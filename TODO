@@ -11,369 +11,362 @@ it (or include it in this list :-)
 Projects marked with an `*' are scheduled for the next DDD release.
 Volunteers for these and other projects are welcome!
 
-008. Have buttons arranged such that they do not disappear when the
-     window is narrowed.
+008 Have buttons arranged such that they do not disappear when the
+    window is narrowed.
 
-017. Have the graph editor scroll automatically when the pointer drags
-     something out of the visible part of the window.
+017 Have the graph editor scroll automatically when the pointer drags
+    something out of the visible part of the window.
 
-021. In the manual index, use special fonts for bold keywords.
-     [Requires Motif 2.0 and CMText.]
+021 In the manual index, use special fonts for bold keywords.
+    [Requires Motif 2.0 and CMText.]
 
-025. Have auto-unfolding for recursive data structures.  Dereferencing
-     a pointer P * would automatically select all P * members in the
-     referenced structure.
+025 Have auto-unfolding for recursive data structures.  Dereferencing
+    a pointer P * would automatically select all P * members in the
+    referenced structure.
 
-026. Have optional abstraction levels, hiding implementation details.
-     Every data type would be assigned an individual VSL function
-     determining its representation.
+026 Have optional abstraction levels, hiding implementation details.
+    Every data type would be assigned an individual VSL function
+    determining its representation.
 
-031. Have a three-dimensional data display (using red/green glasses) :-)
+031 Have a three-dimensional data display (using red/green glasses) :-)
 
-033. Call for bug report if `make' fails.  But how?
+033 Call for bug report if `make' fails.  But how?
 
-     J.H.M. Dassen <jdassen@wi.leidenuniv.nl> suggests using two
-     makefiles: Makefile.real (which does all the hard work, and
-     touches a file "buildcompleted" [1]; if 1. is implemented,
-     "buildcompleted" means that the build is indeed completed) and
-     Makefile (a wrapper that executes Makefile.real, and that
-     displays the error message if "buildcompleted" doesn't exist
-     after executing Makefile.real).  Alternatively, you can merge
-     these into one makefile.
+    J.H.M. Dassen <jdassen@wi.leidenuniv.nl> suggests using two
+    makefiles: Makefile.real (which does all the hard work, and
+    touches a file "buildcompleted" [1]; if 1. is implemented,
+    "buildcompleted" means that the build is indeed completed) and
+    Makefile (a wrapper that executes Makefile.real, and that
+    displays the error message if "buildcompleted" doesn't exist
+    after executing Makefile.real).  Alternatively, you can merge
+    these into one makefile.
 
-     [1] Of course, as long as DDD produces only one executable, you could
-     ddd/ddd instead.
+    [1] Of course, as long as DDD produces only one executable, you could
+    ddd/ddd instead.
 
-034. Call for bug report if a fatal X error occurs.
+034 Call for bug report if a fatal X error occurs.
 
-037. Group dereference.  If multiple pointers are selected,
+037 Group dereference.  If multiple pointers are selected,
      dereference them all.
 
-049. albrecht@igpm.rwth-aachen.de (Harald Albrecht):
-     The dialog windows (especially the backtrace dialog) should not
-     exceed a specific size (at least, they should not be larger than
-     the screen :-).  Also, the DDD dialogs should be iconified on
-     their own, without always laying on top of the main windows.
+049 albrecht@igpm.rwth-aachen.de (Harald Albrecht):
+    The dialog windows (especially the backtrace dialog) should not
+    exceed a specific size (at least, they should not be larger than
+    the screen :-).  Also, the DDD dialogs should be iconified on
+    their own, without always laying on top of the main windows.
 
-050. Include algorithm animation; for instance, in a way similar to
-     LENS (see ftp.cc.gatech.edu:pub/people/stasko).  Suggested by
-     bruce@liverpool.ac.uk (Bruce Stephens).
+050 Include algorithm animation; for instance, in a way similar to
+    LENS (see ftp.cc.gatech.edu:pub/people/stasko).  Suggested by
+    bruce@liverpool.ac.uk (Bruce Stephens).
 
-060. When using a dynamic version of libstdc++, configure fails
-     to add its location to the -R flag.
+060 When using a dynamic version of libstdc++, configure fails
+    to add its location to the -R flag.
 
-069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
-     Let one colorize the displays. By using regexps on types or names
-     of the fields, it would already be extremely useful (or with a
-     match on the typed expression, having a list of regexps to match,
-     the first match giving color, so that given blue for ` pr_.*' and
-     red for `^int .*' one would see `int pr_var' in blue but all
-     other int variables in red).
+069 Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
+    Let one colorize the displays. By using regexps on types or names
+    of the fields, it would already be extremely useful (or with a
+    match on the typed expression, having a list of regexps to match,
+    the first match giving color, so that given blue for ` pr_.*' and
+    red for `^int .*' one would see `int pr_var' in blue but all
+    other int variables in red).
 
-070. Matthias Kurz <mk@baerlap.north.de> suggests an option to set
-     debuggee arguments when invoking DDD.  A simple way of
-     implementing that would be: if more than one argument is given,
-     or if the 1st argument is neither a core file nor a process ID,
-     use the remaining arguments as debugee execution arguments.  [In
-     DDD, this is difficult to implement while conserving remote mode.
-     This should be an extension to GDB, not to DDD.  - AZ]
+070 Matthias Kurz <mk@baerlap.north.de> suggests an option to set
+    debuggee arguments when invoking DDD.  A simple way of
+    implementing that would be: if more than one argument is given,
+    or if the 1st argument is neither a core file nor a process ID,
+    use the remaining arguments as debugee execution arguments.  [In
+    DDD, this is difficult to implement while conserving remote mode.
+    This should be an extension to GDB, not to DDD.  - AZ]
 
-071. Matthias Kurz <mk@baerlap.north.de> suggests code annotations
-     (i.e. comments and graphics that are associated with certain
-     variable/function names in the code).
+071 Matthias Kurz <mk@baerlap.north.de> suggests code annotations
+    (i.e. comments and graphics that are associated with certain
+    variable/function names in the code).
 
-075. Andre Cormeau <ac@enci.ucalgary.ca> says:
+075 Andre Cormeau <ac@enci.ucalgary.ca> says:
 
-     Apparently ddd does not fully support fortran. A problem is in
-     variable names, with capital letters and underscores (not strict
-     f77).  I need to change the variable names to small caps and add
-     underscores to the end of the names, which is a bit annoying
-     after a while.  Is there a filter to do this out there?
-     [This is a problem in the underlying debugger.  -AZ]
+    Apparently ddd does not fully support fortran. A problem is in
+    variable names, with capital letters and underscores (not strict
+    f77).  I need to change the variable names to small caps and add
+    underscores to the end of the names, which is a bit annoying after
+    a while.  Is there a filter to do this out there?  [This is a
+    problem in the underlying debugger.  -AZ]
 
-076. Henrik Seidel <henrik@satchmo.physik.tu-berlin.de> says:
+076 Henrik Seidel <henrik@satchmo.physik.tu-berlin.de> says:
 
-     I am missing a feature which would be very useful (but, maybe,
-     difficult to implement). Maybe it is already there and I just
-     don't see it: I would love to be able to save the layout and the
-     variables of the graphic display, so that I can use the same
-     layout if I continue debugging the program tomorrow. More
-     important, I do not like it so much that I have to re-establish
-     the graphic display each time I recompile. Currently, after
-     recompiling all variables displayed in the previous version of
-     the program are now undefined, probably because addresses have
-     changed. Is there a trick to make them be defined again? If not,
-     it might be a good idea to save the displayed variables not by
-     their address but, more source-code oriented, by their scope and
-     name. That way, it shouldn't be too difficult to save the
-     displayed variables and find the corresponding variables even
-     after recompiling.
+    I am missing a feature which would be very useful (but, maybe,
+    difficult to implement). Maybe it is already there and I just
+    don't see it: I would love to be able to save the layout and the
+    variables of the graphic display, so that I can use the same
+    layout if I continue debugging the program tomorrow. More
+    important, I do not like it so much that I have to re-establish
+    the graphic display each time I recompile. Currently, after
+    recompiling all variables displayed in the previous version of the
+    program are now undefined, probably because addresses have
+    changed. Is there a trick to make them be defined again? If not,
+    it might be a good idea to save the displayed variables not by
+    their address but, more source-code oriented, by their scope and
+    name. That way, it shouldn't be too difficult to save the
+    displayed variables and find the corresponding variables even
+    after recompiling.
 
-078. Have mirror sites for the DDD WWW page.  Maybe via the DDD FTP
-     mirrors?
+078 Have mirror sites for the DDD WWW page.  Maybe via the DDD FTP
+    mirrors?
 
-080. Convert the DDD manual to texinfo, as in ICE, resulting in an
-     HTML manual.  See also 102.
+080 Convert the DDD manual to texinfo, as in ICE, resulting in an
+    HTML manual.  See also 102.
 
-083. Include graphplace (or other graph layout) support.
+083 Include graphplace (or other graph layout) support.
 
-085. Include xDuel support.  See `http://www.math.tau.ac.il/~frangy/'
-     for details.
+085 Include xDuel support.  See `http://www.math.tau.ac.il/~frangy/'
+    for details.
 
-088* Some suggestions by Oyvind Yrke <oyvind@stavanger.geoquest.slb.com>:
+088*Some suggestions by Oyvind Yrke <oyvind@stavanger.geoquest.slb.com>:
 
-     o When setting a breakpoint, it should be possible to select from
-       a list matching a regexp.  This feature would be particularly
-       useful when working with c++ code with overloading, templates
-       and member functions.
+    o When setting a breakpoint, it should be possible to select from
+      a list matching a regexp.  This feature would be particularly
+      useful when working with c++ code with overloading, templates
+      and member functions.
 
-     o In data display, it would be extremely useful to select which
-       fields of a (big) struct should be displayed.  In the current
-       version, you have to display the whole struct, or display
-       individual elements in separate boxes which wastes space.
+    o In data display, it would be extremely useful to select which
+      fields of a (big) struct should be displayed.  In the current
+      version, you have to display the whole struct, or display
+      individual elements in separate boxes which wastes space.
 
-     o Ability to group variables as selections that can be
-       enabled/disabled separately.  For big applications, the data
-       display quickly gets overcrowded.  Disabling data display of
-       these variables will not save much screen space.  So if I can
-       select some of the variable boxes in the data display, and save
-       them for later retrieval would be use very useful.
-       [Use Cut/Copy/Paste -AZ]
+    o Ability to group variables as selections that can be
+      enabled/disabled separately.  For big applications, the data
+      display quickly gets overcrowded.  Disabling data display of
+      these variables will not save much screen space.  So if I can
+      select some of the variable boxes in the data display, and save
+      them for later retrieval would be use very useful.
+      [Use Cut/Copy/Paste -AZ]
 
-     o Display of variables are disabled when stepping into a new
-       function, i.e. variables in functions "above" the current frame
-       are not displayed.  Although I can circumvent this problem by
-       typing the full path (e.g.  graph display
-       /some/deeply/nested/directory/file.c:a, this is quite
-       inconvenient.  The function/file prefix should probably be
-       omitted (at least as an option), since otherwise the data
-       display would be messed up with very long variable names as in
-       SunOS dbxtool/debugger.  Displaying an element of an array in
-       dbxtool as you iterate through the array looks like
+    o Display of variables are disabled when stepping into a new
+      function, i.e. variables in functions "above" the current frame
+      are not displayed.  Although I can circumvent this problem by
+      typing the full path (e.g.  graph display
+      /some/deeply/nested/directory/file.c:a, this is quite
+      inconvenient.  The function/file prefix should probably be
+      omitted (at least as an option), since otherwise the data
+      display would be messed up with very long variable names as in
+      SunOS dbxtool/debugger.  Displaying an element of an array in
+      dbxtool as you iterate through the array looks like
 
          '/a_very/long/path/'funcname'data['/a_very/long/path'funcname'i] = 17
 
-       Some sort of user customization is probably needed here to
-       avoid lengthy names (e.g. by specifying how many directories
-       should be displayed).  An alternative is to have a status line
-       in the data window too specifying the full path of the data box
-       where the cursor is pointing.
+      Some sort of user customization is probably needed here to
+      avoid lengthy names (e.g. by specifying how many directories
+      should be displayed).  An alternative is to have a status line
+      in the data window too specifying the full path of the data box
+      where the cursor is pointing.
         
-094. Have a VSL 'string()' function that extracts the string from a
-     box.  With an additional VSL 'matches()' function that matches
-     regexps, one may display different types in different
-     colors, fonts, etc.
+094 Have a VSL 'string()' function that extracts the string from a
+    box.  With an additional VSL 'matches()' function that matches
+    regexps, one may display different types in different
+    colors, fonts, etc.
 
-099. Add a history mechanism to the `()' fields (cursor up / cursor
-     down).
+099 Add a history mechanism to the `()' fields (cursor up / cursor down).
 
-102. Have a WWW tutorial for DDD.  See also 080.
+102 Have a WWW tutorial for DDD.  See also 080.
 
-108. David M. Karr <dkarr@nmo.gtegsc.com> suggests:
-     In the SparcWorks debugger, if I use the "list" command at the
-     internal dbx prompt, it lists the object or lines I specify in the
-     source window.  I believe that "ddd" should work this way.  Is there a
-     way to get this behavior, or is it simply not designed for this?
+108 David M. Karr <dkarr@nmo.gtegsc.com> suggests:
+    In the SparcWorks debugger, if I use the "list" command at the
+    internal dbx prompt, it lists the object or lines I specify in the
+    source window.  I believe that "ddd" should work this way.  Is there a
+    way to get this behavior, or is it simply not designed for this?
 
-110. N. Dan Zou <zou@hooked.net> suggests a way to display the class
-     structure of an existing program graphically.  [Should be
-     implemented as follows: use the `ptype' output to display types
-     graphically; dereference type names as required.  -AZ]
+110 N. Dan Zou <zou@hooked.net> suggests a way to display the class
+    structure of an existing program graphically.  [Should be
+    implemented as follows: use the `ptype' output to display types
+    graphically; dereference type names as required.  -AZ]
 
-115. Have a link from help texts to appropriate sections of the DDD manual.
+115 Have a link from help texts to appropriate sections of the DDD manual.
 
-117. Paul Courbis <plc@lexem.fr> says: upon dereferencing a pointer, 
-     it would be nice to have a menu to say: display hex data for 255
-     bytes.
+117 Paul Courbis <plc@lexem.fr> says: upon dereferencing a pointer, 
+    it would be nice to have a menu to say: display hex data for 255 bytes.
 
-119. Try whether the `-fno-implement-inlines' option in DDD reduces
-     executable size.
+119 Try whether the `-fno-implement-inlines' option in DDD reduces
+    executable size.
 
-120. Check whether `dbxenv output_short_file_name off' helps in
-     debugging with DBX.
+120 Check whether `dbxenv output_short_file_name off' helps in
+    debugging with DBX.
 
-122. Have a window that shows DDD/GDB communication, with the ability
-     to modify commands before they are processed.
+122 Have a window that shows DDD/GDB communication, with the ability
+    to modify commands before they are processed.
 
-126. `shorten' may need some improvements (count `(' and `)'
-     occurrences, etc.)
+126 `shorten' may need some improvements (count `(' and `)'
+    occurrences, etc.)
 
-127. Include `jdb' (Java debugger) support.  For details, see
-     `http://www.javasoft.com/products/JDK/tools/solaris/jdb.html'.
+127 Include `jdb' (Java debugger) support.  For details, see
+    `http://www.javasoft.com/products/JDK/tools/solaris/jdb.html'.
 
-128. Have a way to completely remove selected struct members from the
-     view.  Suggested by marjeta@mccabe.com (Marjeta Cedilnik).
-     [Could this done by pressing `delete' on them?  And should other
-      displayed items be affected, too?  -AZ]
+128 Have a way to completely remove selected struct members from the
+    view.  Suggested by marjeta@mccabe.com (Marjeta Cedilnik).
+    [Could this done by pressing `delete' on them?  And should other
+     displayed items be affected, too?  -AZ]
 
-129. Detect self-modifying code.
+129 Detect self-modifying code.
 
-131. Include the Athena Panner widget in the DDD distribution, such
-     that Athena/Motif conflicts are removed.
+131 Include the Athena Panner widget in the DDD distribution, such
+    that Athena/Motif conflicts are removed.
 
-135. Have node reference points be at the upper left instead of the
-     center.
+143 Have a list of regexes that suppress or hide displays when
+    matched.  See also #128 and #088.
 
-143. Have a list of regexes that suppress or hide displays when
-     matched.  See also #128 and #088.
+152 When dereferencing, make new displays inherit the show/hide,
+    enable/disable state of their ancestors.  How about selection state?
 
-152. When dereferencing, make new displays inherit the show/hide,
-     enable/disable state of their ancestors.  How about selection
-     state?
+153 Include assembler support for Sun DBX (they have a `dis' command).
 
-153. Include assembler support for Sun DBX (they have a `dis'
-     command).
+154 Allow users to specify geometries for dialog windows.
 
-154. Allow users to specify geometries for dialog windows.
+155 Allow users to specify start-up commands that open specific
+    windows (for instance, open-backtrace(X, Y) would open the
+    backtrace window at X, Y; open-backtrace() would open it in some
+    default position).  See also #154, above.
 
-155. Allow users to specify start-up commands that open specific
-     windows (for instance, open-backtrace(X, Y) would open the
-     backtrace window at X, Y; open-backtrace() would open it in some
-     default position).  See also #154, above.
+160 Support DEC `decladebug'.  Jens Albrecht
+    <Jens.Albrecht@informatik.uni-erlangen.de> has a trace.
 
-160. Support DEC `decladebug'.  Jens Albrecht
-     <Jens.Albrecht@informatik.uni-erlangen.de> has a trace.
+161 Daniel Lyddy <sprocket27@earthlink.net> suggests: Would it be
+    feasible to allow the user to select multiple commands in the
+    "Command History" window?  One could hold down the "Shift" key
+    while selecting a contiguous block of commands and the "Control"
+    key to select non-contiguous commands, a la Windoze File Manager.
 
-161. Daniel Lyddy <sprocket27@earthlink.net> suggests: Would it be
-     feasible to allow the user to select multiple commands in the
-     "Command History" window?  One could hold down the "Shift" key
-     while selecting a contiguous block of commands and the "Control"
-     key to select non-contiguous commands, a la Windoze File Manager.
+164 Matthias Kurz <mk@baerlap.north.de> suggests:
+    - Recognize 'complete' variables; example "ptr->struct.field": if
+      one points inside this string always show the value of
+      ptr->struct.field.
+    [ A selection followed by a click on `Print ()' will do. - AZ]
+    - Selection: Double click to select words - moving the mouse then
+      expands on the basis of words
+    - possibility to select the base (dec, hex, oct ...) for
+      displayed values; Attach this as attributes to variables,
+      fields of structs/unions; load/save
+    - detecting when graph display takes too long (n seconds
+      configurable) if it takes too long switch in mode where updates
+      are only done on request
+    - Dump inspector hex[+/]ascii/octal dump of length n starting at
+      address a. Possibility to 'group' data : selecting bytes in
+      dump with mouse; declare them to be a particular data type
+      (2/4/8 Byte integer/unsigned, float, real, pointer; select
+      numeric base and byte order); load and store such definitions;
+      apply such definition starting at a specified point.
+      Possibility to 'graph display', modify and write back values
+      from the dump.
+    - recognize URLs in source window; follow on click (call external
+      browser)
 
-164. Matthias Kurz <mk@baerlap.north.de> suggests:
-     - Recognize 'complete' variables; example "ptr->struct.field": if
-       one points inside this string always show the value of
-       ptr->struct.field.
-     [ A selection followed by a click on `Print ()' will do. - AZ]
-     - Selection: Double click to select words - moving the mouse then
-       expands on the basis of words
-     - possibility to select the base (dec, hex, oct ...) for
-       displayed values; Attach this as attributes to variables,
-       fields of structs/unions; load/save
-     - detecting when graph display takes too long (n seconds
-       configurable) if it takes too long switch in mode where updates
-       are only done on request
-     - Dump inspector hex[+/]ascii/octal dump of length n starting at
-       address a. Possibility to 'group' data : selecting bytes in
-       dump with mouse; declare them to be a particular data type
-       (2/4/8 Byte integer/unsigned, float, real, pointer; select
-       numeric base and byte order); load and store such definitions;
-       apply such definition starting at a specified point.
-       Possibility to 'graph display', modify and write back values
-       from the dump.
-     - recognize URLs in source window; follow on click (call external
-       browser)
+166 When the inferior debugger crashes, offer to restart it.  This
+    may be done by replaying all previously issued commands (except
+    the last one, of course).  Commands with external side-effects
+    (such as running or making the program as well as shell commands)
+    should be ignored.
 
-166. When the inferior debugger crashes, offer to restart it.  This
-     may be done by replaying all previously issued commands (except
-     the last one, of course).  Commands with external side-effects
-     (such as running or making the program as well as shell commands)
-     should be ignored.
+168 Rename `Lookup' to `List' and recognize the `list' command.  See
+    also #108.
 
-168. Rename `Lookup' to `List' and recognize the `list' command.  See
-     also #108.
+170 In the `File' menu, keep a history of most recently opened files
+    (executables? sources? sessions?)
 
-170. In the `File' menu, keep a history of most recently opened files
-     (executables? sources? sessions?)
+171 Use double-buffering to display the graph.  Even less flickering.
 
-171. Use double-buffering to display the graph.  Even less flickering.
+175 Theodore Papadopoulo <papadop@sophia.inria.fr> suggests a smaller 
+    font for large matrices.
 
-175. Theodore Papadopoulo <papadop@sophia.inria.fr> suggests a smaller 
-     font for large matrices.
+176 Theodore Papadopoulo <papadop@sophia.inria.fr> wants the
+    capability of "freezing" some displayed values. By this, I mean
+    that I want to have some displayed data to remain displayed
+    (presumably as a copy?) as it is at the moment the user asks for
+    this freezing.  This would give to the user a simple way of
+    comparing the state of the program in different (but related)
+    functions, in different calls of a same function or in different
+    runs of the program with different (but again related)
+    parameters. And as far as I can see it, this is purely some
+    interface stuff so does not need for any support from the
+    debugger.
 
-176. Theodore Papadopoulo <papadop@sophia.inria.fr> wants the
-     capability of "freezing" some displayed values. By this, I mean
-     that I want to have some displayed data to remain displayed
-     (presumably as a copy?) as it is at the moment the user asks for
-     this freezing.  This would give to the user a simple way of
-     comparing the state of the program in different (but related)
-     functions, in different calls of a same function or in different
-     runs of the program with different (but again related)
-     parameters. And as far as I can see it, this is purely some
-     interface stuff so does not need for any support from the
-     debugger.
+177 Create menu children in the background, using a work procedure.
 
-177. Create menu children in the background, using a work procedure.
+179 Add `libgdb' as an alternate communication method.
 
-179. Add `libgdb' as an alternate communication method.
+181 If the DDD WWW page server is down, try a mirror site.
 
-181. If the DDD WWW page server is down, try a mirror site.
+183 Have a way to re-dereference until no more changes occur.
 
-183. Have a way to re-dereference until no more changes occur.
-
-187. Have a `commands' menu listing up all debugger commands.  Could
+187 Have a `commands' menu listing up all debugger commands.  Could
      be organized according to `help' classes.
 
-193. Have a way to unfold trees and graphs.  For instance, `Display
-     *()' applied to a struct could dereference all contained pointers
-     (unless already dereferenced).
+193 Have a way to unfold trees and graphs.  For instance, `Display
+    *()' applied to a struct could dereference all contained pointers
+    (unless already dereferenced).
 
-196. Realize GUI support for the GDB `handle' commands 
-     (`Signal handling' or so).
+196 Realize GUI support for the GDB `handle' commands 
+    (`Signal handling' or so).
 
-197. Implement a fast lookup table for assembler locations.  Current
-     linear search may be too slow for large assembly listings.
+197 Implement a fast lookup table for assembler locations.  Current
+    linear search may be too slow for large assembly listings.
 
-199. Use X11R6 XtSignalNotify for Xt-safe signal handling.
+199 Use X11R6 XtSignalNotify for Xt-safe signal handling.
 
-201. Install hotkeys on the command tool, using Harald Albrecht's
-     hotkey package (in
-     `http://www.igpm.rwth-aachen.de/~albrecht/mnem.html')
+201 Install hotkeys on the command tool, using Harald Albrecht's
+    hotkey package (in
+    `http://www.igpm.rwth-aachen.de/~albrecht/mnem.html')
 
-206. `manage_and_raise' should deiconify dialogs.
+206 `manage_and_raise' should deiconify dialogs.
 
-215. Raoul Beauduin <beauduin@ori.u-tokyo.ac.jp> suggests to change
-     the green arrow in the source window into a green bar. Makes it
-     easier to follow the line.
-     [You can turn off glyphs and get a black bar.  -AZ]
+215 Raoul Beauduin <beauduin@ori.u-tokyo.ac.jp> suggests to change
+    the green arrow in the source window into a green bar. Makes it
+    easier to follow the line.
+    [You can turn off glyphs and get a black bar.  -AZ]
 
-216. Raoul Beauduin <beauduin@ori.u-tokyo.ac.jp> wants to be able to
-     view the content of an array graphically.  Useful when you know
-     what kind of array you are expecting (symmetric, diagonal ...)
+216 Raoul Beauduin <beauduin@ori.u-tokyo.ac.jp> wants to be able to
+    view the content of an array graphically.  Useful when you know
+    what kind of array you are expecting (symmetric, diagonal ...)
 
-217. Winson Quock <quock@pepper.com> (see the quote in ddd/exit.C)
-     says: Very often, I found myself spending quite a lot of time
-     arranging each "display box".  It will be cool if we can also
-     have a normal text list display for variable values.
+217 Winson Quock <quock@pepper.com> (see the quote in ddd/exit.C)
+    says: Very often, I found myself spending quite a lot of time
+    arranging each "display box".  It will be cool if we can also
+    have a normal text list display for variable values.
 
-219. Annotated arrows. Christoph Koegl <koegl@informatik.uni-kl.de>
-     suggests that the data display window should be able to annotate
-     arrows with the name of the pointer variables whose value they
-     represent. This would come in handy if one (as I do at the
-     moment) displays heavily cross-pointered data structures.
+219 Annotated arrows. Christoph Koegl <koegl@informatik.uni-kl.de>
+    suggests that the data display window should be able to annotate
+    arrows with the name of the pointer variables whose value they
+    represent. This would come in handy if one (as I do at the
+    moment) displays heavily cross-pointered data structures.
 
-221. Have a DDD USENET news group, such as `comp.debuggers[.ddd]',
-     instead of a mailing list.  [This should be done when there are
-     more than 1000 subscribers, or when the number of messages/day is
-     greater than 50.]
+221 Have a DDD USENET news group, such as `comp.debuggers[.ddd]',
+    instead of a mailing list.  [This should be done when there are
+    more than 1000 subscribers, or when the number of messages/day is
+    greater than 50.]
 
-229. Is it not possible to prevent ddd to put up ANY windows until you
-     say you want one. ddd insists on putting up a source window even
-     if I run it from within xemacs, I've manually hided it with the
-     window manager, but still...  [Try `-iconic'  -AZ]
+229 Is it not possible to prevent ddd to put up ANY windows until you
+    say you want one. ddd insists on putting up a source window even
+    if I run it from within xemacs, I've manually hided it with the
+    window manager, but still...  [Try `-iconic'  -AZ]
 
-232. Have an `infinite' assembler window that extends in both
-     directions as needed.
+232 Have an `infinite' assembler window that extends in both
+    directions as needed.
 
-233. Have a `bookmarks' menu like the `Highlight' menu in tkman.
+233 Have a `bookmarks' menu like the `Highlight' menu in tkman.
 
-235. L. Peter Deutsch <ghost@aladdin.com> suggests:
+235 L. Peter Deutsch <ghost@aladdin.com> suggests:
 
-     * There are 4 different styles of command selection in the GUI:
-       menu bar (at the top), individual command buttons (2 rows),
-       floating 2-D button panel (Run, Interrupt, etc.), and pop-up
-       menus.  I think the GUI would look better with fewer styles,
-       but I'm not sure how I would recommend doing it.  I think it
-       would be especially nice to remove the two bars of buttons
-       across the window, which currently take up nearly 1" of
-       vertical space that I would prefer to have available for other
-       things.  My first thought is to turn those two bars into
-       floating panels like the Run / Interrupt panel.
+    * There are 4 different styles of command selection in the GUI:
+      menu bar (at the top), individual command buttons (2 rows),
+      floating 2-D button panel (Run, Interrupt, etc.), and pop-up
+      menus.  I think the GUI would look better with fewer styles,
+      but I'm not sure how I would recommend doing it.  I think it
+      would be especially nice to remove the two bars of buttons
+      across the window, which currently take up nearly 1" of
+      vertical space that I would prefer to have available for other
+      things.  My first thought is to turn those two bars into
+      floating panels like the Run / Interrupt panel.
 
-    * I would like to be able to select the font for each window,
-      specifically so that I can use a smaller font to get more data
-      visible in the data window.  ddd already has a nice
-      "preferences" facility: this would be an obvious place to add
-      this capability.
+   * I would like to be able to select the font for each window,
+     specifically so that I can use a smaller font to get more data
+     visible in the data window.  ddd already has a nice
+     "preferences" facility: this would be an obvious place to add
+     this capability.
 
-240. (Insert your project idea here)
+240 (Insert your project idea here)

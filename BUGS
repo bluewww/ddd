@@ -13,251 +13,253 @@ in this list :-)
 Projects marked with an `*' are to be fixed in the next DDD release.
 Volunteers for fixing these and other bugs are welcome!
 
-001. It's too big and too slow.  [This one will never get fixed]
+001 It's too big and too slow.  [This one will never get fixed]
 
-003. Using Motif 1.1 or earlier, the command window is scrolled
-     whenever obscured.  [This seems to be a Motif bug.]
+003 Using Motif 1.1 or earlier, the command window is scrolled
+    whenever obscured.  [This seems to be a Motif bug.]
 
-013. Raising windows using the `View' menu does not assign them `mwm'
-     input focus.  [Anyone willing to give me a hint here?  -AZ]
+013 Raising windows using the `View' menu does not assign them `mwm'
+    input focus.  [Anyone willing to give me a hint here?  -AZ]
 
-021. Using Sun DBX, attempting to dereference a `(nil)' pointer
-     results in an error message and no new display.  However, the
-     expression is entered as an ordinary display.
+021 Using Sun DBX, attempting to dereference a `(nil)' pointer
+    results in an error message and no new display.  However, the
+    expression is entered as an ordinary display.
 
-026. Using DBX with PASCAL or Modula-2, selected array elements are
-     always counted from zero, instead of the starting index of the array.
+026 Using DBX with PASCAL or Modula-2, selected array elements are
+    always counted from zero, instead of the starting index of the array.
 
-041. Starting a multi-window DDD iconified under vtwm and fvwm causes
-     trouble with group iconification.
+041 Starting a multi-window DDD iconified under vtwm and fvwm causes
+    trouble with group iconification.
 
-049. The bounding box is computed for all boxes, even if only selected
-     boxes are to be printed.
+049 The bounding box is computed for all boxes, even if only selected
+    boxes are to be printed.
 
-086. mayer@paradigml.com (Ron Mayer) says:
+086 mayer@paradigml.com (Ron Mayer) says:
 
-     In a number of structures I would attempt to "Modify [the]
-     dependent display expression" to display in hex using expressions
-     like "/x g->head", instead of the default "(g)->head".
+    In a number of structures I would attempt to "Modify [the]
+    dependent display expression" to display in hex using expressions
+    like "/x g->head", instead of the default "(g)->head".
 
-     Occasionally this would make ddd hang, and lock up the X-server
-     completely so that I would have to rlogin from another terminal
-     to kill the program.  The bus-error was not reproducable, and
-     unfortunatelly I had core files disabled when it happened.
+    Occasionally this would make ddd hang, and lock up the X-server
+    completely so that I would have to rlogin from another terminal
+    to kill the program.  The bus-error was not reproducable, and
+    unfortunatelly I had core files disabled when it happened.
 
-     These structures did happen to be in a mmap()'d region of shared
-     memory, but since I didn't see the problems when I didn't use the
-     "/x" modifier I suspect this isn't the problem.
+    These structures did happen to be in a mmap()'d region of shared
+    memory, but since I didn't see the problems when I didn't use the
+    "/x" modifier I suspect this isn't the problem.
 
-     PS: What is the prefered way (if any) of making the hex output 
-         the default in the display graph?  If I "set output-radix 16" 
-         in the gdb window ddd seems to lock up very often.
-     [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
+    PS: What is the prefered way (if any) of making the hex output 
+        the default in the display graph?  If I "set output-radix 16" 
+        in the gdb window ddd seems to lock up very often.
+    [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
 
-113. Matthias Kurz <mk@baerlap.north.de> states:
-     If I resize the data display the background doesn't get
-     refreshed.  [Use an Athena Panner instead of Motif scrollbars  -AZ]
+113 Matthias Kurz <mk@baerlap.north.de> states:
+    If I resize the data display the background doesn't get
+    refreshed.  [Use an Athena Panner instead of Motif scrollbars  -AZ]
 
-117. Under Linux slackware 3.1, the file permissions in `/dev/ptyp?'
-     do not allow for DDD <-> GDB interaction.  [Can we circumvent
-     this within DDD?  -AZ]
+117 Under Linux slackware 3.1, the file permissions in `/dev/ptyp?'
+    do not allow for DDD <-> GDB interaction.  [Can we circumvent
+    this within DDD?  -AZ]
 
-118. SGI CC compiles DDD, but the resulting executable soon dies with a
-     segmentation fault.  [Use GCC instead.  -AZ]
+118 SGI CC compiles DDD, but the resulting executable soon dies with a
+    segmentation fault.  [Use GCC instead.  -AZ]
 
-126. Flashing data window.  Thomas Liefke
-     <liefke@cdc.Informatik.TH-Darmstadt.DE> says: 
+126 Flashing data window.  Thomas Liefke
+    <liefke@cdc.Informatik.TH-Darmstadt.DE> says: 
 
-     The data window is flashing forever in certain circumstances. The
-     flashing looks like a rapid, endless update of the data
-     displayed. The flashing only occurs when the panner is
-     used. While the window (i.e. the boxes and the panner) is
-     flashing, another panner is occurring in the upper left corner in
-     each flash-cycle.
+    The data window is flashing forever in certain circumstances. The
+    flashing looks like a rapid, endless update of the data
+    displayed. The flashing only occurs when the panner is
+    used. While the window (i.e. the boxes and the panner) is
+    flashing, another panner is occurring in the upper left corner in
+    each flash-cycle.
 
-     The flashing does NOT occur when the scroll bar is used instead of a
-     panner.
+    The flashing does NOT occur when the scroll bar is used instead of a
+    panner.
 
-     How I can reproduce the bug:
+    How I can reproduce the bug:
 
-     ddd ctest
+    ddd ctest
 
-     now I press:
+    now I press:
 
-     break at()
-     run
-     step
-     click on variable 'tree' and select 'display'
-     click on box 'tree' and select 'display*'
-     click on 'data = {...}' and select 'show detail'
+    break at()
+    run
+    step
+    click on variable 'tree' and select 'display'
+    click on box 'tree' and select 'display*'
+    click on 'data = {...}' and select 'show detail'
 
-     make the data window smaller so that the lower box doesn't fit
-     completely into window
+    make the data window smaller so that the lower box doesn't fit
+    completely into window
 
-     make the data window big enough for all three boxes.
+    make the data window big enough for all three boxes.
 
-     Then the window is flashing forever unless I make the window
-     smaller and then bigger again.
+    Then the window is flashing forever unless I make the window
+    smaller and then bigger again.
 
-     When I repeatedly change the size, the flashing comes again but
-     not each time the window size is big enough to hold all boxes.
-     [I could not reproduce this problem.  -AZ]
+    When I repeatedly change the size, the flashing comes again but
+    not each time the window size is big enough to hold all boxes.
+    [I could not reproduce this problem.  -AZ]
 
-     This flashing occurs in the vsl demos as well.
+    This flashing occurs in the vsl demos as well.
 
-     For example:
+    For example:
 
-     cd ddd-2.0/vsllib
-     ../ddd/vsl DEMOS/arcs
+    cd ddd-2.0/vsllib
+    ../ddd/vsl DEMOS/arcs
 
-     Now the window is flashing until I increase the size of the
-     window so that everything fits into it. The flashing doesn't
-     occur again when I decrease the window size to the original size.
+    Now the window is flashing until I increase the size of the
+    window so that everything fits into it. The flashing doesn't
+    occur again when I decrease the window size to the original size.
 
-     The flashing occurs in other demos as well. It doesn't occur in
-     DEMOS/bigflow.
+    The flashing occurs in other demos as well. It doesn't occur in
+    DEMOS/bigflow.
 
-     I experienced the flashing neither in version 1.4 nor in version
-     2.0beta.
-     [This one is easily reproducible, but has low priority.  -AZ]
+    I experienced the flashing neither in version 1.4 nor in version
+    2.0beta.
+    [This one is easily reproducible, but has low priority.  -AZ]
 
-127. Bob Vickers <bobv@dcs.rhbnc.ac.uk> says that DDD 2.0
-     (alpha-dec-osf3.2) sometimes fails to start.  Often it works
-     fine. But sometimes, especially if you haven't run it for a while
-     (e.g. first thing in the morning) the command window comes up but
-     there is no sign of the source window. There are sometimes error
-     messages, and these vary slightly.
+127 Bob Vickers <bobv@dcs.rhbnc.ac.uk> says that DDD 2.0
+    (alpha-dec-osf3.2) sometimes fails to start.  Often it works
+    fine. But sometimes, especially if you haven't run it for a while
+    (e.g. first thing in the morning) the command window comes up but
+    there is no sign of the source window. There are sometimes error
+    messages, and these vary slightly.
 
-     The parent Unix window sometimes contains tty error messages, e.g.
+    The parent Unix window sometimes contains tty error messages, e.g.
 
-     platon$ make check
-     ==> Making check in ./ddd...
-     make[1]: Entering directory `/nobackup/work/bobv/ddd-2.0/ddd'
-     XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd cxxtest
-     X Toolkit Warning: Cannot convert string 
-     "-*-Menu-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1" to type FontStruct
-     (gdb) cannot set terminal foreground process group: I/O error
-     (gdb) cannot get slave terminal settings: I/O error
+    platon$ make check
+    ==> Making check in ./ddd...
+    make[1]: Entering directory `/nobackup/work/bobv/ddd-2.0/ddd'
+    XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd cxxtest
+    X Toolkit Warning: Cannot convert string 
+    "-*-Menu-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1" to type FontStruct
+    (gdb) cannot set terminal foreground process group: I/O error
+    (gdb) cannot get slave terminal settings: I/O error
 
-     [We cannot fix this, as we neither have an OSF box nor
-      appropriate OSF documentation at our disposition.  The DDD
-      distribution comes with a demo program `ttytest' which is useful
-      for debugging the TTY interface in `TTYAgent.C'  -AZ]
+    [We cannot fix this, as we neither have an OSF box nor
+     appropriate OSF documentation at our disposition.  The DDD
+     distribution comes with a demo program `ttytest' which is useful
+     for debugging the TTY interface in `TTYAgent.C'  -AZ]
 
-131. `Find<<' and `Find>>' should be in the `Edit' menu (at least for
-     sources)
+131 `Find<<' and `Find>>' should be in the `Edit' menu (at least for
+    sources)
 
-150. In GDB Modula-2-mode, DDD displays are named `^tree' instead of
-     `tree^'.  [This is a GDB bug.  Here's a patch for GDB 4.16:
+150 In GDB Modula-2-mode, DDD displays are named `^tree' instead of
+    `tree^'.  [This is a GDB bug.  Here's a patch for GDB 4.16:
 
-     ===========================================================
-     *** m2-lang.c.orig	Mon Feb 24 17:24:47 1997
-     --- m2-lang.c	Mon Feb 24 17:24:58 1997
-     ***************
-     *** 377,381 ****
-           {">",   BINOP_GTR, PREC_ORDER, 0},
-           {"<",   BINOP_LESS, PREC_ORDER, 0},
-     !     {"^",   UNOP_IND, PREC_PREFIX, 0},
-           {"@",   BINOP_REPEAT, PREC_REPEAT, 0},
-           {"CAP", UNOP_CAP, PREC_BUILTIN_FUNCTION, 0},
-     --- 377,381 ----
-           {">",   BINOP_GTR, PREC_ORDER, 0},
-           {"<",   BINOP_LESS, PREC_ORDER, 0},
-     !     {"^",   UNOP_IND, PREC_SUFFIX, 1},
-           {"@",   BINOP_REPEAT, PREC_REPEAT, 0},
-           {"CAP", UNOP_CAP, PREC_BUILTIN_FUNCTION, 0},
-     ===========================================================
-     - AZ]
+    ===========================================================
+    *** m2-lang.c.orig	Mon Feb 24 17:24:47 1997
+    --- m2-lang.c	Mon Feb 24 17:24:58 1997
+    ***************
+    *** 377,381 ****
+          {">",   BINOP_GTR, PREC_ORDER, 0},
+          {"<",   BINOP_LESS, PREC_ORDER, 0},
+    !     {"^",   UNOP_IND, PREC_PREFIX, 0},
+          {"@",   BINOP_REPEAT, PREC_REPEAT, 0},
+          {"CAP", UNOP_CAP, PREC_BUILTIN_FUNCTION, 0},
+    --- 377,381 ----
+          {">",   BINOP_GTR, PREC_ORDER, 0},
+          {"<",   BINOP_LESS, PREC_ORDER, 0},
+    !     {"^",   UNOP_IND, PREC_SUFFIX, 1},
+          {"@",   BINOP_REPEAT, PREC_REPEAT, 0},
+          {"CAP", UNOP_CAP, PREC_BUILTIN_FUNCTION, 0},
+    ===========================================================
+    - AZ]
 
-152. Curved edges cannot (yet) be printed.
-     [Any PostScript and FIG gurus out there?  -AZ]
+152 Curved edges cannot (yet) be printed.
+    [Any PostScript and FIG gurus out there?  -AZ]
 
-153. Jonathan Edwards <edwards@intranet.com> says that in AIX DBX,
-     the local variable display does not display function arguments.
-     [May this be due to using AIX xlC instead of GCC?  -AZ]
+153 Jonathan Edwards <edwards@intranet.com> says that in AIX DBX,
+    the local variable display does not display function arguments.
+    [May this be due to using AIX xlC instead of GCC?  -AZ]
 
-155. DBX `dump` output is not understood if local arrays are shown.
-     (DBX prints these as `ARRAY')
+155 DBX `dump` output is not understood if local arrays are shown.
+    (DBX prints these as `ARRAY')
 
-159. Jonathan Edwards <edwards@intranet.com> says:
-     A status display only shows once.  After stepping the program it
-     collapses into just the title.  Doing a refresh command restores
-     the display.
-     [This is due to using AIX xlC instead of GCC.  -AZ]
+159 Jonathan Edwards <edwards@intranet.com> says:
+    A status display only shows once.  After stepping the program it
+    collapses into just the title.  Doing a refresh command restores
+    the display.
+    [This is due to using AIX xlC instead of GCC.  -AZ]
 
-168. Jens Albrecht <Jens.Albrecht@informatik.uni-erlangen.de>
-     complains that using DBX, the `file' command does not change the
-     source file.
+168 Jens Albrecht <Jens.Albrecht@informatik.uni-erlangen.de>
+    complains that using DBX, the `file' command does not change the
+    source file.
 
-169. The Manual Browser does not recognize manual (sub-)titles for
-     ULTRIX and HP-UX `man' formats (probably problems with others,
-     too)
+169 The Manual Browser does not recognize manual (sub-)titles for
+    ULTRIX and HP-UX `man' formats (probably problems with others, too)
 
-172. Jonathan Edwards <edwards@intranet.com> says: If I interrupt my
-     program while it is running, my data displays are not updated,
-     and instead I get the info in the debugger console.
+172 Jonathan Edwards <edwards@intranet.com> says: If I interrupt my
+    program while it is running, my data displays are not updated,
+    and instead I get the info in the debugger console.
 
-173. Matthias Kurz <mk@baerlap.north.de> says:
-     - Often the first graph display is not completely inside the
-       window; after selecting 'layout graph' things are right
-     [I could not reproduce this. -AZ]
+173 Matthias Kurz <mk@baerlap.north.de> says:
+    - Often the first graph display is not completely inside the
+      window; after selecting 'layout graph' things are right
+    [I could not reproduce this. -AZ]
 
-175. Harry Mangalam <mangalam@uci.edu> reports: As soon as I click on
-     a variable to try to highlight a structure name, DDD 2.1 goes
-     into an unresponsive state for several seconds (seems like up to
-     a minute on a 486) in which the ddd process hogs the cpu.  It
-     then returns to a usable state until the next time I try to
-     highlight a variable name.  It seems that if I click on a simple
-     variable name, it responds appopriately, but if I try to
-     drag-hilite the name, ddd goes berserk with the cpu.
-     [I could not reproduce this. -AZ]
+175 Harry Mangalam <mangalam@uci.edu> reports: As soon as I click on
+    a variable to try to highlight a structure name, DDD 2.1 goes
+    into an unresponsive state for several seconds (seems like up to
+    a minute on a 486) in which the ddd process hogs the cpu.  It
+    then returns to a usable state until the next time I try to
+    highlight a variable name.  It seems that if I click on a simple
+    variable name, it responds appopriately, but if I try to
+    drag-hilite the name, ddd goes berserk with the cpu.
+    [I could not reproduce this. -AZ]
 
-203. On IRIX6.3 and DBX, the green arrow indicating the current
-     execution position is always at the first line of the currently
-     active source file.  Reported by Uwe Wark <uw@bruker.de>
+203 On IRIX6.3 and DBX, the green arrow indicating the current
+    execution position is always at the first line of the currently
+    active source file.  Reported by Uwe Wark <uw@bruker.de>
 
-204. Switching from glyphs to text loses the current PC.
+204 Switching from glyphs to text loses the current PC.
 
-211. Graham Hudspith <ghudspit@mltsa.uk.lucent.com> reports that the
-     HP-UX version of DDD 2.1.95 crashes at start-up.
+211 Graham Hudspith <ghudspit@mltsa.uk.lucent.com> reports that the
+    HP-UX version of DDD 2.1.95 crashes at start-up.
 
-215. With separate windows, a newly created assembler window has zero
-     height.
+215 With separate windows, a newly created assembler window has zero
+    height.
 
-216. Jonathan Edwards <edwards@intranet.com> suggests that the
-     flashing cursor in the gdb console window ought to stop flashing
-     during user input.  [Tell the Motif people! -AZ]
+216 Jonathan Edwards <edwards@intranet.com> suggests that the
+    flashing cursor in the gdb console window ought to stop flashing
+    during user input.  [Tell the Motif people! -AZ]
 
-218. Conor O'Neill <coneill@integral.ie> reports that, under
-     Openwindows on Sparc Solaris2.51, in the Open_File dialog, the
-     file_list box is too narrow and does not have a horizontal scroll
-     bar. Thus we cannot properly see the list of files available.
-     (This problem is not unique to DDD.)
+218 Conor O'Neill <coneill@integral.ie> reports that, under
+    Openwindows on Sparc Solaris2.51, in the Open_File dialog, the
+    file_list box is too narrow and does not have a horizontal scroll
+    bar. Thus we cannot properly see the list of files available.
+    (This problem is not unique to DDD.)
 
-222. Bob Vickers <bobv@dcs.rhbnc.ac.uk> reports that the command tool
-     sometimes is really big and occupies most of the screen, thus
-     obliterating most of the other windows.  This happens with
-     OSF/Motif Version 1.2.4 on alpha-dec-osf4.0.
+222 Bob Vickers <bobv@dcs.rhbnc.ac.uk> reports that the command tool
+    sometimes is really big and occupies most of the screen, thus
+    obliterating most of the other windows.  This happens with
+    OSF/Motif Version 1.2.4 on alpha-dec-osf4.0.
 
-224. Robert A Kerr <Robert_Kerr@byu.edu> says: On HP-UX 10.10,
-     the debugger LED on the bottom right never stops flashing.  If I
-     try to do anything it gives me the "The debugger is busy error"
-     and keeps flashing away.  I've let it sit for up to an hour
-     before and it never stops.
+224 Robert A Kerr <Robert_Kerr@byu.edu> says: On HP-UX 10.10,
+    the debugger LED on the bottom right never stops flashing.  If I
+    try to do anything it gives me the "The debugger is busy error"
+    and keeps flashing away.  I've let it sit for up to an hour
+    before and it never stops.
 
-228. Chip Atkinson <chip@XiG.com> and Bernie Borenstein
-     <bernieb@deltanet.com> state that after enabling `ungrab mouse
-     pointer when interruping modal X application', pressing the right
-     mouse button grabs the cursor and won't release.  When ddd is
-     killed, the X server cannot give focus to any other windows.
-     This happens with Red Hat Linux 4.1 and Metrolink Motif 2.01.
+228 Chip Atkinson <chip@XiG.com> and Bernie Borenstein
+    <bernieb@deltanet.com> state that after enabling `ungrab mouse
+    pointer when interruping modal X application', pressing the right
+    mouse button grabs the cursor and won't release.  When ddd is
+    killed, the X server cannot give focus to any other windows.
+    This happens with Red Hat Linux 4.1 and Metrolink Motif 2.01.
 
-230. Roy Dragseth <royd@math.uit.no> reports that if you type in
-     commands really fast in ddd, it gets problems to cope.  When
-     using DDD from XEmacs, and defining XEmacs command sequences to
-     be sent to DDD, the last command(s) in the sequence get lost.
+230 Roy Dragseth <royd@math.uit.no> reports that if you type in
+    commands really fast in ddd, it gets problems to cope.  When
+    using DDD from XEmacs, and defining XEmacs command sequences to
+    be sent to DDD, the last command(s) in the sequence get lost.
 
-231. According to Ronald Wahl <Ronald.Wahl@Informatik.TU-Chemnitz.DE>, 
-     DDD gets into a busy loop when used with libc-5.4.41 under Linux.
+231 According to Ronald Wahl <Ronald.Wahl@Informatik.TU-Chemnitz.DE>, 
+    DDD gets into a busy loop when used with libc-5.4.41 under Linux.
 
-233. (Insert your bug here)
+233 A display that is automatically disabled by GDB can only be
+    reactivated by `graph enable display.'
+
+234 (Insert your bug here)
