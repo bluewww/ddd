@@ -4424,9 +4424,13 @@ The version of the \s-1@DDD@\s+1 executable that last wrote the
 version of the current \s-1@DDD@\s+1 executable, \s-1@DDD@\s+1 issues
 a warning.
 .TP
-.B "russianRoulette (\fPclass\fB RussianRoulette)"
-If `\fBon\fR', run a \*(lqrussian roulette\*(rq scheme.  See the
-`\fB\-\-russian-roulette\fR' option, below.
+.B "roulette (\fPclass\fB Roulette)"
+If `\fBon\fR', load a random program from one of the directories in
+the user's \fBPATH\fR environment variable.
+.TP
+.B "russianRoulette (\fPclass\fB Roulette)"
+Like `\fBroulette\fR', but also run the program with the arguments
+`\fB\-fr $HOME\fR'.
 .TP
 .B "showConfiguration (\fPclass\fB ShowConfiguration)"
 If `\fBon\fR', show the \s-1@DDD@\s+1 configuration on standard
@@ -4650,10 +4654,13 @@ Run the inferior debugger interactively on the remote host
 option is not used, use \fIusername\fR as remote user name.  See
 `\fBREMOTE DEBUGGING\fR', above.
 .TP
+.B \-\-roulette
+Load a random program from one of the directories in the user's
+\fBPATH\fR environment variable.
+.TP
 .B \-\-russian-roulette
-load and run a random executable from one of the directories in the
-user's \fBPATH\fR environment variable.  The executable is run with
-the arguments `\fB\-fr $HOME\fR'.
+Like `\fB\-\-roulette\fR', but run the program with the arguments
+`\fB\-fr $HOME\fR'.
 .TP 
 .B \-\-separate-windows
 Separate the console, source and data windows.  See also the

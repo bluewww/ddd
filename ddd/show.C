@@ -617,14 +617,3 @@ void GDBManualCB(Widget w, XtPointer, XtPointer)
 	pclose(fp);
     }
 }
-
-
-
-//-----------------------------------------------------------------------------
-// Russian Roulette
-//-----------------------------------------------------------------------------
-
-void russian_roulette()
-{
-    cout << "You did not really expect this to work, did you?\n";
-}

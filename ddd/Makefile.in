@@ -779,6 +779,7 @@ DDD_OBJECTS = \
 	question.o   \
 	regexps.o    \
 	resources.o  \
+	roulette.o   \
 	sashes.o     \
 	select.o     \
 	session.o    \

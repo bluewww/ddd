@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-// DDD info functions
+// Return randowm program
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -26,40 +26,16 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_show_h
-#define _DDD_show_h
+#ifndef _DDD_roulette_h
+#define _DDD_roulette_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
-#include "ddd.h"
-#include "GDBAgent.h"
-#include <X11/Intrinsic.h>
-#include <X11/Xresource.h>
-#include <iostream.h>
+#include "strclass.h"
 
-// Help texts
-void show_invocation(DebuggerType type, ostream& os);
-void show_version(ostream& os);
-void show_configuration(ostream& os);
-void show(int (*formatter)(ostream& os));
+extern string random_program();
 
-// WWW page
-void DDDWWWPageCB(Widget, XtPointer, XtPointer);
-
-// Manual
-int ddd_man(ostream& os);
-void DDDManualCB(Widget, XtPointer, XtPointer);
-void GDBManualCB(Widget, XtPointer, XtPointer);
-
-// License
-int ddd_license(ostream& os);
-void DDDLicenseCB(Widget, XtPointer, XtPointer);
-
-// News
-int ddd_news(ostream& os);
-void DDDNewsCB(Widget, XtPointer, XtPointer);
-
-#endif // _DDD_show_h
+#endif // _DDD_roulette_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

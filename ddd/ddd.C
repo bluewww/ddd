@@ -556,6 +556,9 @@ static XrmOptionDescRec options[] = {
 { "--fonts",                XtNshowFonts,            XrmoptionNoArg, ON },
 { "-fonts",                 XtNshowFonts,            XrmoptionNoArg, ON },
 
+{ "--roulette",             XtNroulette,             XrmoptionNoArg, ON },
+{ "-roulette",              XtNroulette,             XrmoptionNoArg, ON },
+
 { "--russian-roulette",     XtNrussianRoulette,      XrmoptionNoArg, ON },
 { "-russian-roulette",      XtNrussianRoulette,      XrmoptionNoArg, ON },
 
@@ -1797,17 +1800,13 @@ int main(int argc, char *argv[])
     if (app_data.show_manual)
 	show(ddd_man);
 
-    if (app_data.russian_roulette)
-	russian_roulette();
-
     if (app_data.show_version 
 	|| app_data.show_invocation 
 	|| app_data.show_configuration
 	|| app_data.show_news
 	|| app_data.show_license
 	|| app_data.show_manual
-	|| app_data.show_fonts
-	|| app_data.russian_roulette)
+	|| app_data.show_fonts)
 	return EXIT_SUCCESS;
 
     // From this point on, we'll be running under X.

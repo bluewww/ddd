@@ -57,6 +57,7 @@ char comm_manager_rcsid[] =
 #include "buttons.h"
 #include "cmdtty.h"
 #include "cook.h"
+#include "cmdtty.h"
 #include "dbx-lookup.h"
 #include "ddd.h"
 #include "disp-read.h"
@@ -64,10 +65,12 @@ char comm_manager_rcsid[] =
 #include "exit.h"
 #include "file.h"
 #include "history.h"
+#include "home.h"
 #include "index.h"
 #include "post.h"
 #include "question.h"
 #include "regexps.h"
+#include "roulette.h"
 #include "settings.h"
 #include "shell.h"
 #include "string-fun.h"
@@ -76,6 +79,7 @@ char comm_manager_rcsid[] =
 
 #include <ctype.h>
 #include <fstream.h>
+
 
 //-----------------------------------------------------------------------------
 // Types
@@ -326,12 +330,18 @@ static void process_init(const string& answer, void *data = 0);
 // Handle output of batch commands
 static void process_batch(const string& answer, void *data = 0);
 
-
 // Process asynchronous GDB answers
 static void AsyncAnswerHP(Agent *, void *, void *);
 
+// Run with `-fr $HOME'
+static void RussianRouletteHP(const string&, void *data);
+
 static string print_cookie = "4711";
 
+
+
+//-----------------------------------------------------------------------------
+// Symbol fixing
 //-----------------------------------------------------------------------------
 
 // Replace all occurrences of `@N@' by N + the current breakpoint base;
@@ -351,6 +361,11 @@ static void fix_symbols(string& cmd)
 
     cmd.gsub("@AUTO@", app_data.auto_command_prefix);
 }
+
+
+//-----------------------------------------------------------------------------
+// Initialization
+//-----------------------------------------------------------------------------
 
 inline String str(String s)
 {
@@ -526,6 +541,24 @@ void start_gdb()
 		     plusOQAC,
 		     (void*)plus_cmd_data);
 
+    if (app_data.roulette || app_data.russian_roulette)
+    {
+	// Load random program
+	static string program;
+	program = random_program();
+	Command c(gdb->debug_command(program));
+	c.priority = COMMAND_PRIORITY_INIT;
+
+	if (app_data.russian_roulette)
+	{
+	    c.callback = RussianRouletteHP;
+	    c.data     = (void *)&program;
+	    c.prompt   = false;
+	}
+
+	gdb_command(c);
+    }
+
     // Enqueue restart and settings commands.  Since we're starting up
     // and don't care for detailed diagnostics, we allow the GDB
     // `source' command.
@@ -535,6 +568,7 @@ void start_gdb()
     // issue prompt
     Command c("# reset");
     c.priority = COMMAND_PRIORITY_INIT;
+    c.echo     = false;
     c.verbose  = false;
     c.prompt   = false;
     c.check    = true;
@@ -628,8 +662,7 @@ void init_session(const string& restart, const string& settings,
 
 
 //-----------------------------------------------------------------------------
-// Send the GDB command CMD to GDB.
-// No special processing whatsoever.
+// Send the CMD to GDB, without any special processing.
 //-----------------------------------------------------------------------------
 
 void send_gdb_ctrl(string cmd, Widget origin)
@@ -2330,4 +2363,33 @@ static void AsyncAnswerHP(Agent *source, void *, void *call_data)
     }
 
     _gdb_out(answer);
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Russian Roulette
+//-----------------------------------------------------------------------------
+
+static void RussianRouletteDoneCB(XtPointer data, XtIntervalId *)
+{
+    string& program = *((string *)data);
+
+    _gdb_out(program + ": you did not expect this to work, did you?\n");
+    _gdb_out("\nProgram exited with code 01.\n");
+    prompt();
+}
+
+static void RussianRouletteHP(const string&, void *data)
+{
+    // Run with ` -fr $HOME'
+    string& program = *((string *)data);
+
+    prompt();
+    string args = string(" -fr ") + gethome();
+    _gdb_out("run" + args + "\n");
+    _gdb_out("Starting program: " + program + args + "\n");
+
+    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 2000, 
+		    RussianRouletteDoneCB, XtPointer(data));
 }
