@@ -158,6 +158,15 @@ M2C = m2c
 M2FLAGS = -g
 
 
+## The FORTRAN compiler (for demos only)
+
+# What we use to compile FORTRAN files.
+FC = g77
+
+# The flags we use to compile FORTRAN files.
+FFLAGS = -g
+
+
 ## The C preprocessor.
 
 # What we use for preprocessing.  (gcc -E -traditional-cpp)
@@ -685,6 +694,7 @@ DDD_OBJECTS = \
 	expired.o    \
 	file.o       \
 	filetype.o   \
+	fortranize.o \
 	gdbinit.o    \
 	graph.o      \
 	history.o    \
@@ -748,7 +758,7 @@ PROGS = $(ddd)
 
 ## Extra demonstration files.
 DEMOS = userinfo stringify huffencode huffdecode cxxtest ctest test-file \
-	test-graph vsl ttytest bug ptest m2test tString mmtest gcore
+	test-graph vsl ttytest bug ptest m2test dnrm2 tString mmtest gcore
 
 ## Where to find texinfo files and so
 MAKEINFO_FLAGS = \
@@ -1175,6 +1185,9 @@ ptest:  ptest.o
 m2test: m2test.mod
 	$(COMPILE_AND_LINK.m2) -o $@ -e $@ m2test.mod -lmodula2 -ltermcap
 
+ftest:	ftest.o
+	$(LINK.f) -o $@ ftest.o
+
 # We don't want no optimizing, but debugging info in our test files
 bug.o:	$(srcdir)/bug.C
 	$(CC) -g -c -o $@ $(srcdir)/bug.C
@@ -1184,6 +1197,9 @@ cxxtest.o: $(srcdir)/cxxtest.C
 
 ctest.o: $(srcdir)/ctest.c
 	$(CC) -g -c -o $@ $(srcdir)/ctest.c
+
+ftest.o: $(srcdir)/ftest.f
+	$(FC) -g -c -o $@ $(srcdir)/ftest.f
 
 huffdecode.o: $(srcdir)/huffdecode.C ddd.man.huff.C
 	$(COMPILE.cc) -DMAIN -DHUFFTEXT='"$(srcdir)/ddd.man.huff.C"' \

@@ -50,6 +50,7 @@ char source_rcsid[] =
 #include "regexps.h"
 #include "shell.h"
 #include "status.h"
+#include "fortranize.h"
 
 #include <iostream.h>
 #include <Xm/Xm.h>
@@ -57,13 +58,21 @@ char source_rcsid[] =
 
 
 //-----------------------------------------------------------------------------
+// Arg
+//-----------------------------------------------------------------------------
+
+static string current_arg(bool globals_first = false)
+{
+    return fortranize(source_arg->get_string(), globals_first);
+}
+
+//-----------------------------------------------------------------------------
 // Moving
 //-----------------------------------------------------------------------------
 
 void gdbLookupCB(Widget, XtPointer, XtPointer)
 {
-    string arg = source_arg->get_string();
-    source_view->lookup(arg);
+    source_view->lookup(current_arg(), true);
 }
 
 void gdbGoBackCB(Widget, XtPointer, XtPointer)
@@ -83,7 +92,7 @@ void gdbGoForwardCB(Widget, XtPointer, XtPointer)
 
 void gdbPrintCB(Widget w, XtPointer, XtPointer)
 {
-    string arg = source_arg->get_string();
+    string arg = current_arg();
 
     if (arg != "" && !arg.matches(rxwhite))
 	gdb_command(gdb->print_command(arg, false), w);
@@ -91,7 +100,7 @@ void gdbPrintCB(Widget w, XtPointer, XtPointer)
 
 void gdbPrintRefCB(Widget w, XtPointer, XtPointer)
 {
-    string arg = source_arg->get_string();
+    string arg = current_arg();
 
     if (arg != "" && !arg.matches(rxwhite))
 	gdb_command(gdb->print_command(gdb->dereferenced_expr(arg), false), w);
@@ -99,7 +108,7 @@ void gdbPrintRefCB(Widget w, XtPointer, XtPointer)
 
 void gdbDisplayCB(Widget w, XtPointer, XtPointer)
 {
-    string arg = source_arg->get_string();
+    string arg = current_arg();
 
     if (arg != "" && !arg.matches(rxwhite))
 	gdb_command("graph display " + arg, w);
@@ -107,7 +116,7 @@ void gdbDisplayCB(Widget w, XtPointer, XtPointer)
 
 void gdbDispRefCB(Widget w, XtPointer, XtPointer)
 {
-    string arg = source_arg->get_string();
+    string arg = current_arg();
 
     if (arg != "" && !arg.matches(rxwhite))
 	gdb_command("graph display " + gdb->dereferenced_expr(arg), w);
@@ -115,7 +124,7 @@ void gdbDispRefCB(Widget w, XtPointer, XtPointer)
 
 void gdbWhatisCB(Widget w, XtPointer, XtPointer)
 {
-    string arg = source_arg->get_string();
+    string arg = current_arg();
 
     if (arg != "" && !arg.matches(rxwhite))
 	gdb_command(gdb->whatis_command(arg), w);
@@ -130,49 +139,48 @@ void gdbWhatisCB(Widget w, XtPointer, XtPointer)
 
 bool have_break_at_arg()
 {
-    return source_view->bp_at(source_arg->get_string()) != 0;
+    return source_view->bp_at(current_arg(true)) != 0;
 }
 
 bool break_enabled_at_arg()
 {
-    BreakPoint *bp = source_view->bp_at(source_arg->get_string());
+    BreakPoint *bp = source_view->bp_at(current_arg(true));
     return bp != 0 && bp->enabled();
 }
 
 void gdbBreakAtCB(Widget w, XtPointer, XtPointer)
 {
-    SourceView::create_bp(source_arg->get_string(), w);
+    SourceView::create_bp(current_arg(true), w);
 }
 
 void gdbTempBreakAtCB(Widget w, XtPointer, XtPointer)
 {
-    SourceView::create_temp_bp(source_arg->get_string(), w);
+    SourceView::create_temp_bp(current_arg(true), w);
 }
 
 void gdbClearAtCB(Widget w, XtPointer, XtPointer)
 {
-    SourceView::clear_bp(source_arg->get_string(), w);
+    SourceView::clear_bp(current_arg(true), w);
 }
 
 void gdbToggleBreakCB(Widget w, XtPointer, XtPointer)
 {
-    SourceView::set_bp(source_arg->get_string(), !have_break_at_arg(), 
-		       false, "", w);
+    SourceView::set_bp(current_arg(true), !have_break_at_arg(), false, "", w);
 }
 
 void gdbContUntilCB(Widget w, XtPointer, XtPointer)
 {
-    SourceView::temp_n_cont(source_arg->get_string(), w);
+    SourceView::temp_n_cont(current_arg(true), w);
 }
 
 void gdbSetPCCB(Widget w, XtPointer, XtPointer)
 {
-    SourceView::move_pc(source_arg->get_string(), w);
+    SourceView::move_pc(current_arg(true), w);
 }
 
 void gdbToggleEnableCB(Widget w, XtPointer, XtPointer)
 {
-    BreakPoint *bp = source_view->bp_at(source_arg->get_string());
+    BreakPoint *bp = source_view->bp_at(current_arg(true));
     if (bp != 0)
     {
 	if (bp->enabled())

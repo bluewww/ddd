@@ -123,6 +123,7 @@ extern "C" {
 #include "PosBuffer.h"
 #include "string-fun.h"
 #include "ddd.h"
+#include "fortranize.h"
 #include "version.h"
 #include "mydialogs.h"
 #include "verify.h"
@@ -1045,7 +1046,7 @@ void SourceView::text_popup_breakCB (Widget w,
 				     XtPointer)
 {
     string* word_ptr = (string*)client_data;
-    create_bp(*word_ptr, w);
+    create_bp(fortranize(*word_ptr, true), w);
 }
 
 void SourceView::text_popup_clearCB (Widget w, 
@@ -1053,7 +1054,7 @@ void SourceView::text_popup_clearCB (Widget w,
 				     XtPointer)
 {
     string* word_ptr = (string*)client_data;
-    clear_bp(*word_ptr, w);
+    clear_bp(fortranize(*word_ptr, true), w);
 }
 
 
@@ -1067,7 +1068,7 @@ void SourceView::text_popup_printCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command(gdb->print_command(*word_ptr, false), w);
+    gdb_command(gdb->print_command(fortranize(*word_ptr), false), w);
 }
 
 void SourceView::text_popup_print_refCB (Widget w, 
@@ -1076,8 +1077,8 @@ void SourceView::text_popup_print_refCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command(gdb->print_command(gdb->dereferenced_expr(*word_ptr), false), 
-		w);
+    gdb_command(gdb->print_command(gdb->dereferenced_expr(
+	fortranize(*word_ptr)), false), w);
 }
 
 
@@ -1088,7 +1089,7 @@ void SourceView::text_popup_dispCB (Widget w, XtPointer client_data, XtPointer)
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command("graph display " + *word_ptr, w);
+    gdb_command("graph display " + fortranize(*word_ptr), w);
 }
 
 void SourceView::text_popup_disp_refCB (Widget w, 
@@ -1097,7 +1098,8 @@ void SourceView::text_popup_disp_refCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command("graph display " + gdb->dereferenced_expr(*word_ptr), w);
+    gdb_command("graph display " + 
+		gdb->dereferenced_expr(fortranize(*word_ptr)), w);
 }
 
 // ***************************************************************************
@@ -1108,7 +1110,7 @@ void SourceView::text_popup_whatisCB (Widget w, XtPointer client_data,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command(gdb->whatis_command(*word_ptr), w);
+    gdb_command(gdb->whatis_command(fortranize(*word_ptr)), w);
 }
 
 // ***************************************************************************
@@ -1116,7 +1118,7 @@ void SourceView::text_popup_whatisCB (Widget w, XtPointer client_data,
 void SourceView::text_popup_lookupCB (Widget, XtPointer client_data, XtPointer)
 {
     string* word_ptr = (string*)client_data;
-    lookup(*word_ptr);
+    lookup(fortranize(*word_ptr, true));
 }
 
 
@@ -4211,7 +4213,6 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     {
 	// Determine surrounding token (or selection) and create popup
 	static string word;
-	static string ref_word;
 
 	XmTextPosition startpos = 0;
 	XmTextPosition endpos   = 0;
@@ -4220,8 +4221,6 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    word = get_word_at_pos(text_w, pos, startpos, endpos);
 
 	// Popup specific word menu
-	ref_word = gdb->dereferenced_expr(word);
-
 	string current_arg = word;
 	shorten(current_arg, max_popup_expr_length);
 	string current_ref_arg = gdb->dereferenced_expr(current_arg);

@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-// DDD buttons
+// Convert identifiers to FORTRAN format
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -26,42 +26,18 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_buttons_h
-#define _DDD_buttons_h
+#ifndef _DDD_fortranize_h
+#define _DDD_fortranize_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
 #include "strclass.h"
-#include <X11/Intrinsic.h>
 
-// Create a button row named NAME with buttons as specified in LIST
-Widget make_buttons(Widget parent, const string& name, String list);
+// Return ID in `fortranized' form -- that is, in lower case and with
+// `_' appended.  If GLOBALS_FIRST is set, try global symbols first.
+extern string fortranize(const string& id, bool globals_first = false);
 
-// Assign BUTTONS the buttons specified in LIST.  If MANAGE is set,
-// (un)manage BUTTONS depending on the number of buttons.
-void set_buttons(Widget buttons, String list, bool manage = true);
-
-// Make BUTTON insensitive if it is not supported
-void verify_button(Widget button);
-
-// Maximum length of value in value tip and in status line
-extern int max_value_tip_length;
-extern int max_value_doc_length;
-
-// Clear value cache after some change in the program state
-extern void clear_value_cache();
-
-// Invoke button and shortcut editors
-void dddEditButtonsCB  (Widget, XtPointer, XtPointer);
-void dddEditShortcutsCB(Widget, XtPointer, XtPointer);
-
-// Refresh button editor after external change
-void refresh_button_editor();
-
-// Get a value from GDB
-string gdbValue(const string& expr);
-
-#endif // _DDD_buttons_h
+#endif // _DDD_fortranize_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

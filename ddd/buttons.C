@@ -51,6 +51,7 @@ char buttons_rcsid[] =
 #include "ddd.h"
 #include "disp-read.h"
 #include "editing.h"
+#include "fortranize.h"
 #include "Command.h"
 #include "question.h"
 #include "regexps.h"
@@ -388,7 +389,7 @@ void clear_value_cache()
     value_cache = empty;
 }
 
-static string gdbValue(const string& expr)
+string gdbValue(const string& expr)
 {
     string value = NO_GDB_ANSWER;
     if (value == NO_GDB_ANSWER)
@@ -487,15 +488,17 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 	return bp_help;
 
     // Get value of ordinary variable
-    string tip = gdbValue(expr);
+    string name = fortranize(expr);
+    string tip = gdbValue(name);
     if (tip == NO_GDB_ANSWER)
 	return MString(0, true);
 
     if (is_invalid(tip) && widget == source_view->code())
     {
 	// Get register value - look up `$pc' when pointing at `pc'
-	expr.prepend("$");
-	tip = gdbValue(expr);
+	name = expr;
+	name.prepend("$");
+	tip = gdbValue(name);
 	if (tip == NO_GDB_ANSWER)
 	    return MString(0, true);
 
@@ -509,7 +512,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 		tip = hextip + " (" + tip + ")";
 	}
     }
-	    
+
     if (is_invalid(tip))
 	return clear;
 
@@ -519,11 +522,11 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 
     if (for_documentation)
     {
-	shorten(tip, max_value_doc_length - expr.length());
+	shorten(tip, max_value_doc_length - name.length());
 
 	// The status line also shows the name we're pointing at
 	MString mtip = tt(tip);
-	mtip.prepend(rm(expr + " = "));
+	mtip.prepend(rm(name + " = "));
 	return mtip;
     }
     else
