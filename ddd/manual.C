@@ -105,7 +105,7 @@ void show_manual()
 
 void DDDManualCB(Widget w, XtPointer, XtPointer)
 {
-    StatusDelay delay("Formatting " DDD_NAME " manual page");
+    StatusDelay delay("Formatting " DDD_NAME " manual");
 
     ostrstream man;
     ddd_man(man);
@@ -117,7 +117,7 @@ void DDDManualCB(Widget w, XtPointer, XtPointer)
 
 void GDBManualCB(Widget w, XtPointer, XtPointer)
 {
-    StatusDelay delay("Formatting " + gdb->title() + " manual page");
+    StatusDelay delay("Formatting " + gdb->title() + " manual");
 
     string cmd = "man " + downcase(gdb->title());
 
