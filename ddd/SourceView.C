@@ -1162,7 +1162,17 @@ void SourceView::disable_bps(IntArray& nrs, Widget w)
 
 void SourceView::delete_bps(IntArray& nrs, Widget w)
 {
-    if (!gdb->has_delete_command())
+    if (gdb->recording() && gdb->has_clear_command())
+    {
+	// While recording, prefer commands without explicit numbers.
+        for (int i = 0; i < nrs.size(); i++)
+	{
+	    BreakPoint *bp = bp_map.get(nrs[i]);
+	    if (bp != 0)
+		gdb_command(clear_command(bp->pos()));
+	}
+    }
+    else if (gdb->has_delete_command())
     {
         for (int i = 0; i < nrs.size(); i++)
 	    gdb_command(delete_command(nrs[i]));

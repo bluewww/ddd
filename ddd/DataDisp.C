@@ -411,7 +411,13 @@ void DataDisp::dereferenceCB(Widget w, XtPointer client_data,
     disp_value_arg->dereference();
     disp_node_arg->refresh();
 
-    new_display(display_expression, 0, itostring(disp_node_arg->disp_nr()), w);
+    string depends_on;
+    if (gdb->recording())
+	depends_on = disp_node_arg->name();
+    else
+	depends_on = itostring(disp_node_arg->disp_nr());
+
+    new_display(display_expression, 0, depends_on, w);
 }
 
 void DataDisp::dereferenceArgCB(Widget w, XtPointer client_data, 
@@ -900,7 +906,10 @@ void DataDisp::shortcutCB(Widget w, XtPointer client_data, XtPointer)
 	&& disp_value_arg != 0
 	&& !disp_node_arg->nodeptr()->hidden())
     {
-	depends_on = itostring(disp_node_arg->disp_nr());
+	if (gdb->recording())
+	    depends_on = disp_node_arg->name();
+	else
+	    depends_on = itostring(disp_node_arg->disp_nr());
     }
 	
     string arg = source_arg->get_string();
@@ -1322,7 +1331,11 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
     }
 
     static NewDisplayInfo info;
-    info.depends_on = itostring(disp_node_arg->disp_nr());
+    if (gdb->recording())
+	info.depends_on = disp_node_arg->name();
+    else
+	info.depends_on = itostring(disp_node_arg->disp_nr());
+
     info.origin = w;
 
     static Widget dependent_display_dialog = 
@@ -1359,7 +1372,12 @@ void DataDisp::dependentArgCB(Widget w, XtPointer client_data,
 	string depends_on = "";
 	DispNode *disp_node_arg = selected_node();
 	if (disp_node_arg != 0)
-	    depends_on = itostring(disp_node_arg->disp_nr());
+	{
+	    if (gdb->recording())
+		depends_on = disp_node_arg->name();
+	    else
+		depends_on = itostring(disp_node_arg->disp_nr());
+	}
 
 	new_display(arg, 0, depends_on, w);
     }
