@@ -642,33 +642,37 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
     XtFree(key_s);
 
     static StringArray find_keys;
-    find_keys += key;
-    smart_sort(find_keys);
-    uniq(find_keys);
-    ComboBoxSetList(fi->key, find_keys);
 
-    String text_s = XmTextGetString(fi->text);
-    string text(text_s);
-    XtFree(text_s);
-
-    // If no uppercase letter is in KEY, make TEXT lowercase
-    if (key == downcase(key))
-	text.downcase();
-
-    XmTextPosition cursor = XmTextGetInsertionPosition(fi->text);
     int next_occurrence = -1;
+    if (key != "")
+    {
+	find_keys += key;
+	smart_sort(find_keys);
+	uniq(find_keys);
+	ComboBoxSetList(fi->key, find_keys);
 
-    if (forward)
-    {
-	next_occurrence = text.index(key, cursor);
-	if (next_occurrence < 0)
-	    next_occurrence = text.index(key); // Wrap around
-    }
-    else
-    {
-	next_occurrence = text.index(key, cursor - text.length() - 1);
-	if (next_occurrence < 0)
-	    next_occurrence = text.index(key, -1); // Wrap around
+	String text_s = XmTextGetString(fi->text);
+	string text(text_s);
+	XtFree(text_s);
+
+	// If no uppercase letter is in KEY, make TEXT lowercase
+	if (key == downcase(key))
+	    text.downcase();
+
+	XmTextPosition cursor = XmTextGetInsertionPosition(fi->text);
+
+	if (forward)
+	{
+	    next_occurrence = text.index(key, cursor);
+	    if (next_occurrence < 0)
+		next_occurrence = text.index(key); // Wrap around
+	}
+	else
+	{
+	    next_occurrence = text.index(key, cursor - text.length() - 1);
+	    if (next_occurrence < 0)
+		next_occurrence = text.index(key, -1); // Wrap around
+	}
     }
 
     if (next_occurrence < 0)
@@ -844,8 +848,15 @@ static Widget create_text_dialog(Widget parent, String name,
     };
 
     bar = MMcreateMenuBar(w, "menubar", menubar);
+
+    // Don't add a callback to `Edit' menu
+    menubar[1].items = 0;
+
     MMaddCallbacks(menubar);
     MMaddHelpCallback(menubar, ImmediateHelpCB);
+
+    menubar[1].items = simple_edit_menu;
+
     Delay::register_shell(shell);
 
     return w;
