@@ -11,11 +11,11 @@ Graphics: gnudist.gnu.org:/home/www/graphics
 Upload software to:
 -------------------
 
-gnudist.gnu.org:/home/ftp/gnu/ddd/
+alpha.gnu.org: ~ftp/gnu/ddd/             (alpha releases)
 
 or
 
-alpha.gnu.org:/home/ftp/gnu/ddd/
+gnudist.gnu.org: /home/ftp/gnu/ddd/      (final releases)
 
 
 E-Mail
