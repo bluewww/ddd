@@ -46,6 +46,15 @@ Plotting
   shows the index, and the Y-axis shows the values.
 
 
+Source Navigation
+-----------------
+
+- Using GDB, `Open Source' no longer automatically reads all shared
+  libraries of the debuggee; this took too much time with some programs.
+  There is an additional button that loads libraries.
+
+
+
 Data exploration
 ----------------
 

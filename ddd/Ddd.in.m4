@@ -5494,6 +5494,7 @@ Ddd*sources.dialogTitle: 		DDD: Open Source
 Ddd*sources.listLabelString:		Sources
 Ddd*sources.selectionLabelString: 	Open Source
 Ddd*sources*label.labelString:		Filter
+Ddd*sources*sharedlibrary.labelString:  Load Shared Object Library Symbols
 Ddd*sources*selectionPolicy:		XmSINGLE_SELECT
 Ddd*sources*okLabelString:	 	Open
 Ddd*sources*lookup.labelString:		Lookup
@@ -5505,8 +5506,8 @@ The dialog shows the currently accessible source files of your program.\n\
 Please select a source to be opened.\n\
 \n\
 Source files from shared libraries are only shown after the library\n\
-has been loaded into @GDB@.  To load a shared library, run your program\n\
-or use the @GDB@ SAMP(share) command.\n\
+has been loaded into @GDB@.  To load shared libraries, click on\n\
+LBL(Load Shared Object Library Symbols).\n\
 \n\
 To search for other sources, select LBL(Edit, @GDB@ Settings)\n\
 and add their directories to the source path.\n\

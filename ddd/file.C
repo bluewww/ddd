@@ -1325,10 +1325,6 @@ void get_gdb_sources(StringArray& sources_list)
     static StringArray empty;
     sources_list = empty;
 
-    // Load all shared libraries first.  Otherwise, their sources
-    // won't show up in `info sources'.
-    gdb_question("sharedlibrary");
-
     string ans = gdb_question("info sources");
     if (ans != NO_GDB_ANSWER)
     {
@@ -1695,6 +1691,14 @@ static void FilterSourcesCB(Widget, XtPointer, XtPointer)
     update_sources();
 }
 
+static void LoadSharedLibrariesCB(Widget, XtPointer, XtPointer)
+{
+    StatusDelay delay("Loading shared object library symbols");
+    
+    gdb_question("sharedlibrary");
+    update_sources();
+}
+
 void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     if (gdb->type() != GDB)
@@ -1731,7 +1735,17 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 	XtSetArg(args[arg], XmNadjustMargin,    False); arg++;
 	XtSetArg(args[arg], XmNshadowThickness, 0);     arg++;
 	XtSetArg(args[arg], XmNspacing,         0);     arg++;
-	Widget box = XmCreateRowColumn(dialog, "box", args, arg);
+	Widget bigbox = XmCreateRowColumn(dialog, "bigbox", args, arg);
+	XtManageChild(bigbox);
+
+	arg = 0;
+	XtSetArg(args[arg], XmNmarginWidth,     0);     arg++;
+	XtSetArg(args[arg], XmNmarginHeight,    0);     arg++;
+	XtSetArg(args[arg], XmNborderWidth,     0);     arg++;
+	XtSetArg(args[arg], XmNadjustMargin,    False); arg++;
+	XtSetArg(args[arg], XmNshadowThickness, 0);     arg++;
+	XtSetArg(args[arg], XmNspacing,         0);     arg++;
+	Widget box = XmCreateRowColumn(bigbox, "box", args, arg);
 	XtManageChild(box);
 
 	arg = 0;
@@ -1741,6 +1755,11 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 	arg = 0;
 	source_filter = XmCreateTextField(box, "filter", args, arg);
 	XtManageChild(source_filter);
+
+	arg = 0;
+	Widget sharedlibrary = 
+	    XmCreatePushButton(bigbox, "sharedlibrary", args, arg);
+	XtManageChild(sharedlibrary);
 
 #if XmVersion >= 1002
 	arg = 0;
@@ -1769,6 +1788,8 @@ void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 	XtAddCallback(source_filter, XmNactivateCallback, 
 		      FilterSourcesCB, 0);
+	XtAddCallback(sharedlibrary, XmNactivateCallback, 
+		      LoadSharedLibrariesCB, 0);
 
 #if XmVersion >= 1002
 	XtAddCallback(lookup, XmNactivateCallback, 
