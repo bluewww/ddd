@@ -63,9 +63,6 @@ char file_rcsid[] =
 #include "wm.h"
 
 #include <limits.h>
-extern "C" {
-#include <libiberty.h>		// basename()
-}
 #include <string.h>		// strerror()
 #include <errno.h>
 
@@ -80,6 +77,29 @@ extern "C" {
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
+
+
+//-----------------------------------------------------------------------------
+// Helpers
+//-----------------------------------------------------------------------------
+
+// Don't rely on libiberty basename() because we don't want to depend
+// on libiberty include files
+static const char *file_basename(const char *name)
+{
+    const char *base = name;
+
+    while (*name)
+    {
+	if (*name++ == '/')
+	    base = name;
+    }
+
+    return base;
+}
+
+#define basename file_basename
+
 
 //-----------------------------------------------------------------------------
 // Opening files
