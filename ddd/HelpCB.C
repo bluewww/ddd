@@ -78,7 +78,9 @@ char HelpCB_rcsid[] =
 #include "ArgField.h"
 
 
-extern void process_pending_events();
+//-----------------------------------------------------------------------
+// Resources
+//-----------------------------------------------------------------------
 
 // The help system supports five resources:
 // helpString          - displayed in context-sensitive help.
@@ -173,6 +175,10 @@ static XtResource doc_subresources[] = {
     }
 };
 
+//-----------------------------------------------------------------------
+// Data
+//-----------------------------------------------------------------------
+
 static Widget help_dialog = 0;
 static Widget help_shell  = 0;
 
@@ -185,6 +191,11 @@ static void _MStringHelpCB(Widget widget,
 			   bool help_on_help = false);
 
 MString helpOnVersionExtraText;
+
+
+//-----------------------------------------------------------------------
+// Helpers
+//-----------------------------------------------------------------------
 
 // A single `\n' means `no string'.  (An empty string causes the
 // helpers to be called.)
@@ -354,6 +365,11 @@ static bool call_tracking_help(XtPointer call_data, bool key_only = false)
 
 static void nop1(Widget) {}
 void (*PostHelpOnItemHook)(Widget) = nop1;
+
+
+//-----------------------------------------------------------------------
+// Functions
+//-----------------------------------------------------------------------
 
 void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
