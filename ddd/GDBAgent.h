@@ -408,6 +408,12 @@ public:
 	return type() == GDB || type() == XDB || type() == DBX;
     }
 
+    // True if debugger supports I/O redirection
+    bool has_redirection() const
+    {
+	return type() == GDB || type() == XDB || type() == DBX;
+    }
+
     // True if debugger dialog is traced on clog
     bool trace_dialog() const    { return _trace_dialog; }
     bool trace_dialog(bool val);
