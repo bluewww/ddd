@@ -233,6 +233,13 @@ static string gdbHelp(string command)
 	    command = "q";
     }
 
+    if (gdb->type() == JDB)
+    {
+	// JDB 1.1 has an undocumented `next' command.  Treat it like `step'.
+	if (command == "next")
+	    command = "step";
+    }
+
     string help = NO_GDB_ANSWER;
 
     if (is_graph_cmd(command))
@@ -255,6 +262,31 @@ static string gdbHelp(string command)
 	    help = help_cache[command];
     }
 
+    if (help == NO_GDB_ANSWER && gdb->type() == JDB)
+    {
+	// JDB has a single static `help' command.
+	string& all_help = help_cache["<ALL>"];
+	if (all_help == NO_GDB_ANSWER || all_help == "")
+	{
+	    all_help = gdb_question("help", help_timeout, true);
+	    if (all_help == NO_GDB_ANSWER)
+		return NO_GDB_ANSWER; // try again later
+	}
+
+	int index = all_help.index("\n" + command) + 1;
+	if (all_help.contains(command, index))
+	{
+	    help = all_help.from(index);
+	    help = help.after("--");
+	    help = help.before('\n');
+	}
+	else
+	{
+	    help = "Undefined command: " + quote(command) 
+		+ ".  Try \"help\"\n";
+	}
+    }
+
     if (help == NO_GDB_ANSWER && gdb->type() == DBX)
     {
 	string cmd  = command.before(rxwhite);
@@ -268,12 +300,13 @@ static string gdbHelp(string command)
 	}
     }
 
-    if (help == NO_GDB_ANSWER)
+    if (help == NO_GDB_ANSWER && gdb->type() != JDB)
     {
 	// Ask debugger for help
 	help = gdb_question("help " + command, help_timeout, true);
     }
 
+    read_leading_blanks(help);
     strip_final_blanks(help);
 
     if (help != NO_GDB_ANSWER)
@@ -567,8 +600,12 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
     read_leading_blanks(tip);
     if (tip.contains(help_name, 0))
     {
-	tip = tip.after(help_name);
-	read_leading_blanks(tip);
+	string t = tip.after(help_name);
+	if (t != "" && !isalpha(t[0]))
+	{
+	    tip = t;
+	    read_leading_blanks(tip);
+	}
     }
     
     strip_through(tip, " # ");

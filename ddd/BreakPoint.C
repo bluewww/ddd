@@ -61,9 +61,9 @@ static regex rxname_colon_int_nl ("[^ ]+:[0-9]+\n");
 #endif
 
 // Create new breakpoint from INFO_OUTPUT
-BreakPoint::BreakPoint (string& info_output, string arg)
-    : mynumber_str(""),
-      mynumber(0),
+BreakPoint::BreakPoint (string& info_output, string arg, int number)
+    : mynumber_str(number > 0 ? itostring(number) : ""),
+      mynumber(number),
       mytype(BREAKPOINT),
       mydispo(BPKEEP),
       myenabled(true),
@@ -95,29 +95,33 @@ bool BreakPoint::update (string& info_output)
     myfile_changed     = false;
     myaddress_changed  = false;
 
-    read_leading_blanks(info_output);
-    string number_str = read_nr_str (info_output);
-    int number = get_positive_nr (number_str);
-    if (number < 0)
-	return false;
+    if (gdb->type() != JDB)
+    {
+	// Read leading breakpoint number
+	read_leading_blanks(info_output);
+	string number_str = read_nr_str (info_output);
+	int number = get_positive_nr (number_str);
+	if (number < 0)
+	    return false;
 
-    if (number_str != mynumber_str)
-    {
-	mynumber_str = number_str;
-	changed = true;
+	if (number_str != mynumber_str)
+	{
+	    mynumber_str = number_str;
+	    changed = true;
+	}
+	if (number != mynumber)
+	{
+	    mynumber = number;
+	    changed = true;
+	}
     }
-    if (number != mynumber)
-    {
-	mynumber = number;
-	changed = true;
-    }
+    read_leading_blanks (info_output);
 
     switch(gdb->type())
     {
     case GDB:
 	{
 	    // Read "Type" 
-	    read_leading_blanks (info_output);
 	    if (info_output.contains ("watchpoint", 0))
 	    {
 		changed |= (mytype != WATCHPOINT);
@@ -227,7 +231,6 @@ bool BreakPoint::update (string& info_output)
 
     case DBX:
 	{
-	    read_leading_blanks (info_output);
 	    if (info_output.contains ("stop ", 0)
 		|| info_output.contains ("stopped ", 0))
 	    {
@@ -441,8 +444,39 @@ bool BreakPoint::update (string& info_output)
 	}
 	break;
 
-    case JDB:			// FIXME
+    case JDB:
+    {
+	int colon = info_output.index(':');
+	if (colon >= 0)
+	{
+	    string class_name = info_output.before(colon);
+	    int line_no = get_positive_nr(info_output.after(colon));
+	    if (line_no >= 0 && class_name != "")
+	    {
+		if (line_no != myline_nr || class_name != myfile_name)
+		{
+		    changed = myposition_changed = myfile_changed = true;
+		    myfile_name = class_name;
+		    myline_nr   = line_no;
+		}
+
+		// Kill this line
+		int beginning_of_line = colon;
+		while (beginning_of_line >= 0 && 
+		       info_output[beginning_of_line] != '\n')
+		    beginning_of_line--;
+		beginning_of_line++;
+
+		int next_nl = info_output.index('\n', colon);
+		if (next_nl >= 0)
+		    info_output = info_output.before(beginning_of_line)
+			+ info_output.from(next_nl);
+		else
+		    info_output = info_output.before(beginning_of_line);
+	    }
+	}
 	break;
+    }
     }
 
     return changed;
@@ -471,6 +505,7 @@ string BreakPoint::ignore_count() const
 
     case DBX:
     case XDB:
+    case JDB:
 	return myignore_count;
     }
 
@@ -496,6 +531,7 @@ string BreakPoint::condition() const
     }
     case DBX:
     case XDB:
+    case JDB:
 	return mycondition;
     }
 
@@ -595,6 +631,12 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 	    if (ignore != "" && gdb->has_ignore_command())
 		os << gdb->ignore_command(num, atoi(ignore)) << "\n";
 	}
+	break;
+    }
+
+    case JDB:
+    {
+	os << "stop at " << pos << "\n";
 	break;
     }
 

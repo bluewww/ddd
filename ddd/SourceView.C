@@ -79,6 +79,7 @@ char SourceView_rcsid[] =
 #include "charsets.h"
 #include "events.h"
 #include "cook.h"
+#include "filetype.h"
 #include "misc.h"
 #include "shorten.h"
 #include "tabs.h"
@@ -1006,7 +1007,20 @@ void SourceView::bp_popup_deleteCB (Widget w,
 				    XtPointer)
 {
     int bp_nr = *((int *)client_data);
-    gdb_command(gdb->delete_command(itostring(bp_nr)), w);
+    string cmd = gdb->delete_command(itostring(bp_nr));
+    if (cmd != "")
+    {
+	gdb_command(cmd, w);
+    }
+    else if (gdb->has_clear_command())
+    {
+	BreakPoint *bp = bp_map.get(bp_nr);
+	if (bp != 0)
+	{
+	    string pos = bp->file_name() + ":" + itostring(bp->line_nr());
+	    gdb_command(clear_command(pos));
+	}
+    }
 }
 
 
@@ -1222,10 +1236,21 @@ const char *SourceView::basename(const char *name)
 
 bool SourceView::file_matches(const string& file1, const string& file2)
 {
+    if (gdb->type() == JDB)
+	return file1 == file2;
+
     if (gdb->type() == GDB || app_data.use_source_path)
 	return file1 == file2 || full_path(file1) == full_path(file2);
+
+    return base_matches(file1, file2);
+}
+
+bool SourceView::is_current_file(const string& file)
+{
+    if (gdb->type() == JDB)
+	return file == current_source_name();
     else
-	return base_matches(file1, file2);
+	return file_matches(file, current_file_name);
 }
 
 bool SourceView::base_matches(const string& file1, const string& file2)
@@ -1607,6 +1632,79 @@ String SourceView::read_remote(const string& file_name, long& length,
 }
 
 
+// Read class CLASS_NAME
+String SourceView::read_class(const string& class_name, 
+			      string& file_name, SourceOrigin& origin,
+			      long& length, bool silent)
+{
+    StatusDelay delay("Searching class " + quote(class_name));
+    length = 0;
+
+    string base = class_name;
+    if (base.contains(".java", -1))
+	base = base.before(int(int(base.length()) - strlen(".java")));
+    base.gsub(".", "/");
+    base += ".java";
+
+    string use = gdb_question("use");
+    while (use != NO_GDB_ANSWER && use != "")
+    {
+	string loc;
+	if (use.contains(':'))
+	    loc = use.before(':');
+	else
+	    loc = use;
+	use = use.after(':');
+
+	if (loc.contains(".jar", -1) ||
+	    loc.contains(".zip", -1))
+	{
+	    // Archive file.
+	    // Should we search this for sources? (FIXME)
+	}
+	else
+	{
+	    if (loc == "" || loc == ".")
+	    {
+		file_name = base;
+	    }
+	    else
+	    {
+		if (!loc.contains('/', -1))
+		    loc += '/';
+		file_name = loc + base;
+	    }
+		    
+	    String text = 0;
+	    if (remote_gdb())
+		text = read_remote(file_name, length, true);
+	    else
+	    {
+		file_name = full_path(file_name);
+		text = read_local(file_name, length, true);
+	    }
+
+	    if (text != 0 && length != 0)
+	    {
+		// Save class name for further reference
+		source_name_cache[file_name] = class_name;
+		origin = remote_gdb() ? ORIGIN_REMOTE : ORIGIN_LOCAL;
+		return text;
+	    }
+	}
+    }
+
+    file_name = class_name;
+    origin = ORIGIN_NONE;
+    delay.outcome = "failed";
+    if (!silent)
+	post_error ("Cannot access class " + quote(class_name),
+		    "class_error", source_text_w);
+
+    return 0;
+}
+
+
 // Read file FILE_NAME via the GDB `list' function
 // Really slow, is guaranteed to work for source files.
 String SourceView::read_from_gdb(const string& file_name, long& length, 
@@ -1661,7 +1759,7 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
 		   || listing[i] == '>'))
 	    i++, count++;
 
-	if (isdigit(listing[i]))
+	if (i < int(listing.length()) && isdigit(listing[i]))
 	{
 	    // Skip line number
 	    while (i < int(listing.length()) && isdigit(listing[i]))
@@ -1725,45 +1823,53 @@ String SourceView::read_indented(string& file_name, long& length,
     origin = ORIGIN_NONE;
     string full_file_name = file_name;
 
-    for (int trial = 1; (text == 0 || length == 0) && trial <= 2; trial++)
+    if (gdb->type() == JDB)
     {
-	switch (trial)
+	// Attempt #1.  Read class from JDB.
+	text = read_class(file_name, full_file_name, origin, length, true);
+    }
+    else
+    {
+	for (int trial = 1; (text == 0 || length == 0) && trial <= 2; trial++)
 	{
-	case 1:
-	    // Loop #1: use full path of file
-	    full_file_name = full_path(file_name);
-	    break;
+	    switch (trial)
+	    {
+	    case 1:
+		// Loop #1: use full path of file
+		full_file_name = full_path(file_name);
+		break;
 
-	case 2:
-	    // Loop #2: ask debugger for full path, using `edit'
-	    full_file_name = full_path(dbx_path(file_name));
-	    if (full_file_name == full_path(file_name))
-		continue;
-	    break;
-	}
+	    case 2:
+		// Loop #2: ask debugger for full path, using `edit'
+		full_file_name = full_path(dbx_path(file_name));
+		if (full_file_name == full_path(file_name))
+		    continue;
+		break;
+	    }
 
-	// Attempt #1.  Try to read file from remote source.
-	if ((text == 0 || length == 0) && remote_gdb())
-	{
-	    text = read_remote(full_file_name, length, true);
-	    if (text != 0)
-		origin = ORIGIN_REMOTE;
-	}
+	    // Attempt #1.  Try to read file from remote source.
+	    if ((text == 0 || length == 0) && remote_gdb())
+	    {
+		text = read_remote(full_file_name, length, true);
+		if (text != 0)
+		    origin = ORIGIN_REMOTE;
+	    }
 
-	// Attempt #2.  Read file from local source.
-	if ((text == 0 || length == 0) && !remote_gdb())
-	{
-	    text = read_local(full_file_name, length, true);
-	    if (text != 0)
-		origin = ORIGIN_LOCAL;
-	}
+	    // Attempt #2.  Read file from local source.
+	    if ((text == 0 || length == 0) && !remote_gdb())
+	    {
+		text = read_local(full_file_name, length, true);
+		if (text != 0)
+		    origin = ORIGIN_LOCAL;
+	    }
 
-	// Attempt #3.  Read file from local source, even if we are remote.
-	if ((text == 0 || length == 0) && remote_gdb())
-	{
-	    text = read_local(full_file_name, length, true);
-	    if (text != 0)
-		origin = ORIGIN_LOCAL;
+	    // Attempt #3.  Read file from local source, even if we are remote.
+	    if ((text == 0 || length == 0) && remote_gdb())
+	    {
+		text = read_local(full_file_name, length, true);
+		if (text != 0)
+		    origin = ORIGIN_LOCAL;
+	    }
 	}
     }
 
@@ -1789,7 +1895,10 @@ String SourceView::read_indented(string& file_name, long& length,
     if ((text == 0 || length == 0) && !silent)
     {
 	// All failed - produce an appropriate error message.
-	if (!remote_gdb())
+	if (gdb->type() == JDB)
+	    text = read_class(file_name, full_file_name, origin, 
+			      length, silent);
+	else if (!remote_gdb())
 	    text = read_local(full_file_name, length, silent);
 	else
 	    text = read_remote(full_file_name, length, silent);
@@ -2984,10 +3093,10 @@ void SourceView::show_execution_position (string position, bool stopped,
     if (line < 0)
 	return;
 
-    if (!file_matches(file_name, current_file_name))
+    if (!is_current_file(file_name))
 	read_file(file_name, line, silent);
 
-    if (file_matches(file_name, current_file_name))
+    if (is_current_file(file_name))
     {
 	if (!display_glyphs && indent_amount(source_text_w) > 0)
 	{
@@ -3018,13 +3127,12 @@ void SourceView::_show_execution_position(string file, int line, bool silent)
     last_execution_file = file;
     last_execution_line = line;
 
-    if (!file_matches(file, current_file_name))
+    if (!is_current_file(file))
 	read_file(file, line, silent);
-    else if (line >= 1 && line <= line_count)
-	add_to_history(file, line);
 
     if (line < 1 || line > line_count)
 	return;
+    add_to_history(file, line);
 
     XmTextPosition pos = pos_of_line(line);
     SetInsertionPosition(source_text_w, 
@@ -3080,13 +3188,14 @@ void SourceView::show_position (string position, bool silent)
     }
     int line = get_positive_nr(position);
 
-    if (!file_matches(file_name, current_file_name))
+    if (!is_current_file(file_name))
 	read_file(file_name, line, false, silent);
-    add_to_history(file_name, line);
 
-    // Fenster scrollt an Position
+    // Have window scroll to correct position
     if (line > 0 && line <= line_count)
     {
+	add_to_history(file_name, line);
+    
 	XmTextPosition pos = pos_of_line(line);
 	SetInsertionPosition(source_text_w, 
 			     pos + indent_amount(source_text_w), true);
@@ -3115,6 +3224,7 @@ void SourceView::process_info_bp (string& info_output,
     info_output.gsub(rxprocess1, "");
 
     last_info_output = info_output;
+    string keep_me = "";
 
     switch (gdb->type())
     {
@@ -3138,7 +3248,7 @@ void SourceView::process_info_bp (string& info_output,
     bool changed = false;
     bool added   = false;
 
-    while (info_output != "") 
+    while (info_output != "")
     {
 	int bp_nr = -1;
 	switch(gdb->type())
@@ -3182,7 +3292,48 @@ void SourceView::process_info_bp (string& info_output,
 	    break;
 
 	case JDB:
-	    break;		// FIXME
+	{
+	    // JDB has no breakpoint numbers.  Check if we already have one.
+	    int colon = info_output.index(':');
+	    if (colon >= 0)
+	    {
+		string class_name = info_output.before(colon);
+		read_leading_blanks(class_name);
+		int line_no = get_positive_nr(info_output.after(colon));
+		if (line_no > 0 && !class_name.contains(' '))
+		{
+		    MapRef ref;
+		    for (BreakPoint* bp = bp_map.first(ref);
+			 bp != 0;
+			 bp = bp_map.next(ref))
+		    {
+			if (bp->line_nr() == line_no && 
+			    bp->file_name() == class_name)
+			{
+			    bp_nr = bp->number();
+			    break;
+			}
+		    }
+
+		    if (bp_nr < 0)
+		    {
+			// This is a new breakpoint
+			bp_nr = max_breakpoint_number_seen + 1;
+		    }
+		}
+		else
+		{
+		    string line = info_output.before('\n');
+		    if (!line.contains("Current breakpoints set"))
+			keep_me += line;
+
+		    // Skip this line
+		    info_output = info_output.after('\n');
+		    continue;
+		}
+	    }
+	    break;
+	}
 	}
 
 	if (bp_nr <= 0)
@@ -3205,8 +3356,8 @@ void SourceView::process_info_bp (string& info_output,
 	{
 	    // New breakpoint
 	    changed = true;
-	    BreakPoint* new_bp = new BreakPoint(info_output, break_arg);
-	    bp_map.insert (bp_nr, new_bp);
+	    BreakPoint* new_bp = new BreakPoint(info_output, break_arg, bp_nr);
+	    bp_map.insert(bp_nr, new_bp);
 
 	    if (!added)
 	    {
@@ -3220,12 +3371,14 @@ void SourceView::process_info_bp (string& info_output,
 		    bp->selected() = false;
 		}
 	    }
-
 	    new_bp->selected() = true;
 	}
 
 	max_breakpoint_number_seen = max(max_breakpoint_number_seen, bp_nr);
     }
+
+    // Keep this stuff for further processing
+    info_output = keep_me;
 
     // Delete all breakpoints not found now
     for (i = 0; i < bps_not_read.size(); i++)
@@ -3357,16 +3510,27 @@ void SourceView::lookup(string s, bool silent)
 	int line = atoi(s);
 	if (line > 0 && line <= line_count)
 	{
-	    if (gdb->type() == GDB)
+	    switch (gdb->type())
 	    {
-		Command c("info line " + current_source_name()
-			  + ":" + itostring(line));
-		c.verbose = !silent;
-		gdb_command(c);
-	    }
-	    else
+		case GDB:
+		{
+		    Command c("info line " + current_source_name()
+			      + ":" + itostring(line));
+		    c.verbose = !silent;
+		    gdb_command(c);
+		    break;
+		}
+		
+	    case JDB:
+		show_position(current_source_name()
+			      + ":" + itostring(line));
+		break;
+
+	    default:
 		show_position(full_path(current_file_name) 
 			      + ":" + itostring(line));
+		break;
+	    }
 	}
 	else
 	{
@@ -3642,7 +3806,7 @@ void SourceView::goto_entry(string entry)
     if (file_name != "")
     {
 	// Lookup source
-	if (!file_matches(file_name, current_file_name))
+	if (is_current_file(file_name))
 	{
 	    source_history_locked = true;
 	    read_file(file_name, line);
@@ -3986,7 +4150,12 @@ string SourceView::current_source_name()
 	break;
 
     case JDB:
-	break;			// FIXME
+	if (source_name_cache.has(current_file_name))
+	{
+	    // Use the source name as stored by read_class()
+	    source = source_name_cache[current_file_name];
+	}
+	break;
     }
 
     // In case this does not work, use the current base name.
@@ -5179,7 +5348,7 @@ string SourceView::get_line(string position)
     if (line < 1)
 	return "";
 
-    if (!file_matches(file_name, current_file_name))
+    if (is_current_file(file_name))
 	read_file(file_name, line);
 
     XmTextPosition start = pos_of_line(line) + indent_amount(source_text_w);
@@ -5859,11 +6028,12 @@ void SourceView::update_glyphs_now()
 	// Show current execution position
 	XmTextPosition pos = XmTextPosition(-1);
 
-	if (display_glyphs
-	    && base_matches(current_file_name, last_execution_file)
-	    && line_count > 0
-	    && last_execution_line > 0
-	    && last_execution_line <= line_count)
+	if (display_glyphs &&
+	    (is_current_file(last_execution_file) ||
+	     base_matches(last_execution_file, current_file_name)) &&
+	     line_count > 0 &&
+	     last_execution_line > 0 &&
+	     last_execution_line <= line_count)
 	{
 	    pos = pos_of_line(last_execution_line);
 	}

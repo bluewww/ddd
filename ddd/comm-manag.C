@@ -1040,7 +1040,17 @@ void send_gdb_command(string cmd, Widget origin,
 	break;
 
     case JDB:
-	break;			// FIXME
+	if (plus_cmd_data->refresh_bpoints)
+	    cmds += "clear";
+	if (plus_cmd_data->refresh_where)
+	    cmds += "where";
+	if (plus_cmd_data->refresh_data)
+	    plus_cmd_data->n_refresh_data = 
+		data_disp->add_refresh_data_commands(cmds);
+	if (plus_cmd_data->refresh_user)
+	    plus_cmd_data->n_refresh_user = 
+		data_disp->add_refresh_user_commands(cmds);
+	break;
     }
 
     while (dummy.size() < cmds.size())
@@ -1446,6 +1456,7 @@ bool is_known_command(const string& answer)
 	    && !ans.contains("no help available")    // AIX DBX
 	    && !ans.contains("expected")             // SGI DBX
 	    && !ans.contains("invoked in line mode") // SCO DBX
+	    && !ans.contains("huh?")                 // JDB
 	    && !ans.contains("unknown", 0));         // XDB
 }
 

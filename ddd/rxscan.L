@@ -267,7 +267,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S046>{P}:{W}[^ ]			return &rxgdb_begin_of_display;
 <S047>{P}:{w}{w}{w}			return &rxgdb_begin_of_display_info;
 <S048>{P}		 		return &rxgdb_disp_nr;
-<S049>{C}[(][^ \t]*:{P}[)]              return &rxjdbpos;
+<S049>{C}[(][A-Za-z][A-Za-z0-9.]*(:{P})?[)] return &rxjdbpos;
 <S050>{_}graph{W}{C}			return &rxgraph_cmd;
 <S051>[A-Za-z_$][A-Za-z0-9_$]*		return &rxidentifier;
 <S052>[[]-?{D}]{C}			return &rxindex;

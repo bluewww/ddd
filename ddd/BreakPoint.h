@@ -109,9 +109,9 @@ private:
 
 public:
     // Create new breakpoint from INFO_OUTPUT.  ARG denotes the
-    // argument of a breakpoint setting command.  Delete own info from
-    // INFO_OUTPUT.
-    BreakPoint (string& info_output, string arg = "");
+    // argument of a breakpoint setting command.  If NUMBER is given,
+    // assign this number.  Delete own info from INFO_OUTPUT.
+    BreakPoint (string& info_output, string arg = "", int number = 0);
 
     // Breakpoint number.
     const string& number_str()   const { return mynumber_str; }

@@ -271,6 +271,7 @@ class SourceView {
     static bool bp_matches(BreakPoint *bp);
     static bool file_matches(const string& file1, const string& file2);
     static bool base_matches(const string& file1, const string& file2);
+    static bool is_current_file(const string& file);
 
     static StringStringAssoc file_cache;
     static StringOriginAssoc origin_cache;
@@ -324,7 +325,10 @@ class SourceView {
 			     bool silent);
     static String read_remote(const string& file_name, long& length,
 			      bool silent);
-    static String read_from_gdb(const string& file_name, long& length,
+    static String read_class(const string& class_name, 
+			     string& file_name, SourceOrigin& origin,
+			     long& length, bool silent);
+    static String read_from_gdb(const string& source_name, long& length,
 				bool silent);
 
     static String read_indented(string& file_name, long& length,

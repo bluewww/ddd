@@ -214,7 +214,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_output_command(false),
       _has_where_h_option(false),
       _has_display_command(tp == GDB || tp == DBX),
-      _has_clear_command(tp == GDB || tp == DBX),
+      _has_clear_command(tp == GDB || tp == DBX || tp == JDB),
       _has_handler_command(false),
       _has_pwd_command(tp == GDB || tp == DBX),
       _has_setenv_command(tp == DBX),
@@ -222,7 +222,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_make_command(tp == GDB || tp == DBX),
       _has_jump_command(tp == GDB || tp == DBX || tp == XDB),
       _has_regs_command(tp == GDB),
-      _has_named_values(tp == GDB || tp == DBX),
+      _has_named_values(tp == GDB || tp == DBX || tp == JDB),
       _has_when_command(tp == DBX),
       _has_when_semicolon(tp == DBX),
       _has_delete_comma(false),
@@ -647,9 +647,16 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 
     case JDB:
     {
-	// JDB prompts using `> ' or `METHOD[DEPTH] '
-	return answer.contains("> ", -1)
-	    || answer.contains("] ", -1);
+	// JDB prompts using "> " or "THREAD[DEPTH] "
+	if (answer.contains("> ", -1) || answer.contains("] ", -1))
+	{
+	    if (answer.contains('\n'))
+		last_prompt = answer.after('\n', -1);
+	    else
+		last_prompt = answer;
+	    return true;
+	}
+	return false;
     }
     }
 
@@ -799,10 +806,12 @@ void GDBAgent::cut_off_prompt(string& answer) const
 	break;
 
     case JDB:
-	if (answer.contains("> ", -1))
-	    answer = answer.before("> ", -1);
-	else if (answer.contains("] ", -1))
-	    answer = answer.before("] ", -1);
+	// Strip the last line
+	if (answer.contains('\n'))
+	    answer = answer.before('\n', -1);
+	else
+	    answer = "";
+	break;
     }
 }
 

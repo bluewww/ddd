@@ -633,22 +633,28 @@ void PosBuffer::filter (string& answer)
 		    line = line.before('\n');
 		strip_final_blanks(line);
 
-		// JDB uses a format like `(HelloWorld:3)'
+		// Having reached a breakpoint, JDB uses a format like
+		// `(foo.bar.HelloWorld:3)'.
+		// Having loaded a class, JDB uses `(foo.bar.HelloWorld)'.
 #if RUNTIME_REGEX
-		static regex rxjdbpos(".*[(][^ \t]*:[1-9][0-9]*[)]");
+		static regex 
+		    rxjdbpos(".*[(][A-Za-z][A-Za-z0-9.]*(:[1-9][0-9]*)?[)]");
 #endif
 		if (line.matches(rxjdbpos))
 		{
 		    line = line.from('(', -1);
 		    line = line.after('(');
-		    string file = line.before(':');
-		    string line_no = line.after(':');
-		    read_leading_blanks(line_no);
-		    line_no = line_no.through(rxint);
-
+		    string file = line.before(')');
+		    string line_no = "1";
+		    if (file.contains(':'))
+		    {
+			line_no = file.after(':');
+			file = file.before(':');
+		    }
 		    pos_buffer   = file + ":" + line_no;
 		    already_read = PosComplete;
-		    
+
+#if 0
 		    // Delete this line from output
 		    int next_index = answer.index('\n', index);
 		    if (next_index < 0)
@@ -656,6 +662,7 @@ void PosBuffer::filter (string& answer)
 		    else
 			next_index++;
 		    answer.at(index, next_index - index) = "";
+#endif
 		    break;
 		}
 		else

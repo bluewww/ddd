@@ -4878,6 +4878,11 @@ ITEM If your personal FILE(~/.[ddd]/init) file or some session \
 FILE(init) file is out of date,\n\
     use LBL(Edit) | LBL(Save Options) to update it.
 
+Ddd*class_error_popup.title: DDD: No Class
+Ddd*class_error*helpString:	\
+@rm The given class could not be loaded.\n\
+Please check the value of the class search path (KBD(use) command).
+
 Ddd*source_file_error_popup.title: DDD: No Source
 Ddd*source_file_error*helpString:	\
 @rm The given source file could not be loaded.

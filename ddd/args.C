@@ -231,9 +231,10 @@ static void gdbRunDCB(Widget, XtPointer, XtPointer)
 
     case JDB:
     {
-	// JDB wants a current class name.  FIXME.
-	string class_name = "HelloWorld";
-	gdb_command("run " + class_name + " " + args, run_dialog);
+	// JDB wants the current class name
+	string class_name = source_view->line_of_cursor().before(":");
+	if (class_name != "")
+	gdb_command("run " + class_name + args, run_dialog);
 	break;
     }
 
