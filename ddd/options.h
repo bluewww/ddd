@@ -100,6 +100,9 @@ extern void dddToggleValueTipsCB            (Widget, XtPointer, XtPointer);
 extern void dddToggleButtonDocsCB           (Widget, XtPointer, XtPointer);
 extern void dddToggleValueDocsCB            (Widget, XtPointer, XtPointer);
 
+extern void dddToggleButtonCaptionsCB       (Widget, XtPointer, XtPointer);
+extern void dddToggleButtonImagesCB         (Widget, XtPointer, XtPointer);
+
 extern void dddSetGlobalTabCompletionCB     (Widget, XtPointer, XtPointer);
 extern void dddSetSeparateWindowsCB         (Widget, XtPointer, XtPointer);
 extern void dddSetStatusAtBottomCB          (Widget, XtPointer, XtPointer);

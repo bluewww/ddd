@@ -585,13 +585,17 @@ void dddToggleValueDocsCB (Widget, XtPointer, XtPointer call_data)
 
 static void post_startup_warning(Widget w)
 {
-    (void) w;
 #if 0
-    post_warning(
-	"This change will be effective only after\n"
-	"options are saved and " DDD_NAME " is restarted.", 
-	"startup_warning", w);
+    static bool posted = false;
+
+    if (!posted)
+	post_warning("This change will only be effective\n"
+		     "after saving options and restarting " DDD_NAME ".",
+		     "startup_warning", w);
+
+    posted = true;
 #endif
+    (void) w;			// Use it
 }
 
 static string next_ddd_will_start_with = 
@@ -599,15 +603,34 @@ static string next_ddd_will_start_with =
 
 void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = int(client_data);
+    int state = int(client_data);
+    switch (state)
+    {
+    case 0:
+	app_data.separate_data_window   = True;
+	app_data.separate_source_window = True;
+	app_data.common_toolbar         = False;
+	break;
 
-    app_data.separate_data_window   = state;
-    app_data.separate_source_window = state;
+    case 1:
+	app_data.separate_data_window   = False;
+	app_data.separate_source_window = False;
+	app_data.common_toolbar         = True;
+	break;
 
-    if (state)
+    case 2:
+	app_data.separate_data_window   = False;
+	app_data.separate_source_window = False;
+	app_data.common_toolbar         = False;
+	break;
+    }
+
+    if (app_data.separate_data_window || app_data.separate_source_window)
 	set_status(next_ddd_will_start_with + "separate windows.");
+    else if (app_data.common_toolbar)
+	set_status(next_ddd_will_start_with + "one window, one toolbar.");
     else
-	set_status(next_ddd_will_start_with + "one single window.");
+	set_status(next_ddd_will_start_with + "one window, two toolbars.");
 
     update_options();
     post_startup_warning(w);
@@ -761,6 +784,46 @@ void dddSetStartupLogoCB (Widget w, XtPointer client_data, XtPointer)
 
     update_options();
     post_startup_warning(w);
+}
+
+static void toggle_button_appearance(Widget w, Boolean& data, 
+				     XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    data = info->set;
+    
+    string msg = next_ddd_will_start_with;
+    if (app_data.button_images && app_data.button_captions)
+    {
+	msg += " captioned images";
+    }
+    else if (app_data.button_images && !app_data.button_captions)
+    {
+	msg += " images only";
+    }
+    else if (!app_data.button_images && app_data.button_captions)
+    {
+	msg += " captions only";
+    }
+    else if (!app_data.button_images && !app_data.button_captions)
+    {
+	msg += " ordinary labels";
+    }
+
+    update_options();
+    post_startup_warning(w);
+}
+
+void dddToggleButtonCaptionsCB(Widget w, XtPointer, XtPointer call_data)
+{
+    toggle_button_appearance(w, app_data.button_captions, call_data);
+}
+
+void dddToggleButtonImagesCB(Widget w, XtPointer, XtPointer call_data)
+{
+    toggle_button_appearance(w, app_data.button_images, call_data);
 }
 
 
@@ -1278,16 +1341,14 @@ static string widget_value(Widget w, String name)
 
 static string widget_size(Widget w)
 {
-    XtWidgetGeometry size;
-    size.request_mode = CWHeight | CWWidth;
-    XtQueryGeometry(w, NULL, &size);
+    Dimension width, height;
+    XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, NULL);
 
     string s;
-    s += int_app_value(string(XtName(w)) + "." + XmNwidth, size.width);
+    s += int_app_value(string(XtName(w)) + "." + XmNwidth, width);
     s += '\n';
-    s += int_app_value(string(XtName(w)) + "." + XmNheight, size.height);
+    s += int_app_value(string(XtName(w)) + "." + XmNheight, height);
 
-#if 0
     if (XmIsText(w) || XmIsTextField(w))
     {
 	short columns;
@@ -1308,7 +1369,6 @@ static string widget_size(Widget w)
 	    s += int_app_value(string(XtName(w)) + "." + XmNrows, rows);
 	}
     }
-#endif
 
     return s;
 }
@@ -1504,6 +1564,7 @@ bool save_options(unsigned long flags)
 	   << "\n";
 	break;
     }
+
     os << bool_app_value(XtNstatusAtBottom,
 			 app_data.status_at_bottom) << "\n";
     os << bool_app_value(XtNsuppressWarnings,
@@ -1604,14 +1665,18 @@ bool save_options(unsigned long flags)
 
     // Toolbar
     os << "\n! Toolbars\n";
+#if 0
+    // We cannot change these interactively, so there's no point in
+    // saving them.
     os << bool_app_value(XtNcommonToolBar,
 			 app_data.common_toolbar)  << "\n";
+    os << bool_app_value(XtNtoolbarsAtBottom, 
+			 app_data.toolbars_at_bottom) << "\n";
+#endif
     os << bool_app_value(XtNbuttonImages,
 			 app_data.button_images)   << "\n";
     os << bool_app_value(XtNbuttonCaptions,
 			 app_data.button_captions) << "\n";
-    os << bool_app_value(XtNtoolbarsAtBottom, 
-			 app_data.toolbars_at_bottom) << "\n";
 
     // Command tool
     os << "\n! Command tool\n";
@@ -1656,7 +1721,6 @@ bool save_options(unsigned long flags)
     // Widget sizes.
     os << "\n! Window sizes\n";
 
-#if 0
     // We must enable all PanedWindow children in order to get the
     // correct sizes.  Ugly hack.
     popups_disabled  = true;
@@ -1669,7 +1733,6 @@ bool save_options(unsigned long flags)
     gdbOpenSourceWindowCB(gdb_w, 0, 0);
     manage_paned_child(source_view->code_form());
     gdbOpenCommandWindowCB(gdb_w, 0, 0);
-#endif
 
     os << widget_size(data_disp->graph_edit)           << "\n";
     Widget porthole_w = XtParent(data_disp->graph_edit);
@@ -1683,7 +1746,6 @@ bool save_options(unsigned long flags)
     os << widget_size(gdb_w)                           << "\n";
     os << widget_size(XtParent(gdb_w))                 << "\n";
 
-#if 0
     if (!had_data)
 	gdbCloseDataWindowCB(gdb_w, 0, 0);
     if (!had_source)
@@ -1693,7 +1755,6 @@ bool save_options(unsigned long flags)
     if (!had_command)
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
     popups_disabled = false;
-#endif
 
     if (save_geometry)
     {

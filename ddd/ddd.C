@@ -956,21 +956,21 @@ static Widget set_separate_windows_w;
 static Widget set_attached_windows_w;
 static MMDesc window_mode_menu [] = 
 {
-    { "separate",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(True) },
-      NULL, &set_separate_windows_w },
     { "attached",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(False) },
       NULL, &set_attached_windows_w },
+    { "separate",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(True) },
+      NULL, &set_separate_windows_w },
     MMEnd
 };
 
-static Widget set_status_bottom_w;
-static Widget set_status_top_w;
-static MMDesc status_position_menu [] = 
+static Widget set_button_images_w;
+static Widget set_button_captions_w;
+static MMDesc button_appearance_menu [] = 
 {
-    { "bottom",  MMToggle, { dddSetStatusAtBottomCB, XtPointer(True) },
-      NULL, &set_status_bottom_w },
-    { "top",     MMToggle, { dddSetStatusAtBottomCB, XtPointer(False) },
-      NULL, &set_status_top_w },
+    { "images",   MMToggle, { dddToggleButtonImagesCB },
+      NULL, &set_button_images_w },
+    { "captions", MMToggle, { dddToggleButtonCaptionsCB },
+      NULL, &set_button_captions_w },
     MMEnd
 };
 
@@ -1029,7 +1029,6 @@ static MMDesc debugger_menu [] =
 static Widget startup_logo_color_w;
 static Widget startup_logo_grey_w;
 static Widget startup_logo_grey4_w;
-static Widget startup_logo_mono_w;
 static Widget startup_logo_none_w;
 
 static MMDesc startup_logo_menu [] = 
@@ -1040,8 +1039,6 @@ static MMDesc startup_logo_menu [] =
       NULL, &startup_logo_grey_w },
     { "grey4", MMToggle, { dddSetStartupLogoCB, XtPointer("g4") },
       NULL, &startup_logo_grey4_w },
-    { "mono", MMToggle | MMUnmanaged, { dddSetStartupLogoCB, XtPointer("m") },
-      NULL, &startup_logo_mono_w },
     { "none", MMToggle,  { dddSetStartupLogoCB, XtPointer("") },
       NULL, &startup_logo_none_w },
     MMEnd
@@ -1049,13 +1046,13 @@ static MMDesc startup_logo_menu [] =
 
 static MMDesc startup_preferences_menu [] =
 {
-    { "windows",         MMRadioPanel, MMNoCB, window_mode_menu },
-    { "statusPosition",  MMRadioPanel, MMNoCB, status_position_menu },
-    { "toolButtons",     MMRadioPanel, MMNoCB, tool_buttons_menu },
-    { "keyboardFocus",   MMRadioPanel, MMNoCB, keyboard_focus_menu },
-    { "dataScrolling",   MMRadioPanel, MMNoCB, data_scrolling_menu },
-    { "debugger",        MMRadioPanel, MMNoCB, debugger_menu },
-    { "showStartupLogo", MMRadioPanel, MMNoCB, startup_logo_menu },
+    { "windows",         MMRadioPanel,  MMNoCB, window_mode_menu },
+    { "buttons",         MMButtonPanel, MMNoCB, button_appearance_menu },
+    { "toolButtons",     MMRadioPanel,  MMNoCB, tool_buttons_menu },
+    { "keyboardFocus",   MMRadioPanel,  MMNoCB, keyboard_focus_menu },
+    { "dataScrolling",   MMRadioPanel,  MMNoCB, data_scrolling_menu },
+    { "debugger",        MMRadioPanel,  MMNoCB, debugger_menu },
+    { "showStartupLogo", MMRadioPanel,  MMNoCB, startup_logo_menu },
     MMEnd
 };
 
@@ -2096,7 +2093,6 @@ int main(int argc, char *argv[])
     if (app_data.separate_source_window && app_data.status_at_bottom)
 	create_status(source_view_parent);
 
-
     // GDB window
     if (console_buttons_w == 0 && !app_data.toolbars_at_bottom)
 	console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
@@ -2255,24 +2251,17 @@ int main(int argc, char *argv[])
 
 	Widget widgets[10];
 	int w = 0;
+#if 0
 	widgets[w++] = source_view->code_form();
 	widgets[w++] = source_view->source_form();
+#endif
 	widgets[w++] = data_disp->graph_form();
 
 	if (data_disp->graph_cmd_w != arg_cmd_w)
 	    widgets[w++] = data_disp->graph_cmd_w;
 
-	if (lesstif_version < 1000)
-	{
-	    // In LessTif 0.83, the order in which the paned window
-	    // widgets are unmanaged makes a difference.
-	    while (w > 0)
-		XtUnmanageChild(widgets[--w]);
-	}
-	else
-	{
-	    XtUnmanageChildren(widgets, w);
-	}
+	while (w > 0)
+	    unmanage_paned_child(widgets[--w]);
     }
 
     // Save option states
@@ -3263,8 +3252,8 @@ void update_options()
     set_toggle(set_scrolling_panner_w,     app_data.panned_graph_editor);
     set_toggle(set_scrolling_scrollbars_w, !app_data.panned_graph_editor);
 
-    set_toggle(set_status_bottom_w,        app_data.status_at_bottom);
-    set_toggle(set_status_top_w,           !app_data.status_at_bottom);
+    set_toggle(set_button_images_w,        app_data.button_images);
+    set_toggle(set_button_captions_w,      app_data.button_captions);
 
     set_toggle(set_tool_buttons_in_toolbar_w,      app_data.command_toolbar);
     set_toggle(set_tool_buttons_in_command_tool_w, !app_data.command_toolbar);
@@ -3284,7 +3273,6 @@ void update_options()
     set_toggle(startup_logo_color_w, color_key == "c");
     set_toggle(startup_logo_grey_w,  color_key == "g");
     set_toggle(startup_logo_grey4_w, color_key == "g4");
-    set_toggle(startup_logo_mono_w,  color_key == "m");
     set_toggle(startup_logo_none_w,  color_key == "");
 
     if (app_data.cache_source_files != source_view->cache_source_files)
@@ -3613,8 +3601,8 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_separate_windows_w, separate);
     notify_set_toggle(set_attached_windows_w, !separate);
 
-    notify_set_toggle(set_status_bottom_w, initial_app_data.status_at_bottom);
-    notify_set_toggle(set_status_top_w, !initial_app_data.status_at_bottom);
+    notify_set_toggle(set_button_captions_w, initial_app_data.button_captions);
+    notify_set_toggle(set_button_images_w,   initial_app_data.button_images);
 
     notify_set_toggle(set_tool_buttons_in_toolbar_w, 
 		      initial_app_data.command_toolbar);
@@ -3641,7 +3629,6 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(startup_logo_color_w, color_key == "c");
     notify_set_toggle(startup_logo_grey_w,  color_key == "g");
     notify_set_toggle(startup_logo_grey4_w, color_key == "g4");
-    notify_set_toggle(startup_logo_mono_w,  color_key == "m");
     notify_set_toggle(startup_logo_none_w,  color_key == "");
 }
 
@@ -3660,7 +3647,8 @@ bool startup_preferences_changed()
 		  XmNkeyboardFocusPolicy, &focus_policy, NULL);
 
     return separate != initial_separate
-	|| app_data.status_at_bottom != initial_app_data.status_at_bottom
+	|| app_data.button_images != initial_app_data.button_images
+	|| app_data.button_captions != initial_app_data.button_captions
 	|| app_data.command_toolbar != initial_app_data.command_toolbar
 	|| focus_policy != initial_focus_policy
 	|| app_data.panned_graph_editor != initial_app_data.panned_graph_editor

@@ -2861,75 +2861,77 @@ Ddd*preferences*gridSize.titleString:		Grid size
 Ddd*preferences*startup*helpString:   \
 @rm These are the EMPH(Startup Preferences).\n\
 \n\
-ITEM LBL(Windows) sets the window layout.\n\
-    SUBITEM LBL(separate windows) means to use one source window,\n\
-        one data window, and one @GDB@ console window.\n\
-    SUBITEM LBL(one single window) means to use one single window\n\
-        for source, data, and the @GDB@ console. (*)\n\
+To make your changes take effect, select\n\
+ITEM LBL(Edit) | LBL(Save Options), affecting all future DDD sessions.\n\
+ITEM LBL(File) | LBL(Restart [DDD]), affecting the restarted \
+DDD session only.\n\
 \n\
-ITEM The LBL(Status line) can be placed\n\
-    SUBITEM LBL(at bottom of source), in order to display \
-menu descriptions, or\n\
-    SUBITEM LBL(at top of source), as in DDD 2.0 and earlier. (*)\n\
+ITEM LBL(Window Layout) sets the window layout.\n\
+    SUBITEM LBL(One Single Window) means to use one top-level window\n\
+        where source, data, and the @GDB@ console are stacked.\n\
+    SUBITEM LBL(Separate Windows) means to use a separate top-level window\n\
+        for each of source, data, and the @GDB@ console.\n\
 \n\
-ITEM The LBL(Tool buttons) can be placed\n\
-    SUBITEM in the LBL(command tool) which can be moved around DDD, or\n\
-    SUBITEM in the LBL(source window), as in DDD 1.4 and earlier.\n\
+ITEM The LBL(Toolbar) can appear as\n\
+    SUBITEM LBL(Images), showing a small symbol for each action, and/or\n\
+    SUBITEM LBL(Captions), showing the action name below the image.\n\
+    If neither of these two is set, buttons are ordinarily labeled.\n\
 \n\
-ITEM LBL(Keyboard focus) sets the keyboard focus policy.\n\
-    SUBITEM LBL(click-to-type) means that you must click on a window\n\
+ITEM The LBL(Tool Buttons) can be placed\n\
+    SUBITEM in the LBL(Command Tool) which can be moved around DDD, or\n\
+    SUBITEM in the LBL(Source Window), as in DDD 1.4 and earlier.\n\
+\n\
+ITEM LBL(Keyboard Focus) sets the keyboard focus policy.\n\
+    SUBITEM LBL(Click to Type) means that you must click on a window\n\
         to direct the keyboard focus to it.\n\
-    SUBITEM LBL(point-to-type) means that pointing to the window suffices.\n\
+    SUBITEM LBL(Point to Type) means that pointing to the window suffices.\n\
 \n\
 ITEM LBL(Data Scrolling) sets the data window scrolling mode.\n\
     SUBITEM LBL(Panner) means to use a two-dimensional scrollbar\n\
         (not available in all DDD configurations).\n\
-    SUBITEM LBL(Scrollbars) means to use two scrollbars. (*)\n\
+    SUBITEM LBL(Scrollbars) means to use two scrollbars.\n\
 \n\
-ITEM LBL(Debugger Type) sets the type of inferior debugger to use. (*)\n\
+ITEM LBL(Debugger Type) sets the type of inferior debugger to use.\n\
 \n\
 ITEM LBL(Splash Screen) lets you choose among different DDD splash screens,\n\
-    or none at all.\n\
-\n\
-(*) Note: these startup preferences take effect only after saving options\n\
-and restarting DDD.\n\
+    or LBL(None), disabling it.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
 
 Ddd*preferences*startup*adjustMargin:		false
 
-Ddd*preferences*windows.labelString:		DDD comes in
+Ddd*preferences*windows.labelString:		Window Layout
 Ddd*preferences*windows.width:			200
 Ddd*preferences*windows.recomputeSize:		false
-Ddd*windowsMenu*separate.labelString:		separate windows
-Ddd*windowsMenu*attached.labelString:		one single window
+Ddd*windowsMenu*attached.labelString:		One Single Window
+Ddd*windowsMenu*separate.labelString:		Separate Windows
 
-Ddd*preferences*statusPosition.labelString:	Status line is located
-Ddd*preferences*statusPosition.width:		200
-Ddd*preferences*statusPosition.recomputeSize:	false
-Ddd*statusPositionMenu*bottom.labelString:	at bottom of source
-Ddd*statusPositionMenu*top.labelString:		at top of source
+Ddd*preferences*buttons.labelString:		Toolbar Appearance
+Ddd*preferences*buttons.width:			200
+Ddd*preferences*buttons.recomputeSize:		false
+Ddd*buttonsMenu*images.labelString:		Images
+Ddd*buttonsMenu*captions.labelString:		Captions
 
-Ddd*preferences*toolButtons.labelString:	Tool buttons are located
+Ddd*preferences*toolButtons.labelString:	Tool Buttons Location
 Ddd*preferences*toolButtons.width:		200
 Ddd*preferences*toolButtons.recomputeSize:	false
-Ddd*toolButtonsMenu*commandTool.labelString:	in command tool
-Ddd*toolButtonsMenu*sourceWindow.labelString:   in source window
+Ddd*toolButtonsMenu*commandTool.labelString:	Command Tool
+Ddd*toolButtonsMenu*sourceWindow.labelString:   Source Window
 
-Ddd*preferences*keyboardFocus.labelString:	Keyboard focus is
+Ddd*preferences*keyboardFocus.labelString:	Keyboard Focus
 Ddd*preferences*keyboardFocus.width:		200
 Ddd*preferences*keyboardFocus.recomputeSize:	false
-Ddd*keyboardFocusMenu*explicit.labelString:	click-to-type
-Ddd*keyboardFocusMenu*pointer.labelString:	point-to-type
+Ddd*keyboardFocusMenu*explicit.labelString:	Click to Type
+Ddd*keyboardFocusMenu*pointer.labelString:	Point to Type
 
-Ddd*preferences*dataScrolling.labelString:	Data is scrolled using
+Ddd*preferences*dataScrolling.labelString:	Data Scrolling
 Ddd*preferences*dataScrolling.width:		200
 Ddd*preferences*dataScrolling.recomputeSize:	false
-Ddd*dataScrollingMenu*panner.labelString:	a panner
-Ddd*dataScrollingMenu*scrollbars.labelString:	two scrollbars
+Ddd*dataScrollingMenu*panner.labelString:	Panner
+Ddd*dataScrollingMenu*scrollbars.labelString:	Two Scrollbars
 
-Ddd*preferences*debugger.labelString:		Debugger type is
+Ddd*preferences*debugger.labelString:		Debugger Type
 Ddd*preferences*debugger.width:			200
 Ddd*preferences*debugger.recomputeSize:		false
 Ddd*debuggerMenu*gdb.labelString:		GDB
@@ -2937,15 +2939,15 @@ Ddd*debuggerMenu*dbx.labelString:		DBX
 Ddd*debuggerMenu*xdb.labelString:		XDB
 Ddd*debuggerMenu*jdb.labelString:		JDB
 
-Ddd*preferences*showStartupLogo.labelString:	Show DDD splash screen
+Ddd*preferences*showStartupLogo.labelString:	DDD Splash Screen
 Ddd*preferences*showStartupLogo.width:		200
 Ddd*preferences*showStartupLogo.recomputeSize:	false
 
-Ddd*showStartupLogoMenu*color.labelString:	in color
-Ddd*showStartupLogoMenu*grey.labelString:	in grey
-Ddd*showStartupLogoMenu*grey4.labelString:	in grey4
-Ddd*showStartupLogoMenu*mono.labelString:	in monochrome
-Ddd*showStartupLogoMenu*none.labelString:	not at all
+Ddd*showStartupLogoMenu*color.labelString:	Color
+Ddd*showStartupLogoMenu*grey.labelString:	Grey
+Ddd*showStartupLogoMenu*grey4.labelString:	Grey4
+Ddd*showStartupLogoMenu*mono.labelString:	Monochrome
+Ddd*showStartupLogoMenu*none.labelString:	None
 
 Ddd*preferences*helpers*helpString: \
 @rm These are the EMPH([DDD] Helpers), external applications used by DDD.\n\
@@ -3197,20 +3199,20 @@ Ddd*XmPanedWindow.spacing:		4
 ! Width and height for several Motif & Athena variants
 
 ! Motif 1.x, using ScrolledWindow
-Ddd*graph_edit_swindow.width:		622
-Ddd*graph_edit_swindow.height:		180
+Ddd*graph_edit_swindow.width:		594
+Ddd*graph_edit_swindow.height:		174
 
 ! Motif 2.0, using ScrolledWindow
-Ddd*graph_editSW.width:			622
-Ddd*graph_editSW.height:		180
+Ddd*graph_editSW.width:			594
+Ddd*graph_editSW.height:		174
 
 ! Motif 1.x, using Porthole
-Ddd*graph_edit_porthole.width:		622
-Ddd*graph_edit_porthole.height:		180
+Ddd*graph_edit_porthole.width:		594
+Ddd*graph_edit_porthole.height:		174
 
 ! Motif 2.0, using Porthole
-Ddd*graph_edit_form.width:		622
-Ddd*graph_edit_form.height:		180
+Ddd*graph_edit_form.width:		594
+Ddd*graph_edit_form.height:		174
 
 Ddd*graph_edit_swindow.spacing:		0
 Ddd*graph_edit_swindow.borderWidth:	0
@@ -3510,11 +3512,11 @@ Ddd*toolbar*rotateAll.documentationString: \
 Ddd*toolbar*set.helpString:	\
 LBL(Set ())\n\
 \n\
-Change the selected display value.
+Change the value of the argument LBL(()).
 Ddd*toolbar*set.tipString:	\
-@rm Set display value
+@rm Set the value of LBL(())
 Ddd*toolbar*set.documentationString:	\
-@rm Change the selected display value
+@rm Change the value of the argument LBL(())
 
 Ddd*toolbar*delete.helpString:	\
 LBL(Delete ())\n\
@@ -3801,11 +3803,11 @@ Ddd*source_text_w.rows:			24
 Ddd*code_text_w.columns:		80
 Ddd*code_text_w.rows:			2
 
-Ddd*source_form_w.width:		622
-Ddd*source_form_w.height:		280
+Ddd*source_form_w.width:		590
+Ddd*source_form_w.height:		220
 
-Ddd*code_form_w.width:			622
-Ddd*code_form_w.height:			50
+Ddd*code_form_w.width:			590
+Ddd*code_form_w.height:			29
 
 Ddd*source_text_w_swindow.spacing:		0
 Ddd*source_text_w_swindow.borderWidth:		0
@@ -4106,8 +4108,8 @@ Copyright \251 1998 Technische Universit\344t Braunschweig, Germany.\n
 Ddd*gdb_w.columns:		80
 Ddd*gdb_w.rows:			5
 
-Ddd*gdb_wSW.width:		600
-Ddd*gdb_wSW.height:		82
+Ddd*gdb_wSW.width:		569
+Ddd*gdb_wSW.height:		83
 
 Ddd*gdb_w_swindow.spacing:		0
 Ddd*gdb_w_swindow.borderWidth:		0
