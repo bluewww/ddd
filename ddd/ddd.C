@@ -36,7 +36,7 @@
 // it writes things out backwards."  "The system crashed because of  
 // a hardware bug."  "Fred is a winner, but he has a few bugs"
 // (i.e., Fred is a good guy, but he has a few personality problems).
-//    
+//
 // Historical note: Admiral Grace Hopper (an early computing pioneer  
 // better known for inventing {COBOL}) liked to tell a story in  
 // which a technician solved a {glitch} in the Harvard Mark II
@@ -1020,6 +1020,14 @@ int main(int argc, char *argv[])
 	    // -s FILE - read symbol table (GDB)
 	    // -s FILE - execute commands from FILE (DBX)
 	    // -x FILE - execute commands from FILE (GDB)
+
+	    // Note: the following options are used by DDD:
+	    // -h       - Help
+	    // -l LOGIN - Login as LOGIN
+	    // -v       - Show version
+	    // -?       - Help
+	    // -t       - Use TTY mode
+	    // -f       - Use fullname mode
 	    static regex RXoptions("-[bcdeiIopPrRsx]");
 	    if (i < argc - 1 && arg.matches(RXoptions))
 	    {
