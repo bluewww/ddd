@@ -88,7 +88,7 @@ AC_CACHE_VAL(ice_cv_prog_cxx,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_LINK([#include <iostream.h>], [cout << "hello, world!";],
+AC_TRY_LINK([#include <iostream>], [std::cout << "hello, world!";],
 ice_cv_prog_cxx=yes,
 ice_cv_prog_cxx=no)
 AC_LANG_RESTORE
@@ -129,38 +129,6 @@ AC_SUBST(CXXLIBS)dnl
 LIBS="$ice_save_LIBS"
 ])dnl
 dnl
-dnl
-dnl ICE_WERROR
-dnl ----------
-dnl
-dnl If the C++ compiler accepts the `-Werror' flag,
-dnl set output variable `WERROR' to `-Werror',
-dnl empty otherwise.
-dnl
-AC_DEFUN(ICE_WERROR,
-[
-AC_REQUIRE([AC_PROG_CXX])
-if test "$GXX" = yes; then
-AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -Werror)
-AC_CACHE_VAL(ice_cv_werror,
-[
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="-Werror"
-AC_TRY_COMPILE(,[int a;],
-ice_cv_werror=yes, ice_cv_werror=no)
-CXXFLAGS="$ice_save_cxxflags"
-AC_LANG_RESTORE
-])
-AC_MSG_RESULT($ice_cv_werror)
-if test "$ice_cv_werror" = yes; then
-WERROR=-Werror
-fi
-fi
-AC_SUBST(WERROR)
-])dnl
-dnl
 dnl ICE_EXTERNAL_TEMPLATES
 dnl ----------------------
 dnl
@@ -171,7 +139,6 @@ dnl
 AC_DEFUN(ICE_EXTERNAL_TEMPLATES,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_REQUIRE([ICE_WERROR])
 if test "$GXX" = yes; then
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -fexternal-templates)
 AC_CACHE_VAL(ice_cv_external_templates,
@@ -179,7 +146,8 @@ AC_CACHE_VAL(ice_cv_external_templates,
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="$WERROR -fexternal-templates"
+dnl Don't use if deprecated
+CXXFLAGS="-Werror -fexternal-templates"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_external_templates=yes, ice_cv_external_templates=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -206,7 +174,6 @@ dnl
 AC_DEFUN(ICE_PERMISSIVE,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_REQUIRE([ICE_WERROR])
 if test "$GXX" = yes; then
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -fpermissive)
 AC_CACHE_VAL(ice_cv_permissive,
@@ -214,7 +181,7 @@ AC_CACHE_VAL(ice_cv_permissive,
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="$WERROR -fpermissive"
+CXXFLAGS="-fpermissive"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_permissive=yes, ice_cv_permissive=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -281,7 +248,6 @@ dnl
 AC_DEFUN(ICE_NO_IMPLICIT_TEMPLATES,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_REQUIRE([ICE_WERROR])
 if test "$GXX" = yes; then
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -fno-implicit-templates)
 AC_CACHE_VAL(ice_cv_no_implicit_templates,
@@ -289,7 +255,7 @@ AC_CACHE_VAL(ice_cv_no_implicit_templates,
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="$WERROR -fno-implicit-templates"
+CXXFLAGS="-fno-implicit-templates"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_no_implicit_templates=yes, ice_cv_no_implicit_templates=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -314,7 +280,6 @@ dnl
 AC_DEFUN(ICE_ELIDE_CONSTRUCTORS,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_REQUIRE([ICE_WERROR])
 if test "$GXX" = yes; then
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -felide-constructors)
 AC_CACHE_VAL(ice_cv_elide_constructors,
@@ -322,7 +287,7 @@ AC_CACHE_VAL(ice_cv_elide_constructors,
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="$WERROR -felide-constructors"
+CXXFLAGS="-felide-constructors"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_elide_constructors=yes, ice_cv_elide_constructors=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -346,7 +311,6 @@ dnl
 AC_DEFUN(ICE_CONSERVE_SPACE,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_REQUIRE([ICE_WERROR])
 if test "$GXX" = yes; then
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -fconserve-space)
 AC_CACHE_VAL(ice_cv_conserve_space,
@@ -354,7 +318,7 @@ AC_CACHE_VAL(ice_cv_conserve_space,
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="$WERROR -fconserve-space"
+CXXFLAGS="-fconserve-space"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_conserve_space=yes, ice_cv_conserve_space=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -381,7 +345,6 @@ dnl
 AC_DEFUN(ICE_WARN_EFFECTIVE_CXX,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_REQUIRE([ICE_WERROR])
 if test "$GXX" = yes; then
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -Weffc++)
 AC_CACHE_VAL(ice_cv_warn_effective_cxx,
@@ -389,7 +352,7 @@ AC_CACHE_VAL(ice_cv_warn_effective_cxx,
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="$WERROR -Weffc++"
+CXXFLAGS="-Weffc++"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_warn_effective_cxx=yes, ice_cv_warn_effective_cxx=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -418,7 +381,6 @@ dnl
 AC_DEFUN(ICE_TRIGRAPHS,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_REQUIRE([ICE_WERROR])
 if test "$GXX" = yes; then
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -trigraphs)
 AC_CACHE_VAL(ice_cv_trigraphs,
@@ -426,7 +388,7 @@ AC_CACHE_VAL(ice_cv_trigraphs,
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="$WERROR -trigraphs"
+CXXFLAGS="-trigraphs"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_trigraphs=yes, ice_cv_trigraphs=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -450,7 +412,6 @@ dnl
 AC_DEFUN(ICE_BIG_TOC,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_REQUIRE([ICE_WERROR])
 if test "$GXX" = yes; then
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts [-Wl,-bbigtoc])
 AC_CACHE_VAL(ice_cv_big_toc,
@@ -483,7 +444,6 @@ dnl
 AC_DEFUN(ICE_MINIMAL_TOC,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_REQUIRE([ICE_WERROR])
 if test "$GXX" = yes; then
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts [-mminimal-toc])
 AC_CACHE_VAL(ice_cv_minimal_toc,
@@ -491,7 +451,7 @@ AC_CACHE_VAL(ice_cv_minimal_toc,
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="$WERROR -mminimal-toc"
+CXXFLAGS="-mminimal-toc"
 AC_TRY_LINK(,[int a;],
 ice_cv_minimal_toc=yes, ice_cv_minimal_toc=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -514,7 +474,6 @@ dnl
 AC_DEFUN(ICE_RPATH,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_REQUIRE([ICE_WERROR])
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts [-Wl,-rpath,PATH])
 AC_CACHE_VAL(ice_cv_rpath,
 [
@@ -543,7 +502,6 @@ dnl
 AC_DEFUN(ICE_WARN_UNINITIALIZED,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_REQUIRE([ICE_WERROR])
 if test "$GXX" = yes; then
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -Wuninitialized)
 AC_CACHE_VAL(ice_cv_warn_uninitialized,
@@ -551,7 +509,7 @@ AC_CACHE_VAL(ice_cv_warn_uninitialized,
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="$WERROR -Wuninitialized"
+CXXFLAGS="-Wuninitialized"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_warn_uninitialized=yes, ice_cv_warn_uninitialized=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -579,14 +537,13 @@ dnl
 AC_DEFUN(ICE_XS_DEBUG_INFO,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_REQUIRE([ICE_WERROR])
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -xs)
 AC_CACHE_VAL(ice_cv_xs_debug_info,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="$WERROR -xs"
+CXXFLAGS="-xs"
 AC_TRY_COMPILE(,[int a;],
 ice_cv_xs_debug_info=yes, ice_cv_xs_debug_info=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -610,7 +567,6 @@ dnl
 AC_DEFUN(ICE_CXX_ISYSTEM,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_REQUIRE([ICE_WERROR])
 if test "$GXX" = yes; then
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -isystem)
 AC_CACHE_VAL(ice_cv_cxx_isystem,
@@ -618,7 +574,7 @@ AC_CACHE_VAL(ice_cv_cxx_isystem,
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_cxxflags="$CXXFLAGS"
-CXXFLAGS="$WERROR -isystem ."
+CXXFLAGS="-isystem ."
 AC_TRY_COMPILE(,[int a;],
 ice_cv_cxx_isystem=yes, ice_cv_cxx_isystem=no)
 CXXFLAGS="$ice_save_cxxflags"
@@ -823,7 +779,6 @@ dnl
 AC_DEFUN(ICE_CXX_NAMED_RETURN_VALUES,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_REQUIRE([ICE_WERROR])
 AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports named return values)
 AC_CACHE_VAL(ice_cv_have_named_return_values,
 [
@@ -831,7 +786,10 @@ AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 # GCC 3.0 supports named return values, but produces lots of warnings.
 # Prefer GCC 3.0 without warnings.
-CXXFLAGS="$CXXFLAGS $WERROR"
+ice_save_cxxflags="$CXXFLAGS"
+if test "$GXX" = yes; then
+  CXXFLAGS="-Werror $CXXFLAGS"
+fi
 AC_TRY_COMPILE([
 struct X {
     int f();
@@ -844,6 +802,7 @@ int X::f() return i;
 ], [/* empty */],
 ice_cv_have_named_return_values=yes,
 ice_cv_have_named_return_values=no)
+CXXFLAGS="$ice_save_cxxflags"
 AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_named_return_values)
@@ -953,8 +912,8 @@ AC_CACHE_VAL(ice_cv_have_streampos,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([#include <iostream.h>
-#include <fstream.h>],
+AC_TRY_COMPILE([#include <iostream>
+#include <fstream>],
 [streampos p;],
 ice_cv_have_streampos=yes,
 ice_cv_have_streampos=no)
@@ -981,8 +940,8 @@ AC_CACHE_VAL(ice_cv_have_std_streampos,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([#include <iostream.h>
-#include <fstream.h>],
+AC_TRY_COMPILE([#include <iostream>
+#include <fstream>],
 [std::streampos p;],
 ice_cv_have_std_streampos=yes,
 ice_cv_have_std_streampos=no)
@@ -1008,7 +967,7 @@ AC_CACHE_VAL(ice_cv_have_iostate,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([#include <iostream.h>],
+AC_TRY_COMPILE([#include <iostream>],
 [ios::iostate new_state;],
 ice_cv_have_iostate=yes,
 ice_cv_have_iostate=no)
@@ -1037,7 +996,7 @@ AC_CACHE_VAL(ice_cv_have_placement_new,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([#include <new.h>],
+AC_TRY_COMPILE([#include <new>],
 [int *pi = new (operator new (sizeof(int))) int;],
 ice_cv_have_placement_new=yes,
 ice_cv_have_placement_new=no)
@@ -1114,44 +1073,44 @@ AC_DEFINE(HAVE_ANSI_LIFETIME_OF_TEMPORARIES)
 fi
 ])dnl
 dnl
-dnl ICE_OSTRSTREAM_PCOUNT_BROKEN
+dnl ICE_OSTRINGSTREAM_PCOUNT_BROKEN
 dnl ----------------------------
 dnl
-dnl If the C++ ostrstream::pcount() is increased by one after calling
-dnl ostrstream::str() (as in the SGI C++ I/O library), 
-dnl define `OSTRSTREAM_PCOUNT_BROKEN'.
+dnl If the C++ ostringstream::pcount() is increased by one after calling
+dnl ostringstream::str() (as in the SGI C++ I/O library), 
+dnl define `OSTRINGSTREAM_PCOUNT_BROKEN'.
 dnl
-AC_DEFUN(ICE_OSTRSTREAM_PCOUNT_BROKEN,
+AC_DEFUN(ICE_OSTRINGSTREAM_PCOUNT_BROKEN,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING(whether ostrstream::pcount() is broken)
-AC_CACHE_VAL(ice_cv_ostrstream_pcount_broken,
+AC_MSG_CHECKING(whether ostringstream::pcount() is broken)
+AC_CACHE_VAL(ice_cv_ostringstream_pcount_broken,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 AC_TRY_RUN(
 [
-// Returns 0 if ostrstream::pcount() is broken; 1, otherwise.
-#include <iostream.h>
-#include <strstream.h>
+// Returns 0 if ostringstream::pcount() is broken; 1, otherwise.
+#include <iostream>
+#include <sstream>
 
 int main() 
 {
-    ostrstream os;
+    std::ostringstream os;
     os << 'a';           // os.pcount() == 1.
     char *s = os.str();  // In the SGI C++ I/O library, os.pcount() is now 2!
     return (os.pcount() == 2) ? 0 : 1;
 }
 ], 
-ice_cv_ostrstream_pcount_broken=yes,
-ice_cv_ostrstream_pcount_broken=no,
-ice_cv_ostrstream_pcount_broken=no
+ice_cv_ostringstream_pcount_broken=yes,
+ice_cv_ostringstream_pcount_broken=no,
+ice_cv_ostringstream_pcount_broken=no
 )
 AC_LANG_RESTORE
 ])
-AC_MSG_RESULT($ice_cv_ostrstream_pcount_broken)
-if test "$ice_cv_ostrstream_pcount_broken" = yes; then
-AC_DEFINE(OSTRSTREAM_PCOUNT_BROKEN)
+AC_MSG_RESULT($ice_cv_ostringstream_pcount_broken)
+if test "$ice_cv_ostringstream_pcount_broken" = yes; then
+AC_DEFINE(OSTRINGSTREAM_PCOUNT_BROKEN)
 fi
 ])dnl
 dnl
@@ -1226,7 +1185,7 @@ AC_TRY_COMPILE([
 #include <stdexcept>
 #include <math.h>
 ],
-[try { throw runtime_error("too many fingers on keyboard"); }
+[try { throw std::runtime_error("too many fingers on keyboard"); }
  catch(const std::exception& e) { const char *s = e.what(); }],
 ice_cv_have_std_exceptions=yes,
 ice_cv_have_std_exceptions=no)
@@ -1393,7 +1352,12 @@ changequote([,])dnl
 ice_have_tr=HAVE_$ice_tr
 ice_have_decl_tr=${ice_have_tr}_DECL
 ice_have_$1=no
+dnl Have to switch to C for this, or autoconf will include <stdlib.h>
+dnl in the test which breaks lots of things.
+AC_LANG_SAVE
+AC_LANG_C
 AC_CHECK_FUNCS($1, ice_have_$1=yes)
+AC_LANG_RESTORE
 if test "${ice_have_$1}" = yes; then
 AC_MSG_CHECKING(for $1 declaration in $2)
 AC_CACHE_VAL(ice_cv_have_$1_decl,
@@ -1506,7 +1470,7 @@ AC_MSG_CHECKING(for directory to install c++ include files)
 AC_CACHE_VAL(ice_cv_cxx_include_dir,
 [
 cat > conftest.cc << EOF
-#include <iostream.h>
+#include <iostream>
 EOF
 $CXXCPP $DEFS conftest.cc > conftest.ii 2>&5
 if test $? != 0; then
@@ -1820,110 +1784,110 @@ AC_LANG_RESTORE
 )dnl
 AC_MSG_RESULT($ice_cv_type_sig_handler_args)
 if test "$ice_cv_type_sig_handler_args" = ""; then
-AC_MSG_WARN([Please #define SIGHANDLERARGS in config.h])
+AC_MSG_WARN([[Please #define SIGHANDLERARGS in config.h]])
 fi
 AC_DEFINE_UNQUOTED(SIGHANDLERARGS, $ice_cv_type_sig_handler_args)
 ])dnl
 dnl
 dnl
 dnl
-dnl ICE_CHECK_FROZEN_OSTRSTREAM
+dnl ICE_CHECK_FROZEN_OSTRINGSTREAM
 dnl ---------------------------
 dnl
-dnl If the C++ library has a ostrstream::frozen() function,
-dnl define HAVE_FROZEN_OSTRSTREAM.
+dnl If the C++ library has a ostringstream::frozen() function,
+dnl define HAVE_FROZEN_OSTRINGSTREAM.
 dnl
-AC_DEFUN(ICE_CHECK_FROZEN_OSTRSTREAM,
+AC_DEFUN(ICE_CHECK_FROZEN_OSTRINGSTREAM,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING([for ostrstream::frozen()])
-AC_CACHE_VAL(ice_cv_frozen_ostrstream,
+AC_MSG_CHECKING([for ostringstream::frozen()])
+AC_CACHE_VAL(ice_cv_frozen_ostringstream,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([#include <strstream.h>],
-[ostrstream os; int frozen = os.frozen();],
-ice_cv_frozen_ostrstream=yes, ice_cv_frozen_ostrstream=no)
+AC_TRY_COMPILE([#include <sstream>],
+[std::ostringstream os; int frozen = os.frozen();],
+ice_cv_frozen_ostringstream=yes, ice_cv_frozen_ostringstream=no)
 AC_LANG_RESTORE
 ])
-AC_MSG_RESULT($ice_cv_frozen_ostrstream)
-if test "$ice_cv_frozen_ostrstream" = yes; then
-AC_DEFINE(HAVE_FROZEN_OSTRSTREAM)
+AC_MSG_RESULT($ice_cv_frozen_ostringstream)
+if test "$ice_cv_frozen_ostringstream" = yes; then
+AC_DEFINE(HAVE_FROZEN_OSTRINGSTREAM)
 fi
 ])dnl
 dnl
-dnl ICE_CHECK_FREEZE_OSTRSTREAM
+dnl ICE_CHECK_FREEZE_OSTRINGSTREAM
 dnl ---------------------------
 dnl
-dnl If the C++ library has a ostrstream::freeze() function,
-dnl define HAVE_FREEZE_OSTRSTREAM.
+dnl If the C++ library has a ostringstream::freeze() function,
+dnl define HAVE_FREEZE_OSTRINGSTREAM.
 dnl
-AC_DEFUN(ICE_CHECK_FREEZE_OSTRSTREAM,
+AC_DEFUN(ICE_CHECK_FREEZE_OSTRINGSTREAM,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING([for ostrstream::freeze()])
-AC_CACHE_VAL(ice_cv_freeze_ostrstream,
+AC_MSG_CHECKING([for ostringstream::freeze()])
+AC_CACHE_VAL(ice_cv_freeze_ostringstream,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([#include <strstream.h>],
-[ostrstream os; os.freeze(0);],
-ice_cv_freeze_ostrstream=yes, ice_cv_freeze_ostrstream=no)
+AC_TRY_COMPILE([#include <sstream>],
+[std::ostringstream os; os.freeze(0);],
+ice_cv_freeze_ostringstream=yes, ice_cv_freeze_ostringstream=no)
 AC_LANG_RESTORE
 ])
-AC_MSG_RESULT($ice_cv_freeze_ostrstream)
-if test "$ice_cv_freeze_ostrstream" = yes; then
-AC_DEFINE(HAVE_FREEZE_OSTRSTREAM)
+AC_MSG_RESULT($ice_cv_freeze_ostringstream)
+if test "$ice_cv_freeze_ostringstream" = yes; then
+AC_DEFINE(HAVE_FREEZE_OSTRINGSTREAM)
 fi
 ])dnl
 dnl
-dnl ICE_CHECK_FROZEN_OSTRSTREAMBUF
+dnl ICE_CHECK_FROZEN_OSTRINGSTREAMBUF
 dnl ------------------------------
 dnl
-dnl If the C++ library has a ostrstreambuf::frozen() function,
-dnl define HAVE_FROZEN_OSTRSTREAMBUF.
+dnl If the C++ library has a ostringstreambuf::frozen() function,
+dnl define HAVE_FROZEN_OSTRINGSTREAMBUF.
 dnl
-AC_DEFUN(ICE_CHECK_FROZEN_OSTRSTREAMBUF,
+AC_DEFUN(ICE_CHECK_FROZEN_OSTRINGSTREAMBUF,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING([for ostrstreambuf::frozen()])
-AC_CACHE_VAL(ice_cv_frozen_ostrstreambuf,
+AC_MSG_CHECKING([for ostringstreambuf::frozen()])
+AC_CACHE_VAL(ice_cv_frozen_ostringstreambuf,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([#include <strstream.h>],
-[ostrstream os; int frozen = os.rdbuf()->frozen();],
-ice_cv_frozen_ostrstreambuf=yes, ice_cv_frozen_ostrstreambuf=no)
+AC_TRY_COMPILE([#include <sstream>],
+[std::ostringstream os; int frozen = os.rdbuf()->frozen();],
+ice_cv_frozen_ostringstreambuf=yes, ice_cv_frozen_ostringstreambuf=no)
 AC_LANG_RESTORE
 ])
-AC_MSG_RESULT($ice_cv_frozen_ostrstreambuf)
-if test "$ice_cv_frozen_ostrstreambuf" = yes; then
-AC_DEFINE(HAVE_FROZEN_OSTRSTREAMBUF)
+AC_MSG_RESULT($ice_cv_frozen_ostringstreambuf)
+if test "$ice_cv_frozen_ostringstreambuf" = yes; then
+AC_DEFINE(HAVE_FROZEN_OSTRINGSTREAMBUF)
 fi
 ])dnl
 dnl
-dnl ICE_CHECK_FREEZE_OSTRSTREAMBUF
+dnl ICE_CHECK_FREEZE_OSTRINGSTREAMBUF
 dnl ------------------------------
 dnl
-dnl If the C++ library has a ostrstreambuf::freeze() function,
-dnl define HAVE_FREEZE_OSTRSTREAMBUF.
+dnl If the C++ library has a ostringstreambuf::freeze() function,
+dnl define HAVE_FREEZE_OSTRINGSTREAMBUF.
 dnl
-AC_DEFUN(ICE_CHECK_FREEZE_OSTRSTREAMBUF,
+AC_DEFUN(ICE_CHECK_FREEZE_OSTRINGSTREAMBUF,
 [
 AC_REQUIRE([AC_PROG_CXX])
-AC_MSG_CHECKING([for ostrstreambuf::freeze()])
-AC_CACHE_VAL(ice_cv_freeze_ostrstreambuf,
+AC_MSG_CHECKING([for ostringstreambuf::freeze()])
+AC_CACHE_VAL(ice_cv_freeze_ostringstreambuf,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([#include <strstream.h>],
-[ostrstream os; os.rdbuf()->freeze(0);],
-ice_cv_freeze_ostrstreambuf=yes, ice_cv_freeze_ostrstreambuf=no)
+AC_TRY_COMPILE([#include <sstream>],
+[std::ostringstream os; os.rdbuf()->freeze(0);],
+ice_cv_freeze_ostringstreambuf=yes, ice_cv_freeze_ostringstreambuf=no)
 AC_LANG_RESTORE
 ])
-AC_MSG_RESULT($ice_cv_freeze_ostrstreambuf)
-if test "$ice_cv_freeze_ostrstreambuf" = yes; then
-AC_DEFINE(HAVE_FREEZE_OSTRSTREAMBUF)
+AC_MSG_RESULT($ice_cv_freeze_ostringstreambuf)
+if test "$ice_cv_freeze_ostringstreambuf" = yes; then
+AC_DEFINE(HAVE_FREEZE_OSTRINGSTREAMBUF)
 fi
 ])dnl
 dnl
@@ -2134,7 +2098,6 @@ dnl
 AC_DEFUN(ICE_DELETE_CR,
 [
 AC_REQUIRE([AC_CYGWIN])
-AC_REQUIRE([ICE_WERROR])
 if test "$CYGWIN" = yes; then
     DELETE_CR="tr -d '\r' | gzip | gunzip"
 else
@@ -2844,10 +2807,10 @@ dnl
 dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
 dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
 dnl snapshot of the current development tree.
-VERSION=3.3.2
+VERSION=3.3.5
 dnl
 dnl The version nickname.
-NICKNAME="Blue Tomato"
+NICKNAME="Pink Ginkgo"
 dnl 
 dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
 dnl After this date, users are requested to update DDD.

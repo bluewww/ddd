@@ -1,8 +1,7 @@
-dnl $Id$ -*- autoconf -*-
+dnl $Id$
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
-dnl Copyright (C) 1999-2001 Universitaet Passau, Germany.
+dnl Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 dnl Written by Andreas Zeller <zeller@gnu.org>.
 dnl 
 dnl This file is part of DDD.
@@ -31,48 +30,28 @@ dnl
 dnl
 dnl
 dnl
+dnl Revision Control.
 dnl
-dnl Revision Control
-dnl
-AC_PREREQ(2.13)dnl
-AC_REVISION($Revision$)
-dnl
-dnl
-dnl Initialization - setup names and paths
-dnl
-AC_INIT(DispBox.h)
-AM_CONFIG_HEADER(config.h)
-AC_PREFIX_PROGRAM(ddd)
-AC_ARG_PROGRAM
-dnl
-dnl
-dnl Autoconf 2.8 bug fix
-dnl
-ac_cv_lib_dnet=no
+AC_PREREQ(2.53)
+AC_REVISION([$Id$])
 dnl
 dnl Zdenek Sekera <zs@cray.com> says that if CDPATH is set, it may break
 dnl this script.
-dnl
 unset CDPATH
 dnl
-dnl Autoconf 2.12 bug fix (occurs on sparc-sun-solaris2.5.1)
-ac_cv_func_vfork_works=yes
 dnl
+dnl Initialization.
 dnl
+AC_INIT(NEWS)
+AM_CONFIG_HEADER(ddd/config.h)
 dnl
-dnl Name and version number
+dnl Some simple checks.
+dnl 
+AC_CANONICAL_TARGET
+AC_ARG_PROGRAM
 DDD_VERSION
 AM_INIT_AUTOMAKE(${PACKAGE}, ${VERSION})
-dnl
-dnl
-dnl
-dnl
-dnl
-dnl
-dnl Find out what host this is
-dnl
-AC_CANONICAL_HOST
-AC_SUBST(host)
+AC_PROG_MAKE_SET
 dnl
 dnl
 dnl Check for POSIX stuff (required by AC_FIND_X)
@@ -134,6 +113,19 @@ else
 GCORE_COMMAND=
 fi
 AC_SUBST(GCORE_COMMAND)dnl
+dnl
+AC_CHECK_PROGS(COMPFACE, compface)
+if test "$COMPFACE" = "compface"; then
+  AC_CACHE_CHECK([whether compface can input xbm files], ddd_cv_compface_xbm,
+	[if $COMPFACE ${srcdir}/icons/ddd.xbm >&/dev/null; then
+	 ddd_cv_compface_xbm=yes; else ddd_cv_compface_xbm=no; fi])
+  if test "$ddd_cv_compface_xbm" = "yes"; then
+    XBM2XFACE="$COMPFACE"
+  fi
+fi
+if test -z "$XBM2XFACE"; then
+  AC_CHECK_PROGS(XBM2XFACE, xbm2xface.pl xbm2xface, false)
+fi
 dnl
 dnl The debugger.
 dnl
@@ -326,52 +318,46 @@ if test "$GXX" != yes; then
 AC_CHECK_LIB(cxxinst, main, CXXLIBS="-lcxxinst $CXXLIBS")
 fi
 dnl
+dnl
+dnl If we already have -liberty, -ltermcap, etc., 
+dnl there is no need to build them.
+ddd_have_termcap=false
+ddd_have_libiberty=false
+ddd_have_rx=false
+ddd_have_readline=false
+dnl
+dnl By default, DDD needs no RX library.
+ddd_have_rx=true
+dnl
 dnl check for ncurses
 ncurses_includes=
 ncurses_libraries=
 AC_ARG_WITH(ncurses,
-[  --without-ncurses       do not use the Ncurses library],[
+[  --without-ncurses                do not use the Ncurses library],[
   if test "$withval" = "no"; then
     ncurses_includes=no
     ncurses_libraries=no
   fi
 ])
-AC_ARG_WITH(ncurses-includes,
-[  --with-ncurses-includes=DIR
-                          Ncurses include files are in DIR],[
-  ncurses_includes="$withval"
-  case "$ncurses_includes" in
-  no) ;;
-  yes)
-    AC_CHECK_HEADER(ncurses.h) ;;
-  *)
-    _cppflags="${CPPFLAGS}"
-    CPPFLAGS="${CPPFLAGS} -I$ncurses_includes -I$ncurses_includes/ncurses"
-    AC_CHECK_HEADER(ncurses.h, , CPPFLAGS="${_cppflags}")
-    ;;
-  esac
-])
 AC_ARG_WITH(ncurses-libraries,
-[  --with-ncurses-libraries=DIR
-                          Ncurses libraries are in DIR],[
+[  --with-ncurses-libraries=DIR     Ncurses libraries are in DIR],[
   ncurses_libraries="$withval"
   case "$ncurses_libraries" in
   no) ;;
   yes)
-    AC_CHECK_HEADER(ncurses.h,
-      AC_CHECK_LIB(ncurses, tgetent, [LIBTERMCAP="-lncurses"]))
+    AC_CHECK_LIB(ncurses, tgetent, [LIBTERMCAP="-lncurses";
+      ddd_have_termcap=true])
     ;;
   *)
     _ldflags="${LDFLAGS}"
     LDFLAGS="${LDFLAGS} -L$ncurses_libraries"
-    AC_CHECK_HEADER(ncurses.h,
-      AC_CHECK_LIB(ncurses, tgetent,
-	[LIBTERMCAP="-L$ncurses_libraries -lncurses"]))
+    AC_CHECK_LIB(ncurses, tgetent,
+      [LIBTERMCAP="-L$ncurses_libraries -lncurses";
+      ddd_have_termcap=true])
     LDFLAGS="${_ldflags}"
     ;;
   esac
-])
-dnl
+])  
 dnl
 dnl Look for the tgetent() function - either in libtermcap, libcurses,
 dnl or use the GNU termcap library as shipped with DDD.
@@ -382,36 +368,24 @@ dnl
 dnl On Linux ELF systems, `-lncurses' is preferred to `-ltermcap'.
 dnl Reported by jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
 dnl
-if test "x$LIBTERMCAP" = "x"; then
-  LIBTERMCAP="../termcap/libtermcap.a"
+if test "x${ddd_have_termcap}" = "xfalse"; then
   if test "x$ncurses_libraries" = "xno"; then
     _termlib="mytinfo curses termcap terminfo termlib"
   else
     _termlib="mytinfo ncurses curses termcap terminfo termlib"
   fi
   for termlib in ${_termlib}; do
-     AC_CHECK_LIB(${termlib}, tgetent, [LIBTERMCAP="-l${termlib}"; break])
+     AC_CHECK_LIB(${termlib}, tgetent, [LIBTERMCAP="-l${termlib}";
+       ddd_have_termcap=true; break])
   done
 fi
 AC_SUBST(LIBTERMCAP)
 dnl
-dnl
-dnl The `-liberty' library per definition contains only functions
-dnl missing in system libraries.
-LIBIBERTY="../libiberty/libiberty.a"
-dnl
-dnl If we have an installed library, prefer it over the one shipped with DDD.
-AC_CHECK_LIB(iberty, xstrerror, LIBIBERTY="-liberty")
-dnl
-AC_SUBST(LIBIBERTY)
-dnl
-dnl
-dnl Readline library (optional)
-dnl
+dnl Check for -lreadline (optional)
 readline_includes=
 readline_libraries=
 AC_ARG_WITH(readline,
-[  --without-readline      do not use the readline library],[
+[  --without-readline               do not use the readline library],[
   if test "$withval" = "no"; then
     readline_includes=no
     readline_libraries=no
@@ -435,26 +409,64 @@ AC_ARG_WITH(readline-includes,
 ])
 LIBREADLINE=""
 AC_ARG_WITH(readline-libraries,
-[  --with-readline-libraries=DIR
-                          Readline libraries are in DIR],[
+[  --with-readline-libraries=DIR    Readline libraries are in DIR],[
   readline_libraries="$withval"
   case "$readline_libraries" in
   no) ;;
   yes)
-    AC_CHECK_HEADER(readline/readline.h,
-      AC_CHECK_LIB(readline, readline, [LIBREADLINE="-lreadline"], ,
-        $LIBTERMCAP))
+    AC_CHECK_LIB(readline, readline, [ddd_have_readline=true], ,
+      $LIBTERMCAP)
     ;;
   *)
     _ldflags="${LDFLAGS}"
     LDFLAGS="-L$readline_libraries $LDFLAGS"
-    AC_CHECK_HEADER(readline/readline.h,
-      AC_CHECK_LIB(readline, readline,
-        LIBREADLINE="-L$readline_libraries -lreadline", , $LIBTERMCAP))
+    AC_CHECK_LIB(readline, readline,
+		 [ddd_have_readline=true
+		  LIBREADLINE="-L$readline_libraries -lreadline"], ,
+      $LIBTERMCAP)
     LDFLAGS="${_ldflags}"
-  esac
-])
+    ;;
+  esac])
+if test "x${ddd_have_readline}" = "xfalse"; then
+  if test "x${readline_libraries}" != "xno"; then
+    AC_CHECK_LIB(readline, readline, [ddd_have_readline=true], ,
+      $LIBTERMCAP)
+  fi
+fi
 AC_SUBST(LIBREADLINE)
+dnl
+dnl
+dnl The `-liberty' library per definition contains only functions
+dnl missing in system libraries.
+LIBIBERTY="../libiberty/libiberty.a"
+dnl
+dnl If we have an installed library, prefer it over the one shipped with DDD.
+AC_CHECK_LIB(iberty, xstrerror,
+	     [LIBIBERTY="-liberty"
+	      ddd_have_libiberty=true])
+dnl
+AC_SUBST(LIBIBERTY)
+dnl
+dnl
+if test "$ddd_have_readline" != true; then
+    AC_CONFIG_SUBDIRS([readline])
+fi
+if test "$ddd_have_rx" != true; then
+    AC_CONFIG_SUBDIRS([librx])
+fi
+if test "$ddd_have_libiberty" != true; then
+    # Avoid calling config.guess again.  In libiberty, this destroys dummy.c.
+    old_ac_configure_args="$ac_configure_args"
+    case "$ac_configure_args" in
+    *--host*) ;;
+    *) ac_configure_args="$ac_configure_args --build=$build --target=$target";;
+    esac
+    AC_CONFIG_SUBDIRS([libiberty])
+    ac_configure_args="$old_ac_configure_args"
+fi
+if test "$ddd_have_termcap" != true; then
+    AC_CONFIG_SUBDIRS([termcap])
+fi
 dnl
 dnl
 dnl `streampos' and `iostate' types
@@ -746,8 +758,8 @@ dnl
 dnl
 AC_HEADER_STDC
 AC_CHECK_HEADERS(alloca.h fcntl.h limits.h locale.h malloc.h netdb.h pwd.h)
-AC_CHECK_HEADERS(regex.h rx.h libelf.h elf.h sys/elf.h)
-AC_CHECK_HEADERS(stdlib.h string.h strings.h termio.h termios.h unistd.h)
+AC_CHECK_HEADERS(regex.h rx.h libelf.h elf.h sys/elf.h stdlib.h)
+AC_CHECK_HEADERS(string.h strings.h stropts.h termio.h termios.h unistd.h)
 AC_CHECK_HEADERS(sys/ioctl.h sys/int_types.h sys/param.h sys/resource.h)
 AC_CHECK_HEADERS(sys/stat.h sys/stropts.h sys/vty.h sys/sysmacros.h sys/core.h)
 AC_CHECK_HEADERS(sys/socket.h sys/termios.h sys/time.h sys/timeb.h sys/types.h)
@@ -763,11 +775,11 @@ ice_save_LIBS="$LIBS"
 LIBS="$CXXLIBS $LIBS"
 ICE_CHECK_CORE_MAGIC
 ICE_CHECK_PTRACE_DUMPCORE
-ICE_CHECK_FREEZE_OSTRSTREAMBUF
-ICE_CHECK_FROZEN_OSTRSTREAMBUF
-ICE_CHECK_FREEZE_OSTRSTREAM
-ICE_CHECK_FROZEN_OSTRSTREAM
-ICE_OSTRSTREAM_PCOUNT_BROKEN
+ICE_CHECK_FREEZE_OSTRINGSTREAMBUF
+ICE_CHECK_FROZEN_OSTRINGSTREAMBUF
+ICE_CHECK_FREEZE_OSTRINGSTREAM
+ICE_CHECK_FROZEN_OSTRINGSTREAM
+ICE_OSTRINGSTREAM_PCOUNT_BROKEN
 ICE_TYPE_REGEX_T
 dnl
 dnl The regexec() check fails with SGI CC.  Use the C compiler instead.
@@ -777,6 +789,7 @@ ICE_REGCOMP_BROKEN
 AC_LANG_RESTORE
 dnl
 LIBS="$ice_save_LIBS"
+AC_CHECK_LIB(m, hypot)
 dnl
 ICE_CHECK_DECL(_getpty, unistd.h)
 ICE_CHECK_DECL(alloca, alloca.h stdlib.h)
@@ -951,11 +964,13 @@ case "$CXX" in
 esac
 dnl
 dnl
-dnl
 dnl That's all, folks!
 dnl
-AC_OUTPUT(Makefile OldMakefile vr.h bld.h Ddd ddd.man cfg.texi 
-          .gdbinit ../ddd.spec, date > stamp-h)
+AC_CONFIG_FILES([Makefile ddd/Makefile ddd/OldMakefile ddd/vr.h ddd/bld.h
+		 ddd/Ddd ddd/ddd.man ddd/cfg.texi ddd/.gdbinit ddd.spec
+		 themes/Makefile vsllib/Makefile])
+AC_CONFIG_COMMANDS([ddd/stamp-h], [date > ddd/stamp-h])
+AC_OUTPUT
 dnl
 dnl 
 dnl Give some warnings
@@ -985,4 +1000,3 @@ echo "In case of trouble, please check the settings in the files generated"
 echo "by \`configure' - that is, \`ddd/config.h' and \`ddd/Makefile'."
 echo
 fi
-exit 0
