@@ -3484,6 +3484,12 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 		    MMcreatePopupMenu (w, "line_popup", line_popup);
 		MMaddCallbacks (line_popup, XtPointer(&line_nr));
 		InstallButtonTips(line_popup_w);
+
+		if (gdb->type() == DBX && !gdb->has_when_command())
+		{
+		    XtUnmanageChild(line_popup[LineItms::SetTempBP].widget);
+		    XtUnmanageChild(line_popup[LineItms::TempNContBP].widget);
+		}
 	    }
 	    XmMenuPosition (line_popup_w, event);
 	    XtManageChild (line_popup_w);
@@ -3497,6 +3503,14 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 		    MMcreatePopupMenu (w, "address_popup", address_popup);
 		MMaddCallbacks (address_popup, XtPointer(&address));
 		InstallButtonTips(address_popup_w);
+
+		if (gdb->type() == DBX && !gdb->has_when_command())
+		{
+		    XtUnmanageChild(
+			address_popup[AddressItms::SetTempBP].widget);
+		    XtUnmanageChild(
+			address_popup[AddressItms::TempNContBP].widget);
+		}
 	    }
 	    XmMenuPosition (address_popup_w, event);
 	    XtManageChild (address_popup_w);

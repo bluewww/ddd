@@ -147,6 +147,7 @@ private:
     bool _has_setenv_command;
     bool _has_edit_command;
     bool _has_named_values;
+    bool _has_when_command;
     bool _has_when_semicolon;
     bool _has_delete_comma;
     bool _has_err_redirection;
@@ -278,6 +279,10 @@ public:
     // True if debugger issues `NAME = VALUE' upon `print' commands
     bool has_named_values() const      { return _has_named_values; }
     bool has_named_values(bool val)    { return _has_named_values = val; }
+
+    // True if debugger has `when' command
+    bool has_when_command() const      { return _has_when_command; }
+    bool has_when_command(bool val)    { return _has_when_command = val; }
 
     // True if debugger wants `;' at the end of `when' command specs
     bool has_when_semicolon() const    { return _has_when_semicolon; }
