@@ -41,7 +41,6 @@ char buttons_rcsid[] =
 #include "HelpCB.h"
 #include "SourceView.h"
 #include "StringSA.h"
-#include "attach.h"
 #include "bool.h"
 #include "charsets.h"
 #include "comm-manag.h"
@@ -489,10 +488,6 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 	    {
 		cmd = String(callbacks[j].closure);
 		cmd = cmd.through(rxidentifier);
-	    }
-	    else if (callbacks[j].callback == gdbAttachCB)
-	    {
-		cmd = XtName(button);
 	    }
 
 	    if (cmd != "")

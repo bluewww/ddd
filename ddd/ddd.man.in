@@ -486,7 +486,9 @@ To open a program to be debugged, select `\fBOpen Program\fR' from the
 `\fBFile\fR' menu.
 .PP
 To open a core dump for the program, select `\fBOpen Core Dump\fR'
-from the `\fBFile\fR' menu.
+from the `\fBFile\fR' menu.  Before `\fBOpen Core Dump\fR', you should
+first use `\fBOpen Program\fR' to specify the program that generated
+the core dump and to load its symbol table.
 .PP
 To open an arbitrary source file, select `\fBOpen Source\fR' from the
 `\fBFile\fR' menu.
@@ -565,10 +567,11 @@ Using the source window, you can make the program stop at certain
 .SS "Setting Breakpoints by Location"
 .\"
 If the source line is visible, click with the \fIleft mouse button\fR
-on the source line number and then on the `\fBBreak at ()\fR' button.
+on the left of the source line and then on the `\fBBreak at ()\fR'
+button.
 .PP
 As an alternative, you can simply press the \fIright mouse button\fR
-on the source line number and select the `\fBSet Breakpoint\fR' item
+on the left of the source line and select the `\fBSet Breakpoint\fR' item
 from the line popup menu.
 .PP
 .PSPIC PICS/ddd-line-popup.ps 15.3cm
@@ -647,16 +650,16 @@ Finally, you can use the \s-2GDB\s+2 `\fBdisable\fR' command.  Type
 .SS "Temporary Breakpoints"
 .\"
 A \fItemporary breakpoint\fR is immediately deleted as soon as it is
-reached.  To set a temporary breakpoint,  press the \fIright mouse
-button\fR on the source line number and select the `\fBSet Temporary
-Breakpoint\fR' item from the popup menu.
+reached.  To set a temporary breakpoint, press the \fIright mouse
+button\fR on the left of the source line and select the `\fBSet
+Temporary Breakpoint\fR' item from the popup menu.
 .PP
 Temporary breakpoints are convenient to make the program continue up
 to a specific location: just set the temporary breakpoint at this
 location and continue execution.
 .PP
 The `\fBContinue Until Here\fR' item from the popup menu sets a
-temporary breakpoint on the source line number and immediately
+temporary breakpoint on the left of the source line and immediately
 continues execution.  In \s-2GDB\s+2, execution stops when a source
 line greater than the source line is reached, or when the current
 stack frame is exited.  In \s-2DBX\s+2 and \s-2XDB\s+2, execution
@@ -765,6 +768,39 @@ console.  As an alternative, \s-2@DDD@\s+2 can also invoke an \fIexecution
 window\fR, where the program terminal input and output is shown.  See
 the `\fBRun in Execution Window\fR' item in the `\fBOptions...\fR'
 menu for details.
+.\"
+.\"
+.SS "Attaching to a Running Process"
+.\"
+If the debugged program is already running in some process, you can
+\fIattach\fR to this process (instead of starting a new one with
+`\fBRun\fR').  Select `\fBAttach to Process\fR' from the `\fBFile\fR'
+menu to choose from a list of processes.  Afterwards, press the
+`\fBAttach\fR' button to attach to the specified process.
+.PP
+.PSPIC PICS/ddd-attach.ps 15.3cm
+.PP
+The first thing \s-2@DDD@\s+2 does after arranging to debug the
+specified process is to stop it. You can examine and modify an
+attached process with all the \s-2@DDD@\s+2 commands that are
+ordinarily available when you start processes with `\fBRun\fR'. You
+can insert breakpoints; you can step and continue; you can modify
+storage. If you would rather the process continue running, you may use
+`\fBContinue\fR' after attaching \s-2@DDD@\s+2 to the process.
+.PP
+When using `\fBAttach to Process\fR', you should first use `\fBOpen
+Program\fR' to specify the program running in the process and load its
+symbol table.
+.PP
+When you have finished debugging the attached process, you can use the
+`\fBDetach Process\fR' from the `\fBFile\fR' menu to release it from
+\s-2@DDD@\s+2 control.  Detaching the process continues its execution.
+After `\fBDetach Process\fR', that process and \s-2@DDD@\s+2 become
+completely independent once more, and you are ready to attach another
+process or start one with `\fBRun\fR'.
+.PP
+You can customize the list of processes shown.  See the
+`\fBpsCommand\fR' resource for details.
 .\"
 .\"
 .SS "Stopping the Program"
@@ -1832,6 +1868,11 @@ can also indicate these positions using text characters.  If you wish
 to disable glyphs, unset the `\fBUse Glyphs\fR' option.  This also
 makes \s-2@DDD@\s+2 run slightly faster, especially when scrolling.
 .PP
+In contrast to previous releases, \s-2@DDD@\s+2 2.2 and later do not
+display line numbers in the source code.  If you want to see each
+source line prefixed with its respective number, set the `\fBDisplay
+source line numbers\fR' option.
+.PP
 By default, \s-2@DDD@\s+2 caches source files in memory.  This is
 convenient for remote debugging, since remote file access may be slow.
 If you want to reduce memory usage, unset the `\fBCache source
@@ -1846,6 +1887,9 @@ Some \s-2DBX\s+2 and \s-2XDB\s+2 variants do not properly handle paths
 in source file specifications.  If you want the inferior debugger to
 refer to source locations by source base names only, unset the `\fBRefer
 to sources by full path name\fR' option.
+.PP
+If your source code uses a tab width different from 8 (the default),
+you can set an alternate width using the `\fBTab width\fR' slider.
 .PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
@@ -2942,6 +2986,15 @@ The command to print a postscript file.  Usually `\fBlp\fR' or
 .TP
 .B "psCommand (\fPclass\fB PsCommand)"
 The command to get a list of processes.  Usually `\fBps\fR'.
+Depending on your system, useful alternate values include `\fBps
+-ef\fR' and `\fBps -ux\fR'.  The first line of the output must either
+contain a `\fBPID\fR' title, or each line must begin with a process
+ID.
+.PP
+Note that the output of this command is filtered by \s-2@DDD@\s+2; a
+process is only shown if it can be attached to.  The \s-2@DDD@\s+2
+process itself as well as the process of the inferior debugger are
+suppressed, too.
 .TP
 .B "rshCommand (\fPclass\fB RshCommand)"
 The remote shell command to invoke tty-based commands on remote

@@ -1472,6 +1472,10 @@ Ddd*menubar.file*helpString:	\
 @tt \267 @bf Open Core Dump... @rm - open a core dump.\n\
 @tt \267 @bf Open Source... @rm - open a source file.\n\
 \n\
+@tt \267 @bf Attach to Process... @rm - attach to a process \
+outside of @DDD@.\n\
+@tt \267 @bf Detach Process @rm - detach a process previously attached.\n\
+\n\
 @tt \267 @bf Print Graph... @rm - print the data display graph.\n\
 @tt \267 @bf Print Again @rm - print using the previous settings.\n\
 \n\
@@ -1499,6 +1503,15 @@ Ddd*menubar*fileMenu.open_source.mnemonic:    S
 Ddd*menubar*fileMenu.open_source.documentationString:   \
 @rm Open a source file in the source window
 
+Ddd*menubar*fileMenu.attach.labelString: Attach to Process...
+Ddd*menubar*fileMenu.attach.mnemonic:    A
+Ddd*menubar*fileMenu.attach.documentationString:   \
+@rm Attach to a process outside of @DDD@
+
+Ddd*menubar*fileMenu.detach.labelString:       Detach Process
+Ddd*menubar*fileMenu.detach.mnemonic:	       t
+Ddd*menubar*fileMenu.detach.documentationString:
+
 Ddd*menubar*fileMenu.print.labelString:	 Print Graph...
 Ddd*menubar*fileMenu.print.mnemonic:	 P
 ! Ddd*menubar*fileMenu.print.accelerator:      ~Shift Meta<Key>P
@@ -1507,7 +1520,7 @@ Ddd*menubar*fileMenu.print.documentationString:   \
 @rm Print the contents of the data display
 
 Ddd*menubar*fileMenu.printAgain.labelString: Print Again
-Ddd*menubar*fileMenu.printAgain.mnemonic: A
+Ddd*menubar*fileMenu.printAgain.mnemonic: g
 ! Ddd*menubar*fileMenu.printAgain.accelerator:      Shift Meta<Key>P
 ! Ddd*menubar*fileMenu.printAgain.acceleratorText:  Alt+Shift+P
 Ddd*menubar*fileMenu.printAgain.documentationString:   \
@@ -1521,7 +1534,7 @@ Ddd*menubar*fileMenu.make.documentationString:  \
 @rm Run the ``make'' program
 
 Ddd*menubar*fileMenu.makeAgain.labelString:	 Make Again
-Ddd*menubar*fileMenu.makeAgain.mnemonic:	 g
+Ddd*menubar*fileMenu.makeAgain.mnemonic:	 i
 Ddd*menubar*fileMenu.makeAgain.accelerator:      Shift Ctrl<Key>M
 Ddd*menubar*fileMenu.makeAgain.acceleratorText:  Ctrl+Shift+M
 Ddd*menubar*fileMenu.makeAgain.documentationString:  \
@@ -1722,9 +1735,6 @@ Ddd*menubar.program*helpString:	\
 @tt \267 @bf Run... @rm - start the debugged program.\n\
 @tt \267 @bf Run Again @rm - run with current arguments.\n\
 \n\
-@tt \267 @bf Attach... @rm - attach to a process outside of @DDD@.\n\
-@tt \267 @bf Detach @rm - Detach a process previously attached.\n\
-\n\
 @tt \267 @bf Step @rm - step program until it reaches \
 a different source line.\n\
 @tt \267 @bf Step Instruction @rm - step exactly one machine instruction.\n\
@@ -1753,16 +1763,6 @@ Ddd*menubar*programMenu.run_again.accelerator:	   Ctrl Shift<Key>X
 Ddd*menubar*programMenu.run_again.acceleratorText: Ctrl+Shift+X
 Ddd*menubar*programMenu.run_again.documentationString: \
 @rm Restart debugged program, using the previous arguments.
-
-Ddd*menubar*programMenu.attach.labelString:	   Attach...
-Ddd*menubar*programMenu.attach.mnemonic:	   A
-Ddd*menubar*programMenu.attach.documentationString: \
-@rm Attach to a process running outside of @DDD@.
-
-Ddd*menubar*programMenu.detach.labelString:	   Detach
-Ddd*menubar*programMenu.detach.mnemonic:	   D
-Ddd*menubar*programMenu.detach.documentationString: \
-@rm Detach a process or file previously attached.
 
 Ddd*menubar*programMenu.step.labelString:	   Step
 Ddd*menubar*programMenu.step.mnemonic:		   S
@@ -3535,7 +3535,7 @@ Recognized units include:\n\
 
 
 !-----------------------------------------------------------------------------
-! File Selection Dialog
+! File Selection Dialogs
 !-----------------------------------------------------------------------------
 
 Ddd*exec_files_popup.title:		   @DDD@: Open Program
@@ -3543,6 +3543,7 @@ Ddd*exec_files_popup*okLabelString:	   Open
 Ddd*exec_files_popup*selectionLabelString: Program
 Ddd*exec_files_popup*helpString:	   \
 @rm Enter the name of the program to be debugged in the argument field.\n\
+\n\
 The program is read for its symbols, for getting the contents\
  of pure memory,\n\
 and it is the program executed when you use the ``@tt run@rm'' command.\n\
@@ -3551,27 +3552,71 @@ If the program file cannot be found as specified,\
 (@tt $PATH@rm) is searched for a command of that name.\n\
 No argument means to have no executable file and no symbols.\n\
 \n\
-Click on @bf Open @rm to open the selected file.
+Click on @bf Open @rm to open the selected file.\n\
+Click on @bf Filter @rm to apply the given filter.
+
+Ddd*processes_popup.title: @DDD@: Attach to Process
+Ddd*processes.listLabelString:	Processes
+Ddd*processes*selectionPolicy:	XmSINGLE_SELECT
+
+Ddd*processes*okLabelString:	Attach
+Ddd*processes*applyLabelString:	Update
+
+Ddd*processes*helpString:	\
+@rm Select a running process of the program to be debugged.\n\
+\n\
+An attached process is stopped by @DDD@. You can examine and modify an\n\
+attached process with all the @DDD@ commands that are ordinarily available\n\
+when you start processes with @bf Run@rm. You can insert breakpoints; you \n\
+can step and continue; you can modify storage.  If you would rather the\n\
+process continue running, you may use the @bf Continue @rm command after \
+attaching \n\
+@DDD@ to the process.\n\
+\n\
+When you have finished debugging the attached process, you can use\n\
+@bf Detach Process @rm to release it from @DDD@ control.  Detaching \
+the process\n\
+continues its execution.\n\
+\n\
+Before using @bf Attach@rm, you should use the @bf Open Program... @rm \
+command\n\
+to specify the program running in the process, and to load its symbol table.\n\
+\n\
+Click on @bf Attach @rm to attach to the selected process.\n\
+Click on @bf Update @rm to update the list of processes.
+
 
 Ddd*core_files_popup.title:		   @DDD@: Open Core Dump
 Ddd*core_files_popup*okLabelString:	   Open
 Ddd*core_files_popup*selectionLabelString: Core Dump
 Ddd*core_files_popup*helpString:	   \
 @rm  Enter the name of a core dump in the argument field.\n\
+\n\
 The core dump is used for examining memory and registers.\n\
 No argument means to have no core file.\n\
 \n\
-Click on @bf Open @rm to open the selected core dump.
+When using @bf Open Core... @rm, you should use the \
+@bf Open Program... @rm command to specify\n\
+the program causing the core dump, and to load its symbol table.\n\
+\n\
+Click on @bf Open @rm to open the selected core dump.\n\
+Click on @bf Filter @rm to apply the given filter.
 
 Ddd*source_files_popup.title:		   @DDD@: Open Source
 Ddd*source_files_popup*okLabelString:	   Open
 Ddd*source_files_popup*selectionLabelString: Source File
 Ddd*source_files_popup*helpString:    \
 @rm  Enter the name of a source file in the argument field.\n\
+\n\
 The source file is shown in the source window and may be used\n\
 for setting or clearing breakpoints.\n\
 \n\
-Click on @bf Open @rm to open the selected source file.
+When using @bf Open Source... @rm, you should use the \
+@bf Open Program... @rm command to specify\n\
+the executable program, and to load its symbol table.\n\
+\n\
+Click on @bf Open @rm to open the selected source file.\n\
+Click on @bf Filter @rm to apply the given filter.
 
 
 
@@ -3936,25 +3981,6 @@ such that you can re-use them at a later time.\n\
 Select specific arguments to have them copied to the argument prompt.\n\
 Click on @bf OK @rm or @bf Apply @rm to start the make program \
 with the selected arguments.
-
-Ddd*attach_dialog_popup.title: @DDD@: Attach Process
-Ddd*attach_dialog.listLabelString:	Processes
-Ddd*attach_dialog*selectionPolicy:	XmSINGLE_SELECT
-
-Ddd*attach_dialog*okLabelString:	Attach
-Ddd*attach_dialog*applyLabelString:	Update
-
-Ddd*attach_dialog*helpString:	\
-@rm This window shows a @sl List of Processes @rm you can attach to.\n\
-\n\
-Select a specific process and click on @bf Attach @rm to debug it.\n\
-Click on @bf Update @rm to update the list of processes.\n\
-\n\
-Before attaching to a running process, you should first use the\n\
-@bf Open Program...@rm command to specify the program running in the process\n\
-and to load its symbol table.\n\
-\n\
-After debugging, use the @bf Detach @rm command to resume process execution.
 
 
 

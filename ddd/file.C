@@ -46,9 +46,11 @@ char file_rcsid[] =
 #include "SourceView.h"
 #include "VarArray.h"
 #include "commandQ.h"
+#include "cook.h"
 #include "ddd.h"
 #include "filetype.h"
 #include "glob.h"
+#include "mydialogs.h"
 #include "post.h"
 #include "question.h"
 #include "shell.h"
@@ -58,8 +60,15 @@ char file_rcsid[] =
 #include "verify.h"
 #include "wm.h"
 
+#include <limits.h>
+extern "C" {
+#include <libiberty.h>		// basename()
+}
+
 #include <Xm/Xm.h>
 #include <Xm/FileSB.h>
+#include <Xm/List.h>
+#include <Xm/SelectioB.h>
 #include <Xm/Text.h>
 
 // ANSI C++ doesn't like the XtIsRealized() macro
@@ -141,9 +150,9 @@ static void FilterAllCB(Widget dialog, XtPointer client_data,
 // as search procedures for files and directories, respectively, and
 // OK_CALLBACK as the procedure called when a file is selected.
 static Widget file_dialog(Widget w, const string& name,
-			  FileSearchProc do_search_files,
-			  FileSearchProc do_search_dirs,
-			  XtCallbackProc ok_callback)
+			  FileSearchProc do_search_files = 0,
+			  FileSearchProc do_search_dirs  = 0,
+			  XtCallbackProc ok_callback     = 0)
 {
     Delay delay(w);
 
@@ -172,7 +181,10 @@ static Widget file_dialog(Widget w, const string& name,
     Widget dialog = 
 	verify(XmCreateFileSelectionDialog(w, name, args, arg));
     Delay::register_shell(dialog);
-    XtAddCallback(dialog, XmNokCallback,     ok_callback, 0);
+
+    if (ok_callback != 0)
+	XtAddCallback(dialog, XmNokCallback,     ok_callback, 0);
+
     XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
 		  XtPointer(dialog));
     XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
@@ -465,6 +477,56 @@ static string get_file(Widget w, XtPointer, XtPointer call_data)
     return filename;
 }
 
+static void get_current_file(string& filename, int& pid, bool& attached)
+{
+    filename = "";
+    pid      = 0;
+    attached = false;
+
+    switch(gdb->type())
+    {
+    case GDB:
+        {
+	    string ans = gdb_question("info files");
+	    if (ans == NO_GDB_ANSWER)
+		return;
+
+	    if (ans.contains("Symbols from "))
+	    {
+		filename = ans.after("Symbols from ");
+		filename = filename.before(".\n");
+		filename = unquote(filename);
+	    }
+
+	    if (ans.contains("process "))
+	    {
+		string p = ans.after("process ");
+		pid = atoi(p.chars());
+	    }
+
+	    attached = ans.contains("attached process ");
+	}
+	break;
+
+    case DBX:
+        {
+	    string ans = gdb_question("debug");
+	    if (ans == NO_GDB_ANSWER)
+		return;
+
+	    if (ans.contains("Debugging: ", 0))
+	    {
+		filename = ans.after(": ");
+		strip_final_blanks(filename);
+	    }
+	}
+	break;
+
+    case XDB:
+	break;			// FIXME
+    }
+}
+
 // OK pressed in `Open File'
 static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -474,22 +536,86 @@ static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
 
     XtUnmanageChild(w);
 
-    if (filename != NO_GDB_ANSWER)
+    if (filename == NO_GDB_ANSWER)
+	return;
+
+    string current_file;
+    int current_pid;
+    bool attached;
+    get_current_file(current_file, current_pid, attached);
+
+    switch(gdb->type())
     {
-	switch(gdb->type())
-	{
-	case GDB:
-	    gdb_command("file " + filename);
-	    break;
+    case GDB:
+	if (attached)
+	    gdb_command("detach");
 
-	case DBX:
-	    gdb_command("debug " + filename);
-	    break;
+	gdb_command("file " + filename);
+	break;
+	
+    case DBX:
+	gdb_command("debug " + filename);
+	break;
 
-	case XDB:
-	    break;		// FIXME
-	}
+    case XDB:
+	break;		// FIXME
     }
+}
+
+// Process selection
+static int ps_pid_index = 0;
+
+// Retrieve PID from PS output
+static int ps_pid(const string& line)
+{
+    const char *s = line.chars() + ps_pid_index;
+    while (s > line.chars() && isdigit(s[-1]))
+	--s;
+
+    return atoi(s);
+}
+
+// Fill the pids in DISP_NRS
+static void getPIDs(Widget selectionList, IntArray& disp_nrs)
+{
+    static IntArray empty;
+    disp_nrs = empty;
+
+    XmStringTable selected_items;
+    int selected_items_count = 0;
+
+    assert(XmIsList(selectionList));
+
+    XtVaGetValues(selectionList,
+		  XmNselectedItemCount, &selected_items_count,
+		  XmNselectedItems, &selected_items,
+		  NULL);
+
+    for (int i = 0; i < selected_items_count; i++)
+    {
+	String _item;
+	XmStringGetLtoR(selected_items[i], LIST_CHARSET, &_item);
+	string item(_item);
+	XtFree(_item);
+
+	int p = ps_pid(item);
+	if (p > 0)
+	    disp_nrs += p;
+    }
+}
+
+// Get the PID from the selection list in CLIENT_DATA
+static int get_pid(Widget, XtPointer client_data, XtPointer)
+{
+    IntArray pids;
+    Widget processes = Widget(client_data);
+    if (processes != 0)
+	getPIDs(processes, pids);
+
+    if (pids.size() == 1)
+	return pids[0];
+    else
+	return 0;
 }
 
 // OK pressed in `Open Core'
@@ -498,6 +624,11 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
     string corefile = get_file(w, client_data, call_data);
     if (corefile == "")
 	return;
+
+    string current_file;
+    int current_pid;
+    bool attached;
+    get_current_file(current_file, current_pid, attached);
 
     XtUnmanageChild(w);
 
@@ -510,19 +641,8 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 	    break;
 
 	case DBX:
-	    {
-		string file = gdb_question("debug");
-		if (file == NO_GDB_ANSWER)
-		    post_gdb_busy();
-		else if (file.contains("Debugging: ", 0))
-		{
-		    file = file.after(": ");
-		    strip_final_blanks(file);
-		    gdb_command("debug " + file + " " + corefile);
-		}
-		else
-		    post_gdb_message(file);
-	    }
+	    gdb_command("debug " + current_file + " " + corefile);
+	    break;
 
 	case XDB:
 	    break;		// FIXME
@@ -547,11 +667,11 @@ static void openSourceDone(Widget w, XtPointer client_data,
 
 // Create various file dialogs
 static Widget create_file_dialog(Widget w, String name,
-				 FileSearchProc searchRemoteFiles,
-				 FileSearchProc searchRemoteDirectories,
-				 FileSearchProc searchLocalFiles,
-				 FileSearchProc searchLocalDirectories,
-				 XtCallbackProc openDone)
+				 FileSearchProc searchRemoteFiles       = 0,
+				 FileSearchProc searchRemoteDirectories = 0,
+				 FileSearchProc searchLocalFiles        = 0,
+				 FileSearchProc searchLocalDirectories  = 0,
+				 XtCallbackProc openDone = 0)
 {			     
     if (remote_gdb())
 	return file_dialog(find_shell(w), name,
@@ -563,11 +683,237 @@ static Widget create_file_dialog(Widget w, String name,
 			   openDone);
 }
 
+// Process selection
+
+static void sort(StringArray& a)
+{
+    // Shell sort -- simple and fast
+    int h = 1;
+    do {
+	h = h * 3 + 1;
+    } while (h <= a.size());
+    do {
+	h /= 3;
+	for (int i = h; i < a.size(); i++)
+	{
+	    string v = a[i];
+	    int j;
+	    for (j = i; j >= h && ps_pid(a[j - h]) > ps_pid(v); j -= h)
+		a[j] = a[j - h];
+	    if (i != j)
+		a[j] = v;
+	}
+    } while (h != 1);
+}
+
+// Check whether LINE is a valid PS line
+static bool valid_ps_line(const string& line, const string& command)
+{
+    int pid = ps_pid(line);
+    if (pid == 0)
+	return false;		// No PID
+
+    if (remote_gdb())
+	return true;		// No way to check these
+
+    if (kill(pid, 0))
+	return false;		// Cannot send signal - and thus not debug
+
+    if (pid == getpid())
+	return false;		// You don't want to debug DDD, don't you?
+
+    if (pid == gdb->pid())
+	return false;		// Neither should you debug GDB by itself.
+
+    if (line.contains(command))
+	return false;		// This one should now be dead.
+
+    return true;
+}
+
+
+// Create list of processes
+static void update_processes(Widget processes, bool keep_selection)
+{
+    StatusDelay delay("Getting list of processes");
+
+    string cmd = sh_command(app_data.ps_command) + " 2>&1";
+    FILE *fp = popen(cmd.chars(), "r");
+
+    StringArray process_list;
+    int c;
+    string line = "";
+    bool first_line = true;
+
+    while ((c = getc(fp)) != EOF)
+    {
+	if (c == '\n')
+	{
+	    if (first_line || valid_ps_line(line, cmd))
+		process_list += line;
+
+	    if (first_line)
+	    {
+		// Find first occurrence of `PID' title
+		ps_pid_index = line.index("PID ");
+		if (ps_pid_index < 0)
+		    ps_pid_index = 0;
+	    }
+
+	    line = "";
+	    first_line = false;
+	}
+	else
+	{
+	    line += c;
+	}
+    }
+
+    pclose(fp);
+    sort(process_list);
+
+    bool *selected = new bool[process_list.size()];
+    int i;
+    for (i = 0; i < process_list.size(); i++)
+	selected[i] = false;
+
+    int pos = -1;
+    if (keep_selection)
+    {
+	// Preserve old selection: each PID selected before will also be
+	// selected after.
+	IntArray selection;
+	getPIDs(processes, selection);
+
+	for (i = 0; i < selection.size(); i++)
+	{
+	    for (int j = 0; j < process_list.size(); j++)
+		if (selection[i] == ps_pid(process_list[j]))
+		{
+		    if (pos < 0)
+			pos = j;
+		    selected[j] = true;
+		}
+	}
+    }
+
+    if (pos < 0)
+    {
+	// Create new selection from current file and current pid.
+	string current_file;
+	int current_pid;
+	bool attached;
+	get_current_file(current_file, current_pid, attached);
+
+	// Check for current pid; if found, highlight it.
+	for (i = 0; pos < 0 && i < process_list.size(); i++)
+	{
+	    if (current_pid != 0 && ps_pid(process_list[i]) == current_pid)
+		pos = i;
+	}
+
+	if (pos < 0)
+	{
+	    // Not found? Try leftmost occurrence of process base name.
+	    string current_base = basename(current_file.chars());
+	    int leftmost = INT_MAX;
+	    for (i = 0; i < process_list.size(); i++)
+	    {
+		int occurrence = process_list[i].index(current_base);
+		if (occurrence >= 0 && occurrence < leftmost 
+		    && ps_pid(process_list[i]) > 0)
+		{
+		    leftmost = occurrence;
+		    pos = i;
+		}
+	    }
+	}
+    }
+
+    if (pos >= 0)
+	selected[pos] = true;
+
+    setLabelList(processes, process_list.values(),
+		 selected, process_list.size(), true, false);
+
+    if (pos >= 0)
+	ListSetAndSelectPos(processes, pos + 1);
+
+    delete[] selected;
+}
+
+
+static void gdbUpdateProcessesCB(Widget, XtPointer client_data, XtPointer)
+{
+    Widget processes = Widget(client_data);
+    update_processes(processes, true);
+}
+
+// Set program arguments from list
+static void SelectProcessCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
+    int pos = cbs->item_position;
+    if (pos == 1)
+	XmListDeselectAllItems(w); // Title selected
+    else
+	ListSetAndSelectPos(w, pos);
+}
+
+
+// OK pressed in `Open Process'
+static void openProcessDone(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
+{
+    int pid = get_pid(w, client_data, call_data);
+    if (pid <= 0)
+    {
+	gdbUpdateProcessesCB(w, client_data, call_data);	
+	return;
+    }
+
+    XtUnmanageChild(w);
+
+    string current_file;
+    int current_pid;
+    bool attached;
+    get_current_file(current_file, current_pid, attached);
+
+    switch(gdb->type())
+    {
+    case GDB:
+	if (pid != current_pid)
+	{
+	    if (attached)
+		gdb_command("detach");
+
+	    // Attach to new process
+	    gdb_command("attach " + itostring(pid));
+	}
+	break;
+	
+    case DBX:
+	if (pid != current_pid)
+	{
+	    // Attach to new process
+	    gdb_command("debug " + current_file + " " + itostring(pid));
+	}
+	break;
+
+    case XDB:
+	break;		// FIXME
+    }
+}
+
+
+// Entry points
+
 void gdbOpenFileCB(Widget w, XtPointer, XtPointer)
 {
     static Widget dialog = 
 	create_file_dialog(w, "exec_files", 
-			   searchRemoteExecFiles, searchRemoteDirectories,
+			   searchRemoteExecFiles, 
+			   searchRemoteDirectories,
 			   searchLocalExecFiles, 0,
 			   openFileDone);
     manage_and_raise(dialog);
@@ -592,6 +938,52 @@ void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
 			   openSourceDone);
     manage_and_raise(dialog);
 }
+
+void gdbOpenProcessCB(Widget w, XtPointer, XtPointer)
+{
+    static Widget dialog = 0;
+    static Widget processes = 0;
+
+    if (dialog == 0)
+    {
+	Arg args[10];
+	int arg = 0;
+    
+	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
+	dialog = verify(XmCreateSelectionDialog(find_shell(w), 
+						"processes", args, arg));
+
+	Delay::register_shell(dialog);
+
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
+					       XmDIALOG_SELECTION_LABEL));
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
+					       XmDIALOG_TEXT));
+
+	processes = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
+
+	XtAddCallback(processes, XmNsingleSelectionCallback,
+		      SelectProcessCB, 0);
+	XtAddCallback(processes, XmNmultipleSelectionCallback,
+		      SelectProcessCB, 0);
+	XtAddCallback(processes, XmNextendedSelectionCallback,
+		      SelectProcessCB, 0);
+	XtAddCallback(processes, XmNbrowseSelectionCallback,
+		      SelectProcessCB, 0);
+
+	XtAddCallback(dialog, XmNokCallback, 
+		      openProcessDone, XtPointer(processes));
+	XtAddCallback(dialog, XmNapplyCallback, 
+		      gdbUpdateProcessesCB, XtPointer(processes));
+	XtAddCallback(dialog, XmNcancelCallback, 
+		      UnmanageThisCB, XtPointer(dialog));
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+    }
+
+    update_processes(processes, false);
+    manage_and_raise(dialog);
+}
+
 
 // Synchronize file dialogs with current directory
 void process_cd(string pwd)

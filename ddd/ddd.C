@@ -192,7 +192,6 @@ extern "C" {
 #include "WhatNextCB.h"
 #include "args.h"
 #include "assert.h"
-#include "attach.h"
 #include "bool.h"
 #include "buttons.h"
 #include "charsets.h"
@@ -515,8 +514,9 @@ static XtActionsRec actions [] = {
 
 struct FileItems {
     enum FileItem { OpenFile, OpenCore, OpenSource, Dummy1,
-		    Print, PrintAgain, Dummy2,
-		    Make, MakeAgain, Dummy3,
+		    Attach, Detach, Dummy2,
+		    Print, PrintAgain, Dummy3,
+		    Make, MakeAgain, Dummy4,
 		    Close, Restart, Exit
     };
 };
@@ -526,6 +526,9 @@ struct FileItems {
     { "open_file",   MMPush, { gdbOpenFileCB }}, \
     { "open_core",   MMPush, { gdbOpenCoreCB }}, \
     { "open_source", MMPush, { gdbOpenSourceCB }}, \
+    MMSep, \
+    { "attach",      MMPush, { gdbOpenProcessCB }}, \
+    { "detach",      MMPush, { gdbCommandCB, "detach" }}, \
     MMSep, \
     { "print",       MMPush, { graphPrintCB }}, \
     { "printAgain",  MMPush, { graphQuickPrintCB }}, \
@@ -543,27 +546,37 @@ static MMDesc command_file_menu[] = FILE_MENU;
 static MMDesc source_file_menu[]  = FILE_MENU;
 static MMDesc data_file_menu[]    = FILE_MENU;
 
-static MMDesc program_menu[] =
-{
-    { "run",         MMPush, { gdbRunCB }},
-    { "run_again",   MMPush, { gdbCommandCB, "run" }},
-    MMSep,
-    { "attach",      MMPush, { gdbAttachCB }},
-    { "detach",      MMPush, { gdbCommandCB, "detach" }},
-    MMSep,
-    { "step",        MMPush, { gdbCommandCB, "step" }},
-    { "stepi",       MMPush, { gdbCommandCB, "stepi" }},
-    { "next",        MMPush, { gdbCommandCB, "next" }},
-    { "nexti",       MMPush, { gdbCommandCB, "nexti" }},
-    MMSep,
-    { "cont",        MMPush, { gdbCommandCB, "cont" }},
-    { "finish",      MMPush, { gdbCommandCB, "finish" }},
-    MMSep,
-    { "kill",        MMPush, { gdbCommandCB, "kill" }},
-    { "break",       MMPush, { gdbCommandCB, "\003" }},
-    { "quit",        MMPush, { gdbCommandCB, "\034" }},
-    MMEnd
+
+struct ProgramItems {
+    enum ProgramItem { Run, RunAgain, Dummy1,
+		       Step, Stepi, Next, Nexti, Dummy2,
+		       Cont, Finish, Dummy3,
+		       Kill, Break, Quit
+    };
 };
+
+#define PROGRAM_MENU \
+{ \
+    { "run",         MMPush, { gdbRunCB }}, \
+    { "run_again",   MMPush, { gdbCommandCB, "run" }}, \
+    MMSep, \
+    { "step",        MMPush, { gdbCommandCB, "step" }}, \
+    { "stepi",       MMPush, { gdbCommandCB, "stepi" }}, \
+    { "next",        MMPush, { gdbCommandCB, "next" }}, \
+    { "nexti",       MMPush, { gdbCommandCB, "nexti" }}, \
+    MMSep, \
+    { "cont",        MMPush, { gdbCommandCB, "cont" }}, \
+    { "finish",      MMPush, { gdbCommandCB, "finish" }}, \
+    MMSep, \
+    { "kill",        MMPush, { gdbCommandCB, "kill" }}, \
+    { "break",       MMPush, { gdbCommandCB, "\003" }}, \
+    { "quit",        MMPush, { gdbCommandCB, "\034" }}, \
+    MMEnd \
+}
+
+static MMDesc command_program_menu[] = PROGRAM_MENU;
+static MMDesc source_program_menu[]  = PROGRAM_MENU;
+static MMDesc data_program_menu[]     = PROGRAM_MENU;
 
 enum DDDWindow { ToolWindow, ExecWindow, DummySep,
 		 DataWindow, SourceWindow, GDBWindow };
@@ -989,7 +1002,7 @@ static MMDesc command_menubar[] =
     { "options",  MMMenu,          MMNoCB, options_menu },
     { "view",     MMMenu,          { gdbUpdateViewCB, command_view_menu }, 
                                    command_view_menu },
-    { "program",  MMMenu,          MMNoCB, program_menu },
+    { "program",  MMMenu,          MMNoCB, command_program_menu },
     { "commands", MMMenu,          MMNoCB, command_menu },
     { "help",     MMMenu | MMHelp, MMNoCB, help_menu },
     MMEnd
@@ -1004,7 +1017,7 @@ static MMDesc source_menubar[] =
     { "options", MMMenu,           MMNoCB, options_menu },
     { "view",    MMMenu,           { gdbUpdateViewCB, source_view_menu }, 
                                    source_view_menu },
-    { "program", MMMenu,           MMNoCB, program_menu },
+    { "program", MMMenu,           MMNoCB, source_program_menu },
     { "stack",   MMMenu,           MMNoCB, stack_menu },
     { "source",  MMMenu,           MMNoCB, source_menu },
     { "help",    MMMenu | MMHelp,  MMNoCB, help_menu },
@@ -1020,7 +1033,7 @@ static MMDesc data_menubar[] =
     { "options", MMMenu,          MMNoCB, options_menu },
     { "view",     MMMenu,         { gdbUpdateViewCB, data_view_menu }, 
                                   data_view_menu },
-    { "program", MMMenu,          MMNoCB, program_menu },
+    { "program", MMMenu,          MMNoCB, data_program_menu },
     { "data",    MMMenu,          MMNoCB, data_menu },
     { "help",    MMMenu | MMHelp, MMNoCB, help_menu },
     MMEnd
@@ -1035,7 +1048,7 @@ static MMDesc combined_menubar[] =
     { "options",    MMMenu,       MMNoCB, options_menu },
     { "view",       MMMenu,       { gdbUpdateViewCB, command_view_menu }, 
                                   command_view_menu },
-    { "program",    MMMenu,       MMNoCB, program_menu },
+    { "program",    MMMenu,       MMNoCB, command_program_menu },
     { "commands",   MMMenu,       MMNoCB, command_menu },
     { "stack",      MMMenu,       MMNoCB, stack_menu },
     { "source",     MMMenu,       MMNoCB, source_menu },
@@ -3569,6 +3582,72 @@ static void gdb_ready_for_questionHP (Agent *, void*, void* call_data)
     set_sensitive(infos_w,     gdb_ready && gdb->type() == GDB);
     set_sensitive(settings_w,
 		  gdb_ready && (gdb->type() == GDB || gdb->type() == DBX));
+
+    set_sensitive(command_file_menu[FileItems::OpenFile].widget,  gdb_ready);
+    set_sensitive(source_file_menu[FileItems::OpenFile].widget,   gdb_ready);
+    set_sensitive(data_file_menu[FileItems::OpenFile].widget,     gdb_ready);
+
+    set_sensitive(command_file_menu[FileItems::OpenCore].widget,  gdb_ready);
+    set_sensitive(source_file_menu[FileItems::OpenCore].widget,   gdb_ready);
+    set_sensitive(data_file_menu[FileItems::OpenCore].widget,     gdb_ready);
+
+    set_sensitive(command_file_menu[FileItems::Attach].widget,    gdb_ready);
+    set_sensitive(source_file_menu[FileItems::Attach].widget,     gdb_ready);
+    set_sensitive(data_file_menu[FileItems::Attach].widget,       gdb_ready);
+
+    set_sensitive(command_file_menu[FileItems::Detach].widget,    gdb_ready);
+    set_sensitive(source_file_menu[FileItems::Detach].widget,     gdb_ready);
+    set_sensitive(data_file_menu[FileItems::Detach].widget,       gdb_ready);
+
+    set_sensitive(command_file_menu[FileItems::Make].widget,      gdb_ready);
+    set_sensitive(source_file_menu[FileItems::Make].widget,       gdb_ready);
+    set_sensitive(data_file_menu[FileItems::Make].widget,         gdb_ready);
+
+    set_sensitive(command_file_menu[FileItems::MakeAgain].widget, gdb_ready);
+    set_sensitive(source_file_menu[FileItems::MakeAgain].widget,  gdb_ready);
+    set_sensitive(data_file_menu[FileItems::MakeAgain].widget,    gdb_ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Run].widget, gdb_ready);
+    set_sensitive(source_program_menu[ProgramItems::Run].widget,  gdb_ready);
+    set_sensitive(data_program_menu[ProgramItems::Run].widget,    gdb_ready);
+
+    set_sensitive(command_program_menu[ProgramItems::RunAgain].widget, 
+		  gdb_ready);
+    set_sensitive(source_program_menu[ProgramItems::RunAgain].widget,
+		  gdb_ready);
+    set_sensitive(data_program_menu[ProgramItems::RunAgain].widget,
+		  gdb_ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Step].widget, gdb_ready);
+    set_sensitive(source_program_menu[ProgramItems::Step].widget,  gdb_ready);
+    set_sensitive(data_program_menu[ProgramItems::Step].widget,    gdb_ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Stepi].widget, gdb_ready);
+    set_sensitive(source_program_menu[ProgramItems::Stepi].widget,  gdb_ready);
+    set_sensitive(data_program_menu[ProgramItems::Stepi].widget,    gdb_ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Next].widget, gdb_ready);
+    set_sensitive(source_program_menu[ProgramItems::Next].widget,  gdb_ready);
+    set_sensitive(data_program_menu[ProgramItems::Next].widget,    gdb_ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Nexti].widget, gdb_ready);
+    set_sensitive(source_program_menu[ProgramItems::Nexti].widget,  gdb_ready);
+    set_sensitive(data_program_menu[ProgramItems::Nexti].widget,    gdb_ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Cont].widget, gdb_ready);
+    set_sensitive(source_program_menu[ProgramItems::Cont].widget,  gdb_ready);
+    set_sensitive(data_program_menu[ProgramItems::Cont].widget,    gdb_ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Finish].widget, 
+		  gdb_ready);
+    set_sensitive(source_program_menu[ProgramItems::Finish].widget,
+		  gdb_ready);
+    set_sensitive(data_program_menu[ProgramItems::Finish].widget,
+		  gdb_ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Kill].widget, gdb_ready);
+    set_sensitive(source_program_menu[ProgramItems::Kill].widget,  gdb_ready);
+    set_sensitive(data_program_menu[ProgramItems::Kill].widget,    gdb_ready);
 
     blink(!gdb_ready);
     fix_status_size();

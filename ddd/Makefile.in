@@ -354,6 +354,7 @@ GDB = gdb
 
 # The fig2dev command.
 FIG2DEV = fig2dev
+FIG2PS = $(FIG2DEV) -L ps
 
 # Some XPM/PPM/PostScript converters
 XPMTOPPM = xpmtoppm
@@ -645,7 +646,6 @@ LIB_OBJECTS = \
 # is the source window, `DataDisp.C' is the data window.
 DDD_OBJECTS = \
 	args.o       \
-	attach.o     \
 	buttons.o    \
 	charsets.o   \
 	cmdtty.o     \
@@ -742,6 +742,7 @@ PICS = \
 	PICS/ddd-aliases.ps        \
 	PICS/ddd-all.ps            \
 	PICS/ddd-arguments.ps      \
+	PICS/ddd-attach.ps         \
 	PICS/ddd-backtrace.ps	   \
 	PICS/ddd-bp-popup.ps       \
 	PICS/ddd-code.ps           \
@@ -1118,116 +1119,120 @@ $(srcdir)/../doc/ddd.man-nopics.ps: $(srcdir)/ddd.man-nopics
 	$(GROFF) -man $(srcdir)/ddd.man-nopics > $@
 
 PICS/ddd-all.ps: PICS/ddd-all.fig PICS/ddd-all.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-all.fig > ddd-all.ps
+	cd PICS; $(FIG2PS) ddd-all.fig > ddd-all.ps
 
 PICS/ddd-console.ps: PICS/ddd-console.fig PICS/ddd-console.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-console.fig > ddd-console.ps
+	cd PICS; $(FIG2PS) ddd-console.fig > ddd-console.ps
 
 PICS/ddd-history.ps: PICS/ddd-history.fig PICS/ddd-history.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-history.fig > ddd-history.ps
+	cd PICS; $(FIG2PS) ddd-history.fig > ddd-history.ps
 
 PICS/ddd-open.ps: PICS/ddd-open.fig PICS/ddd-open.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-open.fig > ddd-open.ps
+	cd PICS; $(FIG2PS) ddd-open.fig > ddd-open.ps
 
 PICS/ddd-source.ps: PICS/ddd-source.fig PICS/ddd-source.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-source.fig > ddd-source.ps
+	cd PICS; $(FIG2PS) ddd-source.fig > ddd-source.ps
 
 PICS/ddd-cond.ps: PICS/ddd-cond.fig PICS/ddd-cond.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-cond.fig > ddd-cond.ps
+	cd PICS; $(FIG2PS) ddd-cond.fig > ddd-cond.ps
 
 PICS/ddd-line-popup.ps: PICS/ddd-line-popup.fig PICS/ddd-line-popup.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-line-popup.fig > ddd-line-popup.ps
+	cd PICS; $(FIG2PS) ddd-line-popup.fig > ddd-line-popup.ps
 
 PICS/ddd-bp-popup.ps: PICS/ddd-bp-popup.fig PICS/ddd-bp-popup.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-bp-popup.fig > ddd-bp-popup.ps
+	cd PICS; $(FIG2PS) ddd-bp-popup.fig > ddd-bp-popup.ps
 
 PICS/ddd-source-popup.ps: PICS/ddd-source-popup.fig PICS/ddd-source-popup.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-source-popup.fig > ddd-source-popup.ps
+	cd PICS; $(FIG2PS) ddd-source-popup.fig > ddd-source-popup.ps
 
 PICS/ddd-arguments.ps: PICS/ddd-arguments.fig PICS/ddd-arguments.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-arguments.fig > ddd-arguments.ps
+	cd PICS; $(FIG2PS) ddd-arguments.fig > ddd-arguments.ps
 
 PICS/ddd-tool.ps: PICS/ddd-tool.fig PICS/ddd-tool.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-tool.fig > ddd-tool.ps
+	cd PICS; $(FIG2PS) ddd-tool.fig > ddd-tool.ps
 
 PICS/ddd-backtrace.ps: PICS/ddd-backtrace.fig PICS/ddd-backtrace.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-backtrace.fig > ddd-backtrace.ps
+	cd PICS; $(FIG2PS) ddd-backtrace.fig > ddd-backtrace.ps
 
 PICS/ddd-value-tip.ps: PICS/ddd-value-tip.fig PICS/ddd-value-tip.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-value-tip.fig > ddd-value-tip.ps
+	cd PICS; $(FIG2PS) ddd-value-tip.fig > ddd-value-tip.ps
 
 PICS/ddd-print-popup.ps: PICS/ddd-print-popup.fig PICS/ddd-print-popup.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-print-popup.fig > ddd-print-popup.ps
+	cd PICS; $(FIG2PS) ddd-print-popup.fig > ddd-print-popup.ps
 
 PICS/ddd-new-display.ps: PICS/ddd-new-display.fig PICS/ddd-new-display.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-new-display.fig > ddd-new-display.ps
+	cd PICS; $(FIG2PS) ddd-new-display.fig > ddd-new-display.ps
 
 PICS/ddd-select-display.ps: \
 	PICS/ddd-select-display.fig PICS/ddd-select-display.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-select-display.fig > ddd-select-display.ps
+	cd PICS; $(FIG2PS) ddd-select-display.fig > ddd-select-display.ps
 
 PICS/ddd-hide-display.ps: PICS/ddd-hide-display.fig PICS/ddd-hide-display.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-hide-display.fig > ddd-hide-display.ps
+	cd PICS; $(FIG2PS) ddd-hide-display.fig > ddd-hide-display.ps
 
 PICS/ddd-rotate-display.ps: \
 	PICS/ddd-rotate-display.fig PICS/ddd-rotate-display.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-rotate-display.fig > ddd-rotate-display.ps
+	cd PICS; $(FIG2PS) ddd-rotate-display.fig > ddd-rotate-display.ps
 
 PICS/ddd-locals.ps: PICS/ddd-locals.fig PICS/ddd-locals.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-locals.fig > ddd-locals.ps
+	cd PICS; $(FIG2PS) ddd-locals.fig > ddd-locals.ps
 
 PICS/ddd-status-displays.ps: \
 	PICS/ddd-status-displays.fig PICS/ddd-status-displays.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-status-displays.fig > ddd-status-displays.ps
+	cd PICS; $(FIG2PS) ddd-status-displays.fig > ddd-status-displays.ps
 
 PICS/ddd-set.ps: PICS/ddd-set.fig PICS/ddd-set.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-set.fig > ddd-set.ps
+	cd PICS; $(FIG2PS) ddd-set.fig > ddd-set.ps
 
 PICS/ddd-layout.ps: PICS/ddd-layout.fig PICS/ddd-layout.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-layout.fig > ddd-layout.ps
+	cd PICS; $(FIG2PS) ddd-layout.fig > ddd-layout.ps
 
 PICS/ddd-print-graph.ps: PICS/ddd-print-graph.fig PICS/ddd-print-graph.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-print-graph.fig > ddd-print-graph.ps
+	cd PICS; $(FIG2PS) ddd-print-graph.fig > ddd-print-graph.ps
 
 PICS/ddd-print-output.ps: PICS/ddd-print-output.fig PICS/ddd-graph.eps
-	cd PICS; $(FIG2DEV) -L ps ddd-print-output.fig > ddd-print-output.ps
+	cd PICS; $(FIG2PS) ddd-print-output.fig > ddd-print-output.ps
 
 PICS/ddd-code.ps: PICS/ddd-code.fig PICS/ddd-code.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-code.fig > ddd-code.ps
+	cd PICS; $(FIG2PS) ddd-code.fig > ddd-code.ps
 
 PICS/ddd-registers.ps: PICS/ddd-registers.fig PICS/ddd-registers.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-registers.fig > ddd-registers.ps
+	cd PICS; $(FIG2PS) ddd-registers.fig > ddd-registers.ps
 
 PICS/ddd-prefs-menu.ps: PICS/ddd-prefs-menu.fig PICS/ddd-prefs-menu.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-prefs-menu.fig > ddd-prefs-menu.ps
+	cd PICS; $(FIG2PS) ddd-prefs-menu.fig > ddd-prefs-menu.ps
 
 PICS/ddd-general-prefs.ps: \
 	PICS/ddd-general-prefs.fig PICS/ddd-general-prefs.xpm 
-	cd PICS; $(FIG2DEV) -L ps ddd-general-prefs.fig > ddd-general-prefs.ps
+	cd PICS; $(FIG2PS) ddd-general-prefs.fig > ddd-general-prefs.ps
 
 PICS/ddd-source-prefs.ps: PICS/ddd-source-prefs.fig PICS/ddd-source-prefs.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-source-prefs.fig > ddd-source-prefs.ps
+	cd PICS; $(FIG2PS) ddd-source-prefs.fig > ddd-source-prefs.ps
 
 PICS/ddd-data-prefs.ps: PICS/ddd-data-prefs.fig PICS/ddd-data-prefs.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-data-prefs.fig > ddd-data-prefs.ps
+	cd PICS; $(FIG2PS) ddd-data-prefs.fig > ddd-data-prefs.ps
 
 PICS/ddd-startup-prefs.ps: \
 	PICS/ddd-startup-prefs.fig PICS/ddd-startup-prefs.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-startup-prefs.fig > ddd-startup-prefs.ps
+	cd PICS; $(FIG2PS) ddd-startup-prefs.fig > ddd-startup-prefs.ps
 
 PICS/ddd-settings.ps: PICS/ddd-settings.fig PICS/ddd-settings.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-settings.fig > ddd-settings.ps
+	cd PICS; $(FIG2PS) ddd-settings.fig > ddd-settings.ps
 
 PICS/ddd-threads.ps: PICS/ddd-threads.fig PICS/ddd-threads.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-threads.fig > ddd-threads.ps
+	cd PICS; $(FIG2PS) ddd-threads.fig > ddd-threads.ps
 
 PICS/ddd-aliases.ps: PICS/ddd-aliases.fig PICS/ddd-aliases.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-aliases.fig > ddd-aliases.ps
+	cd PICS; $(FIG2PS) ddd-aliases.fig > ddd-aliases.ps
 
 PICS/ddd-edit-displays.ps: \
 	PICS/ddd-edit-displays.fig PICS/ddd-edit-displays.xpm
-	cd PICS; $(FIG2DEV) -L ps ddd-edit-displays.fig > ddd-edit-displays.ps
+	cd PICS; $(FIG2PS) ddd-edit-displays.fig > ddd-edit-displays.ps
 
+PICS/ddd-attach.ps: PICS/ddd-attach.fig PICS/ddd-attach.xpm
+	cd PICS; $(FIG2PS) ddd-attach.fig > ddd-attach.ps
+
+# The logo comes in XPM source
 PICS/dddlogo21.ps: PICS/dddlogo21.xpm
 	$(XPMTOPPM) PICS/dddlogo21.xpm | $(PNMTOPS) -noturn > $@
 

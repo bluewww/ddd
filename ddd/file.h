@@ -37,6 +37,7 @@
 #include "strclass.h"
 
 extern void gdbOpenFileCB   (Widget, XtPointer, XtPointer);
+extern void gdbOpenProcessCB(Widget, XtPointer, XtPointer);
 extern void gdbOpenCoreCB   (Widget, XtPointer, XtPointer);
 extern void gdbOpenSourceCB (Widget, XtPointer, XtPointer);
 
