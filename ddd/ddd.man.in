@@ -201,6 +201,7 @@ section, below.
 .SH "THE DDD WINDOWS"
 .\" ---------------
 .\"
+.PSPIC @srcdir@/PICS/disclaimer.ps 15.3cm
 .PSPIC @srcdir@/PICS/ddd-all.ps 15.3cm
 \s-2@DDD@\s+2 is composed of three main windows:
 .br

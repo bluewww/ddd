@@ -861,7 +861,8 @@ PICS = \
 	$(picdir)/ddd-status-displays.ps \
 	$(picdir)/ddd-threads.ps        \
 	$(picdir)/ddd-tool.ps           \
-	$(picdir)/ddd-value-tip.ps
+	$(picdir)/ddd-value-tip.ps      \
+	$(picdir)/disclaimer.ps
 
 ## The HTML files.
 # HTML_BASES = ddd_toc.html dddint_toc.html
@@ -1558,6 +1559,10 @@ $(picdir)/ddd-drag.ps: \
 	$(picdir)/ddd-drag.fig \
 	$(picdir)/ddd-drag1.xpm $(picdir)/ddd-drag2.xpm $(picdir)/ddd-drag3.xpm
 	cd $(picdir); $(FIG2PS) ddd-drag.fig > ddd-drag.ps
+
+$(picdir)/disclaimer.ps: \
+	$(picdir)/disclaimer.fig
+	cd $(picdir); $(FIG2PS) disclaimer.fig > disclaimer.ps
 
 # The logo comes in XPM source
 $(picdir)/dddsplash.ps: $(icondir)/dddsplash.xpm
