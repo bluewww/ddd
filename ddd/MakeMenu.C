@@ -445,10 +445,16 @@ static Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[])
 
     // By default, PushButton menus are activated using Button 1.
     arg = 0;
-#if XmVersion < 2000		
-    // OSF/Motif 2.0 chokes on this; required by Motif 1.1 and LessTif
-    XtSetArg(args[arg], XmNmenuPost, "<Btn1Down>"); arg++;
-#endif
+
+    if (XmVersion < 1002 || lesstif_version < 1000)
+    {
+	// Setting the menuPost resource is required by Motif 1.1 and
+	// LessTif.  However, OSF/Motif 2.0 (and OSF/Motif 1.2,
+	// according to Roy Dragseth <royd@math.uit.no>) choke on this
+	// line - buttons become entirely insensitive.
+	XtSetArg(args[arg], XmNmenuPost, "<Btn1Down>"); arg++;
+    }
+
     Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
     addItems(parent, menu, items);
 
