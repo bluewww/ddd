@@ -216,7 +216,8 @@ picsdist:
 	    echo "==> Making $$ddd-$$VER-pics.tar.gz"; \
 	    rm -f $$ddd-$$VER-pics.tar.gz; \
 	    ln -s $(srcdir) proto-toplev/$$ddd-$$VER; \
-	    find ddd/PICS -name RCS -prune -o -name CVS -prune \
+	    find $(srcdir)/ddd/PICS -name RCS -prune \
+		-o -name CVS -prune \
 		-o -name proto-toplev -prune \
 		-o -name '.[a-zA-Z0-9]*' -prune \
 		-o -name '*.o' -prune \
@@ -224,7 +225,7 @@ picsdist:
 		-o -name '*~' -prune \
 		-o -name '*#' -prune \
 		-o -type f -print -o -type l -print | \
-	        sed "s,^$(srcdir),$$ddd-$$VER/ddd," | sort \
+	        sed "s,^$(srcdir),$$ddd-$$VER," | sort \
 		> proto-toplev/FILES; \
 	    ( cd proto-toplev; gtar --create --dereference \
 		--verbose --files-from FILES \
