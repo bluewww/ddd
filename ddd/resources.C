@@ -494,7 +494,7 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdataWindow,
+	XtNopenDataWindow,
 	XtCWindow,
 	XtRBoolean,
 	sizeof(Boolean),
@@ -504,7 +504,7 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNsourceWindow,
+	XtNopenSourceWindow,
 	XtCWindow,
 	XtRBoolean,
 	sizeof(Boolean),
@@ -514,7 +514,7 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdebuggerConsole,
+	XtNopenDebuggerConsole,
 	XtCWindow,
 	XtRBoolean,
 	sizeof(Boolean),

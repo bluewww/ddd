@@ -112,9 +112,9 @@
 #define XtNseparateSourceWindow  "separateSourceWindow"
 #define XtNseparateExecWindow    "separateExecWindow"
 #define XtCSeparate              "Separate"
-#define XtNdataWindow            "dataWindow"
-#define XtNsourceWindow          "sourceWindow"
-#define XtNdebuggerConsole       "debuggerConsole"
+#define XtNopenDataWindow        "openDataWindow"
+#define XtNopenSourceWindow      "openSourceWindow"
+#define XtNopenDebuggerConsole   "openDebuggerConsole"
 #ifndef XtCWindow
 #define XtCWindow                "Window"
 #endif

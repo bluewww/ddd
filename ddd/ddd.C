@@ -451,23 +451,23 @@ static XrmOptionDescRec options[] = {
 { "--no-exec-window",       XtNseparateExecWindow,   XrmoptionNoArg, S_false },
 { "-no-exec-window",        XtNseparateExecWindow,   XrmoptionNoArg, S_false },
 
-{ "--source-window",        XtNsourceWindow,         XrmoptionNoArg, S_true },
-{ "-source-window",         XtNsourceWindow,         XrmoptionNoArg, S_true },
+{ "--source-window",        XtNopenSourceWindow,     XrmoptionNoArg, S_true },
+{ "-source-window",         XtNopenSourceWindow,     XrmoptionNoArg, S_true },
 
-{ "--no-source-window",     XtNsourceWindow,         XrmoptionNoArg, S_false },
-{ "-no-source-window",      XtNsourceWindow,         XrmoptionNoArg, S_false },
+{ "--no-source-window",     XtNopenSourceWindow,     XrmoptionNoArg, S_false },
+{ "-no-source-window",      XtNopenSourceWindow,     XrmoptionNoArg, S_false },
 
-{ "--data-window",          XtNdataWindow,           XrmoptionNoArg, S_true },
-{ "-data-window",           XtNdataWindow,           XrmoptionNoArg, S_true },
+{ "--data-window",          XtNopenDataWindow,       XrmoptionNoArg, S_true },
+{ "-data-window",           XtNopenDataWindow,       XrmoptionNoArg, S_true },
 
-{ "--no-data-window",       XtNdataWindow,           XrmoptionNoArg, S_false },
-{ "-no-data-window",        XtNdataWindow,           XrmoptionNoArg, S_false },
+{ "--no-data-window",       XtNopenDataWindow,       XrmoptionNoArg, S_false },
+{ "-no-data-window",        XtNopenDataWindow,       XrmoptionNoArg, S_false },
 
-{ "--debugger-console",     XtNdebuggerConsole,      XrmoptionNoArg, S_true },
-{ "-debugger-console",      XtNdebuggerConsole,      XrmoptionNoArg, S_true },
+{ "--debugger-console",     XtNopenDebuggerConsole,  XrmoptionNoArg, S_true },
+{ "-debugger-console",      XtNopenDebuggerConsole,  XrmoptionNoArg, S_true },
 
-{ "--no-debugger-console",  XtNdebuggerConsole,      XrmoptionNoArg, S_false },
-{ "-no-debugger-console",   XtNdebuggerConsole,      XrmoptionNoArg, S_false },
+{ "--no-debugger-console",  XtNopenDebuggerConsole,  XrmoptionNoArg, S_false },
+{ "-no-debugger-console",   XtNopenDebuggerConsole,  XrmoptionNoArg, S_false },
 
 { "--button-tips",          XtNbuttonTips,           XrmoptionNoArg, S_true },
 { "-button-tips",           XtNbuttonTips,           XrmoptionNoArg, S_true },

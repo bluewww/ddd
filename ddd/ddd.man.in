@@ -3068,9 +3068,6 @@ your window manager has trouble with multi-color icons, set this
 resource to `\fBoff\fR' and \s-2@DDD@\s+2 will use black-and-white
 icons instead.
 .TP
-.B "dataWindow (\fPclass\fB Window)"
-If `\fBoff\fR', no data window is created upon start-up.
-.TP
 .B "decorateTool (\fPclass\fB DecorateTool)"
 This resource controls the decoration of the command tool.
 .RS
@@ -3099,8 +3096,14 @@ using the \*(lqbest\*(rq method, but the extra check takes some time.
 .RE
 .PP
 .TP
-.B "debuggerConsole (\fPclass\fB Window)"
-If `\fBoff\fR', no debugger console is created upon start-up.
+.B "openDataWindow (\fPclass\fB Window)"
+If `\fBoff\fR' (default), the data window is closed upon start-up.
+.TP
+.B "openDebuggerConsole (\fPclass\fB Window)"
+If `\fBoff\fR', the debugger console is closed upon start-up.
+.TP
+.B "openSourceWindow (\fPclass\fB Window)"
+If `\fBoff\fR', the source window is closed upon start-up.
 .TP
 .B "separateDataWindow (\fPclass\fB Separate)"
 If `\fBon\fR', the data window and the debugger console are realized
@@ -3121,9 +3124,6 @@ realized in different top-level windows.  If `\fBoff\fR' (default),
 the source window is attached to the debugger console.  See also the
 `\fB\-\-attach-windows\fR' and `\fB\-\-attach-source-window\fR'
 options, below.
-.TP
-.B "sourceWindow (\fPclass\fB Window)"
-If `\fBoff\fR', no source window is created upon start-up.
 .TP
 .B "statusAtBottom (\fPclass\fB StatusAtBottom)"
 If `\fBon\fR' (default), the status line is placed at the bottom of

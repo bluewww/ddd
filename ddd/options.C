@@ -1801,9 +1801,12 @@ bool save_options(unsigned long flags)
 
     // Windows.
     os << "\n! Windows\n";
-    os << bool_app_value(XtNdataWindow,     app_data.data_window)      << "\n";
-    os << bool_app_value(XtNsourceWindow,   app_data.source_window)    << "\n";
-    os << bool_app_value(XtNdebuggerConsole,app_data.debugger_console) << "\n";
+    os << bool_app_value(XtNopenDataWindow,      
+			 app_data.data_window)      << "\n";
+    os << bool_app_value(XtNopenSourceWindow,    
+			 app_data.source_window)    << "\n";
+    os << bool_app_value(XtNopenDebuggerConsole, 
+			 app_data.debugger_console) << "\n";
 
     if (!app_data.separate_source_window && !app_data.separate_data_window)
     {
