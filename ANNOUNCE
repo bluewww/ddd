@@ -1,10 +1,10 @@
-DDD 1.2 is available
+DDD 1.3 is available
 ====================
 
-    Release 1.2 of the Data Display Debugger (DDD), a graphical
+    Release 1.3 of the Data Display Debugger (DDD), a graphical
     front-end for GDB and DBX debuggers, is now available by anonymous
     FTP from `ftp.ips.cs.tu-bs.de` [134.169.32.1] in the file
-    `/pub/local/softech/ddd/ddd-1.2.tar.gz' (0.9 MB).  Diffs from
+    `/pub/local/softech/ddd/ddd-1.3.tar.gz' (1.0 MB).  Diffs from
     earlier versions are in `/pub/local/softech/ddd/diffs/`.  Binaries
     for various architectures are in `/pub/local/softech/ddd/bin/`.
     Please try a closer FTP site first; see below for a list.
@@ -13,32 +13,40 @@ DDD 1.2 is available
 DDD News
 ========
 
-    DDD 1.2 is again a bug fix release.  Many minor bugs have been
-    fixed; see the `ChangeLog' file for details.
+    DDD 1.3 now compiles using GCC 2.7; some new features have been
+    added and several minor bugs fixed.  Some bugs remain; see the
+    `BUGS' file for details.
 
-    Thanks to all who sent in bug reports and suggestions.
+    Changes to DDD 1.2:
+    - You can now edit the current source via an external editor.
+    - Display placement has been improved; new displays are now
+      created in the current visible view, if possible.
+    - The current execution position now stays near the middle of the
+      visible source code.  Following statements remain visible.
+    - Diagnostics of printing commands no longer get lost.
+    - Upon fatal errors, DDD tries to resume execution by returning to
+      the main event loop.  This leaves you a chance for exiting the
+      debugged program properly.
+    - New `Help on Debugging' item.
+      Written by David A. Lyons (dlyons@apple.com).
+    - A short DDD survey, including lots of screen shots, is included
+      in `doc/ddd-paper.ps'.  The paper also describes some DDD innards.
+    - DDD source code has been adapted to the current ANSI/ISO C++
+      draft standard.  Any GCC release from 2.3.3 onwards, including
+      the recent GCC 2.7.0, should now compile DDD (unjustified
+      commpiler warnings in GCC 2.5 or lower, though).
+    - DBX support on Solaris improved.
+      Thanks to grant@isgtec.com (Grant McDorman)
+    - Patches for FreeBSD incorporated.
+      Thanks to smcarey@mailbox.syr.edu (Shawn M. Carey).
+    - DDD-specific application defaults now override user application
+      defaults.  Thanks to ksfdo0@ksepl.shell.nl (Fred Donck).
+    - New GNU librx 0.07.2 library included (from libg++-2.7.0),
+      should be faster and more reliable.
 
-    Changes to DDD 1.1:
-    - DDD source code should now be ANSI/ISO C++ conformant - all code
-      specific to GCC or libg++ has been adapted.  DDD now also
-      compiles using other C++ compilers than GCC (Sun's CC 4.0 works
-      fine; AT&T Cfront 3.0 has trouble with some inline functions).
-    - DDD should now run correctly on SGI/IRIX machines.
-    - Interrupting processes via the Interrupt button now works
-      correctly on Solaris, HP-UX, and other systems.
-    - Improved support for GDB artificial arrays.
-    - The GDB command window has improved control character support.
-      Tabs, Carriage returns, Backspaces and so on are processed
-      correctly.  Unprintable characters are also handled.
-    - There is an option to suppress X warnings.  This may be useful
-      for people annoyed by tons of Motif Keysym warnings.
-    - We have started to compile a FAQ list to reduce our daily mail
-      load.  See the file `FAQ' for details.
-
-    As building DDD is still a major challenge for some users, we
-    encourage everyone to share her/his binaries with others.  See the
-    file ftp.ips.cs.tu-bs.de:/pub/local/softech/ddd/bin/README for
-    details.
+    Thanks to all who sent in bug reports and suggestions.  DDD now
+    runs on every major UNIX flavour (with the exception of OSF/1 -
+    any volunteers for that task?).
 
 
 
@@ -50,7 +58,7 @@ Summary of DDD
     ``usual'' features such as viewing source texts and breakpoints,
     DDD provides a *graphical data display*, where data structures are
     displayed as graphs.  A simple mouse click dereferences pointers
-    or views structure contents.  Complex data structures can be
+    or reveals structure contents.  Complex data structures can be
     explored incrementally and interactively, using automatic layout
     if preferred.  Each time the program stops, the data display
     reflects the current variable values.  Using DDD, you can reason
@@ -85,8 +93,9 @@ Requirements
 
     To build a complete DDD from sources, you need:
 
-       * The GNU C++ compiler (GCC/G++), version 2.6.3, and a matching
-	 C++ I/O library (libg++, libstdc++, or libiostream).
+       * The GNU C++ compiler (GCC/G++), (preferably release 2.6.3 or
+         later), and a matching C++ I/O library (libg++, libstdc++, or
+         libiostream).
 
          Some other C++ compilers have been reported to compile DDD as
          well, such as Sun CC 4.0.  Cfront 3.0 does not compile DDD.
@@ -118,6 +127,11 @@ More Information
     A World-Wide-Web page (including screen shots) devoted to DDD is
     installed at `http://www.cs.tu-bs.de/softech/software/ddd_e.html'.
 
+    A short DDD survey with several screen shots is available at
+    `ftp://ftp.ips.cs.tu-bs.de:/pub/local/softech/ddd/ddd-paper.ps.gz'.
+    The six-page paper gives a short introduction to the
+    ``look-and-feel'' of DDD and highlights some internal aspects.
+
     The DDD users mailing list, `ddd-users@ips.cs.tu-bs.de', is the
     right place to contact other DDD users for assistance and hints.
     New DDD releases and bug fixes are also announced here.
@@ -134,7 +148,7 @@ More Information
 DDD source FTP sites
 ====================
 
-    The DDD source package `ddd-1.2.tar.gz' will soon be at these FTP
+    The DDD source package `ddd-1.3.tar.gz' will soon be at these FTP
     sites as well.  Please try them before `ftp.ips.cs.tu-bs.de' since
     ftp.ips has a slow network connection.
 
@@ -178,23 +192,33 @@ Australia
 
 
 
-DDD binary sites
-================
+DDD full FTP sites
+==================
+
+    Besides DDD source packages, the sites listed here also carry DDD
+    binaries and patches as well as formatted DDD documentation and
+    DDD-related papers.
 
     DDD pre-compiled binaries are available for a variety of
     architectures.  This may be useful for people who lack GCC or
     Motif.  However, compiling DDD on your machine is strongly
     preferred.  Use binaries as a last resort only.
 
-    The `README' file contains a list of available binaries.
+    The `bin/README' file contains a list of available binaries.
     Additional contributions are very welcome.
+
+
+North America
+-------------
+
+    uiarchive.cso.uiuc.edu[128.174.5.14]:/pub/packages/ddd/
+
 
 Europe
 ------
 
-    ftp.ips.cs.tu-bs.de[134.169.32.1]:/pub/local/softech/ddd/bin/
-    ftp.th-darmstadt.de[130.83.47.112]:/pub/programming/tools/ddd/bin/
-
+    ftp.ips.cs.tu-bs.de[134.169.32.1]:/pub/local/softech/ddd/
+    ftp.th-darmstadt.de[130.83.47.112]:/pub/programming/tools/ddd/
 
 
 Have fun!

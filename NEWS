@@ -1,30 +1,44 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 1.3 (NOT YET RELEASED)
---------------------------
+DDD 1.3
+-------
 
-    More and more minor bugs fixed; see the `ChangeLog' file for
-    details.  Some bugs, especially memory leaks, remain in this
-    release and will be fixed at some random point in future.  The
-    most important bug is that DDD still does not run on Alpha OSF/1
-    machines; it runs fine on every other major UNIX flavour.
+    This release compiles using GCC 2.7; some new features have been
+    added and several minor bugs fixed.  Some bugs remain; see the
+    `BUGS' file for details.
 
     Changes to DDD 1.2:
-    - DDD source code has been adapted to recent ANSI/ISO C++
-      resolutions; GCC 2.7.0 should compile DDD without any errors or
-      warnings.  In fact, any GCC release from 2.3.3 onwards should
-      now compile DDD (unjustified commpiler warnings in GCC 2.5 or
-      lower, though).
-    - DBX support on Solaris improved.  Thanks to grant@isgtec.com
-      (Grant McDorman)
-    - Patches for FreeBSD incorporated.  Thanks to
-      smcarey@mailbox.syr.edu (Shawn M. Carey).
+    - You can now edit the current source via an external editor.
+    - Display placement has been improved; new displays are now
+      created in the current visible view, if possible.
+    - The current execution position now stays near the middle of the
+      visible source code.  Following statements remain visible.
+    - Diagnostics of printing commands no longer get lost.
+    - Upon fatal errors, DDD tries to resume execution by returning to
+      the main event loop.  This leaves you a chance for exiting the
+      debugged program properly.
+    - New `Help on Debugging' item.
+      Written by David A. Lyons (dlyons@apple.com).
+    - A short DDD survey, including lots of screen shots, is included
+      in `doc/ddd-paper.ps'.  The paper also highlights some internal
+      aspects of DDD.
+    - DDD source code has been adapted to the current ANSI/ISO C++
+      draft standard.  Any GCC release from 2.3.3 onwards, including
+      the recent GCC 2.7.0, should now compile DDD (unjustified
+      commpiler warnings in GCC 2.5 or lower, though).
+    - DBX support on Solaris improved.
+      Thanks to grant@isgtec.com (Grant McDorman)
+    - Patches for FreeBSD incorporated.
+      Thanks to smcarey@mailbox.syr.edu (Shawn M. Carey).
     - DDD-specific application defaults now override user application
       defaults.  Thanks to ksfdo0@ksepl.shell.nl (Fred Donck).
-    - `Help on Debugging' item.  Written by David A. Lyons
-      (dlyons@apple.com).
-    - New GNU librx 0.07.2 library included (from libg++-2.7.0).
+    - New GNU librx 0.07.2 library included (from libg++-2.7.0),
+      should be faster and more reliable.
+
+    Thanks to all who sent in bug reports and suggestions.  DDD now
+    runs on every major UNIX flavour (with the exception of OSF/1 -
+    any volunteers for that task?).
 
 
 DDD 1.2

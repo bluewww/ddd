@@ -1,7 +1,7 @@
 # $Id$ -*- Text -*-
 # The DDD projects.
 
-This is a list of commonly wished-for DDD features, which should be
+This is a list of frequently suggested DDD features, which should be
 realized in some future DDD release.  If you want to realize one or
 more of these projects, please ask us (ddd@ips.cs.tu-bs.de) whether
 there are already people working on that project.  Similar, if you
@@ -120,23 +120,19 @@ Volunteers for these and other projects are welcome!
 
 041. [done]
 
-042. Suggestions from jcrupi@mystech.com (John Crupi):
-     1. Is there a way to edit the source in the source window ?
-     2. Can I dereference a multi-length array graphically via the mouse ?
-     3. Can I change the 'break point' symbol ?
-     4. When I hit a break point, can the break line
-        be brought to the center of the source window ?
+042. jcrupi@mystech.com (John Crupi) would like to
+     change the 'break point' symbol.
 
-043. An `Edit' button launching emacs or vi on the current file and line.
+043. [done]
 
 044. Disable pointer grabs from the debugged application as soon as
-     the Debugger prompt reappears.
+     the Debugger prompt reappears.  But how?
 
 045. Collect output of printing command and show it in a dialog box.
 
 046. Apply GNU Library Public license to all of DDD?
 
-047. Have a `Reload' button to reload the current source file.
+047. [done]
 
 048. From bruno@nsipo.nasa.gov (Eric Bruno):
      Under the program menu and a menu option with a dialog
@@ -146,10 +142,16 @@ Volunteers for these and other projects are welcome!
      was testing different command lines it would be just a point
      and click.
 
-049. albrecht@igpm.rwth-aachen.de (Harald Albrecht) suggests that the
-     dialog windows (especially the backtrace dialog) should not
+049. albrecht@igpm.rwth-aachen.de (Harald Albrecht):
+     The dialog windows (especially the backtrace dialog) should not
      exceed a specific size (at least, they should not be larger than
      the screen :-).  Also, the DDD dialogs should be iconified on
      their own, without always laying on top of the main windows.
 
-050. (Insert your project idea here)
+050. Include algorithm animation; for instance, in a way similar to
+     LENS (see ftp.cc.gatech.edu:pub/people/stasko).  Suggested by
+     bruce@liverpool.ac.uk (Bruce Stephens).
+
+051. [fixed]
+
+052. (Insert your project idea here)
