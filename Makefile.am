@@ -49,7 +49,7 @@ diststuff:
 	echo "==> Making $@ in ddd..."; \
 	( cd ./ddd; $(MAKE) diststuff )
 
-# Touch `configure' files souch that they don't get re-created.
+# Touch `configure' files such that they don't get re-created.
 .PHONY: disttouch
 disttouch:
 	@cd $(srcdir); \
