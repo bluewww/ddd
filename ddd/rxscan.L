@@ -182,7 +182,7 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 %p 15000
 %a 25000
 %n 5000
-%o 30000
+%o 35000
 
 %%
 01address{W}{A}				RETURN(&rxaddr);
