@@ -114,6 +114,10 @@ typedef struct _GraphEditPart {
     Dimension extraWidth;	// Additional width (in pixels)
     Dimension extraHeight;	// Additional height (in pixels)
 
+    // Requested sizes; for panner and scrollbar creation only
+    Dimension requestedWidth;	// Requested width (in pixels)
+    Dimension requestedHeight;	// Requested height (in pixels)
+
     // Pixmaps
     Pixmap selectTile;		// Tile to apply when node is selected
 
