@@ -19,10 +19,10 @@ To build a complete DDD from sources, you need:
      some subtle errors.  Cfront 3.0 does not compile DDD.
      In doubt, GCC is preferred.
 
-   * A Motif Widget library, either LessTif (0.83 or later) or
+   * A Motif Widget library, either LessTif (0.86 or later) or
      OSF/Motif (1.2 or later).  See the DDD WWW site and the
      `patches/' directory for useful LessTif patches.  The most recent
-     LessTif release is available via `http://www.lesstif.org/'.
+     LessTif release is available at `http://www.lesstif.org/'.
 
    * The X window library (Xlib) and X toolkit library (Xt), X11R4 or
      later.  Best results are obtained with X11R6.3 and later.

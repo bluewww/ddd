@@ -28,8 +28,8 @@ Ideally, nothing - Binaries of DDD 3.1 for several architectures are
 available at the DDD FTP sites.
 
 To build DDD from sources, you need:
-* Motif.  Either LessTif 0.83 or later or OSF/Motif 1.2 or later.
-* A C++ compiler.  Preferably GCC 2.7.2 or later.
+* Motif.  Typically LessTif (>= 0.86) or OSF/Motif (>= 1.2).
+* A C++ compiler.  Typically GCC (>= 2.7.2).
 
 For details, see the local INSTALL file or the DDD WWW page at
 
