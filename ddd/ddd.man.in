@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "21 February 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "05 March 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -498,7 +498,7 @@ In the source window, you can lookup and examine function and variable
 definitions as well as search for arbitrary occurrences in the source
 text.
 .\"
-.SS "Searching Definitions"
+.SS "Looking up Definitions"
 .\"
 If you wish to lookup a specific function or variable definition whose
 name is visible in the source text, click with the \fIleft mouse
@@ -654,6 +654,7 @@ stops when the temporary breakpoint is reached.
 .\"
 .\"
 .SS "Deleting Breakpoints"
+.\"
 If the breakpoint is visible, click with the \fIleft mouse button\fR
 on the breakpoint.  The breakpoint location is copied to the argument
 field.  Click on the `\fBClear at ()\fR' button to delete all
@@ -768,7 +769,7 @@ You can interrupt a running program any time by clicking the
 .SS "Resuming Execution"
 .\"
 To resume execution, at the address where your program last stopped,
-click on the `\fBContinue\|\fR` button.  Any breakpoints set at that
+click on the `\fBContinue\fR` button.  Any breakpoints set at that
 address are bypassed.
 .PP
 To execute just one source line, click on the `\fBStep\fR' button.
@@ -813,6 +814,34 @@ respectively, will also move you through the stack.
 .PSPIC PICS/ddd-backtrace.ps 15.3cm
 .\"
 .\"
+.SS "Examining Threads"
+.\"
+Note: Thread support is available with \s-2GDB\s+2 only.
+.\"
+In some operating systems, a single program may have more than one
+\fIthread\fR of execution.  The precise semantics of threads differ
+from one operating system to another, but in general the threads of a
+single program are akin to multiple processes\(em\&except that they
+share one address space (that is, they can all examine and modify the
+same variables).  On the other hand, each thread has its own registers
+and execution stack, and perhaps private memory.
+.PP
+For debugging purposes, \s-2@DDD@\s+2 lets you display the list of
+threads currently active in your program and lets you select the
+\fIcurrent thread\fR\(em\&the thread which is the focus of debugging.
+\s-2@DDD@\s+2 shows all program information from the perspective of
+the current thread.
+.PP
+To view all currently active threads in your program, select
+`\fBThreads\fR' from the `\fBstatus\fR' menu.  The current thread is
+highlighted.  Select any thread to make it the current thread.
+.PP
+.\".PSPIC (FIXME)
+.PP
+For more information on threads, see the section `\fBDebugging
+programs with multiple threads\fR' in the \s-2GDB\s+2 documentation.
+.\"
+.\"
 .\" ---------------
 .SH "EXAMINING DATA"
 .\" ---------------
@@ -838,7 +867,9 @@ delete them; they are updated each time the program stops.  This is
 useful for large dynamic structures.
 .PP
 .\"
+.\"
 .SS "Displaying Simple Values"
+.\"
 To display the value of a simple variable, move the mouse pointer on
 its name.  After a second, a small window (called \fIvalue tip\fR)
 pops up showing the value of the variable pointed at.  The window
@@ -861,6 +892,7 @@ the popup menu.
 .PSPIC PICS/ddd-print-popup.ps 15.3cm
 .\"
 .SS "Displaying Complex Values"
+.\"
 To explore complex data structures, you can use the \fIgraphical data
 display\fR in the \fIdata window\fR.  The data window holds
 \fIdisplays\fR showing names and the values of variables.  The display
@@ -962,8 +994,8 @@ button\fR on the aggregate and select the appropriate menu item.
 .PSPIC PICS/ddd-hide-display.ps 15.3cm
 .PP
 .\"
-.\"
 .SS "Rotating Arrays"
+.\"
 Arrays can be aligned horizontally or vertically.  To change the
 alignment of an array, select it and then click on the `\fBRotate()\fR'
 button.
@@ -994,6 +1026,11 @@ Display...\fR' menu item.
 Using dependent displays, you can investigate the data structure of a
 \*(lqtree\*(rq for example and lay it out according to your intuitive
 image of the \*(lqtree\*(rq data structure.
+.PP
+By default, \s-2@DDD@\s+2 does not recognize shared data structures
+(i.e. a data object referenced by multiple other data objects).  See
+the section on \fIExamining Shared Data Structures\fR, below, for
+details on how to examine such structures.
 .\"
 .\"
 .SS "Dereferencing Pointers"
@@ -1158,6 +1195,81 @@ and
 .br
 respectively.
 .\"
+.SS "Examining Shared Data Structures"
+.\"
+By default, \s-2@DDD@\s+2 does not recognize shared data
+structures\(em\&that is, a data object referenced by multiple other
+data objects.  For instance, if two pointers \fBp1\fR and \fBp2\fR
+point at the same data object \fBd\fR, the data displays \fBd\fR,
+\fB*p1\fR, and \fB*p2\fR will be separate, although they denote the
+same object.
+.PP
+\s-2@DDD@\s+2 provides a special mode which makes it detect these
+situations.  \s-2@DDD@\s+2 recognizes if two or more data displays are
+stored at the same physical address, and if this is so, merges all
+these \fIaliases\fR into one single data display.  This mode is called
+\fIAlias Detection\fR; it is enabled via the `\fBDetect Aliases\fR'
+item `\fBData\fR' menu.
+.PP
+When alias detection is enabled, \s-2@DDD@\s+2 inquires the memory
+location (the \fIaddress\fR) of each data display after each program
+step.  If two displays have the same address, they are merged into
+one.  More specifically, only the one which has least recently changed
+remains (called \fIoriginal data display\fR); all other aliases are
+\fIsuppressed\fR, i.e. completely hidden. The edges leading to the
+aliases are replaced by edges leading to the original data display.
+.PP
+Alias detection may introduce \fIcurved edges\fR; that is, edges are
+no more straight lines, but describe an arc through an \fIedge
+hint\fR.  You can make edge hints visible by selecting `\fBShow Edge
+Hints\fR' in the `\fBData Options\fR' menu.  Edge hints can be moved
+around like arbitrary displays.
+.PP
+.\".PSPIC (FIXME)
+.PP
+The suppressed displays can not be accessed via the data window, since
+they are not visible.  However, they are listed in the Display Editor
+as \fIaliases\fR of the original data display.  Via the Display
+Editor, you can select and delete suppressed displays.
+.PP
+.\".PSPIC (FIXME)
+.PP
+Suppressed displays become visible again as soon as
+.br
+.IP \(bu 2
+alias detection is disabled, 
+.br
+.IP \(bu 2
+their address changes such that they are no more aliases, or
+.br
+.IP \(bu 2
+the original data display is deleted, such that the least recently
+changed alias becomes the new original data display.
+.PP
+.PP
+Please note the following \fIcaveats\fR with alias detection:
+.br
+.IP \(bu 2
+Alias detection requires that the current programming language
+provides a means to determine the address of an arbitrary data
+object.  Currently, only C and C++ are supported.
+.br
+.IP \(bu 2
+Some inferior debuggers (for instance, SunOS \s-2DBX\s+2) produce
+incorrect output for address expressions.  Given a pointer \fBp\fR,
+you may verify the correct function of your inferior debugger by
+comparing the values of \fBp\fR and \fB&p\fR (unless \fBp\fR actually
+points to itself).  You can also examine the data display addresses,
+as shown in the Display Editor.
+.br
+.IP \(bu 2
+Alias detection slows down \s-2@DDD@\s+2 considerably, which is why it
+is disabled by default.  You may consider to enable it only at
+need\(em\&for instance, while examining some complex data
+structure\(em\&and disable it while examining control flow (i.e.,
+stepping through your program).  \s-2@DDD@\s+2 will automatically
+restore edges and data displays when switching modes.
+.PP
 .\"
 .\"
 .SS "Refreshing the Data Window"
@@ -1314,6 +1426,7 @@ special machine code and register windows for this task.
 .\"
 .\"
 .SS "Examining Machine Code"
+.\"
 To enable machine-level support, select `\fBDisplay Machine Code\fR'
 from the `\fBSource Options\fR' menu.  With `\fBDisplay Machine
 Code\fR' enabled, an additional \fImachine code window\fR shows up,
@@ -1338,6 +1451,7 @@ updated.
 .\"
 .\"
 .SS "Execution"
+.\"
 All execution facilities available in the source code window are
 available in the machine code window as well.  Two special facilities
 are convenient for machine-level debugging:
@@ -1352,6 +1466,7 @@ subroutine calls are executed without stopping.
 .\"
 .\"
 .SS "Registers"
+.\"
 \s-2@DDD@\s+2 provides a \fIregister window\fR showing the machine
 register values after each program stop.  To enable the register
 window, select `\fBRegisters...\fR' from the `\fBStatus\fR' menu.
@@ -1539,8 +1654,9 @@ invoking user, you should give it very limited access.
 You can run \s-2@DDD@\s+2 as an inferior debugger in other debugger
 front-ends, combining their special abilities with those of
 \s-2@DDD@\s+2.
-.PP
+.\"
 .SS "General Information"
+.\"
 To have \s-2@DDD@\s+2 run as an inferior debugger in other front-ends,
 set up your debugger front-end such that `\fB@ddd@ \-\-tty\fR' is
 invoked instead of the inferior debugger.  When \s-2@DDD@\s+2 is
@@ -1564,14 +1680,16 @@ that the \s-2TTY\s+2 interface does not support line editing and
 command completion and that \s-2@DDD@\s+2 exits as soon as it receives
 a \s-2EOF\s+2 on its standard input.  Also, do not try to run
 \s-2@DDD@\s+2 with \s-2@DDD@\s+2 as inferior debugger.
-.PP
+.\"
 .SS "Using @DDD@ with GNU Emacs"
+.\"
 Use `\fBM-x gdb\fR' or `\fBM-x dbx\fR' to start a debugging session.
 At the prompt, enter `\fB@ddd@ \-\-tty\fR', followed by
 `\fB\-\-dbx\fR' or `\fB\-\-gdb\fR', if required, and the name of the
 program to be debugged.  Proceed as usual.
-.PP
+.\"
 .SS "Using @DDD@ with XEmacs"
+.\"
 Set the variable \fBgdb-command-name\fR to \fB"ddd"\fR, by inserting
 the following line in your \fB$HOME/.emacs\fR file or evaluating it by
 pressing \s-2\fBESC\fR\s+2 \s-2\fB:\fR\s+2\fR (\s-2\fBESC\fR\s+2
@@ -1583,8 +1701,9 @@ pressing \s-2\fBESC\fR\s+2 \s-2\fB:\fR\s+2\fR (\s-2\fBESC\fR\s+2
 .br
 Use `\fBM-x gdb\fR' or `\fBM-x gdbsrc\fR' 
 to start a debugging session.  Proceed as usual.
-.PP
+.\"
 .SS "Using @DDD@ with XXGDB"
+.\"
 Invoke \fBxxgdb\fR as
 .br
 .sp
@@ -1665,7 +1784,7 @@ the `\fBSuppress X warnings\fR' option.
 When debugging a modal X application, \s-2@DDD@\s+2 may interrupt it
 while it has grabbed the pointer, making further interaction
 impossible.  If the `\fBUngrab mouse pointer when interrupting modal X
-application\\fR' option is set, \s-2@DDD@\s+2 will check after each
+application\fR' option is set, \s-2@DDD@\s+2 will check after each
 interaction whether the pointer is grabbed.  If this is so,
 \s-2@DDD@\s+2 will instruct the debugged program to ungrab the mouse
 pointer such that you can continue to use your display.
@@ -1781,11 +1900,13 @@ options and restarted \s-2@DDD@\s+2.  See also the `\fB\-\-gdb\fR',
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Saving Options"
+.\"
 You can save the current option settings by selecting `\fBSave
 Options\fR' in the `\fBOptions\fR' menu.  Options are saved in a file
 named `\fB.dddinit\fR' in your home directory.
 .\"
 .SS "Other Customizations"
+.\"
 Other personal \s-2@DDD@\s+2 resources can also be set in your
 `\fB.dddinit\fR' file.  See the `\fBRESOURCES\fR' section, below.
 .PP
@@ -1828,6 +1949,7 @@ classes.  The following resources are specific to \s-2@DDD@\s+2.
 .\"
 .\"
 .SS "Setting @DDD@ Fonts"
+.\"
 This is the default font setting in \s-2@DDD@\s+2:
 .sp
 .br
@@ -1946,6 +2068,7 @@ the `\fBvslDefs\fR' resource, below.
 .\"
 .\"
 .SS "Setting @DDD@ Colors"
+.\"
 .PP
 These are the most important color resources used in \s-2@DDD@\s+2:
 .TP 30
@@ -1992,6 +2115,7 @@ the `\fBvslDefs\fR' resource, below.
 .\"
 .\"
 .SS "Options and Preferences"
+.\"
 The following resources determine \s-2@DDD@\s+2 options and
 preferences.
 .TP
@@ -2120,6 +2244,7 @@ Whether the display of variable values in the status line is enabled
 .\"
 .\"
 .SS "Debugger Settings"
+.\"
 The following resources determine the inferior debugger.
 .TP
 .B "dbxInitCommands (\fPclass\fB DBXInitCommands)"
@@ -2263,6 +2388,7 @@ and restore debugger settings.
 .\"
 .\"
 .SS "User-defined Buttons"
+.\"
 The following resources can be used to create user-defined buttons.
 .TP
 .B "consoleButtons (\fPclass\fB ConsoleButtons)"
@@ -2471,6 +2597,7 @@ not created.
 .\"
 .\"
 .SS "Data Display Resources"
+.\"
 The following resources control the data display.
 .TP
 .B "vslDefs (\fPclass\fB VSLDefs)"
@@ -2609,6 +2736,7 @@ to specify some minor changes to the built-in library.  See the
 .\"
 .\"
 .SS "Customizing Helper Programs"
+.\"
 The following resources determine external programs invoked by \s-2@DDD@\s+2.
 .TP
 .B "editCommand (\fPclass\fB EditCommand)"
@@ -2737,6 +2865,7 @@ The \s-2@DDD@\s+2 \s-2WWW\s+2 page.  Value:
 .\"
 .\"
 .SS "Obtaining Diagnostics"
+.\"
 The following resources are used for debugging \s-2@DDD@\s+2 and to
 obtain specific \s-2@DDD@\s+2 information.
 .TP
@@ -2790,6 +2919,7 @@ standard output.  Default is `\fBfalse\fR'.
 .\"
 .\"
 .SS "More Resources"
+.\"
 The `\fBDdd\fR' application defaults file contains even more
 information about setting \s-2@DDD@\s+2 resources.  The `\fBDdd\fR'
 file comes with the \s-2@DDD@\s+2 distribution.
@@ -2803,6 +2933,7 @@ file comes with the \s-2@DDD@\s+2 distribution.
 The following \s-2@DDD@\s+2 actions may be used in translation tables.
 .\"
 .SS "General Actions"
+.\"
 These actions are used to assign the keyboard focus.
 .TP
 .B ddd\-next\-tab\-group ()
@@ -2820,6 +2951,7 @@ Assign focus to the element that just received input.
 .\"
 .\"
 .SS "Data Display Actions"
+.\"
 These actions are used in the \s-2@DDD@\s+2 graph editor.
 .TP
 .B end ()
@@ -2909,6 +3041,7 @@ Clear the selection.
 .\"
 .\"
 .SS "Debugger Console Actions"
+.\"
 These actions are used in the debugger console and other text fields.
 .TP
 .B gdb\-backward\-character ()
@@ -3225,7 +3358,9 @@ For more information on this list, send a mail to
 .\" ---------------
 .SH LIMITATIONS
 .\" ---------------
+.\"
 .SS "Limitations using GDB"
+.\"
 Some \s-2GDB\s+2 settings are essential for \s-2@DDD@\s+2 to work correctly.
 These settings with their correct values are:
 .sp
@@ -3259,6 +3394,7 @@ to the most recent \s-2GDB\s+2 version.
 .PP
 .\"
 .SS "Limitations using DBX"
+.\"
 When used for debugging Modula-2 or Pascal programs, \s-2@DDD@\s+2
 always numerates array elements starting with zero, instead of using
 correct array subscripts.
@@ -3277,12 +3413,14 @@ according to the current frame; variables outside the current frame
 cannot be displayed.
 .\"
 .SS "Limitations using XDB"
+.\"
 There is no automatic data display in \s-2XDB\s+2.  As a workaround,
 \s-2@DDD@\s+2 uses the `\fBp\fR' command to access data values.  This
 means that variable names are interpreted according to the current
 frame; variables outside the current frame cannot be displayed.
 .\"
 .SS "General Limitations"
+.\"
 If command output is sent to the debugger console, it is impossible
 for \s-2@DDD@\s+2 to distinguish between the output of the debugged
 program and the output of the inferior debugger.  For instance, if
@@ -3309,6 +3447,7 @@ to fix it.  (Instead of sending bug reports, you may also send
 :-)
 .\"
 .SS "Where to Send Bug Reports"
+.\"
 We recommend that you send bug reports for \s-2@DDD@\s+2 via electronic
 mail to
 .sp
@@ -3339,6 +3478,7 @@ As a last resort, send bug reports on paper to:
 .DE
 .\"
 .SS "Is it a \s-2@DDD@\s+2 Bug?"
+.\"
 Before sending in a bug report, try to find out whether the problem
 cause really lies within \s-2@DDD@\s+2.  A common cause of problems
 are incomplete or missing X or Motif installations, for instance, or
@@ -3364,6 +3504,7 @@ debugger output to the output of \s-2@DDD@\s+2 and determine which one
 is wrong.
 .\"
 .SS "How to Report Bugs"
+.\"
 Here are some guidelines for bug reports:
 .br
 .IP \(bu 2
@@ -3395,6 +3536,7 @@ receive your bug report.
 .PP
 .\"
 .SS "What to Include in a Bug Report"
+.\"
 To enable us to fix a \s-2@DDD@\s+2 bug, you \fImust\fR include the
 following information:
 .br
@@ -3485,8 +3627,8 @@ October, 1996
 \s-2@DDD@\s+2 2.0: Colored displays, \s-2XDB\s+2
 support, generic \s-2DBX\s+2 support, command tool.
 .TP
-March, 1997
-\s-2@DDD@\s+2 2.1: Button and value tips, status displays, automatic
+April, 1997
+\s-2@DDD@\s+2 2.1: Alias detection, button and value tips, status displays.
 pointer ungrabbing.
 .PD
 .\"
@@ -3508,6 +3650,7 @@ welcome.
 .\" ---------------
 .SH "IF YOU LIKE @DDD@..."
 .\" ---------------
+.\"
 If you appreciate this software, or have any suggestions, 
 please send us a picture postcard.  Our address is:
 .PP
@@ -3538,6 +3681,7 @@ It is accessible via our \s-2@DDD@\s+2 \s-2WWW\s+2 page,
 .\" --------------------
 .SH PRINTING THIS MANUAL
 .\" --------------------
+.\"
 Invoke \s-2@DDD@\s+2 with the `\fB\-\-manual\fR' option to show this
 manual page on standard output.  This text output is suitable for
 installation as formatted manual page (as
@@ -3562,6 +3706,7 @@ manual page on \s-2UNIX\s+2 systems (as
 .\" ---------------
 .SH COPYRIGHT
 .\" ---------------
+.\"
 \s-2@DDD@\s+2 is Copyright \(co 1995, 1996, 1997
 Technische Universit\o'"a't Braunschweig, Germany.
 .PP
