@@ -94,11 +94,25 @@ int userinfo(char *arg = 0)
 
     if (s == pwd->pw_gecos)
     {
-	// No real name given; try capitalized user id
+	// No real name given; try user id
 	if (pwd->pw_name[0])
 	{
-	    fputc(toupper(pwd->pw_name[0]), stdout);
-	    fputs(pwd->pw_name + 1, stdout);
+	    s = pwd->pw_name;
+	    while (is_letter(*s++))
+		;
+
+	    if (*s)
+	    {
+		// User id is a real name => capitalize it.
+		fputc(toupper(pwd->pw_name[0]), stdout);
+		fputs(pwd->pw_name + 1, stdout);
+	    }
+	    else
+	    {
+		// User id contains non-letters and is probably a
+		// symbolic name => leave it unchanged.
+		fputs(pwd->pw_name + 1, stdout);
+	    }
 	}
 	else
 	{
@@ -107,7 +121,7 @@ int userinfo(char *arg = 0)
 	}
     }
 
-    // Issue user and host (probable mail address)
+    // Issue user id and host (probable mail address)
     fputs(" <", stdout);
     fputs(pwd->pw_name, stdout);
     fputs("@", stdout);
