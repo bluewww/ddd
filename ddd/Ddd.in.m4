@@ -3140,16 +3140,16 @@ Click on LBL(OK) to close this window.
 
 
 !-----------------------------------------------------------------------------
-! Start-up logo
+! Splash screen
 !-----------------------------------------------------------------------------
 
-Ddd*logo_shell.logo.highlightThickness:	0
-Ddd*logo_shell.logo.background:	  white
-Ddd*logo_shell.logo.foreground:	  black
-Ddd*logo_shell.logo.marginHeight: 0
-Ddd*logo_shell.logo.marginWidth:  0
-Ddd*logo_shell.logo.borderWidth:  0
-Ddd*logo_shell.borderWidth:       0
+Ddd*splash_shell.splash.highlightThickness:	0
+Ddd*splash_shell.splash.background:	        white
+Ddd*splash_shell.splash.foreground:	        black
+Ddd*splash_shell.splash.marginHeight:           0
+Ddd*splash_shell.splash.marginWidth:            0
+Ddd*splash_shell.splash.borderWidth:            0
+Ddd*splash_shell.borderWidth:                   0
 
 
 

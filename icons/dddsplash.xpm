@@ -1,7 +1,7 @@
 /* XPM */
-static char * dddlogo_xpm[] = {
+static char * dddsplash_xpm[] = {
 /* $Id$
- * Big DDD Logo.  Copyright (C) 1998 TU Braunschweig, Germany.
+ * DDD Splash Screen.  Copyright (C) 1998 TU Braunschweig, Germany.
  * For details on DDD, see `http://www.cs.tu-bs.de/softech/ddd/'.
  * width height ncolors chars_per_pixel */
 "  410   140    44      1",

@@ -31,7 +31,7 @@
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
-.PSPIC @srcdir@/PICS/dddlogo.ps 10cm
+.PSPIC @srcdir@/PICS/dddsplash.ps 10cm
 .\"
 .\" ---------------
 .SH "SYNOPSIS"
