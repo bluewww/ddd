@@ -67,7 +67,7 @@ static bool expand_label(string& name, const string& full_path, char sep)
 
 // Make each item in LABELS a base name of FILES, such that all
 // items have unique names.
-extern void uniquify(StringArray& files, StringArray& labels, char sep)
+void uniquify(StringArray& files, StringArray& labels, char sep)
 {
     // Start with base names
     static StringArray empty;
