@@ -38,10 +38,9 @@ DDD 2.2 [in development]
       save options.
     - Support for debugging processes running outside of DDD.  You can
       attach to a running process, examine it, and resume execution.
-    - Shortcuts for dependent displays.  When entering a dependent
-      display, DDD offers to include the operation in a shortcut menu.
-      Hence, once you have changed `p' to `(char *) p', DDD provides a 
-      menu entry for converting arbitrary values to `(char *)'.
+    - Display shortcuts.  Once you have changed `p' to `(char *) p'
+      manually, DDD provides a menu shortcut for converting arbitrary
+      values to `(char *)'.
     - Improved online manuals:
       + Multiple manual browsers are supported.
       + Manual browsers are realized as top-level windows.
