@@ -1922,7 +1922,7 @@ $(picdir)/ddd-layout.eps: \
 $(picdir)/ddd-print-graph.eps: \
 	$(picdir)/ddd-print-graph.fig $(picdir)/ddd-print-graph.xpm
 $(picdir)/ddd-print-output.eps: \
-	$(picdir)/ddd-print-output.fig $(picdir)/ddd-graph.eps
+	$(picdir)/ddd-print-output.fig $(picdir)/ddd-graph.ps
 $(picdir)/ddd-code.eps: \
 	$(picdir)/ddd-code.fig $(picdir)/ddd-code.xpm
 $(picdir)/ddd-registers.eps: \
@@ -1997,7 +1997,7 @@ $(picdir)/ddd-toolbars.eps: \
 	$(picdir)/ddd-toolbar-4.xpm
 
 
-# GIFs are derived from EPS files
+# JPEGs are derived from EPS files
 
 $(picdir)/ddd-all$(IMGEXT):              $(picdir)/ddd-all.eps
 $(picdir)/ddd-console$(IMGEXT):          $(picdir)/ddd-console.eps
