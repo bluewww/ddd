@@ -135,7 +135,8 @@
 !       #override\n\
 ! 	Ctrl<Key>A: gdb-beginning-of-line()
 !
-! The DDD manual contains a list of all available actions.
+! The DDD manual and the XmText documentation
+! contain a list of all available actions.
 
 ! Enrico Scholz <enrico.scholz@wirtschaft.tu-chemnitz.de> suggests the
 ! following accelerators (taken from the Borland Delphi debugger):
