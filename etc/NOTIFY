@@ -38,7 +38,8 @@ USENET News
 * comp.windows.x      (not needed if comp.windows.x.announce has it)
 * comp.windows.x.apps (dito)
 
-Use `Followup-to: poster' and `Reply-to: ddd@ips.cs.tu-bs.de' as headers.
+Use `Followup-to: poster', `Reply-to: ddd@ips.cs.tu-bs.de' and
+`ddd/icons/ddd.xface' as headers.
 
 
 Where to install
