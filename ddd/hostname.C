@@ -162,19 +162,22 @@ static char *_fullhostname(char *most_qualified_host)
 	    if (dots(h->h_aliases[i]) > dots(most_qualified_host))
 		most_qualified_host = h->h_aliases[i];
 
-	// Try network addresses
-	if (h->h_addrtype == AF_INET)
+	if (dots(most_qualified_host) == 0)
 	{
-	    for (int j = 0; h->h_addr_list[j] != 0; j++)
+	    // Unqualified host - try network addresses
+	    if (h->h_addrtype == AF_INET)
 	    {
-		static char num_host[128];
-		num_host[0] = '\0';
-		for (int i = 0; i < h->h_length; i++)
-		    sprintf(num_host + strlen(num_host), i ? ".%d" : "%d",
-			    int((unsigned char)(h->h_addr_list[j][i])));
+		for (int j = 0; h->h_addr_list[j] != 0; j++)
+		{
+		    static char num_host[128];
+		    num_host[0] = '\0';
+		    for (int i = 0; i < h->h_length; i++)
+			sprintf(num_host + strlen(num_host), i ? ".%d" : "%d",
+				int((unsigned char)(h->h_addr_list[j][i])));
 
-		if (dots(num_host) > dots(most_qualified_host))
-		    most_qualified_host = num_host;
+		    if (dots(num_host) > dots(most_qualified_host))
+			most_qualified_host = num_host;
+		}
 	    }
 	}
     }
