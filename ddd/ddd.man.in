@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-05\-25" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-06\-05" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -3330,6 +3330,11 @@ is zero, the entire current function is disassembled.
 The maximum number of glyphs to be displayed (default: \fB10\fR).
 Raising this value causes more glyphs to be allocated, possibly
 wasting resources that are never needed.
+.TP
+.B "sourceEditing (\fPclass\fB SourceEditing)"
+If this is `\fBon\fR', the displayed source code becomes editable.
+This is an experimental feature and may become obsolete in future
+\s-1@DDD@\s+1 releases.  Default if `\fBoff\fR'.
 .TP
 .B "tabWidth (\fPclass\fB TabWidth)"
 The tab width used in the source window (default: \fB8\fR)
