@@ -6026,6 +6026,25 @@ XmTextPosition SourceView::glyph_position(Widget w, XEvent *e, bool normalize)
 
     XmTextPosition pos = XmTextXYToPos(text_w, p[X], p[Y]);
 
+    // Stay within viewable text +/-1 row, such that we don't scroll too fast
+    short rows = 0;
+    XmTextPosition current_top = 0;
+    XtVaGetValues(text_w,
+		  XmNrows, &rows,
+		  XmNtopCharacter, &current_top,
+		  NULL);
+
+    const string& text = current_text(text_w);
+    XmTextPosition current_bottom = current_top;
+    while (current_bottom < int(text.length()) && rows > 0)
+	if (text[current_bottom++] == '\n')
+	    rows--;
+
+    if (pos < current_top)
+	pos = max(current_top - 1, 0);
+    else if (pos > current_bottom)
+	pos = min(current_bottom + 1, text.length());
+
     if (normalize)
     {
 	const string& text = current_text(w);
