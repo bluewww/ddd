@@ -141,6 +141,21 @@ else
 GCORE_COMMAND=
 fi
 AC_SUBST(GCORE_COMMAND)dnl
+AC_CHECK_PROGS(DEBUGGER, gdb dbx xdb jdb)dnl
+case "$DEBUGGER" in
+*gdb*) DEBUGGER_OPTION="";;
+*dbx*) DEBUGGER_OPTION="--dbx";;
+*xdb*) DEBUGGER_OPTION="--xdb";;
+*jdb*) DEBUGGER_OPTION="--jdb";;
+esac
+case "$DEBUGGER" in
+gdb) ;;
+dbx) ;;
+xdb) ;;
+jdb) ;;
+*)   DEBUGGER_OPTION="$DEBUGGER_OPTION --debugger $DEBUGGER";
+esac
+AC_SUBST(DEBUGGER_OPTION)dnl
 AC_PROG_INSTALL
 AC_PROG_RANLIB
 AC_PROG_YACC

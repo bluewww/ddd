@@ -270,6 +270,15 @@ INSTALL_DATA = @INSTALL_DATA@
 transform=@program_transform_name@
 
 
+## `make check' commands.
+
+# A debugger for debugging DDD.  (gdb)
+DEBUGGER = @DEBUGGER@
+
+# The options for DDD when invoking `make check'.  ()
+DDD_OPTIONS = @DEBUGGER_OPTION@
+
+
 ## The following definitions are needed for development only.
 ## Usually, you don't need any of these.
 
@@ -350,7 +359,7 @@ GREP = grep
 # The sort command.
 SORT = sort
 
-# The diff command.
+# The diff command.  (diff)
 DIFF = @DIFF@
 
 # The touch command.
@@ -365,9 +374,6 @@ STRIP = strip
 # The mkdir and rmdir commands.
 MKDIR = mkdir
 RMDIR = rmdir
-
-# The GNU Debugger.
-GDB = gdb
 
 # The sleep command.
 SLEEP = sleep
@@ -1351,17 +1357,17 @@ ftest.o: $(srcdir)/ftest.f
 ## For demonstration and debugging purposes
 .PHONY: check
 check: Ddd ddd cxxtest
-	XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd cxxtest
+	XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd $(DDD_OPTIONS) cxxtest
 
 .PHONY: debug
 debug: Ddd $(ddd) cxxtest .gdbinit $(ddd).syms
-	$(GDB) ./$(ddd)
+	$(DEBUGGER) ./$(ddd)
 
 $(ddd).syms: $(ddd_canonical).syms
 	$(RM) $@; $(LN_S) $(ddd_canonical).syms $@
 
 $(ddd_canonical).syms: $(ddd_canonical)
-	nice $(GDB) -batch -nx -mapped -readnow $(ddd_canonical)
+	nice $(DEBUGGER) -batch -nx -mapped -readnow $(ddd_canonical)
 
 .PHONY: syms
 syms:   $(ddd).syms
