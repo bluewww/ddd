@@ -1,25 +1,50 @@
 <!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
 <HTML>
 <HEAD>
-<TITLE>DDD - GNU Project - Free Software Foundation (FSF)</TITLE>
-<LINK REV="made"HREF="mailto:webmasters@www.gnu.org">
+<TITLE>DDD - Data Display Debugger - GNU Project - Free Software Foundation (FSF)</TITLE>
+<LINK REL="author" HREF="mailto:zeller@gnu.org">
+<LINK REL=StyleSheet HREF="style.css" type="text/css" media=screen>
 
 <META NAME="keywords" CONTENT="debugger debugging visualization GDB">
 
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#1F00FF" ALINK="#FF0000" VLINK="#9900DD">
 
-<H1>DDD - Data Display Debugger</H1>
+<SMALL>
+<A HREF="/home.html">GNU Project</A> - 
+<A HREF="/software/software.html">Software</A>
+</SMALL>
 
-<A HREF="/graphics/gnu-head-sm.jpg"><IMG SRC="/graphics/gnu-head-sm.jpg"
-ALT=" [image of the Head of a GNU] "
-WIDTH="129" HEIGHT="122"></A>
+<HR>
+
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0>
+<TR><TD>
+<IMG SRC="/graphics/dddlogo.jpg" ALT="DDD - the Data Display Debugger" WIDTH="410" HEIGHT="140"><BR>
+</TD>
+<TD VALIGN=CENTER>
+<SMALL CLASS=menu>
+<UL>
+<LI> <A HREF="#News">DDD News</A>
+<LI> <A HREF="#About">About DDD</A>
+<LI> <A HREF="#Getting">Getting DDD</A>
+<LI> <A HREF="#Building">Building DDD</A>
+<LI> <A HREF="#Doc">Documentation</A>
+<LI> <A HREF="#Alpha">Alpha Releases</A>
+<LI> <A HREF="#Bugs">Reporting Bugs</A>
+<LI> <A HREF="#Assistance">Help and Assistance</A>
+<LI> <A HREF="#References">References</A>
+</UL>
+</SMALL>
+</TD></TR></TABLE>
+
+<HR>
+
 
 <!-- end of beginning boilerplate -------------------------------------------->
 
 <!-- Contributing author: Andreas Zeller, zeller@gnu.org -->
 
-<H2>DDD News</H2>
+<H2><A NAME="News" HREF="">DDD News</A></H2>
 
 GNU DDD 3.2 is now <A HREF="#Getting">available</A>.  DDD 3.2 brings a
 <A HREF="/manual/ddd/">new manual</A> as well as <A
@@ -28,7 +53,7 @@ improvements and bug fixes</A>.
 
 
 
-<H2>What is DDD?</H2>
+<H2><A NAME="About" HREF="">What is DDD?</A></H2>
 
 GNU DDD is a graphical front-end for command-line debuggers such as <A
 HREF="/software/gdb/gdb.html">GDB</A>, DBX, WDB, Ladebug, JDB, XDB,
@@ -37,11 +62,19 @@ front-end features such as viewing source texts, DDD has become famous
 through its interactive graphical data display, where data structures
 are displayed as graphs.
 <P>
-For more information (and lots of screenshots), see the <A
+<A HREF="all.jpg"><IMG WIDTH=122 HEIGHT=127 SRC="small-all.jpg" ALT="DDD"></A>
+<A HREF="plots.jpg"><IMG WIDTH=121 HEIGHT=126 SRC="small-plots.jpg" ALT="Plots"></A>
+
+<A HREF="settings.jpg"><IMG WIDTH=121 HEIGHT=127 SRC="small-settings.jpg" ALT="Debugger Settings"></A>
+<A HREF="registers.jpg"><IMG WIDTH=121 HEIGHT=127 SRC="small-registers.jpg" ALT="Registers"></A>
+<A HREF="signal.jpg"><IMG WIDTH=121 HEIGHT=127 SRC="small-signal.jpg" ALT="Signals"></A>
+
+<P>
+For more information (and more screenshots), see the <A
 HREF="/manual/ddd/">DDD Manual</A>.
 
 
-<H2><A NAME="Getting">Where do I get DDD?<A></H2>
+<H2><A NAME="Getting" HREF="">Where do I get DDD?</A></H2>
 
 DDD is in the subdirectory 
 <SAMP><A HREF="ftp://ftp.gnu.org/gnu/ddd/">/gnu/ddd/</A></SAMP> on 
@@ -94,7 +127,7 @@ HREF="http://www.gnu.org/gnu/linux-and-gnu.html">GNU/Linux</A> are
 typically available via your GNU/Linux distributor.
 
 
-<H2>What do I need to build DDD?</H2>
+<H2><A NAME="Building" HREF="">What do I need to build DDD?</A></H2>
 
 To build DDD from sources, you need 
 <UL>
@@ -122,13 +155,13 @@ debugger).
 
 
 
-<H2>How do I get started with DDD?</H2>
+<H2><A NAME="Doc" HREF="">How do I get started with DDD?</A></H2>
 
 The <A HREF="/manual/ddd/">DDD Manual</A> contains a useful tutorial.
 
 
 
-<H2>Where do I get the latest DDD release?</H2>
+<H2><A NAME="Alpha" HREF="">Where do I get the latest DDD release?</A></H2>
 
 The most recent (not necessarily tested) snapshots of GNU DDD can be
 found in <SAMP><A
@@ -139,7 +172,7 @@ you can always download the latest and greatest snapshots.
 
 
 
-<H2>I have found a bug!  How do I report it?</H2>
+<H2><A NAME="Bugs" HREF="">I have found a bug!  How do I report it?</A></H2>
 
 You can report bugs to <SAMP><A
 HREF="mailto:bug-ddd@gnu.org">bug-ddd@gnu.org</A></SAMP>.  Before you
@@ -175,7 +208,7 @@ HREF="mailto:bug-ddd-request@gnu.org">bug-ddd-request@gnu.org</A></SAMP>
 
 
 
-<H2>I have a question regarding DDD.  Where do I get assistance?</H2>
+<H2><A NAME="Assistance" HREF="">I have a question regarding DDD.  Where do I get assistance?</A></H2>
 
 We have a general-purpose mailing list devoted to DDD.  You can ask
 any questions to <SAMP><A
@@ -189,12 +222,12 @@ If you need technical support on DDD, you can <A
 HREF="http://www.gnu.org/help/gethelp.html">ask for technical support</A>.
 
 
-<H2>Where can I learn more about debugging and debuggers?</H2>
+<H2><A NAME="References" HREF="">Where can I learn more about debugging and debuggers?</A></H2>
 
 Here's a couple of related resources:
 
 <UL>
-<LI> <CITE><A HREF="http://www.cs.tu-bs.de/softech/ddd/ddd.html">Old DDD Home Page</A>.
+<LI> <CITE><A HREF="http://www.cs.tu-bs.de/softech/ddd/ddd.html">Old DDD Home Page</A></CITE>.
 <SMALL>Lots of information on earlier DDD versions.  No longer maintained.</SMALL>
 <LI> <CITE><A
  HREF="http://members.home.net:80/davecook/devel/">Linux
@@ -299,7 +332,7 @@ permitted in any medium, provided this notice is preserved.
 <P>
 Updated:
 <!-- hhmts start -->
-Last modified: Tue Jan 18 15:11:41 CET 2000
+Last modified: Thu Jan 27 16:37:17 CET 2000
 <!-- hhmts end -->
 <HR>
 </BODY>
