@@ -47,11 +47,14 @@ extern Pixmap iconmask(Widget shell);
 // Return a small DDD logo suitable for the widget W
 extern Pixmap versionlogo(Widget shell);
 
-// Return the DDD splash screen
+// Return the DDD splash screen.  COLOR_KEY indicates the XPM visual type.
 extern Pixmap dddsplash(Widget shell, const string& color_key = 'c');
 
-// Install toolbar icons in Motif cache
-extern void install_icons(Widget shell, const string& color_key = 'c');
+// Install toolbar icons in Motif cache.  COLOR_KEY indicates the XPM
+// visual type. If STRIP_CAPTIONS is greater than 0, strip this number
+// of pixels from the bottom of toolbar icons.
+extern void install_icons(Widget shell, int strip_captions = 0, 
+			  const string& color_key = 'c');
 
 // Set label of W to NEW_LABEL (and its pixmap to IMAGE_NAME, if given)
 extern void set_label(Widget w, const MString& new_label, 
