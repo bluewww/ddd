@@ -34,6 +34,7 @@
 #endif
 
 #include <X11/Intrinsic.h>
+#include "bool.h"
 
 extern void gdbBreakAtCB      (Widget, XtPointer, XtPointer);
 extern void gdbClearAtCB      (Widget, XtPointer, XtPointer);
