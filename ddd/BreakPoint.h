@@ -121,6 +121,9 @@ public:
     const string& number_str()   const { return mynumber_str; }
     int           number()       const { return mynumber; }
 
+    // Breakpoint symbol (`#N#' or `_N_')
+    string        symbol()       const;
+
     // Breakpoint type.
     BPType        type()         const { return mytype; }
 

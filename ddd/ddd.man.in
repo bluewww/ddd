@@ -653,7 +653,10 @@ shortcuts and prefer popup menus.  \fIExperienced users\fR prefer the
 command line interface.)
 .PP
 Breakpoints are indicated by a plain stop sign, or as
-`\fB#\fIn\fB#\fR', where \fIn\fR is the breakpoint number.
+`\fB#\fIn\fB#\fR', where \fIn\fR is the breakpoint number.  A greyed
+out stop sign (or `\fB_\fIn\fB_\fR') indicates a disabled breakpoint.
+A stop sign with a question mark (or `\fB?\fIn\fB?\fR') indicates a
+conditional breakpoint or a breakpoint with an ignore count set.
 .PP
 Note: some Motif/X server combinations may fail to display stop signs
 correctly.  If this happens, try writing in your

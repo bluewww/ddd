@@ -565,6 +565,19 @@ string BreakPoint::pos() const
 	return file_name() + ":" + itostring(line_nr());
 }
 
+string BreakPoint::symbol() const
+{
+    char c;
+    if (!enabled())
+	c = '_';
+    else if (condition() != "" || ignore_count() != 0)
+	c = '?';
+    else
+	c = '#';
+
+    return c + number_str() + c;
+}
+
 
 //-----------------------------------------------------------------------------
 // Session stuff
