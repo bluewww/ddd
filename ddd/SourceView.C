@@ -3108,7 +3108,8 @@ void SourceView::EditBreakpointConditionCB(Widget,
 
 	Widget text = XmSelectionBoxGetChild(edit_breakpoint_condition_dialog,
 					     XmDIALOG_TEXT);
-	XmTextSetSelection(text, 0, cond.length(), CurrentTime);
+	XmTextSetSelection(text, 0, cond.length(), 
+			   XtLastTimestampProcessed(XtDisplay(text)));
     }
 
     XtManageChild(edit_breakpoint_condition_dialog);
@@ -3210,7 +3211,8 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
 	Widget text = 
 	    XmSelectionBoxGetChild(edit_breakpoint_ignore_count_dialog,
 				   XmDIALOG_TEXT);
-	XmTextSetSelection(text, 0, ignore.length(), CurrentTime);
+	XmTextSetSelection(text, 0, ignore.length(), 
+			   XtLastTimestampProcessed(XtDisplay(text)));
     }
 
     XtManageChild(edit_breakpoint_ignore_count_dialog);
