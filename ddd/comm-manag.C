@@ -1844,7 +1844,12 @@ void send_gdb_command(string cmd, Widget origin,
 					   cmd, (void *)cmd_data);
 
     if (!send_ok)
+    {
+	delete extra_data;
+	delete cmd_data;
+
 	post_gdb_busy(origin);
+    }
 }
 
 
@@ -2126,6 +2131,7 @@ static void command_completed(void *data)
 	    cmd_data->graph_cmd   = "";
 	    cmd_data->user_answer = "";
 	    gdb->send_user_cmd(cmd, (void *)cmd_data);
+	    // TODO: leak on CMD_DATA?
 	    return;
 	}
 
@@ -2266,7 +2272,7 @@ static void command_completed(void *data)
     {
 	cmd_data->filter_disp = Filter;
 	cmd_data->user_prompt = false;	// No more prompts
-	gdb->send_user_cmd(gdb->display_command());
+	gdb->send_user_cmd(gdb->display_command(), cmd_data);
 	return;
     }
 

@@ -99,6 +99,19 @@ protected:
 	return entries = e;
     }
 
+private:
+    // Destroy all elements
+    void destroyAll()
+   {
+      AssocRec<K,V> *next = 0;
+      for (AssocRec<K,V> *e = entries; e != 0; e = next)
+      {
+          next = e->next;
+          delete e;
+      }
+      entries = 0;
+   }
+
 public:
     // Constructors
     _Assoc():
@@ -108,12 +121,7 @@ public:
     // Destructor
     virtual ~_Assoc()
     {
-	AssocRec<K,V> *next = 0;
-	for (AssocRec<K,V> *e = entries; e != 0; e = next)
-	{
-	    next = e->next;
-	    delete e;
-	}
+	destroyAll();
     }
 
     // Resources
@@ -194,7 +202,7 @@ public:
 	if (this != &m)
 	{
 	    if (entries)
-		delete entries;
+		destroyAll();
 	    entries = 0;
 
 	    for (AssocRec<K,V> *e = m.entries; e != 0; e = e->next)

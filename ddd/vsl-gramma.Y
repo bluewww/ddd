@@ -196,7 +196,9 @@ function_declaration	:	function_header
 						    *$1.file, $1.line);
 				    }
 				    delete $1.id;
+				    $1.id = 0;
 				    delete $1.file;
+				    $1.file = 0;
 				}
 
 function_header		:	function_identifier function_argument
@@ -219,6 +221,7 @@ function_header		:	function_identifier function_argument
 				    $$.line    = vsllinenumber;
 
 				    delete $1;
+				    $1 = 0;
 				}
 
 function_identifier	:	identifier
@@ -279,7 +282,9 @@ local_definition	: 	local_header function_body
 				    }
 
 				    delete $1.id;
+				    $1.id = 0;
 				    delete $1.file;
+				    $1.file = 0;
 				}
 
 local_header		:	function_header EQ
@@ -509,9 +514,10 @@ const_expression	:	string_constant
 
 				    // Bug workaround
 				    char *buf = (char *)*$1;
-				    string name = buf;
+				    const string name = buf;
 				    $$ = new StringNode(name);
 				    delete $1;
+				    $1 = 0;
 
 				    ASSERT($$->OK());
 				}
@@ -549,6 +555,9 @@ function_call		:	function_identifier function_argument
 				    $$ = ($2) ? 
 					vsllib->_call(*$1, $2) : 0;
 				    ASSERT($$ == 0 || $$->OK());
+
+				    delete $1;
+				    $1 = 0;
 				}
 
 unary_expression	:	NOT box_expression
@@ -770,6 +779,7 @@ argument_or_function	:	identifier
 
 				    ASSERT($$->OK());
 				    delete $1;
+				    $1 = 0;
 				}
 
 
@@ -784,8 +794,11 @@ override_identifier	:	function_identifier
 				{
 				    ASSERT($1->OK());
 
-				    string func_name = *$1;
+				    const string func_name = *$1;
 				    vsllib->override(func_name);
+
+				    delete $1;
+				    $1 = 0;
 				}
 
 replace_declaration	:	REPLACE replace_list
@@ -797,7 +810,7 @@ replace_identifier	:	function_identifier
 				{
 				    ASSERT($1->OK());
 
-				    string func_name = *$1;
+				    const string func_name = *$1;
 				    if (vsllib->replace(func_name)
 					&& vsllib->replace("#" + func_name))
 				    {
@@ -812,6 +825,9 @@ replace_identifier	:	function_identifier
 						"(...)' undefined");
 					}
 				    }
+
+				    delete $1;
+				    $1 = 0;
 				}
 
 %% /* DO NOT REMOVE THIS COMMENT -- MUNCH-YACC DEPENDS ON IT */

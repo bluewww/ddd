@@ -463,9 +463,15 @@ glob_filename (char *pathname)
       if (directories == 0)
 	goto memory_error;
       else if (directories == (char **)-1)
-	return (char **) -1;
+        {
+	  if (result)
+	      free(result);
+	  return (char **) -1;
+        }
       else if (*directories == 0)
 	{
+	  if (result)
+	      free(result);
 	  free ((char *) directories);
 	  return (char **) -1;
 	}
@@ -538,6 +544,8 @@ glob_filename (char *pathname)
 					 (char *)(directory_len == 0
 					  ? (char *)"." : directory_name));
 
+      if (result)
+	free(result);
       if (temp_results == 0 || temp_results == (char **)-1)
 	return temp_results;
 
