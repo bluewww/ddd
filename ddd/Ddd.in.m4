@@ -4727,19 +4727,27 @@ Ddd*too_many_shortcuts_warning*helpString:	\
 only display the most recently created shortcuts.\n\
 To edit the list of display shortcuts, use LBL(New Display) | LBL(Edit).
 
-Ddd*gdb_io_error_popup.title: DDD: I/O error
+Ddd*gdb_io_error_popup.title: DDD: I/O Error
 Ddd*gdb_io_error*helpString: \
 @rm The communication between GDB and DDD does not work correctly.\n\
-DDD cannot correct this problem, so you may not be able to continue.\n\
+This is probably due to a bad DDD configuration.\n\
 \n\
-This is probably a configuration problem, which must be investigated.
+DDD cannot work around this problem, so you may not be able to continue.
 
-Ddd*gdb_io_warning_popup.title: DDD: I/O warning
+Ddd*gdb_io_warning_popup.title: DDD: I/O Warning
 Ddd*gdb_io_warning*helpString: \
 @rm The communication between GDB and DDD does not work correctly.\n\
-DDD will be able to correct most problems, so you may continue working.\n\
+This is probably due to a bad DDD configuration.\n\
 \n\
-This is probably a configuration problem, which should be investigated.
+DDD can work around this problem, so you may continue working.
+
+Ddd*gdb_echo_warning_popup.title: DDD: Echo Mode Active
+Ddd*gdb_echo_warning*helpString: \
+@rm The communication between GDB and DDD does not work correctly - \n\
+GDB echoes back every character typed by DDD.\n\
+This is probably due to a bad DDD configuration.\n\
+\n\
+DDD can work around this problem, so you can continue working.
 
 
 !-----------------------------------------------------------------------------
