@@ -56,7 +56,7 @@ public:
 	_mstring(XmStringCreateLtoR(text, charset))
     {}
 
-    MString(const char *text = "", 
+    MString(const char *text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
 	_mstring(XmStringCreateLtoR((char *)text, charset))
     {}
@@ -66,7 +66,8 @@ public:
 	_mstring(XmStringCreateLtoR((String)text, charset))
     {}
 
-    MString(XmString text, bool):
+    // `XmString' might be defined as `char *'; hence the DUMMY parameter
+    MString(XmString text, bool /* dummy */):
 	_mstring(XmStringCopy(text))
     {}
 
