@@ -2,6 +2,7 @@
 // Data Display
 
 // Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -3741,7 +3742,10 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     if (box_point == BoxPoint())
 	box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
     dn->moveTo(box_point);
-    dn->cluster(info->cluster_nr - info->cluster_offset);
+
+    if (info->create_cluster)
+	dn->cluster(info->cluster_nr - info->cluster_offset);
+
     select_node(dn, depend_nr);
 
     refresh_addr(dn);
