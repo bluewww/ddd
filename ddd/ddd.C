@@ -5268,14 +5268,14 @@ static ostream& operator<< (ostream& os, ProgramLanguage lang)
 {
     switch (lang)
     {
-    case LANGUAGE_C:       os << "c/c++";         break;
-    case LANGUAGE_JAVA:    os << "java";          break;
-    case LANGUAGE_PASCAL:  os << "pascal/modula"; break;
-    case LANGUAGE_ADA:     os << "ada";           break;
-    case LANGUAGE_PYTHON:  os << "python";        break;
-    case LANGUAGE_PERL:    os << "perl";          break;
-    case LANGUAGE_CHILL:   os << "chill";         break;
-    case LANGUAGE_FORTRAN: os << "fortran";       break;
+    case LANGUAGE_C:       os << "C/C++";         break;
+    case LANGUAGE_JAVA:    os << "Java";          break;
+    case LANGUAGE_PASCAL:  os << "Pascal/Modula"; break;
+    case LANGUAGE_ADA:     os << "Ada";           break;
+    case LANGUAGE_PYTHON:  os << "Python";        break;
+    case LANGUAGE_PERL:    os << "Perl";          break;
+    case LANGUAGE_CHILL:   os << "Chill";         break;
+    case LANGUAGE_FORTRAN: os << "Fortran";       break;
     case LANGUAGE_OTHER:   os << "(unknown)";     break;
     }
 
