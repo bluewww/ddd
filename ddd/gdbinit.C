@@ -293,7 +293,11 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 	    if (arg.contains('/', 0))
 		continue;		// File
 
-	    string classpath = source_view->class_path();
+	    char *classpath_s = getenv("CLASSPATH");
+	    if (classpath_s == 0)
+		classpath_s = ".";
+
+	    string classpath = classpath_s;
 	    while (classpath != "")
 	    {
 		string dir;

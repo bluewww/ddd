@@ -457,8 +457,14 @@ static int gdb_set_tty(string tty_name = "",
 	if (!ok)
 	    return ok;
 
+#if 0
+	// Benoit Rochefort <benoitr@adopt.qc.ca> reports that
+	// Perl-5.005_02 on HP-UX exits after executing 
+	// open(STDIN, "</dev/tty").  
+	// So, redirect to the original TTY name instead.
 	if (tty_name == gdb->slave_tty())
 	    tty_name = "/dev/tty";
+#endif
 
 	cmd = "";
 	if (!has_redirection(gdb->path(), "<"))

@@ -316,4 +316,6 @@ Volunteers for these and other projects are welcome!
 
 372 Add user-defined commands for debuggers other than GDB.
 
-373 (Insert new project ideas here)
+373 Allow `--display' as alias for `-display'.
+
+375 (Insert new project ideas here)

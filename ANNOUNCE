@@ -30,7 +30,7 @@ To build DDD 3.1.2 from sources, you need:
 
 * The DDD 3.1.2 source package, `ddd-3.1.2.tar.gz'.  MD5 checksum:
 
-	................................  ddd-3.1.2.tar.gz
+	efb8705576bd163ad9b5100b920818c0  ddd-3.1.2.tar.gz
 
 * Motif.  Typically LessTif (>= 0.87) or OSF/Motif (>= 1.2).
 * A C++ compiler.  Typically GCC (>= 2.7.2).

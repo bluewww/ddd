@@ -17,6 +17,15 @@ DDD 3.2 also incorporates all changes from DDD 3.1.2 and later; see
 below for details.
 
 
+DDD 3.1.3
+=========
+
+DDD 3.1.3 fixes more minor bugs in DDD 3.1.
+
+- Invoking DDD with a non-existing file name works.
+- [HP-UX] Perl no longer exits upon start-up.
+
+
 DDD 3.1.2
 =========
 
