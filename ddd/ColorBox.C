@@ -73,7 +73,7 @@ void ColorBox::convert_color(Widget w) const
     from.size = color_name().length();
     from.addr = CONST_CAST(char*,color_name().chars());
     to.size   = sizeof(_color);
-    to.addr   = (String)&_color;
+    to.addr   = (XPointer)&_color;
 
     if (!XtConvertAndStore(w, XtRString, &from, XtRPixel, &to))
     {
