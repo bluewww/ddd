@@ -623,6 +623,7 @@ public:
     // Concatenate first 2 args, store result in last arg
     friend inline void cat(const string&, const string&, string&);
     friend inline void cat(const string&, const subString&, string&);
+    friend inline void cat(const string&, const constSubString&, string&);
     friend inline void cat(const string&, const char*, string&);
     friend inline void cat(const string&, char*, string&);
     friend inline void cat(const string&, char, string&);
@@ -1246,6 +1247,12 @@ inline void cat(const string& x, const subString& y, string& r)
 {
     assert(!r.consuming());
     r.rep = string_Scat(r.rep, x.chars(), x.length(), y.chars(), y.length());
+}
+
+inline void cat(const string& x, const constSubString& y, string& r)
+{
+  assert(!r.consuming());
+  r.rep = string_Scat(r.rep, x.chars(), x.length(), y.chars(), y.length());
 }
 
 inline void cat(const string& x, const char* y, string& r)
