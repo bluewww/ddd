@@ -264,27 +264,21 @@ Volunteers for fixing these and other bugs are welcome!
        [This is a problem of the libiberty and librx maintainers.  -AZ]
 
 252 Allow Display Editor, Breakpoint Editor, Status Displays, GDB
-    Settings, Button Editor, Reference to be resized.  `If you set
-    XmNadjustLast, the children of a one column row column will be
-    automatically resized.'
+    Settings, Button Editor, Reference to be resized.  See the Motif
+    bool for a BulletinBoard geometry manager.
 
 255 In Java programs, the `info set' status display is treated as
     variable list.
 
 257 Marco Hess <marcoh@senet.com.au> says that sometimes, the source
     window locks in scroll mode until it reaches the top or bottom of
-    the file.
+    the file.  [Changing the `glyphUpdateDelay' resource should fix
+    this; tell me if this helps.  -AZ]
 
-262 In OSF/Motif 2.0, ordinarily labeled toolbars don't show up
-    correctly.  Motif bug?
+262 Ordinarily labeled toolbars don't show up as they should.  Motif
+    bug?
 
-264 (LessTif bug): In a DialogShell, setting the defautButton to 0
+264 (LessTif bug): In a DialogShell, setting the defaultButton to 0
     won't work.
-
-265 Using OSF/Motif 1.2, the glyph positions are not updated after a
-    management change in the scrolled window.
-
-266 Using OSF/Motif 1.2, the `flat' toolbar flickers considerably when 
-    using large fonts.
 
 269 (Insert new bugs here)
