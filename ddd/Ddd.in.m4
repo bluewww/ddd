@@ -1360,7 +1360,6 @@ DESC(Make..., [run the CODE(make) program])\n\
 DESC(Make Again, [make using the previous settings])\n\
 \n\
 DESC(Close, [close this window])\n\
-DESC(Restart, [restart DDD])\n\
 DESC(Exit, [exit DDD])
 
 Ddd*menubar*fileMenu.open_file.labelString: Open Program...
@@ -3973,8 +3972,9 @@ Click on LBL(Exit) to exit DDD.
 Ddd*fatal_dialog.title: DDD: @TITLE@
 Ddd*fatal_dialog.messageString:	  \
 @rm Internal error
-Ddd*fatal_dialog*okLabelString:	      Exit
-Ddd*fatal_dialog*cancelLabelString:   Ignore
+Ddd*fatal_dialog*okLabelString:	       Exit
+Ddd*fatal_dialog*restart.labelString:  Restart
+Ddd*fatal_dialog*cancelLabelString:    Ignore
 Ddd*fatal_dialog*helpString: \
 @rm Oops!  You have found a bug in DDD.\n\
 You should better save your work immediately; DDD may fail again soon.\n\
@@ -3995,7 +3995,8 @@ Please read also the section ``Reporting Bugs'' in the DDD manual.\n\
 We thank you for your support.\n\
 \n\
 Click on LBL(Exit) to exit DDD.\n\
-Click on LBL(Ignore) if you choose to ignore this message.
+Click on LBL(Restart) to restart DDD from scratch.\n\
+Click on LBL(Ignore) to resume your DDD session.
 
 
 Ddd*yn_dialog_popup.title: DDD: Debugger Question

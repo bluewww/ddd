@@ -66,6 +66,7 @@ char exit_rcsid[] =
 
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
+#include <Xm/PushB.h>
 
 #if defined(HAVE_RAISE)
 #if !defined(HAVE_RAISE_DECL)
@@ -193,6 +194,14 @@ static void post_fatal(string title, string cause)
 	XtAddCallback(fatal_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 	XtAddCallback(fatal_dialog, XmNokCallback, 
 		      DDDExitCB, XtPointer(EXIT_FAILURE));
+
+#if XmVersion >= 1002
+	Widget restart = 
+	    verify(XmCreatePushButton(fatal_dialog, "restart", 0, 0));
+	XtManageChild(restart);
+	XtAddCallback(restart, XmNactivateCallback,
+		      DDDRestartCB, XtPointer(EXIT_FAILURE));
+#endif
     }
 
     defineConversionMacro("TITLE", title);

@@ -546,7 +546,7 @@ struct FileItems {
     { "makeAgain",   MMPush, { gdbMakeAgainCB }}, \
     MMSep, \
     { "close",       MMPush, { DDDCloseCB }}, \
-    { "restart",     MMPush, { DDDRestartCB }}, \
+    { "restart",     MMPush | MMUnmanaged, { DDDRestartCB }}, \
     { "exit",        MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }}, \
     MMEnd \
 }
