@@ -1931,9 +1931,16 @@ ddd.$(OBJEXT): $(PROG_STUFF)
 # These should not go into the distribution.
 DISTCLEANFILES = build.h host.h root.h ../config.cache USERINFO
 
+# `make picsclean' removes all derived pictures
+PICSCLEANFILES = $(PS_IMAGES) $(PDF_IMAGES) $(HTML_IMAGES)
+
+.PHONY:	picsclean
+picsclean:
+	$(RM) $(PICSCLEANFILES)
+
 # Have `make maintainer-clean' remove all derived files.
 MAINTAINERCLEANFILES = \
-	ddd.ps ddd.pdf ddd.html $(PROG_STUFF) \
-	$(PS_IMAGES) $(PDF_IMAGES) $(HTML_IMAGES)
+	ddd.ps ddd.pdf ddd.html $(PROG_STUFF) $(PICSCLEANFILES)
 
+# `make diststuff' creates all files required for a distribution.
 diststuff: $(EXTRA_DIST)
