@@ -5,6 +5,7 @@ dummy
 errors
 lconfig.h
 lneeded-list
+mkinstalldirs
 needed-list
 needed.awk
 needed2.awk

@@ -17,6 +17,8 @@ linux
 linux-lesstif
 linux-lesstif-current
 linux-motif
+ltconfig
+ltmain.sh
 sparc-sun-sunos4.1.4
 sun
 sun-lesstif
