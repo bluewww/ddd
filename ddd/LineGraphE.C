@@ -372,7 +372,7 @@ LineGraphEdgeSelfInfo::LineGraphEdgeSelfInfo(const BoxRegion& region,
 	break;
     }
 
-    // Find arrow angle
+    // Find arrow position and angle
     arrow_angle = 0;
     switch (gc.selfEdgeDirection)
     {
@@ -495,6 +495,7 @@ void LineGraphEdge::printSelf(ostream& os, const GraphGC &gc) const
 
     BoxCoordinate line_width = 1;
 
+    // Draw arc
     os << start << " " << end << " " 
        << info.radius << " " << info.radius << " "
        << info.arc_center[X] << " " << info.arc_center[Y] << " " 
@@ -506,7 +507,11 @@ void LineGraphEdge::printSelf(ostream& os, const GraphGC &gc) const
 	annotation()->_print(os, info.anno_pos, gc);
     }
 
-    // FIXME: the arrow is missing
+    // Now draw the arrow head
+    int angle = (720 - info.arrow_angle) % 360;
+
+    os << gc.arrowAngle << " " << gc.arrowLength << " " << angle << " "
+       << info.arrow_pos[X] << " " << info.arrow_pos[Y] << " arrowhead*\n";
 }
 
 BoxPoint LineGraphEdge::annotationPosition(const GraphGC &gc) const

@@ -73,7 +73,7 @@ Source exploration
 Printing
 --------
 
-- `Self' edges can now be printed.
+- PostScript printing supports `Self' edges.
 
 - The default setting for printing is to print all displays.
 
