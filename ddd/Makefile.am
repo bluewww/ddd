@@ -653,8 +653,8 @@ LIBXT = @XT_LIBS@
 LIBX11 = @X_PRE_LIBS@ @X11_LIBS@ @X_EXTRA_LIBS@
 
 # All libraries shown above
-ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXP) $(LIBXAW) $(LIBXPM) $(LIBXEXT) \
-	     $(LIBXT) $(LIBX11) $(LIBGEN)
+ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXAW) $(LIBXT) $(LIBXPM) \
+             $(LIBXP) $(LIBXEXT) $(LIBX11) $(LIBGEN)
 
 
 # -----------------------------------------------------------------------------
