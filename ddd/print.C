@@ -372,7 +372,7 @@ static int points(string s)
 	    post_error("Unrecognized size.", "paper_size_value_error");
 	    return -1;
 	}
-	s = s.from(tailptr - start);
+	s = s.from(int(tailptr - start));
 
 	// Read unit
 	string unit = s;
