@@ -296,4 +296,6 @@ Volunteers for these and other projects are welcome!
 152. When dereferencing, make new displays inherit the `Show/Hide'
      settings of their ancestors.
 
-153. (Insert your project idea here)
+153. Include assembler support for Sun DBX (they have a `dis' command).
+
+154. (Insert your project idea here)

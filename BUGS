@@ -343,7 +343,7 @@ Volunteers for fixing these and other bugs are welcome!
      [I could not reproduce this.  Ira's DDD is compiled with g++ 2.6.3.
      Is this the reason?  -AZ]
 
-158. ilcooper@tasc.com (Ira Cooper) says:
+158* ilcooper@tasc.com (Ira Cooper) says:
      When deleting a display in the graph display with SunPRO dbx, it
      still deactivates all the displays until I refresh the display.
 
