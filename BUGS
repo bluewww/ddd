@@ -148,12 +148,6 @@ Volunteers for fixing these and other bugs are welcome!
         to scroll and have a button that lets one go to the current
         line in a single mouse click?
 
-     6. If one has automatic save of options and also use one of
-        --exec-window or --noexec-window (to change the expected ddd
-        behaviour for a session), then the new behaviour is automatically
-        saved. I find this counter-intuitive, but maybe is this a feature
-        (which may be documented in the manual for dumb people like me).
-
 071. Klaus-Georg Adams <adams@achibm5.chemie.uni-karlsruhe.de> says:
      I have got a seg-fault in the stock precompiled ddd-1.4b
      (i486-unknown-linux) and report it dutyfully.

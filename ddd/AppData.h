@@ -128,8 +128,6 @@
 #define XtCGroupIconify          "GroupIconify"
 #define XtNglobalTabCompletion   "globalTabCompletion"
 #define XtCGlobalTabCompletion   "GlobalTabCompletion"
-#define XtNsaveOptionsOnExit     "saveOptionsOnExit"
-#define XtCSaveOptionsOnExit     "SaveOptionsOnExit"
 #define XtNsaveHistoryOnExit     "saveHistoryOnExit"
 #define XtCSaveHistoryOnExit     "SaveHistoryOnExit"
 #define XtNcacheSourceFiles      "cacheSourceFiles"
@@ -195,7 +193,6 @@ struct AppData {
     Boolean find_words_only;
     Boolean group_iconify;
     Boolean global_tab_completion;
-    Boolean save_options_on_exit;
     Boolean save_history_on_exit;
     Boolean cache_source_files;
     Boolean cache_machine_code;

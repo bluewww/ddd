@@ -75,18 +75,23 @@ Ddd*debugger:
 Ddd*debuggerCommand:
 
 
-! True if data is to be displayed in a separate top-level window.
-! If this is false, the window is attached to the DDD console window.
-Ddd*separateDataWindow: true
+! True if data and source are to be displayed in separate top-level
+! windows.  If this is false, the data and source windows are attached
+! to the DDD console window.
+Ddd*Separate: true
 
 
-! True if source is to be displayed in a separate top-level window.
-! If this is false, the window is attached to the DDD console window.
-Ddd*separateSourceWindow: true
+! You may also attach the source window or data window alone.
+! Ddd*separateDataWindow: true
+! Ddd*separateSourceWindow: true
 
 
 ! True if programs are to be run in a separate top-level window.
 ! If this is false, input/output is sent to the DDD console window.
+!
+! Although a separate execution window has several advantages, it
+! is less portable and more error-prone, which is why it is disabled 
+! by default.
 Ddd*separateExecWindow: false
 
 

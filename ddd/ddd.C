@@ -571,7 +571,6 @@ enum DDDOption { DummyOptions   = 0,
 static Widget group_iconify_w[4];
 static Widget global_tab_completion_w[4];
 static Widget separate_exec_window_w[4];
-static Widget save_options_on_exit_w[4];
 static Widget save_history_on_exit_w[4];
 static Widget graph_show_grid_w[4];
 static Widget graph_show_hints_w[4];
@@ -605,8 +604,6 @@ static MMDesc ddd_options_menu[] =
       NULL, separate_exec_window_w },
     { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB }, 
       NULL, suppress_warnings_w },
-    { "saveOptionsOnExit",   MMToggle, { dddToggleSaveOptionsOnExitCB }, 
-      NULL, save_options_on_exit_w },
     { "saveHistoryOnExit",   MMToggle, { dddToggleSaveHistoryOnExitCB }, 
       NULL, save_history_on_exit_w },
     MMEnd
@@ -1596,7 +1593,6 @@ static void set_option_widgets(DDDOption opt)
     group_iconify_w[opt]            = group_iconify_w[0];
     global_tab_completion_w[opt]    = global_tab_completion_w[0];
     separate_exec_window_w[opt]     = separate_exec_window_w[0];
-    save_options_on_exit_w[opt]     = save_options_on_exit_w[0];
     save_history_on_exit_w[opt]     = save_history_on_exit_w[0];
     graph_show_grid_w[opt]          = graph_show_grid_w[0];
     graph_show_hints_w[opt]         = graph_show_hints_w[0];
@@ -1637,8 +1633,6 @@ void update_options()
 		      XmNset, app_data.global_tab_completion, NULL);
 	XtVaSetValues(separate_exec_window_w[i],
 		      XmNset, app_data.separate_exec_window, NULL);
-	XtVaSetValues(save_options_on_exit_w[i],
-		      XmNset, app_data.save_options_on_exit, NULL);
 	XtVaSetValues(save_history_on_exit_w[i],
 		      XmNset, app_data.save_history_on_exit, NULL);
 

@@ -305,22 +305,6 @@ void dddToggleSeparateExecWindowCB (Widget, XtPointer, XtPointer call_data)
     options_changed = true;
 }
 
-void dddToggleSaveOptionsOnExitCB (Widget, XtPointer, XtPointer call_data)
-{
-    XmToggleButtonCallbackStruct *info = 
-	(XmToggleButtonCallbackStruct *)call_data;
-
-    app_data.save_options_on_exit = info->set;
-
-    if (info->set)
-	set_status("Options will be saved when " DDD_NAME " exits.");
-    else
-	set_status("Options must be saved manually.");
-
-    update_options();
-    options_changed = true;
-}
-
 void dddToggleSaveHistoryOnExitCB (Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -582,16 +566,25 @@ void save_options(Widget origin)
 			 app_data.group_iconify)   << "\n";
     os << bool_app_value(XtNseparateExecWindow,
 			 app_data.separate_exec_window) << "\n";
-    os << bool_app_value(XtNseparateSourceWindow,
-			 app_data.separate_source_window) << "\n";
-    os << bool_app_value(XtNseparateDataWindow,
-			 app_data.separate_data_window) << "\n";
+    if (!app_data.separate_source_window && !app_data.separate_data_window)
+    {
+	os << bool_app_value(XtCSeparate, false) << "\n";
+    }
+    else if (app_data.separate_source_window && app_data.separate_data_window)
+    {
+	os << bool_app_value(XtCSeparate, true) << "\n";
+    }
+    else
+    {
+	os << bool_app_value(XtNseparateSourceWindow, 
+			     app_data.separate_source_window) << "\n";
+	os << bool_app_value(XtNseparateDataWindow, 
+			     app_data.separate_data_window) << "\n";
+    }
     os << bool_app_value(XtNpannedGraphEditor,
 			 app_data.panned_graph_editor) << "\n";
     os << bool_app_value(XtNsuppressWarnings,
 			 app_data.suppress_warnings) << "\n";
-    os << bool_app_value(XtNsaveOptionsOnExit,
-			 app_data.save_options_on_exit) << "\n";
     os << bool_app_value(XtNsaveHistoryOnExit,
 			 app_data.save_history_on_exit) << "\n";
     os << string_app_value(XtNdebugger,

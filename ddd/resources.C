@@ -442,15 +442,6 @@ XtResource ddd_resources[] = {
 	XtPointer(False)
     },
     {
-	XtNsaveOptionsOnExit,
-	XtCSaveOptionsOnExit,
-	XtRBoolean,
-	sizeof(Boolean),
-	XtOffsetOf(AppData, save_options_on_exit),
-	XtRImmediate,
-	XtPointer(False)
-    },
-    {
 	XtNsaveHistoryOnExit,
 	XtCSaveHistoryOnExit,
 	XtRBoolean,

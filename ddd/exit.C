@@ -191,8 +191,6 @@ void ddd_cleanup()
 
     remove_init_file();
     kill_exec_tty();
-    if (command_shell && app_data.save_options_on_exit)
-	save_options(command_shell);
     if (command_shell && app_data.save_history_on_exit)
 	save_history(command_shell);
     if (gdb)
