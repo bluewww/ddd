@@ -186,6 +186,9 @@ What do I need to build DDD?
          Athena Widget library is convenient for supporting
          two-dimensional scrollbars and the `editres' protocol.
 
+       * Optionally, the XPM library (release 3.2 or later).  The XPM
+         library brings support for multi-color icons and logos.
+
        * Lots of virtual memory.
 
     To run DDD, you need an inferior command-line debugger.  Best

@@ -225,7 +225,9 @@ LessTif
     004. If the insertion cursor is positioned using the mouse, the
          text always scrolls such that the cursor is in the first
          line. [behavioral]
- 
+
+    005. DDD PushButton menus cannot be invoked with Button1 (use
+         Button3 instead). [behavioral]
 
 
 Linux

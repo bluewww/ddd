@@ -21,8 +21,8 @@ Requirements
          X11R4 or later.
 
        * A Motif Widget library, version 1.1 or later.  Best results
-         are achieved using OSF/Motif 2.0.  DDD now also compiles and
-         runs with LessTif, a free Motif clone, release 0.79 or later,
+         are achieved using OSF/Motif 2.0.  DDD also compiles and runs
+         with LessTif, a free Motif clone, release 0.79 or later,
          without loss of functionality.  LessTif is available via
          `http://www.lesstif.org/'.
 
@@ -30,6 +30,9 @@ Requirements
          Athena Widget library (release 5 or later).  Having the
          Athena Widget library is convenient for supporting
          two-dimensional scrollbars and the `editres' protocol.
+
+       * Optionally, the XPM library (release 3.2 or later).  The XPM
+         library brings support for multi-color icons and logos.
 
        * Lots of virtual memory.
 
