@@ -39,7 +39,9 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #endif
 #endif
 
-/* CYGNUS LOCAL (not to be elided!) */
+#ifndef ELIDE_CODE
+
+/* CYGNUS LOCAL */
 
 int
 _obstack_memory_used (h)
@@ -56,8 +58,6 @@ _obstack_memory_used (h)
 }
 
 /* END CYGNUS LOCAL */
-
-#ifndef ELIDE_CODE
 
 
 #if defined (__STDC__) && __STDC__
