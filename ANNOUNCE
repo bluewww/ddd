@@ -47,8 +47,9 @@ Where can you get it?  How can you compile it?
 The ddd-3.2.2.tar.gz distribution file has been placed on `ftp.gnu.org'
 in `gnu/ddd'.
 
-DDD 3.2.2 requires LessTif 0.90 or later (see http://www.lesstif.org/)
-and GCC 2.7.2 or later.
+DDD 3.2.2 requires LessTif 0.90 or later, available from
+`http://www.lesstif.org/' (or any other Motif library), and GCC 2.7.2
+or later (or any other C++ compiler)
 
 The most recent (not necessarily tested) snapshots of DDD will be
 placed on `alpha.gnu.org' in `gnu/ddd'.

@@ -27,7 +27,7 @@ html/index.html -- `Debugging with DDD'
     browser, such as Mozilla or Netscape.  Includes several screen
     shots.
 
-    Included in the DDD source distribution.
+    This directory is contained in a separate package.
 
 
 ddd.info -- `Debugging with DDD'

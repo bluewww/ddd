@@ -332,6 +332,9 @@ Volunteers for these and other projects are welcome!
 382 Support GDB/MI - a machine oriented interface to GDB.  See
     `http://sourceware.cygnus.com/gdb/onlinedocs/gdbmi_toc.html'.
 
-383 In JDB 1.2, make `run' restart JDB.  
+383 Include the following extensions:
+    * Gary Cliff - support for VxWorks
+    * Danny van Elsen - horizontal default layout
+    * Switch to Lesser GPL instead of library GPL
 
 384 (Insert new project ideas here)

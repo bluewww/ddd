@@ -920,7 +920,7 @@ This manual comes in several formats:
 The @emph{Info} format is used for browsing on character devices; it
 comes without pictures.  You should have a local copy installed, which
 you can browse via Emacs, the stand-alone @command{info} program, or from
-@DDD{} via @samp{Help @result{} @DDD{} Manual}.
+@DDD{} via @samp{Help @result{} @DDD{} Reference}.
 
 @flindex ddd-@value{VERSION}.tar.gz
 The @DDD{} source distribution
@@ -12381,7 +12381,6 @@ be done, see the file @samp{TODO} in the @DDD{} distribution.
 
 See @uref{http://www.gnu.org/software/ddd/, the @DDD{} @WWW{} page} for
 frequently answered questions not covered in this manual.
-
 
 
 @node License

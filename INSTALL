@@ -104,7 +104,8 @@ The following recommended helper applications should be in the user path:
    * An X terminal emulator program (`xterm' or likewise).  DDD needs
      this for running programs in the separate execution window.
 
-   * The GNU `info' program as well as various info files.
+   * The GNU `info' program, version 4.0 or later,
+     as well as various info files.
 
      - `info -f gdb' should show the GDB Manual.  DDD uses this to
        display the GDB Reference.
@@ -577,9 +578,10 @@ Documentation
 The DDD Manual, contained in the file `ddd/ddd.texi', is the official
 DDD reference.  
 
-Preformatted versions of the DDD Manual (in info, PostScript, PDF, and
-HTML formats) can be found in the `doc/' subdirectory.  Note that DDD
-also has various on-line facilities.
+Preformatted versions of the DDD Manual (in info, PostScript, and PDF
+formats) can be found in the `doc/' subdirectory.  A HTML version
+comes in a separate package.  Note that DDD also has various on-line
+facilities.
 
 
 $Id$
