@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-08\-01" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-08\-12" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -1665,13 +1665,57 @@ actually points to itself).  You can also examine the data display
 addresses, as shown in the Display Editor.
 .br
 .IP \(bu 2
-Alias detection slows down \s-1@DDD@\s+1 considerably, which is why it
-is disabled by default.  You may consider to enable it only at
+Alias detection slows down \s-1@DDD@\s+1 slightly, which is why it is
+disabled by default.  You may consider to enable it only at
 need\(em\&for instance, while examining some complex data
 structure\(em\&and disable it while examining control flow (i.e.,
 stepping through your program).  \s-1@DDD@\s+1 will automatically
 restore edges and data displays when switching modes.
 .\"
+.\"
+.SS "Clustering Displays"
+.\"
+If you examine several variables at once, having a separate display
+for each of them uses a lot of screen space.  This is why
+\s-1@DDD@\s+1 supports \fIclusters\fR.  A cluster merges several
+logical data displays into one physical display, saving screen space.
+.PP
+.PSPIC @srcdir@/PICS/ddd-clusters.ps 15.3cm
+.PP
+There are two ways to create clusters:
+.br
+.IP \(bu 2
+You can create clusters \fImanually\fR.  This is done by selecting the
+displays to be clustered and choosing `\fBUndisp\(->Cluster ()\fR'.
+This creates a new cluster from all selected displays.  If an already
+existing cluster is selected, too, the selected displays will be
+clustered into the selected cluster.
+.br
+.IP \(bu 2
+You can create a cluster \fIautomatically\fR for all independent data
+displays, such that all new data displays will automatically be
+clustered, too.  This is achieved by enabling
+`\fBEdit\(->Preferences\(->Data\(->Cluster Data Displays\fR'.
+.br
+.PP
+Displays in a cluster can be selected and manipulated like parts of an
+ordinary display; in particular, you can show and hide details, or
+dereference pointers.  However, edges leading to clustered displays
+can not be shown, and you must either select one or all clustered
+displays.
+.PP
+Disabling a cluster is called \fIunclustering\fR, and again, there
+are two ways of doing it:
+.br
+.IP \(bu 2
+You can uncluster displays \fImanually\fR, by selecting the cluster
+and choosing `\fBUndisp\(->Uncluster ()\fR'.
+.br
+.IP \(bu 2
+You can uncluster all current and future displays by disabling
+`\fBEdit\(->Preferences\(->Data\(->Cluster Data Displays\fR'.
+.br
+.PP
 .\"
 .SS "Moving Displays Around"
 .\"
@@ -1774,9 +1818,6 @@ using the \s-1TRANSFIG\s+1 or \s-1FIG2DEV\s+1 package.
 .PP
 .PSPIC @srcdir@/PICS/ddd-print-output.ps 15.3cm
 .PP
-Note: Arcs cannot be printed (yet).  Arcs joining two displays are
-printed using straight lines; arcs joining a display with itself are
-suppressed.
 .\"
 .\"
 .\"
@@ -2194,12 +2235,11 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 If you change one of the resources in this panel, the change will not
 take effect immediately.  Instead, you can
 .IP \(bu 2
-save options (using `\fBEdit\fR'\(->`\fBSave Options\fR') to make the
-change effective for future \s-1@DDD@\s+1 sessions,
+save options (using `\fBEdit\(->Save Options\fR') to make the change
+effective for future \s-1@DDD@\s+1 sessions,
 .IP \(bu 2
-or restart \s-1@DDD@\s+1 (using `\fBFile\fR'\(->`\fBRestart
-\s-1DDD\s+1\fR') to make it effective for the restarted \s-1@DDD@\s+1
-session.
+or restart \s-1@DDD@\s+1 (using `\fBFile\(->Restart \s-1DDD\s+1\fR')
+to make it effective for the restarted \s-1@DDD@\s+1 session.
 .PP
 After having made changes in the panel, \s-1@DDD@\s+1 will
 automatically offer you to restart itself, such that you can see the
@@ -2323,12 +2363,11 @@ Default value is `\fBlucidatypewriter-medium\fR'.
 Just like startup preferences, changes in this panel will not take
 effect immediately.  Instead, you can
 .IP \(bu 2
-save options (using `\fBEdit\fR'\(->`\fBSave Options\fR') to make the
-change effective for future \s-1@DDD@\s+1 sessions,
+save options (using `\fBEdit\(->Save Options\fR') to make the change
+effective for future \s-1@DDD@\s+1 sessions,
 .IP \(bu 2
-or restart \s-1@DDD@\s+1 (using `\fBFile\fR'\(->`\fBRestart
-\s-1DDD\s+1\fR') to make it effective for the restarted \s-1@DDD@\s+1
-session.
+or restart \s-1@DDD@\s+1 (using `\fBFile\(->Restart \s-1DDD\s+1\fR')
+to make it effective for the restarted \s-1@DDD@\s+1 session.
 .PP
 After having made changes in the panel, \s-1@DDD@\s+1 will
 automatically offer you to restart itself, such that you can see the
@@ -2410,6 +2449,8 @@ debugger, you can change its settings using `\fBEdit\(->Settings\fR'.
 Using the settings editor, you can determine whether C++ names are to
 be demangled, how many array elements are to print, and so on.
 .PP
+.PSPIC @srcdir@/PICS/ddd-settings.ps 15.3cm
+.PP
 The capabilities of the settings editor depend on the capabilities of
 your inferior debugger\(em\&that is, your \s-1GDB\s+1 or \s-1DBX\s+1
 version.  Clicking on `\fB?\fR' gives an an explanation on the
@@ -2424,8 +2465,6 @@ details.
 .PP
 All debugger settings (except source and object paths) 
 are saved with \s-1@DDD@\s+1 options.
-.PP
-.PSPIC @srcdir@/PICS/ddd-settings.ps 15.3cm
 .\"
 .\"
 .\" ---------------
@@ -3959,6 +3998,11 @@ on the right of \fID\fR such that the distance between displays
 remains constant.  If this is `\fBoff\fR', other displays are not
 rearranged.
 .TP
+.B "clusterDisplays (\fPclass\fB ClusterDisplays)"
+If `\fBon\fR', new independent data displays will automatically be
+clustered.  Default is `\fBoff\fR', meaning to leave new displays
+unclustered.
+.TP
 .B "deleteAliasDisplays (\fPclass\fB DeleteAliasDisplays)"
 If this is `\fBon\fR' (default), the `\fBUndisplay ()\fR' button also
 deletes all aliases of the selected displays.  If this is `\fBoff\fR',
@@ -4015,6 +4059,14 @@ See also the `\fB\-\-scrolled-graph-editor\fR' and
 .B "paperSize (\fPclass\fB PaperSize)"
 The paper size used for printing, in format \fIwidth\fR x
 \fIheight\fR.  The default is A4 format, or `\fB210mm \(mu 297mm\fR'.
+.TP
+.B "showBaseDisplayTitles (\fPclass\fB ShowDisplayTitles)"
+Whether to assign titles to base (independent) displays or not.
+Default is `\fBon\fR'.
+.TP
+.B "showDependentDisplayTitles (\fPclass\fB ShowDisplayTitles)"
+Whether to assign titles to dependent displays or not.  Default is
+`\fBoff\fR'.
 .TP
 .B "typedAliases (\fPclass\fB TypedAliases)"
 If `\fBon\fR' (default), \s-1@DDD@\s+1 requires structural equivalence
@@ -5622,6 +5674,9 @@ November, 1997
 .TP
 June, 1998
 \s-1@DDD@\s+1 3.0: Icon tool bar, Java support, \s-1JDB\s+1 support.
+.TP
+October, 1998
+\s-1@DDD@\s+1 3.1: Edge annotations, display clusters.
 .PD
 .\"
 .\"
