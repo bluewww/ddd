@@ -2043,11 +2043,11 @@ Ddd*code_dialog*contextHelpString:       \
 !-----------------------------------------------------------------------------
 
 Ddd*register_dialog_popup.title:             @DDD@: Registers
-Ddd*register_dialog*label.labelString:       Registers
+Ddd*register_dialog.listLabelString:         Registers
 Ddd*register_dialog.okLabelString:           Close
 
 Ddd*register_dialog*text.rows:      12
-Ddd*register_dialog*text.columns:   50
+Ddd*register_dialog*text.columns:   60
 Ddd*register_dialog*text.resizable: true
 
 Ddd*register_dialog*contextHelpString:       \
