@@ -667,8 +667,13 @@ bool GDBAgent::ends_with_prompt (const string& ans)
     {
 	// Any line ending in `DB<N> ' is a prompt.
 	// Since N does not make sense in DDD, we use `DB<> ' instead.
+	//
+	// "T. Pospisek's MailLists" <tpo2@sourcepole.ch> reports that
+	// under Debian, Perl issues a prompt with control characters:
+	// <- "\001\002  DB<1> \001\002"
+
 #if RUNTIME_REGEX
-	static regex rxperlprompt("[ \t]*DB<+[0-9]*>+[ \t]*");
+	static regex rxperlprompt("[ \t\001\002]*DB<+[0-9]*>+[ \t\001\002]*");
 #endif
 
 	int i = answer.length() - 1;

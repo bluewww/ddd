@@ -3,6 +3,7 @@
 
 %{
 // Copyright (C) 1997-1999 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -353,7 +354,7 @@ B9{D}{_}\,{_}{D}	 		RETURN(&rxlist_range);
 C0[^:]*:{P}	 			RETURN(&rxfilepos);
 C1{_}{I}[^({\n=]*:[(]			RETURN(&rxdbx_baseclass);
 C2{_}[^=]+=[^=]{C}			RETURN(&rxset3_cmd);
-C3{_}DB<+[0-9]*>+{_}			RETURN(&rxperlprompt);
+C3({w}|\001|\002)*DB<+[0-9]*>+({w}|\001|\002)* RETURN(&rxperlprompt);
 C4[^(]*::[^(]*[(][^:]*:{P}[)]:.*	RETURN(&rxperlpos);
 C5(({I}::)*{I}=)?{I}[(]{A}[)]		RETURN(&rxperlref);
 C6enter{W}.*file{W}name                 RETURN(&rxenter_file_name);
