@@ -16,14 +16,14 @@ To build a complete DDD from sources, you need:
      Some other C++ compilers have been reported to compile DDD as
      well; we recommend to use GCC 2.95 or later.
 
-   * A Motif Widget library.  Either
+   * A M*tif Widget library.  Either
 
      - LessTif, 0.90 or later, or
      - OSF/Motif (1.2 or later).
 
      We recommend to use LessTif 0.90 or later, available from
-     `http://www.lesstif.org/'.  Use LessTif in (default) Motif 1.2
-     compatibility mode; with LessTif in Motif 2.0 mode, DDD will not work.
+     `http://www.lesstif.org/'.  Use LessTif in (default) M*tif 1.2
+     compatibility mode; with LessTif in M*tif 2.0 mode, DDD will not work.
 
    * The X window library (Xlib) and X toolkit library (Xt), X11R4 or
      later.  Best results are obtained with X11R6.3 and later.
@@ -212,7 +212,7 @@ The simplest way to compile DDD is:
      Frequently used `configure' options include `--program-prefix=x'
      to have DDD installed as `xddd' (to avoid confusion with existing
      `ddd' programs) or the `--with-motif...', `--with-athena...',
-     `--with-x...'  options used to specify the locations of Motif and
+     `--with-x...'  options used to specify the locations of M*tif and
      Athena widgets or the X libraries.  These and other `configure'
      options are decribed below.
 
@@ -412,7 +412,7 @@ these packages:
   options `--x-includes=DIR' and `--x-libraries=DIR' to specify their
   locations.
 
-* If `configure' doesn't find the Motif include and library files
+* If `configure' doesn't find the M*tif include and library files
   automatically, you can use the `configure' options
   `--with-motif-includes=DIR' and `--with-motif-libraries=DIR' to
   specify their locations.
@@ -440,13 +440,13 @@ these packages:
 
 You can also configure DDD to *ignore* some external packages:
 
-* If you wish to disable Athena widgets and rely on Motif widgets alone,
+* If you wish to disable Athena widgets and rely on M*tif widgets alone,
   you can use the `configure' option `--without-athena'.
 
 * Likewise, `--without-xpm' disables XPM support.
 
 * There is also a `--without-motif' option.  Don't use it; DDD will
-  not compile without Motif.
+  not compile without M*tif.
 
 * If you wish to disable command-line editing on standard input,
   use `--without-readline'.

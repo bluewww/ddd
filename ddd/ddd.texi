@@ -43,7 +43,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2000-06-06
+@set DATE 2000-06-26
 
 
 @c Macros
@@ -2112,7 +2112,7 @@ for details.
 @item --panned-graph-editor
 Use an Athena panner to scroll the data window.  Most people prefer
 panners on scroll bars, since panners allow two-dimensional scrolling.
-However, the panner is off by default, since some Motif implementations
+However, the panner is off by default, since some M*tif implementations
 do not work well with Athena widgets.  @xref{Customizing Displays}, for
 details; see also @option{--scrolled-graph-editor}, below.
 
@@ -2162,7 +2162,7 @@ Debugger}, for details.
 
 
 @item --scrolled-graph-editor
-Use Motif scroll bars to scroll the data window.  This is the default in
+Use M*tif scroll bars to scroll the data window.  This is the default in
 most @DDD{} configurations.  @xref{Customizing Displays}, for details;
 see also @option{--panned-graph-editor}, above.
 
@@ -2644,7 +2644,7 @@ This setting is tied to the following resource (@pxref{Customizing}):
 @defvr Resource suppressWarnings (class SuppressWarnings)
 If @samp{on}, X warnings are suppressed.  This is
 sometimes useful for executables that were built on a machine with a
-different X or Motif configuration.  By default, this is
+different X or M*tif configuration.  By default, this is
 @samp{off}.
 @end defvr
 
@@ -4348,7 +4348,7 @@ Controls the key bindings for clipboard operations.
 @item
 If this is @samp{Motif} (default), Cut/Copy/Paste is on
 @key{Shift+Del}/@key{Ctrl+Ins}/@key{Shift+Ins}.  This is conformant to
-the Motif style guide.
+the M*tif style guide.
 @item
 If this is @samp{KDE}, Cut/Copy/Paste is on
 @key{Ctrl+X}/@key{Ctrl+C}/@key{Ctrl+V}.  This is conformant to the KDE
@@ -4581,7 +4581,7 @@ latest-and-greatest @acronym{GUI} invention can be disabled, such that
 the button border is always shown.
 
 If you enable @samp{Color} buttons, tool bar images will be colored when
-entered.  If @DDD{} was built using Motif 2.0 and later, you can
+entered.  If @DDD{} was built using M*tif 2.0 and later, you can
 also choose a third setting, where buttons appear in color all the time.
 
 Here are the related resources (@pxref{Customizing}):
@@ -6128,11 +6128,11 @@ text.  The default is @samp{on}.  @xref{Options}, for the
 You can further control glyphs using the following resources:
 
 @defvr Resource cacheGlyphImages (class CacheMachineCode)
-Whether to cache (share) glyph images (@samp{on}) or not
-(@samp{off}).  Caching glyph images requires less X resources, but
-has been reported to fail with Motif 2.1 on XFree86 servers.  Default
-is @samp{off} for Motif 2.1 or later on @GNU{}/Linux machines, and
-@samp{on} otherwise.
+Whether to cache (share) glyph images (@samp{on}) or not (@samp{off}).
+Caching glyph images requires less X resources, but has been reported to
+fail with OSF/Motif 2.1 on XFree86 servers.  Default is @samp{off} for
+OSF/Motif 2.1 or later on @GNU{}/Linux machines, and @samp{on}
+otherwise.
 @end defvr
 
 @defvr Resource glyphUpdateDelay (class GlyphUpdateDelay)
@@ -9264,7 +9264,7 @@ The control to scroll the graph.
 If this is @samp{on}, an Athena panner is used (a kind of
 two-directional scrollbar).
 @item
-If this is @samp{off} (default), two Motif scrollbars are used.
+If this is @samp{off} (default), two M*tif scrollbars are used.
 @end itemize
 
 @xref{Options}, for the @option{--scrolled-graph-editor} and
@@ -11962,8 +11962,8 @@ Send bug reports for @DDD{} via electronic mail to
 
 Before sending in a bug report, try to find out whether the problem
 cause really lies within @DDD{}.  A common cause of problems
-are incomplete or missing X or Motif installations, for instance, or
-bugs in the X server or Motif itself.  Running @DDD{} as
+are incomplete or missing X or M*tif installations, for instance, or
+bugs in the X server or M*tif itself.  Running @DDD{} as
 
 @example
 $ @value{ddd} --check-configuration
@@ -12276,7 +12276,7 @@ exit.  @xref{Options}, for the @option{--version} option.
 
 @defvr Resource suppressWarnings (class SuppressWarnings)
 If @samp{on}, X warnings are suppressed.  This is sometimes useful for
-executables that were built on a machine with a different X or Motif
+executables that were built on a machine with a different X or M*tif
 configuration.  By default, this is @samp{off}.  @xref{X Warnings}, for
 details.
 @end defvr
@@ -12541,10 +12541,10 @@ frame; variables outside the current frame cannot be displayed.
 @section Using @value{DDD} with LessTif
 
 @DDD{} includes a number of hacks that make @DDD{} run with
-@emph{LessTif,} a free Motif clone, without loss of functionality.
-Since a @DDD{} binary may be dynamically bound and used with either
-an OSF/Motif or LessTif library, these @emph{lesstif hacks} can be
-enabled and disabled at run time.
+@emph{LessTif,} a free M*tif library without loss of functionality.
+Since a @DDD{} binary may be dynamically bound and used with either an
+OSF/Motif or LessTif library, these @emph{lesstif hacks} can be enabled
+and disabled at run time.
 
 Whether the @emph{lesstif hacks} are included at run-time depends on the
 setting of the @samp{lessTifVersion} resource:

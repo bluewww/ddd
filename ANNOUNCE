@@ -147,7 +147,7 @@ The ddd-3.3.tar.gz distribution file has been placed on `ftp.gnu.org'
 in `gnu/ddd'.
 
 DDD 3.3 requires LessTif 0.90 or later, available from
-`http://www.lesstif.org/' (or any other Motif library), and GCC 2.7.2
+`http://www.lesstif.org/' (or any other M*tif library), and GCC 2.7.2
 or later (or any other C++ compiler)
 
 The most recent (not necessarily tested) snapshots of DDD will be
