@@ -1609,7 +1609,7 @@ Ddd*source_form_w.break*contextHelpString: \
 @rm This symbol shows an enabled breakpoint at this location. \n\
 Press the @bf right mouse button @rm to change its properties.
 
-Ddd*source_form_w.arrow*contextHelpString: \
+Ddd*source_form_w.nobreak*contextHelpString: \
 @rm This symbol shows a disabled breakpoint at this location. \n\
 Press the @bf right mouse button @rm to change its properties.
 
