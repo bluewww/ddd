@@ -1442,7 +1442,7 @@ GraphNode *graphEditGetNodeAtPoint(Widget w, BoxPoint p)
 
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
 	node = graph->nextVisibleNode(node))
-	if (p <= (BoxRegion&)node->sensitiveRegion(graphGC))
+	if (p <= node->sensitiveRegion(graphGC))
 	    found = node;
 
     return found;

@@ -471,7 +471,7 @@ BoxRegion Graph::region(const GraphGC& gc) const
     for (GraphNode *node = nextVisibleNode(firstVisibleNode()); node != 0;
 	node = nextVisibleNode(node))
     {
-	r = r | (BoxRegion&)node->region(gc);
+	r = r | node->region(gc);
     }
 
     return r;

@@ -106,7 +106,7 @@ void BoxGraphNode::_print(ostream& os, const GraphGC& gc) const
 	startCompound(os, region(gc));
 
     RegionGraphNode::_print(os, gc);
-    box()->_print(os, (BoxRegion&)region(gc), *gc.printGC);
+    box()->_print(os, region(gc), *gc.printGC);
 
     if (gc.printGC->isFig())
 	endCompound(os);
