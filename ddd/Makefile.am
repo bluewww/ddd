@@ -6,6 +6,7 @@
 # DDD Makefile.
 
 # Copyright (C) 2000-2001 Universitaet Passau, Germany.
+# Copyright (C) 2001-2004 Free Software Foundation, USA.
 # Written by Andreas Zeller <zeller@gnu.org>.
 # 
 # This file is part of DDD.
