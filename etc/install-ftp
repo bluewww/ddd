@@ -245,7 +245,7 @@ if $diff; then
       echo
       echo "3. Apply this patch on $file_release, using \`patch':"
       echo
-      echo "   % patch < $diff"
+      echo "   % patch -l < $diff"
       echo
       echo
       echo "4. Check for any rejected patches (in \`.rej' files):"
@@ -277,8 +277,11 @@ if $diff; then
       echo
       echo "Note that changes in the following files are NOT included in this patch,"
       echo "since these files can easily be reconstructed using \`make':"
+      echo
       echo "$DIFF_IGNORE" | sed 's/^/    &/'
-      echo "To re-create \`configure' files, \`make' requires GNU autoconf."
+      echo
+      echo "To re-create \`configure' and \`config.h' files, "
+      echo "\`make' requires GNU autoconf.  See \`http://www.gnu.org/' for details."
       echo
       echo "Please report any bugs or problems to ddd-bugs@ips.cs.tu-bs.de."
       echo
