@@ -2478,12 +2478,10 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     for (GraphNode *gn = disp_graph->firstNode();
 	 gn != 0; gn = disp_graph->nextNode(gn))
     {
-	BoxGraphNode *bgn = ptr_cast(BoxGraphNode, gn);
-	if (bgn)
-	    bgn->selected() = false;
+	gn->selected() = false;
     }
 
-    // DispNode erzeugen und ggf. disabling-Meldung ausgeben
+    // Create new DispNode
     string ans = answer;
     DispNode *dn = new_data_node(info->display_expression, info->scope, ans);
     if (dn == 0)
@@ -2492,7 +2490,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	return;
     }
 
-    // BoxPoint berechnen
+    // Determine position
     int depend_nr = disp_graph->get_by_name(info->depends_on);
     BoxPoint box_point = info->point;
     if (box_point == BoxPoint())
@@ -2500,7 +2498,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     dn->moveTo(box_point);
     dn->selected() = true;
 
-    // in den Graphen einfuegen
+    // Insert node into graph
     disp_graph->insert(dn->disp_nr(), dn, depend_nr);
 
     refresh_addr(dn);
@@ -2526,9 +2524,7 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
     for (GraphNode *gn = disp_graph->firstNode();
 	 gn != 0; gn = disp_graph->nextNode(gn))
     {
-	BoxGraphNode *bgn = ptr_cast(BoxGraphNode, gn);
-	if (bgn)
-	    bgn->selected() = false;
+	gn->selected() = false;
     }
 
     // Create new user node and issue `disabling' messages
@@ -2665,9 +2661,7 @@ void DataDisp::new_data_displaysOQAC (string answers[],
     for (GraphNode *gn = disp_graph->firstNode();
 	 gn != 0; gn = disp_graph->nextNode(gn))
     {
-	BoxGraphNode *bgn = ptr_cast(BoxGraphNode, gn);
-	if (bgn)
-	    bgn->selected() = false;
+	gn->selected() = false;
     }
 
     NewDisplayInfo *info = (NewDisplayInfo *)data;
