@@ -483,6 +483,7 @@ Now, you can invoke @value{DDD} (@pxref{Invocation}) on the
 $ ddd sample
 @end example
 
+@page
 After a few seconds, @value{DDD} comes up.  The @dfn{Source Window}
 contains the source of your debugged program; use the @dfn{Scroll Bar}
 to scroll through the file.
@@ -513,6 +514,7 @@ interested in.  Click on the blank space left to the initialization of
 at the location in @samp{()}.  You see a little red stop sign appear in
 line 31.
 
+@page
 The next thing to do is to actually @dfn{execute} the program, such that
 you can examine its behaviour (@pxref{Running}).  Select @samp{Program
 @result{} Run} to execute the program; the @samp{Run Program} dialog
@@ -555,6 +557,7 @@ After a second, a small window with the variable value pops up
 (@code{6}).  The local variable @samp{a} is not yet initialized; you'll
 probably see @code{0x0} or some other invalid pointer value.
 
+@page
 To execute the current line, click on the @samp{Next} button on the
 command tool.  The arrow advances to the following line.  Now, point
 again on @samp{a} to see that the value has changed and that @samp{a}
@@ -595,6 +598,7 @@ $2 = @{0, 0, 0, 0, 0@}
 (gdb) 
 @end example
 
+@page
 Rather than using @samp{Print} at each stop to see the current value of
 @samp{a}, you can also @dfn{display} @samp{a}, such that its is
 automatically displayed.  With @samp{a[0]@@(argc - 1)} still being shown
@@ -688,21 +692,21 @@ After returning to the lowest frame, enter @samp{a[0]@@size} in the
 argument field and click on @samp{Print}:
 
 @example
-(gdb) print a[0] @ size
+(gdb) print a[0] @@ size
 $4 = @{8000, 7000, 5000, 1000, 4000, 1913@}
 (gdb) 
 @end example
 
-Surprise!  Where does this additional value come from?  The answer is
-simple: The array size as passed in @samp{size} to @samp{shell_sort} is
-@emph{too large by one}---the last value is a bogus value which happens
-to reside in memory after @samp{a}.  And this last value is being sorted
-in as well.
+Surprise!  Where does this additional value @code{1913} come from?  The
+answer is simple: The array size as passed in @samp{size} to
+@samp{shell_sort} is @emph{too large by one}---@code{1913} is a bogus
+value which happens to reside in memory after @samp{a}.  And this last
+value is being sorted in as well.
 
 To see whether this is actually the problem cause, you can now assign
-the correct value to @samp{size}.  Select @samp{size} in the source code
-and click on @samp{Set}.  A dialog pops up where you can edit the
-variable value.
+the correct value to @samp{size} (@pxref{Assignment}).  Select
+@samp{size} in the source code and click on @samp{Set}.  A dialog pops
+up where you can edit the variable value.
 
 @ifnotinfo
 @sp 1
@@ -722,6 +726,7 @@ Run till exit from #0  shell_sort (a=0x8049878, size=5) at sample.c:9
 (gdb) 
 @end example
 
+@page
 Success!  The @samp{a} display now contains the correct values
 @samp{1000, 4000, 5000, 7000, 8000}.  
 
@@ -731,8 +736,9 @@ Success!  The @samp{a} display now contains the correct values
 @sp 1
 @end ifnotinfo
 
-You can verify that these values are actually printed by further
-executing the program.  Click on @samp{Cont} to continue execution.
+You can verify that these values are actually printed to standard output
+by further executing the program.  Click on @samp{Cont} to continue
+execution.
 
 @example
 (gdb) cont
@@ -743,7 +749,7 @@ Program exited normally.
 @end example
 
 The message @samp{Program exited normally.} is from GDB; it indicates
-@file{sample} has finished executing.
+that the @file{sample} program has finished executing.
 
 Having found the problem cause, you can now fix the source code.  Click
 on @samp{Edit} to edit @file{sample.c}, and change the line
@@ -765,6 +771,7 @@ You can now recompile @file{sample}
 $ gcc -g -o sample sample.c
 @end example
 
+@noindent
 and verify (via @samp{Program @result{} Run Again}) that @file{sample}
 works fine now.
 
@@ -857,9 +864,6 @@ Use @samp{File @result{} Exit} or @kbd{Ctrl+Q} to exit.
 @menu
 * Invoking::                    
 * Remote Debugging::            
-* Remote Host::                 
-* Remote Debugger::             
-* Remote Program::              
 * Quitting::                    
 @end menu
 
@@ -1851,29 +1855,149 @@ enables several important warnings.  For further options, see the
 @section Remote Debugging
 
 You can have each of @value{DDD}, the inferior debugger, and the
-debugged program run on different machines.  This section tells you how
-to do this.
+debugged program run on different machines.
 
+@menu
+* Remote Host::                 Running @value{DDD} on a Remote Host
+* Remote Debugger::             Using a Remote Inferior Debugger
+* Remote Program::              Debugging a Remote Program
+@end menu
 
 @node Remote Host
-@section Running @value{DDD} on a Remote Host
+@subsection Running @value{DDD} on a Remote Host
+@cindex Remote host
+@cindex Host, remote
+@cindex Display, setting
 
-...
+You can run @value{DDD} on a remote host, using your current host as X
+display.  On the remote host, invoke @value{DDD} as
+
+@example
+ddd -display @var{display}
+@end example
+
+@noindent
+where @var{display} is the name of the X server to connect to (for
+instance, @samp{@var{hostname}:0.0}, where @var{hostname} is your host).
+
+Instead of specifying @samp{-display @var{display}}, you can also set
+the @samp{DISPLAY} environment variable to @var{display}.
+@enindex DISPLAY
 
 
 @node Remote Debugger
-@section Using @value{DDD} with a Remote Inferior Debugger
+@subsection Using @value{DDD} with a Remote Inferior Debugger
+@cindex Remote debugger
+@cindex Debugger, on remote host
 
-...
+In order to run the inferior debugger on a remote host, you need
+@samp{remsh} (called @samp{rsh} on BSD systems) access on the remote
+host.
 
+To run the debugger on a remote host @emph{hostname}, invoke @value{DDD} as
+@example
+ddd --host @var{hostname} @var{remote-program}
+@end example
+
+If your remote @emph{username} differs from the local username, use
+
+@example
+ddd --host @var{hostname} --login @var{username} @var{remote-program}
+@end example
+
+@noindent
+or
+
+@example
+ddd --host @var{username}@@@var{hostname} @var{remote-program}
+@end example
+
+@noindent
+instead.
+
+There are a few @emph{caveats} in remote mode:
+
+@itemize @bullet
+@item
+The remote debugger is started in your remote home directory.  Hence,
+you must specify an absolute path name for @emph{remote-program} (or a
+path name relative to your remote home directory).  Same applies to
+remote core files.  Also, be sure to specify a remote process id when
+debugging a running program.
+
+@item
+The remote debugger is started non-interactively.  Some DBX versions
+have trouble with this.  If you don't get a prompt from the remote
+debugger, use the @samp{--rhost} option instead of @samp{--host}.  This
+will invoke the remote debugger via an interactive shell on the remote
+host, which may lead to better results.
+
+Note: using @samp{--rhost}, @value{DDD} invokes the inferior debugger as
+soon as a shell prompt appears.  The first output on the remote host
+ending in a space character or @samp{>} and not followed by a newline is
+assumed to be a shell prompt.  If necessary, adjust your shell prompt on
+the remote host.
+
+@item
+To run the remote program, @value{DDD} invokes an @samp{xterm} terminal
+emulator on the remote host, giving your current @samp{DISPLAY}
+environment variable as address.  If the remote host cannot invoke
+@samp{xterm}, or does not have access to your X display, start
+@value{DDD} with the @samp{--no-exec-window} option.  The program
+input/output will then go through the @value{DDD} debugger console.
+
+@item
+In remote mode, all sources are loaded from the remote host; file
+dialogs scan remote directories.  This may result in somewhat slower
+operation than normal.
+
+@item
+To help you find problems due to remote execution, run @value{DDD} with
+the @samp{--trace} option.  This prints the shell commands issued by
+@value{DDD} on standard error.
+@end itemize
+
+@xref{Customizing Remote Debugging}, for customizing remote mode.
 
 
 @node Remote Program
-@section Using @value{DDD} with a Remote Program
+@subsection Debugging a Remote Program
+@cindex Remote program
+@cindex Program, on remote host
 
-...
+The GDB debugger allows you to run the @emph{debugged program} on a
+remote machine (called @emph{remote target}), while GDB runs on the
+local machine.
 
+@xref{Remote, Remote Debugging, Remote Debugging, gdb, Debugging with
+GDB}, for details.  Basically, the following steps are required:
 
+@itemize @bullet
+@item
+Transfer the executable to the remote target.
+
+@item
+Start @samp{gdbserver} on the remote target.
+@pindex gdbserver
+
+@item
+Start @value{DDD} using GDB on the local machine, and load the same
+executable using the GDB @samp{file} command.
+@cmindex file
+
+@item
+Attach to the remote @samp{gdbserver} using the GDB @samp{target remote}
+command.
+@cmindex target remote
+@end itemize
+
+The local @file{.gdbinit} file is useful for setting up directory search
+paths, etc.
+@flindex .gdbinit
+
+Of course, you can also combine @value{DDD} remote mode and GDB remote
+mode, running @value{DDD}, GDB, and the debugged program each on a
+different machine.
 
 
 @node Quitting
@@ -1976,7 +2100,6 @@ program.  @xref{Using the Execution Window}, for details.
 
 All these windows can be customized to fit your preferences.
 @xref{Customizing Windows}, for details.
-
 
 
 @menu
@@ -2856,7 +2979,7 @@ Values}, for details.
 @lbindex Display
 @cindex Values, displaying with @samp{Display}
 @cindex Displaying values in the data window
-@cindex Displays, creating
+@cindex Display, creating
 
 Display the value of @samp{()} in the data window.  @xref{Displaying
 Values}, for details.
@@ -2873,7 +2996,7 @@ Plot @samp{()} in a plot window.  @xref{Plotting Values}, for details.
 @item Show/Hide
 @lbindex Show
 @lbindex Hide
-@cindex Displays, toggling detail
+@cindex Display, toggling detail
 @cindex Detail toggling with @samp{Show/Hide}
 
 Toggle details of the selected display(s).  @xref{Showing and Hiding
@@ -2882,7 +3005,7 @@ Details}, for a discussion.
 
 @item Rotate
 @lbindex Rotate
-@cindex Displays, rotating
+@cindex Display, rotating
 @cindex Rotating displays with @samp{Rotate}
 
 Rotate the selected display(s).  @xref{Rotating Arrays}, for details.
@@ -2890,17 +3013,17 @@ Rotate the selected display(s).  @xref{Rotating Arrays}, for details.
 
 @item Set
 @lbindex Set
-@cindex Displays, setting
+@cindex Display, setting
 @cindex Setting values with @samp{Set}
 @cindex Values, setting with @samp{Set}
 
-Set (change) the value of @samp{()}.  @xref{Changing Values}, for
+Set (change) the value of @samp{()}.  @xref{Assignment}, for
 details.
 
 
 @item Undisp
 @lbindex Undisp
-@cindex Displays, deleting
+@cindex Display, deleting
 @cindex Deleting displays
 
 Undisplay (delete) the selected display(s).  @xref{Deleting Displays},
@@ -3953,16 +4076,45 @@ equivalent to sending a SIGINT (Interrupt) signal.
 command, such as printing data.
 
 
-
-
 @node Stopping X Programs
 @section Stopping X Programs
 @cindex X programs, stopping
 @cindex X server, frozen
 @cindex Mouse pointer, frozen
+@cindex Display, frozen
 
-...
+If your program is a modal X application, @value{DDD} may interrupt it
+while it has grabbed the mouse pointer, making further interaction
+impossible---your X display will be unresponsive to any user actions.
 
+By default, @value{DDD} will check after each interaction whether the
+pointer is grabbed.  If the pointer is grabbed, @value{DDD} will
+continue the debugged program such that you can continue to use your X
+display.
+
+This is how this feature works: When the program stops, @value{DDD}
+checks for input events such as keyboard or mouse interaction.  If
+@value{DDD} does not receive any event within the next 5 seconds,
+@value{DDD} checks whether the mouse pointer is grabbed by attempting to
+grab and ungrab it.  If this attempt fails, then @value{DDD} considers
+the pointer grabbed.
+
+Unfortunately, @value{DDD} cannot determine the program that grabbed the
+pointer---it may be the debugged program, or another program.
+Consequently, you have another 10 seconds to cancel continuation before
+@value{DDD} continues the program automatically.
+
+@cindex X server, locked
+@cindex Display, locked
+There is one situation where this fails: if you lock your X display
+while @var{DDD} is running, then @value{DDD} will consider a resulting
+pointer grab as a result of running the program---and automatically
+continue execution of the debugged program.  Consequently, you can turn
+off this feature via @samp{Edit @result{} Preferences @result{} General
+@result{} Continue Automatically when Mouse Pointer is Frozen}.
+@lbindex Continue Automatically when Mouse Pointer is Frozen
+
+@xref{Customizing Execution}, for further customizations.
 
 
 @node Running
@@ -4210,6 +4362,13 @@ Execution completes.
 
 @value{DDD} shows the current program status in the debugger console.
 The current execution position is highlighted by an arrow.
+
+If @samp{Edit @result{} Preferences @result{} General @result{}
+Uniconify When Ready} is set, @value{DDD} automatically deiconifies
+itself when the program stops.  This way, you can iconify @value{DDD}
+during a lengthy computation and have it uniconify as soon as the
+program stops.
+@lbindex Uniconify When Ready
 
 
 @node Resuming Execution
@@ -4810,7 +4969,9 @@ also shown in the status line.
 @sp 1
 @end ifnotinfo
 
-...
+You can turn off value tips via @samp{Edit @result{} Preferences
+@result{} General @result{} Automatic Display of Variable Values}.
+@lbindex Automatic Display of Variable Values
 
 
 @node Printing Values
@@ -4858,7 +5019,7 @@ graphically.  It is updated each time the program stops.
 @menu
 * Display Basics::              
 * Displaying Arrays::           
-* Changing Values::             
+* Assignment::                  
 * Examining Structures::        
 * Layouting the Graph::         
 * Printing the Graph::          
@@ -4892,7 +5053,7 @@ Click on @samp{Undisplay} to delete the selected display.
 * Displaying Program Status::   
 * Creating Multiple Displays::  
 * Refreshing the Data Window::  
-* Clustering Displays::         
+* Clustering::                  
 * Editing all Displays::        
 * Deleting Displays::           
 @end menu
@@ -4937,8 +5098,8 @@ This command creates a new display showing the value of the expression
 
 @table @code
 @item clustered
-If given, the new display is created in a cluster.  @xref{Clustering
-Displays}, for a discussion.
+If given, the new display is created in a cluster.  @xref{Clustering},
+for a discussion.
 @cindex Display, clustered
 @cindex Cluster command
 
@@ -5096,7 +5257,7 @@ value until you get the right amount of details.
 If @emph{all} details of a display are hidden, the display is called
 @emph{disabled}; this is indicated by the string @samp{(Disabled)}.
 @cindex Disabled displays
-@cindex Displays, disabled
+@cindex Display, disabled
 
 Displays can also be disabled or enabled via a @value{DDD} command,
 which you enter at the debugger prompt:
@@ -5232,8 +5393,8 @@ However, there may be situations where you should refresh the data
 window explicitly.  This is especially the case whenever you changed
 debugger settings that could affect the data format, and want the data
 window to reflect these settings.
-@cindex Displays, refreshing
-@cindex Displays, updating
+@cindex Display, refreshing
+@cindex Display, updating
 @cindex Refreshing displayed values
 @cindex Updating displayed values
 
@@ -5256,7 +5417,7 @@ graph refresh
 at the debugger prompt has the same effect.
 
 
-@node Clustering Displays
+@node Clustering
 @subsubsection Clustering Displays
 
 If you examine several variables at once, having a separate display for
@@ -5315,8 +5476,60 @@ Displays}.
 
 @node Editing all Displays
 @subsubsection Editing all Displays
+@cindex Display Editor
 
-...
+You can view the state of all displays by selecting @samp{Data @result{} 
+Edit Displays}.  This invokes the @dfn{Display Editor}.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-edit-displays, 16cm}
+@sp 1
+@end ifnotinfo
+
+The Display Editor shows the properties of each display, using the
+following fields:
+
+@table @samp
+@item Num
+The display number.
+
+@item Expression
+The displayed expression.
+
+@item State
+One of
+
+@table @samp
+@item enabled
+Normal state.
+
+@item disabled
+Disabled; all details are hidden.  Use @samp{Show} to enable.
+
+@item not active
+Out of scope.
+
+@item deferred
+Will be created as soon as its @samp{Scope} is reached (@pxref{Creating
+Single Displays}).
+
+@item clustered
+Part of a cluster (@pxref{Clustering}).  Use @samp{Undisp @result{}
+Uncluster} to uncluster.
+
+@item alias of @var{display}
+A suppressed alias of display @var{display} (@pxref{Shared Structures}).
+@end table
+
+@item Scope
+The scope in which the display was created.  For deferred displays, this 
+is the scope in which the display will be created.
+
+@item Address
+The address of the displayed expression.  Used for resolving aliases
+(@pxref{Shared Structures}).
+@end table
 
 
 @node Deleting Displays
@@ -5398,6 +5611,9 @@ arrays.
 
 @node Rotating Arrays
 @subsubsection Rotating Arrays
+@cindex Display, rotating
+@cindex Array, rotating
+@cindex Rotating arrays
 
 Arrays can be aligned horizontally or vertically.  To change the
 alignment of an array, select it and then click on the @samp{Rotate}
@@ -5495,50 +5711,277 @@ Displays} after a change in GDB settings.
 @lbindex Refresh Displays
 
 You can also configure @value{DDD} to display each array element
-individually, regardless of GDB settings, using the
+individually.  @xref{Customizing Displays}, for the
 @samp{expandRepeatedValues} resource.
 
-...
 
+@node Assignment
+@subsection Assignment to Variables
+@cindex Assignment
+@cindex Setting variables
+@cindex Variables, setting
 
-@node Changing Values
-@subsection Changing Values
+During program execution, you can change the values of arbitrary
+variables.@footnote{JDB does not support changing variable values.}
 
-...
+To change the value of a variable, enter its name in @samp{()}---for
+instance, by selecting an occurrence or a display.  Then, click on the
+@samp{Set} button.  In a dialog, you can edit the variable value at
+will; clicking the @samp{OK} or @samp{Apply} button commits your change
+and assigns the new value to the variable.
+@lbindex Set
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-set, 16cm}
+@sp 1
+@end ifnotinfo
+
+To change a displayed value, you can also select @samp{Set Value} menu
+from the data popup menu,
+@lbindex Set Value
+
+If you made a mistake, you can use @samp{Edit @result{} Undo} to re-set
+the variable to its previous value.
 
 
 @node Examining Structures
 @subsection Examining Structures
 
-...
+Besides displaying simple values, @value{DDD} can also visualize the
+@dfn{Dependencies} between values---especially pointers and other
+references that make up complex data structures.
 
 @menu
 * Dependent Values::            
-* Dereferencing Pointers::      
 * Display Shortcuts::           
+* Dereferencing Pointers::      
 * Shared Structures::           
 @end menu
 
 @node Dependent Values
 @subsubsection Displaying Dependent Values
 
-@node Dereferencing Pointers
-@subsubsection Dereferencing Pointers
+@cindex Edge
+@cindex Display, dependent
+Dependent displays are created from an existing display.  The dependency
+is indicated by an @dfn{edge} leading from the originating display to
+the dependent display.
+
+To create a dependent display, select the originating display or display
+part and enter the dependent expression in the @samp{():} argument
+field.  Then click on the @samp{Display} button.
+
+Using dependent displays, you can investigate the data structure of a
+tree for example and lay it out according to your intuitive image of the
+tree data structure.
+
+By default, @value{DDD} does not recognize shared data structures
+(i.e. a data object referenced by multiple other data objects).
+@xref{Shared Structures}, below, for details on how to examine such
+structures.
+
 
 @node Display Shortcuts
 @subsubsection Display Shortcuts
 
+@value{DDD} maintains a @emph{shortcut menu} of frequently used display
+expressions.  This menu is activated
+
+@itemize @bullet
+@item
+by pressing and holding the @samp{Display} button, or
+
+@item
+by pressing @emph{mouse button 3} on some display and selecting
+@samp{New Display}, or
+
+@item
+by pressing @strong{Shift} and @emph{mouse button 3} on some display.
+@end itemize
+
+By default, the shortcut menu contains frequently used base conversions.
+
+@lbindex Other
+The @samp{Other} entry in the shortcut menu lets you create a new
+display that @emph{extends} the shortcut menu.  
+
+As an example, assume you have selected a display named @samp{date_ptr}.
+Selecting @samp{Display @result{} Other} pops up a dialog that allows
+you to enter a new expression to be displayed---for instance, you can
+cast the display @samp{date_ptr} to a new display @samp{(char
+*)date_ptr}.  If the @samp{Include in @samp{New Display} Menu} toggle
+was activated, the shortcut menu will then contain a new entry
+@samp{Display (char *)()} that will cast @emph{any} selected display
+@var{display} to @samp{(char *)@var{display}}.  Such shortcuts can save
+you a lot of time when examining complex data structures.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-shortcuts, 16cm}
+@sp 1
+@end ifnotinfo
+
+You can edit the contents of the @samp{New Display} menu by selecting
+its @samp{Edit Menu} item.  This pops up the @emph{Shortcut Editor}
+containing all shortcut expressions, which you can edit at leisure.
+Each line contains the expression for exactly one menu item.  Clicking
+on @samp{Apply} re-creates the @samp{New Display} menu from the text.
+If the text is empty, the @samp{New Display} menu will be empty, too.
+@lbindex Edit Menu
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-shortcut-editor, 16cm}
+@sp 1
+@end ifnotinfo
+
+@value{DDD} also allows you to specify individual labels for
+user-defined buttons.  You can write such a label after the expression,
+separated by @samp{//}.  This feature is used in the default contents of
+the GDB @samp{New Display} menu, where each of the base conversions has
+a label:
+
+@example
+/t ()	// Convert to Bin
+/d ()	// Convert to Dec
+/x ()	// Convert to Hex
+/o ()	// Convert to Oct
+@end example
+
+Feel free to add other conversions here.  @value{DDD} supports up to 20
+@samp{New Display} menu items.
+@lbindex New Display
+
+
+@node Dereferencing Pointers
+@subsubsection Dereferencing Pointers
+@cindex Dereferencing
+@cindex Pointers, dereferencing
+
+There are special shortcuts for creating dependent displays showing the
+value of a dereferenced pointer.  This allows for rapid examination of
+pointer-based data structures.
+
+To dereference a pointer, select the originating pointer value or name
+and click on the @samp{Disp *} button.  A new display showing the
+dereferenced pointer value is created.
+@lbindex Disp *
+
+As a faster alternative, you can also press @emph{mouse button 3} on the
+originating pointer value or name and select the @samp{Display *} menu
+item.
+@lbindex Display *
+
+As an even faster alternative, you can also double-click @emph{mouse
+button 1} on the originating pointer value or name.  If you press
+@key{Ctrl} while double-clicking, the display will be dereferenced
+@emph{in place}--that is, it will be replaced by the dereferenced
+display.
+
+The @samp{Display *()} function is also accessible by pressing and
+holding the @samp{Display} button.
+@lbindex Display *()
+
+
 @node Shared Structures
 @subsubsection Shared Structures
+
+By default, @value{DDD} does not recognize shared data structures---that
+is, a data object referenced by multiple other data objects.  For
+instance, if two pointers @samp{p1} and @samp{p2} point at the same data
+object @samp{d}, the data displays @samp{d}, @samp{*p1}, and @samp{*p2}
+will be separate, although they denote the same object.
+
+@value{DDD} provides a special mode which makes it detect these
+situations.  @value{DDD} recognizes if two or more data displays are
+stored at the same physical address, and if this is so, merges all these
+@dfn{aliases} into one single data display, the @emph{original data
+display}.  This mode is called @emph{Alias Detection}; it is enabled via
+@samp{Data @result{} Detect Aliases}.
+@lbindex Detect Aliases
+@cindex Aliases, detecting
+@cindex Shared structures, detecting
+
+When alias detection is enabled, @value{DDD} inquires the memory
+location (the @emph{address}) of each data display after each program
+step.  If two displays have the same address, they are merged into one.
+More specifically, only the one which has least recently changed remains
+(the @emph{original data display}); all other aliases are
+@emph{suppressed}, i.e. completely hidden.  The edges leading to the
+aliases are replaced by edges leading to the original data display.
+
+An edge created by alias detection is somewhat special: rather than
+connecting two displays directly, it goes through an @emph{edge hint},
+describing an arc connecting the two displays and the edge hint.
+@cindex Edge hint
+
+Each edge hint is a placeholder for a suppressed alias; selecting an
+edge hint is equivalent to selecting the alias.  This way, you can
+easily delete display aliases by simply selecting the edge hint and
+clicking on @samp{Undisp}.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-aliases, 16cm}
+@sp 1
+@end ifnotinfo
+
+To access suppressed display aliases, you can also use the Display
+Editor.  Suppressed displays are listed in the Display Editor as
+@emph{aliases} of the original data display.  Via the Display Editor,
+you can select, change, and delete suppressed displays.
+
+Suppressed displays become visible again as soon as
+
+@itemize @bullet
+@item
+alias detection is disabled, 
+
+@item
+their address changes such that they are no more aliases, or
+
+@item
+the original data display is deleted, such that the least recently
+changed alias becomes the new original data display.
+@end itemize
+
+Please note the following @emph{caveats} with alias detection:
+
+@itemize @bullet
+@item
+Alias detection requires that the current programming language provides
+a means to determine the address of an arbitrary data object.
+Currently, only C, C++, and Java are supported.
+
+@item
+Some inferior debuggers (for instance, SunOS DBX) produce incorrect
+output for address expressions.  Given a pointer @var{p}, you may verify
+the correct function of your inferior debugger by comparing the values
+of @var{p} and @samp{&@var{p}} (unless @var{p} actually points to
+itself).  You can also examine the data display addresses, as shown in
+the Display Editor.
+
+@item
+Alias detection slows down @value{DDD} slightly, which is why it is
+disabled by default.  You may consider to enable it only at need---for
+instance, while examining some complex data structure---and disable it
+while examining control flow (i.e., stepping through your program).
+@value{DDD} will automatically restore edges and data displays when
+switching modes.
+@end itemize
 
 
 @node Layouting the Graph
 @subsection Layouting the Graph
 
-...
+If you have several displays at once, you may wish to arrange them
+according to your personal preferences.  This section tells you how you
+can do this.
 
 @menu
 * Moving Displays::             
+* Scrolling Data::              
 * Aligning Displays::           
 * Automatic Layout::            
 * Rotating the Graph::          
@@ -5546,28 +5989,165 @@ individually, regardless of GDB settings, using the
 
 @node Moving Displays
 @subsubsection Moving Displays
+@cindex Display, moving
+
+From time to time, you may wish to move displays at another place in the
+data window.  You can move a single display by pressing and holding
+@emph{mouse button 1} on the display title.  Moving the pointer while
+holding the button causes all selected displays to move along with the
+pointer.
+
+Edge hints can be selected and moved around like other displays.  If an
+arc goes through the edge hint, you can change the shape of the arc by
+moving the edge hint around.
+
+
+@node Scrolling Data
+@subsubsection Scrolling Data
+@cindex Scrolling
+
+If the data window becomes too small to hold all displays, scroll bars
+are created.  If your @value{DDD} is set up to use @emph{panners}
+instead, a panner is created in the lower right edge.  When the panner
+is moved around, the window view follows the position of the panner.
+@xref{Customizing Scrolling}, for details on how to set up scroll bars
+or panners.
+
+For fine-grain movements, selected displays may also be moved using the
+arrow keys.  Pressing @strong{Shift} and an arrow key moves displays by
+single pixels.  Pressing @key{Ctrl} and arrow keys moves displays by
+grid positions.
+
 
 @node Aligning Displays
 @subsubsection Aligning Displays
+@cindex Display, aligning on grid
+@cindex Grid, aligning displays
+
+You can align all displays on the nearest grid position by selecting
+@samp{Data @result{} Align on Grid}.  This is useful for keeping edges
+strictly horizontal or vertical.
+
+You can enforce alignment by selecting @samp{Edit @result{} Preferences
+@result{} Data @result{} Auto-align Displays on Nearest Grid Point}.  If
+this feature is enabled, displays can be moved on grid positions only.
+@lbindex Auto-align Displays on Nearest Grid Point
+
 
 @node Automatic Layout
 @subsubsection Automatic Layout
 
+You can layout the entire graph as a tree by selecting @samp{Data
+@result{} Layout Graph}.
+@lbindex Layout Graph
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-layout, 16cm}
+@sp 1
+@end ifnotinfo
+
+Layouting the graph may introduce @dfn{edge hints}; that is, edges are
+no more straight lines, but lead to an edge hint and from there to their
+destination.  Edge hints can be moved around like arbitrary displays.
+@cindex Edge hints
+
+To enable a more compact layout, you can set the @samp{Edit @result{}
+Preferences @result{} Data @result{} Compact Layout} option.  This
+realizes an alternate layout algorithm, where successors are placed next
+to their parents.  This algorithm is suitable for homogeneous data
+structures only.
+@cindex Comact Layout
+
+You can enforce layout by setting @samp{Edit @result{} Preferences
+@result{} Data @result{} Automatic Layout}.  If automatic layout is
+enabled, the graph is layouted after each change.
+@cindex Automatic Layout
+
+
+
 @node Rotating the Graph
 @subsubsection Rotating the Graph
+@cindex Graph, rotating
+@cindex Rotating the graph
+
+You can rotate the entire graph clockwise by 90 degrees by selecting
+@samp{Data @result{} Rotate Graph}.
+@lbindex Rotate Graph
+
+If the graph was previously layouted, you may need to layout it again.
+Subsequent layouts will respect the direction of the last rotation.
 
 
 @node Printing the Graph
 @subsection Printing the Graph
+@cindex Graph, printing
+@cindex Printing the Graph
 
+@value{DDD} allows for printing the graph picture on PostScript printers
+or into files.  This is useful for documenting program states.
 
-...
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-print-graph, 16cm}
+@sp 1
+@end ifnotinfo
 
-@defvr Resource printCommand (class PrintCommand)
-The command to print a PostScript file.  Usually @samp{lp} or
-@samp{lpr}.
-@end defvr
+To print the graph on a PostScript printer, select @samp{File @result{}
+Print Graph}.  Enter the printing command in the @samp{Print Command}
+field.  Click on the @samp{OK} or the @samp{Apply} button to start
+printing.
+@lbindex Print Graph
+@lbindex Print Command
 
+As an alternative, you may also print the graph in a file.  Click on the
+@samp{File} button and enter the file name in the @samp{File Name}
+field.  Click on the @samp{Print} button to create the file.
+@lbindex File Name
+
+When the graph is printed in a file, two formats are available:
+
+@itemize @bullet
+@item
+@cindex PostScript, printing as
+@samp{PostScript}---suitable for enclosing the graph in another
+document;
+
+@item
+@cindex FIG file, printing as
+@cindex IBMGL file, printing as
+@cindex @TeX{} file, printing as
+@cindex PIC file, printing as
+@samp{FIG}---suitable for post-processing, using the @code{xfig} graphic
+editor, or for conversion into other formats (among others, IBMGL,
+@TeX{}, PIC), using the @code{transfig} or @code{fig2dev} programs.
+@pindex xfig
+@pindex transfig
+@pindex fig2dev
+@end itemize
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-print-output, 16cm}
+@sp 1
+@end ifnotinfo
+
+Please note the following @emph{caveats} related to printing graphs:
+
+@itemize @bullet
+@item
+If any displays were selected when invoking the @samp{Print} dialog, the
+option @samp{Selected Only} is set.  This makes @value{DDD} print only
+the selected displays.
+@lbindex Selected Only
+
+@item
+The @samp{Color}, @samp{Orientation}, and @samp{Paper Size} options are
+meaningful for PostScript only.
+@lbindex Color
+@lbindex Orientation
+@lbindex Paper Size
+@end itemize
 
 
 @node Plotting Values
@@ -7082,12 +7662,25 @@ file @@MASK@@ | grep '.*:.*text.*' | cut -d: -f1
 ...
 
 @menu
+* Customizing Scrolling::       
 * Customizing Value Tips::      
 * Customizing Displays::        
 * Customizing Shortcuts::       
 * Customizing VSL::             
 * Customizing Plots::           
+* Customizing Prints::          
 @end menu
+
+@node Customizing Scrolling
+@subsection Customizing Scrolling
+
+...
+
+@defvr Resource pannedGraphEditor (class PannedGraphEditor)
+Whether to use an Athena panner (@samp{on}) or Motif scrollbars
+(@samp{off}, default).
+@end defvr
+
 
 @node Customizing Value Tips
 @subsection Customizing Value Tips
@@ -7476,6 +8069,27 @@ noborder}.  Feel free to customize these settings as desired.
 @defvr Resource plot3dSettings (class PlotSettings)
 Additional initial settings for 3-D plots.  Default is @samp{set
 border}.  Feel free to customize these settings as desired.
+@end defvr
+
+
+...
+
+
+@node Customizing Prints
+@subsection Customizing Prints
+
+...
+
+The following resources control printing of graphs and plots:
+
+@defvr Resource printCommand (class PrintCommand)
+The command to print a PostScript file.  Usually @samp{lp} or
+@samp{lpr}.
+@end defvr
+
+@defvr Resource paperSize (class PaperSize)
+The paper size used for printing, in format @samp{@var{width} x
+@var{height}}.  The default is ISO A4 format, or @samp{210mm x 297mm}.
 @end defvr
 
 
