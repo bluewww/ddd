@@ -793,6 +793,15 @@ void PosBuffer::filter_dbx(string& answer)
 	
 void PosBuffer::filter_xdb(string& answer)
 {
+    if (already_read != PosComplete && !answer.contains('\n'))
+    {
+	// Position info is incomplete
+	answer_buffer = answer;
+	answer = "";
+	already_read = PosPart;
+	return;
+    }
+
     // INDEX points at the start of a line
     int index = 0;
     while (index >= 0 && answer != "")
@@ -861,6 +870,15 @@ void PosBuffer::filter_xdb(string& answer)
 	
 void PosBuffer::filter_jdb(string& answer)
 {
+    if (already_read != PosComplete && !answer.contains('\n'))
+    {
+	// Position info is incomplete
+	answer_buffer = answer;
+	answer = "";
+	already_read = PosPart;
+	return;
+    }
+
     int index = 0;
     while (index >= 0 && answer != "")
     {
@@ -944,7 +962,15 @@ void PosBuffer::filter_jdb(string& answer)
 
 void PosBuffer::filter_pydb(string& answer)
 {
-    string result;
+    if (already_read != PosComplete && !answer.contains('\n'))
+    {
+	// Position info is incomplete
+	answer_buffer = answer;
+	answer = "";
+	already_read = PosPart;
+	return;
+    }
+
     // `Breakpoint N, FUNCTION (ARGS...) at file:line_no'
     // rxstopped_func defined for GDB...if it changes, change here
     int fn_index = index(answer, rxstopped_func, "Breakpoint");
@@ -963,15 +989,16 @@ void PosBuffer::filter_pydb(string& answer)
 	    fetch_function(answer, frame_index, func_buffer);
 	}
     }
+
     int lineinfo  = answer.index("Lineinfo");
     // Lineinfo <function> at file:lineno
-    if (lineinfo == 0
-	|| lineinfo > 0 && answer[lineinfo - 1] == '\n')
+    if (lineinfo == 0 || (lineinfo > 0 && answer[lineinfo - 1] == '\n'))
     {
 	answer = answer.after('<');
 	func_buffer = answer.before('>');
     }
-    result = answer.after(" at ");
+
+    string result = answer.after(" at ");
     result = result.before('\n');
     if (result.contains(':'))
     {
