@@ -278,32 +278,33 @@ public:
 
 #if HAVE_NAMESPACE
 namespace X {
-  int i=10,j=10,k=10;
+  int i = 10, j = 10, k = 10;
 }
 
-int k=0;
+int k = 0;
 
 void namespace_test()
 {
+    int i = 0;
 
-  int i = 0;
+    using namespace X;
 
-  using namespace X;
-  i++;  // compiler uses local, so does debugger/ddd
+    // Compiler uses local, so do GDB & DDD
+    i++;
 
-  // the compiler uses X::j here however the debugger has
-  //  ddd inserts just j into the gdb console and produces an error,
-  //  however gdb needs "'X::j'" to work
- j++;
+    // The compiler uses X::j here.  However, DDD inserts just j into
+    // the GDB console and produces an error, because GDB needs
+    // "'X::j'" to work.
+    j++;
 
-  // the compiler uses the global k
-  // ddd will insert just a "k" and properly display the global k
-  ::k++;
+    // The compiler uses the global k.  DDD will insert just a "k" and
+    // properly display the global k.
+    ::k++;
 
-  // the compiler uses X::k
-  // ddd inserts "X::k" into the console and produces an error because
-  // gdb is expecting a "'X::k'" to properly resolve k.
-  X::k++;
+    // The compiler uses X::k.  DDD inserts "X::k" into the console
+    // and produces an error because gdb is expecting "'X::k'" to
+    // properly resolve k.
+    X::k++;
 }
 #else
 void namespace_test() {}
@@ -316,37 +317,42 @@ void namespace_test() {}
 
 class Base {
 public:
-  int value;
-  int *ptr;
-  Base(int i) : value(i) {
-    ptr = &value;
-  }
-  virtual ~Base() {} // make class virtual
+    int value;
+    int *ptr;
+    Base(int i)
+	: value(i)
+    {
+	ptr = &value;
+    }
+    virtual ~Base() {} // make class virtual
 };
 
 class Intermediate1 : public Base
 {
 public:
-  Intermediate1() : Base(1) {}
+    Intermediate1() 
+	: Base(1) 
+    {}
 };
 
 class Intermediate2 : public Base {
 public:
-  Intermediate2() : Base(2) {}
+    Intermediate2() 
+	: Base(2)
+    {}
 };
 
 class Derived: public Intermediate1, public Intermediate2 {
 public:
-  Derived() {}
+    Derived() 
+    {}
 };
- 
-void inheritance_test()
+
+void multiple_inheritance_test()
 {
-  Derived *the_object=new Derived;
-  return; //<=== BREAK HERE and display *the_object
-          // and dereference the pointer ptr of Intermediate1 and Intermediate2
-          // the values of both pointers have to be displayed differently
-          // ('1' and '2', respectively), but they don't 
+    Derived *the_object = new Derived;
+    
+    (void) the_object;		// Display this
 }
 
 //--------------------------------------------------------------------------
@@ -701,7 +707,7 @@ int main(int /* argc */, char ** /* argv */)
     i++;
     namespace_test();
     i++;
-    inheritance_test();
+    multiple_inheritance_test();
     --i;
     cin_cout_test();
     return 0;
