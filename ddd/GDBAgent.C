@@ -1372,28 +1372,35 @@ void GDBAgent::handle_input(string& answer)
 
 	if (_on_answer != 0)
 	{
-	    // Received partial answer
+	    bool ready_to_process = true;
+
 	    if (buffer_gdb_output())
 	    {
 		// Buffer answer
-		if (flush_next_output() && !had_a_prompt)
-		{
-		    flush_next_output(false);
-		    on_answer(answer, user_data);
+		ready_to_process = 
+		    had_a_prompt || complete_answer.contains("(y or n)");
 
+		if (flush_next_output() && !ready_to_process)
+		{
+		    // Flush this output
+		    flush_next_output(false);
+		    ready_to_process = true;
+
+		    // Don't include it in the complete answer
 		    complete_answer = 
 			complete_answer.before(old_complete_answer_length);
 		}
-
-		if (had_a_prompt)
+		else
 		{
-		    normalize_answer(complete_answer);
-		    on_answer(complete_answer, user_data);
+		    // Simply buffer it all until we're ready.
+		    if (ready_to_process)
+			answer = complete_answer;
 		}
 	    }
-	    else
+
+	    if (ready_to_process)
 	    {
-		// Handle immediately
+		// Handle now
 		if (had_a_prompt)
 		{
 		    normalize_answer(answer);
@@ -1403,12 +1410,10 @@ void GDBAgent::handle_input(string& answer)
 		    strip_control(answer);
 		    strip_dbx_comments(answer);
 		}
-
-		_on_answer(answer, _user_data);
+		
+		on_answer(answer, user_data);
 	    }
 	}
-
-	
 
 	if (had_a_prompt)
 	{
