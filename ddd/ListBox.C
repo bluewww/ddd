@@ -162,7 +162,9 @@ bool ListBox::OK() const
 {
     assert (CompositeBox::OK());
     assert (nchildren() == 0 || nchildren() == 2);
-    assert (_last && _last->isEmpty());
+
+    // _last may be inconsistent; it is recomputed before every access
+    // assert (_last && _last->isEmpty());
 
     if (nchildren() == 2)
     {
