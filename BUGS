@@ -22,11 +22,11 @@ Volunteers for fixing these and other bugs are welcome!
 
 003 (Motif 1.1) The command window is scrolled whenever obscured.
 
-021 (DBX) Using Sun DBX, attempting to dereference a `(nil)' pointer
+021 (DBX) Using SunOS DBX, attempting to dereference a `(nil)' pointer
     results in an error message and no new display.  However, the
     expression is entered as an ordinary display.
 
-026 (DBX) Using Sun DBX with PASCAL or Modula-2, selected array
+026 (DBX) Using SunOS DBX with PASCAL or Modula-2, selected array
     elements are not counted from the starting index of the array.
 
 041 Starting a multi-window DDD iconified under vtwm and fvwm causes
@@ -140,4 +140,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 371 Reduce flickering when setting options.
 
-373 (Insert new bugs here)
+373 In `Define Command', changing the `()' toggle does not change
+    defined buttons.
+
+374 (Insert new bugs here)

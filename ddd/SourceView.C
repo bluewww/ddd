@@ -1623,12 +1623,12 @@ void SourceView::set_source_argCB(Widget text_w,
 
     if (have_selection && lesstif_version < 1000)
     {
-	// In LessTif 0.87, the unmanaged DataDisp::graph_selection_w
-	// text widget is not notified that it just has lost the
-	// selection.  The effect is that selecting an item from the
-	// source (or a selection in any other window) does *not*
-	// clear the selection in the data window, as it should.
-	// As a workaround, notify explicitly.
+	// In LessTif, the unmanaged DataDisp::graph_selection_w text
+	// widget is not notified that it just has lost the selection.
+	// The effect is that selecting an item from the source (or a
+	// selection in any other window) does *not* clear the
+	// selection in the data window, as it should.  As a
+	// workaround, notify explicitly.
 	data_disp->SelectionLostCB();
     }
 
@@ -3268,11 +3268,10 @@ string SourceView::get_word_at_pos(Widget text_w,
 //----------------------------------------------------------------------------
 
 // Install the given X bitmap as NAME
-static void InstallImage(unsigned char *bits, int width, int height, 
-			 const string& name)
+static void InstallBitmapAsImage(unsigned char *bits, int width, int height, 
+				 const string& name)
 {
-    XImage *image = CreateImageFromBitmapData(bits, width, height);
-    Boolean ok = XmInstallImage(image, name);
+    Boolean ok = InstallBitmap(bits, width, height, name);
     if (!ok)
 	cerr << "Could not install " << quote(name) << " bitmap\n";
 }
@@ -3288,37 +3287,37 @@ SourceView::SourceView(Widget parent)
 	toplevel_w = XtParent(toplevel_w);
 
     // Install glyph images
-    InstallImage(arrow_bits, arrow_width, arrow_height, 
-		 "plain_arrow");
-    InstallImage(grey_arrow_bits, grey_arrow_width, grey_arrow_height, 
-		 "grey_arrow");
-    InstallImage(past_arrow_bits, past_arrow_width, past_arrow_height, 
-		 "past_arrow");
-    InstallImage(signal_arrow_bits, signal_arrow_width, signal_arrow_height, 
-		 "signal_arrow");
-    InstallImage(drag_arrow_bits, drag_arrow_width, drag_arrow_height, 
-		 "drag_arrow");
+    InstallBitmapAsImage(arrow_bits, arrow_width, arrow_height, 
+			 "plain_arrow");
+    InstallBitmapAsImage(grey_arrow_bits, grey_arrow_width, grey_arrow_height, 
+			 "grey_arrow");
+    InstallBitmapAsImage(past_arrow_bits, past_arrow_width, past_arrow_height, 
+			 "past_arrow");
+    InstallBitmapAsImage(signal_arrow_bits, signal_arrow_width, 
+			 signal_arrow_height, "signal_arrow");
+    InstallBitmapAsImage(drag_arrow_bits, drag_arrow_width, drag_arrow_height, 
+			 "drag_arrow");
 
-    InstallImage(stop_bits, stop_width, stop_height, 
-		 "plain_stop");
-    InstallImage(cond_bits, cond_width, cond_height, 
-		 "plain_cond");
-    InstallImage(temp_bits, temp_width, temp_height, 
-		 "plain_temp");
+    InstallBitmapAsImage(stop_bits, stop_width, stop_height, 
+			 "plain_stop");
+    InstallBitmapAsImage(cond_bits, cond_width, cond_height, 
+			 "plain_cond");
+    InstallBitmapAsImage(temp_bits, temp_width, temp_height, 
+			 "plain_temp");
 
-    InstallImage(grey_stop_bits, grey_stop_width, grey_stop_height, 
-		 "grey_stop");
-    InstallImage(grey_cond_bits, grey_cond_width, grey_cond_height, 
-		 "grey_cond");
-    InstallImage(grey_temp_bits, grey_temp_width, grey_temp_height, 
-		 "grey_temp");
+    InstallBitmapAsImage(grey_stop_bits, grey_stop_width, grey_stop_height, 
+			 "grey_stop");
+    InstallBitmapAsImage(grey_cond_bits, grey_cond_width, grey_cond_height, 
+			 "grey_cond");
+    InstallBitmapAsImage(grey_temp_bits, grey_temp_width, grey_temp_height, 
+			 "grey_temp");
 
-    InstallImage(drag_stop_bits, drag_stop_width, drag_stop_height, 
-		 "drag_stop");
-    InstallImage(drag_cond_bits, drag_cond_width, drag_cond_height, 
-		 "drag_cond");
-    InstallImage(drag_temp_bits, drag_temp_width, drag_temp_height, 
-		 "drag_temp");
+    InstallBitmapAsImage(drag_stop_bits, drag_stop_width, drag_stop_height, 
+			 "drag_stop");
+    InstallBitmapAsImage(drag_cond_bits, drag_cond_width, drag_cond_height, 
+			 "drag_cond");
+    InstallBitmapAsImage(drag_temp_bits, drag_temp_width, drag_temp_height, 
+			 "drag_temp");
 
     // Setup actions
     XtAppAddActions (app_context, actions, XtNumber (actions));
@@ -7860,7 +7859,7 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
 
     y -= (line_height(text_w) + glyph_height) / 2 - 2;
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 87)
 	x += 2;
 
     if (x != old_x || y != old_y)
@@ -8195,16 +8194,47 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
     return True;		// all done
 }
 
+// Return position POS of glyph GLYPH in X/Y.  Return true iff displayed.
+bool SourceView::glyph_pos_to_xy(Widget glyph, XmTextPosition pos,
+				 Position& x, Position& y)
+{
+    assert (is_source_widget(glyph) || is_code_widget(glyph));
+
+    if (pos == XmTextPosition(-1))
+	return false;		// Not displayed
+
+    Widget text_w;
+    if (is_source_widget(glyph))
+	text_w = source_text_w;
+    else
+	text_w = code_text_w;
+
+    Boolean pos_displayed = XmTextPosToXY(text_w, pos, &x, &y);
+
+    // In LessTif 0.87 and later, XmTextPosToXY() returns True even if
+    // the position is *below* the last displayed line.  Verify.
+    Dimension width, height;
+    XtVaGetValues(text_w, XmNwidth, &width, XmNheight, &height, NULL);
+    
+    if (pos_displayed && (x > width || y > height))
+    {
+	// Below last displayed position
+	pos_displayed = False;
+    }
+
+    return pos_displayed;
+}
+
+
 // Map stop sign GLYPH at position POS.  Get widget from STOPS[COUNT];
 // store location in POSITIONS.  Return mapped widget (0 if none)
 Widget SourceView::map_stop_at(Widget glyph, XmTextPosition pos,
 			       WidgetArray& stops, int& count,
 			       TextPositionArray& positions)
 {
-    assert (is_source_widget(glyph) || is_code_widget(glyph));
-
     Position x, y;
-    Boolean pos_displayed = XmTextPosToXY(glyph, pos, &x, &y);
+    bool pos_displayed = glyph_pos_to_xy(glyph, pos, x, y);
+
     if (pos_displayed)
     {
 	while (stops[count] == 0)
@@ -8253,8 +8283,7 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
     assert (is_source_widget(glyph) || is_code_widget(glyph));
 
     Position x, y;
-    Boolean pos_displayed = (pos != XmTextPosition(-1) 
-			     && XmTextPosToXY(glyph, pos, &x, &y));
+    bool pos_displayed = glyph_pos_to_xy(glyph, pos, x, y);
 
     int k = int(is_code_widget(glyph));
 
@@ -8347,8 +8376,7 @@ Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos,
     assert (is_source_widget(glyph) || is_code_widget(glyph));
 
     Position x, y;
-    Boolean pos_displayed = 
-	(pos != XmTextPosition(-1) && XmTextPosToXY(glyph, pos, &x, &y));
+    bool pos_displayed = glyph_pos_to_xy(glyph, pos, x, y);
 
     int k = int(is_code_widget(glyph));
 
@@ -8376,7 +8404,7 @@ Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos,
 
 	    Position origin_x = -1;
  	    XtVaGetValues(origin, XmNx, &origin_x, NULL);
-	    if (lesstif_version < 1000)
+	    if (lesstif_version <= 87)
 		origin_x -= 2;
 
 	    if (origin_x >= 0)
@@ -8430,9 +8458,9 @@ Widget SourceView::map_drag_arrow_at(Widget glyph, XmTextPosition pos,
 				     Widget origin)
 {
     assert (is_source_widget(glyph) || is_code_widget(glyph));
+
     Position x, y;
-    Boolean pos_displayed = (pos != XmTextPosition(-1) 
-			     && XmTextPosToXY(glyph, pos, &x, &y));
+    bool pos_displayed = glyph_pos_to_xy(glyph, pos, x, y);
 
     int k = int(is_code_widget(glyph));
 

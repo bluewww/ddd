@@ -29,7 +29,7 @@ To build a complete DDD from sources, you need:
 
    * A Motif Widget library.  Either
 
-     - LessTif, 0.87 or later, or
+     - LessTif, 0.88 or later, or
      - OSF/Motif (1.2 or later).
 
      Best results are obtained with OSF/Motif 2.0 and later.  We

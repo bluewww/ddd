@@ -608,7 +608,7 @@ static void install_icon(Widget w, String name,
 		    image = subimage;
 		}
 	    }
-	    Boolean ok = XmInstallImage(image, name);
+	    Boolean ok = InstallImage(image, name);
 	    if (ok)
 		return;
 	}
@@ -640,7 +640,7 @@ static void install_icon(Widget w, String name,
 	}
     }
 
-    Boolean ok = XmInstallImage(image, name);
+    Boolean ok = InstallImage(image, name);
     if (ok)
 	return;
 
@@ -714,9 +714,9 @@ void install_icons(Widget shell,
     XmGetColors(XtScreen(shell), win_attr.colormap, background,
 		&foreground, &top_shadow, &bottom_shadow, &select);
 
-    // LessTif does not return a suitable select color
+    // LessTif 0.87 and earlier does not return a suitable select color
     Pixel arm_background;
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 87)
 	arm_background = background;
     else
 	arm_background = select;

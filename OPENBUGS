@@ -166,16 +166,4 @@ detail.
     in. These are not shown in the file window. Out of frustation I
     clicked in the blank window and hey-presto core-dump. Woo-hoo.
 
-738 Joonas Lehtinen <phoenix@jole.fi> reports that DDD 3.1 coredumps
-    after a few replots.
-
-739 Matthew Leditschke <mleditsc@arc.corp.mot.com> reports that
-    clicking button 1 on a variable does not copy it to the ():
-    argument field.
-
-741 DDD under solaris 7 works so far, but there is no green arrow or
-    the stop sign ddd uses to mark the actual line or breakpoints.
-    ddd dumps a lot of error-msgs to stdout when starting, stuff like
-    "blabla cannot be converted to pixmap" or similar.
-
 742 (Insert new bugs here)

@@ -294,7 +294,30 @@ void ListSetAndSelectPos(Widget list, int pos)
 		  XmNitemCount, &items,
 		  NULL);
 
-    XmListSelectPos(list, pos, False);
+    // Eugene M. Indenbom <bom@classic.iki.rssi.ru> reports that we
+    // cannot use XmListSelectPos() unconditionally here because on
+    // his Motif 1.2, you will get two highlighted items.
+
+    int *pos_list, pos_count;
+    bool do_select = true;
+    if (XmListGetSelectedPos(list, &pos_list, &pos_count))
+    {
+        if (pos_count != 1 || pos_list[0] != pos)
+	{
+	    // Deselect all other items first
+            XmListDeselectAllItems(list);
+	}
+        else
+	{
+	    // Already selected -- do not select again
+	    do_select = false;
+	}
+
+	XtFree((String)pos_list);
+    }
+
+    if (do_select)
+        XmListSelectPos(list, pos, False);
 
     if (pos == 1)
 	XmListSetPos(list, pos);

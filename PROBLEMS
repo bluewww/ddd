@@ -298,13 +298,24 @@ LessTif
 =======
     
     To use DDD with LessTif, get a recent LessTif release from
-    `http://www.lesstif.org'.
+    `http://www.lesstif.org'.  Be sure to apply the patches found in
+    the `patches/' subdirectory.
 
-    With LessTif 0.87, the following problems are currently known:
+    With DDD 3.1.4 and LessTif 0.88, the following problems are
+    currently known:
+
+    * Dialogs may enter an endless resize loop.  The dialog box tries
+      to close, but it gets stuck in a state where it is constantly
+      "rolling up" from the bottom, then redrawing itself at full size
+      and rolling up again.
+
+      Sending a SIGINT signal to the DDD process (i.e. Ctrl-C from the
+      invoking shell) will make DDD resume.
+
+    * 3-D button borders remain visible after the button has been
+      left.  See the `patches/' directory for a patch.
 
     * The `Preferences' dialog may need manual resize.
-
-    * Option menus in `GDB Settings' are only displayed partially.
 
     * Resizing the plot window does not work properly.
 

@@ -23,17 +23,22 @@ DDD 3.2 brings not much yet.
 DDD 3.2 also incorporates all changes listed below.
 
 
-DDD 3.1.4 [in development]
-==========================
+DDD 3.1.4
+=========
 
-DDD 3.1.4 fixes more minor bugs in DDD 3.1.
+DDD 3.1.4 brings improved LessTif support and fixes more minor
+problems in DDD 3.1.
 
 - Changing the GDB display radix automatically refreshes displayed values.
-- If you have Java classes in `./foo/bar' and `bar' is a symlink back
-  to `.', DDD no longer searches `./foo/bar/foo/bar/...' and deeper.
+- Searching Java classes visits each file exactly once.
+- [LessTif] LessTif 0.88 is supported.  See `PROBLEMS' for a discussion.
+- [LessTif] Worked around X error when scrolling breakpoint glyphs.
+- [Linux] Improved GNU libc 2.1 support (TTYs).
+- [HP-UX] Improved aCC support.
+- [Solaris] Improved Motif 2.1 support (Pixmaps).
 
 There are no new features in DDD 3.1.4.  You don't need to upgrade
-unless you suffer from one of these bugs.
+unless you suffer from one of these problems.
 
 
 DDD 3.1.3
