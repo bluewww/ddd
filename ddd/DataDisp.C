@@ -945,11 +945,13 @@ void DataDisp::set_args(BoxPoint p)
 
 	    if (!was_selected)
 	    {
-		redraw |= node->selected();
+		if (!redraw)
+		    redraw = node->selected();
 		dn->nodeptr()->selected() = false;
 	    }
 
-	    redraw |= (node->highlight() != 0);
+	    if (!redraw)
+		redraw = (node->highlight() != 0);
 	    dn->select(0);
 
 	    if (redraw)

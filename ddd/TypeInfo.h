@@ -150,8 +150,8 @@ private:
 
 protected:
     // Resources
-    const BaseList direct_bases() const { return _direct_bases; }
-    const BaseList all_bases() const 
+    /* const */ BaseList direct_bases() const { return _direct_bases; }
+    /* const */ BaseList all_bases() const 
     {
 	setup_all_bases();
 	return *_all_bases; 

@@ -38,6 +38,11 @@
 
 extern "C" {
 #include <sys/types.h>
+
+
+#ifndef __STDC__
+#define __STDC__ 1              // Reguired for KCC when using GNU includes
+#endif
 #if defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_REGEX_H)
 #include <regex.h>		// POSIX.2 interface
 #elif defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_RX_H)

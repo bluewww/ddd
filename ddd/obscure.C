@@ -214,7 +214,7 @@ static void meltdown(Display *dpy)
     time(&tm);
 #ifdef HAVE_SRAND
     srand((int)tm);
-#elif HAVE_SRANDOM
+#elif defined(HAVE_SRANDOM)
     srandom((int)tm);
 #endif
 

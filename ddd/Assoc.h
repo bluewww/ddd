@@ -33,8 +33,10 @@
 
 #include "bool.h"
 
-template<class K, class V>
-class AssocMark;
+template<class K, class V> class AssocMark;
+template<class K, class V> class _Assoc;
+template<class K, class V> class Assoc;
+template<class K, class V> class AssocIter;
 
 template<class K, class V>
 class AssocRec {

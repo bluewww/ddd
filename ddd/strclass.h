@@ -76,12 +76,13 @@ protected:
 
     void assign(strRep*, const char*, int = -1);
     subString(string& x, int p, int l);
-    subString(const subString& x);
 
 public:
 // Note there are no public constructors. subStrings are always
 // created via string operations
-
+    
+    // This one should be protected, but KCC keeps complaining about this
+    subString(const subString& x);
     ~subString();
 
     void operator =  (const string&     y);
@@ -377,10 +378,26 @@ public:
     void downcase();
     void capitalize();
 
-// element extraction
+    // Element extraction
+    // Some C++ compilers cannot properly disambiguate here,
+    // so we supply prototypes for all integral types.
 
+    char& operator [] (char i);
+    char& operator [] (short i);
+    char& operator [] (unsigned short i);
     char& operator [] (int i);
+    char& operator [] (unsigned int i);
+    char& operator [] (long i);
+    char& operator [] (unsigned long i);
+
+    char operator [] (char i) const;
+    char operator [] (unsigned short i) const;
+    char operator [] (short i) const;
     char operator [] (int i) const;
+    char operator [] (unsigned int i) const;
+    char operator [] (long i) const;
+    char operator [] (unsigned long i) const;
+
     char elem(int i) const;
     char firstchar() const;
     char lastchar() const;
@@ -900,7 +917,7 @@ inline string capitalize(const string& x)
     string r; r.rep = string_Scapitalize(x.rep, r.rep); return r;
 }
 
-#endif
+#endif /* ! defined(NAMED_RETURN_VALUES) */
 
 // prepend
 
@@ -952,30 +969,90 @@ inline void string::capitalize()
 
 // element extraction
 
-inline char&  string::operator [] (int i) 
+inline char&  string::operator [] (unsigned int i) 
 { 
-    if (((unsigned)i) >= length()) error("invalid index");
+    if (i >= length()) error("invalid index");
     return rep->s[i];
+}
+
+inline char string::operator [] (unsigned int i) const
+{ 
+    if (i >= length()) error("invalid index");
+    return rep->s[i];
+}
+
+inline char& string::operator [] (int i) 
+{
+    return string::operator [] ((unsigned int) i);
 }
 
 inline char string::operator [] (int i) const
+{
+    return string::operator [] ((unsigned int) i);
+}
+
+inline char& string::operator [] (char i) 
+{
+    return string::operator [] ((unsigned int) i);
+}
+
+inline char string::operator [] (char i) const
+{
+    return string::operator [] ((unsigned int) i);
+}
+
+inline char& string::operator [] (short i) 
+{
+    return string::operator [] ((unsigned int) i);
+}
+
+inline char string::operator [] (short i) const
+{
+    return string::operator [] ((unsigned int) i);
+}
+
+inline char& string::operator [] (unsigned short i) 
+{
+    return string::operator [] ((unsigned int) i);
+}
+
+inline char string::operator [] (unsigned short i) const
+{
+    return string::operator [] ((unsigned int) i);
+}
+
+inline char& string::operator [] (long i) 
+{
+    return string::operator [] ((unsigned int) i);
+}
+
+inline char string::operator [] (long i) const
+{
+    return string::operator [] ((unsigned int) i);
+}
+
+inline char& string::operator [] (unsigned long i) 
+{
+    return string::operator [] ((unsigned int) i);
+}
+
+inline char string::operator [] (unsigned long i) const
+{
+    return string::operator [] ((unsigned int) i);
+}
+
+inline char string::elem (int i) const
 { 
     if (((unsigned)i) >= length()) error("invalid index");
     return rep->s[i];
 }
 
-inline char  string::elem (int i) const
-{ 
-    if (((unsigned)i) >= length()) error("invalid index");
-    return rep->s[i];
-}
-
-inline char  string::firstchar() const
+inline char string::firstchar() const
 { 
     return elem(0);
 }
 
-inline char  string::lastchar() const
+inline char string::lastchar() const
 { 
     return elem(length() - 1);
 }

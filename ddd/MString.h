@@ -115,7 +115,7 @@ public:
 
     // Conversions
     operator const XmString() const { return _mstring; }
-    operator       XmString() const { return _mstring; }
+    operator       XmString()       { return _mstring; }
     XmString xmstring()       const { return _mstring; }
 
     // Attributes
