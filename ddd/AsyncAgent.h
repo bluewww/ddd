@@ -55,21 +55,19 @@
 */
 
 
-// Set to 1 if you want asynchronous notification
-#ifndef ASYNC_CHILD_STATUS_CHANGE
-#if XtSpecificationRelease >= 6
-#define ASYNC_CHILD_STATUS_CHANGE 1
-#else
-#define ASYNC_CHILD_STATUS_CHANGE 0
-#endif
-#endif // !defined(ASYNC_CHILD_STATUS_CHANGE)
-
 #include "assert.h"
 #include <X11/Intrinsic.h>
 #include "Agent.h"
 
-class AsyncAgent;
+// Set to 1 if you want asynchronous notification
+// #define ASYNC_CHILD_STATUS_CHANGE
 
+#ifndef ASYNC_CHILD_STATUS_CHANGE
+#define ASYNC_CHILD_STATUS_CHANGE (XtSpecificationRelease >= 6)
+#endif // !defined(ASYNC_CHILD_STATUS_CHANGE)
+
+
+class AsyncAgent;
 
 typedef void (*AsyncAgentHandler)(AsyncAgent *agent);
 
