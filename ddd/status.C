@@ -597,19 +597,18 @@ void set_status_mstring(MString message, bool temporary)
 	return;
 
     if (!temporary)
-    {
 	add_to_status_history(message);
-	if (status_locked)
-	    return;
+
+    if (!status_locked)
+    {
+	current_status_text = message;
+
+	XtVaSetValues(status_w,
+		      XmNlabelString, message.xmstring(),
+		      NULL);
+	XFlush(XtDisplay(status_w));
+	XmUpdateDisplay(status_w);
     }
-
-    current_status_text = message;
-
-    XtVaSetValues(status_w,
-		  XmNlabelString, message.xmstring(),
-		  NULL);
-    XFlush(XtDisplay(status_w));
-    XmUpdateDisplay(status_w);
 
     if (log_status && !temporary)
     {
