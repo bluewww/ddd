@@ -1438,6 +1438,7 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
     Widget tool_shell = 
 	verify(XmCreateDialogShell(tool_shell_parent, 
 				   "tool_shell", args, arg));
+    Delay::register_shell(tool_shell);
     arg = 0;
     Widget tool_buttons = 
 	verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
