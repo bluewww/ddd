@@ -45,10 +45,6 @@ extern "C" int malloc_verify();
 #include <new>
 #include <stdlib.h>
 
-#if HAVE_LIMITS_H
-#include <limits.h>
-#endif
-
 void string::error(const char* msg) const
 {
     std::cerr << "string: " << msg << "\n";
