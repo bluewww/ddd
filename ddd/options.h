@@ -124,6 +124,9 @@ extern void dddSetDebuggerCB                (Widget, XtPointer, XtPointer);
 extern void dddToggleAutoDebuggerCB         (Widget, XtPointer, XtPointer);
 extern void dddSetBindingStyleCB            (Widget, XtPointer, XtPointer);
 
+extern void dddSetUndoBufferSizeCB          (Widget, XtPointer, XtPointer);
+extern void dddClearUndoBufferCB            (Widget, XtPointer, XtPointer);
+
 extern void dddSetEditCommandCB             (Widget, XtPointer, XtPointer);
 extern void dddSetPlotCommandCB             (Widget, XtPointer, XtPointer);
 extern void dddSetGetCoreCommandCB          (Widget, XtPointer, XtPointer);

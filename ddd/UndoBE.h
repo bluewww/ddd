@@ -92,6 +92,9 @@ public:
     {
 	return has(UB_COMMAND) || has(UB_EXEC_COMMAND);
     }
+
+    // Allocated memory
+    int allocation() const;
 };
 
 typedef VarArray<UndoBufferEntry> UndoBufferArray;

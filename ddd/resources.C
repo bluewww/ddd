@@ -1880,13 +1880,23 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNundoDepth,
-	XtCUndoDepth,
+	XtNmaxUndoDepth,
+	XtCMaxUndoDepth,
 	XmRInt,
 	sizeof(int),
-	XtOffsetOf(AppData, undo_depth),
+	XtOffsetOf(AppData, max_undo_depth),
 	XmRImmediate,
-	XtPointer(100)
+	XtPointer(-1)
+    },
+
+    {
+	XtNmaxUndoSize,
+	XtCMaxUndoSize,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, max_undo_size),
+	XmRImmediate,
+	XtPointer(2000000)
     },
 
     {

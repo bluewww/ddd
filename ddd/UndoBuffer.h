@@ -120,6 +120,9 @@ public:
     // Maximum depth (-1: unlimited)
     static int max_history_depth;
 
+    // Maximum memory size (-1: unlimited)
+    static int max_history_size;
+
     // Set source command.
     static void set_source(const string& command);
 
@@ -253,6 +256,9 @@ public:
 
     // Return history of display NAME
     static string display_history(const string& name);
+
+    // Return currently allocated bytes
+    static int allocation();
 
     // Invariant
     static bool OK();

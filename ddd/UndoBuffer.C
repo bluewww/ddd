@@ -129,6 +129,9 @@ int UndoBuffer::current_entry = 0;
 // Maximum depth (< 0 means unlimited)
 int UndoBuffer::max_history_depth = 100;
 
+// Maximum allocation in bytes (< 0 means unlimited)
+int UndoBuffer::max_history_size = 2000000;
+
 // True if we're undoing
 bool UndoBuffer::undoing = false;
 
@@ -199,18 +202,54 @@ void UndoBuffer::clear_exec_commands()
     }
 }
 
-// Remove all entries with no effect
+// Remove all entries with no effect; 
+// also truncate history such that it fits into limits
 void UndoBuffer::cleanup()
 {
-    UndoBufferArray new_history(history.size());
+    if (max_history_depth == 0 || max_history_size == 0)
+    {
+	clear();
+	return;
+    }
+
+    int end = 0;		// Copy entries greater than END
+    if (max_history_depth >= 0)
+    {
+	// Truncate according to MAX_HISTORY_DEPTH
+	end = max(0, history.size() - max_history_depth);
+    }
+
+    if (max_history_size >= 0)
+    {
+	// Truncate according to MAX_HISTORY_SIZE
+	int size = 0;
+
+	for (int i = history.size() - 1; i >= end; i--)
+	{
+	    UndoBufferEntry& entry = history[i];
+	    if (!has_effect(entry))
+		continue;
+
+	    int alloc = entry.allocation();
+
+	    if (size + alloc > max_history_size)
+	    {
+		end = i;
+		break;
+	    }
+
+	    size += alloc;
+	}
+    }
+
+    UndoBufferArray new_history(history.size() - end);
     int old_history_position = history_position;
+
     for (int i = 0; i < history.size(); i++)
     {
 	UndoBufferEntry& entry = history[i];
 
-	if ((max_history_depth < 0 || 
-	     (i >= history.size() - max_history_depth)) &&
-	    has_effect(entry))
+	if (i >= end && has_effect(entry))
 	{
 	    new_history += entry;
 	}
@@ -360,6 +399,16 @@ void UndoBuffer::set_source(const string& command)
     collector.remove(UB_STATE);
 }
 
+int UndoBuffer::allocation()
+{
+    int alloc = 0;
+
+    for (int i = 0; i < history.size(); i++)
+	alloc += history[i].allocation();
+
+    return alloc;
+}
+
 void UndoBuffer::log()
 {
 #if LOG_UNDO_BUFFER
@@ -401,6 +450,8 @@ void UndoBuffer::log()
 	clog << "Undo " << undo_action() << "\n";
     if (redo_action() != NO_GDB_ANSWER)
 	clog << "Redo " << redo_action() << "\n";
+
+    clog << "Allocated " << allocation() << " bytes\n";
 
     clog << "\n";
 #endif

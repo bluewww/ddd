@@ -64,3 +64,19 @@ bool UndoBufferEntry::operator == (const UndoBufferEntry& entry) const
 
     return true;
 }
+
+int UndoBufferEntry::allocation() const
+{
+    StringStringAssocIter iter(*this);
+    int alloc = sizeof(*this);
+
+    while (iter.ok())
+    {
+	alloc += iter.key().allocation();
+	alloc += iter.value().allocation();
+
+	iter++;
+    }
+
+    return alloc;
+}

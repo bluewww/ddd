@@ -44,6 +44,7 @@ char options_rcsid[] =
 #include "GraphEdit.h"
 #include "SourceView.h"
 #include "TimeOut.h"
+#include "UndoBuffer.h"
 #include "cook.h"
 #include "Command.h"
 #include "comm-manag.h"
@@ -960,6 +961,29 @@ void dddSetBindingStyleCB (Widget, XtPointer client_data,
     }
 
     update_options();
+}
+
+void dddSetUndoBufferSizeCB(Widget w, XtPointer, XtPointer)
+{
+    String s = XmTextFieldGetString(w);
+    string value = s;
+    XtFree(s);
+
+    s = value;
+    long val = strtol(value.chars(), &s, 0);
+    if (s != value)
+    {
+	app_data.max_undo_size = int(val * 1000);
+	undo_buffer.max_history_size = app_data.max_undo_size;
+    }
+
+    update_reset_preferences();
+}
+
+void dddClearUndoBufferCB(Widget, XtPointer, XtPointer)
+{
+    StatusDelay delay("Clearing undo buffer");
+    undo_buffer.clear();
 }
 
 static void toggle_button_appearance(Widget w, Boolean& data, 
@@ -2316,6 +2340,12 @@ bool save_options(unsigned long flags)
 			 app_data.disassemble) << '\n';
     os << bool_app_value(XtNallRegisters,
 			 app_data.all_registers) << '\n';
+
+    os << "\n! Undo Buffer.\n";
+    os << int_app_value(XtNmaxUndoDepth,
+			 app_data.max_undo_depth, true) << '\n';
+    os << int_app_value(XtNmaxUndoSize,
+			 app_data.max_undo_size, true) << '\n';
 
     // Misc stuff
     os << "\n! Misc preferences.\n";

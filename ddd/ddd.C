@@ -991,6 +991,16 @@ static MMDesc completion_menu [] =
     MMEnd
 };
 
+static Widget max_undo_size_w;
+static MMDesc undo_menu [] =
+{
+    { "size", MMTextField | MMUnmanagedLabel, { dddSetUndoBufferSizeCB, 0 }, 
+      NULL, &max_undo_size_w, 0, 0 },
+    { "kbytes", MMLabel, MMNoCB, NULL, 0, 0, 0 },
+    { "clear", MMPush, { dddClearUndoBufferCB, 0 }, NULL, 0, 0, 0 },
+    MMEnd
+};
+
 static Widget group_iconify_w;
 static Widget uniconify_when_ready_w;
 static Widget suppress_warnings_w;
@@ -1012,6 +1022,7 @@ static MMDesc general_preferences_menu[] =
       NULL, &warn_if_locked_w, 0, 0 },
     { "checkGrabs",          MMToggle, { dddToggleCheckGrabsCB, 0 },
       NULL, &check_grabs_w, 0, 0 },
+    { "undoSize",            MMPanel,  MMNoCB, undo_menu, 0, 0, 0 },
     MMEnd
 };
 
@@ -2060,9 +2071,6 @@ int main(int argc, char *argv[])
     // Global variables: Setup plot settings
     PlotAgent::plot_2d_settings = app_data.plot_2d_settings;
     PlotAgent::plot_3d_settings = app_data.plot_3d_settings;
-
-    // Global variables: Setup undo buffer
-    UndoBuffer::max_history_depth = app_data.undo_depth;
 
     // Global variables: Set delays for button and value tips
     help_button_tip_delay = app_data.button_tip_delay;
@@ -3610,6 +3618,12 @@ inline void set_string(Widget w, String value)
 		  NULL);
 }
 
+static void set_string_int(Widget w, int value)
+{
+    string v = itostring(value);
+    set_string(w, (String)v);
+}
+
 static bool have_cmd(const string& cmd)
 {
     return cmd_file(cmd).contains('/', 0);
@@ -3868,19 +3882,17 @@ void update_options()
     // Font stuff
     if (font_names[DefaultDDDFont] != 0)
     {
-	XmTextFieldSetString(font_names[DefaultDDDFont], 
-			     app_data.default_font);
-	XmTextFieldSetString(font_names[VariableWidthDDDFont],
-			     app_data.variable_width_font);
-	XmTextFieldSetString(font_names[FixedWidthDDDFont],
-			     app_data.fixed_width_font);
-	string value;
-	value = itostring(app_data.default_font_size);
-	XmTextFieldSetString(font_sizes[DefaultDDDFont],       (String)value);
-	value = itostring(app_data.variable_width_font_size);
-	XmTextFieldSetString(font_sizes[VariableWidthDDDFont], (String)value);
-	value = itostring(app_data.fixed_width_font_size);
-	XmTextFieldSetString(font_sizes[FixedWidthDDDFont],    (String)value);
+	set_string(font_names[DefaultDDDFont], app_data.default_font);
+	set_string(font_names[VariableWidthDDDFont], 
+		   app_data.variable_width_font);
+	set_string(font_names[FixedWidthDDDFont], app_data.fixed_width_font);
+
+	set_string_int(font_sizes[DefaultDDDFont], 
+		       app_data.default_font_size);
+	set_string_int(font_sizes[VariableWidthDDDFont],
+		       app_data.variable_width_font_size);
+	set_string_int(font_sizes[FixedWidthDDDFont], 
+		       app_data.fixed_width_font_size);
     }
 
     // Key Bindings
@@ -3905,6 +3917,12 @@ void update_options()
 	else
 	    unmanage_paned_child(arg_cmd_w);
     }
+
+    // Setup undo buffer size
+    UndoBuffer::max_history_depth = app_data.max_undo_depth;
+    UndoBuffer::max_history_size  = app_data.max_undo_size;
+
+    set_string_int(max_undo_size_w, app_data.max_undo_size / 1000);
 
     update_reset_preferences();
     fix_status_size();
@@ -4002,10 +4020,13 @@ static void ResetGeneralPreferencesCB(Widget, XtPointer, XtPointer)
 {
     notify_set_toggle(button_tips_w, initial_app_data.button_tips);
     notify_set_toggle(button_docs_w, initial_app_data.button_docs);
-    notify_set_toggle(value_tips_w, initial_app_data.value_tips);
-    notify_set_toggle(value_docs_w, initial_app_data.value_docs);
+    notify_set_toggle(value_tips_w,  initial_app_data.value_tips);
+    notify_set_toggle(value_docs_w,  initial_app_data.value_docs);
     notify_set_toggle(set_global_completion_w, 
 	       initial_app_data.global_tab_completion);
+
+    set_string_int(max_undo_size_w, initial_app_data.max_undo_size / 1000);
+
     notify_set_toggle(set_console_completion_w, 
 	       !initial_app_data.global_tab_completion);
     notify_set_toggle(group_iconify_w, initial_app_data.group_iconify);
@@ -4029,6 +4050,9 @@ static bool general_preferences_changed()
 	return true;
 
     if (app_data.value_docs != initial_app_data.value_docs)
+	return true;
+
+    if (app_data.max_undo_size != initial_app_data.max_undo_size)
 	return true;
 
     if (app_data.global_tab_completion != 

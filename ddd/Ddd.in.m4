@@ -829,7 +829,10 @@ Ddd*maxValueDocLength: 80
 
 ! Undo and Redo
 ! How many actions should we be able to undo?  (0: none, <0: unlimited).
-Ddd*undoDepth: 100
+Ddd*maxUndoDepth: -1
+
+! How many bytes can the undo buffer grow? (<0: unlimited)
+Ddd*maxUndoSize: 2000000
 
 ! Focus Policy
 ! POINTER means point-and-type, EXPLICIT means click-and-type.
@@ -3124,6 +3127,7 @@ ITEM If LBL(Continue automatically...) is set, DDD will continue execution\n\
     of programs that were interrupted while grabbing the mouse pointer.\n\
 ITEM LBL(Warn if multiple...) enables warnings about multiple DDD instances\n\
     that share (and may overwrite) preferences and other state files.\n\
+ITEM LBL(Undo Buffer Size) sets the maximum size of the undo buffer.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
@@ -3138,9 +3142,16 @@ Ddd*preferences*tips.labelString: as Popup Tips
 Ddd*preferences*docs.labelString: in the Status Line
 
 Ddd*preferences*tabCompletion.labelString: \
-Tab Key Completes
+TAB Key Completes
 Ddd*preferences*inAllWindows.labelString: in All Windows
 Ddd*preferences*inConsole.labelString:    in Console Only
+
+Ddd*preferences*undoSize.labelString: \
+Undo Buffer Size
+Ddd*preferences*size.text.columns:  5
+Ddd*preferences*kbytes.labelString: kBytes
+Ddd*preferences*clear.labelString:  Clear Undo Buffer
+
 
 Ddd*preferences*groupIconify.labelString:	\
 Iconify all Windows at Once
