@@ -34,5 +34,5 @@
 s!^typedef union\(.*\)$!typedef struct _YYSTYPE \1!
 
 # Avoid conflicting re-definitions
-s!YYSTYPE!IGNORED_&!
-s!yylval!IGNORED_&!
+s!YYSTYPE!IGNORED_&!g
+s!yylval!IGNORED_&!g
