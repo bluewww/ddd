@@ -607,8 +607,7 @@ None<Key>Escape:	gdb-complete-arg(file)      \n
 
 ! The source window is especially tuned for word selection.
 *source_text_w.translations: #override \
-None<Btn3Down>:		source-start-select-word() source-popup-menu()\n\
-None<Btn3Up>:		source-end-select-word()    \n\
+None<Btn3Down>:		source-popup-menu()         \n\
 None<Btn1Down>:		source-start-select-word()  \n\
 None<Btn1Up>:		source-end-select-word()    \n\
 Ctrl<Key>A:		beginning-of-line()         \n\
