@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-10\-21" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-10\-24" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -275,9 +275,9 @@ will automatically copy the item to the argument field.
 You can select a \fIpreviously used argument\fR from the drop-down
 menu at the right of the argument field.
 .PP
-Using \s-1GDB\s+1, the argument field provides a completion mechanism.
-You can enter the first few characters of an item an press the
-`\s-1TAB\s+1' key to complete it.  Pressing `\s-1TAB\s+1' again
+Using \s-1GDB\s+1 and Perl, the argument field provides a completion
+mechanism.  You can enter the first few characters of an item an press
+the `\s-1TAB\s+1' key to complete it.  Pressing `\s-1TAB\s+1' again
 shows alternative completions.
 .PP
 After having entered an argument, you can select one of the buttons on
@@ -2402,9 +2402,10 @@ any cursor command.
 .PP
 .PSPIC @srcdir@/PICS/ddd-history.ps 15.3cm
 .PP
-Using \s-1GDB\s+1, you can also \fIcomplete\fR commands and arguments
-by pressing the `\s-1\fBTAB\fR\s+1' key; pressing the `\s-1\fBTAB\fR\s+1'
-key multiple times shows one possible expansion after the other.
+Using \s-1GDB\s+1 and Perl, you can also \fIcomplete\fR commands and
+arguments by pressing the `\s-1\fBTAB\fR\s+1' key; pressing the
+`\s-1\fBTAB\fR\s+1' key multiple times shows one possible expansion
+after the other.
 .\"
 .\"
 .\" ---------------

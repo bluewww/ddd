@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // Command and arg completion
 
-// Copyright (C) 1996-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -41,6 +41,7 @@ char complete_rcsid[] =
 #include "ddd.h"
 #include "disp-read.h"
 #include "editing.h"
+#include "isid.h"
 #include "post.h"
 #include "regexps.h"
 #include "string-fun.h"
@@ -129,8 +130,11 @@ static string complete_single_completion(string completion)
     // Only one possible expansion: Add final single quote if
     // necessary and add final space as well.
 
-    if (completion.freq('\'') % 2 != 0)
-	completion += '\'';
+    if (gdb->has_quotes())
+    {
+	if (completion.freq('\'') % 2 != 0)
+	    completion += '\'';
+    }
     completion += ' ';
 
     return completion;
@@ -256,7 +260,24 @@ static void complete(Widget w, XEvent *e, string input, string cmd)
 	info.prefix = cmd.through(rxwhite);
 	cmd = cmd.from(int(info.prefix.length()));
     }
-    string complete_cmd = "complete " + cmd;
+
+    string complete_cmd;
+    if (gdb->type() == GDB)
+    {
+	complete_cmd = "complete " + cmd;
+    }
+    else if (gdb->type() == PERL)
+    {
+	string arg = cmd.after(rxwhite);
+	complete_cmd = "S ^" + arg + ".*";
+
+	if (cmd == input)
+	    info.prefix += cmd.through(rxwhite);
+	else
+	    info.cmd = info.input;
+    }
+    else
+	assert(0);
 
     if (XmIsTextField(w))
 	XmTextFieldSetEditable(w, false);
@@ -314,7 +335,7 @@ static void complete_reply(const string& complete_answer, void *qu_data)
 
 	if (info.prefix != "")
 	{
-	    // Add `graph' prefix again
+	    // Add prefix again
 	    for (int i = 0; i < completions_size; i++)
 		completions[i].prepend(info.prefix);
 	}
@@ -372,7 +393,7 @@ static void tabAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 // Complete current GDB command
 void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 {
-    if (gdb->type() != GDB
+    if ((gdb->type() != GDB && gdb->type() != PERL)
 	|| w != gdb_w
 	|| !gdb->isReadyWithPrompt()
 	|| XmTextGetInsertionPosition(w) != XmTextGetLastPosition(w))
@@ -381,23 +402,26 @@ void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 	return;
     }
 
-    // Insert single quote if necessary
     string input = current_line();
-    if (is_break_cmd(input))
+    if (gdb->has_quotes())
     {
-	int last_space = input.index(rxwhite, -1);
-	if (last_space >= 0)
+	// Insert single quote if necessary
+	if (is_break_cmd(input))
 	{
-	    string last_word = input.after(last_space);
-	    if (last_word.length() > 0 && last_word[0] != '\'')
+	    int last_space = input.index(rxwhite, -1);
+	    if (last_space >= 0)
 	    {
-		for (int i = 0; i < int(last_word.length()); i++)
+		string last_word = input.after(last_space);
+		if (last_word.length() > 0 && last_word[0] != '\'')
 		{
-		    char c = last_word[i];
-		    if (!isalnum(c) && c != '_')
+		    for (int i = 0; i < int(last_word.length()); i++)
 		    {
-			input(last_space + 1, 0) = '\'';
-			break;
+			char c = last_word[i];
+			if (!isid(c))
+			{
+			    input(last_space + 1, 0) = '\'';
+			    break;
+			}
 		    }
 		}
 	    }
@@ -416,7 +440,7 @@ static void _complete_argAct(Widget w,
 			     bool tab)
 {
     if ((tab && !app_data.global_tab_completion) 
-	|| gdb->type() != GDB 
+	|| (gdb->type() != GDB && gdb->type() != PERL)
 	|| !gdb->isReadyWithPrompt())
     {
 	tabAct(w, e, args, num_args);
@@ -429,7 +453,6 @@ static void _complete_argAct(Widget w,
 	base = args[0];
     strip_space(base);
 
-    // Insert single quote if necessary
     String _input = 0;
     if (XmIsTextField(w))
 	_input = XmTextFieldGetString(w);
@@ -442,17 +465,21 @@ static void _complete_argAct(Widget w,
     string input(_input);
     XtFree(_input);
 
-    if (is_break_cmd(base))
+    if (gdb->has_quotes())
     {
-	if (input.length() > 0 && input[0] != '\'')
+	// Insert single quote if necessary
+	if (is_break_cmd(base))
 	{
-	    for (int i = 0; i < int(input.length()); i++)
+	    if (input.length() > 0 && input[0] != '\'')
 	    {
-		char c = input[i];
-		if (!isalnum(c) && c != '_')
+		for (int i = 0; i < int(input.length()); i++)
 		{
-		    input(0, 0) = '\'';
-		    break;
+		    char c = input[i];
+		    if (!isid(c))
+		    {
+			input(0, 0) = '\'';
+			break;
+		    }
 		}
 	    }
 	}
