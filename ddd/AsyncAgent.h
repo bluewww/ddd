@@ -138,11 +138,19 @@ private:
 				  void *call_data);
     static Boolean callTheHandlers(XtPointer client_data);
     static void callTheHandlersIfIdle(XtPointer client_data, XtIntervalId *id);
-    
+
+    // Helping functions
+    static void AsyncAgent::terminateProcess(XtPointer, XtIntervalId *);
+    static void AsyncAgent::hangupProcess(XtPointer, XtIntervalId *);
+    static void AsyncAgent::killProcess(XtPointer, XtIntervalId *);
+    static void AsyncAgent::deleteAgent(XtPointer, XtIntervalId *);
 
 protected:
-    // set handler
-    AsyncAgentHandler setHandler(unsigned type, AsyncAgentHandler handler);
+    // Set handler
+    AsyncAgentHandler setHandler(unsigned type, AsyncAgentHandler handler = 0);
+
+    // Clear all handlers
+    void clearHandlers();
 
     // resources
     XtInputId id(unsigned type)
@@ -204,8 +212,11 @@ public:
     // Destructor
     ~AsyncAgent()
     {
-	// make sure the work procedure won't be called
+	// Make sure the work procedure won't be called
 	deleteAllWorkProcs();
+
+	// Inhibit further Xt selection
+	clearHandlers();
     }
 
     // Duplicator

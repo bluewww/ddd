@@ -35,6 +35,7 @@ char AsyncAgent_rcsid[] =
 
 
 #include "AsyncAgent.h"
+#include "misc.h"
 
 #include <sys/types.h>
 #include <strstream.h>
@@ -94,6 +95,13 @@ void AsyncAgent::initHandlers()
 	_handlers[type] = 0;
 	_ids[type] = 0;
     }
+}
+
+// Clear handlers
+void AsyncAgent::clearHandlers()
+{
+    for (unsigned type = 0; type < AsyncAgent_NHandlers; type++)
+	setHandler(type);
 }
 
 // Process "Death of child" signal as soon as possible
@@ -228,22 +236,29 @@ void AsyncAgent::closeChannel(FILE *fp)
 
 
 // Terminator
-static void terminateProcess(XtPointer client_data, XtIntervalId *)
+void AsyncAgent::terminateProcess(XtPointer client_data, XtIntervalId *)
 {
     AsyncAgent *agent = (AsyncAgent *)client_data;
     agent->_terminate();
 }
 
-static void hangupProcess(XtPointer client_data, XtIntervalId *)
+void AsyncAgent::hangupProcess(XtPointer client_data, XtIntervalId *)
 {
     AsyncAgent *agent = (AsyncAgent *)client_data;
     agent->_hangup();
 }
 
-static void killProcess(XtPointer client_data, XtIntervalId *)
+void AsyncAgent::killProcess(XtPointer client_data, XtIntervalId *)
 {
     AsyncAgent *agent = (AsyncAgent *)client_data;
     agent->_kill();
+}
+
+void AsyncAgent::deleteAgent(XtPointer client_data, XtIntervalId *)
+{
+    AsyncAgent *agent = (AsyncAgent *)client_data;
+    agent->terminate(true);
+    delete agent;
 }
 
 void AsyncAgent::waitToTerminate()
@@ -265,8 +280,11 @@ void AsyncAgent::waitToTerminate()
 	XtAppAddTimeOut(appContext(), killTimeOut() * 1000,
 	    killProcess, XtPointer(dummy));
 
-    // The "dummy" agent is never deleted.
-    // It will be checked and waited for termination when exiting.
+    // Delete dummy agent after all is done.
+    int deleteTimeOut = 
+	max(max(terminateTimeOut(), hangupTimeOut()), killTimeOut()) + 1;
+    XtAppAddTimeOut(appContext(), deleteTimeOut, deleteAgent,
+		    XtPointer(dummy));
 }
 
 
