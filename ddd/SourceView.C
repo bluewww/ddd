@@ -1009,7 +1009,7 @@ bool SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
     return true;
 }
 
-void SourceView::_set_bps_cond(IntArray& _nrs, const string& cond,
+void SourceView::_set_bps_cond(const IntArray& _nrs, const string& cond,
 			       int make_false, Widget w)
 {
     CommandGroup cg;
@@ -1937,7 +1937,7 @@ bool SourceView::new_bad_file(const string& file_name)
 }
 
 void SourceView::post_file_error(const string& file_name,
-				 string text, const _XtString name,
+				 const string& text, const _XtString name,
 				 Widget origin)
 {
     if (new_bad_file(file_name))
@@ -1945,7 +1945,7 @@ void SourceView::post_file_error(const string& file_name,
 }
 
 void SourceView::post_file_warning(const string& file_name,
-				   string text, const _XtString name,
+				   const string& text, const _XtString name,
 				   Widget origin)
 {
     if (new_bad_file(file_name))
@@ -2807,7 +2807,7 @@ void SourceView::refresh_source_bp_disp(bool reset)
     // Overwrite old breakpoint displays - - - - - - - - - - - - -
     for (IntIntArrayAssocIter b_i_l_iter(bps_in_line);
 	 b_i_l_iter.ok(); 
-	 b_i_l_iter++)
+	 ++b_i_l_iter)
     {
 	int line_nr = b_i_l_iter.key();
 	if (line_nr < 0 || line_nr > line_count)
@@ -2848,7 +2848,7 @@ void SourceView::refresh_source_bp_disp(bool reset)
     // Show breakpoints in text
     for (IntIntArrayAssocIter b_i_l_iter2(bps_in_line);
 	 b_i_l_iter2.ok();
-	 b_i_l_iter2++)
+	 ++b_i_l_iter2)
     {
 	int line_nr = b_i_l_iter2.key();
 	if (line_nr < 0 || line_nr > line_count)
@@ -7044,7 +7044,7 @@ inline string jdb_thread()
 }
 
 // Process `where' output
-void SourceView::process_where(string& where_output)
+void SourceView::process_where(const string& where_output)
 {
     if (!where_output.contains("No ", 0))
 	undo_buffer.add_where(where_output);

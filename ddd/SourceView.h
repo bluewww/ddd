@@ -191,18 +191,18 @@ class SourceView {
     // * If MAKE_FALSE is == 0, enable breakpoint by restoring
     //   the original condition.
     // * Otherwise, preserve the condition state.
-    static void _set_bps_cond(IntArray& nrs, const string& cond, 
+    static void _set_bps_cond(const IntArray& nrs, const string& cond, 
 			      int make_false, Widget origin);
 
     // Set condition of breakpoints NRS to COND.
-    inline static void set_bps_cond(IntArray& nrs, const string& cond,
+    inline static void set_bps_cond(const IntArray& nrs, const string& cond,
 				    Widget origin = 0)
     {
 	_set_bps_cond(nrs, cond, -1, origin);
     }
 
     // Enable and disable breakpoints via conditions.
-    inline static void set_bps_cond_enabled(IntArray& nrs, bool enabled,
+    inline static void set_bps_cond_enabled(const IntArray& nrs, bool enabled,
 					    Widget origin = 0)
     {
 	_set_bps_cond(nrs, char(-1), enabled ? 0 : 1, origin);
@@ -371,10 +371,10 @@ class SourceView {
     static StringArray bad_files;
     static bool new_bad_file(const string& file_name);
     static void post_file_error(const string& file_name,
-				string text, const _XtString name = 0,
+				const string& text, const _XtString name = 0,
 				Widget origin = 0);
     static void post_file_warning(const string& file_name,
-				  string text, const _XtString name = 0,
+				  const string& text, const _XtString name = 0,
 				  Widget origin = 0);
 
     // The current directory
@@ -631,7 +631,7 @@ public:
     static void process_info_line_main  (string& info_output);
 
     // Handle 'where' information
-    static void process_where           (string& where_output);
+    static void process_where           (const string& where_output);
 
     // Handle 'frame' information
     static void process_frame           (string& frame_output);
