@@ -116,6 +116,31 @@ string dbx_lookup(const string& func_name)
     return pos;
 }
 
+// Find path of source file SOURCE
+string dbx_path(const string& source)
+{
+    string path;
+    if (gdb->has_setenv_command() && gdb->has_edit_command())
+    {
+	// The DBX `file' command issues only the base name of the
+	// current file.  The `edit' command, however, invokes an
+	// editor with the entire path.  So, we misuse the `edit'
+	// command such that it reports the entire path.
+	gdb_question("setenv EDITOR echo");
+	path = gdb_question("edit " + source);
+	gdb_question(string("setenv EDITOR ") + 
+		     (getenv("EDITOR") ? getenv("EDITOR") : "vi"));
+    }
+    else
+    {
+	// No `setenv' and no `edit' command - revert to SOURCE.
+	path = source;
+    }
+
+    strip_final_blanks(path);
+    return path;
+}
+
 void clear_dbx_lookup_cache()
 {
     static StringStringAssoc empty;

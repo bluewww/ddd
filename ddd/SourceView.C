@@ -1154,34 +1154,58 @@ String SourceView::read_indented(string& file_name, long& length,
     length = 0;
     Delay delay;
     long t;
-
-    file_name = full_path(file_name);
+	
+    String text = 0;
     origin = ORIGIN_NONE;
+    string full_file_name = file_name;
 
-    String text;
-
-    // Try to read file
-    if (remote_gdb())
+    for (int trial = 1; (text == 0 || length == 0) && trial <= 2; trial++)
     {
-	// Read file from remote source
-	text = read_remote(file_name, length, true);
-	if (text != 0)
-	    origin = ORIGIN_REMOTE;
+	switch (trial)
+	{
+	case 1:
+	    // Loop #1: use full path of file
+	    full_file_name = full_path(file_name);
+	    break;
+
+	case 2:
+	    // Loop #2: ask debugger for full path, using `edit'
+	    full_file_name = full_path(dbx_path(file_name));
+	    if (full_file_name == full_path(file_name))
+		continue;
+	    break;
+	}
+
+	// Attempt #1.  Try to read file from remote source.
+	if ((text == 0 || length == 0) && remote_gdb())
+	{
+	    text = read_remote(full_file_name, length, true);
+	    if (text != 0)
+		origin = ORIGIN_REMOTE;
+	}
+
+	// Attempt #2.  Read file from local source.
+	if ((text == 0 || length == 0) && !remote_gdb())
+	{
+	    text = read_local(full_file_name, length, true);
+	    if (text != 0)
+		origin = ORIGIN_LOCAL;
+	}
+
+	// Attempt #3.  Read file from local source, even if we are remote.
+	if ((text == 0 || length == 0) && remote_gdb())
+	{
+	    text = read_local(full_file_name, length, true);
+	    if (text != 0)
+		origin = ORIGIN_LOCAL;
+	}
     }
 
-    if (!remote_gdb() && (text == 0 || length == 0))
-    {
-	// Read file from local source
-	text = read_local(file_name, length, true);
-	if (text != 0)
-	    origin = ORIGIN_LOCAL;
-    }
-
+    // Attempt #4.  Read file from GDB.
     if (text == 0 || length == 0)
     {
-	// Read file from GDB
 	string saved_current_file_name = current_file_name;
-	current_file_name = file_name;
+	current_file_name = full_file_name;
 	string source_name = current_source_name();
 	current_file_name = saved_current_file_name;
 
@@ -1190,27 +1214,19 @@ String SourceView::read_indented(string& file_name, long& length,
 	if (text != 0 && length != 0)
 	{
 	    // Use the source name as file name
-	    file_name = source_name;
+	    full_file_name = source_name;
 	    if (text != 0)
 		origin = ORIGIN_GDB;
 	}
-    }
-
-    if (remote_gdb() && (text == 0 || length == 0))
-    {
-	// Read file from local source, even if we are remote
-	text = read_local(file_name, length, true);
-	if (text != 0)
-	    origin = ORIGIN_LOCAL;
     }
 
     if ((text == 0 || length == 0) && !silent)
     {
 	// All failed - produce an appropriate error message.
 	if (!remote_gdb())
-	    text = read_local(file_name, length, silent);
+	    text = read_local(full_file_name, length, silent);
 	else
-	    text = read_remote(file_name, length, silent);
+	    text = read_remote(full_file_name, length, silent);
     }
 
     if (text == 0 || length == 0)

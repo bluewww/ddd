@@ -39,6 +39,9 @@
 string dbx_lookup(const string& func_name);
 void clear_dbx_lookup_cache();
 
+// Find path of source file SOURCE
+string dbx_path(const string& source);
+
 // Find line# in listing
 int line_of_listing(string& listing);
 

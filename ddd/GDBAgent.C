@@ -96,6 +96,8 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_display_command(tp == GDB || tp == DBX),
       _has_clear_command(tp == GDB || tp == DBX),
       _has_pwd_command(tp == GDB || tp == DBX),
+      _has_setenv_command(tp == DBX),
+      _has_edit_command(tp == DBX),
       _has_named_values(tp == GDB || tp == DBX),
       _has_when_semicolon(tp == DBX),
       _has_delete_comma(false),
@@ -143,6 +145,8 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_display_command(gdb.has_display_command()),
       _has_clear_command(gdb.has_clear_command()),
       _has_pwd_command(gdb.has_pwd_command()),
+      _has_setenv_command(gdb.has_setenv_command()),
+      _has_edit_command(gdb.has_edit_command()),
       _has_named_values(gdb.has_named_values()),
       _has_when_semicolon(gdb.has_when_semicolon()),
       _has_delete_comma(gdb.has_delete_comma()),
@@ -1031,7 +1035,6 @@ string GDBAgent::pwd_command() const
     return "";			// Never reached
 }
 
-// Some DBXes want `sh pwd' instead of `pwd'
 string GDBAgent::frame_command(string depth) const
 {
     if (!has_frame_command())

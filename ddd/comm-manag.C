@@ -135,6 +135,8 @@ typedef struct PlusCmdData {
     bool     config_display;	       // try 'display'
     bool     config_clear;	       // try 'clear'
     bool     config_pwd;	       // try 'pwd'
+    bool     config_setenv;	       // try 'setenv'
+    bool     config_edit;	       // try 'edit'
     bool     config_named_values;      // try 'print "ddd"'
     bool     config_when_semicolon;    // try 'help when'
     bool     config_delete_comma;      // try 'delete 4711 4712'
@@ -172,6 +174,8 @@ typedef struct PlusCmdData {
 	config_display(false),
 	config_clear(false),
 	config_pwd(false),
+	config_setenv(false),
+	config_edit(false),
 	config_named_values(false),
 	config_when_semicolon(false),
 	config_delete_comma(false),
@@ -256,6 +260,7 @@ void start_gdb()
 
     case DBX:
 	plus_cmd_data->refresh_initial_line = true;
+
 	cmds += "frame";
 	plus_cmd_data->config_frame = true;
 	cmds += "dbxenv run_io";
@@ -270,6 +275,12 @@ void start_gdb()
 	plus_cmd_data->config_clear = true;
 	cmds += "pwd";
 	plus_cmd_data->config_pwd = true;
+	cmds += "setenv EDITOR echo";
+	plus_cmd_data->config_setenv = true;
+	cmds += "edit";
+	cmds += string("setenv EDITOR ") + 
+	    (getenv("EDITOR") ? getenv("EDITOR") : "vi");
+	plus_cmd_data->config_edit = true;
 	cmds += "print \"" DDD_NAME "\"";
 	plus_cmd_data->config_named_values = true;
 	cmds += "help when";
@@ -612,6 +623,8 @@ void user_cmdSUC (string cmd, Widget origin)
     assert(!plus_cmd_data->config_display);
     assert(!plus_cmd_data->config_clear);
     assert(!plus_cmd_data->config_pwd);
+    assert(!plus_cmd_data->config_setenv);
+    assert(!plus_cmd_data->config_edit);
     assert(!plus_cmd_data->config_named_values);
     assert(!plus_cmd_data->config_when_semicolon);
     assert(!plus_cmd_data->config_delete_comma);
@@ -979,7 +992,7 @@ static void process_config_print_r(string& answer)
 static void process_config_output(string& answer)
 {
     gdb->has_output_command(is_known_command(answer) 
-				  && answer.contains(print_cookie));
+			    && answer.contains(print_cookie));
 }
 
 static void process_config_where_h(string& answer)
@@ -1000,6 +1013,16 @@ static void process_config_clear(string& answer)
 static void process_config_pwd(string& answer)
 {
     gdb->has_pwd_command(is_known_command(answer));
+}
+
+static void process_config_setenv(string& answer)
+{
+    gdb->has_setenv_command(is_known_command(answer));
+}
+
+static void process_config_edit(string& answer)
+{
+    gdb->has_edit_command(is_known_command(answer));
 }
 
 static void process_config_named_values(string& answer)
@@ -1135,6 +1158,17 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->config_pwd) {
 	assert (qu_count < count);
 	process_config_pwd(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_setenv) {
+	assert (qu_count < count);
+	process_config_setenv(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_edit) {
+	assert (qu_count < count);
+	process_config_edit(answers[qu_count++]);
+	process_config_setenv(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_named_values) {

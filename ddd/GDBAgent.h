@@ -144,6 +144,8 @@ private:
     bool _has_display_command;
     bool _has_clear_command;
     bool _has_pwd_command;
+    bool _has_setenv_command;
+    bool _has_edit_command;
     bool _has_named_values;
     bool _has_when_semicolon;
     bool _has_delete_comma;
@@ -267,6 +269,14 @@ public:
     bool has_pwd_command() const       { return _has_pwd_command; }
     bool has_pwd_command(bool val)     { return _has_pwd_command = val; }
 
+    // True if debugger has `setenv' command
+    bool has_setenv_command() const    { return _has_setenv_command; }
+    bool has_setenv_command(bool val)  { return _has_setenv_command = val; }
+
+    // True if debugger has `edit' command
+    bool has_edit_command() const      { return _has_edit_command; }
+    bool has_edit_command(bool val)    { return _has_edit_command = val; }
+
     // True if debugger issues `NAME = VALUE' upon `print' commands
     bool has_named_values() const      { return _has_named_values; }
     bool has_named_values(bool val)    { return _has_named_values = val; }
@@ -299,9 +309,10 @@ public:
     bool verbatim() const        { return _verbatim; }
     bool verbatim(bool val)      { return _verbatim = val; }
 
-    // Usually "print EXPR".  If INTERNAL is set, avoid side effects
+    // GDB: "print EXPR".  If INTERNAL is set, avoid side effects
     // (such as setting the value history in GDB).
     string print_command(string expr = "", bool internal = true) const; 
+
     string display_command(string expr = "") const; // GDB: "display EXPR"
     string where_command() const;	            // GDB: "where "
     string pwd_command() const;	                    // GDB: "pwd "
