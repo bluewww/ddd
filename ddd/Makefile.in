@@ -448,7 +448,7 @@ X_INCLUDE = @X_CFLAGS@
 INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../include -I$(icondir) $(X_INCLUDE)
 
 ## Implicit rules.
-.SUFFIXES: .C .cc .c .mod .p .Y .YY .L .txt
+.SUFFIXES: .C .cc .c .mod .p .Y .YY .L .txt .i
 .C.o:
 	$(COMPILE.cc) $(INCLUDE) -o $@ $<
 .cc.o:
@@ -457,6 +457,14 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../include -I$(icondir) $(X
 	$(COMPILE.c) $(INCLUDE) -o $@ $<
 .p.o:
 	$(COMPILE.p) -o $@ $<
+.C.i:
+	$(COMPILE.cc) $(INCLUDE) -E -o $@ $<
+.cc.i:
+	$(COMPILE.cc) $(INCLUDE) -E -o $@ $<
+.c.i:
+	$(COMPILE.c) $(INCLUDE) -E -o $@ $<
+.p.i:
+	$(COMPILE.p) -E -o $@ $<
 .Y:
 	$(YACC.Y) $<
 	$(YACCTOCPLUS)
