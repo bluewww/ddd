@@ -264,11 +264,25 @@ DispValue *DispValue::dup() { return new DispValue(*this); }
 // True if more sequence members are coming
 bool DispValue::sequence_pending(const string& value) const
 {
-    if (parent() != 0 && 
-	(parent()->type() == Array || parent()->type() == Struct))
+    if (parent() != 0)
     {
-	// In a composite, we always read everything up to the final delimiter.
-	return false;
+	switch (parent()->type())
+	{
+	case Sequence:
+	case List:
+	case Struct:
+	case Reference:
+	case Array:
+	    // In a composite, we always read everything up to the
+	    // final delimiter.
+	    return false;
+
+	case Simple:
+	case Pointer:
+	case Text:
+	case UnknownType:
+	    break;
+	}
     }
 
     string v = value;
@@ -330,8 +344,10 @@ void DispValue::init(string& value, DispValueType given_type)
 
     case Text:
     {
+	// Read in entire text
 	simple = new SimpleDispValue;
 	simple->value = value;
+	value = "";
 #if LOG_CREATE_VALUES
 	clog << mytype << ": " << quote(simple->value) << "\n";
 #endif
@@ -474,7 +490,8 @@ void DispValue::init(string& value, DispValueType given_type)
     {
 	str = new StructDispValue;
 	str->member_count = 0;
-	bool found_struct_begin = false;
+	bool found_struct_begin   = false;
+	bool read_multiple_values = false;
 	
 #if LOG_CREATE_VALUES
 	clog << mytype << " " << quote(myfull_name) << "\n";
@@ -483,6 +500,7 @@ void DispValue::init(string& value, DispValueType given_type)
 	if (mytype == List)
 	{
 	    member_prefix = "";
+	    read_multiple_values = true;
 	}
 	else
 	{
@@ -518,9 +536,9 @@ void DispValue::init(string& value, DispValueType given_type)
 		member_prefix += ".";
 	    }
 
-	    // In case we do not find a struct beginning, read only
-	    // one value.
-	    found_struct_begin = read_struct_begin (value, myaddr);
+	    // In case we do not find a struct beginning, read only one value
+	    found_struct_begin = read_struct_begin(value, myaddr);
+	    read_multiple_values = found_struct_begin;
 	}
 
 	bool more_values = true;
@@ -572,7 +590,7 @@ void DispValue::init(string& value, DispValueType given_type)
 		    str->members[str->member_count++] = dv;
 		}
 
-		more_values = found_struct_begin && read_struct_next (value);
+		more_values = read_multiple_values && read_struct_next(value);
 	    }
 	    else if (is_BaseClass_name(member_name))
 	    {
@@ -581,7 +599,7 @@ void DispValue::init(string& value, DispValueType given_type)
 					      myfull_name, member_name);
 		str->members[str->member_count++] = dv;
 
-		more_values = found_struct_begin && read_struct_next(value);
+		more_values = read_multiple_values && read_struct_next(value);
 
 		// Skip a possible `members of CLASS:' prefix
 		read_members_prefix(value);
@@ -591,7 +609,7 @@ void DispValue::init(string& value, DispValueType given_type)
 		// continue reading after having found a base
 		// class.  After all, the own class members are
 		// still missing.
-		if (!found_struct_begin)
+		if (mytype == Struct && !found_struct_begin)
 		    more_values = true;
 	    }
 	    else
@@ -619,7 +637,7 @@ void DispValue::init(string& value, DispValueType given_type)
 		str->members[str->member_count++] = 
 		    new DispValue (this, depth() + 1, value, 
 				   full_name, member_name);
-		more_values = found_struct_begin && read_struct_next (value);
+		more_values = read_multiple_values && read_struct_next(value);
 	    }
 
 	    if (background(value.length()))
