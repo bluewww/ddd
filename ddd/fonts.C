@@ -379,21 +379,21 @@ static void title(const AppData& ad, const string& s)
     title_seen = true;
 }
 
-static void get_derived_sizes(const AppData& ad,
+static void get_derived_sizes(Dimension size,
 			      Dimension& small_size,
 			      Dimension& llogo_size)
 {
-    small_size = ((ad.default_font_size * 8) / 90) * 10;
-    llogo_size = ((ad.default_font_size * 3) / 20) * 10;
-
-    if (small_size < 80)
-	small_size = ad.default_font_size;
+    small_size = ((size * 8) / 90) * 10;
+    llogo_size = ((size * 3) / 20) * 10;
 }
 
 static void setup_x_fonts(const AppData& ad, XrmDatabase& db)
 {
     Dimension small_size, llogo_size;
-    get_derived_sizes(ad, small_size, llogo_size);
+    get_derived_sizes(ad.default_font_size, small_size, llogo_size);
+
+    if (small_size < 80)
+	small_size = ad.default_font_size;
 
     string small_size_s = itostring(small_size);
     string llogo_size_s = itostring(llogo_size);
@@ -478,7 +478,7 @@ static void replace_vsl_font(string& defs, const string& func,
 static void setup_vsl_fonts(AppData& ad)
 {
     Dimension small_size, llogo_size;
-    get_derived_sizes(ad, small_size, llogo_size);
+    get_derived_sizes(ad.data_font_size, small_size, llogo_size);
 
     string small_size_s = itostring(small_size);
 
