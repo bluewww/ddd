@@ -242,26 +242,45 @@ void PlotArea::plot_nop(const char *)
     // Ignore command
 }
 
+// Unknown command
+void PlotArea::plot_unknown(const char *command)
+{
+    cerr << "PlotArea: unknown plot command " << quote(command) << "\n";
+}
+
 void PlotArea::plot_vector(const char *buf)
 {
     int x, y;
-    int ret = sscanf((char *)buf, "V%4d%4d", &x, &y);
-    assert(ret == 2);
+    int assignments = sscanf((char *)buf, "V%4d%4d", &x, &y);
+    if (assignments != 2)
+    {
+	plot_unknown(buf);
+	return;
+    }
+
     XDrawLine(dpy, win, gc, X(cx), Y(cy), X(x), Y(y));
     cx = x; cy = y;
 }
 
 void PlotArea::plot_move(const char *buf)
 {
-    int ret = sscanf((char *)buf, "M%4d%4d", &cx, &cy);
-    assert(ret == 2);
+    int assignments = sscanf((char *)buf, "M%4d%4d", &cx, &cy);
+    if (assignments != 2)
+    {
+	plot_unknown(buf);
+	return;
+    }
 }
 
 void PlotArea::plot_text(const char *buf)
 {
     int x, y;
-    int ret = sscanf((char *)buf, "T%4d%4d", &x, &y);  
-    assert(ret == 2);
+    int assignments = sscanf((char *)buf, "T%4d%4d", &x, &y);  
+    if (assignments != 2)
+    {
+	plot_unknown(buf);
+	return;
+    }
 
     const char *str = buf + 9;
     int sl = 0;
@@ -283,14 +302,22 @@ void PlotArea::plot_text(const char *buf)
 
 void PlotArea::plot_justify(const char *buf)
 {
-    int ret = sscanf((char *)buf, "J%4d", &jmode);
-    assert(ret == 1);
+    int assignments = sscanf((char *)buf, "J%4d", &jmode);
+    if (assignments != 1)
+    {
+	plot_unknown(buf);
+	return;
+    }
 }
 
 void PlotArea::plot_linetype(const char *buf)
 {
-    int ret = sscanf((char *)buf, "L%4d", &line_type);
-    assert(ret == 1);
+    int assignments = sscanf((char *)buf, "L%4d", &line_type);
+    if (assignments != 1)
+    {
+	plot_unknown(buf);
+	return;
+    }
 
     line_type = (line_type % 8) + 2;
     width = widths[line_type];
@@ -310,8 +337,12 @@ void PlotArea::plot_linetype(const char *buf)
 void PlotArea::plot_point(const char *buf)
 {
     int point, x, y;
-    int ret = sscanf((char *)buf, "P%1d%4d%4d", &point, &x, &y);  
-    assert(ret == 3);
+    int assignments = sscanf((char *)buf, "P%1d%4d%4d", &point, &x, &y);  
+    if (assignments != 3)
+    {
+	plot_unknown(buf);
+	return;
+    }
 
     if (point == 7) 
     {
@@ -431,17 +462,6 @@ void PlotArea::plot_reset(const char *)
 	XFreeGC(dpy, gc);
     gc = XCreateGC(dpy, win, 0, (XGCValues *)0);
     XSetFont(dpy, gc, font->fid);
-}
-
-void PlotArea::plot_unknown(const char *command)
-{
-    // Unknown command
-    int sl = 0;
-    while (command[sl] != '\n' && command[sl] != '\0')
-	sl++;
-    string c(command, sl);
-
-    cerr << "PlotArea: unknown plot command " << quote(c) << "\n";
 }
 
 void PlotArea::plot(const char *commands, int length, bool clear)
