@@ -40,11 +40,14 @@ dnl
 dnl
 dnl Undefine some disturbing macros.
 dnl This works for BSD M4, SYSV M4, and GNU M4.
+undefine([builtin])dnl
 undefine([eval])dnl
-undefine([include])dnl
-undefine([shift])dnl
-undefine([index])dnl
+undefine([file])dnl
 undefine([format])dnl
+undefine([include])dnl
+undefine([index])dnl
+undefine([line])dnl
+undefine([shift])dnl
 undefine([unix])dnl
 dnl
 dnl
