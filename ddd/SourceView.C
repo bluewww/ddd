@@ -4616,6 +4616,8 @@ Widget SourceView::create_glyph(Widget form_w,
     XtSetArg(args[arg], XmNshadowThickness,    0);             arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0);             arg++;
     XtSetArg(args[arg], XmNborderWidth,        0);             arg++;
+    XtSetArg(args[arg], XmNmultiClick, XmMULTICLICK_DISCARD);  arg++;
+    XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING);  arg++;
     Widget w = verify(XmCreatePushButton(form_w, name, args, arg));
     XtRealizeWidget(w);
     XtManageChild(w);
@@ -4629,14 +4631,19 @@ Widget SourceView::create_glyph(Widget form_w,
     int new_height = XmConvertUnits(w, XmVERTICAL, XmPIXELS, 
 				    height + 1 + motif_offset, unit_type);
 
+    Pixel background;
+    XtVaGetValues(w, XmNbackground, &background, NULL);
+
     arg = 0;
-    XtSetArg(args[arg], XmNlabelType, XmPIXMAP); arg++;
-    XtSetArg(args[arg], XmNlabelPixmap, pix);    arg++;
-    XtSetArg(args[arg], XmNwidth,  new_width);   arg++;
-    XtSetArg(args[arg], XmNheight, new_height);  arg++;
+    XtSetArg(args[arg], XmNlabelType,   XmPIXMAP);   arg++;
+    XtSetArg(args[arg], XmNlabelPixmap, pix);        arg++;
+    XtSetArg(args[arg], XmNwidth,       new_width);  arg++;
+    XtSetArg(args[arg], XmNheight,      new_height); arg++;
+    XtSetArg(args[arg], XmNfillOnArm,   True);       arg++;
+    XtSetArg(args[arg], XmNarmColor,    background); arg++;
     XtSetValues(w, args, arg);
     
-    XtAddCallback(w, XmNactivateCallback, MoveCursorToGlyphPosCB, 0);
+    XtAddCallback(w, XmNarmCallback, MoveCursorToGlyphPosCB, 0);
     return w;
 }
 
