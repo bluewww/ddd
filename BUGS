@@ -114,9 +114,9 @@ Volunteers for fixing these and other bugs are welcome!
     off.
 
 304 `Find>>' should be insensitive when FILE:POS is selected.  (Better 
-    yet: make it insensitive if the current source does not contain ()).
+    yet: make it sensitive only if `()' is in the current source?).
 
 305 `Find>>', `Edit Source', and `Reload Source' should be insensitive
-     when no source is present.
+    when no source is present.
 
 306 (Insert new bugs here)
