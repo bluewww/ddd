@@ -355,6 +355,64 @@ void ddd_install_x_fatal()
 
 
 //-----------------------------------------------------------------------------
+// Xt and Motif errors
+//-----------------------------------------------------------------------------
+
+static void PostXErrorCB(XtPointer client_data, XtIntervalId *)
+{
+    string *msg_ptr = (string *)client_data;
+    string msg = *msg_ptr;
+    delete msg_ptr;
+
+    string title = msg.before('\v');
+    string cause = msg.after('\v');
+    post_fatal(title, cause);
+}
+
+static XtErrorHandler old_xt_error_handler;
+static XtAppContext xt_error_app_context = 0;
+
+static void ddd_xt_error(String message = 0)
+{
+    ddd_has_crashed = true;
+
+    if (message == 0 || message[0] == '\0')
+    {
+	ddd_cleanup();
+	exit(EXIT_FAILURE);
+    }
+	
+    static int entered = 0;
+
+    // Issue error on stderr
+    cerr << "Error: " << message << "\n";
+
+    string title = message;
+    string cause = "Xt error";
+
+    if (entered++ || !main_loop_entered || ddd_is_exiting)
+    {
+	print_fatal_msg(title, cause);
+	ddd_xt_error();
+    }
+
+    // Issue error in dialog
+    string *msg_ptr = new string(title + '\v' + cause);
+    XtAppAddTimeOut(xt_error_app_context, 0, PostXErrorCB, XtPointer(msg_ptr));
+
+    // Return to main event loop
+    entered--;
+    longjmp(main_loop_env, -1);
+}
+
+void ddd_install_xt_error(XtAppContext app_context)
+{
+    old_xt_error_handler = XtAppSetErrorHandler(app_context, ddd_xt_error);
+    xt_error_app_context = app_context;
+}
+
+
+//-----------------------------------------------------------------------------
 // Other X errors
 //-----------------------------------------------------------------------------
 
@@ -444,17 +502,6 @@ static void print_x_error(Display *display, XErrorEvent *event, ostream& os)
 
 static int (*old_x_error_handler)(Display *, XErrorEvent *) = 0;
 
-static void PostXErrorCB(XtPointer client_data, XtIntervalId *)
-{
-    string *msg_ptr = (string *)client_data;
-    string msg = *msg_ptr;
-    delete msg_ptr;
-
-    string title = msg.before('\v');
-    string cause = msg.after('\v');
-    post_fatal(title, cause);
-}
-
 static bool recovered_from_x_error = true;
 
 static Boolean recovery_done(XtPointer)
@@ -508,14 +555,17 @@ static int ddd_x_error(Display *display, XErrorEvent *event)
     // Issue error on stderr
     print_x_error(display, event, cerr);
 
-    // Prepare for issuing error in dialog
-    string *msg_ptr = new string(title + '\v' + cause);
-    XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
-    XtAppAddTimeOut(app_context, 0, PostXErrorCB, XtPointer(msg_ptr));
+    if (xt_error_app_context != 0)
+    {
+	// Prepare for issuing error in dialog
+	string *msg_ptr = new string(title + '\v' + cause);
+	XtAppAddTimeOut(xt_error_app_context, 0, 
+			PostXErrorCB, XtPointer(msg_ptr));
 
-    // Set RECOVERED_FROM_X_ERROR to FALSE until DDD is idle again
-    recovered_from_x_error = false;
-    XtAppAddWorkProc(app_context, recovery_done, XtPointer(0));
+	// Set RECOVERED_FROM_X_ERROR to FALSE until DDD is idle again
+	recovered_from_x_error = false;
+	XtAppAddWorkProc(xt_error_app_context, recovery_done, XtPointer(0));
+    }
 
     return 0;			// Keep on acting
 }
@@ -526,51 +576,6 @@ void ddd_install_x_error()
     old_x_error_handler = XSetErrorHandler(ddd_x_error);
 }
 
-
-//-----------------------------------------------------------------------------
-// Xt and Motif errors
-//-----------------------------------------------------------------------------
-
-static XtErrorHandler old_xt_error_handler;
-
-static void ddd_xt_error(String message = 0)
-{
-    ddd_has_crashed = true;
-
-    if (message == 0 || message[0] == '\0')
-    {
-	ddd_cleanup();
-	exit(EXIT_FAILURE);
-    }
-	
-    static int entered = 0;
-
-    // Issue error on stderr
-    cerr << "Error: " << message << "\n";
-
-    string title = message;
-    string cause = "Xt error";
-
-    if (entered++ || !main_loop_entered || ddd_is_exiting)
-    {
-	print_fatal_msg(title, cause);
-	ddd_xt_error();
-    }
-
-    // Issue error in dialog
-    string *msg_ptr = new string(title + '\v' + cause);
-    XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
-    XtAppAddTimeOut(app_context, 0, PostXErrorCB, XtPointer(msg_ptr));
-
-    // Return to main event loop
-    entered--;
-    longjmp(main_loop_env, -1);
-}
-
-void ddd_install_xt_error(XtAppContext app_context)
-{
-    old_xt_error_handler = XtAppSetErrorHandler(app_context, ddd_xt_error);
-}
 
 
 
