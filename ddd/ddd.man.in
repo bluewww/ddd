@@ -3460,7 +3460,7 @@ your window manager has trouble with multi-color icons, set this
 resource to `\fBoff\fR' and \s-1@DDD@\s+1 will use black-and-white
 icons instead.
 .TP
-.B "decorateTool (\fPclass\fB DecorateTool)"
+.B "decorateTool (\fPclass\fB Decorate)"
 This resource controls the decoration of the command tool.
 .RS
 .br

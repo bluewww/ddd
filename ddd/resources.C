@@ -594,6 +594,16 @@ XtResource ddd_resources[] = {
 	XtPointer("set parametric")
     },
 
+   {
+	XtNdecoratePlot,
+	XtCDecorate,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, decorate_plot),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
     {
 	XtNtermCommand,
 	XtCTermCommand,
@@ -622,6 +632,16 @@ XtResource ddd_resources[] = {
 	XtOffsetOf(AppData, use_tty_command),
 	XtRImmediate,
 	XtPointer(False)
+    },
+
+    {
+	XtNdecorateTerm,
+	XtCDecorate,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, decorate_term),
+	XtRImmediate,
+	XtPointer(True)
     },
 
     {
@@ -1561,7 +1581,7 @@ XtResource ddd_resources[] = {
 
     {
 	XtNdecorateTool,
-	XtCDecorateTool,
+	XtCDecorate,
 	XtROnOff,
 	sizeof(OnOff),
 	XtOffsetOf(AppData, decorate_tool),
