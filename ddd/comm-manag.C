@@ -1068,7 +1068,7 @@ void send_gdb_command(string cmd, Widget origin,
 	if (gdb->type() == DBX)
 	{
 	    // In DBX, `func' changes the stack frame
-	    cmd_data->new_frame_pos      = true;
+	    cmd_data->new_frame_pos   = true;
 	    extra_data->refresh_frame = true;
 	    extra_data->refresh_file  = true;
 	    extra_data->refresh_line  = true;
@@ -1887,7 +1887,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	{
 	    // No argument.
 	    // GDB gives no diagnostics in this case.  So, nor do we.
-	    if (verbose)
+	    if (do_prompt)
 		prompt();
 	    return true;
 	}
