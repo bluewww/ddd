@@ -25,50 +25,43 @@
 // ICE is the incremental configuration engine.
 // Contact ice@ips.cs.tu-bs.de for details.
 
-// Allow this file to be included multiple times
-// with different settings of NDEBUG
-
+// Allow this file to be included multiple times with different
+// settings of NDEBUG
+#if defined(NDEBUG)
 #undef assert
 #undef _assert_fn
-
-#if NDEBUG
 #define assert(ignore)
 
-#else // !defined(NDEBUG)
-
-#ifndef _ICE_assert_h
-#define _ICE_assert_h
-
-#if HAVE_CONFIG_H
+#elif HAVE_CONFIG_H
 #include "config.h"
 #include <stdlib.h>		// abort()
 #include <iostream.h>
 
-#ifdef HAVE_PRETTY_FUNCTION
+#undef assert
+#undef _assert_fn
+
+#if HAVE_PRETTY_FUNCTION
 #define _assert_fn \
 "\n" << __FILE__ << ": In function `" << __PRETTY_FUNCTION__ << "':"
-#else
+#else // !HAVE_PRETTY_FUNCTION
 #define _assert_fn ""
-#endif
+#endif // !HAVE_PRETTY_FUNCTION
 
 #define assert(ex) \
 ((ex) ? 1 : (cerr << _assert_fn << "\n" << __FILE__ << ":" << __LINE__ \
 	          << ": assertion `" #ex "' failed\n", \
 	          ::abort(), 0))
 
-#else // !HAVE_CONFIG_H
+#else // !defined(NDEBUG) && !HAVE_CONFIG_H
 
 // This is weird.  In our projects, HAVE_CONFIG_H is always defined.
 // Are we running `configure' with `.' in the <...> #include path?
 // Revert to the original <assert.h>.
 
 #if __GNUC__
-#include_next <assert.h>	// GNU C extension
+#include_next <assert.h>	 // GNU C extension
 #else
 #include </usr/include/assert.h> // Dirty fix
 #endif
 
-#endif // HAVE_CONFIG_H
-
-#endif // _ICE_assert_h
-#endif // !NDEBUG
+#endif // HAVE_CONFIG_H && !defined(NDEBUG)
