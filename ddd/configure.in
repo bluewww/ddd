@@ -50,6 +50,11 @@ dnl
 ac_cv_lib_dnet=no
 dnl
 dnl
+dnl Autoconf 2.12 bug fix (occurs on sparc-sun-solaris2.5.1)
+ac_cv_func_vfork_works=yes
+dnl
+dnl
+dnl
 dnl Name and version number
 dnl *This* is the place where name and version numbers are defined.
 AC_MSG_CHECKING(for name and version number)
@@ -446,7 +451,6 @@ dnl
 dnl
 dnl Find libraries and functions
 dnl 
-AC_FUNC_VFORK
 AC_CHECK_FUNC(getpgrp)
 AC_CHECK_FUNC(setpgrp)
 AC_FUNC_GETPGRP
@@ -534,7 +538,6 @@ ICE_CHECK_DECL(times, sys/times.h)
 ICE_CHECK_DECL(uname, sys/utsname.h)
 ICE_CHECK_DECL(unlink, unistd.h)
 ICE_CHECK_DECL(unlockpt, stdlib.h)
-ICE_CHECK_DECL(vfork, vfork.h unistd.h)
 ICE_CHECK_DECL(waitpid, sys/wait.h)
 dnl
 ICE_CHECK_PATH_MAX
