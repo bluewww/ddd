@@ -1834,7 +1834,7 @@ string GDBAgent::whatis_command(string text) const
 	return "p " + text + "\\T";
 
     case JDB:
-	return "";		// Not available
+	return "dump " + text;	// As close as we can get
     }
 
     return "";			// Never reached
