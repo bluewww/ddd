@@ -38,6 +38,11 @@ char BoxRegion_rcsid[] =
 // Schnittmenge zweier Regionen berechnen
 BoxRegion BoxRegion::operator & (const BoxRegion& r) const
 {
+    if (!origin().isValid())
+	return r;
+    if (!r.origin().isValid())
+	return *this;
+
     BoxPoint nw_corner(max(origin(X), r.origin(X)),
 		    max(origin(Y), r.origin(Y)));
     BoxPoint se_corner(min(origin(X) + space(X), r.origin(X) + r.space(X)),
@@ -49,6 +54,11 @@ BoxRegion BoxRegion::operator & (const BoxRegion& r) const
 // Vereinigung zweier Regionen berechnen
 BoxRegion BoxRegion::operator | (const BoxRegion& r) const
 {
+    if (!origin().isValid())
+	return r;
+    if (!r.origin().isValid())
+	return *this;
+
     BoxPoint nw_corner(min(origin(X), r.origin(X)),
 		    min(origin(Y), r.origin(Y)));
     BoxPoint se_corner(max(origin(X) + space(X), r.origin(X) + r.space(X)),
