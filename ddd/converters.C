@@ -274,16 +274,15 @@ static Boolean CvtStringToPixmap(Display *display,
 			&newfg, &newtop, &newbot, &newselect);
 	    foreground = newfg;
 	}
-	    
     }
 
     // Get pixmap
     string value = str(fromVal, false);
-    Pixmap p = XmGetPixmap (screen, value, foreground, background);
+    Pixmap p = XmGetPixmap(screen, value, foreground, background);
 
     if (p == XmUNSPECIFIED_PIXMAP)
     {
-	XtDisplayStringConversionWarning(display, fromVal->addr, XtRPixmap);
+	XtDisplayStringConversionWarning(display, fromVal->addr, XmRPixmap);
 	return False;
     }
 
@@ -887,86 +886,136 @@ void registerOwnConverters()
 	  sizeof(Widget) }
     };
 
-    // string -> widget
+    // String -> Widget
     XtSetTypeConverter(XtRString, XtRWidget, CvtStringToWidget,
 		       parentCvtArgs, XtNumber(parentCvtArgs), XtCacheNone,
 		       XtDestructor(NULL));
 
-    // string -> window
+    // String -> Window
     // We use CvtStringToWidget for conversions to "Window" as well,
     // since Motif widgets want a widget id in their "Window" fields.
     XtSetTypeConverter(XtRString, XtRWindow, CvtStringToWidget,
 		       parentCvtArgs, XtNumber(parentCvtArgs), XtCacheNone,
 		       XtDestructor(NULL));
 
-    // string -> pixmap
-    XtSetTypeConverter(XtRString, XtRPixmap, CvtStringToPixmap,
+    // String -> Pixmap
+    XtSetTypeConverter(XtRString, XmRPixmap, CvtStringToPixmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
 		       XtDestructor(NULL));
 
-    // string -> XmRPrimForegroundPixmap.  LessTif 0.81 needs this, but Motif
-    // may want this, too.
-    XtSetTypeConverter(XtRString, 
-		       XmRPrimForegroundPixmap, CvtStringToPixmap,
+    // String -> GadgetPixmap
+    XtSetTypeConverter(XtRString, XmRGadgetPixmap, CvtStringToPixmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
 		       XtDestructor(NULL));
 
-    // string -> bitmap
+    // String -> PrimForegroundPixmap
+    XtSetTypeConverter(XtRString, XmRPrimForegroundPixmap, CvtStringToPixmap,
+		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
+		       XtDestructor(NULL));
+
+    // String -> ManForegroundPixmap
+    XtSetTypeConverter(XtRString, XmRManForegroundPixmap, CvtStringToPixmap,
+		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
+		       XtDestructor(NULL));
+
+    // String -> BackgroundPixmap
+    XtSetTypeConverter(XtRString, XmRBackgroundPixmap, CvtStringToPixmap,
+		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
+		       XtDestructor(NULL));
+
+    // String -> PrimHighlightPixmap
+    XtSetTypeConverter(XtRString, XmRPrimHighlightPixmap, CvtStringToPixmap,
+		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
+		       XtDestructor(NULL));
+
+    // String -> PrimTopShadowPixmap
+    XtSetTypeConverter(XtRString, XmRPrimTopShadowPixmap, CvtStringToPixmap,
+		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
+		       XtDestructor(NULL));
+
+    // String -> PrimBottomShadowPixmap
+    XtSetTypeConverter(XtRString, XmRPrimBottomShadowPixmap, CvtStringToPixmap,
+		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
+		       XtDestructor(NULL));
+
+    // String -> ManTopShadowPixmap
+    XtSetTypeConverter(XtRString, XmRManTopShadowPixmap, CvtStringToPixmap,
+		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
+		       XtDestructor(NULL));
+
+    // String -> ManBottomShadowPixmap
+    XtSetTypeConverter(XtRString, XmRManBottomShadowPixmap, CvtStringToPixmap,
+		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
+		       XtDestructor(NULL));
+
+    // String -> ManHighlightPixmap
+    XtSetTypeConverter(XtRString, XmRManHighlightPixmap, CvtStringToPixmap,
+		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
+		       XtDestructor(NULL));
+
+#if XmVersion >= 1002
+    // String -> AnimationPixmap
+    XtSetTypeConverter(XtRString, XmRAnimationPixmap, CvtStringToPixmap,
+		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
+		       XtDestructor(NULL));
+#endif
+
+    // String -> Bitmap
     XtSetTypeConverter(XtRString, XtRBitmap, CvtStringToBitmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheByDisplay,
 		       XtDestructor(NULL));
 
-    // string -> xmstring
+    // String -> XmString
     XtSetTypeConverter(XmRString, XmRXmString, CvtStringToXmString,
 		       NULL, 0, XtCacheNone,
 		       XtDestructor(NULL));
 
 #if OWN_FONT_CONVERTERS
-    // string -> fontlist
+    // String -> FontList
     XtSetTypeConverter(XmRString, XmRFontList, CvtStringToXmFontList,
 		       NULL, 0, XtCacheAll,
 		       XtDestructor(NULL));
 
-    // string -> fontstruct
+    // String -> FontStruct
     XtSetTypeConverter(XmRString, XtRFontStruct, CvtStringToFontStruct,
 		       NULL, 0, XtCacheAll,
 		       XtDestructor(NULL));
 #endif
 
-    // string -> unitType
+    // String -> UnitType
     XtSetTypeConverter(XmRString, XmRUnitType, CvtStringToUnitType,
 		       NULL, 0, XtCacheAll, 
 		       XtDestructor(NULL));
 
-    // string -> OnOff
+    // String -> OnOff
     XtSetTypeConverter(XmRString, XtROnOff, CvtStringToOnOff,
 		       NULL, 0, XtCacheAll, 
 		       XtDestructor(NULL));
 
-    // string -> BindingStyle
+    // String -> BindingStyle
     XtSetTypeConverter(XmRString, XtRBindingStyle, CvtStringToBindingStyle,
 		       NULL, 0, XtCacheAll, 
 		       XtDestructor(NULL));
 
-    // string -> Cardinal
+    // String -> Cardinal
     XtSetTypeConverter(XmRString, XtRCardinal, CvtStringToCardinal,
 		       NULL, 0, XtCacheAll,
 		       XtDestructor(NULL));
 
     // The following three were contributed by Thorsten Sommer
-    // (sommer@ips.cs.tu-bs.de):
+    // <sommer@ips.cs.tu-bs.de>
 
-    // string -> alignment
+    // String -> Alignment
     XtSetTypeConverter(XtRString, XmNentryAlignment, CvtStringToAlignment,
 		       parentCvtArgs, XtNumber(parentCvtArgs), XtCacheNone,
 		       XtDestructor(NULL));
 
-    // string -> orientation
+    // String -> Orientation
     XtSetTypeConverter(XtRString, XmNorientation, CvtStringToOrientation,
 		       parentCvtArgs, XtNumber(parentCvtArgs), XtCacheNone,
 		       XtDestructor(NULL));
 
-    // string -> packing
+    // String -> Packing
     XtSetTypeConverter(XtRString, XmNpacking, CvtStringToPacking,
 		       parentCvtArgs, XtNumber(parentCvtArgs), XtCacheNone,
 		       XtDestructor(NULL));
