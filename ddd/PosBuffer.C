@@ -98,6 +98,66 @@ void PosBuffer::filter (string& answer)
 	    {
 	    case GDB:
 	    {
+		// Try to find out current PC even for non-existent source
+
+		if (pc_buffer == "")
+		{
+		    // `Breakpoint N, ADDRESS in FUNCTION'
+		    static regex rxstopped("Breakpoint  *[1-9][0-9]*,  *"
+					   "0x[a-fA-F0-9][a-fA-F0-9]*");
+		    int pc_index = answer.index(rxstopped);
+		    if (pc_index >= 0)
+		    {
+			pc_buffer = answer.from(pc_index);
+			pc_buffer = pc_buffer.from("0x");
+			pc_buffer = pc_buffer.through(rxalphanum);
+		    }
+		}
+
+		if (pc_buffer == "")
+		{
+		    // `#FRAME ADDRESS in FUNCTION'
+		    static regex 
+			rxframe("#[0-9][0-9]*  *0x[a-fA-F0-9][a-fA-F0-9]*");
+		    int pc_index = answer.index(rxframe);
+		    if (pc_index >= 0)
+		    {
+			pc_buffer = answer.from(pc_index);
+			pc_buffer = pc_buffer.from("0x");
+			pc_buffer = pc_buffer.through(rxalphanum);
+		    }
+		}
+
+		if (pc_buffer == "")
+		{
+		    // `No line number available for 
+		    // address ADDRESS <FUNCTION>'
+		    static regex 
+			rxaddress("address  *0x[a-fA-F0-9][a-fA-F0-9]*");
+		    int pc_index = answer.index(rxaddress);
+		    if (pc_index >= 0)
+		    {
+			pc_buffer = answer.from(pc_index);
+			pc_buffer = pc_buffer.from("0x");
+			pc_buffer = pc_buffer.through(rxalphanum);
+		    }
+		}
+
+		if (pc_buffer == "")
+		{
+		    // `ADDRESS in FUNCTION'
+		    static regex rxsignal("0x[a-fA-F0-9][a-fA-F0-9]*");
+		    int pc_index = answer.index(rxsignal);
+		    if (pc_index >= 0 
+			&& (pc_index == 0 || answer[pc_index - 1] == '\n'))
+		    {
+			pc_buffer = answer.from(pc_index);
+			pc_buffer = pc_buffer.from("0x");
+			pc_buffer = pc_buffer.through(rxalphanum);
+		    }
+		}
+
+		// Look for regular source info
 		int index1 = answer.index ("\032\032");
 
 		if (index1 == -1) 
@@ -113,7 +173,8 @@ void PosBuffer::filter (string& answer)
 
 			return;
 		    }
-		    // nichts gefunden
+
+		    // nothing found
 		    return;
 		}
 		// Antwort enthaelt Positionsangabe
@@ -131,6 +192,9 @@ void PosBuffer::filter (string& answer)
 
 		// Positionsangabe komplett
 		pos_buffer = answer.at (index1 + 2, index2 - (index1 + 2));
+		pc_buffer = pos_buffer.from(":0x");
+		pc_buffer = pc_buffer.after(':');
+		pc_buffer = pc_buffer.through(rxalphanum);
 		answer.at (index1, index2 - index1 + 1) = "";
 		already_read = PosComplete;
 	    }

@@ -50,6 +50,7 @@ class PosBuffer {
     string pos_buffer;
     string func_buffer;
     string answer_buffer;      // fuer Vielleicht-Positionsangaben-Teile
+    string pc_buffer;
     ReadState already_read;
 
 public:
@@ -58,6 +59,7 @@ public:
 	pos_buffer(""),
 	func_buffer(""),
 	answer_buffer(""),
+	pc_buffer(""),
 	already_read(Null)
     {}
 
@@ -77,18 +79,22 @@ public:
     // enthielt die letzte Ausgabe Positionsangaben?
     //
     bool pos_found () const { return already_read == PosComplete; }
+    bool pc_found ()  const { return pc_buffer != ""; }
 
     // Gibt die gepufferte Positionsangabe zurueck;
     //
-    string get_position () const { return pos_buffer; }
-    string get_function () const { return func_buffer; }
+    const string& get_position () const { return pos_buffer; }
+    const string& get_function () const { return func_buffer; }
+    const string& get_pc ()       const { return pc_buffer; }
 
     // Aufrufen bevor neue Antwort gefiltert wird!
     //
-    void clear () {
+    void clear ()
+    {
 	pos_buffer    = "";
 	func_buffer   = "";
 	answer_buffer = "";
+	pc_buffer     = "";
 	already_read  = Null;
     }
 
