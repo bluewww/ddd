@@ -1962,9 +1962,9 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String* str, Cardinal* c)
 					event->x,
 					event->y);
 
-    int line_nr;
+    static int line_nr;
     bool in_text;
-    int bp_nr;
+    static int bp_nr;
     bool pos_found =
 	get_line_of_pos (pos, &line_nr, &in_text, &bp_nr);
 
@@ -1974,9 +1974,6 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String* str, Cardinal* c)
     if (bp_nr != 0) {
 	// Auf Breakpoint-Anzeige geklickt: Popup-Menu fuer Breakpoint oeffnen
 	static Widget bp_popup_w = 0;
-	static int* bp_nr_ptr = new int(0);
-
-	*bp_nr_ptr = bp_nr;
 
 	if (bp_popup_w == 0) {
 	    MMDesc *bp_popup = 0;
@@ -1991,7 +1988,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String* str, Cardinal* c)
 	    }
 
 	    bp_popup_w = MMcreatePopupMenu (w, "bp_popup", bp_popup);
-	    MMaddCallbacks (bp_popup, XtPointer (bp_nr_ptr));
+	    MMaddCallbacks (bp_popup, XtPointer (&bp_nr));
 	}
 
 	switch (gdb->type())
@@ -2015,16 +2012,12 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String* str, Cardinal* c)
     }
     else if (!in_text) {
 	// Popup-Menu fuer Zeile line_nr oeffnen
-	static int* line_nr_ptr = new int(0);
-
-	*line_nr_ptr = line_nr;
-
 	static Widget line_popup_w = 0;
 	if (line_popup_w == 0) {
 	    line_popup_w = MMcreatePopupMenu (w,
 					      "line_popup",
 					      line_popup);
-	    MMaddCallbacks (line_popup, XtPointer(line_nr_ptr));
+	    MMaddCallbacks (line_popup, XtPointer(&line_nr));
 	}
 	XmMenuPosition (line_popup_w, event);
 	XtManageChild (line_popup_w);
@@ -2032,29 +2025,24 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String* str, Cardinal* c)
     }
     else {
 	// 'Umgebenden' C-String ermitteln, und Popup dafuer oeffnen
-	static string* word_ptr = new string();
+	static string word;
 
 	XmTextPosition startpos;
 	XmTextPosition endpos;
 
 	find_word_bounds(pos, startpos, endpos);
+	word = "";
 	if (startpos < current_text.length() && startpos < endpos)
-	{
-	    *word_ptr = current_text(int(startpos), int(endpos - startpos));
-	}
-	else
-	{
-	    *word_ptr = "";
-	}
+	    word = current_text(int(startpos), int(endpos - startpos));
 	
-	static Widget text_popup_w = 0;
-	if (text_popup_w)
-	    XtDestroyWidget(text_popup_w);
+	Widget text_popup_w = MMcreatePopupMenu(w, "text_popup", text_popup);
+	MMaddCallbacks (text_popup, XtPointer(&word));
 
-	text_popup_w = MMcreatePopupMenu(w, "text_popup", text_popup);
-	MMaddCallbacks (text_popup, XtPointer(word_ptr));
+	// The popup menu is destroyed immediately after having popped down.
+	Widget shell = XtParent(text_popup_w);
+	XtAddCallback(shell, XmNpopdownCallback, DestroyThisCB, shell);
 
-	MString current_arg(*word_ptr, "tt");
+	MString current_arg(word, "tt");
 
 	Arg args[5];
 	int arg = 0;
@@ -2082,17 +2070,12 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String* str, Cardinal* c)
 	XtSetArg (args[arg], XmNlabelString, XmString(label));arg++;
 	XtSetValues(text_popup[TextItms::Lookup].widget, args, arg);
 
-	bool sens = (word_ptr->length() > 0);
-	XtSetSensitive (text_popup[TextItms::Break].widget,
-			sens);
-	XtSetSensitive (text_popup[TextItms::Clear].widget,
-			sens);
-	XtSetSensitive (text_popup[TextItms::Print].widget,
-			sens);
-	XtSetSensitive (text_popup[TextItms::Disp].widget,
-			sens);
-	XtSetSensitive (text_popup[TextItms::Lookup].widget,
-			sens);
+	bool sens = (word.length() > 0);
+	XtSetSensitive (text_popup[TextItms::Break].widget,  sens);
+	XtSetSensitive (text_popup[TextItms::Clear].widget,  sens);
+	XtSetSensitive (text_popup[TextItms::Print].widget,  sens);
+	XtSetSensitive (text_popup[TextItms::Disp].widget,   sens);
+	XtSetSensitive (text_popup[TextItms::Lookup].widget, sens);
 
 	XmMenuPosition (text_popup_w, event);
 	XtManageChild (text_popup_w);
