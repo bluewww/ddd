@@ -42,7 +42,7 @@ if [ "$1" = "-final" ]; then
 fi
 
 # Setup environment
-tmpdir=$HOME/tmp
+tmpdir=$HOME/tmp/ddd$$
 CVSROOT=/usr/local/share/CVS; export CVSROOT
 PATH=/usr/local/bin:/usr/local/gnubin:$PATH; export PATH
 
@@ -103,7 +103,7 @@ fi
 
 # We are working in `/tmp/ddd'.  In case of trouble, clean up.
 trap "exit 1" 1 2 15
-trap "set +x; echo -n 'Cleaning up...'; cd $tmpdir; rm -fr ddd; echo done." 0
+trap "set +x; echo -n 'Cleaning up...'; rm -fr $tmpdir; echo done." 0
 
 # Go ahead...
 if [ "$expires" = "" ]; then
@@ -113,7 +113,9 @@ else
 fi
 echo "Creating ddd-$date.tar.gz$expires_msg..."
 echo "Target is $target"
+echo "Working directory is $tmpdir"
 set -x
+mkdir $tmpdir
 cd $tmpdir
 
 # Create a DDD subdirectory and make its group `ddd'
