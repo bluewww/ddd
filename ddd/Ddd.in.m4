@@ -228,9 +228,9 @@ Ddd*paperSize: 210mm x 297mm
 
 ! The `gnuplot' command.
 Ddd*plotCommand: gnuplot -font '@FONT@' -title 'DDD: Plot Window'
-Ddd*plotInitCommands:
-Ddd*plot2dSettings: set noparametric\nset noborder
-Ddd*plot3dSettings: set parametric\nset border
+Ddd*plotInitCommands: set parametric
+Ddd*plot2dSettings:   set noborder
+Ddd*plot3dSettings:   set border
 
 
 
@@ -1077,6 +1077,7 @@ Shift Ctrl<Key>T:       gdb-command(signal 0)\n])dnl
 Ddd*gdb_w.@TRANSLATIONS@: #override\n\
 SHORTCUTS \
 <Btn3Down>:		gdb-popup-menu()            \n\
+~Ctrl ~Shift<Btn1Up>:	source-set-arg() extend-end() \n\
 Ctrl<Key>A:		select-all()	    	    \n\
 Ctrl<Key>B:		gdb-isearch-prev()    	    \n\
 Ctrl<Key>C:		gdb-control(^C)		    \n\
