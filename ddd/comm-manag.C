@@ -933,7 +933,7 @@ void send_gdb_command(string cmd, Widget origin,
 	if (is_define_cmd(cmd))
 	    set_need_save_defines(true);
 
-	extra_data->refresh_breakpoints = false;
+	extra_data->refresh_breakpoints = ends_recording(cmd);
 	extra_data->refresh_addr        = false;
 	extra_data->refresh_user        = false;
 	extra_data->refresh_where       = false;
