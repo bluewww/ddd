@@ -268,8 +268,8 @@
 #define XtCMaxNumber             "MaxNumber"
 #define XtNshowStartupLogo       "showStartupLogo"
 #define XtCShowStartupLogo       "ShowStartupLogo"
-#define XtNcolorIcons            "colorIcons"
-#define XtCColorIcons            "ColorIcons"
+#define XtNcolorWMIcons          "colorWMIcons"
+#define XtCColorWMIcons          "ColorWMIcons"
 #define XtNlessTifVersion        "lessTifVersion"
 #define XtCLessTifVersion        "LessTifVersion"
 #define XtNdddinitVersion        "dddinitVersion"
@@ -403,7 +403,7 @@ struct AppData {
     int     max_breakpoint_number;
     int     max_display_number;
     String  show_startup_logo;
-    Boolean color_icons;
+    Boolean color_wm_icons;
     int     lesstif_version;
     String  dddinit_version;
     String  app_defaults_version;

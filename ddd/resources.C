@@ -1323,11 +1323,11 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNcolorIcons,
-	XtCColorIcons,
+	XtNcolorWMIcons,
+	XtCColorWMIcons,
 	XmRBoolean,
 	sizeof(Boolean),
-	XtOffsetOf(AppData, color_icons),
+	XtOffsetOf(AppData, color_wm_icons),
 	XmRImmediate,
 	XtPointer(True)
     },

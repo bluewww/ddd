@@ -758,7 +758,7 @@ Ddd*showStartupLogo: c
 ! Whether to use multi-color icons.  Multi-color icons are not strictly
 ! ICCM-compliant, although supported by most window managers.  In case
 ! your window manager has trouble with DDD icons, set this to `false'.
-Ddd*colorIcons: true
+Ddd*colorWMIcons: true
 
 
 ! Session Defaults

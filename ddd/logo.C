@@ -145,7 +145,7 @@ Pixmap iconlogo(Widget w)
 	return icon;
 
 #ifdef XpmVersion
-    if (app_data.color_icons)
+    if (app_data.color_wm_icons)
     {
 	// Try XPM file
 	XWindowAttributes root_attr;

@@ -3045,7 +3045,7 @@ not auto-raise windows, set this resource to `\fBfalse\fR':
 .sp
 .br
 .TP
-.B "colorIcons (\fPclass\fB ColorIcons)"
+.B "colorWMIcons (\fPclass\fB ColorWMIcons)"
 If `\fBtrue\fR' (default), \s-2@DDD@\s+2 uses multi-color icons.  If
 your window manager has trouble with multi-color icons, set this
 resource to `\fBfalse\fR' and \s-2@DDD@\s+2 will use black-and-white
@@ -4970,7 +4970,7 @@ interference with the window manager; the first ones listed are the
 ones that are most likely to cause interferences.
 .sp
 .br
-  \fBDdd*colorIcons:         false
+  \fBDdd*colorWMIcons:    false
   Ddd*autoRaiseMenu:      false
   Ddd*groupIconify:       false
   Ddd*uniconifyWhenReady: false
