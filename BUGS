@@ -250,4 +250,6 @@ Volunteers for fixing these and other bugs are welcome!
     compiled with Motif 2.1, does not show any breakpoint indicators.
     Nor does it show arrows.  This does not happen with Motif 2.0.
 
-246 (Insert your bug here)
+246 The `threads' dialog has an `Items' title (in LessTif?)
+
+247 (Insert your bug here)

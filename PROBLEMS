@@ -269,13 +269,6 @@ LessTif
     001. The `F1' menu accelerator (Help | On Context) has no effect;
          invoke the function via the menu instead.  [behavioral]
 
-    002. Some of the dialog shells are non-transient.  This applies to
-         the display editor (Data | Edit Displays) and the breakpoint
-         editor (Source | Edit Breakpoints).  [behavioral]
-
-    003. Pressing a modifier like Alt or Shift in the source window
-         (output-only XmText widget) causes an X bell. [behavioral]
-
 
 Linux
 =====
