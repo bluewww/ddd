@@ -964,7 +964,8 @@ Ddd*source_view_shell.iconName: 	@DDD@: Program Source
 Ddd*data_disp_shell.title: 		@DDD@: Program Data
 Ddd*data_disp_shell.iconName: 		@DDD@: Program Data
 
-Ddd*tool_shell.title: 			@DDD@: Command Tool
+! Ddd*tool_shell.title: 		@DDD@: Command Tool
+Ddd*tool_shell.title: 			@DDD@
 Ddd*tool_shell.iconName: 		@DDD@: Command Tool
 
 
@@ -2083,6 +2084,22 @@ to get help on debugging commands.
 ! Hence, avoid extra redisplays.
 Ddd*tool_shell*saveUnder: true
 
+Ddd*tool_shell.contextHelpString:		\
+@rm This is the @sl command tool.@rm\n\
+\n\
+By clicking on one of the buttons,\n\
+the corresponding command is sent to the inferior debugger.\n\
+The context sensitive help for the buttons\n\
+gives a short command description.\n
+
+Ddd*tool_buttons.contextHelpString:\
+@rm This is the @sl command tool @rm.\n\
+\n\
+By clicking on one of the buttons,\n\
+the corresponding command is sent to the inferior debugger.\n\
+The context sensitive help for the buttons\n\
+gives a short command description.\n
+
 !-----------------------------------------------------------------------------
 ! Debugger Buttons
 !-----------------------------------------------------------------------------
@@ -2099,14 +2116,6 @@ gives a short command description.\n
 Ddd*command_buttons.orientation:	XmHORIZONTAL
 Ddd*command_buttons.contextHelpString:\
 @rm This is a @sl command area @rm.\n\
-\n\
-By clicking on one of the buttons,\n\
-the corresponding command is sent to the inferior debugger.\n\
-The context sensitive help for the buttons\n\
-gives a short command description.\n
-
-Ddd*tool_buttons.contextHelpString:\
-@rm This is the @sl command tool @rm.\n\
 \n\
 By clicking on one of the buttons,\n\
 the corresponding command is sent to the inferior debugger.\n\
@@ -2295,6 +2304,7 @@ Recognized units include:\n\
 ! File Selection Dialog
 !-----------------------------------------------------------------------------
 
+Ddd*exec_files_popup.title:   	 	   @DDD@: Open Program
 Ddd*exec_files_popup*okLabelString:        Open
 Ddd*exec_files_popup*selectionLabelString: Program
 Ddd*exec_files_popup*contextHelpString:    \
@@ -2310,6 +2320,7 @@ No argument means to have no executable file and no symbols.\n\
 Click on @bf Open @rm to open the selected file.
 
 
+Ddd*core_files_popup.title:   	 	   @DDD@: Open Core
 Ddd*core_files_popup*okLabelString:        Open
 Ddd*core_files_popup*selectionLabelString: Core Dump
 Ddd*core_files_popup*contextHelpString:    \
@@ -2320,6 +2331,7 @@ No argument means to have no core file.\n\
 Click on @bf Open @rm to open the selected core dump.
 
 
+Ddd*source_files_popup.title:   	   @DDD@: Open Source
 Ddd*source_files_popup*okLabelString:      Open
 Ddd*source_files_popup*selectionLabelString: Source File
 Ddd*source_files_popup*contextHelpString:    \
@@ -2611,7 +2623,7 @@ Ddd*edit_displays_dialog*buttons*delete.contextHelpString:  \
 @rm Delete the selected data display(s).
 
 
-Ddd*run_dialog.title: @DDD@: Run Program
+Ddd*run_dialog_popup.title: @DDD@: Run Program
 Ddd*run_dialog.listLabelString:	 	Arguments
 Ddd*run_dialog.selectionLabelString:	Run with Arguments
 
