@@ -468,11 +468,12 @@ static void setup_x_fonts(const AppData& ad, XrmDatabase& db)
 //-----------------------------------------------------------------------------
 
 static void replace_vsl_font(string& defs, const string& func, 
-			     AppData& ad, const string& override = "")
+			     AppData& ad, const string& override = "",
+			     DDDFont font = DataDDDFont)
 {
-    string font = quote(make_font(ad, DataDDDFont, override));
+    string fontname = quote(make_font(ad, font, override));
     defs += "#pragma replace " + func + "\n" + 
-	func + "(box) = font(box, " + font + ");\n";
+	func + "(box) = font(box, " + fontname + ");\n";
 }
 
 static void setup_vsl_fonts(AppData& ad)
@@ -508,6 +509,22 @@ static void setup_vsl_fonts(AppData& ad)
 		     override(Weight, "bold", 
 			      override(Slant, "*", 
 				       override(PointSize, small_size_s))));
+
+    replace_vsl_font(defs, "tiny_rm", ad, 
+		     override(PointSize, small_size_s), VariableWidthDDDFont);
+    replace_vsl_font(defs, "tiny_bf", ad, 
+		     override(Weight, "bold", 
+			      override(PointSize, small_size_s)), 
+		     VariableWidthDDDFont);
+    replace_vsl_font(defs, "tiny_it", ad, 
+		     override(Slant, "*", 
+			      override(PointSize, small_size_s)),
+		     VariableWidthDDDFont);
+    replace_vsl_font(defs, "tiny_bf", ad, 
+		     override(Weight, "bold", 
+			      override(Slant, "*", 
+				       override(PointSize, small_size_s))),
+		     VariableWidthDDDFont);
 
     if (ad.show_fonts)
 	cout << defs;

@@ -38,13 +38,22 @@ include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))changequote(,)DDD_VSL_WARNI
 stdfontfamily() = family_typewriter();
 
 // Small fonts.
-// Note: small_rm, small_bf, small_it, small_bi will be overridden by DDD.
+// Note: ALL THESE DEFINITIONS WILL BE OVERRIDDEN BY DDD.
 // Use `ddd --fonts' to see the actual definitions.
 small_size()  = (0, 100);
 small_rm(box) = rm(box, stdfontfamily(), small_size());
 small_bf(box) = bf(box, stdfontfamily(), small_size());
 small_it(box) = it(box, stdfontfamily(), small_size());
 small_bi(box) = bi(box, stdfontfamily(), small_size());
+
+// Tiny fonts.
+// Note: ALL THESE DEFINITIONS WILL BE OVERRIDDEN BY DDD.
+// Use `ddd --fonts' to see the actual definitions.
+tiny_size()  = (0, 100);
+tiny_rm(box) = rm(box, family_helvetica(), tiny_size());
+tiny_bf(box) = bf(box, family_helvetica(), tiny_size());
+tiny_it(box) = it(box, family_helvetica(), tiny_size());
+tiny_bi(box) = bi(box, family_helvetica(), tiny_size());
 
 // Colors
 display_color(box)   = color(box, "FOREGROUND_COLOR", "DISPLAY_COLOR");
@@ -96,7 +105,7 @@ title (name) ->
 
 // Edge annotations.
 annotation (name) ->
-  small_rm(name);
+  tiny_rm(name);
 
 // The "disabled" string
 disabled () -> 
