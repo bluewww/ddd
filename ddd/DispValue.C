@@ -35,7 +35,6 @@ char DispValue_rcsid[] =
 #endif
 
 #define LOG_CREATE_VALUES 0
-#define LOG_UPDATE_VALUES 0
 
 //-----------------------------------------------------------------------------
 // A `DispValue' maintains type and value of a displayed expression
@@ -1112,337 +1111,106 @@ int DispValue::heightExpanded() const
 //-----------------------------------------------------------------------------
 
 // Update values from VALUE.  Set WAS_CHANGED iff value changed; Set
-// WAS_INITIALIZED iff type changed.  If GIVEN_TYPE is given, use
-// GIVEN_TYPE as type instead of inferring it.
-void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
-		       DispValueType given_type)
+// WAS_INITIALIZED iff type changed.  If TYPE is given, use TYPE as
+// type instead of inferring it.  Note: THIS can no more be referenced
+// after calling this function; use the returned value instead.
+DispValue *DispValue::update(string& value, 
+			     bool& was_changed, bool& was_initialized,
+			     DispValueType given_type)
+{
+    DispValue *source = new DispValue(0, depth(), value, 
+				      full_name(), name(), given_type);
+    return update(source, was_changed, was_initialized);
+}
+
+
+// Update values from SOURCE.  Set WAS_CHANGED iff value changed; Set
+// WAS_INITIALIZED iff type changed.  Note: Neither THIS nor SOURCE
+// can be referenced after calling this function; use the returned
+// value instead.
+DispValue *DispValue::update(DispValue *source, 
+			     bool& was_changed, bool& was_initialized)
 {
     if (changed)
     {
-	was_changed = true;	// Changed from `changed' to `unchanged'
-	changed     = false;
+	// Clear `changed' flag
+	changed = false;
+	was_changed = true;
     }
 
-    string init_value = value;
-
-#if LOG_UPDATE_VALUES
-    clog << "Updating " << mytype 
-	 << " " << full_name() << " with " << quote(value) << "\n";
-#endif
-
-    DispValueType new_type = given_type;
-    if (mytype == Sequence)
-	new_type = Sequence;
-    if (new_type == UnknownType && 
-	(parent() == 0 || parent()->type() == List) && print_name == "")
-	new_type = Text;
-    if (new_type == UnknownType && parent() == 0 && 
-	is_user_command(print_name))
-	new_type = List;
-    if (new_type == UnknownType)
-	new_type = determine_type(value);
-
-    bool ignore_repeats = (myparent != 0 && myparent->type() == Array);
-
-    if (mytype != new_type)
+    if (source->type() == type())
     {
-	// Type changed -- re-initialize.  The most common cause for
-	// this effect is an incomplete display output - due to
-	// illegal references, for example.
-#if LOG_UPDATE_VALUES
-	clog << "Type changed from " << mytype << " to " << new_type << "\n";
-#endif
-	value = init_value;
-	clear();
-	init(value);
-	was_initialized = was_changed = true;
-	return;
-    }
-
-    switch (mytype) {
-    case Simple:
-    {
-	string new_value = 
-	    read_simple_value(value, depth(), ignore_repeats);
-	if (simple->value != new_value) {
-	    simple->value = new_value;
-	    changed = was_changed = true;
-	}
-	break;
-    }
-
-    case Text:
-    {
-	if (simple->value != value) {
-	    simple->value = value;
-	    changed = was_changed = true;
-	}
-	break;
-    }
-
-    case Pointer:
-    {
-	string new_value = read_pointer_value (value, ignore_repeats);
-	if (pointer->value != new_value) {
-	    pointer->value = new_value;
-	    changed = was_changed = true;
-	}
-	break;
-    }
-
-    case Array:
-    {
-	read_array_begin (value, myaddr);
-
-	string vtable_entries = read_vtable_entries(value);
-	int member_index = 0;
-	bool size_changed = false;
-	if (vtable_entries != "")
+	switch (type())
 	{
-	    array->members[member_index++]->update(vtable_entries, 
-						     was_changed, 
-						     was_initialized);
-	    if (was_initialized)
-		break;
-	    if (background(value.length()))
-		break;
-	}
-
-	if (!was_initialized)
-	{
-	    DispValueType member_type = UnknownType;
-	    bool more_values = true;
-	    while (more_values && member_index < array->member_count)
+	case Simple:
+	case Text:
+	    if (simple->value != source->simple->value)
 	    {
-		string repeated_value = value;
-		DispValue *member = array->members[member_index++];
-		member->update(value, was_changed, was_initialized, 
-			       member_type);
+		simple->value = source->simple->value;
+		changed = was_changed = true;
+	    }
+	    delete source;
+	    return this;
 
-		if (was_initialized)
-		    break;
-		if (background(value.length()))
-		    break;
-
-		member_type = member->type();
-
-		int repeats = read_repeats(value);
-
-		if (expand_repeated_values)
+	case Pointer:
+	    if (pointer->value != source->pointer->value)
+	    {
+		pointer->value = source->pointer->value;
+		changed = was_changed = true;
+	    }
+	    delete source;
+	    return this;
+		
+	case Array:
+	    if (array->member_count == source->array->member_count &&
+		array->have_index_base == source->array->have_index_base &&
+		(!array->have_index_base || 
+		 array->index_base == source->array->index_base))
+	    {
+		for (int i = 0; i < array->member_count; i++)
 		{
-		    // Update each repeated value
-		    while (--repeats > 0)
-		    {
-			string val = repeated_value;
-			DispValue *member = array->members[member_index++];
-
-			if (member->repeats() > 1)
-			{
-			    size_changed = true;
-			    break;
-			}
-
-			member->update(val, was_changed, 
-				       was_initialized, member_type);
-			if (was_initialized)
-			    break;
-			if (background(value.length()))
-			    break;
-		    }
+		    array->members[i] = 
+			array->members[i]->update(source->array->members[i],
+						  was_changed,
+						  was_initialized);
 		}
-		else
+		source->array->member_count = 0;
+		delete source;
+		return this;
+	    }
+	    break;
+
+	case List:
+	case Struct:
+	case Sequence:
+	case Reference:
+	    if (str->member_count == source->str->member_count)
+	    {
+		for (int i = 0; i < str->member_count; i++)
 		{
-		    // Check whether the repeat count has changed
-		    if (repeats != member->repeats())
-		    {
-			size_changed = true;
-			break;	// No way to update this
-		    }
+		    str->members[i] = 
+			str->members[i]->update(source->str->members[i],
+						was_changed,
+						was_initialized);
 		}
-
-		more_values = read_array_next (value);
+		source->str->member_count = 0;
+		delete source;
+		return this;
 	    }
-	}
+	    break;
 
-	if (was_initialized || size_changed || 
-	    member_index != array->member_count)
-	{
-#if LOG_UPDATE_VALUES
-	    clog << mytype << " changed";
-	    if (member_index != array->member_count)
-	    {
-		clog << " (old size " << array->member_count 
-		     << "!= new size " << member_index << ")";
-	    }
-	    clog << "\n";
-#endif
-	    // Array size changed -- re-initialize.  This may happen
-	    // if the user sets a length on the number of array
-	    // elements to be displayed.
-	    value = init_value;
-	    clear();
-	    init(value);
-	    was_initialized = was_changed = true;
-	    return;
+	case UnknownType:
+	    assert(0);
+	    abort();
 	}
-	read_array_end (value);
-	break;
     }
 
-    case Sequence:
-    {
-	int i;
-	for (i = 0; i < str->member_count; i++)
-	{
-	    str->members[i]->update(value, was_changed, 
-					    was_initialized);
-	    if (was_initialized)
-		break;
-	    if (background(value.length()))
-		break;
-	}
+    // Type or structure have changed -- use SOURCE instead of original
+    source->myparent = myparent;
+    delete this;
 
-	break;
-    }
-
-    case List:
-    case Struct:
-    {
-	if (mytype == List 
-	    && str->member_count == 1
-	    && str->members[0]->type() == Text
-	    && str->members[0]->value() != value)
-	{
-	    // Re-initialize single text.
-	    init(value);
-	    was_initialized = was_changed = true;
-	    return;
-	}
-
-	if (mytype == List)
-	    munch_dump_line (value);
-
-	bool found_struct_begin = read_struct_begin (value, myaddr);
-	int i;
-	bool more_values = true;
-	for (i = 0; more_values && i < str->member_count; i++)
-	{
-	    string member_name = read_member_name (value);
-
-	    if (member_name == "")
-	    {
-		// Some struct stuff that is not a member
-		if (str->members[i]->full_name() == myfull_name)
-		{
-		    str->members[i]->update(value, was_changed, 
-					    was_initialized);
-		    if (was_initialized)
-			break;
-		    if (background(value.length()))
-			break;
-		    more_values = 
-			found_struct_begin && read_struct_next(value);
-		}
-		else
-		{
-		    // Ignore previously empty value
-		}
-	    }
-	    else if (is_BaseClass_name (member_name))
-	    {
-		// Base class member
-		if (str->members[i]->print_name != member_name)
-		{
-		    str->members[i]->print_name = member_name;
-		    was_changed = true;
-		}
-		str->members[i]->update(value, was_changed,
-					was_initialized);
-		if (was_initialized)
-		    break;
-
-		read_struct_next(value);
-		read_members_prefix(value);
-
-		if (background(value.length()))
-		    break;
-	    }
-	    else
-	    {
-		// Ordinary member or anonymous union
-		if (member_name != str->members[i]->name())
-		    break;
-
-		str->members[i]->update(value,
-					was_changed,
-					was_initialized);
-		if (was_initialized)
-		    break;
-		if (background(value.length()))
-		    break;
-		more_values = found_struct_begin && read_struct_next(value);
-	    }
-	}
-
-	if (was_initialized || i != str->member_count || more_values)
-	{
-#if LOG_UPDATE_VALUES
-	    clog << mytype << " changed";
-	    if (i != str->member_count)
-	    {
-		clog << " (old size " << str->member_count
-		     << "!= new size " << i << ")";
-	    }
-	    if (more_values)
-	    {
-		clog << " (more values)";
-	    }
-	    clog << "\n";
-#endif
-	    // Member count or member name changed -- re-initialize.
-	    // Really weird stuff.  Can this ever happen?
-	    value = init_value;
-	    clear();
-	    init(value);
-	    was_initialized = was_changed = true;
-	    return;
-	}
-
-	if (found_struct_begin)
-	    read_struct_end(value);
-    }
-    break;
-
-    case Reference:
-    {
-	string ref = value.before(':');
-	value = value.after(':');
-
-	str->members[0]->update(ref, was_changed, was_initialized);
-	if (!was_initialized)
-	    str->members[1]->update(value, 
-				      was_changed, was_initialized);
-	if (was_initialized)
-	{
-	    value = init_value;
-	    clear();
-	    init(value);
-	    was_initialized = was_changed = true;
-	    return;
-	}
-	break;
-    }
-
-    case UnknownType:
-	assert(0);
-	abort();
-    }
-
-#if LOG_UPDATE_VALUES
-    clog << "Update done\n";
-#endif
-    background(value.length());
-    return;
+    source->changed = was_changed = was_initialized = true;
+    return source;
 }
 
 

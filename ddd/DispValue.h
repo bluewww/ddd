@@ -172,9 +172,18 @@ public:
 
     // Update values from VALUE.  Set WAS_CHANGED iff value changed;
     // Set WAS_INITIALIZED iff type changed.  If TYPE is given, use
-    // TYPE as type instead of inferring it.
-    void update (string& value, bool& changed, bool& inited,
-		 DispValueType type = UnknownType);
+    // TYPE as type instead of inferring it.  Note: THIS can no more
+    // be referenced after calling this function; use the returned
+    // value instead.
+    DispValue *update(string& value, bool& was_changed, bool& was_initialized,
+		      DispValueType type = UnknownType);
+
+    // Update values from SOURCE.  Set WAS_CHANGED iff value changed;
+    // Set WAS_INITIALIZED iff type changed.  Note: Neither THIS nor
+    // SOURCE can be referenced after calling this function; use the
+    // returned value instead.
+    DispValue *update(DispValue *source, 
+		      bool& was_changed, bool& was_initialized);
 
     // Background processing.  PROCESSED is the number of characters
     // processed so far.  If this returns true, abort operation.

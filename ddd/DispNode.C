@@ -38,9 +38,12 @@ char DispNode_rcsid[] =
 // A DispNode keeps all information about a single data display
 //-----------------------------------------------------------------------------
 
-#include "cook.h"
 #include "DispNode.h"
+
+#include "cook.h"
 #include "CompositeB.h"
+#include "DispValue.h"
+#include "DispBox.h"
 
 // Data
 HandlerList DispNode::handlers(DispNode_NTypes);
@@ -142,13 +145,14 @@ bool DispNode::update(string& value)
     if (disp_value == 0)
     { 
 	// We have not read a value yet
-	disp_value = new DispValue (0, 0, value, myname, myname);
+	disp_value = new DispValue(0, 0, value, myname, myname);
 	set_addr(disp_value->addr());
 	changed = true;
     }
     else
-    { 
-	disp_value->update(value, changed, inited);
+    {
+	// Update existing value
+	disp_value = disp_value->update(value, changed, inited);
 	if (addr() != disp_value->addr())
 	{
 	    set_addr(disp_value->addr());
