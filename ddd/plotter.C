@@ -238,6 +238,9 @@ static void send_and_replot(PlotWindowInfo *plot, string cmd)
     else
 	cmd += "replot\n";
 
+    if (plot->area != 0)
+	plot->area->plot_pending();
+
     send(plot, cmd);
 }
 

@@ -63,6 +63,8 @@ class PlotArea {
     int type;			// Current line type
     int pointsize;		// Point size
 
+    int pending_plots;		// Number of plots pending
+
     ChunkQueue last_commands;	// Command buffer
     
     // Plotting commands
@@ -90,6 +92,9 @@ public:
     // Plot
     void plot(const char *commands, int length, bool clear = true);
     void replot(bool clear = false);
+
+    // Set if plot is pending
+    void plot_pending() { pending_plots++; }
 
     Widget widget() const { return area; }
 };
