@@ -167,6 +167,7 @@ FC = g77
 FFLAGS = -g
 
 
+
 ## The C preprocessor.
 
 # What we use for preprocessing.  (gcc -E -traditional-cpp)
@@ -765,8 +766,9 @@ OBJECTS = $(LIB_OBJECTS) $(DDD_OBJECTS)
 PROGS = $(ddd)
 
 ## Extra demonstration files.
-DEMOS = userinfo stringify huffencode huffdecode cxxtest ctest test-file \
-	test-graph vsl ttytest bug ptest m2test ftest tString mmtest gcore
+DEMOS = userinfo stringify huffencode huffdecode \
+	cxxtest ctest ftest jtest ptest m2test \
+	test-file test-graph vsl ttytest bug tString mmtest gcore
 
 ## Where to find texinfo files and so
 MAKEINFO_FLAGS = \
@@ -1196,6 +1198,10 @@ m2test: m2test.mod
 ftest:	ftest.o
 	$(LINK.f) -o $@ ftest.o
 
+.PHONY: jtest
+jtest: 	
+	cd $(srcdir)/jtest; $(MAKE) jtest
+
 # We don't want no optimizing, but debugging info in our test files
 bug.o:	$(srcdir)/bug.C
 	$(CC) -g -c -o $@ $(srcdir)/bug.C
@@ -1206,12 +1212,12 @@ cxxtest.o: $(srcdir)/cxxtest.C
 ctest.o: $(srcdir)/ctest.c
 	$(CC) -g -c -o $@ $(srcdir)/ctest.c
 
-ftest.o: $(srcdir)/ftest.f
-	$(COMPILE.f) -g -c -o $@ $(srcdir)/ftest.f
-
 huffdecode.o: $(srcdir)/huffdecode.C ddd.man.huff.C
 	$(COMPILE.cc) -DMAIN -DHUFFTEXT='"$(srcdir)/ddd.man.huff.C"' \
 	$(INCLUDE) -o $@ $(srcdir)/huffdecode.C
+
+ftest.o: $(srcdir)/ftest.f
+	$(COMPILE.f) -c -o $@ $(srcdir)/ftest.f
 
 
 ## For demonstration and debugging purposes
