@@ -2901,6 +2901,11 @@ Ddd*maintenanceMenu.debugCoreDump.mnemonic:	U
 Ddd*maintenanceMenu.debugCoreDump.documentationString:	\
 @rm Invoke debugger on DDD when it crashes
 
+Ddd*maintenanceMenu.tictactoe.labelString:	Tic Tac Toe
+Ddd*maintenanceMenu.tictactoe.mnemonic:		T
+Ddd*maintenanceMenu.tictactoe.documentationString:	\
+@rm Play Tic Tac Toe against DDD
+
 
 ! Help menu
 Ddd*menubar.help.labelString:		Help
@@ -6244,16 +6249,16 @@ Click on LBL(Change Dir) to change the current directory.
 
 
 !-----------------------------------------------------------------------------
-! Debugger State
+! Tic Tac Toe
 !-----------------------------------------------------------------------------
 
-Ddd*gdb_status_dialog_popup.title: DDD: Debugger State
-Ddd*gdb_status_dialog*okLabelString: Close
-Ddd*gdb_status_dialog*cancelLabelString: Update
-
-Ddd*gdb_status_dialog*helpString: \
-@rm This dialog shows the @GDB@ state and capabilities.\n\
-Click on LBL(Update) to update its contents.
+Ddd*tictactoe_popup.title: Tic Tac Toe
+Ddd*tictactoe.okLabelString: New Game
+Ddd*tictactoe*field.foreground: grey60
+Ddd*tictactoe*helpString: \
+WIDGET(Tic Tac Toe)\n\
+\n\
+Try to get three stop signs in a row.
 
 
 !-----------------------------------------------------------------------------

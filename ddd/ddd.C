@@ -257,6 +257,7 @@ char ddd_rcsid[] =
 #include "status.h"
 #include "strclass.h"
 #include "string-fun.h"
+#include "tictactoe.h"
 #include "tips.h"
 #include "toolbar.h"
 #include "ungrab.h"
@@ -1451,6 +1452,8 @@ static MMDesc maintenance_menu[] =
       &dump_core_w, 0, 0 },
     { "debugCoreDump", MMToggle, { dddToggleDebugCoreDumpCB, 0 }, 0,
       &debug_core_dump_w, 0, 0 },
+    MMSep,
+    { "tictactoe", MMPush, { TicTacToeCB, 0 }, 0, 0, 0, 0 },
     MMEnd
 };
 

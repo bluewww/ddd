@@ -844,6 +844,7 @@ DDD_OBJECTS = \
 	source.o     \
 	status.o     \
 	string-fun.o \
+	tictactoe.o  \
 	tips.o       \
 	toolbar.o    \
 	ungrab.o     \
