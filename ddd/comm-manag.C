@@ -68,16 +68,16 @@ char comm_manager_rcsid[] =
 
 #include <ctype.h>
 
-static void handle_graph_cmd (string cmd, Widget origin,
-			      OQCProc callback, void *data, 
-			      bool verbose, bool check);
-
 //-----------------------------------------------------------------------------
-// Sollen Displays aus der Antwort herausgefiltert werden ?
-//
+// Types
+//-----------------------------------------------------------------------------
+
+// Shall we filter data from the answer?
 enum Filtering {NoFilter, TryFilter, Filter};
 
+// Additional data given to every single command.
 typedef struct CmdData {
+    Widget      origin;		  // Origin of this command
     Filtering   filter_disp;      // NoFilter:  do not filter displays.
 				  // TryFilter: do filter if present.
                                   // Filter:    do filter.
@@ -88,6 +88,7 @@ typedef struct CmdData {
     bool        set_frame_pos;    // True if frame is to be changed manually.
     int         set_frame_arg;    // Argument: 0: reset, +/-N: move N frames
     string      set_frame_func;   // Argument: new function
+    string      graph_cmd;	  // Graph command
 
     string      user_answer;	  // Buffer for the complete answer
     OQCProc     user_callback;	  // User callback
@@ -95,28 +96,68 @@ typedef struct CmdData {
     bool        user_verbose;	  // Flag as given to user_cmdSUC()
     bool        user_check;	  // Flag as given to user_cmdSUC()
 
-    CmdData (Filtering   fd = TryFilter,
-	     DispBuffer* db = 0,
-	     PosBuffer*  pb = 0,
-	     bool     nep= false,
-	     bool     /* nfp */ = false) :
+private:
+    static void clear_origin(Widget w, XtPointer client_data, 
+			     XtPointer call_data);
+
+    void add_destroy_callback()
+    {
+	if (origin != 0)
+	    XtAddCallback(origin, XtNdestroyCallback, clear_origin, 
+			  (XtPointer)this);
+    }
+
+    void remove_destroy_callback()
+    {
+	if (origin != 0)
+	    XtRemoveCallback(origin, XtNdestroyCallback, clear_origin,
+			     (XtPointer)this);
+    }
+
+public:
+    // Constructor
+    CmdData (Widget orig = 0, Filtering fd = TryFilter)
+	: origin(orig),
 	filter_disp(fd),
-	disp_buffer(db),
-	pos_buffer(pb),
-	new_exec_pos(nep),
-	new_frame_pos(nep),
+	disp_buffer(0),
+	pos_buffer(0),
+	new_exec_pos(false),
+	new_frame_pos(false),
 	set_frame_pos(false),
 	set_frame_arg(0),
 	set_frame_func(""),
+	graph_cmd(""),
+
 	user_answer(""),
 	user_callback(0),
 	user_data(0),
 	user_verbose(true),
 	user_check(true)
-    {}
+    {
+	add_destroy_callback();
+    }
+
+    // Destructor
+    ~CmdData ()
+    {
+	remove_destroy_callback();
+	delete disp_buffer;
+	delete pos_buffer;
+    }
 };
 
+void CmdData::clear_origin(Widget w, XtPointer client_data, XtPointer)
+{
+    (void) w;			// Use it
 
+    // The widget is being destroyed.  Remove all references.
+    CmdData *cmd_data = (CmdData *)client_data;
+    assert(w == cmd_data->origin);
+    cmd_data->origin = 0;
+}
+
+
+// Additional data given to extra commands.
 typedef struct PlusCmdData {
     int      n_init;	               // # of initialization commands
 
@@ -210,11 +251,12 @@ typedef struct PlusCmdData {
 static void user_cmdOA  (const string&, void *);
 static void user_cmdOAC (void *);
 static void plusOQAC (string [], void *[], int, void *);
+static bool handle_graph_cmd(string& cmd, const string& where_answer,
+			     Widget origin = 0);
 
 static string print_cookie = "4711";
 
-// ***************************************************************************
-//
+//-----------------------------------------------------------------------------
 
 inline string str(String s)
 {
@@ -224,10 +266,10 @@ inline string str(String s)
 void start_gdb()
 {
     CmdData* cmd_data     = new CmdData;
-    cmd_data->filter_disp = NoFilter;       // keine Display-Ausgaben
-    cmd_data->pos_buffer  = new PosBuffer(); // ggf. Position lesen
+    cmd_data->filter_disp = NoFilter;      // No `display' output
+    cmd_data->pos_buffer  = new PosBuffer; // Find initial pos
 
-    PlusCmdData* plus_cmd_data = new PlusCmdData ();
+    PlusCmdData* plus_cmd_data = new PlusCmdData;
     StringArray cmds;
     VoidArray dummy;
 
@@ -362,16 +404,18 @@ void start_gdb()
 
 
 
-// ***************************************************************************
+//-----------------------------------------------------------------------------
 // Send the GDB command CMD to GDB.
 // No special processing whatsoever.
+//-----------------------------------------------------------------------------
 
 void user_rawSUC (string cmd, Widget origin)
 {
-    CmdData* cmd_data      = new CmdData(NoFilter);
+    CmdData* cmd_data      = new CmdData(origin, NoFilter);
     cmd_data->disp_buffer  = new DispBuffer;
     cmd_data->pos_buffer   = new PosBuffer;
     cmd_data->new_exec_pos = true;
+    cmd_data->origin       = origin;
 
     bool send_ok = gdb->send_user_ctrl_cmd(cmd, cmd_data);
     if (!send_ok)
@@ -380,10 +424,11 @@ void user_rawSUC (string cmd, Widget origin)
 
 
 
-// ***************************************************************************
+//-----------------------------------------------------------------------------
 // Send user command CMD to GDB.  Invoke CALLBACK with DATA upon
 // completion.  If VERBOSE is set, issue command in GDB console.
 // If CHECK is set, add appropriate GDB commands to get GDB state.
+//-----------------------------------------------------------------------------
 
 void user_cmdSUC (string cmd, Widget origin,
 		  OQCProc callback, void *data,
@@ -432,17 +477,8 @@ void user_cmdSUC (string cmd, Widget origin,
 	return;
     }
 
-    // Catch internal commands
-    if (is_graph_cmd (cmd))
-    {
-	handle_graph_cmd(cmd, origin, callback, data, verbose, check);
-	return;
-    }
-
-    // Ordinary GDB command
-
     // Setup extra command information
-    CmdData* cmd_data       = new CmdData;
+    CmdData* cmd_data       = new CmdData(origin);
     cmd_data->disp_buffer   = new DispBuffer;
     cmd_data->pos_buffer    = new PosBuffer;
     cmd_data->user_callback = callback;
@@ -450,7 +486,7 @@ void user_cmdSUC (string cmd, Widget origin,
     cmd_data->user_verbose  = verbose;
     cmd_data->user_check    = check;
 
-    PlusCmdData* plus_cmd_data     = new PlusCmdData;
+    PlusCmdData* plus_cmd_data = new PlusCmdData;
 
     // Breakpoints may change any time
     plus_cmd_data->refresh_bpoints = true;
@@ -483,9 +519,16 @@ void user_cmdSUC (string cmd, Widget origin,
 	cmd_data->filter_disp = NoFilter;
     }
 
-    if (!check || is_nop_cmd(cmd))
+    if (!check || is_nop_cmd(cmd) || is_graph_cmd(cmd))
     {
 	cmd_data->filter_disp            = NoFilter;
+
+	if (is_nop_cmd(cmd) || is_graph_cmd(cmd))
+	{
+	    delete cmd_data->pos_buffer;
+	    cmd_data->pos_buffer = 0;
+	}
+
 	plus_cmd_data->refresh_bpoints   = false;
 	plus_cmd_data->refresh_addr      = false;
 	plus_cmd_data->refresh_user      = false;
@@ -494,6 +537,11 @@ void user_cmdSUC (string cmd, Widget origin,
 	plus_cmd_data->refresh_registers = false;
 	plus_cmd_data->refresh_threads   = false;
 	plus_cmd_data->refresh_addr      = false;
+
+	if (is_graph_cmd(cmd))
+	{
+	    cmd_data->graph_cmd    = cmd;
+	}
     }
     else if (is_file_cmd(cmd, gdb))
     {
@@ -557,8 +605,8 @@ void user_cmdSUC (string cmd, Widget origin,
     else if (is_frame_cmd(cmd))
     {
 	// Update displays
-	cmd_data->filter_disp           = NoFilter;
-	cmd_data->new_frame_pos         = true;
+	cmd_data->filter_disp            = NoFilter;
+	cmd_data->new_frame_pos          = true;
 
 	plus_cmd_data->refresh_bpoints   = false;
 	plus_cmd_data->refresh_where     = false;
@@ -718,10 +766,7 @@ void user_cmdSUC (string cmd, Widget origin,
     }
 
     if (verbose)
-    {
-	gdb_out(cmd);
-	gdb_out("\n");
-    }
+	gdb_out(cmd + "\n");
 
     StringArray cmds;
     VoidArray dummy;
@@ -876,18 +921,24 @@ void user_cmdSUC (string cmd, Widget origin,
     while (dummy.size() < cmds.size())
 	dummy += (void *)0;
 
+    if (cmd_data->graph_cmd != "")
+    {
+	// Instead of DDD `graph' commands, we send a `where 1'
+	// command to get the current scope.
+	cmd = gdb->where_command(1);
+    }
+
     // Send commands
     bool send_ok;
     if (cmds.size() > 0)
     {
-	send_ok = 
-	    gdb->send_user_cmd_plus(cmds, dummy, cmds.size(),
-				    plusOQAC, (void*)plus_cmd_data,
-				    cmd, (void *)cmd_data);
+	send_ok = gdb->send_user_cmd_plus(cmds, dummy, cmds.size(),
+					  plusOQAC, (void*)plus_cmd_data,
+					  cmd, (void *)cmd_data);
     }
     else
     {
-	send_ok = gdb->send_user_cmd (cmd, (void *)cmd_data);
+	send_ok = gdb->send_user_cmd(cmd, (void *)cmd_data);
 	delete plus_cmd_data;
     }
 
@@ -896,32 +947,34 @@ void user_cmdSUC (string cmd, Widget origin,
 }
 
 
-// ***************************************************************************
-// Filtert und buffert ggf. die Displays aus der Antwort und schreibt uebrige
-// Antwort ins gdb_w. Das data-Argument bestimmt das Filtering.
-//
+//-----------------------------------------------------------------------------
+// Part of the answer has been received
+//-----------------------------------------------------------------------------
+
 void user_cmdOA (const string& answer, void* data) 
 {
     string ans = answer;
-    CmdData* cmd_data = (CmdData *) data;
-    cmd_data->pos_buffer->filter(ans);
+    CmdData *cmd_data = (CmdData *) data;
+    if (cmd_data->pos_buffer)
+	cmd_data->pos_buffer->filter(ans);
 
     if (cmd_data->filter_disp != NoFilter)
     {
-	// Displays abfangen und buffern, Rest ausgeben
+	// Filter displays
 	cmd_data->disp_buffer->filter(ans);
     }
 
     cmd_data->user_answer += ans;
 
-    if (cmd_data->user_verbose)
+    // Output remaining answer
+    if (cmd_data->user_verbose && cmd_data->graph_cmd == "")
 	gdb_out(ans);
 }
 
-// ***************************************************************************
-// Schreibt den prompt ins gdb_w, nachdem ggf. gebufferte Displays abgearbeitet
-// sind und evtl. Restantworten ausgegeben sind (ins gdb_w).
-//
+
+//-----------------------------------------------------------------------------
+// Answer is complete
+//-----------------------------------------------------------------------------
 
 // These two are required for the DBX `file' command.
 // DBX does not issue file names when stopping, so use these instead.
@@ -929,28 +982,33 @@ static string last_pos_found;	// Last position found
 static bool last_new_exec_pos;	// True if last command was new exec position
 static bool last_new_frame_pos;	// True if last command was new frame position
 
-void user_cmdOAC (void* data)
+void user_cmdOAC (void *data)
 {
-    CmdData* cmd_data = (CmdData *) data;
+    CmdData *cmd_data = (CmdData *) data;
     PosBuffer *pos_buffer = cmd_data->pos_buffer;
-    bool check = cmd_data->user_check;
+    bool check   = cmd_data->user_check;
+    bool verbose = cmd_data->user_verbose;
 
-    string answer = pos_buffer->answer_ended();
-    cmd_data->user_answer += answer;
+    string answer = "";
+    if (pos_buffer)
+    {
+	answer = pos_buffer->answer_ended();
+	cmd_data->user_answer += answer;
+    }
 
-    if (pos_buffer->started_found())
+    if (pos_buffer && pos_buffer->started_found())
     {
 	// Program has been restarted - clear position history
 	source_view->clear_history();
     }
 
-    if (pos_buffer->terminated_found())
+    if (pos_buffer && pos_buffer->terminated_found())
     {
 	// Program has been terminated - clear execution position
 	source_view->clear_execution_position();
     }
 
-    if (pos_buffer->recompiled_found())
+    if (pos_buffer && pos_buffer->recompiled_found())
     {
 	// Program has been recompiled - clear code and source cache,
 	// clear execution position, and reload current source.
@@ -960,14 +1018,33 @@ void user_cmdOAC (void* data)
 	source_view->reload();
     }
 
-    if (pos_buffer->auto_cmd_found())
+    if (pos_buffer && pos_buffer->auto_cmd_found())
     {
 	// Program (or GDB) issued command to be executed by DDD
 	gdb_batch(pos_buffer->get_auto_cmd());
     }
 
+    if (cmd_data->graph_cmd != "")
+    {
+	// Process graph command
+	string cmd = cmd_data->graph_cmd;
+	bool ok = handle_graph_cmd(cmd, cmd_data->user_answer, 
+				   cmd_data->origin);
+	if (!ok)
+	{
+	    // Unknown command -- try again with base command
+	    cmd_data->graph_cmd   = "";
+	    cmd_data->user_answer = "";
+	    gdb->send_user_cmd(cmd, (void *)cmd_data);
+	    return;
+	}
+
+	check     = false;
+	verbose   = false;
+    }
+
     // Set execution position
-    if (check && pos_buffer->pos_found())
+    if (check && pos_buffer && pos_buffer->pos_found())
     {
 	string pos  = pos_buffer->get_position();
 	string func = pos_buffer->get_function();
@@ -1011,7 +1088,7 @@ void user_cmdOAC (void* data)
 	    source_view->show_position(pos);
 	}
     }
-    else if (check)
+    else if (check && pos_buffer)
     {
 	// Delete old position
 	if (cmd_data->new_exec_pos || pos_buffer->pc_found())
@@ -1026,7 +1103,7 @@ void user_cmdOAC (void* data)
 	    source_view->set_frame_pos(cmd_data->set_frame_arg);
 
     // Set PC position
-    if (check && pos_buffer->pc_found())
+    if (check && pos_buffer && pos_buffer->pc_found())
     {
 	string pc = pos_buffer->get_pc();
 	if (cmd_data->new_exec_pos || cmd_data->new_frame_pos)
@@ -1043,7 +1120,7 @@ void user_cmdOAC (void* data)
 	cmd_data->user_callback(cmd_data->user_answer, cmd_data->user_data);
     }
 
-    if (cmd_data->user_verbose)
+    if (verbose)
     {
 	// Show answer
 	gdb_out(answer);
@@ -1052,7 +1129,7 @@ void user_cmdOAC (void* data)
     // Process displays
     if (check && cmd_data->filter_disp != NoFilter)
     {
-	if (cmd_data->user_verbose)
+	if (verbose)
 	    gdb_out(cmd_data->disp_buffer->answer_ended());
 
 	if (cmd_data->filter_disp == Filter
@@ -1063,7 +1140,7 @@ void user_cmdOAC (void* data)
 	    string not_my_displays = 
 		data_disp->process_displays(displays, disabling_occurred);
 
-	    if (cmd_data->user_verbose)
+	    if (verbose)
 		gdb_out(not_my_displays);
 	    
 	    cmd_data->disp_buffer->clear();
@@ -1077,14 +1154,46 @@ void user_cmdOAC (void* data)
 	}
     }
 
-    prompt();
+    if (verbose)
+	prompt();
 
-    pos_buffer->clear();
     delete cmd_data;
 }
 
-// ***************************************************************************
+//-----------------------------------------------------------------------------
+// Fetch current scope from GDB (a function name or likewise)
+//-----------------------------------------------------------------------------
+
+static string get_scope(const string& answer)
+{
+    // Just issue a `where' command
+    string ans = answer;
+
+    // The word before the first parenthesis is the current function.
+    int index = ans.index('(');
+    if (index < 0)
+	return "";		// no current scope
+
+    do {
+	index--;
+    } while (index >= 0 && isspace(ans[index]));
+
+    int end_of_function_name = index + 1;
+
+    do {
+	index--;
+    } while (index >= 0 && !isspace(ans[index]));
+
+    int start_of_function_name = index + 1;
+
+    return ans.at(start_of_function_name, 
+		  end_of_function_name - start_of_function_name);
+}
+
+
+//-----------------------------------------------------------------------------
 // Process DDD `graph' commands (graph display, graph refresh).
+//-----------------------------------------------------------------------------
 
 // Fetch display numbers from COMMAND
 void read_numbers(string command, IntArray& numbers)
@@ -1093,14 +1202,13 @@ void read_numbers(string command, IntArray& numbers)
 	numbers += atoi(read_nr_str(command));
 }
 
-void handle_graph_cmd (string cmd, Widget origin, 
-		       OQCProc callback, void *data, 
-		       bool verbose, bool check)
+// Handle graph command in CMD, with WHERE_ANSWER being the GDB reply
+// to a `where 1' command; return true iff recognized
+bool handle_graph_cmd(string& cmd, const string& where_answer, Widget origin)
 {
-    if (verbose)
-	gdb_out(cmd + "\n");
+    cmd = cmd.after("graph ");
+    string scope = get_scope(where_answer);
 
-    cmd = cmd.after ("graph ");
     if (is_display_cmd(cmd))
     {
 	string rcmd = reverse(cmd);
@@ -1152,9 +1260,9 @@ void handle_graph_cmd (string cmd, Widget origin,
 	}
 
 	cmd = reverse(rcmd);
-
 	string display_expression = get_display_expression(cmd);
-	data_disp->new_displaySQ(display_expression, pos, depends_on, origin);
+	data_disp->new_displaySQ(display_expression, scope,
+				 pos, depends_on, origin);
     }
     else if (is_refresh_cmd(cmd))
     {
@@ -1180,16 +1288,17 @@ void handle_graph_cmd (string cmd, Widget origin,
     }
     else
     {
-	user_cmdSUC(cmd, origin, callback, data, verbose, check);
+	// Unknown command
+	return false;
     }
 
-    // Make sure the command queue is processed further
-    processCommandQueue();
+    return true;
 }
 
 
-// ***************************************************************************
+//-----------------------------------------------------------------------------
 // Process output of configuration commands
+//-----------------------------------------------------------------------------
 
 bool is_known_command(const string& answer)
 {
@@ -1322,15 +1431,16 @@ static void process_config_program_language(string& lang)
 }
 
 
-// ***************************************************************************
+//-----------------------------------------------------------------------------
 // Handle GDB answers to DDD questions sent after GDB command
-//
+//-----------------------------------------------------------------------------
+
 void plusOQAC (string answers[],
 	       void*  qu_datas[],
 	       int    count,
 	       void*  data)
 {
-    PlusCmdData* plus_cmd_data = (PlusCmdData*)data;
+    PlusCmdData* plus_cmd_data = (PlusCmdData *)data;
     int qu_count = 0;
     string file;
 
