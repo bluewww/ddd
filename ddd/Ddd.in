@@ -1454,17 +1454,17 @@ the item's functions are explained here.\n\
 Click on @bf Close @rm to close the help window.
 
 ! DDD manual.
-Ddd*manual_help*index.selectionPolicy:	XmSINGLE_SELECT
-Ddd*manual_help*index.visibleItemCount:	20
-Ddd*manual_help*key.columns:		22
-Ddd*manual_help*find.labelString:	Find@small>>
-Ddd*manual_help*find.tipString:		Find next occurrence in manual
-Ddd*manual_help*key.borderWidth:	0
-Ddd*manual_help*key.topOffset:		8
-Ddd*manual_help*find.bottomOffset:	3
-Ddd*manual_help*find.rightOffset:	4
-Ddd*manual_help*find.leftOffset:	2
+Ddd*manual_help*form.borderWidth:	0
 
+Ddd*manual_help*title.labelString:	@DDD@ Manual
+Ddd*manual_help*title.alignment:	XmALIGNMENT_BEGINNING
+
+Ddd*manual_help*area.borderWidth:	0
+Ddd*manual_help*area.marginWidth:	0
+Ddd*manual_help*area.marginHeight:	0
+
+Ddd*manual_help*index.selectionPolicy:	XmSINGLE_SELECT
+Ddd*manual_help*index.visibleItemCount:	5
 
 Ddd*manual_help*text.columns:		72
 Ddd*manual_help*text.rows:		25
@@ -1472,15 +1472,39 @@ Ddd*manual_help*text.wordWrap:		true
 Ddd*manual_help*text.scrollHorizontal:	false
 Ddd*manual_help*scrollBarDisplayPolicy: XmAS_NEEDED
 
+Ddd*manual_help*search.orientation:	XmHORIZONTAL
+Ddd*manual_help*search.borderWidth:	0
+Ddd*manual_help*search.spacing:		0
+Ddd*manual_help*search.packing:		XmPACK_TIGHT
+Ddd*manual_help*search.entryAlignment:	XmALIGNMENT_CENTER
+Ddd*manual_help*search*alignment:	XmALIGNMENT_CENTER
+
+Ddd*manual_help*label.labelString:	():
+Ddd*manual_help*label.borderWidth:	0
+Ddd*manual_help*key.columns:		60
+Ddd*manual_help*findBackward.labelString: Find@small<< @bf()
+Ddd*manual_help*findBackward.tipString:	  Find previous @bf()
+Ddd*manual_help*findForward.labelString:  Find@small>> @bf()
+Ddd*manual_help*findForward.tipString:	  Find next @bf()
+
 Ddd*manual_help*helpString: \
 @rm This is the @sl @DDD@ Manual.@rm\n\
 \n\
-To view a specific section, select its title from the index on the left.\n\
+To view a specific section, select its title from the index at the top.\n\
 \n\
-To find a string in the manual, enter it in the text field on the left\n\
-and press @key RETURN @rm or click on @bf Find@small>> @rm.
+To find a string in the manual, enter it in the @bf() @rm argument field \
+and press @key RETURN @rm.\n\
+Click on @bf Find@small>> @bf() @rm to search the next occurrence of \
+@bf ()@rm.\n\
+Click on @bf Find@small<< @bf() @rm to search the previous occurrence of \
+@bf ()@rm.
 
 ! DDD license.
+Ddd*text_help*form.borderWidth:	0
+
+Ddd*text_help*title.labelString:      @DDD@ License
+Ddd*text_help*title.alignment:	      XmALIGNMENT_BEGINNING
+
 Ddd*text_help*text.columns:	      80
 Ddd*text_help*text.rows:	      25
 Ddd*text_help*text.wordWrap:	      true

@@ -52,6 +52,7 @@ char HelpCB_rcsid[] =
 #include <Xm/Form.h>
 #include <Xm/TextF.h>
 #include <Xm/PushB.h>
+#include <Xm/PanedW.h>
 
 #include <X11/cursorfont.h>
 #include <X11/StringDefs.h>
@@ -444,9 +445,8 @@ struct FindInfo {
     Widget text;		// The text to be searched
 };
 
-// Find the next occurrence of the string contained in the widget 
-// given in CLIENT_DATA
-static void FindCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
+		   bool forward)
 {
     Delay delay;
 
@@ -466,11 +466,21 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data)
     if (key == downcase(key))
 	text.downcase();
 
-    XmTextPosition start = XmTextGetInsertionPosition(fi->text);
-    XmTextPosition next_occurrence = text.index(key, start);
+    XmTextPosition cursor = XmTextGetInsertionPosition(fi->text);
+    int next_occurrence = -1;
 
-    if (next_occurrence < 0)
-	next_occurrence = text.index(key); // Wrap around
+    if (forward)
+    {
+	next_occurrence = text.index(key, cursor);
+	if (next_occurrence < 0)
+	    next_occurrence = text.index(key); // Wrap around
+    }
+    else
+    {
+	next_occurrence = text.index(key, cursor - text.length() - 1);
+	if (next_occurrence < 0)
+	    next_occurrence = text.index(key, -1); // Wrap around
+    }
 
     if (next_occurrence < 0)
 	post_warning(quote(key) + " not found.", "manual_find_error", w);
@@ -480,6 +490,84 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data)
 			   next_occurrence,
 			   next_occurrence + key.length(),
 			   time(cbs->event));
+	if (!forward)
+	    XmTextSetInsertionPosition(fi->text, next_occurrence);
+    }
+}
+
+
+// Find the next occurrence of the string contained in the widget 
+// given in CLIENT_DATA
+static void FindForwardCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    FindCB(w, client_data, call_data, true);
+}
+
+// Find the previous occurrence of the string contained in the widget 
+// given in CLIENT_DATA
+static void FindBackwardCB(Widget w, XtPointer client_data, 
+			   XtPointer call_data)
+{
+    FindCB(w, client_data, call_data, false);
+}
+
+// Find title pos in TEXT before CURSOR position
+static XmTextPosition find_title(const string& text, XmTextPosition cursor)
+{
+    for (XmTextPosition start = cursor; start >= 0; start--)
+    {
+	if (start == 0 || text[start - 1]== '\n')
+	{
+	    // At beginning of line
+	    for (int i = 0; start + i < int(text.length())
+		     && text[start + i] != '\n' && i < 4; i++)
+	    {
+		if (text[start + i] != ' ')
+		    return start;
+	    }
+	}
+    }
+
+    return 0;
+}
+
+
+// Highlight current section after cursor motion
+static void HighlightSectionCB(Widget w, XtPointer client_data, 
+			       XtPointer call_data)
+{
+    XmTextVerifyCallbackStruct *cbs = (XmTextVerifyCallbackStruct *)call_data;
+
+    XmTextPosition cursor = cbs->newInsert;
+
+    String text_s = XmTextGetString(w);
+    string text(text_s);
+    XtFree(text_s);
+
+    XmTextPosition title_start = find_title(text, cursor);
+    string title = text.from(int(title_start));
+    title = title.before('\n');
+
+    MString item(title, title.contains(' ', 0) ? "rm" : "bf");
+    Widget list = Widget(client_data);
+
+    int pos = XmListItemPos(list, item.xmstring());
+    if (pos > 0)
+    {
+	int top_item      = 0;
+	int visible_items = 0;
+	XtVaGetValues(list,
+		      XmNtopItemPosition, &top_item,
+		      XmNvisibleItemCount, &visible_items,
+		      NULL);
+
+	XmListSelectPos(list, pos, False);
+	if (pos == 1)
+	    XmListSetPos(list, pos);
+	else if (pos - 1 < top_item)
+	    XmListSetPos(list, pos - 1);
+	else if (pos + 1 >= top_item + visible_items)
+	    XmListSetBottomPos(list, pos + 1);
     }
 }
 
@@ -512,42 +600,70 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 	Delay::register_shell(text_dialog);
 
 	arg = 0;
-	Widget form = verify(XmCreateForm(text_dialog, "area", args, arg));
+	Widget form =
+	    verify(XmCreateForm(text_dialog, "form", args, arg));
+
+	arg = 0;
+	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM);     arg++;
+	XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
+	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
+	Widget title = verify(XmCreateLabel(form, "title", args, arg));
+	XtManageChild(title);
+
+	arg = 0;
+ 	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_WIDGET);   arg++;
+ 	XtSetArg(args[arg], XmNtopWidget,        title);             arg++;
+	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
+	XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
+	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
+	Widget area = 
+	    verify(XmCreatePanedWindow(form, "area", args, arg));
+	XtManageChild(area);
+
+	arg = 0;
+	help_index = verify(XmCreateScrolledList(area, "index", args, arg));
+	XtManageChild(help_index);
 	
 	arg = 0;
 	XtSetArg(args[arg], XmNeditable,         False);             arg++;
 	XtSetArg(args[arg], XmNeditMode,         XmMULTI_LINE_EDIT); arg++;
 	XtSetArg(args[arg], XmNvalue,            text);              arg++;
-	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM);     arg++;
-	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
-	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
-	help_man = verify(XmCreateScrolledText(form, "text", args, arg));
+	help_man = verify(XmCreateScrolledText(area, "text", args, arg));
 	XtManageChild(help_man);
 
 	arg = 0;
-	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM);     arg++;
-	XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
-	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
-	XtSetArg(args[arg], XmNrightWidget,      help_man);          arg++;
-	help_index = verify(XmCreateScrolledList(form, "index", args, arg));
-	XtManageChild(help_index);
+	Widget search = verify(XmCreateRowColumn(area, "search", args, arg));
+	XtManageChild(search);
 
 	arg = 0;
-	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
-	XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
-	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_WIDGET);   arg++;
-	XtSetArg(args[arg], XmNtopWidget,        help_index);        arg++;
-	Widget key = verify(XmCreateTextField(form, "key", args, arg));
+	Widget label = verify(XmCreateLabel(search, "label", args, arg));
+	XtManageChild(label);
+
+	arg = 0;
+	Widget key = verify(XmCreateTextField(search, "key", args, arg));
 	XtManageChild(key);
 
 	arg = 0;
-	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
-	XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_WIDGET);   arg++;
-	XtSetArg(args[arg], XmNleftWidget,       key);               arg++;
-	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
-	XtSetArg(args[arg], XmNrightWidget,      help_man);          arg++;
-	Widget find = verify(XmCreatePushButton(form, "find", args, arg));
-	XtManageChild(find);
+	Widget findBackward = 
+	    verify(XmCreatePushButton(search, "findBackward", args, arg));
+	XtManageChild(findBackward);
+
+	arg = 0;
+	Widget findForward = 
+	    verify(XmCreatePushButton(search, "findForward", args, arg));
+	XtManageChild(findForward);
+
+	XtWidgetGeometry size;
+	size.request_mode = CWHeight;
+	XtQueryGeometry(search, NULL, &size);
+	unsigned char unit_type;
+	XtVaGetValues(search, XmNunitType, &unit_type, NULL);
+	int new_height = XmConvertUnits(search, XmVERTICAL, XmPIXELS, 
+					size.height, unit_type);
+	XtVaSetValues(search,
+		      XmNpaneMaximum, new_height,
+		      XmNpaneMinimum, new_height,
+		      NULL);
 
 	XtAddCallback(help_index, XmNsingleSelectionCallback,
 		      HelpIndexCB, XtPointer(help_man));
@@ -560,14 +676,21 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 	XtAddCallback(text_dialog, XmNhelpCallback,
 		      ImmediateHelpCB, XtPointer(help_man));
 
-	XtAddCallback(key, XmNactivateCallback, ActivateCB, XtPointer(find));
+	XtAddCallback(help_man, XmNmotionVerifyCallback,
+		      HighlightSectionCB, XtPointer(help_index));
+
+	XtAddCallback(key, XmNactivateCallback, ActivateCB, 
+		      XtPointer(findForward));
 
 	static FindInfo fi;
 	fi.key  = key;
 	fi.text = help_man;
 
-	XtAddCallback(find, XmNactivateCallback, FindCB, XtPointer(&fi));
-	
+	XtAddCallback(findForward, XmNactivateCallback, 
+		      FindForwardCB, XtPointer(&fi));
+	XtAddCallback(findBackward, XmNactivateCallback, 
+		      FindBackwardCB, XtPointer(&fi));
+
 	XtUnmanageChild(XmSelectionBoxGetChild(text_dialog, 
 					       XmDIALOG_CANCEL_BUTTON));
 	XtUnmanageChild(XmSelectionBoxGetChild(text_dialog, 
@@ -676,8 +799,11 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
     XmStringTable xmtitles = new XmString[titles.size()];
 
     for (i = 0; i < titles.size(); i++)
-	xmtitles[i] = XmStringCreateLtoR(titles[i], 
-					 titles[i][0] == ' ' ? "rm" : "bf");
+    {
+	xmtitles[i] = 
+	    XmStringCreateLtoR(titles[i], 
+			       titles[i].contains(' ', 0) ? "rm" : "bf");
+    }
 
     XtVaSetValues(help_index,
 		  XmNtopItemPosition,   1,
@@ -768,11 +894,27 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 	Delay::register_shell(text_dialog);
 
 	arg = 0;
-	XtSetArg(args[arg], XmNeditable, False); arg++;
-	XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
-	XtSetArg(args[arg], XmNvalue, text); arg++;
+	Widget form =
+	    verify(XmCreateForm(text_dialog, "form", args, arg));
+
+	arg = 0;
+	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM);     arg++;
+	XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
+	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
+	Widget title = verify(XmCreateLabel(form, "title", args, arg));
+	XtManageChild(title);
+
+	arg = 0;
+ 	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_WIDGET);   arg++;
+ 	XtSetArg(args[arg], XmNtopWidget,        title);             arg++;
+	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
+	XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
+	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
+	XtSetArg(args[arg], XmNeditable,         False);             arg++;
+	XtSetArg(args[arg], XmNeditMode,         XmMULTI_LINE_EDIT); arg++;
+	XtSetArg(args[arg], XmNvalue,            text); arg++;
 	help_text = 
-	    verify(XmCreateScrolledText(text_dialog, "text", args, arg));
+	    verify(XmCreateScrolledText(form, "text", args, arg));
 	XtManageChild(help_text);
 
 	XtAddCallback(text_dialog, XmNhelpCallback,
@@ -784,6 +926,8 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 					       XmDIALOG_TEXT));
 	XtUnmanageChild(XmSelectionBoxGetChild(text_dialog,
 					       XmDIALOG_SELECTION_LABEL));
+
+	XtManageChild(form);
     }
 
     // Setup text for existing dialog
