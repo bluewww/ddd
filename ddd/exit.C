@@ -105,12 +105,6 @@ char exit_rcsid[] =
 #include <Xm/MessageB.h>
 #include <Xm/PushB.h>
 
-#if HAVE_EXCEPTIONS
-#define string stdstring
-#include <stdexcept>
-#undef string
-#endif
-
 #if defined(HAVE_RAISE)
 #if !defined(HAVE_RAISE_DECL)
 extern int raise(int sig);
