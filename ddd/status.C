@@ -84,7 +84,7 @@ static int status_locked = 0;
 //-----------------------------------------------------------------------------
 
 void lock_status()       { status_locked++;   }
-void unlock_status()     { status_locked--;   }
+void unlock_status()     { if (status_locked > 0) status_locked--; }
 void reset_status_lock() { status_locked = 0; }
 
 
