@@ -204,7 +204,7 @@ static void gdbEditDoneHP(Agent *edit_agent, void *client_data, void *)
 
 void gdbEditSourceCB  (Widget w, XtPointer, XtPointer)
 {
-    string pos = source_view->line_of_cursor(false);
+    string pos = source_view->line_of_cursor();
     string file = pos.before(':');
     string line = pos.after(':');
 
