@@ -1654,7 +1654,7 @@ static void drawOutlines(Widget w, const BoxPoint& offset)
 	for (GraphEdge *edge = graph->firstVisibleEdge(); edge != 0;
 	    edge = graph->nextVisibleEdge(edge))
 	{
-	    if (edge->from()->selected() || edge->to()->selected())
+	    // if (edge->from()->selected() || edge->to()->selected())
 		edge->draw(w, EVERYWHERE, gc);
 	}
     }
