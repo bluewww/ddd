@@ -207,7 +207,7 @@ static Widget file_dialog(Widget w, const string& name,
     if (remote_gdb())
     {
 	static MString xmpwd;
-	xmpwd = SourceView::pwd();
+	xmpwd = source_view->pwd();
 	XtSetArg(args[arg], XmNdirectory, xmpwd.xmstring()); arg++;
     }
 
@@ -1185,16 +1185,13 @@ static void SelectClassCB(Widget w, XtPointer client_data,
 {
     XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
     int pos = cbs->item_position;
-    if (pos == 1)
-	XmListDeselectAllItems(w); // Title selected
-    else
-	ListSetAndSelectPos(w, pos);
+    ListSetAndSelectPos(w, pos);
 
     string cls = get_class(w, client_data, call_data);
     if (cls == "")
 	set_status("");
     else
-	set_status("Class " + cls);
+	set_status(source_view->full_path(java_class_file(cls)));
 }
 
 static void update_classes(Widget classes)
@@ -1272,7 +1269,15 @@ void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
 			   searchLocalSourceFiles, 0,
 			   openSourceDone);
     manage_and_raise(dialog);
-    warn_if_no_program(dialog);
+
+    if (gdb->type() != JDB)
+    {
+	warn_if_no_program(dialog);
+    }
+    else
+    {
+	// JDB works well without executable
+    }
 }
 
 void gdbOpenProcessCB(Widget w, XtPointer, XtPointer)
