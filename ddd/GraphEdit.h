@@ -33,8 +33,12 @@
 #pragma interface
 #endif
 
-#include "Graph.h"
 #include <X11/Intrinsic.h>
+#include "BoxPoint.h"
+
+class Graph;
+class GraphGC;
+class GraphNode;
 
 
 // define any special resource names here that are not in <X11/StringDefs.h>

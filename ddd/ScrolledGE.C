@@ -37,6 +37,7 @@ char ScrolledGraphEdit_rcsid[] =
 #include "ScrolleGEP.h"
 #include "GraphEdit.h"
 #include "verify.h"
+#include "strclass.h"
 
 // We have no special class for scrolling a graph editor, but use the
 // Motif ScrolledWindow class instead.

@@ -39,6 +39,7 @@ char print_rcsid[] =
 #include "DataDisp.h"
 #include "DestroyCB.h"
 #include "GraphEdit.h"
+#include "Graph.h"
 #include "LiterateA.h"
 #include "TimeOut.h"
 #include "Command.h"

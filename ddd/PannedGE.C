@@ -38,6 +38,8 @@ char PannedGraphEdit_rcsid[] =
 #include "PannedGE.h"
 #include "BoxPoint.h"
 #include "verify.h"
+#include "strclass.h"
+#include "Graph.h"
 
 #if HAVE_ATHENA && \
     HAVE_X11_XAW_FORM_H && \
