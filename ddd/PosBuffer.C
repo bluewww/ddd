@@ -511,26 +511,6 @@ void PosBuffer::filter (string& answer)
 	    }
 	    
 #if RUNTIME_REGEX
-	    static regex rxdbxfunc("[a-zA-Z_][^:]*: *[1-9][0-9]*  *.*");
-#endif
-	    if (already_read != PosComplete && answer.matches(rxdbxfunc))
-	    {
-		// DEC DBX issues `up', `down' and `func' output
-		// in the format `FUNCTION: LINE  TEXT'
-		
-		// Note that the function name may contain "::" sequences.
-		string line = answer;
-		while (line.contains("::"))
-		    line = line.after("::");
-
-		line = line.after(":");
-		line = line.through(rxint);
-		already_read = PosComplete;
-		
-		answer = answer.after("\n");
-	    }
-	    
-#if RUNTIME_REGEX
 	    static regex rxdbxfunc2(
 		".*line  *[1-9][0-9]*  *in  *(file  *)?\"[^\"]*\"\n.*");
 #endif
@@ -546,53 +526,66 @@ void PosBuffer::filter (string& answer)
 		
 		file = answer.after('\"');
 		file = file.before('\"');
-		
-		already_read = PosComplete;
-		
-		// answer = answer.after("\n");
+
+		if (line != "")
+		{
+		    already_read = PosComplete;
+		    // answer = answer.after("\n");
+		}
 	    }
 	    
 #if RUNTIME_REGEX
-	    static regex rxdbxpos("[[][^]]*:[1-9][0-9]*[^]]*].*");
+	    static regex rxdbxpos("[[][^]]*:[1-9][0-9]*[^]]*[]].*");
 #endif
-	    if (already_read != PosComplete && answer.contains(rxdbxpos))
+	    int dbxpos_index = -1;
+	    if (already_read != PosComplete && 
+		(dbxpos_index = index(answer, rxdbxpos, "[")) >= 0)
 	    {
 		// DEC DBX issues breakpoint lines in the format
 		// "[new_tree:113 ,0x400858] \ttree->right = NULL;"
 		
-		line = answer.from(rxdbxpos);
+		line = answer.from(dbxpos_index);
 		
 		// Note that the function name may contain "::" sequences.
 		while (line.contains("::"))
 		    line = line.after("::");
 		line = line.after(":");
 		line = line.through(rxint);
-		already_read = PosComplete;
+		if (line != "")
+		{
+		    already_read = PosComplete;
 		
-		if (!answer.contains('[', 0))
-		    answer = answer.after("\n");
+		    if (!answer.contains('[', 0))
+			answer = answer.after("\n");
+		}
 	    }
 
 	    if (already_read != PosComplete && 
 		(answer.contains("stopped in ") || 
 		 answer.contains("stopped at ")))
 	    {
+		int stopped_index = answer.index("stopped");
+		assert(stopped_index >= 0);
+
 		// Stop reached
-		if (answer.contains("in file "))
+		int in_file_index = answer.index("in file ", stopped_index);
+		int bracket_index = answer.index("[", stopped_index);
+
+		if (in_file_index >= 0)
 		{
 		    // File name given
-		    file = answer.after("in file ");
+		    file = answer.from(in_file_index);
+		    file = file.after("in file ");
 		    if (file.contains('\n'))
 			file = file.before('\n');
 		    file = unquote(file);
 		}
-		else if (answer.contains("["))
+		else if (bracket_index >= 0)
 		{
 		    // DEC DBX and SGI DBX output format:
 		    // `[3] Process  1852 (cxxtest) 
 		    // stopped at [::main:266 ,0x1000a028]'
-		    line = answer.after("stopped");
-		    line = line.after("[");
+		    line = answer.after(bracket_index);
 		    func_buffer = line;
 		    while (line.contains("::"))
 			line = line.after("::");
@@ -605,7 +598,8 @@ void PosBuffer::filter (string& answer)
 		else
 		{
 		    // Function name given
-		    string func = answer.after("stopped in ");
+		    string func = answer.after(stopped_index);
+		    func = func.after("stopped");
 		    if (func.contains(" at "))
 			func = func.before(" at ");
 		    func_buffer = func;
@@ -613,14 +607,40 @@ void PosBuffer::filter (string& answer)
 		
 		if (line == "")
 		{
-		    line = answer.after("at line ");
+		    line = answer.after("at line ", stopped_index);
 		    line = line.through(rxint);
-		    if (!answer.contains("at line "))
+		    if ((file != "" || func_buffer != "") &&
+			!answer.contains("at line "))
 			line = "0";
 		}
+
+		if (line != "")
+		{
+		    already_read = PosComplete;
+		    filter_line(answer, atoi(line));
+		}
+	    }
+	    
+#if RUNTIME_REGEX
+	    static regex rxdbxfunc("[a-zA-Z_][^[]*: *[1-9][0-9]*  *.*");
+#endif
+	    if (already_read != PosComplete && answer.matches(rxdbxfunc))
+	    {
+		// DEC DBX issues `up', `down' and `func' output
+		// in the format `FUNCTION: LINE  TEXT'
 		
-		already_read = PosComplete;
-		filter_line(answer, atoi(line));
+		// Note that the function name may contain "::" sequences.
+		string line = answer;
+		while (line.contains("::"))
+		    line = line.after("::");
+
+		line = line.after(":");
+		line = line.through(rxint);
+		if (line != "")
+		{
+		    already_read = PosComplete;
+		    answer = answer.after("\n");
+		}
 	    }
 
 	    if (already_read != PosComplete && 
@@ -646,7 +666,7 @@ void PosBuffer::filter (string& answer)
 		    already_read = PosPart;
 		}
 	    }
-	    
+
 	    if (already_read == PosComplete && line != "")
 	    {
 		if (file != "")
