@@ -463,7 +463,9 @@ string GDBAgent::requires_reply (const string& answer)
 	return " ";		// Keep on scrolling
 
     static regex 
-	RXreturn(".*([(]press RETURN[)]|Hit RETURN to continue)[^\n]*");
+	RXreturn(".*([(]press RETURN[)]"
+		 "|Hit RETURN to continue"
+		 "|Type <return> to continue)[^\n]*");
     if (answer.matches(RXreturn))
 	return "\n";		// Keep on scrolling
 
