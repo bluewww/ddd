@@ -220,6 +220,8 @@ static ostream& operator<<(ostream& os, const Command& c)
     os << quote(c.command) << "<" << c.priority << ">";
     if (!c.start_undo)
 	os << "*";
+    if (!c.prompt)
+	os << "+";
 
     return os;
 }
@@ -345,11 +347,20 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 {
     Command c(given_c);
 
-    if (c.command == '\003' && !gdb->isReadyWithPrompt() &&
-	(continuing || processing_gdb_commands || gdb_prompts_y_or_n()))
+    if (c.command == '\003' && !gdb->isReadyWithPrompt())
     {
-	// Cannot interrupt right now - ignore
-	return;
+	if (continuing || processing_gdb_commands)
+	{
+	    // Cannot interrupt right now - ignore
+	    return;
+	}
+
+	if (gdb_prompts_y_or_n())
+	{
+	    // Interrupt prompt by answering `no'.  This is normally
+	    // the good answer.
+	    c.command = "no\n\003";
+	}
     }
 
     if (processing_gdb_commands && c.priority < COMMAND_PRIORITY_NOW)
@@ -430,6 +441,7 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
     // Run interrupt command
     Command interrupt(c);
     interrupt.command        = '\003';
+    interrupt.check          = true;
     interrupt.callback       = 0;
     interrupt.extra_callback = 0;
     interrupt.priority       = COMMAND_PRIORITY_NOW;
@@ -597,7 +609,7 @@ void gdb_command(const Command& c0)
     bool control_command = 
 	(c.command.length() == 1 && iscntrl(c.command[0]));
 
-    if (!continuing && !gdb_prompts_y_or_n() &&
+    if (!continuing && 
 	(control_command || yesno_command || 
 	 c.priority == COMMAND_PRIORITY_NOW))
     {
