@@ -2,6 +2,7 @@
 // DDD main event loop
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -38,6 +39,7 @@ char mainloop_rcsid[] =
 #include "status.h"
 #include "ddd.h"
 #include "AppData.h"
+#include "SignalB.h"
 
 #include <setjmp.h>
 
@@ -78,6 +80,21 @@ void ddd_main_loop()
 	    app_data.maintenance = true;
 	    update_options();
 	}
+
+	// Unblock the given signal, such that we can handle it again
+	if (sig < 0)
+	    sig = -sig;
+
+#ifdef SIG_SETMASK
+	// POSIX interface
+	sigset_t new_set;
+	sigemptyset(&new_set);
+	sigaddset(&new_set, sig);
+	sigprocmask(SIG_UNBLOCK, &new_set, 0);
+#else
+	// BSD interface
+	sigsetmask(sigblock(0) & ~sigmask(sig));
+#endif
     }
 
     // Set `main_loop_entered' to true as soon 
