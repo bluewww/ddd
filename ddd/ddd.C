@@ -754,7 +754,7 @@ static MMDesc views_menu[] =
 struct EditItems {
     enum EditItem { 
 	Cut, Copy, Paste, ClearAll, Delete, Sep1, 
-	SelectAll, UnselectAll, Sep2,
+	SelectAll, Sep2,
 	Preferences, Settings, Sep3,
 	SaveOptions
     };
@@ -767,11 +767,8 @@ struct EditItems {
     { "paste",       MMPush,  { gdbPasteClipboardCB,  XtPointer(win) }}, \
     { "clearAll",    MMPush,  { gdbClearAllCB,        XtPointer(win) }}, \
     { "delete",      MMPush,  { gdbDeleteSelectionCB, XtPointer(win) }}, \
-    { "separator",   MMSeparator | MMUnmanaged }, \
-    { "selectAll",   MMPush | MMUnmanaged, \
-	                      { gdbSelectAllCB,       XtPointer(win) }}, \
-    { "unselectAll", MMPush | MMUnmanaged, \
-	                      { gdbUnselectAllCB,     XtPointer(win) }}, \
+    MMSep, \
+    { "selectAll",   MMPush,  { gdbSelectAllCB,       XtPointer(win) }}, \
     MMSep, \
     { "preferences", MMPush,  { dddPopupPreferencesCB }}, \
     { "settings",    MMPush,  { WhenReady, dddPopupSettingsCB }}, \
@@ -1217,7 +1214,6 @@ static MMDesc data_menu[] =
     { "rotate",     MMPush,    { graphRotateCB }},
     { "layout",     MMPush,    { graphLayoutCB }},
     MMSep,
-    { "selectAll",  MMPush,    { DataDisp::selectAllCB }},
     { "refresh",    MMPush,    { DataDisp::refreshCB }},
     MMEnd
 };
@@ -5042,6 +5038,13 @@ static void gdbCutSelectionCB(Widget w, XtPointer client_data,
 
     DDDWindow win = ddd_window(client_data);
     Boolean success = False;
+    Widget dest = XmGetDestination(XtDisplay(w));
+
+    // Try destination window
+    if (!success && dest != 0 && XmIsText(dest))
+	success = XmTextCut(dest, tm);
+    if (!success && dest != 0 && XmIsTextField(dest))
+	success = XmTextFieldCut(dest, tm);
 
     // Try debugger console
     if (!success && (win == GDBWindow || win == CommonWindow))
@@ -5066,7 +5069,7 @@ static void gdbCutSelectionCB(Widget w, XtPointer client_data,
 	gdbUnselectAllCB(w, client_data, call_data);
 }
 
-static void gdbCopySelectionCB(Widget, XtPointer client_data, 
+static void gdbCopySelectionCB(Widget w, XtPointer client_data, 
 			       XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
@@ -5074,6 +5077,13 @@ static void gdbCopySelectionCB(Widget, XtPointer client_data,
     
     DDDWindow win = ddd_window(client_data);
     Boolean success = False;
+    Widget dest = XmGetDestination(XtDisplay(w));
+
+    // Try destination window
+    if (!success && dest != 0 && XmIsText(dest))
+	success = XmTextCopy(dest, tm);
+    if (!success && dest != 0 && XmIsTextField(dest))
+	success = XmTextFieldCopy(dest, tm);
 
     // Try debugger console
     if (!success && (win == GDBWindow || win == CommonWindow))
@@ -5096,9 +5106,22 @@ static void gdbCopySelectionCB(Widget, XtPointer client_data,
 	success = XmTextCopy(DataDisp::graph_selection_w, tm);
 }
 
-static void gdbPasteClipboardCB(Widget, XtPointer client_data, XtPointer)
+static void gdbPasteClipboardCB(Widget w, XtPointer client_data, XtPointer)
 {
     DDDWindow win = ddd_window(client_data);
+
+    // Try destination window
+    bool success = false;
+    Widget dest = XmGetDestination(XtDisplay(w));
+    if (dest != 0)
+    {
+	if (!success && XmIsText(dest))
+	    success = XmTextPaste(dest);
+	if (!success && XmIsTextField(dest))
+	    success = XmTextFieldPaste(dest);
+    }
+    if (success)
+	return;
 
     switch (win)
     {
@@ -5156,6 +5179,25 @@ static void gdbSelectAllCB(Widget w, XtPointer client_data,
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     Time tm = time(cbs->event);
 
+    bool success = false;
+    Widget dest = XmGetDestination(XtDisplay(w));
+    if (dest != 0)
+    {
+	if (!success && XmIsText(dest))
+	{
+	    XmTextSetSelection(dest, 0, XmTextGetLastPosition(dest), tm);
+	    success = true;
+	}
+	if (!success && XmIsTextField(dest))
+	{
+	    XmTextFieldSetSelection(dest, 0, 
+				    XmTextFieldGetLastPosition(dest), tm);
+	    success = true;
+	}
+    }
+    if (success)
+	return;
+
     switch (win)
     {
     case SourceWindow:
@@ -5186,7 +5228,14 @@ static void gdbDeleteSelectionCB(Widget w, XtPointer client_data,
 {
     DDDWindow win = ddd_window(client_data);
     Boolean success = False;
-    
+    Widget dest = XmGetDestination(XtDisplay(w));
+
+    // Try destination window
+    if (!success && dest != 0 && XmIsText(dest))
+	success = XmTextRemove(dest);
+    if (!success && dest != 0 && XmIsTextField(dest))
+	success = XmTextFieldRemove(dest);
+
     // Try debugger console
     if (!success && (win == GDBWindow || win == CommonWindow))
 	success = XmTextRemove(gdb_w);
@@ -5309,7 +5358,7 @@ static void setup_cut_copy_paste_bindings(XrmDatabase db)
 // Update menu entries
 //-----------------------------------------------------------------------------
 
-static void gdbUpdateEditCB(Widget, XtPointer client_data, XtPointer)
+static void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer)
 {
     DDDWindow win = ddd_window(client_data);
 
@@ -5340,6 +5389,13 @@ static void gdbUpdateEditCB(Widget, XtPointer client_data, XtPointer)
     // Check if we have something to cut
     XmTextPosition start, end;
     bool can_cut  = false;
+    Widget dest = XmGetDestination(XtDisplay(w));
+
+    // Try destination window
+    if (!can_cut && dest != 0 && XmIsText(dest))
+	can_cut = XmTextGetSelectionPosition(dest, &start, &end);
+    if (!can_cut && dest != 0 && XmIsTextField(dest))
+	can_cut = XmTextFieldGetSelectionPosition(dest, &start, &end);
 
     // Try debugger console
     if (!can_cut && (win == GDBWindow || win == CommonWindow))
@@ -5385,7 +5441,6 @@ static void gdbUpdateEditCB(Widget, XtPointer client_data, XtPointer)
     set_sensitive(menu[EditItems::Copy].widget,        can_copy);
     set_sensitive(menu[EditItems::Paste].widget,       can_paste);
     set_sensitive(menu[EditItems::Delete].widget,      can_cut);
-    set_sensitive(menu[EditItems::UnselectAll].widget, can_copy);
 }
 
 static void gdbUpdateFileCB(Widget, XtPointer client_data, XtPointer)
