@@ -559,7 +559,7 @@ static MMDesc stack_menu[] =
 {
     { "stack",       MMPush, { SourceView::ViewStackFramesCB }, 
       NULL, &stack_w },
-    { "registers",   MMPush,  { SourceView::ViewRegistersCB },
+    { "registers",   MMPush, { SourceView::ViewRegistersCB },
       NULL, &register_w },
     MMSep,
     { "up",         MMPush,  { gdbCommandCB, "up" }},
@@ -1514,11 +1514,23 @@ int main(int argc, char *argv[])
     helpOnVersionPixmapProc = versionlogo;
 
     // Setup extra version info
-    helpOnVersionExtraText = 
-	MString(string(config_info).through(".\n"), "rm") +
-	MString("\n" DDD_NAME " is ", "rm") + 
-	MString("free software", "sl") +
-	MString(" and you are welcome to distribute copies of it\n"
+    helpOnVersionExtraText = MString(string(config_info).through(".\n"), "rm");
+
+    string expires = ddd_expiration_date();
+    if (expires != "")
+    {
+	string expired_msg = "This version ";
+	if (ddd_expired())
+	    expired_msg += "has expired since " + expires;
+	else
+	    expired_msg += "expires " + expires;
+
+	helpOnVersionExtraText += MString(expired_msg + ".\n", "rm");
+    }
+
+    helpOnVersionExtraText += MString("\n" DDD_NAME " is ", "rm")
+	+ MString("free software", "sl")
+	+ MString(" and you are welcome to distribute copies of it\n"
 "under certain conditions; select `" DDD_NAME " License' in the `Help' menu\n"
 "to see the conditions. "
 "There is ", "rm") + MString("absolutely no warranty", "sl")
