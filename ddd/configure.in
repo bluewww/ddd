@@ -482,12 +482,11 @@ AC_CHECK_FUNC(getpgrp)
 AC_CHECK_FUNC(setpgrp)
 AC_FUNC_GETPGRP
 AC_FUNC_SETPGRP
-AC_FUNC_ALLOCA
 dnl
 dnl
 dnl
 AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h limits.h malloc.h netdb.h pwd.h regex.h rx.h)
+AC_CHECK_HEADERS(alloca.h fcntl.h limits.h malloc.h netdb.h pwd.h regex.h rx.h)
 AC_CHECK_HEADERS(stdlib.h string.h strings.h termio.h termios.h unistd.h)
 AC_CHECK_HEADERS(sys/ioctl.h sys/int_types.h sys/param.h sys/resource.h)
 AC_CHECK_HEADERS(sys/stat.h sys/stropts.h sys/vty.h sys/sysmacros.h sys/core.h)
