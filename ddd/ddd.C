@@ -2687,13 +2687,9 @@ void show_manual()
 
 int running_shells()
 {
-    int n = int(command_shell_state != PoppedDown)
+    return int(command_shell_state != PoppedDown)
 	+ int(source_view_shell_state != PoppedDown)
 	+ int(data_disp_shell_state != PoppedDown);
-
-    clog << "ddd: " << n << " shells running.\n";
-
-    return n;
 }
 
 
@@ -4672,9 +4668,10 @@ void gdbEditSourceCB  (Widget, XtPointer, XtPointer)
 
     StatusDelay delay("Invoking editor for " + quote(file));
 
-    string cmd = sh_command(app_data.edit_command);
+    string cmd = app_data.edit_command;
     cmd.gsub("@FILE@", file);
     cmd.gsub("@LINE@", line);
+    cmd = sh_command(cmd);
 
     // Invoke an editor in the background
     LiterateAgent *edit_agent = 
