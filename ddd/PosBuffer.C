@@ -2,6 +2,7 @@
 // Filter position information from GDB output.
 
 // Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -475,6 +476,17 @@ void PosBuffer::filter_gdb(string& answer)
 	    int nl_index = 
 		answer.index('\n', at_index - answer.length() - 1) + 1;
 	    fetch_function(answer, nl_index, func_buffer);
+
+	    // Try to construct position from `at FILE:POS' (vxworks)
+	    string file = answer.after(" at ");
+	    file = file.before('\n');
+	    if (file != "")
+	    {
+		pos_buffer = file;
+		already_read = PosComplete;
+		return;
+	    }
+		
 	}
     }
 	    
@@ -511,6 +523,7 @@ void PosBuffer::filter_gdb(string& answer)
 	}
 
 	// Try to construct position from `Line xxxx of "filename"' (vxworks)
+	// which is the output of an 'info line' command
 	string line = answer.after("Line ");
 	string file = answer.after('\"');
 	if (line != "" && file != "")
@@ -523,6 +536,27 @@ void PosBuffer::filter_gdb(string& answer)
 		already_read = PosComplete;
 		return;
 	    }
+	}
+	// Try FUNCTION (ARGS...) at FILE:POS
+	// here to properly handle up/down commands 
+	int at_index = answer.index(" at ");
+	int br_index = answer.index("Break");
+	if ( (at_index > 0) && (br_index < 0) )
+	{
+	    int nl_index = 
+		answer.index('\n', at_index - answer.length() - 1) + 1;
+	    fetch_function(answer, nl_index, func_buffer);
+
+	    // Try to construct position from `at FILE:POS' (vxworks)
+	    string file = answer.after(" at ");
+	    file = file.before('\n');
+	    if (file != "")
+	    {
+		pos_buffer = file;
+		already_read = PosComplete;
+		return;
+	    }
+		
 	}
 	
 	// Nothing found

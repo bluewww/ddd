@@ -4773,13 +4773,7 @@ string SourceView::current_source_name()
 		ans = ans.before('\n');
 		ans = ans.after(' ', -1);
 
-		if (gdb->is_windriver_gdb())
-		{
-		    // `info source' output already contains the file name.
- 		    source = ans;
- 		    return source;
-		}
-		else if (base_matches(ans, current_file_name))
+		if (base_matches(ans, current_file_name))
 		{
 		    // For security, we request that source and current
 		    // file have the same basename.

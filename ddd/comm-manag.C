@@ -1196,6 +1196,16 @@ void send_gdb_command(string cmd, Widget origin,
 	if (gdb->has_display_command())
 	    cmd_data->filter_disp = Filter;
 	cmd_data->new_exec_pos = true;
+
+	// If this is windriver's gdb, add an additional command to
+	// force it to report the current execution position when
+	// execution stops.
+    	if (gdb->is_windriver_gdb())
+	{
+	    extra_data->refresh_frame       = true;
+	    extra_data->refresh_pc	    = true;
+	}
+
 	if (gdb->type() == DBX)
 	{
 	    extra_data->refresh_file  = true;
@@ -1203,11 +1213,13 @@ void send_gdb_command(string cmd, Widget origin,
 	    if (gdb->has_frame_command())
 		extra_data->refresh_frame = true;
 	}
+
 	if (is_pc_cmd(cmd))
 	{
 	    extra_data->refresh_frame = true;
 	    extra_data->refresh_pc    = true;
 	}
+
 	if (!gdb->has_display_command())
 	    extra_data->refresh_data = true;
 

@@ -644,6 +644,8 @@ _main\n\
 _MAIN\n\
 __main\n\
 __MAIN\n\
+my_main\n\
+the_main\n\
 vxworks_main\n\
 main_vxworks
 

@@ -690,18 +690,81 @@ ProgramInfo::ProgramInfo()
     case GDB:
     case PYDB:
     {
-	string ans = gdb_question("info files");
-	if (ans == NO_GDB_ANSWER)
-	    break;
+    	string ans;
 
-	file = "";
-	if (ans.contains("Symbols from "))
+    	if (gdb->is_windriver_gdb())
 	{
-	    file = ans.after("Symbols from ");
-	    file = file.before(".\n");
-	    file = unquote(file);
-	}
+	    // Windriver GDB (VxWorks).
 
+	    // VxWorks allows multiple dynamically relocatable
+	    // programs to be loaded simultaneously. Before a program
+	    // is run, the 'info source' command can report
+	    // information from a source file not related to the
+	    // program just downloaded for debugging. (The WindRiver
+	    // version of gdb does not support the 'info files'
+	    // command.)
+
+	    // In order to tell DDD that there is indeed a source file
+	    // available, we need to first see if a program has
+	    // already been started. If so, then the 'info source'
+	    // command can be used.
+
+	    // Otherwise, the 'info sources' command is used, and the
+	    // first file in the list is used, assuming it is related
+	    // to the current program that was downloaded.
+
+	    // See if the program has been run first
+	    ans = gdb_question("info frame");
+	    if (ans == NO_GDB_ANSWER)
+		break;
+
+	    file = "";
+	    if (ans.contains("No stack"))
+	    {
+		// Then try using info sources and use first file listed
+		ans = gdb_question("info sources");
+		if (ans == NO_GDB_ANSWER)
+		    break;
+
+		if (ans.contains("Source files for which "
+				 "symbols have been read in:"))
+		{
+		    file = ans.after("\n");
+		    file = file.before(" ");
+		    file = unquote(file);
+		}
+	    }
+	    else
+	    {
+	    	// Try using `info source'.
+		ans = gdb_question("info source");
+		if (ans == NO_GDB_ANSWER)
+		    break;
+
+		if (ans.contains("Current source file is "))
+		{
+		    file = ans.after("Current source file is ");
+		    file = file.before(".\n");
+		    file = unquote(file);
+		}
+	    }
+	}
+	else
+	{
+	    // Ordinary GDB.
+	    ans = gdb_question("info files");
+	    if (ans == NO_GDB_ANSWER)
+		break;
+
+	    file = "";
+	    if (ans.contains("Symbols from "))
+	    {
+		file = ans.after("Symbols from ");
+		file = file.before(".\n");
+		file = unquote(file);
+	    }
+
+	}
 	core = "";
 	if (ans.contains("core dump"))
 	{
