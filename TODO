@@ -114,6 +114,7 @@ Volunteers for these and other projects are welcome!
       a list matching a regexp.  This feature would be particularly
       useful when working with c++ code with overloading, templates
       and member functions.
+      [GDB `rbreak' will help you out. -AZ]
 
     o In data display, it would be extremely useful to select which
       fields of a (big) struct should be displayed.  In the current
@@ -130,13 +131,15 @@ Volunteers for these and other projects are welcome!
 
     o Display of variables are disabled when stepping into a new
       function, i.e. variables in functions "above" the current frame
-      are not displayed.  Although I can circumvent this problem by
-      typing the full path (e.g.  graph display
-      /some/deeply/nested/directory/file.c:a, this is quite
-      inconvenient.  The function/file prefix should probably be
-      omitted (at least as an option), since otherwise the data
-      display would be messed up with very long variable names as in
-      SunOS dbxtool/debugger.  Displaying an element of an array in
+      are not displayed.  
+      [This is intentional, such that the data display is not messed
+      up too much. -AZ]
+      Although I can circumvent this problem by typing the full path
+      (e.g.  graph display /some/deeply/nested/directory/file.c:a,
+      this is quite inconvenient.  The function/file prefix should
+      probably be omitted (at least as an option), since otherwise the
+      data display would be messed up with very long variable names as
+      in SunOS dbxtool/debugger.  Displaying an element of an array in
       dbxtool as you iterate through the array looks like
 
          '/a_very/long/path/'funcname'data['/a_very/long/path'funcname'i] = 17
@@ -146,7 +149,7 @@ Volunteers for these and other projects are welcome!
       should be displayed).  An alternative is to have a status line
       in the data window too specifying the full path of the data box
       where the cursor is pointing.
-        
+
 094 Have a VSL 'string()' function that extracts the string from a
     box.  With an additional VSL 'matches()' function that matches
     regexps, one may display different types in different
