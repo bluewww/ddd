@@ -918,12 +918,18 @@ DDDFLAGS = @DEBUGGER_OPTION@
 
 # For demonstration and debugging purposes
 .PHONY: check
-check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT)
+check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) check-now
+
+.PHONY: check-now
+check-now:
 	DDD_HOME=$(srcdir)/.. XUSERFILESEARCHPATH=%N XAPPLRESDIR=. \
 	./$(ddd)$(EXEEXT) $(DDDFLAGS) cxxtest$(EXEEXT)
 
 .PHONY: debug
-debug: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) .gdbinit
+debug: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) .gdbinit debug-now
+
+.PHONY: debug-now
+debug-now:
 	DDD_HOME=$(srcdir)/.. XUSERFILESEARCHPATH=%N XAPPLRESDIR=. \
 $(DEBUGGER) ./$(ddd)$(EXEEXT)
 
