@@ -1566,7 +1566,7 @@ int main(int argc, char *argv[])
     // Remove unnecessary sashes
     untraverse_sashes(source_view_parent);
     if (source_view_shell)
-	unmanage_sashes(source_view_parent, 3);
+	unmanage_sashes(source_view_parent, 2);
 
     untraverse_sashes(data_disp_parent);
     if (data_disp_shell)

@@ -3066,21 +3066,19 @@ string SourceView::line_of_cursor()
 {
     XmTextPosition pos = XmTextGetInsertionPosition(source_text_w);
 
+    string s = current_source_name();
+    if (s == "")
+	return "";		// No source
+
     int line_nr;
     bool in_text;
     int bp_nr;
     string address;
 
-    if (get_line_of_pos(source_text_w,
-			pos, line_nr, address, in_text, bp_nr) == false)
-    {
-	if (current_source_name() == "")
-	    return "";
-	else
-	    return current_source_name() + ":" + itostring(line_count);
-    }
-
-    return current_source_name() + ":" + itostring(line_nr);
+    if (get_line_of_pos(source_text_w, pos, line_nr, address, in_text, bp_nr))
+	return s + ":" + itostring(line_nr);    // Cursor within source
+    else
+	return s + ":" + itostring(line_count);	// Cursor in last line
 }
 
 string SourceView::file_of_cursor()
