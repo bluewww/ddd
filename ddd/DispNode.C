@@ -232,6 +232,9 @@ void DispNode::reset()
     // Set the box
     setBox(disp_box->box());
 
+    // Reset selection
+    select(0);
+
     mylast_refresh = ++tics;
 }
 
