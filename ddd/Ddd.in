@@ -219,13 +219,14 @@ Ddd*questionTimeout: 10
 ! - `Yes'      : Answer current GDB prompt
 ! - `No'       : Answer current GDB prompt
 
-! The buttons under the GDB command window.
+! The command window buttons.
 ! Ddd*commandButtons: \
 ! 	Yes:No:run:Clear:Prev:Next:Apply:interrupt^C
+! Ddd*commandButtons:
 Ddd*commandButtons: \
 	Yes:No:interrupt^C
 
-! The buttons under the source window.
+! The source window buttons.
 Ddd*sourceButtons:   	    \
 run:step:next:stepi:nexti:cont:finish:kill:\
 up:down:Back:Forward:Edit:interrupt^C
@@ -236,15 +237,15 @@ Ddd*step.labelString:      Step
 Ddd*next.labelString:      Next
 Ddd*stepi.labelString:     Stepi
 Ddd*nexti.labelString:     Nexti
-Ddd*cont.labelString:      Continue
-Ddd*interrupt.labelString: Interrupt
+Ddd*cont.labelString:      Cont
+Ddd*interrupt.labelString: Break
 Ddd*kill.labelString:      Kill
 Ddd*until.labelString:     Until
 Ddd*finish.labelString:    Finish
 Ddd*up.labelString:        Up
 Ddd*down.labelString:      Down
 Ddd*Back.labelString:      Back
-Ddd*Forward.labelString:   Forward
+Ddd*Forward.labelString:   Fwd
 Ddd*Edit.labelString:      Edit
 Ddd*Reload.labelString:    Reload
 Ddd*Complete.labelString:  Complete
@@ -1199,7 +1200,7 @@ but proceed through subroutine calls.\n\
 @tt \267 @bf Finish @rm - execute until function returns.\n\
 \n\
 @tt \267 @bf Kill @rm - Kill execution of program being debugged.\n\
-@tt \267 @bf Interrupt @rm - interrupt program (or current debugger command).
+@tt \267 @bf Break @rm - interrupt program (or current debugger command).
 
 Ddd*menubar*programMenu.run.labelString: 	   Run...
 Ddd*menubar*programMenu.run.mnemonic:	   	   R
@@ -1246,8 +1247,8 @@ Ddd*menubar*programMenu.kill.mnemonic:	           K
 Ddd*menubar*programMenu.kill.accelerator:          Ctrl Shift<Key>K
 Ddd*menubar*programMenu.kill.acceleratorText:      Ctrl+Shift+K
 
-Ddd*menubar*programMenu.interrupt.labelString:     Interrupt
-Ddd*menubar*programMenu.interrupt.mnemonic:        I
+Ddd*menubar*programMenu.interrupt.labelString:     Break
+Ddd*menubar*programMenu.interrupt.mnemonic:        B
 Ddd*menubar*programMenu.interrupt.accelerator:     Ctrl<Key>C	 I
 Ddd*menubar*programMenu.interrupt.acceleratorText: Ctrl+C
 
@@ -1556,7 +1557,7 @@ Ddd*graph_popup.refresh.labelString:	Refresh
 Ddd*graph_popup.new_arg.labelString:	New ()
 Ddd*graph_popup.new.labelString:	New Display...
 
-Ddd*node_popup.dereference.labelString:	Dereference
+Ddd*node_popup.dereference.labelString:	Display *
 Ddd*node_popup.dependent.labelString:	Dependent Display...
 Ddd*node_popup.detail.labelString:	Show Detail
 Ddd*node_popup.rotate.labelString: 	Rotate
@@ -1584,36 +1585,41 @@ in the data window above.
 
 Ddd*graph_cmd_w.orientation:			XmHORIZONTAL
 Ddd*graph_cmd_w.graph_cmd_area*orientation:	XmHORIZONTAL
+Ddd*graph_cmd_w.graph_cmd_area*packing:	        XmPACK_COLUMN
+Ddd*graph_cmd_w.graph_cmd_area*entryAlignment:	XmALIGNMENT_CENTER
+Ddd*graph_cmd_w.graph_cmd_area*alignment:	XmALIGNMENT_CENTER
 
-Ddd*graph_cmd_w.graph_cmd_area*dependent.labelString:	Dependent ()
-Ddd*graph_cmd_w.graph_cmd_area*dereference.labelString: Dereference ()
-Ddd*graph_cmd_w.graph_cmd_area*detail.labelString:	Show ()
-Ddd*graph_cmd_w.graph_cmd_area*rotate.labelString:	Rotate ()
-Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:	Delete ()
-Ddd*graph_cmd_w.graph_cmd_area*disable.labelString:	Disable ()
+Ddd*graph_cmd_w.graph_cmd_area*dependent.labelString:	Dependent
+Ddd*graph_cmd_w.graph_cmd_area*dereference.labelString: Display *
+Ddd*graph_cmd_w.graph_cmd_area*detail.labelString:	Show
+Ddd*graph_cmd_w.graph_cmd_area*rotate.labelString:	Rotate
+Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:	Delete
+Ddd*graph_cmd_w.graph_cmd_area*disable.labelString:	Disable
+! Ddd*graph_cmd_w.graph_cmd_area*marginTop:       1
+! Ddd*graph_cmd_w.graph_cmd_area*marginBottom:    1
 
 Ddd*graph_cmd_w.graph_cmd_area*dependent.contextHelpString:\
-@bf Dependent ()@rm\n\
+@bf Dependent@rm\n\
 Create a new display dependent on the selected display part.
 
 Ddd*graph_cmd_w.graph_cmd_area*dereference.contextHelpString:\
-@bf Dereference ()@rm\n\
+@bf Display *@rm\n\
 Dereference the selected display.
 
 Ddd*graph_cmd_w.graph_cmd_area*detail.contextHelpString:	\
-@bf Show () @rm / @bf Hide () @rm\n\
+@bf Show@rm / @bf Hide@rm\n\
 Show/Hide details of the selected displays.
 
 Ddd*graph_cmd_w.graph_cmd_area*rotate.contextHelpString:	\
-@bf Rotate ()@rm\n\
+@bf Rotate@rm\n\
 Rotate the selected displays.
 
 Ddd*graph_cmd_w.graph_cmd_area*disable.contextHelpString:	\
-@bf Disable () @rm / @bf Enable () @rm\n\
+@bf Disable@rm / @bf Enable@rm\n\
 Disable/Enable the selected displays.
 
 Ddd*graph_cmd_w.graph_cmd_area*delete.contextHelpString:	\
-@bf Delete ()@rm\n\
+@bf Delete@rm\n\
 Delete the selected displays.
 
 
@@ -1741,18 +1747,24 @@ Ddd*arg_cmd_w.source_arg.value:                  main
 Ddd*arg_cmd_w.source_arg.columns:                20
 
 Ddd*arg_cmd_w.orientation:				XmHORIZONTAL
-Ddd*arg_cmd_w.arg_cmd_area*orientation:			XmHORIZONTAL
+Ddd*arg_cmd_w.arg_cmd_area.orientation:			XmHORIZONTAL
+Ddd*arg_cmd_w.arg_cmd_area.spacing:			0
+Ddd*arg_cmd_w.arg_cmd_area.packing:			XmPACK_COLUMN
+Ddd*arg_cmd_w.arg_cmd_area.entryAlignment:  		XmALIGNMENT_CENTER
+Ddd*arg_cmd_w.arg_cmd_area*alignment:  			XmALIGNMENT_CENTER
+! Ddd*arg_cmd_w.arg_cmd_area*marginTop:			1
+! Ddd*arg_cmd_w.arg_cmd_area*marginBottom:		1
 
-Ddd*arg_cmd_w.arg_cmd_area*lookup.labelString:		Lookup ()
-Ddd*arg_cmd_w.arg_cmd_area*break.labelString:		Break ()
-Ddd*arg_cmd_w.arg_cmd_area*clear.labelString:		Clear ()
-Ddd*arg_cmd_w.arg_cmd_area*print.labelString:		Print ()
-Ddd*arg_cmd_w.arg_cmd_area*display.labelString:		Display ()
-Ddd*arg_cmd_w.arg_cmd_area*find_backward.labelString:	Find<< ()
-Ddd*arg_cmd_w.arg_cmd_area*find_forward.labelString:	Find>> ()
+Ddd*arg_cmd_w.arg_cmd_area*lookup.labelString:		Lookup
+Ddd*arg_cmd_w.arg_cmd_area*break.labelString:		Break at
+Ddd*arg_cmd_w.arg_cmd_area*clear.labelString:		Clear at
+Ddd*arg_cmd_w.arg_cmd_area*print.labelString:		Print
+Ddd*arg_cmd_w.arg_cmd_area*display.labelString:		Display
+Ddd*arg_cmd_w.arg_cmd_area*find_backward.labelString:	Find<<
+Ddd*arg_cmd_w.arg_cmd_area*find_forward.labelString:	Find>>
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.contextHelpString:	\
-@bf Lookup ()@rm\n\
+@bf Lookup@rm\n\
 Lookup a line, file, function, variable, or breakpoint.\n\
 @tt \267 @rm If the argument @bf () @rm is empty, \
 show the current execution position.\n\
@@ -1768,28 +1780,28 @@ lookup that address.\n\
     the definition of that function or variable.
 
 Ddd*arg_cmd_w.arg_cmd_area*break.contextHelpString:	\
-@bf Break ()@rm\n\
+@bf Break at@rm\n\
 Set a breakpoint at the argument @bf ()@rm.
 
 Ddd*arg_cmd_w.arg_cmd_area*clear.contextHelpString:	\
-@bf Clear ()@rm\n\
+@bf Clear at@rm\n\
 Clear the breakpoint at the argument @bf ()@rm.
 
 Ddd*arg_cmd_w.arg_cmd_area*print.contextHelpString:	\
-@bf Print ()@rm\n\
+@bf Print@rm\n\
 Print the argument @bf () @rm in the command window.
 
 Ddd*arg_cmd_w.arg_cmd_area*display.contextHelpString:	\
-@bf Display ()@rm\n\
+@bf Display@rm\n\
 Display the argument @bf () @rm in the data display window.
 
 Ddd*arg_cmd_w.arg_cmd_area*find_backward.contextHelpString:	\
-@bf Find<< () @rm\n\
+@bf Find<<@rm\n\
 Search the previous occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.
 
 Ddd*arg_cmd_w.arg_cmd_area*find_forward.contextHelpString:	\
-@bf Find>> () @rm\n\
+@bf Find>>@rm\n\
 Search the next occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.
 
@@ -1916,10 +1928,24 @@ gives a short command description.\n
 Ddd*source_buttons*contextHelpString:
 Ddd*command_buttons*contextHelpString:
 
+! Special spacing
+Ddd*source_buttons.spacing:         0
+Ddd*command_buttons.spacing:        0
+Ddd*source_buttons.packing:         XmPACK_COLUMN
+Ddd*command_buttons.packing:        XmPACK_COLUMN
+Ddd*source_buttons.entryAlignment:  XmALIGNMENT_CENTER
+Ddd*command_buttons.entryAlignment: XmALIGNMENT_CENTER
+Ddd*source_buttons*alignment:  	    XmALIGNMENT_CENTER
+Ddd*command_buttons*alignment:      XmALIGNMENT_CENTER
+! Ddd*source_buttons*marginTop:       1
+! Ddd*source_buttons*marginBottom:    1
+! Ddd*command_buttons*marginTop:      1
+! Ddd*command_buttons*marginBottom:   1
+
 ! Some buttons have a special meaning; 
 ! so we must provide help on ourselves.
 Ddd*?*interrupt.contextHelpString: \
-@bf Interrupt\n\
+@bf Break\n\
 @rm Interrupt the debugged process or current debugger command.\n\
 (Equivalent to @key Ctrl+C@rm).
 
@@ -2303,7 +2329,7 @@ Select displays on the left; operations on the right.\n\
 @tt \267 @bf New... @rm - create a new display.\n\
 @tt \267 @bf Dependent... @rm - create a display \
 dependent on the selected display.\n\
-@tt \267 @bf Dereference @rm - dereference the selected display.\n\
+@tt \267 @bf Display * @rm - dereference the selected display.\n\
 @tt \267 @bf Show Detail @rm - show the details of all selected displays.\n\
 @tt \267 @bf Hide Detail @rm - hide the details of all selected displays.\n\
 @tt \267 @bf Enable @rm - enable all selected displays.\n\
@@ -2370,7 +2396,7 @@ Ddd*edit_displays_dialog*buttons*dependent.labelString:     Dependent...
 Ddd*edit_displays_dialog*buttons*dependent.contextHelpString:  \
 @rm Create a data display dependent on the selected data display.
 
-Ddd*edit_displays_dialog*buttons*dereference.labelString:   Dereference
+Ddd*edit_displays_dialog*buttons*dereference.labelString:   Display *
 Ddd*edit_displays_dialog*buttons*dereference.contextHelpString:  \
 @rm Dereference the selected data display.
 
@@ -2425,7 +2451,7 @@ Ddd*busy_dialog*contextHelpString:	\
 Please try again when the `@tt (gdb)@rm' or `@tt (dbx)@rm' \
 prompt appears.\n\
 You may also interrupt the current debugging command by selecting\n\
-@bf Interrupt @rm from the @bf Program @rm menu.
+@bf Break @rm from the @bf Program @rm menu.
 
 Ddd*quit_dialog_popup.title: @DDD@: Debugger Still Busy
 Ddd*quit_dialog.messageString:   \
@@ -2439,7 +2465,7 @@ to the ``quit'' command.\n\
 The debugged process is probably still running.\n\
 \n\
 Before killing a running debugger, you should try to interrupt it\n\
-(by selecting @bf Interrupt @rm from the @bf Program @rm menu).
+(by selecting @bf Break @rm from the @bf Program @rm menu).
 
 Ddd*exited_dialog_popup.title: @DDD@: Debugger Exited
 Ddd*exited_dialog.messageString:   \
