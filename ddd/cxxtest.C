@@ -274,10 +274,7 @@ void cin_cout_test()
     char name[1024];
     cout << "What's your name? ";
     cin >> name;
-    cout << "Hello, " << name << "!\n";
-    cout.flush();
-
-    cerr << "(This is a stderr message.)\n";
+    cerr << "Hello, " << name << "!\n";
 }
 
 //--------------------------------------------------------------------------
