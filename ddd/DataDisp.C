@@ -3046,12 +3046,12 @@ void DataDisp::refresh_builtin_user_displays()
 		    // Clear old local selection
 		    dn->select(0);
 		}
+
+		// FIXME: redraw only if the original node has changed
+		dn->refresh();
+		graphEditRedrawNode(graph_edit, dn);
 	    }
 	}
-
-	// FIXME: redraw only if the original node has changed
-	dn->refresh();
-	graphEditRedrawNode(graph_edit, dn);
     }
 
     DispValue::value_hook = 0;
