@@ -1098,7 +1098,7 @@ named `\fB.dddinit\fR' in your home directory.
 Other personal \s-2@DDD@\s+2 resources can also be set in your
 `\fB.dddinit\fR' file.  To find out which resources are available, and
 how they are set by default, look at the `\fBDdd\fR' application
-defaults file, which is shipped with the \s-2@DDD\s+2 source.  For
+defaults file, which is shipped with the \s-2@DDD@\s+2 source.  For
 individual customization, copy the lines of resources you want to 
 change into your `\fB.dddinit\fR' file and modify them as you like.
 
