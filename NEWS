@@ -10,7 +10,7 @@ DDD 3.0 [in beta test]
     - New, `clean' look.  The DDD 2.x button rows are replaced by an
       icon tool bar at the top, saving vertical and horizontal space.
     - Configurable fonts.  You can easily customize DDD font settings
-      via `Edit | Preferences | Fonts'.
+      via `Edit->Preferences->Fonts'.
     - JDB support.  DDD now also supports JDB as inferior debugger.
       All important JDB features are available via the GUI.
     - Java support.  Requires GDB 4.17 or later (or JDB, of course).
@@ -24,12 +24,12 @@ DDD 3.0 [in beta test]
       * In sessions, displays can also be restored without core dump.
     - Tear-off menus are supported (and enabled by default).
     - Breakpoint properties.  There is an editor panel to set and
-      change all properties for a breakpoint at once.  See `Source |
-      Edit Breakpoints | Properties' for details.
+      change all properties for a breakpoint at once.  See
+      `Source->Edit Breakpoints->Properties' for details.
     - Breakpoint commands.  Using GDB, you can record and edit
       commands to be executed when a breakpoint is reached.
     - User-defined commands.  Using GDB, you can record and edit new
-      commands and assign them to buttons; see `Commands | Define
+      commands and assign them to buttons; see `Commands->Define
       Command'.  All commands are saved across DDD sessions.
     - Conditional breakpoints, temporary breakpoints, and breakpoints
       with ignore counts now have their special symbols on their own.
@@ -55,7 +55,7 @@ DDD 3.0 [in beta test]
     - The maximum number of glyphs is now configurable at startup time.
       See the `maxGlyphs' resource for details.
     - DDD no longer indents the source code, leaving more horizontal
-      space.  See `Edit | Preferences | Source | Source indentation'.
+      space.  See `Edit->Preferences->Source->Source indentation'.
     - Basic Ada support.  Rick Flower <Rick.Flower@trw.com> provided a
       set of patches for basic GDB/Ada (GNAT) support.
     - Further improved FORTRAN support.  DDD refers to FORTRAN
@@ -66,8 +66,8 @@ DDD 3.0 [in beta test]
       * DDD only saves resources that differ from the default setting.
       * Saving options is also much, much faster.
     - Using GDB, VALUEs that are repeated N times are now displayed as
-      `VALUE <Nx>', saving space in the data display; see `Edit | GDB
-      Settings | Threshold for repeated print elements'.  Setting the
+      `VALUE <Nx>', saving space in the data display; see `Edit->GDB
+      Settings->Threshold for repeated print elements'.  Setting the
       `expandRepeatedValues' resource to `on' turns this off.
     - DBX settings also work with SGI DBX.
 
@@ -126,7 +126,7 @@ DDD 3.0 [in beta test]
 
       For full compliance to the KDE style guide, the Cut/Copy/Paste
       operations must be assigned to Ctrl+X/Ctrl+C/Ctrl+V.  This is
-      done by setting `Edit | Preferences | Startup | Cut/Copy/Paste
+      done by setting `Edit->Preferences->Startup->Cut/Copy/Paste
       Bindings' to `KDE style'.  This may also become the default in
       future DDD versions.
 
@@ -155,11 +155,11 @@ DDD 3.0 [in beta test]
 	Ddd*toolbarsAtBottom: on
 
       in your `~/.ddd/init' file.  For a full DDD 2.x look, disable images
-      and captions via `Edit | Preferences | Startup | Toolbar Appareance'.
+      and captions via `Edit->Preferences->Startup->Toolbar Appareance'.
 
     - Source line numbers are now automatically enabled as soon as you
       set the source indentation amount to 8 characters or more.  See
-      `Edit | Preferences | Source | Source indentation'.
+      `Edit->Preferences->Source->Source indentation'.
 
     - Be sure not to leave `Ddd' app-defaults files from previous
       versions behind.  DDD does not require app-defaults files; in
