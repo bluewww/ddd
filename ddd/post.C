@@ -200,9 +200,9 @@ Widget post_gdb_died(string reason, int gdb_status, Widget w)
 					"terminated_dialog", args, arg));
 	XtAddCallback(died_dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);
 	XtAddCallback(died_dialog, XmNokCallback,
-		      DDDRestartCB, XtPointer(exit_status));
-	XtAddCallback(died_dialog, XmNcancelCallback,
 		      DDDExitCB, XtPointer(exit_status));
+	XtAddCallback(died_dialog, XmNcancelCallback,
+		      DDDRestartCB, XtPointer(exit_status));
     }
     else
     {

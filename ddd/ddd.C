@@ -1339,6 +1339,7 @@ int main(int argc, char *argv[])
     Widget toplevel = 
 	XtAppInitialize(&app_context, DDD_CLASS_NAME,
 			0, 0, &argc, argv, ddd_fallback_resources, args, arg);
+    ddd_install_xt_error(app_context);
 
     // Merge in ~/.dddinit resources
     XrmDatabase target = XtDatabase(XtDisplay(toplevel));

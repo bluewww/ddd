@@ -4166,13 +4166,16 @@ Before killing a running @GDB@, you should try to interrupt it\n\
 Ddd*terminated_dialog_popup.title: @DDD@: Hasta la Vista
 ! Ddd*terminated_dialog.messageString:   \
 ! @rm @GDB@ terminated abnormally.
-Ddd*terminated_dialog*okLabelString:	   Restart
-Ddd*terminated_dialog*cancelLabelString:   Exit
+Ddd*terminated_dialog*okLabelString:	   Exit
+Ddd*terminated_dialog*cancelLabelString:   Restart
 Ddd*terminated_dialog*helpString:	\
 @rm @GDB@ terminated abnormally.  Without @GDB@, @DDD@ cannot run.\n\
 \n\
 You may wish to examine the final @GDB@ output before exiting\n\
-or restarting @DDD@.
+or restarting @DDD@.\n\
+\n\
+Click on @bf Exit @rm to exit @DDD@.\n\
+Click on @bf Restart @rm to restart @DDD@ from scratch.
 
 Ddd*no_debugger_dialog_popup.title: @DDD@: Losing my Religion
 ! Ddd*no_debugger_dialog.messageString:   \
@@ -4197,13 +4200,15 @@ specify\n\
     require being invoked with an executable.\n\
 @tt \267 @rm @DDD@ passes all unknown options to @GDB@.  If @GDB@ choked on\n\
     some options intended for @DDD@, use the @DDD@ @tt --help @rm option to\n\
-    get a list of valid @DDD@ options.
+    get a list of valid @DDD@ options.\n\
+\n\
+Click on @bf Exit @rm to exit @DDD@.
 
 Ddd*fatal_dialog.title: @DDD@: @TITLE@
 Ddd*fatal_dialog.messageString:	  \
 @rm Internal error
-Ddd*fatal_dialog*okLabelString:	      Restart
-Ddd*fatal_dialog*cancelLabelString:   Exit
+Ddd*fatal_dialog*okLabelString:	      Exit
+Ddd*fatal_dialog*cancelLabelString:   Ignore
 Ddd*fatal_dialog*helpString: \
 @rm Oops!  You have found a bug in @DDD@.\n\
 You should better save your work immediately; @DDD@ may fail again soon.\n\
@@ -4221,7 +4226,11 @@ Run `@tt @ddd@ --configuration@rm' to get it.\n\
     reproduce the bug, include the trace output in your bug report.\n\
 Please read also the section ``Reporting Bugs'' in the @DDD@ manual.\n\
 \n\
-We thank you for your support.
+We thank you for your support.\n\
+\n\
+Click on @bf Exit @rm to exit @DDD@.\n\
+Click on @bf Ignore @rm if you choose to ignore this message.
+
 
 Ddd*yn_dialog_popup.title: @DDD@: Debugger Question
 Ddd*yn_dialog*okLabelString:	   Yes

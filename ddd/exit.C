@@ -179,21 +179,19 @@ void ddd_install_fatal(char *program_name)
 static void post_fatal(string title, string cause)
 {
     static Widget fatal_dialog = 0;
-    if (fatal_dialog)
-	DestroyWhenIdle(fatal_dialog);
+    if (fatal_dialog == 0)
+    {
+	fatal_dialog = verify(XmCreateErrorDialog (find_shell(),
+						   "fatal_dialog", 0, 0));
+	Delay::register_shell(fatal_dialog);
+
+	XtAddCallback(fatal_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+	XtAddCallback(fatal_dialog, XmNokCallback, 
+		      DDDExitCB, XtPointer(EXIT_FAILURE));
+    }
 
     defineConversionMacro("TITLE", title);
     defineConversionMacro("CAUSE", cause);
-
-    fatal_dialog = 
-	verify(XmCreateErrorDialog (find_shell(),
-				    "fatal_dialog", 0, 0));
-    Delay::register_shell(fatal_dialog);
-
-    XtAddCallback(fatal_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
-    XtAddCallback(fatal_dialog, XmNokCallback,     DDDRestartCB,    0);
-    XtAddCallback(fatal_dialog, XmNcancelCallback,
-		  DDDExitCB, XtPointer(EXIT_FAILURE));
 
     string msg = string("Internal error (") + title + ")";
     MString mtext = rm(msg);
@@ -213,7 +211,8 @@ static void post_fatal(string title, string cause)
 void ddd_show_signal(int sig)
 {
     // Show diagnostic
-    cerr << sigName(sig) << "\n";
+    if (sig > 0)
+	cerr << sigName(sig) << "\n";
     gdb_question_running = false;
 
     // Interrupt current GDB action
@@ -222,7 +221,7 @@ void ddd_show_signal(int sig)
 
     // Show the message in an error dialog,
     // allowing the user to clean up manually.
-    if (sig != SIGINT)
+    if (sig > 0 && sig != SIGINT)
     {
 	string title = sigName(sig);
 	string cause = "`" + title + "' signal";
@@ -280,15 +279,16 @@ static void ddd_fatal(int sig...)
     // IF YOU GET HERE WHILE DEBUGGING DDD, READ THIS
     // ----------------------------------------------
     //
-    // On some systems, especially HP-UX, the stack frame gets corrupted
-    // when a program exits via a signal handler - one cannot determine
-    // the place the signal handler was called from, which makes debugging
-    // impossible.
+    // On some systems, especially HP-UX, the stack frame gets
+    // corrupted when a program exits via a signal handler - one
+    // cannot determine the place the signal handler was called from,
+    // which makes debugging impossible.
     // 
     // You can circumvent this problem by invoking the debugged DDD
-    // process with the environment variable DDD_NO_SIGNAL_HANDLERS set.
-    // This disables installation of the `ddd_fatal' signal handler
-    // and makes it possible for you to determine the problem cause.
+    // process with the environment variable DDD_NO_SIGNAL_HANDLERS
+    // set.  This disables installation of the `ddd_fatal' signal
+    // handler and makes it possible for you to determine the problem
+    // cause.
 
     ddd_has_crashed = true;
 
@@ -420,8 +420,8 @@ static void PostXErrorCB(XtPointer client_data, XtIntervalId *)
     string msg = *msg_ptr;
     delete msg_ptr;
 
-    string title = msg.before('\n');
-    string cause = msg.after('\n');
+    string title = msg.before('\v');
+    string cause = msg.after('\v');
     post_fatal(title, cause);
 }
 
@@ -477,7 +477,7 @@ static int ddd_x_error(Display *display, XErrorEvent *event)
     print_x_error(display, event, cerr);
 
     // Prepare for issuing error in dialog
-    string *msg_ptr = new string(title + '\n' + cause);
+    string *msg_ptr = new string(title + '\v' + cause);
     XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
     XtAppAddTimeOut(app_context, 0, PostXErrorCB, XtPointer(msg_ptr));
 
@@ -492,6 +492,50 @@ static int ddd_x_error(Display *display, XErrorEvent *event)
 void ddd_install_x_error()
 {
     old_x_error_handler = XSetErrorHandler(ddd_x_error);
+}
+
+
+//-----------------------------------------------------------------------------
+// Xt and Motif errors
+//-----------------------------------------------------------------------------
+
+static XtErrorHandler old_xt_error_handler;
+
+static void ddd_xt_error(String message = 0)
+{
+    if (message == 0 || message[0] == '\0')
+    {
+	ddd_cleanup();
+	exit(EXIT_FAILURE);
+    }
+	
+    static int entered = 0;
+
+    // Issue error on stderr
+    cerr << "Error: " << message << "\n";
+
+    string title = message;
+    string cause = "Xt error";
+
+    if (entered++ || !main_loop_entered || ddd_is_exiting)
+    {
+	print_fatal_msg(title, cause);
+	ddd_xt_error();
+    }
+
+    // Issue error in dialog
+    string *msg_ptr = new string(title + '\v' + cause);
+    XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
+    XtAppAddTimeOut(app_context, 0, PostXErrorCB, XtPointer(msg_ptr));
+
+    // Return to main event loop
+    entered--;
+    longjmp(main_loop_env, -1);
+}
+
+void ddd_install_xt_error(XtAppContext app_context)
+{
+    old_xt_error_handler = XtAppSetErrorHandler(app_context, ddd_xt_error);
 }
 
 
@@ -543,18 +587,19 @@ void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
     {
 	// Startup options are still changed; request confirmation
 	static Widget save_options_dialog = 0;
-	if (save_options_dialog)
-	    DestroyWhenIdle(save_options_dialog);
-	save_options_dialog = 
-	    verify(XmCreateQuestionDialog(find_shell(w), 
-					  "save_options_dialog", 0, 0));
-	Delay::register_shell(save_options_dialog);
-	XtAddCallback(save_options_dialog, XmNokCallback,
-		      SaveOptionsAndExitCB, client_data);
-	XtAddCallback(save_options_dialog, XmNcancelCallback,
-		      closure, client_data);
-	XtAddCallback(save_options_dialog, XmNhelpCallback,
-		      ImmediateHelpCB, 0);
+	if (save_options_dialog == 0)
+	{
+	    save_options_dialog = 
+		verify(XmCreateQuestionDialog(find_shell(w), 
+					      "save_options_dialog", 0, 0));
+	    Delay::register_shell(save_options_dialog);
+	    XtAddCallback(save_options_dialog, XmNokCallback,
+			  SaveOptionsAndExitCB, client_data);
+	    XtAddCallback(save_options_dialog, XmNcancelCallback,
+			  closure, client_data);
+	    XtAddCallback(save_options_dialog, XmNhelpCallback,
+			  ImmediateHelpCB, 0);
+	}
 	manage_and_raise(save_options_dialog);
     }
     else

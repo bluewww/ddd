@@ -44,6 +44,7 @@ extern void ddd_install_fatal(char *program_name = 0);
 extern void ddd_install_signal();
 extern void ddd_install_x_fatal();
 extern void ddd_install_x_error();
+extern void ddd_install_xt_error(XtAppContext app_context);
 
 // Callbacks
 void _DDDExitCB   (Widget, XtPointer, XtPointer); // GDB exited normally
