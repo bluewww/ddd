@@ -649,6 +649,8 @@ public:
     string address_expr(string expr) const;         // &EXPR
     string index_expr(string expr, string index) const; // EXPR[INDEX]
     int default_index_base() const;                 // 0 in C, else 1
+    string member_separator() const;                // " = " in C
+
     string info_locals_command() const;	            // info locals
     string info_args_command() const;	            // info args
     string info_display_command() const;	    // info display

@@ -2358,6 +2358,12 @@ string GDBAgent::index_expr(string expr, string index) const
     case LANGUAGE_ADA:
 	return expr + "(" + index + ")";
 
+    case LANGUAGE_PERL:
+	if (expr != "" && expr[0] == '@')
+	    return '$' + expr.after(0) + "[" + index + "]";
+	else
+	    return expr + "[" + index + "]";
+
     default:
 	break;
     }
@@ -2386,6 +2392,30 @@ int GDBAgent::default_index_base() const
     }
 
     return 0;			// Never reached
+}
+
+// Return member separator
+string GDBAgent::member_separator() const
+{
+    switch (program_language())
+    {
+    case LANGUAGE_FORTRAN:
+    case LANGUAGE_PASCAL:
+    case LANGUAGE_CHILL:
+    case LANGUAGE_C:
+    case LANGUAGE_PYTHON:
+    case LANGUAGE_OTHER:
+	return " = ";
+
+    case LANGUAGE_JAVA:
+	return ": ";
+
+    case LANGUAGE_ADA:
+    case LANGUAGE_PERL:
+	return " => ";
+    }
+
+    return "";			// Never reached
 }
 
 // Return assignment command
@@ -2720,6 +2750,7 @@ string GDBAgent::get_dumped_var(const string& dump, const string& var) const
 
     return name + " = " + value;
 }
+
 
 
 //-----------------------------------------------------------------------------
