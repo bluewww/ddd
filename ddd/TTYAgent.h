@@ -42,7 +42,7 @@ private:
     string _master_tty;  // master side of terminal
     string _slave_tty;   // slave side of terminal
     int master;		 // master file descriptor
-    bool push_needed;    // true if extra devices must be pushed onto stream
+    bool push;           // true if extra devices must be pushed
 
     int open_master();   // find and open master tty
     int open_slave();	 // open slave tty 
@@ -61,21 +61,21 @@ public:
          unsigned nTypes = NTypes):
         LiterateAgent(app_context, pth, nTypes),
 	master(-1),
-	push_needed(false)
+	push(false)
     {}
 
     TTYAgent(XtAppContext app_context, FILE *in = stdin,
         FILE *out = stdout, FILE *err = 0, unsigned nTypes = NTypes):
         LiterateAgent(app_context, in, out, err, nTypes),
 	master(-1),
-	push_needed(false)
+	push(false)
     {}
 
     TTYAgent(XtAppContext app_context, bool dummy,
         unsigned nTypes = NTypes):
         LiterateAgent(app_context, dummy, nTypes),
 	master(-1),
-	push_needed(false)
+	push(false)
     {}
 
     // Return the name of the used tty

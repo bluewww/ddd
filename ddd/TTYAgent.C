@@ -210,6 +210,9 @@ int TTYAgent::open_master()
     char *line;
     struct stat sb;
 
+    // Setup defaults
+    push = false;
+
 #ifdef HAVE_GETPTY
     // getpty() - an UTS feature
     static char master_line[MAXPTYNAMELEN];
@@ -220,8 +223,8 @@ int TTYAgent::open_master()
 	// Verify slave side is usable
 	if (access(slave_line, R_OK | W_OK) == 0)
 	{
-	    _master_tty = master_line;
-	    _slave_tty  = slave_line;
+	    _master_tty  = master_line;
+	    _slave_tty   = slave_line;
 	    return master;
 	}
 
@@ -237,8 +240,8 @@ int TTYAgent::open_master()
 	// Verify slave side is usable
 	if (access(line, R_OK | W_OK) == 0)
 	{
-	    _master_tty = ttyname(master);
-	    _slave_tty  = line;
+	    _master_tty  = ttyname(master);
+	    _slave_tty   = line;
 	    return master;
 	}
     }
@@ -293,7 +296,7 @@ int TTYAgent::open_master()
 #ifdef TIOCFLUSH
 		ioctl(master, TIOCFLUSH, (char *)0);
 #endif
-		push_needed = true;
+		push = true;
 		return master;
 	    }
 
@@ -399,14 +402,14 @@ int TTYAgent::open_slave()
 {
     int slave;
 
-    if ((slave = open(slave_tty(), O_RDWR)) < 0)
+    if ((slave = open((char *)slave_tty(), O_RDWR)) < 0)
     {
 	_raiseIOMsg("cannot open " + slave_tty());
 	return -1;
     }
 
 #ifdef I_PUSH
-    if (push_needed)
+    if (push)
     {
 	// Finish STREAMS setup.
 	if (ioctl(slave, I_PUSH, "ptem"))
@@ -489,7 +492,8 @@ int TTYAgent::setupChildCommunication()
 
 #else // !HAVE_SETSID
 
-    // Clear controlling tty.
+    // Clear controlling tty.  This means that we will not have a
+    // controlling tty until we open another terminal device.
 #if defined(HAVE_IOCTL) && defined(TIOCNOTTY)
     int fd;
 
@@ -517,7 +521,7 @@ int TTYAgent::setupChildCommunication()
 	_raiseIOMsg("cannot create new process group");
 
 
-    // Open slave such that it becomes the controlling terminal
+    // Open slave such that it becomes the controlling terminal.
     int slave = open_slave();
     if (slave < 0)
 	return -1;
