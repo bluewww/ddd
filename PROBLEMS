@@ -60,8 +60,7 @@ Reported by: Andreas Zeller <ddd@ips.cs.tu-bs.de>
 
     1. Add the flag `-Wl,-bbigtoc' to the `LDFLAGS' definition in
        `ddd/Makefile' and retype `make'.  This makes the AIX linker
-       use a larger TOC.  (Normally, `configure' should already have
-       done this for you.)
+       use a larger TOC.
 
     2. If this does not work, add the flags `-mno-fp-in-toc' and
        `-mno-sum-in-toc' to the `CXXFLAGS' definition in
@@ -73,6 +72,10 @@ Reported by: Andreas Zeller <ddd@ips.cs.tu-bs.de>
        the `CXXFLAGS' definition in `ddd/Makefile' and recompile all.
        When you specify this option, GCC will produce code that is
        slower and larger but which uses extremely little TOC space.
+
+    (As of DDD 3.1, `configure' should already have done this for
+     you.  If you see neither `-Wl,-bbigtoc' nor `-mminimal-toc',
+     please let me know.)
 
 
 Reported by:	Jacek M. Holeczek <holeczek@us.edu.pl>

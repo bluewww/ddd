@@ -316,6 +316,35 @@ AC_SUBST(BIG_TOC)
 ])dnl
 dnl
 dnl
+dnl ICE_MINIMAL_TOC
+dnl ---------------
+dnl
+dnl If the C++ compiler `-mminimal-toc' (as required for large
+dnl programs on RS/6000 and PowerPC) set MINIMAL_TOC to `-mminimal-toc'.
+dnl An alternative to this is using `-Wl,-bbigtoc' when linking.
+dnl
+AC_DEFUN(ICE_MINIMAL_TOC,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts [-mminimal-toc])
+AC_CACHE_VAL(ice_cv_minimal_toc,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_cxxflags="$CXXFLAGS"
+CXXFLAGS="-mminimal-toc"
+AC_TRY_LINK(,[int a;],
+ice_cv_minimal_toc=yes, ice_cv_minimal_toc=no)
+CXXFLAGS="$ice_save_cxxflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_minimal_toc)
+if test "$ice_cv_minimal_toc" = yes; then
+MINIMAL_TOC="-mminimal-toc"
+fi
+AC_SUBST(MINIMAL_TOC)
+])dnl
+dnl
 dnl
 dnl ICE_WARN_UNINITIALIZED
 dnl ----------------------
@@ -1211,19 +1240,33 @@ dnl
 AC_DEFUN(ICE_CXX_OPTIONS,
 [
 if test "$GXX" = yes; then
+  # Check warnings
   ICE_WARN_EFFECTIVE_CXX
   ICE_WARN_UNINITIALIZED
-  ICE_BIG_TOC
-  CXXOPT="-DNDEBUG"
-  CXXDEBUG=
+  
+  # Check TOC options
+  ICE_MINIMAL_TOC
+  if test "$ice_cv_minimal_toc" = yes; then
+    # Only check for `-Wl,-bbig-toc' if `-mminimal-toc' is supported.
+    ICE_BIG_TOC
+    if test "$ice_cv_big_toc" = yes; then
+      # Prefer `-Wl,-bbig-toc' on `-mminimal-toc'.
+      MINIMAL_TOC=
+    fi
+  fi
+
+  # Setup options
   # In GCC 2.8.0, `-Wuninitialized' generates lots of warnings about
   # variables possibly being clobbered by a longjmp()/vfork() call.
   # These warnings seldom make sense and hide more serious warnings.
   # Hence, we turn them off via `-Wno-uninitialized'.
+  CXXOPT="-DNDEBUG"
+  CXXDEBUG=
   CXXWARNINGS="-W -Wall ${WARN_NO_UNINITIALIZED}"
   CXXSTATIC_BINDING="-Bstatic"
   CXXDYNAMIC_BINDING="-Bdynamic"
-  CXXSTUFF=
+  CXXSTUFF="${MINIMAL_TOC}"
+
   for flag in $CXXFLAGS; do
     case $flag in
       -O)  CXXOPT="$CXXOPT -O2";;
@@ -1249,12 +1292,14 @@ else
     *)
       ;;
   esac
+
   CXXOPT="-DNDEBUG"
   CXXDEBUG="${XS_DEBUG_INFO}"
   CXXWARNINGS=
   CXXSTATIC_BINDING="-static"
   CXXDYNAMIC_BINDING=
   CXXSTUFF=
+
   for flag in $CXXFLAGS; do
     case $flag in
       -O*) CXXOPT="$CXXOPT $flag";;
