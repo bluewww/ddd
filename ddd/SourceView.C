@@ -462,7 +462,7 @@ static void sort(IntArray& a)
 // Return index of RXADDRESS in S, beginning from POS.  Stop search at newline.
 static int address_index(const string& s, int pos)
 {
-    int eol = s.index('\n');
+    int eol = s.index('\n', pos);
     if (eol < 0)
 	eol = s.length();
 
@@ -8890,7 +8890,11 @@ XmTextPosition SourceView::glyph_position(Widget glyph, XEvent *e,
     }
 
     // Get the position
-    XmTextPosition pos = XmTextXYToPos(text_w, p[X], p[Y]);
+    XmTextPosition pos;
+    if (p[Y] <= 0)
+	pos = 0;		// We may drag outside the text window
+    else
+	pos = XmTextXYToPos(text_w, p[X], p[Y]);
 
     // Stay within viewable text +/-1 row, such that we don't scroll too fast
     short rows = 0;

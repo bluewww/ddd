@@ -70,9 +70,9 @@ User Interface
 
 - You can interact with the debugger while the program is running;
   DDD automatically interrupts and resumes debuggee execution.  See the
-  `stopAndContinue' resource.
+  `stopAndContinue' resource for details.
 
-- Undo and Redo now work on logical groups of commands.  If an action
+- Undo and Redo now apply on logical groups of commands.  If an action
   caused multiple commands, Undo will undo them with one click.
 
 - Interrupts (Ctrl+C) from the controlling TTY can be issued multiple times.
@@ -84,8 +84,9 @@ User Interface
 
 - With LessTif, Text selection works better.
 
-- With LessTif, the Backspace and Delete keys in the debugger console 
-  work better.
+- With LessTif, typing in the debugger console works better.
+
+- Drag and Drop of breakpoints in the machine code is supported.
 
 - Spin boxes (used to step values) have been slightly improved.
 
