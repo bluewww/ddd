@@ -43,6 +43,9 @@ void dddPopupSettingsCB(Widget, XtPointer, XtPointer);
 // Process `show' output
 void process_show(string command, string value, bool init = false);
 
+// True if settings might have changed
+bool need_settings();
+
 // Get settings string
 string get_settings(DebuggerType type);
 

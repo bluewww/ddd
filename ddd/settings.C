@@ -1730,6 +1730,11 @@ void dddPopupInfosCB (Widget, XtPointer, XtPointer)
     raise_shell(infos);
 }
 
+// True iff settings might have changed
+bool need_settings()
+{
+    return settings_panel != 0;
+}
 
 // Fetch GDB settings string
 string get_settings(DebuggerType type)

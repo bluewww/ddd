@@ -1562,23 +1562,26 @@ bool save_options(unsigned long flags)
     string xdb_settings = app_data.xdb_settings;
     string jdb_settings = app_data.jdb_settings;
 
-    switch (gdb->type())
+    if (need_settings())
     {
-    case GDB:
-	gdb_settings = get_settings(GDB);
-	break;
+	switch (gdb->type())
+	{
+	case GDB:
+	    gdb_settings = get_settings(GDB);
+	    break;
 
-    case DBX:
-	dbx_settings = get_settings(DBX);
-	break;
+	case DBX:
+	    dbx_settings = get_settings(DBX);
+	    break;
 
-    case XDB:
-	xdb_settings = get_settings(XDB);
-	break;
+	case XDB:
+	    xdb_settings = get_settings(XDB);
+	    break;
 
-    case JDB:
-	jdb_settings = get_settings(JDB);
-	break;
+	case JDB:
+	    jdb_settings = get_settings(JDB);
+	    break;
+	}
     }
 
     os << string_app_value(XtNgdbSettings, gdb_settings) << "\n";
