@@ -46,6 +46,7 @@ const MMType MMRadioPanel  =  8; // create a panel with RadioBox menu
 const MMType MMButtonPanel =  9; // like MMRadioPanel, but no radio behavior
 const MMType MMScale       = 10; // create a scale
 const MMType MMTextField   = 11; // create a text field
+const MMType MMEnterField  = 12; // like MMTextField, but use Enter to activate
 
 const MMType MMTypeMask    = 15; // mask to find type
 

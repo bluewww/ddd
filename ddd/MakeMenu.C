@@ -274,6 +274,7 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    break;
 
 	case MMTextField:
+	case MMEnterField:
 	    // Create a label with an associated text field
 	    assert(subitems == 0);
 
@@ -527,6 +528,14 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 	break;
 
     case MMTextField:
+	if (callback.callback != 0)
+	    XtAddCallback(widget,
+			  XmNvalueChangedCallback,
+			  callback.callback, 
+			  callback.closure);
+	break;
+
+    case MMEnterField:
 	if (callback.callback != 0)
 	    XtAddCallback(widget,
 			  XmNactivateCallback,
