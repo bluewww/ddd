@@ -1641,15 +1641,15 @@ int main(int argc, char *argv[])
 	gdb_host = gdb_host.after('@');
     }
 
-    // Check for --version, --help, etc.
+    // Check for `--version', `--help', `--news', etc.
     if (app_data.show_version)
-	show_version();
+	show_version(cout);
 
     if (app_data.show_invocation)
-	show_invocation(type);
+	show_invocation(type, cout);
 
     if (app_data.show_configuration)
-	show_configuration();
+	show_configuration(cout);
 
     if (app_data.show_news)
 	show(ddd_news);
@@ -1667,6 +1667,18 @@ int main(int argc, char *argv[])
 	|| app_data.show_license
 	|| app_data.show_manual)
 	return EXIT_SUCCESS;
+
+    if (app_data.trace_dialog || app_data.trace_shell_commands)
+    {
+	// Show DDD invocation
+	clog << "$";
+	for (int i = 0; saved_argv()[i] != 0; i++)
+	    clog << " " << cook(saved_argv()[i]);
+	clog << '\n';
+
+	// Always include the configuration in `--trace' output
+	show_configuration(clog);
+    }
 
     // From this point on, we'll be running under X.
 
