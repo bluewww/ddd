@@ -317,7 +317,7 @@ Volunteers for these and other projects are welcome!
 170. In the `File' menu, keep a history of most recently opened files
      (executables? sources?)
 
-171* Use double-buffering to display the graph.  Even less flickering.
+171. Use double-buffering to display the graph.  Even less flickering.
 
 174* Realize `()' buttons as cascade buttons, showing a pulldown menu
      with additional functions, like in Netscape 4.0 - i.e. base
