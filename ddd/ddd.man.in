@@ -15,7 +15,7 @@
 .\" DDD is distributed in the hope that it will be useful, but WITHOUT ANY
 .\" WARRANTY; without even the implied warranty of MERCHANTABILITY or
 .\" FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-.\" for more details.
+.\" for more details. 
 .\" 
 .\" You should have received a copy of the GNU General Public License
 .\" along with DDD -- see the file COPYING.  If not, write to the Free
@@ -27,9 +27,10 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "08 January 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "09 January 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
+.PSPIC PICS/dddlogo21.ps 10cm
 .SH SYNOPSIS
 .na
 .TP
@@ -187,6 +188,48 @@ to get a list of frequently used options, or see the `\fBOPTIONS\fR'
 section, below.
 .\"
 .\" ---------------
+.SH "THE DDD WINDOWS"
+.\" ---------------
+.\"
+.PSPIC PICS/ddd-all.ps 15.3cm
+\s-2@DDD@\s+2 is composed of three main windows:
+.br
+.IP \(bu 2
+The \fIDebugger Console\fR accepts debugger commands and shows
+debugger messages.
+.br
+.IP \(bu 2
+The \fISource Window\fR shows the current source code of the debugged
+program.
+.br
+.IP \(bu 2
+The \fIData Window\fR shows the current data of the debugged program.
+.PP
+\s-2@DDD@\s+2 can be configured to group all these windows into one.
+.PP
+Besides these main windows, there are some other optional windows
+.br
+.IP \(bu 2
+The \fICommand Tool\fR offers buttons for frequently used commands.
+It is usually placed on the source window.
+.br
+.IP \(bu 2
+The \fIMachine Code Window\fR shows the current machine code.  It is
+usually placed beneath the current source.
+.br
+.IP \(bu 2
+The \fIExecution Window\fR shows the input and output of the debugged
+program.
+.PP
+Besides these windows, \s-2@DDD@\s+2 also has several temporary
+\fIDialogs\fR for showing and entering additional information.
+.PP
+In this manual page, we discuss all the functionality associated with
+these windows.  We start with the debugger console and its commands,
+continue with the source window, and continue with the data window.
+But before that, we tell you how to get interactive help.
+.\"
+.\" ---------------
 .SH "GETTING HELP"
 .\" ---------------
 .\"
@@ -210,6 +253,8 @@ prompt\fR\(em\&that is, `\fB(gdb)\fR' for \s-2GDB\s+2, `\fB(dbx)\fR'
 for \s-2DBX\s+2, and `\fB>\fR' for \s-2XDB\s+2.  You can use arbitrary
 debugger commands; use the \s-2\fBRETURN\fR\s+2 key to enter them.
 .PP
+.PSPIC PICS/ddd-console.ps 15.3cm
+.PP
 You can \fIrepeat\fR previous and next commands by pressing the
 `\fBUp\fR' and `\fBDown\fR' arrow keys, respectively.  If you enter
 an empty line, the last command is repeated as well.  The `\fBCommand
@@ -223,8 +268,10 @@ again to repeat the search, or `\fBCtrl+S\fR' to search in the reverse
 direction.  To return to normal mode, press \s-2\fBESC\fR\s+2, or use
 any cursor command.
 .PP
+.PSPIC PICS/ddd-history.ps 15.3cm
+.PP
 Using \s-2GDB\s+2, you can also \fIcomplete\fR commands and arguments
-by pressing the \s-2\fBTAB\fR\s+2 key; pressing the \s-2\fBTAB\fR\s+2
+by pressing the `\s-2\fBTAB\fR\s+2' key; pressing the `\s-2\fBTAB\fR\s+2'
 key multiple times shows one possible expansion after the other.
 .PP
 Here are some of the most frequently needed debugger commands.
@@ -286,19 +333,21 @@ The same text is available online as the \c
 .PP
 .\"
 .SS "Common DBX commands"
+.TP
 .B stop in \fIfunction
 \&
 Set a breakpoint at \c
 .I function.
 .TP
-.TP
-.B break \fR[\|\fIfile\fB:\fR\|]\fIfunction
+.B stop at \fIline
 \&
 Set a breakpoint at \c
-.I function\c
-\& (in \c
-.I file\c
-\&).
+.I line.
+.TP
+.B file \fIfile
+\&
+Change the current file to \c
+.I file.
 .TP
 .B run \fR[\|\fIarglist\fR\|]
 Start your program (with \c
@@ -399,6 +448,8 @@ If you did not invoke \s-2@DDD@\s+2 specifying a program to be debugged,
 you can use the `\fBFile\fR' menu to open programs, core dumps and
 sources.
 .PP
+.PSPIC PICS/ddd-open.ps 15.3cm
+.PP
 To open a program to be debugged, select `\fBOpen Program\fR' from the
 `\fBFile\fR' menu.
 .PP
@@ -413,7 +464,7 @@ program must be specified upon invocation and cannot be changed at run
 time.
 .\"
 .\" ---------------
-.SH "BREAKPOINTS"
+.SH "LOOKING UP ITEMS"
 .\" ---------------
 .\"
 If the source of the debugged program is available, the \fIsource
@@ -421,6 +472,61 @@ window\fR displays its current source text.  (If a source text cannot
 be found, use the \s-2GDB\s+2 `\fBdirectory\fR' command to specify
 source text directories).
 .PP
+In the source window, you can lookup and examine function and variable
+definitions as well as search for arbitrary occurrences in the source
+text.
+.\"
+.SS "Searching Definitions"
+.\"
+If you wish to lookup a specific function or variable definition whose
+name is visible in the source text, click with the \fIleft mouse
+button\fR on the function or variable name.  The name is copied to the
+argument field.  Click on the `\fBLookup()\fR' button to find its
+definition.
+.PP
+.PSPIC PICS/ddd-source-popup.ps 15.3cm
+.PP
+As a shorter alternative, you can simply press the \fIright mouse
+button\fR on the function name and select the `\fBlookup\fR' item from
+the source popup menu.
+.PP
+As another alternative, you can enter the function name in the
+argument field and click on the `\fBLookup()\fR' button to find its
+definition.
+.PP
+Finally, you can use the \s-2GDB\s+2 `\fBinfo line\fR' command.
+Type `\fBhelp info line\fR' at the `\fB(gdb)\fR' prompt for
+details.
+.\"
+.SS "Textual Search"
+.\"
+If the item you wish to search is visible in the source text, click
+with the \fIleft mouse button\fR on it.  The identifier is copied to
+the argument field.  Click on the `\fBFind\s-2>>\s+2()\fR' button to find
+following occurrences and on the  `\fBFind\s-2<<\s+2()\fR' button to find
+previous occurrences.
+.PP
+As an alternative, you can enter the item in the argument field and
+click on one of the `\fBFind\fR' buttons.
+.PP
+By default, \s-2@DDD@\s+2 finds only complete words.  To search for
+arbitrary substrings, change the value of the `\fBFind Words Only\fR'
+option in the `\fBSource Options\fR' menu.
+.PP
+.PSPIC PICS/ddd-source.ps 15.3cm
+.\"
+.SS "Looking up Previous Locations"
+.\"
+Use the `\fBBack\fR' and `\fBForward\fR' buttons to lookup previous or
+next looked-up locations.  The location found is underlined.
+.\"
+.\"
+.\"
+.\"
+.\" ---------------
+.SH "BREAKPOINTS"
+.\" ---------------
+.\"
 Using the source window, you can make the program stop at certain
 \fIbreakpoints\fR and trace its execution.
 .\"
@@ -431,7 +537,9 @@ on the source line number and then on the `\fBBreak at ()\fR' button.
 .PP
 As an alternative, you can simply press the \fIright mouse button\fR
 on the source line number and select the `\fBSet Breakpoint\fR' item
-from the popup menu.
+from the line popup menu.
+.PP
+.PSPIC PICS/ddd-line-popup.ps 15.3cm
 .PP
 As another alternative, you can enter the line number in the argument
 field (indicated by `\fB():\fR') and click on the `\fBBreak at ()\fR'
@@ -450,9 +558,8 @@ prompt) for details.  The \s-2XDB\s+2 `\fBb\fR' command works as well.
 \s-2@DDD@\s+2 users fall into three categories, which must all be
 supported.  \fINovice users\fR explore \s-2@DDD@\s+2 and may prefer to
 use one single mouse button.  \fIAdvanced users\fR know how to use
-shortcuts and prefer popup menus.  \fIExperienced \s-2GDB\s+2,
-\s-2DBX\s+2, and \s-2XDB\s+2 users\fR prefer the command line
-interface.)
+shortcuts and prefer popup menus.  \fIExperienced users\fR prefer the
+command line interface.)
 .PP
 Breakpoints are indicated by a plain stop sign, 
 or as `\fB#\fIn\fB#\fR', where \fIn\fR is the breakpoint number.
@@ -461,7 +568,7 @@ or as `\fB#\fIn\fB#\fR', where \fIn\fR is the breakpoint number.
 .SS "Setting Breakpoints by Name"
 .\"
 If the function name is visible, click with the \fIleft
-mouse button\fR' on the function name.  The function name is copied to
+mouse button\fR on the function name.  The function name is copied to
 the argument field.  Click on the `\fBBreak at ()\fR' button to set a
 breakpoint there.
 .PP
@@ -471,7 +578,7 @@ from the popup menu.
 .PP
 As another alternative, you can enter the function name in the
 argument field (possibly using name completion by pressing the
-`\fBTab\fR' key) and click on the `\fBBreak at ()\fR' button.
+`\fB\s-2TAB\s+2\fR' key) and click on the `\fBBreak at ()\fR' button.
 .PP
 As yet another alternative, you can click on `\fBNew\fR' from the
 Breakpoint editor (invoked through `\fBEdit Breakpoints...\fR'
@@ -487,9 +594,12 @@ prompt) for details.  The \s-2XDB\s+2 `\fBb\fR' command works as well.
 .\"
 Note: \s-2DBX\s+2 does not support breakpoint disabling.
 .PP
-Press the \fIright mouse button\fR on the breakpoint name and select
-the `\fBDisable Breakpoint\fR' item (or the `\fBEnable Breakpoint\fR'
-item, respectively) from the popup menu.
+To temporarily disable a breakpoint, press the \fIright mouse
+button\fR on the breakpoint name and select the `\fBDisable
+Breakpoint\fR' item from the breakpoint popup menu.  To enable it
+again, select `\fBEnable Breakpoint\fR'.
+.PP
+.PSPIC PICS/ddd-bp-popup.ps 15.3cm
 .PP
 As an alternative, you can select the breakpoint and click on
 `\fBDisable\fR' or `\fBEnable\fR' in the Breakpoint editor (invoked
@@ -533,67 +643,16 @@ argument field.  Click on the `\fBClear at ()\fR' button to set a
 breakpoint there.
 .PP
 As a shorter alternative, you can simply press the \fIright mouse
-button\fR on the function name and select the `\fBclear\fR' item from
-the popup menu.
+button\fR on the breakpoint and select the `\fBDelete Breakpoint\fR'
+item from the popup menu.
 .PP
 As yet another alternative, you can select the breakpoint and click on
-`\fBDelete\fR' from the Breakpoint editor (invoked through `\fBEdit
+`\fBDelete\fR' in the Breakpoint editor (invoked through `\fBEdit
 Breakpoints...\fR' in the `\fBSource\fR' menu).
 .PP
 Finally, you can use the \s-2GDB\s+2 `\fBclear\fR' and `\fBdelete\fR'
 commands.  Type `\fBhelp clear\fR' or `\fBhelp delete\fR' at
 the `\fB(gdb)\fR' prompt for details.
-.\"
-.\"
-.SS "More Breakpoint Features"
-Using the Breakpoint editor (invoked through `\fBEdit
-Breakpoints...\fR' in the `\fBSource\fR' menu), you can specify
-breakpoint conditions and ignore counts.  Click on the
-`\fBCondition...\fR' and `\fBIgnore Count...\fR' buttons and click on
-the `\fBHelp\fR' button.
-.PP
-More breakpoint features can be invoked through the debugger console.
-Enter `\fBhelp breakpoints\fR' at the `\fB(gdb)\fR' prompt.
-.\"
-.\" ---------------
-.SH "LOOKING UP ITEMS"
-.\" ---------------
-.\"
-.SS "Searching Definitions"
-.\"
-If you wish to lookup a specific function or variable definition whose
-name is visible in the source text, click with the \fIleft mouse
-button\fR on the function or variable name.  The name is copied to the
-argument field.  Click on the `\fBLookup()\fR' button to find its
-definition.
-.PP
-As a shorter alternative, you can simply press the \fIright mouse
-button\fR on the function name and select the `\fBlookup\fR' item from
-the popup menu.
-.PP
-As another alternative, you can enter the function name in the
-argument field and click on the `\fBLookup()\fR' button to find its
-definition.
-.PP
-Finally, you can use the \s-2GDB\s+2 `\fBinfo line\fR' command.
-Type `\fBhelp info line\fR' at the `\fB(gdb)\fR' prompt for
-details.
-.\"
-.\"
-.SS "Textual Search"
-.\"
-If the item you wish to search is visible in the source text, click
-with the \fIleft mouse button\fR on it.  The identifier is copied to
-the argument field.  Click on the `\fBFind\s-2>>\s+2()\fR' button to find
-following occurrences and on the  `\fBFind\s-2<<\s+2()\fR' button to find
-previous occurrences.
-.PP
-As an alternative, you can enter the item in the argument field and
-click on one of the `\fBFind\fR' buttons.
-.PP
-By default, \s-2@DDD@\s+2 finds only complete words.  To search for
-arbitrary substrings, change the value of the `\fBFind Words Only\fR'
-option in the `\fBSource Options\fR' menu.
 .\"
 .\"
 .SS "Finding Breakpoints"
@@ -608,10 +667,45 @@ where \fIn\fR is the breakpoint number and click on the `\fBLookup()\fR'
 button to find its definition.
 .\"
 .\"
-.SS "Looking up Previous Locations"
+.SS "Breakpoint Conditions"
 .\"
-Use the `\fBBack\fR' and `\fBForward\fR' buttons to lookup previous or
-next looked-up locations.  The location found is underlined.
+Using the Breakpoint Editor (invoked through `\fBEdit
+Breakpoints...\fR' in the `\fBSource\fR' menu), you can specify
+\fIbreakpoint conditions\fR.  Reaching the breakpoint stops 
+the program only if the associated condition is met\(em\&that is, if
+the condition expression evaluates to a non-zero value.
+.PP
+To set a breakpoint condition, select the appropriate breakpoint in
+the Breakpoint Editor and click on the `\fBCondition...\fR' button.
+You can then enter (or change) the condition in a special dialog.
+.PP
+.PSPIC PICS/ddd-cond.ps 15.3cm
+.PP
+As a faster alternative, you can also press the \fIright mouse
+button\fR on the breakpoint in the source code and select the `\fBSet
+Condition...\fR' item from the popup menu.
+.\"
+.\"
+.SS "Breakpoint Ignore Counts"
+.\"
+Using the Breakpoint Editor (invoked through `\fBEdit
+Breakpoints...\fR' in the `\fBSource\fR' menu), you can specify
+\fIignore counts\fR.  If an ignore count is set, each crossing of the
+breakpoint decrements the ignore count.  The program stops only if the
+ignore count is zero.
+.PP
+To set a breakpoint ignore count, select the appropriate breakpoint in
+the Breakpoint Editor and click on the `\fBIgnore Count...\fR' button.
+You can then enter (or change) the ignore count in a special dialog.
+.PP
+As a faster alternative, you can also press the \fIright mouse
+button\fR on the breakpoint in the source code and select the `\fBSet
+Ignore Count...\fR' item from the popup menu.
+.\"
+.SS "More Breakpoint Features"
+.\"
+More breakpoint features can be invoked through the debugger console.
+Enter `\fBhelp breakpoints\fR' at the `\fB(gdb)\fR' prompt.
 .\"
 .\" ---------------
 .SH "RUNNING THE PROGRAM"
@@ -625,6 +719,8 @@ give to your program.  You can either select from a list of previously
 used arguments or enter own arguments in the text field.  Afterwards,
 press the `\fBOK\fR' button to start execution with the selected
 arguments.
+.PP
+.PSPIC PICS/ddd-arguments.ps 15.3cm
 .PP
 To run your program again, with the same arguments, select `\fBRun
 Again\fR' from the `\fBProgram\fR' menu or press the `\fBRun\fR'
@@ -665,6 +761,8 @@ stopping.
 To continue running until the current function returns, use the
 `\fBFinish\fR' button.  The returned value (if any) is printed.
 .PP
+.PSPIC PICS/ddd-tool.ps 15.3cm
+.PP
 To continue running until a line after the current source line is
 reached, use the `\fBContinue Until Here\fR' facility from the line
 popup menu.  See `\fBTemporary Breakpoints\fR', above, for a
@@ -689,6 +787,8 @@ the current one.
 You can also directly type the `\fBup\fR' and `\fBdown\fR' commands at
 the debugger prompt.  Typing \fBCtrl+Up\fR and \fBCtrl+Down\fR,
 respectively, will also move you through the stack.
+.PP
+.PSPIC PICS/ddd-backtrace.ps 15.3cm
 .\"
 .\"
 .\" ---------------
@@ -737,8 +837,8 @@ You can select individual displays by clicking on them with the
 \fIleft mouse button\fR.  The resulting expression is shown in the
 \fIargument field\fR, below.
 .PP
-You can \fIextend\fR an existing selection by pressing the \fBShift\fI
-Key while selecting.
+You can \fIextend\fR an existing selection by pressing the
+\fBShift\fR key while selecting.
 .PP
 Single displays may also be selected by using the arrow keys.
 .\"
@@ -989,7 +1089,7 @@ scroll bars or panners.
 .PP
 For fine-grain movements, selected displays may also be moved using
 the arrow keys.  Pressing \fBShift\fR and an arrow key moves displays
-by single pixels.  Pressing \fRCtrl\fB and arrow keys moves displays
+by single pixels.  Pressing `\fBCtrl\fR' and arrow keys moves displays
 by grid positions.
 .\"
 .\"
@@ -1055,10 +1155,10 @@ Name\fR' field.  Click on the `\fBPrint\fR' button to create the file.
 When the graph is printed in a file, two formats are available:
 .br
 .IP \(bu 2
-PostScript - suitable for enclosing it in another document;
+\fBPostScript\fR - suitable for enclosing it in another document;
 .br
 .IP \(bu 2
-\s-2FIG\s+2 - suitable for editing, using the \s-2XFIG\s+2 graphic
+\fB\s-2FIG\s+2\fR - suitable for editing, using the \s-2XFIG\s+2 graphic
 editor, or for conversion into other formats (among others
 \s-2IBMGL\s+2, LaTeX, \s-2PIC\s+2), 
 using the \s-2TRANSFIG\s+2 or \s-2FIG2DEV\s+2 package.
@@ -1185,15 +1285,15 @@ abort (\fBCtrl+\\\fR or \fBAbort\fR), which sends a \s-2QUIT\s+2 signal
 to the inferior debugger.  Use this in emergencies only; the inferior
 debugger may be left inconsistent after a \s-2QUIT\s+2 signal.
 .PP
-As a last resort\(em&if \s-2DDD\s+2 hangs, for example\(em&, you may
+As a last resort\(em\&if \s-2DDD\s+2 hangs, for example\(em\&, you may
 also interrupt \s-2@DDD@\s+2 itself using an interrupt signal
-(\s-2SIGINT\s+2)\(em\&for instance by pressing \fBCtrl+C\fR in the
+(\s-2SIGINT\s+2).  This can be done by pressing \fBCtrl+C\fR in the
 shell \s-2@DDD@\s+2 was started from, or by using the \s-2UNIX\s+2
-`\fBkill\fR' command.  This interrupts any \s-2@DDD@\s+2 action; the
-inferior debugger is interrupted as well.  Since this interrupt signal
-can result in internal inconsistencies, use this as a last resort in
-emergencies only; save your work as soon as possible
-and restart \s-2DDD\s+2.
+`\fBkill\fR' command.  An interrupt signal interrupts any
+\s-2@DDD@\s+2 action; the inferior debugger is interrupted as well.
+Since this interrupt signal can result in internal inconsistencies,
+use this as a last resort in emergencies only; save your work as soon
+as possible and restart \s-2DDD\s+2.
 .\"
 .\"
 .\" ---------------
@@ -1242,9 +1342,9 @@ results.
 .br
 Note: using `\fB\-\-rhost\fR', \s-2@DDD@\s+2 invokes the inferior
 debugger as soon as a shell prompt appears.  The first output on the
-remote host ending in a space character and not followed by a newline
-is assumed to be a shell prompt.  If necessary, adjust your shell
-prompt on the remote host.
+remote host ending in a space character or `\fB>\fR' and not followed
+by a newline is assumed to be a shell prompt.  If necessary, adjust
+your shell prompt on the remote host.
 .br
 .IP \(bu 2
 To run the remote program, \s-2@DDD@\s+2 invokes an `\fBxterm\fR' terminal
@@ -1532,17 +1632,17 @@ This is the default font setting in \s-2@DDD@\s+2:
 .sp
 .br
   \fB@Ddd@*fontList: \\
-  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset,\\
-  -*-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*=small,\\
-  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=tt,\\
-  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=key,\\
-  -*-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*=rm,\\
-  -*-helvetica-medium-o-*-*-12-*-*-*-*-*-*-*=sl,\\
-  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=bf,\\
-  -*-helvetica-bold-o-*-*-12-*-*-*-*-*-*-*=bs,\\
-  -*-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*=Logo,\\
-  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=logo,\\
-  -*-symbol-*-*-*-12-*-*-*-*-*-*-*=symbol\fR
+  \-*\-helvetica\-bold\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=charset,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-10\-*\-*\-*\-*\-*\-*\-*=small,\\
+  \-*\-lucidatypewriter\-medium\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=tt,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=key,\\
+  \-*\-helvetica\-medium\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=rm,\\
+  \-*\-helvetica\-medium\-o\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=sl,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=bf,\\
+  \-*\-helvetica\-bold\-o\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=bs,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-14\-*\-*\-*\-*\-*\-*\-*=Logo,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=logo,\\
+  \-*\-symbol\-*\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=symbol\fR
 .br
 .sp
 .TP
@@ -1586,57 +1686,57 @@ copy into your `\fB$HOME/.dddinit\fR' file:
 .sp
 .br
   \fB@Ddd@*fontList: \\
-  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset,\\
-  -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\\
-  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=tt,\\
-  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\\
-  -*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=rm,\\
-  -*-helvetica-medium-o-*-*-*-90-*-*-*-*-*-*=sl,\\
-  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=bf,\\
-  -*-helvetica-bold-o-*-*-*-90-*-*-*-*-*-*=bs,\\
-  -*-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*=Logo,\\
-  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=logo,\\
-  -*-symbol-*-*-*-*-90-*-*-*-*-*-*=symbol\fR
+  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=charset,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-*\-80\-*\-*\-*\-*\-*\-*=small,\\
+  \-*\-lucidatypewriter\-medium\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=tt,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=key,\\
+  \-*\-helvetica\-medium\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=rm,\\
+  \-*\-helvetica\-medium\-o\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=sl,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=bf,\\
+  \-*\-helvetica\-bold\-o\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=bs,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-*\-120\-*\-*\-*\-*\-*\-*=Logo,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=logo,\\
+  \-*\-symbol\-*\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=symbol\fR
 .br
 .sp
 The fonts in text fields are specified as follows:
 .sp
 .br
   \fB@Ddd@*XmTextField.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+  \-*\-lucidatypewriter\-medium\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=charset
   @Ddd@*XmText.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset\fR
+  \-*\-lucidatypewriter\-medium\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=charset\fR
 .br
 .sp
 And here is another resolution-independent alternative:
 .sp
 .br
   \fB@Ddd@*XmTextField.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+  \-*\-lucidatypewriter\-medium\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=charset
   @Ddd@*XmText.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset\fR
+  \-*\-lucidatypewriter\-medium\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=charset\fR
 .br
 .sp
 These are the fonts in the command tool:
 .sp
 .br
   \fB@Ddd@*tool_buttons.run.fontList: \\
-  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
+  \-*\-helvetica\-bold\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=charset
   @Ddd@*tool_buttons.break.fontList: \\
-  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
+  \-*\-helvetica\-bold\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=charset
   @Ddd@*tool_buttons*fontList: \\
-  -*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*=charset\fR
+  \-*\-helvetica\-medium\-r\-*\-*\-10\-*\-*\-*\-*\-*\-*\-*=charset\fR
 .br
 .sp
 The resolution-independent alternative looks like this:
 .sp
 .br
   \fB@Ddd@*tool_buttons.run.fontList: \\
-  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=charset
   @Ddd@*tool_buttons.break.fontList: \\
-  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=charset
   @Ddd@*tool_buttons*fontList: \\
-  -*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset\fR
+  \-*\-helvetica\-medium\-r\-*\-*\-*\-80\-*\-*\-*\-*\-*\-*=charset\fR
 .br
 .sp
 Pick your choice and copy and modify the appropriate resources to your
@@ -1736,7 +1836,7 @@ The maximum number of characters allowed in a data display title
 `\fBfoo->..->blue\fR'.
 .TP
 .B "pannedGraphEditor (\fPclass\fB PannedGraphEditor)"
-What shall \s-2@DDD\s+2 use if the graph gets too large to be
+What shall \s-2@DDD@\s+2 use if the graph gets too large to be
 displayed?  If this is `\fBtrue\fR', an Athena panner is used (a kind
 of two-directional scrollbar).  If this is `\fBfalse\fR' (default),
 two Motif scrollbars are used.
@@ -1879,7 +1979,7 @@ also initially sent to \s-2GDB\s+2.  Its default value is
 .br
   \fB@Ddd@*gdbSettings: \\
   set print repeats 0\\n\\
-  set print asm-demangle on\\n
+  set print asm-demangle on\\n\fR
 .br
 .sp
 This resource is used to save and restore the debugger settings.
@@ -1894,7 +1994,7 @@ session, using the `\fB\-\-rhost\fR' option.  By default, it sets up
 the remote terminal such that it suits \s-2@DDD@\s+2:
 .sp
 .br
-  \fB@Ddd@*rHostInitCommands: stty -echo -onlcr
+  \fB@Ddd@*rHostInitCommands: stty -echo -onlcr\fR
 .br
 .sp
 You may add other commands here\(em\&for instance, to set the
@@ -2288,7 +2388,7 @@ by the file name.  The default is to invoke \fB$XEDITOR\fR first, then
 .br
   \fB@Ddd@*editCommand: \\
   ${XEDITOR=false} +@LINE@ @FILE@ \\
-  || xterm -e ${EDITOR=vi} +@LINE@ @FILE@\fR
+  || xterm \-e ${EDITOR=vi} +@LINE@ @FILE@\fR
 .br
 .sp
 .br
@@ -2314,7 +2414,7 @@ The commmand to list all core files on the remote host.  The string
 .br
   \fB@Ddd@*listCoreCommand: \\
   file @MASK@ | grep '.*:.*core.*' \\
-  | cut -d: -f1\fR
+  | cut \-d: \-f1\fR
 .br
 .sp
 .TP
@@ -2325,7 +2425,7 @@ The commmand to list all directories on the remote host.  The string
 .br
   \fB@Ddd@*listDirCommand: \\
   file @MASK@ | grep '.*:.*directory.*' \\
-  | cut -d: -f1\fR
+  | cut \-d: \-f1\fR
 .br
 .sp
 .TP
@@ -2336,8 +2436,8 @@ The commmand to list all executable files on the remote host.  The string
 .br
   \fB@Ddd@*listExecCommand: \\
   file @MASK@ | grep '.*:.*exec.*' \\
-  | grep -v  '.*:.*script.*' \\
-  | cut -d: -f1 | grep -v '.*\\.o$'\fR
+  | grep \-v  '.*:.*script.*' \\
+  | cut \-d: \-f1 | grep \-v '.*\\.o$'\fR
 .br
 .sp
 .TP
@@ -2348,7 +2448,7 @@ The commmand to list all source files on the remote host.  The string
 .br
   \fB@Ddd@*listSourceCommand: \\
   file @MASK@ | grep '.*:.*text.*' \\
-  | cut -d: -f1\fR
+  | cut \-d: \-f1\fR
 .br
 .sp
 .TP
@@ -2366,7 +2466,7 @@ the debugged program.  A bourne shell command to run in the separate
 tty is appended this string.  A simple value is
 .sp
 .br
-  \fB@Ddd@*termCommand: xterm -e /bin/sh -c\fR
+  \fB@Ddd@*termCommand: xterm \-e /bin/sh \-c\fR
 .br
 .TP
 .B "termType (\fPclass\fB TermType)"
@@ -2386,8 +2486,8 @@ To specify `\fBnetscape-3.0\fR' as browser, use the setting:
 .sp
 .br
   \fB@Ddd@*wwwCommand: \\
-  netscape-3.0 -remote 'openURL(@URL@)' \\
-  || netscape-3.0 '@URL@'\fR
+  netscape\-3.0 \-remote 'openURL(@URL@)' \\
+  || netscape\-3.0 '@URL@'\fR
 .br
 .sp
 This command first tries to connect to a running \fBnetscape-3.0\fR browser;
@@ -2398,7 +2498,7 @@ if this fails, it starts a new \fBnetscape-3.0\fR process.
 The \s-2@DDD@\s+2 \s-2WWW\s+2 page.  Value:
 .sp
 .br
-  \fB@Ddd@*wwwPage: http://www.cs.tu-bs.de/softech/ddd/\fR
+  \fB@Ddd@*wwwPage: http://www.cs.tu\-bs.de/softech/ddd/\fR
 .br
 .sp
 .\"
@@ -2473,16 +2573,16 @@ The following \s-2@DDD@\s+2 actions may be used in translation tables.
 .SS "General Actions"
 These actions are used to assign the keyboard focus.
 .TP
-.B ddd-next-tab-group ()
+.B ddd\-next\-tab\-group ()
 Assign focus to the next tab group.
 .TP
-.B ddd-prev-tab-group ()
+.B ddd\-prev\-tab\-group ()
 Assign focus to the previous tab group.
 .TP
-.B ddd-previous-tab-group ()
+.B ddd\-previous\-tab\-group ()
 Assign focus to the previous tab group.
 .TP
-.B ddd-get-focus ()
+.B ddd\-get\-focus ()
 Assign focus to the element that just received input.
 .\"
 .\"
@@ -2496,7 +2596,7 @@ End the action initiated by \fBselect\fR.  Bound to a button up event.
 .B extend ()
 Extend the current selection.  Bound to a button down event.
 .TP
-.B extend-or-move ()
+.B extend\-or\-move ()
 Extend the current selection.  Bound to a button down event.
 If the pointer is dragged, move the selection.
 .TP
@@ -2504,7 +2604,7 @@ If the pointer is dragged, move the selection.
 Continue the action initiated by \fBselect\fR.  Bound to a pointer
 motion event.
 .TP
-.B hide-edges (\fR[\fBany\fR|\fBboth\fR|\fBfrom\fR|\fBto\fR]\fB)
+.B hide\-edges (\fR[\fBany\fR|\fBboth\fR|\fBfrom\fR|\fBto\fR]\fB)
 Hide some edges.  \fBany\fR means to process all edges where either
 source or target node are selected. \fBboth\fR means to process all
 edges where both nodes are selected. \fBfrom\fR means to process all
@@ -2512,23 +2612,23 @@ edges where at least the source node is selected. \fBto\fR means to
 process all edges where at least the target node is selected.  Default
 is \fBany\fR.
 .TP
-.B layout (\fR[\fBregular\fR|\fBcompact\fR]\fB, \fR[[\fB+\fR|\fB-\fR]\fIdegrees\fR]]\fB)
+.B layout (\fR[\fBregular\fR|\fBcompact\fR]\fB, \fR[[\fB+\fR|\fB\-\fR]\fIdegrees\fR]]\fB)
 Layout the graph.  \fBregular\fR means to use the regular layout
 algorithm; \fBcompact\fR uses an alternate layout algorithm, where
 successors are placed next to their parents.  Default is
 \fBregular\fR.  \fIdegrees\fR indicates in which direction the graph
 should be layouted.  Default is the current graph direction.
 .TP
-.B move-selected (\fIx-offset\fB, \fIy-offset\fB)
+.B move\-selected (\fIx-offset\fB, \fIy-offset\fB)
 Move all selected nodes in the direction given by \fIx-offset\fR and
 \fIy-offset\fR.  \fIx-offset\fR and \fIy-offset\fR is either given as
-a numeric pixel value, or as `\fB+grid\fR', or `\fB-grid\fR', meaning
+a numeric pixel value, or as `\fB+grid\fR', or `\fB\-grid\fR', meaning
 the current grid size.
 .TP
 .B normalize ()
 Place all nodes on their positions and redraw the graph.
 .TP
-.B rotate (\fR[[\fB+\fR|\fB-\fR]\fIdegrees\fR]\fB)
+.B rotate (\fR[[\fB+\fR|\fB\-\fR]\fIdegrees\fR]\fB)
 Rotate the graph around \fIdegrees\fR degrees.  
 \fIdegrees\fR must be a multiple of 90.  Default is \fB+90\fR.
 .TP
@@ -2536,23 +2636,23 @@ Rotate the graph around \fIdegrees\fR degrees.
 Select the node pointed at.  Clear all other selections.  Bound to a
 button down event.
 .TP
-.B select-all ()
+.B select\-all ()
 Select all nodes in the graph.
 .TP
-.B select-first ()
+.B select\-first ()
 Select the first node in the graph.
 .TP
-.B select-next ()
+.B select\-next ()
 Select the next node in the graph.
 .TP
-.B select-or-move ()
+.B select\-or\-move ()
 Select the node pointed at.  Clear all other selections.  Bound to a
 button down event. If the pointer is dragged, move the selected node.
 .TP
-.B select-prev ()
+.B select\-prev ()
 Select the previous node in the graph.
 .TP
-.B show-edges (\fR[\fBany\fR|\fBboth\fR|\fBfrom\fR|\fBto\fR]\fB)
+.B show\-edges (\fR[\fBany\fR|\fBboth\fR|\fBfrom\fR|\fBto\fR]\fB)
 Show some edges.  \fBany\fR means to process all edges where either
 source or target node are selected. \fBboth\fR means to process all
 edges where both nodes are selected. \fBfrom\fR means to process all
@@ -2560,79 +2660,79 @@ edges where at least the source node is selected. \fBto\fR means to
 process all edges where at least the target node is selected.  Default
 is \fBany\fR.
 .TP
-.B snap-to-grid ()
+.B snap\-to\-grid ()
 Place all nodes on the nearest grid position.
 .TP
-.B unselect-all ()
+.B unselect\-all ()
 Clear the selection.
 .\"
 .\"
 .SS "Debugger Console Actions"
 These actions are used in the debugger console and other text fields.
 .TP
-.B gdb-backward-character ()
+.B gdb\-backward\-character ()
 Move one character to the left.  Bound to \fBCtrl+B\fR and \fBLeft\fR.
 .TP
-.B gdb-beginning-of-line ()
+.B gdb\-beginning\-of\-line ()
 Move cursor to the beginning of the current line, after the prompt.
 Bound to \fBCtrl+A\fR and \fBHome\fR.
 .TP
-.B gdb-control (\fIcontrol-character\fB)
+.B gdb\-control (\fIcontrol-character\fB)
 Send the given \fIcontrol-character\fR to the inferior debugger.
 The \fIcontrol-character\fR must be specified in the form `\fB^\fIX\fR',
 where \fIX\fR is an upper-case letter or `\fB?\fR'.
 Bound to \fBCtrl+C\fR and \fBCtrl+\\\fR.
 .TP
-.B gdb-complete-arg (\fIcommand\fB)
+.B gdb\-complete\-arg (\fIcommand\fB)
 Complete current argument as if \fIcommand\fR was prepended.
 Bound to \fBCtrl+T\fR.
 .TP
-.B gdb-complete-command ()
+.B gdb\-complete\-command ()
 Complete current command line in the debugger console.
 Bound to \s-2\fBTAB\fR\s+2 and \fBCtrl+T\fR.
 .TP
-.B gdb-complete-tab (\fIcommand\fB)
+.B gdb\-complete\-tab (\fIcommand\fB)
 If global \s-2TAB\s+2 completion is enabled, complete current 
 argument as if \fIcommand\fR was prepended.  Otherwise, proceed as if
 the \s-2TAB\s+2 key was hit.  Bound to \s-2\fBTAB\fR\s+2.
 .TP
-.B gdb-delete-or-control (\fIcontrol-character\fB)
+.B gdb\-delete\-or\-control (\fIcontrol-character\fB)
 Like \fBgdb-control\fR, but effective only if the cursor is at the end
 of a line.  Otherwise, \fIcontrol-character\fR is ignored and the
 character following the cursor is deleted.  Bound to \fBCtrl+D\fR.
 .TP
-.B gdb-end-of-line ()
+.B gdb\-end\-of\-line ()
 Move cursor to the end of the current line.  Bound to \fBCtrl+E\fR and
 \fBEnd\fR.
 .TP
-.B gdb-next-history ()
+.B gdb\-next\-history ()
 Recall next command from history.  Bound to \fBCtrl+N\fR and \fBDown\fR.
 .TP
-.B gdb-prev-history ()
+.B gdb\-prev\-history ()
 Recall previous command from history.  Bound to \fBCtrl+P\fR and \fBUp\fR.
 .TP
-.B gdb-previous-history ()
+.B gdb\-previous\-history ()
 Recall previous command from history.  Bound to \fBCtrl+P\fR and \fBUp\fR.
 .TP
-.B gdb-forward-character ()
+.B gdb\-forward\-character ()
 Move one character to the right.  Bound to \fBCtrl+F\fR and \fBRight\fR.
 .TP
-.B gdb-insert-graph-arg ()
+.B gdb\-insert\-graph\-arg ()
 Insert the contents of the data display argument field `\fB()\fR'.
 .TP
-.B gdb-insert-source-arg ()
+.B gdb\-insert\-source\-arg ()
 Insert the contents of the source argument field `\fB()\fR'.
 .TP
-.B gdb-isearch-prev ()
+.B gdb\-isearch\-prev ()
 Enter reverse incremental search mode.  Bound to \fBCtrl+R\fR.
 .TP
-.B gdb-isearch-next ()
+.B gdb\-isearch\-next ()
 Enter incremental search mode.  Bound to \fBCtrl+S\fR.
 .TP
-.B gdb-isearch-exit ()
+.B gdb\-isearch\-exit ()
 Exit incremental search mode.  Bound to \s-2\fBESC\fR\s+2.
 .TP
-.B gdb-set-line (\fIvalue\fB)
+.B gdb\-set\-line (\fIvalue\fB)
 Set the current line to \fIvalue\fR.  Bound to \fBCtrl+U\fR.
 .\"
 .\" ---------------
@@ -3217,7 +3317,7 @@ manual page on \s-2UNIX\s+2 systems (as
 .\" ---------------
 .SH COPYRIGHT
 .\" ---------------
-\s-2@DDD@\s+2 is Copyright \(co 1995, 1996
+\s-2@DDD@\s+2 is Copyright \(co 1995, 1996, 1997
 Technische Universitaet Braunschweig, Germany.
 .PP
 \s-2@DDD@\s+2 is free software; you can redistribute it and/or modify
@@ -3236,7 +3336,7 @@ You should have received a copy of the License along with
 output.  To read the License from within \s-2@DDD@\s+2, use the
 `\fB@DDD@ License...\fR' item in the `\fBHelp\fR' menu.
 .PP
-This \s-2@DDD@\s+2 manual page is Copyright \(co 1995, 1996
+This \s-2@DDD@\s+2 manual page is Copyright \(co 1995, 1996, 1997
 Technische Universitaet Braunschweig, Germany.
 .PP
 Permission is granted to make and distribute verbatim copies of this
