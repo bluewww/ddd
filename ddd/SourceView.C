@@ -6846,7 +6846,7 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
 	height + border_width + margin_height
 	+ shadow_thickness + highlight_thickness;
 
-    y += -glyph_height + line_height(text_w) / 2 - 2;
+    y -= (line_height(text_w) + glyph_height) / 2 - 2;
 
     if (x != old_x || y != old_y)
     {
