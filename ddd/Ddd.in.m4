@@ -6,7 +6,7 @@ DDD_APP_WARNING
 Ddd*appDefaultsVersion: @VERSION@
 
 ! Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
-! Copyright (C) 1999 Universitaet Passau, Germany.
+! Copyright (C) 1999-2000 Universitaet Passau, Germany.
 ! Written by Andreas Zeller <zeller@gnu.org>.
 ! 
 ! This file is part of DDD.
@@ -6973,11 +6973,11 @@ to access core dumps, source files, or attaching to processes.\n\
 To open a program, use LBL(File, Open Program).
 
 define(NO_SOURCE_HELP,
-[ITEM In order to debug a program effectively, you need to generate\n\
-    debugging information when you compile it.  Without debugging \
-information,\n\
-    @GDB@ will be unable to locate the source code.  To request debugging\n\
-    information, specify the SAMP(-g) option when you run the compiler.\n\
+[ITEM Use LBL(File, Open Source) to select a source file.\n\
+ITEM If this does not work, your program may lack debugging information.\n\
+    Without debugging information, @GDB@ will be unable to locate the source\n\
+    code.  To request debugging information, specify the SAMP(-g) option\n\
+    when you run the compiler.\n\
 ITEM You may need to tell @GDB@ where the source code files are.\n\
     Invoke LBL(Edit, @GDB@ Settings) and look for appropriate entries.\n\
     Using GDB, you can also create a local FILE(.gdbinit) file that contains\n\

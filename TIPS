@@ -2,6 +2,7 @@
 # DDD tips of the day.
 
 # Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
+# Copyright (C) 2000 Universitaet Passau, Germany.
 # Written by Andreas Zeller <zeller@gnu.org>.
 # 
 # This file is part of DDD.
@@ -89,6 +90,11 @@ or curses, let it run in the separate execution window
 
 
 ! Intermediate tips.
+
+You can save space in the data window by 
+ITEM hiding details (LBL(Show/Hide)),
+ITEM rotating structs (LBL(Rotate)), and 
+ITEM clustering variables (LBL(Undisp, Cluster)).
 
 If you want to customize the DDD fonts, see
 LBL(Edit, Preferences, Fonts).
