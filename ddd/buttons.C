@@ -456,6 +456,10 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
     if (tip == NO_GDB_ANSWER)
 	return MString(0, true);
 
+    // Sun DBX 3.2 sometimes forgets the newline after the 80th character
+    if (tip.length() > 80)
+	tip = tip.before(80);
+
     if (tip.contains(help_name, 0))
 	tip = tip.after(help_name);
 
