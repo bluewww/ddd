@@ -319,13 +319,22 @@ Reported by: Andrew Gaylard <apg@users.sf.net>
     - At this point, DDD's "./configure; make; make install" will work.
 
     If anyone's tried building DDD with HP's aCC, I'd like to hear from you.
+
+Reported by: Tuomo Tikkanen <Tuomo.Tikkanen@nokia.com>
+
+    To use HP's aCC to build ddd 3.3.9, setting CXXFLAGS='-AA' is necessary.
+
 
 Irix
 ====
 
-    To use the MIPSPro compilers with Motif 2.1, the configure line is:
+    Using the MIPSPro compilers:
+
+    To compile ddd 3.3.9, CXXFLAGS needs to include "-LANG:std".
+
+    To use Motif 2.1, the configure line is:
     env CC='cc -n32' CXX='CC -n32' \
-     CFLAGS='-O' CXXFLAGS='-O' \
+     CFLAGS='-O' CXXFLAGS='-O -LANG:std' \
      ./configure \
      --with-motif-includes=/usr/Motif-2.1/include \
      --with-motif-libraries=/usr/Motif-2.1/lib32 \
@@ -484,7 +493,7 @@ Reported by: Tim Mooney <mooney@dogbert.cc.ndsu.NoDak.edu>
 
     Using the Compaq C++ compiler Version 6.5, it is necessary
     to use "CXX='cxx' CXXFLAGS='-std ansi -D__USE_STD_IOSTREAM -nousing_std'
-    ./configure" to build ddd 3.3.9 and later
+    ./configure" to build ddd 3.3.9 and later.
     (CXXFLAGS='-std strict_ansi -nopure_cname' should do as well).
 
 
