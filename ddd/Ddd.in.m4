@@ -1422,6 +1422,10 @@ dnl GDB_TRANSLATIONS
 Ddd*XmComboBox*visibleItemCount:    5
 Ddd*comboBoxShell*visibleItemCount: 5
 
+! Have some more items for toolbar argument fields
+Ddd*toolbar*XmComboBox*visibleItemCount:    10
+Ddd*toolbar*comboBoxShell*visibleItemCount: 10
+
 ! Have somewhat lighter combo box arrows
 Ddd*XmComboBox.arrowSize:  15
 Ddd*comboBoxArrow.width:   12
@@ -1877,6 +1881,9 @@ Ddd*menubar*recentMenu.r6.mnemonic: 6
 Ddd*menubar*recentMenu.r7.mnemonic: 7
 Ddd*menubar*recentMenu.r8.mnemonic: 8
 Ddd*menubar*recentMenu.r9.mnemonic: 9
+
+! Get the file names dynamically
+Ddd*menubar*recentMenu*documentationString: 
 
 
 ! Edit menu
