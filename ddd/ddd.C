@@ -286,7 +286,7 @@ static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer);
 static void update_reset_preferences();
 
 // User emergencies (Ctrl-C)
-static void process_emergencies();
+bool process_emergencies();
 
 // Return true if user interaction events are pending
 static bool pending_interaction();
@@ -4898,12 +4898,15 @@ static Bool is_emergency(Display *, XEvent *event, char *)
     }
 }
 
-static void process_emergencies()
+bool process_emergencies()
 {
     XEvent event;
     if (XCheckIfEvent(XtDisplay(gdb_w), &event, is_emergency, 0))
     {
 	// Emergency: process this event immediately
 	XtDispatchEvent(&event);
+	return true;
     }
+
+    return false;
 }
