@@ -2369,8 +2369,25 @@ bool DataDisp::get_state(ostream& os,
 	if (include_position)
 	{
 	    BoxPoint pos = dn->pos();
+
 	    if (pos.isValid())
+	    {
+		if (bump_displays && is_cluster(dn))
+		{
+		    // When this cluster will be restored, it will be
+		    // empty first, but later additions will bump it
+		    // to a new position.  Compensate for this.
+		    static DispNode empty_cluster(-1, dn->name(), 
+						  dn->scope(), "No displays.");
+
+		    BoxPoint offset = 
+			(dn->box()->size() - empty_cluster.box()->size()) / 2;
+		    
+		    pos = graphEditFinalPosition(graph_edit, pos - offset);
+		}
+
 		os << " at " << pos;
+	    }
 	}
 
 	// Write dependency
