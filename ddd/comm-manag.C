@@ -1218,7 +1218,10 @@ static void process_config_make(string& answer)
 
 static void process_config_named_values(string& answer)
 {
-    gdb->has_named_values(answer.contains(" = "));
+    // SUN DBX 4.0 issues "DDD" on `print -r "DDD"', but has named
+    // values anyway.  Work around this.
+    gdb->has_named_values(gdb->has_print_r_option() 
+			  || answer.contains(" = "));
 }
 
 static void process_config_when_semicolon(string& answer)
