@@ -92,7 +92,8 @@ void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer call_data)
     if (info->set)
 	set_status("Caching source texts.");
     else
-	set_status("Not caching source texts.");
+	set_status("Not caching source texts.  "
+		   "Source text cache has been cleared.");
 
     update_options();
     options_changed = true;
@@ -108,7 +109,8 @@ void sourceToggleCacheMachineCodeCB (Widget, XtPointer, XtPointer call_data)
     if (info->set)
 	set_status("Caching machine code.");
     else
-	set_status("Not caching machine code.");
+	set_status("Not caching machine code.  "
+		   "Machine code cache has been cleared.");
 
     update_options();
     options_changed = true;

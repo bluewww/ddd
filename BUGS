@@ -135,11 +135,6 @@ Volunteers for fixing these and other bugs are welcome!
         [I could not reproduce this bug.  Does this also happen on 
          other configurations?  -AZ]
 
-     4. When unselecting the `Display Glyphs' option, the actual line in
-        the source window does not get highlighted. If one has also the
-        assembler window then the line in this window is highlighted, but
-        not the one in the source language window.
-
 071. Klaus-Georg Adams <adams@achibm5.chemie.uni-karlsruhe.de> says:
      I have got a seg-fault in the stock precompiled ddd-1.4b
      (i486-unknown-linux) and report it dutyfully.
