@@ -9385,10 +9385,10 @@ bool SourceView::get_state(ostream& os)
 	    if (restore_old_numbers)
 	    {
 		while (num < breakpoint_nrs[i])
-		    ok &= bp->get_state(os, num++, true);
+		    ok = ok && bp->get_state(os, num++, true);
 		assert(num == breakpoint_nrs[i]);
 	    }
-	    ok &= bp->get_state(os, num++);
+	    ok = ok && bp->get_state(os, num++);
 	}
     }
 
