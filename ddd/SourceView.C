@@ -2812,8 +2812,10 @@ string SourceView::get_word_at_pos(Widget text_w,
 // Constructor
 //----------------------------------------------------------------------------
 
-SourceView::SourceView(XtAppContext app_context, Widget parent)
+SourceView::SourceView(Widget parent)
 {
+    XtAppContext app_context = XtWidgetToApplicationContext(parent);
+
     // Find application shell
     toplevel_w = parent;
     while (toplevel_w != 0 && !XtIsWMShell(toplevel_w))
@@ -2839,6 +2841,12 @@ SourceView::SourceView(XtAppContext app_context, Widget parent)
     create_text(parent, "code", code_form_w, code_text_w);
     if (disassemble)
 	XtManageChild(code_form_w);
+}
+
+void SourceView::create_shells()
+{
+    Widget parent = XtParent(source_form_w);
+    XtAppContext app_context = XtWidgetToApplicationContext(parent);
 
     // Create breakpoint editor
     Arg args[10];

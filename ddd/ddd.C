@@ -1906,13 +1906,11 @@ int main(int argc, char *argv[])
     }
 
     // Create data display
-    data_disp = new DataDisp (app_context,
-			      data_disp_parent,
-			      app_data.vsl_path,
-			      app_data.vsl_library,
-			      app_data.vsl_defs,
-			      app_data.panned_graph_editor);
-    set_shortcut_menu(data_disp, app_data.display_shortcuts);
+    data_disp = new DataDisp(data_disp_parent,
+			     app_data.vsl_path,
+			     app_data.vsl_library,
+			     app_data.vsl_defs,
+			     app_data.panned_graph_editor);
 
     if (app_data.separate_data_window)
     {
@@ -1970,7 +1968,7 @@ int main(int argc, char *argv[])
 	    create_status(source_view_parent);
     }
 
-    source_view = new SourceView(app_context, source_view_parent);
+    source_view = new SourceView(source_view_parent);
     source_view->set_max_glyphs(app_data.max_glyphs);
 
     if (app_data.separate_source_window)
@@ -2070,7 +2068,7 @@ int main(int argc, char *argv[])
     // Create preference panels
     make_preferences(paned_work_w);
 
-    // All widgets are created at this point.
+    // All main widgets (except shells) are created at this point.
     
     // Load history for current session
     load_history(session_history_file(app_data.session));
@@ -2162,6 +2160,12 @@ int main(int argc, char *argv[])
     untraverse_sashes(paned_work_w);
     if (source_view_shell && data_disp_shell)
 	unmanage_sashes(paned_work_w);
+
+    // Create subshells.  We do this after the main window has been
+    // realized, since LessTif won't make the shells transient otherwise.
+    source_view->create_shells();
+    data_disp->create_shells();
+    set_shortcut_menu(data_disp, app_data.display_shortcuts);
 
     // Save option states
     save_option_state();

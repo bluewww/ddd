@@ -373,7 +373,7 @@ static void set_label(Widget w, const string& label)
 //-----------------------------------------------------------------------------
 
 // Count the number of data displays
-int DataDisp::count_data_displays() const
+int DataDisp::count_data_displays()
 {
     int count = 0;
 
@@ -4659,13 +4659,12 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
 // Constructor
 //----------------------------------------------------------------------------
 
-DataDisp::DataDisp (XtAppContext app_context,
-		    Widget parent,
-		    String vsl_path,
-		    String vsl_library,
-		    String vsl_defs,
-		    bool   panned)
+DataDisp::DataDisp(Widget parent,
+		   String vsl_path, String vsl_library, String vsl_defs,
+		   bool panned)
 {
+    XtAppContext app_context = XtWidgetToApplicationContext(parent);
+
     registerOwnConverters();
 
     // Init globals
@@ -4696,21 +4695,6 @@ DataDisp::DataDisp (XtAppContext app_context,
     }
 
     set_last_origin(graph_edit);
-
-    // Create menus
-    graph_popup_w = 
-	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
-    InstallButtonTips(graph_popup_w);
-
-    node_popup_w = 
-	MMcreatePopupMenu(graph_edit, "node_popup", node_popup);
-    InstallButtonTips(node_popup_w);
-
-    shortcut_popup_w = 
-	MMcreatePopupMenu(graph_edit, "shortcut_popup", shortcut_popup1);
-    InstallButtonTips(shortcut_popup_w);
-
-    disp_graph->callHandlers();
 
     // Add actions
     XtAppAddActions (app_context, actions, XtNumber (actions));
@@ -4749,6 +4733,27 @@ DataDisp::DataDisp (XtAppContext app_context,
 	verify(XmCreateText(graph_cmd_w, "graph_selection", NULL, 0));
     XtAddCallback(graph_selection_w, XmNlosePrimaryCallback, 
 		  SelectionLostCB, XtPointer(0));
+}
+
+void DataDisp::create_shells()
+{
+    Arg args[10];
+    int arg = 0;
+
+    // Create menus
+    graph_popup_w = 
+	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
+    InstallButtonTips(graph_popup_w);
+
+    node_popup_w = 
+	MMcreatePopupMenu(graph_edit, "node_popup", node_popup);
+    InstallButtonTips(node_popup_w);
+
+    shortcut_popup_w = 
+	MMcreatePopupMenu(graph_edit, "shortcut_popup", shortcut_popup1);
+    InstallButtonTips(shortcut_popup_w);
+
+    disp_graph->callHandlers();
 
     // Create display editor
     edit_displays_dialog_w =

@@ -394,14 +394,15 @@ public:
     static bool bump_displays;
 
     // Constructor
-    DataDisp (XtAppContext app_context,
-	      Widget       parent,
+    DataDisp (Widget       parent,
 	      String       vsl_path,         // from app_data
 	      String       vsl_library,      // from app_data
 	      String       vsl_defs,         // from app_data
 	      bool         panned);          // from app_data
 
-    int count_data_displays() const;
+    void create_shells();
+
+    static int count_data_displays();
     static void refresh_graph_edit (bool silent = false);
     static Widget graph_form() { return graph_form_w; }
 

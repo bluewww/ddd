@@ -497,9 +497,10 @@ private:
 
 public:
     // Constructor
-    SourceView (XtAppContext app_context, Widget parent);
+    SourceView(Widget parent);
 
-    enum SearchDirection {forward, backward};
+    // Shell constructor
+    void create_shells();
 
     // Set current execution position, based on the GDB position info
     // POSITION; no arg means clear current position.
@@ -566,6 +567,8 @@ public:
     static bool set_frame_func(const string& func);
 
     // Find S in current source; select it at TIME.
+    enum SearchDirection {forward, backward};
+
     static void find(const string& s,
 		     SearchDirection direction = forward,
 		     bool words_only = false,
