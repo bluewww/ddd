@@ -139,13 +139,12 @@ string annotation(string from, string to)
     while (annotation.contains("(())"))
 	annotation.gsub("(())", "()");
 
+    // Display pointers using the base name only
     strip_leading(annotation, "*().");
-    strip_leading(annotation, "()");
+    strip_leading(annotation, "()->");
 
-#if 0
-    if (annotation.contains("*()", 0))
-	annotation = "*" + annotation.after("()");
-#endif
+    // Omit the source name from any other expressions
+    strip_leading(annotation, "()");
 
     return annotation;
 }
