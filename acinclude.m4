@@ -2378,8 +2378,8 @@ ice_cv_athena_libraries=
 # Other directories are just guesses.
 for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
 	   /usr/lib/Motif2.0 /usr/lib/Motif1.2 /usr/lib/Motif1.1 \
-	   /usr/lib/X11R6 /usr/lib/X11R5 /usr/lib/X11R4 /usr/lib/X11 \
-           /usr/contrib/X11R6/lib \
+	   /usr/lib/X11R6 /usr/contrib/X11R6/lib \
+           /usr/lib/X11R5 /usr/lib/X11R4 /usr/lib/X11 \
            /usr/dt/lib /usr/openwin/lib \
 	   /usr/dt/*/lib /opt/*/lib /usr/lib/Motif* \
 	   /usr/*/lib/X11R6 /usr/*/lib/X11R5 /usr/*/lib/X11R4 /usr/*/lib/X11 \
