@@ -1260,7 +1260,7 @@ XtResource ddd_resources[] = {
 
     {
 	XtNbuttonCaptions,
-	XtCCaptions,
+	XtCButtonCaptions,
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, button_captions),
@@ -1269,13 +1269,33 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNbuttonCaptionHeight,
-	XtCCaptionHeight,
-	XmRDimension,
-	sizeof(Dimension),
-	XtOffsetOf(AppData, button_caption_height),
+	XtNbuttonImages,
+	XtCButtonImages,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, button_images),
 	XmRImmediate,
-	XtPointer(10)
+	XtPointer(True)
+    },
+
+    {
+	XtNbuttonCaptionGeometry,
+	XtCButtonCaptionGeometry,
+	XmRString,
+	sizeof(String),
+	XtOffsetOf(AppData, button_caption_geometry),
+	XmRImmediate,
+	XtPointer("29x7+0-0")
+    },
+
+    {
+	XtNbuttonImageGeometry,
+	XtCButtonImageGeometry,
+	XmRString,
+	sizeof(String),
+	XtOffsetOf(AppData, button_image_geometry),
+	XmRImmediate,
+	XtPointer("25x21+2+0")
     },
 
     {

@@ -1537,6 +1537,10 @@ int main(int argc, char *argv[])
 	    XrmMergeDatabases(session_db, &dddinit);
     }
 
+    // Register own converters.  This must be done here to install the
+    // String -> Cardinal converter.
+    registerOwnConverters();
+
     // Open X connection and create top-level application shell
     XtAppContext app_context;
     arg = 0;
@@ -1746,7 +1750,8 @@ int main(int argc, char *argv[])
 	popup_splash_screen(toplevel, app_data.show_startup_logo);
     last_shown_startup_logo = app_data.show_startup_logo;
 
-    // Register own converters
+    // Re-register own converters.  Motif has overridden some of
+    // these, so register them again.
     registerOwnConverters();
 
     // Install special Motif converters
@@ -1828,10 +1833,7 @@ int main(int argc, char *argv[])
     // From this point on, we have a true top-level window.
 
     // Install icon images
-    int strip_captions = 0;
-    if (!app_data.button_captions)
-	strip_captions = app_data.button_caption_height;
-    install_icons(command_shell, strip_captions);
+    install_icons(command_shell);
 
     // Create main window
     Widget main_window = 

@@ -259,10 +259,14 @@
 #define XtNtoolRightOffset       "toolRightOffset"
 #define XtNtoolTopOffset         "toolTopOffset"
 #define XtCToolOffset            "ToolOffset"
+#define XtNbuttonImages          "buttonImages"
+#define XtCButtonImages          "Images"
 #define XtNbuttonCaptions        "buttonCaptions"
-#define XtCCaptions              "Captions"
-#define XtNbuttonCaptionHeight   "buttonCaptionHeight"
-#define XtCCaptionHeight         "CaptionHeight"
+#define XtCButtonCaptions        "Captions"
+#define XtNbuttonCaptionGeometry "buttonCaptionGeometry"
+#define XtCButtonCaptionGeometry "ButtonCaptionGeometry"
+#define XtNbuttonImageGeometry   "buttonImageGeometry"
+#define XtCButtonImageGeometry   "ButtonImageGeometry"
 #define XtNautoCommands          "autoCommands"
 #define XtCAutoCommands          "AutoCommands"
 #define XtNautoCommandPrefix     "autoCommandPrefix"
@@ -403,7 +407,9 @@ struct AppData {
     Position  tool_right_offset;
     Position  tool_top_offset;
     Boolean   button_captions;
-    Dimension button_caption_height;
+    Boolean   button_images;
+    String    button_caption_geometry;
+    String    button_image_geometry;
     Boolean   auto_commands;
     String    auto_command_prefix;
     int       max_breakpoint_number;
