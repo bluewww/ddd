@@ -87,18 +87,22 @@ BreakPoint::BreakPoint (string& info_output, string arg, int number)
       mycode_glyph(0)
 {
     ostrstream dummy;
-    update(info_output, dummy);
+    bool need_total_undo;
+    update(info_output, dummy, need_total_undo);
 }
 
 
 // Update breakpoint information
-bool BreakPoint::update(string& info_output, ostream& undo_commands)
+bool BreakPoint::update(string& info_output,
+			ostream& undo_commands,
+			bool& need_total_undo)
 {
     bool changed       = false;
     myenabled_changed  = false;
     myposition_changed = false;
     myfile_changed     = false;
     myaddress_changed  = false;
+    need_total_undo    = false;
 
     if (gdb->type() != JDB)
     {
@@ -112,7 +116,7 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 	if (number != mynumber)
 	{
 	    mynumber = number;
-	    changed = true;
+	    need_total_undo = changed = true;
 	}
     }
     strip_leading_space (info_output);
@@ -131,7 +135,7 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 	{
 	    if (mytype != WATCHPOINT)
 	    {
-		changed = myenabled_changed = true;
+		need_total_undo = changed = myenabled_changed = true;
 		mytype = WATCHPOINT;
 	    }
 
@@ -148,7 +152,7 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 	{
 	    if (mytype != BREAKPOINT)
 	    {
-		changed = myenabled_changed = true;
+		need_total_undo = changed = myenabled_changed = true;
 		mytype = BREAKPOINT;
 	    }
 	}
@@ -160,7 +164,7 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 	{
 	    if (mydispo != BPDIS)
 	    {
-		changed = myenabled_changed = true;
+		need_total_undo = changed = myenabled_changed = true;
 		mydispo = BPDIS;
 	    }
 	}
@@ -168,7 +172,7 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 	{
 	    if (mydispo != BPDEL)
 	    {
-		changed = myenabled_changed = true;
+		need_total_undo = changed = myenabled_changed = true;
 		mydispo = BPDEL;
 	    }
 	}
@@ -176,7 +180,7 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 	{
 	    if (mydispo != BPKEEP)
 	    {
-		changed = myenabled_changed = true;
+		need_total_undo = changed = myenabled_changed = true;
 		mydispo = BPKEEP;
 	    }
 	}
@@ -190,7 +194,8 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 		changed = myenabled_changed = true;
 		myenabled = true;
 
-		undo_commands << "disable " << number() << "\n";
+		undo_commands << gdb->disable_command(itostring(number()))
+			      << "\n";
 	    }
 	}
 	else if (info_output.contains('n', 0))
@@ -200,7 +205,8 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 		changed = myenabled_changed = true;
 		myenabled = false;
 
-		undo_commands << "enable " << number() << "\n";
+		undo_commands << gdb->enable_command(itostring(number())) 
+			      << "\n";
 	    }
 	}
 	info_output = info_output.after(rxblanks_or_tabs);
@@ -351,18 +357,16 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 
 	if (ignore_count != myignore_count)
 	{
-	    undo_commands << "ignore " << number() << " " 
-			  << myignore_count << "\n";
-
+	    undo_commands << gdb->ignore_command(itostring(number()),
+						 myignore_count) << "\n";
 	    changed = myenabled_changed = true;
 	    myignore_count = ignore_count;
 	}
 
 	if (cond != mycondition)
 	{
-	    undo_commands << "condition " << number() << " " 
-			  << condition() << "\n";
-
+	    undo_commands << gdb->condition_command(itostring(number()),
+						    condition()) << "\n";
 	    changed = myenabled_changed = true;
 	    mycondition = cond;
 	}
@@ -515,6 +519,13 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 	    {
 		myenabled = new_enabled;
 		changed = myenabled_changed = true;
+
+		if (new_enabled)
+		    undo_commands << gdb->disable_command(itostring(number()))
+				  << "\n";
+		else
+		    undo_commands << gdb->enable_command(itostring(number()))
+				  << "\n";
 	    }
 
 	    myinfos = "";
@@ -532,6 +543,9 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 
 		if (ignore_count != myignore_count)
 		{
+		    undo_commands << gdb->ignore_command(itostring(number()),
+							 myignore_count)
+				  << "\n";
 		    myignore_count = ignore_count;
 		    changed = true;
 		}
@@ -546,7 +560,7 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 		if (cond != mycondition)
 		{
 		    mycondition = cond;
-		    changed = true;
+		    need_total_undo = changed = true;
 		}
 	    }
 	}
@@ -575,6 +589,10 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 	    if (myignore_count != ignore_count)
 	    {
 		changed = true;
+
+		undo_commands << gdb->ignore_command(itostring(number()), 
+						     myignore_count) << "\n";
+
 		myignore_count = ignore_count;
 	    }
 	}
@@ -584,14 +602,26 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 	if (info_output.contains("Active", 0))
 	{
 	    if (!myenabled)
+	    {
 		changed = myenabled_changed = true;
+
+		undo_commands << gdb->disable_command(itostring(number())) 
+			      << "\n";
+	    }
+
 	    info_output = info_output.after("Active");
 	    myenabled   = true;
 	}
 	else if (info_output.contains("Suspended", 0))
 	{
 	    if (myenabled)
+	    {
 		changed = myenabled_changed = true;
+
+		undo_commands << gdb->disable_command(itostring(number())) 
+			      << "\n";
+	    }
+
 	    info_output = info_output.after("Suspended");
 	    myenabled   = false;
 	}
@@ -641,7 +671,7 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 		if (cond != mycondition)
 		{
 		    mycondition = cond;
-		    changed = true;
+		    need_total_undo = changed = true;
 		}
 	    }
 
@@ -662,7 +692,9 @@ bool BreakPoint::update(string& info_output, ostream& undo_commands)
 	    {
 		if (line_no != myline_nr || class_name != myfile_name)
 		{
-		    changed = myposition_changed = myfile_changed = true;
+		    need_total_undo = changed = 
+			myposition_changed = myfile_changed = true;
+
 		    myfile_name = class_name;
 		    myline_nr   = line_no;
 		}

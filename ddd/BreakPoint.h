@@ -185,7 +185,11 @@ public:
 
     // Update breakpoint from breakpoint info INFO_OUTPUT.  Return
     // true iff changes occurred.  Delete own info from INFO_OUTPUT.
-    bool update(string& info_output, ostream& undo_commands);
+    // UNDO_COMMANDS contains commands to undo the change.
+    // NEED_TOTAL_UNDO is set iff the change requires deleting and
+    // setting a new breakpoint.
+    bool update(string& info_output, ostream& undo_commands, 
+		bool& need_total_undo);
 
     // Return commands to restore this breakpoint, using the dummy
     // number NR.  If AS_DUMMY is set, delete the breakpoint

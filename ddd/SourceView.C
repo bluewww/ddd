@@ -3721,6 +3721,7 @@ void SourceView::process_info_bp (string& info_output,
     bool changed = false;
     bool added   = false;
     ostrstream undo_commands;
+    int deleted_nr = 1;
 
     while (info_output != "")
     {
@@ -3797,10 +3798,36 @@ void SourceView::process_info_bp (string& info_output,
 	    // Update existing breakpoint
 	    bps_not_read -= bp_nr;
 	    BreakPoint *bp = bp_map.get(bp_nr);
-	    if (bp->update(info_output, undo_commands)
-		&& (bp->position_changed() || bp->enabled_changed()))
+
+	    ostrstream old_state;
+	    bp->get_state(old_state, deleted_nr);
+
+	    ostrstream local_commands;
+	    bool need_total_undo = false;
+
+	    bool bp_changed = 
+		bp->update(info_output, local_commands, need_total_undo);
+
+	    if (bp_changed)
 	    {
-		changed = true;
+		if (bp->position_changed() || bp->enabled_changed())
+		{
+		    changed = true;
+		}
+
+		if (need_total_undo)
+		{
+		    // To undo this change, we must delete the old
+		    // breakpoint and create a new one.
+		    undo_commands << delete_command(bp->number()) << "\n"
+				  << old_state;
+		    deleted_nr++;
+		}
+		else
+		{
+		    // A simple command suffices to undo this change.
+		    undo_commands << string(local_commands);
+		}
 	    }
 	}
 	else
@@ -3834,7 +3861,6 @@ void SourceView::process_info_bp (string& info_output,
     info_output = keep_me;
 
     // Delete all breakpoints not found now
-    int deleted_nr = 1;
     for (i = 0; i < bps_not_read.size(); i++)
     {
 	BreakPoint *bp = bp_map.get(bps_not_read[i]);
