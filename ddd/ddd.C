@@ -338,8 +338,8 @@ static void set_shortcut_menu(DataDisp *data_disp, string expressions);
 // Fix the size of the status line
 static void fix_status_size();
 
-// Decorate new shell
-static void decorate_new_shell(Widget w);
+// Setup new shell
+static void setup_new_shell(Widget w);
 
 // Check if window manager decorates transients
 static void start_have_decorated_transients(Widget parent);
@@ -1862,7 +1862,7 @@ int main(int argc, char *argv[])
     set_gdb_history_file(gdb->history_file());
 
     // Setup shell creation
-    Delay::shell_registered = decorate_new_shell;
+    Delay::shell_registered = setup_new_shell;
 
     // Create command shell
 
@@ -1900,11 +1900,6 @@ int main(int argc, char *argv[])
     WM_DELETE_WINDOW =
 	XmInternAtom(XtDisplay(toplevel), "WM_DELETE_WINDOW", False);
     XmAddWMProtocolCallback(command_shell, WM_DELETE_WINDOW, DDDCloseCB, 0);
-
-#if HAVE_X11_XMU_EDITRES_H
-    XtAddEventHandler(command_shell, EventMask(0), true,
-		      XtEventHandler(_XEditResCheckMessages), NULL);
-#endif
 
     // From this point on, we have a true top-level window.
 
@@ -1983,10 +1978,6 @@ int main(int argc, char *argv[])
 				      toplevel, args, arg));
 	XmAddWMProtocolCallback(data_disp_shell, WM_DELETE_WINDOW, 
 				DDDCloseCB, 0);
-#if HAVE_X11_XMU_EDITRES_H
-	XtAddEventHandler(data_disp_shell, EventMask(0), true,
-			  XtEventHandler(_XEditResCheckMessages), NULL);
-#endif
 
 	data_main_window_w = 
 	    verify(XtVaCreateManagedWidget("data_main_window",
@@ -2054,10 +2045,6 @@ int main(int argc, char *argv[])
 				      toplevel, args, arg));
 	XmAddWMProtocolCallback(source_view_shell, WM_DELETE_WINDOW, 
 				DDDCloseCB, 0);
-#if HAVE_X11_XMU_EDITRES_H
-	XtAddEventHandler(source_view_shell, EventMask(0), true,
-			  XtEventHandler(_XEditResCheckMessages), NULL);
-#endif
 
 	source_main_window_w = 
 	    verify(XtVaCreateManagedWidget("source_main_window",
@@ -3121,9 +3108,9 @@ Boolean ddd_setup_done(XtPointer)
     if (emptyCommandQueue() && gdb->isReadyWithPrompt())
     {
 	// Some WMs have trouble with early decorations.  Just re-decorate.
-	decorate_new_shell(command_shell);
-	decorate_new_shell(data_disp_shell);
-	decorate_new_shell(source_view_shell);
+	setup_new_shell(command_shell);
+	setup_new_shell(data_disp_shell);
+	setup_new_shell(source_view_shell);
 
 	ddd_check_version();
 	install_button_tips();
@@ -5218,12 +5205,24 @@ static void gdbUpdateAllMenus()
 // Configure new shell
 //-----------------------------------------------------------------------------
 
-static void decorate_new_shell(Widget w)
+static void setup_new_shell(Widget w)
 {
     if (w == 0)
 	return;
 
     Widget shell = findShellParent(w);
+    if (shell == 0 && XtIsWidget(w) && XtIsShell(w))
+	shell = w;
+    if (shell == 0)
+	return;
+
+#if HAVE_X11_XMU_EDITRES_H
+    // Make the shell handle EditRes messages
+    XtRemoveEventHandler(shell, EventMask(0), true,
+			 XtEventHandler(_XEditResCheckMessages), NULL);
+    XtAddEventHandler(shell, EventMask(0), true,
+		      XtEventHandler(_XEditResCheckMessages), NULL);
+#endif
 
     // Use DDD logo as icon of the new shell
     if (shell != 0 && XtIsRealized(shell))

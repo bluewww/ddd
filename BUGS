@@ -281,6 +281,4 @@ Volunteers for fixing these and other bugs are welcome!
 264 (LessTif bug): In a DialogShell, setting the defaultButton to 0
     won't work.
 
-269*Enable `editres' on all shells, including dialog shells.
-
 271 (Insert new bugs here)
