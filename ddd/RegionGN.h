@@ -43,15 +43,15 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    BoxRegion _region;		// region
+    BoxRegion _region;		// The region occupied by this node
 
 protected:		
-    // draw region
+    // Draw region
     virtual void forceDraw(Widget w, 
 			   const BoxRegion& exposed, 
 			   const GraphGC& gc) const = 0;
 
-    // center around position
+    // Center around position
     void center();
 
     // Copy Constructor
