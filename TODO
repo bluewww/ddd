@@ -358,4 +358,7 @@ Volunteers for these and other projects are welcome!
 
 196. Have a GUI for the GDB `handle' commands (`Signal handling' or so).
 
-197. (Insert your project idea here)
+197. Implement a fast lookup table for assembler locations.  Current
+     linear search may be too slow for large assembly listings.
+
+198. (Insert your project idea here)

@@ -39,8 +39,8 @@ DDD 2.2 [in development]
     - User-defined DDD commands.  DDD now provides a simple facility
       that allows the inferior debugger to execute DDD commands.  For
       details, see `User-Defined Commands' in the DDD manual.
-    - For `Continue until here', DDD now uses explicit temporary
-      breakpoints and `continue' instead of the GDB `until' command.
+    - For `Continue until here', DDD now sets a temporary breakpoints
+      and continues (instead of using the GDB `until' command).
     - Improved display of breakpoints and execution positions:
       + The current execution position is now properly cleared if
         undetermined (no source, program terminated, etc.)
@@ -52,6 +52,8 @@ DDD 2.2 [in development]
     Bug fixes:
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
       Wiegand <wiegand@kong.gsfc.nasa.gov>.
+    - DDD no longer hangs while receiving large chunks of data.
+    - Several speed-ups in processing debugger and program output.
     - Again, several dozens of minor improvements and bug fixes.
 
 

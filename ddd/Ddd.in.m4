@@ -4261,9 +4261,9 @@ information,\n\
     information, specify the SAMP(-g) option when you run the compiler.\n\
 ITEM You may need to tell @GDB@ where the source code files are.\n\
     Invoke LBL(Edit) | LBL(@GDB@ Settings) and look for appropriate entries.\n\
-ITEM If you don't have the source code of your program, DDD is not\n\
-    the tool of choice for you.  Try using a machine-code oriented debugger\n\
-    instead.
+ITEM Using GDB, you can continue at machine code level \
+by enabling the\n\
+    Machine Code Window.  Use LBL(Source) | LBL(Display Machine Code).
 
 Ddd*program_not_running.helpString: \
 @rm Your program is not running.\n\
