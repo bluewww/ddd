@@ -1616,14 +1616,14 @@ Ddd*menubar.edit*helpString:	\
 @tt \267 @bf Copy @rm - copy the selected text to the clipboard\n\
     without removing the original.\n\
 @tt \267 @bf Paste @rm - paste the clipboard contents into the text.\n\
-@tt \267 @bf Delete @rm - delete the selected text.\n\
 @tt \267 @bf Clear @rm - clear argument fields and @GDB@ command line.\n\
+@tt \267 @bf Delete @rm - delete the selected text.\n\
 \n\
 @tt \267 @bf Preferences... @rm invokes a panel for \
 setting @DDD@ options.\n\
 @tt \267 @bf Settings... @rm invokes a panel for setting @GDB@ options.\n\
 \n\
-@bf Save Options @rm saves options, preferences, and @GDB@ settings\n\
+@tt \267 @bf Save Options @rm saves options, preferences, and @GDB@ settings\n\
 for the next @DDD@ invocation.
 
 Ddd*editMenu.cut.labelString:				Cut
@@ -1650,21 +1650,26 @@ Ddd*editMenu.paste.acceleratorText:			Shift+Ins
 Ddd*editMenu.paste.documentationString: \
 @rm Paste clipboard contents
 
-Ddd*editMenu.delete.labelString:			Delete
-Ddd*editMenu.delete.mnemonic:				D
-Ddd*editMenu.delete.documentationString: \
-@rm Delete current selection
-
 Ddd*editMenu.clearAll.labelString:			Clear
 Ddd*editMenu.clearAll.mnemonic:				l
 Ddd*editMenu.clearAll.documentationString: \
 @rm Clear the selection, all arguments, and the @GDB@ command line
 Ddd*editMenu.clearAll.acceleratorText:			Ctrl+U
 
+Ddd*editMenu.delete.labelString:			Delete
+Ddd*editMenu.delete.mnemonic:				D
+Ddd*editMenu.delete.documentationString: \
+@rm Delete current selection
+
 Ddd*editMenu.selectAll.labelString:			Select All
 Ddd*editMenu.selectAll.mnemonic:			A
 Ddd*editMenu.selectAll.documentationString: \
 @rm Select all items
+
+Ddd*editMenu.unselectAll.labelString:			Unselect All
+Ddd*editMenu.unselectAll.mnemonic:			U
+Ddd*editMenu.unselectAll.documentationString: \
+@rm Unselect all items
 
 Ddd*editMenu.preferences.labelString:			Preferences...
 Ddd*editMenu.preferences.mnemonic:			r
@@ -1892,8 +1897,9 @@ Ddd*menubar.commands*helpString:	\
 @tt \267 @bf Previous @rm - show the previous command.\n\
 @tt \267 @bf Next @rm - show the next command.\n\
 \n\
-@tt \267 @bf Search Previous @rm - incrementally search previous command.\n\
-@tt \267 @bf Search Next @rm - incrementally search next command.\n\
+@tt \267 @bf Search Previous @rm - do incremental search forward.\n\
+@tt \267 @bf Search Next @rm - do incremental search backward.\n\
+@tt \267 @bf Quit Search @rm - quit incremental search.\n\
 \n\
 @tt \267 @bf Complete @rm - complete the current command.\n\
 @tt \267 @bf Apply @rm - execute the current command.\n\
@@ -2104,8 +2110,8 @@ Ddd*menubar.data*helpString:	\
 \n\
 @tt \267 @bf Display Local Variables @rm - show current local variables.\n\
 @tt \267 @bf Display Arguments @rm - show current argument variables.\n\
-@tt \267 @bf More Status Displays... @rm - show other things \
-about the program being debugged.\n\
+@tt \267 @bf More Status Displays... @rm - show other things about\n\
+    the program being debugged.\n\
 \n\
 @tt \267 @bf Align on Grid @rm - align all displays on the next grid point.\n\
 @tt \267 @bf Rotate Graph @rm - rotate the graph clockwise by 90 degrees.\n\
@@ -2599,7 +2605,7 @@ Ddd*settings*helpString: \
 @rm These are the @sl @GDB@ Settings.@rm\n\
 \n\
 All settings (except source and object paths) can be saved\n\
-using @bf Edit @rm| @bf Save Options @rm.\n\
+using @bf Edit @rm| @bf Save Options@rm.\n\
 \n\
 Click on @bf ? @rm near an item to get further information.\n\
 In a text field, press the @key RETURN @rm key to commit the changes.\n\
@@ -4259,7 +4265,7 @@ To discard the changes, click on @bf No@rm.
 Ddd*set_dialog_popup.title: @DDD@: Set Value
 Ddd*set_dialog*helpString:	\
 @rm You can now change a value in the selected display.\n\
-If you want to keep it unchanged, press @bf Cancel @rm.
+If you want to keep it unchanged, press @bf Cancel@rm.
 
 
 !-----------------------------------------------------------------------------
@@ -4302,7 +4308,7 @@ Ddd*source_find_error*helpString:	\
 @rm The given argument @bf () @rm can not be found in the source text.\n\
 \n\
 If you wish to search for @bf () @rm even within words,\n\
-consider disabling @bf Source @rm| @bf Find Words Only @rm.
+consider disabling @bf Source @rm| @bf Find Words Only@rm.
 
 Ddd*manual_find_error_popup.title: @DDD@: Not Found
 Ddd*manual_find_error*helpString:	\
@@ -4383,7 +4389,7 @@ Ddd*tty_type_error*helpString:	\
 @rm @DDD@ could not set the TERM environment variable\n\
 to the type of the execution window.  This means that\n\
 your program will execute with a terminal type\n\
-set to @tt dumb @rm instead of @tt xterm @rm.
+set to @tt dumb @rm instead of @tt xterm@rm.
 
 Ddd*history_save_error_popup.title: @DDD@: Save History Failed
 Ddd*history_save_error*helpString:	\
@@ -4461,7 +4467,7 @@ Ddd*no_program.helpString: \
 @rm You have not opened any program yet.  @GDB@ needs a debuggee\n\
 to access core dumps, source files, or attaching to processes.\n\
 \n\
-To open a program, use @bf File @rm| @bf Open Program @rm.
+To open a program, use @bf File @rm| @bf Open Program@rm.
 
 Ddd*no_source.helpString: \
 @rm @GDB@ cannot find the source code of your program.\n\
@@ -4511,7 +4517,7 @@ Ddd*display_selected.helpString: \
 \n\
 @tt \267 @rm To examine further members of this data structure, use \
 @bf New Display () @rm\n\
-    and @bf Display *() @rm.\n\
+    and @bf Display *()@rm.\n\
 @tt \267 @rm To modify the appearance of the selected display, use \
 @bf Hide () @rm and @bf Rotate ()@rm.\n\
 @tt \267 @rm To change the value of the selected display, use @bf Set ()@rm.\n\

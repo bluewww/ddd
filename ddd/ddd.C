@@ -620,7 +620,7 @@ static MMDesc views_menu[] =
 
 struct EditItems {
     enum EditItem { 
-	Cut, Copy, Paste, Delete, ClearAll, Sep1, 
+	Cut, Copy, Paste, ClearAll, Delete, Sep1, 
 	SelectAll, UnselectAll, Sep2,
 	Preferences, Settings, Sep3,
 	SaveOptions 
@@ -632,8 +632,8 @@ struct EditItems {
     { "cut",         MMPush,  { gdbCutSelectionCB,    XtPointer(win) }}, \
     { "copy",        MMPush,  { gdbCopySelectionCB,   XtPointer(win) }}, \
     { "paste",       MMPush,  { gdbPasteClipboardCB,  XtPointer(win) }}, \
-    { "delete",      MMPush,  { gdbDeleteSelectionCB, XtPointer(win) }}, \
     { "clearAll",    MMPush,  { gdbClearAllCB,        XtPointer(win) }}, \
+    { "delete",      MMPush,  { gdbDeleteSelectionCB, XtPointer(win) }}, \
     { "separator",   MMSeparator | MMUnmanaged }, \
     { "selectAll",   MMPush | MMUnmanaged, \
 	                      { gdbSelectAllCB,       XtPointer(win) }}, \
