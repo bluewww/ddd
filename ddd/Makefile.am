@@ -735,7 +735,7 @@ X_INCLUDE = @X_CFLAGS@
 AM_CPPFLAGS = -I$(srcdir)/.. $(X_INCLUDE)
 
 # -----------------------------------------------------------------------------
-# DDD Applocation Defaults.
+# DDD Application Defaults.
 # -----------------------------------------------------------------------------
 
 # The resource header and app-default files.
