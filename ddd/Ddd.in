@@ -2747,52 +2747,64 @@ Ddd*graph_edit.navigationType:		TAB_GROUP
 
 Ddd*graph_edit.helpString:	\
 @rm This is the @sl Data Window.@rm\n\
-The data window shows the data displays of the debugged program.\n\
+It shows the data displays of the debugged program.\n\
 \n\
-@bf Left mouse button:@rm\n\
-@tt \267 @sl Click @rm on a display to select it.\n\
-@tt \267 @sl Double-click @rm on a display to select all connected displays.\n\
-@tt \267 @sl Double-click @rm on the background to select all displays.\n\
-@tt \267 @sl Drag @rm on a display to move selected displays.\n\
-@tt \267 @sl Drag @rm on the background to select several displays.\n\
+@bf Selecting displays@rm\n\
+@tt \267 @rm Using the @sl left mouse button, @rm click on a display \
+to select it.\n\
+@tt \267 @rm Double-click on a display to select all connected displays.\n\
+@tt \267 @rm Double-click on the background to select all displays.\n\
+@tt \267 @rm Drag on the background to select several displays.\n\
 \n\
-@bf Middle mouse button (or Shift + Left mouse button):@rm\n\
-@tt \267 @sl Click @rm on a display to toggle its selection state.\n\
-@tt \267 @sl Double-click @rm on a display to toggle all connected displays.\n\
-@tt \267 @sl Drag @rm on a display to move selected displays.\n\
-@tt \267 @sl Drag @rm on the background to toggle several displays.\n\
+Using the middle mouse button (or Shift + Left mouse button) instead\n\
+of the left mouse button @sl toggles @rm the selection \
+instead of setting it.\n\
 \n\
-@bf Right mouse button:@rm\n\
-@tt \267 @sl Click @rm on some display to modify it.\n\
-@tt \267 @sl Click @rm on the background to create new displays via a menu.
+@bf Moving displays@rm\n\
+@tt \267 @rm Using the @sl left mouse button, @rm drag on a display to move\n\
+    all selected displays.\n\
+\n\
+@bf Modifying displays@rm\n\
+@tt \267 @rm Using the @sl right mouse button, @rm click on some display \
+to modify it.\n\
+\n\
+@bf Creating displays@rm\n\
+@tt \267 @rm Using the @sl right mouse button, @rm click on the background\n\
+    to create new displays via a popup menu.
 
 Ddd*data_disp_shell.helpString:	\
 @rm This is the @sl Data Window.@rm\n\
-The data window shows the data displays of the debugged program.\n\
+It shows the data displays of the debugged program.\n\
 \n\
-@bf Left mouse button:@rm\n\
-@tt \267 @sl Click @rm on a display to select it.\n\
-@tt \267 @sl Double-click @rm on a display to select all connected displays.\n\
-@tt \267 @sl Double-click @rm on the background to select all displays.\n\
-@tt \267 @sl Drag @rm on a display to move selected displays.\n\
-@tt \267 @sl Drag @rm on the background to select several displays.\n\
+@bf Selecting displays@rm\n\
+@tt \267 @rm Using the @sl left mouse button, @rm click on a display \
+to select it.\n\
+@tt \267 @rm Double-click on a display to select all connected displays.\n\
+@tt \267 @rm Double-click on the background to select all displays.\n\
+@tt \267 @rm Drag on the background to select several displays.\n\
 \n\
-@bf Middle mouse button (or Shift + Left mouse button):@rm\n\
-@tt \267 @sl Click @rm on a display to toggle its selection state.\n\
-@tt \267 @sl Double-click @rm on a display to toggle all connected displays.\n\
-@tt \267 @sl Drag @rm on a display to move selected displays.\n\
-@tt \267 @sl Drag @rm on the background to toggle several displays.\n\
+Using the middle mouse button (or Shift + Left mouse button) instead\n\
+of the left mouse button @sl toggles @rm the selection \
+instead of setting it.\n\
 \n\
-@bf Right mouse button:@rm\n\
-@tt \267 @sl Click @rm on some display to modify it.\n\
-@tt \267 @sl Click @rm on the background to create new displays via a menu.
+@bf Moving displays@rm\n\
+@tt \267 @rm Using the @sl left mouse button, @rm drag on a display to move\n\
+    all selected displays.\n\
+\n\
+@bf Modifying displays@rm\n\
+@tt \267 @rm Using the @sl right mouse button, @rm click on some display \
+to modify it.\n\
+\n\
+@bf Creating displays@rm\n\
+@tt \267 @rm Using the @sl right mouse button, @rm click on the background\n\
+    to create new displays via a popup menu.
 
 Ddd*graph_edit_panner.helpString:	\
-@rm The data window is too small to hold all displays.\n\
-Drag the slider with the @bf left mouse button @rm to select\n\
-the visible part of the data window.
-! Ddd*graph_edit_panner.tipString:	\
-! @rm Scroll window
+@rm This is a @sl panner@rm.\n\
+\n\
+Drag the slider with the @bf left mouse button @rm to scroll the data window.
+Ddd*graph_edit_panner.tipString:	\
+@rm Scroll data window
 
 
 !-----------------------------------------------------------------------------
@@ -3028,39 +3040,51 @@ Ddd*source_text_w.helpString:	\
 @rm This is the @sl Source Text Window.@rm\n\
 It shows the source text of the debugged program.\n\
 \n\
-On the @sl left side@rm, line numbers and breakpoints are shown:\n\
-A stop sign or `@tt #@sl n@tt #@rm' indicates an enabled breakpoint;\n\
-A grey stop sign or `@tt _@sl n@tt _@rm' indicates a disabled breakpoint.\n\
-The next executed line is indicated by an arrow or `@tt>@rm'.\n\
+@bf Left side@rm\n\
+The @sl left side @rm shows line numbers and breakpoints:\n\
+@tt \267 @rm A plain stop sign or `@tt #@sl n@tt #@rm' indicates \
+an enabled breakpoint.\n\
+@tt \267 @rm A grey stop sign or `@tt _@sl n@tt _@rm' indicates \
+a disabled breakpoint.\n\
+@tt \267 @rm The next executed line is indicated by an arrow or `@tt>@rm'.\n\
+\n\
+Click the @sl left mouse button @rm to select positions.\n\
+Click the @sl right mouse button @rm to set and modify breakpoints.\n\
+\n\
+@bf Right side@rm\n\
 The @sl right side @rm contains the source code.\n\
 \n\
-Click the @bf left mouse button @rm to select words.\n\
-Drag with the @bf left mouse button @rm to modify your selection.\n\
+Click the @sl left mouse button @rm to select words.\n\
+Drag with the @sl left mouse button @rm to extend your selection.\n\
+Click the @sl right mouse button @rm to show values and lookup functions.\n\
 \n\
-Click the @bf right mouse button @rm to get a popup menu:\n\
-@tt \267 @rm On the left side: set and modify breakpoints;\n\
-@tt \267 @rm On the right side: show values and lookup functions.\n\
-\n\
-Use the @bf Lookup () @rm button below to view specific functions.
+To view a specific source, use the @bf Lookup() @rm button below.
 
 Ddd*code_text_w.helpString:	\
 @rm This is the @sl Machine Code Window.@rm\n\
 It shows the machine code of the debugged program.\n\
 \n\
-On the @sl left side@rm, code addresses and breakpoints are shown:\n\
-A stop sign or `@tt #@sl n@tt #@rm' indicates an enabled breakpoint;\n\
-A grey stop sign or `@tt _@sl n@tt _@rm' indicates a disabled breakpoint.\n\
-The next executed instruction is indicated by an arrow or `@tt>@rm'.\n\
-The @sl right side @rm contains the machine instructions.\n\
+@bf Left side@rm\n\
+The @sl left side @rm shows addresses and breakpoints:\n\
+@tt \267 @rm A plain stop sign or `@tt #@sl n@tt #@rm' indicates \
+an enabled breakpoint.\n\
+@tt \267 @rm A grey stop sign or `@tt _@sl n@tt _@rm' indicates \
+a disabled breakpoint.\n\
+@tt \267 @rm The next executed location is indicated by an \
+arrow or `@tt>@rm'.\n\
 \n\
-Click the @bf left mouse button @rm to select words.\n\
-Drag with the @bf left mouse button @rm to modify your selection.\n\
+Click the @sl left mouse button @rm to select addresses.\n\
+Click the @sl right mouse button @rm to set and modify breakpoints.\n\
 \n\
-Click the @bf right mouse button @rm to get a popup menu:\n\
-@tt \267 @rm On the left side: set and modify breakpoints;\n\
-@tt \267 @rm On the right side: show values and lookup locations.\n\
+@bf Right side@rm\n\
+The @sl right side @rm contains the source code.\n\
 \n\
-Use the @bf Lookup () @rm button below to disassemble specific functions.
+Click the @sl left mouse button @rm to select words.\n\
+Drag with the @sl left mouse button @rm to extend your selection.\n\
+Click the @sl right mouse button @rm to show values and lookup functions.\n\
+\n\
+To disassemble a specific function or address,\n\
+use the @bf Lookup() @rm button below.
 
 Ddd*source_view_shell.helpString:	\
 @rm This is the @sl Source Window.@rm\n\
@@ -3071,7 +3095,7 @@ The upper area shows the source code.\n\
 The lower area shows the machine code.\n\
 \n\
 Use @bf Help On Context @rm in the @bf Help @rm menu to get\n\
-detailed help on any of these areas.
+detailed help on each of these areas.
 
 
 !-----------------------------------------------------------------------------
@@ -4195,7 +4219,7 @@ Ddd*gdb_selection_dialog_popup.title: @DDD@: Selection
 Ddd*gdb_selection_dialog*listLabelString:  Selection
 Ddd*gdb_selection_dialog*helpString:	\
 @rm This is a @GDB@ selection menu.\n\
-Please select an item from the list and click on @bf Ok@rm.\n\
+Please select an item from the list and click on @bf OK@rm.\n\
 For more details, consult the @GDB@ documentation.
 
 Ddd*confirm_overwrite_dialog_popup.title: @DDD@: File Exists
