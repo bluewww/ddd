@@ -683,6 +683,8 @@ void install_icons(Widget shell, const string& color_key)
     Pixel foreground, top_shadow, bottom_shadow, select;
     XmGetColors(XtScreen(shell), win_attr.colormap, background,
 		&foreground, &top_shadow, &bottom_shadow, &select);
+
+    // LessTif does not return a suitable select color
     Pixel arm_background;
     if (lesstif_version < 1000)
 	arm_background = background;

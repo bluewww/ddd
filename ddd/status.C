@@ -258,10 +258,10 @@ Widget status_history(Widget parent)
 	} while (i != current_history);
     }
 
-    if (lesstif_version <= 84)
+    if (lesstif_version < 1000)
     {
-	// LessTif 0.84 and earlier fail to resize the shell properly.
-	// Use this hack instead.
+	// LessTif fails to resize the shell properly - the border
+	// width is zero.  Use this hack instead.
 	XmFontList font_list;
 	XtVaGetValues(history_label, XmNfontList, &font_list, NULL);
     
