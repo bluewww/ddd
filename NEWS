@@ -54,8 +54,8 @@ DDD 3.0 [in development]
     - One-letter options like `-b BPS' or `-x FILE' work again.
 
     Changes in configuration and building:
-    - LessTif 0.83 is supported (and now the default test environment
-      of the DDD developers).  See `patches/' for some useful patches.
+    - LessTif 0.83 is supported (and a standard test environment of
+      the DDD developers).  See `patches/' for some useful patches.
 
     Compatibility notes:
     - Some resources were renamed for clarity:
