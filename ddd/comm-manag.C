@@ -92,7 +92,8 @@ typedef struct CmdData {
     string      user_answer;	  // Buffer for the complete answer
     OQCProc     user_callback;	  // User callback
     void *      user_data;	  // User data
-    bool        user_verbose;	  // Flag as given to user_cmdSUC
+    bool        user_verbose;	  // Flag as given to user_cmdSUC()
+    bool        user_check;	  // Flag as given to user_cmdSUC()
 
     CmdData (Filtering   fd = TryFilter,
 	     DispBuffer* db = 0,
@@ -110,7 +111,8 @@ typedef struct CmdData {
 	user_answer(""),
 	user_callback(0),
 	user_data(0),
-	user_verbose(true)
+	user_verbose(true),
+	user_check(true)
     {}
 };
 
@@ -432,6 +434,7 @@ void user_cmdSUC (string cmd, Widget origin,
     cmd_data->user_callback = callback;
     cmd_data->user_data     = data;
     cmd_data->user_verbose  = verbose;
+    cmd_data->user_check    = check;
 
     PlusCmdData* plus_cmd_data     = new PlusCmdData;
 
@@ -914,23 +917,25 @@ static bool last_new_frame_pos;	// True if last command was new frame position
 void user_cmdOAC (void* data)
 {
     CmdData* cmd_data = (CmdData *) data;
+    PosBuffer *pos_buffer = cmd_data->pos_buffer;
+    bool check = cmd_data->user_check;
 
-    string answer = cmd_data->pos_buffer->answer_ended();
+    string answer = pos_buffer->answer_ended();
     cmd_data->user_answer += answer;
 
-    if (cmd_data->pos_buffer->started_found())
+    if (pos_buffer->started_found())
     {
 	// Program has been restarted - clear position history
 	source_view->clear_history();
     }
 
-    if (cmd_data->pos_buffer->terminated_found())
+    if (pos_buffer->terminated_found())
     {
 	// Program has been terminated - clear execution position
 	source_view->clear_execution_position();
     }
 
-    if (cmd_data->pos_buffer->recompiled_found())
+    if (pos_buffer->recompiled_found())
     {
 	// Program has been recompiled - clear code and source cache,
 	// clear execution position, and reload current source.
@@ -940,17 +945,17 @@ void user_cmdOAC (void* data)
 	source_view->reload();
     }
 
-    if (cmd_data->pos_buffer->auto_cmd_found())
+    if (pos_buffer->auto_cmd_found())
     {
 	// Program (or GDB) issued command to be executed by DDD
-	gdb_batch(cmd_data->pos_buffer->get_auto_cmd());
+	gdb_batch(pos_buffer->get_auto_cmd());
     }
 
     // Set execution position
-    if (cmd_data->pos_buffer->pos_found())
+    if (check && pos_buffer->pos_found())
     {
-	string pos  = cmd_data->pos_buffer->get_position();
-	string func = cmd_data->pos_buffer->get_function();
+	string pos  = pos_buffer->get_position();
+	string func = pos_buffer->get_function();
 
 	last_pos_found = pos;
 	tty_full_name(pos);
@@ -982,7 +987,8 @@ void user_cmdOAC (void* data)
 
 	if (cmd_data->new_exec_pos || cmd_data->new_frame_pos)
 	{
-	    source_view->show_execution_position(pos, cmd_data->new_exec_pos);
+	    source_view->show_execution_position(pos, cmd_data->new_exec_pos, 
+						 pos_buffer->signaled_found());
 	}
 	else
 	{
@@ -990,11 +996,11 @@ void user_cmdOAC (void* data)
 	    source_view->show_position(pos);
 	}
     }
-    else
+    else if (check)
     {
 	// Delete old position
-	if (cmd_data->new_exec_pos || cmd_data->pos_buffer->pc_found())
-	    source_view->show_execution_position("", true);
+	if (cmd_data->new_exec_pos || pos_buffer->pc_found())
+	    source_view->show_execution_position();
     }
 
     // up/down is done: set frame position in backtrace window
@@ -1005,11 +1011,13 @@ void user_cmdOAC (void* data)
 	    source_view->set_frame_pos(cmd_data->set_frame_arg);
 
     // Set PC position
-    if (cmd_data->pos_buffer->pc_found())
+    if (check && pos_buffer->pc_found())
     {
-	string pc = cmd_data->pos_buffer->get_pc();
+	string pc = pos_buffer->get_pc();
 	if (cmd_data->new_exec_pos || cmd_data->new_frame_pos)
-	    source_view->show_pc(pc, XmHIGHLIGHT_SELECTED);
+	    source_view->show_pc(pc, XmHIGHLIGHT_SELECTED,
+				 cmd_data->new_exec_pos,
+				 pos_buffer->signaled_found());
 	else
 	    source_view->show_pc(pc, XmHIGHLIGHT_NORMAL);
     }
@@ -1027,7 +1035,7 @@ void user_cmdOAC (void* data)
     }
 
     // Process displays
-    if (cmd_data->filter_disp != NoFilter)
+    if (check && cmd_data->filter_disp != NoFilter)
     {
 	if (cmd_data->user_verbose)
 	    gdb_out(cmd_data->disp_buffer->answer_ended());
@@ -1056,7 +1064,7 @@ void user_cmdOAC (void* data)
 
     prompt();
 
-    cmd_data->pos_buffer->clear();
+    pos_buffer->clear();
     delete cmd_data;
 }
 
@@ -1477,7 +1485,7 @@ void plusOQAC (string answers[],
 		{
 		    source_view->show_execution_position(last_pos_found,
 							 last_new_exec_pos,
-							 true);
+							 false, true);
 		}
 		else
 		{
@@ -1504,7 +1512,7 @@ void plusOQAC (string answers[],
 
 	    if (last_new_exec_pos || last_new_frame_pos)
 	    {
-		source_view->show_execution_position(last_pos_found, 
+		source_view->show_execution_position(last_pos_found,
 						     last_new_exec_pos);
 	    }
 	    else

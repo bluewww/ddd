@@ -53,6 +53,7 @@ class PosBuffer {
 
     bool started;		// Program has started
     bool terminated;		// Program has terminated
+    bool signaled;		// Program has received a signal
     bool recompiled;		// Program has been recompiled
 
     string auto_cmd_buffer;	// AutoCommand found
@@ -68,6 +69,7 @@ public:
 	already_read    = Null;
 	started         = false;
 	terminated      = false;
+	signaled        = false;
 	recompiled      = false;
 	auto_cmd_buffer = "";
     }
@@ -99,6 +101,7 @@ public:
     // Other properties.
     bool started_found()    const { return started; }
     bool terminated_found() const { return terminated; }
+    bool signaled_found()   const { return signaled; }
     bool recompiled_found() const { return recompiled; }
 };
 

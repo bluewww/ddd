@@ -97,6 +97,9 @@ void PosBuffer::filter (string& answer)
 	if (has_prefix(answer, "The program no longer exists"))
 	    terminated = true;
 
+	if (has_prefix(answer, "Program received signal"))
+	    signaled = true;
+
 	if (answer.contains("has changed; re-reading symbols"))
 	    recompiled = true;
 
@@ -115,6 +118,9 @@ void PosBuffer::filter (string& answer)
 
 	if (answer.contains("has been recompiled"))
 	    recompiled = true;
+
+	if (has_prefix(answer, "signal "))
+	    signaled = true;
     }
     break;
     

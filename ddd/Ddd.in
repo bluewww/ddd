@@ -770,12 +770,14 @@ Ddd*no_debugger_dialog*foreground: red4
 Ddd*source_form_w.XmPushButton.background: grey90
 Ddd*source_form_w.plain_arrow.foreground:  dark green
 Ddd*source_form_w.grey_arrow.foreground:   dark green
+Ddd*source_form_w.bomb.foreground:         dark green
 Ddd*source_form_w.plain_stop.foreground:   red4
 Ddd*source_form_w.grey_stop.foreground:	   grey50
 
 Ddd*code_form_w.XmPushButton.background:   grey90
 Ddd*code_form_w.plain_arrow.foreground:	   dark green
 Ddd*code_form_w.grey_arrow.foreground:	   dark green
+Ddd*code_form_w.bomb.foreground:           dark green
 Ddd*code_form_w.plain_stop.foreground:	   red4
 Ddd*code_form_w.grey_stop.foreground:	   grey50
 
@@ -3056,7 +3058,7 @@ debugged program.\n\
 The upper area shows the source code.\n\
 The lower area shows the machine code.\n\
 \n\
-Use @bf Help @rm| @bf Help On Context @rm to get\n\
+Use @bf Help @rm| @bf On Context @rm to get\n\
 detailed help on each of these areas.
 
 
@@ -3285,6 +3287,18 @@ Ddd*source_form_w.grey_arrow*helpString: \
 Ddd*source_form_w.grey_arrow*tipString: \
 @rm Last execution position in selected frame
 
+Ddd*source_form_w.bomb*helpString: \
+@bf Lightning arrow\n\
+@rm shows the current execution position (signaled) in the lowest frame.
+Ddd*source_form_w.plain_arrow*tipString: \
+@rm Current execution position
+
+Ddd*code_form_w.bomb*helpString: \
+@bf Lightning arrow\n\
+@rm shows the current program counter (signaled) in the lowest frame.
+Ddd*code_form_w.plain_arrow*tipString: \
+@rm Current program counter
+
 Ddd*plain_stop.helpString: \
 @bf Plain stop sign\n\
 @rm A breakpoint (enabled).\n\
@@ -3320,7 +3334,7 @@ currently\n\
 interaction\n\
     with @GDB@ and the debugged program.\n\
 \n\
-Use @bf Help @rm| @bf Help On Context @rm to get detailed \
+Use @bf Help @rm| @bf On Context @rm to get detailed \
 help on any of these areas.
 
 
@@ -3363,7 +3377,7 @@ as well as the input and output of the debugged program.\n\
 You can enter @GDB@ commands here.\n\
 \n\
 To get a list of @GDB@ commands, enter `@tt help@rm' at the @GDB@ prompt.\n\
-To see the most important editing commands, see the @bf Commands @rm menu.
+See the @bf Commands @rm menu for the most important editing commands.
 
 Ddd*command_shell.helpString:		\
 @rm This is the @sl @GDB@ Console.@rm\n\
@@ -3374,7 +3388,7 @@ as well as the input and output of the debugged program.\n\
 You can enter @GDB@ commands here.\n\
 \n\
 To get a list of @GDB@ commands, enter `@tt help@rm' at the @GDB@ prompt.\n\
-To see the most important editing commands, see the @bf Commands @rm menu.
+See the @bf Commands @rm menu for the most important editing commands.
 
 
 !-----------------------------------------------------------------------------

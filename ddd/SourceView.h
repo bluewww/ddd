@@ -247,6 +247,7 @@ class SourceView {
     static bool disassemble;	              // Disassemble code?
     static bool all_registers;	              // Show all registers?
     static bool at_lowest_frame;              // Are we at lowest frame?
+    static bool signal_received;	      // Did we receive a signal?
 
     // Tab width
     static int tab_width;
@@ -360,9 +361,11 @@ public:
     // Set current execution position, based on the GDB position info
     // POSITION; no arg means clear current position.
     // STOPPED indicates that the program just stopped.
+    // SIGNALED indicates that the program received a signal.
     static void show_execution_position (string position = "",
-					 bool stopped = false,
-					 bool silent = false);
+					 bool stopped    = false,
+					 bool signaled   = false,
+					 bool silent     = false);
 
     // Unset current execution position (program terminated)
     static void clear_execution_position();
@@ -370,10 +373,14 @@ public:
     // Set cursor position, based on the GDB position info POSITION
     static void show_position (string position, bool silent = false);
 
-    // Set pc position to location PC; return start of line
-    // If MODE is given, highlight PC line
+    // Set pc position to PC.
+    // If MODE is given, highlight PC line.
+    // STOPPED indicates that the program just stopped.
+    // SIGNALED indicates that the program just received a signal.
     static void show_pc (const string& pc, 
-			 XmHighlightMode mode = XmHIGHLIGHT_NORMAL);
+			 XmHighlightMode mode = XmHIGHLIGHT_NORMAL,
+			 bool stopped  = false,
+			 bool signaled = false);
 
     // Handle breakpoint information
     static void process_info_bp         (string& info_output,

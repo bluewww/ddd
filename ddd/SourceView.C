@@ -114,6 +114,7 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 // DDD stuff
 #include "PosBuffer.h"
@@ -137,9 +138,10 @@ extern "C" {
 
 // Glyphs
 #include "arrow.xbm"
+#include "bomb.xbm"
 #include "stop.xbm"
-#include "greystop.xbm"
 #include "greyarrow.xbm"
+#include "greystop.xbm"
 
 // Additional macros
 inline int isid(char c)
@@ -363,6 +365,7 @@ bool SourceView::source_history_locked = false;
 bool SourceView::checking_scroll = false;
 
 bool SourceView::at_lowest_frame = true;
+bool SourceView::signal_received = false;
 
 int SourceView::max_popup_expr_length = 20;
 
@@ -2512,11 +2515,15 @@ void SourceView::create_text(Widget parent,
 // Set current execution position, based on the GDB position info
 // POSITION; no arg means clear current position.
 // STOPPED indicates that the program just stopped.
-void SourceView::show_execution_position (string position, bool stopped, 
-					  bool silent)
+// SIGNALED indicates that the program received a signal.
+void SourceView::show_execution_position (string position, bool stopped,
+					  bool signaled, bool silent)
 {
     if (stopped)
+    {
 	at_lowest_frame = true;
+	signal_received = signaled;
+    }
 
     if (position == "")
     {
@@ -2567,7 +2574,7 @@ void SourceView::show_execution_position (string position, bool stopped,
 			   " ");
 	}
 
-	// Zeilennummer usw. anzeigen
+	// Show current position
 	_show_execution_position(file_name, line, silent);
     }
 }
@@ -4960,6 +4967,9 @@ int SourceView::line_height(Widget text_w)
 
 void SourceView::unmap_glyph(Widget w)
 {
+    if (w == 0)
+	return;
+
     assert(is_code_widget(w) || is_source_widget(w));
 
     XtPointer user_data;
@@ -5018,12 +5028,31 @@ void SourceView::map_glyph(Widget& w, Position x, Position y)
 void SourceView::update_glyphs()
 {
     static XtWorkProcId update_glyph_id = 0;
+    static time_t update_glyph_called   = 0;
 
     if (update_glyph_id == 0)
     {
 	update_glyph_id = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 0,
 			    UpdateGlyphsWorkProc, XtPointer(&update_glyph_id));
+	update_glyph_called = time((time_t *)0);
+    }
+    else
+    {
+	// update_glyph() occasionally hangs - that is,
+	// UPDATE_GLYPH_ID != 0 holds, but UpdateGlyphsWorkProc() is
+	// never called.  Hence, we check for the time elapsed since
+	// we added the UpdateGlyphsWorkProc() timeout.
+	time_t seconds_since_timer_call = 
+	    (time((time_t *)0) - update_glyph_called);
+	bool update_glyphs_should_have_been_called =
+	    seconds_since_timer_call >= 1;
+	if (update_glyphs_should_have_been_called)
+	{
+	    XtRemoveTimeOut(update_glyph_id);
+	    UpdateGlyphsWorkProc(XtPointer(&update_glyph_id), 
+				 &update_glyph_id);
+	}
     }
 }
 
@@ -5083,6 +5112,7 @@ const int multiple_stop_x_offset = stop_width + (2 * motif_offset - 2);
 // Glyph locations
 static Widget _plain_arrow_w[2] = {0, 0};
 static Widget _grey_arrow_w[2]  = {0, 0};
+static Widget _bomb_w[2]        = {0, 0};
 static Widget _plain_stops_w[2][max_glyphs + 1];
 static Widget _grey_stops_w[2][max_glyphs + 1];
 
@@ -5120,6 +5150,21 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 			     greyarrow_bits, 
 			     greyarrow_width, 
 			     greyarrow_height);
+	    return False;
+	}
+    }
+
+    for (k = 0; k < 2; k++)
+    {
+	Widget form_w = k ? code_form_w : source_form_w;
+
+	if (_bomb_w[k] == 0)
+	{
+	    _bomb_w[k] = 
+		create_glyph(form_w, "bomb",
+			     bomb_bits, 
+			     bomb_width,
+			     bomb_height);
 	    return False;
 	}
     }
@@ -5183,83 +5228,98 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 
     // clog << "Updating glyphs...";
 
-    // Show source position
-    Widget& source_plain_arrow_w = _plain_arrow_w[0];
-    Widget& source_grey_arrow_w  = _grey_arrow_w[0];
-    Position x, y;
-    XmTextPosition pos;
-    Boolean pos_displayed = False;
-
-    if (display_glyphs
-	&& base_matches(current_file_name, last_execution_file)
-	&& line_count > 0
-	&& last_execution_line > 0
-	&& last_execution_line <= line_count)
     {
-	pos = pos_of_line(last_execution_line);
-	pos_displayed = XmTextPosToXY(source_text_w, pos, &x, &y);
-    }
+	// Show source position
+	Widget& source_plain_arrow_w = _plain_arrow_w[0];
+	Widget& source_grey_arrow_w  = _grey_arrow_w[0];
+	Widget& source_bomb_w        = _bomb_w[0];
+	Position x, y;
+	XmTextPosition pos;
+	Boolean pos_displayed = False;
 
-    if (pos_displayed)
-    {
-	if (at_lowest_frame)
+	if (display_glyphs
+	    && base_matches(current_file_name, last_execution_file)
+	    && line_count > 0
+	    && last_execution_line > 0
+	    && last_execution_line <= line_count)
 	{
-	    map_glyph(source_plain_arrow_w, x + arrow_x_offset, y);
-
-	    if (source_grey_arrow_w)
-		unmap_glyph(source_grey_arrow_w);
+	    pos = pos_of_line(last_execution_line);
+	    pos_displayed = XmTextPosToXY(source_text_w, pos, &x, &y);
 	}
-	else
-	{
-	    map_glyph(source_grey_arrow_w, x + arrow_x_offset, y);
 
-	    if (source_plain_arrow_w)
+	if (pos_displayed)
+	{
+	    if (at_lowest_frame && signal_received)
+	    {
+		map_glyph(source_bomb_w, x + arrow_x_offset, y);
 		unmap_glyph(source_plain_arrow_w);
-	}
-    }
-    else
-    {
-	if (source_plain_arrow_w)
-	    unmap_glyph(source_plain_arrow_w);
-	if (source_grey_arrow_w)
-	    unmap_glyph(source_grey_arrow_w);
-    }
-
-
-    // Show PC
-    Widget& code_plain_arrow_w = _plain_arrow_w[1];
-    Widget& code_grey_arrow_w  = _grey_arrow_w[1];
-    pos_displayed = False;
-    if (display_glyphs && last_execution_pc != "")
-    {
-	pos = find_pc(last_execution_pc);
-	if (pos != XmTextPosition(-1))
-	    pos_displayed = XmTextPosToXY(code_text_w, pos, &x, &y);
-    }
-
-    if (pos_displayed)
-    {
-	if (at_lowest_frame)
-	{
-	    map_glyph(code_plain_arrow_w, x + arrow_x_offset, y);
-	    if (code_grey_arrow_w)
-		unmap_glyph(code_grey_arrow_w);
+		unmap_glyph(source_grey_arrow_w);
+	    }
+	    else if (at_lowest_frame)
+	    {
+		map_glyph(source_plain_arrow_w, x + arrow_x_offset, y);
+		unmap_glyph(source_bomb_w);
+		unmap_glyph(source_grey_arrow_w);
+	    }
+	    else
+	    {
+		map_glyph(source_grey_arrow_w, x + arrow_x_offset, y);
+		unmap_glyph(source_bomb_w);
+		unmap_glyph(source_plain_arrow_w);
+	    }
 	}
 	else
 	{
-	    map_glyph(code_grey_arrow_w, x + arrow_x_offset, y);
-	    if (code_plain_arrow_w)
-		unmap_glyph(code_plain_arrow_w);
+	    unmap_glyph(source_bomb_w);
+	    unmap_glyph(source_plain_arrow_w);
+	    unmap_glyph(source_grey_arrow_w);
 	}
     }
-    else
-    {
-	if (code_plain_arrow_w)
-	    unmap_glyph(code_plain_arrow_w);
-	if (code_grey_arrow_w)
-	    unmap_glyph(code_grey_arrow_w);
-    }
 
+    {
+	// Show PC
+	Widget& code_plain_arrow_w = _plain_arrow_w[1];
+	Widget& code_grey_arrow_w  = _grey_arrow_w[1];
+	Widget& code_bomb_w        = _bomb_w[1];
+	Position x, y;
+	XmTextPosition pos;
+	Boolean pos_displayed = False;
+
+	if (display_glyphs && last_execution_pc != "")
+	{
+	    pos = find_pc(last_execution_pc);
+	    if (pos != XmTextPosition(-1))
+		pos_displayed = XmTextPosToXY(code_text_w, pos, &x, &y);
+	}
+
+	if (pos_displayed)
+	{
+	    if (at_lowest_frame && signal_received)
+	    {
+		map_glyph(code_bomb_w, x + arrow_x_offset, y);
+		unmap_glyph(code_plain_arrow_w);
+		unmap_glyph(code_grey_arrow_w);
+	    }
+	    else if (at_lowest_frame)
+	    {
+		map_glyph(code_plain_arrow_w, x + arrow_x_offset, y);
+		unmap_glyph(code_bomb_w);
+		unmap_glyph(code_grey_arrow_w);
+	    }
+	    else
+	    {
+		map_glyph(code_grey_arrow_w, x + arrow_x_offset, y);
+		unmap_glyph(code_bomb_w);
+		unmap_glyph(code_plain_arrow_w);
+	    }
+	}
+	else
+	{
+	    unmap_glyph(code_bomb_w);
+	    unmap_glyph(code_plain_arrow_w);
+	    unmap_glyph(code_grey_arrow_w);
+	}
+    }
 
     int plain[2]; plain[0] = 0; plain[1] = 0;
     int grey[2];   grey[0] = 0;  grey[1] = 0;
@@ -5289,8 +5349,9 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 		&& bp->line_nr() > 0
 		&& bp->line_nr() <= line_count)
 	    {
-		pos = pos_of_line(bp->line_nr());
-		pos_displayed = 
+		XmTextPosition pos = pos_of_line(bp->line_nr());
+		Position x, y;
+		Boolean pos_displayed = 
 		    XmTextPosToXY(source_text_w, pos, &x, &y);
 		if (pos_displayed)
 		{
@@ -5341,9 +5402,9 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
 	    if (bp->type() != BREAKPOINT)
 		continue;
 
-	    pos = find_pc(bp->address());
-	    pos_displayed = 
-		XmTextPosToXY(code_text_w, pos, &x, &y);
+	    XmTextPosition pos = find_pc(bp->address());
+	    Position x, y;
+	    Boolean pos_displayed = XmTextPosToXY(code_text_w, pos, &x, &y);
 	    if (pos_displayed)
 	    {
 		while (!CreateGlyphsWorkProc(0))
@@ -5636,11 +5697,21 @@ void SourceView::refresh_codeOQC(const string& answer, void *client_data)
 }
 
 // Show program counter location PC
-void SourceView::show_pc(const string& pc, XmHighlightMode mode)
+// If MODE is given, highlight PC line.
+// STOPPED indicates that the program just stopped.
+// SIGNALED indicates that the program just received a signal.
+void SourceView::show_pc(const string& pc, XmHighlightMode mode,
+			 bool stopped, bool signaled)
 {
     last_shown_pc = pc;
     if (mode == XmHIGHLIGHT_SELECTED)
 	last_execution_pc = pc;
+
+    if (stopped)
+    {
+	at_lowest_frame = true;
+	signal_received = signaled;
+    }
 
     if (!disassemble)
 	return;
