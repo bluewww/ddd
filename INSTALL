@@ -20,16 +20,16 @@ Requirements
        * The X window library (Xlib) and X toolkit library (Xt),
          X11R4 or later.
 
-       * The OSF/Motif Widget library (release 1.1 or later).  Best
-         results are achieved using Motif 2.0 in conjunction with the
+       * The Motif Widget library (release 1.1 or later).  Best
+         results are achieved using OSF/Motif 2.0 in conjunction with the
          Athena Widget library.
 
-	 DDD also compiles and runs with LessTif, a free Motif clone.
+	 DDD also compiles and runs with LessTif, a free OSF/Motif clone.
 	 As of LessTif 0.75a, the resulting DDD executable is already
 	 quite usable.  See the file `PROBLEMS' for a recent list of
 	 problems and fixes.
 
-       * Optionally, in addition to the OSF/Motif widget library, the
+       * Optionally, in addition to the Motif widget library, the
          Athena Widget library (release 5 or later).  Having the
          Athena Widget library is convenient for supporting
          two-dimensional scrollbars and the `editres' protocol.

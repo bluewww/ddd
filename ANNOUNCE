@@ -142,19 +142,28 @@ Summary of DDD
     debugging; hypertext source navigation and lookup; breakpoint,
     backtrace, and history editors; preferences and settings editors;
     program execution in terminal emulator window; debugging on remote
-    host; on-line manual; interactive help on the OSF/Motif user
+    host; on-line manual; interactive help on the Motif user
     interface; GDB/DBX/XDB command-line interface with full editing,
     history, and completion capabilities.  DDD has been designed to
     compete with well-known commercial debuggers.
 
-    DDD has been extensively beta-tested (especially by debugging
-    itself) and configures, compiles and runs out-of-the-box on every
-    major UNIX brand, including AIX (powerpc-ibm-aix3,
-    rs6000-ibm-aix3), FreeBSD (i386-intel-freebsd1), HP-UX
-    (hppa1.1-hp-hpux9, m68k-hp-hpux9), IRIX (mips-sgi-irix5), Linux
-    (i[345]86-unknown-linux, i[345]86-unknown-linuxaout), Alpha OSF
-    (alpha-osf3), Solaris (i386-sun-solaris2, sparc-sun-solaris2),
-    SunOS (sparc-sun-sunos4), and ULTRIX (mips-dec-ultrix4).
+    Of course, there are also features of DDD you may not like.
+    First, DDD is quite huge.  If you have a simple debugging task on
+    a system with few resources, DDD may not be the debugger of choice
+    for you.  There is a FAQ entry on how to configure DDD for maximum
+    speed.  Second, DDD uses Motif.  This is a problem for free
+    software purists, but will disappear when free Motif clones such
+    as LessTif become generally usable.  For those who lack Motif, we
+    distribute contributed DDD binaries for all important platforms.
+    
+    Speaking of platforms: DDD configures, compiles and runs
+    out-of-the-box on every major UNIX platform, including AIX
+    (powerpc-ibm-aix3, rs6000-ibm-aix3), FreeBSD
+    (i386-intel-freebsd1), HP-UX (hppa1.1-hp-hpux9, m68k-hp-hpux9),
+    IRIX (mips-sgi-irix5), Linux (i[345]86-unknown-linux,
+    i[345]86-unknown-linuxaout), Alpha OSF (alpha-osf3), Solaris
+    (i386-sun-solaris2, sparc-sun-solaris2), SunOS (sparc-sun-sunos4),
+    and ULTRIX (mips-dec-ultrix4).
 
     DDD is free software, protected by the GNU general public license.
     It is actively maintained by its authors, Dorothea Luetkehaus and
@@ -178,16 +187,16 @@ Requirements
        * The X window library (Xlib) and X toolkit library (Xt),
          X11R4 or later.
 
-       * The OSF/Motif Widget library (release 1.1 or later).  Best
-         results are achieved using Motif 2.0 in conjunction with the
+       * The Motif Widget library (release 1.1 or later).  Best
+         results are achieved using OSF/Motif 2.0 in conjunction with the
          Athena Widget library.
 
-	 DDD also compiles and runs with LessTif, a free Motif clone.
+	 DDD also compiles and runs with LessTif, a free OSF/Motif clone.
 	 As of LessTif 0.75a, the resulting DDD executable is already
 	 quite usable.  See the file `PROBLEMS' for a recent list of
 	 problems and fixes.
 
-       * Optionally, in addition to the OSF/Motif widget library, the
+       * Optionally, in addition to the Motif widget library, the
          Athena Widget library (release 5 or later).  Having the
          Athena Widget library is convenient for supporting
          two-dimensional scrollbars and the `editres' protocol.
