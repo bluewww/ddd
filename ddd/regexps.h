@@ -53,6 +53,7 @@ extern const regex rxbreak_cmd;
 extern const regex rxcd_cmd;
 extern const regex rxchain;
 extern const regex rxcolons;
+extern const regex rxcont_cmd;
 extern const regex rxcore;
 extern const regex rxcore_cmd;
 extern const regex rxcrlf;
