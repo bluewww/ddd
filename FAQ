@@ -304,4 +304,61 @@ DDD Frequently Asked Questions                                  -*- text -*-
        Then, change the file `fonts.vsl' as described in a).
 
 
+19. Can I add my own command buttons in DDD ?
+
+    Yes.  In ~/.dddinit, copy and modify the following resources:
+
+    ! Colon-separated lists of GDB commands for which buttons 
+    ! are to be created.
+    !
+    ! All buttons send the named command to GDB.
+    ! Commands ending with '...' insert their name, followed by a space.
+    ! Commands ending with a control character insert the given
+    ! control character.
+    !
+    ! The following button names have special meanings:
+    ! - `Clear'    : Clear current command
+    ! - `Prev'     : Show previous command
+    ! - `Next'     : Show next command
+    ! - `Apply'    : Send the given command to GDB
+    ! - `Back'     : Lookup previously selected source position
+    ! - `Forward'  : Lookup next selected source position
+    ! - `Edit'     : Edit current source file
+    ! - `Reload'   : Reload source file
+    ! - `Complete' : Complete current command
+    ! - `Yes'      : Answer current GDB prompt
+    ! - `No'       : Answer current GDB prompt
+    
+    ! The buttons under the GDB command window.
+    ! Ddd*commandButtons: \
+    ! 	Yes:No:run:Clear:Prev:Next:Apply:interrupt^C
+    Ddd*commandButtons: \
+    	Yes:No:interrupt^C
+    
+    ! The buttons under the source window.
+    Ddd*sourceButtons:   	    \
+    run:step:next:stepi:nexti:cont:finish:kill:\
+    up:down:Back:Forward:Edit:interrupt^C
+
+    ! The button labels
+    Ddd*run.labelString:       Run
+    Ddd*step.labelString:      Step
+    Ddd*next.labelString:      Next
+    Ddd*stepi.labelString:     Stepi
+    Ddd*nexti.labelString:     Nexti
+    Ddd*cont.labelString:      Continue
+    Ddd*interrupt.labelString: Interrupt
+    Ddd*kill.labelString:      Kill
+    Ddd*until.labelString:     Until
+    Ddd*finish.labelString:    Finish
+    Ddd*up.labelString:        Up
+    Ddd*down.labelString:      Down
+    Ddd*Back.labelString:      Back
+    Ddd*Forward.labelString:   Forward
+    Ddd*Edit.labelString:      Edit
+    Ddd*Reload.labelString:    Reload
+    Ddd*Complete.labelString:  Complete
+
+
+
 $Id$

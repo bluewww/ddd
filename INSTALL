@@ -121,11 +121,16 @@ Basic Installation
          `ddd/Ddd', why you should *not* install an extra app-defaults
          file.
 
-     11. You can remove the program binaries, libraries and object files
-         from the source directory by typing `make clean'.  To also remove
-         the Makefile(s), the header files containing system-dependent
-         definitions, and `config.status' (all the files that `configure'
-         created), type `make distclean'.
+     11. You can remove the program binaries, libraries and object
+         files from the source directory by typing `make clean'.  To
+         also remove the Makefile(s), the header files containing
+         system-dependent definitions, and `config.status' (all the
+         files that `configure' created), type `make distclean'.  To
+         also remove the system-independent derived files included in
+         the DDD distribution for your convenience (such as LEX and
+         YACC output), type `make realclean' instead.  (There is also
+         `make ultraclean' that removes *every* derived file; don't
+         use it unless you know what you do.)
 
      12. Please consider sharing your DDD binary with other people
          lacking Motif or a C++ compiler.  As the DDD maintainers have
@@ -145,7 +150,6 @@ Documentation
 
     Various formatted documents related to DDD are contained in the
     `./doc' directory.  See the `./doc/README' file for details.
-
 
 
 Compilers and Options

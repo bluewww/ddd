@@ -54,13 +54,23 @@ HP-UX
     Various linking problems have been reported.  This is probably due
     to an error in the HP-UX linker.  According to some DDD users, the
     problem can be solved by using patched versions of the GNU
-    binutils (such as ld and ar) instead of the HP-UX binutils.
-    For more information on HP-PA versions of the GNU tools, see
+    binutils (such as ld and ar) instead of the HP-UX binutils.  For
+    more information on HP-PA versions of the GNU tools, see
     `ftp://jaguar.cs.utah.edu/dist/pagnutools.html'.
 
     Ivar Ruyter <ivarr@troll.hz.kfa-juelich.de> states: Build
     everything statically and add `-l:libdld.sl' to the LIBS line in
     the Makefile, voila you have a nice new Christmas Present.
+
+    Roy Dragseth <royd@math.uit.no> adds:
+    Statically link as stated above. Actually it is only
+    neccessary to statically link libXm, so if you exchange 
+            -L/usr/lib/Motif1.2 -lXm
+    with
+            /usr/lib/Motif1.2/libXm.a
+    in the link step DDD works fine. This might be useful for people
+    who don't have the gnu linker. It also makes the executable ~1Mb
+    smaller than when you add -l:libdld.sl to the link step.
 
 
 LINUX
