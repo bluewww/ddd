@@ -282,7 +282,7 @@ Volunteers for fixing these and other bugs are welcome!
     window locks in scroll mode until it reaches the top or bottom of
     the file.
 
-261 DDD does not find inner Java classes (JDB reports class names, not 
+261*DDD does not find inner Java classes (JDB reports class names, not 
     files).  Do we have to scan .class files for source info?
 
 262 (Insert new bugs here)
