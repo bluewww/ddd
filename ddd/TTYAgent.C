@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // An agent interface using ptys (pseudo ttys)
 
-// Copyright (C) 1994 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 // 
 // This file is part of the NORA Library.
@@ -26,12 +26,13 @@
 
 // Most of this code is based on `calldbx.c' from `xxgdb', by Pierre
 // Willard which in turn is based on `calldbx.c' from `xdbx', by Po
-// Cheung.  The open_master() and open_slave() routines are based
-// on the pty routines from the GNU `expect' library.
+// Cheung.  The open_master() and open_slave() routines are based on
+// the pty routines from the GNU `expect' library.
 //
 // I have not been able to test all possible configurations and
 // architectures.  If someone finds problems in this code, please
-// enlighten me.
+// enlighten me.  I also apologize for the mess of `#ifdef's in this
+// file; please tell me about superfluous ones if you find some.
 //
 //                                                 (Andreas Zeller)
 
@@ -47,7 +48,11 @@ char TTYAgent_rcsid[] =
 
 DEFINE_TYPE_INFO_1(TTYAgent, LiterateAgent)
 
-
+#ifdef __osf__
+// OSF has some special treatment in this file; I guess these `#ifdef
+// __osf__' flags should be deleted by an OSF expert some day.   - AZ
+#include <termio.h>
+#else
 #if defined(HAVE_TCGETATTR) && defined(HAVE_TCSETATTR)
 #ifdef HAVE_TERMIOS_H
 #include <termios.h>
@@ -57,6 +62,7 @@ DEFINE_TYPE_INFO_1(TTYAgent, LiterateAgent)
 #include <termio.h>
 #endif
 #endif // !defined(HAVE_TCGETATTR) || !defined(HAVE_TCSETATTR)
+#endif // !__osf__
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -157,8 +163,8 @@ extern "C" {
 #endif
 }
 
-#if defined(HAVE_PTSNAME) && defined(HAVE_GRANTPT) && defined(HAVE_UNLOCKPT) \
-    && defined(HAVE_IOCTL)
+#if !defined(__osf__) && defined(HAVE_PTSNAME) && defined(HAVE_GRANTPT) \
+    && defined(HAVE_UNLOCKPT) && defined(HAVE_IOCTL)
 
 #define HAVE_STREAMS
 
@@ -175,7 +181,7 @@ extern "C" {
 #endif
 }
 
-#endif
+#endif // !defined(__osf__) && defined(HAVE_PTSNAME) ...
 
 #ifndef STDIN_FILENO
 #define STDIN_FILENO 0
@@ -375,6 +381,7 @@ void TTYAgent::open_master()
 
     // Try PTY's in /dev/pty?? -- a BSD and USG feature
     for (int i = 0; i < int(p1.length()); i++)
+    {
 	for (int j = 0; j < int(p2.length()); j++)
 	{
 	    string nr  = string(p1[i]) + p2[j];
@@ -395,6 +402,7 @@ void TTYAgent::open_master()
 		return;
 	    }
 	}
+    }
 
     _raiseIOMsg("cannot open master pty");
     return;
@@ -411,7 +419,7 @@ void TTYAgent::open_slave()
 	return;
     }
 
-#if defined(__FreeBSD__) && defined(TIOCSCTTY)
+#if !defined(__osf__) && defined(__FreeBSD__) && defined(TIOCSCTTY)
     if (!push)
     {
 	if (ioctl(slave, TIOCSCTTY) < 0)
@@ -419,7 +427,7 @@ void TTYAgent::open_slave()
     }
 #endif
 
-#ifdef I_PUSH
+#if defined(HAVE_STREAMS) && defined(I_PUSH)
     if (push)
     {
 	// Finish STREAMS setup.
@@ -448,7 +456,7 @@ int TTYAgent::setupCommunication()
 
 int TTYAgent::setupParentCommunication()
 {
-#if defined(HAVE_FCNTL) && defined(O_NONBLOCK)
+#if defined(__osf__) || (defined(HAVE_FCNTL) && defined(O_NONBLOCK))
     // Set the child file descriptor to nonblocking mode
     int flags = fcntl(master, F_GETFL, 0);
     if (flags == -1)
@@ -475,9 +483,9 @@ int TTYAgent::setupParentCommunication()
     _errorfp  = NULL;
     
     // Set line buffered mode
-#if defined(HAVE_SETVBUF) && defined(_IONBF)
+#if !defined(__osf__) && defined(HAVE_SETVBUF) && defined(_IONBF)
     setvbuf(_outputfp, NULL, _IONBF, BUFSIZ);
-#elif defined(HAVE_SETBUF)
+#elif defined(__osf__) || defined(HAVE_SETBUF)
     setbuf(_outputfp, NULL);
 #endif
 
@@ -539,6 +547,7 @@ int TTYAgent::setupChildCommunication()
 	return -1;
 
 
+#ifndef __osf__
     // Make this process the foreground process in the slave pty.
     result = 0;
 #if defined(HAVE_TCSETPGRP)
@@ -549,10 +558,10 @@ int TTYAgent::setupChildCommunication()
 
     if (result < 0)
 	_raiseIOMsg("cannot set terminal foreground process group");
-
+#endif // !defined(__osf__)
 
     // Modify local and output mode of slave pty
-#if defined(HAVE_TCGETATTR) && defined(HAVE_TCSETATTR)
+#if !defined(__osf__) && defined(HAVE_TCGETATTR) && defined(HAVE_TCSETATTR)
     struct termios settings;
     result = tcgetattr(slave, &settings);
     if (result < 0)
@@ -576,7 +585,7 @@ int TTYAgent::setupChildCommunication()
 	if (result < 0)
 	    _raiseIOMsg("cannot set slave terminal settings");
     }
-#elif defined(HAVE_IOCTL)
+#elif defined(__osf__) || defined(HAVE_IOCTL)
 #if defined(TIOCGETP) && defined(TIOCSETP)
     struct sgttyb settings;
     result = ioctl(slave, TIOCGETP, &settings);
@@ -585,7 +594,7 @@ int TTYAgent::setupChildCommunication()
     else
     {
 	settings.sg_flags &= ~ECHO;	// No echo
-#ifdef ISIG
+#if defined(ISIG) && !defined(__osf__)
 	settings.sg_flags |= ISIG;      // Enable signals
 #endif
 #ifdef CRMOD
@@ -603,17 +612,21 @@ int TTYAgent::setupChildCommunication()
     else
     {
 	settings.c_lflag &= ~ECHO;      // No echo
+#ifndef __osf__
 #ifdef ISIG
 	settings.c_lflag |= ISIG;       // Enable signals
 #endif
 #ifdef OPOST
 	settings.c_oflag &= ~OPOST;     // Do not process output data
 #endif
+#endif
 #ifdef ONLCR
 	settings.c_oflag &= ~ONLCR;	// Do not map NL to CR-NL on output
 #endif
+#ifndef __osf__
 #ifdef VINTR
 	settings.c_cc[VINTR] = '\003';  // Set interrupt to ^C
+#endif
 #endif
 	result = ioctl(slave, TCSETA, &settings);
 	if (result < 0)

@@ -82,6 +82,34 @@ LINUX
      that source file.
 
 
+Alpha OSF
+=========
+
+Reported by:  Walter Tuppa <tuppa@iue.tuwien.ac.at>
+
+     Building DDD on Alpha OSF brings some difficulties, since librx.a
+     (the GNU regular expression library) is not 64-bit clean.  The
+     following procedure should work:
+
+     1. Configure DDD as stated in the installation guide.
+
+     2. `librx' must be compiled using the native `cc' compiler, using
+        the `-taso' flag.  Set `CC = cc -taso' in `librx/Makefile'.
+
+     3. `ddd' can be compiled using GCC, but requires the `-taso' flag
+         to be set as well.  Search for the definition of `COMPILE.cc' in
+         `ddd/Makefile'.  Add a `-taso' flag after `$(CXX)'.
+
+     4. `ddd' should be linked using the native `cc' compiler, again
+         using the `-taso' flag.  Search for the definition of
+         `LINK.cc' in `ddd/Makefile'.  Replace `$(CXX)' by `cc -taso'.
+
+     5. Build DDD as recommended.
+
+     These steps make the DDD binary use only a 31-bit address space
+     and avoid problems between integer and pointer conversion.
+
+
 GCC 2.3, 2.4, 2.5
 =================
 
