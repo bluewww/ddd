@@ -52,10 +52,10 @@
 
 ! Some useful buttons to be added below the source.
 ! Ddd*sourceButtons: \
-! print *(())	Print *()\n\
-! graph display *(())	Display *()\n\
+! print *(())           // Print *()\n\
+! graph display *(())	// Display *()\n\
 ! print /x ()\n\
-! whatis ()	What is ()\n\
+! whatis ()		// What is ()\n\
 ! ptype ()\n\
 ! watch ()\n\
 ! until\n\
