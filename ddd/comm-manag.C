@@ -556,9 +556,14 @@ static void SourceDoneCB(const string& answer, void *qu_data)
 	// ordinary way.
 	init_session(info->restart, info->settings, false);
     }
+    if (answer != "")
+	post_gdb_message(answer);
 
     delete info;
 }
+
+// Experimental: set to true to enable command sourcing
+const bool SOURCE_COMMANDS = false;
 
 // Enqueue init commands
 void init_session(const string& restart, const string& settings, 
@@ -566,7 +571,7 @@ void init_session(const string& restart, const string& settings,
 {
     string init_commands = restart + settings;
 
-    if (try_source && !remote_gdb() && gdb->type() == GDB)
+    if (SOURCE_COMMANDS && try_source && !remote_gdb() && gdb->type() == GDB)
     {
 	// In GDB, source start-up commands from temp file
 	InitSessionInfo *info = new InitSessionInfo;
