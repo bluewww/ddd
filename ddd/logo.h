@@ -69,6 +69,7 @@ extern void set_label(Widget w, const MString& new_label,
 #define FIND_FORWARD_ICON  "find_forward"
 #define HIDE_ICON          "hide"
 #define LOOKUP_ICON        "lookup"
+#define MAKETEMP_ICON      "maketemp"
 #define NEW_BREAK_ICON     "new_break"
 #define NEW_DISPLAY_ICON   "new_display"
 #define NEW_WATCH_ICON     "new_watch"

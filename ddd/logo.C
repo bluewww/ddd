@@ -285,6 +285,7 @@ Pixmap dddsplash(Widget w, const string& color_key)
 #include "icons/toolbar/findfwd.xbm"
 #include "icons/toolbar/hide.xbm"
 #include "icons/toolbar/lookup.xbm"
+#include "icons/toolbar/maketemp.xbm"
 #include "icons/toolbar/newbreak.xbm"
 #include "icons/toolbar/newdisplay.xbm"
 #include "icons/toolbar/newwatch.xbm"
@@ -308,6 +309,7 @@ Pixmap dddsplash(Widget w, const string& color_key)
 #include "icons/toolbar/findfwd-xx.xbm"
 #include "icons/toolbar/hide-xx.xbm"
 #include "icons/toolbar/lookup-xx.xbm"
+#include "icons/toolbar/maketemp-xx.xbm"
 #include "icons/toolbar/newbreak-xx.xbm"
 #include "icons/toolbar/newdisplay-xx.xbm"
 #include "icons/toolbar/newwatch-xx.xbm"
@@ -333,6 +335,7 @@ Pixmap dddsplash(Widget w, const string& color_key)
 #include "icons/toolbar/findfwd.xpm"
 #include "icons/toolbar/hide.xpm"
 #include "icons/toolbar/lookup.xpm"
+#include "icons/toolbar/maketemp.xpm"
 #include "icons/toolbar/newbreak.xpm"
 #include "icons/toolbar/newdisplay.xpm"
 #include "icons/toolbar/newwatch.xpm"
@@ -356,6 +359,7 @@ Pixmap dddsplash(Widget w, const string& color_key)
 #include "icons/toolbar/findfwd-xx.xpm"
 #include "icons/toolbar/hide-xx.xpm"
 #include "icons/toolbar/lookup-xx.xpm"
+#include "icons/toolbar/maketemp-xx.xpm"
 #include "icons/toolbar/newbreak-xx.xpm"
 #include "icons/toolbar/newdisplay-xx.xpm"
 #include "icons/toolbar/newwatch-xx.xpm"
@@ -673,6 +677,12 @@ void install_icons(Widget shell, const string& color_key)
       		        lookup_xpm, lookup_xx_xpm,
 		        lookup_bits, lookup_xx_bits, 
 		        lookup_width, lookup_height,
+			color_key, background, arm_background, root_attr);
+
+    install_button_icon(shell, MAKETEMP_ICON, 
+      		        maketemp_xpm, maketemp_xx_xpm,
+		        maketemp_bits, maketemp_xx_bits, 
+		        maketemp_width, maketemp_height,
 			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, NEW_BREAK_ICON, 
