@@ -171,7 +171,7 @@ void ArgField::callHandlers ()
     handlers.call(Empty, this, (void*)is_empty);
 }
 
-Widget ArgField::top() const { return ComboBoxTop(text()); };
+Widget ArgField::top() const { return ComboBoxTop(text()); }
 
 
 // Clear the text field given in Widget(CLIENT_DATA)

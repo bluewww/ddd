@@ -61,7 +61,7 @@ int rand();
 #if HAVE_SRAND && !HAVE_SRAND_DECL && !defined(srand)
 void srand(unsigned int seed);
 #endif
-};
+}
 
 static void init_random_seed()
 {

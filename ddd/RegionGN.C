@@ -90,7 +90,7 @@ void RegionGraphNode::draw(Widget w,
 		       h.origin(X), h.origin(Y),
 		       h.space(X), h.space(Y));
     }
-};
+}
 
 
 
