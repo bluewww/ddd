@@ -319,6 +319,7 @@ private:
     string requires_reply (const string& answer);
     void cut_off_prompt (string& answer);
     void strip_comments (string& answer);
+    void strip_control (string& answer);
 
 protected:
     string complete_answer;

@@ -492,8 +492,7 @@ void GDBAgent::cut_off_prompt (string& answer)
 
 
 
-// ***************************************************************************
-//
+// Strip annoying comments
 void GDBAgent::strip_comments(string& s)
 {
     if (!has_print_r_command())
@@ -572,6 +571,45 @@ void GDBAgent::strip_comments(string& s)
     }
 }
 
+// Strip control characters
+void GDBAgent::strip_control(string& answer)
+{
+    int source_index = 0;
+    int target_index = 0;
+
+    for (source_index = 0; source_index < int(answer.length()); source_index++)
+    {
+	switch (answer[source_index])
+	{
+	case '\b':
+	    // Delete last character
+	    if (target_index > 0 && answer[target_index - 1] != '\n')
+		target_index--;
+	    break;
+
+	case '\r':
+	    if (source_index + 1 < int(answer.length())
+		&& answer[source_index + 1] == '\n')
+	    {
+		// Followed by '\n' -- ignore
+		break;
+	    }
+
+	    // Return to beginning of line
+	    while (target_index > 0 && answer[target_index - 1] != '\n')
+		target_index--;
+	    break;
+
+	default:
+	    // Leave character unchanged
+	    answer[target_index++] = answer[source_index];
+	    break;
+	}
+    }
+
+    answer = answer.before(target_index);
+}
+
 //-----------------------------------------------------------------------------
 // Event handlers
 //-----------------------------------------------------------------------------
@@ -585,8 +623,8 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
     DataLength* dl    = (DataLength *) call_data;
     string      answer(dl->data, dl->length);
 
-    // Get rid of any remaining `\r\n' combinations
-    answer.gsub("\r\n", '\n');
+    // Get rid of any control combinations
+    gdb->strip_control(answer);
 
     string reply = gdb->requires_reply(answer);
     if (reply != "")
