@@ -280,7 +280,4 @@ Volunteers for fixing these and other bugs are welcome!
       the $(HOME) does not get propagated to all Makefiles.
       [This is a problem of the libiberty and librx maintainers.  -AZ]
 
-250 In LessTif, selecting an identifier first, and a line then, will
-    not update () correctly.
-
 251 (Insert your bug here)

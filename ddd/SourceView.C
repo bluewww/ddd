@@ -1412,6 +1412,15 @@ void SourceView::set_source_argCB(Widget text_w,
 	}
     }
 
+    if (!have_selection && call_data == 0)
+    {
+	// Still no selection?  We're probably called from setSelection();
+	// use the last selected word instead.
+	startPos = selection_startpos;
+	endPos   = selection_endpos;
+	have_selection = True;
+    }
+
     // Don't use this selection event again.
     selection_event.type = KeyPress;
 
