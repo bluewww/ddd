@@ -30,6 +30,8 @@ DDD 3.0 [in beta test]
       buttons.
     - Conditional breakpoints, temporary breakpoints, and breakpoints
       with ignore counts now have their special symbols on their own.
+    - All selection dialogs, including the breakpoint and display
+      editors, now can be resized.
     - When detecting a grabbed (frozen) mouse pointer after reaching a
       breakpoint, DDD now automatically continues execution, rather
       than attempting to ungrab the pointer.
