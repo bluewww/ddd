@@ -777,8 +777,9 @@ bool is_disabling(const string& value, GDBAgent *gdb)
 
 bool is_invalid(const string& value)
 {
-    // If VALUE ends in two words, it is an error message like
-    // `not active' or `no symbol in current context.'.
+    // If VALUE ends in two words, it is an error message like `not
+    // active' or `no symbol in current context.'.  XDB issues
+    // `Unknown name "Foo" (UE369)' and `Local is not active (UE421)'.
 #if RUNTIME_REGEX
     static regex rxinvalid_value("("
 				 "[a-zA-Z]+ [a-zA-Z]+.*"
@@ -786,7 +787,9 @@ bool is_invalid(const string& value)
 				 ")\n?");
 #endif
 
-    return value.matches(rxinvalid_value);
+    return value.contains("Unknown name") 
+	|| value.contains("not active")
+	|| value.matches(rxinvalid_value);
 }
 
 
