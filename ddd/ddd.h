@@ -96,10 +96,19 @@ extern ofstream dddlog;
 extern string gdb_out_ignore;
 
 // Process next DDD event
-void process_next_event();
+extern void process_next_event();
+
+// Process all pending DDD events
+extern void process_pending_events();
 
 // Setup is done
-Boolean ddd_setup_done(XtPointer client_data);
+extern Boolean ddd_setup_done(XtPointer client_data);
+
+// Register shells of menu ITEMS.
+extern void register_menu_shell(struct MMDesc items[]);
+
+// Process ^C key
+extern bool process_emergencies();
 
 #endif // _DDD_ddd_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

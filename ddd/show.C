@@ -57,8 +57,6 @@ char show_rcsid[] =
 #include "Xpm.h"
 #include "HelpCB.h"
 
-extern void process_pending_events();
-
 #if !HAVE_POPEN_DECL
 extern "C" FILE *popen(const char *command, const char *mode);
 #endif

@@ -122,8 +122,6 @@ char DataDisp_rcsid[] =
 #include <iomanip.h>
 #include <ctype.h>
 
-extern void register_menu_shell(MMDesc *items);
-extern bool process_emergencies();
 
 //-----------------------------------------------------------------------
 // Xt Stuff
