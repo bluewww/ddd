@@ -356,4 +356,6 @@ Volunteers for these and other projects are welcome!
      *()' applied to a struct could dereference all contained pointers
      (unless already dereferenced).
 
-196. (Insert your project idea here)
+196. Have a GUI for the GDB `handle' commands (`Signal handling' or so).
+
+197. (Insert your project idea here)
