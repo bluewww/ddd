@@ -222,14 +222,15 @@ Ddd*questionTimeout: 10
 ! The command window buttons.
 ! Ddd*commandButtons: \
 ! 	Yes:No:run:Clear:Prev:Next:Apply:interrupt^C
-! Ddd*commandButtons:
-Ddd*commandButtons: \
+Ddd*commandButtons:
+! Ddd*commandButtons: \
 	Yes:No:interrupt^C
 
 ! The source window buttons.
-Ddd*sourceButtons:   	    \
-run:step:next:stepi:nexti:cont:finish:kill:\
-up:down:Back:Forward:Edit:interrupt^C
+! Ddd*sourceButtons:   	    \
+! run:step:next:stepi:nexti:cont:finish:kill:\
+! up:down:Back:Forward:Edit:interrupt^C
+Ddd*sourceButtons:
 
 ! Some special labels
 Ddd*run.labelString:       Run
@@ -1558,7 +1559,7 @@ Ddd*graph_popup.new_arg.labelString:	New ()
 Ddd*graph_popup.new.labelString:	New Display...
 
 Ddd*node_popup.dereference.labelString:	Display *
-Ddd*node_popup.dependent.labelString:	Dependent Display...
+Ddd*node_popup.dependent.labelString:	Display
 Ddd*node_popup.detail.labelString:	Show Detail
 Ddd*node_popup.rotate.labelString: 	Rotate
 Ddd*node_popup.delete.labelString:	Delete Display
@@ -1589,7 +1590,7 @@ Ddd*graph_cmd_w.graph_cmd_area*packing:	        XmPACK_COLUMN
 Ddd*graph_cmd_w.graph_cmd_area*entryAlignment:	XmALIGNMENT_CENTER
 Ddd*graph_cmd_w.graph_cmd_area*alignment:	XmALIGNMENT_CENTER
 
-Ddd*graph_cmd_w.graph_cmd_area*dependent.labelString:	Dependent
+Ddd*graph_cmd_w.graph_cmd_area*dependent.labelString:	Display
 Ddd*graph_cmd_w.graph_cmd_area*dereference.labelString: Display *
 Ddd*graph_cmd_w.graph_cmd_area*detail.labelString:	Show
 Ddd*graph_cmd_w.graph_cmd_area*rotate.labelString:	Rotate
@@ -1599,7 +1600,7 @@ Ddd*graph_cmd_w.graph_cmd_area*disable.labelString:	Disable
 ! Ddd*graph_cmd_w.graph_cmd_area*marginBottom:    1
 
 Ddd*graph_cmd_w.graph_cmd_area*dependent.contextHelpString:\
-@bf Dependent@rm\n\
+@bf Display@rm\n\
 Create a new display dependent on the selected display part.
 
 Ddd*graph_cmd_w.graph_cmd_area*dereference.contextHelpString:\
@@ -2326,9 +2327,7 @@ Ddd*edit_displays_dialog*contextHelpString:       \
 \n\
 Select displays on the left; operations on the right.\n\
 \n\
-@tt \267 @bf New... @rm - create a new display.\n\
-@tt \267 @bf Dependent... @rm - create a display \
-dependent on the selected display.\n\
+@tt \267 @bf Display @rm - create a new display.\n\
 @tt \267 @bf Display * @rm - dereference the selected display.\n\
 @tt \267 @bf Show Detail @rm - show the details of all selected displays.\n\
 @tt \267 @bf Hide Detail @rm - hide the details of all selected displays.\n\
@@ -2388,13 +2387,10 @@ Ddd*dependent_display_dialog*contextHelpString:	\
 @rm Please modify the display expression displayed in the argument field.\n\
 The current value of the expression is shown each time the program stops.
 
-Ddd*edit_displays_dialog*buttons*new.labelString:           New...
-Ddd*edit_displays_dialog*buttons*new.contextHelpString:     \
-@rm Create a new data display.
-
-Ddd*edit_displays_dialog*buttons*dependent.labelString:     Dependent...
+Ddd*edit_displays_dialog*buttons*dependent.labelString:     Display
 Ddd*edit_displays_dialog*buttons*dependent.contextHelpString:  \
-@rm Create a data display dependent on the selected data display.
+@rm Create a data display dependent on the selected data display,\n\
+or a new data display if none is selected.
 
 Ddd*edit_displays_dialog*buttons*dereference.labelString:   Display *
 Ddd*edit_displays_dialog*buttons*dereference.contextHelpString:  \

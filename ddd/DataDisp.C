@@ -114,15 +114,15 @@ MMDesc DataDisp::graph_popup[] =
     MMEnd
 };
 
-struct ValueItms { enum Itms {Dereference, Detail, Rotate, Dependent,
+struct ValueItms { enum Itms {Dependent, Dereference, Detail, Rotate, 
 			      Dummy, Disable, Delete }; };
 
 MMDesc DataDisp::node_popup[] =
 {
+    {"dependent",     MMPush,   {DataDisp::dependentCB}},
     {"dereference",   MMPush,   {DataDisp::dereferenceCB}},
     {"detail",        MMPush,   {DataDisp::toggleDetailCB}},
     {"rotate",        MMPush,   {DataDisp::toggleRotateCB}},
-    {"dependent",     MMPush,   {DataDisp::dependentCB}},
     MMSep,
     {"disable",       MMPush,   {DataDisp::toggleDisableCB}},
     {"delete",        MMPush,   {DataDisp::deleteCB}},
@@ -131,23 +131,22 @@ MMDesc DataDisp::node_popup[] =
 
 MMDesc DataDisp::graph_cmd_area[] =
 {
+    {"dependent",     MMPush, {DataDisp::dependentCB}},
     {"dereference",   MMPush, {DataDisp::dereferenceCB}},
     {"detail",        MMPush, {DataDisp::toggleDetailCB}},
     {"rotate",        MMPush, {DataDisp::toggleRotateCB}},
-    {"dependent",     MMPush, {DataDisp::dependentCB}},
     MMSep,
     {"disable",       MMPush, {DataDisp::toggleDisableCB}},
     {"delete",        MMPush, {DataDisp::deleteCB}},
     MMEnd
 };
 
-struct DisplayItms { enum Itms {New, Dependent, Dereference, 
+struct DisplayItms { enum Itms {Dependent, Dereference, 
 				ShowDetail, HideDetail,
 				Enable, Disable, Delete}; };
 
 MMDesc DataDisp::display_area[] =
 {
-    {"new",          MMPush,   {DataDisp::newCB }},
     {"dependent",    MMPush,   {DataDisp::dependentCB }},
     {"dereference",  MMPush,   {DataDisp::dereferenceCB }},
     {"show_detail",  MMPush,   {DataDisp::showDetailCB}},
@@ -222,14 +221,18 @@ static void set_label(Widget w, string label)
 //-----------------------------------------------------------------------------
 // Button Callbacks
 //-----------------------------------------------------------------------------
-void DataDisp::dereferenceCB(Widget w, XtPointer, XtPointer)
+void DataDisp::dereferenceCB(Widget w, XtPointer client_data, 
+			     XtPointer call_data)
 {
     set_last_origin(w);
 
     DispNode *disp_node_arg   = selected_node();
     DispValue *disp_value_arg = selected_value();
     if (disp_node_arg == 0 || disp_value_arg == 0)
+    {
+	newCB(w, client_data, call_data);
 	return;
+    }
 
     string display_expression = disp_value_arg->dereferenced_name();
     disp_value_arg->dereference();
@@ -477,14 +480,18 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
 }
 
 
-void DataDisp::dependentCB(Widget w, XtPointer, XtPointer)
+void DataDisp::dependentCB(Widget w, XtPointer client_data, 
+			   XtPointer call_data)
 {
     set_last_origin(w);
 
     DispNode *disp_node_arg   = selected_node();
     DispValue *disp_value_arg = selected_value();
     if (disp_node_arg == 0 || disp_value_arg == 0)
+    {
+	newCB(w, client_data, call_data);
 	return;
+    }
 
     string nr = disp_node_arg->disp_nr();
     static int* disp_nr_ptr = new int;
@@ -1066,10 +1073,6 @@ void DataDisp::refresh_args()
 
     Boolean gdb_ok = (gdb != 0 && gdb->isReadyWithPrompt());
 
-    // New
-    set_sensitive(graph_popup[GraphItms::New].widget,    gdb_ok);
-    set_sensitive(display_area[DisplayItms::New].widget, gdb_ok);
-
     // New ()
     Boolean arg_ok = (gdb_ok && !source_arg->empty());
     set_sensitive(graph_popup[GraphItms::NewArg].widget, arg_ok);
@@ -1120,10 +1123,8 @@ void DataDisp::refresh_args()
 		  dereference_ok);
 
     // Dependent
-    set_sensitive(graph_cmd_area[ValueItms::Dependent].widget, 
-		  count_selected == 1);
-    set_sensitive(display_area[DisplayItms::Dependent].widget,
-		  count_selected == 1);
+    set_sensitive(graph_cmd_area[ValueItms::Dependent].widget, true);
+    set_sensitive(display_area[DisplayItms::Dependent].widget, true);
 
     // Rotate
     set_sensitive(node_popup[ValueItms::Rotate].widget,
