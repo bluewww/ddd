@@ -79,7 +79,7 @@ public:
 	set_status(cause + "...");
     }
 
-    ~StatusMsg()
+    virtual ~StatusMsg()
     {
 	set_status(cause + "...done.");
     }
