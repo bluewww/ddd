@@ -293,7 +293,6 @@ bool BreakPoint::update (string& info_output)
 		    {
 			// Fetch condition
 			cond = line.after("stop only if ");
-			newer_info += line + '\n';
 		    }
 		    else if (line.contains("stop ", 0))
 		    {
