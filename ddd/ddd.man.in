@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-01-26" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-02-11" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -43,6 +43,7 @@
 .RB "[\|" \-\-gdb "\|]"
 .RB "[\|" \-\-dbx "\|]"
 .RB "[\|" \-\-xdb "\|]"
+.RB "[\|" \-\-jdb "\|]"
 .RB "[\|" \-\-debugger
 .I name\c
 \&\|]
@@ -122,11 +123,11 @@ effects of one bug and go on to learn about another.
 debugger (\s-2GDB\s+2) provide a command-line interface and a
 multitude of commands for these and other debugging purposes.
 \s-2@DDD@\s+2 is a \fIwrapper\fR around an inferior \s-2GDB\s+2,
-\s-2DBX\s+2, or \s-2XDB\s+2 debugger.  In addition to the command-line
-interface of the inferior debugger, \s-2@DDD@\s+2 provides a common
-\fIgraphical user interface\fR to support debugging tasks.  The
-\s-2@DDD@\s+2 \fIgraphical data display\fR allows for interactive
-exploration of data structures.
+\s-2DBX\s+2, \s-2XDB\s+2, or \s-2JDB\s+2 debugger.  In addition to the
+command-line interface of the inferior debugger, \s-2@DDD@\s+2
+provides a common \fIgraphical user interface\fR to support debugging
+tasks.  The \s-2@DDD@\s+2 \fIgraphical data display\fR allows for
+interactive exploration of data structures.
 .\"
 .\" ---------------
 .SH "INVOKING @DDD@"
@@ -167,17 +168,23 @@ named `\|\c
 By default, \s-2@DDD@\s+2 uses \s-2GDB\s+2 as inferior debugger.  Use
 .sp
 .br
-  \fB@ddd@\ \-\-dbx program\fR
+  \fB@ddd@\ \-\-dbx \fIprogram\fR
 .br
 .sp
 or
 .sp
 .br
-  \fB@ddd@\ \-\-xdb program\fR
+  \fB@ddd@\ \-\-xdb \fIprogram\fR
+.br
+.sp
+or
+.sp
+.br
+  \fB@ddd@\ \-\-jdb \fIclass\fR
 .br
 .sp
 .\"
-to run \s-2DBX\s+2 or \s-2XDB\s+2 as inferior debugger.
+to run \s-2DBX\s+2 or \s-2XDB\s+2 or \s-2JDB\s+2 as inferior debugger.
 .PP
 To learn more about \s-2@DDD@\s+2 options, run
 .sp
@@ -263,10 +270,8 @@ detailed information about the dialog.
 .\"
 .SS "Help on Debugger Commands"
 .\"
-You can get help on \s-2GDB\s+2 and \s-2DBX\s+2 commands by entering
-`\fBhelp\fR' at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt.  You can
-get help on \s-2XDB\s+2 commands by entering `\fBhelp\fR' at the
-`\fB>\fR' prompt.
+You can get help on debugger commands by entering `\fBhelp\fR' at the
+debugger prompt.
 .PP
 See `\fBEntering Commands\fR', below, for details on entering commands.
 .\"
@@ -285,7 +290,8 @@ on what you can do.
 In the \fIdebugger console\fR, you can interact with the command
 interface of the inferior debugger.  Enter commands at the \fIdebugger
 prompt\fR\(em\&that is, `\fB(gdb)\fR' for \s-2GDB\s+2, `\fB(dbx)\fR'
-for \s-2DBX\s+2, and `\fB>\fR' for \s-2XDB\s+2.  You can use arbitrary
+for \s-2DBX\s+2, `\fB>\fR' for \s-2XDB\s+2, and `\fB>\fR' or
+`\fIthread\fB[\fIdepth\fB]\fR' for \s-2JDB\s+2.  You can use arbitrary
 debugger commands; use the \s-2\fBRETURN\fR\s+2 key to enter them.
 .PP
 .PSPIC @srcdir@/PICS/ddd-console.ps 15.3cm
@@ -353,7 +359,7 @@ Show information about the command \c
 \&, or general usage information.
 .TP
 .B quit
-Exit \s-2@DDD@\s+2.
+Exit \s-2GDB\s+2 (and \s-2@DDD@\s+2).
 .PP
 For full details on \s-2GDB\s+2 commands, see \c
 .I 
@@ -416,7 +422,7 @@ Show information about the command \c
 \&, or general usage information.
 .TP
 .B quit
-Exit \s-2@DDD@\s+2.
+Exit \s-2DBX\s+2 (and \s-2@DDD@\s+2).
 .PP
 For full details on \s-2DBX\s+2 commands, see the \s-2DBX\s+2
 documentation.
@@ -469,10 +475,58 @@ Show information about the command \c
 \&, or general usage information.
 .TP
 .B q
-Exit \s-2@DDD@\s+2.
+Exit \s-2XDB\s+2 (and \s-2@DDD@\s+2).
 .PP
 For full details on \s-2XDB\s+2 commands, see the \s-2XDB\s+2
 documentation.
+.\"
+.SS "Common JDB commands"
+.TP
+.B stop in \fIclass\fB.\fImethod\fB
+\&
+Set a breakpoint in a method.
+.TP
+.B stop at \fIclass\fB.\fIline\fB
+\&
+Set a breakpoint at a line.
+.TP
+.B load \fIclass\fB
+\&
+Open a class to be debugged.
+.TP
+.B run \fIclass\fR \fR[\|\fIarglist\fR\|]
+Start execution of a loaded class.
+.TP
+.B where
+Display a thread's stack.
+.TP
+.B print \fIid\fB
+Print an object or field
+.TP
+.B cont
+Continue execution from breakpoint
+.TP
+.B next
+Execute current program line (after stopping); step \c
+.I over\c
+\& any
+method calls in the line.
+.TP
+.B step
+Execute current program line (after stopping); step \c
+.I into\c
+\& any
+method calls in the line.
+.TP
+.B help
+Show general usage information.
+.TP
+.B quit
+Exit \s-2JDB\s+2 (and \s-2@DDD@\s+2).
+.PP
+For full details on \s-2JDB\s+2 commands, see the \s-2JDB\s+2
+documentation.
+.\"
 .\"
 .\" ---------------
 .SH "OPENING FILES"
@@ -586,9 +640,10 @@ Breakpoints\fR'.  Click on the `\fBNew\fR' button and enter the line
 number.
 .PP
 And finally, you can also use the \s-2GDB\s+2 `\fBbreak\fR' command or
-the \s-2DBX\s+2 `\fBstop\fR' command.  Type `\fBhelp break\fR' at the
-`\fB(gdb)\fR' prompt (or `\fBhelp stop\fR' at the `\fB(dbx)\fR'
-prompt) for details.  The \s-2XDB\s+2 `\fBb\fR' command works as well.
+the \s-2DBX\s+2/\s-2JDB\s+2 `\fBstop\fR' commands.  Type `\fBhelp
+break\fR' at the `\fB(gdb)\fR' prompt (or `\fBhelp stop\fR' at the
+`\fB(dbx)\fR' prompt) for details.  The \s-2XDB\s+2 `\fBb\fR' command
+works as well.
 .PP
 (If you find this number of alternatives confusing, be aware that
 \s-2@DDD@\s+2 users fall into three categories, which must all be
@@ -619,14 +674,16 @@ Breakpoint editor (invoked through `\fBSsource | Edit Breakpoints\fR')
 and enter the function name.
 .PP
 Finally, you can use the \s-2GDB\s+2 `\fBbreak\fR' command or the
-\s-2DBX\s+2 `\fBstop\fR' command.  Type `\fBhelp break\fR' at the
-`\fB(gdb)\fR' prompt (or `\fBhelp stop\fR' at the `\fB(dbx)\fR'
-prompt) for details.  The \s-2XDB\s+2 `\fBb\fR' command works as well.
+\s-2DBX\s+2 and \s-2JDB\s+2 `\fBstop\fR' command.  Type `\fBhelp
+break\fR' at the `\fB(gdb)\fR' prompt (or `\fBhelp stop\fR' at the
+`\fB(dbx)\fR' prompt) for details.  The \s-2XDB\s+2 `\fBb\fR' command
+works as well.
 .\"
 .\"
 .SS "Disabling Breakpoints"
 .\"
-Note: Some \s-2DBX\s+2 variants do not support breakpoint disabling.
+Note: \s-2JDB\s+2 and some \s-2DBX\s+2 variants do not support
+breakpoint disabling.
 .PP
 To temporarily disable a breakpoint, press \fImouse button 3\fR on the
 breakpoint name and select the `\fBDisable Breakpoint\fR' item from
@@ -652,6 +709,8 @@ button to get a popup menu.
 .\"
 .SS "Temporary Breakpoints"
 .\"
+Note: \s-2JDB\s+2 does not support temporary breakpoints.
+.PP
 A \fItemporary breakpoint\fR is immediately deleted as soon as it is
 reached.  To set a temporary breakpoint, press \fImouse button 3\fR on the
 left of the source line and select the `\fBSet Temporary
@@ -663,10 +722,8 @@ location and continue execution.
 .PP
 The `\fBContinue Until Here\fR' item from the popup menu sets a
 temporary breakpoint on the left of the source line and immediately
-continues execution.  In \s-2GDB\s+2, execution stops when a source
-line greater than the source line is reached, or when the current
-stack frame is exited.  In \s-2DBX\s+2 and \s-2XDB\s+2, execution
-stops when the temporary breakpoint is reached.
+continues execution.  Execution stops when the temporary breakpoint is
+reached.
 .PP
 The `\fBSet Temporary Breakpoint\fR' and `\fBContinue Until Here\fR'
 items are also accessible via the `\fBBreak at ()\fR' button.  Just
@@ -724,6 +781,8 @@ button to find its definition.
 .\"
 .SS "Breakpoint Conditions"
 .\"
+Note: \s-2JDB\s+2 does not support breakpoint conditions.
+.PP
 Using the Breakpoint Editor (invoked through `\fBSource | Edit
 Breakpoints\fR'), you can specify \fIbreakpoint conditions\fR.
 Reaching the breakpoint stops the program only if the associated
@@ -743,6 +802,9 @@ item from the popup menu.
 .\"
 .SS "Breakpoint Ignore Counts"
 .\"
+Note: \s-2JDB\s+2 and some \s-2DBX\s+2 variants do not support
+breakpoint ignore counts.
+.PP
 Using the Breakpoint Editor (invoked through `\fBSource | Edit
 Breakpoints\fR'), you can specify \fIignore counts\fR.  If an ignore
 count is set, each crossing of the breakpoint decrements the ignore
@@ -758,8 +820,9 @@ item from the popup menu.
 .\"
 .SS "More Breakpoint Features"
 .\"
-More breakpoint features can be invoked through the debugger console.
-Enter `\fBhelp breakpoints\fR' at the `\fB(gdb)\fR' prompt.
+Using \s-2GDB\s+2, several more breakpoint features can be invoked
+through the debugger console.  Enter `\fBhelp breakpoints\fR' at the
+`\fB(gdb)\fR' prompt.
 .\"
 .\" ---------------
 .SH "RUNNING THE PROGRAM"
@@ -811,6 +874,8 @@ shown.  See `\fBProgram | Run in Execution Window\fR' for details.
 .\"
 .SS "Attaching to a Running Process"
 .\"
+Note: \s-2JDB\s+2 does not support attaching to processes.
+.PP
 If the debugged program is already running in some process, you can
 \fIattach\fR to this process (instead of starting a new one with
 `\fBRun\fR').  Select `\fBFile | Attach to Process\fR' to choose from
@@ -878,6 +943,8 @@ a discussion.
 .\"
 .SS "Altering the Execution Position"
 .\"
+Note: \s-2JDB\s+2 does not support altering the execution position.
+.PP
 To resume execution at a different location, press \fImouse button 1\fR on
 the arrow and drag it to a different location.  The most common
 occasion to use this feature is to back up\(em\&perhaps with more
@@ -931,7 +998,7 @@ respectively, will also move you through the stack.
 .\"
 .SS "Examining Threads"
 .\"
-Note: Thread support is available with \s-2GDB\s+2 only.
+Note: Thread support is available with \s-2GDB\s+2 and \s-2JDB\s+2 only.
 .PP
 In some operating systems, a single program may have more than one
 \fIthread\fR of execution.  The precise semantics of threads differ
@@ -1272,10 +1339,10 @@ holding the `\fBDisplay ()\fR' button.
 .SS "Displaying Local Variables"
 .\"
 You can display all local variables at once by choosing `\fBData |
-Display Local Variables\fR'.  When you using \s-2DBX\s+2 or
-\s-2XDB\s+2, this displays all local variables, including the
-arguments of the current function.  When you are using \s-2GDB\s+2,
-function arguments are contained in a separate display, activated by
+Display Local Variables\fR'.  When using \s-2DBX\s+2, \s-2XDB\s+2, or
+\s-2JDB\s+2, this displays all local variables, including the
+arguments of the current function.  When using \s-2GDB\s+2, function
+arguments are contained in a separate display, activated by
 `\fBDisplay Arguments\fR'.
 .PP
 The display showing the local variables can be manipulated just like
@@ -1350,6 +1417,8 @@ For more details on artificial arrays, see the \s-2GDB\s+2 documentation.
 .\"
 .SS "Altering Variable Values"
 .\"
+Note: Altering variable values is not supported in \s-2JDB\s+2.
+.PP
 Using the `\fBSet ()\fR' button or the `\fBSet Value\fR' menu item in
 the data popup menu, you can alter the value of the selected variable,
 to resume execution with the changed value.  In a dialog, you can
@@ -1389,6 +1458,8 @@ list of display numbers to delete.
 .\"
 .SS "Examining Shared Data Structures"
 .\"
+Note: Alias detection is not supported in \s-2JDB\s+2.
+.PP
 By default, \s-2@DDD@\s+2 does not recognize shared data
 structures\(em\&that is, a data object referenced by multiple other
 data objects.  For instance, if two pointers \fBp1\fR and \fBp2\fR
@@ -1730,7 +1801,7 @@ program has been recompiled, this should seldom be necessary.
 .SH "PERSISTENT SESSIONS"
 .\" ---------------
 .\"
-Note: Session support is available with \s-2GDB\s+2 running on the
+Note: Persistent sessions are supported with \s-2GDB\s+2 running on the
 local machine only.
 .PP
 If you want to interrupt your current \s-2@DDD@\s+2 session, you can
@@ -2361,7 +2432,7 @@ By default, \s-2@DDD@\s+2 runs with \s-2GDB\s+2 as inferior debugger.
 To change this default, set the `\fBDebugger Type\fR' option to
 another debugger.  This change takes only effect after you have saved
 options and restarted \s-2@DDD@\s+2.  See also the `\fB\-\-gdb\fR',
-`\fB\-\-dbx\fR', and `\fB\-\-xdb\fR' options, below.
+`\fB\-\-dbx\fR', `\fB\-\-xdb\fR', and `\fB\-\-jdb\fR' options, below.
 .PP
 If you want the \s-2@DDD@\s+2 logo shown upon startup, you can select
 between different versions.  The `\fBcolor\fR' version is the nicest,
@@ -2999,10 +3070,10 @@ This string contains a list of newline-separated commands that are
 also initially sent to \s-2DBX\s+2.  By default, it is empty.
 .TP
 .B "debugger (\fPclass\fB Debugger)"
-The type of the inferior debugger (`\fBgdb\fR', `\fBdbx\fR', or
-`\fBxdb\fR').  Default value is `\fBgdb\fR'.  This resource is usually
-set through the `\fB\-\-gdb\fR', `\fB\-\-dbx\fR', and `\fB\-\-xdb\fR'
-options; see below for details.
+The type of the inferior debugger (`\fBgdb\fR', `\fBdbx\fR',
+`\fBxdb\fR', or `\fBjdb\fR').  Default value is `\fBgdb\fR'.  This
+resource is usually set through the `\fB\-\-gdb\fR', `\fB\-\-dbx\fR',
+`\fB\-\-xdb\fR', and `\fB\-\-jdb\fR' options; see below for details.
 .TP
 .B "debuggerCommand (\fPclass\fB DebuggerCommand)"
 The name under which the inferior debugger is to be invoked.  If this
@@ -3069,6 +3140,19 @@ also initially sent to \s-2GDB\s+2.  Its default value is
 .br
 .sp
 This resource is used to save and restore the debugger settings.
+.TP
+.B "jdbInitCommands (\fPclass\fB InitCommands)"
+This string contains a list of newline-separated commands that are
+initially sent to \s-2JDB\s+2.  By default, it is empty.
+.br
+This resource may be used to customize \s-2JDB\s+2.
+.TP
+.B "jdbSettings (\fPclass\fB Settings)"
+This string contains a list of newline-separated commands that are
+also initially sent to \s-2JDB\s+2.  By default, it is empty.
+.sp
+This resource is used by \s-2@DDD@\s+2 to save and restore \s-2JDB\s+2
+settings.
 .TP
 .B "questionTimeout (\fPclass\fB QuestionTimeout)"
 The time (in seconds) to wait for the inferior debugger to reply.
@@ -4085,10 +4169,11 @@ Run the \s-2DBX\s+2 debugger as inferior debugger.
 .B \-\-debugger \fIname\fR
 Invoke the inferior debugger \fIname\fR.  This is useful if you have
 several debugger versions around, or if the inferior debugger cannot
-be invoked as `\fBgdb\fR', `\fBdbx\fR', or `\fBxdb\fR', respectively.
-This option can also be used to pass options to the inferior debugger
-that would otherwise conflict with \s-2@DDD@\s+2 options.
-For instance, to pass a `\fB\-d \fIdirectory\fR' option to \s-2XDB\s+2, use:
+be invoked as `\fBgdb\fR', `\fBdbx\fR', `\fBxdb\fR', or `\fBjdb\fR',
+respectively.  This option can also be used to pass options to the
+inferior debugger that would otherwise conflict with \s-2@DDD@\s+2
+options.  For instance, to pass a `\fB\-d \fIdirectory\fR' option to
+\s-2XDB\s+2, use:
 .sp
 .br
   \fB@ddd@\ \-\-debugger "xdb \-d \fIdirectory\fB"\fR
@@ -4096,8 +4181,8 @@ For instance, to pass a `\fB\-d \fIdirectory\fR' option to \s-2XDB\s+2, use:
 .sp
 If you use the `\fB\-\-debugger\fR' option, be sure that the type of
 inferior debugger is specified as well.  That is, use one of the
-options `\fB\-\-gdb\fR', `\fB\-\-dbx\fR', or
-`\fB\-\-xdb\fR'\(em\&unless the default setting works fine.
+options `\fB\-\-gdb\fR', `\fB\-\-dbx\fR', `\fB\-\-xdb\fR', or
+`\fB\-\-jdb\fR'\(em\&unless the default setting works fine.
 .TP
 .B \-\-disassemble
 Disassemble the source code.  See also the `\fB\-\-no-disassemble\fR'
@@ -4132,6 +4217,9 @@ Invoke the inferior debugger directly on the remote host
 \fIhostname\fR.  If \fIusername\fR is given and the `\fB\-\-login\fR'
 option is not used, use \fIusername\fR as remote user name.  See
 `\fBREMOTE DEBUGGING\fR', above.
+.TP
+.B \-\-jdb
+Run \s-2JDB\s+2 as inferior debugger.
 .TP
 .B \-\-lesstif-hacks\fR
 Equivalent to `\fB\-\-lesstif-version \fIversion\fR', where
@@ -4376,12 +4464,19 @@ Old-style \s-2@DDD@\s+2 initialization file; used only if
 .BR rsh (1)
 .PP
 .RB "`\|" gdb "\|'"
-entry in
-.B info
+entry in \fBinfo\fR.
 .PP
 .I
 Using \s-2GDB\s+2: A Guide to the \s-2GNU\s+2 Source-Level Debugger\c
 \&, by Richard M. Stallman and Roland H. Pesch.
+.PP
+.I
+jdb\(em\&The Java Debugger\c
+\&, at \fBhttp://java.sun.com/products/jdk/1.1/docs/tooldocs/solaris/jdb.html\fR
+.PP
+.I
+Java Language Debugging\c
+\&, at \fBhttp://java.sun.com/products/jdk/1.1/debugging/\fR
 .PP
 .I
 \s-2DDD\s+2\(em\&A Free Graphical Front-End for \s-2UNIX\s+2 Debuggers\c
@@ -4453,9 +4548,8 @@ to the most recent \s-2GDB\s+2 version.
 .\"
 .SS "Limitations using DBX"
 .\"
-When used for debugging Modula-2 or Pascal programs, \s-2@DDD@\s+2
-always numerates array elements starting with zero, instead of using
-correct array subscripts.
+When used for debugging Pascal-like programs, \s-2@DDD@\s+2 does not
+infer correct array subscripts and always starts to count with 1.
 .PP
 With some \s-2DBX\s+2 versions (notably Solaris \s-2DBX\s+2),
 \s-2@DDD@\s+2 strips C-style and C++-style comments from the
@@ -4464,18 +4558,40 @@ affects the output of the debugged program when sent to the debugger
 console.  Using the separate execution window avoids these problems.
 .PP
 In some \s-2DBX\s+2 versions (notably \s-2DEC\s+2 \s-2DBX\s+2 and
-\s-2AIX\s+2 \s-2DBX\s+2), there is no automatic data display.
-As an alternative, \s-2@DDD@\s+2 uses the `\fBprint\fR' command to
-access data values.  This means that variable names are interpreted
-according to the current frame; variables outside the current frame
-cannot be displayed.
+\s-2AIX\s+2 \s-2DBX\s+2), there is no automatic data display.  As an
+alternative, \s-2@DDD@\s+2 uses the `\fBprint\fR' command to access
+data values.  This means that variable names are interpreted according
+to the current frame; variables outside the current frame cannot be
+displayed.  This also means that displays slow down \s-2@DDD@\s+2
+considerably.
 .\"
 .SS "Limitations using XDB"
 .\"
 There is no automatic data display in \s-2XDB\s+2.  As a workaround,
 \s-2@DDD@\s+2 uses the `\fBp\fR' command to access data values.  This
 means that variable names are interpreted according to the current
-frame; variables outside the current frame cannot be displayed.
+frame; variables outside the current frame cannot be displayed.  This
+also means that displays slow down \s-2@DDD@\s+2 considerably.
+.\"
+.SS "Limitations using JDB"
+.\"
+There is no automatic data display in \s-2JDB\s+2.  As a workaround,
+\s-2@DDD@\s+2 uses the `\fBdump\fR' command to access data values.
+This means that variable names are interpreted according to the
+current frame; variables outside the current frame cannot be
+displayed.  This also means that displays slow down \s-2@DDD@\s+2
+considerably.
+.PP
+The \s-2JDB\s+2 `\fBdump\fR' and `\fBprint\fR' commands do not support
+expression evaluation.  Hence, you cannot display arbitrary
+expressions.
+.PP
+Parsing of \s-2JDB\s+2 output is quite CPU-intensive, due to the
+recognition of asynchronous prompts (any thread may output anything at
+any time, including prompts).  Hence, a program producing much console
+output is likely to slow down \s-2@DDD@\s+2 considerably.  In such a
+case, have the program run with \fB\-debug\fR in a separate window and
+attach \s-2JDB\s+2 to it using the \fB\-passwd\fR option.
 .\"
 .SS "General Limitations"
 .\"
@@ -4527,6 +4643,8 @@ debugged programs which change the default \s-2TTY\s+2 settings.
 \s-2DBX\s+2 as found on SGI systems (some variants only)
 .IP \(bu 2
 \s-2XDB\s+2 as found on HP-UX systems
+.IP \(bu 2
+\s-2JDB\s+2 as part of JDK 1.1 for Linux.
 .PP
 \s-2@DDD@\s+2 functionality largely depends on the capabilities of the
 underlying debugger; best results are obtained with \s-2GDB\s+2.
@@ -4544,7 +4662,7 @@ the patches from `\fBftp://cs.nyu.edu/pub/gnat/gdb/\fR'.
 .\"
 .SS "Is there an Athena Widgets port of @DDD@?"
 No.  If you want \s-2@DDD@\s+2 running with a free widget set, you
-should support the Hungry Programmer's Team - they develop LessTif, a
+should support the Hungry Programmer's Team\(em\&they develop LessTif, a
 free Motif-compliant widget set.  Check out their \s-2WWW\s+2 page at
 `\fBhttp://www.lesstif.org/\fR'.
 .\"
@@ -4874,30 +4992,34 @@ Dorothea during the winter of 1994/1995.  In the first quarter of
 1995, finally, Andreas completed \s-2@DDD@\s+2 by adding command and
 execution windows, extensions for \s-2DBX\s+2 and remote debugging as
 well as configuration support for several architectures.  Since then,
-many people have contributed to the success of \s-2@DDD@\s+2; see
-comments in the \s-2@DDD@\s+2 source for details.
+Andreas has further maintained and extended \s-2@DDD@\s+2, based on
+the comments and suggestions of several \s-2@DDD@\s+2 users around the 
+world.  See the comments in the \s-2@DDD@\s+2 source for details.
 .PP
 Major \s-2@DDD@\s+2 events:
 .PD 0
 .TP 20
 April, 1995
-\s-2@DDD@\s+2 0.9: First \s-2@DDD@\s+2 beta release
+\s-2@DDD@\s+2 0.9: First \s-2@DDD@\s+2 beta release.
 .TP
 May, 1995
-\s-2@DDD@\s+2 1.0: First public \s-2@DDD@\s+2 release
+\s-2@DDD@\s+2 1.0: First public \s-2@DDD@\s+2 release.
 .TP
 December, 1995
-\s-2@DDD@\s+2 1.4: Machine-level debugging, glyphs, \s-2EMACS\s+2 integration
+\s-2@DDD@\s+2 1.4: Machine-level debugging, glyphs, \s-2EMACS\s+2 integration.
 .TP
 October, 1996
 \s-2@DDD@\s+2 2.0: Color displays, \s-2XDB\s+2 support, generic
 \s-2DBX\s+2 support, command tool.
 .TP
 May, 1997
-\s-2@DDD@\s+2 2.1: Alias detection, button tips, status displays
+\s-2@DDD@\s+2 2.1: Alias detection, button tips, status displays.
 .TP
 November, 1997
 \s-2@DDD@\s+2 2.2: Persistent sessions, display shortcuts.
+.TP
+March, 1998
+\s-2@DDD@\s+2 2.3: Java and \s-2JDB\s+2 support.
 .PD
 .\"
 .\"
