@@ -812,11 +812,6 @@ void PosBuffer::filter (string& answer)
 	}
     }
     break;
-
-    default:
-	// This can't happen.
-	assert(0);
-	break;
     }
 }
 
@@ -834,11 +829,6 @@ string PosBuffer::answer_ended ()
     case PosComplete:
 	assert (pos_buffer != "");
 	return "";
-		
-    default:
-	// This can't happen.
-	assert(0);
-	break;
     }
     return "";
 }

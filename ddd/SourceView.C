@@ -1099,7 +1099,7 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 		return "clear " + line;
 	    break;
 
-	default:
+	case XDB:
 	    break;
 	}
     }
@@ -3612,7 +3612,9 @@ void SourceView::process_info_bp (string& info_output,
 	    check_remainder(info_output);
 	break;
 
-    default:
+    case DBX:
+    case XDB:
+    case JDB:
 	break;
     }
 				    
@@ -3872,21 +3874,22 @@ void SourceView::lookup(string s, bool silent)
 	{
 	    switch (gdb->type())
 	    {
-		case GDB:
-		{
-		    Command c("info line " + current_source_name()
-			      + ":" + itostring(line));
-		    c.verbose = !silent;
-		    gdb_command(c);
-		    break;
-		}
+	    case GDB:
+	    {
+		Command c("info line " + current_source_name() + ":" + 
+			  itostring(line));
+		c.verbose = !silent;
+		gdb_command(c);
+		break;
+	    }
 		
 	    case JDB:
 		show_position(current_source_name()
 			      + ":" + itostring(line));
 		break;
 
-	    default:
+	    case DBX:
+	    case XDB:
 		show_position(full_path(current_file_name) 
 			      + ":" + itostring(line));
 		break;
@@ -4060,7 +4063,8 @@ void SourceView::add_to_history(const string& file_name, int line)
 	    source_name = source_name_cache[file_name];
 	break;
 
-    default:
+    case DBX:
+    case XDB:
 	break;
     }
 

@@ -495,10 +495,6 @@ static void redirect_process(string& command,
 
 	case JDB:
 	    break;		// No redirection in JDB
-
-	default:
-	    // Unsupported
-	    assert(0);
 	}
     }
 

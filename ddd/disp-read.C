@@ -494,10 +494,6 @@ int display_index (const string& gdb_answer, GDBAgent *gdb)
     case JDB:
 	prx = &rxdbx_begin_of_display;
 	break;
-
-    default:
-	assert(0);
-	abort();
     }
 
     const regex& rx = *prx;
@@ -634,10 +630,6 @@ int display_info_index (const string& gdb_answer, GDBAgent *gdb)
     case JDB:
     case XDB:
 	return -1;		// No displays in JDB and XDB
-
-    default:
-	assert(0);
-	abort();
     }
 
     const regex& rx = *prx;
