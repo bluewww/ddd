@@ -27,6 +27,9 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
+char ddd_rcsid[] =
+    "$Id$";
+
 // Introduction to DDD
 // ===================
 //
@@ -110,8 +113,6 @@
 // an entirely unexpected way, by making the myth true!  -- ESR]
 
 
-char ddd_rcsid[] =
-    "$Id$";
 
 //-----------------------------------------------------------------------------
 // Name conventions used:
@@ -5068,6 +5069,16 @@ static void ddd_xt_warning(String message)
 		 << "in the DDD `General Preferences` panel.)\n";
 	    informed = true;
 	}
+    }
+
+    // With auto-raised menus, Motif may fail to ungrab the pointer
+    // due to the interference with DDD auto-raise.  In this case,
+    // Motif issues a warning that it cannot grab the pointer (and
+    // leaves the pointer *grabbed*).  Hence, ungrab it explictly.
+    if (gdb_initialized)
+    {
+	XUngrabPointer(XtDisplay(gdb_w), CurrentTime);
+	XFlush(XtDisplay(gdb_w));
     }
 }
 

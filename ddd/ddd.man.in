@@ -2836,6 +2836,17 @@ tool on top of other \s-2@DDD@\s+2 windows.  If this setting
 interferes with your window manager, or if your window manager keeps
 the command tool on top anyway, set this resource to `\fBfalse\fR'.
 .TP
+.B "autoRaiseMenu (\fPclass\fB AutoRaiseMenu)"
+If `\fBtrue\fR' (default), \s-2@DDD@\s+2 will always keep the pulldown
+menu on top of the \s-2@DDD@\s+2 main window.  If this setting
+interferes with your window manager, or if your window manager does
+not auto-raise windows, set this resource to `\fBfalse\fR':
+.br
+.sp
+  \fB@Ddd@*autoRaiseMenu: false\fR
+.sp
+.br
+.TP
 .B "colorIcons (\fPclass\fB ColorIcons)"
 If `\fBtrue\fR' (default), \s-2@DDD@\s+2 uses multi-color icons.  If
 your window manager has trouble with multi-color icons, set this
@@ -4475,18 +4486,30 @@ This will create an array starting with \fBpi\fR showing the first 10
 elements.
 .\"
 .SS "My window manager crashes when running @DDD@!"
-This is due to a bug in the window manager.  Try the following
+This is due to a bug in the window manager.  You may try the following
 resources in your `\fB$HOME/.ddd/init\fR' file to minimize
-interference with the window manager:
+interference with the window manager; the first ones listed are the
+ones that are most likely to cause interferences.
 .sp
 .br
   \fBDdd*colorIcons:         false
+  Ddd*autoRaiseMenu:      false
   Ddd*groupIconify:       false
   Ddd*uniconifyWhenReady: false
   Ddd*showStartupLogo:    
   Ddd*autoRaiseTool:      false
   Ddd*stickyTool:         false
   Ddd*decoratedTool:      false\fR
+.br
+.sp
+See `\fBRESOURCES\fR', above, for a discussion of these resources.
+.PP
+.SS "My X display freezes when running @DDD@!"
+This is due to a bug in Motif.  You may try the following resources in
+your `\fB$HOME/.ddd/init\fR' file to minimize interference with Motif:
+.sp
+.br
+  \fBDdd*autoRaiseMenu:      false\fR
 .br
 .sp
 See `\fBRESOURCES\fR', above, for a discussion of these resources.
@@ -4502,8 +4525,11 @@ your program in the separate execution window (via `\fBView |
 Execution Window\fR') and type \fBCtrl+C\fR there.
 .\"
 .SS "In C++, how do I see the \fIactual\fR type of an object?"
-In the \s-2GDB\s+2 settings (`\fBEdit | GDB Settings\fR'), enable
-`\fBSet printing of object's derived type based on vtable info\fR'.
+When using a generic pointer, you may wish to see the \fIactual\fR
+type of an object rather than the \fIdeclared\fR type.  In the
+\s-2GDB\s+2 settings (`\fBEdit | GDB Settings\fR'), enable `\fBSet
+printing of object's derived type based on vtable info\fR' or enter
+`\fBset print object on\fR' at the `\fB(gdb)\fR' prompt.
 .\"
 .\" TOPIC: HACKING @DDD@
 .SS "I want to use @DDD@ interprocess communication in my own application!"

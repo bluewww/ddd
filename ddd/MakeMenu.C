@@ -73,6 +73,27 @@ static char pushMenuTranslations[] =
 ;
 
 
+// Whether menus should be auto-raised
+#define XtNautoRaiseMenu  "autoRaiseMenu"
+#define XtCAutoRaiseMenu  "AutoRaiseMenu"
+
+struct MMresource_values {
+    Boolean auto_raise_menu;
+};
+
+static XtResource MMsubresources[] = {
+    {
+	XtNautoRaiseMenu,
+	XtCAutoRaiseMenu,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(MMresource_values, auto_raise_menu),
+	XmRImmediate,
+	XtPointer(False)
+    }
+};
+
+
 // Make sure menu stays on top.  This prevents conflicts with
 // auto-raise windows which would otherwise hide menu panels.
 static void StayOnTopEH(Widget w, XtPointer, XEvent *event, Boolean *)
@@ -94,8 +115,17 @@ static void stay_on_top(Widget shell)
 {
     assert(XmIsMenuShell(shell));
 
-    XtAddEventHandler(shell, VisibilityChangeMask, False,
-		      StayOnTopEH, XtPointer(0));
+    // Get text
+    MMresource_values values;
+    XtGetApplicationResources(shell, &values, 
+			      MMsubresources, XtNumber(MMsubresources), 
+			      NULL, 0);
+
+    if (values.auto_raise_menu)
+    {
+	XtAddEventHandler(shell, VisibilityChangeMask, False,
+			  StayOnTopEH, XtPointer(0));
+    }
 }
 
 // Add items to shell

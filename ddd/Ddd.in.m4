@@ -432,6 +432,11 @@ Ddd*decoratedTool: auto
 ! interferes with your window manager, set this resource to false.
 Ddd*autoRaiseTool: true
 
+! Do we want auto-raised menus?  This is handy with certain window managers:
+! An auto-raised DDD might obscure popped up pulldown menus.  However, there's
+! a risk that this might interfere with Motif.
+Ddd*autoRaiseMenu: true
+
 
 ! Shortcuts
 ! A newline-separated list of expressions to be included in the
