@@ -705,8 +705,8 @@ Ddd*highlightThickness:		1
 !   None  (`')   - don't show the DDD logo.     (Makes DDD start up faster.)
 !
 ! Use the key given in parentheses as resource value.
-! Default is `g4' for 4 shades of grey.
-Ddd*showStartupLogo: g4
+! Default is `c' for color.
+Ddd*showStartupLogo: c
 
 ! Whether to use multi-color icons.  Multi-color icons are not strictly
 ! ICCM-compliant, although supported by most window managers.  In case
@@ -2549,7 +2549,41 @@ Ddd*showStartupLogoMenu*grey4.labelString:	in grey4
 Ddd*showStartupLogoMenu*mono.labelString:	in monochrome
 Ddd*showStartupLogoMenu*none.labelString:	not at all
 
-Ddd*preferences*helpers*helpString:
+Ddd*preferences*helpers*helpString: \
+@rm These are the EMPH([DDD] Helpers), external applications used by DDD.\n\
+\n\
+ITEM LBL(Edit Sources) invokes an X editor for the current source file.\n\
+    SAMP(@ FILE@ ) is replaced by the current file name.\n\
+    SAMP(@ LINE@ ) is replaced by the current line.\n\
+    Example: SAMP(xedit @ FILE@ )\n\
+\n\
+ITEM LBL(Get Core File) is a command to get a core file \
+from a running process.\n\
+    SAMP(@ FILE@ ) is replaced by the base name of the target core file.\n\
+    SAMP(@ PID@ ) is replaced by the process ID.\n\
+    The output must be written to SAMP(@ FILE@ .@ PID@ ).\n\
+    Example: SAMP(gcore -o @ FILE@  @ PID@ )\n\
+    Leave this empty if you have no SAMP(gcore) or similar command.\n\
+\n\
+ITEM LBL(List Processes) is a command to get a list of processes.\n\
+    Example: SAMP(ps)\n\
+\n\
+ITEM LBL(Execution Window) is a command to start a terminal emulator.\n\
+    To this command, DDD appends bourne shell commands to be executed\n\
+    within the execution window.\n\
+    Example: SAMP(xterm -e /bin/sh -c)\n\
+\n\
+ITEM LBL(Uncompress) is an uncompression command.\n\
+    The command reads from standard input and writes to \
+standard output.\n\
+    Example: SAMP(gunzip -c)\n\
+\n\
+ITEM LBL(Web Browser) invokes a WWW browser.\n\
+    SAMP(@ URL@ ) is replaced by the URL to be shown.\n\
+    Example: SAMP(netscape @ URL@ )\n\
+\n\
+Use the buttons above to view and change other preferences.\n\
+Click on LBL(Reset) to restore the saved preferences.
 
 Ddd*preferences*edit*labelString:		Edit Sources
 Ddd*preferences*get_core*labelString:		Get Core File
@@ -4569,8 +4603,9 @@ Ddd*tty_exec_error*helpString:	\
 could not be invoked.  The debugged process will execute in the\n\
 @GDB@ console instead.\n\
 \n\
-Please verify the contents of the SAMP(.termCommand) resource\n\
-in the DDD application defaults file and in your FILE(~/.[ddd]/init) file.
+Please verify the contents of the LBL(Edit) | LBL(Preferences) | \n\
+LBL(Helpers) | LBL(Execution Window) resource and make sure that the given\n\
+terminal program is within your executable path.
 
 Ddd*tty_command_error_popup.title: DDD: TTY Failed
 Ddd*tty_command_error*helpString:	\
@@ -4604,29 +4639,25 @@ Ddd*options_save_error_popup.title: DDD: Save Options Failed
 Ddd*options_save_error*helpString:	\
 @rm The DDD options could not be saved.
 
+define(COULD_NOT_BE_UNCOMPRESSED,
+[could not be uncompressed.\n\
+\n\
+Please verify the contents of the \
+LBL(Edit) | LBL(Preferences) | LBL(Helpers) |\n\
+LBL(Uncompress) resource and make sure that the given\n\
+uncompressing program is within your executable path.])dnl
+
 Ddd*no_license_error_popup.title: DDD: No License
 Ddd*no_license_error*helpString:	\
-@rm The DDD license could not be uncompressed.\n\
-\n\
-Please verify the contents of the SAMP(.uncompressCommand) resource\n\
-in the DDD application defaults file and make sure that the given\n\
-uncompressing program is within your executable path.
+@rm The DDD license COULD_NOT_BE_UNCOMPRESSED
 
 Ddd*no_news_error_popup.title: DDD: No News is Good News
 Ddd*no_news_error*helpString:	\
-@rm The DDD news could not be uncompressed.\n\
-\n\
-Please verify the contents of the SAMP(.uncompressCommand) resource\n\
-in the DDD application defaults file and make sure that the given\n\
-uncompressing program is within your executable path.
+@rm The DDD news COULD_NOT_BE_UNCOMPRESSED
 
 Ddd*no_ddd_manual_error_popup.title: DDD: No Manual
 Ddd*no_ddd_manual_error*helpString:	\
-@rm The DDD manual could not be uncompressed.\n\
-\n\
-Please verify the contents of the SAMP(.uncompressCommand) resource\n\
-in the DDD application defaults file and make sure that the given\n\
-uncompressing program is within your executable path.
+@rm The DDD manual COULD_NOT_BE_UNCOMPRESSED
 
 Ddd*startup_warning_popup.title: DDD: New Startup Required
 Ddd*startup_warning*helpString: \
@@ -4687,7 +4718,7 @@ Ddd*too_many_shortcuts_warning_popup.title: DDD: Too Many Shortcuts
 Ddd*too_many_shortcuts_warning*helpString:	\
 @rm DDD has not enough room for all display shortcuts and will\n\
 only display the most recently created shortcuts.\n\
-To edit the list of display shortcuts, use LBL(New Display) | LBL(Edit...).
+To edit the list of display shortcuts, use LBL(New Display) | LBL(Edit).
 
 
 !-----------------------------------------------------------------------------
