@@ -26,9 +26,6 @@ DDD 2.2.2
       see the `bumpDisplays' resource for details.
     - Case-insensitive search in the source text is now supported;
       see the `findCaseSensitive' resource for details.
-    - The interaction between DDD and the inferior debugger (`--trace'
-      output) is now automatically logged in `~/.ddd/log'; this is
-      useful for debugging DDD.
 
     Bug fixes:
     - Getting and identifying core dumps now works on Solaris, AIX and
@@ -36,9 +33,16 @@ DDD 2.2.2
     - `Edit' no longer causes DDD to crash.
     - The separate execution TTY now works with Sun DBX 4.0.
     - Improved XDB support.  XDB output no longer causes DDD to hang.
-    - Improved SGI DBX support.  File positions are now recognized.
+    - Improved SGI DBX support.  File positions are now recognized;
+      DBX Preferences work, too.
     - Various quirks and memory leaks in the interaction between DDD
       and the inferior debugger have been fixed.
+
+    Changes in debugging DDD:
+    - The interaction between DDD and the inferior debugger is now
+      logged in `~/.ddd/log'.  This is useful for bug reports.
+    - DDD dumps core upon fatal errors (but resumes execution).
+      This is useful for bug reports.
 
     Changes in configuration and building:
     - GCC 2.8.0 is supported.

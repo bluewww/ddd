@@ -56,7 +56,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 113 Matthias Kurz <mk@baerlap.north.de> states:
     If I resize the data display the background doesn't get
-    refreshed.  [Use an Athena Panner instead of Motif scrollbars  -AZ]
+    refreshed.  [Use an Athena Panner instead of Motif scrollbars. -AZ]
 
 117 Under Linux slackware 3.1, the file permissions in `/dev/ptyp?'
     do not allow for DDD <-> GDB interaction.  [Can we circumvent
@@ -211,29 +211,10 @@ Volunteers for fixing these and other bugs are welcome!
     drag-hilite the name, ddd goes berserk with the cpu.
     [I could not reproduce this. -AZ]
 
-203*On IRIX 6.3 DBX, the green arrow indicating the current
-    execution position is always at the first line of the currently
-    active source file.  Reported by Uwe Wark <uw@bruker.de>.  Also,
-    the `preferences' don't work.  See also the report of Paul Sydney
-    <sydney@ulua.mhpcc.af.mil>.
-
 204 Switching from glyphs to text loses the current PC.
-
-211 Graham Hudspith <ghudspit@mltsa.uk.lucent.com> reports that the
-    HP-UX version of DDD 2.1.95 crashes at start-up.
 
 215 With separate windows, a newly created assembler window has zero
     height.
-
-216 Jonathan Edwards <edwards@intranet.com> suggests that the
-    flashing cursor in the gdb console window ought to stop flashing
-    during user input.  [Tell the Motif people! -AZ]
-
-218 Conor O'Neill <coneill@integral.ie> reports that, under
-    Openwindows on Sparc Solaris2.51, in the Open_File dialog, the
-    file_list box is too narrow and does not have a horizontal scroll
-    bar. Thus we cannot properly see the list of files available.
-    (This problem is not unique to DDD.)
 
 222 Bob Vickers <bobv@dcs.rhbnc.ac.uk> reports that the command tool
     sometimes is really big and occupies most of the screen, thus
@@ -263,5 +244,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 238 Neil Soiffer <soiffer@wri.com> reports a `BadMatch' X error for the
     command tool when used under tvtwm.
+    [I could not reproduce this. -AZ]
 
 238 (Insert your bug here)
