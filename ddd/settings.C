@@ -89,6 +89,7 @@ char settings_rcsid[] =
 #include "string-fun.h"
 #include "verify.h"
 #include "version.h"
+#include "vsldoc.h"
 #include "wm.h"
 
 #if !HAVE_PCLOSE_DECL
@@ -295,11 +296,17 @@ static void SendSignalCB(Widget, XtPointer client_data, XtPointer)
     gdb_command(string("signal ") + XtName(Widget(client_data)));
 }
 
-// ToggleButton reply
 static void HelpOnThemeCB(Widget w, XtPointer client_data, 
 			  XtPointer call_data)
 {
-    // FIXME: Fetch help text from theme
+    // Fetch text from file
+    string file = XtName((Widget)client_data);
+    string text = vsldoc(file);
+    if (text == NO_GDB_ANSWER)
+	text = "No help available on this theme.";
+
+    MString mtext = bf(file) + cr() + cr() + rm(text);
+    MStringHelpCB(w, XtPointer(mtext.xmstring()), call_data);
 }
 
 static void ApplyThemesCB(Widget, XtPointer, XtPointer)
@@ -1465,8 +1472,13 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 
     if (entry_filter == ThemeEntry)
     {
-	set_command = show_command = doc = line;
+	set_command = show_command = line;
 	e_type = entry_filter;
+	doc = vsldoc(line);
+	if (doc == "")
+	    doc = line;		// Use file name instead
+	else if (doc.contains("."))
+	    doc = doc.before("."); // Use first sentence only
     }
     else
     {
