@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-10\-24" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-10\-26" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -146,7 +146,14 @@ named `\|\c
 \&\|'; \s-1@DDD@\s+1 does check for a core file first).
 .\"
 .PP
-By default, \s-1@DDD@\s+1 uses \s-1GDB\s+1 as inferior debugger.  Use
+By default, \s-1@DDD@\s+1 determines the inferior debugger
+automatically.  Use
+.sp
+.br
+  \fB@ddd@\ \-\-gdb \fIprogram\fR
+.br
+.sp
+or
 .sp
 .br
   \fB@ddd@\ \-\-dbx \fIprogram\fR
@@ -177,8 +184,8 @@ or
 .br
 .sp
 .\"
-to run \s-1DBX\s+1, \s-1XDB\s+1, \s-1JDB\s+1, \s-1PYDB\s+1 or Perl
-as inferior debugger.
+to run \s-1GDB\s+1, \s-1DBX\s+1, \s-1XDB\s+1, \s-1JDB\s+1,
+\s-1PYDB\s+1 or Perl as inferior debugger.
 .PP
 To learn more about \s-1@DDD@\s+1 options, run
 .sp
@@ -2382,9 +2389,9 @@ program has been recompiled, this should seldom be necessary.
 In the \fIdebugger console\fR, you can interact with the command
 interface of the inferior debugger.  Enter commands at the \fIdebugger
 prompt\fR\(em\&that is, `\fB(gdb)\fR' for \s-1GDB\s+1, `\fB(dbx)\fR'
-for \s-1DBX\s+1, `\fB>\fR' for \s-1XDB\s+1, and `\fB>\fR' or
+for \s-1DBX\s+1, `\fB>\fR' for \s-1XDB\s+1, `\fB>\fR' and
 `\fIthread\fB[\fIdepth\fB]\fR' for \s-1JDB\s+1, or `\fB(Pydb)\fR' for
-\s-1PYDB\s+1, or `\fBDB<\fIn\fB>\fR' for Perl.  You can use arbitrary
+\s-1PYDB\s+1, or `\fBDB<>\fR' for Perl.  You can use arbitrary
 debugger commands; use the \s-1\fBRETURN\fR\s+1 key to enter them.
 .PP
 .PSPIC @srcdir@/PICS/ddd-console.ps 15.3cm
@@ -2559,6 +2566,24 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Data Preferences"
 .PP
+You can control whether edge hints and edge annotations are
+displayed.  Set or unset the `\fBShow Edge Hints\fR' and `\fBShow Edge 
+Annotations\fR' option, respectively.
+.PP
+By default, \s-1@DDD@\s+1 disables the title of a dependent display if
+the name can be deduced from edge annotations.  If you want all
+dependent displays to have a title, set `\fBShow Titles of Dependent
+Displays\fR'.
+.PP
+To enable a more compact layout, you can set the `\fBCompact
+Layout\fR' option.  This realizes an alternate layout algorithm, where
+successors are placed next to their parents.  This algorithm is
+suitable for homogeneous data structures only.
+.PP
+To enforce layout, you can set the `\fBRe-layout graph
+automatically\fR' option.  If automatic layout is enabled, the graph
+is layouted after each change.
+.PP
 If you want \s-1@DDD@\s+1 to detect aliases, set the `\fBDetect
 Aliases\fR' option.  Note that alias detection makes \s-1@DDD@\s+1 run
 slower.  See `\fBExamining Shared Data Structures\fR', above, for
@@ -2579,15 +2604,6 @@ delete the last data display.  You can keep the data window open by
 unsetting `\fBClose data window when deleting last display\fR'.
 .PP
 .PSPIC @srcdir@/PICS/ddd-data-prefs.ps 15.3cm
-.PP
-To enable a more compact layout, you can set the `\fBCompact
-Layout\fR' option.  This realizes an alternate layout algorithm, where
-successors are placed next to their parents.  This algorithm is
-suitable for homogeneous data structures only.
-.PP
-To enforce layout, you can set the `\fBRe-layout graph
-automatically\fR' option.  If automatic layout is enabled, the graph
-is layouted after each change.
 .PP
 In the `\fBGrid Size\fR' scale, you can change the spacing of grid points.
 A spacing of 0 disables the grid.  Default is 16.
@@ -2676,11 +2692,11 @@ default, set the `\fBData Scrolling\fR' option to `\fBPanner\fR'.
 See also the `\fB\-\-panned-graph-editor\fR' and
 `\fB\-\-scrolled-graph-editor\fR' options, below.
 .PP
-By default, \s-1@DDD@\s+1 runs with \s-1GDB\s+1 as inferior debugger.
-To change this default, set the `\fBDebugger Type\fR' option to
-another debugger.  See also the `\fB\-\-gdb\fR', `\fB\-\-dbx\fR',
-`\fB\-\-xdb\fR', `\fB\-\-jdb\fR', `\fB\-\-pydb\fR', and
-`\fB\-\-perl\fR' options, below.
+By default, \s-1@DDD@\s+1 determines the inferior debugger
+automatically.  To change this default, set the `\fBDebugger Type\fR'
+option to a specific debugger.  See also the `\fB\-\-gdb\fR',
+`\fB\-\-dbx\fR', `\fB\-\-xdb\fR', `\fB\-\-jdb\fR', `\fB\-\-pydb\fR',
+and `\fB\-\-perl\fR' options, below.
 .PP
 If you want the \s-1@DDD@\s+1 splash screen shown upon startup, enable 
 `\fBDDD Splash Screen\fR'.
@@ -2781,10 +2797,29 @@ standard input and writes to standard output.  A typical value is
 `\fBgunzip \-c\fR'.  See also the `\fBuncompressCommand\fR' resource,
 below.
 .PP
-Finally, `\fBWeb Browser\fR' is the command to invoke a \s-1WWW\s+1
-browser for the \s-1@DDD@\s+1 \s-1WWW\s+1 page.  `\fB@URL@\fR' is
-replaced by the \s-1URL\s+1 (web page) to be shown.  A simple value is
-`\fBnetscape @URL@\fR'.  See also the `\fBwwwCommand\fR' resource,
+`\fBWeb Browser\fR' is the command to invoke a \s-1WWW\s+1 browser for
+the \s-1@DDD@\s+1 \s-1WWW\s+1 page.  `\fB@URL@\fR' is replaced by the
+\s-1URL\s+1 (web page) to be shown.  A simple value is `\fBnetscape
+@URL@\fR'.  See also the `\fBwwwCommand\fR' resource, below.
+.PP
+`\fBPlot\fR' is the name of a Gnuplot program to invoke.
+\s-1@DDD@\s+1 can run Gnuplot in two ways:
+.IP \(bu 2
+\s-1@DDD@\s+1 can use an \fIexternal\fR window, i.e. the plot window
+as supplied by Gnuplot.  \s-1@DDD@\s+1 incorporates or
+\(lqswallows\(rq the Gnuplot output window into its own user
+interface.  To make the swallowing smooth, Gnuplot should be prevented
+from mapping its window by giving an appropriate (large) geometry.
+Nonetheless, some window managers may have trouble with this
+technique.
+.IP \(bu 2
+\s-1@DDD@\s+1 can supply a \fIbuiltin\fR plot window instead.  The
+advantage is that there can be no interferences with window managers;
+the \s-1@DDD@\s+1 builtin plot window also requires less resources
+than the Gnuplot window.  The disadvantage is that plots are slower
+and less customizable.
+.PP
+See also the `\fBplotCommand\fR' and `\fBbuiltinPlot\fR' resources,
 below.
 .\"
 .\"
@@ -2931,11 +2966,11 @@ To save all command definitions, use `\fBEdit\(->Save Options\fR'.
 .\" next section for a discussion.
 .\"
 .\"
-.SS "Defining Commands with DBX, XDB and JDB"
+.SS "Defining Commands with Other Debuggers"
 .\"
-If your \s-1DBX\s+1, \s-1XDB\s+1, or \s-1JDB\s+1 debugger allows you
-to define own command sequences, you can also use these user-defined
-commands within \s-1@DDD@\s+1; just enter them at the debugger prompt.
+If your inferior debugger allows you to define own command sequences,
+you can also use these user-defined commands within \s-1@DDD@\s+1;
+just enter them at the debugger prompt.
 .PP
 However, you may encounter some problems:
 .IP \(bu 2
@@ -3113,6 +3148,10 @@ in particular, you can examine the program data.  However, you will
 not be able to resume program execution since the environment (open
 files, resources, etc.) will be lost.  However, you can restart the
 program, re-using the restored breakpoints and data displays.
+.PP
+Opening sessions also restores command definitions, buttons, display
+shortcuts and the source tab width.  This way, you can maintain a
+different set of definitions for each session.
 .\"
 .\"
 .SS "Deleting Sessions"
@@ -5944,6 +5983,14 @@ any time, including prompts).  Hence, a program producing much console
 output is likely to slow down \s-1@DDD@\s+1 considerably.  In such a
 case, have the program run with \fB\-debug\fR in a separate window and
 attach \s-1JDB\s+1 to it using the \fB\-passwd\fR option.
+.\"
+.SS "Limitations using Perl"
+.\"
+.PP
+There is no automatic data display in Perl.  As a workaround,
+\s-1@DDD@\s+1 uses the `\fBx\fR' command to access data values.  This
+means that variable names are interpreted according to the current
+frame; variables outside the current frame cannot be displayed.
 .\"
 .SS "General Limitations"
 .\"
