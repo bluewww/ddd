@@ -538,6 +538,9 @@ void DataDisp::show(Widget dialog, int depth, int more)
 	    if (dv == 0)
 		continue;
 
+	    if (dn->disabled() && !dv->collapsed())
+		continue;	// Re-enable old state
+
 	    if (more != 0)
 		depth = dv->heightExpanded() + more;
 
