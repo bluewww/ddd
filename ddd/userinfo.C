@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-// Issue the name of building user
+// Issue name and e-mail address of building user
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 // 
 // This file is part of the DDD Library.
@@ -60,6 +60,150 @@ inline bool is_letter(char c)
     return c && (isalpha(c) || isspace(c) || c == '.' || c == '-');
 }
 
+// Return e-mail address from preferences file DOTRC in HOME dir.
+// Format of preferences line is `TAG E-MAIL-ADDRESS'.
+static char *email_from_preferences(char *home, char *dotrc, char *tag)
+{
+    char preferences[BUFSIZ];
+    strcpy(preferences, home);
+    strcat(preferences, "/");
+    strcat(preferences, dotrc);
+
+    FILE *fp = fopen(preferences, "r");
+    if (fp != NULL)
+    {
+	char line[BUFSIZ];
+	while (fgets(line, sizeof(line), fp) != NULL)
+	{
+	    if (strncmp(line, tag, strlen(tag)) == 0)
+	    {
+		static char buffer[BUFSIZ];
+
+		char *s = line + strlen(tag);
+		char *t = buffer;
+		while (isspace(*s))
+		    s++;
+		while (!isspace(*s) && *s != '\0')
+		    *t++ = tolower(*s++);
+		*t++ = '\0';
+		fclose(fp);
+		return buffer;
+	    }
+	}
+
+	fclose(fp);
+    }
+
+    return 0;
+}
+
+
+// Return e-mail address from signature file DOTRC in HOME dir.  Find
+// the first `@' and return the surrounding string.
+static char *email_from_signature(char *home, char *dotrc)
+{
+    char signature[BUFSIZ];
+    strcpy(signature, home);
+    strcat(signature, "/");
+    strcat(signature, dotrc);
+
+    FILE *fp = fopen(signature, "r");
+    if (fp != NULL)
+    {
+	char line[BUFSIZ];
+	while (fgets(line, sizeof(line), fp) != NULL)
+	{
+	    char *s = strchr(line, '@');
+	    if (s != 0)
+	    {
+		static char buffer[BUFSIZ];
+		char *t = buffer;
+
+		while (!isspace(*s) && s != line)
+		    s--;
+		while (isspace(*s))
+		    s++;
+		while (!isspace(*s) && *s != '\0')
+		    *t++ = tolower(*s++);
+		*t++ = '\0';
+		fclose(fp);
+		return buffer;
+	    }
+	}
+
+	fclose(fp);
+    }
+
+    return 0;
+}
+
+// Return e-mail address from PWD at current host.
+static char *email_from_pwd(struct passwd *pwd)
+{
+    static char buffer[BUFSIZ];
+    strcpy(buffer, pwd->pw_name);
+    strcat(buffer, "@");
+    strcat(buffer, fullhostname());
+
+    return buffer;
+}
+
+// Check if S looks like an e-mail address.  S must contain a `@' and
+// a `.', neither at the beginning nor at the end.
+static bool is_email(char *s)
+{
+    if (s == 0)
+	return false;
+
+    char *at = strchr(s, '@');
+    if (at == 0 || at == s || at[1] == '\0')
+	return false;
+
+    char *dot = strchr(s, '.');
+    if (dot == 0 || dot == s || dot[1] == '\0')
+	return false;
+
+    return true;
+}
+
+// Return an e-mail address for user PWD.
+static char *email(struct passwd *pwd)
+{
+    char *s = 0;
+
+    // Try Netscape and Lynx preferences
+    if (!is_email(s))
+	s = email_from_preferences(pwd->pw_dir, ".netscape-preferences", 
+				   "EMAIL_ADDRESS:");
+    if (!is_email(s))
+	s = email_from_preferences(pwd->pw_dir, ".netscape/preferences", 
+				   "EMAIL_ADDRESS:");
+    if (!is_email(s))
+	s = email_from_preferences(pwd->pw_dir, ".lynxrc", 
+				   "personal_mail_address=");
+
+    // Try .dot files used for e-mail and fingering
+    if (!is_email(s))
+	s = email_from_signature(pwd->pw_dir, ".signature");
+    if (!is_email(s))
+	s = email_from_signature(pwd->pw_dir, ".Sig");
+    if (!is_email(s))
+	s = email_from_signature(pwd->pw_dir, ".project");
+    if (!is_email(s))
+	s = email_from_signature(pwd->pw_dir, ".plan");
+
+    // Try e-mail address from current host name
+    if (!is_email(s))
+	s = email_from_pwd(pwd);
+
+    // Tried it all, and failed :-(
+    if (!is_email(s))
+	s = "unknown";
+
+    return s;
+}
+
+// Write user information for given ARG
 int userinfo(char *arg = 0)
 {
     struct passwd *pwd = 0;
@@ -121,15 +265,14 @@ int userinfo(char *arg = 0)
 	}
     }
 
-    // Issue user id and host (probable mail address)
+    // Lookup preferences files for the e-mail address.
     fputs(" <", stdout);
-    fputs(pwd->pw_name, stdout);
-    fputs("@", stdout);
-    fputs(fullhostname(), stdout);
+    fputs(email(pwd), stdout);
     fputs(">\n", stdout);
 
     return 0;
 }
+
 
 // Issue the name of the building user, in the format
 // ``REALNAME <USERNAME@HOSTNAME>''
