@@ -1,15 +1,15 @@
 This is the source distribution of DDD, the Data Display Debugger.
 Please consult the following files:
 
-    ANNOUNCE     All about the recent DDD release, including FTP sites.
-    BUGS         Known DDD bugs.
-    CREDITS      Thanks for DDD.
+    ANNOUNCE     All about this DDD distribution, including FTP sites.
+    BUGS         Open issues in this DDD distribution.
     COPYING      The DDD license.
     COPYING.LIB  The license applying to some parts of DDD.
+    FAQ          Frequently answered questions about DDD.
     INSTALL      Building and installing DDD.
     NEWS         Release information and recent changes.
     PROBLEMS     Hints for building DDD on specific systems.
-    SERVICE      People offering support services for DDD.
+    README       This file.
     TODO         Possible future DDD features.
 
 Recent versions of these files reflecting the current development state
@@ -20,5 +20,5 @@ the body of your mail.  A list of available files is obtained by
 writing `index ddd-users' in the body of your mail.
 
 -- 
-Andreas Zeller (ddd@ips.cs.tu-bs.de)
-Technische Universitaet Braunschweig, Germany
+Andreas Zeller       Technische Universitaet Braunschweig, Germany
+                     ddd@ips.cs.tu-bs.de http://www.cs.tu-bs.de/softech/ddd/
