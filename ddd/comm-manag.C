@@ -396,6 +396,7 @@ static void process_batch(const string& answer, void *data = 0);
 
 // Process asynchronous GDB answers
 static void AsyncAnswerHP(Agent *, void *, void *);
+static void ExceptionStateHP(Agent *, void *, void *);
 
 static string print_cookie = "4711";
 
@@ -462,6 +463,8 @@ void start_gdb(bool config)
     // Register asynchronous answer handler
     gdb->removeHandler(AsyncAnswer, AsyncAnswerHP);
     gdb->addHandler(AsyncAnswer, AsyncAnswerHP);
+    gdb->removeHandler(ExceptionState, ExceptionStateHP);
+    gdb->addHandler(ExceptionState, ExceptionStateHP);
 
     // Setup command data
     CmdData *cmd_data     = new CmdData;
@@ -3073,16 +3076,18 @@ static void extra_completed (const StringArray& answers,
 // Process asynchronous GDB answers
 //-----------------------------------------------------------------------------
 
+static string answer_buffer = "";
+static bool exception_state = false;
+
 static void AsyncAnswerHP(Agent *source, void *, void *call_data)
 {
     string& answer = *((string *)call_data);
     GDBAgent *gdb = ptr_cast(GDBAgent, source);
 
-    if (gdb->type() == JDB)
+    if (gdb->type() == JDB && !exception_state)
     {
 	// In JDB, any thread may hit a breakpoint asynchronously.
 	// Fetch its position.
-	static string answer_buffer;
 	answer_buffer += answer;
 	if (gdb->ends_with_prompt(answer_buffer))
 	{
@@ -3097,6 +3102,14 @@ static void AsyncAnswerHP(Agent *source, void *, void *call_data)
     }
 
     _gdb_out(answer);
+}
+
+static void ExceptionStateHP(Agent *, void *, void *call_data)
+{
+    // Be sure not to mistake internal exceptions for breakpoints
+    exception_state = (int)(long)call_data;
+    if (exception_state)
+	answer_buffer = "";
 }
 
 
