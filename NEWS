@@ -221,7 +221,9 @@ Bug fixes
 - Improved redirection handling.  You can redirect stderr away from
   the execution window, using `run 2> FILE'.  The debugger command
   `run 2> /dev/tty' will redirect stderr to the debugger console.
-  (requires redirection support by inferior debugger).
+
+  On inferior debuggers without stderr redirection support (such as
+  most DBXes), invoke DDD with `--debugger "dbx 2> FILE"' instead.
 
 - Sun DBX warnings like `warning: -r option only recognized for C++'
   are properly suppressed.
