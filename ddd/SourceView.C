@@ -5112,7 +5112,7 @@ const int motif_offset = 0;  // Motif 1.x does not
 // Create glyph in FORM_W named NAME from given BITS
 Widget SourceView::create_glyph(Widget form_w,
 				String name,
-				char *bits, int width, int height)
+				char */* bits */, int width, int height)
 {
     Arg args[20];
     Cardinal arg = 0;
@@ -5590,10 +5590,17 @@ void SourceView::copy_colors(Widget w, Widget origin)
 		  XmNforeground, &foreground,
 		  XmNbackground, &background,
 		  NULL);
-    XtVaSetValues(w,
-		  XmNforeground, foreground,
-		  XmNbackground, background,
-		  NULL);
+
+    Pixmap pixmap = 
+	XmGetPixmap(XtScreen(w), XtName(w), foreground, background);
+    if (pixmap != XmUNSPECIFIED_PIXMAP)
+    {
+	Pixmap old_pixmap;
+	XtVaGetValues(w, XmNlabelPixmap, &old_pixmap, NULL);
+	XmDestroyPixmap(XtScreen(w), old_pixmap);
+
+	XtVaSetValues(w, XmNlabelPixmap, pixmap, NULL);
+    }
 }
 
 // Map temporary stop sign at position POS.  If ORIGIN is given, use
@@ -5619,7 +5626,14 @@ Widget SourceView::map_temp_stop_at(Widget w, XmTextPosition pos,
     copy_colors(temp_stop, origin);
 
     if (pos_displayed)
-	map_glyph(temp_stop, x + stop_x_offset, y);
+    {
+	if (origin)
+	    XtVaGetValues(origin, XmNx, &x, NULL);
+	else
+	    x += stop_x_offset;
+
+	map_glyph(temp_stop, x, y);
+    }
     else
 	unmap_glyph(temp_stop);
 
