@@ -2238,7 +2238,7 @@ XrmDatabase app_defaults(Display *display)
     if (app_name == 0)
 	XtGetApplicationNameAndClass(display, &app_name, &app_class);
 
-    string own_app_defaults_file = 
+    static string own_app_defaults_file = 
 	resolvePath(string(ddd_NAME) + "/" + app_class);
 
     if (own_app_defaults_file != "")
