@@ -36,6 +36,8 @@ char DispGraph_rcsid[] =
 // Display-Ausdruecken.
 //-----------------------------------------------------------------------------
 
+#include <X11/StringDefs.h>
+
 #include "DispGraph.h"
 #include "GraphEdit.h"
 #include "assert.h"
@@ -411,16 +413,26 @@ BoxPoint DispGraph::default_new_box_point (DispNode *new_node, Widget w) const
 		  XtNrotation,   &rotation,
 		  NULL);
 
-    BoxPoint grid(grid_height, grid_width);
+    BoxPoint grid(max(grid_height, 1), max(grid_width, 1));
 
     bool horizontal = rotation % 90;
 
-    // Default offset: create new displays orthogonal to layout direction
+    // Default offset: create new displays orthogonal to dereference direction
     BoxPoint offset = 
-	horizontal ? BoxPoint(0, grid[Y]) : BoxPoint(grid[X], 0);
+	horizontal ? BoxPoint(grid[X], 0) : BoxPoint(0, grid[Y]);
 
-    // Start with this position
-    BoxPoint pos(grid[X], grid[Y] * 4);
+    // Start with the top-level visible position
+    Position x = 0;
+    Position y = 0;
+    XtVaGetValues(w, XtNx, &x, XtNy, &y, NULL);
+    BoxPoint pos(max(-x, grid[X] * 1), max(-y, grid[Y] * 2));
+
+    // Add size offset
+    BoxSize new_size(new_node->box()->size());
+    pos += new_size / 2;
+
+    // Round to nearest grid position
+    pos = (pos / grid + BoxPoint(1, 1)) * grid;
 
     return adjust_position(new_node, w, pos, offset, grid);
 }
