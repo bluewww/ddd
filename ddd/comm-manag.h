@@ -69,9 +69,5 @@ bool is_known_command(const string& answer);
 void init_session(const string& restart, const string& settings,
 		  bool try_source = false);
 
-// Replace all occurrences of `@N@' by N + the current breakpoint base;
-// Replace all occurrences of `@AUTO@' by the current command prefix.
-void fix_symbols(string& cmd);
-
 #endif // _DDD_comm_manag_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -355,7 +355,7 @@ static string print_cookie = "4711";
 
 // Replace all occurrences of `@N@' by N + the current breakpoint base;
 // Replace all occurrences of `@AUTO@' by the current command prefix.
-void fix_symbols(string& cmd)
+static void fix_symbols(string& cmd)
 {
 #if RUNTIME_REGEX
     static regex rxnum("@[0-9]+@");
