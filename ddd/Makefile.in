@@ -1524,18 +1524,39 @@ swallow$(EXEEXT): swallow.o findWindow.o Swallower.o
 	$(ALL_X_LIBS) $(LIBS)
 
 # We don't want no optimizing, but debugging info in our test files
+MAKE_DEBUG = \
+$(MAKE) CXXFLAGS="`$(ECHO) '$(CXXFLAGS)' | \
+	$(SED) 's/-O[^ ]*//' | $(SED) 's/-DNDEBUG//'`"
+
 cxxtest.o: $(srcdir)/cxxtest.C
-	$(CXX) $(INCLUDE) @CXXDEBUG@ -c -o $@ $(srcdir)/cxxtest.C
+	@case '$(CXXFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(COMPILE.cc) @CXXDEBUG@ $(INCLUDE) $(srcdir)/cxxtest.C -o $@;; \
+	esac
 
 ctest.o: $(srcdir)/ctest.c
-	$(CC) $(INCLUDE) -g -c -o $@ $(srcdir)/ctest.c
+	@case '$(CXXFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(COMPILE.c) @CXXDEBUG@ $(INCLUDE) $(srcdir)/ctest.c -o $@;; \
+	esac
 
 grabtest.o: $(srcdir)/grabtest.C
-	$(CXX) $(X_INCLUDE) @CXXDEBUG@ -c -o $@ $(srcdir)/grabtest.C
+	@case '$(CXXFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(COMPILE.cc) @CXXDEBUG@ $(INCLUDE) $(srcdir)/grabtest.C -o $@;; \
+	esac
 
 bug.o:	$(srcdir)/bug.C
-	$(CXX) $(INCLUDE) @CXXDEBUG@ -c -o $@ $(srcdir)/bug.C
+	@case '$(CXXFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(COMPILE.cc) @CXXDEBUG@ $(INCLUDE) $(srcdir)/bug.C -o $@;; \
+	esac
 
+# These are special.
 huffdecode.o: $(srcdir)/huffdecode.C ddd.man.huff.C
 	$(COMPILE.cc) -DMAIN -DHUFFTEXT='"$(srcdir)/ddd.man.huff.C"' \
 	$(INCLUDE) -o $@ $(srcdir)/huffdecode.C
