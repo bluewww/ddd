@@ -110,13 +110,74 @@ static Box *not(ListBox *args)
     CHECK_SIZE(args);
 
     if ((*args)[0]->size(X) == 0)
-	    return new TrueBox;
+	return new TrueBox;
 
     return new FalseBox;
 }
 
 
 // Graphische Operatoren
+
+// Normalize alignment
+static Box *_normalize(AlignBox *box)
+{
+    // Replace (&)(A) by A
+    if (box->nchildren() == 1)
+    {
+	// Replace by single child
+        Box *new_box = (*box)[0]->link();
+	box->unlink();
+	return new_box;
+    }
+
+    // Replace (&)(A, (&)(B, C)) by (&)(A, B, C)
+    bool need_assoc_restructuring = false;
+
+    for (int i = 0; i < box->nchildren(); i++)
+    {
+	const Box *child = (*box)[i];
+	if (ptr_type_info(box) == ptr_type_info(child))
+	{
+	    need_assoc_restructuring = true;
+	    break;
+	}
+    }
+
+    if (need_assoc_restructuring)
+    {
+	// Replace this box by NEW_ALIGN
+	Box *new_box = box->dup0();
+	AlignBox *new_align = ptr_cast(AlignBox, new_box);
+	assert(new_align != 0);
+
+	for (int i = 0; i < box->nchildren(); i++)
+	{
+	    Box *child = (*box)[i];
+	    if (ptr_type_info(box) == ptr_type_info(child))
+	    {
+		AlignBox *a = ptr_cast(AlignBox, child);
+		assert(a != 0);
+		for (int j = 0; j < a->nchildren(); j++)
+		    *new_align += (*a)[j];
+	    }
+	    else
+		*new_align += child;
+	}
+
+	box->unlink();
+	return new_align;
+    }
+
+    return box;
+}
+
+static Box *normalize(AlignBox *b)
+{
+    // clog << "normalize(" << *b << ") = ";
+    Box *ret = _normalize(b);
+    // clog << *ret << "\n";
+    return ret;
+}
 
 static Box *halign(ListBox *args)
 // Horizontale Anordnung
@@ -138,15 +199,15 @@ static Box *halign(ListBox *args)
 	return new NullBox;
 
     // Wenn 1 Sohn gefunden, diesen zurueckgeben
-    if (ret->nsons() == 1)
+    if (ret->nchildren() == 1)
     {
-	Box *son = (*ret)[0]->link();
+	Box *child = (*ret)[0]->link();
 	ret->unlink();
-	return son;
+	return child;
     }
 
-    // Sonst: Anordnung zurueckgeben
-    return ret;
+    // Return normalized alignment
+    return normalize(ret);
 }
 
 static Box *talign(ListBox *args)
@@ -169,15 +230,15 @@ static Box *talign(ListBox *args)
 	return new NullBox;
 
     // Wenn 1 Sohn gefunden, diesen zurueckgeben
-    if (ret->nsons() == 1)
+    if (ret->nchildren() == 1)
     {
-	Box *son = (*ret)[0]->link();
+	Box *child = (*ret)[0]->link();
 	ret->unlink();
-	return son;
+	return child;
     }
 
-    // Sonst: Anordnung zurueckgeben
-    return ret;
+    // Return normalized alignment
+    return normalize(ret);
 }
 
 static Box *valign(ListBox *args)
@@ -200,15 +261,15 @@ static Box *valign(ListBox *args)
 	return new NullBox;
 
     // Wenn 1 Sohn gefunden, diesen zurueckgeben
-    if (ret->nsons() == 1)
+    if (ret->nchildren() == 1)
     {
-	Box *son = (*ret)[0]->link();
+	Box *child = (*ret)[0]->link();
 	ret->unlink();
-	return son;
+	return child;
     }
 
-    // Sonst: Anordnung zurueckgeben
-    return ret;
+    // Return normalized alignment
+    return normalize(ret);
 }
 
 static Box *ualign(ListBox *args)
@@ -231,15 +292,15 @@ static Box *ualign(ListBox *args)
 	return new NullBox;
 
     // Wenn 1 Sohn gefunden, diesen zurueckgeben
-    if (ret->nsons() == 1)
+    if (ret->nchildren() == 1)
     {
-	Box *son = (*ret)[0]->link();
+	Box *child = (*ret)[0]->link();
 	ret->unlink();
-	return son;
+	return child;
     }
 
-    // Sonst: Anordnung zurueckgeben
-    return ret;
+    // Return normalized alignment
+    return normalize(ret);
 }
 
 
@@ -616,9 +677,9 @@ static Box *fail(ListBox *args)
 struct BuiltinRec {
     char* ext_name;         // Funktionsname (extern; 0 = func_name)
     char* func_name;        // Funktionsname (intern)
-    char isAssoc;           // Flag: Assoziativ?
-    char hasSideEffects;    // Flag: Seiteneffekte?
-    char isInfix;           // Flag: Infix ausgeben?
+    bool isAssoc;           // Flag: Assoziativ?
+    bool hasSideEffects;    // Flag: Seiteneffekte?
+    bool isInfix;           // Flag: Infix ausgeben?
     BuiltinFunc eval_func;  // Aufzurufende Funktion
 
 };
