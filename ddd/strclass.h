@@ -1207,6 +1207,11 @@ inline void string::del(char* t, int startpos = 0)
     del((const char *)t, startpos);
 }
 
+inline int string::freq(char* t) const
+{
+    return freq((const char *)t);
+}
+
 inline subString string::from(char* t, int startpos = 0)
 {
     return from((const char *)t, startpos);

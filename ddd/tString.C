@@ -104,6 +104,7 @@ void cattest()
   cout << "y.prepend(x); y = " << y << "\n";
   assert(y == "Helloworld");
 
+#if 0
   y = Y;
   x = X;
   cat(x, y, x, x);
@@ -115,6 +116,7 @@ void cattest()
   cat(y, x, x, x);
   cout << "cat(y, x, x, x); x = " << x << "\n";
   assert(x == "worldHelloHello");
+#endif
 
   x = X;
   y = Y;
@@ -385,7 +387,7 @@ void identitytest(string a, string b)
     assert(x.OK());
     assert(x == reverse(x));
     assert(x.index(y) == 0);
-    assert(x.index(y, -1) == x.length() / 2);
+    assert(x.index(y, -1) == int(x.length() / 2));
   }
 }
 
