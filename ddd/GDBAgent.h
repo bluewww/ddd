@@ -284,7 +284,7 @@ public:
 
     // Resources
     DebuggerType type()       const { return _type; }
-    string title()            const;
+    const string& title()     const;
     bool isReadyWithPrompt()  const { return state == ReadyWithPrompt; }
     const string& prompt()    const { return last_prompt; }
 
@@ -700,7 +700,7 @@ public:
     string info_locals_command() const;	            // info locals
     string info_args_command() const;	            // info args
     string info_display_command() const;	    // info display
-    string disassemble_command(string start, string end = "") const;
+    string disassemble_command(string start, const string& end = "") const;
                                                     // disassemble START END
     string make_command(const string& target) const;       // make TARGET
     string jump_command(const string& pc) const;    // jump PC

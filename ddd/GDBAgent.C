@@ -333,39 +333,65 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
 {}
 
 // Return default title
-string GDBAgent::title() const
+const string& GDBAgent::title() const
 {
+#define TITLES \
+X(tGDB,"GDB"),  \
+X(tWBD,"WDB"),  \
+X(tXDB,"XDB"),  \
+X(tLADEBUG,"Ladebug"),  \
+X(tDBX,"DBX"),  \
+X(tJDB,"JDB"),  \
+X(tPYDB,"PYDB"),  \
+X(tPERL,"Perl"),  \
+X(tBASH,"Bash"),  \
+X(tDEBUGGER,"debugger")
+    enum{
+#define X(a,b) a
+        TITLES
+#undef X
+    };
+
+    static
+    string const titles[] =
+      {
+#define X(a,b) b
+        TITLES
+#undef X
+      };
+#undef TITLES
+
     switch (type())
     {
     case GDB:
 	if (path().contains("wdb"))
-	    return "WDB";
+	    return titles[tWBD];
 	else
-	    return "GDB";
+	    return titles[tGDB];
 
     case DBX:
 	if (is_ladebug())
-	    return "Ladebug";
+	    return titles[tLADEBUG];
 	else
-	    return "DBX";
+	    return titles[tDBX];
 
     case XDB:
-	return "XDB";
+	return titles[tXDB];
 
     case JDB:
-	return "JDB";
+	return titles[tJDB];
 
     case PYDB:
-	return "PYDB";
+	return titles[tPYDB];
 
     case PERL:
-	return "Perl";
+	return titles[tPERL];
 
     case BASH:
-	return "Bash";
+	return titles[tBASH];
     }
 
-    return "debugger";
+    return titles[tDEBUGGER];
 }
 
 bool GDBAgent::is_ladebug() const
@@ -1720,10 +1746,10 @@ string GDBAgent::print_command(const string& expr, bool internal) const
 // DBX 3.0 wants `display -r' instead of `display' for C++
 string GDBAgent::display_command(const string& expr) const
 {
-    if (!has_display_command())
-	return "";
-
     string cmd;
+    if (!has_display_command())
+	return cmd;
+
     if (has_print_r_option() && !expr.empty())
 	cmd = "display -r";
     else
@@ -1810,10 +1836,10 @@ string GDBAgent::info_args_command() const
 
 string GDBAgent::info_display_command() const
 {
-    if (type() == GDB || type() == BASH)
-	return "info display";
-    else
-	return display_command();
+    return
+      (type() == GDB || type() == BASH) ?
+      "info display":
+      display_command();
 }
 
 
@@ -2442,7 +2468,7 @@ string GDBAgent::quote_file(const string& file) const
 string GDBAgent::debug_command(const string& program, string args) const
 {
     if (!args.empty() && !args.contains(' ', 0))
-	args = " " + args;
+	args.prepend(' ');
 
     switch (type())
     {
@@ -2945,18 +2971,20 @@ void GDBAgent::normalize_address(string& addr) const
 }
 
 // Return disassemble command
-string GDBAgent::disassemble_command(string start, string end) const
+string GDBAgent::disassemble_command(string start, const string& end) const
 {
+    string cmd;
     if (type() != GDB)
-	return "";
+	return cmd;
 
     normalize_address(start);
-    string cmd = "disassemble " + start;
+    cmd = "disassemble " + start;
 
     if (!end.empty())
     {
-	normalize_address(end);
-	cmd += " " + end;
+        string end_( end );
+	normalize_address(end_);
+	cmd += " " + end_;
     }
     return cmd;
 }
