@@ -59,6 +59,7 @@ char comm_manager_rcsid[] =
 #include "SourceView.h"
 #include "DataDisp.h"
 #include "version.h"
+#include "VoidArray.h"
 
 #include <ctype.h>
 
@@ -171,79 +172,81 @@ void start_gdb()
     cmd_data->pos_buffer = new PosBuffer(); // ggf. Position lesen
 
     PlusCmdData* plus_cmd_data = new PlusCmdData ();
-    string cmds[32];
-    void* dummy[32];
-    int qu_count = 0;
+    StringArray cmds;
+    VoidArray dummy;
 
     switch (gdb->type())
     {
     case GDB:
-	cmds[qu_count++] = "info line main";
+	cmds += "info line main";
 	plus_cmd_data->refresh_main = true;
-	cmds[qu_count++] = "pwd";
+	cmds += "pwd";
 	plus_cmd_data->refresh_pwd = true;
-	cmds[qu_count++] = "info breakpoints";
+	cmds += "info breakpoints";
 	plus_cmd_data->refresh_bpoints = true;
-	cmds[qu_count++] = "show history filename";
+	cmds += "show history filename";
 	plus_cmd_data->refresh_history_filename = true;
-	cmds[qu_count++] = "show history size";
+	cmds += "show history size";
 	plus_cmd_data->refresh_history_size = true;
-	cmds[qu_count++] = "show history save";
+	cmds += "show history save";
 	plus_cmd_data->refresh_history_save = true;
 	break;
 
     case DBX:
 	plus_cmd_data->refresh_main = true;
-	cmds[qu_count++] = "frame";
+	cmds += "frame";
 	plus_cmd_data->config_frame = true;
-	cmds[qu_count++] = "line";
+	cmds += "line";
 	plus_cmd_data->config_line = true;
-	cmds[qu_count++] = "dbxenv run_io";
+	cmds += "dbxenv run_io";
 	plus_cmd_data->config_run_io = true;
-	cmds[qu_count++] = "print -r " + print_r_cookie;
+	cmds += "print -r " + print_r_cookie;
 	plus_cmd_data->config_print_r = true;
-	cmds[qu_count++] = "where -h";
+	cmds += "where -h";
 	plus_cmd_data->config_where_h = true;
-	cmds[qu_count++] = "display";
+	cmds += "display";
 	plus_cmd_data->config_display = true;
-	cmds[qu_count++] = "clear";
+	cmds += "clear";
 	plus_cmd_data->config_clear = true;
-	cmds[qu_count++] = "pwd";
+	cmds += "pwd";
 	plus_cmd_data->config_pwd = true;
-	cmds[qu_count++] = "print \"" DDD_NAME "\"";
+	cmds += "print \"" DDD_NAME "\"";
 	plus_cmd_data->config_named_values = true;
-	cmds[qu_count++] = "func main";
+	cmds += "func main";
 	plus_cmd_data->config_func_pos = true;
-	cmds[qu_count++] = "help when";
+	cmds += "help when";
 	plus_cmd_data->config_when_semicolon = true;
-	cmds[qu_count++] = "set $page = 0";
+	cmds += "set $page = 0";
 	plus_cmd_data->config_page = true;
-	cmds[qu_count++] = "sh pwd";
+	cmds += "sh pwd";
 	plus_cmd_data->refresh_pwd = true;
-	cmds[qu_count++] = "file";
+	cmds += "file";
 	plus_cmd_data->refresh_file = true;
-	cmds[qu_count++] = "list";
+	cmds += "list";
 	plus_cmd_data->refresh_line = true;
-	cmds[qu_count++] = "status";
+	cmds += "status";
 	plus_cmd_data->refresh_bpoints = true;
 	break;
 
     case XDB:
-	cmds[qu_count++] = "v main";
+	cmds += "v main";
 	plus_cmd_data->refresh_main = true;
-	cmds[qu_count++] = "!pwd";
+	cmds += "!pwd";
 	plus_cmd_data->refresh_pwd = true;
-	cmds[qu_count++] = "lb";
+	cmds += "lb";
 	plus_cmd_data->refresh_bpoints = true;
-	break;			// FIXME
+	break;
     }
+
+    while (dummy.size() < cmds.size())
+	dummy += (void *)0;
 
     gdb->start_plus (user_cmdOA,
 		     user_cmdOAC,
 		     cmd_data,
 		     cmds,
 		     dummy,
-		     qu_count,
+		     cmds.size(),
 		     plusOQAC,
 		     (void*)plus_cmd_data);
 }
@@ -528,9 +531,8 @@ void user_cmdSUC (string cmd, Widget origin)
     gdb_out(cmd);
     gdb_out("\n");
 
-    string cmds[32];
-    void*  dummy[32];
-    int qu_count = 0;
+    StringArray cmds;
+    VoidArray dummy;
 
     assert(!plus_cmd_data->config_frame);
     assert(!plus_cmd_data->config_line);
@@ -550,57 +552,57 @@ void user_cmdSUC (string cmd, Widget origin)
     {
     case GDB:
 	if (plus_cmd_data->refresh_main)
-	    cmds[qu_count++] = "info line main";
+	    cmds += "info line main";
 	if (plus_cmd_data->refresh_pwd)
-	    cmds[qu_count++] = "pwd";
+	    cmds += "pwd";
 	assert(!plus_cmd_data->refresh_file);
 	assert(!plus_cmd_data->refresh_line);
 	if (plus_cmd_data->refresh_bpoints)
-	    cmds[qu_count++] = "info breakpoints";
+	    cmds += "info breakpoints";
 	if (plus_cmd_data->refresh_where)
-	    cmds[qu_count++] = "where";
+	    cmds += "where";
 	if (plus_cmd_data->refresh_frame)
-	    cmds[qu_count++] = gdb->frame_command();
+	    cmds += gdb->frame_command();
 	if (plus_cmd_data->refresh_register)
-	    cmds[qu_count++] = "info registers";
+	    cmds += "info registers";
 	if (plus_cmd_data->refresh_disp)
-	    cmds[qu_count++] = data_disp->refresh_display_command();
+	    cmds += data_disp->refresh_display_command();
 	if (plus_cmd_data->refresh_disp_info)
-	    cmds[qu_count++] = "info display";
+	    cmds += "info display";
 	if (plus_cmd_data->refresh_history_filename)
-	    cmds[qu_count++] = "show history filename";
+	    cmds += "show history filename";
 	if (plus_cmd_data->refresh_history_size)
-	    cmds[qu_count++] = "show history size";
+	    cmds += "show history size";
 	if (plus_cmd_data->refresh_history_save)
-	    cmds[qu_count++] = "show history save";
+	    cmds += "show history save";
 	break;
 
     case DBX:
 	if (plus_cmd_data->refresh_pwd)
-	    cmds[qu_count++] = "pwd";
+	    cmds += "pwd";
 	if (plus_cmd_data->refresh_file)
-	    cmds[qu_count++] = "file";
+	    cmds += "file";
 	if (plus_cmd_data->refresh_line)
 	{
 	    if (gdb->has_line_command())
-		cmds[qu_count++] = "line";
+		cmds += "line";
 	    else
-		cmds[qu_count++] = "list";
+		cmds += "list";
 	}
 	if (plus_cmd_data->refresh_bpoints)
-	    cmds[qu_count++] = "status";
+	    cmds += "status";
 	if (plus_cmd_data->refresh_where)
-	    cmds[qu_count++] = "where";
+	    cmds += "where";
 	if (plus_cmd_data->refresh_frame)
 	{
 	    assert(gdb->has_frame_command());
-	    cmds[qu_count++] = gdb->frame_command();
+	    cmds += gdb->frame_command();
 	}
 	assert (!plus_cmd_data->refresh_register);
 	if (plus_cmd_data->refresh_disp)
-	    cmds[qu_count++] = data_disp->refresh_display_command();
+	    cmds += data_disp->refresh_display_command();
 	if (plus_cmd_data->refresh_disp_info)
-	    cmds[qu_count++] = gdb->display_command();
+	    cmds += gdb->display_command();
 	assert (!plus_cmd_data->refresh_history_filename);
 	assert (!plus_cmd_data->refresh_history_size);
 	assert (!plus_cmd_data->refresh_history_save);
@@ -608,37 +610,42 @@ void user_cmdSUC (string cmd, Widget origin)
 
     case XDB:
 	if (plus_cmd_data->refresh_main)
-	    cmds[qu_count++] = "v main";
+	    cmds += "v main";
 	if (plus_cmd_data->refresh_pwd)
-	    cmds[qu_count++] = "!pwd";
+	    cmds += "!pwd";
 	assert(!plus_cmd_data->refresh_file);
 	assert(!plus_cmd_data->refresh_line);
 	if (plus_cmd_data->refresh_bpoints)
-	    cmds[qu_count++] = "lb";
+	    cmds += "lb";
 	if (plus_cmd_data->refresh_where)
-	    cmds[qu_count++] = "t";
+	    cmds += "t";
 	if (plus_cmd_data->refresh_frame)
-	    cmds[qu_count++] = gdb->frame_command();
+	    cmds += gdb->frame_command();
 	assert (!plus_cmd_data->refresh_register);
 	if (plus_cmd_data->refresh_disp)
-	    cmds[qu_count++] = data_disp->refresh_display_command();
+	    cmds += data_disp->refresh_display_command();
 	if (plus_cmd_data->refresh_disp_info)
-	    cmds[qu_count++] = gdb->display_command();
+	    cmds += gdb->display_command();
 	assert (!plus_cmd_data->refresh_history_filename);
 	assert (!plus_cmd_data->refresh_history_size);
 	assert (!plus_cmd_data->refresh_history_save);
 	break;
     }
 
+    while (dummy.size() < cmds.size())
+	dummy += (void *)0;
+
     // Send commands
     bool send_ok;
-    if (qu_count) {
+    if (cmds.size() > 0)
+    {
 	send_ok = 
-	    gdb->send_user_cmd_plus(cmds, dummy, qu_count,
+	    gdb->send_user_cmd_plus(cmds, dummy, cmds.size(),
 				    plusOQAC, (void*)plus_cmd_data,
 				    cmd, (void *)cmd_data);
     }
-    else {
+    else
+    {
 	send_ok = gdb->send_user_cmd (cmd, (void *)cmd_data);
 	delete plus_cmd_data;
     }
