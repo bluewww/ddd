@@ -1311,6 +1311,13 @@ void send_gdb_command(string cmd, Widget origin,
 	gdb_input_at_prompt = false;
     }
 
+    if (calls_function(cmd))
+    {
+	// Function call - later input may be user interaction
+	gdb_input_at_prompt = false;
+	debuggee_running    = true;
+    }
+
     if (undo_buffer.showing_earlier_state() && !cmd_data->new_exec_pos)
     {
 	// Showing earlier state.  Don't update anything related to

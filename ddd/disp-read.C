@@ -584,6 +584,13 @@ bool ends_recording(const string& cmd)
     return cmd == "end";
 }
 
+// True if CMD calls a function
+bool calls_function(const string& cmd)
+{
+    return cmd.contains("call ", 0) ||
+	(!is_graph_cmd(cmd) && cmd.contains('('));
+}
+
 
 //----------------------------------------------------------------------------
 // Handle `display' output
