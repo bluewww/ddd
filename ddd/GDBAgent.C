@@ -500,11 +500,11 @@ bool GDBAgent::ends_with_secondary_prompt (const string& answer)
     case DBX:
 	if (ends_in(answer, "]: "))
 	{
-	    // AIX DBX knows `Select one of [FROM - TO]: '
+	    // AIX DBX issues `Select one of [FROM - TO]: ' in the last line
 	    // Reported by Jonathan Edwards <edwards@intranet.com>
-	    static regex rxselect("\nSelect one of \\[[0-9]+ - [0-9]+\\]: ");
+	    static regex rxselect("Select one of \\[[0-9]+ - [0-9]+\\]: ");
 	    int index = answer.index(rxselect, -1);
-	    if (index > 0 && !answer.contains('\n', index))
+	    if (index >= 0 && answer.index('\n', index) < 0)
 		return true;
 	}
 	// Prompt is `> ' at beginning of line
