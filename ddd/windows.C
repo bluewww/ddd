@@ -57,6 +57,11 @@ char windows_rcsid[] =
 #endif
 #include <X11/Xutil.h>
 
+// ANSI C++ doesn't like the XtIsRealized() macro
+#ifdef XtIsRealized
+#undef XtIsRealized
+#endif
+
 //-----------------------------------------------------------------------------
 // Window management
 //-----------------------------------------------------------------------------
@@ -108,13 +113,18 @@ static string last_tool_shell_geometry = "+0+0";
 // Return current tool shell position relative to root window
 static BoxPoint tool_shell_pos()
 {
-    XWindowAttributes attr;
-    XGetWindowAttributes(XtDisplay(tool_shell), XtWindow(tool_shell), 
-			 &attr);
-    int root_x, root_y;
-    Window child;
-    XTranslateCoordinates(XtDisplay(tool_shell), XtWindow(tool_shell), 
-			  attr.root, 0, 0, &root_x, &root_y, &child);
+    int root_x = 0;
+    int root_y = 0;
+
+    if (tool_shell != 0 && XtIsRealized(tool_shell))
+    {
+	XWindowAttributes attr;
+	XGetWindowAttributes(XtDisplay(tool_shell), XtWindow(tool_shell), 
+			     &attr);
+	Window child;
+	XTranslateCoordinates(XtDisplay(tool_shell), XtWindow(tool_shell), 
+			      attr.root, 0, 0, &root_x, &root_y, &child);
+    }
 
     return BoxPoint(root_x, root_y);
 }
@@ -142,10 +152,17 @@ static void move_tool_shell(const BoxPoint& pos)
 
 static void RecenterToolShellCB(XtPointer = 0, XtIntervalId * = 0)
 {
-    XWindowAttributes attr;
-    XGetWindowAttributes(XtDisplay(tool_buttons_w), 
-			 XtWindow(tool_buttons_w), &attr);
-    if (attr.map_state != IsViewable)
+    bool have_visible_tool_shell = false;
+
+    if (XtIsRealized(tool_shell))
+    {
+	XWindowAttributes attr;
+	XGetWindowAttributes(XtDisplay(tool_buttons_w), 
+			     XtWindow(tool_buttons_w), &attr);
+	have_visible_tool_shell = (attr.map_state == IsViewable);
+    }
+
+    if (!have_visible_tool_shell)
     {
 	// Try again in 200 ms
 	XtAppAddTimeOut(XtWidgetToApplicationContext(tool_shell), 200,
@@ -255,7 +272,7 @@ void popdown_shell(Widget w)
 
 void iconify_shell(Widget w)
 {
-    if (w == 0 || popups_disabled)
+    if (w == 0 || popups_disabled || !XtIsRealized(w))
 	return;
 
     if (w == command_shell)
@@ -343,7 +360,7 @@ static bool obscures(Display *display, Window top, Window bottom)
 
 static bool obscures(Widget top, Widget bottom)
 {
-    if (top == 0 || bottom == 0)
+    if (top == 0 || bottom == 0 || !XtIsRealized(top) || !XtIsRealized(bottom))
 	return false;
 
     if (visibility(bottom) == VisibilityUnobscured)
@@ -380,12 +397,13 @@ static void raise_above(Display *display, Window win, Window sibling)
 
 inline void raise_tool_above(Window sibling)
 {
-    raise_above(XtDisplay(tool_shell), XtWindow(tool_shell), sibling);
+    if (tool_shell && XtIsRealized(tool_shell))
+	raise_above(XtDisplay(tool_shell), XtWindow(tool_shell), sibling);
 }
 
 inline void raise_tool_above(Widget w)
 {
-    if (w != 0)
+    if (w != 0 && XtIsRealized(w))
 	raise_tool_above(XtWindow(w));
 }
 
@@ -965,7 +983,8 @@ static void recenter_tool_shell(Widget ref)
 // TOP_OFFSET and RIGHT_OFFSET
 static void recenter_tool_shell(Widget ref, int top_offset, int right_offset)
 {
-    if (ref == 0 || tool_shell == 0)
+    if (ref == 0 || tool_shell == 0 || 
+	!XtIsRealized(ref) || !XtIsRealized(tool_shell))
 	return;
 
     Window ref_window  = XtWindow(ref);
@@ -1018,8 +1037,9 @@ static bool get_tool_offset(int& top_offset, int& right_offset)
 {
     Widget ref = source_view->source();
 
-    if (ref == 0 || tool_shell == 0)
-	return false;
+    if (ref == 0 || tool_shell == 0 || 
+	!XtIsRealized(ref) || !XtIsRealized(tool_shell))
+	return;
 
     Window ref_window  = XtWindow(ref);
     Window tool_window = XtWindow(tool_shell);
