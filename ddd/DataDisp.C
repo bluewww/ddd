@@ -5225,8 +5225,7 @@ void DataDisp::create_shells()
 	verify(XmCreateRowColumn(form1, "form2", NULL, 0));
 
     arg = 0;
-    display_list_w = 
-	verify(XmCreateScrolledList(form2, "displays", args, arg));
+    display_list_w = verify(XmCreateScrolledList(form2, "list", args, arg));
     Widget buttons = 
 	verify(MMcreateWorkArea(form2, "buttons", display_area));
     MMaddCallbacks (display_area);
