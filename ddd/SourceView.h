@@ -516,9 +516,6 @@ private:
     static bool update_code_glyphs;
     static bool update_source_glyphs;
 
-    // Update glyphs for widget W (0: all)
-    static void update_glyphs(Widget w = 0);
-
     // Helping background procedures
     static void UpdateGlyphsWorkProc(XtPointer, XtIntervalId *);
     static Boolean CreateGlyphsWorkProc(XtPointer);
@@ -846,6 +843,9 @@ public:
 
     // Edit breakpoint properties.
     static void edit_breakpoint_properties(int bp_nr);
+
+    // Update glyphs for widget W (0: all)
+    static void update_glyphs(Widget w = 0);
 };
 
 inline void SourceView::create_bp(const string& a, Widget w)
