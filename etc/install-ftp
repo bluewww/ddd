@@ -56,6 +56,7 @@ README="ANNOUNCE    \
         BUGS        \
         COPYING     \
         COPYING.LIB \
+        CREDITS     \
 	FAQ         \
 	INSTALL     \
 	NEWS        \
@@ -265,7 +266,10 @@ exit 0
 
 
 # $Log$
-# Revision 1.7  1995/06/14 07:34:13  zeller
+# Revision 1.8  1995/06/15 15:36:44  zeller
+# New: CREDITS
+#
+# Revision 1.7  1995/06/14  07:34:13  zeller
 # New: preserve access dates when installing
 # Fix: Do not install when FTP server is not accessible
 #
