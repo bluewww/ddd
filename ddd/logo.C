@@ -38,14 +38,14 @@ char logo_rcsid[] =
 #include "xpm.h"
 
 // X bitmaps
-#include "ddd.xbm"
-#include "dddlogo.xbm"
-#include "dddmask.xbm"
+#include "icons/ddd.xbm"
+#include "icons/dddlogo.xbm"
+#include "icons/dddmask.xbm"
 
 // X pixmaps
 #ifdef XpmVersion
-#include "ddd.xpm"
-#include "dddlogo.xpm"
+#include "icons/ddd.xpm"
+#include "icons/dddlogo.xpm"
 #endif
 
 #include <iostream.h>
