@@ -30,6 +30,7 @@
 #define _DDD_ExitCB_h
 
 #include <stdlib.h>
+#include <X11/Intrinsic.h>
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
