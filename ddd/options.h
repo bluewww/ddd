@@ -99,6 +99,7 @@ extern void dddSetToolBarCB                 (Widget, XtPointer, XtPointer);
 extern void dddSetKeyboardFocusPolicyCB     (Widget, XtPointer, XtPointer);
 extern void dddSetPannerCB                  (Widget, XtPointer, XtPointer);
 extern void dddSetDebuggerCB                (Widget, XtPointer, XtPointer);
+extern void dddSetStartupLogoCB             (Widget, XtPointer, XtPointer);
 
 extern void DDDSaveOptionsCB                (Widget, XtPointer, XtPointer);
 extern void DDDSaveOptionsAsCB              (Widget, XtPointer, XtPointer);

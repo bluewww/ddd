@@ -147,7 +147,7 @@ void sourceToggleDisplayLineNumbersCB (Widget, XtPointer, XtPointer call_data)
 
 void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data != 0);
+    Boolean state = Boolean(client_data) != False;
 
     app_data.use_source_path = state;
     string referring_to_sources_using =
@@ -164,7 +164,7 @@ void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
 
 void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data != 0);
+    Boolean state = Boolean(client_data) != False;
 
     app_data.display_glyphs = state;
 
@@ -363,7 +363,7 @@ void dddToggleGroupIconifyCB (Widget, XtPointer, XtPointer call_data)
 
 void dddSetGlobalTabCompletionCB(Widget, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data != 0);
+    Boolean state = Boolean(client_data) != False;
 
     app_data.global_tab_completion = state;
 
@@ -522,7 +522,7 @@ static string next_ddd_will_start_with =
 
 void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data != 0);
+    Boolean state = Boolean(client_data) != False;
 
     app_data.separate_data_window   = state;
     app_data.separate_source_window = state;
@@ -538,7 +538,7 @@ void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data != 0);
+    Boolean state = Boolean(client_data) != False;
 
     app_data.status_at_bottom = state;
 
@@ -553,7 +553,7 @@ void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetToolBarCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data != 0);
+    Boolean state = Boolean(client_data) != False;
 
     app_data.tool_bar = state;
     string tool_buttons_are_located_in = "Tool buttons are located in ";
@@ -636,7 +636,7 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data != 0);
+    Boolean state = Boolean(client_data) != False;
     app_data.panned_graph_editor = state;
 
     if (state)
@@ -669,6 +669,20 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
 
     set_status(next_ddd_will_start_with + "a " 
 	       + upcase(app_data.debugger) + " debugger.");
+
+    update_options();
+    post_startup_warning(w);
+}
+
+void dddSetStartupLogoCB (Widget w, XtPointer client_data, XtPointer)
+{
+    Boolean state = Boolean(client_data) != False;
+    app_data.show_startup_logo = state;
+
+    if (state)
+	set_status(DDD_NAME " logo will be shown upon start-up.");
+    else
+	set_status(DDD_NAME " logo will not be shown upon start-up.");
 
     update_options();
     post_startup_warning(w);
@@ -1141,6 +1155,8 @@ bool save_options(unsigned long flags)
 			 app_data.panned_graph_editor) << "\n";
     os << bool_app_value(XtNsuppressWarnings,
 			 app_data.suppress_warnings) << "\n";
+    os << bool_app_value(XtNshowStartupLogo,
+			 app_data.show_startup_logo) << "\n";
     os << bool_app_value(XtNungrabMousePointer,
 			 app_data.ungrab_mouse_pointer) << "\n";
     os << bool_app_value(XtNsaveHistoryOnExit,

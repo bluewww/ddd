@@ -2425,6 +2425,14 @@ Ddd*debuggerMenu*gdb.labelString:		GDB
 Ddd*debuggerMenu*dbx.labelString:		DBX
 Ddd*debuggerMenu*xdb.labelString:		XDB
 
+Ddd*preferences*showStartupLogo.labelString:	Show DDD logo upon startup
+Ddd*preferences*showStartupLogo.alignment:	XmALIGNMENT_END
+Ddd*preferences*showStartupLogo.width:		200
+Ddd*preferences*showStartupLogo.recomputeSize:	false
+Ddd*showStartupLogoMenu*logo.labelString:	yes, show
+Ddd*showStartupLogoMenu*no_logo.labelString:	no, don't show
+
+
 
 !-----------------------------------------------------------------------------
 ! Settings
@@ -2515,6 +2523,20 @@ Click on LBL(?) near an item to get further information.\n\
 \n\
 Click on LBL(Reset) to delete all status displays.\n\
 Click on LBL(Close) to close this window.
+
+
+
+!-----------------------------------------------------------------------------
+! Start-up logo
+!-----------------------------------------------------------------------------
+
+Ddd*logo_shell.logo.highlightThickness:	0
+Ddd*logo_shell.logo.background:	  white
+Ddd*logo_shell.logo.foreground:	  black
+Ddd*logo_shell.logo.marginHeight: 0
+Ddd*logo_shell.logo.marginWidth:  0
+Ddd*logo_shell.logo.borderWidth:  0
+Ddd*logo_shell.borderWidth:       0
 
 
 

@@ -36,28 +36,94 @@ char logo_rcsid[] =
 #include "logo.h"
 
 #include "config.h"
-#include "../icons/ddd.xbm"
-#include "../icons/ddd.xpm"
-#include "../icons/dddmask.xbm"
-
-#include <X11/Xlib.h>
-#include <Xm/Xm.h>
 
 #if defined(HAVE_XPM) && defined(HAVE_X11_XPM_H)
 #include <X11/xpm.h>
 #endif
 
+// X bitmaps
+#include "ddd.xbm"
+#include "dddlogo.xbm"
+#include "dddmask.xbm"
+
+// X pixmaps
+#ifdef XpmVersion
+#include "ddd.xpm"
+#include "dddlogo.xpm"
+#endif
+
+#include <iostream.h>
+#include <X11/Xlib.h>
+#include <Xm/Xm.h>
+
 //-----------------------------------------------------------------------------
 // DDD logo
 //-----------------------------------------------------------------------------
+
+#ifdef XpmVersion
+
+#ifndef XpmSuccess
+#define XpmSuccess       0
+#endif
+#ifndef XpmColorError
+#define XpmColorError    1
+#endif
+#ifndef XpmOpenFailed
+#define XpmOpenFailed   -1
+#endif
+#ifndef XpmFileInvalid
+#define XpmFileInvalid  -2
+#endif
+#ifndef XpmNoMemory
+#define XpmNoMemory     -3
+#endif
+#ifndef XpmColorFailed
+#define XpmColorFailed  -4
+#endif
+
+static int xpm(String name, int ret)
+{
+    if (ret != XpmSuccess)
+    {
+	cerr << "XPM: " << name << ": ";
+	switch (ret)
+	{
+	case XpmColorError:
+	    cerr << "warning: failed to allocate some color\n";
+	    ret = XpmSuccess;	// ignore
+	    break;
+
+	case XpmOpenFailed:
+	    cerr << "could not open file\n";
+	    break;
+
+	case XpmFileInvalid:
+	    cerr << "could not parse file\n";
+	    break;
+	    
+	case XpmNoMemory:
+	    cerr << "insufficient working storage\n";
+	    break;
+
+	case XpmColorFailed:
+	    cerr << "no color found\n";
+	    break;
+
+	default:
+	    cerr << "error " << ret << "\n";
+	    break;
+	}
+    }
+
+    return ret;
+}
+#endif
 
 // Return pixmaps suitable for icons on the root window
 Pixmap iconlogo(Widget w)
 {
     Window root = RootWindowOfScreen(XtScreen(w));
     Pixmap icon  = 0;
-
-    (void) ddd_xpm;		// use it
 
 #ifdef XpmVersion
     // Try XPM file
@@ -70,11 +136,12 @@ Pixmap iconlogo(Widget w)
     attr.colormap = root_attr.colormap;
     attr.depth    = root_attr.depth;
         
-    int ret = XpmCreatePixmapFromData(XtDisplay(w), root,
-				      ddd_xpm, &icon, (Pixmap *)0, &attr);
+    int ret = xpm("ddd.xpm", 
+		  XpmCreatePixmapFromData(XtDisplay(w), root,
+					  ddd_xpm, &icon, (Pixmap *)0, &attr));
     XpmFreeAttributes(&attr);
 
-    if (ret >= 0)
+    if (ret == XpmSuccess)
 	return icon;
 
     if (icon != 0)
@@ -105,7 +172,7 @@ Pixmap iconmask(Widget w)
 				 dddmask_width, dddmask_height);
 }
 
-// Return pixmaps suitable for the widget W
+// Return a small DDD logo suitable for the widget W
 Pixmap versionlogo(Widget w)
 {
     Pixel foreground, background;
@@ -133,11 +200,12 @@ Pixmap versionlogo(Widget w)
     attr.colorsymbols = &cs;
     attr.numsymbols   = 1;
         
-    int ret = XpmCreatePixmapFromData(XtDisplay(w), XtWindow(w),
-				      ddd_xpm, &logo, (Pixmap *)0, &attr);
+    int ret = xpm("ddd.xpm",
+		  XpmCreatePixmapFromData(XtDisplay(w), XtWindow(w),
+					  ddd_xpm, &logo, (Pixmap *)0, &attr));
     XpmFreeAttributes(&attr);
 
-    if (ret >= 0)
+    if (ret == XpmSuccess)
 	return logo;
 
     if (logo != 0)
@@ -147,9 +215,57 @@ Pixmap versionlogo(Widget w)
 
     int depth = PlanesOfScreen(XtScreen(w));
     logo = XCreatePixmapFromBitmapData(XtDisplay(w), XtWindow(w),
-				    ddd_bits, ddd_width, ddd_height,
-				    foreground, background,
-				    depth);
+				       ddd_bits, ddd_width, ddd_height,
+				       foreground, background,
+				       depth);
 
+    return logo;
+}
+
+// Return a DDD logo suitable for the widget W
+Pixmap dddlogo(Widget w)
+{
+    Pixel foreground, background;
+
+    XtVaGetValues(w,
+		  XmNforeground, &foreground,
+		  XmNbackground, &background,
+		  NULL);
+    Pixmap logo = 0;
+
+    int depth = PlanesOfScreen(XtScreen(w));
+
+    if (depth > 1)
+    {
+#ifdef XpmVersion
+	XWindowAttributes win_attr;
+	XGetWindowAttributes(XtDisplay(w), XtWindow(w), &win_attr);
+
+	XpmAttributes attr;
+	attr.valuemask    = XpmVisual | XpmColormap | XpmDepth;
+	attr.visual       = win_attr.visual;
+	attr.colormap     = win_attr.colormap;
+	attr.depth        = win_attr.depth;
+        
+	int ret = xpm("dddlogo.xpm",
+		      XpmCreatePixmapFromData(XtDisplay(w), XtWindow(w),
+					      dddlogo_xpm, &logo, 
+					      (Pixmap *)0, &attr));
+	XpmFreeAttributes(&attr);
+
+	if (ret == XpmSuccess)
+	    return logo;
+
+	if (logo != 0)
+	    XFreePixmap(XtDisplay(w), logo);
+	logo = 0;
+#endif
+    }
+
+    logo = XCreatePixmapFromBitmapData(XtDisplay(w), XtWindow(w),
+				       dddlogo_bits,
+				       dddlogo_width, dddlogo_height,
+				       foreground, background,
+				       depth);
     return logo;
 }

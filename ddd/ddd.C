@@ -329,6 +329,11 @@ static bool have_decorated_transients();
 // Set `Settings' title
 static void set_settings_title(Widget w);
 
+// Popup DDD logo upon start-up.
+static void popup_startup_logo(Widget parent);
+static void popdown_startup_logo();
+
+
 //-----------------------------------------------------------------------------
 // Xt Stuff
 //-----------------------------------------------------------------------------
@@ -936,6 +941,17 @@ static MMDesc debugger_menu [] =
     MMEnd
 };
 
+static Widget set_startup_logo_w;
+static Widget set_no_startup_logo_w;
+static MMDesc startup_logo_menu [] = 
+{
+    { "logo",   MMToggle, { dddSetStartupLogoCB, XtPointer(True) },
+      NULL, &set_startup_logo_w },
+    { "no_logo", MMToggle, { dddSetStartupLogoCB, XtPointer(False) },
+      NULL, &set_no_startup_logo_w },
+    MMEnd
+};
+
 static MMDesc startup_preferences_menu [] =
 {
     { "windows",         MMRadioPanel, MMNoCB, window_mode_menu },
@@ -944,6 +960,7 @@ static MMDesc startup_preferences_menu [] =
     { "keyboardFocus",   MMRadioPanel, MMNoCB, keyboard_focus_menu },
     { "dataScrolling",   MMRadioPanel, MMNoCB, data_scrolling_menu },
     { "debugger",        MMRadioPanel, MMNoCB, debugger_menu },
+    { "showStartupLogo", MMRadioPanel, MMNoCB, startup_logo_menu },
     MMEnd
 };
 
@@ -1484,6 +1501,7 @@ int main(int argc, char *argv[])
 				ddd_resources, ddd_resources_size,
 				NULL);
 
+
 #if XtSpecificationRelease >= 6
     // Synchronize SESSION_ID and APP_DATA.session
     session_id = 0;
@@ -1495,6 +1513,8 @@ int main(int argc, char *argv[])
     if (app_data.session == 0)
 	app_data.session = DEFAULT_SESSION;
     session_id = app_data.session;
+
+    // From this point on, APP_DATA is valid.
 
     // Create new session dir if needed
     create_session_dir(app_data.session, messages);
@@ -1564,6 +1584,14 @@ int main(int argc, char *argv[])
 	|| app_data.show_manual
 	|| app_data.show_license)
 	return EXIT_SUCCESS;
+
+    // From this point on, we'll be running under X.
+    Boolean iconic;
+    XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
+
+    // Show startup logo
+    if (!iconic && app_data.show_startup_logo)
+	popup_startup_logo(toplevel);
 
     // Warn for incompatible `Ddd' and `~/.ddd/init' files
     if (app_data.app_defaults_version == 0)
@@ -1672,14 +1700,7 @@ int main(int argc, char *argv[])
 	    verify(XtAppCreateShell(NULL, DDD_CLASS_NAME,
 				    applicationShellWidgetClass,
 				    XtDisplay(toplevel), args, arg));
-	
-#if XtSpecificationRelease >= 6
-	// The old top-level shell is still needed for session
-	// management, but is never realized.
-#else
-	// The old top-level shell is no longer needed
-	XtDestroyWidget(toplevel);
-#endif
+
 	// From now on, use the command shell as parent
 	toplevel = command_shell;
     }
@@ -1701,6 +1722,7 @@ int main(int argc, char *argv[])
 		      XtEventHandler(_XEditResCheckMessages), NULL);
 #endif
 
+    // From this point on, we have a true top-level window.
 
     // Create main window
     Widget main_window = 
@@ -2048,6 +2070,9 @@ int main(int argc, char *argv[])
     set_settings_title(source_edit_menu[EditItems::Settings].widget);
     set_settings_title(data_edit_menu[EditItems::Settings].widget);
 
+    // The logo is no longer needed now
+    popdown_startup_logo();
+
     // Realize all top-level widgets
     XtRealizeWidget(command_shell);
     Delay::register_shell(command_shell);
@@ -2121,7 +2146,6 @@ int main(int argc, char *argv[])
     update_infos();
 
     // Startup shells
-    Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
     if (iconic)
     {
@@ -2640,6 +2664,13 @@ static Boolean delete_init_delay_if_idle(XtPointer)
 
 static Boolean ddd_setup_done(XtPointer)
 {
+    if (app_data.session == DEFAULT_SESSION)
+    {
+	// Clear delay now
+	delete init_delay;
+	init_delay = 0;
+    }
+
     if (emptyCommandQueue() && gdb->isReadyWithPrompt())
     {
 	// Some WMs have trouble with early decorations.  Just re-decorate.
@@ -2656,13 +2687,19 @@ static Boolean ddd_setup_done(XtPointer)
 	DispBox::init_vsllib(process_pending_events);
 	DataDisp::refresh_graph_edit();
 
-	// Clear delay when idle again
-	XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
-			 delete_init_delay_if_idle, 0);
+	if (init_delay != 0)
+	{
+	    // Restoring session may still take time
+	    XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
+			     delete_init_delay_if_idle, 0);
+	}
+
 	return True;		// Remove from the list of work procs
     }
-
-    return False;		// Keep on processing the command queue
+    else
+    {
+	return False;		// Keep on processing the command queue
+    }
 }
 
 
@@ -2838,6 +2875,9 @@ void update_options()
     set_toggle(set_debugger_gdb_w, type == GDB);
     set_toggle(set_debugger_dbx_w, type == DBX);
     set_toggle(set_debugger_xdb_w, type == XDB);
+
+    set_toggle(set_startup_logo_w,    app_data.show_startup_logo);
+    set_toggle(set_no_startup_logo_w, !app_data.show_startup_logo);
 
     if (app_data.cache_source_files != source_view->cache_source_files)
     {
@@ -3099,7 +3139,13 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_debugger_gdb_w, type == GDB);
     notify_set_toggle(set_debugger_dbx_w, type == DBX);
     notify_set_toggle(set_debugger_xdb_w, type == XDB);
+
+    notify_set_toggle(set_startup_logo_w,
+		      initial_app_data.show_startup_logo);
+    notify_set_toggle(set_no_startup_logo_w, 
+		      !initial_app_data.show_startup_logo);
 }
+
 
 bool startup_preferences_changed()
 {
@@ -3120,7 +3166,8 @@ bool startup_preferences_changed()
 	|| focus_policy != initial_focus_policy
 	|| app_data.panned_graph_editor != initial_app_data.panned_graph_editor
 	|| debugger_type(app_data.debugger) 
-	    != debugger_type(initial_app_data.debugger);
+  	      != debugger_type(initial_app_data.debugger)
+	|| app_data.show_startup_logo != initial_app_data.show_startup_logo;
 }
 
 static void ResetPreferencesCB(Widget w, XtPointer client_data, 
@@ -4597,6 +4644,56 @@ static bool have_decorated_transients()
     // If the window manager frame is more than 5 pixels larger than
     // the shell window, assume the shell is decorated.
     return frame_attributes.height - shell_attributes.height > 5;
+}
+
+//-----------------------------------------------------------------------------
+// Startup Logo
+//-----------------------------------------------------------------------------
+
+static Widget logo_shell = 0;
+
+static void popdown_startup_logo()
+{
+    if (logo_shell != 0)
+    {
+	popdown_shell(logo_shell);
+	DestroyWhenIdle(logo_shell);
+	logo_shell = 0;
+    }
+}
+
+static void popup_startup_logo(Widget parent)
+{
+    popdown_startup_logo();
+
+    Arg args[10];
+    int arg = 0;
+    XtSetArg(args[arg], XmNallowShellResize, True); arg++;
+    XtSetArg(args[arg], XmNborderWidth, 0); arg++;
+    logo_shell = XtCreatePopupShell("logo_shell", overrideShellWidgetClass, 
+				    parent, args, arg);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNlabelType, XmPIXMAP); arg++;
+    XtSetArg(args[arg], XmNallowResize, True); arg++;
+    Widget logo = XmCreateLabel(logo_shell, "logo", args, arg);
+    XtManageChild(logo);
+    XtRealizeWidget(logo_shell);
+
+    Pixmap pixmap = dddlogo(logo);
+    XtVaSetValues(logo, XmNlabelPixmap, pixmap, NULL);
+
+
+    Dimension width, height;
+    XtVaGetValues(logo_shell, XmNwidth, &width, XmNheight, &height, NULL);
+
+    int x = (WidthOfScreen(XtScreen(logo_shell)) - width) / 2;
+    int y = (HeightOfScreen(XtScreen(logo_shell)) - height) / 2;
+
+    XtVaSetValues(logo_shell, XmNx, x, XmNy, y, NULL);
+
+    popup_shell(logo_shell);
+    wait_until_mapped(logo, logo_shell);
 }
 
 

@@ -1121,6 +1121,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNshowStartupLogo,
+	XtCShowStartupLogo,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, show_startup_logo),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,
