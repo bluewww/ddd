@@ -534,7 +534,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 	    // Show hex value as well.  We don't do a local
 	    // conversion here, but ask GDB instead, since the hex
 	    // format may be language-dependent.
-	    string hextip = gdbValue("/x " + expr);
+	    string hextip = gdbValue("/x " + name);
 	    if (hextip != NO_GDB_ANSWER)
 		tip = hextip + " (" + tip + ")";
 	}
