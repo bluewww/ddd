@@ -322,11 +322,7 @@ dnl If we already have -liberty, -ltermcap, etc.,
 dnl there is no need to build them.
 ddd_have_termcap=false
 ddd_have_libiberty=false
-ddd_have_rx=false
 ddd_have_readline=false
-dnl
-dnl By default, DDD needs no RX library.
-ddd_have_rx=true
 dnl
 dnl check for ncurses
 ncurses_includes=
@@ -462,9 +458,6 @@ dnl
 dnl
 if test "$ddd_have_readline" != true; then
     AC_CONFIG_SUBDIRS([readline])
-fi
-if test "$ddd_have_rx" != true; then
-    AC_CONFIG_SUBDIRS([librx])
 fi
 if test "$ddd_have_libiberty" != true; then
     AC_CONFIG_SUBDIRS([libiberty])
@@ -781,7 +774,7 @@ dnl
 dnl
 AC_HEADER_STDC
 AC_CHECK_HEADERS(alloca.h fcntl.h limits.h locale.h malloc.h netdb.h pwd.h)
-AC_CHECK_HEADERS(regex.h rx.h libelf.h elf.h sys/elf.h stdlib.h)
+AC_CHECK_HEADERS(libelf.h elf.h sys/elf.h stdlib.h)
 AC_CHECK_HEADERS(string.h strings.h stropts.h termio.h termios.h unistd.h)
 AC_CHECK_HEADERS(sys/ioctl.h sys/int_types.h sys/param.h sys/resource.h)
 AC_CHECK_HEADERS(sys/stat.h sys/stropts.h sys/vty.h sys/sysmacros.h sys/core.h)
@@ -803,12 +796,6 @@ dnl ICE_CHECK_FROZEN_OSTRSTREAMBUF
 dnl ICE_CHECK_FREEZE_OSTRSTREAM
 dnl ICE_CHECK_FROZEN_OSTRSTREAM
 dnl ICE_OSTRSTREAM_PCOUNT_BROKEN
-ICE_TYPE_REGEX_T
-dnl
-dnl The regexec() check fails with SGI CC.  Use the C compiler instead.
-AC_LANG_PUSH(C)
-ICE_REGCOMP_BROKEN
-AC_LANG_POP(C)
 dnl
 LIBS="$ice_save_LIBS"
 AC_CHECK_LIB(m, hypot)
@@ -965,17 +952,25 @@ ICE_CHECK_MAXPATHLEN
 LIBS="$ice_save_LIBS"
 dnl
 dnl
-dnl Check for a POSIX.2 regcomp()/regexec() library
-LIBRX="../librx/librx.a"
-if test "$ice_have_regcomp" = yes && test "$ice_have_regexec" = yes && test "$ice_cv_regcomp_broken" = no; then
-dnl No need to use the GNU regcomp() library - there's one in the system
-LIBRX=""
-fi
-AC_SUBST(LIBRX)
 dnl
 dnl
 dnl As of DDD 2.2, we don't need all this RX stuff, but use
 dnl a LEX-generated scanner for regexps.
+dnl
+dnl ICE_TYPE_REGEX_T
+dnl dnl The regexec() check fails with SGI CC.  Use the C compiler instead.
+dnl AC_LANG_PUSH(C)
+dnl ICE_REGCOMP_BROKEN
+dnl AC_LANG_POP(C)
+dnl
+dnl Check for a POSIX.2 regcomp()/regexec() library
+dnl if test "$ice_have_regcomp" != yes || test "$ice_have_regexec" != yes || test "$ice_cv_regcomp_broken" != no; then
+dnl dnl No need to use the GNU regcomp() library - there's one in the system
+dnl   AC_MSG_ERROR([$DDD requires a regcomp()/regexec() library.])
+dnl fi
+dnl
+LIBRX=""
+AC_SUBST(LIBRX)
 dnl
 AC_DEFINE(WITH_RUNTIME_REGEX, 0,
 [Define if you want support for runtime-compiled regexps. Required
