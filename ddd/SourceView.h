@@ -353,11 +353,17 @@ class SourceView {
     // Glyphs
     //-----------------------------------------------------------------------
 
+    // Create glyph in FORM_W named NAME from given BITS
     static Widget create_glyph(Widget form_w, String name, 
 			       char *bits, int width, int height);
+
+    // Map glyph W in (X, Y)
     static void map_glyph(Widget& w, Position x, Position y);
+
+    // Unmap glyph W
     static void unmap_glyph(Widget w);
 
+public:
     // Horizontal arrow offset (pixels)
     static int arrow_x_offset;
 
@@ -367,6 +373,7 @@ class SourceView {
     // Additional offset for multiple breakpoints (pixels)
     static int multiple_stop_x_offset;
 
+private:
     // Glyph locations: x[0] is source, x[1] is code
     static Widget plain_arrows[2];
     static Widget grey_arrows[2];
@@ -392,6 +399,12 @@ class SourceView {
     static void update_glyphs_now();
     static void UpdateGlyphsWorkProc(XtPointer, XtIntervalId *);
     static Boolean CreateGlyphsWorkProc(XtPointer);
+
+    // If false, don't change glyphs - just check if they would change
+    static bool change_glyphs;
+
+    // True if glyphs changed (or would change)
+    static bool glyphs_changed;
 
 public:
     // Constructor

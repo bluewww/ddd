@@ -4876,7 +4876,7 @@ const int motif_offset = 1;  // Motif 2.0 adds a 1 pixel border around glyphs
 const int motif_offset = 0;  // Motif 1.x does not
 #endif
 
-// Create glyph for text
+// Create glyph in FORM_W named NAME from given BITS
 Widget SourceView::create_glyph(Widget form_w,
 				String name,
 				char *bits, int width, int height)
@@ -4965,6 +4965,14 @@ int SourceView::line_height(Widget text_w)
     return height;
 }
 
+
+// If false, don't change glyphs - just check if they would change
+bool SourceView::change_glyphs = true;
+
+// True if glyphs changed (or would change)
+bool SourceView::glyphs_changed = false;
+
+// Unmap glyph W
 void SourceView::unmap_glyph(Widget w)
 {
     if (w == 0)
@@ -4977,10 +4985,16 @@ void SourceView::unmap_glyph(Widget w)
     if (user_data == 0)
 	return;			// Already unmapped
 
-    XtUnmapWidget(w);
-    XtVaSetValues(w, XmNuserData, XtPointer(0), NULL);
+    if (change_glyphs)
+    {
+	XtUnmapWidget(w);
+	XtVaSetValues(w, XmNuserData, XtPointer(0), NULL);
+    }
+
+    glyphs_changed = true;
 }
 
+// Map glyph W in (X, Y)
 void SourceView::map_glyph(Widget& w, Position x, Position y)
 {
     while (w == 0)
@@ -5021,13 +5035,21 @@ void SourceView::map_glyph(Widget& w, Position x, Position y)
     y += -glyph_height + line_height(text_w) / 2 - 2;
 
     if (x != old_x || y != old_y)
-	XtVaSetValues(w, XmNleftOffset, x, XmNtopOffset, y, NULL);
+    {
+	if (change_glyphs)
+	    XtVaSetValues(w, XmNleftOffset, x, XmNtopOffset, y, NULL);
+	glyphs_changed = true;
+    }
 
     if (user_data != 0)
 	return;			// Already mapped
 
-    XtMapWidget(w);
-    XtVaSetValues(w, XmNuserData, XtPointer(1), NULL);
+    if (change_glyphs)
+    {
+	XtMapWidget(w);
+	XtVaSetValues(w, XmNuserData, XtPointer(1), NULL);
+    }
+    glyphs_changed = true;
 }
 
 
@@ -5137,6 +5159,8 @@ Widget SourceView::grey_arrows[2]   = {0, 0};
 Widget SourceView::signal_arrows[2] = {0, 0};
 Widget SourceView::plain_stops[2][MAX_GLYPHS + 1];
 Widget SourceView::grey_stops[2][MAX_GLYPHS + 1];
+
+
 
 // Create glyphs in the background
 Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
@@ -5329,33 +5353,44 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
     XtAppContext app_context = XtWidgetToApplicationContext(source_text_w);
     if (XtAppPending(app_context) & (XtIMXEvent | XtIMAlternateInput))
     {
-	// Other events pending - unmap all glyphs and try again in 10ms
-	for (int k = 0; k < 2; k++)
+	// Other events pending - check if we shall change something
+
+	glyphs_changed = false;
+	change_glyphs  = false;
+	update_glyphs_now();
+	change_glyphs  = true;
+
+	if (glyphs_changed)
 	{
-	    if (k == 0 && !update_source_glyphs)
-		continue;
-	    if (k == 1 && !update_code_glyphs)
-		continue;
-
-	    unmap_glyph(plain_arrows[k]);
-	    unmap_glyph(grey_arrows[k]);
-	    unmap_glyph(signal_arrows[k]);
-
-	    for (int i = 0; i < MAX_GLYPHS; i++)
+	    // Change is imminent - unmap all glyphs and try again in 10ms
+	    for (int k = 0; k < 2; k++)
 	    {
-		unmap_glyph(plain_stops[k][i]);
-		unmap_glyph(grey_stops[k][i]);
-	    }
-	}
+		if (k == 0 && !update_source_glyphs)
+		    continue;
+		if (k == 1 && !update_code_glyphs)
+		    continue;
 
-	XtIntervalId new_id = 
-	    XtAppAddTimeOut(app_context, 10,
-			    UpdateGlyphsWorkProc, client_data);
-	if (proc_id != 0)
-	    *proc_id = new_id;
-	return;
+		unmap_glyph(plain_arrows[k]);
+		unmap_glyph(grey_arrows[k]);
+		unmap_glyph(signal_arrows[k]);
+
+		for (int i = 0; i < MAX_GLYPHS; i++)
+		{
+		    unmap_glyph(plain_stops[k][i]);
+		    unmap_glyph(grey_stops[k][i]);
+		}
+	    }
+
+	    XtIntervalId new_id = 
+		XtAppAddTimeOut(app_context, 10,
+				UpdateGlyphsWorkProc, client_data);
+	    if (proc_id != 0)
+		*proc_id = new_id;
+	    return;
+	}
     }
 
+    change_glyphs = true;
     update_glyphs_now();
 }
 
@@ -5454,8 +5489,11 @@ void SourceView::update_glyphs_now()
 	    unmap_glyph(w);
     }
 
-    update_source_glyphs = false;
-    update_code_glyphs   = false;
+    if (change_glyphs)
+    {
+	update_source_glyphs = false;
+	update_code_glyphs   = false;
+    }
 
     // clog << "done.\n";
 }
