@@ -2102,8 +2102,38 @@ static void command_completed(void *data)
 // Fetch display numbers from ARG into NUMBERS
 static bool read_displays(string arg, IntArray& numbers, bool verbose)
 {
+    IntArray displays;
+    data_disp->get_all_display_numbers(displays);
+
     while (has_nr(arg))
-	numbers += atoi(read_nr_str(arg));
+    {
+	string number = read_nr_str(arg);
+	int nr = atoi(number);
+	bool found = false;
+	for (int i = 0; !found && i < displays.size(); i++)
+	{
+	    if (displays[i] == nr)
+	    {
+		// Found a display with this number
+		numbers += nr;
+		found = true;
+	    }
+	}
+
+	if (!found)
+	{
+	    int disp_nr = data_disp->display_number(number, false);
+	    if (disp_nr != 0)
+	    {
+		// Found a display with this name
+		numbers += disp_nr;
+		found = true;
+	    }
+	}
+
+	if (!found)
+	    numbers += nr;	// Use given (probably invalid) display number
+    }
 
     strip_space(arg);
     if (arg != "")
