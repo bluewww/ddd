@@ -1552,7 +1552,8 @@ static void command_completed(void *data)
     bool verbose   = cmd_data->user_verbose;
     bool do_prompt = cmd_data->user_prompt;
 
-    undo_buffer.set_source(cmd_data->command);
+    if (verbose)		// We only undo visible commands
+	undo_buffer.set_source(cmd_data->command);
 
     string answer = "";
     if (pos_buffer)
