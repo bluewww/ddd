@@ -130,6 +130,9 @@ bool is_graph_cmd(const string& cmd);
 // True if CMD is an internal `graph refresh' command.
 bool is_refresh_cmd(const string& cmd);
 
+// True if CMD is some other builtin (not user-defined) command.
+bool is_other_builtin_cmd(const string& cmd, GDBAgent *gdb);
+
 // Return the string after a `display' command.
 string get_display_expression(const string& cmd);
 

@@ -425,6 +425,14 @@ bool is_quit_cmd (const string& cmd)
     return cmd.contains('q', 0); // `quit', `q', or whatever
 }
 
+// True if CMD is some other builtin command
+bool is_other_builtin_cmd(const string& cmd, GDBAgent *gdb)
+{
+    return cmd.contains(gdb->print_command("", true), 0) ||
+	cmd.contains(gdb->print_command("", false), 0);
+}
+
+
 // Fetch display expression from DISPLAY_CMD
 string get_display_expression (const string& display_cmd)
 {

@@ -917,6 +917,10 @@ void send_gdb_command(string cmd, Widget origin,
 	plus_cmd_data->break_arg = get_break_expression(cmd);
 	plus_cmd_data->refresh_breakpoints = true;
     }
+    else if (is_other_builtin_cmd(cmd, gdb))
+    {
+	// Some other built-in command -- nothing special
+    }
     else if (is_defined_cmd(cmd))
     {
 	// User-defined command -- refresh everything
