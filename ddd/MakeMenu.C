@@ -40,6 +40,7 @@ char MakeMenu_rcsid[] =
 #include <Xm/ToggleB.h>
 #include <Xm/CascadeB.h>
 #include <Xm/Separator.h>
+#include <Xm/Scale.h>
 #include <Xm/Label.h>
 
 #include "MakeMenu.h"
@@ -63,8 +64,8 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	MMDesc *subitems        = item->items;
 
 	char subMenuName[200];
-	Widget subMenu  = 0;
 	char panelName[200];
+	Widget subMenu  = 0;
 	Widget label    = 0;
 
 	switch(type & MMTypeMask) 
@@ -159,6 +160,14 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 			  XmNorientation, XmHORIZONTAL,
 			  NULL);
 	    XtManageChild(subMenu);
+	    break;
+
+	case MMScale:
+	    // Create a scale
+	    assert(subitems == 0);
+
+	    arg = 0;
+	    widget = verify(XmCreateScale(shell, name, args, arg));
 	    break;
 
 	case MMSeparator:
@@ -344,6 +353,7 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 	break;
 
     case MMToggle:
+    case MMScale:
 	if (callback.callback != 0)
 	    XtAddCallback(widget, 
 			  XmNvalueChangedCallback,

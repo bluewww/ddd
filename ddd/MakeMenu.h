@@ -43,6 +43,7 @@ const MMType MMRadioMenu  = 5;	// create CascadeButton with RadioBox menu
 const MMType MMOptionMenu = 6;  // create an option menu
 const MMType MMPanel      = 7;  // create a panel
 const MMType MMRadioPanel = 8;  // create a panel with RadioBox menu
+const MMType MMScale      = 9;  // create a scale
 
 const MMType MMTypeMask  = 15;	// mask to find type
 
@@ -61,12 +62,12 @@ const MMAttr MMAttrMask    = ~MMTypeMask;
 // Description data structure
 
 struct MMDesc {
-    String name;		 // widget name
-    MMType type;		 // widget type
-    XtCallbackRec callback;	 // associated callback
-    MMDesc *items;		 // submenus (NULL if none)
-    Widget *widgetptr;           // where to store the resulting widget
-    Widget widget;		 // the resulting widget
+    String name;		 // Widget name
+    MMType type;		 // Widget type
+    XtCallbackRec callback;	 // Associated callback
+    MMDesc *items;		 // Submenus (NULL if none)
+    Widget *widgetptr;           // Where to store the resulting widget
+    Widget widget;		 // The resulting widget
 };
 
 
