@@ -86,6 +86,9 @@ void BoxGraphNode::_print(ostream& os, const GraphGC& gc) const
 // MARK is a MarkBox in SRC.  Find equivalent box in DUP.
 MarkBox *BoxGraphNode::find_mark(Box *dup, Box *src, Box *mark)
 {
+    if (mark == 0)
+	return 0;
+
     if (src == mark)
     {
 	MarkBox *dup_mb = ptr_cast(MarkBox, dup);
