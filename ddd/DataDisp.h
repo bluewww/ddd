@@ -91,6 +91,7 @@ class DataDisp {
     // Button callbacks
     //-----------------------------------------------------------------------
     static void dereferenceCB           (Widget, XtPointer, XtPointer);
+    static void dereferenceArgCB        (Widget, XtPointer, XtPointer);
     static void toggleDetailCB          (Widget, XtPointer, XtPointer);
     static void toggleRotateCB          (Widget, XtPointer, XtPointer);
     static void toggleDisableCB         (Widget, XtPointer, XtPointer);
@@ -103,6 +104,7 @@ class DataDisp {
     static void showMoreDetailCB        (Widget, XtPointer, XtPointer);
     static void hideDetailCB            (Widget, XtPointer, XtPointer);
     static void dependentCB             (Widget, XtPointer, XtPointer);
+    static void dependentArgCB          (Widget, XtPointer, XtPointer);
     static void setCB                   (Widget, XtPointer, XtPointer);
     static void shortcutCB              (Widget, XtPointer, XtPointer);
 

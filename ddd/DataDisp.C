@@ -223,11 +223,11 @@ struct CmdItms { enum Itms {New, Dereference, Detail, Rotate, Set, Delete }; };
 
 MMDesc DataDisp::graph_cmd_area[] =
 {
-    {"new",           MMPush,                 {DataDisp::dependentCB},
+    {"new",           MMPush,                 {DataDisp::dependentArgCB},
                                                DataDisp::shortcut_menu },
-    {"dereference",   MMPush | MMInsensitive, {DataDisp::dereferenceCB}},
+    {"dereference",   MMPush | MMInsensitive, {DataDisp::dereferenceArgCB}},
     {"detail",        MMPush | MMInsensitive, {DataDisp::toggleDetailCB,
-					       XtPointer(-1)}, 
+					       XtPointer(-1)},
                                                DataDisp::detail_menu },
     {"rotate",        MMPush | MMInsensitive, {DataDisp::rotateCB},
                                                DataDisp::rotate_menu },
@@ -404,6 +404,18 @@ void DataDisp::dereferenceCB(Widget w, XtPointer client_data,
     disp_node_arg->refresh();
 
     new_display(display_expression, 0, itostring(disp_node_arg->disp_nr()), w);
+}
+
+void DataDisp::dereferenceArgCB(Widget w, XtPointer client_data, 
+				XtPointer call_data)
+{
+    if (selected_value() != 0)
+    {
+	dereferenceCB(w, client_data, call_data);
+	return;
+    }
+
+    new_display(gdb->dereferenced_expr(source_arg->get_string()), 0, "", w);
 }
 
 void DataDisp::toggleDetailCB(Widget dialog, XtPointer client_data, XtPointer)
@@ -833,7 +845,6 @@ void DataDisp::shortcutCB(Widget w, XtPointer client_data, XtPointer)
     string expr = shortcut_exprs[number];
 
     string depends_on = "";
-
     DispNode *disp_node_arg   = selected_node();
     DispValue *disp_value_arg = selected_value();
     if (disp_node_arg != 0 
@@ -841,14 +852,15 @@ void DataDisp::shortcutCB(Widget w, XtPointer client_data, XtPointer)
 	&& !disp_node_arg->nodeptr()->hidden())
     {
 	depends_on = itostring(disp_node_arg->disp_nr());
-	string arg = source_arg->get_string();
-
-	// Avoid multiple /format specifications
-	if (arg.contains('/', 0) && expr.contains('/', 0))
-	    arg = arg.after(rxwhite);
-
-	expr.gsub("()", arg);
     }
+	
+    string arg = source_arg->get_string();
+
+    // Avoid multiple /format specifications
+    if (arg.contains('/', 0) && expr.contains('/', 0))
+	arg = arg.after(rxwhite);
+
+    expr.gsub("()", arg);
 
     new_display(expr, 0, depends_on, w);
 }
@@ -1269,6 +1281,16 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
     info.display_expression = disp_value_arg->full_name();
     XmTextSetString(info.text, info.display_expression);
     manage_and_raise(dependent_display_dialog);
+}
+
+void DataDisp::dependentArgCB(Widget w, XtPointer, XtPointer)
+{
+    string depends_on = "";
+    DispNode *disp_node_arg = selected_node();
+    if (disp_node_arg != 0)
+	depends_on = itostring(disp_node_arg->disp_nr());
+
+    new_display(source_arg->get_string(), 0, depends_on, w);
 }
 
 
@@ -1731,11 +1753,23 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	}
     }
 
+    // Argument
+    bool arg_ok = false;
+    if (disp_value_arg != 0)
+    {
+	arg_ok = true;
+    }
+    else
+    {
+	string arg = source_arg->get_string();
+	arg_ok = (arg != "") && (arg.contains("::") || !arg.contains(":"));
+    }
+
     // Dereference
     set_sensitive(node_popup[NodeItms::Dereference].widget,
 		  dereference_ok);
     set_sensitive(graph_cmd_area[CmdItms::Dereference].widget,
-		  dereference_ok);
+		  dereference_ok || (count.selected == 0 && arg_ok));
     set_sensitive(display_area[DisplayItms::Dereference].widget,
 		  dereference_ok);
 
@@ -1792,16 +1826,13 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  count.selected_expanded > 0);
 
     // Delete
-    set_sensitive(graph_cmd_area[CmdItms::Delete].widget, 
-		  count.selected > 0);
-    set_sensitive(display_area[DisplayItms::Delete].widget, 
-		  count.selected > 0);
+    set_sensitive(graph_cmd_area[CmdItms::Delete].widget,   count.selected > 0);
+    set_sensitive(display_area[DisplayItms::Delete].widget, count.selected > 0);
 
     // Set
-    bool have_set = gdb->has_assign_command() && 
-	count.selected == 1 && count.selected_data == 1;
-    set_sensitive(graph_cmd_area[CmdItms::Set].widget,   have_set);
-    set_sensitive(display_area[DisplayItms::Set].widget, have_set);
+    bool can_set = gdb->has_assign_command() && arg_ok;
+    set_sensitive(graph_cmd_area[CmdItms::Set].widget,   can_set);
+    set_sensitive(display_area[DisplayItms::Set].widget, can_set);
     set_sensitive(node_popup[NodeItms::Set].widget, gdb->has_assign_command());
 
     // Shortcut menu
@@ -1811,11 +1842,13 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	bool sens = false;
 	if (!expr.contains("()"))
 	    sens = true;	// Argument not needed
+	else if (arg_ok)
+	    sens = true;	// We have an argument
 	else if (count.selected == 0)
 	    sens = false;	// Nothing selected
-	else if (disp_value_arg)
+	else if (disp_value_arg != 0)
 	    sens = true;	// Exactly one value selected
-	else if (disp_node_arg)
+ 	else if (disp_node_arg != 0)
 	    sens = true;	// Exactly one expression selected
 
 	set_sensitive(shortcut_popup1[i].widget, sens);
@@ -4219,11 +4252,17 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     if (!gdb->has_assign_command())
 	return;
 
+    string name;
     DispValue *disp_value = selected_value();
-    if (disp_value == 0)
+    if (disp_value != 0)
+	name = disp_value->full_name();
+    else
+	name = source_arg->get_string();
+
+    bool can_set = (name != "") && (name.contains("::") || !name.contains(":"));
+    if (!can_set)
 	return;
 
-    const string& name = disp_value->full_name();
     string value = gdb_question(gdb->print_command(name));
     if (value == NO_GDB_ANSWER)
     {
@@ -4259,8 +4298,13 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 	XtUnmanageChild(XmSelectionBoxGetChild(set_dialog,
 					       XmDIALOG_APPLY_BUTTON));
 
-    XtAddCallback(set_dialog, XmNokCallback,     setDCB, disp_value);
-    XtAddCallback(set_dialog, XmNapplyCallback,  setDCB, disp_value);
+    String name_s = (String)XtNewString(name.chars());
+
+    // FIXME: NAME_S is not freed when the dialog is canceled
+    // FIXME: The dialog is not destroyed after OK
+
+    XtAddCallback(set_dialog, XmNokCallback,     setDCB, name_s);
+    XtAddCallback(set_dialog, XmNapplyCallback,  setDCB, name_s);
     XtAddCallback(set_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
     XtAddCallback(set_dialog, XmNcancelCallback, DestroyThisCB,
 		  (XtPointer)set_dialog);
@@ -4275,14 +4319,14 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 
 void DataDisp::setDCB(Widget set_dialog, XtPointer client_data, XtPointer)
 {
-    DispValue *disp_value = (DispValue *)client_data;
+    String name_s = (String)client_data;
+
     Widget text = XmSelectionBoxGetChild(set_dialog, XmDIALOG_TEXT);
     String value_s = XmTextGetString(text);
     string value(value_s);
     XtFree(value_s);
 
-    gdb_command(gdb->assign_command(disp_value->full_name(), value),
-		last_origin);
+    gdb_command(gdb->assign_command(name_s, value), last_origin);
 }
 
 
