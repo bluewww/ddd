@@ -149,9 +149,6 @@ extern XmTextPosition (*TextPosOfEvent)(Widget widget, XEvent *event);
 // Hook for displaying documentation
 extern void (*DisplayDocumentation)(const MString& doc);
 
-// Pixmap to display at ``help on version''
-extern Pixmap (*helpOnVersionPixmapProc)(Widget w);
-
 // Hook before help on context
 extern void (*PreHelpOnContextHook)(Widget w, XtPointer client_data, 
 				    XtPointer call_data);

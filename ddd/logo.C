@@ -136,15 +136,12 @@ static void add_color_key(XpmAttributes& attr, const string& color_key)
 }
 
 
-
 // Return pixmaps suitable for icons on the root window
-Pixmap iconlogo(Widget w)
+static Pixmap _iconlogo(Widget w)
 {
-    Window root = RootWindowOfScreen(XtScreen(w));
-    static Pixmap icon = 0;
-    if (icon != 0)
-	return icon;
+    Pixmap icon = 0;
 
+    Window root = RootWindowOfScreen(XtScreen(w));
 #ifdef XpmVersion
     if (app_data.color_wm_icons)
     {
@@ -186,7 +183,7 @@ Pixmap iconlogo(Widget w)
     return icon;
 }
 
-Pixmap iconmask(Widget w)
+static Pixmap _iconmask(Widget w)
 {
     // The bitmap mask is used for both the XPM and the XBM version.
     return XCreateBitmapFromData(XtDisplay(w),
@@ -195,58 +192,18 @@ Pixmap iconmask(Widget w)
 				 dddmask_width, dddmask_height);
 }
 
-// Return a small DDD logo suitable for the widget W
-Pixmap versionlogo(Widget w)
+Pixmap iconlogo(Widget w)
 {
-    static Pixmap logo = 0;
-    if (logo != 0)
-	return logo;
-
-    Pixel foreground, background;
-
-    assert(XtIsRealized(w));
-
-    XtVaGetValues(w,
-		  XmNforeground, &foreground,
-		  XmNbackground, &background,
-		  NULL);
-#ifdef XpmVersion
-    XWindowAttributes win_attr;
-    XGetWindowAttributes(XtDisplay(w), XtWindow(w), &win_attr);
-
-    XpmColorSymbol cs;
-    cs.name  = "Background";
-    cs.value = 0;
-    cs.pixel = background;
-
-    XpmAttributes attr;
-    attr.valuemask    = XpmVisual | XpmColormap | XpmDepth | XpmColorSymbols;
-    attr.visual       = win_attr.visual;
-    attr.colormap     = win_attr.colormap;
-    attr.depth        = win_attr.depth;
-    attr.colorsymbols = &cs;
-    attr.numsymbols   = 1;
-        
-    int ret = xpm("ddd.xpm", XpmCreatePixmapFromData(XtDisplay(w), XtWindow(w),
-						     ddd_xpm, &logo, 
-						     (Pixmap *)0, &attr));
-    XpmFreeAttributes(&attr);
-
-    if (ret == XpmSuccess)
-	return logo;
-
-    if (logo != 0)
-	XFreePixmap(XtDisplay(w), logo);
-    logo = 0;
-#endif // defined(XpmVersion)
-
-    int depth = PlanesOfScreen(XtScreen(w));
-    logo = XCreatePixmapFromBitmapData(XtDisplay(w), XtWindow(w),
-				       (char *)ddd_bits, ddd_width, ddd_height,
-				       foreground, background,
-				       depth);
-    return logo;
+    static Pixmap icon = _iconlogo(w);
+    return icon;
 }
+
+Pixmap iconmask(Widget w)
+{
+    static Pixmap icon = _iconmask(w);
+    return icon;
+}
+
 
 // Convert NAME into a color, using PIX as default
 static Pixel color(Widget w, String name, Pixel pixel)
@@ -397,7 +354,8 @@ static char get_sign(string& g)
 }
 
 static XImage *get_subimage(XImage *image, String geometry, 
-			    String name = "image", String resource = "geometry")
+			    String name = "image",
+			    String resource = "geometry")
 {
     if (geometry == 0)
     {
@@ -675,7 +633,7 @@ void install_icons(Widget shell, const string& color_key)
 
 
 //-----------------------------------------------------------------------
-// Set pixmap
+// Set pixmap and label
 //-----------------------------------------------------------------------
 
 void set_pixmap(Widget w, string image_name)

@@ -1512,6 +1512,9 @@ Ddd*license_popup.iconName:     DDD License
 Ddd*news_popup.title:           DDD News
 Ddd*news_popup.iconName:     	DDD News
 
+! Icons
+Ddd*help_popup.help.symbolPixmap: ddd
+
 ! Help on help.
 Ddd*help_popup.help*helpString: \
 @rm Welcome to DDD Help\!\n\

@@ -2193,9 +2193,6 @@ int main(int argc, char *argv[])
     promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
     XmTextSetInsertionPosition(gdb_w, messagePosition);
 
-    // Setup help pixmap
-    helpOnVersionPixmapProc = versionlogo;
-
     // Setup help hooks
     PreHelpOnContextHook = PreHelpOnContext;
     PostHelpOnItemHook   = PostHelpOnItem;

@@ -175,7 +175,6 @@ static XtResource doc_subresources[] = {
 
 static Widget help_dialog = 0;
 static Widget help_shell  = 0;
-static Pixmap help_pixmap = 0;
 
 static MString NoHelpText(Widget widget);
 static MString NoTipText(Widget widget, XEvent *event);
@@ -183,8 +182,7 @@ static MString NoDocumentationText(Widget widget, XEvent *event);
 static void _MStringHelpCB(Widget widget, 
 			   XtPointer client_data, 
 			   XtPointer call_data,
-			   bool help_on_help = false,
-			   Pixmap pixmap = 0);
+			   bool help_on_help = false);
 
 MString helpOnVersionExtraText;
 
@@ -446,13 +444,7 @@ void HelpOnVersionCB(Widget widget, XtPointer client_data, XtPointer call_data)
     MString text = get_help_on_version_string(shell);
     text += helpOnVersionExtraText;
 
-    // Get the pixmap
-    Pixmap pixmap = 0;
-    if (helpOnVersionPixmapProc)
-	pixmap = helpOnVersionPixmapProc(widget);
-
-    _MStringHelpCB(widget, XtPointer(text.xmstring()), call_data, 
-		   false, pixmap);
+    _MStringHelpCB(widget, XtPointer(text.xmstring()), call_data, false);
 
     // PostHelpOnItemHook(shell);
 }
@@ -499,7 +491,6 @@ MString (*DefaultDocumentationText)(Widget, XEvent *) = NoDocumentationText;
 XmTextPosition (*TextPosOfEvent)(Widget, XEvent *)    = NoTextPosOfEvent;
 
 
-Pixmap (*helpOnVersionPixmapProc)(Widget)    = 0;
 void (*DisplayDocumentation)(const MString&) = 0;
 
 void StringHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
@@ -517,8 +508,7 @@ void MStringHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 static void _MStringHelpCB(Widget widget, 
 			   XtPointer client_data, 
 			   XtPointer,
-			   bool help_on_help,
-			   Pixmap pixmap)
+			   bool help_on_help)
 {
     XmString text = (XmString)client_data;
 
@@ -530,24 +520,18 @@ static void _MStringHelpCB(Widget widget,
     if (shell == 0)
 	shell = widget;
 
-    if (help_dialog && (shell != help_shell || pixmap != help_pixmap))
+    if (help_dialog && (shell != help_shell))
     {
 	DestroyWhenIdle(help_dialog);
 	help_dialog = 0;
     }
 
     help_shell  = shell;
-    help_pixmap = pixmap;
 
     if (help_dialog == 0)
     {
 	// Build help_dialog
 	XtSetArg(args[arg], XmNdeleteResponse, XmUNMAP); arg++;
-
-	if (pixmap)
-	{
-	    XtSetArg(args[arg], XmNsymbolPixmap, pixmap); arg++;
-	}
 
 	help_dialog = 
 	    verify(XmCreateInformationDialog(shell, "help", args, arg));

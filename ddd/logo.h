@@ -44,9 +44,6 @@
 extern Pixmap iconlogo(Widget shell);
 extern Pixmap iconmask(Widget shell);
 
-// Return a small DDD logo suitable for the widget W
-extern Pixmap versionlogo(Widget shell);
-
 // Return the DDD splash screen.  COLOR_KEY indicates the XPM visual type.
 extern Pixmap dddsplash(Widget shell, const string& color_key = 'c');
 
