@@ -6,6 +6,10 @@ DDD 3.1.90 [beta release]
 
 DDD 3.1.90 is a pre-release of the upcoming DDD 3.2 (see below).
 
+*** Please note that some of the GNU resources (see below) are not
+*** installed at time of this writing.  You can report bugs to the old
+*** DDD address, `ddd-bugs@ips.cs.tu-bs.de'.
+
 
 DDD 3.2 [in beta testing]
 =========================
