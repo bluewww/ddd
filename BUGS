@@ -145,7 +145,6 @@ Volunteers for fixing these and other bugs are welcome!
     (Create a DispGraph::cluster() routine, like DispGraph::make_active()).
 
 322*Finish Plots:
-    - Show diagnostic if plot failed (`graph plot' command w/o numeric data)
     - Show diagnostic if Gnuplot as a whole failed
     - Add menu for printing
     - Add menu for line styles
@@ -164,6 +163,9 @@ Volunteers for fixing these and other bugs are welcome!
 333 Text character breakpoints are not displayed in empty lines
     with zero indentation.
 
-338 Occasionally, Undo displays bogus `Showing earlier state' messages.
+338 Occasionally, Undo gives bogus `Showing earlier state' messages.
 
-341 (Insert new bugs here)
+341 Start `ddd cxxtest', select `tree_test', hit `plot'.  Status line
+    contains bogus characters.
+
+342 (Insert new bugs here)

@@ -3249,6 +3249,21 @@ DispNode *DataDisp::new_data_node(const string& given_name,
     s.current = value.length();
 
     DispNode *dn = new DispNode(nr, title, scope, value, plotted);
+
+    if (plotted && dn->value()->can_plot() == 0)
+    {
+	post_gdb_message("Nothing to plot.", true, last_origin);
+
+	if (gdb->has_display_command())
+	{
+	    gdb_command("undisplay " + itostring(dn->disp_nr()), 
+			last_origin, OQCProc(0));
+	}
+
+	delete dn;
+	return 0;
+    }
+
     if (disabling_occurred)
     {
 	dn->disable();
@@ -3284,6 +3299,13 @@ DispNode *DataDisp::new_user_node(const string& name,
 
     DispNode *dn = new DispNode(nr, name, scope, answer, plotted);
     DispValue::value_hook = 0;
+
+    if (plotted && dn->value()->can_plot() == 0)
+    {
+	post_gdb_message("Nothing to plot.", true, last_origin);
+	delete dn;
+	return 0;
+    }
 
     open_data_window();
 
@@ -3458,9 +3480,10 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
     string ans = answer;
     DispNode *dn = new_user_node(info->display_expression, info->scope, 
 				 ans, info->plotted);
-    dn->constant() = info->constant;
     if (dn != 0)
     {
+	dn->constant() = info->constant;
+
 	// Insert into graph
 	int depend_nr = disp_graph->get_by_name(info->depends_on);
 	disp_graph->insert(dn->disp_nr(), dn, depend_nr);
@@ -3479,10 +3502,10 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
 	refresh_addr(dn);
 	refresh_graph_edit();
 	update_infos();
-    }
 
-    if (info->prompt)
-	prompt();
+	if (info->prompt)
+	    prompt();
+    }
 
     delete info;
 }
