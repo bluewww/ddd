@@ -78,6 +78,11 @@ char options_rcsid[] =
 #include <errno.h>
 #include <string.h>		// strerror
 
+#include <limits.h>
+#ifndef ARG_MAX
+#define ARG_MAX 4096
+#endif
+
 #include <signal.h>
 
 #if HAVE_PTRACE
@@ -1749,7 +1754,7 @@ bool save_options(unsigned long flags)
     }
     else
     {
-	char line[BUFSIZ];
+	char line[ARG_MAX + BUFSIZ];
 	while (is)
 	{
 	    line[0] = '\0';

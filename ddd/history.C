@@ -69,6 +69,7 @@ char history_rcsid[] =
 #include "verify.h"
 #include "wm.h"
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fstream.h>
@@ -76,6 +77,10 @@ char history_rcsid[] =
 #include <Xm/Text.h>
 #include <Xm/List.h>
 #include <Xm/SelectioB.h>
+
+#ifndef ARG_MAX
+#define ARG_MAX 4096
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -236,7 +241,9 @@ void load_history(const string& file)
 
     while (is)
     {
-	char _line[BUFSIZ];
+	// We accept lines up to a length of ARG_MAX (the maximum
+	// length of the ARGV argument passed to a program)
+	char _line[ARG_MAX + BUFSIZ];
 	_line[0] = '\0';
 
 	is.getline(_line, sizeof(_line));

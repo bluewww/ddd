@@ -36,6 +36,11 @@ char filetype_rcsid[] =
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <limits.h>
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 extern "C" {
 #include <sys/types.h>
 #include <unistd.h>
@@ -160,7 +165,7 @@ bool is_core_file(const string& file_name)
     FILE *fp = popen(cmd.chars(), "r");
     if (fp != NULL)
     {
-	char line[BUFSIZ];
+	char line[PATH_MAX];
 	fgets(line, sizeof(line), fp);
 	pclose(fp);
 

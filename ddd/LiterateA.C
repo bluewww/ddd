@@ -54,6 +54,12 @@ extern "C" int fcntl(int fd, int command, ...);
 #include "SignalB.h"
 #include "ChunkQueue.h"
 
+#include <limits.h>
+
+#ifndef ARG_MAX
+#define ARG_MAX 4096
+#endif
+
 
 DEFINE_TYPE_INFO_1(LiterateAgent, AsyncAgent)
 
@@ -150,6 +156,21 @@ int LiterateAgent::write(const char *data, int length)
 
 	if (nitems <= 0)
 	{
+	    if (false
+#ifdef EAGAIN
+		|| errno == EAGAIN 
+#endif
+#ifdef EWOULDBLOCK
+		|| errno == EWOULDBLOCK
+#endif
+#ifdef EINTR
+		|| errno == EINTR
+#endif
+		)
+	    {
+		continue;	// Try again, possibly blocking
+	    }
+
 	    if (nitems == 0 && ++failures <= 3)
 	    {
 		ostrstream os;
@@ -245,22 +266,25 @@ int LiterateAgent::_readNonBlocking(char *buffer, int nelems, FILE *fp)
 // Read from fp
 int LiterateAgent::_read(char*& data, FILE *fp)
 {
-    static ChunkQueue queue;
+    static ChunkQueue queue(ARG_MAX);
 
     queue.discard();
-    char buffer[BUFSIZ + 1];
+    char buffer[ARG_MAX + 1];
     
     if (blocking_tty(fp))
     {
 	// Non-blocking ttys are nasty, so we read only the 
 	// single line available here and now.
-	char *s = fgets(buffer, BUFSIZ, fp);
+	char *s = fgets(buffer, ARG_MAX, fp);
 
 	if (s != 0)
 	    queue.append(buffer, strlen(buffer));
 	else if (false
 #ifdef EAGAIN
 		 || errno == EAGAIN
+#endif
+#ifdef EINTR
+		 || errno == EINTR
 #endif
 #ifdef EWOULDBLOCK
 		 || errno == EWOULDBLOCK
@@ -275,10 +299,10 @@ int LiterateAgent::_read(char*& data, FILE *fp)
     else
     {
 	// Otherwise, read and accumulate whatever's there - up to
-	// BUFSIZ characters
+	// ARG_MAX characters
 	int length = -1;
-	while (queue.length() < BUFSIZ
-	       && (length = _readNonBlocking(buffer, BUFSIZ, fp)) > 0)
+	while (queue.length() < ARG_MAX
+	       && (length = _readNonBlocking(buffer, ARG_MAX, fp)) > 0)
 	    queue.append(buffer, length);
 
 	if (length < 0)
@@ -335,7 +359,7 @@ void LiterateAgent::outputReady(AsyncAgent *c)
 
 void LiterateAgent::inputReady(AsyncAgent *c)
 {
-    char data[BUFSIZ];
+    char data[ARG_MAX];
     char *datap = data;
     LiterateAgent *lc = ptr_cast(LiterateAgent, c);
     if (lc != 0)
@@ -350,7 +374,7 @@ void LiterateAgent::inputReady(AsyncAgent *c)
 
 void LiterateAgent::errorReady(AsyncAgent *c)
 {
-    char data[BUFSIZ];
+    char data[ARG_MAX];
     char *datap = data;
     LiterateAgent *lc = ptr_cast(LiterateAgent, c);
     if (lc != 0)

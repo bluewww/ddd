@@ -84,6 +84,11 @@ extern "C" {
 #endif // HAVE_GETHOSTBYNAME && HAVE_NETDB_H
 }
 
+#include <sys/param.h>
+#ifndef MAXHOSTNAMELEN
+#define MAXHOSTNAMELEN 1024
+#endif
+
 // Return the host name
 char *hostname()
 {
@@ -91,12 +96,12 @@ char *hostname()
     if (name)
 	return name;
 
-    char buffer[BUFSIZ];
+    char buffer[MAXHOSTNAMELEN];
 
     bool okay = false;
 
 #if HAVE_GETHOSTNAME
-    if (!okay && gethostname(buffer, BUFSIZ) == 0)
+    if (!okay && gethostname(buffer, sizeof(buffer)) == 0)
     {
 	okay = true;
     }

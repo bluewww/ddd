@@ -41,6 +41,12 @@ char cwd_rcsid[] =
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <limits.h>
+
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 // Return true iff S1 and S2 are identical
 bool same_file(const string& s1, const string& s2)
 {
@@ -71,7 +77,7 @@ string cwd()
     }
 
     // Try getcwd()
-    char buffer[BUFSIZ];
+    char buffer[PATH_MAX];
     if (getcwd(buffer, sizeof(buffer)) == buffer)
         return buffer;
 

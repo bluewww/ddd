@@ -45,6 +45,11 @@ char xconfig_rcsid[] =
 #include <string.h>
 #include <errno.h>
 
+#include <limits.h>
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 #include <Xm/VirtKeys.h>
 #include <Xm/SelectioB.h>
 
@@ -124,7 +129,7 @@ static String xlibdir(Display *display, bool verbose = false)
 	return dir;
     }
 
-    char buffer[BUFSIZ];
+    char buffer[PATH_MAX];
     buffer[0] = '\0';
     fgets(buffer, sizeof(buffer), fp);
     pclose(fp);

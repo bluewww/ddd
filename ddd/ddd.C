@@ -270,6 +270,11 @@ char ddd_rcsid[] =
 #include <time.h>
 #include <signal.h>
 
+#include <limits.h>
+#ifndef ARG_MAX
+#define ARG_MAX 4096
+#endif
+
 #if HAVE_STD_EXCEPTIONS
 #define string stdstring	  // Avoid `string' name clash
 #define __SGI_STL_INTERNAL_RELOPS // Avoid <stl_relops.h> warning
@@ -2805,7 +2810,7 @@ XrmDatabase GetFileDatabase(char *filename)
     bool version_mismatch = false;
     while (is)
     {
-	char _line[BUFSIZ];
+	char _line[ARG_MAX];
 	_line[0] = '\0';
 	is.getline(_line, sizeof(_line));
 	string line = _line;
