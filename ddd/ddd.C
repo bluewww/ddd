@@ -4949,6 +4949,7 @@ static ostream& operator<< (ostream& os, ProgramLanguage lang)
     case LANGUAGE_JAVA:    os << "java";          break;
     case LANGUAGE_PASCAL:  os << "pascal/modula"; break;
     case LANGUAGE_ADA:     os << "ada";           break;
+    case LANGUAGE_PYTHON:  os << "python";        break;
     case LANGUAGE_CHILL:   os << "chill";         break;
     case LANGUAGE_FORTRAN: os << "fortran";       break;
     case LANGUAGE_OTHER:   os << "(unknown)";     break;
@@ -6878,7 +6879,7 @@ static void setup_options()
     set_sensitive(source_file_menu[FileItems::CD].widget,             have_cd);
     set_sensitive(data_file_menu[FileItems::CD].widget,               have_cd);
 
-    bool have_settings = (gdb->type() != XDB);
+    bool have_settings = (gdb->type() != XDB && gdb->type() != PYDB);
     set_sensitive(command_edit_menu[EditItems::Settings].widget,have_settings);
     set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
     set_sensitive(data_edit_menu[EditItems::Settings].widget,   have_settings);
