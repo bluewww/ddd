@@ -905,7 +905,7 @@ void startup_exec_tty(string& command, Widget origin)
 
     if (app_data.separate_exec_window 
 	&& separate_tty_pid >= 0
-	&& gdb->isReadyWithPrompt()
+	&& can_do_gdb_command()
 	&& gdb->has_redirection())
     {
 	// Launch separate tty if not running

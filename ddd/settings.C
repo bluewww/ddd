@@ -2785,8 +2785,7 @@ static Widget create_settings(DebuggerType type)
 {
     check_options_file();
 
-    if (settings_panel == 0 && 
-	gdb->isReadyWithPrompt() && gdb->type() == type)
+    if (settings_panel == 0 && can_do_gdb_command() && gdb->type() == type)
     {
 	// We place a delay here such that we show only one delay for
 	// both getting the settings and the command definitions.
@@ -2812,7 +2811,7 @@ static Widget create_infos(DebuggerType type)
 {
     check_options_file();
 
-    if (infos_panel == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
+    if (infos_panel == 0 && can_do_gdb_command() && gdb->type() == type)
 	infos_panel = create_panel(type, INFOS);
 
     return infos_panel;
@@ -2833,7 +2832,7 @@ static Widget create_signals(DebuggerType type)
 {
     check_options_file();
 
-    if (signals_panel == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
+    if (signals_panel == 0 && can_do_gdb_command() && gdb->type() == type)
     {
 	signals_panel = create_panel(type, SIGNALS);
     }

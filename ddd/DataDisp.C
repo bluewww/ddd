@@ -2104,7 +2104,7 @@ void DataDisp::no_displaysHP (void*, void* , void* call_data)
     bool empty = bool(call_data);
 
     set_sensitive (graph_popup[GraphItms::Refresh].widget,
-		   (!empty && gdb->isReadyWithPrompt()));
+		   (!empty && can_do_gdb_command()));
 }
 
 
@@ -6401,7 +6401,7 @@ void DataDisp::RefreshAddrCB(XtPointer client_data, XtIntervalId *id)
 
     bool ok = false;
     bool sent = false;
-    if (gdb->isReadyWithPrompt())
+    if (can_do_gdb_command())
     {
 	StringArray cmds;
 	VoidArray dummy;

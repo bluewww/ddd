@@ -5544,7 +5544,7 @@ static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
     XtCallbackProc proc = (XtCallbackProc)client_data;
     XtPointer user_client_data = 0; // No way to pass extra values here
 
-    if (gdb->isReadyWithPrompt())
+    if (can_do_gdb_command())
     {
 	// GDB is ready: do command now
 	proc(w, user_client_data, call_data);

@@ -1725,7 +1725,7 @@ inline String str(String s)
 
 static Boolean done_if_idle(XtPointer data)
 {
-    if (emptyCommandQueue() && gdb->isReadyWithPrompt())
+    if (emptyCommandQueue() && can_do_gdb_command())
     {
 	update_settings();	// Refresh settings and signals
 	update_signals();

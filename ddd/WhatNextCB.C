@@ -173,7 +173,7 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
 	return;
     }
 
-    if (!gdb->isReadyWithPrompt())
+    if (!can_do_gdb_command())
     {
 	hint_on("busy");
 	return;

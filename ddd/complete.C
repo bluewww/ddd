@@ -36,6 +36,7 @@ char complete_rcsid[] =
 #include "complete.h"
 
 #include "AppData.h"
+#include "Command.h"
 #include "Delay.h"
 #include "SmartC.h"
 #include "ddd.h"
@@ -204,7 +205,7 @@ static int completions_size = 0;
 static void complete(Widget w, XEvent *e, string input, string cmd)
 {
     // Issue diagnostic if completion doesn't work right now
-    if (!gdb->isReadyWithPrompt())
+    if (!can_do_gdb_command())
     {
 	post_gdb_busy(w);
 	return;
@@ -412,7 +413,7 @@ void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 {
     if ((gdb->type() != GDB && gdb->type() != PERL)
 	|| w != gdb_w
-	|| !gdb->isReadyWithPrompt()
+	|| !can_do_gdb_command()
 	|| XmTextGetInsertionPosition(w) != XmTextGetLastPosition(w))
     {
 	tabAct(w, e, args, num_args);
@@ -458,7 +459,7 @@ static void _complete_argAct(Widget w,
 {
     if ((tab && !app_data.global_tab_completion) 
 	|| (gdb->type() != GDB && gdb->type() != PERL)
-	|| !gdb->isReadyWithPrompt())
+	|| !can_do_gdb_command())
     {
 	tabAct(w, e, args, num_args);
 	return;

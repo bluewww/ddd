@@ -2114,7 +2114,7 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
 				 bool /* silent */)
 {
     length = 0;
-    if (!gdb->isReadyWithPrompt())
+    if (!can_do_gdb_command())
 	return 0;
     if (gdb->type() == JDB)
 	return 0;		// Won't work with JDB

@@ -864,7 +864,7 @@ static string get_resource(XrmDatabase db, string name, string cls)
 
 static Boolean done_if_idle(XtPointer data)
 {
-    if (emptyCommandQueue() && gdb->isReadyWithPrompt())
+    if (emptyCommandQueue() && can_do_gdb_command())
     {
 	update_settings();	// Refresh settings and signals
 	update_signals();
@@ -1203,7 +1203,7 @@ void SaveSmSessionCB(Widget w, XtPointer, XtPointer call_data)
 	    XtAddCallback(w, XtNinteractCallback, AskSmShutdownCB, 0);
 	else
 	{
-	    if (!gdb->isReadyWithPrompt())
+	    if (!can_do_gdb_command())
 	    {
 		// GDB is still busy - cannot shutdown right now
 		token->request_cancel = true;
@@ -1273,7 +1273,7 @@ static void AskSmShutdownCB(Widget w, XtPointer, XtPointer call_data)
 	return;
     }
 
-    if (!gdb->isReadyWithPrompt())
+    if (!can_do_gdb_command())
     {
 	// Debugger is still running; request confirmation
 	ask(gdb->title() + " is still busy.  Shutdown anyway (and kill it)?",
@@ -1313,7 +1313,7 @@ static void CancelSmShutdownCB(Widget, XtPointer client_data, XtPointer)
 // 4. Let DDD die.
 void ShutdownSmSessionCB(Widget w, XtPointer, XtPointer call_data)
 {
-    if (gdb != 0 && gdb->isReadyWithPrompt())
+    if (gdb != 0 && can_do_gdb_command())
     {
 	if (gdb->type() == GDB)
 	    gdb_question("set confirm off");

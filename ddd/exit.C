@@ -1009,7 +1009,7 @@ static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
 	return;
     }
 
-    if (gdb->isReadyWithPrompt())
+    if (can_do_gdb_command())
     {
 	Command c("quit", w);	// This works for all inferior debuggers
 	c.callback = DDDQuitCanceledCB;
