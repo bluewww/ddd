@@ -58,6 +58,29 @@ private:
 
     friend class QueueIter<E>;
 
+protected:
+    // Remove all elements
+    void clear()
+    {
+        QueueRec<E> *rec = _first;   // loop var
+	while (rec != 0)
+	{
+	    QueueRec<E> *kill = rec;
+	    rec = rec->next;
+	    delete kill;
+	}
+
+	_first = 0;
+	_last  = 0;
+    }
+
+    // Copy and add elements from E
+    void add(const Queue<E>& e)
+    {
+	for (QueueIter<E> i = e; i.ok(); i = i.next())
+	    operator += (i());
+    }
+
 public:
     // Constructor
     Queue(): 
@@ -67,28 +90,25 @@ public:
     // Destructor
     ~Queue()
     {
-	while (_first)
-	    operator -= (_first->elem);
+	clear();
     }
 
     // Copy Constructor
     Queue(const Queue<E>& e): 
         _first(0), _last(0)
     {
-	for (QueueIter<E> i = e; i.ok(); i = i.next())
-	    operator += (i());
+	add(e);
     }
 
     // Assignment
-    void operator = (const Queue<E>& e)
+    Queue<E>& operator = (const Queue<E>& e)
     {
-#if 0
-	while (_first)
-	    operator -= (_first->elem);
-#endif
-
-	for (QueueIter<E> i = e; i.ok(); i = i.next())
-	    operator += (i());
+	if (&e != this)
+	{
+	    clear();
+	    add(e);
+	}
+	return *this;
     }
 
     // Add at end
