@@ -1390,6 +1390,9 @@ string GDBAgent::dereferenced_expr(string expr) const
 // Give the address of an expression.
 string GDBAgent::address_expr(string expr) const
 {
+    if (expr.contains('/', 0))
+	expr = expr.after(' ');
+
     switch (program_language())
     {
     case LANGUAGE_C:
