@@ -887,6 +887,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    if (dont_save)
 		return true;	// Fine
 
+	    StatusDelay delay("Getting core dump from " + quote(info.core));
 	    if (info.core == target)
 	    {
 		// It is our target.
@@ -907,7 +908,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    if (link(info.core, target) == 0)
 		return true;
 #endif
-	    
+
 #ifdef HAVE_SYMLINK
 	    // Try a symlink link from target to current core file
 	    if (symlink(info.core, target) == 0)
@@ -915,7 +916,6 @@ static bool _get_core(const string& session, unsigned long flags,
 #endif
 
 	    // Looks as if we have to copy some large core file.  Blechhh.
-	    StatusDelay delay("Copying core file");
 	    return copy(info.core, target);
 	}
 
@@ -939,7 +939,7 @@ static bool _get_core(const string& session, unsigned long flags,
 		return true;		// Will probably work
 
 	    // Get new core file from running process
-	    StatusDelay delay("Getting core file via `ptrace()'");
+	    StatusDelay delay("Getting core dump via ptrace()");
 	    
 	    // 1. Stop the program being debugged, using a STOP signal.
 	    kill(info.pid, SIGSTOP);
@@ -1004,7 +1004,7 @@ static bool _get_core(const string& session, unsigned long flags,
 		return true;	// Will probably work
 
 	    // Get new core file from running process
-	    StatusDelay delay("Getting core file via `gcore'");
+	    StatusDelay delay("Getting core dump via `gcore'");
 
 	    // 1. Stop the program being debugged, using a STOP signal.
 	    kill(info.pid, SIGSTOP);
@@ -1063,7 +1063,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    return true;	// Will probably work
 
 	// Get new core file from running process
-	StatusDelay delay("Killing process");
+	StatusDelay delay("Getting core dump via killing debuggee");
 
 	string core = SourceView::full_path("core");
 	string core_backup = core + "~";
@@ -1148,7 +1148,10 @@ static bool _get_core(const string& session, unsigned long flags,
 	    return ok;
 	}
 
-	// No core file.  Sorry.  Restore the old core file, if any.
+	// No core file.  Sorry.
+	delay.outcome = "failed";
+
+	// Restore the old core file, if any.
 	if (had_a_core_file)
 	    move(core_backup, core);
     }
