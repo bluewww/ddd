@@ -1200,9 +1200,9 @@ Ddd*define_command*XmText.translations:             \
 
 ! The source window is especially tuned for word selection.
 define(SOURCE_TRANSLATIONS,[\
-<Btn3Down>:		source-popup-menu() \n\
+<Btn3Down>:		source-popup-menu()         \n\
 ~Ctrl ~Shift<Btn1Down>:	source-start-select-word()  \n\
-~Ctrl ~Shift<Btn1Up>:	source-end-select-word()    \n\
+~Ctrl ~Shift<Btn1Up>:	source-end-select-word() source-double-click() \n\
 Ctrl<Key>A:		select-all()	    	    \n\
 Ctrl<Key>B:		gdb-isearch-prev()    	    \n\
 Ctrl<Key>C:             gdb-control(^C)             \n\
@@ -1383,15 +1383,15 @@ Ddd*code_text_w.translations:   \
 
 ! Realize glyph drag and drop as well as glyph menu popups
 define(GLYPH_TRANSLATIONS,[\
-<Btn1Down>:	  ArmAndActivate() source-drag-glyph()	\n\
-<Btn1Motion>: 	  source-follow-glyph()                 \n\
-~Shift <Btn1Up>:  source-drop-glyph(move)               \n\
-Shift <Btn1Up>:   source-drop-glyph(copy)               \n\
-<Btn2Down>:	  ArmAndActivate() source-drag-glyph()	\n\
-<Btn2Motion>: 	  source-follow-glyph()			\n\
-~Shift <Btn2Up>:  source-drop-glyph(move)               \n\
-Shift <Btn2Up>:   source-drop-glyph(copy)               \n\
-<Btn3Down>:	  source-popup-menu()			\n])dnl
+<Btn1Down>:	  ArmAndActivate() source-drag-glyph() \n\
+<Btn1Motion>: 	  source-follow-glyph()   \n\
+~Shift <Btn1Up>:  source-drop-glyph(move) \n\
+Shift <Btn1Up>:   source-drop-glyph(copy) \n\
+<Btn2Down>:	  source-drag-glyph()	  \n\
+<Btn2Motion>: 	  source-follow-glyph()   \n\
+~Shift <Btn2Up>:  source-drop-glyph(move) \n\
+Shift <Btn2Up>:   source-drop-glyph(copy) \n\
+<Btn3Down>:	  source-popup-menu()     \n])dnl
 
 dnl This uses too much space:
 dnl Ddd*source_form_w.XmPushButton.translations: \

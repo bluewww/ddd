@@ -4856,7 +4856,18 @@ The \fIcontrol-character\fR must be specified in the form `\fB^\fIX\fR',
 where \fIX\fR is an upper-case letter or `\fB?\fR'.
 .TP
 .B gdb-command (\fIcommand\fB)
-Execute \fIcommand\fR in the debugger console.
+Execute \fIcommand\fR in the debugger console.  The following
+replacements are performed on \fIcommand\fR:
+.RS
+.br
+.IP \(bu 2
+If \fIcommand\fR has the form '\fIname\fB...\fR', insert \fIname\fR,
+followed by a space, in the debugger console.
+.IP \(bu 2
+All occurrences of `\fB()\fR' are replaced by the current contents of
+the argument field `()'.
+.br
+.RE
 .TP
 .B gdb-complete-arg (\fIcommand\fB)
 Complete current argument as if \fIcommand\fR was prepended.
@@ -4864,7 +4875,7 @@ Bound to \fBCtrl+T\fR.
 .TP
 .B gdb-complete-command ()
 Complete current command line in the debugger console.
-Bound to \s-1\fBTAB\fR\s+1 and \fBCtrl+T\fR.
+Bound to \s-1\fBTAB\fR\s+1.
 .TP
 .B gdb-complete-tab (\fIcommand\fB)
 If global \s-1\fBTAB\fR\s+1 completion is enabled, complete current
@@ -4927,6 +4938,24 @@ These actions are used in the source and code windows.
 .TP
 .B source-delete-glyph ()
 Delete the breakpoint related to the glyph at cursor position.
+.TP
+.B source-double-click ([\fItext-action\fR [,\fIline-action\fR]])
+The double-click action in the source window.
+.RS
+.br
+.IP \(bu 2
+If this action is taken on a breakpoint glyph, edit the breakpoint
+properties.
+.IP \(bu 2
+If this action is taken in the breakpoint area, invoke
+`\fBgdb-command(\fIline-action\fB)\fR'.  If \fIline-action\fR is not
+given, it defaults to `\fBbreak ()\fR'.
+.IP \(bu 2
+Otherwise, invoke `\fBgdb-command(\fItext-action\fB)\fR'.  If
+\fItext-action\fR is not given, it defaults to `\fBgraph display
+()\fR'.
+.br
+.RE
 .TP
 .B source-drag-glyph ()
 Initiate a drag on the glyph at cursor position.

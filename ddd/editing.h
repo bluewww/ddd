@@ -78,6 +78,9 @@ extern void gdbClearWindowCB     (Widget, XtPointer, XtPointer);
 // Return current GDB command line.
 extern string current_line();
 
+// Set current GDB input line
+extern void set_current_line(const string& input);
+
 // True if last input was at GDB prompt.
 extern bool gdb_input_at_prompt;
 
@@ -85,8 +88,11 @@ extern bool gdb_input_at_prompt;
 // RESET means to reset the history; SHOW means to redisplay.
 extern void clear_isearch(bool reset = false, bool show = true);
 
-// Pass the COMMAND given in CLIENT_DATA to gdb_command()
+// Pass the COMMAND given in CLIENT_DATA to gdb_button_command()
 void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data);
+
+// Like gdb_command(), but perform `...' and `()' substitutions
+void gdb_button_command(const string& command, Widget origin = 0);
 
 #endif // _DDD_editing_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

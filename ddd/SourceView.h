@@ -153,7 +153,7 @@ class SourceView {
     static void SetWatchModeCB(Widget, XtPointer, XtPointer);
 
     static void update_title ();
-    static void MoveCursorToGlyphPosCB(Widget, XtPointer, XtPointer);
+    static void ActivateGlyphCB(Widget, XtPointer, XtPointer);
     static int line_height (Widget text_w);
 
     static void create_text(Widget parent,
@@ -207,6 +207,7 @@ class SourceView {
     static void followGlyphAct    (Widget, XEvent*, String*, Cardinal*);
     static void dropGlyphAct      (Widget, XEvent*, String*, Cardinal*);
     static void deleteGlyphAct    (Widget, XEvent*, String*, Cardinal*);
+    static void doubleClickAct    (Widget, XEvent*, String*, Cardinal*);
 
     //-----------------------------------------------------------------------
     // Timer procedures

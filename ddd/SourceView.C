@@ -70,26 +70,54 @@ char SourceView_rcsid[] =
 
 
 //-----------------------------------------------------------------------------
-#include "Delay.h"		// must be included first for GCC 2.5.8
-#include "SourceView.h"
-#include "IntArray.h"
 
-// Misc stuff
-#include "assert.h"
-#include "cwd.h"
-#include "HelpCB.h"
+#include "SourceView.h"
+
+// DDD stuff
+#include "AppData.h"
+#include "ComboBox.h"
+#include "Command.h"
+#include "Delay.h"
 #include "DestroyCB.h"
-#include "charsets.h"
-#include "events.h"
-#include "cook.h"
-#include "filetype.h"
-#include "misc.h"
-#include "shorten.h"
-#include "tabs.h"
-#include "wm.h"
-#include "TimeOut.h"
-#include "logo.h"
+#include "HelpCB.h"
+#include "HistoryD.h"
 #include "InitImage.h"
+#include "IntArray.h"
+#include "MakeMenu.h"
+#include "PosBuffer.h"
+#include "TimeOut.h"
+#include "assert.h"
+#include "charsets.h"
+#include "cmdtty.h"
+#include "cook.h"
+#include "cwd.h"
+#include "dbx-lookup.h"
+#include "ddd.h"
+#include "disp-read.h"
+#include "editing.h"
+#include "events.h"
+#include "file.h"
+#include "filetype.h"
+#include "fortranize.h"
+#include "history.h"
+#include "index.h"
+#include "java.h"
+#include "logo.h"
+#include "misc.h"
+#include "mydialogs.h"
+#include "options.h"
+#include "post.h"
+#include "question.h"
+#include "regexps.h"
+#include "shell.h"
+#include "shorten.h"
+#include "status.h"
+#include "string-fun.h"
+#include "tabs.h"
+#include "verify.h"
+#include "version.h"
+#include "windows.h"
+#include "wm.h"
 
 // Motif stuff
 #include <Xm/Xm.h>
@@ -132,36 +160,6 @@ extern "C" {
 #include <time.h>
 #include <errno.h>
 
-// DDD stuff
-#include "AppData.h"
-#include "ComboBox.h"
-#include "Command.h"
-#include "HistoryD.h"
-#include "MakeMenu.h"
-#include "PosBuffer.h"
-#include "charsets.h"
-#include "cmdtty.h"
-#include "dbx-lookup.h"
-#include "ddd.h"
-#include "disp-read.h"
-#include "file.h"
-#include "fortranize.h"
-#include "history.h"
-#include "index.h"
-#include "java.h"
-#include "mydialogs.h"
-#include "options.h"
-#include "post.h"
-#include "question.h"
-#include "regexps.h"
-#include "shell.h"
-#include "status.h"
-#include "string-fun.h"
-#include "verify.h"
-#include "version.h"
-#include "windows.h"
-#include "wm.h"
-
 
 
 
@@ -189,6 +187,7 @@ XtActionsRec SourceView::actions [] = {
     {"source-follow-glyph",      SourceView::followGlyphAct     },
     {"source-drop-glyph",        SourceView::dropGlyphAct       },
     {"source-delete-glyph",      SourceView::deleteGlyphAct     },
+    {"source-double-click",      SourceView::doubleClickAct     },
 };
 
 //-----------------------------------------------------------------------
@@ -1471,23 +1470,6 @@ void SourceView::set_source_argCB(Widget text_w,
 	return;
     }
 
-    // Check for double clicks
-    bool double_click = false;
-    if (selection_click && selection_time != 0)
-    {
-	static Time last_selection_time = 0;
-
-	double_click = 
-	    last_selection_time != 0 &&
-	    (Time(selection_time - last_selection_time) <= 
-	     Time(XtGetMultiClickTime(XtDisplay(text_w))));
-
-	if (double_click)
-	    last_selection_time = 0;
-	else
-	    last_selection_time = selection_time;
-    }
-
     int startIndex = 0;
     if (startPos > 0)
 	startIndex = text.index('\n', startPos - text.length()) + 1;
@@ -1497,7 +1479,6 @@ void SourceView::set_source_argCB(Widget text_w,
 	endIndex = text.index('\n', endPos - text.length()) + 1;
 
     bool in_bp_area = false;
-    IntArray bp_found;
     if (selection_click
 	&& startIndex == endIndex
 	&& startPos < XmTextPosition(text.length())
@@ -1530,15 +1511,7 @@ void SourceView::set_source_argCB(Widget text_w,
 		     bp != 0;
 		     bp = bp_map.next(ref))
 		{
-		    if (bp_matches(bp, line_nr))
-		    {
-			bp->selected() = true;
-			bp_found += bp->number();
-		    }
-		    else
-		    {
-			bp->selected() = false;
-		    }
+		    bp->selected() = (bp_matches(bp, line_nr));
 		}
 	    }
 	}
@@ -1563,26 +1536,11 @@ void SourceView::set_source_argCB(Widget text_w,
 		     bp != 0;
 		     bp = bp_map.next(ref))
 		{
-		    if (bp->type() == BREAKPOINT && 
-			compare_address(pos, bp->address()) == 0)
-		    {
-			bp->selected() = true;
-			bp_found += bp->number();
-		    }
-		    else
-		    {
-			bp->selected() = false;
-		    }
+		    bp->selected() = 
+			(bp->type() == BREAKPOINT && 
+			 compare_address(pos, bp->address()) == 0);
 		}
 	    }
-	}
-
-	if (in_bp_area && double_click)
-	{
-	    if (bp_found.size() > 0)
-		edit_bps(bp_found, text_w);
-	    else
-		create_bp(pos, text_w);
 	}
     }
 
@@ -1605,13 +1563,10 @@ void SourceView::set_source_argCB(Widget text_w,
 	    s = s.after('\n');
 
 	if (s != "")
-	{
 	    source_arg->set_string(s);
-	    if (double_click)
-		gdb_command("graph display " + s, text_w);
-	}
     }
 }
+
 
 BreakPoint *SourceView::breakpoint_at(string arg)
 {
@@ -4768,8 +4723,8 @@ void SourceView::endSelectWordAct (Widget text_w, XEvent* e,
 	selection_endpos   = endpos;
     }
 
-    selection_pos      = pos;
-    selection_time     = time(e);
+    selection_pos  = pos;
+    selection_time = time(e);
 
     XtAppAddTimeOut(XtWidgetToApplicationContext(text_w), 0, setSelection,
 		   (XtPointer)text_w);
@@ -5011,6 +4966,119 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     }
 }
 
+
+void SourceView::doubleClickAct(Widget w, XEvent *e, String *params, 
+				Cardinal *num_params)
+{
+    if (e->type != ButtonPress && e->type != ButtonRelease)
+	return;
+
+    Widget text_w;
+    if (is_source_widget(w))
+	text_w = source_text_w;
+    else if (is_code_widget(w))
+	text_w = code_text_w;
+    else
+	return;
+
+    XButtonEvent* event = &e->xbutton;
+
+    int x = event->x;
+    int y = event->y;
+
+    if (w != source_text_w && w != code_text_w)
+    {
+	// Called from a glyph: translate glyph position to text position
+	translate_glyph_pos(w, text_w, x, y);
+    }
+
+    if (w == source_text_w || w == code_text_w)
+    {
+	// Called from text: check for double click
+	Time selection_time = time(e);
+	static Time last_selection_time = 0;
+
+	bool double_click = 
+	    last_selection_time != 0 &&
+	    (Time(selection_time - last_selection_time) <= 
+	     Time(XtGetMultiClickTime(XtDisplay(text_w))));
+
+	if (double_click)
+	    last_selection_time = 0;
+	else
+	    last_selection_time = selection_time;
+
+	if (!double_click)
+	    return;
+    }
+
+    // Get the position
+    XmTextPosition pos = XmTextXYToPos(text_w, x, y);
+
+    int line_nr;
+    bool in_text;
+    static int bp_nr;
+    static string address;
+    bool pos_found = get_line_of_pos(w, pos, line_nr, address, in_text, bp_nr);
+
+    if (pos_found && bp_nr != 0)
+    {
+	// Clicked on breakpoint: edit its properties
+	edit_bp(bp_nr, text_w);
+	return;
+    }
+
+    string arg = source_arg->get_string();
+    if (in_text && !is_file_pos(arg))
+    {
+	// In text: do some action on the selection
+	if (*num_params >= 1)
+	    gdb_button_command(params[0]);
+	else
+	    gdb_button_command("graph display ()");
+	return;
+    }
+
+    // In breakpoint area
+    IntArray bps;
+    if (text_w == source_text_w)
+    {
+	MapRef ref;
+	for (BreakPoint* bp = bp_map.first(ref);
+	     bp != 0;
+	     bp = bp_map.next(ref))
+	{
+	    if (bp_matches(bp, line_nr))
+		bps += bp->number();
+	}
+    }
+    else
+    {
+	MapRef ref;
+	for (BreakPoint* bp = bp_map.first(ref);
+	     bp != 0;
+	     bp = bp_map.next(ref))
+	{
+	    if (bp->type() == BREAKPOINT && 
+		compare_address(address, bp->address()) == 0)
+		bps += bp->number();
+	}
+    }
+
+    if (bps.size() > 0)
+    {
+	// In breakpoint area, and we already have a breakpoint
+	edit_bps(bps, text_w);
+    }
+    else
+    {
+	// In breakpoint area, and we have no breakpoint: create a new one
+	if (*num_params >= 2)
+	    gdb_button_command(params[1]);
+	else
+	    create_bp(source_arg->get_string(), w);
+    }
+}
 
 
 //-----------------------------------------------------------------------------
@@ -5516,6 +5584,8 @@ void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
 {
     if (breakpoint_nrs.size() == 0)
 	return;			// No breakpoints given
+
+    sort(breakpoint_nrs);
 
     // Check for first breakpoint
     BreakPoint *bp = bp_map.get(breakpoint_nrs[0]);
@@ -6921,36 +6991,19 @@ void SourceView::set_max_glyphs (int nmax)
 }
 
 
-// Move text cursor at glyph position
-void SourceView::MoveCursorToGlyphPosCB(Widget w, 
-					XtPointer, 
-					XtPointer call_data)
+// Glyph has been activated - catch the double click in LessTif.
+void SourceView::ActivateGlyphCB(Widget glyph, XtPointer, XtPointer call_data)
 {
-    XmPushButtonCallbackStruct *info = (XmPushButtonCallbackStruct *)call_data;
-    XEvent *e = info->event;
-    if (e->type != ButtonPress && e->type != ButtonRelease)
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    XEvent *e = cbs->event;
+    if (e->type != ButtonRelease)
 	return;
 
-    Widget text_w;
-    if (is_source_widget(w))
-	text_w = source_text_w;
-    else if (is_code_widget(w))
-	text_w = code_text_w;
-    else
-	return;
-
-    if (!XtIsRealized(text_w))
-	return;
-
-    // Set up event such that it applies to the source window
-    XButtonEvent *event = &e->xbutton;
-
-    translate_glyph_pos(w, text_w, event->x, event->y);
-    event->window = XtWindow(text_w);
-
-    // Invoke action for source window
     String *params = { 0 };
-    XtCallActionProc(text_w, "source-start-select-word", e, params, 0);
+    XtCallActionProc(glyph, "source-drop-glyph", e, params, 0);
+
+    if (cbs->click_count > 1)
+	XtCallActionProc(glyph, "source-double-click", e, params, 0);
 }
 
 
@@ -6971,12 +7024,6 @@ Pixmap SourceView::pixmap(Widget w, unsigned char *bits, int width, int height)
     return pix;
 }
 
-
-#if XmVersion >= 2000
-const int motif_offset = 1;  // Motif 2.0 adds a 1 pixel border around glyphs
-#else
-const int motif_offset = 0;  // Motif 1.x does not
-#endif
 
 // Create glyph in FORM_W named NAME from given BITS
 Widget SourceView::create_glyph(Widget form_w,
@@ -7000,7 +7047,7 @@ Widget SourceView::create_glyph(Widget form_w,
     XtSetArg(args[arg], XmNhighlightThickness, 0);             arg++;
     XtSetArg(args[arg], XmNborderWidth,        0);             arg++;
     XtSetArg(args[arg], XmNlabelType,  XmPIXMAP);              arg++;
-    XtSetArg(args[arg], XmNmultiClick, XmMULTICLICK_DISCARD);  arg++;
+    XtSetArg(args[arg], XmNmultiClick, XmMULTICLICK_KEEP);     arg++;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING);  arg++;
     XtSetArg(args[arg], XmNuserData,           XtPointer(0));  arg++;
     Widget w = verify(XmCreatePushButton(form_w, name, args, arg));
@@ -7009,9 +7056,6 @@ Widget SourceView::create_glyph(Widget form_w,
 	XtRealizeWidget(w);
 
     XtManageChild(w);
-
-    int new_width  = width  + 1 + motif_offset;
-    int new_height = height + 1 + motif_offset;
 
     Pixel background;
     XtVaGetValues(w, XmNbackground, &background, NULL);
@@ -7022,13 +7066,14 @@ Widget SourceView::create_glyph(Widget form_w,
 	Pixmap pix = pixmap(w, bits, width, height);
 	XtSetArg(args[arg], XmNlabelPixmap, pix); arg++;
     }
-    XtSetArg(args[arg], XmNwidth,       new_width);  arg++;
-    XtSetArg(args[arg], XmNheight,      new_height); arg++;
-    XtSetArg(args[arg], XmNfillOnArm,   True);       arg++;
-    XtSetArg(args[arg], XmNarmColor,    background); arg++;
+    XtSetArg(args[arg], XmNwidth,     width);      arg++;
+    XtSetArg(args[arg], XmNheight,    height);     arg++;
+    XtSetArg(args[arg], XmNfillOnArm, True);       arg++;
+    XtSetArg(args[arg], XmNarmColor,  background); arg++;
     XtSetValues(w, args, arg);
-    
-    XtAddCallback(w, XmNarmCallback, MoveCursorToGlyphPosCB, 0);
+
+    if (lesstif_version < 1000)
+	XtAddCallback(w, XmNactivateCallback, ActivateGlyphCB, 0);
 
     InstallButtonTips(w);
     return w;
@@ -7268,7 +7313,7 @@ int SourceView::arrow_x_offset = -5;
 int SourceView::stop_x_offset = +6;
 
 // Additional offset for multiple breakpoints (pixels)
-int SourceView::multiple_stop_x_offset = stop_width + (2 * motif_offset - 2);
+int SourceView::multiple_stop_x_offset = stop_width;
 
 
 // Glyph locations: x[0] is source, x[1] is code
@@ -7629,9 +7674,15 @@ Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos,
 	copy_colors(drag_stop, origin);
 
 	if (origin)
+	{
  	    XtVaGetValues(origin, XmNx, &x, NULL);
+	    if (lesstif_version < 1000)
+		x -= 2;
+	}
 	else
+	{
 	    x += stop_x_offset;
+	}
 
 	map_glyph(drag_stop, x, y);
 	if (temp)
@@ -8089,7 +8140,8 @@ Widget SourceView::current_drag_origin     = 0;
 // The breakpoint being dragged, or 0 if execution position
 int    SourceView::current_drag_breakpoint = -1;
 
-void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *, Cardinal *)
+void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *params, 
+			      Cardinal *num_params)
 {
     if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
@@ -8105,6 +8157,18 @@ void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *, Cardinal *)
     if (!XtIsRealized(text_w))
 	return;
 
+    // Move cursor to glyph position
+    XButtonEvent *event = &e->xbutton;
+    translate_glyph_pos(glyph, text_w, event->x, event->y);
+    event->window = XtWindow(text_w);
+    XtCallActionProc(text_w, "source-start-select-word", e, 
+		     params, *num_params);
+
+    // Check for double clicks
+    XtCallActionProc(text_w, "source-double-click", e,
+		     params, *num_params);
+
+    // Now start the drag
     int k;
     for (k = 0; k < 2; k++)
     {

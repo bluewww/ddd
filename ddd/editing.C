@@ -378,7 +378,12 @@ static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
 // Misc actions
 //-----------------------------------------------------------------------------
 
-void controlAct(Widget w, XEvent*, String *params, Cardinal *num_params)
+static bool from_keyboard(XEvent *ev)
+{
+    return ev == 0 || (ev->type != ButtonPress && ev->type != ButtonRelease);
+}
+
+void controlAct(Widget w, XEvent *ev, String *params, Cardinal *num_params)
 {
     clear_isearch();
 
@@ -388,12 +393,12 @@ void controlAct(Widget w, XEvent*, String *params, Cardinal *num_params)
 	return;
     }
 
-    gdb_keyboard_command = true;
-    _gdb_command(ctrl(params[0]), w);
-    gdb_keyboard_command = true;
+    gdb_keyboard_command = from_keyboard(ev);
+    gdb_command(ctrl(params[0]), w);
+    gdb_keyboard_command = from_keyboard(ev);
 }
 
-void commandAct(Widget w, XEvent*, String *params, Cardinal *num_params)
+void commandAct(Widget w, XEvent *ev, String *params, Cardinal *num_params)
 {
     clear_isearch();
 
@@ -403,9 +408,9 @@ void commandAct(Widget w, XEvent*, String *params, Cardinal *num_params)
 	return;
     }
 
-    gdb_keyboard_command = true;
-    _gdb_command(params[0], w);
-    gdb_keyboard_command = true;
+    gdb_keyboard_command = from_keyboard(ev);
+    gdb_button_command(params[0], w);
+    gdb_keyboard_command = from_keyboard(ev);
 }
 
 void processAct(Widget w, XEvent *e, String *params, Cardinal *num_params)
@@ -533,14 +538,19 @@ void backward_characterAct(Widget, XEvent*, String*, Cardinal*)
 	XmTextSetInsertionPosition(gdb_w, pos - 1);
 }
 
+void set_current_line(const string& input)
+{
+    XmTextReplace(gdb_w, promptPosition, XmTextGetLastPosition(gdb_w), 
+		  (String)input);
+}
+
 void set_lineAct(Widget, XEvent*, String* params, Cardinal* num_params)
 {
     clear_isearch();
     string input = "";
     if (num_params && *num_params > 0)
 	input = params[0];
-    XmTextReplace(gdb_w, promptPosition, 
-		  XmTextGetLastPosition(gdb_w), (String)input);
+    set_current_line(input);
 }
 
 void delete_or_controlAct(Widget, XEvent *e, 
@@ -749,21 +759,21 @@ void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
     if (cbs->event == 0)
 	return;
 
-    string command = (String)client_data;
+    gdb_button_command((String)client_data, w);
+}
 
+void gdb_button_command(const string& command, Widget origin)
+{
     if (command.contains("..."))
     {
-	command = command.before("...") + " ";
-	String params[1];
-	params[0] = command;
-	gdbClearCB(w, client_data, call_data);
-	XtCallActionProc(gdb_w, "insert-string", cbs->event, params, 1);
+	set_current_line(command.before("...") + " ");
     }
     else
     {
-	command.gsub("()", source_arg->get_string());
-	add_running_arguments(command);
-	gdb_command(command, w);
+	string c = command;
+	c.gsub("()", source_arg->get_string());
+	add_running_arguments(c);
+	gdb_command(c, origin);
     }
 }
 
@@ -817,15 +827,9 @@ void gdbISearchExitCB  (Widget w, XtPointer, XtPointer call_data)
     isearch_exitAct(w, cbs->event, 0, &zero);
 }
 
-void gdbClearCB  (Widget w, XtPointer, XtPointer call_data)
+void gdbClearCB  (Widget, XtPointer, XtPointer)
 {
-    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
-    if (cbs->event == 0)
-	return;
-
-    String params[1] = {""};
-    Cardinal num_params = 1;
-    set_lineAct(w, cbs->event, params, &num_params);
+    set_current_line("");
 }
 
 // Remove any text up to the last GDB prompt
