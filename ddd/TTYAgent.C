@@ -421,7 +421,7 @@ void TTYAgent::open_slave()
 	return;
     }
 
-#if !defined(__osf__) && defined(__FreeBSD__) && defined(TIOCSCTTY)
+#if defined(TIOCSCTTY)
     if (!push)
     {
 	if (ioctl(slave, TIOCSCTTY) < 0)
@@ -551,7 +551,6 @@ int TTYAgent::setupChildCommunication()
 	return -1;
 
 
-#ifndef __osf__
     // Make this process the foreground process in the slave pty.
     result = 0;
 #if defined(HAVE_TCSETPGRP)
@@ -562,10 +561,9 @@ int TTYAgent::setupChildCommunication()
 
     if (result < 0)
 	_raiseIOMsg("cannot set terminal foreground process group");
-#endif // !defined(__osf__)
 
     // Modify local and output mode of slave pty
-#if !defined(__osf__) && defined(HAVE_TCGETATTR) && defined(HAVE_TCSETATTR)
+#if defined(HAVE_TCGETATTR) && defined(HAVE_TCSETATTR)
     struct termios settings;
     result = tcgetattr(slave, &settings);
     if (result < 0)
