@@ -122,6 +122,9 @@ public:
     // If non-zero, log all alloc/free operations
     static int log;
 
+    // If non-zero, wipeout memory after being free'd
+    static int wipeout_free;
+
     // validate
     static int OK();
 };

@@ -45,7 +45,9 @@ extern "C" void *malloc(size_t size);
 
 // Data
 
-int MemCheck::log = 0;		// For debugging
+// Debugging flags
+int MemCheck::log           = 0;
+int MemCheck::wipeout_free  = 1;
 
 MemCheckHeader MemCheck::freebase;
 MemCheckHeader MemCheck::allocbase;
@@ -175,12 +177,15 @@ void MemCheck::free(void *ap)
 	clog << "free:  " << bp->s.requested << " bytes "
 	     << "in block " << bp->s.tic << " at " << ap << "\n";
 
-    // wipe out memory
-    char *wipeout = (char *)ap;
-    for (unsigned i = 0; i < bp->s.requested; i++)
-	*wipeout++ = WIPEOUT;
-    
-    // delete from alloc list
+    if (wipeout_free)
+    {
+	// Wipe out memory
+	char *sweep = (char *)ap;
+	for (unsigned i = 0; i < bp->s.requested; i++)
+	    *sweep++ = WIPEOUT;
+    }
+
+    // Delete from alloc list
     MemCheckHeader *prevp = allocp;
     validate(allocp, "free");
     
@@ -197,17 +202,17 @@ void MemCheck::free(void *ap)
 	
 	if (p == allocp)
 	{
-	    // we traversed the whole list without finding the block
+	    // We traversed the whole list without finding the block
 	    cerr << "free: cannot find block at " << ap << "\n";
 	    abort();
 	}
     }
     
-    // sum up
+    // Sum up
     allocBytes -= bp->s.requested;
     freeBytes  += bp->s.requested;
 
-    // insert in free list
+    // Insert in free list
     _free(bp);
 
 }
@@ -215,7 +220,7 @@ void MemCheck::free(void *ap)
 // Insert a block in free list -- a la K&R
 void MemCheck::_free(MemCheckHeader *bp)
 {
-    // search neighbouring blocks in free list
+    // Search neighbouring blocks in free list
     MemCheckHeader *p;
     for (p = freep; !(bp > p && bp < p->s.ptr); p = p->s.ptr)
     {
@@ -227,7 +232,7 @@ void MemCheck::_free(MemCheckHeader *bp)
 
     if (bp + bp->s.size == p->s.ptr)
     {
-	// merge with right neighbour
+	// Merge with right neighbour
 	bp->s.size += p->s.ptr->s.size;
 	bp->s.ptr = p->s.ptr->s.ptr;
     }
@@ -236,7 +241,7 @@ void MemCheck::_free(MemCheckHeader *bp)
 
     if (p + p->s.size == bp)
     {
-	// merge with left neighbour
+	// Merge with left neighbour
 	p->s.size += bp->s.size;
 	p->s.ptr = bp->s.ptr;
     }
@@ -292,5 +297,3 @@ int MemCheck::OK()
 
     return 1;
 }
-
-    
