@@ -111,7 +111,7 @@ char UndoBuffer_rcsid[] =
 
 
 #ifndef LOG_UNDO_BUFFER
-#define LOG_UNDO_BUFFER 1
+#define LOG_UNDO_BUFFER 0
 #endif
 
 #define REMAP_COMMAND "@remap "
