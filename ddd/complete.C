@@ -556,7 +556,7 @@ static char *complete_readline(char *text, int state)
 	return 0;
 
     char *ret = (char *)malloc(completion.length() + 1);
-    strcpy(ret, completion);
+    strcpy(ret, completion.chars());
     return ret;
 }
 
