@@ -150,23 +150,7 @@ void popup_shell(Widget w)
     // Deiconify window
     XMapWindow(XtDisplay(w), XtWindow(w));
 
-    // Place window on top
-    XWindowChanges changes;
-    changes.stack_mode = Above;
-    XReconfigureWMWindow(XtDisplay(w), XtWindow(w), 
-			 XScreenNumberOfScreen(XtScreen(w)),
-			 CWStackMode, &changes);
-
-#if 0
-    wait_until_mapped(w);
-
-    // Get focus
-    XSetInputFocus(XtDisplay(w), XtWindow(w), RevertToParent, 
-		   XtLastTimestampProcessed(XtDisplay(w)));
-#endif
-
-    // Try this one
-    XmProcessTraversal(w, XmTRAVERSE_CURRENT);
+    raise_shell(w);
 }
 
 void popdown_shell(Widget w)

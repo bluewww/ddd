@@ -50,6 +50,7 @@ extern void wm_set_group_leader(Display *display, Window shell,
 
 // Misc functions
 void wait_until_mapped(Widget w);
+void raise_shell(Widget w);
 
 #endif // _DDD_wm_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -142,3 +142,27 @@ void wait_until_mapped(Widget w)
     XSync(XtDisplay(w), false);
     XmUpdateDisplay(w);
 }
+
+void raise_shell(Widget w)
+{
+    if (w == 0)
+	return;
+
+    // Place window on top
+    XWindowChanges changes;
+    changes.stack_mode = Above;
+    XReconfigureWMWindow(XtDisplay(w), XtWindow(w), 
+			 XScreenNumberOfScreen(XtScreen(w)),
+			 CWStackMode, &changes);
+
+#if 0
+    wait_until_mapped(w);
+
+    // Get focus
+    XSetInputFocus(XtDisplay(w), XtWindow(w), RevertToParent, 
+		   XtLastTimestampProcessed(XtDisplay(w)));
+#endif
+
+    // Try this one
+    XmProcessTraversal(w, XmTRAVERSE_CURRENT);
+}

@@ -57,6 +57,7 @@ char HelpCB_rcsid[] =
 #include "Delay.h"
 #include "StringA.h"
 #include "IntArray.h"
+#include "windows.h"
 
 struct resource_values {
     XmString helpString;
@@ -252,6 +253,7 @@ static void _MStringHelpCB(Widget widget,
 
     // Popup help_dialog
     XtManageChild(help_dialog);
+    raise_shell(help_dialog);
 }
 
 
@@ -487,6 +489,7 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 
     // Enable Text Window
     XtManageChild(text_dialog);
+    raise_shell(text_dialog);
 }
 
 
@@ -541,6 +544,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
     // Enable Text Window
     XtManageChild(text_dialog);
+    raise_shell(text_dialog);
 }
 
 

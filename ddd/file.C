@@ -56,6 +56,7 @@ const char file_rcsid[] =
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"
+#include "windows.h"
 
 #include <Xm/Xm.h>
 #include <Xm/FileSB.h>
@@ -559,6 +560,7 @@ void gdbOpenFileCB(Widget w, XtPointer, XtPointer)
     }
 
     XtManageChild(dialog);
+    raise_shell(dialog);
 }
 
 void gdbOpenCoreCB(Widget w, XtPointer, XtPointer)
@@ -575,6 +577,7 @@ void gdbOpenCoreCB(Widget w, XtPointer, XtPointer)
     }
 
     XtManageChild(dialog);
+    raise_shell(dialog);
 }
 
 void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
@@ -591,6 +594,7 @@ void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
     }
 
     XtManageChild(dialog);
+    raise_shell(dialog);
 }
 
 // Synchronize file dialogs with current directory

@@ -83,6 +83,7 @@ char DataDisp_rcsid[] =
 #include "ArgField.h"
 #include "verify.h"
 #include "windows.h"
+#include "wm.h"
 
 // System includes
 #include <iostream.h>
@@ -2542,7 +2543,9 @@ void DataDisp::fill_labels()
 void DataDisp::EditDisplaysCB(Widget, XtPointer, XtPointer)
 {
     XtManageChild(edit_displays_dialog_w);
+    raise_shell(edit_displays_dialog_w);
 }
+
 //----------------------------------------------------------------------------
 // Value Editor
 //----------------------------------------------------------------------------

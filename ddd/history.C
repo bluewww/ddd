@@ -51,6 +51,7 @@ const char history_rcsid[] =
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"
+#include "windows.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -331,6 +332,7 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
     if (gdb_history_w)
     {
 	XtManageChild(gdb_history_w);
+	raise_shell(gdb_history_w);
 	return;
     }
 
