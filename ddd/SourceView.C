@@ -86,6 +86,7 @@ char SourceView_rcsid[] =
 #include "UndoBuffer.h"
 #include "TimeOut.h"
 #include "assert.h"
+#include "buttons.h"
 #include "charsets.h"
 #include "cmdtty.h"
 #include "cook.h"
@@ -3225,6 +3226,7 @@ void SourceView::create_shells()
 
     set_sensitive(up_w,   False);
     set_sensitive(down_w, False);
+    refresh_buttons();
 
     arg = 0;
     frame_list_w = XmSelectionBoxGetChild(stack_dialog_w, XmDIALOG_LIST);
@@ -6307,6 +6309,7 @@ void SourceView::EditBreakpointsCB(Widget, XtPointer, XtPointer)
 void SourceView::StackDialogPoppedDownCB (Widget, XtPointer, XtPointer)
 {
     stack_dialog_popped_up = false;
+    refresh_buttons();
 }
 
 void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
@@ -6320,6 +6323,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 
     set_sensitive(up_w,   cbs->item_position > 1);
     set_sensitive(down_w, cbs->item_position < count);
+    refresh_buttons();
 
     switch (gdb->type())
     {
@@ -6385,6 +6389,7 @@ void SourceView::ViewStackFramesCB(Widget, XtPointer, XtPointer)
     refresh_stack_frames();
     manage_and_raise(stack_dialog_w);
     stack_dialog_popped_up = true;
+    refresh_buttons();
 }
 
 // Remove file paths and argument lists from `where' output
@@ -6502,6 +6507,7 @@ void SourceView::set_past_exec_pos(bool set)
     set_sensitive(all_registers_w, !set);
     set_sensitive(int_registers_w, !set);
 
+    refresh_buttons();
     update_glyphs();
 }
 
@@ -6572,6 +6578,7 @@ void SourceView::process_frame (string& frame_output)
 
 	set_sensitive(up_w,   pos > 1);
 	set_sensitive(down_w, pos < count);
+	refresh_buttons();
 
 	update_glyphs();
 	current_frame = frame;
@@ -6580,6 +6587,7 @@ void SourceView::process_frame (string& frame_output)
     {
 	set_sensitive(up_w,   False);
 	set_sensitive(down_w, False);
+	refresh_buttons();
 	current_frame = -1;
     }
 }
@@ -6652,12 +6660,22 @@ void SourceView::set_frame_pos(int arg, int pos)
 
     set_sensitive(up_w,   pos > 1);
     set_sensitive(down_w, pos < items);
+    refresh_buttons();
 }
 
 bool SourceView::where_required()    { return stack_dialog_popped_up; }
 bool SourceView::register_required() { return register_dialog_popped_up; }
 bool SourceView::thread_required()   { return thread_dialog_popped_up; }
 
+bool SourceView::can_go_up()
+{
+    return !where_required() || XtIsSensitive(up_w);
+}
+
+bool SourceView::can_go_down()
+{
+    return !where_required() || XtIsSensitive(down_w);
+}
 
 
 //-----------------------------------------------------------------------------

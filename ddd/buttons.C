@@ -621,6 +621,24 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 	    return rm(recent_files[index]);
     }
 
+    if (help_name == "Undo")
+    {
+	string action = undo_buffer.undo_action();
+	if (action != NO_GDB_ANSWER)
+	    return rm("Undo " + action);
+	else
+	    return rm("Undo last action");
+    }
+
+    if (help_name == "Redo")
+    {
+	string action = undo_buffer.redo_action();
+	if (action != NO_GDB_ANSWER)
+	    return rm("Redo " + action);
+	else
+	    return rm("Redo next action");
+    }
+
     string tip = NO_GDB_ANSWER;
     if (tip == NO_GDB_ANSWER)
 	tip = gdbTip(help_name);
@@ -864,6 +882,38 @@ void verify_button(Widget button)
 // Button Creation
 //-----------------------------------------------------------------------------
 
+static WidgetArray up_buttons;
+static WidgetArray down_buttons;
+static WidgetArray undo_buttons;
+static WidgetArray redo_buttons;
+
+void refresh_buttons()
+{
+    int i;
+    for (i = 0; i < up_buttons.size(); i++)
+	set_sensitive(up_buttons[i], source_view->can_go_up());
+    for (i = 0; i < down_buttons.size(); i++)
+	set_sensitive(down_buttons[i], source_view->can_go_down());
+    for (i = 0; i < undo_buttons.size(); i++)
+	set_sensitive(undo_buttons[i], 
+		      undo_buffer.undo_action() != NO_GDB_ANSWER);
+    for (i = 0; i < redo_buttons.size(); i++)
+	set_sensitive(redo_buttons[i], 
+		      undo_buffer.redo_action() != NO_GDB_ANSWER);
+}
+
+static void RemoveFromArrayCB(Widget w, XtPointer client_data, XtPointer)
+{
+    WidgetArray& arr = *((WidgetArray *)client_data);
+    arr -= w;
+}
+
+static void register_button(WidgetArray& arr, Widget w)
+{
+    arr += w;
+    XtAddCallback(w, XtNdestroyCallback, RemoveFromArrayCB, XtPointer(&arr));
+}
+
 // Create a button work area from BUTTON_LIST named NAME
 Widget make_buttons(Widget parent, const string& name, 
 		    String button_list)
@@ -1044,15 +1094,26 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 	else if (name == "Apply")
 	    callback = gdbApplyCB;
 	else if (name == "Undo" || name == "Back")
+	{
 	    callback = gdbUndoCB;
+	    register_button(undo_buttons, button);
+	}
 	else if (name == "Redo" || name == "Forward")
+	{
 	    callback = gdbRedoCB;
+	    register_button(redo_buttons, button);
+	}
 	else if (name == "Edit")
 	    callback = gdbEditSourceCB;
 	else if (name == "Make")
 	    callback = gdbMakeAgainCB;
 	else if (name == "Reload")
 	    callback = gdbReloadSourceCB;
+
+	if (name == "up")
+	    register_button(up_buttons, button);
+	else if (name == "down")
+	    register_button(down_buttons, button);
 
 	// Be sure to verify whether the button actually exists
 	verify_button(button);

@@ -700,6 +700,10 @@ public:
     static bool register_required();
     static bool thread_required();
 
+    // Check whether we can go up or down
+    static bool can_go_up();
+    static bool can_go_down();
+
     // Check whether source files and code are to be cached
     static bool cache_source_files;
     static bool cache_machine_code;

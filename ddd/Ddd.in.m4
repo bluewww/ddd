@@ -4653,15 +4653,13 @@ Ddd*?*Undo.helpString:	\
 LBL(Undo)\n\
 \n\
 Undo last action.
-Ddd*?*Undo.tipString: \
-@rm Undo last action
+Ddd*?*Undo.tipString: 
 
 Ddd*?*Redo.helpString:	\
 LBL(Redo)\n\
 \n\
 Redo next action.
-Ddd*?*Redo.tipString: \
-@rm Redo next action
+Ddd*?*Redo.tipString: 
 
 Ddd*?*Edit.helpString:	\
 LBL(Edit)\n\

@@ -39,6 +39,7 @@ char UndoBuffer_rcsid[] =
 #include "Command.h"
 #include "DataDisp.h"
 #include "SourceView.h"
+#include "buttons.h"
 #include "cook.h"
 #include "ddd.h"
 #include "disp-read.h"
@@ -99,31 +100,47 @@ void UndoBuffer::add(const UndoBufferEntry& entry)
 	history = new_history;
 	history_position = history.size();
     }
+    else
+    {
+	// Added a non-exec position - remove all later entries,
+	// except for exec positions
+	UndoBufferArray new_history;
+	for (int i = 0; i < history.size(); i++)
+	{
+	    if (i < history_position || history[i].exec_pos)
+		new_history += history[i];
+	}
+	history = new_history;
+    }
 
     if (history_position < history.size())
     {
-	history[history_position++] = entry;
+	// Insert after current
+	//
+	// BEFORE        AFTER
+	// -----------   -----------
+	//  entries...    entries...
+	// >state         state
+	//  entries...   >entry
+	//                entries...
+	UndoBufferArray new_history;
+	int i;
+	for (i = 0; i <= history_position - 1; i++)
+	    new_history += history[i];
+	new_history += entry;
+	for (i = history_position; i < history.size(); i++)
+	    new_history += history[i];
 
-	if (!entry.exec_pos)
-	{
-	    // Added a non-exec position - remove all later entries,
-	    // except for exec positions
-	    UndoBufferArray new_history;
-	    for (int i = 0; i < history.size(); i++)
-	    {
-		if (i < history_position || history[i].exec_pos)
-		    new_history += history[i];
-	    }
-	    history = new_history;
-	}
+	history_position++;
     }
     else
     {
+	// Add at end
 	history += entry;
 	history_position = history.size();
     }
 
-    check_past_exec_pos();
+    done();
 }
 
 // Add command COMMAND to history.
@@ -271,7 +288,7 @@ void UndoBuffer::add_command(const string& command)
 	own_processed++;
     }
 
-    check_past_exec_pos();
+    done();
 }
 
 
@@ -312,7 +329,7 @@ void UndoBuffer::add(const string& name, const string& value, bool exec_pos)
     if (new_entry.has(name))
 	add(new_entry);
 
-    check_past_exec_pos();
+    done();
 }
 
 
@@ -470,7 +487,7 @@ void UndoBuffer::process_command(const UndoBufferEntry& entry, int direction)
 	gdb_command(c);
     }
 
-    check_past_exec_pos();
+    done();
 }
 
 void UndoBuffer::process_status(const UndoBufferEntry& entry,
@@ -542,7 +559,7 @@ void UndoBuffer::process_status(const UndoBufferEntry& entry,
 
     history_position += direction;
 
-    check_past_exec_pos();
+    done();
 }
 
 void UndoBuffer::set_past_exec_pos(bool set)
@@ -568,8 +585,8 @@ void UndoBuffer::set_past_exec_pos(bool set)
 }
 
 
-// True iff we're at some past execution position
-void UndoBuffer::check_past_exec_pos()
+// Refresh all settings
+void UndoBuffer::done()
 {
     log();
     assert(OK());
@@ -583,6 +600,7 @@ void UndoBuffer::check_past_exec_pos()
 	}
 
     set_past_exec_pos(set);
+    refresh_buttons();
 }
 
 // Undo and redo commands
@@ -669,7 +687,7 @@ void UndoBuffer::clear()
     history_position = 0;
     locked           = false;
 
-    check_past_exec_pos();
+    done();
 }
 
 // Clear execution positions
@@ -686,7 +704,7 @@ void UndoBuffer::clear_exec_pos()
 
     history = new_history;
 
-    check_past_exec_pos();
+    done();
 }
 
 // Goto last known execution position
@@ -717,7 +735,7 @@ void UndoBuffer::goto_current_exec_pos()
     }
 
     history_position = history.size();
-    check_past_exec_pos();
+    done();
 }
 
 // Invariant
@@ -726,26 +744,6 @@ bool UndoBuffer::OK()
     // HISTORY_POSITION must be within bounds.
     assert(history.size() == 0 || history_position > 0);
     assert(history_position <= history.size());
-
-    // All non-exec positions must follow exec positions.
-    bool non_exec_found = false;
-    bool exec_found = true;
-    for (int i = 0; i < history.size(); i++)
-    {
-	if (history[i].command)
-	{
-	    assert(!history[i].exec_pos);
-	}
-	else if (history[i].exec_pos)
-	{
-	    assert(!non_exec_found);
-	    exec_found = true;
-	}
-	else
-	{
-	    non_exec_found = true;
-	}
-    }
 
     return true;
 }

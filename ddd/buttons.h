@@ -46,6 +46,9 @@ void set_buttons(Widget buttons, String list, bool manage = true);
 // Make BUTTON insensitive if it is not supported
 void verify_button(Widget button);
 
+// Refresh button sensitivity
+void refresh_buttons();
+
 // Maximum length of value in value tip and in status line
 extern int max_value_tip_length;
 extern int max_value_doc_length;

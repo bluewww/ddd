@@ -109,6 +109,9 @@ private:
     static void remap_breakpoint(int old_bp_nr, int new_bp_nr);
     static void remap_breakpoint(string& cmd, int old_bp_nr, int new_bp_nr);
 
+    // Enter or leave `past exec' mode
+    static void set_past_exec_pos(bool set);
+
 protected:
     // Add new entry
     static void add(const UndoBufferEntry& entry);
@@ -119,9 +122,8 @@ protected:
     // Log current position
     static void log();
 
-    // Enter or leave `past exec' mode
-    static void set_past_exec_pos(bool set);
-    static void check_past_exec_pos();
+    // Call when all is done
+    static void done();
 
     // Get a short action description from COMMAND
     static string action(const string& command);
