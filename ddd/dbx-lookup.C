@@ -197,7 +197,7 @@ int line_of_listing(string& listing, bool silent)
 	listing = listing.after('\n');
     }
 
-    if (message != "" && !silent)
+    if (!silent)
 	post_gdb_message(message);
 
     int idx = -1;

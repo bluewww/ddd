@@ -34,6 +34,7 @@
 #endif
 
 #include "strclass.h"
+#include "bool.h"
 #include <X11/Intrinsic.h>
 
 // Error handling
@@ -44,7 +45,8 @@
 // command is used.  Each function returns the created, managed, and
 // raised widget, or 0 if no widget was shown.
 extern Widget post_gdb_busy(Widget origin = 0);
-extern Widget post_gdb_message(string text, Widget origin = 0);
+extern Widget post_gdb_message(string text, bool prompt = true, 
+			       Widget origin = 0);
 extern Widget post_gdb_yn(string text, Widget origin = 0);
 extern Widget post_gdb_died(string reason, int gdb_status, Widget origin = 0);
 extern Widget post_error(string text, String name = 0, Widget origin = 0);

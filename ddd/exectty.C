@@ -278,7 +278,7 @@ static int gdb_set_tty(string tty_name = "",
 		else if (reply != "")
 		{
 		    if (!silent)
-			post_gdb_message(reply, origin);
+			post_gdb_message(reply, true, origin);
 		    return -1;
 		}
 		else
@@ -297,7 +297,7 @@ static int gdb_set_tty(string tty_name = "",
 	    else if (reply != "")
 	    {
 		if (!silent)
-		    post_gdb_message(reply, origin);
+		    post_gdb_message(reply, true, origin);
 		return -1;
 	    }
 	}
@@ -325,7 +325,7 @@ static int gdb_set_tty(string tty_name = "",
 		    else if (reply != "")
 		    {
 			if (!silent)
-			    post_gdb_message(reply, origin);
+			    post_gdb_message(reply, true, origin);
 			return -1;
 		    }
 		    else
@@ -344,7 +344,7 @@ static int gdb_set_tty(string tty_name = "",
 			else if (reply != "")
 			{
 			    if (!silent)
-				post_gdb_message(reply, origin);
+				post_gdb_message(reply, true, origin);
 			    return -1;
 			}
 			else
@@ -368,7 +368,7 @@ static int gdb_set_tty(string tty_name = "",
 		else if (reply != "")
 		{
 		    if (!silent)
-			post_gdb_message(reply, origin);
+			post_gdb_message(reply, true, origin);
 		    return -1;
 		}
 	    }

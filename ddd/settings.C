@@ -60,6 +60,7 @@ char settings_rcsid[] =
 #include "GDBAgent.h"
 #include "HelpCB.h"
 #include "LessTifH.h"
+#include "SmartC.h"
 #include "SourceView.h"
 #include "StringSA.h"
 #include "VarArray.h"
@@ -1966,7 +1967,21 @@ string get_defines(DebuggerType type)
     return defines;
 }
 
+// True iff COMMAND is a defined command
+bool is_defined_cmd(const string& command)
+{
+    if (gdb->type() != GDB)
+	return false;		// Not supported yet
 
+    update_defines();
+
+    string word = command;
+    strip_space(word);
+    if (word.contains(' '))
+	word = word.before(' ');
+
+    return defs.has(word);
+}
 
 
 //-----------------------------------------------------------------------
@@ -2094,34 +2109,13 @@ static void refresh_toggles()
     refresh_toggle(ConsoleTarget);
 }
 
-static void sort(StringArray& a)
-{
-    // Shell sort -- simple and fast
-    int h = 1;
-    do {
-	h = h * 3 + 1;
-    } while (h <= a.size());
-    do {
-	h /= 3;
-	for (int i = h; i < a.size(); i++)
-	{
-	    string v = a[i];
-	    int j;
-	    for (j = i; j >= h && a[j - h] > v; j -= h)
-		a[j] = a[j - h];
-	    if (i != j)
-		a[j] = v;
-	}
-    } while (h != 1);
-}
-
 static void refresh_combo_box()
 {
     // Refresh combo box
     StringArray commands;
     for (StringStringAssocIter iter(defs); iter.ok(); iter++)
 	commands += iter.key();
-    sort(commands);
+    smart_sort(commands);
     ComboBoxSetList(name_w, commands);
 }
 

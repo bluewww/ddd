@@ -273,21 +273,32 @@ Widget post_gdb_died(string reason, int gdb_status, Widget w)
 // GDB issued a message
 //-----------------------------------------------------------------------------
 
+struct PostInfo {
+    string text;
+    bool prompt;
+
+    PostInfo(const string& t, bool p)
+	: text(t), prompt(p)
+    {}
+};
+
 static void GDBOutCB(XtPointer client_data, XtIntervalId *)
 {
-    string *text_ptr = (string *)client_data;
-    gdb_out("\r");
-    if (*text_ptr != "")
-	gdb_out(*text_ptr + "\n");
-    prompt();
+    PostInfo *info = (PostInfo *)client_data;
+    if (info->text != "")
+    {
+	gdb_out("\r" + info->text + "\n");
+	if (info->prompt)
+	    prompt();
+    }
 
-    delete text_ptr;
+    delete info;
 }
 
-Widget post_gdb_message(string text, Widget w)
+Widget post_gdb_message(string text, bool prompt, Widget w)
 {
     strip_trailing_space(text);
-    if (text == NO_GDB_ANSWER)
+    if (text == NO_GDB_ANSWER || text == "")
 	return 0;
 
     if (ddd_is_exiting)
@@ -302,14 +313,11 @@ Widget post_gdb_message(string text, Widget w)
 	// We don't output this immediately, because we might be in a
 	// private input state (private_gdb_input or tty_gdb_input
 	// might be set)
-	string *text_ptr = new string(text);
+	PostInfo *info = new PostInfo(text, prompt);
 	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0,
-			GDBOutCB, XtPointer(text_ptr));
+			GDBOutCB, XtPointer(info));
 	return 0;
     }
-
-    if (text == "")
-	return 0;
 
     Arg args[10];
     int arg = 0;

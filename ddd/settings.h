@@ -85,6 +85,9 @@ extern void set_need_defines(bool val = true);
 // Get current definitions
 extern string get_defines(DebuggerType type);
 
+// True if defined command
+extern bool is_defined_cmd(const string& command);
+
 // Define command
 extern void dddDefineCommandCB(Widget, XtPointer, XtPointer);
 
