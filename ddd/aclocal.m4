@@ -950,8 +950,7 @@ if test "$GXX" = yes; then
   ICE_EFFECTIVE_CXX
   CXXOPT="-DNDEBUG"
   CXXDEBUG=
-  # As of GCC 2.8.0, -Wall no longer implies -W
-  CXXWARNINGS="-W -Wall"
+  CXXWARNINGS="-Wall"
   CXXSTATIC_BINDING="-Bstatic"
   CXXDYNAMIC_BINDING="-Bdynamic"
   CXXSTUFF=
