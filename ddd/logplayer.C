@@ -147,7 +147,9 @@ void logplayer(const string& logname)
 	    // Send out accumulated output
 	    if (out.contains('\n'))
 	    {
-		last_prompt = out.after('\n', -1);
+		string prompt = out.after('\n', -1);
+		if (prompt != "")
+		    last_prompt = prompt;
 
 		if (!scanning)
 		{
