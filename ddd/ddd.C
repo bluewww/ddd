@@ -317,6 +317,9 @@ static void CheckDragCB(Widget, XtPointer client_data, XtPointer call_data);
 // Verify whether buttons are active
 static void verify_buttons(MMDesc *items);
 
+// Register shells of menu ITEMS.
+void register_menu_shell(MMDesc *items);
+
 // Fix the size of the status line
 static void fix_status_size();
 
@@ -1082,12 +1085,6 @@ static MMDesc common_menubar[] =
     MMEnd
 };
 
-static MMDesc lookup_menu[] =
-{
-    { "lookupType",      MMPush | MMInsensitive, { gdbLookupTypeCB } },
-    MMEnd
-};
-
 struct PrintItems {
     enum ArgCmd { PrintRef, Whatis };
 };
@@ -1109,14 +1106,27 @@ static MMDesc display_menu[] =
     MMEnd
 };
 
+struct BreakItems {
+    enum ArgCmd { TempBreak, Enable, ContUntil, SetPC };
+};
+
+static MMDesc break_menu[] = 
+{
+    { "tempBreakAt", MMPush, { gdbTempBreakAtCB }},
+    { "enable",      MMPush, { gdbToggleEnableCB }},
+    { "contUntil",   MMPush, { gdbContUntilCB }},
+    { "setPC",       MMPush, { gdbSetPCCB }},
+    MMEnd
+};
+
 struct ArgItems {
     enum ArgCmd { Lookup, Break, Print, Display, FindForward, FindBackward };
 };
 
 static MMDesc arg_cmd_area[] = 
 {
-    {"lookup",        MMPush,  { gdbLookupCB       }, lookup_menu  },
-    {"breakAt",       MMPush,  { gdbToggleBreakCB  }},
+    {"lookup",        MMPush,  { gdbLookupCB       }},
+    {"breakAt",       MMPush,  { gdbToggleBreakCB  }, break_menu   },
     {"print",         MMPush,  { gdbPrintCB        }, print_menu   },
     {"display",       MMPush,  { gdbDisplayCB      }, display_menu },
     {"findBackward",  MMPush,  { gdbFindBackwardCB }},
@@ -1768,6 +1778,7 @@ int main(int argc, char *argv[])
     Widget menubar_w = MMcreateMenuBar (main_window, "menubar", menubar);
     MMaddCallbacks(menubar);
     verify_buttons(menubar);
+    register_menu_shell(menubar);
 
     // Create Paned Window
     Widget paned_work_w = 
@@ -1810,6 +1821,7 @@ int main(int argc, char *argv[])
 	    MMcreateMenuBar (data_main_window_w, "menubar", data_menubar);
 	MMaddCallbacks(data_menubar);
 	verify_buttons(data_menubar);
+	register_menu_shell(data_menubar);
 
 	data_disp_parent = 
 	    verify(XtVaCreateManagedWidget ("data_paned_work_w",
@@ -1869,6 +1881,7 @@ int main(int argc, char *argv[])
 	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
 	MMaddCallbacks(source_menubar);
 	verify_buttons(source_menubar);
+	register_menu_shell(source_menubar);
 
 	source_view_parent = 
 	    verify(XtVaCreateManagedWidget ("source_paned_work_w",
@@ -1904,6 +1917,7 @@ int main(int argc, char *argv[])
     MMcreateWorkArea(arg_cmd_w, "arg_cmd_area", arg_cmd_area);
     MMaddCallbacks(arg_cmd_area);
     XtManageChild(arg_cmd_w);
+    register_menu_shell(arg_cmd_area);
 
     XtAddCallback(source_arg->widget(), XmNactivateCallback, 
 		  ActivateCB, 
@@ -2507,11 +2521,28 @@ static void install_button_tips()
     for (int i = 0; i < shells.size(); i++)
     {
 	Widget shell = shells[i];
-	while (shell && !XmIsVendorShell(shell))
+	while (shell && !XmIsVendorShell(shell) && !XmIsMenuShell(shell))
 	    shell = XtParent(shell);
 	if (shell)
-	    InstallButtonTips(shell, true);
+	    InstallButtonTips(shell);
     }
+}
+
+void register_menu_shell(MMDesc *items)
+{
+    if (items == 0)
+	return;
+
+    // Register shell of this menu
+    Widget shell = items[0].widget;
+    while (shell && !XtIsShell(shell))
+	shell = XtParent(shell);
+    if (shell)
+	Delay::register_shell(shell);
+
+    // Register shells of submenus
+    for (int i = 0; items[i].widget != 0; i++)
+	register_menu_shell(items[i].items);
 }
 
 
@@ -3318,6 +3349,7 @@ static Widget add_panel(Widget parent, Widget buttons,
     Widget panel = MMcreatePanel(form, "panel", items);
     MMaddCallbacks(items);
     XtManageChild(panel);
+    register_menu_shell(items);
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight | CWWidth;
@@ -3878,10 +3910,23 @@ void update_arg_buttons()
     set_sensitive(arg_cmd_area[ArgItems::Print].widget, can_print);
     set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);
 
-    if (have_break_at_arg())
+    bool have_break = have_break_at_arg();
+    if (have_break)
 	set_label(arg_cmd_area[ArgItems::Break].widget, "Clear at ()");
     else
 	set_label(arg_cmd_area[ArgItems::Break].widget, "Break at ()");
+
+    manage_child(break_menu[BreakItems::TempBreak].widget, !have_break);
+    manage_child(break_menu[BreakItems::Enable].widget,    have_break);
+    manage_child(break_menu[BreakItems::ContUntil].widget, !have_break);
+
+    bool break_enabled = break_enabled_at_arg();
+    if (break_enabled)
+	set_label(break_menu[BreakItems::Enable].widget, 
+		  "Disable Breakpoint at ()");
+    else
+	set_label(break_menu[BreakItems::Enable].widget, 
+		  "Enable Breakpoint at ()");
 }
 
 static void source_argHP(void *, void *, void *)

@@ -44,7 +44,11 @@ extern void gdbLookupCB       (Widget, XtPointer, XtPointer);
 extern void gdbFindForwardCB  (Widget, XtPointer, XtPointer);
 extern void gdbFindBackwardCB (Widget, XtPointer, XtPointer);
 
-extern void gdbLookupTypeCB   (Widget, XtPointer, XtPointer);
+extern void gdbTempBreakAtCB  (Widget, XtPointer, XtPointer);
+extern void gdbContUntilCB    (Widget, XtPointer, XtPointer);
+extern void gdbToggleEnableCB (Widget, XtPointer, XtPointer);
+extern void gdbSetPCCB        (Widget, XtPointer, XtPointer);
+
 extern void gdbPrintRefCB     (Widget, XtPointer, XtPointer);
 extern void gdbWhatisCB       (Widget, XtPointer, XtPointer);
 extern void gdbDispRefCB      (Widget, XtPointer, XtPointer);
@@ -56,6 +60,7 @@ extern void gdbGoBackCB       (Widget, XtPointer, XtPointer);
 extern void gdbGoForwardCB    (Widget, XtPointer, XtPointer);
 
 extern bool have_break_at_arg();
+extern bool break_enabled_at_arg();
 
 #endif // _DDD_source_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -76,11 +76,6 @@ void gdbGoForwardCB(Widget, XtPointer, XtPointer)
     source_view->go_forward();
 }
 
-void gdbLookupTypeCB(Widget, XtPointer, XtPointer)
-{
-    // FIXME...
-}
-
 
 //-----------------------------------------------------------------------------
 // Printing
@@ -138,76 +133,56 @@ bool have_break_at_arg()
     return source_view->bp_at(source_arg->get_string()) != 0;
 }
 
-static void set_break_at_arg(Widget w, bool set)
+bool break_enabled_at_arg()
 {
-    string arg = source_arg->get_string();
-    string pos;
-
-    switch (gdb->type())
-    {
-    case GDB:
-	if (arg != "" && arg[0] == '0')
-	    arg = "*" + arg; // Address given
-	if (set)
-	    gdb_command("break " + arg, w);
-	else
-	    gdb_command(SourceView::clear_command(arg));
-	break;
-
-    case DBX:
-	if (arg.matches(rxint))
-	{
-	    // Line number given
-	    if (set)
-		gdb_command("stop at " + arg, w);
-	    else
-		gdb_command(SourceView::clear_command(arg));
-	}
-	else if (arg.contains(":") && !arg.contains("::"))
-	{
-	    // Function:Line given
-	    pos = arg;
-	}
-	else
-	{
-	    // Function name given
-	    pos = dbx_lookup(arg);
-	}
-
-	if (pos != "")
-	{
-	    gdb_command("file " + pos.before(":"), w);
-	    if (set)
-		gdb_command("stop at " + pos.after(":"), w);
-	    else
-		gdb_command(SourceView::clear_command(pos.after(":")), w);
-	}
-	break;
-
-    case XDB:
-	if (set)
-	    gdb_command("b " + arg, w);
-	else
-	    gdb_command(SourceView::clear_command(arg), w);
-	break;
-    }
+    BreakPoint *bp = source_view->bp_at(source_arg->get_string());
+    return bp != 0 && bp->enabled();
 }
-
 
 void gdbBreakAtCB(Widget w, XtPointer, XtPointer)
 {
-    set_break_at_arg(w, true);
+    SourceView::create_bp(source_arg->get_string(), w);
+}
+
+void gdbTempBreakAtCB(Widget w, XtPointer, XtPointer)
+{
+    SourceView::create_temp_bp(source_arg->get_string(), w);
 }
 
 void gdbClearAtCB(Widget w, XtPointer, XtPointer)
 {
-    set_break_at_arg(w, false);
+    SourceView::clear_bp(source_arg->get_string(), w);
 }
 
 void gdbToggleBreakCB(Widget w, XtPointer, XtPointer)
 {
-    set_break_at_arg(w, !have_break_at_arg());
+    SourceView::set_bp(source_arg->get_string(), !have_break_at_arg(), 
+		       false, w);
 }
+
+void gdbContUntilCB(Widget w, XtPointer, XtPointer)
+{
+    SourceView::temp_n_cont(source_arg->get_string(), w);
+}
+
+void gdbSetPCCB(Widget w, XtPointer, XtPointer)
+{
+    SourceView::move_pc(source_arg->get_string(), w);
+}
+
+void gdbToggleEnableCB(Widget w, XtPointer, XtPointer)
+{
+    BreakPoint *bp = source_view->bp_at(source_arg->get_string());
+    if (bp != 0)
+    {
+	if (bp->enabled())
+	    SourceView::disable_bp(bp->number(), w);
+	else
+	    SourceView::enable_bp(bp->number(), w);
+    }
+}
+
+
 
 
 //-----------------------------------------------------------------------------
