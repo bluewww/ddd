@@ -2139,6 +2139,7 @@ AC_DEFUN([ICE_FIND_ATHENA],
 [
 AC_REQUIRE([AC_PATH_XTRA])
 AC_REQUIRE([ICE_CXX_ISYSTEM])
+AC_REQUIRE([ICE_FIND_XPM])
 athena_includes=
 athena_libraries=
 AC_ARG_WITH(athena,
