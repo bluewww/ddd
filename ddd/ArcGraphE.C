@@ -170,7 +170,7 @@ void ArcGraphEdge::drawLine(Widget w,
     pos_from = new_pos_from;
     pos_to   = new_pos_to;
 
-    // Draw circle segment linking POS_FROM, POS_TO, and POS_HINT
+    // Draw circle segment POS_FROM -> POS_HINT or POS_HINT -> POS_TO
 
     // Determine the arc center
     double x, y;
@@ -195,19 +195,21 @@ void ArcGraphEdge::drawLine(Widget w,
 
     double alpha_from = -atan2(pos_from[Y] - c[Y], pos_from[X] - c[X]);
     double alpha_to   = -atan2(pos_to[Y] - c[Y],   pos_to[X] - c[X]);
-    
-    int angle_from = (int(alpha_from * 360.0 / (M_PI * 2.0)) + 360) % 360;
-    int angle_to   = (int(alpha_to   * 360.0 / (M_PI * 2.0)) + 360) % 360;
 
-    int path = (360 + angle_to - angle_from) % 360;
+    const int base = 360 * 64;
 
-    if (abs(path) > 180)
-	path = (path - 360) % 360;
+    int angle_from = (int(alpha_from * base / (M_PI * 2.0)) + base) % base;
+    int angle_to   = (int(alpha_to   * base / (M_PI * 2.0)) + base) % base;
+
+    int path = (base + angle_to - angle_from) % base;
+
+    if (abs(path) > base / 2)
+	path = (path - base) % base;
 
     XDrawArc(XtDisplay(w), XtWindow(w), gc.edgeGC,
 	     c[X] - int(radius), c[Y] - int(radius),
 	     unsigned(radius) * 2, unsigned(radius) * 2,
-	     angle_from * 64, path * 64);
+	     angle_from, path);
 
     if (from()->isHint())
     {
