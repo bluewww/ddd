@@ -2465,11 +2465,8 @@ void SourceView::refresh_source_bp_disp()
 	int i;
 	for (i = 0; i < bps.size(); i++)
 	{
-	    BreakPoint* bp = bp_map.get(bps[i]);
-	    assert (bp);
-	    insert_string += bp->enabled() ? '#' : '_';
-	    insert_string += bp->number_str();
-	    insert_string += bp->enabled() ? '#' : '_';
+	    BreakPoint *bp = bp_map.get(bps[i]);
+	    insert_string += bp->symbol();
 	}
 	if (int(insert_string.length()) >= indent_amount(source_text_w) - 1)
 	{
@@ -2544,11 +2541,7 @@ void SourceView::refresh_code_bp_disp()
 	     bp = bp_map.next(ref))
 	{
 	    if (bp->address() == address)
-	    {
-		insert_string += bp->enabled() ? '#' : '_';
-		insert_string += bp->number_str();
-		insert_string += bp->enabled() ? '#' : '_';
-	    }
+		insert_string += bp->symbol();
 	}
 	insert_string += replicate(' ', indent_amount(code_text_w));
 	insert_string = insert_string.before(indent_amount(code_text_w));
@@ -6938,6 +6931,13 @@ void SourceView::set_display_glyphs(bool set)
 {
     if (display_glyphs != set)
     {
+	// Save current execution position
+	string file   = last_execution_file;
+	int    line   = last_execution_line;
+	string pc     = last_execution_pc;
+	bool stopped  = at_lowest_frame;
+	bool signaled = signal_received;
+
 	if (XtIsRealized(source_text_w))
 	{
 	    display_glyphs = false;	
@@ -6955,7 +6955,11 @@ void SourceView::set_display_glyphs(bool set)
 	    StatusDelay delay(set ? "Enabling glyphs" : "Disabling glyphs");
 
 	    refresh_bp_disp();
-	    lookup();
+	    if (file != "")
+		show_execution_position(file + ":" + itostring(line), 
+					stopped, signaled);
+	    if (pc != "")
+		show_pc(pc, XmHIGHLIGHT_SELECTED);
 	}
     }
 }
