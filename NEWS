@@ -8,14 +8,17 @@ DDD 2.0 (in development)
     interface and many bug fixes.
 
     User-visible changes to DDD 1.4:
-    - XDB support.  On popular request, DDD now supports HP's XDB debugger.
-    - Extended DBX support.  DDD determines DBX properties
-      at run-time and adapts automatically to a wide range of DBX
-      variants.  DDD now supports DBX on DEC and AIX systems.
+    - Colored displays.  You can specify individual colors for
+      pointers, arrays, structs, and so on.
     - New command tool.  All command buttons that do not take
       arguments are now located in the command tool, a small separate
       window.  The command tool can be moved wherever appropriate,
       leaving more space for window contents.
+    - XDB support.  On popular request, DDD now supports HP's XDB debugger.
+    - Extended DBX support.  DDD determines DBX properties
+      at run-time and adapts automatically to a wide range of DBX
+      variants.
+    - DDD now supports DBX on DEC and AIX systems.
     - User-defined buttons are now available.  These can also
       be used to re-install the old command buttons.
     - Variable values can now be altered interactively during program

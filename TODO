@@ -244,4 +244,7 @@ Volunteers for these and other projects are welcome!
 089. Have an `info source' popup menu that pops up when pointing at
      blank space.  (Info/Reload/Edit)
 
-093. (Insert your project idea here)
+093. Have a `vslDefs' resource that gets appended to the built-in VSL
+     file (for colors, etc.)
+
+094. (Insert your project idea here)

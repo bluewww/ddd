@@ -281,7 +281,7 @@ void dddToggleGlobalTabCompletionCB(Widget, XtPointer, XtPointer call_data)
     if (info->set)
 	set_status("TAB key completes in all " DDD_NAME " windows.");
     else
-	set_status("TAB key completes in " DDD_NAME " command window only.");
+	set_status("TAB key completes in " DDD_NAME " debugger console only.");
 
     update_options();
     options_changed = true;
@@ -299,7 +299,7 @@ void dddToggleSeparateExecWindowCB (Widget, XtPointer, XtPointer call_data)
 		   "separate execution window.");
     else
 	set_status("Debugged program will be executed in the " 
-		   DDD_NAME " command window.");
+		   DDD_NAME " debugger console.");
 
     update_options();
     options_changed = true;
