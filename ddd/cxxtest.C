@@ -186,11 +186,11 @@ void array_test()
     date_ptrs[3] = new Date(Sat, 24, 12, 1994);
 
     Date *date_ptr;
-    for (int i = 0; i < 4; i++)
+    for (int k = 0; k < 4; k++)
     {
 	// Dereference DATE_PTR to see it traverse the individual *DATE_PTRs
-	date_ptr = date_ptrs[i];
-	reference_test(*date_ptr, date_ptrs[i]);
+	date_ptr = date_ptrs[k];
+	reference_test(*date_ptr, date_ptrs[k]);
     }
 }
 
