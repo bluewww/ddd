@@ -24,12 +24,18 @@ above, please let us share your experiences.
 General Features:
 - Improved auto-configuration for HP-UX and Solaris.
 - Pascal and Modula-2 support for DBX completed.
-- Sources are now under CVS revision control
-  (implies a large diff to earlier versions).
 
 User Interface:
 - Foreground color explictly set to black.
 - New `Stack' menu (the `Source' menu may grow in time).
+
+Sources are now under CVS revision control.  This implies a large diff
+to earlier releases, but the DDD distribution itself has shrinked a
+lot due to stripped RCS `$Log$
+lot due to stripped RCS `Revision 1.3  1995/05/02 11:29:21  zeller
+lot due to stripped RCS `New: Sources are under CVS revision control
+lot due to stripped RCS `' entries.  Changes are now recorded in
+the top-level `ChangeLog' file.
 
 
 DDD 0.9.7
