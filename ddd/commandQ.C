@@ -66,18 +66,21 @@ static void ClearOriginCB(Widget w, XtPointer, XtPointer)
 
 void _gdb_command(string command, Widget origin)
 {
-    set_status("");
-
-    if (command.length() == 1 && iscntrl(command[0]))
-	promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
-
-    handle_running_commands(command, origin);
-    handle_obscure_commands(command, origin);
-
-    if (command.length() == 0)
+    if (gdb->isReadyWithPrompt())
     {
-	_gdb_out(gdb->default_prompt());
-	return;
+	set_status("");
+
+	if (command.length() == 1 && iscntrl(command[0]))
+	    promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
+
+	handle_running_commands(command, origin);
+	handle_obscure_commands(command, origin);
+
+	if (command.length() == 0)
+	{
+	    _gdb_out(gdb->default_prompt());
+	    return;
+	}
     }
 
     gdb_keyboard_command = private_gdb_input;
