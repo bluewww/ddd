@@ -151,6 +151,15 @@ void HelpOnVersionCB(Widget widget, XtPointer client_data, XtPointer call_data)
 		   false, pixmap);
 }
 
+static void HelpDestroyCB(Widget widget, XtPointer client_data, 
+			  XtPointer call_data)
+{
+    help_dialog = 0;
+    help_shell  = 0;
+}
+
+
+// Get the top-level shell window
 static MString _DefaultHelpText(Widget widget)
 {
     MString text = "No help available for \"";
@@ -212,6 +221,7 @@ static void _MStringHelpCB(Widget widget,
 
 	help_dialog = XmCreateInformationDialog(shell, "help", args, arg);
 	XtAddCallback(help_dialog, XmNhelpCallback, HelpOnHelpCB, 0);
+	XtAddCallback(help_dialog, XmNdestroyCallback, HelpDestroyCB, 0);
 
 	XtUnmanageChild(XmMessageBoxGetChild(help_dialog, 
 					     XmDIALOG_CANCEL_BUTTON));
