@@ -60,7 +60,7 @@ char GDBAgent_rcsid[] =
 DEFINE_TYPE_INFO_1(GDBAgent, TTYAgent);
 
 //-----------------------------------------------------------------------------
-
+// Determine debugger type from TYPE
 DebuggerType debugger_type(const string& type)
 {
     if (type.contains("gdb"))
@@ -79,6 +79,7 @@ DebuggerType debugger_type(const string& type)
 
 
 // ***************************************************************************
+// Constructor
 GDBAgent::GDBAgent (XtAppContext app_context,
 		    const string& gdb_call,
 		    DebuggerType tp)
@@ -125,6 +126,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
     addHandler(Strange, PanicHP, this);
 }
 
+// Copy constructor
 GDBAgent::GDBAgent(const GDBAgent& gdb)
     : TTYAgent(gdb),
       state(gdb.state),
@@ -159,7 +161,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       complete_answer("")
 {}
 
-
+// Return default prompt
 string GDBAgent::default_prompt() const
 {
     switch (type())
@@ -174,10 +176,9 @@ string GDBAgent::default_prompt() const
 
     return "(???) ";
 }
-    
+
 
 // ***************************************************************************
-
 // Trace communication
 static void trace(char *prefix, void *call_data)
 {
@@ -218,6 +219,7 @@ void GDBAgent::traceErrorHP (Agent *, void *, void *call_data)
 }
 
 // ***************************************************************************
+// Start GDBAgent
 void GDBAgent::do_start (OAProc  on_answer,
 			 OACProc on_answer_completion,
 			 void*   user_data)
@@ -233,6 +235,7 @@ void GDBAgent::do_start (OAProc  on_answer,
 }
 
 // ***************************************************************************
+// Start with some extra commands
 void GDBAgent::start_plus (OAProc   on_answer,
 			   OACProc  on_answer_completion,
 			   void*    user_data,
@@ -254,6 +257,7 @@ void GDBAgent::start_plus (OAProc   on_answer,
 
 
 // ***************************************************************************
+// Destructor
 GDBAgent::~GDBAgent ()
 {
     shutdown();
@@ -261,7 +265,8 @@ GDBAgent::~GDBAgent ()
 
 
 // ***************************************************************************
-bool GDBAgent::send_user_cmd(string cmd, void *user_data)  //ohne \n
+// Send CMD to GDB, associated with USER_DATA.  Return false iff busy.
+bool GDBAgent::send_user_cmd(string cmd, void *user_data)  // without `\n'
 {
     if (user_data)
 	_user_data = user_data;
@@ -270,7 +275,7 @@ bool GDBAgent::send_user_cmd(string cmd, void *user_data)  //ohne \n
     case ReadyWithPrompt:
     case BusyOnInitialCmds:
 
-	// Befehl bearbeiten
+	// Process CMD
 	state = BusyOnCmd;
 	busy_handlers.call(ReadyForQuestion, 0, (void *)false);
 	cmd += '\n';
@@ -289,6 +294,7 @@ bool GDBAgent::send_user_cmd(string cmd, void *user_data)  //ohne \n
 }
 
 // ***************************************************************************
+// Send CMD to GDB (unconditionally), associated with USER_DATA.
 bool GDBAgent::send_user_ctrl_cmd(string cmd, void *user_data)
 {
     if (user_data)
@@ -300,6 +306,7 @@ bool GDBAgent::send_user_ctrl_cmd(string cmd, void *user_data)
 }
 
 // ***************************************************************************
+// Send command array CMDS to GDB, associated with QU_DATAS.
 bool GDBAgent::send_user_cmd_plus (string   cmds[],
 				   void*    qu_datas[],
 				   int      qu_count,
@@ -319,7 +326,7 @@ bool GDBAgent::send_user_cmd_plus (string   cmds[],
 	    (cmds, qu_datas, qu_count, on_qu_array_completion, qa_data);
     }
 
-    // Befehl bearbeiten
+    // Process command
     state = BusyOnCmd;
     busy_handlers.call(ReadyForQuestion, 0, (void*)false);
     user_cmd += '\n';
@@ -331,6 +338,7 @@ bool GDBAgent::send_user_cmd_plus (string   cmds[],
 
 
 // ***************************************************************************
+// Send CMD to GDB; upon completion, call ON_QUESTION_COMPLETION with QU_DATA
 bool GDBAgent::send_question (string  cmd,
 			      OQCProc on_question_completion,
 			      void*   qu_data)
@@ -354,6 +362,7 @@ bool GDBAgent::send_question (string  cmd,
 }
 
 // ***************************************************************************
+// Send CMDS to GDB; upon completion, call ON_QU_ARRAY_COMPLETION with QU_DATAS
 bool GDBAgent::send_qu_array (string   cmds [],
 			      void*    qu_datas [],
 			      int      qu_count,
@@ -377,6 +386,7 @@ bool GDBAgent::send_qu_array (string   cmds [],
 }
 
 // ***************************************************************************
+// Add handler for GDB getting busy
 void GDBAgent::addBusyHandler (unsigned    type,
 			       HandlerProc proc,
 			       void*       client_data)
@@ -385,6 +395,7 @@ void GDBAgent::addBusyHandler (unsigned    type,
 }
 
 // ***************************************************************************
+// Remove handler for GDB getting busy
 void GDBAgent::removeBusyHandler (unsigned    type,
 				  HandlerProc proc,
 				  void        *client_data)
@@ -393,6 +404,7 @@ void GDBAgent::removeBusyHandler (unsigned    type,
 }
 
 // ***************************************************************************
+// Call handlers when GDB gets busy
 void GDBAgent::callBusyHandlers ()
 {
     busy_handlers.call(ReadyForQuestion,
@@ -406,6 +418,7 @@ void GDBAgent::callBusyHandlers ()
 
 
 // ***************************************************************************
+// Add handlers for tracing GDB I/O
 bool GDBAgent::trace_dialog (bool val)
 {
     if (val && !trace_dialog())
@@ -425,6 +438,7 @@ bool GDBAgent::trace_dialog (bool val)
 }
 
 // ***************************************************************************
+// Initialize GDB question array
 void GDBAgent::init_qu_array (string   cmds [],
 			      void*    qu_datas [],
 			      int      qu_count,
@@ -446,6 +460,7 @@ void GDBAgent::init_qu_array (string   cmds [],
 }
 
 // ***************************************************************************
+// Return true iff ANSWER ends with primary prompt.
 bool GDBAgent::ends_with_prompt (const string& answer)
 {
     unsigned beginning_of_line = answer.index('\n', -1) + 1;
@@ -471,6 +486,7 @@ bool GDBAgent::ends_with_prompt (const string& answer)
 }
 
 // ***************************************************************************
+// Return true iff ANSWER ends with secondary prompt.
 bool GDBAgent::ends_with_secondary_prompt (const string& answer)
 {
     switch (type())
@@ -491,6 +507,7 @@ bool GDBAgent::ends_with_secondary_prompt (const string& answer)
 
 
 // ***************************************************************************
+// Check if ANSWER requires an immediate reply; return it.
 string GDBAgent::requires_reply (const string& answer)
 {
     // GDB says: `---Type <return> to continue, or q <return> to quit---'

@@ -27,25 +27,17 @@
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
 //-----------------------------------------------------------------------------
-// GDBAgent stellt eine Verbindung zu GDB ueber einen TTYAgent her.
-// Es gibt drei Arten Befehle an GDB zu schicken:
-// 1. send_user_cmd: ist dazu gedacht, die GDB-Befehle, die der Benutzer
-//           an einem Prompt eingibt an den GDB weiterzuleiten. Die 
-//           Antwort(teile) werden sofort weitergeleitet.
-// 2. send_question: ist dazu gedacht, interne Anfragen an GDB zu schicken.
-//           Unterschiede zu send_user_cmd:
-//           - nur moeglich, wenn die letzte Ausgabe der prompt war. 
-//           - die Antwort auf die Anfrage wird gepuffert und erst am Ende
-//             weitergeleitet.
-//           - bis der naechste GDB-Prompt kommt ist keine weitere Anfrage
-//             moeglich.
-// 3. send_qu_array: ermoeglicht es, mehrere interne Anfragen im Paket 
-//           loszuschicken
-//           - die Antworten werden in einem neu erzeugten Array gepuffert
-//           - Aufruf der uebergebenen Funktion wenn alle Antworten komplett
-//           - die aufgerufene Funktion soll den Speicher der Arrays freigeben!
+// A GDBAgent creates a connection to an inferior GDB via a TTYAgent.
+// There are three ways to send commands to GDB:
+// 1. send_user_cmd: is used for user input at the GDB prompt.  GDB output
+//    (partial answers) are processed immediately.
+// 2. send_question: is used for internal communication.  All answers
+//    are buffered until the whole answer is received.  send_question can
+//    only be used if GDB is ready for input.
+// 3. send_qu_array: issues a list of queries to GDB.  The passed function
+//    is called as soon as the last query is processed.  The passed function
+//    must free the memory claimed by the query array.
 //-----------------------------------------------------------------------------
-
 
 #ifndef _GDBAgent_h
 #define _GDBAgent_h
@@ -82,22 +74,22 @@ enum ProgramLanguage {
 };
 
 //-----------------------------------------------------------------------------
-// Typen der aufzurufenden Prozeduren
+// Procedure types.
 //-----------------------------------------------------------------------------
 
-// wird aufgerufen, sobald eine Antwort auf send_user_cmd 
-// (oder ein Teil davon) ankommt
+// Called as soon as an ANSWER on send_user_cmd (or a part of it)
+// is received
 typedef void (* OAProc) (const string& answer,
 			 void* user_data);
 
-// wird aufgerufen, wenn der prompt kommt nach einer Antwort auf send_user_cmd
+// Called after the whole answer to send_user_cmd has been received
 typedef void (* OACProc) (void* user_data);
 
-// wird aufgerufen mit der kompletten Antwort auf send_question
+// Called from send_question with the complete answer
 typedef void (* OQCProc) (const string& complete_answer,
 			  void*  qu_data);
 
-// wird aufgerufen mit den kompletten Antworten auf send_qu_array
+// Called from send_qu_array with the complete answers
 typedef void (* OQACProc) (string complete_answers[],
 			   void*  qu_datas[],
 			   int    count,
@@ -114,22 +106,29 @@ string build_gdb_call(DebuggerType debugger_type,
 		      int argc, char *argv[],
 		      string myArguments = "");
 
-// Handler zum Anzeigen einer Zustandsaenderung
+// Handlers - called whenever GDB state changes
 static const unsigned ReadyForQuestion = 0;
 static const unsigned ReadyForCmd      = ReadyForQuestion + 1;
 
 static const unsigned BusyNTypes       = ReadyForCmd + 1;
 
+
 //-----------------------------------------------------------------------------
-// Die Klasse GDBAgent
+// The GDBAgent class.
 //-----------------------------------------------------------------------------
+
 class GDBAgent: public TTYAgent {
 public:
     DECLARE_TYPE_INFO
 
 protected:
-    enum State {ReadyWithPrompt, BusyOnCmd, BusyOnQuestion, BusyOnQuArray,
-                BusyOnInitialCmds};
+    enum State {
+	ReadyWithPrompt,
+	BusyOnCmd, 
+	BusyOnQuestion, 
+	BusyOnQuArray,
+	BusyOnInitialCmds
+    };
     State state;
 
 private:
@@ -169,9 +168,8 @@ public:
 		   OACProc on_answer_completion,
 		   void*   user_data);
 
-    // Nach Empfang des ersten gdb-Prompts werden cmds abgeschickt.
-    // Bearbeitung aehnlich send_user_cmd_plus.
-    //
+    // After receiving the first GDB prompt, send commands to GDB.
+    // Processing is very much like send_user_cmd_plus.
     void start_plus (OAProc   on_answer,
 		     OACProc  on_answer_completion,
 		     void*    user_data,
@@ -181,19 +179,19 @@ public:
 		     OQACProc on_qu_array_completion,
 		     void*    qa_data);
 
-    // true, wenn Befehl abgschickt wurde 
-    // Ist user_data == 0, so bleibt _user_data unveraendert.
+    // true iff command was sent.
+    // If user_data == 0, _user_data remains unchanged.
     bool send_user_cmd      (string cmd, void* user_data = 0);  
     bool send_user_ctrl_cmd (string cmd, void* user_data = 0);
 
 
-    // Reihenfolge der Abarbeitung:
-    // Abschicken von user_cmd, wie bei send_user_cmd
-    // (state:ReadyWithPrompt --> BusyOnCmd)
-    // Aufruf von OAProc bei Eintreffen der Antwort.
-    // (state:BusyOnCmd --> BusyOnQuArray)
-    // Abschicken der cmds, wie bei send_qu_array.
-    // Nach Beendigung aller Antworten: Aufruf von OACProc und OQACProc.
+    // Order of tasks:
+    // 1. Send USER_CMD to GDB, as in send_user_cmd
+    //    (state: ReadyWithPrompt --> BusyOnCmd)
+    // 2. Call OAProc when answer comes in
+    //    (state:BusyOnCmd --> BusyOnQuArray)
+    // 3. Send CMDS, as in send_qu_array.
+    // 4. When all replies have come in: call OACProc and OQACProc.
     //
     bool send_user_cmd_plus (string   cmds [],
 			     void*    qu_datas [],
@@ -213,7 +211,7 @@ public:
 			void*    qa_data);
 
 
-    // Zustandsabfragen
+    // Resources
     DebuggerType type()       const { return _type; }
     bool isReadyWithPrompt()  const { return state == ReadyWithPrompt; }
     bool isBusyOnCmd()        const { return state == BusyOnCmd
@@ -221,6 +219,7 @@ public:
     bool isBusyOnQuestion()   const { return state == BusyOnQuestion
 					  || state == BusyOnQuArray; }
 
+    // Handlers
     void addBusyHandler (unsigned    type,
 			 HandlerProc proc,
 			 void*       client_data = 0);
@@ -294,7 +293,7 @@ public:
     string display_command(string expr = "") const; // Usually "display EXPR"
     string where_command() const;	            // Usually "where "
     string pwd_command() const;	                    // Usually "pwd "
-    string frame_command(string depth = "") const;  // Usually "frame EXPR"
+    string frame_command(string depth = "") const;  // Usually "frame DEPTH"
     string echo_command(string text) const;         // Usually "echo TEXT"
     string whatis_command(string text) const;       // Usually "whatis TEXT"
     string dereferenced_expr(string expr) const;    // Usually "*EXPR"
@@ -345,4 +344,3 @@ protected:
 };
 #endif // _DDD_GDBAgent_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
-
