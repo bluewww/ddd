@@ -273,7 +273,7 @@ J       [A-Za-z][A-Za-z0-9.]*
 <S046>{P}:{W}[^ ]			return &rxgdb_begin_of_display;
 <S047>{P}:{w}{w}{w}			return &rxgdb_begin_of_display_info;
 <S048>{P}		 		return &rxgdb_disp_nr;
-<S049>{C}(class[(]{J}[)]|[(]{J}:{P}[)]) return &rxjdbpos;
+<S049>{C}((class|interface)[(]{J}[)]|[(]{J}:{P}[)]) return &rxjdbpos;
 <S050>{_}graph{W}{C}			return &rxgraph_cmd;
 <S051>[A-Za-z_$][A-Za-z0-9_$]*		return &rxidentifier;
 <S052>[[]-?{D}]{C}			return &rxindex;
@@ -322,10 +322,10 @@ J       [A-Za-z][A-Za-z0-9.]*
 <S095>{_}disp(lay){W}[^ ]+		return &rxsingle_display_cmd;
 <S096>{C}(--More--|line{w}{d}).* 	return &rxspace;
 <S097>Breakpoint{W}{P}\,{W}{A}	return &rxstopped;
-<S098>{x}?{_}([(]|[{]|record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|union){C}	return &rxstr_or_cl_begin;
+<S098>{x}?{_}([(]|[{]|record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|interface|union){C}	return &rxstr_or_cl_begin;
 <S099>(>|[[][1-9][0-9]*[]])[ ]          return &rxjdbprompt_nothread;
 <S100>([)]|[}]|end\n|END\n|end;|END;)	return &rxstr_or_cl_end;
-<S101>{x}?{_}(record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|union){C} return &rxstruct_keyword_begin;
+<S101>{x}?{_}(record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|interface|union){C} return &rxstruct_keyword_begin;
 <S102>([Tt]he{W})?[Pp]rogram{W}(exited|terminated|is{W}not{W}being{W}run|no{W}longer{W}exists){C} return &rxterminated;
 <S103>{_}thread({W}{C})?		return &rxthread_cmd;
 <S104>{_}(delete{W}|un)display({W}{C})?	return &rxundisplay;
