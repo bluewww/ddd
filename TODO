@@ -163,9 +163,6 @@ Volunteers for these and other projects are welcome!
 054. Adapt DDD to DBX as found on DEC Alpha.  Ruediger Berlich
      <berlich@pc66.mppmu.mpg.de> has a description of the DBX format.
 
-055. Allow DDD to be invoked as `ddd --remote COMMAND' that executes
-     COMMAND on a already running DDD.  Or have DDD run with a textual
-     interface (using another agent) (as `ddd --tty'?) such that it
-     can be used as GDB replacement.
+055. [done]
 
 056. (Insert your project idea here)

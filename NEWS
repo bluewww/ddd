@@ -1,6 +1,18 @@
 Changes in DDD						-*- text -*-
 **************
 
+DDD 1.4 (NOT YET RELEASED)
+--------------------------
+
+    Feature release.
+
+    - Using the new `--tty' option, DDD can be easily integrated with
+      other GDB/DBX front-ends.  For instance, you can have DDD run as
+      an inferior debugger from your Emacs GDB-mode, having all Emacs
+      and DDD facilities at your disposition.
+    - Again, several minor bugs were fixed.
+
+
 DDD 1.3e
 --------
 
