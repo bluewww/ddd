@@ -136,7 +136,7 @@ protected:
     }
     void _collapse()
     {
-	if (myexpanded)
+	if (!myexpanded)
 	    return;
 
 	myexpanded = false;
@@ -307,7 +307,7 @@ public:
     // Pointer
     void dereference(bool set = true)
     {
-	if (_dereferenced)
+	if (_dereferenced == set)
 	    return;
 
 	_dereferenced = set;
