@@ -647,22 +647,37 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 
     case JDB:
     {
-#if RUNTIME_REGEX
-	static regex rxjdbprompt        
-	    ("(>|[a-zA-Z][a-zA-Z0-9 ]*[a-zA-Z0-9][[][1-9][0-9]*[]]) ");
-	static regex rxjdbprompt_reverse
-	    (" (>|[]][0-9]*[1-9][[][a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z])");
-#endif
 	// JDB prompts using "> " or "THREAD[DEPTH] ".  All these
 	// prompts may also occur asynchronously.
 
-	// Check for prompt at the end of the last line
+#if RUNTIME_REGEX
+	// Threaded prompt: "THREAD[DEPTH] "
+	static regex rxjdbprompt        
+	    ("[a-zA-Z][a-zA-Z0-9 ]*[a-zA-Z0-9][[][1-9][0-9]*[]] ");
+	// Same, but in reverse
+	static regex rxjdbprompt_reverse
+	    (" []][0-9]*[1-9][[][a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z]");
+	// Non-threaded prompt: "[DEPTH] " or "> "
+	static regex rxjdbprompt_nothread
+	    ("(>|[[][1-9][0-9]*[]]) ");
+#endif
+
+	// Check for threaded prompt at the end of the last line
 	string reverse_answer = reverse(answer);
 	int match_len = rxjdbprompt_reverse.match(reverse_answer.chars(), 
 						  reverse_answer.length(), 0);
 	if (match_len > 0)
 	{
 	    last_prompt = reverse(reverse_answer.at(0, match_len));
+	    return true;
+	}
+
+	// Check for non-threaded prompt in the last line
+	int beginning_of_line = answer.index('\n', -1) + 1;
+	string possible_prompt = ((string &) answer).from(beginning_of_line);
+	if (possible_prompt.matches(rxjdbprompt_nothread))
+	{
+	    last_prompt = possible_prompt;
 	    return true;
 	}
 
@@ -834,12 +849,15 @@ void GDBAgent::cut_off_prompt(string& answer) const
 	break;
 
     case JDB:
-	// Strip the last line
-	if (answer.contains('\n'))
-	    answer = answer.through('\n', -1);
-	else
-	    answer = "";
+    {
+	// Check for prompt at the end of the last line
+	if (answer.contains(last_prompt, -1))
+	{
+	    answer = answer.before(int(answer.length()) - 
+				   int(last_prompt.length()));
+	}
 	break;
+    }
     }
 }
 

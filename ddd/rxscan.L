@@ -204,7 +204,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 %s S096
 %s S097
 %s S098
-/* %s S099 */
+%s S099
 %s S100
 %s S101
 %s S102
@@ -295,8 +295,8 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S073>Line{W}number{W}{D}{W}is{W}out{W}of{W}range{W}for{W} return &rxout_of_range;
 <S074>{_}(dir|directory|path)({W}{C})?	return &rxpath_cmd;
 <S075>\$pc{_}={_}{A}			return &rxpc;
-<S076>(>|[a-zA-Z][a-zA-Z0-9 ]*[a-zA-Z0-9][[][1-9][0-9]*[]])[ ] return &rxjdbprompt;
-<S077>[ ](>|[]][0-9]*[1-9][[][a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z]) return &rxjdbprompt_reverse;
+<S076>[a-zA-Z][a-zA-Z0-9 ]*[a-zA-Z0-9][[][1-9][0-9]*[]][ ] return &rxjdbprompt;
+<S077>[ ][]][0-9]*[1-9][[][a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z] return &rxjdbprompt_reverse;
 <S078>Process{W}{D}:{_}			return &rxprocess1;
 <S079>Process{W}{D}:			return &rxprocess2;
 <S080>[(][^ )]*db[^ )]*[)]{w}		return &rxprompt;
@@ -318,6 +318,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S096>{C}(--More--|line{w}{d}).* 	return &rxspace;
 <S097>Breakpoint{W}{P}\,{W}{A}	return &rxstopped;
 <S098>{x}?{_}([(]|[{]|record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|union){C}	return &rxstr_or_cl_begin;
+<S099>(>|[[][1-9][0-9]*[]])[ ]          return &rxjdbprompt_nothread;
 <S100>([)]|[}]|end\n|END\n|end;|END;)	return &rxstr_or_cl_end;
 <S101>{x}?{_}(record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|union){C} return &rxstruct_keyword_begin;
 <S102>([Tt]he{W})?[Pp]rogram{W}(exited|terminated|is{W}not{W}being{W}run|no{W}longer{W}exists){C} return &rxterminated;

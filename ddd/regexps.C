@@ -198,7 +198,7 @@ const regex rxsingle_display_cmd	(rx_matcher, (void *)S095);
 const regex rxspace			(rx_matcher, (void *)S096);
 const regex rxstopped			(rx_matcher, (void *)S097);
 const regex rxstr_or_cl_begin		(rx_matcher, (void *)S098);
-//                                      (rx_matcher, (void *)S099);
+const regex rxjdbprompt_nothread        (rx_matcher, (void *)S099);
 const regex rxstr_or_cl_end		(rx_matcher, (void *)S100);
 const regex rxstruct_keyword_begin	(rx_matcher, (void *)S101);
 const regex rxterminated		(rx_matcher, (void *)S102);
