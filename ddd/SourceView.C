@@ -4708,10 +4708,17 @@ void SourceView::find(const string& s,
 	break;
     }
 
-    if (pos > 0)
-    {
-	string msg;
+    string msg;
 
+    if (pos < 0)
+    {
+	// Clear selection
+	XmTextClearSelection(source_text_w, time);
+
+	msg = quote(s) + " not found";
+    }
+    else
+    {
 	// Highlight occurrence
 	XmTextSetSelection(source_text_w, pos, pos + matchlen, time);
 
@@ -4739,14 +4746,9 @@ void SourceView::find(const string& s,
 	    if (wraps)
 		msg += " (wrapped)";
 	}
+    }
 
-	set_status(msg);
-    }
-    else
-    {
-	post_warning(quote(s) + " not found.", "source_find_error", 
-		     source_text_w);
-    }
+    set_status(msg);
 }
 
 

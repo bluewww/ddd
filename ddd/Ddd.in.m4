@@ -6686,12 +6686,6 @@ Ddd*source_binary_warning*helpString:	\
 You probably loaded a binary file instead of a source file.\n\
 Please verify the file name and try again.
 
-Ddd*source_find_error.dialogTitle: DDD: Not Found
-Ddd*source_find_error*helpString:	\
-@rm The given key LBL(()) can not be found in the source text.\n\
-Please try an alternate key or change the search settings\n\
-via LBL(Edit, Preferences, Source).
-
 Ddd*manual_find_error.dialogTitle: DDD: Not Found
 Ddd*manual_find_error*helpString:	\
 @rm The given search key LBL(()) can not be found in the on-line manual.\n\
