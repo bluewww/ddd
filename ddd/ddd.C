@@ -777,15 +777,19 @@ static MMDesc views_menu[] =
 
 struct EditItems {
     enum EditItem { 
-	Cut, Copy, Paste, ClearAll, Delete, Sep1, 
-	SelectAll, Sep2,
-	Preferences, Settings, Sep3,
+	Undo, Redo, Sep1,
+	Cut, Copy, Paste, ClearAll, Delete, Sep2, 
+	SelectAll, Sep3,
+	Preferences, Settings, Sep4,
 	SaveOptions
     };
 };
 
 #define EDIT_MENU(win) \
 { \
+    { "undo",        MMPush | MMInsensitive }, \
+    { "redo",        MMPush | MMInsensitive }, \
+    MMSep, \
     { "cut",         MMPush,  { gdbCutSelectionCB,    XtPointer(win) }}, \
     { "copy",        MMPush,  { gdbCopySelectionCB,   XtPointer(win) }}, \
     { "paste",       MMPush,  { gdbPasteClipboardCB,  XtPointer(win) }}, \

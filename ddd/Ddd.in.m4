@@ -1837,15 +1837,11 @@ Ddd*menubar*fileMenu.save_session.documentationString:  \
 
 Ddd*menubar*fileMenu.attach.labelString: Attach to Process...
 Ddd*menubar*fileMenu.attach.mnemonic:    A
-! Ddd*menubar*fileMenu.attach.accelerator:      ~Shift Ctrl<Key>Z
-! Ddd*menubar*fileMenu.attach.acceleratorText:  Ctrl+Z
 Ddd*menubar*fileMenu.attach.documentationString:   \
 @rm Attach to a process outside of DDD
 
 Ddd*menubar*fileMenu.detach.labelString:       Detach Process
 Ddd*menubar*fileMenu.detach.mnemonic:	       t
-! Ddd*menubar*fileMenu.detach.accelerator:       Shift Ctrl<Key>Z
-! Ddd*menubar*fileMenu.detach.acceleratorText:   Shift+Ctrl+Z
 Ddd*menubar*fileMenu.detach.documentationString:
 
 Ddd*menubar*fileMenu.print.labelString:	 	Print Graph...
@@ -1946,6 +1942,20 @@ Ddd*menubar.edit*helpString: EDIT_HELP
 Ddd*editMenu*helpString:     EDIT_HELP
 Ddd*editMenu*tearOffTitle:   Edit
 
+Ddd*editMenu.undo.labelString:				Undo
+Ddd*editMenu.undo.mnemonic:				U
+Ddd*editMenu.undo.accelerator:				Ctrl<Key>Z
+Ddd*editMenu.undo.acceleratorText:			Ctrl+Z
+Ddd*editMenu.undo.documentationString: \
+@rm Undo the last action
+
+Ddd*editMenu.redo.labelString:				Redo
+Ddd*editMenu.redo.mnemonic:				R
+Ddd*editMenu.redo.accelerator:				Ctrl<Key>Y
+Ddd*editMenu.redo.acceleratorText:			Ctrl+Y
+Ddd*editMenu.redo.documentationString: \
+@rm Redo the next action
+
 ! Have standard Motif bindings
 ! Ddd*editMenu.cut.accelerator:		Shift<Key>Delete
 ! Ddd*editMenu.cut.acceleratorText:	Shift+Del
@@ -1996,7 +2006,7 @@ Ddd*editMenu.selectAll.documentationString: \
 @rm Select all items
 
 Ddd*editMenu.preferences.labelString:			Preferences...
-Ddd*editMenu.preferences.mnemonic:			r
+Ddd*editMenu.preferences.mnemonic:			e
 Ddd*editMenu.preferences.documentationString:\
 @rm Modify the DDD configuration
 
@@ -2190,8 +2200,6 @@ Ddd*menubar*programMenu.run_again.documentationString: \
 
 Ddd*menubar*programMenu.separateExecWindow.labelString:	Run in Execution Window
 Ddd*menubar*programMenu.separateExecWindow.mnemonic:	E
-Ddd*menubar*programMenu*separateExecWindow.accelerator:	~Shift Meta<Key>E
-Ddd*menubar*programMenu*separateExecWindow.acceleratorText: Alt+E
 Ddd*menubar*programMenu.separateExecWindow.documentationString:\
 @rm Toggle execution of debugged program in separate window
 
