@@ -1926,8 +1926,6 @@ static void update_defines()
 	if (!ok)
 	    return;
     }
-
-    set_need_defines(false);
 }
 
 // Get current definitions
