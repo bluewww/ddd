@@ -254,6 +254,12 @@ LESSTIF
 LINUX
 =====
 
+Reported by:  Andreas Zeller <zeller@acm.org>
+
+     The most recent release of the GNU C library does not work with
+     DDD: the GDB prompt does not appear.  This seems to be a bug in
+     the GNU C library; please let us know about any work-arounds.
+
 Reported by: Jim Van Zandt <jrv@vanzandt.mv.com>
 
      Under slackware 3.1, the file permissions in `/dev/ptyp?' do not

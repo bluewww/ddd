@@ -11,15 +11,23 @@ E-Mail
 * ddd-announce@ips.cs.tu-bs.de (DDD announcements)
 
 * bug-gdb@prep.ai.mit.edu   (for `gnu.gdb.bug')
-* xannounce@x.org           (for `comp.windows.x.announce'; major release only)
 * gnu@prep.ai.mit.edu       (just to notify; maybe someday in `gnu.announce')
 
 * faq%craft@uunet.uu.net    (X11 FAQ, `comp.windows.x')
 * elf@ee.ryerson.ca         (X11 apps FAQ, `comp.windows.x.apps')
 
+* lsm@execpc.com            (DDD lsm entry; subject `add')
+
+Major releases only:
+
+* xannounce@x.org              (for `comp.windows.x.announce')
+* linux-announce@news.ornl.gov (for `comp.os.linux.announce')
+
 
 USENET News
 -----------
+
+(wait a few days whether the announcements get through)
 
 * comp.unix.programmer
 * comp.windows.x
@@ -33,4 +41,4 @@ Where to install
 
 * Local FTP site                        [source + binaries]
 * ftp://ftp.x.org/contrib/utilities/    [source]
-* ftp://sunsite.unc.edu/incoming/Linux/ [DDD LSM entry only; see README]
+* ftp://sunsite.unc.edu/incoming/Linux/ [source + LSM entry; see HOW.TO.SUBMIT]

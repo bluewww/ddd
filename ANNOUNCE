@@ -212,7 +212,6 @@ What is DDD, anyway?
 What do I need to build DDD?
 ============================
 
-
     To build a complete DDD from sources, you need:
 
        * The GNU C++ compiler (GCC/G++), preferably version 2.6.3 or
@@ -273,6 +272,11 @@ Where do I get more information?
     The six-page paper gives a short introduction to the look-and-feel
     of DDD and highlights some internal aspects.
 
+    The DDD manual is the official, up-to-date DDD reference.  It now
+    includes more than 30 screen shots.  Available at
+
+        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/doc/
+
     The DDD users mailing list, 
 
         ddd-users@ips.cs.tu-bs.de
@@ -292,84 +296,238 @@ Where do I get more information?
     all reported bugs as soon as possible.
 
 
-Where do I get DDD sources?
-===========================
+Getting DDD
+===========
 
-    The DDD source package `ddd-2.1.tar.gz' will soon be at these FTP
-    sites as well.  Please try them before `ftp.ips.cs.tu-bs.de' since
-    ftp.ips has a slow network connection.
+    DDD is available from a number of FTP sites.  Sites are marked as
+    follows:
+
+    (1) Site carries DDD sources (src/), patches (patches/), diffs
+        (diffs/), snapshots (current/), documentation (doc/), and
+        various binaries (bin/).  Original site: `ftp.ips.cs.tu-bs.de'.
+    (2) Site carries DDD sources (ddd-2.1.tar.gz) and Linux binaries
+        (ddd-2.1.bin*).  Original site: `sunsite.unc.edu'.
+    (3) Site carries DDD sources (ddd-2.1.tar.gz).  Original
+        site: `ftp.x.org'.
+
+    Please select a site that is geographically close to you.
 
 
-North America
--------------
-
-    ftp://ftp.crl.research.digital.com/pub/X11/contrib/utilities/
-    ftp://ftp.x.org/contrib/utilities/
-    ftp://ftp.cs.columbia.edu/archives/X11/contrib/utilities/
-    ftp://ftp.uu.net/systems/window-sys/X/contrib/utilities/
-
-
-Europe
+Africa
 ------
 
-    ftp://ftp.denet.dk/pub/X11/contrib/utilities/
-    ftp://nic.funet.fi/pub/X11/contrib/utilities/
-    ftp://ftp.ibp.fr/pub/X11/contrib/utilities/
-    ftp://ftp.uni-paderborn.de/pub/X11/contrib/utilities/
-    ftp://ftp.luth.se/pub/X11/contrib/utilities/
-    ftp://ftp.sunet.se/pub/X11/contrib/utilities/
-    ftp://ftp.eunet.ch/archive/software/X/utilities/
-    ftp://ftp.NL.net/pub/windows/X/contrib/utilities/
-    ftp://src.doc.ic.ac.uk/packages/X11-contrib/utilities/
+    South Africa
+    (2)   ftp://ftp.sun.ac.za/pub/linux/sunsite/devel/debuggers/ddd/
+    (2)   ftp://ftp.is.co.za/linux/sunsite/devel/debuggers/ddd/
 
 
-East Asia
----------
+Asia
+----
 
-    ftp://ftp.cs.cuhk.hk/pub/Xcontrib/utilities/
-    ftp://ftp.iij.ad.jp/pub/X/contrib/utilities/
-    ftp://nctuccca.edu.tw/X/contrib/utilities/
+    Hong Kong
+    (3)   ftp://ftp.cs.cuhk.hk/pub/Xcontrib/utilities/
+    (2)   ftp://ftp.cs.cuhk.hk/pub/Linux/devel/debuggers/ddd/
+    (2)   ftp://sunsite.ust.hk/pub/Linux/devel/debuggers/ddd/
+
+    Japan
+    (2)   ftp://ftp.spin.ad.jp/pub/linux/sunsite.unc.edu/devel/debuggers/ddd/
+    (3)   ftp://ftp.iij.ad.jp/pub/X/contrib/utilities/
+
+    Korea
+    (2)   ftp://ftp.nuri.net/pub/Linux/devel/debuggers/ddd/
+
+    Malaysia
+    (2)   ftp://ftp.jaring.my/pub/Linux/devel/debuggers/ddd/
+
+    Singapore
+    (2)   ftp://ftp.nus.sg/pub/unix/Linux/devel/debuggers/ddd/
+
+    Thailand
+    (2)   ftp://ftp.nectec.or.th/pub/mirrors/linux/devel/debuggers/ddd/
+
+    Taiwan
+    (2)   ftp://nctuccca.edu.tw/X/contrib/utilities/
 
 
 Australia
 ---------
 
-    ftp://archie.au/X11/contrib/utilities/
-
-
-
-Where do I get DDD binaries?
-============================
-
-    Besides DDD source packages, the sites listed here also carry DDD
-    binaries and patches as well as formatted DDD documentation and
-    DDD-related papers.
-
-    DDD pre-compiled binaries have been contributed for a variety of
-    architectures.  This may be useful for people who lack GCC or
-    Motif.  However, compiling DDD on your machine is strongly
-    preferred.  Use binaries as a last resort only.
-
-    The `bin/README' file contains a list of available binaries.
-    Additional contributions are very welcome.
-
-
-North America
--------------
-
-    ftp://uiarchive.cso.uiuc.edu/pub/packages/ddd/
-    ftp://richb-pc.acc.qc.edu/pub/ddd/
+    Misc
+    (3)   ftp://archie.au/X11/contrib/utilities/
+    (2)   ftp://ftp.dstc.edu.au/pub/linux/devel/debuggers/ddd/
+    (2)   ftp://sunsite.anu.edu.au/pub/linux/devel/debuggers/ddd/
+    (2)   ftp://ftp.monash.edu.au/pub/linux/devel/debuggers/ddd/
+    (2)   ftp://ftp.sydutech.usyd.edu.au/pub/linux/devel/debuggers/ddd/
 
 
 Europe
 ------
 
-    ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
-    ftp://ftp.th-darmstadt.de/pub/programming/tools/ddd/
-    ftp://ftp.gre.ac.uk/pub/tools/debuggers/ddd/
+    Austria 
+    (2)   ftp://ftp.univie.ac.at/systems/linux/sunsite/devel/debuggers/ddd/
+
+    Czech Republic 
+    (2)   ftp://ftp.fi.muni.cz/pub/UNIX/linux/devel/debuggers/ddd/
+
+    Denmark
+    (3)   ftp://ftp.denet.dk/pub/X11/contrib/utilities/
+
+    Finland 
+    (2)   ftp://ftp.funet.fi/pub/Linux/sunsite/devel/debuggers/ddd/
+    (3)   ftp://nic.funet.fi/pub/X11/contrib/utilities/
+
+    France 
+    (2)   ftp://ftp.univ-angers.fr/pub/Linux/devel/debuggers/ddd/
+    (2)   ftp://ftp.iut-bm.univ-fcomte.fr/devel/debuggers/ddd/
+    (2)   ftp://ftp.ibp.fr/pub/linux/sunsite/devel/debuggers/ddd/
+    (3)   ftp://ftp.ibp.fr/pub/X11/contrib/utilities/
+    (2)   ftp://ftp.loria.fr/pub/linux/sunsite/devel/debuggers/ddd/
+
+    Germany
+    (2)   ftp://ftp.dfv.rwth-aachen.de/pub/linux/sunsite/devel/debuggers/ddd/
+    (2)   ftp://ftp.germany.eu.net/pub/os/Linux/Mirror.SunSITE/devel/debuggers/ddd/
+    (2)   ftp://ftp.tu-dresden.de/pub/Linux/sunsite/devel/debuggers/ddd/
+    (2)   ftp://ftp.uni-erlangen.de/pub/Linux/MIRROR.sunsite/devel/debuggers/ddd/
+    (2)   ftp://ftp.gwdg.de/pub/linux/mirrors/sunsite/devel/debuggers/ddd/
+    (2)   ftp://ftp.rz.uni-karlsruhe.de/pub/linux/mirror.sunsite/devel/debuggers/ddd/
+    (2)   ftp://ftp.ba-mannheim.de/pub/linux/mirror.sunsite/devel/debuggers/ddd/
+    (2)   ftp://ftp.uni-paderborn.de/pub/Mirrors/sunsite.unc.edu/devel/debuggers/ddd/
+    (3)   ftp://ftp.uni-paderborn.de/pub/X11/contrib/utilities/
+    (2)   ftp://ftp.uni-rostock.de/Linux/sunsite/devel/debuggers/ddd/
+    (2)   ftp://ftp.rus.uni-stuttgart.de/pub/unix/systems/linux/MIRROR.sunsite/devel/debuggers/ddd/
+    (2)   ftp://ftp.uni-tuebingen.de/pub/linux/Mirror.sunsite/devel/debuggers/ddd/
+    (2)   ftp://ftp.rz.uni-ulm.de/pub/mirrors/linux/sunsite/devel/debuggers/ddd/
+    (1)   ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
+    (1)   ftp://ftp.th-darmstadt.de/pub/programming/tools/ddd/
+
+    Hungary
+    (2)   ftp://ftp.kfki.hu/pub/linux/devel/debuggers/ddd/
+
+    Italy 
+    (2)   ftp://linux.italnet.it/pub/Linux/devel/debuggers/ddd/
+    (2)   ftp://ftp.unina.it/pub/linux/sunsite/devel/debuggers/ddd/
+    (2)   ftp://giotto.unipd.it/pub/unix/Linux/devel/debuggers/ddd/
+    (2)   ftp://cnuce-arch.cnr.it/pub/Linux/devel/debuggers/ddd/
+    (2)   ftp://ftp.flashnet.it/mirror2/sunsite.unc.edu/devel/debuggers/ddd/
+
+    Netherlands 
+    (2)   ftp://ftp.nijenrode.nl/pub/linux/sunsite.unc-mirror/devel/debuggers/ddd/
+    (2)   ftp://ftp.LeidenUniv.nl/pub/linux/sunsite/devel/debuggers/ddd/
+    (3)   ftp://ftp.NL.net/pub/windows/X/contrib/utilities/
+
+    Norway 
+    (2)   ftp://ftp.nvg.unit.no/pub/linux/sunsite/devel/debuggers/ddd/
+
+    Poland 
+    (2)   ftp://sunsite.icm.edu.pl/pub/Linux/sunsite.unc.edu/devel/debuggers/ddd/
+
+    Spain
+    (2)   ftp://ftp.rediris.es/software/os/linux/sunsite/devel/debuggers/ddd/
+    (2)   ftp://sunsite.rediris.es/software/linux/devel/debuggers/ddd/
+    (2)   ftp://ftp.cs.us.es/pub/Linux/sunsite-mirror/devel/debuggers/ddd/
+    (2)   ftp://ftp.etse.urv.es/pub/mirror/linux/devel/debuggers/ddd/
+    (2)   ftp://ftp.etsimo.uniovi.es/pub/linux/devel/debuggers/ddd/
+    (2)   ftp://ftp.luna.gui.es/pub/linux.new/devel/debuggers/ddd/
+
+    Sweden
+    (3)   ftp://ftp.luth.se/pub/X11/contrib/utilities/
+    (3)   ftp://ftp.sunet.se/pub/X11/contrib/utilities/
+
+    Switzerland 
+    (2)   ftp://ftp.switch.ch/mirror/linux/devel/debuggers/ddd/
+    (3)   ftp://ftp.eunet.ch/archive/software/X/utilities/
+
+    Turkey
+    (2)   ftp://ftp.metu.edu.tr/pub/linux/sunsite/devel/debuggers/
+
+    United Kingdom 
+    (2)   ftp://unix.hensa.ac.uk/mirrors/sunsite/pub/Linux/devel/debuggers/ddd/
+    (2)   ftp://ftp.maths.warwick.ac.uk/mirrors/linux/sunsite.unc-mirror/devel/debuggers/ddd/
+    (2)   ftp://ftp.idiscover.co.uk/pub/Linux/sunsite.unc-mirror/devel/debuggers/ddd/
+    (2)   ftp://sunsite.doc.ic.ac.uk/packages/linux/sunsite.unc-mirror/devel/debuggers/ddd/
+    (2)   ftp://ftp.dungeon.com/pub/linux/sunsite-mirror/devel/debuggers/ddd/
+    (1)   ftp://ftp.gre.ac.uk/pub/tools/debuggers/ddd/
+    (3)   ftp://src.doc.ic.ac.uk/packages/X11-contrib/utilities/
+
+
+North America 
+-------------
+
+    Canada 
+    (2)   ftp://ftp.io.org/pub/mirrors/linux/sunsite/devel/debuggers/ddd/
+
+    Atlanta, GA
+    (2)   ftp://ftp.cc.gatech.edu/pub/linux/devel/debuggers/
+
+    Chapel Hill, NC
+    (2)   ftp://sunsite.unc.edu/pub/Linux/devel/debuggers/ddd/
+
+    Concord, CA
+    (2)   ftp://ftp.cdrom.com/pub/linux/sunsite/devel/debuggers/ddd/
+
+    Dallas, TX
+    (2)   ftp://ftp.siriuscc.com/pub/Linux/Sunsite/devel/debuggers/
+
+    Fayetteville, AR
+    (2)   ftp://ftp.engr.uark.edu/pub/linux/sunsite/devel/debuggers/ddd/
+
+    Flagstaff, AZ
+    (2)   ftp://ftp.infomagic.com/pub/mirrors/linux/sunsite/devel/debuggers/ddd/
+
+    Laurel, MD
+    (2)   ftp://ftp.linux.org/pub/mirrors/sunsite/devel/debuggers/ddd/
+
+    Minneapolis, MN
+    (2)   ftp://ftp.cs.umn.edu/pub/Linux/sunsite/devel/debuggers/ddd/
+
+    Norman, OK
+    (2)   ftp://ftp.uoknor.edu/linux/sunsite/devel/debuggers/ddd/
+
+    Pasadena, CA
+    (2)   ftp://ftp.fuller.edu/mirror/sunsite/devel/debuggers/ddd/
+
+    Raleigh, NC
+    (2)   ftp://ftp.redhat.com/pub/mirrors/sunsite.unc.edu/devel/debuggers/ddd/
+
+    Rochester, NY
+    (2)   ftp://ftp.rge.com/pub/systems/linux/sunsite/devel/debuggers/ddd/
+
+    Salt Lake City, UT
+    (2)   ftp://ftp.pht.com/mirrors/linux/sunsite/devel/debuggers/ddd/
+
+    San Jose, CA
+    (2)   ftp://ftp.yggdrasil.com/mirrors/sunsite/devel/debuggers/ddd/
+
+    Sunnyvale, CA
+    (2)   ftp://ftp.drcdrom.com/pub/linux/sunsite/devel/debuggers/ddd/
+
+    Waukesha, WI
+    (2)   ftp://ftp.wit.com/unix/linux/devel/debuggers/ddd/
+
+    Urbana, IL
+    (2)   ftp://uiarchive.cso.uiuc.edu/pub/systems/linux/sunsite/devel/debuggers/ddd/
+    (1)   ftp://uiarchive.cso.uiuc.edu/pub/packages/ddd/
+
+    Misc
+    (3)   ftp://ftp.crl.research.digital.com/pub/X11/contrib/utilities/
+    (3)   ftp://ftp.x.org/contrib/utilities/
+    (3)   ftp://ftp.cs.columbia.edu/archives/X11/contrib/utilities/
+    (3)   ftp://ftp.uu.net/systems/window-sys/X/contrib/utilities/
+    (1)   ftp://richb-pc.acc.qc.edu/pub/ddd/
+
+
+South America
+-------------
+
+    Brazil 
+    (2)   ftp://ftp.fee.unicamp.br/pub/Linux/mirrors/sunsite.unc.edu/devel/debuggers/ddd/
+    (2)   ftp://ftp.iis.com.br/pub/Linux/devel/debuggers/ddd/
+    (2)   ftp://linux.if.usp.br/pub/mirror/sunsite.unc.edu/pub/Linux/devel/debuggers/ddd/
+    (2)   ftp://farofa.ime.usp.br/pub/linux/devel/debuggers/ddd/
 
 
 Have fun with DDD!
---
-Andreas Zeller (ddd@ips.cs.tu-bs.de)
-Technische Universitaet Braunschweig, Germany
+
+-- 
+Andreas Zeller       Technische Universitaet Braunschweig (Germany)
+DDD Maintainer       ddd@ips.cs.tu-bs.de http://www.cs.tu-bs.de/softech/ddd/
