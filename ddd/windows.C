@@ -458,7 +458,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	if (!synthetic
 	    && (w == source_view_shell
 		|| (source_view_shell == 0 && w == command_shell))
-	    && !app_data.command_tool_bar && app_data.source_window)
+	    && !app_data.command_toolbar && app_data.source_window)
 	{
 	    // Popup command tool again
 	    popup_shell(tool_shell);
@@ -743,7 +743,17 @@ void gdbCloseSourceWindowCB(Widget w, XtPointer, XtPointer)
     // Unmanage source
     XtUnmanageChild(source_view->source_form());
     XtUnmanageChild(source_view->code_form());
-    XtUnmanageChild(XtParent(source_arg->widget()));
+
+
+    Widget arg_cmd_w = XtParent(source_arg->widget());
+    if (data_disp->graph_cmd_w == arg_cmd_w)
+    {
+	// Don't close the common toolbar
+    }
+    else
+    {
+	XtUnmanageChild(arg_cmd_w);
+    }
 
     popdown_shell(source_view_shell);
     update_options();
@@ -783,7 +793,16 @@ void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
 	return;
     }
 
-    XtUnmanageChild(data_disp->graph_cmd_w);
+    Widget arg_cmd_w = XtParent(source_arg->widget());
+    if (data_disp->graph_cmd_w == arg_cmd_w)
+    {
+	// Don't close the common toolbar
+    }
+    else
+    {
+	XtUnmanageChild(data_disp->graph_cmd_w);
+    }
+
     XtUnmanageChild(data_disp->graph_form());
 
     popdown_shell(data_disp_shell);

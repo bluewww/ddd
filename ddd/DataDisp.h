@@ -216,7 +216,6 @@ class DataDisp {
     static MMDesc node_popup[];
     static MMDesc shortcut_popup1[];
     static MMDesc shortcut_popup2[];
-    static MMDesc graph_cmd_area[];
     static MMDesc display_area[];
     static MMDesc detail_menu[];
     static MMDesc shortcut_menu[];
@@ -232,6 +231,9 @@ class DataDisp {
     static void add_shortcut_expr(const string& expr);
 
 public:
+    // Menus - public such that we can chain them in a toolbar
+    static MMDesc graph_cmd_area[];
+
     //-----------------------------------------------------------------------
     // Send queries to GDB and process answers
     //-----------------------------------------------------------------------

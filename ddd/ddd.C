@@ -977,14 +977,14 @@ static MMDesc status_position_menu [] =
     MMEnd
 };
 
-static Widget set_tool_buttons_in_tool_bar_w;
+static Widget set_tool_buttons_in_toolbar_w;
 static Widget set_tool_buttons_in_command_tool_w;
 static MMDesc tool_buttons_menu [] = 
 {
     { "commandTool",  MMToggle, { dddSetToolBarCB, XtPointer(False) },
       NULL, &set_tool_buttons_in_command_tool_w },
     { "sourceWindow", MMToggle, { dddSetToolBarCB, XtPointer(True) },
-      NULL, &set_tool_buttons_in_tool_bar_w },
+      NULL, &set_tool_buttons_in_toolbar_w },
     MMEnd
 };
 
@@ -1280,7 +1280,6 @@ static MMDesc arg_cmd_area[] =
 };
 
 
-
 //-----------------------------------------------------------------------------
 // Global variables
 //-----------------------------------------------------------------------------
@@ -1322,7 +1321,7 @@ XmTextPosition messagePosition;
 static Widget console_buttons_w;
 static Widget source_buttons_w;
 static Widget data_buttons_w;
-static Widget command_tool_bar_w;
+static Widget command_toolbar_w;
 
 // Strings to be ignored in GDB output
 string gdb_out_ignore = "";
@@ -1866,6 +1865,20 @@ int main(int argc, char *argv[])
     if (!app_data.separate_source_window && !app_data.status_at_bottom)
 	create_status(paned_work_w);
 
+    // Common toolbar
+    Widget arg_label = 0;
+    if (!app_data.separate_source_window &&
+	!app_data.separate_data_window &&
+	app_data.common_toolbar)
+    {
+	arg_cmd_area[ArgItems::Display].type |= MMUnmanaged;
+	arg_cmd_w = create_toolbar(paned_work_w, "common",
+				   arg_cmd_area, DataDisp::graph_cmd_area,
+				   arg_label, source_arg);
+
+	DataDisp::graph_cmd_w = arg_cmd_w;
+    }
+
     // Data window
     Widget data_disp_parent = paned_work_w;
     Widget data_menubar_w = 0;
@@ -1984,10 +1997,11 @@ int main(int argc, char *argv[])
     }
 
     // Source tool bar
-    Widget arg_label;
-    arg_cmd_w = create_toolbar(source_view_parent, "source",
-			       arg_cmd_area, arg_label, source_arg);
-
+    if (arg_cmd_w == 0)
+    {
+	arg_cmd_w = create_toolbar(source_view_parent, "source",
+				   arg_cmd_area, 0, arg_label, source_arg);
+    }
     XtAddCallback(arg_label, XmNactivateCallback, 
 		  ClearTextFieldCB, source_arg->widget());
     XtAddCallback(source_arg->widget(), XmNactivateCallback, 
@@ -1995,10 +2009,10 @@ int main(int argc, char *argv[])
 		  XtPointer(arg_cmd_area[ArgItems::Lookup].widget));
 
     // Command tool bar (optional)
-    command_tool_bar_w = make_buttons(source_view_parent, "command_tool_bar", 
-				      app_data.tool_buttons);
-    if (command_tool_bar_w != 0)
-	XtUnmanageChild(command_tool_bar_w);
+    command_toolbar_w = make_buttons(source_view_parent, "command_toolbar", 
+				     app_data.tool_buttons);
+    if (command_toolbar_w != 0)
+	XtUnmanageChild(command_toolbar_w);
 
     // Source buttons (optional)
     source_buttons_w = make_buttons(source_view_parent, "source_buttons", 
@@ -3146,8 +3160,8 @@ void update_options()
     set_toggle(set_status_bottom_w,        app_data.status_at_bottom);
     set_toggle(set_status_top_w,           !app_data.status_at_bottom);
 
-    set_toggle(set_tool_buttons_in_tool_bar_w,     app_data.command_tool_bar);
-    set_toggle(set_tool_buttons_in_command_tool_w, !app_data.command_tool_bar);
+    set_toggle(set_tool_buttons_in_toolbar_w,      app_data.command_toolbar);
+    set_toggle(set_tool_buttons_in_command_tool_w, !app_data.command_toolbar);
 
     Boolean separate = 
 	app_data.separate_data_window || app_data.separate_source_window;
@@ -3204,17 +3218,17 @@ void update_options()
 	// data_disp->refresh_display();
     }
 
-    if (app_data.command_tool_bar && 
-	command_tool_bar_w != 0 && !XtIsManaged(command_tool_bar_w))
+    if (app_data.command_toolbar && 
+	command_toolbar_w != 0 && !XtIsManaged(command_toolbar_w))
     {
 	if (app_data.source_window)
-	    XtManageChild(command_tool_bar_w);
+	    XtManageChild(command_toolbar_w);
 	gdbCloseToolWindowCB(command_shell, 0, 0);
     }
-    else if (!app_data.command_tool_bar && 
-	     command_tool_bar_w != 0 && XtIsManaged(command_tool_bar_w))
+    else if (!app_data.command_toolbar && 
+	     command_toolbar_w != 0 && XtIsManaged(command_toolbar_w))
     {
-	XtUnmanageChild(command_tool_bar_w);
+	XtUnmanageChild(command_toolbar_w);
 	if (app_data.source_window)
 	    gdbOpenToolWindowCB(command_shell, 0, 0);
     }
@@ -3496,10 +3510,10 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_status_bottom_w, initial_app_data.status_at_bottom);
     notify_set_toggle(set_status_top_w, !initial_app_data.status_at_bottom);
 
-    notify_set_toggle(set_tool_buttons_in_tool_bar_w, 
-		      initial_app_data.command_tool_bar);
+    notify_set_toggle(set_tool_buttons_in_toolbar_w, 
+		      initial_app_data.command_toolbar);
     notify_set_toggle(set_tool_buttons_in_command_tool_w, 
-		      !initial_app_data.command_tool_bar);
+		      !initial_app_data.command_toolbar);
 
     notify_set_toggle(set_focus_pointer_w, 
 		      initial_focus_policy == XmPOINTER);
@@ -3541,7 +3555,7 @@ bool startup_preferences_changed()
 
     return separate != initial_separate
 	|| app_data.status_at_bottom != initial_app_data.status_at_bottom
-	|| app_data.command_tool_bar != initial_app_data.command_tool_bar
+	|| app_data.command_toolbar != initial_app_data.command_toolbar
 	|| focus_policy != initial_focus_policy
 	|| app_data.panned_graph_editor != initial_app_data.panned_graph_editor
 	|| debugger_type(app_data.debugger)
@@ -4574,7 +4588,7 @@ void _gdb_out(string text)
     set_buttons_from_gdb(console_buttons_w, text);
     set_buttons_from_gdb(source_buttons_w, text);
     set_buttons_from_gdb(data_buttons_w, text);
-    set_buttons_from_gdb(command_tool_bar_w, text);
+    set_buttons_from_gdb(command_toolbar_w, text);
     set_status_from_gdb(text);
     set_tty_from_gdb(text);
 
@@ -5434,7 +5448,7 @@ static void setup_command_tool(bool iconic)
     XtAddEventHandler(tool_shell, STRUCTURE_MASK, False,
 		      StructureNotifyEH, XtPointer(0));
 
-    if (app_data.command_tool_bar)
+    if (app_data.command_toolbar)
     {
 	// The command tool is not needed, as we have a command tool bar.
     }

@@ -92,7 +92,7 @@
 #define XtNlabelDelimiter        "labelDelimiter"
 #define XtCLabelDelimiter        "LabelDelimiter"
 #define XtNcommandToolBar        "commandToolBar"
-#define XtNargToolBar            "argToolBar"
+#define XtNcommonToolBar         "commonToolBar"
 #define XtCToolBar               "ToolBar"
 #define XtNseparateDataWindow    "separateDataWindow"
 #define XtNseparateSourceWindow  "separateSourceWindow"
@@ -312,8 +312,8 @@ struct AppData {
     String    data_buttons;
     String    tool_buttons;
     String    label_delimiter;
-    Boolean   command_tool_bar;
-    Boolean   arg_tool_bar;
+    Boolean   command_toolbar;
+    Boolean   common_toolbar;
     Boolean   separate_data_window;
     Boolean   separate_source_window;
     Boolean   separate_exec_window;

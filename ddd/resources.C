@@ -368,17 +368,17 @@ XtResource ddd_resources[] = {
 	XtCToolBar,
 	XtRBoolean,
 	sizeof(Boolean),
-	XtOffsetOf(AppData, command_tool_bar),
+	XtOffsetOf(AppData, command_toolbar),
 	XtRImmediate,
 	XtPointer(False)
     },
 
     {
-	XtNargToolBar,
+	XtNcommonToolBar,
 	XtCToolBar,
 	XtRBoolean,
 	sizeof(Boolean),
-	XtOffsetOf(AppData, arg_tool_bar),
+	XtOffsetOf(AppData, common_toolbar),
 	XtRImmediate,
 	XtPointer(False)
     },
@@ -1131,7 +1131,7 @@ XtResource ddd_resources[] = {
     {
 	XtNbusyBlinkRate,
 	XmCBlinkRate,
-	XmRCardinal,
+	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, busy_blink_rate),
 	XmRImmediate,
@@ -1191,7 +1191,7 @@ XtResource ddd_resources[] = {
     {
 	XtNstatusHistorySize,
 	XtCStatusHistorySize,
-	XmRCardinal,
+	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, status_history_size),
 	XmRImmediate,

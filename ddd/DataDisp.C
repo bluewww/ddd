@@ -219,18 +219,18 @@ MMDesc DataDisp::node_popup[] =
     MMEnd
 };
 
-struct CmdItms { enum Itms {Dereference, Detail, Rotate, New, Set, Delete }; };
+struct CmdItms { enum Itms {New, Dereference, Detail, Rotate, Set, Delete }; };
 
 MMDesc DataDisp::graph_cmd_area[] =
 {
+    {"new",           MMPush,                 {DataDisp::dependentCB},
+                                               DataDisp::shortcut_menu },
     {"dereference",   MMPush | MMInsensitive, {DataDisp::dereferenceCB}},
     {"detail",        MMPush | MMInsensitive, {DataDisp::toggleDetailCB,
-					       XtPointer(-1) }, 
+					       XtPointer(-1)}, 
                                                DataDisp::detail_menu },
     {"rotate",        MMPush | MMInsensitive, {DataDisp::rotateCB},
                                                DataDisp::rotate_menu },
-    {"new",           MMPush,                 {DataDisp::dependentCB},
-                                               DataDisp::shortcut_menu },
     {"set",           MMPush | MMInsensitive, {DataDisp::setCB}},
     {"delete",        MMPush | MMInsensitive, {DataDisp::deleteCB}},
     MMEnd
@@ -1843,12 +1843,15 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	    arg_os << "(" << count.selected << " displays)";
 	    arg = arg_os;
 	}
-	graph_arg->set_string(arg);
+
+	if (graph_arg)
+	    graph_arg->set_string(arg);
     }
     else
     {
 	// No argument
-	graph_arg->set_string("");
+	if (graph_arg)
+	    graph_arg->set_string("");
     }
 
     // Set selection.
@@ -4919,11 +4922,15 @@ DataDisp::DataDisp(Widget parent,
 
     // Create buttons
     registerOwnConverters();
-    Widget arg_label;
-    graph_cmd_w = 
-	create_toolbar(parent, "graph", graph_cmd_area, arg_label, graph_arg);
-    XtAddCallback(arg_label, XmNactivateCallback, 
-		  SelectionLostCB, XtPointer(0));
+
+    if (graph_cmd_w == 0)
+    {
+	Widget arg_label;
+	graph_cmd_w = create_toolbar(parent, "graph", 
+				     graph_cmd_area, 0, arg_label, graph_arg);
+	XtAddCallback(arg_label, XmNactivateCallback,
+		      SelectionLostCB, XtPointer(0));
+    }
 
     // Create (unmanaged) selection widget
     graph_selection_w =

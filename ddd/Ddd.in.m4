@@ -406,7 +406,7 @@ Ddd*tool_buttons*rightAttachment:		XmATTACH_POSITION
 
 ! Some special labels
 Ddd*tool_buttons*Forward.labelString:   Fwd
-Ddd*command_tool_bar*Cont.labelString:   Continue
+Ddd*command_toolbar*Cont.labelString:   Continue
 
 
 
@@ -1400,9 +1400,9 @@ dnl ~Ctrl<Btn1Up>:        Activate() Disarm()\n])dnl
 dnl
 dnl Ddd*tool_shell*XmPushButton.translations: \
 dnl BUTTON_TRANSLATIONS GDB_TRANSLATIONS
-dnl Ddd*graph_buttons*XmPushButton.translations: \
+dnl Ddd*toolbar*XmPushButton.translations: \
 dnl BUTTON_TRANSLATIONS GDB_TRANSLATIONS
-dnl Ddd*source_buttons*XmPushButton.translations: \
+dnl Ddd*source.buttons*XmPushButton.translations: \
 dnl BUTTON_TRANSLATIONS GDB_TRANSLATIONS
 dnl
 dnl Ddd*XmLabel.translations: \
@@ -3319,18 +3319,45 @@ Ddd*newMenu*documentationString:
 Ddd*shortcut_popup*documentationString:
 
 
+
+
 !-----------------------------------------------------------------------------
-! Graph Buttons
+! Common Toolbar
+!-----------------------------------------------------------------------------
+
+Ddd*common.arg_label.labelString:		():
+
+Ddd*common.arg.helpString:	\
+WIDGET(Argument)\n\
+\n\
+This is the argument LBL(()) for the command buttons on the right.\n\
+\n\
+Edit LBL(()) using the usual editing functions.\n\
+Set LBL(()) by selecting items from the source window or the data window.\n\
+Clear LBL(()) by clicking on the prompt LBL(():).
+
+Ddd*common.arg.value:				main
+Ddd*common.arg.columns:				10
+
+! For the common toolbar, only pixmap buttons make sense.
+Ddd*common.toolbar.XmPushButton.labelType: 	XmPIXMAP
+
+
+! All other values from the graph and source toolbar, below, apply here, too.
+
+
+!-----------------------------------------------------------------------------
+! Graph Toolbar
 !-----------------------------------------------------------------------------
 
 ! Ddd*graph_toolbar*helpString: \
 ! @rm Commands related to the data window.
 
-Ddd*graph_toolbar.arg_label.labelString:	():
+Ddd*graph.arg_label.labelString:	():
 
-Ddd*graph_arg.columns:			22
-Ddd*graph_arg.editable:			false
-Ddd*graph_arg.helpString:	\
+Ddd*graph.arg.columns:			22
+Ddd*graph.arg.editable:			false
+Ddd*graph.arg.helpString:	\
 WIDGET(Argument)\n\
 \n\
 This is the argument LBL(()) for the command buttons on the right.\n\
@@ -3338,39 +3365,35 @@ This is the argument LBL(()) for the command buttons on the right.\n\
 Set LBL(()) by selecting data displays.\n\
 Clear LBL(()) by clicking on the prompt LBL(():).
 
-Ddd*graph_buttons*dereference.labelString: 	Display *()
-Ddd*graph_buttons*detail.labelString:		Show ()
-Ddd*graph_buttons*show_more.labelString:   	Show More ()
-Ddd*graph_buttons*show_just.labelString:   	Show Just ()
-Ddd*graph_buttons*show_detail.labelString: 	Show All ()
-Ddd*graph_buttons*hide_detail.labelString: 	Hide ()
-Ddd*graph_buttons*rotate.labelString:		Rotate ()
-Ddd*graph_buttons*rotateAll.labelString:	Rotate All ()
-Ddd*graph_buttons*new.labelString:		New Display
-Ddd*graph_buttons*set.labelString:		Set ()
-Ddd*graph_buttons*delete.labelString:		Delete ()
+Ddd*toolbar*dereference.labelString: 	Display *()
+Ddd*toolbar*detail.labelString:		Show ()
+Ddd*toolbar*show_more.labelString:   	Show More ()
+Ddd*toolbar*show_just.labelString:   	Show Just ()
+Ddd*toolbar*show_detail.labelString: 	Show All ()
+Ddd*toolbar*hide_detail.labelString: 	Hide ()
+Ddd*toolbar*rotate.labelString:		Rotate ()
+Ddd*toolbar*rotateAll.labelString:	Rotate All ()
+Ddd*toolbar*new.labelString:		New Display
+Ddd*toolbar*set.labelString:		Set ()
+Ddd*toolbar*delete.labelString:		Delete ()
 
-Ddd*graph_buttons*dereference.labelPixmap: 		dispref
-Ddd*graph_buttons*dereference.labelInsensitivePixmap:	dispref-xx
+Ddd*toolbar*dereference.labelPixmap: 		dispref
+Ddd*toolbar*dereference.labelInsensitivePixmap:	dispref-xx
 
-Ddd*graph_buttons*detail.labelPixmap:			show
-Ddd*graph_buttons*detail.labelInsensitivePixmap:	show-xx
+Ddd*toolbar*detail.labelPixmap:			show
+Ddd*toolbar*detail.labelInsensitivePixmap:	show-xx
 
-Ddd*graph_buttons*rotate.labelPixmap:			rotate
-Ddd*graph_buttons*rotate.labelInsensitivePixmap:	rotate-xx
+Ddd*toolbar*rotate.labelPixmap:			rotate
+Ddd*toolbar*rotate.labelInsensitivePixmap:	rotate-xx
 
-Ddd*graph_buttons*new.labelPixmap:			display
-Ddd*graph_buttons*new.labelInsensitivePixmap:		display-xx
+Ddd*toolbar*new.labelPixmap:			display
+Ddd*toolbar*new.labelInsensitivePixmap:		display-xx
 
-Ddd*graph_buttons*set.labelPixmap:			set
-Ddd*graph_buttons*set.labelInsensitivePixmap:		set-xx
+Ddd*toolbar*set.labelPixmap:			set
+Ddd*toolbar*set.labelInsensitivePixmap:		set-xx
 
-Ddd*graph_buttons*delete.labelPixmap:			undisplay
-Ddd*graph_buttons*delete.labelInsensitivePixmap:	undisplay-xx
-
-
-! Ddd*graph_buttons*marginTop:	  	1
-! Ddd*graph_buttons*marginBottom:	1
+Ddd*toolbar*delete.labelPixmap:			undisplay
+Ddd*toolbar*delete.labelInsensitivePixmap:	undisplay-xx
 
 define(ANNOUNCE_PULLDOWN,[\
 Pulldown menu functions (press and hold BUTTON(1)):\
@@ -3385,7 +3408,7 @@ DESC(Other..., [Enter new shortcut])\n\
 DESC(Edit..., [Edit shortcuts])
 ])dnl
 
-Ddd*graph_buttons*new.helpString:\
+Ddd*toolbar*new.helpString:\
 LBL(New Display)\n\
 \n\
 Create a new display dependent on the selected display part.\n\
@@ -3394,18 +3417,18 @@ ANNOUNCE_PULLDOWN\n\
 NEW_DISPLAY_HELP
 Ddd*newMenu*helpString: NEW_DISPLAY_HELP
 
-Ddd*graph_buttons*new.tipString:\
+Ddd*toolbar*new.tipString:\
 @rm Create new display
-Ddd*graph_buttons*new.documentationString:\
+Ddd*toolbar*new.documentationString:\
 @rm Create a new (dependent) display MORE_PULLDOWN()
 
-Ddd*graph_buttons*dereference.helpString:\
+Ddd*toolbar*dereference.helpString:\
 LBL(Display *())\n\
 \n\
 Dereference the selected display.
-Ddd*graph_buttons*dereference.tipString:\
+Ddd*toolbar*dereference.tipString:\
 @rm Dereference selected display
-Ddd*graph_buttons*dereference.documentationString:\
+Ddd*toolbar*dereference.documentationString:\
 @rm Dereference the selected display
 
 define(DETAIL_HELP, [\
@@ -3415,7 +3438,7 @@ DESC(Show All, [Show all details, including substructures])\n\
 DESC(Hide, [Hide Details])
 ])dnl
 
-Ddd*graph_buttons*detail.helpString:	\
+Ddd*toolbar*detail.helpString:	\
 LBL(Show ()) / LBL(Hide ())\n\
 \n\
 Show/Hide details of the selected displays.\n\
@@ -3425,25 +3448,25 @@ DETAIL_HELP
 
 Ddd*detailMenu*helpString:	DETAIL_HELP
 
-Ddd*graph_buttons*detail.tipString:	\
+Ddd*toolbar*detail.tipString:	\
 @rm Show/Hide selected details
-Ddd*graph_buttons*detail.documentationString: \
+Ddd*toolbar*detail.documentationString: \
 @rm Show/Hide details of the selected displays MORE_PULLDOWN()
 
-Ddd*graph_buttons*show_more.documentationString: \
+Ddd*toolbar*show_more.documentationString: \
 @rm Show more details of the selected displays
-Ddd*graph_buttons*show_just.documentationString: \
+Ddd*toolbar*show_just.documentationString: \
 @rm Show details of the selected displays, hiding substructures
-Ddd*graph_buttons*show_detail.documentationString: \
+Ddd*toolbar*show_detail.documentationString: \
 @rm Show all details of the selected displays, including substructures
-Ddd*graph_buttons*hide_detail.documentationString: \
+Ddd*toolbar*hide_detail.documentationString: \
 @rm Hide details of the selected displays
 
 define(ROTATE_HELP, [\
 DESC(Rotate All, [Rotate substructures too])
 ])dnl
 
-Ddd*graph_buttons*rotate.helpString:	\
+Ddd*toolbar*rotate.helpString:	\
 LBL(Rotate ())\n\
 \n\
 Rotate the selected displays.\n\
@@ -3453,30 +3476,256 @@ ROTATE_HELP
 
 Ddd*rotateMenu*helpString:	ROTATE_HELP
 
-Ddd*graph_buttons*rotate.tipString:	\
+Ddd*toolbar*rotate.tipString:	\
 @rm Rotate selected displays
-Ddd*graph_buttons*rotate.documentationString: \
+Ddd*toolbar*rotate.documentationString: \
 @rm Rotate the selected displays MORE_PULLDOWN()
-Ddd*graph_buttons*rotateAll.documentationString: \
+Ddd*toolbar*rotateAll.documentationString: \
 @rm Rotate the selected displays, including substructures
 
-Ddd*graph_buttons*set.helpString:	\
+Ddd*toolbar*set.helpString:	\
 LBL(Set ())\n\
 \n\
 Change the selected display value.
-Ddd*graph_buttons*set.tipString:	\
+Ddd*toolbar*set.tipString:	\
 @rm Set display value
-Ddd*graph_buttons*set.documentationString:	\
+Ddd*toolbar*set.documentationString:	\
 @rm Change the selected display value
 
-Ddd*graph_buttons*delete.helpString:	\
+Ddd*toolbar*delete.helpString:	\
 LBL(Delete ())\n\
 \n\
 Delete the selected displays.
-Ddd*graph_buttons*delete.tipString:	\
+Ddd*toolbar*delete.tipString:	\
 @rm Delete selected displays
-Ddd*graph_buttons*delete.documentationString:	\
+Ddd*toolbar*delete.documentationString:	\
 @rm Delete the selected displays
+
+
+!-----------------------------------------------------------------------------
+! Source Toolbar
+!-----------------------------------------------------------------------------
+
+Ddd*source.arg_label.labelString:		():
+
+Ddd*source.arg.helpString:	\
+WIDGET(Argument)\n\
+\n\
+This is the argument LBL(()) for the command buttons on the right.\n\
+\n\
+Edit LBL(()) using the usual editing functions.\n\
+Set LBL(()) by selecting items from the source window or the data window.\n\
+Clear LBL(()) by clicking on the prompt LBL(():).
+
+Ddd*source.arg.value:				main
+Ddd*source.arg.columns:				22
+
+Ddd*toolbar*lookup.labelString:		Lookup ()
+Ddd*toolbar*breakAt.labelString:		Break at ()
+Ddd*toolbar*tempBreakAt.labelString:	Set Temporary Breakpoint at ()
+Ddd*toolbar*contUntil.labelString:	Continue Until ()
+Ddd*toolbar*enable.labelString:		Enable Breakpoint at ()
+Ddd*toolbar*condition.labelString:	Set Condition at ()...
+Ddd*toolbar*ignore_count.labelString:	Set Ignore Count at ()...
+Ddd*toolbar*setPC.labelString:		Set Execution Position to ()
+Ddd*toolbar*watch.labelString:		Unwatch ()
+Ddd*toolbar*cwatch.labelString:		Set watchpoint on ()
+Ddd*toolbar*rwatch.labelString:		Set read watchpoint on ()
+Ddd*toolbar*awatch.labelString:		Set access watchpoint on ()
+Ddd*toolbar*print.labelString:		Print ()
+Ddd*toolbar*printRef.labelString:	Print *()
+Ddd*toolbar*whatis.labelString:		Whatis ()
+Ddd*toolbar*display.labelString:		Display ()
+Ddd*toolbar*dispRef.labelString:		Display *()
+Ddd*toolbar*find.labelString:		LBL_FIND_FORWARD
+Ddd*toolbar*findBackward.labelString:	LBL_FIND_BACKWARD
+Ddd*toolbar*findForward.labelString:	LBL_FIND_FORWARD
+
+Ddd*toolbar*lookup.labelPixmap:			lookup
+Ddd*toolbar*lookup.labelInsensitivePixmap:	lookup-xx
+
+Ddd*toolbar*breakAt.labelPixmap:		 	break_at
+Ddd*toolbar*breakAt.labelInsensitivePixmap: 	break_at-xx
+
+Ddd*toolbar*watch.labelPixmap:		 	watch
+Ddd*toolbar*watch.labelInsensitivePixmap: 	watch-xx
+
+Ddd*toolbar*print.labelPixmap:		 	print
+Ddd*toolbar*print.labelInsensitivePixmap: 	print-xx
+
+Ddd*toolbar*display.labelPixmap:		 	display
+Ddd*toolbar*display.labelInsensitivePixmap: 	display-xx
+
+Ddd*toolbar*dispRef.labelPixmap:		 	dispref
+Ddd*toolbar*dispRef.labelInsensitivePixmap: 	dispref-xx
+
+Ddd*toolbar*find.labelPixmap:		 	find_forward
+Ddd*toolbar*find.labelInsensitivePixmap: 	find_forward-xx
+
+Ddd*toolbar*lookup.helpString:	\
+LBL(Lookup ())\n\
+\n\
+Lookup a line, file, function, variable, or breakpoint in the source.\n\
+ITEM If the argument LBL(()) is empty, \
+lookup the current execution position\n\
+    (or cursor position, if there is no current execution position).\n\
+ITEM If LBL(()) contains a number, \
+lookup that line number in the current source.\n\
+ITEM If LBL(()) contains SAMP(VAR(filename):VAR(line)), lookup \
+line number VAR(line)\n\
+    in the source file VAR(filename).\n\
+ITEM If LBL(()) contains SAMP([#]VAR(number)), lookup breakpoint \
+VAR(number).\n\
+ITEM If LBL(()) contains an address, lookup that address.\n\
+ITEM If LBL(()) contains a function or variable name, lookup \
+the definition\n\
+    of that function or variable.
+
+Ddd*toolbar*lookup.tipString:	\
+@rm Lookup LBL(()) in the source
+Ddd*toolbar*lookup.documentationString:	\
+@rm Lookup a line, file, function, variable or breakpoint in the source
+
+define(BREAK_HELP, [\
+DESC(Set Temporary Breakpoint at (), [set temporary breakpoint])\n\
+DESC(Continue Until (), [set temporary breakpoint and resume execution])\n\
+DESC(Enable / Disable Breakpoint at (), [enable or disable breakpoint])\n\
+DESC(Set Condition at ()..., [set breakpoint condition])\n\
+DESC(Set Ignore Count at ()..., [set breakpoint ignore count])\n\
+DESC(Set Execution Position to (), [move execution position])
+])dnl
+
+Ddd*toolbar*breakAt.helpString:	\
+LBL(Break at ()) / LBL(Clear at ())\n\
+\n\
+Set or delete a breakpoint at the argument LBL(()).\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+BREAK_HELP
+
+Ddd*breakAtMenu*helpString:	BREAK_HELP
+
+Ddd*toolbar*breakAt.tipString:	\
+@rm Set/Delete breakpoint at LBL(())
+Ddd*toolbar*breakAt.documentationString:	\
+@rm Set or delete a breakpoint at the argument LBL(()) MORE_PULLDOWN()
+
+Ddd*toolbar*tempBreakAt.documentationString: \
+@rm Set a temporary breakpoint at the argument LBL(())
+Ddd*toolbar*contUntil.documentationString: \
+@rm Set a temporary breakpoint at LBL(()) and resume execution
+Ddd*toolbar*enable.documentationString: \
+@rm Enable or disable the breakpoint at the argument LBL(())
+Ddd*toolbar*condition.documentationString: \
+@rm Specify a condition for the breakpoint at LBL(())
+Ddd*toolbar*ignore_count.documentationString: \
+@rm Specify how many crossings of the breakpoint at LBL(()) are to be ignored
+Ddd*toolbar*setPC.documentationString: \
+@rm Set the current execution position to LBL(())
+
+define(PRINT_HELP, [\
+DESC(Print *(), [print dereferenced argument])\n\
+DESC(Whatis (), [print type of argument])
+])dnl
+
+Ddd*toolbar*print.helpString:	\
+LBL(Print ())\n\
+\n\
+Print the argument LBL(()) in the @GDB@ console.\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+PRINT_HELP
+Ddd*printMenu*helpString:	PRINT_HELP
+
+Ddd*toolbar*print.tipString:	\
+@rm Print LBL(()) in the debugger console
+Ddd*toolbar*print.documentationString:	\
+@rm Print the argument LBL(()) in the @GDB@ console MORE_PULLDOWN()
+Ddd*toolbar*printRef.documentationString:	\
+@rm Print the dereferenced argument LBL(()) in the @GDB@ console
+Ddd*toolbar*whatis.documentationString:	\
+@rm Print the type of the argument LBL(()) in the @GDB@ console
+
+define(DISPLAY_HELP, [\
+DESC(Display *(), [display dereferenced argument])
+])dnl
+
+Ddd*toolbar*display.helpString:	\
+LBL(Display ())\n\
+\n\
+Display the argument LBL(()) in the data window.\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+DISPLAY_HELP
+Ddd*displayMenu*helpString:	DISPLAY_HELP
+
+
+Ddd*toolbar*display.tipString:	\
+@rm Display LBL(()) in the data window
+Ddd*toolbar*display.documentationString:	\
+@rm Display the argument LBL(()) in the data window MORE_PULLDOWN()
+Ddd*toolbar*dispRef.documentationString:	\
+@rm Display the dereferenced argument LBL(()) in the data window
+
+define(WATCH_HELP, [\
+DESC(Set watchpoint on (), [stop whenever LBL(()) changes; same as LBL(Watch())])\n\
+DESC(Set read watchpoint on (), [stop whenever LBL(()) is read])\n\
+DESC(Set access watchpoint on (), [stop whenever LBL(()) is either read or written])\n\
+\n\
+Unless you have special hardware support, watchpoints slow down the\n\
+debugged program by about two orders of magnitude.
+])dnl
+
+Ddd*toolbar*watch.helpString:	\
+LBL(Watch ()) / LBL(Unwatch())\n\
+\n\
+Stop whenever the value of LBL(()) changes.\n\
+\n\
+LBL(Watch ()) sets a EMPH(watchpoint) on LBL(()) - a special breakpoint that\n\
+stops your program whenever the value of LBL(()) changes.  A watchpoint is\n\
+managed like any other breakpoint, via LBL(Source) | LBL(Edit Breakpoints).\n\
+\n\
+LBL(Unwatch()) deletes the EMPH(watchpoint) associated with LBL(()).\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+WATCH_HELP
+Ddd*watchMenu*helpString:	WATCH_HELP
+
+Ddd*toolbar*watch.tipString:	\
+@rm Stop whenever LBL(()) changes
+Ddd*toolbar*watch.documentationString:	\
+@rm Stop whenever the value of LBL(()) changes MORE_PULLDOWN()
+Ddd*toolbar*cwatch.documentationString:	\
+@rm Stop whenever the value of LBL(()) changes
+Ddd*toolbar*rwatch.documentationString:	\
+@rm Stop whenever LBL(()) is read (requires hardware support)
+Ddd*toolbar*awatch.documentationString:	\
+@rm Stop whenever LBL(()) is either read or written (requires hardware support)
+
+define(FIND_HELP, [\
+DESC(LBL_FIND_BACKWARD, [find backwards])\n\
+DESC(LBL_FIND_FORWARD, [find forwards])
+])dnl
+
+Ddd*toolbar*find.helpString:	\
+LBL(LBL_FIND_BACKWARD / LBL_FIND_FORWARD)\n\
+\n\
+Search an occurrence of LBL(()) in the current source text.\n\
+\n\
+See LBL(Edit) | LBL(Preferences) | LBL(Source) for search settings.\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+FIND_HELP
+Ddd*findMenu*helpString:	FIND_HELP
+
+Ddd*toolbar*find.tipString:	\
+@rm Find LBL(()) in source
+Ddd*toolbar*find.documentationString:	\
+@rm Search LBL(()) in the current source MORE_PULLDOWN()
+Ddd*toolbar*findBackward.documentationString:	\
+@rm Search the previous occurrence of LBL(()) in the source
+Ddd*toolbar*findForward.documentationString:	\
+@rm Search the next occurrence of LBL(()) in the source
 
 
 !-----------------------------------------------------------------------------
@@ -3531,8 +3780,9 @@ Ddd*status_lines.spacing:		0
 
 Ddd*status_history.row.background:	Black
 
+
 !-----------------------------------------------------------------------------
-! Source view
+! Source View
 !-----------------------------------------------------------------------------
 
 Ddd*source_text_w.columns:		80
@@ -3700,233 +3950,6 @@ Ddd*text_popup.breakAt.documentationString: \
 
 Ddd*text_popup.clearAt.documentationString: \
 @rm Delete a breakpoint at the selected function
-
-
-!-----------------------------------------------------------------------------
-! Source Toolbar
-!-----------------------------------------------------------------------------
-
-Ddd*source_toolbar.arg_label.labelString:		():
-
-Ddd*source_arg.helpString:	\
-WIDGET(Argument)\n\
-\n\
-This is the argument LBL(()) for the command buttons on the right.\n\
-\n\
-Edit LBL(()) using the usual editing functions.\n\
-Set LBL(()) by selecting items from the source window or the data window.\n\
-Clear LBL(()) by clicking on the prompt LBL(():).
-
-Ddd*source_arg.value:				main
-Ddd*source_arg.columns:				22
-
-Ddd*source_buttons*lookup.labelString:		Lookup ()
-Ddd*source_buttons*breakAt.labelString:		Break at ()
-Ddd*source_buttons*tempBreakAt.labelString:	Set Temporary Breakpoint at ()
-Ddd*source_buttons*contUntil.labelString:	Continue Until ()
-Ddd*source_buttons*enable.labelString:		Enable Breakpoint at ()
-Ddd*source_buttons*condition.labelString:	Set Condition at ()...
-Ddd*source_buttons*ignore_count.labelString:	Set Ignore Count at ()...
-Ddd*source_buttons*setPC.labelString:		Set Execution Position to ()
-Ddd*source_buttons*watch.labelString:		Unwatch ()
-Ddd*source_buttons*cwatch.labelString:		Set watchpoint on ()
-Ddd*source_buttons*rwatch.labelString:		Set read watchpoint on ()
-Ddd*source_buttons*awatch.labelString:		Set access watchpoint on ()
-Ddd*source_buttons*print.labelString:		Print ()
-Ddd*source_buttons*printRef.labelString:	Print *()
-Ddd*source_buttons*whatis.labelString:		Whatis ()
-Ddd*source_buttons*display.labelString:		Display ()
-Ddd*source_buttons*dispRef.labelString:		Display *()
-Ddd*source_buttons*find.labelString:		LBL_FIND_FORWARD
-Ddd*source_buttons*findBackward.labelString:	LBL_FIND_BACKWARD
-Ddd*source_buttons*findForward.labelString:	LBL_FIND_FORWARD
-
-Ddd*source_buttons*lookup.labelPixmap:			lookup
-Ddd*source_buttons*lookup.labelInsensitivePixmap:	lookup-xx
-
-Ddd*source_buttons*breakAt.labelPixmap:		 	break_at
-Ddd*source_buttons*breakAt.labelInsensitivePixmap: 	break_at-xx
-
-Ddd*source_buttons*watch.labelPixmap:		 	watch
-Ddd*source_buttons*watch.labelInsensitivePixmap: 	watch-xx
-
-Ddd*source_buttons*print.labelPixmap:		 	print
-Ddd*source_buttons*print.labelInsensitivePixmap: 	print-xx
-
-Ddd*source_buttons*display.labelPixmap:		 	display
-Ddd*source_buttons*display.labelInsensitivePixmap: 	display-xx
-
-Ddd*source_buttons*dispRef.labelPixmap:		 	dispref
-Ddd*source_buttons*dispRef.labelInsensitivePixmap: 	dispref-xx
-
-Ddd*source_buttons*find.labelPixmap:		 	find_forward
-Ddd*source_buttons*find.labelInsensitivePixmap: 	find_forward-xx
-
-Ddd*source_buttons*lookup.helpString:	\
-LBL(Lookup ())\n\
-\n\
-Lookup a line, file, function, variable, or breakpoint in the source.\n\
-ITEM If the argument LBL(()) is empty, \
-lookup the current execution position\n\
-    (or cursor position, if there is no current execution position).\n\
-ITEM If LBL(()) contains a number, \
-lookup that line number in the current source.\n\
-ITEM If LBL(()) contains SAMP(VAR(filename):VAR(line)), lookup \
-line number VAR(line)\n\
-    in the source file VAR(filename).\n\
-ITEM If LBL(()) contains SAMP([#]VAR(number)), lookup breakpoint \
-VAR(number).\n\
-ITEM If LBL(()) contains an address, lookup that address.\n\
-ITEM If LBL(()) contains a function or variable name, lookup \
-the definition\n\
-    of that function or variable.
-
-Ddd*source_buttons*lookup.tipString:	\
-@rm Lookup LBL(()) in the source
-Ddd*source_buttons*lookup.documentationString:	\
-@rm Lookup a line, file, function, variable or breakpoint in the source
-
-define(BREAK_HELP, [\
-DESC(Set Temporary Breakpoint at (), [set temporary breakpoint])\n\
-DESC(Continue Until (), [set temporary breakpoint and resume execution])\n\
-DESC(Enable / Disable Breakpoint at (), [enable or disable breakpoint])\n\
-DESC(Set Condition at ()..., [set breakpoint condition])\n\
-DESC(Set Ignore Count at ()..., [set breakpoint ignore count])\n\
-DESC(Set Execution Position to (), [move execution position])
-])dnl
-
-Ddd*source_buttons*breakAt.helpString:	\
-LBL(Break at ()) / LBL(Clear at ())\n\
-\n\
-Set or delete a breakpoint at the argument LBL(()).\n\
-\n\
-ANNOUNCE_PULLDOWN\n\
-BREAK_HELP
-
-Ddd*breakAtMenu*helpString:	BREAK_HELP
-
-Ddd*source_buttons*breakAt.tipString:	\
-@rm Set/Delete breakpoint at LBL(())
-Ddd*source_buttons*breakAt.documentationString:	\
-@rm Set or delete a breakpoint at the argument LBL(()) MORE_PULLDOWN()
-
-Ddd*source_buttons*tempBreakAt.documentationString: \
-@rm Set a temporary breakpoint at the argument LBL(())
-Ddd*source_buttons*contUntil.documentationString: \
-@rm Set a temporary breakpoint at LBL(()) and resume execution
-Ddd*source_buttons*enable.documentationString: \
-@rm Enable or disable the breakpoint at the argument LBL(())
-Ddd*source_buttons*condition.documentationString: \
-@rm Specify a condition for the breakpoint at LBL(())
-Ddd*source_buttons*ignore_count.documentationString: \
-@rm Specify how many crossings of the breakpoint at LBL(()) are to be ignored
-Ddd*source_buttons*setPC.documentationString: \
-@rm Set the current execution position to LBL(())
-
-define(PRINT_HELP, [\
-DESC(Print *(), [print dereferenced argument])\n\
-DESC(Whatis (), [print type of argument])
-])dnl
-
-Ddd*source_buttons*print.helpString:	\
-LBL(Print ())\n\
-\n\
-Print the argument LBL(()) in the @GDB@ console.\n\
-\n\
-ANNOUNCE_PULLDOWN\n\
-PRINT_HELP
-Ddd*printMenu*helpString:	PRINT_HELP
-
-Ddd*source_buttons*print.tipString:	\
-@rm Print LBL(()) in the debugger console
-Ddd*source_buttons*print.documentationString:	\
-@rm Print the argument LBL(()) in the @GDB@ console MORE_PULLDOWN()
-Ddd*source_buttons*printRef.documentationString:	\
-@rm Print the dereferenced argument LBL(()) in the @GDB@ console
-Ddd*source_buttons*whatis.documentationString:	\
-@rm Print the type of the argument LBL(()) in the @GDB@ console
-
-define(DISPLAY_HELP, [\
-DESC(Display *(), [display dereferenced argument])
-])dnl
-
-Ddd*source_buttons*display.helpString:	\
-LBL(Display ())\n\
-\n\
-Display the argument LBL(()) in the data window.\n\
-\n\
-ANNOUNCE_PULLDOWN\n\
-DISPLAY_HELP
-Ddd*displayMenu*helpString:	DISPLAY_HELP
-
-
-Ddd*source_buttons*display.tipString:	\
-@rm Display LBL(()) in the data window
-Ddd*source_buttons*display.documentationString:	\
-@rm Display the argument LBL(()) in the data window MORE_PULLDOWN()
-Ddd*source_buttons*dispRef.documentationString:	\
-@rm Display the dereferenced argument LBL(()) in the data window
-
-define(WATCH_HELP, [\
-DESC(Set watchpoint on (), [stop whenever LBL(()) changes; same as LBL(Watch())])\n\
-DESC(Set read watchpoint on (), [stop whenever LBL(()) is read])\n\
-DESC(Set access watchpoint on (), [stop whenever LBL(()) is either read or written])\n\
-\n\
-Unless you have special hardware support, watchpoints slow down the\n\
-debugged program by about two orders of magnitude.
-])dnl
-
-Ddd*source_buttons*watch.helpString:	\
-LBL(Watch ()) / LBL(Unwatch())\n\
-\n\
-Stop whenever the value of LBL(()) changes.\n\
-\n\
-LBL(Watch ()) sets a EMPH(watchpoint) on LBL(()) - a special breakpoint that\n\
-stops your program whenever the value of LBL(()) changes.  A watchpoint is\n\
-managed like any other breakpoint, via LBL(Source) | LBL(Edit Breakpoints).\n\
-\n\
-LBL(Unwatch()) deletes the EMPH(watchpoint) associated with LBL(()).\n\
-\n\
-ANNOUNCE_PULLDOWN\n\
-WATCH_HELP
-Ddd*watchMenu*helpString:	WATCH_HELP
-
-Ddd*source_buttons*watch.tipString:	\
-@rm Stop whenever LBL(()) changes
-Ddd*source_buttons*watch.documentationString:	\
-@rm Stop whenever the value of LBL(()) changes MORE_PULLDOWN()
-Ddd*source_buttons*cwatch.documentationString:	\
-@rm Stop whenever the value of LBL(()) changes
-Ddd*source_buttons*rwatch.documentationString:	\
-@rm Stop whenever LBL(()) is read (requires hardware support)
-Ddd*source_buttons*awatch.documentationString:	\
-@rm Stop whenever LBL(()) is either read or written (requires hardware support)
-
-define(FIND_HELP, [\
-DESC(LBL_FIND_BACKWARD, [find backwards])\n\
-DESC(LBL_FIND_FORWARD, [find forwards])
-])dnl
-
-Ddd*source_buttons*find.helpString:	\
-LBL(LBL_FIND_BACKWARD / LBL_FIND_FORWARD)\n\
-\n\
-Search an occurrence of LBL(()) in the current source text.\n\
-\n\
-See LBL(Edit) | LBL(Preferences) | LBL(Source) for search settings.\n\
-\n\
-ANNOUNCE_PULLDOWN\n\
-FIND_HELP
-Ddd*findMenu*helpString:	FIND_HELP
-
-Ddd*source_buttons*find.tipString:	\
-@rm Find LBL(()) in source
-Ddd*source_buttons*find.documentationString:	\
-@rm Search LBL(()) in the current source MORE_PULLDOWN()
-Ddd*source_buttons*findBackward.documentationString:	\
-@rm Search the previous occurrence of LBL(()) in the source
-Ddd*source_buttons*findForward.documentationString:	\
-@rm Search the next occurrence of LBL(()) in the source
-
 
 
 !-----------------------------------------------------------------------------
@@ -4173,14 +4196,14 @@ Ddd*source_buttons*XmPushButton.helpString:
 Ddd*console_buttons*XmPushButton.helpString:
 Ddd*data_buttons*XmPushButton.helpString:
 Ddd*tool_buttons*XmPushButton.helpString:
-Ddd*command_tool_bar*XmPushButton.helpString:
+Ddd*command_toolbar*XmPushButton.helpString:
 
 ! Same applies for button tips.
 Ddd*source_buttons*XmPushButton.tipString:
 Ddd*console_buttons*XmPushButton.tipString:
 Ddd*data_buttons*XmPushButton.tipString:
 Ddd*tool_buttons*XmPushButton.tipString:
-Ddd*command_tool_bar*XmPushButton.tipString:
+Ddd*command_toolbar*XmPushButton.tipString:
 
 ! Special spacing
 Ddd*source_buttons.spacing:	    0
@@ -4218,7 +4241,7 @@ Ddd*console_buttons*break.tipString: \
 @rm Interrupt debugged program
 Ddd*tool_buttons*break.tipString: \
 @rm Interrupt debugged program
-Ddd*command_tool_bar*break.tipString: \
+Ddd*command_toolbar*break.tipString: \
 @rm Interrupt debugged program
 Ddd*?*break.documentationString: \
 @rm Interrupt the debugged process (or current @GDB@ command)
