@@ -1710,8 +1710,8 @@ static Boolean _SelectAll(Widget w, XEvent *, String *, Cardinal *)
     const Graph* graph       = _w->graphEdit.graph;
 
     Boolean changed = False;
-    for (GraphNode *node = graph->firstNode(); node != 0;
-	node = graph->nextNode(node))
+    for (GraphNode *node = graph->firstVisibleNode(); node != 0;
+	node = graph->nextVisibleNode(node))
     {
 	if (!node->selected())
 	{
