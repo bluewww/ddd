@@ -625,6 +625,16 @@ XtResource ddd_resources[] = {
 	XtPointer(True)
     },
 
+   {
+	XtNbuiltinPlot,
+	XtCBuiltinPlot,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, builtin_plot),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
     {
 	XtNtermCommand,
 	XtCTermCommand,

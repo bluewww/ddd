@@ -869,6 +869,7 @@ DDD_OBJECTS = \
 	HistoryF.o   \
 	MinMaxA.o    \
 	PlotAgent.o  \
+	PlotArea.o   \
 	PosBuffer.o  \
 	ProgressM.o  \
 	RefreshDI.o  \

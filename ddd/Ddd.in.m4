@@ -4601,6 +4601,10 @@ WIDGET(Plot Window)\n\
 \n\
 Use LBL(File, Close) to close this window.
 
+Ddd*plot*area.width:        640
+Ddd*plot*area.height:       450
+Ddd*plot*area.background:   TEXT_BACKGROUND_COLOR
+
 
 !-----------------------------------------------------------------------------
 ! Debugger Buttons
@@ -4809,8 +4813,9 @@ Ddd*print*postscript.labelString:	      PostScript
 Ddd*print*xfig.labelString:		      FIG
 
 Ddd*print*what.labelString:	      	      Print
-Ddd*print*all.labelString:		      All Displays
-Ddd*print*selected.labelString:		      Selected Displays
+Ddd*print*displays.labelString:		      Displays
+Ddd*print*plots.labelString:		      Plots
+Ddd*print*selected.labelString:		      Selected Only
 
 Ddd*print*orientation.labelString:            Orientation
 Ddd*print*portrait.labelString:		      Portrait

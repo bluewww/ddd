@@ -295,3 +295,38 @@ void PlotAgent::add_break()
 {
     plot_os << '\n';
 }
+
+
+// Handle plot commands
+void PlotAgent::dispatch(int type, char *data, int length)
+{
+    if (type != int(Input) || length < 2)
+    {
+	LiterateAgent::dispatch(type, data, length);
+	return;
+    }
+
+    bool getting_plot_data = plot_commands.length() > 0;
+    if (data[0] == 'G' && data[1] == '\n')
+    {
+	// Enter graphics mode
+	getting_plot_data = true;
+    }
+
+    if (getting_plot_data)
+    {
+	// Continue plot
+	plot_commands += string(data, length);
+    }
+
+    if (getting_plot_data && 
+	data[length - 2] == 'E' && 
+	data[length - 1] == '\n')
+    {
+	// Leave graphics mode
+	DataLength dl(plot_commands.chars(), plot_commands.length());
+	callHandlers(Plot, &dl);
+
+	plot_commands = "";
+    }
+}

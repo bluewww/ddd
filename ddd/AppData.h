@@ -136,6 +136,8 @@
 #define XtCPlotSettings          "PlotSettings"
 #define XtNdecoratePlot          "decoratePlot"
 #define XtCDecorate              "Decorate"
+#define XtNbuiltinPlot           "builtinPlot"
+#define XtCBuiltinPlot           "BuiltinPlot"
 #define XtNtermCommand           "termCommand"
 #define XtCTermCommand           "TermCommand"
 #define XtNtermType              "termType"
@@ -414,6 +416,7 @@ struct AppData {
     String    plot_2d_settings;
     String    plot_3d_settings;
     Boolean   decorate_plot;
+    Boolean   builtin_plot;
     String    term_command;
     String    term_type;
     Boolean   use_tty_command;

@@ -40,6 +40,11 @@
 
 #include <fstream.h>
 
+// Event types
+const unsigned Plot = LiterateAgent_NTypes;   // Plot data received
+
+const unsigned PlotAgent_NTypes = Plot + 1;   // number of events
+
 class PlotAgent: public LiterateAgent {
 
 public:
@@ -55,6 +60,7 @@ private:
     double x_min, x_max;	// Minimum and maximum values
     double y_min, y_max;
     double v_min, v_max;
+    string plot_commands;	// Plotting commands received so far
 
 protected:
     void add_v(double v);
@@ -64,18 +70,21 @@ protected:
     void reset();
     string var(char *name, double min, double max);
 
+    virtual void dispatch(int type, char *data, int length);
+
 public:
     static string plot_2d_settings;
     static string plot_3d_settings;
 
     // Constructor for Agent users
     PlotAgent(XtAppContext app_context, const string& pth,
-	      unsigned nTypes = LiterateAgent_NTypes)
+	      unsigned nTypes = PlotAgent_NTypes)
 	: LiterateAgent(app_context, pth, nTypes),
 	  files(), titles(), plot_os(), ndim(0), 
 	  x_min(0.0), x_max(0.0),
 	  y_min(0.0), y_max(0.0),
-	  v_min(0.0), v_max(0.0)
+	  v_min(0.0), v_max(0.0),
+	  plot_commands("")
     {
 	reset();
     }
