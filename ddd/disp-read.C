@@ -515,7 +515,9 @@ bool is_make_cmd (const string& cmd)
 // True if CMD quits GDB
 bool is_quit_cmd (const string& cmd)
 {
-    return cmd.contains('q', 0); // `quit', `q', or whatever
+    string c = cmd;
+    strip_leading_space(c);
+    return c.contains('q', 0);	// `quit', `q', or whatever
 }
 
 static bool starts_with(const string& cmd, const string& prefix)
