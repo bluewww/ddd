@@ -1,7 +1,7 @@
 // $Id$
 // Associative array
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the ICE Library.
@@ -35,6 +35,8 @@
 
 #include "bool.h"
 #include "assert.h"
+
+#include <stdlib.h>		// abort()
 
 template<class K, class V> class AssocMark;
 template<class K, class V> class _Assoc;
