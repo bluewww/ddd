@@ -83,7 +83,7 @@ char SourceView_rcsid[] =
 #include "IntArray.h"
 #include "MakeMenu.h"
 #include "PosBuffer.h"
-#include "PositionH.h"
+#include "UndoBuffer.h"
 #include "TimeOut.h"
 #include "assert.h"
 #include "charsets.h"
@@ -4111,7 +4111,7 @@ void SourceView::add_current_to_history()
     pos_found = get_line_of_pos(code_text_w, pos, line_nr, address, 
 				in_text, bp_nr);
     if (pos_found && address != "")
-	position_history.add_address(address, false);
+	undo_buffer.add_address(address, false);
 }
 
 // Add position to history
@@ -4133,7 +4133,7 @@ void SourceView::add_position_to_history(const string& file_name, int line,
 	break;
     }
 
-    position_history.add_position(source_name, line, exec_pos);
+    undo_buffer.add_position(source_name, line, exec_pos);
 }
 
 // Lookup entry from position history
@@ -7609,7 +7609,7 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
 
     if (pos_displayed)
     {
-	if (!position_history.at_last_exec_pos())
+	if (!undo_buffer.at_last_exec_pos())
 	{
 	    map_glyph(past_arrow, x + arrow_x_offset, y);
 	    unmap_glyph(grey_arrow);
@@ -8859,7 +8859,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	return;
 
     SetInsertionPosition(code_text_w, pos + indent_amount(code_text_w));
-    position_history.add_address(pc, stopped);
+    undo_buffer.add_address(pc, stopped);
 
     XmTextPosition pos_line_end = 0;
     if (current_code != "")

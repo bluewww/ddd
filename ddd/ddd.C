@@ -791,9 +791,9 @@ struct EditItems {
 
 #define EDIT_MENU(win) \
 { \
-    { "undo",        MMPush | MMUnmanaged }, \
-    { "redo",        MMPush | MMUnmanaged }, \
-    { "separator",   MMSeparator | MMUnmanaged }, \
+    { "undo",        MMPush,  { gdbUndoCB }}, \
+    { "redo",        MMPush,  { gdbRedoCB }}, \
+    MMSep, \
     { "cut",         MMPush,  { gdbCutSelectionCB,    XtPointer(win) }}, \
     { "copy",        MMPush,  { gdbCopySelectionCB,   XtPointer(win) }}, \
     { "paste",       MMPush,  { gdbPasteClipboardCB,  XtPointer(win) }}, \
@@ -892,9 +892,6 @@ static MMDesc source_menu[] =
     MMSep,
     { "edit",       MMPush,  { gdbEditSourceCB }, NULL, &edit_source_w },
     { "reload",     MMPush,  { gdbReloadSourceCB }, NULL, &reload_source_w },
-    MMSep,
-    { "back",       MMPush,  { gdbGoBackCB }},
-    { "forward",    MMPush,  { gdbGoForwardCB }},
     MMEnd
 };
 

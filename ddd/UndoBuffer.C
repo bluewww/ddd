@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Position history (`Back' and `Forward' buttons)
+// Undo/Redo buffer
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -26,14 +26,14 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-char PositionHistory_rcsid[] = 
+char UndoBuffer_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation
 #endif
 
-#include "PositionH.h"
+#include "UndoBuffer.h"
 
 #include "SourceView.h"
 #include "DataDisp.h"
@@ -41,32 +41,31 @@ char PositionHistory_rcsid[] =
 #include "ddd.h"
 #include "string-fun.h"
 
-#ifndef LOG_POSITION_HISTORY
-#define LOG_POSITION_HISTORY 0
+#ifndef LOG_UNDO_BUFFER
+#define LOG_UNDO_BUFFER 0
 #endif
 
+UndoBuffer undo_buffer;
 
-PositionHistory position_history;
-
-PositionHistoryArray PositionHistory::history;
+UndoBufferArray UndoBuffer::history;
 
 // Last position in history + 1
-int PositionHistory::history_position = 1;
+int UndoBuffer::history_position = 1;
 
-bool PositionHistory::locked = false;
+bool UndoBuffer::locked = false;
 
 
 //-----------------------------------------------------------------------
 // Position history
 //-----------------------------------------------------------------------
 
-void PositionHistory::add(const PositionHistoryEntry& entry)
+void UndoBuffer::add(const UndoBufferEntry& entry)
 {
     if (entry.exec_pos)
     {
 	// Adding a new execution position - remove all non-exec
 	// positions from history
-	PositionHistoryArray new_history;
+	UndoBufferArray new_history;
 	for (int i = 0; i < history.size(); i++)
 	{
 	    if (history[i].exec_pos)
@@ -84,7 +83,7 @@ void PositionHistory::add(const PositionHistoryEntry& entry)
 	{
 	    // Adding a non-exec position - remove all later non-exec
 	    // entries in history
-	    PositionHistoryArray new_history;
+	    UndoBufferArray new_history;
 	    for (int i = 0; i < history.size(); i++)
 	    {
 		if (i < history_position || history[i].exec_pos)
@@ -101,18 +100,18 @@ void PositionHistory::add(const PositionHistoryEntry& entry)
 }
 
 // Add position to history
-void PositionHistory::add_position(const string& source_name, int line,
+void UndoBuffer::add_position(const string& source_name, int line,
 				   bool exec_pos)
 {
     if (locked)
 	return;
 
-    PositionHistoryEntry new_entry;
+    UndoBufferEntry new_entry;
     new_entry.file     = source_name;
     new_entry.line     = line;
     new_entry.exec_pos = exec_pos;
 
-    PositionHistoryEntry current_entry;
+    UndoBufferEntry current_entry;
     if (history.size() > 0 && history_position > 0)
     {
 	current_entry = history[history_position - 1];
@@ -128,17 +127,17 @@ void PositionHistory::add_position(const string& source_name, int line,
 }
 
 // Add address to history
-void PositionHistory::add_address(const string& address, bool exec_pos)
+void UndoBuffer::add_address(const string& address, bool exec_pos)
 {
     if (locked)
 	return;
 
-    PositionHistoryEntry new_entry;
+    UndoBufferEntry new_entry;
     new_entry.exec_pos = exec_pos;
 
     if (history.size() > 0)
     {
-	PositionHistoryEntry& current_entry = history[history_position - 1];
+	UndoBufferEntry& current_entry = history[history_position - 1];
 	if (current_entry.address == "")
 	{
 	    // Append address to current position
@@ -167,16 +166,16 @@ void PositionHistory::add_address(const string& address, bool exec_pos)
 
 
 // Add displays to history
-void PositionHistory::add_displays(const string& displays)
+void UndoBuffer::add_displays(const string& displays)
 {
     if (locked)
 	return;
 
-    PositionHistoryEntry new_entry;
+    UndoBufferEntry new_entry;
 
     if (history.size() > 0)
     {
-	PositionHistoryEntry& current_entry = history[history_position - 1];
+	UndoBufferEntry& current_entry = history[history_position - 1];
 	if (current_entry.displays == NO_GDB_ANSWER)
 	{
 	    // Append displays to current position
@@ -203,16 +202,16 @@ void PositionHistory::add_displays(const string& displays)
 
 
 // Add single display to history
-void PositionHistory::add_display(const string& display)
+void UndoBuffer::add_display(const string& display)
 {
     if (locked)
 	return;
 
-    PositionHistoryEntry new_entry;
+    UndoBufferEntry new_entry;
 
     if (history.size() > 0)
     {
-	PositionHistoryEntry& current_entry = history[history_position - 1];
+	UndoBufferEntry& current_entry = history[history_position - 1];
 	if (current_entry.displays == NO_GDB_ANSWER)
 	{
 	    // Append display to current position
@@ -238,13 +237,13 @@ void PositionHistory::add_display(const string& display)
 }
 
 
-void PositionHistory::log()
+void UndoBuffer::log()
 {
-#if LOG_POSITION_HISTORY
-    clog << "Position history:\n";
+#if LOG_UNDO_BUFFER
+    clog << "Undo buffer:\n";
     for (int i = 0; i < history.size(); i++)
     {
-	const PositionHistoryEntry& entry = history[i];
+	const UndoBufferEntry& entry = history[i];
 
 	if (i == history_position - 1)
 	    clog << ">";
@@ -271,7 +270,7 @@ void PositionHistory::log()
 #endif
 }
 
-void PositionHistory::goto_entry(const PositionHistoryEntry& entry)
+void UndoBuffer::goto_entry(const UndoBufferEntry& entry)
 {
     locked = true;
 
@@ -294,7 +293,7 @@ void PositionHistory::goto_entry(const PositionHistoryEntry& entry)
 
 
 // True iff we're at the last known execution position
-bool PositionHistory::at_last_exec_pos()
+bool UndoBuffer::at_last_exec_pos()
 {
     for (int i = history_position; i < history.size(); i++)
 	if (history[i].exec_pos)
@@ -304,11 +303,11 @@ bool PositionHistory::at_last_exec_pos()
 }
 
 
-bool PositionHistory::go_back()
+bool UndoBuffer::undo()
 {
     if (history_position > 1 && history.size() > 0)
     {
-	const PositionHistoryEntry& entry = history[--history_position - 1];
+	const UndoBufferEntry& entry = history[--history_position - 1];
 	goto_entry(entry);
 	return true;
     }
@@ -316,11 +315,11 @@ bool PositionHistory::go_back()
     return false;
 }
 
-bool PositionHistory::go_forward()
+bool UndoBuffer::redo()
 {
     if (history_position < history.size())
     {
-	const PositionHistoryEntry& entry = history[history_position++];
+	const UndoBufferEntry& entry = history[history_position++];
         goto_entry(entry);
 	return true;
     }
@@ -329,9 +328,9 @@ bool PositionHistory::go_forward()
 }
 
 // Clear history
-void PositionHistory::clear()
+void UndoBuffer::clear()
 {
-    static PositionHistoryArray empty;
+    static UndoBufferArray empty;
     history          = empty;
     history_position = 1;
     locked           = false;

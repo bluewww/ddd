@@ -51,7 +51,7 @@ char comm_manager_rcsid[] =
 #include "DispBuffer.h"
 #include "DispValue.h"
 #include "PosBuffer.h"
-#include "PositionH.h"
+#include "UndoBuffer.h"
 #include "SourceView.h"
 #include "VoidArray.h"
 #include "bool.h"
@@ -1467,7 +1467,7 @@ void user_cmdOAC(void *data)
     if (pos_buffer && pos_buffer->started_found())
     {
 	// Program has been restarted - clear position history
-	position_history.clear();
+	undo_buffer.clear();
     }
 
     if (pos_buffer && pos_buffer->terminated_found())

@@ -335,8 +335,8 @@ Ddd*verifyButtons: on
 ! - `Prev'     : Show previous command
 ! - `Next'     : Show next command
 ! - `Apply'    : Send the given command to GDB
-! - `Back'     : Lookup previously selected source position
-! - `Forward'  : Lookup next selected source position
+! - `Undo'     : Undo last action
+! - `Redo'     : Redo last action
 ! - `Edit'     : Edit current source file
 ! - `Make'     : Remake current program
 ! - `Reload'   : Reload source file
@@ -366,7 +366,7 @@ Ddd*dataButtons:
 ! The command tool buttons, as of DDD 2.0 and later.
 Ddd*toolButtons: \
 run\nbreak^C\nstep\nstepi\nnext\nnexti\nuntil\nfinish\ncont\n\kill\n\
-up\ndown\nBack\nForward\nEdit\nMake
+up\ndown\nUndo\nRedo\nEdit\nMake
 
 Ddd*break.labelString: Interrupt
 
@@ -1943,6 +1943,9 @@ Ddd*menubar.edit*documentationString:	\
 define(EDIT_HELP, [\
 WIDGET(Edit Menu)\n\
 \n\
+DESC(Undo, [undo last action])\n\
+DESC(Redo, [redo next action])\n\
+\n\
 DESC(Cut, [remove the selected text to the clipboard])\n\
 DESC(Copy, [copy the selected text to the clipboard\n\
     without removing the original])\n\
@@ -1966,14 +1969,14 @@ Ddd*editMenu.undo.mnemonic:				U
 Ddd*editMenu.undo.accelerator:				Ctrl<Key>Z
 Ddd*editMenu.undo.acceleratorText:			Ctrl+Z
 Ddd*editMenu.undo.documentationString: \
-@rm Undo the last action
+@rm Undo last action
 
 Ddd*editMenu.redo.labelString:				Redo
 Ddd*editMenu.redo.mnemonic:				R
 Ddd*editMenu.redo.accelerator:				Ctrl<Key>Y
 Ddd*editMenu.redo.acceleratorText:			Ctrl+Y
 Ddd*editMenu.redo.documentationString: \
-@rm Redo the next action
+@rm Redo next action
 
 ! Have standard Motif bindings
 ! Ddd*editMenu.cut.accelerator:		Shift<Key>Delete
@@ -2489,11 +2492,7 @@ ITEM If LBL(Display Machine Code) is set, the current function\n\
     is automatically disassembled.\n\
 \n\
 DESC(Edit Source..., [invoke text editor for current source])\n\
-DESC(Reload Source , [reload current source file])\n\
-\n\
-DESC(Back, [return to previous source position])\n\
-DESC(Forward, [move forward to next source position])
-])dnl
+DESC(Reload Source , [reload current source file])\n])dnl
 
 Ddd*menubar.source.helpString:	SOURCE_HELP
 Ddd*sourceMenu.helpString:	SOURCE_HELP
@@ -2558,20 +2557,6 @@ Ddd*sourceMenu.reload.accelerator:	~Meta Shift Ctrl<Key>L
 Ddd*sourceMenu.reload.acceleratorText:	Shift+Ctrl+L
 Ddd*sourceMenu.reload.documentationString: \
 @rm Reload current source file
-
-Ddd*sourceMenu.back.labelString:	Back
-Ddd*sourceMenu.back.mnemonic:		B
-Ddd*sourceMenu.back.accelerator:	Ctrl<Key>Left
-Ddd*sourceMenu.back.acceleratorText:	Ctrl+Left
-Ddd*sourceMenu.back.documentationString: \
-@rm Return to previous source position
-
-Ddd*sourceMenu.forward.labelString:	Forward
-Ddd*sourceMenu.forward.mnemonic:	F
-Ddd*sourceMenu.forward.accelerator:	Ctrl<Key>Right
-Ddd*sourceMenu.forward.acceleratorText:	Ctrl+Right
-Ddd*sourceMenu.forward.documentationString: \
-@rm Move forward to next source position
 
 
 ! Data menu
@@ -2923,15 +2908,15 @@ Ddd*tool_buttons.down.bottomPosition:		70
 Ddd*tool_buttons.down.leftPosition:		45
 Ddd*tool_buttons.down.rightPosition:		90
 
-Ddd*tool_buttons.Back.topPosition:		70
-Ddd*tool_buttons.Back.bottomPosition:		80
-Ddd*tool_buttons.Back.leftPosition:		0
-Ddd*tool_buttons.Back.rightPosition:		45
+Ddd*tool_buttons.Undo.topPosition:		70
+Ddd*tool_buttons.Undo.bottomPosition:		80
+Ddd*tool_buttons.Undo.leftPosition:		0
+Ddd*tool_buttons.Undo.rightPosition:		45
 
-Ddd*tool_buttons.Forward.topPosition:		70
-Ddd*tool_buttons.Forward.bottomPosition:	80
-Ddd*tool_buttons.Forward.leftPosition:		45
-Ddd*tool_buttons.Forward.rightPosition:		90
+Ddd*tool_buttons.Redo.topPosition:		70
+Ddd*tool_buttons.Redo.bottomPosition:		80
+Ddd*tool_buttons.Redo.leftPosition:		45
+Ddd*tool_buttons.Redo.rightPosition:		90
 
 Ddd*tool_buttons.Edit.topPosition:		80
 Ddd*tool_buttons.Edit.bottomPosition:		90
@@ -2948,11 +2933,6 @@ Ddd*tool_buttons*topAttachment:			XmATTACH_POSITION
 Ddd*tool_buttons*bottomAttachment:		XmATTACH_POSITION
 Ddd*tool_buttons*leftAttachment:		XmATTACH_POSITION
 Ddd*tool_buttons*rightAttachment:		XmATTACH_POSITION
-
-! Some special labels
-Ddd*tool_buttons*Forward.labelString:      Fwd
-Ddd*command_toolbar*Forward.labelString:   Fwd
-
 
 ! Make command tool and buttons a little lighter
 Ddd*tool_buttons*shadowThickness:		1
@@ -4669,19 +4649,19 @@ Execute the current debugging command.  (Equivalent to KEY_RETURN).
 Ddd*?*Apply.tipString: \
 @rm Execute current command
 
-Ddd*?*Back.helpString:	\
-LBL(Back)\n\
+Ddd*?*Undo.helpString:	\
+LBL(Undo)\n\
 \n\
-Return to the previous source position.
-Ddd*?*Back.tipString: \
-@rm Previous source position
+Undo last action.
+Ddd*?*Undo.tipString: \
+@rm Undo last action
 
-Ddd*?*Forward.helpString:	\
-LBL(Forward)\n\
+Ddd*?*Redo.helpString:	\
+LBL(Redo)\n\
 \n\
-Move forward to the next source position.
-Ddd*?*Forward.tipString: \
-@rm Next source position
+Redo next action.
+Ddd*?*Redo.tipString: \
+@rm Redo next action
 
 Ddd*?*Edit.helpString:	\
 LBL(Edit)\n\

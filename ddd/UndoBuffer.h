@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Position history (`Back' and `Forward' buttons)
+// Undo/Redo buffer
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -26,20 +26,20 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_PositionHistory_h
-#define _DDD_PositionHistory_h
+#ifndef _DDD_UndoBuffer_h
+#define _DDD_UndoBuffer_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
 #include "bool.h"
-#include "PositionHE.h"
+#include "UndoBE.h"
 
-class PositionHistory {
+class UndoBuffer {
 
 private:
-    static PositionHistoryArray history;
+    static UndoBufferArray history;
 
     // Last position in history + 1
     static int history_position;
@@ -49,10 +49,10 @@ private:
 
 protected:
     // Add new entry
-    static void add(const PositionHistoryEntry& entry);
+    static void add(const UndoBufferEntry& entry);
 
     // Lookup entry in source
-    static void goto_entry(const PositionHistoryEntry& entry);
+    static void goto_entry(const UndoBufferEntry& entry);
 
     // Log current position
     static void log();
@@ -70,8 +70,8 @@ public:
     static void add_display(const string& display);
 
     // Lookup previous/next position; return true iff successful
-    static bool go_back();
-    static bool go_forward();
+    static bool undo();
+    static bool redo();
 
     // True iff we're at the last known execution position
     static bool at_last_exec_pos();
@@ -80,7 +80,7 @@ public:
     static void clear();
 };
 
-extern PositionHistory position_history;
+extern UndoBuffer undo_buffer;
 
-#endif // _DDD_PositionHistory_h
+#endif // _DDD_UndoBuffer_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

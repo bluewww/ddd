@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Position History Entries
+// Undo Buffer Entry
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_PositionHistoryEntry_h
-#define _DDD_PositionHistoryEntry_h
+#ifndef _DDD_UndoBufferEntry_h
+#define _DDD_UndoBufferEntry_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -38,24 +38,24 @@
 #include "bool.h"
 #include "question.h"
 
-struct PositionHistoryEntry {
+struct UndoBufferEntry {
     string file;		// Source position
     int line;
     string address;		// Machine code position
     string displays;		// Displayed values
     bool exec_pos;		// True if execution position
 
-    PositionHistoryEntry()
+    UndoBufferEntry()
 	: file(""), line(0), address(""), displays(NO_GDB_ANSWER),
 	  exec_pos(false)
     {}
 
-    PositionHistoryEntry(const PositionHistoryEntry& entry)
+    UndoBufferEntry(const UndoBufferEntry& entry)
 	: file(entry.file), line(entry.line), address(entry.address),
 	  displays(entry.displays), exec_pos(entry.exec_pos)
     {}
 
-    PositionHistoryEntry& operator = (const PositionHistoryEntry& entry)
+    UndoBufferEntry& operator = (const UndoBufferEntry& entry)
     {
 	file     = entry.file;
 	line     = entry.line;
@@ -66,7 +66,7 @@ struct PositionHistoryEntry {
 	return *this;
     }
 
-    bool operator == (const PositionHistoryEntry& entry) const
+    bool operator == (const UndoBufferEntry& entry) const
     {
 	return (file == entry.file && 
 		line == entry.line &&
@@ -75,13 +75,13 @@ struct PositionHistoryEntry {
 		exec_pos == entry.exec_pos);
     }
 
-    bool operator != (const PositionHistoryEntry& entry) const
+    bool operator != (const UndoBufferEntry& entry) const
     {
 	return !operator == (entry);
     }
 };
 
-typedef VarArray<PositionHistoryEntry> PositionHistoryArray;
+typedef VarArray<UndoBufferEntry> UndoBufferArray;
 
-#endif // _DDD_PositionHistoryEntry_h
+#endif // _DDD_UndoBufferEntry_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

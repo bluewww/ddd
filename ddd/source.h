@@ -62,8 +62,8 @@ extern void gdbWhatisCB       (Widget, XtPointer, XtPointer);
 extern void gdbEditSourceCB   (Widget, XtPointer, XtPointer);
 extern void gdbReloadSourceCB (Widget, XtPointer, XtPointer);
 
-extern void gdbGoBackCB       (Widget, XtPointer, XtPointer);
-extern void gdbGoForwardCB    (Widget, XtPointer, XtPointer);
+extern void gdbUndoCB         (Widget, XtPointer, XtPointer);
+extern void gdbRedoCB         (Widget, XtPointer, XtPointer);
 
 extern bool have_breakpoint_at_arg();
 extern bool have_enabled_breakpoint_at_arg();

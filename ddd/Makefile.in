@@ -862,10 +862,10 @@ DDD_OBJECTS = \
 	HistoryF.o   \
 	MinMaxA.o    \
 	PosBuffer.o  \
-	PositionH.o  \
-	PositionHE.o \
 	SmartC.o     \
 	SourceView.o \
+	UndoBuffer.o \
+	UndoBE.o     \
 	WhatNextCB.o
 
 # Objects required for userinfo

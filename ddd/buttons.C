@@ -1039,10 +1039,10 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 	    callback = gdbCompleteCB;
 	else if (name == "Apply")
 	    callback = gdbApplyCB;
-	else if (name == "Back")
-	    callback = gdbGoBackCB;
-	else if (name == "Forward")
-	    callback = gdbGoForwardCB;
+	else if (name == "Undo" || name == "Back")
+	    callback = gdbUndoCB;
+	else if (name == "Redo" || name == "Forward")
+	    callback = gdbRedoCB;
 	else if (name == "Edit")
 	    callback = gdbEditSourceCB;
 	else if (name == "Make")

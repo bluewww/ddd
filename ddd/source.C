@@ -38,7 +38,7 @@ char source_rcsid[] =
 #include "AppData.h"
 #include "ArgField.h"
 #include "GDBAgent.h"
-#include "PositionH.h"
+#include "UndoBuffer.h"
 #include "SourceView.h"
 #include "TimeOut.h"
 #include "Command.h"
@@ -76,16 +76,16 @@ void gdbLookupCB(Widget, XtPointer, XtPointer)
     source_view->lookup(current_arg(true));
 }
 
-void gdbGoBackCB(Widget, XtPointer, XtPointer)
+void gdbUndoCB(Widget, XtPointer, XtPointer)
 {
-    if (!position_history.go_back())
-	set_status("No previous source position.");
+    if (!undo_buffer.undo())
+	set_status("Nothing to undo.");
 }
 
-void gdbGoForwardCB(Widget, XtPointer, XtPointer)
+void gdbRedoCB(Widget, XtPointer, XtPointer)
 {
-    if (!position_history.go_forward())
-	set_status("No next source position.");
+    if (!undo_buffer.redo())
+	set_status("Nothing to redo.");
 }
 
 

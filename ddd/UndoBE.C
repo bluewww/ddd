@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Position History Entries
+// Undo Buffer Entry
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -26,7 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-char PositionHistoryEntry_rcsid[] = 
+char UndoBufferEntry_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
@@ -35,5 +35,5 @@ char PositionHistoryEntry_rcsid[] =
 #pragma implementation "VarArray.h"
 #endif
 
-#include "PositionHE.h"
+#include "UndoBE.h"
 

@@ -136,7 +136,7 @@ To quickly display variable values,
 double-click on the variable name.
 
 After looking up an item or stepping through the program, you can use
-LBL(Source, Back) and LBL(Source, Forward) to return to earlier locations.
+LBL(Edit, Undo) and LBL(Edit, Redo) to return to earlier locations.
 
 You can repeat the last command by hitting KEY_RETURN.
 Use KEY(Ctrl+B) and KEY(Ctrl+F) to search the command history.
@@ -196,7 +196,7 @@ To use GDB with Sun CC, compile with SAMP(-xs).
 GDB wants debugging info in the executable.
 
 Double-clicking on a function call will lead you to the definition of
-the function.  Use LBL(Source, Back) to return to the function call.
+the function.  Use LBL(Edit, Undo) to return to the function call.
 
 Disabled breakpoints can be used as bookmarks.
 Use LBL(Source, Edit Breakpoints) to list all breakpoints;
