@@ -2,13 +2,13 @@ Memo: Whom to notify about new DDD releases
 ===========================================
 
 Text is found in `ANNOUNCE'.
-Title: `The Data Display Debugger (DDD) 2.0 is available' or
-       `DDD 2.0 is available'.
+Title: `The Data Display Debugger (DDD) 2.1 is available' or
+       `DDD 2.1 is available'.
 
 E-Mail
 ------
 
-* ddd-users@ips.cs.tu-bs.de (DDD users)
+* ddd-announce@ips.cs.tu-bs.de (DDD announcements)
 
 * bug-gdb@prep.ai.mit.edu   (for `gnu.gdb.bug')
 * xannounce@x.org           (for `comp.windows.x.announce'; major release only)
@@ -16,6 +16,7 @@ E-Mail
 
 * faq%craft@uunet.uu.net    (X11 FAQ, `comp.windows.x')
 * elf@ee.ryerson.ca         (X11 apps FAQ, `comp.windows.x.apps')
+
 
 USENET News
 -----------
@@ -25,3 +26,11 @@ USENET News
 * comp.windows.x.apps
 * gnu.misc.discuss
 * gnu.utils.help
+
+
+Where to install
+----------------
+
+* Local FTP site                        [source + binaries]
+* ftp://ftp.x.org/contrib/utilities/    [source]
+* ftp://sunsite.unc.edu/incoming/Linux/ [DDD LSM entry only; see README]
