@@ -454,9 +454,9 @@ public:
 
     // Constructor
     DataDisp (Widget       parent,
-	      String       vsl_path,           // from APP_DATA
-	      String       vsl_library,        // from APP_DATA
-	      String       vsl_defs,           // from APP_DATA
+	      string       vsl_path,           // from APP_DATA
+	      string       vsl_library,        // from APP_DATA
+	      string       vsl_defs,           // from APP_DATA
 	      bool         panned,             // from APP_DATA
 	      bool         toolbar_at_bottom,  // from APP_DATA
 	      unsigned char label_type);       // from APP_DATA

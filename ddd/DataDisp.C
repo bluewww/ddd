@@ -5103,7 +5103,7 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
 //----------------------------------------------------------------------------
 
 DataDisp::DataDisp(Widget parent,
-		   String vsl_path, String vsl_library, String vsl_defs,
+		   string vsl_path, string vsl_library, string vsl_defs,
 		   bool panned, bool toolbar_at_bottom,
 		   unsigned char label_type)
 {
