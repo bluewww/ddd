@@ -84,6 +84,9 @@ extern void set_current_line(const string& input);
 // True if last input was at GDB prompt.
 extern bool gdb_input_at_prompt;
 
+// True if debuggee is currently running.
+extern bool gdb_debuggee_running;
+
 // Clear isearch mode.
 // RESET means to reset the history; SHOW means to redisplay.
 extern void clear_isearch(bool reset = false, bool show = true);

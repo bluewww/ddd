@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // DDD command-line actions
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -47,6 +47,7 @@ char editing_rcsid[] =
 #include "cook.h"
 #include "ctrl.h"
 #include "ddd.h"
+#include "disp-read.h"
 #include "history.h"
 #include "misc.h"
 #include "post.h"
@@ -727,6 +728,14 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
 	    {
 		// We're typing at the GDB prompt: place CMD in command queue
 		gdb_command(cmd, w);
+
+		if (is_running_cmd(cmd, gdb))
+		{
+		    // We're getting a `run' (or `next' or `step')
+		    // command followed by other input.  Treat the
+		    // following input as user interaction.
+		    gdb_input_at_prompt = false;
+		}
 	    }
 	    else
 	    {
