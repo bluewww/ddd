@@ -2838,8 +2838,21 @@ void SourceView::create_text(Widget parent,
     XtSetArg(args[arg], XmNrightAttachment,   XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNallowResize,       True);              arg++;
     XtSetArg(args[arg], XmNeditMode,          XmMULTI_LINE_EDIT); arg++;
-    XtSetArg(args[arg], XmNautoShowCursorPosition, True);         arg++;
     XtSetArg(args[arg], XmNcursorPositionVisible, True);          arg++;
+
+    if (lesstif_version < 1000)
+    {
+	// LessTif 0.81 has a bad implementation of auto-show
+	// position: rather than scrolling only when needed, the line
+	// containing the cursor is *always* scrolled such that it
+	// becomes the first line.  Hence, disable the LessTif
+	// auto-show mechanism and rely on the DDD ones.
+	XtSetArg(args[arg], XmNautoShowCursorPosition, False);    arg++;
+    }
+    else
+    {
+	XtSetArg(args[arg], XmNautoShowCursorPosition, True);     arg++;
+    }
 
     if (lesstif_version <= 79)
     {

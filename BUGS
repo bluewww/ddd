@@ -280,8 +280,10 @@ Volunteers for fixing these and other bugs are welcome!
      flashing cursor in the gdb console window ought to stop flashing
      during user input.  [Tell the Motif people  -AZ]
 
-217* Using LessTif, placing the insertion cursor by clicking the mouse 
-     always scrolls the text window such that the insertion cursor is
-     in the first line.  [LessTif bug?  alwaysShowCursorPosition?  -AZ]
+218. Conor O'Neill <coneill@integral.ie> reports that, under
+     Openwindows on Sparc Solaris2.51, in the Open_File dialog, the
+     file_list box is too narrow and does not have a horizontal scroll
+     bar. Thus we cannot properly see the list of files available.
+     (This problem is not unique to DDD.)
 
-218. (Insert your bug here)
+219. (Insert your bug here)
