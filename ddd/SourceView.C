@@ -3553,7 +3553,8 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
     static Widget _breaks_w[2][max_glyphs + 1];
     static Widget _nobreaks_w[2][max_glyphs + 1];
 
-    for (int k = 0; k < 2; k++)
+    int k;
+    for (k = 0; k < 2; k++)
     {
 	Widget form_w      = k ? code_form_w : source_form_w;
 	Widget& arrow_w    = _arrow_w[k];
@@ -3648,7 +3649,7 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	}
     }
 
-    for (int k = 0; k < 2; k++)
+    for (k = 0; k < 2; k++)
     {
 	// Unmap remaining glyphs
 	Widget w;
@@ -3780,15 +3781,34 @@ XmTextPosition SourceView::find_pc(const string& pc)
 }
 
 
+bool SourceView::refresh_code_pending = false;
+
 // Process `disassemble' output
-void SourceView::refresh_codeOQC(const string& answer, void* data)
+void SourceView::refresh_codeOQC(const string& answer, void *client_data)
 {
-    string *ppc = (string *)data;
+    string *ppc = (string *)client_data;
     string& pc = *ppc;
     process_disassemble(answer);
 
     if (find_pc(pc) != XmTextPosition(-1))
 	show_pc(pc);
+
+    refresh_code_pending = false;
+}
+
+void SourceView::refresh_codeWorkProc(XtPointer client_data, XtIntervalId *)
+{
+    string *ppc = (string *)client_data;
+    string& pc = *ppc;
+    bool ok = gdb->send_question("disassemble " + pc, 
+				 refresh_codeOQC, (void *)&pc);
+
+    if (!ok)
+    {
+	// Try again in 250ms
+	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 250,
+			refresh_codeWorkProc, client_data);
+    }
 }
 
 // Show program counter location PC
@@ -3802,8 +3822,14 @@ void SourceView::show_pc (const string& pc)
 	// PC not found: disassemble location
 	static string last_pc;
 	last_pc = pc;
-	gdb->send_question("disassemble " + pc, 
-			   refresh_codeOQC, (void *)&last_pc);
+	if (!refresh_code_pending)
+	{
+	    // Send `disassemble' command only after the running command
+	    // has ended.
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 0,
+			    refresh_codeWorkProc, XtPointer(&last_pc));
+	    refresh_code_pending = true;
+	}
 	return;
     }
 
