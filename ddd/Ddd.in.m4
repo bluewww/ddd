@@ -6106,6 +6106,16 @@ or invoke DDD with the SAMP(--manual) option.\n\
 \n\
 Click on LBL(Exit) to exit DDD.
 
+Ddd*no_plotter_dialog_popup.title: DDD: It's a Bitter Sweet Symphony
+! Ddd*no_plotter_dialog.messageString:   \
+! @rm Gnuplot could not be started.
+Ddd*no_plotter_dialog*helpString:	\
+@rm The Gnuplot program could not be started.\n\
+\n\
+DDD requires the Gnuplot program to create plots.\n\
+Please install Gnuplot (available from any GNU site)\n\
+or verify the value of the SAMP(.plotCommand) resource.
+
 Ddd*fatal_dialog_popup.title: DDD: Oops
 Ddd*fatal_dialog.messageString:	  \
 @rm Internal error

@@ -44,6 +44,7 @@ char plotter_rcsid[] =
 #include "findWindow.h"
 #include "filetype.h"
 #include "fonts.h"
+#include "post.h"
 #include "print.h"
 #include "simpleMenu.h"
 #include "verify.h"
@@ -78,6 +79,7 @@ static void TraceInputHP (Agent *source, void *, void *call_data);
 static void TraceOutputHP(Agent *source, void *, void *call_data);
 static void TraceErrorHP (Agent *source, void *, void *call_data);
 static void SetStatusHP  (Agent *source, void *, void *call_data);
+static void PlotterNotFoundHP(Agent *source, void *, void *call_data);
 
 static void CancelPlotCB(Widget, XtPointer, XtPointer);
 static void ExposePlotAreaCB(Widget, XtPointer, XtPointer);
@@ -347,6 +349,28 @@ static void configure_plot(PlotWindowInfo *plot)
 // Decoration stuff
 //-------------------------------------------------------------------------
 
+// Start plot
+static void popup_plot_shell(PlotWindowInfo *plot)
+{
+    if (!plot->active && plot->plotter != 0)
+    {
+	// Pop down working dialog
+	if (plot->dialog != 0)
+	{
+	    XtUnmanageChild(plot->dialog);
+	    XtPopdown(XtParent(plot->dialog));
+	}
+
+	// Setup menu
+	plot->plotter->removeHandler(Died, PlotterNotFoundHP, 
+				     (void *)plot);
+	configure_plot(plot);
+
+	XtPopup(plot->shell, XtGrabNone);
+	plot->active = true;
+    }
+}
+
 // Swallow new GNUPLOT window
 static void SwallowCB(Widget swallower, XtPointer client_data, 
 		      XtPointer call_data)
@@ -362,21 +386,9 @@ static void SwallowCB(Widget swallower, XtPointer client_data,
 	XtRemoveCallback(swallower, XtNwindowCreatedCallback, 
 			 SwallowCB, client_data);
 
-	if (plot->dialog != 0)
-	{
-	    XtUnmanageChild(plot->dialog);
-	    XtPopdown(XtParent(plot->dialog));
-	}
-
 	XtVaSetValues(swallower, XtNwindow, window, NULL);
 
-	if (!plot->active && plot->plotter != 0)
-	{
-	    configure_plot(plot);
-
-	    XtPopup(plot->shell, XtGrabNone);
-	    plot->active = true;
-	}
+	popup_plot_shell(plot);
     }
 }
 
@@ -394,13 +406,19 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
     if (entered)
 	return;
 
-    if (plot->shell == 0)
-	return;
-
     entered = true;
 
-    // Pop down shell
-    XtPopdown(plot->shell);
+    if (plot->dialog != 0)
+    {
+	XtUnmanageChild(plot->dialog);
+	XtPopdown(XtParent(plot->dialog));
+    }
+
+    if (plot->shell != 0)
+    {
+	XtPopdown(plot->shell);
+    }
+
     plot->active = false;
 
     entered = false;
@@ -439,8 +457,10 @@ static void DeletePlotterHP(Agent *plotter, void *client_data, void *)
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
 		    DeletePlotterCB, XtPointer(plotter));
 
+    plotter->removeHandler(Died, DeletePlotterHP, client_data);
+
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
-    assert(plot->plotter == plotter);
+    assert(plot->plotter == 0 || plot->plotter == plotter);
     plot->plotter = 0;
     popdown_plot_shell(plot);
 }
@@ -449,22 +469,38 @@ static void GetPlotHP(Agent *, void *client_data, void *call_data)
 {
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
 
-    // We got the plot commands
-    XtUnmanageChild(plot->dialog);
-    XtPopdown(XtParent(plot->dialog));
-
-    if (!plot->active && plot->plotter != 0)
-    {
-	// Setup menu
-	configure_plot(plot);
-
-	XtPopup(plot->shell, XtGrabNone);
-	plot->active = true;
-    }
-
-    // Pass the received commands to the plot area
+    // We got the plot commands: Pass them to the plot area
     DataLength *dl = (DataLength *)call_data;
     plot->area->plot(string(dl->data, dl->length));
+
+    // Popup shell if needed
+    popup_plot_shell(plot);
+}
+
+static void PlotterNotFoundHP(Agent *plotter, void *client_data, void *)
+{
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+    assert(plot->plotter == 0 || plot->plotter == plotter);
+
+    plotter->removeHandler(Died, PlotterNotFoundHP, client_data);
+
+    string base = app_data.plot_command;
+    if (base.contains(' '))
+	base = base.before(' ');
+
+    Arg args[10];
+    Cardinal arg = 0;
+    MString msg = rm(capitalize(base) + " could not be started.");
+    XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
+    Widget dialog = 
+	verify(XmCreateErrorDialog(find_shell(),
+				   "no_plotter_dialog", args, arg));
+    XtUnmanageChild(XmMessageBoxGetChild
+		    (dialog, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+
+    Delay::register_shell(dialog);
+    manage_and_raise(dialog);
 }
 
 
@@ -669,8 +705,13 @@ PlotAgent *new_plotter(string name)
     plotter->addHandler(Input,  TraceInputHP);     // Gnuplot => DDD
     plotter->addHandler(Output, TraceOutputHP);    // DDD => Gnuplot
     plotter->addHandler(Error,  TraceErrorHP);     // Gnuplot Errors => DDD
-    plotter->addHandler(Error,  SetStatusHP);      // Gnuplot Errors => status
-    plotter->addHandler(Died,   DeletePlotterHP, (void *)plot);  // Free memory
+
+    // Show Gnuplot Errors in status line
+    plotter->addHandler(Error,  SetStatusHP,       (void *)plot);
+
+    // Handle death
+    plotter->addHandler(Died, PlotterNotFoundHP, (void *)plot);
+    plotter->addHandler(Died, DeletePlotterHP,   (void *)plot);
 
     if (plot->area != 0)
 	plotter->addHandler(Plot, GetPlotHP, (void *)plot);
@@ -821,10 +862,21 @@ static void SetViewCB(Widget, XtPointer client_data, XtPointer)
 //-------------------------------------------------------------------------
 
 // Forward Gnuplot error messages to DDD status line
-static void SetStatusHP(Agent *, void *, void *call_data)
+static void SetStatusHP(Agent *, void *client_data, void *call_data)
 {
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
     DataLength* dl = (DataLength *) call_data;
     string s(dl->data, dl->length);
+
+    (void) plot;		// Use it
+#if 0
+    if (!plot->active)
+    {
+	// Probably an invocation problem
+	post_gdb_message(s);
+	return;
+    }
+#endif
 
     while (s != "")
     {
