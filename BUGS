@@ -145,9 +145,6 @@ Volunteers for fixing these and other bugs are welcome!
     (Create a DispGraph::cluster() routine, like DispGraph::make_active()).
 
 320 Finish Undo/Redo:
-    - graph undisplay `NAME` should delete *all* displays named NAME
-    - undo/redo may make clusters (or user displays?) inactive - they
-      should all be restored at the end
     - Document it all
 
 322*Finish Plots:
@@ -172,7 +169,5 @@ Volunteers for fixing these and other bugs are welcome!
 331*Paul Sydney <sydney@ulua.mhpcc.af.mil>, Jim Van Zandt
     <jrv@mbunix.mitre.org>, and Bob Full <roundman@biz-tech.net>
     report `MakeMenu' problems with EGCS.
-
-332 On SGI DBX, `run' without args clears all args; use `rerun' instead.
 
 333 (Insert new bugs here)
