@@ -195,17 +195,19 @@ section, below.
 \s-2@DDD@\s+2 is composed of three main windows:
 .br
 .IP \(bu 2
-The \fIDebugger Console\fR accepts debugger commands and shows
-debugger messages.
+The \fIData Window\fR shows the current data of the debugged program.
 .br
 .IP \(bu 2
 The \fISource Window\fR shows the current source code of the debugged
 program.
 .br
 .IP \(bu 2
-The \fIData Window\fR shows the current data of the debugged program.
+The \fIDebugger Console\fR accepts debugger commands and shows
+debugger messages.
 .PP
-\s-2@DDD@\s+2 can be configured to group all these windows into one.
+By default, \s-2@DDD@\s+2 groups these main windows into one single
+window, but \s-2@DDD@\s+2 can also be configured to treat each one
+separately.
 .PP
 Besides these main windows, there are some other optional windows
 .br
@@ -221,13 +223,15 @@ usually placed beneath the current source.
 The \fIExecution Window\fR shows the input and output of the debugged
 program.
 .PP
-Besides these windows, \s-2@DDD@\s+2 also has several temporary
-\fIDialogs\fR for showing and entering additional information.
+\s-2@DDD@\s+2 also has several temporary \fIdialogs\fR for showing and
+entering additional information.
 .PP
 In this manual page, we discuss all the functionality associated with
 these windows.  We start with the debugger console and its commands,
 continue with the source window, and continue with the data window.
-But before that, we tell you how to get interactive help.
+But before that, we tell you how to get help while working with
+\s-2@DDD@\s+2.
+.\"
 .\"
 .\" ---------------
 .SH "GETTING HELP"
