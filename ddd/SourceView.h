@@ -502,7 +502,8 @@ public:
 
     // Get a help string for GLYPH; return 0 if none
     static MString help_on_glyph(Widget glyph, bool detailed);
-    static MString help_on_pos(Widget w, XmTextPosition pos, bool detailed);
+    static MString help_on_pos(Widget w, XmTextPosition pos, 
+			       XmTextPosition& ref, bool detailed);
 
     // Get the position of breakpoint NUM
     static string bp_pos(int num);

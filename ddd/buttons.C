@@ -312,18 +312,16 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 
     // If we're at a breakpoint, return appropriate help
     MString bp_help = 
-	source_view->help_on_pos(widget, startpos, for_documentation);
-    if (bp_help.xmstring() != 0)
-	return bp_help;
+	source_view->help_on_pos(widget, startpos, endpos, for_documentation);
 
-    if (expr == "")
+    if (bp_help.xmstring() == 0 && expr == "")
 	return MString(0, true); // Nothing pointed at
 
     // Don't invoke the debugger if EXPR is not an identifier.
     // Otherwise, we might point at `i++' or `f()' and have weird side
     // effects.
     MString clear = for_documentation ? rm(" ") : MString(0, true);
-    if (!expr.matches(rxidentifier))
+    if (bp_help.xmstring() == 0 && !expr.matches(rxidentifier))
 	return clear;
 
     // Change EVENT such that the popup tip will remain at the same
@@ -345,6 +343,9 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 	    break;
 	}
     }
+
+    if (bp_help.xmstring() != 0)
+	return bp_help;
 
     // Get value of ordinary variable
     string tip = gdbValue(expr);

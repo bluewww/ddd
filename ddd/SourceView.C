@@ -5178,24 +5178,27 @@ void SourceView::set_display_glyphs(bool set)
 // Return help on a glyph
 MString SourceView::help_on_glyph(Widget w, bool detailed)
 {
-    return help_on_pos(w, 0, detailed);
+    XmTextPosition dummy;
+    return help_on_pos(w, 0, dummy, detailed);
 }
 
 // Return help on a breakpoint position
-MString SourceView::help_on_pos(Widget w, XmTextPosition pos, bool detailed)
+MString SourceView::help_on_pos(Widget w, XmTextPosition pos, 
+				XmTextPosition& ref, bool detailed)
 {
     if (w == 0)
 	return MString(0, true);
 
-    static int line_nr;
+    int line_nr;
     bool in_text;
-    static int bp_nr;
-    static string address;
+    int bp_nr;
+    string address;
     bool pos_found = get_line_of_pos(w, pos, line_nr, address, in_text, bp_nr);
 
     if (!pos_found || bp_nr == 0)
 	return MString(0, true);
 
+    ref = pos_of_line(line_nr) + bp_indent_amount - 1;
     return help_on_bp(bp_nr, detailed);
 }
 
