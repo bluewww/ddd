@@ -116,7 +116,7 @@ static string gdb_value(const string& expr)
 	return "";
 
     val = get_disp_value_str(val, gdb);
-    if (val.contains('('), 0)
+    if (val.contains('(', 0))
 	val = val.after(')');
 
     strip_space(val);
