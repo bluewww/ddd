@@ -4,21 +4,22 @@ DDD Documentation					-*- text -*-
 This directory contains various documentation related to DDD in
 PostScript format.
 
-
 ddd-paper.ps -- ``DDD---A Free Graphical Front-End for UNIX Debuggers''
 
-    A six-page DDD survey including lots of screen shots.  The paper
+    A six-page DDD survey including some screen shots.  The paper
     also highlights some internal aspects of DDD.  Appeared in ACM
     SIGPLAN Notices 31(1), pp. 22--27, January 1996.
 
-    Included in the DDD distribution.
+    Included in the DDD source distribution.
 
 
 ddd.man.ps -- ``DDD---The Data Display Debugger''
 
-    The DDD manual page, in PostScript format.
+    The DDD manual page, in PostScript format.  The official,
+    up-to-date DDD reference.  The PostScript version includes more
+    than 30 screen shots highlighting DDD usage.
 
-    Included in the DDD distribution.
+    Included in the DDD source distribution.
 
 
 ddd-thesis.ps -- ``DDD - ein Debugger mit graphischer Datendarstellung''
@@ -41,8 +42,8 @@ gdb.ps -- ``Debugging with GDB''
 
 vse.ps -- ``Visual Prettyprinting''
 
-    This paper decribes the VSL language, which DDD uses to display data
-    structures in displays.  Contains a short VSL reference.
+    This survey paper decribes the VSL language, which DDD uses to
+    display data structures in displays.  Contains a short VSL reference.
 
     Not included in the DDD distribution; available via anonymous FTP in 
 
