@@ -478,8 +478,9 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
     {
 	if (dn->selected())
 	{
-	    string nr = dn->disp_nr();
-	    disp_nrs += get_positive_nr(nr);
+	    string nr_s = dn->disp_nr();
+	    int nr = get_positive_nr(nr_s);
+	    disp_nrs += nr;
 
 	    // Select all ancestors
 	    GraphEdge *edge;
@@ -1108,6 +1109,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	 dn = disp_graph->next(ref))
     {
 	count_all++;
+
 	if (dn->selected())
 	{
 	    count_selected++;
@@ -1169,16 +1171,16 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(graph_popup[GraphItms::NewArg].widget, arg_ok);
 
     // Refresh (), Select All ()
-    set_sensitive(graph_popup[GraphItms::Refresh].widget,   count_all);
-    set_sensitive(graph_popup[GraphItms::SelectAll].widget, count_all);
+    set_sensitive(graph_popup[GraphItms::Refresh].widget,   count_all > 0);
+    set_sensitive(graph_popup[GraphItms::SelectAll].widget, count_all > 0);
 
-    // Klick auf einen Knoten - - - - - - - - - - - - - - - - - - - - - - - -
     Boolean dereference_ok  = False;
     Boolean rotate_ok       = False;
     Boolean rotate_state    = False;
 
-    if (disp_value_arg)
+    if (disp_value_arg != 0)
     {
+	// We have selected a single node
 	switch (disp_value_arg->type())
 	{
 	case Simple:
@@ -1322,7 +1324,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	    || left != 0
 	    || right != XmTextFieldGetLastPosition(w))
 	{
-	    // Make it obtain the selection
+	    // Give it the selection
 	    XmTextFieldSetSelection(w,
 				    0, XmTextFieldGetLastPosition(w),
 				    XtLastTimestampProcessed(XtDisplay(w)));
