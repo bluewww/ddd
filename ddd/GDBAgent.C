@@ -177,6 +177,47 @@ string GDBAgent::default_prompt() const
     
 
 // ***************************************************************************
+
+// Trace communication
+static void trace(char *prefix, void *call_data)
+{
+    DataLength* dl    = (DataLength *) call_data;
+    string s(dl->data, dl->length);
+
+    bool s_ends_with_nl = false;
+    if (s.length() > 0 && s[s.length() - 1] == '\n')
+    {
+	s_ends_with_nl = true;
+	s = s.before(int(s.length() - 1));
+    }
+
+    s = quote(s);
+    string nl = string("\\n\"\n") + replicate(' ', strlen(prefix)) + "\"";
+    s.gsub("\\n", nl);
+
+    if (s_ends_with_nl)
+	s(s.length() - 1, 0) = "\\n";
+
+    clog << prefix << s << '\n';
+    clog.flush();
+}
+    
+void GDBAgent::traceInputHP(Agent *, void *, void *call_data)
+{
+    trace("<- ", call_data);
+}
+
+void GDBAgent::traceOutputHP(Agent *, void *, void *call_data)
+{
+    trace("-> ", call_data);
+}
+
+void GDBAgent::traceErrorHP (Agent *, void *, void *call_data)
+{
+    trace("<= ", call_data);
+}
+
+// ***************************************************************************
 void GDBAgent::do_start (OAProc  on_answer,
 			 OACProc on_answer_completion,
 			 void*   user_data)
@@ -488,6 +529,14 @@ void GDBAgent::normalize(string& answer)
     strip_control(answer);
     strip_comments(answer);
     cut_off_prompt(answer);
+
+#if 0
+    if (trace_dialog())
+    {
+	DataLength dl(answer, answer.length());
+	trace("<< ", &dl);
+    }
+#endif
 }
 
 // Remove GDB prompt
@@ -1054,47 +1103,6 @@ void GDBAgent::PanicHP (Agent *source, void *, void *call_data)
 }
 
 
-
-// ***************************************************************************
-
-// Trace communication
-static void trace(const string& prefix, void *call_data)
-{
-    DataLength* dl    = (DataLength *) call_data;
-    string s(dl->data, dl->length);
-
-    bool s_ends_with_nl = false;
-    if (s.length() > 0 && s[s.length() - 1] == '\n')
-    {
-	s_ends_with_nl = true;
-	s = s.before(int(s.length() - 1));
-    }
-
-    s = quote(s);
-    string nl = string("\\n\"\n") + replicate(' ', prefix.length()) + "\"";
-    s.gsub("\\n", nl);
-
-    if (s_ends_with_nl)
-	s(s.length() - 1, 0) = "\\n";
-
-    clog << prefix << s << '\n';
-    clog.flush();
-}
-    
-void GDBAgent::traceInputHP(Agent *, void *, void *call_data)
-{
-    trace("<- ", call_data);
-}
-
-void GDBAgent::traceOutputHP(Agent *, void *, void *call_data)
-{
-    trace("-> ", call_data);
-}
-
-void GDBAgent::traceErrorHP (Agent *, void *, void *call_data)
-{
-    trace("<= ", call_data);
-}
 
 // ***************************************************************************
 
