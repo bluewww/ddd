@@ -2681,8 +2681,16 @@ static void blink(bool set)
 {
     blinker_active = set;
 
-    if (blink_timer == 0)
-	BlinkCB(XtPointer(set), (XtIntervalId *)0);
+    if (!blinker_active || blink_timer == 0)
+    {
+	if (blink_timer != 0)
+	{
+	    XtRemoveTimeOut(blink_timer);
+	    blink_timer = 0;
+	}
+
+	BlinkCB(XtPointer(blinker_active), (XtIntervalId *)0);
+    }
 }
 
 
