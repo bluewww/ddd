@@ -6,11 +6,13 @@ DDD 3.1.4 [in development]
 
 DDD 3.1.4 fixes more minor problems in DDD 3.1.
 
-- [LessTif] LessTif 0.88 is supported.  See `PROBLEMS' for a discussion.
 - Changing the GDB display radix automatically refreshes displayed values.
 - Searching Java classes visits each file exactly once.
+- [LessTif] LessTif 0.88 is supported.  See `PROBLEMS' for a discussion.
+- [LessTif] Worked around X error when scrolling breakpoint glyphs.
 - [HP-UX] Improved aCC support.
-- [Solaris] Improved Motif 2.1 support on Solaris 7.
+- [Solaris] Improved Motif 2.1 support (Pixmaps).
+- [Linux] Improved GNU libc 2.1 support (TTYs).
 
 There are no new features in DDD 3.1.4.  You don't need to upgrade
 unless you suffer from one of these problems.
