@@ -136,7 +136,7 @@ DispValue::DispValue (DispValue* parent,
 		      const string& f_n, 
 		      const string& p_n,
 		      DispValueType given_type)
-    : mytype(UnknownType), myexpanded(true), 
+    : mytype(UnknownType), myexpanded(true), myenabled(true),
       myfull_name(f_n), print_name(p_n), changed(false), myrepeats(1),
       _value(""), _dereferenced(false), _children(0),
       _index_base(0), _have_index_base(false), _alignment(Horizontal),
@@ -150,8 +150,8 @@ DispValue::DispValue (DispValue* parent,
 
 // Duplicator
 DispValue::DispValue (const DispValue& dv)
-    : mytype(dv.mytype), 
-      myexpanded(dv.myexpanded), myfull_name(dv.myfull_name),
+    : mytype(dv.mytype), myexpanded(dv.myexpanded), 
+      myenabled(dv.myenabled), myfull_name(dv.myfull_name),
       print_name(dv.print_name), myaddr(dv.myaddr),
       changed(false), myrepeats(dv.myrepeats),
       _value(dv.value()), _dereferenced(false), _children(dv.nchildren()), 
@@ -838,6 +838,15 @@ DispValue *DispValue::update(DispValue *source,
 	// Clear `changed' flag
 	changed = false;
 	was_changed = true;
+    }
+
+    if (source->enabled() != enabled())
+    {
+	myenabled = source->enabled();
+	was_changed = true;
+
+	// We don't set CHANGED to true since enabled/disabled changes
+	// are merely a change in the view, not a change in the data.
     }
 
     static DispValueArray empty(0);

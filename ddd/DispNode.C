@@ -47,6 +47,10 @@ char DispNode_rcsid[] =
 #include "DispBox.h"
 #include "AliasGE.h"
 
+#ifndef KEEP_CLUSTERED_DISPLAYS
+#define KEEP_CLUSTERED_DISPLAYS 0
+#endif
+
 DEFINE_TYPE_INFO_1(DispNode, BoxGraphNode)
 
 // Data
@@ -65,7 +69,6 @@ DispNode::DispNode (int disp_nr,
       myscope(scope),
       mydepends_on(""),
       mystr(value),
-      myenabled(true),
       myactive(true),
       saved_node_hidden(false),
       mydeferred(false),
@@ -137,11 +140,10 @@ bool DispNode::update(string& value)
     bool changed = false;
     bool inited  = false;
 
-    if (!myenabled) 
+    if (disabled()) 
     { 
 	// Display has been enabled (automatically)
-	myenabled = true;
-	handlers.call(DispNode_Disabled, this, (void*)false);
+	enable();
 	changed = true;
     }
 
@@ -203,13 +205,9 @@ bool DispNode::update(string& value)
 
 
 // Re-create box from current disp_value
-void DispNode::refresh ()
+void DispNode::refresh()
 {
-    if (enabled())
-	disp_box->set_value(disp_value);
-    else
-	disp_box->set_value(0);
-	
+    disp_box->set_value(disp_value);
     setBox(disp_box->box());
     select(selected_value());
 }
@@ -273,24 +271,23 @@ void DispNode::copy_selection_state(DispNode *src)
 // Disable display
 void DispNode::disable()
 {
-    if (enabled())
-    {
-	myenabled = false;
-	handlers.call(DispNode_Disabled, this, (void *)true);
-	disp_box->set_value(0);
-	setBox (disp_box->box());
-    }
+    if (value() == 0 || disabled())
+	return;
+
+    value()->enabled() = false;
+    handlers.call(DispNode_Disabled, this, (void *)true);
+    refresh();
 }
 
 // Enable display
 void DispNode::enable()
 {
-    if (disabled())
-    {
-	myenabled = true;
-	handlers.call(DispNode_Disabled, this, (void *)false);
-	refresh();
-    }
+    if (value() == 0 || enabled())
+	return;
+
+    value()->enabled() = true;
+    handlers.call(DispNode_Disabled, this, (void *)false);
+    refresh();
 }
 
 // Hide display
@@ -329,7 +326,11 @@ void DispNode::cluster(int target)
 	if (clustered() == 0)
 	    saved_node_hidden = hidden();
 
+#if KEEP_CLUSTERED_DISPLAYS
+	// Don't hide clustered displays
+#else
 	hidden() = true;
+#endif
     }
     else // target == 0
     {

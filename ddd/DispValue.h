@@ -49,6 +49,7 @@ class DispValue {
     // General members
     DispValueType mytype;
     bool myexpanded;
+    bool myenabled;
     string myfull_name;		// Full name
     string print_name;		// Name relative to parent
     string myaddr;		// Address as found
@@ -175,18 +176,20 @@ public:
 
     // General resources
     DispValueType type()       const { return mytype; }
-    int           repeats()    const { return myrepeats; }
+    bool enabled()             const { return myenabled; }
     const string& full_name()  const { return myfull_name; }
     const string& name()       const { return print_name; }
     const string& addr()       const { return myaddr; }
+    int repeats()              const { return myrepeats; }
 
-    int&          repeats()    { return myrepeats; }
-    string&       full_name()  { return myfull_name; }
-    string&       name()       { return print_name; }
+    int& repeats()       { return myrepeats; }
+    string& full_name()  { return myfull_name; }
+    string& name()       { return print_name; }
+    bool& enabled()      { return myenabled; }
 
-    bool          is_changed() const { return changed; }
-    bool          expanded()   const { return myexpanded; }
-    bool          collapsed()  const { return !expanded(); }
+    bool is_changed() const { return changed; }
+    bool expanded()   const { return myexpanded; }
+    bool collapsed()  const { return !expanded(); }
 
     // Return height of entire tree
     int height() const;

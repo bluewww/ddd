@@ -155,11 +155,7 @@ void DispBox::set_value (const DispValue* dv, const DispValue *parent)
     if (title_box != 0)
 	args[arg++] = title_box;
 
-    if (dv)
-	args[arg++] = create_value_box(dv, parent);
-    else
-	args[arg++] = eval("disabled");
-
+    args[arg++] = create_value_box(dv, parent);
     mybox = eval("display_box", args);
 }
 
@@ -244,8 +240,10 @@ Box* DispBox::create_value_box (const DispValue *dv,
 				const DispValue *parent,
 				int member_name_width)
 {
-    Box* vbox = 0;
+    if (dv == 0 || !dv->enabled())
+	return eval("disabled");
 
+    Box *vbox = 0;
     switch (dv->type())
     {
     case Simple:

@@ -44,8 +44,8 @@
 #include "GraphNode.h"
 #include "HandlerL.h"
 #include "BoxGraphN.h"
+#include "DispValue.h"
 
-class DispValue;
 class DispBox;
 
 // Event types
@@ -81,7 +81,6 @@ private:
     string        myscope;	      // Program location where created
     string        mydepends_on;	      // Display we depend upon (when deferred)
     string        mystr;	      // Last value (as string)
-    bool          myenabled;	      // Flag: is display enabled?
     bool          myactive;	      // Flag: is display active (in scope)?
     bool          saved_node_hidden;  // Saved `hidden' flag of node
     bool          mydeferred;	      // Flag: is display deferred?
@@ -107,7 +106,7 @@ private:
     DispNode(const DispNode& node)
 	: BoxGraphNode(node),
 	  mydisp_nr(0), myname(), myaddr(), myscope(), mydepends_on(), mystr(),
-	  myenabled(false), myactive(false), saved_node_hidden(false),
+	  myactive(false), saved_node_hidden(false),
 	  mydeferred(false), myclustered(0), myconstant(false),
 	  disp_value(0), myselected_value(0), disp_box(0),
 	  mylast_change(0), alias_of(0)
@@ -143,8 +142,8 @@ public:
 	return mydepends_on;
     }
 
-    bool enabled()  const { return myenabled; }
-    bool disabled() const { return !myenabled; }
+    bool enabled()  const { return value() != 0 && value()->enabled(); }
+    bool disabled() const { return !enabled(); }
     bool active() const   { return myactive; }
     bool deferred() const { return mydeferred; }
     bool& deferred()      { return mydeferred; }
