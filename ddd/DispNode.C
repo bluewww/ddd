@@ -301,6 +301,8 @@ void DispNode::make_inactive()
 	    hidden() = true;
 	}
 	myactive = false;
+
+	mylast_refresh = ++tics;
     }
 
     // Unselect it
@@ -315,6 +317,8 @@ void DispNode::make_active()
 	myactive = true;
 	if (!clustered())
 	    hidden() = saved_node_hidden;
+
+	mylast_refresh = ++tics;
     }
 }
 
