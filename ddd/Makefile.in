@@ -1058,6 +1058,9 @@ $(ddd_canonical): ddd.o $(OBJECTS)
 userinfo: userinfo.o $(USERINFO_OBJECTS)
 	-$(LINK.cc) -o $@ userinfo.o $(USERINFO_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
+rxtest: rxtest.o $(HUFFMAN_OBJECTS)
+	-$(LINK.cc) -o $@ rxtest.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
+
 huffencode: huffencode.o $(HUFFMAN_OBJECTS)
 	$(LINK.cc) -o $@ huffencode.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 

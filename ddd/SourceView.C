@@ -99,6 +99,7 @@ char SourceView_rcsid[] =
 #include <Xm/PanedW.h>
 #include <Xm/ToggleB.h>
 #include <X11/StringDefs.h>
+#include <X11/cursorfont.h>
 
 // LessTif hacks
 #include <X11/IntrinsicP.h>
@@ -165,6 +166,8 @@ XtActionsRec SourceView::actions [] = {
     {"source-start-select-word", SourceView::startSelectWordAct },
     {"source-end-select-word",   SourceView::endSelectWordAct   },
     {"source-update-glyphs",     SourceView::updateGlyphsAct    },
+    {"source-drag-glyph",        SourceView::dragGlyphAct       },
+    {"source-drop-glyph",        SourceView::dropGlyphAct       },
 };
 
 //-----------------------------------------------------------------------
@@ -510,6 +513,13 @@ void SourceView::line_popup_set_tempCB (Widget w,
 					XtPointer)
 {
     string address = *((string *)client_data);
+    create_temp_bp(address, w);
+}
+
+void SourceView::create_temp_bp(const string& a, Widget w)
+{
+    string address = a;
+
     switch (gdb->type())
     {
     case GDB:
@@ -606,41 +616,95 @@ void SourceView::line_popup_temp_n_contCB (Widget w,
 //
 void SourceView::line_popup_set_pcCB(Widget w, 
 				     XtPointer client_data,
-				     XtPointer call_data)
+				     XtPointer)
 {
     string address = *((string *)client_data);
+    move_pc(address, w);
+}
 
+// ***************************************************************************
+//
+void SourceView::move_pc(const string& address, Widget w)
+{
     if (gdb->has_jump_command())
     {
 	// We prefer the GDB `jump' command since it requires
 	// confirmation when jumping out of the current function.
 
-	// Create a temporary breakpoint
-	line_popup_set_tempCB(w, client_data, call_data);
+	// Create a temporary breakpoint at ADDRESS
+	create_temp_bp(address, w);
 
 	// Jump to the new address and clear the breakpoint again
-	Command c(gdb->jump_command(address));
+	Command c(gdb->jump_command(address), w);
 	c.callback = clearJumpBP;
 	gdb_command(c);
     }
     else
     {
+	string addr = address;
+
 	// Use the `set $pc = ADDR' alternative
-	if (address.contains('*', 0))
+	if (addr.contains('*', 0))
 	{
-	    address = address.after('*');
+	    addr = addr.after('*');
 	}
 	else
 	{
-	    lookup(address, true);
+	    lookup(addr, true);
 	    syncCommandQueue();
-	    address = last_shown_pc;
+	    addr = last_shown_pc;
 	}
 
-	if (address != "")
-	    gdb_command(gdb->assign_command("$pc", address), w);
+	if (addr != "")
+	    gdb_command(gdb->assign_command("$pc", addr), w);
     }
 }
+
+void SourceView::move_bp(int bp_nr, const string& a, Widget w)
+{
+    string address = a;
+
+    clog << "Moving breakpoint " << bp_nr << " to " << address << '\n';
+
+    BreakPoint *bp = bp_map.get(bp_nr);
+    if (bp == 0)
+	return;			// No such breakpoint
+
+    if (address.contains('*', 0))
+    {
+	if (compare_address(address.after('*'), bp->address()) == 0)
+	    return;		// Breakpoint already at address
+    }
+    else
+    {
+	string file = address.before(':');
+	string line = address.after(':');
+
+	if (bp->file_name() == file && bp->line_nr() == atoi(line.chars()))
+	    return;		// Breakpoint already at address
+    }
+
+    // Create a new breakpoint at ADDRESS and make it inherit the
+    // current settings
+    ostrstream os;
+    bool ok = bp->get_state(os, 0, false, address);
+    if (!ok)
+	return;			// Command failed
+
+    string commands(os);
+    commands.gsub("@0@", itostring(next_breakpoint_number()));
+
+    while (commands != "")
+    {
+	string command = commands.before('\n');
+	gdb_command(command, w);
+	commands = commands.after('\n');
+    }
+
+    // Delete old breakpoint
+    bp_popup_deleteCB(w, XtPointer(&bp_nr), XtPointer(0));
+}
+
 
 // ***************************************************************************
 //
@@ -3739,7 +3803,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
     if (!is_source_widget(w) && !is_code_widget(w))
 	return;
-    
+
     XButtonEvent* event = (XButtonEvent *) e;
 
     Position x = event->x;
@@ -5243,10 +5307,10 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
     int k;
     for (k = 0; k < 2; k++)
     {
-	// On the Form widget, later children are displayed
-	// on top of earlier children.  A stop sign hiding an arrow
-	// gives more pleasing results than vice-versa, so place arrow
-	// glyph below sign glyphs.
+	// On the Form widget, later children are displayed on top of
+	// earlier children.  A stop sign hiding an arrow gives more
+	// pleasing results than vice-versa, so place arrow glyph
+	// below sign glyphs.
 
 	Widget form_w = k ? code_form_w : source_form_w;
 
@@ -5678,6 +5742,119 @@ MString SourceView::help_on_bp(int bp_nr, bool detailed)
 
     return info;
 }
+
+
+// Glyph drag & drop
+
+void SourceView::dragGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
+{
+    if (e->type != ButtonPress && e->type != ButtonRelease)
+	return;
+
+    if (!is_source_widget(w) && !is_code_widget(w))
+	return;
+
+    int k;
+    for (k = 0; k < 2; k++)
+	if (w == grey_arrows[k])
+	    return;
+
+    static Cursor move_cursor = XCreateFontCursor(XtDisplay(w), XC_fleur);
+
+    clog << "Drag glyph\n";
+    XDefineCursor(XtDisplay(w), XtWindow(w), move_cursor);
+}
+
+void SourceView::dropGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
+{
+    if (e->type != ButtonPress && e->type != ButtonRelease)
+	return;
+
+    if (!is_source_widget(w) && !is_code_widget(w))
+	return;
+
+    int k;
+    for (k = 0; k < 2; k++)
+	if (w == grey_arrows[k])
+	    return;
+
+    clog << "Drop glyph\n";
+    XUndefineCursor(XtDisplay(w), XtWindow(w));
+
+    XButtonEvent *event = (XButtonEvent *) e;
+
+    Position x = event->x;
+    Position y = event->y;
+
+    if (w != source_text_w && w != code_text_w)
+    {
+	// Called from a glyph: add glyph position to event position
+	Position xw, yw;
+	XtVaGetValues(w, 
+		      XmNx, &xw,
+		      XmNy, &yw,
+		      NULL);
+	x += xw;
+	y += yw;
+    }
+
+    // Get the position
+    Widget text_w;
+    if (is_source_widget(w))
+	text_w = source_text_w;
+    else if (is_code_widget(w))
+	text_w = code_text_w;
+    else
+	return;
+
+    XmTextPosition pos = XmTextXYToPos(text_w, x, y);
+
+    int line_nr = 0;
+    bool in_text;
+    int bp_nr;
+    string address;
+    get_line_of_pos(text_w, pos, line_nr, address, in_text, bp_nr);
+
+    if (text_w == code_text_w)
+    {
+	// Selection from code
+	if (address == "")
+	    return;		// No address
+	address = '*' + address;
+    }
+    else
+    {
+	// Selection from source
+	if (line_nr == 0)
+	    return;		// No line
+	address = current_source_name() + ':' + itostring(line_nr);
+    }
+	
+    // Check for breakpoint
+    MapRef ref;
+    for (BreakPoint *bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+    {
+	if (w == bp->source_glyph() || w == bp->code_glyph())
+	{
+	    move_bp(bp->number(), address, text_w);
+	    return;
+	}
+    }
+
+    // Check for exec pos
+    for (k = 0; k < 2; k++)
+    {
+	if (w == plain_arrows[k] || w == signal_arrows[k])
+	{
+	    line_popup_set_pcCB(text_w, XtPointer(&address), XtPointer(0));
+	    return;
+	}
+    }
+
+    cerr << "Cannot drag - unknown glyph\n";
+}
+
+
 
 //----------------------------------------------------------------------------
 // Machine code stuff

@@ -562,9 +562,16 @@ string BreakPoint::condition() const
 
 // Return commands to restore this breakpoint.  Assume that the new
 // breakpoint will be given the number NR.
-bool BreakPoint::get_state(ostream& os, int nr, bool dummy)
+bool BreakPoint::get_state(ostream& os, int nr, bool dummy, string pos)
 {
-    string pos = file_name() + ":" + itostring(line_nr());
+    if (pos == "")
+    { 
+	if (line_nr() > 0)
+	    pos = file_name() + ":" + itostring(line_nr());
+	else
+	    pos = '*' + address();
+    }
+
     string num = "@" + itostring(nr) + "@";
 
     switch (gdb->type())
@@ -620,7 +627,10 @@ bool BreakPoint::get_state(ostream& os, int nr, bool dummy)
 
     case XDB:
     {
-	os << "b " << pos << "\n";
+	if (pos.contains('*', 0))
+	    os << "ba " << pos.after('*') << '\n';
+	else
+	    os << "b " << pos << "\n";
 
 	if (!dummy)
 	{

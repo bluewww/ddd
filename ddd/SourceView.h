@@ -147,6 +147,16 @@ class SourceView {
     static void clearBP(void *client_data, XtIntervalId *timer);
     static void clearJumpBP(const string& answer, void *client_data);
 
+    // Create temp breakpoint at ADDRESS
+    static void create_temp_bp(const string& address, Widget origin = 0);
+
+    // Move PC to ADDRESS
+    static void move_pc(const string& address, Widget origin = 0);
+
+    // Move breakpoint N to ADDRESS
+    static void move_bp(int nr, const string& address, Widget origin = 0);
+
+
     // Find the line number at POS
     // LINE_NR becomes the line number at POS
     // IN_TEXT becomes true iff POS is in the source area
@@ -173,6 +183,8 @@ class SourceView {
     static void startSelectWordAct(Widget, XEvent*, String*, Cardinal*);
     static void endSelectWordAct  (Widget, XEvent*, String*, Cardinal*);
     static void updateGlyphsAct   (Widget, XEvent*, String*, Cardinal*);
+    static void dragGlyphAct      (Widget, XEvent*, String*, Cardinal*);
+    static void dropGlyphAct      (Widget, XEvent*, String*, Cardinal*);
 
     //-----------------------------------------------------------------------
     // Timer procedures

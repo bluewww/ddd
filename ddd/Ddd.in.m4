@@ -1115,11 +1115,13 @@ Ddd*code_text_w.translations:   SOURCE_TRANSLATIONS
 
 ! Make sure glyphs popup as well
 Ddd*source_form_w.XmPushButton.translations: #override \
-None<Btn1Down>:	ArmAndActivate() \n\
+None<Btn1Down>:	ArmAndActivate() source-drag-glyph() \n\
+None<Btn1Up>:	source-drop-glyph() \n\
 None<Btn3Down>:	source-popup-menu()
 
 Ddd*code_form_w.XmPushButton.translations: #override \
-None<Btn1Down>:	ArmAndActivate() \n\
+None<Btn1Down>:	ArmAndActivate() source-drag-glyph() \n\
+None<Btn1Up>:	source-drop-glyph() \n\
 None<Btn3Down>:	source-popup-menu()
 
 

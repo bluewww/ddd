@@ -134,8 +134,8 @@ public:
 
     // Return commands to restore this breakpoint.  If DUMMY is set,
     // delete the breakpoint immediately in order to increase the
-    // breakpoint number.
-    bool get_state(ostream& os, int num, bool dummy = false);
+    // breakpoint number.  If ADDR is set, use ADDR as (fake) address.
+    bool get_state(ostream& os, int num, bool dummy = false, string addr = "");
 };
 
 #endif // _DDD_BreakPoint_h
