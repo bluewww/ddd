@@ -1,4 +1,4 @@
-DDD 2.1 is available
+DDD 2.1 is available					-*- text -*-
 ====================
 
     Release 2.1 of the Data Display Debugger (DDD), a common graphical
@@ -24,14 +24,14 @@ DDD 2.1 is available
 DDD News
 ========
 
-    DDD 2.1 brings alias detection, status displays, a further
-    improved user interface, and several bug fixes.
+    DDD 2.1 brings alias detection, local variable displays, button
+    and value tips as well as several new features and bug fixes.
 
     User-visible changes to DDD 2.0:
     - Alias detection.  DDD now recognizes that multiple displays
       reference the same object.  This allows the examination of
-      graph-like data structures (circular lists, DAGs, and so on).
-      Alias detection slows down DDD a bit, so it can be turned off.
+      shared data structures (circular lists, DAGs, and so on).  Alias
+      detection slows down DDD a bit, so it is turned off by default.
     - Local variable displays.  You can display all local variables
       and arguments in the data display.  The display is automatically
       updated to reflect the list of variables and their values.
@@ -41,9 +41,9 @@ DDD News
       "graph display `info locals`".
     - Button tips.  Moving the mouse pointer over a button causes a
       small hint window to raise.  This feature is also known as
-      `toolbar tips' or `button help'.  (optional)
+      `toolbar tips' or `bubble help'.  (optional)
     - Value tips.  Moving the mouse pointer over a variable causes a
-      small window to raise showing the current variable value.  (optional)
+      small window to raise showing the current value.  (optional)
     - The status line has been reworked and extended:
       + It displays information about the selected item.
       + It has moved to the bottom, such that menu entries can be
@@ -66,14 +66,14 @@ DDD News
     - Some items have been renamed for clarity:
       + The `Stack' menu is now named `Status', as it hosts other
         status-related items besides backtrace and registers.
-      + The `Break' button is now named `Interrupt' (as in DDD 1.x), to
-        avoid confusion with the `Break At' button. 
+      + The `Break' button is now named `Interrupt' (as in DDD 1.x),
+        to avoid confusion with the `Break At' button.
       + The `Quit' menu item is now named `Abort', to avoid confusion
         with the `Exit' menu item (which issues a `quit' command).
     - DBX settings can now be viewed and changed at run time, using
       the `Settings' panel.
-    - In GDB, there is a panel for displaying various things about 
-      the program being debugged.
+    - In GDB, there is a `status displays' panel for displaying 
+      various things about the program being debugged.
     - Reading the VSL library is now realized as a background job,
       reducing startup time drastically.
     - In the data window, the middle mouse button now toggles 
@@ -81,12 +81,18 @@ DDD News
     - In the debugger console, the right mouse button invokes a small
       popup menu which you can use to clear the line or the window.
     - Ever suffered from a frozen display while debugging a modal
-      application?  If the debugged program is interrupted in some modal
-      state, DDD will automatically make it ungrab the pointer, 
+      application?  If the debugged program is interrupted in some
+      modal state, DDD will automatically make it ungrab the pointer.
+    - You can now clear all argument fields `()' by clicking on the
+      prompt `():'.
     - In the source argument field `()', pressing RETURN activates
       the `Lookup ()' button.
     - Unnecessary redisplays have been significantly reduced, causing
       much less flickering.
+    - If you specify some overloaded or ambiguous identifier, DDD now
+      lets you select from all alternatives.
+    - Buttons not supported on certain debuggers (for instance,
+      `Finish' on DBX) are now made insensitive.  (optional)
     - You can search for keywords in the online DDD manual.
 
     Documentation:
@@ -107,13 +113,21 @@ DDD News
     - With XDB, sources are found in alternate directories, too.
     - With DBX, the current source line was omitted from the listing
       under certain circumstances.  Fixed.
-    - `Help on Version' no longer includes the entire DDD configuration.
-    - Several single-letter options like `-d DIR' are now passed down to the
-      inferior debugger.
-    - Buttons ending in `...' insert their name, followed by a space.
+    - With Sun DBX, DDD uses the DBX display numbers instead of
+      generating own numbers.
+    - `Help on Version' no longer includes the entire DDD
+      configuration.
+    - Several single-letter options like `-d DIR' are now properly
+      passed down to the inferior debugger.
+    - `Select All' followed by `Delete' no more causes DDD to crash.
+    - Problems with button specs ending in `...' have been fixed.
     - Line continuations (i.e. lines ending in `\') are properly handled.
-    - The `vsl' and `test-graph' programs can again be built.
-    - And, again, dozens of minor bug fixes and improvements.
+    - Problems in building the `vsl' and `test-graph' programs are fixed.
+    - On Linux, drag-and-drop of pixmaps has been disabled explicitly.
+      (Several Linux Motif libraries are broken in this aspect.)
+    - DDD now sets the WM_COMMAND resource such that X session
+      managers can save and restore DDD state.
+    - And again, dozens of minor bug fixes and improvements.
 
     Release policy:
     - Due to the large amount of testing, we make new DDD releases
@@ -149,12 +163,13 @@ Summary of DDD
 
     Of course, there are also features of DDD you may not like.
     First, DDD is quite huge.  If you have a simple debugging task on
-    a system with few resources, DDD may not be the debugger of choice
-    for you.  There is a FAQ entry on how to configure DDD for maximum
-    speed.  Second, DDD uses Motif.  This is a problem for free
-    software purists, but will disappear when free Motif clones such
-    as LessTif become generally usable.  For those who lack Motif, we
-    distribute contributed DDD binaries for all important platforms.
+    a system with few resources, DDD may not be the system of choice.
+    There is a FAQ entry on how to configure DDD for minimal resources
+    and maximum speed.  Second, DDD uses Motif.  This is a problem for
+    free software purists, but will disappear in a few months when
+    free Motif implementations such as LessTif become generally
+    usable.  For those who lack Motif, we distribute contributed DDD
+    binaries for all important platforms.
     
     Speaking of platforms: DDD configures, compiles and runs
     out-of-the-box on every major UNIX platform, including AIX
@@ -224,7 +239,7 @@ Requirements
 More Information
 ================
 
-    The DDD World-Wide-Web page (including screen shots) is installed at
+    The DDD WWW page (including screen shots) is installed at
 
         http://www.cs.tu-bs.de/softech/ddd/
 
