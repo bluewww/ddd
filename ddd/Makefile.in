@@ -861,7 +861,6 @@ PICS = \
 	$(picdir)/ddd-layout.ps         \
 	$(picdir)/ddd-line-popup.ps     \
 	$(picdir)/ddd-locals.ps	        \
-	$(picdir)/ddd-new-display.ps    \
 	$(picdir)/ddd-open.ps           \
 	$(picdir)/ddd-open-session.ps   \
 	$(picdir)/ddd-print-graph.ps    \
@@ -1499,10 +1498,6 @@ $(picdir)/ddd-value-tip.ps: \
 $(picdir)/ddd-print-popup.ps: \
 	$(picdir)/ddd-print-popup.fig $(picdir)/ddd-print-popup.xpm
 	cd $(picdir); $(FIG2PS) ddd-print-popup.fig > ddd-print-popup.ps
-
-$(picdir)/ddd-new-display.ps: \
-	$(picdir)/ddd-new-display.fig $(picdir)/ddd-new-display.xpm
-	cd $(picdir); $(FIG2PS) ddd-new-display.fig > ddd-new-display.ps
 
 $(picdir)/ddd-select-display.ps: \
 	$(picdir)/ddd-select-display.fig $(picdir)/ddd-select-display.xpm

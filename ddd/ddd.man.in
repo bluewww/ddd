@@ -991,7 +991,6 @@ program.  You can either select from a list of previously used
 arguments or enter own arguments in the text field.  Afterwards, press
 the `\fBOK\fR' button to start execution with the selected arguments.
 .PP
-.PSPIC @srcdir@/PICS/disclaimer.ps 15.3cm
 .PSPIC @srcdir@/PICS/ddd-arguments.ps 15.3cm
 .PP
 To run your program again, with the same arguments, select `\fBProgram
@@ -1036,8 +1035,9 @@ control.  Detaching the process continues its execution.  After
 completely independent once more, and you are ready to attach another
 process or start one with `\fBRun\fR'.
 .PP
-You can customize the list of processes shown.  See the
-`\fBpsCommand\fR' resource for details.
+You can customize the list of processes shown by defining an alternate
+command to list processes.  See `\fBEdit | Preferences | Helpers |
+List Processes\fR'.
 .\"
 .\"
 .SS "Stopping the Program"
@@ -1224,12 +1224,6 @@ As another alternative, you may also enter the expression to be
 displayed in the argument field and press the `\fBDisplay ()\fR'
 button.
 .PP
-If the data window is visible, you may click on the `\fBNew
-Display\fR' button.  Enter the expression to be displayed in the
-resulting prompt dialog.
-.PP
-.PSPIC @srcdir@/PICS/ddd-new-display.ps 15.3cm
-.PP
 Finally, you may also enter
 .sp
 .br
@@ -1298,6 +1292,7 @@ selection is \fIextended\fR.
 By double-clicking on a display title, the display itself and all
 connected displays are automatically selected.
 .PP
+.PSPIC @srcdir@/PICS/disclaimer.ps 15.3cm
 .PSPIC @srcdir@/PICS/ddd-select-display.ps 15.3cm
 .PP
 .\"
