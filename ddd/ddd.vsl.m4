@@ -1,6 +1,6 @@
 // $Id$ -*- c++ -*-
 // VSL functions for DDD graph display
-include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))DDD_VSL_WARNING
+include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))changequote(,)DDD_VSL_WARNING
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
@@ -159,7 +159,7 @@ horizontal_array (...) ->
 twodim_array (...) -> 
   array_color(dtab(...));
 twodim_array_elem (value) -> 
-  value;
+  value_rm(value);
 
 // Struct value
 struct_value (...) -> 
