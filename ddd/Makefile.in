@@ -668,11 +668,11 @@ LIB_OBJECTS = \
 
 # The DDD application itself.  `ddd.C' is the main program, `SourceView.C'
 # is the source window, `DataDisp.C' is the data window.
+# `configinfo' comes after `show' such that `what DDD' issues the configuration
 DDD_OBJECTS = \
 	args.o       \
 	buttons.o    \
 	cmdtty.o     \
-	configinfo.o \
 	comm-manag.o \
 	complete.o   \
 	ctrl.o       \
@@ -705,6 +705,7 @@ DDD_OBJECTS = \
 	shell.o      \
 	shorten.o    \
 	show.o       \
+	configinfo.o \
 	source.o     \
 	status.o     \
 	string-fun.o \

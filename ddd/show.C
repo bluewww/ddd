@@ -65,8 +65,8 @@ extern void process_pending_events();
 
 void show_version()
 {
-    cout << DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
-	"Copyright (C) 1997 TU Braunschweig.\n";
+    cout << "@(#)" DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
+	"Copyright (C) 1997 TU Braunschweig.\n" + 4;
 }
 
 //-----------------------------------------------------------------------------
@@ -269,7 +269,8 @@ void show_configuration()
 {    
     show_version();
     cout << 
-	"Compiled with "
+	// Compilation stuff
+	"@(#)Compiled with "
 #ifdef __GNUC__
 	"GCC " stringize(__GNUC__)
 #ifdef __GNUC_MINOR__
@@ -286,18 +287,30 @@ void show_configuration()
 #elif defined(_LINUX_C_LIB_VERSION)
         ", Linux libc " _LINUX_C_LIB_VERSION
 #endif
-	"\n"
-	"Using X" stringize(X_PROTOCOL) "R" stringize(XlibSpecificationRelease)
-	 ", Xt" stringize(X_PROTOCOL) "R" stringize(XtSpecificationRelease)
-	 ", Motif " stringize(XmVERSION) "." stringize(XmREVISION)
+	"\n" + 4
+	// X stuff
+	 << 
+	"@(#)Using X" stringize(X_PROTOCOL) 
+	"R" stringize(XlibSpecificationRelease)
+	", Xt" stringize(X_PROTOCOL) "R" stringize(XtSpecificationRelease)
+	", Motif " stringize(XmVERSION) "." stringize(XmREVISION)
 #ifdef XmVERSION_STRING
-	 " (" XmVERSION_STRING ")"
+	" (" XmVERSION_STRING ")"
 #endif
+	"\n" + 4
+	// Optional stuff
+	 << "@(#)Includes " DDD_NAME " manual"
 #ifdef XpmFormat
-         ", XPM " stringize(XpmFormat) "." stringize(XpmVersion) 
+	", XPM " stringize(XpmFormat) "." stringize(XpmVersion) 
 	"." stringize(XpmRevision)
 #endif
-	"\n";
+#if HAVE_ATHENA
+	", Athena widgets"
+#endif
+#if !RUNTIME_REGEX
+	", compile-time regexps"
+#endif
+	"\n" + 4;
     cout << config_info;
 }
 
