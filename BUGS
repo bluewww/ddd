@@ -323,7 +323,8 @@ Volunteers for fixing these and other bugs are welcome!
      the display.
      [This is due to using AIX xlC instead of GCC.  -AZ]
 
-165. The data display `list_test @ 10' is not correctly parsed.
+165* The data display `list_test @ 10' is not correctly parsed.
+     The data display `new_years_eve' is not correctly parsed.
 
 168. Jens Albrecht <Jens.Albrecht@informatik.uni-erlangen.de>
      complains that using DBX, the `file' command does not change the

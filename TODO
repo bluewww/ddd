@@ -134,6 +134,8 @@ Volunteers for these and other projects are welcome!
 080* Include the FAQ in the DDD manual.  Better yet, include all
      top-level documentation in the DDD manual (including news,
      problems, etc.) and generate it from this single source.
+     Even better, convert it to texinfo, as in ICE, resulting in an
+     HTML manual.  See also 102.
 
 083. Include graphplace (or other graph layout) support.
 
@@ -189,7 +191,7 @@ Volunteers for these and other projects are welcome!
 099. Add a history mechanism to the `()' fields (cursor up / cursor
      down).
 
-102. Have a WWW tutorial for DDD.  Any volunteers?
+102. Have a WWW tutorial for DDD.  See also 080.
 
 108. David M. Karr <dkarr@nmo.gtegsc.com> suggests:
      In the SparcWorks debugger, if I use the "list" command at the
@@ -215,7 +217,7 @@ Volunteers for these and other projects are welcome!
      executable size.
 
 120. Check whether `dbxenv output_short_file_name off' helps in
-     debugging DBX code.
+     debugging with DBX.
 
 122. Have a window that shows DDD/GDB communication, with the ability
      to modify commands before they are processed.
@@ -397,5 +399,13 @@ Volunteers for these and other projects are welcome!
      file.  Maybe it would be useful to include it into .dddsession -
      or to append the appropriate resources at the end.  (Note that a
      core file contains `holes' - copying it would waste space.)
+
+     The new structure might be
+     ~/.ddd/init               - the former ~/.dddinit file
+     ~/.ddd/sessions/NAME/     - the session for executable named NAME
+     ~/.ddd/sessions/NAME/core - the associated core file
+     ~/.ddd/sessions/NAME/exec - symbolic link to the executable
+     ~/.ddd/sessions/NAME/init - the session-specific init file
+
 
 203. (Insert your project idea here)
