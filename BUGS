@@ -140,4 +140,6 @@ Volunteers for fixing these and other bugs are welcome!
     likewise), DDD considers the pointer to be frozen, such that it
     continues execution.
 
-369 (Insert new bugs here)
+371 Is the command shell raised each time a new display is created?
+
+372 (Insert new bugs here)
