@@ -7,6 +7,7 @@ Makefile
 USERINFO
 acconfig.h
 acspecial.h
+config.cache
 config.h
 config.h.in
 config.log
