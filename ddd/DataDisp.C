@@ -2814,11 +2814,12 @@ void DataDisp::new_data_displaysSQA (string display_expression,
     }
 }
 
-void DataDisp::new_data_displaysOQAC (string answers[],
-				      void*  qu_datas[],
-				      int    count,
+void DataDisp::new_data_displaysOQAC (const StringArray& answers,
+				      const VoidArray& /* qu_datas */,
 				      void*  data)
 {
+    int count = answers.size();
+
     // Unselect all nodes
     for (GraphNode *gn = disp_graph->firstNode();
 	 gn != 0; gn = disp_graph->nextNode(gn))
@@ -2857,8 +2858,6 @@ void DataDisp::new_data_displaysOQAC (string answers[],
 	    disp_graph->insert(dn->disp_nr(), dn, depend_nr);
 	}
     }
-    delete[] answers;
-    delete[] qu_datas;
 
     refresh_addr();
     refresh_graph_edit();
@@ -3003,11 +3002,12 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose)
     }
 }
 
-void DataDisp::refresh_displayOQAC (string answers[],
-				    void*  qu_datas[],
-				    int    count,
+void DataDisp::refresh_displayOQAC (const StringArray& answers,
+				    const VoidArray& qu_datas,
 				    void*  data)
 {
+    int count = answers.size();
+
     string data_answers;
     int data_answers_seen = 0;
     StringArray user_answers;
@@ -3065,9 +3065,6 @@ void DataDisp::refresh_displayOQAC (string answers[],
 	force_check_aliases = true;
 	process_addr(addr_answers);
     }
-
-    delete[] answers;
-    delete[] qu_datas;
 
     if (info->verbose)
 	prompt();
@@ -3485,7 +3482,6 @@ string DataDisp::process_displays(string& displays,
     // (text) displays as well as error messages
     int disp_nr = 0;
     StringMap disp_string_map;
-    string *strptr;
 
 #if LOG_DISPLAYS
     clog << "Updating displays " << quote(displays) << "...\n";
@@ -3560,7 +3556,7 @@ string DataDisp::process_displays(string& displays,
 	}
 	else if (disp_nr >= 0 && disp_graph->contains(disp_nr))
 	{
-	    strptr = new string(get_disp_value_str(next_display, gdb));
+	    string *strptr = new string(get_disp_value_str(next_display, gdb));
 	    disp_string_map.insert(disp_nr, strptr);
 	    s.total += strptr->length();
 	}
@@ -3573,56 +3569,76 @@ string DataDisp::process_displays(string& displays,
     }
 
     // Process own displays
-    bool changed = false;
+    bool changed   = false;
+    bool activated = false;
+
+    // Change `active' status.  This must be done before updating
+    // values, since inactive nodes must not be bumped after a resize.
     MapRef ref;
-    for (int k = disp_graph->first_nr(ref); 
-	     k != 0 ; 
-	     k = disp_graph->next_nr(ref))
+    int k;
+    for (k = disp_graph->first_nr(ref); k != 0; k = disp_graph->next_nr(ref))
     {
 	DispNode* dn = disp_graph->get(k);
-	if (!dn->is_user_command())
+	if (dn->is_user_command())
+	    continue;
+
+	if (disp_string_map.contains(k))
 	{
-	    if (!disp_string_map.contains(k))
+	    if (disp_graph->make_active(k))
 	    {
-		// Node is no more part of `display' output
-		if (disp_graph->make_inactive(k))
-		{
-		    // Now inactive
-		    changed = true;
-		}
+		// Now active
+		changed = activated = true;
 	    }
-	    else
+	}
+	else
+	{
+	    // Node is no more part of `display' output
+	    if (disp_graph->make_inactive(k))
 	    {
-		// Update existing node
-		strptr = disp_string_map.get(k);
-		s.current = strptr->length();
-
-		if (dn->update(*strptr))
-		{
-		    // New value
-		    changed = true;
-		}
-		if (disp_graph->make_active(k))
-		{
-		    // Now active
-		    changed = true;
-		}
-		if (*strptr != "" && !(strptr->matches(rxwhite)))
-		{
-		    // After the `display' output, more info followed
-		    // (e.g. the returned value when `finish'ing)
-		    not_my_displays += strptr->after(rxwhite);
-		}
-
-		s.base += s.current;
-
-		delete disp_string_map.get(k);
-		disp_string_map.del (k);
+		// Now inactive
+		changed = true;
 	    }
 	}
     }
 
+    // Update values
+    for (k = disp_graph->first_nr(ref); k != 0; k = disp_graph->next_nr(ref))
+    {
+	DispNode* dn = disp_graph->get(k);
+	if (dn->is_user_command())
+	    continue;
+
+	if (!disp_string_map.contains(k))
+	    continue;
+
+	// Update existing node
+	string *strptr = disp_string_map.get(k);
+	s.current = strptr->length();
+
+	if (dn->update(*strptr))
+	{
+	    // New value
+	    changed = true;
+	}
+	if (*strptr != "" && !(strptr->matches(rxwhite)))
+	{
+	    // After the `display' output, more info followed
+	    // (e.g. the returned value when `finish'ing)
+	    not_my_displays += strptr->after(rxwhite);
+	}
+
+	s.base += s.current;
+
+	delete strptr;
+	disp_string_map.del(k);
+    }
+
     assert (disp_string_map.length() == 0);
+    if (activated)
+    {
+	force_check_aliases = true;
+	refresh_addr();
+    }
     if (changed) 
 	refresh_graph_edit();
 
@@ -4564,6 +4580,30 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
     {
 	if (r == node)
 	    continue;
+
+	// If R is inactive, don't bump it
+	// This makes the check O(n^2), where O(n) would suffice (FIXME).
+	BoxGraphNode *b = ptr_cast(BoxGraphNode, r);
+
+	if (b != 0)
+	{
+	    bool is_active = true;
+
+	    MapRef ref;
+	    for (DispNode* dn = disp_graph->first(ref); 
+		 dn != 0;
+		 dn = disp_graph->next(ref))
+	    {
+		if (b == dn->nodeptr())
+		{
+		    is_active = dn->active();
+		    break;
+		}
+	    }
+
+	    if (!is_active)
+		continue;
+	}
 
 	// If ORIGIN (the upper left corner of R) is right of BUMPER,
 	// move R DELTA units to the right.  If it is below BUMPER,
