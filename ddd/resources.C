@@ -1499,6 +1499,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNsplashScreenColorKey,
+	XtCColorKey,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, splash_screen_color_key),
+	XtRString,
+	XtPointer("c")
+    },
+
+    {
 	XtNautoCommands,
 	XtCAutoCommands,
 	XmRBoolean,
@@ -1553,13 +1563,13 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNshowStartupLogo,
-	XtCColorKey,
-	XmRString,
-	sizeof(String),
-	XtOffsetOf(AppData, show_startup_logo),
+	XtNsplashScreen,
+	XtCSplashScreen,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, splash_screen),
 	XmRImmediate,
-	XtPointer("g4")
+	XtPointer(True)
     },
 
     {

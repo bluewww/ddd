@@ -98,6 +98,7 @@ DDD 3.0 [in beta test]
         traceDialog         trace
         traceShellCommands  trace
         ungrabMousePointer  checkGrabs
+        showStartupLogo     splashScreen + splashScreenColorKey
 
       Please rename all references to the old DDD resources.
     - To enable a DDD 2.x style window layout, use

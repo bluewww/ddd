@@ -801,14 +801,6 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
     post_startup_warning(w);
 }
 
-void dddSetStartupLogoCB (Widget w, XtPointer client_data, XtPointer)
-{
-    app_data.show_startup_logo = (String)client_data;
-
-    update_options();
-    post_startup_warning(w);
-}
-
 static void toggle_button_appearance(Widget w, Boolean& data, 
 				     XtPointer call_data)
 {
@@ -1711,8 +1703,6 @@ bool save_options(unsigned long flags)
 			 app_data.status_at_bottom) << "\n";
     os << bool_app_value(XtNsuppressWarnings,
 			 app_data.suppress_warnings) << "\n";
-    os << string_app_value(XtNshowStartupLogo,
-			   app_data.show_startup_logo) << "\n";
     os << bool_app_value(XtNcheckGrabs,
 			 app_data.check_grabs) << "\n";
     os << bool_app_value(XtNsaveHistoryOnExit,
@@ -1721,6 +1711,8 @@ bool save_options(unsigned long flags)
 			   app_data.paper_size) << "\n";
     os << bool_app_value(XtNblinkWhileBusy,
 			 app_data.blink_while_busy) << "\n";
+    os << bool_app_value(XtNsplashScreen,
+			 app_data.splash_screen) << "\n";
     os << bool_app_value(XtNstartupTips, 
 			 app_data.startup_tips) << "\n";
 

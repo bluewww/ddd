@@ -756,19 +756,24 @@ Ddd*gdb_w.rows:		    5
 Ddd*menubar*tearOffModel: XmTEAR_OFF_ENABLED
 
 
-! Logos and icons
 
-! DDD can display its splash screen in five different ways:
+! Splash screen
+
+! Whether to show the DDD splash screen
+Ddd*splashScreen: on
+
+! DDD can display its splash screen in four different ways:
 !
-!   Color (`c')  - using 42 shades of blue.     (Nice, but costly.)
-!   Grey  (`g')  - using 42 shades of grey.     (Nice on greyscale displays.)
-!   Grey4 (`g4') - using 4 shades of grey.      (A balanced compromise.)
-!   Mono  (`m')  - using only black and white.  (Ugly; on monochrome displays.)
-!   None  (`')   - don't show the DDD logo.     (Makes DDD start up faster.)
+!   Color (`c')  - using up to 42 shades of blue. (Nice, but costly.)
+!   Grey  (`g')  - using up to 42 shades of grey. (Nice on greyscale displays.)
+!   Grey4 (`g4') - using 4 shades of grey.        (A balanced compromise.)
+!   Mono  (`m')  - using only black and white.    (On monochrome displays.)
 !
-! Use the key given in parentheses as resource value.
-! Default is `c' for color.
-Ddd*showStartupLogo: c
+! Use the key given in parentheses as resource value.  Default is `c'.
+Ddd*splashScreenColorKey: c
+
+
+! Logos and icons
 
 ! Whether to use multi-color icons.  Multi-color icons are not strictly
 ! ICCM-compliant, although supported by most window managers.  In case
@@ -3042,11 +3047,8 @@ ITEM LBL(Data Scrolling) sets the data window scrolling mode.\n\
         (not available in all DDD configurations).\n\
     SUBITEM LBL(Scrollbars) means to use two scrollbars.\n\
 ITEM LBL(Debugger Type) sets the type of the inferior debugger.\n\
-ITEM LBL(Splash Screen) lets you choose among different DDD splash screens,\n\
-    or LBL(None), disabling it.\n\
-ITEM LBL(Show Tip of the Day) determines whether DDD shows the tip \
-of the day\n\
-    upon startup.\n\
+ITEM LBL(Show [DDD] Splash Screen) sets whether DDD shows its splash screen.\n\
+ITEM LBL(Show Tip of the Day) sets whether DDD shows its tip of the day.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
@@ -3077,14 +3079,8 @@ Ddd*debuggerMenu*dbx.labelString:		DBX
 Ddd*debuggerMenu*xdb.labelString:		XDB
 Ddd*debuggerMenu*jdb.labelString:		JDB
 
-Ddd*preferences*showStartupLogo.labelString:	DDD Splash Screen
-
-Ddd*showStartupLogoMenu*color.labelString:	Color
-Ddd*showStartupLogoMenu*grey.labelString:	Grey
-Ddd*showStartupLogoMenu*grey4.labelString:	Grey4
-Ddd*showStartupLogoMenu*none.labelString:	None
-
-Ddd*preferences*showStartupTips.labelString:	Show Tip of the Day
+Ddd*preferences*splashScreen.labelString:	Show DDD Splash Screen
+Ddd*preferences*startupTips.labelString:	Show Tip of the Day
 
 
 Ddd*preferences*fonts*helpString: \

@@ -303,6 +303,7 @@
 #define XtNflatDialogButtons     "flatDialogButtons"
 #define XtCFlatButtons           "FlatButtons"
 #define XtNbuttonColorKey        "buttonColorKey"
+#define XtNsplashScreenColorKey  "splashScreenColorKey"
 #define XtCColorKey              "ColorKey"
 #define XtNautoCommands          "autoCommands"
 #define XtCAutoCommands          "AutoCommands"
@@ -311,7 +312,8 @@
 #define XtNmaxBreakpointNumber   "maxBreakpointNumber"
 #define XtNmaxDisplayNumber      "maxDisplayNumber"
 #define XtCMaxNumber             "MaxNumber"
-#define XtNshowStartupLogo       "showStartupLogo"
+#define XtNsplashScreen          "splashScreen"
+#define XtCSplashScreen          "SplashScreen"
 #define XtNcolorWMIcons          "colorWMIcons"
 #define XtCColorWMIcons          "ColorWMIcons"
 #define XtNlessTifVersion        "lessTifVersion"
@@ -466,11 +468,12 @@ struct AppData {
     Boolean   flat_toolbar_buttons;
     Boolean   flat_dialog_buttons;
     String    button_color_key;
+    String    splash_screen_color_key;
     Boolean   auto_commands;
     String    auto_command_prefix;
     int       max_breakpoint_number;
     int       max_display_number;
-    String    show_startup_logo;
+    Boolean   splash_screen;
     Boolean   color_wm_icons;
     int       lesstif_version;
     String    dddinit_version;

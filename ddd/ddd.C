@@ -349,6 +349,7 @@ static bool have_decorated_transients();
 static void set_settings_title(Widget w);
 
 // Popup DDD splash screen upon start-up.
+static void SetSplashScreenCB(Widget, XtPointer, XtPointer);
 static void popup_splash_screen(Widget parent, string color_key);
 static void popdown_splash_screen(XtPointer data = 0, XtIntervalId *id = 0);
 
@@ -1064,25 +1065,8 @@ static MMDesc debugger_menu [] =
     MMEnd
 };
 
-static Widget startup_logo_color_w;
-static Widget startup_logo_grey_w;
-static Widget startup_logo_grey4_w;
-static Widget startup_logo_none_w;
-
-static MMDesc startup_logo_menu [] = 
-{
-    { "color", MMToggle, { dddSetStartupLogoCB, XtPointer("c") },
-      NULL, &startup_logo_color_w },
-    { "grey", MMToggle, { dddSetStartupLogoCB, XtPointer("g") },
-      NULL, &startup_logo_grey_w },
-    { "grey4", MMToggle, { dddSetStartupLogoCB, XtPointer("g4") },
-      NULL, &startup_logo_grey4_w },
-    { "none", MMToggle,  { dddSetStartupLogoCB, XtPointer("") },
-      NULL, &startup_logo_none_w },
-    MMEnd
-};
-
 static Widget startup_tips_w;
+static Widget splash_screen_w;
 
 static MMDesc startup_preferences_menu [] =
 {
@@ -1091,9 +1075,8 @@ static MMDesc startup_preferences_menu [] =
     { "keyboardFocus",   MMRadioPanel,  MMNoCB, keyboard_focus_menu },
     { "dataScrolling",   MMRadioPanel,  MMNoCB, data_scrolling_menu },
     { "debugger",        MMRadioPanel,  MMNoCB, debugger_menu },
-    { "showStartupLogo", MMRadioPanel,  MMNoCB, startup_logo_menu },
-    { "showStartupTips", MMToggle, { SetStartupTipsCB }, 
-      NULL, &startup_tips_w },
+    { "splashScreen", MMToggle, { SetSplashScreenCB }, NULL, &splash_screen_w},
+    { "startupTips",  MMToggle, { SetStartupTipsCB },  NULL, &startup_tips_w },
     MMEnd
 };
 
@@ -1420,9 +1403,6 @@ static XtErrorHandler ddd_original_xt_warning_handler;
 // Initial delays
 static StatusMsg *init_delay = 0;
 static Delay *setup_delay = 0;
-
-// Logo stuff
-static string last_shown_startup_logo;
 
 // Events to note for window visibility
 const int STRUCTURE_MASK = StructureNotifyMask | VisibilityChangeMask;
@@ -1830,9 +1810,8 @@ int main(int argc, char *argv[])
     // Show splash screen
     Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
-    if (!iconic && restart_session() == "")
-	popup_splash_screen(toplevel, app_data.show_startup_logo);
-    last_shown_startup_logo = app_data.show_startup_logo;
+    if (app_data.splash_screen && !iconic && restart_session() == "")
+	popup_splash_screen(toplevel, app_data.splash_screen_color_key);
 
     // Re-register own converters.  Motif has overridden some of
     // these, so register them again.
@@ -2699,7 +2678,6 @@ XrmDatabase GetFileDatabase(char *filename)
 	XmNwidth, XmNheight,	              // Shell sizes
 	XmNcolumns, XmNrows,	              // Text window sizes
 	XtNtoolRightOffset, XtNtoolTopOffset, // Command tool offset
-	XtNshowStartupLogo,	              // Splash screen
 	XtNshowHints,		              // Show edge hints
     };
 
@@ -3395,13 +3373,8 @@ void update_options()
     set_toggle(set_debugger_xdb_w, type == XDB);
     set_toggle(set_debugger_jdb_w, type == JDB);
 
-    string color_key = app_data.show_startup_logo;
-    set_toggle(startup_logo_color_w, color_key == "c");
-    set_toggle(startup_logo_grey_w,  color_key == "g");
-    set_toggle(startup_logo_grey4_w, color_key == "g4");
-    set_toggle(startup_logo_none_w,  color_key == "");
-
-    set_toggle(startup_tips_w, app_data.startup_tips);
+    set_toggle(splash_screen_w, app_data.splash_screen);
+    set_toggle(startup_tips_w,  app_data.startup_tips);
 
     if (app_data.cache_source_files != source_view->cache_source_files)
     {
@@ -3458,22 +3431,6 @@ void update_options()
     EnableButtonDocs(app_data.button_docs);
     EnableTextTips(app_data.value_tips);
     EnableTextDocs(app_data.value_docs);
-
-    if (last_shown_startup_logo != app_data.show_startup_logo)
-    {
-	popup_splash_screen(gdb_w, app_data.show_startup_logo);
-
-	static XtIntervalId timer = 0;
-
-	if (timer != 0)
-	{
-	    XtRemoveTimeOut(timer);
-	    timer = 0;
-	}
-
-	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 1000, 
-				popdown_splash_screen, (void *)&timer);
-    }
 
     set_string(edit_command_w,       app_data.edit_command);
     set_string(get_core_command_w,   app_data.get_core_command);
@@ -3806,13 +3763,8 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_debugger_xdb_w, type == XDB);
     notify_set_toggle(set_debugger_jdb_w, type == JDB);
 
-    string color_key = initial_app_data.show_startup_logo;
-    notify_set_toggle(startup_logo_color_w, color_key == "c");
-    notify_set_toggle(startup_logo_grey_w,  color_key == "g");
-    notify_set_toggle(startup_logo_grey4_w, color_key == "g4");
-    notify_set_toggle(startup_logo_none_w,  color_key == "");
-
-    notify_set_toggle(startup_tips_w, initial_app_data.startup_tips);
+    notify_set_toggle(splash_screen_w, initial_app_data.splash_screen);
+    notify_set_toggle(startup_tips_w,  initial_app_data.startup_tips);
 }
 
 
@@ -3830,6 +3782,7 @@ static bool startup_preferences_changed()
 		  XmNkeyboardFocusPolicy, &focus_policy, NULL);
 
     return app_data.startup_tips != initial_app_data.startup_tips
+	|| app_data.splash_screen != initial_app_data.splash_screen
 	|| separate != initial_separate
 	|| app_data.button_images != initial_app_data.button_images
 	|| app_data.button_captions != initial_app_data.button_captions
@@ -3840,9 +3793,7 @@ static bool startup_preferences_changed()
 	|| focus_policy != initial_focus_policy
 	|| app_data.panned_graph_editor != initial_app_data.panned_graph_editor
 	|| debugger_type(app_data.debugger)
-  	      != debugger_type(initial_app_data.debugger)
-	|| string(app_data.show_startup_logo)
-	      != string(initial_app_data.show_startup_logo);
+  	      != debugger_type(initial_app_data.debugger);
 }
 
 static void ResetFontPreferencesCB(Widget, XtPointer, XtPointer)
@@ -5460,7 +5411,7 @@ static bool have_decorated_transients()
 
 
 //-----------------------------------------------------------------------------
-// Startup Logo
+// Splash Screen
 //-----------------------------------------------------------------------------
 
 static Widget splash_shell  = 0;
@@ -5494,11 +5445,6 @@ static void popdown_splash_screen(XtPointer data, XtIntervalId *id)
 static void popup_splash_screen(Widget parent, string color_key)
 {
     popdown_splash_screen();
-
-    last_shown_startup_logo = color_key;
-
-    if (color_key == "")
-	return;
 
     Arg args[10];
     int arg = 0;
@@ -5534,6 +5480,16 @@ static void popup_splash_screen(Widget parent, string color_key)
 
     popup_shell(splash_shell);
     wait_until_mapped(splash, splash_shell);
+}
+
+static void SetSplashScreenCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.splash_screen = info->set;
+
+    update_options();
 }
 
 
