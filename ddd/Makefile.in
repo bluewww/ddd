@@ -858,7 +858,7 @@ PROG_STUFF       = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
 	 	   acconfig.h acspecial.h stamp-h.in config.h \
 		   $(srcdir)/Ddd.in Ddd.ad.h host.h \
 		   ddd.vsl.h vr.h version.h configinfo.C \
-		   ddd.man.txt ddd.man.txt.gz ddd.man.txt.gz.C \
+		   ddd.1 ddd.man.txt ddd.man.txt.gz ddd.man.txt.gz.C \
                    COPYING.gz.C NEWS.gz.C xlibdir.C eps-code.h
 
 # Extra files to be built for the distribution
