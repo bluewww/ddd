@@ -39,7 +39,10 @@ char DispBox_rcsid[] =
 
 #include "assert.h"
 #include "DispBox.h"
+#include "StringBox.h"
+#include "ColorBox.h"
 #include "DispNode.h"
+#include "VSEFlags.h"
 #include "strclass.h"
 #include "bool.h"
 #include "cook.h"
@@ -154,11 +157,11 @@ void DispBox::init_vsllib(void (*background)())
 	    + "#line 1 \"" Ddd_NAME "*vslDefs\"\n"
 	    + vsllib_defs;
 	istrstream is(defs.chars());
-	vsllib_ptr = new VSLLib(is);
+	vsllib_ptr = new VSLLib(is, VSEFlags::optimize_mode());
     }
     else
     {
-	vsllib_ptr = new VSLLib (vsllib_name);
+	vsllib_ptr = new VSLLib(vsllib_name, VSEFlags::optimize_mode());
     }
 
     VSLLib::background = old_background;
@@ -205,8 +208,18 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	if (dv->collapsed())
 	    vbox = eval("collapsed_simple_value");
 	else
-	    vbox = eval("simple_value", dv->value());
-	break;
+	{
+	    // Flush numeric values to the right, unless in a struct
+	    char c = '\0';
+	    if (dv->value() != "")
+		c = dv->value()[0];
+	    if ((dv->parent() == 0 || dv->parent()->type() == Array) && 
+		(isdigit(c) || c == '+' || c == '-'))
+		vbox = eval("numeric_value", dv->value());
+	    else
+		vbox = eval("simple_value", dv->value());
+	    break;
+	}
 
     case Text:
 	if (dv->collapsed())
@@ -255,16 +268,101 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 		vbox = eval("empty_array");
 	    else
 	    {
-		ListBox* args = new ListBox;
-		for (int i = 0; i < count; i++)
-		    *args += create_value_box (dv->get_child(i));
+		bool have_twodimensional_array = true;
+		for (int k = 0; k < count; k++)
+		    if (dv->get_child(k)->type() != Array)
+		    {
+			have_twodimensional_array = false;
+			break;
+		    }
 
-		if (dv->vertical_aligned())
-		    vbox = eval("vertical_array", args);
+		if (have_twodimensional_array)
+		{
+		    // Two-dimensional array
+		    ListBox *table = new ListBox;
+
+		    if (dv->vertical_aligned())
+		    {
+			// Sub-arrays are aligned vertically;
+			// each sub-array is layed out horizontally
+			for (int i = 0; i < count; i++)
+			{
+			    DispValue *c = dv->get_child(i);
+			    ListBox *row = new ListBox;
+			    for (int j = 0; j < c->number_of_childs(); j++)
+			    {
+				DispValue *cc = c->get_child(j);
+				ListBox *args = new ListBox;
+				*args += create_value_box(cc);
+				Box *b = eval("twodim_array_elem", args);
+				*row += b;
+				b->unlink();
+				args->unlink();
+			    }
+
+			    *table += row;
+			    row->unlink();
+			}
+		    }
+		    else
+		    {
+			// Sub-arrays are aligned horizontally;
+			// each sub-array is layed out vertically
+			int max_cc = 0;
+			for (int j = 0; j < count; j++)
+			    max_cc = max(max_cc,
+					 dv->get_child(j)->number_of_childs());
+			for (int i = 0; i < max_cc; i++)
+			{
+			    ListBox *row = new ListBox;
+			    for (int j = 0; j < count; j++)
+			    {
+				DispValue *c = dv->get_child(j);
+				Box *elem = 0;
+				if (i < c->number_of_childs())
+				{
+				    DispValue *cc = c->get_child(i);
+				    elem = create_value_box(cc);
+				}
+				else
+				{
+				    elem = new ListBox;
+				}
+				ListBox *args = new ListBox;
+				*args += elem;
+				Box *b = eval("twodim_array_elem", elem);
+				*row += b;
+				b->unlink();
+				args->unlink();
+			    }
+
+			    *table += row;
+			    row->unlink();
+			}
+		    }
+
+		    ListBox *args = new ListBox;
+		    *args += table;
+		    table->unlink();
+
+		    vbox = eval("twodim_array", args);
+
+		    args->unlink();
+		}
 		else
-		    vbox = eval("horizontal_array", args);
+		{
+		    // One-dimensional array
+		    ListBox* args = new ListBox;
+		    for (int i = 0; i < count; i++)
+			*args += create_value_box (dv->get_child(i));
 
-		args->unlink();
+		    if (dv->vertical_aligned())
+			vbox = eval("vertical_array", args);
+		    else
+			vbox = eval("horizontal_array", args);
+
+		    args->unlink();
+		}
 	    }
 	}
 	break;
@@ -388,5 +486,7 @@ Box *DispBox::dup(const string& func_name, const Box *box)
     if (box != 0)
 	return ((Box *)box)->link();
 
-    return (new StringBox("<?" + func_name + ">"))->link(); // box not found
+    // Box not found
+    return (new ForegroundColorBox(
+	new StringBox("<?" + func_name + ">"), "red"))->link();
 }

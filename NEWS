@@ -59,6 +59,8 @@ DDD 2.2 [in beta test]
       depending on the current DDD state.  Useful for beginners.
     - Improved data display.
       * Displayed data is highlighted whenever it changes.
+      * Two-dimensional arrays are now laid out as tables.
+      * Numerical values are now aligned to the right.
       * You can now incrementally `Show More' details of an object,
         instead of showing all details at once.
       * Processing displays can be interrupted by typing Ctrl+C.

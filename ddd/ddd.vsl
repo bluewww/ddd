@@ -28,6 +28,7 @@
 
 // Includes
 #include <std.vsl>
+#include <tab.vsl>
 #include <fonts.vsl>
 #include <colors.vsl>
 
@@ -67,6 +68,8 @@ disabled () ->
 // Ordinary values
 simple_value (value) -> 
   simple_color(vcenter(value & hfill()));
+numeric_value (value) -> 
+  simple_color(vcenter(hfill() & value));
 
 // Collapsed ordinary values
 collapsed_simple_value () -> 
@@ -110,6 +113,14 @@ vertical_array (...) ->
 // Horizontal array
 horizontal_array (...) -> 
   array_color(frame(indent(hlist((vwhite(3) & vrule() & vwhite(3)), ...))));
+
+// Two-dimensional arrays
+#replace tab_elem
+tab_elem(x) = x;
+twodim_array (...) -> 
+  array_color(hrule() | vrule() & tab(...));
+twodim_array_elem (...) -> 
+  whiteframe(rm(...)) & vrule() | hrule();
 
 // Struct value
 struct_value (...) -> 
