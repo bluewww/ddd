@@ -2,6 +2,7 @@
 // Command and arg completion
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -303,7 +304,7 @@ static void complete(Widget w, XEvent *e, string input, string cmd)
 	XmTextSetEditable(w, false);
     XmTextSetEditable(gdb_w, false);
     
-    gdb->send_question(complete_cmd, complete_reply, (void *)&info);
+    gdb_command(complete_cmd, gdb_w, complete_reply, (void *)&info);
 
     completion_delay = new Delay;
 }

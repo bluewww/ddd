@@ -54,9 +54,12 @@ bool gdb_question_running = false; // Flag: is gdb_question() running?
 struct GDBReply {
     string answer;		// The answer text (NO_GDB_ANSWER if timeout)
     bool received;		// True iff we found an answer
+    bool answered;		// True if we got an answer from GDB
+    bool killme;		// True if this is to be deleted
 
     GDBReply()
-	: answer(NO_GDB_ANSWER), received(false)
+	: answer(NO_GDB_ANSWER), 
+	  received(false), answered(false), killme(false)
     {}
 };
 
@@ -66,6 +69,7 @@ static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
     GDBReply *reply = (GDBReply *)client_data;
     reply->answer   = NO_GDB_ANSWER;
     reply->received = true;
+    reply->answered = false;
 }
 
 // GDB sent a reply - Called from GDBAgent::send_question()
@@ -74,9 +78,16 @@ static void gdb_reply(const string& complete_answer, void *qu_data)
     GDBReply *reply = (GDBReply *)qu_data;
     reply->answer   = complete_answer;
     reply->received = true;
+    reply->answered = true;
 
     // Weed out GDB junk
     filter_junk(reply->answer);
+
+    if (reply->killme)
+    {
+	// Reply arrived too late
+	delete reply;
+    }
 }
 
 // Weed out GDB `verbose' junk from ANSWER
@@ -96,10 +107,10 @@ void filter_junk(string& answer)
 }
 
 // Wait for GDB reply
-static void wait_for_gdb_reply(GDBReply& reply, int timeout)
+static void wait_for_gdb_reply(GDBReply *reply, int timeout)
 {
-    reply.received = false;
-    reply.answer   = NO_GDB_ANSWER;
+    reply->received = false;
+    reply->answer   = NO_GDB_ANSWER;
 
     if (timeout == 0)
 	timeout = app_data.question_timeout;
@@ -109,16 +120,16 @@ static void wait_for_gdb_reply(GDBReply& reply, int timeout)
     {
 	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
 				timeout * 1000,
-				gdb_reply_timeout, (void *)&reply);
+				gdb_reply_timeout, (void *)reply);
     }
 
     // Process all GDB input and timer events
-    while (!reply.received && gdb->running())
+    while (!reply->received && gdb->running())
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), 
 			  XtIMTimer | XtIMAlternateInput);
 
     // Remove timeout in case it's still running
-    if (reply.answer != NO_GDB_ANSWER)
+    if (reply->answered)
     {
 	if (timer && timeout > 0)
 	    XtRemoveTimeOut(timer);
@@ -133,56 +144,30 @@ string gdb_question(const string& command, int timeout, bool verbatim)
     if (command == "")
 	return "";
 
-    if (gdb_question_running)
-	return NO_GDB_ANSWER;
-
-    if (gdb->recording())
+    if (gdb_question_running || !can_do_gdb_command())
 	return NO_GDB_ANSWER;
 
     // Block against reentrant calls
     gdb_question_running = true;
 
-    static GDBReply reply;
-
     // Set verbatim mode if needed
     bool old_verbatim = gdb->verbatim();
     gdb->verbatim(verbatim);
 
-    bool interrupted = false;
-
-    // Interrupt GDB if needed
-    if (app_data.stop_and_continue && 
-	!gdb->isReadyWithPrompt() &&
-	is_cont_cmd(current_gdb_command()))
-    {
-	gdb_command('\003', Widget(0), gdb_reply, (void *)&reply);
-
-	wait_for_gdb_reply(reply, timeout);
-	interrupted = true;
-    }
+    // Set delay (unless this is a trivial question)
+    Delay *delay = 0;
+    if (!command.contains("help", 0) && !is_print_cmd(command, gdb))
+	delay = new Delay;
 
     // Send question to GDB
-    bool ok = gdb->send_question(command, gdb_reply, (void *)&reply);
+    GDBReply *reply = new GDBReply;
+    gdb_command(command, 0, gdb_reply, (void *)reply);
 
-    if (ok)
-    {
-	// Set delay (unless this is a trivial question)
-	Delay *delay = 0;
-	if (!command.contains("help", 0) && !is_print_cmd(command, gdb))
-	    delay = new Delay;
+    // GDB received question - set timeout
+    wait_for_gdb_reply(reply, timeout);
 
-	// GDB received question - set timeout
-	wait_for_gdb_reply(reply, timeout);
-
-	// Clear delay again
-	delete delay;
-    }
-
-    if (interrupted)
-    {
-	// Silently resume execution
-	gdb_command("cont", Widget(0), OQCProc(0));
-    }
+    // Clear delay again
+    delete delay;
 
     // Restore old verbatim mode
     gdb->verbatim(old_verbatim);
@@ -190,6 +175,19 @@ string gdb_question(const string& command, int timeout, bool verbatim)
     // Unblock against reentrant calls
     gdb_question_running = false;
 
+    string answer = reply->answer;
+
+    if (reply->answered)
+    {
+	// Reply is no longer needed
+	delete reply;
+    }
+    else
+    {
+	// Answer may still arrive (or be canceled): delete reply at this point
+	reply->killme = true;
+    }
+
     // Return answer
-    return reply.answer;
+    return answer;
 }
