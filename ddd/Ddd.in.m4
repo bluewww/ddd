@@ -684,6 +684,18 @@ Ddd*clearTipDelay:   50
 Ddd*pushMenuPopupTime: 400
 
 
+
+! Popdown history
+
+! The maximum number of items in pop-down histories.  0 means `unlimited'.
+Ddd*popdownHistorySize: 0
+
+! Shall pop-down histories be sorted?
+! on: sort alphabetically
+! off: don't sort; least-recently-used comes first
+Ddd*sortPopdownHistory: on
+
+
 ! Status line
 
 ! Should the status line be placed at the bottom?

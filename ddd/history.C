@@ -35,6 +35,7 @@ char history_rcsid[] =
 
 #include "history.h"
 
+#include "AppData.h"
 #include "Assoc.h"
 #include "ComboBox.h"
 #include "Command.h"
@@ -500,15 +501,34 @@ static void update_combo_box(Widget text, HistoryFilter filter)
     {
 	const string& entry = gdb_history[i];
 	string arg = filter(entry);
-	if (arg != "")
+	if (arg == "")
+	    continue;		// Empty arg
+
+	if (entries.size() > 0 && entries[entries.size() - 1] == arg)
+	    continue;		// Adjacent duplicate
+
+	if (app_data.popdown_history_size > 0 &&
+	    entries.size() >= int(app_data.popdown_history_size))
+	    break;		// Enough entries
+
+	bool found_duplicate = false;
+	if (!app_data.sort_popdown_history)
 	{
-	    if (entries.size() == 0 || entries[entries.size() - 1] != arg)
-		entries += arg;
+	    // We'll not be sorted.  If we already have this value,
+	    // ignore new entry.
+	    for (int j = 0; !found_duplicate && j < entries.size(); j++)
+		found_duplicate = (entries[j] == arg);
 	}
+	if (!found_duplicate)
+	    entries += arg;
     }
 
-    smart_sort(entries);
-    uniq(entries);
+    if (app_data.sort_popdown_history)
+    {
+	smart_sort(entries);
+	uniq(entries);
+    }
+
     ComboBoxSetList(text, entries);
 }
 

@@ -289,7 +289,10 @@
 #define XtNhideInactiveDisplays  "hideInactiveDisplays"
 #define XtCHideInactiveDisplays  "HideInactiveDisplays"
 #define XtNstatusHistorySize     "statusHistorySize"
-#define XtCStatusHistorySize     "StatusHistorySize"
+#define XtCHistorySize           "HistorySize"
+#define XtNpopdownHistorySize    "popsownHistorySize"
+#define XtNsortPopdownHistory    "sortPopdownHistory"
+#define XtCSortPopdownHistory    "SortPopdownHistory"
 #define XtNverifyButtons         "verifyButtons"
 #define XtCVerifyButtons         "VerifyButtons"
 #define XtNautoRaiseTool         "autoRaiseTool"
@@ -474,6 +477,8 @@ struct AppData {
     Boolean   bump_displays;
     Boolean   hide_inactive_displays;
     Cardinal  status_history_size;
+    Cardinal  popdown_history_size;
+    Boolean   sort_popdown_history;
     Boolean   verify_buttons;
     Boolean   auto_raise_tool;
     OnOff     decorate_tool;

@@ -65,10 +65,18 @@ Platforms
   to JDB.  Note that you need a Windows X server to run DDD.
 
 
-Miscellaneous
+Customization
 -------------
 
+- History customization.  You can customize the number of items in
+  pop-down value histories as well as the way they are sorted.  See
+  the `popdownHistorySize' and `sortPopdownHistory' resources.
+
 - Signal settings are saved with the current session.
+
+
+Bug fixes
+---------
 
 - Improved redirection handling.  You can redirect stderr away from
   the execution window, using `run 2> FILE'.  The debugger command

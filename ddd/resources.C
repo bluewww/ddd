@@ -1431,12 +1431,32 @@ XtResource ddd_resources[] = {
 
     {
 	XtNstatusHistorySize,
-	XtCStatusHistorySize,
+	XtCHistorySize,
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, status_history_size),
 	XmRImmediate,
 	XtPointer(10)
+    },
+
+    {
+	XtNpopdownHistorySize,
+	XtCHistorySize,
+	XtRCardinal,
+	sizeof(Cardinal),
+	XtOffsetOf(AppData, popdown_history_size),
+	XmRImmediate,
+	XtPointer(0)
+    },
+
+    {
+	XtNsortPopdownHistory,
+	XtCSortPopdownHistory,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, sort_popdown_history),
+	XmRImmediate,
+	XtPointer(True)
     },
 
     {

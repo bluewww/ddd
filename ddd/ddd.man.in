@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-07\-23" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-07\-31" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -4168,6 +4168,22 @@ output on each own, such that the final line is placed at the bottom
 of the debugger console.  If this is `\fBoff\fR', all lines are
 output as a whole.  This is faster, but results in a random position
 of the last line.
+.PP
+.\"
+.SS "Value Histories"
+.\"
+The following resources control the pop-down value histories
+associated with various text fields.
+.\"
+.TP
+.B "popdownHistorySize (\fPclass\fB HistorySize)"
+The maximum number of items to display in pop-down value histories.  A
+value of \fB0\fR (default) means an unlimited number of values.
+.TP
+.B "sortPopdownHistory (\fPclass\fB SortPopdownHistory)"
+If `\fBon\fR' (default), items in the pop-down value histories are
+sorted alphabetically.  If `\fBoff\fR', most recently used values will
+appear at the top.
 .PP
 .\"
 .\"
