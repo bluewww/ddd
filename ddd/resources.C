@@ -795,6 +795,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+        XtNrussianRoulette,
+	XtCRussianRoulette,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, russian_roulette),
+	XtRImmediate,
+	XtPointer(False)
+    },
+
+    {
         XtNcheckConfiguration,
 	XtCCheckConfiguration,
 	XtRBoolean,

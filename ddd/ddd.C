@@ -392,8 +392,8 @@ static void PostHelpOnItem(Widget item);
 // Xt Stuff
 //-----------------------------------------------------------------------------
 
-static char S_true[]    = "true";
-static char S_false[]   = "false";
+static char ON[]  = "on";
+static char OFF[] = "off";
 
 // Options
 // Note: we support both the GDB '--OPTION' and the X '-OPTION' convention.
@@ -418,8 +418,8 @@ static XrmOptionDescRec options[] = {
 { "--jdb",                  XtNdebugger,             XrmoptionNoArg,  "jdb" },
 { "-jdb",                   XtNdebugger,             XrmoptionNoArg,  "jdb" },
 
-{ "--trace",                XtCTrace,                XrmoptionNoArg,  S_true },
-{ "-trace",                 XtCTrace,                XrmoptionNoArg,  S_true },
+{ "--trace",                XtCTrace,                XrmoptionNoArg,  ON },
+{ "-trace",                 XtCTrace,                XrmoptionNoArg,  ON },
 
 { "--font",                 XtNdefaultFont,          XrmoptionSepArg, NULL },
 { "-font",                  XtNdefaultFont,          XrmoptionSepArg, NULL },
@@ -434,90 +434,90 @@ static XrmOptionDescRec options[] = {
 { "--vsl-path",             XtNvslPath,              XrmoptionSepArg, NULL },
 { "-vsl-path",              XtNvslPath,              XrmoptionSepArg, NULL },
 
-{ "--separate",             XtCSeparate,             XrmoptionNoArg, S_true },
-{ "-separate",              XtCSeparate,             XrmoptionNoArg, S_true },
-{ "--separate-windows",     XtCSeparate,             XrmoptionNoArg, S_true },
-{ "-separate-windows",      XtCSeparate,             XrmoptionNoArg, S_true },
+{ "--separate",             XtCSeparate,             XrmoptionNoArg, ON },
+{ "-separate",              XtCSeparate,             XrmoptionNoArg, ON },
+{ "--separate-windows",     XtCSeparate,             XrmoptionNoArg, ON },
+{ "-separate-windows",      XtCSeparate,             XrmoptionNoArg, ON },
 
-{ "--separate-source-window",XtNseparateSourceWindow, XrmoptionNoArg, S_true },
-{ "-separate-source-window", XtNseparateSourceWindow, XrmoptionNoArg, S_true },
+{ "--separate-source-window",XtNseparateSourceWindow, XrmoptionNoArg, ON },
+{ "-separate-source-window", XtNseparateSourceWindow, XrmoptionNoArg, ON },
 
-{ "--separate-data-window", XtNseparateDataWindow,   XrmoptionNoArg, S_true },
-{ "-separate-data-window",  XtNseparateDataWindow,   XrmoptionNoArg, S_true },
+{ "--separate-data-window", XtNseparateDataWindow,   XrmoptionNoArg, ON },
+{ "-separate-data-window",  XtNseparateDataWindow,   XrmoptionNoArg, ON },
 
-{ "--attach",               XtCSeparate,             XrmoptionNoArg, S_false },
-{ "-attach",                XtCSeparate,             XrmoptionNoArg, S_false },
-{ "--attach-windows",       XtCSeparate,             XrmoptionNoArg, S_false },
-{ "-attach-windows",        XtCSeparate,             XrmoptionNoArg, S_false },
+{ "--attach",               XtCSeparate,             XrmoptionNoArg, OFF },
+{ "-attach",                XtCSeparate,             XrmoptionNoArg, OFF },
+{ "--attach-windows",       XtCSeparate,             XrmoptionNoArg, OFF },
+{ "-attach-windows",        XtCSeparate,             XrmoptionNoArg, OFF },
 
-{ "--attach-source-window", XtNseparateSourceWindow, XrmoptionNoArg, S_false },
-{ "-attach-source-window",  XtNseparateSourceWindow, XrmoptionNoArg, S_false },
+{ "--attach-source-window", XtNseparateSourceWindow, XrmoptionNoArg, OFF },
+{ "-attach-source-window",  XtNseparateSourceWindow, XrmoptionNoArg, OFF },
 
-{ "--attach-data-window",   XtNseparateDataWindow,   XrmoptionNoArg, S_false },
-{ "-attach-data-window",    XtNseparateDataWindow,   XrmoptionNoArg, S_false },
+{ "--attach-data-window",   XtNseparateDataWindow,   XrmoptionNoArg, OFF },
+{ "-attach-data-window",    XtNseparateDataWindow,   XrmoptionNoArg, OFF },
 
-{ "--exec-window",          XtNseparateExecWindow,   XrmoptionNoArg, S_true },
-{ "-exec-window",           XtNseparateExecWindow,   XrmoptionNoArg, S_true },
+{ "--exec-window",          XtNseparateExecWindow,   XrmoptionNoArg, ON },
+{ "-exec-window",           XtNseparateExecWindow,   XrmoptionNoArg, ON },
 
-{ "--no-exec-window",       XtNseparateExecWindow,   XrmoptionNoArg, S_false },
-{ "-no-exec-window",        XtNseparateExecWindow,   XrmoptionNoArg, S_false },
+{ "--no-exec-window",       XtNseparateExecWindow,   XrmoptionNoArg, OFF },
+{ "-no-exec-window",        XtNseparateExecWindow,   XrmoptionNoArg, OFF },
 
-{ "--source-window",        XtNopenSourceWindow,     XrmoptionNoArg, S_true },
-{ "-source-window",         XtNopenSourceWindow,     XrmoptionNoArg, S_true },
+{ "--source-window",        XtNopenSourceWindow,     XrmoptionNoArg, ON },
+{ "-source-window",         XtNopenSourceWindow,     XrmoptionNoArg, ON },
 
-{ "--no-source-window",     XtNopenSourceWindow,     XrmoptionNoArg, S_false },
-{ "-no-source-window",      XtNopenSourceWindow,     XrmoptionNoArg, S_false },
+{ "--no-source-window",     XtNopenSourceWindow,     XrmoptionNoArg, OFF },
+{ "-no-source-window",      XtNopenSourceWindow,     XrmoptionNoArg, OFF },
 
-{ "--data-window",          XtNopenDataWindow,       XrmoptionNoArg, S_true },
-{ "-data-window",           XtNopenDataWindow,       XrmoptionNoArg, S_true },
+{ "--data-window",          XtNopenDataWindow,       XrmoptionNoArg, ON },
+{ "-data-window",           XtNopenDataWindow,       XrmoptionNoArg, ON },
 
-{ "--no-data-window",       XtNopenDataWindow,       XrmoptionNoArg, S_false },
-{ "-no-data-window",        XtNopenDataWindow,       XrmoptionNoArg, S_false },
+{ "--no-data-window",       XtNopenDataWindow,       XrmoptionNoArg, OFF },
+{ "-no-data-window",        XtNopenDataWindow,       XrmoptionNoArg, OFF },
 
-{ "--debugger-console",     XtNopenDebuggerConsole,  XrmoptionNoArg, S_true },
-{ "-debugger-console",      XtNopenDebuggerConsole,  XrmoptionNoArg, S_true },
+{ "--debugger-console",     XtNopenDebuggerConsole,  XrmoptionNoArg, ON },
+{ "-debugger-console",      XtNopenDebuggerConsole,  XrmoptionNoArg, ON },
 
-{ "--no-debugger-console",  XtNopenDebuggerConsole,  XrmoptionNoArg, S_false },
-{ "-no-debugger-console",   XtNopenDebuggerConsole,  XrmoptionNoArg, S_false },
+{ "--no-debugger-console",  XtNopenDebuggerConsole,  XrmoptionNoArg, OFF },
+{ "-no-debugger-console",   XtNopenDebuggerConsole,  XrmoptionNoArg, OFF },
 
-{ "--button-tips",          XtNbuttonTips,           XrmoptionNoArg, S_true },
-{ "-button-tips",           XtNbuttonTips,           XrmoptionNoArg, S_true },
+{ "--button-tips",          XtNbuttonTips,           XrmoptionNoArg, ON },
+{ "-button-tips",           XtNbuttonTips,           XrmoptionNoArg, ON },
 
-{ "--no-button-tips",       XtNbuttonTips,           XrmoptionNoArg, S_false },
-{ "-no-button-tips",        XtNbuttonTips,           XrmoptionNoArg, S_false },
+{ "--no-button-tips",       XtNbuttonTips,           XrmoptionNoArg, OFF },
+{ "-no-button-tips",        XtNbuttonTips,           XrmoptionNoArg, OFF },
 
-{ "--value-tips",           XtNvalueTips,            XrmoptionNoArg, S_true },
-{ "-value-tips",            XtNvalueTips,            XrmoptionNoArg, S_true },
+{ "--value-tips",           XtNvalueTips,            XrmoptionNoArg, ON },
+{ "-value-tips",            XtNvalueTips,            XrmoptionNoArg, ON },
 
-{ "--no-value-tips",        XtNvalueTips,            XrmoptionNoArg, S_false },
-{ "-no-value-tips",         XtNvalueTips,            XrmoptionNoArg, S_false },
+{ "--no-value-tips",        XtNvalueTips,            XrmoptionNoArg, OFF },
+{ "-no-value-tips",         XtNvalueTips,            XrmoptionNoArg, OFF },
 
-{ "--status-at-bottom",     XtNstatusAtBottom,       XrmoptionNoArg, S_true },
-{ "-status-at-bottom",      XtNstatusAtBottom,       XrmoptionNoArg, S_true },
+{ "--status-at-bottom",     XtNstatusAtBottom,       XrmoptionNoArg, ON },
+{ "-status-at-bottom",      XtNstatusAtBottom,       XrmoptionNoArg, ON },
 
-{ "--status-at-top",        XtNstatusAtBottom,       XrmoptionNoArg, S_false },
-{ "-status-at-top",         XtNstatusAtBottom,       XrmoptionNoArg, S_false },
+{ "--status-at-top",        XtNstatusAtBottom,       XrmoptionNoArg, OFF },
+{ "-status-at-top",         XtNstatusAtBottom,       XrmoptionNoArg, OFF },
 
-{ "--panned-graph-editor",  XtNpannedGraphEditor,    XrmoptionNoArg, S_true },
-{ "-panned-graph-editor",   XtNpannedGraphEditor,    XrmoptionNoArg, S_true },
+{ "--panned-graph-editor",  XtNpannedGraphEditor,    XrmoptionNoArg, ON },
+{ "-panned-graph-editor",   XtNpannedGraphEditor,    XrmoptionNoArg, ON },
 
-{ "--scrolled-graph-editor", XtNpannedGraphEditor,   XrmoptionNoArg, S_false },
-{ "-scrolled-graph-editor", XtNpannedGraphEditor,    XrmoptionNoArg, S_false },
+{ "--scrolled-graph-editor", XtNpannedGraphEditor,   XrmoptionNoArg, OFF },
+{ "-scrolled-graph-editor", XtNpannedGraphEditor,    XrmoptionNoArg, OFF },
 
-{ "--sync-debugger",        XtNsynchronousDebugger,  XrmoptionNoArg, S_true },
-{ "-sync-debugger",         XtNsynchronousDebugger,  XrmoptionNoArg, S_true },
+{ "--sync-debugger",        XtNsynchronousDebugger,  XrmoptionNoArg, ON },
+{ "-sync-debugger",         XtNsynchronousDebugger,  XrmoptionNoArg, ON },
 
-{ "--disassemble",          XtNdisassemble,          XrmoptionNoArg, S_true },
-{ "-disassemble",           XtNdisassemble,          XrmoptionNoArg, S_true },
+{ "--disassemble",          XtNdisassemble,          XrmoptionNoArg, ON },
+{ "-disassemble",           XtNdisassemble,          XrmoptionNoArg, ON },
 
-{ "--no-disassemble",       XtNdisassemble,          XrmoptionNoArg, S_false },
-{ "-no-disassemble",        XtNdisassemble,          XrmoptionNoArg, S_false },
+{ "--no-disassemble",       XtNdisassemble,          XrmoptionNoArg, OFF },
+{ "-no-disassemble",        XtNdisassemble,          XrmoptionNoArg, OFF },
 
-{ "--glyphs",               XtNdisplayGlyphs,        XrmoptionNoArg, S_true },
-{ "-glyphs",                XtNdisplayGlyphs,        XrmoptionNoArg, S_true },
+{ "--glyphs",               XtNdisplayGlyphs,        XrmoptionNoArg, ON },
+{ "-glyphs",                XtNdisplayGlyphs,        XrmoptionNoArg, ON },
 
-{ "--no-glyphs",            XtNdisplayGlyphs,        XrmoptionNoArg, S_false },
-{ "-no-glyphs",             XtNdisplayGlyphs,        XrmoptionNoArg, S_false },
+{ "--no-glyphs",            XtNdisplayGlyphs,        XrmoptionNoArg, OFF },
+{ "-no-glyphs",             XtNdisplayGlyphs,        XrmoptionNoArg, OFF },
 
 { "--host",                 XtNdebuggerHost,         XrmoptionSepArg, NULL },
 { "-host",                  XtNdebuggerHost,         XrmoptionSepArg, NULL },
@@ -529,35 +529,38 @@ static XrmOptionDescRec options[] = {
 { "-login",                 XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
 { "-l",                     XtNdebuggerHostLogin,    XrmoptionSepArg, NULL },
 
-{ "--tty",                  XtNttyMode,              XrmoptionNoArg, S_true },
-{ "-tty",                   XtNttyMode,              XrmoptionNoArg, S_true },
-{ "-t",                     XtNttyMode,              XrmoptionNoArg, S_true },
+{ "--tty",                  XtNttyMode,              XrmoptionNoArg, ON },
+{ "-tty",                   XtNttyMode,              XrmoptionNoArg, ON },
+{ "-t",                     XtNttyMode,              XrmoptionNoArg, ON },
 
-{ "--fullname",             XtCTTYMode,              XrmoptionNoArg, S_true },
-{ "-fullname",              XtCTTYMode,              XrmoptionNoArg, S_true },
-{ "-f",                     XtCTTYMode,              XrmoptionNoArg, S_true },
+{ "--fullname",             XtCTTYMode,              XrmoptionNoArg, ON },
+{ "-fullname",              XtCTTYMode,              XrmoptionNoArg, ON },
+{ "-f",                     XtCTTYMode,              XrmoptionNoArg, ON },
 
-{ "--version",              XtNshowVersion,          XrmoptionNoArg, S_true },
-{ "-version",               XtNshowVersion,          XrmoptionNoArg, S_true },
-{ "-v",                     XtNshowVersion,          XrmoptionNoArg, S_true },
+{ "--version",              XtNshowVersion,          XrmoptionNoArg, ON },
+{ "-version",               XtNshowVersion,          XrmoptionNoArg, ON },
+{ "-v",                     XtNshowVersion,          XrmoptionNoArg, ON },
 
-{ "--configuration",        XtNshowConfiguration,    XrmoptionNoArg, S_true },
-{ "-configuration",         XtNshowConfiguration,    XrmoptionNoArg, S_true },
+{ "--configuration",        XtNshowConfiguration,    XrmoptionNoArg, ON },
+{ "-configuration",         XtNshowConfiguration,    XrmoptionNoArg, ON },
 
-{ "--manual",               XtNshowManual,           XrmoptionNoArg, S_true },
-{ "-manual",                XtNshowManual,           XrmoptionNoArg, S_true },
+{ "--manual",               XtNshowManual,           XrmoptionNoArg, ON },
+{ "-manual",                XtNshowManual,           XrmoptionNoArg, ON },
 
-{ "--license",              XtNshowLicense,          XrmoptionNoArg, S_true },
-{ "-license",               XtNshowLicense,          XrmoptionNoArg, S_true },
+{ "--license",              XtNshowLicense,          XrmoptionNoArg, ON },
+{ "-license",               XtNshowLicense,          XrmoptionNoArg, ON },
 
-{ "--news",                 XtNshowNews,             XrmoptionNoArg, S_true },
-{ "-news",                  XtNshowNews,             XrmoptionNoArg, S_true },
+{ "--news",                 XtNshowNews,             XrmoptionNoArg, ON },
+{ "-news",                  XtNshowNews,             XrmoptionNoArg, ON },
 
-{ "--fonts",                XtNshowFonts,            XrmoptionNoArg, S_true },
-{ "-fonts",                 XtNshowFonts,            XrmoptionNoArg, S_true },
+{ "--fonts",                XtNshowFonts,            XrmoptionNoArg, ON },
+{ "-fonts",                 XtNshowFonts,            XrmoptionNoArg, ON },
 
-{ "--check-configuration",  XtNcheckConfiguration,   XrmoptionNoArg, S_true },
-{ "-check-configuration",   XtNcheckConfiguration,   XrmoptionNoArg, S_true },
+{ "--russian-roulette",     XtNrussianRoulette,      XrmoptionNoArg, ON },
+{ "-russian-roulette",      XtNrussianRoulette,      XrmoptionNoArg, ON },
+
+{ "--check-configuration",  XtNcheckConfiguration,   XrmoptionNoArg, ON },
+{ "-check-configuration",   XtNcheckConfiguration,   XrmoptionNoArg, ON },
 
 { "--lesstif-hacks",        XtNlessTifVersion,       XrmoptionNoArg, "999" },
 { "-lesstif-hacks",         XtNlessTifVersion,       XrmoptionNoArg, "999" },
@@ -568,11 +571,11 @@ static XrmOptionDescRec options[] = {
 { "--lesstif-version",      XtNlessTifVersion,       XrmoptionSepArg, NULL },
 { "-lesstif-version",       XtNlessTifVersion,       XrmoptionSepArg, NULL },
 
-{ "--help",                 XtNshowInvocation,       XrmoptionNoArg, S_true },
-{ "-help",                  XtNshowInvocation,       XrmoptionNoArg, S_true },
-{ "-h",                     XtNshowInvocation,       XrmoptionNoArg, S_true },
-{ "--?",                    XtNshowInvocation,       XrmoptionNoArg, S_true },
-{ "-?",                     XtNshowInvocation,       XrmoptionNoArg, S_true },
+{ "--help",                 XtNshowInvocation,       XrmoptionNoArg, ON },
+{ "-help",                  XtNshowInvocation,       XrmoptionNoArg, ON },
+{ "-h",                     XtNshowInvocation,       XrmoptionNoArg, ON },
+{ "--?",                    XtNshowInvocation,       XrmoptionNoArg, ON },
+{ "-?",                     XtNshowInvocation,       XrmoptionNoArg, ON },
 
 };
 
@@ -1794,13 +1797,17 @@ int main(int argc, char *argv[])
     if (app_data.show_manual)
 	show(ddd_man);
 
+    if (app_data.russian_roulette)
+	russian_roulette();
+
     if (app_data.show_version 
 	|| app_data.show_invocation 
 	|| app_data.show_configuration
 	|| app_data.show_news
 	|| app_data.show_license
 	|| app_data.show_manual
-	|| app_data.show_fonts)
+	|| app_data.show_fonts
+	|| app_data.russian_roulette)
 	return EXIT_SUCCESS;
 
     // From this point on, we'll be running under X.

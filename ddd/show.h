@@ -61,5 +61,8 @@ void DDDLicenseCB(Widget, XtPointer, XtPointer);
 int ddd_news(ostream& os);
 void DDDNewsCB(Widget, XtPointer, XtPointer);
 
+// Russian Roulette
+void russian_roulette();
+
 #endif // _DDD_show_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
