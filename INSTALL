@@ -1,11 +1,11 @@
-Installing DDD						-*- text -*-
-**************
+Installing DDD					-*- outline -*-
+==============
 
     For compiling and installing DDD on a system, please follow these
     instructions.
 
-Requirements
-============
+*** Requirements
+================
 
     To build a complete DDD from sources, you need:
 
@@ -22,8 +22,8 @@ Requirements
          `patches/' directory for useful LessTif patches.  LessTif is
          available via `http://www.lesstif.org/'.
 
-       * The X window library (Xlib) and X toolkit library (Xt), X11R4
-         or later.
+       * The X window library (Xlib) and X toolkit library (Xt), 
+	 X11 Release 4 or later.
 
 
     The following packages are recommended, but not required:
@@ -55,8 +55,8 @@ Requirements
     and later.  Using JDB, you can find and fix bugs in Java programs.
 
 
-Basic Installation
-==================
+*** Basic Installation
+======================
 
     The `configure' shell script attempts to guess correct values for
     various system-dependent variables used during compilation.  It uses
@@ -118,7 +118,7 @@ Basic Installation
 	 sources), you may also have to supply their locations.  See
 	 `Optional features', below.
 
-      6. Now type `make' to build DDD.  Any `make' will do, although
+      6. Now type `make' to build DDD.  Any `make' should do, although
          GNU make is preferred for incremental construction.  Please
          report any bugs and problems to `ddd-bugs@ips.cs.tu-bs.de'.
 
@@ -177,18 +177,11 @@ Basic Installation
      15. You can remove DDD from your system by typing `make uninstall'.
 
 
-Documentation
-=============
+*** Installation Details
+========================
 
-    The DDD Manual Page, contained in the file `ddd/ddd.man', contains
-    a short reference.  Note that DDD provides an on-line help system.
-
-    Various formatted documents related to DDD are contained in the
-    `./doc' directory.  See the `./doc/README' file for details.
-
-
-Compilers and Options
-=====================
+** Compilers and Options
+------------------------
 
     Some systems require unusual options for compilation or linking that
     the `configure' script does not know about.  You can give `configure'
@@ -226,8 +219,8 @@ Compilers and Options
          Linker flags used by both the C and C++ compiler
 
 
-Using a Different Build Directory
-=================================
+** Using a Different Build Directory
+------------------------------------
 
     You can compile the DDD package in a different directory from the
     one containing the source code.  Doing so allows you to compile it on
@@ -239,8 +232,8 @@ Using a Different Build Directory
     `configure' is in and in `..'.
 
 
-Installation Names
-==================
+** Installation Names
+---------------------
 
     By default, `make install' will install the DDD files in
     `/usr/local/bin', `/usr/local/man', etc.  You can specify an
@@ -258,8 +251,8 @@ Installation Names
     `--program-suffix=SUFFIX'.
 
 
-Optional Features
-=================
+** Optional Features
+--------------------
 
     By default, `configure' will configure DDD to use all supported
     features available on your system.
@@ -290,8 +283,8 @@ Optional Features
     `--without-motif' option; DDD will not compile without Motif.
 
 
-Specifying the System Type
-==========================
+** Specifying the System Type
+-----------------------------
 
     There may be some features `configure' can not figure out
     automatically, but needs to determine by the type of host DDD will
@@ -306,8 +299,8 @@ Specifying the System Type
     See the file `config.sub' for the possible values of each field.
 
 
-Sharing Defaults
-================
+** Sharing Defaults
+-------------------
 
     If you want to set default values for `configure' scripts to
     share, you can create a site shell script called `config.site'
@@ -319,8 +312,8 @@ Sharing Defaults
     a site script.
 
 
-Operation Controls
-==================
+** Operation Controls
+---------------------
 
     `configure' recognizes the following options to control how it
     operates.
@@ -348,6 +341,17 @@ Operation Controls
 
     `configure' also accepts some other, not widely useful, options.
 
+
+
+*** Documentation
+==================
+
+    The DDD Manual Page, contained in the file `ddd/ddd.man', is the
+    official DDD reference.  Note that DDD provides various on-line
+    help mechanisms.
+
+    Various formatted documents related to DDD are contained in the
+    `./doc' directory.  See the `./doc/README' file for details.
 
 
 $Id$
