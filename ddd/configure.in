@@ -63,12 +63,12 @@ dnl SUFFIX is optional - a letter `a' to `z' or `beta1', `beta2', etc.
 dnl 
 dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
 dnl snapshot of the current development tree.
-VERSION=2.1beta3
+VERSION=2.1
 dnl
 dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
 dnl After this date, users are requested to update the product.
 dnl An empty expiration date means no expiration.
-EXPIRES=1997-06-01
+dnl EXPIRES=2000-01-01
 dnl
 dnl
 AC_SUBST(ddd)dnl
