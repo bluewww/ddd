@@ -54,7 +54,7 @@ extern string get_settings(DebuggerType type);
 
 // Get help on `DBXENV BASE'
 extern string get_dbx_help(string dbxenv, string base);
-		    
+
 // Mark settings as `saved'
 extern void save_settings_state();
 
@@ -63,6 +63,7 @@ extern void reset_settings();
 
 // Get `show' command for settings command CMD
 extern string show_command(const string& cmd, DebuggerType type);
+
 
 // User Status Displays
 
@@ -81,14 +82,23 @@ extern void register_info_button(Widget w);
 // Popup editor for signal handling
 extern void dddPopupSignalsCB(Widget, XtPointer, XtPointer);
 
+// Process `handle' output
+extern void process_handle(string line, bool init = false);
+
+// True if signals might have changed
+extern bool need_signals();
+
 // Update signal tables
 extern void update_signals();
 
-// Get settings string
+// Get signals string
 extern string get_signals(DebuggerType type);
 
-// Process `handle' output
-extern void process_handle(string line, bool init = false);
+// Mark signals as `saved'
+extern void save_signals_state();
+
+// Mark signals as `invalid'
+extern void reset_signals();
 
 
 // Command Definitions

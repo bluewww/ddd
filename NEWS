@@ -4,16 +4,32 @@ DDD News						-*- text -*-
 DDD 3.x [in development]
 ========================
 
-- Insensitive items now have a 3d `emboss' look, making them more legible.
+DDD 3.x brings some minor improvements.
+
+
+User Interface
+--------------
+
+- Insensitive items now have a 3-D `emboss' look, making them more legible.
+
+- `Flat' buttons keep their border after having been activated.
+
+
+Data exploration
+----------------
 
 - `Set ()' now allows to set structs as a whole.
 
-- `Flat' buttons keep their border after having been activated.
+
+Miscellaneous
+-------------
+
+- Signal settings are saved with the current session.
 
 - Minor performance improvements.
 
 
-
+
 DDD 3.0
 =======
 

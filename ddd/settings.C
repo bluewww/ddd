@@ -107,16 +107,17 @@ static WidgetStringAssoc settings_values;
 static WidgetStringAssoc settings_initial_values;
 static bool              need_reload_settings = false;
 
-static Widget      infos_panel        = 0;
-static Widget      reset_infos_button = 0;
-static WidgetArray infos_entries;
-
-static Widget signals_panel = 0;
-static Widget signals_form  = 0;
-static Widget reset_signals_button = 0;
-static WidgetArray signals_entries;
+static Widget            signals_panel = 0;
+static Widget            signals_form  = 0;
+static Widget            reset_signals_button = 0;
+static WidgetArray       signals_entries;
 static WidgetStringAssoc signals_values;
 static WidgetStringAssoc signals_initial_values;
+static bool              need_reload_signals = false;
+
+static Widget            infos_panel        = 0;
+static Widget            reset_infos_button = 0;
+static WidgetArray       infos_entries;
 
 
 
@@ -267,7 +268,7 @@ static void SendSignalCB(Widget, XtPointer client_data, XtPointer)
     gdb_command(string("signal ") + XtName(Widget(client_data)));
 }
 
-static void gdb_handle_command(Widget w, bool set)
+static string handle_command(Widget w, bool set)
 {
     string sig    = string(XtName(w)).before('-');
     string action = string(XtName(w)).after('-');
@@ -279,7 +280,7 @@ static void gdb_handle_command(Widget w, bool set)
     else if (action == "noignore")
 	action = "pass";
 
-    gdb_command("handle " + sig + " " + action);
+    return "handle " + sig + " " + action;
 }
 
 // ToggleButton reply
@@ -288,7 +289,7 @@ static void SignalCB(Widget w, XtPointer, XtPointer call_data)
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    gdb_handle_command(w, cbs->set);
+    gdb_command(handle_command(w, cbs->set));
 }
 
 // Get help on signal - using `info' on `libc'
@@ -430,7 +431,21 @@ void save_settings_state()
     update_reset_settings_button();
     set_need_save_defines(false);
 }
-    
+
+// Save `signals' state
+void save_signals_state()
+{
+    if (signals_form == 0)
+	return;
+
+    for (int i = 0; i < signals_entries.size(); i++)
+    {
+	Widget entry = signals_entries[i];
+	signals_initial_values[entry] = signals_values[entry];
+    }
+
+    update_reset_signals_button();
+}
 
 // Process output of `show' command
 void process_show(string command, string value, bool init)
@@ -1833,7 +1848,10 @@ static void ResetSignalsCB (Widget, XtPointer, XtPointer)
     {
 	Widget entry = signals_entries[i];
 	if (signals_initial_values[entry] != signals_values[entry])
-	    gdb_handle_command(entry, signals_initial_values[entry] == "yes");
+	{
+	    bool set = (signals_initial_values[entry] == "yes");
+	    gdb_command(handle_command(entry, set));
+	}
     }
 }
 
@@ -2131,13 +2149,27 @@ static Widget create_infos(DebuggerType type)
     return infos_panel;
 }
 
+// Reload all signals
+static void reload_all_signals()
+{
+    string info = gdb_question("info handle");
+    if (info != NO_GDB_ANSWER)
+	process_handle(info, true);
+}
+
 // Create signal editor
 static Widget create_signals(DebuggerType type)
 {
     if (signals_panel == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
 	signals_panel = create_panel(type, SIGNALS);
+    else if (signals_panel != 0 && need_reload_signals)
+    {
+	reload_all_signals();
+	need_reload_signals = false;
+    }
     return signals_panel;
 }
+
 
 // Popup editor for debugger settings
 void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
@@ -2182,6 +2214,22 @@ void reset_settings()
     {
 	XtUnmanageChild(settings_panel);
 	need_reload_settings = true;
+    }
+}
+
+// True iff signals might have changed
+bool need_signals()
+{
+    return signals_panel != 0;
+}
+
+// Reset it all
+void reset_signals()
+{
+    if (signals_panel != 0)
+    {
+	XtUnmanageChild(signals_panel);
+	need_reload_signals = true;
     }
 }
 
@@ -2279,8 +2327,20 @@ string get_settings(DebuggerType type)
 // Fetch GDB signal handling string
 string get_signals(DebuggerType type)
 {
+    if (type != GDB)
+	return "";		// Not supported yet
+
     create_signals(type);
-    return "";			// Not yet implemented
+    string commands = "";
+
+    for (int i = 0; i < signals_entries.size(); i++)
+    {
+	Widget entry = signals_entries[i];
+	bool set = (signals_values[entry] == "yes");
+	commands += handle_command(entry, set) + "\n";
+    }
+
+    return commands;
 }
 
 

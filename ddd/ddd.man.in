@@ -1060,6 +1060,11 @@ erroneous variables and continue, hoping to see more execution; but
 your program would probably terminate immediately as a result of the
 fatal signal once it saw the signal.  To prevent this, you can
 resume execution using `\fBCommands\(->Continue Without Signal\fR'.
+.PP
+`\fBEdit\(->Save Options\fR' does not save changed signal settings,
+since changed signal settings are normally useful within specific
+projects only.  Instead, signal settings are saved with the current
+session, using `\fBFile\(->Save Session As\fR'.
 .\"
 .\"
 .\" ---------------

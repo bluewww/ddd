@@ -1713,7 +1713,10 @@ bool save_options(unsigned long flags)
 
     if (need_settings() || need_save_defines())
     {
-	string settings = get_settings(gdb->type()) + get_defines(gdb->type());
+	string settings;
+	settings += get_settings(gdb->type());
+	settings += get_defines(gdb->type());
+
 	settings.gsub(app_data.auto_command_prefix, "@AUTO@");
 
 	switch (gdb->type())
@@ -2108,7 +2111,7 @@ bool save_options(unsigned long flags)
 	    break;
 	}
 
-	string restart = string(es) + string(rs);
+	string restart = string(es) + string(rs) + get_signals(gdb->type());
 	restart.gsub(app_data.auto_command_prefix, "@AUTO@");
 
 	os << string_app_value(XtNrestartCommands, restart) << "\n";

@@ -1053,7 +1053,7 @@ void send_gdb_command(string cmd, Widget origin,
     }
     else if (is_handle_cmd(cmd))
     {
-	get_signals(gdb->type());
+	(void) get_signals(gdb->type());
 	plus_cmd_data->refresh_handle      = true;
 	plus_cmd_data->refresh_data        = false;
 	plus_cmd_data->refresh_addr        = false;
@@ -1239,6 +1239,8 @@ void send_gdb_command(string cmd, Widget origin,
 	{
 	    string sig = cmd.after(rxwhite);
 	    sig = sig.before(rxwhite);
+	    if (sig == "all")
+		sig = "";
 	    cmds += "info handle " + sig;
 	}
 	break;

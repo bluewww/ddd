@@ -871,9 +871,10 @@ static void open_session(const string& session)
     // Load session-specific command history
     load_history(session_history_file(session));
 
-    // Remove settings panel (such that GDB settings will be updated
-    // from scratch)
+    // Remove settings and signals panel (such that GDB settings and
+    // signals will be updated from scratch)
     reset_settings();
+    reset_signals();
 
     // Enqueue start-up commands
     string restart = get_resource(db, XtNrestartCommands, XtCInitCommands);
