@@ -1263,6 +1263,7 @@ void user_cmdOAC (void *data)
 	    if (disabling_occurred)
 	    {
 		cmd_data->filter_disp = Filter;
+		cmd_data->user_verbose = false;	// No more prompts
 		gdb->send_user_cmd(gdb->display_command());
 		return;
 	    }
