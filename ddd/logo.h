@@ -45,7 +45,9 @@ extern Pixmap iconlogo(Widget shell);
 extern Pixmap iconmask(Widget shell);
 
 // Return the DDD splash screen.  COLOR_KEY indicates the XPM visual type.
-extern Pixmap dddsplash(Widget shell, const string& color_key = 'c');
+extern Pixmap dddsplash(Widget shell, 
+			const string& color_key,
+			Dimension& width, Dimension& height);
 
 // Install toolbar icons in Motif cache.  COLOR_KEY indicates the XPM
 // visual type for inactive buttons.  ACTIVE_COLOR_KEY is the XPM visual

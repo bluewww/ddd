@@ -140,6 +140,7 @@ char ddd_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/AtomMgr.h>
 #include <Xm/CutPaste.h>
+#include <Xm/DrawingA.h>
 #include <Xm/MainW.h>
 #include <Xm/PanedW.h>
 #include <Xm/Label.h>
@@ -6240,23 +6241,22 @@ static void popup_splash_screen(Widget parent, string color_key)
 					     parent, args, arg));
 
     arg = 0;
-    XtSetArg(args[arg], XmNlabelType, XmPIXMAP);   arg++;
-    XtSetArg(args[arg], XmNallowResize, True);     arg++;
-    XtSetArg(args[arg], XmNborderWidth, 0);        arg++;
-    XtSetArg(args[arg], XmNmarginWidth, 0);        arg++;
-    XtSetArg(args[arg], XmNmarginHeight, 0);       arg++;
-    XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    Widget splash = verify(XmCreateLabel(splash_shell, "splash", args, arg));
+    XtSetArg(args[arg], XmNborderWidth, 0);  arg++;
+    XtSetArg(args[arg], XmNmarginWidth, 0);  arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    Widget splash = 
+	verify(XmCreateDrawingArea(splash_shell, "splash", args, arg));
     XtManageChild(splash);
-    XtRealizeWidget(splash_shell);
 
     splash_delay = new _Delay(splash_shell);
 
-    splash_pixmap = dddsplash(splash, color_key);
-    XtVaSetValues(splash, XmNlabelPixmap, splash_pixmap, NULL);
-
     Dimension width, height;
-    XtVaGetValues(splash_shell, XmNwidth, &width, XmNheight, &height, NULL);
+    splash_pixmap = dddsplash(splash, color_key, width, height);
+    XtVaSetValues(splash,
+		  XmNbackgroundPixmap, splash_pixmap,
+		  XmNwidth, width,
+		  XmNheight, height,
+		  NULL);
 
     int x = (WidthOfScreen(XtScreen(splash_shell)) - width) / 2;
     int y = (HeightOfScreen(XtScreen(splash_shell)) - height) / 2;
@@ -6267,6 +6267,7 @@ static void popup_splash_screen(Widget parent, string color_key)
     lock_dialog_x = x + 20;
     lock_dialog_y = y + 20;
 
+    XtRealizeWidget(splash_shell);
     popup_shell(splash_shell);
     wait_until_mapped(splash, splash_shell);
 }

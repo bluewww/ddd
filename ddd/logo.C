@@ -241,18 +241,28 @@ static Pixel color(Widget w, String name, Pixel pixel)
 }
 
 // Return the DDD splash screen
-Pixmap dddsplash(Widget w, const string& color_key)
+Pixmap dddsplash(Widget w, const string& color_key,
+		 Dimension& width, Dimension& height)
 {
-    assert(XtIsRealized(w));
+    width  = dddsplash_width;
+    height = dddsplash_height;
 
     Pixmap logo = 0;
     int depth = PlanesOfScreen(XtScreen(w));
+
+    Window window = None;
+    if (XtIsRealized(w))
+	window = XtWindow(w);
+    else
+	window = RootWindowOfScreen(XtScreen(w));
+
+    assert(window != None);
 
 #ifdef XpmVersion
     if (depth > 1 && color_key != "m")
     {
 	XWindowAttributes win_attr;
-	XGetWindowAttributes(XtDisplay(w), XtWindow(w), &win_attr);
+	XGetWindowAttributes(XtDisplay(w), window, &win_attr);
 
 	XpmAttributes attr;
 	attr.valuemask    = XpmVisual | XpmColormap | XpmDepth;
@@ -263,7 +273,7 @@ Pixmap dddsplash(Widget w, const string& color_key)
 	add_closeness(attr);
 
 	int ret = xpm("dddsplash.xpm",
-		      XpmCreatePixmapFromData(XtDisplay(w), XtWindow(w),
+		      XpmCreatePixmapFromData(XtDisplay(w), window,
 					      dddsplash_xpm, &logo, 
 					      (Pixmap *)0, &attr));
 	XpmFreeAttributes(&attr);
@@ -279,7 +289,7 @@ Pixmap dddsplash(Widget w, const string& color_key)
     (void) color_key;		// Use it
 #endif // defined(XpmVersion)
 
-    logo = XCreatePixmapFromBitmapData(XtDisplay(w), XtWindow(w),
+    logo = XCreatePixmapFromBitmapData(XtDisplay(w), window,
 				       (char *)dddsplash_bits,
 				       dddsplash_width, dddsplash_height,
 				       color(w, "black", 
@@ -287,6 +297,7 @@ Pixmap dddsplash(Widget w, const string& color_key)
 				       color(w, "white", 
 					     WhitePixelOfScreen(XtScreen(w))),
 				       depth);
+
     return logo;
 }
 
