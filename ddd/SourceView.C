@@ -4340,7 +4340,7 @@ void SourceView::startSelectWordAct (Widget text_w, XEvent* e,
     if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
 
-    XButtonEvent *event = (XButtonEvent *) e;
+    XButtonEvent *event = &e->xbutton;
 
     XmTextPosition pos = XmTextXYToPos (text_w, event->x, event->y);
 
@@ -4368,7 +4368,7 @@ void SourceView::endSelectWordAct (Widget text_w, XEvent* e,
     if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
     
-    XButtonEvent *event = (XButtonEvent *) e;
+    XButtonEvent *event = &e->xbutton;
 
     XmTextPosition pos = XmTextXYToPos (text_w, event->x, event->y);
 
@@ -4429,6 +4429,7 @@ void SourceView::translate_glyph_pos(Widget glyph, Widget text, int& x, int& y)
     y = dest_y;
 }
 
+// Popup button3 source menu
 void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 {
     if (e->type != ButtonPress && e->type != ButtonRelease)
@@ -4442,7 +4443,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     else
 	return;
 
-    XButtonEvent* event = (XButtonEvent *) e;
+    XButtonEvent* event = &e->xbutton;
 
     int x = event->x;
     int y = event->y;
@@ -5800,7 +5801,7 @@ void SourceView::MoveCursorToGlyphPosCB(Widget w,
 	return;
 
     // Set up event such that it applies to the source window
-    XButtonEvent *event = (XButtonEvent *) e;
+    XButtonEvent *event = &e->xbutton;
 
     translate_glyph_pos(w, text_w, event->x, event->y);
     event->window = XtWindow(text_w);
