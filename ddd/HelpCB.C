@@ -1167,24 +1167,101 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 }
 
 
+// In LessTif, XmTrackingEvent() is somewhat broken - it returns on
+// KeyRelease events, and it does not return the event.  So we provide
+// an own implementation.
+static Widget TrackingLocate(Widget widget, Cursor cursor, Boolean confine_to)
+{
+    Window confine_to_this;
+    XEvent ev;
+
+    if (confine_to)
+    {
+	confine_to_this = XtWindow(widget);
+    }
+    else
+    {
+	confine_to_this = None;
+    }
+
+    XtGrabPointer(widget,
+		  True,
+		  ButtonReleaseMask | ButtonPressMask,
+		  GrabModeAsync,
+		  GrabModeAsync,
+		  confine_to_this,
+		  cursor,
+		  CurrentTime);
+
+    while (True)
+    {
+	XtAppNextEvent(XtWidgetToApplicationContext(widget), &ev);
+
+	if (ev.xbutton.type == ButtonRelease && ev.xbutton.button == 1)
+	{
+	    XtUngrabPointer(widget, CurrentTime);
+
+	    /* If the button was clicked outside of this programs windows,
+	     * the widget that grabbed the pointer will get the event.  So,
+	     * we check the bounds of the widget against the coordinates of
+	     * the event.  If they're outside, we return NULL.  Otherwise we
+	     * return the widget in which the event occured.
+	     */
+
+	    Position x, y;
+	    Dimension width, height;
+	    XtVaGetValues(widget, XmNx, &x, XmNy, &y,
+			  XmNwidth, &width, XmNheight, &height,
+			  NULL);
+
+	    if (ev.xbutton.window == XtWindow(widget)
+		&& (ev.xbutton.x < x
+		    || ev.xbutton.y < y
+		    || ev.xbutton.x > x + width
+		    || ev.xbutton.y > y + height))
+	    {
+		return NULL;
+	    }
+	    else
+	    {
+		return XtWindowToWidget(XtDisplay(widget),
+					ev.xbutton.window);
+	    }
+	}
+    }
+}
+
+
 void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
+    Widget *widget_return = (Widget *)client_data;
+
+    Widget item = 0;
     Widget toplevel = findTheTopLevelShell(widget);
-    if (toplevel == 0)
-	return;
+    if (toplevel != 0)
+    {
+	static Cursor cursor = 
+	    XCreateFontCursor(XtDisplay(toplevel), XC_question_arrow);
 
-    Cursor cursor = XCreateFontCursor(XtDisplay(toplevel), XC_question_arrow);
-    Widget item = XmTrackingLocate(toplevel, cursor, False);
+	if (lesstif_version < 1000)
+	    item = TrackingLocate(toplevel, cursor, False);
+	else
+	    item = XmTrackingLocate(toplevel, cursor, False);
 
-    if (item)
-	ImmediateHelpCB(item, client_data, call_data);
-    else
-	ImmediateHelpCB(toplevel, client_data, call_data);
+	if (item)
+	    ImmediateHelpCB(item, client_data, call_data);
+	else
+	    ImmediateHelpCB(toplevel, client_data, call_data);
 
-    // Some Motif versions get confused if this function is invoked
-    // via a menu accelerator; the keyboard remains grabbed. Hence, we
-    // ungrab it explicitly.
-    XtUngrabKeyboard(toplevel, XtLastTimestampProcessed(XtDisplay(widget)));
+	// Some Motif versions get confused if this function is invoked
+	// via a menu accelerator; the keyboard remains grabbed. Hence, we
+	// ungrab it explicitly.
+	XtUngrabKeyboard(toplevel,
+			 XtLastTimestampProcessed(XtDisplay(widget)));
+    }
+
+    if (widget_return != 0)
+	*widget_return = item;
 }
 
 
