@@ -62,8 +62,8 @@ UndoBufferArray UndoBuffer::history;
 // Last position in history + 1
 int UndoBuffer::history_position = 0;
 
-// Current target in history + 1
-int UndoBuffer::history_target = 0;
+// Current entry we're processing
+int UndoBuffer::current_entry = 0;
 
 // Number of commands we have undone
 int UndoBuffer::own_processed = 0;
@@ -126,7 +126,6 @@ void UndoBuffer::add(const UndoBufferEntry& entry)
 	history = new_history;
 
 	history_position = history.size();
-	history_target = history_position;
     }
     else
     {
@@ -141,37 +140,9 @@ void UndoBuffer::add(const UndoBufferEntry& entry)
 	history = new_history;
     }
 
-    if (history_target <= history.size())
-    {
-	// Insert after target
-	//
-	// BEFORE        AFTER
-	// -----------   -----------
-	//  entries...    entries...
-	// *state         state
-	//  entries...   *entry
-	//                entries...
-	UndoBufferArray new_history;
-	int i;
-	for (i = 0; i < history_target; i++)
-	    new_history += history[i];
-
-	new_history += entry;
-
-	for (i = history_target; i < history.size(); i++)
-	    new_history += history[i];
-
-	history = new_history;
-	history_target++;
-	history_position++;
-    }
-    else
-    {
-	// Add at end
-	history += entry;
-	history_position = history.size();
-	history_target = history_position;
-    }
+    // Add at end
+    history += entry;
+    history_position = history.size();
 
     done();
 }
@@ -186,141 +157,44 @@ void UndoBuffer::add_command(const string& command, bool exec)
 
     string command_key = exec ? UB_EXEC_COMMAND : UB_COMMAND;
 
-    UndoBufferEntry& current_entry = history[history_position - 1];
+    UndoBufferEntry new_entry;
+    new_entry[command_key] = c;
+    new_entry[UB_SOURCE] = current_source;
+
+    UndoBufferEntry& entry = history[current_entry];
 
     if (own_direction == 0)
     {
-	// Regular command: Insert new entry before current
-	//
-	// BEFORE        AFTER
-	// -----------   -----------
-	//  entries...    entries...
-	// >state         command
-	//  entries...   >state
-	//                entries...
-	UndoBufferArray new_history;
-	int i;
-	for (i = 0; i < history_position - 1; i++)
-	    new_history += history[i];
-
-	// Add command
-	UndoBufferEntry new_entry;
-	new_entry[command_key] = c;
-	new_entry[UB_SOURCE] = current_source;
-	new_history += new_entry;
-	history_target = new_history.size();
-
-	// Add current
-	new_history += current_entry;
-
-	// Add remaining exec positions
-	for (i = history_position; i < history.size(); i++)
-	{
-	    if (history[i].has_exec_pos())
-		new_history += history[i];
-	}
-
-	history = new_history;
-	history_position++;
+	// Regular command: add at end
+	history += new_entry;
+	history_position = history.size();
     }
     else if (own_direction < 0 && own_processed == 0)
     {
-	// Called from undo => a `redo' command: add after current
-	//
-	// BEFORE        AFTER
-	// -----------   -----------
-	//  entries...    entries...
-	//  old_command  >state
-	// >state         command
-	//  entries...    entries...
+	// Called from undo => a `redo' command: replace current
 
-	UndoBufferArray new_history;
-	int i;
-	for (i = 0; i < history_position - 2; i++)
-	    new_history += history[i];
-
-	// Add current
-	new_history += current_entry;
-
-	// Add command
-	UndoBufferEntry new_entry;
-	new_entry[command_key] = c;
-	new_entry[UB_SOURCE] = current_source;
-	new_history += new_entry;
-	history_target = new_history.size();
-
-	// Add remaining entries
-	for (i = history_position; i < history.size(); i++)
-	    new_history += history[i];
-
-	history = new_history;
-
-	history_position--;
+	entry = new_entry;
 	own_processed++;
     }
     else if (own_direction < 0 && own_processed > 0)
     {
 	// Called from undo => another `redo' command; prepend before last
-	//
-	// BEFORE        AFTER
-	// -----------   -----------
-	//  entries...    entries...
-	// >state        >state
-	//  old_command   command + old_command
-	//  entries...    entries...
 
-	UndoBufferEntry& next_entry = history[history_position];
-	next_entry[command_key].prepend(c + '\n');
+	entry[command_key].prepend(c + '\n');
 	own_processed++;
     }
     else if (own_direction > 0 && own_processed == 0)
     {
-	// Called from redo => an `undo' command: insert before current
-	//
-	// BEFORE        AFTER
-	// -----------   -----------
-	//  entries...    entries...
-	// >state         command
-	//  old_command  >state
-	//  entries...    entries...
+	// Called from redo => an `undo' command: replace current
 
-	UndoBufferArray new_history;
-	int i;
-	for (i = 0; i < history_position - 1; i++)
-	    new_history += history[i];
-
-	// Add command
-	UndoBufferEntry new_entry;
-	new_entry[command_key] = c;
-	new_entry[UB_SOURCE] = current_source;
-	new_history += new_entry;
-	history_target = new_history.size();
-
-	// Add current
-	new_history += current_entry;
-
-	// Add remaining entries
-	for (i = history_position + 1; i < history.size(); i++)
-	    new_history += history[i];
-
-	history = new_history;
-
-	history_position++;
+	entry = new_entry;
 	own_processed++;
     }
     else if (own_direction > 0 && own_processed > 0)
     {
 	// Called from redo => another `undo' command: prepend to previous
-	//
-	// BEFORE        AFTER
-	// -----------   -----------
-	//  entries...    entries...
-	//  old_command   command + old_command
-	// >state        >state
-	//  entries...    entries...
 
-	UndoBufferEntry& last_entry = history[history_position - 2];
-	last_entry[command_key].prepend(c + '\n');
+	entry[command_key].prepend(c + '\n');
 	own_processed++;
     }
     else
@@ -344,33 +218,33 @@ void UndoBuffer::add(const string& name, const string& value)
 
     if (history.size() > 0)
     {
-	UndoBufferEntry& target_entry = history[history_target - 1];
+	UndoBufferEntry& last_entry = history[history.size() - 1];
 
-	if (target_entry.has(name) && target_entry[name] != value)
+	if (last_entry.has(name) && last_entry[name] != value)
 	{
 	    // VALUE has changed - use new entry instead
 	    make_new_entry = true;
 	}
-	else if (target_entry.has_command() && 
+	else if (last_entry.has_command() && 
 		 (name == UB_POS || name == UB_EXEC_POS ||
 		  name == UB_ADDRESS || name == UB_EXEC_ADDRESS))
 	{
 	    // We're adding a position to a command entry.  Use new entry.
 	    make_new_entry = true;
 	}
-	else if (target_entry.has(UB_SOURCE) &&
-		 target_entry[UB_SOURCE] != current_source)
+	else if (last_entry.has(UB_SOURCE) && 
+		 last_entry[UB_SOURCE] != current_source)
 	{
 	    // Source has changed - use new value
 	    make_new_entry = true;
 	}
 	else
 	{
-	    // Add NAME/VALUE to current target
-	    target_entry[name] = value;
+	    // Add NAME/VALUE to last entry
+	    last_entry[name] = value;
 
 	    // Override source
-	    target_entry[UB_SOURCE] = current_source;
+	    last_entry[UB_SOURCE] = current_source;
 	    make_new_entry = false;
 	}
     }
@@ -406,12 +280,8 @@ void UndoBuffer::log()
 
 	const UndoBufferEntry& entry = history[i];
 
-	if (i == history_position - 1)
-	    clog << ">";
-	else if (i == history_target - 1)
-	    clog << "*";
-	else
-	    clog << " ";
+	if (i == history_position)
+	    clog << ">-------------\n";
 
 	clog << i << '\t';
 
@@ -425,30 +295,30 @@ void UndoBuffer::log()
 	}
 	clog << "\n";
     }
+
+    if (undo_action() != NO_GDB_ANSWER)
+	clog << "Undo " << undo_action() << "\n";
+    if (redo_action() != NO_GDB_ANSWER)
+	clog << "Redo " << redo_action() << "\n";
+
     clog << "\n";
 #endif
 }
 
-// Remove status NAME from current history.
-void UndoBuffer::remove(const string& name)
-{
-    if (history.size() > 0)
-    {
-	UndoBufferEntry& current_entry = history[history_position - 1];
-	current_entry.remove(name);
-    }
-}
-
-void UndoBuffer::process(const UndoBufferEntry& entry, int direction)
+void UndoBuffer::process(int entry, int direction)
 {
     locked = true;
 
+    current_entry = entry;
+
+    UndoBufferEntry& e = history[entry];
+
     assert(OK());
 
-    if (entry.has_command())
-	process_command(entry, direction);
+    if (e.has_command())
+	process_command(e, direction);
     else
-	process_status(entry, direction);
+	process_status(e, direction);
 
     locked = false;
 }
@@ -531,6 +401,8 @@ void UndoBuffer::process_command(const UndoBufferEntry& entry, int direction)
     }
 
     own_direction = 0;
+
+    history_position += direction;
 
     done();
 }
@@ -618,7 +490,6 @@ void UndoBuffer::process_status(const UndoBufferEntry& entry, int direction)
     locked = false;
 
     history_position += direction;
-    history_target = history_position;
 
     done();
 }
@@ -667,11 +538,26 @@ void UndoBuffer::done()
 // Undo and redo commands
 void UndoBuffer::undo()
 {
-    if (history_position > 1 && history.size() > 0)
+    if (history_position > 0 && history_position <= history.size())
     {
 	set_status("Undoing " + undo_action());
-	process(history[history_position - 2], -1);
-	return;
+
+	const UndoBufferEntry& undo_entry = history[history_position - 1];
+	if (!undo_entry.has_command())
+	{
+	    if (history_position > 1)
+	    {
+		// We're at the current state - restore previous state
+		process(history_position - 2, -1);
+		return;
+	    }
+	}
+	else
+	{
+	    // Use current command
+	    process(history_position - 1, -1);
+	    return;
+	}
     }
 
     set_status("Nothing to undo");
@@ -679,10 +565,11 @@ void UndoBuffer::undo()
 
 void UndoBuffer::redo()
 {
-    if (history_position < history.size())
+    if (history_position >= 0 && history_position < history.size())
     {
 	set_status("Redoing " + redo_action());
-        process(history[history_position], 1);
+
+        process(history_position, 1);
 	return;
     }
 
@@ -710,21 +597,28 @@ string UndoBuffer::action(const string& command)
 
 string UndoBuffer::undo_action()
 {
-    if (history_position < 2 || history.size() == 0)
+    if (history_position == 0 || history.size() == 0)
 	return NO_GDB_ANSWER;	// Nothing to undo
 
-    const UndoBufferEntry& previous_entry = history[history_position - 2];
-    const UndoBufferEntry& current_entry  = history[history_position - 1];
+    const UndoBufferEntry& undo_entry = history[history_position - 1];
 
-    if (previous_entry.has_command())
+    if (!undo_entry.has_command())
     {
-	if (previous_entry.has(UB_SOURCE))
-	    return action(previous_entry[UB_SOURCE]);
+	// We're at the current state - restore previous state
+	if (history_position < 2)
+	    return NO_GDB_ANSWER; // Nothing to undo
+
+	const UndoBufferEntry& prev_entry = history[history_position - 2];
+
+	if (prev_entry.has_command() && prev_entry.has(UB_SOURCE))
+	    return action(prev_entry[UB_SOURCE]);
     }
-    else if (!current_entry.has_exec_pos() && current_entry.has_pos())
+
+    if (!undo_entry.has_exec_pos() && undo_entry.has_pos())
 	return action("lookup");
-    else if (current_entry.has(UB_SOURCE))
-	return action(current_entry[UB_SOURCE]);
+    else if (undo_entry.has(UB_SOURCE))
+	return action(undo_entry[UB_SOURCE]);
+
 
     return "";		// Generic action
 }
@@ -734,16 +628,16 @@ string UndoBuffer::redo_action()
     if (history_position >= history.size())
 	return NO_GDB_ANSWER;	// Nothing to redo
 
-    const UndoBufferEntry& entry = history[history_position];
+    const UndoBufferEntry& redo_entry = history[history_position];
 
-    if (entry.has(UB_EXEC_COMMAND))
-	return action(entry[UB_EXEC_COMMAND]);
-    else if (entry.has(UB_COMMAND))
-	return action(entry[UB_COMMAND]);
-    else if (!entry.has_exec_pos() && entry.has_pos())
+    if (redo_entry.has(UB_EXEC_COMMAND))
+	return action(redo_entry[UB_EXEC_COMMAND]);
+    else if (redo_entry.has(UB_COMMAND))
+	return action(redo_entry[UB_COMMAND]);
+    else if (!redo_entry.has_exec_pos() && redo_entry.has_pos())
 	return action("lookup");
-    else if (entry.has(UB_SOURCE))
-	return action(entry[UB_SOURCE]);
+    else if (redo_entry.has(UB_SOURCE))
+	return action(redo_entry[UB_SOURCE]);
 
     return "";		// Generic action
 }
@@ -754,7 +648,6 @@ void UndoBuffer::clear()
     static UndoBufferArray empty;
     history          = empty;
     history_position = 0;
-    history_target   = 0;
     locked           = false;
 
     done();
@@ -779,7 +672,6 @@ void UndoBuffer::clear_exec_pos()
     }
 
     history = new_history;
-    history_target = history_position;
 
     done();
 }
@@ -804,12 +696,10 @@ void UndoBuffer::goto_current_exec_pos()
     if (history.size() > 0)
     {
 	history_position = history.size() - 1;
-	history_target = history_position;
-	process(history[history_position - 1], 1);
+	process(history_position, 1);
     }
 
     history_position = history.size();
-    history_target = history_position;
 
     done();
 }
@@ -818,39 +708,8 @@ void UndoBuffer::goto_current_exec_pos()
 bool UndoBuffer::OK()
 {
     // HISTORY_POSITION must be within bounds.
-    assert(history.size() == 0 || history_position > 0);
+    assert(history_position >= 0);
     assert(history_position <= history.size());
-
-    // HISTORY_TARGET must be within bounds.
-    assert(history.size() == 0 || history_target > 0);
-    assert(history_target <= history.size());
-
-#if 0
-    // The target is never after the current position.
-    assert(history_target <= history_position);
-#endif
-
-    // Check entries
-    for (int i = 0; i < history.size(); i++)
-    {
-	UndoBufferEntry& entry = history[i];
-
-#if 0
-	// Unless we're at the current position, collecting state,
-	// each entry must either have
-	// - a position to lookup
-	// - an execution position to restore
-	// - an undo command to execute.
-	assert(i == history_position - 1 ||
-	       entry.has_pos() ||
-	       entry.has_exec_pos() ||
-	       entry.has_command());
-#endif
-
-	// An entry cannot contain a position as well as a command.
-	assert(!(entry.has_pos() && entry.has_command()));
-	assert(!(entry.has_exec_pos() && entry.has_command()));
-    }
 
     return true;
 }

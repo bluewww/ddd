@@ -49,8 +49,8 @@ private:
     // Last position in history + 1
     static int history_position;
 
-    // Last target in history
-    static int history_target;
+    // Currently processed entry
+    static int current_entry;
 
     // General scheme:
     //
@@ -60,10 +60,9 @@ private:
     // `history' contains:
     //
     // 0                       \ 
-    // 1                        > entries (state or commands) to be undone
-    // ...                     /
-    // (history_position - 1)     current entry; always state
-    // ...                     \ 
+    // 1 ...                    > entries (state or commands) to be undone
+    // (history_position - 1)  /
+    // (history_position)      \ 
     // ...                      > entries (state or commands) to be redone
     // (history.size() - 1)    /
     //
@@ -105,7 +104,7 @@ protected:
     static void add(const UndoBufferEntry& entry);
 
     // Process entry
-    static void process(const UndoBufferEntry& entry, int direction);
+    static void process(int entry, int direction);
 
     // Log current position
     static void log();
@@ -165,16 +164,6 @@ public:
     static void add_display_address(const string& name, const string& addr)
     {
 	add(UB_DISPLAY_ADDRESS_PREFIX + name, addr);
-    }
-
-    // Remove status NAME from current history.
-    static void remove(const string& name);
-
-    // Custom calls
-    static void remove_display(const string& name)
-    {
-	remove(UB_DISPLAY_PREFIX + name);
-	remove(UB_DISPLAY_ADDRESS_PREFIX + name);
     }
 
     // Undo/Redo action
