@@ -412,4 +412,7 @@ Volunteers for these and other projects are welcome!
      (termCommand, psCommand, printCommand, editCommand, 
       getCoreCommand, uncompressCommand)
 
-224. (Insert your project idea here)
+224. Have some preferences that are not overridden by user prefs when
+     switching to a new version (for instance, window sizes).
+
+225. (Insert your project idea here)
