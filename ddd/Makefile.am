@@ -30,6 +30,8 @@
 # `http://www.gnu.org/software/ddd/',
 # or send a mail to the DDD developers <ddd@gnu.org>.
 
+# The build number.  (This must be set from outside)
+REL = 1
 
 # Various utilities.
 CAT = cat
@@ -1595,7 +1597,10 @@ $(srcdir)/ddd.vsl: $(srcdir)/ddd.vsl.m4 $(srcdir)/colors.m4
 
 # Special rules for configuration.
 # autoheader might not change config.h.in
-stamp-h: $(srcdir)/config.h.in
+stamp-h: config.h.in config.status
+	CONFIG_FILES= CONFIG_HEADERS=config.h ./config.status
+	$(DATE) > $@~ && $(MV) $@~ $@
+
 $(srcdir)/config.h.in: stamp-h.in
 $(srcdir)/stamp-h.in: $(srcdir)/acconfig.h
 	cd $(srcdir) && $(AUTOHEADER)
@@ -1622,12 +1627,7 @@ host.h: $(srcdir)/host.h.in config.status
 	$(SED) "s%@TARGET_CANONICAL@%$(target_canonical)%" > $@~ && \
 	$(MV) $@~ $@
 
-# Special Texinfo includes
-config.texi: cfg.texi
-	@$(CMP) cfg.texi $@ 2> /dev/null || \
-	( $(CAT) cfg.texi > $@~ && $(MV) $@~ $@ )
-
-## EPS code stuff.
+# EPS code stuff.
 $(srcdir)/header.str: $(srcdir)/header.ps
 	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/header.ps > $@~ && $(MV) $@~ $@
 
@@ -1641,13 +1641,13 @@ $(srcdir)/eps-code.h: \
 	> $@~ && $(MV) $@~ $@
 
 
-## Lex and Yacc stuff.
+# Lex and Yacc stuff.
 
-## YACC commands.
+# YACC commands.
 YY = yy
 YACCTOCXX = $(srcdir)/yacctoC
 
-## LEX commands.
+# LEX commands.
 LEXTOCXX = $(srcdir)/lextoC
 
 # The lex output root (lex.yy)
@@ -1741,7 +1741,7 @@ USERINFO: userinfo$(EXEEXT)
 	@$(ECHO) "If it is not correct, please edit $@ and re-compile."
 	@$(ECHO) ""
 
-## For demonstration and debugging purposes
+# For demonstration and debugging purposes
 .PHONY: check
 check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT)
 	XUSERFILESEARCHPATH=%N XAPPLRESDIR=. ./$(ddd)$(EXEEXT) $(DDD_OPTIONS) cxxtest$(EXEEXT)
@@ -1788,6 +1788,13 @@ bug.$(OBJEXT):	$(srcdir)/bug.C
 	   $(CXXCOMPILE) -c @CXXDEBUG@ $(srcdir)/bug.C -o $@;; \
 	esac
 
+# RPM spec
+.PHONY:	spec
+spec: ../$(ddd)-$(VERSION)-$(REL).spec
+../$(ddd)-$(VERSION)-$(REL).spec: $(srcdir)/../ddd.spec.in config.status
+	CONFIG_FILES=../ddd.spec CONFIG_HEADERS= $(SHELL) ./config.status
+	$(SED) 's/@REL@/$(REL)/g' ../ddd.spec > $@
+	$(RM) ../ddd.spec
 
 # Architecture-independent files required for building DDD.
 # In a distribution, these should be already built.
@@ -1809,5 +1816,8 @@ DIST_STUFF = ../$(ddd)-$(VERSION)-$(REL).spec \
 
 # Let automake know what we need
 EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF)
+
+CLEANFILES = build.h ddd.?? ddd.??s ddd.ps ddd.pdf *.tmp
+DISTCLEANFILES = host.h
 
 diststuff: $(EXTRA_DIST)

@@ -31,3 +31,137 @@
 # or send a mail to the DDD developers <ddd@gnu.org>.
 
 SUBDIRS = @subdirs@
+
+
+# Distribution stuff
+
+# Build a DDD distribution.
+.PHONY: ddddist
+ddddist: diststuff disttouch distclean snapshot htmldist picsdist
+
+# Create architecture-independent files in DDD subdirectory.
+.PHONY: diststuff
+diststuff:
+	@cd $(srcdir); \
+	target=$@; \
+	rootme=`pwd`; export rootme; \
+	srcroot=`cd $(srcdir); pwd`; export srcroot; \
+	echo "==> Making $@ in ddd..."; \
+	( cd ./ddd; $(MAKE) diststuff )
+
+# Touch `configure' files souch that they don't get re-created.
+.PHONY: disttouch
+disttouch:
+	@cd $(srcdir); \
+	for i in $(SUBDIRS); do \
+	  if test -f ./$$i/Makefile && test -f ./$$i/configure; then \
+	    echo "==> Making configure in $$i..."; \
+	    if (cd ./$$i; $(MAKE) configure); then true; \
+	    else exit 1; fi; \
+	    if (cd ./$$i; touch configure); then true; \
+	    else exit 1; fi; \
+          else true; fi; \
+        done
+
+# Create a snapshot distribution from the current DDD development tree.
+.PHONY: snapshot
+snapshot:
+	rm -fr proto-toplev; mkdir proto-toplev
+	( \
+	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
+	    ddd=`sed -n < $(srcdir)/ddd/configure.in 's/^ddd *= *//p'`; \
+	    VER=`sed -n < $(srcdir)/ddd/configure.in 's/^VERSION *= *//p'`; \
+	    VER=`echo $$VER | sed 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
+	    echo "==> Making $$ddd-$$VER.tar.gz"; \
+	    rm -f $$ddd-$$VER.tar.gz; \
+	    ln -s $$srcroot proto-toplev/$$ddd-$$VER; \
+	    find $(srcdir) -name RCS -prune \
+		-o -name CVS -prune \
+		-o -name PICS -prune \
+		-o -name html -prune \
+		-o -name proto-toplev -prune \
+		-o -name etc -prune \
+		-o -name tests -prune \
+		-o -name '.gdbinit.in' -print \
+		-o -name '.[a-zA-Z0-9]*' -prune \
+		-o -name '*.o' -prune \
+		-o -name '*.a' -prune \
+		-o -name '*~' -prune \
+		-o -name '*#' -prune \
+		-o \( -name "$$ddd" -type l \) -prune \
+		-o -name "$$ddd-$$VER-*" -prune \
+		-o -name "userinfo" -prune \
+		-o -name "huffencode" -prune \
+		-o -name "ctest" -prune \
+		-o -name "cxxtest" -prune \
+		-o -name "stringify" -prune \
+		-o -name "sun" -prune \
+		-o -name "linux" -prune \
+		-o -type f -print -o -type l -print | \
+	        sed "s,^$(srcdir)/,$$ddd-$$VER/," | sort \
+		> proto-toplev/FILES; \
+	    ( cd proto-toplev; gtar --create --dereference \
+		--verbose --files-from FILES \
+		--file - ) | gzip -v -9 > $$ddd-$$VER.tar.gz; \
+	)
+	rm -fr proto-toplev
+
+
+# Create a HTML manual distribution.
+.PHONY: htmldist
+htmldist:
+	rm -fr proto-toplev; mkdir proto-toplev
+	( \
+	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
+	    ddd=`sed -n < ddd/configure.in 's/^ddd *= *//p'`; \
+	    VER=`sed -n < ddd/configure.in 's/^VERSION *= *//p'`; \
+	    VER=`echo $$VER | sed 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
+	    echo "==> Making $$ddd-$$VER-html-manual.tar.gz"; \
+	    rm -f $$ddd-$$VER-pics.tar.gz; \
+	    ln -s $$srcroot proto-toplev/$$ddd-$$VER; \
+	    find $(srcdir)/doc/html -name RCS -prune \
+		-o -name CVS -prune \
+		-o -name proto-toplev -prune \
+		-o -name '.[a-zA-Z0-9]*' -prune \
+		-o -name '*.o' -prune \
+		-o -name '*.a' -prune \
+		-o -name '*~' -prune \
+		-o -name '*#' -prune \
+		-o -type f -print -o -type l -print | \
+	        sed "s,^$(srcdir)/,$$ddd-$$VER/," | sort \
+		> proto-toplev/FILES; \
+	    ( cd proto-toplev; gtar --create --dereference \
+		--verbose --files-from FILES \
+		--file - ) | gzip -v -9 > $$ddd-$$VER-html-manual.tar.gz; \
+	)
+	rm -fr proto-toplev
+
+
+# Create a picture distribution.
+.PHONY: picsdist
+picsdist:
+	rm -fr proto-toplev; mkdir proto-toplev
+	( \
+	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
+	    ddd=`sed -n < ddd/configure.in 's/^ddd *= *//p'`; \
+	    VER=`sed -n < ddd/configure.in 's/^VERSION *= *//p'`; \
+	    VER=`echo $$VER | sed 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
+	    echo "==> Making $$ddd-$$VER-pics.tar.gz"; \
+	    rm -f $$ddd-$$VER-pics.tar.gz; \
+	    ln -s $$srcroot proto-toplev/$$ddd-$$VER; \
+	    find $(srcdir)/ddd/PICS -name RCS -prune \
+		-o -name CVS -prune \
+		-o -name proto-toplev -prune \
+		-o -name '.[a-zA-Z0-9]*' -prune \
+		-o -name '*.o' -prune \
+		-o -name '*.a' -prune \
+		-o -name '*~' -prune \
+		-o -name '*#' -prune \
+		-o -type f -print -o -type l -print | \
+	        sed "s,^$(srcdir)/,$$ddd-$$VER/," | sort \
+		> proto-toplev/FILES; \
+	    ( cd proto-toplev; gtar --create --dereference \
+		--verbose --files-from FILES \
+		--file - ) | gzip -v -9 > $$ddd-$$VER-pics.tar.gz; \
+	)
+	rm -fr proto-toplev
