@@ -1702,7 +1702,6 @@ string sh_command(string command, bool force_local)
 
 int main(int argc, char *argv[])
 {
-
     // As this is a C++ program, execution does not begin here.  At
     // this point, all global data objects already have been properly
     // initialized.
