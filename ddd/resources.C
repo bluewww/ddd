@@ -1064,6 +1064,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNalign2dArrays,
+	XtCAlign2dArrays,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, align_2d_arrays),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNstatusHistorySize,
 	XtCStatusHistorySize,
 	XmRInt,

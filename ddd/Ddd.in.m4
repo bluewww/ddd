@@ -539,6 +539,9 @@ Ddd*autoCommandPrefix: ddd:\
 ! Shall we detect aliases?  (expensive)
 Ddd*detectAliases:		false
 
+! Shall we layout two-dimensional arrays as tables?
+Ddd*align2dArrays:		true
+
 ! The VSL library for displaying graph nodes.  `builtin' means the VSL
 ! library compiled into DDD, named `ddd.vsl'.  If you wish to use
 ! another VSL library, put its name here and set `vslPath' to a
@@ -2592,7 +2595,11 @@ ITEM If LBL(Detect aliases) is set, DDD detects displays with the same\n\
     physical address and suppresses all aliases except the one that was\
  least recently changed.\n\
     This is useful for examining shared data structures.\n\
-ITEM If LBL(Show edge hints) is set, edge hints are displayed.\n\
+ITEM If LBL(Display two-dimensional arrays as tables) is set, the elements\
+ of two-dimensional\n\
+    arrays are aligned in a table.\n\
+    Otherwise, two-dimensional arrays are displayed as nested one-dimensional\
+ arrays.\n\
 ITEM If LBL(Auto-align displays) is set,\n\
     each display is aligned on the nearest grid point.\n\
 ITEM If LBL(Use compact layout) is set, the graph is layouted \
@@ -2610,6 +2617,8 @@ Click on LBL(Reset) to restore the saved preferences.
 
 Ddd*preferences*detectAliases.labelString:	\
 Detect aliases (shared data structures)
+Ddd*preferences*align2dArrays.labelString:	\
+Display two-dimensional arrays as tables
 Ddd*preferences*showHints.labelString:	        \
 Show edge hints
 Ddd*preferences*snapToGrid.labelString:	        \

@@ -67,6 +67,7 @@ string  DispBox::vsllib_path     = ".";
 string  DispBox::vsllib_defs     = "";
 int     DispBox::max_display_title_length = 20;
 bool    DispBox::vsllib_initialized = false;
+bool    DispBox::align_2d_arrays = true;
 
 // ***************************************************************************
 //
@@ -268,15 +269,15 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 		vbox = eval("empty_array");
 	    else
 	    {
-		bool have_twodimensional_array = true;
+		bool have_2d_array = true;
 		for (int k = 0; k < count; k++)
 		    if (dv->get_child(k)->type() != Array)
 		    {
-			have_twodimensional_array = false;
+			have_2d_array = false;
 			break;
 		    }
 
-		if (have_twodimensional_array)
+		if (have_2d_array && align_2d_arrays)
 		{
 		    // Two-dimensional array
 		    ListBox *table = new ListBox;

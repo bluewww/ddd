@@ -1420,9 +1420,6 @@ edge hint is equivalent to selecting the alias.  This way, you can
 easily delete display aliases by simply selecting the edge hint and
 clicking on `\fBDelete ()\fR'.
 .PP
-Edge hints can be made invisible by disabling `\fBEdit | Preferences |
-Data | Show Edge Hints\fR'.
-.PP
 .PSPIC @srcdir@/PICS/ddd-aliases.ps 15.3cm
 .PP
 To access suppressed display aliases, you can also use the Display
@@ -1556,9 +1553,8 @@ Layout Graph\fR'.
 .PP
 Layouting the graph may introduce \fIedge hints\fR; that is, edges are
 no more straight lines, but lead to an edge hint and from there to
-their destination.  You can make edge hints invisible by disabling
-`\fBEdit | Preferences | Data | Show Edge Hints\fR'.
-Edge hints can be moved around like arbitrary displays.
+their destination.  Edge hints can be moved around like arbitrary
+displays.
 .PP
 To enable a more compact layout, you can set the `\fBEdit |
 Preferences | Data | Use compact layout\fR' option.  This
@@ -2269,11 +2265,11 @@ Aliases\fR' option.  Note that alias detection makes \s-2@DDD@\s+2 run
 slower.  See `\fBExamining Shared Data Structures\fR', above, for
 details on alias detection.
 .PP
-Graph layout and alias detection may introduce \fIedge hints\fR; that
-is, edges are no more straight lines, but lead to an edge hint and
-from there to their destination.  These edge hints can be selected and
-moved around like displays.  You can make edge hints visible by
-setting the `\fBShow Edge Hints\fR' option.
+By default, \s-2@DDD@\s+2 displays two-dimensional arrays as tables,
+aligning the array elements in rows and columns.  If you prefer
+viewing two-dimensional arrays as nested one-dimensional arrays, you
+can disable the `\fBDisplay two-dimensional arrays as tables\fR'
+option.
 .PP
 To facilitate alignment of data displays, you can set the
 `\fBAuto-align displays\fR' option.  If auto-alignment is enabled,
@@ -3304,9 +3300,9 @@ The distance between the upper border of the command tool and the
 upper border of the source text (in pixels).  Default is 8 pixels.
 .TP
 .B "verifyButtons (\fPclass\fB VerifyButtons)"
-If true (default), verify for each button whether its command is
+If \fBtrue\fR (default), verify for each button whether its command is
 actually supported by the inferior debugger.  If the command is
-unknown, the button is disabled.  If this resource is false, no
+unknown, the button is disabled.  If this resource is \fBfalse\fR, no
 checking is done: all commands are accepted \*(lqas is\*(rq.
 .\"
 .\"
@@ -3316,9 +3312,17 @@ checking is done: all commands are accepted \*(lqas is\*(rq.
 The following resources control the data display.
 .\"
 .TP
-.B "labelDelimiter (\fPclass\fB LabelDelimiter)"
-The string used to separate labels from commands and shortcuts.
-Default is `\fB//\fR'.
+.B "align2dArrays (\fPclass\fB Align2dArrays)"
+If \fBtrue\fR (default), \s-2@DDD@\s+2 lays out two-dimensional arrays
+as tables, such that all array elements are aligned with each other.
+If \fBfalse\fR, \s-2@DDD@\s+2 treats a two-dimensional array as an
+array of one-dimensional arrays, each aligned on its own.
+.TP
+.B "detectAliases (\fPclass\fB DetectAliases)"
+If \fBtrue\fR, \s-2@DDD@\s+2 attempts to recognize shared data
+structures.  See `\fBExamining shared data structures\fR', above, for
+a discussion.  The default is \fBfalse\fR, meaning that shared data
+structures are not recognized.
 .TP
 .B "displayShortcuts (\fPclass\fB DisplayShortcuts)"
 A newline-separated list of display expressions to be included in the
@@ -3329,6 +3333,10 @@ resource), the string before the delimiter is used as
 Otherwise, the label is `\fBDisplay \fIexpression\fR'.  Upon
 activation, the string `\fB()\fR' in \fIexpression\fR is replaced by
 the name of the currently selected display.
+.TP
+.B "labelDelimiter (\fPclass\fB LabelDelimiter)"
+The string used to separate labels from commands and shortcuts.
+Default is `\fB//\fR'.
 .TP
 .B "pannedGraphEditor (\fPclass\fB PannedGraphEditor)"
 What shall \s-2@DDD@\s+2 use if the graph gets too large to be

@@ -872,6 +872,7 @@ static MMDesc source_preferences_menu[] =
 
 // Data preferences
 static Widget graph_detect_aliases_w;
+static Widget graph_align_2d_arrays_w;
 static Widget graph_show_hints_w;
 static Widget graph_snap_to_grid_w;
 static Widget graph_compact_layout_w;
@@ -882,7 +883,9 @@ static MMDesc data_preferences_menu[] =
 {
     { "detectAliases", MMToggle,  { graphToggleDetectAliasesCB },
       NULL, &graph_detect_aliases_w },
-    { "showHints",     MMToggle,  { graphToggleShowHintsCB },
+    { "align2dArrays", MMToggle,  { graphToggleAlign2dArraysCB },
+      NULL, &graph_align_2d_arrays_w },
+    { "showHints",     MMToggle | MMUnmanaged,  { graphToggleShowHintsCB },
       NULL, &graph_show_hints_w },
     { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB },
       NULL, &graph_snap_to_grid_w },
@@ -2632,7 +2635,8 @@ XrmDatabase GetFileDatabase(char *filename)
 	XmNwidth, XmNheight,	              // Shell sizes
 	XmNcolumns, XmNrows,	              // Text window sizes
 	XtNtoolRightOffset, XtNtoolTopOffset, // Command tool offset
-	XtNshowStartupLogo	              // Startup logo
+	XtNshowStartupLogo,	              // Startup logo
+	XtNshowHints		              // Show edge hints
     };
 
     bool version_mismatch = false;
@@ -3222,8 +3226,9 @@ void update_options()
 		  XtNgridHeight, &grid_height,
 		  NULL);
 
-    set_toggle(graph_detect_aliases_w, app_data.detect_aliases);
     set_toggle(detect_aliases_w, app_data.detect_aliases);
+    set_toggle(graph_detect_aliases_w, app_data.detect_aliases);
+    set_toggle(graph_align_2d_arrays_w, app_data.align_2d_arrays);
 
     if (!show_grid && XtIsSensitive(graph_snap_to_grid_w))
     {
@@ -3313,6 +3318,12 @@ void update_options()
     data_disp->max_display_number      = app_data.max_display_number;
 
     data_disp->set_detect_aliases(app_data.detect_aliases);
+
+    if (DispBox::align_2d_arrays != app_data.align_2d_arrays)
+    {
+	DispBox::align_2d_arrays = app_data.align_2d_arrays;
+	// data_disp->refresh_display();
+    }
 
     if (app_data.tool_bar && tool_bar_w != 0 && !XtIsManaged(tool_bar_w))
     {
@@ -3504,9 +3515,10 @@ static bool source_preferences_changed()
 
 static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 {
-    notify_set_toggle(graph_detect_aliases_w, initial_app_data.detect_aliases);
     notify_set_toggle(detect_aliases_w, initial_app_data.detect_aliases);
-
+    notify_set_toggle(graph_detect_aliases_w, initial_app_data.detect_aliases);
+    notify_set_toggle(graph_align_2d_arrays_w, 
+		      initial_app_data.align_2d_arrays);
     notify_set_toggle(graph_show_hints_w, initial_show_hints);
     notify_set_toggle(graph_snap_to_grid_w, initial_snap_to_grid);
     notify_set_toggle(graph_compact_layout_w, 
@@ -3553,6 +3565,7 @@ static bool data_preferences_changed()
 		  NULL);
 
     return app_data.detect_aliases != initial_app_data.detect_aliases
+	|| app_data.align_2d_arrays != initial_app_data.align_2d_arrays
 	|| show_grid    != initial_show_grid
 	|| show_hints   != initial_show_hints
 	|| snap_to_grid != initial_snap_to_grid

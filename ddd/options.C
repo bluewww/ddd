@@ -229,11 +229,29 @@ void graphToggleDetectAliasesCB(Widget, XtPointer, XtPointer call_data)
 	(XmToggleButtonCallbackStruct *)call_data;
 
     app_data.detect_aliases = info->set;
+    string alias_detection = "Alias detection ";
 
     if (info->set)
-	set_status("Alias detection enabled.");
+	set_status(alias_detection + "enabled.");
     else
-	set_status("Alias detection disabled.");
+	set_status(alias_detection + "disabled.");
+
+    update_options();
+}
+
+void graphToggleAlign2dArraysCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.align_2d_arrays = info->set;
+    string displaying_arrays_as = 
+	"Two-dimensional arrays will be displayed as ";
+
+    if (info->set)
+	set_status(displaying_arrays_as + "tables.");
+    else
+	set_status(displaying_arrays_as + "nested one-dimensional arrays.");
 
     update_options();
 }
@@ -1334,7 +1352,8 @@ bool save_options(unsigned long flags)
 	break;
     }
 
-    os << bool_app_value(XtNdetectAliases, app_data.detect_aliases) << "\n";
+    os << bool_app_value(XtNdetectAliases,  app_data.detect_aliases)   << "\n";
+    os << bool_app_value(XtNalign2dArrays,  app_data.align_2d_arrays)  << "\n";
     os << bool_app_value(XtNblinkWhileBusy, app_data.blink_while_busy) << "\n";
 
     get_tool_offset();

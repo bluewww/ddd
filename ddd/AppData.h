@@ -225,6 +225,8 @@
 #define XtCUngrabMousePointer    "UngrabMousePointer"
 #define XtNdetectAliases         "detectAliases"
 #define XtCDetectAliases         "DetectAliases"
+#define XtNalign2dArrays         "align2dArrays"
+#define XtCAlign2dArrays         "Align2dArrays"
 #define XtNstatusHistorySize     "statusHistorySize"
 #define XtCStatusHistorySize     "StatusHistorySize"
 #define XtNverifyButtons         "verifyButtons"
@@ -358,6 +360,7 @@ struct AppData {
     int     busy_blink_rate;
     Boolean ungrab_mouse_pointer;
     Boolean detect_aliases;
+    Boolean align_2d_arrays;
     int     status_history_size;
     Boolean verify_buttons;
     Boolean auto_raise_tool;

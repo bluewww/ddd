@@ -76,6 +76,7 @@ extern void sourceSetUseSourcePathCB        (Widget, XtPointer, XtPointer);
 extern void sourceSetTabWidthCB             (Widget, XtPointer, XtPointer);
 
 extern void graphToggleDetectAliasesCB      (Widget, XtPointer, XtPointer);
+extern void graphToggleAlign2dArraysCB      (Widget, XtPointer, XtPointer);
 extern void graphToggleShowGridCB           (Widget, XtPointer, XtPointer);
 extern void graphToggleShowHintsCB          (Widget, XtPointer, XtPointer);
 extern void graphToggleSnapToGridCB         (Widget, XtPointer, XtPointer);
