@@ -248,7 +248,7 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 <S015>{C}:{C}core{C}		 	return &rxcore;
 <S016>{_}(attach|core(-file)?)({W}{C})?	return &rxcore_cmd;
 <S017>\r\r*\n				return &rxcrlf;
-<S018>{_}[a-z ]*display({W}-?{D}{C})?	return &rxdata;
+<S018>{_}[a-z ]*display({W}{C})?	return &rxdata;
 <S019>[^ \t\n)}][^=\n]*{w}={w}		return &rxdbx_begin_of_display;
 <S020>[(]{P}[)]{w}			return &rxdbx_begin_of_display_info;
 <S021>[a-zA-Z_$0-9]*`			return &rxdbx_scope;

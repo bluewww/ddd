@@ -1446,11 +1446,22 @@ void user_cmdOAC(void *data)
 // Process DDD `graph' commands (graph display, graph refresh).
 //-----------------------------------------------------------------------------
 
-// Fetch display numbers from COMMAND
-void read_numbers(string command, IntArray& numbers)
+// Fetch display numbers from COMMAND into NUMBERS
+static bool read_displays(string command, IntArray& numbers, bool verbose)
 {
     while (has_nr(command))
 	numbers += atoi(read_nr_str(command));
+
+    strip_space(command);
+    if (command != "")
+    {
+	int nr = data_disp->display_number(command, verbose);
+	if (nr == 0)
+	    return false;	// No such display
+	numbers += nr;
+    }
+
+    return true;		// Ok
 }
 
 // Handle graph command in CMD, with WHERE_ANSWER being the GDB reply
@@ -1557,19 +1568,21 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
     else if (is_data_cmd(cmd))
     {
 	IntArray numbers;
-	read_numbers(cmd.after("display"), numbers);
-
-	if (is_delete_display_cmd(cmd))
+	bool ok = read_displays(cmd.after("display"), numbers, verbose);
+	if (ok)
 	{
-	    data_disp->delete_displaySQ(numbers, verbose);
-	}
-	else if (is_disable_display_cmd(cmd))
-	{
-	    data_disp->disable_displaySQ(numbers, verbose);
-	}
-	else if (is_enable_display_cmd(cmd))
-	{
-	    data_disp->enable_displaySQ(numbers, verbose);
+	    if (is_delete_display_cmd(cmd))
+	    {
+		data_disp->delete_displaySQ(numbers, verbose);
+	    }
+	    else if (is_disable_display_cmd(cmd))
+	    {
+		data_disp->disable_displaySQ(numbers, verbose);
+	    }
+	    else if (is_enable_display_cmd(cmd))
+	    {
+		data_disp->enable_displaySQ(numbers, verbose);
+	    }
 	}
     }
     else

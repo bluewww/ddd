@@ -170,7 +170,7 @@ bool is_data_cmd (const string& cmd)
 {
     // enable display, disable display, delete display, undisplay
 #if RUNTIME_REGEX
-    static regex rxdata("[ \t]*[a-z ]*display([ \t]+-?[0-9][0-9]*.*)?");
+    static regex rxdata("[ \t]*[a-z ]*display([ \t]+.*)?");
 #endif
 
     return cmd.matches(rxdata);
