@@ -352,4 +352,11 @@ Volunteers for these and other projects are welcome!
 
 183* Have a way to re-dereference until a NULL pointer is encountered.
 
-187. (Insert your project idea here)
+187. Have a `commands' menu listing up all debugger commands.  Should
+     be organized according to `help' classes.
+
+188. Delete the `Options' menu.  Move `Preferences', `Settings', and
+     `Save Options' to the `Edit' menu, and move other options to the
+     respective menus.
+
+189. (Insert your project idea here)
