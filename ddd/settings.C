@@ -353,13 +353,15 @@ void process_show(string command, string value, bool init)
 
     if (gdb->type() == GDB)
     {
-	if (value.contains(".", -1))
-	{
+	if (value.contains(" is "))
 	    value = value.after(" is ", -1);
+	if (value.contains(".", -1))
 	    value = value.before(int(value.length()) - 1);
-	}
 
-	if (value.contains("\"auto;", 0))
+	if (value.contains("assumed to be "))
+	    value = value.after("assumed to be ");
+	if (value.contains("\"auto;", 0) || 
+	    value.contains("set automatically", 0))
 	    value = "auto";
 	if (value.contains('"', 0))
 	    value = unquote(value);
@@ -475,7 +477,11 @@ static EntryType entry_type(DebuggerType type,
     case GDB:
 	if (base.contains("check", 0))
 	    return CheckOptionMenuEntry;
-	else if (base.contains("language", 0) || base.contains("demangle", 0))
+	else if (base.contains("endian", 0) ||
+		 base.contains("architecture", 0))
+	    return TargetOptionMenuEntry;
+	else if (base.contains("language", 0) || 
+		 base.contains("demangle", 0))
 	    return OtherOptionMenuEntry;
 	else if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
 	    return OnOffToggleButtonEntry;
@@ -614,6 +620,9 @@ static void munch_doc(string& doc)
 
     if (doc.length() > 0)
 	doc[0] = toupper(doc[0]);
+
+    if (gdb->type() == GDB)
+	doc.gsub('_', ' ');
 }
 
 
@@ -857,7 +866,9 @@ static void add_button(Widget form, int& row, DebuggerType type,
 		    return;
 		}
 
-		if (is_set && !value.contains(".\n", -1))
+		if (is_set && 
+		    !value.contains(" is ") && 
+		    !value.contains(".\n", -1))
 		    return;
 
 		e_type = entry_type(type, base, doc, value);
@@ -1087,22 +1098,37 @@ static void add_button(Widget form, int& row, DebuggerType type,
 	break;
 
     case OtherOptionMenuEntry:
+    case TargetOptionMenuEntry:
 	{
-	    // `set language / set demangle'
+	    // set language / set demangle / set architecture / set endian
 	    arg = 0;
 	    Widget menu = 
 		verify(XmCreatePulldownMenu(form, "menu", args, arg));
 
-	    // Possible options are listed upon `set language'
-	    // without value
 	    string options;
 	    char separator = '\n';
 
 	    switch (gdb->type())
 	    {
 	    case GDB:
-		options = cached_gdb_question("set " + base);
-		separator = '\n';
+		if (base == "architecture")
+		{
+		    // Possible options are listed upon `info architecture'
+		    // and separated by ` '.
+		    options = cached_gdb_question("info " + base);
+		    options = "auto" + options.from('\n');
+		    separator = ' ';
+		}
+		else if (base == "endian")
+		{
+		    // Hardwired options
+		    options = "auto\nbig endian\nlittle endian\n";
+		}
+		else
+		{
+		    // Possible options are listed upon `set BASE'
+		    options = cached_gdb_question("set " + base);
+		}
 		break;
 
 	    case DBX:
@@ -1172,9 +1198,7 @@ static void add_button(Widget form, int& row, DebuggerType type,
 	    XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
 	    XtSetArg(args[arg], XmNspacing,          0);                 arg++;
 	    XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
-	    entry = 
-		verify(XmCreateOptionMenu(form, 
-					  set_command, args, arg));
+	    entry = verify(XmCreateOptionMenu(form, set_command, args, arg));
 	    XtManageChild(entry);
 	}
 	break;
@@ -1423,19 +1447,21 @@ static Widget create_panel(DebuggerType type, bool create_settings)
 	add_settings(form, row, type, SensitiveToggleButtonEntry);
 	add_settings(form, row, type, NumToggleButtonEntry);
 	add_settings(form, row, type, NoNumToggleButtonEntry);
+	if (row != last_row)
+	    add_separator(form, row);
 
+	last_row = row;
+	add_settings(form, row, type, TargetOptionMenuEntry);
 	if (row != last_row)
 	    add_separator(form, row);
 
 	last_row = row;
 	add_settings(form, row, type, OtherOptionMenuEntry);
-
 	if (row != last_row)
 	    add_separator(form, row);
 
 	last_row = row;
 	add_settings(form, row, type, CheckOptionMenuEntry);
-
 	if (row != last_row)
 	    add_separator(form, row);
 

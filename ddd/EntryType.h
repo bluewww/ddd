@@ -43,6 +43,7 @@ enum EntryType
     NoNumToggleButtonEntry,	// Create 0/1 toggle button
     SensitiveToggleButtonEntry,	// Create sensitive/insensitive toggle button
     DisplayToggleButtonEntry,	// Create display toggle button
+    TargetOptionMenuEntry,	// Create `target' option menu
     CheckOptionMenuEntry,       // Create `check' option menu
     OtherOptionMenuEntry,       // Create other option menu
     TextFieldEntry		// Create text field
