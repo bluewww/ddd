@@ -42,6 +42,23 @@ We also recommend the following (optional) packages:
      kind of two-dimensional scrollbar.
 
 
+If (and only if) you make changes to the DDD sources, you may also need:
+
+   * `automake' (after changes to Makefile templates)
+   * `autoconf' (after changes to configuration files)
+   * `bison' and `flex' (after changes to parser and scanner files)
+   * `makeinfo' (after changes to documentation)
+   * `netpbm' and `pbmplus' packages (after changes to icons)
+   * `fig2dev' and ImageMagick `convert' (after changes to screenshots)
+   * `texi2dvi' and LaTeX (for recreating the PostScript manual)
+   * `epstopdf' and PDFLaTeX (for recreating the PDF manual)
+
+The DDD source package contains several pre-build files, such that you
+should not need any of these programs.  (If your `make' program
+invokes any of the programs above on an unchanged source package, this
+is a potential bug.  Find out what's going on and let us know; use GNU
+make as a workaround.)
+
 
 Execution Requirements
 ======================
@@ -173,7 +190,7 @@ The simplest way to compile DDD is:
      old version of System V, you might need to type
 
 	% sh ./configure
-	
+
      instead to prevent `csh' from trying to execute `configure' itself.
      If you're building DDD on Windows using CYGWIN, type
      
