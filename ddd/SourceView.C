@@ -7299,7 +7299,9 @@ void SourceView::SelectRegisterCB (Widget, XtPointer, XtPointer call_data)
 
     if (item != "" && item[item.length() - 1] != '.')
     {
-	item = "/x $" + item.through(rxalphanum);
+	string regname = item.through(rxidentifier);
+	strip_space(regname);
+	item = "/x $" + regname;
 	source_arg->set_string(item);
     }
 }
