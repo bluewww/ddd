@@ -75,6 +75,7 @@ extern "C" {
 // Use GNU rx as shipped with DDD.
 #if !defined(REG_EXTENDED)
 #include <librx/rx.h>		// Header from GNU rx 0.07, as shipped with DDD
+#define GNU_LIBRX_USED
 #endif
 
 #undef regex

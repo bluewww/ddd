@@ -105,6 +105,10 @@ void regex::fatal(int errcode, const char *src)
     if (src)
 	 cerr << quote(src) << ": ";
     cerr << buffer << "\n";
+#if !defined(REGCOMP_BROKEN) && !defined(GNU_LIBRX_USED)
+    cerr << "As a workaround, link with GNU librx - "
+	"in `config.h', #define REGCOMP_BROKEN.\n";
+#endif
     delete[] buffer;
 
     abort();
