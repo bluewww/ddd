@@ -553,7 +553,21 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
     DataLength* dl    = (DataLength *) call_data;
     string      answer(dl->data, dl->length);
 
-    switch (gdb->state) {
+    if (gdb->ends_with_secondary_prompt(answer))
+    {
+	// GDB requires more information here: probably the
+	// selection of an ambiguous C++ name.
+	// We simply try the first alternative here:
+	// - in GDB, this means `all';
+	// - in DBX and XDB, this is a non-deterministic selection,
+
+	string answer = "1\n";
+	gdb->write(answer, answer.length());
+	gdb->flush();
+    }
+
+    switch (gdb->state)
+    {
     case ReadyWithPrompt:
 	// We have a prompt, and still get input?  Maybe this is an
 	// answer to a command sent before the prompt was received - 
@@ -563,19 +577,6 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 
     case BusyOnInitialCmds:
     case BusyOnCmd:
-	if (gdb->ends_with_secondary_prompt(answer))
-	{
-	    // GDB requires more information here: probably the
-	    // selection of an ambiguous C++ name.
-	    // We simply try the first alternative here:
-	    // - in GDB, this means `all';
-	    // - in DBX and XDB, this is a non-deterministic selection,
-
-	    string answer = "1\n";
-	    gdb->write(answer, answer.length());
-	    gdb->flush();
-	}
-
 	if (!gdb->ends_with_prompt(answer))
 	{
             // Received only part of the answer
@@ -637,22 +638,7 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	break;
 
     case BusyOnQuestion:
-	if (gdb->ends_with_secondary_prompt(answer))
-	{
-	    // GDB requires more information here: probably the
-	    // selection of an ambiguous C++ name.
-	    // We simply try the first alternative here:
-	    // - in GDB, this means `all';
-	    // - in DBX and XDB, this is a non-deterministic selection,
-
-	    string answer = "1\n";
-	    gdb->write(answer, answer.length());
-	    gdb->flush();
-
-	    // Ignore the info yet received
-	    gdb->complete_answer = "";
-	}
-	else if (!gdb->ends_with_prompt(answer))
+	if (!gdb->ends_with_prompt(answer))
 	{
             // Received only part of the answer
 	    gdb->complete_answer += answer;
@@ -677,18 +663,6 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	break;
 
     case BusyOnQuArray:
-	if (gdb->ends_with_secondary_prompt(answer))
-	{
-	    // GDB requires more information here: probably the
-	    // selection of an ambiguous C++ name.
-	    // We simply try the first alternative here:
-	    // - in GDB, this means `all';
-	    // - in DBX and XDB, this is a non-deterministic selection,
-
-	    string answer = "1\n";
-	    gdb->write(answer, answer.length());
-	    gdb->flush();
-	}
 	if (!gdb->ends_with_prompt(answer))
 	{
             // Received only part of the answer
