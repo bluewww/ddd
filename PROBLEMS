@@ -118,22 +118,31 @@ GCC and LIBG++
 HP-UX
 =====
 
-Reported by:  Graham Hudspith <ghudspit@mltsa.uk.lucent.com>
-
-    On HP-UX 10.20, use `-O2' instead of `-O3' to compile. In
-    `ddd/Makefile', change CXXOPT from being '-DNDEBUG -O3' to be
-    '-DNDEBUG -O2'.  When DDD is compiled with -O3 on HPs under HP-UX
-    10.20, it will crash at start-up; when compiled with -O2,
-    everything is fine.
-
-
 Reported by:  (various)
 
-    Various linking problems have been reported.  This is probably due
-    to an error in the HP-UX linker.  According to some DDD users, the
-    problem can be solved by using patched versions of the GNU
-    binutils (such as ld and ar) instead of the HP-UX binutils.  For
-    more information on HP-PA versions of the GNU tools, see
+    On HP-UX 10.01, if you cannot link DDD or get an illegal
+    instruction at start-up, this is due to some bugs in the X11 and
+    Motif libraries as shipped by HP.  Mark Harig <markh@landmark.com>
+    says that some patches to X11 and Motif libraries are required to
+    build DDD on HP-UX 10.01.  You can find these patches at:
+    `ftp://us-support.external.hp.com/hp-ux_patches/'; he found the
+    patches he needed in the directory `s700_800/10.X'.
+
+    In that directory are the files:
+
+       PHSS_10789  (the patch for S700/S800, HP-UX 10.20)
+       PHSS_10789.txt (description of the patch and instructions)  
+
+    You might also need patch PHSS_10688, PHSS_9810, PHSS_9811,
+    PHSS_9813, and PHSS_9815.  Because the patch file names change as
+    new patches are created, you should look in this directory for the
+    file 'catalog', which lists the patch file names along with brief
+    descriptions.
+
+    According to some DDD users, linking problems on HP-UX can be
+    solved by using patched versions of the GNU binutils (such as ld
+    and ar) instead of the HP-UX binutils.  For more information on
+    HP-PA versions of the GNU tools, see
     `ftp://jaguar.cs.utah.edu/dist/pagnutools.html'.
 
     Ivar Ruyter <ivarr@troll.hz.kfa-juelich.de> states: Build
