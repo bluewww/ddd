@@ -169,12 +169,13 @@ disttouch:
 snapshot:
 	rm -fr proto-toplev; mkdir proto-toplev
 	( \
+	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
 	    ddd=`sed -n < $(srcdir)/ddd/configure.in 's/^ddd *= *//p'`; \
 	    VER=`sed -n < $(srcdir)/ddd/configure.in 's/^VERSION *= *//p'`; \
 	    VER=`echo $$VER | sed 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
 	    echo "==> Making $$ddd-$$VER.tar.gz"; \
 	    rm -f $$ddd-$$VER.tar.gz; \
-	    ln -s $(srcdir) proto-toplev/$$ddd-$$VER; \
+	    ln -s $$srcroot proto-toplev/$$ddd-$$VER; \
 	    find $(srcdir) -name RCS -prune \
 		-o -name CVS -prune \
 		-o -name PICS -prune \
@@ -197,7 +198,7 @@ snapshot:
 		-o -name "sun" -prune \
 		-o -name "linux" -prune \
 		-o -type f -print -o -type l -print | \
-	        sed "s,^$(srcdir),$$ddd-$$VER," | sort \
+	        sed "s,^$(srcdir)/,$$ddd-$$VER/," | sort \
 		> proto-toplev/FILES; \
 	    ( cd proto-toplev; gtar --create --dereference \
 		--verbose --files-from FILES \
@@ -210,12 +211,13 @@ snapshot:
 picsdist:
 	rm -fr proto-toplev; mkdir proto-toplev
 	( \
+	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
 	    ddd=`sed -n < ddd/configure.in 's/^ddd *= *//p'`; \
 	    VER=`sed -n < ddd/configure.in 's/^VERSION *= *//p'`; \
 	    VER=`echo $$VER | sed 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
 	    echo "==> Making $$ddd-$$VER-pics.tar.gz"; \
 	    rm -f $$ddd-$$VER-pics.tar.gz; \
-	    ln -s $(srcdir) proto-toplev/$$ddd-$$VER; \
+	    ln -s $$srcroot proto-toplev/$$ddd-$$VER; \
 	    find $(srcdir)/ddd/PICS -name RCS -prune \
 		-o -name CVS -prune \
 		-o -name proto-toplev -prune \
@@ -225,7 +227,7 @@ picsdist:
 		-o -name '*~' -prune \
 		-o -name '*#' -prune \
 		-o -type f -print -o -type l -print | \
-	        sed "s,^$(srcdir),$$ddd-$$VER," | sort \
+	        sed "s,^$(srcdir)/,$$ddd-$$VER/," | sort \
 		> proto-toplev/FILES; \
 	    ( cd proto-toplev; gtar --create --dereference \
 		--verbose --files-from FILES \
