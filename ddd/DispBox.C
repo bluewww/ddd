@@ -562,18 +562,17 @@ Box *DispBox::create_value_box (const DispValue *dv,
 	dv->name() != "" &&
 	!dv->name().matches(rxwhite))
     {
-	string sep = gdb->member_separator();
-
 	switch (parent->type())
 	{
 	case List:
-	    vbox = eval("list_member", 
-			dv->name(), sep, vbox, member_name_width);
+	    vbox = eval("list_member", dv->name(), " = ", 
+			vbox, member_name_width);
 	    break;
 
 	case Struct:
 	    vbox = eval("struct_member", 
-			dv->name(), sep, vbox, member_name_width);
+			dv->name(), gdb->member_separator(), 
+			vbox, member_name_width);
 	    break;
 
 	case Sequence:
