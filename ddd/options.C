@@ -1767,6 +1767,7 @@ bool save_options(unsigned long flags)
     }
 
     // ... and write them back again
+    bool ok = true;
     string workfile = file + "#";
     ofstream os(workfile);
     if (os.bad())
@@ -1790,8 +1791,18 @@ bool save_options(unsigned long flags)
     {
 	app_data.dddinit_version = DDD_VERSION;
 	os.close();
-	rename(workfile, file);
-	return true;
+
+	if (workfile != file && rename(workfile, file) != 0)
+	{
+	    if (interact)
+		post_error("Cannot rename " + quote(workfile)
+			   + " to " + quote(file) + ": " + strerror(errno),
+			   "options_save_error");
+	    ok = saved = false;
+	    unlink(workfile);
+	}
+
+	return ok;
     }
 
     if (app_data.initial_session != 0)
@@ -2128,7 +2139,6 @@ bool save_options(unsigned long flags)
 	    os << widget_geometry(data_disp_shell)   << '\n';
     }
 
-    bool ok = true;
     if (save_session)
     {
 	// Restart commands
@@ -2253,7 +2263,7 @@ bool save_options(unsigned long flags)
     {
 	if (interact)
 	    post_error("Cannot rename " + quote(workfile)
-		       + " to " + quote(file),
+		       + " to " + quote(file) + ": " + strerror(errno),
 		       "options_save_error");
 	ok = saved = false;
 	unlink(workfile);
