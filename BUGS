@@ -145,12 +145,7 @@ Volunteers for fixing these and other bugs are welcome!
     (Create a DispGraph::cluster() routine, like DispGraph::make_active()).
 
 322*Finish Plots:
-    - Allow rotating scalar values.
     - Document it all.
-
-330 Oliver Eichler <oliver.eichler@regensburg.netsurf.de> suggests
-    that `Displays' clusters should have two or more columns in order
-    to fit the visible part of the display.
 
 333 When source indentation is set to 0, text character breakpoints
     are not displayed in empty lines.

@@ -3853,9 +3853,9 @@ NEW_DISPLAY_MENU_HELP
 Ddd*newMenu*helpString: NEW_DISPLAY_MENU_HELP
 
 Ddd*toolbar*new.tipString:\
-@rm Display/Undisplay LBL(())
+@rm Display LBL(())
 Ddd*toolbar*new.documentationString:\
-@rm Display/Undisplay the argument LBL(()) in the data window \
+@rm Display the argument LBL(()) in the data window \
 MORE_PULLDOWN()
 
 Ddd*toolbar*new2.documentationString:\
