@@ -313,7 +313,7 @@ like this:
 
 Or on systems that have the `env' program, you can do it like this:
 
-     env CXXCPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
+     env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
 
 Options set this way include:
 
@@ -321,16 +321,13 @@ Options set this way include:
      The name of the C compiler
 
 `CPPFLAGS'
-     Preprocessing flags used by the C compiler
+     Preprocessing flags used by the C and C++ compilers
 
 `CFLAGS'
      Compilation flags used by the C compiler
 
 `CXX'
      The name of the C++ compiler
-
-`CXXCPPFLAGS'
-     Preprocessing flags used by the C++ compiler
 
 `CXXFLAGS'
      Compilation flags used by the C++ compiler
