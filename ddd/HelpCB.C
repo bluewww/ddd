@@ -26,6 +26,9 @@
 // `http://www.gnu.org/software/ddd/',
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
+// "DDD is for wimps."
+//                  -- Robert Bresner <rbresner@olf.com>
+
 char HelpCB_rcsid[] =
     "$Id$";
 
