@@ -225,11 +225,6 @@ Volunteers for these and other projects are welcome!
 
 233 Have a `bookmarks' menu like the `Highlight' menu in tkman.
 
-240 If a new display A' is created from some display A, copy the
-    selection state in A to A'.  This way, you can easily dereference
-    a series of `next' pointers just by pressing `Display *' again and 
-    again.
-
 241 Include a mail reader.  See also `feeping creaturism'.
 
 242 Make programs dump core by forking and killing them.

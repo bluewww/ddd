@@ -185,6 +185,13 @@ public:
     DispValue *update(DispValue *source, 
 		      bool& was_changed, bool& was_initialized);
 
+    // Return true iff SOURCE and this are structurally equal.
+    // If SOURCE_DESCENDANT (a descendant of SOURCE) is set, 
+    // return its equivalent descendant of this in DESCENDANT.
+    bool structurally_equal(DispValue *source,
+			    DispValue *source_descendant = 0,
+			    DispValue *&descendant = 0);
+
     // Background processing.  PROCESSED is the number of characters
     // processed so far.  If this returns true, abort operation.
     static bool (*background)(int processed);

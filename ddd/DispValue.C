@@ -1233,6 +1233,86 @@ DispValue *DispValue::update(DispValue *source,
 
 
 //-----------------------------------------------------------------------------
+// Find descendant
+//-----------------------------------------------------------------------------
+
+// Return true iff SOURCE and this are structurally equal.
+// If SOURCE_DESCENDANT (a descendant of SOURCE) is set, 
+// return its equivalent descendant of this in DESCENDANT.
+bool DispValue::structurally_equal(DispValue *source,
+				   DispValue *source_descendant,
+				   DispValue *&descendant)
+{
+    if (source == source_descendant)
+	descendant = this;
+
+    if (type() != source->type())
+	return false;		// Differing type
+
+    switch (type())
+    {
+	case Simple:
+	case Text:
+	case Pointer:
+	    return true;	// Structurally equal
+		
+	case Array:
+	{
+	    if (array->member_count != source->array->member_count)
+		return false;	// Differing size
+
+	    if (array->have_index_base != source->array->have_index_base)
+		return false;	// Differing base
+
+	    if (array->have_index_base && 
+		array->index_base != source->array->index_base)
+		return false;	// Differing base
+
+	    for (int i = 0; i < array->member_count; i++)
+	    {
+		DispValue *child = array->members[i];
+		DispValue *source_child = source->array->members[i];
+		bool eq = child->structurally_equal(source_child, 
+						    source_descendant,
+						    descendant);
+
+		if (!eq)
+		    return false;
+	    }
+	    return true;	// All children structurally equal
+	}
+
+	case List:
+	case Struct:
+	case Sequence:
+	case Reference:
+	{
+	    if (str->member_count != source->str->member_count)
+		return false;
+
+	    for (int i = 0; i < array->member_count; i++)
+	    {
+		DispValue *child = str->members[i];
+		DispValue *source_child = source->str->members[i];
+		bool eq = child->structurally_equal(source_child, 
+						    source_descendant,
+						    descendant);
+
+		if (!eq)
+		    return false;
+	    }
+	    return true;	// All children structurally equal
+	}
+
+	case UnknownType:
+	    assert(0);
+	    abort();
+    }
+
+    return false;		// Not found
+}
+
+//-----------------------------------------------------------------------------
 // Background processing
 //-----------------------------------------------------------------------------
 

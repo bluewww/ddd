@@ -3035,7 +3035,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     if (box_point == BoxPoint())
 	box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
     dn->moveTo(box_point);
-    dn->selected() = true;
+    select_node(dn, depend_nr);
 
     // Insert node into graph
     disp_graph->insert(dn->disp_nr(), dn, depend_nr);
@@ -3078,7 +3078,7 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
 	if (box_point == BoxPoint())
 	    box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
 	dn->moveTo(box_point);
-	dn->selected() = true;
+	select_node(dn, depend_nr);
 
 	// Insert into graph
 	disp_graph->insert(dn->disp_nr(), dn, depend_nr);
@@ -5282,6 +5282,21 @@ bool DataDisp::have_selection()
 	    return true;
     }
     return false;
+}
+
+// Select node, copying selection state from NR
+void DataDisp::select_node(DispNode *dn, int nr)
+{
+    dn->selected() = true;
+    if (nr == 0)
+	return;
+
+    DispNode *src = disp_graph->get(nr);
+    if (src == 0)
+	return;
+	
+    dn->copy_selection_state(src);
+    refresh_args(true);
 }
 
 

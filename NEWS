@@ -46,6 +46,10 @@ Data exploration
   * A drop down selection of previously set values is available.
   * Invalid values cause the dialog to remain open.
 
+- When DDD creates a new dependent display, it copies the selection
+  state from the originating display.  This way, you can easily unfold
+  linked elements simply by clicking `Disp *' again and again.
+
 - Anonymous unions are no longer prefixed by `='.
 
 

@@ -178,6 +178,9 @@ public:
     // Highlights the box related to the display value DV
     void select (DispValue *dv = 0);
 
+    // Copy selection state from SRC
+    void copy_selection_state(DispNode *src);
+
     // Disable and enable manually
     void disable();
     void enable();

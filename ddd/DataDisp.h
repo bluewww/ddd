@@ -203,6 +203,8 @@ class DataDisp {
 
     static void toggle_rotate(DispValue *dv, bool all = false);
 
+    static void select_node(DispNode *dn, int src = 0);
+
     // Setting values
     static void setDCB (Widget, XtPointer, XtPointer);
     static void DeleteSetInfoCB(Widget, XtPointer client_data, XtPointer);

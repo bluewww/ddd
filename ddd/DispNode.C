@@ -232,6 +232,24 @@ void DispNode::select(DispValue *dv)
     myselected_value = dv;
 }
 
+// Copy selection state from SRC
+void DispNode::copy_selection_state(DispNode *src)
+{
+    if (value() != 0 && src != 0 && 
+	src->value() != 0 && src->selected_value() != 0)
+    {
+	DispValue *descendant = 0;
+	bool eq = value()->structurally_equal(src->value(), 
+					      src->selected_value(),
+					      descendant);
+	if (eq)
+	    select(descendant);
+	return;
+    }
+
+    // Don't care - just select it all
+    select();
+}
 
 // Disable display
 void DispNode::disable()
