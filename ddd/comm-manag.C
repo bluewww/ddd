@@ -101,6 +101,7 @@ typedef struct PlusCmdData {
     bool     refresh_main;             // send 'info line main' / `func main'
     bool     refresh_file;             // send 'file'
     bool     refresh_line;             // send 'list' (DBX 1.x) or 'line'
+    bool     refresh_pwd;	       // send 'pwd'
     bool     refresh_bpoints;          // send 'info b'
     bool     refresh_where;            // send 'where'
     bool     refresh_frame;            // send 'frame'
@@ -116,6 +117,7 @@ typedef struct PlusCmdData {
 	refresh_main(false),
 	refresh_file(false),
 	refresh_line(false),
+	refresh_pwd(false),
 	refresh_bpoints(false),
 	refresh_where(false),
 	refresh_frame(false),
@@ -153,6 +155,8 @@ void start_gdb()
     case GDB:
 	cmds[qu_count++] = "info line main";
 	plus_cmd_data->refresh_main = true;
+	cmds[qu_count++] = "pwd";
+	plus_cmd_data->refresh_pwd = true;
 	cmds[qu_count++] = "info breakpoints";
 	plus_cmd_data->refresh_bpoints = true;
 	cmds[qu_count++] = "show history filename";
@@ -167,6 +171,8 @@ void start_gdb()
 	plus_cmd_data->refresh_main = true;
 	cmds[qu_count++] = "print -r " + print_r_cookie;
 	plus_cmd_data->refresh_print_r = true;
+	cmds[qu_count++] = "pwd";
+	plus_cmd_data->refresh_pwd = true;
 	cmds[qu_count++] = "file";
 	plus_cmd_data->refresh_file = true;
 	cmds[qu_count++] = "list";
@@ -396,6 +402,10 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_where    = false;
 	plus_cmd_data->refresh_register = false;
     }
+    else if (is_cd_cmd(cmd))
+    {
+	plus_cmd_data->refresh_pwd      = true;
+    }
     else if (is_nop_cmd(cmd))
     {
 	cmd_data->filter_disp           = NoFilter;
@@ -459,6 +469,8 @@ void user_cmdSUC (string cmd, Widget origin)
     case GDB:
 	if (plus_cmd_data->refresh_main)
 	    cmds[qu_count++] = "info line main";
+	if (plus_cmd_data->refresh_pwd)
+	    cmds[qu_count++] = "pwd";
 	if (plus_cmd_data->refresh_file)
 	    assert(0);
 	if (plus_cmd_data->refresh_line)
@@ -488,6 +500,8 @@ void user_cmdSUC (string cmd, Widget origin)
     case DBX:
 	if (plus_cmd_data->refresh_print_r)
 	    cmds[qu_count++] = "print -r " + print_r_cookie;
+	if (plus_cmd_data->refresh_pwd)
+	    cmds[qu_count++] = "pwd";
 	if (plus_cmd_data->refresh_file)
 	    cmds[qu_count++] = "file";
 	if (plus_cmd_data->refresh_line)
@@ -747,6 +761,11 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->refresh_print_r) {
 	assert (qu_count < count);
 	process_print_r(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->refresh_pwd) {
+	assert (qu_count < count);
+	source_view->process_pwd(answers[qu_count++]);
     }
 
     if (plus_cmd_data->refresh_file) {
