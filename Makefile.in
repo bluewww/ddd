@@ -233,7 +233,7 @@ $(srcdir)/configure: $(srcdir)/ddd/aclocal.m4 $(srcdir)/configure.in
 	-cd $(srcdir) && $(AUTOCONF) -l $(srcdir)/ddd
 
 $(srcdir)/ddd/aclocal.m4: $(srcdir)/ddd/acinclude.m4 $(srcdir)/configure.in
-	-cd $(srcdir) && $(ACLOCAL)
+	-cd $(srcdir)/ddd && $(ACLOCAL)
 
 config.status: $(srcdir)/configure
 	-$(SHELL) ./config.status --recheck || $(SHELL) $(srcdir)/configure -v
