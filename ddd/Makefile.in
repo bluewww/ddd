@@ -626,7 +626,6 @@ XSTUFF_OBJECTS = \
 	frame.o      \
 	longName.o   \
 	verify.o     \
-	BulletiBRH.o \
 	Delay.o      \
 	DestroyCB.o  \
 	ExitCB.o     \
