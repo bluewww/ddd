@@ -334,8 +334,11 @@ void show_configuration(ostream& os)
 #if HAVE_XMUSEVERSION
     if (xmUseVersion != XmVersion)
     {
-	os << "(Actually using Motif " << xmUseVersion / 1000 
-	   << "." << xmUseVersion % 1000 << ")\n";
+	os << "(Note: Compiled using Motif " 
+	   << xmVersion / 1000 << "." << xmVersion % 1000 
+	   << ", but linked against Motif " 
+	   << xmUseVersion / 1000 << "." << xmUseVersion % 1000 
+	   << ")\n";
     }
 #endif
 
