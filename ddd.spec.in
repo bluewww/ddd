@@ -4,7 +4,7 @@
 # Note that this is NOT a relocatable package
 %define name     @ddd@
 %define ver      @VERSION@
-%define rel      @REL@
+%define rel      1
 
 Name: %name
 Summary: graphical debugger front-end; GDB, DBX, Ladebug, JDB, Perl, Python
@@ -25,6 +25,15 @@ texts, DDD has become famous through its interactive graphical data
 display, where data structures are displayed as graphs.
 
 %changelog
+* Wed Nov 8  2000 Daniel Serodio <dserodio@email.com>
+- Added missing files ($PREFIX/share/*) and fixed replaces .gz for .* so
+  it works with Mandrake (.bz2)
+- Replaced @REL@ with "1" (the macro wasn't expanded)
+[ddd-3.2.91]
+- Data themes
+- Support for JDB 1.2
+- Bug fixes
+
 * Wed Nov 3  1999 Mirko Streckenbach <strecken@fmi.uni-passau.de>
 - Initial skeleton, based on the .specs from gnome-libs-1.0.17 and 
   redhat 6.1 tar-1.13.11
@@ -48,15 +57,16 @@ make prefix=$RPM_BUILD_ROOT%{_prefix} install
     strip $dir/* || :
   done
   gzip -9nf .%{_prefix}/info/ddd.info*
+# bzip2 -9z .%{_prefix}/info/ddd.info*
   rm -f .%{_prefix}/info/dir
 )
 
 %post
-/sbin/install-info %{_prefix}/info/ddd.info.gz %{_prefix}/info/dir
+/sbin/install-info %{_prefix}/info/ddd.info.* %{_prefix}/info/dir
 
 %preun
 if [ $1 = 0 ]; then
-   /sbin/install-info --delete %{_prefix}/info/ddd.info.gz %{_prefix}/info/dir
+   /sbin/install-info --delete %{_prefix}/info/ddd.info.* %{_prefix}/info/dir
 fi
 
 %clean
@@ -67,5 +77,8 @@ rm -rf $RPM_BUILD_ROOT
 %doc PROBLEMS README TIPS TODO
 %doc doc/ddd-paper.ps doc/ddd.pdf doc/ddd.ps         
 %{_prefix}/bin/ddd
-%{_prefix}/man/man1/ddd.1
-%{_prefix}/info/ddd.info*.gz
+%{_prefix}/man/man1/ddd.1*
+%{_prefix}/info/ddd.info*
+%{_prefix}/share/%{name}-%{ver}/vsllib/*
+%{_prefix}/share/%{name}-%{ver}/themes/*
+%{_prefix}/share/%{name}-%{ver}/ddd/Ddd
