@@ -1,10 +1,10 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 1.5 (in development)
+DDD 2.0 (in development)
 ------------------------
 
-    DDD 1.5 brings XDB support, extended DBX support, an improved user
+    DDD 2.0 brings XDB support, extended DBX support, an improved user
     interface and many bug fixes.
 
     User-visible changes to DDD 1.4:
@@ -33,6 +33,7 @@ DDD 1.5 (in development)
     - The `Save Options on Exit' function has been removed, as it
       also saved options given upon DDD invocation like `--dbx' or
       `--exec-window'.  Options must now always be saved explicitly.
+    - Ctrl+C has now the highest priority of all processed events.
     - The DDD License can now be viewed from within DDD.
 
     Changes in configuration and building:
@@ -76,6 +77,8 @@ DDD 1.5 (in development)
       `vslPath' resource.
     - The `--attach' and `--separate' options now work; they are no
       more overridden by the settings in `~/.dddinit'.
+    - The `-synchronous' option (for X debugging) now works;
+      `--synchronous-debugger' has been renamed to `--sync-debugger'.
     - The source window no more scrolls back to some previous position
       when adding or removing breakpoints.
     - Pagers (`more', `less', etc.) invoked by the inferior debugger

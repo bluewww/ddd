@@ -1,10 +1,10 @@
-DDD 1.5 is available
+DDD 2.0 is available
 =====================
 
-    Release 1.5 of the Data Display Debugger (DDD), a graphical
+    Release 2.0 of the Data Display Debugger (DDD), a graphical
     front-end for GDB, DBX, and XDB debuggers, is now available at
 
-        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-1.5.tar.gz
+        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-2.0.tar.gz
 
     Diffs from earlier versions are in
 
@@ -20,32 +20,37 @@ DDD 1.5 is available
 DDD News
 ========
 
-
-    DDD 1.5 brings XDB support, extended DBX support, an improved user
+    DDD 2.0 brings XDB support, extended DBX support, an improved user
     interface and many bug fixes.
 
     User-visible changes to DDD 1.4:
     - XDB support.  On popular request, DDD now supports HP's XDB debugger.
-    - DBX is now also supported on DEC and AIX systems.
-    - Improved general DBX support.  DDD determines DBX properties
+    - Extended DBX support.  DDD determines DBX properties
       at run-time and adapts automatically to a wide range of DBX
-      variants.
+      variants.  DDD now supports DBX on DEC and AIX systems.
     - New command tool.  All command buttons that do not take
       arguments are now located in the command tool, a small separate
       window.  The command tool can be moved wherever appropriate,
       leaving more space for window contents.
     - User-defined buttons are now available.  These can also
-      be used to re-install the DDD 1.4 command buttons.
-    - Improved directory support.  Sources and executables can reside
-      in several different directories.
-    - Changing the current directory (`cd') is now supported.
-      File selection dialogs are synchronized with the current
-      directory.
+      be used to re-install the old command buttons.
     - Variable values can now be altered interactively during program
       execution.
     - `New display' subsumes `Dependent display': if a display is
       selected, the new display is made dependent on it.
-    - A couple of buttons have been renamed for further clarity.
+    - Some items have been renamed for further clarity:
+      * The `command window' is now named `debugger console', to avoid
+        confusion with the command tool.
+      * The `Interrupt' button is now named `Break', to associate the
+	concept with `Breakpoints'.
+      * The `Break ()' and `Clear ()' buttons are now named `Break at
+	()' and `Clear at ()', respectively.
+      * The `Dereference' button is now named `Display *'.
+    - The `Save Options on Exit' function has been removed, as it
+      also saved options given upon DDD invocation like `--dbx' or
+      `--exec-window'.  Options must now always be saved explicitly.
+    - Ctrl+C has now the highest priority of all processed events.
+    - The DDD License can now be viewed from within DDD.
 
     Changes in configuration and building:
     - Regular expressions now use the POSIX.2 standard regcomp/regexec
@@ -54,18 +59,44 @@ DDD News
       libraries wherever possible.  GNU termcap and librx are used
       only if the system does not provide them.  This results in
       smaller and (hopefully) safer DDD executables.
+    - DDD configuration tests whether your C++ compiler can compile a
+      `hello, world' program.  It is amazing how many misconfigured
+      C++ compilers exist in the world.
+    - You can specify `--without-athena' to avoid searching for and
+      linking with Athena libraries.
     - Patches for AIX xlC C++ compiler (and probably others) included.
       Thanks to Jacek Holeczek <holeczek@clri6f.gsi.de>.
+    - DDD now compiles and runs unchanged with LessTif, a free Motif
+      clone under construction.  Note that `runs' is relative: As of
+      LessTif 0.50, DDD is still far from being usable.  This will
+      change as LessTif evolves.
 
-    Several bug fixes, including:
-    - The execution window can be opened, closed and re-opened
-      without DDD crashing or hanging.
-    - Invoking a source editor via `Edit' should work fine now.
+    Tons and tons of bug fixes, including:
+    - Improved directory support.  Sources and executables can reside
+      in several different directories.
+    - Several TTY problems fixed.  Switching between execution window 
+      and debugger console should work fine now; the execution window
+      can be opened, closed and re-opened without DDD crashing or
+      hanging.
+    - The terminal type (TERM environment variable) of the debugger
+      console and the execution window is now properly set.
+    - Editor problems fixed.  Invoking a source editor via `Edit'
+      should work fine now.
     - The rubber band outline no more clutters the data display.
+      (This was a gcc optimization bug.)
+    - No more endless scrolling when glyphs are enabled.  Scrolling is
+      slightly faster, too.
     - On HP-UX, the `@' character is no more discarded from GDB input.
     - On Solaris 2.x, annoying DBX warnings like `dbx: -r option only
       recognized for C++' are silently ignored.
-    - The `vslPath' resource now works.
+    - You can now specify the location of own VSL libraries via the
+      `vslPath' resource.
+    - The `--attach' and `--separate' options now work; they are no
+      more overridden by the settings in `~/.dddinit'.
+    - The source window no more scrolls back to some previous position
+      when adding or removing breakpoints.
+    - Pagers (`more', `less', etc.) invoked by the inferior debugger
+      are properly handled.  (DDD hits space when it sees `--More--')
 
 
 Summary of DDD
@@ -185,7 +216,7 @@ More Information
 DDD source FTP sites
 ====================
 
-    The DDD source package `ddd-1.5.tar.gz' will soon be at these FTP
+    The DDD source package `ddd-2.0.tar.gz' will soon be at these FTP
     sites as well.  Please try them before `ftp.ips.cs.tu-bs.de' since
     ftp.ips has a slow network connection.
 
@@ -193,38 +224,38 @@ DDD source FTP sites
 North America
 -------------
 
-  ftp://ftp.crl.research.digital.com/pub/X11/contrib/utilities/ddd-1.5.tar.gz
-  ftp://ftp.x.org/contrib/utilities/ddd-1.5.tar.gz
-  ftp://ftp.cs.columbia.edu/archives/X11/contrib/utilities/ddd-1.5.tar.gz
-  ftp://ftp.uu.net/systems/window-sys/X/contrib/utilities/ddd-1.5.tar.gz
+  ftp://ftp.crl.research.digital.com/pub/X11/contrib/utilities/ddd-2.0.tar.gz
+  ftp://ftp.x.org/contrib/utilities/ddd-2.0.tar.gz
+  ftp://ftp.cs.columbia.edu/archives/X11/contrib/utilities/ddd-2.0.tar.gz
+  ftp://ftp.uu.net/systems/window-sys/X/contrib/utilities/ddd-2.0.tar.gz
 
 
 Europe
 ------
 
-  ftp://ftp.denet.dk/pub/X11/contrib/utilities/ddd-1.5.tar.gz
-  ftp://nic.funet.fi/pub/X11/contrib/utilities/ddd-1.5.tar.gz
-  ftp://ftp.ibp.fr/pub/X11/contrib/utilities/ddd-1.5.tar.gz
-  ftp://ftp.uni-paderborn.de/pub/X11/contrib/utilities/ddd-1.5.tar.gz
-  ftp://ftp.luth.se/pub/X11/contrib/utilities/ddd-1.5.tar.gz
-  ftp://ftp.sunet.se/pub/X11/contrib/utilities/ddd-1.5.tar.gz
-  ftp://ftp.eunet.ch/archive/software/X/utilities/ddd-1.5.tar.gz
-  ftp://ftp.NL.net/pub/windows/X/contrib/utilities/ddd-1.5.tar.gz
-  ftp://src.doc.ic.ac.uk/packages/X11-contrib/utilities/ddd-1.5.tar.gz
+  ftp://ftp.denet.dk/pub/X11/contrib/utilities/ddd-2.0.tar.gz
+  ftp://nic.funet.fi/pub/X11/contrib/utilities/ddd-2.0.tar.gz
+  ftp://ftp.ibp.fr/pub/X11/contrib/utilities/ddd-2.0.tar.gz
+  ftp://ftp.uni-paderborn.de/pub/X11/contrib/utilities/ddd-2.0.tar.gz
+  ftp://ftp.luth.se/pub/X11/contrib/utilities/ddd-2.0.tar.gz
+  ftp://ftp.sunet.se/pub/X11/contrib/utilities/ddd-2.0.tar.gz
+  ftp://ftp.eunet.ch/archive/software/X/utilities/ddd-2.0.tar.gz
+  ftp://ftp.NL.net/pub/windows/X/contrib/utilities/ddd-2.0.tar.gz
+  ftp://src.doc.ic.ac.uk/packages/X11-contrib/utilities/ddd-2.0.tar.gz
 
 
 East Asia
 ---------
 
-  ftp://ftp.cs.cuhk.hk/pub/Xcontrib/utilities/ddd-1.5.tar.gz
-  ftp://ftp.iij.ad.jp/pub/X/contrib/utilities/ddd-1.5.tar.gz
-  ftp://NCTUCCCA.edu.tw/X/contrib/utilities/ddd-1.5.tar.gz
+  ftp://ftp.cs.cuhk.hk/pub/Xcontrib/utilities/ddd-2.0.tar.gz
+  ftp://ftp.iij.ad.jp/pub/X/contrib/utilities/ddd-2.0.tar.gz
+  ftp://NCTUCCCA.edu.tw/X/contrib/utilities/ddd-2.0.tar.gz
 
 
 Australia
 ---------
 
-  ftp://archie.AUX11/contrib/utilities/ddd-1.5.tar.gz
+  ftp://archie.AUX11/contrib/utilities/ddd-2.0.tar.gz
 
 
 

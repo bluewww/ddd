@@ -1597,7 +1597,7 @@ Use Motif scroll bars to scroll the data window.  This is the default
 in most \s-2@DDD@\s+2 configurations.  See also
 \fB\-\-panned\-graph\fR, above.
 .TP
-.B \-\-synchronous\-debugger
+.B \-\-sync\-debugger
 Do not process X events while the debugger is busy.  This may result
 in slightly better performance on single-processor systems.
 .TP
@@ -1970,20 +1970,20 @@ Major \s-2@DDD@\s+2 events:
 .PD 0
 .TP 20
 April, 1995
-First \s-2@DDD@\s+2 beta release (\s-2@DDD@\s+2 0.9)
+\s-2@DDD@\s+2 0.9: First \s-2@DDD@\s+2 beta release
 .TP
 May, 1995
-First public \s-2@DDD@\s+2 release (\s-2@DDD@\s+2 1.0)
+\s-2@DDD@\s+2 1.0: First public \s-2@DDD@\s+2 release
 .TP
 August, 1995
-Code adapted to \s-2ANSI/ISO\s+2 C++ standard (\s-2@DDD@\s+2 1.3)
+\s-2@DDD@\s+2 1.3: Code adapted to \s-2ANSI/ISO\s+2 C++ standard
 .TP
 December, 1995
-Machine-level debugging, glyphs, \s-2EMACS\s+2 integration
-(\s-2@DDD@\s+2 1.4)
+\s-2@DDD@\s+2 1.4: Machine-level debugging, glyphs, \s-2EMACS\s+2 integration
 .TP
 September, 1996
-\s-2XDB\s+2 support, command tool (\s-2@DDD@\s+2 1.5)
+\s-2@DDD@\s+2 2.0: \s-2XDB\s+2 support, generic \s-2DBX\s+2 support, 
+command tool 
 .PD
 .PP
 .\"
