@@ -187,6 +187,7 @@ bool is_set_cmd (const string& cmd)
 {
     static regex RXset_cmd(
 	"[ \t]*set\\( .*\\)?",
+	"[ \t]*assign\\( .*\\)?",
 	true);
 
     return cmd.matches (RXset_cmd);
