@@ -474,6 +474,9 @@ void user_rawSUC (string cmd, Widget origin)
 // If CHECK is set, add appropriate GDB commands to get GDB state.
 //-----------------------------------------------------------------------------
 
+// True iff last command was cancelled
+static bool command_was_cancelled = false;
+
 void user_cmdSUC (string cmd, Widget origin,
 		  OQCProc callback, void *data,
 		  bool verbose, bool check)
@@ -491,6 +494,9 @@ void user_cmdSUC (string cmd, Widget origin,
 	    else
 		gdb_out("^?");	// DEL
 	}
+
+	if (cmd == "\004")
+	    command_was_cancelled = true;
 
 	user_rawSUC(cmd, origin);
 	return;
@@ -510,6 +516,9 @@ void user_cmdSUC (string cmd, Widget origin,
 	}
 	else
 	{
+	    if (cmd == "no")
+		command_was_cancelled = true;
+
 	    // We do not wait for GDB output.  Pass CMD unprocessed to
 	    // GDB, leaving current user_data unharmed.
 	    cmd += '\n';
@@ -520,6 +529,8 @@ void user_cmdSUC (string cmd, Widget origin,
 	    post_gdb_busy(origin);
 	return;
     }
+
+    command_was_cancelled = false;
 
     // Setup extra command information
     CmdData* cmd_data       = new CmdData(origin);
@@ -1131,17 +1142,21 @@ void user_cmdOAC (void *data)
     }
     else if (check && pos_buffer)
     {
-	// Delete old position
-	if (cmd_data->new_exec_pos || pos_buffer->pc_found())
+	// Command should have issued new position, or only PC was
+	// found, and command was not cancelled: Clear old exec position
+	if ((cmd_data->new_exec_pos || pos_buffer->pc_found())
+	    && !command_was_cancelled)
 	    source_view->show_execution_position();
     }
 
     // up/down is done: set frame position in backtrace window
     if (cmd_data->set_frame_pos)
+    {
 	if (cmd_data->set_frame_func != "")
 	    source_view->set_frame_func(cmd_data->set_frame_func);
 	else
 	    source_view->set_frame_pos(cmd_data->set_frame_arg);
+    }
 
     // Set PC position
     if (check && pos_buffer && pos_buffer->pc_found())
