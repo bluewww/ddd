@@ -23,7 +23,7 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
       small hint window to raise.  This feature is also known as
       `toolbar tips' or `bubble help'.  (optional)
     - Value tips.  Moving the mouse pointer over a variable causes a
-      small window to raise showing the current variable value.  (optional)
+      small window to raise showing the current value.  (optional)
     - The status line has been reworked and extended:
       + It displays information about the selected item.
       + It has moved to the bottom, such that menu entries can be
@@ -46,8 +46,8 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
     - Some items have been renamed for clarity:
       + The `Stack' menu is now named `Status', as it hosts other
         status-related items besides backtrace and registers.
-      + The `Break' button is now named `Interrupt' (as in DDD 1.x), to
-        avoid confusion with the `Break At' button. 
+      + The `Break' button is now named `Interrupt' (as in DDD 1.x),
+        to avoid confusion with the `Break At' button.
       + The `Quit' menu item is now named `Abort', to avoid confusion
         with the `Exit' menu item (which issues a `quit' command).
     - DBX settings can now be viewed and changed at run time, using
@@ -61,8 +61,8 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
     - In the debugger console, the right mouse button invokes a small
       popup menu which you can use to clear the line or the window.
     - Ever suffered from a frozen display while debugging a modal
-      application?  If the debugged program is interrupted in some modal
-      state, DDD will automatically make it ungrab the pointer.
+      application?  If the debugged program is interrupted in some
+      modal state, DDD will automatically make it ungrab the pointer.
     - In the source argument field `()', pressing RETURN activates
       the `Lookup ()' button.
     - You can now clear all argument fields `()' by clicking on the
@@ -91,8 +91,11 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
     - With XDB, sources are found in alternate directories, too.
     - With DBX, the current source line was omitted from the listing
       under certain circumstances.  Fixed.
-    - `Help on Version' no longer includes the entire DDD configuration.
-    - Several single-letter options like `-d DIR' are now properly 
+    - With Sun DBX, DDD uses the DBX display numbers instead of
+      generating own numbers.
+    - `Help on Version' no longer includes the entire DDD
+      configuration.
+    - Several single-letter options like `-d DIR' are now properly
       passed down to the inferior debugger.
     - `Select All' followed by `Delete' no more causes DDD to crash.
     - Problems with button specs ending in `...' have been fixed.

@@ -4352,6 +4352,11 @@ Ddd*print_warning*helpString:	\
 @rm This is the output of your printing command.\n\
 For more details, consult your system documentation.
 
+Ddd*no_display_number_warning.title: @DDD@: No Display Number
+Ddd*no_display_number*helpString: \
+@rm @DDD@ could not determine the number of the new display\n\
+as assigned by @GDB@.  @DDD@ now uses a default number instead.
+
 Ddd*paper_size_value_error.title: @DDD@: Unrecognized Paper Size
 Ddd*paper_size_value_error*helpString:	\
 @rm @DDD@ could not parse your paper size specification.\n\

@@ -211,13 +211,13 @@ public:
     static void refresh_displaySQ   (Widget origin = 0);
 
     // Disable displays given in DISPLAY_NRS.  Sends `disable display' to GDB.
-    static void disable_displaySQ   (const IntArray& display_nrs);
+    static void disable_displaySQ   (IntArray& display_nrs);
 
     // Enable displays given in DISPLAY_NRS.  Sends `enable display' to GDB.
-    static void enable_displaySQ    (const IntArray& display_nrs);
+    static void enable_displaySQ    (IntArray& display_nrs);
 
     // Delete displays given in DISPLAY_NRS.  Sends `delete display' to GDB.
-    static void delete_displaySQ    (const IntArray& display_nrs);
+    static void delete_displaySQ    (IntArray& display_nrs);
 
     // Create a new display for DISPLAY_EXPRESSION dependent on
     // DISP_NR.  Sends a `display' command to GDB.
@@ -276,6 +276,9 @@ private:
 
     static void select_with_all_descendants(GraphNode *node);
     static void select_with_all_ancestors(GraphNode *node);
+
+    // Get display number and name from ANSWER; store them in NR and NAME
+    static void read_number_and_name(string& answer, string& nr, string& name);
 
     //-----------------------------------------------------------------------
     // Data

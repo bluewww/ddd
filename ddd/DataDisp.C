@@ -198,6 +198,32 @@ XtIntervalId DataDisp::refresh_graph_edit_timer = 0;
 
 
 //----------------------------------------------------------------------------
+// Helpers
+//-----------------------------------------------------------------------------
+
+// Sort A
+static void sort(IntArray& a)
+{
+    // Shell sort -- simple and fast
+    int h = 1;
+    do {
+	h = h * 3 + 1;
+    } while (h <= a.size());
+    do {
+	h /= 3;
+	for (int i = h; i < a.size(); i++)
+	{
+	    int v = a[i];
+	    int j;
+	    for (j = i; j >= h && a[j - h] > v; j -= h)
+		a[j] = a[j - h];
+	    if (i != j)
+		a[j] = v;
+	}
+    } while (h != 1);
+}
+
+//----------------------------------------------------------------------------
 // Origin
 //-----------------------------------------------------------------------------
 
@@ -606,7 +632,7 @@ void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
 	}
     }
 
-    enable_displaySQ (disp_nrs);
+    enable_displaySQ(disp_nrs);
 }
 
 void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
@@ -627,7 +653,7 @@ void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
 	}
     }
 
-    disable_displaySQ (disp_nrs);
+    disable_displaySQ(disp_nrs);
 }
 
 //-----------------------------------------------------------------------------
@@ -1644,32 +1670,64 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint *p,
     }
 }
 
-
-DispNode *DataDisp::new_data_node(string& answer)
+// Get display number and name from ANSWER; store them in NR and NAME
+void DataDisp::read_number_and_name(string& answer, string& nr, string& name)
 {
-    string disp_nr_str;
+    nr   = "";
+    name = "";
+
     switch(gdb->type())
     {
     case GDB:
-	disp_nr_str = read_disp_nr_str (answer, gdb);
-	if (disp_nr_str == "")
-	{
-	    post_gdb_message(answer, last_origin);
-	    return 0;
-	}
+	nr = read_disp_nr_str(answer, gdb);
+	if (nr != "")
+	    name = read_disp_name(answer, gdb);
 	break;
 
     case DBX:
     case XDB:
-	// Assign a default number
-	disp_nr_str = itostring(next_display_number++);
+	name = read_disp_name(answer, gdb);
+	if (gdb->has_display_command())
+	{
+	    // Fetch number from `display' output
+	    string ans = gdb_question(gdb->display_command());
+	    int index = ans.index(name + "\n", -1);
+	    if (index > 0)
+	    {
+		while (index > 0 && ans[index - 1] != '\n')
+		    index--;
+		ans = ans.from(index);
+		int n = get_nr(ans);
+		nr = itostring(n);
+	    }
+
+	    if (nr == "")
+	    {
+		// Could not determine number
+		post_warning("Could not determine number of display " 
+			     + quote(name), 
+			     "no_display_number_warning", last_origin);
+	    }
+	}
+	
+	if (nr == "")
+	{
+	    // Assign a default number
+	    nr = itostring(next_display_number++);
+	}
 	break;
     }
+}
 
-    string name = read_disp_name (answer, gdb);
-    if (name == "")
+DispNode *DataDisp::new_data_node(string& answer)
+{
+    string nr;
+    string name;
+
+    read_number_and_name(answer, nr, name);
+    if (nr == "" || name == "")
     {
-	post_gdb_message (answer, last_origin);
+	post_gdb_message(answer, last_origin);
 	return 0;
     }
 
@@ -1677,12 +1735,12 @@ DispNode *DataDisp::new_data_node(string& answer)
 
     if (is_disabling (answer, gdb))
     {
-	post_gdb_message (answer, last_origin);
-	dn = new DispNode(disp_nr_str, name);
+	post_gdb_message(answer, last_origin);
+	dn = new DispNode(nr, name);
     }
     else
     {
-	dn = new DispNode(disp_nr_str, name, answer);
+	dn = new DispNode(nr, name, answer);
     }
 
     return dn;
@@ -1898,7 +1956,7 @@ void DataDisp::new_displaysOQAC (string answers[],
 	if (!contains_display (answers[i], gdb))
 	{
 	    // Looks like an error message
-	    post_gdb_message (answers[i], last_origin);
+	    post_gdb_message(answers[i], last_origin);
 	}
 	else
 	{
@@ -2094,8 +2152,10 @@ void DataDisp::refresh_displayOQAC (string answers[],
 // sendet den 'disable display'-Befehl mit den Nummern an den gdb
 // und aktualisiert den disp_graph.
 //
-void DataDisp::disable_displaySQ (const IntArray& display_nrs)
+void DataDisp::disable_displaySQ(IntArray& display_nrs)
 {
+    sort(display_nrs);
+
     int k = 0;
     int i;
     string cmd = "disable display";
@@ -2151,8 +2211,10 @@ void DataDisp::disable_displayOQC (const string& answer, void *)
 // sendet den 'enable display'-Befehl mit den Nummern an den gdb
 // und aktualisiert den disp_graph.
 //
-void DataDisp::enable_displaySQ (const IntArray& display_nrs)
+void DataDisp::enable_displaySQ(IntArray& display_nrs)
 {
+    sort(display_nrs);
+
     int k = 0;
     int i;
     string cmd = "enable display";
@@ -2209,53 +2271,34 @@ void DataDisp::enable_displayOQC (const string& answer, void *)
 // sendet den 'delete display'-Befehl mit den Nummern an den gdb
 // und aktualisiert den disp_graph.
 //
-void DataDisp::delete_displaySQ (const IntArray& display_nrs)
+void DataDisp::delete_displaySQ(IntArray& display_nrs)
 {
+    sort(display_nrs);
+
     string cmd = "undisplay";
 
     int k = 0;
-    switch (gdb->type())
+    int i;
+    for (i = 0; i < display_nrs.size(); i++)
     {
-    case GDB:
+	if (display_nrs[i] > 0)
 	{
-	    for (int i = 0; i < display_nrs.size(); i++)
-	    {
-		if (display_nrs[i] > 0)
-		{
-		    cmd += " " + itostring(display_nrs[i]);
-		    k++;
-		}
-	    }
+	    if (k++ > 0 && gdb->type() == DBX)
+		cmd += ",";
+	    cmd += " " + itostring(display_nrs[i]);
 	}
-	break;
-
-    case DBX:
-    case XDB:
-	{
-	    for (int i = 0; i < display_nrs.size(); i++)
-	    {
-		DispNode *dn = disp_graph->get(display_nrs[i]);
-		if (dn && !dn->is_user_command())
-		{
-		    if (k++)
-			cmd += ", ";
-		    cmd += " " + dn->name();
-		}
-	    }
-	}
-	break;
     }
-	
+
     bool ok = true;
     bool sent = false;
 
     if (k > 0 && gdb->has_display_command())
-	sent = ok = gdb->send_question (cmd, delete_displayOQC, 0);
+	sent = ok = gdb->send_question(cmd, delete_displayOQC, 0);
 
     if (!ok)
 	post_gdb_busy(last_origin);
 
-    for (int i = 0; i < display_nrs.size(); i++)
+    for (i = 0; i < display_nrs.size(); i++)
     {
 	DispNode *dn = disp_graph->get(display_nrs[i]);
 	if (dn != 0 && (ok || dn->is_user_command()))
@@ -2288,7 +2331,7 @@ void DataDisp::delete_displayOQC (const string& answer, void *)
 
     case DBX:
 	// Upon `undisplay', DBX redisplays remaining displays with values
-	if (answer != "")
+	if (answer != "" && !answer.contains("no such expression"))
 	{
 	    bool disabling_occurred;
 	    process_displays(ans, disabling_occurred);
@@ -2298,7 +2341,7 @@ void DataDisp::delete_displayOQC (const string& answer, void *)
 
     // Anything remaining is an error message
     if (answer != "")
-	post_gdb_message (ans, last_origin);
+	post_gdb_message(ans, last_origin);
 
     // Refresh remaining addresses
     force_check_aliases = true;
@@ -2495,7 +2538,6 @@ void DataDisp::dependent_displaysOQAC (string answers[],
 				       void*  data)
 {
     int       old_disp_nr = int (data);
-    string    name;
     DispNode* dn = 0;
 
     string disabling_error_msgs = "";
@@ -2517,24 +2559,13 @@ void DataDisp::dependent_displaysOQAC (string answers[],
 	else 
 	{
 	    // DispNode erzeugen und ggf. disabling-Meldung ausgeben
-	    string disp_nr_str;
+	    string nr;
+	    string name;
 
-	    switch(gdb->type())
-	    {
-	    case GDB:
-		disp_nr_str = read_disp_nr_str (answers[i], gdb);
-		if (disp_nr_str == "")
-		    return;
-		break;
+	    read_number_and_name(answers[i], nr, name);
+	    if (nr == "")
+		return;
 
-	    case DBX:
-	    case XDB:
-		// Assign a default number
-		disp_nr_str = itostring(next_display_number++);
-		break;
-	    }
-
-	    name = read_disp_name (answers[i], gdb);
 	    if (name == "")
 	    {
 		disabling_error_msgs += answers[i] + '\n';
@@ -2544,11 +2575,11 @@ void DataDisp::dependent_displaysOQAC (string answers[],
 		if (is_disabling (answers[i], gdb))
 		{
 		    disabling_error_msgs += answers[i] + '\n';
-		    dn = new DispNode(disp_nr_str, name);
+		    dn = new DispNode(nr, name);
 		}
 		else
 		{
-		    dn = new DispNode(disp_nr_str, name, answers[i]);
+		    dn = new DispNode(nr, name, answers[i]);
 		}
 
 		BoxPoint box_point =
@@ -2571,7 +2602,7 @@ void DataDisp::dependent_displaysOQAC (string answers[],
     delete[] qu_datas;
 
     if (disabling_error_msgs != "")
-	post_gdb_message (disabling_error_msgs, last_origin);
+	post_gdb_message(disabling_error_msgs, last_origin);
 
     refresh_addr();
     refresh_graph_edit();
@@ -2773,8 +2804,9 @@ string DataDisp::process_displays (string& displays,
     }
 
     // gesammelte Fehlermeldungen ausgeben.
-    if ( !disabling_occurred && disabling_error_msgs != "") {
-	post_gdb_message (disabling_error_msgs, last_origin);
+    if ( !disabling_occurred && disabling_error_msgs != "")
+    {
+	post_gdb_message(disabling_error_msgs, last_origin);
 	disabling_error_msgs = "";
     }
 
@@ -2902,28 +2934,6 @@ static int max_width(const StringArray& s)
 	w = max(w, s[i].length());
 
     return w;
-}
-
-// Sort A
-static void sort(IntArray& a)
-{
-    // Shell sort -- simple and fast
-    int h = 1;
-    do {
-	h = h * 3 + 1;
-    } while (h <= a.size());
-    do {
-	h /= 3;
-	for (int i = h; i < a.size(); i++)
-	{
-	    int v = a[i];
-	    int j;
-	    for (j = i; j >= h && a[j - h] > v; j -= h)
-		a[j] = a[j - h];
-	    if (i != j)
-		a[j] = v;
-	}
-    } while (h != 1);
 }
 
 // Create labels for the list
