@@ -829,7 +829,7 @@ Ddd*graph_edit.outlineColor:	   grey50
 ! #replace array_color	   \n\
 ! #replace reference_color \n\
 ! \n\
-! display_color(box)   = color(box, "black", "grey95");	\n\
+! display_color(box)   = color(box, "black", "white");	\n\
 ! title_color(box)     = color(box, "black");		\n\
 ! disabled_color(box)  = color(box, "white", "grey50");	\n\
 ! simple_color(box)    = color(box, "black");		\n\
@@ -3176,7 +3176,8 @@ Ddd*arg_cmd_w.arg_cmd_area*lookup.helpString:	\
 @bf Lookup ()@rm\n\
 Lookup a line, file, function, variable, or breakpoint in the source.\n\
 @tt \267 @rm If the argument @bf () @rm is empty, \
-lookup the current execution position.\n\
+lookup the current execution position\n\
+    (or cursor position, if there is no current execution position).\n\
 @tt \267 @rm If @bf () @rm contains a number, \
 lookup that line number in the current source.\n\
 @tt \267 @rm If @bf () @rm contains @sl FILENAME@tt:@sl LINE@rm, lookup \
@@ -3698,7 +3699,7 @@ Ddd*exec_files_popup*helpString:	   \
 \n\
 The program is read for its symbols, for getting the contents\
  of pure memory,\n\
-and it is the program executed when you use the ``@tt run@rm'' command.\n\
+and it is the program executed when you use the `@tt run@rm' command.\n\
 If the program file cannot be found as specified,\
  your execution directory path\n\
 (@tt $PATH@rm) is searched for a command of that name.\n\
@@ -4171,7 +4172,7 @@ Ddd*quit_dialog*okLabelString:	     Yes
 Ddd*quit_dialog*cancelLabelString:   No
 Ddd*quit_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*quit_dialog*helpString:	\
-@rm @GDB@ is busy and does not react to the ``quit'' command.\n\
+@rm @GDB@ is busy and does not react to the `@tt quit@rm' command.\n\
 The debugged process is probably still running.\n\
 \n\
 Before killing a running @GDB@, you should try to interrupt it\n\
@@ -4313,7 +4314,7 @@ This message is also caused by attempting to load an empty source file.
 Ddd*source_file_from_gdb_warning_popup.title: @DDD@: Source From Debugger
 Ddd*source_file_from_gdb_warning*helpString:	\
 @rm The given source file could not be loaded directly.\n\
-Instead, the source was obtained from @GDB@ via the ``list'' command.
+Instead, the source was obtained from @GDB@ via the `@tt list@rm' command.
 
 Ddd*source_trunc_error_popup.title: @DDD@: Source Truncated
 Ddd*source_trunc_error*helpString:	\
@@ -4398,14 +4399,14 @@ in the @DDD@ application defaults file and in your @tt ~/.dddinit @rm file.
 
 Ddd*tty_command_error_popup.title: @DDD@: TTY Failed
 Ddd*tty_command_error*helpString:	\
-@rm @DDD@ sent a `tty' command to @GDB@ in order to redirect\n\
+@rm @DDD@ sent a `@tt tty@rm' command to @GDB@ in order to redirect\n\
 input/output of the debugged process to the execution window.\n\
 This command failed.\n\
 \n\
 @DDD@ will now redirect the process I/O explicitly.  This means that\n\
 the command window remains the controlling terminal.\n\
 \n\
-You can tell @DDD@ to not use the `tty' command, but to use explicit\n\
+You can tell @DDD@ to not use the `@tt tty@rm' command, but to use explicit\n\
 redirection instead, using shell redirection operators.\n\
 To do so, include a line\n\
 \n\
@@ -4563,7 +4564,78 @@ use @key Up @rm and @key Down@rm.\n\
 @tt \267 @rm To clear the current line, use @key Ctrl+U@rm.\n\
 @tt \267 @rm For further options, see the @bf Commands @rm menu.
 
-Ddd*program_stopped.helpString: \
+Ddd*code_but_no_source.helpString: \
+@rm Your program @PROGRAM_STATE@,\n\
+and there is no source code for the current execution position.\n\
+\n\
+Here are some hints that may help you out:\n\
+@tt \267 @rm Use @bf Status @rm| @bf Up @rm to step out of libraries \
+and to enter your own functions.\n\
+@tt \267 @rm In order to debug a program effectively, you need to generate\n\
+    debugging information when you compile it.  Without debugging \
+information,\n\
+    @GDB@ will be unable to locate the source code.  To request debugging\n\
+    information, specify the `@tt -g@rm' option when you run the compiler.\n\
+@tt \267 @rm You may need to tell @GDB@ where the source code files are.\n\
+    Invoke @bf Edit @rm| @bf @GDB@ Settings @rm and look for appropriate \
+entries.\n\
+@tt \267 @rm Using GDB, you can continue at machine code level \
+by enabling the\n\
+    Machine Code Window.  Use @bf Source @rm| @bf Display Machine Code@rm.
+
+Ddd*stopped_at_passed_signal.helpString: \
+@rm Your program @PROGRAM_STATE@.\n\
+\n\
+@tt \267 @rm To find out how you got here, use @bf Status @rm| @bf \
+Backtrace@rm.\n\
+@tt \267 @rm To examine a variable value, select it first (click on an \
+occurrence).\n\
+    Then use @bf Print () @rm (for simple values) and @bf Display () @rm \
+(for complex\n\
+    values).  As a shortcut, you may also press the @sl right mouse\n\
+    button @rm to get a popup menu.\n\
+@tt \267 @rm You can display all local variables at once using \
+@bf Data @rm| @bf Display\n\
+    Local Variables@rm.\n\
+@tt \267 @rm To set and clear further breakpoints, use @bf Source @rm| @bf \
+Edit Breakpoints@rm.\n\
+    As a shortcut, you may also press the @sl right mouse button @rm on a\n\
+    location or breakpoint to get a popup menu.\n\
+\n\
+When resuming execution, the @SIGNAL_DESCRIPTION@ signal \
+will be passed to the program.\n\
+@tt \267 @rm To continue execution without giving a @SIGNAL@ signal, \
+use the @GDB@ command `@tt signal 0@rm'.\n\
+@tt \267 @rm To see the current signal handling, \
+use the @GDB@ command `@tt info handle@rm'.
+
+Ddd*stopped_at_ignored_signal.helpString: \
+@rm Your program @PROGRAM_STATE@.\n\
+\n\
+@tt \267 @rm To find out how you got here, use @bf Status @rm| @bf \
+Backtrace@rm.\n\
+@tt \267 @rm To examine a variable value, select it first (click on an \
+occurrence).\n\
+    Then use @bf Print () @rm (for simple values) and @bf Display () @rm \
+(for complex\n\
+    values).  As a shortcut, you may also press the @sl right mouse\n\
+    button @rm to get a popup menu.\n\
+@tt \267 @rm You can display all local variables at once using \
+@bf Data @rm| @bf Display\n\
+    Local Variables@rm.\n\
+@tt \267 @rm To set and clear further breakpoints, use @bf Source @rm| @bf \
+Edit Breakpoints@rm.\n\
+    As a shortcut, you may also press the @sl right mouse button @rm on a\n\
+    location or breakpoint to get a popup menu.\n\
+\n\
+When resuming execution, the @SIGNAL_DESCRIPTION@ signal \
+will @sl not @rm be passed to the program.\n\
+@tt \267 @rm To pass this signal to the program, \
+use the @GDB@ command `@tt signal @SIGNAL@@rm'.\n\
+@tt \267 @rm To see the current signal handling, \
+use the @GDB@ command `@tt info handle@rm'.
+
+Ddd*stopped.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
 \n\
 @tt \267 @rm To find out how you got here, use @bf Status @rm| @bf \

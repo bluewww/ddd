@@ -46,6 +46,7 @@ char WhatNextCB_rcsid[] =
 #include "verify.h"
 #include "version.h"
 #include "wm.h"
+#include "AppData.h"
 #include "DataDisp.h"
 #include "Delay.h"
 #include "DestroyCB.h"
@@ -85,6 +86,50 @@ static bool no_gdb()
 static bool gdb_has_crashed()
 {
     return !no_gdb() && (gdb == 0 || gdb->pid() <= 0 || !gdb->running());
+}
+
+static bool code_but_no_source()
+{
+    return source_view->have_pc() && !source_view->have_exec_pos()
+	&& (gdb->type() != GDB || !app_data.disassemble);
+}
+
+// Return 1 if the signal specified in PROGRAM_STATE is passed to the
+// program; 0 if not, -1 if undecided.
+static int passed_to_program(string program_state)
+{
+    string signal = program_state.from("SIG");
+    signal = signal.through(rxalpha);
+
+    if (signal != "")
+    {
+	string signal_description = program_state.after(signal);
+	signal_description = signal_description.after(rxwhite);
+
+	if (signal_description == "")
+	    signal_description = signal;
+	
+	defineConversionMacro("SIGNAL", signal);
+	defineConversionMacro("SIGNAL_DESCRIPTION", signal_description);
+
+	string ans = gdb_question("info handle " + signal);
+
+	// `info handle SIGINT' output has the form
+	// "Signal        Stop\tPrint\tPass to program\tDescription\n"
+	// "SIGINT        Yes\tYes\tNo\t\tInterrupt\n"
+
+	ans.downcase();
+	string header = ans.before("pass ");
+	int tabs_before_pass = header.freq('\t');
+	string info = ans.after('\n');
+	while (tabs_before_pass--)
+	    info = info.after('\t');
+	if (info.contains('y', 0))
+	    return 1;
+	if (info.contains('n', 0))
+	    return 0;
+    }
+    return -1;
 }
 
 static bool program_running(string& state)
@@ -201,7 +246,29 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
 	return;
     }
 
-    // Fallback: all is well, program has stopped, nothing is selected.
+    // Program has stopped and nothing is selected.
     defineConversionMacro("PROGRAM_STATE", program_state);
-    hint_on("program_stopped");
+
+    if (code_but_no_source())
+    {
+	hint_on("code_but_no_source");
+	return;
+    }
+
+    if (gdb->type() == GDB && program_state.contains("signal"))
+    {
+	int p = passed_to_program(program_state);
+	if (p > 0)
+	{
+	    hint_on("stopped_at_passed_signal");
+	    return;
+	}
+	else if (p == 0)
+	{
+	    hint_on("stopped_at_ignored_signal");
+	    return;
+	}
+    }
+
+    hint_on("stopped");
 }
