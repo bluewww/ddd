@@ -41,6 +41,8 @@ extern "C" {
 #include <Xm/ManagerP.h>
 #endif
 }
+#undef new
+#undef class
 
 #include "LabelHP.h"
 
@@ -69,6 +71,29 @@ static XtResource resources[] =
     {XmNinsensitive3D, XmCInsensitive3D, XmRBoolean, sizeof(Boolean),
      TheOffset(insensitive3D), XmRImmediate, (XtPointer)TRUE},
 };
+
+#if XmVersion < 1002
+// Motif 1.1 backwards compatibility
+#ifndef XmInheritBorderHighlight
+#define XmInheritBorderHighlight (XtWidgetProc)_XtInherit
+#endif
+
+#ifndef XmInheritBorderUnhighlight
+#define XmInheritBorderUnhighlight (XtWidgetProc)_XtInherit
+#endif
+
+#ifndef XmInheritArmAndActivate
+#define XmInheritArmAndActivate (XmArmAndActivate)_XtInherit
+#endif
+
+#ifndef XmInheritSetOverrideCallback
+#define	XmInheritSetOverrideCallback (XtWidgetProc) _XtInherit
+#endif
+
+#ifndef XmInheritMenuProc
+#define XmInheritMenuProc (XmMenuProc) _XtInherit
+#endif
+#endif // XmVersion < 1002
 
 
 XmLabelHackClassRec xmLabelHackClassRec =
@@ -108,20 +133,13 @@ XmLabelHackClassRec xmLabelHackClassRec =
 	(XtPointer)NULL,			/* extension */
     },
     { 	/* xmPrimitiveClass */
-#if XmVersion >= 1002
-	(XtWidgetProc)XmInheritBorderHighlight,
-	(XtWidgetProc)XmInheritBorderUnhighlight,
-	XtInheritTranslations,
-	(XtActionProc)XmInheritArmAndActivate,
-#else
-	(XtWidgetProc)_XtInherit,
-	(XtWidgetProc)_XtInherit,
-	XtInheritTranslations,
-	(XmArmAndActivate)_XtInherit,
-#endif
-	0,			// syn_resources
-	0,			// num_syn_resources
-	0			// extension
+	XmInheritBorderHighlight,     // border_highlight
+	XmInheritBorderUnhighlight,   // border_unhighlight
+	XtInheritTranslations,        // translations
+	XmInheritArmAndActivate,      // arm_and_activate
+	0,			      // syn_resources
+	0,                            // num_syn_resources
+	0                             // extension
 #if defined(__sgi)
 	// Paul Sydney <sydney@ulua.mhpcc.af.mil> reports that Motif
 	// on an SGI Indy running IRIX 6.5 has an extra
@@ -131,19 +149,13 @@ XmLabelHackClassRec xmLabelHackClassRec =
 #endif
     },
     {	/* xmLabelClass */
-#if XmVersion >= 1002
-	(XtWidgetProc) XmInheritSetOverrideCallback,
-	XmInheritMenuProc,
-	XtInheritTranslations,
-#else
-	(XtWidgetProc) _XtInherit,
-	(XmMenuProc) _XtInherit,
-	XtInheritTranslations,
-#endif
-	0			// extension
+	XmInheritSetOverrideCallback, // setOverrideCallback
+	XmInheritMenuProc,            // menuProcs
+	XtInheritTranslations,        // translations
+	0                             // extension
     },
     {
-	-1,
+	-1			      // on
     }
 };
 

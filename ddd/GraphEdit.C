@@ -63,6 +63,22 @@ char GraphEdit_rcsid[] =
 #include "GraphNPA.h"
 
 
+#if XmVersion < 1002
+// Motif 1.1 backwards compatibility
+#ifndef XmInheritBorderHighlight
+#define XmInheritBorderHighlight (XtWidgetProc)_XtInherit
+#endif
+
+#ifndef XmInheritBorderUnhighlight
+#define XmInheritBorderUnhighlight (XtWidgetProc)_XtInherit
+#endif
+
+#ifndef XmInheritArmAndActivate
+#define XmInheritArmAndActivate (XmArmAndActivate)_XtInherit
+#endif
+#endif // XmVersion
+
+
 static BoxRegion EVERYWHERE(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX));
 
 
@@ -408,16 +424,23 @@ GraphEditClassRec graphEditClassRec = {
     /* extension                */  NULL,
   },
   {	 /* Primitive fields */
-    /* border_highlight         */ (XtWidgetProc) _XtInherit,
-    /* border_unhighlight       */ (XtWidgetProc) _XtInherit,
+    /* border_highlight         */ XmInheritBorderHighlight,
+    /* border_unhighlight       */ XmInheritBorderUnhighlight,
     /* translations             */ XtInheritTranslations,
-    /* arm_and_activate         */ NULL,
+    /* arm_and_activate         */ NULL,   // XmInheritArmAndActivate?
     /* syn_resources            */ NULL,
     /* num_syn_resources        */ 0,
-    /* extension                */ NULL,
+    /* extension                */ NULL
+#if defined(__sgi)
+	// Paul Sydney <sydney@ulua.mhpcc.af.mil> reports that Motif
+	// on an SGI Indy running IRIX 6.5 has an extra
+	// `_SG_vendorExtension' field.  If this is not initialized
+	// explicitly, then EGCS 1.1 gives a warning.
+	, 0
+#endif
   },
   {	/* GraphEdit fields */
-    /* extension                */ NULL,
+    /* extension                */ NULL
   },
 };
 
