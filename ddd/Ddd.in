@@ -479,6 +479,12 @@ Ddd*cacheMachineCode:		true
 ! Do we wish to refer to sources using the full path name?
 Ddd*useSourcePaths:		false
 
+! Do we wish to show all registers, instead of only integer registers?
+Ddd*allRegisters:		false
+
+! Do we want button tips?  (aka ballon help or bubble help)
+Ddd*buttonTips:			true
+
 
 ! Focus policy
 ! POINTER means point-and-type, EXPLICIT means click-and-type.
@@ -1895,6 +1901,8 @@ Ddd*preferences*buttons*startup.labelString: Startup Preferences
 Ddd*preferences*general*helpString:	\
 @rm These are the @sl General Preferences@rm.\n\
 \n\
+@tt \267 @rm If @bf Enable button tips @rm is set, @DDD@ shows a hint \
+whenever you move over a button.\n\
 @tt \267 @rm If @bf Iconify all windows at once @rm is set, all @DDD@ windows \
 are iconified as a group.\n\
     Otherwise, windows are iconified separately.\n\
@@ -1911,6 +1919,8 @@ X warnings are silently ignored.\n\
 \n\
 Use the buttons above to view and change other preferences.
 
+Ddd*preferences*buttonTips.labelString:	 \
+Enable button tips
 Ddd*preferences*groupIconify.labelString:	 \
 Iconify all windows at once
 Ddd*preferences*globalTabCompletion.labelString: \

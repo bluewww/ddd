@@ -374,6 +374,23 @@ void dddToggleSuppressWarningsCB (Widget, XtPointer, XtPointer call_data)
     options_changed = true;
 }
 
+void dddToggleButtonTipsCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.button_tips = info->set;
+
+    if (info->set)
+	set_status("Button tips enabled.");
+    else
+	set_status("Button tips disabled.");
+
+    update_button_tips();
+    update_options();
+    options_changed = true;
+}
+
 
 //-----------------------------------------------------------------------------
 // Startup Options
@@ -645,7 +662,9 @@ void save_options(Widget origin)
     os << bool_app_value(XtNallRegisters,
 			 app_data.all_registers) << "\n";
     os << bool_app_value(XtNgroupIconify,
-			 app_data.group_iconify)   << "\n";
+			 app_data.group_iconify) << "\n";
+    os << bool_app_value(XtNbuttonTips,
+			 app_data.button_tips) << "\n";
     os << bool_app_value(XtNseparateExecWindow,
 			 app_data.separate_exec_window) << "\n";
     if (!app_data.separate_source_window && !app_data.separate_data_window)

@@ -585,6 +585,7 @@ static MMDesc source_menu[] =
 static Widget preferences_dialog;
 
 // General preferences
+static Widget button_tips_w;
 static Widget group_iconify_w;
 static Widget global_tab_completion_w;
 static Widget suppress_warnings_w;
@@ -592,13 +593,15 @@ static Widget save_history_on_exit_w;
 
 static MMDesc general_preferences_menu[] = 
 {
-    { "groupIconify",        MMToggle, { dddToggleGroupIconifyCB }, 
+    { "buttonTips",          MMToggle, { dddToggleButtonTipsCB },
+      NULL, &button_tips_w },
+    { "groupIconify",        MMToggle, { dddToggleGroupIconifyCB },
       NULL, &group_iconify_w },
-    { "globalTabCompletion", MMToggle, { dddToggleGlobalTabCompletionCB }, 
+    { "globalTabCompletion", MMToggle, { dddToggleGlobalTabCompletionCB },
       NULL, &global_tab_completion_w },
-    { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB }, 
+    { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB },
       NULL, &suppress_warnings_w },
-    { "saveHistoryOnExit",   MMToggle, { dddToggleSaveHistoryOnExitCB }, 
+    { "saveHistoryOnExit",   MMToggle, { dddToggleSaveHistoryOnExitCB },
       NULL, &save_history_on_exit_w },
     MMEnd
 };
@@ -1754,12 +1757,30 @@ static void ddd_check_version()
 
 
 //-----------------------------------------------------------------------------
+// (Un)install button tips
+//-----------------------------------------------------------------------------
+
+void update_button_tips()
+{
+    const WidgetArray& shells = Delay::shells();
+    for (int i = 0; i < shells.size(); i++)
+    {
+	Widget shell = shells[i];
+	while (shell && !XmIsVendorShell(shell))
+	    shell = XtParent(shell);
+	if (shell)
+	    InstallTips(shell, app_data.button_tips);
+    }
+}
+
+//-----------------------------------------------------------------------------
 // Setup
 //-----------------------------------------------------------------------------
 
 static Boolean ddd_setup_done(XtPointer)
 {
     ddd_check_version();
+    update_button_tips();
 
     main_loop_entered = true;
     return True;		// Remove from the list of work procs
@@ -1794,7 +1815,8 @@ void update_options()
     Arg args[10];
     int arg = 0;
 
-    for (int i = 1; i < 4; i++)
+    int i;
+    for (i = 1; i < 4; i++)
     {
 	if (separate_exec_window_w[i] == 0)
 	    continue;		// Shell not realized
@@ -1808,6 +1830,8 @@ void update_options()
 	set_sensitive(disassemble_w[i], gdb->type() == GDB);
     }
 
+    XtVaSetValues(button_tips_w,
+		  XmNset, app_data.button_tips, NULL); 
     XtVaSetValues(group_iconify_w,
 		  XmNset, app_data.group_iconify, NULL);
     XtVaSetValues(global_tab_completion_w,

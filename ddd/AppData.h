@@ -163,6 +163,8 @@
 #define XtCUseSourcePath         "UseSourcePath"
 #define XtNallRegisters          "allRegisters"
 #define XtCAllRegisters          "AllRegisters"
+#define XtNbuttonTips            "buttonTips"
+#define XtCButtonTips            "ButtonTips"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
 #define XtCVersion               "Version"
@@ -231,6 +233,7 @@ struct AppData {
     Boolean disassemble;
     Boolean use_source_path;
     Boolean all_registers;
+    Boolean button_tips;
     String  dddinit_version;
     String  app_defaults_version;
 };

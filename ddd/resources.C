@@ -664,6 +664,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNbuttonTips,
+	XtCButtonTips,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, button_tips),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,

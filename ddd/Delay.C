@@ -273,8 +273,6 @@ void Delay::register_shell(Widget widget)
 #endif
 
     assert(delays.size() == _shells.size());
-
-    InstallTips(widget);
 }
 
 Delay::~Delay()
