@@ -2964,6 +2964,9 @@ Ddd*status_form.led.documentationString: \
 @rm Debugger status: blinks while inferior debugger is busy \
 (click to disable or enable)
 
+Ddd*status_form.arrow.shadowThickness:  0
+Ddd*status_form.arrow.foreground:  	grey
+
 Ddd*status_lines.marginWidth:		0
 Ddd*status_lines.marginHeight:		0
 Ddd*status_lines.borderWidth:		0
