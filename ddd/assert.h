@@ -31,16 +31,18 @@
 #undef assert
 #undef _assert_fn
 
-#if defined(NDEBUG)
+#if NDEBUG
 #define assert(ignore)
+
 #else // !defined(NDEBUG)
 
 #ifndef _ICE_assert_h
 #define _ICE_assert_h
-#include <stdlib.h>
-#include <iostream.h>
+
+#if HAVE_CONFIG_H
 #include "config.h"
-#endif // _ICE_assert_h
+#include <stdlib.h>		// abort()
+#include <iostream.h>
 
 #ifdef HAVE_PRETTY_FUNCTION
 #define _assert_fn \
@@ -54,4 +56,19 @@
 	          << ": assertion `" #ex "' failed\n", \
 	          ::abort(), 0))
 
-#endif // !defined(NDEBUG)
+#else // !HAVE_CONFIG_H
+
+// This is weird.  In our projects, HAVE_CONFIG_H is always defined.
+// Are we running `configure' with `.' in the <...> #include path?
+// Revert to the original <assert.h>.
+
+#if __GNUC__
+#include_next <assert.h>	// GNU C extension
+#else
+#include </usr/include/assert.h> // Dirty fix
+#endif
+
+#endif // HAVE_CONFIG_H
+
+#endif // _ICE_assert_h
+#endif // !NDEBUG
