@@ -153,7 +153,7 @@ MString helpOnVersionExtraText;
 // helpers to be called.)
 static bool isNone(const MString& s)
 {
-    return s.isEmpty() && s.lineCount() > 0;
+    return s.isEmpty() && s.lineCount() > 1;
 }
 
 static MString get_help_string(Widget widget)
