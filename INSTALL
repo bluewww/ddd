@@ -432,29 +432,34 @@ By default, `configure' will configure DDD to use all supported
 optional DDD features.  There are two optional features.
 
 * You can configure DDD such that the `Ddd' application defaults file
-  will not be compiled into the DDD executable.  This reduces the size
-  of the DDD executable by about 330 kBytes.  
+  will be compiled into the DDD executable.
 
-  Note that this option requires you to install the application
-  defaults file in a place where DDD will find it.  This option will
-  also cause trouble if
-  - you want to maintain multiple DDD versions or 
-  - you upgrade to a new DDD version without removing or changing the
-    application defaults file.
+  To enable the builtin application defaults file, use the `configure'
+  option `--enable-builtin-app-defaults'.
 
-  To disable the builtin application defaults file, use the `configure'
-  option `--disable-builtin-app-defaults'.
+* You can configure DDD such that the DDD manual will be compiled into
+  the DDD executable.
 
-* You can configure DDD such that the DDD manual will not be compiled
-  into the DDD executable.  This reduces the size of the DDD executable
-  by about 80 kBytes.
+  To enable the builtin DDD manual, use the `configure' option
+  `--enable-builtin-manual'.
 
-  `Help->DDD Reference' will then invoke `info ddd' to get the DDD
-  manual.  Note that this option only works well if the `info' program
-  as well as the DDD info files are installed.
+* You can configure DDD such that the DDD News will be compiled into
+  the DDD executable.
 
-  To disable the builtin DDD manual, use the `configure' option
-  `--disable-builtin-manual'.
+  To enable the builtin DDD news, use the `configure' option
+  `--enable-builtin-news'.
+
+* You can configure DDD such that the DDD License will be compiled into
+  the DDD executable.
+
+  To enable the builtin DDD news, use the `configure' option
+  `--enable-builtin-license'.
+
+* You can configure DDD such that the DDD VSL library `ddd.vsl' will
+  be compiled into the DDD executable.
+
+  To enable the builtin VSL library, use the `configure' option
+  `--enable-builtin-vsllib'.
 
 See also `External Packages', above, to disable external packages such
 as the Readline library used for command-line editing on standard input.

@@ -316,4 +316,7 @@ Volunteers for these and other projects are welcome!
     * Allow for interaction between VSL and DDD.
     * Document it all.
 
-385 (Insert new project ideas here)
+385 Finish external resources:
+    * Handle case where `ddd.vsl' is not found.
+
+386 (Insert new project ideas here)
