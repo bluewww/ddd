@@ -61,9 +61,6 @@ void send_gdb_ctrl(string cmd, Widget origin = 0);
 // Return FALSE if ANSWER is an error message indicating an unknown command
 bool is_known_command(const string& answer);
 
-// Replace all occurrences of `@N@' by N + the current breakpoint base.
-void fix_bp_numbers(string& cmd);
-
 // Send commands to initialize a session
 void init_session(const string& restart, const string& settings);
 
