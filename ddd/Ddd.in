@@ -386,10 +386,10 @@ Ddd*tabWidth:	        8
 ! as these GDB versions do not issue the current PC location when source
 ! code is not available.
 Ddd*gdbInitCommands:	\
+set prompt (gdb) \n\
 set height 0\n\
 set width 0\n\
- set verbose off\n\
-set prompt (gdb) \n
+ set verbose off\n
 
 ! The GDB settings.  Usually overridden in `~/.dddinit'.
 Ddd*gdbSettings: \
@@ -397,17 +397,38 @@ set print asm-demangle on\n\
 set print repeats 0\n
 
 
-! The DBX initialization commands and settings.  Nothing special yet.  
-! Use a personal `~/.dbxinit' or `~/.dbxrc' file to customize DBX.
-Ddd*dbxInitCommands:
+! The DBX initialization commands. Make sure the TTY is in a proper state,
+! by invoking a `stty' command; Some DBXes require this.
+!
+! Do not change these settings.  Use a personal `~/.dbxinit' 
+! or `~/.dbxrc' file to customize DBX.
+Ddd*dbxInitCommands: \
+sh stty -echo -onlcr\n\
+set $page = 0\n
+
+! The DBX settings.  Usually overridden in `~/.dddinit'.
 Ddd*dbxSettings:
 
 
-! The XDB initialization commands and settings.  Nothing special yet.
-! Use a personal `~/.xdbrc' file to customize XDB.
-Ddd*xdbInitCommands:
+! The XDB initialization commands.  Define some macros to make common 
+! commands available.
+!
+! Do not change these settings.  Use a personal `~/.xdbrc' file
+! to customize DBX.
+Ddd*xdbInitCommands: \
+sm\n\
+def run r\n\
+def cont c\n\
+def next S\n\
+def step s\n\
+def quit q\n\
+def finish { bu \\1t ; c ; L }\n
+
+! The XDB settings.  Usually overridden in `~/.dddinit'.
 Ddd*xdbSettings:
 
+
+! Graph Editor Defaults
 
 ! The VSL library for displaying graph nodes.  `builtin' means the VSL
 ! library compiled into DDD, named `ddd.vsl'.  If you wish to use
@@ -420,7 +441,6 @@ Ddd*xdbSettings:
 Ddd*vslLibrary:			builtin
 Ddd*vslPath:			.
 
-! Graph Editor Defaults
 ! What shall we use if the graph gets too large to be displayed?
 ! If true, an Athena panner is used (a kind of two-directional scrollbar).
 ! If false, two Motif scrollbars are used.
@@ -462,7 +482,8 @@ Ddd*graph_edit.autoLayout:	false
 Ddd*graph_edit.GridSize:	16
 
 
-! Source defaults
+! Source View Defaults
+
 ! Do we wish to find complete words only?
 Ddd*findWordsOnly:		true
 
@@ -532,7 +553,7 @@ Ddd*maxValueDocLength:		100
 
 
 
-! Focus policy
+! Focus Policy
 ! POINTER means point-and-type, EXPLICIT means click-and-type.
 ! Rather than accepting the user's default, we use POINTER here because:
 ! 1. Using EXPLICIT focus policy works bad with a panned graph editor,

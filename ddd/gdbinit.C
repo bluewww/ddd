@@ -42,9 +42,6 @@ char gdbinit_rcsid[] =
 #include "string-fun.h"
 #include "ddd.h"
 
-// GDB initialization file (may be remote)
-static string gdb_init_file;
-
 static void InvokeGDBFromShellHP(Agent *source, void *client_data, 
 				 void *call_data);
 
@@ -57,91 +54,24 @@ GDBAgent *new_gdb(DebuggerType type,
 		  XtAppContext app_context,
 		  int argc, char *argv[])
 {
-    char *initial_cmds = 0;
-    char *settings = 0;
-
-    switch (type)
-    {
-    case GDB:
-	initial_cmds = app_data.gdb_initial_cmds;
-	settings     = app_data.gdb_settings;
-	break;
-
-    case DBX:
-	initial_cmds = app_data.dbx_initial_cmds;
-	settings     = app_data.dbx_settings;
-	break;
-
-    case XDB:
-	initial_cmds = app_data.xdb_initial_cmds;
-	settings     = app_data.xdb_settings;
-	break;
-    }
-
-    if ((initial_cmds == 0 || initial_cmds[0] == '\0')
-	&& (settings == 0 || settings[0] == '\0'))
-    {
-	// No initial commands
-	gdb_init_file = "";
-    }
-    else
-    {
-	// Set initial commands
-	if (remote_gdb())
-	{
-	    gdb_init_file = "${TMPDIR=/tmp}/ddd" + itostring(getpid());
-	    string cmd = sh_command("cat > " + gdb_init_file);
-	    FILE *fp = popen(cmd, "w");
-	    if (fp == 0)
-	    {
-		perror(gdb_init_file);
-	    }
-	    else
-	    {
-		if (settings)
-		    fputs(settings, fp);
-		if (initial_cmds)
-		    fputs(initial_cmds, fp);
-		pclose(fp);
-	    }
-	}
-	else
-	{
-	    gdb_init_file = tmpnam(0);
-	    ofstream os(gdb_init_file);
-	    if (settings)
-		os << settings << "\n";
-	    if (initial_cmds)
-		os << initial_cmds << "\n";
-	}
-    }
-
     // Build call
     static string gdb_call = app_data.debugger_command;
 
     switch(type)
     {
     case GDB:
+	// Do not issue introductiory messages; output full file names.
 	gdb_call += " -q -fullname";
-	if (gdb_init_file != "")
-	    gdb_call += " -x " + gdb_init_file;
 	break;
 
     case DBX:
-	if (gdb_init_file != "")
-	{
-	    // When we specify a DBX init file, all default init
-	    // files are overridden.  Specify them explicitly.
-	    gdb_call += " -s .dbxrc -s $HOME/.dbxrc";
-	    gdb_call += " -s .dbxinit -s $HOME/.dbxinit";
-	    gdb_call += " -s " + gdb_init_file;
-	}
+	// Nothing special.  (Anyway, every DBX has its own sets of
+	// options, so there is not much we could do here.)
 	break;
 
     case XDB:
-	gdb_call += " -L ";
-	if (gdb_init_file != "")
-	    gdb_call += " -p " + gdb_init_file;
+	// Enable line mode.
+	gdb_call += " -L";
 	break;
     }
 
@@ -227,25 +157,5 @@ static void InvokeGDBFromShellHP(Agent *source, void *client_data,
 	    // ... and don't get called again.
 	    gdb->removeHandler(Input, InvokeGDBFromShellHP, client_data);
 	}
-    }
-}
-
-
-// Cleanup
-void remove_init_file()
-{
-    if (gdb_init_file != "")
-    {
-	if (remote_gdb())
-	{
-	    string cmd = sh_command("rm -f " + gdb_init_file 
-				    + " >/dev/null </dev/null 2>&1 &");
-	    system(cmd);
-	}
-	else
-	{
-	    unlink(gdb_init_file.chars());
-	}
-	gdb_init_file = "";
     }
 }

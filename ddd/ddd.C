@@ -2578,9 +2578,6 @@ void gdb_ready_for_questionHP (void*, void*, void* call_data)
 	    gdb_initialized = true;
 	    XmTextSetEditable(gdb_w, true);
 
-	    // Kill initialization file
-	    remove_init_file();
-
 	    // Load the default history (for debuggers that don't
 	    // provide history); the ``real'' history is read as reply
 	    // to the ``show history filename'' command.

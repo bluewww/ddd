@@ -37,15 +37,15 @@ char exit_rcsid[] =
 
 #include "AgentM.h"
 #include "AppData.h"
-#include "ExitCB.h"
-#include "HelpCB.h"
 #include "DestroyCB.h"
+#include "ExitCB.h"
+#include "GDBAgent.h"
+#include "HelpCB.h"
 #include "MString.h"
 #include "commandQ.h"
 #include "ddd.h"
 #include "exectty.h"
 #include "findParent.h"
-#include "gdbinit.h"
 #include "history.h"
 #include "host.h"
 #include "options.h"
@@ -200,7 +200,6 @@ void ddd_cleanup()
 
     ddd_is_exiting = true;
 
-    remove_init_file();
     kill_exec_tty();
     if (command_shell && app_data.save_history_on_exit)
 	save_history(command_shell);

@@ -37,8 +37,7 @@
 #include "AppData.h"
 #include <X11/Intrinsic.h>
 
-extern void remove_init_file();
-
+// Create new GDB process
 extern GDBAgent *new_gdb(DebuggerType type,
 			 const AppData& app_data,
 			 XtAppContext app_context,

@@ -64,7 +64,7 @@ char comm_manager_rcsid[] =
 #include "buttons.h"
 #include "question.h"
 #include "settings.h"
-#include "stty.h"
+#include "AppData.h"
 
 #include <ctype.h>
 
@@ -107,6 +107,8 @@ typedef struct CmdData {
 
 
 typedef struct PlusCmdData {
+    int      n_init;	               // # of initialization commands
+
     bool     refresh_initial_line;     // send 'info line' / `func'
     bool     refresh_file;             // send 'file'
     bool     refresh_line;             // send 'list'
@@ -124,7 +126,6 @@ typedef struct PlusCmdData {
     string   set_command;	       // setting to update
     int      n_refresh_disp;	       // # of displays to refresh
 
-    bool     config_stty;	       // try stty command
     bool     config_frame;	       // try 'frame'
     bool     config_run_io;	       // try 'dbxenv run_io'
     bool     config_print_r;	       // try 'print -r'
@@ -135,12 +136,13 @@ typedef struct PlusCmdData {
     bool     config_named_values;      // try 'print "ddd"'
     bool     config_when_semicolon;    // try 'help when'
     bool     config_err_redirection;   // try 'help run'
-    bool     config_page;	       // try 'set $page = 0'
     bool     config_xdb;	       // try XDB settings
     bool     config_output;            // try 'output'
     bool     config_program_language;  // try 'show language'
 
     PlusCmdData () :
+	n_init(0),
+
 	refresh_initial_line(false),
 	refresh_file(false),
 	refresh_line(false),
@@ -158,7 +160,6 @@ typedef struct PlusCmdData {
 	set_command(""),
 	n_refresh_disp(0),
 
-	config_stty(false),
 	config_frame(false),
 	config_run_io(false),
 	config_print_r(false),
@@ -169,7 +170,6 @@ typedef struct PlusCmdData {
 	config_named_values(false),
 	config_when_semicolon(false),
 	config_err_redirection(false),
-	config_page(false),
 	config_xdb(false),
 	config_output(false),
 	config_program_language(false)
@@ -184,6 +184,12 @@ static string print_cookie = "4711";
 
 // ***************************************************************************
 //
+
+inline string str(String s)
+{
+    return s != 0 ? s : "";
+}
+
 void start_gdb()
 {
     CmdData* cmd_data = new CmdData ();
@@ -194,6 +200,32 @@ void start_gdb()
     StringArray cmds;
     VoidArray dummy;
 
+    // Set up initialization commands
+    string init;
+
+    switch (gdb->type())
+    {
+    case GDB:
+	init = str(app_data.gdb_initial_cmds) + str(app_data.gdb_settings);
+	break;
+
+    case DBX:
+	init = str(app_data.dbx_initial_cmds) + str(app_data.dbx_settings);
+	break;
+
+    case XDB:
+	init = str(app_data.xdb_initial_cmds) + str(app_data.xdb_settings);
+	break;
+    }
+
+    plus_cmd_data->n_init = init.freq('\n');
+    while (init != "")
+    {
+	cmds += init.before('\n');
+	init = init.after('\n');
+    }
+
+    // Some additional commands with reply handling
     switch (gdb->type())
     {
     case GDB:
@@ -218,8 +250,6 @@ void start_gdb()
 
     case DBX:
 	plus_cmd_data->refresh_initial_line = true;
-	cmds += "sh " STTY_COMMAND;
-	plus_cmd_data->config_stty = true;
 	cmds += "frame";
 	plus_cmd_data->config_frame = true;
 	cmds += "dbxenv run_io";
@@ -240,8 +270,6 @@ void start_gdb()
 	plus_cmd_data->config_when_semicolon = true;
 	cmds += "help run";
 	plus_cmd_data->config_err_redirection = true;
-	cmds += "set $page = 0";
-	plus_cmd_data->config_page = true;
 
 	cmds += "sh pwd";
 	plus_cmd_data->refresh_pwd = true;
@@ -256,17 +284,8 @@ void start_gdb()
     case XDB:
 	cmds += "L";
 	plus_cmd_data->refresh_initial_line = true;
-
-	cmds += "sm";
 	cmds += "tm";
-	cmds += "def run r";
-	cmds += "def cont c";
-	cmds += "def next S";
-	cmds += "def step s";
-	cmds += "def quit q";
-	cmds += "def finish { bu \\1t ; c ; L }";
 	plus_cmd_data->config_xdb = true;
-
 	cmds += "!pwd";
 	plus_cmd_data->refresh_pwd = true;
 	cmds += "lb";
@@ -572,7 +591,7 @@ void user_cmdSUC (string cmd, Widget origin)
     StringArray cmds;
     VoidArray dummy;
 
-    assert(!plus_cmd_data->config_stty);
+    assert(plus_cmd_data->n_init == 0);
     assert(!plus_cmd_data->config_frame);
     assert(!plus_cmd_data->config_run_io);
     assert(!plus_cmd_data->config_print_r);
@@ -583,7 +602,6 @@ void user_cmdSUC (string cmd, Widget origin)
     assert(!plus_cmd_data->config_named_values);
     assert(!plus_cmd_data->config_when_semicolon);
     assert(!plus_cmd_data->config_err_redirection);
-    assert(!plus_cmd_data->config_page);
     assert(!plus_cmd_data->config_xdb);
     assert(!plus_cmd_data->config_output);
     assert(!plus_cmd_data->config_program_language);
@@ -911,7 +929,7 @@ static bool is_known_command(const string& answer)
 	    && !ans.contains("unknown", 0));     // XDB
 }
 
-static void process_config_stty(string&)
+static void process_init(string&)
 {
     // Nothing yet...
 }
@@ -974,16 +992,6 @@ static void process_config_err_redirection(string& answer)
     gdb->has_err_redirection(answer.contains(">&"));
 }
 
-static void process_config_page(string&)
-{
-    // Nothing yet...
-}
-
-static void process_config_sm(string&)
-{
-    // Nothing yet...
-}
-
 static void process_config_tm(string& answer)
 {
     // If the `tm' command we just sent SUSPENDED macros instead of
@@ -991,11 +999,6 @@ static void process_config_tm(string& answer)
     // them.
     if (answer.contains("SUSPENDED"))
 	gdb_question("tm", 0);
-}
-
-static void process_config_def(string&)
-{
-    // Nothing yet...
 }
 
 static void process_config_program_language(string& lang)
@@ -1015,6 +1018,19 @@ void plusOQAC (string answers[],
     PlusCmdData* plus_cmd_data = (PlusCmdData*)data;
     int qu_count = 0;
     string file;
+
+    if (plus_cmd_data->config_xdb) {
+	// Make sure XDB understands macros
+	assert (qu_count < count);
+	process_config_tm(answers[qu_count++]);
+    }
+
+    while (plus_cmd_data->n_init > 0)
+    {
+	// Handle output of initialization commands
+	process_init(answers[qu_count++]);
+	plus_cmd_data->n_init--;
+    }
 
     if (plus_cmd_data->refresh_initial_line)
     {
@@ -1053,11 +1069,6 @@ void plusOQAC (string answers[],
 	case DBX:
 	    break;
 	}
-    }
-
-    if (plus_cmd_data->config_stty) {
-	assert (qu_count < count);
-	process_config_stty(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_frame) {
@@ -1110,21 +1121,9 @@ void plusOQAC (string answers[],
 	process_config_err_redirection(answers[qu_count++]);
     }
 
-    if (plus_cmd_data->config_page) {
-	assert (qu_count < count);
-	process_config_page(answers[qu_count++]);
-    }
-
     if (plus_cmd_data->config_xdb) {
 	assert (qu_count < count);
-	process_config_sm(answers[qu_count++]);
 	process_config_tm(answers[qu_count++]);
-	process_config_def(answers[qu_count++]); // def run r
-	process_config_def(answers[qu_count++]); // def cont c
-	process_config_def(answers[qu_count++]); // def next S
-	process_config_def(answers[qu_count++]); // def step s
-	process_config_def(answers[qu_count++]); // def quit q
-	process_config_def(answers[qu_count++]); // def finish { ... }
     }
 
     if (plus_cmd_data->config_output) {
