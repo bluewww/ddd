@@ -2,6 +2,7 @@
 ddd-aliases.ps
 ddd-all.ps
 ddd-arguments.ps
+ddd-attach.ps
 ddd-backtrace.ps
 ddd-bp-popup.ps
 ddd-code.ps
