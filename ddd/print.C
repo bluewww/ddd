@@ -180,6 +180,10 @@ static string output_buffer;
 
 static void printDoneHP(Agent *print_agent, void *client_data, void *)
 {
+    // Don't get called again
+    print_agent->removeAllHandlers(InputEOF);
+    print_agent->removeAllHandlers(Died);
+
     // Printing is done: remove temporary file
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, deletePrintAgent, 
 		    XtPointer(print_agent));
@@ -221,9 +225,11 @@ static int print_to_printer(string command, PrintGC& gc,
 
     output_buffer = "";
 
+    string *sp = new string(tempfile);
+
     print_agent->removeAllHandlers(Died);
-    print_agent->addHandler(InputEOF, printDoneHP, 
-			   (void *)new string(tempfile));
+    print_agent->addHandler(InputEOF, printDoneHP, (void *)sp);
+    print_agent->addHandler(Died,     printDoneHP, (void *)sp);
     print_agent->addHandler(Input, printOutputHP);
     print_agent->addHandler(Error, printOutputHP);
     print_agent->start();
