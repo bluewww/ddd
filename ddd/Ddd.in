@@ -3,7 +3,7 @@
 ! @configure_input@
 Ddd*appDefaultsVersion:	 @VERSION@
 
-! Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
+! Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 ! Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 ! 
 ! This file is part of the DDD Library.
@@ -2141,7 +2141,9 @@ Ddd*menubar.data*helpString:	\
 @tt \267 @bf Display Local Variables @rm - show current local variables.\n\
 @tt \267 @bf Display Arguments @rm - show current argument variables.\n\
 \n\
-@tt \267 @bf Align Displays @rm - align all displays on the next grid point.\n\
+@tt \267 @bf Detect Aliases @rm - toggle alias detection.\n\
+\n\
+@tt \267 @bf Align on Grid @rm - align all displays on the next grid point.\n\
 @tt \267 @bf Rotate Graph @rm - rotate the graph clockwise by 90 degrees.\n\
 @tt \267 @bf Layout Graph @rm - layout the graph.\n\
 \n\
@@ -2156,31 +2158,46 @@ Ddd*dataMenu.displays.documentationString: \
 ! This item is visible in GDB only.
 Ddd*dataMenu.info locals.labelString:	Display Local Variables
 Ddd*dataMenu.info locals.mnemonic:	V
+Ddd*dataMenu.info locals.accelerator:	Meta<Key>V
+Ddd*dataMenu.info locals.acceleratorText: Alt+V
 Ddd*dataMenu.info locals.documentationString: \
 @rm Display the local variables of the current stack frame.
 
 ! This item is visible in GDB only.
 Ddd*dataMenu.info args.labelString:	Display Arguments
-Ddd*dataMenu.info args.mnemonic:	A
+Ddd*dataMenu.info args.mnemonic:	u
+Ddd*dataMenu.info args.accelerator:	Meta<Key>U
+Ddd*dataMenu.info args.acceleratorText: Alt+U
 Ddd*dataMenu.info args.documentationString: \
 @rm Display the argument variables of the current stack frame.
 
 ! This item is visible in DBX only.
 Ddd*dataMenu.dump.labelString:		Display Local Variables
 Ddd*dataMenu.dump.mnemonic:		V
+Ddd*dataMenu.dump.accelerator:		Meta<Key>V
+Ddd*dataMenu.dump.acceleratorText:	Alt+V
 Ddd*dataMenu.dump.documentationString: \
 @rm Display all local variables of the current stack frame.
 
 ! This item is visible in XDB only.
 Ddd*dataMenu.l.labelString:		Display Local Variables
 Ddd*dataMenu.l.mnemonic:		V
+Ddd*dataMenu.l.accelerator:		Meta<Key>V
+Ddd*dataMenu.l.acceleratorText:		Alt+V
 Ddd*dataMenu.l.documentationString: \
 @rm Display all local variables of the current stack frame.
 
-Ddd*dataMenu.align.labelString:		Align Displays
-Ddd*dataMenu.align.mnemonic:		D
-Ddd*dataMenu.align.accelerator:		Meta<Key>A
-Ddd*dataMenu.align.acceleratorText:	Alt+A
+Ddd*dataMenu.detectAliases.labelString:	Detect Aliases
+Ddd*dataMenu.detectAliases.mnemonic:	A
+Ddd*dataMenu.detectAliases.accelerator:	Meta<Key>A
+Ddd*dataMenu.detectAliases.acceleratorText: Alt+A
+Ddd*dataMenu.detectAliases.documentationString:	\
+@rm Detect aliases (shared data structures)
+
+Ddd*dataMenu.align.labelString:		Align on Grid
+Ddd*dataMenu.align.mnemonic:		G
+Ddd*dataMenu.align.accelerator:		Meta<Key>G
+Ddd*dataMenu.align.acceleratorText:	Alt+G
 Ddd*dataMenu.align.documentationString:	\
 @rm Align all displays on the next grid point
 
@@ -2425,9 +2442,11 @@ Ddd*preferences*tabWidth.titleString:		Tab width
 Ddd*preferences*data*helpString:	\
 @rm These are the @sl Data Preferences@rm.\n\
 \n\
-@tt \267 @rm If @bf Detect aliases @rm is set, @DDD@ merges displays\
+@tt \267 @rm If @bf Detect aliases @rm is set, @DDD@ detects displays\
  with the same\n\
-    physical address.  This is useful for examining shared data structures.\n\
+    physical address and suppresses all aliases except the one that was\
+ least recently changed.\n\
+    This is useful for examining shared data structures.\n\
 @tt \267 @rm If @bf Show edge hints @rm is set, edge hints are displayed.\n\
 @tt \267 @rm If @bf Auto-align displays @rm is set, \n\
     each display is aligned on the nearest grid point.\n\

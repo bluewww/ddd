@@ -866,10 +866,11 @@ static MMDesc options_menu [] =
 
 
 // Data
-static Widget info_locals_w = 0;
-static Widget info_args_w   = 0;
-static Widget dump_w        = 0;
-static Widget l_w           = 0;
+static Widget info_locals_w    = 0;
+static Widget info_args_w      = 0;
+static Widget dump_w           = 0;
+static Widget l_w              = 0;
+static Widget detect_aliases_w = 0;
 
 static MMDesc data_menu[] = 
 {
@@ -883,6 +884,9 @@ static MMDesc data_menu[] =
       NULL, &info_locals_w },
     { "info args",   MMToggle | MMUnmanaged, { graphToggleArgsCB },
       NULL, &info_args_w },
+    MMSep,
+    { "detectAliases", MMToggle, { graphToggleDetectAliasesCB },
+      NULL, &detect_aliases_w },
     MMSep,
     { "align",      MMPush,    { graphAlignCB  }},
     { "rotate",     MMPush,    { graphRotateCB }},
@@ -1760,18 +1764,29 @@ int main(int argc, char *argv[])
     switch (gdb->type())
     {
     case XDB:
+	XtDestroyWidget(info_locals_w);
+	XtDestroyWidget(info_args_w);
+	XtDestroyWidget(dump_w);
 	XtManageChild(l_w);
+
 	register_info_button(l_w);
 	break;
 
     case DBX:
+	XtDestroyWidget(info_locals_w);
+	XtDestroyWidget(info_args_w);
 	XtManageChild(dump_w);
+	XtDestroyWidget(l_w);
+
 	register_info_button(dump_w);
 	break;
 
     case GDB:
 	XtManageChild(info_locals_w);
 	XtManageChild(info_args_w);
+	XtDestroyWidget(dump_w);
+	XtDestroyWidget(l_w);
+
 	register_info_button(info_locals_w);
 	register_info_button(info_args_w);
     }
@@ -2114,6 +2129,9 @@ void update_options()
 
     XtVaSetValues(graph_detect_aliases_w,
 		  XmNset, app_data.detect_aliases, NULL);
+    XtVaSetValues(detect_aliases_w,
+		  XmNset, app_data.detect_aliases, NULL);
+
     XtVaSetValues(graph_snap_to_grid_w, XmNset, snap_to_grid, NULL);
     XtVaSetValues(graph_show_hints_w, XmNset, show_hints, NULL);
     XtVaSetValues(graph_auto_layout_w, XmNset, auto_layout, NULL);
@@ -2309,6 +2327,8 @@ static bool source_preferences_changed()
 static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 {
     set_toggle(graph_detect_aliases_w, initial_app_data.detect_aliases);
+    set_toggle(detect_aliases_w, initial_app_data.detect_aliases);
+
     set_toggle(graph_show_hints_w, initial_show_hints);
     set_toggle(graph_snap_to_grid_w, initial_snap_to_grid);
     set_toggle(graph_compact_layout_w, 
