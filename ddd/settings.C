@@ -2093,12 +2093,34 @@ static void refresh_toggles()
     refresh_toggle(ConsoleTarget);
 }
 
+static void sort(StringArray& a)
+{
+    // Shell sort -- simple and fast
+    int h = 1;
+    do {
+	h = h * 3 + 1;
+    } while (h <= a.size());
+    do {
+	h /= 3;
+	for (int i = h; i < a.size(); i++)
+	{
+	    string v = a[i];
+	    int j;
+	    for (j = i; j >= h && a[j - h] > v; j -= h)
+		a[j] = a[j - h];
+	    if (i != j)
+		a[j] = v;
+	}
+    } while (h != 1);
+}
+
 static void refresh_combo_box()
 {
     // Refresh combo box
     StringArray commands;
     for (StringStringAssocIter iter(defs); iter.ok(); iter++)
 	commands += iter.key();
+    sort(commands);
     MMsetComboBoxList(name_w, commands);
 }
 
