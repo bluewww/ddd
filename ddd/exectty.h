@@ -57,5 +57,8 @@ void handle_running_commands(string& command, Widget origin);
 // Name of GDB tty
 extern string gdb_tty;
 
+// Verify if TTY window is still running
+extern void exec_tty_running();
+
 #endif // _DDD_exectty_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -48,9 +48,14 @@ const char exectty_rcsid[] =
 #include "string-fun.h"
 #include "windows.h"
 #include "wm.h"
+#include "commandQ.h"
 
+#include <fstream.h>
 #include <signal.h>
 #include <unistd.h>
+
+#include <X11/X.h>
+#include <X11/Xlib.h>
 
 extern "C" {
 // The GNU termcap declarations should also work for non-GNU termcap
@@ -74,9 +79,6 @@ static pid_t separate_tty_pid   = 0;
 // TTY terminal type
 static string separate_tty_term  = "dumb";
 
-// TTY pipe agent
-static LiterateAgent *separate_tty_agent = 0;
-
 // TTY window
 static Window separate_tty_window = 0;
 
@@ -92,21 +94,17 @@ static bool show_starting_line_in_tty    = false;
 pid_t exec_tty_pid()     { return separate_tty_pid; }
 Window exec_tty_window() { return separate_tty_window; }
 
-// Create a separate tty window; return its name and process id
+// Create a separate tty window; return its name in TTYNAME, its
+// process id in PID, its terminal type in TERM, and its window id in
+// WINDOWID.
 void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
-			 LiterateAgent*& tty_agent, 
 			 Window& windowid, Widget origin)
 {
     // If we're already running, all is done.
     if (pid > 0 && !remote_gdb() && kill(pid, 0) == 0)
 	return;
 
-    if (pid > 0)
-	set_status("Restarting execution tty.");
-    else
-	set_status("Starting execution tty.");
-
-    Delay delay;
+    StatusDelay delay("Starting execution tty");
 
     string old_ttyname = ttyname;
 
@@ -126,7 +124,7 @@ void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 
 	// which saves TTY, PID, TERM, and WINDOWID in TMP and goes to
 	// sleep forever.  Signal 2 (SIGINT) is blocked for two
-	// reasons: first, we dont want ^C to kill the tty window;
+	// reasons: first, we don't want ^C to kill the tty window;
 	// second, later invocations will send us SIGINT to find out
 	// whether we're still alive.
 	" '"
@@ -157,19 +155,21 @@ void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 
     command = sh_command(command);
 
-    Agent tty(command);
-    tty.start();
-
-    FILE *fp = tty.inputfp();
-    if (fp != 0)
     {
-	char reply[BUFSIZ];
-	fgets(reply, BUFSIZ, fp);
+	Agent tty(command);
+	tty.start();
 
-	if (strlen(reply) > 2)
+	FILE *fp = tty.inputfp();
+	if (fp != 0)
 	{
-	    istrstream is(reply);
-	    is >> ttyname >> pid >> term >> windowid;
+	    char reply[BUFSIZ];
+	    fgets(reply, BUFSIZ, fp);
+
+	    if (strlen(reply) > 2)
+	    {
+		istrstream is(reply);
+		is >> ttyname >> pid >> term >> windowid;
+	    }
 	}
     }
 
@@ -180,37 +180,6 @@ void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     if (pid < 0)
 	post_error("Could not start execution tty", "tty_exec_error", origin);
 
-    if (pid < 0 || ttyname != old_ttyname)
-    {
-	// Close old tty stream
-	if (tty_agent)
-	{
-	    delete tty_agent;
-	    tty_agent = 0;
-	}
-    }
-
-    if (pid > 0 && tty_agent == 0)
-    {
-	XtAppContext app_context =
-	    XtWidgetToApplicationContext(gdb_w);
-
-	// Open new tty stream
-	if (remote_gdb())
-	{
-	    string command = sh_command("cat -u > " + ttyname);
-
-	    tty_agent = new LiterateAgent(app_context, command);
-	    tty_agent->start();
-	}
-	else
-	{
-	    FILE *ttyfp = fopen(ttyname, "w");
-	    tty_agent = new LiterateAgent(app_context, stdin, ttyfp, stderr);
-	    tty_agent->start();
-	}
-    }
-
     // Set icon and group leader
     if (windowid)
     {
@@ -218,6 +187,12 @@ void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 		    iconlogo(command_shell), iconmask(command_shell));
 	wm_set_group_leader(XtDisplay(command_shell), windowid,
 			    XtWindow(command_shell));
+    }
+
+    // Be sure to be notified when the TTY window is deleted
+    if (windowid)
+    {
+	XSelectInput(XtDisplay(gdb_w), windowid, StructureNotifyMask);
     }
 }
 
@@ -459,9 +434,11 @@ inline void addcap(string& s, const char *cap, char *& b)
     if (str)
 	s += str;
 }
-    
-void initialize_tty(LiterateAgent *tty_agent, const string& tty_term)
+
+void initialize_tty(const string& tty_name, const string& tty_term)
 {
+    StatusDelay delay("Initializing execution tty");
+
     char buffer[2048];
     string init;
 
@@ -476,10 +453,17 @@ void initialize_tty(LiterateAgent *tty_agent, const string& tty_term)
 	addcap(init, "cl", b);	// Clear screen
     }
 
-    if (init.length() > 0)
+    if (remote_gdb())
     {
-	tty_agent->write(init, init.length());
-	tty_agent->flush();
+	string command = sh_command("cat > " + tty_name);
+	FILE *fp = popen(command, "w");
+	fwrite((char *)init, init.length(), sizeof(char), fp);
+	pclose(fp);
+    }
+    else
+    {
+	ofstream tty(tty_name);
+	tty << init;
     }
 }
 
@@ -540,7 +524,6 @@ void startup_exec_tty(string& command, Widget origin)
 	launch_separate_tty(separate_tty_name, 
 			    separate_tty_pid,
 			    separate_tty_term,
-			    separate_tty_agent,
 			    separate_tty_window,
 			    origin);
 
@@ -548,7 +531,7 @@ void startup_exec_tty(string& command, Widget origin)
 	    return;
 
 	// Initialize tty
-	initialize_tty(separate_tty_agent, separate_tty_term);
+	initialize_tty(separate_tty_name, separate_tty_term);
 
 	// Set title from `starting program...' message
 	show_starting_line_in_tty = true;
@@ -578,7 +561,7 @@ void set_tty_from_gdb(const string& text)
 
     show_starting_line_in_tty = false;
 
-    if (separate_tty_pid <= 0 || separate_tty_agent == 0)
+    if (separate_tty_pid <= 0)
 	return;
 
     set_tty_title(text, separate_tty_window);
@@ -589,6 +572,8 @@ void kill_exec_tty()
 {
     if (separate_tty_pid > 0)
     {
+	StatusDelay delay("Closing execution tty");
+
 	if (remote_gdb())
 	{
 	    ostrstream os;
@@ -604,4 +589,23 @@ void kill_exec_tty()
 
     separate_tty_pid    = 0;
     separate_tty_window = 0;
+}
+
+// Verify if execution tty is still running
+void exec_tty_running()
+{
+    if (separate_tty_window)
+    {
+	XEvent event;
+
+	if (XCheckTypedWindowEvent(XtDisplay(gdb_w), separate_tty_window,
+				   DestroyNotify, &event))
+	{
+	    // TTY window has been killed - kill process as well
+	    kill_exec_tty();
+
+	    // Restore original TTY for the time being
+	    gdb_set_tty(gdb->slave_tty(), "dumb", gdb_w);
+	}
+    }
 }
