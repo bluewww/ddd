@@ -380,6 +380,9 @@ static void redirect_process(string& command,
     string args;
     get_args(command, base, args);
 
+    static string empty;
+    args.gsub(gdb_redirection, empty);
+
     gdb_redirection = "";
     if (!args.contains("<"))
 	gdb_redirection = "< " + tty_name;
@@ -490,7 +493,8 @@ static void unredirect_process(string& command,
 	get_args(command, base, args);
 	if (args.contains(gdb_redirection) && gdb->type() == GDB)
 	{
-	    args = args.before(gdb_redirection);
+	    static string empty;
+	    args.gsub(gdb_redirection, empty);
 	    strip_final_blanks(args);
 	    string reply = gdb_question("set args " + args);
 	    if (reply != "")
