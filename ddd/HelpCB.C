@@ -913,7 +913,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     XtManageChild(help_index);
     set_scrolled_window_size(help_index);
 
-    int columns = max(max_width(unformatted_text.chars()), 40);
+    int columns = max_width(unformatted_text.chars());
+    columns = min(max(columns, 40), 80);
 
     arg = 0;
     XtSetArg(args[arg], XmNcolumns,  columns);                  arg++;
@@ -1344,7 +1345,8 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     Widget title = verify(XmCreateLabel(form, "title", args, arg));
     XtManageChild(title);
 
-    int columns = max(max_width(text), 40);
+    int columns = max_width(text);
+    columns = min(max(columns, 40), 80);
 
     arg = 0;
     XtSetArg(args[arg], XmNcolumns,          columns);           arg++;
