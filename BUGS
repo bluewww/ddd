@@ -282,7 +282,10 @@ Volunteers for fixing these and other bugs are welcome!
     window locks in scroll mode until it reaches the top or bottom of
     the file.
 
-258 Using the common toolbar, the `():' button does not clear the
+258*Using the common toolbar, the `():' button does not clear the
     graph editor selection.
 
-259 (Insert new bugs here)
+259*In LessTif, the `flat' command toolbars are not reset after
+    leaving the PushMenu.
+
+260 (Insert new bugs here)
