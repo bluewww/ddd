@@ -433,10 +433,8 @@ void Graph::begin_color(ostream& os, const PrintGC& gc,
 {
     if (gc.isPostScript())
     {
-	// Mark Klink <mark.klink@dsto.defence.gov.au> says
-	// gcc 2.8.1 bails out if we use ref_cast() here.
 	const PostScriptPrintGC &ps = 
-	    *ptr_cast(PostScriptPrintGC, (PrintGC *)&gc);
+	    ref_cast(PostScriptPrintGC, (PrintGC &)gc);
 
 	if (ps.color)
 	{
@@ -453,10 +451,8 @@ void Graph::end_color(ostream& os, const PrintGC& gc) const
 {
     if (gc.isPostScript())
     {
-	// Mark Klink <mark.klink@dsto.defence.gov.au> says
-	// gcc 2.8.1 bails out if we use ref_cast() here.
 	const PostScriptPrintGC &ps = 
-	    *ptr_cast(PostScriptPrintGC, (PrintGC *)&gc);
+	    ref_cast(PostScriptPrintGC, (PrintGC &)gc);
 
 	if (ps.color)
 	    os << "endcolor*\n";

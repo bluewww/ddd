@@ -49,7 +49,14 @@
 #define ptr_type_info(p)    typeid(p)
 #define ref_type_info(r)    typeid(&(r))
 #define ptr_cast(T, p)      dynamic_cast<T *>(p)
+
+#if 0
+// This doesn't work in GCC 2.8.1.
 #define ref_cast(T, r)      dynamic_cast<T &>(r)
+#else
+// Use this kludge instead.
+#define ref_cast(T, r)      *(ptr_cast(T, &(r)))
+#endif
 
 // Old-style definition macros are no more required
 #define DECLARE_TYPE_INFO
