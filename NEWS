@@ -150,6 +150,8 @@ File Access
 User Interface
 --------------
 
+- DDD has a new splash screen by Stefan "snowcrash" Stiasny <sc@swi.ml.org>.
+
 - Insensitive items have a 3-D `emboss' look, making them more legible.
 
 - `Flat' toolbar buttons keep their border after having been activated.
