@@ -204,14 +204,6 @@ static void unflatten_button(Widget w)
 }
 
 
-static void FlattenNow(XtPointer client_data, XtIntervalId *)
-{
-    Widget *w = (Widget *)client_data;
-    flatten_button(*w);
-    *w = 0;
-    active_button = 0;
-}
-
 static void FlattenEH(Widget w,
 		      XtPointer /* client_data */,
 		      XEvent *event, 
@@ -220,21 +212,6 @@ static void FlattenEH(Widget w,
     if (event->xcrossing.state & (Button1Mask | Button2Mask | Button3Mask | 
 				  Button4Mask | Button5Mask))
 	return;			// Button is still pressed
-
-    static XtIntervalId pending_flatten_timer = 0;
-    static Widget pending_flatten_widget      = 0;
-
-    if (pending_flatten_widget != 0)
-    {
-	// Flattening of old button still pending - do this now
-	XtRemoveTimeOut(pending_flatten_timer);
-
-	if (pending_flatten_widget != w)
-	    flatten_button(pending_flatten_widget);
-
-	pending_flatten_timer = 0;
-	pending_flatten_widget = 0;
-    }
 
     switch (event->type)
     {
@@ -251,13 +228,8 @@ static void FlattenEH(Widget w,
     {
 	// clog << "Leaving " << XtName(w) << "\n";
 
-	// We don't flatten the button immediately, because the DDD
-	// ungrab mechanism may cause the pointer to leave a button
-	// and re-enter it immediately.  Wait for 75ms.
-	pending_flatten_widget = w;
-	pending_flatten_timer = 
-	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
-			    75, FlattenNow, &pending_flatten_widget);
+	flatten_button(w);
+	active_button = 0;
 	break;
     }
     }
