@@ -87,6 +87,25 @@ Customization
 - Signal settings are saved with the current session.
 
 
+Key bindings
+------------
+
+- The function keys F2-F9 have been assigned to frequently used
+  debugger commands:
+
+	F2 Run
+	F3 Run Again
+	F4 Kill
+	F5 Until
+	F6 Finish
+	F7 Step		Shift+F7 Step Instruction
+	F8 Next		Shift+F8 Next Instruction
+	F9 Continue	Shift+F9 Continue Without Signal
+
+  The bindings from DDD 3.0 and earlier (Ctrl+E for Run, Ctrl+I for
+  Step, etc.) are still available.
+
+
 Bug fixes
 ---------
 
