@@ -377,9 +377,8 @@ void set_status_mstring(const MString& message)
     if (status_w == 0)
 	return;
 
-    add_to_status_history(current_status_text);
-
     current_status_text = message;
+    add_to_status_history(message);
 
     XtVaSetValues(status_w,
 		  XmNlabelString, message.xmstring(),
