@@ -85,7 +85,7 @@ cd ddd
 sed 's/VERSION=.*/# &/
 s/EXPIRES=.*/# &/
 /^# VERSION=/a\
-VERSION=ddd-'$date'
+VERSION='$date'
 
 /^# EXPIRES=/a\
 EXPIRES='$expires'
