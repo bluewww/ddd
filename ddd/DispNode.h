@@ -91,6 +91,17 @@ protected:
     static HandlerList handlers;
     static class TagBox *findTagBox(const Box *box, DispValue *dv);
 
+private:
+    DispNode(const DispNode&)
+	: mydisp_nr(0), myname(), myaddr(), myscope(),
+	  myenabled(false), mynodeptr(0), disp_value(0),
+	myselected_value(0), disp_box(0), mylast_change(0),
+	alias_of(0)
+    {
+	assert(0);
+    }
+    const DispNode& operator = (const DispNode&) { assert(0); return *this; }
+
 public:
     // Create a new display numbered DISP_NR, named NAME, created at
     // SCOPE (a function name or "") with a value of VALUE.

@@ -46,6 +46,7 @@
 #include "HandlerL.h"
 #include "bool.h"
 #include "strclass.h"
+#include "assert.h"
 
 
 //-----------------------------------------------------------------------------
@@ -68,9 +69,14 @@ class ArgField {
 			      XtPointer client_data, 
 			      XtPointer call_data);
 
+private:
+    ArgField(const ArgField&): 
+	arg_text_field(0), handlers(), is_empty(false) { assert(0); }
+    const ArgField& operator = (const ArgField&)       { assert(0); }
+
 public:
     // Constructor
-    ArgField (Widget parent, const char* name);
+    ArgField(Widget parent, const char *name);
 
     bool empty () const { return is_empty; }
 

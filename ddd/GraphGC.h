@@ -129,6 +129,33 @@ struct GraphGC {
 	printGC(g.printGC),
 	printSelectedNodesOnly(g.printSelectedNodesOnly)
     {}
+
+    // Assignment
+    const GraphGC& operator = (const GraphGC& g)
+    {
+	if (&g != this)
+	{
+	    redraw                 = g.redraw;
+	    nodeGC                 = g.nodeGC;
+	    hintGC                 = g.hintGC;
+	    edgeGC                 = g.edgeGC;
+	    invertGC               = g.invertGC;
+	    clearGC                = g.clearGC;
+	    offsetIfSelected       = g.offsetIfSelected;
+	    edgeAttachMode         = g.edgeAttachMode;
+	    drawArrowHeads         = g.drawArrowHeads;
+	    drawHints              = g.drawHints;
+	    hintSize               = g.hintSize;
+	    arrowAngle             = g.arrowAngle;
+	    arrowLength            = g.arrowLength;
+	    selfEdgeDiameter       = g.selfEdgeDiameter;
+	    selfEdgePosition       = g.selfEdgePosition;
+	    selfEdgeDirection      = g.selfEdgeDirection;
+	    printGC                = g.printGC;
+	    printSelectedNodesOnly = g.printSelectedNodesOnly;
+	}
+	return *this;
+    }
 };
 
 #endif // _DDD_GraphGC_h

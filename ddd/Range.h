@@ -32,18 +32,19 @@
 #include <iostream.h>
 
 struct Range {
-    int start;          // Beginn Bereich
-    int end;            // Ende Bereich
-    Range(int x = 0) {
-	start = end = x;
-    }
-    Range(int s, int e) {
-	start = s; end = e;
-    }
-    int operator == (Range r) {
+    int start;			// Start of range
+    int end;			// End of range
+
+    Range(int x = 0)
+	: start(x), end(x) {}
+    Range(int s, int e)
+	: start(s), end(e) {}
+    int operator == (const Range& r) 
+    {
 	return start == r.start && end == r.end;
     }
-    int operator != (Range r) {
+    int operator != (const Range& r)
+    {
 	return start != r.start || end != r.end;
     }
     friend ostream& operator << (ostream& s, Range& range);

@@ -56,11 +56,11 @@ char DispGraph_rcsid[] =
 // Constructor
 //
 DispGraph::DispGraph() :
+    Graph(),
     idMap(),
     handlers(DispGraph_NTypes),
     no_enabled(true),
-    no_disabled(true),
-    Graph()
+    no_disabled(true)
 {
     DispNode::addHandler(DispNode_Disabled,
 			 disp_node_disabledHP,

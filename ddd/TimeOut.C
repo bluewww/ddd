@@ -56,6 +56,17 @@ struct TimerInfo {
     string file;		// The file where XtAppAddTimeOut() was called
     int line;			// The line where XtAppAddTimeOut() was called
     TimerInfo *next;		// Next pending timer
+
+    TimerInfo()
+	: timer(0), tic(0), interval(0), proc(0), closure(0), file(), line(0),
+	  next(0)
+    {}
+
+private:
+    TimerInfo(const TimerInfo& ti)
+	: timer(0), tic(0), interval(0), proc(0), closure(0), file(), line(0),
+	  next(0)
+    {}
 };
 
 // List of pending timers

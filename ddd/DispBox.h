@@ -41,6 +41,7 @@
 #include "Box.h"
 #include "VSLLib.h"
 #include "DispValue.h"
+#include "assert.h"
 
 //-----------------------------------------------------------------------------
 
@@ -48,6 +49,10 @@ class DispBox {
 private:
     Box* mybox;
     Box* title_box;
+
+    DispBox(const DispBox&): mybox(0), title_box(0) { assert(0); }
+    const DispBox& operator = (const DispBox&) { assert(0); return *this; }
+
 public:
     // Must be initialized from outside!
     static string  vsllib_name;

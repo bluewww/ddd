@@ -82,6 +82,10 @@ struct LockInfo {
     string hostname;		// Name of host on which DDD is running
     string display;		// Display used by DDD
     int pid;			// DDD process ID
+
+    LockInfo()
+	: hostname(), display(), pid(0)
+    {}
 };
 
 // Lock session.  Return true iff successful.  Otherwise, return

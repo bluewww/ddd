@@ -52,6 +52,10 @@ bool gdb_question_running = false; // Flag: is gdb_question() running?
 struct GDBReply {
     string answer;    // The answer text (NO_GDB_ANSWER if timeout)
     bool received;    // true iff we found an answer
+
+    GDBReply()
+	: answer(NO_GDB_ANSWER), received(false)
+    {}
 };
 
 // Timeout proc - called from XtAppAddTimeOut()

@@ -443,11 +443,11 @@ public:
     subString(const subString& x);
     ~subString();
 
-    void operator = (const string& y);
-    void operator = (const subString& y);
-    void operator = (const char* t);
-    void operator = (char* t);
-    void operator = (char c);
+    const subString& operator = (const string& y);
+    const subString& operator = (const subString& y);
+    const subString& operator = (const char* t);
+    const subString& operator = (char* t);
+    const subString& operator = (char c);
 
     // Return true iff target appears anywhere in subString
     bool contains(char c) const;
@@ -490,8 +490,8 @@ protected:
 
 private:
     // Don't get constructed or assigned from int
-    string(int)            { error("init from int"); }
-    void operator = (int)  { error("int assign"); }
+    string(int) : rep(0)   { error("init from int"); }
+    const string& operator = (int)  { error("int assign"); return *this; }
 
 public:
     // Constructors and assignment
@@ -505,25 +505,25 @@ public:
 
     ~string();
 
-    void operator = (const string& y);
-    void operator = (const char* y);
-    void operator = (char* y);
-    void operator = (char c);
-    void operator = (const subString& y);
-    void operator = (ostrstream& os);
+    const string& operator = (const string& y);
+    const string& operator = (const char* y);
+    const string& operator = (char* y);
+    const string& operator = (char c);
+    const string& operator = (const subString& y);
+    const string& operator = (ostrstream& os);
 
     // Concatenation
-    void operator += (const string& y); 
-    void operator += (const subString& y);
-    void operator += (const char* t);
-    void operator += (char* t);
-    void operator += (char c);
+    const string& operator += (const string& y); 
+    const string& operator += (const subString& y);
+    const string& operator += (const char* t);
+    const string& operator += (char* t);
+    const string& operator += (char c);
 
-    void prepend(const string& y); 
-    void prepend(const subString& y);
-    void prepend(const char* t);
-    void prepend(char* t);
-    void prepend(char c);
+    const string& prepend(const string& y); 
+    const string& prepend(const subString& y);
+    const string& prepend(const char* t);
+    const string& prepend(char* t);
+    const string& prepend(char c);
 
 
     // Procedural versions:
@@ -871,32 +871,32 @@ inline subString::subString(const string& x, int first, int l)
 inline subString::~subString() {}
 
 // Assignment
-inline void string::operator =  (const string& y)
+inline const string& string::operator =  (const string& y)
 { 
-    rep = string_Scopy(rep, y.rep);
+    rep = string_Scopy(rep, y.rep); return *this;
 }
 
-inline void string::operator=(const char* t)
+inline const string& string::operator=(const char* t)
 {
-    rep = string_Salloc(rep, t, -1, -1); 
+    rep = string_Salloc(rep, t, -1, -1); return *this;
 }
 
-inline void string::operator=(char* t)
+inline const string& string::operator=(char* t)
 {
-    rep = string_Salloc(rep, t, -1, -1); 
+    rep = string_Salloc(rep, t, -1, -1); return *this;
 }
 
-inline void string::operator=(const subString&  y)
+inline const string& string::operator=(const subString&  y)
 {
-    rep = string_Salloc(rep, y.chars(), y.length(), y.length());
+    rep = string_Salloc(rep, y.chars(), y.length(), y.length()); return *this;
 }
 
-inline void string::operator=(char c)
+inline const string& string::operator=(char c)
 {
-    rep = string_Salloc(rep, &c, 1, 1); 
+    rep = string_Salloc(rep, &c, 1, 1); return *this;
 }
 
-inline void string::operator=(ostrstream& os)
+inline const string& string::operator=(ostrstream& os)
 {
 #ifdef HAVE_FROZEN_OSTRSTREAM
     // No need to freeze the stream, since the string is copied right away
@@ -909,6 +909,7 @@ inline void string::operator=(ostrstream& os)
 #ifdef HAVE_FROZEN_OSTRSTREAM
     os.freeze(frozen);
 #endif
+    return *this;
 }
 
 inline string::string(ostrstream& os)
@@ -917,29 +918,29 @@ inline string::string(ostrstream& os)
     operator=(os);
 }
 
-inline void subString::operator = (const char* ys)
+inline const subString& subString::operator = (const char* ys)
 {
-    assign(0, ys);
+    assign(0, ys); return *this;
 }
 
-inline void subString::operator = (char* ys)
+inline const subString& subString::operator = (char* ys)
 {
-    assign(0, ys);
+    assign(0, ys); return *this;
 }
 
-inline void subString::operator = (char ch)
+inline const subString& subString::operator = (char ch)
 {
-    assign(0, &ch, 1);
+    assign(0, &ch, 1); return *this;
 }
 
-inline void subString::operator = (const string& y)
+inline const subString& subString::operator = (const string& y)
 {
-    assign(y.rep, y.chars(), y.length());
+    assign(y.rep, y.chars(), y.length()); return *this;
 }
 
-inline void subString::operator = (const subString& y)
+inline const subString& subString::operator = (const subString& y)
 {
-    assign(y.S.rep, y.chars(), y.length());
+    assign(y.S.rep, y.chars(), y.length()); return *this;
 }
 
 // Zillions of cats...
@@ -1071,29 +1072,29 @@ inline void cat(char x, char y, string& r)
 
 
 // Operator versions
-inline void string::operator +=(const string& y)
+inline const string& string::operator +=(const string& y)
 {
-    cat(*this, y, *this);
+    cat(*this, y, *this); return *this;
 }
 
-inline void string::operator +=(const subString& y)
+inline const string& string::operator +=(const subString& y)
 {
-    cat(*this, y, *this);
+    cat(*this, y, *this); return *this;
 }
 
-inline void string::operator += (const char* y)
+inline const string& string::operator += (const char* y)
 {
-    cat(*this, y, *this);
+    cat(*this, y, *this); return *this;
 }
 
-inline void string::operator += (char* y)
+inline const string& string::operator += (char* y)
 {
-    cat(*this, y, *this);
+    cat(*this, y, *this); return *this;
 }
 
-inline void string:: operator +=(char y)
+inline const string& string:: operator +=(char y)
 {
-    cat(*this, y, *this);
+    cat(*this, y, *this); return *this;
 }
 
 // Constructive concatenation
@@ -1305,29 +1306,29 @@ inline string capitalize(const string& x)
 
 // prepend
 
-inline void string::prepend(const string& y)
+inline const string& string::prepend(const string& y)
 {
-    rep = string_Sprepend(rep, y.chars(), y.length());
+    rep = string_Sprepend(rep, y.chars(), y.length()); return *this;
 }
 
-inline void string::prepend(const char* y)
+inline const string& string::prepend(const char* y)
 {
-    rep = string_Sprepend(rep, y, -1); 
+    rep = string_Sprepend(rep, y, -1); return *this;
 }
 
-inline void string::prepend(char* y)
+inline const string& string::prepend(char* y)
 {
-    rep = string_Sprepend(rep, y, -1); 
+    rep = string_Sprepend(rep, y, -1); return *this;
 }
 
-inline void string::prepend(char y)
+inline const string& string::prepend(char y)
 {
-    rep = string_Sprepend(rep, &y, 1); 
+    rep = string_Sprepend(rep, &y, 1); return *this;
 }
 
-inline void string::prepend(const subString& y)
+inline const string& string::prepend(const subString& y)
 {
-    rep = string_Sprepend(rep, y.chars(), y.length());
+    rep = string_Sprepend(rep, y.chars(), y.length());return *this;
 }
 
 

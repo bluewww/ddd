@@ -60,6 +60,7 @@ DispNode::DispNode (int disp_nr,
       disp_value(0),
       myselected_value(0),
       disp_box(0),
+      mylast_change(0),
       alias_of(0)
 {
     mylast_change = ++change_tics;

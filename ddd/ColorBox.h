@@ -85,8 +85,8 @@ protected:
 
 public:
     // Constructor
-    ColorBox(Box *box, const string& name):
-	TransparentHatBox(box), _color_name(name),
+    ColorBox(Box *box, const string& name)
+	: TransparentHatBox(box), _color_name(name), _color(0),
 	_color_valid(false), _color_failed(false)
     {}
 

@@ -38,6 +38,7 @@
 #include "bool.h"
 #include "GraphGC.h"
 #include "TypeInfo.h"
+#include "assert.h"
 
 class GraphEdge {
 public:
@@ -67,6 +68,8 @@ private:
     GraphEdge *prev;
     Graph *graph;
 
+    const GraphEdge& operator = (const GraphEdge&) { assert(0); return *this; }
+
 protected:
     // Graphics
     virtual void _draw(Widget w, 
@@ -81,6 +84,7 @@ protected:
 
     // Copy Constructor
     GraphEdge(const GraphEdge& edge):
+	_id(),
         _from(0),
         _to(0),
 	_hidden(edge._hidden),
@@ -96,6 +100,7 @@ protected:
 public:
     // Constructor
     GraphEdge(GraphNode *f, GraphNode *t):
+	_id(),
         _from(f), _to(t), 
         _hidden(false),
         _nextFrom(0), _nextTo(0),

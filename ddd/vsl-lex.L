@@ -247,11 +247,25 @@ class yyNameSet {
 private:
     string _name;
     yyNameSet *_next;
+
 public:
-    yyNameSet(string name) { _name = name; _next = 0; }
+    yyNameSet(const char *name)
+	: _name(name), _next(0)
+    {}
     ~yyNameSet()	   { reset(); }
     void reset();
-    int add(string name);
+    int add(const char *name);
+
+private:
+    yyNameSet(const yyNameSet&)
+	: _name(), _next(0)
+    {
+	assert(0);
+    }
+    const yyNameSet& operator = (const yyNameSet&)
+    {
+	assert(0); return *this;
+    }
 } yynameSet("xyzzy");
 
 // Namenmenge loeschen
@@ -264,9 +278,9 @@ void yyNameSet::reset()
 
 // Neuen Namen zur Namenmenge hinzufuegen; 
 // wenn bereits dabei, -1 zurueckgeben
-int yyNameSet::add(string name)
+int yyNameSet::add(const char *name)
 {
-    if (_name == name)
+    if (strcmp(_name.chars(), name) == 0)
 	return -1;
 
     if (_next)

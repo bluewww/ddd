@@ -100,10 +100,6 @@ typedef int (*rxmatchproc)(void *data, const char *s, int len, int pos);
 
 class regex
 {
-private:
-    regex(const regex&) {}	      // no X(X&)
-    void operator = (const regex&) {} // no assignment
-
 protected:
 #if WITH_RUNTIME_REGEX
     regex_t compiled;		// "^" + regexp
@@ -156,7 +152,16 @@ public:
     bool match_info(int& start, int& length, int nth = 0) const;
 #endif
 
-    bool OK() const;  // representation invariant
+    bool OK() const;  // Representation invariant
+
+private:
+    regex(const regex&) :
+#if WITH_RUNTIME_REGEX
+	exprs(0),
+#endif
+	matcher(0), data(0) {} // no X(X&)
+
+    const regex& operator = (const regex&) { return *this; } // no assignment
 };
 
 #if WITH_RUNTIME_REGEX

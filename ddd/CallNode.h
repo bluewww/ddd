@@ -80,6 +80,12 @@ protected:
 	    *_arg == *(((CallNode *)(&node))->_arg));   // dirty trick
     }
 
+private:
+    const CallNode& operator = (const CallNode&)
+    {
+	assert(0); return *this;
+    }
+
 public:
     // Ressourcen
     VSLNode*& arg() { return _arg; }

@@ -70,22 +70,20 @@ void VSLLib::initHash()
 {
     for (int i = 0; i < hashSize; i++)
 	defs[i] = 0;
-    _first = 0;
-    _last  = 0;
 }
 
 // VSL-Bibliothek initialisieren
 VSLLib::VSLLib()
+    : _lib_name(""), _first(0), _last(0)
 {
-    _lib_name = "";
     initHash();
 }
 
 
 // VSL-Bibliothek initialisieren und einlesen
 VSLLib::VSLLib(const string& lib_name, unsigned optimize)
+    : _lib_name(lib_name), _first(0), _last(0)
 {
-    _lib_name = lib_name;
     initHash();
     read(lib_name, optimize);
 }
@@ -93,8 +91,8 @@ VSLLib::VSLLib(const string& lib_name, unsigned optimize)
 
 // VSL-Bibliothek initialisieren und einlesen
 VSLLib::VSLLib(istream& i, unsigned optimize)
+    : _lib_name(""), _first(0), _last(0)
 {
-    _lib_name = "";
     initHash();
     read(i, optimize);
 }

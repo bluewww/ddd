@@ -6410,7 +6410,25 @@ struct RefreshInfo {
     string pc;
     XmHighlightMode mode;
     StatusDelay *delay;
+
+    RefreshInfo(const string& p, XmHighlightMode m, const string& msg);
+
+private:
+    RefreshInfo(const RefreshInfo& info)
+	: pc(info.pc), mode(info.mode), delay(0)
+    {
+	assert(0);
+    }
+    const RefreshInfo& operator = (const RefreshInfo&)
+    {
+	assert(0); return *this;
+    }
 };
+
+// EGCS 1.0 wants this to be non-inlined
+RefreshInfo::RefreshInfo(const string& p, XmHighlightMode m, const string& msg)
+    : pc(p), mode(m), delay(new StatusDelay(msg))
+{}
 
 // Process `disassemble' output
 void SourceView::refresh_codeOQC(const string& answer, void *client_data)
@@ -6572,10 +6590,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	if (end != "")
 	    msg += " to " + end;
 
-	RefreshInfo *info = new RefreshInfo;
-	info->pc    = pc;
-	info->mode  = mode;
-	info->delay = new StatusDelay(msg);
+	RefreshInfo *info = new RefreshInfo(pc, mode, msg);
 
 	gdb_command(gdb->disassemble_command(start, end), 0,
 		    refresh_codeOQC, (void *)info);

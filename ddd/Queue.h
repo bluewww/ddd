@@ -32,6 +32,7 @@
 #endif
 
 #include "bool.h"
+#include "assert.h"
 
 template<class E>
 struct QueueRec {
@@ -39,9 +40,21 @@ struct QueueRec {
     QueueRec<E> *next;
 
     // Constructor
-    QueueRec(const E& e):
-        elem(e), next(0)
+    QueueRec(const E& e)
+        : elem(e), next(0)
     {}
+
+private:
+    QueueRec(const QueueRec<E>& qr)
+	: elem(qr.elem), next(0)
+    {
+	assert(0);
+    }
+
+    const QueueRec<E>& operator = (const QueueRec<E>&)
+    {
+	assert(0); return *this;
+    }
 };
 
 template<class E>
@@ -101,7 +114,7 @@ public:
     }
 
     // Assignment
-    Queue<E>& operator = (const Queue<E>& e)
+    const Queue<E>& operator = (const Queue<E>& e)
     {
 	if (&e != this)
 	{

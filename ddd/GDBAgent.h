@@ -50,6 +50,7 @@
 #include "HandlerL.h"
 #include "strclass.h"
 #include "bool.h"
+#include "assert.h"
 
 //-----------------------------------------------------------------------------
 // Debugger types
@@ -119,6 +120,10 @@ const unsigned GDBAgent_NTypes  = EchoDetected + 1;
 struct ReplyRequiredInfo {
     string question;		// Question asked by GDB
     string reply;		// Our reply
+
+    ReplyRequiredInfo()
+	: question(), reply()
+    {}
 };
 
 //-----------------------------------------------------------------------------
@@ -172,6 +177,8 @@ private:
     string last_prompt;		// Last prompt received
     string last_written;	// Last command sent
     int echoed_characters;      // # of echoed characters so far (-1: no echo)
+
+    const GDBAgent& operator = (const GDBAgent&) { assert(0); return *this; }
 
 protected:
     // Return PREFIX + EXPR, parenthesizing EXPR if needed

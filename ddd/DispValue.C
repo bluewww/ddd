@@ -68,13 +68,21 @@ enum Alignment {Vertical, Horizontal};
 class SimpleDispValue {
 public:
     string value;
+
+    SimpleDispValue()
+	: value()
+    {}
 };
 
 // Pointer
 class PointerDispValue {
 public:
     string  value;
-    bool dereferenced;  // True iff dereferenced
+    bool dereferenced;		// True iff dereferenced
+
+    PointerDispValue()
+	: value(), dereferenced(false)
+    {}
 };
 
 // Array
@@ -83,6 +91,10 @@ public:
     DispValueArray members;
     int            member_count;
     Alignment      align;
+
+    ArrayDispValue()
+	: members(), member_count(0), align(Horizontal)
+    {}
 };
 
 // Struct or class
@@ -90,6 +102,10 @@ class StructOrClassDispValue {
 public:
     DispValueArray members;
     int            member_count;
+
+    StructOrClassDispValue()
+	: members(), member_count(0)
+    {}
 };
 
 

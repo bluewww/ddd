@@ -53,6 +53,8 @@ private:
     Box **boxes;            // List of children
     void grow();            // Grow the list
 
+    const CompositeBox& operator = (const CompositeBox&) { assert(0); }
+
 protected:
     // Box als Kind hinzufuegen
     virtual void addChild(Box *b)

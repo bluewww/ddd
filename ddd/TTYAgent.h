@@ -69,6 +69,7 @@ public:
     TTYAgent(XtAppContext app_context, string pth,
 	     unsigned nTypes = TTYAgent_NTypes):
         LiterateAgent(app_context, pth, nTypes),
+	_master_tty(), _slave_tty(),
 	master(-1), slave(-1),
 	push(false)
     {}
@@ -77,6 +78,7 @@ public:
 	     FILE *out = stdout, FILE *err = 0, 
 	     unsigned nTypes = TTYAgent_NTypes):
         LiterateAgent(app_context, in, out, err, nTypes),
+	_master_tty(), _slave_tty(),
 	master(-1), slave(-1),
 	push(false)
     {}
@@ -84,6 +86,7 @@ public:
     TTYAgent(XtAppContext app_context, bool dummy,
 	     unsigned nTypes = TTYAgent_NTypes):
         LiterateAgent(app_context, dummy, nTypes),
+	_master_tty(), _slave_tty(),
 	master(-1), slave(-1),
 	push(false)
     {}

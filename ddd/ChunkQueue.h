@@ -33,11 +33,10 @@
 #pragma interface
 #endif
 
-
-#include "assert.h"
 #include <stdio.h>
 #include <string.h>
 #include "TypeInfo.h"
+#include "assert.h"
 
 #if defined(HAVE_MEMCPY) && !defined(HAVE_MEMCPY_DECL)
 extern "C" void *memcpy(void *to, const void *from, size_t size);
@@ -68,10 +67,21 @@ private:
 	_data = newData;
     }
 
+    ChunkQueue(const ChunkQueue&)
+	: _length(0), _size(0), _data(0)
+    {
+	assert(0);
+    }
+
+    const ChunkQueue& operator = (const ChunkQueue&)
+    {
+	assert(0); return *this;
+    }
+
 public:
     // Constructor
-    ChunkQueue(int initialSize = BUFSIZ):
-	_length(0), _size(initialSize), _data(new char [initialSize])
+    ChunkQueue(int initialSize = BUFSIZ)
+	: _length(0), _size(initialSize), _data(new char [initialSize])
     {}
 
     // Destructor

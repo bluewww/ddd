@@ -993,11 +993,40 @@ public:
     bool verbose;
 
     NewDisplayInfo()
-	: point_ptr(0), depends_on(""), origin(0), shortcut(0), text(0)
+	: display_expression(),
+	  scope(),
+	  display_expressions(),
+	  point(),
+	  point_ptr(0),
+	  depends_on(),
+	  origin(0),
+	  shortcut(0),
+	  text(0),
+	  verbose(false)
     {}
 
     ~NewDisplayInfo()
     {}
+
+private:
+    NewDisplayInfo(const NewDisplayInfo&)
+	: display_expression(),
+	  scope(),
+	  display_expressions(),
+	  point(),
+	  point_ptr(0),
+	  depends_on(),
+	  origin(0),
+	  shortcut(0),
+	  text(0),
+	  verbose(false)
+    {
+	assert(0);
+    }
+    const NewDisplayInfo& operator = (const NewDisplayInfo&)
+    {
+	assert(0); return *this;
+    }
 };
 
 void DataDisp::new_displayDCB (Widget dialog, XtPointer client_data, XtPointer)
@@ -2363,9 +2392,9 @@ struct StatusShower {
     StatusShower(const string& _msg)
 	: msg(_msg),
 	  delay(0), current(0), base(0), total(0), last_shown(0),
+	  old_background(DispValue::background),
 	  aborted(false)
     {
-	old_background = DispValue::background;
 	DispValue::background = _process;
 	active = (StatusShower *)this;
 	delay = new StatusDelay(msg);
@@ -2378,6 +2407,21 @@ struct StatusShower {
 	if (aborted)
 	    delay->outcome = "aborted";
 	delete delay;
+    }
+
+private:
+    StatusShower(const StatusShower&)
+	: msg(),
+	  delay(0), current(0), base(0), total(0), last_shown(0),
+	  old_background(0),
+	  aborted(false)
+    {
+	assert(0);
+    }
+
+    const StatusShower& operator = (const StatusShower&)
+    {
+	assert(0);
     }
 };
 

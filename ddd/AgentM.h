@@ -65,19 +65,22 @@ private:
     // Remove an agent
     void operator -= (Agent *key);
 
+private:
+    AgentManager(const AgentManager&): 
+	first(0), old_pipe_handler(0), old_chld_handler(0) { assert(0); }
+    const AgentManager& operator = (const AgentManager&)   { assert(0); }
+
 public:
     DECLARE_TYPE_INFO
 
     // Constructor
     AgentManager(SignalProc new_chld_handler = SignalProc(SIG_IGN)):
-	first(0)
-    {
+	first(0), 
 	// Ignore "Broken Pipe" signals
-	old_pipe_handler = SignalProc(signal(SIGPIPE, SignalProc(SIG_IGN)));
-
+	old_pipe_handler(SignalProc(signal(SIGPIPE, SignalProc(SIG_IGN)))),
 	// Catch "Death of child" signals
-	old_chld_handler = SignalProc(signal(SIGCHLD, new_chld_handler));
-    }
+	old_chld_handler(SignalProc(signal(SIGCHLD, new_chld_handler)))
+    {}
 
     // Destructor
     virtual ~AgentManager();

@@ -70,6 +70,12 @@ protected:
 		_deflist == ((DefCallNode *)&node)->_deflist); // dirty trick
     }
 
+private:
+    const DefCallNode& operator = (const DefCallNode&)
+    {
+	assert(0); return *this;
+    }
+
 public:
     // DefCallNode kopieren
     VSLNode *dup() const

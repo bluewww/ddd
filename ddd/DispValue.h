@@ -66,6 +66,12 @@ class DispValue {
     void init(string& value, DispValueType type = UnknownType);
     void clear();
 
+    const DispValue& operator = (const DispValue&)
+    {
+	assert(0);
+	return *this;
+    }
+
 protected:
     // Makes sense only for type() == Array, StructOrClass, BaseClass
     // Expand/collapse single value

@@ -149,7 +149,10 @@ struct GraphEditPositionChangedInfo {
     Boolean   is_last;         // True iff no more changes follow
 
     GraphEditPositionChangedInfo():
-        graph(0), node(0), is_last(False)
+        graph(0), node(0), 
+	old_position(),
+	new_position(),
+	is_last(False)
     {}
     GraphEditPositionChangedInfo(const GraphEditPositionChangedInfo& info):
         graph(info.graph), node(info.node), 
@@ -157,6 +160,16 @@ struct GraphEditPositionChangedInfo {
         new_position(info.new_position),
         is_last(info.is_last)
     {}
+    const GraphEditPositionChangedInfo& 
+        operator = (const GraphEditPositionChangedInfo& info)
+    {
+	graph        = info.graph;
+	node         = info.node;
+	old_position = info.old_position;
+	new_position = info.new_position;
+	is_last      = info.is_last;
+	return *this;
+    }
 };
 
 struct GraphEditSelectionChangedInfo {
@@ -168,6 +181,12 @@ struct GraphEditSelectionChangedInfo {
     GraphEditSelectionChangedInfo(const GraphEditSelectionChangedInfo& info):
         graph(info.graph)
     {}
+    const GraphEditSelectionChangedInfo& 
+        operator = (const GraphEditSelectionChangedInfo& info)
+    {
+	graph = info.graph;
+	return *this;
+    }
 };
 
 struct GraphEditLayoutInfo {
@@ -181,6 +200,14 @@ struct GraphEditLayoutInfo {
     GraphEditLayoutInfo(const GraphEditLayoutInfo& info):
         graph(info.graph), mode(info.mode), rotation(info.rotation)
     {}
+    const GraphEditLayoutInfo& 
+        operator = (const GraphEditLayoutInfo& info)
+    {
+	graph    = info.graph;
+	mode     = info.mode;
+	rotation = info.rotation;
+	return *this;
+    }
 };
 
 struct GraphEditCompareNodesInfo {
@@ -201,6 +228,15 @@ struct GraphEditCompareNodesInfo {
 	node2(info.node2),
 	result(info.result)
     {}
+    const GraphEditCompareNodesInfo& 
+        operator = (const GraphEditCompareNodesInfo& info)
+    {
+        graph  = info.graph;
+	node1  = info.node1;
+	node2  = info.node2;
+	result = info.result;
+	return *this;
+    }
 };
 
 

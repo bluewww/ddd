@@ -36,7 +36,7 @@ unsigned int hashpjw(const char*);
 inline unsigned int multiplicativehash(int x)
 {
     // uses a const close to golden ratio * pow(2,32)
-    return ((unsigned)x) * 2654435767;
+    return ((unsigned)x) * 2654435767UL;
 }
 
 unsigned int foldhash(double);

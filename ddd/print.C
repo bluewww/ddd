@@ -288,7 +288,7 @@ static string suffix(PrintType print_type)
 static void SetPrintTypeCB(Widget, XtPointer client_data, XtPointer)
 {
     string old_suffix = suffix(print_type);
-    print_type = PrintType(client_data);
+    print_type = PrintType(int(client_data));
     string new_suffix = suffix(print_type);
 
     String file_name_s = XmTextFieldGetString(print_file_name_field);

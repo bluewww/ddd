@@ -40,6 +40,7 @@
 #include "bool.h"
 #include "VSLNode.h"
 #include "TypeInfo.h"
+#include "assert.h"
 
 class Box;
 class VSLDefList;
@@ -72,8 +73,8 @@ public:
 
     // Erzeugen
     VSLDef(VSLDefList* l, VSLNode *pattern, VSLNode *e = 0,
-	string filename = "builtin", int lineno = 0):
-	_expr(e),
+	string filename = "builtin", int lineno = 0)
+	: _expr(e),
 	_node_pattern(pattern),
 	_box_pattern(0),
 	_nargs(pattern->nargs()),
@@ -85,6 +86,25 @@ public:
 	deflist(l)
     {}
 
+private:
+    VSLDef(const VSLDef&)
+	:_expr(0),
+	_node_pattern(0),
+	_box_pattern(0),
+	_nargs(0),
+	_straight(0),
+	_filename(),
+	_lineno(0),
+	_listnext(0), _libnext(0), _libprev(0),
+	being_compiled(false),
+	deflist(0)
+    {
+	assert(0);
+    }
+
+    const VSLDef& operator = (const VSLDef&) { assert(0); return *this; }
+
+public:
     // Ressourcen
     VSLNode*& expr()            { return _expr; }
     VSLNode*& node_pattern()    { return _node_pattern; }

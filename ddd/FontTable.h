@@ -37,12 +37,21 @@
 #include <X11/Xlib.h>
 #include "strclass.h"
 #include "TypeInfo.h"
+#include "assert.h"
 
 #define MAX_FONTS 511 /* Max #Fonts */
 
 struct FontTableHashEntry {
     XFontStruct *font;
     string name;
+
+    FontTableHashEntry(): font(0), name() {}
+
+private:
+    FontTableHashEntry(const FontTableHashEntry&)
+	: font(0), name() { assert(0); }
+    const FontTableHashEntry& operator = (const FontTableHashEntry&)
+	{ assert(0); return *this; }
 };
 
 class FontTable {
@@ -52,6 +61,9 @@ public:
 private:
     FontTableHashEntry table[MAX_FONTS];
     Display *_display;
+
+    FontTable(const FontTable&): _display(0) { assert(0); }
+    const FontTable& operator = (const FontTable&)    { assert(0); }
 
 public:
     FontTable(Display *display):

@@ -111,7 +111,7 @@ void HandlerList::remove(unsigned type,
 
     for (HandlerRec *h = handlers[type]; h != 0; h = h->next)
 	if (proc == h->proc && client_data == h->client_data)
-	    h->remove_me++;
+	    h->remove_me = true;
 
     if (active[type] == 0)
 	processRemovals(type);
@@ -123,7 +123,7 @@ void HandlerList::removeAll(unsigned type)
     assert(type < nTypes());
 
     for (HandlerRec *h = handlers[type]; h != 0; h = h->next)
-	h->remove_me++;
+	h->remove_me = true;
 
     if (active[type] == 0)
 	processRemovals(type);

@@ -68,12 +68,23 @@ struct AsyncAgentWorkProcInfo {
     DECLARE_TYPE_INFO
 
     AsyncAgent *agent;
-    unsigned type;
+    unsigned int type;
     void *call_data;
 
-    AsyncAgentWorkProcInfo(AsyncAgent *a, unsigned t, void *c):
-	agent(a), type(t), call_data(c)
+    AsyncAgentWorkProcInfo(AsyncAgent *a, unsigned t, void *c)
+	: agent(a), type(t), call_data(c)
     {}
+
+private:
+    AsyncAgentWorkProcInfo(const AsyncAgentWorkProcInfo&)
+	: agent(0), type(0), call_data(0)
+    {
+	assert(0);
+    }
+    const AsyncAgentWorkProcInfo& operator = (const AsyncAgentWorkProcInfo&)
+    {
+	assert(0); return *this;
+    }
 };
 
 struct AsyncAgentWorkProc {
@@ -88,6 +99,17 @@ struct AsyncAgentWorkProc {
 		       AsyncAgentWorkProc *n):
 	proc_id(i), info(inf), next(n)
     {}
+
+private:
+    AsyncAgentWorkProc(const AsyncAgentWorkProc& p)
+	: proc_id(p.proc_id), info(0), next(0)
+    {
+	assert(0);
+    }
+    const AsyncAgentWorkProc& operator = (const AsyncAgentWorkProc&)
+    {
+	assert(0); return *this;
+    }
 };
 
 // Events
@@ -183,6 +205,12 @@ private:
         }
     }
 
+    const AsyncAgent& operator = (const AsyncAgent&)
+    {
+	assert(0);
+	return *this;
+    }
+
 public:
     // Resources
     XtAppContext appContext() const { return _appContext; }
@@ -190,7 +218,8 @@ public:
     // Constructors
     AsyncAgent(XtAppContext app_context, string pth, 
 	       unsigned nTypes = AsyncAgent_NTypes):
-	Agent(pth, nTypes), _appContext(app_context), workProcs(0)
+	Agent(pth, nTypes), _appContext(app_context), workProcs(0), 
+	new_status(0)
     {
 	initHandlers();
 	addDeathOfChildHandler();
@@ -198,21 +227,23 @@ public:
 
     AsyncAgent(XtAppContext app_context, FILE *in = stdin, FILE *out = stdout,
 	FILE *err = 0, unsigned nTypes = AsyncAgent_NTypes):
-	Agent(in, out, err, nTypes), _appContext(app_context), workProcs(0)
+	Agent(in, out, err, nTypes), _appContext(app_context), workProcs(0),
+	new_status(0)
     {
 	initHandlers();
     }
 
     AsyncAgent(XtAppContext app_context, bool dummy,
 	unsigned nTypes = AsyncAgent_NTypes):
-	Agent(dummy, nTypes), _appContext(app_context), workProcs(0)
+	Agent(dummy, nTypes), _appContext(app_context), workProcs(0),
+	new_status(0)
     {
 	initHandlers();
     }
 
     // Duplicator
     AsyncAgent(const AsyncAgent& c):
-	Agent(c), _appContext(c.appContext()), workProcs(0)
+	Agent(c), _appContext(c.appContext()), workProcs(0), new_status(0)
     {
 	initHandlers();
     }

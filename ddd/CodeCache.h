@@ -44,14 +44,16 @@ struct CodeCacheEntry {
     string end;			// Last location
     string code;		// Actual code
 
-    CodeCacheEntry() {};
+    CodeCacheEntry()
+        : start(), end(), code()
+    {}
     CodeCacheEntry(const string& s, const string& e, const string& c)
 	: start(s), end(e), code(c)
     {}
     CodeCacheEntry(const CodeCacheEntry& cce)
 	: start(cce.start), end(cce.end), code(cce.code)
     {}
-    CodeCacheEntry& operator=(const CodeCacheEntry& cce)
+    const CodeCacheEntry& operator=(const CodeCacheEntry& cce)
     {
 	start = cce.start;
 	end   = cce.end;

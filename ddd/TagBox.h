@@ -53,6 +53,8 @@ private:
     // Default access functions
     static DataLink default_datalink;
 
+    const TagBox& operator = (const TagBox&) { assert(0); }
+
 protected:
     // Draw
     virtual void _draw(Widget w, 

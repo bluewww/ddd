@@ -78,6 +78,35 @@ class BreakPoint {
     Widget  mysource_glyph;
     Widget  mycode_glyph;
 
+private:
+    BreakPoint(const BreakPoint& b)
+	: mynumber_str(b.mynumber_str),
+	  mynumber(b.mynumber),
+	  mytype(b.mytype),
+	  mydispo(b.mydispo),
+	  myenabled(b.myenabled),
+	  myfile_name(b.myfile_name),
+	  myline_nr(b.myline_nr),
+	  myaddress(b.myaddress),
+	  myinfos(b.myinfos),
+	  myignore_count(b.myignore_count),
+	  mycondition(b.mycondition),
+	  myarg(b.myarg),
+	  myenabled_changed(b.myenabled_changed),
+	  myfile_changed(b.myfile_changed),
+	  myposition_changed(b.myposition_changed),
+	  myaddress_changed(b.myaddress_changed),
+	  myselected(b.myselected),
+	  mysource_glyph(b.mysource_glyph),
+	  mycode_glyph(b.mycode_glyph)
+    {
+	assert(0);
+    }
+    const BreakPoint& operator = (const BreakPoint&)
+    {
+	assert(0); return *this;
+    }
+
 public:
     // Create new breakpoint from INFO_OUTPUT.  ARG denotes the
     // argument of a breakpoint setting command.  Delete own info from

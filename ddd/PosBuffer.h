@@ -76,8 +76,18 @@ public:
 
     // Constructor
     PosBuffer()
+	: pos_buffer(""),
+	  func_buffer(""),
+	  answer_buffer(""),
+	  pc_buffer(""),
+	  already_read(Null),
+	  started(false),
+	  terminated(false),
+	  signaled(false),
+	  recompiled(false),
+	  auto_cmd_buffer("")
     {
-	clear();
+	// clear();
     }
 
     // Filter positions from ANSWER and buffer them.  ANSWER contains

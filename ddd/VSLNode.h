@@ -83,6 +83,8 @@ protected:
     {
 	return strcmp(_type, node._type) == 0;
     }
+private:
+    const VSLNode& operator = (const VSLNode &) { assert(0); return *this; }
 
 public:
     // Knoten erzeugen

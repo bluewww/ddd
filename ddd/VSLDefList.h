@@ -67,12 +67,28 @@ public:
 
     // Erzeugen
     VSLDefList(VSLLib* l, unsigned hash, 
-	string func_nm, bool g = false):
-	_func_name(func_nm), _first(0), _last(0), _ndefs(0),
+	string func_nm, bool g = false)
+	: _func_name(func_nm), _first(0), _last(0), _ndefs(0),
 	_next(0), _global(g), lib(l), hashcode(hash), 
 	references(0), self_references(-1)
     {}
 
+
+private:
+    VSLDefList(const VSLDefList&)
+	: _func_name(), _first(0), _last(0), _ndefs(0),
+	_next(0), _global(false), lib(0), hashcode(0), 
+	references(0), self_references(0)
+    {
+	assert(0);
+    }
+
+    const VSLDefList& operator = (const VSLDefList&) 
+    { 
+	assert(0); return *this; 
+    }
+
+public:
     // Hinzufuegen
     VSLDef *add(bool& newFlag,
 	VSLNode *pattern, VSLNode *expr = 0,

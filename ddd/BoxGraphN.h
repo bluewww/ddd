@@ -46,6 +46,11 @@ private:
     Box *_box;		 // the box
     MarkBox *_highlight; // box to be highlighted when selected
 
+    const BoxGraphNode& operator = (const BoxGraphNode&)
+    {
+	assert(0); return *this; 
+    }
+
 protected:
     // Draw
     virtual void forceDraw(Widget w, 

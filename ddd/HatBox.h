@@ -34,9 +34,9 @@
 #endif
 
 
-// Eine HatBox stuelpt sich wie ein Hut ueber eine andere Box,
-// um bestimmte Eigenschaften zu veraendern 
-// (insbesondere Groesse, Ausdehnung usw.).
+// Eine HatBox stuelpt sich wie ein Hut ueber eine andere Box, um
+// bestimmte Eigenschaften zu veraendern (insbesondere Groesse,
+// Ausdehnung usw.).
 
 #include "Box.h"
 #include "Widget.h"
@@ -69,6 +69,9 @@ protected:
     {
 	return _box->findTag(p);
     }
+
+private:
+    const HatBox& operator = (const HatBox&) { assert(0); }
 
 public:
     HatBox(Box *box, char *t = "HatBox"): 

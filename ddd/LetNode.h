@@ -94,6 +94,12 @@ protected:
     char *func_name() const       { assert(0); return "let"; }
     const Box *call(Box *) const  { assert(0); return 0; }
 
+private:
+    const LetNode& operator = (const LetNode&)
+    {
+	assert(0); return *this;
+    }
+
 public:
     // LetNode erzeugen
     LetNode(VSLNode *p, VSLNode *a, VSLNode *b, char *type = "LetNode"):

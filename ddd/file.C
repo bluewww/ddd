@@ -514,7 +514,8 @@ ProgramInfo::ProgramInfo()
       core(NO_GDB_ANSWER),
       pid(0),
       attached(false),
-      running(false)
+      running(false),
+      state()
 {
     if (source_view->have_exec_pos())
     {

@@ -96,6 +96,21 @@ struct CompletionInfo {
     XEvent *event;		// Event 
     string input;		// Current input
     string prefix;		// Current prefix
+
+    CompletionInfo()
+	: widget(0), event(0), input(), prefix()
+    {}
+private:
+    CompletionInfo(const CompletionInfo&)
+	: widget(0), event(0), input(), prefix()
+    {
+	assert(0);
+    }
+
+    const CompletionInfo& operator = (const CompletionInfo&)
+    {
+	assert(0); return *this;
+    }
 };
 
 static void complete_reply(const string& complete_answer, void *qu_data);

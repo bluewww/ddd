@@ -47,6 +47,7 @@ typedef void* MapRef;
 template <class Key, class Contents>
 class Map {
     int _length;
+
 public:
     // leere Map erzeugen
     Map ();
@@ -102,6 +103,10 @@ private:
 	    ln = ln->_next;
 	return ln;
     }
+
+private:
+    Map(const Map&): _length(0), _first(0) { assert(0); }
+    const Map& operator = (const Map&) { assert(0); return *this; }
 };
 
 

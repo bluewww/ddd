@@ -254,6 +254,38 @@ AC_SUBST(CONSERVE_SPACE)
 dnl
 dnl
 dnl
+dnl ICE_EFFECTIVE_CXX
+dnl -----------------
+dnl
+dnl If the C++ compiler accepts the `-Weffc++' flag,
+dnl set output variable `EFFECTIVE_CXX' to `-Weffc++',
+dnl empty otherwise.
+dnl
+AC_DEFUN(ICE_EFFECTIVE_CXX,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -Weffc++)
+AC_CACHE_VAL(ice_cv_effective_cxx,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_cxxflags="$CXXFLAGS"
+CXXFLAGS=-Weffc++
+AC_TRY_COMPILE(,[int a;],
+ice_cv_effective_cxx=yes, ice_cv_effective_cxx=no)
+CXXFLAGS="$ice_save_cxxflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_effective_cxx)
+if test "$ice_cv_effective_cxx" = yes; then
+EFFECTIVE_CXX=-Weffc++
+fi
+AC_SUBST(EFFECTIVE_CXX)
+])dnl
+dnl
+dnl
+dnl
+dnl
 dnl ICE_CXX_PROBLEMATIC_VERSION
 dnl ---------------------------
 dnl
@@ -865,9 +897,11 @@ dnl
 AC_DEFUN(ICE_CXX_OPTIONS,
 [
 if test "$GXX" = yes; then
+  ICE_EFFECTIVE_CXX
   CXXOPT="-DNDEBUG"
   CXXDEBUG=
-  CXXWARNINGS="-Wall"
+  # As of GCC 2.8.0, -Wall no longer implies -W
+  CXXWARNINGS="-W -Wall"
   CXXSTATIC_BINDING="-Bstatic"
   CXXDYNAMIC_BINDING="-Bdynamic"
   CXXSTUFF=

@@ -35,6 +35,7 @@
 
 #include <sys/types.h>
 #include <signal.h>
+#include "assert.h"
 
 // A SignalBlocker is used to protect critical sections:
 // 
@@ -62,8 +63,22 @@ private:
 #endif
 
     // No assignments and copies
-    void operator = (const SignalBlocker&) {}
-    SignalBlocker(const SignalBlocker&) {}
+    const SignalBlocker& operator = (const SignalBlocker&) 
+    {
+	assert(0);
+	return *this;
+    }
+
+    SignalBlocker(const SignalBlocker&) 
+	:
+#ifdef SIG_SETMASK
+	old_set(0)
+#else
+	old_mask(0)
+#endif
+     {
+	 assert(0);
+     }
 
 public:
     // Constructor - block signal SIGNUM

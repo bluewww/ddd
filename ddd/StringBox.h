@@ -52,6 +52,8 @@ private:
     XFontStruct *_font;
     BoxCoordinate _ascent;
 
+    const StringBox& operator = (const StringBox&) { assert(0); }
+
 protected:
     virtual void _draw(Widget w, 
 		       const BoxRegion& region, 

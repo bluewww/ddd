@@ -36,6 +36,7 @@
 
 #include <string.h>
 #include "TypeInfo.h"
+#include "assert.h"
 
 struct DataLength {
     DECLARE_TYPE_INFO
@@ -43,13 +44,18 @@ struct DataLength {
     const char *data;
     int length;
 
-    DataLength(const char *d):
-	data(d), length(strlen(d))
+    DataLength(const char *d)
+	: data(d), length(strlen(d))
     {}
 
-    DataLength(const char *d, int l):
-        data(d), length(l)
+    DataLength(const char *d, int l)
+        : data(d), length(l)
     {}
+
+private:
+    DataLength(const DataLength&): data(0), length(0) { assert(0); }
+    const DataLength& operator = (const DataLength&)
+    { assert(0); return *this; }
 };
 
 #endif

@@ -66,14 +66,20 @@ protected:
 		*_box == *(((ConstNode *)&node)->_box); // dirty trick
     }
 
+private:
+    const ConstNode& operator = (const ConstNode&)
+    {
+	assert(0); return *this;
+    }
+
 public:
     // ConstNode erzeugen
     ConstNode(Box *box, char *type = "ConstNode"): 
 	VSLNode(type), _box(box)
     {}
 
-    ~ConstNode()
     // ConstNode zerstoeren
+    ~ConstNode()
     {
 	_box->unlink();
     }
@@ -94,7 +100,5 @@ public:
     // Repraesentations-Invariante
     bool OK() const;
 };
-
-
 
 #endif

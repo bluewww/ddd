@@ -69,6 +69,12 @@ protected:
 	    *_tail == *(((ListNode *)&node)->_tail);    // dirty trick
     }
 
+private:
+    const ListNode& operator = (const ListNode&)
+    {
+	assert(0); return *this;
+    }
+
 public:
     ListNode(VSLNode *hd, VSLNode *tl, char *type = "ListNode"):
 	VSLNode(type), _head(hd), _tail(tl)

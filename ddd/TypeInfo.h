@@ -35,6 +35,7 @@
 
 #include <iostream.h>
 #include <stdlib.h>
+#include "assert.h"
 
 #ifdef __GNUC__
 // Set this to 1 to enable TypeInfo table construction at link time
@@ -163,6 +164,12 @@ protected:
     // Make hash code
     void makehash();
 
+private:
+    // No X(const X&)
+    TypeInfo(const TypeInfo&): 
+	_name(0), _direct_bases(0), _all_bases(0), _hash(0) { assert(0); }
+    const TypeInfo& operator = (const TypeInfo&) { assert(0); }
+
 public:
 #if !IMMEDIATE_TYPE_INFO
     // Construction
@@ -214,6 +221,11 @@ class BaseIterator {
 private:
     int index;
     const BaseList bases;
+
+    BaseIterator(const BaseIterator&) : index(0), bases(0) 
+	{ assert(0); }
+    const BaseIterator& operator = (const BaseIterator&) 
+	{ assert(0); return *this; }
 
 public:
     enum mode { all, direct };

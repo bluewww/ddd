@@ -125,7 +125,8 @@ void Agent::unsetRunning()
 
 // Duplicator
 Agent::Agent(const Agent& c):
-    _pid(c._pid), _inputfp(0), _outputfp(0), _errorfp(0),
+    _pid(c._pid), _inputfp(0), _outputfp(0), _errorfp(0), 
+    _running(c._running),
     _beingTerminated(c._beingTerminated), _lastStatus(c._lastStatus),
     _terminateTimeOut(c._terminateTimeOut),
     _hangupTimeOut(c._hangupTimeOut),

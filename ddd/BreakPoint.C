@@ -74,6 +74,7 @@ BreakPoint::BreakPoint (string& info_output, string arg)
       myignore_count(""),
       mycondition(""),
       myarg(arg),
+      myenabled_changed(true),
       myfile_changed(true),
       myposition_changed(true),
       myaddress_changed(true),

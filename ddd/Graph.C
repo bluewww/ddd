@@ -65,12 +65,11 @@ Graph::~Graph()
 
 // Copy Constructor
 Graph::Graph(const Graph &org_graph)
+    : _firstNode(0), _firstEdge(0)
 {
     GraphNode *node, *new_node; 
 
     // Copy Nodes
-    _firstNode = 0; // for addNodes
-
     node = org_graph._firstNode;
    
     if (node != 0)
@@ -93,7 +92,6 @@ Graph::Graph(const Graph &org_graph)
     GraphEdge *edge, *new_edge;
     
     // Copy Edges
-    _firstEdge = 0;
     edge = org_graph._firstEdge;
     
     if (edge != 0)

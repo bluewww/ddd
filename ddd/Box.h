@@ -115,6 +115,8 @@ private:
 			   const BoxRegion& region, 
 			   const BoxPostScriptGC& gc);
 
+    const Box& operator = (const Box&) { assert(0); }
+
 protected:
     int _links;			// #references (>= 1)
 
@@ -125,7 +127,8 @@ protected:
 
     // Copy constructor
     Box(const Box& box):
-	_size(box._size), _extend(box._extend), _type(box._type), _links(1)
+	_id(), _size(box._size), _extend(box._extend), 
+	_type(box._type), _links(1)
     {}
 	
     // Equality
@@ -144,7 +147,7 @@ public:
     // Constructor
     Box(BoxSize s = BoxSize(0, 0), BoxExtend e = BoxExtend(0, 0), 
 	char *t = "Box"):
-	_size(s), _extend(e), _type(t), _links(1)
+	_id(), _size(s), _extend(e), _type(t), _links(1)
     {}
 
     // Destructor

@@ -51,15 +51,16 @@ private:
 
 public:
     // Constructors
-    BoxRegion(const BoxPoint& o, const BoxSize& s):
-	_origin(o), _space(s)
+    BoxRegion(const BoxPoint& o, const BoxSize& s)
+	: _origin(o), _space(s)
     {}
 
-    BoxRegion(const BoxPoint& o):
-	_origin(o)
+    BoxRegion(const BoxPoint& o)
+	: _origin(o), _space()
     {}
 
     BoxRegion()
+	: _origin(), _space()
     {}
 
     BoxRegion(const BoxRegion& r):

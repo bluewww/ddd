@@ -32,6 +32,7 @@
 #endif
 
 #include "bool.h"
+#include "assert.h"
 
 template<class K, class V> class AssocMark;
 template<class K, class V> class _Assoc;
@@ -52,12 +53,23 @@ public:
     V value;
     
     // Constructor
-    AssocRec(const K& k, const V& v):
-	next(0), key(k), value(v)
+    AssocRec(const K& k, const V& v)
+	: next(0), key(k), value(v)
     {}
-    AssocRec(const K& k):
-	next(0), key(k)
+    AssocRec(const K& k)
+	: next(0), key(k)
     {}
+
+private:
+    AssocRec(const AssocRec<K, V>& x)
+	: next(0), key(x.key), value(x.value)
+    {
+	assert(0);
+    }
+    const AssocRec<K,V>& operator = (const AssocRec<K, V>&)
+    {
+	assert(0); return *this;
+    }
 };
 
 template<class K, class V>
@@ -162,14 +174,18 @@ public:
     }
 
     // Assignment
-    void operator = (const _Assoc<K,V>& m)
+    const _Assoc<K, V> operator = (const _Assoc<K,V>& m)
     {
-	if (entries)
-	    delete entries;
-	entries = 0;
+	if (this != &m)
+	{
+	    if (entries)
+		delete entries;
+	    entries = 0;
 
-	for (AssocRec<K,V> *e = m.entries; e != 0; e = e->next)
-	    (*this)[e->key] = e->value;
+	    for (AssocRec<K,V> *e = m.entries; e != 0; e = e->next)
+		(*this)[e->key] = e->value;
+	}
+	return *this;
     }
 };
 
@@ -236,13 +252,15 @@ public:
 
     bool ok() { return rec != 0; }
     AssocIter<K,V> next() { return AssocIter<K,V>(rec->next); }
-    void operator ++ ()
+    const AssocIter<K,V>& operator ++ ()
     {
-	rec = rec->next;
+	rec = rec->next; return *this;
     }
-    void operator ++ (int)
+    const AssocIter<K,V> operator ++ (int)
     {
+	AssocIter<K,V> old(*this);
 	rec = rec->next;
+	return old;
     }
 };
 

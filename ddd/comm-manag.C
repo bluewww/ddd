@@ -146,6 +146,32 @@ public:
 	delete disp_buffer;
 	delete pos_buffer;
     }
+
+private:
+    CmdData(const CmdData&)
+	: origin(0),
+	  filter_disp(TryFilter),
+	  disp_buffer(0),
+	  pos_buffer(0),
+	  new_exec_pos(false),
+	  new_frame_pos(false),
+	  set_frame_pos(false),
+	  set_frame_arg(0),
+	  set_frame_func(""),
+	  graph_cmd(""),
+	  user_answer(""),
+	  user_callback(0),
+	  user_data(0),
+	  user_verbose(true),
+	  user_check(true)
+    {
+	assert(0);
+    }
+
+    const CmdData& operator = (const CmdData&)
+    {
+	assert(0); return *this;
+    }
 };
 
 void CmdData::clear_origin(Widget w, XtPointer client_data, XtPointer)

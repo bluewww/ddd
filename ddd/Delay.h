@@ -38,7 +38,7 @@
 
 #include "TypeInfo.h"
 #include "VarArray.h"
-
+#include "assert.h"
 
 // _Delay defines a delay for a specific widget only
 class _Delay {
@@ -51,6 +51,9 @@ private:
 
     static Cursor current_cursor;
     static Cursor hourglass_cache;
+
+    _Delay(const _Delay&): widget(0), old_cursor(0) { assert(0); }
+    const _Delay& operator = (const _Delay&) { assert(0); return *this; }
 
 protected:
     static void DestroyCB(Widget, XtPointer, XtPointer);

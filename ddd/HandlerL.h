@@ -34,6 +34,8 @@
 #endif
 
 #include "compare.h"
+#include "bool.h"
+#include "assert.h"
 
 typedef void (*HandlerProc)(void *source,	// handler source
 			    void *client_data,  // data supplied by client
@@ -47,13 +49,18 @@ private:
 	HandlerProc proc;		// handling procedure
 	void        *client_data;	// data supplied by client
 	HandlerRec  *next;		// for collectors
-	int     remove_me;              // Flag: to be removed?
+	bool    remove_me;              // Flag: to be removed?
 	
 	// Constructor
 	HandlerRec(HandlerProc p, void *c, HandlerRec *n = 0):
 	    proc(p), client_data(c), next(n), 
-	    remove_me(0)
+	    remove_me(false)
         {}
+
+    private:
+	HandlerRec(const HandlerRec&):
+	    proc(0), client_data(0), next(0), remove_me(false) { assert(0); }
+	const HandlerRec& operator = (const HandlerRec&)       { assert(0); }
     };
 
     static int compare(const HandlerRec& l1, const HandlerRec& l2)
@@ -70,6 +77,9 @@ private:
 protected:
     // Remove all handlers marked as "remove me"
     void processRemovals(unsigned type) const;
+
+private:
+    const HandlerList& operator = (const HandlerList&) { assert(0); }
 
 public:
     // Constructor

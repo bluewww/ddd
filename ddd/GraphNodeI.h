@@ -62,9 +62,12 @@ private:
     GraphNode *prev;		// For collectors
     Graph *graph;		// For collectors
 
+    const GraphNode& operator = (const GraphNode&) { assert(0); return *this; }
+
 protected:
     // Copy Constructor
     GraphNode(const GraphNode& node):
+	_id(),
 	_selected(node._selected),
 	_hidden(node._hidden),
 	_redraw(node._redraw),
@@ -72,7 +75,8 @@ protected:
 	_firstTo(0),
 	next(0),
 	prev(0),
-	graph(0)
+	graph(0),
+	count(0)
     {}
 
 public:
@@ -80,7 +84,7 @@ public:
 
     // Constructor
     GraphNode():
-	_selected(false), _hidden(false), _redraw(false),
+	_id(), _selected(false), _hidden(false), _redraw(false),
 	_firstFrom(0), _firstTo(0), next(0), prev(0), graph(0), count(0)
     {}
 
@@ -107,7 +111,7 @@ public:
     GraphEdge *firstTo() const { return _firstTo; }
     GraphEdge *nextTo(GraphEdge *ref) const;
 
-    // resources
+    // Resources
     virtual const BoxPoint&  pos() const                              = 0;
     virtual const BoxRegion& region(const GraphGC& gc) const          = 0;
     virtual const BoxRegion& highlightRegion(const GraphGC& gc) const = 0;
@@ -119,21 +123,21 @@ public:
 	return string(os);
     }
 
-    // types
+    // Types
     virtual bool isHint() const { return false; }
 
-    // move
+    // Move
     virtual void moveTo(const BoxPoint& newPos) = 0;
 
-    // draw
+    // Draw
     virtual void draw(Widget, 
 		      const BoxRegion&, 
 		      const GraphGC&) const
     {
-	// default: do nothing
+	// Default: do nothing
     }
 
-    // custom drawing functions
+    // Custom drawing functions
     void draw(Widget w, const BoxRegion& exposed) const
     {
 	draw(w, exposed, GraphGC());
@@ -145,13 +149,13 @@ public:
 	    GraphGC());
     }
 
-    // printing
+    // Printing
     virtual void _print(ostream&, const GraphGC&) const
     {
-	// default: do nothing
+	// Default: do nothing
     }
 
-    // representation invariant
+    // Representation invariant
     virtual bool OK() const;
 };
 

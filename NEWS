@@ -36,6 +36,9 @@ DDD 2.2.1
     - Command tool decoration has been improved and should now work
       with all X window managers.
 
+    Changes in configuration and building:
+    - EGCS 1.0 compiles DDD (see http://www.cygnus.com/egcs/)
+
     There are also some more minor improvements and bug fixes.  See
     the ChangeLog for details.
 
