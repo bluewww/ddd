@@ -276,12 +276,9 @@ char ddd_rcsid[] =
 #define ARG_MAX 4096
 #endif
 
-#if HAVE_STD_EXCEPTIONS
-#define string stdstring	  // Avoid `string' name clash
-#define __SGI_STL_INTERNAL_RELOPS // Avoid <stl_relops.h> warning
-#include <stdexcept>
-#undef string
-#endif // HAVE_STD_EXCEPTIONS
+#if HAVE_EXCEPTIONS && HAVE_EXCEPTION
+#include <exception>
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -2713,30 +2710,13 @@ void process_next_event()
 
 #if HAVE_EXCEPTIONS
     }
-#if HAVE_STD_EXCEPTIONS
-    // Catch standard exceptions.
-#if HAVE_TYPEINFO
-    // Just get the exception type and diagnostics.
+#if HAVE_EXCEPTION && HAVE_TYPEINFO
+    // Standard library exception: get its type and diagnostics.
     catch (const exception& err)
     {
 	ddd_show_exception(typeid(err).name(), err.what());
     }
-#else // !HAVE_TYPEINFO
-    // Catch the two major error classes.
-    catch (const logic_error& err)
-    {
-	ddd_show_exception("logic_error", err.what());
-    }
-    catch (const runtime_error& err)
-    {
-	ddd_show_exception("runtime_error", err.what());
-    }
-    catch (const exception& err)
-    {
-	ddd_show_exception("exception", err.what());
-    }
-#endif // !HAVE_TYPEINFO
-#endif // HAVE_STD_EXCEPTIONS
+#endif // HAVE_EXCEPTION && HAVE_TYPEINFO
     catch (...)
     {
 	// Handle non-standard C++ exceptions
