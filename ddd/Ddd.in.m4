@@ -429,6 +429,14 @@ Ddd*tool_buttons*Forward.labelString:   Fwd
 Ddd*command_toolbar*Cont.labelString:   Continue
 
 
+! Make command tool and buttons a little lighter
+Ddd*tool_buttons*shadowThickness:		1
+Ddd*source_buttons*shadowThickness:		1
+Ddd*console_buttons*shadowThickness:		1
+Ddd*data_buttons*shadowThickness:		1
+Ddd*command_toolbar*shadowThickness:		1
+
+
 
 ! Command tool stuff.
 

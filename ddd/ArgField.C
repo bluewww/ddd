@@ -42,6 +42,7 @@ char ArgField_rcsid[] =
 
 #include "verify.h"
 #include "charsets.h"
+#include "buttons.h"
 
 
 // Constructor
@@ -160,17 +161,5 @@ void ClearTextFieldCB(Widget, XtPointer client_data, XtPointer)
 // Create a `():' label named "arg_label" for ARG_FIELD
 Widget create_arg_label(Widget parent)
 {
-    Arg args[10];
-    int arg = 0;
-
-    arg = 0;
-    XtSetArg(args[arg], XmNborderWidth,	       0);     arg++;
-    XtSetArg(args[arg], XmNshadowThickness,    0);     arg++;
-    XtSetArg(args[arg], XmNhighlightThickness, 0);     arg++;
-    XtSetArg(args[arg], XmNfillOnArm,          False); arg++;
-    Widget arg_label = 
-	verify(XmCreatePushButton(parent, "arg_label", args, arg));
-    XtManageChild(arg_label);
-
-    return arg_label;
+    return create_flat_button(parent, "arg_label");
 }

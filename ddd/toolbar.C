@@ -35,19 +35,23 @@ char toolbar_rcsid[] =
 
 #include "toolbar.h"
 
+#include "ddd.h"
 #include "misc.h"
 #include "verify.h"
 #include "HelpCB.h"
 #include "Delay.h"
 #include "converters.h"
 
-extern void register_menu_shell(MMDesc *items);
-
 #include <Xm/Xm.h>
 #include <Xm/Form.h>
 #include <Xm/Label.h>
 #include <Xm/PushB.h>
 #include <Xm/PanedW.h>
+
+
+//-----------------------------------------------------------------------
+// Helpers
+//-----------------------------------------------------------------------
 
 // Return the preferred height of W
 static int preferred_height(Widget w)
@@ -80,6 +84,20 @@ static void disable_multi_click(MMDesc items[])
     }
 }
 
+static void flatten_buttons(MMDesc items[])
+{
+    // Replace all `MMPush' by `MMFlatPush'
+    for (MMDesc *item = items; item != 0 && item->name != 0; item++)
+    {
+	if ((item->type & MMTypeMask) == MMPush)
+	    item->type = (MMFlatPush | (item->type & ~MMTypeMask));
+    }
+}
+
+//-----------------------------------------------------------------------
+// Toolbar creation
+//-----------------------------------------------------------------------
+
 // Create a toolbar as child of parent, named `NAME', having
 // the buttons ITEMS.  Return LABEL and ARGFIELD.
 Widget create_toolbar(Widget parent, string name, 
@@ -94,9 +112,10 @@ Widget create_toolbar(Widget parent, string name,
     string toolbar_name = name;
 
     arg = 0;
-    XtSetArg(args[arg], XmNmarginWidth, 0);  arg++;
-    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
-    XtSetArg(args[arg], XmNborderWidth, 0);  arg++;
+    XtSetArg(args[arg], XmNmarginWidth, 0);        arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0);       arg++;
+    XtSetArg(args[arg], XmNborderWidth, 0);        arg++;
+    XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
     Widget toolbar = verify(XmCreateForm(parent, toolbar_name, args, arg));
 
     // Create `():'
@@ -107,6 +126,13 @@ Widget create_toolbar(Widget parent, string name,
     argfield = new ArgField (toolbar, argfield_name);
 
     registerOwnConverters();
+
+    if (label_type == XmPIXMAP)
+    {
+	// Use flat buttons
+	flatten_buttons(items1);
+	flatten_buttons(items2);
+    }
 
     // Create buttons
     string buttons_name = "toolbar";

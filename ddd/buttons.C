@@ -65,6 +65,7 @@ char buttons_rcsid[] =
 #include "wm.h"
 #include "TimeOut.h"
 #include "LessTifH.h"
+#include "MakeMenu.h"
 
 #include <Xm/Xm.h>
 #include <Xm/Label.h>
@@ -756,7 +757,13 @@ Widget make_buttons(Widget parent, const string& name,
     Arg args[10];
     int arg = 0;
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
-    XtSetArg(args[arg], XmNuserData, XtPointer("")); arg++;
+    XtSetArg(args[arg], XmNuserData, XtPointer(""));   arg++;
+    XtSetArg(args[arg], XmNmarginWidth, 0);            arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0);           arg++;
+    XtSetArg(args[arg], XmNspacing, 2);                arg++;
+    XtSetArg(args[arg], XmNborderWidth, 0);            arg++;
+    XtSetArg(args[arg], XmNhighlightThickness, 0);     arg++;
+    XtSetArg(args[arg], XmNshadowThickness, 0);        arg++;
     Widget buttons = verify(XmCreateWorkArea(parent, name, args, arg));
     if (buttons == 0)
     {
@@ -883,10 +890,16 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 #endif
 	name.gsub(rxsep, '_');
 
+#if 0
+	Widget button = verify(create_flat_button(buttons, name));
+#else
 	Arg args[10];
 	Cardinal arg = 0;
-	XtSetArg(args[arg], XmNmultiClick, XmMULTICLICK_DISCARD); arg++;
+	XtSetArg(args[arg], XmNborderWidth, 0);        arg++;
+	XtSetArg(args[arg], XmNhighlightThickness, 1); arg++;
 	Widget button = verify(XmCreatePushButton(buttons, name, args, arg));
+#endif
+	XtVaSetValues(button, XmNmultiClick, XmMULTICLICK_DISCARD, NULL);
 	XtManageChild(button);
 	number_of_buttons++;
 
@@ -1251,4 +1264,26 @@ void refresh_button_editor()
 
     if (active_info != 0 && active_info->str == &app_data.display_shortcuts)
 	XmTextSetString(active_info->text, app_data.display_shortcuts);
+}
+
+
+//-----------------------------------------------------------------------------
+// Flat Buttons
+//-----------------------------------------------------------------------------
+
+static void nop(Widget, XtPointer, XtPointer) {}
+
+static MMDesc desc[] = 
+{
+    { "", MMFlatPush, { nop }},
+    MMEnd
+};
+
+// Create a flat PushButton named NAME
+Widget create_flat_button(Widget parent, const string& name)
+{
+    desc[0].name = (char *)name;
+    MMaddItems(parent, desc);
+    MMaddCallbacks(desc);
+    return desc[0].widget;
 }

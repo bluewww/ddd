@@ -31,6 +31,7 @@ char HelpCB_rcsid[] =
 
 #include "config.h"
 
+#include "ddd.h"		// process_pending_events()
 #include "HelpCB.h"
 #include "DestroyCB.h"
 #include "findParent.h"

@@ -63,5 +63,8 @@ void refresh_button_editor();
 // Get a value from GDB
 string gdbValue(const string& expr);
 
+// Create a flat PushButton named NAME
+Widget create_flat_button(Widget parent, const string& name);
+
 #endif // _DDD_buttons_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

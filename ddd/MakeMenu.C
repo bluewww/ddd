@@ -56,6 +56,8 @@ char MakeMenu_rcsid[] =
 #include "findParent.h"
 #include "frame.h"
 
+
+
 // Pushmenu callbacks
 static void ArmPushMenuCB(Widget, XtPointer, XtPointer);
 static void RedrawPushMenuCB(Widget, XtPointer, XtPointer);
@@ -77,6 +79,19 @@ static char lesstif_pushMenuTranslations[] =
     "None<Btn3Down>:	popup-push-menu()\n"
 ;
 
+struct PushMenuInfo {
+    Widget widget;		// The PushButton
+    Widget subMenu;		// Submenu of this PushButton
+    bool flat;			// Whether the PushButton is flattened
+
+    PushMenuInfo(Widget w, Widget s, bool f)
+	: widget(w), subMenu(s), flat(f)
+    {}
+};
+
+//-----------------------------------------------------------------------
+// Auto-raise stuff
+//-----------------------------------------------------------------------
 
 // Whether menus should be auto-raised
 #define XtNautoRaiseMenu  "autoRaiseMenu"
@@ -133,6 +148,53 @@ static void auto_raise(Widget shell)
     }
 }
 
+
+//-----------------------------------------------------------------------
+// Flat buttons
+//-----------------------------------------------------------------------
+
+static void flatten_button(Widget w)
+{
+    XtVaSetValues(w,
+		  XmNhighlightThickness, 2,
+		  XmNshadowThickness, 0,
+		  NULL);
+}
+
+static void unflatten_button(Widget w)
+{
+    XtVaSetValues(w,
+		  XmNhighlightThickness, 0,
+		  XmNshadowThickness, 2,
+		  NULL);
+}
+
+static void HandleFlattenEvent(Widget w,
+			       XtPointer /* client_data */,
+			       XEvent *event, 
+			       Boolean * /* continue_to_dispatch */)
+{
+    switch (event->type)
+    {
+    case EnterNotify:
+    {
+	unflatten_button(w);
+	break;
+    }
+
+    case LeaveNotify:
+    {
+	flatten_button(w);
+	break;
+    }
+    }
+}
+
+
+//-----------------------------------------------------------------------
+// Add items
+//-----------------------------------------------------------------------
+
 // Add items to shell.  If IGNORE_SEPS is set, all separators are ignored.
 void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 {
@@ -157,6 +219,9 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 	Widget *widgetptr       = item->widgetptr;
 	MMDesc *subitems        = item->items;
 
+	if (type & MMIgnore)
+	    continue;		// Don't create
+
 	string subMenuName = string(name) + "Menu";
 	string panelName   = string(name) + "Panel";
 	string textName    = "text";
@@ -164,32 +229,50 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 	Widget subMenu = 0;
 	Widget label   = 0;
 	Widget panel   = 0;
+	bool flat = false;
+	PushMenuInfo *info = 0;
 
 	switch(type & MMTypeMask) 
 	{
+	case MMFlatPush:
+	    flat = true;
+	    // FALL THROUGH
+
 	case MMPush:
 	    // Create a PushButton
+	    arg = 0;
+	    if (flat)
+	    {
+		XtSetArg(args[arg], XmNshadowThickness,    0); arg++;
+		XtSetArg(args[arg], XmNhighlightThickness, 2); arg++;
+	    }
+
 	    if (lesstif_version < 1000)
 	    {
 		// LessTif wants the PushButton as parent of the menu
-		arg = 0;
 		widget = verify(XmCreatePushButton(shell, name, args, arg));
 
 		if (subitems != 0)
 		{
 		    subMenu = MMcreatePushMenu(widget, subMenuName, subitems);
-		    XtVaSetValues(widget, XmNuserData, subMenu, NULL);
+		    info = new PushMenuInfo(widget, subMenu, flat);
+		    XtVaSetValues(widget, XmNuserData, XtPointer(info), NULL);
 		}
 	    }
 	    else
 	    {
 		// Motif wants the shell as parent of the menu
 		if (subitems != 0)
+		{
 		    subMenu = MMcreatePushMenu(shell, subMenuName, subitems);
+		    info = new PushMenuInfo(0, subMenu, flat);
+		    XtSetArg(args[arg], XmNuserData, XtPointer(info)); arg++;
+		}
 
-		arg = 0;
-		XtSetArg(args[arg], XmNuserData, subMenu); arg++;
 		widget = verify(XmCreatePushButton(shell, name, args, arg));
+
+		if (info != 0)
+		    info->widget = widget;
 	    }
 	    break;
 
@@ -384,6 +467,9 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 }
 
 
+//-----------------------------------------------------------------------
+// Custom menu creation
+//-----------------------------------------------------------------------
 
 // Create pulldown menu from items
 Widget MMcreatePulldownMenu(Widget parent, String name, MMDesc items[])
@@ -432,51 +518,6 @@ Widget MMcreatePopupMenu(Widget parent, String name, MMDesc items[])
     // 2. During a popup, the pointer is grabbed such that we won't
     //    have an auto-raised window anyway.
     // auto_raise(XtParent(menu));
-
-    return menu;
-}
-
-// Create pushmenu from items
-static Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[])
-{
-    Arg args[10];
-    int arg;
-
-    // By default, PushButton menus are activated using Button 1.
-    arg = 0;
-
-    if (XmVersion < 1002 || lesstif_version < 1000)
-    {
-	// Setting the menuPost resource is required by Motif 1.1 and
-	// LessTif.  However, OSF/Motif 2.0 (and OSF/Motif 1.2,
-	// according to Roy Dragseth <royd@math.uit.no>) choke on this
-	// line - buttons become entirely insensitive.
-	XtSetArg(args[arg], XmNmenuPost, "<Btn1Down>"); arg++;
-    }
-
-#if XmVersion >= 1002
-    // Tear-off push menus don't work well - in LessTif, they cause
-    // frequent X errors, and in Motif, they disable the old menus
-    // once torn off.  So, we explicitly disable them.
-    XtSetArg(args[arg], XmNtearOffModel, XmTEAR_OFF_DISABLED); arg++;
-#endif
-    
-    Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
-    MMaddItems(menu, items);
-
-    // Don't auto-raise popup menus.
-    // 1. There are conflicts with nested popups.
-    // 2. During a popup, the pointer is grabbed such that we won't
-    //    have an auto-raised window anyway.
-    // auto_raise(XtParent(menu));
-
-    // LessTif places a passive grab on the parent, such that the
-    // pointer is grabbed as soon as the menuPost event occurs.  This
-    // grab breaks PushMenus, so we cancel it.  Motif places a passive
-    // grab on button 3, such that the pointer is grabbed as soon as
-    // button 3 is pressed.  In Motif 1.1, it even remains grabbed!
-    // This breaks any X session, so we cancel it.
-    XtUngrabButton(parent, AnyButton, AnyModifier);
 
     return menu;
 }
@@ -560,6 +601,9 @@ void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure)
 {
     for (MMDesc *item = items; item != 0 && item->name != 0; item++)
     {
+	if (item->type & MMIgnore)
+	    continue;
+
 	proc(item, closure);
 
 	if (item->items)
@@ -567,6 +611,10 @@ void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure)
     }
 }
 
+
+//-----------------------------------------------------------------------
+// Callbacks
+//-----------------------------------------------------------------------
 
 // Add callbacks to items
 static void addCallback(MMDesc *item, XtPointer default_closure)
@@ -578,22 +626,32 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
     Widget widget           = item->widget;
     XtCallbackRec callback  = item->callback;
     Widget subMenu          = 0;
+    void *userData          = 0;
+    PushMenuInfo *info      = 0;
     
     if (callback.closure == 0)
 	callback.closure = default_closure;
 
+    bool flat = false;
+
     switch(type & MMTypeMask) 
     {
+    case MMFlatPush:
+	flat = true;
+	// FALL THROUGH
+
     case MMPush:
 	arg = 0;
-	XtSetArg(args[arg], XmNuserData, &subMenu); arg++;
+	XtSetArg(args[arg], XmNuserData, &userData); arg++;
 	XtGetValues(widget, args, arg);
 
-	if (subMenu != 0)
+	if (userData != 0)
 	{
+	    info = (PushMenuInfo *)userData;
+
 	    // A 'push menu' is a menu associated with a push button.
 	    // It pops up after pressing the button a certain time.
-	    XtAddCallback(widget, XmNarmCallback,    ArmPushMenuCB, subMenu);
+	    XtAddCallback(widget, XmNarmCallback,    ArmPushMenuCB, info);
 	    XtAddCallback(widget, XmNarmCallback,    RedrawPushMenuCB, 0);
 	    XtAddCallback(widget, XmNdisarmCallback, RedrawPushMenuCB, 0);
 
@@ -609,6 +667,13 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 		    XtParseTranslationTable(lesstif_pushMenuTranslations);
 		XtAugmentTranslations(widget, lesstif_translations);
 	    }
+	}
+
+	if (flat)
+	{
+	    EventMask event_mask = EnterWindowMask | LeaveWindowMask;
+	    XtAddEventHandler(widget, event_mask, False, HandleFlattenEvent,
+			      XtPointer(0));
 	}
 
 	if (callback.callback != 0)
@@ -698,7 +763,59 @@ void MMaddHelpCallback(MMDesc items[], XtCallbackProc proc)
     MMonItems(items, addHelpCallback, XtPointer(proc));
 }
 
-// Handle PushButton menu popups
+
+
+//-----------------------------------------------------------------------
+// PushMenus
+//-----------------------------------------------------------------------
+
+// Create pushmenu from items
+static Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[])
+{
+    Arg args[10];
+    int arg;
+
+    // By default, PushButton menus are activated using Button 1.
+    arg = 0;
+
+    if (XmVersion < 1002 || lesstif_version < 1000)
+    {
+	// Setting the menuPost resource is required by Motif 1.1 and
+	// LessTif.  However, OSF/Motif 2.0 (and OSF/Motif 1.2,
+	// according to Roy Dragseth <royd@math.uit.no>) choke on this
+	// line - buttons become entirely insensitive.
+	XtSetArg(args[arg], XmNmenuPost, "<Btn1Down>"); arg++;
+    }
+
+#if XmVersion >= 1002
+    // Tear-off push menus don't work well - in LessTif, they cause
+    // frequent X errors, and in Motif, they disable the old menus
+    // once torn off.  So, we explicitly disable them.
+    XtSetArg(args[arg], XmNtearOffModel, XmTEAR_OFF_DISABLED); arg++;
+#endif
+    
+    Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
+    MMaddItems(menu, items);
+
+    // Don't auto-raise popup menus.
+    // 1. There are conflicts with nested popups.
+    // 2. During a popup, the pointer is grabbed such that we won't
+    //    have an auto-raised window anyway.
+    // auto_raise(XtParent(menu));
+
+    // LessTif places a passive grab on the parent, such that the
+    // pointer is grabbed as soon as the menuPost event occurs.  This
+    // grab breaks PushMenus, so we cancel it.  Motif places a passive
+    // grab on button 3, such that the pointer is grabbed as soon as
+    // button 3 is pressed.  In Motif 1.1, it even remains grabbed!
+    // This breaks any X session, so we cancel it.
+    XtUngrabButton(parent, AnyButton, AnyModifier);
+
+    return menu;
+}
+
+
+
 
 static XEvent last_push_menu_event; // Just save it
 
@@ -713,7 +830,8 @@ static void RemoveTimeOutCB(Widget w, XtPointer client_data, XtPointer)
 // Popup menu right now
 static void PopupPushMenuCB(XtPointer client_data, XtIntervalId *id)
 {
-    Widget w = (Widget)client_data;
+    PushMenuInfo *info = (PushMenuInfo *)client_data;
+    Widget w = info->widget;
 
     XtRemoveCallback(w, XmNdisarmCallback, RemoveTimeOutCB, XtPointer(*id));
 
@@ -732,17 +850,29 @@ static void PopupPushMenuCB(XtPointer client_data, XtIntervalId *id)
 #endif
 }
 
-void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
+static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data, 
+			      XtPointer)
+{
+    Widget w = (Widget)client_data;
+    EventMask event_mask = EnterWindowMask | LeaveWindowMask;
+    XtAddEventHandler(w, event_mask, False, HandleFlattenEvent, 
+		      XtPointer(0));
+    flatten_button(w);
+}
+
+static void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
 {
     if (!XmIsPushButton(w))
 	return;
 
-    Widget subMenu;
-    XtVaGetValues(w, XmNuserData, &subMenu, XtPointer(0));
-    if (subMenu == 0)
+    void *userData = 0;
+    XtVaGetValues(w, XmNuserData, &userData, XtPointer(0));
+    if (userData == 0)
 	return;
 
-    Widget shell = XtParent(subMenu);
+    PushMenuInfo *info = (PushMenuInfo *)userData;
+
+    Widget shell = XtParent(info->subMenu);
 
     // Attempt to place menu below button
     Position button_x, button_y;
@@ -759,13 +889,25 @@ void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
 
     event->xbutton.x_root = x;
     event->xbutton.y_root = y;
-    XmMenuPosition(subMenu, &event->xbutton);
+    XmMenuPosition(info->subMenu, &event->xbutton);
 
-    XtManageChild(subMenu);
+    if (info->flat)
+    {
+	// Don't have the PushMenu interfere with flattening.  Disable
+	// flattening until the menu is popped down again.
+	EventMask event_mask = EnterWindowMask | LeaveWindowMask;
+	XtRemoveEventHandler(w, event_mask, False, HandleFlattenEvent, 
+			     XtPointer(0));
+	XtAddCallback(shell, XtNpopdownCallback, ReflattenButtonCB, 
+		      XtPointer(w));
+    }
+
+    XtManageChild(info->subMenu);
     XtPopup(shell, XtGrabNone);
 }
 
-void DecoratePushMenuAct(Widget w, XEvent */* event */, String *, Cardinal *)
+static void DecoratePushMenuAct(Widget w, XEvent */* event */, 
+				String *, Cardinal *)
 {
     if (!XmIsPushButton(w) || !XtIsRealized(w))
 	return;
@@ -826,7 +968,7 @@ static XtResource subresources[] = {
     }
 };
 
-static void ArmPushMenuCB(Widget w, XtPointer, XtPointer call_data)
+static void ArmPushMenuCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     subresource_values values;
     XtGetApplicationResources(w, &values, 
@@ -839,7 +981,7 @@ static void ArmPushMenuCB(Widget w, XtPointer, XtPointer call_data)
 
     XtIntervalId id = XtAppAddTimeOut(XtWidgetToApplicationContext(w), 
 				      values.push_menu_popup_time, 
-				      PopupPushMenuCB, w);
+				      PopupPushMenuCB, client_data);
     XtAddCallback(w, XmNdisarmCallback, RemoveTimeOutCB, XtPointer(id));
 }
 

@@ -277,9 +277,6 @@ static void source_argHP       (void *, void *, void *call_data);
 // Warning proc
 static void ddd_xt_warning(String message);
 
-// Event handling
-void process_pending_events();
-
 // Cut and Paste
 static void gdbCutSelectionCB    (Widget, XtPointer, XtPointer);
 static void gdbCopySelectionCB   (Widget, XtPointer, XtPointer);
@@ -298,9 +295,6 @@ static void gdbUpdateAllMenus();
 // Preferences
 static void make_preferences (Widget parent);
 static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer);
-
-// User emergencies (Ctrl-C)
-bool process_emergencies();
 
 // Synchronize `():' fields
 static void sync_args(ArgField *a1, ArgField *a2);
@@ -335,9 +329,6 @@ static void verify_buttons(MMDesc *items);
 
 // Setup shortcut menu
 static void set_shortcut_menu(DataDisp *data_disp, string expressions);
-
-// Register shells of menu ITEMS.
-void register_menu_shell(MMDesc *items);
 
 // Fix the size of the status line
 static void fix_status_size();

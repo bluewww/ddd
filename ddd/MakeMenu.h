@@ -34,30 +34,32 @@
 // Main types
 typedef int MMType;
 
-const MMType MMPush        =  0; // create PushButton (default)
-const MMType MMToggle      =  1; // create ToggleButton
-const MMType MMMenu        =  2; // create CascadeButton with menu
-const MMType MMSeparator   =  3; // create Separator
-const MMType MMLabel       =  4; // create Label
-const MMType MMRadioMenu   =  5; // create CascadeButton with RadioBox menu
-const MMType MMOptionMenu  =  6; // create an option menu
-const MMType MMPanel       =  7; // create a panel
-const MMType MMRadioPanel  =  8; // create a panel with RadioBox menu
-const MMType MMButtonPanel =  9; // like MMRadioPanel, but no radio behavior
-const MMType MMScale       = 10; // create a scale
-const MMType MMTextField   = 11; // create a text field
-const MMType MMEnterField  = 12; // like MMTextField, but use Enter to activate
+const MMType MMPush        =  0; // Create PushButton (default)
+const MMType MMToggle      =  1; // Create ToggleButton
+const MMType MMMenu        =  2; // Create CascadeButton with menu
+const MMType MMSeparator   =  3; // Create Separator
+const MMType MMLabel       =  4; // Create Label
+const MMType MMRadioMenu   =  5; // Create CascadeButton with RadioBox menu
+const MMType MMOptionMenu  =  6; // Create an option menu
+const MMType MMPanel       =  7; // Create a panel
+const MMType MMRadioPanel  =  8; // Create a panel with RadioBox menu
+const MMType MMButtonPanel =  9; // Like MMRadioPanel, but no radio behavior
+const MMType MMScale       = 10; // Create a scale
+const MMType MMTextField   = 11; // Create a text field
+const MMType MMEnterField  = 12; // Like MMTextField, but use Enter to activate
+const MMType MMFlatPush    = 13; // Create `flat' PushButton without shadows
 
-const MMType MMTypeMask    = 15; // mask to find type
+const MMType MMTypeMask    = 31; // mask to find type
 
 
 // Special attributes, to be ORed with types
 
 typedef int MMAttr;
 
-const MMAttr MMHelp        = 16; // this is a help button
-const MMAttr MMInsensitive = 32; // make item insensitive
-const MMAttr MMUnmanaged   = 64; // make item unmanaged
+const MMAttr MMHelp        =  32; // This is a help button
+const MMAttr MMInsensitive =  64; // Make item insensitive
+const MMAttr MMUnmanaged   = 128; // Make item unmanaged
+const MMAttr MMIgnore      = 256; // Don't create item
 const MMAttr MMAttrMask    = ~MMTypeMask;
 
 
