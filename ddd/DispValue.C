@@ -98,14 +98,13 @@ public:
 // Constructor
 DispValue::DispValue (DispValue* p, 
 		      int d,
-		      const string& value,
+		      string& value,
 		      const string& f_n, 
 		      const string& p_n)
     : myparent(p), mydepth (d), myexpanded(true), 
       myfull_name(f_n), print_name(p_n)
 {
-    string v = value;
-    init(v);
+    init(value);
 }
 
 // Initialization

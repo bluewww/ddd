@@ -68,7 +68,7 @@ public:
     // The DispValue type is determined from VALUE
     DispValue (DispValue* parent, 
 	       int        depth,
-	       const string& value,
+	       string&    value,
 	       const string& full_name, 
 	       const string& print_name);
 
