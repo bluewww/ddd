@@ -180,12 +180,26 @@ static void EchoTextCB(XtPointer client_data, XtIntervalId *)
 static void InvokeGDBFromShellHP(Agent *source, void *client_data, 
 				 void *call_data)
 {
-    GDBAgent *gdb = ptr_cast(GDBAgent, source);
     DataLength *d = (DataLength *)call_data;
 
-    if (d->length > 1 && d->data[d->length - 1] == ' ')
+    bool at_shell_prompt = false;
+    if (d->length >= 1)
     {
-	// We got input ending in ' '; probably a prompt.
+	char last_character = d->data[d->length - 1];
+	switch (last_character)
+	{
+	case ' ':
+	case '>':
+	    // We got input ending in ' ' or `>' - probably a prompt.
+	    // (Any other prompt choices out there?  -AZ)
+	    at_shell_prompt = true;
+	    break;
+	}
+    }
+
+    if (at_shell_prompt)
+    {
+	GDBAgent *gdb = ptr_cast(GDBAgent, source);
 	static bool init_sent = false;
 
 	if (!init_sent)
