@@ -795,7 +795,7 @@ MANS = $(srcdir)/ddd.man
 README_FILES = 
 
 ## GDB symbol files
-SYMS = $(ddd).syms
+SYMS = $(ddd).syms $(ddd_canonical).syms
 
 
 ## Intermediate files
@@ -1000,6 +1000,13 @@ love:
 	@$(ECHO) 'not war?'
 
 
+## FORCE target
+
+.PHONY: FORCE
+FORCE:
+	@:
+
+
 ## The resource header and app-default files.
 
 Ddd.ad.h: Ddd $(srcdir)/ad2c.sed
@@ -1103,33 +1110,33 @@ huffdecode.o: $(srcdir)/huffdecode.C ddd.man.huff.C
 
 
 ## For demonstration and debugging purposes
+.PHONY: check
 check: Ddd ddd cxxtest
 	XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd cxxtest
-,PHONY: check
 
+.PHONY: debug
 debug: Ddd $(ddd) cxxtest ddd.gdb syms
 	$(GDB) -x $(srcdir)/ddd.gdb ./$(ddd)
-,PHONY: debug
 
-SYMS_COMMAND = \
-	test "`ls -t $(ddd_canonical) $(ddd).syms | head -1`" \
-	= $(ddd_canonical) && (nice $(GDB) -batch -nx -mapped \
-	-readnow $(ddd) || $(TOUCH) $(ddd).syms)
-
-# Does not explicitly depend on DDD since we don't want to rebuild it
-$(ddd).syms:
-	-$(SYMS_COMMAND)
+# ddd.syms does not explicitly depend on DDD since we don't want to rebuild it
+$(ddd).syms: FORCE
+	@echo 'Creating $@...'
+	@test "`ls -t $(ddd_canonical) $@ 2> /dev/null | head -1`" \
+	= $(ddd_canonical) && (set -x; \
+	nice $(GDB) -batch -nx -mapped -readnow $(ddd_canonical) \
+	&& $(MV) $(ddd_canonical).syms $@ || $(RM) $@); true
+	@echo 'Creating $@...done'
 
 # By default, create symbol files in the background
-syms:
-	(sleep 10; ($(SYMS_COMMAND)) > $(ddd).syms.log 2>&1) &
 .PHONY: syms
+syms:
+	(sleep 10; $(MAKE) $(ddd).syms > $(ddd).syms.log 2>&1) &
 
 
 # A convient target for setting up a debugging environment.
+.PHONY: it
 it:	all cxxtest ctest syms
 	@:
-.PHONY: it
 
 
 
