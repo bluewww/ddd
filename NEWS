@@ -1,16 +1,15 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 0.9.9
----------
+DDD 1.0
+-------
 
-Definitively the last beta release before DDD 1.0, which is scheduled
-for May 7th, 1995.  This release fixes sime minor bugs introduced by
-porting DDD on other machines (the AIX patches made DDD not run on
-HP-UX; the HP-UX patches made DDD not run on ULTRIX, and so on...).
+First public DDD release.  Many thanks to all who spent their time in
+testing DDD, sending bug reports and suggestions, and making DDD what
+it is today.
 
-DDD should configure, compile and run out-of-the-box on the following
-systems:
+This DDD release should configure, compile and run out-of-the-box on
+the following systems:
 
     hppa1.1-hp-hpux9.05 
     linux-i386-unknown
@@ -25,6 +24,32 @@ If your system is in the list above, please let us know if you
 encountered any problems (unless these are known problems listed in
 the `BUGS' and `PROBLEMS' files).  If your system is not in the list
 above, please let us share your experiences.
+
+Changes to DDD 0.9:
+- New `Program' menu, introduces keyboard accelerators for frequently
+  used commands.
+- Graph printing reworked; you can now set paper size and graph
+  orientation.  The bounding box is computed correctly for all sizes.
+- The `Graph' menu has been dropped; its items have been moved 
+  into the `Data' and `File' menus.
+- Selecting and moving multiple displays made easier.
+- Pointers to functions are now displayed correctly.
+- Regex name conflicts on Linux fixed.
+
+Announce policy for future releases:
+- Bug fix releases shall be named 1.0a, 1.0b, and so on.
+  In general, they will be announced in DDD mailing lists only.
+- Feature releases shall be numbered 1.1, 1.2, 1.3 and so on.
+  They will be announced in USENET news as well.
+
+
+DDD 0.9.9
+---------
+
+Definitively the last beta release before DDD 1.0, which is scheduled
+for May 7th, 1995.  This release fixes sime minor bugs introduced by
+porting DDD on other machines (the AIX patches made DDD not run on
+HP-UX; the HP-UX patches made DDD not run on ULTRIX, and so on...).
 
 
 DDD 0.9.8
@@ -169,10 +194,6 @@ User Interface:
 - There is a button for quick and painless application killing.
 - The run and interrupt buttons have less aggressive colors.
 - The hourglass is smaller.
-
-Once more, thanks to all who spent their time in testing DDD and
-sending bug reports and suggestions.
-
 
 
 DDD 0.9.2
