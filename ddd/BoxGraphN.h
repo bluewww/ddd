@@ -117,4 +117,5 @@ public:
     virtual void _print(ostream& os, const GraphGC& gc) const;
 };
 
-#endif
+#endif // _DDD_BoxGraphNode_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

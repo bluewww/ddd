@@ -115,4 +115,5 @@ public:
     }
 };
 
-#endif
+#endif // _DDD_RegionGraphNode_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
