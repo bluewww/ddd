@@ -1,0 +1,167 @@
+From owner-ddd-bugs@ibr.cs.tu-bs.de  Mon Dec 14 19:42:44 1998
+From: Jonathan Edwards <edwards@intranet.com>
+Subject: [ddd-bugs] Java package source error
+To: ddd-bugs@ips.cs.tu-bs.de
+Date: Mon, 14 Dec 1998 13:39:11 -0500 (EST)
+Received: from mumm.ibr.cs.tu-bs.de (majordom@mumm.ibr.cs.tu-bs.de [134.169.34.190])
+	by infbssys.ips.cs.tu-bs.de (8.9.1/8.9.1) with ESMTP id TAA09490
+	for <zeller@ips.cs.tu-bs.de>; Mon, 14 Dec 1998 19:42:39 +0100
+Received: by mumm.ibr.cs.tu-bs.de (8.9.1/8.9.0) id TAA22062
+	for ddd-bugs-outgoing; Mon, 14 Dec 1998 19:42:35 +0100 (MET)
+Received: from infbssys.ips.cs.tu-bs.de (root@infbssys.ips.cs.tu-bs.de [134.169.32.1])
+	by mumm.ibr.cs.tu-bs.de (8.9.1/8.9.0) with ESMTP id TAA22056
+	for <ddd-bugs@ibr.cs.tu-bs.de>; Mon, 14 Dec 1998 19:42:30 +0100 (MET)
+Received: from omega.intranet.com (omega.intranet.com [208.195.240.42])
+	by infbssys.ips.cs.tu-bs.de (8.9.1/8.9.1) with SMTP id TAA09484
+	for <ddd-bugs@ips.cs.tu-bs.de>; Mon, 14 Dec 1998 19:42:14 +0100
+Received: by omega.intranet.com; (5.65v3.2/1.3/10May95) id AA26132; Mon, 14 Dec 1998 13:45:47 -0500
+Received: from somewhere by smtpxd
+Received: from somewhere by smtpxd
+Message-Id: <199812141839.NAA18218@blight.IntraNet.com>
+Sender: owner-ddd-bugs@ibr.cs.tu-bs.de
+Precedence: bulk
+
+Hello, the latest snapshot fixes the problem I reported about not
+finding the main class source from CLASSPATH. Thanks!
+
+But there is still a minor problem when using classes in packages. DDD
+now finds the source, but it also displays the "DDD:No Class" dialog
+containing "Cannot access class "Test"". I can dismiss the dialog and
+still see the source, but breakpoints don't display till I actually
+hit the first breakpoint.
+
+You can reproduce this with the file pkg/Test.java:
+
+package pkg;
+public class Test 
+{
+  public static void main(String argv[])
+  {
+    System.out.println("Hello\n");
+  }
+}
+
+
+
+DDD 1998-12-10 (powerpc-ibm-aix4.2.1.0), Copyright (C) 1998 TU Braunschweig.
+Compiled with GCC 2.7.2.2, libstdc++ 2.7.2
+Requires X11R5, Xt11R5, Motif 1.2.3 (OSF/Motif Version 1.2.3)
+Includes DDD core, manual, app-defaults, XPM 3.4.7, Athena Panner
+Built 1998-12-14 by edwards <edwards@intranet.com>.
+$  ddd pkg.Test
++  /bin/sh -c 'exec jdb '\''pkg.Test'\'''
+#  Hello, world!
+#  Starting JDB...
+#  Raising core file size limit from 1048576 to 2147483647 bytes...
+#  Raising core file size limit from 1048576 to 2147483647 bytes...done.
+#  Running JDB (pid 20990, tty /dev/pts/3)...
+#  Current language: java
+#  JDB: EOF detected
+<- "Initializing jdb..."
+<- "\n"
+<- "JIT Compiler disabled\n"
+<- "0x30024a10:class(pkg.Test)\n"
+<- "> "
+-> "use\n"
+<- "/home/zeller/ddd/3.1/linux/ddd:/usr/jdk_base/classes:/usr/jdk_base/lib/classes.jar:/usr/jdk_base/lib/rt.jar:/usr/jdk_base/lib/i18n.jar:/usr/jdk_base/lib/classes.zip:/usr/jdk_base/classes:/usr/jdk_base/lib/classes.jar:/usr/jdk_base/lib/rt.jar:/usr/jdk_base/lib/i18n.jar:/usr/jdk_base/lib/classes.zip\n"
+<- "> "
+#  Loading class "pkg.Test"...
+#  Searching for "pkg.Test" source...
+#  Searching for "Test" source...
+#  Searching for "Test" source...failed.
+#  Searching for "Test" source...
+#  Searching for "Test" source...failed.
+#  Searching for "pkg.Test" source..."/home/edwards/tmp/pkg/Test.java".
+#  Reading file "/home/edwards/tmp/pkg/Test.java"...
+#  Reading file "/home/edwards/tmp/pkg/Test.java"...done.
+#  Loading class "pkg.Test"...done.
+#  File "/home/edwards/tmp/pkg/Test.java" 8 lines, 120 characters
+#  Loading class "Test"...
+#  Searching for "Test" source...
+#  Searching for "Test" source...
+#  Searching for "Test" source...failed.
+#  Searching for "Test" source...
+#  Searching for "Test" source...failed.
+#  Searching for "Test" source...
+#  Searching for "Test" source...failed.
+#  Searching for "Test" source...
+#  Searching for "Test" source...failed.
+#  Searching for "Test" source...failed.
+#  Loading class "Test"...failed.
+#  Reading file "/home/edwards/Test"...
+#  Reading file "/home/edwards/Test"...No such file or directory.
+#  Loading class "Test"...
+#  Searching for "Test" source...
+#  Searching for "Test" source...
+#  Searching for "Test" source...failed.
+#  Searching for "Test" source...
+#  Searching for "Test" source...failed.
+#  Searching for "Test" source...
+#  Searching for "Test" source...failed.
+#  Searching for "Test" source...
+#  Searching for "Test" source...failed.
+#  Searching for "Test" source...failed.
+#  Loading class "Test"...failed.
+-> "# reset\n"
+<- "huh? Try help...\n"
+<- "> "
+#  Starting JDB...done.
+#  Welcome to DDD 1998-12-10 "Birdland" (powerpc-ibm-aix4.2.1.0)
+-> "help\n"
+<- "** command list **\n"
+<- "threads [threadgroup]     -- list threads\n"
+<- "thread <thread id>        -- set default thread\n"
+<- "suspend [thread id(s)]    -- suspend threads (default: all)\n"
+<- "resume [thread id(s)]     -- resume threads (default: all)\n"
+<- "where [thread id] | all   -- dump a thread\'s stack\n"
+<- "wherei [thread id] | all  -- dump a thread\'s stack, with pc info\n"
+<- "threadgroups              -- list threadgroups\n"
+<- "threadgroup <name>        -- set current threadgroup\n"
+<- "\n"
+<- "print <id> [id(s)]        -- print object or field\n"
+<- "dump <id> [id(s)]         -- print all object information\n"
+<- "\n"
+<- "locals                    -- print all local variables in current stack frame\n"
+<- "\n"
+<- "classes                   -- list currently known classes\n"
+<- "methods <class id>        -- list a class\'s methods\n"
+<- "\n"
+<- "stop in <class id>.<method> -- set a breakpoint in a method\n"
+<- "stop at <class id>:<line> -- set a breakpoint at a line\n"
+<- "up [n frames]             -- move up a thread\'s stack\n"
+<- "down [n frames]           -- move down a thread\'s stack\n"
+<- "clear <class id>:<line>   -- clear a breakpoint\n"
+<- "step                      -- execute current line\n"
+<- "step up                   -- execute until the current method returns to its caller\n"
+<- "stepi                     -- execute current instruction\n"
+<- "next                      -- step one line (step OVER calls)\n"
+<- "cont                      -- continue execution from breakpoint\n"
+<- "\n"
+<- "catch <class id>          -- break for the specified exception\n"
+<- "ignore <class id>         -- ignore when the specified exception\n"
+<- "\n"
+<- "list [line number|method] -- print source code\n"
+<- "use [source file path]    -- display or change the source path\n"
+<- "\n"
+<- "memory                    -- report memory usage\n"
+<- "gc                        -- free unused objects\n"
+<- "\n"
+<- "load classname            -- load Java class to be debugged\n"
+<- "run <class> [args]        -- start execution of a loaded Java class\n"
+<- "!!                        -- repeat last command\n"
+<- "help (or ?)               -- list commands\n"
+<- "exit (or quit)            -- exit debugger\n"
+<- "> "
+-----
+This message is brought to you via the `ddd-bugs' mailing list.
+
+Send messages to all subscribers:           ddd-bugs@ips.cs.tu-bs.de
+Administrative requests (unsubscribing...): ddd-bugs-request@ips.cs.tu-bs.de
+
+Message archive:     http://www.cs.tu-bs.de/softech/ddd/ddd-bugs/
+Recent DDD info:     http://www.cs.tu-bs.de/softech/ddd/
+Recent DDD software: ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
+DDD mirror sites:    ftp://ftp.th-darmstadt.de/pub/programming/tools/ddd/
+                     ftp://ftp.gre.ac.uk/pub/tools/debuggers/ddd/
+                     ftp://uiarchive.cso.uiuc.edu/pub/packages/ddd/
+

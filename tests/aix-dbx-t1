@@ -1,0 +1,482 @@
+From owner-ddd-bugs@ibr.cs.tu-bs.de  Mon Dec 14 20:00:17 1998
+From: Eric Blinn <eric.blinn@sdrc.com>
+Subject: [ddd-bugs] Missing source pointer with AIX DBX
+To: ddd-bugs@ips.cs.tu-bs.de, Monty Stein <monty.stein@heimdall.sdrc.com>
+Date: Mon, 14 Dec 1998 13:59:20 -0500
+Organization: Structural Dynamics Research Corporation
+Received: from mumm.ibr.cs.tu-bs.de (majordom@mumm.ibr.cs.tu-bs.de [134.169.34.190])
+	by infbssys.ips.cs.tu-bs.de (8.9.1/8.9.1) with ESMTP id UAA09860
+	for <zeller@ips.cs.tu-bs.de>; Mon, 14 Dec 1998 20:00:11 +0100
+Received: by mumm.ibr.cs.tu-bs.de (8.9.1/8.9.0) id UAA22866
+	for ddd-bugs-outgoing; Mon, 14 Dec 1998 20:00:07 +0100 (MET)
+Received: from infbssys.ips.cs.tu-bs.de (root@infbssys.ips.cs.tu-bs.de [134.169.32.1])
+	by mumm.ibr.cs.tu-bs.de (8.9.1/8.9.0) with ESMTP id UAA22858
+	for <ddd-bugs@ibr.cs.tu-bs.de>; Mon, 14 Dec 1998 20:00:02 +0100 (MET)
+Received: from rzcomm1.rz.tu-bs.de (root@rzcomm1.rz.tu-bs.de [134.169.9.107])
+	by infbssys.ips.cs.tu-bs.de (8.9.1/8.9.1) with ESMTP id UAA09787
+	for <ddd-bugs@ips.cs.tu-bs.de>; Mon, 14 Dec 1998 20:00:01 +0100
+Received: from heimdall.sdrc.com (heimdall.sdrc.com [146.122.132.195])
+	by rzcomm1.rz.tu-bs.de (8.8.6/8.8.6) with ESMTP id TAA11584
+	for <ddd-bugs@ips.cs.tu-bs.de>; Mon, 14 Dec 1998 19:59:38 +0100 (MET)
+Received: from mailhub-cvg.sdrc.com (ratatosk.sdrc.com [146.122.131.194])
+	by heimdall.sdrc.com (8.9.1/8.9.1) with ESMTP id NAA00868
+	for <ddd-bugs@ips.cs.tu-bs.de>; Mon, 14 Dec 1998 13:59:23 -0500 (EST)
+Received: from cas1.sdrc.com (cas1h.sdrc.com [146.122.142.17])
+	by mailhub-cvg.sdrc.com (8.8.8/8.8.5) with ESMTP id NAA10233
+	for <ddd-bugs@ips.cs.tu-bs.de>; Mon, 14 Dec 1998 13:59:22 -0500 (EST)
+Received: by cas1.sdrc.com id NAA28479; Mon, 14 Dec 1998 13:59:21 -0500 (EST)
+Received: from sdrc.com (localhost [127.0.0.1]) by sgipd381 (980427.SGI.8.8.8/970903.SGI.AUTOCF) via ESMTP id NAA15137; Mon, 14 Dec 1998 13:59:21 -0500 (EST)
+Message-ID: <36756008.1F23A810@sdrc.com>
+X-Mailer: Mozilla 4.05 [en] (X11; U; IRIX 6.5 IP22)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Sender: owner-ddd-bugs@ibr.cs.tu-bs.de
+Precedence: bulk
+
+DDD CONFIGURATION
+-----------------
+DDD 3.1.1 (powerpc-ibm-aix4.3.1.0), Copyright (C) 1998 TU Braunschweig.
+Compiled with CC
+Requires X11R6, Xt11R6, Motif 2.1 (Motif Version 2.1.0)
+Includes DDD core, manual, app-defaults, XPM 3.4.10, Athena Panner
+Built 1998-12-08 by Eric Blinn <qablinn@146.122.9.68>.
+
+
+INFERIOR DEBUGGER
+-----------------
+I am using dbx as shipped with IBM AIX 4.3.1.0.
+
+
+COMPILER USED TO COMPILE DDD
+----------------------------
+I used IBM xlC 3.6.4 to compile DDD.
+
+
+DESCRIPTION OF PROBLEMATIC BEHAVIOR
+-----------------------------------
+In the source window, the pointer to the next source line to be executed
+does not show up. This is the case for both a glyph pointer and a text
+based pointer. The text cursor _does_ seem to show up in the right
+place, which gives some indication of what the next source line to be
+executed is, as long as I don't move the cursor manually (such as doing
+a cut and paste operation). I suspect an interaction issue with dbx and
+have been trying to debug the problem, but I'd like to get the issue in
+front of someone with better knowledge of DDD internals. The DDD log
+file follows:
+
+DDD 3.1.1 (powerpc-ibm-aix4.3.1.0), Copyright (C) 1998 TU Braunschweig.
+Compiled with CC
+Requires X11R6, Xt11R6, Motif 2.1 (Motif Version 2.1.0)
+Includes DDD core, manual, app-defaults, XPM 3.4.10, Athena Panner
+Built 1998-12-08 by Eric Blinn <qablinn@146.122.9.68>.
+$  /scratch/qablinn/tmp/ddd-3.1.1_debug/ddd/ddd -dbx ./local/geomod.exe
++  /bin/sh -c 'exec dbx '\''./local/geomod.exe'\'''
+#  Hello, world!
+#  Starting DBX...
+!  X error
+X Error of failed request:  BadDrawable (invalid Pixmap or Window
+parameter)
+  Major opcode of failed request:  70 (X_PolyFillRectangle)
+  Resource id in failed request:  0x0
+  Serial number of failed request:  4533
+  Current serial number in output stream:  4534
+#  Raising core file size limit from 1048576 to 2147483647 bytes...
+#  Raising core file size limit from 1048576 to 2147483647 bytes...done.
+#  Running DBX (pid 12756, tty /dev/pts/1)...
+#  Current language: c/c++
+#  DBX: EOF detected
+<- "Type \'help\' for help.\n"
+<- "reading symbolic information ..."
+<- "\n"
+<- "(dbx) "
+-> "sh stty -echo -onlcr\n"
+<- "(dbx) "
+-> "set $page = 1\n"
+<- "(dbx) "
+-> "frame\n"
+<- "frame\n"
+<- "^ unrecognized command\n"
+<- "(dbx) "
+-> "func\n"
+<- "main\n"
+<- "(dbx) "
+-> "dbxenv run_io\n"
+<- "dbxenv run_io\n"
+<- "^ unrecognized command\n"
+<- "(dbx) "
+-> "print -r 4711\n"
+<- "\"r\" is not defined\n"
+<- "(dbx) "
+-> "where -h\n"
+<- "__start() at 0x10000200\n"
+<- "where -h\n"
+<- "      ^ syntax error\n"
+<- "(dbx) "
+-> "display\n"
+<- "display\n"
+<- "^ unrecognized command\n"
+<- "(dbx) "
+-> "clear\n"
+<- "clear\n"
+<- "     ^ syntax error\n"
+<- "(dbx) "
+-> "help handler\n"
+<- "handler is not a known help topic or command\n"
+<- "(dbx) "
+-> "pwd\n"
+<- "pwd\n"
+<- "^ unrecognized command\n"
+<- "(dbx) "
+-> "help setenv\n"
+<- "setenv is not a known help topic or command\n"
+<- "(dbx) "
+-> "help edit\n"
+<- "edit\n"
+<- "edit <filename>\n"
+<- "edit <procedure>\n"
+<- "\tInvoke an editor on <filename> or the current source file\n"
+<- "\tif none is specified. If a procedure or function name\n"
+<- "\tis specified the editor is invoked on the file that\n"
+<- "\tcontains it. The default editor is the vi editor.\n"
+<- "\tThe default can be overridden by setting the environment\n"
+<- "\tvariable EDITOR to the name of the desired editor.\n"
+<- "(dbx) "
+-> "help make\n"
+<- "make is not a known help topic or command\n"
+<- "(dbx) "
+-> "help regs\n"
+<- "regs is not a known help topic or command\n"
+<- "(dbx) "
+-> "print \"DDD\"\n"
+<- "DDD \n"
+<- "(dbx) "
+-> "help when\n"
+<- "no help available for when\n"
+<- "(dbx) "
+-> "delete 4711 4711\n"
+<- "unknown event 4711\n"
+<- "(dbx) "
+-> "help run\n"
+<- "run [<arguments>] [< <filename>] [> <filename>] \n"
+<- "                    [>> <filename>] [>! <filename>] \n"
+<- "                    [2> <filename>] [2>> <filename>] \n"
+<- "                    [>& <filename>] [>>& <filename>] \n"
+<- "rerun [<arguments>] [< <filename>] [> <filename>] \n"
+<- "                    [>> <filename>] [>! <filename>] \n"
+<- "                    [2> <filename>] [2>> <filename>] \n"
+<- "                    [>& <filename>] [>>& <filename>] \n"
+<- "\tStart executing the object file, passing arguments as\n"
+<- "\tcommand line arguments; < or > can be used to redirect\n"
+<- "\tinput or output in a shell-like manner. When \"rerun\"\n"
+<- "\tis used without any arguments the previous argument list\n"
+<- "\tis passed to the program; otherwise it is identical to run.\n"
+<- "(dbx) "
+-> "help givenfile\n"
+<- "givenfile is not a known help topic or command\n"
+<- "(dbx) "
+-> "help cont\n"
+<- "cont\n"
+<- "cont <signal-number>\n"
+<- "cont <signal-name>\n"
+<- "\tContinue execution from where it stopped. If a signal\n"
+<- "\tis specified, the process continues as though it\n"
+<- "\treceived the signal. Otherwise, the process is continued\n"
+<- "\tas though it had not been stopped.\n"
+<- "(dbx) "
+-> "help examine\n"
+<- "examine is not a known help topic or command\n"
+<- "(dbx) "
+-> "help rerun\n"
+<- "run [<arguments>] [< <filename>] [> <filename>] \n"
+<- "                    [>> <filename>] [>! <filename>] \n"
+<- "                    [2> <filename>] [2>> <filename>] \n"
+<- "                    [>& <filename>] [>>& <filename>] \n"
+<- "rerun [<arguments>] [< <filename>] [> <filename>] \n"
+<- "                    [>> <filename>] [>! <filename>] \n"
+<- "                    [2> <filename>] [2>> <filename>] \n"
+<- "                    [>& <filename>] [>>& <filename>] \n"
+<- "\tStart executing the object file, passing arguments as\n"
+<- "\tcommand line arguments; < or > can be used to redirect\n"
+<- "\tinput or output in a shell-like manner. When \"rerun\"\n"
+<- "\tis used without any arguments the previous argument list\n"
+<- "\tis passed to the program; otherwise it is identical to run.\n"
+<- "(dbx) "
+-> "language\n"
+<- "language\n"
+<- "^ unrecognized command\n"
+<- "(dbx) "
+-> "sh pwd\n"
+<- "/scratch/qablinn/tmp1\n"
+<- "(dbx) "
+-> "file\n"
+<- "/msdev/sms/ms7/riosqa/src/tffi/fi2ct.c\n"
+<- "(dbx) "
+-> "list\n"
+<- "    1   /* SDRC Source File Description Block
+------------------------------------\n"
+<- "    2    * \n"
+<- "    3    * fi2ct.c - file containing public functions of curve t
+point\n"
+<- "    4    * date (22-MAR-1995) SDRC/INASU P.VETTIKKAL\n"
+<- "    5    *\n"
+<- "    6    *
+***********************************************************\n"
+<- "    7    * *****              COPYRIGHT (C) 1992              
+*******\n"
+<- "    8    * *****     BY STRUCTURAL DYNAMICS RESEARCH CORP.    
+*******\n"
+<- "    9    * *****             ALL RIGHTS RESERVED              
+*******\n"
+<- "   10    *
+***********************************************************\n"
+<- "(dbx) "
+-> "status\n"
+<- "(dbx) "
+#  Reading file "/msdev/sms/ms7/riosqa/src/tffi/fi2ct.c"...
+#  Reading file "/msdev/sms/ms7/riosqa/src/tffi/fi2ct.c"...done.
+#  File "/msdev/sms/ms7/riosqa/src/tffi/fi2ct.c" 1512 lines, 46823
+characters
+-> "debug \n"
+<- "debug\n"
+<- "     ^ syntax error\n"
+<- "(dbx) "
+-> "# reset\n"
+<- "# reset\n"
+<- "^ unrecognized command\n"
+<- "(dbx) "
+-> "file\n"
+<- "/msdev/sms/ms7/riosqa/src/tffi/fi2ct.c\n"
+<- "(dbx) "
+-> "list\n"
+<- "   11    *\n"
+<- "   12    * Subsystem Description:\n"
+<- "   13    *\n"
+<- "   14    *   File contains public fucntions of t point on a curve\n"
+<- "   15    *\n"
+<- "   16    * Global functions defined in this source file:\n"
+<- "   17    *\n"
+<- "   18    *   fi2ctConstructor    - make a \"t point\", filling in
+basic data\n"
+<- "   19    *   fi2ctCopy           - make a copy of a \"t point\"\n"
+<- "   20    *   fi2ctGetXnType      - get the XnType\n"
+<- "(dbx) "
+-> "status\n"
+<- "(dbx) "
+-> "debug \n"
+<- "debug\n"
+<- "     ^ syntax error\n"
+<- "(dbx) "
+#  Starting DBX...done.
+#  Welcome to DDD 3.1.1 "Morning Sky" (powerpc-ibm-aix4.3.1.0)
+-> "help detach\n"
+<- "detach\n"
+<- "detach <sig_num>\n"
+<- "detach <sig_name>\n"
+<- "\tContinues execution from where it stopped without debugger\n"
+<- "\tcontrol. If a signal is specified, the process continues\n"
+<- "\tas though it received a signal. Otherwise, the debugger will\n"
+<- "\texit, but the debugged process shall continue.\n"
+<- "(dbx) "
+-> "help run\n"
+<- "run [<arguments>] [< <filename>] [> <filename>] \n"
+<- "                    [>> <filename>] [>! <filename>] \n"
+<- "                    [2> <filename>] [2>> <filename>] \n"
+<- "                    [>& <filename>] [>>& <filename>] \n"
+<- "rerun [<arguments>] [< <filename>] [> <filename>] \n"
+<- "                    [>> <filename>] [>! <filename>] \n"
+<- "                    [2> <filename>] [2>> <filename>] \n"
+<- "                    [>& <filename>] [>>& <filename>] \n"
+<- "\tStart executing the object file, passing arguments as\n"
+<- "\tcommand line arguments; < or > can be used to redirect\n"
+<- "\tinput or output in a shell-like manner. When \"rerun\"\n"
+<- "\tis used without any arguments the previous argument list\n"
+<- "\tis passed to the program; otherwise it is identical to run.\n"
+<- "(dbx) "
+-> "help step\n"
+<- "step\n"
+<- "step <count>\n"
+<- "\tExecute one source line.\n"
+<- "\tIf a count is supplied, execute the next count source lines.\n"
+<- "\tThe difference between this and \"next\" is that if the line\n"
+<- "\tcontains a call to a procedure or function the \"step\"\n"
+<- "\tcommand will enter that procedure or function, while the \n"
+<- "\t\"next\" command will not.\n"
+<- "\tSee also: set_variables $stepignore\n"
+<- "(dbx) "
+-> "help stepi\n"
+<- "stepi\n"
+<- "stepi <count>\n"
+<- "\tExecute a single instruction.\n"
+<- "\tIf a count is supplied, execute the next count instructions.\n"
+<- "(dbx) "
+-> "help next\n"
+<- "next\n"
+<- "next <count>\n"
+<- "\tExecute up to the next source line. If a count is supplied\n"
+<- "\texecute the next count source lines. The difference between\n"
+<- "\tthis and \"step\" is that if the line contains a call\n"
+<- "\tto a procedure or function the \"step\" command will\n"
+<- "\tstop at the beginning of that block, while the \"next\"\n"
+<- "\tcommand will not.\n"
+<- "(dbx) "
+-> "help nexti\n"
+<- "nexti\n"
+<- "nexti <count>\n"
+<- "\tSingle step as in \"next\", but do a single instruction\n"
+<- "\trather than source line. If a count is supplied\n"
+<- "\texecute the nexti count instructions.\n"
+<- "(dbx) "
+-> "help until\n"
+<- "until is not a known help topic or command\n"
+<- "(dbx) "
+-> "help cont\n"
+<- "cont\n"
+<- "cont <signal-number>\n"
+<- "cont <signal-name>\n"
+<- "\tContinue execution from where it stopped. If a signal\n"
+<- "\tis specified, the process continues as though it\n"
+<- "\treceived the signal. Otherwise, the process is continued\n"
+<- "\tas though it had not been stopped.\n"
+<- "(dbx) "
+-> "help signal\n"
+<- "signal is not a known help topic or command\n"
+<- "(dbx) "
+-> "help kill\n"
+<- "kill is not a known help topic or command\n"
+<- "(dbx) "
+-> "help up\n"
+<- "up\n"
+<- "up <count>\n"
+<- "down\n"
+<- "down <count>\n"
+<- "\tMove the current function, which is used for resolving\n"
+<- "\tnames, up or down the stack <count> levels. The default\n"
+<- "\t<count> is one.\n"
+<- "(dbx) "
+-> "help down\n"
+<- "up\n"
+<- "up <count>\n"
+<- "down\n"
+<- "down <count>\n"
+<- "\tMove the current function, which is used for resolving\n"
+<- "\tnames, up or down the stack <count> levels. The default\n"
+<- "\t<count> is one.\n"
+<- "(dbx) "
+-> "commands\n"
+<- "commands\n"
+<- "^ unrecognized command\n"
+<- "(dbx) "
+-> "rerun \n"
+<- "[ ./local/geomod.exe ]\n"
+<- "\n"
+<- "\n"
+<- "You are running I-DEAS with X3D.\n"
+<- "\n"
+-> "\003"
+<- "\n"
+<- "Interrupt in IoWait at 0xd0ab6c9c ($t1)\n"
+<- "0xd0ab6c9c (IoWait+0x20) 80410014        lwz   r2,0x14(r1)\n"
+<- "(dbx) "
+-> "file\n"
+<- "/msdev/sms/ms7/riosqa/src/tffi/fi2ct.c\n"
+<- "(dbx) "
+-> "status\n"
+<- "(dbx) "
+-> "stop in FaceGrow\n"
+<- "[4] stop in FaceGrow\n"
+<- "(dbx) "
+-> "status\n"
+<- "[4] stop in FaceGrow\n"
+<- "(dbx) "
+-> "list FaceGrow\n"
+<- " 4254      FUNCTION_REGISTER1(\"tffi/fi2tofu.c/FaceGrow\")\n"
+<- " 4255      /* Put NOTHING between Function_Register1 line and
+functions first \'{\' */\n"
+<- " 4256   \n"
+<- " 4257      /*==== Declare Variables
+==================================================*/\n"
+<- " 4258   \n"
+<- " 4259      Integer           iRc = fi_kNOERR, iRet = fi_kNOERR,\n"
+<- " 4260                        fEnd, fProcessed = FALSE;\n"
+<- " 4261      Integer           fOrient, fFaceTrimFailed = 0;\n"
+<- " 4262      Double_Precision  adUvs[6], adXyz[3], adXyz1[3],
+adUvSt[4], adUvEn[4],\n"
+<- " 4263                        adDum[3];\n"
+<- " 4264   \n"
+<- "(dbx) "
+-> "file\n"
+<- "/msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c\n"
+<- "(dbx) "
+-> "list main\n"
+<- "no source lines for \""
+<- "main\"\n"
+<- "(dbx) "
+-> "cont\n"
+<- "\n"
+<- "\rRun the STOP_SDRC* script to shutdown I-DEAS Master Series.\n"
+<- "\n"
+<- "\rCancel request ignored.\n"
+<- "[4] stopped in unnamed block $b382 at line 4259 in file \"/msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c\" ($t1)\n"
+<- " 4259      Integer           iRc = fi_kNOERR, iRet = fi_kNOERR,\n"
+<- "(dbx) "
+-> "file\n"
+<- "/msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c\n"
+<- "(dbx) "
+-> "status\n"
+<- "[4] stop in FaceGrow\n"
+<- "(dbx) "
+#  Reading file "/msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c\" ($t1"...
+#  Reading file "/msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c\" ($t1"...No
+such file or directory.
+-> "file /msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c\" ($t1\n"
+<- "non-terminated string\n"
+<- "(dbx) "
+-> "file\n"
+<- "/msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c\n"
+<- "(dbx) "
+#  Reading file "/msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c"...
+#  Reading file "/msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c"...done.
+#  File "/msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c" 9239 lines, 338395
+characters
+-> "next\n"
+<- "stopped in unnamed block $b382 at line 4260 in file \"/msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c\" ($t1)\n"
+<- " 4260                        fEnd, fProcessed = FALSE;\n"
+<- "(dbx) "
+-> "file\n"
+<- "/msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c\n"
+<- "(dbx) "
+-> "status\n"
+<- "[4] stop in FaceGrow\n"
+<- "(dbx) "
+#  File "/msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c" 9239 lines, 338395
+characters
+-> "quit\n"
+#  DBX: EOF detected
+#  Running DBX (pid 12756, tty /dev/pts/1)...Exit 0.
+#  Saving history in "/u/qablinn/.ddd/history"...
+#  Saving history in "/u/qablinn/.ddd/history"...done.
+#  Thanks for using DDD 3.1.1!  (We apologize for the inconvenience.)
+
+
+Thanks,
+Eric Blinn
+
+
+-- Eric W. Blinn
+-- Software QA Engineer II / SDRC
+-- eric.blinn@sdrc.com (work)
+-- eblinn@one.net (home)
+-----
+This message is brought to you via the `ddd-bugs' mailing list.
+
+Send messages to all subscribers:           ddd-bugs@ips.cs.tu-bs.de
+Administrative requests (unsubscribing...): ddd-bugs-request@ips.cs.tu-bs.de
+
+Message archive:     http://www.cs.tu-bs.de/softech/ddd/ddd-bugs/
+Recent DDD info:     http://www.cs.tu-bs.de/softech/ddd/
+Recent DDD software: ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
+DDD mirror sites:    ftp://ftp.th-darmstadt.de/pub/programming/tools/ddd/
+                     ftp://ftp.gre.ac.uk/pub/tools/debuggers/ddd/
+                     ftp://uiarchive.cso.uiuc.edu/pub/packages/ddd/
+
