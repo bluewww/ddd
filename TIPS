@@ -112,7 +112,7 @@ For instance, to continue execution with an interrupt signal, use
 KBD(signal SIGINT) or KBD(signal 2) at the GDB prompt.
 
 You can repeat the last command by hitting KEY_RETURN.
-Use KEY(Ctrl+R) and KEY(Ctrl+F) to search the command history.
+Use KEY(Ctrl+B) and KEY(Ctrl+F) to search the command history.
 
 You can move breakpoints by dragging them.  
 Just press and hold BUTTON(1) on a breakpoint,
