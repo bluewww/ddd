@@ -783,19 +783,26 @@ static bool ends_in(const string& answer, const string& prompt)
 bool GDBAgent::is_exception_answer(const string& answer)
 {
     // Any JDB backtrace contains these lines.
-    return type() == JDB && answer.contains("com.sun.tools.example.debug");
-
+    return type() == JDB && 
+	(answer.contains("com.sun.tools.example.debug") ||
+	 answer.contains("sun.tools.debug"));
 }
 
-void GDBAgent::set_exception_state(bool state)
+void GDBAgent::set_exception_state(bool new_state)
 {
-    if (state != exception_state)
+    if (new_state != exception_state)
     {
-	exception_state = state;
+	exception_state = new_state;
 	callHandlers(ExceptionState, (void *)exception_state);
+
+	if (exception_state && state != ReadyWithPrompt)
+	{
+	    // Report the exception message like an unexpected output
+	    callHandlers(AsyncAnswer, (void *)&complete_answer);
+	}
     }
 }
-	
+
 
 // Return true iff ANSWER ends with secondary prompt.
 bool GDBAgent::ends_with_secondary_prompt (const string& ans)
@@ -1340,11 +1347,11 @@ void GDBAgent::handle_input(string& answer)
     handle_more(answer);
     handle_reply(answer);
 
-    if (is_exception_answer(complete_answer))
-	set_exception_state(true);
-
     if (exception_state && state != ReadyWithPrompt)
+    {
+	// Be sure to report the exception like an unexpected output
 	callHandlers(AsyncAnswer, (void *)&answer);
+    }
 
     // Handle all other GDB output, depending on current state.
     switch (state)
@@ -1502,6 +1509,9 @@ void GDBAgent::handle_input(string& answer)
 	assert(0);
 	break;
     }
+
+    if (is_exception_answer(complete_answer))
+	set_exception_state(true);
 }
 
 // Write arbitrary data
@@ -3012,4 +3022,23 @@ void GDBAgent::StrangeHP(Agent *source, void *client_data, void *call_data)
     string msg = (char *)call_data;
     msg.prepend("warning: ");
     PanicHP(source, client_data, (char *)msg);
+}
+
+// Terminator
+void GDBAgent::abort()
+{
+    // Clean up now
+    TTYAgent::abort();
+
+    // Reset state (in case we're restarted)
+    state             = BusyOnInitialCmds;
+    _verbatim         = false;
+    _recording        = false;
+    _detect_echos     = true;
+    last_prompt       = "";
+    last_written      = "";
+    echoed_characters = -1;
+    exception_state   = false;
+    questions_waiting = false;
+    complete_answer   = "";
 }

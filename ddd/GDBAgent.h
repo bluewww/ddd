@@ -808,6 +808,10 @@ protected:
     static void traceInputHP (Agent *, void *, void *);
     static void traceOutputHP(Agent *, void *, void *);
     static void traceErrorHP (Agent *, void *, void *);
+
+public:    
+    // Terminator
+    virtual void abort();
 };
 
 #endif // _DDD_GDBAgent_h
