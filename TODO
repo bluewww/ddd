@@ -365,4 +365,11 @@ Volunteers for these and other projects are welcome!
 
 349 Access Java `.jar' class archives.
 
-350 (Insert new project ideas here)
+350 Harri Pasanen <harri@trema.com> suggests:
+    - Allow to pass arguments to defined commands.  More specifically,
+      I mean having a command specification where the (): argument
+      would used as $arg0 for the defined command.
+    - Command buttons are not restored when opening a session.
+    - Incremental search for the source window is also something I miss.
+
+351 (Insert new project ideas here)

@@ -168,4 +168,7 @@ Volunteers for fixing these and other bugs are welcome!
 341 Start `ddd cxxtest', select `tree_test', hit `plot'.  Status line
     contains bogus characters.
 
-342 (Insert new bugs here)
+342 Using the builtin plot window, the plot points of different arrays
+    have the same color.
+
+343 (Insert new bugs here)
