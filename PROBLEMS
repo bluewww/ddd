@@ -84,6 +84,11 @@ HP-UX
     For more information on HP-PA versions of the GNU tools, see
     `ftp://jaguar.cs.utah.edu/dist/pagnutools.html'.
 
+    Ivar Ruyter <ivarr@troll.hz.kfa-juelich.de> states:
+    Build everything statically (advice from MR.ZELLER), then add
+    l:libdld.sl tothe LIBS line in the Makefile, voila you have a nice
+    new Christmas Present.
+
 
 LINUX
 =====
