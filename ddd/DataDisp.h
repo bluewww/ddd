@@ -209,7 +209,8 @@ class DataDisp {
     static Widget create_display_dialog(Widget parent, String name,
 					NewDisplayInfo& info);
 
-    static void toggle_rotate(DispValue *dv, bool all = false);
+    static void rotate_value(DispValue *dv, bool all = false);
+    static void rotate_node(DispNode *dn, bool all = false);
 
     static void select_node(DispNode *dn, int src = 0);
 

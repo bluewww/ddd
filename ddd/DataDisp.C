@@ -787,7 +787,7 @@ void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 }
 
 
-void DataDisp::toggle_rotate(DispValue *dv, bool all)
+void DataDisp::rotate_value(DispValue *dv, bool all)
 {
     if (dv == 0)
 	return;
@@ -807,7 +807,35 @@ void DataDisp::toggle_rotate(DispValue *dv, bool all)
 
     if (all)
 	for (int i = 0; i < dv->nchildren(); i++)
-	    toggle_rotate(dv->child(i), all);
+	    rotate_value(dv->child(i), all);
+}
+
+void DataDisp::rotate_node(DispNode *dn, bool all)
+{
+    DispValue *dv = dn->selected_value();
+    if (dv == 0)
+	dv = dn->value();
+    if (dv == 0)
+	return;
+
+    rotate_value(dv, all);
+
+    if (dv->type() == Simple)
+    {
+	// We have rotated a scalar value in a plot.  Replot.
+	if (dn->clustered())
+	{
+	    DispNode *cluster = disp_graph->get(dn->clustered());
+	    if (cluster != 0 && cluster->value() != 0)
+		cluster->value()->replot();
+	}
+	else if (dn->value() != 0)
+	{
+	    dn->value()->replot();
+	}
+    }
+
+    dn->refresh();
 }
 
 void DataDisp::rotateCB(Widget w, XtPointer client_data, XtPointer)
@@ -816,29 +844,14 @@ void DataDisp::rotateCB(Widget w, XtPointer client_data, XtPointer)
 
     set_last_origin(w);
 
-    DispNode *disp_node_arg   = selected_node();
-    DispValue *disp_value_arg = selected_value();
-    if (disp_node_arg == 0 || disp_value_arg == 0)
-	return;
-
-    toggle_rotate(disp_value_arg, rotate_all);
-
-    if (disp_value_arg->type() == Simple)
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
     {
-	// We have rotated a scalar value in a plot.  Replot.
-	if (disp_node_arg->clustered())
-	{
-	    DispNode *cluster = disp_graph->get(disp_node_arg->clustered());
-	    if (cluster != 0 && cluster->value() != 0)
-		cluster->value()->replot();
-	}
-	else if (disp_node_arg->value() != 0)
-	{
-	    disp_node_arg->value()->replot();
-	}
+	if (selected(dn))
+	    rotate_node(dn, rotate_all);
     }
-
-    disp_node_arg->refresh();
 
     refresh_graph_edit();
 }
