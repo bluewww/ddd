@@ -313,6 +313,7 @@ void AsyncAgent::terminate(bool onExit)
 			    killProcess, XtPointer(pid()));
 
 	// Inhibit further communication
+	hasNewStatus(-1);
 	abort();
 	callHandlers(Died, "Exit 0");
     }
