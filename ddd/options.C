@@ -64,7 +64,6 @@ char options_rcsid[] =
 #include <Xm/DialogS.h>
 #include <Xm/BulletinB.h>
 #include <Xm/MessageB.h>
-#include <Xm/PushB.h>
 
 #include <stdio.h>
 #include <fstream.h>
@@ -673,12 +672,13 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
 // ---------------------------------------------------------------------------
 
 // Get core from running program
-static bool get_core(unsigned long flags)
+static bool get_core(const string& session, unsigned long flags)
 {
     const bool interact      = (flags & MAY_INTERACT);
     const bool may_kill      = (flags & MAY_KILL);
 
-    string target = session_core_file(app_data.session);
+    create_session_dir(session);
+    string target = session_core_file(session);
     if (!program_running())
     {
 	// The program is not running.  Maybe we're still examining a
@@ -895,17 +895,20 @@ bool saving_options_kills_program(unsigned long flags)
 
 bool save_options(unsigned long flags)
 {
-    const string file = session_state_file(app_data.session);
-
     const bool create        = (flags & CREATE_OPTIONS);
     const bool save_session  = (flags & SAVE_SESSION);
     const bool save_geometry = (flags & SAVE_GEOMETRY);
     const bool interact      = (flags & MAY_INTERACT);
 
-    string options = (save_session ? "session" : "options");
-    string msg = (create ? "Creating " : "Saving ") + options + " in ";
+    string session = (save_session ? app_data.session : DEFAULT_SESSION);
 
-    StatusDelay delay(msg + quote(file));
+    create_session_dir(session);
+    const string file = session_state_file(session);
+
+    string options = (save_session ? "session" : "options");
+    string status = (create ? "Creating " : "Saving ") + options + " in ";
+
+    StatusDelay delay(status + quote(file));
 
     const char delimiter[] = "! DO NOT ADD ANYTHING BELOW THIS LINE";
 
@@ -1177,7 +1180,7 @@ bool save_options(unsigned long flags)
 	if (displays_ok && data_disp->need_core_to_restore())
 	    displays_ok = data_disp->get_scopes(scopes);
 	if (displays_ok && data_disp->need_core_to_restore())
-	    displays_ok = get_core(flags);
+	    displays_ok = get_core(session, flags);
 	if (displays_ok)
 	    displays_ok = data_disp->get_state(restart_commands, scopes);
 
@@ -1219,8 +1222,6 @@ bool save_options(unsigned long flags)
     return ok;
 }
 
-
-
 // ---------------------------------------------------------------------------
 // Callbacks
 // ---------------------------------------------------------------------------
@@ -1231,10 +1232,16 @@ static void DoSaveOptionsCB(Widget, XtPointer client_data, XtPointer)
     save_options(flags);
 }
 
+// Save options
 void DDDSaveOptionsCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     unsigned long flags = (unsigned long)client_data;
-    if (saving_options_kills_program(flags))
+    if ((flags & SAVE_SESSION) && app_data.session == DEFAULT_SESSION)
+    {
+	// No current session; cannot save
+	return;
+    }
+    else if (saving_options_kills_program(flags))
     {
 	// Saving options would kill program; request confirmation
 	Arg args[10];

@@ -1383,6 +1383,8 @@ DESC(Print Again, [print using the previous settings])\n\
 DESC(Make..., [run the CODE(make) program])\n\
 DESC(Make Again, [make using the previous settings])\n\
 \n\
+DESC(Change Session..., [define a session in which to save DDD state])\n\
+\n\
 DESC(Close, [close this window])\n\
 DESC(Exit, [exit DDD])
 
@@ -1416,15 +1418,15 @@ Ddd*menubar*fileMenu.detach.accelerator:       Shift Ctrl<Key>Z
 Ddd*menubar*fileMenu.detach.acceleratorText:   Ctrl+Shift+Z
 Ddd*menubar*fileMenu.detach.documentationString:
 
-Ddd*menubar*fileMenu.print.labelString:	 Print Graph...
-Ddd*menubar*fileMenu.print.mnemonic:	 P
+Ddd*menubar*fileMenu.print.labelString:	 	Print Graph...
+Ddd*menubar*fileMenu.print.mnemonic:	 	P
 ! Ddd*menubar*fileMenu.print.accelerator:      ~Shift Meta<Key>P
 ! Ddd*menubar*fileMenu.print.acceleratorText:  Alt+P
 Ddd*menubar*fileMenu.print.documentationString:   \
 @rm Print the contents of the data display
 
-Ddd*menubar*fileMenu.printAgain.labelString: Print Again
-Ddd*menubar*fileMenu.printAgain.mnemonic: g
+Ddd*menubar*fileMenu.printAgain.labelString: 	    Print Again
+Ddd*menubar*fileMenu.printAgain.mnemonic: 	    g
 ! Ddd*menubar*fileMenu.printAgain.accelerator:      Shift Meta<Key>P
 ! Ddd*menubar*fileMenu.printAgain.acceleratorText:  Alt+Shift+P
 Ddd*menubar*fileMenu.printAgain.documentationString:   \
@@ -1443,6 +1445,11 @@ Ddd*menubar*fileMenu.makeAgain.accelerator:      Shift Ctrl<Key>M
 Ddd*menubar*fileMenu.makeAgain.acceleratorText:  Ctrl+Shift+M
 Ddd*menubar*fileMenu.makeAgain.documentationString:  \
 @rm Run the ``make'' program, using previous settings
+
+Ddd*menubar*fileMenu.sessions.labelString:	Change Session...
+Ddd*menubar*fileMenu.sessions.mnemonic:	 h
+Ddd*menubar*fileMenu.sessions.documentationString:   \
+@rm Set and edit the current session setting
 
 Ddd*menubar*fileMenu.close.labelString:	 Close
 Ddd*menubar*fileMenu.close.mnemonic:	 C
@@ -1547,12 +1554,7 @@ Ddd*editMenu.settings.documentationString:\
 Ddd*editMenu.saveOptions.labelString:			Save Options
 Ddd*editMenu.saveOptions.mnemonic:			O
 Ddd*editMenu.saveOptions.documentationString:\
-@rm Save DDD state (without process state) for the next DDD invocation
-
-Ddd*editMenu.saveSession.labelString:			Save Session
-Ddd*editMenu.saveSession.mnemonic:			e
-Ddd*editMenu.saveSession.documentationString:\
-@rm Save DDD state (including process state) for the next DDD invocation
+@rm Save preferences and settings for the next DDD invocation
 
 
 ! View menu (for multi-window DDD)
@@ -3459,11 +3461,10 @@ Ddd*print*executive.labelString:	      Executive (7ONE_HALF" TIMES 10")
 Ddd*print*custom.labelString:		      Other...
 
 Ddd*print.autoUnmanage:	 false
-Ddd*print*okLabelString: Print
 
 Ddd*print*helpString: \
 @rm You can print the graph on a POSTSCRIPT printer \
-or print the graph in a file.\n\4
+or print the graph in a file.\n\
 Enter the print command or the file name in the appropriate fields.\n\
 \n\
 Files can be created in the following formats:\n\
@@ -3476,7 +3477,7 @@ If you wish to print selected displays only, select\
 For POSTSCRIPT format only, you can also specify \
 orientation and paper size.\n\
 \n\
-To print, click on LBL(Print).
+To print, click on LBL(OK) or LBL(Apply).
 
 Ddd*paper_size_dialog_popup.title:  DDD: Paper Size
 Ddd*paper_size_dialog.autoUnmanage:  false
@@ -3518,35 +3519,6 @@ No argument means to have no executable file and no symbols.\n\
 Click on LBL(Open) to open the selected file.\n\
 Click on LBL(Filter) to apply the given filter.
 
-Ddd*processes_popup.title: DDD: Attach to Process
-Ddd*processes.listLabelString:	Processes
-Ddd*processes*selectionPolicy:	XmSINGLE_SELECT
-
-Ddd*processes*okLabelString:	Attach
-Ddd*processes*applyLabelString:	Update
-
-Ddd*processes*helpString:	\
-@rm Select a running process of the program to be debugged.\n\
-\n\
-An attached process is stopped by DDD. You can examine and modify an\n\
-attached process with all the DDD commands that are ordinarily available\n\
-when you start processes with LBL(Run). You can insert breakpoints; you \n\
-can step and continue; you can modify storage.  If you would rather the\n\
-process continue running, you may use the LBL(Continue) command after\n\
-attaching DDD to the process.\n\
-\n\
-When you have finished debugging the attached process, you can use\n\
-LBL(Detach Process) to release it from DDD control.  Detaching \
-the process\n\
-continues its execution.\n\
-\n\
-Before using LBL(Attach), you should use LBL(File) | LBL(Open Program)\n\
-to specify the program running in the process, and to load its symbol table.\n\
-\n\
-Click on LBL(Attach) to attach to the selected process.\n\
-Click on LBL(Update) to update the list of processes.
-
-
 Ddd*core_files_popup.title:		   DDD: Open Core Dump
 Ddd*core_files_popup*okLabelString:	   Open
 Ddd*core_files_popup*selectionLabelString: Core Dump
@@ -3576,6 +3548,62 @@ to specify the executable program, and to load its symbol table.\n\
 \n\
 Click on LBL(Open) to open the selected source file.\n\
 Click on LBL(Filter) to apply the given filter.
+
+Ddd*processes_popup.title: DDD: Attach to Process
+Ddd*processes.listLabelString:	Processes
+Ddd*processes*selectionPolicy:	XmSINGLE_SELECT
+
+Ddd*processes*okLabelString:	Attach
+Ddd*processes*applyLabelString:	Update
+
+Ddd*processes*helpString:	\
+@rm Select a running process of the program to be debugged.\n\
+\n\
+An attached process is stopped by DDD. You can examine and modify an\n\
+attached process with all the DDD commands that are ordinarily available\n\
+when you start processes with LBL(Run). You can insert breakpoints; you \n\
+can step and continue; you can modify storage.  If you would rather the\n\
+process continue running, you may use the LBL(Continue) command after\n\
+attaching DDD to the process.\n\
+\n\
+When you have finished debugging the attached process, you can use\n\
+LBL(Detach Process) to release it from DDD control.  Detaching \
+the process\n\
+continues its execution.\n\
+\n\
+Before using LBL(Attach), you should use LBL(File) | LBL(Open Program)\n\
+to specify the program running in the process, and to load its symbol table.\n\
+\n\
+Click on LBL(Attach) to attach to the selected process.\n\
+Click on LBL(Update) to update the list of processes.
+
+Ddd*sessions_popup.title: 	DDD: Save Session
+Ddd*sessions.listLabelString:	Sessions
+Ddd*sessions.selectionLabelString: Set Session
+Ddd*sessions*selectionPolicy:	XmSINGLE_SELECT
+
+Ddd*sessions*okLabelString:	 Set
+Ddd*sessions*applyLabelString:	 Delete
+
+Ddd*sessions*helpString:	\
+@rm You can save the current DDD state by defining a EMPH(session).\n\
+\n\
+When exiting, DDD checks whether a EMPH(session) is defined.\n\
+If so, DDD saves the entire process state using the session name.\n\
+You can restore the session at a later time by restarting DDD with \
+SAMP(=VAR(session)).\n\
+\n\
+ITEM To choose one of the existing sessions, select it from the list.\n\
+    Click on LBL(Set) to make the selected session name the current session.\n\
+\n\
+ITEM To create a new session, enter its name.\n\
+    Click on LBL(Set) to make the entered session name the current session.\n\
+\n\
+ITEM To undefine the current session, select SAMP(\133none\135).\n\
+    Click on LBL(Set) to undefine the current session.\n\
+\n\
+ITEM To delete old sessions, select them from the list.\n\
+    Click on LBL(Delete) to delete the selected sessions.
 
 
 
@@ -3841,7 +3869,7 @@ Ddd*dependent_display_dialog*helpString:	\
 @rm Please modify the display expression displayed in the argument field.\n\
 The current value of the expression is shown each time the program stops.
 
-Ddd*edit_displays_dialog*buttons*dependent.labelString:	    New Display
+Ddd*edit_displays_dialog*buttons*dependent.labelString:	    New...
 Ddd*edit_displays_dialog*buttons*dependent.tipString:  \
 @rm Create new display
 Ddd*edit_displays_dialog*buttons*dependent.documentationString:  \
@@ -3897,7 +3925,7 @@ with the selected arguments.
 
 Ddd*make_dialog_popup.title: DDD: Make
 Ddd*make_dialog.listLabelString:	Targets
-Ddd*make_dialog.selectionLabelString:	Make Target
+Ddd*make_dialog.selectionLabelString:	Make
 
 Ddd*make_dialog*selectionPolicy:	XmSINGLE_SELECT
 
@@ -4090,7 +4118,7 @@ Ddd*set_dialog*helpString:	\
 @rm You can now change a value in the selected display.\n\
 If you want to keep it unchanged, click on LBL(Cancel).
 
-Ddd*kill_to_save_dialog_popup.title: DDD: Save State
+Ddd*kill_to_save_dialog_popup.title: DDD: Kill To Save
 Ddd*kill_to_save_dialog.messageString: \
 @rm Saving data displays requires a core dump of the debugged program.\
   Kill it?
@@ -4301,6 +4329,14 @@ Ddd*incomplete_save_warning.title: DDD: Incomplete Save
 Ddd*incomplete_save_warning*helpString: \
 @rm Some displays could not be saved because their scope is not active.\n\
 See the status line for details.
+
+Ddd*no_sessions_error.title: DDD: No Sessions
+Ddd*no_sessions_error*helpString: \
+@rm DDD could not access the session repository.
+
+Ddd*delete_session_error.title: DDD: Delete Session Failed
+Ddd*delete_session_error*helpString: \
+@rm DDD could not entirely remove the session directory from the repository.
 
 
 !-----------------------------------------------------------------------------

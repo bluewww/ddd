@@ -97,6 +97,7 @@ extern void dddSetPannerCB                  (Widget, XtPointer, XtPointer);
 extern void dddSetDebuggerCB                (Widget, XtPointer, XtPointer);
 
 extern void DDDSaveOptionsCB                (Widget, XtPointer, XtPointer);
+extern void DDDSaveOptionsAsCB              (Widget, XtPointer, XtPointer);
 
 #endif // _DDD_options_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -37,7 +37,7 @@
 #include "strclass.h"
 
 // Name of default session
-#define DEFAULT_SESSION ""
+const string DEFAULT_SESSION = "";
 
 // Return session directories
 
@@ -61,14 +61,18 @@ inline string session_history_file(const string& session)
 }
 
 // Create session directory for SESSION; leave messages in MSG
-void create_ddd_session_dir(const string& session, ostream& msg);
+void create_session_dir(const string& session, ostream& msg);
+
+// Same, but leave messages in status line
+void create_session_dir(const string& session);
+
 
 // Callbacks for X11R6 session management
 extern void SaveSessionCB(Widget, XtPointer, XtPointer);
 extern void DieSessionCB(Widget, XtPointer, XtPointer);
 
-// Standard callback
-extern void SaveSessionAndExitCB(Widget, XtPointer, XtPointer);
+// Session editor
+extern void EditSessionsCB(Widget, XtPointer, XtPointer);
 
 #endif // _DDD_session_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
