@@ -1,8 +1,8 @@
 // $Id$ -*- C++ -*-
-// DDD version and version number
+// DDD name and version number
 // @configure_input@
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
