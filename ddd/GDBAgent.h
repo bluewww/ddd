@@ -345,7 +345,7 @@ public:
 
     // Non-zero if debugger has `watch' command; also indicates
     // `watch' capabilities
-    bool has_watch_command() const     { return _has_watch_command; }
+    WatchMode has_watch_command() const { return _has_watch_command; }
     WatchMode has_watch_command(WatchMode val)
     { 
 	return _has_watch_command = val;
