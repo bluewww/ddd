@@ -171,4 +171,8 @@ detail.
        not sure if it happens with other pointers than 'this'.  I
        could not reproduce the bug now.
 
-728 (Insert new bugs here)
+728 It seems that `run' without arguments on SGI DBX clears the
+    argument list, rather than re-using previous arguments.  Reported
+    by Zdenek Sekera <zs@sgi.com>.
+
+729 (Insert new bugs here)

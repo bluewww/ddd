@@ -148,7 +148,7 @@ Volunteers for fixing these and other bugs are welcome!
     - Redoing displays queries the _current_ frame from GDB, as well
       as the _current_ values (and not the recorded ones).
     - Up/Down does not change program state, hence undoing `up N'
-      should result in `down N'
+      should result in `down N' (but what about display values?)
     - Document it all
 
 322*Finish Plots:
