@@ -34,13 +34,16 @@ echo '#include "configinfo.h"'
 echo 
 echo "const char *config_info = "
 (
+    echo "Binary built by `cat ./USERINFO`"
+    echo "on `date`"
+
+    echo
     echo Features:
     (
-    grep '#define' config.h   | 
-	sed 's/#define  *\([_a-zA-Z0-9]*\)  *\(.*\)/\1=\2/'
-    grep '#undef' config.h    | 
-	sed 's/.*#undef  *\([_a-zA-Z0-9]*\).*/\1=/'
-    ) | grep -v '[$]' | sort
+    grep '#define' config.h
+    grep '#undef' config.h
+    ) | sed 's,/\* *\(.*\) *\*/,\1,g' |
+    sed 's, *$,,' | sort +1 | sed 's,#undef ,#undef  ,'
 
     echo
     echo Tools and Flags:
