@@ -47,6 +47,7 @@ char post_rcsid[] =
 #include "ddd.h"
 #include "exit.h"
 #include "findParent.h"
+#include "session.h"
 #include "string-fun.h"
 #include "verify.h"
 #include "wm.h"
@@ -193,18 +194,16 @@ Widget post_gdb_died(string reason, int state, Widget w)
     Arg args[10];
     int arg;
 
-    Widget died_dialog = 0;
+    Widget dialog = 0;
+    Widget shell = find_shell(w);
     if (gdb_initialized)
     {
 	String name;
 	MString msg;
 	if (exited)
 	{
-	    msg = rm(gdb->title() + " suddenly exited");
+	    msg = rm(gdb->title() + " suddenly exited.");
 	    name = "exited_dialog";
-
-	    // An unexpected exit is almost always an error.
-	    exit_state = EXIT_FAILURE;
 	}
 	else
 	{
@@ -215,32 +214,31 @@ Widget post_gdb_died(string reason, int state, Widget w)
 
 	arg = 0;
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
-	died_dialog = 
-	    verify(XmCreateErrorDialog (find_shell(w), name, args, arg));
-	XtAddCallback(died_dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);
-	XtAddCallback(died_dialog, XmNokCallback,
+	if (exited)
+	    dialog = verify(XmCreateWarningDialog(shell, name, args, arg));
+	else
+	    dialog = verify(XmCreateErrorDialog(shell, name, args, arg));
+
+	XtAddCallback(dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);
+	XtAddCallback(dialog, XmNokCallback,     RestartDebuggerCB, NULL);
+	XtAddCallback(dialog, XmNcancelCallback, 
 		      DDDExitCB, XtPointer(exit_state));
-	XtAddCallback(died_dialog, XmNcancelCallback,
-		      DDDRestartCB, XtPointer(exit_state));
     }
     else
     {
 	arg = 0;
 	MString msg = rm(gdb->title() + " could not be started.");
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
-	died_dialog = 
-	    verify(XmCreateErrorDialog (find_shell(w), 
-					"no_debugger_dialog", args, arg));
-	XtUnmanageChild(XmMessageBoxGetChild
-			(died_dialog, XmDIALOG_CANCEL_BUTTON));
-	XtAddCallback(died_dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);
-	XtAddCallback(died_dialog, XmNokCallback,
-		      DDDExitCB, XtPointer(exit_state));
+	dialog = verify(XmCreateErrorDialog(shell, "no_debugger_dialog", 
+					    args, arg));
+	XtUnmanageChild(XmMessageBoxGetChild(dialog, XmDIALOG_CANCEL_BUTTON));
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback(dialog, XmNokCallback, DDDExitCB, XtPointer(exit_state));
     }
 
-    Delay::register_shell(died_dialog);
-    manage_and_raise(died_dialog);
-    return died_dialog;
+    Delay::register_shell(dialog);
+    manage_and_raise(dialog);
+    return dialog;
 }
 
 

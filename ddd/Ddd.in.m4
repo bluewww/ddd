@@ -6131,35 +6131,29 @@ Ddd*shutdown_dialog*helpString:	\
 Shutting down DDD now will kill your program.\n\
 Please confirm that this is what you want.
 
-Ddd*terminated_dialog_popup.title: DDD: Hasta la Vista
+Ddd*terminated_dialog_popup.title: DDD: Debugger Terminated
 ! Ddd*terminated_dialog.messageString:   \
 ! @rm @GDB@ terminated abnormally.
-Ddd*terminated_dialog*okLabelString:	   Exit
-Ddd*terminated_dialog*cancelLabelString:   Restart
+Ddd*terminated_dialog*okLabelString:	   Restart
+Ddd*terminated_dialog*cancelLabelString:   Exit
 Ddd*terminated_dialog*helpString:	\
 @rm @GDB@ terminated abnormally.  Without @GDB@, DDD cannot run.\n\
 \n\
-You may wish to examine the final @GDB@ output before exiting\n\
-or restarting DDD.\n\
-\n\
-Click on LBL(Exit) to exit DDD.\n\
-Click on LBL(Restart) to restart DDD (and @GDB@) from scratch.
+Click on LBL(Restart) to restart @GDB@.\n\
+Click on LBL(Exit) to exit DDD.
 
-Ddd*exited_dialog_popup.title: DDD: Always Look at the Bright Side of Life
+Ddd*exited_dialog_popup.title: DDD: Debugger Exited
 ! Ddd*exited_dialog.messageString:   \
 ! @rm @GDB@ exited.
-Ddd*exited_dialog*okLabelString:	   Exit
-Ddd*exited_dialog*cancelLabelString:   Restart
+Ddd*exited_dialog*okLabelString:	Restart
+Ddd*exited_dialog*cancelLabelString:	Exit
 Ddd*exited_dialog*helpString:	\
 @rm @GDB@ has exited.  Without @GDB@, DDD cannot run.\n\
 \n\
-You may wish to examine the final @GDB@ output before exiting\n\
-or restarting DDD.\n\
-\n\
-Click on LBL(Exit) to exit DDD.\n\
-Click on LBL(Restart) to restart DDD (and @GDB@) from scratch.
+Click on LBL(Restart) to restart @GDB@.\n\
+Click on LBL(Exit) to exit DDD.
 
-Ddd*no_debugger_dialog_popup.title: DDD: Losing my Religion
+Ddd*no_debugger_dialog_popup.title: DDD: No Debugger
 ! Ddd*no_debugger_dialog.messageString:   \
 ! @rm @GDB@ could not be started.
 Ddd*no_debugger_dialog*okLabelString:	   Exit
@@ -6171,17 +6165,10 @@ You may wish to examine the diagnostic messages before exiting DDD.\n\
 \n\
 Here are some hints that may help you out:\n\
 ITEM If DDD looked for the wrong inferior debugger, re-invoke DDD,\n\
-    but use SAMP(--gdb), SAMP(--dbx), SAMP(--xdb), \
-SAMP(--jdb), SAMP(--pydb), or SAMP(--perl)\n\
-    to specify the inferior debugger.\n\
-ITEM If @GDB@ is the correct inferior debugger, \
-but could not be found,\n\
-    re-invoke DDD, but use the SAMP(--debugger VAR(path)) option to \
-specify\n\
+    but use SAMP(--auto) to have DDD infer the correct inferior debugger.\n\
+ITEM If @GDB@ is the correct inferior debugger, but could not be found,\n\
+    re-invoke DDD, but use the SAMP(--debugger VAR(path)) option to specify\n\
     the full @GDB@ path VAR(path).\n\
-ITEM If you gave the SAMP(--debugger VAR(path)) option, be sure to give\n\
-    SAMP(--gdb), SAMP(--dbx), SAMP(--xdb), SAMP(--jdb), SAMP(--pydb), \
-or SAMP(--perl) as well.\n\
 ITEM If you started DDD without arguments, re-invoke DDD,\n\
     but give it an executable as argument.  XDB and some DBX versions\n\
     require being invoked with an executable.\n\
@@ -6196,7 +6183,7 @@ or invoke DDD with the SAMP(--manual) option.\n\
 \n\
 Click on LBL(Exit) to exit DDD.
 
-Ddd*no_plotter_dialog_popup.title: DDD: It's a Bitter Sweet Symphony
+Ddd*no_plotter_dialog_popup.title: DDD: No Plot
 ! Ddd*no_plotter_dialog.messageString:   \
 ! @rm Gnuplot could not be started.
 Ddd*no_plotter_dialog*helpString:	\
@@ -6209,8 +6196,8 @@ or verify the value of the SAMP(.plotCommand) resource.
 Ddd*fatal_dialog_popup.title: DDD: Oops
 Ddd*fatal_dialog.messageString:	  \
 @rm Internal error
-Ddd*fatal_dialog*okLabelString:	       Exit
-Ddd*fatal_dialog*restart.labelString:  Restart
+Ddd*fatal_dialog*okLabelString:	       Restart
+Ddd*fatal_dialog*exit.labelString:     Exit
 Ddd*fatal_dialog*cancelLabelString:    Ignore
 Ddd*fatal_dialog*helpString: \
 @rm Oops!  You have found a bug in DDD.\n\
@@ -6232,9 +6219,9 @@ Please read also the section ``Reporting Bugs'' in the DDD manual.\n\
 \n\
 We thank you for your support.\n\
 \n\
-Click on LBL(Exit) to exit DDD.\n\
 Click on LBL(Restart) to restart DDD from scratch.\n\
-Click on LBL(Ignore) to resume your DDD session.
+Click on LBL(Exit) to exit DDD.\n\
+Click on LBL(Ignore) to resume your current DDD session.
 
 
 Ddd*yn_dialog_popup.title: DDD: Debugger Question
