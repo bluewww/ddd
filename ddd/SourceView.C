@@ -61,7 +61,11 @@ char SourceView_rcsid[] =
 extern "C" {
 #define new new_w
 #define class class_w
+#define Input _motif_Input
+#define Output _motif_Output
 #include <Xm/TextP.h>
+#undef Output
+#undef Input
 #undef class
 #undef new
 }; 
