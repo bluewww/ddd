@@ -157,15 +157,25 @@ static int check_xkeysymdb(Display *display, bool verbose)
     String me, my_class;
     XtGetApplicationNameAndClass(display, &me, &my_class);
 
-    String xkeysymdb = 0;
+    string xkeysymdb;
 
-    if (xkeysymdb == 0 || xkeysymdb[0] == '\0')
-	xkeysymdb = getenv("XKEYSYMDB");
-    if (xkeysymdb == 0 || xkeysymdb[0] == '\0')
-	xkeysymdb = XtResolvePathname(display, "", "XKeysymDB", "",
-				      NULL, NULL, 0, NULL);
+    if (xkeysymdb == "")
+    {
+	String s = getenv("XKEYSYMDB");
+	if (s != 0)
+	    xkeysymdb = s;
+    }
 
-    if (xkeysymdb != 0 && xkeysymdb[0] != '\0')
+    if (xkeysymdb == "")
+    {
+	String s = XtResolvePathname(display, "", "XKeysymDB", "",
+				     NULL, NULL, 0, NULL);
+	if (s != 0)
+	    xkeysymdb = s;
+	XtFree(s);
+    }
+
+    if (xkeysymdb != "")
     {
 	if (verbose)
 	{
@@ -175,15 +185,11 @@ static int check_xkeysymdb(Display *display, bool verbose)
 
 	// Fix it now
 	static string env;
-	env = "XKEYSYMDB=" + string(xkeysymdb);
+	env = "XKEYSYMDB=" + xkeysymdb;
 	putenv(env);
 
-	XtFree(xkeysymdb);
 	return 0;			// Okay
     }
-
-    if (xkeysymdb != 0)
-	XtFree(xkeysymdb);
 
     if (xlibdir(display) != 0)
     {
