@@ -1037,9 +1037,13 @@ Makedeps depend:
 	$(ECHO) \#' DO NOT EDIT -- generated automagically by make depend'; \
 	$(ECHO) \#' Source: $$Id$$'; \
 	$(ECHO) ; \
-	$(CXX) -M $(CPPFLAGS) $(DEFS) $(INCLUDE) *.C | \
-	$(SED) 's% /[^ ]*%%g' | $(SED) 's% \./% %g' | $(GREP) -v '^ *\\$$' | \
-	$(SED) 's%^ *$$%& config.h%g' ) > Makedeps~
+	$(CXX) -M $(CPPFLAGS) $(DEFS) $(INCLUDE) *.C \
+	| $(SED) 's% /[^ ]*%%g' \
+	| $(SED) 's% \./% %g' \
+	| $(GREP) -v '^ *\\$$' \
+	| $(SED) 's% \.\./% \$$(srcdir)/\.\./%g' \
+	| $(SED) 's%^ *$$%& config.h%g' ) \
+	> Makedeps~
 	$(MV) Makedeps~ Makedeps
 
 ## If your `make' cannot handle the following line,
