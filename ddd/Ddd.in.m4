@@ -4407,10 +4407,18 @@ Ddd*classes.listLabelString:		Classes
 Ddd*classes.selectionLabelString: 	Open Class
 Ddd*classes*selectionPolicy:		XmSINGLE_SELECT
 Ddd*classes*okLabelString:	 	Open
+Ddd*classes*applyLabelString:	 	Update
 Ddd*classes*helpString:	\
-@rm Enter the name of the class to be debugged in the argument field.\n\
+@rm Please select a class to be debugged.\n\
 \n\
-Click on LBL(Open) to open the selected class.
+These classes all have corresponding CODE(.java) files \
+in the SAMP(use) path.\n\
+To search for other classes, change the search path \
+with the SAMP(use) command.\n\
+\n\
+Click on LBL(Open) to open the selected class.\n\
+Click on LBL(Update) to update the list of classes.
+
 
 
 Ddd*sessions_to_open_popup.title: 		DDD: Open Session

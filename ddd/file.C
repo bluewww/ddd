@@ -1137,15 +1137,9 @@ static void warn_if_no_program(Widget popdown)
 // Classes (JDB only)
 //-----------------------------------------------------------------------------
 
-// FIXME: This is broken; it only shows the classes that are already
-// loaded.  A better alternative would be to scan the `use' path for
-// .java files and to select from these classes.
-
 static string class_id(const string& s)
 {
-    string item = s.after('(');
-    item = item.before(')');
-    return item;
+    return s;
 }
 
 static void sortClasses(StringArray& a)
@@ -1230,32 +1224,78 @@ static void SelectClassCB(Widget w, XtPointer client_data,
 	set_status("Class " + cls);
 }
 
+#define JAVA_SUFFIX ".java"
+
+static void strip_java_suffix(string& s)
+{
+    if (s.contains(JAVA_SUFFIX, -1))
+	s = s.before(int(int(s.length()) - strlen(JAVA_SUFFIX)));
+}
+
 static void update_classes(Widget classes)
 {
     StatusDelay delay("Getting list of classes");
-    string ans = gdb_question("classes");
     StringArray classes_list;
-    int index = 0;
-    int start_of_line = 0;
 
-    while (index <= int(ans.length()))
+    string use = source_view->class_path();
+    while (use != "")
     {
-	char c = ((char *)ans)[index];
-	switch (c)
+	string base = "*" JAVA_SUFFIX;
+
+	string loc;
+	if (use.contains(':'))
+	    loc = use.before(':');
+	else
+	    loc = use;
+	use = use.after(':');
+
+	if (loc.contains(".jar", -1) ||
+	    loc.contains(".zip", -1))
 	{
-	case '\n':
-	case '\0':
+	    // Archive file.
+	    // Should we search this for classes? (FIXME)
+	}
+	else
 	{
-	    int end_of_line = index;
-	    string line = ans.at(start_of_line, end_of_line - start_of_line);
-	    classes_list += line;
-	    start_of_line = index + 1;
-	    break;
+	    string mask;
+
+	    if (loc == "" || loc == ".")
+	    {
+		mask = base;
+	    }
+	    else
+	    {
+		if (!loc.contains('/', -1))
+		    loc += '/';
+		mask = loc + base;
+	    }
+
+	    char **files = glob_filename(mask);
+	    if (files == (char **)0)
+	    {
+		cerr << mask << ": glob failed\n";
+	    }
+	    else if (files == (char **)-1)
+	    {
+#if 0
+		// No *.java in directory
+		post_error(string(mask) + ": " + strerror(errno));
+#endif
+	    }
+	    else
+	    {
+		for (int i = 0; files[i] != 0; i++)
+		{
+		    string file = files[i];
+		    file = basename(file);
+		    strip_java_suffix(file);
+		    classes_list += file;
+
+		    free(files[i]);
+		}
+		free((char *)files);
+	    }
 	}
-	default:
-	    break;
-	}
-	index++;
     }
 
     sortClasses(classes_list);
@@ -1266,7 +1306,7 @@ static void update_classes(Widget classes)
 	selected[i] = false;
 
     setLabelList(classes, classes_list.values(),
-		 selected, classes_list.size(), true, false);
+		 selected, classes_list.size(), false, false);
 
     delete[] selected;
 }
@@ -1287,6 +1327,8 @@ static void openClassDone(Widget w, XtPointer client_data,
 	gdbUpdateClassesCB(w, client_data, call_data);	
 	return;
     }
+
+    XtUnmanageChild(w);
 
     gdb_command(gdb->debug_command(cls));
 }

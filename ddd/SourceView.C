@@ -1816,7 +1816,7 @@ String SourceView::read_class(const string& class_name,
 	    loc.contains(".zip", -1))
 	{
 	    // Archive file.
-	    // Should we search this for sources? (FIXME)
+	    // Should we search this for classes? (FIXME)
 	}
 	else
 	{
