@@ -284,6 +284,13 @@ public:
 
     // Resources
     DebuggerType type()       const { return _type; }
+    bool isSunDBX()           const {
+#ifdef HAVE_SUNDBX
+                                      return type() == DBX;
+#else
+                                      return false;
+#endif
+    }
     const string& title()     const;
     bool isReadyWithPrompt()  const { return state == ReadyWithPrompt; }
     const string& prompt()    const { return last_prompt; }

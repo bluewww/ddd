@@ -7538,21 +7538,19 @@ void SourceView::process_threads(string& threads_output)
     case BASH:
     case DBG:
     case DBX:
-#ifdef HAVE_SUNDBX
-    {
-	for (int i = 0; i < count; i++)
-	{
-	    selected[i] = thread_list[i].contains('>', 1);
-	}
-	break;
-    }
-#endif
     case XDB:
     case PERL:
     case PYDB:
     {
-	for (int i = 0; i < count; i++)
-	    selected[i] = false;
+        if (gdb->type() == DBX && gdb->isSunDBX())
+        {
+	    for (int i = 0; i < count; i++)
+	      selected[i] = thread_list[i].contains('>', 1);
+        } else
+	{
+	    for (int i = 0; i < count; i++)
+	      selected[i] = false;
+	}
 	break;
     }
     }
@@ -7589,16 +7587,17 @@ void SourceView::refresh_threads(bool all_threadgroups)
 	break;
     }
 
+    case DBX:
+    {
+        if (gdb->isSunDBX())
+        {
+	    string threads = gdb_question("threads");
+	    process_threads(threads);
+        }
+        break;
+    }
     case BASH:
     case DBG:
-    case DBX:
-#ifdef HAVE_SUNDBX
-    {
-	string threads = gdb_question("threads");
-	process_threads(threads);
-	break;
-    }
-#endif
     case XDB:
     case PERL:
     case PYDB:
@@ -7644,7 +7643,9 @@ void SourceView::SelectThreadCB(Widget w, XtPointer, XtPointer)
 	// Make single thread the default thread.
 	gdb_command("thread " + itostring(threads[0]), w);
     }
-    else if (threads.size() == 0 && gdb->type() == JDB)
+    else if (threads.size() == 0 &&
+	     ( gdb->type() == JDB || (gdb->type() == DBX && gdb->isSunDBX()) )
+	     )
     {
 	// Check if we have selected a threadgroup
 	XmStringTable selected_items;
@@ -7661,43 +7662,29 @@ void SourceView::SelectThreadCB(Widget w, XtPointer, XtPointer)
 	    XmStringGetLtoR(selected_items[0], LIST_CHARSET, &_item);
 	    string item(_item);
 	    XtFree(_item);
-	    
-	    // Output has the form `Group jtest.main:'
-	    if (item.contains("Group ", 0))
-	    {
-		string threadgroup = item.after(" ");
-		strip_leading_space(threadgroup);
-		threadgroup = threadgroup.before(":");
 
-		if (threadgroup == current_threadgroup)
+	    // Output has the form `Group jtest.main:'
+	    if (gdb->type() == JDB)
+	    {
+	        if (item.contains("Group ", 0))
+	        {
+		  string threadgroup = item.after(" ");
+		  strip_leading_space(threadgroup);
+		  threadgroup = threadgroup.before(":");
+
+		  if (threadgroup == current_threadgroup)
 		    threadgroup = "system"; // show all threadgroups
 
-		gdb_command("threadgroup " + threadgroup, w);
+		  gdb_command("threadgroup " + threadgroup, w);
+	        }
+	    } else
+            {
+		string thread = item.after("t@");
+		thread = thread.before(" ");
+		gdb_command("thread t@" + thread, w);
 	    }
 	}
     }
-#ifdef HAVE_SUNDBX
-    if (threads.size() == 0 && gdb->type() == DBX) { 
-	XmStringTable selected_items;
-	int selected_items_count = 0;
-
-	XtVaGetValues(thread_list_w,
-		XmNselectedItemCount, &selected_items_count,
-		XmNselectedItems, &selected_items,
-		XtPointer(0));
-
-	if (selected_items_count == 1) {
-		String _item;
-		XmStringGetLtoR(selected_items[0], LIST_CHARSET, &_item);
-		string item(_item);
-		XtFree(_item);
-
-		string thread = item.after("t@");
-		thread = thread.before(" ");
-		gdb_command("thread t@" + thread, w);	
-	}
-    }
-#endif
 }
 
 //-----------------------------------------------------------------------------

@@ -5677,15 +5677,11 @@ void update_arg_buttons()
 
     set_sensitive(stack_w,     !undoing);
     set_sensitive(registers_w, gdb->has_regs_command() && !undoing);
-#ifdef HAVE_SUNDBX
-    set_sensitive(threads_w,   (gdb->type() == GDB 
+    set_sensitive(threads_w,   (gdb->type() == GDB
 				|| gdb->type() == JDB
-				|| gdb->type() == DBX) &&
+				|| (gdb->type() == DBX && gdb->isSunDBX())
+				) &&
 		                !undoing);
-#else
-    set_sensitive(threads_w,   (gdb->type() == GDB || gdb->type() == JDB) &&
-		                !undoing);
-#endif
     set_sensitive(infos_w,     (gdb->type() == GDB || gdb->type() == PYDB) &&
 		                !undoing);
 }
