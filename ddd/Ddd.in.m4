@@ -4875,8 +4875,8 @@ Ddd*breakpoint_properties*title.width:			120
 Ddd*breakpoint_properties*title.recomputeSize:		off
 
 Ddd*breakpoint_properties*enabled.labelString:		Enabled
-Ddd*breakpoint_properties*enabled.width:		120
-Ddd*breakpoint_properties*enabled.recomputeSize:	off
+Ddd*breakpoint_properties*temporary.labelString:	Temporary
+Ddd*breakpoint_properties*lookup.labelString:		Lookup
 
 Ddd*breakpoint_properties*condition.label.labelString:	Condition
 Ddd*breakpoint_properties*condition.label.width:	120

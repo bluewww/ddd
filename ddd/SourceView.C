@@ -219,7 +219,8 @@ MMDesc SourceView::bp_area[] =
     {"new_bp",       MMPush,   {SourceView::NewBreakpointCB}},
     {"new_wp",       MMPush,   {SourceView::NewWatchpointCB}},
     {"properties",   MMPush,   {SourceView::EditBreakpointPropertiesCB, 0}},
-    {"lookup",       MMPush,   {SourceView::LookupBreakpointCB}},
+    {"lookup",       MMPush,   
+     {SourceView::LookupBreakpointCB, XtPointer(0) }},
     {"enable",       MMPush,   {SourceView::BreakpointCmdCB, "enable"  }},
     {"disable",      MMPush,   {SourceView::BreakpointCmdCB, "disable" }},
     {"delete",       MMPush,   {SourceView::BreakpointCmdCB, "delete" }},
@@ -5034,24 +5035,26 @@ void SourceView::NewWatchpointCB(Widget, XtPointer, XtPointer)
 
 struct BreakpointPropertiesInfo {
     IntArray nrs;		// The affected breakpoints
-    Widget panel;
+    Widget panel;		// The widgets of the properties panel
     Widget title;
     Widget enabled;
+    Widget temp;
+    Widget lookup;
     Widget ignore;
     Widget condition;
     Widget record;
     Widget edit;
     XtIntervalId timer;
     bool spin_locked;
-    BreakpointPropertiesInfo *next;
+    BreakpointPropertiesInfo *next; // Next info in list
 
-    static BreakpointPropertiesInfo *all;
+    static BreakpointPropertiesInfo *all; // List of all infos
 
     BreakpointPropertiesInfo()
 	: nrs(),
-	  panel(0), title(0), enabled(0), ignore(0), condition(0),
-	  record(0), edit(0), timer(0), spin_locked(false),
-	  next(all)
+	  panel(0), title(0), enabled(0), temp(0), lookup(0), 
+	  ignore(0), condition(0), record(0), edit(0), 
+	  timer(0), spin_locked(false), next(all)
     {
 	all = this;
     }
@@ -5188,6 +5191,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 
     // Set values
     XtVaSetValues(info->enabled, XmNset, bp->enabled(), NULL);
+    XtVaSetValues(info->temp,    XmNset, bp->dispo() != BPKEEP, NULL);
 
     bool lock = info->spin_locked;
     info->spin_locked = true;
@@ -5210,6 +5214,8 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     XmTextFieldSetString(info->condition, (String)bp->condition());
 
     set_sensitive(info->enabled,   gdb->has_disable_command());
+    set_sensitive(info->temp,
+		  gdb->type() == GDB && bp->dispo() == BPKEEP);
     set_sensitive(info->ignore,    gdb->has_ignore_command());
     set_sensitive(info->condition, true);
     set_sensitive(info->record,    gdb->type() == GDB);
@@ -5276,29 +5282,31 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
 
     MMDesc commands_menu[] =
     {
-	{ "record", MMPush, { RecordBreakpointCommandsCB, XtPointer(info) },
-	  NULL, &info->record },
-	{ "edit",   MMPush, { EditBreakpointCommandsCB, XtPointer(info) },
-	  NULL, &info->edit },
+	{ "record", MMPush, \
+	  { RecordBreakpointCommandsCB, XtPointer(info) }, 0, &info->record },
+	{ "edit",   MMPush | MMInsensitive, \
+	  { EditBreakpointCommandsCB, XtPointer(info) }, 0, &info->edit },
 	MMEnd
     };
 
     MMDesc enabled_menu[] = 
     {
-	{ "enabled", MMToggle, { ToggleBreakpointEnabledCB, XtPointer(info) },
-	  NULL, &info->enabled },
+	{ "enabled",   MMToggle, 
+	  { ToggleBreakpointEnabledCB, XtPointer(info) }, 0, &info->enabled },
+	{ "temporary", MMToggle, 
+	  { ToggleBreakpointTempCB, XtPointer(info) }, 0, &info->temp },
+	{ "lookup",    MMPush, 
+	  { LookupBreakpointCB, XtPointer(info) }, 0, &info->lookup },
 	MMEnd
     };
 
     MMDesc panel_menu[] = 
     {
 	{ "title", MMButtonPanel, MMNoCB, enabled_menu },
-	{ "condition", MMEnterField, { SetBreakpointConditionCB,
-				      XtPointer(info) },
-	  NULL, &info->condition },
+	{ "condition", MMEnterField,
+	  { SetBreakpointConditionCB, XtPointer(info) }, 0, &info->condition },
 	{ "ignore", MMSpinField,
-	  { SetBreakpointIgnoreCountCB, XtPointer(info) },
-	  NULL, &info->ignore },
+	  { SetBreakpointIgnoreCountCB, XtPointer(info) }, 0, &info->ignore },
 	{ "commands", MMButtonPanel, MMNoCB, commands_menu },
 	MMEnd
     };
@@ -5408,12 +5416,30 @@ void SourceView::ToggleBreakpointEnabledCB(Widget,
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
-    string cmd = cbs->set ? gdb->enable_command() : gdb->disable_command();
-    
-    for (int i = 0; i < info->nrs.size(); i++)
-	cmd += " " + itostring(info->nrs[i]);
-    gdb_command(cmd);
+    if (cbs->set)
+	enable_bps(info->nrs);
+    else
+	disable_bps(info->nrs);
 }
+
+// Toggle breakpoint temp state
+void SourceView::ToggleBreakpointTempCB(Widget, 
+					XtPointer client_data, 
+					XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+    BreakpointPropertiesInfo *info = 
+	(BreakpointPropertiesInfo *)client_data;
+
+    if (cbs->set)
+	gdb_command("enable delete " + numbers(info->nrs));
+    else
+    {
+	// How do we make a temp breakpoint non-temporary?  (FIXME)
+    }
+}
+
 
 // Delete Breakpoint
 void SourceView::DeleteBreakpointCB(Widget, XtPointer client_data, XtPointer)
@@ -5425,21 +5451,25 @@ void SourceView::DeleteBreakpointCB(Widget, XtPointer client_data, XtPointer)
 }
 
 // Record breakpoint commands
-void SourceView::RecordBreakpointCommandsCB(Widget, 
+void SourceView::RecordBreakpointCommandsCB(Widget w,
 					    XtPointer client_data, 
-					    XtPointer call_data)
+					    XtPointer)
 {
-    (void)client_data;
-    (void)call_data;
+    BreakpointPropertiesInfo *info = 
+	(BreakpointPropertiesInfo *)client_data;
+
+    gdb_command("commands " + itostring(info->nrs[0]), w);
 }
 
 // Edit breakpoint commands
 void SourceView::EditBreakpointCommandsCB(Widget, 
 					  XtPointer client_data, 
-					  XtPointer call_data)
+					  XtPointer)
 {
-    (void)client_data;
-    (void)call_data;
+    BreakpointPropertiesInfo *info = 
+	(BreakpointPropertiesInfo *)client_data;
+
+    (void)info;			// FIXME
 }
 
 void SourceView::edit_breakpoint_properties(int bp_nr)
@@ -5479,14 +5509,24 @@ void SourceView::BreakpointCmdCB(Widget,
 	disable_bps(nrs);
 }
 
-void SourceView::LookupBreakpointCB(Widget, XtPointer, XtPointer)
+void SourceView::LookupBreakpointCB(Widget, XtPointer client_data, XtPointer)
 {
     if (breakpoint_list_w == 0)
 	return;
 
     IntArray breakpoint_nrs;
-    getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
-    if (breakpoint_nrs.size() != 1)
+
+    if (client_data == 0)
+    {
+	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
+    }
+    else
+    {
+	BreakpointPropertiesInfo *info = 
+	    (BreakpointPropertiesInfo *)client_data;
+	breakpoint_nrs = info->nrs;
+    }
+    if (breakpoint_nrs.size() < 1)
 	return;
 
     BreakPoint *bp = bp_map.get(breakpoint_nrs[0]);
@@ -5510,20 +5550,20 @@ int SourceView::jdb_breakpoint(const string& bp_info)
 {
     int colon = bp_info.index(':');
     if (colon < 0)
-	return -1;		// no breakpoint
+	return -1;		// No breakpoint
 
     string class_name = bp_info.before(colon);
     strip_leading_space(class_name);
     int line = get_positive_nr(bp_info.after(colon));
     if (line <= 0 || class_name.contains(' '))
-	return -1;		// no breakpoint
+	return -1;		// No breakpoint
 
     MapRef ref;
     for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
 	if (bp_matches(bp, class_name, line))
-	    return bp->number(); // existing breakpoint
+	    return bp->number(); // Existing breakpoint
 
-    return 0;			// new breakpoint
+    return 0;		       // New breakpoint
 }
 
 
