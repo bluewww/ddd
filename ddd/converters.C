@@ -44,7 +44,6 @@ char converters_rcsid[] =
 #include "OnOff.h"
 #include "strclass.h"
 #include "charsets.h"
-#include "regexps.h"
 #include "StringSA.h"
 
 #include <Xm/Xm.h>
@@ -408,6 +407,24 @@ static String locateBitmap(Display *display, String basename)
 // Macro tables
 static StringStringAssoc conversionMacroTable;
 
+// Return length of leading font id
+static int font_id_len(const string& s)
+{
+    // Font ids have the syntax "[_A-Za-z][-_A-Za-z0-9]*"
+
+    if (s == "")
+	return 0;
+
+    if (s[0] != '_' && !isalpha(s[0]))
+	return 0;
+
+    for (int i = 1; i < int(s.length()); i++)
+	if (s[i] != '-' && s[i] != '_' && !isalnum(s[i]))
+	    return i;
+
+    return s.length();
+}
+
 // Convert String to XmString, using `@' for font specs: `@FONT TEXT'
 // makes TEXT be displayed in font FONT; a single space after FONT is
 // eaten.  `@ ' displays a single `@'.
@@ -417,10 +434,6 @@ Boolean CvtStringToXmString(Display *display,
 			    XtPointer *)
 {
     const string font_esc = "@";
-
-#if RUNTIME_REGEX
-    static regex rxfont_id("[_A-Za-z][-_A-Za-z0-9]*");
-#endif
 
     // Get string
     string source = str(fromVal, false);
@@ -443,10 +456,11 @@ Boolean CvtStringToXmString(Display *display,
 	}
 	else
 	{
-	    if (segments[i].contains(rxfont_id, 0))
+	    int len = font_id_len(segments[i]);
+	    if (len > 0)
 	    {
 		// Found @[font-id] <segment>: process it
-		string c = segments[i].through(rxfont_id);
+		string c = segments[i].before(len);
 		segment = segments[i].from(int(c.length()));
 		if (segment == "")
 		{
