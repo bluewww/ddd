@@ -39,10 +39,19 @@ char ReadLineAgent_rcsid[] =
 #include <iostream.h>
 
 #if WITH_READLINE
+
+// `readline.h' has no complete declaration for `rl_callback_handler_install',
+// so we install our own.
+#define rl_callback_handler_install old_rl_callback_handler_install
+
 extern "C" {
 #include "readline/readline.h"
 }
-#endif
+
+#undef rl_callback_handler_install
+extern "C" void rl_callback_handler_install(char *prompt, 
+					    VFunction *lhandler);
+#endif // WITH_READLINE
 
 DEFINE_TYPE_INFO_1(ReadLineAgent, LiterateAgent)
 
@@ -75,7 +84,8 @@ void ReadLineAgent::prompt(const string& prompt_string)
     {
 	// Prompt using PROMPT_STRING
 	rl_callback_handler_remove();
-	rl_callback_handler_install((char *)prompt_string, readline_handler);
+	rl_callback_handler_install((char *)prompt_string,
+				    (VFunction *)readline_handler);
 	current_prompter = this;
 	return;
     }
