@@ -683,7 +683,7 @@ CXXOPT = @CXXOPT@
 CXXDEBUG = @CXXDEBUG@
 # Warnings.  (-W -Wall)
 CXXWARNINGS = @CXXWARNINGS@
-# Extras.  (-felide-constructors)
+# Extras.  (-trigraphs)
 CXXSTUFF = @CXXSTUFF@ @X_PERMISSIVE@
 CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS) $(CXXSTUFF)
 
