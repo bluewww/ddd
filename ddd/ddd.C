@@ -407,6 +407,10 @@ static void PostHelpOnItem(Widget item);
 // Log player stuff
 static void check_log(const string& logname, DebuggerType& type);
 
+#if XmVersion < 2000
+static void toggleOverstrikeAct (Widget, XEvent*, String*, Cardinal*) {}
+#endif
+
 
 //-----------------------------------------------------------------------------
 // Xt Stuff
@@ -636,6 +640,9 @@ static XtActionsRec actions [] = {
     {"ddd-prev-tab-group",     prev_tab_groupAct},
     {"ddd-previous-tab-group", prev_tab_groupAct},
     {"ddd-get-focus",          get_focusAct},
+#if XmVersion < 2000
+    {"toggle-overstrike",      toggleOverstrikeAct},
+#endif
 };
 
 
@@ -6069,7 +6076,7 @@ static void ddd_xt_warning(String message)
 	if (!informed)
 	{
 	    cerr << "(Annoyed?  "
-		"Try 'Edit | Preferences | General | Suppress X Warnings'!)\n";
+		"Try 'Edit->Preferences->General->Suppress X Warnings'!)\n";
 	    informed = true;
 	}
     }
