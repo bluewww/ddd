@@ -45,7 +45,7 @@ dnl
 ddd=ddd
 Ddd=Ddd
 DDD=DDD
-VERSION=1.3
+VERSION=1.3a
 dnl
 AC_SUBST(ddd)dnl
 AC_SUBST(Ddd)dnl
@@ -251,7 +251,7 @@ AC_CHECK_HEADERS(unistd.h limits.h malloc.h pwd.h stdlib.h termio.h termios.h)
 AC_CHECK_HEADERS(sys/ioctl.h sys/param.h sys/time.h sys/resource.h sys/timeb.h)
 AC_CHECK_HEADERS(sys/stat.h sys/stropts.h sys/vty.h sys/sysmacros.h sys/core.h)
 AC_CHECK_HEADERS(sys/socket.h sys/termios.h sys/utsname.h sys/user.h)
-AC_CHECK_HEADERS(fcntl.h string.h strings.h memory.h netdb.h)
+AC_CHECK_HEADERS(fcntl.h string.h strings.h netdb.h)
 AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
 AC_HEADER_DIRENT
@@ -273,7 +273,8 @@ ICE_CHECK_DECL(grantpt, stdlib.h)
 ICE_CHECK_DECL(ioctl, unistd.h)
 ICE_CHECK_DECL(lstat, sys/stat.h)
 ICE_CHECK_DECL(malloc, stdlib.h)
-ICE_CHECK_DECL(memset, string.h memory.h)
+ICE_CHECK_DECL(memcpy, string.h)
+ICE_CHECK_DECL(memset, string.h)
 ICE_CHECK_DECL(popen, stdio.h)
 ICE_CHECK_DECL(pclose, stdio.h)
 ICE_CHECK_DECL(ptsname, stdlib.h)
