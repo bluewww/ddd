@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-04-01" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-04-07" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -3962,6 +3962,231 @@ file comes with the \s-2@DDD@\s+2 distribution.
 .\"
 .\"
 .\" ---------------
+.SH "OPTIONS"
+.\" ---------------
+.\"
+You can use the following options when starting \s-2@DDD@\s+2.  All
+options may be abbreviated, as long as they are unambiguous; single
+dashes may also be used.  \s-2@DDD@\s+2 also understands the usual X
+options such as `\fB\-display\fR' or `\fB\-geometry\fR'; see
+\fBX(1)\fR for details.
+.PP
+All other arguments and options are passed to the inferior debugger.
+To pass an option to the inferior debugger that conflicts with an X
+option, or with a \s-2@DDD@\s+2 option listed here, use the
+`\fB\-\-debugger\fR' option, below.
+.PP
+.\"
+.TP
+.B \-\-attach-windows
+Attach the source and data windows to the debugger console, creating
+one single big \s-2@DDD@\s+2 window.  This is the default setting.
+.TP
+.B \-\-attach-source-window
+Attaches only the source window to the debugger console.
+.TP
+.B \-\-attach-data-window
+Attaches only the source window to the debugger console.
+.TP
+.B \-\-button-tips
+Enable button tips.
+.TP
+.B \-\-configuration
+Show the \s-2@DDD@\s+2 configuration settings and exit.
+.TP
+.B \-\-check-configuration
+Check the \s-2@DDD@\s+2 environment (in particular, the X configuration),
+report any possible problem causes and exit.
+.TP
+.B \-\-dbx
+Run the \s-2DBX\s+2 debugger as inferior debugger.
+.TP
+.B \-\-debugger \fIname\fR
+Invoke the inferior debugger \fIname\fR.  This is useful if you have
+several debugger versions around, or if the inferior debugger cannot
+be invoked as `\fBgdb\fR', `\fBdbx\fR', `\fBxdb\fR', or `\fBjdb\fR',
+respectively.  This option can also be used to pass options to the
+inferior debugger that would otherwise conflict with \s-2@DDD@\s+2
+options.  For instance, to pass a `\fB\-d \fIdirectory\fR' option to
+\s-2XDB\s+2, use:
+.sp
+.br
+  \fB@ddd@\ \-\-debugger "xdb \-d \fIdirectory\fB"\fR
+.br
+.sp
+If you use the `\fB\-\-debugger\fR' option, be sure that the type of
+inferior debugger is specified as well.  That is, use one of the
+options `\fB\-\-gdb\fR', `\fB\-\-dbx\fR', `\fB\-\-xdb\fR', or
+`\fB\-\-jdb\fR'\(em\&unless the default setting works fine.
+.TP
+.B \-\-disassemble
+Disassemble the source code.  See also the `\fB\-\-no-disassemble\fR'
+option, below.
+.TP
+.B \-\-exec-window
+Run the debugged program in a specially created execution window.
+This is useful for programs that have special terminal requirements
+not provided by the debugger window, as raw keyboard processing or
+terminal control sequences.
+.TP
+.B \-\-fullname
+Enable \s-2TTY\s+2 interface, taking additional debugger commands
+from standard input and forwarding debugger output on standard output.
+Current positions are issued in \s-2GDB\s+2 `\fB\-fullname\fR' format
+suitable for debugger front-ends.  By default, both the debugger
+console and source window are disabled.
+.TP
+.B \-\-gdb
+Run the \s-2GDB\s+2 debugger as inferior debugger.
+.TP
+.B \-\-glyphs
+Display the current execution position and breakpoints as glyphs.
+See also the `\fB\-\-no-glyphs\fR' option, below.
+.TP
+.B \-\-help
+Give a list of frequently used options.  Show options of the
+inferior debugger as well.
+.TP
+.B \-\-host \fR[\|\fIusername\fB@\fR\|]\|\fIhostname\fR
+Invoke the inferior debugger directly on the remote host
+\fIhostname\fR.  If \fIusername\fR is given and the `\fB\-\-login\fR'
+option is not used, use \fIusername\fR as remote user name.  See
+`\fBREMOTE DEBUGGING\fR', above.
+.TP
+.B \-\-jdb
+Run \s-2JDB\s+2 as inferior debugger.
+.TP
+.B \-\-lesstif-hacks\fR
+Equivalent to `\fB\-\-lesstif-version \fIversion\fR', where
+\fIversion\fR is the version of the most recent LessTif release.
+Deprecated.
+.TP
+.B \-\-lesstif-version \fIversion\fR
+Enable some hacks to make \s-2@DDD@\s+2 run properly with LessTif.
+See the `\fBlessTifVersion\fR' resource and `\fBUSING @DDD@ WITH
+LESSTIF\fR', above, for a discussion.
+.TP
+.B \-\-license
+Show the \s-2@DDD@\s+2 license and exit.
+.TP
+.B \-\-login \fIusername\fR
+Use \fIusername\fR as remote user name.  See `\fBREMOTE DEBUGGING\fR',
+above.
+.TP
+.B \-\-manual
+Show this manual page and exit.
+.TP
+.B \-\-news
+Show the \s-2@DDD@\s+2 news and exit.
+.TP
+.B \-\-no-button-tips
+Disable button tips.
+.TP
+.B \-\-no-data-window
+Do not create the data window upon start-up.
+.TP
+.B \-\-no-debugger-console
+Do not create the debugger console upon start-up.
+.TP
+.B \-\-no-disassemble
+Do not disassemble the source code.
+.TP
+.B \-\-no-exec-window
+Do not run the debugged program in a specially created execution
+window; use the debugger console instead.  Useful for programs that have
+little terminal input/output, or for remote debugging.
+.TP
+.B \-\-no-glyphs
+Display the current execution position and breakpoints as text
+characters.  Do not use glyphs.
+.TP
+.B \-\-no-lesstif-hacks\fR
+Equivalent to `\fB\-\-lesstif-version 1000\fR'.  Deprecated.
+.TP
+.B \-\-no-source-window
+Do not create the source window upon start-up.
+.TP
+.B \-\-no-value-tips
+Disable value tips.
+.TP
+.B \-\-nw
+Do not use the X window interface.  Start the inferior debugger on
+the local host.
+.TP
+.B \-\-panned-graph-editor
+Use an Athena panner to scroll the data window.  Most people prefer
+panners on scroll bars, since panners allow two-dimensional scrolling.
+However, the panner is off by default, since some Motif
+implementations do not work well with Athena widgets.  See also
+\fB\-\-scrolled-graph-editor\fR, below.
+.TP
+.B \-\-rhost \fR[\|\fIusername\fB@\fR\|]\|\fIhostname\fR
+Run the inferior debugger interactively on the remote host
+\fIhostname\fR.  If \fIusername\fR is given and the `\fB\-\-login\fR'
+option is not used, use \fIusername\fR as remote user name.  See
+`\fBREMOTE DEBUGGING\fR', above.
+.TP
+.B \-\-separate-windows
+Separate the console, source and data windows.  See also the
+`\fB\-\-attach\fR' options, above.
+.TP
+.B \-\-scrolled-graph-editor
+Use Motif scroll bars to scroll the data window.  This is the default
+in most \s-2@DDD@\s+2 configurations.  See also
+\fB\-\-panned-graph-editor\fR, above.
+.TP
+.B \-\-status-at-bottom
+Place the status line at the bottom of the source window.
+.TP
+.B \-\-status-at-top
+Place the status line at the top of the source window.
+.TP
+.B \-\-sync-debugger
+Do not process X events while the debugger is busy.  This may result
+in slightly better performance on single-processor systems.
+.TP
+.B \-\-trace-dialog
+Show the interaction between \s-2@DDD@\s+2 and the inferior debugger
+on standard error.  This is useful for debugging \s-2@DDD@\s+2.
+.TP
+.B \-\-trace-shell-commands
+Show the shell commands issued by \s-2@DDD@\s+2 on standard error.  This
+is useful for debugging \s-2@DDD@\s+2.
+.TP
+.B \-\-trace
+Show both interaction and shell commands.
+.TP
+.B \-\-tty
+Enable \s-2TTY\s+2 interface, taking additional debugger commands from
+standard input and forwarding debugger output on standard output.
+Current positions are issued in a format readable for humans.  By
+default, the debugger console is disabled.
+.TP
+.B \-\-value-tips
+Enable value tips.
+.TP
+.B \-\-version
+Show the \s-2@DDD@\s+2 version and exit.
+.TP
+.B \-\-vsl-library \fIlibrary\fR
+Load the \s-2VSL\s+2 library \fIlibrary\fR instead of using the
+\s-2@DDD@\s+2 built-in library.  This is useful for customizing
+display shapes and fonts.
+.TP
+.B \-\-vsl-path \fIpath\fR
+Search \s-2VSL\s+2 libraries in \fIpath\fR (a colon-separated
+directory list).
+.TP
+.B \-\-vsl-help
+Show a list of further options controlling the \s-2VSL\s+2
+interpreter.  These options are intended for debugging purposes and
+are subject to change without further notice.
+.TP
+.B \-\-xdb
+Run \s-2XDB\s+2 as inferior debugger.
+.\"
+.\"
+.\" ---------------
 .SH "ACTIONS"
 .\" ---------------
 .\"
@@ -4218,231 +4443,153 @@ some motion event.
 .B source-drop-glyph ()
 Drop the dragged glyph at cursor position.
 .\"
+.\"
 .\" ---------------
-.SH "OPTIONS"
+.SH "IMAGES"
 .\" ---------------
 .\"
-You can use the following options when starting \s-2@DDD@\s+2.  All
-options may be abbreviated, as long as they are unambiguous; single
-dashes may also be used.  \s-2@DDD@\s+2 also understands the usual X
-options such as `\fB\-display\fR' or `\fB\-geometry\fR'; see
-\fBX(1)\fR for details.
+\s-2@DDD@\s+2 installs a number of pixmaps that may be used as pixmap
+resources, simply by giving a symbolic name.  The suffix `\fB-xx\fR'
+indicates a disabled (insensitive) variant.
+.TP
+.B "break_at"
+.PD 0
+.TP
+.B "break_at-xx"
+`\fBBreak at ()\fR' button.
+.PD
+.TP
+.B "clear_at"
+.PD 0
+.TP
+.B "clear_at-xx"
+`\fBClear at ()\fR' button.
+.PD
+.TP
+.B "@ddd@"
+\s-2@DDD@\s+2 icon.
+.TP
+.B "deref"
+.PD 0
+.TP
+.B "deref-xx"
+`\fBDisplay * ()\fR' button.
+.PD
+.TP
+.B "display"
+.PD 0
+.TP
+.B "display-xx"
+`\fBDisplay ()\fR' button.
+.PD
+.TP
+.B "find_next"
+.PD 0
+.TP
+.B "find_next-xx"
+`\fBFind\s-2>>\s+2 ()\fR' button.
+.PD
+.TP
+.B "find_prev"
+.PD 0
+.TP
+.B "find_prev-xx"
+`\fBFind\s-2<<\s+2 ()\fR' button.
+.PD
+.TP
+.B "grey_arrow"
+The execution pointer (not in lowest frame).
+.TP
+.B "grey_cond"
+A conditional breakpoint (disabled).
+.TP
+.B "grey_stop"
+A breakpoint (disabled).
+.TP
+.B "hide"
+.PD 0
+.TP
+.B "hide-xx"
+`\fBHide ()\fR' button.
+.PD
+.TP
+.B "lookup"
+.PD 0
+.TP
+.B "lookup-xx"
+`\fBLookup ()\fR' button.
+.PD
+.TP
+.B "plain_arrow"
+The execution pointer.
+.TP
+.B "plain_cond"
+A conditional breakpoint (enabled).
+.TP
+.B "plain_stop"
+A breakpoint (enabled).
+.TP
+.B "print"
+.PD 0
+.TP
+.B "print-xx"
+`\fBPrint ()\fR' button.
+.PD
+.TP
+.B "rotate"
+.PD 0
+.TP
+.B "rotate-xx"
+`\fBRotate ()\fR' button.
+.PD
+.TP
+.B "set"
+.PD 0
+.TP
+.B "set-xx"
+`\fBSet ()\fR' button.
+.PD
+.TP
+.B "show"
+.PD 0
+.TP
+.B "show-xx"
+`\fBShow ()\fR' button.
+.PD
+.TP
+.B "signal_arrow"
+The execution pointer (stopped by signal).
+.TP
+.B "temp_arrow"
+The execution pointer (being dragged).
+.TP
+.B "temp_cond"
+A conditional breakpoint (being dragged).
+.TP
+.B "temp_stop"
+A breakpoint (being dragged).
+.TP
+.B "undisplay"
+.PD 0
+.TP
+.B "undisplay-xx"
+`\fBDelete ()\fR' button.
+.PD
+.TP
+.B "unwatch"
+.PD 0
+.TP
+.B "unwatch-xx"
+`\fBUnwatch ()\fR' button.
+.PD
+.TP
+.B "watch"
+.PD 0
+.TP
+.B "watch-xx"
+`\fBWatch ()\fR' button.
+.PD
 .PP
-All other arguments and options are passed to the inferior debugger.
-To pass an option to the inferior debugger that conflicts with an X
-option, or with a \s-2@DDD@\s+2 option listed here, use the
-`\fB\-\-debugger\fR' option, below.
-.PP
-.\"
-.TP
-.B \-\-attach-windows
-Attach the source and data windows to the debugger console, creating
-one single big \s-2@DDD@\s+2 window.  This is the default setting.
-.TP
-.B \-\-attach-source-window
-Attaches only the source window to the debugger console.
-.TP
-.B \-\-attach-data-window
-Attaches only the source window to the debugger console.
-.TP
-.B \-\-button-tips
-Enable button tips.
-.TP
-.B \-\-configuration
-Show the \s-2@DDD@\s+2 configuration settings and exit.
-.TP
-.B \-\-check-configuration
-Check the \s-2@DDD@\s+2 environment (in particular, the X configuration),
-report any possible problem causes and exit.
-.TP
-.B \-\-dbx
-Run the \s-2DBX\s+2 debugger as inferior debugger.
-.TP
-.B \-\-debugger \fIname\fR
-Invoke the inferior debugger \fIname\fR.  This is useful if you have
-several debugger versions around, or if the inferior debugger cannot
-be invoked as `\fBgdb\fR', `\fBdbx\fR', `\fBxdb\fR', or `\fBjdb\fR',
-respectively.  This option can also be used to pass options to the
-inferior debugger that would otherwise conflict with \s-2@DDD@\s+2
-options.  For instance, to pass a `\fB\-d \fIdirectory\fR' option to
-\s-2XDB\s+2, use:
-.sp
-.br
-  \fB@ddd@\ \-\-debugger "xdb \-d \fIdirectory\fB"\fR
-.br
-.sp
-If you use the `\fB\-\-debugger\fR' option, be sure that the type of
-inferior debugger is specified as well.  That is, use one of the
-options `\fB\-\-gdb\fR', `\fB\-\-dbx\fR', `\fB\-\-xdb\fR', or
-`\fB\-\-jdb\fR'\(em\&unless the default setting works fine.
-.TP
-.B \-\-disassemble
-Disassemble the source code.  See also the `\fB\-\-no-disassemble\fR'
-option, below.
-.TP
-.B \-\-exec-window
-Run the debugged program in a specially created execution window.
-This is useful for programs that have special terminal requirements
-not provided by the debugger window, as raw keyboard processing or
-terminal control sequences.
-.TP
-.B \-\-fullname
-Enable \s-2TTY\s+2 interface, taking additional debugger commands
-from standard input and forwarding debugger output on standard output.
-Current positions are issued in \s-2GDB\s+2 `\fB\-fullname\fR' format
-suitable for debugger front-ends.  By default, both the debugger
-console and source window are disabled.
-.TP
-.B \-\-gdb
-Run the \s-2GDB\s+2 debugger as inferior debugger.
-.TP
-.B \-\-glyphs
-Display the current execution position and breakpoints as glyphs.
-See also the `\fB\-\-no-glyphs\fR' option, below.
-.TP
-.B \-\-help
-Give a list of frequently used options.  Show options of the
-inferior debugger as well.
-.TP
-.B \-\-host \fR[\|\fIusername\fB@\fR\|]\|\fIhostname\fR
-Invoke the inferior debugger directly on the remote host
-\fIhostname\fR.  If \fIusername\fR is given and the `\fB\-\-login\fR'
-option is not used, use \fIusername\fR as remote user name.  See
-`\fBREMOTE DEBUGGING\fR', above.
-.TP
-.B \-\-jdb
-Run \s-2JDB\s+2 as inferior debugger.
-.TP
-.B \-\-lesstif-hacks\fR
-Equivalent to `\fB\-\-lesstif-version \fIversion\fR', where
-\fIversion\fR is the version of the most recent LessTif release.
-Deprecated.
-.TP
-.B \-\-lesstif-version \fIversion\fR
-Enable some hacks to make \s-2@DDD@\s+2 run properly with LessTif.
-See the `\fBlessTifVersion\fR' resource and `\fBUSING @DDD@ WITH
-LESSTIF\fR', above, for a discussion.
-.TP
-.B \-\-license
-Show the \s-2@DDD@\s+2 license and exit.
-.TP
-.B \-\-login \fIusername\fR
-Use \fIusername\fR as remote user name.  See `\fBREMOTE DEBUGGING\fR',
-above.
-.TP
-.B \-\-manual
-Show this manual page and exit.
-.TP
-.B \-\-news
-Show the \s-2@DDD@\s+2 news and exit.
-.TP
-.B \-\-no-button-tips
-Disable button tips.
-.TP
-.B \-\-no-data-window
-Do not create the data window upon start-up.
-.TP
-.B \-\-no-debugger-console
-Do not create the debugger console upon start-up.
-.TP
-.B \-\-no-disassemble
-Do not disassemble the source code.
-.TP
-.B \-\-no-exec-window
-Do not run the debugged program in a specially created execution
-window; use the debugger console instead.  Useful for programs that have
-little terminal input/output, or for remote debugging.
-.TP
-.B \-\-no-glyphs
-Display the current execution position and breakpoints as text
-characters.  Do not use glyphs.
-.TP
-.B \-\-no-lesstif-hacks\fR
-Equivalent to `\fB\-\-lesstif-version 1000\fR'.  Deprecated.
-.TP
-.B \-\-no-source-window
-Do not create the source window upon start-up.
-.TP
-.B \-\-no-value-tips
-Disable value tips.
-.TP
-.B \-\-nw
-Do not use the X window interface.  Start the inferior debugger on
-the local host.
-.TP
-.B \-\-panned-graph-editor
-Use an Athena panner to scroll the data window.  Most people prefer
-panners on scroll bars, since panners allow two-dimensional scrolling.
-However, the panner is off by default, since some Motif
-implementations do not work well with Athena widgets.  See also
-\fB\-\-scrolled-graph-editor\fR, below.
-.TP
-.B \-\-rhost \fR[\|\fIusername\fB@\fR\|]\|\fIhostname\fR
-Run the inferior debugger interactively on the remote host
-\fIhostname\fR.  If \fIusername\fR is given and the `\fB\-\-login\fR'
-option is not used, use \fIusername\fR as remote user name.  See
-`\fBREMOTE DEBUGGING\fR', above.
-.TP
-.B \-\-separate-windows
-Separate the console, source and data windows.  See also the
-`\fB\-\-attach\fR' options, above.
-.TP
-.B \-\-scrolled-graph-editor
-Use Motif scroll bars to scroll the data window.  This is the default
-in most \s-2@DDD@\s+2 configurations.  See also
-\fB\-\-panned-graph-editor\fR, above.
-.TP
-.B \-\-status-at-bottom
-Place the status line at the bottom of the source window.
-.TP
-.B \-\-status-at-top
-Place the status line at the top of the source window.
-.TP
-.B \-\-sync-debugger
-Do not process X events while the debugger is busy.  This may result
-in slightly better performance on single-processor systems.
-.TP
-.B \-\-trace-dialog
-Show the interaction between \s-2@DDD@\s+2 and the inferior debugger
-on standard error.  This is useful for debugging \s-2@DDD@\s+2.
-.TP
-.B \-\-trace-shell-commands
-Show the shell commands issued by \s-2@DDD@\s+2 on standard error.  This
-is useful for debugging \s-2@DDD@\s+2.
-.TP
-.B \-\-trace
-Show both interaction and shell commands.
-.TP
-.B \-\-tty
-Enable \s-2TTY\s+2 interface, taking additional debugger commands from
-standard input and forwarding debugger output on standard output.
-Current positions are issued in a format readable for humans.  By
-default, the debugger console is disabled.
-.TP
-.B \-\-value-tips
-Enable value tips.
-.TP
-.B \-\-version
-Show the \s-2@DDD@\s+2 version and exit.
-.TP
-.B \-\-vsl-library \fIlibrary\fR
-Load the \s-2VSL\s+2 library \fIlibrary\fR instead of using the
-\s-2@DDD@\s+2 built-in library.  This is useful for customizing
-display shapes and fonts.
-.TP
-.B \-\-vsl-path \fIpath\fR
-Search \s-2VSL\s+2 libraries in \fIpath\fR (a colon-separated
-directory list).
-.TP
-.B \-\-vsl-help
-Show a list of further options controlling the \s-2VSL\s+2
-interpreter.  These options are intended for debugging purposes and
-are subject to change without further notice.
-.TP
-.B \-\-xdb
-Run \s-2XDB\s+2 as inferior debugger.
-.\"
-.\"
 .\" ---------------
 .SH "ENVIRONMENT"
 .\" ---------------
@@ -4465,9 +4612,17 @@ used by \s-2@DDD@\s+2 when restarting itself.
 .B @DDD@_SESSIONS
 \s-2@DDD@\s+2 session directory.  Default is `\fB$DDD_STATE/sessions/\fR'.
 .TP
+.B EDITOR
+The text editor to invoke for editing source code.  See the
+`\fBeditCommand\fR' resource, above.
+.TP
 .B VSL_INCLUDE
 Where to search for \s-2VSL\s+2 include files.  Default is the current 
 directory.
+.TP
+.B XEDITOR
+The X editor to invoke for editing source code.  See the
+`\fBeditCommand\fR' resource, above.
 .PD
 The following environment variables are set by \s-2@DDD@\s+2:
 .PD 0
@@ -4670,6 +4825,7 @@ also means that displays slow down \s-2@DDD@\s+2 considerably.
 .\"
 .SS "Limitations using JDB"
 .\"
+.PP
 There is no automatic data display in \s-2JDB\s+2.  As a workaround,
 \s-2@DDD@\s+2 uses the `\fBdump\fR' command to access data values.
 This means that variable names are interpreted according to the
@@ -5114,7 +5270,7 @@ November, 1997
 \s-2@DDD@\s+2 2.2: Persistent sessions, display shortcuts.
 .TP
 May, 1998
-\s-2@DDD@\s+2 2.3: Java and \s-2JDB\s+2 support, watchpoints.
+\s-2@DDD@\s+2 3.0: Java and \s-2JDB\s+2 support, watchpoints.
 .PD
 .\"
 .\"
