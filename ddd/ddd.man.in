@@ -81,6 +81,16 @@ but usually just
 .SH "DESCRIPTION"
 .\" ---------------
 .\"
+\fBTHIS MAN PAGE IS OBSOLETE!\fR It is no longer being maintained and
+probably out of date.  You should look at the \s-1@DDD@\s+1 Manual
+instead.  You can read it in Emacs (as Info file) or online in HTML,
+PostScript, and PDF formats via the \s-1@DDD@\s+1 WWW page,
+.sp
+.br
+  \fBhttp://www.gnu.org/software/ddd/\fR
+.br
+.sp
+.PP
 The purpose of a debugger such as \s-1@DDD@\s+1 is to allow you to see
 what is going on \*(lqinside\*(rq another program while it
 executes\(em\&or what another program was doing at the moment it
@@ -6139,7 +6149,7 @@ Universität Braunschweig, 1994.
 The \s-1@DDD@\s+1 \fI\s-1FTP\s+1 site,\fR
 .sp
 .br
-  \fBftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/\fR
+  \fBftp://ftp.gnu.org/\fR
 .br
 .sp
 .PP
@@ -6153,13 +6163,13 @@ The \s-1@DDD@\s+1 \fI\s-1WWW\s+1 page,\fR
 The \s-1@DDD@\s+1 \fIMailing List,\fR
 .sp
 .br
-   \fBhelp-ddd@gnu.org\fR
+   \fBddd@gnu.org\fR
 .br
 .sp
 For more information on this list, send a mail to
 .sp
 .br
-   \fBhelp-ddd-request@gnu.org\fR .
+   \fBddd-request@gnu.org\fR .
 .br
 .sp
 .PP
@@ -6289,30 +6299,12 @@ to fix it.  (Instead of sending bug reports, you may also send
 .\"
 .SS "Where to Send Bug Reports"
 .\"
-We recommend that you send bug reports for \s-1@DDD@\s+1 via electronic
-mail to
+Send bug reports for \s-1@DDD@\s+1 via electronic mail to
 .sp
 .br
   \fBbug-ddd@gnu.org\fR
 .br
 .sp
-As a last resort, send bug reports on paper to:
-.sp
-.br
-.DS
-  Technische Universität Braunschweig 
-.br
-  Abteilung Softwaretechnologie 
-.br
-  \s-1@DDD@\s+1-Bugs 
-.br
-  Bültenweg 88
-.br
-  D-38092 Braunschweig
-.br
-  \s-1GERMANY\s+1 
-.br
-.DE
 .\"
 .SS "Is it a \s-1@DDD@\s+1 Bug?"
 .\"
@@ -6487,35 +6479,6 @@ what might be done, see the file `\fBTODO\fR' in the \s-1@DDD@\s+1
 distribution.
 .\"
 .\"
-.\" ---------------
-.SH "@DDD@ NEEDS YOUR SUPPORT!"
-.\" ---------------
-.\"
-@DDD@ needs your support!  If you have any success stories related to
-@DDD@, please write them down on a picture postcard and send them to us:
-.PP
-.DS
-  Technische Universität Braunschweig 
-.br
-  Abteilung Softwaretechnologie 
-.br
-  Bültenweg 88
-.br
-  D-38092 Braunschweig 
-.br
-  \s-1GERMANY\s+1 
-.br
-.DE
-.PP
-You may also leave a message in the \fI\s-1@DDD@\s+1 Guestbook\fR. It
-is accessible via the \s-1@DDD@\s+1 \s-1WWW\s+1 page,
-.sp
-.br
-  \fBhttp://www.gnu.org/software/ddd/\fR .
-.br
-.sp
-.PP
-.\"
 .\"
 .\" --------------------
 .SH "PRINTING THIS MANUAL"
@@ -6526,20 +6489,15 @@ manual page on standard output.  This text output is suitable for
 installation as formatted manual page (as
 `\fB/usr/local/man/cat1/ddd.1\fR' or similar) on \s-1UNIX\s+1 systems.
 .PP
-A PostScript copy of this manual page, including several \s-1@DDD@\s+1
-screen shots and diagrams, is included in the \s-1@DDD@\s+1 source
-distribution and available separately as `\fBddd.man.ps.gz\fR' in
+The new \s-1@DDD@\s+1 manual, including several \s-1@DDD@\s+1 screen
+shots and diagrams, is included in the \s-1@DDD@\s+1 source
+distribution and available separately via
 .sp
 .br
-  \fBftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/doc/\fR
+  \fBhttp://www.gnu.org/software/ddd/\fR
 .br
 .sp
 This directory also contains other documentation related to \s-1@DDD@\s+1.
-.PP
-A \s-1ROFF\s+1 copy of this manual page, suitable for installation as
-manual page on \s-1UNIX\s+1 systems (as
-`\fB/usr/local/man/man1/ddd.1\fR' or similar), is included in the
-\s-1@DDD@\s+1 source distribution.
 .PP
 .\"
 .\"
@@ -6553,6 +6511,9 @@ manual page on \s-1UNIX\s+1 systems (as
 .\"
 \s-1@DDD@\s+1 is Copyright \(co 1995, 1996, 1997, 1998, 1999
 Technische Universität Braunschweig, Germany.
+.PP
+\s-1@DDD@\s+1 is Copyright \(co 1999
+Universität Passau, Germany.
 .PP
 \s-1@DDD@\s+1 is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
