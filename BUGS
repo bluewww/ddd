@@ -141,4 +141,10 @@ Volunteers for fixing these and other bugs are welcome!
 353 (Automake) The `configure' script checks for `__CYGWIN32__', but
     as of Beta 20, this should be `__CYGWIN__'.
 
-354 (Insert new bugs here)
+354 (LessTif) when I want to change for the jdb debugger in the
+    preference Edit -> Preferences -> Startup the windows turn to a
+    flashing border and the program hangs up!
+
+355 DDD crashes when the plot command is not found.
+
+356 (Insert new bugs here)
