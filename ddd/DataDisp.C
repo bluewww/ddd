@@ -3743,7 +3743,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
     dn->moveTo(box_point);
 
-    if (info->create_cluster)
+    if (info->cluster_nr != 0)
 	dn->cluster(info->cluster_nr - info->cluster_offset);
 
     select_node(dn, depend_nr);
