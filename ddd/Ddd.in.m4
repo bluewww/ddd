@@ -732,7 +732,7 @@ Ddd*highlightThickness: 1
 
 ! Logos and icons
 
-! DDD can display its startup logo in five different ways:
+! DDD can display its splash screen in five different ways:
 !
 !   Color (`c')  - using 42 shades of blue.     (Nice, but costly.)
 !   Grey  (`g')  - using 42 shades of grey.     (Nice on greyscale displays.)
@@ -2766,8 +2766,10 @@ ITEM LBL(Data Scrolling) sets the data window scrolling mode.\n\
         (not available in all DDD configurations).\n\
     SUBITEM LBL(Scrollbars) means to use two scrollbars. (*)\n\
 \n\
-ITEM LBL(Debugger Type) sets the type of inferior debugger to use. \
-(*)\n\
+ITEM LBL(Debugger Type) sets the type of inferior debugger to use. (*)\n\
+\n\
+ITEM LBL(Splash Screen) lets you choose among different DDD splash screens,\n\
+    or none at all.\n\
 \n\
 (*) Note: these startup preferences take effect only after saving options\n\
 and restarting DDD.\n\
@@ -2821,7 +2823,7 @@ Ddd*debuggerMenu*dbx.labelString:		DBX
 Ddd*debuggerMenu*xdb.labelString:		XDB
 Ddd*debuggerMenu*jdb.labelString:		JDB
 
-Ddd*preferences*showStartupLogo.labelString:	Show DDD startup logo
+Ddd*preferences*showStartupLogo.labelString:	Show DDD splash screen
 Ddd*preferences*showStartupLogo.alignment:	XmALIGNMENT_END
 Ddd*preferences*showStartupLogo.width:		200
 Ddd*preferences*showStartupLogo.recomputeSize:	false
