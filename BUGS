@@ -74,6 +74,7 @@ Volunteers for fixing these and other bugs are welcome!
 043. vickery@babbage.cs.qc.edu (Christopher Vickery) states:
      The display() operation generates a segmentation fault if the variable
      to be displayed is an uninitialized pointer.
+     [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
 
 046. Line continuations (i.e. GDB commands ended by `\' and continued
      on the next line) are not handled.
@@ -100,11 +101,6 @@ Volunteers for fixing these and other bugs are welcome!
      displays the upper 32 bits of "unsigned long long" data.
      Xxgdb, mxgdb and xde all display the full 64 bits of this data
      type.
-
-067. On Solaris 2.x, when attaching with DBX to a running process, 
-     ddd gets a seg fault.  The command line is, for example:
-     ddd --dbx $PAR_HOME/bin/tesla-wish 20919
-     Reported by Joe Hildebrand <hildjj@fuentez.com>
 
 069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
      [Linux 1.3.38 system, X11R6 (XFree 3.1.1), Motif 2.x]
@@ -145,6 +141,8 @@ Volunteers for fixing these and other bugs are welcome!
      the beginning OR it complains of "Internal error (IOT
      trap/Abort)" and ddd exits...  this does not result in an error
      under just gdb so I am assuming that it is an error in ddd.
+     [I could not reproduce this bug.  Does this also happen on 
+      other configurations?  -AZ]
 
 077. oyvind@stavanger.Geco-Prakla.slb.com (Oyvind Yrke) says that DDD
      crashes after receiving too much data from GDB (e.g. `info
@@ -166,20 +164,6 @@ Volunteers for fixing these and other bugs are welcome!
      environment variables.
      [Is this true for the top-level `configure', or for
      `ddd/configure'? -AZ]
-
-085. DDD cannot handle `members of T:' GDB output in displays.
-     The following is not processed correctly:
-
-     -> "display p\n"
-     <- "1: p = {\n"
-        "  <bidirectional_iterator<pair<Symbol *const,ProcInfo>,int>> = {\n"
-        "  }, \n"
-        "  members of iterator: \n"
-        "  node = 0xf5300\n"
-        "}\n"
-        "(gdb) "
-
-     Reported by Jens Krinke <krinke@ips.cs.tu-bs.de>.
 
 086. Lassi A. Tuura <Lassi.Tuura@cern.ch> states:
 
@@ -229,7 +213,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 100. Self-modifying code is not detected automatically; users must
      explicitly re-disassemble (with caching disabled).  
-     [Does anyone care?  -AZ]
+     [Does anyone care about self-modifying code?  -AZ]
 
 107. Jonathan Edwards <edwards@blight.IntraNet.com> says that DDD/DBX
      hangs up on his powerpc-ibm-aix4.2.0.0 box after a few `step's.
@@ -252,8 +236,5 @@ Volunteers for fixing these and other bugs are welcome!
      mechanism I choose to create a display the data window always
      remains empty and the 'edit displays' dialog says 'no displays'.
      I don't have this problem with beta2.
-
-111. On AIX with DBX, the backtrace window does not reflect the
-     current frame when using `up' or `down'.
 
 112. (Insert your bug here)
