@@ -961,16 +961,10 @@ static bool _get_core(const string& session, unsigned long flags,
 	return false;
     }
 
-    if (info.pid <= 0)
-    {
-	// Without process id, no chance to get a core file.
-	return false;
-    }
-
     if (may_ptrace)
     {
 #if HAVE_PTRACE_DUMPCORE
-	if (gdb->type() == GDB)
+	if (gdb->type() == GDB && info.pid > 0)
 	{
 	    // Try getting core via ptrace(2) call
 	    if (dont_save)
@@ -1036,7 +1030,7 @@ static bool _get_core(const string& session, unsigned long flags,
     {
 	// Try `gcore' command
 	string gcore = app_data.get_core_command;
-	if (gcore != "" && gdb->type() == GDB)
+	if (gcore != "" && gdb->type() == GDB && info.pid > 0)
 	{
 	    if (dont_save)
 		return true;	// Will probably work
@@ -1128,38 +1122,8 @@ static bool _get_core(const string& session, unsigned long flags,
 	    }
 	}
 
-#if 0				// Won't work on Solaris 2.4  -AZ
-	if (gdb->type() == GDB)
-	{
-	    // With GDB, simply send a signal and detach the process.
-	    // This has the advantage that any signals blocked by GDB
-	    // will be unblocked.
-	    kill(info.pid, SIGABRT);
-	    detach();
-
-	    int seconds = 5;
-	    while (seconds-- > 0 && !is_core_file(core))
-	    {
-		// Wait 5s for detached process to dump core
-		sleep(1);
-	    }
-	}
-	else
-#endif
-	{
-	    // Alternate method: kill the process while it's still
-	    // being debugged.
-	    int tries = 10;
-	    while (tries-- > 0 && kill(info.pid, SIGABRT) == 0)
-	    {
-		Command c("step");
-		c.verbose  = false;
-		c.check    = true;
-		c.priority = COMMAND_PRIORITY_AGAIN;
-		gdb_command(c);
-		syncCommandQueue();
-	    }
-	}
+	// Kill the process, hopefully leaving a core file
+	gdb_question(gdb->signal_command(SIGABRT));
 
 	if (is_core_file(core))
 	{

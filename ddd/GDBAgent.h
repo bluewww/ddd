@@ -169,6 +169,7 @@ private:
     bool _has_delete_comma;
     bool _has_err_redirection;
     bool _has_givenfile_command;
+    bool _has_cont_sig_command;
 
     ProgramLanguage _program_language; // Current program language
 
@@ -348,6 +349,10 @@ public:
 	return _has_givenfile_command = val;
     }
 
+    // True if debugger has `cont sig' command
+    bool has_cont_sig_command() const   { return _has_cont_sig_command; }
+    bool has_cont_sig_command(bool val) { return _has_cont_sig_command = val; }
+
     // Current program language
     ProgramLanguage program_language() const   { return _program_language; }
     ProgramLanguage program_language(ProgramLanguage val) 
@@ -424,6 +429,7 @@ public:
 				                    // GDB: "cond BP EXPR"
     string shell_command(string cmd) const;	    // GDB: "shell CMD"
     string debug_command(string program = "") const; // GDB: "file PROGRAM"
+    string signal_command(int sig) const;           // GDB: "signal SIG"
 
     // Default history file
     string history_file() const;                    // GDB: "~/.gdb_history"

@@ -220,6 +220,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_delete_comma(false),
       _has_err_redirection(true),
       _has_givenfile_command(false),
+      _has_cont_sig_command(false),
       _program_language(LANGUAGE_C),
       _trace_dialog(false),
       _verbatim(false),
@@ -279,6 +280,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_delete_comma(gdb.has_delete_comma()),
       _has_err_redirection(gdb.has_err_redirection()),
       _has_givenfile_command(gdb.has_givenfile_command()),
+      _has_cont_sig_command(gdb.has_cont_sig_command()),
       _program_language(gdb.program_language()),
       _trace_dialog(gdb.trace_dialog()),
       _verbatim(gdb.verbatim()),
@@ -1758,6 +1760,28 @@ string GDBAgent::debug_command(string program) const
     return "";			// Never reached
 }
 
+// Return command to send signal SIG
+string GDBAgent::signal_command(int sig) const
+{
+    string n = itostring(sig);
+
+    switch (type())
+    {
+    case GDB:
+	return "signal " + n;
+
+    case DBX:
+	if (has_cont_sig_command())
+	    return "cont sig " + n; // SUN DBX
+	else
+	    return "cont " + n;     // Other DBXes
+
+    case XDB:
+	return "p $signal = " + n + "; C";
+    }
+
+    return "";			// Never reached
+}
 
 // Return PREFIX + EXPR, parenthesizing EXPR if needed
 string GDBAgent::prepend_prefix(const string& prefix, const string& expr)
