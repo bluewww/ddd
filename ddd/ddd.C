@@ -377,6 +377,8 @@ static void setup_tty();
 static void setup_version_warnings();
 static void setup_core_limit();
 
+// Main loop
+static void ddd_main_loop();
 
 //-----------------------------------------------------------------------------
 // Xt Stuff
@@ -2243,10 +2245,20 @@ int main(int argc, char *argv[])
 	DispBox::init_vsllib();
     }
 
-    // Main Loop
+    // Enter main event loop
+    ddd_main_loop();
+
+    return EXIT_SUCCESS;	// Never reached
+}
+
+
+// Main loop.  This is placed in a separate procedure to avoid
+// longjmp() clobbering local variables.
+static void ddd_main_loop()
+{
     main_loop_entered = false;
-    int sig;
-    if ((sig = setjmp(main_loop_env)))
+    static int sig = 0;
+    if ((sig = setjmp(main_loop_env)) != 0)
     {
 	main_loop_entered = false;
 	ddd_show_signal(sig);
@@ -2255,13 +2267,11 @@ int main(int argc, char *argv[])
 
     // Set `main_loop_entered' to true as soon 
     // as DDD becomes idle again.
-    XtAppAddWorkProc(app_context, ddd_setup_done, 0);
+    XtAppAddWorkProc(XtWidgetToApplicationContext(gdb_w), ddd_setup_done, 0);
 
-    bool forever = true;
-    while (forever)
+    // Main Loop
+    for (;;)
 	process_next_event();
-
-    return EXIT_SUCCESS;	// Never reached
 }
 
 
