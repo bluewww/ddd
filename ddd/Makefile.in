@@ -2455,10 +2455,9 @@ host.h: $(srcdir)/host.h.in config.status
 tags:	$(srcdir)/TAGS
 
 $(srcdir)/TAGS:	FORCE
-	@cd $(srcdir); \
-	if [ `ls -c TAGS *.[Ch] | head -1` != TAGS ]; then \
+	@if [ `ls -c $(srcdir)/TAGS $(srcdir)/*.[Ch] | head -1` != $(srcdir)/TAGS ]; then \
 	echo 'Creating $@...'; \
-	$(ETAGS) *.[Ch] > $@; \
+	$(ETAGS) -o $@ $(srcdir)/*.[Ch]; \
 	echo 'Creating $@...done.'; \
 	else \
 	echo "'"'$@` is up to date.'; \
