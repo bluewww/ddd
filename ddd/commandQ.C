@@ -197,10 +197,15 @@ bool emptyCommandQueue()
 void gdb_command(const string& cmd, Widget origin, 
 		 OQCProc callback, void *data)
 {
-    if (cmd.length() == 1 && iscntrl(cmd[0]) || cmd == "yes" ||	cmd == "no")
+    if (cmd.length() == 1 && iscntrl(cmd[0]) || cmd == "no" || cmd == "yes")
     {
 	_gdb_command(cmd, origin, callback, data);
-	clearCommandQueue();
+
+	if (cmd != "yes")
+	{
+	    // Probably some canceling command - clear remaining commands
+	    clearCommandQueue();
+	}
 	return;
     }
 
