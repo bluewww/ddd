@@ -451,6 +451,17 @@ public:
 	return type() == GDB || type() == XDB || type() == DBX;
     }
 
+    // True if debugger supports temporary breakpoints
+    bool has_temporary_breakpoints() const
+    {
+	return type() == GDB || type() == XDB || has_when_command();
+    }
+
+    // True if debugger supports breakpoint conditions
+    bool has_breakpoint_conditions() const
+    {
+	return type() == GDB || type() == XDB || type() == DBX;
+    }
 
     // True if debugger dialog is traced on clog
     bool trace_dialog() const    { return _trace_dialog; }
