@@ -61,7 +61,9 @@ static Dimension preferred_height(Widget w)
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
     XtQueryGeometry(w, NULL, &size);
-    return size.height;
+    Dimension real_height;
+    XtVaGetValues(w, XmNheight, &real_height, NULL);
+    return max(size.height, real_height);
 }
 
 static void set_label_type(MMDesc items[], unsigned char label_type)
