@@ -147,8 +147,8 @@ Ddd*saveOptionsOnExit: off
 ! program.  To this string, DDD appends bourne shell commands which must be
 ! run in the execution window.
 ! The string `@FONT@' is replaced by the current DDD text font.
-Ddd*termCommand: @XTERM@ -bg 'grey90' -fg 'black' -cr 'DarkGreen' \
--fn '@FONT@' -title 'DDD: Execution Window' -e /bin/sh -c
+Ddd*termCommand: @XTERM@ -bg 'TEXT_BACKGROUND_COLOR' -fg 'black' \
+-cr 'DarkGreen' -fn '@FONT@' -title 'DDD: Execution Window' -e /bin/sh -c
 
 ! The command to invoke to select fonts.
 ! The string `@FONT@' is replaced by the current DDD default font.
@@ -841,78 +841,75 @@ END-OF-USER-PREFERENCES: here
 
 ! Rationale for color usage:
 !
-! * GREY is the default DDD background color, because this works well with
-!   all possible color schemes.  It also gives DDD a professional look.
+! * BACKGROUND_COLOR (grey) is the default DDD background color, because 
+!   this works well with all possible color schemes.  It also gives 
+!   DDD a professional look.
 !
-! * RED (actually, red4) is used for all objects associated with
+! * STOP_COLOR (red4) is used for all objects associated with
 !   stopping the debugged program (red traffic light).  This applies
 !   to breakpoints (when activated) as well as everything associated
 !   with signal handling (interrupt button, signal arrow).
 !
-! * GREEN (actually, DarkGreen) is used for all objects associated
+! * RUN_COLOR (DarkGreen) is used for all objects associated
 !   with running the debugged program (green traffic light).  This applies
 !   to the current execution position as well as to the run button, but
 !   also to the `GDB busy' indicator (meaning that the program is running.)
 !
-! * BLUE (actually, blue4) is used for objects associated with references
+! * DATA_COLOR (blue4) is used for objects associated with references
 !   (blue is the default color for links in popular WWW browswers).  This
 !   applies to pointers and edges in the data display.
 
-Ddd*foreground:			   black
-Ddd*background:			   grey
-Ddd*XmText.background:		   grey90
-Ddd*XmTextField.background:	   grey90
-Ddd*GraphEdit.background:	   grey90
-Ddd*XmList.background:		   grey90
-Ddd*graph_edit_panner.background:  grey
-Ddd*graph_edit_panner.foreground:  grey
-Ddd*graph_edit_panner.shadowColor: black
+Ddd*foreground:			   FOREGROUND_COLOR
+Ddd*background:			   BACKGROUND_COLOR
+Ddd*XmText.background:		   TEXT_BACKGROUND_COLOR
+Ddd*XmTextField.background:	   TEXT_BACKGROUND_COLOR
+Ddd*GraphEdit.background:	   TEXT_BACKGROUND_COLOR
+Ddd*XmList.background:		   TEXT_BACKGROUND_COLOR
+Ddd*graph_edit_panner.background:  BACKGROUND_COLOR
+Ddd*graph_edit_panner.foreground:  BACKGROUND_COLOR
+Ddd*graph_edit_panner.shadowColor: FOREGROUND_COLOR
 
 ! Red, green and blue buttons.
-Ddd*break.foreground:		   red4
-Ddd*quit.foreground:		   red4
-Ddd*send.foreground:		   red4
-Ddd*run.foreground:		   DarkGreen
-Ddd*run_again.foreground:	   DarkGreen
-! Ddd*dereference.foreground:	   blue4
+Ddd*break.foreground:		   STOP_COLOR
+Ddd*quit.foreground:		   STOP_COLOR
+Ddd*send.foreground:		   STOP_COLOR
+Ddd*run.foreground:		   RUN_COLOR
+Ddd*run_again.foreground:	   RUN_COLOR
+! Ddd*dereference.foreground:	   DATA_COLOR
 
 ! Highlight special dialogs
-Ddd*fatal_dialog*foreground:	   red4
-Ddd*terminated_dialog*foreground:  red4
-Ddd*exited_dialog*foreground:      red4
-Ddd*no_debugger_dialog*foreground: red4
+Ddd*fatal_dialog*foreground:	   STOP_COLOR
+Ddd*terminated_dialog*foreground:  STOP_COLOR
+Ddd*exited_dialog*foreground:      STOP_COLOR
+Ddd*no_debugger_dialog*foreground: STOP_COLOR
 
 ! Glyph colors
-Ddd*source_form_w.XmPushButton.background: grey90
-Ddd*code_form_w.XmPushButton.background:   grey90
+Ddd*plain_arrow.foreground:  RUN_COLOR
+Ddd*grey_arrow.foreground:   RUN_COLOR
+Ddd*signal_arrow.foreground: STOP_COLOR
 
-Ddd*plain_arrow.foreground:  DarkGreen
-Ddd*grey_arrow.foreground:   DarkGreen
-Ddd*signal_arrow.foreground: red4
+Ddd*plain_stop.foreground:   STOP_COLOR
+Ddd*plain_cond.foreground:   STOP_COLOR
+Ddd*plain_temp.foreground:   STOP_COLOR
 
-Ddd*plain_stop.foreground:   red4
-Ddd*plain_cond.foreground:   red4
-Ddd*plain_temp.foreground:   red4
-
-Ddd*grey_stop.foreground:    grey50
-Ddd*grey_cond.foreground:    grey50
-Ddd*grey_temp.foreground:    grey50
+Ddd*grey_stop.foreground:    DISABLED_COLOR
+Ddd*grey_cond.foreground:    DISABLED_COLOR
+Ddd*grey_temp.foreground:    DISABLED_COLOR
 
 ! Note: In Motif 1.2 and later, colors of dragged glyphs 
 ! (drag_...) are copied from the drag source.
-Ddd*drag_arrow.foreground:   DarkGreen
-Ddd*drag_stop.foreground:    red4
-Ddd*drag_cond.foreground:    red4
-Ddd*drag_temp.foreground:    red4
-
+Ddd*drag_arrow.foreground:   RUN_COLOR
+Ddd*drag_stop.foreground:    STOP_COLOR
+Ddd*drag_cond.foreground:    STOP_COLOR
+Ddd*drag_temp.foreground:    STOP_COLOR
 
 ! Graph colors
-Ddd*graph_edit.nodeColor:	   black
-Ddd*graph_edit.edgeColor:	   blue4
-Ddd*graph_edit.selectColor:	   black
-Ddd*graph_edit.gridColor:	   black
-Ddd*graph_edit.frameColor:	   grey50
-Ddd*graph_edit.outlineColor:	   grey50
+Ddd*graph_edit.nodeColor:	FOREGROUND_COLOR
+Ddd*graph_edit.edgeColor:	DATA_COLOR
+Ddd*graph_edit.selectColor:	FOREGROUND_COLOR
+Ddd*graph_edit.gridColor:	FOREGROUND_COLOR
+Ddd*graph_edit.frameColor:	DISABLED_COLOR
+Ddd*graph_edit.outlineColor:	DISABLED_COLOR
 
 ! For colors of nodes in the data display, see below.
 
@@ -1727,10 +1724,10 @@ What's new in this DDD release relative to previous releases.
 ! These colors are taken from Netscape.  The basic idea is that you might
 ! have a Netscape already running, so we won't use up another color cell.
 
-Ddd*tipLabel.background:  #ffffcc
-Ddd*tipLabel.foreground:  Black
-Ddd*tipRow.background:    Black
-Ddd*tipShell.borderColor: Black
+Ddd*tipLabel.background:  TIP_COLOR
+Ddd*tipLabel.foreground:  FOREGROUND_COLOR
+Ddd*tipRow.background:    FOREGROUND_COLOR
+Ddd*tipShell.borderColor: FOREGROUND_COLOR
 Ddd*tipShell.borderWidth: 1
 
 
@@ -4058,7 +4055,7 @@ Ddd*status_form.status.fillOnArm:	off
 Ddd*status_form.led.highlightThickness: 0
 Ddd*status_form.led.labelString:
 Ddd*status_form.led.visibleWhenOff:	off
-Ddd*status_form.led.selectColor:	DarkGreen
+Ddd*status_form.led.selectColor:	RUN_COLOR
 Ddd*status_form.led.tipString:	\
 @rm @GDB@ status
 Ddd*status_form.led.documentationString: \

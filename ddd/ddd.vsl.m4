@@ -1,7 +1,9 @@
 // $Id$
 // VSL functions for DDD graph display
+// Generated automatically from ddd.vsl.m4 and colors.m4 by M4.
+include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))dnl
 
-// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -43,17 +45,17 @@ shadow(box, thickness) =
 shadow(box) = shadow(box, 1);
 
 // Colors
-display_color(box)   = color(box, "black", "white");
-title_color(box)     = color(box, "black");
-disabled_color(box)  = color(box, "white", "grey50");
-simple_color(box)    = color(box, "black");
-text_color(box)      = color(box, "black");
-pointer_color(box)   = color(box, "blue4");
-struct_color(box)    = color(box, "black");
-list_color(box)      = color(box, "black");
-array_color(box)     = color(box, "blue4");
-reference_color(box) = color(box, "blue4");
-changed_color(box)   = color(box, "black", "#ffffcc");
+display_color(box)   = color(box, "FOREGROUND_COLOR", "DISPLAY_COLOR");
+title_color(box)     = color(box, "FOREGROUND_COLOR");
+disabled_color(box)  = color(box, "DISPLAY_COLOR", "DISABLED_COLOR");
+simple_color(box)    = color(box, "FOREGROUND_COLOR");
+text_color(box)      = color(box, "FOREGROUND_COLOR");
+pointer_color(box)   = color(box, "DATA_COLOR");
+struct_color(box)    = color(box, "FOREGROUND_COLOR");
+list_color(box)      = color(box, "FOREGROUND_COLOR");
+array_color(box)     = color(box, "DATA_COLOR");
+reference_color(box) = color(box, "DATA_COLOR");
+changed_color(box)   = color(box, "FOREGROUND_COLOR", "CHANGED_COLOR");
 
 // The title
 title (disp_nr, name) -> 
@@ -100,11 +102,11 @@ dereferenced_pointer_value (value) ->
 
 // Collapsed array
 collapsed_array () -> 
-  array_color(vcenter(rm("[...]") & hfill()));
+  array_color(vcenter(rm("\133...\135") & hfill()));
 
 // Empty array
 empty_array () -> 
-  array_color(vcenter(rm("[]") & hfill()));
+  array_color(vcenter(rm("\133\135") & hfill()));
 
 // Vertical array
 vertical_array (...) -> 

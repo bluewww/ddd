@@ -1014,7 +1014,7 @@ SYMS = $(ddd).syms $(ddd_canonical).syms
 PROG_STUFF       = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
 	 	   acconfig.h acspecial.h stamp-h.in config.h \
 		   $(srcdir)/tips.m4 $(srcdir)/Ddd.in Ddd.ad.h host.h \
-		   ddd.vsl.h vr.h version.h configinfo.C \
+		   ddd.vsl ddd.vsl.h vr.h version.h configinfo.C \
 		   ddd.1 ddd.man.txt ddd.man.txt.gz ddd.man.txt.gz.C \
                    COPYING.gz.C NEWS.gz.C xlibdir.C eps-code.h .gdbinit
 
@@ -1284,7 +1284,8 @@ FORCE:
 Ddd.ad.h: Ddd $(srcdir)/ad2c.sed
 	$(AD2C) Ddd > $@~ && $(MV) $@~ $@
 
-$(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/tips.m4 $(srcdir)/macros.m4 
+$(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/tips.m4 \
+	$(srcdir)/macros.m4 $(srcdir)/colors.m4 
 	( \
 	( \
 		echo "define(srcdir, \`$(srcdir)')dnl"; \
@@ -1301,9 +1302,15 @@ $(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/tips.m4 $(srcdir)/macros.m4
 
 VSL_CPP = $(CPP) -I$(srcdir)/../vsllib -I$(prefix)/lib/vsl-include
 ddd.vsl.h: ddd.vsl $(srcdir)/vsl2c.sed
-	$(CAT) $(srcdir)/ddd.vsl > tmp.c
+	$(CAT) ddd.vsl > tmp.c
 	$(VSL_CPP) tmp.c | $(VSL2C) > ddd.vsl.h
 	$(RM) tmp.c
+
+ddd.vsl: $(srcdir)/ddd.vsl.m4 $(srcdir)/colors.m4
+	( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/ddd.vsl.m4)dnl" \
+	) | $(M4) > $@~ && $(MV) $@~ $@
 
 
 ## The TIPS files.

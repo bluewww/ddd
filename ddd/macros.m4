@@ -29,26 +29,7 @@ dnl
 dnl M4 setup
 dnl --------
 dnl
-dnl Use `[' and `]' for quoting; the default quotes ``' and `'' 
-dnl are used too often within DDD resources.
-changequote()changequote([,])dnl
-dnl
-dnl Disable comment characters
-ifdef([changecom],changecom)dnl
-dnl
-dnl
-dnl Undefine some disturbing macros.
-dnl This works for BSD M4, SYSV M4, and GNU M4.
-undefine([builtin])dnl
-undefine([eval])dnl
-undefine([file])dnl
-undefine([format])dnl
-undefine([gnu])dnl
-undefine([include])dnl
-undefine([index])dnl
-undefine([line])dnl
-undefine([shift])dnl
-undefine([unix])dnl
+include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))dnl
 dnl
 dnl
 dnl Typesetting
@@ -164,7 +145,6 @@ define([ONE_HALF], [\275])dnl
 dnl
 dnl TIMES is the x symbol.
 define([TIMES], [\327])dnl
-dnl
 dnl
 dnl DDD is defined as `@DDD@', which `configure' replaces by `DDD' again
 dnl Same applies to `Ddd' and `ddd'.  This allows `configure' to set up
