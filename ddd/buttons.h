@@ -36,8 +36,11 @@
 #include "strclass.h"
 #include <X11/Intrinsic.h>
 
-// Button creator
+// Create a button row named NAME with buttons as specified in LIST
 Widget make_buttons(Widget parent, const string& name, const string& list);
+
+// Add buttons as specified in LIST to BUTTONS
+void add_buttons(Widget buttons, const string& list);
 
 #endif // _DDD_buttons_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

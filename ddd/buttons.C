@@ -98,6 +98,25 @@ Widget make_buttons(Widget parent, const string& name,
 	buttons = verify(XmCreateRowColumn(parent, name, 0, 0));
     }
 
+    add_buttons(buttons, button_list);
+
+    DefaultHelpText = gdbDefaultHelp;
+
+    XtManageChild(buttons);
+
+    XtWidgetGeometry size;
+    size.request_mode = CWHeight;
+    XtQueryGeometry(buttons, NULL, &size);
+    XtVaSetValues(buttons,
+		  XmNpaneMaximum, size.height,
+		  XmNpaneMinimum, size.height,
+		  NULL);
+
+    return buttons;
+}
+
+void add_buttons(Widget buttons, const string& button_list)
+{
     int colons = button_list.freq(':') + 1;
     string *commands = new string[colons];
     split(button_list, commands, colons, ':');
@@ -158,21 +177,10 @@ Widget make_buttons(Widget parent, const string& name,
 	else if (name == "Reload")
 	    callback = gdbReloadSourceCB;
 
+	// We remove all callbacks to avoid popping down DialogShells
+	XtRemoveAllCallbacks(button, XmNactivateCallback);
 	XtAddCallback(button, XmNactivateCallback, callback,
 		      (XtPointer)XtNewString((String)command));
     }
     delete[] commands;
-    DefaultHelpText = gdbDefaultHelp;
-
-    XtManageChild(buttons);
-
-    XtWidgetGeometry size;
-    size.request_mode = CWHeight;
-    XtQueryGeometry(buttons, NULL, &size);
-    XtVaSetValues(buttons,
-		  XmNpaneMaximum, size.height,
-		  XmNpaneMinimum, size.height,
-		  NULL);
-
-    return buttons;
 }
