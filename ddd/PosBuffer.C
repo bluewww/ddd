@@ -33,10 +33,6 @@ char PosBuffer_rcsid[] =
 #pragma implementation
 #endif
 
-//-----------------------------------------------------------------------------
-// Implementation von PosBuffer.h
-//-----------------------------------------------------------------------------
-
 // Misc includes
 #include "assert.h"
 #include "cook.h"
@@ -49,9 +45,8 @@ char PosBuffer_rcsid[] =
 #include "GDBAgent.h"
 #include "SourceView.h"
 
-// Filter all lines from ANSWER beginning with LINE
-// This is required to suppress the line number output
-// after a `stopping in' message.
+// Filter all lines from ANSWER beginning with LINE.  This is required
+// to suppress the line number output after a `stopping in' message.
 static void filter_line(string& answer, int line)
 {
     if (line <= 0)
@@ -68,6 +63,7 @@ static void filter_line(string& answer, int line)
     } while (pos > 0);
 }
 
+// Fetch position from GDB output ANSWER.
 void PosBuffer::filter (string& answer)
 {
     if (gdb->type() == GDB)
@@ -104,10 +100,10 @@ void PosBuffer::filter (string& answer)
 	    recompiled = true;
     }
 
-    // Positionsangabe abfangen und puffern, Rest zurueckgeben
+    // Fetch and store position info, return remainder
     switch (already_read) {
     case PosComplete:
-	// Nichts mehr zu filtern
+	// Nothing more to filter
 	assert (pos_buffer != "");
 	assert (answer_buffer == "");
 
@@ -239,8 +235,7 @@ void PosBuffer::filter (string& answer)
 		    int index_p = answer.index ("\032");
 
 		    if (index_p == int(answer.length()) - 1) {
-			// moegl. Beginn einer Positionsangabe
-			// am Ende von answer
+			// Possible begin of position info at end of ANSWER
 			already_read = PosPart;
 			answer_buffer = "\032";
 			answer = answer.before (index_p);
@@ -248,14 +243,29 @@ void PosBuffer::filter (string& answer)
 			return;
 		    }
 
-		    // nothing found
+		    // Handle erroneous `info line' output like
+		    // `Line number 10 is out of range for "t1.f".'
+		    // At least get the file name.
+		    static regex rxout_of_range(
+	                "Line number [0-9]+ is out of range for ");
+		    index_p = answer.index(rxout_of_range);
+		    if (index_p >= 0)
+		    {
+			string file = answer.after('\"', index_p);
+			file = file.before('\"');
+			answer_buffer = file + ":1";
+			already_read = PosComplete;
+			return;
+		    }
+
+		    // Nothing found
 		    return;
 		}
-		// Antwort enthaelt Positionsangabe
+		// ANSWER contains position info
 		int index2 = answer.index ("\n", index1);
 
 		if (index2 == -1) {
-		    // keine komplette Positionsangabe
+		    // Position info is incomplete
 		    already_read = PosPart;
 		    answer_buffer = answer.from (index1);
 		    answer = answer.before (index1);
@@ -264,7 +274,7 @@ void PosBuffer::filter (string& answer)
 		}
 		assert (index1 < index2);
 
-		// Positionsangabe komplett
+		// Position info is complete
 		pos_buffer = answer.at (index1 + 2, index2 - (index1 + 2));
 		int last_colon = pos_buffer.index(':', -1);
 		pc_buffer = pos_buffer.after(last_colon);
@@ -451,7 +461,7 @@ void PosBuffer::filter (string& answer)
 	break;
 
     default:
-	// Fehler!
+	// This can't happen.
 	assert(0);
 	break;
     }
@@ -473,7 +483,7 @@ string PosBuffer::answer_ended ()
 	return "";
 
     default:
-	// Fehler!
+	// This can't happen.
 	assert(0);
 	break;
     }
