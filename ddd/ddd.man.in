@@ -1040,6 +1040,17 @@ refers to program state will also leave historic mode immediately by
 applying to the current program state instead.  For instance,
 `\fBUp\fR' leaves historic mode immediately and selects an alternate
 frame in the restored current program state.
+.PP
+If you want to see the history of a specific variable, as recorded
+during program stops, you can enter the \s-1@DDD@\s+1 command
+.sp
+.br
+  \fBgraph history \fIname\fR
+.sp
+.br
+This returns a list of all previously recorded values of the variable
+\fIname\fR, using array syntax.  Note that \fIname\fR must have been
+displayed at earlier program stops in order to record values.
 .\"
 .\"
 .\"
@@ -2047,6 +2058,14 @@ line.  You can change this initial alignment by selecting the scalar
 display, followed by `\fBRotate ()\fR'.
 .\"
 .\"
+.SS "Plotting Display Histories"
+.\"
+At each program stop, \s-1@DDD@\s+1 records the values of all
+displayed variables.  These \fIdisplay histories\fR can be plotted,
+too.  The menu item `\fBPlot\(->Plot history of ()\fR' creates a plot
+that shows all previously recorded values of the selected display.
+.\"
+.\"
 .SS "Printing Plots"
 .\"
 If you want to print the plot, select `\fBFile\(->Print Plot\fR'.
@@ -2089,8 +2108,20 @@ directly.  Each command entered at the `\fBgnuplot>\fR' prompt is
 passed to Gnuplot, followed by a Gnuplot `\fBreplot\fR' command to
 update the view.  This is useful for advanced Gnuplot tasks.
 .PP
-For instance, the following sequence of Gnuplot commands saves the
-plot in \s-1L\s-1A\s+1T\dE\uX\s+1 format:
+Here's a simple example.  The Gnuplot command `\fBset xrange
+[\fIxmin\fB:\fIxmax\fB]\fR' sets the horizontal range that will be
+displayed to \fIxmin\fR...\fIxmax\fR.  To plot only the elements
+10 to 20, enter:
+.br
+.sp
+  gnuplot>\fBset xrange [10:20]\fR
+.sp
+.br
+After each command entered, DDD adds a `\fBreplot\fR' command, such
+that the plot is updated automatically.
+.PP
+Here's a more complex example.  The following sequence of Gnuplot
+commands saves the plot in \s-1L\s-1A\s+1T\dE\uX\s+1 format:
 .br
 .sp
   gnuplot>\fBset output "plot.tex"\fR # Set the output filename
@@ -2098,8 +2129,9 @@ plot in \s-1L\s-1A\s+1T\dE\uX\s+1 format:
   gnuplot>\fBset term x11\fR          # Show original picture again
 .sp
 .br
-Note that a `\fBreplot\fR' command after `\fBset term latex\fR' is not 
-required, since it is automatically added by \s-1@DDD@\s+1.
+Due to the implicit `\fBreplot\fR' command, the output is
+automatically written to `\fBplot.tex\fR' after the `\fBset term
+latex\fR' command.
 .PP
 The dialog keeps track of the commands entered; use the arrow keys to
 restore previous commands.  Gnuplot error messages (if any) are also
@@ -4133,7 +4165,7 @@ by a letter or `\fB?\fR') insert the given control character.
 .br
 .IP \(bu 2
 The string `\fB()\fR' is replaced by the current contents 
-of the argument field `()'.
+of the argument field `\fB()\fR'.
 .br
 .IP \(bu 2
 The string specified in the `\fBlabelDelimiter\fR' resource (usually
@@ -5343,7 +5375,7 @@ If \fIcommand\fR has the form '\fIname\fB...\fR', insert \fIname\fR,
 followed by a space, in the debugger console.
 .IP \(bu 2
 All occurrences of `\fB()\fR' are replaced by the current contents of
-the argument field `()'.
+the argument field `\fB()\fR'.
 .br
 .RE
 .TP
