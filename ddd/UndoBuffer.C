@@ -555,7 +555,9 @@ void UndoBuffer::undo()
     // Undo most recent command
     process_command(history_position - 1, -1);
 
-    if (history_position > 1)
+    if (history_position > 1 && 
+	(showing_earlier_state() || 
+	 history[history_position - 1].has_exec_pos()))
     {
 	// Restore previous state
 	process_status(history_position - 2, -1);
@@ -578,7 +580,9 @@ void UndoBuffer::redo()
 
     // Redo next command and restore state
     process_command(history_position, 1);
-    process_status(history_position, 1);
+
+    if (showing_earlier_state())
+	process_status(history_position, 1);
     
     history_position++;
 
@@ -668,17 +672,18 @@ void UndoBuffer::done()
     log();
     assert(OK());
 
-    bool set = false;
+    // Check whether we're showing an earlier state
+    bool earlier_state = false;
     for (int i = history_position; i < history.size(); i++)
     {
 	if (history[i].has_exec_pos())
 	{
-	    set = true;		// later exec pos
+	    earlier_state = true;
 	    break;
 	}
     }
 
-    showing_earlier_state(set);
+    showing_earlier_state(earlier_state);
     refresh_buttons();
 }
 
