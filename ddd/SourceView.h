@@ -406,6 +406,9 @@ public:
     // Return source cursor position in <source>:<line> format.
     static string line_of_cursor();
 
+    // Return file cursor position in <file>:<line> format.
+    static string file_of_cursor();
+
     // Callbacks for menu bar
     static void EditBreakpointsCB(Widget, XtPointer, XtPointer);
     static void ViewStackFramesCB(Widget, XtPointer, XtPointer);

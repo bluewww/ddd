@@ -680,7 +680,7 @@ void SourceView::text_popup_print_refCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command(gdb->print_command("*(" + *word_ptr + ")"), w);
+    gdb_command(gdb->print_command(gdb->dereferenced_expr(*word_ptr)), w);
 }
 
 
@@ -700,7 +700,7 @@ void SourceView::text_popup_disp_refCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command("graph display *(" + *word_ptr + ")", w);
+    gdb_command("graph display " + gdb->dereferenced_expr(*word_ptr), w);
 }
 
 // ***************************************************************************
@@ -1308,9 +1308,9 @@ void SourceView::reload()
     if (current_file_name == "")
 	return;
 
-    string pos  = line_of_cursor();
-    string line = pos.after(':');
-    string file = full_path(current_file_name);
+    string file = file_of_cursor();
+    string line = file.after(':');
+    file        = file.before(':');
 
     StatusDelay delay("Reloading " + quote(file));
 
@@ -3037,6 +3037,12 @@ string SourceView::line_of_cursor()
 	return "";
 
     return current_source_name() + ":" + itostring(line_nr);
+}
+
+string SourceView::file_of_cursor()
+{
+    string pos = line_of_cursor();
+    return full_path(current_file_name) + pos.from(':');
 }
 
 
