@@ -68,8 +68,10 @@ string user_command(const string& s);
 // The DispNode class
 //-----------------------------------------------------------------------------
 
-class DispNode 
-{
+class DispNode: public BoxGraphNode {
+public:
+    DECLARE_TYPE_INFO
+
 private:
     int           mydisp_nr;	      // Display number
     string        myname;	      // Display expression
@@ -83,7 +85,6 @@ private:
     bool          mydeferred;	      // Flag: is display deferred?
     int           myclustered;	      // Flag: is display clustered?
     bool          myconstant;	      // Flag: is display constant?
-    BoxGraphNode* mynodeptr;	      // Associated graph node 
     DispValue*    disp_value;	      // Associated value
     DispValue*    myselected_value;   // Selected value within DISP_VALUE
     DispBox*      disp_box;	      // Associated box within DISP_VALUE
@@ -97,14 +98,17 @@ public:
 protected:
     static HandlerList handlers;
     static class TagBox *findTagBox(const Box *box, DispValue *dv);
+    
+    virtual string str() const { return value_str(); }
 
 private:
-    DispNode(const DispNode&)
-	: mydisp_nr(0), myname(), myaddr(), myscope(), mydepends_on(), mystr(),
+    DispNode(const DispNode& node)
+	: BoxGraphNode(node),
+	  mydisp_nr(0), myname(), myaddr(), myscope(), mydepends_on(), mystr(),
 	  myenabled(false), myactive(false), saved_node_hidden(false),
-	  mydeferred(false), myclustered(0), myconstant(false), 
-	  mynodeptr(0), disp_value(0), 
-	  myselected_value(0), disp_box(0), mylast_change(0), alias_of(0)
+	  mydeferred(false), myclustered(0), myconstant(false),
+	  disp_value(0), myselected_value(0), disp_box(0),
+	  mylast_change(0), alias_of(0)
     {
 	assert(0);
     }
@@ -154,14 +158,9 @@ public:
     // Return `true' if this expression can be aliased
     bool alias_ok() const;
 
-    BoxGraphNode* nodeptr() const { return mynodeptr; }
-    const Box*    box()     const { return mynodeptr->box(); }
-    DispValue*    value()   const { return disp_value; }
-    DispValue*    selected_value() const { return myselected_value; }
-    const string& str()     const { return mystr; }
-
-    bool& selected()                    { return mynodeptr->selected(); }
-    void moveTo(const BoxPoint& newPos) { mynodeptr->moveTo(newPos); }
+    DispValue* value()          const { return disp_value; }
+    DispValue* selected_value() const { return myselected_value; }
+    const string& value_str()   const { return mystr; }
 
     // Handlers
     static void addHandler (unsigned    type,

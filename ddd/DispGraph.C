@@ -169,14 +169,14 @@ void DispGraph::callHandlers ()
 // ***************************************************************************
 // new_disp_nr bei Erfolg
 //
-int DispGraph::insert(int new_disp_nr, DispNode* new_dn, int depends_on)
+int DispGraph::insert(int new_disp_nr, DispNode *new_dn, int depends_on)
 {
     if (idMap.contains(new_disp_nr))
 	return 0;
     if (idMap.length() == 0)
 	handlers.call(DispGraph_Empty, this, (void*)false);
 
-    *this += new_dn->nodeptr();
+    *this += new_dn;
 
     if (depends_on != 0)
     {
@@ -187,7 +187,7 @@ int DispGraph::insert(int new_disp_nr, DispNode* new_dn, int depends_on)
 	if (a != "")
 	    ann = new BoxEdgeAnnotation(DispBox::eval("annotation", a));
 
-	*this += new LineGraphEdge(old_dn->nodeptr(), new_dn->nodeptr(), ann);
+	*this += new LineGraphEdge(old_dn, new_dn, ann);
     }
     assert (Graph::OK());
 
@@ -310,7 +310,7 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 	//
 	// NODE -> (new)
 
-	BoxGraphNode *node = idMap.get(depends_on)->nodeptr();
+	BoxGraphNode *node = idMap.get(depends_on);
 	// clog << "node           at " << node->pos() << "\n";
 	pos = node->pos() + offset;
 
@@ -332,7 +332,7 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 		child = child->firstFrom()->to();
 	    if (child->hidden())
 		continue;
-	    if (child == new_node->nodeptr())
+	    if (child == new_node)
 		continue;
 	    if (child->pos() == BoxPoint())
 		continue;
@@ -483,12 +483,12 @@ bool DispGraph::del (int disp_nr)
 
 	VarArray<GraphNode *> hints;
 
-	find_hints_from(dn->nodeptr(), hints);
-	find_hints_to(dn->nodeptr(), hints);
+	find_hints_from(dn, hints);
+	find_hints_to(dn, hints);
 	for (int i = 0; i < hints.size(); i++)
 	    *this -= hints[i];
 	    
-	*this -= dn->nodeptr();
+	*this -= dn;
 	delete dn;
 	idMap.del (disp_nr);
 
@@ -509,13 +509,10 @@ bool DispGraph::del (int disp_nr)
 }
 
 // ***************************************************************************
-int DispGraph::get_nr (BoxGraphNode *nodeptr) const
+int DispGraph::get_nr (BoxGraphNode *node) const
 {
-    MapRef ref;
-    for (int k = idMap.first_key(ref); k != 0; k = idMap.next_key(ref))
-	if (idMap.get(k)->nodeptr() == nodeptr)
-	    return k;
-    return 0;
+    DispNode *dn = ptr_cast(DispNode, node);
+    return dn == 0 ? 0 : dn->disp_nr();
 }
 
 
@@ -699,20 +696,18 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
 	return false;
     }
 
-    GraphNode *node = dn->nodeptr();
-
-    if (node->hidden() && dn->alias_of == disp_nr)
+    if (dn->hidden() && dn->alias_of == disp_nr)
     {
 	// Already hidden as alias of DISP_NR
 	return false;
     }
 
-    if (node->hidden())
+    if (dn->hidden())
 	unalias(alias_disp_nr);
 
     // Hide alias
-    node->hidden() = true;
-    dn->alias_of   = disp_nr;
+    dn->hidden() = true;
+    dn->alias_of = disp_nr;
 
     // Clear any special selections in this alias
     dn->select();
@@ -725,7 +720,7 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
     VarArray<EdgeAnnotation *> to_annotations;
     int i;
 
-    for (edge = node->firstFrom(); edge != 0; edge = node->nextFrom(edge))
+    for (edge = dn->firstFrom(); edge != 0; edge = dn->nextFrom(edge))
     {
 	GraphEdge *e = edge;
 	while (e->to()->isHint())
@@ -741,7 +736,7 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
 	    anno = ge->annotation();
 	to_annotations += anno;
     }
-    for (edge = node->firstTo(); edge != 0; edge = node->nextTo(edge))
+    for (edge = dn->firstTo(); edge != 0; edge = dn->nextTo(edge))
     {
 	GraphEdge *e = edge;
 	while (e->from()->isHint())
@@ -759,14 +754,14 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
     }
 
     for (i = 0; i < to_nodes.size(); i++)
-	add_alias_edge(w, alias_disp_nr, d0->nodeptr(), 
-		       to_nodes[i], to_annotations[i]);
+	add_alias_edge(w, alias_disp_nr, 
+		       d0, to_nodes[i], to_annotations[i]);
     for (i = 0; i < from_nodes.size(); i++)
-	add_alias_edge(w, alias_disp_nr, from_nodes[i], d0->nodeptr(), 
-		       from_annotations[i]);
+	add_alias_edge(w, alias_disp_nr, 
+		       from_nodes[i], d0, from_annotations[i]);
 
     // Propagate `selected' state to hints
-    for (node = firstNode(); node != 0; node = nextNode(node))
+    for (GraphNode *node = firstNode(); node != 0; node = nextNode(node))
     {
 	if (!node->isHint())
 	    continue;
@@ -789,12 +784,11 @@ bool DispGraph::unalias(int alias_disp_nr)
     if (dn == 0 || !dn->active() || dn->clustered())
 	return false;
 
-    GraphNode *node = dn->nodeptr();
-    if (!node->hidden())
+    if (!dn->hidden())
 	return false;
 
     // Unsuppress display
-    node->hidden() = false;
+    dn->hidden() = false;
 
     // Delete all alias edges associated with this node
     VoidArray kill_edges;
@@ -821,7 +815,7 @@ bool DispGraph::unalias(int alias_disp_nr)
     }
 
     // Unsuppress remaining (ordinary) hints
-    for (edge = node->firstFrom(); edge != 0; edge = node->nextFrom(edge))
+    for (edge = dn->firstFrom(); edge != 0; edge = dn->nextFrom(edge))
     {
 	GraphEdge *e = edge;
 	while (e->to()->isHint())
@@ -830,7 +824,7 @@ bool DispGraph::unalias(int alias_disp_nr)
 	    e = e->to()->firstFrom();
 	}
     }
-    for (edge = node->firstTo(); edge != 0; edge = node->nextTo(edge))
+    for (edge = dn->firstTo(); edge != 0; edge = dn->nextTo(edge))
     {
 	GraphEdge *e = edge;
 	while (e->from()->isHint())
@@ -1144,7 +1138,7 @@ bool DispGraph::make_active(int disp_nr)
     {
 	dn->make_active();
 
-	if (dn->nodeptr()->hidden())
+	if (dn->hidden())
 	{
 	    // Redisplay all alias edges associated with this node
 	    VoidArray hide_edges;
@@ -1180,11 +1174,11 @@ bool DispGraph::refresh_titles() const
     for (DispNode *dn = first(ref); dn != 0; dn = next(ref))
     {
 	bool is_dependent = false;
-	for (GraphEdge *e = dn->nodeptr()->firstTo();
+	for (GraphEdge *e = dn->firstTo();
 	     !is_dependent && e != 0;
-	     e = dn->nodeptr()->nextTo(e))
+	     e = dn->nextTo(e))
 	{
-	    if (e->from() == dn->nodeptr())
+	    if (e->from() == dn)
 		continue;		// Self edge
 	    if (ptr_cast(AliasGraphEdge, e) != 0)
 		continue;		// Alias edge

@@ -72,7 +72,8 @@ char DataDisp_rcsid[] =
 #include "DispGraph.h"
 #include "DispNode.h"
 #include "DispBox.h"
-#include "GraphEdit.h"		// XtNgraph
+#include "GraphEdit.h"
+#include "Graph.h"
 #include "HistoryD.h"
 #include "IntIntAA.h"
 #include "LessTifH.h"
@@ -776,22 +777,9 @@ void DataDisp::select_with_all_descendants(GraphNode *node)
 {
     bool selected = node->selected();
 
-    BoxGraphNode *bn = ptr_cast(BoxGraphNode, node);
-    if (bn != 0)
-    {
-	// FIXME: this is O(n^2)
-	MapRef ref;
-	for (DispNode* dn = disp_graph->first(ref); 
-	     dn != 0;
-	     dn = disp_graph->next(ref))
-	{
-	    if (dn->nodeptr() == node)
-	    {
-		dn->select(0);
-		break;
-	    }
-	}
-    }
+    DispNode *dn = ptr_cast(DispNode, node);
+    if (dn != 0)
+	dn->select(0);
 
     if (!selected)
     {
@@ -807,22 +795,9 @@ void DataDisp::select_with_all_ancestors(GraphNode *node)
 {
     bool selected = node->selected();
 
-    BoxGraphNode *bn = ptr_cast(BoxGraphNode, node);
-    if (bn != 0)
-    {
-	// FIXME: this has O(n^2)
-	MapRef ref;
-	for (DispNode* dn = disp_graph->first(ref); 
-	     dn != 0;
-	     dn = disp_graph->next(ref))
-	{
-	    if (dn->nodeptr() == node)
-	    {
-		dn->select(0);
-		break;
-	    }
-	}
-    }
+    DispNode *dn = ptr_cast(DispNode, node);
+    if (dn != 0)
+	dn->select(0);
 
     if (!selected)
     {
@@ -857,8 +832,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer client_data, XtPointer)
 
 	    // Select all ancestors
 	    GraphEdge *edge;
-	    for (edge = dn->nodeptr()->firstTo();
-		 edge != 0; edge = dn->nodeptr()->nextTo(edge))
+	    for (edge = dn->firstTo(); edge != 0; edge = dn->nextTo(edge))
 	    {
 		GraphNode *ancestor = edge->from();
 		while (ancestor->isHint())
@@ -868,8 +842,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer client_data, XtPointer)
 	    }
 
 	    // Select all descendants
-	    for (edge = dn->nodeptr()->firstFrom();
-		 edge != 0; edge = dn->nodeptr()->nextFrom(edge))
+	    for (edge = dn->firstFrom(); edge != 0; edge = dn->nextFrom(edge))
 	    {
 		GraphNode *descendant = edge->to();
 		while (descendant->isHint())
@@ -982,7 +955,7 @@ void DataDisp::shortcutCB(Widget w, XtPointer client_data, XtPointer)
     DispValue *disp_value_arg = selected_value();
     if (disp_node_arg != 0 
 	&& disp_value_arg != 0
-	&& !disp_node_arg->nodeptr()->hidden())
+	&& !disp_node_arg->hidden())
     {
 	if (gdb->recording())
 	    depends_on = disp_node_arg->name();
@@ -1133,7 +1106,7 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
     {
 	all++;
 
-	if (!dn->nodeptr()->hidden())
+	if (!dn->hidden())
 	    visible++;
 
 	if (dn->selected())
@@ -1437,7 +1410,7 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
     DispValue *disp_value_arg = selected_value();
     if (disp_node_arg == 0 
 	|| disp_value_arg == 0
-	|| disp_node_arg->nodeptr()->hidden())
+	|| disp_node_arg->hidden())
     {
 	newCB(w, client_data, call_data);
 	return;
@@ -1771,7 +1744,6 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
 {
     DispNode*  disp_node   = 0;
     DispValue* disp_value  = 0;
-    BoxGraphNode *disp_bgn = 0;
 
     bool was_selected = false;
 
@@ -1781,8 +1753,7 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
 	disp_node = disp_graph->get (disp_nr);
 	disp_value = (DispValue *)disp_node->box()->data(p);
 
-	disp_bgn = disp_node->nodeptr();
-	was_selected = disp_bgn->selected() && disp_value == 0;
+	was_selected = disp_node->selected() && disp_value == 0;
 
 	switch (mode)
 	{
@@ -1794,9 +1765,9 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
 	    {
 		// Add another value in this node.  We can't do this,
 		// so toggle the entire node.
-		disp_bgn->selected() = false;
+		disp_node->selected() = false;
 		disp_node->select(0);
-		graphEditRedrawNode(graph_edit, disp_bgn);
+		graphEditRedrawNode(graph_edit, disp_node);
 		break;
 	    }
 	    // FALL THROUGH
@@ -1805,7 +1776,7 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
 	    if (disp_value != disp_node->selected_value())
 	    {
 		disp_node->select(disp_value);
-		graphEditRedrawNode(graph_edit, disp_bgn);
+		graphEditRedrawNode(graph_edit, disp_node);
 	    }
 	    break;
 	}
@@ -1821,22 +1792,21 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
 	{
 	    if (dn != disp_node)
 	    {
-		BoxGraphNode *node = dn->nodeptr();
 		bool redraw = false;
 
 		if (!was_selected)
 		{
 		    if (!redraw)
-			redraw = node->selected();
-		    dn->nodeptr()->selected() = false;
+			redraw = dn->selected();
+		    dn->selected() = false;
 		}
 
 		if (!redraw)
-		    redraw = (node->highlight() != 0);
+		    redraw = (dn->highlight() != 0);
 		dn->select(0);
 
 		if (redraw)
-		    graphEditRedrawNode(graph_edit, node);
+		    graphEditRedrawNode(graph_edit, dn);
 	    }
 	}
     }
@@ -1906,7 +1876,7 @@ void DataDisp::refresh_args(bool update_arg)
 	    {
 		dn->selected() = true;
 		dn->select();
-		graphEditRedrawNode(graph_edit, dn->nodeptr());
+		graphEditRedrawNode(graph_edit, dn);
 	    }
 	}
     }
@@ -1928,12 +1898,11 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	     dn != 0;
 	     dn = disp_graph->next(ref))
 	{
-	    BoxGraphNode *node = dn->nodeptr();
-	    bool redraw = (node->highlight() != 0);
+	    bool redraw = (dn->highlight() != 0);
 
 	    dn->select(0);
 	    if (redraw)
-		graphEditRedrawNode(graph_edit, node);
+		graphEditRedrawNode(graph_edit, dn);
 	}
     }
 
@@ -2336,7 +2305,7 @@ bool DataDisp::get_state(ostream& os,
 	// Write position
 	if (include_position)
 	{
-	    BoxPoint pos = dn->nodeptr()->pos();
+	    BoxPoint pos = dn->pos();
 	    if (pos.isValid())
 		os << " at " << pos;
 	}
@@ -2349,8 +2318,8 @@ bool DataDisp::get_state(ostream& os,
 	}
 	else
 	{
-	    for (GraphEdge *edge = dn->nodeptr()->firstTo();
-		 edge != 0; edge = dn->nodeptr()->nextTo(edge))
+	    for (GraphEdge *edge = dn->firstTo();
+		 edge != 0; edge = dn->nextTo(edge))
 	    {
 		BoxGraphNode *ancestor = ptr_cast(BoxGraphNode, edge->from());
 		if (ancestor != 0)
@@ -2484,10 +2453,10 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	if (select != dn->selected())
 	{
 	    dn->selected() = select;
-	    graphEditRedrawNode(graph_edit, dn->nodeptr());
+	    graphEditRedrawNode(graph_edit, dn);
 	}
 
-	if (dn->nodeptr()->hidden())
+	if (dn->hidden())
 	{
 	    // Synchronize hint nodes with this alias node
 	    for (GraphNode *node = disp_graph->firstNode();
@@ -2527,7 +2496,7 @@ void DataDisp::UpdateDisplayEditorSelectionCB(Widget, XtPointer, XtPointer)
 		if (node->selected() != dn->selected())
 		{
 		    dn->selected() = node->selected();
-		    graphEditRedrawNode(graph_edit, dn->nodeptr());
+		    graphEditRedrawNode(graph_edit, dn);
 		}
 	    }
 	}
@@ -3700,7 +3669,7 @@ void DataDisp::add_aliases(IntArray& display_nrs)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->nodeptr()->hidden())
+	if (dn->hidden())
 	{
 	    bool have_alias = false;
 	    bool need_alias = false;
@@ -4182,11 +4151,11 @@ void DataDisp::process_info_display(string& info_display_answer,
 	    DispNode *dn = disp_graph->get(deleted_displays[i]);
 
 	    // Fetch old position and dependent info
-	    BoxPoint pos = dn->nodeptr()->pos();
+	    BoxPoint pos = dn->pos();
 
 	    string depends_on = "";
-	    for (GraphEdge *edge = dn->nodeptr()->firstTo();
-		 edge != 0; edge = dn->nodeptr()->nextTo(edge))
+	    for (GraphEdge *edge = dn->firstTo();
+		 edge != 0; edge = dn->nextTo(edge))
 	    {
 		BoxGraphNode *ancestor = ptr_cast(BoxGraphNode, edge->from());
 		if (ancestor != 0)
@@ -4546,7 +4515,7 @@ void DataDisp::process_scope(const string& scope)
 	    DispNode *dn = disp_graph->get(deferred_displays[i]);
 	    assert(dn != 0 && dn->deferred());
 
-	    BoxPoint pos = dn->nodeptr()->pos();
+	    BoxPoint pos = dn->pos();
 	    Command c(new_display_cmd(dn->name(), &pos, dn->depends_on()));
 	    c.verbose = false;
 	    c.prompt  = false;
@@ -4664,7 +4633,7 @@ void DataDisp::refresh_display_list(bool silent)
 	    states += "not active";
 	else if (dn->clustered())
 	    states += "clustered";
-	else if (dn->nodeptr()->hidden() && dn->alias_of != 0)
+	else if (dn->hidden() && dn->alias_of != 0)
 	    states += "alias of " + itostring(dn->alias_of);
 	else if (dn->enabled())
 	    states += "enabled";
@@ -5498,7 +5467,7 @@ int DataDisp::last_change_of_disp_nr(int disp_nr)
     DispNode *dn = disp_graph->get(disp_nr);
     assert(dn != 0);
 
-    if (dn->nodeptr()->hidden())
+    if (dn->hidden())
 	return INT_MAX;
 
     return dn->last_change();
@@ -5546,7 +5515,7 @@ void DataDisp::merge_displays(IntArray displays,
 #endif
 
     DispNode *d0 = disp_graph->get(displays[0]);
-    if (d0->active() && d0->nodeptr()->hidden())
+    if (d0->active() && d0->hidden())
     {
 	// All aliases are hidden.  Make sure we see at least the
 	// least recently changed one.
@@ -5562,9 +5531,9 @@ void DataDisp::merge_displays(IntArray displays,
 	if (!dn->active())
 	    continue;		// Out of scope
 
-	bool hidden = dn->nodeptr()->hidden();
+	bool hidden = dn->hidden();
 
-	if (!hidden && dn->nodeptr()->firstTo() == 0)
+	if (!hidden && dn->firstTo() == 0)
 	{
 	    // There is no edge pointing at this node.  Don't merge it
 	    // because it would simply disappear otherwise.
@@ -5749,28 +5718,9 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
 	    continue;
 
 	// If R is inactive, don't bump it
-	// This makes the check O(n^2), where O(n) would suffice (FIXME).
-	BoxGraphNode *b = ptr_cast(BoxGraphNode, r);
-
-	if (b != 0)
-	{
-	    bool is_active = true;
-
-	    MapRef ref;
-	    for (DispNode* dn = disp_graph->first(ref); 
-		 dn != 0;
-		 dn = disp_graph->next(ref))
-	    {
-		if (b == dn->nodeptr())
-		{
-		    is_active = dn->active();
-		    break;
-		}
-	    }
-
-	    if (!is_active)
-		continue;
-	}
+	DispNode *dn = ptr_cast(DispNode, r);
+	if (dn != 0 && !dn->active())
+	    continue;
 
 	// If ORIGIN (the upper left corner of R) is right of BUMPER,
 	// move R DELTA units to the right.  If it is below BUMPER,

@@ -47,6 +47,8 @@ char DispNode_rcsid[] =
 #include "DispBox.h"
 #include "AliasGE.h"
 
+DEFINE_TYPE_INFO_1(DispNode, BoxGraphNode)
+
 // Data
 HandlerList DispNode::handlers(DispNode_NTypes);
 int DispNode::change_tics = 0;
@@ -56,7 +58,8 @@ DispNode::DispNode (int disp_nr,
 		    const string& name,
 		    const string& scope,
 		    const string& value)
-    : mydisp_nr(disp_nr),
+    : BoxGraphNode(),
+      mydisp_nr(disp_nr),
       myname(name),
       myaddr(""),
       myscope(scope),
@@ -68,7 +71,6 @@ DispNode::DispNode (int disp_nr,
       mydeferred(false),
       myclustered(false),
       myconstant(false),
-      mynodeptr(0),
       disp_value(0),
       myselected_value(0),
       disp_box(0),
@@ -87,9 +89,9 @@ DispNode::DispNode (int disp_nr,
 
     // Create new box from DISP_VALUE
     disp_box = new DispBox (mydisp_nr, myname, disp_value);
-    
-    // Create graph node from box
-    mynodeptr = new BoxGraphNode (disp_box->box());
+
+    // Set the box
+    setBox(disp_box->box());
 }
 
 // Destructor
@@ -99,7 +101,6 @@ DispNode::~DispNode()
 	disp_value->unlink();
 
     delete disp_box;
-    delete mynodeptr;
 }
 
 // User-defined displays (status displays)
@@ -191,7 +192,7 @@ bool DispNode::update(string& value)
 	disp_box->set_value(disp_value);
 
 	// Set new box
-	mynodeptr->setBox(disp_box->box());
+	setBox(disp_box->box());
     }
 
     if (changed || inited)
@@ -215,7 +216,7 @@ void DispNode::refresh ()
     else
 	disp_box->set_value(0);
 	
-    mynodeptr->setBox(disp_box->box());
+    setBox(disp_box->box());
     select(selected_value());
 }
 
@@ -252,7 +253,7 @@ void DispNode::select(DispValue *dv)
     if (dv != 0)
 	tb = findTagBox(box(), dv);
 
-    nodeptr()->setHighlight(tb);
+    setHighlight(tb);
     myselected_value = dv;
 }
 
@@ -283,7 +284,7 @@ void DispNode::disable()
 	myenabled = false;
 	handlers.call(DispNode_Disabled, this, (void *)true);
 	disp_box->set_value(0);
-	mynodeptr->setBox (disp_box->box());
+	setBox (disp_box->box());
     }
 }
 
@@ -305,14 +306,14 @@ void DispNode::make_inactive()
     {
 	if (!clustered())
 	{
-	    saved_node_hidden = mynodeptr->hidden();
-	    mynodeptr->hidden() = true;
+	    saved_node_hidden = hidden();
+	    hidden() = true;
 	}
 	myactive = false;
     }
 
     // Unselect it
-    mynodeptr->selected() = false;
+    selected() = false;
 }
 
 // Show display
@@ -322,7 +323,7 @@ void DispNode::make_active()
     {
 	myactive = true;
 	if (!clustered())
-	    mynodeptr->hidden() = saved_node_hidden;
+	    hidden() = saved_node_hidden;
     }
 }
 
@@ -332,21 +333,21 @@ void DispNode::cluster(int target)
     if (target != 0)
     {
 	if (clustered() == 0)
-	    saved_node_hidden = mynodeptr->hidden();
+	    saved_node_hidden = hidden();
 
-	mynodeptr->hidden() = true;
+	hidden() = true;
     }
     else // target == 0
     {
 	if (clustered() != 0)
-	    mynodeptr->hidden() = saved_node_hidden;
+	    hidden() = saved_node_hidden;
     }
 
     // Set new target
     myclustered = target;
 
     // Unselect it
-    mynodeptr->selected() = false;
+    selected() = false;
 }
 
 // Update address with NEW_ADDR
@@ -396,7 +397,7 @@ bool DispNode::set_title(bool set)
 	disp_box->set_value(disp_value);
 
 	// Show new box
-	mynodeptr->setBox(disp_box->box());
+	setBox(disp_box->box());
     }
 
     return changed;
