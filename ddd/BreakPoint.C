@@ -256,8 +256,9 @@ bool BreakPoint::update (string& info_output)
 		{
 		    string line = lines[i];
 		    bool save_info = true;
+		    read_leading_blanks(line);
 
-		    if (line.contains("ignore next "), 0)
+		    if (line.contains("ignore next ", 0))
 		    {
 			// Fetch ignore count
 			string count = line.after("ignore next ");
@@ -278,11 +279,15 @@ bool BreakPoint::update (string& info_output)
 		    {
 			// Any info
 		    }
-		    else if (line != "")
+		    else if (line != "" && isspace(lines[i][0]))
 		    {
 			// A command
 			commands += line;
 			save_info = false;
+		    }
+		    else
+		    {
+			// Some other info
 		    }
 
 		    if (save_info)
