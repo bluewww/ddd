@@ -92,29 +92,33 @@ Widget post_gdb_yn(string question, Widget w)
     if (question == "")
 	return 0;
 
-    if (yn_dialog)
-	DestroyWhenIdle(findShellParent(yn_dialog));
-
     Arg args[10];
     int arg;
 
     arg = 0;
-    XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
     MString mquestion = rm(question);
     XtSetArg(args[arg], XmNmessageString, mquestion.xmstring()); arg++;
 
-    yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
-					      "yn_dialog", args, arg));
-    Delay::register_shell(yn_dialog);
-    XtAddCallback (yn_dialog, XmNokCallback,     YnCB, (void *)"yes");
-    XtAddCallback (yn_dialog, XmNcancelCallback, YnCB, (void *)"no");
-    XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+    if (yn_dialog == 0)
+    {
+	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+	yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
+						  "yn_dialog", args, arg));
+	Delay::register_shell(yn_dialog);
+	XtAddCallback (yn_dialog, XmNokCallback,     YnCB, (void *)"yes");
+	XtAddCallback (yn_dialog, XmNcancelCallback, YnCB, (void *)"no");
+	XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 
-    // If the dialog is closed, assume `no'.
-    Atom WM_DELETE_WINDOW =
-	XmInternAtom(XtDisplay(yn_dialog), "WM_DELETE_WINDOW", False);
-    XmAddWMProtocolCallback(XtParent(yn_dialog), WM_DELETE_WINDOW, 
-			    YnCB, (caddr_t)"no");
+	// If the dialog is closed, assume `no'.
+	Atom WM_DELETE_WINDOW =
+	    XmInternAtom(XtDisplay(yn_dialog), "WM_DELETE_WINDOW", False);
+	XmAddWMProtocolCallback(XtParent(yn_dialog), WM_DELETE_WINDOW, 
+				YnCB, (caddr_t)"no");
+    }
+    else
+    {
+	XtSetValues(yn_dialog, args, arg);
+    }
 
     manage_and_raise(yn_dialog);
     return yn_dialog;
@@ -138,14 +142,16 @@ Widget post_gdb_busy(Widget w)
     if (ddd_is_exiting)
 	return 0;
 
-    if (busy_dialog != 0)
-	DestroyWhenIdle(findShellParent(busy_dialog));
-
-    busy_dialog = verify(XmCreateWorkingDialog(find_shell(w), "busy_dialog", 
-					       NULL, 0));
-    Delay::register_shell(busy_dialog);
-    XtUnmanageChild(XmMessageBoxGetChild(busy_dialog, XmDIALOG_CANCEL_BUTTON));
-    XtAddCallback(busy_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+    if (busy_dialog == 0)
+    {
+	busy_dialog = 
+	    verify(XmCreateWorkingDialog(find_shell(w), "busy_dialog", 
+					 NULL, 0));
+	Delay::register_shell(busy_dialog);
+	XtUnmanageChild(XmMessageBoxGetChild(busy_dialog, 
+					     XmDIALOG_CANCEL_BUTTON));
+	XtAddCallback(busy_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+    }
 
     manage_and_raise(busy_dialog);
     return busy_dialog;
@@ -262,24 +268,28 @@ Widget post_gdb_message(string text, Widget w)
 	return 0;
     }
 
-    static Widget gdb_message_dialog = 0;
-    if (gdb_message_dialog)
-	DestroyWhenIdle(findShellParent(gdb_message_dialog));
-
-
     Arg args[10];
     int arg = 0;
 
     MString mtext = rm(text);
     XtSetArg(args[arg], XmNmessageString, mtext.xmstring()); arg++;
 
-    gdb_message_dialog = 
-	verify(XmCreateWarningDialog(find_shell(w), "gdb_message_dialog",
-				     args, arg));
-    Delay::register_shell(gdb_message_dialog);
-    XtUnmanageChild(XmMessageBoxGetChild(gdb_message_dialog, 
-					 XmDIALOG_CANCEL_BUTTON));
-    XtAddCallback(gdb_message_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+    static Widget gdb_message_dialog = 0;
+    if (gdb_message_dialog == 0)
+    {
+	gdb_message_dialog = 
+	    verify(XmCreateWarningDialog(find_shell(w), "gdb_message_dialog",
+					 args, arg));
+	Delay::register_shell(gdb_message_dialog);
+	XtUnmanageChild(XmMessageBoxGetChild(gdb_message_dialog, 
+					     XmDIALOG_CANCEL_BUTTON));
+	XtAddCallback(gdb_message_dialog, XmNhelpCallback, 
+		      ImmediateHelpCB, NULL);
+    }
+    else
+    {
+	XtSetValues(gdb_message_dialog, args, arg);
+    }
 
     manage_and_raise(gdb_message_dialog);
     return gdb_message_dialog;
