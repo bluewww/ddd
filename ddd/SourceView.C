@@ -1133,13 +1133,16 @@ String SourceView::read_indented(string& file_name, long& length, bool silent)
     file_name = full_path(file_name);
 
     String text;
+
+    // Try to read file directly
     if (!remote_gdb())
-	text = read_local(file_name, length, silent);
+	text = read_local(file_name, length, true);
     else
-	text = read_remote(file_name, length, silent);
+	text = read_remote(file_name, length, true);
 
     if (text == 0 || length == 0)
     {
+	// Read file from GDB
 	string saved_current_file_name = current_file_name;
 	current_file_name = file_name;
 	string source_name = current_source_name();
@@ -1147,20 +1150,25 @@ String SourceView::read_indented(string& file_name, long& length, bool silent)
 
 	text = read_from_gdb(source_name, length, silent);
 
-	if (text != 0 && text[0] != '\0')
+	if (text != 0 && length != 0)
 	{
-#if 0
-	    if (!silent)
-		post_warning("File was read as source from GDB.",
-			     "source_file_from_gdb_warning", source_text_w);
-#endif
+	    // Use the source name as file name
 	    file_name = source_name;
 	}
     }
 
+    if ((text == 0 || length == 0) && !silent)
+    {
+	// All failed - produce an appropriate error message.
+	if (!remote_gdb())
+	    text = read_local(file_name, length, silent);
+	else
+	    text = read_remote(file_name, length, silent);
+    }
     if (text == 0 || length == 0)
 	return 0;
 
+    // At this point, we have a source text.
     // Determine text length and number of lines
     int lines = 0;
     for (t = 0; t < length; t++)
