@@ -47,6 +47,7 @@ char buttons_rcsid[] =
 #include "SourceView.h"
 #include "StringSA.h"
 #include "TimeOut.h"
+#include "UndoBuffer.h"
 #include "args.h"
 #include "bool.h"
 #include "charsets.h"
@@ -437,6 +438,9 @@ void clear_value_cache()
 
 string gdbValue(const string& expr)
 {
+    if (undo_buffer.at_past_exec_pos())
+	return NO_GDB_ANSWER;	// We don't know about earlier values
+
     string value = NO_GDB_ANSWER;
     if (value == NO_GDB_ANSWER)
     {
