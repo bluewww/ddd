@@ -210,7 +210,6 @@ typedef struct PlusCmdData {
     string   break_arg;		       // argument when setting breakpoint
     int      n_refresh_data;	       // # of data displays to refresh
     int      n_refresh_user;	       // # of user displays to refresh
-    int      n_refresh_addr;	       // # of addresses to refresh
 
     bool     config_frame;	       // try 'frame'
     bool     config_func;	       // try 'func'
@@ -258,7 +257,6 @@ typedef struct PlusCmdData {
 	break_arg(""),
 	n_refresh_data(0),
 	n_refresh_user(0),
-	n_refresh_addr(0),
 
 	config_frame(false),
 	config_func(false),
@@ -652,7 +650,6 @@ void send_gdb_command(string cmd, Widget origin,
 	plus_cmd_data->refresh_frame     = false;
 	plus_cmd_data->refresh_registers = false;
 	plus_cmd_data->refresh_threads   = false;
-	plus_cmd_data->refresh_addr      = false;
 
 	if (is_graph_cmd(cmd))
 	{
@@ -941,9 +938,6 @@ void send_gdb_command(string cmd, Widget origin,
 	if (plus_cmd_data->refresh_user)
 	    plus_cmd_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
-	if (plus_cmd_data->refresh_addr)
-	    plus_cmd_data->n_refresh_addr = 
-		data_disp->add_refresh_addr_commands(cmds);
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds += "info display";
 	if (plus_cmd_data->refresh_history_filename)
@@ -993,9 +987,6 @@ void send_gdb_command(string cmd, Widget origin,
 	if (plus_cmd_data->refresh_user)
 	    plus_cmd_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
-	if (plus_cmd_data->refresh_addr)
-	    plus_cmd_data->n_refresh_addr = 
-		data_disp->add_refresh_addr_commands(cmds);
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds += gdb->display_command();
 	assert (!plus_cmd_data->refresh_history_filename);
@@ -1025,9 +1016,6 @@ void send_gdb_command(string cmd, Widget origin,
 	if (plus_cmd_data->refresh_user)
 	    plus_cmd_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
-	if (plus_cmd_data->refresh_addr)
-	    plus_cmd_data->n_refresh_addr = 
-		data_disp->add_refresh_addr_commands(cmds);
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds += gdb->display_command();
 	assert (!plus_cmd_data->refresh_history_filename);
@@ -1873,12 +1861,7 @@ void plusOQAC (string answers[],
     }
 
     if (plus_cmd_data->refresh_addr)
-    {
-	StringArray answers(((string *)answers) + qu_count,
-			    plus_cmd_data->n_refresh_addr);
-	data_disp->process_addr(answers);
-	qu_count += plus_cmd_data->n_refresh_addr;
-    }
+	data_disp->refresh_addr();
 
     if (plus_cmd_data->refresh_disp_info) {
 	assert (qu_count < count);

@@ -3459,8 +3459,7 @@ string DataDisp::process_displays(string& displays,
 
 	if (is_invalid(next_display))
 	{
-	    // Display is not active: don't insert it into map.
-	    // This way, it will be shown as disabled.
+	    // Display is not active
 	}
 	else if (disp_nr >= 0 && disp_graph->contains(disp_nr))
 	{
@@ -4067,7 +4066,7 @@ int DataDisp::add_refresh_addr_commands(StringArray& cmds, DispNode *dn)
 
     if (dn != 0)
     {
- 	if (!dn->is_user_command())
+ 	if (dn->active() && !dn->is_user_command())
 	    cmds += gdb->print_command(gdb->address_expr(dn->name()));
     }
     else
@@ -4152,7 +4151,7 @@ void DataDisp::process_addr (StringArray& answers)
 	 dn != 0 && i < answers.size();
 	 dn = disp_graph->next(ref))
     {
-	if (!dn->is_user_command())
+	if (dn->active() && !dn->is_user_command())
 	{
 	    string addr = answers[i++];
 	    addr = addr.from(rxaddress);
