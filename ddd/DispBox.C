@@ -137,7 +137,7 @@ void DispBox::init_vsllib(void (*background)())
 
     // Set include search path
     VSEFlags::include_search_path = 
-	strcpy(new char[vsllib_path.length()], vsllib_path);
+	strcpy(new char[vsllib_path.length() + 1], vsllib_path);
 
     // Load library
     void (*old_background)() = VSLLib::background;
