@@ -48,8 +48,6 @@ fi
 
 # Setup environment
 tmpdir=$HOME/tmp/ddd$$
-# CVSROOT=/usr/local/share/CVS; export CVSROOT
-# PATH=/usr/local/bin:/usr/local/gnubin:$PATH; export PATH
 
 target=`pwd`
 echo make-current[$$]: start at `date`
@@ -129,14 +127,6 @@ EXPIRES='$expires'
 ' < ddd/acinclude.m4 > ddd/acinclude.m4~
 mv ddd/acinclude.m4~ ddd/acinclude.m4
 fi
-
-# Add ChangeLog files.
-ln -s $CVSROOT/CVSROOT/ddd-log ChangeLog
-ln -s $CVSROOT/CVSROOT/ddd-log-99 ChangeLog-1999
-ln -s $CVSROOT/CVSROOT/ddd-log-98 ChangeLog-1998
-ln -s $CVSROOT/CVSROOT/ddd-log-97 ChangeLog-1997
-ln -s $CVSROOT/CVSROOT/ddd-log-96 ChangeLog-1996
-ln -s $CVSROOT/CVSROOT/ddd-log-95 ChangeLog-1995
 
 # Set up configure scripts.
 # Note: Don't use `--include-deps' at this stage, such that

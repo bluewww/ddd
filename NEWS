@@ -108,6 +108,19 @@ License
   License (LGPL) have been changed to use the GNU General Public 
   License (GPL) instead.
 
+- The DDD Manual is released under the new GNU Free Documentation License.
+
+
+Tracking Code Changes
+---------------------
+
+- This release no longer includes ChangeLog files.  Instead, you can
+  directly access old and recent DDD versions (including a list of all
+  changes) via the public CVS interface at 
+
+      http://sourceforge.net/projects/ddd/
+
+
 
 Known Issues
 ------------
