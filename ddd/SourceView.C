@@ -409,23 +409,39 @@ static void tabto(string& s, int pos)
 }
     
 // Replace all '\t' by filling up spaces until multiple of TAB_WIDTH is reached
-static void untabify(string& s, int tab_width = 8)
+static void untabify(string& str, int tab_width = 8)
 {
+    char *buffer = 
+	new char[str.length() + str.freq('\t') * (tab_width - 1) + 1];
+    char *b = buffer;
+
     int column = 0;
-    for (int i = 0; unsigned(i) < s.length(); i++)
+    int spaces;
+    const char *s = str.chars();
+    while (*s != '\0')
     {
-	if (s[i] == '\t')
+	switch (*s)
 	{
-	    int spaces = tab_width - (column % tab_width);
-	    s(i, 1) = replicate(' ', spaces);
-	    i += spaces - 1;
+	case '\t':
+	    spaces = tab_width - (column % tab_width);
+	    while (spaces-- > 0)
+		*b++ = ' ';
+	    break;
+
+	default:
+	    *b++ = *s;
+	    break;
 	}
 
-	if (s[i] == '\n')
+	if (*s++ == '\n')
 	    column = 0;
 	else
 	    column++;
     }
+    *b++ = '\0';
+
+    s = buffer;
+    delete[] buffer;
 }
 
 
@@ -3188,14 +3204,22 @@ string SourceView::current_source_name()
 			if (ans != NO_GDB_ANSWER)
 			{
 			    // Create a newline-separated list of sources
-			    static regex rxtitle("[^\n]*:\n");
-			    ans.gsub(rxtitle, string(""));
-			    ans.gsub(", ", "\n");
-			    ans.gsub(rxwhite, "\n");
+			    string new_ans;
+			    string line;
 
-			    static regex rxnls("\n\n*");
-			    ans.gsub(rxnls, "\n");
+			    while (ans != "")
+			    {
+				line = ans.before('\n');
+				ans = ans.after('\n');
 
+				if (line == "" || line.contains(':', -1))
+				    continue;
+
+				line.gsub(", ", "\n");
+				new_ans += line + '\n';
+			    }
+
+			    ans = new_ans;
 			    source_name_cache[all_sources] = ans;
 			}
 		    }
