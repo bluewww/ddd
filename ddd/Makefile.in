@@ -319,7 +319,7 @@ MAKEINFO = @MAKEINFO@
 TEXINDEX = texindex
 
 # The texi2html program.  (texi2html)
-TEXI2HTML = texi2html
+TEXI2HTML = texi2html -split_chapter
 
 # The texi2dvi program.  (texi2dvi)
 TEXI2DVI = texi2dvi
@@ -410,7 +410,11 @@ XPMTOPPM   = xpmtoppm
 CONVERT    = convert
 
 # The image extension (.gif or .jpg)
-IMGEXT     = .gif
+IMGEXT     = .jpg
+
+# GIF <=> PPM conversion
+GIFTOPPM   = giftoppm
+PPMTOGIF   = ppmtogif
 
 # The face-generating program from the `compface' package.  (xbm2xface.pl)
 XBM2XFACE  = xbm2xface.pl
@@ -645,7 +649,15 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 # Width of image in HTML manual (pixels)
 IMAGE_WIDTH = 600
 
-.eps$(IMGEXT):
+# We use giftoppm/ppmtogif to get optimal GIF compression.
+.eps.gif:
+	$(CONVERT) -geometry $(IMAGE_WIDTH) -interlace Line $< $@
+	$(GIFTOPPM) $@ | $(PPMTOGIF) -interlace > $@~ && $(MV) $@~ $@
+
+.eps.jpeg:
+	$(CONVERT) -geometry $(IMAGE_WIDTH) -interlace Line $< $@
+
+.eps.jpg:
 	$(CONVERT) -geometry $(IMAGE_WIDTH) -interlace Line $< $@
 
 .fig.eps:
@@ -925,8 +937,8 @@ DEMOS = userinfo$(EXEEXT) stringify$(EXEEXT) huffencode$(EXEEXT) \
 	huffdecode$(EXEEXT) cxxtest$(EXEEXT) ctest$(EXEEXT) grabtest$(EXEEXT) \
 	ftest$(EXEEXT) ptest$(EXEEXT) m2test$(EXEEXT) \
 	test-file$(EXEEXT) test-graph$(EXEEXT) vsl$(EXEEXT) ttytest$(EXEEXT) \
-	bug$(EXEEXT) tString$(EXEEXT) mmtest$(EXEEXT) gcore$(EXEEXT) \
-	logplayer$(EXEEXT)
+	bug$(EXEEXT) sample$(EXEEXT) tString$(EXEEXT) \
+	mmtest$(EXEEXT) gcore$(EXEEXT) logplayer$(EXEEXT)
 
 ## The index files
 IDXS = *.cp *.fn *.ky *.pg *.tp *.vr
@@ -943,7 +955,7 @@ PSS = \
 
 ## The HTML files.
 htmldir = $(docdir)/html
-HTMLS = $(htmldir)/index.html
+HTMLS = $(htmldir)/index.html $(docdir)/sample.c
 
 ## The info files.
 INFOS = $(docdir)/ddd.info
@@ -952,6 +964,8 @@ INFOS = $(docdir)/ddd.info
 # All of these are generated from FIG and XPM files.
 picdir = $(srcdir)/PICS
 PICS = \
+	$(picdir)/disclaimer.eps           \
+	$(picdir)/dddlogo.eps		   \
 	$(picdir)/dddsplash.eps            \
 	$(picdir)/ddd-aliases.eps          \
 	$(picdir)/ddd-all.eps              \
@@ -1006,10 +1020,18 @@ PICS = \
 	$(picdir)/ddd-toolbar.eps          \
 	$(picdir)/ddd-toolbars.eps         \
 	$(picdir)/ddd-value-tip.eps        \
-	$(picdir)/disclaimer.eps           \
-	$(picdir)/dddlogo.eps
+	$(picdir)/tut-backtrace.eps        \
+	$(picdir)/tut-display.eps          \
+	$(picdir)/tut-finish.eps           \
+	$(picdir)/tut-invoke.eps           \
+	$(picdir)/tut-run.eps              \
+	$(picdir)/tut-set.eps              \
+	$(picdir)/tut-value.eps
 
 IMAGES = \
+	$(picdir)/disclaimer$(IMGEXT)           \
+	$(picdir)/dddback$(IMGEXT)		\
+	$(picdir)/dddlogo$(IMGEXT)              \
 	$(picdir)/dddsplash$(IMGEXT)            \
 	$(picdir)/ddd-aliases$(IMGEXT)          \
 	$(picdir)/ddd-all$(IMGEXT)              \
@@ -1064,9 +1086,13 @@ IMAGES = \
 	$(picdir)/ddd-toolbar$(IMGEXT)          \
 	$(picdir)/ddd-toolbars$(IMGEXT)         \
 	$(picdir)/ddd-value-tip$(IMGEXT)        \
-	$(picdir)/disclaimer$(IMGEXT)           \
-	$(picdir)/dddlogo$(IMGEXT)              \
-	$(picdir)/dddback$(IMGEXT)
+	$(picdir)/tut-backtrace$(IMGEXT)        \
+	$(picdir)/tut-display$(IMGEXT)          \
+	$(picdir)/tut-finish$(IMGEXT)           \
+	$(picdir)/tut-invoke$(IMGEXT)           \
+	$(picdir)/tut-run$(IMGEXT)              \
+	$(picdir)/tut-set$(IMGEXT)              \
+	$(picdir)/tut-value$(IMGEXT)
 
 
 ## The manual page.
@@ -1224,7 +1250,8 @@ REALCLEAN_STUFF	 = $(DISTCLEAN_STUFF) $(DIST_STUFF) \
 # All files that can be reconstructed (but may require special programs)
 ULTRACLEAN_STUFF = $(REALCLEAN_STUFF) \
 		   config.h.in stamp-h.in configure Makedeps \
-		   $(README_FILES) $(HTMLS) $(srcdir)/Ddd.in
+		   $(README_FILES) $(docdir)/sample.c \
+		   $(htmldir)/*.html $(htmldir)/PICS $(srcdir)/Ddd.in
 
 
 ## Targets as specified in GNU standards.
@@ -1280,6 +1307,7 @@ install-info: $(INFOS)
 	test -d $$grandparent || $(MKDIR) $$grandparent; \
 	test -d $$parent || $(MKDIR) $$parent
 	-test -d $(infodir) || $(MKDIR) $(infodir)
+	cd $(infodir) && $(RM) $(INFOS)
 	for i in $(INFOS); do \
 	    test -s $$i && $(INSTALL_DATA) $$i $(infodir); \
 	done
@@ -1581,6 +1609,9 @@ ttytest$(EXEEXT): ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS)
 bug$(EXEEXT):	bug.o
 	$(LINK.cc) -o $@ bug.o $(LIBS)
 
+sample$(EXEEXT): sample.o
+	$(LINK.c) -o $@ sample.o $(LIBS)
+
 tString$(EXEEXT): tString.o  $(HUFFMAN_OBJECTS)
 	$(LINK.cc) -o $@ tString.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
@@ -1614,6 +1645,8 @@ swallow$(EXEEXT): swallow.o findWindow.o Swallower.o
 # We don't want no optimizing, but debugging info in our test files
 MAKE_DEBUG = \
 $(MAKE) CXXFLAGS="`$(ECHO) '$(CXXFLAGS)' | \
+	$(SED) 's/-O[^ ]*//' | $(SED) 's/-DNDEBUG//'`" \
+	CFLAGS="`$(ECHO) '$(CFLAGS)' | \
 	$(SED) 's/-O[^ ]*//' | $(SED) 's/-DNDEBUG//'`"
 
 cxxtest.o: $(srcdir)/cxxtest.C
@@ -1624,10 +1657,17 @@ cxxtest.o: $(srcdir)/cxxtest.C
 	esac
 
 ctest.o: $(srcdir)/ctest.c
-	@case '$(CXXFLAGS)' in \
+	@case '$(CFLAGS)' in \
 	*-O*) $(MAKE_DEBUG) $@;; \
 	*) set -x; \
-	   $(COMPILE.c) @CXXDEBUG@ $(INCLUDE) $(srcdir)/ctest.c -o $@;; \
+	   $(COMPILE.c) -g $(INCLUDE) $(srcdir)/ctest.c -o $@;; \
+	esac
+
+sample.o: $(srcdir)/sample.c
+	@case '$(CFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(COMPILE.c) -g $(INCLUDE) $(srcdir)/sample.c -o $@;; \
 	esac
 
 grabtest.o: $(srcdir)/grabtest.C
@@ -1967,26 +2007,35 @@ $(htmldir)/index.html: ddd.texi $(INCLUDES) $(IMAGES) \
 	@-test -d $(htmldir) || $(MKDIR) $(htmldir)
 	@-test -d $(htmldir)/PICS || $(MKDIR) $(htmldir)/PICS
 	@-test -d PICS || $(LN_S) $(picdir) .
-	$(TEXI2HTML) -split_chapter $(srcdir)/ddd.texi
-	for file in ddd_*html; do \
+	$(RM) ddd*.html
+	$(TEXI2HTML) $(srcdir)/ddd.texi
+	for file in ddd*.html; do \
 		$(SED) -f $(srcdir)/fix-html.sed $$file > $$file~ && \
 		$(MV) $$file~ $$file; \
 	done
 	$(SED) -f $(srcdir)/fix-toc.sed ddd_toc.html > ddd_toc.html~ && \
 		$(MV) ddd_toc.html~ ddd_toc.html
-	$(INSTALL_DATA) ddd_*.html $(srcdir)/style.css $(htmldir)
+	cd $(htmldir) && $(RM) ddd*.html style.css PICS/*
+	$(INSTALL_DATA) ddd*.html $(srcdir)/style.css $(htmldir)
 	@$(ECHO) Installing images...
 	@$(INSTALL_DATA) $(IMAGES) $(htmldir)/PICS
 	@$(ECHO) Installing images...done.
 	$(RM) $(htmldir)/index.html
 	$(LN_S) ddd_toc.html $@
 
-
 ## The DDD manual in Info format.
 
 $(docdir)/ddd.info: ddd.texi $(INCLUDES)
+	$(RM) ddd.info*
 	$(MAKEINFO) -I$(srcdir) $(srcdir)/ddd.texi
 	$(INSTALL_DATA) ddd.info* $(docdir)
+
+
+## Auxiliary manual files.
+
+$(docdir)/sample.c: $(srcdir)/sample.c
+	$(INSTALL_DATA) $(srcdir)/sample.c $(docdir)
+
 
 
 ## Icons and logos.
