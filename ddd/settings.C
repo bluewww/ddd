@@ -45,6 +45,7 @@ const char settings_rcsid[] =
 #include <Xm/TextF.h>
 #include <Xm/Form.h>
 #include <Xm/Label.h>
+#include <Xm/Separator.h>
 #include <ctype.h>
 
 #include "Assoc.h"
@@ -84,13 +85,29 @@ static void SetOptionCB(Widget w, XtPointer client_data, XtPointer)
 }
 
 // ToggleButton reply
-static void SetBoolCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void SetBoolCB(Widget, XtPointer client_data, XtPointer call_data)
 {
+    String set_command = (String)client_data;
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (cbs->set)
-	SetOptionCB(w, client_data, call_data);
+	gdb_command(string(set_command) + " on");
+    else
+	gdb_command(string(set_command) + " off");
+}
+
+// ToggleButton reply
+static void SetNumCB(Widget, XtPointer client_data, XtPointer call_data)
+{
+    String set_command = (String)client_data;
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (cbs->set)
+	gdb_command(string(set_command) + " 1");
+    else
+	gdb_command(string(set_command) + " 0");
 }
 
 // Find widget for command COMMAND
@@ -155,24 +172,12 @@ void process_show(string command, string value, bool show_status)
 		return;
 	    }
 	}
-
-	Widget on  = XtNameToWidget(button, "on");
-	Widget off = XtNameToWidget(button, "off");
-	if (on != 0 && off != 0)
-	{
-	    if (value == "on")
-	    {
-		XmToggleButtonSetState(on,  True,  False);
-		XmToggleButtonSetState(off, False, False);
-		return;
-	    }
-	    else if (value == "off")
-	    {
-		XmToggleButtonSetState(on,  False, False);
-		XmToggleButtonSetState(off, True,  False);
-		return;
-	    }
-	}
+    }
+    else if (button != 0 && XtIsSubclass(button, xmToggleButtonWidgetClass))
+    {
+	bool set = value != "off" && value != "0" && value != "unlimited";
+	XtVaSetValues(button, XmNset, set, NULL);
+	return;
     }
     else if (button != 0 && XtIsSubclass(button, xmTextFieldWidgetClass))
     {
@@ -194,20 +199,43 @@ void process_show(string command, string value, bool show_status)
 
 enum EntryType
 {
-    ToggleButtonEntry,		// Create toggle button
-    OptionMenuEntry,		// Create option menu
+    BoolToggleButtonEntry,	// Create on/off toggle button
+    NumToggleButtonEntry,	// Create 1/0 toggle button
+    CheckOptionMenuEntry,       // Create `check' option menu
+    OtherOptionMenuEntry,       // Create other option menu
     TextFieldEntry		// Create text field
 };
 
-// Determine entry type
-static EntryType entry_type(const string& base, const string& value)
+// Return TRUE if doc begins with a boolean verb
+static bool is_verb(const string& doc)
 {
-    if (base.contains("language", 0)
-	|| base.contains("demangle", 0)
-	|| base.contains("check", 0))
-	return OptionMenuEntry;
+    if (doc.contains("whether to"))
+	return true;
+    int ing = doc.index("ing");
+    if (ing < 0)
+	return false;
+    int first_space  = doc.index(' ');
+    int second_space = doc.index(' ', first_space + 1);
+    if (ing < first_space || ing < second_space || second_space < 0)
+	return true;
+
+    return false;
+}
+
+// Determine entry type
+static EntryType entry_type(const string& base, 
+			    const string& doc,
+			    const string& value)
+{
+    if (base.contains("check", 0))
+	return CheckOptionMenuEntry;
+    else if (base.contains("language", 0) || base.contains("demangle", 0))
+	return OtherOptionMenuEntry;
     else if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
-	return ToggleButtonEntry;
+	return BoolToggleButtonEntry;
+    else if ((value.contains("0.\n", -1) || value.contains("1.\n", -1))
+	     && (is_verb(doc)))
+	return NumToggleButtonEntry;
     else
 	return TextFieldEntry;
 }
@@ -260,10 +288,12 @@ static void add_button(string line, EntryType entry_filter, int& row)
     if (!value.contains(".\n", -1))
 	return;
 
-    if (entry_type(base, value) != entry_filter)
+    doc = doc.after("Set ");
+
+    EntryType e_type = entry_type(base, doc, value);
+    if (e_type != entry_filter)
 	return;
 
-    doc = doc.after("Set ");
     if (doc.contains("whether to ", 0))
 	doc = doc.after("whether to ");
     if (doc.contains("the ", 0))
@@ -274,6 +304,11 @@ static void add_button(string line, EntryType entry_filter, int& row)
     int arg;
 
     // Add label
+    Widget label = 0;
+    Widget entry = 0;
+    String set_command_s = new char[set_command.length() + 1];
+    strcpy(set_command_s, set_command);
+
     MString labelString(doc);
     arg = 0;
     XtSetArg(args[arg], XmNlabelString,      labelString.xmstring()); arg++;
@@ -281,8 +316,25 @@ static void add_button(string line, EntryType entry_filter, int& row)
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);      arg++;
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);                arg++;
     XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_BEGINNING);  arg++;
-    Widget label = verify(XmCreateLabel(settings_form, base, args, arg));
-    XtManageChild(label);
+    if (e_type != BoolToggleButtonEntry && e_type != NumToggleButtonEntry)
+    {
+	label = verify(XmCreateLabel(settings_form, base, args, arg));
+	XtManageChild(label);
+    }
+    else
+    {
+	entry = label = 
+	    verify(XmCreateToggleButton(settings_form, set_command, 
+					args, arg));
+	XtManageChild(label);
+
+	if (e_type == BoolToggleButtonEntry)
+	    XtAddCallback(entry, XmNvalueChangedCallback,
+			  SetBoolCB, XtPointer(set_command_s));
+	else
+	    XtAddCallback(entry, XmNvalueChangedCallback,
+			  SetNumCB, XtPointer(set_command_s));
+    }
 
     // Add help button
     arg = 0;
@@ -296,138 +348,122 @@ static void add_button(string line, EntryType entry_filter, int& row)
     XtManageChild(help);
 
     // Add entry
-    Widget entry;
-    String set_command_s = new char[set_command.length() + 1];
-    strcpy(set_command_s, set_command);
-
-    if (base.contains("check", 0))
+    switch (e_type)
     {
-	// `set check'
-	arg = 0;
-	Widget menu = 
-	    verify(XmCreatePulldownMenu(settings_form, "menu", args, arg));
+    case BoolToggleButtonEntry:
+    case NumToggleButtonEntry:
+	// All is done
+	break;
 
-	// Possible options are contained in the help string
-	string options = cached_gdb_question("help " + set_command);
-	options = options.from('(');
-	options = options.before(')');
-
-	while (options != "")
+    case CheckOptionMenuEntry:
 	{
-	    string option = options.after(0);
-	    option = option.through(rxalpha);
-	    options = options.after(rxalpha);
-
+	    // `set check'
 	    arg = 0;
-	    Widget button = 
-		verify(XmCreatePushButton(menu, option, args, arg));
-	    XtManageChild(button);
-	    XtAddCallback(button, XmNactivateCallback, SetOptionCB, 
-			  set_command_s);
-	}
+	    Widget menu = 
+		verify(XmCreatePulldownMenu(settings_form, "menu", args, arg));
 
-	MString empty;
-	arg = 0;
-	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
-	XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
-	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
-	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
-	XtSetArg(args[arg], XmNlabelString,      empty.xmstring());  arg++;
-	XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
-	XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
-	XtSetArg(args[arg], XmNspacing,          0);                 arg++;
-	XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
-	entry = 
-	    verify(XmCreateOptionMenu(settings_form, set_command, args, arg));
-	XtManageChild(entry);
-    }
-    else if (base.contains("language", 0) || base.contains("demangle", 0))
-    {
-	// `set language / set demangle'
-	arg = 0;
-	Widget menu = 
-	    verify(XmCreatePulldownMenu(settings_form, "menu", args, arg));
+	    // Possible options are contained in the help string
+	    string options = cached_gdb_question("help " + set_command);
+	    options = options.from('(');
+	    options = options.before(')');
 
-	// Possible options are listed upon `set language' without value
-	string options = cached_gdb_question("set " + base);
-
-	while (options != "")
-	{
-	    string option = options.before('\n');
-	    options = options.after('\n');
-
-	    if (option.contains("  "))
+	    while (options != "")
 	    {
-		string label = option.after("  ");
-		label = label.after(rxwhite);
-		if (label.contains(" based on"))
-		    label = label.before(" based on");
-		if (label.contains("Use the "))
-		    label = label.after("Use the ");
-		if (label.contains(" demangling"))
-		    label = label.before(" demangling");
-		if (label.contains(" language"))
-		    label = label.before(" language");
+		string option = options.after(0);
+		option = option.through(rxalpha);
+		options = options.after(rxalpha);
 
-		if (option.contains(" auto"))
-		    option = "auto";
-		else
-		    option = option.before(rxwhite);
-
-		MString xmlabel(label);
 		arg = 0;
-		XtSetArg(args[arg], XmNlabelString, xmlabel.xmstring()); arg++;
 		Widget button = 
 		    verify(XmCreatePushButton(menu, option, args, arg));
 		XtManageChild(button);
 		XtAddCallback(button, XmNactivateCallback, SetOptionCB, 
 			      set_command_s);
 	    }
+
+	    MString empty;
+	    arg = 0;
+	    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
+	    XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
+	    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
+	    XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
+	    XtSetArg(args[arg], XmNlabelString,      empty.xmstring());  arg++;
+	    XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
+	    XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
+	    XtSetArg(args[arg], XmNspacing,          0);                 arg++;
+	    XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
+	    entry = verify(XmCreateOptionMenu(settings_form, 
+					      set_command, args, arg));
+	    XtManageChild(entry);
 	}
+	break;
 
-	MString empty;
-	arg = 0;
-	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
-	XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
-	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
-	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
-	XtSetArg(args[arg], XmNlabelString,      empty.xmstring());  arg++;
-	XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
-	XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
-	XtSetArg(args[arg], XmNspacing,          0);                 arg++;
-	XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
-	entry = 
-	    verify(XmCreateOptionMenu(settings_form, set_command, args, arg));
-	XtManageChild(entry);
-    }
-    else if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
-    {
-	// Boolean value
-	arg = 0;
-	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
-	XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
-	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
-	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
-	XtSetArg(args[arg], XmNorientation,      XmHORIZONTAL);      arg++;
-	entry = 
-	    verify(XmCreateRadioBox(settings_form, set_command, args, arg));
-	XtManageChild(entry);
+    case OtherOptionMenuEntry:
+	{
+	    // `set language / set demangle'
+	    arg = 0;
+	    Widget menu = 
+		verify(XmCreatePulldownMenu(settings_form, "menu", args, arg));
 
-	arg = 0;
-	Widget on = verify(XmCreateToggleButton(entry, "on", args, arg));
-	XtManageChild(on);
+	    // Possible options are listed upon `set language' without value
+	    string options = cached_gdb_question("set " + base);
 
-	arg = 0;
-	Widget off = verify(XmCreateToggleButton(entry, "off", args, arg));
-	XtManageChild(off);
+	    while (options != "")
+	    {
+		string option = options.before('\n');
+		options = options.after('\n');
 
-	XtAddCallback(on, XmNvalueChangedCallback,
-		      SetBoolCB, XtPointer(set_command_s));
-	XtAddCallback(off, XmNvalueChangedCallback,
-		      SetBoolCB, XtPointer(set_command_s));
-    }
-    else
-    {
+		if (option.contains("  "))
+		{
+		    string label = option.after("  ");
+		    label = label.after(rxwhite);
+#if 0
+		    if (label.contains(" based on"))
+			label = label.before(" based on");
+		    if (label.contains("Use the "))
+			label = label.after("Use the ");
+		    if (label.contains(" demangling"))
+			label = label.before(" demangling");
+		    if (label.contains(" language"))
+			label = label.before(" language");
+#endif
+
+		    if (option.contains(" auto"))
+			option = "auto";
+		    else
+			option = option.before(rxwhite);
+
+		    MString xmlabel(label);
+		    arg = 0;
+		    XtSetArg(args[arg], XmNlabelString, 
+			     xmlabel.xmstring()); arg++;
+		    Widget button = 
+			verify(XmCreatePushButton(menu, option, args, arg));
+		    XtManageChild(button);
+		    XtAddCallback(button, XmNactivateCallback, SetOptionCB, 
+				  set_command_s);
+		}
+	    }
+
+	    MString empty;
+	    arg = 0;
+	    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
+	    XtSetArg(args[arg], XmNrightWidget,      help);              arg++;
+	    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
+	    XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
+	    XtSetArg(args[arg], XmNlabelString,      empty.xmstring());  arg++;
+	    XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
+	    XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
+	    XtSetArg(args[arg], XmNspacing,          0);                 arg++;
+	    XtSetArg(args[arg], XmNsubMenuId,        menu);              arg++;
+	    entry = 
+		verify(XmCreateOptionMenu(settings_form, 
+					  set_command, args, arg));
+	    XtManageChild(entry);
+	}
+	break;
+
+    case TextFieldEntry:
 	// Some other value
 	arg = 0;
 	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
@@ -440,6 +476,22 @@ static void add_button(string line, EntryType entry_filter, int& row)
 	XtAddCallback(entry, XmNactivateCallback, 
 		      SetTextCB, XtPointer(set_command_s));
     }
+
+    Widget rightmost = help;
+    if (entry != label)
+	rightmost = entry;
+
+    // Add leader
+    arg = 0;
+    XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_WIDGET);   arg++;
+    XtSetArg(args[arg], XmNleftWidget,       label);             arg++;
+    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
+    XtSetArg(args[arg], XmNrightWidget,      rightmost);         arg++;
+    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
+    XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
+    Widget leader = 
+	verify(XmCreateSeparator(settings_form, "leader", args, arg));
+    XtManageChild(leader);
 
     // Initialize button
     process_show(show_command, value, false);
@@ -463,13 +515,27 @@ static void add_settings(int& row, EntryType entry_filter, string command)
     }
 }
 
+// Add separator
+static void add_separator(int& row)
+{
+    Arg args[10];
+    int arg = 0;
+    XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
+    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
+    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
+    XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
+    Widget sep = verify(XmCreateSeparator(settings_form, "sep", args, arg));
+    XtManageChild(sep);
+    row++;
+}
+
 
 // Popup editor for debugger settings
 void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 {
-    static Widget settings_dialog = 0;
+    static Widget settings = 0;
 
-    if (settings_dialog == 0)
+    if (settings == 0)
     {
 	StatusDelay delay("Retrieving debugger settings");
 
@@ -477,29 +543,41 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 	int arg;
 
 	arg = 0;
-	settings_dialog = 
-	    verify(XmCreatePromptDialog(find_shell(), "settings", args, arg));
-	Delay::register_shell(settings_dialog);
+	settings = verify(XmCreatePromptDialog(find_shell(), "settings", 
+					       args, arg));
+	Delay::register_shell(settings);
 
 	// Remove old prompt and cancel button
-	Widget text = 
-	    XmSelectionBoxGetChild(settings_dialog, XmDIALOG_TEXT);
-	XtUnmanageChild(text);
-	Widget old_label = 
-	    XmSelectionBoxGetChild(settings_dialog, XmDIALOG_SELECTION_LABEL);
-	XtUnmanageChild(old_label);
-	Widget cancel = 
-	    XmSelectionBoxGetChild(settings_dialog, XmDIALOG_CANCEL_BUTTON);
-	XtUnmanageChild(cancel);
-	XtAddCallback(settings_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
-	XtAddCallback(settings_dialog, XmNokCallback, UnmanageThisCB, 
-		      XtPointer(settings_dialog));
-	XtVaSetValues(settings_dialog, XmNdefaultButton, Widget(0), NULL);
+	XtUnmanageChild(XmSelectionBoxGetChild(settings, XmDIALOG_TEXT));
+	XtUnmanageChild(XmSelectionBoxGetChild(settings, 
+					       XmDIALOG_SELECTION_LABEL));
+	XtUnmanageChild(XmSelectionBoxGetChild(settings, 
+					       XmDIALOG_CANCEL_BUTTON));
+	XtAddCallback(settings, XmNhelpCallback, ImmediateHelpCB, 0);
+	XtAddCallback(settings, XmNokCallback, UnmanageThisCB, 
+		      XtPointer(settings));
+	XtVaSetValues(settings, XmNdefaultButton, Widget(0), NULL);
+
+	// Add a rowcolumn widget
+	arg = 0;
+	XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+	XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+	XtSetArg(args[arg], XmNspacing,      0); arg++;
+	Widget column =
+	    verify(XmCreateRowColumn(settings, "column", args, arg));
+	XtManageChild(column);
+
+	// Add a label
+	arg = 0;
+	Widget title =
+	    verify(XmCreateLabel(column, "title", args, arg));
+	XtManageChild(title);
 
 	// Add a scrolled window...
 	arg = 0;
-	Widget scroll = verify(XmCreateScrolledWindow(settings_dialog, 
-						      "scroll", args, arg));
+	Widget scroll = 
+	    verify(XmCreateScrolledWindow(column, "scroll", args, arg));
 
 	// ...and a form.
 	arg = 0;
@@ -507,8 +585,14 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 
 	// Add setting buttons to the button box.
 	int row = 0;
-	add_settings(row, ToggleButtonEntry);
-	add_settings(row, OptionMenuEntry);
+	add_settings(row, BoolToggleButtonEntry);
+	// add_separator(row);
+	add_settings(row, NumToggleButtonEntry);
+	add_separator(row);
+	add_settings(row, OtherOptionMenuEntry);
+	add_separator(row);
+	add_settings(row, CheckOptionMenuEntry);
+	add_separator(row);
 	add_settings(row, TextFieldEntry);
 	clear_gdb_question_cache();
 
@@ -517,6 +601,6 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 	XtManageChild(scroll);
     }
 
-    XtManageChild(settings_dialog);
-    raise_shell(settings_dialog);
+    XtManageChild(settings);
+    raise_shell(settings);
 }
