@@ -124,9 +124,15 @@ bool LiterateAgent::default_block_tty_input()
     if (version_major > 5)
 	return false;
 
-    // According to Terence Spielman <terence@globeset.com>, this is also
-    // true for Linux with GNU libc 5.4.35.  Anders Wegge Jakobsen
-    // <wegge@wegge.dk> reports the same for GNU libc 5.4.38.
+    // According to Andi <ak@muc.de>, Linux with GNU libc 5.3.12 wants
+    // BLOCK_TTY_INPUT to be unset.
+    if (version_major == 5 && version_minor <= 3)
+	return false;
+
+    // According to Terence Spielman <terence@globeset.com>, Linux
+    // with GNU libc 5.4.35 also doesn't want BLOCK_TTY_INPUT.  Anders
+    // Wegge Jakobsen <wegge@wegge.dk> reports the same for GNU libc
+    // 5.4.38.
     if (version_major == 5 && version_minor > 4)
 	return false;
     if (version_major == 5 && version_minor == 4 && version_subminor > 33)
