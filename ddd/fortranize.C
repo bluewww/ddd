@@ -40,20 +40,45 @@ char fortranize_rcsid[] =
 #include "regexps.h"
 #include "disp-read.h"		// is_invalid()
 
+// Return ID in `fortranized' form -- that is, in lower/upper case and
+// with `_' suffix.
+static string _fortranize_globals(const string& id)
+{
+    if (!id.contains('_', -1))
+    {
+	// 1. Try `_'  postfix, lower-case.  Global objects in g77.
+	// 2. Try `__' postfix, lower-case.  In g77, if the name contains `_'.
+	// 3. Try `_'  postfix, upper-case.  Global objects in f77.
+	// 4. Try `__' postfix, upper-case.  In f77?
+
+	for (int caps = 0; caps < 2; caps++)
+	{
+	    string new_id = caps ? upcase(id) : downcase(id);
+	    
+	    for (int suffix_length = 1; suffix_length < 3; suffix_length++)
+	    {
+		new_id += '_';
+		if (!is_invalid(gdbValue(new_id)))
+		    return new_id;
+	    }
+	}
+    }
+
+    // Don't know what to try next - use as given
+    return id;
+}
 
 
 // Return ID in `fortranized' form -- that is, in lower/upper case and
 // with appended `_'.  If GLOBALS_FIRST is set, try global symbols first.
 string _fortranize(const string& id, bool globals_first)
 {
-    if (globals_first && !id.contains('_', -1))
+    if (globals_first)
     {
 	// Try global identifier first.
-	if (!is_invalid(gdbValue(downcase(id) + "_")))
-	    return downcase(id) + "_";
-
-	if (!is_invalid(gdbValue(upcase(id) + "_")))
-	    return upcase(id) + "_";
+	string global_id = _fortranize_globals(id);
+	if (global_id != id)
+	    return global_id;
     }
 
     // Try identifier as given.
@@ -68,18 +93,8 @@ string _fortranize(const string& id, bool globals_first)
     if (!is_invalid(gdbValue(upcase(id))))
 	return upcase(id);
 
-    // Try with `_' postfix, lower-case.  g77 does this for global objects.
-    if (!id.contains('_', -1) &&
-	!is_invalid(gdbValue(downcase(id) + "_")))
-	return downcase(id) + "_";
-
-    // Try with `_' postfix, upper-case.  f77 does this for global objects.
-    if (!id.contains('_', -1) &&
-	!is_invalid(gdbValue(upcase(id) + "_")))
-	return upcase(id) + "_";
-
-    // Don't know what to try next - use as given
-    return id;
+    // Try global objects.
+    return _fortranize_globals(id);
 }
 
 // Return ID in `fortranized' form -- that is, in lower/upper case and
