@@ -2808,6 +2808,14 @@ static Widget create_themes(DebuggerType type)
     if (themes_panel != 0)
 	XtDestroyWidget(themes_panel);
 
+    // Reset variables
+    static WidgetArray empty;
+    themes_panel        = 0;
+    reset_themes_button = 0;
+    apply_themes_button = 0;
+    themes_entries = empty;
+    themes_labels  = empty;
+
     themes_panel = create_panel(type, THEMES);
 
     update_themes();

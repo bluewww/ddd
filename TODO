@@ -337,6 +337,5 @@ Volunteers for these and other projects are welcome!
     * Scan entire VSL include path for themes
     * Cache computed VSL libraries (clear when changed)
     * Make `Suppress' more easily accessible
-    * Allow for re-opening the `themes' menu (clear `entries' arrays)
 
 385 (Insert new project ideas here)
