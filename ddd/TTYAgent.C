@@ -223,7 +223,7 @@ extern "C" {
 
 // Open a tty.
 // Like open(TTY, FLAGS), but care for EAGAIN and EWOULDBLOCK conditions
-int TTYAgent::open_tty(const char *tty, int flags = O_RDWR)
+int TTYAgent::open_tty(const char *tty, int flags)
 {
     int fd = open(tty, flags);
     if (fd >= 0)
