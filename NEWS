@@ -55,6 +55,8 @@ DDD 3.0 [in beta test]
     - Paned window management has been improved a lot.
     - DDD now works around a Motif 2.1/XFree86 bug that caused glyphs
       to disappear.  See the `cacheGlyphImages' resource for details.
+      (This bug could be fixed thanks to Trond Eivind Glomsrød
+      <teg@pvv.ntnu.no> who donated a copy of Motif 2.1 for Linux)
     - The `endless scrolling' problem may now be prevented by delaying
       glyph updates.  See the `glyphUpdateDelay' resource for details.
     - DDD no longer terminates the inferior debugger when receiving an 

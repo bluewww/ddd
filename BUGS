@@ -286,11 +286,6 @@ Volunteers for fixing these and other bugs are welcome!
     saved and worse, the sub-windows are being resized to some
     internal default when 'Save Options' returns. 
 
-274*Mike Bond <mike.bond@template.com> says:
-    I'm also getting loads of 'Warning: Cannot convert string
-    "@CHARSET@" to type FontStruct' and other such, where CHARSET is
-    replace with one of several other strings.
-
 275 (LessTif only) In the GDB settings, the option menus are not
     shown.
 
