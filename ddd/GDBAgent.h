@@ -88,6 +88,7 @@ const int WATCH_CHANGE = 1;	// break if value changes
 const int WATCH_READ   = 2;	// break if value is read
 const int WATCH_WRITE  = 4;	// break if value is written
 
+const int WATCH_ACCESS = WATCH_READ | WATCH_WRITE; // shorthand
 
 //-----------------------------------------------------------------------------
 // Procedure types.
@@ -344,11 +345,7 @@ public:
 
     // Non-zero if debugger has `watch' command; also indicates
     // `watch' capabilities
-    WatchMode has_watch_command() const     { return _has_watch_command; }
-    bool has_watch_command(WatchMode w) const
-    {
-	return has_watch_command() & w;
-    }
+    bool has_watch_command() const     { return _has_watch_command; }
     WatchMode has_watch_command(WatchMode val)
     { 
 	return _has_watch_command = val;

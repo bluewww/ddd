@@ -1586,28 +1586,28 @@ string GDBAgent::regs_command(bool all) const
 // Watch expressions
 string GDBAgent::watch_command(string expr, WatchMode w) const
 {
-    if (!has_watch_command(w))
+    if ((has_watch_command() & w) != w)
 	return "";
 
     switch (type())
     {
     case GDB:
-	if (w & WATCH_CHANGE)
+	if ((w & WATCH_CHANGE) == WATCH_CHANGE)
 	    return "watch " + expr;
-	if ((w & WATCH_WRITE) && (w & WATCH_READ))
+	if ((w & WATCH_ACCESS) == WATCH_ACCESS)
 	    return "awatch " + expr;
-	if (w & WATCH_READ)
+	if ((w & WATCH_READ) == WATCH_READ)
 	    return "rwatch " + expr;
 	return "";
    
     case DBX:
-	if (w | WATCH_CHANGE)
+	if ((w & WATCH_CHANGE) == WATCH_CHANGE)
 	    return "stop " + expr;
 	return "";
 
     case XDB:
 	// Not available.  (There is the `assertion' concept which is
-	// similar but won't fit into the GUI.)
+	// similar but won't fit into the DDD GUI.)
 	return "";
 
     case JDB:
