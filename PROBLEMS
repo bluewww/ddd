@@ -580,21 +580,6 @@ Reported by:  mlj@gensym.com (Magnus Ljungberg)
     `ddd.C'.
 
 
-libiberty
-=========
-
-Reported by: Martin Opel and Arnaud Desitter
-
-    On systems without a pre-installed libiberty, configure process may fail,
-    for example if CFLAGS and CXXFLAGS are defined and contain spaces.
-    ddd 3.3.8 requires autoconf 2.53 and later and the bundled libiberty uses
-    autoconf 2.13 which leads to this problem.  The easier workaround is to
-    attempt a build without libiberty.  For that purpose, use './configure
-    --without-libiberty'. If the previous method is not successful, revert to
-    the former method and when it fails, configure manually libiberty by
-    typing the proper configure command in the "libiberty" directory.
-
-
 Cygwin
 ======
 
@@ -610,6 +595,6 @@ for f in `grep -rl '^#pragma interface' .` ; do mv $f $f.old ; sed -e 's:^#pragm
 
     Furthermore, recent versions of the autotools are necessary and the
     configure script and associated files may have to be regenerated.
-    autoconf-2.5x, automake-1.7.x, and libtool-1.5+ are recommended.
+    libtool-1.5+ is required.
 
 $Id$

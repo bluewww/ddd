@@ -13,8 +13,8 @@ DDD-3.3.9
 - Builds with readline support now work.
 - Builds without -DNDEBUG (i.e. with "assert" enabled) now work.
 - Several missing files in the distribution are now included.
-- The libiberty distributed with ddd has been upgraded to the one released
-  with gcc-3.3.2.
+- The libiberty distributed with ddd has been upgraded to the one included
+  in GCC 3.4 20040116.
 - configure has a new option '--without-libiberty' that avoids linking ddd
   against libiberty.  It can be useful to workaround configuration problems.
 - The configure machinery has been updated to conform more closely to the
