@@ -1017,6 +1017,14 @@ DispValue *DispValue::_update(DispValue *source,
     DispValue *ret = source->link();
     ret->changed = was_changed = was_initialized = true;
 
+    // Copy the basic settings
+    ret->myexpanded = expanded();
+    ret->dereference(dereferenced());
+    if (vertical_aligned())
+	ret->align_vertical();
+    if (horizontal_aligned())
+	ret->align_horizontal();
+
     unlink();
     return ret;
 }
@@ -1193,7 +1201,19 @@ void DispValue::plot() const
 
     if (plotter() == 0)
     {
-	((DispValue *)this)->_plotter = new_plotter(full_name());
+	string title = full_name();
+	if (is_user_command(title))
+	{
+	    title = user_command(title);
+	    if (title.contains("info ", 0))
+		title = title.after("info ");
+	    else if (title.contains(" "))
+		title = title.before(" ");
+	    if (title.length() > 0)
+		title = toupper(title[0]) + title.after(0);
+	}
+
+	((DispValue *)this)->_plotter = new_plotter(title);
 	plotter()->addHandler(Died, PlotterDiedHP, (void *)this);
     }
 
