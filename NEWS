@@ -5,7 +5,7 @@ DDD 2.2 [in development]
 ------------------------
 
     User-visible changes to DDD 2.1:
-    - The DDD windows now require less width:
+    - DDD now requires less width:
       + Source line numbers have been turned off (can be restored);
         the breakpoint area extends to the first non-blank character.
       + The `Disable ()' button for disabling displays has gone;

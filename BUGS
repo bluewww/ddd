@@ -381,11 +381,9 @@ Volunteers for fixing these and other bugs are welcome!
      variable name, it responds appopriately, but if I try to
      drag-hilite the name, ddd goes berserk with the cpu.
 
-176. Les Schaffer <godzilla@futuris.net> states: I use DDD 2.1.1 on a
-     Linux Machine, using LessTif 0.79.  The program starts fine, and
-     it runs code fine. But when i step in such a way that source
-     lines are in a different file than the main file, that source is
-     NOT displayed: instead the main file is displayed at some
-     arbitrary line number.
+177. Michael Taeschner <Michael.Taeschner@dlr.de> reports that using
+     SGI dbx, setting of temporary breakpoints regularly fails because
+     dbx cannot handle `when at { }' without a command inside the
+     parentheses (this should be `{ delete xx,yy }' anyway).
 
-177. (Insert your bug here)
+178. (Insert your bug here)
