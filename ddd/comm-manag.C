@@ -45,32 +45,33 @@ char comm_manager_rcsid[] =
 //-----------------------------------------------------------------------------
 #include "comm-manag.h"
 
-#include "bool.h"
-#include "cook.h"
+#include "AppData.h"
 #include "Command.h"
-#include "ddd.h"
+#include "DataDisp.h"
+#include "DispBuffer.h"
+#include "DispValue.h"
+#include "PosBuffer.h"
+#include "SourceView.h"
+#include "VoidArray.h"
+#include "bool.h"
+#include "buttons.h"
+#include "cmdtty.h"
+#include "cook.h"
 #include "dbx-lookup.h"
+#include "ddd.h"
+#include "disp-read.h"
+#include "editing.h"
 #include "exit.h"
 #include "file.h"
-#include "disp-read.h"
-#include "DispBuffer.h"
-#include "PosBuffer.h"
-#include "string-fun.h"
-#include "post.h"
-#include "cmdtty.h"
-#include "editing.h"
 #include "history.h"
-#include "SourceView.h"
-#include "DataDisp.h"
-#include "DispValue.h"
-#include "version.h"
-#include "VoidArray.h"
-#include "buttons.h"
+#include "index.h"
+#include "post.h"
 #include "question.h"
 #include "regexps.h"
-#include "index.h"
 #include "settings.h"
-#include "AppData.h"
+#include "string-fun.h"
+#include "version.h"
+#include "windows.h"
 
 #include <ctype.h>
 
@@ -500,6 +501,7 @@ void start_gdb()
 	break;
 
     case JDB:
+	plus_cmd_data->refresh_initial_line = true;
 	cmds += "use";
 	plus_cmd_data->refresh_class_path = true;
 	break;
@@ -1895,6 +1897,12 @@ void plusOQAC (const StringArray& answers,
 	case DBX:
 	case JDB:
 	    break;
+	}
+
+	if (running_shells() == 0)
+	{
+	    // No shell (yet) -- be sure to popup something
+	    gdbOpenSourceWindowCB(gdb_w, 0, 0);
 	}
     }
 
