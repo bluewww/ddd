@@ -250,9 +250,9 @@ Volunteers for these and other projects are welcome!
      boxes.  [Place this on Button2 or Shift+Button1?  -AZ]
 
 110. N. Dan Zou <zou@hooked.net> suggests a way to display the class
-     structure of an existing program graphically.  [Use the `ptype'
-     output to display types graphically; dereference type names as
-     required.  -AZ]
+     structure of an existing program graphically.  [Should be
+     implemented as follows: use the `ptype' output to display types
+     graphically; dereference type names as required.  -AZ]
 
 113. In DBX, use `setenv EDITOR echo' and `edit' to determine the
      full path of the current source file.  Be sure to reset EDITOR to
@@ -277,9 +277,6 @@ Volunteers for these and other projects are welcome!
 120. Check whether `dbxenv output_short_file_name off' helps in
      debugging DBX code.
 
-121. Mirror the DDD WWW pages, using `wget' 
-     (see `ftp://gnjilux.cc.fer.hr/pub/unix/util/wget/')
-
 122. Have a window that shows DDD/GDB communication, with the ability
      to modify commands before they are processed.
 
@@ -288,7 +285,7 @@ Volunteers for these and other projects are welcome!
 
 124* Include more pictures in the PostScript copy of the DDD manual.
 
-126. `shorten' is needs some improvements (count `(' and `)'
+126. `shorten' may need some improvements (count `(' and `)'
      occurrences, etc.)
 
 127. Include `jdb' (Java debugger) support.  For details, see
@@ -296,8 +293,18 @@ Volunteers for these and other projects are welcome!
 
 128. Have a way to completely remove selected struct members from the
      view.  Suggested by marjeta@mccabe.com (Marjeta Cedilnik).
-     [Could this done by pressing `delete' on them?  -AZ]
+     [Could this done by pressing `delete' on them?  And should other
+      displayed items be affected, too?  -AZ]
 
-129. Detect self-modifying code.  
+129. Detect self-modifying code.
 
-130. (Insert your project idea here)
+130* Have a `bookmarks' menu like the `Highlight' menu in tkman.
+
+131. Include the Athena Panner widget in the DDD distribution, such
+     that Athena/Motif conflicts are removed.
+
+132. Include NEWS, INSTALL, COPYING and the FAQ in the DDD Manual,
+     and have the DDD `Help' menu items invoke the appropriate
+     sections.
+ 
+134. (Insert your project idea here)
