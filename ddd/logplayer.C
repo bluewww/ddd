@@ -283,8 +283,11 @@ void logplayer(const string& logname)
 		if (ddd_line.contains('q', 0))
 		    exit(EXIT_SUCCESS);
 
-		if (ddd_line.contains("list ", 0) && 
-		    (ddd_line.contains(" 1,") || ddd_line.contains(":1,")))
+		if ((ddd_line.contains("list ", 0) || 
+		     ddd_line.contains("l ", 0)) && 
+		    (ddd_line.contains(" 1,") || 
+		     ddd_line.contains(":1,") || 
+		     ddd_line.contains(" 1-")))
 		{
 		    // Send the log file instead of a source
 		    ifstream is(logname);
