@@ -53,21 +53,22 @@ month=`date +"%m"`
 day=`date +"%d"`
 date=$year-$month-$day
 
-# Let this release expire in six months.
+# Let this release expire in 30-60 days.  It is unlikely we won't make
+# any changes until then.
 next_year=`expr $year + 1`
 case $month in
-01) expires=$year-07-01;;
-02) expires=$year-08-01;;
-03) expires=$year-09-01;;
-04) expires=$year-10-01;;
-05) expires=$year-11-01;;
-06) expires=$year-12-01;;
-07) expires=$next_year-01-01;;
-08) expires=$next_year-02-01;;
-09) expires=$next_year-03-01;;
-10) expires=$next_year-04-01;;
-11) expires=$next_year-05-01;;
-12) expires=$next_year-06-01;;
+01) expires=$year-03-01;;
+02) expires=$year-04-01;;
+03) expires=$year-05-01;;
+04) expires=$year-06-01;;
+05) expires=$year-07-01;;
+06) expires=$year-08-01;;
+07) expires=$next_09-01;;
+08) expires=$next_10-01;;
+09) expires=$next_11-01;;
+10) expires=$next_12-01;;
+11) expires=$next_year-01-01;;
+12) expires=$next_year-02-01;;
 esac
 
 # We are working in /tmp/ddd.  In case of trouble, clean up.
