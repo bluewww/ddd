@@ -34,7 +34,6 @@ char ThemeManager_rcsid[] =
 #endif
 
 #include "ThemeM.h"
-#include "cook.h"
 #include "string-fun.h"
 
 #include <iostream.h>
@@ -72,9 +71,14 @@ ThemeManager::ThemeManager(const string& rep)
 	    theme = s;
 	    s = "";
 	}
-	
+
 	strip_space(theme);
 	strip_space(s);
+
+	if (theme == "")
+	    continue;
+	if (s == "")
+	    s = "*";
 
 	bool active = true;
 	if (theme.contains("!", 0))
