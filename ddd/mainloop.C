@@ -56,6 +56,11 @@ void ddd_main_loop()
 	main_loop_entered = false;
 	ddd_show_signal(sig);
 	reset_status_lock();
+
+	// Bring X in a consistent state
+	XUngrabPointer(XtDisplay(gdb_w), CurrentTime);
+	XUngrabKeyboard(XtDisplay(gdb_w), CurrentTime);
+	XUngrabServer(XtDisplay(gdb_w));
     }
 
     // Set `main_loop_entered' to true as soon 
