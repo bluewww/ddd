@@ -2721,7 +2721,7 @@ ProgramLanguage GDBAgent::program_language(string text)
     if (type() == GDB && text.contains("language"))
 	text = text.after("language");
 
-    if (text.contains("\n"));
+    if (text.contains("\n"))
 	text = text.before("\n");
 
     static struct {
