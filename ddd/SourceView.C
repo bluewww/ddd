@@ -6700,13 +6700,24 @@ void SourceView::process_where(string& where_output)
 
     split(where_output, frame_list, count, '\n');
 
-    while (count > 0 && frame_list[count - 1] == "")
-	count--;
+    StringArray frames;
+    int i;
+    for (i = 0; i < count; i++)
+    {
+	const string& frame = frame_list[i];
+	if (frame.contains("Reading ", 0))
+	    continue;		// Skip GDB `Reading in symbols' messages
+
+	frames += frame;
+    }
+    delete[] frame_list;
+    frame_list = frames;
+    count = frames.size();
 
     if (gdb->type() != XDB)
     {
 	// Invert list such that `Up' and `Down' make sense
-	for (int i = 0; i < count / 2; i++)
+	for (i = 0; i < count / 2; i++)
 	{
 	    string tmp = frame_list[i];
 	    frame_list[i] = frame_list[count - i - 1];
@@ -6715,7 +6726,7 @@ void SourceView::process_where(string& where_output)
     }
 
     // Make sure we have a minimum width
-    for (int i = 0; i < count; i++)
+    for (i = 0; i < count; i++)
     {
 	selected[i] = false;
 	setup_where_line(frame_list[i]);
@@ -6729,7 +6740,6 @@ void SourceView::process_where(string& where_output)
 	setLabelList(frame_list_w, frame_list, selected, count, false, false);
     set_frame_pos(0, 0);
 
-    delete[] frame_list;
     delete[] selected;
 }
 
