@@ -56,6 +56,7 @@ class BreakPoint {
     int     myline_nr;
     string  myaddress;
     string  myinfos;
+    string  myignore_count;
     bool    myenabled_changed;
     bool    myfile_changed;
     bool    myposition_changed;
@@ -69,18 +70,20 @@ public:
     //
     BreakPoint (string& info_output);
 
-    const string& number_str() const { return mynumber_str; }
-    int           number    () const { return mynumber; }
-    BPType        type      () const { return mytype; }
-    BPDispo       dispo     () const { return mydispo; }
-    bool          enabled   () const { return myenabled; }
-    const string& file_name () const { return myfile_name; }
-    int           line_nr   () const { return myline_nr; }
-    const string& address   () const { return myaddress; }
-    const string& infos     () const { return myinfos; }
-    bool&         selected  ()       { return myselected; }
-    Widget&       source_glyph ()    { return mysource_glyph; }
-    Widget&       code_glyph ()      { return mycode_glyph; }
+    const string& number_str()   const { return mynumber_str; }
+    int           number()       const { return mynumber; }
+    BPType        type()         const { return mytype; }
+    BPDispo       dispo()        const { return mydispo; }
+    bool          enabled()      const { return myenabled; }
+    const string& file_name()    const { return myfile_name; }
+    int           line_nr()      const { return myline_nr; }
+    const string& address()      const { return myaddress; }
+    const string& infos()        const { return myinfos; }
+    string        ignore_count() const { return myignore_count; }
+
+    bool&         selected()        { return myselected; }
+    Widget&       source_glyph()    { return mysource_glyph; }
+    Widget&       code_glyph()      { return mycode_glyph; }
 
     // true wenn sich beim letzten update enabled geaendert hat.
     //

@@ -176,8 +176,8 @@ MMDesc SourceView::address_popup[] =
     MMEnd
 };
 
-struct BPItms { enum Itms {Disable, Dummy1, Condition, IgnoreCount, 
-			   Dummy2, Delete}; };
+struct BPItms { enum Itms {Disable, Sep1, Condition, IgnoreCount, 
+			   Sep2, Delete}; };
 MMDesc SourceView::bp_popup_gdb[] =
 {
     {"disable",      MMPush, {SourceView::bp_popup_disableCB}},
@@ -3030,8 +3030,14 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
 	switch (gdb->type())
 	{
-	case GDB:
 	case XDB:
+	    // We don't support these items in XDB
+	    XtUnmanageChild(bp_popup_gdb[BPItms::Sep1].widget);
+	    XtUnmanageChild(bp_popup_gdb[BPItms::Condition].widget);
+	    XtUnmanageChild(bp_popup_gdb[BPItms::Sep2].widget);
+
+	    // FALL THROUGH
+	case GDB:
 	    {
 		MString label(bp_map.get(bp_nr)->enabled() ? 
 			      "Disable Breakpoint" : "Enable Breakpoint");
@@ -3360,20 +3366,32 @@ void SourceView::EditBreakpointIgnoreCountDCB(Widget,
     if (input[0] == '\0')
 	input = "0";
 
+    string ignore;
+    switch (gdb->type())
+    {
+    case GDB:
+	ignore = "ignore ";
+	break;
+    case DBX:
+	return;			// FIXME
+    case XDB:
+	ignore = "bc ";
+	break;
+    }
+
     if (client_data == 0)
     {
 	int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
 	for (int i = 0; breakpoint_nrs[i] > 0; i++)
 	{
-	    gdb_command(string("ignore ") + itostring(breakpoint_nrs[i])
-			+ " " + input);
+	    gdb_command(ignore + itostring(breakpoint_nrs[i]) + " " + input);
 	}
 	delete[] breakpoint_nrs;
     }
     else
     {
 	int bp_nr = *((int *)client_data);
-	gdb_command(string("ignore ") + itostring(bp_nr) + " " + input);
+	gdb_command(ignore + itostring(bp_nr) + " " + input);
     }
 
     XtFree(input);
@@ -3423,13 +3441,39 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
 
     if (bp_nr > 0)
     {
-	string info = 
-	    gdb_question("info breakpoint " + itostring(bp_nr));
-	if (info == NO_GDB_ANSWER)
-	    return;
+	string ignore;
+	switch (gdb->type())
+	{
+	case GDB:
+	    {
+		string info = 
+		    gdb_question("info breakpoint " + itostring(bp_nr));
+		if (info == NO_GDB_ANSWER)
+		    return;
 
-	string ignore = info.after("ignore next ");
-	ignore = ignore.before(" hits");
+		ignore = info.after("ignore next ");
+		ignore = ignore.before(" hits");
+	    }
+	    break;
+
+	case DBX:
+	    break;		// FIXME
+
+	case XDB:
+	    {
+		MapRef ref;
+		for (BreakPoint* bp = bp_map.first(ref);
+		     bp != 0;
+		     bp = bp_map.next(ref))
+		{
+		    if (bp->number() == bp_nr && bp->ignore_count() != "")
+		    {
+			ignore = bp->ignore_count();
+			break;
+		    }
+		}
+	    }
+	}
 
 	MString xmignore(ignore);
 	XtVaSetValues(edit_breakpoint_ignore_count_dialog,
@@ -3579,7 +3623,7 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer, XtPointer)
     XtSetSensitive(bp_area[BPButtons::Disable].widget,     
 		   gdb->type() != DBX && count > 0);
     XtSetSensitive(bp_area[BPButtons::Condition].widget,   
-		   gdb->type() != DBX && count > 0);
+		   gdb->type() == GDB && count > 0);
     XtSetSensitive(bp_area[BPButtons::IgnoreCount].widget, 
 		   gdb->type() != DBX && count > 0);
     XtSetSensitive(bp_area[BPButtons::Delete].widget,

@@ -62,6 +62,7 @@ BreakPoint::BreakPoint (string& info_output)
       myline_nr(0),
       myaddress(""),
       myinfos(""),
+      myignore_count(""),
       myfile_changed(true),
       myposition_changed(true),
       myaddress_changed(true),
@@ -198,8 +199,8 @@ BreakPoint::BreakPoint (string& info_output)
 	    {
 		info_output = info_output.after("count:");
 		read_leading_blanks(info_output);
-		(void) read_positive_nr(info_output);
-		read_leading_blanks(info_output);
+		myignore_count = info_output.before(RXblanks_or_tabs);
+		info_output = info_output.after(RXblanks_or_tabs);
 	    }
 	    
 	    // Check for `Active'
@@ -432,8 +433,13 @@ bool BreakPoint::update (string& info_output)
 	    {
 		info_output = info_output.after("count:");
 		read_leading_blanks(info_output);
-		(void) read_positive_nr(info_output);
-		read_leading_blanks(info_output);
+		string ignore_count = info_output.before(RXblanks_or_tabs);
+		info_output = info_output.after(RXblanks_or_tabs);
+		if (myignore_count != ignore_count)
+		{
+		    changed = true;
+		    myignore_count = ignore_count;
+		}
 	    }
 	    
 	    // Check for `Active'
