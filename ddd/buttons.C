@@ -245,6 +245,8 @@ static string gdbValue(const string& expr)
     {
 	// Ask debugger for value
 	value = gdb_question(gdb->print_command(expr), help_timeout);
+	read_leading_blanks(value);
+	strip_final_blanks(value);
     }
 
     if (value != NO_GDB_ANSWER)
@@ -317,28 +319,49 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 		break;
 	    }
 	}
+
+	// Get value of ordinary variable
 	tip = gdbValue(expr);
 	if (tip == NO_GDB_ANSWER)
 	    return MString(0, true);
 
+	if (is_invalid(tip) && widget == source_view->code())
+	{
+	    // Get register value - look up `$pc' when pointing at `pc'
+	    expr.prepend("$");
+	    tip = gdbValue(expr);
+	    if (tip == NO_GDB_ANSWER)
+		return MString(0, true);
+
+	    if (tip.matches(rxint))
+	    {
+		// Show hex value as well.  We don't do a local
+		// conversion here, but ask GDB instead, since the hex
+		// format may be language-dependent.
+		string hextip = gdbValue("/x " + expr);
+		if (hextip != NO_GDB_ANSWER)
+		    tip = hextip + " (" + tip + ")";
+	    }
+	}
+	    
 	if (is_invalid(tip))
 	{
 	    if (for_documentation)
-	    {
-#if 0
-		// Give a diagnostic in the status line
-		if (tip.contains('\n'))
-		    tip = tip.before('\n');
-		return MString(tip, "rm");
-#else
 		return empty;
-#endif
-	    }
-
-	    return MString(0, true);
+	    else
+		return MString(0, true);
 	}
 
 	tip = get_disp_value_str(tip, gdb);
+	if (tip == "void")
+	    return MString(0, true);
+
+	if (for_documentation)
+	{
+	    // The status line shows the name we're pointing at
+	    tip.prepend(expr + " = ");
+	}
+
 	int max_length = 
 	    for_documentation ? max_value_doc_length : max_value_tip_length;
 	shorten(tip, max_length);
