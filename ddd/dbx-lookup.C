@@ -80,20 +80,26 @@ string dbx_lookup(const string& func_name)
 	return "";
     }
 
-    string file;
-    string line;
+    string file = "";
+    int line    = 0;
     switch (gdb->type())
     {
     case GDB:
+    {
 	file = reply.from('\"');
 	file = file.before('\"');
-	line = reply.after("Line ");
+	string line_s = reply.after("Line ");
+	line = atoi(line_s);
 	break;
+    }
 
     case DBX:
-	line = itostring(line_of_listing(reply));
-	file = gdb_question("file");
-	strip_final_blanks(file);
+	line = line_of_listing(reply);
+	if (line > 0)
+	{
+	    file = gdb_question("file");
+	    strip_final_blanks(file);
+	}
 	break;
 
     case XDB:
@@ -107,7 +113,8 @@ string dbx_lookup(const string& func_name)
 		reply = reply.after(':'); // Skip file
 		reply = reply.after(':'); // Skip function
 		read_leading_blanks(reply);
-		line = reply.before(':');
+		string line_s = reply.before(':');
+		line = atoi(line_s);
 	    }
 	    else
 	    {
@@ -117,10 +124,9 @@ string dbx_lookup(const string& func_name)
 	}
     }
 
-    if (atoi(line) == 0)
-	return "";
-
-    string pos = file + ":" + line;
+    string pos = "";
+    if (line > 0)
+	pos = file + ":" + itostring(line);
 
     pos_cache[func_name] = pos;
     return pos;

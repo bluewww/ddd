@@ -624,8 +624,15 @@ bool BreakPoint::get_state(ostream& os, int nr, bool dummy, string pos)
 
     case DBX:
     {
-	os << "file " << file_name() << "\n";
-	os << "stop at " << line_nr() << "\n";
+	if (pos.contains('*', 0))
+	{
+	    os << "stop at " << pos.after('*') << '\n';
+	}
+	else
+	{
+	    os << "file "    << pos.before(':') << "\n";
+	    os << "stop at " << pos.after(':')  << "\n";
+	}
 	break;
     }
 

@@ -101,7 +101,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_setenv_command(tp == DBX),
       _has_edit_command(tp == DBX),
       _has_make_command(tp == GDB || tp == DBX),
-      _has_jump_command(tp == GDB),
+      _has_jump_command(true),
       _has_named_values(tp == GDB || tp == DBX),
       _has_when_command(tp == DBX),
       _has_when_semicolon(tp == DBX),
@@ -1222,13 +1222,29 @@ string GDBAgent::make_command(string args) const
 	return cmd + " " + args;
 }
 
-// Some DBXes want `sh make' instead of `make'
+// Move PC to POS
 string GDBAgent::jump_command(string pos) const
 {
     if (!has_jump_command())
 	return "";
 
-    return "jump " + pos;
+    switch (type())
+    {
+    case GDB:
+	return "jump " + pos;
+   
+    case XDB:
+    {
+	if (pos.contains('*', 0))
+	    pos = pos.after('*');
+	return "g " + pos;
+    }
+
+    case DBX:
+	return "cont at " + pos;
+    }
+
+    return "";			// Never reached
 }
 
 string GDBAgent::kill_command() const

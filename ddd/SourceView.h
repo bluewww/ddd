@@ -618,7 +618,9 @@ public:
 
     // Return `clear ARG' command.  If CLEAR_NEXT is set, attempt to
     // guess the next event number and clear this one as well.
-    static string clear_command(string arg, bool clear_next = false);
+    // Consider only breakpoints whose number is >= FIRST_BP.
+    static string clear_command(string arg, bool clear_next = false,
+				int first_bp = 0);
 
     // Return `{ COMMAND; }'
     static string command_list(string cmd);

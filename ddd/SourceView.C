@@ -609,6 +609,7 @@ void SourceView::line_popup_set_tempCB (Widget w,
 // temporary.  W is the origin.
 void SourceView::set_bp(const string& a, bool set, bool temp, Widget w)
 {
+    int new_bps = max_breakpoint_number_seen + 1;
     string address = a;
 
     if (address != "" && address[0] == '0')
@@ -642,13 +643,14 @@ void SourceView::set_bp(const string& a, bool set, bool temp, Widget w)
 		{
 		    syncCommandQueue();
 		    gdb_command("when $pc == " + address + " "
-				+ command_list(clear_command(address, true)),
+				+ command_list(clear_command(address, true, 
+							     new_bps)),
 				w);
 		}
 	    }
 	    else
 	    {
-		string line;
+		string line = "";
 		if (address.matches(rxint))
 		{
 		    // Line number given
@@ -657,18 +659,37 @@ void SourceView::set_bp(const string& a, bool set, bool temp, Widget w)
 		}
 		else if (address.contains(":") && !address.contains("::"))
 		{
-		    // Function:line given
+		    // File:line given
 		    string file = address.before(':');
 		    line = address.after(':');
 
 		    gdb_command("file " + file, w);
 		    gdb_command("stop at " + line, w);
 		}
+		else
+		{
+		    // Function given
+		    string pos = dbx_lookup(address);
+
+		    if (pos.contains(':'))
+		    {
+			string file = pos.before(':');
+			line = pos.after(':');
+
+			gdb_command("file " + file, w);
+			gdb_command("stop at " + line, w);
+		    }
+		    else
+		    {
+			// Cannot determine function position - try this one
+			gdb_command("stop in " + address, w);
+		    }
+		}
 
 		if (temp && line != "")
 		{
 		    syncCommandQueue();
-		    string clear_cmd = clear_command(line, true);
+		    string clear_cmd = clear_command(line, true, new_bps);
 		    gdb_command("when at " + line + " " 
 				+ command_list(clear_cmd), w);
 		}
@@ -700,16 +721,22 @@ void SourceView::clearBP(XtPointer client_data, XtIntervalId *)
     int bp_nr = int(client_data);
     BreakPoint *bp = bp_map.get(bp_nr);
     if (bp != 0)
-    {
-	// Delete last breakpoint
 	bp_popup_deleteCB(source_text_w, XtPointer(&bp_nr), 0);
-    }
 }
 
-void SourceView::clearJumpBP(const string&, void *)
+void SourceView::clearJumpBP(const string& msg, void *data)
 {
-    XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 0, clearBP, 
-		    XtPointer(max_breakpoint_number_seen));
+    set_status(msg);
+
+    int old_max_breakpoint_number_seen = int(data);
+
+    for (int i = old_max_breakpoint_number_seen + 1;
+	 i <= max_breakpoint_number_seen; i++)
+    {
+	// Delete all recently created breakpoints
+	XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w),
+			0, clearBP, XtPointer(i));
+    }
 }
 
 void SourceView::line_popup_temp_n_contCB (Widget w,
@@ -734,12 +761,15 @@ void SourceView::temp_n_cont(const string& a, Widget w)
     
     case DBX:
     {
+	int old_max_breakpoint_number_seen = max_breakpoint_number_seen;
+
 	// Create a temporary breakpoint
 	create_temp_bp(address, w);
 
 	// Make sure the temporary breakpoint is deleted after `cont'
 	Command c("cont", w);
 	c.callback = clearJumpBP;
+	c.data     = XtPointer(old_max_breakpoint_number_seen);
 	gdb_command(c);
 	break;
     }
@@ -785,20 +815,32 @@ void SourceView::move_pc(const string& a, Widget w)
 
     if (gdb->has_jump_command())
     {
-	// We prefer the GDB `jump' command since it requires
-	// confirmation when jumping out of the current function.
+	int old_max_breakpoint_number_seen = max_breakpoint_number_seen;
 
-	// Create a temporary breakpoint at ADDRESS
+	// We prefer the GDB `jump' command to setting `$pc'
+	// immediately since `jump' requires confirmation when jumping
+	// out of the current function.
+
+	// GDB and DBX immediately resume execution, which we don't
+	// want.  Create a temporary breakpoint at ADDRESS.
 	create_temp_bp(address, w);
+
+	if (gdb->type() == DBX)
+	{
+	    // DBX `cont at ' requires a line number.
+	    gdb_command("file " + address.before(':'));
+	    address = address.after(':');
+	}
 
 	// Jump to the new address and clear the breakpoint again
 	Command c(gdb->jump_command(address), w);
 	c.callback = clearJumpBP;
+	c.data     = XtPointer(old_max_breakpoint_number_seen);
 	gdb_command(c);
     }
     else
     {
-	// Use the `set $pc = ADDR' alternative
+	// Use the `set $pc = ADDR' alternative.
 	if (address.contains('*', 0))
 	{
 	    address = address.after('*');
@@ -810,7 +852,9 @@ void SourceView::move_pc(const string& a, Widget w)
 	    address = last_shown_pc;
 	}
 
-	if (address != "")
+	if (address == "")
+	    set_status("Cannot determine address of " + a);
+	else
 	    gdb_command(gdb->assign_command("$pc", address), w);
     }
 }
@@ -1122,7 +1166,10 @@ const char *SourceView::basename(const char *name)
 
 bool SourceView::file_matches(const string& file1, const string& file2)
 {
-    return file1 == file2 || full_path(file1) == full_path(file2);
+    if (gdb->type() == GDB || app_data.use_source_path)
+	return file1 == file2 || full_path(file1) == full_path(file2);
+    else
+	return base_matches(file1, file2);
 }
 
 bool SourceView::base_matches(const string& file1, const string& file2)
@@ -4042,9 +4089,9 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    // We don't support these items in XDB
 	    XtUnmanageChild(bp_popup[BPItms::Sep1].widget);
 	    XtUnmanageChild(bp_popup[BPItms::Sep2].widget);
-	    XtUnmanageChild(bp_popup[BPItms::Sep3].widget);
 	    XtUnmanageChild(bp_popup[BPItms::Condition].widget);
-	    XtUnmanageChild(bp_popup[BPItms::SetPC].widget);
+	    // XtUnmanageChild(bp_popup[BPItms::Sep3].widget);
+	    // XtUnmanageChild(bp_popup[BPItms::SetPC].widget);
 
 	    // FALL THROUGH
 	case GDB:
@@ -4080,8 +4127,8 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    }
 	    if (gdb->type() != GDB)
 	    {
-		XtUnmanageChild(line_popup[LineItms::Sep2].widget);
-		XtUnmanageChild(line_popup[LineItms::SetPC].widget);
+		// XtUnmanageChild(line_popup[LineItms::Sep2].widget);
+		// XtUnmanageChild(line_popup[LineItms::SetPC].widget);
 	    }
 	}
 
@@ -6477,19 +6524,18 @@ void SourceView::set_all_registers(bool set)
 }
 
 
-// Return `clear ARG' command.
-
-// If CLEAR_NEXT is set, attempt to guess the next event number and
-// clear this one as well.  This is useful for setting temporary
-// breakpoints, as `delete' must also clear the event handler we're
-// about to install.
-string SourceView::clear_command(string pos, bool clear_next)
+// Return `clear ARG' command.  If CLEAR_NEXT is set, attempt to guess
+// the next event number and clear this one as well.  (This is useful
+// for setting temporary breakpoints, as `delete' must also clear the
+// event handler we're about to install.)  Consider only breakpoints
+// whose number is >= FIRST_BP.
+string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 {
-    if (gdb->has_clear_command())
-	return "clear " + pos;
-
     string file = current_file_name;
     string line = pos;
+
+    if (gdb->type() == DBX && !pos.contains(':') && !pos.matches(rxint))
+	pos = dbx_lookup(pos);
 
     if (pos.contains(':'))
     {
@@ -6499,6 +6545,23 @@ string SourceView::clear_command(string pos, bool clear_next)
 
     int line_no = atoi(line);
 
+    if (!clear_next && gdb->has_clear_command())
+    {
+	switch (gdb->type())
+	{
+	case GDB:
+	    return "clear " + pos;
+
+	case DBX:
+	    if (line_no > 0 && file_matches(file, current_file_name))
+		return "clear " + line;
+	    break;
+
+	default:
+	    break;
+	}
+    }
+
     int max_bp_nr = -1;
     string bps = "";
     MapRef ref;
@@ -6506,7 +6569,8 @@ string SourceView::clear_command(string pos, bool clear_next)
 	 bp != 0;
 	 bp = bp_map.next(ref))
     {
-	if (bp->line_nr() == line_no
+	if (bp->number() >= first_bp
+	    && bp->line_nr() == line_no
 	    && (bp->file_name() == "" 
 		|| file_matches(bp->file_name(), file)))
 	    {

@@ -203,7 +203,6 @@ typedef struct PlusCmdData {
     bool     config_err_redirection;   // try 'help run'
     bool     config_xdb;	       // try XDB settings
     bool     config_output;            // try 'output'
-    bool     config_jump;              // try 'jump'
     bool     config_program_language;  // try 'show language'
 
     PlusCmdData () :
@@ -249,7 +248,6 @@ typedef struct PlusCmdData {
 	config_err_redirection(false),
 	config_xdb(false),
 	config_output(false),
-	config_jump(false),
 	config_program_language(false)
     {}
 };
@@ -355,8 +353,6 @@ void start_gdb()
 	plus_cmd_data->refresh_initial_line = true;
 	cmds += "output " + print_cookie;
 	plus_cmd_data->config_output = true;
-	cmds += "help jump";
-	plus_cmd_data->config_jump = true;
 	cmds += "show language";
 	plus_cmd_data->config_program_language = true;
 	cmds += "pwd";
@@ -856,7 +852,6 @@ void user_cmdSUC (string cmd, Widget origin,
     assert(!plus_cmd_data->config_err_redirection);
     assert(!plus_cmd_data->config_xdb);
     assert(!plus_cmd_data->config_output);
-    assert(!plus_cmd_data->config_jump);
     assert(!plus_cmd_data->config_program_language);
     
     // Setup additional trailing commands
@@ -1418,11 +1413,6 @@ static void process_config_output(string& answer)
 			    && answer.contains(print_cookie));
 }
 
-static void process_config_jump(string& answer)
-{
-    gdb->has_jump_command(is_known_command(answer));
-}
-
 static void process_config_where_h(string& answer)
 {
     gdb->has_where_h_option(is_known_command(answer));
@@ -1650,11 +1640,6 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->config_output) {
 	assert (qu_count < count);
 	process_config_output(answers[qu_count++]);
-    }
-
-    if (plus_cmd_data->config_jump) {
-	assert (qu_count < count);
-	process_config_jump(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_program_language) {
