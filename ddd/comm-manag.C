@@ -1081,6 +1081,7 @@ void send_gdb_command(string cmd, Widget origin,
 		unsigned long flags = DONT_RELOAD_FILE;
 		get_restart_commands(cmd_data->init_perl, flags);
 		cmd_data->init_perl += get_settings(gdb->type());
+		cmd_data->init_perl.prepend(app_data.perl_init_commands);
 
 		cmd_data->new_exec_pos = true;
 	    }
