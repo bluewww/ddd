@@ -1837,6 +1837,7 @@ static void HandleTipEvent(Widget w,
 	break;
 
     case MotionNotify:
+	if (XmIsText(w))
 	{
 	    static Widget last_motion_widget           = 0;
 	    static XmTextPosition last_motion_position = XmTextPosition(-1);
