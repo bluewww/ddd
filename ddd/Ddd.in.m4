@@ -1406,10 +1406,12 @@ Ddd*code_text_w.translations:   SOURCE_TRANSLATIONS GDB_TRANSLATIONS
 define(GLYPH_TRANSLATIONS,[#override\n\
 <Btn1Down>:	  ArmAndActivate() source-drag-glyph()	\n\
 <Btn1Motion>: 	  source-follow-glyph()                 \n\
-<Btn1Up>:	  source-drop-glyph()                   \n\
+~Shift <Btn1Up>:  source-drop-glyph(move)               \n\
+Shift <Btn1Up>:   source-drop-glyph(copy)               \n\
 <Btn2Down>:	  ArmAndActivate() source-drag-glyph()	\n\
 <Btn2Motion>: 	  source-follow-glyph()			\n\
-<Btn2Up>:	  source-drop-glyph()			\n\
+~Shift <Btn2Up>:  source-drop-glyph(move)               \n\
+Shift <Btn2Up>:   source-drop-glyph(copy)               \n\
 <Btn3Down>:	  source-popup-menu()			\n])dnl
 
 dnl This uses too much space:

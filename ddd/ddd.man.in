@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-04-16" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-04-21" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -4509,8 +4509,11 @@ Initiate a drag on the glyph at cursor position.
 Continue a drag on the glyph at cursor position.  Usually bound to
 some motion event.
 .TP
-.B source-drop-glyph ()
-Drop the dragged glyph at cursor position.
+.B source-drop-glyph ([\fIaction\fR])
+Drop the dragged glyph at cursor position.  \fIaction\fR is either
+`\fBmove\fR', meaning to move the dragged glyph, or `\fBcopy\fR',
+meaning to copy the dragged glyph.  If no \fIaction\fR is given,
+`\fBmove\fR' is assumed.
 .\"
 .\"
 .\" ---------------

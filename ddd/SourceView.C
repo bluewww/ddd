@@ -992,7 +992,7 @@ void SourceView::move_pc(const string& a, Widget w)
     }
 }
 
-void SourceView::move_bp(int bp_nr, const string& a, Widget w)
+void SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
 {
     string address = a;
 
@@ -1033,8 +1033,11 @@ void SourceView::move_bp(int bp_nr, const string& a, Widget w)
 	commands = commands.after('\n');
     }
 
-    // Delete old breakpoint
-    gdb_command(delete_command(bp_nr));
+    if (!copy)
+    {
+	// Delete old breakpoint
+	gdb_command(delete_command(bp_nr));
+    }
 }
 
 void SourceView::set_bp_cond(int bp_nr, const string& cond, Widget w)
@@ -7289,7 +7292,8 @@ void SourceView::followGlyphAct(Widget glyph, XEvent *e, String *, Cardinal *)
 	map_temp_arrow_at(text_w, pos, glyph);
 }
 
-void SourceView::dropGlyphAct (Widget glyph, XEvent *e, String *, Cardinal *)
+void SourceView::dropGlyphAct (Widget glyph, XEvent *e, 
+			       String *params, Cardinal *num_params)
 {
     if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
@@ -7368,10 +7372,25 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e, String *, Cardinal *)
 	address = current_source_name() + ':' + itostring(line_nr);
     }
 
+    string p = "move";
+    if (num_params != 0 && *num_params == 1)
+	p = params[0];
+    if (num_params != 0 && *num_params > 1)
+	cerr << "source-drop-glyph: too many parameters\n";
+    p.downcase();
+
+    bool copy = false;
+    if (p == "move")
+	copy = false;
+    else if (p == "copy")
+	copy = true;
+    else
+	cerr << "source-drop-glyph: unknown parameter " << quote(p) << "\n";
+
     if (current_drag_breakpoint)
     {
 	// Move breakpoint
-	move_bp(current_drag_breakpoint, address, text_w);
+	move_bp(current_drag_breakpoint, address, text_w, copy);
     }
     else
     {

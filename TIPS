@@ -111,6 +111,10 @@ KBD(signal SIGINT) or KBD(signal 2) at the GDB prompt.
 You can repeat the last command by hitting KEY_RETURN.
 Use KEY(Ctrl+R) and KEY(Ctrl+S) to search the command history.
 
+You can move breakpoints by dragging them.  
+Just press and hold BUTTON(1) on a breakpoint,
+move it to the new position and release BUTTON(1) again.  That's all!
+
 You can save space by disabling toolbar captions.
 See LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Toolbar Appearance).
 
@@ -135,6 +139,10 @@ LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Show Tip of the Day).
 
 You can have each of DDD, @GDB@ and the debugged program run on
 different machines.  See the DDD KBD(--rhost) option for details.
+
+You can copy breakpoints by dragging them while pressing KEY(Shift).
+Just press and hold KEY(Shift)+BUTTON(1) on a breakpoint,
+move it to the new position and release BUTTON(1) again.  That's all!
 
 To save and restore data displays, cut, copy and paste them via the
 LBL(Edit) menu.  Together with CODE(xclipboard), you can manage

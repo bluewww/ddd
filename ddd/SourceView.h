@@ -152,8 +152,13 @@ class SourceView {
     static void clearBP(void *client_data, XtIntervalId *timer);
     static void clearJumpBP(const string& answer, void *client_data);
 
-    // Move breakpoint NR to ADDRESS
-    static void move_bp(int nr, const string& address, Widget origin = 0);
+    // Move/Copy breakpoint NR to ADDRESS
+    static void move_bp(int nr, const string& address, Widget origin = 0,
+			bool copy = false);
+    static void copy_bp(int nr, const string& address, Widget origin = 0)
+    {
+	move_bp(nr, address, origin, true);
+    }
 
     // Set condition of breakpoint NR to COND
     static void set_bp_cond(int nr, const string& cond, Widget origin = 0);
