@@ -4,7 +4,14 @@ Changes in DDD						-*- text -*-
 DDD 1.5 (in development)
 ------------------------
 
-    Changes to DDD 1.4:
+    Changes to DDD 1.4d:
+
+    New features:
+    - Improved directory support.  Sources and executables can reside
+      in several different directories; DDD tracks them all properly.
+      The `cd' command works fine as well.
+
+    Configuration and building:
     - Regular expressions now use the POSIX.2 standard regcomp/regexec
       interface.  The slower interface is compensated by smarter calls.
     - DDD configuration now generally attempts to link with system

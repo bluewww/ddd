@@ -341,14 +341,15 @@ Volunteers for fixing these and other bugs are welcome!
          the default in the display graph?  If I "set output-radix 16" 
          in the gdb window ddd seems to lock up very often.
 
-086. Jochen Schuetze <jos@GBF-Braunschweig.DE> says:
+086* Jochen Schuetze <jos@GBF-Braunschweig.DE> says:
      If the binary and the sources are not located in the current
      directory, no source is displayed, I get an empty alert box and
      ddd hangs until killed from outside.  Will ddd ever learn to
      handle the case that source code and binary of the debugged
      program aren't in the current directory?
+     [(hopefully) fixed in DDD 1.5  -AZ]
 
-087. Eirik Lygre <z61z@pson17.ppco.com> states: 
+087* Eirik Lygre <z61z@pson17.ppco.com> states: 
      The IBM xlC compiler has a very useful (at least until now!) flag
      (-qfullpath) which tells the compiler to store the full path name
      of the source file, rather than just the stem
@@ -367,8 +368,9 @@ Volunteers for fixing these and other bugs are welcome!
      scroll the source window, the arrow indicating the current line
      is positioned on the correct line. However, as soon as I
      step/next, the source window is redrawn from line 1.
+     [fixed in DDD 1.5  -AZ]
 
-088. Oyvind Yrke <oyvind@stavanger.geoquest.slb.com> says:
+088* Oyvind Yrke <oyvind@stavanger.geoquest.slb.com> says:
 
      * Problem setting breakpoint if the basename of 2 files are
        equal.  E.g. the proper file is listed both in "stack
@@ -378,6 +380,7 @@ Volunteers for fixing these and other bugs are welcome!
        command sent to gdb is break file.c:987 If there are several
        file.c, it is somewhat arbitrary which file.c gdb picks up.
        Ddd should send the full path to gdb to avoid the problem.
+       [fixed in DDD 1.5  -AZ]
 
      * If I change a variable using "set var=new_value" in the command
        window, the Data window is not updated automatically.

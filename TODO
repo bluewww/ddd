@@ -91,12 +91,13 @@ Volunteers for these and other projects are welcome!
 060. When using a dynamic version of libstdc++, configure fails
      to add its location to the -R flag.
 
-063. Have a (generic) panel for GDB options.  Inquire setting and
+063* Have a (generic) panel for GDB options.  Inquire setting and
      documentation strings via `show'.
 
 064. Have scrolling parameters user-configurable.
 
-066. Upgrade rx library to rx-1.0.  Should be less buggy (and more portable).
+066. Upgrade rx library to rx-1.0.  Should be less buggy (and more
+     portable).
 
 067. Andy Gill (andy@dcs.gla.ac.uk) wants more options to
      `graph display': ``for example,
@@ -139,7 +140,9 @@ Volunteers for these and other projects are welcome!
      debuggee arguments when invoking DDD.  A simple way of
      implementing that would be: if more than one argument is given,
      or if the 1st argument is neither a core file nor a process ID,
-     use the remaining arguments as debugee execution arguments.
+     use the remaining arguments as debugee execution arguments.  [In
+     DDD, this is difficult to implement while conserving remote mode.
+     This should be an extension to GDB, not to DDD.  - AZ]
 
 071. Matthias Kurz <mk@baerlap.north.de> suggests code annotations
      (i.e. comments and graphics that are associated with certain
@@ -211,30 +214,30 @@ Volunteers for these and other projects are welcome!
 
 088. Some suggestions by Oyvind Yrke <oyvind@stavanger.geoquest.slb.com>:
 
-     * Buttons for print* and display*, or better - programmable buttons
+     o Buttons for print* and display*, or better - programmable buttons
 
-     * When setting a breakpoint, it should be possible to select from
+     o When setting a breakpoint, it should be possible to select from
        a list matching a regexp.  This feature would be particularly
        useful when working with c++ code with overloading,templates
        and member functions.
 
-     * In data display, it would be extremely useful to select which
+     o In data display, it would be extremely useful to select which
        fields of a (big) struct should be displayed.  In the current
        version, you have to display the whole struct, or display
        individual elements in separate boxes which wastes space.
 
-     * Change a variable by selecting it in the Data window.  A new
+     o Change a variable by selecting it in the Data window.  A new
        command along the lines of Derefence(), Hide() ... would be
        Change value() that pops up a new dialog.
 
-     * Ability to group variables as selections that can be
+     o Ability to group variables as selections that can be
        enabled/disabled separately.  For big applications, the data
        display quickly gets overcrowded.  Disabling data display of
        these variables will not save much screen space.  So if I can
        select some of the variable boxes in the data display, and save
        them for later retrieval would be use very useful.
 
-     * Display of variables are disabled when stepping into a new
+     o Display of variables are disabled when stepping into a new
        function, i.e. variables in functions "above" the current frame
        are not displayed.  Although I can circumvent this problem by
        typing the full path (e.g.  graph display
@@ -253,7 +256,10 @@ Volunteers for these and other projects are welcome!
        in the data window too specifying the full path of the data box
        where the cursor is pointing.
         
-     * Since you supply ddd binaries, why not supply gdb binaries as
+     o Since you supply ddd binaries, why not supply gdb binaries as
        well?
+
+089. Have an `info source' popup menu that pops up when pointing at
+     blank space.  (Info/Reload/Edit)
 
 089. (Insert your project idea here)
