@@ -10,6 +10,8 @@ DDD 1.4 (NOT YET RELEASED)
       other GDB/DBX front-ends.  For instance, you can have DDD run as
       an inferior debugger from your Emacs GDB-mode, having all Emacs
       and DDD facilities at your disposition.
+    - Breakpoints and the current execution position can be
+      displayed as symbols (``glyphs'') instead of text.
     - Again, several minor bugs were fixed.
 
 

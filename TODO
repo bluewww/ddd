@@ -52,7 +52,7 @@ Volunteers for these and other projects are welcome!
 
 011. Have local source files without path indication located via the
      GDB directories setting.  Maybe through the `info source'
-     command?
+     and `show directories' commands?
 
 012. [done]
 
@@ -121,7 +121,7 @@ Volunteers for these and other projects are welcome!
 
 041. [done]
 
-042. jcrupi@mystech.com (John Crupi) wants to change the 'break point' symbol.
+042. [done]
 
 043. [done]
 
@@ -156,9 +156,7 @@ Volunteers for these and other projects are welcome!
 
 052. [done]
 
-053. Improve location of source files through `info sources' and `show
-     directories', such that a lookup of a base file name will refer
-     to the source file used in compilation.
+053. [see 011, above]
 
 054. Adapt DDD to DBX as found on DEC Alpha.  Ruediger Berlich
      <berlich@pc66.mppmu.mpg.de> has a description of the DBX format.
