@@ -107,6 +107,16 @@ extern void save_signals_state();
 extern void reset_signals();
 
 
+
+// Theme Handling
+
+// Update theme table
+extern void update_themes();
+
+// Popup themes editor
+extern void dddPopupThemesCB(Widget, XtPointer, XtPointer);
+
+
 // Command Definitions
 
 // True if definitions must be reloaded

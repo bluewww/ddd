@@ -68,13 +68,13 @@ fixed_vlist(_) = vnull();
 fixed_vlist(_, head) = vfix(head);
 fixed_vlist(sep, head, ...) = vfix(head) | sep | fixed_vlist(sep, ...);
 
-// The title
+// Titles.
 title (disp_nr, name) -> 
   title_color(rm(disp_nr & ": ") & bf(name) & hfill());
 title (name) -> 
   title_color(bf(name) & hfill());
 
-// The annotation
+// Edge annotations.
 annotation (name) ->
   small(name);
 
@@ -222,6 +222,10 @@ changed_value (value) ->
 // A value that is repeated N times
 repeated_value (value, n) ->
   value & vcenter(rm(" <" & dec(n) & "\327>"));
+
+// The entire value
+value_box (value) -> 
+  value;
 
 // The entire box
 display_box (title, value) -> 

@@ -2,6 +2,7 @@
 // Display boxes
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>
 // 
@@ -552,7 +553,7 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 	    for (i = 0; i < count; i++)
 	    {
 		string child_member_name = dv->child(i)->name();
-		Box *box = eval(dv, member_name, child_member_name);
+		Box *box = eval(dv->child(i), member_name, child_member_name);
 		max_member_name_width = 
 		    max(max_member_name_width, box->size(X));
 		box->unlink();
@@ -600,6 +601,9 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
     {
 	vbox = eval(dv, "changed_value", vbox);
     }
+
+    // Finalize the whole thing (a hook for arbitrary commands)
+    vbox = eval(dv, "value_box", vbox);
 
     assert_ok(vbox->OK());
 
@@ -666,6 +670,9 @@ Box *DispBox::create_value_box (const DispValue *dv,
 	    abort();
 	}
     }
+
+    // Finalize the whole thing (a hook for arbitrary commands)
+    vbox = eval(dv, "value_box", vbox);
 
     if (dv != 0)
     {

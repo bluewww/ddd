@@ -48,6 +48,7 @@ enum EntryType
     OtherOptionMenuEntry,       // Create other option menu
     TextFieldEntry,		// Create text field
     SignalEntry,		// Create signal handler
+    ThemeEntry,			// Create theme field
     ForkOptionMenuEntry,	// Create `follow-fork-mode' option menu
     DisassemblyOptionMenuEntry,	// Create `disassembly-flavor' option menu
     SchedulerOptionMenuEntry	// Create `scheduler-locking' option menu

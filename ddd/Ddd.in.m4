@@ -2776,7 +2776,6 @@ DESC(Align on Grid, [align all displays on the next grid point])\n\
 DESC(Rotate Graph, [rotate the graph clockwise by 90 degrees])\n\
 DESC(Layout Graph, [layout the graph])\n\
 \n\
-DESC(Select All, [select all displays])\n\
 DESC(Refresh, [update all displays])
 ])dnl
 
@@ -3424,9 +3423,7 @@ Detect Aliases (shared data structures)
 Ddd*preferences*align2dArrays.labelString:	\
 Display Two-Dimensional Arrays as Tables
 Ddd*preferences*snapToGrid.labelString:	        \
-Auto-Align Displays on Nearest Grid Point
-Ddd*preferences*show.labelString:	        \
-Show
+Auto-Align Displays on Nearest Grid Point\ \ \ \ \ \ \ \ \ \ 
 Ddd*preferences*hints.labelString:	        \
 Edge Hints
 Ddd*preferences*annotations.labelString:	\
@@ -3436,6 +3433,8 @@ Titles of Dependent Displays
 Ddd*preferences*autoClose.labelString:	        \
 Close Data Window when Deleting last Display
 
+Ddd*preferences*show.labelString:	        \
+Show
 Ddd*preferences*layout.labelString:	        \
 Layout
 Ddd*preferences*auto.labelString:	        \
@@ -3455,9 +3454,12 @@ Clustered
 Ddd*preferences*gridSize.orientation:		XmHORIZONTAL
 Ddd*preferences*gridSize.minimum:		0
 Ddd*preferences*gridSize.maximum:		64
-Ddd*preferences*gridSize.width:			192
+Ddd*preferences*gridSize.width:	                192
 Ddd*preferences*gridSize.showValue:		on
 Ddd*preferences*gridSize.titleString:		Grid Size
+
+Ddd*preferences*themes.labelString:             \ \ \ \ Themes...\ \ \ \ 
+
 
 Ddd*preferences*startup*helpString:   \
 WIDGET(Startup Preferences)\n\
@@ -3746,6 +3748,33 @@ DESC(Send, [continue program execution with this signal])\n\
 Use LBL(All Signals) to modify all signals at once.\n\
 Click on LBL(?) to get further information on the specific signal.\n\
 \n\
+Click on LBL(Reset) to restore the original settings.\n\
+Click on LBL(Close) to close this window.
+
+
+!-----------------------------------------------------------------------------
+! Themes
+!-----------------------------------------------------------------------------
+
+! Ddd*themes.okLabelString: Close
+Ddd*themes.dialogTitle: DDD: Themes
+Ddd*themes.okLabelString:     Apply
+Ddd*themes.applyLabelString:  Reset
+Ddd*themes.cancelLabelString: Close
+
+Ddd*themes*help.labelString:	   ?
+Ddd*themes*help.tipString: \
+@rm Get help on this theme
+
+! The panel itself has a help button, too.
+Ddd*themes*helpString: \
+WIDGET(Themes)\n\
+\n\
+This panel controls how values are to be displayed by DDD.\n\
+\n\
+Click on LBL(?) to get further information on the specific theme.\n\
+\n\
+Click on LBL(Apply) to apply changed text settings.\n\
 Click on LBL(Reset) to restore the original settings.\n\
 Click on LBL(Close) to close this window.
 

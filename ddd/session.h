@@ -79,6 +79,11 @@ inline string session_tips_file()
     return session_file(DEFAULT_SESSION, "tips");
 }
 
+inline string session_themes_dir()
+{
+    return session_file(DEFAULT_SESSION, "themes");
+}
+
 inline string session_tmp_flag(const string& session)
 {
     return session_file(session, "tmp");

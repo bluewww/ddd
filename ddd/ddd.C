@@ -1216,6 +1216,16 @@ static MMDesc placement_menu[] =
     MMEnd
 };
 
+static Widget graph_snap_to_grid_w;
+
+static MMDesc themes_menu[] = 
+{
+    { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB, 0 },
+      NULL, &graph_snap_to_grid_w, 0, 0 },
+    { "themes", MMPush, { dddPopupThemesCB, 0 }, 0, 0, 0, 0 },
+    MMEnd
+};
+
 static Widget graph_grid_size_w;
 
 static MMDesc grid_menu[] =
@@ -1228,7 +1238,6 @@ static MMDesc grid_menu[] =
 static Widget graph_detect_aliases_w;
 static Widget graph_align_2d_arrays_w;
 static Widget graph_auto_close_w;
-static Widget graph_snap_to_grid_w;
 
 static MMDesc data_preferences_menu[] = 
 {
@@ -1241,8 +1250,8 @@ static MMDesc data_preferences_menu[] =
       NULL, &graph_align_2d_arrays_w, 0, 0 },
     { "autoClose",     MMToggle,  { graphToggleAutoCloseCB, 0 },
       NULL, &graph_auto_close_w, 0, 0 },
-    { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB, 0 },
-      NULL, &graph_snap_to_grid_w, 0, 0 },
+    { "themes",    MMPanel | MMUnmanagedLabel, 
+	  MMNoCB, themes_menu, 0, 0, 0 },
     { "grid",    MMPanel | MMUnmanagedLabel, MMNoCB, grid_menu, 0, 0, 0 },
     MMEnd
 };

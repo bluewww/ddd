@@ -34,6 +34,7 @@
 #endif
 
 #include "StringTPA.h"
+#include "ThemeP.h"
 #include <iostream.h>
 
 class ThemeManager {
@@ -51,6 +52,12 @@ public:
 
     // Create from external representation REP
     ThemeManager(const string& rep);
+
+    // Add pattern
+    void add(const string& theme, const ThemePattern& pattern)
+    {
+	map[theme] = pattern;
+    }
 
     // Copy constructor
     ThemeManager(const ThemeManager& t)
@@ -72,6 +79,12 @@ public:
 
     // Get all themes
     StringArray themes();
+
+    // Check wether pattern exists
+    bool has_pattern(const string& theme)
+    {
+	return map.has(theme);
+    }
 
     // Get pattern of theme
     ThemePattern pattern(const string& theme)

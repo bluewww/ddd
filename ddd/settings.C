@@ -58,6 +58,7 @@ char settings_rcsid[] =
 #include "DataDisp.h"
 #include "Delay.h"
 #include "DestroyCB.h"
+#include "DispBox.h"
 #include "EntryType.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
@@ -67,6 +68,7 @@ char settings_rcsid[] =
 #include "SourceView.h"
 #include "StringSA.h"
 #include "UndoBuffer.h"
+#include "ThemeP.h"
 #include "VarArray.h"
 #include "WidgetSA.h"
 #include "buttons.h"
@@ -74,11 +76,14 @@ char settings_rcsid[] =
 #include "comm-manag.h"
 #include "ddd.h"
 #include "editing.h"
+#include "glob.h"
 #include "mydialogs.h"
 #include "logo.h"
 #include "options.h"
+#include "post.h"
 #include "question.h"
 #include "regexps.h"
+#include "session.h"
 #include "shell.h"
 #include "status.h"
 #include "string-fun.h"
@@ -98,7 +103,7 @@ const Dimension EXTRA_SPACE     = 10;   // Minimum space between label / entry
 const Dimension EXTRA_WIDTH     =  6;   // Additional space for safety
 const Dimension MAX_HEIGHT     = 300;   // Maximum height of window
 
-enum SettingsType { SETTINGS, INFOS, SIGNALS };
+enum SettingsType { SETTINGS, INFOS, SIGNALS, THEMES };
 
 
 //-----------------------------------------------------------------------
@@ -122,6 +127,12 @@ static WidgetArray       signals_entries;
 static WidgetStringAssoc signals_values;
 static WidgetStringAssoc signals_initial_values;
 static bool              need_reload_signals = false;
+
+static Widget            themes_panel = 0;
+static Widget            reset_themes_button = 0;
+static Widget            apply_themes_button = 0;
+static WidgetArray       themes_entries;
+static WidgetArray       themes_labels;
 
 static Widget            infos_panel        = 0;
 static Widget            reset_infos_button = 0;
@@ -283,6 +294,35 @@ static void SendSignalCB(Widget, XtPointer client_data, XtPointer)
 {
     gdb_command(string("signal ") + XtName(Widget(client_data)));
 }
+
+// ToggleButton reply
+static void HelpOnThemeCB(Widget w, XtPointer client_data, 
+			  XtPointer call_data)
+{
+    // FIXME: Fetch help text from theme
+}
+
+static void ApplyThemesCB(Widget, XtPointer, XtPointer)
+{
+    ThemeManager t;
+
+    for (int i = 0; i < themes_entries.size(); i++)
+    {
+	Widget button = themes_labels[i];
+	if (!XmToggleButtonGetState(button))
+	    continue;
+
+	Widget entry  = themes_entries[i];
+	String value_s = XmTextFieldGetString(entry);
+	string value = value_s;
+	XtFree(value_s);
+
+	t.add(XtName(entry), ThemePattern(value));
+    }
+
+    data_disp->set_theme_manager(t);
+}
+
 
 static string handle_command(Widget w, bool set)
 {
@@ -461,6 +501,58 @@ static void update_reset_signals_button()
     set_sensitive(reset_signals_button, False);
 }
 
+static void update_themes_buttons()
+{
+    if (apply_themes_button == 0 || reset_themes_button == 0)
+	return;
+
+    int i;
+
+    for (i = 0; i < themes_entries.size(); i++)
+    {
+	Widget entry = themes_entries[i];
+	string theme = XtName(entry);
+	ThemePattern p;
+
+	if (DispBox::theme_manager.has_pattern(theme))
+	    p = DispBox::theme_manager.pattern(theme);
+
+	ostrstream os;
+	os << p;
+	string old_value = string(os);
+
+	String value_s = XmTextFieldGetString(entry);
+	string value(value_s);
+	XtFree(value_s);
+
+	if (value != old_value)
+	{
+	    set_sensitive(apply_themes_button, True);
+	    set_sensitive(reset_themes_button, True);
+	    return;
+	}
+    }
+
+    for (i = 0; i < themes_labels.size(); i++)
+    {
+	Widget button = themes_labels[i];
+	string theme = XtName(button);
+	bool old_set = DispBox::theme_manager.has_pattern(theme);
+
+	if (XmToggleButtonGetState(button) != old_set)
+	{
+	    set_sensitive(apply_themes_button, True);
+	    set_sensitive(reset_themes_button, True);
+	    return;
+	}
+    }
+
+    set_sensitive(apply_themes_button, False);
+    set_sensitive(reset_themes_button, False);
+}
+
+
+
 // Update states of `info' buttons
 void update_infos()
 {
@@ -485,11 +577,27 @@ static void UpdateSettingsButtonsNowCB(XtPointer, XtIntervalId *)
 }
 
 // TextField reply
-static void UpdateSettingsButtonsCB(Widget w, XtPointer client_data, XtPointer)
+static void UpdateSettingsButtonsCB(Widget w, XtPointer client_data, 
+				    XtPointer)
 {
     // The TextField value has not yet changed.  Call again later.
     XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
 		    UpdateSettingsButtonsNowCB, client_data);
+}
+
+
+static void UpdateThemesButtonsNowCB(XtPointer, XtIntervalId *)
+{
+    update_themes_buttons();
+}
+
+// TextField reply
+static void UpdateThemesButtonsCB(Widget w, XtPointer client_data, 
+				  XtPointer)
+{
+    // The TextField value has not yet changed.  Call again later.
+    XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
+		    UpdateThemesButtonsNowCB, client_data);
 }
 
 
@@ -1353,207 +1461,216 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     bool is_set = true;		// Command sets a value
     bool is_add = false;	// Command adds a value
 
-    switch (type)
+    if (entry_filter == ThemeEntry)
     {
-    case GDB:
-    case PYDB:
-    {
-	if (!line.contains(" -- ") && 
-	    (entry_filter != SignalEntry || (!line.contains("SIG", 0) &&
-					     !line.contains("all", 0))))
-	    return;			// No help line
-
-	set_command  = line.before(" -- ");
-	doc          = line.after(" -- ");
-	base         = set_command.after(' ');
-	if (base == "")
-	    base = set_command;
-	show_command = "show " + base;
-
-	if (entry_filter == SignalEntry)
-	{
-	    if (!line.contains("all", 0) && !line.contains("SIG", 0))
-		return;		// No signal line
-
-	    // Special handling for signal tables
-	    base = line.before(rxwhite);
-	    doc  = line.after(rxwhite);
-	    doc  = doc.after(rxwhite);
-	    doc  = doc.after(rxwhite);
-	    doc  = doc.after(rxwhite);
-	    e_type = SignalEntry;
-	}
-	else if (entry_filter != DisplayToggleButtonEntry)
-	{
-	    if (base == "args")
-		return; // Already handled in `Run...' editor
-
-	    if (base == "radix")
-		return; // Already handled in input- and output-radix
-
-	    // GDB 4.18 provides `set extension-language', but not the
-	    // equivalent `show extension-language'.
-	    if (base == "extension-language")
-		return;
-
-	    is_set = doc.contains("Set ", 0);
-	    is_add = doc.contains("Add ", 0);
-
-	    if (!is_set && !is_add)
-	    {
-		// Generic command or `set variable' - list `set'
-		// subcommands
-		add_settings(form, row, max_width, 
-			     type, entry_filter, set_command);
-		return;
-	    }
-
-	    value = cached_gdb_question(show_command);
-	    if (is_set && value.freq('\n') > 1)
-	    {
-		// Generic command - list `set' subcommands
-		add_settings(form, row, max_width,
-			     type, entry_filter, set_command);
-		return;
-	    }
-
-	    if (is_set && 
-		!value.contains(" is ") && 
-		!value.contains(".\n", -1))
-		return;
-
-	    e_type = entry_type(type, base, doc, value);
-	    if (e_type != entry_filter)
-		return;
-
-	    if (is_set)
-		doc = doc.after("Set ");
-	    else if (is_add)
-		doc = doc.after("Add ");
-
-	    if (is_add && doc.contains("of "))
-		doc = doc.after("of ");
-	}
-	else
-	{
-	    if (base == "signals")
-		return;	// We already have `info handle'.
-	    if (base == "watchpoints")
-		return;	// We already have `info breakpoints'.
-	    if (base == "target")
-		return;	// We already have `info files'.
-	    if (base == "address")
-		return;	// `info address' requires an argument.
-	    if (base == "line")
-		return;	// `info line' requires an argument.
-
-	    // These infos produce too much output for the data window
-	    // to be of any use.  Even worse, a data display as large
-	    // as the one generated by `info functions' causes my X
-	    // terminal to crash. - AZ
-	    if (base == "types")
-		return;
-	    if (base == "functions")
-		return;
-	    if (base == "variables")
-		return;
-
-	    e_type = DisplayToggleButtonEntry;
-	    if (e_type != entry_filter)
-		return;
-
-	    strip_leading(doc, "Show ");
-	    strip_leading(doc, "Print ");
-	    strip_leading(doc, "out ");
-	    strip_leading(doc, "the ");
-	}
-	munch_doc(doc);
-        break;
+	set_command = show_command = doc = line;
+	e_type = entry_filter;
     }
-
-    case DBX:
+    else
     {
-	if (!line.contains("$", 0) 
-	    && !(line.contains(rxidentifier, 0) && islower(line[0])))
-	    return;			// No help line
-
-	base = line.before(rxwhite);
-	if (base == "")
-	    return;
-	if (base == "run_savetty")
-	    return; // Makes no sense under a GUI
-
-	value = line.after(rxwhite);
-	if (value.contains('=', 0))
+	switch (type)
 	{
-	    // Ladebug `set' output is `$VAR = VALUE'
-	    value = value.after('=');
-	    value = value.after(rxwhite);
+	case GDB:
+	case PYDB:
+	{
+	    if (!line.contains(" -- ") && 
+		(entry_filter != SignalEntry || (!line.contains("SIG", 0) &&
+						 !line.contains("all", 0))))
+		return;			// No help line
+
+	    set_command  = line.before(" -- ");
+	    doc          = line.after(" -- ");
+	    base         = set_command.after(' ');
+	    if (base == "")
+		base = set_command;
+	    show_command = "show " + base;
+
+	    if (entry_filter == SignalEntry)
+	    {
+		if (!line.contains("all", 0) && !line.contains("SIG", 0))
+		    return;		// No signal line
+
+		// Special handling for signal tables
+		base = line.before(rxwhite);
+		doc  = line.after(rxwhite);
+		doc  = doc.after(rxwhite);
+		doc  = doc.after(rxwhite);
+		doc  = doc.after(rxwhite);
+		e_type = SignalEntry;
+	    }
+	    else if (entry_filter != DisplayToggleButtonEntry)
+	    {
+		if (base == "args")
+		    return; // Already handled in `Run...' editor
+
+		if (base == "radix")
+		    return; // Already handled in input- and output-radix
+
+		// GDB 4.18 provides `set extension-language', but not the
+		// equivalent `show extension-language'.
+		if (base == "extension-language")
+		    return;
+
+		is_set = doc.contains("Set ", 0);
+		is_add = doc.contains("Add ", 0);
+
+		if (!is_set && !is_add)
+		{
+		    // Generic command or `set variable' - list `set'
+		    // subcommands
+		    add_settings(form, row, max_width, 
+				 type, entry_filter, set_command);
+		    return;
+		}
+
+		value = cached_gdb_question(show_command);
+		if (is_set && value.freq('\n') > 1)
+		{
+		    // Generic command - list `set' subcommands
+		    add_settings(form, row, max_width,
+				 type, entry_filter, set_command);
+		    return;
+		}
+
+		if (is_set && 
+		    !value.contains(" is ") && 
+		    !value.contains(".\n", -1))
+		    return;
+
+		e_type = entry_type(type, base, doc, value);
+		if (e_type != entry_filter)
+		    return;
+
+		if (is_set)
+		    doc = doc.after("Set ");
+		else if (is_add)
+		    doc = doc.after("Add ");
+
+		if (is_add && doc.contains("of "))
+		    doc = doc.after("of ");
+	    }
+	    else
+	    {
+		if (base == "signals")
+		    return;	// We already have `info handle'.
+		if (base == "watchpoints")
+		    return;	// We already have `info breakpoints'.
+		if (base == "target")
+		    return;	// We already have `info files'.
+		if (base == "address")
+		    return;	// `info address' requires an argument.
+		if (base == "line")
+		    return;	// `info line' requires an argument.
+
+		// These infos produce too much output for the data window
+		// to be of any use.  Even worse, a data display as large
+		// as the one generated by `info functions' causes my X
+		// terminal to crash. - AZ
+		if (base == "types")
+		    return;
+		if (base == "functions")
+		    return;
+		if (base == "variables")
+		    return;
+
+		e_type = DisplayToggleButtonEntry;
+		if (e_type != entry_filter)
+		    return;
+
+		strip_leading(doc, "Show ");
+		strip_leading(doc, "Print ");
+		strip_leading(doc, "out ");
+		strip_leading(doc, "the ");
+	    }
+	    munch_doc(doc);
+	    break;
 	}
 
+	case DBX:
+	{
+	    if (!line.contains("$", 0) 
+		&& !(line.contains(rxidentifier, 0) && islower(line[0])))
+		return;			// No help line
 
-	string dbxenv;
-	if (base[0] == '$')
-	    dbxenv = "set";
-	else
-	    dbxenv = "dbxenv";
+	    base = line.before(rxwhite);
+	    if (base == "")
+		return;
+	    if (base == "run_savetty")
+		return; // Makes no sense under a GUI
 
-	e_type = entry_type(type, base, get_dbx_help(dbxenv, base), value);
+	    value = line.after(rxwhite);
+	    if (value.contains('=', 0))
+	    {
+		// Ladebug `set' output is `$VAR = VALUE'
+		value = value.after('=');
+		value = value.after(rxwhite);
+	    }
+
+
+	    string dbxenv;
+	    if (base[0] == '$')
+		dbxenv = "set";
+	    else
+		dbxenv = "dbxenv";
+
+	    e_type = entry_type(type, base, 
+				get_dbx_help(dbxenv, base), value);
+	    if (e_type != entry_filter)
+		return;
+
+	    set_command = dbxenv + " " + base;
+	    show_command = set_command + " " + value;
+	    doc = get_dbx_doc(dbxenv, base);
+
+#if RUNTIME_REGEX
+	    static regex rxdont("Do ?n['o]t");
+#endif
+	    if (doc.contains(rxdont, 0) && e_type == NumToggleButtonEntry)
+	    {
+		doc = doc.after(rxdont);
+		munch_doc(doc);
+		e_type = NoNumToggleButtonEntry;
+	    }
+	    break;
+	}
+
+	case JDB:
+	{
+	    // All we have is the `use' command.
+	    e_type = TextFieldEntry;
+	    set_command  = "use";
+	    show_command = "use";
+	    doc          = "Class path";
+	    value = source_view->class_path();
+	    break;
+	}
+
+	case XDB:
+	    return;			// FIXME
+
+	case PERL:
+	{
+	    e_type = TextFieldEntry;
+	    base  = line.before(" = ");
+	    strip_space(base);
+
+	    value = unquote(line.after(" = "));
+	    if (value == "N/A")
+		value = "";
+
+	    set_command  = "O " + base;
+	    show_command = "O " + base + "?";
+	    doc = base;
+	    break;
+	}
+	}
+
 	if (e_type != entry_filter)
 	    return;
 
-	set_command = dbxenv + " " + base;
-	show_command = set_command + " " + value;
-	doc = get_dbx_doc(dbxenv, base);
-
-#if RUNTIME_REGEX
-	static regex rxdont("Do ?n['o]t");
-#endif
-	if (doc.contains(rxdont, 0) && e_type == NumToggleButtonEntry)
-	{
-	    doc = doc.after(rxdont);
-	    munch_doc(doc);
-	    e_type = NoNumToggleButtonEntry;
-	}
-        break;
+	if (doc == "")
+	    return;		// No need to support undocumented stuff
     }
-
-    case JDB:
-    {
-	// All we have is the `use' command.
-	e_type = TextFieldEntry;
-	set_command  = "use";
-	show_command = "use";
-	doc          = "Class path";
-	value = source_view->class_path();
-	break;
-    }
-
-    case XDB:
-	return;			// FIXME
-
-    case PERL:
-    {
-	e_type = TextFieldEntry;
-	base  = line.before(" = ");
-	strip_space(base);
-
-	value = unquote(line.after(" = "));
-	if (value == "N/A")
-	    value = "";
-
-	set_command  = "O " + base;
-	show_command = "O " + base + "?";
-	doc = base;
-	break;
-    }
-    }
-
-    if (e_type != entry_filter)
-	return;
-
-    if (doc == "")
-	return;			// No need to support undocumented stuff
 
     Arg args[15];
     int arg;
@@ -1599,6 +1716,10 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 
     case DisplayToggleButtonEntry:
 	callback = SetDisplayCB;
+	break;
+
+    case ThemeEntry:
+	callback = ApplyThemesCB;
 	break;
 
     default:
@@ -1843,6 +1964,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	break;
     }
 
+    case ThemeEntry:
     case TextFieldEntry:
     {
 	// Some other value
@@ -1854,8 +1976,12 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	entry = verify(XmCreateTextField(form, set_command, args, arg));
 	XtManageChild(entry);
 
-	XtAddCallback(entry, XmNvalueChangedCallback, UpdateSettingsButtonsCB,
-		      NULL);
+	if (e_type == TextFieldEntry)
+	    XtAddCallback(entry, XmNvalueChangedCallback, 
+			  UpdateSettingsButtonsCB, NULL);
+	else // ThemeEntry
+	    XtAddCallback(entry, XmNvalueChangedCallback, 
+			  UpdateThemesButtonsCB, NULL);
     }
     }
 
@@ -1907,15 +2033,22 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     XtManageChild(leader);
 
     // Add help callback
-    if (e_type == SignalEntry)
+    switch (e_type)
     {
+    case SignalEntry:
 	XtAddCallback(help, XmNactivateCallback, 
 		      HelpOnSignalCB, XtPointer(label));
-    }
-    else
-    {
+	break;
+
+    case ThemeEntry:
+	XtAddCallback(help, XmNactivateCallback, 
+		      HelpOnThemeCB, XtPointer(label));
+	break;
+
+    default:
 	XtAddCallback(help, XmNactivateCallback, 
 		      HelpOnThisCB, XtPointer(entry));
+	break;
     }
 
     if (e_type == SignalEntry)
@@ -1930,6 +2063,12 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    signals_entries += print;
 	    signals_entries += pass;
 	}
+    }
+    else if (e_type == ThemeEntry)
+    {
+	// Register entry
+	themes_entries += entry;
+	themes_labels  += label;
     }
     else if (e_type != DisplayToggleButtonEntry)
     {
@@ -2233,6 +2372,51 @@ static void fix_clip_window_translations(Widget scroll)
     XtVaSetValues(clip, XmNtranslations, tr, NULL);
 }
 
+
+// Themes
+static void get_themes(StringArray& arr)
+{
+    // FIXME: Fetch themes from entire path
+
+    string mask = session_themes_dir() + "/*";
+    char **files = glob_filename(mask);
+    if (files == (char **)0)
+    {
+	cerr << mask << ": glob failed\n";
+    }
+    else if (files == (char **)-1)
+    {
+	if (errno != 0)
+	    post_warning(string(mask) + ": " + strerror(errno), 
+			 "no_themes_warning");
+    }
+    else
+    {
+	int count;
+	for (count = 0; files[count] != 0; count++)
+	    ;
+	smart_sort(files, count);
+
+	for (int i = 0; i < count; i++)
+	{
+	    string file = files[i];
+	    free(files[i]);
+	    file = file.after('/', -1);
+	    arr += file;
+	}
+	free((char *)files);
+    }
+}
+
+static void add_themes(Widget form, int& row, Dimension& max_width)
+{
+    StringArray themes;
+    get_themes(themes);
+    for (int i = 0; i < themes.size(); i++)
+	add_button(form, row, max_width, gdb->type(), ThemeEntry, themes[i]);
+}
+
+
 // Create settings or infos editor
 static Widget create_panel(DebuggerType type, SettingsType stype)
 {
@@ -2253,6 +2437,11 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     case SIGNALS:
 	title_msg = gdb->title() + " Signal Handling";
 	dialog_name = "signals";
+	break;
+
+    case THEMES:
+	title_msg   = "Themes";
+	dialog_name = "themes";
 	break;
     }
 
@@ -2297,6 +2486,12 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 	XtAddCallback(panel, XmNapplyCallback, ResetSignalsCB, 0);
 	XtUnmanageChild(apply_button); // No text entries
 	break;
+
+    case THEMES:
+	XtAddCallback(panel, XmNokCallback,    ApplyThemesCB, 0);
+	XtAddCallback(panel, XmNapplyCallback, ApplyThemesCB, 0);
+	apply_themes_button = apply_button;
+	break;
     }
 
     // Add a rowcolumn widget
@@ -2338,6 +2533,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 	break;
 
     case INFOS:
+    case THEMES:
 	break;
     }
 
@@ -2401,6 +2597,10 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     case SIGNALS:
 	add_settings(form, row, max_width, type, SignalEntry, "signals");
 	break;
+
+    case THEMES:
+	add_themes(form, row, max_width);
+	break;
     }
 
     // Clean up cached documentation stuff
@@ -2422,6 +2622,11 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     case SIGNALS:
 	reset_signals_button = reset_button;
 	update_reset_signals_button();
+	break;
+
+    case THEMES:
+	reset_themes_button = reset_button;
+	update_themes();
 	break;
     }
 
@@ -2491,7 +2696,8 @@ static Widget create_settings(DebuggerType type)
 {
     check_options_file();
 
-    if (settings_panel == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
+    if (settings_panel == 0 && 
+	gdb->isReadyWithPrompt() && gdb->type() == type)
     {
 	// We place a delay here such that we show only one delay for
 	// both getting the settings and the command definitions.
@@ -2560,6 +2766,52 @@ static Widget create_signals(DebuggerType type)
     return signals_panel;
 }
 
+// Update themes
+void update_themes()
+{
+    int i;
+
+    for (i = 0; i < themes_entries.size(); i++)
+    {
+	Widget entry = themes_entries[i];
+	string theme = XtName(entry);
+	ThemePattern p;
+
+	if (DispBox::theme_manager.has_pattern(theme))
+	    p = DispBox::theme_manager.pattern(theme);
+
+	ostrstream os;
+	os << p;
+	string value = string(os);
+	XmTextFieldSetString(entry, (String)value);
+    }
+
+    StringArray themes = DispBox::theme_manager.themes();
+
+    for (i = 0; i < themes_labels.size(); i++)
+    {
+	Widget button = themes_labels[i];
+	string theme = XtName(button);
+	bool set = DispBox::theme_manager.has_pattern(theme);
+	XtVaSetValues(button, XmNset, set, NULL);
+    }
+}
+
+
+// Create themes editor
+static Widget create_themes(DebuggerType type)
+{
+    check_options_file();
+
+    if (themes_panel != 0)
+	XtDestroyWidget(themes_panel);
+
+    themes_panel = create_panel(type, THEMES);
+
+    update_themes();
+    return themes_panel;
+}
+
 
 // Popup editor for debugger settings
 void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
@@ -2589,6 +2841,16 @@ void dddPopupSignalsCB (Widget, XtPointer, XtPointer)
 	return;
 
     manage_and_raise(signals);
+}
+
+// Popup editor for display themes
+void dddPopupThemesCB (Widget, XtPointer, XtPointer)
+{
+    Widget themes = create_themes(gdb->type());
+    if (themes == 0)
+	return;
+
+    manage_and_raise(themes);
 }
 
 // True iff settings might have changed
