@@ -362,8 +362,10 @@ Volunteers for these and other projects are welcome!
 
 177. Create menu children in the background, using a work procedure.
 
-178. Offer more dereferencing options, which may be user-customizable.
-     Instead of just providing `Display *()', offer also `Display /o ()', etc.
+178* Offer more dereferencing options, which may be user-customizable.
+     Instead of just providing `Display *()', offer also `Display /o
+     ()', etc.  These conversions may also be obtained from creating
+     dependent displays.
 
 179. Add `libgdb' as an alternate communication method.
 
@@ -375,6 +377,13 @@ Volunteers for these and other projects are welcome!
      - ``Your program has stopped.  Inquire variable values and use
        step/next.''
      - ``GDB has died.  So sorry.''
-     - ``There was a fatal error.  You'd better save your work and restart.''
+     - ``There was a fatal error.  You'd better save your work and
+       restart.''
 
-181. (Insert your project idea here)
+181. If the DDD WWW page server is down, try a mirror site.
+
+182. Use an alternate method for realizing the command tool.  Make it a
+     toplevel window (with restricted decoration) that raises itself
+     each time it is obscured by some other DDD window.
+
+183. (Insert your project idea here)

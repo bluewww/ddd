@@ -14,8 +14,16 @@ DDD 2.2 [in development]
         into one single dynamic button.
       If you already have a ~/.dddinit file, you must resize DDD
       manually and save options.
-    - The manual compiled within DDD now uses `gzip' format, relying
-      on an external `gzip' program.
+
+    - Improved handling of online manuals:
+      + Multiple manual browsers are supported.
+      + Manual browsers are realized as top-level windows and can be
+        iconified separately.
+      + The DDD manual browsers now process the text in the background:
+        you can keep on working with DDD while the manual is
+        uncompressed and formatted.
+      + DDD manuals are now stored in `gzip' format, saving space in
+        executables.
 
     Bug fixes:
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
