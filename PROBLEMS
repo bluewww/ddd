@@ -50,44 +50,29 @@ Reported by: Brian Cameron <bcameron@tuc.com>
 	#undef math_exception
 
 
-Reported by: Jason A. Smith <smithj4@rpi.edu>
+Reported by: Andreas Zeller <ddd@ips.cs.tu-bs.de>
 
-    I had problems building ddd-2.99.9 on AIX-4.1.5.0.  The errors
-    were "TOC overflow" which can be fixed by adding -Wl,-bbigtoc to
-    the compile and link flags.  Adding this to the final compile/link
-    step did not work because of symbol mismatch errors, so I
-    configured ddd with the following command:
+    Because of a limitation in the AIX linker, linking of DDD may stop
+    with the message "TOC overflow".  The AIX Table of Contents (TOC)
+    by default has only 16,384 entries; DDD has far more symbols.
 
-    CFLAGS=-Wl,-bbigtoc CXXFLAGS=-Wl,-bbigtoc LDFLAGS=-Wl,-bbigtoc
-    ./configure
+    There are three ways to fix this:
 
-    This might not be the correct solution but it worked for me with no
-    errors, just warnings like:
+    1. Add the flag `-Wl,-bbigtoc' to the `LDFLAGS' definition in
+       `ddd/Makefile' and retype `make'.  This makes the AIX linker
+       use a larger TOC.  (Normally, `configure' should already have
+       done this for you.)
 
-    c++: -bbigtoc: linker input file unused since linking not done
+    2. If this does not work, add the flags `-mno-fp-in-toc' and
+       `-mno-sum-in-toc' to the `CXXFLAGS' definition in
+       `ddd/Makefile' and recompile all.  Each of these options causes
+       GCC to produce very slightly slower and larger code at the
+       expense of conserving TOC space.
 
-
-Reported by:  Charlie Rusbridger <charlie@vampire.co.uk>
-
-    Just a small note, I find because of a bug in the AIX linker, I
-    have to add a C++ flag of '-mminimal-toc' or else the link fails
-    with something about a toc-overflow.
-
-
-Reported by:  Kai Engert <Kai.Engert@dresdner-bank.com>
-
-    At the end of "make", linking of DDD stop withs the message "TOC
-    overflow".  I could fix the problem, by modifying the following
-    rule in `ddd/Makefile':
-
-	$(ddd_canonical): ddd.o $(OBJECTS)
-		$(LINK.cc) -v -o $@ ddd.o $(OBJECTS) $(ALL_X_LIBS) $(LIBS)
-
-    I added the "-v" switch. This displays the exact parameters to "ld".
-    Then I manually entered the link command again, adding the switch
-	-bbigtoc
-    I get warnings, that extra code is generated, but I get a working
-    executable.
+    3. If this still does not work, add the flag `-mminimal-toc' to
+       the `CXXFLAGS' definition in `ddd/Makefile' and recompile all.
+       When you specify this option, GCC will produce code that is
+       slower and larger but which uses extremely little TOC space.
 
 
 Reported by:	Jacek M. Holeczek <holeczek@us.edu.pl>

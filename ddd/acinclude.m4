@@ -286,6 +286,35 @@ AC_SUBST(WARN_EFFECTIVE_CXX)
 AC_SUBST(WARN_NO_EFFECTIVE_CXX)
 ])dnl
 dnl
+dnl ICE_BIG_TOC
+dnl -----------
+dnl
+dnl If the C++ compiler supports `-Wl,-bbigtoc' (as required for large
+dnl programs on RS/6000 and PowerPC) set BIG_TOC to `-Wl,-bbigtoc'.
+dnl An alternative to this is using `-mminimal-toc' when compiling.
+dnl
+AC_DEFUN(ICE_BIG_TOC,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts [-Wl,-bbigtoc])
+AC_CACHE_VAL(ice_cv_big_toc,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_ldflags="$LDFLAGS"
+LDFLAGS="-Wl,-bbigtoc"
+AC_TRY_LINK(,[int a;],
+ice_cv_big_toc=yes, ice_cv_big_toc=no)
+LDFLAGS="$ice_save_ldflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_big_toc)
+if test "$ice_cv_big_toc" = yes; then
+BIG_TOC="-Wl,-bbigtoc"
+fi
+AC_SUBST(BIG_TOC)
+])dnl
+dnl
 dnl
 dnl
 dnl ICE_WARN_UNINITIALIZED
@@ -1184,6 +1213,7 @@ AC_DEFUN(ICE_CXX_OPTIONS,
 if test "$GXX" = yes; then
   ICE_WARN_EFFECTIVE_CXX
   ICE_WARN_UNINITIALIZED
+  ICE_BIG_TOC
   CXXOPT="-DNDEBUG"
   CXXDEBUG=
   # In GCC 2.8.0, `-Wuninitialized' generates lots of warnings about

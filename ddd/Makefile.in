@@ -192,10 +192,10 @@ DEFS = @DEFS@
 ## The Linker.
 
 # Flags passed to the linker.  (-g -O)
-LDFLAGS = @LDFLAGS@
+LDFLAGS = @LDFLAGS@ @BIG_TOC@
 
 # Use this for building statically linked executables with GCC.
-# LDFLAGS = -static @LDFLAGS@
+# LDFLAGS = -static @LDFLAGS@ @BIG_TOC@
 
 
 
