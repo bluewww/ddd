@@ -111,14 +111,14 @@ string DispBuffer::answer_ended ()
     case DisplayPart:
 	assert (display_buffer == "");
 	return answer_buffer;
-	break;
+
     case Null:
 	assert (display_buffer == "");
 	return "";
-	break;
+
     case DisplayFound:
 	return "";
-	break;
+
     default:
 	// Fehler!
 	assert(0);

@@ -92,7 +92,7 @@ public:
     // Destructor
     virtual ~_Assoc()
     {
-	AssocRec<K,V> *next;
+	AssocRec<K,V> *next = 0;
 	for (AssocRec<K,V> *e = entries; e != 0; e = next)
 	{
 	    next = e->next;

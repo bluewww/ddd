@@ -490,7 +490,6 @@ string read_next_disp_info (string& gdb_answer, GDBAgent *gdb)
 	}
 	return next_disp_info;
     }
-    break;
 
     case DBX:
     {
@@ -508,7 +507,6 @@ string read_next_disp_info (string& gdb_answer, GDBAgent *gdb)
 	}
 	return next_disp_info;
     }
-    break;
 
     case XDB:
 	break;			// FIXME

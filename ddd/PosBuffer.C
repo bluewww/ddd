@@ -463,15 +463,15 @@ string PosBuffer::answer_ended ()
     case PosPart:
 	assert (pos_buffer == "");
 	return answer_buffer;
-	break;
+
     case Null:
 	assert (pos_buffer == "");
 	return "";
-	break;
+
     case PosComplete:
 	assert (pos_buffer != "");
 	return "";
-	break;
+
     default:
 	// Fehler!
 	assert(0);

@@ -61,6 +61,7 @@ char VSLBuiltin_rcsid[] =
 
 // Typ-Pruefungen
 
+#ifndef NDEBUG
 inline bool checkAtoms(ListBox *args)
 // Prueft, ob alle Argumente Atome sind
 {
@@ -76,8 +77,6 @@ inline bool checkAtoms(ListBox *args)
 
     return true;
 }
-
-#ifndef NDEBUG
 #define CHECK_ATOMS(args) { if (!checkAtoms(args)) return 0; }
 #else
 #define CHECK_ATOMS(args)

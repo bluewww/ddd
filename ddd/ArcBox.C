@@ -139,7 +139,6 @@ void ArcBox::dump(ostream& s) const
 //
 
 const float rad = 0.70710678118654752440;
-const float pi  = 3.14159265358979323846;
 
 
 //

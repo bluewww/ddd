@@ -61,7 +61,7 @@ string _cook(const string& raw, bool for_postscript) RETURNS(cooked)
 	    cooked += "\\b";
 	    break;
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__STRICT_ANSI__)
 	case '\e':
 	    cooked += "\\e";
 	    break;
@@ -212,7 +212,7 @@ string uncook(const string& cooked) RETURNS(ret)
 		i++;
 		break;
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__STRICT_ANSI__)
 	    case 'e':
 		ret += '\e';
 		i++;

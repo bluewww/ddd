@@ -233,11 +233,11 @@ bool GDBAgent::send_user_cmd(string cmd, void *user_data)  //ohne \n
 	flush();
 
 	return true;
-	break;
+
 
     default: // BusyOnQuestion || BusyOnQuArray || BusyOnCmd:
 	return false;
-	break;
+
     }
 
     // Never reached

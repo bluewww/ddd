@@ -1645,8 +1645,7 @@ int main(int argc, char *argv[])
 	}
     }
 
-    // Never reached...
-    return EXIT_SUCCESS;
+    return EXIT_SUCCESS;	// Never reached
 }
 
 

@@ -33,6 +33,7 @@
 #pragma interface
 #endif
 
+#include <sys/types.h>
 #include <signal.h>
 
 // A SignalBlocker is used to protect critical sections:

@@ -31,7 +31,7 @@
 
 inline int min(int a, int b)
 {
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__STRICT_ANSI__)
     return a <? b;
 #else
     return a < b ? a : b;
@@ -40,7 +40,7 @@ inline int min(int a, int b)
 
 inline int max(int a, int b)
 {
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__STRICT_ANSI__)
     return a >? b;
 #else
     return a > b ? a : b;
