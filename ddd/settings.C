@@ -2809,6 +2809,11 @@ void update_themes()
 	ostrstream os;
 	os << p;
 	string value = string(os);
+	if (value == "")
+	{
+	    value = "*";
+	    set = false;
+	}
 
 	XmTextFieldSetString(entry, (String)value);
 	XtVaSetValues(button, XmNset, set, NULL);
