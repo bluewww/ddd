@@ -802,7 +802,7 @@ void init_session(const string& restart, const string& settings,
 	info->settings = settings;
 	info->tempfile = tmpnam(0);
 
-	string file_commands = "";
+	string file_commands = "set confirm off\n";
 	bool recording_defines = false;
 
 	{
