@@ -260,4 +260,13 @@ Volunteers for fixing these and other bugs are welcome!
 231 According to Ronald Wahl <Ronald.Wahl@Informatik.TU-Chemnitz.DE>, 
     DDD gets into a busy loop when used with libc-5.4.41 under Linux.
 
-234 (Insert your bug here)
+234*When a display is re-enabled after having been disabled by GDB,
+    re-enable its aliases, too.
+
+235 Nagi M. Aboulenein" <naboulen@ichips.intel.com> says: I'm seeing a
+    persistent problem with various version of DDD on FreeBSD/x86
+    platforms. The problem occurs when an attempt is made to save
+    options. At that point DDD dies and the options file is not
+    updated.
+    
+237 (Insert your bug here)
