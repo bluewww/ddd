@@ -218,20 +218,6 @@ static void InvokeGDBFromShellHP(Agent *source, void *client_data,
 // Guess inferior debugger type
 //-----------------------------------------------------------------------------
 
-static string first_line(const string& file)
-{
-    ifstream is(file);
-    if (is.bad())
-	return "";
-
-    char line[BUFSIZ];
-    line[0] = '\0';
-
-    is.getline(line, sizeof(line));
-
-    return line;
-}
-
 static bool have_cmd(const string& cmd)
 {
     return cmd_file(cmd).contains('/', 0);
@@ -255,22 +241,11 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 	if (arg.contains('-', 0))
 	    continue;		// Option
 
-	if (!is_regular_file(arg) || is_binary_file(arg))
-	    continue;		// Not a file or binary file
-
-	string header = first_line(arg);
-
-	if (have_perl && (arg.contains(".pl", -1) || 
-			  header.contains("perl")))
-	{
+	if (have_perl && is_perl_file(arg))
 	    return PERL;
-	}
 
-	if (have_python && (arg.contains(".py", -1) || 
-			    header.contains("python")))
-	{
+	if (have_python && is_python_file(arg))
 	    return PYDB;
-	}
     }
 
     // Check for executables.

@@ -253,10 +253,54 @@ bool is_fig_file(const string& file_name)
 	&& buf[3] == 'G';
 }
 
-// True if FILE_NAME is an XWD file
-bool is_xwd_file(const string& /* file_name */)
+// True if the first line of FILE_NAME contains `#! ... PATTERN ...'.
+static bool has_hashbang(const string& file_name, const string& pattern)
 {
-    // No simple way to determine this portably... *sigh*
+    char buf[BUFSIZ];
+
+    int fd = open(file_name, O_RDONLY);
+    if (fd < 0)
+	return false;
+    int n = read(fd, buf, sizeof(buf));
+    close(fd);
+    if (n < 2)
+	return false;
+
+    if (buf[0] != '#' || buf[1] != '!')
+	return false;
+	
+    string line(buf, n);
+    line = line.before('\n');
+
+    return line.contains(pattern);
+}
+
+// A python file is a standard source file which ends in '.py'
+bool is_python_file(const string& file_name)
+{
+    if (!is_source_file(file_name))
+	return false;
+
+    if (file_name.contains(".py", -1) || 
+	file_name.contains(".python", -1) || 
+	has_hashbang(file_name, "python"))
+	return true;
+
+    return false;
+}
+
+// A Perl file is a standard source file which ends in '.pl' or `.pm'
+bool is_perl_file(const string& file_name)
+{
+    if (!is_source_file(file_name))
+	return false;
+
+    if (file_name.contains(".pl", -1) || 
+	file_name.contains(".pm", -1) || 
+	file_name.contains(".perl", -1) || 
+	has_hashbang(file_name, "perl"))
+	return true;
+
     return false;
 }
 

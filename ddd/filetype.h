@@ -56,8 +56,11 @@ bool is_postscript_file(const string& file_name);
 // True if FILE_NAME is a FIG file
 bool is_fig_file(const string& file_name);
 
-// True if FILE_NAME is a X Window Dump file
-bool is_xwd_file(const string& file_name);
+// True if FILE_NAME is a PERL file
+bool is_perl_file(const string& file_name);
+
+// True if FILE_NAME is a PYTHON file
+bool is_python_file(const string& file_name);
 
 // True if FILE_NAME is a directory
 bool is_directory(const string& file_name);

@@ -490,20 +490,22 @@ static void searchLocal(Widget fs,
 		  NULL);
 }
 
-// A pydb source file is a standard source file which ends in '.py'
-static bool is_pydb_source_file(const string& file_name)
-{
-    // Does it end in '.py'?
-    if (!file_name.contains(".py", -1))
-	return false;
-
-    return (is_source_file(file_name));
-}
-
 static void searchLocalExecFiles(Widget fs,
 				 XmFileSelectionBoxCallbackStruct *cbs)
 {
-    searchLocal(fs, cbs, is_exec_file);
+    switch (gdb->type())
+    {
+    case PYDB:
+	searchLocal(fs, cbs, is_python_file);
+	break;
+
+    case PERL:
+	searchLocal(fs, cbs, is_perl_file);
+	break;
+
+    default:
+	searchLocal(fs, cbs, is_exec_file);
+    }
 }
 
 static void searchLocalCoreFiles(Widget fs,
@@ -515,12 +517,17 @@ static void searchLocalCoreFiles(Widget fs,
 static void searchLocalSourceFiles(Widget fs,
 				   XmFileSelectionBoxCallbackStruct *cbs)
 {
-    if (gdb->type() == PYDB)
+    switch (gdb->type())
     {
-	searchLocal(fs, cbs, is_pydb_source_file);
-    }
-    else
-    {
+    case PYDB:
+	searchLocal(fs, cbs, is_python_file);
+	break;
+
+    case PERL:
+	searchLocal(fs, cbs, is_perl_file);
+	break;
+
+    default:
 	searchLocal(fs, cbs, is_source_file);
     }
 }
@@ -575,7 +582,12 @@ static void open_file(const string& filename)
 	    gdb_command("detach");
     }
 
-    gdb_command(gdb->debug_command(filename));
+    string cmd = gdb->debug_command(filename);
+
+    if (gdb->type() == PERL)
+	cmd.gsub("perl", string(app_data.debugger_command));
+
+    gdb_command(cmd);
 }
 
 // OK pressed in `Open File'
