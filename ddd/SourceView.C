@@ -7133,7 +7133,17 @@ Widget SourceView::create_glyph(Widget form_w,
 				unsigned char *bits,
 				int width, int height)
 {
-    Arg args[20];
+    // Get background color from text
+    Pixel background;
+    Widget text_w;
+    if (form_w == code_form_w)
+	text_w = code_text_w;
+    else
+	text_w = source_text_w;
+    XtVaGetValues(text_w, XmNbackground, &background, NULL);
+
+    // Create push button
+    Arg args[30];
     Cardinal arg = 0;
     XtSetArg(args[arg], XmNmappedWhenManaged,  False);         arg++;
     XtSetArg(args[arg], XmNtopAttachment,      XmATTACH_FORM); arg++;
@@ -7152,6 +7162,9 @@ Widget SourceView::create_glyph(Widget form_w,
     XtSetArg(args[arg], XmNmultiClick, XmMULTICLICK_KEEP);     arg++;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING);  arg++;
     XtSetArg(args[arg], XmNuserData,           XtPointer(0));  arg++;
+    XtSetArg(args[arg], XmNfillOnArm,          True);          arg++;
+    XtSetArg(args[arg], XmNarmColor,           background);    arg++;
+    XtSetArg(args[arg], XmNbackground,         background);    arg++;
     Widget w = verify(XmCreatePushButton(form_w, name, args, arg));
 
     if (XtIsRealized(form_w))
@@ -7159,19 +7172,14 @@ Widget SourceView::create_glyph(Widget form_w,
 
     XtManageChild(w);
 
-    Pixel background;
-    XtVaGetValues(w, XmNbackground, &background, NULL);
-
     arg = 0;
     if (!cache_glyph_images)
     {
 	Pixmap pix = pixmap(w, bits, width, height);
 	XtSetArg(args[arg], XmNlabelPixmap, pix); arg++;
     }
-    XtSetArg(args[arg], XmNwidth,     width);      arg++;
-    XtSetArg(args[arg], XmNheight,    height);     arg++;
-    XtSetArg(args[arg], XmNfillOnArm, True);       arg++;
-    XtSetArg(args[arg], XmNarmColor,  background); arg++;
+    XtSetArg(args[arg], XmNwidth,  width);  arg++;
+    XtSetArg(args[arg], XmNheight, height); arg++;
     XtSetValues(w, args, arg);
 
     XtAddCallback(w, XmNactivateCallback, ActivateGlyphCB, 0);
