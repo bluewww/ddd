@@ -67,10 +67,10 @@ case $month in
 04) expires=$year-06-01;;
 05) expires=$year-07-01;;
 06) expires=$year-08-01;;
-07) expires=$next_09-01;;
-08) expires=$next_10-01;;
-09) expires=$next_11-01;;
-10) expires=$next_12-01;;
+07) expires=$year-09-01;;
+08) expires=$year-10-01;;
+09) expires=$year-11-01;;
+10) expires=$year-12-01;;
 11) expires=$next_year-01-01;;
 12) expires=$next_year-02-01;;
 esac
