@@ -87,6 +87,7 @@ char SourceView_rcsid[] =
 #include "wm.h"
 #include "TimeOut.h"
 #include "logo.h"
+#include "InitImage.h"
 
 // Motif stuff
 #include <Xm/Xm.h>
@@ -288,200 +289,18 @@ MMDesc SourceView::text_popup[] =
 //-----------------------------------------------------------------------
 
 #include "icons/glyphs/arrow.xbm"
-static XImage arrow_image = {
-    arrow_width,		// width
-    arrow_height,		// height
-    0,				// xoffset
-    XYBitmap,			// format
-    (char *)arrow_bits,		// data
-    MSBFirst,			// byte_order
-    8,				// bitmap_unit
-    LSBFirst,			// bitmap_bit_order
-    8,				// bitmap_pad
-    1,				// depth
-    2				// bytes_per_line
-};
-
 #include "icons/glyphs/greyarrow.xbm"
-static XImage grey_arrow_image = {
-    grey_arrow_width,		// width
-    grey_arrow_height,		// height
-    0,				// xoffset
-    XYBitmap,			// format
-    (char *)grey_arrow_bits,	// data
-    MSBFirst,			// byte_order
-    8,				// bitmap_unit
-    LSBFirst,			// bitmap_bit_order
-    8,				// bitmap_pad
-    1,				// depth
-    2				// bytes_per_line
-};
-
 #include "icons/glyphs/signalarrow.xbm"
-static XImage signal_arrow_image = {
-    signal_arrow_width,		// width
-    signal_arrow_height,	// height
-    0,				// xoffset
-    XYBitmap,			// format
-    (char *)signal_arrow_bits,	// data
-    MSBFirst,			// byte_order
-    8,				// bitmap_unit
-    LSBFirst,			// bitmap_bit_order
-    8,				// bitmap_pad
-    1,				// depth
-    2				// bytes_per_line
-};
-
 #include "icons/glyphs/dragarrow.xbm"
-static XImage drag_arrow_image = {
-    drag_arrow_width,		// width
-    drag_arrow_height,		// height
-    0,				// xoffset
-    XYBitmap,			// format
-    (char *)drag_arrow_bits,	// data
-    MSBFirst,			// byte_order
-    8,				// bitmap_unit
-    LSBFirst,			// bitmap_bit_order
-    8,				// bitmap_pad
-    1,				// depth
-    2				// bytes_per_line
-};
-
 #include "icons/glyphs/stop.xbm"
-static XImage stop_image = {
-    stop_width,			// width
-    stop_height,		// height
-    0,				// xoffset
-    XYBitmap,			// format
-    (char *)stop_bits,		// data
-    MSBFirst,			// byte_order
-    8,				// bitmap_unit
-    LSBFirst,			// bitmap_bit_order
-    8,				// bitmap_pad
-    1,				// depth
-    2				// bytes_per_line
-};
-
 #include "icons/glyphs/greystop.xbm"
-static XImage grey_stop_image = {
-    grey_stop_width,		// width
-    grey_stop_height,		// height
-    0,				// xoffset
-    XYBitmap,			// format
-    (char *)grey_stop_bits,	// data
-    MSBFirst,			// byte_order
-    8,				// bitmap_unit
-    LSBFirst,			// bitmap_bit_order
-    8,				// bitmap_pad
-    1,				// depth
-    2				// bytes_per_line
-};
-
 #include "icons/glyphs/dragstop.xbm"
-static XImage drag_stop_image = {
-    drag_stop_width,		// width
-    drag_stop_height,		// height
-    0,				// xoffset
-    XYBitmap,			// format
-    (char *)drag_stop_bits,	// data
-    MSBFirst,			// byte_order
-    8,				// bitmap_unit
-    LSBFirst,			// bitmap_bit_order
-    8,				// bitmap_pad
-    1,				// depth
-    2				// bytes_per_line
-};
-
 #include "icons/glyphs/cond.xbm"
-static XImage cond_image = {
-    cond_width,			// width
-    cond_height,		// height
-    0,				// xoffset
-    XYBitmap,			// format
-    (char *)cond_bits,		// data
-    MSBFirst,			// byte_order
-    8,				// bitmap_unit
-    LSBFirst,			// bitmap_bit_order
-    8,				// bitmap_pad
-    1,				// depth
-    2				// bytes_per_line
-};
-
 #include "icons/glyphs/greycond.xbm"
-static XImage grey_cond_image = {
-    grey_cond_width,		// width
-    grey_cond_height,		// height
-    0,				// xoffset
-    XYBitmap,			// format
-    (char *)grey_cond_bits,	// data
-    MSBFirst,			// byte_order
-    8,				// bitmap_unit
-    LSBFirst,			// bitmap_bit_order
-    8,				// bitmap_pad
-    1,				// depth
-    2				// bytes_per_line
-};
-
 #include "icons/glyphs/dragcond.xbm"
-static XImage drag_cond_image = {
-    drag_cond_width,		// width
-    drag_cond_height,		// height
-    0,				// xoffset
-    XYBitmap,			// format
-    (char *)drag_cond_bits,	// data
-    MSBFirst,			// byte_order
-    8,				// bitmap_unit
-    LSBFirst,			// bitmap_bit_order
-    8,				// bitmap_pad
-    1,				// depth
-    2				// bytes_per_line
-};
-
 #include "icons/glyphs/temp.xbm"
-static XImage temp_image = {
-    temp_width,			// width
-    temp_height,		// height
-    0,				// xoffset
-    XYBitmap,			// format
-    (char *)temp_bits,		// data
-    MSBFirst,			// byte_order
-    8,				// bitmap_unit
-    LSBFirst,			// bitmap_bit_order
-    8,				// bitmap_pad
-    1,				// depth
-    2				// bytes_per_line
-};
-
 #include "icons/glyphs/greytemp.xbm"
-static XImage grey_temp_image = {
-    grey_temp_width,		// width
-    grey_temp_height,		// height
-    0,				// xoffset
-    XYBitmap,			// format
-    (char *)grey_temp_bits,	// data
-    MSBFirst,			// byte_order
-    8,				// bitmap_unit
-    LSBFirst,			// bitmap_bit_order
-    8,				// bitmap_pad
-    1,				// depth
-    2				// bytes_per_line
-};
-
 #include "icons/glyphs/dragtemp.xbm"
-static XImage drag_temp_image = {
-    drag_temp_width,		// width
-    drag_temp_height,		// height
-    0,				// xoffset
-    XYBitmap,			// format
-    (char *)drag_temp_bits,	// data
-    MSBFirst,			// byte_order
-    8,				// bitmap_unit
-    LSBFirst,			// bitmap_bit_order
-    8,				// bitmap_pad
-    1,				// depth
-    2				// bytes_per_line
-};
-
 
 
 //-----------------------------------------------------------------------
@@ -3142,8 +2961,11 @@ string SourceView::get_word_at_pos(Widget text_w,
 // Constructor
 //----------------------------------------------------------------------------
 
-static void InstallImage(XImage *image, const string& name)
+// Install the given X bitmap as NAME
+static void InstallImage(unsigned char *bits, int width, int height, 
+			 const string& name)
 {
+    XImage *image = CreateImageFromBitmapData(bits, width, height);
     Boolean ok = XmInstallImage(image, name);
     if (!ok)
 	cerr << "Could not install " << quote(name) << " bitmap\n";
@@ -3160,22 +2982,35 @@ SourceView::SourceView(Widget parent)
 	toplevel_w = XtParent(toplevel_w);
 
     // Install glyph images
-    InstallImage(&arrow_image,        "plain_arrow");
-    InstallImage(&grey_arrow_image,   "grey_arrow");
-    InstallImage(&signal_arrow_image, "signal_arrow");
-    InstallImage(&drag_arrow_image,   "drag_arrow");
+    InstallImage(arrow_bits, arrow_width, arrow_height, 
+		 "plain_arrow");
+    InstallImage(grey_arrow_bits, grey_arrow_width, grey_arrow_height, 
+		 "grey_arrow");
+    InstallImage(signal_arrow_bits, signal_arrow_width, signal_arrow_height, 
+		 "signal_arrow");
+    InstallImage(drag_arrow_bits, drag_arrow_width, drag_arrow_height, 
+		 "drag_arrow");
 
-    InstallImage(&stop_image,         "plain_stop");
-    InstallImage(&cond_image,         "plain_cond");
-    InstallImage(&temp_image,         "plain_temp");
+    InstallImage(stop_bits, stop_width, stop_height, 
+		 "plain_stop");
+    InstallImage(cond_bits, cond_width, cond_height, 
+		 "plain_cond");
+    InstallImage(temp_bits, temp_width, temp_height, 
+		 "plain_temp");
 
-    InstallImage(&grey_stop_image,    "grey_stop");
-    InstallImage(&grey_cond_image,    "grey_cond");
-    InstallImage(&grey_temp_image,    "grey_temp");
+    InstallImage(grey_stop_bits, grey_stop_width, grey_stop_height, 
+		 "grey_stop");
+    InstallImage(grey_cond_bits, grey_cond_width, grey_cond_height, 
+		 "grey_cond");
+    InstallImage(grey_temp_bits, grey_temp_width, grey_temp_height, 
+		 "grey_temp");
 
-    InstallImage(&drag_stop_image,    "drag_stop");
-    InstallImage(&drag_cond_image,    "drag_cond");
-    InstallImage(&drag_temp_image,    "drag_temp");
+    InstallImage(drag_stop_bits, drag_stop_width, drag_stop_height, 
+		 "drag_stop");
+    InstallImage(drag_cond_bits, drag_cond_width, drag_cond_height, 
+		 "drag_cond");
+    InstallImage(drag_temp_bits, drag_temp_width, drag_temp_height, 
+		 "drag_temp");
 
     // Setup actions
     XtAppAddActions (app_context, actions, XtNumber (actions));
