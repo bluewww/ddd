@@ -365,4 +365,37 @@ Volunteers for these and other projects are welcome!
      hotkey package (in
      `http://www.igpm.rwth-aachen.de/~albrecht/mnem.html')
 
-202. (Insert your project idea here)
+202. Allow to save the entire state of the debugging session to some
+     file (for instance, `.dddsession').  This state should include
+     the GDB argument list, the names of files being debugged,
+     breakpoint status, and data displays, as well as main window
+     geometry information.
+
+     The whole thing works as follows:
+     * For each data display, record the stack frame (the function?)
+       where it was created.
+     * Create a list of breakpoint and display restoration commands:
+       - For each breakpoint, issue an appropriate `break' command.
+         If a breakpoint is deleted, use dummy `b main; d main' sequences, 
+         such that breakpoint numbers are preserved.
+       - For each display, issue an appropriate `graph display'
+         command.  Just as with breakpoints, use dummy `display main;
+         undisplay main' sequences to restore display numbers.  The
+         difficult part is to generate appropriate `frame' commands
+         such that the displays are created on the correct frame.
+         Maybe one should record the frame offset from `main' when
+         creating displays.
+     * Make the program dump core, using `signal SIGKILL' or likewise.
+
+     When DDD receives a WM_SAVE_YOURSELF message (via an X session
+     manager), it saves its state to a file FILE (try `.dddsession'
+     and `~/.dddsession') and places a command `ddd --session
+     .dddsession' in its RESTART_COMMAND property.  There might also
+     be an explicit `Save session...' option.
+
+     Note: The core file should be associated with the .dddsession
+     file.  Maybe it would be useful to include it into .dddsession -
+     or to append the appropriate resources at the end.  (Note that a
+     core file contains `holes' - copying it would waste space.)
+
+203. (Insert your project idea here)

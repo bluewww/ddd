@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-//
+// Save and edit DDD options
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -41,6 +41,7 @@ char options_rcsid[] =
 #include "GraphEdit.h"
 #include "SourceView.h"
 #include "cook.h"
+#include "commandQ.h"
 #include "ddd.h"
 #include "post.h"
 #include "status.h"
@@ -665,14 +666,27 @@ inline String bool_value(bool value)
     return value ? "true" : "false";
 }
 
+string app_value(string resource, const string& value)
+{
+    String app_name;
+    String app_class;
+    XtGetApplicationNameAndClass(XtDisplay(find_shell()), 
+				 &app_name, &app_class);
+
+    if (resource.contains(string(app_name) + ".", 0))
+	return string(app_class) + resource.from(".") + ": " + value;
+    else
+	return string(app_class) + "*" + resource + ": " + value;
+}
+
 inline string bool_app_value(const string& name, bool value)
 {
-    return DDD_CLASS_NAME "*" + name + ": " + bool_value(value);
+    return app_value(name, bool_value(value));
 }
 
 inline string int_app_value(const string& name, int value)
 {
-    return DDD_CLASS_NAME "*" + name + ": " + itostring(value);
+    return app_value(name, itostring(value));
 }
 
 string string_app_value(const string& name, string value)
@@ -686,7 +700,7 @@ string string_app_value(const string& name, string value)
 	value = "\\\n" + value;
     }
 
-    return DDD_CLASS_NAME "*" + name + ": " + value;
+    return app_value(name, value);
 }
 
 static string widget_value(Widget w, String name)
@@ -697,7 +711,7 @@ static string widget_value(Widget w, String name)
 		  NULL);
 
     if (value == 0)
-	value = (String)XtNewString("");
+	value = "";
 
     return string_app_value(string(XtName(w)) + "." + name, value);
 }
@@ -736,6 +750,20 @@ static string widget_size(Widget w)
     return s;
 }
 
+static string widget_geometry(Widget w)
+{
+    Dimension width, height;
+    XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, NULL);
+
+    XWindowAttributes attr;
+    XGetWindowAttributes(XtDisplay(w), frame(w), &attr);
+
+    ostrstream geometry;
+    geometry << width << "x" << height << "+" << attr.x << "+" << attr.y;
+
+    return string_app_value(string(XtName(w)) + ".geometry", geometry);
+}
+
 string options_file()
 {
     char *home = getenv("HOME");
@@ -750,10 +778,19 @@ string options_file()
     return string(home) + "/.dddinit";
 }
 
-bool save_options(Widget origin, bool create, bool interact)
+bool save_options(string file, unsigned long flags)
 {
-    string file = options_file();
-    string msg = (create ? "Creating " : "Saving options in ");
+#if 0
+    flags |= OPTIONS_SAVE_SESSION;
+#endif
+
+    bool create        = (flags & OPTIONS_CREATE);
+    bool save_session  = (flags & OPTIONS_SAVE_SESSION);
+    bool interact      = (flags & OPTIONS_INTERACT);
+
+    string options = (save_session ? "session" : "options");
+    string msg = (create ? "Creating " : "Saving ") + options + " in ";
+
     StatusDelay delay(msg + quote(file));
 
     const char delimiter[] = "! DO NOT ADD ANYTHING BELOW THIS LINE";
@@ -788,16 +825,13 @@ bool save_options(Widget origin, bool create, bool interact)
     if (os.bad())
     {
 	if (interact)
-	    post_error("Cannot save options in " + quote(file),
-		       "options_save_error", origin);
+	    post_error("Cannot save " + options + " in " + quote(file),
+		       "options_save_error");
 	return false;
     }
 
     os << dddinit << delimiter << " -- " DDD_NAME " WILL OVERWRITE IT\n";
-
-    // The version
-    os << string_app_value(XtNdddinitVersion,
-			   DDD_VERSION) << "\n";
+    os << string_app_value(XtNdddinitVersion, DDD_VERSION) << "\n";
 
     if (create)
     {
@@ -805,7 +839,7 @@ bool save_options(Widget origin, bool create, bool interact)
 	return true;
     }
 
-    // Debugger settings
+    os << "\n! Debugger settings\n";
     string gdb_settings = app_data.gdb_settings;
     string dbx_settings = app_data.dbx_settings;
     string xdb_settings = app_data.xdb_settings;
@@ -830,7 +864,7 @@ bool save_options(Widget origin, bool create, bool interact)
     os << string_app_value(XtNxdbSettings, xdb_settings) << "\n";
 
 
-    // Some settable top-level defaults
+    os << "\n! Preferences\n";
     os << bool_app_value(XtNfindWordsOnly,
 			 app_data.find_words_only) << "\n";
     os << int_app_value(XtNtabWidth,
@@ -944,6 +978,7 @@ bool save_options(Widget origin, bool create, bool interact)
 			    + XtNgridHeight, grid_height) << "\n";
     }
 
+    os << "\n! Window sizes\n";
     // Some widget sizes.
 
     // We must enable all PanedWindow children in order to get the
@@ -981,13 +1016,32 @@ bool save_options(Widget origin, bool create, bool interact)
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
     popups_disabled = false;
 
+    if (save_session)
+    {
+	os << "\n! Last " << DDD_NAME << " session\n";
+
+	// Save current widget geometry
+	if (command_shell)
+	    os << widget_geometry(command_shell)     << "\n";
+	if (source_view_shell)
+	    os << widget_geometry(source_view_shell) << "\n";
+	if (data_disp_shell)
+	    os << widget_geometry(data_disp_shell)   << "\n";
+
+	// Save restart commands
+	string restart_commands;
+	restart_commands += data_disp->get_state();
+	restart_commands += source_view->get_state(gdb->type());
+	os << string_app_value(XtNrestartCommands, restart_commands) << "\n";
+    }
+    
     save_option_state();
     save_settings_state();
 
-    return true;
+    return !os.bad();
 }
 
-void DDDSaveOptionsCB (Widget w, XtPointer, XtPointer)
+void DDDSaveOptionsCB(Widget, XtPointer, XtPointer)
 {
-    save_options(w);
+    save_options(options_file());
 }

@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Options
+// Save and edit DDD options
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -42,16 +42,18 @@
 // Return option file name
 string options_file();
 
-// Save options in OPTIONS_FILE.  If CREATE is true, allow creation;
-// if INTERACT is false, don't allow interaction.  Return true iff
-// successful.
-bool save_options(Widget origin, bool create = false, bool interact = true);
+// Save options in FILE.  If CREATE is true, allow creation; if
+// SAVE_YOURSELF is true, include additional state information.
+// Return true iff successful.
 
-// A shorthand for option file creation
-inline bool create_options(Widget origin)
-{
-    return save_options(origin, true);
-}
+#define OPTIONS_CREATE         1 // Create simple options file if non-existent
+#define OPTIONS_SAVE_SESSION   2 // Save extra session information
+#define OPTIONS_INTERACT       4 // Allow interaction
+
+#define OPTIONS_DEFAULT (OPTIONS_INTERACT)
+
+bool save_options(string file, unsigned long flags = OPTIONS_DEFAULT);
+
 
 // Return true iff the startup preferences have changed.
 extern bool startup_preferences_changed();

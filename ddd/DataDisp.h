@@ -380,7 +380,13 @@ public:
     static bool have_selection();
 
     // Current selection as DDD commands
-    static string selection_as_commands();
+    static string get_selection(bool restore_state = false);
+
+    // The maximum display number when saving states
+    static int max_display_number;
+
+    // Return DDD commands to restore current state (displays, etc.)
+    static string get_state();
 };
 
 inline void DataDisp::new_displaySQ(string display_expression,
@@ -401,6 +407,10 @@ inline void DataDisp::new_display(string display_expression,
 			  itostring(depends_on), origin);
 }
 
+inline string DataDisp::get_state()
+{
+    return get_selection(true);
+}
 
 #endif // _DDD_DataDisp_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

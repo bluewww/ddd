@@ -36,8 +36,9 @@ char session_rcsid[] =
 #include "session.h"
 
 #if XtSpecificationRelease >= 6
-
 #include <X11/SM/SM.h>
+#endif
+
 #include <stdlib.h>
 
 #include "Delay.h"
@@ -58,21 +59,43 @@ char session_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
 
+// ---------------------------------------------------------------------------
+// Save state
+// ---------------------------------------------------------------------------
+
+
+
+
+
+
+// ---------------------------------------------------------------------------
+// Session management
+// ---------------------------------------------------------------------------
+
+#if XtSpecificationRelease >= 6
+
+// Realize X11R6 session management protocols.
+
 static void ShutdownCB(Widget w, XtPointer, XtPointer call_data);
 static void ConfirmShutdownCB(Widget w, XtPointer, XtPointer call_data);
 static void CancelShutdownCB(Widget w, XtPointer, XtPointer call_data);
 static void post_shutdown(string text, String name, XtCheckpointToken token, 
 			  Widget w);
 
-// 1. The user initiates a checkpoint.  DDD saves its options.
+// 1. The user initiates a checkpoint.  Have DDD saves its options.
 void SaveSessionCB(Widget w, XtPointer, XtPointer call_data)
 {
     XtCheckpointToken token = XtCheckpointToken(call_data);
 
     bool interact = (token->interact_style == SmInteractStyleAny);
 
-    // Save options
-    token->save_success = save_options(w, false, interact);
+    unsigned long flags = OPTIONS_SAVE_SESSION;
+    if (interact)
+	flags |= OPTIONS_INTERACT;
+
+    // Save session
+    
+    token->save_success = save_options(options_file(), flags);
 
     if (token->shutdown)
     {
@@ -188,9 +211,10 @@ static void post_shutdown(string text, String name,
     manage_and_raise(dialog);
 }
 
-#else /* XtSpecificationRelease < 6 */
+#else // XtSpecificationRelease < 6
 
+// X11R5 and earlier: Nothing yet...
 void SaveSessionCB(Widget, XtPointer, XtPointer) {}
 void DieSessionCB(Widget, XtPointer, XtPointer) {}
 
-#endif
+#endif // XtSpecificationRelease < 6

@@ -667,6 +667,22 @@ Ddd*ungrabMousePointer:		true
 Ddd*highlightThickness:		1
 
 
+
+! Session Defaults
+
+! DDD attempts to preserve breakpoint and display numbers across
+! sessions.  Unfortunately, if they grow too large, startup takes
+! much time due to `dummy' commands inserted in order to push up
+! the debugger's breakpoint and display numbers.  Hence, we impose
+! a limit: Breakpoints or displays with numbers higher than 99 get
+! re-assigned new numbers from 1 on when restoring state.
+!
+! Setting these resources to 0 ensures a re-assignment of numbers
+! upon each restart.
+Ddd*maxBreakpointNumber: 99
+Ddd*maxDisplayNumber:    99
+
+
 !-----------------------------------------------------------------------------
 ! Fonts
 !-----------------------------------------------------------------------------

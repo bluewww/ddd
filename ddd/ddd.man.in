@@ -2505,7 +2505,7 @@ COMMANDS\fR, above.  By default, `\fBfalse\fR'.
 .B "autoCommandPrefix (\fPclass\fB AutoCommandPrefix)"
 The prefix for auto-commands.  By default, `\fB@ddd@: \fR'.
 .TP
-.B "dbxInitCommands (\fPclass\fB DBXInitCommands)"
+.B "dbxInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
 initially sent to \s-2DBX\s+2.  By default, it is empty.
 .br
@@ -2513,7 +2513,7 @@ Do not use this resource to customize \s-2DBX\s+2; instead, use a
 personal `\fB$HOME/.dbxinit\fR' or `\fB$HOME/.dbxrc\fR' file.  See
 your \s-2DBX\s+2 documentation for details.
 .TP
-.B "dbxSettings (\fPclass\fB DBXSettings)"
+.B "dbxSettings (\fPclass\fB Settings)"
 This string contains a list of newline-separated commands that are
 also initially sent to \s-2DBX\s+2.  By default, it is empty.
 .br
@@ -2555,7 +2555,7 @@ If this is `\fBtrue\fR', \s-2@DDD@\s+2 reports the current source
 position on standard output in \s-2GDB\s+2 `\fB\-\-fullname\fR'
 format.  See also the `\fB\-\-fullname\fR' option, below.
 .TP
-.B "gdbInitCommands (\fPclass\fB GDBInitCommands)"
+.B "gdbInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
 initially sent to \s-2GDB\s+2.  As a side-effect, all settings
 specified in this resource are considered fixed and cannot be changed
@@ -2580,7 +2580,7 @@ Do not use this resource to customize \s-2GDB\s+2; instead, use a
 personal `\fB$HOME/.gdbinit\fR' file.  See your \s-2GDB\s+2
 documentation for details.
 .TP
-.B "gdbSettings (\fPclass\fB GDBSettings)"
+.B "gdbSettings (\fPclass\fB Settings)"
 This string contains a list of newline-separated commands that are
 also initially sent to \s-2GDB\s+2.  Its default value is
 .sp
@@ -2628,7 +2628,7 @@ operators `\fB<\fR' and `\fB>\fR'.  The default is `\fBfalse\fR'
 (explicit redirection), since on some systems, the `\fBtty\fR' command
 does not work properly.
 .TP
-.B "xdbInitCommands (\fPclass\fB XDBInitCommands)"
+.B "xdbInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
 initially sent to \s-2XDB\s+2.  By default, it is empty.
 .br
@@ -2636,7 +2636,7 @@ Do not use this resource to customize \s-2DBX\s+2; instead, use a
 personal `\fB$HOME/.xdbrc\fR' file.  See your \s-2XDB\s+2
 documentation for details.
 .TP
-.B "xdbSettings (\fPclass\fB XDBSettings)"
+.B "xdbSettings (\fPclass\fB Settings)"
 This string contains a list of newline-separated commands that are
 also initially sent to \s-2XDB\s+2.  By default, it is empty.
 .br

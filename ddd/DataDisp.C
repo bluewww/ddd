@@ -1408,7 +1408,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     }
 
     // Set selection
-    string cmd = selection_as_commands();
+    string cmd = get_selection();
 
     // Setting the string causes the selection to be lost.  By setting
     // LOSE_SELECTION, we make sure the associated callbacks return
@@ -1432,21 +1432,26 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     }
 }
 
-string DataDisp::selection_as_commands()
+
+// The maximum display number when saving states
+int DataDisp::max_display_number = 99;
+
+string DataDisp::get_selection(bool restore_state)
 {
     ostrstream cmd;
     IntArray nrs;
 
     // Sort displays by number, such that old displays appear before
-    // newer ones.  (Note: this fails with the negative numbers of
-    // user-defined displays; a topological sort would make more sense
-    // here.  FIXME.)
+    // newer ones.
+
+    // Note: this fails with the negative numbers of user-defined
+    // displays; a topological sort would make more sense here. (FIXME)
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->selected())
+	if (restore_state || dn->selected())
 	{
 	    string nr = dn->disp_nr();
 	    nrs += get_positive_nr(nr);
@@ -1481,7 +1486,6 @@ string DataDisp::selection_as_commands()
 
     return string(cmd);
 }
-
 
 int DataDisp::alias_display_nr(GraphNode *node)
 {

@@ -84,10 +84,10 @@ XtResource ddd_resources[] = {
 
     { 
 	XtNgdbInitCommands, 
-	XtCGDBInitCommands, 
+	XtCInitCommands, 
 	XtRString,
 	sizeof(String),
-	XtOffsetOf(AppData, gdb_initial_cmds), 
+	XtOffsetOf(AppData, gdb_init_commands), 
 	XtRString,
 	XtPointer(
 	    "set height 0\n"
@@ -98,7 +98,7 @@ XtResource ddd_resources[] = {
 
     { 
 	XtNgdbSettings, 
-	XtCGDBSettings, 
+	XtCSettings, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, gdb_settings), 
@@ -108,17 +108,17 @@ XtResource ddd_resources[] = {
 
     { 
 	XtNdbxInitCommands, 
-	XtCDBXInitCommands, 
+	XtCInitCommands, 
 	XtRString,
 	sizeof(String),
-	XtOffsetOf(AppData, dbx_initial_cmds), 
+	XtOffsetOf(AppData, dbx_init_commands), 
 	XtRString,
 	XtPointer("")
     },
 
     { 
 	XtNdbxSettings, 
-	XtCDBXSettings, 
+	XtCSettings, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, dbx_settings), 
@@ -128,20 +128,30 @@ XtResource ddd_resources[] = {
 
     { 
 	XtNxdbInitCommands, 
-	XtCXDBInitCommands, 
+	XtCInitCommands, 
 	XtRString,
 	sizeof(String),
-	XtOffsetOf(AppData, xdb_initial_cmds), 
+	XtOffsetOf(AppData, xdb_init_commands), 
 	XtRString,
 	XtPointer("")
     },
 
     { 
 	XtNxdbSettings, 
-	XtCXDBSettings, 
+	XtCSettings, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, xdb_settings), 
+	XtRString,
+	XtPointer("")
+    },
+
+    {
+	XtNrestartCommands,
+	XtCInitCommands,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, restart_commands), 
 	XtRString,
 	XtPointer("")
     },
@@ -1054,6 +1064,26 @@ XtResource ddd_resources[] = {
 	XtOffsetOf(AppData, auto_command_prefix),
 	XtRString,
 	XtPointer(ddd_NAME ": ")
+    },
+
+    {
+	XtNmaxBreakpointNumber,
+	XtCMaxNumber,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, max_breakpoint_number),
+	XmRImmediate,
+	XtPointer(99)
+    },
+
+    {
+	XtNmaxDisplayNumber,
+	XtCMaxNumber,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, max_display_number),
+	XmRImmediate,
+	XtPointer(99)
     },
 
     {

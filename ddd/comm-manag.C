@@ -237,30 +237,44 @@ void start_gdb()
     switch (gdb->type())
     {
     case GDB:
-	init = str(app_data.gdb_initial_cmds) + str(app_data.gdb_settings);
+	init = str(app_data.gdb_init_commands) + str(app_data.gdb_settings);
 	break;
 
     case DBX:
-	init = str(app_data.dbx_initial_cmds) + str(app_data.dbx_settings);
+	init = str(app_data.dbx_init_commands) + str(app_data.dbx_settings);
 	break;
 
     case XDB:
-	init = str(app_data.xdb_initial_cmds) + str(app_data.xdb_settings);
+	init = str(app_data.xdb_init_commands) + str(app_data.xdb_settings);
 	break;
     }
 
-    plus_cmd_data->n_init = init.freq('\n');
+    // Add restart commands
+    init += app_data.restart_commands;
+
+    // Place individual commands in CMDS array
     while (init != "")
     {
-	cmds += init.before('\n');
+	string command = init.before('\n');
+	if (is_graph_cmd(command))
+	{
+	    // To be handled later by DDD - enqueue via gdb_command()
+	    gdb_command(command);
+	}
+	else
+	{
+	    cmds += command;
+	}
 	init = init.after('\n');
     }
+    plus_cmd_data->n_init = cmds.size();
 
-    // Some additional commands with reply handling
+    // Add some additional commands with reply handling
     switch (gdb->type())
     {
     case GDB:
-	cmds += "list";		// Required to load symbol table
+	cmds += "info line";	// Fails if no symbol table is loaded.
+	cmds += "list";		// But works just fine after a `list'.
 	cmds += "info line";
 	plus_cmd_data->refresh_initial_line = true;
 	cmds += "output " + print_cookie;
@@ -737,7 +751,8 @@ void user_cmdSUC (string cmd, Widget origin,
     case GDB:
 	if (plus_cmd_data->refresh_initial_line)
 	{
-	    cmds += "list";	// Required to load symbol table
+	    cmds += "info line";	// Fails if no symbol table is loaded.
+	    cmds += "list";		// But works just fine after a `list'.
 	    cmds += "info line";
 	}
 	if (plus_cmd_data->refresh_pwd)
@@ -1332,9 +1347,15 @@ void plusOQAC (string answers[],
 	{
 	case GDB:
 	    {
-		// Handle `list' output
+		// Handle `info line' output
 		assert (qu_count < count);
-		string list = answers[qu_count++];
+		string info_line1 = answers[qu_count++];
+
+		assert (qu_count < count);
+		string list       = answers[qu_count++];
+
+		assert (qu_count < count);
+		string info_line2 = answers[qu_count++];
 
 		// Skip initial message lines like `Reading symbols...'
 		while (list != "" && !has_nr(list))
@@ -1343,14 +1364,15 @@ void plusOQAC (string answers[],
 		if (atoi(list) == 0)
 		{
 		    // No listing => no source => ignore `info line' output
-		    assert (qu_count < count);
-		    qu_count++;
 		}
 		else
 		{
 		    // Handle `info line' output
-		    assert (qu_count < count);
-		    source_view->process_info_line_main(answers[qu_count++]);
+		    string info_line = info_line1;
+		    if (!info_line.contains("Line ", 0))
+			info_line = info_line2;
+
+		    source_view->process_info_line_main(info_line);
 		}
 	    }
 	    break;

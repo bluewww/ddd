@@ -2240,7 +2240,7 @@ static void ddd_check_version()
 
 	// We have no ~/.dddinit file: create a simple one
 	if (app_data.dddinit_version == 0)
-	    create_options(gdb_w);
+	    save_options(options_file(), OPTIONS_CREATE);
     }
 
     if (ddd_expired())
@@ -2649,6 +2649,9 @@ void update_options()
     source_view->line_indent_amount   = app_data.line_number_width;
     source_view->lines_above_cursor   = app_data.lines_above_cursor;
     source_view->lines_below_cursor   = app_data.lines_below_cursor;
+
+    source_view->max_breakpoint_number = app_data.max_breakpoint_number;
+    data_disp->max_display_number      = app_data.max_display_number;
 
     data_disp->set_detect_aliases(app_data.detect_aliases);
 

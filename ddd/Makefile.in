@@ -795,7 +795,7 @@ MANS = $(srcdir)/ddd.man
 README_FILES = 
 
 ## GDB symbol files
-SYMS = ddd.syms
+SYMS = $(ddd).syms
 
 
 ## Intermediate files
@@ -815,7 +815,7 @@ PROG_STUFF       = config.h vsl-lex.C vsl-gramma.h vsl-gramma.C \
 DIST_STUFF	 = $(PROG_STUFF) $(MANS) $(PSS)
 
 # Temporary Files to be cleaned, keeping configuration intact
-CLEAN_STUFF	 = ddd-$(VERSION)-* $(PROGS) $(DEMOS) $(PICS) \
+CLEAN_STUFF	 = $(ddd)-$(VERSION)-* $(PROGS) $(DEMOS) $(PICS) \
 		   core *.o *.a *.s *.i \
 		   tmp* *.tmp .*hist* *.syms *.log dddgraph.* \
 		   *.aux *.cp *.cps *.fn *.fns *.flc \
@@ -992,10 +992,6 @@ programs: $(PROGS)
 demos:	$(DEMOS)
 	@:
 
-.PHONY: syms
-syms:	$(SYMS)
-	@:
-
 
 ## A TECO-ism
 
@@ -1109,16 +1105,29 @@ huffdecode.o: $(srcdir)/huffdecode.C ddd.man.huff.C
 ## For demonstration and debugging purposes
 check: Ddd ddd cxxtest
 	XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd cxxtest
+,PHONY: check
 
-debug: Ddd ddd cxxtest ddd.gdb
-	(sleep 10; nice $(MAKE) $(SYMS) > ddd.syms.log 2>&1) & \
-	$(GDB) -x $(srcdir)/ddd.gdb ./ddd;
+debug: Ddd $(ddd) cxxtest ddd.gdb syms
+	$(GDB) -x $(srcdir)/ddd.gdb ./$(ddd)
+,PHONY: debug
 
-ddd.syms: ddd
-	$(GDB) -batch -nx -mapped -readnow ddd || $(TOUCH) $@
+SYMS_COMMAND = \
+	test "`ls -t $(ddd_canonical) $(ddd).syms | head -1`" \
+	= $(ddd_canonical) && (nice $(GDB) -batch -nx -mapped \
+	-readnow $(ddd) || $(TOUCH) $(ddd).syms)
+
+# Does not explicitly depend on DDD since we don't want to rebuild it
+$(ddd).syms:
+	-$(SYMS_COMMAND)
+
+# By default, create symbol files in the background
+syms:
+	(sleep 10; ($(SYMS_COMMAND)) > $(ddd).syms.log 2>&1) &
+.PHONY: syms
+
 
 # A convient target for setting up a debugging environment.
-it:	all cxxtest ddd.syms
+it:	all cxxtest ctest syms
 	@:
 .PHONY: it
 

@@ -48,17 +48,14 @@
 #define XtNtraceShellCommands    "traceShellCommands"
 #define XtCTrace                 "Trace"
 #define XtNgdbInitCommands       "gdbInitCommands"
-#define XtCGDBInitCommands       "GDBInitCommands"
 #define XtNgdbSettings           "gdbSettings"
-#define XtCGDBSettings           "GDBSettings"
 #define XtNdbxInitCommands       "dbxInitCommands"
-#define XtCDBXInitCommands       "DBXInitCommands"
 #define XtNdbxSettings           "dbxSettings"
-#define XtCDBXSettings           "DBXSettings"
 #define XtNxdbInitCommands       "xdbInitCommands"
-#define XtCXDBInitCommands       "XDBInitCommands"
 #define XtNxdbSettings           "xdbSettings"
-#define XtCXDBSettings           "XDBSettings"
+#define XtNrestartCommands       "restartCommands"
+#define XtCInitCommands          "InitCommands"
+#define XtCSettings              "Settings"
 #define XtNvslPath               "vslPath"
 #define XtCVSLPath               "VSLPath"
 #define XtNvslLibrary            "vslLibrary"
@@ -231,6 +228,9 @@
 #define XtCAutoCommands          "AutoCommands"
 #define XtNautoCommandPrefix     "autoCommandPrefix"
 #define XtCAutoCommandPrefix     "AutoCommandPrefix"
+#define XtNmaxBreakpointNumber   "maxBreakpointNumber"
+#define XtNmaxDisplayNumber      "maxDisplayNumber"
+#define XtCMaxNumber             "MaxNumber"
 #define XtNlessTifHacks          "lessTifHacks"
 #define XtCLessTifHacks          "LessTifHacks"
 #define XtNdddinitVersion        "dddinitVersion"
@@ -242,12 +242,13 @@ struct AppData {
     String  debugger_command;
     Boolean trace_dialog;
     Boolean trace_shell_commands;
-    String  gdb_initial_cmds;
+    String  gdb_init_commands;
     String  gdb_settings;
-    String  dbx_initial_cmds;
+    String  dbx_init_commands;
     String  dbx_settings;
-    String  xdb_initial_cmds;
+    String  xdb_init_commands;
     String  xdb_settings;
+    String  restart_commands;
     String  vsl_path;
     String  vsl_library;
     String  vsl_defs;
@@ -340,6 +341,8 @@ struct AppData {
     int     tool_top_offset;
     Boolean auto_commands;
     String  auto_command_prefix;
+    int     max_breakpoint_number;
+    int     max_display_number;
     Boolean lesstif_hacks;
     String  dddinit_version;
     String  app_defaults_version;

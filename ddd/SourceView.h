@@ -556,6 +556,9 @@ public:
     static int lines_above_cursor;           // Lines to keep before cursor
     static int lines_below_cursor;           // Lines to keep after cursor
 
+    // The maximum breakpoint number when saving states
+    static int max_breakpoint_number;
+
     // Return `clear ARG' command.  If CLEAR_NEXT is set, attempt to
     // guess the next event number and clear this one as well.
     static string clear_command(string arg, bool clear_next = false);
@@ -618,6 +621,9 @@ public:
 
     // True iff we have some selection
     static bool have_selection();
+
+    // Return debugger command(s) to restore current state (breakpoints, etc.)
+    static string get_state(DebuggerType type);
 };
 
 #endif // _DDD_SourceView_h

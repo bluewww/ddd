@@ -42,6 +42,7 @@
 // Misc includes
 #include "strclass.h"
 #include "bool.h"
+#include "GDBAgent.h"
 
 // Breakpoint type
 enum BPType {
@@ -102,7 +103,8 @@ public:
 
     // Additional infos
     const string& infos()        const { return myinfos; }
-    const string& ignore_count() const { return myignore_count; }
+    string ignore_count() const;
+    string condition() const;
 
     // Argument of breakpoint-setting command, as passed to constructor
     const string& arg()          const { return myarg; }
@@ -129,8 +131,12 @@ public:
     // Update breakpoint from breakpoint info INFO_OUTPUT.  Return
     // true iff changes occurred.  Delete own info from INFO_OUTPUT.
     bool update (string& info_output);
-};
 
+    // Return commands to restore this breakpoint.  Assume that the
+    // new breakpoint will be given the number NUM.  If DUMMY is set,
+    // delete the breakpoint immediately.
+    string get_state(DebuggerType type, int num, bool dummy = false);
+};
 
 #endif // _DDD_BreakPoint_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

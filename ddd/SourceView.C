@@ -372,7 +372,7 @@ int SourceView::max_popup_expr_length = 20;
 
 
 //-----------------------------------------------------------------------
-// Selectinn stuff
+// Selection stuff
 //-----------------------------------------------------------------------
 
 static XmTextPosition selection_startpos;
@@ -385,6 +385,28 @@ static XEvent         selection_event;
 //-----------------------------------------------------------------------
 // Helping functions.
 //-----------------------------------------------------------------------
+
+// Sort A
+static void sort(IntArray& a)
+{
+    // Shell sort -- simple and fast
+    int h = 1;
+    do {
+	h = h * 3 + 1;
+    } while (h <= a.size());
+    do {
+	h /= 3;
+	for (int i = h; i < a.size(); i++)
+	{
+	    int v = a[i];
+	    int j;
+	    for (j = i; j >= h && a[j - h] > v; j -= h)
+		a[j] = a[j - h];
+	    if (i != j)
+		a[j] = v;
+	}
+    } while (h != 1);
+}
 
 // Return true if W is a descendant of code_form_w
 bool SourceView::is_code_widget(Widget w)
@@ -1059,9 +1081,7 @@ void SourceView::set_source_argCB(Widget text_w,
 int SourceView::bp_at(string arg)
 {
     MapRef ref;
-    for (BreakPoint* bp = bp_map.first(ref);
-	 bp != 0;
-	 bp = bp_map.next(ref))
+    for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
     {
 	if (arg.matches(rxint))
 	{
@@ -1805,9 +1825,7 @@ void SourceView::refresh_source_bp_disp()
 
     // Find all breakpoints referring to this file
     MapRef ref;
-    for (BreakPoint* bp = bp_map.first(ref);
-	 bp != 0;
-	 bp = bp_map.next(ref))
+    for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
     {
 	if (bp_matches(bp))
 	    bps_in_line[bp->line_nr()] += bp->number();
@@ -4061,14 +4079,18 @@ void SourceView::EditBreakpointConditionCB(Widget,
 
     if (bp_nr > 0)
     {
-	string info = 
-	    gdb_question("info breakpoint " + itostring(bp_nr));
-	if (info == NO_GDB_ANSWER)
-	    return;
-
-	string cond = info.after("stop only if ");
-	if (cond.contains('\n'))
-	    cond = cond.before("\n");
+	string cond = "";
+	MapRef ref;
+	for (BreakPoint* bp = bp_map.first(ref);
+	     bp != 0;
+	     bp = bp_map.next(ref))
+	{
+	    if (bp->number() == bp_nr)
+	    {
+		cond = bp->condition();
+		break;
+	    }
+	}
 
 	MString xmcond(cond);
 	XtVaSetValues(edit_breakpoint_condition_dialog,
@@ -4178,52 +4200,31 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
 	bp_nr = *bp_nr_ptr;
     }
 
+    string ignore = "";
     if (bp_nr > 0)
     {
-	string ignore;
-	switch (gdb->type())
+	MapRef ref;
+	for (BreakPoint* bp = bp_map.first(ref);
+	     bp != 0;
+	     bp = bp_map.next(ref))
 	{
-	case GDB:
+	    if (bp->number() == bp_nr)
 	    {
-		string info = 
-		    gdb_question("info breakpoint " + itostring(bp_nr));
-		if (info == NO_GDB_ANSWER)
-		    return;
-
-		ignore = info.after("ignore next ");
-		ignore = ignore.before(" hits");
-	    }
-	    break;
-
-	case DBX:
-	    break;		// FIXME
-
-	case XDB:
-	    {
-		MapRef ref;
-		for (BreakPoint* bp = bp_map.first(ref);
-		     bp != 0;
-		     bp = bp_map.next(ref))
-		{
-		    if (bp->number() == bp_nr && bp->ignore_count() != "")
-		    {
-			ignore = bp->ignore_count();
-			break;
-		    }
-		}
+		ignore = bp->ignore_count();
+		break;
 	    }
 	}
-
-	MString xmignore(ignore);
-	XtVaSetValues(edit_breakpoint_ignore_count_dialog,
-		      XmNtextString, xmignore.xmstring(),
-		      NULL);
-	Widget text = 
-	    XmSelectionBoxGetChild(edit_breakpoint_ignore_count_dialog,
-				   XmDIALOG_TEXT);
-	XmTextSetSelection(text, 0, ignore.length(), 
-			   XtLastTimestampProcessed(XtDisplay(text)));
     }
+
+    MString xmignore(ignore);
+    XtVaSetValues(edit_breakpoint_ignore_count_dialog,
+		  XmNtextString, xmignore.xmstring(),
+		  NULL);
+    Widget text = 
+	XmSelectionBoxGetChild(edit_breakpoint_ignore_count_dialog,
+			       XmDIALOG_TEXT);
+    XmTextSetSelection(text, 0, ignore.length(), 
+		       XtLastTimestampProcessed(XtDisplay(text)));
 
     manage_and_raise(edit_breakpoint_ignore_count_dialog);
 }
@@ -4335,9 +4336,7 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
 
     // Update selection
     MapRef ref;
-    for (BreakPoint* bp = bp_map.first(ref);
-	 bp != 0;
-	 bp = bp_map.next(ref))
+    for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
 	bp->selected() = false;
 
     for (int i = 0; i < breakpoint_nrs.size(); i++)
@@ -4481,9 +4480,9 @@ void SourceView::setup_where_line(string& line)
 {
     const int min_width = 40;
 
-    // Remove file paths (otherwise line can be too long for dbx)
+    // Remove file paths (otherwise line can be too long for DBX)
     //   ... n.b. with templates, line can still be rather long
-    static regex filepath("/[^ ]*/");
+    static regex filepath("[^ /]*/");
     line.gsub(filepath, "");
 
     // Shorten argument lists `(a = 1, b = 2, ...)' to `()'
@@ -6086,4 +6085,69 @@ bool SourceView::have_selection()
     return (XmTextGetSelectionPosition(source_text_w, &left, &right)
 	    || XmTextGetSelectionPosition(code_text_w, &left, &right)) 
 	&& left != right;
+}
+
+
+
+//----------------------------------------------------------------------------
+// Session stuff
+//----------------------------------------------------------------------------
+
+int SourceView::max_breakpoint_number = 99;
+
+// Return DDD commands to restore current state (breakpoints, etc.)
+string SourceView::get_state(DebuggerType type)
+{
+    string cmds;
+
+    IntArray breakpoint_nrs;
+
+    // Restore breakpoints
+    MapRef ref;
+    for (BreakPoint *bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+	breakpoint_nrs += bp->number();
+
+    if (breakpoint_nrs.size() > 0)
+    {
+	sort(breakpoint_nrs);
+
+	// If all breakpoint numbers are less than
+	// MAX_BREAKPOINT_NUMBER, insert `dummy' breakpoints that are
+	// immediately deleted after creation, such that the
+	// breakpoint numbers are preserved.  Otherwise, begin
+	// numbering with 1.
+
+	int max_number = breakpoint_nrs[breakpoint_nrs.size() - 1];
+	bool restore_old_numbers = max_number < max_breakpoint_number;
+
+	int num = 1;
+	for (int i = 0; i < breakpoint_nrs.size(); i++)
+	{
+	    BreakPoint *bp = bp_map.get(breakpoint_nrs[i]);
+	    if (restore_old_numbers)
+	    {
+		while (num < breakpoint_nrs[i])
+		    cmds += bp->get_state(type, num++, true);
+		assert(num == breakpoint_nrs[i]);
+	    }
+	    cmds += bp->get_state(type, num++);
+	}
+    }
+
+    // Restore current cursor position
+    switch (type)
+    {
+    case GDB:
+	cmds += "info line " + line_of_cursor() + "\n";
+	break;
+
+    case DBX:
+	break;			// FIXME
+
+    case XDB:
+	cmds += "v " + line_of_cursor() + "\n";
+	break;
+    }
+
+    return cmds;
 }

@@ -1,5 +1,5 @@
 // $Id$
-// Breakpoint handler
+// Breakpoint management
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
@@ -33,8 +33,9 @@ char BreakPoint_rcsid[] =
 #pragma implementation
 #endif
 
+
 //-----------------------------------------------------------------------------
-// Implementation von BreakPoint.h
+// Breakpoint management
 //-----------------------------------------------------------------------------
 
 #include "BreakPoint.h"
@@ -49,11 +50,13 @@ char BreakPoint_rcsid[] =
 #include "comm-manag.h"
 #include "ddd.h"
 #include "dbx-lookup.h"
+#include "question.h"
 #include "GDBAgent.h"
 
 regex RXnl_int ("\n[1-9]");
 regex RXname_colon_int_nl ("[^ ]+:[0-9]+\n");
 
+// Create new breakpoint from INFO_OUTPUT
 BreakPoint::BreakPoint (string& info_output, string arg)
     : mytype(BREAKPOINT),
       mydispo(BPKEEP),
@@ -244,6 +247,7 @@ BreakPoint::BreakPoint (string& info_output, string arg)
 }
 
 
+// Update breakpoint information
 bool BreakPoint::update (string& info_output)
 {
     bool changed       = false;
@@ -507,4 +511,144 @@ bool BreakPoint::update (string& info_output)
     }
 
     return changed;
+}
+
+
+//-----------------------------------------------------------------------------
+// Session stuff
+//-----------------------------------------------------------------------------
+
+// Return ignore count ("" if none)
+string BreakPoint::ignore_count() const
+{
+    switch (gdb->type())
+    {
+    case GDB:
+    {
+	string info = gdb_question("info breakpoint " + number_str());
+	if (info == NO_GDB_ANSWER)
+	    return "";
+
+	string ignore = info.after("ignore next ");
+	return ignore.before(" hits");
+    }
+    break;
+
+    case DBX:
+	return "";		// FIXME
+
+    case XDB:
+	return ignore_count();
+    }
+
+    return "";			// Never reached
+}
+
+// Return condition ("" if none)
+string BreakPoint::condition() const
+{
+    if (gdb->type() != GDB)
+	return "";
+
+    string info = gdb_question("info breakpoint " + number_str());
+    if (info == NO_GDB_ANSWER)
+	return "";
+
+    string cond = info.after("stop only if ");
+    if (cond.contains('\n'))
+	cond = cond.before("\n");
+    return cond;
+}
+
+// Return commands to restore this breakpoint.  Assume that the new
+// breakpoint will be given the number NUM.
+string BreakPoint::get_state(DebuggerType type, int num, bool dummy)
+{
+    string cmd;
+    string nr = itostring(num);
+    string pos = file_name() + ":" + itostring(line_nr());
+
+    switch (type)
+    {
+    case GDB:
+    {
+	switch (BPType())
+	{
+	case BREAKPOINT:
+	{
+	    switch (dispo())
+	    {
+	    case BPKEEP:
+	    case BPDIS:
+		cmd += "break " + pos + "\n";
+		break;
+
+	    case BPDEL:
+		cmd += "tbreak " + pos + "\n";
+		break;
+	    }
+	    break;
+	}
+
+	case WATCHPOINT:
+	{
+	    cmd += "watch " + infos() + "\n";
+	    break;
+	}
+	}
+
+	if (!dummy)
+	{
+	    // Extra infos
+	    if (!enabled())
+		cmd += "disable " + nr + "\n";
+	    string ignore = ignore_count();
+	    if (ignore != "")
+		cmd += "ignore "  + nr + " " + ignore + "\n";
+	    string cond = condition();
+	    if (cond != "")
+		cmd += "condition " + nr + " " + cond + "\n";
+	}
+	break;
+    }
+
+    case DBX:
+    {
+	cmd += "file " + file_name() + "\n";
+	cmd += "stop at " + itostring(line_nr()) + "\n";
+	break;
+    }
+
+    case XDB:
+    {
+	cmd += "b " + file_name() + ":" + itostring(line_nr()) + "\n";
+
+	if (!dummy)
+	{
+	    // Extra infos
+	    if (!enabled())
+		cmd += "sb " + nr + "\n";
+	    string ignore = ignore_count();
+	    if (ignore != "")
+		cmd += "bc " + nr + " " + ignore + "\n";
+	}
+	break;
+    }
+    }
+
+    if (dummy)
+    {
+	switch (type)
+	{
+	case GDB:
+	case DBX:
+	    cmd += "delete " + nr + "\n";
+	    break;
+
+	case XDB:
+	    cmd += "db " + nr + "\n";
+	}
+    }
+
+    return cmd;
 }

@@ -1184,7 +1184,7 @@ static void add_button(Widget form, int& row, DebuggerType type,
     if (e_type != DisplayToggleButtonEntry)
     {
 	// Make entry insensitive if part of initialization commands.
-	string init = app_data.gdb_initial_cmds;
+	string init = app_data.gdb_init_commands;
 	int idx = init.index(set_command);
 	if (idx == 0 || idx > 0 && init[idx - 1] == '\n')
 	{
