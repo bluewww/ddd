@@ -1,10 +1,10 @@
-DDD 2.2.2 is available					-*- text -*-
+DDD 2.2.3 is available					-*- text -*-
 ======================
 
-    Release 2.2.2 of the Data Display Debugger (DDD), a common graphical
+    Release 2.2.3 of the Data Display Debugger (DDD), a common graphical
     front-end for GDB, DBX, and XDB debuggers, is now available at
 
-        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-2.2.2.tar.gz
+        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-2.2.3.tar.gz
 
     Diffs from earlier versions are in
 
@@ -24,51 +24,9 @@ DDD 2.2.2 is available					-*- text -*-
 What's new in DDD?
 ==================
 
-    DDD 2.2.2 brings improved FORTRAN support, improvements in the
-    data display and fixes some minor bugs introduced in DDD 2.2.
-
-    User-visible changes to DDD 2.2.1:
-    - Improved FORTRAN support.  When debugging FORTRAN programs with
-      GDB, DDD now supports FORTRAN array indexing syntax, FORTRAN
-      pointer recognition, and lookup of FORTRAN functions with
-      trailing underscore `_'.
-    - The data display is now scope-sensitive: displays are
-      automatically hidden as they become inactive (out of scope) and
-      redisplayed as they become active again.  This is handy when
-      maintaining a multitude of displays in different scopes.  For
-      details, see the `hideInactiveDisplays' resource.
-    - Faster data exploration.  Double-clicking...
-      * ...on a pointer value: dereferences it.
-      * ...on a partially hidden value: shows more detail.
-      * ...on a fully shown value: hides it again.
-    - A display resize (due to value changes) now automatically
-      `bumps' adjacent displays such that they are not obscured;
-      see the `bumpDisplays' resource for details.
-    - Case-insensitive search in the source text is now supported;
-      see the `findCaseSensitive' resource for details.
-
-    Bug fixes:
-    - Getting and identifying core dumps now works on Solaris, AIX and
-      other architectures.
-    - `Edit' no longer causes DDD to crash.
-    - The separate execution TTY now works with Sun DBX 4.0.
-    - Improved XDB support.  XDB output no longer causes DDD to hang.
-    - Improved SGI DBX support.  File positions are now recognized;
-      DBX Preferences work, too.
-    - Various quirks and memory leaks in the interaction between DDD
-      and the inferior debugger have been fixed.
-
-    Changes in debugging DDD:
-    - The interaction between DDD and the inferior debugger is now
-      logged in `~/.ddd/log'.  This is useful for bug reports.
-    - DDD dumps core upon fatal errors (but resumes execution).
-      This is useful for bug reports.
-
-    Changes in configuration and building:
-    - GCC 2.8.0 is supported.
-
-    There are also some more minor improvements and bug fixes; see the
-    `ChangeLog' file for details.
+    DDD 2.2.3 fixes two problems in DDD 2.2.2.
+    - `struct' recognition with DBX now works again.  (This one was serious.)
+    - `configure' now checks for the presence of ISO C++ <stdexcept>.
 
 
 What is DDD, anyway?
