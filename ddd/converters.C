@@ -666,6 +666,27 @@ Boolean CvtStringToOnOff(Display*     display,
     return False;
 }
 
+// Convert a string to Cardinal.
+Boolean CvtStringToCardinal(Display*     display, 
+			    XrmValue*    ,
+			    Cardinal*    , 
+			    XrmValue*    fromVal,
+			    XrmValue*    toVal,
+			    XtPointer*   )
+{
+    string value = str(fromVal, true);
+    char *ptr = 0;
+    long val = strtol(value.chars(), &ptr, 0);
+    if (ptr == value.chars() || val < 0)
+    {
+	XtDisplayStringConversionWarning(display, fromVal->addr, XtRCardinal);
+	return False;
+    }
+
+    done(Cardinal, val);
+}
+
+
 // Register all converters
 void registerOwnConverters()
 {
@@ -721,6 +742,11 @@ void registerOwnConverters()
     // string -> OnOff
     XtSetTypeConverter(XmRString, XtROnOff, CvtStringToOnOff,
 		       NULL, 0, XtCacheAll, 
+		       XtDestructor(NULL));
+
+    // string -> Cardinal
+    XtSetTypeConverter(XmRString, XtRCardinal, CvtStringToCardinal,
+		       NULL, 0, XtCacheAll,
 		       XtDestructor(NULL));
 
     // The following three were contributed by Thorsten Sommer
