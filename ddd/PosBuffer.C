@@ -132,9 +132,37 @@ void PosBuffer::filter (string& answer)
 
 		if (pc_buffer == "")
 		{
+		    // `$pc = ADDRESS'
+		    static regex rxpc("\\$pc  *=  *0x[a-fA-F0-9][a-fA-F0-9]*",
+				      true);
+		    int pc_index = answer.index(rxpc);
+		    if (pc_index >= 0)
+		    {
+			pc_buffer = answer.from(pc_index);
+			pc_buffer = pc_buffer.from("0x");
+			pc_buffer = pc_buffer.through(rxalphanum);
+
+			// Strip this line from ANSWER
+			int end_line = answer.index('\n', pc_index);
+			int start_line = pc_index;
+			while (start_line > 0 
+			       && answer[start_line - 1] != '\n')
+			    start_line--;
+
+			if (end_line < 0)
+			    answer.from(start_line) = "";
+			else
+			    answer.at(start_line, end_line - start_line + 1) 
+				= "";
+		    }
+		}
+
+		if (pc_buffer == "")
+		{
 		    // `Breakpoint N, ADDRESS in FUNCTION'
 		    static regex rxstopped("Breakpoint  *[1-9][0-9]*,  *"
-					   "0x[a-fA-F0-9][a-fA-F0-9]*");
+					   "0x[a-fA-F0-9][a-fA-F0-9]*",
+					   true);
 		    int pc_index = answer.index(rxstopped);
 		    if (pc_index >= 0)
 		    {
@@ -148,7 +176,8 @@ void PosBuffer::filter (string& answer)
 		{
 		    // `#FRAME ADDRESS in FUNCTION'
 		    static regex 
-			rxframe("#[0-9][0-9]*  *0x[a-fA-F0-9][a-fA-F0-9]*");
+			rxframe("#[0-9][0-9]*  *0x[a-fA-F0-9][a-fA-F0-9]*",
+				true);
 		    int pc_index = answer.index(rxframe);
 		    if (pc_index == 0
 			|| pc_index > 0 && answer[pc_index - 1] == '\n')
@@ -164,7 +193,8 @@ void PosBuffer::filter (string& answer)
 		    // `No line number available for 
 		    // address ADDRESS <FUNCTION>'
 		    static regex 
-			rxaddress("address  *0x[a-fA-F0-9][a-fA-F0-9]*");
+			rxaddress("address  *0x[a-fA-F0-9][a-fA-F0-9]*",
+				  true);
 		    int pc_index = answer.index(rxaddress);
 		    if (pc_index >= 0)
 		    {
@@ -177,7 +207,8 @@ void PosBuffer::filter (string& answer)
 		if (pc_buffer == "")
 		{
 		    // `ADDRESS in FUNCTION'
-		    static regex rxsignal("0x[a-fA-F0-9][a-fA-F0-9]*");
+		    static regex rxsignal("0x[a-fA-F0-9][a-fA-F0-9]*",
+					  true);
 		    int pc_index = answer.index(rxsignal);
 		    if (pc_index == 0 
 		        || pc_index > 0 && answer[pc_index - 1] == '\n')
