@@ -592,12 +592,12 @@ static void HelpIndexCB(Widget widget, XtPointer client_data,
     Widget help_man = Widget(client_data);
     int index = cbs->item_position;
 
-    void *userData;
-    XtVaGetValues(widget,
-		  XmNuserData, &userData,
-		  NULL);
-
+    void *userData = 0;
+    XtVaGetValues(widget, XmNuserData, &userData, NULL);
     XmTextPosition *positions = (XmTextPosition *)userData;
+    if (positions == 0)
+	return;			// Not yet set
+
     XmTextPosition pos = positions[index - 1];
 
     XmTextSetInsertionPosition(help_man, pos);
@@ -722,9 +722,11 @@ static void HighlightSectionCB(Widget, XtPointer client_data,
 
     XmTextPosition cursor = cbs->newInsert;
 
-    void *userData;
+    void *userData = 0;
     XtVaGetValues(list, XmNuserData, &userData, NULL);
     XmTextPosition *positions = (XmTextPosition *)userData;
+    if (positions == 0)
+	return;			// Not yet set
 
     int pos = 0;
     while (positions[pos] <= cursor)
