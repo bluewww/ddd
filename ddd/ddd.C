@@ -949,13 +949,22 @@ int main(int argc, char *argv[])
     if (geteuid() != getuid())
 	no_windows = true;
 
-    // Check if the `--nw' or `-L' option was given
+    // Check for special options:
+    // `--nw'   - no windows (GDB)
+    // `-L'     - no windows (XDB)
+    // and options that would otherwise be eaten by Xt
+    StringArray saved_options;
     string gdb_name = "gdb";
     int gdb_option_pos = -1;
     int gdb_option_offset = 2;
-    for (int i = 1; i < argc; i++)
+    int i;
+    for (i = 1; i < argc; i++)
     {
 	string arg = string(argv[i]);
+
+	if (arg == "--")
+	    break;		// End of options
+
 	if ((arg == "--debugger" || arg == "-debugger") && i < argc - 1)
 	{
 	    gdb_name = argv[i + 1];
@@ -991,6 +1000,37 @@ int main(int argc, char *argv[])
 	    i    -= 1;
 
 	    no_windows = true;
+	}
+
+	if (!no_windows)
+	{
+	    // Save some one-letter options that would be eaten by Xt:
+	    // -b BPS  - Set the line speed to BPS (GDB)
+	    // -c FILE - use FILE as a core dump to examine (GDB)
+	    // -d DIR  - Add DIR to the path of search files (GDB, XDB)
+	    // -e FILE - use FILE as executable file to execute (GDB)
+	    // -e FILE - Redirect stderr to FILE (XDB)
+	    // -i FILE - Redirect stdin to FILE (XDB)
+	    // -I DIR  - Add DIR to the path of search files (DBX)
+	    // -o FILE - Redirect stdout to FILE (XDB)
+	    // -p FILE - Specify a playback FILE (XDB)
+	    // -P PID  - Specify a process id PID (DBX, XDB)
+	    // -r FILE - Specify a record FILE (XDB)
+	    // -R FILE - Specify a restore state FILE (XDB)
+	    // -s FILE - read symbol table (GDB)
+	    // -s FILE - execute commands from FILE (DBX)
+	    // -x FILE - execute commands from FILE (GDB)
+	    static regex RXoptions("-[bcdeiIopPrRsx]");
+	    if (i < argc - 1 && arg.matches(RXoptions))
+	    {
+		saved_options += arg;
+		saved_options += string(argv[i + 1]);
+
+		for (int j = i; j <= argc - 2; j++)
+		    argv[j] = argv[j + 2];
+		argc -= 2;
+		i    -= 2;
+	    }
 	}
     }
 
@@ -1036,7 +1076,7 @@ int main(int argc, char *argv[])
     }
 
     // Setup toplevel window
-#if defined(HAVE_X11_XMU_EDITRES_H)
+#ifdef HAVE_X11_XMU_EDITRES_H
     XtAddEventHandler(toplevel, EventMask(0), true,
 		      XtEventHandler(_XEditResCheckMessages), NULL);
 #endif
@@ -1150,7 +1190,7 @@ int main(int argc, char *argv[])
 				  toplevel, args, arg));
     XmAddWMProtocolCallback(command_shell,
 			    WM_DELETE_WINDOW, gdbCloseCommandWindowCB, 0);
-#if defined(HAVE_X11_XMU_EDITRES_H)
+#ifdef HAVE_X11_XMU_EDITRES_H
     XtAddEventHandler(command_shell, EventMask(0), true,
 		      XtEventHandler(_XEditResCheckMessages), NULL);
 #endif
@@ -1216,7 +1256,7 @@ int main(int argc, char *argv[])
 				      toplevel, args, arg));
 	XmAddWMProtocolCallback(data_disp_shell,
 				WM_DELETE_WINDOW, gdbCloseDataWindowCB, 0);
-#if defined(HAVE_X11_XMU_EDITRES_H)
+#ifdef HAVE_X11_XMU_EDITRES_H
 	XtAddEventHandler(data_disp_shell, EventMask(0), true,
 			  XtEventHandler(_XEditResCheckMessages), NULL);
 #endif
@@ -1277,7 +1317,7 @@ int main(int argc, char *argv[])
 				      toplevel, args, arg));
 	XmAddWMProtocolCallback(source_view_shell,
 				WM_DELETE_WINDOW, gdbCloseSourceWindowCB, 0);
-#if defined(HAVE_X11_XMU_EDITRES_H)
+#ifdef HAVE_X11_XMU_EDITRES_H
 	XtAddEventHandler(source_view_shell, EventMask(0), true,
 			  XtEventHandler(_XEditResCheckMessages), NULL);
 #endif
@@ -1386,7 +1426,7 @@ int main(int argc, char *argv[])
     XmTextSetEditable(gdb_w, false);
 #endif
 
-    // source_area (Befehle mit PushButton an gdb) ----------------------------
+    // source_area (Befehle mit PushButton an gdb)
     console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
 				     app_data.console_buttons);
 
@@ -1407,6 +1447,14 @@ int main(int argc, char *argv[])
 
     // Setup history
     init_history_file();
+
+    // Put saved options back again
+    for (i = argc + saved_options.size() - 1; i > saved_options.size(); i--)
+	argv[i] = argv[i - saved_options.size()];
+    for (i = saved_options.size() - 1; i >= 0; i--)
+	argv[i + 1] = saved_options[i];
+    argc += saved_options.size();
+    argv[argc] = 0;
 
     // Create GDB interface
     gdb = new_gdb(type, app_data, app_context, argc, argv);
