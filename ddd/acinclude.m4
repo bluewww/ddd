@@ -577,7 +577,7 @@ namespace one {
     extern int f(); 
 };
 
-int one::f() {};
+int one::f() { return 1; };
 
 using namespace one;
 ],[f()],
@@ -890,7 +890,7 @@ AC_CACHE_VAL(ice_cv_have_exceptions,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(,[try { throw 1; } catch(...) { }],
+AC_TRY_COMPILE(,[try { throw 1; } catch(int) { }],
 ice_cv_have_exceptions=yes,
 ice_cv_have_exceptions=no)
 AC_LANG_RESTORE
