@@ -72,53 +72,6 @@ static VarArray<Widget> entries;
 static Assoc<Widget, string> values;
 static Assoc<Widget, string> initial_values;
 
-// TextField reply
-static void SetTextCB(Widget w, XtPointer client_data, XtPointer)
-{
-    String set_command = (String)client_data;
-    String value_s = XmTextFieldGetString(w);
-    string value(value_s);
-    XtFree(value_s);
-
-    if (value == "unlimited")
-	value = "0";
-
-    gdb_command(string(set_command) + " " + value);
-}
-
-// OptionMenu reply
-static void SetOptionCB(Widget w, XtPointer client_data, XtPointer)
-{
-    String set_command = (String)client_data;
-    gdb_command(string(set_command) + " " + XtName(w));
-}
-
-// ToggleButton reply
-static void SetBoolCB(Widget, XtPointer client_data, XtPointer call_data)
-{
-    String set_command = (String)client_data;
-    XmToggleButtonCallbackStruct *cbs = 
-	(XmToggleButtonCallbackStruct *)call_data;
-
-    if (cbs->set)
-	gdb_command(string(set_command) + " on");
-    else
-	gdb_command(string(set_command) + " off");
-}
-
-// ToggleButton reply
-static void SetNumCB(Widget, XtPointer client_data, XtPointer call_data)
-{
-    String set_command = (String)client_data;
-    XmToggleButtonCallbackStruct *cbs = 
-	(XmToggleButtonCallbackStruct *)call_data;
-
-    if (cbs->set)
-	gdb_command(string(set_command) + " 1");
-    else
-	gdb_command(string(set_command) + " 0");
-}
-
 // Find widget for command COMMAND
 static Widget command_to_widget(Widget ref, string command)
 {
@@ -131,6 +84,76 @@ static Widget command_to_widget(Widget ref, string command)
     }
 
     return found;
+}
+
+// Issue `set' command
+static void gdb_set_command(string set_command, string value)
+{
+    if (value == "unlimited")
+	value = "0";
+
+    if (set_command == "dir" && value != "")
+    {
+	// `dir' in GDB works somewhat special: it prepends its
+	// argument to the source path instead of simply setting it.
+	// Hence, first reset `dir' to some initial value.
+
+	string confirm_value = "on";
+	Widget confirm_w = command_to_widget(settings_form, "set confirm");
+	if (confirm_w)
+	    confirm_value = values[confirm_w];
+
+	if (confirm_value == "on")
+	    gdb_question("set confirm off");
+	gdb_question(set_command);
+	if (confirm_value == "on")
+	    gdb_question("set confirm on");
+    }
+
+    if (value != "")
+	gdb_command(set_command + " " + value);
+    else
+	gdb_command(set_command);
+}
+
+// TextField reply
+static void SetTextCB(Widget w, XtPointer client_data, XtPointer)
+{
+    String value_s = XmTextFieldGetString(w);
+    string value(value_s);
+    XtFree(value_s);
+
+    gdb_set_command((String)client_data, value);
+}
+
+// OptionMenu reply
+static void SetOptionCB(Widget w, XtPointer client_data, XtPointer)
+{
+    gdb_set_command((String)client_data, XtName(w));
+}
+
+// ToggleButton reply
+static void SetBoolCB(Widget, XtPointer client_data, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (cbs->set)
+	gdb_set_command((String)client_data, "on");
+    else
+	gdb_set_command((String)client_data, "off");
+}
+
+// ToggleButton reply
+static void SetNumCB(Widget, XtPointer client_data, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (cbs->set)
+	gdb_set_command((String)client_data, "1");
+    else
+	gdb_set_command((String)client_data, "0");
 }
 	
 // Update state of `reset' button
@@ -155,23 +178,24 @@ void process_show(string command, string value, bool init)
     if (settings_form == 0)
 	return;
 
-    if (!init)
-    {
-	string msg = value;
-	if (msg.contains('\n', -1))
-	    msg = msg.before('\n');
-	set_status(msg);
-    }
+    if (value.contains('\n', -1))
+	value = value.before('\n');
 
-    if (value.contains(".\n", -1))
+    if (!init)
+	set_status(value);
+	
+    if (value.contains(".", -1))
     {
 	value = value.after(" is ", -1);
-	value = value.before(".\n");
+	value = value.before(int(value.length()) - 1);
     }
+
     if (value.contains("\"auto;", 0))
 	value = "auto";
     if (value.contains('"', 0))
 	value = unquote(value);
+    else if (value.contains(": "))
+	value = value.after(": ");
 
     static string empty;
     value.gsub(gdb_out_ignore, empty);
@@ -181,6 +205,10 @@ void process_show(string command, string value, bool init)
 	set_command = string("set ") + set_command.after(rxwhite);
 
     Widget button = command_to_widget(settings_form, set_command);
+    if (button == 0)
+	button = command_to_widget(settings_form, command);
+    if (button == 0)
+	button = command_to_widget(settings_form, command.after(rxwhite));
 
     if (button != 0)
     {
@@ -223,7 +251,7 @@ void process_show(string command, string value, bool init)
 	return;
     }
 
-    cerr << "Warning: cannot " << set_command 
+    cerr << "Warning: cannot set " << quote(set_command)
 	 << " to " << quote(value) << "\n";
 }
 
@@ -294,14 +322,16 @@ static void add_settings(int& row, EntryType entry_filter,
 			 string command = "set");
 
 // Add single button
-static void add_button(string line, EntryType entry_filter, int& row)
+static void add_button(int& row, EntryType entry_filter, string line)
 {
-    if (!line.contains("set ", 0))
-	return;			// No `set' command
+    if (!line.contains(" -- "))
+	return;			// No help line
 
     string set_command  = line.before(" -- ");
     string doc          = line.after(" -- ");
     string base         = set_command.after("set ");
+    if (base == "")
+	base = set_command;
     string show_command = "show " + base;
 
     if (base == "args")
@@ -310,7 +340,10 @@ static void add_button(string line, EntryType entry_filter, int& row)
     if (base == "radix")
 	return;			// Already handled in input- and output-radix
 
-    if (!doc.contains("Set ", 0))
+    bool is_set = doc.contains("Set ", 0);
+    bool is_add = doc.contains("Add ", 0);
+
+    if (!is_set && !is_add)
     {
 	// Generic command or `set variable' - list `set' subcommands
 	add_settings(row, entry_filter, set_command);
@@ -318,22 +351,27 @@ static void add_button(string line, EntryType entry_filter, int& row)
     }
 
     string value = cached_gdb_question(show_command);
-    if (value.freq('\n') > 1)
+    if (is_set && value.freq('\n') > 1)
     {
 	// Generic command - list `set' subcommands
 	add_settings(row, entry_filter, set_command);
 	return;
     }
 
-    if (!value.contains(".\n", -1))
+    if (is_set && !value.contains(".\n", -1))
 	return;
 
-    doc = doc.after("Set ");
+    if (is_set)
+	doc = doc.after("Set ");
+    else if (is_add)
+	doc = doc.after("Add ");
 
     EntryType e_type = entry_type(base, doc, value);
     if (e_type != entry_filter)
 	return;
 
+    if (is_add && doc.contains("of "))
+	doc = doc.after("of ");
     if (doc.contains("whether to ", 0))
 	doc = doc.after("whether to ");
     if (doc.contains("the ", 0))
@@ -358,7 +396,11 @@ static void add_button(string line, EntryType entry_filter, int& row)
     XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_BEGINNING);  arg++;
     if (e_type != BoolToggleButtonEntry && e_type != NumToggleButtonEntry)
     {
-	label = verify(XmCreateLabel(settings_form, base, args, arg));
+	if (is_set)
+	    label = verify(XmCreateLabel(settings_form, base, args, arg));
+	else
+	    label = verify(XmCreateLabel(settings_form, "the" + base, args, arg));
+
 	XtManageChild(label);
     }
     else
@@ -552,7 +594,7 @@ static void add_settings(int& row, EntryType entry_filter, string command)
     {
 	string line = commands.before('\n');
 	commands = commands.after('\n');
-	add_button(line, entry_filter, row);
+	add_button(row, entry_filter, line);
     }
 }
 
@@ -577,13 +619,19 @@ static void ResetSettingsCB (Widget, XtPointer, XtPointer)
     {
 	Widget entry = entries[i];
 	if (initial_values[entry] != values[entry])
-	{
-	    string initial_value = initial_values[entry];
-	    if (initial_value == "unlimited")
-		initial_value = "0";
-	    gdb_command(string(XtName(entry)) + " " + initial_value);
-	}
+	    gdb_set_command(XtName(entry), initial_values[entry]);
     }
+}
+
+// Fetch help for specific COMMAND
+static string get_help_line(string command)
+{
+    string reply = cached_gdb_question("help " + command);
+    reply = reply.before('\n');
+    if (reply.contains('.'))
+	reply = reply.before('.');
+    reply = command + " -- " + reply;
+    return reply;
 }
 
 // Create settings editor
@@ -652,6 +700,9 @@ static Widget create_settings()
     add_separator(row);
     add_settings(row, CheckOptionMenuEntry);
     add_separator(row);
+    add_button(row, TextFieldEntry, get_help_line("dir"));
+    add_button(row, TextFieldEntry, get_help_line("path"));
+    add_separator(row);
     add_settings(row, TextFieldEntry);
     clear_gdb_question_cache();
     update_reset_settings();
@@ -693,10 +744,16 @@ string get_gdb_settings()
 	{
 	    // This is the default setting - do nothing
 	}
+	else if (base.contains("set ", 0))
+	{
+	    // Add setting.
+	    command += base + ' ' + value + '\n';
+	}
 	else
 	{
-	    // Add setting
-	    command += base + ' ' + value + '\n';
+	    // `dir' and `path' values are not saved, since they are
+	    // dependent on the current machine and the current
+	    // executable.
 	}
     }
 

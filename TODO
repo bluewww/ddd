@@ -230,18 +230,12 @@ Volunteers for these and other projects are welcome!
      o Since you supply ddd binaries, why not supply gdb binaries as
        well?
 
-089. Have an `info source' popup menu that pops up when pointing at
-     blank space.  (Info/Reload/Edit)
-
 094. Have a VSL 'string()' function that extracts the string from a
      box.  With an additional VSL 'matches()' function that matches
      regexps, one may display different types in different
      colors, fonts, etc.
 
 095. Have a colored DDD icon (requires Xpm).
-
-096* GDB settings:
-     - Insert a `dir' prompt - where to search for source files.
 
 099. Add a history mechanism to the `()' fields (cursor up / cursor
      down).

@@ -2010,6 +2010,8 @@ Ddd*settings*scroll.width:			528
 Ddd*settings*form.width:			500
 Ddd*settings*help.labelString:			?
 Ddd*settings*XmTextField.columns:		10
+Ddd*settings*dir.columns:			36
+Ddd*settings*path.columns:			36
 Ddd*settings*sep.bottomOffset:			10
 Ddd*settings*leader.bottomOffset:		4
 Ddd*settings*leader.separatorType:		XmSINGLE_DASHED_LINE
@@ -2023,7 +2025,8 @@ Ddd*settings*contextHelpString: \
 @rm These are the @sl Debugger Settings@rm.\n\
 \n\
 These settings affect the inferior debugger only.\n\
-They can be saved using @bf Save Options @rm in the @bf Options @rm menu.\n\
+All settings (except source and object paths) can be saved\n\
+using @bf Save Options @rm in the @bf Options @rm menu.\n\
 \n\
 Click on @bf ? @rm near an item to get further information.\n\
 In a text field, press the @key RETURN @rm key to commit the changes.\n\

@@ -596,7 +596,12 @@ void user_cmdSUC (string cmd, Widget origin)
 	    cmds += "show history save";
 	if (plus_cmd_data->refresh_setting)
 	{
-	    string show_command = "show " + cmd.after("set ");
+	    string show_command = "show ";
+	    if (cmd.contains("set ", 0))
+		show_command += cmd.after("set ");
+	    else
+		show_command += cmd;
+
 	    if (show_command.freq(' ') >= 2)
 	    {
 		// Strip last argument from `show' command

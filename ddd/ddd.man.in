@@ -1481,7 +1481,8 @@ Some debugger settings are insensitive and cannot be changed, because
 doing so would endanger \s-2@DDD@\s+2 operation.  See the
 `\fBgdbInitCommands\fR' resource for details.
 .PP
-Debugger settings are saved with \s-2@DDD@\s+2 options.
+All debugger settings (except source and object paths) 
+are saved with \s-2@DDD@\s+2 options.
 .\"
 .\"
 .\" ---------------

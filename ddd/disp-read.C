@@ -190,24 +190,28 @@ bool is_set_cmd (const string& cmd)
 bool is_setting_cmd (const string& cmd)
 {
     static regex RXsetting_cmd("[ \t]*(set|dbxenv)[ \t]+.*");
+    static regex RXpath_cmd("[ \t]*(dir|directory|path)([ \t]+.*)?");
 
-    return !cmd.contains('=') && cmd.matches (RXsetting_cmd);
+    return !cmd.contains('=') 
+	&& (cmd.matches (RXsetting_cmd) || cmd.matches(RXpath_cmd));
 }
 
 // ***************************************************************************
 // 
 bool is_file_cmd (const string& cmd, GDBAgent *gdb)
 {
-    static regex RXfile_cmd("[ \t]*file([ \t]+.*)?");
-
-    static regex RXdebug_cmd("[ \t]*debug([ \t]+.*)?");
-
     switch (gdb->type())
     {
     case GDB:
-	return cmd.matches (RXfile_cmd);
+	{
+	    static regex RXfile_cmd("[ \t]*file([ \t]+.*)?");
+	    return cmd.matches (RXfile_cmd);
+	}
     case DBX:
-	return cmd.matches (RXdebug_cmd);
+	{
+	    static regex RXdebug_cmd("[ \t]*debug([ \t]+.*)?");
+	    return cmd.matches (RXdebug_cmd);
+	}
     case XDB:
 	return false;		// FIXME
     }
