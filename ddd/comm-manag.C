@@ -192,6 +192,7 @@ typedef struct PlusCmdData {
     bool     config_where_h;	       // try 'where -h'
     bool     config_display;	       // try 'display'
     bool     config_clear;	       // try 'clear'
+    bool     config_handler;	       // try 'help handler'
     bool     config_pwd;	       // try 'pwd'
     bool     config_setenv;	       // try 'help setenv'
     bool     config_edit;	       // try 'help edit'
@@ -237,6 +238,7 @@ typedef struct PlusCmdData {
 	config_where_h(false),
 	config_display(false),
 	config_clear(false),
+	config_handler(false),
 	config_pwd(false),
 	config_setenv(false),
 	config_edit(false),
@@ -381,6 +383,8 @@ void start_gdb()
 	plus_cmd_data->config_display = true;
 	cmds += "clear";
 	plus_cmd_data->config_clear = true;
+	cmds += "help handler";
+	plus_cmd_data->config_handler = true;
 	cmds += "pwd";
 	plus_cmd_data->config_pwd = true;
 	cmds += "help setenv";
@@ -848,6 +852,7 @@ void send_gdb_command(string cmd, Widget origin,
     assert(!plus_cmd_data->config_where_h);
     assert(!plus_cmd_data->config_display);
     assert(!plus_cmd_data->config_clear);
+    assert(!plus_cmd_data->config_handler);
     assert(!plus_cmd_data->config_pwd);
     assert(!plus_cmd_data->config_setenv);
     assert(!plus_cmd_data->config_edit);
@@ -1434,6 +1439,11 @@ static void process_config_clear(string& answer)
     gdb->has_clear_command(is_known_command(answer));
 }
 
+static void process_config_handler(string& answer)
+{
+    gdb->has_handler_command(is_known_command(answer));
+}
+
 static void process_config_pwd(string& answer)
 {
     gdb->has_pwd_command(is_known_command(answer));
@@ -1601,6 +1611,11 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->config_clear) {
 	assert (qu_count < count);
 	process_config_clear(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_handler) {
+	assert (qu_count < count);
+	process_config_handler(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_pwd) {
