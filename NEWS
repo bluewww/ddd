@@ -61,6 +61,9 @@ Building
 
 - CXXFLAGS settings are respected.
 
+- A bad dependency on $(SHELL) in Makefile has been fixed.  This
+  caused unnecessary calls of flex and bison in the distribution. (9)
+
 - A bad wildcard use in Makefile has been fixed. (3)
 
 - ddd.texi rules in Makefile have been fixed. (4)
@@ -86,6 +89,7 @@ Thanks to:
     (6) Danny Van Elsen <Danny_Van_Elsen@village.uunet.be>
     (7) Philippe Midol-Monnet <Philippe.MIDOL-MONNET@airbus.aeromatra.com>
     (8) Felipe Rivera <felipe@informador.com.mx>
+    (9) Thomas Anders <anders@hmi.de>
 
 
 DDD 3.2.1

@@ -501,11 +501,11 @@ LINK.f = $(FC)
 
 ## YACC commands.
 YY = yy
-YACCTOCXX = $(SHELL) $(srcdir)/yacctoC
+YACCTOCXX = $(srcdir)/yacctoC
 YACC.Y = $(YACC) $(YFLAGS)
 
 ## LEX commands.
-LEXTOCXX = $(SHELL) $(srcdir)/lextoC
+LEXTOCXX = $(srcdir)/lextoC
 LEX.L = $(LEX) $(LFLAGS)
 
 ## Where to look for X include files.  (-I/usr/X11R5/include)
@@ -536,23 +536,23 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 	$(COMPILE.p) -E -o $@ $<
 .Y:
 	$(YACC.Y) $<
-	$(YACCTOCXX)
+	$(SHELL) $(YACCTOCXX)
 	$(RM) y.tab.c y.tab.h
 	$(LINK.cc) -o $@ y.tab.C $(LDLIBS)
 	$(RM) y.tab.C y.tab.H
 .Y.C:
 	$(YACC) $(YFLAGS) $<
-	$(YACCTOCXX)
+	$(SHELL) $(YACCTOCXX)
 	$(MV) y.tab.C $@
 	$(RM) y.tab.H y.tab.c y.tab.h
 .Y.h:
 	$(YACC) -d $(YFLAGS) $<
-	$(YACCTOCXX)
+	$(SHELL) $(YACCTOCXX)
 	$(MV) y.tab.H $@
 	$(RM) y.tab.C y.tab.c y.tab.h
 .Y.$(OBJEXT):
 	$(YACC) $(YFLAGS) $<
-	$(YACCTOCXX)
+	$(SHELL) $(YACCTOCXX)
 	$(COMPILE.cc) y.tab.C
 	$(RM) y.tab.C y.tab.H y.tab.c y.tab.h
 .Y.YY:
@@ -561,17 +561,17 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 	$(RM) y.tab.c y.tab.h
 .L:
 	$(LEX.L) $<
-	$(LEXTOCXX)
+	$(SHELL) $(LEXTOCXX)
 	$(LINK.cc) -o $@ $(LEX_OUTPUT_ROOT).C $(LDLIBS)
 	$(RM) $(LEX_OUTPUT_ROOT).C $(LEX_OUTPUT_ROOT).c
 .L.C:
 	$(LEX.L) $<
-	$(LEXTOCXX)
+	$(SHELL) $(LEXTOCXX)
 	$(MV) $(LEX_OUTPUT_ROOT).C $@
 	$(RM) $(LEX_OUTPUT_ROOT).c
 .L.$(OBJEXT):
 	$(LEX.L) $<
-	$(LEXTOCXX)
+	$(SHELL) $(LEXTOCXX)
 	$(COMPILE.cc) -o $@ $(LEX_OUTPUT_ROOT).C
 	$(RM) $(LEX_OUTPUT_ROOT).C $(LEX_OUTPUT_ROOT).c
 
@@ -1865,14 +1865,14 @@ it:	all cxxtest$(EXEEXT) ctest$(EXEEXT) stuff
 # VSL parsers.
 vsl-lex.C: $(srcdir)/vsl-lex.L
 	$(LEX.L) $(srcdir)/vsl-lex.L
-	$(LEXTOCXX) -prefix vsl
+	$(SHELL) $(LEXTOCXX) -prefix vsl
 	$(MV) $(LEX_OUTPUT_ROOT).C $@
 	$(RM) $(LEX_OUTPUT_ROOT).c
 
 vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
 	$(YACCTOCXX) $(YACCTOCXX).bison $(YACCTOCXX).h $(YACCTOCXX).sun
 	$(YACC.Y) -d $(srcdir)/vsl-gramma.Y
-	$(YACCTOCXX) -prefix vsl
+	$(SHELL) $(YACCTOCXX) -prefix vsl
 	$(MV) y.tab.H vsl-gramma.h
 	$(MV) y.tab.C vsl-gramma.C
 	$(RM) y.tab.c y.tab.h
@@ -1880,7 +1880,7 @@ vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
 # DDD regexp parsers.
 rxscan.C: $(srcdir)/rxscan.L
 	$(LEX.L) $(srcdir)/rxscan.L
-	$(LEXTOCXX) -prefix "ddd"
+	$(SHELL) $(LEXTOCXX) -prefix "ddd"
 	$(MV) $(LEX_OUTPUT_ROOT).C $@
 	$(RM) $(LEX_OUTPUT_ROOT).c
 
