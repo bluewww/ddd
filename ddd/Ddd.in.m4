@@ -2873,7 +2873,7 @@ Ddd*edit_buttons*shortcuts*helpString: \
 \n\
 Each line specifies a display shortcut, in the format\n\
 \n\
-    VAR(expression)CODE( // )VAR(label)\n\
+    VAR(expression)\ \ \ \ CODE(//) VAR(label)\n\
 \n\
 If SAMP(// VAR(label)) is omitted, LBL(Display VAR(expression)) \
 is used as label.\n\
