@@ -1878,6 +1878,25 @@ void DataDisp::refresh_args(bool update_arg)
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
 			    0, RefreshArgsCB, XtPointer(graph_edit));
     }
+
+    // Synchronize node selection with cluster
+    MapRef ref;
+    for (DispNode *dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->clustered() && !dn->selected())
+	{
+	    DispNode *cluster = disp_graph->get(dn->clustered());
+	    if (cluster != 0 && 
+		cluster->selected() && cluster->selected_value() == 0)
+	    {
+		dn->selected() = true;
+		dn->select();
+		graphEditRedrawNode(graph_edit, dn->nodeptr());
+	    }
+	}
+    }
 }
 
 void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
@@ -2421,6 +2440,18 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	    {
 		select = true;
 		break;
+	    }
+	}
+
+	if (dn->clustered())
+	{
+	    // Synchronize nodes with cluster
+	    DispNode *cluster = disp_graph->get(dn->clustered());
+	    if (cluster != 0 && 
+		cluster->selected() && cluster->selected_value() == 0)
+	    {
+		select = true;
+		dn->select();
 	    }
 	}
 
@@ -3382,7 +3413,7 @@ void DataDisp::insert_data_node(DispNode *dn, int depend_nr)
     if (depend_nr != 0)
 	return;
 
-    if (current_cluster == 0)
+    if (current_cluster == 0 || disp_graph->get(current_cluster) == 0)
     {
 	// No cluster -- create a new one
 	current_cluster = new_cluster();
