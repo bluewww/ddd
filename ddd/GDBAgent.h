@@ -72,14 +72,14 @@ enum DebuggerType { GDB, DBX };
 
 // wird aufgerufen, sobald eine Antwort auf send_user_cmd 
 // (oder ein Teil davon) ankommt
-typedef void (* OAProc) (string answer,
-			 void*  user_data);
+typedef void (* OAProc) (const string& answer,
+			 void* user_data);
 
 // wird aufgerufen, wenn der prompt kommt nach einer Antwort auf send_user_cmd
 typedef void (* OACProc) (void* user_data);
 
 // wird aufgerufen mit der kompletten Antwort auf send_question
-typedef void (* OQCProc) (string complete_answer,
+typedef void (* OQCProc) (const string& complete_answer,
 			  void*  qu_data);
 
 // wird aufgerufen mit den kompletten Antworten auf send_qu_array

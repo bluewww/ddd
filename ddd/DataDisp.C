@@ -1413,11 +1413,12 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint* p,
 DispNode *DataDisp::new_node (string& answer)
 {
     string disp_nr_str;
+    string ans = answer;
 
     switch(gdb->type())
     {
     case GDB:
-	disp_nr_str = read_disp_nr_str (answer, gdb->type());
+	disp_nr_str = read_disp_nr_str (ans, gdb->type());
 	if (disp_nr_str == "")
 	    return 0;
 	break;
@@ -1428,17 +1429,17 @@ DispNode *DataDisp::new_node (string& answer)
 	break;
     }
 
-    string name = read_disp_name (answer, gdb->type());
+    string name = read_disp_name (ans, gdb->type());
     DispNode* dn = 0;
 
-    if (is_disabling (answer, gdb->type()))
+    if (is_disabling (ans, gdb->type()))
     {
-	post_gdb_message (answer, last_origin);
+	post_gdb_message (ans, last_origin);
 	dn = new DispNode(disp_nr_str, name);
     }
     else
     {
-	dn = new DispNode(disp_nr_str, name, answer);
+	dn = new DispNode(disp_nr_str, name, ans);
     }
 
     return dn;
@@ -1449,7 +1450,7 @@ DispNode *DataDisp::new_node (string& answer)
 // erzeugt neuen Display-Knoten und setzt ihn an den im data-Argument
 // angegebenen Punkt (falls (BoxPoint *)data != (-1,-1))
 //
-void DataDisp::new_displayOQC (string answer, void* data)
+void DataDisp::new_displayOQC (const string& answer, void* data)
 {
     if (answer == "") {
 	// Problemfall bei Start mit core-file, display-Ausgabe nur bei
@@ -1472,7 +1473,8 @@ void DataDisp::new_displayOQC (string answer, void* data)
 	}
 
 	// DispNode erzeugen und ggf. disabling-Meldung ausgeben
-	DispNode *dn = new_node(answer);
+	string ans = answer;
+	DispNode *dn = new_node(ans);
 	if (dn == 0)
 	    return;
 
@@ -1496,9 +1498,10 @@ void DataDisp::new_displayOQC (string answer, void* data)
 // Aus den Display-Ausdruecken den ersten (neuen) herausfischen, und dann
 // der normalen Verarbeitung zufuehren.
 //
-void DataDisp::new_display_extraOQC (string answer, void* data)
+void DataDisp::new_display_extraOQC (const string& answer, void* data)
 {
-    string display = read_next_display (answer, gdb->type());
+    string ans = answer;
+    string display = read_next_display (ans, gdb->type());
     new_displayOQC (display, data);
 }
 
@@ -1641,13 +1644,14 @@ void DataDisp::refresh_displaySQ ()
 // ***************************************************************************
 // Aktualisiert die Displays entsprechend.
 //
-void DataDisp::refresh_displayOQC (string answer, void *)
+void DataDisp::refresh_displayOQC (const string& answer, void *)
 {
     bool disabling_occurred;
 
+    string ans = answer;
+
     // Antwort auf 'display' auswerten
-    string not_my_displays =
-	process_displays (answer, disabling_occurred);
+    string not_my_displays = process_displays (ans, disabling_occurred);
 
     // Bei Fehlermeldung (Disabling...) nochmal refresh.
     if (disabling_occurred) {
@@ -1755,7 +1759,7 @@ void DataDisp::disable_displaySQ (int display_nrs[], int count)
 // ***************************************************************************
 // Bei nicht-leerer Antwort Ausgabe als Fehlermeldung.
 //
-void DataDisp::disable_displayOQC (string answer, void *)
+void DataDisp::disable_displayOQC (const string& answer, void *)
 {
     if (answer != "")
 	post_gdb_message (answer, last_origin);
@@ -1789,7 +1793,7 @@ void DataDisp::enable_displaySQ (int display_nrs[], int count)
 // ***************************************************************************
 // Bei nicht-leerer Antwort Ausgabe als Fehlermeldung.
 //
-void DataDisp::enable_displayOQC (string answer, void *)
+void DataDisp::enable_displayOQC (const string& answer, void *)
 {
     if (answer != "")
 	post_gdb_message (answer, last_origin);
@@ -1853,8 +1857,10 @@ void DataDisp::delete_displaySQ (int display_nrs[], int count)
 // ***************************************************************************
 // Bei nicht-leerer Antwort Ausgabe als Fehlermeldung.
 //
-void DataDisp::delete_displayOQC (string answer, void *)
+void DataDisp::delete_displayOQC (const string& answer, void *)
 {
+    string ans = answer;
+
     switch (gdb->type())
     {
     case GDB:
@@ -1866,14 +1872,14 @@ void DataDisp::delete_displayOQC (string answer, void *)
 	if (answer != "")
 	{
 	    bool disabling_occurred;
-	    process_displays(answer, disabling_occurred);
+	    process_displays(ans, disabling_occurred);
 	}
 	break;
     }
 
     // Anything remaining is an error message
     if (answer != "")
-	post_gdb_message (answer, last_origin);
+	post_gdb_message (ans, last_origin);
 }
 
 
@@ -1923,7 +1929,7 @@ void DataDisp::dependent_displaySQ (string display_expression, int disp_nr)
 // ***************************************************************************
 // ruft disp_graph->insert_dependent (answer, data).
 //
-void DataDisp::dependent_displayOQC (string answer, void* data)
+void DataDisp::dependent_displayOQC (const string& answer, void* data)
 {
     if (answer == "") {
 	// Problemfall bei Start mit core-file, display-Ausgabe nur bei
@@ -1935,6 +1941,8 @@ void DataDisp::dependent_displayOQC (string answer, void* data)
 	post_gdb_message (answer, last_origin);
     }
     else {
+	string ans = answer;
+
 	// Unselect all nodes
 	for (GraphNode *gn = disp_graph->firstNode();
 	     gn != 0; gn = disp_graph->nextNode(gn))
@@ -1945,7 +1953,7 @@ void DataDisp::dependent_displayOQC (string answer, void* data)
 	}
 
 	// DispNode erzeugen und ggf. disabling-Meldung merken
-	DispNode *dn = new_node(answer);
+	DispNode *dn = new_node(ans);
 	if (dn == 0)
 	    return;
 
@@ -1967,9 +1975,10 @@ void DataDisp::dependent_displayOQC (string answer, void* data)
 // Aus den Display-Ausdruecken den ersten (neuen) herausfischen, und dann
 // der normalen Verarbeitung zufuehren.
 //
-void DataDisp::dependent_display_extraOQC (string answer, void* data)
+void DataDisp::dependent_display_extraOQC (const string& answer, void* data)
 {
-    string display = read_next_display (answer, gdb->type());
+    string ans = answer;
+    string display = read_next_display (ans, gdb->type());
     dependent_displayOQC (display, data);
 }
 

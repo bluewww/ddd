@@ -236,23 +236,23 @@ public:
     static string process_displays  (string& display_answer,
 				     bool& disabling_occurred);
 private:
-    static void new_displayOQC       (string answer, void* data);
-    static void new_display_extraOQC (string answer, void* data);
+    static void new_displayOQC       (const string& answer, void* data);
+    static void new_display_extraOQC (const string& answer, void* data);
     static void new_displaysSQA      (string display_expression, BoxPoint* p);
     static void new_displaysOQAC     (string answers[],
 				      void*  qu_datas[],
 				      int    count,
 				      void*  data);
-    static void refresh_displayOQC   (string answer, void*  data);
+    static void refresh_displayOQC   (const string& answer, void*  data);
     static void refresh_displayOQAC  (string answers[],
 				      void*  qu_datas[],
 				      int    count,
 				      void*  data);
-    static void disable_displayOQC   (string answer, void* data);
-    static void enable_displayOQC    (string answer, void* data);
-    static void delete_displayOQC    (string answer, void* data);
-    static void dependent_displayOQC (string answer, void* data);
-    static void dependent_display_extraOQC (string answer, void* data);
+    static void disable_displayOQC   (const string& answer, void* data);
+    static void enable_displayOQC    (const string& answer, void* data);
+    static void delete_displayOQC    (const string& answer, void* data);
+    static void dependent_displayOQC (const string& answer, void* data);
+    static void dependent_display_extraOQC (const string& answer, void* data);
     static void dependent_displaysSQA (string display_expression, int disp_nr);
     static void dependent_displaysOQAC(string answers[],
 				       void*  qu_datas[],

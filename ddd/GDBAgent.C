@@ -267,8 +267,8 @@ bool GDBAgent::send_user_cmd_plus (string   cmds [],
 
 // ***************************************************************************
 bool GDBAgent::send_question (string  cmd,
-				 OQCProc on_question_completion,
-				 void*   qu_data)
+			      OQCProc on_question_completion,
+			      void*   qu_data)
 {
     if (state != ReadyWithPrompt) 
 	return false;
