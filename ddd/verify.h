@@ -24,13 +24,6 @@
 // DDD is the GDB-based data display debugger.
 // Contact ddd@ips.cs.tu-bs.de for details.
 
-// $Log$
-// Revision 1.1  1995/08/31 11:56:47  zeller
-// New: verify return value of widget creation routines; it seems some
-// Motif functions return 0 if they cannot create a widget due to
-// insufficient resources (esp. colormap entries)
-//
-
 #ifndef _DDD_verify_h
 #define _DDD_verify_h
 
