@@ -73,6 +73,8 @@ static void YnButtonCB(Widget dialog,
 MString gdbDefaultHelp(Widget widget)
 {
     string name = XtName(widget);
+    name.gsub('_', ' ');
+    strip_final_blanks(name);
 
     string help = gdb_question("help " + name);
     if (help == NO_GDB_ANSWER)
@@ -145,8 +147,28 @@ void add_buttons(Widget buttons, const string& button_list)
 	    name = name.before(-1);
 	}
 
+	// Make sure the widget name does not contain invalid characters
+	string label_s = name;
+	if (label_s != "")
+	    label_s[0] = toupper(label_s[0]);
+	MString label(label_s);
+	static regex rxsep("[^-_a-zA-Z0-9]");
+	name.gsub(rxsep, '_');
+
 	Widget button = verify(XmCreatePushButton(buttons, name, 0, 0));
 	XtManageChild(button);
+
+	XmString xmlabel;
+	XtVaGetValues(button, XmNlabelString, &xmlabel, NULL);
+	MString foundLabel(xmlabel, true);
+	XmStringFree(xmlabel);
+
+	if (foundLabel.str() == name)
+	{
+	    // User did not specify a specific labelString - 
+	    // use the specified button command as label
+	    XtVaSetValues(button, XmNlabelString, label.xmstring(), NULL);
+	}
 
 	if (name == "Yes")
 	{
