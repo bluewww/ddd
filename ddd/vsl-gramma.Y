@@ -788,9 +788,16 @@ override_identifier	:	function_identifier
 				    if (vsllib->override(func_name)
 					&& vsllib->override("#" + func_name))
 				    {
-					VSLLib::parse_error("'" + func_name + 
-							    "(...)'"
-							    " undefined");
+					// Don't complain about misspelled
+					// functions here -- they will be
+					// uncovered with the following
+					// (overriding) definition.
+					if (false)
+					{
+					    VSLLib::parse_error(
+						"'" + func_name + 
+						"(...)' undefined");
+					}
 				    }
 				}
 
@@ -807,9 +814,16 @@ replace_identifier	:	function_identifier
 				    if (vsllib->replace(func_name)
 					&& vsllib->replace("#" + func_name))
 				    {
-					VSLLib::parse_error("'" + func_name + 
-							    "(...)'"
-							    " undefined");
+					// Don't complain about misspelled
+					// functions here -- they will be
+					// uncovered with the following
+					// (replacing) definition.
+					if (false)
+					{
+					    VSLLib::parse_error(
+						"'" + func_name + 
+						"(...)' undefined");
+					}
 				    }
 				}
 
