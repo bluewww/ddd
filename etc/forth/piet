@@ -1,0 +1,661 @@
+From piet@eng.sun.com  Fri Feb 11 00:49:29 2000
+X-VM-v5-Data: ([nil nil nil nil nil nil nil nil nil]
+	["47097" "Thursday" "10" "February" "2000" "15:52:26" "-0800" "Piet Delaney" "piet@eng.sun.com" "<38A34F3A.84B0A23C@eng.Sun.COM>" "624" "AnswerBook2: OpenBoot 3.x Command Reference Manual" "^From:" nil nil "2" "2000021023:52:26" "AnswerBook2: OpenBoot 3.x Command Reference Manual" nil nil nil]
+	nil)
+Return-Path: <piet@eng.sun.com>
+Delivered-To: andreas@infosun.fmi.uni-passau.de
+Received: from yoda.fmi.uni-passau.de (yoda.fmi.uni-passau.de [132.231.1.30])
+	by mail.infosun.fmi.uni-passau.de (Postfix) with ESMTP id DA7CA30C01
+	for <andreas@infosun.fmi.uni-passau.de>; Fri, 11 Feb 2000 00:49:28 +0100 (MET)
+Received: from mercury.Sun.COM (mercury.Sun.COM [192.9.25.1])
+	by yoda.fmi.uni-passau.de (8.8.8/8.8.8) with ESMTP id AAA14568
+	for <andreas.zeller@fmi.uni-passau.de>; Fri, 11 Feb 2000 00:49:26 +0100 (MET)
+Received: from engmail2.Eng.Sun.COM ([129.146.1.25])
+	by mercury.Sun.COM (8.9.3+Sun/8.9.3) with ESMTP id PAA25228
+	for <andreas.zeller@fmi.uni-passau.de>; Thu, 10 Feb 2000 15:49:24 -0800 (PST)
+Received: from uask4it.eng.sun.com (uask4it.Eng.Sun.COM [129.146.222.39])
+	by engmail2.Eng.Sun.COM (8.9.1b+Sun/8.9.1/ENSMAIL,v1.6) with ESMTP id PAA19433;
+	Thu, 10 Feb 2000 15:49:23 -0800 (PST)
+Received: from eng.Sun.COM (campton [129.146.55.191])
+	by uask4it.eng.sun.com (8.9.3+Sun/8.9.3) with ESMTP id PAA17703;
+	Thu, 10 Feb 2000 15:49:22 -0800 (PST)
+Message-ID: <38A34F3A.84B0A23C@eng.Sun.COM>
+Organization: Sun Microsystems
+X-Mailer: Mozilla 4.51 [en] (X11; U; SunOS 5.7 sun4u)
+X-Accept-Language: en
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="------------78F9475FCFD5625E80E9D37B"
+From: Piet Delaney <piet@eng.sun.com>
+Sender: piet@uask4it.Eng.Sun.COM
+To: Andreas Zeller <andreas.zeller@yoda.fmi.uni-passau.de>
+Cc: Pingchun.Lee@eng.sun.com, David.Paktor@eng.sun.com,
+	jeffco@eng.sun.com, piet@eng.sun.com
+Subject: AnswerBook2: OpenBoot 3.x Command Reference Manual
+Date: Thu, 10 Feb 2000 15:52:26 -0800
+
+This is a multi-part message in MIME format.
+--------------78F9475FCFD5625E80E9D37B
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+Hi Andreas:
+
+  The Forth Debugger is explained in the Sun AnswerBook Chapter:
+OpenBoot 3.x Command Reference Manual:
+
+
+http://otis.uk:8888/ab2/coll.216.1/OPENBOOTCMDREF_3.x/@Ab2PageView/11685?
+
+Also the IEEE 1276 Standard has a some information, like single stepping
+in assembler,
+perhaps it also would help:
+
+	http://playground.sun.com/1275/
+
+  If you have questions, Perhaps our OBP Experts could
+give you a few pointers; I'd use their time sparingly; 
+Ping and David are extremely busy.
+ 
+	Pingchun.Lee@eng.sun.com
+	David.Paktor@eng.sun.com
+
+  There is a lot of forth documentation available, for example
+http://www.forth.org/ has lots of http pointers to interesting
+stuff like:
+
+	http://www.complang.tuwien.ac.at/forth/forl.html
+
+  We are using ddd for Java development here at Sun, I've used
+it for kernel debugging on SunOS 4.1.4 and we expect to have
+dbx available for kernel debugging soon. I hope dbx is extended
+to support kernel needs like dumping special kernel registers,
+so I assume we will want to make small enhancement to ddd to 
+support things like displaying the new kernel specific registers.
+
+  The forth environment is on every SPARCstation, here in the states
+they are giving away the old SparcStation-1's. I can send you an
+old SparcStation but I think the shipping cost are an order of 
+magnatude more that you would likley have to pay to pick one up
+at an electronics flea market. I think SparcStation-1's sell on
+e-bay for about $10. Even a Sparcstation-10 only cost about $100.
+When I was in Germany they use to coast $40,000.00; a great investment.
+
+  My focus is mostly the Kernel C code, I don't use forth very much,
+but I do interface to it, so being able to quickly browse thru the
+huge src code of OBP to understand things would be great. I've found
+GUI's to C debuggers a great leverage to qetting up to speed on src
+code. If hacking DDD to interface to the forth debugger is as easy 
+as you think it might be it would make my forth learning experience
+a much more enjoyable experience.
+
+
+BTW, I'm surprised you PH.D dissertation hasn't been translated to
+English yet. I tried the German version but I'm afraid my language
+skills are my weakest skill.
+
+-piet
+
+
+-- 
+         ______		     Piet Delaney; UMPK12-3551
+        /_____/\             Sun Microsystems Inc.
+       /_____\\ \            12 Network Circle
+      /_____\ \\ /           Menlo Park, Ca. 94025
+     /_____/ \/ / /          piet@eng.sun.com
+    /_____/ /   \//\         (650) 786-4131 or X:84131
+    \_____\//\   / /         
+     \_____/ / /\ /          Home:
+      \_____/ \\ \             pete@www.piet.net
+       \_____\ \\              http://www.piet.net
+        \_____\/               (408) 243-8872
+--------------78F9475FCFD5625E80E9D37B
+Content-Type: text/html; charset=us-ascii;
+ name="11685"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="11685"
+Content-Base: "http://otis.uk:8888/ab2/coll.216.1/OPE
+	NBOOTCMDREF_3.x/@Ab2PageView/11685?"
+Content-Location: "http://otis.uk:8888/ab2/coll.216.1/OPE
+	NBOOTCMDREF_3.x/@Ab2PageView/11685?"
+
+   
+        
+   	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+        
+   <HTML>
+        <HEAD>
+                <TITLE>AnswerBook2: OpenBoot 3.x Command Reference Manual</TITLE>
+                <BASE HREF="http://otis.uk:8888/ab2/coll.216.1/OPENBOOTCMDREF_3.x/@Ab2PageView">
+                <META NAME="dwTemplate" CONTENT="Ab2PageView">
+        </HEAD>
+	<BODY BGCOLOR="#FFFFFF">
+	<!-- Toolbar -->
+		<!-- Banner -->
+	<FONT COLOR="#000066"><B>AnswerBook2 &#183; <I>OpenBoot 3.x Command Reference Manual</I></B></FONT>        <TABLE CELLPADDING="1" CELLSPACING="1" BORDER="1" WIDTH="100%">
+          <TR>            <TD ALIGN="CENTER" VALIGN="MIDDLE" BGCOLOR="#FFFFCC" NOWRAP><A HREF="/ab2"><IMG SRC="/icons/ab2_home.gif" WIDTH="42" HEIGHT="46" BORDER="0" ALT="Library"></A>&nbsp;<A HREF="http://otis.uk:8888/ab2/coll.216.1/OPENBOOTCMDREF_3.x/@Ab2TocView/11685?"><IMG SRC="/icons/ab2_toc.gif" WIDTH="42" HEIGHT="46" BORDER="0" ALT="Book Table of Contents"></A>&nbsp;<A HREF="@Ab2PrintSelect"><IMG SRC="/icons/ab2_print.gif" WIDTH="42" HEIGHT="46" BORDER="0" ALT="Print"></A>&nbsp;<A HREF="http://otis.uk:8888/ab2/@AnswerBook2Options"><IMG SRC="/icons/ab2_prefs.gif" WIDTH="42" HEIGHT="46" BORDER="0" ALT="Options"></A>&nbsp;<A HREF="/ab2/Help_C/ONLINEACCESS/@Ab2HelpView/idmatch(help-page-info)"><IMG SRC="/icons/ab2_help.gif" WIDTH="42" HEIGHT="46" BORDER="0" ALT="Help"></A>
+            </TD>
+            <TD ALIGN="LEFT" BGCOLOR="#FFFFCC" NOWRAP>    <FORM METHOD="GET" ACTION="@Ab2SearchResults"><INPUT TYPE="HIDDEN" NAME="_AB2_SearchAllColl" VALUE="CL">
+	&nbsp;Search in:&nbsp;
+	<SELECT NAME="scope">
+		<OPTION VALUE="BOOK">This Book
+		<OPTION VALUE="PL" SELECTED>Personal Library
+		<OPTION VALUE="CL">Complete Library
+		<OPTION VALUE="MAN_KEY">Man Pages by Keyword
+		<OPTION VALUE="HELP">AnswerBook2 Help
+	</SELECT>&nbsp;&nbsp;&nbsp;<A HREF="/ab2/Help_C/ONLINEACCESS/@Ab2HelpView/idmatch(help-search-tips)">Tips</A><BR>&nbsp;<INPUT TYPE="text" NAME="DwebQuery" VALUE="" SIZE="25">&nbsp;<INPUT TYPE="submit" VALUE=" Search " NAME="Search">
+    </FORM>
+            </TD>          </TR>
+        </TABLE>
+	<P></P>
+	<!-- Content -->	
+        
+        <a name=X><A NAME="Z40003AAA1D"></A><DIV CLASS="CHAPTER" ID="Z40003AAA1D"><A NAME="Z40003AA1485"></A><H1 CLASS="TITLE" ID="Z40003AA1485">  Debugging</H1>
+<P CLASS="PARA" >OpenBoot provides debugging tools that include a Forth language decompiler, a machine language disassembler, register display commands, a symbolic debugger, breakpoint commands, a Forth source-level debugger, a high-level language patching facility, and exception tracing. This chapter describes the capabilities specified by <EM CLASS="EMPHASIS" >IEEE Standard 1275-1994</EM>.</P>
+<A NAME="Z40003AA1765"></A><DIV CLASS="SECT1" ID="Z40003AA1765"><A NAME="Z40003AA1491"></A><H1 CLASS="TITLE" ID="Z40003AA1491">  Using the Forth Language Decompiler</H1>
+<P CLASS="PARA" >The built-in Forth language decompiler can be used to recreate the source code for any previously-defined Forth word. The command: <HR>
+ <STRONG><FONT COLOR="#000000"><PRE CLASS="PROGRAMLISTING" >ok <KBD CLASS="USERINPUT" ><B>see</B></KBD> <KBD CLASS="USERINPUT" ><B>old-name</B></KBD></PRE>
+</FONT></STRONG><HR>
+</P>
+<P CLASS="PARA" >displays a listing of the source for <KBD CLASS="COMMAND" >old-name</KBD> (without the source comments, of course).</P>
+<P CLASS="PARA" >A companion to <KBD CLASS="COMMAND" >see</KBD> is <KBD CLASS="COMMAND" >(see)</KBD> which is used to decompile the Forth word whose execution token is taken from the stack. For example: <HR>
+ <STRONG><FONT COLOR="#000000"><PRE CLASS="PROGRAMLISTING" >ok <KBD CLASS="USERINPUT" ><B>'</B></KBD> <KBD CLASS="USERINPUT" ><B>old-name</B></KBD> <KBD CLASS="USERINPUT" ><B>(see)</B></KBD></PRE>
+</FONT></STRONG><HR>
+</P>
+<P CLASS="PARA" ><KBD CLASS="COMMAND" >(see)</KBD> produces a listing in a format identical to <KBD CLASS="COMMAND" >see</KBD>.</P>
+<P CLASS="PARA" ><HR>
+ <STRONG><FONT COLOR="#000000"><PRE CLASS="PROGRAMLISTING" >ok <KBD CLASS="USERINPUT" ><B>see see</B></KBD>
+: see   
+   ' ['] (see) catch if    
+      drop 
+   then  
+; 
+ok <KBD CLASS="USERINPUT" ><B>see (see)</B></KBD>
+defer (see) is 
+: (f0018a44)   
+   40 rmargin ! dup dup (f00189c4) dup (f0018944) (f0018980) (f0018658) 
+   ??cr 
+; 
+ok <KBD CLASS="USERINPUT" ><B>f0018a44 (see)</B></KBD>
+: (f0018a44)   
+   40 rmargin ! dup dup (f00189c4) dup (f0018944) (f0018980) (f0018658) 
+   ??cr 
+; </PRE>
+</FONT></STRONG><HR>
+</P>
+<P CLASS="PARA" >The preceding listing shows that:</P>
+<UL CLASS="ITEMIZEDLIST" ><LI CLASS="LISTITEM" >  <P CLASS="PARA" ><KBD CLASS="COMMAND" >see</KBD> itself is composed only of Forth source words that were compiled as <KBD CLASS="COMMAND" >external</KBD> or as <KBD CLASS="COMMAND" >headers</KBD> with <KBD CLASS="COMMAND" >fcode-debug?</KBD> set to true.</P>
+</LI>
+<LI CLASS="LISTITEM" >  <P CLASS="PARA" ><KBD CLASS="COMMAND" >(see)</KBD> is a defer word. <KBD CLASS="COMMAND" >(see)</KBD> also contains words that were compiled as <KBD CLASS="COMMAND" >headerless</KBD> and are, consequently, displayed as hex addresses surrounded by parentheses.</P>
+</LI>
+<LI CLASS="LISTITEM" >  <P CLASS="PARA" >Decompiling a word with<KBD CLASS="COMMAND" >(see)</KBD> produces a listing identical to that produced by <KBD CLASS="COMMAND" >see</KBD>.</P>
+</LI>
+</UL>
+<P CLASS="PARA" >For words implemented in Forth assembler language, <KBD CLASS="COMMAND" >see</KBD> displays a Forth assembler listing. For example, decompiling <KBD CLASS="COMMAND" >dup</KBD> displays: <HR>
+ <STRONG><FONT COLOR="#000000"><PRE CLASS="PROGRAMLISTING" >ok <KBD CLASS="USERINPUT" ><B>see dup</B></KBD>
+code dup 
+f0008c98     sub         %g7, 8, %g7
+f0008c9c     stx         %g4, [%g0 + %g7]
+f0008ca0     ld          [%g5], %l0
+f0008ca4     jmp         %l0, %g2, %g0
+f0008ca8     add         %g5, 4, %g5</PRE>
+</FONT></STRONG><HR>
+</P>
+</DIV>
+<A NAME="Z40003AA1788"></A><DIV CLASS="SECT1" ID="Z40003AA1788"><A NAME="Z40003AA14E3"></A><H1 CLASS="TITLE" ID="Z40003AA14E3">  Using the Disassembler</H1>
+<P CLASS="PARA" >The built-in disassembler translates the contents of memory into equivalent assembly language. </P>
+<P CLASS="PARA" ><A HREF="@Ab2PageView/idmatch(Z40003AAA29)#Z40003AAA29?">Table 48</A>   lists commands that disassemble memory into equivalent opcodes. </P>
+<A NAME="Z40003AAA28"></A><TABLE BORDER="2" CELLPADDING="10" CELLSPACING="0" WIDTH="100%"><A NAME="Z40003AAA29"></A><CAPTION><B>Table 48 -   Disassembler Commands</CAPTION>
+<!--passthru--><!--ignore--><!--ignore--><!--ignore--><!--passthru--><TR><TH ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><B>Command </B></P>
+</TH><TH ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><B>Stack Diagram</B></P>
+</TH><TH ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><B>Description</B></P>
+</TH></TR>
+<!--passthru--><TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >+dis</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Continue disassembling where the last disassembly left off.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >dis</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( addr -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Begin disassembling at the specified address.</P>
+</TD></TR>
+</TABLE>
+<P CLASS="PARA" ><KBD CLASS="COMMAND" >dis</KBD> begins to disassemble the data content of any desired location. The system pauses when:</P>
+<UL CLASS="ITEMIZEDLIST" ><LI CLASS="LISTITEM" >  <P CLASS="PARA" >Any key is pressed while disassembly is taking place.</P>
+</LI>
+<LI CLASS="LISTITEM" >  <P CLASS="PARA" >The disassembler output fills the display screen.</P>
+</LI>
+<LI CLASS="LISTITEM" >  <P CLASS="PARA" >A <KBD CLASS="COMMAND" >call</KBD> or <KBD CLASS="COMMAND" >jump</KBD> opcode is encountered.</P>
+</LI>
+</UL>
+<P CLASS="PARA" >Disassembly can then be stopped or the <KBD CLASS="COMMAND" >+dis</KBD> command can be used to continue disassembling at the location where the last disassembly stopped.</P>
+<P CLASS="PARA" >Memory addresses are normally shown in hexadecimal. However, if a symbol table is present, memory addresses are displayed symbolically whenever possible.</P>
+</DIV>
+<A NAME="Z40003AA179B"></A><DIV CLASS="SECT1" ID="Z40003AA179B"><A NAME="Z40003AA1519"></A><H1 CLASS="TITLE" ID="Z40003AA1519">  Displaying Registers</H1>
+<P CLASS="PARA" >You can enter the User Interface from the middle of an executing program as a result of a program crash, a user abort, or an encountered breakpoint. (Breakpoints are discussed on <A HREF="@Ab2PageView/idmatch(Z40003AA17DB)#Z40003AA17DB?">     Breakpoints</A> .) In all these cases, the User Interface automatically saves all the CPU data register values in a buffer area. These values can then be inspected or altered for debugging purposes.</P>
+<A NAME="Z40003AA172A"></A><DIV CLASS="SECT2" ID="Z40003AA172A"><A NAME="Z40003AA1528"></A><H2 CLASS="TITLE" ID="Z40003AA1528">  SPARC Registers</H2>
+<P CLASS="PARA" ><A HREF="@Ab2PageView/idmatch(Z40003AAA39)#Z40003AAA39?">Table 49</A>   lists the SPARC register commands. </P>
+<A NAME="Z40003AAA38"></A><TABLE BORDER="2" CELLPADDING="10" CELLSPACING="0" WIDTH="100%"><A NAME="Z40003AAA39"></A><CAPTION><B>Table 49 -   SPARC Register Commands</CAPTION>
+<!--passthru--><!--ignore--><!--ignore--><!--ignore--><!--passthru--><TR><TH ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><B>Command </B></P>
+</TH><TH ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><B>Stack Diagram</B></P>
+</TH><TH ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><B>Description</B></P>
+</TH></TR>
+<!--passthru--><TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >%g0</TT> through <TT CLASS="LITERAL" >%g7</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- value )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Return the value in the specified global register.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >%i0</TT> through <TT CLASS="LITERAL" >%i7</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- value )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Return the value in the specified input register.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >%l0</TT> through <TT CLASS="LITERAL" >%l7</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- value )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Return the value in the specified local register.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >%o0</TT> through <TT CLASS="LITERAL" >%o7</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- value )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Return the value in the specified output register.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >%pc %npc %y</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- value )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Return the value in the specified register.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >%f0</TT> through <TT CLASS="LITERAL" >%f31</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- value )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Return the value in the specified floating point register.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >.fregisters </TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Display the values in <TT CLASS="LITERAL" >%f0</TT> through <TT CLASS="LITERAL" >%f31</TT>.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >.locals</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Display the values in the <TT CLASS="LITERAL" >i</TT>, <TT CLASS="LITERAL" >l</TT> and <TT CLASS="LITERAL" >o</TT> registers.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >.registers </TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Display values in processor registers.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >.window</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( window# -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Same as <KBD CLASS="COMMAND" >w</KBD> <TT CLASS="LITERAL" >.locals</TT>; display the desired window.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >ctrace</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Display the return stack showing C subroutines.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >set-pc</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( new-value -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Set <TT CLASS="LITERAL" >%pc</TT> to new-value, and set <TT CLASS="LITERAL" >%npc</TT> to (new-value+4).</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >to </TT>regname</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( new-value -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Change the value stored in any of the above registers.
+Use in the form:   new-value <TT CLASS="LITERAL" >to</TT> regname.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >w</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( window# -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Set the current window for displaying <TT CLASS="LITERAL" >%i</TT>x, <TT CLASS="LITERAL" >%l</TT>x, or <TT CLASS="LITERAL" >%o</TT>x.</P>
+</TD></TR>
+</TABLE>
+<A NAME="Z40003AAB12"></A><TABLE BORDER="2" CELLPADDING="10" CELLSPACING="0" WIDTH="100%"><A NAME="Z40003AAB13"></A><CAPTION><B>Table 50 -   SPARC V9 Register Commands</CAPTION>
+<!--passthru--><!--ignore--><!--ignore--><!--ignore--><!--passthru--><TR><TH ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><B>Command</B></P>
+</TH><TH ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><B>Stack Diagram</B></P>
+</TH><TH ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><B>Description</B></P>
+</TH></TR>
+<!--passthru--><TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><TT CLASS="LITERAL" >%fprs</TT></P>
+<P CLASS="PARA" ><TT CLASS="LITERAL" >%asi</TT></P>
+<P CLASS="PARA" ><TT CLASS="LITERAL" >%pstate</TT></P>
+<P CLASS="PARA" ><TT CLASS="LITERAL" >%tl-c</TT></P>
+<P CLASS="PARA" ><TT CLASS="LITERAL" >%pil</TT></P>
+<P CLASS="PARA" ><TT CLASS="LITERAL" >%tstate</TT></P>
+<P CLASS="PARA" ><TT CLASS="LITERAL" >%tt</TT></P>
+<P CLASS="PARA" ><TT CLASS="LITERAL" >%tba</TT></P>
+<P CLASS="PARA" ><TT CLASS="LITERAL" >%cwp</TT></P>
+<P CLASS="PARA" ><TT CLASS="LITERAL" >%cansave</TT></P>
+<P CLASS="PARA" ><TT CLASS="LITERAL" >%canrestore</TT></P>
+<P CLASS="PARA" ><TT CLASS="LITERAL" >%otherwin</TT></P>
+<P CLASS="PARA" ><TT CLASS="LITERAL" >%wstate</TT></P>
+<P CLASS="PARA" ><TT CLASS="LITERAL" >%cleanwin</TT></P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- value )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Return the value in the specified register.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >.pstate</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Formatted display of the processor state register.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >.ver</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Formatted display of the version register.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >.ccr</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Formatted display of the <TT CLASS="LITERAL" >%ccr</TT> register.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >.trap-registers</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Display trap-related registers.</P>
+</TD></TR>
+</TABLE>
+<P CLASS="PARA" >The values of all of these registers are saved and can be altered with <KBD CLASS="COMMAND" >to</KBD>. After the values have been inspected and/or modified, program execution can be continued with the <KBD CLASS="COMMAND" >go</KBD> command. The saved (and possibly modified) register values are copied back into the CPU, and execution resumes at the location specified by the saved program counter.</P>
+<P CLASS="PARA" >If you change <KBD CLASS="COMMAND" >%pc</KBD> with <KBD CLASS="COMMAND" >to</KBD>, you should also change <KBD CLASS="COMMAND" >%npc</KBD>. (It is easier to use <KBD CLASS="COMMAND" >set-pc</KBD>, which changes both registers automatically.)</P>
+<P CLASS="PARA" >On SPARC V9 systems, if Nis the current window, N-1 specifies the window for the caller, N-2 specifies the callers's caller, etc.</P>
+</DIV>
+</DIV>
+<A NAME="Z40003AA17DB"></A><DIV CLASS="SECT1" ID="Z40003AA17DB"><A NAME="Z40003AA154B"></A><H1 CLASS="TITLE" ID="Z40003AA154B">  Breakpoints</H1>
+<A NAME="Z40003AA16F0"></A><DIV CLASS="PROCEDURE" ID="Z40003AA16F0"><P CLASS="PARA" >The User Interface provides a breakpoint capability to assist in the development and debugging of stand-alone programs. (Programs that run over the operating system generally do not use this OpenBoot feature, but use other debuggers designed to run with the operating system.) The breakpoint feature lets you stop the program under test at desired points. After program execution has stopped, registers or memory can be inspected or changed, and new breakpoints can be set or cleared. You can resume program execution with the <KBD CLASS="COMMAND" >go</KBD> command.</P>
+<P CLASS="PARA" ><A HREF="@Ab2PageView/idmatch(Z40003AAA7D)#Z40003AAA7D?">Table 51</A>   lists the breakpoint commands that control and monitor program execution. </P>
+<A NAME="Z40003AAA7C"></A><TABLE BORDER="2" CELLPADDING="10" CELLSPACING="0" WIDTH="100%"><A NAME="Z40003AAA7D"></A><CAPTION><B>Table 51 -   Breakpoint Commands </CAPTION>
+<!--passthru--><!--ignore--><!--ignore--><!--ignore--><!--passthru--><TR><TH ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><B>Command </B></P>
+</TH><TH ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><B>Stack Diagram</B></P>
+</TH><TH ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><B>Description</B></P>
+</TH></TR>
+<!--passthru--><TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >+bp</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( addr -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Add a breakpoint at the specified address.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >-bp</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( addr -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Remove the breakpoint at the specified address.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >--bp</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- ) </P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Remove the most-recently-set breakpoint.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >.bp</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Display all currently set breakpoints.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >.breakpoint</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Perform a specified action when a breakpoint occurs. This word can be altered to perform any desired action. For example, to display registers at every breakpoint, type: <TT CLASS="LITERAL" >[']
+.registers to .breakpoint</TT>. The default behavior is <TT CLASS="LITERAL" >.instruction</TT>. To perform multiple behaviors, create a single definition which calls all desired behaviors, then load that word into <TT CLASS="LITERAL" >.breakpoint</TT>.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >.instruction</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Display the address, opcode for the last-encountered breakpoint. </P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >.step</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Perform a specified action when a single step occurs (see <TT CLASS="LITERAL" >.breakpoint</TT>).</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >bpoff</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Remove all breakpoints.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >finish-loop</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Execute until the end of this loop.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >go</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Continue from a breakpoint. This can be used to go to an arbitrary address by setting up the processor's program counter before issuing <TT CLASS="LITERAL" >go</TT>.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >gos</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( n -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Execute <TT CLASS="LITERAL" >go</TT> n times.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >hop</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >(Like the <TT CLASS="LITERAL" >step</TT> command.) Treat a subroutine call as a single instruction.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >hops</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( n -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Execute <TT CLASS="LITERAL" >hop</TT> n times.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >return</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Execute until the end of this subroutine.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >returnl</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- ) </P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Execute until the end of this leaf subroutine.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >skip</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Skip (do not execute) the current instruction.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >step</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Single-step one instruction.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >steps</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( n -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Execute <TT CLASS="LITERAL" >step</TT> n times.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >till</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >( addr -- )</P>
+</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Execute until the given address is encountered. Equivalent to <TT CLASS="LITERAL" >+bp</TT> <TT CLASS="LITERAL" >go</TT>.</P>
+</TD></TR>
+</TABLE>
+<P CLASS="PARA" >To debug a program using breakpoints, use the following procedure.</P>
+<OL> <A NAME="Z40003AA16D3"></A><LI>  <P CLASS="PARA" >Load the test program into memory.</P>
+</LI>
+ <A NAME="Z40003AA16D7"></A><LI>  <P CLASS="PARA" >See <A HREF="@Ab2PageView/idmatch(Z40003A756B)#Z40003A756B?">Chapter 5,      Loading and Executing Programs</A>  for more information. The register values are initialized automatically.</P>
+</LI>
+ <A NAME="Z40003AA16DD"></A><LI>  <P CLASS="PARA" >(Optional) Disassemble the downloaded program to verify a properly-loaded file.</P>
+</LI>
+ <A NAME="Z40003AA16E1"></A><LI>  <P CLASS="PARA" >Begin single-stepping the test program using the <KBD CLASS="COMMAND" >step</KBD> command. </P>
+</LI>
+ <A NAME="Z40003AA16E7"></A><LI>  <P CLASS="PARA" >You can also set a breakpoint, then execute (for example, using the commands <EM CLASS="EMPHASIS" >addr</EM><TT CLASS="LITERAL" > </TT><KBD CLASS="COMMAND" >+bp</KBD> and <KBD CLASS="COMMAND" >go</KBD>) or perform other variations.</P>
+</LI>
+</OL>
+</DIV>
+</DIV>
+<A NAME="Z40003AA1815"></A><DIV CLASS="SECT1" ID="Z40003AA1815"><A NAME="Z40003AA1584"></A><H1 CLASS="TITLE" ID="Z40003AA1584">  The Forth Source-Level Debugger</H1>
+<P CLASS="PARA" >The Forth source-level Debugger allows single-stepping and tracing of Forth programs. Each step represents the execution of one Forth word. </P>
+<P CLASS="PARA" >The debugger commands are shown in <A HREF="@Ab2PageView/idmatch(Z40003AAAD1)#Z40003AAAD1?">Table 52</A>  . </P>
+<A NAME="Z40003AAAD0"></A><TABLE BORDER="2" CELLPADDING="10" CELLSPACING="0" WIDTH="100%"><A NAME="Z40003AAAD1"></A><CAPTION><B>Table 52 -   Forth Source-level Debugger Commands</CAPTION>
+<!--passthru--><!--ignore--><!--ignore--><!--passthru--><TR><TH ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><B>Command</B></P>
+</TH><TH ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" ><B>Description</B></P>
+</TH></TR>
+<!--passthru--><TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >c</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >"Continue". Switch from stepping to tracing, thus tracing the remainder of the execution of the word being debugged.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >d</TT>d></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >"Down a level". Mark for debugging the word whose name was just displayed, then execute it.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >u</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >"Up a level". Un-mark the word being debugged, mark its caller for debugging, and finish executing the word that was previously being debugged.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >f</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Start a subordinate Forth interpreter with which Forth commands can be executed normally. When that interpreter is terminated (with <TT CLASS="LITERAL" >resume</TT>), control returns to the debugger at the place where the <TT CLASS="LITERAL" >f</TT> command was executed.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM">g</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >"Go." Turn off the debugger and continue execution.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >q</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >"Quit". Abort the execution of the word being debugged and all its callers and return to the command interpreter.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM">s </TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >"see". Decompile the word being debugged.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM">$</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Display the address,len on top of the stack as a text string.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM">h</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >"Help". Display symbolic debugger documentation.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM">?</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >"Short Help". Display brief symbolic debugger documentation. </P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >debug </TT>name</TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Mark the specified Forth word for debugging. Enter the Forth Source-level Debugger on all subsequent attempts to execute name. After executing <TT CLASS="LITERAL" >debug</TT>, the execution speed of the system may decrease until debugging is turned off with <TT CLASS="LITERAL" >debug-off</TT>. (Do not debug basic Forth words such as ".".)</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >(debug</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Like <TT CLASS="LITERAL" >debug</TT> except that <TT CLASS="LITERAL" >(debug</TT> takes an execution token from the stack instead of a name from the input stream.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >debug-off</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Turn off the Forth Source-level Debugger so that no word is being debugged.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >resume</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Exit from a subordinate interpreter, and go back to the stepper (See the <TT CLASS="LITERAL" >f</TT> command in this table).</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >stepping</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Set "step mode" for the Forth Source-level Debugger, allowing the interactive, step-by-step execution of the word being debugged. Step mode is the default.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >tracing</TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Set "trace mode" for the Forth Source-level Debugger. Tracing enables the execution of the word being debugged, while showing the name and stack contents for each word called by that word.</P>
+</TD></TR>
+<TR><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><TT CLASS="LITERAL" >&lt;space-bar></TT></TD><TD ROWSPAN="1" ALIGN="LEFT" VALIGN="BOTTOM"><P CLASS="PARA" >Execute the word just displayed and proceed to the next word.</P>
+</TD></TR>
+</TABLE>
+<P CLASS="PARA" >Every Forth word is defined as a series of one or more words that could be called "component" words. While debugging a specified word, the debugger displays information about the contents of the stack while executing each of the word's "component" words. Immediately before executing each component word, the debugger displays the contents of the stack and the name of the component word that is about to be executed.</P>
+<P CLASS="PARA" >In trace mode, that component word is then executed, and the process continues with the next component word.</P>
+<P CLASS="PARA" >In step mode (the default), the user controls the debugger's execution behavior. Before the execution of each component word, the user is prompted for one of the keystrokes specified in <A HREF="@Ab2PageView/idmatch(Z40003AAAD1)#Z40003AAAD1?">Table 52</A>  .</P>
+</DIV>
+<A NAME="Z40003AA183C"></A><DIV CLASS="SECT1" ID="Z40003AA183C"><A NAME="Z40003AA15A5"></A><H1 CLASS="TITLE" ID="Z40003AA15A5">  Using <TT CLASS="LITERAL" >patch</TT> and <TT CLASS="LITERAL" >(patch)</TT></H1>
+<P CLASS="PARA" >OpenBoot provides the ability to change the definition of a previously compiled Forth word using high-level Forth language. While the changes will typically be made in the appropriate source code, the <TT CLASS="LITERAL" >patch</TT> facility provides a means of quickly correcting errors uncovered during debugging.</P>
+<P CLASS="PARA" ><KBD CLASS="COMMAND" >patch</KBD> reads the input stream for the following information:</P>
+<UL CLASS="ITEMIZEDLIST" ><LI CLASS="LISTITEM" >  <P CLASS="PARA" >The name of the new code to be inserted.</P>
+</LI>
+<LI CLASS="LISTITEM" >  <P CLASS="PARA" >The name of the old code to be replaced.</P>
+</LI>
+<LI CLASS="LISTITEM" >  <P CLASS="PARA" >The name of the word containing the old code.</P>
+</LI>
+</UL>
+<P CLASS="PARA" >For example, consider the following example in which the word <KBD CLASS="COMMAND" >test</KBD> is replaced with the number <KBD CLASS="COMMAND" >555</KBD>:<HR>
+ <STRONG><FONT COLOR="#000000"><PRE CLASS="PROGRAMLISTING" >ok <KBD CLASS="USERINPUT" ><B>: patch-me  test 0 do  i . cr  loop ;</B></KBD>
+ok <KBD CLASS="USERINPUT" ><B>patch 555 test patch-me</B></KBD>
+ok <KBD CLASS="USERINPUT" ><B>see patch-me</B></KBD>
+: patch-me
+ h# 555 0 do
+  i . cr
+ loop
+;</PRE>
+</FONT></STRONG><HR>
+</P>
+<P CLASS="PARA" >When using <KBD CLASS="COMMAND" >patch</KBD>, some care must be taken to select the right word to replace. This is especially true if the word you are replacing is used several times within the target word and the occurrence of the word that you want to replace is not the first occurrence within the target word. In such a case, some subterfuge is required.<HR>
+ <STRONG><FONT COLOR="#000000"><PRE CLASS="PROGRAMLISTING" >ok <KBD CLASS="USERINPUT" ><B>: patch-me2  dup dup dup ( This third dup should be drop) ;</B></KBD>
+ok <KBD CLASS="USERINPUT" ><B>: xx dup ;</B></KBD>
+ok <KBD CLASS="USERINPUT" ><B>patch xx dup patch-me2</B></KBD>
+ok <KBD CLASS="USERINPUT" ><B>patch xx dup patch-me2</B></KBD>
+ok <KBD CLASS="USERINPUT" ><B>patch drop dup patch-me2</B></KBD>
+ok <KBD CLASS="USERINPUT" ><B>see patch-me</B></KBD>2
+: patch-me2
+ xx xx drop
+;</PRE>
+</FONT></STRONG><HR>
+</P>
+<P CLASS="PARA" >Another use for <KBD CLASS="COMMAND" >patch</KBD> is the case where the word to be patched contains some functionality that needs to be completely discarded. In this case, the word <KBD CLASS="COMMAND" >exit</KBD> should be patched over the first word whose functionality is to be eliminated. For example, consider a word whose definition is:<HR>
+ <STRONG><FONT COLOR="#000000"><PRE CLASS="PROGRAMLISTING" >ok <KBD CLASS="USERINPUT" ><B>: foo good bad unneeded ;</B></KBD></PRE>
+</FONT></STRONG><HR>
+</P>
+<P CLASS="PARA" >In this example, the functionality of <KBD CLASS="COMMAND" >bad</KBD> is incorrect and the functionality of <KBD CLASS="COMMAND" >unneeded</KBD> should be discarded. A first attempt to patch <KBD CLASS="COMMAND" >foo</KBD> might be:<HR>
+ <STRONG><FONT COLOR="#000000"><PRE CLASS="PROGRAMLISTING" >ok <KBD CLASS="USERINPUT" ><B>: right this that exit ;</B></KBD>
+ok <KBD CLASS="USERINPUT" ><B>patch right bad foo </B></KBD></PRE>
+</FONT></STRONG><HR>
+</P>
+<P CLASS="PARA" >on the expectation that the use of <KBD CLASS="COMMAND" >exit</KBD> in the word <KBD CLASS="COMMAND" >right</KBD> would prevent the execution of <KBD CLASS="COMMAND" >unneeded</KBD>. Unfortunately, <KBD CLASS="COMMAND" >exit</KBD> terminates the execution of the word which contains it, in this case <KBD CLASS="COMMAND" >right</KBD>. The correct way to patch <KBD CLASS="COMMAND" >foo</KBD> is:<HR>
+ <STRONG><FONT COLOR="#000000"><PRE CLASS="PROGRAMLISTING" >ok <KBD CLASS="USERINPUT" ><B>: right this that ;</B></KBD>
+ok <KBD CLASS="USERINPUT" ><B>patch right bad foo </B></KBD>
+ok <KBD CLASS="USERINPUT" ><B>patch exit unneeded foo </B></KBD></PRE>
+</FONT></STRONG><HR>
+</P>
+<P CLASS="PARA" ><KBD CLASS="COMMAND" >(patch)</KBD> is similar to <KBD CLASS="COMMAND" >patch</KBD> except that <KBD CLASS="COMMAND" >(patch)</KBD> obtains its arguments from the stack. The stack diagram for <KBD CLASS="COMMAND" >(patch)</KBD> is:</P>
+<P CLASS="PARA" ><TT CLASS="LITERAL" >( new-n1 num1? old-n2 num2? xt -- )</TT></P>
+<P CLASS="PARA" >where:</P>
+<UL CLASS="ITEMIZEDLIST" ><LI CLASS="LISTITEM" >  <P CLASS="PARA" ><KBD CLASS="COMMAND" >new-n1</KBD> and <KBD CLASS="COMMAND" >old-n2</KBD> can be either execution tokens or literal numbers.</P>
+</LI>
+</UL>
+<UL CLASS="ITEMIZEDLIST" ><LI CLASS="LISTITEM" >  <P CLASS="PARA" ><KBD CLASS="COMMAND" >num1?</KBD> and <KBD CLASS="COMMAND" >num2?</KBD> are flags indicating whether <KBD CLASS="COMMAND" >new-n1 </KBD>or <KBD CLASS="COMMAND" >old-n2</KBD>, respectively, are numbers.</P>
+</LI>
+</UL>
+<UL CLASS="ITEMIZEDLIST" ><LI CLASS="LISTITEM" >  <P CLASS="PARA" ><KBD CLASS="COMMAND" >xt</KBD> is the execution token of the word to be patched.</P>
+</LI>
+</UL>
+<P CLASS="PARA" >For example, consider the following example in which we reverse the affect of our first <KBD CLASS="COMMAND" >patch</KBD> example by replacing the number 555 with <KBD CLASS="COMMAND" >test</KBD>: <HR>
+ <STRONG><FONT COLOR="#000000"><PRE CLASS="PROGRAMLISTING" >ok <KBD CLASS="USERINPUT" ><B>see patch-me</B></KBD>
+: patch-me
+ h# 555 0 do
+  i . cr
+ loop
+;
+ok ['] test false 555 true ['] patch-me (patch)
+ok <KBD CLASS="USERINPUT" ><B>see patch-me</B></KBD>
+: patch-me
+ test 0 do
+  i . cr
+ loop
+;</PRE>
+</FONT></STRONG><HR>
+ </P>
+</DIV>
+<A NAME="Z40003AA186C"></A><DIV CLASS="SECT1" ID="Z40003AA186C"><A NAME="Z40003AA1631"></A><H1 CLASS="TITLE" ID="Z40003AA1631">  Using <TT CLASS="LITERAL" >ftrace</TT></H1>
+<P CLASS="PARA" >The <KBD CLASS="COMMAND" >ftrace</KBD> command shows the sequence of Forth words that were being executed at the time of the last exception. An example of <KBD CLASS="COMMAND" >ftrace</KBD> follows. <HR>
+ <STRONG><FONT COLOR="#000000"><PRE CLASS="PROGRAMLISTING" >ok <KBD CLASS="USERINPUT" ><B>: test1 1 ! ;</B></KBD> 
+ok <KBD CLASS="USERINPUT" ><B>: test2 1 test1 ;</B></KBD> 
+ok <KBD CLASS="USERINPUT" ><B>test2</B></KBD> 
+Memory address not aligned
+ok <KBD CLASS="USERINPUT" ><B>ftrace</B></KBD> 
+!    Called from test1  at ffeacc5c
+test1    Called from test2  at ffeacc6a
+(ffe8b574)  Called from (interpret  at ffe8b6f8
+execute    Called from catch  at ffe8a8ba
+ ffefeff0
+ 0 
+ ffefebdc
+catch     Called from (fload)  at ffe8ced8
+ 0
+(fload)    Called from interact  at ffe8cf74
+execute  Called from catch  at ffe8a8ba
+ ffefefd4
+ 0  
+ ffefebdc
+catch   Called from (quit  at ffe8cf98
+</PRE>
+</FONT></STRONG><HR>
+</P>
+<P CLASS="PARA" >In this example, <KBD CLASS="COMMAND" >test2</KBD> calls <KBD CLASS="COMMAND" >test1</KBD>, which tries to store a value to an unaligned address. This results in the exception: <KBD CLASS="COMMAND" >Memory
+address not aligned</KBD>. </P>
+<P CLASS="PARA" >The first line of <KBD CLASS="COMMAND" >ftrace</KBD>'s output shows the last command that caused the exception to occur. The next lines show locations from which the subsequent commands were being called.</P>
+<P CLASS="PARA" >The last few lines are usually the same in any <KBD CLASS="COMMAND" >ftrace</KBD> output, because that is the calling sequence in effect when the Forth interpreter interprets a word from the input stream.</P>
+</DIV>
+</DIV>
+
+	<!-- Next Button -->
+	  <!-- Next Topic -->
+  
+  <H2>Next Topic</H2>
+  <DL><DD><A HREF="@Ab2PageView/12944?">  Setting Up a TIP Connection </A></DD></DL>
+	<HR>
+        <!-- Partial TOC -->
+	  
+    <H2>Other Topics in: <I>OpenBoot 3.x Command Reference Manual</I></H2>	<TABLE CELLSPACING="0" CELLPADDING="0" BORDER="0" WIDTH="1000">
+		<!-- this row is for alignment -->
+		<TR>
+			<TH WIDTH="15"></TH>
+			<TH WIDTH="15"></TH>
+			<TH WIDTH="25"></TH>
+			<TH WIDTH="20"></TH>
+			<TH WIDTH="20"></TH>
+			<TH WIDTH="15"></TH>
+			<TH WIDTH="15"></TH>
+			<TH WIDTH="875"></TH>
+		</TR>	<TR>
+		<TD COLSPAN="1"></TD>
+		<TD> </TD>
+		<TD></TD>
+		<TD COLSPAN="5" NOWRAP><A HREF="@Ab2PageView/10882?">Loading and Executing Programs </A></TD>
+	</TR>	<TR>
+		<TD COLSPAN="1">  
+  <A NAME = "CurrentPos"><IMG SRC="/icons/ab2_toc_index.gif" BORDER="0" WIDTH="18" HEIGHT="17" ALT="You are here"></A></TD>
+		<TD> </TD>
+		<TD></TD>
+		<TD COLSPAN="5" NOWRAP>Debugging </TD>
+	</TR>	<TR>
+		<TD COLSPAN="2"></TD>
+		<TD> </TD>
+		<TD></TD>
+		<TD COLSPAN="4" NOWRAP><A HREF="@Ab2PageView/11693?">Using the Forth Language Decompiler </A></TD>
+	</TR>	<TR>
+		<TD COLSPAN="2"></TD>
+		<TD> </TD>
+		<TD></TD>
+		<TD COLSPAN="4" NOWRAP><A HREF="@Ab2PageView/11801?">Using the Disassembler </A></TD>
+	</TR>	<TR>
+		<TD COLSPAN="2"></TD>
+		<TD> </TD>
+		<TD></TD>
+		<TD COLSPAN="4" NOWRAP><A HREF="@Ab2PageView/11875?">Displaying Registers </A></TD>
+	</TR>	<TR>
+		<TD COLSPAN="2"></TD>
+		<TD> </TD>
+		<TD></TD>
+		<TD COLSPAN="4" NOWRAP><A HREF="@Ab2PageView/12238?">Breakpoints </A></TD>
+	</TR>	<TR>
+		<TD COLSPAN="2"></TD>
+		<TD> </TD>
+		<TD></TD>
+		<TD COLSPAN="4" NOWRAP><A HREF="@Ab2PageView/12524?">The Forth Source-Level Debugger </A></TD>
+	</TR>	<TR>
+		<TD COLSPAN="2"></TD>
+		<TD> </TD>
+		<TD></TD>
+		<TD COLSPAN="4" NOWRAP><A HREF="@Ab2PageView/12693?">Using  patch  and  (patch) </A></TD>
+	</TR>	<TR>
+		<TD COLSPAN="2"></TD>
+		<TD> </TD>
+		<TD></TD>
+		<TD COLSPAN="4" NOWRAP><A HREF="@Ab2PageView/12895?">Using  ftrace </A></TD>
+	</TR>	<TR>
+		<TD COLSPAN="1"></TD>
+		<TD> </TD>
+		<TD></TD>
+		<TD COLSPAN="5" NOWRAP><A HREF="@Ab2PageView/12944?">Setting Up a TIP Connection </A></TD>
+	</TR>	<TR>
+		<TD COLSPAN="1"></TD>
+		<TD> </TD>
+		<TD></TD>
+		<TD COLSPAN="5" NOWRAP><A HREF="@Ab2PageView/13151?">Building a Bootable Floppy Disk </A></TD>
+	</TR>  <!-- blank rows -->
+        <TR>
+                <TD>&nbsp;</TD>
+        </TR>
+ 
+        <TR>
+                <TD>&nbsp;</TD>
+        </TR>
+ 
+        <TR>
+		
+		
+                <TD COLSPAN="8" NOWRAP><A HREF="http://otis.uk:8888/ab2/coll.216.1/OPENBOOTCMDREF_3.x/@Ab2TocView/11685"><IMG SRC="/icons/ab2_goto_toc.gif" ALIGN="MIDDLE" BORDER="0" ALT="Book Table of Contents" HEIGHT="21" WIDTH="19"></A> <A HREF="http://otis.uk:8888/ab2/coll.216.1/OPENBOOTCMDREF_3.x/@Ab2TocView/11685"><B>Complete Table of Contents for Book</B></A></TD>
+	</TR>	</TABLE><P></P>
+	<!-- Footer -->
+	<HR>
+        <!-- copyright -->
+          
+  
+  
+  <P ALIGN=RIGHT><FONT COLOR="#000066" SIZE="-1"><A HREF="@Ab2PageView/45">Copyright</A> 1998  Sun Microsystems, Inc.  All rights reserved.</FONT></P>
+	</BODY>
+   </HTML>
+--------------78F9475FCFD5625E80E9D37B--
+
+
