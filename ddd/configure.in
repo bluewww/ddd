@@ -54,7 +54,7 @@ dnl
 ddd=ddd
 Ddd=Ddd
 DDD=DDD
-VERSION=1.4d
+VERSION=1.5beta1
 dnl
 AC_SUBST(ddd)dnl
 AC_SUBST(Ddd)dnl
@@ -169,9 +169,9 @@ fi
 AC_CHECK_LIB(nsl, gethostbyname, LIBS="$LIBS -lnsl")
 AC_CHECK_FUNC(gethostbyname)
 dnl
-dnl If we use gcc or g++, link with -lg++ if it exists
+dnl If we use gcc or g++, link with -lstdc++ if it exists
 if test "$GXX" = yes; then
-AC_CHECK_LIB(g++, lib_error_handler, LIBS="$LIBS -lg++")
+AC_CHECK_LIB(stdc++, cout, LIBS="$LIBS -lstdc++")
 fi
 dnl
 AC_CHECK_LIB(m, sin, LIBM="-lm")
@@ -183,29 +183,20 @@ dnl
 AC_CHECK_LIB(gen, regcmp, LIBGEN="-lgen")
 AC_SUBST(LIBGEN)
 dnl
-dnl On HP-UX (and other systems?), the Motif references the
-dnl regcomp() function from libc, the standard C library.  A GNU version
-dnl of regcomp() is provided by libg++, but it is incompatible with the
-dnl HP-UX regcomp() that Motif expects.  To make sure we get the correct
-dnl functions, we reference libc explicitly (-lc).  Also, our local
-dnl librx library required by the regex classes redefines regcomp(),
-dnl regexec(), ... to GNU_regcomp(), GNU_regexec() and so on.
-dnl Bug reported and fixed by neal@ctd.comsat.com (Neal Becker).
 dnl
-dnl Unfortunately, on LINUX, this extra -lc causes trouble.
-dnl (Reported by Ronald Wahl <ronald.wahl@informatik.tu-chemnitz.de>)
-dnl It is difficult to determine automatically whether -lc is required
-dnl or harmful, so we simply check on the host type.
+dnl Look for the tgetent() function - either in libtermcap, libcurses,
+dnl or use the GNU termcap library as shipped with DDD.
 dnl
-EXTRA_LIBC="$LIBC"
-case "$host_os" in
-*linux*) EXTRA_LIBC="";;
-esac
-AC_SUBST(EXTRA_LIBC)
+LIBTERMCAP="../termcap/libtermcap.a"
+dnl
+dnl Try the `curses' library first.  Usually a safe guess.
+AC_CHECK_LIB(curses, tgetent, LIBTERMCAP="-lcurses")
+dnl 
+dnl If we have a special `termcap' library, use it instead.
+AC_CHECK_LIB(termcap, tgetent, LIBTERMCAP="-ltermcap")
 dnl
 dnl On Linux ELF systems, `-lncurses' is preferred to `-ltermcap'.
 dnl Reported by jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
-LIBTERMCAP="../termcap/libtermcap.a"
 AC_CHECK_LIB(ncurses, tgetent, LIBTERMCAP="-lncurses")
 dnl
 dnl On FreeBSD systems, `-lmytinfo' is preferred to `-lncurses'.
@@ -214,11 +205,11 @@ AC_CHECK_LIB(mytinfo, tgetent, LIBTERMCAP="-lmytinfo")
 dnl
 AC_SUBST(LIBTERMCAP)
 dnl
+dnl
+dnl The `-liberty' library per definition contains only functions
+dnl missing in system libraries.
 LIBIBERTY="../libiberty/libiberty.a"
 AC_SUBST(LIBIBERTY)
-dnl
-LIBRX="../librx/librx.a"
-AC_SUBST(LIBRX)
 dnl
 dnl
 dnl Check for X stuff
@@ -364,13 +355,15 @@ AC_CHECK_HEADERS(unistd.h limits.h malloc.h pwd.h stdlib.h termio.h termios.h)
 AC_CHECK_HEADERS(sys/ioctl.h sys/param.h sys/time.h sys/resource.h sys/timeb.h)
 AC_CHECK_HEADERS(sys/stat.h sys/stropts.h sys/vty.h sys/sysmacros.h sys/core.h)
 AC_CHECK_HEADERS(sys/socket.h sys/termios.h sys/utsname.h sys/user.h)
-AC_CHECK_HEADERS(fcntl.h string.h strings.h netdb.h)
+AC_CHECK_HEADERS(fcntl.h string.h strings.h netdb.h regex.h rx.h)
 AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
 AC_HEADER_DIRENT
 AC_STAT_MACROS_BROKEN
 dnl
 ICE_CHECK_FROZEN_OSTRSTREAM
+ICE_TYPE_REGEX_T
+dnl
 dnl
 ICE_CHECK_DECL(dup2, unistd.h)
 ICE_CHECK_DECL(endpwent, pwd.h)
@@ -428,6 +421,15 @@ ICE_CHECK_PATH_MAX
 ICE_CHECK_POSIX_PATH_MAX
 ICE_CHECK_MAXPATHLEN
 AC_LANG_RESTORE
+dnl
+dnl
+dnl Check for a POSIX.2 regcomp()/regexec() library
+LIBRX="../rx/librx.a"
+if test "$ice_have_regcomp" = yes && test "$ice_have_regexec" = yes; then
+dnl No need to use the GNU regcomp() library - there's one in the system
+LIBRX=""
+fi
+AC_SUBST(LIBRX)
 dnl
 dnl
 dnl That's all, folks
