@@ -232,6 +232,8 @@ bool is_setting_cmd (const string& cmd)
 
     if (cmd.contains(" = ") && !cmd.contains(" $"))
 	return false;		// `set' command applied to variables
+    if (is_set_args_cmd(cmd))
+	return false;		// `set args' command
 
     return cmd.matches (RXsetting_cmd) || cmd.matches(RXpath_cmd);
 }
