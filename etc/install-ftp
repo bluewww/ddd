@@ -26,8 +26,11 @@
 # Contact ddd@ips.cs.tu-bs.de for details.
 
 # $Log$
-# Revision 1.1  1995/05/01 15:48:41  zeller
-# Initial revision
+# Revision 1.2  1995/05/02 09:37:31  zeller
+# New: Service
+#
+# Revision 1.1.1.1  1995/05/01  15:48:42  zeller
+# DDD 0.9 distribution
 #
 
 # Name of the ftp server (use "" if local)
@@ -57,6 +60,7 @@ README="ANNOUNCE    \
 	PROBLEMS    \
 	PROJECTS    \
 	README      \
+	SERVICE     \
 "
 
 # Distribution files
