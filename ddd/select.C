@@ -45,6 +45,7 @@ char select_rcsid[] =
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"
+#include "wm.h"
 
 #include <Xm/List.h>
 #include <Xm/SelectioB.h>
@@ -149,7 +150,7 @@ static void select_from_gdb(string& question, string& reply)
     delete[] choices;
     delete[] selected;
 
-    XtManageChild(gdb_selection_dialog);
+    manage_and_raise(gdb_selection_dialog);
 
     selection_reply = "";
     while (selection_reply == "" 

@@ -45,6 +45,7 @@ char post_rcsid[] =
 #include "string-fun.h"
 #include "GDBAgent.h"
 #include "charsets.h"
+#include "wm.h"
 
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
@@ -95,7 +96,7 @@ void post_gdb_yn(string question, Widget w)
     MString mquestion = rm(question);
     XtVaSetValues (yn_dialog, XmNmessageString, mquestion.xmstring(), NULL);
 
-    XtManageChild (yn_dialog);
+    manage_and_raise(yn_dialog);
 }
 
 void post_gdb_busy(Widget w)
@@ -114,7 +115,7 @@ void post_gdb_busy(Widget w)
     XtUnmanageChild(XmMessageBoxGetChild 
 		    (busy_dialog, XmDIALOG_CANCEL_BUTTON));
     XtAddCallback(busy_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
-    XtManageChild(busy_dialog);
+    manage_and_raise(busy_dialog);
 }
 
 void post_gdb_died(string reason, int gdb_status, Widget w)
@@ -176,7 +177,7 @@ void post_gdb_died(string reason, int gdb_status, Widget w)
     }
 
     Delay::register_shell(died_dialog);
-    XtManageChild (died_dialog);
+    manage_and_raise(died_dialog);
 }
 
 void post_gdb_message(string text, Widget w)
@@ -216,7 +217,7 @@ void post_gdb_message(string text, Widget w)
 		   XmNmessageString, mtext.xmstring(),
 		   NULL);
 
-    XtManageChild (gdb_message_dialog);
+    manage_and_raise(gdb_message_dialog);
 }
 
 void post_error(string text, String name, Widget w)
@@ -255,6 +256,7 @@ void post_error(string text, String name, Widget w)
 		   NULL);
 
     XtManageChild (ddd_error);
+    raise_shell(ddd_error);
 }
 
 void post_warning(string text, String name, Widget w)
@@ -292,5 +294,6 @@ void post_warning(string text, String name, Widget w)
 		   XmNmessageString, mtext.xmstring(),
 		   NULL);
 
-    XtManageChild (ddd_warning);
+    XtManageChild(ddd_warning);
+    raise_shell(ddd_warning);
 }

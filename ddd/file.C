@@ -546,56 +546,51 @@ static void openSourceDone(Widget w, XtPointer client_data,
 
 
 // Create various file dialogs
+static Widget create_file_dialog(Widget w, String name,
+				 FileSearchProc searchRemoteFiles,
+				 FileSearchProc searchRemoteDirectories,
+				 FileSearchProc searchLocalFiles,
+				 FileSearchProc searchLocalDirectories,
+				 XtCallbackProc openDone)
+{			     
+    if (remote_gdb())
+	return file_dialog(find_shell(w), name,
+			   searchRemoteFiles, searchRemoteDirectories, 
+			   openDone);
+    else
+	return file_dialog(find_shell(w), name,
+			   searchLocalFiles, searchLocalDirectories, 
+			   openDone);
+}
 
 void gdbOpenFileCB(Widget w, XtPointer, XtPointer)
 {
-    static Widget dialog = 0;
-    if (dialog == 0)
-    {
-	if (remote_gdb())
-	    dialog = file_dialog(w, "exec_files", searchRemoteExecFiles, 
-				 searchRemoteDirectories, openFileDone);
-	else
-	    dialog = file_dialog(w, "exec_files", searchLocalExecFiles, 
-				 0, openFileDone);
-    }
-
-    XtManageChild(dialog);
-    raise_shell(dialog);
+    static Widget dialog = 
+	create_file_dialog(w, "exec_files", 
+			   searchRemoteExecFiles, searchRemoteDirectories,
+			   searchLocalExecFiles, 0,
+			   openFileDone);
+    manage_and_raise(dialog);
 }
 
 void gdbOpenCoreCB(Widget w, XtPointer, XtPointer)
 {
-    static Widget dialog = 0;
-    if (dialog == 0)
-    {
-	if (remote_gdb())
-	    dialog = file_dialog(w, "core_files", searchRemoteCoreFiles, 
-				 searchRemoteDirectories, openCoreDone);
-	else
-	    dialog = file_dialog(w, "core_files", searchLocalCoreFiles, 
-				 0, openCoreDone);
-    }
-
-    XtManageChild(dialog);
-    raise_shell(dialog);
+    static Widget dialog = 
+	create_file_dialog(w, "core_files", 
+			   searchRemoteCoreFiles, searchRemoteDirectories,
+			   searchLocalCoreFiles, 0,
+			   openCoreDone);
+    manage_and_raise(dialog);
 }
 
 void gdbOpenSourceCB(Widget w, XtPointer, XtPointer)
 {
-    static Widget dialog = 0;
-    if (dialog == 0)
-    {
-	if (remote_gdb())
-	    dialog = file_dialog(w, "source_files", searchRemoteSourceFiles, 
-				 searchRemoteDirectories, openSourceDone);
-	else
-	    dialog = file_dialog(w, "source_files", searchLocalSourceFiles, 
-				 0, openSourceDone);
-    }
-
-    XtManageChild(dialog);
-    raise_shell(dialog);
+    static Widget dialog = 
+	create_file_dialog(w, "source_files", 
+			   searchRemoteSourceFiles, searchRemoteDirectories,
+			   searchLocalSourceFiles, 0,
+			   openSourceDone);
+    manage_and_raise(dialog);
 }
 
 // Synchronize file dialogs with current directory

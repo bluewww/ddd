@@ -472,7 +472,7 @@ static XrmOptionDescRec options[] = {
 };
 
 // Actions
-XtActionsRec actions [] = {
+static XtActionsRec actions [] = {
     {"gdb-control",            controlAct},
     {"gdb-delete-or-control",  delete_or_controlAct},
     {"gdb-prev-history",       prev_historyAct},
@@ -1028,6 +1028,13 @@ static MMDesc combined_menubar[] =
     MMEnd
 };
 
+static MMDesc lookup_menu[] =
+{
+    { "lookupType",      MMPush, { gdbLookupCB } },
+    { "lookupSomething", MMPush, { gdbLookupCB } },
+    MMEnd
+};
+
 
 struct ArgItems {
     enum ArgCmd { Lookup, Break, Print, Display, FindForward, FindBackward };
@@ -1035,7 +1042,7 @@ struct ArgItems {
 
 static MMDesc arg_cmd_area[] = 
 {
-    {"lookup",        MMPush,  { gdbLookupCB            }},
+    {"lookup",        MMPush,  { gdbLookupCB            }, lookup_menu },
     {"breakAt",       MMPush,  { gdbToggleBreakArgCmdCB }},
     {"print",         MMPush,  { gdbPrintArgCmdCB       }},
     {"display",       MMPush,  { gdbDisplayArgCmdCB     }},
@@ -3009,8 +3016,7 @@ static void make_preferences(Widget parent)
 // Popup Preference Panel
 static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer)
 {
-    XtManageChild(preferences_dialog);
-    raise_shell(preferences_dialog);
+    manage_and_raise(preferences_dialog);
 }
 
 

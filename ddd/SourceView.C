@@ -3835,7 +3835,7 @@ void SourceView::NewBreakpointCB(Widget, XtPointer, XtPointer)
 		      NewBreakpointDCB,
 		      NULL);
     }
-    XtManageChild(new_breakpoint_dialog);
+    manage_and_raise(new_breakpoint_dialog);
 }
 
 
@@ -3940,8 +3940,7 @@ void SourceView::EditBreakpointConditionCB(Widget,
 			   XtLastTimestampProcessed(XtDisplay(text)));
     }
 
-    XtManageChild(edit_breakpoint_condition_dialog);
-    raise_shell(edit_breakpoint_condition_dialog);
+    manage_and_raise(edit_breakpoint_condition_dialog);
 }
 
 
@@ -4085,8 +4084,7 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
 			   XtLastTimestampProcessed(XtDisplay(text)));
     }
 
-    XtManageChild(edit_breakpoint_ignore_count_dialog);
-    raise_shell(edit_breakpoint_ignore_count_dialog);
+    manage_and_raise(edit_breakpoint_ignore_count_dialog);
 }
 
 
@@ -4245,11 +4243,7 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
 
 void SourceView::EditBreakpointsCB(Widget, XtPointer, XtPointer)
 {
-    if (edit_breakpoints_dialog_w)
-    {
-	XtManageChild(edit_breakpoints_dialog_w);
-	raise_shell(edit_breakpoints_dialog_w);
-    }
+    manage_and_raise(edit_breakpoints_dialog_w);
 }
 
 
@@ -4337,9 +4331,7 @@ void SourceView::refresh_stack_frames()
 void SourceView::ViewStackFramesCB(Widget, XtPointer, XtPointer)
 {
     refresh_stack_frames();
-    XtManageChild(stack_dialog_w);
-    raise_shell(stack_dialog_w);
-    
+    manage_and_raise(stack_dialog_w);
     stack_dialog_popped_up = true;
 }
 
@@ -4596,9 +4588,7 @@ string SourceView::refresh_registers_command()
 void SourceView::ViewRegistersCB(Widget, XtPointer, XtPointer)
 {
     refresh_registers();
-    XtManageChild(register_dialog_w);
-    raise_shell(register_dialog_w);
-    
+    manage_and_raise(register_dialog_w);
     register_dialog_popped_up = true;
 }
 
@@ -4668,9 +4658,7 @@ void SourceView::refresh_threads()
 void SourceView::ViewThreadsCB(Widget, XtPointer, XtPointer)
 {
     refresh_threads();
-    XtManageChild(thread_dialog_w);
-    raise_shell(thread_dialog_w);
-    
+    manage_and_raise(thread_dialog_w);
     thread_dialog_popped_up = true;
 }
 

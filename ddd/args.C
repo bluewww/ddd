@@ -44,6 +44,7 @@ char args_rcsid[] =
 #include "mydialogs.h"
 #include "string-fun.h"
 #include "verify.h"
+#include "wm.h"
 
 #include <Xm/Xm.h>
 #include <Xm/List.h>
@@ -247,7 +248,7 @@ void gdbRunCB(Widget w, XtPointer, XtPointer)
     }
 
     update_run_arguments();
-    XtManageChild(run_dialog);
+    manage_and_raise(run_dialog);
 }
 
 
@@ -308,5 +309,5 @@ void gdbMakeCB(Widget w, XtPointer, XtPointer)
     }
 
     update_make_arguments();
-    XtManageChild(make_dialog);
+    manage_and_raise(make_dialog);
 }

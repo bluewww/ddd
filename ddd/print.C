@@ -254,7 +254,7 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 				  + quote(f) + "?");
 	    XtVaSetValues (yn_dialog, XmNmessageString, 
 			   question.xmstring(), NULL);
-	    XtManageChild (yn_dialog);
+	    manage_and_raise(yn_dialog);
 	}
     }
 }
@@ -555,7 +555,7 @@ static void SetGCCustom(Widget w, XtPointer, XtPointer)
     if (!XmToggleButtonGetState(w))
 	return;
 
-    XtManageChild(paper_size_dialog);
+    manage_and_raise(paper_size_dialog);
 }
 
 static void SetGCOrientation(Widget w, XtPointer, XtPointer)
@@ -571,8 +571,7 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     if (print_dialog != 0)
     {
 	// Dialog already created -- pop it up again
-	XtManageChild(print_dialog);
-	raise_shell(print_dialog);
+	manage_and_raise(print_dialog);
 	return;
     }
 
@@ -805,6 +804,5 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     if (ret < 0)
 	XmToggleButtonSetState(a4_paper_size, True, True);
 
-    XtManageChild(print_dialog);
-    raise_shell(print_dialog);
+    manage_and_raise(print_dialog);
 }

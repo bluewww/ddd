@@ -185,7 +185,7 @@ void ddd_show_signal(int sig)
 		       XmNmessageString, mtext.xmstring(),
 		       0);
 
-	XtManageChild(fatal_dialog);
+	manage_and_raise(fatal_dialog);
 
 	// Wait until dialog is mapped, such that DDD will exit
 	// if we get another signal during that time.
@@ -320,7 +320,7 @@ void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 		      closure, client_data);
 	XtAddCallback(yn_dialog, XmNhelpCallback,
 		      ImmediateHelpCB, 0);
-	XtManageChild(yn_dialog);
+	manage_and_raise(yn_dialog);
     }
     else
     {
@@ -328,11 +328,10 @@ void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
-// Exit after confirmation
-void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
+// Exit/Restart after confirmation, depending on the setting of
+// DDD_IS_RESTARTING
+static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
-    ddd_is_restarting = false;
-
     if (gdb == 0 || !gdb->running())
     {
 	_DDDExitCB(w, client_data, call_data);
@@ -354,52 +353,32 @@ void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     arg = 0;
     MString msg = rm(gdb->title() + " is still busy.  "
-		     "Exit anyway (and kill it)?");
+		     + (ddd_is_restarting ? "Restart" : "Exit")
+		     + "anyway (and kill it)?");
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
+    XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
 					      "quit_dialog", args, arg));
     Delay::register_shell(yn_dialog);
     XtAddCallback(yn_dialog, XmNokCallback,   _DDDExitCB, client_data);
+    XtAddCallback(yn_dialog, XmNcancelCallback, UnmanageThisCB, yn_dialog);
     XtAddCallback(yn_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
-    XtManageChild(yn_dialog);
+    manage_and_raise(yn_dialog);
+}
+
+// Exit after confirmation
+void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    ddd_is_restarting = false;
+    DDDDoneCB(w, client_data, call_data);
 }
 
 // Restart after confirmation
 void DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     ddd_is_restarting = true;
-
-    if (gdb == 0 || !gdb->running())
-    {
-	_DDDExitCB(w, client_data, call_data);
-	return;
-    }
-
-    if (gdb->isReadyWithPrompt())
-    {
-	gdb_command("quit");
-	return;
-    }
-
-    // Debugger is still running; request confirmation
-    Arg args[10];
-    int arg;
-
-    if (yn_dialog)
-	DestroyWhenIdle(yn_dialog);
-
-    arg = 0;
-    MString msg = rm(gdb->title() + " is still busy.  "
-		     "Restart anyway (and kill it)?");
-    XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
-    yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
-					      "quit_dialog", args, arg));
-    Delay::register_shell(yn_dialog);
-    XtAddCallback (yn_dialog, XmNokCallback,     _DDDExitCB, client_data);
-    XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
-
-    XtManageChild(yn_dialog);
+    DDDDoneCB(w, client_data, call_data);
 }
 
 

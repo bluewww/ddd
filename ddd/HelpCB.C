@@ -155,7 +155,7 @@ static XtResource tip_subresources[] = {
 	XtPointer(0)
     }
 };
-    
+
 static XtResource doc_subresources[] = {
     {
 	XtNdocumentationString,
@@ -468,8 +468,7 @@ static void _MStringHelpCB(Widget widget,
     XtSetSensitive(help_button, !help_on_help);
 
     // Popup help_dialog
-    XtManageChild(help_dialog);
-    raise_shell(help_dialog);
+    manage_and_raise(help_dialog);
 }
 
 
@@ -1028,8 +1027,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     delete[] xmtitles;
 
     // Enable Text Window
-    XtManageChild(text_dialog);
-    raise_shell(text_dialog);
+    manage_and_raise(text_dialog);
 }
 
 
@@ -1106,8 +1104,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     XtSetValues(help_text, args, arg);
 
     // Enable Text Window
-    XtManageChild(text_dialog);
-    raise_shell(text_dialog);
+    manage_and_raise(text_dialog);
 }
 
 

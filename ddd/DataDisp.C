@@ -643,7 +643,7 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
     XtVaSetValues (dependent_display_dialog,
 		   XmNtextString, label.xmstring(),
 		   NULL);
-    XtManageChild (dependent_display_dialog);
+    manage_and_raise(dependent_display_dialog);
 }
 
 
@@ -837,7 +837,7 @@ void DataDisp::new_displayCD (BoxPoint box_point)
     Widget text = XmSelectionBoxGetChild(new_display_dialog, XmDIALOG_TEXT);
     XmTextSetString(text, source_arg->get_string());
 
-    XtManageChild (new_display_dialog);
+    manage_and_raise(new_display_dialog);
 }
 
 
@@ -2976,8 +2976,7 @@ void DataDisp::refresh_display_list(bool silent)
 
 void DataDisp::EditDisplaysCB(Widget, XtPointer, XtPointer)
 {
-    XtManageChild(edit_displays_dialog_w);
-    raise_shell(edit_displays_dialog_w);
+    manage_and_raise(edit_displays_dialog_w);
 }
 
 //----------------------------------------------------------------------------
@@ -3034,7 +3033,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 
     Widget apply = XmSelectionBoxGetChild(set_dialog, XmDIALOG_APPLY_BUTTON);
     XtManageChild(apply);
-    XtManageChild(set_dialog);
+    manage_and_raise(set_dialog);
 
     Widget text = XmSelectionBoxGetChild(set_dialog, XmDIALOG_TEXT);
     XmTextSetString(text, value);

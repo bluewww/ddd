@@ -38,6 +38,7 @@ char wm_rcsid[] =
 #include "commandQ.h"
 #include "ddd.h"
 #include "string-fun.h"
+#include "findParent.h"
 
 #include <Xm/Xm.h>
 
@@ -153,12 +154,9 @@ void raise_shell(Widget w)
     if (w == 0)
 	return;
 
-    // Place window on top
-    XWindowChanges changes;
-    changes.stack_mode = Above;
-    XReconfigureWMWindow(XtDisplay(w), XtWindow(w), 
-			 XScreenNumberOfScreen(XtScreen(w)),
-			 CWStackMode, &changes);
+    // Place current shell on top
+    Widget shell = findShellParent(w);
+    XRaiseWindow(XtDisplay(w), XtWindow(shell));
 
 #if 0
     wait_until_mapped(w);
@@ -170,4 +168,13 @@ void raise_shell(Widget w)
 
     // Try this one
     XmProcessTraversal(w, XmTRAVERSE_CURRENT);
+}
+
+void manage_and_raise(Widget w)
+{
+    if (w != 0)
+    {
+	XtManageChild(w);
+	raise_shell(w);
+    }
 }

@@ -1241,7 +1241,10 @@ static void Initialize(Widget, Widget w, ArgList, Cardinal *)
     graphEditSizeChanged(w);
 
     // Override XmPrimitive translations
-    XtOverrideTranslations(w, XtParseTranslationTable(extraTranslations));
+    static XtTranslations translations = 
+	XtParseTranslationTable(extraTranslations);
+
+    XtOverrideTranslations(w, translations);
 }
 
 inline void defineCursor(Widget w, Cursor cursor)
