@@ -1520,24 +1520,25 @@ Ddd*status_w.labelString:		Ready.
 Ddd*status_w.contextHelpString:		\
 @rm This @sl status line @rm shows the last debugger message.
 
-Ddd*source_view_w.marginWidth:          0
-Ddd*source_view_w.marginHeight:         0
+Ddd*source_text_w.value:		No source code.
+Ddd*code_text_w.value:		        No machine code.
 
 Ddd*source_text_w.columns:		88
 Ddd*source_text_w.rows:			12
 Ddd*source_view_shell*source_text_w.rows:	20
 
-Ddd*source_text_wSW.width:		660
-Ddd*source_text_wSW.height:		140
-Ddd*source_view_shell*source_text_wSW.height: 280
-
 Ddd*code_text_w.columns:		88
 Ddd*code_text_w.rows:			1
 Ddd*source_view_shell*code_text_w.rows:	1
 
-Ddd*code_text_wSW.width:		660
-Ddd*code_text_wSW.height:		30
-Ddd*source_view_shell*code_text_wSW.height: 30
+Ddd*source_form_w.width:		660
+Ddd*source_form_w.height:		140
+Ddd*source_view_shell*source_form_w.height: 280
+
+Ddd*code_form_w.width:			660
+Ddd*code_form_w.height:			30
+Ddd*source_view_shell*code_form_w.height: 30
+
 
 Ddd*source_text_w.editable:		false
 Ddd*source_text_w.allowResize:		true
@@ -1555,33 +1556,14 @@ Ddd*code_text_w.cursorPositionVisible:	true
 Ddd*code_text_w.scrollHorizontal:	false
 Ddd*code_text_w.wordWrap:		true
 
-Ddd*code_text_w.contextHelpString:	\
-\
-@rm This is the @sl machine code window @rm in which the machine code\n\
-of the debugged program is shown.\n\
-\n\
-On the @sl left side@rm, code addresses and breakpoints are shown:\n\
-A stop sign or `@tt #@sl n@tt #@rm' shows an enabled breakpoint;\n\
-A grey stop sign or `@tt _@sl n@tt _@rm' shows a disabled breakpoint.\n\
-The last executed line is indicated by an arrow or `@tt>@rm'.\n\
-The @sl right side @rm contains the machine instructions.\n\
-\n\
-Click the @bf left mouse button @rm to select words.\n\
-Drag with the @bf left mouse button @rm to modify your selection.\n\
-\n\
-Click the @bf right mouse button @rm to get a popup menu:\n\
-@tt \267 @rm On the left side: set and modify breakpoints;\n\
-@tt \267 @rm On the right side: show values and lookup functions.
-
 Ddd*source_text_w.contextHelpString:	\
-\
-@rm This is the @sl source text window @rm in which the source code\n\
-of the debugged program is shown.\n\
+@rm This is the @sl source text window @rm showing the source code\n\
+of the debugged program.\n\
 \n\
 On the @sl left side@rm, line numbers and breakpoints are shown:\n\
-A stop sign or `@tt #@sl n@tt #@rm' shows an enabled breakpoint;\n\
-A grey stop sign or `@tt _@sl n@tt _@rm' shows a disabled breakpoint.\n\
-The last executed line is indicated by an arrow or `@tt>@rm'.\n\
+A stop sign or `@tt #@sl n@tt #@rm' indicates an enabled breakpoint;\n\
+A grey stop sign or `@tt _@sl n@tt _@rm' indicates a disabled breakpoint.\n\
+The next executed line is indicated by an arrow or `@tt>@rm'.\n\
 The @sl right side @rm contains the source code.\n\
 \n\
 Click the @bf left mouse button @rm to select words.\n\
@@ -1589,15 +1571,35 @@ Drag with the @bf left mouse button @rm to modify your selection.\n\
 \n\
 Click the @bf right mouse button @rm to get a popup menu:\n\
 @tt \267 @rm On the left side: set and modify breakpoints;\n\
-@tt \267 @rm On the right side: show values and lookup functions.
+@tt \267 @rm On the right side: show values and lookup functions.\n\
+\n\
+Use the @bf Lookup () @rm button below to view specific functions.
+
+Ddd*code_text_w.contextHelpString:	\
+@rm This is the @sl machine code window @rm showing the machine code\n\
+of the debugged program.\n\
+\n\
+On the @sl left side@rm, code addresses and breakpoints are shown:\n\
+A stop sign or `@tt #@sl n@tt #@rm' indicates an enabled breakpoint;\n\
+A grey stop sign or `@tt _@sl n@tt _@rm' indicates a disabled breakpoint.\n\
+The next executed instruction is indicated by an arrow or `@tt>@rm'.\n\
+The @sl right side @rm contains the machine instructions.\n\
+\n\
+Click the @bf left mouse button @rm to select words.\n\
+Drag with the @bf left mouse button @rm to modify your selection.\n\
+\n\
+Click the @bf right mouse button @rm to get a popup menu:\n\
+@tt \267 @rm On the left side: set and modify breakpoints;\n\
+@tt \267 @rm On the right side: show values and lookup locations.\n\
+\n\
+Use the @bf Lookup () @rm button below to disassemble specific functions.
 
 Ddd*source_view_shell.contextHelpString:	\
-\
-@rm This is the @sl source text window @rm in which the source code\n\
+@rm This is the @sl source text window @rm in which the source\n\
 and machine code of the debugged program are displayed.\n\
 \n\
-The upper half displays the machine code.\n\
-The lower half displays the source code, if any.
+The upper area shows the source code.\n\
+The lower area shows the machine code.
 
 
 !-----------------------------------------------------------------------------
