@@ -943,8 +943,8 @@ dnl
 dnl ICE_STREAMPOS
 dnl -------------
 dnl
-dnl If <iostream.h> defines a `streampos' type (as type of os.tellp(), 
-dnl os.tellg(), etc.), define `HAVE_STREAMPOS'.
+dnl If <iostream.h> defines a `streampos' type (as type of os.tellp(), etc.), 
+dnl define `HAVE_STREAMPOS'.
 dnl
 AC_DEFUN(ICE_STREAMPOS,
 [
@@ -957,7 +957,7 @@ AC_CACHE_VAL(ice_cv_have_streampos,
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 AC_TRY_COMPILE([#include <iostream.h>],
-[streampos scan_start;],
+[streampos p;],
 ice_cv_have_streampos=yes,
 ice_cv_have_streampos=no)
 AC_LANG_RESTORE
@@ -965,6 +965,33 @@ AC_LANG_RESTORE
 AC_MSG_RESULT($ice_cv_have_streampos)
 if test "$ice_cv_have_streampos" = yes; then
 AC_DEFINE(HAVE_STREAMPOS)
+fi
+])dnl
+dnl
+dnl
+dnl If <iostream.h> defines a `std::streampos' type 
+dnl (as type of os.tellp(), etc.), define `HAVE_STD_STREAMPOS'.
+dnl Note: In GCC 3.0, `streampos' does not work, but `std::streampos' does :-(
+dnl
+AC_DEFUN(ICE_STD_STREAMPOS,
+[
+AC_REQUIRE([AC_PROG_CXX])
+changequote(,)dnl
+AC_MSG_CHECKING(for std::streampos)
+changequote([,])dnl
+AC_CACHE_VAL(ice_cv_have_std_streampos,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([#include <iostream.h>],
+[std::streampos p;],
+ice_cv_have_std_streampos=yes,
+ice_cv_have_std_streampos=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_std_streampos)
+if test "$ice_cv_have_std_streampos" = yes; then
+AC_DEFINE(HAVE_STD_STREAMPOS)
 fi
 ])dnl
 dnl

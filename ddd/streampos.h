@@ -2,6 +2,7 @@
 // A typedef for stream positions
 
 // Copyright (C) 2000 Universitaet Passau, Germany.
+// Copyright (C) 2001 Universitaet des Saarlandes, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -33,14 +34,20 @@
 #pragma interface
 #endif
 
-// Older C++ releases defined `streampos' as a type for stream positions;
-// in the current C++ standard, this is implementation-defined.  We use
-// a simple `long' as replacement.
+// Older C++ releases defined `streampos' as a type for stream
+// positions; in some compilers, this is implementation-defined.  
 
 #include "config.h"
+#include <iostream.h>
 
 #if !HAVE_STREAMPOS
+#if HAVE_STD_STREAMPOS
+// `streampos' is not visible, but `std::streampos' is.
+using namespace std;
+#else
+// Use a simple `long' as replacement.
 typedef long streampos;
+#endif
 #endif
 
 #endif // _DDD_streampos_h

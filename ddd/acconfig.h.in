@@ -101,8 +101,11 @@
 /* Define if MAXPATHLEN is defined or declared in <sys/param.h>. */
 #undef HAVE_MAXPATHLEN
 
-/* Define if the `streampos' type is defined or declared in <iostream.h>. */
+/* Define if the `streampos' type can be used after <iostream.h>. */
 #undef HAVE_STREAMPOS
+
+/* Define if the `std::streampos' type can be used after <iostream.h>. */
+#undef HAVE_STD_STREAMPOS
 
 /* Define if you have the XP library (X11R6.3 print server).
    Required by Motif 2.1 and later. */

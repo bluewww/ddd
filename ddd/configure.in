@@ -459,7 +459,8 @@ dnl
 dnl
 dnl `streampos' and `iostate' types
 ICE_STREAMPOS
-ICE_IOSTATE
+ICE_STD_STREAMPOS
+dnl ICE_IOSTATE
 dnl
 dnl
 dnl
