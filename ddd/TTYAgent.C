@@ -502,7 +502,9 @@ void TTYAgent::open_master()
 	else
 	{
 	    // Everything ok - proceed
-	    _master_tty = ttyname(master);
+	    char *t = ttyname(master);
+	    if (t)
+		_master_tty = t;
 	    _slave_tty  = line;
 #ifdef TIOCFLUSH
 	    ioctl(master, TIOCFLUSH, (char *)0);
