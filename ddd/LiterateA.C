@@ -185,28 +185,26 @@ int LiterateAgent::write(const char *data, int length)
 	errno = 0;
 	int nitems = ::write(fileno(outputfp()), data, length);
 
-	if (nitems == 0)
+	if (nitems <= 0)
 	{
-	    if (errno)
+	    if (nitems == 0 && ++failures <= 3)
 	    {
-		if (++failures <= 3)
-		{
-		    ostrstream os;
-		    os << "write failed (attempt #" 
-		       << failures << ", still trying)";
-		    string s(os);
-		    raiseIOMsg(s);
-		    sleep(1);
-		    continue;
-		}
-		else
-		{
-		    raiseIOMsg("write failed");
-		    return -1;
-		}
+		ostrstream os;
+		os << "write failed (attempt #" 
+		   << failures << ", still trying)";
+		string s(os);
+		raiseIOMsg(s);
+		sleep(1);
+		continue;
+	    }
+	    else
+	    {
+		raiseIOMsg("write failed");
+		return -1;
 	    }
 	}
 
+	assert(nitems > 0);
 	dispatch(Output, (char *)data, nitems);
 
 	length -= nitems;
