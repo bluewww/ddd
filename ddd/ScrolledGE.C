@@ -141,9 +141,12 @@ Widget createScrolledGraphEdit(Widget parent, String name,
     XtSetArg(args[arg], XmNscrollingPolicy, XmAUTOMATIC); arg++;
     string swindow_name = string(name) + "_swindow";
 
-#if XmVersion >= 2000
+#if 1
     // In Motif 2.0 or later, the definition above crashes.
     // Use a standard scrolled window instead.
+
+    // Siddharth Ram <srram@qualcomm.com> says this is also the case
+    // for Motif 1.2 => use this definition all the time.
     Widget scrolledWindow = 
 	verify(XtCreateManagedWidget((char *)swindow_name, 
 				     xmScrolledWindowWidgetClass,
