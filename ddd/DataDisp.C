@@ -330,7 +330,7 @@ inline void set_sensitive(Widget w, bool state)
 	XtSetSensitive(w, state);
 }
 
-static void set_label(Widget w, string label)
+static void set_label(Widget w, const string& label)
 {
     MString new_label(label);
     XmString old_label;
@@ -2284,9 +2284,8 @@ void DataDisp::new_display(string display_expression, BoxPoint *p,
 
 
 
-#define UPDATING_DISPLAYS "Updating displays"
-
 struct StatusShower {
+    string msg;			// The message shown
     StatusDelay *delay;		// The delay shown
     int current;		// Current data to be processed
     int base;			// Data already processed
@@ -2306,14 +2305,15 @@ struct StatusShower {
 	return active->process(remaining_length);
     }
 
-    StatusShower()
-	: delay(0), current(0), base(0), total(0), last_shown(0),
+    StatusShower(const string& _msg)
+	: msg(_msg),
+	  delay(0), current(0), base(0), total(0), last_shown(0),
 	  aborted(false)
     {
 	old_background = DispValue::background;
 	DispValue::background = _process;
 	active = (StatusShower *)this;
-	delay = new StatusDelay(UPDATING_DISPLAYS);
+	delay = new StatusDelay(msg);
     }
 
     ~StatusShower()
@@ -2340,8 +2340,7 @@ bool StatusShower::process(int remaining_length)
     {
 	// Another THRESHOLD characters processed.  Wow!
 	int percent = (processed * 100) / total;
-	set_status(UPDATING_DISPLAYS "... ("
-		   + itostring(percent) + "% processed)", true);
+	set_status(msg + "... (" + itostring(percent) + "% processed)", true);
 	last_shown = processed;
     }
 
@@ -2396,7 +2395,7 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 	value = "";
     }
 
-    StatusShower s;
+    StatusShower s("Creating display");
     s.total   = value.length();
     s.current = value.length();
 
@@ -2410,7 +2409,7 @@ DispNode *DataDisp::new_user_node(const string& name,
     // Assign a default number
     int nr = -(next_display_number++);
 
-    StatusShower s;
+    StatusShower s("Creating status display");
     s.total   = answer.length();
     s.current = answer.length();
 
@@ -3243,11 +3242,14 @@ void DataDisp::process_info_display (string& info_display_answer)
 string DataDisp::process_displays (string& displays,
 				   bool& disabling_occurred)
 {
-    StatusShower s;
-
     string not_my_displays;
     static string disabling_error_msgs;
     disabling_occurred = false;
+
+    if (displays.length() == 0)
+	return displays;
+
+    StatusShower s("Updating displays");
 
     // Store graph displays in DISP_STRING_MAP; return all other
     // (text) displays as well as error messages
@@ -3256,14 +3258,14 @@ string DataDisp::process_displays (string& displays,
     string *strptr;
 
 #if LOG_DISPLAYS
-    clog << "Processing displays " << quote(displays) << "...\n";
+    clog << "Updating displays " << quote(displays) << "...\n";
 #endif
 
     string next_display = read_next_display (displays, gdb);
     while (next_display != "") 
     {
 #if LOG_DISPLAYS
-        clog << "Processing display " << quote(next_display);
+        clog << "Updating display " << quote(next_display);
 #endif
 	switch (gdb->type())
 	{
@@ -3397,10 +3399,12 @@ string DataDisp::process_displays (string& displays,
 // Handle output of user commands
 void DataDisp::process_user (StringArray& answers)
 {
+    if (answers.size() == 0)
+	return;
+
+    StatusShower s("Updating status displays");
+
     int i;
-
-    StatusShower s;
-
     for (i = 0; i < answers.size(); i++)
 	s.total += answers[i].length();
 
@@ -3802,19 +3806,11 @@ void DataDisp::language_changedHP(Agent *source, void *, void *)
     GDBAgent *gdb = ptr_cast(GDBAgent, source);
     assert(gdb != 0);
 
-    MString dereference_label("Display " + gdb->dereferenced_expr("()"));
-    XtVaSetValues(node_popup[PopupItms::Dereference].widget,
-		  XmNlabelString, dereference_label.xmstring(),
-		  NULL);
+    string label("Display " + gdb->dereferenced_expr("()"));
 
-    XtVaSetValues(display_area[DisplayItms::Dereference].widget,
-		  XmNlabelString, dereference_label.xmstring(),
-		  NULL);
-
-    MString dereference_arg_label("Display " + gdb->dereferenced_expr("()"));
-    XtVaSetValues(graph_cmd_area[CmdItms::Dereference].widget,
-		  XmNlabelString, dereference_arg_label.xmstring(),
-		  NULL);
+    set_label(node_popup[PopupItms::Dereference].widget, label);
+    set_label(display_area[DisplayItms::Dereference].widget, label);
+    set_label(graph_cmd_area[CmdItms::Dereference].widget, label);
 }
 
 
