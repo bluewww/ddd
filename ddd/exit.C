@@ -94,7 +94,7 @@ void ddd_install_fatal(char *program_name)
     (void)sigName(1);
 
     // Save program name
-    if (program_name)
+    if (program_name != 0 && program_name[0] != '\0')
 	ddd_invoke_name = program_name;
 
     // Install signal handlers
@@ -247,7 +247,7 @@ static void ddd_fatal(int sig)
 	    "  * What you were doing to get this message.  "
 	    "Report all the facts.\n"
 	    "  * Your " DDD_NAME " configuration.  "
-	    "Run %s --configuration' to get it.\n"
+	    "Run `%s --configuration' to get it.\n"
 	    "  * If a core file was generated in your directory, please run\n"
 	    "    `gdb %s core', and type `where' at the `(gdb)' prompt.\n"
 	    "    (Include this output only.  Do not include "
