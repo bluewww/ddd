@@ -1844,16 +1844,22 @@ void send_gdb_command(string cmd, Widget origin,
 // Part of the answer has been received
 //-----------------------------------------------------------------------------
 
+static bool y_or_n_prompt = false;
+
+bool gdb_prompts_y_or_n() { return y_or_n_prompt; }
+
 static void print_partial_answer(const string& answer, CmdData *cmd_data)
 {
     cmd_data->user_answer += answer;
+
+    y_or_n_prompt = cmd_data->user_answer.contains("(y or n) ", -1);
 
     // Output remaining answer
     if (cmd_data->user_verbose && cmd_data->graph_cmd == "")
     {
 	gdb_out(answer);
     }
-    else if (cmd_data->user_answer.contains("(y or n) ", -1))
+    else if (y_or_n_prompt)
     {
 	// GDB wants confirmation for a batch command
 	gdb->send_user_ctrl_cmd("y\n");

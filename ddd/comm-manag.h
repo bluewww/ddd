@@ -81,6 +81,9 @@ string buffered_gdb_output();
 // True if the debuggee is running
 extern bool debuggee_running;
 
+// True if GDB prompts with `(y or n) '
+bool gdb_prompts_y_or_n();
+
 // Configure JDB
 extern void configure_jdb(const string& all_help);
 
