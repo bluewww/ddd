@@ -224,6 +224,11 @@ int main(int argc, char *argv[])
 	VSLLib lib(library_file, VSEFlags::optimize_mode());
 	long endtime = clock();
 
+	assert(lib.OK());
+
+	VSLLib *lib2 = lib.dup();
+	assert(lib2->OK());
+
 	if (VSEFlags::show_optimizing_time)
 	    cout << "\nRead & optimizing time: " 
 		<< (endtime - starttime) / 1000 << " ms\n";
