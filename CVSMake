@@ -4,7 +4,8 @@
 # Script to setup DDD configuration work before actually running configure
 # when starting from fresh CVS checkout.  See `README-CVS' for details.
 
-echo "$0: setting up DDD from CVS..."
+this=`basename $0`
+echo "$this: setting up DDD from CVS..."
 
 # Set up configure scripts.
 # Note: no `--include-deps': dependencies are generated in `.deps/' subdirs.
@@ -29,5 +30,5 @@ sh ./configure "$@"
 # If all went well, delete any configuration-dependent files.
 make diststuff && make distclean
 
-echo "$0: setting up DDD from CVS...done."
-echo "$0: Now see the INSTALL file for configuring and building DDD."
+echo "$this: setting up DDD from CVS...done."
+echo "$this: Now see the INSTALL file for configuring and building DDD."
