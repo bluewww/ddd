@@ -223,7 +223,7 @@ void popup_shell(Widget w)
     else if (w == tool_shell)
 	tool_shell_state           = PoppedUp;
 
-    // Deiconify window
+    // Uniconify window
     XMapWindow(XtDisplay(w), XtWindow(w));
     raise_shell(w);
 }
@@ -268,7 +268,7 @@ void popup_tty(Widget shell)
 {
     if (exec_tty_window() && !popups_disabled)
     {
-	// Deiconify window
+	// Uniconify window
 	XMapWindow(XtDisplay(shell), exec_tty_window());
 
 	// Place window on top
