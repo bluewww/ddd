@@ -359,8 +359,10 @@ Volunteers for these and other projects are welcome!
 
 345 Have automatic unfolding of data structures using `Layout by
     Example' - that is, lay out the first few elements and have this
-    operation repeated until a fix point is reached.
+    operation repeated until a fix point is reached.  
+    See also 025 and 193.
 
-346 Use spring-embedded layout in case of conflicts.
+346 If a new display obscures an existing display, use spring-embedded
+    layout to resolve conflicts.
 
 347 (Insert new project ideas here)
