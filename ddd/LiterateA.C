@@ -54,31 +54,47 @@ extern "C" int fcntl(int fd, int command, ...);
 #include "ChunkQueue.h"
 
 // This package reads data in non-blocking mode, reading only data
-// that is currently present. However, this is not a good idea for
-// ttys, since if the process is run in the background, it will set
-// non-blocking mode for its controlling tty. Since this mode change
-// affects all processes reading from this tty, they will detect an
-// EOF on input and (most likely) exit.  Thus, we have a special flag,
-// called BLOCK_TTY_INPUT.  If BLOCK_TTY_INPUT is set (non-zero), we
-// use blocking mode for TTYs and read only one line at a time.  This
-// works fine unless the process runs in raw or cbreak mode.  If
-// BLOCK_TTY_INPUT is not set, we have no special treatment for TTYs.
+// that is currently present.  Unfortunately, this is not a good idea
+// for ttys, since if the process is run in the background, it will
+// set non-blocking mode for its controlling tty.  Since this mode
+// change affects all processes reading from this tty, they will
+// detect an EOF on input and (most likely) exit.
+
+// Consequently, we provide a special flag, called BLOCK_TTY_INPUT.
+// If BLOCK_TTY_INPUT is set (non-zero), we use blocking mode for TTYs
+// and read only one line at a time.  This works fine unless the
+// process runs in raw or cbreak mode.  If BLOCK_TTY_INPUT is not set,
+// we have no special treatment for TTYs.
 
 // According to Ray Dassen <jdassen@wi.LeidenUniv.nl>, Linux with GNU
-// libc 6 wants BLOCK_TTY_INPUT to be unset.
-#if _LINUX_C_LIB_VERSION_MAJOR >= 6
+// libc 5.4.38 and later wants BLOCK_TTY_INPUT to be unset.
+#if !defined(BLOCK_TTY_INPUT) \
+    && _LINUX_C_LIB_VERSION_MAJOR > 5
+#define BLOCK_TTY_INPUT 0
+#endif
+#if !defined(BLOCK_TTY_INPUT) \
+    && _LINUX_C_LIB_VERSION_MAJOR == 5 \
+    && _LINUX_C_LIB_VERSION_MINOR > 4
+#define BLOCK_TTY_INPUT 0
+#endif
+#if !defined(BLOCK_TTY_INPUT) \
+    && _LINUX_C_LIB_VERSION_MAJOR == 5 \
+    && _LINUX_C_LIB_VERSION_MINOR == 4 \
+    && _LINUX_C_LIB_VERSION_SUBMINOR > 37
 #define BLOCK_TTY_INPUT 0
 #endif
 
-// Linux with GNU libc5, however, wants BLOCK_TTY_INPUT being set.
-#if _LINUX_C_LIB_VERSION_MAJOR <= 5
+// Linux with GNU libc 5.4.33 and earlier, however, needs
+// BLOCK_TTY_INPUT being set.
+#if !defined(BLOCK_TTY_INPUT) \
+    && _LINUX_C_LIB_VERSION_MAJOR <= 5
 #define BLOCK_TTY_INPUT 1
 #endif
 
 // The default for all other systems is BLOCK_TTY_INPUT set.  (I don't
 // know whether this is the `best' setting, but I have no reason to
 // change a default that has been around successfully for so long...)
-#ifndef BLOCK_TTY_INPUT
+#if !defined(BLOCK_TTY_INPUT)
 #define BLOCK_TTY_INPUT 1
 #endif
 
