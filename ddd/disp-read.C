@@ -186,7 +186,7 @@ bool is_down_cmd (const string& cmd)
 bool is_set_cmd (const string& cmd)
 {
     static regex RXset_cmd(
-	"[ \t]*set\\( .*\\)?",
+	"[ \t]*set\\( .*\\)?"
 	"[ \t]*assign\\( .*\\)?",
 	true);
 
