@@ -3192,6 +3192,12 @@ Boolean ddd_setup_done(XtPointer)
 	install_button_tips();
 	fix_status_size();
 
+	if (running_shells() == 0)
+	{
+	    // We have no shell (yet) -- be sure to popup something
+	    gdbOpenCommandWindowCB(gdb_w, 0, 0);
+	}
+
 	// Initialize `views' menu.  LessTif needs this.
 	gdbUpdateViewsCB(0, XtPointer(views_menu), 0);
 

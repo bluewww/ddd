@@ -71,7 +71,6 @@ char comm_manager_rcsid[] =
 #include "settings.h"
 #include "string-fun.h"
 #include "version.h"
-#include "windows.h"
 
 #include <ctype.h>
 
@@ -1897,12 +1896,6 @@ void plusOQAC (const StringArray& answers,
 	case DBX:
 	case JDB:
 	    break;
-	}
-
-	if (running_shells() == 0)
-	{
-	    // No shell (yet) -- be sure to popup something
-	    gdbOpenSourceWindowCB(gdb_w, 0, 0);
 	}
     }
 
