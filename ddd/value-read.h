@@ -66,7 +66,7 @@ string read_token (string& value);
 string read_simple_value (string& value, int depth, bool ignore_repeats);
 
 // Read pointer from VALUE
-string read_pointer_value (string& value);
+string read_pointer_value (string& value, bool ignore_repeats);
 
 // Read array; return false iff error
 bool read_array_begin (string& value, string& addr);

@@ -303,7 +303,7 @@ void DispValue::init(string& value, DispValueType given_type)
     case Pointer:
 	{
 	    v.pointer = new PointerDispValue;
-	    v.pointer->value = read_pointer_value (value);
+	    v.pointer->value = read_pointer_value (value, ignore_repeats);
 	    v.pointer->dereferenced = false;
 
 #if LOG_CREATE_VALUES
@@ -999,7 +999,7 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 
     case Pointer:
     {
-	string new_value = read_pointer_value (value);
+	string new_value = read_pointer_value (value, ignore_repeats);
 	if (v.pointer->value != new_value) {
 	    v.pointer->value = new_value;
 	    changed = was_changed = true;

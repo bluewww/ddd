@@ -34,6 +34,8 @@ char value_read_rcsid[] =
 #pragma implementation
 #endif
 
+#define LOG_DETERMINE_TYPE 0
+
 //-----------------------------------------------------------------------------
 // Read variable values in string representation
 //-----------------------------------------------------------------------------
@@ -63,7 +65,7 @@ static regex rxvtable(
 #endif
 
 // Determine the type of VALUE.
-DispValueType determine_type (string value)
+static DispValueType _determine_type (string& value)
 {
     strip_space (value);
 
@@ -224,6 +226,21 @@ DispValueType determine_type (string value)
     // Simple values.
     // Everything else failed - assume simple value.
     return Simple;
+}
+
+DispValueType determine_type(string value)
+{
+#if LOG_DETERMINE_TYPE
+    clog << quote(value);
+#endif
+
+    DispValueType type = _determine_type(value);
+
+#if LOG_DETERMINE_TYPE
+    clog << " has type " << type << "\n";
+#endif
+
+    return type;
 }
 
 
@@ -422,6 +439,7 @@ string read_simple_value(string& value, int depth, bool ignore_repeats)
 	if (ignore_repeats)
 	{
 	    // Don't read in `<repeats N times>'
+	    strip_leading_space(value);
 	    if (value.contains('<', 0) && value.contains(rxrepeats, 0))
 		break;
 	}
@@ -434,9 +452,9 @@ string read_simple_value(string& value, int depth, bool ignore_repeats)
 }
 
 // Read a pointer value.
-string read_pointer_value (string& value)
+string read_pointer_value (string& value, bool ignore_repeats)
 {
-    return read_simple_value(value, 1, false);
+    return read_simple_value(value, 1, ignore_repeats);
 }
 
 // Read the beginning of an array from VALUE.  Return false iff failure.
