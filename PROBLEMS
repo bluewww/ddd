@@ -270,21 +270,13 @@ LessTif
     
     To use DDD with LessTif, get a recent LessTif release from
     `http://www.lesstif.org'; if needed, apply the patches found in
-    the `patches/' subdirectory.
+    the `patches/' subdirectory.  See the DDD WWW page for further
+    issues and patches.
 
-    With LessTif 0.83 and the patches applied, the following problems
+    With LessTif 0.84 and the patches applied, the following problems
     are currently known:
 
-    * Menu traversal by keyboard does not work correctly; use the
-      mouse instead.
-
-    * Tearing off menus may result in X errors.
-
-    * In dialogs involving multiple buttons, the `OK' button still
-      remains the default button, causing the dialog to pop down as
-      soon as `Return' is hit.
-
-    * In `GDB settings', the option menus are not shown.
+    * Menu traversal by keyboard does not work; use the mouse instead.
 
  
 
