@@ -198,16 +198,17 @@ private:
     static void childStatusChange(int sig);
 
     // generic error report function
-    void _raise(string msg, 
+    void _raise(const char *msg_,
 		int handler, 
 		bool system_error, 
 		bool check_if_running)
     {
-	if (system_error)
-	    msg += string(": ") + strerror(errno);
-	const char *s = msg.chars();
-
-	callHandlers(handler, STATIC_CAST(void *,CONST_CAST(char*,s)));
+        if (system_error) {
+	    const string msg = string(msg_) + ": " + strerror(errno);
+	    callHandlers(handler, STATIC_CAST(void *,
+					      CONST_CAST(char*,msg.chars())));
+	} else
+	    callHandlers(handler, STATIC_CAST(void *,CONST_CAST(char*,msg_)));
 
 	if (check_if_running)
 	    (void)running();
@@ -220,14 +221,21 @@ protected:
     // Msg invokes error handler, Warning invokes warning handler
     // IO means include system error, _ means don't check if running.
 
-    void _raiseMsg(const string& msg)        { _raise(msg, Panic,   false, false); }
-    void _raiseWarning(const string& msg)    { _raise(msg, Strange, false, false); }
-    void _raiseIOMsg(const string& msg)      { _raise(msg, Panic,   true,  false); }
-    void _raiseIOWarning(const string& msg)  { _raise(msg, Strange, true,  false); }
-    void raiseMsg(const string& msg)         { _raise(msg, Panic,   false, true); }
-    void raiseWarning(const string& msg)     { _raise(msg, Strange, false, true); }
-    void raiseIOMsg(const string& msg)       { _raise(msg, Panic,   true,  true); }
-    void raiseIOWarning(const string& msg)   { _raise(msg, Strange, true,  true); }
+
+#define DECL_RAISE(NAME, TYPE, ERROR, RUNNING) \
+    void NAME(const string& msg){ _raise(msg.chars(), TYPE, ERROR, RUNNING); }\
+    void NAME(const char *msg)  { _raise(msg,         TYPE, ERROR, RUNNING); }
+
+    DECL_RAISE(_raiseMsg,      Panic,   false, false)
+    DECL_RAISE(_raiseWarning,  Strange, false, false)
+    DECL_RAISE(_raiseIOMsg,    Panic,   true,  false)
+    DECL_RAISE(_raiseIOWarning,Strange, true,  false)
+
+    DECL_RAISE(raiseMsg,       Panic,   false, true)
+    DECL_RAISE(raiseWarning,   Strange, false, true)
+    DECL_RAISE(raiseIOMsg,     Panic,   true,  true)
+    DECL_RAISE(raiseIOWarning, Strange, true,  true)
+#undef DECL_RAISE
 
     // Terminator
     virtual void waitToTerminate();	// wait until agent dead
