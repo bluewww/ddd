@@ -283,8 +283,10 @@ void show_configuration()
 #ifdef _G_LIB_VERSION
 	", libg++ " _G_LIB_VERSION
 #endif
-#ifdef _LINUX_C_LIB_VERSION
-        ", glibc " _LINUX_C_LIB_VERSION
+#if defined(__GLIBC__)
+	", GNU libc " stringize(__GLIBC__) "." stringize(__GLIBC_MINOR__)
+#elif defined(_LINUX_C_LIB_VERSION)
+        ", Linux libc " _LINUX_C_LIB_VERSION
 #endif
 	"\n"
 	"Using X" stringize(X_PROTOCOL) "R" stringize(XlibSpecificationRelease)
