@@ -52,7 +52,7 @@ char test_graph_rcsid[] =
 #include "Graph.h"
 #include "BoxGraphN.h"
 #include "HintGraphN.h"
-#include "LineGraphE.h"
+#include "ArcGraphE.h"
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
@@ -85,7 +85,9 @@ Graph *myGraph()
 	new BoxGraphNode(new StringBox("100, 100"), BoxPoint(100, 100));
     GraphNode *n6 =
 	new BoxGraphNode(new StringBox("100, 100 a"), BoxPoint(100, 100));
-    GraphNode *n7 =
+    HintGraphNode *n7 =
+	new HintGraphNode(BoxPoint(100, 50));
+    GraphNode *n8 =
 	new BoxGraphNode(new StringBox("100, 100 b"), BoxPoint(100, 100));
 
     n2->selected() = True;
@@ -115,6 +117,9 @@ Graph *myGraph()
     assert(g->OK());
 
     *g += n7;
+    assert(g->OK());
+
+    *g += n8;
     assert(g->OK());
 
     *g += new LineGraphEdge(n0, n0);
@@ -150,30 +155,17 @@ Graph *myGraph()
     *g += new LineGraphEdge(n4, n5);
     assert(g->OK());
 
-    GraphEdge *e67 = new LineGraphEdge(n6, n7); 
+    GraphEdge *e67 = new ArcGraphEdge(n6, n7); 
     *g += e67;
+    assert(g->OK());
+
+    GraphEdge *e78 = new ArcGraphEdge(n7, n8); 
+    *g += e78;
     assert(g->OK());
 
     GraphEdge *e56 = new LineGraphEdge(n5, n6); 
     *g += e56;
     assert(g->OK());
-
-#if 0
-    *g -= e67;
-    assert(g->OK());
-
-    *g -= e56;
-    assert(g->OK());
-
-    *g -= n6;
-    assert(g->OK());
-
-    *g -= n7;
-    assert(g->OK());
-
-    *g -= n3;
-    assert(g->OK());
-#endif
 
     Graph *g2 = g->dup();
     assert(g->OK());
