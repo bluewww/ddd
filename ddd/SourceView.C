@@ -6228,7 +6228,7 @@ Widget SourceView::map_stop_at(Widget w, XmTextPosition pos,
 	{
 	    // Max number of glyphs exceeded
 	    string msg = "Out of glyphs (used " + 
-		itostring(stops.size() - 1) + " of "
+		itostring(stops.size() - 1) + " of " +
 		itostring(stops.size() - 1) + ")";
 
 	    set_status(msg);
