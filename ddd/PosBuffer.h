@@ -58,6 +58,14 @@ class PosBuffer {
 
     string auto_cmd_buffer;	// AutoCommand found
 
+protected:
+    void filter_gdb(string& answer);
+    void filter_dbx(string& answer);
+    void filter_xdb(string& answer);
+    void filter_jdb(string& answer);
+    void filter_pydb(string& answer);
+    void filter_perl(string& answer);
+
 public:
     bool check_pc;		// Whether to search for PC
     bool check_func;		// Whether to search for function name
