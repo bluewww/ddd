@@ -464,16 +464,13 @@ static Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[])
     //    have an auto-raised window anyway.
     // auto_raise(XtParent(menu));
 
-    if (XmVersion < 1002 || lesstif_version < 1000)
-    {
-	// LessTif places a passive grab on the parent, such that the
-	// pointer is grabbed as soon as the menuPost event occurs.
-	// This grab breaks PushMenus, so we cancel it.
-	// Motif 1.1 places a passive grab on button 3, such that the
-	// pointer is grabbed (and remains grabbed) as soon as button
-	// 3 is pressed.  This breaks any X session, so we cancel it.
-	XtUngrabButton(parent, AnyButton, AnyModifier);
-    }
+    // LessTif places a passive grab on the parent, such that the
+    // pointer is grabbed as soon as the menuPost event occurs.  This
+    // grab breaks PushMenus, so we cancel it.  Motif places a passive
+    // grab on button 3, such that the pointer is grabbed as soon as
+    // button 3 is pressed.  In Motif 1.1, it even remains grabbed!
+    // This breaks any X session, so we cancel it.
+    XtUngrabButton(parent, AnyButton, AnyModifier);
 
     return menu;
 }
