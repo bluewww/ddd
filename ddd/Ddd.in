@@ -2033,7 +2033,7 @@ Ddd*print*a3.labelString:                     A3 (297mm \327 420mm)
 Ddd*print*letter.labelString:		      Letter (8\275" \327 11")
 Ddd*print*legal.labelString:		      Legal (8\275" \327 14")
 Ddd*print*executive.labelString:	      Executive (7\275" \327 10")
-Ddd*print*custom.labelString:	      	      Custom...
+Ddd*print*custom.labelString:	      	      Other...
 
 Ddd*print.autoUnmanage:  false
 Ddd*print*okLabelString: Print
