@@ -563,8 +563,7 @@ static void GotSelectionCB(Widget w, XtPointer client_data,
 }
 
 // Handle `Select' button in xfontsel
-static void SelectionLostCB(Widget w, XtPointer client_data, 
-			    XtPointer call_data)
+static void SelectionLostCB(Widget w, XtPointer client_data, XtPointer)
 {
     FontSelectInfo *info = (FontSelectInfo *)client_data;
     assert(info->text == w);
