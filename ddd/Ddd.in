@@ -2616,7 +2616,15 @@ input/output of the debugged process to the execution window.\n\
 This command failed.\n\
 \n\
 @DDD@ will now redirect the process I/O explicitly.  This means that\n\
-the command window remains the controlling terminal.
+the command window remains the controlling terminal.\n\
+\n\
+You can tell @DDD@ to not use the `tty' command, but to use explicit\n\
+redirection instead, using shell redirection operators.\n\
+To do so, include a line\n\
+\n\
+@tt Ddd*useTTYCommand: false\n\
+\n\
+@rm in your @tt ~/.dddinit @rm file and restart @DDD@.
 
 Ddd*history_save_error_popup.title: @DDD@: Save History Failed
 Ddd*history_save_error*contextHelpString:	\
