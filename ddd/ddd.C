@@ -5645,8 +5645,12 @@ static void popup_splash_screen(Widget parent, string color_key)
 					     parent, args, arg));
 
     arg = 0;
-    XtSetArg(args[arg], XmNlabelType, XmPIXMAP); arg++;
-    XtSetArg(args[arg], XmNallowResize, True); arg++;
+    XtSetArg(args[arg], XmNlabelType, XmPIXMAP);   arg++;
+    XtSetArg(args[arg], XmNallowResize, True);     arg++;
+    XtSetArg(args[arg], XmNborderWidth, 0);        arg++;
+    XtSetArg(args[arg], XmNmarginWidth, 0);        arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0);       arg++;
+    XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
     Widget splash = verify(XmCreateLabel(splash_shell, "splash", args, arg));
     XtManageChild(splash);
     XtRealizeWidget(splash_shell);

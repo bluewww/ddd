@@ -3404,13 +3404,8 @@ Click on LBL(OK) to close this window.
 ! Splash screen
 !-----------------------------------------------------------------------------
 
-Ddd*splash_shell.splash.highlightThickness:	0
 Ddd*splash_shell.splash.background:	        white
 Ddd*splash_shell.splash.foreground:	        black
-Ddd*splash_shell.splash.marginHeight:           0
-Ddd*splash_shell.splash.marginWidth:            0
-Ddd*splash_shell.splash.borderWidth:            0
-Ddd*splash_shell.borderWidth:                   0
 
 
 
