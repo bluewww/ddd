@@ -1,44 +1,33 @@
-$Id$
+$Id$ -*- text -*-
 DDD descriptions for the Linux software map
 
 Begin3
 Title:          ddd
-Version:        2.1
-Entered-date:   09MAY97
+Version:        2.1.1
+Entered-date:   01JUN97
 Description:    The Data Display Debugger (DDD) is a common graphical
                 user interface to GDB, DBX, and XDB, the popular UNIX
-                debuggers.  Besides ``usual'' features such as viewing
-                source texts and breakpoints, DDD provides a
-                *graphical data display*, where data structures are
-                displayed as graphs.  Complex data structures can be
-                explored incrementally and interactively.  Other DDD
-                features include: debugging of programs written in C,
-                C++, Ada, Fortran, Pascal, Modula-2, or Modula-3;
-                machine-level debugging; hypertext source navigation
-                and lookup; breakpoint, backtrace, and history
-                editors; preferences and settings editors; program
-                execution in terminal emulator window; debugging on
-                remote host; on-line manuals; interactive help on the
-                Motif user interface; GDB/DBX/XDB command-line
-                interface with full editing, history, and completion
-                capabilities.  DDD has been designed to compete with
-                well-known commercial debuggers.
+                debuggers.  DDD provides a *graphical data display*
+                where complex data structures can be explored
+                incrementally and interactively.  DDD has been
+                designed to compete with well-known commercial
+                debuggers; as of release 2.1.1, DDD also compiles and
+                runs with LessTif without loss of functionality.
+		For more details, see the DDD WWW page at
+		`http://www.cs.tu-bs.de/softech/ddd/'.
 Keywords:       DDD, GUI, Debugger, GDB, Visualization
 Author:         luetke@ips.cs.tu-bs.de (Dorothea Luetkehaus)
                 zeller@ips.cs.tu-bs.de (Andreas Zeller)
 Maintained-by:  ddd@ips.cs.tu-bs.de (DDD Maintainers)
 Primary-site:   sunsite.unc.edu /pub/Linux/devel/debuggers/ddd/
-                2099k ddd-2.1.tar.gz  (Source)
-                487k  ddd-2.1.bin.ELF.dynamic.gz    ddd binary w/ dynamic motif
-                962k  ddd-2.1.bin.ELF.semistatic.gz ddd binary w/ static motif
+                2109k ddd-2.1.1.tar.gz  (Source)
+                487k  ddd-2.1.bin.ELF.dynamic.gz    ddd binary w/ dynamic Motif
+                962k  ddd-2.1.bin.ELF.semistatic.gz ddd binary w/ static Motif
                 1412k ddd-2.1.bin.ELF.static.gz     ddd binary w/ static all
 Alternate-site: ftp.funet.fi /pub/OS/Linux/devel/debuggers/ddd/
-                2099k ddd-2.1.tar.gz  (Source)
-                487k  ddd-2.1.bin.ELF.dynamic.gz    ddd binary w/ dynamic motif
-                962k  ddd-2.1.bin.ELF.semistatic.gz ddd binary w/ static motif
-                1412k ddd-2.1.bin.ELF.static.gz     ddd binary w/ static all
 Original-site:  ftp.ips.cs.tu-bs.de /pub/local/softech/ddd/
-Platforms:      Requires Motif and a C++ compiler (e.g. GCC)
+Platforms:      Requires Motif (OSF/Motif >= 1.1 or LessTif >= 0.79) 
+                and a C++ compiler (GCC >= 2.6.3)
 Copying-policy: GPL
 End
 
