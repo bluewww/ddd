@@ -3552,10 +3552,11 @@ void SourceView::create_text(Widget parent, const string& base, bool editable,
 	XtSetArg(args[arg], XmNautoShowCursorPosition, True);     arg++;
     }
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 86)
     {
-	// LessTif has trouble with non-editable text windows: cursor
-	// movement is inhibited.  Rely on `CheckModificationCB' instead.
+	// LessTif 0.86 and earlier has trouble with non-editable text
+	// windows: cursor movement is inhibited.  Rely on
+	// `CheckModificationCB' instead.
 	XtSetArg(args[arg], XmNeditable, True); arg++;
     }
     else
