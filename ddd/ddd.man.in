@@ -2111,10 +2111,10 @@ not be what you desire.)
 .\"
 .SS "Entering Plotting Commands"
 .\"
-Via `\fBFile\(->Plot Command\fR', you can enter Gnuplot commands
-directly.  Each command entered at the `\fBgnuplot>\fR' prompt is
-passed to Gnuplot, followed by a Gnuplot `\fBreplot\fR' command to
-update the view.  This is useful for advanced Gnuplot tasks.
+Via `\fBFile\(->Command\fR', you can enter Gnuplot commands directly.
+Each command entered at the `\fBgnuplot>\fR' prompt is passed to
+Gnuplot, followed by a Gnuplot `\fBreplot\fR' command to update the
+view.  This is useful for advanced Gnuplot tasks.
 .PP
 Here's a simple example.  The Gnuplot command `\fBset xrange
 [\fIxmin\fB:\fIxmax\fB]\fR' sets the horizontal range that will be

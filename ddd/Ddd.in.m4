@@ -1632,11 +1632,11 @@ Ddd*helpLabelString: \ \ \ Help\ \ \
 Ddd*helpShowTitle: off
 
 ! Help is never acknowledged, always closed.
-Ddd*help.okLabelString: 		Close
+Ddd*help.okLabelString: 	Close
 Ddd*license.okLabelString: 	Close
-Ddd*news.okLabelString: 		Close
+Ddd*news.okLabelString: 	Close
 Ddd*manual_help.okLabelString: 	Close
-Ddd*tip_dialog.okLabelString: 		Close
+Ddd*tip_dialog.okLabelString: 	Close
 
 ! Titles
 Ddd*help_popup.title:           DDD Help
@@ -4670,7 +4670,7 @@ In a 3-D plot, a point at X/Y/Z shows the value Z at the array index X/Y.\n\
 Scalars are shown as lines and can be rotated using the LBL(Rotate ()) button.\n\
 \n\
 You can modify the plot appearance via the options in the menu bar.\n\
-LBL(File, Plot Command) gives you direct access to the Gnuplot program.\n\
+LBL(File, Command) gives you direct access to the Gnuplot program.\n\
 \n\
 Use LBL(File, Close) to close this window.
 ])dnl
@@ -4686,8 +4686,8 @@ Ddd*plot*replot.acceleratorText: Ctrl+L
 Ddd*plot*replot.documentationString:   \
 @rm Refresh plot, using current values
 
-Ddd*plot*command.labelString:    Plot Command...
-Ddd*plot*command.mnemonic:       C
+Ddd*plot*command.labelString:    Command...
+Ddd*plot*command.mnemonic:       o
 Ddd*plot*command.documentationString:   \
 @rm Enter plotting command
 
