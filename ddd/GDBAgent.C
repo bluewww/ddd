@@ -2703,7 +2703,11 @@ string GDBAgent::assign_command(string var, string expr) const
 	break;
 
     case JDB:
-	return "";		// Not available
+	if (has_debug_command())
+	    return "";		// JDB 1.1: not available
+
+	cmd = "set";		// JDB 1.2
+	break;
     }
 
     cmd += " " + var + " ";

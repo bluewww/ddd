@@ -485,8 +485,8 @@ public:
     // True if debugger supports assignments
     bool has_assign_command() const
     {
-	return type() == GDB || type() == XDB || type() == DBX || 
-	       type() == PYDB || type() == PERL;
+	// All debuggers except JDB 1.1 can assign
+	return !(type() == JDB && has_debug_command());
     }
 
     // True if debugger supports calling system functions

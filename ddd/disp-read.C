@@ -306,7 +306,7 @@ bool is_assign_cmd(const string& cmd, GDBAgent *gdb)
 	return false;		// Setting command
 
     return cmd.matches(rxset1_cmd) || 
-	(type == GDB && cmd.matches(rxset2_cmd)) ||
+	((type == GDB || type == JDB) && cmd.matches(rxset2_cmd)) ||
 	((type == PYDB || type == PERL) && cmd.matches(rxset3_cmd));
 }
 
@@ -995,6 +995,9 @@ bool is_valid(const string& value, GDBAgent *gdb)
 	return false;
 
     if (value.contains("not valid"))
+	return false;
+
+    if (value.contains("incorrect type"))
 	return false;
 
     if (value.contains("not a valid"))
