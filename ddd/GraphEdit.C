@@ -279,11 +279,11 @@ static char extraTranslations[] =
     "Shift<Key>osfUp:   move-selected( 0, -1)\n"
     "Shift<Key>osfDown: move-selected( 0, +1)\n"
     "Shift<Key>osfBeginLine: move-selected(-1, -1)\n"
-    "~Meta ~Alt<Key>osfLeft:      select-prev()\n"
-    "~Meta ~Alt<Key>osfRight:     select-next()\n"
-    "~Meta ~Alt<Key>osfUp:        select-prev()\n"
-    "~Meta ~Alt<Key>osfDown:      select-next()\n"
-    "~Meta ~Alt<Key>osfBeginLine: select-first()\n"
+    "~Meta ~Alt ~Shift ~Ctrl<Key>osfLeft:      select-prev()\n"
+    "~Meta ~Alt ~Shift ~Ctrl<Key>osfRight:     select-next()\n"
+    "~Meta ~Alt ~Shift ~Ctrl<Key>osfUp:        select-prev()\n"
+    "~Meta ~Alt ~Shift ~Ctrl<Key>osfDown:      select-next()\n"
+    "~Meta ~Alt ~Shift ~Ctrl<Key>osfBeginLine: select-first()\n"
 ;
 
 // Method function declarations
@@ -1118,9 +1118,9 @@ static BoxRegion frameRegion(Widget w)
 // Get frame cursor
 static void setRegionCursor(Widget w)
 {
-    const GraphEditWidget _w   = GraphEditWidget(w);
-    const BoxPoint startAction = _w->graphEdit.startAction;
-    const BoxPoint endAction   = _w->graphEdit.endAction;
+    const GraphEditWidget _w    = GraphEditWidget(w);
+    const BoxPoint& startAction = _w->graphEdit.startAction;
+    const BoxPoint& endAction   = _w->graphEdit.endAction;
 
     Cursor selectCursor            = _w->graphEdit.selectCursor;
     Cursor selectBottomLeftCursor  = _w->graphEdit.selectBottomLeftCursor;
@@ -1160,54 +1160,57 @@ inline void myXDrawLine(Display *display,
     
 
 // Redraw line (f0/t1) at (f1/t1)
-static void redrawLine(Widget w,
+inline void redrawLine(Display *display,
+		       Drawable d,
+		       GC gc,
 		       const BoxPoint& f0, 
 		       const BoxPoint& t0, 
 		       const BoxPoint& f1, 
 		       const BoxPoint& t1)
 {
-    const GraphEditWidget _w   = GraphEditWidget(w);
-    const GC frameGC           = _w->graphEdit.frameGC;
-
-    Display *display = XtDisplay(w);
-    Window window    = XtWindow(w);
-
     // Clear old line (by redrawing it)
-    myXDrawLine(display, window, frameGC, f0, t0);
+    myXDrawLine(display, d, gc, f0, t0);
 
     // Draw new line
-    myXDrawLine(display, window, frameGC, f1, t1);
+    myXDrawLine(display, d, gc, f1, t1);
 }
 
 static void drawSelectFrames(Widget w, 
 			     const BoxRegion& r0, 
 			     const BoxRegion& r1)
 {
-    // check four sides, one after the other
+    const GraphEditWidget _w = GraphEditWidget(w);
+    const GC frameGC         = _w->graphEdit.frameGC;
+
+    Display *display = XtDisplay(w);
+    Window window    = XtWindow(w);
+
+
+    // Redraw all four sides, one after the other
 
     // North
-    redrawLine(w,
+    redrawLine(display, window, frameGC,
 	r0.origin(),
 	r0.origin() + BoxPoint(r0.space(X), 0),
 	r1.origin(),
 	r1.origin() + BoxPoint(r1.space(X), 0));
 
     // South
-    redrawLine(w,
+    redrawLine(display, window, frameGC,
 	r0.origin() + BoxPoint(0, r0.space(Y)),
 	r0.origin() + r0.space(),
 	r1.origin() + BoxPoint(0, r1.space(Y)),
 	r1.origin() + r1.space());
 
     // East
-    redrawLine(w,
+    redrawLine(display, window, frameGC,
 	r0.origin(),
 	r0.origin() + BoxPoint(0, r0.space(Y)),
 	r1.origin(),
 	r1.origin() + BoxPoint(0, r1.space(Y)));
 
     // West
-    redrawLine(w,
+    redrawLine(display, window, frameGC,
 	r0.origin() + BoxPoint(r0.space(X), 0),
 	r0.origin() + r0.space(),
 	r1.origin() + BoxPoint(r1.space(X), 0),
@@ -1277,13 +1280,13 @@ static void getMinimalOffset(Widget w)
 // Return current offset
 static BoxPoint actionOffset(Widget w)
 {
-    const GraphEditWidget _w     = GraphEditWidget(w);
-    const Dimension gridWidth    = _w->graphEdit.gridWidth;
-    const Dimension gridHeight   = _w->graphEdit.gridHeight;
-    const Boolean snapToGrid     = _w->graphEdit.snapToGrid;
-    const BoxPoint startAction   = _w->graphEdit.startAction;
-    const BoxPoint endAction     = _w->graphEdit.endAction;
-    const BoxPoint minimalOffset = _w->graphEdit.minimalOffset;
+    const GraphEditWidget _w      = GraphEditWidget(w);
+    const Dimension gridWidth     = _w->graphEdit.gridWidth;
+    const Dimension gridHeight    = _w->graphEdit.gridHeight;
+    const Boolean snapToGrid      = _w->graphEdit.snapToGrid;
+    const BoxPoint& startAction   = _w->graphEdit.startAction;
+    const BoxPoint& endAction     = _w->graphEdit.endAction;
+    const BoxPoint& minimalOffset = _w->graphEdit.minimalOffset;
 
     BoxPoint offset = endAction - startAction;
     BoxPoint grid(gridWidth, gridHeight);
@@ -1586,12 +1589,12 @@ static void Extend(Widget w, XEvent *event, String *params,
 // Keep on acting...
 static void Follow(Widget w, XEvent *event, String *, Cardinal *)
 {
-    const GraphEditWidget _w   = GraphEditWidget(w);
-    const BoxPoint startAction = _w->graphEdit.startAction;
-    BoxPoint& endAction        = _w->graphEdit.endAction;
-    GraphEditState& state      = _w->graphEdit.state;
-    BoxPoint& lastOffset       = _w->graphEdit.lastOffset;
-    const Dimension moveDelta  = _w->graphEdit.moveDelta;
+    const GraphEditWidget _w    = GraphEditWidget(w);
+    const BoxPoint& startAction = _w->graphEdit.startAction;
+    BoxPoint& endAction         = _w->graphEdit.endAction;
+    GraphEditState& state       = _w->graphEdit.state;
+    BoxPoint& lastOffset        = _w->graphEdit.lastOffset;
+    const Dimension moveDelta   = _w->graphEdit.moveDelta;
 
     BoxPoint p = point(event);
 
