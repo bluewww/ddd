@@ -148,15 +148,15 @@ MMDesc DataDisp::node_popup[] =
 
 MMDesc DataDisp::graph_cmd_area[] =
 {
-    {"dereference",   MMPush, {DataDisp::dereferenceCB}},
-    {"detail",        MMPush, {DataDisp::toggleDetailCB}},
-    {"rotate",        MMPush, {DataDisp::toggleRotateCB}},
+    {"dereference",   MMPush | MMInsensitive, {DataDisp::dereferenceCB}},
+    {"detail",        MMPush | MMInsensitive, {DataDisp::toggleDetailCB}},
+    {"rotate",        MMPush | MMInsensitive, {DataDisp::toggleRotateCB}},
     {"dependent",     MMPush, {DataDisp::dependentCB}},
     MMSep,
-    {"set",           MMPush, {DataDisp::setCB}},
+    {"set",           MMPush | MMInsensitive, {DataDisp::setCB}},
     MMSep,
-    {"disable",       MMPush, {DataDisp::toggleDisableCB}},
-    {"delete",        MMPush, {DataDisp::deleteCB}},
+    {"disable",       MMPush | MMInsensitive, {DataDisp::toggleDisableCB}},
+    {"delete",        MMPush | MMInsensitive, {DataDisp::deleteCB}},
     MMEnd
 };
 
@@ -178,7 +178,6 @@ MMDesc DataDisp::display_area[] =
 };
 
 DispGraph *DataDisp::disp_graph             = 0;
-Delay     *DataDisp::delay                  = 0;
 Widget     DataDisp::graph_edit             = 0;
 Widget     DataDisp::last_origin            = 0;
 ArgField  *DataDisp::graph_arg              = 0;
@@ -192,7 +191,8 @@ bool DataDisp::detect_aliases = false;
 
 int DataDisp::next_display_number = 1;
 
-XtIntervalId DataDisp::refresh_args_timer = 0;
+XtIntervalId DataDisp::refresh_args_timer       = 0;
+XtIntervalId DataDisp::refresh_graph_edit_timer = 0;
 
 
 //----------------------------------------------------------------------------
@@ -757,24 +757,6 @@ void DataDisp::new_displayCD (BoxPoint box_point)
 
 
 //-----------------------------------------------------------------------------
-// Delay stuff
-//-----------------------------------------------------------------------------
-
-void DataDisp::set_delay () 
-{
-    if (!delay)
-	delay = new Delay;
-}
-void DataDisp::unset_delay () 
-{
-    if (delay)
-	delete delay;
-    delay = 0;
-}
-
-
-
-//-----------------------------------------------------------------------------
 // Set up event handlers
 //-----------------------------------------------------------------------------
 
@@ -787,8 +769,25 @@ void DataDisp::set_handlers()
 //-----------------------------------------------------------------------------
 // Redraw graph and update display list
 //-----------------------------------------------------------------------------
-void DataDisp::refresh_graph_edit (bool silent)
+
+void DataDisp::refresh_graph_edit(bool silent)
 {
+    if (refresh_graph_edit_timer == 0)
+    {
+	refresh_graph_edit_timer = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
+			    0, RefreshGraphEditCB, XtPointer(graph_edit));
+    }
+
+    refresh_args();
+    refresh_display_list(silent);
+}
+
+void DataDisp::RefreshGraphEditCB(XtPointer, XtIntervalId *id)
+{
+    assert(*id == refresh_graph_edit_timer);
+    refresh_graph_edit_timer = 0;
+
     static Graph *dummy = new Graph;
 
     XtVaSetValues(graph_edit,
@@ -797,9 +796,6 @@ void DataDisp::refresh_graph_edit (bool silent)
     XtVaSetValues(graph_edit,
 		  XtNgraph, (Graph *)disp_graph,
 		  NULL);
-
-    refresh_args();
-    refresh_display_list(silent);
 }
 
 // ***************************************************************************
@@ -1087,7 +1083,7 @@ void DataDisp::refresh_args()
     {
 	refresh_args_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
-			    0, RefreshArgsCB, XtPointer(0));
+			    0, RefreshArgsCB, XtPointer(graph_edit));
     }
 }
 
@@ -1164,11 +1160,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     DispNode *disp_node_arg   = selected_node();
     DispValue *disp_value_arg = selected_value();
 
-    Boolean gdb_ok = (gdb != 0 && gdb->isReadyWithPrompt());
-
     // New ()
-    Boolean arg_ok = (gdb_ok && !source_arg->empty());
-    set_sensitive(graph_popup[GraphItms::NewArg].widget, arg_ok);
+    set_sensitive(graph_popup[GraphItms::NewArg].widget, !source_arg->empty());
 
     // Refresh (), Select All ()
     set_sensitive(graph_popup[GraphItms::Refresh].widget,   count_all > 0);
@@ -1189,7 +1182,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	    break;
 
 	case Pointer: 
-	    dereference_ok = gdb_ok;
+	    dereference_ok = true;
 	    break;
 
 	case Array:
@@ -3271,6 +3264,12 @@ void DataDisp::refresh_addr(DispNode *dn)
     while (dummy.size() < cmds.size())
 	dummy += (void *)PROCESS_ADDR;
 
+    if (cmds.size() > 0)
+    {
+	// Disable redisplay until we have processed all addresses
+	graphEditEnableRedisplay(graph_edit, False);
+    }
+
     bool ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
 				 refresh_displayOQAC, 0);
     if (!ok)
@@ -3309,6 +3308,9 @@ void DataDisp::process_addr (StringArray& answers)
 	suppressed = check_aliases();
 	force_check_aliases = false;
     }
+
+    // Re-enable redisplay
+    graphEditEnableRedisplay(graph_edit, True);
 
     if (changed)
 	refresh_display_list(suppressed);
@@ -3509,19 +3511,30 @@ bool DataDisp::unmerge_display(int disp_nr)
     return disp_graph->unalias(disp_nr);
 }
 
-void DataDisp::PreLayoutCB(Widget, XtPointer client_data, XtPointer)
+void DataDisp::PreLayoutCB(Widget w, XtPointer client_data, XtPointer)
 {
+    DataDisp *data_disp = (DataDisp *)client_data;
+
+    if (data_disp->detect_aliases)
+    {
+	// Don't redisplay while or after layouting
+	graphEditEnableRedisplay(w, False);
+    }
 }
 
 // Re-enable aliases after layouting
-void DataDisp::PostLayoutCB(Widget, XtPointer client_data, XtPointer)
+void DataDisp::PostLayoutCB(Widget w, XtPointer client_data, XtPointer)
 {
     DataDisp *data_disp = (DataDisp *)client_data;
+
     if (data_disp->detect_aliases)
     {
 	data_disp->set_detect_aliases(false);
 	data_disp->set_detect_aliases(true);
     }
+
+    // Okay - we can redisplay now
+    graphEditEnableRedisplay(w, True);
 }
 
 //----------------------------------------------------------------------------
@@ -3561,12 +3574,10 @@ DataDisp::DataDisp (XtAppContext app_context,
     set_last_origin(graph_edit);
 
     // Create menus
-    graph_popup_w = 
-	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
+    graph_popup_w = MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
     InstallButtonTips(graph_popup_w);
 
-    node_popup_w = 
-	MMcreatePopupMenu(graph_edit, "node_popup", node_popup);
+    node_popup_w = MMcreatePopupMenu(graph_edit, "node_popup", node_popup);
     InstallButtonTips(node_popup_w);
 
     disp_graph->callHandlers();

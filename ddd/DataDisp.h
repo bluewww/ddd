@@ -120,6 +120,15 @@ class DataDisp {
     static void PostLayoutCB                   (Widget, XtPointer, XtPointer);
 
     //-----------------------------------------------------------------------
+    // Timers and timer callbacks
+    //-----------------------------------------------------------------------
+    static void RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id);
+    static void RefreshArgsCB     (XtPointer client_data, XtIntervalId *id);
+
+    static XtIntervalId refresh_args_timer;
+    static XtIntervalId refresh_graph_edit_timer;
+
+    //-----------------------------------------------------------------------
     // Sorting nodes for layout
     //-----------------------------------------------------------------------
     static void CompareNodesCB (Widget, XtPointer, XtPointer);
@@ -143,9 +152,7 @@ class DataDisp {
     static void set_args(BoxPoint p = BoxPoint(-1, -1),
 			 SelectionMode mode = SetSelection);
 
-    static XtIntervalId refresh_args_timer;
     static void refresh_args();
-    static void RefreshArgsCB(XtPointer, XtIntervalId *);
     static void refresh_display_list(bool silent = false);
 
     static DispValue *selected_value();
@@ -155,9 +162,6 @@ class DataDisp {
     static DispNode  *new_user_node(const string& name, string& answer);
 
 public:
-    static void set_delay ();
-    static void unset_delay ();
-
     static void set_handlers();
 
 private:
