@@ -24,14 +24,30 @@ DDD 3.2 brings not much yet.
 
 DDD 3.2 also incorporates all changes listed below.
 
+DDD 3.1.7
+=========
+
+DDD 3.1.7 fixes a number of minor bugs.
+
+- Auto-raise of menus works much better (and is enabled by default).
+- Value tips of strings containing ` = ' are displayed correctly.
+- In file names, `//' is no longer normalized to `/'.
+- The array syntax `graph display [A..B]' now works for DBX.
+- [JDB] Thread names with dashes are handled correctly.
+- [HP-UX] Renaming the `~/.ddd/init' file during saving options works.
+- [Build] DDD checks whether -fpermissive is required for old X headers.
+
+There are no new features in DDD 3.1.7.  You don't need to upgrade
+unless you suffer from one of these problems.
 
 DDD 3.1.6
 =========
 
-DDD 3.1.6 fixes more minor problems in DDD 3.1.
+DDD 3.1.6 brings support for recent tools and components.
 
 - DDD passes all options after `--' to the inferior debugger.
-- [Build] Minor code fixes for recent EGCS and GCC versions.
+- [Build] DDD supports EGCS 1.1.2 as well as GCC 2.95 and later
+- [Build] DDD supports LessTif 0.88.9 and later.
 
 There are no new features in DDD 3.1.6.  You don't need to upgrade
 unless you suffer from one of these problems.

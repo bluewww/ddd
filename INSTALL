@@ -25,7 +25,7 @@ To build a complete DDD from sources, you need:
      - Cfront 3.0: does not compile DDD.
 
      To avoid any risks, we strongly recommend to use the GNU C++
-     compiler.  GCC 2.7.2 and EGCS 1.1.1 or later are best choices.
+     compiler, such as GCC 2.95 or later.
 
    * A Motif Widget library.  Either
 

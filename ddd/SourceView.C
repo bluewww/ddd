@@ -1525,7 +1525,9 @@ string SourceView::full_path(string file)
         file_length = file.length();
     } while (file_length != prev_file_length);
 
-    file.gsub("//", "/");
+    // Don't do this - it breaks file access on Cygwin, where
+    // `//c/foo/bar' is translated to `c:\foo\bar'.
+    // file.gsub("//", "/");
 
     if (file.contains('/', -1))
 	file = file.before(int(file.length() - 1));

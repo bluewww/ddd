@@ -484,9 +484,14 @@ Ddd*toolRightOffset: 8
 Ddd*toolTopOffset:   8
 
 ! Do we want auto-raised menus?  This is handy with certain window managers:
-! An auto-raised DDD might obscure popped up pulldown menus.  However, there's
-! a risk that this might interfere with Motif, which is why this is off.
-Ddd*autoRaiseMenu: off
+! An auto-raised DDD might obscure popped up pulldown menus.  There is
+! a risk that this might interfere with Motif, but we have not received
+! any bug reports so far.
+Ddd*autoRaiseMenu: on
+
+! The delay during which an initial auto-raise blocks further auto-raises 
+! (in ms).  This prevents `auto-raise loops'.
+Ddd*autoRaiseMenuDelay: 100
 
 
 ! Shortcuts
@@ -2086,9 +2091,6 @@ Ddd*menubar*recentMenu.r9.mnemonic: 9
 
 ! Get the file names dynamically
 Ddd*menubar*recentMenu*documentationString: 
-
-! Don't auto-raise this one
-Ddd*menubar*popup_recentMenu*autoRaiseMenu: off
 
 
 ! Edit menu

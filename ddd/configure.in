@@ -374,10 +374,16 @@ ice_save_CFLAGS="$CFLAGS"
 ice_save_CPPFLAGS="$CPPFLAGS"
 ice_save_LDFLAGS="$LDFLAGS"
 dnl
+ICE_PERMISSIVE
+ice_save_CXXFLAGS="$CXXFLAGS"
+CXXFLAGS="$CXXFLAGS $PERMISSIVE"
 AC_PATH_XTRA
 ICE_FIND_MOTIF
 ICE_FIND_ATHENA
 ICE_FIND_XPM
+CXXFLAGS="$ice_save_cxxflags"
+ICE_X_PERMISSIVE
+CXXFLAGS="$CXXFLAGS $X_PERMISSIVE"
 dnl
 dnl Autoconf bug fix: Sun CC 3.0 requires `-R lib', g++ requires `-Rlib'.
 changequote(,)dnl

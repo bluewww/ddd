@@ -301,7 +301,7 @@ LessTif
     `http://www.lesstif.org'.  Be sure to apply the patches found in
     the `patches/' subdirectory.
 
-    With DDD 3.1.90 and LessTif 0.88.9, the following problems are
+    With DDD 3.1.6 and LessTif 0.88.9, the following problems are
     currently known:
 
     * Resizing the plot window does not work properly.

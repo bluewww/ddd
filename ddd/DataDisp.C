@@ -3764,6 +3764,14 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
     for (int i = 0; i < count; i++)
     {
 	string answer = answers[i];
+	string var = info->display_expressions[i];
+
+	if (!gdb->has_named_values())
+	{
+	    // The debugger `print NAME' does not prepend 'NAME = ' before
+	    // the value.  Fix this.
+	    answer.prepend(var + " = ");
+	}
 
 	if (!contains_display(answer, gdb))
 	{
@@ -3774,8 +3782,6 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
 	else
 	{
 	    // Create new display and remember disabling message
-	    string var = info->display_expressions[i];
-	    gdb->munch_value(answer, var);
 	    DispNode *dn = 
 		new_data_node(var, info->scope, answer, info->plotted);
 	    if (dn == 0)

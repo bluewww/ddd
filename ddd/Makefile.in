@@ -129,7 +129,7 @@ CXXWARNINGS = @CXXWARNINGS@
 CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS)
 
 # Extra C++-specific flags.  (-fexternal-templates -felide-constructors)
-CXXSTUFF = @CXXSTUFF@
+CXXSTUFF = @CXXSTUFF@ @X_PERMISSIVE@
 
 # Possible extra libraries required for all C++ programs.  ()
 CXXLIBS = @CXXLIBS@
@@ -722,6 +722,7 @@ XSTUFF_OBJECTS = \
 	selection.$(OBJEXT)  \
 	simpleMenu.$(OBJEXT) \
 	verify.$(OBJEXT)     \
+	AutoRaise.$(OBJEXT)  \
 	ComboBox.$(OBJEXT)   \
 	Delay.$(OBJEXT)      \
 	DestroyCB.$(OBJEXT)  \
@@ -1709,7 +1710,7 @@ ftest.$(OBJEXT): $(srcdir)/ftest.f
 ## For demonstration and debugging purposes
 .PHONY: check
 check: Ddd $(ddd)$(EXEEXT) cxxtest$(EXEEXT)
-	XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd $(DDD_OPTIONS) cxxtest$(EXEEXT)
+	XUSERFILESEARCHPATH=%N XAPPLRESDIR=. ./ddd $(DDD_OPTIONS) cxxtest$(EXEEXT)
 
 .PHONY: debug
 debug: Ddd $(ddd)$(EXEEXT) cxxtest$(EXEEXT) .gdbinit $(ddd).syms
