@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-04-22" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-04-24" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -2379,11 +2379,11 @@ the `\fBSuppress X warnings\fR' option.
 .PP
 When debugging a modal X application, \s-2@DDD@\s+2 may interrupt it
 while it has grabbed the pointer, making further interaction
-impossible.  If the `\fBUngrab mouse pointer when interrupting modal X
-application\fR' option is set, \s-2@DDD@\s+2 will check after each
+impossible.  If the `\fBContinue automatically when mouse pointer is
+frozen\fR' option is set, \s-2@DDD@\s+2 will check after each
 interaction whether the pointer is grabbed.  If this is so,
-\s-2@DDD@\s+2 will instruct the debugged program to ungrab the mouse
-pointer such that you can continue to use your display.
+\s-2@DDD@\s+2 will continue the debugged program such that you can
+continue to use your display.
 .PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
@@ -2847,11 +2847,42 @@ may be distracting for experienced users.
 Whether the display of button hints in the status line is enabled
 (`\fBon\fR', default) or not (`\fBoff\fR').
 .TP
+.B "checkGrabs (\fPclass\fB CheckGrabs)"
+When debugging a modal X application, \s-2@DDD@\s+2 may interrupt it
+while it has grabbed the pointer, making further interaction
+impossible.  If this is `\fBon\fR' (default), \s-2@DDD@\s+2 will check
+after each interaction whether the pointer is grabbed.  If this is so,
+\s-2@DDD@\s+2 will automatically continue execution of debugged
+program.
+.TP
+.B "checkGrabDelay (\fPclass\fB CheckGrabDelay)"
+The time to wait (in ms) after a debugger command before checking for
+a grabbed pointer.  If \s-2@DDD@\s+2 sees some pointer event within
+this delay, the pointer cannot be grabbed and an explicit check for a
+grabbed pointer is unnecessary.  Default is \fB5000\fR, or 5 seconds.
+.TP
 .B "globalTabCompletion (\fPclass\fB GlobalTabCompletion)"
 If this is `\fBon\fR' (default), the \s-2\fBTAB\fR\s+2 key completes
 arguments in all windows.  If this is `\fBoff\fR', the
 \s-2\fBTAB\fR\s+2 key completes arguments in the debugger console
 only.
+.TP
+.B "grabAction (\fPclass\fB grabAction)"
+The action to take after having detected a grabbed mouse pointer.
+This is a list of newline-separated commands.  Default is
+`\fBcont\fR', meaning to continue the debuggee.  Other possible
+choices include `\fBkill\fR' (killing the debuggee) or `\fBquit\fR'
+(exiting \s-2@DDD@\s+2).
+.TP
+.B "grabActionDelay (\fPclass\fB grabActionDelay)"
+The time to wait (in ms) before taking an action due to having
+detected a grabbed pointer.  During this delay, a working dialog pops
+up telling the user about imminent execution of the grab action (see
+the `\fBgrabAction\fR' resource, above).  If the pointer grab is
+released within this delay, the working dialog pops down and no action 
+is taken.  This is done to exclude pointer grabs from sources other
+than the debugged program (including \s-2@DDD@\s+2).  Default is
+\fB10000\fR, or 10 seconds.
 .TP
 .B "groupIconify (\fPclass\fB GroupIconify)"
 If this is `\fBon\fR', (un)iconifying any \s-2@DDD@\s+2 window
@@ -2892,15 +2923,6 @@ different X or Motif configuration.  By default, this is
 .TP
 .B "tip\fIn\fR (\fPclass\fB Tip)"
 The tip of the day numbered \fIn\fR (a string).
-.TP
-.B "ungrabMousePointer (\fPclass\fB UngrabMousePointer)"
-When debugging a modal X application, \s-2@DDD@\s+2 may interrupt it
-while it has grabbed the pointer, making further interaction
-impossible.  If this is `\fBon\fR', \s-2@DDD@\s+2 will check after
-each interaction whether the pointer is grabbed.  If this is so,
-\s-2@DDD@\s+2 will instruct the debugged program to ungrab the mouse
-pointer.  The default setting is `\fBoff\fR', since this feature is
-known to interfere with some Motif versions (popup menus won't work).
 .TP
 .B "uniconifyWhenReady (\fPclass\fB UniconifyWhenReady)"
 If this is `\fBon\fR' (default), the \s-2@DDD@\s+2 windows are
@@ -4977,8 +4999,8 @@ This is due to a bug in Motif.  You may try the following resources in
 your `\fB$HOME/.@ddd@/init\fR' file to minimize interference with Motif:
 .sp
 .br
-  \fBDdd*autoRaiseMenu:      off
-  Ddd*ungrabMousePointer: off\fR
+  \fBDdd*autoRaiseMenu:    off
+  Ddd*checkGrabs:       off\fR
 .br
 .sp
 See `\fBRESOURCES\fR', above, for a discussion of these resources.
