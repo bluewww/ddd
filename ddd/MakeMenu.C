@@ -394,8 +394,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 	    assert(subitems == 0);
 
 	    arg = 0;
-	    label = widget = 
-		verify(XmCreateLabel(shell, name, args, arg));
+	    widget = verify(XmCreateLabel(shell, name, args, arg));
 	    break;
 
 	case MMArrow:
@@ -487,14 +486,12 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 	    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
 	    widget = verify(XmCreateRowColumn(shell, panelName, args, arg));
 
-	    if (name[0] != '\0')
-	    {
-		arg = 0;
-		label = verify(XmCreateLabel(widget, name, args, arg));
+	    arg = 0;
+	    label = verify(XmCreateLabel(widget, name, args, arg));
+	    if (name[0] != '\0' && (type & MMUnmanagedLabel) == 0)
 		XtManageChild(label);
-	    }
 
-	    switch (type)
+	    switch (type & MMTypeMask)
 	    {
 	    case MMPanel:
 		subMenu = MMcreatePanel(widget, subMenuName, subitems);
@@ -507,6 +504,10 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 	    case MMButtonPanel:
 		subMenu = MMcreateButtonPanel(widget, subMenuName, subitems);
 		break;
+
+	    default:
+		assert(0);
+		abort();
 	    }
 		
 	    XtVaSetValues(subMenu,
@@ -540,7 +541,8 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 
 	    arg = 0;
 	    label = verify(XmCreateLabel(panel, labelName, args, arg));
-	    XtManageChild(label);
+	    if (name[0] != '\0' && (type & MMUnmanagedLabel) == 0)
+		XtManageChild(label);
 
 	    spin = panel;
 	    if ((type & MMTypeMask) == MMSpinField)
@@ -695,7 +697,7 @@ Widget MMcreatePanel(Widget parent, String name, MMDesc items[])
 
 void MMadjustPanel(MMDesc items[], Dimension space)
 {
-    // Align labels
+    // Align panel labels
     Dimension max_label_width = 0;
     MMDesc *item;
     for (item = items; item != 0 && item->name != 0; item++)

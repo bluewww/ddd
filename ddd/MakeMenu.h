@@ -58,11 +58,12 @@ const MMType MMTypeMask    = 31; // mask to find type
 
 typedef int MMAttr;
 
-const MMAttr MMHelp        =  32; // This is a help button
-const MMAttr MMInsensitive =  64; // Make item insensitive
-const MMAttr MMUnmanaged   = 128; // Make item unmanaged
-const MMAttr MMIgnore      = 256; // Don't create item
-const MMAttr MMAttrMask    = ~MMTypeMask;
+const MMAttr MMHelp           =  32; // Mark as help button
+const MMAttr MMInsensitive    =  64; // Make item insensitive
+const MMAttr MMUnmanaged      = 128; // Make item unmanaged
+const MMAttr MMUnmanagedLabel = 256; // Don't manage label (in panels)
+const MMAttr MMIgnore         = 512; // Don't create item
+const MMAttr MMAttrMask       = ~MMTypeMask;
 
 
 
