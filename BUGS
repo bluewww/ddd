@@ -382,4 +382,6 @@ Volunteers for fixing these and other bugs are welcome!
      dbx cannot handle `when at { }' without a command inside the
      parentheses (this should be `{ delete xx,yy }' anyway).
 
-186. (Insert your bug here)
+186. Selecting a display twice causes it to be unselected.
+
+187. (Insert your bug here)
