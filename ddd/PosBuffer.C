@@ -223,8 +223,10 @@ void PosBuffer::filter (string& answer)
 
 		// Positionsangabe komplett
 		pos_buffer = answer.at (index1 + 2, index2 - (index1 + 2));
-		pc_buffer = pos_buffer.from(":0x");
-		pc_buffer = pc_buffer.after(':');
+		int last_colon = pos_buffer.index(':', -1);
+		pc_buffer = pos_buffer.after(last_colon);
+		if (!pc_buffer.contains("0x", 0))
+		    pc_buffer = "0x" + pc_buffer;
 		pc_buffer = pc_buffer.through(rxalphanum);
 		answer.at (index1, index2 - index1 + 1) = "";
 		already_read = PosComplete;
