@@ -76,8 +76,9 @@ is to press BUTTON(3) on them.
 Double-clicking on any value in the data display 
 will toggle more details.
 
-If your program needs special terminal capabilities, let in run in
-the separate execution window (LBL(Program, Run in Execution Window)).
+If your program needs special terminal capabilities, 
+let it run in the separate execution window
+(LBL(Program, Run in Execution Window)).
 
 
 ! Intermediate tips.
@@ -113,9 +114,10 @@ To display VAR(data) in hexadecimal format, display it and choose
 LBL(Convert to Hex) from the LBL(Display ()) menu, 
 or enter KBD(graph display /x VAR(data)) at the GDB prompt.
 
-To send a signal to the debuggee, use LBL(Status, Signals, Send).
+To send a signal to your program,
+use LBL(Status, Signals, Send).
 
-You can quickly print variable values
+You can quickly display variable values
 by double-clicking on the variable name.
 
 After looking up an item or stepping through the program, you can use
@@ -133,6 +135,9 @@ unset the LBL(Pass) button for the appropriate signal.
 
 You can save space by disabling toolbar captions.
 See LBL(Edit, Preferences, Startup, Toolbar Appearance).
+
+You can quickly edit breakpoint properties
+by double-clicking on a breakpoint symbol.
 
 To have GDB start your program automatically upon startup,
 put the following lines in your FILE(.gdbinit) file:
@@ -183,7 +188,8 @@ To change the properties of multiple breakpoints at once,
 select them in the breakpoint editor (LBL(Source, Edit Breakpoints))
 and click on LBL(Properties).
 
-Even while in the source window, you can enter and edit GDB commands:
+Even while in the source window, 
+you can enter and edit GDB commands:
 Just type the command and press KEY_RETURN.
 
 You can record commands to be executed when a breakpoint is hit.
@@ -192,9 +198,9 @@ In the LBL(Breakpoint Properties) panel, try LBL(Record) and LBL(End).
 You can easily resume a saved DDD VAR(session)
 by invoking DDD as KBD([ddd] =VAR(session)).
 
-For further DDD customization (e.g. colors), see the FILE(Ddd)
+For further DDD customization (e.g. colors), see the FILE([Ddd])
 app-defaults file from the DDD WWW Site or the DDD source
-distribution.  Copy resources to FILE(~/.ddd/init) and edit as desired.
+distribution.  Copy resources to FILE(~/.[ddd]/init) and edit as desired.
 
 
 ! Professional tips.
