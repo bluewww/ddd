@@ -317,6 +317,7 @@ Volunteers for these and other projects are welcome!
     * Document it all.
 
 385 Finish external resources:
-    * Handle case where `ddd.vsl' is not found.
+    * Report if `ddd.vsl' is not found.
+    * Document it all
 
 386 (Insert new project ideas here)
