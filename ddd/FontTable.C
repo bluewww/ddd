@@ -55,7 +55,7 @@ inline unsigned hash(const char *name)
 }
 
 // Return XFontStruct for given font name NAME
-XFontStruct *FontTable::operator[](string& name)
+XFontStruct *FontTable::operator[](const string& name)
 {
     int i = hash(name.chars());
     while (table[i].font != 0 && name != table[i].name)

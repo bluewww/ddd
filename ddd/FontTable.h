@@ -79,7 +79,7 @@ public:
 	    if (table[i].font != 0)
 		XFreeFont(_display, table[i].font);
     }
-    XFontStruct *operator[](string& name);
+    XFontStruct *operator[](const string& name);
 };
 
 #endif
