@@ -61,4 +61,5 @@ vslroot_DATA = \
 	vsldef.vsl    \
 	vsllib.vsl
 
-
+# Automake invokes `autoconf' without passing the `-l' option :-(
+AUTOCONF = autoconf -l ../ddd

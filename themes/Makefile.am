@@ -46,3 +46,7 @@ themesroot_DATA = \
 	smallvalues.vsl \
 	suppress.vsl \
 	tinyvalues.vsl
+
+
+# Automake invokes `autoconf' without passing the `-l' option :-(
+AUTOCONF = autoconf -l ../ddd
