@@ -1,6 +1,15 @@
 DDD News						-*- text -*-
 ********
 
+DDD 3.x [in development]
+========================
+
+- Insensitive items now have a 3d `emboss' look, making them more legible.
+
+- `Set ()' now allows to set structs as a whole.
+
+
+
 DDD 3.0
 =======
 
