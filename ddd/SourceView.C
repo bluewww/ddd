@@ -2319,6 +2319,7 @@ void SourceView::process_info_line_main(string& info_output)
     switch (gdb->type())
     {
     case GDB:
+    case XDB:
 	{
 	    PosBuffer pos_buffer;
 	    pos_buffer.filter(info_output);
@@ -2329,15 +2330,13 @@ void SourceView::process_info_line_main(string& info_output)
 		show_pc(pos_buffer.get_pc());
 	}
 	break;
+
     case DBX:
 	{
 	    show_position(info_output);
 	    info_output = "";
 	}
 	break;
-
-    case XDB:
-	break;			// FIXME
     }
 
     // Strip 'Line <n> of <file> starts at <address>...' info

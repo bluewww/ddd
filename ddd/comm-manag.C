@@ -229,6 +229,8 @@ void start_gdb()
 	break;
 
     case XDB:
+	cmds[qu_count++] = "v main";
+	plus_cmd_data->refresh_main = true;
 	cmds[qu_count++] = "!pwd";
 	plus_cmd_data->refresh_pwd = true;
 	cmds[qu_count++] = "lb";
@@ -605,6 +607,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	break;
 
     case XDB:
+	if (plus_cmd_data->refresh_main)
+	    cmds[qu_count++] = "v main";
 	if (plus_cmd_data->refresh_pwd)
 	    cmds[qu_count++] = "!pwd";
 	assert(!plus_cmd_data->refresh_file);
@@ -913,14 +917,12 @@ void plusOQAC (string answers[],
 	switch (gdb->type())
 	{
 	case GDB:
+	case XDB:
 	    source_view->process_info_line_main(answers[qu_count++]);
 	    break;
 
 	case DBX:
 	    break;
-
-	case XDB:
-	    break;		// FIXME
 	}
     }
 
