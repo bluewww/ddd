@@ -629,8 +629,8 @@ Click on `\fBEnable\fR' to enable the breakpoint.
 Click on `\fBDisable\fR' to disable the breakpoint.
 .IP \(bu 2
 Click on `\fBTemp\fR' to make the breakpoint temporary.  Note:
-\s-1GDB\+2 provides no way to make a temporary breakpoint
-non-temporary.
+\s-1GDB\s+1 has no way to make a temporary breakpoint non-temporary
+again.
 .IP \(bu 2
 Click on `\fBDelete\fR' to delete the breakpoint.
 .PP
@@ -655,7 +655,7 @@ count is set to some value \fIN\fR, the next \fIN\fR crossings of the
 breakpoint will be ignored: Each crossing of the breakpoint decrements
 the ignore count; the program stops only if the ignore count is zero.
 .PP
-Note: \s-1JDB\s+1 and some \s-1DBX\s+1 variants do not support
+Note: \s-1JDB\s+1, Perl and some \s-1DBX\s+1 variants do not support
 breakpoint ignore counts.
 .\"
 .SS "Breakpoint Commands"
@@ -870,8 +870,6 @@ If the debugged program is already running in some process, you can
 a list of processes.  Afterwards, press the `\fBAttach\fR' button to
 attach to the specified process.
 .PP
-.PSPIC @srcdir@/PICS/ddd-attach.ps 15.3cm
-.PP
 The first thing \s-1@DDD@\s+1 does after arranging to debug the
 specified process is to stop it. You can examine and modify an
 attached process with all the \s-1@DDD@\s+1 commands that are
@@ -891,11 +889,14 @@ control.  Detaching the process continues its execution.  After
 completely independent once more, and you are ready to attach another
 process or start one with `\fBRun\fR'.
 .PP
+.PSPIC @srcdir@/PICS/ddd-attach.ps 15.3cm
+.PP
 You can customize the list of processes shown by defining an alternate
 command to list processes.  See
 `\fBEdit\(->Preferences\(->Helpers\(->List Processes\fR'.
 .PP
-Note: \s-1JDB\s+1 does not support attaching to processes.
+Note: \s-1JDB\s+1, \s-1PYDB\s+1, and Perl do not support attaching the 
+debugger to running processes.
 .\"
 .\"
 .SS "Stopping the Program"
