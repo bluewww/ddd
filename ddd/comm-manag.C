@@ -1123,12 +1123,14 @@ void send_gdb_command(string cmd, Widget origin,
 
     if (cmd_data->graph_cmd != "")
     {
-	// Instead of DDD `graph' commands, we send a `func' or
-	// `frame' command to get the current scope.
+	// Instead of DDD `graph' commands, we send a `func', `frame'
+	// or `where' command to get the current scope.
 	if (gdb->has_func_command())
 	    cmd = gdb->func_command();
-	else
+	else if (gdb->has_frame_command())
 	    cmd = gdb->frame_command();
+	else
+	    cmd = gdb->where_command();
     }
 
     // Send commands
