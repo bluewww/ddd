@@ -861,11 +861,13 @@ void set_tty_from_gdb(const string& text)
 }
 
 // Some cleanup actions...
-void kill_exec_tty()
+void kill_exec_tty(bool killed)
 {
     if (separate_tty_pid > 0)
     {
-	StatusDelay delay("Closing execution window");
+	StatusDelay delay(killed ?
+			  "Execution window has been closed" :
+			  "Closing execution window");
 
 	if (remote_gdb())
 	{
@@ -897,7 +899,7 @@ void exec_tty_running()
 				   DestroyNotify, &event))
 	{
 	    // TTY window has been killed - kill process as well
-	    kill_exec_tty();
+	    kill_exec_tty(true);
 
 	    // Restore original TTY for the time being
 	    unredirect_process(gdb_run_command);
