@@ -8,7 +8,7 @@ there are already people working on that project.  Similar, if you
 have a project idea, be sure to send it to us such that we may realize
 it (or include it in this list :-)
 
-Projects marked with an `*' represent work in progress.
+Projects marked with an `*' are scheduled for the next DDD release.
 Volunteers for these and other projects are welcome!
 
 003. Support full annotation mode (`gdb --annotate=2').  This would
@@ -131,7 +131,7 @@ Volunteers for these and other projects are welcome!
 078. Have mirror sites for the DDD WWW page.  Maybe via the DDD FTP
      mirrors?
 
-080* Include the FAQ in the DDD manual.  Better yet, include all
+080. Include the FAQ in the DDD manual.  Better yet, include all
      top-level documentation in the DDD manual (including news,
      problems, etc.) and generate it from this single source.
      Even better, convert it to texinfo, as in ICE, resulting in an
@@ -347,9 +347,9 @@ Volunteers for these and other projects are welcome!
 
 181. If the DDD WWW page server is down, try a mirror site.
 
-183* Have a way to re-dereference until a NULL pointer is encountered.
+183. Have a way to re-dereference until a NULL pointer is encountered.
 
-187* Have a `commands' menu listing up all debugger commands.  Should
+187. Have a `commands' menu listing up all debugger commands.  Should
      be organized according to `help' classes.
 
 193* Have a way to unfold trees and graphs.  For instance, `Display
@@ -375,5 +375,8 @@ Volunteers for these and other projects are welcome!
      * Don't show status messages while restoring a session.  A `lock
        status line' flag in StatusDelays may be helpful (i.e. add to
        history, but don't show).
+     * Verify how X11R6 Session Manager stuff works.
 
-205. (Insert your project idea here)
+205* Show the DDD logo upon start-up, as in acroread.
+
+206. (Insert your project idea here)
