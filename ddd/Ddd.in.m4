@@ -4819,7 +4819,12 @@ Ddd*sources*applyLabelString:	 	Lookup
 Ddd*sources*helpString:	\
 @rm Please select a source to be opened.\n\
 \n\
-These are the accessible source files of your program.\n\
+These are the currently accessible source files of your program.\n\
+\n\
+Source files from shared libraries are only shown after the library\n\
+has been loaded into @GDB@.  To load a shared library, run your program\n\
+or use the @GDB@ SAMP(share) command.\n\
+\n\
 To search for other sources, select LBL(Edit, @GDB@ Settings)\n\
 and add their directories to the source path.\n\
 \n\
