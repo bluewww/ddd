@@ -648,18 +648,42 @@ bool GDBAgent::ends_with_prompt (const string& ans)
     case JDB:
     {
 #if RUNTIME_REGEX
-	static regex rxjdbprompt(" (>|[]][0-9]*[1-9][[][a-zA-Z0-9]+)");
+	static regex rxjdbprompt        
+	    ("([a-zA-Z0-9 ]+[[][1-9][0-9]*[]]|>) ");
+	static regex rxjdbprompt_reverse
+	    (" (>|[]][0-9]*[1-9][[][a-zA-Z0-9 ]+)");
 #endif
-	// JDB prompts using "> " or "THREAD[DEPTH] "
-	if (answer.contains(' ', -1)
-	    && reverse(answer).contains(rxjdbprompt, 0))
+	// JDB prompts using "> " or "THREAD[DEPTH] ".  All these
+	// prompts may also occur asynchronously.
+
+	// Check for prompt at the end of the last line
+	string reverse_answer = reverse(answer);
+	int match_len = rxjdbprompt_reverse.match(reverse_answer.chars(), 
+						  reverse_answer.length(), 0);
+	if (match_len > 0)
 	{
-	    if (answer.contains('\n'))
-		last_prompt = answer.after('\n', -1);
-	    else
-		last_prompt = answer;
+	    last_prompt = reverse(reverse_answer.at(0, match_len));
 	    return true;
 	}
+
+	// Check for prompt at the beginning of each line
+	int last_nl = answer.length() - 1;
+	while (last_nl >= 0)
+	{
+	    last_nl = answer.index('\n', last_nl - answer.length());
+	    int beginning_of_line = last_nl + 1;
+
+	    match_len = rxjdbprompt.match(answer.chars(), answer.length(), 
+					  beginning_of_line);
+	    if (match_len > 0)
+	    {
+		last_prompt = answer.at(beginning_of_line, match_len);
+		return true;
+	    }
+
+	    last_nl--;
+	}
+
 	return false;
     }
     }
