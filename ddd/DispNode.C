@@ -105,12 +105,6 @@ DispNode::~DispNode()
 
 // User-defined displays (status displays)
 
-// Return true iff S is a user-defined display
-bool is_user_command(const string& s)
-{
-    return s.length() > 0 && s[0] == '`' && s[s.length() - 1] == '`';
-}
-
 // Return user command from S
 string user_command(const string& s)
 {

@@ -58,11 +58,13 @@ const unsigned DispNode_NTypes  = DispNode_Disabled + 1;
 //-----------------------------------------------------------------------------
 
 // Return true iff S is a user command display (`status display')
-bool is_user_command(const string& s);
+inline bool is_user_command(const string& s)
+{
+    return s.length() >= 2 && s[0] == '`' && s[s.length() - 1] == '`';
+}
 
 // Return user command from S
 string user_command(const string& s);
-
 
 //-----------------------------------------------------------------------------
 // The DispNode class
@@ -202,6 +204,16 @@ public:
     // Toggle titles.  Return true iff changed.
     bool set_title(bool set);
 };
+
+// Clustering stuff
+
+// The command to use for clusters
+#define CLUSTER_COMMAND "displays"
+
+inline bool is_cluster(DispNode *dn)
+{
+    return dn->is_user_command() && dn->user_command() == CLUSTER_COMMAND;
+}
 
 #endif // _DDD_DispNode_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

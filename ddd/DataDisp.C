@@ -325,14 +325,6 @@ XtIntervalId DataDisp::refresh_graph_edit_timer = 0;
 StringArray DataDisp::shortcut_exprs;
 StringArray DataDisp::shortcut_labels;
 
-// The command to use for clusters
-#define CLUSTER_COMMAND "displays"
-
-inline bool is_cluster(DispNode *dn)
-{
-    return dn->is_user_command() && dn->user_command() == CLUSTER_COMMAND;
-}
-
 inline bool selected(DispNode *dn)
 {
     // Don't treat a cluster as selected if only a member is selected
