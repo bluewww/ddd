@@ -47,6 +47,7 @@ XtResource ddd_resources[] = {
 	XtRString, 
 	XtPointer("")
     },
+
     { 
 	XtNdebuggerCommand,
 	XtCDebuggerCommand,
@@ -56,6 +57,7 @@ XtResource ddd_resources[] = {
 	XtRString, 
 	XtPointer("")
     },
+
     { 
 	XtNtraceDialog, 
 	XtCTrace, 
@@ -65,6 +67,7 @@ XtResource ddd_resources[] = {
 	XmRImmediate, 
 	XtPointer(False)
     },
+
     { 
 	XtNtraceShellCommands,
 	XtCTrace,
@@ -74,6 +77,7 @@ XtResource ddd_resources[] = {
 	XmRImmediate, 
 	XtPointer(False)
     },
+
     { 
 	XtNgdbInitCommands, 
 	XtCGDBInitCommands, 
@@ -88,6 +92,7 @@ XtResource ddd_resources[] = {
 	    "set verbose off\n"
 	    "set prompt (gdb) \n")
     },
+
     { 
 	XtNdbxInitCommands, 
 	XtCDBXInitCommands, 
@@ -97,6 +102,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("")
     },
+
     { 
 	XtNxdbInitCommands, 
 	XtCXDBInitCommands, 
@@ -106,6 +112,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("")
     },
+
     { 
 	XtNvslPath, 
 	XtCVSLPath, 
@@ -115,6 +122,7 @@ XtResource ddd_resources[] = {
 	XtRString, 
 	XtPointer(".")
     },
+
     { 
 	XtNvslLibrary, 
 	XtCVSLLibrary, 
@@ -124,6 +132,7 @@ XtResource ddd_resources[] = {
 	XtRString, 
 	XtPointer("builtin")
     },
+
     { 
 	XtNvslDefs, 
 	XtCVSLDefs, 
@@ -133,6 +142,7 @@ XtResource ddd_resources[] = {
 	XtRString, 
 	XtPointer("")
     },
+
     {
 	XtNmaxNameLength,
 	XtCMaxNameLength,
@@ -142,6 +152,7 @@ XtResource ddd_resources[] = {
 	XmRImmediate,
 	XtPointer(32)
     },
+
     {
 	XtNindentAmount,
 	XtCIndentAmount,
@@ -151,6 +162,7 @@ XtResource ddd_resources[] = {
 	XmRImmediate,
 	XtPointer(8)
     },
+
     {
 	XtNconsoleButtons,
 	XtCConsoleButtons,
@@ -160,6 +172,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("")
     },
+
     {
 	XtNsourceButtons,
 	XtCSourceButtons,
@@ -169,6 +182,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("")
     },
+
     {
 	XtNdataButtons,
 	XtCDataButtons,
@@ -178,6 +192,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("")
     },
+
     {
 	XtNtoolButtons,
 	XtCToolButtons,
@@ -187,6 +202,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("run:interrupt^C:next:step:continue:finish:up:down")
     },
+
     {
 	XtNseparateDataWindow,
 	XtCSeparate,
@@ -196,6 +212,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
 	XtNseparateSourceWindow,
 	XtCSeparate,
@@ -205,6 +222,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
 	XtNseparateExecWindow,
 	XtCSeparate,
@@ -214,6 +232,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
 	XtNtermCommand,
 	XtCTermCommand,
@@ -223,6 +242,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("xterm -e /bin/sh -c")
     },
+
     {
 	XtNtermType,
 	XtCTermType,
@@ -232,6 +252,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("xterm")
    },
+
    {
 	XtNuseTTYCommand,
 	XtCUseTTYCommand,
@@ -241,6 +262,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
 	XtNquestionTimeout,
 	XtCQuestionTimeout,
@@ -250,6 +272,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(5)
     },
+
     {
 	XtNsynchronousDebugger,
 	XtCSynchronousDebugger,
@@ -259,6 +282,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
         XtNdebuggerHost,
 	XtCDebuggerHost,
@@ -268,6 +292,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("")
     },
+
     {
         XtNdebuggerHostLogin,
 	XtCDebuggerHostLogin,
@@ -277,6 +302,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("")
     },
+
     {
         XtNrHostInitCommands,
 	XtCRHostInitCommands,
@@ -286,6 +312,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("stty -echo -onlcr")
     },
+
     {
         XtNdebuggerRHost,
 	XtCDebuggerRHost,
@@ -295,6 +322,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("")
     },
+
     {
         XtNrshCommand,
 	XtCRshCommand,
@@ -304,6 +332,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("rsh")
     },
+
     {
         XtNlistExecCommand,
 	XtCListExecCommand,
@@ -313,6 +342,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("file @MASK@ | grep  '.*:.*exec.*' | cut -d: -f1")
     },
+
     {
         XtNlistSourceCommand,
 	XtCListSourceCommand,
@@ -322,6 +352,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("file @MASK@ | grep '.*:.*text.*' | cut -d: -f1")
     },
+
     {
         XtNlistCoreCommand,
 	XtCListCoreCommand,
@@ -331,6 +362,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("file @MASK@ | grep '.*:.*core.*' | cut -d: -f1")
     },
+
     {
         XtNlistDirCommand,
 	XtCListDirCommand,
@@ -340,6 +372,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("file @MASK@ | grep '.*:.*directory.*' | cut -d: -f1")
     },
+
     {
         XtNwwwPage,
 	XtCWWWPage,
@@ -349,6 +382,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("http://www.cs.tu-bs.de/softech/ddd/")
     },
+
     {
         XtNwwwCommand,
 	XtCWWWCommand,
@@ -358,6 +392,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("netscape @URL@")
     },
+
     {
         XtNshowInvocation,
 	XtCShowInvocation,
@@ -367,6 +402,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
         XtNshowVersion,
 	XtCShowVersion,
@@ -376,6 +412,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
         XtNshowConfiguration,
 	XtCShowConfiguration,
@@ -385,6 +422,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
         XtNshowResources,
 	XtCShowResources,
@@ -394,6 +432,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
         XtNshowManual,
 	XtCShowManual,
@@ -403,6 +442,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
         XtNshowLicense,
 	XtCShowLicense,
@@ -412,6 +452,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
         XtNcheckConfiguration,
 	XtCCheckConfiguration,
@@ -421,6 +462,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
         XtNprintCommand,
 	XtCPrintCommand,
@@ -430,6 +472,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("lp")
     },
+
     {
         XtNpaperSize,
 	XtCPaperSize,
@@ -439,6 +482,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("210mm x 297mm")
     },
+
     {
         XtNeditCommand,
 	XtCEditCommand,
@@ -448,6 +492,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("xterm -e vi +@LINE@ @FILE@")
     },
+
     {
         XtNpannedGraphEditor,
 	XtCPannedGraphEditor,
@@ -457,6 +502,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
         XtNfindWordsOnly,
 	XtCFindWordsOnly,
@@ -466,6 +512,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(True)
     },
+
     {
 	XtNgroupIconify,
 	XtCGroupIconify,
@@ -475,6 +522,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
 	XtNglobalTabCompletion,
 	XtCGlobalTabCompletion,
@@ -484,6 +532,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
 	XtNsaveHistoryOnExit,
 	XtCSaveHistoryOnExit,
@@ -493,6 +542,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(True)
     },
+
     {
 	XtNcacheSourceFiles,
 	XtCCacheSourceFiles,
@@ -502,6 +552,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(True)
     },
+
     {
 	XtNcacheMachineCode,
 	XtCCacheMachineCode,
@@ -511,6 +562,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(True)
     },
+
     {
 	XtNsuppressWarnings,
 	XtCSuppressWarnings,
@@ -520,6 +572,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
 	XtNttyMode,
 	XtCTTYMode,
@@ -529,6 +582,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
 	XtNfullNameMode,
 	XtCTTYMode,
@@ -538,6 +592,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
     {
 	XtNdisplayGlyphs,
 	XtCDisplayGlyphs,
@@ -547,6 +602,7 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(True)
     },
+
     {
 	XtNdisassemble,
 	XtCDisassemble,
@@ -556,6 +612,17 @@ XtResource ddd_resources[] = {
 	XtRImmediate,
 	XtPointer(False)
     },
+
+    {
+	XtNignoreSourcePath,
+	XtCIgnoreSourcePath,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, ignore_source_path),
+	XtRImmediate,
+	XtPointer(False)
+    },
+
     {
 	XtNdddinitVersion,
 	XtCVersion,
@@ -565,6 +632,7 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer(0)
     },
+
     {
 	XtNappDefaultsVersion,
 	XtCVersion,
@@ -573,7 +641,7 @@ XtResource ddd_resources[] = {
 	XtOffsetOf(AppData, app_defaults_version),
 	XtRString,
 	XtPointer(0)
-    },
+    }
 };
 
 const int ddd_resources_size = XtNumber(ddd_resources);

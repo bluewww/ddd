@@ -408,7 +408,7 @@ void SourceView::line_popup_setCB (Widget w,
 	break;
 	
     case DBX:
-	gdb_command("file " + full_path(current_file_name), w);
+	gdb_command("file " + current_source_name(), w);
 	gdb_command("stop at " + itostring(line_nr), w);
 	break;
 
@@ -454,7 +454,7 @@ void SourceView::line_popup_set_tempCB (Widget w,
 	break;
 
     case DBX:
-	gdb_command("file " + full_path(current_file_name), w);
+	gdb_command("file " + current_source_name(), w);
 	gdb_command("stop at " + itostring(line_nr), w);
 
 	// Make sure we get the number of the temporary breakpoint
@@ -3009,8 +3009,11 @@ string SourceView::current_source_name()
 
     case DBX:
     case XDB:
-	// DBX and XDB use full file names.
-	source = full_path(current_file_name);
+	if (!app_data.ignore_source_path)
+	{
+	    // DBX and XDB use full file names.
+	    source = full_path(current_file_name);
+	}
 	break;
     }
 

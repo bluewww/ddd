@@ -1212,7 +1212,14 @@ The remote debugger is started non-interactively.  Some \s-2DBX\s+2
 versions have trouble with this.  If you don't get a prompt from the
 remote debugger, use the `\fB\-\-rhost\fR' option instead of
 `\fB\-\-host\fR'.  This will invoke the remote debugger via an
-interactive shell on the remote host, which may lead to better results.
+interactive shell on the remote host, which may lead to better
+results.
+.br
+Note: using `\fB\-\-rhost\fR', \s-2@DDD@\s+2 invokes the inferior
+debugger as soon as a shell prompt appears.  The first output on the
+remote host ending in a space character and not followed by a newline
+is assumed to be a shell prompt.  If necessary, adjust your shell
+prompt on the remote host.
 .br
 .IP \(bu 2
 To run the remote program, \s-2@DDD@\s+2 invokes an `\fBxterm\fR' terminal
@@ -1381,6 +1388,11 @@ By default, \s-2@DDD@\s+2 caches machine code in memory.  This is bad
 for memory usage, but convenient for speed, since disassembling a
 function each time it is reached may take time.  If you want to reduce
 memory usage, unset the `\fBCache machine code\fR' option.
+.PP
+Some \s-2DBX\s+2 and \s-2XDB\s+2 variants do not properly handle paths
+in source file specifications.  If you want the inferior debugger to
+refer to source locations by source base names only, set the `\fBRefer
+to sources by base names only\fR' option.
 .\"
 .SS "Data Preferences"
 By default, \s-2@DDD@\s+2 displays a grid in the data window to
@@ -1676,6 +1688,11 @@ be iconified on its own.
 .B "indentAmount (\fPclass\fB IndentAmount)"
 The number of columns used for the code line number display (default:
 \fB8\fR)
+.TP
+.B "ignoreSourcePath (\fPclass\fB IgnoreSourcePath)"
+If this is `\fBtrue\fR', the inferior debugger refers to source code
+locations only by their base names.  If this is `\fBfalse\fR'
+(default), \s-2DDD\s+2 uses the full source code paths.
 .TP
 .B "maxNameLength (\fPclass\fB MaxNameLength)"
 The maximum number of characters allowed in a data display title

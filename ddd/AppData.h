@@ -153,6 +153,8 @@
 #define XtCDisplayGlyphs         "DisplayGlyphs"
 #define XtNdisassemble           "disassemble"
 #define XtCDisassemble           "Disassemble"
+#define XtNignoreSourcePath      "ignoreSourcePath"
+#define XtCIgnoreSourcePath      "IgnoreSourcePath"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
 #define XtCVersion               "Version"
@@ -216,6 +218,7 @@ struct AppData {
     Boolean full_name_mode;
     Boolean display_glyphs;
     Boolean disassemble;
+    Boolean ignore_source_path;
     String  dddinit_version;
     String  app_defaults_version;
 };

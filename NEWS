@@ -86,7 +86,8 @@ DDD 2.0 (in beta test)
 
     Tons and tons of bug fixes, including:
     - Improved directory support.  Sources and executables can reside
-      in several different directories.
+      in several different directories; in DBX and XDB, source
+      positions are optionally referred using the full file path.
     - Several TTY problems fixed.  Switching between execution window 
       and debugger console should work fine now; the execution window
       can be opened, closed and re-opened without DDD crashing or
