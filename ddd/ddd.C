@@ -5536,7 +5536,9 @@ struct WhenReadyInfo {
 
 private:
     WhenReadyInfo(WhenReadyInfo&)
-	: message(), proc(0), client_data(0), cbs(), event()
+	: // message(), // GCC 2.7.2 can't handle this
+	  proc(0), client_data(0)
+	  // , cbs(), event() // GCC 2.7.2 can't handle this
     {
 	assert(0);
     }
