@@ -834,46 +834,33 @@ regexps.$(OBJEXT): rxscan.C
 	$(CPP) -C -P -undef $(CPPFLAGS) $(DEFS) $(INCLUDE) tmp.C > $@; \
 	$(RM) tmp.C
 
-# The info file, in text format
+# Reference.
 # ddd.info.txt does NOT depend on ddd.info since we don't want it to get
 # re-created after each configuration.
-ddd.info.txt: $(srcdir)/ddd.texi configure.in
+$(srcdir)/ddd.info.txt: $(srcdir)/ddd.texi configure.in
 	$(MAKE) ddd.info
 	info --subnodes -o - -f ddd.info > $@~ && $(MV) $@~ $@
 
-# ddd.man.txt may reside in $(srcdir) or `.' , hence the `$?'
-ddd.info.txt.gz: ddd.info.txt
+$(srcdir)/ddd.info.txt.gz: $(srcdir)/ddd.info.txt
 	$(COMPRESS) $? > $@~ && $(MV) $@~ $@
 
-ddd.info.txt.gz.C: ddd.info.txt.gz
+$(srcdir)/ddd.info.txt.gz.C: $(srcdir)/ddd.info.txt.gz
 	$(MAKE) stringify$(EXEEXT)
 	-./stringify < $? > $@~ && $(MV) $@~ $@
 
-# COPYING.huff.C does NOT depend on huffencode since we don't want it
-# to get re-created after each configuration.
-COPYING.huff.C: $(srcdir)/../COPYING
-	$(MAKE) huffencode$(EXEEXT)
-	-$(SED) 's///' < $(srcdir)/../COPYING | ./huffencode > $@~ && \
-	$(MV) $@~ $@
-
-COPYING.gz: $(srcdir)/../COPYING
+# License.
+$(srcdir)/COPYING.gz: $(srcdir)/../COPYING
 	$(COMPRESS) $(srcdir)/../COPYING > $@
 
-COPYING.gz.C: COPYING.gz
+$(srcdir)/COPYING.gz.C: COPYING.gz
 	$(MAKE) stringify$(EXEEXT)
 	-./stringify < COPYING.gz > $@~ && $(MV) $@~ $@
 
-# NEWS.huff.C does NOT depend on huffencode since we don't want it
-# to get re-created after each configuration.
-NEWS.huff.C: $(srcdir)/../NEWS
-	$(MAKE) huffencode$(EXEEXT)
-	-$(SED) 's///' < $(srcdir)/../NEWS | ./huffencode > $@~ && \
-	$(MV) $@~ $@
-
-NEWS.gz: $(srcdir)/../NEWS
+# News.
+$(srcdir)/NEWS.gz: $(srcdir)/../NEWS
 	$(COMPRESS) $(srcdir)/../NEWS > $@~ && $(MV) $@~ $@
 
-NEWS.gz.C: NEWS.gz
+$(srcdir)/NEWS.gz.C: NEWS.gz
 	$(MAKE) stringify$(EXEEXT)
 	-./stringify < NEWS.gz > $@~ && $(MV) $@~ $@
 
@@ -1904,7 +1891,8 @@ PROG_STUFF = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
              $(srcdir)/Ddd.in Ddd.ad.h host.h \
              $(vsldir)/ddd.vsl $(srcdir)/ddd.vsl.h \
              vr.h version.h bld.h build.h root.h configinfo.C \
-             COPYING.gz.C NEWS.gz.C ddd.info.txt ddd.info.txt.gz.C \
+             $(srcdir)/COPYING.gz.C $(srcdir)/NEWS.gz.C \
+	     $(srcdir)/ddd.info.txt.gz.C \
              xlibdir.C eps-code.h .gdbinit
 
 # Additional files to be included in the distribution.
@@ -1918,7 +1906,8 @@ EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF)
 # Make sure all this is built before DDD.
 ddd.$(OBJEXT): $(PROG_STUFF)
 
-CLEANFILES = build.h ddd.?? ddd.??s ddd.ps ddd.pdf *.tmp ddd.html ddd.info* \
+CLEANFILES = build.h ddd.?? ddd.??s ddd.ps ddd.pdf *.tmp ddd.html \
+	ddd.info ddd.info-* \
 	$(PS_IMAGES) $(PDF_IMAGES) $(HTML_IMAGES)
 DISTCLEANFILES = build.h host.h root.h
 
