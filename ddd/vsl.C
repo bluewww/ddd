@@ -50,7 +50,7 @@ char vsl_rcsid[] =
 #if !HAVE_ATHENA
 int main(int argc, char *argv[]) 
 {
-    cerr "This program requires the Athena widget library.\n";
+    cerr << "This program requires the Athena widget library.\n";
     return EXIT_FAILURE;
 }
 #else
