@@ -601,7 +601,7 @@ void GDBManualCB(Widget w, XtPointer, XtPointer)
 {
     StatusMsg msg("Invoking " + gdb->title() + " manual browser");
 
-    string cmd = "man " + downcase(gdb->title());
+    string cmd = "man " + downcase(gdb->title()) + " 2>&1";
 
     if (gdb->type() == GDB)
     {
