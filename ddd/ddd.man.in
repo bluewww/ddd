@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "03 Dec 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "21 Dec 1997" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -2748,10 +2748,11 @@ different X or Motif configuration.  By default, this is
 .B "ungrabMousePointer (\fPclass\fB UngrabMousePointer)"
 When debugging a modal X application, \s-2@DDD@\s+2 may interrupt it
 while it has grabbed the pointer, making further interaction
-impossible.  If this is `\fBtrue\fR' (default), \s-2@DDD@\s+2 will
-check after each interaction whether the pointer is grabbed.  If this
-is so, \s-2@DDD@\s+2 will instruct the debugged program to ungrab the
-mouse pointer.
+impossible.  If this is `\fBtrue\fR', \s-2@DDD@\s+2 will check after
+each interaction whether the pointer is grabbed.  If this is so,
+\s-2@DDD@\s+2 will instruct the debugged program to ungrab the mouse
+pointer.  The default setting is `\fBfalse\fR', since this feature is
+known to interfere with some Motif versions (popup menus won't work).
 .TP
 .B "valueTips (\fPclass\fB Tips)"
 Whether value tips are enabled (`\fBtrue\fR', default) or not

@@ -708,7 +708,7 @@ Ddd*maxValueDocLength: 80
 Ddd*suppressWarnings: false
 
 ! Shall DDD ungrab the mouse pointer when interrupting a modal X application?
-Ddd*ungrabMousePointer: true
+Ddd*ungrabMousePointer: false
 
 ! A little less highlighting
 Ddd*highlightThickness: 1

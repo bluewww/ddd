@@ -2398,7 +2398,8 @@ XrmDatabase GetFileDatabase(char *filename)
 	XmNcolumns, XmNrows,	              // Text window sizes
 	XtNtoolRightOffset, XtNtoolTopOffset, // Command tool offset
 	XtNshowStartupLogo,	              // Startup logo
-	XtNshowHints		              // Show edge hints
+	XtNshowHints,		              // Show edge hints
+	XtNungrabMousePointer,	              // Ungrab pointer settings
     };
 
     bool version_mismatch = false;

@@ -271,4 +271,11 @@ Volunteers for fixing these and other bugs are welcome!
      and keeps flashing away.  I've let it sit for up to an hour
      before and it never stops.
 
-228. (Insert your bug here)
+228. Chip Atkinson <chip@XiG.com> and Bernie Borenstein
+     <bernieb@deltanet.com> state that after enabling `ungrab mouse
+     pointer when interruping modal X application', pressing the right
+     mouse button grabs the cursor and won't release.  When ddd is
+     killed, the X server cannot give focus to any other windows.
+     This happens with Red Hat Linux 4.1 and Metrolink Motif 2.01.
+
+229. (Insert your bug here)
