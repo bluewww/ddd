@@ -111,6 +111,7 @@ char DataDisp_rcsid[] =
 #include "mydialogs.h"
 #include "post.h"
 #include "regexps.h"
+#include "session.h"
 #include "settings.h"
 #include "status.h"
 #include "string-fun.h"
@@ -6506,9 +6507,13 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
     // Init globals
     StringBox::fontTable      = new FontTable (XtDisplay(parent));
     DispBox::vsllib_name      = app_data.vsl_library;
-    DispBox::vsllib_path      = app_data.vsl_path;
     DispBox::vsllib_base_defs = app_data.vsl_base_defs;
     DispBox::vsllib_defs      = app_data.vsl_defs;
+
+    string path = ":" + string(app_data.vsl_path) + ":";
+    path.gsub(":themes:", ":" + session_themes_dir() + ":");
+    path = unquote(path);
+    DispBox::vsllib_path = path;
 
     // Create graph
     disp_graph = new DispGraph();
