@@ -65,39 +65,43 @@ extern "C" {
 #include <termio.h>
 #else
 #if HAVE_TCGETATTR && HAVE_TCSETATTR
-#ifdef HAVE_TERMIOS_H
+#if HAVE_TERMIOS_H
 #include <termios.h>
 #endif
 #else // !HAVE_TCGETATTR || !HAVE_TCSETATTR
-#ifdef HAVE_TERMIO_H
+#if HAVE_TERMIO_H
 #include <termio.h>
 #endif
 #endif // !HAVE_TCGETATTR || !HAVE_TCSETATTR
 #endif // !__osf__
 
-#ifdef HAVE_SYS_TYPES_H
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
 
-#ifdef HAVE_SYS_STAT_H
+#if HAVE_SYS_INT_TYPES_H
+#include <sys/int_types.h>
+#endif
+
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #ifndef S_ISDIR
 #define S_ISDIR ((m) & S_IFMT == S_IFDIR)
 #endif
 #endif
 
-#ifdef HAVE_SYS_STROPTS_H
+#if HAVE_SYS_STROPTS_H
 #include <sys/stropts.h>
 #endif
 
-#ifdef HAVE_SYS_SYSMACROS_H
+#if HAVE_SYS_SYSMACROS_H
 #include <sys/sysmacros.h>
 #ifndef minor
 #define minor(x)        ((int)((x)&0377))
 #endif
 #endif
 
-#ifdef HAVE_FCNTL_H
+#if HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
 
@@ -106,7 +110,7 @@ extern "C" {
 #define HAVE_IOCTL_DECL 1
 #endif
 
-#ifdef HAVE_SYS_VTY_H
+#if HAVE_SYS_VTY_H
 #include <sys/vty.h>
 
 #ifndef MAXPTYNAMELEN
@@ -268,7 +272,7 @@ void TTYAgent::open_master()
     // Setup defaults
     push = false;
 
-#ifdef HAVE_GETPTY
+#if HAVE_GETPTY
     // getpty() - an UTS feature
     static char master_line[MAXPTYNAMELEN];
     static char slave_line[MAXPTYNAMELEN];
@@ -287,7 +291,7 @@ void TTYAgent::open_master()
     }
 #endif
 
-#ifdef HAVE__GETPTY
+#if HAVE__GETPTY
     // _getpty() - an SGI/IRIX feature
     line = _getpty(&master, O_RDWR, 0600, 0);
     if (line != 0 && master >= 0)
