@@ -1975,7 +1975,7 @@ static bool is_fallback_value(const string& resource, string val)
 }
 
 static string app_value(const string& resource, const string& value, 
-			bool check_default)
+			Boolean check_default)
 {
     static String app_name  = 0;
     static String app_class = 0;
@@ -2001,7 +2001,7 @@ static string app_value(const string& resource, const string& value,
     return s;
 }
 
-inline const _XtString bool_value(bool value)
+inline const _XtString bool_value(Boolean value)
 {
     // Since GDB uses `on' and `off' for its settings, we do so, too. 
     return value ? "on" : "off";
@@ -2021,27 +2021,27 @@ inline const _XtString binding_value(BindingStyle value)
     return "";			// Never reached
 }
 
-static string bool_app_value(const string& name, bool value, 
-			     bool check_default = false)
+static string bool_app_value(const string& name, Boolean value, 
+			     Boolean check_default = False)
 {
     return app_value(name, bool_value(value), check_default);
 }
 
 static string int_app_value(const string& name, int value,
-			    bool check_default = false)
+			    Boolean check_default = False)
 {
     return app_value(name, itostring(value), check_default);
 }
 
 static string binding_app_value(const string& name, BindingStyle value,
-				bool check_default = false)
+				Boolean check_default = False)
 {
     return app_value(name, binding_value(value), check_default);
 }
 
 
 static string string_app_value(const string& name, const _XtString v,
-			       bool check_default = false)
+			       Boolean check_default = False)
 {
     if (v == 0)
 	return "";
@@ -2064,7 +2064,8 @@ static string string_app_value(const string& name, const _XtString v,
     return app_value(name, value, check_default);
 }
 
-static string widget_value(Widget w, const _XtString name, bool check_default = false)
+static string widget_value(Widget w, const _XtString name,
+			   Boolean check_default = False)
 {
     String value = 0;
     XtVaGetValues(w, 
@@ -2076,7 +2077,7 @@ static string widget_value(Widget w, const _XtString name, bool check_default = 
 }
 
 static string orientation_app_value(const string& name, unsigned char v,
-				    bool check_default = false)
+				    Boolean check_default = False)
 {
     string value = "XmBAD_ORIENTATION";
 
@@ -2101,7 +2102,7 @@ static string orientation_app_value(const string& name, unsigned char v,
 static string paned_widget_size(Widget w, bool height_only = false)
 {
     string s;
-    const bool check_default = false;
+    const Boolean check_default = False;
 
     if (XmIsText(w) || XmIsTextField(w))
     {
@@ -2164,7 +2165,7 @@ inline string paned_widget_height(Widget w)
 
 static string widget_geometry(Widget w, bool include_size = false)
 {
-    const bool check_default = false;
+    const Boolean check_default = False;
 
     Dimension width, height;
     XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, XtPointer(0));
@@ -2492,14 +2493,14 @@ bool save_options(unsigned long flags)
 	}
     }
 
-    os << string_app_value(XtNbashSettings, bash_settings.chars(), true) << '\n';
-    os << string_app_value(XtNdbgSettings,  dbg_settings.chars(), true)  << '\n';
-    os << string_app_value(XtNdbxSettings,  dbx_settings.chars(), true)  << '\n';
-    os << string_app_value(XtNgdbSettings,  gdb_settings.chars(), true)  << '\n';
-    os << string_app_value(XtNjdbSettings,  jdb_settings.chars(), true)  << '\n';
-    os << string_app_value(XtNperlSettings, perl_settings.chars(), true) << '\n';
-    os << string_app_value(XtNpydbSettings, pydb_settings.chars(), true) << '\n';
-    os << string_app_value(XtNxdbSettings,  xdb_settings.chars(), true)  << '\n';
+    os << string_app_value(XtNbashSettings, bash_settings.chars(), True) << '\n';
+    os << string_app_value(XtNdbgSettings,  dbg_settings.chars(), True)  << '\n';
+    os << string_app_value(XtNdbxSettings,  dbx_settings.chars(), True)  << '\n';
+    os << string_app_value(XtNgdbSettings,  gdb_settings.chars(), True)  << '\n';
+    os << string_app_value(XtNjdbSettings,  jdb_settings.chars(), True)  << '\n';
+    os << string_app_value(XtNperlSettings, perl_settings.chars(), True) << '\n';
+    os << string_app_value(XtNpydbSettings, pydb_settings.chars(), True) << '\n';
+    os << string_app_value(XtNxdbSettings,  xdb_settings.chars(), True)  << '\n';
 
     os << "\n! Source.\n";
     os << bool_app_value(XtNfindWordsOnly,
@@ -2507,11 +2508,11 @@ bool save_options(unsigned long flags)
     os << bool_app_value(XtNfindCaseSensitive,
 			 app_data.find_case_sensitive) << '\n';
     os << int_app_value(XtNtabWidth,
-			 app_data.tab_width, true) << '\n';
+			 app_data.tab_width, True) << '\n';
     os << int_app_value(XtNindentSource,
-			 app_data.indent_source, true) << '\n';
+			 app_data.indent_source, True) << '\n';
     os << int_app_value(XtNindentCode,
-			 app_data.indent_code, true) << '\n';
+			 app_data.indent_code, True) << '\n';
     os << bool_app_value(XtNcacheSourceFiles,
 			 app_data.cache_source_files) << '\n';
     os << bool_app_value(XtNcacheMachineCode,
@@ -2527,9 +2528,9 @@ bool save_options(unsigned long flags)
 
     os << "\n! Undo Buffer.\n";
     os << int_app_value(XtNmaxUndoDepth,
-			 app_data.max_undo_depth, true) << '\n';
+			 app_data.max_undo_depth, True) << '\n';
     os << int_app_value(XtNmaxUndoSize,
-			 app_data.max_undo_size, true) << '\n';
+			 app_data.max_undo_size, True) << '\n';
 
     // Misc stuff
     os << "\n! Misc preferences.\n";
@@ -2602,14 +2603,14 @@ bool save_options(unsigned long flags)
     if (!save_session && grid_width == grid_height)
     {
 	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
-			    + XtCGridSize, grid_width, true) << '\n';
+			    + XtCGridSize, grid_width, True) << '\n';
     }
     else
     {
 	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
-			    + XtNgridWidth,  grid_width, true) << '\n';
+			    + XtNgridWidth,  grid_width, True) << '\n';
 	os << int_app_value(string(XtName(data_disp->graph_edit)) + "." 
-			    + XtNgridHeight, grid_height, true) << '\n';
+			    + XtNgridHeight, grid_height, True) << '\n';
     }
     os << bool_app_value(XtNdetectAliases,  app_data.detect_aliases)   << '\n';
     os << bool_app_value(XtNclusterDisplays,app_data.cluster_displays) << '\n';
@@ -2648,23 +2649,23 @@ bool save_options(unsigned long flags)
 
     // Helpers
     os << "\n! Helpers.\n";
-    os << string_app_value(XtNeditCommand,    app_data.edit_command, true)
+    os << string_app_value(XtNeditCommand,    app_data.edit_command, True)
        << '\n';
-    os << string_app_value(XtNgetCoreCommand, app_data.get_core_command, true)
+    os << string_app_value(XtNgetCoreCommand, app_data.get_core_command, True)
        << '\n';
-    os << string_app_value(XtNpsCommand,      app_data.ps_command, true)
+    os << string_app_value(XtNpsCommand,      app_data.ps_command, True)
        << '\n';
-    os << string_app_value(XtNtermCommand,    app_data.term_command, true)
+    os << string_app_value(XtNtermCommand,    app_data.term_command, True)
        << '\n';
     os << string_app_value(XtNuncompressCommand, app_data.uncompress_command,
-			   true) << '\n';
-    os << string_app_value(XtNwwwCommand,     app_data.www_command, true) 
+			   True) << '\n';
+    os << string_app_value(XtNwwwCommand,     app_data.www_command, True) 
        << '\n';
-    os << string_app_value(XtNplotCommand,    app_data.plot_command, true)
+    os << string_app_value(XtNplotCommand,    app_data.plot_command, True)
        << '\n';
     os << string_app_value(XtNplotTermType,   app_data.plot_term_type)
        << '\n';
-    os << string_app_value(XtNprintCommand,   app_data.print_command, true) 
+    os << string_app_value(XtNprintCommand,   app_data.print_command, True) 
        << '\n';
 
     // Toolbar
@@ -2706,9 +2707,9 @@ bool save_options(unsigned long flags)
     os << bool_app_value(XtNcommandToolBar,
 			 app_data.command_toolbar) << '\n';
     os << int_app_value(XtNtoolRightOffset,
-			app_data.tool_right_offset, true) << '\n';
+			app_data.tool_right_offset, True) << '\n';
     os << int_app_value(XtNtoolTopOffset,
-			app_data.tool_top_offset, true) << '\n';
+			app_data.tool_top_offset, True) << '\n';
 
     // Buttons
     os << "\n! Buttons.\n";
@@ -2765,33 +2766,33 @@ bool save_options(unsigned long flags)
 	}
 
 	os << string_app_value(XtNbashDisplayShortcuts,
-			       bash_display_shortcuts.chars(), true) << '\n';
+			       bash_display_shortcuts.chars(), True) << '\n';
  	os << string_app_value(XtNdbgDisplayShortcuts,
- 			       dbg_display_shortcuts.chars(), true)  << '\n';
+ 			       dbg_display_shortcuts.chars(), True)  << '\n';
 	os << string_app_value(XtNdbxDisplayShortcuts,
-			       dbx_display_shortcuts.chars(), true) << '\n';
+			       dbx_display_shortcuts.chars(), True) << '\n';
 	os << string_app_value(XtNgdbDisplayShortcuts, 
-			       gdb_display_shortcuts.chars(), true) << '\n';
+			       gdb_display_shortcuts.chars(), True) << '\n';
 	os << string_app_value(XtNjdbDisplayShortcuts,
-			       jdb_display_shortcuts.chars(), true) << '\n';
+			       jdb_display_shortcuts.chars(), True) << '\n';
 	os << string_app_value(XtNperlDisplayShortcuts,
-			       perl_display_shortcuts.chars(), true) << '\n';
+			       perl_display_shortcuts.chars(), True) << '\n';
 	os << string_app_value(XtNpydbDisplayShortcuts,
-			       pydb_display_shortcuts.chars(), true) << '\n';
+			       pydb_display_shortcuts.chars(), True) << '\n';
 	os << string_app_value(XtNxdbDisplayShortcuts,
-			       xdb_display_shortcuts.chars(), true) << '\n';
+			       xdb_display_shortcuts.chars(), True) << '\n';
     }
 
     // Fonts
     os << "\n! Fonts.\n";
     os << string_app_value(XtNdefaultFont,
-			   app_data.default_font, true) << '\n';
+			   app_data.default_font, True) << '\n';
     os << string_app_value(XtNvariableWidthFont, 
-			   app_data.variable_width_font, true) << '\n';
+			   app_data.variable_width_font, True) << '\n';
     os << string_app_value(XtNfixedWidthFont,
-			   app_data.fixed_width_font, true) << '\n';
+			   app_data.fixed_width_font, True) << '\n';
     os << string_app_value(XtNdataFont,
-			   app_data.data_font, true) << '\n';
+			   app_data.data_font, True) << '\n';
     if (!save_session &&
 	app_data.default_font_size == app_data.variable_width_font_size &&
 	app_data.default_font_size == app_data.fixed_width_font_size &&
@@ -2824,12 +2825,12 @@ bool save_options(unsigned long flags)
     if (!save_session && 
 	!app_data.separate_source_window && !app_data.separate_data_window)
     {
-	os << bool_app_value(XtCSeparate, false) << '\n';
+	os << bool_app_value(XtCSeparate, False) << '\n';
     }
     else if (!save_session &&
 	     app_data.separate_source_window && app_data.separate_data_window)
     {
-	os << bool_app_value(XtCSeparate, true) << '\n';
+	os << bool_app_value(XtCSeparate, True) << '\n';
     }
     else
     {

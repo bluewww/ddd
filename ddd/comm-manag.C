@@ -710,7 +710,7 @@ static void SourceDoneCB(const string& answer, void *qu_data)
 	// We've had an error while sourcing the file.  This keeps GDB
 	// from reading the entire file, so we issue commands the
 	// ordinary way.
-	init_session(info->restart, info->settings, false);
+	init_session(info->restart, info->settings, False);
     }
 
     delete info;
@@ -718,7 +718,7 @@ static void SourceDoneCB(const string& answer, void *qu_data)
 
 // Enqueue init commands
 void init_session(const string& restart, const string& settings, 
-		  bool try_source)
+		  Boolean try_source)
 {
     string init_commands = restart + settings;
 
