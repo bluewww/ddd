@@ -413,8 +413,6 @@ Volunteers for these and other projects are welcome!
 300*New Display, New Breakpoint, New Watchpoint should all have
     histories.
 
-301*The main argument field should have a history.
-
 302*Up and Down in ComboBox fields should select the previous/next
     item in the history.
 
