@@ -464,12 +464,6 @@ void init_session(const string& restart, const string& settings)
 
 	init_commands = init_commands.after('\n');
     }
-
-    // One last command to clear the delay and set up breakpoints
-    Command c("# reset");
-    c.priority = COMMAND_PRIORITY_INIT;
-    c.verbose  = false;
-    gdb_command(c);
 }
 
 

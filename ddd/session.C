@@ -742,11 +742,12 @@ static void open_session(const string& session)
     }
     init_session(restart, settings);
 
-    // One last command to clear the delay
-    c.command  = "# dummy";
+    // One last command to clear the delay and set up breakpoints
+    c.command  = "# reset";
     c.callback = delete_delay;
     c.data     = (void *)(Delay *)delay_ptr;
     c.priority = COMMAND_PRIORITY_BATCH;
+    c.verbose  = false;
     c.check    = true;
     gdb_command(c);
 }
