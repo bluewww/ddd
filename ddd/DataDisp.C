@@ -200,8 +200,6 @@ MMDesc DataDisp::shortcut_menu[]   =
     MMEnd
 };
 
-#define shortcut_menu1 (&shortcut_menu[1])
-
 // A stand-alone popup menu.
 MMDesc DataDisp::shortcut_popup1[] = { SHORTCUT_MENU, MMEnd };
 
@@ -952,7 +950,7 @@ void DataDisp::set_shortcut_menu(const StringArray& exprs,
     {
 	Widget popup1_item = shortcut_popup1[i].widget;
 	Widget popup2_item = shortcut_popup2[i].widget;
-	Widget menu_item   = shortcut_menu1[i].widget;
+	Widget menu_item   = shortcut_menu  [i].widget;
 
 	if (i < exprs.size())
 	{
@@ -1006,9 +1004,9 @@ MString DataDisp::shortcut_help(Widget w)
 {
     for (int i = 0; i < shortcut_items; i++)
     {
-	if (w == shortcut_menu1[i].widget
-	    || w == shortcut_popup1[i].widget
-	    || w == shortcut_popup2[i].widget)
+	if (w == shortcut_menu  [i].widget ||
+	    w == shortcut_popup1[i].widget ||
+	    w == shortcut_popup2[i].widget)
 	{
 	    MString ret = rm("Display ");
 	    string expr = shortcut_exprs[i];
@@ -2003,7 +2001,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
 	set_sensitive(shortcut_popup1[i].widget, sens);
 	set_sensitive(shortcut_popup2[i].widget, sens);
-	set_sensitive(shortcut_menu1 [i].widget, sens);
+	set_sensitive(shortcut_menu  [i].widget, sens);
     }
 
     // Argument field
