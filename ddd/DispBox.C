@@ -78,7 +78,7 @@ DispBox::DispBox (int disp_nr, const string& t, const DispValue *dv)
 #if RUNTIME_REGEX
 	static regex rxdbx_scope("[a-zA-Z_0-9]*`");
 #endif
-	int i;
+	int i = 0;
 	while (int(title.length()) > max_display_title_length 
 	       && ((i = title.index(rxdbx_scope)) >= 0))
 	{

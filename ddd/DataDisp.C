@@ -2295,7 +2295,7 @@ struct StatusShower {
     bool aborted;		// True iff bg proc aborted
 
     // Show delay when updating from at least THRESHOLD characters.
-    const int THRESHOLD = 512;
+    static const int THRESHOLD;
 
     bool process(int remaining_length);
 
@@ -2325,6 +2325,8 @@ struct StatusShower {
 	delete delay;
     }
 };
+
+const int StatusShower::THRESHOLD = 512;
 
 StatusShower *StatusShower::active = 0;
 

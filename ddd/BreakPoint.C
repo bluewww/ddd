@@ -573,7 +573,7 @@ bool BreakPoint::get_state(ostream& os, int nr, bool dummy, string pos)
 	if (line_nr() > 0)
 	    pos = file_name() + ":" + itostring(line_nr());
 	else
-	    pos = '*' + address();
+	    pos = string('*') + address();
     }
 
     string num = "@" + itostring(nr) + "@";

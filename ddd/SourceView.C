@@ -995,7 +995,7 @@ void SourceView::bp_popup_set_pcCB(Widget w, XtPointer client_data,
     BreakPoint *bp = bp_map.get(bp_nr);
     if (bp != 0 && bp->address() != "")
     {
-	string address = '*' + bp->address();
+	string address = string('*') + bp->address();
 	line_popup_set_pcCB(w, XtPointer(&address), call_data);
     }
 }
@@ -4144,7 +4144,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	if (is_source_widget(w))
 	    address = current_source_name() + ":" + itostring(line_nr);
 	else
-	    address = '*' + address;
+	    address = string('*') + address;
 	XmMenuPosition (line_popup_w, event);
 	XtManageChild (line_popup_w);
     }
@@ -6195,7 +6195,7 @@ void SourceView::dropGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
 	// Selection from code
 	if (address == "")
 	    return;		// No address
-	address = '*' + address;
+	address = string('*') + address;
     }
     else
     {
