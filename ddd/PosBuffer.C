@@ -38,6 +38,7 @@ char PosBuffer_rcsid[] =
 #include "cook.h"
 
 // DDD includes
+#include "AppData.h"
 #include "PosBuffer.h"
 #include "comm-manag.h"
 #include "string-fun.h"
@@ -67,6 +68,14 @@ static void filter_line(string& answer, int line)
     } while (pos > 0);
 }
 
+// Return true iff ANSWER has a line beginning with PREFIX
+static bool has_prefix(const string& answer, const string& prefix)
+{
+    int index = answer.index(prefix);
+    return index == 0 || index > 0 && answer[index - 1] == '\n';
+}
+
+
 // Fetch position from GDB output ANSWER.
 void PosBuffer::filter (string& answer)
 {
@@ -79,43 +88,32 @@ void PosBuffer::filter (string& answer)
     {
 	// If GDB prints a "Current function" line, it overrides whatever
 	// came before (e.g. "stopped in").
-
-	int index;
-	index = answer.index("Current function is ");
-	if (index == 0 || index > 0 && answer[index - 1] == '\n')
+	if (has_prefix(answer, "Current function is "))
 	    already_read = Null;
 
-	index = answer.index("Starting program: ");
-	if (index == 0 || index > 0 && answer[index - 1] == '\n')
+	if (has_prefix(answer, "Starting program: "))
 	    started = true;
 
-	index = answer.index("The program no longer exists");
-	if (index == 0 || index > 0 && answer[index - 1] == '\n')
+	if (has_prefix(answer, "The program no longer exists"))
 	    terminated = true;
 
-	index = answer.index("has changed; re-reading symbols");
-	if (index > 0)
+	if (answer.contains("has changed; re-reading symbols"))
 	    recompiled = true;
 
-	index = answer.index("Current language: ");
-	if (index == 0 || index > 0 && answer[index - 1] == '\n')
+	if (has_prefix(answer, "Current language: "))
 	    gdb->program_language(answer);
 
-	index = answer.index("The current source language is ");
-	if (index == 0 || index > 0 && answer[index - 1] == '\n')
+	if (has_prefix(answer, "The current source language is "))
 	    gdb->program_language(answer);
     }
     break;
 
     case DBX:
     {
-	int index;
-	index = answer.index("Running: ");
-	if (index == 0 || index > 0 && answer[index - 1] == '\n')
+	if (has_prefix(answer, "Running: "))
 	    started = true;
 
-	index = answer.index("has been recompiled");
-	if (index > 0)
+	if (answer.contains("has been recompiled"))
 	    recompiled = true;
     }
     break;
@@ -124,6 +122,7 @@ void PosBuffer::filter (string& answer)
 	break;			// FIXME
     }
 
+    // Check for terminated program
     static regex rxterminated("(.*\n)?([Tt]he )?[Pp]rogram "
 			      "(exited|terminated"
 			      "|is not being run|no longer exists).*");
@@ -133,6 +132,23 @@ void PosBuffer::filter (string& answer)
     if (answer.contains("no active process") ||
 	answer.contains("execution completed"))
 	terminated = true;
+
+
+    // Check for auto command
+    if (app_data.auto_commands)
+    {
+	while (has_prefix(answer, app_data.auto_command_prefix))
+	{
+	    int index = answer.index(app_data.auto_command_prefix);
+	    string cmd = answer.from(index);
+	    if (cmd.contains('\n'))
+		cmd = cmd.through('\n');
+	    answer = 
+		answer.before(index) + answer.from(int(index + cmd.length()));
+	    cmd = cmd.after(app_data.auto_command_prefix);
+	    auto_cmd_buffer += cmd;
+	}
+    }
 
     // Fetch and store position info, return remainder
     switch (already_read)
@@ -263,11 +279,10 @@ void PosBuffer::filter (string& answer)
 		// Look for regular source info
 		int index1 = answer.index ("\032\032");
 
-		if (index1 == -1) 
+		if (index1 < 0) 
 		{
 		    int index_p = answer.index ("\032");
-
-		    if (index_p == int(answer.length()) - 1)
+		    if (index_p >= 0 && index_p == int(answer.length()) - 1)
 		    {
 			// Possible begin of position info at end of ANSWER
 			already_read = PosPart;
