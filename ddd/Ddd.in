@@ -886,7 +886,7 @@ the @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
 @rm by Dorothea L\374tkehaus and Andreas Zeller.\n\
 \n\
 @DDD@ @VERSION@ (@host@),\n\
-Copyright \251 1995 Technische Universit\344t Braunschweig, Germany.\n
+Copyright \251 1995, 1996 Technische Universit\344t Braunschweig, Germany.\n
 
 ! The default Help Text.
 Ddd*contextHelpString:	\
@@ -1876,7 +1876,7 @@ Press the @bf right mouse button @rm to change its properties.
 
 Ddd*gdb_w.value: \
 @DDD@ @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
-Copyright \251 1995 Technische Universit\344t Braunschweig, Germany.\n
+Copyright \251 1995, 1996 Technische Universit\344t Braunschweig, Germany.\n
 
 Ddd*gdb_w.rows:			10
 Ddd*gdb_w.columns:		88
