@@ -11,16 +11,15 @@ DDD 1.4c (NOT YET RELEASED)
       compilation should now require slightly more time, but much less
       memory.  Due to the large number of new files, diffs to earlier
       versions are somewhat larger than usual.
-    - Font sizes are now resolution-independent.  This may lead to
-      different font sizes on some displays.
+    - Font sizes are now resolution-independent, resulting in larger
+      font sizes on high-resolution displays.
     - The built-in manual page is now compressed, resulting in
       slightly smaller executables.
     - Improved DBX 3.x support.  Thanks to Grant McDorman
       <grant@isgtec.com>.
     - Improved DEC Alpha/OSF support.  Thanks to Phil Brooks
       <phil_brooks@MENTORG.COM>.
-    - Various bugs fixed, one of them serious (raising a message box
-      multiple times could lead to a segmentation fault).
+    - Several minor and two major bugs were found and fixed.
 
 
 DDD 1.4b

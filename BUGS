@@ -160,27 +160,6 @@ Volunteers for fixing these and other bugs are welcome!
         assembler window then the line in this window is highlighted, but
         not the one in the source language window.
 
-     5. Paths to filename are not `normalized' before being passed to
-        emacslient (or gnuclient). I mean that if one of your source
-        files was compiled as
-
-                /some/path//there/file.C
-
-        (which happens fairly often due to empty paths components in
-        Makefiles, for example), the file will not appear in Emacs
-        because the Emacs visit-file function and friends do consider
-        that when there is a // or a /~ in a path then everything
-        before the first / is garbage. The file that will be looked
-        for in the example is
-
-                  /there/file.C
-
-        (the GUD Emacs mode exhibits the same bug ;-)). Thus // in
-        file pathes must be changed to / (or Emacs changed so that
-        only interactively-called versions of visit-file and friends
-        do that, but I don't think this will be done...).  
-	[Fixed in DDD 1.4c  -AZ]
-
 070. Matthias Kurz <mk@baerlap.north.de> complains: When glyphs are
      enabled, I have endless scrolling as soon as I press a `repeat'
      button on the DDD source scrollbars.
@@ -212,9 +191,6 @@ Volunteers for fixing these and other bugs are welcome!
 073. Debugging `icicle' causes trouble with job control.  Reported by
      Andreas Zeller <zeller@acm.org>.
 
-074. If there is no `less', `ddd --manual' will not work.  [Fixed for
-     DDD 1.4c]
-
 075. On Linux boxes, attempting to drag & drop a breakpoint symbol
      causes a core dump.  [Motif/Linux bug?]
 
@@ -227,17 +203,6 @@ Volunteers for fixing these and other bugs are welcome!
      the beginning OR it complains of "Internal error (IOT
      trap/Abort)" and ddd exits...  this does not result in an error
      under just gdb so I am assuming that it is an error in ddd.
-
-077. rwolff@noao.edu (Richard Wolff) reports:
-
-     Load a program to debug but do not run it.  Select a variable to
-     display by sweeping out the name with a mouse (or type it into
-     the argument field) and press the Display() button.  The message
-     "No symbol "xxx" in current context." is presented.  Fine.  Now
-     do the same thing with the right mouse button: left click (or
-     sweep) the name in the source window and then right click and
-     select "Display xxx".  "Internal Error (Segmentation Fault)"!
-     [Fixed in DDD 1.4c]
 
 077. oyvind@stavanger.Geco-Prakla.slb.com (Oyvind Yrke) says that DDD
      crashes after receiving too much data from GDB (e.g. `info
