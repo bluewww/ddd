@@ -35,6 +35,9 @@
 /* Define if your C++ compiler has ANSI-compliant lifetime of temporaries. */
 #undef HAVE_ANSI_LIFETIME_OF_TEMPORARIES
 
+/* Define if your C++ compiler supports explicit template instantiation. */
+#undef HAVE_EXPLICIT_TEMPLATE_INSTANTIATION
+
 /* Define if your C++ compiler supports overloaded operator new[]. */
 #undef HAVE_ARRAY_OPERATOR_NEW
 
