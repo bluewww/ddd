@@ -983,9 +983,9 @@ static Widget set_separate_windows_w;
 static Widget set_attached_windows_w;
 static MMDesc window_mode_menu [] = 
 {
-    { "attached",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(False) },
+    { "attached",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(1) },
       NULL, &set_attached_windows_w },
-    { "separate",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(True) },
+    { "separate",  MMToggle, { dddSetSeparateWindowsCB, XtPointer(0) },
       NULL, &set_separate_windows_w },
     MMEnd
 };
