@@ -1,7 +1,7 @@
-DDD 3.1.5 is available					-*- text -*-
+DDD 3.1.6 is available					-*- text -*-
 ======================
 
-Release 3.1.5 of DDD, the Data Display Debugger, is now available at
+Release 3.1.6 of DDD, the Data Display Debugger, is now available at
 
     ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
 
@@ -12,8 +12,8 @@ Please try a closer FTP site first; see below for a list.
 What's new in DDD?
 ------------------
 
-DDD 3.1.5 "Twenty One" is a maintenance release for DDD 3.1.  It
-supports GNU libc 2.1, Xemacs 21 and OSF/Motif 2.1.
+DDD 3.1.6 "Eclipse" is a maintenance release for DDD 3.1.  It
+supports recent GCC, EGCS, and Lesstif versions.
 
 DDD 3.1 brings Perl support, Python support, data plotting, Undo/Redo,
 advanced data exploration, and several more new features and bug fixes.
@@ -26,11 +26,11 @@ For details, see the local NEWS file or the DDD WWW page at
 What do I need to build DDD?
 ----------------------------
 
-To build DDD 3.1.5 from sources, you need:
+To build DDD 3.1.6 from sources, you need:
 
-* The DDD 3.1.5 source package, `ddd-3.1.5.tar.gz'.  MD5 checksum:
+* The DDD 3.1.6 source package, `ddd-3.1.6.tar.gz'.  MD5 checksum:
 
-	................................  ddd-3.1.5.tar.gz
+	................................  ddd-3.1.6.tar.gz
 
 * Motif.  Typically LessTif (>= 0.88) or OSF/Motif (>= 1.2).
 * A C++ compiler.  Typically GCC (>= 2.7.2).
