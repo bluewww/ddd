@@ -2503,6 +2503,14 @@ int main(int argc, char *argv[])
     XtSetArg(args[arg], XmNargc,           original_argc); arg++;
     XtSetArg(args[arg], XmNargv,           original_argv); arg++;
 
+    // Forward toplevel geometry (as given by `-geometry') to command shell
+    String toplevel_geometry = 0;
+    XtVaGetValues(toplevel, XmNgeometry, &toplevel_geometry, XtPointer(0));
+    if (toplevel_geometry != 0)
+    {
+	XtSetArg(args[arg], XmNgeometry, toplevel_geometry); arg++;
+    }
+
     // Make command shell a popup shell.  
     // The toplevel window is never realized.
     command_shell = verify(XtCreatePopupShell((char *)"command_shell",
