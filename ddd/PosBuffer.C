@@ -481,10 +481,9 @@ void PosBuffer::filter_gdb(string& answer)
 	if (index_p >= 0 && index_p == int(answer.length()) - 1)
 	{
 	    // Possible begin of position info at end of ANSWER
-	    already_read = PosPart;
 	    answer_buffer = "\032";
 	    answer = answer.before (index_p);
-		    
+	    already_read = PosPart;
 	    return;
 	}
 		
@@ -515,9 +514,9 @@ void PosBuffer::filter_gdb(string& answer)
     if (index2 == -1)
     {
 	// Position info is incomplete
-	already_read = PosPart;
 	answer_buffer = answer.from (index1);
 	answer = answer.before (index1);
+	already_read = PosPart;
 	return;
     }
 
@@ -606,7 +605,7 @@ void PosBuffer::filter_dbx(string& answer)
 
 	line = answer.after("line ");
 	line = line.through(rxint);
-		
+
 	file = answer.after('\"');
 	file = file.before('\"');
 
@@ -628,7 +627,7 @@ void PosBuffer::filter_dbx(string& answer)
 	// "[new_tree:113 ,0x400858] \ttree->right = NULL;"
 		
 	line = answer.from(dbxpos_index);
-		
+
 	// Note that the function name may contain "::" sequences.
 	while (line.contains("::"))
 	    line = line.after("::");
@@ -636,10 +635,23 @@ void PosBuffer::filter_dbx(string& answer)
 	line = line.through(rxint);
 	if (line != "")
 	{
-	    already_read = PosComplete;
-		
-	    if (!answer.contains('[', 0))
-		answer = answer.after("\n");
+	    if (answer.index('\n', dbxpos_index) >= 0)
+	    {
+		already_read = PosComplete;
+
+		// Strip position info and line
+		strip_leading_space(answer);
+		if (answer.contains('[', 0))
+		    answer = answer.after("\n");
+	    }
+	    else
+	    {
+		// Wait for `\n' such that we can delete the line
+		answer_buffer = answer;
+		answer = "";
+		already_read = PosPart;
+		return;
+	    }
 	}
     }
 
@@ -751,16 +763,18 @@ void PosBuffer::filter_dbx(string& answer)
 	    answer_buffer = answer;
 	    answer = "";
 	    already_read = PosPart;
+	    return;
 	}
     }
 
     if (already_read != PosComplete && 
-	answer.contains('[') && !answer.contains(']'))
+	(!answer.contains('\n') ||
+	 (answer.contains('[') && !answer.contains(']'))))
     {
 	// Position info is incomplete
+	answer_buffer = answer;
+	answer = "";
 	already_read = PosPart;
-	answer_buffer = answer.from('[');
-	answer = answer.before('[');
 	return;
     }
 
@@ -841,6 +855,7 @@ void PosBuffer::filter_xdb(string& answer)
 	answer_buffer = answer.from(index);
 	answer.from(index) = "";
 	already_read = PosPart;
+	return;
     }
 }
 	
@@ -982,10 +997,9 @@ void PosBuffer::filter_perl(string& answer)
 	if (index_p >= 0 && index_p == int(answer.length()) - 1)
 	{
 	    // Possible begin of position info at end of ANSWER
-	    already_read = PosPart;
 	    answer_buffer = "\032";
 	    answer = answer.before (index_p);
-		    
+	    already_read = PosPart;
 	    return;
 	}
     }
@@ -997,9 +1011,9 @@ void PosBuffer::filter_perl(string& answer)
 	if (index2 == -1)
 	{
 	    // Position info is incomplete
-	    already_read = PosPart;
 	    answer_buffer = answer.from (index1);
 	    answer = answer.before (index1);
+	    already_read = PosPart;
 	    return;
 	}
 	else
