@@ -162,19 +162,20 @@ Volunteers for fixing these and other bugs are welcome!
 084. Configure problems.  Lutz Vieweg <vieweg@iap.uni-frankfurt.de>
      says that the `configure' tests ignore the `CC' and `CXX'
      environment variables.
-     [Is this true for the top-level `configure', or for
-     `ddd/configure'? -AZ]
+     [This should be fixed with DDD 2.0 -AZ]
 
-086. Lassi A. Tuura <Lassi.Tuura@cern.ch> states:
+085. Lassi A. Tuura <Lassi.Tuura@cern.ch> states:
 
      - configure does not handle CXXFLAGS correctly -- it wanted to
        determine the options itself anyway.  I had to go and modify
        the makefiles by hand later on (not a big deal).
+     [This should be fixed with DDD 2.0 -AZ]
 
      - configure did not respect CC settings for -liberty.  Sligthly
        worse than the previous.  I had to modify the settings again
        by hand (is the problem that libiberty/Makefile.in does not
        have an entry for CC= @CC@?)
+     [This should be fixed with DDD 2.0 -AZ]
 
      - There is a bug somewhere in graph layout code that manifests
        only on highest KCC optimization levels (+K2 and +K3).  The
@@ -191,8 +192,9 @@ Volunteers for fixing these and other bugs are welcome!
        goes either negative or to extremely large positive value.  I
        could try to narrow down the location of the bug if someone
        would be nice enough to tell me which functions to look at.
+     [This is a bug in KCC.  Don't know how to fix this  -AZ]
 
-085. mayer@paradigml.com (Ron Mayer) says:
+086. mayer@paradigml.com (Ron Mayer) says:
 
      In a number of structures I would attempt to "Modify [the]
      dependent display expression" to display in hex using expressions

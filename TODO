@@ -104,7 +104,8 @@ Volunteers for these and other projects are welcome!
      looking at, and where you want them to go on your
      canvas. Furthermore, there could be an option on the graph window
      that let you dump such scripts automatically generated from the
-     current layout on the canvas.''  See also 076.
+     current layout on the canvas.''
+     [See also 076 -AZ]
 
 069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
 
@@ -144,7 +145,7 @@ Volunteers for these and other projects are welcome!
      are posted.  (Hmm.  Might be time for a USENET newsgroup
      `comp.debuggers.ddd.announce' :-)
 
-075* Andre Cormeau <ac@enci.ucalgary.ca> says:
+075. Andre Cormeau <ac@enci.ucalgary.ca> says:
 
      Apparently ddd does not fully support fortran. A problem is in
      variable names, with capital letters and underscores (not strict
@@ -169,7 +170,8 @@ Volunteers for these and other projects are welcome!
      their address but, more source-code oriented, by their scope and
      name. That way, it shouldn't be too difficult to save the
      displayed variables and find the corresponding variables even
-     after recompiling.  See also 067.
+     after recompiling.
+     [See also 067 -AZ]
 
 077. Have a way to show all display detail.  Maybe by selecting `show' on a
      title?
