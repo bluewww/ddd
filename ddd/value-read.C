@@ -784,22 +784,22 @@ static string get_member_name(string& value, const string& sep)
 
 
 // Read member name; return "" upon error
-string read_member_name (string& value)
+string read_member_name (string& value, bool picky)
 {
     read_leading_junk(value);
 
-    if (value.contains(')', 0)
-	|| value.contains('}', 0)
-	|| value.contains(']', 0)
-	|| value.contains(',', 0))
+    if (picky && (value.contains(')', 0)
+		  || value.contains('}', 0)
+		  || value.contains(']', 0)
+		  || value.contains(',', 0)))
     {
 	// No value
 	return "";
     }
 
-    if (value.contains('(', 0)
-	|| value.contains('{', 0)
-	|| value.contains('[', 0))
+    if (picky && (value.contains('(', 0)
+		  || value.contains('{', 0)
+		  || value.contains('[', 0)))
     {
 	// No value
 	return "";

@@ -78,7 +78,7 @@ void munch_dump_line (string& value);
 string read_vtable_entries (string& value);
 
 // Read struct or class member name; return "" iff error
-string read_member_name (string& value);
+string read_member_name (string& value, bool picky = true);
 
 // Return true if NAME has the form `<FOO>' or `<>'
 bool is_BaseClass_name (const string& name);

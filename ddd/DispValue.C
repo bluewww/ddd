@@ -558,7 +558,10 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	bool more_values = true;
 	while (more_values)
 	{
-	    string member_name = read_member_name(value);
+	    // In a List, we may have `member' names like `(a + b)'.
+	    // Don't be picky about this.
+	    bool picky = (mytype == Struct);
+	    string member_name = read_member_name(value, picky);
 
 	    if (member_name == "")
 	    {
