@@ -75,11 +75,15 @@ GDBAgent *new_gdb(DebuggerType type,
 	if (remote_gdb())
 	{
 	    gdb_init_file = "${TMPDIR=/tmp}/ddd" + itostring(getpid());
-	    Agent cat(sh_command("cat > " + gdb_init_file));
-	    cat.start();
-
-	    FILE *fp = cat.outputfp();
-	    fputs(initial_cmds, fp);
+	    string cmd = sh_command("cat > " + gdb_init_file);
+	    FILE *fp = popen(cmd, "w");
+	    if (fp == 0)
+		perror(gdb_init_file);
+	    else
+	    {
+		fputs(initial_cmds, fp);
+		pclose(fp);
+	    }
 	}
 	else
 	{
@@ -114,9 +118,8 @@ GDBAgent *new_gdb(DebuggerType type,
     case XDB:
 	gdb_call += " -L ";
 	if (gdb_init_file != "")
-	{
-	    // No way to do that in XDB.  FIXME.
-	}	
+	    gdb_call += " -p " + gdb_init_file;
+	break;
     }
 
     for (int i = 1; i < argc; i++) {
@@ -136,11 +139,9 @@ void remove_init_file()
     {
 	if (remote_gdb())
 	{
-	    string rm_init_file = sh_command(
+	    string cmd = sh_command(
 		"rm -f " + gdb_init_file + " >/dev/null </dev/null 2>&1 &");
-	    Agent agent(rm_init_file);
-	    agent.start();
-	    agent.wait();
+	    system(cmd);
 	}
 	else
 	{

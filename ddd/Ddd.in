@@ -406,9 +406,18 @@ set prompt (gdb) \n
 Ddd*dbxInitCommands:
 
 
-! The XDB initialization commands.  Nothing special yet.
+! The XDB initialization commands.  We define a few useful macros
+! such that we do not need to redefine our buttons; `tm' activates them.
 ! Use a personal `~/.xdbrc' file instead to customize XDB.
-Ddd*xdbInitCommands:
+Ddd*xdbInitCommands:	\
+sm\n\
+def run r\n\
+def cont c\n\
+def next S\n\
+def step s\n\
+def quit q\n\
+def finish { bu \1t ; c ; L }\n\
+tm\n
 
 
 ! The VSL library for displaying graph nodes.  `builtin' means the VSL
