@@ -3161,7 +3161,7 @@ Ddd*preferences*buttons*helpers.labelString:	Helpers
 Ddd*preferences*buttons*packing:                XmPACK_COLUMN
 
 Ddd*preferences*general*helpString:	\
-@rm These are the EMPH(General Preferences).\n\
+WIDGET(General Preferences)\n\
 \n\
 ITEM When you move the mouse pointer over a button, DDD can give a hint \
 on its usage.\n\
@@ -3233,7 +3233,7 @@ Warn if Multiple DDD Instances are Running
 
 
 Ddd*preferences*source*helpString:	\
-@rm These are the EMPH(Source Preferences).\n\
+WIDGET(Source Preferences)\n\
 \n\
 ITEM DDD can show the current position and breakpoints\n\
     SUBITEM LBL(as glyphs), using small images in the text,\n\
@@ -3309,7 +3309,7 @@ Machine Code Indentation
 
 
 Ddd*preferences*data*helpString:	\
-@rm These are the EMPH(Data Preferences).\n\
+WIDGET(Data Preferences)\n\
 \n\
 ITEM If LBL(Detect aliases) is set, DDD detects displays with the same\n\
     physical address and suppresses all aliases except the one that was\n\
@@ -3368,7 +3368,9 @@ Ddd*preferences*gridSize.showValue:		on
 Ddd*preferences*gridSize.titleString:		Grid Size
 
 Ddd*preferences*startup*helpString:   \
-@rm These are the EMPH(Startup Preferences), effective only after a restart.\n\
+WIDGET(Startup Preferences)\n\
+\n\
+These preferences are effective only after a restart.\n\
 \n\
 ITEM LBL(Window Layout) sets the window layout.\n\
     SUBITEM LBL(Stacked Windows) means to use one top-level window\n\
@@ -3450,7 +3452,7 @@ Ddd*preferences*startupTips.labelString:	Tip of the Day
 
 
 Ddd*preferences*fonts*helpString: \
-@rm These are the EMPH([DDD] fonts).\n\
+WIDGET([DDD] fonts)\n\
 \n\
 ITEM LBL(Default Font) is the font used for DDD labels and buttons.\n\
 ITEM LBL(Variable Width) is the font used for messages (such as this one).\n\
@@ -3479,7 +3481,9 @@ Ddd*preferences*fonts*browse.labelString:	 Browse...
 
 
 Ddd*preferences*helpers*helpString: \
-@rm These are the EMPH([DDD] Helpers), external applications used by DDD.\n\
+WIDGET([DDD] Helpers)\n\
+\n\
+Helpers are external applications used by DDD.\n\
 \n\
 ITEM LBL(Edit Sources) invokes an X editor for the current source file.\n\
     SAMP(@ FILE@ ) is replaced by the current file name.\n\
@@ -3564,7 +3568,7 @@ Ddd*settings*scroll*helpString:
 
 ! The panel itself has a help button, too.
 Ddd*settings*helpString: \
-@rm These are the EMPH(@GDB@ Settings).\n\
+WIDGET(@GDB@ Settings)\n\
 \n\
 All settings (except source and object paths) can be saved\n\
 using LBL(Edit, Save Options).\n\
@@ -5315,7 +5319,9 @@ Ddd*exec_files_popup.title:		   DDD: Open Program
 Ddd*exec_files.okLabelString:	   Open
 Ddd*exec_files.selectionLabelString: Program
 Ddd*exec_files*helpString:	   \
-@rm These are executable files in the current directory.\n\
+WIDGET(Open Program)\n\
+\n\
+The dialog shows executable files in the current directory.\n\
 Enter the name of the program to be debugged in the argument field.\n\
 \n\
 The program is read for its symbols, for getting the contents\
@@ -5333,7 +5339,9 @@ Ddd*core_files_popup.title:		   DDD: Open Core Dump
 Ddd*core_files.okLabelString:	   Open
 Ddd*core_files.selectionLabelString: Core Dump
 Ddd*core_files*helpString:	   \
-@rm These are core dumps in the current directory.\n\
+WIDGET(Open Core Dump)\n\
+\n\
+The dialog shows core dumps in the current directory.\n\
 Enter the name of a core dump in the argument field.\n\
 \n\
 The core dump is used for examining memory and registers.\n\
@@ -5349,7 +5357,9 @@ Ddd*source_files_popup.title:		   DDD: Open Source
 Ddd*source_files.okLabelString:	   Open
 Ddd*source_files.selectionLabelString: Source File
 Ddd*source_files*helpString:    \
-@rm These are source files in the current directory.\n\
+WIDGET(Open Source)\n\
+\n\
+The dialog shows source files in the current directory.\n\
 Enter the name of a source file in the argument field.\n\
 \n\
 The source file is shown in the source window and may be used\n\
@@ -5369,7 +5379,9 @@ Ddd*processes.okLabelString:	Attach
 Ddd*processes.applyLabelString:	Update
 
 Ddd*processes*helpString:	\
-@rm These are the currently running processes.\n\
+WIDGET(Attach to Process)\n\
+\n\
+The dialog shows the currently running processes.\n\
 Select a running process of the program to be debugged.\n\
 \n\
 An attached process is stopped by DDD. You can examine and modify an\n\
@@ -5398,7 +5410,9 @@ Ddd*classes*selectionPolicy:		XmSINGLE_SELECT
 Ddd*classes*okLabelString:	 	Open
 Ddd*classes*applyLabelString:	 	Update
 Ddd*classes*helpString:	\
-@rm These are the currently accessible Java classes.\n\
+WIDGET(Open Class)\n\
+\n\
+The dialog shows the currently accessible Java classes.\n\
 Please select a class to be debugged.\n\
 \n\
 These classes all have corresponding CODE(.java) sources in the class path.\n\
@@ -5418,7 +5432,9 @@ Ddd*sources*okLabelString:	 	Open
 Ddd*sources*lookup.labelString:		Lookup
 Ddd*sources*applyLabelString:	 	Filter
 Ddd*sources*helpString:	\
-@rm These are the currently accessible source files of your program.\n\
+WIDGET(Open Source)\n\
+\n\
+The dialog shows the currently accessible source files of your program.\n\
 Please select a source to be opened.\n\
 \n\
 Source files from shared libraries are only shown after the library\n\
@@ -5440,7 +5456,9 @@ Ddd*sessions_to_open*selectionPolicy:		XmSINGLE_SELECT
 Ddd*sessions_to_open*okLabelString:	 	Open
 Ddd*sessions_to_open*applyLabelString:	 	Delete
 Ddd*sessions_to_open*helpString:	\
-@rm These are your DDD sessions.\n\
+WIDGET(Open Session)\n\
+\n\
+The dialog shows your DDD sessions.\n\
 Enter the name of a DDD session in the argument field.\n\
 \n\
 A DDD session records the state of a debugging session,\n\
@@ -5464,7 +5482,9 @@ Ddd*sessions_to_save*ptrace.labelString:	The ptrace() call
 Ddd*sessions_to_save*gcore.labelString:		The `gcore' Command
 
 Ddd*sessions_to_save*helpString:	\
-@rm These are your DDD sessions.\n\
+WIDGET(Save Session)\n\
+\n\
+The dialog shows your DDD sessions.\n\
 Enter the name of a DDD session in the argument field.\n\
 \n\
 A DDD session records the state of a debugging session,\n\
