@@ -1730,6 +1730,7 @@ int main(int argc, char *argv[])
     for (i = 0; saved_argv()[i] != 0; i++)
 	dddlog << " " << cook(saved_argv()[i]);
     dddlog << '\n';
+    dddlog.flush();
 
     // Warn for incompatible `Ddd' and `~/.ddd/init' files
     setup_version_warnings();
