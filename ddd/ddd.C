@@ -2761,7 +2761,8 @@ void gdb_ready_for_questionHP (void*, void*, void* call_data)
     set_sensitive(registers_w, gdb_ready && gdb->type() == GDB);
     set_sensitive(threads_w,   gdb_ready && gdb->type() == GDB);
     set_sensitive(infos_w,     gdb_ready && gdb->type() == GDB);
-    set_sensitive(settings_w,  gdb_ready);
+    set_sensitive(settings_w,
+		  gdb_ready && (gdb->type() == GDB || gdb->type() == DBX));
 
     blink(!gdb_ready);
 }
