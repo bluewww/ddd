@@ -364,7 +364,7 @@ public:
 
     // Remove event handler
     void removeHandler(unsigned type, AgentHandlerProc proc,
-			       void *client_data = 0)
+		       void *client_data = 0)
     {
 	SignalBlocker sb(SIGCHLD);
 
@@ -400,15 +400,18 @@ public:
     void hasNewStatus(int status);
 
     // Resources
-    string path()		{ return _path;    }
-    pid_t pid()			{ return _pid;     }
-    int& terminateTimeOut()	{ return _terminateTimeOut; }
-    int& hangupTimeOut()	{ return _hangupTimeOut; }
-    int& killTimeOut()		{ return _killTimeOut; }
-    bool beingTerminated()	{ return _beingTerminated; }
-    int lastStatus()		{ return _lastStatus; }
+    string path() const		 { return _path;    }
+    pid_t pid()	const		 { return _pid;     }
+    int& terminateTimeOut()	 { return _terminateTimeOut; }
+    int& hangupTimeOut()	 { return _hangupTimeOut; }
+    int& killTimeOut()		 { return _killTimeOut; }
+    int terminateTimeOut() const { return _terminateTimeOut; }
+    int hangupTimeOut()	const    { return _hangupTimeOut; }
+    int killTimeOut()	const	 { return _killTimeOut; }
+    bool beingTerminated() const { return _beingTerminated; }
+    int lastStatus() const	 { return _lastStatus; }
 
-    string name()
+    string name() const
     {
 	ostrstream os;
 	os << path();
@@ -427,7 +430,7 @@ public:
     }
 
     // Debugging
-    virtual bool OK()
+    virtual bool OK() const
     {
 	return true;
     }
