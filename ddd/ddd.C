@@ -298,6 +298,8 @@ void gdbCloseSourceWindowCB  (Widget, XtPointer, XtPointer);
 void gdbCloseDataWindowCB    (Widget, XtPointer, XtPointer);
 void gdbCloseExecWindowCB    (Widget, XtPointer, XtPointer);
 
+void gdbRunWithArgsCB        (Widget, XtPointer, XtPointer);
+
 void DDDExitCB               (Widget, XtPointer, XtPointer);
 void DDDCloseCB              (Widget, XtPointer, XtPointer);
 void DDDSaveOptionsCB        (Widget, XtPointer, XtPointer);
@@ -1088,12 +1090,15 @@ static MMDesc file_menu[] =
 static MMDesc program_menu[] =
 {
     { "run",         MMPush, { gdbCommandCB, "run" }},
+    { "run_with_args", MMPush, { gdbRunWithArgsCB }},
     MMSep,
     { "step",        MMPush, { gdbCommandCB, "step" }},
     { "stepi",       MMPush, { gdbCommandCB, "stepi" }},
     { "next",        MMPush, { gdbCommandCB, "next" }},
     { "nexti",       MMPush, { gdbCommandCB, "nexti" }},
+    MMSep,
     { "cont",        MMPush, { gdbCommandCB, "cont" }},
+    { "finish",      MMPush, { gdbCommandCB, "finish" }},
     MMSep,
     { "kill",        MMPush, { gdbCommandCB, "kill" }},
     { "interrupt",   MMPush, { gdbCommandCB, "\003" }},
@@ -2235,7 +2240,23 @@ int main(int argc, char *argv[])
 
     // Setup extra version info
     helpOnVersionExtraText = 
-	MString(string(config_info).before("\n\n"), "rm");
+	MString(string(config_info).before("\n\n"), "rm") +
+	MString("\n\n"
+DDD_NAME " is free software and you are welcome to distribute copies of it\n"
+"under certain conditions; type `show copying' to see the conditions.\n"
+"There is absolutely no warranty for " DDD_NAME "; "
+"type `show warranty' for details.\n"
+"\n"
+"If you appreciate this software, please send a picture postcard to:\n"
+"\n"
+"    Technische Universit\344t Braunschweig\n"
+"    Abteilung Softwaretechnologie\n"
+"    Gau\337stra\337e 17\n"
+"    D-38092 Braunschweig\n"
+"    GERMANY\n"
+"\n"
+"Send bug reports to <" ddd_NAME "-bugs@ips.cs.tu-bs.de>\n"
+"Send comments and suggestions to <" ddd_NAME "@ips.cs.tu-bs.de>", "rm");
 
     // Realize all top-level widgets
     XtRealizeWidget(command_shell);
@@ -3726,7 +3747,7 @@ Widget make_buttons(Widget parent, const string& name,
     if (button_list == "")
 	return 0;
 
-    Widget buttons = XmCreateWorkArea(parent, name, 0, 0);
+    Widget buttons = verify(XmCreateWorkArea(parent, name, 0, 0));
     if (buttons == 0)
     {
 	// Not available in LessTif 0.1
@@ -4985,13 +5006,7 @@ void gdbEditSourceCB  (Widget, XtPointer, XtPointer)
 
 void gdbReloadSourceCB  (Widget, XtPointer, XtPointer)
 {
-    string pos = source_view->line_of_cursor(false);
-    string file = pos.before(':');
-    string line = pos.after(':');
-
-    StatusDelay delay("Reloading " + quote(file));
-
-    source_view->read_file(file, atoi(line), true);
+    source_view->reload();
 }
 
 void gdbGoBackCB  (Widget, XtPointer, XtPointer)
@@ -5249,7 +5264,90 @@ void gdbUpdateViewCB(Widget, XtPointer, XtPointer)
     set_sensitive(source_view_menu[ExecWindow].widget,  b);
     set_sensitive(data_view_menu[ExecWindow].widget,    b);
 }
-    
+
+void gdbRunWithArgsDCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    string args = "";
+
+    Widget command_w = Widget(client_data);
+    if (command_w == 0)
+    {
+	// Entered via command widget
+	XmCommandCallbackStruct *cbs = (XmCommandCallbackStruct *)call_data;
+
+	char *_args = 0;
+
+	if (XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET,
+			    &_args) && _args != 0)
+	{
+	    args = _args;
+	    XtFree(_args);
+	}
+    }
+    else
+    {
+	// Entered via OK/Run button
+	Widget text = XmCommandGetChild(command_w, XmDIALOG_COMMAND_TEXT);
+	String _args = XmTextGetString(text);
+	args = _args;
+	XtFree(_args);
+    }
+
+    if (args != "")
+	args = " " + args;
+
+    if (gdb->type() == GDB)
+    {
+	gdb_command("set args" + args, w);
+	gdb_command("run");
+    }
+    else if (gdb->type() == DBX)
+    {
+	gdb_command("rerun" + args);
+    }
+}
+
+void gdbRunWithArgsCB(Widget w, XtPointer, XtPointer)
+{
+    static Widget run_with_args_dialog  = 0;
+    static Widget run_with_args_command = 0;
+
+    if (run_with_args_dialog == 0)
+    {
+	run_with_args_dialog = 
+	    verify(XmCreatePromptDialog(w, "run_with_args_dialog", NULL, 0));
+
+	run_with_args_command =
+	    verify(XmCreateCommand(run_with_args_dialog, 
+				   "run_with_args_command", NULL, 0));
+	XtManageChild(run_with_args_command);
+
+	Delay::register_shell(run_with_args_dialog);
+	XtAddCallback(run_with_args_dialog, XmNokCallback, 
+		      gdbRunWithArgsDCB, XtPointer(run_with_args_command));
+	XtAddCallback(run_with_args_dialog, XmNhelpCallback, 
+		      ImmediateHelpCB, 0);
+	XtAddCallback(run_with_args_command, XmNcommandEnteredCallback,
+		      gdbRunWithArgsDCB, XtPointer(0));
+
+	XtUnmanageChild(XmSelectionBoxGetChild(run_with_args_dialog,
+					       XmDIALOG_TEXT));
+	XtUnmanageChild(XmSelectionBoxGetChild(run_with_args_dialog,
+					       XmDIALOG_SELECTION_LABEL));
+    }
+
+    string base;
+    string args;
+    get_args("run", base, args);
+
+    if (args != "")
+    {
+	MString margs(args);
+	XmCommandSetValue(run_with_args_command, margs.xmstring());
+    }
+
+    XtManageChild(run_with_args_dialog);
+}
 
 //-----------------------------------------------------------------------------
 // Handlers
