@@ -1373,7 +1373,8 @@ const int STRUCTURE_MASK = StructureNotifyMask | VisibilityChangeMask;
 static Atom WM_DELETE_WINDOW;
 
 // Logging stuff
-ostream *_dddlog = &clog;
+static ostrstream devnull;
+ostream *_dddlog = &devnull;
 
 
 //-----------------------------------------------------------------------------
@@ -1728,7 +1729,11 @@ int main(int argc, char *argv[])
 
     // Create a `~/.ddd/log' file for this session; 
     // log invocation and configuration
-    if (!app_data.trace)
+    if (app_data.trace)
+    {
+	_dddlog = &clog;
+    }
+    else
     {
 	static ofstream log(session_log_file());
 	_dddlog = &log;
