@@ -104,9 +104,9 @@ GDBAgent *new_gdb(DebuggerType type,
 	gdb_call += " " + sh_quote(arg);
     }
 
-    if (type == PERL && (argc <= 1 || argv[argc - 1][0] == '-'))
+    if (type == PERL && argc <= 1)
     {
-	// Not invoked with a script.  Add a dummy `eval' arg.
+	// Invoked without args.  Add a dummy `eval' arg.
 	gdb_call += " -e 42";
     }
 
