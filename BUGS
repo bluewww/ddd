@@ -63,9 +63,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 016. [fixed]
 
-017. On Solaris, exiting DDD while the debugger is still running
-     sometimes results in a core dump.
-     [May be fixed in DDD 1.0a and later.]
+017. [fixed]
 
 018. [not a DDD bug, forwarded to manual page]
 
@@ -77,23 +75,9 @@ Volunteers for fixing these and other bugs are welcome!
      an error message and no new display.  However, the expression is
      entered as an ordinary display.
 
-022. Doug.Royer@eng.sun.com (Doug Royer [KD6HBW]) states:
-     > On Solaris 2.5, when I run it, I get:
-     > Warning: Actions not found: select-start, extend-end, doTheRightThing
-     > Warning: Actions not found: select-start, extend-end, doTheRightThing
-     > Warning: Actions not found: select-start, extend-end, doTheRightThing
-     > (gdb)  write failed: Resource temporarily unavailable
-     > ddd hangs.
-     [We cannot determine what causes this error.  On Solaris 2.4, DDD
-      runs fine.]
-     [May be fixed in DDD 1.0a and later.]
+022. [fixed]
 
-023. Doug.Royer@eng.sun.com (Doug Royer [KD6HBW]) states:
-     > On Solaris 2.5, when I try to 'file->open file...', I get not errors,
-     > and nothing happens.
-     [May be related with 022, above; `Open file' tries to get the
-      current directory from GDB and this won't work if GDB hangs.]
-     [May be fixed in DDD 1.0a and later.]
+023. [fixed]
 
 024. [fixed]
 
@@ -112,11 +96,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 030. [fixed]
 
-031. On Solaris 2.3, DDD dumps core when dereferencing `date_ptrs' in
-     the `cxxtest' program.  Reported by
-     Herve.Poirier@grenoble.rxrc.xerox.com (Herve Poirier) and
-     dana@bellcore.com (Dana A Chee).  [Should be fixed in DDD 1.0a
-     and later.]
+031. [fixed]
 
 032. [fixed]
 
@@ -124,10 +104,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 034. [fixed]
 
-035. On LINUX, ddd fails when opening a file selection box.  Reported
-     by mende@ips.cs.tu-bs.de (Andreas Mende).  [Be sure not to use
-     librx/librx.a when it is already part of the OS standard library,
-     as on LINUX].
+035. [fixed]
 
 036. [fixed]
 
