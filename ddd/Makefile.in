@@ -400,7 +400,7 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../include $(X_INCLUDE)
 .Y:
 	$(YACC.Y) $<
 	$(YACCTOCPLUS)
-	$(LINK.C) -o $@ y.tab.C $(LDLIBS)
+	$(LINK.cc) -o $@ y.tab.C $(LDLIBS)
 	$(RM) y.tab.C y.tab.H
 .Y.C:
 	$(YACC) $(YFLAGS) $<
@@ -415,7 +415,7 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../include $(X_INCLUDE)
 .Y.o:
 	$(YACC) $(YFLAGS) $<
 	$(YACCTOCPLUS)
-	$(COMPILE.C) y.tab.C
+	$(COMPILE.cc) y.tab.C
 	$(RM) y.tab.C y.tab.H
 .Y.YY:
 	$(YACC) -v $(YFLAGS) $<
@@ -424,7 +424,7 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../include $(X_INCLUDE)
 .L:
 	$(LEX.L) $<
 	$(LEXTOCPLUS)
-	$(LINK.C) -o $@ lex.yy.C $(LDLIBS)
+	$(LINK.cc) -o $@ lex.yy.C $(LDLIBS)
 	$(RM) lex.yy.C
 .L.C:
 	$(LEX.L) $<
@@ -433,7 +433,7 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../include $(X_INCLUDE)
 .L.o:
 	$(LEX.L) $<
 	$(LEXTOCPLUS)
-	$(COMPILE.C) -o $@ lex.yy.C
+	$(COMPILE.cc) -o $@ lex.yy.C
 	$(RM) lex.yy.C
 
 ## Script rules
