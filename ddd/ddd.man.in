@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "26 Aug 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "19 Sep 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo.ps 10cm
@@ -1921,8 +1921,6 @@ pointer such that you can continue to use your display.
 .PP
 If you want to save the command history for the next \s-2@DDD@\s+2
 invocation, set the `\fBSave command history on exit\fR' option.
-Note: This option is always set if your \s-2GDB\s+2 is set up to save
-its command history.
 .PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
@@ -2319,9 +2317,7 @@ be iconified on its own.
 .TP
 .B "saveHistoryOnExit (\fPclass\fB SaveHistoryOnExit)"
 If `\fBtrue\fR' (default), the command history is automatically saved
-when \s-2@DDD@\s+2 exits.  If the inferior debugger saves its
-command history, its history file is used, otherwise,
-`\fB$HOME/.ddd_history\fR' is used.
+when \s-2@DDD@\s+2 exits.
 .TP
 .B "showStartupLogo (\fPclass\fB ShowStartupLogo)"
 If non-empty, show a \s-2@DDD@\s+2 logo upon start-up.  Possible
@@ -3661,11 +3657,27 @@ Run \s-2XDB\s+2 as inferior debugger.
 .\"
 .PD 0
 .TP 20
-.B $HOME/.dddinit
-Individual \s-2@DDD@\s+2 resource file.  \s-2@DDD@\s+2 options are saved here.
+.B $HOME/.ddd/
+\s-2@DDD@\s+2 resource directory.
 .TP
-.B $HOME/.ddd_history
+.B $HOME/.ddd/init
+Individual \s-2@DDD@\s+2 resource file.  \s-2@DDD@\s+2 options are
+saved here.
+.TP
+.B $HOME/.ddd/history
 Default \s-2@DDD@\s+2 command history file.
+.TP
+.B $HOME/.ddd/sessions/
+\s-2@DDD@\s+2 session directory.  One subdirectory per session.
+.TP
+.B $HOME/.ddd/sessions/\fIsession\fR/init
+\s-2@DDD@\s+2 resource file for session \fIsession\fR.
+.TP
+.B $HOME/.ddd/sessions/\fIsession\fR/history
+\s-2@DDD@\s+2 command history file for session \fIsession\fR.
+.TP
+.B $HOME/.ddd/sessions/\fIsession\fR/core
+\s-2@DDD@\s+2 core file for session \fIsession\fR.
 .TP
 .B $HOME/.gdbinit
 \s-2GDB\s+2 initialization file.
