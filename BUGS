@@ -335,9 +335,6 @@ Volunteers for fixing these and other bugs are welcome!
 155. DBX `dump` output is not understood if local arrays are shown.
      (DBX prints these as `ARRAY')
 
-156. Tabs are off by one (see `graph display `info signals`' for an
-     example).
-
 157. ilcooper@tasc.com (Ira Cooper) says:
      The status message "The debugger is busy" keeps popping up, is
      there a way to not have it tell me that?  I consider this a bug
@@ -356,7 +353,5 @@ Volunteers for fixing these and other bugs are welcome!
      the display.
      [I could not reproduce this.  Jonathan's DDD is compiled with AIX
      xlC.  Is this the reason?  -AZ]
-
-163. The `-iconic' option is not recognized for the new DDD main window.
 
 164. (Insert your bug here)
