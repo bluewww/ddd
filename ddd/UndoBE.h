@@ -36,23 +36,22 @@
 #include "StringSA.h"
 #include "VarArray.h"
 #include "bool.h"
-#include "question.h"
 
-struct UndoBufferEntry {
-    StringStringAssoc status;	// Status fields
+class UndoBufferEntry: public StringStringAssoc {
+public:
     bool exec_pos;		// True if execution position
 
     UndoBufferEntry()
-	: status(), exec_pos(false)
+	: StringStringAssoc(), exec_pos(false)
     {}
 
     UndoBufferEntry(const UndoBufferEntry& entry)
-	: status(entry.status), exec_pos(entry.exec_pos)
+	: StringStringAssoc(entry), exec_pos(entry.exec_pos)
     {}
 
     UndoBufferEntry& operator = (const UndoBufferEntry& entry)
     {
-	status   = entry.status;
+	StringStringAssoc::operator = (entry);
 	exec_pos = entry.exec_pos;
 
 	return *this;

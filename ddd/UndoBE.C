@@ -45,8 +45,8 @@ bool UndoBufferEntry::operator == (const UndoBufferEntry& entry) const
     if (exec_pos != entry.exec_pos)
 	return false;		// Differing EXEC_POS values
 
-    StringStringAssocIter iter1(status);
-    StringStringAssocIter iter2(entry.status);
+    StringStringAssocIter iter1(*this);
+    StringStringAssocIter iter2(entry);
 
     // This assumes both Assocs have the same ordering.
     while (iter1.ok() && iter2.ok())
