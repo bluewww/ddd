@@ -328,7 +328,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S108>{D}{W}{V}{W}entries\,	        return &rxvtable_entries;
 <S109>[ \n\t\r\v\f]+		 	return &rxwhite;
 <S110>{C}Standard{W}input:{W}END{C} 	return &rxxdb;
-<S111>[^: \t]*:[^:]*:{w}{P}[: ]{C} 	return &rxxdbpos;
+<S111>[^ \t]*:.*:{w}{P}[: ]{C} 	        return &rxxdbpos;
 <S112>[<]repeats{W}{P}{W}times[>]       return &rxrepeats;
 <*>.|\n				        return 0;  // Anything else
 %%
