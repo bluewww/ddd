@@ -55,7 +55,7 @@ fi
 dnl
 dnl
 dnl
-dnl Not much to do here.  Just configure the sub-directories...
+dnl Not much to do here.  Configure the sub-directories.
 dnl
 # Avoid calling config.guess again.  In libiberty, this destroys dummy.c.
 case "$ac_configure_args" in
@@ -63,8 +63,44 @@ case "$ac_configure_args" in
 *) ac_configure_args="$ac_configure_args --host=$host";;
 esac
 dnl
-AC_CONFIG_SUBDIRS(libiberty librx termcap ddd)
+dnl If we already have -liberty, -ltermcap, etc., 
+dnl there is no need to build them.
+ddd_have_termcap=false
+ddd_have_libiberty=false
+ddd_have_rx=false
 dnl
-dnl ... and create the top-level Makefile.
+dnl By default, DDD needs no RX library.
+ddd_have_rx=true
+dnl
+dnl Check for -liberty.
+AC_CHECK_LIB(iberty, xstrerror, ddd_have_libiberty=true)
+dnl
+dnl Look for the tgetent() function - either in termcap, libcurses,
+dnl or use the GNU termcap library as shipped with DDD.
+dnl
+AC_CHECK_LIB(curses, tgetent, ddd_have_termcap=true)
+dnl 
+dnl If we have a special `termcap' library, use it instead.
+AC_CHECK_LIB(termcap, tgetent, ddd_have_termcap=true)
+dnl
+dnl On Linux ELF systems, `-lncurses' is preferred to `-ltermcap'.
+dnl Reported by jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
+AC_CHECK_LIB(ncurses, tgetent, ddd_have_termcap=true)
+dnl
+dnl On FreeBSD systems, `-lmytinfo' is preferred to `-lncurses'.
+dnl Reported by Vincenzo Capuano <vcapuano@esoc.esa.de>
+AC_CHECK_LIB(mytinfo, tgetent, ddd_have_termcap=true)
+dnl
+dnl
+AC_MSG_CHECKING([for packages to be configured and built])
+ddd_subdirs="ddd"
+test "$ddd_have_termcap"   != true && ddd_subdirs="termcap $ddd_subdirs"
+test "$ddd_have_libiberty" != true && ddd_subdirs="libiberty $ddd_subdirs"
+test "$ddd_have_rx"        != true && ddd_subdirs="librx $ddd_subdirs"
+AC_MSG_RESULT($ddd_subdirs)
+AC_CONFIG_SUBDIRS($ddd_subdirs)
+dnl
+dnl
+dnl Create the top-level Makefile.
 dnl
 AC_OUTPUT(Makefile)
