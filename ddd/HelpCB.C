@@ -1102,6 +1102,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	arg = 0;
 	XtSetArg(args[arg], XmNlabelString, tip.xmstring());        arg++;
 	XtSetArg(args[arg], XmNrecomputeSize, true);                arg++;
+	XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING);   arg++;
 	tip_label = XmCreateLabel(tip_shell, "tipLabel", args, arg);
 	XtManageChild(tip_label);
 
