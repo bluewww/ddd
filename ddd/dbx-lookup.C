@@ -60,6 +60,9 @@ string dbx_lookup(const string& func_name)
     switch (gdb->type())
     {
     case GDB:
+	reply = gdb_question("info line " + func_name, 0, true);
+	break;
+
     case DBX:
 	reply = gdb_question("list " + func_name, 0, true);
 	break;
@@ -80,12 +83,15 @@ string dbx_lookup(const string& func_name)
     switch (gdb->type())
     {
     case GDB:
+	file = reply.from('\"');
+	file = file.before('\"');
+	line = reply.after("Line ");
+	break;
+
     case DBX:
-	{
-	    line = itostring(line_of_listing(reply));
-	    file = gdb_question("file");
-	    strip_final_blanks(file);
-	}
+	line = itostring(line_of_listing(reply));
+	file = gdb_question("file");
+	strip_final_blanks(file);
 	break;
 
     case XDB:
