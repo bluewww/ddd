@@ -24,7 +24,7 @@
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 char DispValue_rcsid[] =
     "$Id$";
@@ -104,9 +104,12 @@ DispValue::DispValue (DispValue* p,
 		      const string& f_n, 
 		      const string& p_n)
     : myparent(p), mydepth (d), myexpanded(true), 
-      myfull_name(f_n), print_name(p_n)
+      myfull_name(f_n), print_name(p_n), changed(false)
 {
     init(value);
+
+    // A new display is not changed, but initialized
+    changed = false;
 }
 
 // Initialization
@@ -308,6 +311,8 @@ void DispValue::init(string& value)
 	    break;
 	}
     }
+
+    changed = true;
 }
 
 
@@ -654,11 +659,16 @@ bool DispValue::new_BaseClass_name (string name)
 }
 
 
-// Update values from VALUE.  Make WAS_CHANGED true iff value changed;
-// Make WAS_INITIALIZED true iff type changed.
+// Update values from VALUE.  Set WAS_CHANGED iff value changed;
+// Set WAS_INITIALIZED iff type changed.
 void DispValue::update (string& value, 
 			bool& was_changed, bool& was_initialized)
 {
+    if (changed)
+    {
+	was_changed = true;	// Changed from `changed' to `unchanged'
+	changed     = false;
+    }
     string init_value = value;
 
     int i;
@@ -702,14 +712,14 @@ void DispValue::update (string& value,
 	new_value = read_simple_value (value);
 	if (v.simple->value != new_value) {
 	    v.simple->value = new_value;
-	    was_changed = true;
+	    changed = was_changed = true;
 	}
 	break;
 
     case Text:
 	if (v.simple->value != value) {
 	    v.simple->value = value;
-	    was_changed = true;
+	    changed = was_changed = true;
 	}
 	break;
 
@@ -717,7 +727,7 @@ void DispValue::update (string& value,
 	new_value = read_pointer_value (value);
 	if (v.pointer->value != new_value) {
 	    v.pointer->value = new_value;
-	    was_changed = true;
+	    changed = was_changed = true;
 	}
 	break;
 

@@ -336,6 +336,12 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	break;
     }
 
+    // Highlight if value changed
+    if (dv->is_changed())
+    {
+	vbox = eval("changed_value", vbox->link());
+    }
+
     // Add member name
     if (dv->depth() > 0)
     {

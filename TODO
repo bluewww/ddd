@@ -299,9 +299,6 @@ Volunteers for these and other projects are welcome!
      - recognize URLs in source window; follow on click (call external
        browser)
 
-164* It would be very nice if the data displayed in the Display window
-     was color highlighted whenever it changes.
-
 166. When the inferior debugger crashes, offer to restart it.  This
      may be done by replaying all previously issued commands (except
      the last one, of course).  Commands with external side-effects

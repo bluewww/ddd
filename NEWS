@@ -46,6 +46,8 @@ DDD 2.2 [in development]
         executables.
     - New `What Next' help.  Gives a hint on what to do next,
       depending on current state.  Useful for beginners.
+    - Data displayed in the data window is now highlighted whenever it
+      changes.
     - User-defined DDD commands.  DDD now provides a simple facility
       that allows the inferior debugger to execute DDD commands.  For
       details, see `User-Defined Commands' in the DDD manual.

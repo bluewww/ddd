@@ -1,7 +1,7 @@
 // $Id$
 // VSL functions for DDD graph display
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -24,7 +24,7 @@
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 // Includes
 #include <std.vsl>
@@ -52,6 +52,7 @@ struct_color(box)    = color(box, "black");
 list_color(box)      = color(box, "black");
 array_color(box)     = color(box, "blue4");
 reference_color(box) = color(box, "blue4");
+changed_color(box)   = color(box, "black", "#ffffcc");
 
 // The title
 title (disp_nr, name) -> 
@@ -65,7 +66,7 @@ disabled () ->
 
 // Ordinary values
 simple_value (value) -> 
-  simple_color(vcenter(rm(value) & hfill()));
+  simple_color(vcenter(value & hfill()));
 
 // Collapsed ordinary values
 collapsed_simple_value () -> 
@@ -84,7 +85,7 @@ collapsed_text_value () ->
 
 // Ordinary pointers
 pointer_value (value) -> 
-  pointer_color(vcenter(rm(value) & hfill()));
+  pointer_color(vcenter(value & hfill()));
 
 // Collapsed pointers
 collapsed_pointer_value () -> 
@@ -129,7 +130,7 @@ struct_member_name (name) ->
 // Struct member
 struct_member (name, value, name_width) -> 
   vcenter(rm(name) | hspace(name_width)) 
-  & vcenter(rm(" = ")) & rm(value) & hfill();
+  & vcenter(rm(" = ")) & rm(value);
 
 // List value
 list_value (...) -> 
@@ -160,6 +161,10 @@ reference_value (ref, value) ->
 collapsed_reference_value () -> 
   reference_color(vcenter(rm("...") & hfill()));
 
+// Changed value
+changed_value (value) -> 
+  changed_color(it(value));
+
 // The entire box
 display_box (title, value) -> 
-  shadow(display_color(frame(title | hrule() | hwhite () | value)));
+  shadow(display_color(frame(title | hrule() | hwhite () | rm(value))));
