@@ -42,6 +42,7 @@ char complete_rcsid[] =
 #include "editing.h"
 #include "post.h"
 #include "regexps.h"
+#include "string-fun.h"
 
 #include <ctype.h>
 
@@ -95,14 +96,15 @@ struct CompletionInfo {
     Widget widget;		// Widget
     XEvent *event;		// Event 
     string input;		// Current input
+    string cmd;			// Current command
     string prefix;		// Current prefix
 
     CompletionInfo()
-	: widget(0), event(0), input(), prefix()
+	: widget(0), event(0), input(), cmd(), prefix()
     {}
 private:
     CompletionInfo(const CompletionInfo&)
-	: widget(0), event(0), input(), prefix()
+	: widget(0), event(0), input(), cmd(), prefix()
     {
 	assert(0);
     }
@@ -203,6 +205,7 @@ static void complete(Widget w, XEvent *e, string input, string cmd)
     info.widget = w;
     info.event  = e;
     info.input  = input;
+    info.cmd    = cmd;
     info.prefix = "";
 
     // Compare with last completions
@@ -296,8 +299,7 @@ static void complete_reply(const string& complete_answer, void *qu_data)
     bool from_gdb_w = (info.widget == gdb_w);
 
     string input = info.input;
-    if (input != "" && isspace(input[0]))
-	input = input.after(rxwhite);
+    strip_space(input);
 
     assert(completions == 0);
 
@@ -324,9 +326,9 @@ static void complete_reply(const string& complete_answer, void *qu_data)
     }
     else
     {
-	if (!from_gdb_w)
+	if (info.cmd != info.input)
 	{
-	    // Strip initial `break' command
+	    // Strip initial base command
 	    for (int i = 0; i < completions_size; i++)
 		completions[i] = completions[i].after(' ');
 	}
@@ -446,6 +448,7 @@ static void _complete_argAct(Widget w,
     string base = gdb->print_command();
     if (*num_args >= 1)
 	base = args[0];
+    strip_space(base);
 
     // Insert single quote if necessary
     String _input = 0;
@@ -476,7 +479,10 @@ static void _complete_argAct(Widget w,
 	}
     }
 
-    complete(w, e, input, base + " " + input);
+    if (base != "")
+	complete(w, e, input, base + " " + input);
+    else
+	complete(w, e, input, input);
 }
 
 void complete_argAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
