@@ -445,7 +445,7 @@ LEX.L = $(LEX) $(LFLAGS)
 X_INCLUDE = @X_CFLAGS@
 
 ## Where to look for include files.
-INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../include -I$(icondir) $(X_INCLUDE)
+INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 
 ## Implicit rules.
 .SUFFIXES: .C .cc .c .mod .p .Y .YY .L .txt .i
