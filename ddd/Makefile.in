@@ -755,13 +755,18 @@ ULTRACLEAN_STUFF = $(REALCLEAN_STUFF) \
 
 
 ## Targets as specified in GNU standards.
-all:	ddd-message $(PROG_STUFF) $(PROGS)
+all:	ddd-message $(PROG_STUFF) $(PROGS) ddd-done
 	@:
 .PHONY: all
 
 .PHONY: ddd-message
 ddd-message:
-	@$(ECHO) "Building $(ddd_canonical)"
+	@$(ECHO) "Building $(ddd_canonical)..."
+
+.PHONY: ddd-done
+ddd-done:
+	@$(ECHO) "Building $(ddd_canonical)... done."
+	@$(ECHO) "You may now type \`$(MAKE) check' for a test."
 
 .PHONY: install
 install: install-prog install-man
