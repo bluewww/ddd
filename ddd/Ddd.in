@@ -4071,7 +4071,7 @@ Ddd*source_find_error_popup.title: @DDD@: Not Found
 Ddd*source_find_error*helpString:	\
 @rm The given argument @bf () @rm can not be found in the source text.\n\
 \n\
-If you wish to search for @bf ()@rm even within words,\n\
+If you wish to search for @bf () @rm even within words,\n\
 consider disabling @bf Find Words Only @rm (via the @bf Options @rm menu).
 
 Ddd*manual_find_error_popup.title: @DDD@: Not Found
