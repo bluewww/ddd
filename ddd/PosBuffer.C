@@ -663,6 +663,9 @@ void PosBuffer::filter_dbx(string& answer)
 	assert(stopped_index >= 0);
 
 	// Stop reached
+	// AIX DBX issues lines like
+	// `[4] stopped in unnamed block $b382 at line 4259 in file
+	//      "/msdev/sms/ms7/riosqa/src/tffi/fi2tofu.c" ($t1)'
 	int in_file_index = answer.index("in file ", stopped_index);
 	int bracket_index = answer.index("[", stopped_index);
 
@@ -673,7 +676,11 @@ void PosBuffer::filter_dbx(string& answer)
 	    file = file.after("in file ");
 	    if (file.contains('\n'))
 		file = file.before('\n');
-	    file = unquote(file);
+	    if (file.contains('"', 0))
+	    {
+		file = file.after('"');
+		file = file.before('"');
+	    }
 	}
 	else if (bracket_index >= 0)
 	{

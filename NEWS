@@ -8,6 +8,7 @@ DDD 3.1.2 fixes more minor bugs in DDD 3.1:
 
 - The splash screen works with C++ compilers other than GCC.
 - Show/Hide works properly with deeply nested substructures.
+- Execution positions as reported by AIX DBX are properly recognized.
 - DDD also uses the CLASSPATH environment variable to lookup Java classes.
 
 There are no new features in DDD 3.1.2, so unless you suffer from one
