@@ -101,8 +101,8 @@ protected:
     regmatch_t *exprs;		// Matched expressions
     size_t nexprs() const;	// Number of expressions
 
-    // Fatal error ERRCODE with regexp COMPILED
-    void fatal(int errcode);
+    // Fatal error ERRCODE with regexp source SRC
+    void fatal(int errcode, const char *src = 0);
 
     // Create a prefix from T and FLAGS
     static char get_prefix(const char *& t, int flags);

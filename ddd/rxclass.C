@@ -38,6 +38,7 @@ char regex_rcsid[] =
 #include "strclass.h"
 #include "assert.h"
 #include "misc.h"
+#include "cook.h"
 
 #include <stdlib.h>
 #include <iostream.h>
@@ -91,7 +92,7 @@ char regex::get_prefix(const char *& t, int flags)
     }
 }
 
-void regex::fatal(int errcode)
+void regex::fatal(int errcode, const char *src)
 {
     if (errcode == 0)
 	return;
@@ -100,7 +101,10 @@ void regex::fatal(int errcode)
     char *buffer = new char[length];
     regerror(errcode, &compiled, buffer, length);
 
-    cerr << "regex: " << buffer << "\n";
+    cerr << "regex: ";
+    if (src)
+	 cerr << quote(src) << ": ";
+    cerr << buffer << "\n";
     delete[] buffer;
 
     abort();
@@ -111,7 +115,7 @@ regex::regex(const char* t, int flags)
     string rx = "^" + string(t);
     int errcode = regcomp(&compiled, rx, flags);
     if (errcode)
-	fatal(errcode);
+	fatal(errcode, rx.chars());
 
     exprs = new regmatch_t[nexprs()];
 
