@@ -26,13 +26,14 @@ Summary of DDD
     can reason about your application by viewing its data, not just by
     viewing it execute lines of source code.
 
-    Other DDD features include: source navigation and lookup; GDB/DBX
-    command-line interface with full editing, history, and completion
-    capabilities; breakpoint, backtrace, and history editors; optional
-    program execution in terminal emulator window; debugging on remote
-    host; on-line manual; interactive help on the OSF/Motif user
-    interface.  DDD has been designed to compete with well-known
-    commercial debuggers.
+    Other DDD features include: debugging of programs written in C,
+    C++, Pascal, or Modula-2; hypertext source navigation and lookup;
+    GDB/DBX command-line interface with full editing, history, and
+    completion capabilities; breakpoint, backtrace, and history
+    editors; optional program execution in terminal emulator window;
+    debugging on remote host; on-line manual; interactive help on the
+    OSF/Motif user interface.  DDD has been designed to compete with
+    well-known commercial debuggers.
 
     DDD has been extensively beta-tested (especially by debugging
     itself) and has been reported to compile and run out-of-the-box

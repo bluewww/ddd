@@ -101,11 +101,12 @@ Basic Installation
 
       8. Type `make install' to install the DDD program and manual page.
 
-      9. Optionally, you can install the DDD application defaults file,
-         `ddd/Ddd', in a place where app-defaults files are commonly
-         found.  However, DDD has runs perfectly without app-defaults
-         file.  See the comment at the beginning of `ddd/Ddd', why you
-         should *not* install an extra app-defaults file.
+      9. Optionally, you can install the DDD application defaults
+         file, `ddd/Ddd', in a place where app-defaults files are
+         commonly found.  However, DDD runs perfectly without
+         app-defaults file.  See the comment at the beginning of
+         `ddd/Ddd', why you should *not* install an extra app-defaults
+         file.
 
      10. You can remove the program binaries, libraries and object files
          from the source directory by typing `make clean'.  To also remove
