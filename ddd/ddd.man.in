@@ -2708,17 +2708,17 @@ This is the default font setting in \s-2@DDD@\s+2:
 .sp
 .br
   \fB@Ddd@*fontList: \\
-  \-*\-helvetica\-bold\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=charset,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-10\-*\-*\-*\-*\-*\-*\-*=small,\\
-  \-*\-lucidatypewriter\-medium\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=tt,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=key,\\
-  \-*\-helvetica\-medium\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=rm,\\
-  \-*\-helvetica\-medium\-o\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=sl,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=bf,\\
-  \-*\-helvetica\-bold\-o\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=bs,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-14\-*\-*\-*\-*\-*\-*\-*=Logo,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=logo,\\
-  \-*\-symbol\-*\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=symbol\fR
+  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=charset,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-*\-80\-*\-*\-*\-*\-*\-*=small,\\
+  \-*\-lucidatypewriter\-medium\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=tt,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=key,\\
+  \-*\-helvetica\-medium\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=rm,\\
+  \-*\-helvetica\-medium\-o\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=sl,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=bf,\\
+  \-*\-helvetica\-bold\-o\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=bs,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-*\-120\-*\-*\-*\-*\-*\-*=Logo,\\
+  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=logo,\\
+  \-*\-symbol\-*\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=symbol\fR
 .br
 .sp
 .TP
@@ -2757,34 +2757,7 @@ The \s-2@DDD@\s+2 logo font (lowercase letters).
 .B "symbol"
 The symbol font.  In help texts.
 .PP
-Here is an alternative, resolution-independent setting, which you may
-copy into your `\fB$HOME/.@ddd@/init\fR' file:
-.sp
-.br
-  \fB@Ddd@*fontList: \\
-  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=charset,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-*\-80\-*\-*\-*\-*\-*\-*=small,\\
-  \-*\-lucidatypewriter\-medium\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=tt,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=key,\\
-  \-*\-helvetica\-medium\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=rm,\\
-  \-*\-helvetica\-medium\-o\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=sl,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=bf,\\
-  \-*\-helvetica\-bold\-o\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=bs,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-*\-120\-*\-*\-*\-*\-*\-*=Logo,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=logo,\\
-  \-*\-symbol\-*\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=symbol\fR
-.br
-.sp
-The fonts in text fields are specified as follows:
-.sp
-.br
-  \fB@Ddd@*XmTextField.FontList: \\
-  \-*\-lucidatypewriter\-medium\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=charset
-  @Ddd@*XmText.FontList: \\
-  \-*\-lucidatypewriter\-medium\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=charset\fR
-.br
-.sp
-And here is another resolution-independent alternative:
+The fonts in text fields are defined as follows:
 .sp
 .br
   \fB@Ddd@*XmTextField.FontList: \\
@@ -2793,18 +2766,7 @@ And here is another resolution-independent alternative:
   \-*\-lucidatypewriter\-medium\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=charset\fR
 .br
 .sp
-These are the fonts in the command tool:
-.sp
-.br
-  \fB@Ddd@*tool_buttons.run.fontList: \\
-  \-*\-helvetica\-bold\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=charset
-  @Ddd@*tool_buttons.break.fontList: \\
-  \-*\-helvetica\-bold\-r\-*\-*\-12\-*\-*\-*\-*\-*\-*\-*=charset
-  @Ddd@*tool_buttons*fontList: \\
-  \-*\-helvetica\-medium\-r\-*\-*\-10\-*\-*\-*\-*\-*\-*\-*=charset\fR
-.br
-.sp
-The resolution-independent alternative looks like this:
+The command tool uses a slightly smaller font for its buttons.
 .sp
 .br
   \fB@Ddd@*tool_buttons.run.fontList: \\
@@ -2815,9 +2777,13 @@ The resolution-independent alternative looks like this:
   \-*\-helvetica\-medium\-r\-*\-*\-*\-80\-*\-*\-*\-*\-*\-*=charset\fR
 .br
 .sp
-Pick your choice and copy and modify the appropriate resources to your
-`\fB$HOME/.@ddd@/init\fR' file.  For fonts within the data display, see
-the `\fBvslDefs\fR' resource, below.
+You can override these font definitions in your
+`\fB$HOME/.@ddd@/init\fR' file by supplying alternate resource values.
+The `\fBDdd\fR' application defaults file also contains instructions
+on how to create a new `\fBDdd\fR' file with alternate font sizes and
+resolutions just by changing a few definitions.
+.PP
+For fonts within the data display, see the `\fBvslDefs\fR' resource, below.
 .\"
 .\"
 .\"
@@ -3707,12 +3673,12 @@ The font family used.  One of \fBfamily_times()\fR,
 \fBfamily_new_century()\fR, or \fBfamily_typewriter()\fR (default).
 .TP 10
 .B "stdfontsize()"
-The font size used (in pixels).  \fB0\fR means to use
-\fBstdfontpoints()\fR instead.  Default value: \fB12\fR.
+The font size used (in pixels).  \fB0\fR (default) means to use
+\fBstdfontpoints()\fR instead.
 .TP 10
 .B "stdfontpoints()"
-The font size used (in 1/10 points).  \fB0\fR (default) means to use
-\fBstdfontsize()\fR instead.
+The font size used (in 1/10 points).  \fB0\fR means to use
+\fBstdfontsize()\fR instead.  Default value: \fB90\fR.
 .TP 10
 .B "stdfontweight()"
 The font weight used.  Either \fBweight_medium()\fR (default) or
