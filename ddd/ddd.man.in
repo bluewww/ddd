@@ -1056,9 +1056,10 @@ When the graph is printed in a file, two formats are available:
 PostScript - suitable for enclosing it in another document;
 .br
 .IP \(bu 2
-\s-2XFIG\s+2 - suitable for editing, using the \s-2XFIG\s+2 graphic
-editor, or for conversion into other formats using the
-\s-2TRANSFIG\s+2 package.
+\s-2FIG\s+2 - suitable for editing, using the \s-2XFIG\s+2 graphic
+editor, or for conversion into other formats (among others
+\s-2IBMGL\s+2, LaTeX, \s-2PIC\s+2), 
+using the \s-2TRANSFIG\s+2 or \s-2FIG2DEV\s+2 package.
 .\"
 .\"
 .\" ---------------

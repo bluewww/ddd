@@ -256,9 +256,37 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
     }
 }
 
+static string suffix(PrintType print_type)
+{
+    switch (print_type)
+    {
+    case PRINT_POSTSCRIPT:
+	return ".ps";
+
+    case PRINT_FIG:
+	return ".fig";
+    }
+
+    return "";
+}
+
 static void SetPrintTypeCB(Widget, XtPointer client_data, XtPointer)
 {
+    string old_suffix = suffix(print_type);
     print_type = PrintType(client_data);
+    string new_suffix = suffix(print_type);
+
+    String file_name_s = XmTextFieldGetString(print_file_name_field);
+    string file_name(file_name_s);
+    XtFree(file_name_s);
+
+    if (file_name.contains(old_suffix, -1))
+    {
+	int idx = file_name.index(old_suffix, -1);
+	file_name = file_name.before(idx) + new_suffix;
+
+	XmTextFieldSetString(print_file_name_field, (char *)file_name.chars());
+    }
 }
 
 static void SetSensitiveCB(Widget w, XtPointer client_data, XtPointer)

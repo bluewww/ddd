@@ -2670,8 +2670,9 @@ Ddd*print*file_name.alignment:		      XmALIGNMENT_END
 Ddd*print*file_name.width:		      120
 Ddd*print*file_name.recomputeSize:	      false
 Ddd*print*file_name_field.columns:	      32
+Ddd*print*file_name_field.value:	      @ddd@graph.ps
 Ddd*print*postscript.labelString:	      PostScript
-Ddd*print*xfig.labelString:		      XFIG
+Ddd*print*xfig.labelString:		      FIG
 
 Ddd*print*print_what.labelString:	      Print:
 Ddd*print*print_what.alignment:		      XmALIGNMENT_END
