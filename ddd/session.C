@@ -48,6 +48,7 @@ char session_rcsid[] =
 #include <string.h>		// strerror()
 #include <errno.h>
 #include <fstream.h>
+#include <pwd.h>
 
 #include "AppData.h"
 #include "DataDisp.h"
@@ -312,7 +313,17 @@ bool lock_session_dir(Display *display,
 	    if (version.contains(DDD_NAME, 0))
 	    {
 		// Lock already exists -- use contents as diagnostics
-		is >> info.hostname >> info.pid;
+		is >> info.hostname
+		   >> info.pid 
+		   >> info.display 
+		   >> info.uid
+		   >> info.username;
+
+		if (info.username == "")
+		{
+		    // DDD 3.0.90 and earlier do not save the user name
+		    info.username = itostring(info.uid);
+		}
 
 		if (info.hostname != fullhostname())
 		    return false;	// Process running on remote host
@@ -325,12 +336,20 @@ bool lock_session_dir(Display *display,
 
     // Lock session dir, possibly overriding old lock
     {
+	string username;
+	struct passwd *pw = getpwuid(getuid());
+	if (pw != 0)
+	    username = pw->pw_name;
+	else
+	    username = itostring(getuid());
+
 	ofstream os(lock_file);
 	os << DDD_NAME "-" DDD_VERSION
-	   << " " << fullhostname() 
+	   << " " << fullhostname()
 	   << " " << getpid()
 	   << " " << XDisplayString(display)
 	   << " " << getuid()
+	   << " " << username
 	   << "\n";
     }
 
@@ -347,7 +366,9 @@ bool unlock_session_dir(const string& session)
 	// There is a lock -- check whether it's ours
 	LockInfo info;
 	string version;
-	is >> version >> info.hostname >> info.pid;
+	is >> version 
+	   >> info.hostname
+	   >> info.pid;
 
 	if (info.hostname == fullhostname() && info.pid == getpid())
 	{
@@ -356,9 +377,13 @@ bool unlock_session_dir(const string& session)
 	    unlink(lock_file);
 	    return true;
 	}
+	else
+	{
+	    return false;	// Mismatched lock
+	}
     }
 
-    return false;		// No or mismatched lock
+    return false;		// No lock
 }
 
 

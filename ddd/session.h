@@ -89,9 +89,11 @@ struct LockInfo {
     string hostname;		// Name of host on which DDD is running
     string display;		// Display used by DDD
     int pid;			// DDD process ID
+    int uid;			// DDD user ID
+    string username;		// DDD user name
 
     LockInfo()
-	: hostname(), display(), pid(0)
+	: hostname(), display(), pid(0), uid(0), username()
     {}
 };
 
