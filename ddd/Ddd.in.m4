@@ -159,6 +159,12 @@ Ddd*selectAllBindings: KDE
 Ddd*lineBufferedConsole: on
 
 
+! `On' if the debugger console handles keyboard events from the source window,
+! `Off' if not,
+! `Auto' if only an *open* debugger console handles keyboard events.
+Ddd*consoleHasFocus: on
+
+
 ! On if options are to be saved in `~/.ddd/init' across DDD invocations.
 Ddd*saveOptionsOnExit: off
 

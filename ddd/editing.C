@@ -2,6 +2,7 @@
 // DDD command-line actions
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -53,6 +54,7 @@ char editing_rcsid[] =
 #include "regexps.h"
 #include "status.h"
 #include "string-fun.h"
+#include "windows.h"
 
 #include <iostream.h>
 #include <Xm/Xm.h>
@@ -427,15 +429,21 @@ void processAct(Widget w, XEvent *e, String *params, Cardinal *num_params)
     }
 
     if (e->type != KeyPress && e->type != KeyRelease)
-	return;
+	return;			// Forward only keyboard events
+
+    if (!XtIsRealized(gdb_w))
+	return;			// We don't have a console yet
+
+    if (app_data.console_has_focus == Off)
+	return;			// No forwarding
+
+    if (app_data.console_has_focus == Auto && !have_command_window())
+	return;			// The console is closed
 
     static bool running = false;
 
-    if (running || !XtIsRealized(gdb_w))
-    {
-	// Ignore event
-	return;
-    }
+    if (running)
+	return;			// We have already entered this procedure
 
     running = true;
 

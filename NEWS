@@ -69,6 +69,9 @@ User Interface
 
 - Interrupts (Ctrl+C) from the controlling TTY can be issued multiple times.
 
+- Forwarding of keyboard events from the source window into the
+  debugger console is now optional.  See the `consoleHasFocus' resource. (10)
+
 
 Installation
 ------------
@@ -125,7 +128,7 @@ Thanks to:
     (7) Philippe Midol-Monnet <Philippe.MIDOL-MONNET@airbus.aeromatra.com>
     (8) Felipe Rivera <felipe@informador.com.mx>
     (9) Thomas Anders <anders@hmi.de>
-
+   (10) Colin <cbyh@yahoo.com>
 
 
 DDD 3.2.1

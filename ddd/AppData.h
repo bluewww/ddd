@@ -117,6 +117,8 @@
 #define XtCSourceEditing         "SourceEditing"
 #define XtNlineBufferedConsole   "lineBufferredConsole"
 #define XtCLineBuffered          "LineBuffered"
+#define XtNconsoleHasFocus       "consoleHasFocus"
+#define XtCConsoleHasFocus       "ConsoleHasFocus"
 #define XtNgdbDisplayShortcuts   "gdbDisplayShortcuts"
 #define XtNdbxDisplayShortcuts   "dbxDisplayShortcuts"
 #define XtNxdbDisplayShortcuts   "xdbDisplayShortcuts"
@@ -453,6 +455,7 @@ struct AppData {
     Cardinal  line_number_width;
     Boolean   source_editing;
     Boolean   line_buffered_console;
+    OnOff     console_has_focus;
     String    gdb_display_shortcuts;
     String    dbx_display_shortcuts;
     String    xdb_display_shortcuts;

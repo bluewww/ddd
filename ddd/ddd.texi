@@ -43,7 +43,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2000-06-26
+@set DATE 2000-11-16
 
 
 @c Macros
@@ -331,7 +331,9 @@ lists all the lower level nodes in the document.
 * Concept Index::               All concepts as mentioned in this manual.
 
 @ifinfo
-@detailmenu --- The Detailed Node Listing ---
+
+@detailmenu
+ --- The Detailed Node Listing ---
 
 Summary of @value{DDD}
 
@@ -606,6 +608,7 @@ Display Basics
 * Displaying Local Variables::  
 * Displaying Program Status::   
 * Refreshing the Data Window::  
+* Placement::                   
 * Clustering::                  
 * Creating Multiple Displays::  
 * Editing all Displays::        
@@ -686,6 +689,7 @@ Entering Commands
 
 * Command Completion::          Using the @key{TAB} key.
 * Command History::             Repeating previous commands.
+* Typing in the Source Window::  
 
 Defining Buttons
 
@@ -736,6 +740,11 @@ Configuration Notes
 * JDB::                         Using @DDD{} with @JDB{}
 * Perl::                        Using @DDD{} with Perl
 * LessTif::                     Using @DDD{} with LessTif
+
+Using @value{DDD} with GDB
+
+* WDB::                         Using @value{DDD} with WDB
+* WindRiver GDB::               Using @value{DDD} with WindRiver GDB (Tornado)
 
 @end detailmenu
 @end ifinfo
@@ -10592,6 +10601,7 @@ interface of the inferior debugger.  Enter commands at the
 @menu
 * Command Completion::          Using the @key{TAB} key.
 * Command History::             Repeating previous commands.
+* Typing in the Source Window::  
 @end menu
 
 @node Command Completion
@@ -10765,6 +10775,25 @@ when @DDD{} exits.
 @end defvr
 
 @c FIXME: more on history
+
+
+@node Typing in the Source Window
+@subsection Typing in the Source Window
+
+@cindex Source file, typing into
+As a special convenience, anything you type into the source window is
+automatically forwarded to the debugger console.  Thus, you don't have
+to change the keyboard focus explicitly in order to enter commands.
+
+You can change this behaviour using the following resource:
+
+@defvr Resource consoleHasFocus (class ConsoleHasFocus)
+If @samp{on} (default), all keyboard events in the source window are
+automatically forwarded to the debugger console.  If @samp{off},
+keyboard events are not forwarded.  If @samp{auto}, keyboard events
+forwarded only if the debugger console is open.
+@end defvr
+
 
 
 
@@ -12328,8 +12357,8 @@ Further information is available on the following @GDB{} variants:
 @end ifinfo
 
 @menu
-* WDB::                          Using @value{DDD} with WDB
-* WindRiver GDB::                Using @value{DDD} with WindRiver GDB (Tornado)
+* WDB::                         Using @value{DDD} with WDB
+* WindRiver GDB::               Using @value{DDD} with WindRiver GDB (Tornado)
 @end menu
 
 @node WDB

@@ -2,7 +2,7 @@
 // DDD application resources
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
-// Copyright (C) 1999 Universitaet Passau, Germany.
+// Copyright (C) 1999-2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -497,6 +497,16 @@ XtResource ddd_resources[] = {
 	XtOffsetOf(AppData, line_buffered_console),
 	XtRImmediate,
 	XtPointer(True)
+    },
+
+    {
+	XtNconsoleHasFocus,
+	XtCConsoleHasFocus,
+	XtROnOff,
+	sizeof(OnOff),
+	XtOffsetOf(AppData, console_has_focus),
+	XmRImmediate,
+	XtPointer(On)
     },
 
     {
