@@ -48,9 +48,14 @@ fi
 
 # Setup environment
 tmpdir=$HOME/tmp/ddd$$
-cvs_server="-z3 -d:pserver:anonymous@cvs.ddd.sourceforge.net:/cvsroot/ddd"
-
+workdir=$HOME/ddd
 target=`pwd`
+
+# Setup CVS stuff
+cvs_options="-z3"
+CVSROOT=":pserver:anonymous@cvs.ddd.sourceforge.net:/cvsroot/ddd"; export CVSROOT
+CVSREAD=1; export CVSREAD
+
 echo make-current[$$]: start at `date`
 
 # Fetch the date in ISO 8601 YYYY-MM-DD format.
@@ -61,7 +66,7 @@ date=$year-$month-$day
 
 if $final; then
   # This is a final release; use the expiration date from the file.
-  eval `cvs "$cvs_server" checkout "$@" -p ddd/ddd/acinclude.m4 2> /dev/null | \
+  eval `cvs "$cvs_options" checkout "$@" -p ddd/ddd/acinclude.m4 2> /dev/null | \
    egrep '^(EXPIRES|VERSION|NICKNAME)='`
   expires=$EXPIRES
   date=$VERSION
@@ -105,14 +110,14 @@ mkdir $tmpdir
 cd $tmpdir
 
 # Get a first DDD file out of CVS, such that `ddd' and `ddd/CVS' are created
-cvs "$cvs_server" checkout -kkv -P "$@" ddd/README
+cvs "$cvs_options" checkout -kkv -P "$@" ddd/README
 
 # Change the group of the DDD subdirectory to `ddd'
 chgrp -R ddd ddd
 chmod g+s ddd
 
 # Now get the remainder, expanding RCS keywords.
-cvs "$cvs_server" checkout -kkv -P "$@" ddd
+cvs "$cvs_options" checkout -kkv -P "$@" ddd
 cd ddd
 
 if $final; then
@@ -161,10 +166,13 @@ sh ./configure -v \
  automake --foreign --include-deps --srcdir-name=`pwd` --build-dir=. --verbose
 )
 
-# Add a RELEASE tag
+Add a RELEASE tag
 if $final; then
-  echo "ddd-$date: released `date`" > ./.RELEASE
-  cvs commit -m"ddd-$date \"$nickname\" released" .RELEASE
+   (
+    cd $workdir
+    echo "ddd-$date: released `date`" > ./.RELEASE
+    cvs commit -m"ddd-$date \"$nickname\" released" .RELEASE
+   )
 fi
 
 # Create distribution.
@@ -174,14 +182,15 @@ if [ -f ddd-$date.tar.gz ]; then
   if $final; then
     # Tag our CVS files
     tag=DDD_`echo $date | sed 's/[^a-zA-Z0-9]/_/g'`
-    cvs tag -F "$tag" .
+    ( cd $workdir; cvs rtag -F "$tag" . )
     case "$tag" in
       DDD_*_*_*)
 	# Already a `fix' release
 	;;
       *)
 	# Create a `fixes' branch
-	cvs tag -F -b ${tag}_fixes . ;;
+        ( cd $workdir; cvs rtag -F -b ${tag}_fixes . )
+        ;;
     esac
   fi
 
