@@ -1693,10 +1693,6 @@ const int STRUCTURE_MASK = StructureNotifyMask | VisibilityChangeMask;
 // The atom for the delete-window protocol
 static Atom WM_DELETE_WINDOW;
 
-// Logging stuff
-static ostrstream devnull;
-ostream *_dddlog = &devnull;
-
 // Message handling
 static MString version_warnings;
 
@@ -2088,22 +2084,7 @@ int main(int argc, char *argv[])
 
     // Create a `~/.ddd/log' file for this session; 
     // log invocation and configuration
-    if (app_data.trace)
-    {
-	_dddlog = &clog;
-    }
-    else
-    {
-	static ofstream log(session_log_file());
-	_dddlog = &log;
-    }
-    show_configuration(dddlog);
-    dddlog << "$ ";
-    int i;
-    for (i = 0; saved_argv()[i] != 0; i++)
-	dddlog << " " << cook(saved_argv()[i]);
-    dddlog << '\n';
-    dddlog.flush();
+    init_dddlog();
 
     // Warn for incompatible `Ddd' and `~/.ddd/init' files
     setup_ddd_version_warnings();
@@ -2181,6 +2162,7 @@ int main(int argc, char *argv[])
     }
 
     // Put saved options back again
+    int i;
     for (i = argc + saved_options.size() - 1; i > saved_options.size(); i--)
 	argv[i] = argv[i - saved_options.size()];
     for (i = saved_options.size() - 1; i >= 0; i--)
@@ -3083,6 +3065,38 @@ XrmDatabase GetFileDatabase(char *filename)
 }
 
 
+
+//-----------------------------------------------------------------------------
+// Install DDD log
+//-----------------------------------------------------------------------------
+
+static ostrstream devnull;
+ostream *_dddlog = &devnull;
+
+void init_dddlog()
+{
+    if (_dddlog != &devnull)
+	return;			// Already initialized
+
+    if (app_data.trace)
+    {
+	_dddlog = &clog;
+    }
+    else
+    {
+	static ofstream log(session_log_file());
+	_dddlog = &log;
+    }
+
+    show_configuration(dddlog);
+
+    dddlog << "$ ";
+    for (int i = 0; saved_argv()[i] != 0; i++)
+	dddlog << " " << cook(saved_argv()[i]);
+    dddlog << '\n';
+
+    dddlog.flush();
+}
 
 //-----------------------------------------------------------------------------
 // Install button tips

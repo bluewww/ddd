@@ -471,6 +471,9 @@ static void ddd_fatal(int sig...)
     if (sig != SIGINT)
 	ddd_has_crashed = true;
 
+    // Make sure we have a ~/.ddd/log file
+    init_dddlog();
+
     dddlog << "!  " << sigName(sig) << "\n";
     dddlog.flush();
 

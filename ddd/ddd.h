@@ -95,6 +95,7 @@ extern class ArgField   *source_arg;
 // Where to log DDD I/O
 extern ostream *_dddlog;
 #define dddlog (*_dddlog)
+extern void init_dddlog();
 
 // Text to ignore upon output
 extern string gdb_out_ignore;
