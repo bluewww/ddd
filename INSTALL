@@ -185,6 +185,26 @@ The simplest way to compile DDD is:
      wish to read and/or print the documentation shipped with DDD.
      See the "Documentation" section, below.
 
+     Please check the `make' output for compiler warnings.  Normally,
+     DDD should build without any warnings (that is, with GCC).  If
+     you encounter warnings, these are signs of either a bad GCC
+     configuration or actual problems in DDD code.
+
+     Warnings that can be ignored safely include warnings about code
+     not being reached and warnings about unused, uninitialized, or
+     shadowed variables.
+
+     However, GCC warnings that *must never be ignored* include:
+
+	- `implicit declaration of function F'
+	- `cannot pass objects of type T through `...''
+
+     If you encounter such a warning, GCC will generate unusable code.
+     Abort compilation and fix the problem.
+
+     If you find a warning can be avoided by changing DDD code, send a
+     bug report to the DDD maintainers <ddd-bugs@ips.cs.tu-bs.de>.
+
   8. For a simple check, type
   
 	$ make check
