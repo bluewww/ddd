@@ -112,9 +112,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 360 Plot tear-offs remain active after the main window has been closed.
 
-363 (LessTif 0.87) Selecting something outside the source window does
-    not clear the selection in the data window.
-
 368 When DDD is running on a locked terminal (via `xlock' or
     likewise), DDD considers the pointer to be frozen, such that it
     continues execution.
@@ -127,7 +124,5 @@ Volunteers for fixing these and other bugs are welcome!
     defined buttons.
 
 375 Improve Python support (in DDD 3.2)
-
-379 Adapt DDD to JDB as of JDK 1.2.
 
 382 (Insert new bugs here)

@@ -333,6 +333,5 @@ Volunteers for these and other projects are welcome!
     `http://sourceware.cygnus.com/gdb/onlinedocs/gdbmi_toc.html'.
 
 383 In JDB 1.2, make `run' restart JDB.  
-    Also be sure that the positions are properly parsed.
 
 384 (Insert new project ideas here)
