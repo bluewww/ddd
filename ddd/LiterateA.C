@@ -192,9 +192,11 @@ int LiterateAgent::_read(char*& data, FILE *fp)
     }
     else
     {
-	// Otherwise, read and accumulate whatever's there
+	// Otherwise, read and accumulate whatever's there - up to
+	// BUFSIZ characters
 	int length;
-	while ((length = _readNonBlocking(buffer, BUFSIZ, fp)) > 0)
+	while (queue.length() < BUFSIZ
+	       && (length = _readNonBlocking(buffer, BUFSIZ, fp)) > 0)
 	    queue.append(buffer, length);
 
 	if (length < 0)
