@@ -1,10 +1,10 @@
-DDD 1.3 is available
-====================
+DDD 1.3b is available
+=====================
 
-    Release 1.3 of the Data Display Debugger (DDD), a graphical
+    Release 1.3b of the Data Display Debugger (DDD), a graphical
     front-end for GDB and DBX debuggers, is now available by anonymous
     FTP from `ftp.ips.cs.tu-bs.de` [134.169.32.1] in the file
-    `/pub/local/softech/ddd/ddd-1.3.tar.gz' (1.0 MB).  Diffs from
+    `/pub/local/softech/ddd/ddd-1.3b.tar.gz' (1.1 MB).  Diffs from
     earlier versions are in `/pub/local/softech/ddd/diffs/`.  Binaries
     for various architectures are in `/pub/local/softech/ddd/bin/`.
     Please try a closer FTP site first; see below for a list.
@@ -13,7 +13,7 @@ DDD 1.3 is available
 DDD News
 ========
 
-    DDD 1.3 now compiles using GCC 2.7; some new features have been
+    DDD 1.3b now compiles using GCC 2.7; some new features have been
     added and several minor bugs fixed.  Some bugs remain; see the
     `BUGS' file for details.
 
@@ -27,8 +27,14 @@ DDD News
     - Upon fatal errors, DDD tries to resume execution by returning to
       the main event loop.  This leaves you a chance for exiting the
       debugged program properly.
-    - New `Help on Debugging' item.
+    - DDD can now be interrupted using the SIGINT signal.
+    - In the breakpoint editor, you can now set multiple breakpoint
+      conditions and ignore counts at a time.
+    - New `Help/on Debugging' item.
       Written by David A. Lyons (dlyons@apple.com).
+    - New `Help/DDD WWW Page' item.  Invokes a WWW browser
+      with recent DDD info.
+    - The DDD WWW page has moved to `http://www.cs.tu-bs.de/softech/ddd/'.
     - Colours slightly reworked: text background is a little brighter.
     - A short DDD survey, including lots of screen shots, is included
       in `doc/ddd-paper.ps'.  The paper also describes some DDD innards.
@@ -149,7 +155,7 @@ More Information
 DDD source FTP sites
 ====================
 
-    The DDD source package `ddd-1.3.tar.gz' will soon be at these FTP
+    The DDD source package `ddd-1.3b.tar.gz' will soon be at these FTP
     sites as well.  Please try them before `ftp.ips.cs.tu-bs.de' since
     ftp.ips has a slow network connection.
 

@@ -14,7 +14,8 @@ ddd.man.ps   -- ``DDD---The Data Display Debugger''
 ddd-paper.ps -- ``DDD---A Free Graphical Front-End for UNIX Debuggers''
 
     A six-page DDD survey including lots of screen shots.  The paper
-    also highlights some internal aspects of DDD.
+    also highlights some internal aspects of DDD.  To appear in
+    ACM SIGPLAN Notices 30(12), December 1995.
 
     Included in the DDD distribution.
 
