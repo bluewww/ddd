@@ -18,7 +18,6 @@ Table of Contents
     * HP-UX
     * LessTif
     * Linux
-    * SCO
     * SGI
     * Solaris 2.x
     * SunOS
@@ -321,18 +320,6 @@ Reported by:  J.H.M. Dassen <jdassen@wi.leidenuniv.nl>
      
     There might be some problems left but 2.1.61/2.0.32 fix most of
     the known ones.  See the BUGS file for other known problems.
-
-SCO
-===
-
-Reported by:  Guillaume Proux <Guillaume.Proux@aar.alcatel-alsthom.fr>
-
-    DDD does not run correctly under SCO.  The DDD virtual TTY
-    interface (see TTYAgent.C) has not been ported to SCO systems yet.
-    With GDB, this results in GDB echoing every command, which DDD
-    cannot handle properly.
-
-    [Some SCO expert willing to fix this?  -AZ]
 
 SGI
 ===
