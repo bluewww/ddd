@@ -123,6 +123,7 @@ class SourceView {
     static void MakeBreakpointsTempCB      (Widget, XtPointer, XtPointer);
     static void DeleteBreakpointsCB        (Widget, XtPointer, XtPointer);
     static void RecordBreakpointCommandsCB (Widget, XtPointer, XtPointer);
+    static void EndBreakpointCommandsCB    (Widget, XtPointer, XtPointer);
     static void EditBreakpointCommandsCB   (Widget, XtPointer, XtPointer);
     static void SetBreakpointIgnoreCountNowCB(XtPointer, XtIntervalId *);
     static void DeleteInfoCB               (Widget, XtPointer, XtPointer);

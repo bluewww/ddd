@@ -5346,7 +5346,7 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
 	{ "record", MMPush, \
 	  { RecordBreakpointCommandsCB, XtPointer(info) }, 0, &info->record },
 	{ "end",    MMPush | MMInsensitive, \
-	  { RecordBreakpointCommandsCB, XtPointer(info) }, 0, &info->end },
+	  { EndBreakpointCommandsCB, XtPointer(info) }, 0, &info->end },
 	{ "edit",   MMPush | MMInsensitive, \
 	  { EditBreakpointCommandsCB, XtPointer(info) }, 0, &info->edit },
 	MMEnd
@@ -5555,18 +5555,16 @@ void SourceView::RecordBreakpointCommandsCB(Widget w,
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
-    bool record = (w == info->record);
 
-    if (record)
-    {
-	gdb->removeHandler(Recording, RecordingHP, XtPointer(info));
-	gdb->addHandler(Recording, RecordingHP, XtPointer(info));
-	gdb_command("commands " + itostring(info->nrs[0]), w);
-    }
-    else			// end
-    {
-	gdb_command("end", w);
-    }
+    gdb->removeHandler(Recording, RecordingHP, XtPointer(info));
+    gdb->addHandler(Recording, RecordingHP, XtPointer(info));
+    gdb_command("commands " + itostring(info->nrs[0]), w);
+}
+
+// End recording breakpoint commands
+void SourceView::EndBreakpointCommandsCB(Widget w, XtPointer, XtPointer)
+{
+    gdb_command("end", w);
 }
 
 // Log recording state
