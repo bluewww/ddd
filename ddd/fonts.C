@@ -51,6 +51,7 @@ char fonts_rcsid[] =
 #include "string-fun.h"
 #include "post.h"
 
+#include <stdlib.h>		// atoi()
 #include <ctype.h>
 #include <Xm/TextF.h>
 #include <Xm/Text.h>
