@@ -335,8 +335,8 @@ Volunteers for these and other projects are welcome!
 
 217. Winson Quock <quock@pepper.com> (see the quote in ddd/exit.C)
      says: Very often, I found myself spending quite a lot of time
-     arranging each "display box".  It will cool if we can also have a
-     normal text list display for variable values.
+     arranging each "display box".  It will be cool if we can also
+     have a normal text list display for variable values.
 
 219. Annotated arrows. Christoph Koegl <koegl@informatik.uni-kl.de>
      suggests that the data display window should be able to annotate
@@ -344,7 +344,7 @@ Volunteers for these and other projects are welcome!
      represent. This would come in handy if one (as I do at the
      moment) displays heavily cross-pointered data structures.
 
-221. Have a DDD USENET news group, such as `comp.debuggers.ddd',
+221. Have a DDD USENET news group, such as `comp.debuggers[.ddd]',
      instead of a mailing list.  [This should be done when there are
      more than 1000 subscribers, or when the number of messages/day is
      greater than 50.]
@@ -354,4 +354,9 @@ Volunteers for these and other projects are welcome!
      if I run it from within xemacs, I've manually hided it with the
      window manager, but still...
 
-231. (Insert your project idea here)
+231* Let the user specify which method to use for getting core dumps.
+
+232. Have an `infinite' assembler window that extends in both
+     directions as needed.
+
+233. (Insert your project idea here)
