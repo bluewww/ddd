@@ -68,7 +68,7 @@ do
 	   echo "// DON'T ADD ANYTHING BEHIND THIS #endif"
 	) > $file.h
 	$path/apply-license -f $user $file.h > /dev/null
-	rm $file.h~
+	rm $file.h.orig
  	${VISUAL:-vi} $file.h
     fi
 done
