@@ -41,8 +41,7 @@
 #pragma interface
 #endif
 
-#include "strclass.h"
-#include <X11/Intrinsic.h>
+#include "GDBAgent.h"
 
 
 //-----------------------------------------------------------------------------
@@ -60,7 +59,8 @@ void start_gdb ();
 // Setzt Filtering , ruft ggf. handle_graph_cmd, setzt insensitiv und delay,
 // schreibt Befehlstext ins gdb_w und schickt Befehl an gdb.
 //
-void user_cmdSUC (string cmd, Widget origin = 0);
+void user_cmdSUC (string cmd, Widget origin = 0,
+		  OQCProc callback = 0, void *data = 0);
 
 
 // ***************************************************************************

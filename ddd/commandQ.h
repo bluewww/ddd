@@ -33,15 +33,15 @@
 #pragma interface
 #endif
 
-#include "bool.h"
-#include "strclass.h"
-#include <X11/Intrinsic.h>
+#include "GDBAgent.h"
 
 // Send COMMAND to GDB, if GDB is ready; queue in COMMAND, otherwise
-extern void gdb_command(const string& command, Widget origin = 0);
+extern void gdb_command(const string& command, Widget origin = 0,
+			OQCProc callback = 0, void *data = 0);
 
 // Send COMMAND to GDB (unconditionally)
-extern void _gdb_command(string command, Widget origin = 0);
+extern void _gdb_command(string command, Widget origin = 0,
+			 OQCProc callback = 0, void *qu_data = 0);
 
 // Pass the COMMAND given in CLIENT_DATA to gdb_command()
 void gdbCommandCB(Widget w, XtPointer call_data, XtPointer client_data);

@@ -69,8 +69,7 @@ char comm_manager_rcsid[] =
 #include <ctype.h>
 
 
-void handle_graph_cmd (string cmd, Widget origin);
-void send_display_cmdHP (void*, void* client_data, void* call_data);
+static void handle_graph_cmd (string cmd, Widget origin);
 
 //-----------------------------------------------------------------------------
 // Sollen Displays aus der Antwort herausgefiltert werden ?
@@ -89,6 +88,10 @@ typedef struct CmdData {
     int         set_frame_arg;    // Argument: 0: reset, +/-N: move N frames
     string      set_frame_func;   // Argument: new function
 
+    string      user_answer;	  // Buffer for the complete answer
+    OQCProc     user_callback;	  // User callback
+    void *      user_data;	  // User data
+
     CmdData (Filtering   fd = TryFilter,
 	     DispBuffer* db = 0,
 	     PosBuffer*  pb = 0,
@@ -101,7 +104,10 @@ typedef struct CmdData {
 	new_frame_pos (nep),
 	set_frame_pos (false),
 	set_frame_arg (0),
-	set_frame_func ("")
+	set_frame_func (""),
+	user_answer(""),
+	user_callback (0),
+	user_data (0)
     {}
 };
 
@@ -194,9 +200,9 @@ typedef struct PlusCmdData {
     {}
 };
 
-void user_cmdOA  (const string&, void *);
-void user_cmdOAC (void *);
-void plusOQAC (string [], void *[], int, void *);
+static void user_cmdOA  (const string&, void *);
+static void user_cmdOAC (void *);
+static void plusOQAC (string [], void *[], int, void *);
 
 static string print_cookie = "4711";
 
@@ -210,9 +216,9 @@ inline string str(String s)
 
 void start_gdb()
 {
-    CmdData* cmd_data = new CmdData ();
+    CmdData* cmd_data     = new CmdData;
     cmd_data->filter_disp = NoFilter;       // keine Display-Ausgaben
-    cmd_data->pos_buffer = new PosBuffer(); // ggf. Position lesen
+    cmd_data->pos_buffer  = new PosBuffer(); // ggf. Position lesen
 
     PlusCmdData* plus_cmd_data = new PlusCmdData ();
     StringArray cmds;
@@ -357,7 +363,7 @@ void user_rawSUC (string cmd, Widget origin)
 // Send the GDB command CMD to GDB.
 // Handle filters, internal commands, control characters, echoing etc.
 
-void user_cmdSUC (string cmd, Widget origin)
+void user_cmdSUC (string cmd, Widget origin, OQCProc callback, void *data)
 {
     // Pass control commands unprocessed to GDB.
     if (cmd.length() == 1 && iscntrl(cmd[0]))
@@ -406,19 +412,19 @@ void user_cmdSUC (string cmd, Widget origin)
     if (is_graph_cmd (cmd))
     {
 	handle_graph_cmd (cmd, origin);
-	cmd += '\n';
-	gdb_out(cmd);
-	prompt();
 	return;
     }
 
     // Ordinary GDB command
 
     // Setup extra command information
-    CmdData* cmd_data              = new CmdData;
+    CmdData* cmd_data       = new CmdData;
+    cmd_data->disp_buffer   = new DispBuffer;
+    cmd_data->pos_buffer    = new PosBuffer;
+    cmd_data->user_callback = callback;
+    cmd_data->user_data     = data;
+
     PlusCmdData* plus_cmd_data     = new PlusCmdData;
-    cmd_data->disp_buffer          = new DispBuffer;
-    cmd_data->pos_buffer           = new PosBuffer;
 
     // Breakpoints may change any time
     plus_cmd_data->refresh_bpoints = true;
@@ -451,7 +457,19 @@ void user_cmdSUC (string cmd, Widget origin)
 	cmd_data->filter_disp = NoFilter;
     }
 
-    if (is_file_cmd (cmd, gdb))
+    if (callback != 0 || is_nop_cmd(cmd))
+    {
+	cmd_data->filter_disp            = NoFilter;
+	plus_cmd_data->refresh_bpoints   = false;
+	plus_cmd_data->refresh_addr      = false;
+	plus_cmd_data->refresh_user      = false;
+	plus_cmd_data->refresh_where     = false;
+	plus_cmd_data->refresh_frame     = false;
+	plus_cmd_data->refresh_registers = false;
+	plus_cmd_data->refresh_threads   = false;
+	plus_cmd_data->refresh_addr      = false;
+    }
+    else if (is_file_cmd(cmd, gdb))
     {
 	// File may change: display main() function and update displays
 	plus_cmd_data->refresh_disp_info    = true;
@@ -474,6 +492,18 @@ void user_cmdSUC (string cmd, Widget origin)
     {
 	// No new displays
 	cmd_data->filter_disp = NoFilter;
+
+	// Breakpoints, Frames, Code and Registers won't change
+	plus_cmd_data->refresh_bpoints   = false;
+	plus_cmd_data->refresh_where     = false;
+	plus_cmd_data->refresh_frame     = false;
+	plus_cmd_data->refresh_registers = false;
+	plus_cmd_data->refresh_threads   = false;
+	plus_cmd_data->refresh_addr      = false;
+    }
+    else if (is_data_cmd(cmd))
+    {
+	plus_cmd_data->refresh_data      = true;
 
 	// Breakpoints, Frames, Code and Registers won't change
 	plus_cmd_data->refresh_bpoints   = false;
@@ -576,18 +606,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_threads   = false;
 	plus_cmd_data->refresh_addr      = false;
     }
-    else if (is_nop_cmd(cmd))
-    {
-	cmd_data->filter_disp            = NoFilter;
-	plus_cmd_data->refresh_bpoints   = false;
-	plus_cmd_data->refresh_where     = false;
-	plus_cmd_data->refresh_frame     = false;
-	plus_cmd_data->refresh_registers = false;
-	plus_cmd_data->refresh_threads   = false;
-	plus_cmd_data->refresh_addr      = false;
-    }
-
-    if (is_setting_cmd(cmd))
+    else if (is_setting_cmd(cmd))
     {
 	get_settings(gdb->type());
 	plus_cmd_data->refresh_setting = true;
@@ -658,8 +677,11 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_threads   = false;
     }
 
-    gdb_out(cmd);
-    gdb_out("\n");
+    if (callback == 0)
+    {
+	gdb_out(cmd);
+	gdb_out("\n");
+    }
 
     StringArray cmds;
     VoidArray dummy;
@@ -841,15 +863,18 @@ void user_cmdOA (const string& answer, void* data)
 {
     string ans = answer;
     CmdData* cmd_data = (CmdData *) data;
-    cmd_data->pos_buffer->filter (ans);
+    cmd_data->pos_buffer->filter(ans);
 
-    if (cmd_data->filter_disp == NoFilter)
-	gdb_out(ans);
-    else {
+    if (cmd_data->filter_disp != NoFilter)
+    {
 	// Displays abfangen und buffern, Rest ausgeben
-	cmd_data->disp_buffer->filter (ans);
-	gdb_out(ans);
+	cmd_data->disp_buffer->filter(ans);
     }
+
+    cmd_data->user_answer += ans;
+
+    if (cmd_data->user_callback == 0)
+	gdb_out(ans);
 }
 
 
@@ -869,6 +894,7 @@ void user_cmdOAC (void* data)
     CmdData* cmd_data = (CmdData *) data;
 
     string answer = cmd_data->pos_buffer->answer_ended();
+    cmd_data->user_answer += answer;
 
     if (cmd_data->pos_buffer->started_found())
     {
@@ -943,8 +969,6 @@ void user_cmdOAC (void* data)
 	else
 	    source_view->set_frame_pos(cmd_data->set_frame_arg);
 
-    gdb_out(answer);
-
     // Set PC position
     if (cmd_data->pos_buffer->pc_found())
     {
@@ -955,34 +979,40 @@ void user_cmdOAC (void* data)
 	    source_view->show_pc(pc, XmHIGHLIGHT_NORMAL);
     }
 
-    // Process displays
-    if (cmd_data->filter_disp == NoFilter)
+    if (cmd_data->user_callback != 0)
     {
-	prompt();
+	// Invoke user-defined callback
+	cmd_data->user_callback(cmd_data->user_answer, cmd_data->user_data);
     }
-    else 
+    else
     {
-	gdb_out(cmd_data->disp_buffer->answer_ended());
+	// Show answer
+	gdb_out(answer);
 
-	if (cmd_data->filter_disp == Filter
-	    || cmd_data->disp_buffer->displays_found())
+	// Process displays
+	if (cmd_data->filter_disp != NoFilter)
 	{
+	    gdb_out(cmd_data->disp_buffer->answer_ended());
 
-	    bool disabling_occurred;
-	    string displays = cmd_data->disp_buffer->get_displays();
-	    string not_my_displays = 
-		data_disp->process_displays(displays, disabling_occurred);
-	    gdb_out(not_my_displays);
-
-	    cmd_data->disp_buffer->clear();
-
-	    // War letztes display disabling.... ?
- 	    if (disabling_occurred)
+	    if (cmd_data->filter_disp == Filter
+		|| cmd_data->disp_buffer->displays_found())
 	    {
-		cmd_data->filter_disp = Filter;
-		gdb->send_user_cmd(gdb->display_command());
- 		return;
- 	    }
+
+		bool disabling_occurred;
+		string displays = cmd_data->disp_buffer->get_displays();
+		string not_my_displays = 
+		    data_disp->process_displays(displays, disabling_occurred);
+		gdb_out(not_my_displays);
+	    
+		cmd_data->disp_buffer->clear();
+
+		// War letztes display disabling.... ?
+		if (disabling_occurred)
+		{
+		    cmd_data->filter_disp = Filter;
+		    gdb->send_user_cmd(gdb->display_command());
+		}
+	    }
 	}
 
 	prompt();
@@ -996,22 +1026,101 @@ void user_cmdOAC (void* data)
 // Behandelt die Programmeigenen graph-Befehle (insbes. graph display ... und
 // graph refresh).
 //
+
+// Fetch display numbers from COMMAND
+void read_numbers(string command, IntArray& numbers)
+{
+    while (has_nr(command))
+	numbers += atoi(read_nr_str(command));
+}
+
 void handle_graph_cmd (string cmd, Widget origin)
 {
+    gdb_out(cmd + "\n");
     cmd = cmd.after ("graph ");
-    if (is_display_cmd (cmd))
+    if (is_display_cmd(cmd))
     {
+	string rcmd = reverse(cmd);
+
+	int depends_on = 0;
+	BoxPoint *pos = 0;
+
+	for (;;)
+	{
+	    read_leading_blanks(rcmd);
+
+	    {
+		// Check for `dependent on DISPLAY_NR'
+		static regex 
+		    rxdep("[0-9]*[1-9]-?[ \t]+no[ \t]+tnedneped[ \t]+.*");
+		if (rcmd.matches(rxdep))
+		{
+		    string nr = reverse(rcmd.before(rxwhite));
+		    depends_on = get_nr(nr);
+		    rcmd = rcmd.after("tnedneped");
+		    continue;
+		}
+	    }
+
+	    {
+		// Check for `at X, Y' or `at (X, Y)'
+		static regex 
+		    rxat("[)]?[0-9]*[1-9]-?[ \t]*,[ \t]*[0-9]*[1-9]-?[(]?"
+			 "+[ \t]+ta[ \t]+.*");
+		if (rcmd.matches(rxat))
+		{
+		    if (pos == 0)
+			pos = new BoxPoint;
+
+		    string y = reverse(rcmd.before(','));
+		    (*pos)[Y] = get_nr(y);
+		    string x = rcmd.after(',');
+		    x = reverse(x.before(rxwhite));
+		    (*pos)[X] = get_nr(x);
+		    rcmd = rcmd.after("ta");
+		    continue;
+		}
+	    }
+
+	    break;
+	}
+	    
+	cmd = reverse(rcmd);
+
 	string display_expression = get_display_expression (cmd);
-	data_disp->new_displaySQ(display_expression, 0, 0, origin);
+	data_disp->new_displaySQ(display_expression, pos, depends_on, origin);
+	return;
     }
-    else if (is_refresh_cmd (cmd))
+
+    if (is_refresh_cmd (cmd))
     {
 	data_disp->refresh_displaySQ(origin);
+	return;
     }
-    else
+
+    if (is_data_cmd (cmd))
     {
-	user_cmdSUC(cmd, origin);
+	IntArray numbers;
+	read_numbers(cmd.after("display"), numbers);
+
+	if (is_delete_display_cmd (cmd))
+	{
+	    data_disp->delete_displaySQ(numbers);
+	    return;
+	}
+	else if (is_disable_display_cmd (cmd))
+	{
+	    data_disp->disable_displaySQ(numbers);
+	    return;
+	}
+	else if (is_enable_display_cmd (cmd))
+	{
+	    data_disp->enable_displaySQ(numbers);
+	    return;
+	}
     }
+    
+    user_cmdSUC(cmd, origin);
 }
 
 

@@ -63,7 +63,7 @@ static void ClearOriginCB(Widget w, XtPointer, XtPointer)
 	gdb_last_origin = 0;
 }
 
-void _gdb_command(string command, Widget origin)
+void _gdb_command(string command, Widget origin, OQCProc callback, void *data)
 {
     if (gdb->isReadyWithPrompt())
     {
@@ -97,7 +97,7 @@ void _gdb_command(string command, Widget origin)
 		      ClearOriginCB, 0);
     }
 
-    user_cmdSUC(command, origin);
+    user_cmdSUC(command, origin, callback, data);
     messagePosition = XmTextGetLastPosition(gdb_w);
 }
 
@@ -111,6 +111,8 @@ struct Command
 {
     string command;		// Command text
     Widget origin;		// Origin
+    OQCProc callback;		// Associated callback
+    void *data;			// Data for callback
 
 private:
     static void clear_origin(Widget w, XtPointer client_data, 
@@ -131,13 +133,14 @@ private:
     }
 
 public:
-    Command(const string& cmd, Widget w = 0)
-	: command(cmd), origin(w)
+    Command(const string& cmd, Widget w = 0, OQCProc cb = 0, void *d = 0)
+	: command(cmd), origin(w), callback(cb), data(d)
     {
 	add_destroy_callback();
     }
     Command(const Command& c)
-	: command(c.command), origin(c.origin)
+	: command(c.command), origin(c.origin), 
+	  callback(c.callback), data(c.data)
     {
 	add_destroy_callback();
     }
@@ -151,8 +154,10 @@ public:
 	{
 	    remove_destroy_callback();
 
-	    command = c.command;
-	    origin = c.origin;
+	    command  = c.command;
+	    origin   = c.origin;
+	    callback = c.callback;
+	    data     = c.data;
 
 	    add_destroy_callback();
 	}
@@ -160,7 +165,9 @@ public:
     }
     bool operator == (const Command& c)
     {
-	return this == &c || command == c.command && origin == c.origin;
+	return this == &c || 
+	    command == c.command && origin == c.origin 
+	    && callback == c.callback && data == c.data;
     }
 };
 
@@ -187,22 +194,25 @@ bool emptyCommandQueue()
     return commandQueue.isEmpty();
 }
 
-void gdb_command(const string& cmd, Widget origin)
+void gdb_command(const string& cmd, Widget origin, 
+		 OQCProc callback, void *data)
 {
     if (cmd.length() == 1 && iscntrl(cmd[0]) || cmd == "yes" ||	cmd == "no")
     {
-	_gdb_command(cmd, origin);
+	_gdb_command(cmd, origin, callback, data);
 	clearCommandQueue();
 	return;
     }
 
     if (gdb->isReadyWithPrompt() && commandQueue.isEmpty())
     {
-	add_to_history(cmd);
-	_gdb_command(cmd, origin);
+	if (callback == 0)
+	    add_to_history(cmd);
+
+	_gdb_command(cmd, origin, callback, data);
     }
     else
-	commandQueue += Command(cmd, origin);
+	commandQueue += Command(cmd, origin, callback, data);
 }
 
 void processCommandQueue(XtPointer, XtIntervalId *)
