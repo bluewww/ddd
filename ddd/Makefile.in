@@ -729,7 +729,6 @@ AGENT_OBJECTS = \
 XSTUFF_OBJECTS = \
 	charsets.$(OBJEXT)   \
 	converters.$(OBJEXT) \
-	decoration.$(OBJEXT) \
 	events.$(OBJEXT)     \
 	findParent.$(OBJEXT) \
 	findWindow.$(OBJEXT) \
@@ -737,22 +736,25 @@ XSTUFF_OBJECTS = \
 	frame.$(OBJEXT)      \
 	longName.$(OBJEXT)   \
 	selection.$(OBJEXT)  \
-	simpleMenu.$(OBJEXT) \
 	verify.$(OBJEXT)     \
 	AutoRaise.$(OBJEXT)  \
-	ComboBox.$(OBJEXT)   \
 	Delay.$(OBJEXT)      \
 	DestroyCB.$(OBJEXT)  \
 	ExitCB.$(OBJEXT)     \
 	InitImage.$(OBJEXT)  \
+	Swallower.$(OBJEXT)  \
+	XErrorB.$(OBJEXT)
+
+# Same, but for Motif
+MSTUFF_OBJECTS = \
+	freeXmST.$(OBJEXT)   \
 	LabelH.$(OBJEXT)     \
 	LessTifH.$(OBJEXT)   \
-	MString.$(OBJEXT)    \
 	MakeMenu.$(OBJEXT)   \
+	MString.$(OBJEXT)    \
+	ComboBox.$(OBJEXT)   \
 	SpinBox.$(OBJEXT)    \
-	Swallower.$(OBJEXT)  \
-	TextSetS.$(OBJEXT)   \
-	XErrorB.$(OBJEXT)
+	TextSetS.$(OBJEXT)
 
 # Box library - rectangular composible graphical items
 # Top-level class is `Box', declared in `Box.h'
@@ -841,6 +843,7 @@ LIB_OBJECTS = \
 	$(TEMPLATE_OBJECTS)  \
 	$(AGENT_OBJECTS)  \
 	$(XSTUFF_OBJECTS) \
+	$(MSTUFF_OBJECTS) \
 	$(BOX_OBJECTS)    \
 	$(VSL_OBJECTS)    \
 	$(GRAPH_OBJECTS)
@@ -857,6 +860,7 @@ DDD_OBJECTS = \
 	ctrl.$(OBJEXT)       \
 	data.$(OBJEXT)       \
 	dbx-lookup.$(OBJEXT) \
+	decoration.$(OBJEXT) \
 	deref.$(OBJEXT)      \
 	disp-read.$(OBJEXT)  \
 	editing.$(OBJEXT)    \
@@ -874,7 +878,7 @@ DDD_OBJECTS = \
 	hostname.$(OBJEXT)   \
 	index.$(OBJEXT)      \
 	isid.$(OBJEXT)       \
-	java.$(OBJEXT) 	    \
+	java.$(OBJEXT) 	     \
 	logo.$(OBJEXT)       \
 	logplayer.$(OBJEXT)  \
 	mainloop.$(OBJEXT)   \
@@ -893,6 +897,7 @@ DDD_OBJECTS = \
 	shell.$(OBJEXT)      \
 	shorten.$(OBJEXT)    \
 	show.$(OBJEXT)       \
+	simpleMenu.$(OBJEXT) \
 	configinfo.$(OBJEXT) \
 	source.$(OBJEXT)     \
 	status.$(OBJEXT)     \
@@ -1813,6 +1818,10 @@ ftest.$(OBJEXT): $(srcdir)/ftest.f
 .PHONY: check
 check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT)
 	XUSERFILESEARCHPATH=%N XAPPLRESDIR=. ./$(ddd)$(EXEEXT) $(DDD_OPTIONS) cxxtest$(EXEEXT)
+
+.PHONY: vsldemo
+vsldemo: ./vsl$(EXEEXT)
+	./vsl$(EXEEXT) -I $(VSLDIR) $(srcdir)/ddd.vsl
 
 .PHONY: debug
 debug: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) .gdbinit $(ddd).syms

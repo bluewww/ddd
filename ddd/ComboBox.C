@@ -152,7 +152,8 @@ static void PopupComboListCB(Widget w, XtPointer client_data,
 
     // Popup shell
     XtPopup(info->shell, XtGrabNone);
-    raise_shell(info->shell);
+    if (XtIsRealized(info->shell))
+	XRaiseWindow(XtDisplay(info->shell), XtWindow(info->shell));
     info->popped_up = true;
 
     // Unmanage horizontal scrollbar

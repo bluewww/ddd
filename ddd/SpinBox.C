@@ -40,11 +40,11 @@ char SpinBox_rcsid[] =
 
 #include "assert.h"
 #include "strclass.h"
-#include "string-fun.h"
 #include "verify.h"
 #include "TimeOut.h"
 
 #include <stdlib.h>
+#include <stdio.h>		// sprintf
 
 #include <Xm/Xm.h>
 #include <Xm/ArrowB.h>
@@ -76,8 +76,9 @@ static void add_to_value(Widget text, int offset)
 
     if (v >= 0)
     {
-	string s = itostring(v);
-	XmTextFieldSetString(text, (String)s);
+	char buffer[20];
+	sprintf(buffer, "%d", v);
+	XmTextFieldSetString(text, buffer);
     }
     XtFree(value);
 }

@@ -261,29 +261,6 @@ XmStringTable makeXmStringTable (string label_list[],
     return xmlist;
 }
 
-// Free the XmString table XMLIST of length LIST_LENGTH
-void freeXmStringTable (XmStringTable xmlist, int list_length)
-{
-    for (int i = 0; i < list_length; i++)
-	XmStringFree(xmlist[i]);
-
-    // Some Motif versions want XMLIST to be freed, others (notably
-    // older Lesstif versions) do not.
-#if MOTIF_DIALOGS_OWN_STRING_TABLE
-    // do nothing - list is owned by widget
-#else
-    if (lesstif_version <= 89)
-    {
-	// do nothing - list is owned by widget
-    }
-    else
-    {
-	XtFree((char *)xmlist);
-    }
-#endif
-}
-
-
 // Select POS in LIST and make it visible
 void ListSetAndSelectPos(Widget list, int pos)
 {
