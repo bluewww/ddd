@@ -4265,8 +4265,10 @@ static void language_changedHP(Agent *source, void *, void *)
 
 static void decorate_new_shell(Widget w)
 {
-    // Set DDD logo as icon for new shell
-    wm_set_icon(w, iconlogo(w), iconmask(w));
+    // Use DDD logo as icon of the new shell
+    Widget shell = findShellParent(w);
+    if (shell != 0 && XtIsRealized(shell))
+	wm_set_icon(shell, iconlogo(w), iconmask(w));
 }
 
 //-----------------------------------------------------------------------------
