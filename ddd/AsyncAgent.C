@@ -287,13 +287,15 @@ void AsyncAgent::killProcess(XtPointer client_data, XtIntervalId *)
 
 void AsyncAgent::terminate(bool onExit)
 {
+    bool was_running = (pid() > 0 && running());
+
     Agent::terminate(onExit);
 
     if (onExit)
     {
 	Agent::waitToTerminate();
     }
-    else if (pid() > 0 && running() && !killing_asynchronously)
+    else if (was_running && !killing_asynchronously)
     {
 	// Kill asynchronously.  We don't want to wait until the
 	// process dies, so we just send out some signals and pretend
