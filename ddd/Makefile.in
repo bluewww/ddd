@@ -637,7 +637,6 @@ BASE_OBJECTS = \
 	compare.o    \
 	cook.o       \
 	cwd.o        \
-	debugged.o   \
 	glob.o       \
 	hash.o       \
 	home.o       \

@@ -209,7 +209,6 @@ char ddd_rcsid[] =
 #include "charsets.h"
 #include "cmdtty.h"
 #include "comm-manag.h"
-#include "debugged.h"
 #include "Command.h"
 #include "complete.h"
 #include "converters.h"
@@ -1960,10 +1959,6 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    // Enable maintenance menu if debugging DDD
-    if (being_debugged())
-	app_data.maintenance = true;
-
     // Setup label hack
     arg = 0;
     XtCreateWidget("label_hack", xmLabelHackWidgetClass, toplevel, args, arg);
@@ -2780,7 +2775,8 @@ int main(int argc, char *argv[])
     // Setup TTY interface
     setup_tty();
 
-    // Raise core limit if needed (this must be done before starting GDB)
+    // Raise core limit if needed; required for getting session info.
+    // Note: this must be done before starting GDB.
     setup_core_limit();
 
     // Start debugger
@@ -7470,11 +7466,6 @@ static void setup_options()
     set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
     set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
     set_sensitive(set_debugger_perl_w, have_cmd("perl"));
-
-#if 0
-    set_sensitive(debug_ddd_w, !being_debugged());
-    set_sensitive(dump_core_w, !being_debugged());
-#endif
 }
 
 static void setup_core_limit()
