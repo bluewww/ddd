@@ -385,7 +385,6 @@ PBMTOXBM   = pbmtoxbm
 PNMGAMMA   = pnmgamma
 PGMENHANCE = pgmenhance
 PNMDEPTH   = pnmdepth
-SXPM       = sxpm
 
 ### END OF CUSTOMIZATION SECTION ---
 ### You shouldn't need to change anything below this line.
@@ -543,9 +542,8 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 ## Icon rules
 .xpm.xbm:
 	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/[.]x[bp]m.*//'`; \
-	$(SXPM) -nod -o - -mono $< | \
+	$(SED) 's/[	 ][cg]4*[ 	][#a-zA-Z0-9][#a-zA-Z0-9]*//g' $< | \
 	$(SED) 's/[nN]one/white/g' | \
-	$(SED) 's/[gG]r[ae]y[a-z0-9]*/black/g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
 	$(PBMTOXBM) | $(SED) "s/noname/$${base}/g" | \
 	$(SED) "s/static char/static unsigned char/g" > $@~
@@ -555,8 +553,12 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 # modify the icons.  In case of trouble, use GNU make.
 %-xx.xpm: %.xpm
 	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
-	$(SED) 's/c black /c grey50/' $< | \
-	$(SED) 's/c white /c grey75/' | $(SED) "s/$$base/&_xx/" > $@
+	$(SED) 's/[ 	]c[	 ][#a-zA-Z0-9][#a-zA-Z0-9]*//' $< | \
+	$(SED) 's/ g black / g grey50/' | \
+	$(SED) 's/ g white / g grey75/' | \
+	$(SED) 's/g \([a-zA-Z0-9]*\) /c \1 g \1/' | \
+	$(SED) "s/$$base/&_xx/" > $@~
+	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
 
 %-xx.xbm: %-xx.xpm
 	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
@@ -1589,25 +1591,18 @@ icons:	$(ICONS)
 
 # All X bitmaps are derived from the XPM sources.
 
-$(icondir)/ddd.xbm: $(icondir)/ddd.xpm
-	-$(SXPM) -nod -o - -mono $(icondir)/ddd.xpm | \
-	$(SED) 's/[nN]one/white/g' | $(SED) 's/gr[ae]y/white/g' | \
-	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
-	$(PBMTOXBM) | $(SED) 's/noname/ddd/g' | \
-	$(SED) "s/static char/static unsigned char/g" > $@~
-	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
+$(icondir)/dddmask.xpm: $(icondir)/ddd.xpm
+	$(SED) 's/[wW]hite/black/g' $(icondir)/ddd.xpm > $@
 
-$(icondir)/dddmask.xbm: $(icondir)/ddd.xpm
-	-$(SXPM) -nod -o - -mono $(icondir)/ddd.xpm | \
-	$(SED) 's/[nN]one/white/g' | $(SED) 's/gr[ae]y/black/g' | \
-	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
-	$(PBMTOXBM) | $(SED) 's/noname/dddmask/g' | \
-	$(SED) "s/static char/static unsigned char/g" > $@~
-	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
+$(icondir)/ddd.xbm: $(icondir)/ddd.xpm
+
+$(icondir)/dddmask.xbm: $(icondir)/dddmask.xpm
 
 $(icondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
-	-$(SXPM) -nod -o - -grey $(icondir)/dddsplash.xpm | $(XPMTOPPM) | \
-	$(PNMDEPTH) 255 | $(PNMGAMMA) 0.75 | $(PPMTOPGM) | $(PGMENHANCE) -7 | \
+	-$(CAT) $(icondir)/dddsplash.xpm | \
+	$(SED) 's/[	 ][cmg][ 	][#a-zA-Z0-9][#a-zA-Z0-9]*//g' | \
+	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PNMGAMMA) 0.4 | $(PPMTOPGM) | \
+	$(PGMENHANCE) -7 | \
 	$(PGMTOPBM) | $(PBMTOXBM) | $(SED) 's/noname/dddsplash/g' | \
 	$(SED) "s/static char/static unsigned char/g" > $@~
 	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
