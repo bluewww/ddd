@@ -379,14 +379,21 @@ FIG2DEV = fig2dev
 FIG2PS = $(FIG2DEV) -L ps
 
 # Some XPM/PPM/PostScript converters, from the netpbm and pbmplus packages.
-XPMTOPPM   = xpmtoppm
+PBMTOXBM   = pbmtoxbm
+PGMENHANCE = pgmenhance
+PGMTOPBM   = pgmtopbm
+PNMARITH   = pnmarith
+PNMCUT     = pnmcut
+PNMDEPTH   = pnmdepth
+PNMGAMMA   = pnmgamma
+PNMINVERT  = pnminvert
+PNMMARGIN  = pnmmargin
+PNMPASTE   = pnmpaste
 PNMTOPS    = pnmtops
 PPMTOPGM   = ppmtopgm
-PGMTOPBM   = pgmtopbm
-PBMTOXBM   = pbmtoxbm
-PNMGAMMA   = pnmgamma
-PGMENHANCE = pgmenhance
-PNMDEPTH   = pnmdepth
+PPMTOXPM   = ppmtoxpm
+XBMTOPBM   = xbmtopbm
+XPMTOPPM   = xpmtoppm
 
 # The face-generating program from the `compface' package.  (xbm2xface.pl)
 XBM2XFACE  = xbm2xface.pl
@@ -576,20 +583,40 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 
 # Old makes will fail on pattern rules.  No big deal, unless you want to
 # modify the icons.  In case of trouble, use GNU make.
-%-xx.xpm: %.xpm
+
+# This jewel makes an `emboss' effect in two steps:
+# 1. Create a displaced mask in FILE-mask.pbm, using `pnmcut' and `pnmpaste'
+# 2. Add the mask to FILE.xbm, using `pnmarith'.
+%-xx.xpm: %.xbm
+	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
+	$(SED) 's/unsigned //' $< | \
+	$(XBMTOPBM) > $${base}-object.pbm; \
+	$(PNMMARGIN) 1 $${base}-object.pbm | \
+	$(PNMCUT) 0 0 29 25 | \
+	$(PNMINVERT) | \
+	$(PNMPASTE) -and $${base}-object.pbm 0 0 > $${base}-mask.pbm; \
+	$(PPMTOXPM) $${base}-object.pbm | \
+	$(SED) 's/#00*/grey50/' | \
+	$(SED) 's/#FF*/grey/' | \
+	$(XPMTOPPM) > $${base}-button.ppm; \
+	$(PNMARITH) -add $${base}-button.ppm $${base}-mask.pbm | \
+	$(PPMTOXPM) | \
+	$(SED) 's/c #BE[BE]*/c none   g none   m none  s Background/' | \
+	$(SED) 's/c #7F[7F]*/c grey50 g grey50 m black/' | \
+	$(SED) 's/c #FF*/c white  g white  m white/' | \
+	$(SED) "s/noname/$${base}_xx_xpm/" > $@~; \
+	$(RM) $${base}-object.pbm $${base}-mask.pbm $${base}-button.ppm
+	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
+
+%-xx.xbm: %.xpm
 	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
 	$(SED) 's/[ 	]c[	 ][#a-zA-Z0-9][#a-zA-Z0-9]*//' $< | \
 	$(SED) 's/ g black  / g grey50 /' | \
 	$(SED) 's/ g white  / g grey75 /' | \
 	$(SED) 's/g \([a-zA-Z0-9]*\) /c \1 g \1 /' | \
-	$(SED) "s/$$base/&_xx/" > $@~
-	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
-
-%-xx.xbm: %-xx.xpm
-	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
-	$(SED) 's/[nN]one/white/g' $< | \
+	$(SED) 's/[nN]one/white/g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
-	$(PBMTOXBM) | $(SED) "s/noname/$${base}_xx/g" | \
+	$(PBMTOXBM) | $(SED) "s/noname/$${base}_xx/" | \
 	$(SED) "s/static char/static unsigned char/g" > $@~
 	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
 
