@@ -261,6 +261,20 @@ int TTYAgent::open_tty(const char *tty, int flags)
     return fd;
 }
 
+// Check whether a TTY is usable
+bool TTYAgent::tty_ok(const char *tty)
+{
+    if (access(tty, R_OK | W_OK) != 0)
+	return false;		// No access
+
+    int fd = open_tty(tty);
+    if (fd < 0)
+	return false;		// Cannot open
+
+    close(fd);
+    return true;
+}
+
 
 // Open master side of pty.
 // Depending on the host features, we try a large variety of possibilities.
@@ -280,7 +294,7 @@ void TTYAgent::open_master()
     if (master >= 0)
     {
 	// Verify slave side is usable
-	if (access(slave_line, R_OK | W_OK) == 0)
+	if (tty_ok(slave_line))
 	{
 	    _master_tty  = master_line;
 	    _slave_tty   = slave_line;
@@ -297,7 +311,7 @@ void TTYAgent::open_master()
     if (line != 0 && master >= 0)
     {
 	// Verify slave side is usable
-	if (access(line, R_OK | W_OK) == 0)
+	if (tty_ok(line))
 	{
 	    char *t = ttyname(master);
 	    if (t)
@@ -318,7 +332,7 @@ void TTYAgent::open_master()
 	    line = ttyname(master);
 	    if (line != 0)
 	    {
-		if (access(line, R_OK | W_OK) == 0)
+		if (tty_ok(line))
 		{
 		    _master_tty = line;
 		    _slave_tty  = line;
@@ -350,7 +364,7 @@ void TTYAgent::open_master()
 		_raiseIOMsg("grantpt " + string(line));
 	    else if (unlockpt(master))
 		_raiseIOMsg("unlockpt " + string(line));
-	    else if (access(line, R_OK | W_OK))
+	    else if (!tty_ok(line))
 		_raiseIOMsg("access " + string(line));
 	    else
 	    {
@@ -390,7 +404,8 @@ void TTYAgent::open_master()
 	    master = open_tty(pty.chars());
 	    if (master >= 0)
 	    {
-		if (access(tty, R_OK | W_OK) != 0)
+		// Verify slave tty is usable
+		if (!tty_ok(tty))
 		{
 		    close(master);
 		    continue;
@@ -403,7 +418,7 @@ void TTYAgent::open_master()
 	}
     }
 
-    const string p1 = "pqrstuvwxyzPQRST";
+    const string p1 = "pqrstuvwxyzPQRSTUVWXYZ";
     const string p2 = "0123456789abcdefghijklmnopqrstuvwxyz";
 
     if (stat("/dev/ptym", &sb) == 0 && S_ISDIR(sb.st_mode))
@@ -419,7 +434,8 @@ void TTYAgent::open_master()
 		master = open_tty(pty.chars());
 		if (master >= 0)
 		{
-		    if (access(tty, R_OK | W_OK) != 0)
+		    // Verify slave tty is usable
+		    if (!tty_ok(tty))
 		    {
 			close(master);
 			continue;
@@ -450,7 +466,8 @@ void TTYAgent::open_master()
 		master = open_tty(pty.chars());
 		if (master >= 0)
 		{
-		    if (access(tty, R_OK | W_OK) != 0)
+		    // Verify slave tty is usable
+		    if (!tty_ok(tty))
 		    {
 			close(master);
 			continue;

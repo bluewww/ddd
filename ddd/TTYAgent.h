@@ -63,7 +63,10 @@ protected:
     // Open a tty.
     // Like open(TTY, FLAGS), but care for EAGAIN and EWOULDBLOCK conditions
     virtual int open_tty(const char *tty, int flags = O_RDWR);
-    
+
+    // Check whether a TTY is usable
+    virtual bool tty_ok(const char *tty);
+
 public:
     // Constructors
     TTYAgent(XtAppContext app_context, string pth,
