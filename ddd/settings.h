@@ -42,5 +42,8 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer);
 // Process `show' output
 void process_show(string command, string value, bool init = false);
 
+// Get settings string
+string get_gdb_settings();
+
 #endif // _DDD_settings_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

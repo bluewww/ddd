@@ -1481,9 +1481,7 @@ Some debugger settings are insensitive and cannot be changed, because
 doing so would endanger \s-2@DDD@\s+2 operation.  See the
 `\fBgdbInitCommands\fR' resource for details.
 .PP
-Debugger settings are not saved with \s-2@DDD@\s+2 options.  Instead,
-insert the associated commands in your personal \fB$HOME/.gdbinit\fR
-file to customize \s-2GDB\s+2.
+Debugger settings are saved with \s-2@DDD@\s+2 options.
 .\"
 .\"
 .\" ---------------
@@ -1756,6 +1754,13 @@ Do not use this resource to customize \s-2DBX\s+2; instead, use a
 personal `\fB$HOME/.dbxinit\fR' or `\fB$HOME/.dbxrc\fR' file.  See
 your \s-2DBX\s+2 documentation for details.
 .TP
+B "dbxSettings (\fPclass\fB DBXSettings)"
+This string contains a list of newline-separated commands that are
+also initially sent to \s-2DBX\s+2.  By default, it is empty.
+.br
+In future \s-2@DDD@\s+2 releases, this resource will be used to save
+and restore debugger settings.
+.TP
 .B "debugger (\fPclass\fB Debugger)"
 The type of the inferior debugger (`\fBgdb\fR', `\fBdbx\fR', or
 `\fBxdb\fR').  Default value is `\fBgdb\fR'.  This resource is usually
@@ -1803,20 +1808,30 @@ settings vital to \s-2@DDD@\s+2:
   \fB@Ddd@*gdbInitCommands: \\
   set height 0\\n\\
   set width 0\\n\\
-   set print repeats 0\\n\\
    set verbose off\\n\\
-   set print asm-demangle on\\n\\
   set prompt (gdb) \\n\fR
 .br
 .sp
 While the `\fBset height\fR', `\fBset width\fR', and `\fBset
-prompt\fR' settings are fixed, the `\fBset print\fR' and `\fBset
-verbose\fR' settings can be changed through the \s-2GDB\s+2 settings
-panel (although being reset upon each new \s-2@DDD@\s+2 invocation).
+prompt\fR' settings are fixed, the `\fBset verbose\fR' settings can be
+changed through the \s-2GDB\s+2 settings panel (although being reset
+upon each new \s-2@DDD@\s+2 invocation).
 .br
 Do not use this resource to customize \s-2GDB\s+2; instead, use a
 personal `\fB$HOME/.gdbinit\fR' file.  See your \s-2GDB\s+2
 documentation for details.
+.TP
+B "gdbSettings (\fPclass\fB GDBSettings)"
+This string contains a list of newline-separated commands that are
+also initially sent to \s-2GDB\s+2.  Its default value is
+.sp
+.br
+  \fB@Ddd@*gdbSettings: \\
+  set print repeats 0\\n\\
+  set print asm-demangle on\\n
+.br
+.sp
+This resource is used to save and restore the debugger settings.
 .TP
 .B "questionTimeout (\fPclass\fB QuestionTimeout)"
 The time (in seconds) to wait for the inferior debugger to reply.
@@ -1861,6 +1876,13 @@ initially sent to \s-2XDB\s+2.  By default, it is empty.
 Do not use this resource to customize \s-2DBX\s+2; instead, use a
 personal `\fB$HOME/.xdbrc\fR' file.  See your \s-2XDB\s+2
 documentation for details.
+.TP
+B "xdbSettings (\fPclass\fB XDBSettings)"
+This string contains a list of newline-separated commands that are
+also initially sent to \s-2XDB\s+2.  By default, it is empty.
+.br
+In future \s-2@DDD@\s+2 releases, this resource will be used to save
+and restore debugger settings.
 .\"
 .\"
 .\"

@@ -304,6 +304,12 @@ static void add_button(string line, EntryType entry_filter, int& row)
     string base         = set_command.after("set ");
     string show_command = "show " + base;
 
+    if (base == "args")
+	return;			// Already handled in `Run...' editor
+
+    if (base == "radix")
+	return;			// Already handled in input- and output-radix
+
     if (!doc.contains("Set ", 0))
     {
 	// Generic command or `set variable' - list `set' subcommands
@@ -580,81 +586,119 @@ static void ResetSettingsCB (Widget, XtPointer, XtPointer)
     }
 }
 
+// Create settings editor
+static Widget create_settings()
+{
+    static Widget settings = 0;
+    if (settings != 0 || !gdb->isReadyWithPrompt())
+	return settings;
+
+    StatusDelay delay("Retrieving debugger settings");
+
+    Arg args[10];
+    int arg;
+
+    arg = 0;
+    settings = verify(XmCreatePromptDialog(find_shell(), "settings", 
+    				       args, arg));
+    Delay::register_shell(settings);
+
+    // Remove old prompt and cancel button
+    XtUnmanageChild(XmSelectionBoxGetChild(settings, XmDIALOG_TEXT));
+    XtUnmanageChild(XmSelectionBoxGetChild(settings, 
+    				       XmDIALOG_SELECTION_LABEL));
+    XtAddCallback(settings, XmNhelpCallback, ImmediateHelpCB, 0);
+    XtAddCallback(settings, XmNokCallback, UnmanageThisCB, 
+    	      XtPointer(settings));
+
+    reset_settings = 
+        XmSelectionBoxGetChild(settings, XmDIALOG_CANCEL_BUTTON);
+    XtRemoveAllCallbacks(reset_settings, XmNactivateCallback);
+    XtAddCallback(reset_settings, XmNactivateCallback, ResetSettingsCB, 0);
+    XtVaSetValues(settings, XmNdefaultButton, Widget(0), NULL);
+
+    // Add a rowcolumn widget
+    arg = 0;
+    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNspacing,      0); arg++;
+    Widget column =
+        verify(XmCreateRowColumn(settings, "column", args, arg));
+    XtManageChild(column);
+
+    // Add a label
+    arg = 0;
+    Widget title =
+        verify(XmCreateLabel(column, "title", args, arg));
+    XtManageChild(title);
+
+    // Add a scrolled window...
+    arg = 0;
+    Widget scroll = 
+        verify(XmCreateScrolledWindow(column, "scroll", args, arg));
+
+    // ...and a form.
+    arg = 0;
+    settings_form = verify(XmCreateForm(scroll, "form", args, arg));
+
+    // Add setting buttons to the button box.
+    int row = 0;
+    add_settings(row, BoolToggleButtonEntry);
+    // add_separator(row);
+    add_settings(row, NumToggleButtonEntry);
+    add_separator(row);
+    add_settings(row, OtherOptionMenuEntry);
+    add_separator(row);
+    add_settings(row, CheckOptionMenuEntry);
+    add_separator(row);
+    add_settings(row, TextFieldEntry);
+    clear_gdb_question_cache();
+    update_reset_settings();
+
+    XtVaSetValues(settings_form, XmNfractionBase, row, NULL);
+    XtManageChild(settings_form);
+    XtManageChild(scroll);
+
+    return settings;
+}
+
 // Popup editor for debugger settings
 void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 {
-    static Widget settings = 0;
-
-    if (settings == 0)
-    {
-	StatusDelay delay("Retrieving debugger settings");
-
-	Arg args[10];
-	int arg;
-
-	arg = 0;
-	settings = verify(XmCreatePromptDialog(find_shell(), "settings", 
-					       args, arg));
-	Delay::register_shell(settings);
-
-	// Remove old prompt and cancel button
-	XtUnmanageChild(XmSelectionBoxGetChild(settings, XmDIALOG_TEXT));
-	XtUnmanageChild(XmSelectionBoxGetChild(settings, 
-					       XmDIALOG_SELECTION_LABEL));
-	XtAddCallback(settings, XmNhelpCallback, ImmediateHelpCB, 0);
-	XtAddCallback(settings, XmNokCallback, UnmanageThisCB, 
-		      XtPointer(settings));
-
-	reset_settings = 
-	    XmSelectionBoxGetChild(settings, XmDIALOG_CANCEL_BUTTON);
-	XtRemoveAllCallbacks(reset_settings, XmNactivateCallback);
-	XtAddCallback(reset_settings, XmNactivateCallback, ResetSettingsCB, 0);
-	XtVaSetValues(settings, XmNdefaultButton, Widget(0), NULL);
-
-	// Add a rowcolumn widget
-	arg = 0;
-	XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-	XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
-	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
-	XtSetArg(args[arg], XmNspacing,      0); arg++;
-	Widget column =
-	    verify(XmCreateRowColumn(settings, "column", args, arg));
-	XtManageChild(column);
-
-	// Add a label
-	arg = 0;
-	Widget title =
-	    verify(XmCreateLabel(column, "title", args, arg));
-	XtManageChild(title);
-
-	// Add a scrolled window...
-	arg = 0;
-	Widget scroll = 
-	    verify(XmCreateScrolledWindow(column, "scroll", args, arg));
-
-	// ...and a form.
-	arg = 0;
-	settings_form = verify(XmCreateForm(scroll, "form", args, arg));
-
-	// Add setting buttons to the button box.
-	int row = 0;
-	add_settings(row, BoolToggleButtonEntry);
-	// add_separator(row);
-	add_settings(row, NumToggleButtonEntry);
-	add_separator(row);
-	add_settings(row, OtherOptionMenuEntry);
-	add_separator(row);
-	add_settings(row, CheckOptionMenuEntry);
-	add_separator(row);
-	add_settings(row, TextFieldEntry);
-	clear_gdb_question_cache();
-	update_reset_settings();
-
-	XtVaSetValues(settings_form, XmNfractionBase, row, NULL);
-	XtManageChild(settings_form);
-	XtManageChild(scroll);
-    }
-
+    Widget settings = create_settings();
     XtManageChild(settings);
     raise_shell(settings);
+}
+
+// Fetch GDB settings string
+string get_gdb_settings()
+{
+    create_settings();
+
+    string command = "";
+    for (int i = 0; i < entries.size(); i++)
+    {
+	Widget entry = entries[i];
+	string value = values[entry];
+	if (value == "unlimited")
+	    value = "0";
+
+	string base = XtName(entry);
+	if (base == "set remotelogfile" && value == "")
+	{
+	    // This is the default setting - do nothing
+	}
+	else if (base == "set remotedevice" && value == "")
+	{
+	    // This is the default setting - do nothing
+	}
+	else
+	{
+	    // Add setting
+	    command += base + ' ' + value + '\n';
+	}
+    }
+
+    return command;
 }

@@ -375,30 +375,34 @@ Ddd*indentAmount:	8
 ! so don't change them unless required by your GDB version.
 ! Use a personal `~/.gdbinit' file instead to customize GDB.
 !
+! If a `set' command begins in the first column, the appropriate entry
+! in the `settings' panel is disabled - that is, the setting is frozen.
+!
 ! Users of GDB 4.12 and earlier may wish to add a line `display /x $pc',
 ! as these GDB versions do not issue the current PC location when source
 ! code is not available.
-!
-! Technically, the two commands `set print repeats 0' and 
-! `set print asm-demangle on' are not required by DDD, but 
-! this is frequently demanded by DDD users...
 Ddd*gdbInitCommands:	\
 set height 0\n\
 set width 0\n\
- set print repeats 0\n\
  set verbose off\n\
- set print asm-demangle on\n\
 set prompt (gdb) \n
 
+! The GDB settings.  Usually overridden in `~/.dddinit'.
+Ddd*gdbSettings: \
+set print asm-demangle on\n\
+set print repeats 0\n
 
-! The DBX initialization commands.  Nothing special yet.  
+
+! The DBX initialization commands and settings.  Nothing special yet.  
 ! Use a personal `~/.dbxinit' or `~/.dbxrc' file to customize DBX.
 Ddd*dbxInitCommands:
+Ddd*dbxSettings:
 
 
-! The XDB initialization commands.  Nothing special yet.
+! The XDB initialization commands and settings.  Nothing special yet.
 ! Use a personal `~/.xdbrc' file to customize XDB.
 Ddd*xdbInitCommands:
+Ddd*xdbSettings:
 
 
 ! The VSL library for displaying graph nodes.  `builtin' means the VSL
@@ -1501,7 +1505,8 @@ only complete words are found.\n\
 @tt \267 @rm If @bf Display Machine Code @rm is set, \
 the current function is automatically disassembled.\n\
 \n\
-@bf Save Options @rm saves options and preferences for the next use of @DDD@.
+@bf Save Options @rm saves options, preferences, and debugger settings\n\
+for the next @DDD@ invocation.
 
 Ddd*optionsMenu.separateExecWindow.labelString:		Run in Execution Window
 Ddd*optionsMenu.separateExecWindow.mnemonic:		E
@@ -2018,13 +2023,13 @@ Ddd*settings*contextHelpString: \
 @rm These are the @sl Debugger Settings@rm.\n\
 \n\
 These settings affect the inferior debugger only.\n\
-Click on @bf ? @rm near an item to get further information.\n\
-Click on @bf Reset @rm to restore the initial settings.\n\
+They can be saved using @bf Save Options @rm in the @bf Options @rm menu.\n\
 \n\
-Note: debugger settings are not saved with @DDD@ options.\n\
-Insert the resulting commands in your personal\n\
-@tt ~/.gdbinit@rm, @tt~/.dbxinit@rm, @tt~/.dbxrc@rm, or @tt~/.xdbrc @rm file\n\
-to customize the inferior debugger.
+Click on @bf ? @rm near an item to get further information.\n\
+In a text field, press the @key RETURN @rm key to commit the changes.\n\
+\n\
+Click on @bf Reset @rm to restore the settings at start-up.\n\
+Click on @bf Close @rm to close this window.
 
 
 !-----------------------------------------------------------------------------

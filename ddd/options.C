@@ -46,6 +46,7 @@ const char options_rcsid[] =
 #include "status.h"
 #include "string-fun.h"
 #include "windows.h"
+#include "settings.h"
 
 #include <Xm/Xm.h>
 #include <Xm/ToggleB.h>
@@ -490,14 +491,23 @@ inline string bool_app_value(const string& name, bool value)
     return string(DDD_CLASS_NAME) + "*" + name + ": " + bool_value(value);
 }
 
-inline string string_app_value(const string& name, const string& value)
-{
-    return string(DDD_CLASS_NAME) + "*" + name + ": " + value;
-}
-
 inline string int_app_value(const string& name, int value)
 {
     return string(DDD_CLASS_NAME) + "*" + name + ": " + itostring(value);
+}
+
+string string_app_value(const string& name, string value)
+{
+    value = cook(value);
+    if (value.contains("\\n"))
+    {
+	value.gsub("\\n", "\\n\\\n");
+	if (value.contains("\\\n", -1))
+	    value = value.before(int(value.length()) - 2);
+	value = "\\\n" + value;
+    }
+
+    return string(DDD_CLASS_NAME) + "*" + name + ": " + value;
 }
 
 string widget_value(Widget w, String name)
@@ -575,6 +585,31 @@ void save_options(Widget origin)
     // The version
     os << string_app_value(XtNdddinitVersion,
 			   DDD_VERSION) << "\n";
+
+    // Debugger settings
+    string gdb_settings = app_data.gdb_settings;
+    string dbx_settings = app_data.dbx_settings;
+    string xdb_settings = app_data.xdb_settings;
+
+    switch (gdb->type())
+    {
+    case GDB:
+	gdb_settings = get_gdb_settings();
+	break;
+
+    case DBX:
+	// dbx_settings = get_dbx_settings();
+	break;
+
+    case XDB:
+	// xdb_settings = get_xdb_settings();
+	break;
+    }
+
+    os << string_app_value(XtNgdbSettings, gdb_settings) << "\n";
+    os << string_app_value(XtNdbxSettings, dbx_settings) << "\n";
+    os << string_app_value(XtNxdbSettings, xdb_settings) << "\n";
+
 
     // Some settable top-level defaults
     os << bool_app_value(XtNfindWordsOnly,

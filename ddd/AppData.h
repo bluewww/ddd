@@ -48,10 +48,16 @@
 #define XtCTrace                 "Trace"
 #define XtNgdbInitCommands       "gdbInitCommands"
 #define XtCGDBInitCommands       "GDBInitCommands"
+#define XtNgdbSettings           "gdbSettings"
+#define XtCGDBSettings           "GDBSettings"
 #define XtNdbxInitCommands       "dbxInitCommands"
 #define XtCDBXInitCommands       "DBXInitCommands"
+#define XtNdbxSettings           "dbxSettings"
+#define XtCDBXSettings           "DBXSettings"
 #define XtNxdbInitCommands       "xdbInitCommands"
 #define XtCXDBInitCommands       "XDBInitCommands"
+#define XtNxdbSettings           "xdbSettings"
+#define XtCXDBSettings           "XDBSettings"
 #define XtNvslPath               "vslPath"
 #define XtCVSLPath               "VSLPath"
 #define XtNvslLibrary            "vslLibrary"
@@ -165,8 +171,11 @@ struct AppData {
     Boolean trace_dialog;
     Boolean trace_shell_commands;
     String  gdb_initial_cmds;
+    String  gdb_settings;
     String  dbx_initial_cmds;
+    String  dbx_settings;
     String  xdb_initial_cmds;
+    String  xdb_settings;
     String  vsl_path;
     String  vsl_library;
     String  vsl_defs;

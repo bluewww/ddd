@@ -88,9 +88,18 @@ XtResource ddd_resources[] = {
 	XtPointer(
 	    "set height 0\n"
 	    "set width 0\n"
-	    "set print repeats 0\n" 
-	    "set verbose off\n"
+	    " set verbose off\n"
 	    "set prompt (gdb) \n")
+    },
+
+    { 
+	XtNgdbSettings, 
+	XtCGDBSettings, 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, gdb_settings), 
+	XtRString,
+	XtPointer("")
     },
 
     { 
@@ -104,11 +113,31 @@ XtResource ddd_resources[] = {
     },
 
     { 
+	XtNdbxSettings, 
+	XtCDBXSettings, 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, dbx_settings), 
+	XtRString,
+	XtPointer("")
+    },
+
+    { 
 	XtNxdbInitCommands, 
 	XtCXDBInitCommands, 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, xdb_initial_cmds), 
+	XtRString,
+	XtPointer("")
+    },
+
+    { 
+	XtNxdbSettings, 
+	XtCXDBSettings, 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, xdb_settings), 
 	XtRString,
 	XtPointer("")
     },

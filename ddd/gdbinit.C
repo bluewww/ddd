@@ -58,23 +58,32 @@ GDBAgent *new_gdb(DebuggerType type,
 		  int argc, char *argv[])
 {
     char *initial_cmds = 0;
+    char *settings = 0;
+
     switch (type)
     {
     case GDB:
 	initial_cmds = app_data.gdb_initial_cmds;
+	settings     = app_data.gdb_settings;
 	break;
 
     case DBX:
 	initial_cmds = app_data.dbx_initial_cmds;
+	settings     = app_data.dbx_settings;
 	break;
 
     case XDB:
 	initial_cmds = app_data.xdb_initial_cmds;
+	settings     = app_data.xdb_settings;
 	break;
     }
 
-    if (initial_cmds == 0 || initial_cmds[0] == '\0')
+    if ((initial_cmds == 0 || initial_cmds[0] == '\0')
+	&& (settings == 0 || settings[0] == '\0'))
+    {
+	// No initial commands
 	gdb_init_file = "";
+    }
     else
     {
 	// Set initial commands
@@ -84,10 +93,15 @@ GDBAgent *new_gdb(DebuggerType type,
 	    string cmd = sh_command("cat > " + gdb_init_file);
 	    FILE *fp = popen(cmd, "w");
 	    if (fp == 0)
+	    {
 		perror(gdb_init_file);
+	    }
 	    else
 	    {
-		fputs(initial_cmds, fp);
+		if (settings)
+		    fputs(settings, fp);
+		if (initial_cmds)
+		    fputs(initial_cmds, fp);
 		pclose(fp);
 	    }
 	}
@@ -95,7 +109,10 @@ GDBAgent *new_gdb(DebuggerType type,
 	{
 	    gdb_init_file = tmpnam(0);
 	    ofstream os(gdb_init_file);
-	    os << initial_cmds << "\n";
+	    if (settings)
+		os << settings << "\n";
+	    if (initial_cmds)
+		os << initial_cmds << "\n";
 	}
     }
 
@@ -213,7 +230,7 @@ void remove_init_file()
 	}
 	else
 	{
-	    unlink((String)gdb_init_file);
+	    unlink(gdb_init_file.chars());
 	}
 	gdb_init_file = "";
     }
