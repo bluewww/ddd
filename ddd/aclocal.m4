@@ -790,10 +790,10 @@ X_CFLAGS="-I$motif_includes $X_CFLAGS"
 fi
 if test "$motif_libraries" != "" && test "$motif_libraries" != "$x_libraries"
 then
-# Use `-R lib', not `-Rlib', since Sun CC 3.0 requires this.
 case "$X_LIBS" in
-*-R*) X_LIBS="-L $motif_libraries -R $motif_libraries $X_LIBS";;
-*) X_LIBS="-L $motif_libraries $X_LIBS";;
+  *-R\ *) X_LIBS="-L$motif_libraries -R $motif_libraries $X_LIBS";;
+  *-R*)   X_LIBS="-L$motif_libraries -R$motif_libraries $X_LIBS";;
+  *)      X_LIBS="-L$motif_libraries $X_LIBS";;
 esac
 fi
 #
@@ -945,10 +945,10 @@ X_CFLAGS="-I$athena_includes $X_CFLAGS"
 fi
 if test "$athena_libraries" != "" && test "$athena_libraries" != "$x_libraries"
 then
-# Use `-R lib', not `-Rlib', since Sun CC 3.0 requires this.
 case "$X_LIBS" in
-*-R*) X_LIBS="-L $athena_libraries -R $athena_libraries $X_LIBS";;
-*) X_LIBS="-L $athena_libraries $X_LIBS";;
+  *-R\ *) X_LIBS="-L$athena_libraries -R $athena_libraries $X_LIBS";;
+  *-R*)   X_LIBS="-L$athena_libraries -R$athena_libraries $X_LIBS";;
+  *)      X_LIBS="-L$athena_libraries $X_LIBS";;
 esac
 fi
 #
