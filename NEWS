@@ -65,6 +65,8 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
       state, DDD will automatically make it ungrab the pointer.
     - In the source argument field `()', pressing RETURN activates
       the `Lookup ()' button.
+    - You can now clear all argument fields `()' by clicking on the
+      prompt `():'.
     - Unnecessary redisplays have been significantly reduced, causing
       much less flickering.
     - You can search for keywords in the online DDD manual.

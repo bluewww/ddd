@@ -36,7 +36,13 @@ char ArgField_rcsid[] =
 //-----------------------------------------------------------------------------
 #include "ArgField.h"
 #include <ctype.h>
+
+#include <Xm/TextF.h>
+#include <Xm/PushB.h>
+
 #include "verify.h"
+#include "charsets.h"
+
 
 // Constructor
 ArgField::ArgField (Widget parent, const char* name)
@@ -137,3 +143,27 @@ void ArgField::callHandlers ()
 }
 
 
+// Clear the text field given in Widget(CLIENT_DATA)
+void ClearTextFieldCB(Widget, XtPointer client_data, XtPointer)
+{
+    Widget arg_field = Widget(client_data);
+    XmTextFieldSetString(arg_field, "");
+}
+
+// Create a `():' label named "arg_label" for ARG_FIELD
+Widget create_arg_label(Widget parent)
+{
+    Arg args[10];
+    int arg = 0;
+
+    arg = 0;
+    XtSetArg(args[arg], XmNborderWidth,	       0);     arg++;
+    XtSetArg(args[arg], XmNshadowThickness,    0);     arg++;
+    XtSetArg(args[arg], XmNhighlightThickness, 0);     arg++;
+    XtSetArg(args[arg], XmNfillOnArm,          False); arg++;
+    Widget arg_label = 
+	verify(XmCreatePushButton(parent, "arg_label", args, arg));
+    XtManageChild(arg_label);
+
+    return arg_label;
+}

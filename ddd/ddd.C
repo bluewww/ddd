@@ -150,6 +150,7 @@ char ddd_rcsid[] =
 #include <Xm/SelectioB.h>
 #include <Xm/DialogS.h>
 #include <Xm/Form.h>
+#include <Xm/TextF.h>
 #include <Xm/ToggleB.h>
 #include <Xm/PushB.h>
 #include <Xm/ArrowB.h>
@@ -1534,12 +1535,11 @@ int main(int argc, char *argv[])
     arg_cmd_w = 
 	verify(XmCreateRowColumn(source_view_parent, "arg_cmd_w", NULL, 0));
 
-    XtVaCreateManagedWidget("arg_label",
-			    xmLabelWidgetClass,
-			    arg_cmd_w,
-			    NULL);
-
+    Widget arg_label = create_arg_label(arg_cmd_w);
     source_arg = new ArgField (arg_cmd_w, "source_arg");
+    XtAddCallback(arg_label, XmNactivateCallback, 
+		  ClearTextFieldCB, source_arg->widget());
+
     MMcreateWorkArea(arg_cmd_w, "arg_cmd_area", arg_cmd_area);
     MMaddCallbacks (arg_cmd_area);
     XtManageChild (arg_cmd_w);

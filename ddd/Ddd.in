@@ -1510,6 +1510,15 @@ Drag the sash with the @bf left mouse button @rm to resize window parts.
 Ddd*XmSash.tipString: \
 @rm Resize window
 
+Ddd*arg_label.helpString: \
+@rm This is a @sl Text Prompt.@rm\n\
+\n\
+Enter the text on the right.  Click on @bf (): @rm to clear the text field.
+Ddd*arg_label.tipString: \
+@rm Clear argument @bf()
+Ddd*arg_label.documentationString: \
+@rm Click to clear the argument @bf()@rm.
+
 
 !-----------------------------------------------------------------------------
 ! DDD manual
@@ -1546,8 +1555,8 @@ Ddd*manual_help*search.packing:		XmPACK_TIGHT
 Ddd*manual_help*search.entryAlignment:	XmALIGNMENT_CENTER
 Ddd*manual_help*search*alignment:	XmALIGNMENT_CENTER
 
-Ddd*manual_help*label.labelString:	():
-Ddd*manual_help*label.borderWidth:	0
+Ddd*manual_help*arg_label.labelString:	():
+
 Ddd*manual_help*key.columns:		50
 Ddd*manual_help*findBackward.labelString: Find@small<< @bf()
 Ddd*manual_help*findBackward.tipString:	  \
@@ -2834,8 +2843,8 @@ Ddd*graph_cmd_w.marginWidth:	 0
 Ddd*graph_cmd_w.marginHeight:	 0
 Ddd*graph_cmd_area.marginWidth:	 0
 
-Ddd*graph_cmd_w.graph_arg_label.labelString:	():
-Ddd*graph_cmd_w.graph_arg_label.marginWidth:	0
+Ddd*graph_cmd_w.arg_label.labelString:	():
+
 Ddd*graph_cmd_w.graph_arg.columns:		20
 Ddd*graph_cmd_w*graph_arg.editable:		false
 Ddd*graph_cmd_w*graph_arg.helpString:	\
@@ -3139,7 +3148,7 @@ Ddd*arg_cmd_w.marginHeight: 0
 Ddd*arg_cmd_area.marginWidth:  0
 
 Ddd*arg_cmd_w.arg_label.labelString:		():
-Ddd*arg_cmd_w.arg_label.marginWidth:		0
+
 Ddd*arg_cmd_w.source_arg.helpString:	\
 @rm This is the argument @bf () @rm for the command buttons on the right.\n\
 You can edit this field, or easily change its value\n\

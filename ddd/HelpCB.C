@@ -68,6 +68,7 @@ char HelpCB_rcsid[] =
 #include "wm.h"
 #include "post.h"
 #include "mydialogs.h"
+#include "ArgField.h"
 
 // The help system supports four resources:
 // helpString          - displayed in context-sensitive help.
@@ -634,13 +635,12 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 	Widget search = verify(XmCreateRowColumn(area, "search", args, arg));
 	XtManageChild(search);
 
-	arg = 0;
-	Widget label = verify(XmCreateLabel(search, "label", args, arg));
-	XtManageChild(label);
-
+	Widget arg_label = create_arg_label(search);
 	arg = 0;
 	Widget key = verify(XmCreateTextField(search, "key", args, arg));
 	XtManageChild(key);
+	XtAddCallback(arg_label, XmNactivateCallback, 
+		      ClearTextFieldCB, key);
 
 	arg = 0;
 	Widget findBackward = 

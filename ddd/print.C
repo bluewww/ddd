@@ -62,6 +62,7 @@ char print_rcsid[] =
 #include <Xm/SelectioB.h>
 #include <Xm/MessageB.h>
 #include <Xm/Text.h>
+#include <Xm/TextF.h>
 #include <Xm/PushB.h>
 
 

@@ -40,7 +40,7 @@
 //-----------------------------------------------------------------------------
 
 // Motif includes
-#include <Xm/TextF.h>
+#include <X11/Intrinsic.h>
 
 // Misc includes
 #include "HandlerL.h"
@@ -95,6 +95,11 @@ public:
     void callHandlers ();
 };
 
+// Create a `():' label named "arg_label"
+Widget create_arg_label(Widget parent);
+
+// Clear the text field given in Widget(CLIENT_DATA)
+void ClearTextFieldCB(Widget w, XtPointer client_data, XtPointer call_data);
 
 #endif // _DDD_ArgField_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

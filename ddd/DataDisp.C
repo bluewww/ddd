@@ -3608,12 +3608,10 @@ DataDisp::DataDisp (XtAppContext app_context,
     graph_cmd_w = 
 	verify(XmCreateRowColumn(parent, "graph_cmd_w", NULL, 0));
 
-    verify(XtVaCreateManagedWidget("graph_arg_label",
-				   xmLabelWidgetClass,
-				   graph_cmd_w,
-				   NULL));
-
+    Widget arg_label = create_arg_label(graph_cmd_w);
     graph_arg = new ArgField (graph_cmd_w, "graph_arg");
+    XtAddCallback(arg_label, XmNactivateCallback, 
+		  XtCallbackProc(graph_unselectHP), XtPointer(0));
 
     registerOwnConverters();
 
