@@ -393,6 +393,7 @@ static void setup_auto_command_prefix();
 static void setup_core_limit();
 static void setup_options();
 static void setup_cut_copy_paste_bindings(XrmDatabase db);
+static void setup_show(XrmDatabase db, char *app_name, char *gdb_name);
 
 // Help hooks
 static void PreHelpOnContext(Widget w, XtPointer, XtPointer);
@@ -1478,9 +1479,6 @@ static MMDesc arg_cmd_area[] =
 // All communication with GDB passes through this variable
 GDBAgent*     gdb = 0;
 
-// Application resources
-AppData       app_data;
-
 // Data display
 DataDisp*     data_disp;
 
@@ -1684,11 +1682,11 @@ int main(int argc, char *argv[])
 	}
     }
 
-    XrmDatabase session_db = 0;
     if (restart_session() != "")
     {
 	// A session is given in $DDD_SESSION: override everything.
-	session_db = GetFileDatabase(session_state_file(restart_session()));
+	XrmDatabase session_db = 
+	    GetFileDatabase(session_state_file(restart_session()));
 	if (session_db != 0)
 	    XrmMergeDatabases(session_db, &dddinit);
     }
@@ -1696,7 +1694,8 @@ int main(int argc, char *argv[])
     {
 	// Merge in session resources; these override `~/.ddd/init' as
 	// well as the command-line options.
-	session_db = GetFileDatabase(session_state_file(session_id));
+	XrmDatabase session_db = 
+	    GetFileDatabase(session_state_file(session_id));
 	if (session_db != 0)
 	    XrmMergeDatabases(session_db, &dddinit);
     }
@@ -1704,6 +1703,12 @@ int main(int argc, char *argv[])
     // Register own converters.  This must be done here to install the
     // String -> Cardinal converter.
     registerOwnConverters();
+
+    // Handle `--version', `--help', etc.  We do this here, since we
+    // might want to use them even without X access.
+    setup_show(dddinit, (char *)SourceView::basename(argv[0]), gdb_name);
+
+    // From this point on, we'll be running under X.
 
     // Open X connection and create top-level application shell
     XtAppContext app_context;
@@ -1792,8 +1797,14 @@ int main(int argc, char *argv[])
     // Set key bindings
     setup_cut_copy_paste_bindings(XtDatabase(XtDisplay(toplevel)));
 
+    // Handle `--version', `--help', etc.  once more, in case the user
+    // gave appropriate X resources.  Somewhat paranoid.
+    setup_show(XtDatabase(XtDisplay(toplevel)), XtName(toplevel), gdb_name);
+
     // Define font macros
     setup_fonts(app_data, XtDatabase(XtDisplay(toplevel)));
+    if (app_data.show_fonts)
+	return EXIT_SUCCESS;
 
     // Create new session dir if needed
     create_session_dir(app_data.session, messages);
@@ -1878,37 +1889,6 @@ int main(int argc, char *argv[])
 	// Don't overwrite existing log files
 	app_data.trace = true;
     }
-
-
-    // Check for `--version', `--help', `--news', etc.
-    if (app_data.show_version)
-	show_version(cout);
-
-    if (app_data.show_invocation)
-	show_invocation(type, cout);
-
-    if (app_data.show_configuration)
-	show_configuration(cout);
-
-    if (app_data.show_news)
-	show(ddd_news);
-
-    if (app_data.show_license)
-	show(ddd_license);
-
-    if (app_data.show_manual)
-	show(ddd_man);
-
-    if (app_data.show_version 
-	|| app_data.show_invocation 
-	|| app_data.show_configuration
-	|| app_data.show_news
-	|| app_data.show_license
-	|| app_data.show_manual
-	|| app_data.show_fonts)
-	return EXIT_SUCCESS;
-
-    // From this point on, we'll be running under X.
 
     // Create a `~/.ddd/log' file for this session; 
     // log invocation and configuration
@@ -6407,6 +6387,95 @@ static void check_log(const string& logname, DebuggerType& type)
 	}
     }
 }
+
+
+//-----------------------------------------------------------------------------
+// `Show' options
+//-----------------------------------------------------------------------------
+
+// Return true iff resource is defined and set
+static string resource_value(XrmDatabase db, string app_name, char *res_name)
+{
+    string str_name  = app_name + "." + res_name;
+    string str_class = string(DDD_CLASS_NAME) + "." + res_name;
+
+    char *type;
+    XrmValue xrmvalue;
+    Bool success = XrmGetResource(db, str_name, str_class, &type, &xrmvalue);
+    if (!success)
+	return "";		// Resource not found
+
+    char *str = (char *)xrmvalue.addr;
+    int len   = xrmvalue.size - 1; // includes the final `\0'
+    return string(str, len);
+}
+
+static bool is_set(string value)
+{
+    value.downcase();
+
+    if (value == "on" || value == "true" || value == "yes")
+	return true;
+    else if (value == "off" || value == "false" || value == "no")
+	return false;
+
+    // Illegal value
+    return false;
+}
+
+inline bool have_set_resource(XrmDatabase db, char *app_name, char *res_name)
+{
+    return is_set(resource_value(db, app_name, res_name));
+}
+
+static void setup_show(XrmDatabase db, char *app_name, char *gdb_name)
+{
+    // Check for `--version', `--help', `--news', etc.  This may be
+    // invoked before we have connected to an X display, so check
+    // APP_DATA as well as the resource database (initialized from the
+    // command line).
+
+    bool cont = true;
+    if (app_data.show_version || 
+	have_set_resource(db, app_name, XtNshowVersion))
+    {
+	show_version(cout);
+	cont = false;
+    }
+    if (app_data.show_invocation ||
+	have_set_resource(db, app_name, XtNshowInvocation))
+    {
+	show_invocation(gdb_name, cout);
+	cont = false;
+    }
+    if (app_data.show_configuration ||
+	have_set_resource(db, app_name, XtNshowConfiguration))
+    {
+	show_configuration(cout);
+	cont = false;
+    }
+    if (app_data.show_news ||
+	have_set_resource(db, app_name, XtNshowNews))
+    {
+	show(ddd_news);
+	cont = false;
+    }
+    if (app_data.show_license ||
+	have_set_resource(db, app_name, XtNshowLicense))
+    {
+	show(ddd_license);
+	cont = false;
+    }
+    if (app_data.show_manual ||
+	have_set_resource(db, app_name, XtNshowManual))
+    {
+	show(ddd_man);
+	cont = false;
+    }
+    if (!cont)
+	exit(EXIT_SUCCESS);
+}
+
 
 //-----------------------------------------------------------------------------
 // Various setups

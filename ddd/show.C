@@ -79,17 +79,16 @@ void show_version(ostream& os)
 // Show invocation
 //-----------------------------------------------------------------------------
 
-void show_invocation(DebuggerType type, ostream& os)
+void show_invocation(const string& gdb_command, ostream& os)
 {
     string gdb_version = "";
     string options     = "";
     string title       = "";
     string base        = "";
 
-    string gdb_get_help = 
-	sh_command(string(app_data.debugger_command) + " -h");
-    string gdb_get_version = 
-	sh_command(string(app_data.debugger_command) + " -v");
+    string gdb_get_help    = sh_command(gdb_command + " -h");
+    string gdb_get_version = sh_command(gdb_command + " -v");
+    DebuggerType type = debugger_type(gdb_command);
 
     switch (type)
     {

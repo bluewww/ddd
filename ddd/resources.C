@@ -39,6 +39,7 @@ char resources_rcsid[] =
 #include "stty.h"
 #include "config.h"
 
+#include <X11/Xfuncs.h>		// memmove
 #include <Xm/Xm.h>
 
 // Application resource definitions
@@ -1835,6 +1836,63 @@ XtResource ddd_resources[] = {
 };
 
 const int ddd_resources_size = XtNumber(ddd_resources);
+
+// Application resources
+AppData app_data;
+
+// Make sure APP_DATA is initialized with above default values
+struct AppDataInitializer {
+    AppDataInitializer();
+} app_data_initializer;
+
+// This constructor is invoked before program start
+AppDataInitializer::AppDataInitializer()
+{
+    // Copy resources to appropriate fields in APP_DATA
+    for (Cardinal i = 0; i < ddd_resources_size; i++)
+    {
+	XtResource& res = ddd_resources[i];
+	XtPointer src = res.default_addr;
+	XtPointer dst = ((char *)&app_data) + res.resource_offset;
+	Cardinal size = res.resource_size;
+
+	// This stuff is taken from Xt11R6.3 _XtCopyArg().  I hope it
+	// gets all possible conversions right...
+
+	if (size > sizeof(XtArgVal))
+	{
+	    memmove((char *)dst, (char *)src, (int)size);
+	}
+	else 
+	{
+	    union {
+		long longval;
+		int intval;
+		short shortval;
+		char charval;
+		char* charptr;
+		XtPointer ptr;
+	    } u;
+	    char *p = (char*)&u;
+	    if (size == sizeof(long))
+		u.longval = (long)src;
+	    else if (size == sizeof(int))
+		u.intval = (int)src;
+	    else if (size == sizeof(short))
+		u.shortval = (short)src;
+	    else if (size == sizeof(char))
+		u.charval = (char)src;
+	    else if (size == sizeof(XtPointer))
+		u.ptr = (XtPointer)src;
+	    else if (size == sizeof(char*))
+		u.charptr = (char*)src;
+	    else
+		p = (char*)&src;
+
+	    memmove((char *)dst, (char *)p, (int)size);
+	}
+    }
+}
 
 // Fallback resources
 String ddd_fallback_resources[] = {
