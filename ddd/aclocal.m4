@@ -985,6 +985,10 @@ dnl
 AC_DEFUN(ICE_FIND_MOTIF,
 [
 AC_REQUIRE([AC_PATH_XTRA])
+AC_ARG_WITH(motif,
+[  --without-motif              Don't use Motif widgets],
+motif_includes="$withval"
+motif_libraries="$withval")
 AC_ARG_WITH(motif-includes,
 [  --with-motif-includes=DIR    Motif include files are in DIR],
 motif_includes="$withval", motif_includes=)
@@ -1099,11 +1103,11 @@ motif_libraries="$ice_cv_motif_libraries"
 fi
 # Add Motif definitions to X flags
 #
-if test "$motif_includes" != "" && test "$motif_includes" != "$x_includes"
+if test "$motif_includes" != "" && test "$motif_includes" != "$x_includes" && test "$motif_includes" != "no"
 then
 X_CFLAGS="-I$motif_includes $X_CFLAGS"
 fi
-if test "$motif_libraries" != "" && test "$motif_libraries" != "$x_libraries"
+if test "$motif_libraries" != "" && test "$motif_libraries" != "$x_libraries" && text "$motif_libraries" != "no"
 then
 case "$X_LIBS" in
   *-R\ *) X_LIBS="-L$motif_libraries -R $motif_libraries $X_LIBS";;
@@ -1119,6 +1123,10 @@ test "$motif_libraries_result" = "" &&
   motif_libraries_result="in default path"
 test "$motif_includes_result" = "" && 
   motif_includes_result="in default path"
+test "$motif_libraries_result" = "no" && 
+  motif_libraries_result="none"
+test "$motif_includes_result" = "no" && 
+  motif_includes_result="none"
 AC_MSG_RESULT(
   [libraries $motif_libraries_result, headers $motif_includes_result])
 ])dnl
@@ -1133,6 +1141,10 @@ dnl
 AC_DEFUN(ICE_FIND_ATHENA,
 [
 AC_REQUIRE([AC_PATH_XTRA])
+AC_ARG_WITH(motif,
+[  --without-athena             Don't use Athena widgets],
+athena_includes="$withval"
+athena_libraries="$withval")
 AC_ARG_WITH(athena-includes,
 [  --with-athena-includes=DIR   Athena include files are in DIR],
 athena_includes="$withval", athena_includes=)
@@ -1254,11 +1266,11 @@ athena_libraries="$ice_cv_athena_libraries"
 fi
 # Add Athena definitions to X flags
 #
-if test "$athena_includes" != "" && test "$athena_includes" != "$x_includes"
+if test "$athena_includes" != "" && test "$athena_includes" != "$x_includes" && test "$athena_includes" != "no"
 then
 X_CFLAGS="-I$athena_includes $X_CFLAGS"
 fi
-if test "$athena_libraries" != "" && test "$athena_libraries" != "$x_libraries"
+if test "$athena_libraries" != "" && test "$athena_libraries" != "$x_libraries" && test "$athena_libraries" != "no"
 then
 case "$X_LIBS" in
   *-R\ *) X_LIBS="-L$athena_libraries -R $athena_libraries $X_LIBS";;
@@ -1274,6 +1286,10 @@ test "$athena_libraries_result" = "" &&
   athena_libraries_result="in default path"
 test "$athena_includes_result" = "" && 
   athena_includes_result="in default path"
+test "$athena_libraries_result" = "no" && 
+  athena_libraries_result="none"
+test "$athena_includes_result" = "no" && 
+  athena_includes_result="none"
 AC_MSG_RESULT(
   [libraries $athena_libraries_result, headers $athena_includes_result])
 ])dnl

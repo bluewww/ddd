@@ -83,10 +83,11 @@ Basic Installation
          Frequently used `configure' options include
          `--program-prefix=x' to have DDD installed as `xddd' (to
          avoid confusion with existing `ddd' programs) or the
-         `--with-motif' and `--with-athena' options used to specify
-         the locations of Motif and Athena widgets.  These and other
-         `configure' options are decribed below.  Note that some of
-         these options apply to the `ddd/configure' script only.
+         `--with-motif...', `--with-athena...', `--with-x...'  options
+         used to specify the locations of Motif and Athena widgets or
+         the X libraries.  These and other `configure' options are
+         decribed below.  Note that some of these options apply to the
+         `ddd/configure' script only.
 
 	 If you have multiple library versions installed (for
 	 instance, multiple X11 releases or releases from different
@@ -242,6 +243,11 @@ Optional Features
     automatically, you can use the `configure' options
     `--with-athena-includes=DIR' and `--with-athena-libraries=DIR' to
     specify their locations.
+
+    If you wish to disable Athena widgets and rely on Motif widgets
+    alone, you can use the `configure' option `--without-athena'.
+    Don't use the `--without-motif' option; DDD will not compile
+    without Motif.
 
 
 Specifying the System Type
