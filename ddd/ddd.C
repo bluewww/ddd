@@ -160,6 +160,7 @@ char ddd_rcsid[] =
 #include "AppData.h"
 #include "ArgField.h"
 #include "DataDisp.h"
+#include "ExitCB.h"
 #include "GraphEdit.h"
 #include "GDBAgent.h"
 #include "MakeMenu.h"
@@ -425,6 +426,7 @@ static MMDesc file_menu[] =
     { "quickPrint", MMPush,  { graphQuickPrintCB }},
     MMSep,
     { "close",       MMPush, { DDDCloseCB }},
+    { "restart",     MMPush, { DDDRestartCB }},
     { "quit",        MMPush, { DDDExitCB }},
     MMEnd
 };
@@ -901,6 +903,9 @@ int main(int argc, char *argv[])
     // this point, all global data objects already have been properly
     // initialized.
 
+    // Save environment for restart.
+    register_restart(argv);
+
     // This one is required for error messages
     char *program_name = argc ? argv[0] : ddd_NAME;
 
@@ -1364,7 +1369,7 @@ int main(int argc, char *argv[])
 				    source_preferences_menu);
     data_preferences = make_panel(DataDisp::graph_edit, "data_preferences",
 				  data_preferences_menu);
-    startup_preferences = make_panel(gdb_w, "startup_preferences",
+    startup_preferences = make_panel(paned_work_w, "startup_preferences",
 				     startup_preferences_menu);
 
     // All widgets are created at this point.
@@ -1821,15 +1826,15 @@ static Widget make_panel(Widget parent, String name, MMDesc items[])
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-    Widget form = XmCreateRowColumn(panel_dialog, "form", args, arg);
+    Widget form = verify(XmCreateRowColumn(panel_dialog, "form", args, arg));
     XtManageChild(form);
 
     arg = 0;
-    Widget label = XmCreateLabel(form, "label", args, arg);
+    Widget label = verify(XmCreateLabel(form, "label", args, arg));
     XtManageChild(label);
 
     arg = 0;
-    Widget frame = XmCreateFrame(form, "frame", args, arg);
+    Widget frame = verify(XmCreateFrame(form, "frame", args, arg));
     XtManageChild(frame);
 
     // Add panel
@@ -1901,6 +1906,9 @@ void gdb_ready_for_questionHP (void*, void*, void* call_data)
 
 	// Completion is done
 	clear_completion_delay();
+
+	// We don't exit and we don't restart
+	ddd_is_exiting = ddd_is_restarting = false;
     }
 
     set_sensitive(stack_w,    gdb_ready);

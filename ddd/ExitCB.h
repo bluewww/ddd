@@ -29,11 +29,13 @@
 #ifndef _DDD_ExitCB_h
 #define _DDD_ExitCB_h
 
-// leave program
-extern void ExitCB(Widget widget, XtPointer client_data, XtPointer call_data);
+// Exit program
+extern void ExitCB(Widget, XtPointer, XtPointer);
 
-// same, but with interaction
-extern void ExitAfterConfirmationCB(Widget widget, XtPointer client_data,
-				  XtPointer call_data);
+// Restart program
+extern void RestartCB(Widget, XtPointer, XtPointer);
+
+// Save environment
+extern void register_restart(char *argv[]);
 
 #endif

@@ -43,11 +43,16 @@ extern void ddd_install_fatal(char *program_name = 0);
 extern void ddd_install_signal();
 
 // Callbacks
-void DDDExitCB  (Widget, XtPointer, XtPointer);
-void DDDCloseCB (Widget, XtPointer, XtPointer);
+void _DDDExitCB   (Widget, XtPointer, XtPointer); // GDB exited normally
+void DDDExitCB    (Widget, XtPointer, XtPointer); // Exit DDD
+void DDDRestartCB (Widget, XtPointer, XtPointer); // Restart DDD
+void DDDCloseCB   (Widget, XtPointer, XtPointer); // DDD window closed
 
 // True if DDD is about to exit
 extern bool ddd_is_exiting;
+
+// True if DDD is about to restart
+extern bool ddd_is_restarting;
 
 #endif // _DDD_exit_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

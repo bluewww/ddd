@@ -69,6 +69,9 @@ static void ddd_fatal(int sig);
 // True if DDD is about to exit
 bool ddd_is_exiting = false;
 
+// True if DDD is about to restart
+bool ddd_is_restarting = false;
+
 //-----------------------------------------------------------------------------
 // Signal handling
 //-----------------------------------------------------------------------------
@@ -158,10 +161,9 @@ void ddd_show_signal(int sig)
 					"fatal_dialog", 0, 0));
 	Delay::register_shell(fatal_dialog);
 
-	XtUnmanageChild (XmMessageBoxGetChild 
-			 (fatal_dialog, XmDIALOG_CANCEL_BUTTON));
-	XtAddCallback (fatal_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
-	XtAddCallback (fatal_dialog, XmNokCallback,   DDDExitCB,       0);
+	XtAddCallback (fatal_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+	XtAddCallback (fatal_dialog, XmNokCallback,     DDDRestartCB,    0);
+	XtAddCallback (fatal_dialog, XmNcancelCallback, DDDExitCB,       0);
 
 	string msg = string("Internal error (") + sigName(sig) + ")";
 	MString mtext(msg, "rm");
@@ -286,18 +288,23 @@ void DDDCloseCB(Widget w, XtPointer client_data, XtPointer call_data)
     popdown_shell(shell);
 }
 
-void SaveOptionsAndExitCB(Widget w, XtPointer client_data, XtPointer call_data)
+static void SaveOptionsAndExitCB(Widget w, XtPointer client_data,
+				 XtPointer call_data)
 {
     ddd_cleanup();
 
+    XtCallbackProc closure = ddd_is_restarting ? RestartCB : ExitCB;
+
     DDDSaveOptionsCB(w, client_data, call_data);
-    ExitCB(w, client_data, call_data);
+    closure(w, client_data, call_data);
 }
 
 // Exit callback
 void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     ddd_cleanup();
+
+    XtCallbackProc closure = ddd_is_restarting ? RestartCB : ExitCB;
 
     if (startup_options_changed)
     {
@@ -309,17 +316,21 @@ void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 					  "save_options_dialog", 0, 0));
 	Delay::register_shell(yn_dialog);
 	XtAddCallback (yn_dialog, XmNokCallback,     SaveOptionsAndExitCB, 0);
-	XtAddCallback (yn_dialog, XmNcancelCallback, ExitCB, 0);
+	XtAddCallback (yn_dialog, XmNcancelCallback, closure, 0);
 	XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 	XtManageChild(yn_dialog);
     }
     else
-	ExitCB(w, client_data, call_data);
+    {
+	closure(w, client_data, call_data);
+    }
 }
 
 // Exit after confirmation
 void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
+    ddd_is_restarting = false;
+
     if (gdb == 0 || !gdb->running())
     {
 	_DDDExitCB(w, client_data, call_data);
@@ -343,6 +354,36 @@ void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     XtManageChild(yn_dialog);
 }
+
+// Restart after confirmation
+void DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    ddd_is_restarting = true;
+
+    if (gdb == 0 || !gdb->running())
+    {
+	_DDDExitCB(w, client_data, call_data);
+	return;
+    }
+
+    if (gdb->isReadyWithPrompt())
+    {
+	gdb_command("quit");
+	return;
+    }
+
+    // Debugger is still running; request confirmation
+    if (yn_dialog)
+	DestroyWhenIdle(yn_dialog);
+    yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
+					      "quit_dialog", 0, 0));
+    Delay::register_shell(yn_dialog);
+    XtAddCallback (yn_dialog, XmNokCallback,     _DDDExitCB, 0);
+    XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+
+    XtManageChild(yn_dialog);
+}
+
 
 // EOF on input/output detected
 void gdb_eofHP(Agent *, void *, void *)

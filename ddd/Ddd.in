@@ -1118,6 +1118,9 @@ Ddd*menubar*fileMenu.quickPrint.mnemonic: A
 Ddd*menubar*fileMenu.close.labelString:	 Close
 Ddd*menubar*fileMenu.close.mnemonic:	 C
 
+Ddd*menubar*fileMenu.restart.labelString: Restart
+Ddd*menubar*fileMenu.restart.mnemonic:	 R
+
 Ddd*menubar*fileMenu.quit.labelString:	 Exit
 Ddd*menubar*fileMenu.quit.mnemonic:	 E
 Ddd*menubar*fileMenu.quit.accelerator:      Ctrl<Key>Q
@@ -1186,18 +1189,20 @@ the current function is automatically disassembled.\n\
 \n\
 @bf Save Options @rm saves options and preferences for the next use of @DDD@.
 
-Ddd*optionsMenu.separateExecWindow.labelString: Run in Execution Window
-Ddd*optionsMenu.separateExecWindow.mnemonic:    E
+Ddd*optionsMenu.separateExecWindow.labelString: 	Run in Execution Window
+Ddd*optionsMenu.separateExecWindow.mnemonic:    	E
+Ddd*optionsMenu*separateExecWindow.accelerator:		Ctrl<Key>Z
+Ddd*optionsMenu*separateExecWindow.acceleratorText:	Ctrl+Z
 
-Ddd*optionsMenu.findWordsOnly.labelString:     Find Words Only
-Ddd*optionsMenu.findWordsOnly.mnemonic:	       W
-Ddd*optionsMenu*findWordsOnly.accelerator:     Ctrl<Key>W
-Ddd*optionsMenu*findWordsOnly.acceleratorText: Ctrl+W
+Ddd*optionsMenu.findWordsOnly.labelString:		Find Words Only
+Ddd*optionsMenu.findWordsOnly.mnemonic: 		W
+Ddd*optionsMenu*findWordsOnly.accelerator:		Ctrl<Key>W
+Ddd*optionsMenu*findWordsOnly.acceleratorText:		Ctrl+W
 
-Ddd*optionsMenu.disassemble.labelString:     Display Machine Code
-Ddd*optionsMenu.disassemble.mnemonic:        M
-Ddd*optionsMenu*disassemble.accelerator:     Ctrl<Key>M
-Ddd*optionsMenu*disassemble.acceleratorText: Ctrl+M
+Ddd*optionsMenu.disassemble.labelString:		Display Machine Code
+Ddd*optionsMenu.disassemble.mnemonic:			M
+Ddd*optionsMenu*disassemble.accelerator:		Ctrl<Key>M
+Ddd*optionsMenu*disassemble.acceleratorText:		Ctrl+M
 
 Ddd*optionsMenu.generalPreferences.labelString:  General Preferences...
 Ddd*optionsMenu.generalPreferences.mnemonic:     G
@@ -2692,7 +2697,8 @@ Before killing a running debugger, you should try to interrupt it\n\
 Ddd*terminated_dialog_popup.title: @DDD@: Hasta la Vista
 Ddd*terminated_dialog.messageString:   \
 @rm The debugger terminated abnormally.
-Ddd*terminated_dialog*okLabelString:   Exit
+Ddd*terminated_dialog*okLabelString:       Restart
+Ddd*terminated_dialog*cancelLabelString:   Exit
 Ddd*terminated_dialog*contextHelpString:	\
 @rm The inferior debugger terminated abnormally.\n\
 You may wish to examine its final output before exiting @DDD@.
@@ -2700,7 +2706,8 @@ You may wish to examine its final output before exiting @DDD@.
 Ddd*fatal_dialog.title: @DDD@: Oops!
 Ddd*fatal_dialog.messageString:   \
 @rm Internal error
-Ddd*fatal_dialog*okLabelString:   Exit
+Ddd*fatal_dialog*okLabelString:       Restart
+Ddd*fatal_dialog*cancelLabelString:   Exit
 Ddd*fatal_dialog*contextHelpString: \
 @rm Oops!  You have found a bug in @DDD@.\n\
 You should better save your work immediately; @DDD@ may fail again soon.\n\

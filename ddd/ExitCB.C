@@ -30,6 +30,7 @@ char ExitCB_rcsid[] =
     "$Id$";
 
 #include <stdlib.h>
+#include <unistd.h>
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
 
@@ -37,8 +38,14 @@ char ExitCB_rcsid[] =
 #include "ExitCB.h"
 #include "verify.h"
 
+extern char **environ;
+
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 0
 #endif
 
 // callbacks
@@ -49,18 +56,42 @@ void ExitCB(Widget, XtPointer, XtPointer)
     exit(EXIT_SUCCESS);
 }
 
-// same, but with interaction
-void ExitAfterConfirmationCB(Widget widget, XtPointer, XtPointer)
+static char **saved_argv    = 0;
+static char **saved_environ = 0;
+
+// restart program
+void RestartCB(Widget, XtPointer, XtPointer)
 {
-    Arg args[10];
-    int arg;
+    environ = saved_environ;
+    execvp(saved_argv[0], saved_argv);
+    exit(EXIT_FAILURE);
+}
 
-    arg = 0;
-    Widget confirmExit = 
-	verify(XmCreateQuestionDialog(findTopLevelShellParent(widget),
-				      "confirmExit", args, arg));
+// Save environment
+void register_restart(char *argv[])
+{
+    int i;
+    int argc = 0;
+    while (argv[argc] != 0)
+	argc++;
 
-    XtAddCallback(confirmExit, XmNokCallback, ExitCB, NULL);
+    saved_argv = new char *[argc + 1];
+    for (i = 0; i < argc; i++)
+    {
+	saved_argv[i] = new char[strlen(argv[i]) + 1];
+	strcpy(saved_argv[i], argv[i]);
+    }
+    saved_argv[argc] = 0;
 
-    XtManageChild(confirmExit);
+    int envc = 0;
+    while (environ[envc] != 0)
+	envc++;
+
+    saved_environ = new char *[envc + 1];
+    for (i = 0; i < envc; i++)
+    {
+	saved_environ[i] = new char[strlen(environ[i]) + 1];
+	strcpy(saved_environ[i], environ[i]);
+    }
+    saved_environ[envc] = 0;
 }

@@ -112,7 +112,7 @@ void post_gdb_died(string reason, Widget w)
 
     if (gdb_initialized && reason.contains("Exit 0"))
     {
-	DDDExitCB(find_shell(w), 0, 0);
+	_DDDExitCB(find_shell(w), 0, 0);
 	return;
     }
 
@@ -135,10 +135,9 @@ void post_gdb_died(string reason, Widget w)
 				    "terminated_dialog", NULL, 0));
     Delay::register_shell(died_dialog);
 
-    XtUnmanageChild (XmMessageBoxGetChild 
-		     (died_dialog, XmDIALOG_CANCEL_BUTTON));
-    XtAddCallback (died_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
-    XtAddCallback (died_dialog, XmNokCallback,   DDDExitCB,       NULL);
+    XtAddCallback (died_dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);
+    XtAddCallback (died_dialog, XmNokCallback,     DDDRestartCB,    NULL);
+    XtAddCallback (died_dialog, XmNcancelCallback, DDDExitCB,       NULL);
 
     XtManageChild (died_dialog);
 }
