@@ -320,7 +320,8 @@ bool BreakPoint::update (string& info_output)
 		{
 		    string count = options.after(" -count ");
 		    read_leading_blanks(count);
-		    count = count.before(rxwhite);
+		    if (count.contains(' '))
+			count = count.before(' ');
 
 		    myinfos = "count " + count;
 		    if (count.contains('/'))
@@ -564,7 +565,12 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
     {
 	string cond_suffix = "";
 	if (cond != "")
-	    cond_suffix = " if " + cond;
+	{
+	    if (gdb->has_handler_command())
+		cond_suffix = " -if " + cond;
+	    else
+		cond_suffix = " if " + cond;
+	}
 
 	if (pos.contains('*', 0))
 	{
