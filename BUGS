@@ -133,4 +133,11 @@ Volunteers for fixing these and other bugs are welcome!
 064. After changing the source code, the current execution glyph is
      not cleared.
 
-065. (Insert your bug here)
+065. Using DDD on a remote host does not automatically
+     qualify the DISPLAY variable.
+
+066. The `fatal error' routine should exit if an error occurs between
+     the signal and the final drawing of the last `fatal error' 
+     dialog box.
+
+067. (Insert your bug here)
