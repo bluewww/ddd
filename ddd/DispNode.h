@@ -112,7 +112,10 @@ public:
     // highlights the box related to the display value DV
     void select (DispValue *dv = 0);
 
+    // disable and enable manually
     void disable();
+    void enable();
+
 private:
     DispBox* disp_box;
 };

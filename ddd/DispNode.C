@@ -232,3 +232,15 @@ void DispNode::disable()
 	mynodeptr->setBox (disp_box->box());
     }
 }
+
+// ***************************************************************************
+void DispNode::enable()
+{
+    if (!myenabled)
+    {
+	myenabled = true;
+	handlers.call(DispNode_Disabled, this, (void*)false);
+	refresh();
+    }
+}
+
