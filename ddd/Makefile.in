@@ -803,6 +803,7 @@ DDD_OBJECTS = \
 	index.o      \
 	java.o 	     \
 	logo.o       \
+	logplayer.o  \
 	mainloop.o   \
 	mydialogs.o  \
 	options.o    \
@@ -1412,8 +1413,9 @@ mmtest: mmtest.o $(LIB_OBJECTS)
 gcore: gcore.o $(HUFFMAN_OBJECTS)
 	$(LINK.cc) -o $@ gcore.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
-logplayer: logplayer.o $(HUFFMAN_OBJECTS)
-	$(LINK.cc) -o $@ logplayer.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
+logplayer: $(srcdir)/logplayer.C $(HUFFMAN_OBJECTS)
+	$(COMPILE_AND_LINK.cc) -DMAIN $(INCLUDE) -o $@ \
+	$(srcdir)/logplayer.C $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
 test-file: test-file.o
 	$(LINK.cc) -o $@ test-file.o $(ALL_X_LIBS)

@@ -52,6 +52,8 @@
 #define XtCDebuggerCommand       "DebuggerCommand"
 #define XtNtrace                 "trace"
 #define XtCTrace                 "Trace"
+#define XtNplayLog               "playLog"
+#define XtCPlayLog               "PlayLog"
 #define XtNgdbInitCommands       "gdbInitCommands"
 #define XtNgdbSettings           "gdbSettings"
 #define XtNdbxInitCommands       "dbxInitCommands"
@@ -336,6 +338,7 @@ struct AppData {
     String    debugger;
     String    debugger_command;
     Boolean   trace;
+    String    play_log;
     String    gdb_init_commands;
     String    gdb_settings;
     String    dbx_init_commands;

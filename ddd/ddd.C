@@ -228,6 +228,7 @@ char ddd_rcsid[] =
 #include "host.h"
 #include "hostname.h"
 #include "logo.h"
+#include "logplayer.h"
 #include "longName.h"
 #include "mainloop.h"
 #include "options.h"
@@ -390,6 +391,9 @@ static void setup_cut_copy_paste_bindings(XrmDatabase db);
 static void PreHelpOnContext(Widget w, XtPointer, XtPointer);
 static void PostHelpOnItem(Widget item);
 
+// Log player stuff
+static void check_log(const string& logname, DebuggerType& type);
+
 
 //-----------------------------------------------------------------------------
 // Xt Stuff
@@ -421,8 +425,11 @@ static XrmOptionDescRec options[] = {
 { "--jdb",                  XtNdebugger,             XrmoptionNoArg,  "jdb" },
 { "-jdb",                   XtNdebugger,             XrmoptionNoArg,  "jdb" },
 
-{ "--trace",                XtCTrace,                XrmoptionNoArg,  ON },
-{ "-trace",                 XtCTrace,                XrmoptionNoArg,  ON },
+{ "--trace",                XtNtrace,                XrmoptionNoArg,  ON },
+{ "-trace",                 XtNtrace,                XrmoptionNoArg,  ON },
+
+{ "--play-log",		    XtNplayLog,              XrmoptionSepArg, NULL },
+{ "-play-log",		    XtNplayLog,              XrmoptionSepArg, NULL },
 
 { "--font",                 XtNdefaultFont,          XrmoptionSepArg, NULL },
 { "-font",                  XtNdefaultFont,          XrmoptionSepArg, NULL },
@@ -442,8 +449,8 @@ static XrmOptionDescRec options[] = {
 { "--separate-windows",     XtCSeparate,             XrmoptionNoArg, ON },
 { "-separate-windows",      XtCSeparate,             XrmoptionNoArg, ON },
 
-{ "--separate-source-window",XtNseparateSourceWindow, XrmoptionNoArg, ON },
-{ "-separate-source-window", XtNseparateSourceWindow, XrmoptionNoArg, ON },
+{ "--separate-source-window", XtNseparateSourceWindow, XrmoptionNoArg, ON },
+{ "-separate-source-window",  XtNseparateSourceWindow, XrmoptionNoArg, ON },
 
 { "--separate-data-window", XtNseparateDataWindow,   XrmoptionNoArg, ON },
 { "-separate-data-window",  XtNseparateDataWindow,   XrmoptionNoArg, ON },
@@ -1544,6 +1551,7 @@ int main(int argc, char *argv[])
     // Check for special options:
     // `--nw'   - no windows (GDB)
     // `-L'     - no windows (XDB)
+    // `--PLAY' - logplayer mode (DDD)
     // and options that would otherwise be eaten by Xt
     StringArray saved_options;
     string gdb_name = "gdb";
@@ -1812,6 +1820,23 @@ int main(int argc, char *argv[])
 	app_data.debugger_host_login = new_login;
 	gdb_host = gdb_host.after('@');
     }
+
+    // Check for `--play-log'
+    if (app_data.play_log != NULL)
+    {
+	// Invoke self with `--PLAY LOGFILE' as inferior
+	app_data.debugger_command = argv[0];
+
+	if (!remote_gdb())
+	{
+	    // Override debugger type from log
+	    check_log(app_data.play_log, type);
+	}
+
+	// Don't overwrite existing log files
+	app_data.trace = true;
+    }
+
 
     // Check for `--version', `--help', `--news', etc.
     if (app_data.show_version)
@@ -6134,6 +6159,35 @@ static void sync_args(ArgField *source, ArgField *target)
 
 
 
+
+//-----------------------------------------------------------------------------
+// Log player stuff
+//-----------------------------------------------------------------------------
+
+static void check_log(const string& logname, DebuggerType& type)
+{
+    ifstream log(logname);
+    if (log.bad())
+    {
+	(void) fopen(logname, "r");
+	perror(logname);
+	exit(EXIT_FAILURE);
+    }
+
+    while (log)
+    {
+	char buffer[1024];
+	log.getline(buffer, sizeof buffer);
+	string log_line(buffer);
+
+	if (log_line.contains("+  ", 0))
+	{
+	    type = debugger_type(log_line);
+	    return;
+	}
+    }
+}
+
 //-----------------------------------------------------------------------------
 // Various setups
 //-----------------------------------------------------------------------------
@@ -6400,6 +6454,18 @@ static void setup_options(int& argc, char *argv[],
 	    i    -= 1;
 
 	    no_windows = true;
+	}
+
+	if (arg == "--PLAY")
+	{
+	    // Switch into logplayer mode
+	    string logname;
+	    if (i < argc - 1)
+		logname = argv[i + 1];
+	    else
+		logname = session_log_file();
+
+	    logplayer(logname);
 	}
 
 	if (!no_windows)

@@ -59,26 +59,33 @@ GDBAgent *new_gdb(DebuggerType type,
     // Build call
     static string gdb_call = app_data.debugger_command;
 
-    switch(type)
+    if (app_data.play_log != 0)
     {
-    case GDB:
-	// Do not issue introductiory messages; output full file names.
-	gdb_call += " -q -fullname";
-	break;
+	gdb_call += string(" --PLAY ") + app_data.play_log;
+    }
+    else
+    {
+	switch(type)
+	{
+	case GDB:
+	    // Do not issue introductiory messages; output full file names.
+	    gdb_call += " -q -fullname";
+	    break;
 
-    case DBX:
-	// Nothing special.  (Anyway, every DBX has its own sets of
-	// options, so there is not much we could do here.)
-	break;
+	case DBX:
+	    // Nothing special.  (Anyway, every DBX has its own sets of
+	    // options, so there is not much we could do here.)
+	    break;
 
-    case JDB:
-	// Nothing special.
-	break;
+	case JDB:
+	    // Nothing special.
+	    break;
 
-    case XDB:
-	// Enable line mode.
-	gdb_call += " -L";
-	break;
+	case XDB:
+	    // Enable line mode.
+	    gdb_call += " -L";
+	    break;
+	}
     }
 
     for (int i = 1; i < argc; i++) {

@@ -94,6 +94,16 @@ XtResource ddd_resources[] = {
     },
 
     { 
+	XtNplayLog,
+	XtCPlayLog,
+	XtRString, 
+	sizeof(String),
+	XtOffsetOf(AppData, play_log), 
+	XtRString, 
+	XtPointer(NULL)
+    },
+
+    { 
 	XtNgdbInitCommands, 
 	XtCInitCommands, 
 	XtRString,

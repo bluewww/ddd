@@ -43,6 +43,7 @@ char disp_read_rcsid[] =
 #include "string-fun.h"
 #include "cook.h"
 #include "regexps.h"
+#include "AppData.h"
 
 #include <stdlib.h>		// atoi()
 #include <stdio.h>		// sprintf()
@@ -79,6 +80,15 @@ bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
 // True if CMD has no effect on DDD state
 bool is_nop_cmd(const string& cmd)
 {
+    if (app_data.play_log != 0)
+    {
+	if (cmd.contains('/', 0) ||
+	    cmd.contains('?', 0) ||
+	    cmd.contains('.', 0) ||
+	    cmd.contains('!', 0))
+	    return true;
+    }
+
 #if RUNTIME_REGEX
     // All these command have no effect on DDD state...
     static regex rxnop_cmd("[ \t]*(echo|help|show|info|where|shell|sh|x)([ \t]+.*)?");
