@@ -1,0 +1,136 @@
+#! /bin/sh
+# $Id$
+# Create DDD patch between two releases.
+
+# Copyright (C) 2000 Universitaet Passau, Germany.
+# Written by Andreas Zeller <zeller@gnu.org>.
+# 
+# This file is part of DDD.
+# 
+# DDD is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+# 
+# DDD is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with DDD -- see the file COPYING.
+# If not, write to the Free Software Foundation, Inc.,
+# 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+# 
+# DDD is the data display debugger.
+# For details, see the DDD World-Wide-Web page, 
+# `http://www.gnu.org/software/ddd/',
+# or send a mail to the DDD developers <ddd@gnu.org>.
+
+# This script checks out two DDD development trees, as stored in CVS,
+# and creates a DDD patch.
+
+# Usage: `make-patch [YESTERDAY-TAG [TODAY-TAG]]'
+
+# Setup environment
+tmpdir=$HOME/tmp/ddd$$
+# CVSROOT=/usr/local/share/CVS; export CVSROOT
+# PATH=/usr/local/bin:/usr/local/gnubin:$PATH; export PATH
+target=`pwd`
+
+# Default `yesterday' tag
+yesterday_tag=`cvs checkout -p ddd/.RELEASE | grep 'ddd-' | sed 's/ddd-//' | \
+sed 's/:.*//' | sed 's/\./_/g'`
+
+# Default `today' tag
+eval `cvs checkout -p ddd/ddd/acinclude.m4 2> /dev/null | \
+ egrep '^(EXPIRES|VERSION|NICKNAME)='`
+today_tag=DDD_`echo $VERSION | sed 's/\./_/g'`
+
+case $# in
+0) 
+   ;;
+1)
+   yesterday_tag="$1";;
+2)
+   yesterday_tag="$1"
+   today_tag="$2";;
+*)
+   echo "make-patch: usage: make-patch [TAG1] [TAG2]" 1>&2
+   exit 2
+esac
+
+yesterday=`echo $yesterday_tag | sed 's/DDD_//' | sed 's/_/\./g'`
+today=`echo $today_tag | sed 's/DDD_//' | sed 's/_/\./g'`
+yesterday_dir=ddd-$yesterday
+today_dir=ddd-$today
+
+diff=ddd-$yesterday-$today.diff
+
+echo "Creating $target/$diff..."
+echo "Working directory is $tmpdir"
+set -x
+mkdir $tmpdir
+cd $tmpdir
+
+# We are working in `/tmp/ddd'.  In case of trouble, clean up.
+trap "exit 1" 1 2 15
+trap "set +x; echo -n 'Cleaning up...'; rm -fr $tmpdir; echo done." 0
+
+# Checkout releases
+mkdir ddd
+chgrp ddd ddd
+chmod g+s ddd
+cvs checkout -kkv -P -r "$yesterday_tag" ddd
+mv ddd $yesterday_dir
+
+mkdir ddd
+chgrp ddd ddd
+chmod g+s ddd
+cvs checkout -kkv -P -r "$today_tag" ddd
+mv ddd $today_dir
+
+# Remove files and directories that are not in the distribution
+rm -fr `find . -name 'CVS' -print`
+rm -fr `find . -name '.cvs*' -print`
+rm -fr ddd-*/etc ddd-*/tests ddd-*/.RELEASE
+
+# Create diffs
+(
+echo "This patch will bring a DDD $yesterday release up to DDD $today."
+echo 
+echo "This patch only affects source files.  Derived files as contained"
+echo "in the DDD source package must be reconstructed using `make'."
+echo
+echo "To apply this patch, do the following:"
+echo
+echo "1. See the INSTALL file for additional packages required"
+echo "   to rebuild DDD after making changes to the source code."
+echo "   Typically, you will need \`automake', \`autoconf',
+echo "   \`bison' and \`flex' as well as \`makeinfo' 4.0 or later.
+echo
+echo "2. Change to the directory containing the ddd-$yesterday"
+echo "   top-level directory, such that \`./ddd-$yesterday/ANNOUNCE'"
+echo "   contains the DDD $yesterday announcement."
+echo
+echo "3. Apply this patch on DDD $yesterday, using \`patch':"
+echo
+echo "   % patch -p0 -l < $diff"
+echo
+echo "4. Rename the \`ddd-$yesterday' directory to \`ddd-$today':"
+echo
+echo "   % mv ddd-$yesterday ddd-$today"
+echo
+echo "5. See the installation instructions for building or rebuilding DDD."
+echo "   In case of missing packages, install the package and try again."
+echo
+echo "Please report any bugs or problems to bug-ddd@gnu.org."
+echo
+echo
+diff -r -C 2 -P $yesterday_dir $today_dir
+) > $target/$diff
+
+echo "Creating $target/$diff...done"
+
+# That's all, folks!
+exit 0
