@@ -118,10 +118,6 @@ void ddd_install_fatal(char *program_name)
     signal(SIGBUS, ddd_fatal);
 #endif
 
-#ifdef SIGABRT
-    signal(SIGABRT, ddd_fatal);
-#endif
-
 #ifdef SIGIOT
     signal(SIGIOT, ddd_fatal);
 #endif

@@ -674,7 +674,7 @@ static MMDesc debugger_menu [] =
       NULL, set_debugger_gdb_w },
     { "dbx", MMToggle, { dddSetDebuggerCB, XtPointer(DBX) },
       NULL, set_debugger_dbx_w },
-    { "xdb", MMToggle | MMInsensitive, { dddSetDebuggerCB, XtPointer(XDB) },
+    { "xdb", MMToggle, { dddSetDebuggerCB, XtPointer(XDB) },
       NULL, set_debugger_xdb_w },
     MMEnd
 };
