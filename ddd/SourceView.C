@@ -6382,20 +6382,14 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	    // JDB, PYDB and some DBXes lack a `frame' command.
 	    // Use `up N'/`down N' instead.
 	    int offset = cbs->item_position - last_frame_pos;
-	    if (offset == -1)
-		gdb_command("up");
-	    else if (offset < 0)
-		gdb_command("up " + itostring(-offset));
-	    else if (offset == 1)
-		gdb_command("down");
-	    else if (offset > 0)
-		gdb_command("down " + itostring(offset));
+	    if (offset != 0)
+		gdb_command(gdb->relative_frame_command(-offset));
 
 	    // Call `set_frame_pos' now.
 	    frame_pos_locked = false;
 	    set_frame_pos(0, cbs->item_position);
 
-	    // Ignore the call after `up'/`down' command.
+	    // Ignore the `up'/`down' reply.
 	    frame_pos_locked = (offset != 0);
 	}
 	break;
@@ -6549,8 +6543,6 @@ void SourceView::process_frame (string& frame_output)
     if (frame_output != "" 
 	&& (frame_output[0] == '#' || gdb->type() != GDB))
     {
-	undo_buffer.add_frame(frame_output);
-
 	string frame_nr;
 
 	switch (gdb->type())
@@ -6584,6 +6576,29 @@ void SourceView::process_frame (string& frame_output)
 	    frame--;
 
 	at_lowest_frame = (frame == 0);
+
+	if (current_frame < 0)
+	{
+	    // We have not seen a `frame' output yet - assume we're at
+	    // the lowest frame.
+	    current_frame = 0;
+	}
+
+	int offset = (frame - current_frame);
+	if (offset != 0)
+	{
+	    // Add undoing command
+	    string c;
+	    if (gdb->has_frame_command())
+		c = gdb->frame_command(current_frame);
+	    else
+		c = gdb->relative_frame_command(-offset);
+	    undo_buffer.add_command(c, true);
+	}
+	else
+	{
+	    undo_buffer.add_frame(frame_output);
+	}
 
 	int count         = 0;
 	int top_item      = 0;
