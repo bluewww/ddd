@@ -230,3 +230,7 @@ display_box (title, value) ->
 // The entire box, but without title
 display_box (value) -> 
   shadow(display_color(frame(rm(value))));
+
+// For VSL
+main (_...) -> 
+  display_box(title("1", "a display"), simple_value("A value"));
