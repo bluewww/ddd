@@ -607,6 +607,10 @@ static void munch_doc(string& doc)
     if (doc.contains("0 =>"))
 	doc = "Don't" + doc.after("0 =>");
 
+    doc.gsub(" " + downcase(gdb->title()), " " + gdb->title());
+    if (doc.contains(downcase(gdb->title()), 0))
+	doc = gdb->title() + doc.after(downcase(gdb->title()));
+
     if (doc.length() > 0)
 	doc[0] = toupper(doc[0]);
 }
@@ -1253,10 +1257,19 @@ static void add_settings(Widget form, int& row, DebuggerType type,
 	break;
 
     case DBX:
-	commands = cached_gdb_question("dbxenv");
-	if (commands.freq('\n') <= 2)
-	    commands = cached_gdb_question("set");
+    {
+	// Some DBXes know `dbxenv'; others know `set'.  We cannot use
+	// is_invalid() or likewise here, since the output may contain
+	// `error' strings that would cause is_invalid() to fail.
+	// Just try both and use the longer reply.
+	string dbxenv = cached_gdb_question("dbxenv");
+	string set    = cached_gdb_question("set");
+	if (dbxenv.length() > set.length())
+	    commands = dbxenv;
+	else
+	    commands = set;
 	break;
+    }
     }
 
     while (commands != "")
