@@ -44,6 +44,7 @@ char DispGraph_rcsid[] =
 #include "hypot.h"
 #include <X11/StringDefs.h>
 
+#include "AppData.h"
 #include "GraphEdit.h"
 #include "assert.h"
 #include "VarArray.h"
@@ -201,9 +202,7 @@ int DispGraph::insert(int new_disp_nr, DispNode* new_dn, int depends_on)
 	    handlers.call(NoDisabled, this, (void*)false);
     }
 
-    MapRef ref;
-    for (DispNode* dn = first(ref); dn != 0; dn = next(ref))
-	dn->refresh_title();
+    refresh_titles();
 
     return new_disp_nr;
 }
@@ -315,6 +314,8 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 	// clog << "node           at " << node->pos() << "\n";
 	pos = node->pos() + offset;
 
+	assert(pos.isValid());
+
 	// Check if we already have a successor
 	BoxGraphNode *max_child      = 0;
 	BoxGraphNode *next_max_child = 0;
@@ -330,6 +331,10 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 	    while (child->isHint())
 		child = child->firstFrom()->to();
 	    if (child->hidden())
+		continue;
+	    if (child == new_node->nodeptr())
+		continue;
+	    if (child->pos() == BoxPoint())
 		continue;
 
 	    BoxGraphNode *bgn = ptr_cast(BoxGraphNode, child);
@@ -407,6 +412,7 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 		//
 
 		GraphNode *parent = edge->from();
+		assert(parent->pos().isValid());
 
 		// clog << "parent         at " << parent->pos() << "\n";
 
@@ -495,9 +501,7 @@ bool DispGraph::del (int disp_nr)
 	    if ((no_disabled = (count_all(Disabled) == 0)))
 		handlers.call(NoDisabled, this, (void*)true);
 
-	MapRef ref;
-	for (dn = first(ref); dn != 0; dn = next(ref))
-	    dn->refresh_title();
+	refresh_titles();
 
 	return true;
     }
@@ -1161,4 +1165,44 @@ bool DispGraph::make_active(int disp_nr)
     }
 
     return false;
+}
+
+
+//-----------------------------------------------------------------------------
+// Title stuff
+//-----------------------------------------------------------------------------
+
+bool DispGraph::refresh_titles() const
+{
+    bool changed = false;
+
+    MapRef ref;
+    for (DispNode *dn = first(ref); dn != 0; dn = next(ref))
+    {
+	bool is_dependent = false;
+	for (GraphEdge *e = dn->nodeptr()->firstTo();
+	     !is_dependent && e != 0;
+	     e = dn->nodeptr()->nextTo(e))
+	{
+	    if (e->from() == dn->nodeptr())
+		continue;		// Self edge
+	    if (ptr_cast(AliasGraphEdge, e) != 0)
+		continue;		// Alias edge
+
+	    LineGraphEdge *le = ptr_cast(LineGraphEdge, e);
+	    if (le != 0 && le->annotation() != 0)
+		is_dependent = true;
+	}
+
+	bool need_title = false;
+	if (is_dependent && app_data.show_dependent_display_titles)
+	    need_title = true;
+	else if (!is_dependent && app_data.show_base_display_titles)
+	    need_title = true;
+
+	if (dn->set_title(need_title))
+	    changed = true;
+    }
+
+    return changed;
 }

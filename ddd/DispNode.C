@@ -368,35 +368,16 @@ bool DispNode::alias_ok() const
 }
 
 // Toggle titles.  Return true if changed.
-bool DispNode::refresh_title(bool assume_dependent)
+bool DispNode::set_title(bool set)
 {
-    bool is_dependent = assume_dependent;
-    for (GraphEdge *e = nodeptr()->firstTo();
-	 !is_dependent && e != 0;
-	 e = nodeptr()->nextTo(e))
-    {
-	if (e->from() == nodeptr())
-	    continue;		// Self edge
-	if (ptr_cast(AliasGraphEdge, e) != 0)
-	    continue;		// Alias edge
-
-	is_dependent = true;
-    }
-
-    bool need_title = false;
-    if (is_dependent && app_data.show_dependent_display_titles)
-	need_title = true;
-    else if (!is_dependent && app_data.show_base_display_titles)
-	need_title = true;
-
     bool changed = false;
-    if (need_title && !disp_box->have_title())
+    if (set && !disp_box->have_title())
     {
 	// Add title
 	disp_box->set_title(mydisp_nr, myname);
 	changed = true;
     }
-    else if (!need_title && disp_box->have_title())
+    else if (!set && disp_box->have_title())
     {
 	// Remove title
 	disp_box->set_title(mydisp_nr, "");

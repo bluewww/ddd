@@ -142,6 +142,9 @@ public:
 	Graph::print(os, gc);
     }
 
+    // Refresh title settings
+    bool refresh_titles() const;
+
 protected:
     BoxPoint adjust_position (DispNode *new_node,
 			      Widget w,

@@ -3122,9 +3122,9 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	return;
     }
 
-    // Set title
+    // Insert node into graph
     int depend_nr = disp_graph->get_by_name(info->depends_on);
-    dn->refresh_title(depend_nr != 0);
+    insert_data_node(dn, depend_nr);
 
     // Determine position
     BoxPoint box_point = info->point;
@@ -3132,9 +3132,6 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
     dn->moveTo(box_point);
     select_node(dn, depend_nr);
-
-    // Insert node into graph
-    insert_data_node(dn, depend_nr);
 
     refresh_addr(dn);
     refresh_graph_edit();
@@ -3169,9 +3166,9 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
     dn->constant() = info->constant;
     if (dn != 0)
     {
-	// Determine title
+	// Insert into graph
 	int depend_nr = disp_graph->get_by_name(info->depends_on);
-	dn->refresh_title(depend_nr != 0);
+	disp_graph->insert(dn->disp_nr(), dn, depend_nr);
 
 	// Determine new position
 	BoxPoint box_point = info->point;
@@ -3179,9 +3176,6 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
 	    box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
 	dn->moveTo(box_point);
 	select_node(dn, depend_nr);
-
-	// Insert into graph
-	disp_graph->insert(dn->disp_nr(), dn, depend_nr);
 
 	refresh_addr(dn);
 	refresh_graph_edit();
@@ -3311,7 +3305,10 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
 	    if (dn == 0)
 		continue;
 
-	    dn->refresh_title(depend_nr != 0);
+	    // Insert into graph
+	    insert_data_node(dn, depend_nr);
+
+	    // Set position
 	    BoxPoint box_point = info->point;
 	    if (box_point == BoxPoint())
 	    {
@@ -3319,9 +3316,6 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
 	    }
 	    dn->moveTo(box_point);
 	    dn->selected() = true;
-
-	    // Insert into graph
-	    insert_data_node(dn, depend_nr);
 	}
     }
 
@@ -5009,15 +5003,7 @@ void DataDisp::language_changedHP(Agent *source, void *, void *)
 // Refresh titles after change in APP_DATA
 void DataDisp::refresh_titles()
 {
-    bool changed = false;
-    MapRef ref;
-    for (DispNode* dn = disp_graph->first(ref); 
-	 dn != 0; dn = disp_graph->next(ref))
-    {
-	if (dn->refresh_title())
-	    changed = true;
-    }
-
+    bool changed = disp_graph->refresh_titles();
     if (changed)
 	refresh_graph_edit();
 }

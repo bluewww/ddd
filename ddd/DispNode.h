@@ -200,9 +200,8 @@ public:
     // Cluster display into TARGET
     void cluster(int target = 0);
 
-    // Toggle titles.  If ASSUME_DEPEND is set, assume we're dependent
-    // on some other node.  Return true iff changed.
-    bool refresh_title(bool assume_dependent = false);
+    // Toggle titles.  Return true iff changed.
+    bool set_title(bool set);
 };
 
 #endif // _DDD_DispNode_h

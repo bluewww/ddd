@@ -345,14 +345,11 @@ Volunteers for these and other projects are welcome!
     (graph display `a = 16`) and are no longer updated.  See also 176.
 
 326 Mihai Budiu <mihaib@gs41.sp.cs.cmu.edu> reports:
-
-    4) It would be nice if you had a short-cut to display 'this' when
-       debugging C++; I found no easy way.
-
-       [graph display `print *this` would help.]
+    It would be nice if you had a short-cut to display 'this' when
+    debugging C++; I found no easy way.
+    [graph display `print *this` would help.  -AZ]
 
 328*Finish display clustering:
-    - Make `nice' annotations from cluster to variable
     - Add unclustering and target clustering
     - Improve change display in cluster (variable-specific? copy?)
     - Propagate commands (delete, etc.) from cluster to item
