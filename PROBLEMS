@@ -115,18 +115,12 @@ Reported by:  Andreas Zeller <zeller@acm.org>
 SGI
 ===
 
-Reported by:  Pavol Federl <federl@cpsc.ucalgary.ca>
+Reported by:  Andreas Zeller <zeller@acm.org>
 
-    I tried to compile ddd on an SGI Indy (Irix5.3), and after using
-    the 'configure' script, I typed 'make', and I got an error
-    message:
-
-        target=all: Command not found.
-        *** Error code 1 (bu21)
-
-    So I added 'SHELL = /bin/sh' to the top of the Makefile (since
-    SHELL wasn't declared), and that fixed the problem.  Otherwise, it
-    compiled ok, except some warnings.
+    I compiled DDD on a mips-sgi-irix5.3 using SGI's CC; the resulting
+    executable fails with segmentation faults.  I could not find the
+    cause for this problem; using GCC instead of CC seems a better
+    alternative.
 
 
 Solaris 2.x
