@@ -6976,7 +6976,7 @@ static void setup_version_info()
 	+ rm(DDD_NAME " mailing list: <")
 	+ tt("ddd-request@gnu.org") + rm(">") + cr();
 
-    
+#if 0	             // Right now, this generates too many LessTif warnings
     // Duplicate version info in source window
     string s =
 	"/----------------------------------------\\\n"
@@ -6996,6 +6996,7 @@ static void setup_version_info()
     s.gsub("\256", "->");
     s += "To start, select `Help->What Now?'.";
     XmTextSetString(SourceView::source(), s);
+#endif
 }
 
 
