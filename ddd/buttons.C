@@ -253,6 +253,15 @@ static string gdbValue(const string& expr)
     return value;
 }
 
+static void strip_through(string& s, string key)
+{
+    int key_index = s.index(key);
+    int nl_index  = s.index('\n');
+
+    if (key_index >= 0 && (nl_index < 0 || key_index < nl_index))
+	s = s.from(int(key_index + key.length()));
+}
+
 static XmTextPosition textPosOfEvent(Widget widget, XEvent *event)
 {
     XmTextPosition startpos, endpos;
@@ -343,10 +352,8 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 	    return MString(0, true);
 	if (tip.contains(help_name, 0))
 	    tip = tip.after(help_name);
-	if (tip.contains(" # ") && tip.index(" # ") < tip.index('\n'))
-	    tip = tip.after(" # ");
-	if (tip.contains(" - ") && tip.index(" - ") < tip.index('\n'))
-	    tip = tip.after(" - ");
+	strip_through(tip, " # ");
+	strip_through(tip, " - ");
 
 	tip = tip.from(rxalpha);
 	if (tip.length() > 0)
