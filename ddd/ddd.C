@@ -1681,9 +1681,9 @@ int main(int argc, char *argv[])
     DispBox::max_display_title_length = app_data.max_display_title_length;
     SourceView::max_popup_expr_length = app_data.max_popup_expr_length;
 
-    // Global variables: Set bump_displays and hide_displays
-    DataDisp::bump_displays = app_data.bump_displays;
-    DataDisp::hide_displays = app_data.hide_displays;
+    // Global variables: Setup data display
+    DataDisp::bump_displays          = app_data.bump_displays;
+    DataDisp::hide_inactive_displays = app_data.hide_inactive_displays;
 
     // Global variables: Set delays for button and value tips
     help_button_tip_delay = app_data.button_tip_delay;

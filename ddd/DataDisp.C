@@ -289,7 +289,7 @@ StringArray DataDisp::shortcut_exprs;
 StringArray DataDisp::shortcut_labels;
 
 // Whether to hide disabled displays
-bool DataDisp::hide_displays = true;
+bool DataDisp::hide_inactive_displays = true;
 
 
 //----------------------------------------------------------------------------
@@ -3494,13 +3494,13 @@ string DataDisp::process_displays(string& displays,
 	{
 	    if (!disp_string_map.contains(k))
 	    {
-		// Node is out of scope or disabled
-		if (hide_displays && dn->shown() && dn->enabled())
+		// Node is inactive (out of scope) or disabled
+		if (hide_inactive_displays && dn->active() && dn->enabled())
 		{
-		    dn->hide();
+		    dn->make_inactive();
 		    changed = true;
 		}
-		if (dn->shown() && dn->enabled())
+		if (dn->active() && dn->enabled())
 		{
 		    dn->disable();
 		    changed = true;
@@ -3517,10 +3517,10 @@ string DataDisp::process_displays(string& displays,
 		    // New value
 		    changed = true;
 		}
-		if (dn->hidden())
+		if (!dn->active())
 		{
-		    // Now in scope
-		    dn->show();
+		    // Now active
+		    dn->make_active();
 		    changed = true;
 		}
 		if (*strptr != "" && !(strptr->matches(rxwhite)))
@@ -3697,7 +3697,7 @@ void DataDisp::refresh_display_list(bool silent)
 
 	nums += itostring(dn->disp_nr()) + ":";
 
-	if (dn->hidden())
+	if (!dn->active())
 	    states += "not active";
 	else if (dn->nodeptr()->hidden())
 	    states += "alias of " + itostring(dn->alias_of);
@@ -4288,7 +4288,7 @@ void DataDisp::merge_displays(IntArray displays,
 #endif
 
     DispNode *d0 = disp_graph->get(displays[0]);
-    if (!d0->hidden() && d0->nodeptr()->hidden())
+    if (d0->active() && d0->nodeptr()->hidden())
     {
 	// All aliases are hidden.  Make sure we see at least the
 	// least recently changed one.
@@ -4301,7 +4301,7 @@ void DataDisp::merge_displays(IntArray displays,
 	int disp_nr = displays[i];
 	DispNode *dn = disp_graph->get(disp_nr);
 
-	if (dn->hidden())
+	if (!dn->active())
 	    continue;		// Out of scope
 
 	bool hidden = dn->nodeptr()->hidden();

@@ -393,7 +393,7 @@ public:
     static Widget graph_selection_w;
     static ArgField *graph_arg;
     static bool bump_displays;
-    static bool hide_displays;
+    static bool hide_inactive_displays;
 
     // Constructor
     DataDisp (XtAppContext app_context,

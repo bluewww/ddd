@@ -545,7 +545,7 @@ Ddd*align2dArrays:		true
 Ddd*bumpDisplays:		true
 
 ! Shall we hide displays that are out of scope?
-Ddd*hideDisplays:		true
+Ddd*hideInactiveDisplays:	true
 
 ! The VSL library for displaying graph nodes.  `builtin' means the VSL
 ! library compiled into DDD, named `ddd.vsl'.  If you wish to use

@@ -1104,11 +1104,11 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNhideDisplays,
-	XtCHideDisplays,
+	XtNhideInactiveDisplays,
+	XtCHideInactiveDisplays,
 	XmRBoolean,
 	sizeof(Boolean),
-	XtOffsetOf(AppData, hide_displays),
+	XtOffsetOf(AppData, hide_inactive_displays),
 	XmRImmediate,
 	XtPointer(True)
     },

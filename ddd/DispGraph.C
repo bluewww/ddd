@@ -667,7 +667,7 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
     if (d0 == 0 || dn == 0)
 	return false;
 
-    if (dn->hidden())
+    if (!dn->active())
     {
 	// Already hidden because it is out of scope
 	return false;
@@ -741,7 +741,7 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
 bool DispGraph::unalias(int alias_disp_nr)
 {
     DispNode *dn = get(alias_disp_nr);
-    if (dn == 0)
+    if (dn == 0 || !dn->active())
 	return false;
 
     GraphNode *node = dn->nodeptr();
@@ -749,7 +749,7 @@ bool DispGraph::unalias(int alias_disp_nr)
 	return false;
 
     // Unsuppress display
-    node->hidden() = dn->hidden();
+    node->hidden() = false;
 
     // Delete all alias edges associated with this node
     VoidArray kill_edges;

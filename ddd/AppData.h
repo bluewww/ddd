@@ -233,8 +233,8 @@
 #define XtCAlign2dArrays         "Align2dArrays"
 #define XtNbumpDisplays          "bumpDisplays"
 #define XtCBumpDisplays          "BumpDisplays"
-#define XtNhideDisplays          "hideDisplays"
-#define XtCHideDisplays          "HideDisplays"
+#define XtNhideInactiveDisplays  "hideInactiveDisplays"
+#define XtCHideInactiveDisplays  "HideInactiveDisplays"
 #define XtNstatusHistorySize     "statusHistorySize"
 #define XtCStatusHistorySize     "StatusHistorySize"
 #define XtNverifyButtons         "verifyButtons"
@@ -372,7 +372,7 @@ struct AppData {
     Boolean detect_aliases;
     Boolean align_2d_arrays;
     Boolean bump_displays;
-    Boolean hide_displays;
+    Boolean hide_inactive_displays;
     int     status_history_size;
     Boolean verify_buttons;
     Boolean auto_raise_tool;

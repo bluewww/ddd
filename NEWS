@@ -16,9 +16,9 @@ DDD 2.2.2
       adjacent displays such that they are not obscured.  (Can be
       disabled; see the `bumpDisplays' resource.)
     - The data display is now scope-sensitive: displays are
-      automatically shown as soon as their scope is entered and hidden
-      as soon as their scope is left.  (Can be disabled; see the
-      `hideDisplays' resource.)
+      automatically hidden as they become inactive (out of scope) and
+      redisplayed as they become active again.  (Can be disabled; see
+      the `hideInactiveDisplays' resource.)
     - DDD supports case-insensitive search in the source text.
 
     Bug fixes:
