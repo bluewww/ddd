@@ -888,6 +888,12 @@ string read_member_name (string& value)
 	member_name = unquote(member_name);
     }
 
+    if (member_name.contains("[]", -1))
+    {
+	// JDB lets array member names end in `[]'
+	member_name = member_name.before(int(member_name.length()) - 2);
+    }
+
     read_leading_junk (member_name);
 
     if (member_name == "")
