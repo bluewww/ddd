@@ -144,6 +144,10 @@ User Interface
 Debuggers, Languages, and Platforms
 -----------------------------------
 
+- The new debugger type `auto' will automatically select the most
+  appropriate debugger for the given arguments (i.e. Perl for perl
+  files, JDB for Java classes, etc.).
+
 - Improved JDB class search.  Using JDB, `File->Open Class' no longer
   searches the class path for .java source files; instead, it searches
   for .class files and returns all classes with accessible .java

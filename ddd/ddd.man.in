@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-10\-05" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-10\-21" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -3953,10 +3953,12 @@ also initially sent to \s-1DBX\s+1.  By default, it is empty.
 .TP
 .B "debugger (\fPclass\fB Debugger)"
 The type of the inferior debugger (`\fBgdb\fR', `\fBdbx\fR',
-`\fBxdb\fR', `\fBjdb\fR', `\fBpydb\fR', or `\fBperl\fR').  Default
-value is `\fBgdb\fR'.  This resource is usually set through the
-`\fB\-\-gdb\fR', `\fB\-\-dbx\fR', `\fB\-\-xdb\fR', `\fB\-\-jdb\fR',
-`\fB\-\-pydb\fR', and `\fB\-\-perl\fR' options; see below for details.
+`\fBxdb\fR', `\fBjdb\fR', `\fBpydb\fR', `\fBperl\fR', or
+`\fBauto\fR').  The special value `\fBauto\fR' makes \s-1@DDD@\s+1
+determine the appropriate inferior debugger automatically.  This
+resource is usually set through the `\fB\-\-gdb\fR', `\fB\-\-dbx\fR',
+`\fB\-\-xdb\fR', `\fB\-\-jdb\fR', `\fB\-\-pydb\fR', `\fB\-\-perl\fR',
+and `\fB\-\-automatic-debugger\fR' options; see below for details.
 .TP
 .B "debuggerCommand (\fPclass\fB DebuggerCommand)"
 The name under which the inferior debugger is to be invoked.  If this
@@ -4985,6 +4987,9 @@ Attaches only the source window to the debugger console.
 .TP
 .B \-\-attach-data-window
 Attaches only the source window to the debugger console.
+.TP
+.B \-\-automatic-debugger
+Determine the inferior debugger automatically.
 .TP
 .B \-\-button-tips
 Enable button tips.
