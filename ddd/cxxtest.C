@@ -62,6 +62,7 @@ public:
     }
 
     virtual void print() {}
+    virtual void print(int) {}
 };
 
 //--------------------------------------------------------------------------
@@ -76,6 +77,7 @@ public:
     {}
 
     virtual void print() {}
+    virtual void print(int) {}
 };
 //--------------------------------------------------------------------------
 class Tree {
