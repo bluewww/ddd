@@ -1,8 +1,8 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 1.4d (WORK IN PROGRESS)
----------------------------
+DDD 1.4d
+--------
 
     Bug fix release; fixes problems introduced in DDD 1.4c.
 
@@ -14,9 +14,7 @@ DDD 1.4d (WORK IN PROGRESS)
     - Improved VSL interface.  VSL interpreter options can now be set
       upon DDD invocation; type `ddd --vsl-help' for a list of
       options.
-    - Some of the VSL options had to be renamed for DDD compliance;
-      this affects the `vsl' program only.
-    - Some VSL problems removed.  Thanks to Richard Wolff <rwolff@noao.edu>.
+    - Some VSL problems fixed.  Thanks to Richard Wolff <rwolff@noao.edu>.
 
 
 DDD 1.4c
