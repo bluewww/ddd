@@ -146,7 +146,7 @@ class DataDisp {
     static void set_args(BoxPoint p = BoxPoint(-1, -1),
 			 SelectionMode mode = SetSelection);
     static void refresh_args();
-    static void fill_labels();
+    static void refresh_display_list();
 
     static DispValue *selected_value();
     static DispNode  *selected_node();

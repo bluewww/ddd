@@ -768,7 +768,7 @@ void DataDisp::refresh_graph_edit ()
 		  XtNgraph, (Graph *)disp_graph,
 		  NULL);
     refresh_args();
-    fill_labels();
+    refresh_display_list();
 }
 
 // ***************************************************************************
@@ -838,7 +838,7 @@ void DataDisp::graph_unselectHP (void*, void*, void*)
     }
 
     refresh_args();
-    fill_labels();
+    refresh_display_list();
 }
 
 void DataDisp::gdb_ready_for_questionHP (Agent *, void *, void *)
@@ -1031,7 +1031,7 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
     }
 
     refresh_args();
-    fill_labels();
+    refresh_display_list();
 }
 
 DispNode *DataDisp::selected_node()
@@ -1366,7 +1366,7 @@ void DataDisp::UpdateDisplayEditorSelectionCB(Widget, XtPointer, XtPointer)
     ignore_update_display_editor_selection = true;
 
     refresh_args();
-    fill_labels();
+    refresh_display_list();
 
     ignore_update_graph_editor_selection  =  false;
     ignore_update_display_editor_selection = false;
@@ -2555,7 +2555,7 @@ void DataDisp::process_info_display (string& info_display_answer)
     if (changed)
 	refresh_graph_edit();
 
-    fill_labels();
+    refresh_display_list();
 }
 
 
@@ -2775,7 +2775,7 @@ static void sort(string labels[], bool selected[], int size)
 }
 
 // Create labels for the list
-void DataDisp::fill_labels()
+void DataDisp::refresh_display_list()
 {
     if (display_list_w == 0)
 	return;
