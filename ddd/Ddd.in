@@ -1433,7 +1433,7 @@ Ddd*menubar*fileMenu.restart.accelerator:      Shift Meta<Key>Q
 Ddd*menubar*fileMenu.restart.acceleratorText:  Alt+Shift+Q
 
 Ddd*menubar*fileMenu.quit.labelString:	 Exit
-Ddd*menubar*fileMenu.quit.mnemonic:	 E
+Ddd*menubar*fileMenu.quit.mnemonic:	 x
 Ddd*menubar*fileMenu.quit.accelerator:	    ~Shift Meta<Key>Q
 Ddd*menubar*fileMenu.quit.acceleratorText:  Alt+Q
 
