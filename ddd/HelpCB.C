@@ -1126,11 +1126,22 @@ static void HandleTipEvent(Widget w,
 			   XEvent *event, 
 			   Boolean * /* continue_to_dispatch */)
 {
-    if (event->type == EnterNotify || event->type == LeaveNotify)
+    // If user Lisa presses a mouse button on the widget, activating it,
+    // we assume she knows what she is doing, and popdown the help.
+    switch (event->type)
+    {
+    case EnterNotify:
+    case LeaveNotify:
+    case ButtonPress:
+    case ButtonRelease:
 	ClearTip(w);
+    }
 
-    if (event->type == EnterNotify)
+    switch (event->type)
+    {
+    case EnterNotify:
 	RaiseTip(w);
+    }
 }
 
 // (Un)install toolbar tips for W
@@ -1150,11 +1161,13 @@ static void InstallTipEvents(Widget w, bool install)
 	 << " event handler for " << cook(longName(w)) << "\n";
 #endif
 
-    EventMask event_mask = EnterWindowMask | LeaveWindowMask;
+    EventMask event_mask = 
+	EnterWindowMask | LeaveWindowMask | ButtonPress | ButtonRelease;
     if (install)
     {
 	XtAddEventHandler(w, event_mask, False, 
 			  HandleTipEvent, XtPointer(0));
+
     }
     else
     {
