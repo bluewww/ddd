@@ -26,7 +26,7 @@ To build a complete DDD from sources, you need:
 
    * A Motif Widget library.  Either
 
-     - LessTif, 0.86 or later, or
+     - LessTif, 0.87 or later, or
      - OSF/Motif (1.2 or later).
 
      Best results are obtained with OSF/Motif 2.0 and later.  We
@@ -40,9 +40,6 @@ To build a complete DDD from sources, you need:
      later.  Best results are obtained with X11R6.3 and later.
 
    * A `make' program.  We recommend GNU make.
-
-   * On Windows, you'll need a compatibility library.  We recommend
-     the CYGWIN library from `http://sourceware.cygnus.com/cygwin/'.
 
 
 We also recommend the following (optional) packages:
@@ -173,7 +170,7 @@ The simplest way to compile DDD is:
 	% sh ./configure
 	
      instead to prevent `csh' from trying to execute `configure' itself.
-     If you're building DDD on Windows using Cygwin32, type
+     If you're building DDD on Windows using CYGWIN, type
      
 	$ bash ./configure
 

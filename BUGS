@@ -141,8 +141,4 @@ Volunteers for fixing these and other bugs are welcome!
 353 (Automake) The `configure' script checks for `__CYGWIN32__', but
     as of Beta 20, this should be `__CYGWIN__'.
 
-354 (LessTif) Changing the Debugger in `Edit->Preferences->Startup',
-    makes the windows turn to a flashing border and the program hangs
-    up.
-
 358 (Insert new bugs here)
