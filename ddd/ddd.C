@@ -1299,6 +1299,7 @@ static XtErrorHandler ddd_original_xt_warning_handler;
 
 // Initial delays
 static StatusMsg *init_delay = 0;
+static Delay *setup_delay = 0;
 
 // Logo stuff
 static string last_shown_startup_logo;
@@ -2089,7 +2090,8 @@ int main(int argc, char *argv[])
     // Create initial delay
     if (app_data.session == DEFAULT_SESSION)
     {
-	init_delay = new StatusMsg("Initializing " + gdb->title());
+	setup_delay = new Delay;
+	init_delay  = new StatusMsg("Initializing " + gdb->title());
 	unlock_status();	// We still want to see the messages
     }
     else
@@ -2858,6 +2860,10 @@ static Boolean session_setup_done(XtPointer)
 
 Boolean ddd_setup_done(XtPointer)
 {
+    // Delete setup delay, if any
+    delete setup_delay;
+    setup_delay = 0;
+
     if (emptyCommandQueue() && gdb->isReadyWithPrompt())
     {
 	// Some WMs have trouble with early decorations.  Just re-decorate.
