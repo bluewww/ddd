@@ -35,19 +35,24 @@ const char shorten_rcsid[] =
 
 #include "shorten.h"
 #include "cook.h"
+#include "IntArray.h"
 
 #ifdef MAIN
 #include <iostream.h>
 #include <stdlib.h>
+#ifndef DEBUG
+#define DEBUG 1
+#endif
 #endif
 
 static string shorten_replacement = "..";
 
 static regex RXdbx_scope("[a-zA-Z_0-9]*`");
 
+// Shorten EXPR such that it is at most MAX_LENGTH characters long.
 void shorten(string& expr, unsigned max_length)
 {
-#ifdef DEBUG
+#if DEBUG
     clog << quote(expr) << "\n";
 #endif
 
@@ -55,7 +60,7 @@ void shorten(string& expr, unsigned max_length)
     if (expr.contains(rxwhite))
     {
 	expr.gsub(rxwhite, ' ');
-#ifdef DEBUG
+#if DEBUG
 	clog << quote(expr) << "\n";
 #endif
     }
@@ -64,103 +69,132 @@ void shorten(string& expr, unsigned max_length)
     while (expr.contains(' ', expr.length() - 1))
 	expr = expr.before(int(expr.length()) - 1);
 
+    if (expr.length() > max_length * 3)
+    {
+	// Bring EXPR to a reasonable size first: cut in the middle.
+	int keep = (max_length * 3 - shorten_replacement.length()) / 2;
+	expr = expr.through(keep) 
+	    + shorten_replacement
+	    + expr.from(int(expr.length()) - keep);
+    }
+
     // Strip DBX scope information
     while (expr.length() > max_length && expr.contains(RXdbx_scope))
     {
 	string postfix = expr.after(RXdbx_scope);
 	expr = expr.before(RXdbx_scope);
 	expr += postfix;
-#ifdef DEBUG
+#if DEBUG
 	clog << quote(expr) << "\n";
 #endif
     }
 
-    // Strip expressions '{..}', '[..]', '(..)', and `<..>'.
-    const char opening[] = "{[<(";
-    const char closing[] = "}]>)";
-    int i = 0;
-    for (i = 0; i < int(sizeof(opening) / sizeof(opening[0])) - 1; i++)
+    if (expr.length() > max_length)
     {
-	char open_paren  = opening[i];
-	char close_paren = closing[i];
-	
-	while (expr.length() > max_length && expr.contains(open_paren))
+	// Strip expressions '{..}', '[..]', '(..)', and `<..>'.
+	const char opening[] = "{[<(";
+	const char closing[] = "}]>)";
+	int i = 0;
+	for (i = 0; i < int(sizeof(opening) / sizeof(opening[0])) - 1; i++)
 	{
-	    // Find last `(' not followed by replacement string
-	    int last_opening = expr.index(open_paren, -1);
-	    while (last_opening >= 0 
-		   && expr.contains(shorten_replacement, last_opening + 1))
+	    char open_paren  = opening[i];
+	    char close_paren = closing[i];
+	
+	    while (expr.length() > max_length && expr.contains(open_paren))
 	    {
-		last_opening = expr.index(open_paren, 
-					  last_opening - expr.length() - 1);
-	    }
-	    if (last_opening < 0)
-		break;
+		// Find last `(' not followed by replacement string
+		int last_opening = expr.index(open_paren, -1);
+		while (last_opening >= 0 
+		       && expr.contains(shorten_replacement, last_opening + 1))
+		{
+		    last_opening = 
+			expr.index(open_paren, 
+				   last_opening - expr.length() - 1);
+		}
+		if (last_opening < 0)
+		    break;
 
-	    int next_closing = expr.index(close_paren, last_opening + 1);
-	    if (next_closing < 0)
-		break;
+		int next_closing = expr.index(close_paren, last_opening + 1);
+		if (next_closing < 0)
+		    break;
 
-	    expr.at(last_opening + 1, next_closing - last_opening - 1) 
-		= shorten_replacement;
-#ifdef DEBUG
-	    clog << quote(expr) << "\n";
+		expr.at(last_opening + 1, next_closing - last_opening - 1) 
+		    = shorten_replacement;
+#if DEBUG
+		clog << quote(expr) << "\n";
 #endif
+	    }
 	}
     }
 
-    const regex *rxs[] = { &rxdouble, &rxint, &rxidentifier };
-
-    for (i = 0; i < int(sizeof(rxs) / sizeof(rxs[0])); i++)
+    if (expr.length() > max_length)
     {
-	const regex& rx = *rxs[i];
+	// Still too long?  Remove tokens!
+	const regex *rxs[] = { &rxdouble, &rxint, &rxidentifier };
 
-	while (expr.length() > max_length && expr.contains(rx))
+	for (int i = 0; i < int(sizeof(rxs) / sizeof(rxs[0])); i++)
 	{
-	    // Replace all identifiers, starting in the middle
-	    int number_of_rxs = 0;
-	    int id = 0;
-	    while (id >= 0)
-	    {
-		int matchlen = 0;
-		id = rx.search(expr.chars(), expr.length(), matchlen, id);
-		if (id < 0)
-		    break;
-		if (matchlen > int(shorten_replacement.length()))
-		    number_of_rxs++;
-		id += matchlen;
-	    }
-	    if (&rx == &rxidentifier && number_of_rxs <= 2)
-		break;
-	    if (number_of_rxs == 0)
-		break;
+	    const regex& rx = *rxs[i];
 
-	    int kill = number_of_rxs / 2 + 1;
-	    
-	    id = 0;
-	    while (id >= 0)
+	    // Replace all tokens, starting in the middle
+	    int number_of_rxs = 0;
+	    IntArray positions;	// all occurrences of rx
+	    IntArray matchlens;	// the strings matched
+	    int rxpos = 0;
+	    while (rxpos >= 0)
 	    {
 		int matchlen = 0;
-		id = rx.search(expr.chars(), expr.length(), matchlen, id);
-		if (matchlen > int(shorten_replacement.length()))
-		    kill--;
-		
-		if (kill <= 0)
-		{
-		    expr.at(id, matchlen) = shorten_replacement;
-#ifdef DEBUG
-		    clog << quote(expr) << "\n";
-#endif
+		rxpos = 
+		    rx.search(expr.chars(), expr.length(), matchlen, rxpos);
+		if (rxpos < 0)
 		    break;
+		if (matchlen > int(shorten_replacement.length()))
+		{
+		    number_of_rxs++;
+		    positions += rxpos;
+		    matchlens += matchlen;
+		}
+		rxpos += matchlen;
+	    }
+
+	    while (expr.length() > max_length)
+	    {
+		if (&rx == &rxidentifier && number_of_rxs <= 2)
+		    break;
+		if (number_of_rxs == 0)
+		    break;
+
+		int kill = number_of_rxs / 2;
+		
+		expr.at(positions[kill], matchlens[kill]) =
+		    shorten_replacement;
+#if DEBUG
+		clog << quote(expr) << "\n";
+#endif
+
+		int diff = matchlens[kill] - shorten_replacement.length();
+		for (int k = kill; k < number_of_rxs - 1; k++)
+		{
+		    positions[k] = positions[k + 1] - diff;
+		    matchlens[k] = matchlens[k + 1];
 		}
 
-		id += matchlen;
+		number_of_rxs--;
 	    }
 	}
+    }
+
+    if (expr.length() > max_length)
+    {
+	// Still too long?  Cut in the middle!
+	int keep = (max_length - shorten_replacement.length()) / 2;
+	expr = expr.through(keep) 
+	    + shorten_replacement
+	    + expr.from(int(expr.length()) - keep);
     }
 }
 
-#ifdef MAIN
+#if MAIN
 int main(int argc, char *argv[])
 {
     int max_length = 20;
