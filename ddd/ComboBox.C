@@ -34,7 +34,7 @@ char ComboBox_rcsid[] =
 #endif
 
 // #define as 0 to rely exclusively on our replacement routines
-// #define USE_XM_COMBOBOX 0
+#define USE_XM_COMBOBOX 0
 
 #include "ComboBox.h"
 
