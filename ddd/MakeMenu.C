@@ -235,30 +235,12 @@ static void FlattenEH(Widget w,
     }
 }
 
-static void FlattenCB(Widget w, XtPointer client_data, XtPointer)
-{
-    bool set = bool(client_data);
-    if (set)
-    {
-	flatten_button(w);
-	active_button = 0;
-    }
-    else
-    {
-	unflatten_button(w);
-	active_button = w;
-    }
-}
-
 static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data, 
 			      XtPointer = 0)
 {
     Widget w = (Widget)client_data;
     EventMask event_mask = EnterWindowMask | LeaveWindowMask;
-    XtAddEventHandler(w, event_mask, False, FlattenEH, 
-		      XtPointer(0));
-    XtAddCallback(w, XmNarmCallback,    FlattenCB, XtPointer(False));
-    XtAddCallback(w, XmNdisarmCallback, FlattenCB, XtPointer(True));
+    XtAddEventHandler(w, event_mask, False, FlattenEH, XtPointer(0));
     flatten_button(w);
 }
 
@@ -1088,11 +1070,7 @@ static void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
 	// Don't have the PushMenu interfere with flattening.  Disable
 	// flattening until the menu is popped down again.
 	EventMask event_mask = EnterWindowMask | LeaveWindowMask;
-	XtRemoveEventHandler(w, event_mask, False, FlattenEH, 
-			     XtPointer(0));
-	XtRemoveCallback(w, XmNarmCallback,    FlattenCB, XtPointer(False));
-	XtRemoveCallback(w, XmNdisarmCallback, FlattenCB, XtPointer(True));
-
+	XtRemoveEventHandler(w, event_mask, False, FlattenEH, XtPointer(0));
 #if 0
 	XtAddCallback(shell, XtNpopdownCallback, ReflattenButtonCB, 
 		      XtPointer(w));
