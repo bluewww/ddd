@@ -30,17 +30,28 @@ dnl
 dnl
 dnl
 dnl
-dnl Revision Control
+dnl Revision Control.
 dnl
 AC_PREREQ(2.6)
 AC_REVISION([$Id$])
 dnl
 dnl
-dnl Initialization
+dnl Initialization.
 dnl
 AC_INIT(NEWS)
 AC_CONFIG_AUX_DIR(libiberty)
+dnl
+dnl Some simple checks.
+dnl 
 AC_CANONICAL_SYSTEM
+AC_PROG_MAKE_SET
+dnl
+dnl
+dnl Do not run these tests, but be sure to include their --with options.  
+if false; then
+ICE_FIND_MOTIF
+ICE_FIND_ATHENA
+fi
 dnl
 dnl
 dnl Not much to do here.  Just configure the sub-directories...

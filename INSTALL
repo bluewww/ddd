@@ -90,8 +90,7 @@ Basic Installation
          `--with-motif...', `--with-athena...', `--with-x...'  options
          used to specify the locations of Motif and Athena widgets or
          the X libraries.  These and other `configure' options are
-         decribed below.  Note that some of these options apply to the
-         `ddd/configure' script only.
+         decribed below.
 
 	 If you have multiple library versions installed (for
 	 instance, multiple X11 releases or releases from different

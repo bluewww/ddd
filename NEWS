@@ -59,6 +59,9 @@ DDD 2.0 (in beta test)
       Thanks to Peter Klein <pk@i3.informatik.rwth-aachen.de>.
 
     Changes in configuration and building:
+    - DDD now uses an `autoconf' top-level `configure' script instead
+      of the Cygnus one.  Advantages: `configure' options are properly
+      passed down to sub-`configures'; configuration caches are shared.
     - Regular expressions now use the POSIX.2 standard regcomp/regexec
       interface.  The slower interface is compensated by smarter calls.
     - DDD configuration now generally attempts to link with native system

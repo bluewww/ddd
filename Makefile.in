@@ -1,5 +1,5 @@
 # $Id$
-# DDD top-level Makefile
+# DDD top-level Makefile.
 
 # Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
@@ -48,6 +48,14 @@ target_canonical = @target@
 
 ### END OF CUSTOMIZATION SECTION ---
 ### You shouldn't need to change anything below this line.
+
+## Some programs
+# The make program, if not predefined.  ()
+@SET_MAKE@
+
+# The autoconf program.  (autoconf)
+AUTOCONF = autoconf
+
 
 ## Default target: build all
 
@@ -165,13 +173,11 @@ diststuff:
 
 ## Configuration stuff.
 
-AUTOCONF = autoconf
-
 Makefile: Makefile.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-$(srcdir)/configure: $(srcdir)/configure.in
-	cd $(srcdir) && $(AUTOCONF)
+$(srcdir)/configure: $(srcdir)/ddd/aclocal.m4 $(srcdir)/configure.in
+	cd $(srcdir) && $(AUTOCONF) -l $(srcdir)/ddd
 
 config.status: $(srcdir)/configure
 	-$(SHELL) ./config.status --recheck || $(SHELL) $(srcdir)/configure -v
