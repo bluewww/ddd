@@ -25,19 +25,16 @@ To build a complete DDD from sources, you need:
      - Cfront 3.0: does not compile DDD.
 
      To avoid any risks, we strongly recommend to use the GNU C++
-     compiler.  GCC 2.7.2 and EGCS 1.1.1 are best choices.
+     compiler.  GCC 2.7.2 and EGCS 1.1.1 or later are best choices.
 
    * A Motif Widget library.  Either
 
      - LessTif, 0.88 or later, or
      - OSF/Motif (1.2 or later).
 
-     Best results are obtained with OSF/Motif 2.0 and later.  We
-     recommend to use OSF/Motif or the most recent LessTif release,
-     available from `http://www.lesstif.org/'.
-
-     LessTif should be used in (default) Motif 1.2 compatibility mode.
-     The Motif 2.0 compatibility mode of LessTif is still incomplete.
+     We recommend to use LessTif 0.88.9 or later, available from
+     `http://www.lesstif.org/'.  Use LessTif in (default) Motif 1.2
+     compatibility mode.
 
    * The X window library (Xlib) and X toolkit library (Xt), X11R4 or
      later.  Best results are obtained with X11R6.3 and later.
