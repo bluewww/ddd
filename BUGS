@@ -282,11 +282,6 @@ Volunteers for fixing these and other bugs are welcome!
 131. `Find<<' and `Find>>' should be in the `Edit' menu (at least for
      sources)
 
-134. David M. Karr <dkarr@nmo.gtegsc.com> wrote: It seems to me that
-     when the executable is reloaded, it should force a reload of the
-     source.  I don't see much use in running an executable with the
-     old version of a source file.  [Is this still a problem?  -AZ]
-
 136. If a DBX `where' output in the console window contains a line
      like ["test_dxdb.f":49], it is omitted from the listing.
      Reported by Clemmitt Sigler <siglercm@alphamb.phys.vt.edu>.
@@ -333,9 +328,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 165. The data display `list_test @ 10' is not correctly parsed.
 
-166. When disassembling, have a way to place a delay that is
-     automatically cleared with the next GDB prompt (AutoDelay or so).
-
 168. Jens Albrecht <Jens.Albrecht@informatik.uni-erlangen.de>
      complains that using DBX, the `file' command does not change the
      source file.
@@ -376,4 +368,6 @@ Volunteers for fixing these and other bugs are welcome!
      dbx cannot handle `when at { }' without a command inside the
      parentheses (this should be `{ delete xx,yy }' anyway).
 
-187. (Insert your bug here)
+187. Resizing the DDD window causes the command tool to jump around.
+
+188. (Insert your bug here)
