@@ -4,7 +4,7 @@ DDD Documentation					-*- text -*-
 This directory contains various documentation related to DDD in
 PostScript format.
 
-ddd-paper.ps -- ``DDD---A Free Graphical Front-End for UNIX Debuggers''
+ddd-paper.ps -- `DDD---A Free Graphical Front-End for UNIX Debuggers'
 
     A six-page DDD survey including some screen shots.  The paper
     also highlights some internal aspects of DDD.  Appeared in ACM
@@ -13,7 +13,7 @@ ddd-paper.ps -- ``DDD---A Free Graphical Front-End for UNIX Debuggers''
     Included in the DDD source distribution.
 
 
-ddd.man.ps -- ``DDD---The Data Display Debugger''
+ddd.man.ps -- `DDD---The Data Display Debugger'
 
     The DDD manual page, in PostScript format.  The official,
     up-to-date DDD reference.  The PostScript version includes more
@@ -25,7 +25,7 @@ ddd.man.ps -- ``DDD---The Data Display Debugger''
     Included in the DDD source distribution.
 
 
-ddd.man-nopics.ps -- ``DDD---The Data Display Debugger''
+ddd.man-nopics.ps -- `DDD---The Data Display Debugger'
 
     The DDD manual page, in PostScript format, but without pictures.
 
@@ -34,7 +34,7 @@ ddd.man-nopics.ps -- ``DDD---The Data Display Debugger''
     Included in the DDD source distribution.
 
 
-ddd-thesis.ps -- ``DDD - ein Debugger mit graphischer Datendarstellung''
+ddd-thesis.ps -- `DDD - ein Debugger mit graphischer Datendarstellung'
 
     Dorothea's Master's Thesis on DDD (in German).
 
@@ -43,7 +43,7 @@ ddd-thesis.ps -- ``DDD - ein Debugger mit graphischer Datendarstellung''
         ftp://ftp.ips.tu-bs.de/pub/local/softech/ddd/doc/ddd-thesis.ps
 
 
-gdb.ps -- ``Debugging with GDB''
+gdb.ps -- `Debugging with GDB'
 
     The GDB manual, in PostScript format.
 
@@ -52,7 +52,14 @@ gdb.ps -- ``Debugging with GDB''
         ftp://ftp.ips.tu-bs.de/pub/local/softech/ddd/doc/gdb.ps
 
 
-vse.ps -- ``Visual Prettyprinting''
+sample.dddinit -- `Sample DDD initialization file'
+
+    A sample `~/.dddinit' file.  Use for customization.
+
+    Included in the DDD source distribution.
+
+
+vse.ps -- `Visual Prettyprinting'
 
     This survey paper decribes the VSL language, which DDD uses to
     display data structures in displays.  Contains a short VSL reference.

@@ -69,13 +69,13 @@ README="ANNOUNCE    \
 "
 
 # Documentation files
-DOC="ddd.man.ps ddd.man-nopics.ps"
+DOC="ddd.man.ps ddd.man-nopics.ps sample.dddinit"
 
 # Icons
 ICONS="ddd.xbm ddd.xpm mini-ddd.xpm README"
 
 # Sample files
-SAMPLES="ddd.man ddd.man.txt sample.dddinit Ddd"
+SAMPLES="ddd.man ddd.man.txt Ddd"
 
 # Files to be ignored in DIFF files
 DIFF_IGNORE="
@@ -173,6 +173,7 @@ if $doc; then
   echo installing $SAMPLES...
   $rsh "cd $dir/doc; /bin/rm -f $SAMPLES"
   $rcp -p $SAMPLES $ftpdir/doc
+  $rsh "cd $dir/doc; gzip -f -v -9 $SAMPLES"
 
   (cd ../doc; rm -f $DOC)
   )
