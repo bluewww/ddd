@@ -2004,10 +2004,6 @@ int main(int argc, char *argv[])
     // Motif widget has been created.
     setup_motif_version_warnings();
 
-    // Merge ~/.ddd/init resources into application shell
-    XrmDatabase target = XtDatabase(XtDisplay(toplevel));
-    XrmMergeDatabases(dddinit, &target);
-
     // Setup top-level actions; this must be done before reading
     // application defaults.
     XtAppAddActions(app_context, actions, XtNumber(actions));
@@ -2023,6 +2019,29 @@ int main(int argc, char *argv[])
 				ddd_resources, ddd_resources_size,
 				NULL);
 
+    // If we have no application defaults so far, or if the
+    // application defaults have the wrong version, try to load our own.
+    XrmDatabase target = XtDatabase(XtDisplay(toplevel));
+    if (app_data.app_defaults_version == 0 ||
+	string(app_data.app_defaults_version) != DDD_VERSION)
+    {
+	if (app_data.app_defaults_version != 0)
+	{
+	    messages << "Ignoring app-defaults file for " 
+		     << DDD_NAME << app_data.app_defaults_version << "\n";
+	}
+
+	XrmDatabase app_def = app_defaults(XtDisplay(toplevel));
+	XrmMergeDatabases(app_def, &target);
+    }
+
+    // Merge ~/.ddd/init resources into application shell
+    XrmMergeDatabases(dddinit, &target);
+
+    // Read APP_DATA again
+    XtVaGetApplicationResources(toplevel, (XtPointer)&app_data,
+				ddd_resources, ddd_resources_size,
+				NULL);
 
 #if XtSpecificationRelease >= 6
     // Synchronize SESSION_ID and APP_DATA.session
