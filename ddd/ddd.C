@@ -1039,35 +1039,29 @@ static MMDesc source_preferences_menu[] =
 
 
 // Data preferences
-static Widget graph_show_hints_w;
-static Widget graph_show_annotations_w;
-static Widget graph_show_dependent_titles_w;
-
-static MMDesc data_appearance_menu[] =
-{
-    { "hints", MMToggle, { graphToggleShowHintsCB },
-      NULL, &graph_show_hints_w },
-    { "annotations", MMToggle, { graphToggleShowAnnotationsCB },
-      NULL, &graph_show_annotations_w },
-    { "dependentTitles", MMToggle, { graphToggleShowDependentTitlesCB },
-      NULL, &graph_show_dependent_titles_w },
-    MMEnd
-};
 
 static Widget graph_detect_aliases_w;
 static Widget graph_cluster_displays_w;
 static Widget graph_align_2d_arrays_w;
+static Widget graph_show_hints_w;
+static Widget graph_show_annotations_w;
+static Widget graph_show_dependent_titles_w;
 static Widget graph_auto_close_w;
 
 static MMDesc data_preferences_menu[] = 
 {
-    { "appearance", MMButtonPanel, MMNoCB, data_appearance_menu },
     { "detectAliases", MMToggle, { graphToggleDetectAliasesCB },
       NULL, &graph_detect_aliases_w },
     { "clusterDisplays", MMToggle, { graphToggleClusterDisplaysCB },
       NULL, &graph_cluster_displays_w }, 
     { "align2dArrays", MMToggle,  { graphToggleAlign2dArraysCB },
       NULL, &graph_align_2d_arrays_w },
+    { "hints", MMToggle, { graphToggleShowHintsCB },
+      NULL, &graph_show_hints_w },
+    { "annotations", MMToggle, { graphToggleShowAnnotationsCB },
+      NULL, &graph_show_annotations_w },
+    { "dependentTitles", MMToggle, { graphToggleShowDependentTitlesCB },
+      NULL, &graph_show_dependent_titles_w },
     { "autoClose", MMToggle,  { graphToggleAutoCloseCB },
       NULL, &graph_auto_close_w },
     MMEnd

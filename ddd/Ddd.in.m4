@@ -3125,16 +3125,17 @@ Machine Code Indentation
 Ddd*preferences*data*helpString:	\
 @rm These are the EMPH(Data Preferences).\n\
 \n\
-ITEM Using LBL(Show), you can define the appearance of the data:\n\
-    SUBITEM LBL(Edge hints) enables handles for multi-line and arc edges.\n\
-    SUBITEM LBL(Edge annotations) enables named edges.\n\
-    SUBITEM LBL(Titles) enables titles of dependent displays.\n\
 ITEM If LBL(Detect aliases) is set, DDD detects displays with the same\n\
     physical address and suppresses all aliases except the one that was\n\
     least recently changed.  Useful for examining shared data structures.\n\
+ITEM If LBL(Cluster displays) is set, all independent displays will be\n\
+    merged into one single cluster, saving screen space.\n\
 ITEM If LBL(Display two-dimensional arrays as tables) is set, the elements\n\
     of two-dimensional arrays are aligned in a table.\n\
     Otherwise, two-dimensional arrays are displayed as nested linear arrays.\n\
+ITEM LBL(Show edge hints) enables handles for multi-line and arc edges.\n\
+ITEM LBL(Show edge annotations) enables named edges.\n\
+ITEM LBL(Show titles) enables titles of dependent displays.\n\
 ITEM If LBL(Close data window when deleting last display) is set,\n\
     deleting the last display automatically closes the data window.\n\
 \n\
@@ -3158,22 +3159,20 @@ Click on LBL(Reset) to restore the saved preferences.
 Ddd*preferences*detectAliases.labelString:	\
 Detect Aliases (shared data structures)
 Ddd*preferences*clusterDisplays.labelString:    \
-Cluster Displays
+Cluster Independent Displays
 Ddd*preferences*align2dArrays.labelString:	\
 Display Two-Dimensional Arrays as Tables
 Ddd*preferences*snapToGrid.labelString:	        \
 Auto-Align Displays on Nearest Grid Point
+Ddd*preferences*hints.labelString:	        \
+Show Edge Hints
+Ddd*preferences*annotations.labelString:	\
+Show Edge Annotations
+Ddd*preferences*dependentTitles.labelString:    \
+Show Titles of Dependent Displays
 Ddd*preferences*autoClose.labelString:	        \
 Close Data Window when Deleting last Display
 
-Ddd*preferences*appearance.labelString:	        \
-Show
-Ddd*preferences*hints.labelString:	        \
-Edge Hints
-Ddd*preferences*annotations.labelString:	\
-Edge Annotations
-Ddd*preferences*dependentTitles.labelString:    \
-Titles of Dependent Displays
 Ddd*preferences*auto.labelString:	        \
 Automatic Layout
 Ddd*preferences*compact.labelString:	        \
