@@ -212,12 +212,16 @@ void BreakPoint::process_gdb(string& info_output)
 	}
 
 	// Location
-	info_output = info_output.from(rxname_colon_int_nl);
-	myfile_name = info_output.before(":");
-
-	info_output = info_output.after (":");
-	if (info_output != "" && isdigit(info_output[0]))
-	    myline_nr = get_positive_nr(info_output);
+ 	// We have to deal with breakpoint in code w/o source
+	// -- Hiro Sugawara <hiro@lynx.com>
+ 	string remainder = info_output.through('\n');
+ 	remainder = remainder.from(rxname_colon_int_nl);
+ 	info_output = info_output.from('\n');
+ 	myfile_name = remainder.before(":");
+ 
+ 	remainder = remainder.after(":");
+ 	if (remainder != "" && isdigit(remainder[0]))
+ 	    myline_nr = get_positive_nr(remainder);
     }
     else if (mytype == WATCHPOINT)
     {
