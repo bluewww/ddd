@@ -27,7 +27,7 @@
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
 //-----------------------------------------------------------------------------
-// Verschiedene Funktionen auf string
+// Miscellaneous string functions
 //-----------------------------------------------------------------------------
 
 #ifndef _DDD_string_fun_h

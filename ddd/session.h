@@ -134,7 +134,7 @@ bool is_saved_session(const string& session);
 bool is_temporary_session(const string& session);
 
 // Set temporary flag of SESSION
-void set_tmeporary_session(const string& session, bool temporary);
+void set_temporary_session(const string& session, bool temporary);
 
 // Set name of session to be restarted with
 void set_restart_session(const string& session = "");

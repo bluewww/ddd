@@ -2,6 +2,7 @@
 // DDD session management
 
 // Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001 Universitaet des Saarlandes, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -1310,20 +1311,16 @@ static void CancelSmShutdownCB(Widget, XtPointer client_data, XtPointer)
     XtSessionReturnToken(token);
 }
 
-// 4. Let DDD die.
+// 4. Let DDD die.  This leaves the session as temporary.
 void ShutdownSmSessionCB(Widget w, XtPointer, XtPointer call_data)
 {
     if (gdb != 0 && can_do_gdb_command())
     {
 	if (gdb->type() == GDB)
 	    gdb_question("set confirm off");
+    }
 
-	DDDExitCB(w, XtPointer(EXIT_SUCCESS), call_data);
-    }
-    else
-    {
-	_DDDExitCB(w, XtPointer(EXIT_SUCCESS), call_data);
-    }
+    _DDDExitCB(w, XtPointer(EXIT_SUCCESS), call_data);
 }
 
 // Create a confirmation dialog

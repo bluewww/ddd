@@ -866,7 +866,7 @@ void startup_exec_tty()
 // Tie GDB buffering to existence of execution window
 static void set_buffer_gdb_output()
 {
-    if (app_data.buffer_gdb_output == Auto)
+    if (gdb && app_data.buffer_gdb_output == Auto)
     {
         // Buffer GDB output iff we have a separate exec window
 	gdb->buffer_gdb_output(separate_tty_pid > 0);
