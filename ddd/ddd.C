@@ -5915,12 +5915,14 @@ static Bool is_emergency(Display *, XEvent *event, char *)
 
 	int len = XLookupString(&event->xkey, buffer, sizeof buffer, 
 				&keysym, NULL);
-	if (len == 1 && (buffer[0] == '\003' || 
-			 buffer[0] == '\007' || 
-			 buffer[0] == '\034'))
+	if (len == 1)
 	{
-	    // Interrupt: ^C, ^G, or ^\ found in queue
-	    return True;
+	    char c = buffer[0];
+	    if (c== '\003' || c == '\007' || c == '\033' || c == '\034')
+	    {
+		// Interrupt: ^C, ^G, ^\, or ESC found in queue
+		return True;
+	    }
 	}
     }
     }
