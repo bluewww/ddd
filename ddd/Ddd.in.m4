@@ -3206,7 +3206,7 @@ define(ANNOUNCE_PULLDOWN,[\
 Pulldown menu functions (press and hold BUTTON(1)):\
 ])dnl
 
-define(MORE_PULLDOWN,[(press and hold BUTTON(1) for menu)])dnl
+define(MORE_PULLDOWN,[(hold for menu)])dnl
 
 Ddd*graph_cmd_w.graph_cmd_area*new.helpString:\
 LBL(New Display)\n\
@@ -3221,7 +3221,7 @@ DESC(Edit..., [Edit shortcuts])
 Ddd*graph_cmd_w.graph_cmd_area*new.tipString:\
 @rm Create new display
 Ddd*graph_cmd_w.graph_cmd_area*new.documentationString:\
-@rm Create a new (dependent) display  MORE_PULLDOWN()
+@rm Create a new (dependent) display MORE_PULLDOWN()
 
 Ddd*graph_cmd_w.graph_cmd_area*dereference.helpString:\
 LBL(Display *())\n\
@@ -3244,7 +3244,7 @@ DESC(Hide, [Hide Details])
 Ddd*graph_cmd_w.graph_cmd_area*detail.tipString:	\
 @rm Show/Hide selected details
 Ddd*graph_cmd_w.graph_cmd_area*detail.documentationString: \
-@rm Show/Hide details of the selected displays  MORE_PULLDOWN()
+@rm Show/Hide details of the selected displays MORE_PULLDOWN()
 
 Ddd*graph_cmd_w.graph_cmd_area*show_more.documentationString: \
 @rm Show more details of the selected displays
@@ -3264,7 +3264,7 @@ DESC(Rotate All, [Rotate substructures too])
 Ddd*graph_cmd_w.graph_cmd_area*rotate.tipString:	\
 @rm Rotate selected displays
 Ddd*graph_cmd_w.graph_cmd_area*rotate.documentationString: \
-@rm Rotate the selected displays  MORE_PULLDOWN()
+@rm Rotate the selected displays MORE_PULLDOWN()
 Ddd*graph_cmd_w.graph_cmd_area*rotateAll.documentationString: \
 @rm Rotate the selected displays, including substructures
 
@@ -3576,7 +3576,7 @@ DESC(Set Execution Position to (), [move execution position])
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.tipString:	\
 @rm Set/Delete breakpoint at LBL(())
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.documentationString:	\
-@rm Set or delete a breakpoint at the argument LBL(())  MORE_PULLDOWN()
+@rm Set or delete a breakpoint at the argument LBL(()) MORE_PULLDOWN()
 
 Ddd*arg_cmd_w.arg_cmd_area*tempBreakAt.documentationString: \
 @rm Set a temporary breakpoint at the argument LBL(())
@@ -3598,7 +3598,7 @@ DESC(Whatis (), [print type of argument])
 Ddd*arg_cmd_w.arg_cmd_area*print.tipString:	\
 @rm Print LBL(()) in the debugger console
 Ddd*arg_cmd_w.arg_cmd_area*print.documentationString:	\
-@rm Print the argument LBL(()) in the @GDB@ console  MORE_PULLDOWN()
+@rm Print the argument LBL(()) in the @GDB@ console MORE_PULLDOWN()
 Ddd*arg_cmd_w.arg_cmd_area*printRef.documentationString:	\
 @rm Print the dereferenced argument LBL(()) in the @GDB@ console
 Ddd*arg_cmd_w.arg_cmd_area*whatis.documentationString:	\
@@ -3614,7 +3614,7 @@ DESC(Display *(), [display dereferenced argument])
 Ddd*arg_cmd_w.arg_cmd_area*display.tipString:	\
 @rm Display LBL(()) in the data window
 Ddd*arg_cmd_w.arg_cmd_area*display.documentationString:	\
-@rm Display the argument LBL(()) in the data window  MORE_PULLDOWN()
+@rm Display the argument LBL(()) in the data window MORE_PULLDOWN()
 Ddd*arg_cmd_w.arg_cmd_area*dispRef.documentationString:	\
 @rm Display the dereferenced argument LBL(()) in the data window
 
