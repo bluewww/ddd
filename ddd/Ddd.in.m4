@@ -901,6 +901,7 @@ Ddd*fontList: \
 @CHARSET@=charset,\
 @SMALL@=small,\
 @TT@=tt,\
+@TB@=tb,\
 @KEY@=key,\
 @RM@=rm,\
 @SL@=sl,\
@@ -4744,6 +4745,8 @@ DESC(Condition..., [set or modify an item's condition])\n\
 DESC(Properties..., [set or modify an item's properties])\n\
 DESC(Delete, [delete all selected items])
 
+Ddd*edit_breakpoints_dialog*list.selectionPolicy: XmEXTENDED_SELECT
+
 Ddd*new_breakpoint_dialog_popup.title: DDD: New Breakpoint
 Ddd*new_breakpoint_dialog.selectionLabelString:	New Breakpoint
 
@@ -5033,6 +5036,9 @@ stack frame, plus all those whose scope is global or an entire file.\n\
 \n\
 If LBL(Include in `Display ()' Menu) is set, the new display expression\n\
 becomes an item in the LBL(Display ()) menu.])dnl
+
+Ddd*edit_displays_dialog*list.selectionPolicy: XmEXTENDED_SELECT
+
 
 Ddd*new_display_dialog_popup.title:          	   DDD: New Display
 Ddd*new_display_dialog.okLabelString:              Display
