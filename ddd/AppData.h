@@ -98,6 +98,7 @@
 #define XtCLinesAboveCursor      "LinesAboveCursor"
 #define XtNlinesBelowCursor      "linesBelowCursor"
 #define XtCLinesBelowCursor      "LinesBelowCursor"
+#define XtNindentScript          "indentScript"
 #define XtNindentSource          "indentSource"
 #define XtNindentCode            "indentCode"
 #define XtCIndent                "Indent"
@@ -403,6 +404,7 @@ struct AppData {
     Cardinal  lines_above_cursor;
     Cardinal  lines_below_cursor;
     Cardinal  indent_source;
+    Cardinal  indent_script;
     Cardinal  indent_code;
     Cardinal  line_number_width;
     Boolean   source_editing;

@@ -616,6 +616,14 @@ public:
 	return has_enable_command() || has_conditions();
     }
 
+    // True if a minimum indent is required.  This is true for
+    // scripting languages.
+    bool requires_script_indent() const
+    {
+	return program_language() == LANGUAGE_PERL ||
+	    program_language() == LANGUAGE_PYTHON;
+    }
+
     // True if DBX output is to be processed verbatim
     bool verbatim() const        { return _verbatim; }
     bool verbatim(bool val)      { return _verbatim = val; }

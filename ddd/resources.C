@@ -412,6 +412,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNindentScript,
+	XtCIndent,
+	XtRCardinal,
+	sizeof(Cardinal),
+	XtOffsetOf(AppData, indent_script),
+	XmRImmediate,
+	XtPointer(4)
+    },
+
+    {
 	XtNindentCode,
 	XtCIndent,
 	XtRCardinal,

@@ -359,6 +359,7 @@ bool SourceView::disassemble            = true;
 bool SourceView::all_registers          = false;
 
 int  SourceView::source_indent_amount = 4;
+int  SourceView::script_indent_amount = 4;
 int  SourceView::code_indent_amount   = 4;
 int  SourceView::line_indent_amount   = 4;
 int  SourceView::tab_width            = 8;
@@ -525,10 +526,9 @@ int SourceView::indent_amount(Widget w, int pos)
 	if (display_line_numbers)
 	    indent += line_indent_amount;
 
-	// For scripting languages, add a minimum amount
-	if (gdb->program_language() == LANGUAGE_PERL ||
-	    gdb->program_language() == LANGUAGE_PYTHON)
-	    indent = max(indent, 4);
+	// Set a minimum indentation for scripting languages
+	if (gdb->requires_script_indent())
+	    indent = max(indent, script_indent_amount);
     }
 
     if (pos >= 0)

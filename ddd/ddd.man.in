@@ -3765,6 +3765,10 @@ enough place to display breakpoint locations.  Default: \fB4\fR.
 The number of columns to indent the source code, such that there is
 enough place to display breakpoint locations.  Default: \fB0\fR.
 .TP
+.B "indentScript (\fPclass\fB Indent)"
+The minimum indentation for script languages, such as Perl and Python.
+Default: \fB4\fR.
+.TP
 .B "lineNumberWidth (\fPclass\fB LineNumberWidth)"
 The number of columns to use for line numbers (if displaying line
 numbers is enabled).  Line numbers wider than this value extend into

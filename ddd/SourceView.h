@@ -744,6 +744,7 @@ public:
     static int source_indent_amount;         // Source
     static int code_indent_amount;           // Machine code
     static int line_indent_amount;           // Extra columns for line numbers
+    static int script_indent_amount;         // Minimum for scripts
 
     // The scrolling amounts
     static int lines_above_cursor;           // Lines to keep before cursor
