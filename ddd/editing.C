@@ -386,7 +386,7 @@ void commandAct(Widget w, XEvent*, String *params, Cardinal *num_params)
     gdb_keyboard_command = true;
 }
 
-void processAct(Widget w, XEvent *e, String *, Cardinal *)
+void processAct(Widget, XEvent *e, String *, Cardinal *)
 {
     if (e->type != KeyPress && e->type != KeyRelease)
 	return;
