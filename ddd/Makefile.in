@@ -173,36 +173,21 @@ LDFLAGS = @LDFLAGS@
 
 ## Local libraries
 
-# Note: on HP-UX (and other systems?), the Motif references the
-# regcomp() function from libc, the standard C library.  A GNU version
-# of regcomp() is provided by libg++, but it is incompatible with the
-# HP-UX regcomp() that Motif expects.  To make sure we get the correct
-# functions, we reference libc explicitly (-lc).  Also, our local
-# librx library required by the regex classes redefines regcomp(),
-# regexec(), ... to GNU_regcomp(), GNU_regexec() and so on.
-#
-# On other systems (notably Linux), DDD crashes if -lc is defined twice.
-#
-# Hence: if DDD crashes immediately after startup, change the setting
-# of `EXTRA_LIBC' from `-lc' to `' or vice versa.  Please report the
-# problem to `ddd-bugs@ips.cs.tu-bs.de' such that future DDD releases
-# will detect this problem automatically.
-
-# LIBRX      = ../librx/librx.a
+# POSIX regex routines (from system or ../rx/librx.a)
 LIBRX      = @LIBRX@
-# LIBTERMCAP = ../termcap/libtermcap.a
+# termcap routines (from system or ../termcap/libtermcap.a)
 LIBTERMCAP = @LIBTERMCAP@
-# LIBIBERTY  = ../libiberty/libiberty.a
+# -liberty library (../libiberty/libiberty.a)
 LIBIBERTY  = @LIBIBERTY@
-# LIBM = -lm
+# Math library (-lm)
 LIBM       = @LIBM@
-# LIBC = -lc
+# C library (-lc)
 LIBC       = @LIBC@
-# EXTRA_LIBC = -lc
-EXTRA_LIBC = @EXTRA_LIBC@
-# NON_X_LIBS = -ly -lnsl -lg++
+# Libraries required for non-X programs (-ly -lnsl -lstdc++)
 NON_X_LIBS = @LIBS@
-LIBS = $(EXTRA_LIBC) $(LIBRX) $(LIBTERMCAP) $(LIBIBERTY) $(LIBM) $(LIBC)
+
+# All libraries shown above
+LIBS = $(CXXLIBS) $(LIBRX) $(LIBTERMCAP) $(LIBIBERTY) $(LIBM) $(LIBC)
 
 
 ## X Libraries
@@ -219,10 +204,10 @@ LIBXAW = @XAW_LIBS@
 # X extension library; needed for Athena and Motif 2.0.  (-lXext)
 LIBXEXT = @XEXT_LIBS@
 
-# Xpm library; needed for Motif 2.0.  (-lXpm)
+# Xpm library; sometimes needed for Motif 2.0.  (-lXpm)
 LIBXPM = @XPM_LIBS@
 
-# gen library; needed for Motif 2.0.  (-lgen)
+# gen library; sometimes needed for Motif 2.0.  (-lgen)
 LIBGEN = @LIBGEN@
 
 # X toolkit library.  (-lXt)
@@ -496,7 +481,7 @@ BASE_OBJECTS = \
 	cook.o       \
 	glob.o       \
 	hash.o       \
-	regex.o      \
+	rxclass.o    \
 	sigName.o    \
 	strclass.o   \
 	SignalB.o    \
@@ -679,7 +664,7 @@ DDD_OBJECTS = \
 USERINFO_OBJECTS =
 
 # Objects required for huffencode and huffdecode
-HUFFMAN_OBJECTS = strclass.o cook.o regex.o
+HUFFMAN_OBJECTS = strclass.o cook.o rxclass.o
 
 ## All objects.
 OBJECTS = $(NORA_OBJECTS) $(DDD_OBJECTS)
@@ -689,7 +674,7 @@ PROGS = $(ddd)
 
 ## Extra demonstration files.
 DEMOS = userinfo huffencode huffdecode cxxtest ctest test-file test-graph \
-        vsl ttytest bug ptest m2test
+        vsl ttytest bug ptest m2test tString
 
 ## Where to find texinfo files and so
 MAKEINFO_FLAGS = \
@@ -939,6 +924,9 @@ ttytest: ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS)
 
 bug:	bug.o  $(NORA_OBJECTS)
 	$(LINK.cc) -o $@ bug.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
+
+tString: tString.o  $(HUFFMAN_OBJECTS)
+	$(LINK.cc) -o $@ tString.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
 cxxtest: cxxtest.o
 	$(LINK.cc) -o $@ cxxtest.o
