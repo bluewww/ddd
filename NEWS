@@ -8,6 +8,7 @@ Minor bug fixes:
 
 * Minor compilation problems with GCC 2.7.2 and Sun CC are fixed.
 * The option to create new displays `left-to-right' is restored upon startup.
+* Fortran struct members are accessed as `A%B' instead of `A.B'.
 
 
 
