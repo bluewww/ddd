@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Assoc<int, VarArray<int> >
+// Assoc<int, VarArray<int> > and Assoc<string, VarArray<int> >.
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
@@ -35,9 +35,13 @@
 
 #include "Assoc.h"
 #include "IntArray.h"
+#include "strclass.h"
 
 typedef Assoc<int, VarIntArray> IntIntArrayAssoc;
 typedef AssocIter<int, VarIntArray> IntIntArrayAssocIter;
+
+typedef Assoc<string, VarIntArray> StringIntArrayAssoc;
+typedef AssocIter<string, VarIntArray> StringIntArrayAssocIter;
 
 #endif // _DDD_IntIntArrayAssoc_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
