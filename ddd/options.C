@@ -2106,8 +2106,7 @@ bool save_options(unsigned long flags)
 	os << string_app_value(XtNrestartCommands, restart) << "\n";
     }
 
-    save_option_state();
-    save_settings_state();
+    bool saved = true;
 
     os.close();
     if (os.bad())
@@ -2115,7 +2114,7 @@ bool save_options(unsigned long flags)
 	if (interact)
 	    post_error("Cannot save " + options + " in " + quote(workfile),
 		       "options_save_error");
-	ok = false;
+	ok = saved = false;
 	unlink(workfile);
     }
 
@@ -2125,8 +2124,14 @@ bool save_options(unsigned long flags)
 	    post_error("Cannot rename " + quote(workfile)
 		       + " to " + quote(file),
 		       "options_save_error");
-	ok = false;
+	ok = saved = false;
 	unlink(workfile);
+    }
+
+    if (saved)
+    {
+	save_option_state();
+	save_settings_state();
     }
 
     return ok;
