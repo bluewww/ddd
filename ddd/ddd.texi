@@ -1,4 +1,4 @@
-\input texinfo @c -*- texinfo -*-
+\def\postscript{}\input texinfo @c -*- texinfo -*-
 @c $Id$
 @c DDD Manual
 
@@ -72,14 +72,14 @@ Institut f@"ur Software
 Abteilung Softwaretechnologie
 B@"ultenweg 88
 D-38092 Braunschweig
-@sc{germany}
+GERMANY
 
 Phone: +49 531 391-7580
 Fax: +49 531 391-8940
 E-mail: @email{@value{ddd}@@ips.cs.tu-bs.de}
 
 @value{DDD} and this manual are available via @*
-@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} @sc{www} page}.
+@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW page}.
 @end format
 
 Permission is granted to make and distribute verbatim copies of
@@ -104,13 +104,23 @@ into another language, under the above conditions for modified versions.
 
 @titlepage
 @sp -7
+@ifnottex
 @title Debugging with @value{DDD}
 @subtitle User's Guide and Reference Manual
 @subtitle @value{EDITION} Edition, for @value{DDD} Version @value{VERSION}
 @subtitle Last updated @value{DATE}
-@sp 2
-@center @image{PICS/dddlogo, 15cm}
 @author Andreas Zeller
+@end ifnottex
+@tex
+\setfont\bigtitlesf\sfbshape{10}{\magstep4}
+\title \bigtitlesf{Debugging with @value{DDD}}
+\subtitle \textsf{User's Guide and Reference Manual}
+\subtitle \textsf{\value{EDITION} Edition, for \value{DDD} Version \value{VERSION}}
+\subtitle \textsf{Last updated \value{DATE}}
+\sp 2
+\center \image{PICS/dddlogo, 15cm}
+\author \titlesf{Andreas Zeller}
+@end tex
 @page
 @tex
 {\parskip=0pt
@@ -128,14 +138,14 @@ Technische Universit@"at Braunschweig @*
 Abteilung Softwaretechnologie @*
 B@"ultenweg 88 @*
 D-38092 Braunschweig @*
-@sc{germany} @*
+GERMANY @*
 
 Phone: +49 531 391-7580 @*
 Fax: +49 531 391-8940 @*
 E-mail: @email{@value{ddd}@@ips.cs.tu-bs.de} @*
 
-@value{DDD} and this manual are available via 
-@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} @sc{www} page}.
+@value{DDD} and this manual are available via @*
+@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW page}.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -169,14 +179,14 @@ Institut f@"ur Software @*
 Abteilung Softwaretechnologie @*
 B@"ultenweg 88 @*
 D-38092 Braunschweig @*
-@sc{germany} @*
+GERMANY @*
 
 Phone: +49 531 391-7580 @*
 Fax: +49 531 391-8940 @*
 E-mail: @email{@value{ddd}@@ips.cs.tu-bs.de}
 
-@value{DDD} and this manual are available via the
-@uref{http://www.cs.tu-bs.de/softech/ddd/, @value{DDD} WWW page}.
+@value{DDD} and this manual are available via
+@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW page}.
 
 Permission is granted to copy and distribute modified versions of this
 manual under the conditions for verbatim copying, provided also that the
@@ -198,34 +208,22 @@ into another language, under the above conditions for modified versions.
 * Breakpoints and Watchpoints::  
 * Running the Program::         
 * Examining Data::              
-* Plotting Data::               
 * Machine-Level Debugging::     
-* Editing and Recompiling::     
+* Changing the Program::        
 * Entering Commands::           
-* Customizing DDD::             
-* Debugger Settings::           
-* User-Defined Actions::        
-* Quitting DDD::                
 * Persistent Sessions::         
-* Integrating DDD::             
-* Using DDD with LessTif::      
-* Remote Debugging::            
-* Root Debugging::              
-* Resources::                   
-* Options::                     
+* Customizing::                 
+* Special Set-Ups::             
+* License::                     
+* Reporting Bugs::              
+* Copyright::                   
+* Extending::                   
+* Environment Variables::       
+* Files::                       
 * Actions::                     
 * Images::                      
-* Environment::                 
-* Files::                       
-* References::                  
 * Limitations::                 
-* Reporting Bugs::              
-* History::                     
-* Extending::                   
-* Support::                     
-* License::                     
 * Printing this Manual::        
-* Copyright::                   
 * Label Index::                 
 * Key Index::                   
 * Command Index::               
@@ -241,6 +239,7 @@ another program was doing at the moment it crashed.
 
 @value{DDD} can do four main kinds of things (plus other things in
 support of these) to help you catch bugs in the act:
+
 @itemize @bullet
 @item
 Start your program, specifying anything that might affect its behavior.
@@ -253,12 +252,11 @@ Change things in your program, so you can experiment with correcting the
 effects of one bug and go on to learn about another.
 @end itemize
 
-``Classical'' @sc{unix} debuggers such as the @sc{gnu} debugger
-(@sc{gdb}) provide a command-line interface and a multitude of commands
-for these and other debugging purposes.  @value{DDD} is a comfortable
-@emph{graphical user interface} around an inferior command-line
-debugger, such as @sc{gdb}, @sc{dbx}, @sc{xdb}, @sc{jdb}, the Python
-debugger, or the Perl debugger.
+``Classical'' UNIX debuggers such as the GNU debugger (GDB) provide a
+command-line interface and a multitude of commands for these and other
+debugging purposes.  @value{DDD} is a comfortable @emph{graphical user
+interface} around an inferior command-line debugger, such as GDB, DBX,
+XDB, JDB, the Python debugger, or the Perl debugger.
 @cindex Inferior debugger
 @cindex Command-line debugger
 
@@ -266,13 +264,15 @@ debugger, or the Perl debugger.
 @menu
 * Free Software::               
 * Contributors::                
+* History::                     
+* Support::                     
 @end menu
 
 @node Free Software
 @unnumberedsec Free software
 
-@value{DDD} is @dfn{free software}, protected by the @sc{gnu} General
-Public License (GPL).  The GPL gives you the freedom to copy or adapt a
+@value{DDD} is @dfn{free software}, protected by the GNU General Public
+License (GPL).  The GPL gives you the freedom to copy or adapt a
 licensed program---but every person getting a copy also gets with it the
 freedom to modify that copy (which means that they must get access to
 the source code), and the freedom to distribute further copies.  Typical
@@ -285,7 +285,7 @@ from anyone else.
 
 
 @node Contributors
-@unnumberedsec Contributors to GDB
+@unnumberedsec Contributors to DDD
 
 Dorothea L@"utkehaus and Andreas Zeller were the original authors of
 @value{DDD}.  Many others have contributed to its development.  The
@@ -293,24 +293,39 @@ files @file{ChangeLog} and @file{THANKS} in the @value{DDD} distribution
 approximates a blow-by-blow account.
 
 
+
+@node History
+@unnumberedsec History
+
+...
+
+
+@node Support
+@unnumberedsec DDD Needs Your Support!
+
+...
+
+
 @node Invocation
 @chapter Getting In and Out of @value{DDD}
 
 This chapter discusses how to start @value{DDD}, and how to get out of it.
-The essentials are: 
+The essentials are:
+
 @itemize @bullet
 @item 
-type @samp{@value{ddd}} to start DDD.
+Type @samp{@value{ddd}} to start DDD.
 @item 
 Use @samp{File @result{} Exit} or @kbd{Ctrl+Q} to exit.
 @kindex Ctrl+Q
 @end itemize
 
 @menu
-* Invoking DDD::                
+* Invoking::                    
+* Quitting::                    
 @end menu
 
-@node Invoking DDD
+@node Invoking
 @section Invoking @value{DDD}
 
 Normally, you can run @value{DDD} by invoking the program
@@ -327,9 +342,8 @@ an executable program:
 @end example
 
 @noindent
-If you use @sc{gdb}, @sc{dbx}, or @sc{xdb} as inferior debuggers, you
-can also start with both an executable program and a core file
-specified:
+If you use GDB, DBX, or XDB as inferior debuggers, you can also start
+with both an executable program and a core file specified:
 
 @example
 @value{ddd} @var{program} @var{core}
@@ -349,8 +363,9 @@ named @file{1234}; @value{DDD} does check for a core file first).
 
 @menu
 * Choosing an inferior debugger::  
-* Debugger-Specific Options::   
+* DDD-Specific Options::        
 * X Options::                   
+* Debugger-Specific Options::   
 @end menu
 
 @node Choosing an inferior debugger
@@ -383,8 +398,19 @@ Use
 @value{ddd} --perl @var{program}
 @end example
 
-to run @sc{gdb}, @sc{dbx}, @sc{xdb}, @sc{jdb}, @sc{pydb} or Perl as
-inferior debugger.
+to run GDB, DBX, XDB, JDB, PYDB or Perl as inferior debugger.
+
+
+@node DDD-Specific Options
+@subsection @value{DDD}-Specific Options
+
+...
+
+
+@node X Options
+@subsection X Options
+
+...
 
 
 @node Debugger-Specific Options
@@ -402,25 +428,38 @@ inferior debugger.
 @node GDB Options
 @subsubsection GDB Options
 
+...
+
 @node DBX Options
 @subsubsection DBX Options
+
+...
 
 @node XDB Options
 @subsubsection XDB Options
 
+...
+
 @node JDB Options
 @subsubsection JDB Options
+
+...
 
 @node PYDB Options
 @subsubsection PYDB Options
 
+...
+
 @node Perl Options
 @subsubsection Perl Options
 
+...
 
-@node X Options
-@subsection X Options
 
+@node Quitting
+@section Quitting @value{DDD}
+
+...
 
 
 @node Basics
@@ -430,7 +469,6 @@ inferior debugger.
 * Windows::                     
 * Command Tool::                
 * Tool Bar::                    
-* Tool Bar Buttons::            
 * Getting Help::                
 @end menu
 
@@ -467,6 +505,7 @@ treat each one separately.
 @end ifnotinfo
 
 Besides these main windows, there are some other optional windows:
+
 @itemize @bullet
 @item
 The @emph{Command Tool} offers buttons for frequently used commands.
@@ -526,8 +565,8 @@ saved position, use @samp{View @result{} Command Tool}.
 @end ifnotinfo
 
 These are the buttons of the command tool.  Note that not all buttons
-may be available, depending on the capabilities of the inferior
-debugger.
+may be inactive, depending on the current state and the capabilities of
+the inferior debugger.
 
 @table @code
 @item Run
@@ -617,6 +656,7 @@ Run the @code{make} program with the most recently given arguments.
 Some @value{DDD} commands require an @emph{argument}.  This argument
 is specified in the @emph{argument field}, labeled @samp{():}.
 Basically, there are four ways to set arguments:
+
 @itemize @bullet
 @item
 You can @emph{key in} the argument manually.
@@ -632,10 +672,10 @@ You can select a @emph{previously used argument} from the drop-down
 menu at the right of the argument field.
 @end itemize
 
-Using @sc{gdb} and Perl, the argument field provides a completion
-mechanism.  You can enter the first few characters of an item an press
-the @key{TAB} key to complete it.  Pressing @key{TAB} again shows
-alternative completions.
+Using GDB and Perl, the argument field provides a completion mechanism.
+You can enter the first few characters of an item an press the @key{TAB}
+key to complete it.  Pressing @key{TAB} again shows alternative
+completions.
 @kindex TAB
 
 After having entered an argument, you can select one of the buttons on
@@ -651,13 +691,145 @@ with further operations.
 @end ifnotinfo
 
 
-@node Tool Bar Buttons
-@section The Tool Bar Buttons
+@menu
+* Tool Bar Buttons::            
+@end menu
 
-...
+@node Tool Bar Buttons
+@subsection The Tool Bar Buttons
+
+These are the buttons of the tool bar.  Note that not all buttons may be
+inactive, depending on the current state and the capabilities of the
+inferior debugger.
+
+@table @code
+@item Lookup
+@lbindex Lookup
+@cindex Looking up items
+
+Look up the argument @samp{()} in the code.  @xref{Looking up
+Definitions}, for details.
+
+
+@item Find >>
+@lbindex Find >>
+@cindex Finding items
+@cindex Search, using @samp{Find >>}
+
+Look up the next occurrence of the argument @samp{()} in the current
+source code.  @xref{Textual Search}, for details.
+
+
+@item Break/Clear
+@cindex Breakpoint, toggling
+
+Toggle a breakpoint (@pxref{Breakpoints}) at the location @samp{()}.
+
+@table @code
+@item Break
+@lbindex Break
+If there is no breakpoint at @samp{()}, then this button is labeled
+@samp{Break}.  Clicking on @samp{Break} sets a breakpoint at the
+location @samp{()}.  @xref{Setting Breakpoints}, for details.
+
+@item Clear
+@lbindex Clear
+If there already is a breakpoint at @samp{()}, then this button is
+labeled @samp{Clear}.  Clicking on @samp{Clear} clears (deletes) the
+breakpoint at the location @samp{()}.  @xref{Deleting Breakpoints}, for
+details.
+@end table
+
+
+@item Watch/Unwatch
+@cindex Watchpoint, toggling
+
+Toggle a watchpoint (@pxref{Watchpoints}) on the expression @samp{()}.
+
+@table @code
+@item Watch
+@lbindex Watch
+If @samp{()} is not being watched, then this button is labeled
+@samp{Watch}.  Clicking on @samp{Watch} creates a watchpoint on the
+expression @samp{()}.  @xref{Setting Watchpoints}, for details.
+
+@item Unwatch
+@lbindex Unwatch
+If @samp{()} is being watched, then this button is labeled
+@samp{Unwatch}.  Clicking on @samp{Unwatch} clears (deletes) the
+watchpoint on @samp{()}.  @xref{Deleting Watchpoints}, for details.
+@end table
+
+
+@item Print
+@lbindex Print
+@cindex Values, printing with @samp{Print}
+@cindex Printing values in the debugger console
+
+Print the value of @samp{()} in the debugger console.  @xref{Printing
+Values}, for details.
+
+
+@item Display
+@lbindex Display
+@cindex Values, displaying with @samp{Display}
+@cindex Displaying values in the data window
+@cindex Displays, creating
+
+Display the value of @samp{()} in the data window.  @xref{Displaying
+Values}, for details.
+
+
+@item Plot
+@lbindex Plot
+@cindex Values, plotting with @samp{Plot}
+@cindex Plotting values
+
+Plot @samp{()} in a plot window.  @xref{Plotting Values}, for details.
+
+
+@item Show/Hide
+@lbindex Show
+@lbindex Hide
+@cindex Displays, toggling detail
+@cindex Detail toggling with @samp{Show/Hide}
+
+Toggle details of the selected display(s).  @xref{Showing and Hiding
+Values}, for details.
+
+
+@item Rotate
+@lbindex Rotate
+@cindex Displays, rotating
+@cindex Rotating displays with @samp{Rotate}
+
+Rotate the selected display(s).  @xref{Rotating Arrays}, for details.
+
+
+@item Set
+@lbindex Set
+@cindex Displays, setting
+@cindex Setting values with @samp{Set}
+@cindex Values, setting with @samp{Set}
+
+Set (change) the value of @samp{()}.  @xref{Changing Variable Values},
+for details.
+
+
+@item Undisp
+@lbindex Undisp
+@cindex Displays, deleting
+@cindex Deleting displays
+
+Undisplay (delete) the selected display(s).  @xref{Deleting Displays},
+for details.
+
+@end table
+
 
 @node Getting Help
 @section Getting Help
+@cindex Help
 
 @value{DDD} has an extensive on-line help system.  Here's how to get
 help while working with @value{DDD}.
@@ -675,7 +847,8 @@ help while working with @value{DDD}.
 @subsection Button Tips
 
 @cindex Button tip
-@cindex Help on buttons
+@cindex Help, on buttons
+@cindex Tip, on buttons
 
 You can get a short help text on most @value{DDD} buttons by simply
 moving the mouse pointer on it and leave it there.  After a second, a
@@ -686,6 +859,8 @@ mouse pointer to another item.
 
 @node The Status Line
 @subsection The Status Line
+@cindex Help, in the status line
+@cindex Status line
 
 The status line also displays information about the currently selected
 item.  By clicking on the status line, you can redisplay the most
@@ -697,7 +872,7 @@ recent messages.
 @node Context-Sensitive Help
 @subsection Context-Sensitive Help
 
-@cindex Help on items
+@cindex Help, on items
 @cindex Context-sensitive help
 
 You can get detailed help on any visible @value{DDD} item.  Just
@@ -713,7 +888,7 @@ detailed information about the dialog.
 @node Help on Debugger Commands
 @subsection Help on Debugger Commands
 
-@cindex Help on commands
+@cindex Help, on commands
 @cmindex help
 
 You can get help on debugger commands by entering @samp{help} at the
@@ -727,6 +902,7 @@ debugger prompt.
 
 @lbindex What Now?
 @kindex Ctrl+F1
+@cindex Help, when stuck
 
 If you are stuck, try @samp{Help @result{} What Now?} (the @samp{What
 Now} item in the @samp{Help} menu) or press @key{Ctrl+F1}.  Depending on
@@ -741,8 +917,8 @@ do next.
 @lbindex Redo
 @kindex Ctrl+Z
 @kindex Ctrl+Y
-@cindex Undo
-@cindex Redo
+@cindex Undoing commands
+@cindex Redoing commands
 
 And if, after all, you made a mistake, don't worry.  Almost every
 @value{DDD} command can be undone, using @samp{Edit @result{} Undo} or
@@ -758,11 +934,45 @@ undone.
 
 This chapter discusses how to access resources from within @value{DDD}.
 
-
 @menu
+* Compiling for Debugging::     
 * Opening Files::               
 * Looking up Items::            
 @end menu
+
+@node Compiling for Debugging
+@section Compiling for Debugging
+
+In order to debug a program effectively, you need to generate debugging
+information when you compile it.  This debugging information is stored
+in the object file; it describes the data type of each variable or
+function and the correspondence between source line numbers and
+addresses in the executable code.@footnote{If you use @value{DDD} to
+debug Perl or Python scripts, then this section does not apply.}
+
+To request debugging information, specify the @samp{-g} option when you
+run the compiler.
+
+Many C compilers are unable to handle the @samp{-g} and @samp{-O}
+options together.  Using those compilers, you cannot generate optimized
+executables containing debugging information.
+
+GCC, the GNU C compiler, supports @samp{-g} with or without @samp{-O},
+making it possible to debug optimized code.  We recommend that you
+@emph{always} use @samp{-g} whenever you compile a program.  You may
+think your program is correct, but there is no sense in pushing your
+luck.
+@cindex GCC
+
+@cindex Optimized code, debugging
+@cindex Debugging optimized code
+When you debug a program compiled with @samp{-g -O}, remember that the
+optimizer is rearranging your code; the debugger shows you what is
+really there.  Do not be too surprised when the execution path does not
+exactly match your source file!  An extreme example: if you define a
+variable, but never use it, @value{DDD} never sees that
+variable---because the compiler optimizes it out of existence.
+
 
 @node Opening Files
 @section Opening Files
@@ -773,13 +983,6 @@ If you did not invoke @value{DDD} specifying a program to be debugged,
 you can use the @samp{File} menu to open programs, core dumps and
 sources.
 
-@ifnotinfo
-@sp 1
-@center @image{PICS/ddd-open, 15cm}
-@sp 1
-@end ifnotinfo
-
-
 @menu
 * Opening Programs::            
 * Opening Core Dumps::          
@@ -788,55 +991,67 @@ sources.
 
 @node Opening Programs
 @subsection Opening Programs
-
 @cindex Program, opening
 @cindex Class, opening
 
 To open a program to be debugged, select @samp{File @result{} Open
-Program}.@footnote{With @sc{xdb} and some @sc{dbx} versions, the
-debugged program must be specified upon invocation and cannot be changed
-at run time.}
+Program}.@footnote{With XDB and some DBX versions, the debugged program
+must be specified upon invocation and cannot be changed at run time.}
+Click on @samp{Open} to open the program
+@lbindex Open Program
+@lbindex Open
 
-In @sc{jdb}, select @samp{File @result{} Open Class} instead.  This gives
-you a list of available classes to choose from.
+In JDB, select @samp{File @result{} Open Class} instead.  This gives you
+a list of available classes to choose from.
+@lbindex Open Class
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-open, 15cm}
+@sp 1
+@end ifnotinfo
 
 To re-open a recently debugged program or class, select @samp{File
 @result{} Open Recent} and choose a program or class from the list.
+@lbindex Open Recent
 
 
 @node Opening Core Dumps
 @subsection Opening Core Dumps
-
 @cindex Core dump, opening
 
 If a previous run of the program has crashed and you want to find out
-why, you can have @value{DDD} examine its @dfn{core
-dump}.@footnote{@sc{jdb}, @sc{pydb}, and @sc{perl} do not support core
-dumps.}
+why, you can have @value{DDD} examine its @dfn{core dump}.@footnote{JDB,
+PYDB, and Perl do not support core dumps.}
 
 To open a core dump for the program, select @samp{File @result{} Open
-Core Dump}.  Before @samp{Open Core Dump}, you should first use
-@samp{File @result{} Open Program} to specify the program that generated
-the core dump and to load its symbol table.
+Core Dump}.  Click on @samp{Open} to open the core dump.
+@lbindex Open
+
+Before @samp{Open Core Dump}, you should first use @samp{File @result{}
+Open Program} to specify the program that generated the core dump and to
+load its symbol table.
 
 
 @node Opening Source Files
 @subsection Opening Source Files
-
 @cindex Source file, opening
 
 To open a source file of the debugged program, select @samp{File
 @result{} Open Source}.
+@lbindex Open Source
 
 @itemize @bullet{}
 @item
-Using @sc{gdb}, this gives you a list of the sources used for
-compiling your program.
+Using GDB, this gives you a list of the sources used for compiling your
+program.
 @item
 Using other inferior debuggers, this gives you a list of accessible
 source files, which may or may not be related to your program.
 @end itemize
 
+Click on @samp{Open} to open the source file.
+@lbindex Open
 
 
 @node Looking up Items
@@ -851,7 +1066,6 @@ In the source window, you can lookup and examine function and variable
 definitions as well as search for arbitrary occurrences in the source
 text.
 
-
 @menu
 * Looking up Definitions::      
 * Textual Search::              
@@ -864,7 +1078,7 @@ text.
 If you wish to lookup a specific function or variable definition whose
 name is visible in the source text, click with @emph{mouse button 1} on
 the function or variable name.  The name is copied to the argument
-field.  Alter the name if desired and click on the @samp{Lookup} button
+field.  Change the name if desired and click on the @samp{Lookup} button
 to find its definition.
 @lbindex Lookup
 
@@ -888,9 +1102,10 @@ function definition.
 
 If the item you wish to search is visible in the source text, click with
 @emph{mouse button 1} on it.  The identifier is copied to the argument
-field.  Click on the @samp{Find} button to find following occurrences
-and on @samp{Find @result{} Find << ()} to find previous occurrences.
-@lbindex Find
+field.  Click on the @samp{Find >>} button to find following occurrences
+and on @samp{Find >> @result{} Find << ()} to find previous occurrences.
+@lbindex Find >>
+@lbindex Find <<
 
 By default, @value{DDD} finds only complete words.  To search for
 arbitrary substrings, change the value of the @samp{Source @result{}
@@ -907,6 +1122,10 @@ locations.  @samp{Edit @result{} Redo} brings you back again to the
 location you looked for.
 @lbindex Undo
 @lbindex Redo
+@cindex Undoing lookups
+@cindex Redoing lookups
+@cindex Lookups, undoing
+@cindex Lookups, redoing
 
 @ifnotinfo
 @sp 1
@@ -935,6 +1154,7 @@ control in finer detail whether your program stops.
 
 A @dfn{watchpoint} is a special breakpoint that stops your program when
 the value of an expression changes.
+@cindex Watchpoint
 
 @menu
 * Breakpoints::                 
@@ -945,9 +1165,7 @@ the value of an expression changes.
 @section Breakpoints
 
 @menu
-* Setting Breakpoints by Location::  
-* Setting Breakpoints by Name::  
-* Setting Regexp Breakpoints::  
+* Setting Breakpoints::         
 * Disabling Breakpoints::       
 * Temporary Breakpoints::       
 * Deleting Breakpoints::        
@@ -958,11 +1176,15 @@ the value of an expression changes.
 * Moving and Copying Breakpoints::  
 * Looking up Breakpoints::      
 * Editing all Breakpoints::     
-* More Breakpoint Features::    
+* Hardware-Assisted Breakpoints::  
 @end menu
 
-@node Setting Breakpoints by Location
-@subsection Setting Breakpoints by Location
+@node Setting Breakpoints
+@subsection Setting Breakpoints
+@cindex Breakpoint, setting
+
+@c @node Setting Breakpoints by Location
+@subsubsection Setting Breakpoints by Location
 
 Breakpoints are set at a specific location in the program.
 
@@ -1004,8 +1226,8 @@ If you set a breakpoint by mistake, use @samp{Edit @result{} Undo} to delete
 it again.
 
 
-@node Setting Breakpoints by Name
-@subsection Setting Breakpoints by Name
+@c @node Setting Breakpoints by Name
+@subsubsection Setting Breakpoints by Name
 
 If the function name is visible, click with @emph{mouse button 1} on the
 function name.  The function name is then copied to the argument field.
@@ -1020,13 +1242,13 @@ the Breakpoint editor (invoked through @samp{Source @result{} Edit
 Breakpoints}) and enter the function name.
 
 
-@node Setting Regexp Breakpoints
-@subsection Setting Regexp Breakpoints
+@c @node Setting Regexp Breakpoints
+@subsubsection Setting Regexp Breakpoints
 
-Using @sc{gdb}, you can also set a breakpoint on all functions that
-match a given string.  @samp{Break @result{} Set Breakpoints at Regexp
-()} sets a breakpoint on all functions whose name matches the
-@emph{regular expression} given in @samp{()}.  Here are some examples:
+Using GDB, you can also set a breakpoint on all functions that match a
+given string.  @samp{Break @result{} Set Breakpoints at Regexp ()} sets
+a breakpoint on all functions whose name matches the @emph{regular
+expression} given in @samp{()}.  Here are some examples:
 
 @itemize @bullet
 @item
@@ -1046,16 +1268,20 @@ set @samp{()} to @samp{_test$}.
 
 @node Disabling Breakpoints
 @subsection Disabling Breakpoints
+@cindex Breakpoint, disabling
+@cindex Breakpoint, enabling
 
 Rather than deleting a breakpoint or watchpoint, you might prefer to
 @dfn{disable} it.  This makes the breakpoint inoperative as if it had
 been deleted, but remembers the information on the breakpoint so that
-you can @dfn{enable} it again later.@footnote{@sc{jdb} does not support
+you can @dfn{enable} it again later.@footnote{JDB does not support
 breakpoint disabling.}
 
 To disable a breakpoint, press @emph{mouse button 3} on the breakpoint
 symbol and select the @samp{Disable Breakpoint} item from the breakpoint
 popup menu.  To enable it again, select @samp{Enable Breakpoint}.
+@lbindex Disable Breakpoint
+@lbindex Enable Breakpoint
 
 @ifnotinfo
 @sp 1
@@ -1080,9 +1306,10 @@ button to get a popup menu.
 
 @node Temporary Breakpoints
 @subsection Temporary Breakpoints
+@cindex Breakpoint, temporary
 
 A @emph{temporary breakpoint} is immediately deleted as soon as it is
-reached.@footnote{@sc{jdb} does not support temporary breakpoints.}
+reached.@footnote{JDB does not support temporary breakpoints.}
 
 To set a temporary breakpoint, press @emph{mouse button 3} on the left
 of the source line and select the @samp{Set Temporary Breakpoint} item
@@ -1109,6 +1336,7 @@ are also accessible via the @samp{Break} button.  Just press and hold
 
 @node Deleting Breakpoints
 @subsection Deleting Breakpoints
+@cindex Breakpoint, deleting
 
 To delete a visible breakpoint, click with @emph{mouse button 1} on the
 breakpoint.  The breakpoint location is copied to the argument field.
@@ -1135,7 +1363,8 @@ breakpoint while holding @key{Ctrl}.
 
 @node Editing Breakpoint Properties
 @subsection Editing Breakpoint Properties
-
+@cindex Breakpoint properties
+@cindex Breakpoint, editing
 
 You can change all properties of a breakpoint by pressing @emph{mouse
 button 3} on the breakpoint symbol and select @samp{Properties}
@@ -1155,20 +1384,27 @@ breakpoint.
 @item
 Click on @samp{Lookup} to move the cursor to the breakpoint's
 location.
+@lbindex Lookup
 @item
 Click on @samp{Enable} to enable the breakpoint.
+@lbindex Enable
 @item
 Click on @samp{Disable} to disable the breakpoint.
+@lbindex Disable
 @item
-Click on @samp{Temp} to make the breakpoint temporary.@footnote{@sc{gdb}
-has no way to make a temporary breakpoint non-temporary again.}
+Click on @samp{Temp} to make the breakpoint temporary.@footnote{GDB has
+no way to make a temporary breakpoint non-temporary again.}
+@lbindex Temp
 @item
 Click on @samp{Delete} to delete the breakpoint.
+@lbindex Delete
 @end itemize
 
 
 @node Breakpoint Conditions
 @subsection Breakpoint Conditions
+@cindex Conditions on breakpoints
+@cindex Breakpoint conditions
 
 The simplest sort of breakpoint breaks every time your program reaches a
 specified place.  You can also specify a @dfn{condition} for a
@@ -1182,6 +1418,7 @@ situation, you want to stop when the assertion is violated--that is,
 when the condition is false.  In C, if you want to test an assertion
 expressed by the condition @var{assertion}, you should set the condition
 @samp{!@var{assertion}} on the appropriate breakpoint.
+@cindex Assertions and breakpoints
 
 Break conditions can have side effects, and may even call functions in
 your program.  This can be useful, for example, to activate functions
@@ -1194,10 +1431,13 @@ without checking the condition of this one.)
 Note that breakpoint commands are usually more convenient and flexible
 for the purpose of performing side effects when a breakpoint is reached.
 @xref{Breakpoint Commands}, for details.
+@cindex Breakpoint commands, vs. conditions
 
 
 @node Breakpoint Ignore Counts
 @subsection Breakpoint Ignore Counts
+@cindex Breakpoint ignore counts
+@cindex Ignore count
 
 A special case of a breakpoint condition is to stop only when the
 breakpoint has been reached a certain number of times.  This is so
@@ -1211,9 +1451,9 @@ value is @var{n}, the breakpoint does not stop the next @var{n} times
 your program reaches it.
 
 In the field @samp{Ignore Count} of the @samp{Breakpoint Properties}
-panel, you can specify the breakpoint ignore count.@footnote{@sc{jdb},
-Perl and some @sc{dbx} variants do not support breakpoint ignore
-counts.}
+panel, you can specify the breakpoint ignore count.@footnote{JDB, Perl
+and some DBX variants do not support breakpoint ignore counts.}
+@lbindex Ignore Count
 
 If a breakpoint has a positive ignore count and a condition, the
 condition is not checked.  Once the ignore count reaches zero,
@@ -1222,12 +1462,14 @@ condition is not checked.  Once the ignore count reaches zero,
 
 @node Breakpoint Commands
 @subsection Breakpoint Commands
+@cindex Breakpoint commands
+@cindex Command, breakpoint
 
 You can give any breakpoint (or watchpoint) a series of @value{DDD}
 commands to execute when your program stops due to that breakpoint.  For
 example, you might want to print the values of certain expressions, or
-enable other breakpoints.@footnote{@sc{jdb}, PYDB, and some @sc{dbx}
-variants do not support breakpoint commands.}
+enable other breakpoints.@footnote{JDB, PYDB, and some DBX variants do
+not support breakpoint commands.}
 
 Using the @samp{Commands} buttons of the @samp{Breakpoint Properties}
 panel, you can edit commands to be executed when the breakpoint is hit.
@@ -1236,43 +1478,52 @@ To edit breakpoint commands, click on @samp{Edit >>} and enter the
 commands in the commands editor.  When done with editing, click on
 @samp{Edit <<} to close the commands editor.
 
-Using @sc{gdb}, you can also @emph{record} a command sequence to be
-executed.  To record a command sequence, follow these steps:
-@itemize @bullet
+Using GDB, you can also @emph{record} a command sequence to be executed.
+To record a command sequence, follow these steps:
+
+@enumerate
 @item
-Click on @samp{Record} to begin the recording of the breakpoint commands.
+Click on @samp{Record} to begin the recording of the breakpoint
+commands.
+@lbindex Record
 @item
 Now interact with @value{DDD}.  While recording, @value{DDD} does not
 execute commands, but simply records them to be executed when the
 breakpoint is hit.  The recorded debugger commands are shown in the
 debugger console.
 @item
-To stop the recording, click on @samp{End} or enter @samp{end} at
-the @sc{gdb} prompt.  To @emph{cancel} the recording, click on
-@samp{Interrupt} or press @key{ESC}.
+To stop the recording, click on @samp{End} or enter @samp{end} at the
+GDB prompt.  To @emph{cancel} the recording, click on @samp{Interrupt}
+or press @key{ESC}.
+@lbindex End
 @item
 You can edit the breakpoint commands just recorded using @samp{Edit >>}.
-@end itemize
+@lbindex Edit >>
+@end enumerate
 
 
 @node Moving and Copying Breakpoints
 @subsection Moving and Copying Breakpoints
+@cindex Breakpoint, moving
+@cindex Breakpoint, copying
+@cindex Breakpoint, dragging
 
 To move a breakpoint to a different location, press @emph{mouse button
-1} on the stop sign and drag it to the desired location.  This is
-equivalent to deleting the breakpoint at the old location and setting a
-breakpoint at the new location.  The new breakpoint inherits all
-properties of the old breakpoint, except the breakpoint number.
+1} on the stop sign and drag it to the desired location.@footnote{When
+glyphs are disabled (@pxref{Source Preferences}), breakpoints cannot be
+dragged.  Delete and set breakpoints instead.}  This is equivalent to
+deleting the breakpoint at the old location and setting a breakpoint at
+the new location.  The new breakpoint inherits all properties of the old
+breakpoint, except the breakpoint number.
 
 To copy a breakpoint to a new location, press @key{Shift} while
 dragging.
 
-Please note: Dragging breakpoints is not possible when glyphs are
-disabled.  Delete and set breakpoints instead.
-
 
 @node Looking up Breakpoints
 @subsection Looking up Breakpoints
+@cindex Breakpoint, looking up
+@cindex Looking up breakpoints
 
 If you wish to lookup a specific breakpoint, select @samp{Source
 @result{} Edit Breakpoints @result{} Lookup}.  After selecting a
@@ -1286,6 +1537,7 @@ button to find its definition.
 
 @node Editing all Breakpoints
 @subsection Editing all Breakpoints
+@cindex Breakpoints, editing
 
 To view and edit all breakpoints at once, select @samp{Source @result{}
 Edit Breakpoints}.  This will popup the @emph{Breakpoint Editor} which
@@ -1303,11 +1555,12 @@ selection.  To edit the properties of all selected breakpoints, click on
 @samp{Props}.
 
 
-@node More Breakpoint Features
-@subsection More Breakpoint Features
+@node Hardware-Assisted Breakpoints
+@subsection Hardware-Assisted breakpoints
+@cindex Breakpoint, hardware-assisted
 
-Using @sc{gdb}, a few more commands related to breakpoints can be
-invoked through the debugger console:
+Using GDB, a few more commands related to breakpoints can be invoked
+through the debugger console:
 
 @table @samp
 @item hbreak @emph{position}
@@ -1330,13 +1583,14 @@ gdb, Debugging with GDB}, for details.
 
 @node Watchpoints
 @section Watchpoints
+@cindex Watchpoint
 
 You can make the program stop as soon as some variable value changes, or
 when some variable is read or written.  This is called `setting a
 @emph{watchpoint} on a variable'.  @footnote{Watchpoints are available
-in @sc{gdb} and some @sc{dbx} variants only.  In @sc{xdb}, a similar
-feature is available via @sc{xdb} @emph{assertions}; see the @sc{xdb}
-documentation for details.}
+in GDB and some DBX variants only.  In XDB, a similar feature is
+available via XDB @emph{assertions}; see the XDB documentation for
+details.}
 
 Watchpoints have much in common with breakpoints: in particular, you can
 enable and disable them.  You can also set conditions, ignore counts,
@@ -1359,53 +1613,65 @@ culprit.
 
 @node Setting Watchpoints
 @subsection Setting Watchpoints
+@cindex Watchpoint, setting
 
 If the variable name is visible, click with @emph{mouse button 1} on the
 variable name.  The variable name is copied to the argument field.
 Otherwise, enter the variable name in the argument field.  Click on the
-@samp{Watch ()} button to set a watchpoint there.
+@samp{Watch} button to set a watchpoint there.
 
-Using @sc{gdb}, you can set different types of watchpoints.  Click and
-hold @emph{mouse button 1} on the @samp{Watch ()} button to get a menu.
+Using GDB, you can set different types of watchpoints.  Click and hold
+@emph{mouse button 1} on the @samp{Watch} button to get a menu.
+@lbindex Watch
 
 
 @node Editing Watchpoint Properties
 @subsection Editing Watchpoint Properties
+@cindex Watchpoint properties
+@cindex Watchpoint, editing
 
 To change the properties of a watchpoint, enter the name of the watched
 variable in the argument field.  Click and hold @emph{mouse button 1} on
-the @samp{Watch ()} button and select @samp{Watchpoint Properties}.
+the @samp{Watch} button and select @samp{Watchpoint Properties}.
+@lbindex Watch
 
-The @strong{Watchpoint Properties} panel has the same functionality as
-the @strong{Breakpoint Properties} panel; see @samp{Editing Breakpoint
-Properties}, above, for details.  As an additional feature, you can
-click on @samp{Print ()} to see the current value of a watched variable.
+The Watchpoint Properties panel has the same functionality as the
+@emph{Breakpoint Properties} panel (@pxref{Editing Breakpoint
+Properties}).  As an additional feature, you can click on @samp{Print}
+to see the current value of a watched variable.
+@lbindex Print
 
 
 @node Editing all Watchpoints
 @subsection Editing all Watchpoints
+@cindex Watchpoints, editing
 
 To view and edit all watchpoints at once, select @samp{Data @result{}
 Edit Watchpoints}.  This will popup the @emph{Watchpoint Editor} which
 displays the state of all watchpoints.
 
-The @emph{Watchpoint Editor} has the same functionality as the
-@emph{Breakpoint Editor}; see @samp{Editing All Breakpoints}, above, for
-details.  As an additional feature, you can click on @samp{Print} to see
-the current value of a watched variable.
+The Watchpoint Editor has the same functionality as the Breakpoint
+Editor (@pxref{Editing all Breakpoints}).  As an additional feature, you
+can click on @samp{Print} to see the current value of a watched
+variable.
+@lbindex Print
 
 
 @node Deleting Watchpoints
 @subsection Deleting Watchpoints
+@cindex Watchpoint, deleting
 
 To delete a watchpoint, enter the name of the watched variable in the
-argument field and click the @samp{Unwatch ()} button.
+argument field and click the @samp{Unwatch} button.
 
 
 @node Running the Program
 @chapter Running the Program
+@cindex Running the debugged program
 
-...
+You may start the debugged program with its arguments, if any, in an
+environment of your choice.  You may redirect your program's input and
+output, debug an already running process, or kill a child process.
 
 @menu
 * Starting Program Execution::  
@@ -1413,51 +1679,794 @@ argument field and click the @samp{Unwatch ()} button.
 * Attaching to a Running Process::  
 * Stopping the Program::        
 * Resuming Execution::          
-* Altering the Execution Position::  
+* Continuing at a Different Address::  
 * Examining the Stack::         
 * Undoing Program Execution::   
 * Examining Threads::           
 * Handling Signals::            
+* Killing the Program::         
 @end menu
 
 @node Starting Program Execution
 @section Starting Program Execution
+@cindex Arguments, program
+@cindex Program arguments
+
+To start execution of the debugged program, select @samp{Program
+@result{} Run}.  You will then be prompted for the arguments to pass to
+your program.  You can either select from a list of previously used
+arguments or enter own arguments in the text field.  Afterwards, press
+the @samp{Run} button to start execution with the selected arguments.
+@lbindex Run
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-arguments, 15cm}
+@sp 1
+@end ifnotinfo
+
+To run your program again, with the same arguments, select
+@samp{Program @result{} Run Again} or press the @samp{Run} button on the
+command tool.  You may also enter @samp{run}, followed by arguments
+at the debugger prompt instead.
+@lbindex Run Again
+@lbindex Run
+@cmindex run
+
+When you click on @samp{Run}, your program begins to execute
+immediately.  @xref{Setting Breakpoints}, for a discussion of how to
+arrange for your program to stop.  Once your program has stopped, you
+may call functions in your program to examine data.  @xref{Examining
+Data}, for details.
+
+If the modification time of your symbol file has changed since the last
+time GDB read its symbols, GDB discards its symbol table, and reads it
+again.  When it does this, GDB and @value{DDD} trie to retain your
+current debugger state, such as breakpoints.
+
+
+@menu
+* Arguments::                   
+* Environment::                 
+* Working Directory::           
+* Input/Output::                
+@end menu
+
+@node Arguments
+@subsection Your Program's Arguments
+@cindex Arguments, of the debugged program
+
+The arguments to your program are specified by the arguments of the
+@samp{run} command, as composed in @samp{Program @result{} Run}.
+
+In GDB, the arguments are passed to a shell, which expands wildcard
+characters and performs redirection of I/O, and thence to your program.
+Your @samp{SHELL} environment variable (if it exists) specifies what
+shell GDB uses.  If you do not define @samp{SHELL}, GDB uses
+@samp{/bin/sh}.
+
+If you use another inferior debugger, the exact semantics on how the
+arguments are interpreted depend on the inferior debugger you are using.
+Normally, the shell is used to pass the arguments, so that you may use
+normal conventions (such as wildcard expansion or variable substitution)
+in describing the arguments.
+
+@node Environment
+@subsection Your Program's Environment
+@cindex Environment, of the debugged program
+
+Your program normally inherits its environment from the inferior
+debugger, which again inherits it from @value{DDD}, which again inherits
+it from its parent process (typically the shell or desktop).
+
+In GDB, you can use the commands @samp{set environment} and @samp{unset
+environment} to change parts of the environment that affect your
+program.   @xref{Your program's environment, Your program's environment,
+Your Program's Environment, gdb, Debugging with GDB}, for details.
+@cmindex set environment
+@cmindex unset environment
+
+
+@node Working Directory
+@subsection Your Program's Working Directory
+@cindex Working directory, of the debugged program
+@cindex Directory, of the debugged program
+
+Your program normally inherits its working directory from the inferior
+debugger, which again inherits it from @value{DDD}, which again inherits
+it from its parent process (typically the shell or desktop).
+
+You can change the working directory of the inferior debugger via
+@samp{File @result{} Change Directory} or via the @samp{cd} command of
+the inferior debugger.
+@lbindex Change Directory
+
+
+@node Input/Output
+@subsection Your Program's Input and Output
+@cindex Input of the debugged program
+@cindex Output of the debugged program
+@cindex Redirecting I/O of the debugged program
+
+By default, the program you run under @value{DDD} does input and output
+to the debugger console.  Normally, you can redirect your program's
+input and/or output using shell redirection with the arguments.  For
+example,
+
+@example
+run > @var{outfile}
+@end example
+
+starts your program, diverting its output to the file @var{outfile}.
+
+@emph{Warning:} While input and output redirection work, you cannot use
+pipes to pass the output of the program you are debugging to another
+program; if you attempt this, @value{DDD} is likely to wind up debugging
+the wrong program.  @xref{Attaching to a Running Process}, for an
+alternative.
+@cindex Pipes
+
 
 @node Using the Execution Window
 @section Using the Execution Window
+@cindex Execution window
+@cindex Redirecting I/O to the execution window
+
+By default, input and output of your program go to the debugger console.
+As an alternative, @value{DDD} can also invoke an @emph{execution
+window}, where the program terminal input and output is
+shown.@footnote{The execution window is not available in JDB.}  To
+activate the execution window, select @samp{Program @result{} Run in
+Execution Window}.
+@lbindex Run in Execution Window
+
+The execution window is opened automatically as soon as you start the
+debugged program.  While the execution window is active, @value{DDD}
+redirects the standard input, output, and error streams of your program
+to the execution window.  Note that the device @samp{/dev/tty} still
+refers to the debugger console, @emph{not} the execution window.
+
+You can override the @value{DDD} stream redirection by giving alternate
+redirection operations as arguments.  For instance, to have your program
+read from @var{file}, but to write to the execution window, invoke your
+program with @samp{< @var{file}} as argument.  Likewise, to redirect the
+standard error output to the debugger console, use @samp{2> /dev/tty}
+(assuming the inferior debugger and/or your UNIX shell support standard
+error redirection).
+
 
 @node Attaching to a Running Process
 @section Attaching to a Running Process
+@cindex Process, attaching
+
+If the debugged program is already running in some process, you can
+@emph{attach} to this process (instead of starting a new one with
+@samp{Run}).@footnote{JDB, PYDB, and Perl do not support attaching the
+debugger to running processes.}
+
+To attach @value{DDD} to a process, select @samp{File @result{} Attach
+to Process}.  You can now choose from a list of processes.  Then, press
+the @samp{Attach} button to attach to the specified process.
+@lbindex Attach to Process
+@lbindex Attach
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-attach, 15cm}
+@sp 1
+@end ifnotinfo
+
+The first thing @value{DDD} does after arranging to debug the specified
+process is to stop it. You can examine and modify an attached process
+with all the @value{DDD} commands that are ordinarily available when you
+start processes with @samp{Run}. You can insert breakpoints; you can
+step and continue; you can modify storage. If you would rather the
+process continue running, you may use @samp{Continue} after attaching
+@value{DDD} to the process.
+@cindex Continuing process execution
+
+When using @samp{Attach to Process}, you should first use @samp{Open
+Program} to specify the program running in the process and load its
+symbol table.
+@lbindex Open Program
+
+When you have finished debugging the attached process, you can use the
+@samp{File @result{} Detach Process} to release it from @value{DDD}
+control.  Detaching the process continues its execution.  After
+@samp{Detach Process}, that process and @value{DDD} become
+completely independent once more, and you are ready to attach another
+process or start one with @samp{Run}.
+@lbindex Detach Process
+
+You can customize the list of processes shown by defining an alternate
+command to list processes.  See @samp{Edit @result{} Preferences
+@result{} Helpers @result{} List Processes}.
+@lbindex List Processes
+
 
 @node Stopping the Program
 @section Stopping the Program
+@cindex Program, stopping
+@cindex Program, interrupting
+@cindex Stopping program execution
+@cindex Interrupting program execution
+
+After the program has been started, it runs until one of the following
+happens:
+
+@itemize @bullet
+@item
+A breakpoint is reached.  @xref{Breakpoints}, for details.
+
+@item
+A watchpoint is reached.  @xref{Watchpoints}, for details.
+
+@item
+A signal is received.  @xref{Handling Signals}, for details.
+
+@item
+Execution completes.
+@end itemize
+
+You can interrupt a running program any time by clicking the
+@samp{Interrupt} button or typing @key{ESC} in a @value{DDD} window.
+@lbindex Interrupt
+@kindex ESC
+
+Unless execution has completed, the current execution position is
+highlighted by an arrow.
+
 
 @node Resuming Execution
 @section Resuming Execution
 
-@node Altering the Execution Position
-@section Altering the Execution Position
+@subsection Continuing
+@cindex Continuing execution
+@cindex Execution, continuing
+
+To resume execution, at the current execution position, click on the
+@samp{Continue} button.  Any breakpoints set at the current execution
+position are bypassed.
+@lbindex Continue
+
+
+@subsection Stepping One line
+@cindex Execution, one line
+@cindex Continue, one line
+
+To execute just one source line, click on the @samp{Step} button.  The
+program is executed until control reaches a different source line, which
+may be in a different function.  Then, the program is stopped and
+control returns to @value{DDD}.
+@lbindex Step
+
+@emph{Warning}: If you use the @samp{Step} button while control is
+within a function that was compiled without debugging information,
+execution proceeds until control reaches a function that does have
+debugging information.  Likewise, it will not step into a function which
+is compiled without debugging information.  To step through functions
+without debugging information, use the @samp{Stepi} button
+(@pxref{Machine Code Execution}).
+@lbindex Stepi
+
+In GDB, the @samp{Step} button only stops at the first instruction of a
+source line.  This prevents the multiple stops that used to occur in
+switch statements, for loops, etc.  @samp{Step} continues to stop if a
+function that has debugging information is called within the line.
+
+Also, the @samp{Step} in GDB only enters a subroutine if there is line
+number information for the subroutine.  Otherwise it acts like the
+@samp{Next} button.
+@lbindex Next
+
+
+@subsection Continuing to the Next Line
+@cindex Execution, to next line
+@cindex Continue, to next line
+
+To continue to the next line in the current function, click on the
+@samp{Next} button.  This is similar to @samp{Step}, but any function
+calls appearing within the line of code are executed without stopping.
+@lbindex Next
+@lbindex Step
+
+Execution stops when control reaches a different line of code at the
+original stack level that was executing when you clicked on @samp{Next}.
+
+
+@subsection Continuing Until Here
+@cindex Execution, to location
+@cindex Continue, to location
+
+To continue running until a specific location is reached, use the
+@samp{Continue Until Here} facility from the line popup menu.
+@xref{Temporary Breakpoints}, for a discussion.
+
+
+@subsection Continuing Until a Greater Line is Reached
+@cindex Execution, until greater line is reached
+@cindex Continue, until greater line is reached
+
+To continue until a greater line in the current function is reached,
+click on the @samp{Until} button.  This is useful to avoid single
+stepping through a loop more than once.
+@lbindex Until
+
+In GDB, @samp{Until} is like @samp{Next} command, except that when
+@samp{Until} encounters a jump, it automatically continues execution
+until the program counter is greater than the address of the jump.
+
+This means that when you reach the end of a loop after single stepping
+though it, @samp{until} makes your program continue execution until it
+exits the loop.  In contrast, clicking on @samp{Next} at the end of a
+loop simply steps back to the beginning of the loop, which forces you to
+step through the next iteration.
+
+@samp{Until} always stops your program if it attempts to exit the
+current stack frame.
+
+@samp{Until} with no argument works by means of single instruction
+stepping, and hence is slower than continuing until a breakpoint is
+reached.
+
+
+@subsection Continuing Until Function Returns
+@cindex Execution, until function returns
+@cindex Continue, until function returns
+
+To continue running until the current function returns, use the
+@samp{Finish} button.  The returned value (if any) is printed.
+@lbindex Finish
+
+
+@node Continuing at a Different Address
+@section Continuing at a Different Address
+@cindex Execution, at different address
+@cindex Continue, at different address
+@cindex Jump to different address
+
+Ordinarily, when you continue your program, you do so at the place where
+it stopped.  You can instead continue at an address of your own
+choosing.
+
+The most common occasion to use this feature is to back up---perhaps
+with more breakpoints set-over a portion of a program that has already
+executed, in order to examine its execution in more detail.
+
+To set the execution position to the current location, use @samp{Set
+Execution Position} from the breakpoint popup menu.  This item is also
+accessible by pressing and holding the @samp{Break/Clear}
+button.@footnote{JDB, PYDB, and Perl do not support altering the
+execution position.}
+@lbindex Set Execution Position
+
+As a quicker alternative, you can also press @emph{mouse button 1} on
+the arrow and drag it to a different location.@footnote{When glyphs are
+disabled (@pxref{Source Preferences}), dragging the execution position
+is not possible.  Set the execution position explicitly instead.}
+@cindex Execution position, dragging
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-drag, 15cm}
+@sp 1
+@end ifnotinfo
+
+Moving the execution position does not change the current stack frame,
+or the stack pointer, or the contents of any memory location or any
+register other than the program counter.
+
+Some inferior debuggers (notably GDB) allow you to set the new execution
+position into a different function from the one currently executing.
+This may lead to bizarre results if the two functions expect different
+patterns of arguments or of local variables.  For this reason, moving
+the execution position requests confirmation if the specified line is
+not in the function currently executing.
+
+After moving the execution position, click on @samp{Continue} to resume
+execution.
+@lbindex Continue
+
 
 @node Examining the Stack
 @section Examining the Stack
 
+When your program has stopped, the first thing you need to know is
+where it stopped and how it got there.
+
+Each time your program performs a function call, information about the
+call is generated.  That information includes the location of the call
+in your program, the arguments of the call, and the local variables of
+the function being called.  The information is saved in a block of data
+called a @dfn{stack frame}.  The stack frames are allocated in a region
+of memory called the @dfn{call stack}.
+@cindex Stack frame
+@cindex Call stack
+@cindex Frame
+
+When your program stops, the @value{DDD} commands for examining the
+stack allow you to see all of this information.
+
+One of the stack frames is @dfn{selected} by @value{DDD} and many
+@value{DDD} commands refer implicitly to the selected frame.  In
+particular, whenever you ask @value{DDD} for the value of a variable in
+your program, the value is found in the selected frame.  There are
+special @value{DDD} commands to select whichever frame you are
+interested in.
+
+@menu
+* Frames::                      
+* Backtraces::                  
+* Selecting a frame::           
+@end menu
+
+@node Frames
+@subsection Stack Frames
+
+@cindex Frame
+@cindex Stack Frame
+The call stack is divided up into contiguous pieces called @dfn{stack
+frames}, or @dfn{frames} for short; each frame is the data associated
+with one call to one function.  The frame contains the arguments given
+to the function, the function's local variables, and the address at
+which the function is executing.
+
+@cindex Initial frame
+@cindex Outermost frame
+@cindex Innermost frame
+When your program is started, the stack has only one frame, that of the
+function @code{main}.  This is called the @dfn{initial} frame or the
+@dfn{outermost} frame.  Each time a function is called, a new frame is
+made.  Each time a function returns, the frame for that function invocation
+is eliminated.  If a function is recursive, there can be many frames for
+the same function.  The frame for the function in which execution is
+actually occurring is called the @dfn{innermost} frame.  This is the most
+recently created of all the stack frames that still exist.
+
+@cindex Frame pointer
+Inside your program, stack frames are identified by their addresses.  A
+stack frame consists of many bytes, each of which has its own address; each
+kind of computer has a convention for choosing one byte whose
+address serves as the address of the frame.  Usually this address is kept
+in a register called the @dfn{frame pointer register} while execution is
+going on in that frame.
+
+@cindex Frame number
+GDB assigns numbers to all existing stack frames, starting with zero for
+the innermost frame, one for the frame that called it, and so on upward.
+These numbers do not really exist in your program; they are assigned by
+GDB to give you a way of designating stack frames in GDB commands.
+
+
+@node Backtraces
+@subsection Backtraces
+
+@value{DDD} provides a @emph{backtrace window} showing a summary of how
+your program got where it is.  It shows one line per frame, for many
+frames, starting with the currently executing frame (frame zero),
+followed by its caller (frame one), and on up the stack.
+
+To enable the backtrace window, select @samp{Status @result{}
+Backtrace}.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-backtrace, 15cm}
+@sp 1
+@end ifnotinfo
+
+Usign GDB, each line in the backtrace shows the frame number and the
+function name.  The program counter value is also shown---unless you use
+the GDB command @samp{set print address off}.  The backtrace also shows
+the source file name and line number, as well as the arguments to the
+function.  The program counter value is omitted if it is at the
+beginning of the code for that line number.
+
+
+@node Selecting a frame
+@subsection Selecting a Frame
+@cindex Frame, selecting
+@cindex Selecting frames
+@cindex Stack, moving within
+
+Most commands for examining the stack and other data in your program
+work on whichever stack frame is selected at the moment.  Here are the
+commands for selecting a stack frame.@footnote{Perl does not allow
+changing the current stack frame.}
+
+In the backtrace window, you can @emph{select} an arbitrary frame to
+move from one stack frame to another.  Just click on the desired frame.
+
+The @samp{Up} button selects the function that called the current
+one---that is, it moves one frame up.
+@lbindex Up
+
+The @samp{Down} button selects the function that was called by
+the current one---that is, it moves one frame down.
+@lbindex Down
+
+You can also directly type the @samp{up} and @samp{down} commands at
+the debugger prompt.  Typing @key{Ctrl+Up} and @key{Ctrl+Down},
+respectively, will also move you through the stack.
+@cmindex up
+@cmindex down
+@kindex Ctrl+Up
+@kindex Ctrl+Down
+
+@samp{Up} and @samp{Down} actions can be undone via @samp{Edit @result{}
+Undo}.
+@lbindex Undo
+@cindex Undoing frame changes
+@cindex Frame changes, undoing
+
+
 @node Undoing Program Execution
 @section ``Undoing'' Program Execution
+@cindex Execution, ``undoing''
+@cindex Undoing program execution
+
+If you take a look at the @samp{Edit @result{} Undo} menu item after an
+execution command, you'll find that @value{DDD} offers you to undo
+execution commands just as other commands.  Does this mean that
+@value{DDD} allows you to go backwards in time, undoing program
+execution as well as undoing any side-effects of your program?
+
+Sorry---we must disappoint you.  @value{DDD} cannot undo what your
+program did.  (After a little bit of thought, you'll find that this
+would be impossible in general.)  However, DDD can do something
+different: it can show @emph{previously recorded states} of your
+program.
+
+After ``undoing'' an execution command (via
+@samp{Edit @result{} Undo}, or the @samp{Undo} button), the execution
+position moves back to the earlier position and displayed variables
+take their earlier values.  Your program state is in fact unchanged,
+but DDD gives you a @emph{view} on the earlier state as recorded by
+DDD.
+
+In this so-called @emph{historic mode}, most normal @value{DDD}
+commands that would query further information from the program are
+disabled, since the debugger cannot be queried for the earlier state.
+However, you can examine the current execution position, or the
+displayed variables.  Using @samp{Undo} and @samp{Redo}, you can
+move back and forward in time to examine how your program got into the
+present state.
+@cindex Historic mode
+@lbindex Undo
+@lbindex Redo
+
+To let you know that you are operating in historic mode, the execution
+arrow gets a dashed-line appearance (indicating a past position);
+variable displays also come with dashed lines.  Furthermore, the
+status line informs you that you are seeing an earlier program state.
+
+Here's how historic mode works: each time your program stops,
+@value{DDD} collects the current execution position and the values of
+displayed variables.  Backtrace, thread, and register information is
+also collected if the corresponding dialogs are open.  When
+``undoing'' an execution command, @value{DDD} updates its view
+from this collected state instead of querying the program.
+
+If you want to collect this information without interrupting your
+program---within a loop, for instance---you can place a breakpoint with
+an associated @samp{cont} command (@pxref{Breakpoint Commands}).  When
+the breakpoint is hit, @value{DDD} will stop, collect the data, and
+execute the @samp{cont} command, resuming execution.  Using a later
+@samp{Undo}, you can step back and look at every single loop iteration.
+
+To leave historic mode, you can use @samp{Redo} until you are back in
+the current program state.  However, any @value{DDD} command that
+refers to program state will also leave historic mode immediately by
+applying to the current program state instead.  For instance,
+@samp{Up} leaves historic mode immediately and selects an alternate
+frame in the restored current program state.
+
+If you want to see the history of a specific variable, as recorded
+during program stops, you can enter the @value{DDD} command
+
+@example
+graph history @var{name}
+@end example
+
+This returns a list of all previously recorded values of the variable
+@var{name}, using array syntax.  Note that @var{name} must have been
+displayed at earlier program stops in order to record values.
+
 
 @node Examining Threads
 @section Examining Threads
+@cindex Threads
+
+In some operating systems, a single program may have more than one
+@emph{thread} of execution.  The precise semantics of threads differ
+from one operating system to another, but in general the threads of a
+single program are akin to multiple processes---except that they share
+one address space (that is, they can all examine and modify the same
+variables).  On the other hand, each thread has its own registers and
+execution stack, and perhaps private memory.
+
+For debugging purposes, @value{DDD} lets you display the list of threads
+currently active in your program and lets you select the @emph{current
+thread}---the thread which is the focus of debugging.  @value{DDD} shows
+all program information from the perspective of the current
+thread.@footnote{Currently, threads are supported in GDB and JDB only.}
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-threads, 15cm}
+@sp 1
+@end ifnotinfo
+
+To view all currently active threads in your program, select
+@samp{Status @result{} Threads}.  The current thread is highlighted.
+Select any thread to make it the current thread.
+@lbindex Threads
+
+Using JDB, additional functionality is available:
+
+@itemize @bullet
+@item
+Select a @emph{thread group} to switch between viewing all threads and
+the threads of the selected thread group;
+@item
+Click on @samp{Suspend} to suspend execution of the selected threads;
+@item
+Click on @samp{Resume} to resume execution of the selected threads.
+@end itemize
+
+For more information on threads, see the JDB and GDB documentation
+(@pxref{Threads, Debugging programs with multiple threads, Debugging
+Programs with Multiple Threads, gdb, Debugging with GDB}).
+
 
 @node Handling Signals
 @section Handling Signals
+
+A signal is an asynchronous event that can happen in a program.  The
+operating system defines the possible kinds of signals, and gives each
+kind a name and a number.  For example, in UNIX, @code{SIGINT} is the
+signal a program gets when you type an interrupt; @code{SIGSEGV} is
+the signal a program gets from referencing a place in memory far away
+from all the areas in use; @code{SIGALRM} occurs when the alarm clock
+timer goes off (which happens only if your program has requested an
+alarm).
+@cindex Signals
+
+Some signals, including @code{SIGALRM}, are a normal part of the
+functioning of your program.  Others, such as @code{SIGSEGV}, indicate
+errors; these signals are @emph{fatal} (kill your program immediately)
+if the program has not specified in advance some other way to handle the
+signal.  @code{SIGINT} does not indicate an error in your program, but
+it is normally fatal so it can carry out the purpose of the interrupt:
+to kill the program.
+@cindex Signal, fatal
+
+GDB has the ability to detect any occurrence of a signal in your
+program.  You can tell GDB in advance what to do for each kind of
+signal.
+
+Normally, @value{DDD} is set up to ignore non-erroneous signals like
+@code{SIGALRM} (so as not to interfere with their role in the
+functioning of your program) but to stop your program immediately
+whenever an error signal happens.  In @value{DDD}, you can view and edit
+these settings via @samp{Status @result{} Signals}.
+@lbindex Signals
+@cindex Signal settings, editing
+
+@samp{Status @result{} Signals} pops up a panel showing all the kinds of
+signals and how GDB has been told to handle each one.  The settings
+available for each signal are:
+
+@table @code
+@item Stop
+@lbindex Stop
+If set, GDB should stop your program when this signal happens.
+This also implies @samp{Print} being set.
+
+@item Print
+@lbindex Print
+If set, GDB should print a message when this signal happens.
+
+If unset, GDB should not mention the occurrence of the signal at all.
+This also implies @samp{Stop} being unset.
+
+@item Pass
+@lbindex Pass
+If set, GDB should allow your program to see this signal; your
+program can handle the signal, or else it may terminate if the signal
+is fatal and not handled.
+
+If unset, GDB should not allow your program to see this signal.
+@end table
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-signals, 15cm}
+@sp 1
+@end ifnotinfo
+
+The entry @samp{All Signals} is special.  Changing a setting here
+affects @emph{all signals at once}---except those used by the debugger,
+typically @code{SIGTRAP} and @code{SIGINT}.
+@lbindex All Signals
+
+To undo any changes, use @samp{Edit @result{} Undo}.  The @samp{Reset}
+button restores the saved settings.
+@cindex Undoing signal handling
+@lbindex Reset
+
+When a signal stops your program, the signal is not visible until you
+continue.  Your program sees the signal then, if @samp{Pass} is in
+effect for the signal in question @emph{at that time}.  In other words,
+after GDB reports a signal, you can change the @samp{Pass} setting in
+@samp{Status @result{} Signals} to control whether your program sees
+that signal when you continue.
+
+You can also cause your program to see a signal it normally would not
+see, or to give it any signal at any time.  The @samp{Send} button will
+resume execution where your program stopped, but immediately give it the
+signal shown.
+@lbindex Send
+
+On the other hand, you can also prevent your program from seeing a
+signal.  For example, if your program stopped due to some sort of memory
+reference error, you might store correct values into the erroneous
+variables and continue, hoping to see more execution; but your program
+would probably terminate immediately as a result of the fatal signal
+once it saw the signal.  To prevent this, you can resume execution using
+@samp{Commands @result{} Continue Without Signal}.
+@lbindex Continue Without Signal
+
+@samp{Edit @result{} Save Options} does not save changed signal
+settings, since changed signal settings are normally useful within
+specific projects only.  Instead, signal settings are saved with the
+current session, using @samp{File @result{} Save Session As}.
+@lbindex Save Options
+@lbindex Save Session As
+@cindex Signal settings, saving
+
+
+@node Killing the Program
+@section Killing the Program
+@cindex Killing the debugged program
+
+You can kill the process of the debugged program at any time using the
+@samp{Kill} button.
+@lbindex Kill
+
+Killing the process is useful if you wish to debug a core dump instead
+of a running process.  GDB ignores any core dump file while your program
+is running.
+
+The @samp{Kill} button is also useful if you wish to recompile and
+relink your program, since on many systems it is impossible to modify an
+executable file while it is running in a process.  In this case, when
+you next click on @samp{Run}, GDB notices that the file has changed, and
+reads the symbol table again (while trying to preserve your current
+debugger state).
+
 
 
 @node Examining Data
 @chapter Examining Data
 
 @menu
-* Showing Simple Values using Value Hints::  
-* Printing Simple Values in the Debugger Console::  
-* Displaying Complex Values in the Data Window::  
+* Value Hints::                 
+* Printing Values::             
+* Displaying Values::           
+* Plotting Values::             
+@end menu
+
+@node Value Hints
+@section Showing Simple Values using Value Hints
+
+@node Printing Values
+@section Printing Simple Values in the Debugger Console
+
+@node Displaying Values
+@section Displaying Complex Values in the Data Window
+
+@menu
 * Selecting Displays::          
 * Selecting Multiple Displays::  
 * Showing and Hiding Values::   
@@ -1469,7 +2478,7 @@ argument field and click the @samp{Unwatch ()} button.
 * Displaying Program Status::   
 * Displaying Multiple Array Values::  
 * Repeated Array Values::       
-* Altering Variable Values::    
+* Changing Variable Values::    
 * Refreshing the Data Window::  
 * Deleting Displays::           
 * Examining Shared Data Structures::  
@@ -1481,81 +2490,72 @@ argument field and click the @samp{Unwatch ()} button.
 * Printing the Display Graph::  
 @end menu
 
-@node Showing Simple Values using Value Hints
-@section Showing Simple Values using Value Hints
-
-@node Printing Simple Values in the Debugger Console
-@section Printing Simple Values in the Debugger Console
-
-@node Displaying Complex Values in the Data Window
-@section Displaying Complex Values in the Data Window
-
 @node Selecting Displays
-@section Selecting Displays
+@subsection Selecting Displays
 
 @node Selecting Multiple Displays
-@section Selecting Multiple Displays
+@subsection Selecting Multiple Displays
 
 @node Showing and Hiding Values
-@section Showing and Hiding Values
+@subsection Showing and Hiding Values
 
 @node Rotating Arrays
-@section Rotating Arrays
+@subsection Rotating Arrays
 
 @node Displaying Dependent Values
-@section Displaying Dependent Values
+@subsection Displaying Dependent Values
 
 @node Display Shortcuts
-@section Display Shortcuts
+@subsection Display Shortcuts
 
 @node Dereferencing Pointers
-@section Dereferencing Pointers
+@subsection Dereferencing Pointers
 
 @node Displaying Local Variables
-@section Displaying Local Variables
+@subsection Displaying Local Variables
 
 @node Displaying Program Status
-@section Displaying Program Status
+@subsection Displaying Program Status
 
 @node Displaying Multiple Array Values
-@section Displaying Multiple Array Values
+@subsection Displaying Multiple Array Values
 
 @node Repeated Array Values
-@section Repeated Array Values
+@subsection Repeated Array Values
 
-@node Altering Variable Values
-@section Altering Variable Values
+@node Changing Variable Values
+@subsection Changing Variable Values
 
 @node Refreshing the Data Window
-@section Refreshing the Data Window
+@subsection Refreshing the Data Window
 
 @node Deleting Displays
-@section Deleting Displays
+@subsection Deleting Displays
 
 @node Examining Shared Data Structures
-@section Examining Shared Data Structures
+@subsection Examining Shared Data Structures
 
 @node Clustering Displays
-@section Clustering Displays
+@subsection Clustering Displays
 
 @node Moving Displays Around
-@section Moving Displays Around
+@subsection Moving Displays Around
 
 @node Aligning Displays
-@section Aligning Displays
+@subsection Aligning Displays
 
 @node Layouting the Display Graph
-@section Layouting the Display Graph
+@subsection Layouting the Display Graph
 
 @node Rotating the Display Graph
-@section Rotating the Display Graph
+@subsection Rotating the Display Graph
 
 @node Printing the Display Graph
-@section Printing the Display Graph
+@subsection Printing the Display Graph
 
 
-@node Plotting Data
-@chapter Plotting Data
+@node Plotting Values
+@section Plotting Values
 
 @menu
 * Plotting Arrays::             
@@ -1569,28 +2569,28 @@ argument field and click the @samp{Unwatch ()} button.
 @end menu
 
 @node Plotting Arrays
-@section Plotting Arrays
+@subsection Plotting Arrays
 
 @node Changing the Plot Appearance
-@section Changing the Plot Appearance
+@subsection Changing the Plot Appearance
 
 @node Plotting Scalars and Composites
-@section Plotting Scalars and Composites
+@subsection Plotting Scalars and Composites
 
 @node Plotting Display Histories
-@section Plotting Display Histories
+@subsection Plotting Display Histories
 
 @node Printing Plots
-@section Printing Plots
+@subsection Printing Plots
 
 @node Entering Plotting Commands
-@section Entering Plotting Commands
+@subsection Entering Plotting Commands
 
 @node Exporting Plot Data
-@section Exporting Plot Data
+@subsection Exporting Plot Data
 
 @node Animating Plots
-@section Animating Plots
+@subsection Animating Plots
 
 
 @node Machine-Level Debugging
@@ -1616,12 +2616,13 @@ argument field and click the @samp{Unwatch ()} button.
 @section Examining Memory
 
 
-@node Editing and Recompiling
-@chapter Editing and Recompiling
+@node Changing the Program
+@chapter Changing the Program
 
 @menu
 * Editing Source Code::         
 * Recompiling::                 
+* Patching::                    
 @end menu
 
 @node Editing Source Code
@@ -1630,84 +2631,13 @@ argument field and click the @samp{Unwatch ()} button.
 @node Recompiling
 @section Recompiling
 
+@node Patching
+@section Patching
+
 
 
 @node Entering Commands
-@chapter Entering Commands
-
-
-@node Customizing DDD
-@chapter Customizing @value{DDD}
-
-@menu
-* Frequently Used Preferences::  
-* General Preferences::         
-* Source Preferences::          
-* Data Preferences::            
-* Startup Preferences::         
-* Fonts::                       
-* Helpers::                     
-* Saving Options::              
-* Other Customizations::        
-@end menu
-
-@node Frequently Used Preferences
-@section Frequently Used Preferences
-
-@node General Preferences
-@section General Preferences
-
-@node Source Preferences
-@section Source Preferences
-
-@node Data Preferences
-@section Data Preferences
-
-@node Startup Preferences
-@section Startup Preferences
-
-@node Fonts
-@section Fonts
-
-@node Helpers
-@section Helpers
-
-@node Saving Options
-@section Saving Options
-
-@node Other Customizations
-@section Other Customizations
-
-
-@node Debugger Settings
-@chapter Debugger Settings
-
-
-@node User-Defined Actions
-@chapter User-Defined Actions
-
-@menu
-* Defining Buttons::            
-* Defining Simple Commands using GDB::  
-* Defining Argument Commands using GDB::  
-* Defining Commands using Other Debuggers::  
-@end menu
-
-@node Defining Buttons
-@section Defining Buttons
-
-@node Defining Simple Commands using GDB
-@section Defining Simple Commands using GDB
-
-@node Defining Argument Commands using GDB
-@section Defining Argument Commands using GDB
-
-@node Defining Commands using Other Debuggers
-@section Defining Commands using Other Debuggers
-
-
-@node Quitting DDD
-@chapter Quitting @value{DDD}
+@chapter The Command-Line Interface
 
 
 @node Persistent Sessions
@@ -1733,8 +2663,88 @@ argument field and click the @samp{Unwatch ()} button.
 @section Starting @value{DDD} with a Session
 
 
+@node Customizing
+@chapter Customizing @value{DDD}
+
+@menu
+* Frequently Used Preferences::  
+* General Preferences::         
+* Source Preferences::          
+* Data Preferences::            
+* Startup Preferences::         
+* Fonts::                       
+* Helpers::                     
+* Debugger Settings::           
+* User-Defined Actions::        
+* Saving Options::              
+* Other Customizations::        
+@end menu
+
+@node Frequently Used Preferences
+@section Frequently Used Preferences
+
+@node General Preferences
+@section General Preferences
+
+@node Source Preferences
+@section Source Preferences
+
+@node Data Preferences
+@section Data Preferences
+
+@node Startup Preferences
+@section Startup Preferences
+
+@node Fonts
+@section Fonts
+
+@node Helpers
+@section Helpers
+
+@node Debugger Settings
+@section Debugger Settings
+
+@node User-Defined Actions
+@section User-Defined Actions
+
+@menu
+* Defining Buttons::            
+* Defining Simple Commands using GDB::  
+* Defining Argument Commands using GDB::  
+* Defining Commands using Other Debuggers::  
+@end menu
+
+@node Defining Buttons
+@subsection Defining Buttons
+
+@node Defining Simple Commands using GDB
+@subsection Defining Simple Commands using GDB
+
+@node Defining Argument Commands using GDB
+@subsection Defining Argument Commands using GDB
+
+@node Defining Commands using Other Debuggers
+@subsection Defining Commands using Other Debuggers
+
+@node Saving Options
+@section Saving Options
+
+@node Other Customizations
+@section Other Customizations
+
+
+@node Special Set-Ups
+@chapter Special Set-Ups
+
+@menu
+* Integrating DDD::             
+* Using DDD with a Remote Debugger::  
+* Using DDD with a Remote Program::  
+* Debugging as Root::           
+@end menu
+
 @node Integrating DDD
-@chapter Integrating @value{DDD}
+@section Integrating @value{DDD}
 
 @menu
 * Using DDD with GNU Emacs::    
@@ -1743,25 +2753,13 @@ argument field and click the @samp{Unwatch ()} button.
 @end menu
 
 @node Using DDD with GNU Emacs
-@section Using @value{DDD} with GNU Emacs
+@subsection Using @value{DDD} with GNU Emacs
 
 @node Using DDD with XEmacs
-@section Using @value{DDD} with XEmacs
+@subsection Using @value{DDD} with XEmacs
 
 @node Using DDD with XXGDB
-@section Using @value{DDD} with XXGDB
-
-@node Using DDD with LessTif
-@chapter Using @value{DDD} with LessTif
-
-
-@node Remote Debugging
-@chapter Remote Debugging
-
-@menu
-* Using DDD with a Remote Debugger::  
-* Using DDD with a Remote Program::  
-@end menu
+@subsection Using @value{DDD} with XXGDB
 
 @node Using DDD with a Remote Debugger
 @section Using @value{DDD} with a Remote Debugger
@@ -1769,154 +2767,21 @@ argument field and click the @samp{Unwatch ()} button.
 @node Using DDD with a Remote Program
 @section Using @value{DDD} with a Remote Program
 
-
-@node Root Debugging
-@chapter Root Debugging
-
-
-@node Resources
-@chapter Resources
-
-@menu
-* Setting DDD Fonts::           
-* Setting DDD Colors::          
-* General Preferences Resources::  
-* Source Window::               
-* Window Creation and Layout::  
-* Debugger Settings Resources::  
-* User-defined Buttons::        
-* User-Defined New Display Menu::  
-* Data Display::                
-* Plot Window::                 
-* Debugger Console::            
-* Value Histories::             
-* Customizing Helpers::         
-* Obtaining Diagnostics::       
-* More Resources::              
-@end menu
-
-@node Setting DDD Fonts
-@section Setting @value{DDD} Fonts
-
-@node Setting DDD Colors
-@section Setting @value{DDD} Colors
-
-@node General Preferences Resources
-@section General Preferences
-
-@node Source Window
-@section Source Window
-
-@node Window Creation and Layout
-@section Window Creation and Layout
-
-@node Debugger Settings Resources
-@section Debugger Settings
-
-@node User-defined Buttons
-@section User-defined Buttons
-
-@node User-Defined New Display Menu
-@section User-Defined New Display Menu
-
-@node Data Display
-@section Data Display
-
-@node Plot Window
-@section Plot Window
-
-@node Debugger Console
-@section Debugger Console
-
-@node Value Histories
-@section Value Histories
-
-@node Customizing Helpers
-@section Customizing Helpers
-
-@node Obtaining Diagnostics
-@section Obtaining Diagnostics
-
-@node More Resources
-@section More Resources
+@node Debugging as Root
+@section Debugging as Root
 
 
-@node Options
-@chapter Options
 
+@c A
+@node License
+@appendix GNU General Public License
 
-@node Actions
-@chapter Actions
+@cindex License
+@include gpl.texinfo
 
-@menu
-* General Actions::             
-* Data Display Actions::        
-* Debugger Console Actions::    
-* Source Window Actions::       
-@end menu
-
-@node General Actions
-@section General Actions
-
-@node Data Display Actions
-@section Data Display Actions
-
-@node Debugger Console Actions
-@section Debugger Console Actions
-
-@node Source Window Actions
-@section Source Window Actions
-
-
-@node Images
-@chapter Images
-
-
-@node Environment
-@chapter Environment
-
-
-@node Files
-@chapter Files
-
-
-@node References
-@chapter References
-
-
-@node Limitations
-@chapter Limitations
-
-@menu
-* General Limitations::         
-* Limitations using GDB::       
-* Limitations using DBX::       
-* Limitations using XDB::       
-* Limitations using JDB::       
-* Limitations using Perl::      
-@end menu
-
-@node General Limitations
-@section General Limitations
-
-@node Limitations using GDB
-@section Limitations using GDB
-
-@node Limitations using DBX
-@section Limitations using DBX
-
-@node Limitations using XDB
-@section Limitations using XDB
-
-@node Limitations using JDB
-@section Limitations using JDB
-
-@node Limitations using Perl
-@section Limitations using Perl
-
-
+@c B
 @node Reporting Bugs
-@chapter Reporting Bugs
+@appendix Reporting Bugs
 
 @menu
 * Where to Send Bug Reports::   
@@ -1937,35 +2802,90 @@ argument field and click the @samp{Unwatch ()} button.
 @node What to Include in a Bug Report
 @section What to Include in a Bug Report
 
-
-@node History
-@chapter History
-
-
-@node Extending
-@chapter Extending DDD
-
-
-@node Support
-@chapter DDD Needs Your Support!
-
-
-@node License
-@appendix GNU GENERAL PUBLIC LICENSE
-
-
-@cindex License
-@include gpl.texinfo
-
-@node Printing this Manual
-@appendix Printing this Manual
-
-
+@c C
 @node Copyright
 @appendix Copyright
 
 @section @value{DDD}
 @section @value{DDD} Manual
+
+@c D
+@node Extending
+@appendix Extending DDD
+
+@c E
+@node Environment Variables
+@appendix Environment Variables used by @value{DDD}
+
+@c F
+@node Files
+@appendix Files used by @value{DDD}
+
+@c G
+@node Actions
+@appendix Actions used by @value{DDD}
+
+@menu
+* General Actions::             
+* Data Display Actions::        
+* Debugger Console Actions::    
+* Source Window Actions::       
+@end menu
+
+@node General Actions
+@section General Actions
+
+@node Data Display Actions
+@section Data Display Actions
+
+@node Debugger Console Actions
+@section Debugger Console Actions
+
+@node Source Window Actions
+@section Source Window Actions
+
+@c H
+@node Images
+@appendix Images used by @value{DDD}
+
+@c I
+@node Limitations
+@appendix Limitations
+
+@menu
+* General Limitations::         
+* Limitations using GDB::       
+* Limitations using DBX::       
+* Limitations using XDB::       
+* Limitations using JDB::       
+* Limitations using Perl::      
+* LessTif::                     
+@end menu
+
+@node General Limitations
+@section General Limitations
+
+@node Limitations using GDB
+@section Limitations using GDB
+
+@node Limitations using DBX
+@section Limitations using DBX
+
+@node Limitations using XDB
+@section Limitations using XDB
+
+@node Limitations using JDB
+@section Limitations using JDB
+
+@node Limitations using Perl
+@section Limitations using Perl
+
+@node LessTif
+@section Using @value{DDD} with LessTif
+
+@c J
+@node Printing this Manual
+@appendix Printing this Manual
 
 
 @node Label Index
