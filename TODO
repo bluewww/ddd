@@ -265,9 +265,6 @@ Volunteers for these and other projects are welcome!
      threads.  Another useful feature is allowing one to choose to
      follow child forked processes or not.
 
-106* If `-lXm' is not found, point to `--with-motif-libraries' and
-     `--with-motif-includes' options.  Do the same with `-lXaw'.
-
 107. Have toolbar tips, as in NetScape 3.0 or WinWord.
 
 108. David M. Karr <dkarr@nmo.gtegsc.com> suggests:
@@ -295,11 +292,20 @@ Volunteers for these and other projects are welcome!
      confused.
 
 114. Have a link to GDB info---for instance, using
-     `xterm -e info --file gdb Index COMMAND'
+     `xterm -e info --file gdb Index COMMAND',
 
-115. In DBX, use `where N' instead of GDB `frame N'.
+115. Have a link from help texts to appropriate sections of the DDD manual.
 
-116. Paul Courbis <plc@lexem.fr> says: upon dereferencing a pointer, 
-     it would be nice to have a menu to say: display hex data for 255 bytes.
+116. In DBX, use `where N' instead of GDB `frame N'.
 
-117. (Insert your project idea here)
+117. Paul Courbis <plc@lexem.fr> says: upon dereferencing a pointer, 
+     it would be nice to have a menu to say: display hex data for 255
+     bytes.
+
+118. In the source view and the data display, forward all keyboard
+     events except position changes to the debugger console.
+
+119. Try whether the `-fno-implement-inlines' option in DDD reduces
+     executable size.
+
+120. (Insert your project idea here)
