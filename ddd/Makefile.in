@@ -1105,6 +1105,11 @@ debug: Ddd ddd cxxtest ddd.gdb
 ddd.syms: ddd
 	$(GDB) -batch -nx -mapped -readnow ddd || $(TOUCH) $@
 
+# A convient target for setting up a debugging environment.
+it:	all cxxtest ddd.syms
+	@:
+.PHONY: it
+
 
 
 ## Lex and Yacc stuff.
