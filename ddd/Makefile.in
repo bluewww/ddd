@@ -758,8 +758,9 @@ ULTRACLEAN_STUFF = $(REALCLEAN_STUFF) \
 
 
 ## Targets as specified in GNU standards.
-.PHONY: all
 all:	ddd-message $(PROG_STUFF) $(PROGS)
+	@:
+.PHONY: all
 
 .PHONY: ddd-message
 ddd-message:
@@ -767,9 +768,11 @@ ddd-message:
 
 .PHONY: install
 install: install-prog install-man
+	@:
 
 .PHONY: uninstall
 uninstall: uninstall-prog uninstall-man
+	@:
 
 # install-prog does not depend on $(PROGS) 
 # since we may have precompiled packages
@@ -821,6 +824,7 @@ distclean:
 
 .PHONY: mostlyclean
 mostlyclean: clean
+	@:
 
 .PHONY: realclean
 realclean:
@@ -835,30 +839,39 @@ TAGS:
 
 .PHONY: info
 info:	$(INFO_BASES)
+	@:
 
 .PHONY: dvi
 dvi:	$(DVIS)
+	@:
 
 .PHONY: ps
 ps:	$(PSS)
+	@:
 
 .PHONY: man
 man:	$(MANS)
+	@:
 
 .PHONY: postscript
 postscript: $(PSS)
+	@:
 
 .PHONY: html
 html:	$(HTML_BASES)
+	@:
 
 .PHONY: lib
 lib:	$(LIB)
+	@:
 
 .PHONY: readme
 readme:	$(README_FILES)
+	@:
 
 .PHONY: diststuff
 diststuff: $(DIST_STUFF)
+	@:
 
 .PHONY: dist
 dist:	
@@ -871,10 +884,13 @@ strip:	$(PROGS)
 
 .PHONY: progs programs
 progs:	$(PROGS)
+	@:
 programs: $(PROGS)
+	@:
 
 .PHONY: demos
 demos:	$(DEMOS)
+	@:
 
 
 ## A TECO-ism

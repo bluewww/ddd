@@ -43,9 +43,9 @@ SUBDIRS = "this is set via configure, don't edit this"
 
 ### Default target: build all
 
-.PHONY: default
 default: all
 	@:
+.PHONY: default
 
 
 ### Recursive targets
