@@ -327,4 +327,6 @@ Volunteers for fixing these and other bugs are welcome!
            {"CAP", UNOP_CAP, PREC_BUILTIN_FUNCTION, 0},
      ===========================================================
 
-152. (Insert your bug here)
+152. Curved edges cannot (yet) be printed.
+
+153. (Insert your bug here)
