@@ -100,6 +100,18 @@ extern "C" {
 #endif
 }
 
+#ifndef S_IRWXU
+#define S_IRWXU 0700
+#endif
+
+#ifndef S_IRWXG
+#define S_IRWXG 070
+#endif
+
+#ifndef S_IRWXO
+#define S_IRWXO 07
+#endif
+
 
 // ---------------------------------------------------------------------------
 // How to present a default session to the user
@@ -188,13 +200,17 @@ public:
     }
 };
 
-static int makedir(string name, ostream& msg)
+static int makedir(string name, ostream& msg, bool user_only = false)
 {
     StreamAction action(msg, "Creating " + quote(name + "/"));
 
     mode_t mask = umask(0);
     umask(mask);
-    mode_t mode = 0777 & ~mask;
+    mode_t mode;
+    if (user_only)
+	mode = S_IRWXU & ~mask;
+    else
+	mode = (S_IRWXU | S_IRWXG | S_IRWXO) & ~mask;
     int ret = mkdir(name, mode);
 
     if (ret != 0)
@@ -236,7 +252,7 @@ static void create_session_state_dir(ostream& msg)
 {
     // Create or find state directory
     if (!is_directory(session_state_dir()) && 
-	makedir(session_state_dir(), msg) == 0)
+	makedir(session_state_dir(), msg, true) == 0)
     {
 	// Check for DDD 2.1 `~/.dddinit' and `~/.ddd_history' files; 
 	// copy them to new location if needed
@@ -245,7 +261,7 @@ static void create_session_state_dir(ostream& msg)
 	copy(home_dir() + "/.ddd_history",
 	     session_history_file(DEFAULT_SESSION), msg);
     }
-    
+
     // Create session base directory
     if (!is_directory(session_base_dir()))
 	makedir(session_base_dir(), msg);
