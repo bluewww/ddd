@@ -4433,7 +4433,7 @@ bool DataDisp::have_selection()
 
 bool DataDisp::bump_displays = true;
 
-static bool Yes(const RegionGraphNode *, const BoxSize&)
+static bool Yes(RegionGraphNode *, const BoxSize&)
 {
     return true;
 }
