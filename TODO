@@ -354,9 +354,6 @@ Volunteers for these and other projects are welcome!
 
 342 Add a menu bar for the execution window (via swallowing)
 
-343*Add a progress meter (including `Cancel' button) for long display
-    updates.
-
 345 Have automatic unfolding of data structures using `Layout by
     Example' - that is, lay out the first few elements and have this
     operation repeated until a fix point is reached.  
