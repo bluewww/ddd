@@ -1,7 +1,7 @@
 // $Id$
 // DDD main program (and much more)
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus (luetke@ips.cs.tu-bs.de)
 // and Andreas Zeller (zeller@ips.cs.tu-bs.de)
 // 
@@ -873,6 +873,7 @@ XmTextPosition messagePosition;
 // Buttons
 static Widget console_buttons_w;
 static Widget source_buttons_w;
+static Widget data_buttons_w;
 
 // Strings to be ignored in GDB output
 string gdb_out_ignore = "";
@@ -1246,6 +1247,10 @@ int main(int argc, char *argv[])
 		       XmNworkWindow, data_disp_parent,
 		       NULL);
     }
+
+    // source_area (Befehle mit PushButton an gdb) ----------------------------
+    data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
+				  app_data.data_buttons);
 
     // Source window
     Widget source_view_parent = paned_work_w;
@@ -2174,6 +2179,7 @@ void _gdb_out(string text)
     set_selection_from_gdb(text);
     set_buttons_from_gdb(console_buttons_w, text);
     set_buttons_from_gdb(source_buttons_w, text);
+    set_buttons_from_gdb(data_buttons_w, text);
     set_status_from_gdb(text);
     set_tty_from_gdb(text);
 

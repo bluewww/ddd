@@ -170,6 +170,15 @@ XtResource ddd_resources[] = {
 	XtPointer("")
     },
     {
+	XtNdataButtons,
+	XtCDataButtons,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, data_buttons),
+	XtRString,
+	XtPointer("")
+    },
+    {
 	XtNtoolButtons,
 	XtCToolButtons,
 	XtRString,
