@@ -376,6 +376,13 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 {
     unsigned char policy = (unsigned char)int(client_data);
 
+    if (policy != XmEXPLICIT && policy != XmPOINTER)
+	return;
+
+    StatusDelay delay(policy == XmEXPLICIT ?
+		      "Setting click-to-type keyboard focus policy" :
+		      "Setting pointer-driven keyboard focus policy");
+
     const WidgetArray& shells = Delay::shells();
     for (int i = 0; i < shells.size(); i++)
     {
@@ -395,13 +402,11 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
     switch (policy)
     {
     case XmEXPLICIT:
-	XrmPutStringResource(&target, keyboardFocusPolicy,  "EXPLICIT");
-	set_status("Setting click-to-type keyboard focus policy.");
+	XrmPutStringResource(&target, keyboardFocusPolicy, "EXPLICIT");
 	break;
 
     case XmPOINTER:
-	XrmPutStringResource(&target, keyboardFocusPolicy,  "POINTER");
-	set_status("Setting pointer-driven keyboard focus policy.");
+	XrmPutStringResource(&target, keyboardFocusPolicy, "POINTER");
 	break;
     }
 
