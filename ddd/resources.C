@@ -39,7 +39,10 @@ char resources_rcsid[] =
 #include "stty.h"
 #include "config.h"
 
+extern "C" {
 #include <X11/Xfuncs.h>		// memmove
+}
+
 #include <Xm/Xm.h>
 
 // Application resource definitions
@@ -632,7 +635,7 @@ XtResource ddd_resources[] = {
 	sizeof(Boolean),
 	XtOffsetOf(AppData, builtin_plot),
 	XtRImmediate,
-	XtPointer(True)
+	XtPointer(False)
     },
 
     {
