@@ -62,12 +62,12 @@ static regex rxname_colon_int_nl ("[^ ]+:[0-9]+\n");
 #endif
 
 // Create new breakpoint from INFO_OUTPUT
-BreakPoint::BreakPoint(string& info_output, string arg, int number)
+BreakPoint::BreakPoint(string& info_output, char *arg, int number, char *file)
     : mynumber(number),
       mytype(BREAKPOINT),
       mydispo(BPKEEP),
       myenabled(true),
-      myfile_name(""),
+      myfile_name(file),
       myline_nr(0),
       myaddress(""),
       myfunc(""),

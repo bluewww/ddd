@@ -132,8 +132,10 @@ protected:
 public:
     // Create new breakpoint from INFO_OUTPUT.  ARG denotes the
     // argument of a breakpoint setting command.  If NUMBER is given,
-    // assign this number.  Delete own info from INFO_OUTPUT.
-    BreakPoint (string& info_output, string arg = "", int number = 0);
+    // assign this number.  If FILE is given, assume this file.
+    // Delete own info from INFO_OUTPUT.
+    BreakPoint (string& info_output, char *arg = "",
+		int number = 0, char *file = "");
 
     // Breakpoint number.
     int number() const               { return mynumber; }
