@@ -1356,7 +1356,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	xmtitles[i] = 
 	    XmStringCreateLtoR(titles[i], 
 			       titles[i].contains(' ', 0) ? 
-			       CHARSET_RM : CHARSET_BF);
+			       (char *)CHARSET_RM : (char *)CHARSET_BF);
     }
 
     XtVaSetValues(help_index,

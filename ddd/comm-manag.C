@@ -423,7 +423,7 @@ static void fix_symbols(string& cmd)
 
 inline String str(String s)
 {
-    return s != 0 ? s : "";
+    return s != 0 ? s : (String)"";
 }
 
 static void StartDoneCB(const string& /* answer */, void * /* qu_data */)

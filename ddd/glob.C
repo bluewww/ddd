@@ -535,7 +535,7 @@ glob_filename (char *pathname)
       /* Otherwise, just return what glob_vector
 	 returns appended to the directory name. */
       char **temp_results = glob_vector (filename,
-					 (directory_len == 0
+					 (char *)(directory_len == 0
 					  ? "." : directory_name));
 
       if (temp_results == NULL || temp_results == (char **)-1)

@@ -1682,7 +1682,7 @@ static bool options_file_has_changed(ChangeMode mode, bool reset)
 
 inline String str(String s)
 {
-    return s != 0 ? s : "";
+    return s != 0 ? s : (String)"";
 }
 
 static Boolean done_if_idle(XtPointer data)
@@ -1937,7 +1937,7 @@ static string app_value(string resource, const string& value,
 inline String bool_value(bool value)
 {
     // Since GDB uses `on' and `off' for its settings, we do so, too. 
-    return value ? "on" : "off";
+    return value ? (String)"on" : (String)"off";
 }
 
 inline String binding_value(BindingStyle value)
