@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl $Id$
 dnl 
-dnl Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
+dnl Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 dnl Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 dnl 
 dnl This file is part of the DDD Library.
@@ -24,7 +24,7 @@ dnl
 dnl DDD is the data display debugger.
 dnl For details, see the DDD World-Wide-Web page, 
 dnl `http://www.cs.tu-bs.de/softech/ddd/',
-dnl or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+dnl or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 dnl
 dnl
 dnl
@@ -66,7 +66,7 @@ dnl
 dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
 dnl After this date, users are requested to update the product.
 dnl An empty expiration date means no expiration.
-dnl EXPIRES=2000-01-01
+EXPIRES=1998-01-01
 dnl
 dnl
 AC_SUBST(ddd)dnl
