@@ -39,10 +39,6 @@ char resources_rcsid[] =
 #include "stty.h"
 #include "config.h"
 
-extern "C" {
-#include <X11/Xfuncs.h>		// memmove
-}
-
 #include <Xm/Xm.h>
 
 // Application resource definitions
@@ -1938,14 +1934,35 @@ struct AppDataInitializer {
     AppDataInitializer();
 } app_data_initializer;
 
-static void CopyArg(XtPointer src, XtPointer dst, Cardinal size)
+
+// Copy the SIZE bytes at FROM into the SIZE bytes at DEST, even if
+// those two blocks of space overlap.  In the case of overlap, be
+// careful to copy the original values of the bytes in the block at
+// SRC, including those bytes which also belong to the block at DEST.
+static void copy(char *dest, char *src, Cardinal size)
+{
+    // This is taken from libiberty's bcopy().
+    if (dest < src)
+	while (size--)
+	    *dest++ = *src++;
+    else
+    {
+	char *lasts = src + (size - 1);
+	char *lastd = dest + (size - 1);
+	while (size--)
+	    *(char *)lastd-- = *(char *)lasts--;
+    }
+}
+
+// Copy the value at SRC of size SIZE to the value at DEST.
+static void CopyArg(XtPointer src, XtPointer dest, Cardinal size)
 {
     // This stuff is taken from Xt11R6.3 _XtCopyArg().  I hope it
     // gets all possible conversions right...
 
     if (size > sizeof(XtArgVal))
     {
-	memmove((char *)dst, (char *)src, (int)size);
+	copy((char *)dest, (char *)src, size);
     }
     else 
     {
@@ -1973,7 +1990,7 @@ static void CopyArg(XtPointer src, XtPointer dst, Cardinal size)
 	else
 	    p = (char*)&src;
 
-	memmove((char *)dst, (char *)p, (int)size);
+	copy((char *)dest, (char *)p, size);
     }
 }
 
@@ -1986,10 +2003,10 @@ AppDataInitializer::AppDataInitializer()
     {
 	XtResource& res = ddd_resources[i];
 	XtPointer src = res.default_addr;
-	XtPointer dst = ((char *)&app_data) + res.resource_offset;
+	XtPointer dest = ((char *)&app_data) + res.resource_offset;
 	Cardinal size = res.resource_size;
 
-	CopyArg(src, dst, size);
+	CopyArg(src, dest, size);
     }
 }
 
@@ -1998,7 +2015,7 @@ String ddd_fallback_resources[] = {
 #if WITH_BUILTIN_APP_DEFAULTS
 #include "Ddd.ad.h"
 #endif
-0
+0				// Terminating NULL
 };
 
 // Return a database of default settings
