@@ -34,6 +34,9 @@
 
 # Check args
 final=false;
+case "$0" in
+  *final*) final=true;;
+esac
 if [ "$1" = "-final" ]; then
   final=true;
 fi
