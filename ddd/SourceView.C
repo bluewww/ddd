@@ -211,18 +211,20 @@ MMDesc SourceView::bp_popup[] =
     MMEnd
 };
 
-struct BPButtons { enum Itms {NewBP, NewWP, Properties, Lookup, 
+struct BPButtons { enum Itms {Properties, Lookup, NewBP, NewWP, Print, 
 			      Enable, Disable, Delete}; };
 MMDesc SourceView::bp_area[] =
 {
-    {"new_bp",       MMPush,   {SourceView::NewBreakpointCB}},
-    {"new_wp",       MMPush,   {SourceView::NewWatchpointCB}},
     {"properties",   MMPush,   {SourceView::EditBreakpointPropertiesCB, 0}},
     {"lookup",       MMPush,   
      {SourceView::LookupBreakpointCB, XtPointer(0) }},
+    {"new_bp",       MMPush,   {SourceView::NewBreakpointCB}},
+    {"new_wp",       MMPush,   {SourceView::NewWatchpointCB}},
+    {"print",        MMPush,   
+     {SourceView::PrintWatchpointCB, XtPointer(0) }},
     {"enable",       MMPush,   {SourceView::BreakpointCmdCB, "enable"  }},
     {"disable",      MMPush,   {SourceView::BreakpointCmdCB, "disable" }},
-    {"delete",       MMPush,   {SourceView::BreakpointCmdCB, "delete" }},
+    {"delete",       MMPush | MMHelp,   {SourceView::BreakpointCmdCB, "delete" }},
     MMEnd
 };
 
@@ -330,13 +332,13 @@ static XImage signal_arrow_image = {
     2				// bytes_per_line
 };
 
-#include "icons/glyphs/temparrow.xbm"
-static XImage temp_arrow_image = {
-    temp_arrow_width,		// width
-    temp_arrow_height,		// height
+#include "icons/glyphs/dragarrow.xbm"
+static XImage drag_arrow_image = {
+    drag_arrow_width,		// width
+    drag_arrow_height,		// height
     0,				// xoffset
     XYBitmap,			// format
-    (char *)temp_arrow_bits,	// data
+    (char *)drag_arrow_bits,	// data
     MSBFirst,			// byte_order
     8,				// bitmap_unit
     LSBFirst,			// bitmap_bit_order
@@ -375,13 +377,13 @@ static XImage grey_stop_image = {
     2				// bytes_per_line
 };
 
-#include "icons/glyphs/tempstop.xbm"
-static XImage temp_stop_image = {
-    temp_stop_width,		// width
-    temp_stop_height,		// height
+#include "icons/glyphs/dragstop.xbm"
+static XImage drag_stop_image = {
+    drag_stop_width,		// width
+    drag_stop_height,		// height
     0,				// xoffset
     XYBitmap,			// format
-    (char *)temp_stop_bits,	// data
+    (char *)drag_stop_bits,	// data
     MSBFirst,			// byte_order
     8,				// bitmap_unit
     LSBFirst,			// bitmap_bit_order
@@ -420,13 +422,58 @@ static XImage grey_cond_image = {
     2				// bytes_per_line
 };
 
-#include "icons/glyphs/tempcond.xbm"
-static XImage temp_cond_image = {
-    temp_cond_width,		// width
-    temp_cond_height,		// height
+#include "icons/glyphs/dragcond.xbm"
+static XImage drag_cond_image = {
+    drag_cond_width,		// width
+    drag_cond_height,		// height
     0,				// xoffset
     XYBitmap,			// format
-    (char *)temp_cond_bits,	// data
+    (char *)drag_cond_bits,	// data
+    MSBFirst,			// byte_order
+    8,				// bitmap_unit
+    LSBFirst,			// bitmap_bit_order
+    8,				// bitmap_pad
+    1,				// depth
+    2				// bytes_per_line
+};
+
+#include "icons/glyphs/temp.xbm"
+static XImage temp_image = {
+    temp_width,			// width
+    temp_height,		// height
+    0,				// xoffset
+    XYBitmap,			// format
+    (char *)temp_bits,		// data
+    MSBFirst,			// byte_order
+    8,				// bitmap_unit
+    LSBFirst,			// bitmap_bit_order
+    8,				// bitmap_pad
+    1,				// depth
+    2				// bytes_per_line
+};
+
+#include "icons/glyphs/greytemp.xbm"
+static XImage grey_temp_image = {
+    grey_temp_width,		// width
+    grey_temp_height,		// height
+    0,				// xoffset
+    XYBitmap,			// format
+    (char *)grey_temp_bits,	// data
+    MSBFirst,			// byte_order
+    8,				// bitmap_unit
+    LSBFirst,			// bitmap_bit_order
+    8,				// bitmap_pad
+    1,				// depth
+    2				// bytes_per_line
+};
+
+#include "icons/glyphs/dragtemp.xbm"
+static XImage drag_temp_image = {
+    drag_temp_width,		// width
+    drag_temp_height,		// height
+    0,				// xoffset
+    XYBitmap,			// format
+    (char *)drag_temp_bits,	// data
     MSBFirst,			// byte_order
     8,				// bitmap_unit
     LSBFirst,			// bitmap_bit_order
@@ -1173,15 +1220,16 @@ void SourceView::delete_bps(IntArray& nrs, Widget w)
     }
     else if (gdb->has_delete_command())
     {
-        for (int i = 0; i < nrs.size(); i++)
-	    gdb_command(delete_command(nrs[i]));
+	gdb_command(gdb->delete_command(numbers(nrs)), w);
     }
     else
     {
-	gdb_command(gdb->delete_command(numbers(nrs)), w);
+        for (int i = 0; i < nrs.size(); i++)
+	    gdb_command(delete_command(nrs[i]));
     }
 }
 
+// A generic deletion command for breakpoint BP_NR - either `clear' or `delete'
 string SourceView::delete_command(int bp_nr)
 {
     if (gdb->has_delete_command())
@@ -1196,6 +1244,74 @@ string SourceView::delete_command(int bp_nr)
     }
 
     return "";			// No way to delete a breakpoint (*sigh*)
+}
+
+// Return `clear ARG' command.  If CLEAR_NEXT is set, attempt to guess
+// the next event number and clear this one as well.  (This is useful
+// for setting temporary breakpoints, as `delete' must also clear the
+// event handler we're about to install.)  Consider only breakpoints
+// whose number is >= FIRST_BP.
+string SourceView::clear_command(string pos, bool clear_next, int first_bp)
+{
+    string file = current_file_name;
+    string line = pos;
+
+    if (gdb->type() == DBX && !pos.contains(':') && !pos.matches(rxint))
+	pos = dbx_lookup(pos);
+
+    if (pos.contains(':'))
+    {
+	file = pos.before(':');
+	line = pos.after(':');
+    }
+
+    int line_no = atoi(line);
+
+    if (!clear_next && gdb->has_clear_command())
+    {
+	switch (gdb->type())
+	{
+	case GDB:
+	case JDB:
+	    return "clear " + pos;
+
+	case DBX:
+	    if (line_no > 0 && file_matches(file, current_file_name))
+		return "clear " + line;
+	    break;
+
+	default:
+	    break;
+	}
+    }
+
+    int max_bp_nr = -1;
+    string bps = "";
+    MapRef ref;
+    for (BreakPoint* bp = bp_map.first(ref);
+	 bp != 0;
+	 bp = bp_map.next(ref))
+    {
+	if (bp->number() >= first_bp
+	    && bp_matches(bp, file, line_no))
+	    {
+		if (bps != "")
+		    bps += gdb->wants_delete_comma() ? ", " : " ";
+		bps += itostring(bp->number());
+		max_bp_nr = max(max_bp_nr, bp->number());
+	    }
+    }
+
+    if (bps == "")
+	return "";
+
+    if (clear_next && max_bp_nr >= 0)
+    {
+	bps += (gdb->wants_delete_comma() ? ", " : " ");
+	bps += itostring(max_bp_nr + 1);
+    }
+
+    return gdb->delete_command(bps);
 }
 
 
@@ -3047,13 +3163,19 @@ SourceView::SourceView(Widget parent)
     InstallImage(&arrow_image,        "plain_arrow");
     InstallImage(&grey_arrow_image,   "grey_arrow");
     InstallImage(&signal_arrow_image, "signal_arrow");
-    InstallImage(&temp_arrow_image,   "temp_arrow");
+    InstallImage(&drag_arrow_image,   "drag_arrow");
+
     InstallImage(&stop_image,         "plain_stop");
     InstallImage(&cond_image,         "plain_cond");
+    InstallImage(&temp_image,         "plain_temp");
+
     InstallImage(&grey_stop_image,    "grey_stop");
     InstallImage(&grey_cond_image,    "grey_cond");
-    InstallImage(&temp_stop_image,    "temp_stop");
-    InstallImage(&temp_cond_image,    "temp_cond");
+    InstallImage(&grey_temp_image,    "grey_temp");
+
+    InstallImage(&drag_stop_image,    "drag_stop");
+    InstallImage(&drag_cond_image,    "drag_cond");
+    InstallImage(&drag_temp_image,    "drag_temp");
 
     // Setup actions
     XtAppAddActions (app_context, actions, XtNumber (actions));
@@ -3081,44 +3203,47 @@ void SourceView::create_shells()
     arg = 0;
     XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
     edit_breakpoints_dialog_w =
-	verify(XmCreatePromptDialog(parent, "edit_breakpoints_dialog",
-				    args, arg));
+	verify(XmCreateSelectionDialog(parent, "edit_breakpoints_dialog",
+				       args, arg));
     Delay::register_shell(edit_breakpoints_dialog_w);
-
-    if (lesstif_version <= 79)
-	XtUnmanageChild(XmSelectionBoxGetChild(edit_breakpoints_dialog_w,
-					       XmDIALOG_APPLY_BUTTON));
 
     XtUnmanageChild(XmSelectionBoxGetChild(edit_breakpoints_dialog_w,
 					   XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(edit_breakpoints_dialog_w,
 					   XmDIALOG_CANCEL_BUTTON));
     XtUnmanageChild(XmSelectionBoxGetChild(edit_breakpoints_dialog_w,
+					   XmDIALOG_APPLY_BUTTON));
+    XtUnmanageChild(XmSelectionBoxGetChild(edit_breakpoints_dialog_w,
 					   XmDIALOG_SELECTION_LABEL));
+    XtUnmanageChild(XmSelectionBoxGetChild(edit_breakpoints_dialog_w,
+					   XmDIALOG_LIST_LABEL));
 
-    Widget form1 = 
-	verify(XmCreateRowColumn(edit_breakpoints_dialog_w, "form1", NULL, 0));
+    breakpoint_list_w = 
+	XmSelectionBoxGetChild(edit_breakpoints_dialog_w, XmDIALOG_LIST);
 
-    Widget label =
-	verify(XmCreateLabel(form1, "breakpoints", NULL, 0));
+    if (app_data.flat_dialog_buttons)
+    {
+	for (MMDesc *item = bp_area; item != 0 && item->name != 0; item++)
+	{
+	    if ((item->type & MMTypeMask) == MMPush)
+		item->type = (MMFlatPush | (item->type & ~MMTypeMask));
+	}
+    }
 
-    Widget form2 = 
-	verify(XmCreateRowColumn(form1, "form2", NULL, 0));
+    Widget buttons = verify(MMcreateWorkArea(edit_breakpoints_dialog_w, 
+					     "buttons", bp_area));
+    XtVaSetValues(buttons,
+		  XmNmarginWidth,     0, 
+		  XmNmarginHeight,    0, 
+		  XmNborderWidth,     0,
+		  XmNshadowThickness, 0, 
+		  XmNspacing,         0,
+		  NULL);
 
-    arg = 0;
-    breakpoint_list_w = verify(XmCreateScrolledList(form2, "list", args, arg));
-    Widget buttons = 
-	verify(MMcreateWorkArea(form2, "buttons", bp_area));
     MMaddCallbacks(bp_area);
     MMaddHelpCallback(bp_area, ImmediateHelpCB);
 
-    XtManageChild (buttons);
-    XtManageChild (breakpoint_list_w);
-    XtManageChild (form2);
-    XtManageChild (label);
-    XtManageChild (form1);
-
-    if (breakpoint_list_w)
+    if (breakpoint_list_w != 0)
     {
 	XtAddCallback(breakpoint_list_w,
 		      XmNsingleSelectionCallback,
@@ -3144,7 +3269,7 @@ void SourceView::create_shells()
 		      0);
     }
 
-    if (edit_breakpoints_dialog_w)
+    if (edit_breakpoints_dialog_w != 0)
     {
 	XtAddCallback(edit_breakpoints_dialog_w,
 		      XmNokCallback,
@@ -3390,7 +3515,6 @@ void SourceView::create_text(Widget parent, const string& base, bool editable,
 		  CheckScrollCB, XtPointer(0));
     XtAddCallback(text, XmNmodifyVerifyCallback,
 		  CheckModificationCB, XtPointer(editable));
-		  
     InstallTextTips(text);
 
     // Fetch scrollbar ID and add callbacks
@@ -5070,9 +5194,11 @@ struct BreakpointPropertiesInfo {
     IntArray nrs;		// The affected breakpoints
     Widget dialog;		// The widgets of the properties panel
     Widget title;
-    Widget enabled;
-    Widget temp;
     Widget lookup;
+    Widget enable;
+    Widget disable;
+    Widget temp;
+    Widget del;
     Widget ignore;
     Widget condition;
     Widget record;
@@ -5088,7 +5214,8 @@ struct BreakpointPropertiesInfo {
 
     BreakpointPropertiesInfo()
 	: nrs(),
-	  dialog(0), title(0), enabled(0), temp(0), lookup(0), 
+	  dialog(0), title(0), 
+	  lookup(0), enable(0), disable(0), temp(0), del(0),
 	  ignore(0), condition(0), record(0), edit(0), editor(0),
 	  timer(0), spin_locked(false), sync_commands(false), next(all)
     {
@@ -5151,16 +5278,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     int i;
     for (i = 0; i < info->nrs.size(); i++)
     {
-	MapRef ref;
-	BreakPoint *bp = 0;
-	for (bp = bp_map.first(ref);
-	     bp != 0;
-	     bp = bp_map.next(ref))
-	{
-	    if (bp->number() == info->nrs[i])
-		break;
-	}
-
+	BreakPoint *bp = bp_map.get(info->nrs[i]);
 	if (bp == 0)
 	{
 	    // Breakpoint not found -- mark as deleted
@@ -5185,15 +5303,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     }
 
     // Use first breakpoint for getting values
-    BreakPoint *bp = 0;
-    MapRef ref;
-    for (bp = bp_map.first(ref);
-	 bp != 0;
-	 bp = bp_map.next(ref))
-    {
-	if (bp->number() == info->nrs[0])
-	    break;
-    }
+    BreakPoint *bp = bp_map.get(info->nrs[0]);
     assert(bp != 0);
 
     // Set titles
@@ -5239,9 +5349,6 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 		  title.xmstring(), NULL);
 
     // Set values
-    XtVaSetValues(info->enabled, XmNset, bp->enabled(), NULL);
-    XtVaSetValues(info->temp,    XmNset, bp->dispo() != BPKEEP, NULL);
-
     string commands = "";
     for (i = 0; i < bp->commands().size(); i++)
     {
@@ -5272,9 +5379,26 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 
     XmTextFieldSetString(info->condition, (String)bp->condition());
 
-    set_sensitive(info->enabled,   gdb->has_disable_command());
-    set_sensitive(info->temp,
-		  gdb->type() == GDB && bp->dispo() == BPKEEP);
+    bool can_enable   = false;
+    bool can_disable  = false;
+    bool can_maketemp = false;
+
+    for (i = 0; i < info->nrs.size(); i++)
+    {
+	BreakPoint *bp = bp_map.get(info->nrs[i]);
+	if (bp->enabled())
+	    can_disable = gdb->has_disable_command();
+	else
+	    can_enable  = gdb->has_enable_command();
+
+	if (bp->dispo() != BPDEL)
+	    can_maketemp = (gdb->type() == GDB);
+    }
+
+    set_sensitive(info->enable,  can_enable);
+    set_sensitive(info->disable, can_disable);
+    set_sensitive(info->temp,    can_maketemp);
+
     set_sensitive(info->ignore,    gdb->has_ignore_command());
     set_sensitive(info->condition, true);
 
@@ -5314,17 +5438,7 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
     }
 
     // Check for first breakpoint
-    MapRef ref;
-    BreakPoint *bp = 0;
-    for (bp = bp_map.first(ref);
-	 bp != 0;
-	 bp = bp_map.next(ref))
-    {
-	if (bp->number() == info->nrs[0])
-	{
-	    break;
-	}
-    }
+    BreakPoint *bp = bp_map.get(info->nrs[0]);
     if (bp == 0)
 	return;			// No such breakpoint
 
@@ -5350,6 +5464,8 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(info->dialog, 
 					       XmDIALOG_APPLY_BUTTON));
+    XtUnmanageChild(XmSelectionBoxGetChild(info->dialog, 
+					   XmDIALOG_CANCEL_BUTTON));
 
     MMDesc commands_menu[] =
     {
@@ -5364,14 +5480,27 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
 
     MMDesc enabled_menu[] = 
     {
-	{ "enabled",   MMToggle, 
-	  { ToggleBreakpointEnabledCB, XtPointer(info) }, 0, &info->enabled },
-	{ "temporary", MMToggle, 
-	  { ToggleBreakpointTempCB, XtPointer(info) }, 0, &info->temp },
-	{ "lookup",    MMPush, 
-	  { LookupBreakpointCB, XtPointer(info) }, 0, &info->lookup },
+	{ "lookup",    MMPush,
+	  { LookupBreakpointCB,    XtPointer(info) }, 0, &info->lookup },
+	{ "enable",    MMPush,
+	  { EnableBreakpointsCB,   XtPointer(info) }, 0, &info->enable },
+	{ "disable",   MMPush,
+	  { DisableBreakpointsCB,  XtPointer(info) }, 0, &info->disable },
+	{ "temporary", MMPush,
+	  { MakeBreakpointsTempCB, XtPointer(info) }, 0, &info->temp },
+	{ "delete",    MMPush | MMHelp,
+	  { DeleteBreakpointsCB,   XtPointer(info) }, 0, &info->del },
 	MMEnd
     };
+
+    if (app_data.flat_dialog_buttons)
+    {
+	for (MMDesc *item = enabled_menu; item != 0 && item->name != 0; item++)
+	{
+	    if ((item->type & MMTypeMask) == MMPush)
+		item->type = (MMFlatPush | (item->type & ~MMTypeMask));
+	}
+    }
 
     MMDesc panel_menu[] = 
     {
@@ -5396,6 +5525,15 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
 		  XmNmarginHeight,   0,
 		  NULL);
 
+    Widget buttons = XtParent(info->lookup);
+    XtVaSetValues(buttons,
+		  XmNmarginWidth,     0, 
+		  XmNmarginHeight,    0, 
+		  XmNborderWidth,     0,
+		  XmNshadowThickness, 0, 
+		  XmNspacing,         0,
+		  NULL);
+
     arg = 0;
     XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
     info->editor = XmCreateScrolledText(form, "text", args, arg);
@@ -5406,6 +5544,7 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
     MMaddCallbacks(panel_menu, XtPointer(info));
 
     update_properties_panel(info);
+    InstallButtonTips(panel);
 
     MMadjustPanel(panel_menu);
 
@@ -5417,8 +5556,6 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
 		  DestroyThisCB, XtParent(info->dialog));
     XtAddCallback(info->dialog, XmNdestroyCallback,
 		  DeleteInfoCB,  XtPointer(info));
-    XtAddCallback(info->dialog, XmNcancelCallback,
-		  DeleteBreakpointCB, XtPointer(info));
 
     manage_and_raise(info->dialog);
     info->spin_locked = false;
@@ -5497,48 +5634,42 @@ void SourceView::SetBreakpointIgnoreCountNowCB(XtPointer client_data,
 }
 
 
-// Toggle breakpoint enabled state
-void SourceView::ToggleBreakpointEnabledCB(Widget, 
-					   XtPointer client_data, 
-					   XtPointer call_data)
+// Make breakpoint temporary
+void SourceView::MakeBreakpointsTempCB(Widget, XtPointer client_data, 
+				       XtPointer)
 {
-    XmToggleButtonCallbackStruct *cbs = 
-	(XmToggleButtonCallbackStruct *)call_data;
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
-    if (cbs->set)
-	enable_bps(info->nrs);
-    else
-	disable_bps(info->nrs);
-}
-
-// Toggle breakpoint temp state
-void SourceView::ToggleBreakpointTempCB(Widget, 
-					XtPointer client_data, 
-					XtPointer call_data)
-{
-    XmToggleButtonCallbackStruct *cbs = 
-	(XmToggleButtonCallbackStruct *)call_data;
-    BreakpointPropertiesInfo *info = 
-	(BreakpointPropertiesInfo *)client_data;
-
-    if (cbs->set)
-	gdb_command("enable delete " + numbers(info->nrs));
-    else
-    {
-	// How do we make a temp breakpoint non-temporary?  (FIXME)
-    }
+    gdb_command("enable delete " + numbers(info->nrs));
 }
 
 
 // Delete Breakpoint
-void SourceView::DeleteBreakpointCB(Widget, XtPointer client_data, XtPointer)
+void SourceView::DeleteBreakpointsCB(Widget, XtPointer client_data, XtPointer)
 {
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
     delete_bps(info->nrs);
+}
+
+// Enable Breakpoints
+void SourceView::EnableBreakpointsCB(Widget, XtPointer client_data, XtPointer)
+{
+    BreakpointPropertiesInfo *info = 
+	(BreakpointPropertiesInfo *)client_data;
+
+    enable_bps(info->nrs);
+}
+
+// Disable Breakpoints
+void SourceView::DisableBreakpointsCB(Widget, XtPointer client_data, XtPointer)
+{
+    BreakpointPropertiesInfo *info = 
+	(BreakpointPropertiesInfo *)client_data;
+
+    disable_bps(info->nrs);
 }
 
 // Record breakpoint commands
@@ -5731,10 +5862,47 @@ void SourceView::LookupBreakpointCB(Widget, XtPointer client_data, XtPointer)
 	break;
 
     case WATCHPOINT:
-	gdb_command(gdb->print_command(bp->expr(), false));
+	lookup(bp->expr());
 	break;
     }
 }
+
+void SourceView::PrintWatchpointCB(Widget w, XtPointer client_data, XtPointer)
+{
+    if (breakpoint_list_w == 0)
+	return;
+
+    IntArray breakpoint_nrs;
+
+    if (client_data == 0)
+    {
+	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
+    }
+    else
+    {
+	BreakpointPropertiesInfo *info = 
+	    (BreakpointPropertiesInfo *)client_data;
+	breakpoint_nrs = info->nrs;
+    }
+    if (breakpoint_nrs.size() < 1)
+	return;
+
+    BreakPoint *bp = bp_map.get(breakpoint_nrs[0]);
+    if (bp == 0)
+	return;
+
+    switch (bp->type())
+    {
+    case BREAKPOINT:
+	// How should we print a breakpoint?  (FIXME)
+	break;
+
+    case WATCHPOINT:
+	gdb_command(gdb->print_command(bp->expr(), false), w);
+	break;
+    }
+}
+
 
 // Return breakpoint of BP_INFO; 0 if new; -1 if none
 int SourceView::jdb_breakpoint(const string& bp_info)
@@ -5889,27 +6057,14 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
     // Update buttons
     XtSetSensitive(bp_area[BPButtons::NewWP].widget, gdb->has_watch_command());
     XtSetSensitive(bp_area[BPButtons::Lookup].widget, selected == 1);
-    XtSetSensitive(bp_area[BPButtons::Enable].widget,      
+    XtSetSensitive(bp_area[BPButtons::Print].widget, 
+		   selected == 1 && selected_bp->type() == WATCHPOINT);
+    XtSetSensitive(bp_area[BPButtons::Enable].widget,
 		   gdb->has_enable_command() && selected_disabled > 0);
-    XtSetSensitive(bp_area[BPButtons::Disable].widget,     
+    XtSetSensitive(bp_area[BPButtons::Disable].widget,
 		   gdb->has_disable_command() && selected_enabled > 0);
     XtSetSensitive(bp_area[BPButtons::Properties].widget, selected > 0);
     XtSetSensitive(bp_area[BPButtons::Delete].widget, selected > 0);
-
-    if (selected == 1)
-    {
-	switch (selected_bp->type())
-	{
-	case BREAKPOINT:
-	    set_label(bp_area[BPButtons::Lookup].widget, "Lookup", 
-		      LOOKUP_ICON);
-	    break;
-
-	case WATCHPOINT:
-	    set_label(bp_area[BPButtons::Lookup].widget, "Print", PRINT_ICON);
-	    break;
-	}
-    }
 }
 
 void SourceView::EditBreakpointsCB(Widget, XtPointer, XtPointer)
@@ -6009,8 +6164,6 @@ void SourceView::ViewStackFramesCB(Widget, XtPointer, XtPointer)
 // Remove file paths and argument lists from `where' output
 void SourceView::setup_where_line(string& line)
 {
-    const int min_width = 40;
-
     if (gdb->type() != JDB)
     {
 	// Remove file paths (otherwise line can be too long for DBX)
@@ -6036,8 +6189,12 @@ void SourceView::setup_where_line(string& line)
 	}
     }
 
+
+#if 0
+    const int min_width = 40;
     if (int(line.length()) < min_width)
 	line += replicate(' ', min_width - line.length());
+#endif
 }
 
 // Return current JDB frame; 0 if none
@@ -6609,6 +6766,7 @@ void SourceView::set_max_glyphs (int nmax)
 	    if (grey_stops[k][i] != 0)
 		XtDestroyWidget(grey_stops[k][i]);
 	}
+
 	for (i = 0; i < plain_conds[k].size(); i++)
 	{
 	    if (plain_conds[k][i] != 0)
@@ -6620,19 +6778,38 @@ void SourceView::set_max_glyphs (int nmax)
 		XtDestroyWidget(grey_conds[k][i]);
 	}
 
+	for (i = 0; i < plain_temps[k].size(); i++)
+	{
+	    if (plain_temps[k][i] != 0)
+		XtDestroyWidget(plain_temps[k][i]);
+	}
+	for (i = 0; i < grey_temps[k].size(); i++)
+	{
+	    if (grey_stops[k][i] != 0)
+		XtDestroyWidget(grey_temps[k][i]);
+	}
+
 	// ...make array empty...
 	plain_stops[k] = empty;
 	grey_stops[k]  = empty;
+
 	plain_conds[k] = empty;
 	grey_conds[k]  = empty;
+
+	plain_temps[k] = empty;
+	grey_temps[k]  = empty;
 
 	// ...and make room for new widgets.  The last one is a null pointer.
 	for (i = 0; i < nmax + 1; i++)
 	{
 	    plain_stops[k] += Widget(0);
 	    grey_stops[k]  += Widget(0);
+
 	    plain_conds[k] += Widget(0);
 	    grey_conds[k]  += Widget(0);
+
+	    plain_temps[k] += Widget(0);
+	    grey_temps[k]  += Widget(0);
 	}
     }
 }
@@ -6993,13 +7170,20 @@ int SourceView::multiple_stop_x_offset = stop_width + (2 * motif_offset - 2);
 Widget SourceView::plain_arrows[2]  = {0, 0};
 Widget SourceView::grey_arrows[2]   = {0, 0};
 Widget SourceView::signal_arrows[2] = {0, 0};
-Widget SourceView::temp_arrows[2]   = {0, 0};
-Widget SourceView::temp_stops[2]    = {0, 0};
-Widget SourceView::temp_conds[2]    = {0, 0};
+Widget SourceView::drag_arrows[2]   = {0, 0};
+
+Widget SourceView::drag_stops[2]    = {0, 0};
+Widget SourceView::drag_conds[2]    = {0, 0};
+Widget SourceView::drag_temps[2]    = {0, 0};
+
 WidgetArray SourceView::plain_stops[2];
 WidgetArray SourceView::grey_stops[2];
+
 WidgetArray SourceView::plain_conds[2];
 WidgetArray SourceView::grey_conds[2];
+
+WidgetArray SourceView::plain_temps[2];
+WidgetArray SourceView::grey_temps[2];
 
 
 // Create glyphs in the background
@@ -7048,13 +7232,13 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    return False;
 	}
 
-	if (temp_arrows[k] == 0)
+	if (drag_arrows[k] == 0)
 	{
-	    temp_arrows[k] = 
-		create_glyph(form_w, "temp_arrow",
-			     temp_arrow_bits, 
-			     temp_arrow_width,
-			     temp_arrow_height);
+	    drag_arrows[k] = 
+		create_glyph(form_w, "drag_arrow",
+			     drag_arrow_bits, 
+			     drag_arrow_width,
+			     drag_arrow_height);
 	    return False;
 	}
     }
@@ -7067,6 +7251,45 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    continue;
 
 	int i;
+
+	for (i = 0; i < plain_stops[k].size() - 1; i++)
+	{
+	    if (plain_stops[k][i] == 0)
+	    {
+		plain_stops[k][i] = 
+		    create_glyph(form_w, "plain_stop",
+				 stop_bits, 
+				 stop_width,
+				 stop_height);
+		return False;
+	    }
+	}
+
+	for (i = 0; i < plain_temps[k].size() - 1; i++)
+	{
+	    if (plain_temps[k][i] == 0)
+	    {
+		plain_temps[k][i] = 
+		    create_glyph(form_w, "plain_temp",
+				 temp_bits, 
+				 temp_width,
+				 temp_height);
+		return False;
+	    }
+	}
+
+	for (i = 0; i < plain_conds[k].size() - 1; i++)
+	{
+	    if (plain_conds[k][i] == 0)
+	    {
+		plain_conds[k][i] = 
+		    create_glyph(form_w, "plain_cond",
+				 cond_bits, 
+				 cond_width,
+				 cond_height);
+		return False;
+	    }
+	}
 	for (i = 0; i < grey_stops[k].size() - 1; i++)
 	{
 	    if (grey_stops[k][i] == 0)
@@ -7076,6 +7299,19 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 				 grey_stop_bits, 
 				 grey_stop_width,
 				 grey_stop_height);
+		return False;
+	    }
+	}
+
+	for (i = 0; i < grey_temps[k].size() - 1; i++)
+	{
+	    if (grey_temps[k][i] == 0)
+	    {
+		grey_temps[k][i] = 
+		    create_glyph(form_w, "grey_temp",
+				 grey_temp_bits, 
+				 grey_temp_width,
+				 grey_temp_height);
 		return False;
 	    }
 	}
@@ -7093,49 +7329,33 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    }
 	}
 
-	for (i = 0; i < plain_stops[k].size() - 1; i++)
+	if (drag_stops[k] == 0)
 	{
-	    if (plain_stops[k][i] == 0)
-	    {
-		plain_stops[k][i] = 
-		    create_glyph(form_w, "plain_stop",
-				 stop_bits, 
-				 stop_width,
-				 stop_height);
-		return False;
-	    }
-	}
-
-	for (i = 0; i < plain_conds[k].size() - 1; i++)
-	{
-	    if (plain_conds[k][i] == 0)
-	    {
-		plain_conds[k][i] = 
-		    create_glyph(form_w, "plain_cond",
-				 cond_bits, 
-				 cond_width,
-				 cond_height);
-		return False;
-	    }
-	}
-
-	if (temp_stops[k] == 0)
-	{
-	    temp_stops[k] = 
-		create_glyph(form_w, "temp_stop",
-			     temp_stop_bits, 
-			     temp_stop_width,
-			     temp_stop_height);
+	    drag_stops[k] = 
+		create_glyph(form_w, "drag_stop",
+			     drag_stop_bits, 
+			     drag_stop_width,
+			     drag_stop_height);
 	    return False;
 	}
 
-	if (temp_conds[k] == 0)
+	if (drag_temps[k] == 0)
 	{
-	    temp_conds[k] = 
-		create_glyph(form_w, "temp_cond",
-			     temp_cond_bits, 
-			     temp_cond_width,
-			     temp_cond_height);
+	    drag_temps[k] = 
+		create_glyph(form_w, "drag_temp",
+			     drag_temp_bits, 
+			     drag_temp_width,
+			     drag_temp_height);
+	    return False;
+	}
+
+	if (drag_conds[k] == 0)
+	{
+	    drag_conds[k] = 
+		create_glyph(form_w, "drag_cond",
+			     drag_cond_bits, 
+			     drag_cond_width,
+			     drag_cond_height);
 	    return False;
 	}
     }
@@ -7275,7 +7495,7 @@ void SourceView::copy_colors(Widget glyph, Widget origin)
 
 // Map temporary stop sign at position POS.  If ORIGIN is given, use
 // colors from ORIGIN.
-Widget SourceView::map_temp_stop_at(Widget glyph, XmTextPosition pos, 
+Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos, 
 				    Widget origin)
 {
     assert (is_source_widget(glyph) || is_code_widget(glyph));
@@ -7288,31 +7508,50 @@ Widget SourceView::map_temp_stop_at(Widget glyph, XmTextPosition pos,
     if (pos_displayed)
     {
 	bool cond = (origin != 0 && string(XtName(origin)).contains("cond"));
+	bool temp = (origin != 0 && string(XtName(origin)).contains("temp"));
 
-	Widget& temp_stop = cond ? temp_conds[k] : temp_stops[k];
+	Widget& drag_stop = 
+	    temp ? drag_temps[k] : 
+	    cond ? drag_conds[k] : 
+	    drag_stops[k];
 	
-	while (temp_stop == 0)
+	while (drag_stop == 0)
 	{
 	    if (CreateGlyphsWorkProc(0))
 		break;
 	}
 
-	copy_colors(temp_stop, origin);
+	copy_colors(drag_stop, origin);
 
 	if (origin)
  	    XtVaGetValues(origin, XmNx, &x, NULL);
 	else
 	    x += stop_x_offset;
 
-	map_glyph(temp_stop, x, y);
-	unmap_glyph(cond ? temp_stops[k] : temp_conds[k]);
+	map_glyph(drag_stop, x, y);
+	if (temp)
+	{
+	    unmap_glyph(drag_conds[k]);
+	    unmap_glyph(drag_stops[k]);
+	}
+	else if (cond)
+	{
+	    unmap_glyph(drag_temps[k]);
+	    unmap_glyph(drag_stops[k]);
+	}
+	else
+	{
+	    unmap_glyph(drag_conds[k]);
+	    unmap_glyph(drag_temps[k]);
+	}
 
-	return temp_stop;
+	return drag_stop;
     }
     else
     {
-	unmap_glyph(temp_stops[k]);
-	unmap_glyph(temp_conds[k]);
+	unmap_glyph(drag_conds[k]);
+	unmap_glyph(drag_temps[k]);
+	unmap_glyph(drag_stops[k]);
 
 	return 0;
     }
@@ -7320,7 +7559,7 @@ Widget SourceView::map_temp_stop_at(Widget glyph, XmTextPosition pos,
 
 // Map temporary arrow at position POS.  If ORIGIN is given, use
 // colors from ORIGIN.
-Widget SourceView::map_temp_arrow_at(Widget glyph, XmTextPosition pos, 
+Widget SourceView::map_drag_arrow_at(Widget glyph, XmTextPosition pos, 
 				     Widget origin)
 {
     assert (is_source_widget(glyph) || is_code_widget(glyph));
@@ -7330,22 +7569,22 @@ Widget SourceView::map_temp_arrow_at(Widget glyph, XmTextPosition pos,
 
     int k = int(is_code_widget(glyph));
 
-    Widget& temp_arrow = temp_arrows[k];
+    Widget& drag_arrow = drag_arrows[k];
 
-    while (temp_arrow == 0)
+    while (drag_arrow == 0)
     {
 	if (CreateGlyphsWorkProc(0))
 	    break;
     }
 
-    copy_colors(temp_arrow, origin);
+    copy_colors(drag_arrow, origin);
 
     if (pos_displayed)
-	map_glyph(temp_arrow, x + arrow_x_offset, y);
+	map_glyph(drag_arrow, x + arrow_x_offset, y);
     else
-	unmap_glyph(temp_arrow);
+	unmap_glyph(drag_arrow);
 
-    return temp_arrow;
+    return drag_arrow;
 }
 
 
@@ -7437,8 +7676,12 @@ void SourceView::update_glyphs_now()
 
 	int plain_stops_count = 0;
 	int grey_stops_count  = 0;
+
 	int plain_conds_count = 0;
 	int grey_conds_count  = 0;
+
+	int plain_temps_count = 0;
+	int grey_temps_count  = 0;
 
 	if (display_glyphs)
 	{
@@ -7474,8 +7717,19 @@ void SourceView::update_glyphs_now()
 		    pos = find_pc(bp->address());
 		}
 
-		if (bp->condition() != "" || bp->ignore_count() != 0)
+		if (bp->dispo() != BPKEEP)
 		{
+		    // Temporary breakpoint
+		    if (bp->enabled())
+			bp_glyph = map_stop_at(text_w, pos, plain_temps[k],
+					       plain_temps_count, positions);
+		    else
+			bp_glyph = map_stop_at(text_w, pos, grey_temps[k],
+					       grey_temps_count, positions);
+		}
+		else if (bp->condition() != "" || bp->ignore_count() != 0)
+		{
+		    // Conditional breakpoint
 		    if (bp->enabled())
 			bp_glyph = map_stop_at(text_w, pos, plain_conds[k],
 					       plain_conds_count, positions);
@@ -7485,7 +7739,8 @@ void SourceView::update_glyphs_now()
 		}
 		else
 		{
-		    if (bp->enabled() && bp->ignore_count() == 0)
+		    // Orindary breakpoint
+		    if (bp->enabled())
 			bp_glyph = map_stop_at(text_w, pos, plain_stops[k],
 					       plain_stops_count, positions);
 		    else
@@ -7504,6 +7759,10 @@ void SourceView::update_glyphs_now()
 	while ((glyph = plain_conds[k][plain_conds_count++]))
 	    unmap_glyph(glyph);
 	while ((glyph = grey_conds[k][grey_conds_count++]))
+	    unmap_glyph(glyph);
+	while ((glyph = plain_temps[k][plain_temps_count++]))
+	    unmap_glyph(glyph);
+	while ((glyph = grey_temps[k][grey_temps_count++]))
 	    unmap_glyph(glyph);
     }
 
@@ -7652,10 +7911,10 @@ MString SourceView::help_on_bp(int bp_nr, bool detailed)
 	case BPKEEP:
 	    break;
 	case BPDEL:
-	    info += rm("; delete when reached");
+	    info += rm("; delete when hit");
 	    break;
 	case BPDIS:
-	    info += rm("; disable when reached");
+	    info += rm("; disable when hit");
 	    break;
 	}
 	info += rm(")");
@@ -7757,9 +8016,10 @@ void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *, Cardinal *)
 		return;
 	    }
 	}
-	else if (glyph == temp_stops[k] || 
-		 glyph == temp_conds[k] || 
-		 glyph == temp_arrows[k])
+	else if (glyph == drag_stops[k] || 
+		 glyph == drag_conds[k] || 
+		 glyph == drag_temps[k] || 
+		 glyph == drag_arrows[k])
 	{
 	    // Temp glyph cannot be dragged
 	    return;
@@ -7772,8 +8032,8 @@ void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *, Cardinal *)
 
     XDefineCursor(XtDisplay(glyph), XtWindow(glyph), move_cursor);
 
-    unmap_temp_stop(text_w);
-    unmap_temp_arrow(text_w);
+    unmap_drag_stop(text_w);
+    unmap_drag_arrow(text_w);
 
     current_drag_origin     = glyph;
     current_drag_breakpoint = 0;
@@ -7812,9 +8072,9 @@ void SourceView::followGlyphAct(Widget glyph, XEvent *e, String *, Cardinal *)
     CheckScrollCB(glyph, XtPointer(0), XtPointer(0));
 
     if (current_drag_breakpoint)
-	map_temp_stop_at(text_w, pos, glyph);
+	map_drag_stop_at(text_w, pos, glyph);
     else
-	map_temp_arrow_at(text_w, pos, glyph);
+	map_drag_arrow_at(text_w, pos, glyph);
 }
 
 void SourceView::dropGlyphAct (Widget glyph, XEvent *e, 
@@ -7840,8 +8100,8 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e,
     XUndefineCursor(XtDisplay(glyph), XtWindow(glyph));
 
     // Unmap temp glyphs
-    unmap_temp_stop(text_w);
-    unmap_temp_arrow(text_w);
+    unmap_drag_stop(text_w);
+    unmap_drag_arrow(text_w);
 
     // Show all other glyphs
     update_glyphs();
@@ -7849,9 +8109,10 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e,
     int k;
     for (k = 0; k < 2; k++)
 	if (glyph == grey_arrows[k] || 
-	    glyph == temp_stops[k] || 
-	    glyph == temp_conds[k] || 
-	    glyph == temp_arrows[k])
+	    glyph == drag_stops[k] || 
+	    glyph == drag_conds[k] || 
+	    glyph == drag_temps[k] || 
+	    glyph == drag_arrows[k])
 	    return;
 
     XmTextPosition pos = glyph_position(glyph, e);
@@ -7979,16 +8240,25 @@ void SourceView::log_glyphs()
 	    log_glyph(plain_stops[k][i], i);
 	for (i = 0; i < grey_stops[k].size() - 1; i++)
 	    log_glyph(grey_stops[k][i], i);
+
 	for (i = 0; i < plain_conds[k].size() - 1; i++)
 	    log_glyph(plain_conds[k][i], i);
 	for (i = 0; i < grey_conds[k].size() - 1; i++)
 	    log_glyph(grey_conds[k][i], i);
+
+	for (i = 0; i < plain_temps[k].size() - 1; i++)
+	    log_glyph(plain_temps[k][i], i);
+	for (i = 0; i < grey_temps[k].size() - 1; i++)
+	    log_glyph(grey_temps[k][i], i);
+
 	log_glyph(plain_arrows[k]);
 	log_glyph(grey_arrows[k]);
 	log_glyph(signal_arrows[k]);
-	log_glyph(temp_arrows[k]);
-	log_glyph(temp_stops[k]);
-	log_glyph(temp_conds[k]);
+	log_glyph(drag_arrows[k]);
+
+	log_glyph(drag_stops[k]);
+	log_glyph(drag_conds[k]);
+	log_glyph(drag_temps[k]);
     }
 }
 
@@ -8450,74 +8720,6 @@ void SourceView::set_all_registers(bool set)
     }
 }
 
-
-// Return `clear ARG' command.  If CLEAR_NEXT is set, attempt to guess
-// the next event number and clear this one as well.  (This is useful
-// for setting temporary breakpoints, as `delete' must also clear the
-// event handler we're about to install.)  Consider only breakpoints
-// whose number is >= FIRST_BP.
-string SourceView::clear_command(string pos, bool clear_next, int first_bp)
-{
-    string file = current_file_name;
-    string line = pos;
-
-    if (gdb->type() == DBX && !pos.contains(':') && !pos.matches(rxint))
-	pos = dbx_lookup(pos);
-
-    if (pos.contains(':'))
-    {
-	file = pos.before(':');
-	line = pos.after(':');
-    }
-
-    int line_no = atoi(line);
-
-    if (!clear_next && gdb->has_clear_command())
-    {
-	switch (gdb->type())
-	{
-	case GDB:
-	case JDB:
-	    return "clear " + pos;
-
-	case DBX:
-	    if (line_no > 0 && file_matches(file, current_file_name))
-		return "clear " + line;
-	    break;
-
-	default:
-	    break;
-	}
-    }
-
-    int max_bp_nr = -1;
-    string bps = "";
-    MapRef ref;
-    for (BreakPoint* bp = bp_map.first(ref);
-	 bp != 0;
-	 bp = bp_map.next(ref))
-    {
-	if (bp->number() >= first_bp
-	    && bp_matches(bp, file, line_no))
-	    {
-		if (bps != "")
-		    bps += gdb->wants_delete_comma() ? ", " : " ";
-		bps += itostring(bp->number());
-		max_bp_nr = max(max_bp_nr, bp->number());
-	    }
-    }
-
-    if (bps == "")
-	return "";
-
-    if (clear_next && max_bp_nr >= 0)
-    {
-	bps += (gdb->wants_delete_comma() ? ", " : " ");
-	bps += itostring(max_bp_nr + 1);
-    }
-
-    return gdb->delete_command(bps);
-}
 
 // Some DBXes require `{ COMMAND; }', others `{ COMMAND }'.
 string SourceView::command_list(string cmd)

@@ -112,18 +112,20 @@ class SourceView {
     static void NewWatchpointCB          (Widget, XtPointer, XtPointer);
 
     static void LookupBreakpointCB       (Widget, XtPointer, XtPointer);
+    static void PrintWatchpointCB        (Widget, XtPointer, XtPointer);
     static void BreakpointCmdCB          (Widget, XtPointer, XtPointer);
 
     static void EditBreakpointPropertiesCB (Widget, XtPointer, XtPointer);
     static void SetBreakpointIgnoreCountCB (Widget, XtPointer, XtPointer);
     static void SetBreakpointConditionCB   (Widget, XtPointer, XtPointer);
-    static void ToggleBreakpointEnabledCB  (Widget, XtPointer, XtPointer);
-    static void ToggleBreakpointTempCB     (Widget, XtPointer, XtPointer);
+    static void EnableBreakpointsCB        (Widget, XtPointer, XtPointer);
+    static void DisableBreakpointsCB       (Widget, XtPointer, XtPointer);
+    static void MakeBreakpointsTempCB      (Widget, XtPointer, XtPointer);
+    static void DeleteBreakpointsCB        (Widget, XtPointer, XtPointer);
     static void RecordBreakpointCommandsCB (Widget, XtPointer, XtPointer);
     static void EditBreakpointCommandsCB   (Widget, XtPointer, XtPointer);
     static void SetBreakpointIgnoreCountNowCB(XtPointer, XtIntervalId *);
     static void DeleteInfoCB               (Widget, XtPointer, XtPointer);
-    static void DeleteBreakpointCB         (Widget, XtPointer, XtPointer);
     static void RecordingHP                (Agent *, void *, void *);
 
     static void UpdateBreakpointButtonsCB (Widget, XtPointer, XtPointer);
@@ -481,13 +483,16 @@ private:
     static Widget plain_arrows[2];
     static Widget grey_arrows[2];
     static Widget signal_arrows[2];
-    static Widget temp_arrows[2];
+    static Widget drag_arrows[2];
     static WidgetArray plain_stops[2];
     static WidgetArray grey_stops[2];
     static WidgetArray plain_conds[2];
     static WidgetArray grey_conds[2];
-    static Widget temp_stops[2];
-    static Widget temp_conds[2];
+    static WidgetArray plain_temps[2];
+    static WidgetArray grey_temps[2];
+    static Widget drag_stops[2];
+    static Widget drag_conds[2];
+    static Widget drag_temps[2];
 
     // Map stop sign in W at position POS.  Get widget from STOPS[COUNT];
     // store location in POSITIONS.  Return mapped widget (0 if none)
@@ -495,20 +500,20 @@ private:
 			      WidgetArray& stops, int& count,
 			      TextPositionArray& positions);
 
-    // Map arrow/temp arrow/temp stop in W at POS.  If ORIGIN is
+    // Map arrow/drag arrow/drag stop in W at POS.  If ORIGIN is
     // given, use colors from ORIGIN.
     static Widget map_arrow_at     (Widget w, XmTextPosition pos);
-    static Widget map_temp_arrow_at(Widget w, XmTextPosition pos,
+    static Widget map_drag_arrow_at(Widget w, XmTextPosition pos,
 				    Widget origin = 0);
-    static inline void unmap_temp_arrow(Widget w)
+    static inline void unmap_drag_arrow(Widget w)
     {
-	map_temp_arrow_at(w, XmTextPosition(-1));
+	map_drag_arrow_at(w, XmTextPosition(-1));
     }
-    static Widget map_temp_stop_at (Widget w, XmTextPosition pos,
+    static Widget map_drag_stop_at (Widget w, XmTextPosition pos,
 				    Widget origin = 0);
-    static inline void unmap_temp_stop(Widget w)
+    static inline void unmap_drag_stop(Widget w)
     {
-	map_temp_stop_at(w, XmTextPosition(-1));
+	map_drag_stop_at(w, XmTextPosition(-1));
     }
     static void copy_colors(Widget w, Widget origin);
 
