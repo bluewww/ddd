@@ -3,7 +3,7 @@ dnl ICE and DDD autoconf macros
 dnl 
 dnl Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 dnl Copyright (C) 1999-2001 Universitaet Passau, Germany.
-dnl Copyright (C) 2001-2003 Free Software Fundation, USA.
+dnl Copyright (C) 2001-2003 Free Software Foundation, USA.
 dnl Written by Andreas Zeller <zeller@gnu.org>.
 dnl 
 dnl This file is part of DDD.

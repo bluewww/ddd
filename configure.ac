@@ -2,7 +2,7 @@ dnl $Id$
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
-dnl Copyright (C) 2001-2003 Free Software Fundation, USA.
+dnl Copyright (C) 2001-2003 Free Software Foundation, USA.
 dnl Written by Andreas Zeller <zeller@gnu.org>.
 dnl 
 dnl This file is part of DDD.
