@@ -45,7 +45,7 @@ dnl
 ddd=ddd
 Ddd=Ddd
 DDD=DDD
-VERSION=1.0
+VERSION=1.0a
 dnl
 AC_SUBST(ddd)dnl
 AC_SUBST(Ddd)dnl
