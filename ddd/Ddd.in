@@ -683,7 +683,6 @@ None<Key>R13:		gdb-end-of-line()           \n\
 None<Key>Tab:		gdb-complete-command()      \n\
 None<Key>Escape:	gdb-complete-command()      \n
 
-
 ! Have some of these in argument fields as well
 Ddd*XmTextField*translations: #override \
 Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
@@ -729,6 +728,26 @@ None<Key>Escape:	gdb-complete-arg(break)     \n\
 None<Key>Home:		beginning-of-line()         \n\
 None<Key>End:		end-of-line()               \n
 
+Ddd*new_breakpoint_dialog*XmTextField.translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl ~Shift<Key>E:    	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(break)     \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(break)     \n\
+None<Key>Escape:	gdb-complete-arg(break)     \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
+
 Ddd*edit_breakpoint_condition_dialog*XmText.translations: #override \
 Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
 Ctrl<Key>B:     	backward-character()        \n\
@@ -743,6 +762,26 @@ Ctrl<Key>U:     	beginning-of-line() 	    \
 Ctrl<Key>W:     	delete-previous-word()      \n\
 Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(print)     \n\
+None<Key>Escape:	gdb-complete-arg(print)     \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
+
+Ddd*edit_breakpoint_condition_dialog*XmTextField.translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl ~Shift<Key>E:    	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		gdb-complete-tab(print)     \n\
@@ -769,6 +808,24 @@ None<Key>R13:		end-of-line()               \n\
 None<Key>Home:		beginning-of-line()         \n\
 None<Key>End:		end-of-line()               \n
 
+Ddd*edit_breakpoint_ignore_count_dialog*XmTextField.translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl ~Shift<Key>E:    	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	beep()                      \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
+
 Ddd*new_display_dialog*XmText.translations: #override \
 Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
 Ctrl<Key>B:     	backward-character()        \n\
@@ -790,6 +847,26 @@ None<Key>Escape:	gdb-complete-arg(print)     \n\
 None<Key>Home:		beginning-of-line()         \n\
 None<Key>End:		end-of-line()               \n
 
+Ddd*new_display_dialog*XmTextField.translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl ~Shift<Key>E:    	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(print)     \n\
+None<Key>Escape:	gdb-complete-arg(print)     \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
+
 Ddd*dependent_display_dialog*XmText.translations: #override \
 Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
 Ctrl<Key>B:     	backward-character()        \n\
@@ -804,6 +881,26 @@ Ctrl<Key>U:     	beginning-of-line() 	    \
 Ctrl<Key>W:     	delete-previous-word()      \n\
 Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(print)     \n\
+None<Key>Escape:	gdb-complete-arg(print)     \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
+
+Ddd*dependent_display_dialog*XmTextField.translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl ~Shift<Key>E:    	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		gdb-complete-tab(print)     \n\
@@ -834,6 +931,26 @@ None<Key>Escape:	gdb-complete-arg(file)      \n\
 None<Key>Home:		beginning-of-line()         \n\
 None<Key>End:		end-of-line()               \n
 
+Ddd*exec_files_popup*XmTextField.translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl ~Shift<Key>E:    	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(file)      \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(file)      \n\
+None<Key>Escape:	gdb-complete-arg(file)      \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
+
 Ddd*core_files_popup*XmText.translations: #override \
 Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
 Ctrl<Key>B:     	backward-character()        \n\
@@ -855,6 +972,26 @@ None<Key>Escape:	gdb-complete-arg(core-file) \n\
 None<Key>Home:		beginning-of-line()         \n\
 None<Key>End:		end-of-line()               \n
 
+Ddd*core_files_popup*XmTextField.translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl ~Shift<Key>E:    	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(core-file) \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(core-file) \n\
+None<Key>Escape:	gdb-complete-arg(core-file) \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
+
 Ddd*source_files_popup*XmText.translations: #override \
 Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
 Ctrl<Key>B:     	backward-character()        \n\
@@ -869,6 +1006,46 @@ Ctrl<Key>U:     	beginning-of-line() 	    \
 Ctrl<Key>W:     	delete-previous-word()      \n\
 Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(file)      \n\
+None<Key>Escape:	gdb-complete-arg(file)      \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
+
+Ddd*source_files_popup*XmTextField.translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl ~Shift<Key>E:    	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(file)      \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(file)      \n\
+None<Key>Escape:	gdb-complete-arg(file)      \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
+
+Ddd*print_popup*XmText.translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl ~Shift<Key>E:    	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(file)      \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		gdb-complete-tab(file)      \n\
@@ -917,6 +1094,26 @@ None<Key>Escape:	gdb-complete-arg(shell)     \n\
 None<Key>Home:		beginning-of-line()         \n\
 None<Key>End:		end-of-line()               \n
 
+Ddd*run_dialog*XmTextField.translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl ~Shift<Key>E:    	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(shell)     \n\
+None<Key>Escape:	gdb-complete-arg(shell)     \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
+
 Ddd*set_dialog*XmText.translations: #override \
 Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
 Ctrl<Key>B:     	backward-character()        \n\
@@ -931,6 +1128,26 @@ Ctrl<Key>U:     	beginning-of-line() 	    \
 Ctrl<Key>W:     	delete-previous-word()      \n\
 Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 Ctrl<Key>Y:     	unkill()                    \n\
+None<Key>R7:		beginning-of-line()         \n\
+None<Key>R13:		end-of-line()               \n\
+None<Key>Tab:		gdb-complete-tab(print)     \n\
+None<Key>Escape:	gdb-complete-arg(print)     \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
+
+Ddd*set_dialog*XmTextField.translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()         \n\
+Ctrl<Key>B:     	backward-character()        \n\
+Ctrl<Key>D:     	delete-next-character()     \n\
+Ctrl ~Shift<Key>E:    	end-of-line()               \n\
+Ctrl<Key>F:     	forward-character()         \n\
+Ctrl<Key>H:     	delete-previous-character() \n\
+Ctrl<Key>I:     	gdb-complete-arg(print)     \n\
+Ctrl<Key>K:     	delete-to-end-of-line()     \n\
+Ctrl<Key>U:     	beginning-of-line() 	    \
+			delete-to-end-of-line()     \n\
+Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		gdb-complete-tab(print)     \n\
