@@ -63,29 +63,85 @@ extern "C" {
 #include <sys/ioctl.h>
 #endif
 
-#if defined(ECHO) && (HAVE_TERMIOS_H || HAVE_TERMIO_H)
-// On SunOS 4.1.4, these symbols are defined in <sys/ioctl.h> *and*
-// <termios.h>.  Prefer the <termios.h> ones.
+#if sun
+// On SunOS 4.1.4, <sys/ioctl.h> defines lots of symbols which are
+// redefined in <termios.h>.  We want the <termios.h> ones.
+#if defined(ECHO) && defined(O_ECHO) && ECHO == O_ECHO
 #undef ECHO
+#endif
+
+#if defined(NL0) && defined(O_NL0) && NL0 == O_NL0
 #undef NL0
+#endif
+
+#if defined(NL1) && defined(O_NL1) && NL1 == O_NL1
 #undef NL1
+#endif
+
+#if defined(TAB0) && defined(O_TAB0) && TAB0 == O_TAB0
 #undef TAB0
+#endif
+
+#if defined(TAB1) && defined(O_TAB1) && TAB1 == O_TAB1
 #undef TAB1
+#endif
+
+#if defined(TAB2) && defined(O_TAB2) && TAB2 == O_TAB2
 #undef TAB2
+#endif
+
+#if defined(XTABS) && defined(O_XTABS) && XTABS == O_XTABS
 #undef XTABS
+#endif
+
+#if defined(CR0) && defined(O_CR0) && CR0 == O_CR0
 #undef CR0
+#endif
+
+#if defined(CR1) && defined(O_CR1) && CR1 == O_CR1
 #undef CR1
+#endif
+
+#if defined(CR2) && defined(O_CR2) && CR2 == O_CR2
 #undef CR2
+#endif
+
+#if defined(CR3) && defined(O_CR3) && CR3 == O_CR3
 #undef CR3
+#endif
+
+#if defined(FF0) && defined(O_FF0) && FF0 == O_FF0
 #undef FF0
+#endif
+
+#if defined(FF1) && defined(O_FF1) && FF1 == O_FF1
 #undef FF1
+#endif
+
+#if defined(BS0) && defined(O_BS0) && BS0 == O_BS0
 #undef BS0
+#endif
+
+#if defined(BS1) && defined(O_BS1) && BS1 == O_BS1
 #undef BS1
+#endif
+
+#if defined(TOSTOP) && defined(O_TOSTOP) && TOSTOP == O_TOSTOP
 #undef TOSTOP
+#endif
+
+#if defined(FLUSHO) && defined(O_FLUSHO) && FLUSHO == O_FLUSHO
 #undef FLUSHO
+#endif
+
+#if defined(PENDIN) && defined(O_PENDIN) && PENDIN == O_PENDIN
 #undef PENDIN
+#endif
+
+#if defined(NOFLSH) && defined(O_NOFLSH) && NOFLSH == O_NOFLSH
 #undef NOFLSH
 #endif
+#endif // sun
 
 // Nico van Waes <nico@yegal.njit.edu> says: under Solaris 2.6, one
 // must include <sys/types.h> before <termios.h>.
