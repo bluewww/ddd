@@ -60,6 +60,8 @@ DDD 2.2 [in development]
       `~/.ddd/init'; `~/.ddd_history' is now `~/.ddd/history'.  The
        directory `~/.ddd/sessions/' contains saved DDD sessions.
     - Multi-color icons.  (requires XPM)
+    - During start-up, DDD shows its logo in a transient window
+      (can be disabled).
 
     Bug fixes:
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
