@@ -33,6 +33,8 @@ char options_rcsid[] =
 #pragma implementation
 #endif
 
+#define LOG_FALLBACKS 0
+
 #include "options.h"
 
 #include "config.h"
@@ -50,6 +52,7 @@ char options_rcsid[] =
 #include "filetype.h"
 #include "frame.h"
 #include "post.h"
+#include "resources.h"
 #include "session.h"
 #include "settings.h"
 #include "shell.h"
@@ -1336,22 +1339,78 @@ static bool must_kill_to_get_core()
 // Write state
 //-----------------------------------------------------------------------------
 
-inline String bool_value(bool value)
+static bool is_fallback_value(string app_class, 
+			      string resource, const string& val)
 {
-    return value ? "on" : "off";
+    static string endOfPreferences = "END-OF-USER-PREFERENCES";
+
+    string value = uncook(val);
+
+    // FIXME: This has a complexity of O(N^2), with N being the number
+    // of options.  We should better use an XrmDatabase here.
+
+    for (int i = 0; ddd_fallback_resources[i] != 0; i++)
+    {
+	string fallback_resource = uncook(ddd_fallback_resources[i]);
+	if (fallback_resource.contains(endOfPreferences, 0))
+	    break;
+
+	if (fallback_resource.contains(resource + ":", 0) ||
+	    fallback_resource.contains(app_class + "*" + resource + ":", 0) ||
+	    fallback_resource.contains(app_class + "." + resource + ":", 0))
+	{
+	    string fallback_value = fallback_resource.after(':');
+	    strip_space(fallback_value);
+
+	    if (fallback_value != value)
+	    {
+#if LOG_FALLBACKS
+		clog << app_class << "*" << cook(resource) << ": "
+		     << cook(fallback_value) << " => " << cook(value) << "\n";
+#endif
+	    }
+
+	    return fallback_value == value;
+	}
+    }
+
+#if LOG_FALLBACKS
+    clog << app_class << "*" << cook(resource) 
+	 << ": <none> => " << cook(value) << "\n";
+#endif
+
+    return false;
 }
 
 static string app_value(string resource, const string& value)
 {
-    String app_name;
-    String app_class;
-    XtGetApplicationNameAndClass(XtDisplay(find_shell()), 
-				 &app_name, &app_class);
+    static String app_name  = 0;
+    static String app_class = 0;
+
+    if (app_name == 0)
+	XtGetApplicationNameAndClass(XtDisplay(find_shell()), 
+				     &app_name, &app_class);
+
+    string prefix = "";
+    if (is_fallback_value(app_class, resource, value))
+	prefix = "! ";
+
+    string s = prefix + app_class;
 
     if (resource.contains(string(app_name) + ".", 0))
-	return string(app_class) + resource.from(".") + ": " + value;
+	s += resource.from(".") + ": " + value;
     else
-	return string(app_class) + "*" + resource + ": " + value;
+	s += "*" + resource + ": " + value;
+
+    if (prefix != "")
+	s.gsub("\n", "\n" + prefix);
+
+    return s;
+}
+
+inline String bool_value(bool value)
+{
+    return value ? "on" : "off";
 }
 
 inline string bool_app_value(const string& name, bool value)
@@ -1568,12 +1627,12 @@ bool save_options(unsigned long flags)
 
     if (app_data.initial_session != 0)
     {
-	os << "\n! Session\n";
+	os << "\n! Session.\n";
 	os << string_app_value(XtNinitialSession, app_data.initial_session) 
 	   << "\n";
     }
 
-    os << "\n! Debugger settings\n";
+    os << "\n! Debugger settings.\n";
     os << string_app_value(XtNdebugger, app_data.debugger) << "\n";
     os << bool_app_value(XtNuseSourcePath, app_data.use_source_path) << "\n";
 
@@ -1609,7 +1668,7 @@ bool save_options(unsigned long flags)
     os << string_app_value(XtNxdbSettings, xdb_settings) << "\n";
     os << string_app_value(XtNjdbSettings, jdb_settings) << "\n";
 
-    os << "\n! Source\n";
+    os << "\n! Source.\n";
     os << bool_app_value(XtNfindWordsOnly,
 			 app_data.find_words_only) << "\n";
     os << bool_app_value(XtNfindCaseSensitive,
@@ -1633,7 +1692,7 @@ bool save_options(unsigned long flags)
     os << bool_app_value(XtNallRegisters,
 			 app_data.all_registers) << "\n";
 
-    os << "\n! Misc Preferences\n";
+    os << "\n! Misc preferences.\n";
     unsigned char policy = '\0';
     XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &policy, NULL);
     switch (policy)
@@ -1667,7 +1726,7 @@ bool save_options(unsigned long flags)
 
 
     // Graph editor
-    os << "\n! Data\n";
+    os << "\n! Data.\n";
     os << bool_app_value(XtNpannedGraphEditor, 
 			 app_data.panned_graph_editor) << "\n";
     os << widget_value(data_disp->graph_edit, XtNshowGrid)   << "\n";
@@ -1697,7 +1756,7 @@ bool save_options(unsigned long flags)
     os << bool_app_value(XtNalign2dArrays,  app_data.align_2d_arrays)  << "\n";
 
     // Tips
-    os << "\n! Tips\n";
+    os << "\n! Tips.\n";
     os << bool_app_value(XtNbuttonTips,
 			 app_data.button_tips) << "\n";
     os << bool_app_value(XtNvalueTips,
@@ -1708,7 +1767,7 @@ bool save_options(unsigned long flags)
 			 app_data.value_docs) << "\n";
 
     // Helpers
-    os << "\n! Helpers\n";
+    os << "\n! Helpers.\n";
     os << string_app_value(XtNeditCommand,       app_data.edit_command)
        << '\n';
     os << string_app_value(XtNgetCoreCommand,    app_data.get_core_command)
@@ -1725,7 +1784,7 @@ bool save_options(unsigned long flags)
        << "\n";
 
     // Toolbar
-    os << "\n! Toolbars\n";
+    os << "\n! Tool Bars.\n";
 #if 0
     // We cannot change these interactively, so there's no point in
     // saving them.
@@ -1755,7 +1814,7 @@ bool save_options(unsigned long flags)
 			   app_data.button_color_key) << "\n";
 
     // Command tool
-    os << "\n! Command tool\n";
+    os << "\n! Command Tool.\n";
     if (have_visible_tool_window())
 	get_tool_offset();
     os << bool_app_value(XtNcommandToolBar,
@@ -1766,7 +1825,7 @@ bool save_options(unsigned long flags)
 			app_data.tool_top_offset) << "\n";
 
     // Buttons
-    os << "\n! Buttons\n";
+    os << "\n! Buttons.\n";
     os << string_app_value(XtNconsoleButtons, app_data.console_buttons) 
        << '\n';
     os << string_app_value(XtNsourceButtons,  app_data.source_buttons)
@@ -1777,7 +1836,7 @@ bool save_options(unsigned long flags)
        << '\n';
 
     // Shortcut expressions
-    os << "\n! Display shortcuts\n";
+    os << "\n! Display shortcuts.\n";
     {
 	StringArray exprs;
 	StringArray labels;
@@ -1796,7 +1855,7 @@ bool save_options(unsigned long flags)
     }
 
     // Fonts
-    os << "\n! Fonts\n";
+    os << "\n! Fonts.\n";
     os << string_app_value(XtNdefaultFont,
 			   app_data.default_font) << "\n";
     os << string_app_value(XtNvariableWidthFont, 
@@ -1819,7 +1878,7 @@ bool save_options(unsigned long flags)
     }
 
     // Windows.
-    os << "\n! Windows\n";
+    os << "\n! Windows.\n";
     os << bool_app_value(XtNopenDataWindow,      
 			 app_data.data_window)      << "\n";
     os << bool_app_value(XtNopenSourceWindow,    
@@ -1850,7 +1909,7 @@ bool save_options(unsigned long flags)
 			 app_data.uniconify_when_ready) << "\n";
 
     // Window sizes.
-    os << "\n! Window sizes\n";
+    os << "\n! Window sizes.\n";
 
     os << widget_height(data_disp->graph_edit) << "\n";
     os << widget_size(source_view->source())   << "\n";
@@ -1860,7 +1919,7 @@ bool save_options(unsigned long flags)
     if (save_geometry)
     {
 	// Widget geometry
-	os << "\n! Last " << DDD_NAME << " geometry\n";
+	os << "\n! Last " DDD_NAME " geometry.\n";
 
 	if (command_shell)
 	    os << widget_geometry(command_shell)     << "\n";
@@ -1874,7 +1933,7 @@ bool save_options(unsigned long flags)
     if (save_session)
     {
 	// Restart commands
-	os << "\n! Last " << DDD_NAME << " session\n";
+	os << "\n! Last " DDD_NAME " session.\n";
 
 	ProgramInfo info;
 	if (info.file == NO_GDB_ANSWER)

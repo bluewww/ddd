@@ -303,6 +303,9 @@ Ddd*FlatButtons: on
 ! See the XPM documentation for details.
 Ddd*buttonColorKey: g
 
+! Whether to check buttons if their commands are actually supported by
+! the inferior debugger.
+Ddd*verifyButtons: on
 
 ! Newline-separated lists of GDB commands for which buttons are to be created.
 !
@@ -352,133 +355,6 @@ up\ndown\nBack\nForward\nEdit\nMake
 
 Ddd*break.labelString: Interrupt
 
-! The number of rows in the command tool.
-Ddd*tool_buttons.fractionBase:			90
-
-! The positions are set up according to the following scheme:
-! 
-!    0 45 90	Each line has its individual number.
-!  0 +--+--+	`topPosition' refers to the line above the button;
-!    |  |  |	`bottomPosition' is the line below.  Likewise,
-! 10 +--+--+	`leftPosition' is the line at the left, and
-!    |  |  |	`rightPosition' is the line to the right.  For instance,
-! 20 +--+--+	the line above the `break' button
-!    |  |  |	is line 1 (topPosition), the line below is line 2
-! 30 +--+--+	(bottomPosition), the line to the left is line 0
-!    |  |  |	(leftPosition), and the line to the right is line 8
-! 40 +--+--+	(rightPosition).
-!    |  |  |	
-! 50 +--+--+	To replace a button by another command, change the
-!    |  |  |	`toolButtons' resource, above, and insert appropriate
-! 60 +--+--+	resource values for the new button, specifying its
-!    |  |  |	location.
-! 70 +--+--+	
-!    |  |  |	
-! 80 +--+--+	
-!    |  |  |	
-! 90 +--+--+	
-
-Ddd*tool_buttons.run.topPosition:		0
-Ddd*tool_buttons.run.bottomPosition:		10
-Ddd*tool_buttons.run.leftPosition:		0
-Ddd*tool_buttons.run.rightPosition:		90
-
-Ddd*tool_buttons.break.topPosition:		10
-Ddd*tool_buttons.break.bottomPosition:		20
-Ddd*tool_buttons.break.leftPosition:		0
-Ddd*tool_buttons.break.rightPosition:		90
-
-Ddd*tool_buttons.step.topPosition:		20
-Ddd*tool_buttons.step.bottomPosition:		30
-Ddd*tool_buttons.step.leftPosition:		0
-Ddd*tool_buttons.step.rightPosition:		45
-
-Ddd*tool_buttons.stepi.topPosition:		20
-Ddd*tool_buttons.stepi.bottomPosition:		30
-Ddd*tool_buttons.stepi.leftPosition:		45
-Ddd*tool_buttons.stepi.rightPosition:		90
-
-Ddd*tool_buttons.next.topPosition:		30
-Ddd*tool_buttons.next.bottomPosition:		40
-Ddd*tool_buttons.next.leftPosition:		0
-Ddd*tool_buttons.next.rightPosition:		45
-
-Ddd*tool_buttons.nexti.topPosition:		30
-Ddd*tool_buttons.nexti.bottomPosition:		40
-Ddd*tool_buttons.nexti.leftPosition:		45
-Ddd*tool_buttons.nexti.rightPosition:		90
-
-Ddd*tool_buttons.until.topPosition:		40
-Ddd*tool_buttons.until.bottomPosition:		50
-Ddd*tool_buttons.until.leftPosition:		0
-Ddd*tool_buttons.until.rightPosition:		45
-
-Ddd*tool_buttons.finish.topPosition:		40
-Ddd*tool_buttons.finish.bottomPosition:		50
-Ddd*tool_buttons.finish.leftPosition:		45
-Ddd*tool_buttons.finish.rightPosition:		90
-
-Ddd*tool_buttons.cont.topPosition:		50
-Ddd*tool_buttons.cont.bottomPosition:		60
-Ddd*tool_buttons.cont.leftPosition:		0
-Ddd*tool_buttons.cont.rightPosition:		45
-
-Ddd*tool_buttons.kill.topPosition:		50
-Ddd*tool_buttons.kill.bottomPosition:		60
-Ddd*tool_buttons.kill.leftPosition:		45
-Ddd*tool_buttons.kill.rightPosition:		90
-
-Ddd*tool_buttons.up.topPosition:		60
-Ddd*tool_buttons.up.bottomPosition:		70
-Ddd*tool_buttons.up.leftPosition:		0
-Ddd*tool_buttons.up.rightPosition:		45
-
-Ddd*tool_buttons.down.topPosition:		60
-Ddd*tool_buttons.down.bottomPosition:		70
-Ddd*tool_buttons.down.leftPosition:		45
-Ddd*tool_buttons.down.rightPosition:		90
-
-Ddd*tool_buttons.Back.topPosition:		70
-Ddd*tool_buttons.Back.bottomPosition:		80
-Ddd*tool_buttons.Back.leftPosition:		0
-Ddd*tool_buttons.Back.rightPosition:		45
-
-Ddd*tool_buttons.Forward.topPosition:		70
-Ddd*tool_buttons.Forward.bottomPosition:	80
-Ddd*tool_buttons.Forward.leftPosition:		45
-Ddd*tool_buttons.Forward.rightPosition:		90
-
-Ddd*tool_buttons.Edit.topPosition:		80
-Ddd*tool_buttons.Edit.bottomPosition:		90
-Ddd*tool_buttons.Edit.leftPosition:		0
-Ddd*tool_buttons.Edit.rightPosition:		45
-
-Ddd*tool_buttons.Make.topPosition:		80
-Ddd*tool_buttons.Make.bottomPosition:		90
-Ddd*tool_buttons.Make.leftPosition:		45
-Ddd*tool_buttons.Make.rightPosition:		90
-
-! Command tool button placement.  Don't change this.
-Ddd*tool_buttons*topAttachment:			XmATTACH_POSITION
-Ddd*tool_buttons*bottomAttachment:		XmATTACH_POSITION
-Ddd*tool_buttons*leftAttachment:		XmATTACH_POSITION
-Ddd*tool_buttons*rightAttachment:		XmATTACH_POSITION
-
-! Some special labels
-Ddd*tool_buttons*Forward.labelString:      Fwd
-Ddd*command_toolbar*Forward.labelString:   Fwd
-Ddd*tool_buttons*return.labelString:       Ret
-Ddd*command_toolbar*return.labelString:    Ret
-
-
-! Make command tool and buttons a little lighter
-Ddd*tool_buttons*shadowThickness:		1
-Ddd*source_buttons*shadowThickness:		1
-Ddd*console_buttons*shadowThickness:		1
-Ddd*data_buttons*shadowThickness:		1
-Ddd*command_toolbar*shadowThickness:		1
-
-
 
 ! Command tool stuff.
 
@@ -502,6 +378,14 @@ Ddd*decoratedTool: auto
 ! keep the command tool on top of other DDD windows.  If this setting
 ! interferes with your window manager, set this resource to off.
 Ddd*autoRaiseTool: on
+
+! Do we want a command tool bar instead of the command tool?
+Ddd*commandToolBar: off
+
+! The offset between the upper right corner of the command tool
+! and the upper right courner in the source window.
+Ddd*toolRightOffset: 8
+Ddd*toolTopOffset:   8
 
 ! Do we want auto-raised menus?  This is handy with certain window managers:
 ! An auto-raised DDD might obscure popped up pulldown menus.  However, there's
@@ -725,7 +609,10 @@ Ddd*cacheSourceFiles: on
 Ddd*cacheMachineCode: on
 
 ! Do we wish to refer to sources using the full path name?
-Ddd*useSourcePaths: off
+Ddd*useSourcePath: off
+
+! Do we wish to save history on exit?
+Ddd*saveHistoryOnExit: on
 
 ! Do we wish to show all registers, instead of only integer registers?
 Ddd*allRegisters: off
@@ -828,12 +715,40 @@ Ddd*grabActionDelay:   10000
 Ddd*grabAction:  cont
 
 
+! Fonts.
 
-! A little less highlighting
+! The default font to use for labels, etc.
+Ddd*defaultFont:       helvetica-bold
+
+! The font to use for help texts.
+Ddd*variableWidthFont: helvetica-medium
+
+! The font to use for fixed-width fields, such as the source code.
+Ddd*fixedWidthFont:    lucidatypewriter-medium
+
+! The base font size; overrides the point settings as set above.
+Ddd*FontSize:          120
+
+
+! A little less highlighting.
 Ddd*highlightThickness: 1
 
 
-! Menus
+! Window sizes.
+Ddd*graph_edit.height:      100
+
+Ddd*source_text_w.columns:  80
+Ddd*source_text_w.rows:     31
+
+Ddd*code_text_w.columns:    80
+Ddd*code_text_w.rows:       4
+
+Ddd*gdb_w.columns:          80
+Ddd*gdb_w.rows:		    5
+
+
+! Menus.
+
 ! Enable tear-off pulldown menus
 Ddd*menubar*tearOffModel: XmTEAR_OFF_ENABLED
 
@@ -857,14 +772,6 @@ Ddd*showStartupLogo: c
 ! your window manager has trouble with DDD icons, set this to `off'.
 Ddd*colorWMIcons: on
 
-! Tips of the day
-
-! Whether to show a tip of the day upon startup
-Ddd*startupTips: on
-
-! Which tip to start with.  This is usually overridden by `~/.ddd/tips'.
-Ddd*startupTipCount: 1
-
 
 ! Session Defaults
 
@@ -881,22 +788,20 @@ Ddd*maxBreakpointNumber: 99
 Ddd*maxDisplayNumber:    99
 
 
+! Tips of the day
 
-!-----------------------------------------------------------------------------
-! Fonts
-!-----------------------------------------------------------------------------
+! Whether to show a tip of the day upon startup
+Ddd*startupTips: on
 
-! The default font to use for labels, etc.
-Ddd*defaultFont:       helvetica-bold
+! Which tip to start with.  This is usually overridden by `~/.ddd/tips'.
+Ddd*startupTipCount: 1
 
-! The font to use for help texts.
-Ddd*variableWidthFont: helvetica-medium
 
-! The font to use for fixed-width fields, such as the source code.
-Ddd*fixedWidthFont:    lucidatypewriter-medium
 
-! The base font size; overrides the point settings as set above.
-Ddd*FontSize:          120
+! The `endOfPreferences' pseudo-resource marks the end of
+! user-settable preferences.  When saving options, DDD checks anything
+! up to this resource for default values.
+END-OF-USER-PREFERENCES: here
 
 
 !-----------------------------------------------------------------------------
@@ -2761,6 +2666,136 @@ Ddd*helpMenu.onVersion.documentationString:	\
 @rm General information about this DDD version
 
 
+!-----------------------------------------------------------------------------
+! Command Tool Layout
+!-----------------------------------------------------------------------------
+
+! The number of rows in the command tool.
+Ddd*tool_buttons.fractionBase:			90
+
+! The positions are set up according to the following scheme:
+! 
+!    0 45 90	Each line has its individual number.
+!  0 +--+--+	`topPosition' refers to the line above the button;
+!    |  |  |	`bottomPosition' is the line below.  Likewise,
+! 10 +--+--+	`leftPosition' is the line at the left, and
+!    |  |  |	`rightPosition' is the line to the right.  For instance,
+! 20 +--+--+	the line above the `break' button
+!    |  |  |	is line 1 (topPosition), the line below is line 2
+! 30 +--+--+	(bottomPosition), the line to the left is line 0
+!    |  |  |	(leftPosition), and the line to the right is line 8
+! 40 +--+--+	(rightPosition).
+!    |  |  |	
+! 50 +--+--+	To replace a button by another command, change the
+!    |  |  |	`toolButtons' resource, above, and insert appropriate
+! 60 +--+--+	resource values for the new button, specifying its
+!    |  |  |	location.
+! 70 +--+--+	
+!    |  |  |	
+! 80 +--+--+	
+!    |  |  |	
+! 90 +--+--+	
+
+Ddd*tool_buttons.run.topPosition:		0
+Ddd*tool_buttons.run.bottomPosition:		10
+Ddd*tool_buttons.run.leftPosition:		0
+Ddd*tool_buttons.run.rightPosition:		90
+
+Ddd*tool_buttons.break.topPosition:		10
+Ddd*tool_buttons.break.bottomPosition:		20
+Ddd*tool_buttons.break.leftPosition:		0
+Ddd*tool_buttons.break.rightPosition:		90
+
+Ddd*tool_buttons.step.topPosition:		20
+Ddd*tool_buttons.step.bottomPosition:		30
+Ddd*tool_buttons.step.leftPosition:		0
+Ddd*tool_buttons.step.rightPosition:		45
+
+Ddd*tool_buttons.stepi.topPosition:		20
+Ddd*tool_buttons.stepi.bottomPosition:		30
+Ddd*tool_buttons.stepi.leftPosition:		45
+Ddd*tool_buttons.stepi.rightPosition:		90
+
+Ddd*tool_buttons.next.topPosition:		30
+Ddd*tool_buttons.next.bottomPosition:		40
+Ddd*tool_buttons.next.leftPosition:		0
+Ddd*tool_buttons.next.rightPosition:		45
+
+Ddd*tool_buttons.nexti.topPosition:		30
+Ddd*tool_buttons.nexti.bottomPosition:		40
+Ddd*tool_buttons.nexti.leftPosition:		45
+Ddd*tool_buttons.nexti.rightPosition:		90
+
+Ddd*tool_buttons.until.topPosition:		40
+Ddd*tool_buttons.until.bottomPosition:		50
+Ddd*tool_buttons.until.leftPosition:		0
+Ddd*tool_buttons.until.rightPosition:		45
+
+Ddd*tool_buttons.finish.topPosition:		40
+Ddd*tool_buttons.finish.bottomPosition:		50
+Ddd*tool_buttons.finish.leftPosition:		45
+Ddd*tool_buttons.finish.rightPosition:		90
+
+Ddd*tool_buttons.cont.topPosition:		50
+Ddd*tool_buttons.cont.bottomPosition:		60
+Ddd*tool_buttons.cont.leftPosition:		0
+Ddd*tool_buttons.cont.rightPosition:		45
+
+Ddd*tool_buttons.kill.topPosition:		50
+Ddd*tool_buttons.kill.bottomPosition:		60
+Ddd*tool_buttons.kill.leftPosition:		45
+Ddd*tool_buttons.kill.rightPosition:		90
+
+Ddd*tool_buttons.up.topPosition:		60
+Ddd*tool_buttons.up.bottomPosition:		70
+Ddd*tool_buttons.up.leftPosition:		0
+Ddd*tool_buttons.up.rightPosition:		45
+
+Ddd*tool_buttons.down.topPosition:		60
+Ddd*tool_buttons.down.bottomPosition:		70
+Ddd*tool_buttons.down.leftPosition:		45
+Ddd*tool_buttons.down.rightPosition:		90
+
+Ddd*tool_buttons.Back.topPosition:		70
+Ddd*tool_buttons.Back.bottomPosition:		80
+Ddd*tool_buttons.Back.leftPosition:		0
+Ddd*tool_buttons.Back.rightPosition:		45
+
+Ddd*tool_buttons.Forward.topPosition:		70
+Ddd*tool_buttons.Forward.bottomPosition:	80
+Ddd*tool_buttons.Forward.leftPosition:		45
+Ddd*tool_buttons.Forward.rightPosition:		90
+
+Ddd*tool_buttons.Edit.topPosition:		80
+Ddd*tool_buttons.Edit.bottomPosition:		90
+Ddd*tool_buttons.Edit.leftPosition:		0
+Ddd*tool_buttons.Edit.rightPosition:		45
+
+Ddd*tool_buttons.Make.topPosition:		80
+Ddd*tool_buttons.Make.bottomPosition:		90
+Ddd*tool_buttons.Make.leftPosition:		45
+Ddd*tool_buttons.Make.rightPosition:		90
+
+! Command tool button placement.  Don't change this.
+Ddd*tool_buttons*topAttachment:			XmATTACH_POSITION
+Ddd*tool_buttons*bottomAttachment:		XmATTACH_POSITION
+Ddd*tool_buttons*leftAttachment:		XmATTACH_POSITION
+Ddd*tool_buttons*rightAttachment:		XmATTACH_POSITION
+
+! Some special labels
+Ddd*tool_buttons*Forward.labelString:      Fwd
+Ddd*command_toolbar*Forward.labelString:   Fwd
+Ddd*tool_buttons*return.labelString:       Ret
+Ddd*command_toolbar*return.labelString:    Ret
+
+
+! Make command tool and buttons a little lighter
+Ddd*tool_buttons*shadowThickness:		1
+Ddd*source_buttons*shadowThickness:		1
+Ddd*console_buttons*shadowThickness:		1
+Ddd*data_buttons*shadowThickness:		1
+Ddd*command_toolbar*shadowThickness:		1
+
 
 !-----------------------------------------------------------------------------
 ! Preferences
@@ -3303,8 +3338,6 @@ Ddd*XmPanedWindow.spacing:		4
 !-----------------------------------------------------------------------------
 ! Graph Editor
 !-----------------------------------------------------------------------------
-
-Ddd*graph_edit.height:		        100
 
 Ddd*graph_edit_panner.backgroundPixmap:	25_foreground
 Ddd*graph_edit_panner.defaultScale:	10
@@ -3900,12 +3933,6 @@ Ddd*status_history.row.background:	Black
 ! Source View
 !-----------------------------------------------------------------------------
 
-Ddd*source_text_w.columns:		80
-Ddd*source_text_w.rows:			31
-
-Ddd*code_text_w.columns:		80
-Ddd*code_text_w.rows:			4
-
 Ddd*source_text_w_swindow.spacing:		0
 Ddd*source_text_w_swindow.borderWidth:		0
 Ddd*source_text_w_swindow.shadowThickness:	0
@@ -4209,9 +4236,6 @@ Ddd.main_window.helpString: MAIN_WINDOW_HELP
 Ddd*gdb_w.value: \
 DDD @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
 Copyright \251 1998 Technische Universit\344t Braunschweig, Germany.\n
-
-Ddd*gdb_w.columns:		80
-Ddd*gdb_w.rows:			5
 
 Ddd*gdb_w_swindow.spacing:		0
 Ddd*gdb_w_swindow.borderWidth:		0
