@@ -2510,17 +2510,17 @@ void SourceView::process_info_bp (string& info_output)
     VarIntArray bps_not_read;
     MapRef ref;
     int i;
-    for (i = bp_map.first_key(ref);
-	 i != 0;
-	 i = bp_map.next_key(ref)) {
+    for (i = bp_map.first_key(ref); i != 0; i = bp_map.next_key(ref))
 	bps_not_read += i;
-    }
 
+#if 0
     // Skip header
     if (gdb->type() == GDB)
 	info_output = info_output.after ('\n');
+#endif
 
     bool changed = false;
+    bool added   = false;
 
     while (info_output != "") 
     {
@@ -2528,7 +2528,7 @@ void SourceView::process_info_bp (string& info_output)
 	switch(gdb->type())
 	{
 	case GDB:
-	    if (!isdigit(info_output[0]))
+	    if (!has_nr(info_output))
 	    {
 		// Skip this line
 		info_output = info_output.after('\n');
@@ -2587,19 +2587,26 @@ void SourceView::process_info_bp (string& info_output)
 	    BreakPoint* new_bp = new BreakPoint (info_output);
 	    bp_map.insert (bp_nr, new_bp);
 
-	    // Select this breakpoint only
-	    MapRef ref;
-	    for (BreakPoint* bp = bp_map.first(ref);
-		 bp != 0;
-		 bp = bp_map.next(ref))
+	    if (!added)
 	    {
-		bp->selected() = (bp == new_bp);
+		added = true;
+		// Select this breakpoint only
+		MapRef ref;
+		for (BreakPoint* bp = bp_map.first(ref);
+		     bp != 0;
+		     bp = bp_map.next(ref))
+		{
+		    bp->selected() = false;
+		}
 	    }
+
+	    new_bp->selected() = true;
 	}
     }
 
     // Delete all breakpoints not found now
-    for (i = 0; i < bps_not_read.size(); i++) {
+    for (i = 0; i < bps_not_read.size(); i++)
+    {
 	delete bp_map.get(bps_not_read[i]);
 	bp_map.del(bps_not_read[i]);
 	changed = true;

@@ -4190,10 +4190,10 @@ Ddd*gdb_message_dialog*helpString:	\
 For more details, consult the @GDB@ documentation.
 
 Ddd*gdb_selection_dialog_popup.title: @DDD@: Selection
-Ddd*gdb_selection_dialog*okLabelString:	   Select
-Ddd*gdb_selection_dialog*listLabelString:  Choices
+Ddd*gdb_selection_dialog*listLabelString:  Selection
 Ddd*gdb_selection_dialog*helpString:	\
 @rm This is a @GDB@ selection menu.\n\
+Please select an item from the list and click on @bf Ok@rm.\n\
 For more details, consult the @GDB@ documentation.
 
 Ddd*confirm_overwrite_dialog_popup.title: @DDD@: File Exists

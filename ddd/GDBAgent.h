@@ -111,8 +111,14 @@ string build_gdb_call(DebuggerType debugger_type,
 const unsigned ReadyForQuestion = TTYAgent_NTypes;
 const unsigned ReadyForCmd      = ReadyForQuestion + 1;
 const unsigned LanguageChanged  = ReadyForCmd + 1;
-const unsigned GDBAgent_NTypes  = LanguageChanged + 1;
+const unsigned ReplyRequired    = LanguageChanged + 1;
+const unsigned GDBAgent_NTypes  = ReplyRequired + 1;
 
+// Handler info
+struct ReplyRequiredInfo {
+    string question;		// Question asked by GDB
+    string reply;		// Our reply
+};
 
 //-----------------------------------------------------------------------------
 // The GDBAgent class.
@@ -357,9 +363,9 @@ private:
 			   int      qu_count,
 			   OQACProc on_qu_array_completion,
 			   void*    qa_data);
-    bool ends_with_prompt (const string& answer);
-    bool ends_with_secondary_prompt (const string& answer);
-    string requires_reply (const string& answer);
+    bool ends_with_prompt(const string& answer);
+    bool ends_with_secondary_prompt(const string& answer);
+    string requires_reply(const string& answer);
 
     void cut_off_prompt(string& answer);
     void strip_comments(string& answer);
@@ -370,12 +376,12 @@ private:
 protected:
     string complete_answer;
 
-    static void InputHP (Agent*, void*, void*);
-    static void PanicHP (Agent*, void*, void*);
+    static void InputHP(Agent*, void*, void*);
+    static void PanicHP(Agent*, void*, void*);
 
-    static void traceInputHP (Agent*, void*, void*);
-    static void traceOutputHP (Agent*, void*, void*);
-    static void traceErrorHP (Agent*, void*, void*);
+    static void traceInputHP(Agent*, void*, void*);
+    static void traceOutputHP(Agent*, void*, void*);
+    static void traceErrorHP(Agent*, void*, void*);
 
     virtual int setupChildCommunication();
 };

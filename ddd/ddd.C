@@ -210,6 +210,7 @@ char ddd_rcsid[] =
 #include "question.h"
 #include "resources.h"
 #include "sashes.h"
+#include "select.h"
 #include "settings.h"
 #include "shell.h"
 #include "shorten.h"
@@ -1710,6 +1711,7 @@ int main(int argc, char *argv[])
     gdb->addHandler(ErrorEOF,         gdb_eofHP);
     gdb->addHandler(Died,             gdb_diedHP);
     gdb->addHandler(LanguageChanged,  DataDisp::language_changedHP);
+    gdb->addHandler(ReplyRequired,    gdb_selectHP);
     DataDisp::set_handlers();
 
     source_arg->addHandler (Changed, source_argHP);
@@ -3167,6 +3169,10 @@ static void gdb_ready_for_questionHP (Agent *, void*, void* call_data)
 
 	// Completion is done
 	clear_completion_delay();
+
+	// Selection is done
+	if (gdb_selection_dialog != 0)
+	    XtUnmanageChild(gdb_selection_dialog);
 
 	// We don't exit and we don't restart
 	ddd_is_exiting = ddd_is_restarting = false;

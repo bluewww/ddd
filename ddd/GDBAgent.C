@@ -122,9 +122,9 @@ GDBAgent::GDBAgent (XtAppContext app_context,
     // unerwuenschte Fehlermeldungen unterdruecken
     removeAllHandlers(Panic);
     removeAllHandlers(Strange);
-    addHandler(Panic,   PanicHP, this);
-    addHandler(Strange, PanicHP, this);
-    addHandler(Input,   InputHP, this); // GDB-Ausgaben
+    addHandler(Panic,   PanicHP);
+    addHandler(Strange, PanicHP);
+    addHandler(Input,   InputHP); // GDB-Ausgaben
 }
 
 // Copy constructor
@@ -715,17 +715,18 @@ void GDBAgent::strip_control(string& answer)
 // ***************************************************************************
 // Received data from GDB
 //
-void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
+void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 {
-    GDBAgent*   gdb   = (GDBAgent *) client_data;
-    DataLength* dl    = (DataLength *) call_data;
-    string      answer(dl->data, dl->length);
+    GDBAgent* gdb = ptr_cast(GDBAgent, agent);
+    assert(gdb != 0);
+
+    DataLength* dl = (DataLength *) call_data;
+    string answer(dl->data, dl->length);
 
     string reply = gdb->requires_reply(answer);
     if (reply != "")
     {
-	// Oops - this should not happen.
-	// Just hit the reply key; this should work.
+	// Oops - this should not happen.  Just hit the reply key.
 	gdb->write(reply, reply.length());
 	gdb->flush();
 
@@ -739,10 +740,21 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	// selection of an ambiguous C++ name.
 	// We simply try the first alternative here:
 	// - in GDB, this means `all';
-	// - in DBX and XDB, this is a non-deterministic selection,
-	string reply = "1\n";
-	gdb->write(reply, reply.length());
+	// - in DBX and XDB, this is a non-deterministic selection.
+
+	ReplyRequiredInfo info;
+	info.question = answer;
+	info.reply    = "1\n";
+
+	// Allow handlers to override the default reply
+	gdb->callHandlers(ReplyRequired, (void *)&info);
+
+	// Send reply immediately
+	gdb->write(info.reply, info.reply.length());
 	gdb->flush();
+
+	// Ignore the selection
+	answer = info.question;
     }
 
     switch (gdb->state)

@@ -45,15 +45,15 @@ class Date {
     int month;
     int year;
 public:
-    Date ()
+    Date() 
 	: day_of_week(Thu), day(1), month(1), year(1970)
     {}
-    Date (DayOfWeek w, int d, int m, int y)
+    Date(DayOfWeek w, int d, int m, int y)
 	: day_of_week(w), day(d), month(m), year(y)
     {}
-    virtual ~Date ()
+    virtual ~Date()
     {}
-    void set (DayOfWeek w, int d, int m, int y)
+    void set(DayOfWeek w, int d, int m, int y)
     {
 	day_of_week = w;
 	day         = d;
@@ -61,7 +61,7 @@ public:
 	year        = y;
     }
 
-    virtual void print() {}
+    virtual void print()    {}
     virtual void print(int) {}
 };
 
@@ -70,13 +70,13 @@ class Holiday : public Date {
     const char *name;
 
 public:
-    Holiday (DayOfWeek w, int d, int m, int y, const char *n) :
+    Holiday(DayOfWeek w, int d, int m, int y, const char *n) :
 	Date (w, d, m, y), name(n)
     {}
-    virtual ~Holiday ()
+    virtual ~Holiday()
     {}
 
-    virtual void print() {}
+    virtual void print()    {}
     virtual void print(int) {}
 };
 //--------------------------------------------------------------------------
@@ -88,10 +88,10 @@ public:
     Tree *left;
     Tree *right;
 
-    Tree (int v, char *n):
+    Tree(int v, char *n):
 	value(v), name(n), left(0), right(0)
     {}
-    ~Tree () 
+    ~Tree() 
     {
 	if (left)
 	    delete left;
@@ -106,21 +106,21 @@ public:
     List *self;
     List *next;
 
-    List (int v):
+    List(int v):
 	value(v), self(this), next(this)
     {}
 };
 
 //--------------------------------------------------------------------------
 // Simple binary tree
-void tree_test ()
+void tree_test()
 {
     Tree *tree = 0;
-    tree =              new Tree (7, "Ada");      // Byron Lovelace
-    tree->left =        new Tree (1, "Grace");    // Murray Hopper
-    tree->left->left =  new Tree (5, "Judy");     // Clapp
-    tree->left->right = new Tree (6, "Kathleen"); // McNulty
-    tree->right =       new Tree (9, "Mildred");  // Koss
+    tree =              new Tree(7, "Ada");      // Byron Lovelace
+    tree->left =        new Tree(1, "Grace");    // Murray Hopper
+    tree->left->left =  new Tree(5, "Judy");     // Clapp
+    tree->left->right = new Tree(6, "Kathleen"); // McNulty
+    tree->right =       new Tree(9, "Mildred");  // Koss
 
     tree->date.set(Tue, 29, 11, 1994);
     tree->date.set(Wed, 30, 11, 1994);
@@ -130,7 +130,7 @@ void tree_test ()
 
 //--------------------------------------------------------------------------
 // Simple circular list.  Examine `list' with alias detection enabled.
-void list_test (int start)
+void list_test(int start)
 {
     List *list = 0;
 
@@ -144,8 +144,13 @@ void list_test (int start)
     delete list;
 }
 
+void list_test(double d)
+{
+    // Do nothing - just test disambiguation
+}
+
 //--------------------------------------------------------------------------
-void reference_test (Date& date, Date*& date_ptr)
+void reference_test(Date& date, Date*& date_ptr)
 {
     date = *date_ptr;
     delete date_ptr;
@@ -153,7 +158,7 @@ void reference_test (Date& date, Date*& date_ptr)
 }
 
 //--------------------------------------------------------------------------
-void array_test ()
+void array_test()
 {
     DayOfWeek days_of_week[7] = {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
 
@@ -164,10 +169,10 @@ void array_test ()
     (void) days_of_week;	// Use it
 
     Date *date_ptrs[4];
-    date_ptrs[0] = new Date (Thu, 1, 9, 1994);
-    date_ptrs[1] = new Date (Tue, 10, 5, 1994);
-    date_ptrs[2] = new Date (Fri, 15, 7, 1994);
-    date_ptrs[3] = new Date (Sat, 24, 12, 1994);
+    date_ptrs[0] = new Date(Thu, 1, 9, 1994);
+    date_ptrs[1] = new Date(Tue, 10, 5, 1994);
+    date_ptrs[2] = new Date(Fri, 15, 7, 1994);
+    date_ptrs[3] = new Date(Sat, 24, 12, 1994);
 
     Date *date_ptr;
     Date dates[4];
@@ -179,10 +184,10 @@ void array_test ()
 }
 
 //--------------------------------------------------------------------------
-void type_test ()
+void type_test()
 {
-    Holiday new_years_eve (Sat, 31, 12, 1994, 
-			   "May all acquaintance be forgot");
+    Holiday new_years_eve(Sat, 31, 12, 1994, 
+			  "May all acquaintance be forgot");
 
     Date *date = new Date(Sat, 24, 12, 1994);
     void *voidptr = date;
@@ -234,7 +239,7 @@ void type_test ()
 }
 
 //--------------------------------------------------------------------------
-void cin_cout_test ()
+void cin_cout_test()
 {
     // Simple I/O
     char name[1024];
@@ -244,7 +249,7 @@ void cin_cout_test ()
 }
 
 //--------------------------------------------------------------------------
-int main (int /* argc */, char ** /* argv */)
+int main(int /* argc */, char ** /* argv */)
 {
     int i = 42;
     tree_test();

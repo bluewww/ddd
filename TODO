@@ -283,9 +283,6 @@ Volunteers for these and other projects are welcome!
 145. Have some macros in `Ddd' that expand at run-time.  For instance,
      @DEBUGGER@ may be replaced by the current inferior debugger.
 
-147* When replying to secondary choice prompts, popup some (modal)
-     interactive choice dialog.
-
 148* Include a sample `.dddinit' file.
 
 151. When `Disable/Enable' is applied to a display part, make it act like

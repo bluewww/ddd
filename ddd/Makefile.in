@@ -669,6 +669,7 @@ DDD_OBJECTS = \
 	question.o   \
 	resources.o  \
 	sashes.o     \
+	select.o     \
 	settings.o   \
 	shell.o      \
 	shorten.o    \
