@@ -107,6 +107,7 @@ class DispValue {
     bool can_plot1d() const;
     bool can_plot2d() const;
     bool can_plot3d() const;
+    static bool starts_number(char c);
 
     static void PlotterDiedHP(Agent *, void *, void *);
 

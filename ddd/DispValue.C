@@ -1269,7 +1269,7 @@ int DispValue::can_plot() const
     return ndim;
 }
 
-inline bool starts_number(char c)
+bool DispValue::starts_number(char c)
 {
     return c == '.' || c == '+' || c == '-' || isdigit(c);
 }
