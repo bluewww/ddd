@@ -264,9 +264,26 @@ void PosBuffer::filter (string& answer)
 
 	    case DBX:
 	    {
-		if (answer.contains("stopped in "))
+		static regex RXdbxpos("[[][^]]*:[1-9][0-9]*[^]]*].*");
+		if (answer.contains(RXdbxpos))
+		{
+		    // DEC dbx issues lines in the format
+		    // "[new_tree:113 ,0x400858] \ttree->right = NULL;"
+
+		    string line = answer.from(RXdbxpos);
+		    line = line.after(":");
+		    line = line.through(rxint);
+
+		    pos_buffer = line;
+		    already_read = PosComplete;
+
+		    answer = answer.after("\n");
+		}
+		else if (answer.contains("stopped in ")
+			 || answer.contains("stopped at "))
 		{
 		    string file;
+		    string line;
 
 		    // Stop reached
 		    if (answer.contains("in file "))
@@ -276,6 +293,15 @@ void PosBuffer::filter (string& answer)
 			if (file.contains('\n'))
 			    file = file.before('\n');
 			file = unquote(file);
+		    }
+		    else if (answer.contains("["))
+		    {
+			// DEC dbx output format
+			string line = answer.after("[");
+			func_buffer = line.before(":");
+			line = line.after(":");
+			line = line.through(rxint);
+			answer = answer.after("\n");
 		    }
 		    else
 		    {
@@ -287,15 +313,19 @@ void PosBuffer::filter (string& answer)
 			file = "";
 		    }
 
-		    string line = answer.after("at line ");
-		    line = line.through(rxint);
-		    if (!answer.contains("at line "))
-			line = "0";
+		    if (line == "")
+		    {
+			line = answer.after("at line ");
+			line = line.through(rxint);
+			if (!answer.contains("at line "))
+			    line = "0";
+		    }
 
 		    if (file != "")
 			pos_buffer = file + ":" + line;
 		    else
 			pos_buffer = line;
+
 		    already_read = PosComplete;
 		    filter_line(answer, atoi(line));
 		}

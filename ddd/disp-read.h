@@ -53,7 +53,7 @@
 // ***************************************************************************
 // false, wenn cmd ein einzelnes display erzeugt.
 // 
-bool is_single_display_cmd(const string& cmd, DebuggerType type);
+bool is_single_display_cmd(const string& cmd, GDBAgent *gdb);
 
 // ***************************************************************************
 // false, wenn cmd keine besonderen Auswirkungen hat.
@@ -68,7 +68,7 @@ bool is_display_cmd(const string& cmd);
 // ***************************************************************************
 // true, wenn cmd Programmstop (mit display-Ausgabe) zur Folge hat.
 // 
-bool is_running_cmd(const string& cmd, DebuggerType type);
+bool is_running_cmd(const string& cmd, GDBAgent *gdb);
 
 // ***************************************************************************
 // true, wenn cmd ein Programm startet.
@@ -95,7 +95,7 @@ bool is_set_cmd(const string& cmd);
 // ***************************************************************************
 // true, wenn cmd File-Wechsel zur Folge hat.
 // 
-bool is_file_cmd(const string& cmd, DebuggerType type);
+bool is_file_cmd(const string& cmd, GDBAgent *gdb);
 
 // ***************************************************************************
 // true, wenn cmd Breakpoints setzt
@@ -125,29 +125,29 @@ string get_display_expression(const string& cmd);
 // -1, wenn gdb_answer kein display enthaelt, 
 // sonst den index des ersten displays.
 // 
-int display_index (const string& gdb_answer, DebuggerType type);
+int display_index (const string& gdb_answer, GDBAgent *gdb);
 
 // ***************************************************************************
 // 
-int contains_display (const string& gdb_answer, DebuggerType type);
+bool contains_display (const string& gdb_answer, GDBAgent *gdb);
 
 // ***************************************************************************
 // gibt index zurueck, an dem ein Display anfangen koennte (d.h. index eines
 // moeglichen Display-Teils
 // 
-int possible_begin_of_display (string gdb_answer, DebuggerType type);
+int possible_begin_of_display (string gdb_answer, GDBAgent *gdb);
 
 // ***************************************************************************
 // gibt den naechsten Display zurueck falls vorhanden, und
 // schneidet diesen von displays vorn ab.
 // 
-string read_next_display (string& displays, DebuggerType type);
+string read_next_display (string& displays, GDBAgent *gdb);
 
 
 // ***************************************************************************
 // schneidet vom display "'nr': 'name' = " vorne ab.
 // 
-string get_disp_value_str (/*const*/ string& display, DebuggerType type);
+string get_disp_value_str (/*const*/ string& display, GDBAgent *gdb);
 
 
 //----------------------------------------------------------------------------
@@ -159,17 +159,17 @@ string get_disp_value_str (/*const*/ string& display, DebuggerType type);
 // Ist kein weiteres display-info vorhanden, sind return-Wert und gdb_answer
 // gleich "".
 // 
-string read_first_disp_info (string& gdb_answer, DebuggerType type);
-string read_next_disp_info (string& gdb_answer, DebuggerType type);
+string read_first_disp_info (string& gdb_answer, GDBAgent *gdb);
+string read_next_disp_info (string& gdb_answer, GDBAgent *gdb);
 
 // ***************************************************************************
 // schneidet "'nr': " vorne ab
 //
-string get_info_disp_str (string& display, DebuggerType type);
+string get_info_disp_str (string& display, GDBAgent *gdb);
 
 // ***************************************************************************
 //
-int disp_is_disabled (const string& info_disp_str, DebuggerType type);
+bool disp_is_disabled (const string& info_disp_str, GDBAgent *gdb);
 
 
 
@@ -177,9 +177,9 @@ int disp_is_disabled (const string& info_disp_str, DebuggerType type);
 // fuer Knotenerzeugung (Lesen des Display-Anfangs)
 //----------------------------------------------------------------------------
 
-string  read_disp_nr_str (string& display, DebuggerType type);
-string  read_disp_name   (string& display, DebuggerType type);
-bool is_disabling (const string& value, DebuggerType type);
-bool is_not_active (const string& value, DebuggerType type);
+string  read_disp_nr_str (string& display, GDBAgent *gdb);
+string  read_disp_name   (string& display, GDBAgent *gdb);
+bool is_disabling (const string& value, GDBAgent *gdb);
+bool is_not_active (const string& value, GDBAgent *gdb);
 
 #endif

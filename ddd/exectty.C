@@ -500,7 +500,7 @@ void set_tty_title(string message, Window tty_window)
 void handle_running_commands(string& command, Widget origin)
 {
     // Make sure we see control messages such as `Starting program'
-    if (is_running_cmd(command, gdb->type()))
+    if (is_running_cmd(command, gdb))
 	show_next_line_in_status = true;
 
     if (is_run_cmd(command))

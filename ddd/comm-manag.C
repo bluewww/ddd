@@ -58,6 +58,7 @@ char comm_manager_rcsid[] =
 #include "history.h"
 #include "SourceView.h"
 #include "DataDisp.h"
+#include "version.h"
 
 #include <ctype.h>
 
@@ -114,11 +115,13 @@ typedef struct PlusCmdData {
 
     bool     config_frame;	       // try 'frame'
     bool     config_line;	       // try 'line'
-    bool     config_run_io;	       // try 'dbxenv'
+    bool     config_run_io;	       // try 'dbxenv run_io'
     bool     config_print_r;	       // try 'print -r'
     bool     config_where_h;	       // try 'where -h'
     bool     config_display;	       // try 'display'
     bool     config_pwd;	       // try 'pwd'
+    bool     config_named_values;      // try 'print "ddd"'
+    bool     config_func_pos;          // try 'func main'
 
     PlusCmdData () :
 	refresh_main(false),
@@ -141,7 +144,9 @@ typedef struct PlusCmdData {
 	config_print_r(false),
 	config_where_h(false),
 	config_display(false),
-	config_pwd(false)
+	config_pwd(false),
+	config_named_values(false),
+	config_func_pos(false)
     {}
 };
 
@@ -197,6 +202,10 @@ void start_gdb()
 	plus_cmd_data->config_display = true;
 	cmds[qu_count++] = "pwd";
 	plus_cmd_data->config_pwd = true;
+	cmds[qu_count++] = "print \"" DDD_NAME "\"";
+	plus_cmd_data->config_named_values = true;
+	cmds[qu_count++] = "func main";
+	plus_cmd_data->config_func_pos = true;
 	cmds[qu_count++] = "sh pwd";
 	plus_cmd_data->refresh_pwd = true;
 	cmds[qu_count++] = "file";
@@ -321,7 +330,14 @@ void user_cmdSUC (string cmd, Widget origin)
 	cmd_data->filter_disp = NoFilter;
     }
 
-    if (is_file_cmd (cmd, gdb->type()))
+    if (!gdb->has_display_command())
+    {
+	// The debugger has no `display' command.  Update display
+	// explicitly after each command.
+	plus_cmd_data->refresh_disp = true;
+    }
+
+    if (is_file_cmd (cmd, gdb))
     {
 	// File may change: display main() function and update displays
 	plus_cmd_data->refresh_disp_info = true;
@@ -338,7 +354,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	    break;
 	}
     }
-    else if (is_single_display_cmd(cmd, gdb->type()))
+    else if (is_single_display_cmd(cmd, gdb))
     {
 	// No new displays
 	cmd_data->filter_disp = NoFilter;
@@ -349,7 +365,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_frame    = false;
 	plus_cmd_data->refresh_register = false;
     }
-    else if (is_running_cmd(cmd, gdb->type()))
+    else if (is_running_cmd(cmd, gdb))
     {
 	// New displays and new exec position
 	cmd_data->filter_disp = Filter;
@@ -408,7 +424,9 @@ void user_cmdSUC (string cmd, Widget origin)
 		{
 		    // Update position
 		    plus_cmd_data->refresh_file      = true;
-		    plus_cmd_data->refresh_line      = true;
+
+		    if (!gdb->has_func_pos())
+			plus_cmd_data->refresh_line = true;
 		}
 	    }
 	    else
@@ -488,6 +506,8 @@ void user_cmdSUC (string cmd, Widget origin)
     assert(!plus_cmd_data->config_where_h);
     assert(!plus_cmd_data->config_display);
     assert(!plus_cmd_data->config_pwd);
+    assert(!plus_cmd_data->config_named_values);
+    assert(!plus_cmd_data->config_func_pos);
     
     // Setup additional trailing commands
     switch (gdb->type())
@@ -508,7 +528,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	if (plus_cmd_data->refresh_register)
 	    cmds[qu_count++] = "info registers";
 	if (plus_cmd_data->refresh_disp)
-	    cmds[qu_count++] = gdb->display_command();
+	    cmds[qu_count++] = data_disp->refresh_display_command();
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds[qu_count++] = "info display";
 	if (plus_cmd_data->refresh_history_filename)
@@ -781,6 +801,18 @@ static void process_config_pwd(string& answer)
     gdb->has_pwd_command(is_known_command(answer));
 }
 
+static void process_config_named_values(string& answer)
+{
+    gdb->has_named_values(answer.contains(" = "));
+}
+
+static void process_config_func_pos(string& answer)
+{
+    static regex RXcolon_and_line_number(": *[0-9][0-9]*");
+    if (answer.contains(RXcolon_and_line_number))
+	gdb->has_func_pos(true);
+}
+
 
 // ***************************************************************************
 // Behandelt die Antworten auf die hinterhergeschickten Anfragen
@@ -842,6 +874,16 @@ void plusOQAC (string answers[],
 	process_config_pwd(answers[qu_count++]);
     }
 
+    if (plus_cmd_data->config_named_values) {
+	assert (qu_count < count);
+	process_config_named_values(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_func_pos) {
+	assert (qu_count < count);
+	process_config_func_pos(answers[qu_count++]);
+    }
+
     if (plus_cmd_data->refresh_pwd) {
 	assert (qu_count < count);
 	source_view->process_pwd(answers[qu_count++]);
@@ -863,7 +905,8 @@ void plusOQAC (string answers[],
 	}
     }
 
-    if (plus_cmd_data->refresh_line) {
+    if (plus_cmd_data->refresh_line)
+    {
 	assert (gdb->type() == DBX);
 	assert (qu_count < count);
 

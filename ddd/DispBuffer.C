@@ -60,7 +60,7 @@ void DispBuffer::filter (string& answer)
 	already_read = Null;
 	// weiter wie bei Null
     case Null:
-	index = display_index(answer, gdb->type());
+	index = display_index(answer, gdb);
 
 	if (index == 0) {
 	    // Antwort besteht nur aus displays
@@ -78,7 +78,7 @@ void DispBuffer::filter (string& answer)
 	}
 	else {
 	    // Vielleicht ein Display-Teil am Ende der Antwort ?
-	    index = possible_begin_of_display (answer, gdb->type());
+	    index = possible_begin_of_display (answer, gdb);
 
 	    if (index == -1) {
 		// nichts gefunden -> answer bleibt unveraendert

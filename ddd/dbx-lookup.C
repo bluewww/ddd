@@ -68,6 +68,7 @@ string dbx_lookup(const string& func_name)
     {
 	// DEC DBX issues line number immediately after `func'
 	listing = reply.after(":");
+	listing = itostring(atoi(listing));
     }
     else
     {

@@ -90,6 +90,8 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_where_h_command(false),
       _has_display_command(tp == GDB),
       _has_pwd_command(true),
+      _has_named_values(true),
+      _has_func_pos(false),
       trace_dialog(false),
       questions_waiting(false),
       _qu_data(0),
@@ -107,8 +109,8 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       TTYAgent (app_context, gdb_call)
 {
     removeAllHandlers(Died);
-    addHandler(Input, InputHP, this); //gdb-Ausgaben
-    addHandler(Died,  DiedHP, this);  //gdb beendet
+    addHandler(Input, InputHP, this); // GDB-Ausgaben
+    addHandler(Died,  DiedHP, this);  // GDB beendet
 
     // unerwuenschte Fehlermeldungen unterdruecken
     removeAllHandlers(Panic);
@@ -651,21 +653,41 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 // Configuration
 
 // DBX 3.0 wants `print -r' instead of `print' for C++
-string GDBAgent::print_command() const
+string GDBAgent::print_command(string expr) const
 {
+    string cmd;
     if (has_print_r_command())
-	return "print -r";
+	cmd = "print -r";
     else
-	return "print";
+	cmd = "print";
+
+    if (expr != "")
+    {
+	if (has_named_values())
+	    cmd += " " + expr;
+	else
+	    cmd += " \"" + expr + " = \", " + expr;
+    }
+
+    return cmd;
 }
 
 // DBX 3.0 wants `display -r' instead of `display' for C++
-string GDBAgent::display_command() const
+string GDBAgent::display_command(string expr) const
 {
+    if (!has_display_command())
+	return "";
+
+    string cmd;
     if (has_print_r_command())
-	return "display -r";
+	cmd = "display -r";
     else
-	return "display";
+	cmd = "display";
+
+    if (expr != "")
+	cmd += " " + expr;
+
+    return cmd;
 }
 
 // DBX 3.0 wants `where -h' instead of `where'

@@ -129,6 +129,8 @@ private:
     bool _has_where_h_command;
     bool _has_display_command;
     bool _has_pwd_command;
+    bool _has_named_values;
+    bool _has_func_pos;
 
 protected:
     // Copy constructor - too complicated yet
@@ -246,13 +248,21 @@ public:
     bool has_pwd_command() const       { return _has_pwd_command; }
     bool has_pwd_command(bool val)     { return _has_pwd_command = val; }
 
+    // True if debugger issues `NAME = VALUE' upon `print' commands
+    bool has_named_values() const      { return _has_named_values; }
+    bool has_named_values(bool val)    { return _has_named_values = val; }
+
+    // True if debugger issues position upon `func' command
+    bool has_func_pos() const          { return _has_func_pos; }
+    bool has_func_pos(bool val)        { return _has_func_pos = val; }
+
     // True if debugger has stderr redirection
     bool has_err_redirection() const   { return has_print_r_command(); }
 
-    string print_command() const;	// Usually "print "
-    string display_command() const;	// Usually "display "
-    string where_command() const;	// Usually "where "
-    string pwd_command() const;	        // Usually "pwd "
+    string print_command(string expr = "") const;   // Usually "print EXPR"
+    string display_command(string expr = "") const; // Usually "display EXPR"
+    string where_command() const;	            // Usually "where "
+    string pwd_command() const;	                    // Usually "pwd "
 
 private:
     bool trace_dialog;

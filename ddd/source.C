@@ -140,11 +140,10 @@ void gdbLineArgCmdCB(Widget w, XtPointer client_data, XtPointer)
 
 void gdbPrintArgCmdCB(Widget w, XtPointer, XtPointer)
 {
-    string cmd = gdb->print_command();
     string arg = source_arg->get_string();
 
     if (arg != "" && !arg.matches(rxwhite))
-	gdb_command(cmd + " " + arg, w);
+	gdb_command(gdb->print_command(arg), w);
 }
 
 void gdbDisplayArgCmdCB(Widget w, XtPointer, XtPointer)

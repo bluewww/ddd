@@ -719,7 +719,7 @@ void DataDisp::new_displayCD (BoxPoint box_point)
     }
 
     Widget text = XmSelectionBoxGetChild(new_display_dialog, XmDIALOG_TEXT);
-    set_string(text, source_arg->get_string());
+    XmTextSetString(text, source_arg->get_string());
 
     XtManageChild (new_display_dialog);
 }
@@ -1429,7 +1429,7 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint* p,
     {
     case GDB:
     {
-	string cmd = gdb->display_command() + " " + display_expression;
+	string cmd = gdb->display_command(display_expression);
 	bool ok = gdb->send_question (cmd, new_displayOQC, p);
 	if (!ok) {
 	    post_gdb_busy(last_origin);
@@ -1439,8 +1439,8 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint* p,
 
     case DBX:
     {
-	gdb_question(gdb->display_command() + " " + display_expression);
-	string cmd = gdb->print_command() + " " + display_expression;
+	gdb_question(gdb->display_command(display_expression));
+	string cmd = gdb->print_command(display_expression);
 	bool ok = gdb->send_question (cmd, new_displayOQC, p);
 	if (!ok) {
 	    post_gdb_busy(last_origin);
@@ -1457,7 +1457,7 @@ DispNode *DataDisp::new_node (string& answer)
     switch(gdb->type())
     {
     case GDB:
-	disp_nr_str = read_disp_nr_str (answer, gdb->type());
+	disp_nr_str = read_disp_nr_str (answer, gdb);
 	if (disp_nr_str == "")
 	    return 0;
 	break;
@@ -1468,10 +1468,10 @@ DispNode *DataDisp::new_node (string& answer)
 	break;
     }
 
-    string name = read_disp_name (answer, gdb->type());
+    string name = read_disp_name (answer, gdb);
     DispNode* dn = 0;
 
-    if (is_disabling (answer, gdb->type()))
+    if (is_disabling (answer, gdb))
     {
 	post_gdb_message (answer, last_origin);
 	dn = new DispNode(disp_nr_str, name);
@@ -1491,14 +1491,16 @@ DispNode *DataDisp::new_node (string& answer)
 //
 void DataDisp::new_displayOQC (const string& answer, void* data)
 {
-    if (answer == "") {
+    if (answer == "")
+    {
 	// Problemfall bei Start mit core-file, display-Ausgabe nur bei
 	// display-Befehl
-	gdb->send_question (gdb->display_command(),
+	gdb->send_question (refresh_display_command(),
 			    new_display_extraOQC,
 			    data);
     }
-    else if (!contains_display (answer, gdb->type())) {
+    else if (!contains_display (answer, gdb))
+    {
 	post_gdb_message (answer, last_origin);
     }
     else {
@@ -1540,7 +1542,7 @@ void DataDisp::new_displayOQC (const string& answer, void* data)
 void DataDisp::new_display_extraOQC (const string& answer, void* data)
 {
     string ans = answer;
-    string display = read_next_display (ans, gdb->type());
+    string display = read_next_display (ans, gdb);
     new_displayOQC (display, data);
 }
 
@@ -1571,11 +1573,9 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
     int j = 0;
     for (int i = start; i < stop + 1; i++) {
 	display_cmds[j] = 
-	    gdb->display_command() + " " 
-	    + prefix + "[" + itostring (i) + "]" + postfix;
+	    gdb->display_command(prefix + "[" + itostring (i) + "]" + postfix);
 	print_cmds[j] = 
-	    gdb->print_command() + " "
-	    + prefix + "[" + itostring (i) + "]" + postfix;
+	    gdb->print_command(prefix + "[" + itostring (i) + "]" + postfix);
 	j++;
     }
 
@@ -1636,7 +1636,7 @@ void DataDisp::new_displaysOQAC (string answers[],
 
     // Create and select new nodes
     for (int i = 0; i < count; i++) {
-	if (!contains_display (answers[i], gdb->type()))
+	if (!contains_display (answers[i], gdb))
 	    post_gdb_message (answers[i], last_origin);
 	else {
 
@@ -1685,9 +1685,21 @@ string DataDisp::refresh_display_command()
 		 dn != 0;
 		 dn = disp_graph->next(ref))
 	    {
-		if (i++)
-		    command += ", ";
-		command += dn->name();
+		if (!gdb->has_named_values())
+		{
+		    // The debugger has no named values (and probably
+		    // no `display' command).  Hence, we insert names 
+		    // (and newlines) in the `print' command.
+		    if (i++)
+			command += ", \"\\n" + dn->name();
+		    else
+			command += "\"" + dn->name();
+		    command += " = \", " + dn->name();
+		}
+		else
+		{
+		    command += dn->name();
+		}
 	    }
 	}
 	break;
@@ -1754,14 +1766,13 @@ void DataDisp::refresh_displaySQA (Widget origin)
     {
     case GDB:
 	cmds[0] = "info display";
-	cmds[1] = gdb->display_command();
+	cmds[1] = refresh_display_command();
 	ok = gdb->send_qu_array(cmds, dummy, 2, refresh_displayOQAC, 0);
 	break;
 
     case DBX:
-	// No way to do this in DBX.
-	// (We may issue a `print' command for every display shown.  FIXME)
-	ok = false;
+	cmds[0] = refresh_display_command();
+	ok = gdb->send_qu_array(cmds, dummy, 1, refresh_displayOQAC, 0);
 	break;
     }
 
@@ -1983,7 +1994,7 @@ void DataDisp::dependent_displaySQ (string display_expression, int disp_nr)
     {
     case GDB:
     {
-	string cmd = gdb->display_command() + " " + display_expression;
+	string cmd = gdb->display_command(display_expression);
 	bool ok = gdb->send_question(cmd, dependent_displayOQC, 
 				     (void *) disp_nr);
 	if (!ok) {
@@ -1994,8 +2005,9 @@ void DataDisp::dependent_displaySQ (string display_expression, int disp_nr)
 
     case DBX:
     {
-	gdb_question(gdb->display_command() + " " + display_expression);
-	string cmd = gdb->print_command() + " " + display_expression;
+	gdb_question(gdb->display_command(display_expression));
+
+	string cmd = gdb->print_command(display_expression);
 	bool ok = gdb->send_question(cmd, dependent_displayOQC, 
 				   (void *) disp_nr);
 	if (!ok) {
@@ -2011,13 +2023,14 @@ void DataDisp::dependent_displaySQ (string display_expression, int disp_nr)
 //
 void DataDisp::dependent_displayOQC (const string& answer, void* data)
 {
-    if (answer == "") {
+    if (answer == "")
+    {
 	// Problemfall bei Start mit core-file, display-Ausgabe nur bei
 	// display-Befehl
 	gdb->send_question
-	    (gdb->display_command(), dependent_display_extraOQC, data);
+	    (refresh_display_command(), dependent_display_extraOQC, data);
     }
-    else if (!contains_display (answer, gdb->type())) {
+    else if (!contains_display (answer, gdb)) {
 	post_gdb_message (answer, last_origin);
     }
     else {
@@ -2058,7 +2071,7 @@ void DataDisp::dependent_displayOQC (const string& answer, void* data)
 void DataDisp::dependent_display_extraOQC (const string& answer, void* data)
 {
     string ans = answer;
-    string display = read_next_display (ans, gdb->type());
+    string display = read_next_display (ans, gdb);
     dependent_displayOQC (display, data);
 }
 
@@ -2090,11 +2103,9 @@ void DataDisp::dependent_displaysSQA (string display_expression,
     int j = 0;
     for (int i = start; i < stop + 1; i++) {
 	display_cmds[j] = 
-	    gdb->display_command() + " "
-	    + prefix + "[" + itostring (i) + "]" + postfix;
+	    gdb->display_command(prefix + "[" + itostring (i) + "]" + postfix);
 	print_cmds[j] = 
-	    gdb->print_command() + " " 
-	    + prefix + "[" + itostring (i) + "]" + postfix;
+	    gdb->print_command(prefix + "[" + itostring (i) + "]" + postfix);
 	j++;
     }
 
@@ -2159,7 +2170,7 @@ void DataDisp::dependent_displaysOQAC (string answers[],
     }
 
     for (int i = 0; i < count; i++) {
-	if (!contains_display (answers[i], gdb->type()))
+	if (!contains_display (answers[i], gdb))
 	    post_gdb_message (answers[i], last_origin);
 	else {
 	    // DispNode erzeugen und ggf. disabling-Meldung ausgeben
@@ -2168,7 +2179,7 @@ void DataDisp::dependent_displaysOQAC (string answers[],
 	    switch(gdb->type())
 	    {
 	    case GDB:
-		disp_nr_str = read_disp_nr_str (answers[i], gdb->type());
+		disp_nr_str = read_disp_nr_str (answers[i], gdb);
 		if (disp_nr_str == "")
 		    return;
 		break;
@@ -2179,8 +2190,8 @@ void DataDisp::dependent_displaysOQAC (string answers[],
 		break;
 	    }
 
-	    name = read_disp_name (answers[i], gdb->type());
-	    if (is_disabling (answers[i], gdb->type()))
+	    name = read_disp_name (answers[i], gdb);
+	    if (is_disabling (answers[i], gdb))
 	    {
 		disabling_error_msgs += answers[i];
 		dn = new DispNode(disp_nr_str, name);
@@ -2229,7 +2240,7 @@ void DataDisp::process_info_display (string& info_display_answer)
     string *strptr;
 
     string next_disp_info = 
-	read_first_disp_info (info_display_answer, gdb->type());
+	read_first_disp_info (info_display_answer, gdb);
     while (next_disp_info != "")
     {
 	disp_nr = get_positive_nr (next_disp_info);
@@ -2239,12 +2250,12 @@ void DataDisp::process_info_display (string& info_display_answer)
 	    {
 		// Eigenes display-info
 		strptr = 
-		    new string(get_info_disp_str(next_disp_info, gdb->type()));
+		    new string(get_info_disp_str(next_disp_info, gdb));
 		info_disp_string_map.insert (disp_nr, strptr);
 	    }
 	}
 	next_disp_info = 
-	    read_next_disp_info(info_display_answer, gdb->type());
+	    read_next_disp_info(info_display_answer, gdb);
     }
 
 
@@ -2265,7 +2276,7 @@ void DataDisp::process_info_display (string& info_display_answer)
 	{
 	    // Knoten aktualisieren
 	    DispNode* dn = disp_graph->get (k);
-	    if (disp_is_disabled(*(info_disp_string_map.get (k)), gdb->type()))
+	    if (disp_is_disabled(*(info_disp_string_map.get (k)), gdb))
 	    {
 		if (dn->enabled())
 		{
@@ -2318,7 +2329,7 @@ string DataDisp::process_displays (string& displays,
     clog << "Processing displays " << quote(displays) << "...\n";
 #endif
 
-    string next_display = read_next_display (displays, gdb->type());
+    string next_display = read_next_display (displays, gdb);
     while (next_display != "") 
     {
 #if LOG_DISPLAYS
@@ -2334,7 +2345,7 @@ string DataDisp::process_displays (string& displays,
 	{
 	    disp_nr = 0;
 	    string disp_name = next_display;
-	    disp_name = read_disp_name(disp_name, gdb->type());
+	    disp_name = read_disp_name(disp_name, gdb);
 	    MapRef ref;
 	    for (DispNode* dn = disp_graph->first(ref); 
 		 dn != 0;
@@ -2355,13 +2366,13 @@ string DataDisp::process_displays (string& displays,
 #endif
 
 	// Falls Fehlermeldung: merken und alles nochmal von vorne.
-	if (is_disabling (next_display, gdb->type())) 
+	if (is_disabling (next_display, gdb))
 	{
 	    disabling_occurred = true;
 	    if (disp_nr >= 0 && disp_graph->contains(disp_nr))
 	    {
 		disabling_error_msgs += 
-		    get_disp_value_str(next_display, gdb->type());
+		    get_disp_value_str(next_display, gdb);
 	    }
 	    else
 	    {
@@ -2374,14 +2385,14 @@ string DataDisp::process_displays (string& displays,
 	    return not_my_displays;
 	}
 
-	if (is_not_active (next_display, gdb->type()))
+	if (is_not_active (next_display, gdb))
 	{
 	    // Display is not active: don't insert it into map.
 	    // This way, it will be shown as disabled.
 	}
 	else if (disp_nr >= 0 && disp_graph->contains(disp_nr))
 	{
-	    strptr = new string(get_disp_value_str(next_display, gdb->type()));
+	    strptr = new string(get_disp_value_str(next_display, gdb));
 	    disp_string_map.insert (disp_nr, strptr);
 	}
 	else 
@@ -2389,7 +2400,7 @@ string DataDisp::process_displays (string& displays,
 	    not_my_displays += next_display + '\n';
 	}
 
-	next_display = read_next_display (displays, gdb->type());
+	next_display = read_next_display (displays, gdb);
     }
 
     // gesammelte Fehlermeldungen ausgeben.
@@ -2575,7 +2586,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     XtManageChild(set_dialog);
 
     Widget text = XmSelectionBoxGetChild(set_dialog, XmDIALOG_TEXT);
-    set_string(text, value);
+    XmTextSetString(text, value);
 }
 
 void DataDisp::setDCB(Widget set_dialog, XtPointer client_data, XtPointer)

@@ -591,7 +591,7 @@ void SourceView::text_popup_printCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command(gdb->print_command() + " " + *word_ptr, w);
+    gdb_command(gdb->print_command(*word_ptr), w);
 }
 
 void SourceView::text_popup_print_refCB (Widget w, 
@@ -600,7 +600,7 @@ void SourceView::text_popup_print_refCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command(gdb->print_command() + " *(" + *word_ptr + ")", w);
+    gdb_command(gdb->print_command("*(" + *word_ptr + ")"), w);
 }
 
 
@@ -2120,6 +2120,9 @@ void SourceView::show_position (string position)
 //
 void SourceView::process_info_bp (string& info_output)
 {
+    // DEC dbx issues empty lines, which causes trouble
+    info_output.gsub("\n\n", "\n");
+
     last_info_output = info_output;
 
     switch (gdb->type())
@@ -2165,13 +2168,14 @@ void SourceView::process_info_bp (string& info_output)
 	    break;
 
 	case DBX:
-	    if (!info_output.contains('(', 0))
+	    if (!info_output.contains('(', 0)
+		&& !info_output.contains('[', 0))
 	    {
 		// Skip this line
 		info_output = info_output.after('\n');
 		continue;
 	    }
-	    bp_nr_s = info_output.after('(');
+	    bp_nr_s = info_output.after(0);
 	    bp_nr = get_positive_nr (bp_nr_s);
 	    break;
 	}
@@ -2401,7 +2405,12 @@ void SourceView::lookup(string s)
 void SourceView::process_pwd(string& pwd_output)
 {
     string pwd = pwd_output;
-    pwd = pwd.before('\n', -1);
+
+    strip_final_blanks(pwd);
+
+    // Use last line only
+    if (pwd.contains('\n'))
+	pwd = pwd.after('\n', -1);
 
     switch (gdb->type())
     {
@@ -3379,7 +3388,10 @@ void SourceView::fill_labels(const string& info_output)
     if (breakpoint_list_w == 0)
 	return;
 
-    int count          = info_output.freq('\n') + 1;
+    int count = info_output.freq('\n') + 1;
+    if (info_output == "")
+	count = 0;
+
     string *label_list = new string[count];
     bool *selected     = new bool[count];
 
@@ -3392,7 +3404,9 @@ void SourceView::fill_labels(const string& info_output)
     for (int i = 0; i < count; i++)
     {
 	if (label_list[i] != "" && 
-	    (isdigit(label_list[i][0]) || label_list[i][0] == '('))
+	    (isdigit(label_list[i][0])
+	     || label_list[i][0] == '('
+	     || label_list[i][0] == '['))
 	{
 	    int bp_number = get_positive_nr(label_list[i]);
 

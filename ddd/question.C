@@ -69,6 +69,9 @@ static void gdb_reply(const string& complete_answer, void *qu_data)
 
 string gdb_question(const string& command, int timeout)
 {
+    if (command == "")
+	return "";
+
     if (gdb_question_running)
 	return NO_GDB_ANSWER;
 

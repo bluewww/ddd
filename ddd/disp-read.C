@@ -56,13 +56,13 @@ char disp_read_rcsid[] =
 // ***************************************************************************
 // false, wenn cmd ein einzelnes display erzeugt
 // 
-bool is_single_display_cmd (const string& cmd, DebuggerType type)
+bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
 {
     static regex RXsingle_display_cmd(
         "[ \t]*"
 	"(disp|displ|displa|display)[ \t]+[^ ]+");
 
-    switch (type)
+    switch (gdb->type())
     {
     case GDB:
 	return cmd.matches (RXsingle_display_cmd);
@@ -84,7 +84,7 @@ bool is_nop_cmd(const string& cmd)
 
 // ***************************************************************************
 // 
-bool is_running_cmd (const string& cmd, DebuggerType type)
+bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 {
     static regex RXrunning_cmd(
 	"[ \t]*"
@@ -100,7 +100,7 @@ bool is_running_cmd (const string& cmd, DebuggerType type)
     static regex RXdisplay(
 	"[ \t]*(disp|displ|displa|display)([ \t]+.*)?");
 
-    switch (type)
+    switch (gdb->type())
     {
     case GDB:
 	return cmd.matches(RXrunning_cmd)
@@ -181,13 +181,13 @@ bool is_set_cmd (const string& cmd)
 
 // ***************************************************************************
 // 
-bool is_file_cmd (const string& cmd, DebuggerType type)
+bool is_file_cmd (const string& cmd, GDBAgent *gdb)
 {
     static regex RXfile_cmd("[ \t]*file([ \t]+.*)?");
 
     static regex RXdebug_cmd("[ \t]*debug([ \t]+.*)?");
 
-    switch (type)
+    switch (gdb->type())
     {
     case GDB:
 	return cmd.matches (RXfile_cmd);
@@ -270,14 +270,14 @@ string get_display_expression (const string& display_cmd)
 // -1, wenn gdb_answer kein display enthaelt, 
 // sonst den index des ersten displays.
 // 
-int display_index (const string& gdb_answer, DebuggerType type)
+int display_index (const string& gdb_answer, GDBAgent *gdb)
 {
     static regex RXgdb_begin_of_display("[1-9][0-9]*:  *[^ ]");
     static regex RXdbx_begin_of_display("[^ \t\n)}][^=\n]* = ");
 
     regex *prx = 0;
 
-    switch (type)
+    switch (gdb->type())
     {
     case GDB: 
 	prx = &RXgdb_begin_of_display;
@@ -303,38 +303,38 @@ int display_index (const string& gdb_answer, DebuggerType type)
 
 // ***************************************************************************
 // 
-int contains_display (const string& gdb_answer, DebuggerType type)
+bool contains_display (const string& gdb_answer, GDBAgent *gdb)
 {
-    return display_index(gdb_answer, type) >= 0;
+    return display_index(gdb_answer, gdb) >= 0;
 }
 
 // ***************************************************************************
 // gibt index zurueck, an dem ein Display anfangen koennte (d.h. index eines
 // moeglichen Display-Anfangs
 // 
-int possible_begin_of_display (string gdb_answer, DebuggerType type)
+int possible_begin_of_display (string gdb_answer, GDBAgent *gdb)
 {
     int index = -1;
 
     if (index == -1)
-	index = display_index(gdb_answer, type);
+	index = display_index(gdb_answer, gdb);
 
     if (index == -1)
     {
 	gdb_answer += "a";
-	index = display_index(gdb_answer, type);
+	index = display_index(gdb_answer, gdb);
     }
 
     if (index == -1)
     {
 	gdb_answer.at ("a", -1) = " a";
-	index = display_index(gdb_answer, type);
+	index = display_index(gdb_answer, gdb);
     }
 
     if (index == -1)
     {
 	gdb_answer.at (" a", -1) = ": a";
-	index = display_index(gdb_answer, type);
+	index = display_index(gdb_answer, gdb);
     }
 
     return index;
@@ -344,7 +344,7 @@ int possible_begin_of_display (string gdb_answer, DebuggerType type)
 // gibt den naechsten Display zurueck falls vorhanden, und
 // schneidet diesen von displays vorne ab.
 // 
-string read_next_display (string& displays, DebuggerType)
+string read_next_display (string& displays, GDBAgent *)
 {
     string next_display;
 
@@ -364,7 +364,7 @@ string read_next_display (string& displays, DebuggerType)
 // ***************************************************************************
 // schneidet vom display "'nr': 'name' = " vorne ab.
 // 
-string get_disp_value_str (/*const*/ string& display, DebuggerType)
+string get_disp_value_str (/*const*/ string& display, GDBAgent *)
 {
     return display.after (" = ");
 }
@@ -377,14 +377,14 @@ string get_disp_value_str (/*const*/ string& display, DebuggerType)
 // -1, wenn gdb_answer kein display enthaelt, 
 // sonst den index des ersten displays.
 // 
-int display_info_index (const string& gdb_answer, DebuggerType type)
+int display_info_index (const string& gdb_answer, GDBAgent *gdb)
 {
     static regex RXgdb_begin_of_display_info("[1-9][0-9]*:   ");
     static regex RXdbx_begin_of_display_info("[(][1-9][0-9]*[)] ");
 
     regex *prx = 0;
 
-    switch (type)
+    switch (gdb->type())
     {
     case GDB: 
 	prx = &RXgdb_begin_of_display_info;
@@ -413,12 +413,12 @@ int display_info_index (const string& gdb_answer, DebuggerType type)
 // Ist kein weiteres display-info vorhanden, sind return-Wert und gdb_answer
 // gleich "".
 // 
-string read_first_disp_info (string& gdb_answer, DebuggerType type)
+string read_first_disp_info (string& gdb_answer, GDBAgent *gdb)
 {
-    int i = display_info_index(gdb_answer, type);
+    int i = display_info_index(gdb_answer, gdb);
     if (i > 0) {
 	gdb_answer = gdb_answer.from (i);
-	return read_next_disp_info (gdb_answer, type);
+	return read_next_disp_info (gdb_answer, gdb);
     }
     gdb_answer = "";
     return "";
@@ -430,9 +430,9 @@ string read_first_disp_info (string& gdb_answer, DebuggerType type)
 // Ist kein weiteres display-info vorhanden, sind return-Wert und gdb_answer
 // gleich "".
 // 
-string read_next_disp_info (string& gdb_answer, DebuggerType type)
+string read_next_disp_info (string& gdb_answer, GDBAgent *gdb)
 {
-    switch (type)
+    switch (gdb->type())
     {
     case GDB:
     {
@@ -478,9 +478,9 @@ string read_next_disp_info (string& gdb_answer, DebuggerType type)
 // ***************************************************************************
 // schneidet "'nr': " vorne ab
 //
-string get_info_disp_str (string& display_info, DebuggerType type)
+string get_info_disp_str (string& display_info, GDBAgent *gdb)
 {
-    switch (type)
+    switch (gdb->type())
     {
     case GDB:
 	return display_info.after (":   ");
@@ -494,9 +494,9 @@ string get_info_disp_str (string& display_info, DebuggerType type)
 
 // ***************************************************************************
 //
-int disp_is_disabled (const string& info_disp_str, DebuggerType type)
+bool disp_is_disabled (const string& info_disp_str, GDBAgent *gdb)
 {
-    switch (type)
+    switch (gdb->type())
     {
     case GDB:
 	return info_disp_str.length() > 0 && info_disp_str[0] == 'n';
@@ -516,9 +516,9 @@ int disp_is_disabled (const string& info_disp_str, DebuggerType type)
 
 // ***************************************************************************
 //
-string  read_disp_nr_str (string& display, DebuggerType type)
+string  read_disp_nr_str (string& display, GDBAgent *gdb)
 {
-    switch (type)
+    switch (gdb->type())
     {
     case GDB:
     {
@@ -529,7 +529,7 @@ string  read_disp_nr_str (string& display, DebuggerType type)
 	return disp_nr;
     }
     case DBX:
-	return read_disp_name(display, type);
+	return read_disp_name(display, gdb);
     }
 
     return "";
@@ -537,7 +537,7 @@ string  read_disp_nr_str (string& display, DebuggerType type)
 
 // ***************************************************************************
 //
-string  read_disp_name   (string& display, DebuggerType)
+string read_disp_name (string& display, GDBAgent *)
 {
     string name = display.before (" = ");
     display = display.after (" = ");
@@ -546,14 +546,14 @@ string  read_disp_name   (string& display, DebuggerType)
 
 // ***************************************************************************
 //
-bool is_disabling(const string& value, DebuggerType type)
+bool is_disabling(const string& value, GDBAgent *gdb)
 {
-    return type == GDB && value.contains("\nDisabling display ");
+    return gdb->type() == GDB && value.contains("\nDisabling display ");
 }
 
-bool is_not_active(const string& value, DebuggerType type)
+bool is_not_active(const string& value, GDBAgent *gdb)
 {
-    return type == DBX 
+    return gdb->type() == DBX 
 	&& (value.contains(" is not active\n", -1)
 	    || value.contains(" is not active", -1)
 	    || value.contains("<not active>\n", -1)
