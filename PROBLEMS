@@ -12,7 +12,7 @@ Table of Contents
     * DEC
     * FreeBSD
     * GCC
-      + GCC 2.8.0 on SunOS
+      + GCC optimization errors
       + Early GCC versions
       + GCC and libg++
     * HP-UX
