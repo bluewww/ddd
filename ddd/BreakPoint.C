@@ -104,6 +104,8 @@ bool BreakPoint::update(string& info_output,
     myaddress_changed  = false;
     need_total_undo    = false;
 
+    string num = "@" + itostring(number()) + "@";
+
     if (gdb->type() != JDB)
     {
 	// Read leading breakpoint number
@@ -194,8 +196,7 @@ bool BreakPoint::update(string& info_output,
 		changed = myenabled_changed = true;
 		myenabled = true;
 
-		undo_commands << gdb->disable_command(itostring(number()))
-			      << "\n";
+		undo_commands << gdb->disable_command(num) << "\n";
 	    }
 	}
 	else if (info_output.contains('n', 0))
@@ -205,8 +206,7 @@ bool BreakPoint::update(string& info_output,
 		changed = myenabled_changed = true;
 		myenabled = false;
 
-		undo_commands << gdb->enable_command(itostring(number())) 
-			      << "\n";
+		undo_commands << gdb->enable_command(num) << "\n";
 	    }
 	}
 	info_output = info_output.after(rxblanks_or_tabs);
@@ -357,16 +357,14 @@ bool BreakPoint::update(string& info_output,
 
 	if (ignore_count != myignore_count)
 	{
-	    undo_commands << gdb->ignore_command(itostring(number()),
-						 myignore_count) << "\n";
+	    undo_commands << gdb->ignore_command(num, myignore_count) << "\n";
 	    changed = myenabled_changed = true;
 	    myignore_count = ignore_count;
 	}
 
 	if (cond != mycondition)
 	{
-	    undo_commands << gdb->condition_command(itostring(number()),
-						    condition()) << "\n";
+	    undo_commands << gdb->condition_command(num, condition()) << "\n";
 	    changed = myenabled_changed = true;
 	    mycondition = cond;
 	}
@@ -521,11 +519,9 @@ bool BreakPoint::update(string& info_output,
 		changed = myenabled_changed = true;
 
 		if (new_enabled)
-		    undo_commands << gdb->disable_command(itostring(number()))
-				  << "\n";
+		    undo_commands << gdb->disable_command(num) << "\n";
 		else
-		    undo_commands << gdb->enable_command(itostring(number()))
-				  << "\n";
+		    undo_commands << gdb->enable_command(num) << "\n";
 	    }
 
 	    myinfos = "";
@@ -543,8 +539,7 @@ bool BreakPoint::update(string& info_output,
 
 		if (ignore_count != myignore_count)
 		{
-		    undo_commands << gdb->ignore_command(itostring(number()),
-							 myignore_count)
+		    undo_commands << gdb->ignore_command(num, myignore_count)
 				  << "\n";
 		    myignore_count = ignore_count;
 		    changed = true;
@@ -590,8 +585,8 @@ bool BreakPoint::update(string& info_output,
 	    {
 		changed = true;
 
-		undo_commands << gdb->ignore_command(itostring(number()), 
-						     myignore_count) << "\n";
+		undo_commands << gdb->ignore_command(num, myignore_count) 
+			      << "\n";
 
 		myignore_count = ignore_count;
 	    }
@@ -605,8 +600,7 @@ bool BreakPoint::update(string& info_output,
 	    {
 		changed = myenabled_changed = true;
 
-		undo_commands << gdb->disable_command(itostring(number())) 
-			      << "\n";
+		undo_commands << gdb->disable_command(num) << "\n";
 	    }
 
 	    info_output = info_output.after("Active");
@@ -618,8 +612,7 @@ bool BreakPoint::update(string& info_output,
 	    {
 		changed = myenabled_changed = true;
 
-		undo_commands << gdb->disable_command(itostring(number())) 
-			      << "\n";
+		undo_commands << gdb->disable_command(num) << "\n";
 	    }
 
 	    info_output = info_output.after("Suspended");
