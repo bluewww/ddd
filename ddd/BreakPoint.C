@@ -62,7 +62,9 @@ static regex rxname_colon_int_nl ("[^ ]+:[0-9]+\n");
 
 // Create new breakpoint from INFO_OUTPUT
 BreakPoint::BreakPoint (string& info_output, string arg)
-    : mytype(BREAKPOINT),
+    : mynumber_str(""),
+      mynumber(0),
+      mytype(BREAKPOINT),
       mydispo(BPKEEP),
       myenabled(true),
       myfile_name(""),
@@ -70,6 +72,7 @@ BreakPoint::BreakPoint (string& info_output, string arg)
       myaddress(""),
       myinfos(""),
       myignore_count(""),
+      mycondition(""),
       myarg(arg),
       myfile_changed(true),
       myposition_changed(true),
@@ -78,195 +81,7 @@ BreakPoint::BreakPoint (string& info_output, string arg)
       mysource_glyph(0),
       mycode_glyph(0)
 {
-    read_leading_blanks(info_output);
-    mynumber_str = read_nr_str (info_output);
-    mynumber = get_positive_nr (mynumber_str);
-
-    switch(gdb->type())
-    {
-    case GDB:
-	{
-	    // Read "Type" 
-	    read_leading_blanks (info_output);
-	    if (info_output.contains ("watchpoint", 0))
-		mytype = WATCHPOINT;
-	    else if (info_output.contains ("breakpoint", 0))
-		mytype = BREAKPOINT;
-
-	    info_output = info_output.after(rxblanks_or_tabs);
-
-	    // Read "Disp" 
-	    if (info_output.contains("dis", 0))
-		mydispo = BPDIS;
-	    else if (info_output.contains("del", 0))
-		mydispo = BPDEL;
-	    else if (info_output.contains("keep", 0))
-		mydispo = BPKEEP;
-	    info_output = info_output.after(rxblanks_or_tabs);
-
-	    // Read "Enb" 
-	    if (info_output.contains("n", 0))
-		myenabled = false;
-	    else {
-		myenabled = true;
-	    }
-	    info_output = info_output.after(rxblanks_or_tabs);
-
-	    if (mytype == BREAKPOINT)
-	    {
-		// Read "Address"
-		myaddress   = info_output.through(rxalphanum);
-
-		info_output = info_output.from (rxname_colon_int_nl);
-		myfile_name = info_output.before(":");
-		info_output = info_output.after (":");
-		if (info_output != "" && isdigit(info_output[0]))
-		    myline_nr = read_positive_nr (info_output);
-	    }
-	    else if (mytype == WATCHPOINT)
-	    {
-		// Read "Address" 
-		info_output = info_output.after(rxblanks_or_tabs);
-
-		myinfos += info_output.through ("\n");
-	    }
-
-	    if (info_output != "" && !isdigit(info_output[0]))
-	    {
-		// Extra info may follow
-		int next_nl = index(info_output, rxnl_int, "\n");
-		if (next_nl == -1)
-		{
-		    // That's all, folks!
-		    myinfos += info_output;
-		    info_output = "";
-		}
-		else {
-		    myinfos += info_output.through(next_nl);
-		    info_output = info_output.after(next_nl);
-		}
-	    }
-	}
-	break;
-
-    case DBX:
-	{
-	    read_leading_blanks (info_output);
-	    if (info_output.contains ("stop ", 0)
-		|| info_output.contains ("stopped ", 0))
-	    {
-		info_output = info_output.after(rxblanks_or_tabs);
-		read_leading_blanks (info_output);
-		if (info_output.contains ("at ", 0))
-		{
-		    info_output = info_output.after(rxblanks_or_tabs);
-		    if (info_output.contains('"', 0))
-		    {
-			// ``stop at "FILE":LINE''
-			myfile_name = unquote(info_output.before(":"));
-			info_output = info_output.after (":");
-		    }
-		    else if (info_output.contains('[', 0))
-		    {
-			// ``stop at [file:line ...]''
-			myfile_name = info_output.before(":");
-			myfile_name = myfile_name.after('[');
-			info_output = info_output.after (":");
-		    }
-		    else
-		    {
-			// ``stop at LINE''
-			myfile_name = "";
-		    }
-
-		    if (info_output != "" && isdigit(info_output[0]))
-			myline_nr = get_positive_nr(info_output);
-		}
-		else if (info_output.contains ("in ", 0))
-		{
-		    // ``stop in FUNC''
-		    string func = info_output.after(rxblanks_or_tabs);
-		    func = func.before('\n');
-		    string pos = dbx_lookup(func);
-		    if (pos != "")
-		    {
-			myfile_name   = pos.before(":");
-			string line_s = pos.after(":");
-			myline_nr     = get_positive_nr(line_s);
-		    }
-		}
-
-		// Sun DBX 3.2 issues extra characters like 
-		// (2) stop in main -count 0/10
-		// [3] stop in main -disable
-		string options;
-		if (info_output.contains('\n'))
-		    options = info_output.before('\n');
-		else
-		    options = info_output;
-		myenabled = !options.contains(" -disable");
-
-		if (options.contains(" -count "))
-		{
-		    string count = options.after(" -count ");
-		    myinfos = "count " + count;
-		    if (count.contains('/'))
-			count = count.after('/');
-		    myignore_count = read_nr_str(count);
-		}
-	    }
-	    info_output = info_output.after('\n');
-	}
-	break;
-
-    case XDB:
-	{
-	    // Strip leading `:'.
-	    // Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
-	    if (info_output.contains(':', 0))
-		info_output = info_output.after(0);
-
-	    read_leading_blanks(info_output);
-
-	    // Skip `count: N'
-	    if (info_output.contains("count:", 0))
-	    {
-		info_output = info_output.after("count:");
-		read_leading_blanks(info_output);
-		myignore_count = info_output.before(rxblanks_or_tabs);
-		info_output = info_output.after(rxblanks_or_tabs);
-	    }
-	    
-	    // Check for `Active'
-	    if (info_output.contains("Active", 0))
-	    {
-		// Strip `Active'.
-		// Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
-		info_output = info_output.after("Active");
-		myenabled = true;
-	    }
-	    else if (info_output.contains("Suspended", 0))
-	    {
-		// Strip `Suspended'.
-		// Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
-		info_output = info_output.after("Suspended");
-		myenabled = false;
-	    }
-
-	    // Get function name and position
-	    info_output = info_output.after(rxblanks_or_tabs);
-	    string func = info_output.before(": ");
-	    string pos  = dbx_lookup(func);
-	    if (pos != "")
-		myfile_name = pos.before(":");
-
-	    info_output = info_output.after(": ");
-	    myline_nr = get_positive_nr(info_output);
-	    
-	    info_output = info_output.after('\n');
-	}
-	break;
-    }
+    update(info_output);
 }
 
 
@@ -280,36 +95,54 @@ bool BreakPoint::update (string& info_output)
     myaddress_changed  = false;
 
     read_leading_blanks(info_output);
-    int ret = read_positive_nr (info_output);
-    if (ret < 0)
+    string number_str = read_nr_str (info_output);
+    int number = get_positive_nr (number_str);
+    if (number < 0)
 	return false;
+
+    if (number_str != mynumber_str)
+    {
+	mynumber_str = number_str;
+	changed = true;
+    }
+    if (number != mynumber)
+    {
+	mynumber = number;
+	changed = true;
+    }
 
     switch(gdb->type())
     {
     case GDB:
 	{
-	    // Read "Type" (cannot change)
+	    // Read "Type" 
 	    read_leading_blanks (info_output);
-
-	    if (!info_output.contains("breakpoint", 0) &&
-		!info_output.contains("watchpoint", 0))
-		return false;
+	    if (info_output.contains ("watchpoint", 0))
+	    {
+		changed |= (mytype != WATCHPOINT);
+		mytype = WATCHPOINT;
+	    }
+	    else if (info_output.contains ("breakpoint", 0))
+	    {
+		changed |= (mytype != BREAKPOINT);
+		mytype = BREAKPOINT;
+	    }
 	    info_output = info_output.after(rxblanks_or_tabs);
 
 	    // Read "Disp"
 	    if (info_output.contains("dis", 0))
 	    {
-		changed = (mydispo != BPDIS);
+		changed |= (mydispo != BPDIS);
 		mydispo = BPDIS;
 	    }
 	    else if (info_output.contains("del", 0))
 	    {
-		changed = (mydispo != BPDEL);
+		changed |= (mydispo != BPDEL);
 		mydispo = BPDEL;
 	    }
 	    else if (info_output.contains("keep", 0))
 	    {
-		changed = (mydispo != BPKEEP);
+		changed |= (mydispo != BPKEEP);
 		mydispo = BPKEEP;
 	    }
 	    info_output = info_output.after(rxblanks_or_tabs);
@@ -331,7 +164,9 @@ bool BreakPoint::update (string& info_output)
 	    info_output = info_output.after(rxblanks_or_tabs);
 
 	    string new_info = "";
-	    if (mytype == BREAKPOINT) {
+	    if (mytype == BREAKPOINT) 
+	    {
+		// Read address
 		string new_address = info_output.through(rxalphanum);
 
 		if (myaddress != new_address)
@@ -360,9 +195,8 @@ bool BreakPoint::update (string& info_output)
 	    }
 	    else if (mytype == WATCHPOINT)
 	    {
-		// Read "Address" 
+		// Read Address
 		info_output = info_output.after(rxblanks_or_tabs);
-
 		new_info = info_output.through ("\n");
 	    }
 
@@ -382,7 +216,8 @@ bool BreakPoint::update (string& info_output)
 		}
 	    }
 
-	    if (new_info != myinfos) {
+	    if (new_info != myinfos)
+	    {
 		changed = true;
 		myinfos = new_info;
 	    }
@@ -391,7 +226,6 @@ bool BreakPoint::update (string& info_output)
 
     case DBX:
 	{
-	    // One may ask why a DBX breakpoint should change... :-)
 	    read_leading_blanks (info_output);
 	    if (info_output.contains ("stop ", 0)
 		|| info_output.contains ("stopped ", 0))
@@ -481,9 +315,13 @@ bool BreakPoint::update (string& info_output)
 		    changed = myenabled_changed = true;
 		}
 
+		myinfos = "";
 		if (options.contains(" -count "))
 		{
 		    string count = options.after(" -count ");
+		    read_leading_blanks(count);
+		    count = count.before(rxwhite);
+
 		    myinfos = "count " + count;
 		    if (count.contains('/'))
 			count = count.after('/');
@@ -495,12 +333,17 @@ bool BreakPoint::update (string& info_output)
 			changed = true;
 		    }
 		}
-		else
+
+		if (options.contains(" if ") || options.contains(" -if "))
 		{
+		    string cond = options.after("if ");
 		    if (myinfos != "")
+			myinfos += '\n';
+		    myinfos += "stop only if " + cond;
+		    if (cond != mycondition)
 		    {
+			mycondition = cond;
 			changed = true;
-			myinfos = "";
 		    }
 		}
 	    }
@@ -509,10 +352,12 @@ bool BreakPoint::update (string& info_output)
 	break;
 
     case XDB:
-	    if (info_output[0] == ':')
+	{
+	    // Strip leading `:'.
+	    // Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
+	    if (info_output.contains(':', 0))
 		info_output = info_output.after(0);
 
-	{
 	    read_leading_blanks(info_output);
 
 	    // Skip `count: N'
@@ -533,13 +378,15 @@ bool BreakPoint::update (string& info_output)
 	    // Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
 	    if (info_output.contains("Active", 0))
 	    {
-		changed     = myenabled_changed = !myenabled;
+		if (!myenabled)
+		    changed = myenabled_changed = true;
 		info_output = info_output.after("Active");
 		myenabled   = true;
 	    }
 	    else if (info_output.contains("Suspended", 0))
 	    {
-		changed     = myenabled_changed = myenabled;
+		if (myenabled)
+		    changed = myenabled_changed = true;
 		info_output = info_output.after("Suspended");
 		myenabled   = false;
 	    }
@@ -567,6 +414,28 @@ bool BreakPoint::update (string& info_output)
 	    }
 	    
 	    info_output = info_output.after('\n');
+
+	    // Examine commands for condition
+	    string commands = info_output;
+	    read_leading_blanks(commands);
+	    if (commands.contains('{', 0))
+	    {
+		// A condition has the form `{if COND {} {Q; c}}'.
+		if (commands.contains("{if ", 0))
+		{
+		    string cond = commands.after("{if ");
+		    cond = cond.before('{');
+		    strip_final_blanks(cond);
+		    if (cond != mycondition)
+		    {
+			mycondition = cond;
+			changed = true;
+		    }
+		}
+
+		// Skip this line, too
+		info_output = info_output.after('\n');
+	    }
 	}
 	break;
     }
@@ -606,22 +475,34 @@ string BreakPoint::ignore_count() const
 // Return condition ("" if none)
 string BreakPoint::condition() const
 {
-    if (gdb->type() != GDB)
-	return "";
+    switch (gdb->type())
+    {
+    case GDB:
+    {
+	string info = gdb_question("info breakpoint " + number_str());
+	if (info == NO_GDB_ANSWER)
+	    return "";
 
-    string info = gdb_question("info breakpoint " + number_str());
-    if (info == NO_GDB_ANSWER)
-	return "";
+	string cond = info.after("stop only if ");
+	if (cond.contains('\n'))
+	    cond = cond.before("\n");
 
-    string cond = info.after("stop only if ");
-    if (cond.contains('\n'))
-	cond = cond.before("\n");
-    return cond;
+	return cond;
+    }
+    case DBX:
+    case XDB:
+	return mycondition;
+    }
+
+    return "";			// Never reached
 }
 
-// Return commands to restore this breakpoint.  Assume that the new
-// breakpoint will be given the number NR.
-bool BreakPoint::get_state(ostream& os, int nr, bool dummy, string pos)
+// Return commands to restore this breakpoint.  If AS_DUMMY is set,
+// delete the breakpoint immediately in order to increase the
+// breakpoint number.  If ADDR is set, use ADDR as (fake) address.  If
+// COND is set, use COND as (fake) condition.
+bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
+			   string pos, string cond)
 {
     if (pos == "")
     { 
@@ -630,6 +511,9 @@ bool BreakPoint::get_state(ostream& os, int nr, bool dummy, string pos)
 	else
 	    pos = string('*') + address();
     }
+
+    if (cond == char(-1))
+	cond = condition();
 
     string num = "@" + itostring(nr) + "@";
 
@@ -662,16 +546,15 @@ bool BreakPoint::get_state(ostream& os, int nr, bool dummy, string pos)
 	}
 	}
 
-	if (!dummy)
+	if (!as_dummy)
 	{
 	    // Extra infos
-	    if (!enabled())
+	    if (!enabled() && gdb->has_disable_command())
 		os << gdb->disable_command(num) << "\n";
 	    string ignore = ignore_count();
-	    if (ignore != "")
+	    if (ignore != "" && gdb->has_ignore_command())
 		os << gdb->ignore_command(num, atoi(ignore)) << "\n";
-	    string cond = condition();
-	    if (cond != "")
+	    if (cond != "" && gdb->has_condition_command())
 		os << gdb->condition_command(num, cond) << "\n";
 	}
 	break;
@@ -679,17 +562,21 @@ bool BreakPoint::get_state(ostream& os, int nr, bool dummy, string pos)
 
     case DBX:
     {
+	string cond_suffix = "";
+	if (cond != "")
+	    cond_suffix = " if " + cond;
+
 	if (pos.contains('*', 0))
 	{
-	    os << "stop at " << pos.after('*') << '\n';
+	    os << "stop at " << pos.after('*') << cond_suffix << '\n';
 	}
 	else
 	{
 	    os << "file "    << pos.before(':') << "\n";
-	    os << "stop at " << pos.after(':')  << "\n";
+	    os << "stop at " << pos.after(':')  << cond_suffix << "\n";
 	}
 
-	if (!dummy)
+	if (!as_dummy)
 	{
 	    // Extra infos
 	    if (!enabled() && gdb->has_disable_command())
@@ -703,36 +590,32 @@ bool BreakPoint::get_state(ostream& os, int nr, bool dummy, string pos)
 
     case XDB:
     {
-	if (pos.contains('*', 0))
-	    os << "ba " << pos.after('*') << '\n';
-	else
-	    os << "b " << pos << "\n";
+	string cond_suffix;
+	if (cond != "" && !gdb->has_condition_command())
+	    cond_suffix = " {if " + cond + " {} {Q;c}}";
 
-	if (!dummy)
+	if (pos.contains('*', 0))
+	    os << "ba " << pos.after('*') << cond_suffix << '\n';
+	else
+	    os << "b " << pos << cond_suffix << "\n";
+
+	if (!as_dummy)
 	{
 	    // Extra infos
-	    if (!enabled())
+	    if (!enabled() && gdb->has_disable_command())
 		os << gdb->disable_command(num) << "\n";
 	    string ignore = ignore_count();
-	    if (ignore != "")
+	    if (ignore != "" && gdb->has_ignore_command())
 		os << gdb->ignore_command(num, atoi(ignore)) << "\n";
 	}
 	break;
     }
     }
 
-    if (dummy)
+    if (as_dummy)
     {
-	switch (gdb->type())
-	{
-	case GDB:
-	case DBX:
-	    os << "delete " << num << "\n";
-	    break;
-
-	case XDB:
-	    os << "db " << num << "\n";
-	}
+	// Delete the breakpoint just created
+	os << gdb->delete_command(num) << "\n";
     }
 
     return true;
