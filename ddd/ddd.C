@@ -463,223 +463,372 @@ static char OFF[] = "off";
 // Options
 // Note: we support both the GDB '--OPTION' and the X '-OPTION' convention.
 static XrmOptionDescRec options[] = {
-{ (char *)"--session",              (char *)XtNsession,              XrmoptionSepArg, XPointer(0) },
-{ (char *)"-session",               (char *)XtNsession,              XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"-xtsessionID",           (char *)XtNsession,              XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--debugger",             (char *)XtNdebuggerCommand,      XrmoptionSepArg, XPointer(0) },
-{ (char *)"-debugger",              (char *)XtNdebuggerCommand,      XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--automatic-debugger",   (char *)XtNautoDebugger,         XrmoptionNoArg,  ON },
-{ (char *)"-automatic-debugger",    (char *)XtNautoDebugger,         XrmoptionNoArg,  ON },
-
-{ (char *)"--gdb",                  (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"gdb" },
-{ (char *)"-gdb",                   (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"gdb" },
-
-{ (char *)"--dbx",                  (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"dbx" },
-{ (char *)"-dbx",                   (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"dbx" },
-
-{ (char *)"--ladebug",              (char *)XtNdebugger,            XrmoptionNoArg, (char *)"ladebug"},
-{ (char *)"-ladebug", 		    (char *)XtNdebugger,            XrmoptionNoArg, (char *)"ladebug"},
-
-{ (char *)"--wdb",                  (char *)XtNdebugger,            XrmoptionNoArg, (char *)"wdb"},
-{ (char *)"-wdb", 		    (char *)XtNdebugger,            XrmoptionNoArg, (char *)"wdb"},
-
-{ (char *)"--xdb",                  (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"xdb" },
-{ (char *)"-xdb",                   (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"xdb" },
-
-{ (char *)"--jdb",                  (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"jdb" },
-{ (char *)"-jdb",                   (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"jdb" },
-
-{ (char *)"--pydb",                 (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"pydb" },
-{ (char *)"-pydb",                  (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"pydb" },
-
-{ (char *)"--perl",                 (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"perl" },
-{ (char *)"-perl",                  (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"perl" },
-
-{ (char *)"--trace",                (char *)XtNtrace,                XrmoptionNoArg,  ON },
-{ (char *)"-trace",                 (char *)XtNtrace,                XrmoptionNoArg,  ON },
-
-{ (char *)"--play-log",		   (char *)XtNplayLog,              XrmoptionSepArg, XPointer(0) },
-{ (char *)"-play-log",		   (char *)XtNplayLog,              XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--font",                 (char *)XtNdefaultFont,          XrmoptionSepArg, XPointer(0) },
-{ (char *)"-font",                  (char *)XtNdefaultFont,          XrmoptionSepArg, XPointer(0) },
-{ (char *)"-fn",                    (char *)XtNdefaultFont,          XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--fontsize",             (char *)XtCFontSize,             XrmoptionSepArg, XPointer(0) },
-{ (char *)"-fontsize",              (char *)XtCFontSize,             XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--vsl-library",          (char *)XtNvslLibrary,           XrmoptionSepArg, XPointer(0) },
-{ (char *)"-vsl-library",           (char *)XtNvslLibrary,           XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--vsl-path",             (char *)XtNvslPath,              XrmoptionSepArg, XPointer(0) },
-{ (char *)"-vsl-path",              (char *)XtNvslPath,              XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--separate",             (char *)XtCSeparate,             XrmoptionNoArg, ON },
-{ (char *)"-separate",              (char *)XtCSeparate,             XrmoptionNoArg, ON },
-{ (char *)"--separate-windows",     (char *)XtCSeparate,             XrmoptionNoArg, ON },
-{ (char *)"-separate-windows",      (char *)XtCSeparate,             XrmoptionNoArg, ON },
-
-{ (char *)"--separate-source-window", (char *)XtNseparateSourceWindow, XrmoptionNoArg, ON },
-{ (char *)"-separate-source-window",  (char *)XtNseparateSourceWindow, XrmoptionNoArg, ON },
-
-{ (char *)"--separate-data-window", (char *)XtNseparateDataWindow,   XrmoptionNoArg, ON },
-{ (char *)"-separate-data-window",  (char *)XtNseparateDataWindow,   XrmoptionNoArg, ON },
-
-{ (char *)"--attach",               (char *)XtCSeparate,             XrmoptionNoArg, OFF },
-{ (char *)"-attach",                (char *)XtCSeparate,             XrmoptionNoArg, OFF },
-{ (char *)"--attach-windows",       (char *)XtCSeparate,             XrmoptionNoArg, OFF },
-{ (char *)"-attach-windows",        (char *)XtCSeparate,             XrmoptionNoArg, OFF },
-
-{ (char *)"--attach-source-window", (char *)XtNseparateSourceWindow, XrmoptionNoArg, OFF },
-{ (char *)"-attach-source-window",  (char *)XtNseparateSourceWindow, XrmoptionNoArg, OFF },
-
-{ (char *)"--attach-data-window",   (char *)XtNseparateDataWindow,   XrmoptionNoArg, OFF },
-{ (char *)"-attach-data-window",    (char *)XtNseparateDataWindow,   XrmoptionNoArg, OFF },
-
-{ (char *)"--exec-window",          (char *)XtNseparateExecWindow,   XrmoptionNoArg, ON },
-{ (char *)"-exec-window",           (char *)XtNseparateExecWindow,   XrmoptionNoArg, ON },
-
-{ (char *)"--no-exec-window",       (char *)XtNseparateExecWindow,   XrmoptionNoArg, OFF },
-{ (char *)"-no-exec-window",        (char *)XtNseparateExecWindow,   XrmoptionNoArg, OFF },
-
-{ (char *)"--source-window",        (char *)XtNopenSourceWindow,     XrmoptionNoArg, ON },
-{ (char *)"-source-window",         (char *)XtNopenSourceWindow,     XrmoptionNoArg, ON },
-
-{ (char *)"--no-source-window",     (char *)XtNopenSourceWindow,     XrmoptionNoArg, OFF },
-{ (char *)"-no-source-window",      (char *)XtNopenSourceWindow,     XrmoptionNoArg, OFF },
-
-{ (char *)"--data-window",          (char *)XtNopenDataWindow,       XrmoptionNoArg, ON },
-{ (char *)"-data-window",           (char *)XtNopenDataWindow,       XrmoptionNoArg, ON },
-
-{ (char *)"--no-data-window",       (char *)XtNopenDataWindow,       XrmoptionNoArg, OFF },
-{ (char *)"-no-data-window",        (char *)XtNopenDataWindow,       XrmoptionNoArg, OFF },
-
-{ (char *)"--debugger-console",     (char *)XtNopenDebuggerConsole,  XrmoptionNoArg, ON },
-{ (char *)"-debugger-console",      (char *)XtNopenDebuggerConsole,  XrmoptionNoArg, ON },
-
-{ (char *)"--no-debugger-console",  (char *)XtNopenDebuggerConsole,  XrmoptionNoArg, OFF },
-{ (char *)"-no-debugger-console",   (char *)XtNopenDebuggerConsole,  XrmoptionNoArg, OFF },
-
-{ (char *)"--button-tips",          (char *)XtNbuttonTips,           XrmoptionNoArg, ON },
-{ (char *)"-button-tips",           (char *)XtNbuttonTips,           XrmoptionNoArg, ON },
-
-{ (char *)"--no-button-tips",       (char *)XtNbuttonTips,           XrmoptionNoArg, OFF },
-{ (char *)"-no-button-tips",        (char *)XtNbuttonTips,           XrmoptionNoArg, OFF },
-
-{ (char *)"--value-tips",           (char *)XtNvalueTips,            XrmoptionNoArg, ON },
-{ (char *)"-value-tips",            (char *)XtNvalueTips,            XrmoptionNoArg, ON },
-
-{ (char *)"--no-value-tips",        (char *)XtNvalueTips,            XrmoptionNoArg, OFF },
-{ (char *)"-no-value-tips",         (char *)XtNvalueTips,            XrmoptionNoArg, OFF },
-
-{ (char *)"--status-at-bottom",     (char *)XtNstatusAtBottom,       XrmoptionNoArg, ON },
-{ (char *)"-status-at-bottom",      (char *)XtNstatusAtBottom,       XrmoptionNoArg, ON },
-
-{ (char *)"--status-at-top",        (char *)XtNstatusAtBottom,       XrmoptionNoArg, OFF },
-{ (char *)"-status-at-top",         (char *)XtNstatusAtBottom,       XrmoptionNoArg, OFF },
-
-{ (char *)"--toolbars-at-bottom",   (char *)XtNtoolbarsAtBottom,     XrmoptionNoArg, ON },
-{ (char *)"-toolbars-at-bottom",    (char *)XtNtoolbarsAtBottom,     XrmoptionNoArg, ON },
-
-{ (char *)"--toolbars-at-top",      (char *)XtNtoolbarsAtBottom,     XrmoptionNoArg, OFF },
-{ (char *)"-toolbars-at-top",       (char *)XtNtoolbarsAtBottom,     XrmoptionNoArg, OFF },
-
-{ (char *)"--panned-graph-editor",  (char *)XtNpannedGraphEditor,    XrmoptionNoArg, ON },
-{ (char *)"-panned-graph-editor",   (char *)XtNpannedGraphEditor,    XrmoptionNoArg, ON },
-
-{ (char *)"--scrolled-graph-editor", (char *)XtNpannedGraphEditor,   XrmoptionNoArg, OFF },
-{ (char *)"-scrolled-graph-editor", (char *)XtNpannedGraphEditor,    XrmoptionNoArg, OFF },
-
-{ (char *)"--sync-debugger",        (char *)XtNsynchronousDebugger,  XrmoptionNoArg, ON },
-{ (char *)"-sync-debugger",         (char *)XtNsynchronousDebugger,  XrmoptionNoArg, ON },
-
-{ (char *)"--disassemble",          (char *)XtNdisassemble,          XrmoptionNoArg, ON },
-{ (char *)"-disassemble",           (char *)XtNdisassemble,          XrmoptionNoArg, ON },
-
-{ (char *)"--no-disassemble",       (char *)XtNdisassemble,          XrmoptionNoArg, OFF },
-{ (char *)"-no-disassemble",        (char *)XtNdisassemble,          XrmoptionNoArg, OFF },
-
-{ (char *)"--glyphs",               (char *)XtNdisplayGlyphs,        XrmoptionNoArg, ON },
-{ (char *)"-glyphs",                (char *)XtNdisplayGlyphs,        XrmoptionNoArg, ON },
-
-{ (char *)"--no-glyphs",            (char *)XtNdisplayGlyphs,        XrmoptionNoArg, OFF },
-{ (char *)"-no-glyphs",             (char *)XtNdisplayGlyphs,        XrmoptionNoArg, OFF },
-
-{ (char *)"--host",                 (char *)XtNdebuggerHost,         XrmoptionSepArg, XPointer(0) },
-{ (char *)"-host",                  (char *)XtNdebuggerHost,         XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--rhost",                (char *)XtNdebuggerRHost,        XrmoptionSepArg, XPointer(0) },
-{ (char *)"-rhost",                 (char *)XtNdebuggerRHost,        XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--login",                (char *)XtNdebuggerHostLogin,    XrmoptionSepArg, XPointer(0) },
-{ (char *)"-login",                 (char *)XtNdebuggerHostLogin,    XrmoptionSepArg, XPointer(0) },
-{ (char *)"-l",                     (char *)XtNdebuggerHostLogin,    XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--tty",                  (char *)XtNttyMode,              XrmoptionNoArg, ON },
-{ (char *)"-tty",                   (char *)XtNttyMode,              XrmoptionNoArg, ON },
-{ (char *)"-t",                     (char *)XtNttyMode,              XrmoptionNoArg, ON },
-
-{ (char *)"--fullname",             (char *)XtNannotate,             XrmoptionNoArg, (char *)"1" },
-{ (char *)"-fullname",              (char *)XtNannotate,             XrmoptionNoArg, (char *)"1" },
-{ (char *)"-f",                     (char *)XtNannotate,             XrmoptionNoArg, (char *)"1" },
-
-{ (char *)"--annotate",             (char *)XtNannotate,             XrmoptionSepArg, XPointer(0) },
-{ (char *)"-annotate",              (char *)XtNannotate,             XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--annotate=0",           (char *)XtNannotate,             XrmoptionNoArg, (char *)"0" },
-{ (char *)"-annotate=0",            (char *)XtNannotate,             XrmoptionNoArg, (char *)"0" },
-
-{ (char *)"--annotate=1",           (char *)XtNannotate,             XrmoptionNoArg, (char *)"1" },
-{ (char *)"-annotate=1",            (char *)XtNannotate,             XrmoptionNoArg, (char *)"1" },
-
-{ (char *)"--annotate=2",           (char *)XtNannotate,             XrmoptionNoArg, (char *)"2" },
-{ (char *)"-annotate=2",            (char *)XtNannotate,             XrmoptionNoArg, (char *)"2" },
-
-{ (char *)"--version",              (char *)XtNshowVersion,          XrmoptionNoArg, ON },
-{ (char *)"-version",               (char *)XtNshowVersion,          XrmoptionNoArg, ON },
-{ (char *)"-v",                     (char *)XtNshowVersion,          XrmoptionNoArg, ON },
-
-{ (char *)"--configuration",        (char *)XtNshowConfiguration,    XrmoptionNoArg, ON },
-{ (char *)"-configuration",         (char *)XtNshowConfiguration,    XrmoptionNoArg, ON },
-
-{ (char *)"--manual",               (char *)XtNshowManual,           XrmoptionNoArg, ON },
-{ (char *)"-manual",                (char *)XtNshowManual,           XrmoptionNoArg, ON },
-
-{ (char *)"--maintenance",          (char *)XtNmaintenance,          XrmoptionNoArg, ON },
-{ (char *)"-maintenance",           (char *)XtNmaintenance,          XrmoptionNoArg, ON },
-
-{ (char *)"--no-maintenance",       (char *)XtNmaintenance,          XrmoptionNoArg, OFF },
-{ (char *)"-no-maintenance",        (char *)XtNmaintenance,          XrmoptionNoArg, OFF },
-
-{ (char *)"--license",              (char *)XtNshowLicense,          XrmoptionNoArg, ON },
-{ (char *)"-license",               (char *)XtNshowLicense,          XrmoptionNoArg, ON },
-
-{ (char *)"--news",                 (char *)XtNshowNews,             XrmoptionNoArg, ON },
-{ (char *)"-news",                  (char *)XtNshowNews,             XrmoptionNoArg, ON },
-
-{ (char *)"--fonts",                (char *)XtNshowFonts,            XrmoptionNoArg, ON },
-{ (char *)"-fonts",                 (char *)XtNshowFonts,            XrmoptionNoArg, ON },
-
-{ (char *)"--check-configuration",  (char *)XtNcheckConfiguration,   XrmoptionNoArg, ON },
-{ (char *)"-check-configuration",   (char *)XtNcheckConfiguration,   XrmoptionNoArg, ON },
-
-{ (char *)"--lesstif-hacks",        (char *)XtNlessTifVersion,       XrmoptionNoArg, (char *)"999" },
-{ (char *)"-lesstif-hacks",         (char *)XtNlessTifVersion,       XrmoptionNoArg, (char *)"999" },
-
-{ (char *)"--no-lesstif-hacks",     (char *)XtNlessTifVersion,       XrmoptionNoArg, (char *)"1000" },
-{ (char *)"-no-lesstif-hacks",      (char *)XtNlessTifVersion,       XrmoptionNoArg, (char *)"1000" },
-
-{ (char *)"--lesstif-version",      (char *)XtNlessTifVersion,       XrmoptionSepArg, XPointer(0) },
-{ (char *)"-lesstif-version",       (char *)XtNlessTifVersion,       XrmoptionSepArg, XPointer(0) },
-
-{ (char *)"--help",                 (char *)XtNshowInvocation,       XrmoptionNoArg, ON },
-{ (char *)"-help",                  (char *)XtNshowInvocation,       XrmoptionNoArg, ON },
-{ (char *)"-h",                     (char *)XtNshowInvocation,       XrmoptionNoArg, ON },
-{ (char *)"--?",                    (char *)XtNshowInvocation,       XrmoptionNoArg, ON },
-{ (char *)"-?",                     (char *)XtNshowInvocation,       XrmoptionNoArg, ON },
+{ (char *)"--session",              (char *)XtNsession,              
+                                        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-session",               (char *)XtNsession,              
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ (char *)"-xtsessionID",           (char *)XtNsession,              
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ (char *)"--debugger",             (char *)XtNdebuggerCommand,      
+                                        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-debugger",              (char *)XtNdebuggerCommand,      
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ (char *)"--automatic-debugger",   (char *)XtNautoDebugger,         
+                                        XrmoptionNoArg,  ON },
+{ (char *)"-automatic-debugger",    (char *)XtNautoDebugger,         
+                                        XrmoptionNoArg,  ON },
+
+{ (char *)"--gdb",                  (char *)XtNdebugger,             
+                                        XrmoptionNoArg,  (char *)"gdb" },
+{ (char *)"-gdb",                   (char *)XtNdebugger,             
+                                        XrmoptionNoArg,  (char *)"gdb" },
+
+{ (char *)"--dbx",                  (char *)XtNdebugger,             
+                                        XrmoptionNoArg,  (char *)"dbx" },
+{ (char *)"-dbx",                   (char *)XtNdebugger,             
+                                        XrmoptionNoArg,  (char *)"dbx" },
+
+{ (char *)"--ladebug",              (char *)XtNdebugger,            
+                                        XrmoptionNoArg, (char *)"ladebug"},
+{ (char *)"-ladebug", 		    (char *)XtNdebugger,            
+                                        XrmoptionNoArg, (char *)"ladebug"},
+
+{ (char *)"--wdb",                  (char *)XtNdebugger,            
+                                        XrmoptionNoArg, (char *)"wdb"},
+{ (char *)"-wdb", 		    (char *)XtNdebugger,            
+                                        XrmoptionNoArg, (char *)"wdb"},
+
+{ (char *)"--xdb",                  (char *)XtNdebugger,             
+                                        XrmoptionNoArg,  (char *)"xdb" },
+{ (char *)"-xdb",                   (char *)XtNdebugger,             
+                                        XrmoptionNoArg,  (char *)"xdb" },
+
+{ (char *)"--jdb",                  (char *)XtNdebugger,             
+                                        XrmoptionNoArg,  (char *)"jdb" },
+{ (char *)"-jdb",                   (char *)XtNdebugger,             
+                                        XrmoptionNoArg,  (char *)"jdb" },
+
+{ (char *)"--pydb",                 (char *)XtNdebugger,             
+                                        XrmoptionNoArg,  (char *)"pydb" },
+{ (char *)"-pydb",                  (char *)XtNdebugger,             
+                                        XrmoptionNoArg,  (char *)"pydb" },
+
+{ (char *)"--perl",                 (char *)XtNdebugger,             
+                                        XrmoptionNoArg,  (char *)"perl" },
+{ (char *)"-perl",                  (char *)XtNdebugger,             
+                                        XrmoptionNoArg,  (char *)"perl" },
+
+{ (char *)"--trace",                (char *)XtNtrace,                
+                                        XrmoptionNoArg,  ON },
+{ (char *)"-trace",                 (char *)XtNtrace,                
+                                        XrmoptionNoArg,  ON },
+
+{ (char *)"--play-log",		   (char *)XtNplayLog,              
+                                        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-play-log",		   (char *)XtNplayLog,              
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ (char *)"--font",                 (char *)XtNdefaultFont,          
+                                        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-font",                  (char *)XtNdefaultFont,          
+                                        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-fn",                    (char *)XtNdefaultFont,          
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ (char *)"--fontsize",             (char *)XtCFontSize,             
+                                        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-fontsize",              (char *)XtCFontSize,             
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ (char *)"--vsl-library",          (char *)XtNvslLibrary,           
+                                        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-vsl-library",           (char *)XtNvslLibrary,           
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ (char *)"--vsl-path",             (char *)XtNvslPath,              
+                                        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-vsl-path",              (char *)XtNvslPath,              
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ (char *)"--separate",             (char *)XtCSeparate,             
+                                        XrmoptionNoArg, ON },
+{ (char *)"-separate",              (char *)XtCSeparate,             
+                                        XrmoptionNoArg, ON },
+{ (char *)"--separate-windows",     (char *)XtCSeparate,             
+                                        XrmoptionNoArg, ON },
+{ (char *)"-separate-windows",      (char *)XtCSeparate,             
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--separate-source-window", (char *)XtNseparateSourceWindow, 
+                                        XrmoptionNoArg, ON },
+{ (char *)"-separate-source-window",  (char *)XtNseparateSourceWindow, 
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--separate-data-window", (char *)XtNseparateDataWindow,   
+                                        XrmoptionNoArg, ON },
+{ (char *)"-separate-data-window",  (char *)XtNseparateDataWindow,   
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--attach",               (char *)XtCSeparate,             
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-attach",                (char *)XtCSeparate,             
+                                        XrmoptionNoArg, OFF },
+{ (char *)"--attach-windows",       (char *)XtCSeparate,             
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-attach-windows",        (char *)XtCSeparate,             
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--attach-source-window", (char *)XtNseparateSourceWindow, 
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-attach-source-window",  (char *)XtNseparateSourceWindow, 
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--attach-data-window",   (char *)XtNseparateDataWindow,   
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-attach-data-window",    (char *)XtNseparateDataWindow,   
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--exec-window",          (char *)XtNseparateExecWindow,   
+                                        XrmoptionNoArg, ON },
+{ (char *)"-exec-window",           (char *)XtNseparateExecWindow,   
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--no-exec-window",       (char *)XtNseparateExecWindow,   
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-no-exec-window",        (char *)XtNseparateExecWindow,   
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--source-window",        (char *)XtNopenSourceWindow,     
+                                        XrmoptionNoArg, ON },
+{ (char *)"-source-window",         (char *)XtNopenSourceWindow,     
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--no-source-window",     (char *)XtNopenSourceWindow,     
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-no-source-window",      (char *)XtNopenSourceWindow,     
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--data-window",          (char *)XtNopenDataWindow,       
+                                        XrmoptionNoArg, ON },
+{ (char *)"-data-window",           (char *)XtNopenDataWindow,       
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--no-data-window",       (char *)XtNopenDataWindow,       
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-no-data-window",        (char *)XtNopenDataWindow,       
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--debugger-console",     (char *)XtNopenDebuggerConsole,  
+                                        XrmoptionNoArg, ON },
+{ (char *)"-debugger-console",      (char *)XtNopenDebuggerConsole,  
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--no-debugger-console",  (char *)XtNopenDebuggerConsole,  
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-no-debugger-console",   (char *)XtNopenDebuggerConsole,  
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--button-tips",          (char *)XtNbuttonTips,           
+                                        XrmoptionNoArg, ON },
+{ (char *)"-button-tips",           (char *)XtNbuttonTips,           
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--no-button-tips",       (char *)XtNbuttonTips,           
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-no-button-tips",        (char *)XtNbuttonTips,           
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--value-tips",           (char *)XtNvalueTips,            
+                                        XrmoptionNoArg, ON },
+{ (char *)"-value-tips",            (char *)XtNvalueTips,            
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--no-value-tips",        (char *)XtNvalueTips,            
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-no-value-tips",         (char *)XtNvalueTips,            
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--status-at-bottom",     (char *)XtNstatusAtBottom,       
+                                        XrmoptionNoArg, ON },
+{ (char *)"-status-at-bottom",      (char *)XtNstatusAtBottom,       
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--status-at-top",        (char *)XtNstatusAtBottom,       
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-status-at-top",         (char *)XtNstatusAtBottom,       
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--toolbars-at-bottom",   (char *)XtNtoolbarsAtBottom,     
+                                        XrmoptionNoArg, ON },
+{ (char *)"-toolbars-at-bottom",    (char *)XtNtoolbarsAtBottom,     
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--toolbars-at-top",      (char *)XtNtoolbarsAtBottom,     
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-toolbars-at-top",       (char *)XtNtoolbarsAtBottom,     
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--panned-graph-editor",  (char *)XtNpannedGraphEditor,    
+                                        XrmoptionNoArg, ON },
+{ (char *)"-panned-graph-editor",   (char *)XtNpannedGraphEditor,    
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--scrolled-graph-editor", (char *)XtNpannedGraphEditor,   
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-scrolled-graph-editor", (char *)XtNpannedGraphEditor,    
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--sync-debugger",        (char *)XtNsynchronousDebugger,  
+                                        XrmoptionNoArg, ON },
+{ (char *)"-sync-debugger",         (char *)XtNsynchronousDebugger,  
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--disassemble",          (char *)XtNdisassemble,          
+                                        XrmoptionNoArg, ON },
+{ (char *)"-disassemble",           (char *)XtNdisassemble,          
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--no-disassemble",       (char *)XtNdisassemble,          
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-no-disassemble",        (char *)XtNdisassemble,          
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--glyphs",               (char *)XtNdisplayGlyphs,        
+                                        XrmoptionNoArg, ON },
+{ (char *)"-glyphs",                (char *)XtNdisplayGlyphs,        
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--no-glyphs",            (char *)XtNdisplayGlyphs,        
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-no-glyphs",             (char *)XtNdisplayGlyphs,        
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--host",                 (char *)XtNdebuggerHost,         
+                                        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-host",                  (char *)XtNdebuggerHost,         
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ (char *)"--rhost",                (char *)XtNdebuggerRHost,        
+                                        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-rhost",                 (char *)XtNdebuggerRHost,        
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ (char *)"--login",                (char *)XtNdebuggerHostLogin,    
+                                        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-login",                 (char *)XtNdebuggerHostLogin,    
+                                        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-l",                     (char *)XtNdebuggerHostLogin,    
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ (char *)"--tty",                  (char *)XtNttyMode,              
+                                        XrmoptionNoArg, ON },
+{ (char *)"-tty",                   (char *)XtNttyMode,              
+                                        XrmoptionNoArg, ON },
+{ (char *)"-t",                     (char *)XtNttyMode,              
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--fullname",             (char *)XtNannotate,             
+                                        XrmoptionNoArg, (char *)"1" },
+{ (char *)"-fullname",              (char *)XtNannotate,             
+                                        XrmoptionNoArg, (char *)"1" },
+{ (char *)"-f",                     (char *)XtNannotate,             
+                                        XrmoptionNoArg, (char *)"1" },
+
+{ (char *)"--annotate",             (char *)XtNannotate,             
+                                        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-annotate",              (char *)XtNannotate,             
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ (char *)"--annotate=0",           (char *)XtNannotate,             
+                                        XrmoptionNoArg, (char *)"0" },
+{ (char *)"-annotate=0",            (char *)XtNannotate,             
+                                        XrmoptionNoArg, (char *)"0" },
+
+{ (char *)"--annotate=1",           (char *)XtNannotate,             
+                                        XrmoptionNoArg, (char *)"1" },
+{ (char *)"-annotate=1",            (char *)XtNannotate,             
+                                        XrmoptionNoArg, (char *)"1" },
+
+{ (char *)"--annotate=2",           (char *)XtNannotate,             
+                                        XrmoptionNoArg, (char *)"2" },
+{ (char *)"-annotate=2",            (char *)XtNannotate,             
+                                        XrmoptionNoArg, (char *)"2" },
+
+{ (char *)"--version",              (char *)XtNshowVersion,          
+                                        XrmoptionNoArg, ON },
+{ (char *)"-version",               (char *)XtNshowVersion,          
+                                        XrmoptionNoArg, ON },
+{ (char *)"-v",                     (char *)XtNshowVersion,          
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--configuration",        (char *)XtNshowConfiguration,    
+                                        XrmoptionNoArg, ON },
+{ (char *)"-configuration",         (char *)XtNshowConfiguration,    
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--manual",               (char *)XtNshowManual,           
+                                        XrmoptionNoArg, ON },
+{ (char *)"-manual",                (char *)XtNshowManual,           
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--maintenance",          (char *)XtNmaintenance,          
+                                        XrmoptionNoArg, ON },
+{ (char *)"-maintenance",           (char *)XtNmaintenance,          
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--no-maintenance",       (char *)XtNmaintenance,          
+                                        XrmoptionNoArg, OFF },
+{ (char *)"-no-maintenance",        (char *)XtNmaintenance,          
+                                        XrmoptionNoArg, OFF },
+
+{ (char *)"--license",              (char *)XtNshowLicense,          
+                                        XrmoptionNoArg, ON },
+{ (char *)"-license",               (char *)XtNshowLicense,          
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--news",                 (char *)XtNshowNews,             
+                                        XrmoptionNoArg, ON },
+{ (char *)"-news",                  (char *)XtNshowNews,             
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--fonts",                (char *)XtNshowFonts,            
+                                        XrmoptionNoArg, ON },
+{ (char *)"-fonts",                 (char *)XtNshowFonts,            
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--check-configuration",  (char *)XtNcheckConfiguration,   
+                                        XrmoptionNoArg, ON },
+{ (char *)"-check-configuration",   (char *)XtNcheckConfiguration,   
+                                        XrmoptionNoArg, ON },
+
+{ (char *)"--lesstif-hacks",        (char *)XtNlessTifVersion,       
+                                        XrmoptionNoArg, (char *)"999" },
+{ (char *)"-lesstif-hacks",         (char *)XtNlessTifVersion,       
+                                        XrmoptionNoArg, (char *)"999" },
+
+{ (char *)"--no-lesstif-hacks",     (char *)XtNlessTifVersion,       
+                                        XrmoptionNoArg, (char *)"1000" },
+{ (char *)"-no-lesstif-hacks",      (char *)XtNlessTifVersion,       
+                                        XrmoptionNoArg, (char *)"1000" },
+
+{ (char *)"--lesstif-version",      (char *)XtNlessTifVersion,       
+                                        XrmoptionSepArg, XPointer(0) },
+{ (char *)"-lesstif-version",       (char *)XtNlessTifVersion,       
+                                        XrmoptionSepArg, XPointer(0) },
+
+{ (char *)"--help",                 (char *)XtNshowInvocation,       
+                                        XrmoptionNoArg, ON },
+{ (char *)"-help",                  (char *)XtNshowInvocation,       
+                                        XrmoptionNoArg, ON },
+{ (char *)"-h",                     (char *)XtNshowInvocation,       
+                                        XrmoptionNoArg, ON },
+{ (char *)"--?",                    (char *)XtNshowInvocation,       
+                                        XrmoptionNoArg, ON },
+{ (char *)"-?",                     (char *)XtNshowInvocation,
+                                        XrmoptionNoArg, ON },
 
 };
 
