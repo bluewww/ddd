@@ -119,6 +119,13 @@ Reported by: Pascal Quesseveur <abak@hol.fr>
     to link ddd correctly.
 
 
+EGCS
+====
+
+    When using EGCS 1.0 on a sparc-sun-sunos4.1.4 system, the file
+    `VSLRead.o' must be generated without `-O' flag.  Just type `rm
+    VSLRead.o; make CXXOPT=-DNDEBUG VSLRead.o' and re-build DDD.
+
 
 FreeBSD
 =======
@@ -213,7 +220,8 @@ LessTif
 
     When linking with LessTif instead of OSF/Motif, the following
     problems occur.  Unless otherwise noted, all problems refer to DDD
-    2.1.1 compiled against LessTif 0.81 on a sparc-sunos-4.1.4.
+    2.2.1 compiled against LessTif 0.82 on a sparc-sunos-4.1.4 with
+    DDD-specific patches applied.
  
     001. The `F1' menu accelerator (Help|On Context) has no effect.
          [behavioral]
@@ -225,13 +233,6 @@ LessTif
  
     003. Menu items are not made insensitive as they ought to be.
          [behavioral]
-
-    004. If the insertion cursor is positioned using the mouse, the
-         text always scrolls such that the cursor is in the first
-         line. [behavioral]
-
-    005. DDD PushButton menus cannot be invoked with Button1 (use
-         Button3 instead). [behavioral]
 
 
 Linux
@@ -322,7 +323,7 @@ SunOS 4.1 and Sun C++
 
 Reported by:	Franklin Chen <chen@adi.com>
 
-    On SunOS 4.1.x, with Sun C++ 4.0.1, config.h needs to end up with
+    On SunOS 4.1.x, with Sun C++ 4.0.1, `config.h' needs to end up with
         #define SIGHANDLERARGS int, ...
     rather than
         #define SIGHANDLERARGS int
