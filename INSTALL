@@ -24,9 +24,18 @@ To build a complete DDD from sources, you need:
      - LessTif, 0.90 or later, or
      - OSF/Motif (1.2 or later).
 
-     We recommend to use LessTif 0.90 or later, available from
-     `http://www.lesstif.org/'.  Use LessTif in (default) M*tif 1.2
-     compatibility mode; with LessTif in M*tif 2.0 mode, DDD will not work.
+     We recommend to use LessTif 0.92 or later, available from
+     `http://www.lesstif.org/'.  
+
+     Please note: LessTif can be built and installed as M*tif
+     1.2-compatible version and as M*tif 2.0-compatible version.
+     LessTif packages normally install both versions, with one being
+     the default.
+
+     If you use DDD with LessTif 0.92 or later, you can use any of the
+     two LessTif versions.  If you use DDD with an older LessTif
+     version, be sure to use the M*tif-1.2 compatible LessTif version.
+     See `External Packages', below, for details.
 
    * The X window library (Xlib) and X toolkit library (Xt), X11R4 or
      later.  Best results are obtained with X11R6.3 and later.
@@ -188,7 +197,7 @@ The simplest way to compile DDD is:
      subdirectory for patches to be applied.
 
   4. `cd' to the directory containing the DDD package source code
-     (that is, the directory named `ddd-<release>', *not* `ddd') and
+     (that is, the directory named `ddd-<release>', _not_ `ddd') and
      type
      
 	$ ./configure
@@ -253,22 +262,27 @@ The simplest way to compile DDD is:
      on it by invoking `./ddd cxxtest'.  Enjoy!
 
      You can also invoke DDD directly, but DDD may not be able to
-     locate its resources.  See Step 11, below, for appropriate
+     locate its resources.  See Step 12, below, for appropriate
      settings.
 
- 10. If DDD crashes immediately after startup or after a few
+ 10. If DDD fails to start because a dynamic library is not found at
+     runtime, re-run `configure' with the `--enable-rpath' option;
+     see `Locating Libraries', below.  Delete ddd (`cd ddd; rm ddd')
+     and repeat Steps 6--9.
+
+ 11. If DDD crashes immediately after startup or after a few
      interactions, first check your configuration (the output of
      `./ddd --configuration') for version mismatches.  Also check
      whether libraries and include files have matching versions.
 
-     Then, see the `PROBLEMS' and `BUGS' files for known problems.  If
-     the problem is not listed, report it to the DDD maintainers
-     <bug-ddd@gnu.org>.  If you need help and assistance, see
-     the DDD WWW page `http://www.gnu.org/software/ddd/' for
-     patches, people, and pointers.
+     Then, see the `PROBLEMS' and `BUGS' files for known problems.  
+     If the problem is not listed, report it to the DDD maintainers
+     <bug-ddd@gnu.org>.  If you need help and assistance, see the DDD
+     WWW page `http://www.gnu.org/software/ddd/' for patches, people,
+     and pointers.
 
- 11. If you want to use DDD on your own program, please install it
-     first (see the next step, below).  If you absolutely *must* run 
+ 12. If you want to use DDD on your own program, please install it
+     first (see the Step 13, below).  If you absolutely *must* run 
      DDD without installing it, be sure that the following environment
      variables are properly set:
 
@@ -281,7 +295,7 @@ The simplest way to compile DDD is:
      See the DDD invocation in `make check', above, to see typical
      values of these variables.
 
- 12. Type
+ 13. Type
  
 	$ make install
 	
@@ -303,15 +317,15 @@ The simplest way to compile DDD is:
      See `Installation Names', below, on how to configure DDD to use
      other locations and names.
 
- 13. This distribution also comes with documentation in PostScript,
+ 14. This distribution also comes with documentation in PostScript,
      PDF, and HTML format.  You will find these files in the `doc/'
      subdirectory.  Feel free to install them in some public place.
 
- 14. If you have a `Ddd' app-defaults file installed from a previous
-     DDD version, this file will *override* the DDD settings compiled 
+ 15. If you have a `Ddd' app-defaults file installed from a previous
+     DDD version, this file will _override_ the DDD settings compiled 
      into DDD and cause major problems.  Remove it.
 
- 15. Like every good X citizen, DDD comes with an application defaults
+ 16. Like every good X citizen, DDD comes with an application defaults
      file, named `ddd/Ddd'.  By default, this file is already installed as
      a DDD run-time resource (and possibly also compiled into DDD), so you
      need not install it in the default application defaults directory.
@@ -319,13 +333,13 @@ The simplest way to compile DDD is:
      In fact, we **STRONGLY RECOMMEND** not to install it; there is a
      whole slew of version-skew problems associated with app-defaults
      files, which are best avoided by simply not using them.  For
-     details, see step 14, above, and the comment at the `Ddd' top.
+     details, see Step 15, above, and the comment at the `Ddd' top.
 
      If you absolutely want to install it (or if you configured DDD
      such that `Ddd' is not compiled into DDD), copy `Ddd' to a place
      where app-defaults files are commonly found.
 
- 16. You can remove the program binaries, libraries and object files
+ 17. You can remove the program binaries, libraries and object files
      from the source directory by typing
      
 	$ make clean
@@ -339,11 +353,11 @@ The simplest way to compile DDD is:
      
 	$ make distclean
 
-     (There is also `make maintainer-clean', which removes *every*
+     (There is also `make maintainer-clean', which removes *each*
      derived file included in the DDD distribution - such as LEX and
      YACC output.  Do not use this unless you know what you're doing.)
 
- 17. You can remove DDD from your system by typing
+ 18. You can remove DDD from your system by typing
  
 	$ make uninstall
 
@@ -430,49 +444,83 @@ external packages available on your system.
 In some cases, `configure' may require additional information about
 these packages:
 
-* `configure' can usually find the X include and library files
-  automatically, but if it doesn't, you can use the `configure'
-  options `--x-includes=DIR' and `--x-libraries=DIR' to specify their
-  locations.
+   * `configure' can usually find the X include and library files
+     automatically, but if it doesn't, you can use the `configure'
+     options `--x-includes=DIR' and `--x-libraries=DIR' to specify their
+     locations.  See also `Locating Libraries', below.
+   
+   * If `configure' doesn't find the M*tif include and library files
+     automatically, you can use the `configure' options
+     `--with-motif-includes=DIR' and `--with-motif-libraries=DIR' to
+     specify their locations.  See also `Locating Libraries', below.
+   
+   * If `configure' doesn't find the Athena include and library files
+     automatically, you can use the `configure' options
+     `--with-athena-includes=DIR' and `--with-athena-libraries=DIR' to
+     specify their locations.  See also `Locating Libraries', below.
+   
+   * If `configure' doesn't find the XPM include and library files
+     automatically, you can use the `configure' options
+     `--with-xpm-includes=DIR' and `--with-xpm-libraries=DIR' to specify
+     their locations.  See also `Locating Libraries', below.
+   
+   * If `configure' doesn't find the Readline include and library files
+     automatically, you can use the `configure' options
+     `--with-readline-includes=DIR' and `--with-readline-libraries=DIR'
+     to specify their locations.  See also `Locating Libraries', below.
+   
+   * If `configure' doesn't find the Ncurses include and library files
+     automatically, you can use the `configure' options
+     `--with-ncurses-includes=DIR' and `--with-ncurses-libraries=DIR'
+     to specify their locations.  See also `Locating Libraries', below.
 
-* If `configure' doesn't find the M*tif include and library files
-  automatically, you can use the `configure' options
-  `--with-motif-includes=DIR' and `--with-motif-libraries=DIR' to
-  specify their locations.
 
-* If `configure' doesn't find the Athena include and library files
-  automatically, you can use the `configure' options
-  `--with-athena-includes=DIR' and `--with-athena-libraries=DIR' to
-  specify their locations.
+You can also configure DDD to _ignore_ some external packages:
 
-* If `configure' doesn't find the XPM include and library files
-  automatically, you can use the `configure' options
-  `--with-xpm-includes=DIR' and `--with-xpm-libraries=DIR' to specify
-  their locations.
-
-* If `configure' doesn't find the Readline include and library files
-  automatically, you can use the `configure' options
-  `--with-readline-includes=DIR' and `--with-readline-libraries=DIR'
-  to specify their locations.
-
-* If `configure' doesn't find the Ncurses include and library files
-  automatically, you can use the `configure' options
-  `--with-ncurses-includes=DIR' and `--with-ncurses-libraries=DIR'
-  to specify their locations.
+   * If you wish to disable Athena widgets and rely on M*tif widgets alone,
+     you can use the `configure' option `--without-athena'.
+   
+   * Likewise, `--without-xpm' disables XPM support.
+   
+   * There is also a `--without-motif' option.  Don't use it; DDD will
+     not compile without M*tif.
+   
+   * If you wish to disable command-line editing on standard input,
+     use `--without-readline'.
 
 
-You can also configure DDD to *ignore* some external packages:
 
-* If you wish to disable Athena widgets and rely on M*tif widgets alone,
-  you can use the `configure' option `--without-athena'.
+Locating Libraries
+------------------
 
-* Likewise, `--without-xpm' disables XPM support.
+If one of the libraries to be used with DDD is a dynamic library and
+installed in a non-standard place (that is, in a place where the
+run-time linker cannot find it), you can specify its location
+explicitly.
 
-* There is also a `--without-motif' option.  Don't use it; DDD will
-  not compile without M*tif.
+The option `--enable-rpath=PATH' sets the path of directories to be
+searched for dynamic libraries to PATH (a colon-separated list of
+directories).
 
-* If you wish to disable command-line editing on standard input,
-  use `--without-readline'.
+For instance, if you have a LessTif library `libXm.so' installed in
+`/you/cannot/find/me/' and a Readline library `libreadline.so'
+installed in `/nobody/knows/i/am/here/', you can specify
+
+    --enable-rpath=/you/cannot/find/me/:/nobody/knows/i/am/here/
+
+to make sure these places are searched for libraries.
+
+Note: `--enable-rpath' must be specified separately from
+`--with-PACKAGE-libraries' and likewise because these are different
+concepts:
+
+   * `--with-PACKAGE-libraries' specifies the place to be searched at
+     _link_ time;
+   
+   * `--enable-rpath' specifies the place to be searched at
+     _execution_ time.
+
+
 
 
 Optional Features
@@ -481,40 +529,39 @@ Optional Features
 By default, `configure' will configure DDD to use all supported
 optional DDD features.  There are five optional features.
 
-* You can configure DDD such that the `Ddd' application defaults file
-  will be compiled into the DDD executable.
-
-  To enable the builtin application defaults file, use the `configure'
-  option `--enable-builtin-app-defaults'.
-
-
-* You can configure DDD such that the DDD manual will be compiled into
-  the DDD executable.
-
-  To enable the builtin DDD manual, use the `configure' option
-  `--enable-builtin-manual'.
-
-
-* You can configure DDD such that the DDD News will be compiled into
-  the DDD executable.
-
-  To enable the builtin DDD news, use the `configure' option
-  `--enable-builtin-news'.
-
-
-* You can configure DDD such that the DDD License will be compiled into
-  the DDD executable.
-
-  To enable the builtin DDD news, use the `configure' option
-  `--enable-builtin-license'.
-
-
-* You can configure DDD such that the DDD VSL library `ddd.vsl' will
-  be compiled into the DDD executable.
-
-  To enable the builtin VSL library, use the `configure' option
-  `--enable-builtin-vsllib'.
-
+   * You can configure DDD such that the `Ddd' application defaults file
+     will be compiled into the DDD executable.
+   
+     To enable the builtin application defaults file, use the `configure'
+     option `--enable-builtin-app-defaults'.
+   
+   
+   * You can configure DDD such that the DDD manual will be compiled into
+     the DDD executable.
+   
+     To enable the builtin DDD manual, use the `configure' option
+     `--enable-builtin-manual'.
+   
+   
+   * You can configure DDD such that the DDD News will be compiled into
+     the DDD executable.
+   
+     To enable the builtin DDD news, use the `configure' option
+     `--enable-builtin-news'.
+   
+   
+   * You can configure DDD such that the DDD License will be compiled into
+     the DDD executable.
+   
+     To enable the builtin DDD news, use the `configure' option
+     `--enable-builtin-license'.
+   
+   
+   * You can configure DDD such that the DDD VSL library `ddd.vsl' will
+     be compiled into the DDD executable.
+   
+     To enable the builtin VSL library, use the `configure' option
+     `--enable-builtin-vsllib'.
 
 See also `External Packages', above, to disable external packages such
 as the Readline library used for command-line editing on standard input.
@@ -593,8 +640,8 @@ shadowed variables.
 
 However, GCC warnings that *must never be ignored* include:
 
-- `implicit declaration of function F'
-- `cannot pass objects of type T through `...''
+   * `implicit declaration of function F'
+   * `cannot pass objects of type T through `...''
 
 If you encounter such a warning, GCC will generate unusable code.
 Abort compilation and fix the problem.
@@ -602,7 +649,7 @@ Abort compilation and fix the problem.
 If you find the warning can be avoided by changing some code or by
 changing the DDD build process, please send a bug report to the DDD
 maintainers <bug-ddd@gnu.org>.  Be sure to include a context
-diff (`diff -c5') between the original and the changed file(s).
+diff (`diff -c2') between the original and the changed file(s).
 
 
 

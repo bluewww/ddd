@@ -621,6 +621,9 @@ ALL_LIBS = $(CXXLIBS) $(LIBREADLINE) $(LIBSOCKET) $(LIBNSL) $(LIBRX) \
 # Special flags for linking with X.  (-L/usr/X11R5/lib)
 X_LDFLAGS = @X_LIBS@
 
+# Special flags to set the run-time library search path.
+RPATH = @RPATH@
+
 # Motif library.  (-lXm)
 LIBXM = @XM_LIBS@
 
@@ -698,8 +701,8 @@ vsl_SOURCES       = vsl.C \
 	$(VSL_SOURCES)
 
 cxxtest_LDADD = $(LIBM)
-ddd_LDADD = $(ALL_X_LIBS) $(ALL_LIBS) 
-vsl_LDADD = $(ALL_X_LIBS) $(ALL_LIBS)
+ddd_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
+vsl_LDADD = $(RPATH) $(ALL_X_LIBS) $(ALL_LIBS)
 X_INCLUDE = @X_CFLAGS@
 INCLUDES = -I$(srcdir)/.. $(X_INCLUDE)
 
