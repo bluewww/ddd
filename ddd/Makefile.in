@@ -647,6 +647,7 @@ DDD_OBJECTS = \
 	dbx-lookup.o \
 	disp-read.o  \
 	editing.o    \
+	environ.o    \
 	exectty.o    \
 	exit.o       \
 	expired.o    \

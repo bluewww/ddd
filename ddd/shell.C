@@ -38,6 +38,7 @@ char shell_rcsid[] =
 #include "AppData.h"
 #include "hostname.h"
 #include "windows.h"
+#include "environ.h"
 
 #include <stdlib.h>
 #include <iostream.h>
@@ -87,7 +88,8 @@ string _sh_command(string command, bool force_local,
 
     string settings = "";
     if (display != "")
-	settings += "DISPLAY='" + display + "'; export DISPLAY; ";
+	settings += "DISPLAY=" + sh_quote(display) + "; export DISPLAY; ";
+    settings += set_environment_command();
 
     if (force_local || !remote_gdb())
     {
