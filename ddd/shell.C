@@ -64,7 +64,13 @@ string _sh_command(string command, bool force_local,
 		   bool force_display_settings)
 {
     // Fetch display settings
-    string display = XDisplayString(XtDisplay(command_shell));
+    string display;
+    if (command_shell != 0)
+	display = XDisplayString(XtDisplay(command_shell));
+    else if (getenv("DISPLAY") != 0)
+	display = getenv("DISPLAY");
+    else
+	display = "";
 
     // Make sure display contains host name
     if (display.contains("unix:", 0) || display.contains(":", 0))
@@ -79,7 +85,9 @@ string _sh_command(string command, bool force_local,
 	display = string(fullhostname(host)) + display.from(":");
     }
 
-    string settings = "DISPLAY='" + display + "'; export DISPLAY; ";
+    string settings = "";
+    if (display != "")
+	settings += "DISPLAY='" + display + "'; export DISPLAY; ";
 
     if (force_local || !remote_gdb())
     {
