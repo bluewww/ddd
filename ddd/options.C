@@ -897,6 +897,18 @@ static bool _get_core(const string& session, unsigned long flags,
 	// Get new core file from running process
 	StatusDelay delay("Killing process");
 
+	string core = SourceView::full_path("core");
+	string core_backup = core + "~" + itostring(getpid());
+
+	bool had_a_core_file = false;
+	if (is_regular_file(core) || is_directory(core))
+	{
+	    // There is already a file named `core'.  Preserve it.
+	    had_a_core_file = true;
+	    move(core, core_backup);
+	}
+
+	// Try 10 times to kill the process
 	int tries = 10;
 	while (tries-- > 0 && kill(info.pid, SIGABRT) == 0)
 	{
@@ -908,18 +920,22 @@ static bool _get_core(const string& session, unsigned long flags,
 	    syncCommandQueue();
 	}
 
-	string core = SourceView::full_path("core");
 	if (is_core_file(core))
 	{
-	    // It worked.  Fine!
-	    if (!move(core, target))
+	    // It worked.  Fine!  Move generated core file to target.
+	    bool ok = move(core, target);
+	    
+	    if (!ok)
 	    {
-		// Move failed -- sorry
+		// Move failed.  Sorry.
 		unlink(core);
-		return false;
 	    }
 
-	    if (gdb->type() == GDB && !(flags & DONT_RELOAD_CORE))
+	    // Restore the old core file, if any.
+	    if (had_a_core_file)
+		move(core_backup, core);
+
+	    if (ok && gdb->type() == GDB && !(flags & DONT_RELOAD_CORE))
 	    {
 		// Load the core file just saved, such that we can
 		// keep on examining data in this session.
@@ -935,8 +951,12 @@ static bool _get_core(const string& session, unsigned long flags,
 		syncCommandQueue();
 	    }
 
-	    return true;
+	    return ok;
 	}
+
+	// No core file.  Sorry.  Restore the old core file, if any.
+	if (had_a_core_file)
+	    move(core_backup, core);
     }
 
     return false;
