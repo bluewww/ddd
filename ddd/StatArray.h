@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-// Create an XImage from bitmap data
+// Array of `stat' entries
 
-// Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1999 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -26,28 +26,37 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_InitImage_h
-#define _DDD_InitImage_h
+#ifndef _DDD_StatArray_h
+#define _DDD_StatArray_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
-#include <X11/Xlib.h>
-#include <X11/Intrinsic.h>
+#include "VarArray.h"
+#include "DynArray.h"
 
-// Initialize IMAGE
-extern void InitImage(XImage *image);
+#include "config.h"
+#include "bool.h"
 
-// Create IMAGE from bitmap source
-extern XImage *CreateImageFromBitmapData(unsigned char *bits,
-					 int width, int height);
+extern "C" {
+#include <sys/types.h>
+#include <unistd.h>
+#include <ctype.h>
 
-// Install IMAGE in Motif cache
-Boolean InstallImage(XImage *image, char *name);
+#if HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
 
-// Install bitmap in Motif cache
-Boolean InstallBitmap(unsigned char *bits, int width, int height, char *name);
+#include <fcntl.h>
+}
 
-#endif // _DDD_InitImage_h
+inline bool operator==(const struct stat& sb1, const struct stat& sb2)
+{
+    return sb1.st_ino == sb2.st_ino && sb1.st_dev == sb2.st_dev;
+}
+
+typedef VarArray<struct stat> StatArray;
+
+#endif // _DDD_StatArray_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

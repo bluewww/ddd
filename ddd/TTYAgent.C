@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // An agent interface using ptys (pseudo ttys)
 
-// Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1999 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -243,8 +243,13 @@ extern "C" {
     int tcsetpgrp(int fd, pid_t pgid);
 #endif
 #if HAVE_IOCTL && !HAVE_IOCTL_DECL && !defined(ioctl)
+#if defined(__GLIBC__) && __GLIBC__ >= 2 && __GLIBC_MINOR__ > 0
+    //  Christian Meder <meder@isr.uni-stuttgart.de> says glibc 2.1
+    //  has an ioctl() decl.
+#else
     int ioctl(int fd, int request, ...);
-#endif
+#endif // __GLIBC__
+#endif // HAVE_IOCTL
 #if HAVE_FCNTL && !HAVE_FCNTL_DECL && !defined(fcntl)
     int fcntl(int fd, int command, ...);
 #endif
@@ -263,28 +268,29 @@ extern "C" {
 #endif
 }
 
+// getpt() should be defined in <stdlib.h> if we define _GNU_SOURCE
+#if HAVE_GETPT && !HAVE_GETPT_DECL && !defined(getpt)
+extern "C" int getpt();
+#endif
+
 // Streams won't work on DEC OSF because there isn't any "ttcompat"
 // module and I don't know enough about any of this stuff to try to
 // figure it out now.  -- phil_brooks@MENTORG.COM (Phil Brooks)
-#if !defined(__osf__) && HAVE_PTSNAME && HAVE_GRANTPT \
-    && HAVE_UNLOCKPT && HAVE_IOCTL
-
+#if !defined(__osf__) && \
+    HAVE_PTSNAME && HAVE_GRANTPT && HAVE_UNLOCKPT && HAVE_IOCTL
 #define HAVE_STREAMS 1
+#endif // !defined(__osf__) && HAVE_PTSNAME && ...
 
 // Provide C++ declarations
-extern "C" {
-#if !HAVE_PTSNAME_DECL && !defined(ptsname)
-    char *ptsname(int master);
+#if HAVE_PTSNAME && !HAVE_PTSNAME_DECL && !defined(ptsname)
+extern "C" char *ptsname(int master);
 #endif
-#if !HAVE_UNLOCKPT_DECL && !defined(unlockpt)
-    int unlockpt(int fd);
+#if HAVE_GRANTPT && !HAVE_GRANTPT_DECL && !defined(grantpt)
+extern "C" int grantpt(int fd);
 #endif
-#if !HAVE_GRANTPT_DECL && !defined(grantpt)
-    int grantpt(int fd);
+#if HAVE_UNLOCKPT && !HAVE_UNLOCKPT_DECL && !defined(unlockpt)
+extern "C" int unlockpt(int fd);
 #endif
-}
-
-#endif // !defined(__osf__) && HAVE_PTSNAME && ...
 
 #ifndef STDIN_FILENO
 #define STDIN_FILENO 0
@@ -458,6 +464,31 @@ void TTYAgent::open_master()
 	}
     }
 
+
+#if HAVE_GETPT && HAVE_PTSNAME
+    // getpt() - a GNU libc 2.1 feature
+    master = getpt();
+    if (master >= 0)
+    {
+	line = ptsname(master);
+	if (line == NULL)
+	    _raiseIOMsg("ptsname");
+	else
+	{
+	    // Everything ok - proceed
+	    _master_tty = ttyname(master);
+	    _slave_tty  = line;
+#ifdef TIOCFLUSH
+	    ioctl(master, TIOCFLUSH, (char *)0);
+#endif
+	    return;
+	}
+
+	close(master);
+    }
+#endif
+
+
 #if HAVE_STREAMS
     if (stat("/dev/ptmx", &sb) == 0)
     {
@@ -556,8 +587,8 @@ void TTYAgent::open_master()
 	    }
     }
 
-    // Try PTY's in /dev/pty?? -- a BSD and USG feature
-    // Slackware 3.0 wants [/zip]/dev/pty??, as
+    // Try PTY's in /dev/ptyXX -- a BSD and USG feature
+    // Slackware 3.0 wants [/zip]/dev/ptyXX, as
     // Jim Van Zandt <jrv@vanzandt.mv.com> suggests.
     for (int k = 0; k < 2; k++)
     {

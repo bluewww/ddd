@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-// Create an XImage from bitmap data
+// Command Tool
 
-// Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1999 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -26,28 +26,17 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_InitImage_h
-#define _DDD_InitImage_h
+#ifndef _DDD_Tool_h
+#define _DDD_Tool_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
-#include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 
-// Initialize IMAGE
-extern void InitImage(XImage *image);
+// Create command tool
+extern void create_command_tool();
 
-// Create IMAGE from bitmap source
-extern XImage *CreateImageFromBitmapData(unsigned char *bits,
-					 int width, int height);
-
-// Install IMAGE in Motif cache
-Boolean InstallImage(XImage *image, char *name);
-
-// Install bitmap in Motif cache
-Boolean InstallBitmap(unsigned char *bits, int width, int height, char *name);
-
-#endif // _DDD_InitImage_h
+#endif // _DDD_Tool_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

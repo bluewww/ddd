@@ -73,6 +73,18 @@ static VSLLib *vsllib = 0;	// The VSL library to read
 
 static string vslfilename = "standard input";   // Current file name
 
+// Some type decls for $$
+struct VSLFunctionHeader {
+    string *id;
+    VSLNode *pattern;
+    string *file;
+    int line;
+};
+
+struct VSLVarDefinition {
+    VSLNode *pattern;
+    VSLNode *args;
+};
 
 // GNU C++ complains about the declaration of VSLSTYPE, so leave it alone
 #ifdef __GNUG__

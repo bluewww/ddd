@@ -118,7 +118,7 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 	"|j|ju|jump"
 	"|k|ki|kill"
 	"|fin|fini|finis|finish"
-        "|R|S"
+        "|R|S|exec"
 	")([ \t]+.*)?");
 
     static regex rxdisplay("[ \t]*(disp|displ|displa|display)([ \t]+.*)?");
@@ -147,7 +147,7 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 bool is_run_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
-    static regex rxrun_cmd("[ \t]*(r|rer|rerun|ru|run|R)([ \t]+.*)?");
+    static regex rxrun_cmd("[ \t]*(r|rer|rerun|ru|run|R|exec)([ \t]+.*)?");
 #endif
 
     return cmd.matches (rxrun_cmd);
@@ -584,6 +584,13 @@ bool ends_recording(const string& cmd)
     return cmd == "end";
 }
 
+// True if CMD calls a function
+bool calls_function(const string& cmd)
+{
+    return cmd.contains("call ", 0) ||
+	(!is_graph_cmd(cmd) && cmd.contains('('));
+}
+
 
 //----------------------------------------------------------------------------
 // Handle `display' output
@@ -674,6 +681,7 @@ static bool next_is_nl(const string& displays)
 string read_next_display (string& displays, GDBAgent *gdb)
 {
     string next_display;
+    strip_leading_space(displays);
 
     // string old_displays = displays;
     // clog << "read_next_display(" << quote(old_displays) << ")...\n";
@@ -705,7 +713,9 @@ string read_next_display (string& displays, GDBAgent *gdb)
 		break;		// At end of display
 	}
     }
+
     displays = displays.after('\n');
+    strip_leading_space(displays);
 
     // clog << "read_next_display(" << quote(old_displays) << ") = "
     //      << quote(next_display) << "\n";

@@ -38,6 +38,7 @@ char xconfig_rcsid[] =
 #include "bool.h"
 #include "cook.h"
 #include "filetype.h"
+#include "shell.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -65,21 +66,7 @@ extern "C" int pclose(FILE *stream);
 // Determine X project root
 //-----------------------------------------------------------------------------
 
-inline string sh_quote(string s)
-{
-    s.gsub('\'', "'\\''");
-    return string('\'') + s + '\'';
-}
-
-inline string dirname(string file)
-{
-    if (file.contains('/'))
-	return file.before('/', -1);
-    else
-	return ".";
-}
-
-static bool is_file(string file)
+static bool is_file(const string& file)
 {
     FILE *fp = fopen(file, "r");
     if (fp == 0)
@@ -250,6 +237,14 @@ static int check_xkeysymdb(Display *display, bool verbose)
 }
 
 #if XlibSpecificationRelease == 5 && !__hpux__
+static string dirname(const string& file)
+{
+    if (file.contains('/'))
+	return file.before('/', -1);
+    else
+	return ".";
+}
+
 static String resolve_dirname(Display *display, String type, String name)
 {
     String ret = XtResolvePathname(display, type, name, "", 

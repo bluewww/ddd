@@ -135,12 +135,31 @@ void add_to_arguments(string line)
     }
     else if (is_run_cmd(line))
     {
-	string args = line.after(rxwhite);
+	string args;
 	if (gdb->type() == JDB)
 	{
-	    // Skip class name
+	    // `run CLASS ARGS...'
+	    args = line.after(rxwhite);
 	    args = args.after(rxwhite);
 	}
+	else if (gdb->type() == PERL && line.contains("exec ", 0))
+	{
+	    // `exec "perl -d PROGRAM ARGS..."'
+	    args = line.after("exec ");
+	    strip_leading_space(args);
+	    if (args.contains('\"', 0) || args.contains('\'', 0))
+		args = unquote(args);
+
+	    args = args.after("-d ");
+	    strip_leading_space(args);
+	    args = args.after(rxwhite);
+	}
+	else
+	{
+	    // `run ARGS...'
+	    args = line.after(rxwhite);
+	}
+
 	add_argument(args, run_arguments, last_run_argument, 
 		     run_arguments_updated);
     }

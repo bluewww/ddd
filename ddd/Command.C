@@ -157,8 +157,8 @@ void translate_command(string& command)
 
     case PERL:
 	// PERL only has one-letter commands
-	if (command == "run")
-	    command = "r";
+	if (command == "run" || command == "R")
+	    command = gdb->run_command(command.after(' '));
 	else if (command == "cont")
 	    command = "c";
 	else if (command == "step")

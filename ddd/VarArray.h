@@ -64,7 +64,7 @@ protected:
 
 	int sz = size();
 	for (int i = n; i < sz - 1; i++)
-	    _value(i) = _value(i + 1);
+	    this->_value(i) = this->_value(i + 1);
 
 	_size--;
     }
@@ -76,7 +76,7 @@ protected:
 	int sz = size();
 	while (i < sz)
 	{
-	    if (_value(i) == v)
+	    if (this->_value(i) == v)
 	    {
 		_remove(i);
 		sz = size();

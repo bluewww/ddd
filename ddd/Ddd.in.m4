@@ -5,7 +5,7 @@ DDD_APP_WARNING
 ! @configure_input@
 Ddd*appDefaultsVersion: @VERSION@
 
-! Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+! Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 ! Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 ! 
 ! This file is part of DDD.
@@ -219,6 +219,12 @@ Ddd*blockTTYInput: auto
 
 ! The time (in seconds) to wait for synchronous GDB questions to complete
 Ddd*questionTimeout: 10
+
+! The time (in ms) to wait for GDB to finish a partial position information
+Ddd*positionTimeout: 500
+
+! The time (in ms) to wait for GDB to finish a partial display information
+Ddd*displayTimeout: 2000
 
 
 ! The `rsh' command to invoke tty-based commands on other hosts.
@@ -461,7 +467,7 @@ Ddd*stickyTool: on
 ! * If `auto', DDD checks the window manager.  If it decorates
 !   transients, the command tool is realized as a transient, and as
 !   a top-level-window. otherwise.
-Ddd*decoratedTool: auto
+Ddd*decorateTool: auto
 
 ! Do we want an auto-raised command tool?  If on, DDD will always 
 ! keep the command tool on top of other DDD windows.  If this setting
@@ -504,8 +510,8 @@ Ddd*pydbDisplayShortcuts:  \
 /o ()	// Convert to Oct
 
 Ddd*perlDisplayShortcuts:  \
-hex(())	// Convert to Hex\n\
-oct(())	// Convert to Oct
+sprintf("%#x", ())	// Convert to Hex\n\
+sprintf("%#o", ())	// Convert to Oct
 
 
 ! Tab width in source texts
@@ -598,7 +604,9 @@ Ddd*pydbSettings:
 
 ! The Perl Debugger initialization commands.  Enable emacs mode.
 Ddd*perlInitCommands: \
-$DB::emacs = 1\n
+$DB::emacs = 1\n\
+O compactDump=\n\
+O veryCompact=\n
 
 ! The Perl Debugger settings.  Usually overridden in `~/.ddd/init'.
 Ddd*perlSettings:
@@ -4757,7 +4765,7 @@ Ddd.main_window.helpString: MAIN_WINDOW_HELP
 
 Ddd*gdb_w.value: \
 DDD @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
-Copyright \251 1998 Technische Universit\344t Braunschweig, Germany.\n
+Copyright \251 1999 Technische Universit\344t Braunschweig, Germany.\n
 
 Ddd*gdb_w.editable:			on
 Ddd*gdb_w.allowResize:			on

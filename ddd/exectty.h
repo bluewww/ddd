@@ -38,9 +38,18 @@
 #include <X11/Intrinsic.h>
 
 // Execution TTY
-void startup_exec_tty();
-void startup_exec_tty(string& command, Widget origin = 0);
-void kill_exec_tty(bool killed = false);
+
+// Raise execution TTY
+extern void startup_exec_tty();
+
+// Raise execution TTY on COMMAND
+extern void startup_exec_tty(string& command, Widget origin = 0);
+
+// Kill execution TTY
+extern void kill_exec_tty(bool killed = false);
+
+// Reset execution TTY (also in GDB)
+extern void reset_exec_tty();
 
 // TTY pid (0: not initialized, -1: failed)
 extern pid_t exec_tty_pid();
@@ -49,10 +58,10 @@ extern pid_t exec_tty_pid();
 extern Window exec_tty_window();
 
 // Set TTY title
-void set_tty_from_gdb(const string& text);
+extern void set_tty_from_gdb(const string& text);
 
 // Create TTY if required
-void handle_running_commands(string& command, Widget origin);
+extern void handle_running_commands(string& command, Widget origin);
 
 // Name of GDB tty
 extern string gdb_tty;

@@ -2,7 +2,7 @@
 .\" DDD manual page
 .\" @configure_input@
 .\"
-.\" Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+.\" Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 .\" Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 .\" 
 .\" This file is part of DDD.
@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-12\-01" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1999\-01\-01" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -695,7 +695,17 @@ the \s-1GDB\s+1 prompt.  To \fIcancel\fR the recording, click on
 Click on `\fBEdit \s-2>>\s+2\fR' to edit the recorded commands.
 When done with editing, click on `\fBEdit \s-2<<\s+2\fR' to close the
 commands editor.
-.PP
+.\" .PP
+.\" Technical note: If you use \s-1@DDD@\s+1 commands within breakpoint
+.\" command definitions, or if you include debugger commands that resume
+.\" execution, these commands will be realized transparently as
+.\" \fIauto-commands\fR\(em\&that is, they won't be executed directly by
+.\" the inferior debugger, but result in a command string being sent to
+.\" \s-1@DDD@\s+1.  This command string is then interpreted by
+.\" \s-1@DDD@\s+1 and sent back to the inferior debugger, possibly
+.\" prefixed by some other commands such that \s-1@DDD@\s+1 can update its
+.\" state.  See \fBDefining Commands using Other Debuggers\fR, below, for
+.\" a discussion.
 .\"
 .\"
 .SS "Moving and Copying Breakpoints"
@@ -857,9 +867,10 @@ console.  As an alternative, \s-1@DDD@\s+1 can also invoke an
 shown.  To activate the execution window, select `\fBProgram\(->Run in
 Execution Window\fR'.
 .PP
-While the execution window is active, \s-1@DDD@\s+1 invokes your
-program such that its standard input, output, and error streams are
-redirected to the execution window.  Note that the device
+The execution window is opened automatically as soon as you start the
+debugged program.  While the execution window is active, \s-1@DDD@\s+1
+redirects the standard input, output, and error streams of your
+program to the execution window.  Note that the device
 `\fB/dev/tty\fR' still refers to the debugger console, \fInot\fR the
 execution window.
 .PP
@@ -871,7 +882,7 @@ redirect the standard error output to the debugger console, use `\fB2>
 /dev/tty\fR' (assuming the inferior debugger and/or your \s-1UNIX\s+1
 shell support standard error redirection).
 .PP
-The execution window is not available in \s-1JDB\s+1 and \s-1Perl\s+1.
+The execution window is not available in \s-1JDB\s+1.
 .\"
 .\"
 .SS "Attaching to a Running Process"
@@ -2194,7 +2205,7 @@ resuming execution.
 .PP
 This way, you can set a \(lqcontinue\(rq breakpoint at some decisive
 point within an array-processing algorithm and have \s-1@DDD@\s+1
-display the progress graphically.  When your program has topped for
+display the progress graphically.  When your program has stopped for
 good, you can use `\fBUndo\fR' and `\fRRedo\fR' to redisplay and
 examine previous program states.
 .\"
@@ -2987,9 +2998,16 @@ doing omit the messages when used in a user-defined command.
 .PP
 To save all command definitions, use `\fBEdit\(->Save Options\fR'.
 .\" .PP
-.\" \s-1@DDD@\s+1 commands that are part of \s-1GDB\s+1 command
-.\" definitions are realized transparently as \fIauto-commands\fR; see 
-.\" \fBDefining Commands using Other Debuggers\fR, below, for a discussion.
+.\" Technical note: If you use \s-1@DDD@\s+1 commands within command
+.\" definitions, or if you include debugger commands that resume
+.\" execution, these commands will be realized transparently as
+.\" \fIauto-commands\fR\(em\&that is, they won't be executed directly by
+.\" the inferior debugger, but result in a command string being sent to
+.\" \s-1@DDD@\s+1.  This command string is then interpreted by
+.\" \s-1@DDD@\s+1 and sent back to the inferior debugger, possibly
+.\" prefixed by some other commands such that \s-1@DDD@\s+1 can update its
+.\" state.  See \fBDefining Commands using Other Debuggers\fR, below, for
+.\" a discussion.
 .\"
 .\"
 .SS "Defining Argument Commands using GDB"
@@ -4153,6 +4171,10 @@ contrast to `\fBdebuggerHost\fR', using this resource causes
 inferior debugger from the remote shell.  See also the
 `\fB\-\-rhost\fR' option, below, and `\fBREMOTE DEBUGGING\fR', above.
 .TP
+.B "displayTimeout (\fPclass\fB DisplayTimeout)"
+The time (in ms) to wait for the inferior debugger to finish a partial
+display information.  Default is \fB2000\fR.
+.TP
 .B "fullNameMode (\fPclass\fB TTYMode)"
 If this is `\fBon\fR', \s-1@DDD@\s+1 reports the current source
 position on standard output in \s-1GDB\s+1 `\fB\-fullname\fR'
@@ -4240,6 +4262,10 @@ also initially sent to \s-1PYDB\s+1.  By default, it is empty.
 .sp
 This resource is used by \s-1@DDD@\s+1 to save and restore \s-1PYDB\s+1
 settings.
+.TP
+.B "positionTimeout (\fPclass\fB PositionTimeout)"
+The time (in ms) to wait for the inferior debugger to finish a partial
+position information.  Default is \fB500\fR.
 .TP
 .B "questionTimeout (\fPclass\fB QuestionTimeout)"
 The time (in seconds) to wait for the inferior debugger to reply.
@@ -5909,6 +5935,9 @@ The execution pointer (stopped by signal).
 \s-1@DDD@\s+1 is controlled by the following environment variables:
 .PP
 .TP 20
+.B CLASSPATH
+A colon-separated list of directories in which to search for Java classes.
+.TP
 .B @DDD@_NO_SIGNAL_HANDLERS
 If set, \s-1@DDD@\s+1 does not catch fatal errors.  This is sometimes
 useful when debugging \s-1@DDD@\s+1.
@@ -6480,7 +6509,7 @@ manual page on \s-1UNIX\s+1 systems (as
 .\"
 .SS "\s-1@DDD@\s+1"
 .\"
-\s-1@DDD@\s+1 is Copyright \(co 1995, 1996, 1997, 1998
+\s-1@DDD@\s+1 is Copyright \(co 1995, 1996, 1997, 1998, 1999
 Technische Universität Braunschweig, Germany.
 .PP
 \s-1@DDD@\s+1 is free software; you can redistribute it and/or modify
@@ -6503,7 +6532,7 @@ License\fR'.
 .\"
 .SS "\s-1@DDD@\s+1 Manual"
 .\"
-This \s-1@DDD@\s+1 manual is Copyright \(co 1995, 1996, 1997, 1998
+This \s-1@DDD@\s+1 manual is Copyright \(co 1995, 1996, 1997, 1998, 1999
 Technische Universität Braunschweig, Germany.
 .PP
 Permission is granted to make and distribute verbatim copies of this

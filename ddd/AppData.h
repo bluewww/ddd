@@ -162,6 +162,10 @@
 #define XtCUseTTYCommand         "UseTTYCommand"
 #define XtNquestionTimeout       "questionTimeout"
 #define XtCQuestionTimeout       "QuestionTimeout"
+#define XtNpositionTimeout       "positionTimeout"
+#define XtCPositionTimeout       "PositionTimeout"
+#define XtNdisplayTimeout        "displayTimeout"
+#define XtCDisplayTimeout        "DisplayTimeout"
 #define XtNsynchronousDebugger   "synchronousDebugger"
 #define XtCSynchronousDebugger   "SynchronousDebugger"
 #define XtNterminateOnEOF        "terminateOnEOF"
@@ -462,6 +466,8 @@ struct AppData {
     String    term_type;
     Boolean   use_tty_command;
     int       question_timeout;
+    int       position_timeout;
+    int       display_timeout;
     Boolean   synchronous_gdb;
     Boolean   terminate_on_eof;
     Boolean   poll_child_status;
