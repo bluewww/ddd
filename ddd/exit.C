@@ -854,18 +854,6 @@ void gdb_diedHP(Agent *gdb, void *, void *call_data)
 // Controlled exiting
 //-----------------------------------------------------------------------------
 
-static void SaveOptionsAndExitCB(Widget w, XtPointer client_data,
-				 XtPointer call_data)
-{
-    ddd_cleanup();
-
-    XtCallbackProc closure = 
-	ddd_is_restarting ? XtCallbackProc(RestartCB) : XtCallbackProc(ExitCB);
-
-    DDDSaveOptionsCB(w, client_data, call_data);
-    closure(w, client_data, call_data);
-}
-
 // Exit callback
 void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
