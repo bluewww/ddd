@@ -1364,7 +1364,7 @@ syms:   $(ddd).syms
 
 # Create useful stuff in background
 .PHONY: stuff
-stuff: FORCE
+stuff:  ddd
 	$(MAKE) syms > make.log 2>&1 &
 	@:
 
