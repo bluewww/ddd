@@ -824,6 +824,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNblinkWhileBusy,
+	XtCBlinkWhileBusy,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, blink_while_busy),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNbusyBlinkRate,
 	XmCBlinkRate,
 	XmRInt,

@@ -267,8 +267,9 @@ static void create_status(Widget parent);
 
 // Status LED
 static void blink(bool set);
+static void ToggleBlinkCB(Widget, XtPointer client_data, XtPointer call_data);
 
-// Callbacks
+// Argument callback
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
 
 
@@ -2086,6 +2087,8 @@ void update_options()
     XtVaSetValues(tab_width_w,
 		  XmNvalue, app_data.tab_width, NULL);
 
+    XtVaSetValues(led_w, XmNset, app_data.blink_while_busy, NULL);
+
     XtVaSetValues(suppress_warnings_w,
 		  XmNset, app_data.suppress_warnings, NULL);
 
@@ -2632,9 +2635,12 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNbottomAttachment,   XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNrightAttachment,    XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNresizable,          True); arg++; 
-    XtSetArg(args[arg], XmNfillOnSelect,       True); arg++; 
+    XtSetArg(args[arg], XmNfillOnSelect,       True); arg++;
+    XtSetArg(args[arg], XmNset,                True); arg++;
     led_w = verify(XmCreateToggleButton(status_form, "led", args, arg));
     XtManageChild(led_w);
+
+    XtAddCallback(led_w, XmNvalueChangedCallback, ToggleBlinkCB, XtPointer(0));
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
@@ -2651,6 +2657,7 @@ static void create_status(Widget parent)
 		  XmNpaneMinimum, new_height,
 		  NULL);
 
+    XtVaSetValues(led_w, XmNset, app_data.blink_while_busy, NULL);
     blink(true);
 }
 
@@ -2687,6 +2694,9 @@ static void blink(bool set)
 {
     blinker_active = set;
 
+    if (!XmToggleButtonGetState(led_w))
+	return;			// Button is not active
+
     // The blinker hangs up occasionally - that is, BLINK_TIMER != 0
     // holds, but BlinkCB() is never called.  Hence, we check for the
     // time elapsed since we added the BlinkCB() timeout.
@@ -2712,6 +2722,24 @@ static void blink(bool set)
 	if (blink_timer == 0 && blinker_active)
 	    BlinkCB(XtPointer(True), &blink_timer);
     }
+}
+
+static void ToggleBlinkCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+    string debugger_status_indicator =
+	"Debugger status indicator ";
+
+    app_data.blink_while_busy = info->set;
+
+    if (info->set)
+	set_status(debugger_status_indicator + "enabled.");
+    else
+	set_status(debugger_status_indicator + "disabled.");
+
+    // Restart blinker
+    blink(blinker_active);
 }
 
 

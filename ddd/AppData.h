@@ -187,6 +187,8 @@
 #define XtNclearDocDelay         "clearDocDelay"
 #define XtNclearTipDelay         "clearTipDelay"
 #define XtCClearDelay            "ClearDelay"
+#define XtNblinkWhileBusy        "blinkWhileBusy"
+#define XtCBlinkWhileBusy        "BlinkWhileBusy"
 #define XtNbusyBlinkRate         "busyBlinkRate"
 #define XtNungrabMousePointer    "ungrabMousePointer"
 #define XtCUngrabMousePointer    "UngrabMousePointer"
@@ -276,6 +278,7 @@ struct AppData {
     int     value_doc_delay;
     int     clear_doc_delay;
     int     clear_tip_delay;
+    Boolean blink_while_busy;
     int     busy_blink_rate;
     Boolean ungrab_mouse_pointer;
     Boolean detect_aliases;

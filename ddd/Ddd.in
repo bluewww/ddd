@@ -2882,8 +2882,9 @@ Ddd*status_form*helpString: \
 It shows the last message of the inferior debugger\n\
 as well as short @DDD@ messages.\n\
 \n\
-The indicator on the right side blinks whenever\n\
-the inferior debugger is busy.
+The debugger status indicator on the right side\n\
+blinks while the inferior debugger is busy.\n\
+If this annoys you, disable it by clicking on it.
 
 Ddd*status_form*borderWidth:		0
 
@@ -2900,9 +2901,13 @@ Ddd*status_form.led.marginTop:		0
 Ddd*status_form.led.marginBottom:	0
 Ddd*status_form.led.spacing:		0
 Ddd*status_form.led.labelString:
-Ddd*status_form.led.set:		true
-Ddd*status_form.led.sensitive:		false
+Ddd*status_form.led.visibleWhenOff:	false
 Ddd*status_form.led.selectColor:	dark green
+Ddd*status_form.led.tipString:	\
+@rm Debugger status
+Ddd*status_form.led.documentationString: \
+@rm Debugger status: blinks while inferior debugger is busy \
+(click to disable or enable)
 
 
 !-----------------------------------------------------------------------------
