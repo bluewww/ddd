@@ -107,9 +107,8 @@ extern "C" int symlink (const char *oldname, const char *newname);
 
 // True if `gcore' should be used to get a core dump.
 // Right now, this has the side-effect that the debuggee runs for a
-// short moment between `gcore' has finished and DDD stops it again,
-// which is why it is disabled.
-#define TRY_GCORE  0
+// short moment between `gcore' has finished and DDD stops it again.
+#define TRY_GCORE  1
 
 //-----------------------------------------------------------------------------
 // Source Options
@@ -880,8 +879,9 @@ static bool move(const string& from, const string& to)
 static bool _get_core(const string& session, unsigned long flags, 
 		      string& target)
 {
-    const bool may_kill      = (flags & MAY_KILL);
-    const bool dont_save     = (flags & DONT_SAVE);
+    const bool may_kill         = (flags & MAY_KILL);
+    const bool dont_save        = (flags & DONT_SAVE);
+    const bool dont_reload_core = (flags & DONT_RELOAD_CORE);
 
     create_session_dir(session);
     target = session_core_file(session);
@@ -979,16 +979,9 @@ static bool _get_core(const string& session, unsigned long flags,
 		     << strerror(errno) << "\n";
 	}
 
-	// 6. Have GDB attach to the debuggee again.
+	// 6. Attach GDB to the debuggee again.
 	sleep(1);
-	gdb_question("attach " + itostring(info.pid));
-
-	// 7. One last command to reset current execution position
-	Command c("# reset");
-	c.priority = COMMAND_PRIORITY_INIT;
-	c.verbose  = false;
-	c.check    = true;
-	gdb_command(c);
+	gdb_command("attach " + itostring(info.pid));
 
 	if (is_core_file(gcore_target) && move(gcore_target, target))
 	    return true;
@@ -1012,8 +1005,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	// 2. Detach GDB from the debuggee.  The debuggee is still stopped.
 	gdb_question("detach");
 
-	// 3. Invoke `gcore' command.  Since `gcore' restarts the
-	// debuggee, stop it again.
+	// 3. Invoke `gcore' command.
   	string gcore_target = target + "." + itostring(info.pid);
  	gcore.gsub("@FILE@", target);
  	gcore.gsub("@PID@",  itostring(info.pid));
@@ -1031,20 +1023,15 @@ static bool _get_core(const string& session, unsigned long flags,
 	    }
 	}
 	int gcore_status = pclose(fp);
+
+	// 4. Since `gcore' restarts the debuggee, stop it again.
 	kill(info.pid, SIGSTOP);
 	if (gcore_status != 0)
 	    cerr << string(errs);
 
-	// 4. Attach GDB again.
+	// 5. Attach GDB again.
 	sleep(1);
-	gdb_question("attach " + itostring(info.pid));
-
-	// 5. One last command to reset current execution position
-	Command c("# reset");
-	c.priority = COMMAND_PRIORITY_INIT;
-	c.verbose  = false;
-	c.check    = true;
-	gdb_command(c);
+	gdb_command("attach " + itostring(info.pid));
 
   	if (is_core_file(gcore_target) && move(gcore_target, target))
   	    return true;
@@ -1085,16 +1072,28 @@ static bool _get_core(const string& session, unsigned long flags,
 	    }
 	}
 
-	// Try 10 times to kill the process
-	int tries = 10;
-	while (tries-- > 0 && kill(info.pid, SIGABRT) == 0)
+	if (gdb->type() == GDB)
 	{
-	    Command c("stepi");
-	    c.verbose  = false;
-	    c.check    = true;
-	    c.priority = COMMAND_PRIORITY_AGAIN;
-	    gdb_command(c);
-	    syncCommandQueue();
+	    // With GDB, simply send a signal and detach the process.
+	    // This has the advantage that any signals blocked by GDB
+	    // will be unblocked.
+	    kill(info.pid, SIGABRT);
+	    gdb_question("detach");
+	}
+	else
+	{
+	    // Alternate method: kill the process while it's still
+	    // being debugged.
+	    int tries = 10;
+	    while (tries-- > 0 && kill(info.pid, SIGABRT) == 0)
+	    {
+		Command c("step");
+		c.verbose  = false;
+		c.check    = true;
+		c.priority = COMMAND_PRIORITY_AGAIN;
+		gdb_command(c);
+		syncCommandQueue();
+	    }
 	}
 
 	if (is_core_file(core))
@@ -1112,7 +1111,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    if (had_a_core_file)
 		move(core_backup, core);
 
-	    if (ok && gdb->type() == GDB && !(flags & DONT_RELOAD_CORE))
+	    if (ok && gdb->type() == GDB && !dont_reload_core)
 	    {
 		// Load the core file just saved, such that we can
 		// keep on examining data in this session.

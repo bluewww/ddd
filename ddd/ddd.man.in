@@ -1763,9 +1763,18 @@ details.
 To make the current session inactive, open the \fIdefault session\fR
 named `\fB[None]\fR'; see below for details on opening sessions.
 .PP
-If a core file is to be included in the session, \s-2@DDD@\s+2 must
-kill the debugged program in order to get a core file.  This means
-that you cannot continue program execution after saving a session.
+If a core file is to be included in the session, \s-2@DDD@\s+2 uses
+the `\fBgcore\fR' command specified in `\fBEdit | Preferences |
+Helpers | Get Core File\fR'.  Since `\fBgcore\fR' automatically
+resumes debuggee execution, and since some time may elapse until
+\s-2@DDD@\s+2 can stop the debuggee again, the current execution
+position may change after saving state.  If you do not want this,
+leave the entry in `\fBEdit | Preferences | Helpers | Get Core
+File\fR' empty.
+.PP
+If no `\fBgcore\fR' command is specified, \s-2@DDD@\s+2 must kill the
+debugged program in order to get a core file.  This means that you
+cannot resume program execution after saving a session.
 .\"
 .SS "Opening Sessions"
 To resume a previously saved session, select `\fBFile | Open
