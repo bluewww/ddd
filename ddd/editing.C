@@ -445,7 +445,7 @@ void processAct(Widget w, XEvent *e, String *params, Cardinal *num_params)
     running = false;
 }
 
-void insert_source_argAct   (Widget w, XEvent*, String*, Cardinal*)
+void insert_source_argAct(Widget w, XEvent*, String*, Cardinal*)
 {
     clear_isearch();
 
@@ -464,23 +464,12 @@ void insert_source_argAct   (Widget w, XEvent*, String*, Cardinal*)
     }
 }
 
-void insert_graph_argAct (Widget w, XEvent*, String*, Cardinal*)
+void insert_graph_argAct (Widget w, XEvent *ev, 
+			  String *args, Cardinal *num_args)
 {
-    clear_isearch();
-
-    string arg = DataDisp::graph_arg->get_string();
-    if (XmIsText(w)) {
-	if (XmTextGetEditable(w)) {
-	    XmTextPosition pos = XmTextGetInsertionPosition(w);
-	    XmTextReplace(w, pos, pos, (String)arg);
-	}
-    }
-    else if (XmIsTextField(w)) {
-	if (XmTextFieldGetEditable(w)) {
-	    XmTextPosition pos = XmTextFieldGetInsertionPosition(w);
-	    XmTextFieldReplace(w, pos, pos, (String)arg);
-	}
-    }
+    // Since both fields are synchronized, it doesn't matter which one
+    // we insert.
+    insert_source_argAct(w, ev, args, num_args);
 }
 
 void next_tab_groupAct (Widget w, XEvent*, String*, Cardinal*)

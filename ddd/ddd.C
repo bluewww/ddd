@@ -5067,8 +5067,12 @@ static void gdbUnselectAllCB(Widget w, XtPointer client_data,
     XmTextFieldClearSelection(source_arg->widget(), tm);
     XmTextClearSelection(source_view->source(), tm);
     XmTextClearSelection(source_view->code(), tm);
-    XmTextFieldClearSelection(DataDisp::graph_arg->widget(), tm);
-    XmTextClearSelection(DataDisp::graph_selection_w, tm);
+
+    if (data_disp->graph_arg != 0)
+	XmTextFieldClearSelection(data_disp->graph_arg->widget(), tm);
+    if (data_disp->graph_selection_w != 0)
+	XmTextClearSelection(data_disp->graph_selection_w, tm);
+
     DataDisp::unselectAllCB(w, client_data, call_data);
 }
 
