@@ -22,7 +22,7 @@ DDD is now a GNU program
     and `ddd@gnu.org' (for announcements, discussions, or anything else).
   
     You can subscribe to these lists by sending an e-mail to
-    `request-bug-ddd@gnu.org' and `request-ddd@gnu.org', respectively.
+    `bug-ddd-request@gnu.org' and `ddd-request@gnu.org', respectively.
 
   There will be a smooth transition from previous DDD resources to the
   new ones; subscribers of old mailing lists will be notified.
