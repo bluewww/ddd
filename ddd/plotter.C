@@ -707,12 +707,12 @@ static void GetPlotHP(Agent *, void *client_data, void *call_data)
     // We got the plot commands
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
 
-    // Popup shell
-    popup_plot_shell(plot);
-
     // Pass commands to the plot area
     DataLength *dl = (DataLength *)call_data;
-    plot->area->plot(dl->data);
+    plot->area->plot(dl->data, dl->length);
+
+    // Popup shell
+    popup_plot_shell(plot);
 }
 
 static void PlotterNotFoundHP(Agent *plotter, void *client_data, void *)

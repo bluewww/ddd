@@ -35,6 +35,7 @@
 
 #include "strclass.h"
 #include <X11/Intrinsic.h>
+#include "ChunkQueue.h"
 
 class PlotArea;
 
@@ -62,7 +63,7 @@ class PlotArea {
     int type;			// Current line type
     int pointsize;		// Point size
 
-    string last_commands;	// Last commands drawn
+    ChunkQueue last_commands;	// Command buffer
     
     // Plotting commands
     void plot_unknown (const char *command);
@@ -73,13 +74,21 @@ class PlotArea {
     void plot_justify (const char *command);
     void plot_linetype(const char *command);
     void plot_point   (const char *command);
+    void plot_clear   (const char *command);
+    void plot_reset   (const char *command);
+
+protected:
+    virtual int do_plot(const char *commands, bool clear);
 
 public:
     // Constructor
     PlotArea(Widget w, const string& fontname);
 
+    // Destructor
+    virtual ~PlotArea() {}
+
     // Plot
-    void plot(const char *commands, bool clear = true);
+    void plot(const char *commands, int length, bool clear = true);
     void replot(bool clear = false);
 
     Widget widget() const { return area; }

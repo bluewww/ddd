@@ -65,11 +65,11 @@ private:
     double y_min, y_max;
     double v_min, v_max;
 
-    ChunkQueue plot_data;	// Plotting commands received so far
-
     string init_commands;	// Initialization commands
     bool need_reset;		// Reset with next plot
     int last_ndim;		// Last number of dimensions
+
+    bool getting_plot_data;	// True if getting plot data
 
 protected:
     void add_v(double v);
@@ -93,10 +93,10 @@ public:
 	  x_min(0.0), x_max(0.0),
 	  y_min(0.0), y_max(0.0),
 	  v_min(0.0), v_max(0.0),
-	  plot_data(),
 	  init_commands(""),
 	  need_reset(false),
-	  last_ndim(0)
+	  last_ndim(0),
+	  getting_plot_data(false)
     {
 	reset();
     }

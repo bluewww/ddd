@@ -329,38 +329,30 @@ void PlotAgent::dispatch(int type, char *data, int length)
 	return;
     }
 
-    bool getting_plot_data = (plot_data.length() > 0);
-
     if (data[0] == 'G' && data[1] == '\n')
     {
 	// Enter graphics mode
 	getting_plot_data = true;
     }
 
-    if (getting_plot_data)
-    {
-	// Continue plot
-	plot_data.append(data, length);
-    }
-    else
+    if (!getting_plot_data)
     {
 	LiterateAgent::dispatch(type, data, length);
 	return;
     }
 
-    // Process any chunks up to 'E\n' received so far
-    for (int i = 0; i < plot_data.length() - 1; i++)
+    // Call handlers
+    DataLength dl(data, length);
+    callHandlers(Plot, &dl);
+
+    if (length >= 2 && data[length - 1] == '\n')
     {
-	char *commands = plot_data.data();
-	if (commands[i] == 'E' && commands[i + 1] == '\n')
+	char last_cmd = data[length - 2];
+
+	if (last_cmd == 'E' || last_cmd == 'R')
 	{
-	    // Process commands
-	    DataLength dl(commands, i + 1);
-	    callHandlers(Plot, &dl);
-
-	    plot_data.discard(i + 1);
-
-	    i = 0;
+	    // Leave graphics mode
+	    getting_plot_data = false;
 	}
     }
 }

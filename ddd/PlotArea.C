@@ -129,7 +129,7 @@ PlotArea::PlotArea(Widget w, const string& fontname)
     : area(w), dpy(XtDisplay(w)), win(XtWindow(w)),
       cx(0), cy(0), px(1), py(1), xscale(0.0), yscale(0.0),
       gc(0), font(0), vchar(0), jmode(0), line_type(0), width(0),
-      type(LineSolid), pointsize(1), last_commands("")
+      type(LineSolid), pointsize(1), last_commands()
 {
     plot_resource_values values;
     XtGetApplicationResources(area, &values,
@@ -375,20 +375,9 @@ void PlotArea::plot_point(const char *buf)
     }
 }
 
-void PlotArea::plot_unknown(const char *command)
+void PlotArea::plot_clear(const char *)
 {
-    // Unknown command
-    cerr << "PlotArea: unknown plot command " << quote(command) << "\n";
-}
-
-void PlotArea::plot(const char *cmds, bool clear)
-{
-    last_commands = cmds;
-
-    if (!XtIsRealized(area))
-	return;
-
-    // Initialize
+    // Clear window
     Dimension area_width, area_height;
     Pixel area_background;
     XtVaGetValues(area, 
@@ -397,76 +386,161 @@ void PlotArea::plot(const char *cmds, bool clear)
 		  XmNbackground, &area_background,
 		  NULL);
 
+    XSetForeground(dpy, gc, area_background);
+    XFillRectangle(dpy, win, gc, 0, 0, area_width, area_height);
+    XSetBackground(dpy, gc, area_background);
+}
+
+// Reset all values
+void PlotArea::plot_reset(const char *)
+{
+    if (!XtIsRealized(area))
+    {
+	win = 0;
+	return;
+    }
+
+    win = XtWindow(area);
+
     // Set scaling factor between internal driver & window geometry
+    Dimension area_width, area_height;
+    XtVaGetValues(area, 
+		  XmNwidth, &area_width, 
+		  XmNheight, &area_height, 
+		  NULL);
     xscale = (double)area_width  / 4096.0;
     yscale = (double)area_height / 4096.0;
 
+    // Reset center
     cx = 0;
     cy = 0;
 
+    // Reset line type
     type = LineSolid;
-    win = XtWindow(area);
 
     // Create new GC
     if (gc != 0)
 	XFreeGC(dpy, gc);
     gc = XCreateGC(dpy, win, 0, (XGCValues *)0);
     XSetFont(dpy, gc, font->fid);
+}
 
-    if (clear)
+void PlotArea::plot_unknown(const char *command)
+{
+    // Unknown command
+    int sl = 0;
+    while (command[sl] != '\n' && command[sl] != '\0')
+	sl++;
+    string c(command, sl);
+
+    cerr << "PlotArea: unknown plot command " << quote(c) << "\n";
+}
+
+void PlotArea::plot(const char *commands, int length, bool clear)
+{
+    int discard = do_plot(commands, clear);
+
+    if (discard >= 0)
     {
-	// Set win background
-	XSetForeground(dpy, gc, area_background);
-	XFillRectangle(dpy, win, gc, 0, 0, area_width, area_height);
-	XSetBackground(dpy, gc, area_background);
+	// `G' command found - forget about old commands
+	last_commands.discard();
+	last_commands.append((char *)commands + discard, length - discard);
+    }
+    else
+    {
+	// No `G' command found - append to previous commands
+	last_commands.append((char *)commands, length);
+    }
+
+    assert(last_commands.length() == 0 || last_commands.data()[0] == 'G');
+}
+
+void PlotArea::replot(bool clear)
+{
+    plot_reset("");
+
+    do_plot(last_commands.data(), clear);
+}
+
+int PlotArea::do_plot(const char *commands, bool clear)
+{
+    // Discard all commands up to `G' command, if any
+    int discard = -1;
+
+    const char *cmds = commands;
+    while (*cmds != '\0')
+    {
+	if (cmds[0] == 'G' && cmds[1] == '\n')
+	    discard = (cmds - commands);
+
+	while (*cmds != '\n' && *cmds != '\0')
+	    cmds++;
+	if (*cmds != '\0')
+	    cmds++;
     }
 
     // Process commands
-    while (*cmds != '\0')
+    cmds = commands;
+    if (discard >= 0)
+	cmds += discard;
+
+    while (cmds[0] != '\0')
     {
 	const char *command = cmds;
 
-	// Let CMDS point to the end of the line
+	// Move CMDS to the next line
 	while (*cmds != '\0' && *cmds != '\n')
 	    cmds++;
-	char eol = *cmds;
+	if (*cmds != '\0')
+	    cmds++;
 
-	if (eol != '\0')
-	{
-	    // Let COMMAND be 0-terminated
-	    *((char *)cmds) = '\0';
-	}
+	// Make current command NUL-terminated.  Otherwise, sscanf()
+	// takes far too much time.
+	if (cmds > commands && *cmds != '\0')
+	    ((char *)cmds)[-1] = '\0';
 
 	switch (command[0])
 	{
 	case 'V':
-	    plot_vector(command);
+	    if (win)
+		plot_vector(command);
 	    break;
 
 	case 'M':
-	    plot_move(command);
+	    if (win)
+		plot_move(command);
 	    break;
 
 	case 'T':
-	    plot_text(command);
+	    if (win)
+		plot_text(command);
 	    break;
 
 	case 'J':
-	    plot_justify(command);
+	    if (win)
+		plot_justify(command);
 	    break;
 
 	case 'L':
-	    plot_linetype(command);
+	    if (win)
+		plot_linetype(command);
 	    break;
 
 	case 'P':
-	    plot_point(command);
+	    if (win)
+		plot_point(command);
 	    break;
 
 	case 'G':
+	    plot_reset(command);
+	    if (win && clear)
+		plot_clear(command);
+	    break;
+
 	case 'E':
 	case 'R':
-	    plot_nop(command);
+	    if (win)
+		plot_nop(command);
 	    break;
 
 	default:
@@ -474,19 +548,10 @@ void PlotArea::plot(const char *cmds, bool clear)
 	    break;
 	}
 
-	if (eol != '\0')
-	{
-	    // Restore old line terminator
-	    *((char *)cmds) = '\n';
-
-	    // Go to next line
-	    cmds++;
-	}
+	// Restore terminator
+	if (cmds > commands && *cmds != '\0')
+	    ((char *)cmds)[-1] = '\n';
     }
-}
 
-void PlotArea::replot(bool clear)
-{
-    plot(last_commands, clear);
+    return discard;
 }
-
