@@ -12,28 +12,39 @@ DDD 3.2 brings almost nothing yet.
   Define Command, and GDB Settings Dialogs.
 
 
+DDD 3.1.2
+=========
+
+DDD 3.1.2 fixes more minor bugs in DDD 3.1:
+
+- The splash screen works with C++ compilers other than GCC.
+- Under certain circumstances, show/hide can fail with deeply nested
+  structures.
+
+There are no new features in DDD 3.1.2, so unless you suffer from one
+of the bugs listed above, feel free to upgrade at some later time.
+
+
 DDD 3.1.1
 =========
 
 DDD 3.1.1 fixes a number of minor bugs in DDD 3.1:
 
-- Work around EGCS 1.1 bug on Linux
-- Make sure ostrstream::pcount() is not considered broken when
-  using `gcc' (instead of `c++' or `g++') as C++ compiler
-- Handle empty status displays properly
-- Recognize multiple breakpoints as reported by the Perl debugger 
-  as of Perl 5.005 and later
-- Handle incomplete DBX output correctly, such as prompts of the
-  debugged program.  For details, see the new `positionTimeout' and
-  `displayTimeout' resources.
-- Under certain circumstances, DDD could hang searching for a Java
-  class.
-- Using a remote GDB, a new execution window was launched for each
-  program run.
-- Using the execution window, Program->Run Again and the `run' command
-  tool button cleared all arguments.
+- EGCS 1.1 on Linux properly compiles DDD.
+- ostrstream::pcount() is no longer considered `broken' when using
+  `gcc' (instead of `c++' or `g++') as C++ compiler.
+- Empty status displays are handled properly.
+- Using Perl 5.005 and later, multiple breakpoints are properly recognized.
+- Using DBX, incomplete DBX output is properly handled, such as
+  prompts of the debugged program.  For details, see the new
+  `positionTimeout' and `displayTimeout' resources.
+- DDD no longer hangs searching for a Java class.
+- Using a remote GDB, only one execution window is launched.
+- Using DBX and the execution window, Program->Run Again and the `run'
+  command tool button no longer clear all arguments.
 
-There are no new features in DDD 3.1.1.
+There are no new features in DDD 3.1.1, so unless you suffer from one
+of the bugs listed above, feel free to upgrade at some later time.
 
 
 DDD 3.1

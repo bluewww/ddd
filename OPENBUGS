@@ -150,7 +150,21 @@ detail.
     is. I could not yet (after 20 seconds of experimenting) see a
     pattern.
 
-737 Joonas Lehtinen <phoenix@jole.fi> reports that DDD 3.1 coredumps
-    after a few replots.
+736 Charles Neil Harwick Ridgway <cnhr@ecs.soton.ac.uk> reports:
+    (LessTif 0.87) I load up ddd in separated windows
+    e.g. non-stacked. I load in a egcs-g++ compiled file (with -g) and
+    the program is loaded in. DDD then justs sits there with an
+    hour-glass symbol doing nothing. There is little or no process
+    usage - it is just doing nothing! The only way I can kill it is by
+    using the "kill -9" command.
 
-739 (Insert new bugs here)
+737 Charles Neil Harwick Ridgway <cnhr@ecs.soton.ac.uk> reports:
+    (LessTif 0.87) I use the file open dialog box to try and load in a
+    file. I'm not in the correct directory and so I change to another
+    (double-clicking doesn't seem to work - point with the mouse and
+    press enter). I have a symbolic link to the directory with my code
+    in. These are not shown in the file window. Out of frustation I
+    clicked in the blank window and hey-presto core-dump. Woo-hoo.
+
+738 Joonas Lehtinen <phoenix@jole.fi> reports that DDD 3.1 coredumps
+    after a few replots.

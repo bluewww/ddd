@@ -176,184 +176,187 @@ void logplayer(const string& logname)
 	}
 
 	// Read line from log
-	char buffer[1024];
+	char buffer[65536];
 	log.getline(buffer, sizeof buffer);
-	string log_line(buffer);
+	if (!log.fail())
+	{
+	    string log_line(buffer);
 
-	if (out_seen && log_line.contains("   ", 0))
-	{
-	    // Continuation line
-	    out += unquote(log_line.from('"'));
-	}
-	else if (out != "")
-	{
-	    // Send out accumulated output
-	    if (!scanning)
+	    if (out_seen && log_line.contains("   ", 0))
 	    {
-		if (out.contains(ddd_line, 0))
-		    echoing = true;
-		put(out);
+		// Continuation line
+		out += unquote(log_line.from('"'));
 	    }
-	    out = "";
-	}
-
-	if (log_line.contains("<- ", 0))
-	{
-	    assert(out == "");
-
-	    // Output line
-	    out = unquote(log_line.from('"'));
-	    out_seen = true;
-	}
-
-	if (out_seen && log_line.contains("-> ", 0))
-	{
-	    // Handle input
-	    string in = unquote(log_line.from('"'));
-	    if (in.contains('\n', -1))
-		in = in.before('\n', -1);
-	    command_no++;
-
-	    if (ddd_line.contains('/', 0) || ddd_line.contains(':', 0))
+	    else if (out != "")
 	    {
-		static string pattern;
-		char c = ddd_line[0];
-		string p = ddd_line.after(0);
-		if (p != "" || c == ':')
-		    pattern = p;
-		if (pattern == "" ||
-		    (c == ':' && command_no == atoi(pattern)) ||
-		    (c == '/' && (pattern == "" || in.contains(pattern))))
+		// Send out accumulated output
+		if (!scanning)
 		{
-		    // Report line
-		    ostrstream os;
-		    os << setw(4) << command_no << " " << in << "\n";
-		    put(os);
-
-		    if (c == '/' || pattern != "")
-		    {
-			// Stop here
-			scanning = false;
-			scan_start = current;
-			command_no_start = command_no - 1;
-		    }
+		    if (out.contains(ddd_line, 0))
+			echoing = true;
+		    put(out);
 		}
+		out = "";
 	    }
 
-	    if (!scanning)
+	    if (log_line.contains("<- ", 0))
 	    {
-		last_input = scan_start;
-		initializing = false;
+		assert(out == "");
 
-		// Read command from DDD
-		if (last_out.contains('\n'))
+		// Output line
+		out = unquote(log_line.from('"'));
+		out_seen = true;
+	    }
+
+	    if (out_seen && log_line.contains("-> ", 0))
+	    {
+		// Handle input
+		string in = unquote(log_line.from('"'));
+		if (in.contains('\n', -1))
+		    in = in.before('\n', -1);
+		command_no++;
+
+		if (ddd_line.contains('/', 0) || ddd_line.contains(':', 0))
 		{
-		    string prompt = last_out.after('\n', -1);
-		    if (prompt != "")
+		    static string pattern;
+		    char c = ddd_line[0];
+		    string p = ddd_line.after(0);
+		    if (p != "" || c == ':')
+			pattern = p;
+		    if (pattern == "" ||
+			(c == ':' && command_no == atoi(pattern)) ||
+			(c == '/' && (pattern == "" || in.contains(pattern))))
 		    {
-			if (prompt.contains('('))
-			    prompt = prompt.from('(', -1);
+			// Report line
+			ostrstream os;
+			os << setw(4) << command_no << " " << in << "\n";
+			put(os);
 
-			last_prompt = prompt;
+			if (c == '/' || pattern != "")
+			{
+			    // Stop here
+			    scanning = false;
+			    scan_start = current;
+			    command_no_start = command_no - 1;
+			}
 		    }
 		}
 
-		if (!last_out.contains(last_prompt, -1))
-		    put(last_prompt);
-
-		last_out = "";
-
-		char *s = fgets(buffer, sizeof buffer, stdin);
-		if (ignore_next_input)
+		if (!scanning)
 		{
-		    s = fgets(buffer, sizeof buffer, stdin);
-		    ignore_next_input = false;
-		}
-		if (s == NULL)
-		    exit(EXIT_SUCCESS);
+		    last_input = scan_start;
+		    initializing = false;
 
-		ddd_line = buffer;
-		if (ddd_line.contains('\n', -1))
-		    ddd_line = ddd_line.before('\n', -1);
+		    // Read command from DDD
+		    if (last_out.contains('\n'))
+		    {
+			string prompt = last_out.after('\n', -1);
+			if (prompt != "" && !prompt.contains('\\', 0))
+			{
+			    if (prompt.contains('('))
+				prompt = prompt.from('(', -1);
 
-		if (echoing && ddd_line != "" && !isalpha(ddd_line[0]))
-		    put(ddd_line + "\r\n");
+			    last_prompt = prompt;
+			}
+		    }
 
-		if (ddd_line.contains('q', 0))
-		    exit(EXIT_SUCCESS);
+		    if (!last_out.contains(last_prompt, -1))
+			put(last_prompt);
 
-		if ((ddd_line.contains("list ", 0) || 
-		     ddd_line.contains("l ", 0)) && 
-		    (ddd_line.contains(" 1,") || 
-		     ddd_line.contains(":1,") || 
-		     ddd_line.contains(" 1-")))
-		{
-		    // Send the log file instead of a source
-		    if (echoing)
+		    last_out = "";
+
+		    char *s = fgets(buffer, sizeof buffer, stdin);
+		    if (ignore_next_input)
+		    {
+			s = fgets(buffer, sizeof buffer, stdin);
+			ignore_next_input = false;
+		    }
+		    if (s == NULL)
+			exit(EXIT_SUCCESS);
+
+		    ddd_line = buffer;
+		    if (ddd_line.contains('\n', -1))
+			ddd_line = ddd_line.before('\n', -1);
+
+		    if (echoing && ddd_line != "" && !isalpha(ddd_line[0]))
 			put(ddd_line + "\r\n");
 
-		    ifstream is(logname);
-		    int line = 1;
-		    bool at_start_of_line = true;
+		    if (ddd_line.contains('q', 0))
+			exit(EXIT_SUCCESS);
 
-		    ostrstream os;
-		    for (;;)
+		    if ((ddd_line.contains("list ", 0) || 
+			 ddd_line.contains("l ", 0)) && 
+			(ddd_line.contains(" 1,") || 
+			 ddd_line.contains(":1,") || 
+			 ddd_line.contains(" 1-")))
 		    {
-			char c;
-			is.get(c);
-			if (is.eof())
-			    break;
+			// Send the log file instead of a source
+			if (echoing)
+			    put(ddd_line + "\r\n");
 
-			if (at_start_of_line)
+			ifstream is(logname);
+			int line = 1;
+			bool at_start_of_line = true;
+
+			ostrstream os;
+			for (;;)
 			{
-			    os << line << '\t';
-			    at_start_of_line = false;
+			    char c;
+			    is.get(c);
+			    if (is.eof())
+				break;
+
+			    if (at_start_of_line)
+			    {
+				os << line << '\t';
+				at_start_of_line = false;
+			    }
+
+			    os << c;
+
+			    if (c == '\n')
+			    {
+				line++;
+				at_start_of_line = true;
+			    }
 			}
 
-			os << c;
-
-			if (c == '\n')
-			{
-			    line++;
-			    at_start_of_line = true;
-			}
+			put(string(os));
+			scanning = false;
 		    }
+		}
 
-		    put(string(os));
+		if (!scanning && ddd_line == ".")
+		{
+		    ostrstream os;
+		    os << "Expecting " 
+		       << command_no << " " << quote(in) << "\n";
+		    put(os);
+		    log.seekg(scan_start);
+		    command_no = command_no_start;
+		}
+		else if (!scanning && ddd_line == "?")
+		{
+		    put(usage);
+		    log.seekg(scan_start);
+		    command_no = command_no_start;
+		}
+		else if (ddd_line == in || ddd_line == "!" || ddd_line == "")
+		{
+		    // Okay, got it
 		    scanning = false;
 		}
-	    }
-
-	    if (!scanning && ddd_line == ".")
-	    {
-		ostrstream os;
-		os << "Expecting " 
-		   << command_no << " " << quote(in) << "\n";
-		put(os);
-		log.seekg(scan_start);
-		command_no = command_no_start;
-	    }
-	    else if (!scanning && ddd_line == "?")
-	    {
-		put(usage);
-		log.seekg(scan_start);
-		command_no = command_no_start;
-	    }
-	    else if (ddd_line == in || ddd_line == "!" || ddd_line == "")
-	    {
-		// Okay, got it
-		scanning = false;
-	    }
-	    else if (!scanning)
-	    {
-		// Bad match: try to find this command in the log
-		expecting = in;
-		scanning = true;
-		wrapped = false;
+		else if (!scanning)
+		{
+		    // Bad match: try to find this command in the log
+		    expecting = in;
+		    scanning = true;
+		    wrapped = false;
+		}
 	    }
 	}
 
-	if (log.eof())
+	if (log.eof() || log.fail())
 	{
 	    if (scanning && wrapped)
 	    {
@@ -364,6 +367,7 @@ void logplayer(const string& logname)
 		scanning = false;
 		log.clear();
 		log.seekg(scan_start);
+		out = "";
 		command_no = command_no_start;
 	    }
 	    else if (initializing)

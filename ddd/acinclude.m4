@@ -286,6 +286,38 @@ AC_SUBST(WARN_EFFECTIVE_CXX)
 AC_SUBST(WARN_NO_EFFECTIVE_CXX)
 ])dnl
 dnl
+dnl ICE_TRIGRAPHS
+dnl -------------
+dnl
+dnl If the C++ compiler accepts the `-trigraphs' flag,
+dnl set output variable `TRIGRAPHS' to `-trigraphs'.  Otherwise,
+dnl leave it empty.
+dnl
+dnl Note: I'm not fond of trigraphs, but enabling `-trigraphs' allows us
+dnl to detect incompatibilities with other C++ compilers
+dnl
+AC_DEFUN(ICE_TRIGRAPHS,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -trigraphs)
+AC_CACHE_VAL(ice_cv_trigraphs,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_cxxflags="$CXXFLAGS"
+CXXFLAGS=-trigraphs
+AC_TRY_COMPILE(,[int a;],
+ice_cv_trigraphs=yes, ice_cv_trigraphs=no)
+CXXFLAGS="$ice_save_cxxflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_trigraphs)
+if test "$ice_cv_trigraphs" = yes; then
+TRIGRAPHS=-trigraphs
+fi
+AC_SUBST(TRIGRAPHS)
+])dnl
+dnl
 dnl ICE_BIG_TOC
 dnl -----------
 dnl
@@ -1243,7 +1275,7 @@ if test "$GXX" = yes; then
   # Check warnings
   ICE_WARN_EFFECTIVE_CXX
   ICE_WARN_UNINITIALIZED
-  
+
   # Check TOC options
   ICE_MINIMAL_TOC
   if test "$ice_cv_minimal_toc" = yes; then
@@ -1302,7 +1334,8 @@ else
 
   for flag in $CXXFLAGS; do
     case $flag in
-      -O*) CXXOPT="$CXXOPT $flag";;
+      -O)  CXXOPT="$CXXOPT $flag";;
+      -O[0123456789]*)  CXXOPT="$CXXOPT $flag";;
       -g*) CXXDEBUG="$CXXDEBUG $flag";;
       -W*) CXXWARNINGS="$CXXWARNINGS $flag";;
       *)   CXXSTUFF="$CXXSTUFF $flag";;
@@ -1333,8 +1366,9 @@ ICE_EXTERNAL_TEMPLATES
 dnl ICE_NO_IMPLICIT_TEMPLATES
 ICE_ELIDE_CONSTRUCTORS
 ICE_CONSERVE_SPACE
+ICE_TRIGRAPHS
 fi
-CXXSTUFF="$CXXSTUFF $EXTERNAL_TEMPLATES $ELIDE_CONSTRUCTORS $CONSERVE_SPACE"
+CXXSTUFF="$CXXSTUFF $EXTERNAL_TEMPLATES $ELIDE_CONSTRUCTORS $CONSERVE_SPACE $TRIGRAPHS"
 AC_SUBST(CXXSTUFF)dnl
 ])dnl
 dnl

@@ -64,6 +64,10 @@ char DispBox_rcsid[] =
 #define CACHE_BOXES 1
 #endif
 
+#ifndef LOG_BOX_CACHE
+#define LOG_BOX_CACHE 0
+#endif
+
 
 //-----------------------------------------------------------------------------
 
@@ -261,10 +265,18 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 
     if (vbox != 0)
     {
+#if LOG_BOX_CACHE
+	clog << dv->full_name() << ": using cached box\n";
+#endif
+
 	vbox = vbox->link();
 	assert_ok(vbox->OK());
 	return vbox;
     }
+#endif
+
+#if LOG_BOX_CACHE
+    clog << dv->full_name() << ": computing new box\n";
 #endif
 
     // Rebuild box

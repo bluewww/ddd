@@ -1104,7 +1104,7 @@ PROG_STUFF       = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
 		   $(srcdir)/tips.m4 $(srcdir)/tips.html \
 		   $(srcdir)/Ddd.in Ddd.ad.h host.h \
 		   $(srcdir)/ddd.vsl $(srcdir)/ddd.vsl.h \
-		   vr.h version.h configinfo.C \
+		   vr.h version.h bld.h build.h configinfo.C \
 		   ddd.1 ddd.man.txt ddd.man.txt.gz ddd.man.txt.gz.C \
                    COPYING.gz.C NEWS.gz.C xlibdir.C eps-code.h .gdbinit
 
@@ -1131,7 +1131,7 @@ DISTCLEAN_STUFF	 = $(CLEAN_STUFF) \
 
 # Any files that can be reconstructed, except configure script
 REALCLEAN_STUFF	 = $(DISTCLEAN_STUFF) $(DIST_STUFF) \
-		   header.str trailer.str eps-code.h vr.h $(MANS)
+		   header.str trailer.str eps-code.h vr.h bld.h $(MANS)
 
 # All files that can be reconstructed (but may require special programs)
 ULTRACLEAN_STUFF = $(REALCLEAN_STUFF) \
@@ -1948,6 +1948,15 @@ stamp-h: config.h.in config.status
 version.h: vr.h
 	@$(CMP) vr.h $@ 2> /dev/null || ( $(CAT) vr.h > $@~ && $(MV) $@~ $@ )
 vr.h: vr.h.in config.status
+	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+# We use configure to create `build.h'.
+# To make sure these are not touched upon every invocation,
+# we create temporary bld.* files instead and touch the build.* files
+# only if the bld.* files changed.
+build.h: bld.h
+	@$(CMP) bld.h $@ 2> /dev/null || ( $(CAT) bld.h > $@~ && $(MV) $@~ $@ )
+bld.h: bld.h.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 ## The manual page
