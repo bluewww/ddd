@@ -5321,26 +5321,31 @@ void DataDisp::set_cluster_displays(bool value)
     if (cluster_displays)
     {
 	// Cluster all independent data displays
-	int target_cluster = current_cluster();
+	int target_cluster = 0;
 
 	MapRef ref;
 	for (DispNode *dn = disp_graph->first(ref); 
 	     dn != 0; dn = disp_graph->next(ref))
 	{
 	    if (dn->is_user_command())
-		continue;	// no data display
+		continue;	// No data display
 
 	    if (dn->firstTo() != 0 && dn->firstTo()->from() != dn)
-		continue;	// dependent display
+		continue;	// Dependent display
 
 	    if (dn->clustered())
-		continue;	// already clustered
+		continue;	// Already clustered
 
+	    if (target_cluster == 0)
+		target_cluster = current_cluster();
 	    dn->cluster(target_cluster);
 	}
 
-	refresh_builtin_user_displays();
-	refresh_graph_edit();
+	if (target_cluster != 0)
+	{
+	    refresh_builtin_user_displays();
+	    refresh_graph_edit();
+	}
     }
     else
     {
@@ -5360,8 +5365,11 @@ void DataDisp::set_cluster_displays(bool value)
 	    }
 	}
 
-	delete_display(killme);
-	refresh_graph_edit();
+	if (killme.size() > 0)
+	{
+	    delete_display(killme);
+	    refresh_graph_edit();
+	}
     }
 }
 
