@@ -155,13 +155,6 @@ sh ./configure --x-libraries=/usr/X11R5/lib --x-includes=/usr/X11R5/include -v
 # Create an empty `ddd/Makedeps' such that old MAKEs won't fail.
 touch ddd/Makedeps
 
-# The derived icon files must be newer than the original XPM files,
-# because we cannot re-create them in batch mode.  (This is the reason
-# why they're under CVS control.)
-touch icons/*.xbm
-touch icons/toolbar/*-xx.xpm
-touch icons/toolbar/*.xbm
-
 # Create distribution stuff.
 (cd libiberty; make)
 (cd librx; make)
