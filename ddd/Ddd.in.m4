@@ -4573,9 +4573,9 @@ Examples:\n\
 KBD(42cm x 59.4cm) DASH A2 paper\n\
 KBD(7.5in x 10in) DASH Executive paper\n\
 \n\
-Recognized units include:\n\
-KBD(pt) (points), KBD(in) (inches), KBD(mm) (millimeters),\n\
-KBD(cm) (centimeters), KBD(parsec) (parsecs).
+Supported units for VAR(width) and VAR(height) include:\n\
+KBD(pt) (points), KBD(in) (inches),\n\
+KBD(mm) (millimeters), KBD(cm) (centimeters).
 
 
 
@@ -5833,25 +5833,9 @@ as assigned by @GDB@.  DDD will use a default number instead.
 
 Ddd*invalid_range_error_popup.title: DDD: Invalid Range
 Ddd*invalid_range_error*helpString: \
-@rm You entered an invalid range VAR(x)..VAR(y), with VAR(x) > VAR(y).
-
-Ddd*paper_size_value_error_popup.title: DDD: Unrecognized Paper size
-Ddd*paper_size_value_error*helpString:	\
-@rm DDD could not parse your paper size specification.\n\
-Please verify the paper size and try again.
-
-Ddd*paper_size_unit_error_popup.title: DDD: Unrecognized Paper size unit
-Ddd*paper_size_unit_error*helpString:	\
-@rm DDD did not recognize your paper size unit.\n\
-Recognized units include:\n\
-KBD(pt) (points), KBD(in) (inches), \n\
-KBD(mm) (millimeters), KBD(cm) (centimeters).
-Please verify the paper size unit and try again.
-
-Ddd*paper_size_x_error_popup.title: DDD: Unrecognized Paper Size
-Ddd*paper_size_x_error*helpString:	\
-@rm DDD could not find an SAMP(x) in your paper size specification.\n\
-Please verify the paper size and try again.
+@rm The displays to be created have an invalid range VAR(x)..VAR(y).\n\
+The range must be where VAR(x)..VAR(y) with VAR(x) < VAR(y).\n\
+Please verify the range and try again.
 
 Ddd*expired_warning_popup.title: DDD: DDD Expired
 Ddd*expired_warning*helpString: \

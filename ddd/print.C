@@ -428,7 +428,7 @@ static int points(string s)
 	int value_len = (int)(tailptr - start);
 	if (value_len == 0)
 	{
-	    post_error("Unrecognized size.", "paper_size_value_error");
+	    // No size
 	    return -1;
 	}
 	s = s.from(value_len);
@@ -438,12 +438,7 @@ static int points(string s)
 	if (unit.contains(rxdouble))
 	    unit = unit.before(rxdouble);
 
-	// Strip leading and trailing spaces
-	while (unit.length() > 0 && isspace(unit[0]))
-	    unit = unit.after(0);
-	while (unit.length() > 0 && isspace(unit[unit.length() - 1]))
-	    unit = unit.before(int(unit.length() - 1));
-
+	strip_space(unit);
 	unit.downcase();
 
 	if (unit.contains("es", -1))
@@ -475,8 +470,7 @@ static int points(string s)
 	    factor = 72.0 * 1/2.54 * 100000 * 3.085678e+13;
 	else
 	{
-	    post_error(string("Unrecognized unit \"") + unit + "\".",
-		       "paper_size_unit_error");
+	    // Invalid unit
 	    return -1;
 	}
 
@@ -485,7 +479,19 @@ static int points(string s)
 	else
 	    s = "";
 
+	if (double(points) + factor * value > double(INT_MAX))
+	{
+	    // Too large
+	    return -1;
+	}
+
 	points += int(factor * value);
+    }
+
+    if (points <= 0)
+    {
+	// Too small
+	return -1;
     }
 
     return points;
@@ -496,25 +502,39 @@ inline bool near(int i, int j)
     return abs(i - j) <= 2;
 }
 
-static int set_paper_size(string s)
+static void get_paper_size(string s, int& hsize, int& vsize)
 {
-    if (!s.contains('x'))
+    char delim = '\0';
+
+    if (s.contains('\327'))	// \327 is the times symbol
+	delim = '\327';
+    else if (s.contains('x'))
+	delim = 'x';
+    else if (s.contains('X'))
+	delim = 'X';
+
+    if (delim == '\0')
     {
-	post_error("Unrecognized paper size (missing \"x\").",
-		   "paper_size_x_error");
-	return -1;
+	// Bad spec
+	hsize = -1;
+	vsize = -1;
+	return;
     }
     
-    string s_hsize = s.before('x');
-    string s_vsize = s.after('x');
+    string s_hsize = s.before(delim);
+    string s_vsize = s.after(delim);
 
-    int hsize = points(s_hsize);
-    int vsize = points(s_vsize);
+    hsize = points(s_hsize);
+    vsize = points(s_vsize);
+}
 
-    if (hsize < 0)
-	return hsize;
-    if (vsize < 0)
-	return vsize;
+static bool set_paper_size(string s)
+{
+    int hsize, vsize;
+    get_paper_size(s, hsize, vsize);
+
+    if (hsize <= 0 || vsize <= 0)
+	return false;		// Error
 
     BoxPostScriptGC gc;
 
@@ -543,7 +563,7 @@ static int set_paper_size(string s)
 
     set_paper_size_string(s);
 
-    return 0;
+    return true;
 }
 
 static void SetPaperSizeCB(Widget w, XtPointer, XtPointer call_data)
@@ -561,12 +581,26 @@ static void SetPaperSizeCB(Widget w, XtPointer, XtPointer call_data)
 	XtFree(value);
     }
 
-    int ret = 0;
+    int ok = true;
     if (s != "")
-	ret = set_paper_size(s);
+	ok = set_paper_size(s);
 
-    if (ret == 0)
+    if (ok)
 	XtUnmanageChild(w);
+}
+
+static void CheckPaperSizeCB(Widget text, XtPointer client_data, XtPointer)
+{
+    Widget ok_button = Widget(client_data);
+    String value;
+    XtVaGetValues(text, XmNvalue, &value, NULL);
+    string size(value);
+    XtFree(value);
+
+    int hsize, vsize;
+    get_paper_size(size, hsize, vsize);
+
+    XtSetSensitive(ok_button, hsize >= 0 && vsize >= 0);
 }
 
 static void ResetPaperSizeCB(Widget w, XtPointer, XtPointer)
@@ -750,6 +784,13 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     XtAddCallback(paper_size_dialog, XmNhelpCallback,   
 		  ImmediateHelpCB, XtPointer(0));
 
+    Widget size = XmSelectionBoxGetChild(paper_size_dialog,
+					 XmDIALOG_TEXT);
+    Widget ok_button = XmSelectionBoxGetChild(paper_size_dialog, 
+					      XmDIALOG_OK_BUTTON);
+    XtAddCallback(size, XmNvalueChangedCallback, 
+		  CheckPaperSizeCB, XtPointer(ok_button));
+
 
     // Set initial state
     XmToggleButtonSetState(print_to_printer, True, True);
@@ -757,8 +798,8 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     XmToggleButtonSetState(print_all, True, True);
     XmToggleButtonSetState(print_portrait, True, True);
 
-    int ret = set_paper_size(app_data.paper_size);
-    if (ret < 0)
+    bool ok = set_paper_size(app_data.paper_size);
+    if (!ok)
 	XmToggleButtonSetState(a4_paper_size, True, True);
 
     string command = string(app_data.print_command) + " ";
