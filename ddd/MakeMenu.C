@@ -174,7 +174,7 @@ static void flatten_button(Widget w)
 
     if (highlight != SHADOW_THICKNESS || shadow != 0)
     {
-	clog << "Flattening " << XtName(w) << "\n";
+	// clog << "Flattening " << XtName(w) << "\n";
 
 	XtVaSetValues(w,
 		      XmNhighlightThickness, SHADOW_THICKNESS,
@@ -194,7 +194,7 @@ static void unflatten_button(Widget w)
 
     if (highlight != 0 || shadow != SHADOW_THICKNESS)
     {
-	clog << "Unflattening " << XtName(w) << "\n";
+	// clog << "Unflattening " << XtName(w) << "\n";
 
 	XtVaSetValues(w,
 		      XmNhighlightThickness, 0,
@@ -240,7 +240,8 @@ static void FlattenEH(Widget w,
     {
     case EnterNotify:
     {
-	clog << "Entering " << XtName(w) << "\n";
+	// clog << "Entering " << XtName(w) << "\n";
+
 	unflatten_button(w);
 	active_button = w;
 	break;
@@ -248,7 +249,7 @@ static void FlattenEH(Widget w,
 
     case LeaveNotify:
     {
-	clog << "Leaving " << XtName(w) << "\n";
+	// clog << "Leaving " << XtName(w) << "\n";
 
 	// We don't flatten the button immediately, because the DDD
 	// ungrab mechanism may cause the pointer to leave a button
