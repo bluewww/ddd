@@ -43,36 +43,41 @@ DEFINE_TYPE_INFO_1(BoxGraphNode, RegionGraphNode)
 
 // Draw a BoxGraphNode
 void BoxGraphNode::forceDraw(Widget w, 
-			     const BoxRegion&, 
+			     const BoxRegion& /* exposed */,
 			     const GraphGC& gc) const
 {
     // We do not check for exposures here --
     // boxes are usually small and partial display
     // doesn't work well with scrolling
+    static BoxRegion exposed(BoxPoint(0, 0), BoxSize(INT_MAX, INT_MAX));
 
     if (selected() && highlight())
     {
-	box()->draw(w, region(gc), region(gc), gc.nodeGC, false);
+	box()->draw(w, region(gc), exposed, gc.nodeGC, false);
 
 	bool use_color = ColorBox::use_color;
 	ColorBox::use_color = false;
 	BoxRegion r = highlightRegion(gc);
-	XFillRectangle(XtDisplay(w), XtWindow(w), gc.clearGC,
-		       r.origin(X), r.origin(Y),
-		       r.space(X), r.space(Y));
-	highlight()->draw(w, r, r, gc.nodeGC, false);
+
+	if (r <= exposed)
+	{
+	    XFillRectangle(XtDisplay(w), XtWindow(w), gc.clearGC,
+			   r.origin(X), r.origin(Y),
+			   r.space(X), r.space(Y));
+	    highlight()->draw(w, r, r, gc.nodeGC, false);
+	}
 	ColorBox::use_color = use_color;
     }
     else if (selected())
     {
 	bool use_color = ColorBox::use_color;
 	ColorBox::use_color = false;
-	box()->draw(w, region(gc), region(gc), gc.nodeGC, false);
+	box()->draw(w, region(gc), exposed, gc.nodeGC, false);
 	ColorBox::use_color = use_color;
     }
     else
     {
-	box()->draw(w, region(gc), region(gc), gc.nodeGC, false);
+	box()->draw(w, region(gc), exposed, gc.nodeGC, false);
     }
 }
 
