@@ -541,7 +541,7 @@ void graphEditRedrawNode(Widget w, GraphNode *node)
 
     setGrid(w);
 
-    if (node == 0)
+    if (node == 0 || node->hidden())
 	return;
 
     BoxRegion r = node->region(graphGC);
@@ -1117,8 +1117,8 @@ GraphNode *graphEditGetNodeAtPoint(Widget w, BoxPoint p)
     // note that we return the last matching node in the list;
     // thus on overlapping nodes we select the top one
 
-    for (GraphNode *node = graph->firstNode(); node != 0;
-	node = graph->nextNode(node))
+    for (GraphNode *node = graph->firstVisibleNode(); node != 0;
+	node = graph->nextVisibleNode(node))
 	if (p <= (BoxRegion&)node->sensitiveRegion(graphGC))
 	    found = node;
 
@@ -1290,8 +1290,8 @@ static void getMinimalOffset(Widget w)
     found[X] = false;
     found[Y] = false;
 
-    for (GraphNode *node = graph->firstNode(); node != 0;
-	node = graph->nextNode(node))
+    for (GraphNode *node = graph->firstVisibleNode(); node != 0;
+	node = graph->nextVisibleNode(node))
     {
 	if (node->selected())
 	{
@@ -1351,8 +1351,8 @@ static void drawOutlines(Widget w, const BoxPoint& offset)
     const GraphGC& graphGC              = _w->graphEdit.graphGC;
     const GC& outlineGC                 = _w->graphEdit.outlineGC;
 
-    for (GraphNode *node = graph->firstNode(); node != 0;
-	node = graph->nextNode(node))
+    for (GraphNode *node = graph->firstVisibleNode(); node != 0;
+	node = graph->nextVisibleNode(node))
     {
 	if (node->selected())
 	{
@@ -1371,8 +1371,8 @@ static void drawOutlines(Widget w, const BoxPoint& offset)
 	gc.offsetIfSelected = offset;
 	gc.drawArrowHeads   = rubberArrows;
 
-	for (GraphEdge *edge = graph->firstEdge(); edge != 0;
-	    edge = graph->nextEdge(edge))
+	for (GraphEdge *edge = graph->firstVisibleEdge(); edge != 0;
+	    edge = graph->nextVisibleEdge(edge))
 	{
 	    if (edge->from()->selected() || edge->to()->selected())
 		edge->draw(w, EVERYWHERE, gc);
@@ -1428,8 +1428,8 @@ static bool _SelectAll(Widget w, XEvent *, String *, Cardinal *)
     const GraphGC& graphGC   = _w->graphEdit.graphGC;
 
     bool changed = false;
-    for (GraphNode *node = graph->firstNode(); node != 0;
-	node = graph->nextNode(node))
+    for (GraphNode *node = graph->firstVisibleNode(); node != 0;
+	node = graph->nextVisibleNode(node))
     {
 	if (!node->selected())
 	{
@@ -1458,8 +1458,8 @@ static bool _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
     const GraphGC& graphGC   = _w->graphEdit.graphGC;
 
     bool changed = false;
-    for (GraphNode *node = graph->firstNode(); node != 0;
-	node = graph->nextNode(node))
+    for (GraphNode *node = graph->firstVisibleNode(); node != 0;
+	node = graph->nextVisibleNode(node))
     {
 	if (node->selected())
 	{
@@ -1486,7 +1486,8 @@ static void find_connected_nodes(GraphNode *root, VarArray<GraphNode *>& nodes)
 	if (nodes[i] == root)
 	    return;
 
-    nodes += root;
+    if (!root->hidden())
+	nodes += root;
 
     GraphEdge *edge;
     for (edge = root->firstFrom(); edge != 0; edge = root->nextFrom(edge))
@@ -1576,7 +1577,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 
     GraphNode *node = graphEditGetNodeAtPoint(w, p);
 
-    if (node == 0)
+    if (node == 0 || node->hidden())
     {
 	// On the background
 	switch (mode)
@@ -1776,9 +1777,9 @@ static void move_selected_nodes(Widget w, const BoxPoint& offset)
 
     // Move selected nodes
     GraphNode *lastNode = 0;
-    for (GraphNode *node = graph->firstNode(); 
+    for (GraphNode *node = graph->firstVisibleNode(); 
 	 node != 0;
-	 node = graph->nextNode(node))
+	 node = graph->nextVisibleNode(node))
     {
 	if (node->selected())
 	{
@@ -1817,8 +1818,8 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 	    bool have_unselected_nodes = false;
 
 	    // Find all nodes in frame and select them
-	    for (GraphNode *node = graph->firstNode(); node != 0;
-		node = graph->nextNode(node))
+	    for (GraphNode *node = graph->firstVisibleNode(); node != 0;
+		node = graph->nextVisibleNode(node))
 	    {
 		if (!node->selected())
 		{
@@ -1839,8 +1840,8 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 	    if (!have_unselected_nodes)
 	    {
 		// All selected nodes are already selected - unselect them
-		for (GraphNode *node = graph->firstNode(); node != 0;
-		     node = graph->nextNode(node))
+		for (GraphNode *node = graph->firstVisibleNode(); node != 0;
+		     node = graph->nextVisibleNode(node))
 		{
 		    if (node->selected())
 		    {
@@ -1960,9 +1961,9 @@ static void select_single_node(Widget w, GraphNode *selectNode)
 
     bool changed = false;
 
-    for (GraphNode *node = graph->firstNode(); 
+    for (GraphNode *node = graph->firstVisibleNode(); 
 	 node != 0;
-	 node = graph->nextNode(node))
+	 node = graph->nextVisibleNode(node))
     {
 	if (node != selectNode && node->selected())
 	{
@@ -1991,7 +1992,7 @@ static void SelectFirst(Widget w, XEvent *, String *, Cardinal *)
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->graphEdit.graph;
 
-    select_single_node(w, graph->firstNode());
+    select_single_node(w, graph->firstVisibleNode());
 }
 
 // Select next node
@@ -2001,19 +2002,19 @@ static void SelectNext(Widget w, XEvent *, String *, Cardinal *)
     const Graph* graph         = _w->graphEdit.graph;
 
     GraphNode *selectNode = 0;
-    for (GraphNode *node = graph->firstNode(); 
+    for (GraphNode *node = graph->firstVisibleNode(); 
 	 node != 0;
-	 node = graph->nextNode(node))
+	 node = graph->nextVisibleNode(node))
     {
 	if (node->selected())
 	{
-	    selectNode = graph->nextNode(node);
+	    selectNode = graph->nextVisibleNode(node);
 	    break;
 	}
     }
 
     if (selectNode == 0)
-	selectNode = graph->firstNode();
+	selectNode = graph->firstVisibleNode();
 
     select_single_node(w, selectNode);
 }
@@ -2026,9 +2027,9 @@ static void SelectPrev(Widget w, XEvent *, String *, Cardinal *)
 
     GraphNode *lastNode = 0;
     GraphNode *selectNode = 0;
-    for (GraphNode *node = graph->firstNode(); 
+    for (GraphNode *node = graph->firstVisibleNode(); 
 	 node != 0;
-	 node = graph->nextNode(node))
+	 node = graph->nextVisibleNode(node))
     {
 	if (node->selected())
 	    selectNode = lastNode;
@@ -2061,8 +2062,8 @@ static void _SnapToGrid(Widget w, XEvent *, String *params,
 
     bool redraw = false;
 
-    for (GraphNode *node = graph->firstNode(); node != 0;
-	node = graph->nextNode(node))
+    for (GraphNode *node = graph->firstVisibleNode(); node != 0;
+	node = graph->nextVisibleNode(node))
     {
 	BoxPoint pos = node->pos();
 
@@ -2286,7 +2287,7 @@ static void remove_all_hints(Graph *graph)
 
 static void compact_layouted_graph(Graph *graph)
 {
-    for (GraphNode *node = graph->firstNode(); 
+    for (GraphNode *node = graph->firstNode();
 	 node != 0;
 	 node = graph->nextNode(node))
     {
@@ -2360,9 +2361,9 @@ static void _Layout(Widget w, XEvent *event, String *params,
     // Send graph to layouter
     Layout::add_graph(graph_name);
 
-    for (GraphNode *node = graph->firstNode(); 
+    for (GraphNode *node = graph->firstVisibleNode(); 
 	 node != 0;
-	 node = graph->nextNode(node))
+	 node = graph->nextVisibleNode(node))
     {
 	BoxRegion r = node->region(graphGC);
 	int width  = r.space(X);
@@ -2382,9 +2383,9 @@ static void _Layout(Widget w, XEvent *event, String *params,
 	Layout::set_node_position(graph_name, name, -1, -1);
     }
 
-    for (GraphEdge *edge = graph->firstEdge(); 
+    for (GraphEdge *edge = graph->firstVisibleEdge(); 
 	 edge != 0;
-	 edge = graph->nextEdge(edge))
+	 edge = graph->nextVisibleEdge(edge))
     {
 	Layout::add_edge(graph_name, 
 			 node_name(edge->from()), node_name(edge->to()));
@@ -2441,9 +2442,9 @@ static void _Normalize(Widget w, XEvent *, String *, Cardinal *)
 
     bool redraw = false;
 
-    for (GraphNode *node = graph->firstNode(); 
+    for (GraphNode *node = graph->firstVisibleNode(); 
 	 node != 0;
-	 node = graph->nextNode(node))
+	 node = graph->nextVisibleNode(node))
     {
 	BoxPoint pos = node->pos() - r.origin() 
 	    + BoxPoint(gridHeight, gridWidth);

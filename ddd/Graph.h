@@ -130,11 +130,20 @@ public:
 	return ref->next == _firstNode ? 0 : ref->next;
     }
 
+    // Same, but iterate on non-hidden nodes only
+    GraphNode *firstVisibleNode() const;
+    GraphNode *nextVisibleNode(GraphNode *ref) const;
+
+    // Same, but iterate on edges
     GraphEdge *firstEdge() const { return _firstEdge; }
     GraphEdge *nextEdge(GraphEdge *ref) const
     {
 	return ref->next == _firstEdge ? 0 : ref->next;
     }
+
+    // Same, but iterate on non-hidden edges only
+    GraphEdge *firstVisibleEdge() const;
+    GraphEdge *nextVisibleEdge(GraphEdge *ref) const;
 
     // Change position in node list
     void makeNodeFirst(GraphNode *node);

@@ -386,11 +386,13 @@ void Graph::draw(Widget w, const BoxRegion& exposed, const GraphGC& _gc) const
 	gc.clearGC  = DefaultGCOfScreen(XtScreen(w));
 
     // draw all edges
-    for (GraphEdge *edge = firstEdge(); edge != 0; edge = nextEdge(edge))
+    for (GraphEdge *edge = firstVisibleEdge(); edge != 0; 
+	 edge = nextVisibleEdge(edge))
 	edge->draw(w, exposed, gc);
 
     // draw all nodes
-    for (GraphNode *node = firstNode(); node != 0; node = nextNode(node))
+    for (GraphNode *node = firstVisibleNode(); node != 0; 
+	 node = nextVisibleNode(node))
 	node->draw(w, exposed, gc);
 }
 
@@ -405,14 +407,16 @@ void Graph::_print(ostream& os, const GraphGC& _gc) const
 
     // print all edges
     // if printSelectedNodesOnly, print only edges between selected nodes
-    for (GraphEdge *edge = firstEdge(); edge != 0; edge = nextEdge(edge))
+    for (GraphEdge *edge = firstVisibleEdge(); edge != 0; 
+	 edge = nextVisibleEdge(edge))
 	if (gc.printSelectedNodesOnly == false ||
 	    (edge->from()->selected() && edge->to()->selected()))
 	    edge->_print(os, gc);
 
     // print all nodes
     // if printSelectedNodesOnly, print only selected nodes
-    for (GraphNode *node = firstNode(); node != 0; node = nextNode(node))
+    for (GraphNode *node = firstVisibleNode(); node != 0; 
+	 node = nextVisibleNode(node))
 	if (gc.printSelectedNodesOnly == false || node->selected())
 	    node->_print(os, gc);
 }
@@ -432,15 +436,52 @@ ostream& operator << (ostream& s, const Graph& g)
 // Region occupied by graph
 BoxRegion Graph::region(const GraphGC& gc) const
 {
-    if (firstNode() == 0)
+    if (firstVisibleNode() == 0)
 	return BoxRegion();
 
-    BoxRegion r = firstNode()->region(gc);
-    for (GraphNode *node = nextNode(firstNode()); node != 0;
-	node = nextNode(node))
+    BoxRegion r = firstVisibleNode()->region(gc);
+    for (GraphNode *node = nextVisibleNode(firstVisibleNode()); node != 0;
+	node = nextVisibleNode(node))
+    {
 	r = r | (BoxRegion&)node->region(gc);
+    }
 
     return r;
+}
+
+// Visible nodes and edges
+GraphNode *Graph::firstVisibleNode() const
+{
+    GraphNode *node = firstNode();
+    while (node != 0 && node->hidden())
+	node = nextNode(node);
+    return node;
+}
+
+GraphNode *Graph::nextVisibleNode(GraphNode *ref) const
+{
+    GraphNode *node = nextNode(ref);
+    while (node != 0 && node->hidden())
+	node = nextNode(node);
+    return node;
+}
+
+GraphEdge *Graph::firstVisibleEdge() const
+{
+    GraphEdge *edge = firstEdge();
+    while (edge != 0 && (edge->hidden() 
+			 || edge->from()->hidden() || edge->to()->hidden()))
+	edge = nextEdge(edge);
+    return edge;
+}
+
+GraphEdge *Graph::nextVisibleEdge(GraphEdge *ref) const
+{
+    GraphEdge *edge = nextEdge(ref);
+    while (edge != 0 && (edge->hidden() 
+			 || edge->from()->hidden() || edge->to()->hidden()))
+	edge = nextEdge(edge);
+    return edge;
 }
 
 // representation invariant
