@@ -24,7 +24,7 @@ ddd-thesis.ps -- ``DDD - ein Debugger mit graphischer Datendarstellung''
     Dorothea's Master's Thesis on DDD (in German).
 
     Not included in the DDD distribution; available via anonymous FTP in 
-    <ftp://ftp.ips.tu.bs.de/pub/local/softech/ddd/doc/ddd-thesis.ps>.
+    <ftp://ftp.ips.tu-bs.de/pub/local/softech/ddd/doc/ddd-thesis.ps>.
 
 
 gdb.ps -- ``Debugging with GDB''
@@ -32,7 +32,7 @@ gdb.ps -- ``Debugging with GDB''
     The GDB manual.
 
     Not included in the DDD distribution; available via anonymous FTP in 
-    <ftp://ftp.ips.tu.bs.de/pub/local/softech/ddd/doc/gdb.ps>,
+    <ftp://ftp.ips.tu-bs.de/pub/local/softech/ddd/doc/gdb.ps>,
 
 
 vse.ps -- ``Visual Prettyprinting''
@@ -41,7 +41,7 @@ vse.ps -- ``Visual Prettyprinting''
     structures in displays.  Contains a short VSL reference.
 
     Not included in the DDD distribution; available via anonymous FTP in 
-    <ftp://ftp.ips.tu.bs.de/pub/local/softech/ddd/doc/vse.ps>,
+    <ftp://ftp.ips.tu-bs.de/pub/local/softech/ddd/doc/vse.ps>,
 
 
 $Id$
