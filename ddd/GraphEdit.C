@@ -31,8 +31,6 @@ char GraphEdit_rcsid[] =
 
 #ifdef __GNUG__
 #pragma implementation
-#pragma implementation "VarArray.h"
-#pragma implementation "DynArray.h"
 #endif
 
 #include <string.h>
@@ -56,15 +54,13 @@ char GraphEdit_rcsid[] =
 #include "GraphEdit.h"
 #include "HintGraphN.h"
 #include "LineGraphE.h"
-#include "VarArray.h"
 #include "layout.h"
 #include "misc.h"
 #include "cook.h"
 #include "strtoul.h"
 #include "TimeOut.h"
-
-// Make sure we generate some templates
-typedef VarArray<EdgeAnnotation *> EdgeAnnotationArray;
+#include "EdgeAPA.h"
+#include "GraphNPA.h"
 
 
 static BoxRegion EVERYWHERE(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX));
@@ -1806,7 +1802,7 @@ static void UnselectAll(Widget w, XEvent *event, String *params,
 }
 
 // Find nodes connected to ROOT
-static void find_connected_nodes(GraphNode *root, VarArray<GraphNode *>& nodes)
+static void find_connected_nodes(GraphNode *root, GraphNodePointerArray& nodes)
 {
     for (int i = 0; i < nodes.size(); i++)
 	if (nodes[i] == root)
@@ -1827,7 +1823,7 @@ static void find_connected_nodes(GraphNode *root, VarArray<GraphNode *>& nodes)
 static Boolean select_graph(Widget w, GraphNode *root, Boolean set = True)
 {
     // Find all connected nodes
-    VarArray<GraphNode *> nodes;
+    GraphNodePointerArray nodes;
     find_connected_nodes(root, nodes);
 
     // Select them
@@ -2629,7 +2625,7 @@ string node_name(GraphNode *node)
 static void remove_all_hints(Graph *graph)
 {
     // Find all hint nodes
-    VarArray<GraphNode *> hints;
+    GraphNodePointerArray hints;
 
     for (GraphNode *node = graph->firstNode(); 
 	 node != 0;
