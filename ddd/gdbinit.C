@@ -71,6 +71,10 @@ GDBAgent *new_gdb(DebuggerType type,
 	// options, so there is not much we could do here.)
 	break;
 
+    case JDB:
+	// Nothing special.
+	break;
+
     case XDB:
 	// Enable line mode.
 	gdb_call += " -L";

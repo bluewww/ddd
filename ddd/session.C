@@ -919,6 +919,10 @@ static void open_session(const string& session)
     case XDB:
 	settings = get_resource(db, XtNxdbSettings, XtCSettings);
 	break;
+
+    case JDB:
+	settings = get_resource(db, XtNjdbSettings, XtCSettings);
+	break;
     }
     init_session(restart, settings);
 

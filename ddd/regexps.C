@@ -139,7 +139,7 @@ const regex rxfunction_call		(rx_matcher, (void *)S045);
 const regex rxgdb_begin_of_display	(rx_matcher, (void *)S046);
 const regex rxgdb_begin_of_display_info	(rx_matcher, (void *)S047);
 const regex rxgdb_disp_nr		(rx_matcher, (void *)S048);
-//                                  	(rx_matcher, (void *)S049);
+const regex rxjdbpos                	(rx_matcher, (void *)S049);
 const regex rxgraph_cmd			(rx_matcher, (void *)S050);
 const regex rxidentifier		(rx_matcher, (void *)S051);
 const regex rxindex			(rx_matcher, (void *)S052);

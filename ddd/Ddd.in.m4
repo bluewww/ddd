@@ -68,7 +68,7 @@ Ddd*appDefaultsVersion: @VERSION@
 ! User-settable resources
 !-----------------------------------------------------------------------------
 
-! The inferior debugger type (dbx, gdb, or xdb; defaults to gdb)
+! The inferior debugger type (dbx, gdb, xdb, or jdb; defaults to gdb)
 Ddd*debugger:
 
 
@@ -515,6 +515,13 @@ def finish { bu \\1t ; c ; L }\n
 
 ! The XDB settings.  Usually overridden in `~/.ddd/init'.
 Ddd*xdbSettings:
+
+
+! The JDB initialization commands.  Nothing special.
+Ddd*jdbInitCommands:
+
+! The JDB settings.  Usually overridden in `~/.ddd/init'.
+Ddd*jdbSettings:
 
 
 ! Auto-command defaults
@@ -2373,6 +2380,14 @@ Ddd*dataMenu.l.acceleratorText:		Alt+L
 Ddd*dataMenu.l.documentationString: \
 @rm Display all local variables of the current stack frame.
 
+! This item is visible in JDB only.
+Ddd*dataMenu.locals.labelString:	Display Local Variables
+Ddd*dataMenu.locals.mnemonic:		L
+Ddd*dataMenu.locals.accelerator:	Meta<Key>L
+Ddd*dataMenu.locals.acceleratorText:	Alt+L
+Ddd*dataMenu.locals.documentationString: \
+@rm Display all local variables of the current stack frame.
+
 Ddd*dataMenu.infos.labelString:		More Status Displays...
 Ddd*dataMenu.infos.mnemonic:		M
 Ddd*dataMenu.infos.documentationString: \
@@ -2791,6 +2806,7 @@ Ddd*preferences*debugger.recomputeSize:		false
 Ddd*debuggerMenu*gdb.labelString:		GDB
 Ddd*debuggerMenu*dbx.labelString:		DBX
 Ddd*debuggerMenu*xdb.labelString:		XDB
+Ddd*debuggerMenu*jdb.labelString:		JDB
 
 Ddd*preferences*showStartupLogo.labelString:	Show DDD startup logo
 Ddd*preferences*showStartupLogo.alignment:	XmALIGNMENT_END
@@ -4689,8 +4705,8 @@ You may wish to examine the diagnostic messages before exiting DDD.\n\
 \n\
 Here are some hints that may help you out:\n\
 ITEM If DDD looked for the wrong inferior debugger, re-invoke DDD,\n\
-    but use one of the SAMP(--gdb), SAMP(--dbx), or SAMP(--xdb) options \
-to specify\n\
+    but use one of the SAMP(--gdb), SAMP(--dbx), SAMP(--xdb), \
+or SAMP(--jdb) options to specify\n\
     the inferior debugger.\n\
 ITEM If @GDB@ is the correct inferior debugger, \
 but could not be found,\n\
@@ -4699,7 +4715,8 @@ specify\n\
     the full @GDB@ path VAR(path).\n\
 ITEM If you used the SAMP(--debugger VAR(path)) option, be sure to specify \
 one of\n\
-    the SAMP(--gdb), SAMP(--dbx), or SAMP(--xdb) options as well.\n\
+    the SAMP(--gdb), SAMP(--dbx), SAMP(--xdb), or SAMP(--jdb) options \
+as well.\n\
 ITEM If you started DDD without arguments, re-invoke DDD,\n\
     but give it an executable as argument.  XDB and some DBX versions\n\
     require being invoked with an executable.\n\

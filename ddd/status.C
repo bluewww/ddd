@@ -96,7 +96,8 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 {
     bool yn = text.contains("(y or n) ", -1) 
 	|| text.contains("(yes or no) ", -1)
-	|| (gdb->type() == XDB && text.contains("? ", -1));
+	|| ((gdb->type() == XDB || gdb->type() == JDB) 
+	    && text.contains("? ", -1));
 
     if (yn)
     {
@@ -115,6 +116,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 	string prompt(s);
 	XtFree(s);
 
+	// FIXME: Handle JDB
 	char prompt_start = (gdb->type() == XDB ? '>' : '(');
 
 	int pos = prompt.index(prompt_start, -1);
@@ -517,6 +519,7 @@ void set_status_from_gdb(const string& text)
     if (private_gdb_input)
 	return;
 
+    // FIXME: handle JDB
     if (!show_next_line_in_status 
 	&& (gdb->type() == XDB || !text.contains(") ", -1))
 	&& (gdb->type() != XDB || !text.contains(">", -1)))

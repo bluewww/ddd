@@ -90,6 +90,7 @@ extern const regex rxidentifier;
 extern const regex rxindex;
 extern const regex rxint;
 extern const regex rxinvalid_value;
+extern const regex rxjdbpos;
 extern const regex rxlookup_cmd;
 extern const regex rxlowercase;
 extern const regex rxm3comment;

@@ -741,6 +741,10 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
     case XDB:
 	app_data.debugger = "xdb";
 	break;
+
+    case JDB:
+	app_data.debugger = "jdb";
+	break;
     }
 
     set_status(next_ddd_will_start_with + "a " 
@@ -1427,6 +1431,7 @@ bool save_options(unsigned long flags)
     string gdb_settings = app_data.gdb_settings;
     string dbx_settings = app_data.dbx_settings;
     string xdb_settings = app_data.xdb_settings;
+    string jdb_settings = app_data.jdb_settings;
 
     switch (gdb->type())
     {
@@ -1440,6 +1445,10 @@ bool save_options(unsigned long flags)
 
     case XDB:
 	xdb_settings = get_settings(XDB);
+	break;
+
+    case JDB:
+	jdb_settings = get_settings(JDB);
 	break;
     }
 
@@ -1755,6 +1764,7 @@ bool save_options(unsigned long flags)
 	    break;
 
 	case XDB:
+	case JDB:
 	    // FIXME
 	    break;
 	}

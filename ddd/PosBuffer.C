@@ -151,6 +151,7 @@ void PosBuffer::filter (string& answer)
     break;
     
     case XDB:
+    case JDB:
 	break;			// FIXME
     }
 
@@ -171,10 +172,10 @@ void PosBuffer::filter (string& answer)
 	    terminated = true;
     }
 
-    if (answer.contains("no active process") ||
-	answer.contains("execution completed"))
+    if (answer.contains("no active process") 
+	|| answer.contains("execution completed")
+	|| answer.contains("application exited"))
 	terminated = true;
-
 
     // Check for auto command
     if (app_data.auto_commands)
@@ -216,6 +217,7 @@ void PosBuffer::filter (string& answer)
 	    }
 
 	case XDB:
+	case JDB:
 	    break;		// FIXME
 	}
 	break;
@@ -227,402 +229,448 @@ void PosBuffer::filter (string& answer)
 	// FALL THROUGH
 
     case Null:
+    {
+	switch (gdb->type())
 	{
-	    switch (gdb->type())
+	case GDB:
+	{
+	    // Try to find out current PC even for non-existent source
+
+	    if (pc_buffer == "")
 	    {
-	    case GDB:
-	    {
-		// Try to find out current PC even for non-existent source
-
-		if (pc_buffer == "")
-		{
-		    // `$pc = ADDRESS'
+		// `$pc = ADDRESS'
 #if RUNTIME_REGEX
-		    static regex rxpc("\\$pc  *=  *" RXADDRESS);
+		static regex rxpc("\\$pc  *=  *" RXADDRESS);
 #endif
-		    int pc_index = index(answer, rxpc, "$pc ");
-		    if (pc_index >= 0)
-		    {
-			int addr_index = answer.index('=');
-			fetch_address(answer, addr_index, pc_buffer);
-
-			// Strip this line from ANSWER
-			int end_line = answer.index('\n', pc_index);
-			int start_line = pc_index;
-			while (start_line > 0 
-			       && answer[start_line - 1] != '\n')
-			    start_line--;
-
-			if (end_line < 0)
-			    answer.from(start_line) = "";
-			else
-			    answer.at(start_line, end_line - start_line + 1) 
-				= "";
-		    }
-		}
-
-		if (pc_buffer == "")
+		int pc_index = index(answer, rxpc, "$pc ");
+		if (pc_index >= 0)
 		{
-		    // `Breakpoint N, ADDRESS in FUNCTION'
-#if RUNTIME_REGEX
-		    static regex rxstopped("Breakpoint  *[1-9][0-9]*,  *"
-					   RXADDRESS);
-#endif
-		    int pc_index = index(answer, rxstopped, "Breakpoint");
-		    if (pc_index >= 0)
-		    {
-			pc_index = answer.index(',');
-			fetch_address(answer, pc_index, pc_buffer);
-		    }
-		}
-
-		if (pc_buffer == "")
-		{
-		    // `#FRAME ADDRESS in FUNCTION'
-#if RUNTIME_REGEX
-		    static regex rxframe("#[0-9][0-9]*  *" RXADDRESS);
-#endif
-
-		    int pc_index = index(answer, rxframe, "#");
-		    if (pc_index == 0
-			|| pc_index > 0 && answer[pc_index - 1] == '\n')
-		    {
-			pc_index = answer.index(' ');
-			fetch_address(answer, pc_index, pc_buffer);
-		    }
-		}
-
-		if (pc_buffer == "")
-		{
-		    // `No line number available for 
-		    // address ADDRESS <FUNCTION>'
-#if RUNTIME_REGEX
-		    static regex rxaddr("address  *" RXADDRESS);
-#endif
-
-		    int pc_index = index(answer, rxaddr, "address ");
-		    if (pc_index >= 0)
-		    {
-			pc_index = answer.index(' ');
-			fetch_address(answer, pc_index, pc_buffer);
-		    }
-		}
-
-		if (pc_buffer == "" && answer != "")
-		{
-		    // `ADDRESS in FUNCTION'
-#if RUNTIME_REGEX
-		    static regex rxaddress_in(RXADDRESS " in ");
-#endif
-		    int pc_index = -1;
-		    if (is_address_start(answer[0]) 
-			&& answer.contains(rxaddress_in, 0))
-		    {
-			pc_index = 0;
-		    }
+		    int addr_index = answer.index('=');
+		    fetch_address(answer, addr_index, pc_buffer);
+		    
+		    // Strip this line from ANSWER
+		    int end_line = answer.index('\n', pc_index);
+		    int start_line = pc_index;
+		    while (start_line > 0 
+			   && answer[start_line - 1] != '\n')
+			start_line--;
+		    
+		    if (end_line < 0)
+			answer.from(start_line) = "";
 		    else
-		    {
-#if RUNTIME_REGEX
-			static regex rxnladdress_in("\n" RXADDRESS " in ");
-#endif
-			pc_index = index(answer, rxnladdress_in, "\n");
-		    }
-
-		    if (pc_index >= 0)
-		    {
-			fetch_address(answer, pc_index, pc_buffer);
-		    }
+			answer.at(start_line, end_line - start_line + 1) 
+			    = "";
 		}
-
-		// Look for regular source info
-		int index1 = answer.index ("\032\032");
-
-		if (index1 < 0) 
-		{
-		    int index_p = answer.index ("\032");
-		    if (index_p >= 0 && index_p == int(answer.length()) - 1)
-		    {
-			// Possible begin of position info at end of ANSWER
-			already_read = PosPart;
-			answer_buffer = "\032";
-			answer = answer.before (index_p);
-
-			return;
-		    }
-
-		    // Handle erroneous `info line' output like
-		    // `Line number 10 is out of range for "t1.f".'
-		    // At least get the file name.
-#if RUNTIME_REGEX
-		    static regex rxout_of_range(
-	                "Line number [0-9]+ is out of range for ");
-#endif
-		    index_p = index(answer, rxout_of_range, "Line number");
-		    if (index_p >= 0)
-		    {
-			string file = answer.after('\"', index_p);
-			file = file.before('\"');
-			answer_buffer = file + ":1";
-			already_read = PosComplete;
-			return;
-		    }
-
-		    // Nothing found
-		    return;
-		}
-
-		// ANSWER contains position info
-		int index2 = answer.index ("\n", index1);
-
-		if (index2 == -1)
-		{
-		    // Position info is incomplete
-		    already_read = PosPart;
-		    answer_buffer = answer.from (index1);
-		    answer = answer.before (index1);
-		    return;
-		}
-
-		assert (index1 < index2);
-
-		// Position info is complete
-		pos_buffer = answer.at(index1 + 2, index2 - (index1 + 2));
-		int last_colon = pos_buffer.index(':', -1);
-		pc_buffer = pos_buffer.after(last_colon);
-		if (!pc_buffer.contains(rxaddress_start, 0))
-		    pc_buffer = "0x" + pc_buffer;
-		pc_buffer = pc_buffer.through(rxaddress);
-		answer.at(index1, index2 - index1 + 1) = "";
-		already_read = PosComplete;
 	    }
-	    break;
-
-	    case DBX:
+	    
+	    if (pc_buffer == "")
 	    {
-		string file;	// File name found
-		string line;	// Line number found
-
-		if (answer.contains('(', 0) || answer.contains('[', 0))
-		{
-		    // Get breakpoint position
-		    string ans = answer;
-		    int num = read_positive_nr(ans);
-		    string pos = source_view->bp_pos(num);
-		    if (pos != "")
-		    {
-			file = pos.before(':');
-			line = pos.after(':');
-		    }
-		}
-
+		// `Breakpoint N, ADDRESS in FUNCTION'
 #if RUNTIME_REGEX
-		static regex rxdbxfunc("[a-zA-Z_][^:]*: *[1-9][0-9]*  *.*");
+		static regex rxstopped("Breakpoint  *[1-9][0-9]*,  *"
+				       RXADDRESS);
 #endif
-		if (answer.matches(rxdbxfunc))
+		int pc_index = index(answer, rxstopped, "Breakpoint");
+		if (pc_index >= 0)
 		{
-		    // DEC DBX issues `up', `down' and `func' output
-		    // in the format `FUNCTION: LINE  TEXT'
-
-		    line = answer.after(":");
-		    line = line.through(rxint);
-		    already_read = PosComplete;
-
-		    answer = answer.after("\n");
+		    pc_index = answer.index(',');
+		    fetch_address(answer, pc_index, pc_buffer);
 		}
-
+	    }
+	    
+	    if (pc_buffer == "")
+	    {
+		// `#FRAME ADDRESS in FUNCTION'
 #if RUNTIME_REGEX
-		static regex rxdbxfunc2(
-		    ".*line  *[1-9][0-9]*  *in  *(file  *)?\"[^\"]*\"\n.*");
+		static regex rxframe("#[0-9][0-9]*  *" RXADDRESS);
 #endif
-		if (answer.matches(rxdbxfunc2))
+		
+		int pc_index = index(answer, rxframe, "#");
+		if (pc_index == 0
+		    || pc_index > 0 && answer[pc_index - 1] == '\n')
 		{
-		    // AIX DBX issues `up', `down' and `func' output
-		    // in the format `FUNCTION(ARGS), line LINE in "FILE"'.
-		    // SUN DBX uses `line LINE in file "FILE"' instead.
-
-		    line = answer.after("line ");
-		    line = line.through(rxint);
-
-		    file = answer.after('\"');
+		    pc_index = answer.index(' ');
+		    fetch_address(answer, pc_index, pc_buffer);
+		}
+	    }
+	    
+	    if (pc_buffer == "")
+	    {
+		// `No line number available for 
+		// address ADDRESS <FUNCTION>'
+#if RUNTIME_REGEX
+		static regex rxaddr("address  *" RXADDRESS);
+#endif
+		
+		int pc_index = index(answer, rxaddr, "address ");
+		if (pc_index >= 0)
+		{
+		    pc_index = answer.index(' ');
+		    fetch_address(answer, pc_index, pc_buffer);
+		}
+	    }
+	    
+	    if (pc_buffer == "" && answer != "")
+	    {
+		// `ADDRESS in FUNCTION'
+#if RUNTIME_REGEX
+		static regex rxaddress_in(RXADDRESS " in ");
+#endif
+		int pc_index = -1;
+		if (is_address_start(answer[0]) 
+		    && answer.contains(rxaddress_in, 0))
+		{
+		    pc_index = 0;
+		}
+		else
+		{
+#if RUNTIME_REGEX
+		    static regex rxnladdress_in("\n" RXADDRESS " in ");
+#endif
+		    pc_index = index(answer, rxnladdress_in, "\n");
+		}
+		
+		if (pc_index >= 0)
+		{
+		    fetch_address(answer, pc_index, pc_buffer);
+		}
+	    }
+	    
+	    // Look for regular source info
+	    int index1 = answer.index ("\032\032");
+	    
+	    if (index1 < 0) 
+	    {
+		int index_p = answer.index ("\032");
+		if (index_p >= 0 && index_p == int(answer.length()) - 1)
+		{
+		    // Possible begin of position info at end of ANSWER
+		    already_read = PosPart;
+		    answer_buffer = "\032";
+		    answer = answer.before (index_p);
+		    
+		    return;
+		}
+		
+		// Handle erroneous `info line' output like
+		// `Line number 10 is out of range for "t1.f".'
+		// At least get the file name.
+#if RUNTIME_REGEX
+		static regex rxout_of_range(
+		    "Line number [0-9]+ is out of range for ");
+#endif
+		index_p = index(answer, rxout_of_range, "Line number");
+		if (index_p >= 0)
+		{
+		    string file = answer.after('\"', index_p);
 		    file = file.before('\"');
-
+		    answer_buffer = file + ":1";
 		    already_read = PosComplete;
-
-		    // answer = answer.after("\n");
+		    return;
 		}
-
-#if RUNTIME_REGEX
-		static regex rxdbxpos("[[][^]]*:[1-9][0-9]*[^]]*].*");
-#endif
-		if (answer.contains(rxdbxpos))
+		
+		// Nothing found
+		return;
+	    }
+	    
+	    // ANSWER contains position info
+	    int index2 = answer.index ("\n", index1);
+	    
+	    if (index2 == -1)
+	    {
+		// Position info is incomplete
+		already_read = PosPart;
+		answer_buffer = answer.from (index1);
+		answer = answer.before (index1);
+		return;
+	    }
+	    
+	    assert (index1 < index2);
+	    
+	    // Position info is complete
+	    pos_buffer = answer.at(index1 + 2, index2 - (index1 + 2));
+	    int last_colon = pos_buffer.index(':', -1);
+	    pc_buffer = pos_buffer.after(last_colon);
+	    if (!pc_buffer.contains(rxaddress_start, 0))
+		pc_buffer = "0x" + pc_buffer;
+	    pc_buffer = pc_buffer.through(rxaddress);
+	    answer.at(index1, index2 - index1 + 1) = "";
+	    already_read = PosComplete;
+	}
+	break;
+	
+	case DBX:
+	{
+	    string file;	// File name found
+	    string line;	// Line number found
+	    
+	    if (answer.contains('(', 0) || answer.contains('[', 0))
+	    {
+		// Get breakpoint position
+		string ans = answer;
+		int num = read_positive_nr(ans);
+		string pos = source_view->bp_pos(num);
+		if (pos != "")
 		{
-		    // DEC DBX issues breakpoint lines in the format
-		    // "[new_tree:113 ,0x400858] \ttree->right = NULL;"
-
-		    line = answer.from(rxdbxpos);
-
-		    // Note that the function name may contain "::" sequences.
+		    file = pos.before(':');
+		    line = pos.after(':');
+		}
+	    }
+	    
+#if RUNTIME_REGEX
+	    static regex rxdbxfunc("[a-zA-Z_][^:]*: *[1-9][0-9]*  *.*");
+#endif
+	    if (answer.matches(rxdbxfunc))
+	    {
+		// DEC DBX issues `up', `down' and `func' output
+		// in the format `FUNCTION: LINE  TEXT'
+		
+		line = answer.after(":");
+		line = line.through(rxint);
+		already_read = PosComplete;
+		
+		answer = answer.after("\n");
+	    }
+	    
+#if RUNTIME_REGEX
+	    static regex rxdbxfunc2(
+		".*line  *[1-9][0-9]*  *in  *(file  *)?\"[^\"]*\"\n.*");
+#endif
+	    if (answer.matches(rxdbxfunc2))
+	    {
+		// AIX DBX issues `up', `down' and `func' output
+		// in the format `FUNCTION(ARGS), line LINE in "FILE"'.
+		// SUN DBX uses `line LINE in file "FILE"' instead.
+		
+		line = answer.after("line ");
+		line = line.through(rxint);
+		
+		file = answer.after('\"');
+		file = file.before('\"');
+		
+		already_read = PosComplete;
+		
+		// answer = answer.after("\n");
+	    }
+	    
+#if RUNTIME_REGEX
+	    static regex rxdbxpos("[[][^]]*:[1-9][0-9]*[^]]*].*");
+#endif
+	    if (answer.contains(rxdbxpos))
+	    {
+		// DEC DBX issues breakpoint lines in the format
+		// "[new_tree:113 ,0x400858] \ttree->right = NULL;"
+		
+		line = answer.from(rxdbxpos);
+		
+		// Note that the function name may contain "::" sequences.
+		while (line.contains("::"))
+		    line = line.after("::");
+		line = line.after(":");
+		line = line.through(rxint);
+		already_read = PosComplete;
+		
+		if (!answer.contains('[', 0))
+		    answer = answer.after("\n");
+	    }
+	    else if (answer.contains("stopped in ")
+		     || answer.contains("stopped at "))
+	    {
+		// Stop reached
+		if (answer.contains("in file "))
+		{
+		    // File name given
+		    file = answer.after("in file ");
+		    if (file.contains('\n'))
+			file = file.before('\n');
+		    file = unquote(file);
+		}
+		else if (answer.contains("["))
+		{
+		    // DEC DBX and SGI DBX output format:
+		    // `[3] Process  1852 (cxxtest) 
+		    // stopped at [::main:266 ,0x1000a028]'
+		    line = answer.after("stopped");
+		    line = line.after("[");
+		    func_buffer = line;
 		    while (line.contains("::"))
 			line = line.after("::");
+		    line = line.from(":");
+		    func_buffer = func_buffer.before(line);
 		    line = line.after(":");
 		    line = line.through(rxint);
+		    // answer = answer.after("\n");
+		}
+		else
+		{
+		    // Function name given
+		    string func = answer.after("stopped in ");
+		    if (func.contains(" at "))
+			func = func.before(" at ");
+		    func_buffer = func;
+		}
+		
+		if (line == "")
+		{
+		    line = answer.after("at line ");
+		    line = line.through(rxint);
+		    if (!answer.contains("at line "))
+			line = "0";
+		}
+		
+		already_read = PosComplete;
+		filter_line(answer, atoi(line));
+	    }
+	    else if (answer.contains("Current function is "))
+	    {
+		// Up/Down command entered
+		string nr = answer.after("\n");
+		if (nr != "")
+		{
+		    line = itostring(atoi(nr));
 		    already_read = PosComplete;
-
-		    if (!answer.contains('[', 0))
-			answer = answer.after("\n");
+		    
+		    // Show current function only
+		    answer = answer.from("Current function is ");
+		    answer = answer.through("\n");
+		    func_buffer = answer.after("function is ");
+		    func_buffer = func_buffer.before("\n");
 		}
-		else if (answer.contains("stopped in ")
-			 || answer.contains("stopped at "))
+		else
 		{
-		    // Stop reached
-		    if (answer.contains("in file "))
-		    {
-			// File name given
-			file = answer.after("in file ");
-			if (file.contains('\n'))
-			    file = file.before('\n');
-			file = unquote(file);
-		    }
-		    else if (answer.contains("["))
-		    {
-			// DEC DBX and SGI DBX output format:
-			// `[3] Process  1852 (cxxtest) 
-			// stopped at [::main:266 ,0x1000a028]'
-			line = answer.after("stopped");
-			line = line.after("[");
-			func_buffer = line;
-			while (line.contains("::"))
-			    line = line.after("::");
-			line = line.from(":");
-			func_buffer = func_buffer.before(line);
-			line = line.after(":");
-			line = line.through(rxint);
-			// answer = answer.after("\n");
-		    }
-		    else
-		    {
-			// Function name given
-			string func = answer.after("stopped in ");
-			if (func.contains(" at "))
-			    func = func.before(" at ");
-			func_buffer = func;
-		    }
-
-		    if (line == "")
-		    {
-			line = answer.after("at line ");
-			line = line.through(rxint);
-			if (!answer.contains("at line "))
-			    line = "0";
-		    }
-
-		    already_read = PosComplete;
-		    filter_line(answer, atoi(line));
-		}
-		else if (answer.contains("Current function is "))
-		{
-		    // Up/Down command entered
-		    string nr = answer.after("\n");
-		    if (nr != "")
-		    {
-			line = itostring(atoi(nr));
-			already_read = PosComplete;
-
-			// Show current function only
-			answer = answer.from("Current function is ");
-			answer = answer.through("\n");
-			func_buffer = answer.after("function is ");
-			func_buffer = func_buffer.before("\n");
-		    }
-		    else
-		    {
-			answer_buffer = answer;
-			answer = "";
-			already_read = PosPart;
-		    }
-		}
-
-		if (already_read == PosComplete && line != "")
-		{
-		    if (file != "")
-			pos_buffer = file + ":" + line;
-		    else
-			pos_buffer = line;
+		    answer_buffer = answer;
+		    answer = "";
+		    already_read = PosPart;
 		}
 	    }
-	    break;
-
-	    case XDB:
-		{
-		    // INDEX points at the start of a line
-		    int index = 0;
-		    while (index >= 0 && answer != "")
-		    {
-			string line = answer.from(index);
-			if (line.contains('\n'))
-			    line = line.before('\n');
-			strip_final_blanks(line);
-
-			// XDB uses a format like
-			// `ctest.c: main: 4: int a = 33;'
-#if RUNTIME_REGEX
-			static regex rxxdbpos("[^ \t]*:.*: [1-9][0-9]*[: ].*");
-#endif
-			if (line.matches(rxxdbpos))
-			{
-			    string file = line.before(':');
-			    line = line.after(':');
-
-			    // The function name may contain "::"
-			    string func = line;
-			    while (line.contains("::"))
-				line = line.after("::");
-			    line = line.from(':');
-			    func = func.before(line);
-
-			    line = line.after(':');
-			    string line_no = line.before(':');
-			
-			    read_leading_blanks(func);
-			    read_leading_blanks(line_no);
-			    line_no = line_no.through(rxint);
-
-			    pos_buffer   = file + ":" + line_no;
-			    func_buffer  = func;
-			    already_read = PosComplete;
-
-			    // Delete this line from output
-			    int next_index = answer.index('\n', index);
-			    if (next_index < 0)
-				next_index = answer.length();
-			    else
-				next_index++;
-			    answer.at(index, next_index - index) = "";
-			    break;
-			}
-			else
-			{
-			    // Look at next line
-			    index = answer.index('\n', index);
-			    if (index >= 0)
-				index++;
-			}
-		    }
-
-		    // Check for trailing `:' in last line
-		    index = answer.index('\n', -1) + 1;
-		    if (already_read != PosComplete 
-			&& answer.index(':', index) >= 0)
-		    {
-			answer_buffer = answer.from(index);
-			answer.from(index) = "";
-			already_read = PosPart;
-		    }
-		}
-		break;
+	    
+	    if (already_read == PosComplete && line != "")
+	    {
+		if (file != "")
+		    pos_buffer = file + ":" + line;
+		else
+		    pos_buffer = line;
 	    }
 	}
 	break;
+	
+	case XDB:
+	{
+	    // INDEX points at the start of a line
+	    int index = 0;
+	    while (index >= 0 && answer != "")
+	    {
+		string line = answer.from(index);
+		if (line.contains('\n'))
+		    line = line.before('\n');
+		strip_final_blanks(line);
+		
+		// XDB uses a format like `ctest.c: main: 4: int a = 33;'
+#if RUNTIME_REGEX
+		static regex rxxdbpos("[^ \t]*:.*: [1-9][0-9]*[: ].*");
+#endif
+		if (line.matches(rxxdbpos))
+		{
+		    string file = line.before(':');
+		    line = line.after(':');
+		    
+		    // The function name may contain "::"
+		    string func = line;
+		    while (line.contains("::"))
+			line = line.after("::");
+		    line = line.from(':');
+		    func = func.before(line);
+		    
+		    line = line.after(':');
+		    string line_no = line.before(':');
+		    
+		    read_leading_blanks(func);
+		    read_leading_blanks(line_no);
+		    line_no = line_no.through(rxint);
+		    
+		    pos_buffer   = file + ":" + line_no;
+		    func_buffer  = func;
+		    already_read = PosComplete;
+		    
+		    // Delete this line from output
+		    int next_index = answer.index('\n', index);
+		    if (next_index < 0)
+			next_index = answer.length();
+		    else
+			next_index++;
+		    answer.at(index, next_index - index) = "";
+		    break;
+		}
+		else
+		{
+		    // Look at next line
+		    index = answer.index('\n', index);
+		    if (index >= 0)
+			index++;
+		}
+	    }
+	    
+	    // Check for trailing `:' in last line
+	    index = answer.index('\n', -1) + 1;
+	    if (already_read != PosComplete 
+		&& answer.index(':', index) >= 0)
+	    {
+		answer_buffer = answer.from(index);
+		answer.from(index) = "";
+		already_read = PosPart;
+	    }
+	    
+	    break;
+	}
+	
+	case JDB:
+	{
+	    int index = 0;
+	    while (index >= 0 && answer != "")
+	    {
+		string line = answer.from(index);
+		if (line.contains('\n'))
+		    line = line.before('\n');
+		strip_final_blanks(line);
+
+		// JDB uses a format like `(HelloWorld:3)'
+#if RUNTIME_REGEX
+		static regex rxjdbpos(".*[(][^ \t]*:[1-9][0-9]*[)]");
+#endif
+		if (line.matches(rxjdbpos))
+		{
+		    line = line.from('(', -1);
+		    line = line.after('(');
+		    string file = line.before(':');
+		    string line_no = line.after(':');
+		    read_leading_blanks(line_no);
+		    line_no = line_no.through(rxint);
+
+		    pos_buffer   = file + ":" + line_no;
+		    already_read = PosComplete;
+		    
+		    // Delete this line from output
+		    int next_index = answer.index('\n', index);
+		    if (next_index < 0)
+			next_index = answer.length();
+		    else
+			next_index++;
+		    answer.at(index, next_index - index) = "";
+		    break;
+		}
+		else
+		{
+		    // Look at next line
+		    index = answer.index('\n', index);
+		    if (index >= 0)
+			index++;
+		}
+	    }
+	    break;
+	}
+	}
+    }
+    break;
 
     default:
 	// This can't happen.
@@ -637,15 +685,15 @@ string PosBuffer::answer_ended ()
     case PosPart:
 	assert (pos_buffer == "");
 	return answer_buffer;
-
+		
     case Null:
 	assert (pos_buffer == "");
 	return "";
-
+	
     case PosComplete:
 	assert (pos_buffer != "");
 	return "";
-
+		
     default:
 	// This can't happen.
 	assert(0);

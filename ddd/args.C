@@ -229,6 +229,14 @@ static void gdbRunDCB(Widget, XtPointer, XtPointer)
 	gdb_command("rerun" + args, run_dialog);
 	break;
 
+    case JDB:
+    {
+	// JDB wants a current class name.  FIXME.
+	string class_name = "HelloWorld";
+	gdb_command("run " + class_name + " " + args, run_dialog);
+	break;
+    }
+
     case XDB:
 	if (args == "")
 	    gdb_command("R", run_dialog);

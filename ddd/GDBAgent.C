@@ -183,6 +183,8 @@ DebuggerType debugger_type(const string& type)
 	return DBX;
     if (type.contains("xdb"))
 	return XDB;
+    if (type.contains("jdb"))
+	return JDB;
 
     cerr << "Unknown debugger type " << quote(type) << "\n";
     exit(EXIT_FAILURE);
@@ -218,16 +220,16 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_setenv_command(tp == DBX),
       _has_edit_command(tp == DBX),
       _has_make_command(tp == GDB || tp == DBX),
-      _has_jump_command(true),
+      _has_jump_command(tp == GDB || tp == DBX || tp == XDB),
       _has_regs_command(tp == GDB),
       _has_named_values(tp == GDB || tp == DBX),
       _has_when_command(tp == DBX),
       _has_when_semicolon(tp == DBX),
       _has_delete_comma(false),
-      _has_err_redirection(true),
+      _has_err_redirection(tp == GDB || tp == DBX || tp == XDB),
       _has_givenfile_command(false),
       _has_cont_sig_command(false),
-      _program_language(LANGUAGE_C),
+      _program_language(tp == JDB ? LANGUAGE_JAVA : LANGUAGE_C),
       _trace_dialog(false),
       _verbatim(false),
       _detect_echos(true),
@@ -326,6 +328,8 @@ string GDBAgent::title() const
 	return "DBX";
     case XDB:
 	return "XDB";
+    case JDB:
+	return "JDB";
     }
 
     return "debugger";
@@ -560,21 +564,6 @@ bool GDBAgent::send_qu_array (const StringArray& cmds,
 // Add handlers for tracing GDB I/O
 bool GDBAgent::trace_dialog (bool val)
 {
-#if 0
-    if (val && !trace_dialog())
-    {
- 	addHandler(Input,  traceInputHP);     // GDB => DDD
- 	addHandler(Output, traceOutputHP);    // DDD => GDB
- 	addHandler(Error,  traceErrorHP);     // GDB Errors => DDD
-    }
-    else if (!val && trace_dialog())
-    {
- 	removeHandler(Input,  traceInputHP);  // GDB => DDD
- 	removeHandler(Output, traceOutputHP); // DDD => GDB
- 	removeHandler(Error,  traceErrorHP);  // GDB Errors => DDD
-    }
-#endif
-
     return _trace_dialog = val;
 }
 
@@ -619,42 +608,49 @@ bool GDBAgent::ends_with_prompt (const string& ans)
     {
     case DBX:
     case GDB:
-	{
-	    // Any line ending in `(gdb) ' or `(dbx) ' is a prompt.
-	    int i = answer.length() - 1;
-	    if (i < 0 || answer[i] != ' ')
-		return false;
-
-	    while (i >= 0 && answer[i] != '\n' && answer[i] != '(')
-		i--;
-	    if (i < 0 || answer[i] != '(')
-		return false;
-
-	    string possible_prompt = ((string &) answer).from(i);
-#if RUNTIME_REGEX
-	    static regex rxprompt("[(][^ )]*db[^ )]*[)] ");
-#endif
-	    if (possible_prompt.matches(rxprompt))
-	    {
-		last_prompt = possible_prompt;
-		return true;
-	    }
+    {
+	// Any line ending in `(gdb) ' or `(dbx) ' is a prompt.
+	int i = answer.length() - 1;
+	if (i < 0 || answer[i] != ' ')
 	    return false;
+
+	while (i >= 0 && answer[i] != '\n' && answer[i] != '(')
+	    i--;
+	if (i < 0 || answer[i] != '(')
+	    return false;
+
+	string possible_prompt = ((string &) answer).from(i);
+#if RUNTIME_REGEX
+	static regex rxprompt("[(][^ )]*db[^ )]*[)] ");
+#endif
+	if (possible_prompt.matches(rxprompt))
+	{
+	    last_prompt = possible_prompt;
+	    return true;
 	}
+	return false;
+    }
 
     case XDB:
+    {
+	// Any line equal to `>' is a prompt.
+	unsigned beginning_of_line = answer.index('\n', -1) + 1;
+	if (beginning_of_line < answer.length()
+	    && answer.length() > 0
+	    && answer[beginning_of_line] == '>')
 	{
-	    // Any line equal to `>' is a prompt.
-	    unsigned beginning_of_line = answer.index('\n', -1) + 1;
-	    if (beginning_of_line < answer.length()
-		&& answer.length() > 0
-		&& answer[beginning_of_line] == '>')
-	    {
-		last_prompt = ">";
-		return true;
-	    }
-	    return false;
+	    last_prompt = ">";
+	    return true;
 	}
+	return false;
+    }
+
+    case JDB:
+    {
+	// JDB prompts using `> ' or `METHOD[DEPTH] '
+	return answer.contains("> ", -1)
+	    || answer.contains("] ", -1);
+    }
     }
 
     return false;		// Never reached
@@ -695,6 +691,10 @@ bool GDBAgent::ends_with_secondary_prompt (const string& ans)
 	return answer == "> " || ends_in(answer, "\n> ");
 	
     case XDB:
+	// Is there any secondary prompt in XDB? (FIXME)
+	return false;
+
+    case JDB:
 	// Is there any secondary prompt in XDB? (FIXME)
 	return false;
     }
@@ -797,6 +797,12 @@ void GDBAgent::cut_off_prompt(string& answer) const
     case XDB:
 	answer = answer.before('>', -1);
 	break;
+
+    case JDB:
+	if (answer.contains("> ", -1))
+	    answer = answer.before("> ", -1);
+	else if (answer.contains("] ", -1))
+	    answer = answer.before("] ", -1);
     }
 }
 
@@ -1278,6 +1284,7 @@ string GDBAgent::print_command(string expr, bool internal) const
     {
     case GDB:
     case DBX:
+    case JDB:
 	if (internal && has_output_command())
 	    cmd = "output";
 	else
@@ -1305,6 +1312,9 @@ string GDBAgent::print_command(string expr, bool internal) const
 	    case XDB:
 		cmd = echo_command(expr + " = ") + "; " + cmd;
 		break;
+
+	    case JDB:
+		break;		// FIXME
 	    }
 	}
 
@@ -1340,6 +1350,7 @@ string GDBAgent::where_command(int count) const
     {
     case GDB:
     case DBX:
+    case JDB:
 	if (has_where_h_option())
 	    cmd = "where -h";
 	else
@@ -1369,6 +1380,9 @@ string GDBAgent::info_locals_command() const
 
     case XDB:
 	return "l";
+
+    case JDB:
+	return "locals";
     }
 
     return "";			// Never reached
@@ -1381,8 +1395,7 @@ string GDBAgent::info_args_command() const
     case GDB:
 	return "info args";
 
-    case DBX:
-    case XDB:
+    default:
 	return info_locals_command();
     }
 
@@ -1405,6 +1418,9 @@ string GDBAgent::pwd_command() const
 
     case XDB:
 	return "!pwd";
+
+    case JDB:
+	return "";
     }
 
     return "";			// Never reached
@@ -1427,6 +1443,9 @@ string GDBAgent::make_command(string args) const
     case XDB:
 	cmd = "!make";
 	break;
+
+    case JDB:
+	return "";		// Not available
     }
 
     if (args == "")
@@ -1455,6 +1474,9 @@ string GDBAgent::jump_command(string pos) const
 
     case DBX:
 	return "cont at " + pos;
+
+    case JDB:
+	return "";		// Not available
     }
 
     return "";			// Never reached
@@ -1481,7 +1503,8 @@ string GDBAgent::regs_command(bool all) const
 	    return "regs";	
 
     case XDB:
-	return "";		// FIXME
+    case JDB:
+	return "";		// Not available
     }
 
     return "";			// Never reached
@@ -1497,6 +1520,9 @@ string GDBAgent::kill_command() const
    
     case XDB:
 	return "k";
+
+    case JDB:
+	return "";		// Not available
     }
 
     return "";			// Never reached
@@ -1515,6 +1541,9 @@ string GDBAgent::frame_command() const
 
     case XDB:
 	return print_command("$depth");
+
+    case JDB:
+	return "";		// Not available
     }
 
     return "";			// Never reached
@@ -1533,6 +1562,9 @@ string GDBAgent::frame_command(int num) const
 
     case XDB:
 	return "V " + itostring(num);
+
+    case JDB:
+	return "";		// Not available
     }
 
     return "";			// Never reached
@@ -1544,6 +1576,7 @@ string GDBAgent::func_command() const
     {
     case GDB:
     case XDB:
+    case JDB:
 	return frame_command();
 
     case DBX:
@@ -1566,6 +1599,9 @@ string GDBAgent::echo_command(string text) const
 
     case XDB:
 	return quote(text);
+
+    case JDB:
+	return "";		// Not available
     }
 
     return "";			// Never reached
@@ -1587,6 +1623,9 @@ string GDBAgent::whatis_command(string text) const
 
     case XDB:
 	return "p " + text + "\\T";
+
+    case JDB:
+	return "";		// Not available
     }
 
     return "";			// Never reached
@@ -1611,6 +1650,9 @@ string GDBAgent::enable_command(string bp) const
 
     case XDB:
 	return "ab" + bp;
+
+    case JDB:
+	return "";		// Not available
     }
 
     return "";			// Never reached
@@ -1635,6 +1677,9 @@ string GDBAgent::disable_command(string bp) const
 
     case XDB:
 	return "sb" + bp;
+
+    case JDB:
+	return "";		// Not available
     }
 
     return "";			// Never reached
@@ -1654,6 +1699,9 @@ string GDBAgent::delete_command(string bp) const
 
     case XDB:
 	return "db" + bp;
+
+    case JDB:
+	return "";		// Not available
     }
 
     return "";			// Never reached
@@ -1675,6 +1723,9 @@ string GDBAgent::ignore_command(string bp, int count) const
 
     case XDB:
 	return "bc " + bp + " " + itostring(count);
+
+    case JDB:
+	return "";		// Not available
     }
 
     return "";			// Never reached
@@ -1690,6 +1741,7 @@ string GDBAgent::condition_command(string bp, string expr) const
 
     case DBX:
     case XDB:
+    case JDB:
 	return "";		// FIXME
     }
 
@@ -1709,6 +1761,9 @@ string GDBAgent::shell_command(string cmd) const
 
     case XDB:
 	return "!" + cmd;
+
+    case JDB:
+	return "";		// Not available
     }
     return "";			// Never reached
 }
@@ -1729,6 +1784,9 @@ string GDBAgent::debug_command(string program) const
 
     case XDB:
 	return "";		// FIXME
+
+    case JDB:
+	return "load " + program;
     }
     return "";			// Never reached
 }
@@ -1751,6 +1809,9 @@ string GDBAgent::signal_command(int sig) const
 
     case XDB:
 	return "p $signal = " + n + "; C";
+
+    case JDB:
+	return "";		// Not available
     }
 
     return "";			// Never reached
@@ -1789,8 +1850,7 @@ string GDBAgent::dereferenced_expr(string expr) const
 	return prepend_prefix("*", expr);
 
     case LANGUAGE_FORTRAN:
-	// GDB prints dereferenced pointers as `**X', but accepts them
-	// as `*X'.
+	// GDB prints dereferenced pointers as `**X', but accepts them as `*X'.
 	return prepend_prefix("*", expr);
 
     case LANGUAGE_JAVA:
@@ -1892,6 +1952,9 @@ string GDBAgent::assign_command(string var, string expr) const
     case XDB:
 	cmd = "pq";
 	break;
+
+    case JDB:
+	return "";		// Not available
     }
 
     cmd += " " + var + " ";
@@ -1989,9 +2052,8 @@ string GDBAgent::history_file() const
     }
 
     case DBX:
-    {
+    case JDB:
 	return "";		// Unknown
-    }
 
     case XDB:
     {

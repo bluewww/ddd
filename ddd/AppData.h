@@ -58,6 +58,8 @@
 #define XtNdbxSettings           "dbxSettings"
 #define XtNxdbInitCommands       "xdbInitCommands"
 #define XtNxdbSettings           "xdbSettings"
+#define XtNjdbInitCommands       "jdbInitCommands"
+#define XtNjdbSettings           "jdbSettings"
 #define XtNrestartCommands       "restartCommands"
 #define XtCInitCommands          "InitCommands"
 #define XtCSettings              "Settings"
@@ -278,6 +280,8 @@ struct AppData {
     String  dbx_settings;
     String  xdb_init_commands;
     String  xdb_settings;
+    String  jdb_init_commands;
+    String  jdb_settings;
     String  restart_commands;
     String  vsl_path;
     String  vsl_library;

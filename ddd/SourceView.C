@@ -713,6 +713,15 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	    break;
 	}
 
+	case JDB:
+	{
+	    if (address.contains(":"))
+		gdb_command("stop at " + address);
+	    else
+		gdb_command("stop in " + address);
+	    break;
+	}
+
 	case XDB:
 	{
 	    string command;
@@ -795,6 +804,7 @@ void SourceView::temp_n_cont(const string& a, Widget w)
 #endif
     
     case DBX:
+    case JDB:
     {
 	int old_max_breakpoint_number_seen = max_breakpoint_number_seen;
 
@@ -877,6 +887,9 @@ void SourceView::move_pc(const string& a, Widget w)
 
 	case GDB:
 	    break;
+
+	case JDB:
+	    break;		// Unsupported
 	}
 
 	// Jump to the new address and clear the breakpoint again
@@ -1615,6 +1628,10 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
 
     case DBX:
 	command = "list 1,1000000";
+	break;
+
+    case JDB:
+	command = "list " + file_name;
 	break;
 
     case XDB:
@@ -3107,6 +3124,7 @@ void SourceView::process_info_bp (string& info_output,
 	    !info_output.contains("No breakpoints", 0))
 	    check_remainder(info_output);
 	break;
+
     default:
 	break;
     }
@@ -3162,6 +3180,9 @@ void SourceView::process_info_bp (string& info_output,
 	case XDB:
 	    bp_nr = get_positive_nr(info_output);
 	    break;
+
+	case JDB:
+	    break;		// FIXME
 	}
 
 	if (bp_nr <= 0)
@@ -3240,6 +3261,7 @@ void SourceView::process_info_line_main(string& info_output)
     {
     case GDB:
     case XDB:
+    case JDB:
 	{
 	    PosBuffer pos_buffer;
 	    pos_buffer.filter(info_output);
@@ -3431,6 +3453,9 @@ void SourceView::lookup(string s, bool silent)
 	    gdb_command(c);
 	    break;
 	}
+
+	case JDB:
+	    break;		// FIXME
 	}
     }
 }
@@ -3477,6 +3502,9 @@ void SourceView::process_pwd(string& pwd_output)
 		return;
 	    }
 	    break;
+
+	case JDB:
+	    break;		// FIXME
 	}
     }
 }
@@ -3956,6 +3984,9 @@ string SourceView::current_source_name()
 	    source = full_path(current_file_name);
 	}
 	break;
+
+    case JDB:
+	break;			// FIXME
     }
 
     // In case this does not work, use the current base name.
@@ -4196,10 +4227,12 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    MMaddCallbacks (line_popup, XtPointer(&address));
 	    InstallButtonTips(line_popup_w);
 
-	    XtSetSensitive(line_popup[LineItms::SetTempBP].widget, 
-			   gdb->type() != DBX || gdb->has_when_command());
-	    XtSetSensitive(line_popup[LineItms::TempNContBP].widget,
-			   gdb->type() != DBX || gdb->has_when_command());
+	    bool temp = gdb->type() == GDB 
+		|| gdb->type() == XDB 
+		|| gdb->has_when_command();
+
+	    XtSetSensitive(line_popup[LineItms::SetTempBP].widget, temp);
+	    XtSetSensitive(line_popup[LineItms::TempNContBP].widget, temp);
 	}
 
 	if (is_source_widget(w))
@@ -4718,6 +4751,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	break;
 
     case DBX:
+    case JDB:
 	if (gdb->has_frame_command())
 	{
 	    // Issue `frame' command
@@ -4725,7 +4759,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	}
 	else
 	{
-	    // Some DBXes lack a `frame' command.
+	    // JDB and some DBXes lack a `frame' command.
 	    // Use `up N'/`down N' instead.
 	    int offset = cbs->item_position - last_frame_pos;
 	    if (offset == -1)
@@ -4837,9 +4871,7 @@ void SourceView::process_where (string& where_output)
 void SourceView::process_frame (string& frame_output)
 {
     if (frame_output != "" 
-	&& (frame_output[0] == '#' 
-	    || gdb->type() == DBX
-	    || gdb->type() == XDB))
+	&& (frame_output[0] == '#' || gdb->type() != GDB))
     {
 	string frame_nr;
 
@@ -4859,6 +4891,10 @@ void SourceView::process_frame (string& frame_output)
 
 	case XDB:
 	    frame_nr = frame_output.after(" = ", -1);
+	    break;
+
+	case JDB:
+	    frame_nr = "0";	// Always highest frame (FIXME)
 	    break;
 	}
 
@@ -4883,6 +4919,7 @@ void SourceView::process_frame (string& frame_output)
 	{
 	case GDB:
 	case DBX:
+	case JDB:
 	    pos = count - frame;
 	    break;
 
@@ -6757,6 +6794,7 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 	switch (gdb->type())
 	{
 	case GDB:
+	case JDB:
 	    return "clear " + pos;
 
 	case DBX:
@@ -6884,6 +6922,7 @@ bool SourceView::get_state(ostream& os)
 	break;
 
     case DBX:
+    case JDB:
 	break;			// FIXME
 
     case XDB:

@@ -600,6 +600,7 @@ ProgramInfo::ProgramInfo()
     }
 
     case XDB:
+    case JDB:
 	break;			// FIXME
     }
 
@@ -736,12 +737,13 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 
 	case DBX:
 	    if (info.file != NO_GDB_ANSWER && info.file != "")
-		gdb_command("debug " + info.file + " " + info.core);
+		gdb_command(gdb->debug_command(info.file) + " " + info.core);
 	    else
 		post_error("No program.", "no_program", w);
 	    break;
 
 	case XDB:
+	case JDB:
 	    break;		// FIXME
 	}
     }
@@ -1066,6 +1068,7 @@ static void openProcessDone(Widget w, XtPointer client_data,
 	break;
 
     case XDB:
+    case JDB:
 	break;		// FIXME
     }
 }

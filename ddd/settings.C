@@ -515,6 +515,7 @@ static EntryType entry_type(DebuggerType type,
 	break;
 
     case XDB:
+    case JDB:
 	break;			// FIXME
     }
 
@@ -1042,6 +1043,7 @@ static void add_button(Widget form, int& row, DebuggerType type,
         break;
 
     case XDB:
+    case JDB:
 	return;			// FIXME
     }
 
@@ -1234,6 +1236,7 @@ static void add_button(Widget form, int& row, DebuggerType type,
 		break;
 
 	    case XDB:
+	    case JDB:
 		return;		// FIXME
 	    }
 
@@ -1392,6 +1395,9 @@ static void add_settings(Widget form, int& row, DebuggerType type,
 	}
 	break;
     }
+
+    case JDB:
+	break;			// FIXME
     }
 
     while (commands != "")
@@ -1718,6 +1724,7 @@ string get_settings(DebuggerType type)
 	    break;
 
 	case XDB:
+	case JDB:
 	    // Add setting (FIXME)
 	    command += base + ' ' + value + '\n';
 	    break;

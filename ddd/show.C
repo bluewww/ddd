@@ -150,6 +150,14 @@ void show_invocation(DebuggerType type, ostream& os)
 	}
 	break;
 
+    case JDB:
+	{
+	    title = "JDB";
+	    base  = "JDB, the Java debugger.";
+	    options = "  [JDB options]      Pass option to JDB.\n";
+	}
+	break;
+
     case XDB:
 	{
 	    title = "XDB";

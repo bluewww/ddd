@@ -2381,6 +2381,7 @@ void DataDisp::new_displaySQ (string display_expression,
 
 	case DBX:
 	case XDB:
+	case JDB:
 	    {
 		gdb_question(gdb->display_command(display_expression));
 		string cmd;
@@ -2408,6 +2409,7 @@ void DataDisp::read_number_and_name(string& answer, string& nr, string& name)
 
     case DBX:
     case XDB:
+    case JDB:
 	name = read_disp_name(answer, gdb);
 	if (gdb->has_display_command())
 	{
@@ -2814,6 +2816,7 @@ void DataDisp::new_data_displaysSQA (string display_expression,
 
     case DBX:
     case XDB:
+    case JDB:
 	{
 	    for (int i = 0; i < display_cmds.size(); i++)
 		gdb_question(display_cmds[i]);
@@ -2920,6 +2923,7 @@ int DataDisp::add_refresh_data_commands(StringArray& cmds)
     {
     case DBX:
     case XDB:
+    case JDB:
 	{
 	    MapRef ref;
 	    for (DispNode* dn = disp_graph->first(ref); 
@@ -3334,6 +3338,7 @@ void DataDisp::delete_displayOQC (const string& answer, void *data)
     {
     case GDB:
     case XDB:
+    case JDB:
 	break;
 
     case DBX:
@@ -3506,6 +3511,7 @@ string DataDisp::process_displays(string& displays,
 
 	case DBX:
 	case XDB:
+	case JDB:
 	    {
 		disp_nr = 0;
 		string disp_name = next_display;

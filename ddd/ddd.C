@@ -402,6 +402,9 @@ static XrmOptionDescRec options[] = {
 { "--xdb",                  XtNdebugger,             XrmoptionNoArg,  "xdb" },
 { "-xdb",                   XtNdebugger,             XrmoptionNoArg,  "xdb" },
 
+{ "--jdb",                  XtNdebugger,             XrmoptionNoArg,  "jdb" },
+{ "-jdb",                   XtNdebugger,             XrmoptionNoArg,  "jdb" },
+
 { "--trace",                XtCTrace,                XrmoptionNoArg,  S_true },
 { "-trace",                 XtCTrace,                XrmoptionNoArg,  S_true },
 
@@ -1005,6 +1008,7 @@ static MMDesc data_scrolling_menu [] =
 static Widget set_debugger_gdb_w;
 static Widget set_debugger_dbx_w;
 static Widget set_debugger_xdb_w;
+static Widget set_debugger_jdb_w;
 static MMDesc debugger_menu [] = 
 {
     { "gdb", MMToggle, { dddSetDebuggerCB, XtPointer(GDB) },
@@ -1013,6 +1017,8 @@ static MMDesc debugger_menu [] =
       NULL, &set_debugger_dbx_w },
     { "xdb", MMToggle, { dddSetDebuggerCB, XtPointer(XDB) },
       NULL, &set_debugger_xdb_w },
+    { "jdb", MMToggle, { dddSetDebuggerCB, XtPointer(JDB) },
+      NULL, &set_debugger_jdb_w },
     MMEnd
 };
 
@@ -3074,6 +3080,7 @@ void update_options()
     set_toggle(set_debugger_gdb_w, type == GDB);
     set_toggle(set_debugger_dbx_w, type == DBX);
     set_toggle(set_debugger_xdb_w, type == XDB);
+    set_toggle(set_debugger_jdb_w, type == JDB);
 
     string color_key = app_data.show_startup_logo;
     set_toggle(startup_logo_color_w, color_key == "c");
@@ -3403,6 +3410,7 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_debugger_gdb_w, type == GDB);
     notify_set_toggle(set_debugger_dbx_w, type == DBX);
     notify_set_toggle(set_debugger_xdb_w, type == XDB);
+    notify_set_toggle(set_debugger_jdb_w, type == JDB);
 
     string color_key = initial_app_data.show_startup_logo;
     notify_set_toggle(startup_logo_color_w, color_key == "c");
@@ -5281,8 +5289,9 @@ static void setup_environment()
 	break;
 
     case XDB:
-	// In XDB, we have no means to set the TTY type afterwards;
-	// Set the execution TTY type right now.
+    case JDB:
+	// In XDB and JDB, we have no means to set the TTY type
+	// afterwards.  Set the execution TTY type right now.
 	put_environment("TERM", app_data.term_type);
 	break;
     }
@@ -5410,7 +5419,8 @@ static void setup_options(int argc, char *argv[],
 
 	if (arg == "--dbx" || arg == "-dbx" 
 	    || arg == "--gdb" || arg == "-gdb"
-	    || arg == "--xdb" || arg == "-xdb")
+	    || arg == "--xdb" || arg == "-xdb"
+	    || arg == "--jdb" || arg == "-jdb")
 	{
 	    gdb_name = arg.after('-', -1);
 	    gdb_option_pos    = i;

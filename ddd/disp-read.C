@@ -68,11 +68,9 @@ bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
 	return cmd.matches (rxsingle_display_cmd);
 
     case DBX:
-	// DBX has no `display' equivalent
-	return false;
-
     case XDB:
-	return false;		// FIXME
+    case JDB:
+	return false;
     }
 
     return false;
@@ -122,6 +120,7 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 
     case DBX:
     case XDB:
+    case JDB:
 	return cmd.matches (rxrunning_cmd)
 	    || is_display_cmd(cmd);
     }
@@ -298,20 +297,23 @@ bool is_file_cmd (const string& cmd, GDBAgent *gdb)
     switch (gdb->type())
     {
     case GDB:
-	{
+    {
 #if RUNTIME_REGEX
-	    static regex rxfile_cmd("[ \t]*file([ \t]+.*)?");
+	static regex rxfile_cmd("[ \t]*file([ \t]+.*)?");
 #endif
-	    return cmd.matches (rxfile_cmd);
-	}
+	return cmd.matches (rxfile_cmd);
+    }
+
     case DBX:
-	{
+    {
 #if RUNTIME_REGEX
-	    static regex rxdebug_cmd("[ \t]*(debug|givenfile)([ \t]+.*)?");
+	static regex rxdebug_cmd("[ \t]*(debug|givenfile)([ \t]+.*)?");
 #endif
-	    return cmd.matches (rxdebug_cmd);
-	}
+	return cmd.matches (rxdebug_cmd);
+    }
+
     case XDB:
+    case JDB:
 	return false;		// FIXME
     }
 
@@ -444,6 +446,8 @@ int display_index (const string& gdb_answer, GDBAgent *gdb)
     case XDB:
 	prx = &rxdbx_begin_of_display;
 	break;
+    case JDB:
+	return -1;		// FIXME
 
     default:
 	assert(0);
@@ -579,6 +583,9 @@ int display_info_index (const string& gdb_answer, GDBAgent *gdb)
     case DBX:
 	prx = &rxdbx_begin_of_display_info;
 	break;
+    case JDB:
+	return -1;
+	break;
 
     default:
 	assert(0);
@@ -661,6 +668,7 @@ string read_next_disp_info (string& gdb_answer, GDBAgent *gdb)
     }
 
     case XDB:
+    case JDB:
 	break;			// FIXME
     }
 
@@ -679,6 +687,7 @@ string get_info_disp_str (string& display_info, GDBAgent *gdb)
 	return display_info.after (") ");
 
     case XDB:
+    case JDB:
 	return "";		// FIXME
     }
 
@@ -697,6 +706,7 @@ bool disp_is_disabled (const string& info_disp_str, GDBAgent *gdb)
 	return false;		// no display disabling in dbx
 
     case XDB:
+    case JDB:
 	return false;		// FIXME
     }
 
@@ -728,6 +738,7 @@ string  read_disp_nr_str (string& display, GDBAgent *gdb)
 	return read_disp_name(display, gdb);
 
     case XDB:
+    case JDB:
 	return "";		// FIXME
     }
 

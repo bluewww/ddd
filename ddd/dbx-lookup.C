@@ -76,6 +76,9 @@ string dbx_lookup(const string& func_name, bool silent)
     case XDB:
 	reply = gdb_question("v " + func_name, 0, true);
 	break;
+
+    case JDB:
+	break;			// FIXME
     }
 
     if (reply == NO_GDB_ANSWER)
@@ -107,25 +110,29 @@ string dbx_lookup(const string& func_name, bool silent)
 	break;
 
     case XDB:
-	{
+    {
 #if RUNTIME_REGEX
-	    static regex rxcolons("[^:]*:[^:]*: *[0-9][0-9]*.*");
+	static regex rxcolons("[^:]*:[^:]*: *[0-9][0-9]*.*");
 #endif
-	    if (reply.matches(rxcolons))
-	    {
-		file = reply.before(':');
-		reply = reply.after(':'); // Skip file
-		reply = reply.after(':'); // Skip function
-		read_leading_blanks(reply);
-		string line_s = reply.before(':');
-		line = atoi(line_s);
-	    }
-	    else
-	    {
-		// post_gdb_message(reply);
-		return "";
-	    }
+	if (reply.matches(rxcolons))
+	{
+	    file = reply.before(':');
+	    reply = reply.after(':'); // Skip file
+	    reply = reply.after(':'); // Skip function
+	    read_leading_blanks(reply);
+	    string line_s = reply.before(':');
+	    line = atoi(line_s);
 	}
+	else
+	{
+	    // post_gdb_message(reply);
+	    return "";
+	}
+	break;
+    }
+
+    case JDB:
+	break;			// FIXME
     }
 
     string pos = "";

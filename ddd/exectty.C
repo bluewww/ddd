@@ -369,7 +369,8 @@ static int gdb_set_tty(string tty_name = "",
 	break;
 
     case XDB:
-	// No way to set environment variables in XDB (FIXME)
+    case JDB:
+	// No way to set environment variables
 	break;
     }
 
@@ -485,6 +486,9 @@ static void redirect_process(string& command,
 	    // XDB uses ksh style redirection.
 	    gdb_redirection += " > " + tty_name + " 2>&1";
 	    break;
+
+	case JDB:
+	    break;		// No redirection in JDB
 
 	default:
 	    // Unsupported

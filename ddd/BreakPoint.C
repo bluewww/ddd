@@ -440,6 +440,9 @@ bool BreakPoint::update (string& info_output)
 	    }
 	}
 	break;
+
+    case JDB:			// FIXME
+	break;
     }
 
     return changed;

@@ -353,6 +353,11 @@ void start_gdb()
 	init     = str(app_data.xdb_init_commands);
 	settings = str(app_data.xdb_settings);
 	break;
+
+    case JDB:
+	init     = str(app_data.jdb_init_commands);
+	settings = str(app_data.jdb_settings);
+	break;
     }
     string restart = str(app_data.restart_commands);
 
@@ -460,6 +465,9 @@ void start_gdb()
 	cmds += "lb";
 	plus_cmd_data->refresh_bpoints = true;
 	break;
+
+    case JDB:
+	break;			// FIXME
     }
 
     while (dummy.size() < cmds.size())
@@ -680,9 +688,10 @@ void send_gdb_command(string cmd, Widget origin,
 	    plus_cmd_data->refresh_file = true;
 	    plus_cmd_data->refresh_line = true;
 	    break;
+
 	case GDB:
-	    break;
 	case XDB:
+	case JDB:
 	    break;		// FIXME
 	}
     }
@@ -1029,6 +1038,9 @@ void send_gdb_command(string cmd, Widget origin,
 	assert (!plus_cmd_data->refresh_history_size);
 	assert (!plus_cmd_data->refresh_setting);
 	break;
+
+    case JDB:
+	break;			// FIXME
     }
 
     while (dummy.size() < cmds.size())
@@ -1185,6 +1197,10 @@ void user_cmdOAC (void *data)
 
 	    case GDB:
 		// GDB always issues file names on positions...
+		break;
+
+	    case JDB:
+		// FIXME
 		break;
 	    }
 
@@ -1595,37 +1611,38 @@ void plusOQAC (const StringArray& answers,
 	switch (gdb->type())
 	{
 	case GDB:
+	{
+	    // Handle `info line' output
+	    string info_line1 = answers[qu_count++];
+	    string list       = answers[qu_count++];
+	    string info_line2 = answers[qu_count++];
+
+	    // Skip initial message lines like `Reading symbols...'
+	    while (list != "" && !has_nr(list))
+		list = list.after('\n');
+
+	    if (atoi(list) == 0)
+	    {
+		// No listing => no source => ignore `info line' output
+	    }
+	    else
 	    {
 		// Handle `info line' output
-		string info_line1 = answers[qu_count++];
-		string list       = answers[qu_count++];
-		string info_line2 = answers[qu_count++];
+		string info_line = info_line1;
+		if (!info_line.contains("Line ", 0))
+		    info_line = info_line2;
 
-		// Skip initial message lines like `Reading symbols...'
-		while (list != "" && !has_nr(list))
-		    list = list.after('\n');
-
-		if (atoi(list) == 0)
-		{
-		    // No listing => no source => ignore `info line' output
-		}
-		else
-		{
-		    // Handle `info line' output
-		    string info_line = info_line1;
-		    if (!info_line.contains("Line ", 0))
-			info_line = info_line2;
-
-		    source_view->process_info_line_main(info_line);
-		}
+		source_view->process_info_line_main(info_line);
 	    }
 	    break;
+	}
 
 	case XDB:
 	    source_view->process_info_line_main(answers[qu_count++]);
 	    break;
 
 	case DBX:
+	case JDB:
 	    break;
 	}
     }
