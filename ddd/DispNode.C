@@ -217,12 +217,17 @@ void DispNode::refresh()
 // Re-create entire box from current disp_value
 void DispNode::reset()
 {
+    bool have_title = disp_box->have_title();
+
     if (disp_value)
 	disp_value->clear_box_cache();
     delete disp_box;
 
     // Create new box from DISP_VALUE
     disp_box = new DispBox (mydisp_nr, myname, disp_value);
+
+    // Set the title
+    set_title(have_title);
 
     // Set the box
     setBox(disp_box->box());
