@@ -663,6 +663,11 @@ static void install_button_icon(Widget w, String name,
 
 void install_icons(Widget shell, const string& color_key)
 {
+    static bool installed = false;
+    if (installed)
+	return;
+    installed = true;
+
     // Determine attributes
     XWindowAttributes win_attr;
     XGetWindowAttributes(XtDisplay(shell), 
