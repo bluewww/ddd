@@ -458,7 +458,7 @@ string GDBAgent::requires_reply (const string& answer)
     if (answer.matches(RXq))
 	return "q";		// Stop this
 
-    static regex RXspace(".*(--More--|line [0-9]|\a)[^\n]*");
+    static regex RXspace(".*(--More--|line [0-9])[^\n]*");
     if (answer.matches(RXspace))
 	return " ";		// Keep on scrolling
 
