@@ -1524,6 +1524,16 @@ string get_settings(DebuggerType type)
 	    else if (base.contains("set ", 0))
 	    {
 		// Add setting (GDB).
+
+		// Jonathan Edwards <edwards@intranet.com> states:
+		// DDD gets all confused with gdb radix settings. When
+		// it configures gdb it assumes a decimal radix. But
+		// if you specify a non-decimal radix, then all
+		// settings made after that are incorrect.  I would
+		// suggest prefixing "0d" to all decimal numbers.
+		if (value.matches(rxint) && atoi(value) > 1)
+		    value.prepend("0d");
+
 		command += base + " " + value + '\n';
 	    }
 	    else if (base.contains("dbxenv ", 0))
