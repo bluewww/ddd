@@ -604,6 +604,7 @@ int display_info_index (const string& gdb_answer, GDBAgent *gdb)
 	prx = &rxdbx_begin_of_display_info;
 	break;
     case JDB:
+    case XDB:
 	return -1;
 	break;
 
@@ -626,8 +627,9 @@ int display_info_index (const string& gdb_answer, GDBAgent *gdb)
 string read_first_disp_info (string& gdb_answer, GDBAgent *gdb)
 {
     int i = display_info_index(gdb_answer, gdb);
-    if (i > 0) {
-	gdb_answer = gdb_answer.from (i);
+    if (i >= 0)
+    {
+	gdb_answer = gdb_answer.from(i);
 	return read_next_disp_info (gdb_answer, gdb);
     }
     gdb_answer = "";
