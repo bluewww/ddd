@@ -122,14 +122,20 @@ struct PlotWindowInfo {
     Widget command_dialog;      // Command dialog
     Widget export_dialog;       // Export dialog
     bool active;		// True if popped up
-    XtIntervalId timer;		// Window timeout
+    XtIntervalId swallow_timer;	// Wait for Window creation
+
+    string settings;		 // Plot settings
+    XtIntervalId settings_timer; // Wait for settings
+    string settings_file;	 // File to get settings from
+    StatusDelay *settings_delay; // Delay while getting settings
 
     // Constructor - just initialize
     PlotWindowInfo()
 	: source(0), window_name(""),
 	  plotter(0), area(0), shell(0), working_dialog(0), swallower(0),
 	  vsb(0), hsb(0), command(0), command_dialog(0), 
-	  export_dialog(0), active(false), timer(0)
+	  export_dialog(0), active(false), swallow_timer(0), 
+	  settings(""), settings_timer(0), settings_file(""), settings_delay(0)
     {}
 };
 
@@ -207,6 +213,8 @@ static MMDesc menubar[] =
 };
 
 
+static void configure_plot(PlotWindowInfo *plot);
+
 
 //-------------------------------------------------------------------------
 // Plotter commands
@@ -238,39 +246,53 @@ static void send_and_replot(PlotWindowInfo *plot, string cmd)
 // Set up menu
 //-------------------------------------------------------------------------
 
-static string slurp_file(const string& filename)
+static void slurp_file(const string& filename, string& target)
 {
-    string s;
-
     ifstream is(filename);
     if (is.bad())
-	return "";
+    {
+	target = "";
+	return;
+    }
 
+    ostrstream s;
     int c;
     while ((c = is.get()) != EOF)
-	s += (unsigned char)c;
+	s << (unsigned char)c;
 
-    return s;
+    target = s;
 }
 
-static string plot_settings(PlotWindowInfo *plot)
+static void GetPlotSettingsCB(XtPointer client_data, XtIntervalId *id)
 {
-    string settings_file = tmpnam(0);
-    string cmd = "save " + quote(settings_file) + "\n";
-    send(plot, cmd);
+    (void) id;			// Use it
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
 
-    // Wait for settings file to be created
-    Delay delay;
+    assert(plot->settings_timer == *id);
+    plot->settings_timer = 0;
 
+    // Check for settings file to be created
     string settings;
-    do {
-	sleep(1);
-	settings = slurp_file(settings_file);
-    } while (!settings.contains("set zero"));
+    slurp_file(plot->settings_file, settings);
 
-    unlink(settings_file);
+    if (settings.contains("set zero"))
+    {
+	// Settings are complete
+	unlink(plot->settings_file);
+	plot->settings = settings;
 
-    return settings;
+	configure_plot(plot);
+
+	delete plot->settings_delay;
+	plot->settings_delay = 0;
+    }
+    else
+    {
+	// Try again in 500 ms
+	plot->settings_timer = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(plot->shell), 500, 
+			    GetPlotSettingsCB, XtPointer(plot));
+    }
 }
 
 static void configure_options(PlotWindowInfo *plot, MMDesc *menu, 
@@ -314,6 +336,28 @@ static void configure_plot(PlotWindowInfo *plot)
     if (plot->plotter == 0)
 	return;
 
+    if (plot->settings == "")
+    {
+	// No settings yet
+	if (plot->settings_timer == 0)
+	{
+	    plot->settings_delay = 
+		new StatusDelay("Retrieving Plot Settings");
+
+	    // Save settings...
+	    plot->settings_file = tmpnam(0);
+	    string cmd = "save " + quote(plot->settings_file) + "\n";
+	    send(plot, cmd);
+
+	    // ...and try again in 250ms
+	    plot->settings_timer = 
+		XtAppAddTimeOut(XtWidgetToApplicationContext(plot->shell), 250,
+				GetPlotSettingsCB, XtPointer(plot));
+	}
+
+	return;
+    }
+
     int ndim = plot->plotter->dimensions();
 
     // Set up plot menu
@@ -355,11 +399,9 @@ static void configure_plot(PlotWindowInfo *plot)
     XtSetSensitive(base,    ndim >= 3);
     XtSetSensitive(surface, ndim >= 3);
 
-    // Get settings
-    string settings = plot_settings(plot);
-    configure_options(plot, view_menu,    settings);
-    configure_options(plot, contour_menu, settings);
-    configure_options(plot, scale_menu,   settings);
+    configure_options(plot, view_menu,    plot->settings);
+    configure_options(plot, contour_menu, plot->settings);
+    configure_options(plot, scale_menu,   plot->settings);
 
     // Get style
     for (i = 0; plot_menu[i].name != 0; i++)
@@ -371,7 +413,7 @@ static void configure_plot(PlotWindowInfo *plot)
 
 	Widget w = XtNameToWidget(plot->shell, "*" + name);
 
-	bool set = settings.contains("\nset data style " + name + "\n");
+	bool set = plot->settings.contains("\nset data style " + name + "\n");
 	XmToggleButtonSetState(w, set, False);
     }
 
@@ -382,11 +424,11 @@ static void configure_plot(PlotWindowInfo *plot)
     int rot_x = 60;
     int rot_z = 30;
 
-    int view_index = settings.index("set view ");
+    int view_index = plot->settings.index("set view ");
     if (view_index >= 0)
     {
 	// `set view <rot_x> {,{<rot_z>}{,{<scale>}{,<scale_z>}}}'
-	string view_setting = settings.after("set view ");
+	string view_setting = plot->settings.after("set view ");
 	rot_x = atoi(view_setting);
 	view_setting = view_setting.after(", ");
 	rot_z = atoi(view_setting);
@@ -425,6 +467,19 @@ static void popup_plot_shell(PlotWindowInfo *plot)
 {
     if (!plot->active && plot->plotter != 0)
     {
+	// We have the plot
+	plot->plotter->removeHandler(Died, PlotterNotFoundHP, 
+				     (void *)plot);
+
+	// Fetch plot settings
+	configure_plot(plot);
+
+	// Command and export dialogs are not needed (yet)
+	if (plot->command_dialog != 0)
+	    XtUnmanageChild(plot->command_dialog);
+	if (plot->export_dialog != 0)
+	    XtUnmanageChild(plot->export_dialog);
+
 	// Pop down working dialog
 	if (plot->working_dialog != 0)
 	{
@@ -432,17 +487,10 @@ static void popup_plot_shell(PlotWindowInfo *plot)
 	    XtPopdown(XtParent(plot->working_dialog));
 	}
 
-	if (plot->command_dialog != 0)
-	    XtUnmanageChild(plot->command_dialog);
-	if (plot->export_dialog != 0)
-	    XtUnmanageChild(plot->export_dialog);
-
-	// Setup menu
-	plot->plotter->removeHandler(Died, PlotterNotFoundHP, 
-				     (void *)plot);
-	configure_plot(plot);
-
+	// Pop up shell
 	XtPopup(plot->shell, XtGrabNone);
+	wait_until_mapped(plot->shell);
+
 	plot->active = true;
     }
 }
@@ -456,10 +504,10 @@ static void swallow(PlotWindowInfo *plot, Window window)
     XtRemoveCallback(plot->swallower, XtNwindowCreatedCallback, 
 		     SwallowCB, XtPointer(plot));
 
-    if (plot->timer != 0)
+    if (plot->swallow_timer != 0)
     {
-	XtRemoveTimeOut(plot->timer);
-	plot->timer = 0;
+	XtRemoveTimeOut(plot->swallow_timer);
+	plot->swallow_timer = 0;
     }
 
     XtVaSetValues(plot->swallower, XtNwindow, window, NULL);
@@ -502,8 +550,8 @@ static void SwallowTimeOutCB(XtPointer client_data, XtIntervalId *id)
     (void) id;
 
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
-    assert(*id == plot->timer);
-    plot->timer = 0;
+    assert(*id == plot->swallow_timer);
+    plot->swallow_timer = 0;
 
     Window root = RootWindowOfScreen(XtScreen(plot->swallower));
     Window window = None;
@@ -520,7 +568,7 @@ static void SwallowTimeOutCB(XtPointer client_data, XtIntervalId *id)
     if (window == None)
     {
 	// Try again later
-	plot->timer = 
+	plot->swallow_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(plot->swallower),
 			    app_data.plot_window_delay, 
 			    SwallowTimeOutCB, XtPointer(plot));
@@ -539,10 +587,10 @@ static void SwallowAgainCB(Widget swallower, XtPointer client_data, XtPointer)
     XtAddCallback(swallower, XtNwindowCreatedCallback, SwallowCB, 
 		  XtPointer(plot));
 
-    if (plot->timer != 0)
-	XtRemoveTimeOut(plot->timer);
+    if (plot->swallow_timer != 0)
+	XtRemoveTimeOut(plot->swallow_timer);
 
-    plot->timer = 
+    plot->swallow_timer = 
 	XtAppAddTimeOut(XtWidgetToApplicationContext(plot->swallower),
 			app_data.plot_window_delay, 
 			SwallowTimeOutCB, XtPointer(plot));
@@ -558,6 +606,7 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 
     entered = true;
 
+    // Manage dialogs
     if (plot->working_dialog != 0)
     {
 	XtUnmanageChild(plot->working_dialog);
@@ -573,6 +622,25 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
     {
 	XtPopdown(plot->shell);
     }
+
+    // Manage settings
+    if (plot->settings_timer != 0)
+    {
+	// Still waiting for settings
+	XtRemoveTimeOut(plot->settings_timer);
+	plot->settings_timer = 0;
+
+	unlink(plot->settings_file);
+    }
+
+    if (plot->settings_delay != 0)
+    {
+	plot->settings_delay->outcome = "canceled";
+	delete plot->settings_delay;
+	plot->settings_delay = 0;
+    }
+
+    plot->settings = "";
 
     plot->active = false;
 
@@ -597,10 +665,10 @@ static void CancelPlotCB(Widget, XtPointer client_data, XtPointer)
 	XtRemoveAllCallbacks(plot->swallower, XtNwindowGoneCallback);
     }
 
-    if (plot->timer != 0)
+    if (plot->swallow_timer != 0)
     {
-	XtRemoveTimeOut(plot->timer);
-	plot->timer = 0;
+	XtRemoveTimeOut(plot->swallow_timer);
+	plot->swallow_timer = 0;
     }
 
     if (plot->plotter != 0)
@@ -636,14 +704,15 @@ static void DeletePlotterHP(Agent *plotter, void *client_data, void *)
 
 static void GetPlotHP(Agent *, void *client_data, void *call_data)
 {
+    // We got the plot commands
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
 
-    // We got the plot commands: Pass them to the plot area
-    DataLength *dl = (DataLength *)call_data;
-    plot->area->plot(string(dl->data, dl->length));
-
-    // Popup shell if needed
+    // Popup shell
     popup_plot_shell(plot);
+
+    // Pass commands to the plot area
+    DataLength *dl = (DataLength *)call_data;
+    plot->area->plot(dl->data);
 }
 
 static void PlotterNotFoundHP(Agent *plotter, void *client_data, void *)
@@ -819,10 +888,10 @@ static PlotWindowInfo *new_decoration(const string& name)
 	XtAddCallback(plot->swallower, XtNwindowGoneCallback, 
 		      SwallowAgainCB, XtPointer(plot));
 
-	if (plot->timer != 0)
-	    XtRemoveTimeOut(plot->timer);
+	if (plot->swallow_timer != 0)
+	    XtRemoveTimeOut(plot->swallow_timer);
 
-	plot->timer = 
+	plot->swallow_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(plot->swallower),
 			    app_data.plot_window_delay, SwallowTimeOutCB, 
 			    XtPointer(plot));
