@@ -2340,13 +2340,8 @@ static void SelectPrev(Widget w, XEvent *, String *, Cardinal *)
 }
 
 // Return nearest grid position near P
-static BoxPoint NearestGridPosition(Widget w, const BoxPoint& p)
+static BoxPoint NearestGridPosition(const BoxPoint& grid, const BoxPoint& p)
 {
-    const GraphEditWidget _w   = GraphEditWidget(w);
-    const Dimension gridWidth  = _w->graphEdit.gridWidth;
-    const Dimension gridHeight = _w->graphEdit.gridHeight;
-
-    BoxPoint grid(gridWidth, gridHeight);
     BoxPoint pos(p);
 
     for (BoxDimension d = X; d <= Y; d++)
@@ -2356,6 +2351,7 @@ static BoxPoint NearestGridPosition(Widget w, const BoxPoint& p)
     return pos;
 }
 
+
 // Return final position (if snapToGrid is enabled, for example)
 BoxPoint graphEditFinalPosition(Widget w, const BoxPoint& p)
 {
@@ -2363,9 +2359,14 @@ BoxPoint graphEditFinalPosition(Widget w, const BoxPoint& p)
 
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Boolean snapToGrid   = _w->graphEdit.snapToGrid;
+    const Dimension gridWidth  = _w->graphEdit.gridWidth;
+    const Dimension gridHeight = _w->graphEdit.gridHeight;
 
     if (snapToGrid)
-	return NearestGridPosition(w, p);
+    {
+	BoxPoint grid(gridWidth, gridHeight);
+	return NearestGridPosition(grid, p);
+    }
     else
 	return p;
 }
@@ -2391,11 +2392,11 @@ static void _SnapToGrid(Widget w, XEvent *, String *params,
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
 	node = graph->nextVisibleNode(node))
     {
-	BoxPoint pos = NearestGridPosition(w, node->pos());
+	BoxPoint pos = NearestGridPosition(grid, node->pos());
 	if (pos != node->pos())
 	{
-            // set new node position
-	    moveTo(w, node, pos, graph->nextNode(node) == 0);
+            // Set new node position
+	    moveTo(w, node, pos, graph->nextVisibleNode(node) == 0);
 	    redraw = True;
 	}
     }
@@ -2790,7 +2791,7 @@ static void _Normalize(Widget w, XEvent *, String *, Cardinal *)
 	if (pos != node->pos())
 	{
             // set new node position
-	    moveTo(w, node, pos, graph->nextNode(node) == 0);
+	    moveTo(w, node, pos, graph->nextVisibleNode(node) == 0);
 	    redraw = True;
 	}
     }
