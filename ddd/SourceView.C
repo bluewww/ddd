@@ -884,7 +884,7 @@ void SourceView::set_source_argCB(Widget text_w,
 	if (bp_selected)
 	{
 	    // Update breakpoint selection
-	    fill_labels(last_info_output);
+	    process_breakpoints(last_info_output);
 	}
 	else
 	{
@@ -2611,7 +2611,7 @@ void SourceView::process_info_bp (string& info_output)
 	refresh_bp_disp();
 
     // Set up breakpoint editor contents
-    fill_labels(last_info_output);
+    process_breakpoints(last_info_output);
 }
 
 
@@ -3955,28 +3955,28 @@ void SourceView::LookupBreakpointCB(Widget, XtPointer, XtPointer)
 	lookup("#" + itostring(breakpoint_nrs[0]));
 }
 
-// Create labels for the list
-void SourceView::fill_labels(const string& info_output)
+// Handle breakpoint info
+void SourceView::process_breakpoints(string& info_breakpoints_output)
 {
     if (breakpoint_list_w == 0)
 	return;
 
-    int count = info_output.freq('\n') + 1;
-    if (info_output == "")
+    int count = info_breakpoints_output.freq('\n') + 1;
+    if (info_breakpoints_output == "")
 	count = 0;
 
-    string *label_list = new string[count];
-    bool *selected     = new bool[count];
+    string *breakpoint_list = new string[count];
+    bool *selected          = new bool[count];
 
-    split(info_output, label_list, count, '\n');
+    split(info_breakpoints_output, breakpoint_list, count, '\n');
 
-    while (count > 0 && label_list[count - 1] == "")
+    while (count > 0 && breakpoint_list[count - 1] == "")
 	count--;
 
     bool select = false;
     for (int i = 0; i < count; i++)
     {
-	int bp_number = get_positive_nr(label_list[i]);
+	int bp_number = get_positive_nr(breakpoint_list[i]);
 	if (bp_number > 0)
 	{
 	    MapRef ref;
@@ -3993,12 +3993,13 @@ void SourceView::fill_labels(const string& info_output)
 	}
 
 	selected[i] = select;
+	setup_where_line(breakpoint_list[i]);
     }
 
-    setLabelList(breakpoint_list_w, label_list, selected, count);
+    setLabelList(breakpoint_list_w, breakpoint_list, selected, count);
     UpdateBreakpointButtonsCB(breakpoint_list_w, XtPointer(0), XtPointer(0));
 
-    delete[] label_list;
+    delete[] breakpoint_list;
     delete[] selected;
 }
 

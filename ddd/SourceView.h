@@ -128,8 +128,6 @@ class SourceView {
     static void SelectRegisterCB (Widget, XtPointer, XtPointer);
     static void SelectThreadCB   (Widget, XtPointer, XtPointer);
 
-    static void fill_labels(const string& info_output);
-
     static Widget create_glyph(Widget form_w, String name, 
 			       char *bits, int width, int height);
     static void map_glyph(Widget& w, Position x, Position y);
@@ -396,6 +394,9 @@ public:
 
     // Handle 'info threads' information
     static void process_threads         (string& info_threads_output);
+
+    // Handle `info breakpoints' information
+    static void process_breakpoints     (string& info_breakpoints_output);
 
     // Handle 'disassemble' information
     static void process_disassemble     (const string& disassemble_output);
