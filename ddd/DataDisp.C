@@ -74,6 +74,7 @@ char DataDisp_rcsid[] =
 #include "mydialogs.h"
 #include "ddd.h"
 #include "ArgField.h"
+#include "verify.h"
 
 // sonstige includes
 #include <iostream.h>
@@ -466,9 +467,9 @@ void DataDisp::dependentCB(Widget w, XtPointer, XtPointer)
     if (!dependent_display_dialog) {
 
 	dependent_display_dialog = 
-	    XmCreatePromptDialog (graph_edit,
-				  "dependent_display_dialog",
-				  NULL, 0);
+	    verify(XmCreatePromptDialog (graph_edit,
+					 "dependent_display_dialog",
+					 NULL, 0));
 	Delay::register_shell(dependent_display_dialog);
 
 	XtAddCallback (dependent_display_dialog, 
@@ -658,9 +659,10 @@ void DataDisp::new_displayCD (BoxPoint box_point)
     static Widget new_display_dialog = 0;
     if (!new_display_dialog) {
 	p = new BoxPoint(box_point);
-	new_display_dialog = XmCreatePromptDialog (graph_edit,
-						   "new_display_dialog",
-						   NULL, 0);
+	new_display_dialog = 
+	    verify(XmCreatePromptDialog (graph_edit,
+					 "new_display_dialog",
+					 NULL, 0));
 	Delay::register_shell(new_display_dialog);
 	XtAddCallback (new_display_dialog, 
 		       XmNhelpCallback, 
@@ -2486,12 +2488,12 @@ DataDisp::DataDisp (XtAppContext app_context,
     XtManageChild (graph_edit);
 
     graph_cmd_w = 
-	XmCreateRowColumn(parent, "graph_cmd_w", NULL, 0);
+	verify(XmCreateRowColumn(parent, "graph_cmd_w", NULL, 0));
 
-    XtVaCreateManagedWidget("graph_arg_label",
-			    xmLabelWidgetClass,
-			    graph_cmd_w,
-			    NULL);
+    verify(XtVaCreateManagedWidget("graph_arg_label",
+				   xmLabelWidgetClass,
+				   graph_cmd_w,
+				   NULL));
 
     graph_arg = new ArgField (graph_cmd_w, "graph_arg");
 
@@ -2516,8 +2518,8 @@ DataDisp::DataDisp (XtAppContext app_context,
 #else
     // Create display editor
     edit_displays_dialog_w =
-	XmCreatePromptDialog(graph_edit, "edit_displays_dialog", 
-			     NULL, 0);
+	verify(XmCreatePromptDialog(graph_edit, "edit_displays_dialog", 
+				    NULL, 0));
     Delay::register_shell(edit_displays_dialog_w);
 
     XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
@@ -2528,18 +2530,19 @@ DataDisp::DataDisp (XtAppContext app_context,
 					   XmDIALOG_SELECTION_LABEL));
 
     Widget form1 = 
-	XmCreateRowColumn(edit_displays_dialog_w, "form1", NULL, 0);
+	verify(XmCreateRowColumn(edit_displays_dialog_w, "form1", NULL, 0));
 
     Widget label =
-	XmCreateLabel(form1, "displays", NULL, 0);
+	verify(XmCreateLabel(form1, "displays", NULL, 0));
 
     Widget form2 = 
-	XmCreateRowColumn(form1, "form2", NULL, 0);
+	verify(XmCreateRowColumn(form1, "form2", NULL, 0));
 
     arg = 0;
     display_list_w = 
-	XmCreateScrolledList(form2, "displays", args, arg);
-    Widget buttons = MMcreateWorkArea(form2, "buttons", display_area);
+	verify(XmCreateScrolledList(form2, "displays", args, arg));
+    Widget buttons = 
+	verify(MMcreateWorkArea(form2, "buttons", display_area));
     MMaddCallbacks (display_area);
 
     XtManageChild (buttons);

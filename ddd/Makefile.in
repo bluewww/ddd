@@ -484,6 +484,7 @@ NORA_OBJECTS = \
 	layout.o \
 	longName.o \
 	printBox.o \
+	verify.o \
 	AlignBox.o \
 	ArcBox.o \
 	ArgNode.o \

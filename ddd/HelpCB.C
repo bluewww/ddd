@@ -50,6 +50,7 @@ char HelpCB_rcsid[] =
 
 #include "strclass.h"
 #include "cook.h"
+#include "verify.h"
 #include "Delay.h"
 #include "StringA.h"
 #include "IntArray.h"
@@ -222,7 +223,8 @@ static void _MStringHelpCB(Widget widget,
 	    XtSetArg(args[arg], XmNsymbolPixmap, pixmap); arg++;
 	}
 
-	help_dialog = XmCreateInformationDialog(shell, "help", args, arg);
+	help_dialog = 
+	    verify(XmCreateInformationDialog(shell, "help", args, arg));
 	Delay::register_shell(help_dialog);
 	XtAddCallback(help_dialog, XmNhelpCallback,
 		      HelpOnHelpCB, 0);
@@ -290,21 +292,22 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmUNMAP); arg++;
-	text_dialog = XmCreatePromptDialog(toplevel, "manual_help", args, arg);
+	text_dialog = 
+	    verify(XmCreatePromptDialog(toplevel, "manual_help", args, arg));
 	Delay::register_shell(text_dialog);
 
 	arg = 0;
-	Widget form = XmCreateWorkArea(text_dialog, "area", args, arg);
+	Widget form = verify(XmCreateWorkArea(text_dialog, "area", args, arg));
 
 	arg = 0;
-	help_index = XmCreateScrolledList(form, "index", args, arg);
+	help_index = verify(XmCreateScrolledList(form, "index", args, arg));
 	XtManageChild(help_index);
 	
 	arg = 0;
 	XtSetArg(args[arg], XmNeditable, False); arg++;
 	XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
 	XtSetArg(args[arg], XmNvalue, text); arg++;
-	help_man = XmCreateScrolledText(form, "text", args, arg);
+	help_man = verify(XmCreateScrolledText(form, "text", args, arg));
 	XtManageChild(help_man);
 
 	XtAddCallback(help_index, XmNsingleSelectionCallback,
@@ -526,14 +529,16 @@ void FileHelpCB(Widget widget, XtPointer client_data, XtPointer)
 	}
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmUNMAP); arg++;
-	text_dialog = XmCreatePromptDialog(toplevel, "text_help", args, arg);
+	text_dialog = 
+	    verify(XmCreatePromptDialog(toplevel, "text_help", args, arg));
 	Delay::register_shell(text_dialog);
 
 	arg = 0;
 	XtSetArg(args[arg], XmNeditable, False); arg++;
 	XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
 	XtSetArg(args[arg], XmNvalue, text); arg++;
-	help_text = XmCreateScrolledText(text_dialog, "text", args, arg);
+	help_text = 
+	    verify(XmCreateScrolledText(text_dialog, "text", args, arg));
 	XtManageChild(help_text);
 
 	XtAddCallback(text_dialog, XmNhelpCallback,

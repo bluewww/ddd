@@ -87,6 +87,7 @@ extern "C" {
 #include "ddd.h"
 #include "version.h"
 #include "mydialogs.h"
+#include "verify.h"
 
 inline int isid(char c)
 {
@@ -1159,9 +1160,9 @@ SourceView::SourceView (XtAppContext app_context,
     Arg args[10];
     Cardinal arg = 0;
     XtSetArg (args[arg], XmNselectionArrayCount, 1); arg++;
-    source_text_w = XmCreateScrolledText (parent,
-					  "source_text_w",
-					  args, arg);
+    source_text_w = verify(XmCreateScrolledText (parent,
+						 "source_text_w",
+						 args, arg));
     source_view_w = source_text_w;
     XtManageChild(source_text_w);
 #ifndef LESSTIF_VERSION		// won't work with LessTif 1.0
@@ -1184,8 +1185,8 @@ SourceView::SourceView (XtAppContext app_context,
     arg = 0;
     XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
     edit_breakpoints_dialog_w =
-	XmCreatePromptDialog(source_text_w, "edit_breakpoints_dialog", 
-			     args, arg);
+	verify(XmCreatePromptDialog(source_text_w, "edit_breakpoints_dialog",
+				    args, arg));
     Delay::register_shell(edit_breakpoints_dialog_w);
 
     XtUnmanageChild(XmSelectionBoxGetChild(edit_breakpoints_dialog_w,
@@ -1196,17 +1197,19 @@ SourceView::SourceView (XtAppContext app_context,
 					   XmDIALOG_SELECTION_LABEL));
 
     Widget form1 = 
-	XmCreateRowColumn(edit_breakpoints_dialog_w, "form1", NULL, 0);
+	verify(XmCreateRowColumn(edit_breakpoints_dialog_w, "form1", NULL, 0));
 
     Widget label =
-	XmCreateLabel(form1, "breakpoints", NULL, 0);
+	verify(XmCreateLabel(form1, "breakpoints", NULL, 0));
 
-    Widget form2 = XmCreateRowColumn(form1, "form2", NULL, 0);
+    Widget form2 = 
+	verify(XmCreateRowColumn(form1, "form2", NULL, 0));
 
     arg = 0;
     breakpoint_list_w = 
-	XmCreateScrolledList(form2, "breakpoints", args, arg);
-    Widget buttons = MMcreateWorkArea(form2, "buttons", bp_area);
+	verify(XmCreateScrolledList(form2, "breakpoints", args, arg));
+    Widget buttons = 
+	verify(MMcreateWorkArea(form2, "buttons", bp_area));
     MMaddCallbacks (bp_area);
 
     XtManageChild (buttons);
@@ -1252,7 +1255,8 @@ SourceView::SourceView (XtAppContext app_context,
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     stack_dialog_w =
-	XmCreateSelectionDialog(source_text_w, "stack_dialog", args, arg);
+	verify(XmCreateSelectionDialog(source_text_w, 
+				       "stack_dialog", args, arg));
     Delay::register_shell(stack_dialog_w);
 
     XtUnmanageChild(XmSelectionBoxGetChild(stack_dialog_w, 
@@ -2189,9 +2193,9 @@ void SourceView::NewBreakpointCB(Widget, XtPointer, XtPointer)
     if (new_breakpoint_dialog == 0)
     {
 	new_breakpoint_dialog = 
-	    XmCreatePromptDialog(source_text_w, 
-				 "new_breakpoint_dialog",
-				 NULL, 0);
+	    verify(XmCreatePromptDialog(source_text_w,
+					"new_breakpoint_dialog",
+					NULL, 0));
 	Delay::register_shell(new_breakpoint_dialog);
 	XtAddCallback(new_breakpoint_dialog,
 		      XmNhelpCallback,
@@ -2249,9 +2253,9 @@ void SourceView::EditBreakpointConditionCB(Widget,
     if (edit_breakpoint_condition_dialog == 0)
     {
 	edit_breakpoint_condition_dialog = 
-	    XmCreatePromptDialog(source_text_w, 
-				 "edit_breakpoint_condition_dialog",
-				 NULL, 0);
+	    verify(XmCreatePromptDialog(source_text_w,
+					"edit_breakpoint_condition_dialog",
+					NULL, 0));
 	Delay::register_shell(edit_breakpoint_condition_dialog);
 	XtAddCallback(edit_breakpoint_condition_dialog,
 		      XmNhelpCallback,
@@ -2348,9 +2352,9 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
     if (edit_breakpoint_ignore_count_dialog == 0)
     {
 	edit_breakpoint_ignore_count_dialog = 
-	    XmCreatePromptDialog(source_text_w, 
-				 "edit_breakpoint_ignore_count_dialog",
-				 NULL, 0);
+	    verify(XmCreatePromptDialog(source_text_w,
+					"edit_breakpoint_ignore_count_dialog",
+					NULL, 0));
 	Delay::register_shell(edit_breakpoint_ignore_count_dialog);
 	XtAddCallback(edit_breakpoint_ignore_count_dialog,
 		      XmNhelpCallback,

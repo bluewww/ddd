@@ -42,6 +42,7 @@ char MakeMenu_rcsid[] =
 
 #include "MakeMenu.h"
 #include "bool.h"
+#include "verify.h"
 
 // Add items to shell
 static void addItems(Widget /* parent */, Widget shell, MMDesc items[], 
@@ -69,7 +70,7 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    assert(subitems == 0);
 
 	    arg = 0;
-	    widget = XmCreatePushButton(shell, name, args, arg);
+	    widget = verify(XmCreatePushButton(shell, name, args, arg));
 	    break;
 
 	case MMToggle:
@@ -77,7 +78,7 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    assert(subitems == 0);
 
 	    arg = 0;
-	    widget = XmCreateToggleButton(shell, name, args, arg);
+	    widget = verify(XmCreateToggleButton(shell, name, args, arg));
 	    break;
 
 	case MMLabel:
@@ -85,7 +86,7 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    assert(subitems == 0);
 
 	    arg = 0;
-	    widget = XmCreateLabel(shell, name, args, arg);
+	    widget = verify(XmCreateLabel(shell, name, args, arg));
 	    break;
 
 	case MMMenu:
@@ -97,7 +98,7 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
-	    widget = XmCreateCascadeButton(shell, name, args, arg);
+	    widget = verify(XmCreateCascadeButton(shell, name, args, arg));
 	    break;
 
 	case MMRadioMenu:
@@ -109,7 +110,7 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
-	    widget = XmCreateCascadeButton(shell, name, args, arg);
+	    widget = verify(XmCreateCascadeButton(shell, name, args, arg));
 	    break;
 
 	case MMSeparator:
@@ -119,7 +120,7 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    if (ignore_seps)
 		continue;
 	    arg = 0;
-	    widget = XmCreateSeparator(shell, name, args, arg);
+	    widget = verify(XmCreateSeparator(shell, name, args, arg));
 	    break;
 
 	default:
@@ -155,7 +156,7 @@ Widget MMcreatePulldownMenu(Widget parent, String name, MMDesc items[])
     int arg;
 
     arg = 0;
-    Widget shell = XmCreatePulldownMenu(parent, name, args, arg);
+    Widget shell = verify(XmCreatePulldownMenu(parent, name, args, arg));
     addItems(parent, shell, items);
 
     return shell;
@@ -172,7 +173,7 @@ Widget MMcreateRadioPulldownMenu(Widget parent, String name, MMDesc items[])
     XtSetArg(args[arg], XmNentryClass, xmToggleButtonWidgetClass); arg++;
     XtSetArg(args[arg], XmNradioBehavior, True); arg++;	// 
 
-    Widget shell = XmCreatePulldownMenu(parent, name, args, arg);
+    Widget shell = verify(XmCreatePulldownMenu(parent, name, args, arg));
     addItems(parent, shell, items);
 
     return shell;
@@ -185,7 +186,7 @@ Widget MMcreatePopupMenu(Widget parent, String name, MMDesc items[])
     int arg;
 
     arg = 0;
-    Widget shell = XmCreatePopupMenu(parent, name, args, arg);
+    Widget shell = verify(XmCreatePopupMenu(parent, name, args, arg));
     addItems(parent, shell, items);
 
     return shell;
@@ -199,7 +200,7 @@ Widget MMcreateMenuBar(Widget parent, String name, MMDesc items[])
     int arg;
 
     arg = 0;
-    Widget bar = XmCreateMenuBar(parent, name, args, arg);
+    Widget bar = verify(XmCreateMenuBar(parent, name, args, arg));
     addItems(parent, bar, items);
     XtManageChild(bar);
 
@@ -217,7 +218,7 @@ Widget MMcreateWorkArea(Widget parent, String name, MMDesc items[])
     if (bar == 0)
     {
 	// LessTif 0.1 doesn't have work areas
-	bar = XmCreateRowColumn(parent, name, args, arg);
+	bar = verify(XmCreateRowColumn(parent, name, args, arg));
     }
     addItems(parent, bar, items, true);
     XtManageChild(bar);

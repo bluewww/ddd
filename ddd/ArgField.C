@@ -34,15 +34,16 @@ char ArgField_rcsid[] =
 //-----------------------------------------------------------------------------
 #include "ArgField.h"
 #include <ctype.h>
+#include "verify.h"
 
 // Constructor
 ArgField::ArgField (Widget parent, const char* name)
     : arg_text_field(0), handlers(ArgField_NTypes), is_empty(true)
 {
-    arg_text_field = XtVaCreateManagedWidget (name,
-					      xmTextFieldWidgetClass,
-					      parent,
-					      NULL);
+    arg_text_field = verify(XtVaCreateManagedWidget (name,
+						     xmTextFieldWidgetClass,
+						     parent,
+						     NULL));
     XtAddCallback(arg_text_field, XmNvalueChangedCallback,
 		  valueChangedCB, this);
 #ifndef LESSTIF_VERSION		// LessTif 0.1 won't compile this

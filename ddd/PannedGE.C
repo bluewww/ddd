@@ -35,6 +35,7 @@ char PannedGraphEdit_rcsid[] =
 #include "misc.h"
 #include "PannedGE.h"
 #include "BoxPoint.h"
+#include "verify.h"
 
 #if defined(HAVE_ATHENA_WIDGETS) \
     && defined(HAVE_X11_XAW_FORM_H) \
@@ -164,7 +165,8 @@ Widget createPannedGraphEdit(Widget parent, String name,
     XtSetArg(args[arg], XtNborderWidth,     0); arg++;
     XtSetArg(args[arg], XtNdefaultDistance, 0); arg++;
     Widget form =
-	XtCreateManagedWidget(form_name, formWidgetClass, parent, args, arg);
+	verify(XtCreateManagedWidget(form_name, 
+				     formWidgetClass, parent, args, arg));
 
     string panner_name = string(name) + "_panner";
     arg = 0;
@@ -175,17 +177,19 @@ Widget createPannedGraphEdit(Widget parent, String name,
     XtSetArg(args[arg], XtNleft,      XawChainRight);  arg++;
     XtSetArg(args[arg], XtNright,     XawChainRight);  arg++;
     Widget panner = 
-	XtCreateManagedWidget(panner_name, pannerWidgetClass, form, args, arg);
+	verify(XtCreateManagedWidget(panner_name, 
+				     pannerWidgetClass, form, args, arg));
 
     string porthole_name = string(name) + "_porthole";
     arg = 0;
     Widget porthole = 
-	XtCreateManagedWidget(porthole_name, pannedGraphEditWidgetClass, 
-			      form, args, arg);
+	verify(XtCreateManagedWidget(porthole_name,
+				     pannedGraphEditWidgetClass, 
+				     form, args, arg));
 
     Widget graph_edit = 
-	XtCreateManagedWidget(name, graphEditWidgetClass, porthole, 
-			      graph_edit_args, graph_edit_arg);
+	verify(XtCreateManagedWidget(name, graphEditWidgetClass, porthole, 
+				     graph_edit_args, graph_edit_arg));
     XtVaSetValues(graph_edit,
 		  XtNresizable, True,
 		  NULL);

@@ -218,6 +218,7 @@ extern "C" {
 #include "host.h"
 #include "strings.h"
 #include "mydialogs.h"
+#include "verify.h"
 
 
 // Standard stuff
@@ -1735,9 +1736,9 @@ int main(int argc, char *argv[])
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
     command_shell =
-	XtCreatePopupShell("command_shell",
-			   topLevelShellWidgetClass,
-			   toplevel, args, arg);
+	verify(XtCreatePopupShell("command_shell",
+				  topLevelShellWidgetClass,
+				  toplevel, args, arg));
     XmAddWMProtocolCallback(command_shell,
 			    WM_DELETE_WINDOW, gdbCloseCommandWindowCB, 0);
 #if defined(HAVE_X11_XMU_EDITRES_H)
@@ -1748,10 +1749,11 @@ int main(int argc, char *argv[])
 
 
     // Create main window
-    Widget main_window = XtVaCreateManagedWidget ("main_window",
-						  xmMainWindowWidgetClass,
-						  command_shell,
-						  NULL);
+    Widget main_window = 
+	verify(XtVaCreateManagedWidget ("main_window", 
+					xmMainWindowWidgetClass,
+					command_shell,
+					NULL));
 
     // Register own converters
     // Do this now to override Motif converters.
@@ -1789,14 +1791,15 @@ int main(int argc, char *argv[])
 
 
     // Create Paned Window
-    Widget paned_work_w = XtVaCreateWidget ("paned_work_w",
-					    xmPanedWindowWidgetClass,
-					    main_window,
-					    NULL);
+    Widget paned_work_w = 
+	verify(XtVaCreateWidget("paned_work_w",
+				xmPanedWindowWidgetClass,
+				main_window,
+				NULL));
 
     if (!app_data.separate_source_window)
     {
-	status_w = XmCreateLabel(paned_work_w, "status_w", NULL, 0);
+	status_w = verify(XmCreateLabel(paned_work_w, "status_w", NULL, 0));
 	XtManageChild(status_w);
 
 	XtWidgetGeometry size;
@@ -1817,9 +1820,9 @@ int main(int argc, char *argv[])
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 	data_disp_shell =
-	    XtCreatePopupShell("data_disp_shell",
-			       topLevelShellWidgetClass,
-			       toplevel, args, arg);
+	    verify(XtCreatePopupShell("data_disp_shell",
+				      topLevelShellWidgetClass,
+				      toplevel, args, arg));
 	XmAddWMProtocolCallback(data_disp_shell,
 				WM_DELETE_WINDOW, gdbCloseDataWindowCB, 0);
 #if defined(HAVE_X11_XMU_EDITRES_H)
@@ -1829,10 +1832,10 @@ int main(int argc, char *argv[])
 	Delay::register_shell(data_disp_shell);
 
 	data_main_window_w = 
-	    XtVaCreateManagedWidget("data_main_window",
-				    xmMainWindowWidgetClass,
-				    data_disp_shell,
-				    NULL);
+	    verify(XtVaCreateManagedWidget("data_main_window",
+					   xmMainWindowWidgetClass,
+					   data_disp_shell,
+					   NULL));
 
 	// Add menu bar
 	data_menubar_w = 
@@ -1863,10 +1866,10 @@ int main(int argc, char *argv[])
 	set_attached_windows_w[DataOptions]     = set_attached_windows_w[0];
 
 	data_disp_parent = 
-	    XtVaCreateManagedWidget ("data_paned_work_w",
-				     xmPanedWindowWidgetClass,
-				     data_main_window_w,
-				     NULL);
+	    verify(XtVaCreateManagedWidget ("data_paned_work_w",
+					    xmPanedWindowWidgetClass,
+					    data_main_window_w,
+					    NULL));
     }
 				  
     data_disp = new DataDisp (app_context,
@@ -1894,9 +1897,9 @@ int main(int argc, char *argv[])
 	arg = 0;
 	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 	source_view_shell = 
-	    XtCreatePopupShell("source_view_shell",
-			       topLevelShellWidgetClass,
-			       toplevel, args, arg);
+	    verify(XtCreatePopupShell("source_view_shell",
+				      topLevelShellWidgetClass,
+				      toplevel, args, arg));
 	XmAddWMProtocolCallback(source_view_shell,
 				WM_DELETE_WINDOW, gdbCloseSourceWindowCB, 0);
 #if defined(HAVE_X11_XMU_EDITRES_H)
@@ -1906,10 +1909,10 @@ int main(int argc, char *argv[])
 	Delay::register_shell(source_view_shell);
 
 	source_main_window_w = 
-	    XtVaCreateManagedWidget("source_main_window",
-				    xmMainWindowWidgetClass,
-				    source_view_shell,
-				    NULL);
+	    verify(XtVaCreateManagedWidget("source_main_window",
+					   xmMainWindowWidgetClass,
+					   source_view_shell,
+					   NULL));
 
 	// Add menu bar
 	source_menubar_w = 
@@ -1940,11 +1943,13 @@ int main(int argc, char *argv[])
 	set_attached_windows_w[SourceOptions]     = set_attached_windows_w[0];
 
 	source_view_parent = 
-	    XtVaCreateManagedWidget ("source_paned_work_w",
-				     xmPanedWindowWidgetClass,
-				     source_main_window_w,
-				     NULL);
-	status_w = XmCreateLabel(source_view_parent, "status_w", NULL, 0);
+	    verify(XtVaCreateManagedWidget ("source_paned_work_w",
+					    xmPanedWindowWidgetClass,
+					    source_main_window_w,
+					    NULL));
+
+	status_w = 
+	    verify(XmCreateLabel(source_view_parent, "status_w", NULL, 0));
 	XtManageChild(status_w);
 
 	XtWidgetGeometry size;
@@ -1971,7 +1976,7 @@ int main(int argc, char *argv[])
 
     // Argument field and commands
     arg_cmd_w = 
-	XmCreateRowColumn(source_view_parent, "arg_cmd_w", NULL, 0);
+	verify(XmCreateRowColumn(source_view_parent, "arg_cmd_w", NULL, 0));
 
     XtVaCreateManagedWidget("arg_label",
 			    xmLabelWidgetClass,
@@ -1997,9 +2002,9 @@ int main(int argc, char *argv[])
 				    app_data.source_buttons);
 
     // GDB window
-    gdb_w = XmCreateScrolledText(paned_work_w,
-				 "gdb_w",
-				 NULL, 0);
+    gdb_w = verify(XmCreateScrolledText(paned_work_w,
+					"gdb_w",
+					NULL, 0));
     XtAddCallback (gdb_w,
 		   XmNmodifyVerifyCallback,
 		   gdbModifyCB,
@@ -2805,7 +2810,7 @@ Widget file_dialog(Widget w, const string& name,
     }
 
     Widget dialog = 
-	XmCreateFileSelectionDialog(w, name, args, arg);
+	verify(XmCreateFileSelectionDialog(w, name, args, arg));
     Delay::register_shell(dialog);
     XtAddCallback(dialog, XmNokCallback,     ok_callback, 0);
     XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
@@ -3514,7 +3519,7 @@ Widget make_buttons(Widget parent, const string& name,
     if (buttons == 0)
     {
 	// Not available in LessTif 0.1
-	buttons = XmCreateRowColumn(parent, name, 0, 0);
+	buttons = verify(XmCreateRowColumn(parent, name, 0, 0));
     }
 
     int colons = button_list.freq(':') + 1;
@@ -3543,7 +3548,7 @@ Widget make_buttons(Widget parent, const string& name,
 	    name = name.before(-1);
 	}
 
-	Widget button = XmCreatePushButton(buttons, name, 0, 0);
+	Widget button = verify(XmCreatePushButton(buttons, name, 0, 0));
 	XtManageChild(button);
 
 	if (name == "Yes")
@@ -4401,7 +4406,7 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
     // Create history viewer
     arg = 0;
     gdb_history_w =
-	XmCreateSelectionDialog(w, "history_dialog", args, arg);
+	verify(XmCreateSelectionDialog(w, "history_dialog", args, arg));
     Delay::register_shell(gdb_history_w);
 
     XtUnmanageChild(XmSelectionBoxGetChild(gdb_history_w, 
@@ -6274,8 +6279,9 @@ void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 	// Startup options are still changed; request confirmation
 	if (yn_dialog)
 	    XtDestroyWidget(yn_dialog);
-	yn_dialog = XmCreateQuestionDialog(find_shell(w),
-					   "save_options_dialog", NULL, 0);
+	yn_dialog = 
+	    verify(XmCreateQuestionDialog(find_shell(w), 
+					  "save_options_dialog", NULL, 0));
 	Delay::register_shell(yn_dialog);
 	XtAddCallback (yn_dialog, XmNokCallback,     SaveOptionsAndExitCB, 0);
 	XtAddCallback (yn_dialog, XmNcancelCallback, ExitCB, 0);
@@ -6304,8 +6310,8 @@ void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
     // Debugger is still running; request confirmation
     if (yn_dialog)
 	XtDestroyWidget(yn_dialog);
-    yn_dialog = XmCreateQuestionDialog(find_shell(w),
-				       "quit_dialog", NULL, 0);
+    yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
+					      "quit_dialog", NULL, 0));
     Delay::register_shell(yn_dialog);
     XtAddCallback (yn_dialog, XmNokCallback,     _DDDExitCB, 0);
     XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
@@ -6499,8 +6505,9 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 	    if (yn_dialog)
 		XtDestroyWidget(yn_dialog);
 	    yn_dialog = 
-		XmCreateQuestionDialog(find_shell(w),
-				       "confirm_overwrite_dialog", NULL, 0);
+		verify(XmCreateQuestionDialog(find_shell(w),
+					      "confirm_overwrite_dialog", 
+					      NULL, 0));
 	    Delay::register_shell(yn_dialog);
 	    XtAddCallback (yn_dialog, XmNokCallback,   graphQuickPrintCB, 
 			   (void *)1);
@@ -6614,7 +6621,8 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     Arg args[10];
     Cardinal num_args;
 
-    print_dialog = XmCreatePromptDialog(find_shell(w), "print", ArgList(0), 0);
+    print_dialog = 
+	verify(XmCreatePromptDialog(find_shell(w), "print", ArgList(0), 0));
     Delay::register_shell(print_dialog);
     XtAddCallback(print_dialog, XmNokCallback,     
 		  graphQuickPrintCB, XtPointer(0));
@@ -6632,20 +6640,20 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     XtUnmanageChild(label);
 
     // Create form as work area
-    Widget options = XmCreateRowColumn(print_dialog, "options", 0, 0);
+    Widget options = verify(XmCreateRowColumn(print_dialog, "options", 0, 0));
     XtManageChild(options);
 
     // Build options
     Widget print_to_option = 
-	XmCreateRowColumn(options, "print_to_option", 0, 0);
+	verify(XmCreateRowColumn(options, "print_to_option", 0, 0));
     Widget print_to = 
-	XmCreateLabel(print_to_option, "print_to", 0, 0);
+	verify(XmCreateLabel(print_to_option, "print_to", 0, 0));
     Widget print_to_field = 
-	XmCreateRadioBox(print_to_option, "print_to_field", 0, 0);
+	verify(XmCreateRadioBox(print_to_option, "print_to_field", 0, 0));
     Widget print_to_printer = 
-	XmCreateToggleButton(print_to_field, "printer", 0, 0);
+	verify(XmCreateToggleButton(print_to_field, "printer", 0, 0));
     Widget print_to_file = 
-	XmCreateToggleButton(print_to_field, "file", 0, 0);
+	verify(XmCreateToggleButton(print_to_field, "file", 0, 0));
     XtVaSetValues(print_to_field, XmNpacking, XmPACK_TIGHT, 0);
     XtManageChild(print_to_option);
     XtManageChild(print_to);
@@ -6655,11 +6663,12 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 
 
     Widget print_command_option = 
-	XmCreateRowColumn(options, "print_command_option", 0, 0);
+	verify(XmCreateRowColumn(options, "print_command_option", 0, 0));
     Widget print_command = 
-	XmCreateLabel(print_command_option, "print_command", 0, 0);
+	verify(XmCreateLabel(print_command_option, "print_command", 0, 0));
     print_command_field = 
-	XmCreateTextField(print_command_option, "print_command_field", 0, 0);
+	verify(XmCreateTextField(print_command_option, 
+				 "print_command_field", 0, 0));
     XtManageChild(print_command_option);
     XtManageChild(print_command);
     XtManageChild(print_command_field);
@@ -6668,21 +6677,21 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     XmTextFieldSetString(print_command_field, command);
 
     Widget file_name_option = 
-	XmCreateRowColumn(options, "file_name_option", 0, 0);
+	verify(XmCreateRowColumn(options, "file_name_option", 0, 0));
     Widget file_name = 
-	XmCreateLabel(file_name_option, "file_name", 0, 0);
+	verify(XmCreateLabel(file_name_option, "file_name", 0, 0));
     print_file_name_field = 
-	XmCreateTextField(file_name_option, "file_name_field", 0, 0);
+	verify(XmCreateTextField(file_name_option, "file_name_field", 0, 0));
     Widget file_type_menu =
-	XmCreatePulldownMenu(file_name_option, "type", 0, 0);
+	verify(XmCreatePulldownMenu(file_name_option, "type", 0, 0));
     Widget postscript = 
-	XmCreatePushButton(file_type_menu, "postscript", 0, 0);
+	verify(XmCreatePushButton(file_type_menu, "postscript", 0, 0));
     Widget xfig = 
-	XmCreatePushButton(file_type_menu, "xfig", 0, 0);
+	verify(XmCreatePushButton(file_type_menu, "xfig", 0, 0));
     num_args = 0;
     XtSetArg(args[num_args], XmNsubMenuId, file_type_menu); num_args++;
     Widget file_type = 
-	XmCreateOptionMenu(file_name_option, "type", args, num_args);
+	verify(XmCreateOptionMenu(file_name_option, "type", args, num_args));
     XtManageChild(file_name_option);
     XtManageChild(file_name);
     XtManageChild(file_type);
@@ -6729,15 +6738,15 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 
 
     Widget print_what_option = 
-	XmCreateRowColumn(options, "print_what_option", 0, 0);
+	verify(XmCreateRowColumn(options, "print_what_option", 0, 0));
     Widget print_what = 
-	XmCreateLabel(print_what_option, "print_what", 0, 0);
+	verify(XmCreateLabel(print_what_option, "print_what", 0, 0));
     Widget print_what_field = 
-	XmCreateRadioBox(print_what_option, "print_what_field", 0, 0);
+	verify(XmCreateRadioBox(print_what_option, "print_what_field", 0, 0));
     Widget print_all = 
-	XmCreateToggleButton(print_what_field, "all", 0, 0);
+	verify(XmCreateToggleButton(print_what_field, "all", 0, 0));
     Widget print_selected = 
-	XmCreateToggleButton(print_what_field, "selected", 0, 0);
+	verify(XmCreateToggleButton(print_what_field, "selected", 0, 0));
     XtVaSetValues(print_what_field, XmNpacking, XmPACK_TIGHT, 0);
     XtManageChild(print_what_option);
     XtManageChild(print_what);
@@ -6750,16 +6759,19 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     XmToggleButtonSetState(print_all, True, True);
 
     Widget print_orientation_option = 
-	XmCreateRowColumn(options, "print_orientation_option", 0, 0);
+	verify(XmCreateRowColumn(options, "print_orientation_option", 0, 0));
     Widget print_orientation = 
-	XmCreateLabel(print_orientation_option, "print_orientation", 0, 0);
+	verify(XmCreateLabel(print_orientation_option,
+			     "print_orientation", 0, 0));
     Widget print_orientation_field = 
-	XmCreateRadioBox(print_orientation_option,
-			 "print_orientation_field", 0, 0);
+	verify(XmCreateRadioBox(print_orientation_option,
+				"print_orientation_field", 0, 0));
     Widget print_portrait = 
-	XmCreateToggleButton(print_orientation_field, "portrait", 0, 0);
+	verify(XmCreateToggleButton(print_orientation_field, 
+				    "portrait", 0, 0));
     Widget print_landscape = 
-	XmCreateToggleButton(print_orientation_field, "landscape", 0, 0);
+	verify(XmCreateToggleButton(print_orientation_field, 
+				    "landscape", 0, 0));
     XtVaSetValues(print_orientation_field, XmNpacking, XmPACK_TIGHT, 0);
     XtManageChild(print_orientation_option);
     XtManageChild(print_orientation);
@@ -6772,19 +6784,19 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     XmToggleButtonSetState(print_portrait, True, True);
 
     Widget paper_size_option = 
-	XmCreateRowColumn(options, "paper_size_option", 0, 0);
+	verify(XmCreateRowColumn(options, "paper_size_option", 0, 0));
     Widget paper_size = 
-	XmCreateLabel(paper_size_option, "paper_size", 0, 0);
+	verify(XmCreateLabel(paper_size_option, "paper_size", 0, 0));
     Widget paper_size_field = 
-	XmCreateRadioBox(paper_size_option, "paper_size_field", 0, 0);
+	verify(XmCreateRadioBox(paper_size_option, "paper_size_field", 0, 0));
     Widget a4 = 
-	XmCreateToggleButton(paper_size_field, "a4", 0, 0);
+	verify(XmCreateToggleButton(paper_size_field, "a4", 0, 0));
     Widget letter = 
-	XmCreateToggleButton(paper_size_field, "letter", 0, 0);
+	verify(XmCreateToggleButton(paper_size_field, "letter", 0, 0));
     Widget legal = 
-	XmCreateToggleButton(paper_size_field, "legal", 0, 0);
+	verify(XmCreateToggleButton(paper_size_field, "legal", 0, 0));
     Widget executive = 
-	XmCreateToggleButton(paper_size_field, "executive", 0, 0);
+	verify(XmCreateToggleButton(paper_size_field, "executive", 0, 0));
     XtManageChild(paper_size_option);
     XtManageChild(paper_size);
     XtManageChild(paper_size_field);
@@ -7221,7 +7233,7 @@ string widget_value(Widget w, String name)
 		  NULL);
 
     if (value == 0)
-	value = XtNewString("");
+	value = (String)XtNewString("");
 
     return string_app_value(string(XtName(w)) + "." + name, value);
 }
@@ -7386,7 +7398,7 @@ static void DungeonCollapseCB(XtPointer client_data, XtIntervalId *)
 
     Widget shell = find_shell(w);
     dungeon_error = 
-	XmCreateErrorDialog(shell, "dungeon_collapse_error", NULL, 0);
+	verify(XmCreateErrorDialog(shell, "dungeon_collapse_error", NULL, 0));
     Delay::register_shell(dungeon_error);
     XtUnmanageChild(XmMessageBoxGetChild 
 		    (dungeon_error, XmDIALOG_CANCEL_BUTTON));
@@ -7454,7 +7466,7 @@ void HelpOnDebuggingCB(Widget w, XtPointer, XtPointer)
 
     Widget shell = find_shell(w);
     debugging_poem = 
-	XmCreateMessageDialog(shell, "debugging_poem", NULL, 0);
+	verify(XmCreateMessageDialog(shell, "debugging_poem", NULL, 0));
     Delay::register_shell(debugging_poem);
     XtUnmanageChild(XmMessageBoxGetChild 
 		    (debugging_poem, XmDIALOG_CANCEL_BUTTON));
@@ -7476,8 +7488,8 @@ void post_gdb_yn(string question, Widget w)
 
     if (yn_dialog)
 	XtDestroyWidget(yn_dialog);
-    yn_dialog = XmCreateQuestionDialog(find_shell(w),
-				       "yn_dialog", NULL, 0);
+    yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
+					      "yn_dialog", NULL, 0));
     Delay::register_shell(yn_dialog);
     XtAddCallback (yn_dialog, XmNokCallback,     YnCB, (void *)"yes");
     XtAddCallback (yn_dialog, XmNcancelCallback, YnCB, (void *)"no");
@@ -7500,7 +7512,8 @@ void post_gdb_busy(Widget w)
 	XtDestroyWidget(busy_dialog);
 
     busy_dialog = 
-	XmCreateWorkingDialog (find_shell(w), "busy_dialog", NULL, 0);
+	verify(XmCreateWorkingDialog (find_shell(w), 
+				      "busy_dialog", NULL, 0));
     Delay::register_shell(busy_dialog);
     XtUnmanageChild(XmMessageBoxGetChild 
 		    (busy_dialog, XmDIALOG_CANCEL_BUTTON));
@@ -7533,7 +7546,8 @@ void post_gdb_died(string reason, Widget w)
     if (died_dialog)
 	XtDestroyWidget(died_dialog);
     died_dialog = 
-	XmCreateErrorDialog (find_shell(w), "terminated_dialog", NULL, 0);
+	verify(XmCreateErrorDialog (find_shell(w), 
+				    "terminated_dialog", NULL, 0));
     Delay::register_shell(died_dialog);
 
     XtUnmanageChild (XmMessageBoxGetChild 
@@ -7568,7 +7582,8 @@ void post_gdb_message(string text, Widget w)
     if (gdb_message_dialog)
 	XtDestroyWidget(gdb_message_dialog);
     gdb_message_dialog = 
-	XmCreateWarningDialog (find_shell(w), "gdb_message_dialog", NULL, 0);
+	verify(XmCreateWarningDialog (find_shell(w), 
+				      "gdb_message_dialog", NULL, 0));
     Delay::register_shell(gdb_message_dialog);
     XtUnmanageChild (XmMessageBoxGetChild 
 		     (gdb_message_dialog, XmDIALOG_CANCEL_BUTTON));
@@ -7609,7 +7624,7 @@ void post_error (string text, String name, Widget w)
     if (ddd_error)
 	XtDestroyWidget(ddd_error);
     ddd_error = 
-	XmCreateErrorDialog (find_shell(w), name, NULL, 0);
+	verify(XmCreateErrorDialog (find_shell(w), name, NULL, 0));
     Delay::register_shell(ddd_error);
     XtUnmanageChild (XmMessageBoxGetChild 
 		     (ddd_error, XmDIALOG_CANCEL_BUTTON));
@@ -7647,7 +7662,7 @@ void post_warning (string text, String name, Widget w)
     if (ddd_warning)
 	XtDestroyWidget(ddd_warning);
     ddd_warning = 
-	XmCreateWarningDialog (find_shell(w), name, NULL, 0);
+	verify(XmCreateWarningDialog (find_shell(w), name, NULL, 0));
     Delay::register_shell(ddd_warning);
     XtUnmanageChild (XmMessageBoxGetChild 
 		     (ddd_warning, XmDIALOG_CANCEL_BUTTON));

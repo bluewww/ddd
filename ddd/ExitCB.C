@@ -33,6 +33,7 @@ char ExitCB_rcsid[] =
 
 #include "findParent.h"
 #include "ExitCB.h"
+#include "verify.h"
 
 // callbacks
 
@@ -50,8 +51,8 @@ void ExitAfterConfirmationCB(Widget widget, XtPointer, XtPointer)
 
     arg = 0;
     Widget confirmExit = 
-	XmCreateQuestionDialog(findTopLevelShellParent(widget),
-			       "confirmExit", args, arg);
+	verify(XmCreateQuestionDialog(findTopLevelShellParent(widget),
+				      "confirmExit", args, arg));
 
     XtAddCallback(confirmExit, XmNokCallback, ExitCB, NULL);
 

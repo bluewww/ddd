@@ -34,6 +34,7 @@ char ScrolledGraphEdit_rcsid[] =
 #include <iostream.h>
 #include "ScrolleGEP.h"
 #include "GraphEdit.h"
+#include "verify.h"
 
 #define EVERYWHERE (BoxRegion(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX)))
 
@@ -142,16 +143,16 @@ Widget createScrolledGraphEdit(Widget parent, String name,
     // In Motif 2.0 or later, the definition above crashes.
     // Use a standard scrolled window instead.
     Widget scrolledWindow = 
-	XtCreateManagedWidget((char *)swindow_name, 
-			      xmScrolledWindowWidgetClass,
-			      parent, args, arg);
+	verify(XtCreateManagedWidget((char *)swindow_name, 
+				     xmScrolledWindowWidgetClass,
+				     parent, args, arg));
 #else
     Widget scrolledWindow = 
-	XtCreateManagedWidget((char *)swindow_name, 
-			      scrolledGraphEditWidgetClass,
-			      parent, args, arg);
+	verify(XtCreateManagedWidget((char *)swindow_name, 
+				     scrolledGraphEditWidgetClass,
+				     parent, args, arg));
 #endif
 
-    return XtCreateManagedWidget(name, graphEditWidgetClass,
-				 scrolledWindow, arglist, argcount);
+    return verify(XtCreateManagedWidget(name, graphEditWidgetClass,
+					scrolledWindow, arglist, argcount));
 }
