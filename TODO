@@ -335,4 +335,6 @@ Volunteers for these and other projects are welcome!
     * Return from frame: return.
     * Shell command: shell.
 
-310 (Insert new project ideas here)
+310 Include `NEWS.gz.C' and `COPYING.gz.C' in the distribution.
+
+311 (Insert new project ideas here)

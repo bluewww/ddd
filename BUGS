@@ -101,6 +101,11 @@ Volunteers for fixing these and other bugs are welcome!
 290 (Motif 1.1) The `Settings' dialog is too wide.
 
 297 Using display commands like `undisplay' directly instead of using
-    the `graph' prefix confuses DDD - displays are considered `inactive'.
+    the `graph' prefix confuses DDD - displays are considered
+    `inactive'.
 
-299 (Insert new bugs here)
+299 Starting DDD in `-iconic' mode still pops up some windows:
+    - In multi-window mode, the source pops up;
+    - In single-window mode, the command tool pops up.
+
+300 (Insert new bugs here)

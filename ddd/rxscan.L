@@ -30,8 +30,26 @@
 char rxscan_rcsid[] = 
     "$Id$";
 
-// Maximal length of a token when using lex.
+// Maximal length of a token when using LEX.
 #define MAX_LEX_TOKEN_SIZE 8192
+
+// I think that even a low limit of, say, 200 characters or less will
+// make DDD work just fine.  Please note that MAX_LEX_TOKEN_SIZE
+// effectively limits the length of the input to be matched, so if you
+// set it to 4000, only the first 4000 characters of GDB output will be
+// matched; the remaining ones will be ignored (by the regexp matcher,
+// not by DDD).
+//
+// In most cases, it does not matter whether the first 80 or 200 or 8192
+// characters of some GDB output are matched by the regular expression.
+// I have run DDD with a deliberately low limit of 80 characters, and run
+// into no problems whatsoever, even if only the first 80 characters were
+// ever matched.  The reason is that most DDD regexps that go this far
+// have the form `<something>.*', and it does not matter whether the
+// trailing `.*' matches 80 or 8192 characters.  So, in practice, raising
+// or lowering the MAX_LEX_TOKEN_SIZE won't make a big difference unless
+// you make it lower than 20 characters or so.  (8192 is just to stay on
+// the safe side; I don't have the time to verify all DDD regexps.)
 
 
 static const char *the_prefix;	// Prefix
