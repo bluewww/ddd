@@ -996,6 +996,7 @@ static void open_session(const string& session)
 void RestartDebuggerCB(Widget, XtPointer, XtPointer)
 {
     static string restart_commands;
+    static string settings;
     unsigned long flags = 0;
 
     if (gdb->type() == PERL)
@@ -1003,6 +1004,34 @@ void RestartDebuggerCB(Widget, XtPointer, XtPointer)
 
     (void) get_restart_commands(restart_commands, flags);
     app_data.restart_commands = restart_commands;
+
+    settings = get_settings(gdb->type());
+    switch (gdb->type())
+    {
+    case GDB:
+	app_data.gdb_settings = settings;
+	break;
+
+    case DBX:
+	app_data.dbx_settings = settings;
+	break;
+
+    case XDB:
+	app_data.xdb_settings = settings;
+	break;
+
+    case JDB:
+	app_data.jdb_settings = settings;
+	break;
+
+    case PYDB:
+	app_data.pydb_settings = settings;
+	break;
+
+    case PERL:
+	app_data.perl_settings = settings;
+	break;
+    }
 
     _gdb_out("Restarting " + gdb->title() + "\n");
 
