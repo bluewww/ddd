@@ -36,6 +36,7 @@ char converters_rcsid[] =
 #include <stdlib.h>
 #include <unistd.h>
 #include <pwd.h>
+#include <ctype.h>
 
 #include <X11/CoreP.h>
 
@@ -126,6 +127,32 @@ extern "C" {
     } while(0)
 
 
+// Return string of value.  If STRIP is set, strip leading and
+// trailing whitespace.
+static string str(XrmValue *from, bool strip)
+{
+    // Use the length given in FROM->size; strip trailing '\0'
+    String s = (String)from->addr;
+    int sz   = from->size;
+    if (sz > 0 && s[sz - 1] == '\0')
+	sz--;
+    string v(s, sz);
+
+    if (strip)
+    {
+	// Strip leading and trailing space.  Pinwu Xu
+	// <pxu@perigee.net> reports a `Warning: Cannot convert string
+	// "false " to type OnOff'.  No idea where the trailing space in
+	// `"false "' comes from, so remove it here.
+	while (v.length() > 0 && isspace(v[0]))
+	    v = v.after(0);
+	while (v.length() > 0 && isspace(v[v.length() - 1]))
+	    v = v.before(int(v.length()) - 1);
+    }
+
+    return v;
+}
+
 // Convert String to Widget
 // This is based on Asente/Swick: The X Window System Toolkit,
 // Digital Press, Example 3.9
@@ -135,7 +162,7 @@ Boolean CvtStringToWidget(Display *display,
 			  XrmValue *fromVal, XrmValue *toVal,
 			  XtPointer *)
 {
-    // convert first arg into parent    
+    // Convert first arg into parent    
     if (*num_args != 1) 
     {
 	XtAppErrorMsg(XtDisplayToApplicationContext(display),
@@ -146,8 +173,9 @@ Boolean CvtStringToWidget(Display *display,
     }
     Widget parent = *(Widget *) args[0].addr;
 
-    // get widget
-    Widget w = XtNameToWidget(parent, (String)fromVal->addr);
+    // Get widget
+    string value = str(fromVal, false);
+    Widget w = XtNameToWidget(parent, value);
     if (w == NULL)
     {
 	XtDisplayStringConversionWarning(display, fromVal->addr, XtRWidget);
@@ -196,9 +224,9 @@ Boolean CvtStringToPixmap(Display *display,
 	    
     }
 
-    // get pixmap
-    Pixmap p = XmGetPixmap (screen, (String)fromVal->addr,
-			    foreground, background);
+    // Get pixmap
+    string value = str(fromVal, false);
+    Pixmap p = XmGetPixmap (screen, value, foreground, background);
 
     if (p == XmUNSPECIFIED_PIXMAP)
     {
@@ -237,7 +265,7 @@ Boolean CvtStringToBitmap(Display *display,
 	window = DefaultRootWindow(display);
 
     // Locate file
-    string basename = (String)fromVal->addr;
+    string basename = str(fromVal, false);
     String filename = locateBitmap(display, basename);
     if (filename == NULL)
     {
@@ -270,7 +298,7 @@ Boolean CvtStringToBitmap(Display *display,
 				  &width, &height, &bitmap, &x_hot, &y_hot);
     if (success != BitmapSuccess)
     {
-	XtDisplayStringConversionWarning(display, filename, XtRBitmap);
+	XtDisplayStringConversionWarning(display, fromVal->addr, XtRBitmap);
 	XtFree(filename);
 	return False;
     }
@@ -395,7 +423,7 @@ Boolean CvtStringToXmString(Display *display,
 #endif
 
     // Get string
-    string source = (String)fromVal->addr;
+    string source = str(fromVal, false);
     string charset = (String)MSTRING_DEFAULT_CHARSET;
 
     int n_segments = source.freq(font_esc) + 1;
@@ -495,7 +523,9 @@ Boolean CvtStringToAlignment(Display*   display,
                              XrmValue*  toVal,
                              XtPointer* )
 {
-    string theAlignment = downcase((String)fromVal->addr);
+    string theAlignment = str(fromVal, true);
+    theAlignment.downcase();
+
     if (theAlignment.contains("xm", 0))
 	theAlignment = theAlignment.after("xm");
     if (theAlignment.contains("alignment_", 0))
@@ -523,7 +553,8 @@ Boolean CvtStringToOrientation(Display*         display,
                                XrmValue*        toVal,
                                XtPointer*       )
 {
-    string theOrientation = downcase((String)fromVal->addr);
+    string theOrientation = str(fromVal, true);
+    theOrientation.downcase();
     if (theOrientation.contains("xm", 0))
 	theOrientation = theOrientation.after("xm");
   
@@ -550,7 +581,8 @@ Boolean CvtStringToPacking(Display*     display,
                            XrmValue*    toVal,
                            XtPointer*   )
 {
-    string thePacking = downcase((String)fromVal->addr);
+    string thePacking = str(fromVal, true);
+    thePacking.downcase();
     if (thePacking.contains("xm", 0))
 	thePacking = thePacking.after("xm");
     if (thePacking.contains("pack_", 0))
@@ -577,7 +609,8 @@ Boolean CvtStringToUnitType(Display*     display,
 			    XrmValue*    toVal,
 			    XtPointer*   )
 {
-    string theType = downcase((String)fromVal->addr);
+    string theType = str(fromVal, true);
+    theType.downcase();
     if (theType.contains("xm", 0))
 	theType = theType.after("xm");
   
@@ -604,7 +637,8 @@ Boolean CvtStringToOnOff(Display*     display,
 			 XrmValue*    toVal,
 			 XtPointer*   )
 {
-    string value = downcase((String)fromVal->addr);
+    string value = str(fromVal, true);
+    value.downcase();
     value.gsub('_', ' ');
 
     if (value == "on" || value == "true" || value == "yes")
