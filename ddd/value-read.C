@@ -48,7 +48,7 @@ char value_read_rcsid[] =
 #include "GDBAgent.h"
 
 static regex RXindex("[[]-?[0-9][0-9]*].*");
-
+static regex RXvtable("[^\n]*<[^\n>]* v(irtual )?t(a)?bl(e)?>{.*");
 
 // Determine the type of VALUE.
 DispValueType determine_type (string value)
@@ -65,6 +65,10 @@ DispValueType determine_type (string value)
 	RXreference("([(][^)]*[)] )? *@ *(0(0|x)[0-9a-f]+|[(]nil[)]) *:.*");
     if (value.matches(RXreference))
 	return Reference;
+
+    // Vtables
+    if (value.matches(RXvtable))
+	return Array;
 
     // Scalars:
     switch(gdb->type())
@@ -340,6 +344,10 @@ string read_pointer_value (string& value)
 bool read_array_begin (string& value)
 {
     read_leading_blanks (value);
+
+    // GDB has a special format for vtables
+    if (value.matches(RXvtable))
+	value = value.from("{");
 
     // XDB prepends the address before each struct
     if (value.contains("0x", 0) || value.contains("00", 0))

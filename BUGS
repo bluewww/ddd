@@ -327,9 +327,6 @@ Volunteers for fixing these and other bugs are welcome!
       distribution comes with a demo program `ttytest' which is useful
       for debugging the TTY interface in `TTYAgent.C'  -AZ]
 
-129. Displaying `*tree' in `cxxtest.C' with `set print vtbl on' gives
-     a bad display.
-
 131. `Find<<' and `Find>>' should be in the `Edit' menu (at least for
      sources)
 
