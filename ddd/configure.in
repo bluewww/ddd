@@ -180,6 +180,10 @@ ICE_CXX_LIFETIME_OF_TEMPORARIES
 ICE_PROG_CPP_TRADITIONAL
 dnl
 dnl
+dnl The C++ compiler is set up.  Use it for further checks.
+dnl 
+AC_LANG_CPLUSPLUS
+dnl
 dnl Locate Libraries
 dnl
 AC_CHECK_LIB(nsl, gethostbyname, LIBNSL="-lnsl")
@@ -230,6 +234,8 @@ dnl
 AC_SUBST(LIBIBERTY)
 dnl
 dnl
+dnl
+dnl
 dnl Check for X stuff
 dnl
 dnl
@@ -264,10 +270,6 @@ case "$CXX" in
   *CC) X_LIBS="`echo $X_LIBS | $SED 's, -R\([^ ]\), -R \1,g'`"
 esac
 changequote([,])dnl
-dnl
-dnl
-AC_LANG_SAVE
-AC_LANG_C
 dnl
 dnl
 dnl
@@ -410,7 +412,6 @@ LIBS="$ice_save_LIBS"
 CFLAGS="$ice_save_CFLAGS"
 CPPFLAGS="$ice_save_CPPFLAGS"
 LDFLAGS="$ice_save_LDFLAGS"
-AC_LANG_RESTORE
 fi
 dnl
 dnl
@@ -439,8 +440,8 @@ AC_CHECK_FUNC(setpgrp)
 AC_FUNC_GETPGRP
 AC_FUNC_SETPGRP
 AC_FUNC_ALLOCA
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+dnl
+dnl
 dnl
 AC_HEADER_STDC
 AC_CHECK_HEADERS(unistd.h limits.h malloc.h pwd.h stdlib.h termio.h termios.h)
@@ -521,7 +522,6 @@ dnl
 ICE_CHECK_PATH_MAX
 ICE_CHECK_POSIX_PATH_MAX
 ICE_CHECK_MAXPATHLEN
-AC_LANG_RESTORE
 dnl
 dnl
 dnl Check for a POSIX.2 regcomp()/regexec() library
