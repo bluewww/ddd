@@ -44,6 +44,7 @@ char history_rcsid[] =
 #include "StringA.h"
 #include "args.h"
 #include "cook.h"
+#include "commandQ.h"
 #include "ddd.h"
 #include "editing.h"
 #include "mydialogs.h"
@@ -319,7 +320,8 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
     // Create history viewer
     arg = 0;
     gdb_history_w =
-	verify(XmCreateSelectionDialog(w, "history_dialog", args, arg));
+	verify(XmCreateSelectionDialog(find_shell(w), "history_dialog", 
+				       args, arg));
     Delay::register_shell(gdb_history_w);
 
     XtUnmanageChild(XmSelectionBoxGetChild(gdb_history_w, 

@@ -3598,7 +3598,8 @@ DataDisp::DataDisp (XtAppContext app_context,
 
     // Create display editor
     edit_displays_dialog_w =
-	verify(XmCreatePromptDialog(graph_edit, "edit_displays_dialog", 
+	verify(XmCreatePromptDialog(find_shell(graph_edit), 
+				    "edit_displays_dialog", 
 				    NULL, 0));
 
     if (lesstif_hacks_enabled)
