@@ -2568,17 +2568,23 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 	|| title.contains('}'))
 	title = given_name;
 
+    bool disabling_occurred = false;
     if (is_disabling(value, gdb))
     {
-	post_gdb_message(answer, last_origin);
+	string error_msg = get_disp_value_str(value, gdb);
+	post_gdb_message(error_msg, last_origin);
 	value = "";
+	disabling_occurred = true;
     }
 
     StatusShower s("Creating display");
     s.total   = value.length();
     s.current = value.length();
 
-    return new DispNode(nr, title, scope, value);
+    DispNode *dn = new DispNode(nr, title, scope, value);
+    if (disabling_occurred)
+	dn->disable();
+    return dn;
 }
 
 DispNode *DataDisp::new_user_node(const string& name,
