@@ -96,7 +96,7 @@ DispNode::DispNode (int disp_nr,
 	// No need to show all detail; it is plotted, anyway
 	value()->collapse();
     }
-	
+
     // Create new box from DISP_VALUE
     disp_box = new DispBox (mydisp_nr, myname, disp_value);
 
@@ -203,13 +203,29 @@ bool DispNode::update(string& value)
 }
 
 
-// Re-create box from current disp_value
+// Re-create box value from current disp_value
 void DispNode::refresh()
 {
     disp_box->set_value(disp_value);
     setBox(disp_box->box());
     select(selected_value());
     refresh_plot_state();
+
+    mylast_refresh = ++tics;
+}
+
+// Re-create entire box from current disp_value
+void DispNode::reset()
+{
+    if (disp_value)
+	disp_value->clear_box_cache();
+    delete disp_box;
+
+    // Create new box from DISP_VALUE
+    disp_box = new DispBox (mydisp_nr, myname, disp_value);
+
+    // Set the box
+    setBox(disp_box->box());
 
     mylast_refresh = ++tics;
 }

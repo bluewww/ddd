@@ -6485,9 +6485,10 @@ void DataDisp::set_theme_manager(const ThemeManager& t)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	dn->refresh();
-	graphEditRedrawNode(graph_edit, dn);
+	dn->reset();
     }
+
+    refresh_graph_edit();
 }
 
 

@@ -880,6 +880,15 @@ void DispValue::validate_box_cache()
     }
 }
 
+// Clear box caches for this and all children
+void DispValue::clear_box_cache()
+{
+    clear_cached_box();
+
+    for (int i = 0; i < nchildren(); i++)
+	child(i)->clear_box_cache();
+}
+
 //-----------------------------------------------------------------------------
 // Resources
 //-----------------------------------------------------------------------------

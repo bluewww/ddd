@@ -397,6 +397,9 @@ public:
 	_cached_box_change = cached_box_tics++;
     }
 
+    // Clear box caches for this and all children
+    void clear_box_cache();
+
     // Print plots to FILENAME
     void print_plots(const string& filename, 
 		     const PrintGC& gc = PostScriptPrintGC()) const;

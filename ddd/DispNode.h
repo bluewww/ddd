@@ -189,8 +189,11 @@ public:
     // Update address with NEW_ADDR
     void set_addr(const string& new_addr);
 
-    // Re-create the box from old DISP_VALUE
+    // Re-create the box value from old DISP_VALUE
     void refresh();
+
+    // Re-create the entire box from old DISP_VALUE
+    void reset();
 
     // Highlights the box related to the display value DV
     void select (DispValue *dv = 0);
