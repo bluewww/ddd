@@ -107,6 +107,9 @@ void   MMaddHelpCallback(MMDesc items[], XtCallbackProc proc);
 void   MMonItems        (MMDesc items[], MMItemProc proc, 
 			 XtPointer closure = 0);
 
+// Add items to shell.  If IGNORE_SEPS is set, all separators are ignored.
+void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false);
+
 // Conveniences
 #define MMNoCB { NULL }
 #define MMEnd  { NULL }

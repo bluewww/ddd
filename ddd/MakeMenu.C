@@ -133,9 +133,8 @@ static void auto_raise(Widget shell)
     }
 }
 
-// Add items to shell
-static void addItems(Widget /* parent */, Widget shell, MMDesc items[], 
-		     bool ignore_seps = false)
+// Add items to shell.  If IGNORE_SEPS is set, all separators are ignored.
+void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false)
 {
     static bool actions_added = false;
 		
@@ -394,7 +393,7 @@ Widget MMcreatePulldownMenu(Widget parent, String name, MMDesc items[])
 
     arg = 0;
     Widget menu = verify(XmCreatePulldownMenu(parent, name, args, arg));
-    addItems(parent, menu, items);
+    MMaddItems(menu, items);
     auto_raise(XtParent(menu));
 
     return menu;
@@ -412,7 +411,7 @@ Widget MMcreateRadioPulldownMenu(Widget parent, String name, MMDesc items[])
     XtSetArg(args[arg], XmNradioBehavior, True); arg++;
 
     Widget menu = verify(XmCreatePulldownMenu(parent, name, args, arg));
-    addItems(parent, menu, items);
+    MMaddItems(menu, items);
     auto_raise(XtParent(menu));
 
     return menu;
@@ -426,7 +425,7 @@ Widget MMcreatePopupMenu(Widget parent, String name, MMDesc items[])
 
     arg = 0;
     Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
-    addItems(parent, menu, items);
+    MMaddItems(menu, items);
 
     // Don't auto-raise popup menus.
     // 1. There are conflicts with nested popups.
@@ -463,7 +462,7 @@ static Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[])
 #endif
     
     Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
-    addItems(parent, menu, items);
+    MMaddItems(menu, items);
 
     // Don't auto-raise popup menus.
     // 1. There are conflicts with nested popups.
@@ -491,7 +490,7 @@ Widget MMcreateMenuBar(Widget parent, String name, MMDesc items[])
 
     arg = 0;
     Widget bar = verify(XmCreateMenuBar(parent, name, args, arg));
-    addItems(parent, bar, items);
+    MMaddItems(bar, items);
     XtManageChild(bar);
 
     return bar;
@@ -505,7 +504,7 @@ Widget MMcreateWorkArea(Widget parent, String name, MMDesc items[])
 
     arg = 0;
     Widget bar = verify(XmCreateWorkArea(parent, name, args, arg));
-    addItems(parent, bar, items, true);
+    MMaddItems(bar, items, true);
     XtManageChild(bar);
 
     return bar;
@@ -519,7 +518,7 @@ Widget MMcreatePanel(Widget parent, String name, MMDesc items[])
 
     arg = 0;
     Widget panel = verify(XmCreateWorkArea(parent, name, args, arg));
-    addItems(parent, panel, items);
+    MMaddItems(panel, items);
     XtManageChild(panel);
 
     return panel;
@@ -536,7 +535,7 @@ Widget MMcreateRadioPanel(Widget parent, String name, MMDesc items[])
     XtSetArg(args[arg], XmNentryClass, xmToggleButtonWidgetClass); arg++;
     XtSetArg(args[arg], XmNradioBehavior, True); arg++;
     Widget panel = verify(XmCreateRowColumn(parent, name, args, arg));
-    addItems(parent, panel, items);
+    MMaddItems(panel, items);
     XtManageChild(panel);
 
     return panel;
@@ -550,7 +549,7 @@ Widget MMcreateButtonPanel(Widget parent, String name, MMDesc items[])
 
     arg = 0;
     Widget panel = verify(XmCreateRowColumn(parent, name, args, arg));
-    addItems(parent, panel, items);
+    MMaddItems(panel, items);
     XtManageChild(panel);
 
     return panel;
