@@ -1972,9 +1972,10 @@ Sometimes, you may require to debug programs with root privileges, but
 without actually logging in as root.  This is usually done by
 installing the debugger \fIsetuid root\fR, that is, having the
 debugger run with root privileges.  For security reasons, you cannot
-install \s-2@DDD@\s+2 as a setuid program.  Instead, you should invoke
-\s-2@DDD@\s+2 such that a \fIsetuid\fR copy of the inferior debugger
-is used.
+install \s-2@DDD@\s+2 as a setuid program; \s-2@DDD@\s+2 invokes shell
+commands and even shell scripts, such that all known problems of
+setuid shell scripts apply.  Instead, you should invoke \s-2@DDD@\s+2
+such that a \fIsetuid\fR copy of the inferior debugger is used.
 .PP
 Here is an example.  Have a \fIsetuid root\fR copy of \s-2GDB\s+2
 installed as `\fBrootgdb\fR'.  Then invoke
