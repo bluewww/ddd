@@ -48,6 +48,8 @@ char BreakPoint_rcsid[] =
 #include "string-fun.h"
 #include "comm-manag.h"
 #include "ddd.h"
+#include "dbx-lookup.h"
+#include "GDBAgent.h"
 
 regex RXnl_int ("\n[1-9]", true);
 regex RXname_colon_int_nl ("[^ ]+:[0-9]+\n", true);

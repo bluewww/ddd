@@ -511,7 +511,6 @@ AGENT_OBJECTS = \
 # context-sensitive help...
 XSTUFF_OBJECTS = \
 	converters.o \
-	database.o   \
 	events.o     \
 	findParent.o \
 	fileSBF.o    \
@@ -610,15 +609,43 @@ NORA_OBJECTS = \
 # The DDD application itself.  `ddd.C' is the main program, `SourceView.C'
 # is the source window, `DataDisp.C' is the data window.
 DDD_OBJECTS = \
+	args.o       \
+	buttons.o    \
+	cmdtty.o     \
 	configinfo.o \
 	comm-manag.o \
+	commandQ.o   \
+	complete.o   \
+	ctrl.o       \
+	dbx-lookup.o \
 	disp-read.o  \
+	editing.o    \
+	exectty.o    \
+	exit.o       \
+	file.o       \
 	filetype.o   \
+	gdbinit.o    \
+	graph.o      \
+	history.o    \
 	hostname.o   \
+	logo.o       \
 	mydialogs.o  \
+	obscure.o    \
+	options.o    \
+	post.o       \
+	print.o      \
+	question.o   \
+	resources.o  \
+	sashes.o     \
+	shell.o      \
+	show.o       \
+	source.o     \
+	status.o     \
 	string-fun.o \
 	strings.o    \
 	value-read.o \
+	windows.o    \
+	wm.o         \
 	xconfig.o    \
 	ArgField.o   \
 	BreakPoint.o \

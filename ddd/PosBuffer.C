@@ -40,6 +40,7 @@ char PosBuffer_rcsid[] =
 #include "comm-manag.h"
 #include "string-fun.h"
 #include "ddd.h"
+#include "GDBAgent.h"
 
 // includes von Nora-Zeugs
 #include "assert.h"

@@ -45,7 +45,8 @@ char value_read_rcsid[] =
 #include "assert.h"
 #include "comm-manag.h"
 #include "cook.h"
-
+#include "ddd.h"
+#include "GDBAgent.h"
 
 // ***************************************************************************
 DispValueType determine_type (string value)

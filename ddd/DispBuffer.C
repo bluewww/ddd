@@ -42,6 +42,7 @@ char DispBuffer_rcsid[] =
 // includes eigener Sachen
 #include "disp-read.h"
 #include "comm-manag.h"
+#include "ddd.h"
 
 // includes von Nora-Zeugs
 #include "assert.h"

@@ -28,7 +28,9 @@
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
 #ifdef __GNUG__
+#pragma implementation
 #pragma implementation "Assoc.h"
+#pragma implementation "Map.h"
 #endif
 
 char SourceView_rcsid[] =
@@ -81,6 +83,7 @@ char SourceView_rcsid[] =
 #include "cook.h"
 
 // Motif stuff
+#include <Xm/Xm.h>
 #include <Xm/Form.h>
 #include <Xm/Label.h>
 #include <Xm/MessageB.h>
@@ -91,6 +94,7 @@ char SourceView_rcsid[] =
 #include <Xm/SelectioB.h>
 #include <Xm/List.h>
 #include <Xm/PanedW.h>
+#include <X11/StringDefs.h>
 
 // System stuff
 #include <sys/types.h>
@@ -109,6 +113,13 @@ char SourceView_rcsid[] =
 #include "version.h"
 #include "mydialogs.h"
 #include "verify.h"
+#include "commandQ.h"
+#include "post.h"
+#include "shell.h"
+#include "windows.h"
+#include "dbx-lookup.h"
+#include "question.h"
+#include "status.h"
 
 // Glyphs
 #include "arrow.xbm"
@@ -1178,7 +1189,6 @@ void SourceView::read_file (string file_name,
     refresh_bp_disp();
 
     XtManageChild(source_text_w);
-    XtManageChild(arg_cmd_w);
 
     ostrstream os;
     os << "File " << quote(file_name) << " ";

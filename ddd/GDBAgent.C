@@ -40,6 +40,7 @@ char GDBAgent_rcsid[] =
 #include "GDBAgent.h"
 #include "cook.h"
 #include "ddd.h"
+#include "post.h"
 
 #include <string.h> // strdup
 #include <stdio.h>  // tmpnam
@@ -61,47 +62,6 @@ DebuggerType debugger_type(const string& type)
     exit(1);
 }
 
-
-// ***************************************************************************
-// Create appropriate debugger call
-string build_gdb_call (DebuggerType debugger_type,
-		       const string& debugger_name,
-		       const string& init_file,
-		       int argc, char *argv[],
-		       string myArguments)
-{
-    string gdb_call = debugger_name;
-
-    switch(debugger_type)
-    {
-    case GDB:
-	gdb_call += " -q -fullname";
-	if (init_file != "")
-	    gdb_call += " -x " + init_file;
-	break;
-
-    case DBX:
-	if (init_file != "")
-	{
-	    // When we specify a DBX init file, all default init
-	    // files are overridden.  Specify them explicitly.
-	    gdb_call += " -s .dbxrc -s $HOME/.dbxrc";
-	    gdb_call += " -s .dbxinit -s $HOME/.dbxinit";
-	    gdb_call += " -s " + init_file;
-	}
-	break;
-    }
-
-    if (myArguments != "")
-	gdb_call += " " + myArguments;
-
-    for (int i = 1; i < argc; i++) {
-	string arg = argv[i];
-	gdb_call += " " + sh_quote(arg);
-    }
-
-    return gdb_call;
-}
 
 // ***************************************************************************
 GDBAgent::GDBAgent (XtAppContext app_context,

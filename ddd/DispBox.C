@@ -43,6 +43,7 @@ char DispBox_rcsid[] =
 #include "bool.h"
 #include "cook.h"
 #include "ddd.h"
+#include "status.h"
 
 
 //-----------------------------------------------------------------------------

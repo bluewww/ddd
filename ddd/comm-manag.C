@@ -48,10 +48,16 @@ char comm_manager_rcsid[] =
 
 #include "bool.h"
 #include "ddd.h"
+#include "dbx-lookup.h"
 #include "disp-read.h"
 #include "DispBuffer.h"
 #include "PosBuffer.h"
 #include "string-fun.h"
+#include "post.h"
+#include "cmdtty.h"
+#include "history.h"
+#include "SourceView.h"
+#include "DataDisp.h"
 
 #include <ctype.h>
 

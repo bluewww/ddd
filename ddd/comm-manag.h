@@ -41,21 +41,13 @@
 #pragma interface
 #endif
 
-// includes von Nora-Zeugs
 #include "strclass.h"
+#include <X11/Intrinsic.h>
 
-// includes eigener Sachen
-#include "GDBAgent.h"
-#include "DataDisp.h"
-#include "SourceView.h"
 
 //-----------------------------------------------------------------------------
 // Deklarationen
 //-----------------------------------------------------------------------------
-
-extern GDBAgent*   gdb;
-extern DataDisp*   data_disp;
-extern SourceView* source_view;
 
 //-----------------------------------------------------------------------------
 // Ruft gdb->start mit den noetigen Parametern.

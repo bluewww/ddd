@@ -58,6 +58,8 @@ char DataDisp_rcsid[] =
 #include "CompositeB.h"
 #include "TagBox.h"
 #include "cook.h"
+#include "post.h"
+#include "question.h"
 
 // includes von Motif-Zeugs
 #include <Xm/MessageB.h>
@@ -77,6 +79,7 @@ char DataDisp_rcsid[] =
 #include "ddd.h"
 #include "ArgField.h"
 #include "verify.h"
+#include "windows.h"
 
 // sonstige includes
 #include <iostream.h>
