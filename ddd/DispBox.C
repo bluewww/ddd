@@ -563,7 +563,11 @@ Box *DispBox::create_value_box (const DispValue *dv,
 				int member_name_width)
 {
     Box *vbox = 0;
-    if (dv == 0 || !dv->enabled())
+    if (dv == 0)
+    {
+	vbox = eval("none");
+    }
+    else if (!dv->enabled())
     {
 	vbox = eval("disabled");
     }
