@@ -1,0 +1,22 @@
+# This file is used by both libiberty/configure.in and xiberty/configure.in.
+
+case "${xhost-${host}}" in
+  rs6000-ibm-aix3.1 | rs6000-ibm-aix)
+                        frag=mh-aix
+			files=${xsrcdir}alloca-botch.h ;;
+  rs6000-ibm-aix*)      files=${xsrcdir}alloca-botch.h ;;
+  m68k-apollo-bsd*)	frag=mh-a68bsd ;;
+  m68k-apollo-sysv*)	frag=mh-apollo68 ;;
+  i[34]86-ncr-sysv4*)	frag=mh-ncr3000 ;;
+  *-*-lynxos*)		frag=mh-lynxos ;;
+  *-*-dgux*)		frag=mh-sysv ;;
+  hppa*-hp-bsd*)	frag=mh-hpbsd ;;
+  *-*-hpux*)		frag=mh-hpux ;;
+  *-*-hiux*)		frag=mh-hpux ;;
+  *-*-irix4*)		frag=mh-irix4 ;;
+  *-*-irix*)		frag=mh-sysv ;;
+  *-*-m88kbcs*)		frag=mh-sysv ;;
+  *-*-solaris2*)	frag=mh-sysv4 ;;
+  *-*-sysv4*)		frag=mh-sysv4 ;;
+  *-*-sysv*)		frag=mh-sysv ;;
+esac
