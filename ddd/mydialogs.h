@@ -57,14 +57,20 @@ void getDisplayNumbers(Widget selectionList, IntArray& arr);
 // label_list : Labels, using the format disp_nr ": " disp_name.
 // selected   : Decides whether labels are to be selected
 // list_length: Length of label_list[] and selected[]
+// notify     : Whether callbacks should be invoked
 //
 void setLabelList (Widget  selectionList,
 		   string  label_list[],
 		   bool    selected[],
-		   int     list_length);
+		   int     list_length,
+		   bool    notify = true);
 
 // The default list charset
 #define LIST_CHARSET "tt"
+
+
+// Select POS in LIST and make it visible
+void ListSetAndSelectPos(Widget list, int pos);
 
 #endif // _DDD_mydialogs_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

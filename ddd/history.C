@@ -109,24 +109,7 @@ void set_line_from_history()
     XmTextSetInsertionPosition(gdb_w, XmTextGetLastPosition(gdb_w));
 
     if (gdb_history_w)
-    {
-	int pos = gdb_current_history + 1;
-
-	int top_item      = 0;
-	int visible_items = 0;
-	XtVaGetValues(gdb_commands_w,
-		      XmNtopItemPosition, &top_item,
-		      XmNvisibleItemCount, &visible_items,
-		      NULL);
-
-	XmListSelectPos(gdb_commands_w, pos, False);
-	if (pos == 1)
-	    XmListSetPos(gdb_commands_w, pos);
-	else if (pos - 1 < top_item)
-	    XmListSetPos(gdb_commands_w, pos - 1);
-	else if (pos + 1 >= top_item + visible_items)
-	    XmListSetBottomPos(gdb_commands_w, pos + 1);
-    }
+	ListSetAndSelectPos(gdb_commands_w, gdb_current_history + 1);
 
     private_gdb_history = false;
 }

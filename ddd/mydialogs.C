@@ -93,8 +93,9 @@ Widget createDisplaySelectionList(Widget parent, String name,
 //
 void setLabelList (Widget  selectionList,
 		   string  label_list[],
-		   bool selected[],
-		   int     list_length)
+		   bool    selected[],
+		   int     list_length,
+		   bool    notify)
 {
     XmStringTable xmlabel_list = makeXmStringTable(label_list, list_length);
 
@@ -107,11 +108,11 @@ void setLabelList (Widget  selectionList,
     XtVaSetValues (selectionList,
 		   XmNselectionPolicy, XmMULTIPLE_SELECT,
 		   NULL);
-    for (int i = 0; i < list_length; i++) {
-	if (selected[i] == true) {
-	    XmListSelectItem (selectionList, xmlabel_list[i], true);
-	}
-    }
+
+    for (int i = 0; i < list_length; i++) 
+	if (selected[i] == true) 
+	    XmListSelectItem (selectionList, xmlabel_list[i], Boolean(notify));
+
     XtVaSetValues (selectionList,
 		   XmNselectionPolicy, XmEXTENDED_SELECT,
 		   NULL);
@@ -169,4 +170,32 @@ static void freeXmStringTable (XmStringTable xmlist, int list_length)
 	XmStringFree (*xmlist);
 	xmlist++;
     }
+}
+
+
+// ***************************************************************************
+// Select POS in LIST and make it visible
+// ***************************************************************************
+
+void ListSetAndSelectPos(Widget list, int pos)
+{
+    int top_item      = 0;
+    int visible_items = 0;
+    int items         = 0;
+    XtVaGetValues(list,
+		  XmNtopItemPosition, &top_item,
+		  XmNvisibleItemCount, &visible_items,
+		  XmNitemCount, &items,
+		  NULL);
+
+    XmListSelectPos(list, pos, False);
+
+    if (pos == 1)
+	XmListSetPos(list, pos);
+    else if (pos == 0 || pos >= items)
+	XmListSetBottomPos(list, 0);
+    else if (pos - 1 < top_item)
+	XmListSetPos(list, pos - 1);
+    else if (pos + 1 >= top_item + visible_items)
+	XmListSetBottomPos(list, pos + 1);
 }

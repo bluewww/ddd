@@ -67,6 +67,7 @@ char HelpCB_rcsid[] =
 #include "IntArray.h"
 #include "wm.h"
 #include "post.h"
+#include "mydialogs.h"
 
 // The help system supports three resources:
 // helpString          - displayed in context-sensitive help.
@@ -553,22 +554,7 @@ static void HighlightSectionCB(Widget w, XtPointer client_data,
 
     int pos = XmListItemPos(list, item.xmstring());
     if (pos > 0)
-    {
-	int top_item      = 0;
-	int visible_items = 0;
-	XtVaGetValues(list,
-		      XmNtopItemPosition, &top_item,
-		      XmNvisibleItemCount, &visible_items,
-		      NULL);
-
-	XmListSelectPos(list, pos, False);
-	if (pos == 1)
-	    XmListSetPos(list, pos);
-	else if (pos - 1 < top_item)
-	    XmListSetPos(list, pos - 1);
-	else if (pos + 1 >= top_item + visible_items)
-	    XmListSetBottomPos(list, pos + 1);
-    }
+	ListSetAndSelectPos(list, pos);
 }
 
 // Note: this assumes `groff -Tascii -man' format.
