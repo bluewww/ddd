@@ -949,8 +949,18 @@ void DataDisp::no_displaysHP (void*, void* , void* call_data)
 		   (!empty && gdb->isReadyWithPrompt()));
 }
 
+
+//-----------------------------------------------------------------------------
+// Unselect nodes when selection is lost
+//-----------------------------------------------------------------------------
+
+bool DataDisp::lose_selection = true;
+
 void DataDisp::SelectionLostCB(Widget, XtPointer, XtPointer)
 {
+    if (!lose_selection)
+	return;
+
     // Selection lost - clear all highlights
     for (GraphNode *gn = disp_graph->firstNode();
 	 gn != 0; gn = disp_graph->nextNode(gn))
@@ -1383,17 +1393,24 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
     // Set selection
     string cmd = selection_as_commands();
+
+    // Setting the string causes the selection to be lost.  By setting
+    // LOSE_SELECTION, we make sure the associated callbacks return
+    // immediately.
+    lose_selection = false;
     XmTextSetString(graph_selection_w, cmd);
+    lose_selection = true;
+
     Time tm = XtLastTimestampProcessed(XtDisplay(graph_selection_w));
 
     if (cmd == "")
     {
-	// No selection
+	// Nothing selected - clear selection explicitly
 	XmTextClearSelection(graph_selection_w, tm);
     }
     else
     {
-	// Give it to the selection
+	// Own the selection
 	XmTextSetSelection(graph_selection_w, 
 			   0, XmTextGetLastPosition(graph_selection_w), tm);
     }

@@ -148,6 +148,7 @@ class DataDisp {
     // Helpers
     //-----------------------------------------------------------------------
 
+    static bool lose_selection;
     static void SelectionLostCB(Widget, XtPointer, XtPointer);
 
     static void set_args(BoxPoint p = BoxPoint(),
