@@ -78,6 +78,9 @@ static const char *usage =
 // a DDD command in LOGNAME, issue the appropriate answer.
 void logplayer(const string& logname)
 {
+    // All this is really ugly.  Works well as a hack for debugging DDD,
+    // but not really worth anything else.
+
     static ifstream log(logname);
     if (log.bad())
     {
@@ -94,10 +97,11 @@ void logplayer(const string& logname)
     static bool scanning = false;
     static bool out_seen = false;
     static bool wrapped = false;
-    static streampos scan_start;
+    static streampos scan_start, last_input;
     static string expecting;
     static int command_no = 0;
     static int command_no_start = 0;
+    static bool ignore_next_input = false;
 
     signal(SIGINT, (SignalProc)intr);
     static int sig = 0;
@@ -109,17 +113,19 @@ void logplayer(const string& logname)
 	scanning = false;
 	wrapped  = false;
 	log.clear();
-	log.seekg(scan_start);
+	log.seekg(last_input);
 	command_no = command_no_start;
 	out = "";
 	ddd_line = "";
+	ignore_next_input = true;
     }
 
     for (;;)
     {
+	streampos current = log.tellg();
 	if (!scanning)
 	{
-	    scan_start = log.tellg();
+	    scan_start = current;
 	    command_no_start = command_no;
 	}
 
@@ -176,34 +182,53 @@ void logplayer(const string& logname)
 		    cout << setw(4) << command_no << " " << in << "\n";
 
 		    if (c == '/' || pattern != "")
-			scanning = false; // Stop here
+		    {
+			// Stop here
+			scanning = false;
+			scan_start = current;
+			command_no_start = command_no - 1;
+		    }
 		}
 	    }
 
 	    if (!scanning)
 	    {
+		last_input = scan_start;
+
 		// Read command from DDD
 		cout << last_prompt;
 		cout.flush();
-
-		cin.getline(buffer, sizeof buffer);
-		ddd_line = buffer;
-
-		if (cin.fail() || cin.eof() || ddd_line.contains('q', 0))
+		char *s = fgets(buffer, sizeof buffer, stdin);
+		if (ignore_next_input)
+		{
+		    s = fgets(buffer, sizeof buffer, stdin);
+		    ignore_next_input = false;
+		}
+		if (s == NULL)
 		    exit(EXIT_SUCCESS);
 
-		cin.clear();
+		ddd_line = buffer;
+		if (ddd_line.contains('\n', -1))
+		    ddd_line = ddd_line.before('\n', -1);
 
-		if (ddd_line == ".")
-		    cout << "Expecting " 
-			 << command_no << " " << quote(in) << "\n";
-		else if (ddd_line == "!")
-		    ddd_line = in;
-		else if (ddd_line == "?")
-		    cout << usage;
+		if (ddd_line.contains('q', 0))
+		    exit(EXIT_SUCCESS);
 	    }
 
-	    if (ddd_line == in)
+	    if (!scanning && ddd_line == ".")
+	    {
+		cout << "Expecting " 
+		     << command_no << " " << quote(in) << "\n";
+		log.seekg(scan_start);
+		command_no = command_no_start;
+	    }
+	    else if (!scanning && ddd_line == "?")
+	    {
+		cout << usage;
+		log.seekg(scan_start);
+		command_no = command_no_start;
+	    }
+	    else if (ddd_line == in || ddd_line == "!" || ddd_line == "")
 	    {
 		// Okay, got it
 		scanning = false;
