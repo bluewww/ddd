@@ -271,6 +271,7 @@ if $diff; then
       echo
       echo "7. Rename the \`$file_release' directory to \`$dist_release':"
       echo
+      echo "   % rm $dist_release"
       echo "   % mv $file_release $dist_release"
       echo
       echo
