@@ -411,18 +411,19 @@ void show_license()
 
 void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
 {
+    string msg = "Invoking " DDD_NAME " license browser...";
+    set_status(msg);
+
     ostrstream license;
-    int ret;
-    {
-	StatusDelay delay("Invoking " DDD_NAME " license browser");
-	ret = ddd_license(license);
-    }
+    int ret = ddd_license(license);
     string s(license);
     TextHelpCB(w, XtPointer((char *)s), call_data);
 
     if (ret != 0 || !s.contains("GNU"))
 	post_error("The license could not be uncompressed.", 
 		   "no_license_error", w);
+
+    set_status(msg + "done.");
 }
 
 
@@ -451,12 +452,11 @@ void show_manual()
 
 void DDDManualCB(Widget w, XtPointer, XtPointer)
 {
+    string msg = "Invoking " DDD_NAME " manual browser...";
+    set_status(msg);
+    
     ostrstream man;
-    int ret;
-    {
-	StatusDelay delay("Invoking " DDD_NAME " manual browser");
-	ret = ddd_man(man);
-    }
+    int ret = ddd_man(man);
     string s(man);
 
     MString title(DDD_NAME " Manual");
@@ -465,10 +465,14 @@ void DDDManualCB(Widget w, XtPointer, XtPointer)
     if (ret != 0 || !s.contains(DDD_NAME))
 	post_error("The manual could not be uncompressed.", 
 		   "no_ddd_manual_error", w);
+
+    set_status(msg + "done.");
 }
 
 void GDBManualCB(Widget w, XtPointer, XtPointer)
 {
+    string msg = "Invoking " + gdb->title() + " manual browser...";
+    set_status(msg);
 
     string cmd = "man " + downcase(gdb->title());
 
@@ -483,18 +487,14 @@ void GDBManualCB(Widget w, XtPointer, XtPointer)
     if (fp != 0)
     {
 	ostrstream man;
-
+	int c;
+	int i = 0;
+	while ((c = getc(fp)) != EOF)
 	{
-	    StatusDelay delay("Invoking " + gdb->title() + " manual browser");
-	    int c;
-	    int i = 0;
-	    while ((c = getc(fp)) != EOF)
-	    {
-		if (i % 100 == 0)
-		    process_pending_events();
-		man << char(c);
-		i++;
-	    }
+	    if (i % 100 == 0)
+		process_pending_events();
+	    man << char(c);
+	    i++;
 	}
 	
 	string s(man);
@@ -505,4 +505,6 @@ void GDBManualCB(Widget w, XtPointer, XtPointer)
 
 	pclose(fp);
     }
+
+    set_status(msg + "done.");
 }
