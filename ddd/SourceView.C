@@ -3887,7 +3887,7 @@ void SourceView::lookup(string s, bool echo, bool verbose, bool do_prompt)
 	    {
 	    case GDB:
 	    {
-		Command c("info line " + current_source_name() + ":" + 
+		Command c("list " + current_source_name() + ":" + 
 			  itostring(line));
 		c.verbose = verbose;
 		c.prompt  = do_prompt;
@@ -3896,7 +3896,7 @@ void SourceView::lookup(string s, bool echo, bool verbose, bool do_prompt)
 		do_prompt = false;
 		break;
 	    }
-		
+
 	    case JDB:
 		show_position(current_source_name()
 			      + ":" + itostring(line));
@@ -3946,7 +3946,7 @@ void SourceView::lookup(string s, bool echo, bool verbose, bool do_prompt)
 	// File:line given
 	if (gdb->type() == GDB)
 	{
-	    Command c("info line " + s);
+	    Command c("list " + s);
 	    c.verbose = verbose;
 	    c.prompt  = do_prompt;
 	    c.echo    = echo;
@@ -3967,7 +3967,7 @@ void SourceView::lookup(string s, bool echo, bool verbose, bool do_prompt)
 		s = "*" + s;
 	    if (s[0] != '\'' && s[0] != '*')
 		s = string('\'') + s + '\'';
-	    Command c("info line " + s);
+	    Command c("list " + s);
 	    c.verbose = verbose;
 	    c.prompt  = do_prompt;
 	    c.echo    = echo;
@@ -5334,7 +5334,8 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     set_sensitive(info->disable, can_disable);
     set_sensitive(info->temp,    can_maketemp);
 
-    set_sensitive(info->ignore,    gdb->has_ignore_command());
+    set_sensitive(info->ignore,           gdb->has_ignore_command());
+    set_sensitive(XtParent(info->ignore), gdb->has_ignore_command());
     set_sensitive(info->condition, true);
 
     bool can_record = gdb->type() == GDB && !gdb->recording();

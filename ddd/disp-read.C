@@ -393,7 +393,7 @@ bool is_lookup_cmd (const string& cmd)
 bool is_list_cmd (const string& cmd)
 {
 #if RUNTIME_REGEX
-    static regex rxlist_cmd("[ \t]*(l|li|lis|list)[ \t]+.*");
+    static regex rxlist_cmd("[ \t]*(l|li|lis|list)([ \t]+.*)?");
 #endif
 
     return cmd.matches(rxlist_cmd);
@@ -435,11 +435,22 @@ bool is_quit_cmd (const string& cmd)
     return cmd.contains('q', 0); // `quit', `q', or whatever
 }
 
+static bool starts_with(const string& cmd, const string& prefix)
+{
+    if (prefix == "")
+	return false;
+
+    return cmd.contains(prefix, 0);
+}
+
 // True if CMD is some other builtin command
 bool is_other_builtin_cmd(const string& cmd, GDBAgent *gdb)
 {
-    return cmd.contains(gdb->print_command("", true), 0) ||
-	cmd.contains(gdb->print_command("", false), 0);
+    return starts_with(cmd, gdb->enable_command("")) ||
+	starts_with(cmd, gdb->disable_command("")) ||
+	starts_with(cmd, gdb->delete_command("")) ||
+	starts_with(cmd, gdb->print_command("", true)) ||
+	starts_with(cmd, gdb->print_command("", false));
 }
 
 

@@ -99,7 +99,6 @@ public:
     string      set_frame_func;   // Argument: new function
     string      graph_cmd;	  // Graph command
     string      lookup_arg;	  // Argument when looking up sources
-    bool        lookup_verbose;	  // Verbosity when looking up sources
 
     string      user_answer;	  // Buffer for the complete answer
     OQCProc     user_callback;	  // User callback
@@ -141,7 +140,6 @@ public:
 	  set_frame_func(""),
 	  graph_cmd(""),
 	  lookup_arg(""),
-	  lookup_verbose(false),
 
 	  user_answer(""),
 	  user_callback(0),
@@ -175,7 +173,6 @@ private:
 	  set_frame_func(""),
 	  graph_cmd(""),
 	  lookup_arg(""),
-	  lookup_verbose(false),
 
 	  user_answer(""),
 	  user_callback(0),
@@ -611,6 +608,8 @@ void send_gdb_command(string cmd, Widget origin,
 		      OQCProc callback, void *data,
 		      bool echo, bool verbose, bool prompt, bool check)
 {
+    string echoed_cmd = cmd;
+
     // Pass control commands unprocessed to GDB.
     if (cmd.length() == 1 && iscntrl(cmd[0]))
     {
@@ -878,18 +877,39 @@ void send_gdb_command(string cmd, Widget origin,
     }
     else if (is_list_cmd(cmd))
     {
-	// As a side effect, lookup argument in the source window
-	cmd_data->lookup_arg     = cmd.after(rxwhite);
-	cmd_data->lookup_verbose = false;
-
-	if (gdb->type() == GDB && have_source_window())
+	string arg = cmd.after(rxwhite);
+	strip_space(arg);
+	if (arg == "" || 
+	    arg.contains('-', 0) || 
+	    arg.contains('+', 0) || 
+	    arg.matches(rxlist_range))
 	{
-	    // We have a source window, thus there is no need to list
-	    // the argument in the debugger console.  Rely on the
-	    // `info line' command used by GDB lookup instead.
-	    cmd = gdb->nop_command(cmd);
-	    cmd_data->lookup_verbose = verbose;
-	    check = verbose = false;
+	    // Ordinary `list', `list +', `list -', or `list N, M'.
+	    // Nothing special.
+	}
+	else
+	{
+	    // `list ARG'
+	    if (have_source_window())
+	    {
+		// Lookup ARG in source window, too
+		switch (gdb->type())
+		{
+		case GDB:
+		    // No need to list lines in the debugger console;
+		    // translate `list' to `info line'.
+		    cmd = "info line " + arg;
+		    break;
+
+		case DBX:
+		case XDB:
+		case JDB:
+		    // Use `list ARG' as directed, but as a side effect,
+		    // lookup ARG in source window, too.
+		    cmd_data->lookup_arg = arg;
+		    break;
+		}
+	    }
 	}
 
 	plus_cmd_data->refresh_breakpoints = false;
@@ -1039,9 +1059,8 @@ void send_gdb_command(string cmd, Widget origin,
 
     if (echo && verbose)
     {
-	string c = cmd;
-	strip_auto_command_prefix(c);
-	gdb_out(c + "\n");
+	strip_auto_command_prefix(echoed_cmd);
+	gdb_out(echoed_cmd + "\n");
 	gdb_input_at_prompt = true;
     }
 
@@ -1535,8 +1554,7 @@ void user_cmdOAC(void *data)
     if (cmd_data->lookup_arg != "")
     {
 	// As a side effect of `list X', lookup X in the source
-	source_view->lookup(cmd_data->lookup_arg, false, 
-			    cmd_data->lookup_verbose, do_prompt);
+	source_view->lookup(cmd_data->lookup_arg, false, false, do_prompt);
 	do_prompt = false;	// `lookup' already did it for us
     }
 

@@ -67,9 +67,6 @@ string dbx_lookup(const string& func_name, bool silent)
     switch (gdb->type())
     {
     case GDB:
-	reply = gdb_question("info line " + func_name, 0, true);
-	break;
-
     case DBX:
     case JDB:
 	reply = gdb_question("list " + func_name, 0, true);
