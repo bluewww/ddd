@@ -103,6 +103,12 @@ Installation
 
 - A compilation problem in `PannedGE.C' with some GCC variants has been fixed.
 
+- DDD now compiles cleanly even with `gcc -Wwrite-strings'.  This
+  avoids several warnings/errors on C++ compilers other than GCC. (1)
+
+- The `--configuration' option now gives more information about the
+  compiler being used to compile DDD. (1)
+
 - ddd.texi rules in the Makefile have been fixed. (4)
 
 - The release includes the `libiberty' and `readline' packages as of GDB 5.0.
