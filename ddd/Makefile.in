@@ -949,6 +949,7 @@ PICS = \
 	$(picdir)/ddd-locals.ps	        \
 	$(picdir)/ddd-open.ps           \
 	$(picdir)/ddd-open-session.ps   \
+	$(picdir)/ddd-plots.ps          \
 	$(picdir)/ddd-print-graph.ps    \
 	$(picdir)/ddd-print-output.ps   \
 	$(picdir)/ddd-print-popup.ps    \
@@ -1807,6 +1808,10 @@ $(picdir)/ddd-clusters.ps: \
 	$(picdir)/clustered.ps \
 	$(picdir)/unclustered.ps
 	cd $(picdir); $(FIG2PS) ddd-clusters.fig > ddd-clusters.ps
+
+$(picdir)/ddd-plots.ps: \
+	$(picdir)/ddd-plots.fig $(picdir)/ddd-plots.xpm
+	cd $(picdir); $(FIG2PS) ddd-plots.fig > ddd-plots.ps
 
 
 # The logo comes in XPM source

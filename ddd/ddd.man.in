@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-09\-19" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-10\-05" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -1175,7 +1175,7 @@ session, using `\fBFile\(->Save Session As\fR'.
 .SH "EXAMINING DATA"
 .\" ---------------
 .TP
-\s-1@DDD@\s+1 provides four means to examine data.
+\s-1@DDD@\s+1 provides several means to examine data.
 .TP 10
 .B "Value Hints"
 The quickest way to examine variables is to move the pointer on an
@@ -1193,6 +1193,11 @@ If you want to examine complex data structures, you can display them
 graphically in the data display.  Displays remain effective until you
 delete them; they are updated each time the program stops.  This is
 useful for large dynamic structures.
+.TP 10
+.B "Plotting Values"
+If you want to examine arrays of numeric values, you can plot them
+graphically in a separate plot window.  The plot is updated each time
+the program stops.  This is useful for large numeric arrays.
 .TP 10
 .B "Memory Dumps"
 This feature, available using \s-1GDB\s+1 only, allows you to dump
@@ -1915,7 +1920,7 @@ Name\fR' field.  Click on the `\fBPrint\fR' button to create the file.
 When the graph is printed in a file, two formats are available:
 .br
 .IP \(bu 2
-\fBPostScript\fR - suitable for enclosing it in another document;
+\fBPostScript\fR - suitable for enclosing the graph in another document;
 .br
 .IP \(bu 2
 \fB\s-1FIG\s+1\fR - suitable for editing, using the \s-1XFIG\s+1 graphic
@@ -1925,6 +1930,216 @@ using the \s-1TRANSFIG\s+1 or \s-1FIG2DEV\s+1 package.
 .PP
 .PSPIC @srcdir@/PICS/ddd-print-output.ps 15.3cm
 .PP
+Please note the following \fIcaveats\fR related to printing graphs:
+.IP \(bu 2
+If any displays were selected when invoking the `\fBPrint\fR' dialog,
+the option `\fBSelected Only\fR' is set.  This makes \s-1@DDD@\s+1
+print only the selected displays.
+.IP \(bu 2
+The `\fBColor\fR', `\fBOrientation\fR', and `\fBPaper Size\fR' options 
+are meaningful for PostScript only.
+.PP
+.\"
+.\" ---------------
+.SH "PLOTTING DATA"
+.\" ---------------
+.\"
+If you have huge amounts of numerical data to examine, a picture often
+says more than a thousand numbers.  Therefore, \s-1@DDD@\s+1 allows
+you to draw numerical values in nice 2-D and 3-D plots.
+.\"
+.\"
+.SS "Plotting Arrays"
+.\"
+Basically, \s-1@DDD@\s+1 can plot two types of numerical values:
+.\"
+.IP \(bu 2
+One-dimensional arrays.  These are drawn in a 2-D \fIX\fR/\fIY\fR
+space, where \fIX\fR denotes the array index, and \fIY\fR the element
+value.
+.IP \(bu 2
+Two-dimensional arrays.  These are drawn in a 3-D
+\fIX\fR/\fIY\fR/\fIZ\fR space, where \fIX\fR and \fIY\fR denote the
+array indexes, and \fIZ\fR the element value.
+.PP
+To plot an array, select it by clicking \fImouse button 1\fR on an
+occurrence.  The array name is copied to the argument field.  By
+clicking the `\fBPlot\fR' button, a new display is created in the data
+window, followed by a new top-level window containing the value plot.
+.PP
+.PSPIC @srcdir@/PICS/ddd-plots.ps 15.3cm
+.PP
+Each time the value changes during program execution, the plot is
+updated to reflect the current values.  The plot window remains active
+until you close it (via `\fBFile\(->Close\fR') or until the associated
+display is deleted.
+.\"
+.\"
+.SS "Changing the Plot Appearance"
+.\"
+The actual drawing is not done by \s-1@DDD@\s+1 itself.  Instead,
+\s-1@DDD@\s+1 relies on an external Gnuplot program to create the
+drawing.  \s-1@DDD@\s+1 adds a menu bar to the Gnuplot plot window
+that lets you influence the appearance of the plot:
+.IP \(bu 2
+The `\fBView\fR' menu toggles optional parts of the plot, such as
+border lines or a background grid.
+.br
+.IP \(bu 2
+The `\fBPlot\fR' menu changes the plotting style.  The `\fB3-D
+Lines\fR' option uis useful for plotting two-dimensional arrays.
+.br
+.IP \(bu 2
+The `\fBScale\fR' menu allows you to enable logarithmic scaling and to 
+enable or disable the scale tics.
+.br
+.IP \(bu 2
+The `\fBContour\fR' menu adds contour lines to 3-D plots.
+.PP
+You can also resize the plot window as desired.
+.PP
+In a 3-D plot, you can use the scroll bars to change your view
+position.  The horizontal scroll bar rotates the plot around the
+\fIZ\fR axis, that is, to the left and right.  The vertical scroll bar
+rotates the plot around the \fIY\fR axis, that is, up and down.
+.\"
+.\"
+.SS "Plotting Scalars and Composites"
+.\"
+Besides plotting arrays, \s-1@DDD@\s+1 also allows you to plot scalars
+(simple numerical values).  This works just like plotting
+arrays\(em\&you select the numerical variable, click on `\fBPlot\fR',
+and here comes the plot.  However, plotting a scalar is not very
+exciting.  A plot that contains nothing but a scalar simply draws the
+scalar's value as a \fIY\fR constant\(em\&that is, a horizontal line.
+.PP
+So why care about scalars at all?  \s-1@DDD@\s+1 allows you to combine
+multiple values into one plot.  The basic idea is: if you want to plot
+something that is neither an array nor a scalar, \s-1@DDD@\s+1 takes
+all numerical subvalues it can find and plots them all together in one
+window.  For instance, you can plot all local variables by selecting
+`\fBData\(->Display Local Variables\fR', followed by `\fBPlot\fR'.
+This will create a plot containing all numerical values as found in
+the current local variables.  Likewise, you can plot all numeric
+members contained in a structure by selecting it, followed by
+`\fBPlot\fR'.
+.PP
+If you want more control about what to include in a plot and what not,
+you can use display clusters.  (See `\fBClustering Displays\fR',
+above, for details on clusters.)  A common scenario is to plot a
+one-dimensional array together with the current index position.
+This is done in three steps:
+.IP \(bu 2
+Display the array and the index, using `\fBDisplay ()\fR'.
+.br
+.IP \(bu 2
+Cluster both displays: select them and choose `\fBUndisp\(->Cluster
+()\fR'.
+.br
+.IP \(bu 2
+Plot the cluster by pressing `\fBPlot\fR'.
+.PP
+Scalars that are displayed together with arrays can be displayed
+either as vertical lines or horizontal lines.  By default, scalars are
+plotted as horizontal lines.  However, if a scalar is a valid index
+for an array that was previously plotted, it is shown as a vertical
+line.  You can change this initial alignment by selecting the scalar
+display, followed by `\fBRotate ()\fR'.
+.\"
+.\"
+.SS "Printing Plots"
+.\"
+If you want to print the plot, select `\fBFile\(->Print Plot\fR'.
+This pops up the \s-1@DDD@\s+1 printing dialog, set up for printing
+plots.  Just as when printing graphs, you have the choice between
+printing to a printer or a file and setting up appropriate options.
+.PP
+The actual printing is also performed by Gnuplot, using the
+appropriate driver.  Please note the following caveats related to
+printing:
+.IP \(bu 2
+Creating \fB\s-1FIG\s+1\fR files requires an appropriate driver built
+into Gnuplot.  Your Gnuplot program may not contain such a driver.  In
+this case, you will have to recompile Gnuplot, including the line
+`\fB#define FIG\fR' in the Gnuplot `\fBterm.h\fR' file.
+.br
+.IP \(bu 2
+The `\fBPortrait\fR' option generates an \fBEPS\fR file useful for
+inclusion in other documents.  The `\fBLandscape\fR' option makes
+\s-1@DDD@\s+1 print the plot in the size specified in the `\fBPaper
+Size\fR' option; this is useful for printing on a printer.  In
+`\fBPortrait\fR' mode, the `\fBPaper Size\fR' option is ignored.
+.br
+.IP \(bu 2
+The PostScript and X11 drivers each have their own set of colors, such
+that the printed colors may differ from the displayed colors.
+.br
+.IP \(bu 2
+The `\fBSelected Only\fR' option is set by default, such that only the
+currently selected plot is printed.  (If you select multiple plots to
+be printed, the respective outputs will all be concatenated, which may
+not be what you desire.)
+.PP
+.\"
+.\"
+.SS "Entering Plotting Commands"
+.\"
+Via `\fBFile\(->Plot Command\fR', you can enter Gnuplot commands
+directly.  Each command entered at the `\fBgnuplot>\fR' prompt is
+passed to Gnuplot, followed by a Gnuplot `\fBreplot\fR' command to
+update the view.  This is useful for advanced Gnuplot tasks.
+.PP
+For instance, the following sequence of Gnuplot commands saves the
+plot in \s-1L\s-1A\s+1T\dE\uX\s+1 format:
+.br
+.sp
+  gnuplot>\fBset output "plot.tex"\fR # Set the output filename
+  gnuplot>\fBset term latex\fR        # Set the output format
+  gnuplot>\fBset term x11\fR          # Show original picture again
+.sp
+.br
+Note that a `\fBreplot\fR' command after `\fBset term latex\fR' is not 
+required, since it is automatically added by \s-1@DDD@\s+1.
+.PP
+The dialog keeps track of the commands entered; use the arrow keys to
+restore previous commands.  Gnuplot error messages (if any) are also
+shown in the history area.
+.PP
+The interaction between \s-1@DDD@\s+1 and Gnuplot is logged in the
+file `\fB$HOME/.@ddd@/log\fR'.  The \s-1@DDD@\s+1 `\fB\-\-trace\fR'
+option logs this interaction on standard output.
+.\"
+.\"
+.SS "Exporting Plot Data"
+.\"
+If you want some external program to process the plot data (a
+stand-alone Gnuplot program or the \fBxmgr\fR program, for instance),
+you can save the plot data in a file, using `\fBFile\(->Save Data
+As\fR'.  This pops up a dialog that lets you choose a data file to
+save the plotted data in.
+.PP
+The generated file starts with a few comment lines.  The actual data
+follows in X/Y or X/Y/Z format.  It is the same file as processed by
+Gnuplot.
+.\" .PP
+.\" Exporting plot data is only available if your plot includes exactly
+.\" one array.
+.\"
+.\"
+.SS "Animating Plots"
+.\"
+If you want to see how your data evolves in time, you can set a
+breakpoint whose command sequence ends in a `\fBcont\fR' command.
+Each time this \(lqcontinue\(rq breakpoint is reached, the program
+stops and \s-1@DDD@\s+1 updates the displayed values, including the
+plots.  Then, \s-1@DDD@\s+1 executes the breakpoint command sequence,
+resuming execution.
+.PP
+This way, you can set a \(lqcontinue\(rq breakpoint at some decisive
+point within an array-processing algorithm and have \s-1@DDD@\s+1
+display the progress graphically.  When your program has topped for
+good, you can use `\fBUndo\fR' and `\fRRedo\fR' to redisplay and
+examine previous program states.
 .\"
 .\"
 .\"
@@ -4346,6 +4561,54 @@ to specify some minor changes to the built-in library.  See the
 `\fBvslDefs\fR' resource, above, for details.
 .RE
 .\"
+.SS "Plot Window"
+.\"
+The following resources control the plot window.
+.\"
+.TP
+.B "builtinPlot (\fPclass\fB BuiltinPlot)"
+If this is `\fBoff\fR' (default), \s-1@DDD@\s+1 incorporates or
+\(lqswallows\(rq the Gnuplot output window into its own user
+interface.  Some window managers may have trouble with this technique.
+Setting this resource to `\fBon\fR' makes \s-1@DDD@\s+1 provide a
+builtin plot window instead.  The advantage is that interferences with
+the window manager are excluded; the \s-1@DDD@\s+1 builtin plot window
+also requires less resources than the Gnuplot window.  The
+disadvantage is that plots are slower and less customizable.
+.TP
+.B "plotCommand (\fPclass\fB PlotCommand)"
+The name of a Gnuplot executable.  Default is `\fBgnuplot\fR',
+followed by some options to set up colors and the initial geometry.
+.TP
+.B "plotWindow (\fPclass\fB PlotWindow)"
+The name or class of the Gnuplot output window.  When invoking
+Gnuplot, \s-1@DDD@\s+1 waits for a window with this name or class and
+incorporates it into its own user interface (unless
+`\fBbuiltinPlot\fR' is set; see above).  Default is `\fBGnuplot\fR'.
+.TP
+.B "plotInitCommands (\fPclass\fB PlotInitCommands)"
+The initial Gnuplot commands issued by \s-1@DDD@\s+1.  Default is:
+.sp
+.br
+  \fBset parametric
+  set urange [0:1]
+  set vrange [0:1]
+  set trange [0:1]\fR
+.br
+.sp
+The `\fBparametric\fR' setting is required to make Gnuplot understand
+the data files as generated \s-1@DDD@\s+1.  The range commands are
+used to plot scalars.
+.TP
+.B "plot2dSettings (\fPclass\fB PlotSettings)"
+Additional initial settings for 2-D plots.  Default is `\fBset
+noborder\fR'.  Feel free to customize these settings as desired.
+.TP
+.B "plot3dSettings (\fPclass\fB PlotSettings)"
+Additional initial settings for 3-D plots.  Default is `\fBset
+border\fR'.  Feel free to customize these settings as desired.
+.PP
+.\"
 .SS "Debugger Console"
 .\"
 The following resources control the debugger console.
@@ -5446,6 +5709,9 @@ Alternate \s-1DBX\s+1 initialization file.
 .B $HOME/.xdbrc
 \s-1XDB\s+1 initialization file.
 .TP
+.B $HOME/.gnuplot
+Gnuplot initialization file.
+.TP
 .B $HOME/.@ddd@init
 Old-style \s-1@DDD@\s+1 initialization file; used only if
 \fB$HOME/.@ddd@/init\fR does not exist.
@@ -5459,7 +5725,8 @@ Old-style \s-1@DDD@\s+1 initialization file; used only if
 .BR dbx (1),
 .BR xdb (1),
 .BR remsh (1),
-.BR rsh (1)
+.BR rsh (1),
+.BR gnuplot (1),
 .PP
 .RB "`\|" gdb "\|'"
 entry in \fBinfo\fR.
@@ -5821,8 +6088,8 @@ June, 1998
 \s-1@DDD@\s+1 3.0: Icon tool bar, Java support, \s-1JDB\s+1 support.
 .TP
 December, 1998
-\s-1@DDD@\s+1 3.1: Data plotting, Python support, Undo/Redo, 
-	new data display engine.
+\s-1@DDD@\s+1 3.1: Data plotting, Python support, Undo/Redo, new data
+display engine.
 .PD
 .\"
 .\"
