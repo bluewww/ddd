@@ -4644,6 +4644,7 @@ If LBL(All registers) is set, all registers are shown.
 Ddd*thread_dialog_popup.title:	     	     DDD: Threads
 Ddd*thread_dialog.listLabelString:	     Threads
 Ddd*thread_dialog.okLabelString:	     Close
+Ddd*thread_dialog.applyLabelString:	     Update
 Ddd*thread_dialog.listVisibleItemCount:      10
 
 Ddd*thread_dialog*box.orientation:  XmHORIZONTAL
@@ -4657,7 +4658,8 @@ The current thread is highlighted.\n\
 All debugging commands show information from the perspective\n\
 of the current thread.\n\
 \n\
-Select any thread to make it the current thread.
+Select any thread to make it the current thread.\n\
+Click on LBL(Update) to update the list of threads at any time.
 
 
 !-----------------------------------------------------------------------------

@@ -928,10 +928,11 @@ void send_gdb_command(string cmd, Widget origin,
     }
 
     if (gdb->type() != GDB)
-    {
 	plus_cmd_data->refresh_registers = false;
-	plus_cmd_data->refresh_threads   = false;
-    }
+
+    if (gdb->type() != GDB && gdb->type() != JDB)
+	plus_cmd_data->refresh_threads = false;
+
 
     if (verbose)
     {
@@ -1096,7 +1097,8 @@ void send_gdb_command(string cmd, Widget origin,
 	if (plus_cmd_data->refresh_where)
 	    cmds += "where";
 	assert (!plus_cmd_data->refresh_registers);
-	assert (!plus_cmd_data->refresh_threads);
+	if (plus_cmd_data->refresh_threads)
+	    cmds += "threads";
 	if (plus_cmd_data->refresh_data)
 	    plus_cmd_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);

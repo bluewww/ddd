@@ -3112,8 +3112,6 @@ void SourceView::create_shells()
     XtUnmanageChild(XmSelectionBoxGetChild(thread_dialog_w, 
 					   XmDIALOG_SELECTION_LABEL));
     XtUnmanageChild(XmSelectionBoxGetChild(thread_dialog_w, 
-					   XmDIALOG_APPLY_BUTTON));
-    XtUnmanageChild(XmSelectionBoxGetChild(thread_dialog_w, 
 					   XmDIALOG_CANCEL_BUTTON));
     arg = 0;
     thread_list_w = XmSelectionBoxGetChild(thread_dialog_w, XmDIALOG_LIST);
@@ -3134,6 +3132,8 @@ void SourceView::create_shells()
 		  XmNokCallback, UnmanageThisCB, thread_dialog_w);
     XtAddCallback(thread_dialog_w,
 		  XmNokCallback, ThreadDialogPoppedDownCB, 0);
+    XtAddCallback(thread_dialog_w,
+		  XmNapplyCallback, ViewThreadsCB, 0);
     XtAddCallback(thread_dialog_w,
 		  XmNhelpCallback, ImmediateHelpCB, 0);
 
@@ -5734,13 +5734,42 @@ void SourceView::process_threads(string& threads_output)
     while (count > 0 && thread_list[count - 1] == "")
 	count--;
 
-    for (int i = 0; i < count; i++)
+    switch (gdb->type())
     {
-	selected[i] = thread_list[i].contains('*', 0);
-	if (selected[i])
-	    thread_list[i] = thread_list[i].after(0);
-	read_leading_blanks(thread_list[i]);
-	setup_where_line(thread_list[i]);
+    case GDB:
+    {
+	for (int i = 0; i < count; i++)
+	{
+	    selected[i] = thread_list[i].contains('*', 0);
+	    if (selected[i])
+		thread_list[i] = thread_list[i].after(0);
+	    read_leading_blanks(thread_list[i]);
+	    setup_where_line(thread_list[i]);
+	}
+	break;
+    }
+
+    case JDB:
+    {
+	string current_thread = gdb->prompt().before('[');
+	for (int i = 0; i < count; i++)
+	{
+	    string thread = thread_list[i].after("0x");
+	    thread = thread.after(" ");
+	    read_leading_blanks(thread);
+
+	    selected[i] = thread.contains(current_thread + " ", 0);
+	}
+	break;
+    }
+
+    case DBX:
+    case XDB:
+    {
+	for (int i = 0; i < count; i++)
+	    selected[i] = false;
+	break;
+    }
     }
 
     setLabelList(thread_list_w, thread_list, selected, count, false, false);
@@ -5751,8 +5780,28 @@ void SourceView::process_threads(string& threads_output)
 
 void SourceView::refresh_threads()
 {
-    string threads = gdb_question("info threads");
-    process_threads(threads);
+    switch (gdb->type())
+    {
+    case GDB:
+    {
+	string threads = gdb_question("info threads");
+	process_threads(threads);
+	break;
+    }
+    case JDB:
+    {
+	// In JDB, `threadgroup system' seems to make `threads' list
+	// the threads of *all* threadgroups, not only system threads.
+	gdb_question("threadgroup system");
+	string threads = gdb_question("threads");
+	process_threads(threads);
+	break;
+    }
+    case DBX:
+    case XDB:
+	// No threads.
+	break;
+    }
 }
 
 void SourceView::ViewThreadsCB(Widget, XtPointer, XtPointer)

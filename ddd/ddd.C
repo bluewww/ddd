@@ -4357,7 +4357,8 @@ static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
 
     set_sensitive(stack_w,        ready);
     set_sensitive(registers_w,    ready && gdb->has_regs_command());
-    set_sensitive(threads_w,      ready && gdb->type() == GDB);
+    set_sensitive(threads_w,      ready && (gdb->type() == GDB || 
+					    gdb->type() == JDB));
     set_sensitive(infos_w,        ready && gdb->type() == GDB);
     set_sensitive(up_w,           ready);
     set_sensitive(down_w,         ready);

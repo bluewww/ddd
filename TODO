@@ -362,14 +362,13 @@ Volunteers for these and other projects are welcome!
     a series of `next' pointers just by pressing `Display *' again and 
     again.
 
-241 Include a mail reader.
+241 Include a mail reader.  See also `feeping creaturism'.
 
 242 Make programs dump core by forking and killing them.
 
-245*Finish JDB support:
+245*Improve JDB support:
     * Implement better function lookup.  (prepend class (= file) name;
       prepending classes may also be useful for C++)
-    * Implement GUI thread support.  (and threadgroups)
     * Load classes via GUI.
 
 246 Martin Fick <fick@fgm.com> suggests that breakpoints should be
