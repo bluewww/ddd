@@ -349,8 +349,12 @@ static string gdbTip(string command)
 		i--;
 	    if (i == 0 || commands[i - 1] == '\n')
 	    {
-		tip = commands.from(i);
-		tip = tip.before('\n');
+		string t = commands.from(i);
+		t = t.before('\n');
+		strip_space(t);
+
+		if (t.length() > command.length()) // Simple sanity check
+		    tip = t;
 		break;
 	    }
 
@@ -617,6 +621,15 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 	return MString(0, true);
 
     strip_leading_space(tip);
+
+    if (tip.contains(help_name + " -", 0))
+    {
+	// Solaris DBX first describes `kill -l', then `kill'.  Check for this.
+	string t = tip.from(help_name + "  ", 0);
+	if (t != "")
+	    tip = t;
+    }
+
     if (tip.contains(help_name, 0))
     {
 	string t = tip.after(help_name);
@@ -627,7 +640,7 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 	}
     }
 
-    if (gdb->type() == DBX && tip != "" && !isupper(tip[0]))
+    if (gdb->type() == DBX && tip != "" && islower(tip[0]))
     {
 	// Avoid giving help like `step <count>' on `step'.  This happens
 	// with AIX DBX, where the help looks like
