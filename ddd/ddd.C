@@ -2,6 +2,7 @@
 // DDD main program (and much more)
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1999 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
@@ -357,9 +358,6 @@ static void PopdownStatusHistoryCB(Widget, XtPointer, XtPointer);
 
 // Argument callback
 static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
-
-// Drag and drop
-static void CheckDragCB(Widget, XtPointer client_data, XtPointer call_data);
 
 // Verify whether buttons are active
 static void verify_buttons(MMDesc *items);
@@ -2152,18 +2150,6 @@ int main(int argc, char *argv[])
     help_clear_doc_delay  = app_data.clear_doc_delay;
     help_clear_tip_delay  = app_data.clear_tip_delay;
 
-#if XmVersion >= 2000
-    // Setup drag and drop callback
-    Widget display_w = verify(XmGetXmDisplay(XtDisplay(toplevel)));
-    if (XmIsDisplay(display_w))
-    {
-	XtAddCallback(display_w, XmNdragStartCallback,
-		      CheckDragCB, NULL);
-    }
-#else
-    CheckDragCB(0, 0, 0);		// Use it
-#endif
-
     // Re-register own converters.  Motif may have overridden some of
     // these, so register them again.
     registerOwnConverters();
@@ -3576,10 +3562,10 @@ Boolean ddd_setup_done(XtPointer)
 	fix_status_size();
 
 	if (running_shells() == 0 ||
-	    app_data.full_name_mode && running_shells() == 1)
+	    app_data.annotate && running_shells() == 1)
 	{
 	    // We have no shell (yet).  Be sure to popup at least one shell.
-	    if (app_data.full_name_mode)
+	    if (app_data.annotate)
 		gdbOpenDataWindowCB(gdb_w, 0, 0);
 	    else if (app_data.source_window)
 		gdbOpenSourceWindowCB(gdb_w, 0, 0);
@@ -3618,33 +3604,6 @@ static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data)
     
     Widget button = Widget(client_data);
     XtCallActionProc(button, "ArmAndActivate", cbs->event, (String *)0, 0);
-}
-
-//-----------------------------------------------------------------------------
-// Drag and drop
-//-----------------------------------------------------------------------------
-
-static void CheckDragCB(Widget, XtPointer, XtPointer call_data)
-{
-    if (call_data == 0)		// Use it
-	return;
-
-    // Some Linux Motif implementations have trouble dragging pixmaps.
-    // Disable this, such that we don't get drowned in bug reports.
-#if XmVersion >= 2000 && defined(__linux__)
-    XmDragStartCallbackStruct *cbs = (XmDragStartCallbackStruct *)call_data;
-    Widget w = cbs->widget;
-    // clog << "Dragging from " << longName(w) << "\n";
-
-    if (XtIsSubclass(w, xmLabelWidgetClass) 
-	|| XtIsSubclass(w, xmLabelGadgetClass))
-    {
-	unsigned char label_type = XmSTRING;
-	XtVaGetValues(w, XmNlabelType, &label_type, NULL);
-	if (label_type == XmPIXMAP)
-	    cbs->doit = False;
-    }
-#endif // XmNdragStartCallback
 }
 
 
@@ -4898,7 +4857,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNset,                True); arg++;
 
     MString spaces("   ");
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 87)
     {
 	XtSetArg(args[arg], XmNlabelString, spaces.xmstring()); arg++;
     }
@@ -4969,7 +4928,7 @@ static void create_status(Widget parent)
     size.request_mode = CWHeight;
     XtQueryGeometry(status_w, NULL, &size);
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 87)
 	XtVaSetValues(led_w, XmNindicatorSize, size.height - 4, NULL);
     else
 	XtVaSetValues(led_w, XmNindicatorSize, size.height - 1, NULL);
@@ -6864,30 +6823,32 @@ static void setup_version_info()
 	+ rm("If you find " DDD_NAME " useful, please send "
 	     "us a picture postcard:") + cr()
 	+ cr()
-	+ rm("    Technische Universit\344t Braunschweig") + cr()
-	+ rm("    Abteilung Softwaretechnologie") + cr()
-	+ rm("    B\374ltenweg 88") + cr()
-	+ rm("    D-38092 Braunschweig") + cr()
+	+ rm("    Universit\344t Passau") + cr()
+	+ rm("    Lehrstuhl f\374r Softwaresysteme") + cr()
+	+ rm("    Innstra\337e 33") + cr()
+	+ rm("    D-94032 Passau") + cr()
 	+ rm("    GERMANY") + cr();
 
     string log = session_log_file();
     if (log.contains(gethome(), 0))
 	log = "~" + log.after(gethome());
 
+#define ddd_DOMAIN "fmi.uni-passau.de"
+
     helpOnVersionExtraText += cr()
 	+ rm("Send bug reports to <")
-	+ tt(ddd_NAME "-bugs@ips.cs.tu-bs.de") + rm(">.") + cr()
+	+ tt(ddd_NAME "-bugs@" ddd_DOMAIN) + rm(">.") + cr()
 	+ rm("Always include the ") + tt(log) + rm(" file;")
 	+ rm(" see the " DDD_NAME " manual for details.") + cr()
 	+ rm("Send comments and suggestions to <")
-	+ tt(ddd_NAME "@ips.cs.tu-bs.de") + rm(">.") + cr();
+	+ tt(ddd_NAME "@" ddd_DOMAIN) + rm(">.") + cr();
 
     helpOnVersionExtraText += cr()
 	+ rm(DDD_NAME " WWW page: ") + tt(app_data.www_page) + cr()
 	+ rm(DDD_NAME " discussions: <")
-	+ tt(ddd_NAME "-users-request@ips.cs.tu-bs.de") + rm(">") + cr()
+	+ tt(ddd_NAME "-users-request@" ddd_DOMAIN) + rm(">") + cr()
 	+ rm(DDD_NAME " announcements: <")
-	+ tt(ddd_NAME "-announce-request@ips.cs.tu-bs.de") + rm(">");
+	+ tt(ddd_NAME "-announce-request@" ddd_DOMAIN) + rm(">");
 }
 
 
