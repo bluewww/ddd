@@ -34,7 +34,12 @@ char InitImage_rcsid[] =
 #endif
 
 #include "InitImage.h"
+
+#include "config.h"
 #include "assert.h"
+
+#include <sys/types.h>
+#include <X11/Xlib.h>
 
 #include <X11/Xlibint.h>	// Xcalloc()
 #include <X11/Xutil.h>		// XGetPixel(), etc.
