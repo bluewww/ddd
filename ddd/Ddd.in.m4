@@ -1752,7 +1752,7 @@ DESC(Exit, [exit DDD])
 
 Ddd*menubar.file*helpString: FILE_HELP
 Ddd*fileMenu*helpString:     FILE_HELP
-Ddd*fileMenu*tearOffTitle:   File Menu
+Ddd*fileMenu*tearOffTitle:   File
 
 Ddd*menubar*fileMenu.open_file.labelString: Open Program...
 Ddd*menubar*fileMenu.open_file.mnemonic:    O
@@ -1883,7 +1883,7 @@ DESC(Save Options, [saves options, preferences, and @GDB@ settings\n\
 
 Ddd*menubar.edit*helpString: EDIT_HELP
 Ddd*editMenu*helpString:     EDIT_HELP
-Ddd*editMenu*tearOffTitle:   Edit Menu
+Ddd*editMenu*tearOffTitle:   Edit
 
 Ddd*editMenu.cut.labelString:				Cut
 Ddd*editMenu.cut.mnemonic:				t
@@ -1966,7 +1966,7 @@ DESC(@GDB@ Console, [toggle display of debugger console])
 
 Ddd*menubar.views.helpString:	VIEWS_HELP
 Ddd*viewsMenu*helpString:	VIEWS_HELP
-Ddd*viewsMenu*tearOffTitle:     View Menu
+Ddd*viewsMenu*tearOffTitle:     View
 
 Ddd*viewsMenu.tool.labelString:			Command Tool...
 Ddd*viewsMenu.tool.mnemonic:			T
@@ -2024,7 +2024,7 @@ DESC(@GDB@ Console..., [open the debugger console window])
 
 Ddd*menubar.view.helpString:	VIEW_HELP
 Ddd*viewMenu*helpString:	VIEW_HELP
-Ddd*viewMenu*tearOffTitle:      View Menu
+Ddd*viewMenu*tearOffTitle:      View
 
 Ddd*viewMenu.tool.labelString:			Command Tool...
 Ddd*viewMenu.tool.mnemonic:			T
@@ -2097,7 +2097,7 @@ DESC(Abort, [abort program (or current @GDB@ command)])
 
 Ddd*menubar.program*helpString:	PROGRAM_HELP
 Ddd*programMenu*helpString:	PROGRAM_HELP
-Ddd*programMenu*tearOffTitle:   Program Menu
+Ddd*programMenu*tearOffTitle:   Program
 
 Ddd*menubar*programMenu.run.labelString:	   Run...
 Ddd*menubar*programMenu.run.mnemonic:		   R
@@ -2207,7 +2207,7 @@ DESC(Edit Buttons..., [edit command buttons])
 
 Ddd*menubar.commands*helpString:	COMMANDS_HELP
 Ddd*commandsMenu*helpString:		COMMANDS_HELP
-Ddd*commandsMenu*tearOffTitle:          Commands Menu
+Ddd*commandsMenu*tearOffTitle:          Commands
 
 Ddd*commandsMenu.history.labelString:	        Command History...
 Ddd*commandsMenu.history.mnemonic:	        H
@@ -2303,7 +2303,7 @@ DESC(Down, [show the function that was called by the current one])
 
 Ddd*menubar.stack.helpString:	STACK_HELP
 Ddd*stackMenu*helpString:	STACK_HELP
-Ddd*stackMenu*tearOffTitle:     Status Menu
+Ddd*stackMenu*tearOffTitle:     Status
 
 Ddd*stackMenu.stack.labelString:	Backtrace...
 Ddd*stackMenu.stack.mnemonic:		B
@@ -2452,7 +2452,7 @@ DESC(Refresh, [update all displays])
 
 Ddd*menubar.data*helpString:	DATA_HELP
 Ddd*dataMenu*helpString:	DATA_HELP
-Ddd*dataMenu*tearOffTitle:      Data Menu
+Ddd*dataMenu*tearOffTitle:      Data
 
 Ddd*dataMenu.displays.labelString:	Edit Displays...
 Ddd*dataMenu.displays.mnemonic:		D
@@ -2581,7 +2581,7 @@ DESC(About [[DDD]]..., [some general information about DDD])
 
 Ddd*menubar.help*helpString: HELP_HELP
 Ddd*helpMenu*helpString:     HELP_HELP
-Ddd*helpMenu*tearOffTitle:   Help Menu
+Ddd*helpMenu*tearOffTitle:   Help
 
 Ddd*helpMenu.onHelp.labelString:		Overview...
 Ddd*helpMenu.onHelp.mnemonic:			v
