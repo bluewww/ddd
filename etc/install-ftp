@@ -95,6 +95,7 @@ dist=false
 doc=false
 diff=false
 link=false
+icons=false
 
 errors=false
 if [ $# = 0 ]; then
