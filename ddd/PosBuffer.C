@@ -1,8 +1,9 @@
 // $Id$
 // Filter position information from GDB output.
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
+// and Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
 // 
@@ -459,6 +460,10 @@ void PosBuffer::filter (string& answer)
 		    // "[new_tree:113 ,0x400858] \ttree->right = NULL;"
 
 		    line = answer.from(rxdbxpos);
+
+		    // Note that the function name may contain "::" sequences.
+		    while (line.contains("::"))
+			line = line.after("::");
 		    line = line.after(":");
 		    line = line.through(rxint);
 		    already_read = PosComplete;
@@ -480,9 +485,16 @@ void PosBuffer::filter (string& answer)
 		    }
 		    else if (answer.contains("["))
 		    {
-			// DEC dbx and SGI dbx output format
-			line = answer.after("[");
-			func_buffer = line.before(":");
+			// DEC DBX and SGI DBX output format:
+			// `[3] Process  1852 (cxxtest) 
+			// stopped at [::main:266 ,0x1000a028]'
+			line = answer.after("stopped");
+			line = line.after("[");
+			func_buffer = line;
+			while (line.contains("::"))
+			    line = line.after("::");
+			line = line.from(":");
+			func_buffer = func_buffer.before(line);
 			line = line.after(":");
 			line = line.through(rxint);
 			// answer = answer.after("\n");
@@ -551,15 +563,23 @@ void PosBuffer::filter (string& answer)
 			    line = line.before('\n');
 			strip_final_blanks(line);
 
+			// XDB uses a format like
+			// `ctest.c: main: 4: int a = 33;'
 #if RUNTIME_REGEX
-			static regex rxxdbpos(
-			    "[^: \t]*:[^:]*: [1-9][0-9]*[: ].*");
+			static regex rxxdbpos("[^ \t]*:.*: [1-9][0-9]*[: ].*");
 #endif
 			if (line.matches(rxxdbpos))
 			{
 			    string file = line.before(':');
 			    line = line.after(':');
-			    string func = line.before(':');
+
+			    // The function name may contain "::"
+			    string func = line;
+			    while (line.contains("::"))
+				line = line.after("::");
+			    line = line.from(':');
+			    func = func.before(line);
+
 			    line = line.after(':');
 			    string line_no = line.before(':');
 			
