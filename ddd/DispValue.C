@@ -257,6 +257,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 
 	mytype = Simple;
 	_value = "(Aborted)";
+	value  = "Aborted\n";
 	return;
     }
 
@@ -839,6 +840,16 @@ DispValue *DispValue::update(string& value,
 {
     DispValue *source = parse(0, 0, value, 
 			      full_name(), name(), given_type);
+
+    if (background(value.length()))
+    {
+	// Aborted while parsing - use SOURCE instead of original
+	DispValue *ret = source->link();
+	ret->changed = was_changed = was_initialized = true;
+	unlink();
+	return ret;
+    }
+
     DispValue *dv = update(source, was_changed, was_initialized);
 
     source->unlink();
