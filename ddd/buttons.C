@@ -246,8 +246,11 @@ static string gdbHelp(string original_command)
 	// Perl help has only one argument
 	if (command.contains(rxwhite))
 	    command = command.before(rxwhite);
-	if (is_run_cmd(command))
-	    help = "Restart debugged program";
+
+	// There is no help on `exec', and `R' help (`Pure-man-restart
+	// of debugger') is somewhat misleading.
+	if (command == "R" || command == "exec")
+	    help = "Restart debugged program.";
     }
 
     if (is_graph_cmd(command))
@@ -769,7 +772,8 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
     if (gdb->type() == PERL)
     {
 	// In Perl, the help has the form `COMMAND\tTEXT'.
-	tip = tip.after('\t');
+	if (tip.contains('\t'))
+	    tip = tip.after('\t');
 	strip_leading_space(tip);
 
 	if (tip.contains('['))
