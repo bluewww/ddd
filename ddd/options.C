@@ -863,6 +863,29 @@ static bool move(const string& from, const string& to)
     return false;
 }
 
+// Some GDB implementations want a confirmation when detaching:
+// `Was stopped when attached, make it runnable again? (y or n) '
+// Handle this by turning confirmations off.
+static void get_confirm(const string& complete_answer, void *qu_data)
+{
+    bool *flag = (bool *)qu_data;
+    *flag = complete_answer.contains("is on");
+}
+
+static void detach()
+{
+    bool confirm = true;
+    gdb_command("show confirm", 0, get_confirm, &confirm);
+    syncCommandQueue();
+
+    if (confirm)
+	gdb_question("set confirm off");
+
+    gdb_question("detach");
+
+    if (confirm)
+	gdb_question("set confirm on");
+}
 
 // Get core from running program
 static bool _get_core(const string& session, unsigned long flags, 
@@ -945,7 +968,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    kill(info.pid, SIGSTOP);
 
 	    // 2. Detach GDB from the debuggee.  The debuggee is still stopped.
-	    gdb_question("detach");
+	    detach();
 
 	    // 3. Attach to the process, using the ptrace() call.
 	    string gcore_target = target + "." + itostring(info.pid);
@@ -1010,7 +1033,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    kill(info.pid, SIGSTOP);
 
 	    // 2. Detach GDB from the debuggee.  The debuggee is still stopped.
-	    gdb_question("detach");
+	    detach();
 
 	    // 3. Invoke `gcore' command.
 	    string gcore_target = target + "." + itostring(info.pid);
@@ -1090,15 +1113,24 @@ static bool _get_core(const string& session, unsigned long flags,
 	    }
 	}
 
+#if 0				// Won't work on Solaris 2.4  -AZ
 	if (gdb->type() == GDB)
 	{
 	    // With GDB, simply send a signal and detach the process.
 	    // This has the advantage that any signals blocked by GDB
 	    // will be unblocked.
 	    kill(info.pid, SIGABRT);
-	    gdb_question("detach");
+	    detach();
+
+	    int seconds = 5;
+	    while (seconds-- > 0 && !is_core_file(core))
+	    {
+		// Wait 5s for detached process to dump core
+		sleep(1);
+	    }
 	}
 	else
+#endif
 	{
 	    // Alternate method: kill the process while it's still
 	    // being debugged.
