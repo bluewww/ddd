@@ -231,19 +231,49 @@ int LiterateAgent::_readNonBlocking(char *buffer, int nelems, FILE *fp)
     // Avoid being stopped when file is non-blocking
     SignalBlocker sb;
 
+#if HAVE_FCNTL && defined(O_NONBLOCK)
     // Make file non-blocking
     int flags = fcntl(fileno(fp), F_GETFL, 0);
     if (flags == -1)
 	_raiseIOWarning("cannot get file descriptor status flags");
     if (fcntl(fileno(fp), F_SETFL, flags | O_NONBLOCK) == -1)
 	_raiseIOWarning("cannot set file to non-blocking mode");
+#endif
 
     // Read stuff
     int nitems = fread(buffer, sizeof(char), nelems, fp);
 
+    if (nitems <= 0)
+    {
+	if (false
+#ifdef EAGAIN
+	|| errno == EAGAIN
+#endif
+#ifdef EWOULDBLOCK
+	|| errno == EWOULDBLOCK
+#endif
+	)
+	{
+	    // Resource temporarily unavailable: an operation that
+	    // would block was attempted on an object that has
+	    // non-blocking mode selected.  Trying the same operation
+	    // again will block until some external condition makes it
+	    // possible to read, write, or connect (whatever the
+	    // operation).  So, just try again next time.
+	    nitems = 0;
+
+	    // Linux libc 5.4.39 and later treats EAGAIN and
+	    // EWOULDBLOCK as EOF condition.  This is a bad idea.
+	    clearerr(fp);
+	}
+    }
+
+
+#if HAVE_FCNTL && defined(F_SETFL)
     // Reset file state
     if (fcntl(fileno(fp), F_SETFL, flags) == -1)
 	_raiseIOWarning("cannot restore file mode");
+#endif
 
     return nitems;
 }
@@ -329,35 +359,31 @@ void LiterateAgent::outputReady(AsyncAgent *c)
 
 void LiterateAgent::inputReady(AsyncAgent *c)
 {
-    bool expectEOF = false;
-    char data[1024];
+    char data[BUFSIZ];
     char *datap = data;
-    LiterateAgent *leeLA = ptr_cast(LiterateAgent, c);
-    if (leeLA)
+    LiterateAgent *lc = ptr_cast(LiterateAgent, c);
+    if (lc != 0)
     {
-	int length = leeLA->readInput(datap);
+	int length = lc->readInput(datap);
 	if (length > 0)
-	    leeLA->dispatch(Input, datap, length);
-	else if (!expectEOF && length == 0 
-		 && leeLA->inputfp() != 0 && feof(leeLA->inputfp()))
-	    leeLA->inputEOF();
+	    lc->dispatch(Input, datap, length);
+	else if (length == 0 && lc->inputfp() != 0 && feof(lc->inputfp()))
+	    lc->inputEOF();
     }
 }
 
 void LiterateAgent::errorReady(AsyncAgent *c)
 {
-    bool expectEOF = false;
-    char data[1024];
+    char data[BUFSIZ];
     char *datap = data;
-    LiterateAgent *leeLA = ptr_cast(LiterateAgent, c);
-    if (leeLA)
+    LiterateAgent *lc = ptr_cast(LiterateAgent, c);
+    if (lc != 0)
     {
-	int length = leeLA->readError(datap);
+	int length = lc->readError(datap);
 	if (length > 0)
-	    leeLA->dispatch(Error, datap, length);
-	else if (!expectEOF && length == 0 
-		 && leeLA->errorfp() != 0 && feof(leeLA->errorfp()))
-	    leeLA->errorEOF();
+	    lc->dispatch(Error, datap, length);
+	else if (length == 0 && lc->errorfp() != 0 && feof(lc->errorfp()))
+	    lc->errorEOF();
     }
 }
 
@@ -417,11 +443,11 @@ void LiterateAgent::start()
 {
     AsyncAgent::start();
     
-    // dispatch input data that may already be there
-    if (inputfp() != NULL && !blocking_tty(inputfp()))
+    // Dispatch input data that may already be there
+    if (inputfp() != 0 && !blocking_tty(inputfp()))
 	readAndDispatchInput();
 
-    if (errorfp() != NULL && !blocking_tty(errorfp()))
+    if (errorfp() != 0 && !blocking_tty(errorfp()))
 	readAndDispatchError();
 }
 
