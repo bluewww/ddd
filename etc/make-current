@@ -1,7 +1,6 @@
 #! /bin/sh
 # $Id$
 # Create DDD release-of-the-day.  
-# If `-final' is given, make an official release.
 
 # Copyright (C) 1997-1998 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -30,7 +29,11 @@
 
 # This script checks out the current DDD development tree, as
 # stored in CVS, and creates a DDD release-of-the-day (`ROTD').
-# If `-final' is given, create an official release.
+
+# Usage: `make-current [-final] [-local] [CVS options]'
+# -final: make an official release (else: release-of-the-day).
+# -local: install in local dir (else: on FTP server if not final)
+# CVS options: given to CVS checkout (for checking out older versions)
 
 # Check args
 final=false;
@@ -130,7 +133,7 @@ chgrp ddd ddd
 chmod g+s ddd
 
 # Get the DDD development tree out of CVS.
-cvs checkout -P ddd
+cvs checkout -P "$@" ddd
 cd ddd
 
 if $final; then
