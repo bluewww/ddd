@@ -46,11 +46,12 @@ char plotter_rcsid[] =
 #include "fonts.h"
 #include "post.h"
 #include "print.h"
+#include "regexps.h"
 #include "simpleMenu.h"
-#include "verify.h"
 #include "status.h"
 #include "strclass.h"
 #include "string-fun.h"
+#include "verify.h"
 #include "version.h"
 #include "wm.h"
 #include "AppData.h"
@@ -66,13 +67,17 @@ char plotter_rcsid[] =
 #include <stdio.h>
 #include <fstream.h>
 
+#include <Xm/Command.h>
 #include <Xm/MainW.h>
 #include <Xm/MessageB.h>
 #include <Xm/AtomMgr.h>
 #include <Xm/Protocols.h>
 #include <Xm/DrawingA.h>
 #include <Xm/ScrolledW.h>
+#include <Xm/SelectioB.h>
 #include <Xm/ScrollBar.h>
+#include <Xm/Text.h>
+#include <Xm/TextF.h>
 #include <Xm/ToggleB.h>
 
 #define PLOT_CLASS_NAME "Gnuplot"
@@ -90,6 +95,10 @@ static void ResizePlotAreaCB(Widget, XtPointer, XtPointer);
 static void SelectPlotCB(Widget, XtPointer, XtPointer);
 static void SelectAndPrintPlotCB(Widget, XtPointer, XtPointer);
 
+static void ReplotCB(Widget, XtPointer, XtPointer);
+static void PlotCommandCB(Widget, XtPointer, XtPointer);
+static void ExportPlotCB(Widget, XtPointer, XtPointer);
+
 static void ToggleOptionCB(Widget, XtPointer, XtPointer);
 static void ToggleLogscaleCB(Widget, XtPointer, XtPointer);
 static void SetStyleCB(Widget, XtPointer, XtPointer);
@@ -102,16 +111,18 @@ struct PlotWindowInfo {
     PlotAgent *plotter;		// The current Gnuplot instance
     PlotArea *area;		// The area we're drawing in
     Widget shell;		// The shell we're in
-    Widget dialog;		// The dialog
+    Widget working_dialog;	// The working dialog
     Widget swallower;		// The Gnuplot window
     Widget vsb;			// Vertical scroll bar
     Widget hsb;			// Horizontal scroll bar
+    Widget command;		// Command widget
+    Widget command_dialog;      // Command dialog
     bool active;		// True if popped up
 
     // Constructor - just initialize
     PlotWindowInfo()
-	: plotter(0), area(0), shell(0), dialog(0), swallower(0),
-	  vsb(0), hsb(0), active(false)
+	: plotter(0), area(0), shell(0), working_dialog(0), swallower(0),
+	  vsb(0), hsb(0), command(0), command_dialog(0), active(false)
     {}
 };
 
@@ -122,10 +133,14 @@ struct PlotWindowInfo {
 
 static MMDesc file_menu[] = 
 {
-    { "print", MMPush, { SelectAndPrintPlotCB, 0 }, 0, 0, 0, 0 },
+    { "command", MMPush, { PlotCommandCB, 0 }, 0, 0, 0, 0 },
     MMSep,
-    { "close", MMPush, { CancelPlotCB, 0 }, 0, 0, 0, 0 },
-    { "exit",  MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }, 0, 0, 0, 0},
+    { "replot",  MMPush, { ReplotCB, 0 }, 0, 0, 0, 0 },
+    { "print",   MMPush, { SelectAndPrintPlotCB, 0 }, 0, 0, 0, 0 },
+    { "export",  MMPush | MMInsensitive, { ExportPlotCB, 0 }, 0, 0, 0, 0 },
+    MMSep,
+    { "close",   MMPush, { CancelPlotCB, 0 }, 0, 0, 0, 0 },
+    { "exit",    MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }, 0, 0, 0, 0},
     MMEnd
 };
 
@@ -194,6 +209,21 @@ static void send(PlotWindowInfo *plot, const string& cmd)
 {
     data_disp->select(plot->source);
     plot->plotter->write(cmd.chars(), cmd.length());
+}
+
+static void send_and_replot(PlotWindowInfo *plot, string cmd)
+{
+    if (cmd.matches(rxwhite))
+	return;
+
+    if (!cmd.contains('\n', -1))
+	cmd += "\n";
+    if (cmd.contains("help", 0))
+	cmd += "\n";		// Exit `help'
+    else
+	cmd += "replot\n";
+
+    send(plot, cmd);
 }
 
 
@@ -372,11 +402,14 @@ static void popup_plot_shell(PlotWindowInfo *plot)
     if (!plot->active && plot->plotter != 0)
     {
 	// Pop down working dialog
-	if (plot->dialog != 0)
+	if (plot->working_dialog != 0)
 	{
-	    XtUnmanageChild(plot->dialog);
-	    XtPopdown(XtParent(plot->dialog));
+	    XtUnmanageChild(plot->working_dialog);
+	    XtPopdown(XtParent(plot->working_dialog));
 	}
+
+	if (plot->command_dialog != 0)
+	    XtUnmanageChild(plot->command_dialog);
 
 	// Setup menu
 	plot->plotter->removeHandler(Died, PlotterNotFoundHP, 
@@ -425,11 +458,14 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 
     entered = true;
 
-    if (plot->dialog != 0)
+    if (plot->working_dialog != 0)
     {
-	XtUnmanageChild(plot->dialog);
-	XtPopdown(XtParent(plot->dialog));
+	XtUnmanageChild(plot->working_dialog);
+	XtPopdown(XtParent(plot->working_dialog));
     }
+
+    if (plot->command_dialog != 0)
+	XtUnmanageChild(plot->command_dialog);
 
     if (plot->shell != 0)
     {
@@ -686,7 +722,7 @@ PlotAgent *new_plotter(string name, DispValue *source)
 
     XtRemoveAllCallbacks(dialog, XmNcancelCallback);
     XtAddCallback(dialog, XmNcancelCallback, CancelPlotCB, XtPointer(plot));
-    plot->dialog = dialog;
+    plot->working_dialog = dialog;
 
     string base = cmd;
     if (base.contains(' '))
@@ -776,6 +812,120 @@ static void SelectAndPrintPlotCB(Widget w, XtPointer client_data,
     PrintPlotCB(w, client_data, call_data);
 }
 
+
+
+//-------------------------------------------------------------------------
+// Plot again
+//-------------------------------------------------------------------------
+
+static void ReplotCB(Widget, XtPointer client_data, XtPointer)
+{
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+
+    // This transfers the data once again and replots the whole thing
+    plot->source->plot();
+}
+
+//-------------------------------------------------------------------------
+// Command
+//-------------------------------------------------------------------------
+
+// Selection from Command widget
+static void DoPlotCommandCB(Widget, XtPointer client_data, XtPointer call_data)
+{
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+    XmCommandCallbackStruct *cbs = (XmCommandCallbackStruct *)call_data;
+
+    MString xcmd(cbs->value, true);
+    string cmd = xcmd.str();
+
+    send_and_replot(plot, cmd);
+}
+
+// Apply button
+static void ApplyPlotCommandCB(Widget, XtPointer client_data, XtPointer)
+{
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+
+    Widget text = XmCommandGetChild(plot->command, XmDIALOG_COMMAND_TEXT);
+    String cmd_s = 0;
+
+    if (XmIsTextField(text))
+	cmd_s = XmTextFieldGetString(text);
+    else if (XmIsText(text))
+	cmd_s = XmTextGetString(text);
+    else
+	assert(0);
+
+    string cmd = cmd_s;
+    XtFree(cmd_s);
+
+    send_and_replot(plot, cmd);
+}
+
+static void EnableApplyCB(Widget, XtPointer client_data, XtPointer call_data)
+{
+    Widget apply = (Widget)client_data;
+    XmCommandCallbackStruct *cbs = (XmCommandCallbackStruct *)call_data;
+
+    set_sensitive(apply, cbs->length > 0);
+}
+
+static void PlotCommandCB(Widget, XtPointer client_data, XtPointer)
+{
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+
+    if (plot->command_dialog == 0)
+    {
+	Arg args[10];
+	Cardinal arg = 0;
+	Widget dialog = 
+	    verify(XmCreatePromptDialog(plot->shell, "plot_command_dialog",
+					args, arg));
+	Delay::register_shell(dialog);
+	plot->command_dialog = dialog;
+
+	Widget apply = XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
+	XtManageChild(apply);
+    
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
+					       XmDIALOG_OK_BUTTON));
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
+					       XmDIALOG_SELECTION_LABEL));
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT));
+
+	XtAddCallback(dialog, XmNapplyCallback,
+		      ApplyPlotCommandCB, XtPointer(client_data));
+	XtAddCallback(dialog, XmNhelpCallback,
+		      ImmediateHelpCB, XtPointer(client_data));
+
+	arg = 0;
+	Widget command = 
+	    verify(XmCreateCommand(dialog, "plot_command", args, arg));
+	plot->command = command;
+	XtManageChild(command);
+
+	XtAddCallback(command, XmNcommandEnteredCallback, 
+		      DoPlotCommandCB, XtPointer(client_data));
+	XtAddCallback(command, XmNcommandChangedCallback, 
+		      EnableApplyCB, XtPointer(apply));
+	set_sensitive(apply, false);
+    }
+
+    manage_and_raise(plot->command_dialog);
+}
+
+
+//-------------------------------------------------------------------------
+// Export
+//-------------------------------------------------------------------------
+
+static void ExportPlotCB(Widget, XtPointer, XtPointer)
+{
+    // Nothing yet
+}
+
+
 //-------------------------------------------------------------------------
 // Settings
 //-------------------------------------------------------------------------
@@ -789,12 +939,11 @@ static void ToggleOptionCB(Widget w, XtPointer client_data,
 
     string cmd;
     if (cbs->set)
-	cmd = string("set ") + XtName(w) + "\n";
+	cmd = string("set ") + XtName(w);
     else
-	cmd = string("set no") + XtName(w) + "\n";
-    cmd += "replot\n";
+	cmd = string("set no") + XtName(w);
 
-    send(plot, cmd);
+    send_and_replot(plot, cmd);
 }
 
 static void ToggleLogscaleCB(Widget, XtPointer client_data, 
@@ -811,14 +960,11 @@ static void ToggleLogscaleCB(Widget, XtPointer client_data,
 	cmd = "set nologscale ";
 
     if (plot->plotter->dimensions() >= 3)
-	cmd += "z\n";
+	cmd += "z";
     else
-	cmd += "y\n";
+	cmd += "y";
 
-    plot->plotter->write(cmd.chars(), cmd.length());
-
-    cmd = "replot\n";
-    send(plot, cmd);
+    send_and_replot(plot, cmd);
 }
 
 static void SetStyleCB(Widget w, XtPointer client_data, XtPointer call_data)
@@ -843,10 +989,9 @@ static void SetStyleCB(Widget w, XtPointer client_data, XtPointer call_data)
 	if (style.contains("2d", -1))
 	    style = style.before("2d");
 	
-	cmd += "set data style " + style + "\n";
-	cmd += "replot\n";
+	cmd += "set data style " + style;
 
-	send(plot, cmd);
+	send_and_replot(plot, cmd);
     }
 }
 
@@ -864,16 +1009,15 @@ static void SetContourCB(Widget w, XtPointer client_data, XtPointer)
 
     string cmd;
     if (base_set && surface_set)
-	cmd = "set contour both\n";
+	cmd = "set contour both";
     else if (base_set && !surface_set)
-	cmd = "set contour base\n";
+	cmd = "set contour base";
     else if (!base_set && surface_set)
-	cmd = "set contour surface\n";
+	cmd = "set contour surface";
     else
-	cmd = "set nocontour\n";
-    cmd += "replot\n";
+	cmd = "set nocontour";
 
-    send(plot, cmd);
+    send_and_replot(plot, cmd);
 }
 
 static void SetViewCB(Widget, XtPointer client_data, XtPointer)
@@ -887,10 +1031,9 @@ static void SetViewCB(Widget, XtPointer client_data, XtPointer)
     XtVaGetValues(plot->hsb, XmNvalue, &rot_z, NULL);
 
     string cmd = 
-	"set view " + itostring(rot_x) + ", " + itostring(rot_z) + "\n";
-    cmd += "replot\n";
+	"set view " + itostring(rot_x) + ", " + itostring(rot_z);
 
-    send(plot, cmd);
+    send_and_replot(plot, cmd);
 }
 
 //-------------------------------------------------------------------------
@@ -914,6 +1057,14 @@ static void SetStatusHP(Agent *, void *client_data, void *call_data)
     }
 #endif
 
+    if (plot->command != 0)
+    {
+	string msg = s;
+	strip_space(msg);
+	MString xmsg = tb(msg);
+	XmCommandError(plot->command, xmsg.xmstring());
+    }
+
     while (s != "")
     {
 	string line;
@@ -922,6 +1073,7 @@ static void SetStatusHP(Agent *, void *client_data, void *call_data)
 	else
 	    line = s;
 	s = s.after('\n');
+	strip_space(line);
 
 	if (line != "")
 	    set_status(line);

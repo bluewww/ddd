@@ -4619,7 +4619,27 @@ Ddd*plot.helpString:            PLOT_WINDOW_HELP
 Ddd*plot*swallower.helpString:  PLOT_WINDOW_HELP
 Ddd*plot*area.helpString:       PLOT_WINDOW_HELP
 
-Ddd*plot*print.labelString: Print Plot...
+Ddd*plot*replot.labelString:    Refresh Plot
+Ddd*plot*replot.mnemonic:       R
+Ddd*plot*replot.accelerator:	~Shift ~Meta Ctrl<Key>L
+Ddd*plot*replot.acceleratorText: Ctrl+L
+Ddd*plot*replot.documentationString:   \
+@rm Refresh plot, using current values
+
+Ddd*plot*command.labelString:    Plot Command...
+Ddd*plot*command.mnemonic:       C
+Ddd*plot*command.documentationString:   \
+@rm Enter plotting command
+
+Ddd*plot*export.labelString:    Save Data As...
+Ddd*plot*export.mnemonic:       S
+Ddd*plot*export.accelerator:	~Shift ~Meta Ctrl<Key>S
+Ddd*plot*export.acceleratorText: Ctrl+S
+Ddd*plot*export.documentationString:   \
+@rm Write plotted data to file
+
+Ddd*plot*print.labelString: 	Print Plot...
+Ddd*plot*print.mnemonic:        P
 Ddd*plot*print.documentationString:   \
 @rm Print the current plot
 
@@ -4826,6 +4846,19 @@ Ddd*contourMenu.surface.labelString:	Surface
 Ddd*contourMenu.surface.mnemonic:	S
 Ddd*contourMenu.surface.documentationString:	\
 @rm Draw contour on surface
+
+
+Ddd*plot_command_dialog_popup.title:		DDD: Plot Command
+Ddd*plot_command_dialog.cancelLabelString:	Close
+Ddd*plot_command.promptString:			gnuplot>
+Ddd*plot_command_dialog*helpString:     \
+WIDGET(Plot Command)\n\
+\n\
+Please enter a Gnuplot command at the SAMP(gnuplot>) prompt.\n\
+The plot will automatically be refreshed after execution.\n\
+\n\
+See the Gnuplot documentation for useful commands.
+
 
 
 

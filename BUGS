@@ -145,7 +145,6 @@ Volunteers for fixing these and other bugs are welcome!
     (Create a DispGraph::cluster() routine, like DispGraph::make_active()).
 
 322*Finish Plots:
-    - Add a command dialog to enter commands.  (File->Enter Command)
     - Allow rotating scalar values.
     - Have an `export' option that writes the data to a file.  This
       should just copy the original data file (in `File')
@@ -164,4 +163,7 @@ Volunteers for fixing these and other bugs are welcome!
     files all have the same color.  This does not happen with the
     Gnuplot window.
 
-343 (Insert new bugs here)
+344*Replotting a value changes the `set border' setting.  These
+    `settings' commands should be issued only with the first plot.
+
+345 (Insert new bugs here)
