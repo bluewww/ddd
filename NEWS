@@ -30,6 +30,7 @@ DDD 2.1 (in development)
       item is now named `Abort', to avoid confusion with the `Exit'
       menu item (which issues a `quit' command).
     - DBX settings can now be viewed and changed at run time.
+    - Reading the VSL library is now realized as a background job.
     - If the debugged program is interrupted while grabbing the
       pointer (while being in a popup menu or in a modal dialog, for
       instance), DDD will automatically make the program ungrab it.
