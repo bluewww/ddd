@@ -232,9 +232,7 @@ static int check_xkeysymdb(Display *display, bool verbose)
 	     << "    If " << me << " was not compiled on this machine, " 
 	     << me << "\n" 
 	     << "    may not run properly "
-	     << "(lots of warnings for unknown keysym names).\n"
-	     << "    Please get the `XKeysymDB' file from\n"
-	     << "    `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/bin/'\n";
+	     << "(lots of warnings for unknown keysym names).\n";
 
 	if (xlibdir(display) != 0)
 	    std::cout << "    and install it into `" << xlibdir(display, verbose) 
@@ -361,11 +359,9 @@ static int check_xnlspath(Display *display, bool verbose)
     if (verbose)
     {
 	std::cout << "Warning: cannot locate the X11 `nls' directory!\n"
-	     << "    If " << me << " was not compiled on this machine, " 
-	     << me << "\n" 
-	     << "    may not run properly (`cut and paste' fails).\n"
-	     << "    Please get the `nls' directory from\n"
-	     << "    `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/bin/'\n";
+	     << "    If " << me << " was not compiled on this machine, "
+	     << me << "\n"
+	     << "    may not run properly (`cut and paste' fails).\n";
 
 	if (xlibdir(display) != 0)
 	    std::cout << "    and install it into `" << xlibdir(display) << "'\n";
