@@ -2565,7 +2565,7 @@ Widget file_dialog(Widget w, const string& name,
 	pwd = gdb_question("pwd");
 	if (pwd == string(-1))
 	{
-	    post_error("Cannot get current remote directory", "pwd_error");
+	    post_error("Cannot get current remote directory", "pwd_error", w);
 	    pwd = "";
 	}
 	else
@@ -4084,7 +4084,12 @@ void SelectHistoryCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 void HistoryDestroyedCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
-    gdb_commands_w = gdb_history_w = 0;
+    Widget old_gdb_history_w = Widget(client_data);
+    if (gdb_history_w == old_gdb_history_w)
+    {
+	gdb_history_w = 0;
+	gdb_commands_w = 0;
+    }
 }
 
 void gdbHistoryCB(Widget w, XtPointer client_data, XtPointer call_data)
@@ -4134,7 +4139,8 @@ void gdbHistoryCB(Widget w, XtPointer client_data, XtPointer call_data)
     XtAddCallback(gdb_history_w, XmNokCallback, DestroyThisCB, gdb_history_w);
     XtAddCallback(gdb_history_w, XmNapplyCallback, gdbApplyCB, 0);
     XtAddCallback(gdb_history_w, XmNhelpCallback,  ImmediateHelpCB, 0);
-    XtAddCallback(gdb_history_w, XmNdestroyCallback, HistoryDestroyedCB, 0);
+    XtAddCallback(gdb_history_w, XtNdestroyCallback, 
+		  HistoryDestroyedCB, XtPointer(gdb_history_w));
 
     bool *selected = new bool[gdb_history.size() + 1];
     for (int i = 0; i < gdb_history.size() + 1; i++)
@@ -5774,21 +5780,15 @@ void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
     if (startup_options_changed)
     {
 	// Startup options are still changed; request confirmation
-	static Widget save_options_dialog = 0;
-	if (save_options_dialog == 0)
-	{
-	    save_options_dialog = 
-		XmCreateQuestionDialog(find_shell(w),
-				       "save_options_dialog", NULL, 0);
-	    Delay::register_shell(save_options_dialog);
-	    XtAddCallback (save_options_dialog, 
-			   XmNokCallback,     SaveOptionsAndExitCB, 0);
-	    XtAddCallback (save_options_dialog, 
-			   XmNcancelCallback, ExitCB, 0);
-	    XtAddCallback (save_options_dialog, 
-			   XmNhelpCallback,   ImmediateHelpCB, 0);
-	}
-	XtManageChild(save_options_dialog);
+	if (yn_dialog)
+	    XtDestroyWidget(yn_dialog);
+	yn_dialog = XmCreateQuestionDialog(find_shell(w),
+					   "save_options_dialog", NULL, 0);
+	Delay::register_shell(yn_dialog);
+	XtAddCallback (yn_dialog, XmNokCallback,     SaveOptionsAndExitCB, 0);
+	XtAddCallback (yn_dialog, XmNcancelCallback, ExitCB, 0);
+	XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+	XtManageChild(yn_dialog);
     }
     else
 	ExitCB(w, client_data, call_data);
@@ -5810,17 +5810,15 @@ void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 
     // Debugger is still running; request confirmation
-    static Widget quit_dialog = 0;
-    if (quit_dialog == 0)
-    {
-	quit_dialog = XmCreateQuestionDialog(find_shell(w),
-					   "quit_dialog", NULL, 0);
-	Delay::register_shell(quit_dialog);
-	XtAddCallback (quit_dialog, XmNokCallback,     _DDDExitCB, 0);
-	XtAddCallback (quit_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
-    }
+    if (yn_dialog)
+	XtDestroyWidget(yn_dialog);
+    yn_dialog = XmCreateQuestionDialog(find_shell(w),
+				       "quit_dialog", NULL, 0);
+    Delay::register_shell(yn_dialog);
+    XtAddCallback (yn_dialog, XmNokCallback,     _DDDExitCB, 0);
+    XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 
-    XtManageChild(quit_dialog);
+    XtManageChild(yn_dialog);
 }
 
 // EOF on input/output detected
@@ -5905,40 +5903,36 @@ static Widget          print_file_name_field = 0;
 void graphQuickPrintCB(Widget w, 
 		       XtPointer client_data, XtPointer call_data)
 {
-    BoxPrintGC *gc_ptr = 0;
-    switch (print_type)
-    {
-    case PRINT_POSTSCRIPT:
-	gc_ptr = &print_postscript_gc;
-	break;
-
-    case PRINT_FIG:
-	gc_ptr = &print_xfig_gc;
-	break;
-    }
-    BoxPrintGC& gc = *gc_ptr;
-
     if (print_to_printer)
     {
-	if (gc.isFig())
-	{
-	    post_error("Cannot print FIG files on printer", 
-		       "print_fig_error", w);
-	    return;
-	}
-	
 	string command = app_data.print_command;
 	if (print_command_field)
 	{
-	    String cmd = XmTextFieldGetString(print_command_field);
-	    command = cmd;
-	    XtFree(cmd);
+	    String c = XmTextFieldGetString(print_command_field);
+	    command = c;
+	    XtFree(c);
 	}
-	if (print(command, gc, print_selected_only) == 0)
-	    XtUnmanageChild(print_dialog);
+	if (print(command, print_postscript_gc, print_selected_only) == 0)
+	{
+	    if (print_dialog)
+		XtUnmanageChild(print_dialog);
+	}
     }
     else
     {
+	BoxPrintGC *gc_ptr = 0;
+	switch (print_type)
+	{
+	case PRINT_POSTSCRIPT:
+	    gc_ptr = &print_postscript_gc;
+	    break;
+
+	case PRINT_FIG:
+	    gc_ptr = &print_xfig_gc;
+	    break;
+	}
+	BoxPrintGC& gc = *gc_ptr;
+
 	String file = XmTextFieldGetString(print_file_name_field);
 	string f = file;
 	XtFree(file);
@@ -5951,32 +5945,29 @@ void graphQuickPrintCB(Widget w,
 	{
 	    // File does not exist or override is on
 	    if (convert(f, gc, print_selected_only) == 0)
-		XtUnmanageChild(print_dialog);
+	    {
+		if (print_dialog)
+		    XtUnmanageChild(print_dialog);
+	    }
 	}
 	else
 	{
-	    static Widget confirm_overwrite_dialog = 0;
-	    if (confirm_overwrite_dialog == 0)
-	    {
-		confirm_overwrite_dialog = 
-		    XmCreateQuestionDialog(find_shell(w),
-					   "confirm_overwrite_dialog", 
-					   NULL, 0);
-		Delay::register_shell(confirm_overwrite_dialog);
-		XtAddCallback (confirm_overwrite_dialog, 
-			       XmNokCallback,   graphQuickPrintCB, 
-			       (void *)1);
-		XtAddCallback (confirm_overwrite_dialog, 
-			       XmNhelpCallback, ImmediateHelpCB, 0);
-	    }
+	    if (yn_dialog)
+		XtDestroyWidget(yn_dialog);
+	    yn_dialog = 
+		XmCreateQuestionDialog(find_shell(w),
+				       "confirm_overwrite_dialog", NULL, 0);
+	    Delay::register_shell(yn_dialog);
+	    XtAddCallback (yn_dialog, XmNokCallback,   graphQuickPrintCB, 
+			   (void *)1);
+	    XtAddCallback (yn_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
 	    string question = "Overwrite existing file\n" + quote(f) + "?";
 	    XmString xmtext = XmStringCreateLtoR (question, "rm");
-	    XtVaSetValues (confirm_overwrite_dialog, 
-			   XmNmessageString, xmtext, NULL);
+	    XtVaSetValues (yn_dialog, XmNmessageString, xmtext, NULL);
 	    XmStringFree (xmtext);
 
-	    XtManageChild (confirm_overwrite_dialog);
+	    XtManageChild (yn_dialog);
 	}
     }
 }
@@ -6834,26 +6825,25 @@ static void DungeonCollapseCB(XtPointer client_data, XtIntervalId *id)
 {
     Widget w = Widget(client_data);
 
-    static Widget dungeon_collapse_error = 0;
-    if (dungeon_collapse_error == 0)
-    {
-	Widget shell = find_shell(w);
-	dungeon_collapse_error = 
-	    XmCreateErrorDialog(shell, "dungeon_collapse_error", NULL, 0);
-	Delay::register_shell(dungeon_collapse_error);
-	XtUnmanageChild(XmMessageBoxGetChild 
-			(dungeon_collapse_error, XmDIALOG_CANCEL_BUTTON));
-	XtAddCallback(dungeon_collapse_error, 
-		      XmNhelpCallback, ImmediateHelpCB, NULL);
-    }
+    static Widget dungeon_error = 0;
+    if (dungeon_error)
+	XtDestroyWidget(dungeon_error);
+
+    Widget shell = find_shell(w);
+    dungeon_error = 
+	XmCreateErrorDialog(shell, "dungeon_collapse_error", NULL, 0);
+    Delay::register_shell(dungeon_error);
+    XtUnmanageChild(XmMessageBoxGetChild 
+		    (dungeon_error, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback(dungeon_error, XmNhelpCallback, ImmediateHelpCB, NULL);
 
     MString mtext("Suddenly, the dungeon collapses.", "rm");
-    XtVaSetValues (dungeon_collapse_error,
+    XtVaSetValues (dungeon_error,
 		   XmNmessageString, XmString(mtext),
 		   NULL);
 
-    XtManageChild(dungeon_collapse_error);
-    wait_until_mapped(dungeon_collapse_error);
+    XtManageChild(dungeon_error);
+    wait_until_mapped(dungeon_error);
 
     sleep(2);
 
@@ -6913,15 +6903,14 @@ void post_gdb_yn(string question, Widget w)
     if (question == "")
 	return;
 
-    if (yn_dialog == 0)
-    {
-	yn_dialog = XmCreateQuestionDialog(find_shell(w),
-					   "yn_dialog", NULL, 0);
-	Delay::register_shell(yn_dialog);
-	XtAddCallback (yn_dialog, XmNokCallback,     YnCB, (void *)"yes");
-	XtAddCallback (yn_dialog, XmNcancelCallback, YnCB, (void *)"no");
-	XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
-    }
+    if (yn_dialog)
+	XtDestroyWidget(yn_dialog);
+    yn_dialog = XmCreateQuestionDialog(find_shell(w),
+				       "yn_dialog", NULL, 0);
+    Delay::register_shell(yn_dialog);
+    XtAddCallback (yn_dialog, XmNokCallback,     YnCB, (void *)"yes");
+    XtAddCallback (yn_dialog, XmNcancelCallback, YnCB, (void *)"no");
+    XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 
     XmString xmtext = XmStringCreateLtoR (question, "rm");
     XtVaSetValues (yn_dialog, XmNmessageString, xmtext, NULL);
@@ -6936,15 +6925,15 @@ void post_gdb_busy(Widget w)
 	return;
 
     static Widget busy_dialog = 0;
-    if (busy_dialog == 0)
-    {
-	busy_dialog = 
-	    XmCreateWorkingDialog (find_shell(w), "busy_dialog", NULL, 0);
-	Delay::register_shell(busy_dialog);
-	XtUnmanageChild(XmMessageBoxGetChild 
-			(busy_dialog, XmDIALOG_CANCEL_BUTTON));
-	XtAddCallback(busy_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
-    }
+    if (busy_dialog)
+	XtDestroyWidget(busy_dialog);
+
+    busy_dialog = 
+	XmCreateWorkingDialog (find_shell(w), "busy_dialog", NULL, 0);
+    Delay::register_shell(busy_dialog);
+    XtUnmanageChild(XmMessageBoxGetChild 
+		    (busy_dialog, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback(busy_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
     XtManageChild(busy_dialog);
 }
 
@@ -6970,17 +6959,16 @@ void post_gdb_died(string reason, Widget w)
     _gdb_out("\n" + gdb_path + ": " + reason + "\n");
 
     static Widget died_dialog = 0;
-    if (died_dialog == 0)
-    {
-	died_dialog = 
-	    XmCreateErrorDialog (find_shell(w), "terminated_dialog", NULL, 0);
-	Delay::register_shell(died_dialog);
+    if (died_dialog)
+	XtDestroyWidget(died_dialog);
+    died_dialog = 
+	XmCreateErrorDialog (find_shell(w), "terminated_dialog", NULL, 0);
+    Delay::register_shell(died_dialog);
 
-	XtUnmanageChild (XmMessageBoxGetChild 
-			 (died_dialog, XmDIALOG_CANCEL_BUTTON));
-	XtAddCallback (died_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
-	XtAddCallback (died_dialog, XmNokCallback,   DDDExitCB,       NULL);
-    }
+    XtUnmanageChild (XmMessageBoxGetChild 
+		     (died_dialog, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback (died_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+    XtAddCallback (died_dialog, XmNokCallback,   DDDExitCB,       NULL);
 
     XtManageChild (died_dialog);
 }
@@ -7006,19 +6994,17 @@ void post_gdb_message(string text, Widget w)
 #endif
 
     static Widget gdb_message_dialog = 0;
-    if (gdb_message_dialog == 0)
-    {
-	gdb_message_dialog = 
-	    XmCreateWarningDialog (find_shell(w), 
-				   "gdb_message_dialog", NULL, 0);
-	Delay::register_shell(gdb_message_dialog);
-	XtUnmanageChild (XmMessageBoxGetChild 
-			 (gdb_message_dialog, XmDIALOG_CANCEL_BUTTON));
-	XtAddCallback (gdb_message_dialog,
-		       XmNhelpCallback,
-		       ImmediateHelpCB,
-		       NULL);
-    }
+    if (gdb_message_dialog)
+	XtDestroyWidget(gdb_message_dialog);
+    gdb_message_dialog = 
+	XmCreateWarningDialog (find_shell(w), "gdb_message_dialog", NULL, 0);
+    Delay::register_shell(gdb_message_dialog);
+    XtUnmanageChild (XmMessageBoxGetChild 
+		     (gdb_message_dialog, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback (gdb_message_dialog,
+		   XmNhelpCallback,
+		   ImmediateHelpCB,
+		   NULL);
 
     MString mtext(text, "rm");
     XtVaSetValues (gdb_message_dialog,
@@ -7049,15 +7035,14 @@ void post_error (string text, String name, Widget w)
 	name = "ddd_error";
 
     static Widget ddd_error = 0;
-    if (ddd_error == 0)
-    {
-	ddd_error = 
-	    XmCreateErrorDialog (find_shell(w), name, NULL, 0);
-	Delay::register_shell(ddd_error);
-	XtUnmanageChild (XmMessageBoxGetChild 
-			 (ddd_error, XmDIALOG_CANCEL_BUTTON));
-	XtAddCallback (ddd_error, XmNhelpCallback, ImmediateHelpCB, NULL);
-    }
+    if (ddd_error)
+	XtDestroyWidget(ddd_error);
+    ddd_error = 
+	XmCreateErrorDialog (find_shell(w), name, NULL, 0);
+    Delay::register_shell(ddd_error);
+    XtUnmanageChild (XmMessageBoxGetChild 
+		     (ddd_error, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback (ddd_error, XmNhelpCallback, ImmediateHelpCB, NULL);
 
     MString mtext(text, "rm");
     XtVaSetValues (ddd_error,
@@ -7088,15 +7073,14 @@ void post_warning (string text, String name, Widget w)
 	name = "ddd_warning";
 
     static Widget ddd_warning = 0;
-    if (ddd_warning == 0)
-    {
-	ddd_warning = 
-	    XmCreateWarningDialog (find_shell(w), name, NULL, 0);
-	Delay::register_shell(ddd_warning);
-	XtUnmanageChild (XmMessageBoxGetChild 
-			 (ddd_warning, XmDIALOG_CANCEL_BUTTON));
-	XtAddCallback (ddd_warning, XmNhelpCallback, ImmediateHelpCB, NULL);
-    }
+    if (ddd_warning)
+	XtDestroyWidget(ddd_warning);
+    ddd_warning = 
+	XmCreateWarningDialog (find_shell(w), name, NULL, 0);
+    Delay::register_shell(ddd_warning);
+    XtUnmanageChild (XmMessageBoxGetChild 
+		     (ddd_warning, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback (ddd_warning, XmNhelpCallback, ImmediateHelpCB, NULL);
 
     MString mtext(text, "rm");
     XtVaSetValues (ddd_warning,
