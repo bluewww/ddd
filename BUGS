@@ -282,7 +282,4 @@ Volunteers for fixing these and other bugs are welcome!
     window locks in scroll mode until it reaches the top or bottom of
     the file.
 
-258*Using the common toolbar, the `():' button does not clear the
-    graph editor selection.
-
 260 (Insert new bugs here)

@@ -2097,13 +2097,21 @@ int main(int argc, char *argv[])
 		       NULL);
     }
 
-    // Source tool bar
+    // Source toolbar
     if (arg_cmd_w == 0)
 	arg_cmd_w = create_toolbar(source_view_parent, "source",
 				   arg_cmd_area, 0, arg_label, source_arg,
 				   label_type);
     XtAddCallback(arg_label, XmNactivateCallback, 
 		  ClearTextFieldCB, source_arg->widget());
+
+    if (DataDisp::graph_cmd_w == arg_cmd_w)
+    {
+	// Common toolbar
+	XtAddCallback(arg_label, XmNactivateCallback, 
+		      DataDisp::SelectionLostCB, XtPointer(0));
+    }
+
     XtAddCallback(source_arg->widget(), XmNactivateCallback, 
 		  ActivateCB, 
 		  XtPointer(arg_cmd_area[ArgItems::Lookup].widget));
@@ -5655,7 +5663,7 @@ static void setup_command_tool(bool iconic)
 #if 0
     if (app_data.command_toolbar)
     {
-	// The command tool is not needed, as we have a command tool bar.
+	// The command tool is not needed, as we have a command toolbar.
     }
     else if (!app_data.source_window)
     {

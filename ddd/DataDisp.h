@@ -167,7 +167,6 @@ class DataDisp {
     //-----------------------------------------------------------------------
 
     static bool lose_selection;
-    static void SelectionLostCB(Widget, XtPointer, XtPointer);
 
     static void set_args(BoxPoint p = BoxPoint(),
 			 SelectionMode mode = SetSelection);
@@ -513,6 +512,9 @@ public:
 
     // Reset all
     static void reset();
+
+    // True if the selection was lost
+    static void SelectionLostCB(Widget = 0, XtPointer = 0, XtPointer = 0);
 };
 
 inline bool DataDisp::get_selection(ostream& os, bool include_position)
