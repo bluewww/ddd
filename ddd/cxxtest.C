@@ -272,6 +272,44 @@ public:
 	value(v), self(this), next(this)
     {}
 };
+
+//--------------------------------------------------------------------------
+// Namespaces.
+
+#if HAVE_NAMESPACE
+namespace X {
+  int i=10,j=10,k=10;
+}
+
+int k=0;
+
+void namespace_test()
+{
+
+  int i = 0;
+
+  using namespace X;
+  i++;  // compiler uses local, so does debugger/ddd
+
+  // the compiler uses X::j here however the debugger has
+  //  ddd inserts just j into the gdb console and produces an error,
+  //  however gdb needs "'X::j'" to work
+ j++;
+
+  // the compiler uses the global k
+  // ddd will insert just a "k" and properly display the global k
+  ::k++;
+
+  // the compiler uses X::k
+  // ddd inserts "X::k" into the console and produces an error because
+  // gdb is expecting a "'X::k'" to properly resolve k.
+  X::k++;
+}
+#else
+void namespace_test() {}
+#endif
+
+
 //--------------------------------------------------------------------------
 // Simple threaded tree
 
@@ -621,6 +659,8 @@ int main(int /* argc */, char ** /* argv */)
     plot_test();
     i++;
     type_test();
+    i++;
+    namespace_test();
     --i;
     cin_cout_test();
     return 0;
