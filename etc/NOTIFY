@@ -1,0 +1,27 @@
+Memo: Whom to notify about new DDD releases
+===========================================
+
+Text is found in `ANNOUNCE'.
+Title: `The Data Display Debugger (DDD) 2.0 is available' or
+       `DDD 2.0 is available'.
+
+E-Mail
+------
+
+* ddd-users@ips.cs.tu-bs.de (DDD users)
+
+* bug-gdb@prep.ai.mit.edu   (for `gnu.gdb.bug')
+* xannounce@x.org           (for `comp.windows.x.announce'; major release only)
+* gnu@prep.ai.mit.edu       (just to notify; maybe someday in `gnu.announce')
+
+* faq%craft@uunet.uu.net    (X11 FAQ, `comp.windows.x')
+* elf@ee.ryerson.ca         (X11 apps FAQ, `comp.windows.x.apps')
+
+USENET News
+-----------
+
+* comp.unix.programmer
+* comp.windows.x
+* comp.windows.x.apps
+* gnu.misc.discuss
+* gnu.utils.help
