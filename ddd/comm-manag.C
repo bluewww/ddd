@@ -829,10 +829,10 @@ static bool command_was_cancelled = false;
 
 // Send user command CMD to GDB.  Invoke CALLBACK with DATA upon
 // completion of CMD; invoke EXTRA_CALLBACK with DATA when all extra
-// commands (see CHECK) are done.  If ECHO and VERBOSE are set, issue
-// command in GDB console.  If VERBOSE is set, issue answer in GDB
-// console.  If PROMPT is set, issue prompt.  If CHECK is set, add
-// extra GDB commands to get GDB state.
+// commands (see CHECK) are done.  If ECHO and either VERBOSE or
+// PROMPT are set, issue command in GDB console.  If VERBOSE is set,
+// issue answer in GDB console.  If PROMPT is set, issue prompt.  If
+// CHECK is set, add extra GDB commands to get GDB state.
 void send_gdb_command(string cmd, Widget origin,
 		      OQCProc callback, OACProc extra_callback, void *data,
 		      bool echo, bool verbose, bool prompt, bool check)
@@ -950,34 +950,32 @@ void send_gdb_command(string cmd, Widget origin,
 	    arg.matches(rxlist_range))
 	{
 	    // Ordinary `list', `list +', `list -', or `list N, M'.
-	    // Nothing special.
+	    // Leave as is.
 	}
 	else
 	{
 	    // `list ARG'
 	    if (have_source_window())
 	    {
-		// Lookup ARG in source window, too
+		// Lookup ARG in source window only
 		switch (gdb->type())
 		{
 		case GDB:
 		case PYDB:
-		    // No need to list lines in the debugger console;
-		    // translate `list' to `info line'.
+		    // Translate `list' to `info line'.
 		    cmd = "info line " + arg;
 		    break;
 
 		case DBX:
 		case XDB:
 		case JDB:
-		    // Lookup ARG in source window only.
+		    // Just lookup ARG; ignore `list' output
 		    verbose = false;
-		    prompt  = false;
 		    cmd_data->lookup_arg = arg;
 		    break;
 
 		case PERL:
-		    // Perl issues a position.  Nothing special.
+		    // Perl `l' command issues a position anyway.
 		    break;
 		}
 	    }
@@ -1399,7 +1397,7 @@ void send_gdb_command(string cmd, Widget origin,
 	cmd_data->pos_buffer->check_func = data_disp->need_scope();
     }
 
-    if (echo && verbose)
+    if (echo && (verbose || prompt))
     {
 	strip_auto_command_prefix(echoed_cmd);
 	gdb_out(echoed_cmd + "\n");
