@@ -8,6 +8,7 @@ DDD 2.0 (in development)
     interface and many bug fixes.
 
     User-visible changes to DDD 1.4:
+    - Fonts are now resolution-independent.
     - Colored displays.  You can specify individual colors for
       pointers, arrays, structs, and so on.
     - New command tool.  All command buttons that do not take
