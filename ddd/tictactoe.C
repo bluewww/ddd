@@ -48,6 +48,7 @@ char tictactoe_rcsid[] =
 #include <Xm/SelectioB.h>	// XmCreatePromptDialog()
 
 #include <iostream.h>
+#include <unistd.h>
 
 #include "Command.h"
 #include "Delay.h"
@@ -55,6 +56,7 @@ char tictactoe_rcsid[] =
 #include "HelpCB.h"
 #include "InitImage.h"
 #include "LessTifH.h"
+#include "TimeOut.h"
 #include "assert.h"
 #include "bool.h"
 #include "cook.h"
@@ -64,13 +66,9 @@ char tictactoe_rcsid[] =
 #include "version.h"
 
 
-/* The entire drawing area is scalable upon the screen variable
- * Board is:
- *                              1 2 3
- *                              4 5 6
- *                              7 8 9
- */
-
+// Board is: 1 2 3
+//           4 5 6
+//           7 8 9
 
 static int board[10];
 static bool winning[10];
@@ -411,17 +409,43 @@ static void repaint()
     }
 }
 
+static void MoveCB(XtPointer client_data, XtIntervalId *id)
+{
+    (void) id;			// Use it
+    XtIntervalId *timer = (XtIntervalId *)client_data;
+    assert(*timer == *id);
+    *timer = 0;
+
+    autoMove();
+    repaint();
+}
+
+static const int THINKING_TIME = 750; // `Thinking' time in ms
+
 static void make_move(int move)
 {
+    static XtIntervalId timer = 0;
+
     // Is it a valid move?
     if ((move < 1) || (move > 9) || (board[move] != NO_ONE))
 	return;
 
-    board[move] = PLAYER1;
-    if (winner() == NO_ONE)
-	autoMove();
+    // Are we still thinking?
+    if (timer != 0)
+	return;
 
+    board[move] = PLAYER1;
     repaint();
+
+    if (winner() == NO_ONE)
+    {
+	for (int i = 1; i < 10; i++)
+	    XtSetSensitive(buttons[i], False);
+
+	// Make a move in THINKING_TIME ms
+	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(buttons[move]),
+				THINKING_TIME, MoveCB, XtPointer(&timer));
+    }
 }
 
 // Install the given X bitmap as NAME
