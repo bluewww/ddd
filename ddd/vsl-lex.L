@@ -61,7 +61,7 @@ static char *pushback_ptr = pushback;
 
 inline int do_unput(char c) 
 {
-    if (c != 0)
+    if (c != '\0')
 	*pushback_ptr++ = c;
 
     return c;
@@ -161,9 +161,6 @@ W			[ \f\t]*
 				case '*': unput('*');
 				default : goto loop;
 				}
-
-			// Avoid warnings about unused function
-			(void) yyunput;
 			BREAK
 		}
 ^{W}#!.*		BREAK			// Unix exec() tag
@@ -479,6 +476,12 @@ static int switchup(char *filename, bool thisdir)
 	cout << "(" << yyfilename;
 	cout.flush();
     }
+
+#ifdef FLEX_SCANNER
+    // Avoid warnings about unused vslunput() function
+    if (false)
+	vslunput(0, 0);		// Never called
+#endif
 
     return 0;
 }
