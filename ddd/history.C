@@ -79,9 +79,14 @@ char history_rcsid[] =
 #include <Xm/SelectioB.h>
 
 #if WITH_READLINE
+// `history.h' has no complete declaration for `add_history',
+// so we install our own.
+#define add_history old_add_history
 extern "C" {
 #include "readline/history.h"
 }
+#undef add_history
+extern "C" void add_history(char *line);
 #endif
 
 #ifndef ARG_MAX
@@ -233,7 +238,7 @@ void add_to_history(const string& line)
     update_combo_boxes(line);
 
 #if WITH_READLINE
-    add_history((char *)line);
+    add_history(line);
 #endif
 }
 
@@ -310,7 +315,7 @@ void load_history(const string& file)
 		add_to_arguments(line);
 
 #if WITH_READLINE
-		add_history((char *)line);
+		add_history(line);
 #endif
 	    }
 
