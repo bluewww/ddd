@@ -417,6 +417,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "bool.h"
 #include "assert.h"
 #include "casts.h"
+#include "attribute.h"
 
 #ifndef STRING_CHECK_CONSUME
 #define STRING_CHECK_CONSUME 0
@@ -881,7 +882,7 @@ public:
     // Report current allocation (not length!)
     int allocation() const;
 
-    void error(const char* msg) const;
+    void error(const char* msg) const ATTRIBUTE_NORETURN;
 
     bool OK() const;
 };

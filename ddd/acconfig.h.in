@@ -62,6 +62,9 @@
 /* Define if your C++ compiler supports new C++ casts, such as `const_cast' */
 #undef HAVE_NEW_CASTS
 
+/* Define if your C++ compiler supports __attribute__ ((noreturn)). */
+#undef HAVE_ATTRIBUTE_NORETURN
+
 /* Define if your C++ compiler supports exception handling. */
 #undef HAVE_EXCEPTIONS
 

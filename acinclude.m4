@@ -619,6 +619,30 @@ fi
 ])dnl
 dnl
 dnl
+dnl ICE_CXX_ATTRIBUTE_NORETURN
+dnl --------------------------
+dnl
+dnl If the C++ compiler accepts __attribute__ ((noreturn)).
+dnl
+AC_DEFUN(ICE_CXX_ATTRIBUTE_NORETURN,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler ($CXX) supports __attribute__ ((noreturn)))
+AC_CACHE_VAL(ice_cv_have_attribute_noreturn,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(,[class A {void foo (int x) __attribute__ ((noreturn));}],
+ice_cv_have_attribute_noreturn=yes,
+ice_cv_have_attribute_noreturn=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_attribute_noreturn)
+if test "$ice_cv_have_attribute_noreturn" = yes; then
+AC_DEFINE(HAVE_ATTRIBUTE_NORETURN)
+fi
+])dnl
+dnl
 dnl
 dnl
 dnl

@@ -59,6 +59,7 @@ dddappdir     = $(pkgdatadir)-$(VERSION)/$(ddd)
 # General-purpose utilities: strings, regexps, run-type type info...
 BASE_SRC = \
 	assert.h     \
+	attribute.h  \
 	basename.C   \
 	basename.h   \
 	bool.h       \
