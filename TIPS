@@ -155,22 +155,12 @@ To debug a child process, put a call to SAMP(sleep) in the child right
 after the SAMP(fork) call.  Run the program and attach to the child process
 using LBL(File) | LBL(Attach to Process).
 
-If you suspect memory corruption caused by problematic pointers, try
-linking with Electric Fence SAMP(efence) or the SAMP(dbmalloc) library
-(URL(http://www.cs.colorado.edu/homes/zorn/public_html/MallocDebug.html)).
-BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
-
-Prevention is better than cure.  Document your assumptions using CODE(<assert.h>) 
-or GNU NANA (URL(http://wattle.cs.ntu.edu.au/homepages/pjm/nana-home/)).
-BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
-
 To execute frequently used commands with one mouse click,
 define your own DDD buttons via LBL(Commands) | LBL(Edit Buttons).
 
-The debugger isn't a substitute for good thinking.  But, in some
-cases, thinking isn't a substitute for a good debugger either.  The
-most effective combination is good thinking and a good debugger.
-QUOTE(Steve McConnell, Code Complete)
+Even while in the source window, you can enter and edit GDB commands.
+Try KEY(Ctrl+P), KEY(Ctrl+N), KEY(Ctrl+B), KEY(Ctrl+F) for cursor movement
+and finish entering commands with KEY_RETURN.
 
 When debugging an X application, there is always a risk of
 interrupting it while the mouse pointer is grabbed (frozen).  To
@@ -179,6 +169,23 @@ LBL(Ungrab mouse pointer when interrupting modal X application).
 
 You can easily resume a saved DDD VAR(session)
 by invoking DDD as KBD([ddd] =VAR(session)).
+
+
+! Professional tips.
+
+If you suspect memory corruption caused by problematic pointers, try
+linking with Electric Fence SAMP(efence) or the SAMP(dbmalloc) library.
+See the DDD WWW page for links.
+BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
+
+Prevention is better than cure.  Document your assumptions using CODE(<assert.h>) 
+or GNU NANA.  See the DDD WWW page for links.
+BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
+
+The debugger isn't a substitute for good thinking.  But, in some
+cases, thinking isn't a substitute for a good debugger either.  The
+most effective combination is good thinking and a good debugger.
+QUOTE(Steve McConnell, Code Complete)
 
 When you're totally stuck, try to find a helpful ear.  In my experience,
 nothing helps you more in debugging than to try to explain your problem

@@ -370,7 +370,7 @@ Volunteers for these and other projects are welcome!
 249 `Rotate' should be enabled as soon as there is exactly one child
     that can be rotated.
 
-250*Record breakpoint commands to be executed.
+250*Edit breakpoint commands to be executed.
 
 252 Print via the X Printer extension (-lXp).
 
@@ -397,7 +397,5 @@ Volunteers for these and other projects are welcome!
 277 Allow in-place editing.  There is already a simple `editSource' resource,
     but we'd have to do a lot more to realize decent editing
     capabilities.
-
-278 Support GDB `enable once' and `enable delete' commands.
 
 279 (Insert new project ideas here)
