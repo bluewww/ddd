@@ -729,8 +729,7 @@ static Widget graph_grid_size_w;
 
 static MMDesc data_preferences_menu[] = 
 {
-    { "detectAliases", MMToggle | MMInsensitive,
-      { graphToggleDetectAliasesCB },
+    { "detectAliases", MMToggle,  { graphToggleDetectAliasesCB },
       NULL, &graph_detect_aliases_w },
     { "showHints",     MMToggle,  { graphToggleShowHintsCB },
       NULL, &graph_show_hints_w },
@@ -2179,6 +2178,8 @@ void update_options()
     source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
     source_view->set_all_registers(app_data.all_registers);
     source_view->set_tab_width(app_data.tab_width);
+
+    data_disp->set_detect_aliases(app_data.detect_aliases);
 
     if (app_data.tool_bar && tool_bar_w != 0 && !XtIsManaged(tool_bar_w))
     {

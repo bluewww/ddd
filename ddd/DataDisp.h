@@ -230,8 +230,11 @@ public:
     static string process_displays(string& display_answer,
 				   bool& disabling_occurred);
 
-    // Process user-defined command output in DISPLAY_ANSWER.
+    // Process user-defined command output in ANSWERS.
     static void process_user(StringArray& answers);
+
+    // Process data output in ANSWERS.
+    static void process_addr(StringArray& answers);
 
 private:
     // Call me back again
@@ -275,6 +278,7 @@ private:
     static Widget last_origin;
     static Time last_select_time;
     static int next_display_number;
+    static bool detect_aliases;
 
     static Widget graph_popup_w;
     static Widget node_popup_w;
@@ -301,9 +305,13 @@ public:
     inline int count_all() { return disp_graph->count_all(); }
     static void refresh_graph_edit ();
 
+    // Refresh address of NODE (0: all nodes)
+    static void refresh_addr(DispNode *node = 0);
+
     // Command(s) to re-print all displays; return # of commands
     static int add_refresh_data_commands(StringArray& cmds);
     static int add_refresh_user_commands(StringArray& cmds);
+    static int add_refresh_addr_commands(StringArray& cmds, DispNode *dn = 0);
 
     // Callbacks for menu bar
     static void EditDisplaysCB(Widget, XtPointer, XtPointer);
@@ -319,6 +327,9 @@ public:
     // Callbacks for language changes
     static void language_changedHP(Agent *source, void *client_data, 
 				   void *call_data);
+
+    // Set whether aliases are to be detected
+    static void set_detect_aliases(bool value);
 };
 
 #endif // _DDD_DataDisp_h

@@ -120,6 +120,7 @@ typedef struct PlusCmdData {
     bool     refresh_threads;          // send 'info threads'
     bool     refresh_data;             // send 'display'
     bool     refresh_user;             // send user-defined commands
+    bool     refresh_addr;             // send commands to get addresses
     bool     refresh_disp_info;        // send 'info display'
     bool     refresh_history_filename; // send 'show history filename'
     bool     refresh_history_size;     // send 'show history size'
@@ -128,6 +129,7 @@ typedef struct PlusCmdData {
     string   set_command;	       // setting to update
     int      n_refresh_data;	       // # of data displays to refresh
     int      n_refresh_user;	       // # of user displays to refresh
+    int      n_refresh_addr;	       // # of addresses to refresh
 
     bool     config_frame;	       // try 'frame'
     bool     config_run_io;	       // try 'dbxenv run_io'
@@ -160,6 +162,7 @@ typedef struct PlusCmdData {
 	refresh_threads(false),
 	refresh_data(false),
 	refresh_user(false),
+	refresh_addr(false),
 	refresh_disp_info(false),
 	refresh_history_filename(false),
 	refresh_history_size(false),
@@ -168,6 +171,7 @@ typedef struct PlusCmdData {
 	set_command(""),
 	n_refresh_data(0),
 	n_refresh_user(0),
+	n_refresh_addr(0),
 
 	config_frame(false),
 	config_run_io(false),
@@ -420,6 +424,9 @@ void user_cmdSUC (string cmd, Widget origin)
     // User command output may change any time
     plus_cmd_data->refresh_user    = true;
 
+    // Addresses may change any time
+    plus_cmd_data->refresh_addr    = true;
+
     if (source_view->where_required())
     {
 	plus_cmd_data->refresh_where = true;
@@ -472,6 +479,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_frame     = false;
 	plus_cmd_data->refresh_registers = false;
 	plus_cmd_data->refresh_threads   = false;
+	plus_cmd_data->refresh_addr      = false;
     }
     else if (is_running_cmd(cmd, gdb))
     {
@@ -533,6 +541,9 @@ void user_cmdSUC (string cmd, Widget origin)
     {
 	// Update displays
 	plus_cmd_data->refresh_data = true;
+
+	// Addresses won't change
+	plus_cmd_data->refresh_addr = false;
     }
     else if (is_lookup_cmd(cmd))
     {
@@ -548,6 +559,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_where     = false;
 	plus_cmd_data->refresh_registers = false;
 	plus_cmd_data->refresh_threads   = false;
+	plus_cmd_data->refresh_addr      = false;
 
 	if (!gdb->has_display_command())
 	    plus_cmd_data->refresh_data = true;
@@ -560,6 +572,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_frame     = false;
 	plus_cmd_data->refresh_registers = false;
 	plus_cmd_data->refresh_threads   = false;
+	plus_cmd_data->refresh_addr      = false;
     }
     else if (is_nop_cmd(cmd))
     {
@@ -569,6 +582,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_frame     = false;
 	plus_cmd_data->refresh_registers = false;
 	plus_cmd_data->refresh_threads   = false;
+	plus_cmd_data->refresh_addr      = false;
     }
 
     if (is_setting_cmd(cmd))
@@ -576,6 +590,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	get_settings(gdb->type());
 	plus_cmd_data->refresh_setting = true;
 	plus_cmd_data->set_command     = cmd;
+	plus_cmd_data->refresh_data    = false;
+	plus_cmd_data->refresh_addr    = false;
     }
 
     if (cmd_data->new_exec_pos
@@ -693,6 +709,9 @@ void user_cmdSUC (string cmd, Widget origin)
 	if (plus_cmd_data->refresh_user)
 	    plus_cmd_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
+	if (plus_cmd_data->refresh_addr)
+	    plus_cmd_data->n_refresh_addr = 
+		data_disp->add_refresh_addr_commands(cmds);
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds += "info display";
 	if (plus_cmd_data->refresh_history_filename)
@@ -743,6 +762,9 @@ void user_cmdSUC (string cmd, Widget origin)
 	if (plus_cmd_data->refresh_user)
 	    plus_cmd_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
+	if (plus_cmd_data->refresh_addr)
+	    plus_cmd_data->n_refresh_addr = 
+		data_disp->add_refresh_addr_commands(cmds);
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds += gdb->display_command();
 	assert (!plus_cmd_data->refresh_history_filename);
@@ -773,6 +795,9 @@ void user_cmdSUC (string cmd, Widget origin)
 	if (plus_cmd_data->refresh_user)
 	    plus_cmd_data->n_refresh_user = 
 		data_disp->add_refresh_user_commands(cmds);
+	if (plus_cmd_data->refresh_addr)
+	    plus_cmd_data->n_refresh_addr = 
+		data_disp->add_refresh_addr_commands(cmds);
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds += gdb->display_command();
 	assert (!plus_cmd_data->refresh_history_filename);
@@ -1359,6 +1384,14 @@ void plusOQAC (string answers[],
 			    plus_cmd_data->n_refresh_user);
 	data_disp->process_user(answers);
 	qu_count += plus_cmd_data->n_refresh_user;
+    }
+
+    if (plus_cmd_data->refresh_addr)
+    {
+	StringArray answers(((string *)answers) + qu_count,
+			    plus_cmd_data->n_refresh_addr);
+	data_disp->process_addr(answers);
+	qu_count += plus_cmd_data->n_refresh_addr;
     }
 
     if (plus_cmd_data->refresh_disp_info) {

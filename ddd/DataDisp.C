@@ -64,6 +64,7 @@ char DataDisp_rcsid[] =
 #include "VoidArray.h"
 #include "settings.h"
 #include "status.h"
+#include "PosBuffer.h"
 
 // Motif includes
 #include <Xm/MessageB.h>
@@ -185,6 +186,8 @@ Widget     DataDisp::node_popup_w           = 0;
 
 bool DataDisp::ignore_update_graph_editor_selection   = false;
 bool DataDisp::ignore_update_display_editor_selection = false;
+
+bool DataDisp::detect_aliases = false;
 
 int DataDisp::next_display_number = 1;
 
@@ -1681,6 +1684,8 @@ void DataDisp::new_displayOQC (const string& answer, void* data)
     // in den Graphen einfuegen
     string nr = dn->disp_nr();
     disp_graph->insert_new (get_nr(nr), dn);
+
+    refresh_addr(dn);
     refresh_graph_edit();
 }
 
@@ -1718,6 +1723,8 @@ void DataDisp::new_userOQC (const string& answer, void* data)
     // in den Graphen einfuegen
     string nr = dn->disp_nr();
     disp_graph->insert_new (get_nr(nr), dn);
+
+    refresh_addr(dn);
     refresh_graph_edit();
     update_infos();
 
@@ -1832,12 +1839,16 @@ void DataDisp::new_displaysOQAC (string answers[],
     }
 
     // Create and select new nodes
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++)
+    {
 	if (!contains_display (answers[i], gdb))
+	{
+	    // Looks like an error message
 	    post_gdb_message (answers[i], last_origin);
-	else {
-
-	    // DispNode erzeugen und ggf. disabling-Meldung merken
+	}
+	else
+	{
+	    // Create new display and remember disabling-message
 	    DispNode *dn = new_data_node(answers[i]);
 	    if (dn == 0)
 		return;
@@ -1859,6 +1870,7 @@ void DataDisp::new_displaysOQAC (string answers[],
     delete[] answers;
     delete[] qu_datas;
 
+    refresh_addr();
     refresh_graph_edit();
 }
 
@@ -1869,7 +1881,6 @@ void DataDisp::new_displaysOQAC (string answers[],
 
 int DataDisp::add_refresh_data_commands(StringArray& cmds)
 {
-    string command;
     int initial_size = cmds.size();
 
     switch (gdb->type())
@@ -1877,7 +1888,6 @@ int DataDisp::add_refresh_data_commands(StringArray& cmds)
     case DBX:
     case XDB:
 	{
-	    command = "";
 	    MapRef ref;
 	    for (DispNode* dn = disp_graph->first(ref); 
 		 dn != 0;
@@ -1899,10 +1909,8 @@ int DataDisp::add_refresh_data_commands(StringArray& cmds)
 
 int DataDisp::add_refresh_user_commands(StringArray& cmds)
 {
-    string command;
     int initial_size = cmds.size();
 
-    command = "";
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
 	 dn != 0;
@@ -1916,6 +1924,10 @@ int DataDisp::add_refresh_user_commands(StringArray& cmds)
 }
 
 
+#define PROCESS_INFO_DISPLAY 0
+#define PROCESS_DATA         1
+#define PROCESS_USER         2
+#define PROCESS_ADDR         3
 
 // ***************************************************************************
 // sendet die Befehle "info display" und "display" an den gdb,
@@ -1928,25 +1940,26 @@ void DataDisp::refresh_displaySQ (Widget origin)
 
     StringArray cmds;
     VoidArray dummy;
-    bool ok = false;
 
-    switch (gdb->type())
-    {
-    case GDB:
+    if (gdb->type() == GDB)
 	cmds += "info display";
-	break;
-	
-    case DBX:
-    case XDB:
-	break;
-    }
-    add_refresh_data_commands(cmds);
-    add_refresh_user_commands(cmds);
-
     while (dummy.size() < cmds.size())
-	dummy += (void *)0;
+	dummy += (void *)PROCESS_INFO_DISPLAY;
+
+    add_refresh_data_commands(cmds);
+    while (dummy.size() < cmds.size())
+	dummy += (void *)PROCESS_DATA;
+
+    add_refresh_user_commands(cmds);
+    while (dummy.size() < cmds.size())
+	dummy += (void *)PROCESS_USER;
+
+    add_refresh_addr_commands(cmds);
+    while (dummy.size() < cmds.size())
+	dummy += (void *)PROCESS_ADDR;
 	    
-    ok = gdb->send_qu_array(cmds, dummy, cmds.size(), refresh_displayOQAC, 0);
+    bool ok = 
+	gdb->send_qu_array(cmds, dummy, cmds.size(), refresh_displayOQAC, 0);
 
     if (!ok)
     {
@@ -1963,28 +1976,58 @@ void DataDisp::refresh_displayOQAC (string answers[],
 				    int    count,
 				    void*  )
 {
-    int n = 0;
-    if (gdb->type() == GDB)
-    {
-	// Antwort auf 'info display' auswerten (evtl displays loeschen)
-	process_info_display (answers[n++]);
-    }
-    
-    // Antwort auf 'display' auswerten
-    string ans;
-    for (int i = n; i < count; i++)
-	ans += answers[i];
+    string data_answers;
+    int data_answers_seen = 0;
+    StringArray user_answers;
+    StringArray addr_answers;
 
-    bool disabling_occurred = false;
-    if (n < count)
-	process_displays (ans, disabling_occurred);
+    for (int i = 0; i < count; i++)
+    {
+	switch (int(qu_datas[i]))
+	{
+	case PROCESS_INFO_DISPLAY:
+	    // Process 'info display' output (delete displays if necessary)
+	    process_info_display(answers[i]);
+	    break;
+
+	case PROCESS_DATA:
+	    data_answers += answers[i];
+	    data_answers_seen++;
+	    break;
+
+	case PROCESS_USER:
+	    user_answers += answers[i];
+	    break;
+
+	case PROCESS_ADDR:
+	    addr_answers += answers[i];
+	    break;
+
+	default:
+	    assert(0);
+	    break;
+	}
+    }
+
+    // Process `display', user command, and addr command output
+    if (data_answers_seen > 0)
+    {
+	bool disabling_occurred = false;
+	process_displays(data_answers, disabling_occurred);
+
+	// If we had a `disabling' message, refresh displays once more
+	if (disabling_occurred)
+	    refresh_displaySQ();
+    }
+
+    if (user_answers.size() > 0)
+	process_user(user_answers);
+
+    if (addr_answers.size() > 0)
+	process_addr(addr_answers);
 
     delete[] answers;
     delete[] qu_datas;
-
-    // Bei Fehlermeldung (Disabling...) nochmal refresh.
-    if (disabling_occurred)
-	refresh_displaySQ();
 }
 
 
@@ -2290,6 +2333,8 @@ void DataDisp::dependent_displayOQC (const string& answer, void* data)
     // in den Graphen einfuegen
     string nr = dn->disp_nr();
     disp_graph->insert_dependent (get_nr(nr), dn, old_disp_nr);
+
+    refresh_addr(dn);
     refresh_graph_edit();
 }
 
@@ -2471,6 +2516,7 @@ void DataDisp::dependent_displaysOQAC (string answers[],
     if (disabling_error_msgs != "")
 	post_gdb_message (disabling_error_msgs, last_origin);
 
+    refresh_addr();
     refresh_graph_edit();
 }
 
@@ -2712,7 +2758,7 @@ string DataDisp::process_displays (string& displays,
     return not_my_displays;
 }
 
-
+// Handle output of user commands
 void DataDisp::process_user (StringArray& answers)
 {
     int i = 0;
@@ -2720,7 +2766,7 @@ void DataDisp::process_user (StringArray& answers)
     bool changed = false;
     MapRef ref;
     for (int k = disp_graph->first_nr(ref); 
-	     k != 0 ; 
+	     k != 0 && i < answers.size();
 	     k = disp_graph->next_nr(ref))
     {
 	DispNode* dn = disp_graph->get(k);
@@ -2736,7 +2782,6 @@ void DataDisp::process_user (StringArray& answers)
     if (changed) 
 	refresh_graph_edit();
 }
-
 
 
 //----------------------------------------------------------------------------
@@ -2972,6 +3017,87 @@ void DataDisp::language_changedHP(Agent *source, void *, void *)
 		  NULL);
 }
 
+
+//----------------------------------------------------------------------------
+// Alias Detection
+//----------------------------------------------------------------------------
+
+// Set whether aliases are to be detected
+void DataDisp::set_detect_aliases(bool value)
+{
+    if (value == detect_aliases)
+	return;
+
+    detect_aliases = value;
+    if (detect_aliases)
+	refresh_displaySQ();
+}
+
+// Add address-printing commands to CMDS
+int DataDisp::add_refresh_addr_commands(StringArray& cmds, DispNode *dn)
+{
+    if (!detect_aliases)
+	return 0;
+
+    int initial_size = cmds.size();
+
+    if (dn != 0)
+    {
+ 	if (!dn->is_user_command())
+	    cmds += gdb->print_command(gdb->address_expr(dn->name()));
+    }
+    else
+    {
+	MapRef ref;
+	for (dn = disp_graph->first(ref); 
+	     dn != 0;
+	     dn = disp_graph->next(ref))
+	{
+	    add_refresh_addr_commands(cmds, dn);
+	}
+    }
+
+    return cmds.size() - initial_size;
+}
+
+// Handle output of addr commands
+void DataDisp::process_addr (StringArray& answers)
+{
+    int i = 0;
+
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0 && i < answers.size();
+	 dn = disp_graph->next(ref))
+    {
+	if (!dn->is_user_command())
+	{
+	    string addr = answers[i++];
+	    addr = addr.from(rxaddress);
+	    addr = addr.through(rxaddress);
+
+	    clog << "Address of " << dn->name() 
+		 << " is " << quote(addr) << '\n';
+	}
+    }
+}
+
+// Refresh all addresses
+void DataDisp::refresh_addr(DispNode *dn)
+{
+    StringArray cmds;
+    VoidArray dummy;
+
+    add_refresh_addr_commands(cmds, dn);
+    while (dummy.size() < cmds.size())
+	dummy += (void *)PROCESS_ADDR;
+
+    bool ok = 
+	gdb->send_qu_array(cmds, dummy, cmds.size(), refresh_displayOQAC, 0);
+
+    if (!ok)
+	post_gdb_busy();
+}
 
 //----------------------------------------------------------------------------
 // Constructor
