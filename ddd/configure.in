@@ -189,7 +189,7 @@ dnl It is difficult to determine automatically whether -lc is required
 dnl or harmful, so we simply check on the host type.
 dnl
 EXTRA_LIBC="$LIBC"
-case "$host" in
+case "$host_os" in
 *linux*) EXTRA_LIBC="";;
 esac
 AC_SUBST(EXTRA_LIBC)
