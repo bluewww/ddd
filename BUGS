@@ -273,4 +273,9 @@ Volunteers for fixing these and other bugs are welcome!
       the $(HOME) does not get propagated to all Makefiles.
       [This is a problem of the libiberty and librx maintainers.  -AZ]
 
-252 (Insert your bug here)
+252 Allow Display Editor, Breakpoint Editor, Status Displays, GDB
+    Settings, Button Editor, Reference to be resized.  `If you set
+    XmNadjustLast, the children of a one column row column will be
+    automatically resized.'
+
+253 (Insert your bug here)

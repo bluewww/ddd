@@ -20,6 +20,9 @@ DDD 2.3 [in development]
     - Tear-off menus are supported (and enabled by default).
     - Conditional breakpoints and breakpoints with ignore counts are now
       indicated by special breakpoint symbols.
+    - Improved help system: In accordance with the Motif style guide,
+      F1 invokes help on the item pointed at, while Shift+F1 lets you
+      choose an item.
     - Value tips and selections now work for struct members, too: you
       can point at `A.B' or `A->B' and get the current value.
     - The maximum number of glyphs is now configurable at startup time.

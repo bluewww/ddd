@@ -138,6 +138,11 @@ BY(J.H.M. Dassen, jdassen@wi.leidenuniv.nl)
 
 You can define your own DDD buttons via LBL(Commands) | LBL(Edit Buttons).
 
+The debugger isn't a substitute for good thinking.  But, in some
+cases, thinking isn't a substitute for a good debugger either.  The
+most effective combination is good thinking and a good debugger.
+QUOTE(Steve McConnell, Code Complete)
+
 When debugging an X application, there is always a risk of
 interrupting it while the mouse pointer is grabbed (frozen).  To
 prevent this, set LBL(Edit) | LBL(Preferences) | LBL(General) |
