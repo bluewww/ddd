@@ -712,8 +712,11 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 		string answer = gdbHelp(cmd);
 		if (answer == NO_GDB_ANSWER)
 		{
-		    // No answer - try again in 20ms
-		    next_invocation = 20;
+		    // No answer -- try again later
+		    if (gdb->recording())
+			next_invocation = 500;
+		    else
+			next_invocation = 250;
 		}
 		else
 		{
