@@ -246,8 +246,6 @@ void PosBuffer::filter (string& answer)
     {
     case PosComplete:
 	// Nothing more to filter
-	assert (pos_buffer != "");
-	assert (answer_buffer == "");
 
 	// Skip possible line number info
 	switch (gdb->type())
