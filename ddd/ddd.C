@@ -1256,6 +1256,7 @@ static MMDesc help_menu[] =
     {"onHelp",      MMPush, { HelpOnHelpCB }},
     {"onVersion",   MMPush, { HelpOnVersionCB }},
     {"onDebugging", MMPush, { HelpOnDebuggingCB }},
+    MMSep,
     {"index",       MMPush, { ManualStringHelpCB, XtPointer(ddd_man_page) }},
     MMEnd
 };
