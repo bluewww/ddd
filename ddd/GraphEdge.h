@@ -133,7 +133,10 @@ public:
     // Printing
     virtual void _print(ostream& os, const GraphGC& gc) const;
 
-    // representation invariant
+    // Region occupied by edge - if none, BoxRegion()
+    virtual BoxRegion region(const GraphGC&) const { return BoxRegion(); }
+
+    // Representation invariant
     virtual bool OK() const;
 };
 

@@ -63,6 +63,12 @@ public:
     virtual void _print(ostream& os, const BoxPoint& p, 
 			const GraphGC& gc) const = 0;
 
+    // Size used by annotation
+    virtual BoxSize size(const GraphGC& gc) const = 0;
+
+    // Region used by annotation
+    virtual BoxRegion region(const BoxPoint& p, const GraphGC& gc) const = 0;
+
     // Duplication
     virtual EdgeAnnotation *dup() const = 0;
 };

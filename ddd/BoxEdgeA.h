@@ -35,6 +35,7 @@
 
 #include "EdgeA.h"
 #include "Box.h"
+#include "assert.h"
 
 class BoxEdgeAnnotation: public EdgeAnnotation {
 public:
@@ -54,12 +55,12 @@ protected:
 	    _box = src._box->dup();
     }
 
-    virtual BoxRegion region(const BoxPoint& p, const GraphGC& gc) const;
-
 public:
     BoxEdgeAnnotation(Box *box)
 	: _box(box)
-    {}
+    {
+	assert(box != 0);
+    }
 
     virtual ~BoxEdgeAnnotation()
     {
@@ -78,6 +79,15 @@ public:
     // Print
     virtual void _print(ostream& os, const BoxPoint& p, 
 			const GraphGC& gc) const;
+
+    // Size used by annotation
+    virtual BoxSize size(const GraphGC&) const
+    {
+	return box()->size();
+    }
+
+    // Region used by annotation
+    virtual BoxRegion region(const BoxPoint& p, const GraphGC& gc) const;
 };
 
 #endif // _DDD_BoxEdgeAnnotation_h

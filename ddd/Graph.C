@@ -437,16 +437,20 @@ void Graph::_print(ostream& os, const GraphGC& _gc) const
     // if printSelectedNodesOnly, print only edges between selected nodes
     for (GraphEdge *edge = firstVisibleEdge(); edge != 0; 
 	 edge = nextVisibleEdge(edge))
+    {
 	if (gc.printSelectedNodesOnly == false ||
 	    (edge->from()->selected() && edge->to()->selected()))
 	    edge->_print(os, gc);
+    }
 
     // print all nodes
     // if printSelectedNodesOnly, print only selected nodes
     for (GraphNode *node = firstVisibleNode(); node != 0; 
 	 node = nextVisibleNode(node))
+    {
 	if (gc.printSelectedNodesOnly == false || node->selected())
 	    node->_print(os, gc);
+    }
 }
     
 
@@ -472,6 +476,14 @@ BoxRegion Graph::region(const GraphGC& gc) const
 	node = nextVisibleNode(node))
     {
 	r = r | node->region(gc);
+    }
+
+    for (GraphEdge *edge = firstVisibleEdge(); edge != 0; 
+	 edge = nextVisibleEdge(edge))
+    {
+	BoxRegion edge_region = edge->region(gc);
+	if (edge_region.origin().isValid())
+	    r = r | edge_region;
     }
 
     return r;
