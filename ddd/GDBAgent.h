@@ -186,6 +186,7 @@ public:
 
     ~GDBAgent ();
 
+    // Start new process
     void do_start (OAProc  on_answer,
 		   OACProc on_answer_completion,
 		   void*   user_data);
@@ -386,12 +387,13 @@ private:
 protected:
     string complete_answer;
 
-    static void InputHP(Agent*, void*, void*);
-    static void PanicHP(Agent*, void*, void*);
+    static void InputHP(Agent *, void *, void *);
+    static void PanicHP(Agent *, void *, void *);
+    static void DiedHP (Agent *, void *, void *);
 
-    static void traceInputHP(Agent*, void*, void*);
-    static void traceOutputHP(Agent*, void*, void*);
-    static void traceErrorHP(Agent*, void*, void*);
+    static void traceInputHP (Agent *, void *, void *);
+    static void traceOutputHP(Agent *, void *, void *);
+    static void traceErrorHP (Agent *, void *, void *);
 
     virtual int setupChildCommunication();
 };

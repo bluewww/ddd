@@ -162,6 +162,8 @@ Widget post_gdb_died(string reason, int gdb_status, Widget w)
 
     if (gdb_initialized)
     {
+	_gdb_out(reason + "\n");
+
 	arg = 0;
 	MString msg = rm(gdb->title() + " terminated abnormally"
 			 + " (" + reason + ")");

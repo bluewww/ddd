@@ -34,16 +34,14 @@ char GDBAgent_rcsid[] =
 #endif
 
 //-----------------------------------------------------------------------------
-// Implementierung der Klasse GDBAgent
+// GDBAgent implementation
 //-----------------------------------------------------------------------------
 
 #include "GDBAgent.h"
 #include "cook.h"
 #include "ddd.h"
 
-#include <stdlib.h> // exit
-#include <string.h> // strdup
-#include <stdio.h>  // tmpnam
+#include <stdlib.h>		// exit
 #include <iostream.h>
 #include <fstream.h>
 #include <ctype.h>
@@ -136,12 +134,16 @@ GDBAgent::GDBAgent (XtAppContext app_context,
 	break;
     }
 
-    // unerwuenschte Fehlermeldungen unterdruecken
+    // Suppress default error handlers
     removeAllHandlers(Panic);
     removeAllHandlers(Strange);
+    removeAllHandlers(Died);
+
+    // Add own handlers
     addHandler(Panic,   PanicHP);
     addHandler(Strange, PanicHP);
-    addHandler(Input,   InputHP); // GDB-Ausgaben
+    addHandler(Died,    DiedHP);
+    addHandler(Input,   InputHP);
 }
 
 // Copy constructor
@@ -1019,6 +1021,18 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	break;
     }
 }
+
+// GDB died
+void GDBAgent::DiedHP(Agent *a, void *, void *)
+{
+    GDBAgent *agent = ptr_cast(GDBAgent, a);
+
+    // We're not ready anymore
+    agent->state = BusyOnCmd;
+    agent->callHandlers(ReadyForQuestion, (void *)false);
+    agent->callHandlers(ReadyForCmd,      (void *)false);
+}
+
 
 // ***************************************************************************
 // Configuration

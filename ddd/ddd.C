@@ -291,6 +291,7 @@ static void create_status(Widget parent);
 // Status LED
 static void blink(bool set);
 static void ToggleBlinkCB(Widget, XtPointer client_data, XtPointer call_data);
+static void DisableBlinkHP(Agent *, void *, void *);
 
 // Status history
 static void PopupStatusHistoryCB(Widget, XtPointer, XtPointer);
@@ -1471,11 +1472,11 @@ int main(int argc, char *argv[])
     defineConversionMacro("GDB", gdb->title());
 
     // Set up GDB handlers
-    gdb->removeAllHandlers(Died);
     gdb->addHandler(ReadyForQuestion, gdb_readyHP);
     gdb->addHandler(InputEOF,         gdb_eofHP);
     gdb->addHandler(ErrorEOF,         gdb_eofHP);
     gdb->addHandler(Died,             gdb_diedHP);
+    gdb->addHandler(Died,             DisableBlinkHP);
     gdb->addHandler(LanguageChanged,  DataDisp::language_changedHP);
     gdb->addHandler(LanguageChanged,  language_changedHP);
     gdb->addHandler(ReplyRequired,    gdb_selectHP);
@@ -3244,6 +3245,12 @@ static void blink(bool set)
 	if (blink_timer == 0 && blinker_active)
 	    BlinkCB(XtPointer(int(true)), &blink_timer);
     }
+}
+
+static void DisableBlinkHP(Agent *, void *, void *)
+{
+    // GDB has died -- disable status LED
+    XmToggleButtonSetState(led_w, False, False);
 }
 
 static void ToggleBlinkCB(Widget, XtPointer, XtPointer call_data)
