@@ -1322,10 +1322,7 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
     // Always recompute size
     after->graphEdit.sizeChanged = true;
 
-    if (redisplay)
-	graphEditRedraw(new_w);
-	
-    return False;
+    return redisplay;
 }
 
 // Destroy widget
