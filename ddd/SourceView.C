@@ -776,16 +776,61 @@ void SourceView::text_popup_lookupCB (Widget, XtPointer client_data, XtPointer)
 // Return the normalized full path of FILE
 string SourceView::full_path(string file)
 {
-    static regex RXdotdot("/[^/]*/\\.\\./");
+    /* Chris van Engelen <engelen@lucent.com>, Jul 10, 1997
+     *
+     * The regular expression is used to remove parts from the full path
+     * which look like "/aap/../". However, it should ***NOT*** remove
+     * the sequence "/../../" from the path, obviously ! On the other
+     * hand, sequences like "/.tmpdir.test/../" should be removed.
+     * Therefore, the regular expression reads now like:
+     *
+     * - forward slash
+     * - zero or more  characters other than forward slash (dot is allowed)
+     * - any character other than forward slash or dot: this makes sure that
+     *   a sequence like "/../../" is not modified.
+     * - forward slash, two dots, and the final forward slash.
+     *
+     * The only valid patterns which are not normalized are patterns ending
+     * in a dot: too bad, you can't win them all.
+     */
+
+    static regex RXdotdot("/[^/]*[^/.]/\\.\\./");
+    unsigned int file_length, prev_file_length;
 
     if (file == "")
-	return current_pwd;
+        return current_pwd;
 
     if (file[0] != '/')
-	file = current_pwd + "/" + file;
+        file = current_pwd + "/" + file;
 
-    file.gsub(RXdotdot, "/");
-    file.gsub("/./", "/");
+    /* CvE, Jul 10, 1997
+     *
+     * Repeatedly remove patterns like /dir1/../ from the file name.
+     * Note that a number of /../ patterns may follow each other, like
+     * in "/dir1/dir1/dir3/../../../"
+     */
+    file_length = file.length();
+    do {
+        prev_file_length = file_length;
+        file.gsub(RXdotdot, "/");
+        file_length=file.length();
+    } while (file_length != prev_file_length);
+
+    /* CvE, Jul 10, 1997
+     *
+     *
+     * Repeatedly remove pattern /./ from the file name.
+     * Note that a number of /./ patterns may follow each other.
+     * Note that if the first parameter of gsub is a C-string,
+     * the pattern is not regarded to be a regular expression,
+     * so the dot in the pattern does not need to be escaped!
+     */
+    file_length = file.length();
+    do {
+        prev_file_length = file_length;
+        file.gsub("/./", "/");
+        file_length=file.length();
+    } while (file_length != prev_file_length);
 
     return file;
 }
