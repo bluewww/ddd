@@ -419,3 +419,14 @@ void goto_history(int pos)
     gdb_current_history = pos;
     set_line_from_history();
 }
+
+// Return the arguments of all history entries matching PREFIX into ARR
+void get_history(const string& prefix, StringArray& arr)
+{
+    for (int i = 0; i < gdb_history.size(); i++)
+    {
+	const string& entry = gdb_history[i];
+	if (prefix == "" || entry.contains(prefix, 0))
+	    arr += entry.after(prefix);
+    }
+}
