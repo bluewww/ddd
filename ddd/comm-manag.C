@@ -594,9 +594,6 @@ void start_gdb(bool config)
 
     case JDB:
 	extra_data->refresh_initial_line = true;
-
-	cmds += "use";
-	extra_data->refresh_class_path = true;
 	break;
 
     case PYDB:
