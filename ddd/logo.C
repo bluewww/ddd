@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // DDD logo functions
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -40,13 +40,13 @@ char logo_rcsid[] =
 
 // X bitmaps
 #include "icons/ddd.xbm"
-#include "icons/dddlogo.xbm"
 #include "icons/dddmask.xbm"
+#include "icons/dddsplash.xbm"
 
 // X pixmaps
 #ifdef XpmVersion
 #include "icons/ddd.xpm"
-#include "icons/dddlogo.xpm"
+#include "icons/dddsplash.xpm"
 #endif
 
 #include <iostream.h>
@@ -62,6 +62,7 @@ char logo_rcsid[] =
 
 #include "AppData.h"
 #include "cook.h"
+
 
 //-----------------------------------------------------------------------------
 // DDD logo
@@ -107,6 +108,33 @@ static int xpm(String name, int ret)
 }
 #endif // defined(XpmVersion)
 
+static void add_color_key(XpmAttributes& attr, const string& color_key)
+{
+#ifdef XpmColorKey		// Not available in XPM 3.2 and earlier
+    attr.valuemask |= XpmColorKey;
+    if (color_key == "c")
+	attr.color_key = XPM_COLOR;
+    else if (color_key == "g4")
+	attr.color_key = XPM_GRAY4;
+    else if (color_key == "g")
+	attr.color_key = XPM_GRAY;
+    else if (color_key == "m")
+	attr.color_key = XPM_MONO;
+    else
+    {
+	if (color_key != "best")
+	    cerr << "XPM: invalid color key " << quote(color_key) << "\n";
+
+	attr.valuemask &= ~XpmColorKey;
+    }
+#else // !defined(XpmColorKey)
+    (void) attr;		// Use it
+    (void) color_key;		// Use it
+#endif
+}
+
+
+
 // Return pixmaps suitable for icons on the root window
 Pixmap iconlogo(Widget w)
 {
@@ -150,7 +178,7 @@ Pixmap iconlogo(Widget w)
     int depth = PlanesOfScreen(XtScreen(w));
 
     icon = XCreatePixmapFromBitmapData(XtDisplay(w), root,
-				       ddd_bits, ddd_width, ddd_height,
+				       (char *)ddd_bits, ddd_width, ddd_height,
 				       gcv.foreground, gcv.background,
 				       depth);
     return icon;
@@ -212,7 +240,7 @@ Pixmap versionlogo(Widget w)
 
     int depth = PlanesOfScreen(XtScreen(w));
     logo = XCreatePixmapFromBitmapData(XtDisplay(w), XtWindow(w),
-				       ddd_bits, ddd_width, ddd_height,
+				       (char *)ddd_bits, ddd_width, ddd_height,
 				       foreground, background,
 				       depth);
     return logo;
@@ -231,8 +259,8 @@ static Pixel color(Widget w, String name, Pixel pixel)
     return pixel;
 }
 
-// Return a DDD logo suitable for the widget W
-Pixmap dddlogo(Widget w, const string& color_key)
+// Return the DDD splash screen
+Pixmap dddsplash(Widget w, const string& color_key)
 {
     assert(XtIsRealized(w));
 
@@ -250,31 +278,11 @@ Pixmap dddlogo(Widget w, const string& color_key)
 	attr.visual       = win_attr.visual;
 	attr.colormap     = win_attr.colormap;
 	attr.depth        = win_attr.depth;
+	add_color_key(attr, color_key);
 
-#ifdef XpmColorKey		// Not available in XPM 3.2 and earlier
-	attr.valuemask |= XpmColorKey;
-	if (color_key == "c")
-	    attr.color_key = XPM_COLOR;
-	else if (color_key == "g4")
-	    attr.color_key = XPM_GRAY4;
-	else if (color_key == "g")
-	    attr.color_key = XPM_GRAY;
-	else if (color_key == "m")
-	    attr.color_key = XPM_MONO;
-	else
-	{
-	    if (color_key != "best")
-	    {
-		cerr << "XPM: dddlogo.xpm: invalid color key " 
-		     << quote(color_key) << "\n";
-	    }
-	    attr.valuemask &= ~XpmColorKey;
-	}
-#endif // defined(XpmColorKey)
-
-	int ret = xpm("dddlogo.xpm",
+	int ret = xpm("dddsplash.xpm",
 		      XpmCreatePixmapFromData(XtDisplay(w), XtWindow(w),
-					      dddlogo_xpm, &logo, 
+					      dddsplash_xpm, &logo, 
 					      (Pixmap *)0, &attr));
 	XpmFreeAttributes(&attr);
 
@@ -290,8 +298,8 @@ Pixmap dddlogo(Widget w, const string& color_key)
 #endif // defined(XpmVersion)
 
     logo = XCreatePixmapFromBitmapData(XtDisplay(w), XtWindow(w),
-				       dddlogo_bits,
-				       dddlogo_width, dddlogo_height,
+				       (char *)dddsplash_bits,
+				       dddsplash_width, dddsplash_height,
 				       color(w, "black", 
 					     BlackPixelOfScreen(XtScreen(w))),
 				       color(w, "white", 
@@ -300,8 +308,253 @@ Pixmap dddlogo(Widget w, const string& color_key)
     return logo;
 }
 
-void get_dddlogo_size(Dimension& width, Dimension& height)
+
+
+//-----------------------------------------------------------------------
+// Toolbar icons
+//-----------------------------------------------------------------------
+
+// X Bitmaps
+#include "icons/toolbar/breakat.xbm"
+#include "icons/toolbar/clearat.xbm"
+#include "icons/toolbar/deref.xbm"
+#include "icons/toolbar/display.xbm"
+#include "icons/toolbar/findbwd.xbm"
+#include "icons/toolbar/findfwd.xbm"
+#include "icons/toolbar/hide.xbm"
+#include "icons/toolbar/lookup.xbm"
+#include "icons/toolbar/print.xbm"
+#include "icons/toolbar/rotate.xbm"
+#include "icons/toolbar/set.xbm"
+#include "icons/toolbar/show.xbm"
+#include "icons/toolbar/undisplay.xbm"
+#include "icons/toolbar/unwatch.xbm"
+#include "icons/toolbar/watch.xbm"
+
+#include "icons/toolbar/breakat-xx.xbm"
+#include "icons/toolbar/clearat-xx.xbm"
+#include "icons/toolbar/deref-xx.xbm"
+#include "icons/toolbar/display-xx.xbm"
+#include "icons/toolbar/findbwd-xx.xbm"
+#include "icons/toolbar/findfwd-xx.xbm"
+#include "icons/toolbar/hide-xx.xbm"
+#include "icons/toolbar/lookup-xx.xbm"
+#include "icons/toolbar/print-xx.xbm"
+#include "icons/toolbar/rotate-xx.xbm"
+#include "icons/toolbar/set-xx.xbm"
+#include "icons/toolbar/show-xx.xbm"
+#include "icons/toolbar/undisplay-xx.xbm"
+#include "icons/toolbar/unwatch-xx.xbm"
+#include "icons/toolbar/watch-xx.xbm"
+
+#ifdef XpmVersion
+// X Pixmaps
+#include "icons/toolbar/breakat.xpm"
+#include "icons/toolbar/clearat.xpm"
+#include "icons/toolbar/deref.xpm"
+#include "icons/toolbar/display.xpm"
+#include "icons/toolbar/findbwd.xpm"
+#include "icons/toolbar/findfwd.xpm"
+#include "icons/toolbar/hide.xpm"
+#include "icons/toolbar/lookup.xpm"
+#include "icons/toolbar/print.xpm"
+#include "icons/toolbar/rotate.xpm"
+#include "icons/toolbar/set.xpm"
+#include "icons/toolbar/show.xpm"
+#include "icons/toolbar/undisplay.xpm"
+#include "icons/toolbar/unwatch.xpm"
+#include "icons/toolbar/watch.xpm"
+
+#include "icons/toolbar/breakat-xx.xpm"
+#include "icons/toolbar/clearat-xx.xpm"
+#include "icons/toolbar/deref-xx.xpm"
+#include "icons/toolbar/display-xx.xpm"
+#include "icons/toolbar/findbwd-xx.xpm"
+#include "icons/toolbar/findfwd-xx.xpm"
+#include "icons/toolbar/hide-xx.xpm"
+#include "icons/toolbar/lookup-xx.xpm"
+#include "icons/toolbar/print-xx.xpm"
+#include "icons/toolbar/rotate-xx.xpm"
+#include "icons/toolbar/set-xx.xpm"
+#include "icons/toolbar/show-xx.xpm"
+#include "icons/toolbar/undisplay-xx.xpm"
+#include "icons/toolbar/unwatch-xx.xpm"
+#include "icons/toolbar/watch-xx.xpm"
+#endif // XpmVersion
+
+
+static void install_icon(Widget w, string name,
+			 char **xpm_data, unsigned char *xbm_data,
+			 int width, int height, const string& color_key)
 {
-    width  = dddlogo_width;
-    height = dddlogo_height;
+#ifdef XpmVersion
+    int depth = PlanesOfScreen(XtScreen(w));
+
+    if (depth > 1 && color_key != "m")
+    {
+	XWindowAttributes win_attr;
+	XGetWindowAttributes(XtDisplay(w), 
+			     RootWindowOfScreen(XtScreen(w)),
+			     &win_attr);
+
+	Pixel background;
+	XtVaGetValues(w, XmNbackground, &background, NULL);
+
+	XpmColorSymbol cs;
+	cs.name  = "Background";
+	cs.value = 0;
+	cs.pixel = background;
+
+	XpmAttributes attr;
+	attr.valuemask    = 
+	    XpmVisual | XpmColormap | XpmDepth | XpmColorSymbols;
+	attr.visual       = win_attr.visual;
+	attr.colormap     = win_attr.colormap;
+	attr.depth        = win_attr.depth;
+	attr.colorsymbols = &cs;
+	attr.numsymbols   = 1;
+	add_color_key(attr, color_key);
+
+	XImage *image = 0;
+	XImage *shape = 0;
+
+	int ret = 
+	    xpm(name, XpmCreateImageFromData(XtDisplay(w), xpm_data, 
+					     &image, &shape, &attr));
+
+	XpmFreeAttributes(&attr);
+	XFree(shape);
+
+	if (ret == XpmSuccess && image != 0)
+	{
+	    Boolean ok = XmInstallImage(image, name);
+	    if (ok)
+		return;
+	}
+
+	cerr << "Could not install " << quote(name) << " pixmap\n";
+	XFree(image);
+    }
+#endif // defined(XpmVersion)
+
+    // Install the bitmap version
+    XImage *image = (XImage *)XtCalloc(1, sizeof(XImage));
+    image->width            = width;
+    image->height           = height;
+    image->xoffset          = 0;
+    image->format           = XYBitmap;
+    image->data             = (char *)xbm_data;
+    image->byte_order       = MSBFirst;
+    image->bitmap_unit      = 8;
+    image->bitmap_bit_order = LSBFirst;
+    image->bitmap_pad       = 8;
+    image->depth            = 1;
+    image->bytes_per_line   = 2;
+
+    Boolean ok = XmInstallImage(image, name);
+    if (ok)
+	return;
+
+    cerr << "Could not install " << quote(name) << " bitmap\n";
+    XtFree((char *)image);
+};
+
+static void install_icon(Widget w, string name,
+			 char **xpm_data, char **xpm_xx_data,
+			 unsigned char *xbm_data, unsigned char *xbm_xx_data,
+			 int width, int height, const string& color_key)
+{
+    install_icon(w, name,
+		 xpm_data,
+		 xbm_data,
+		 width, height, color_key);
+    install_icon(w, name + "-xx",
+		 xpm_xx_data,
+		 xbm_xx_data, 
+		 width, height, color_key);
+}
+
+void install_icons(Widget shell, const string& color_key)
+{
+    // DDD icon
+    install_icon(shell, DDD_ICON, 
+		 ddd_xpm,
+		 ddd_bits,
+		 ddd_width, ddd_height, color_key);
+
+    // Toolbar icons
+    install_icon(shell, BREAK_AT_ICON, 
+		 breakat_xpm, breakat_xx_xpm,
+		 breakat_bits, breakat_xx_bits, 
+		 breakat_width, breakat_height, color_key);
+
+    install_icon(shell, CLEAR_AT_ICON, 
+		 clearat_xpm, clearat_xx_xpm,
+		 clearat_bits, clearat_xx_bits, 
+		 clearat_width, clearat_height, color_key);
+
+    install_icon(shell, DEREF_ICON, 
+		 deref_xpm, deref_xx_xpm,
+		 deref_bits, deref_xx_bits, 
+		 deref_width, deref_height, color_key);
+
+    install_icon(shell, DISPLAY_ICON, 
+		 display_xpm, display_xx_xpm,
+		 display_bits, display_xx_bits, 
+		 display_width, display_height, color_key);
+
+    install_icon(shell, FIND_PREV_ICON, 
+		 findbwd_xpm, findbwd_xx_xpm,
+		 findbwd_bits, findbwd_xx_bits, 
+		 findbwd_width, findbwd_height, color_key);
+
+    install_icon(shell, FIND_NEXT_ICON, 
+		 findfwd_xpm, findfwd_xx_xpm,
+		 findfwd_bits, findfwd_xx_bits, 
+		 findfwd_width, findfwd_height, color_key);
+
+    install_icon(shell, HIDE_ICON, 
+		 hide_xpm, hide_xx_xpm,
+		 hide_bits, hide_xx_bits, 
+		 hide_width, hide_height, color_key);
+
+    install_icon(shell, LOOKUP_ICON, 
+		 lookup_xpm, lookup_xx_xpm,
+		 lookup_bits, lookup_xx_bits, 
+		 lookup_width, lookup_height, color_key);
+
+    install_icon(shell, PRINT_ICON, 
+		 print_xpm, print_xx_xpm,
+		 print_bits, print_xx_bits, 
+		 print_width, print_height, color_key);
+
+    install_icon(shell, ROTATE_ICON, 
+		 rotate_xpm, rotate_xx_xpm,
+		 rotate_bits, rotate_xx_bits, 
+		 rotate_width, rotate_height, color_key);
+
+    install_icon(shell, SET_ICON, 
+		 set_xpm, set_xx_xpm,
+		 set_bits, set_xx_bits, 
+		 set_width, set_height, color_key);
+
+    install_icon(shell, SHOW_ICON, 
+		 show_xpm, show_xx_xpm,
+		 show_bits, show_xx_bits, 
+		 show_width, show_height, color_key);
+
+    install_icon(shell, UNDISPLAY_ICON, 
+		 undisplay_xpm, undisplay_xx_xpm,
+		 undisplay_bits, undisplay_xx_bits, 
+		 undisplay_width, undisplay_height, color_key);
+
+    install_icon(shell, UNWATCH_ICON, 
+		 unwatch_xpm, unwatch_xx_xpm,
+		 unwatch_bits, unwatch_xx_bits, 
+		 unwatch_width, unwatch_height, color_key);
+
+    install_icon(shell, WATCH_ICON, 
+		 watch_xpm, watch_xx_xpm,
+		 watch_bits, watch_xx_bits, 
+		 watch_width, watch_height, color_key);
 }

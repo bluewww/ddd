@@ -542,22 +542,24 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 
 ## Icon rules
 .xpm.xbm:
-	base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/[.]x[bp]m.*//'`; \
+	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/[.]x[bp]m.*//'`; \
 	$(SXPM) -nod -o - -mono $< | $(SED) 's/[nN]one/white/g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
-	$(PBMTOXBM) | $(SED) "s/noname/$${base}/g" > $@~
+	$(PBMTOXBM) | $(SED) "s/noname/$${base}/g" | \
+	$(SED) "s/static char/static unsigned char/g" > $@~
 	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
 
 # Old makes will fail on these rules.  In case of trouble, use GNU make.
 %-xx.xpm: %.xpm
-	base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
+	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
 	$(SED) 's/c black /c grey50/' $< | $(SED) "s/$$base/&_xx/" > $@
 
 %-xx.xbm: %-xx.xpm
-	base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
+	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
 	$(SED) 's/[nN]one/white/g' $< | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
-	$(PBMTOXBM) | $(SED) "s/noname/$${base}_xx/g" > $@~
+	$(PBMTOXBM) | $(SED) "s/noname/$${base}_xx/g" | \
+	$(SED) "s/static char/static unsigned char/g" > $@~
 	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
 
 
@@ -810,7 +812,7 @@ PSS = $(srcdir)/../doc/ddd.man-nopics.ps $(srcdir)/../doc/ddd.man.ps
 # All of these are generated from FIG and XPM files.
 picdir = $(srcdir)/PICS
 PICS = \
-	$(picdir)/dddlogo.ps            \
+	$(picdir)/dddsplash.ps          \
 	$(picdir)/ddd-aliases.ps        \
 	$(picdir)/ddd-all.ps            \
 	$(picdir)/ddd-arguments.ps      \
@@ -869,7 +871,7 @@ toolbardir = $(icondir)/toolbar
 ICONS = \
 	$(icondir)/ddd.xbm \
 	$(icondir)/dddmask.xbm \
-	$(icondir)/dddlogo.xbm \
+	$(icondir)/dddsplash.xbm \
 	$(toolbardir)/breakat-xx.xpm \
 	$(toolbardir)/clearat-xx.xpm \
 	$(toolbardir)/deref-xx.xpm \
@@ -1536,8 +1538,8 @@ $(picdir)/ddd-drag.ps: \
 	cd $(picdir); $(FIG2PS) ddd-drag.fig > ddd-drag.ps
 
 # The logo comes in XPM source
-$(picdir)/dddlogo.ps: $(icondir)/dddlogo.xpm
-	$(XPMTOPPM) $(icondir)/dddlogo.xpm | $(PNMDEPTH) 255 | \
+$(picdir)/dddsplash.ps: $(icondir)/dddsplash.xpm
+	$(XPMTOPPM) $(icondir)/dddsplash.xpm | $(PNMDEPTH) 255 | \
 	$(PNMTOPS) -noturn > $@~ && $(MV) $@~ $@
 
 
@@ -1553,20 +1555,23 @@ $(icondir)/ddd.xbm: $(icondir)/ddd.xpm
 	-$(SXPM) -nod -o - -mono $(icondir)/ddd.xpm | \
 	$(SED) 's/[nN]one/white/g' | $(SED) 's/gr[ae]y/white/g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
-	$(PBMTOXBM) | $(SED) 's/noname/ddd/g' > $@~
+	$(PBMTOXBM) | $(SED) 's/noname/ddd/g' | \
+	$(SED) "s/static char/static unsigned char/g" > $@~
 	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
 
 $(icondir)/dddmask.xbm: $(icondir)/ddd.xpm
 	-$(SXPM) -nod -o - -mono $(icondir)/ddd.xpm | \
 	$(SED) 's/[nN]one/white/g' | $(SED) 's/gr[ae]y/black/g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
-	$(PBMTOXBM) | $(SED) 's/noname/dddmask/g' > $@~
+	$(PBMTOXBM) | $(SED) 's/noname/dddmask/g' | \
+	$(SED) "s/static char/static unsigned char/g" > $@~
 	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
 
-$(icondir)/dddlogo.xbm: $(icondir)/dddlogo.xpm
-	$(SXPM) -nod -o - -grey $(icondir)/dddlogo.xpm | $(XPMTOPPM) | \
+$(icondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
+	-$(SXPM) -nod -o - -grey $(icondir)/dddsplash.xpm | $(XPMTOPPM) | \
 	$(PNMDEPTH) 255 | $(PNMGAMMA) 0.75 | $(PPMTOPGM) | $(PGMENHANCE) -7 | \
-	$(PGMTOPBM) | $(PBMTOXBM) | $(SED) 's/noname/dddlogo/g' > $@~
+	$(PGMTOPBM) | $(PBMTOXBM) | $(SED) 's/noname/dddsplash/g' | \
+	$(SED) "s/static char/static unsigned char/g" > $@~
 	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
 
 

@@ -35,14 +35,40 @@
 
 #include <X11/Intrinsic.h>
 #include "strclass.h"
+#include "version.h"
 
 // DDD logos
+
+// Return a pixmap suitable for icons on the root window
 extern Pixmap iconlogo(Widget shell);
 extern Pixmap iconmask(Widget shell);
-extern Pixmap versionlogo(Widget shell);
-extern Pixmap dddlogo(Widget shell, const string& color_class);
 
-extern void get_dddlogo_size(Dimension& x, Dimension& y);
+// Return a small DDD logo suitable for the widget W
+extern Pixmap versionlogo(Widget shell);
+
+// Return the DDD splash screen
+extern Pixmap dddsplash(Widget shell, const string& color_key = 'c');
+
+// Install toolbar icons in Motif cache
+extern void install_icons(Widget shell, const string& color_key = 'c');
+
+// Icon names
+#define DDD_ICON       ddd_NAME
+#define BREAK_AT_ICON  "break_at"
+#define CLEAR_AT_ICON  "clear_at"
+#define DEREF_ICON     "deref"
+#define DISPLAY_ICON   "display"
+#define FIND_NEXT_ICON "find_next"
+#define FIND_PREV_ICON "find_prev"
+#define HIDE_ICON      "hide"
+#define LOOKUP_ICON    "lookup"
+#define PRINT_ICON     "print"
+#define ROTATE_ICON    "rotate"
+#define SET_ICON       "set"
+#define SHOW_ICON      "show"
+#define UNDISPLAY_ICON "undisplay"
+#define UNWATCH_ICON   "unwatch"
+#define WATCH_ICON     "watch"
 
 #endif // _DDD_logo_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
