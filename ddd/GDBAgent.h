@@ -163,6 +163,8 @@ private:
     bool _trace_dialog;
     bool _verbatim;
 
+    string last_prompt;
+
 protected:
     // Return PREFIX + EXPR, parenthesizing EXPR if needed
     static string prepend_prefix(const string& prefix, const string& expr);
@@ -238,7 +240,7 @@ public:
 					  || state == BusyOnInitialCmds; }
     bool isBusyOnQuestion()   const { return state == BusyOnQuestion
 					  || state == BusyOnQuArray; }
-    string default_prompt()   const;
+    string prompt()           const { return last_prompt; }
 
 
     // Debugger properties

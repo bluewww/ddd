@@ -105,6 +105,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _program_language(LANGUAGE_C),
       _trace_dialog(false),
       _verbatim(false),
+      last_prompt("(???) "),
       questions_waiting(false),
       _qu_data(0),
       qu_index(0),
@@ -119,6 +120,20 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _on_qu_array_completion(0),
       complete_answer("")
 {
+    // Set default prompt
+    switch (type())
+    {
+    case GDB:
+	last_prompt = "(gdb) ";
+	break;
+    case DBX:
+	last_prompt = "(dbx) ";
+	break;
+    case XDB:
+	last_prompt = ">";
+	break;
+    }
+
     // unerwuenschte Fehlermeldungen unterdruecken
     removeAllHandlers(Panic);
     removeAllHandlers(Strange);
@@ -165,22 +180,6 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _on_qu_array_completion(0),
       complete_answer("")
 {}
-
-// Return default prompt
-string GDBAgent::default_prompt() const
-{
-    switch (type())
-    {
-    case GDB:
-	return "(gdb) ";
-    case DBX:
-	return "(dbx) ";
-    case XDB:
-	return ">";
-    }
-
-    return "(???) ";
-}
 
 // Return default title
 string GDBAgent::title() const
@@ -467,7 +466,13 @@ bool GDBAgent::ends_with_prompt (const string& answer)
 	{
 	    // Any line ending in `(gdb) ' or `(dbx) ' is a prompt.
 	    static regex rxprompt(".*[(][^ )]*db[^ )]*[)] ");
-	    return answer.matches(rxprompt);
+	    if (answer.matches(rxprompt))
+	    {
+		last_prompt = answer;
+		last_prompt = last_prompt.from('(', -1);
+		return true;
+	    }
+	    return false;
 	}
 
     case XDB:
@@ -505,12 +510,13 @@ bool GDBAgent::ends_with_secondary_prompt (const string& answer)
 	    if (index >= 0 && answer.index('\n', index) < 0)
 		return true;
 	}
+
 	// Prompt is `> ' at beginning of line
-	return ends_in(answer, "\n> ");
+	return answer == "> " || ends_in(answer, "\n> ");
 
     case GDB:
 	// Prompt is `> ' at beginning of line
-	return ends_in(answer, "\n> ");
+	return answer == "> " || ends_in(answer, "\n> ");
 	
     case XDB:
 	// Is there any secondary prompt in XDB? (FIXME)
@@ -963,7 +969,7 @@ string GDBAgent::display_command(string expr) const
 	return "";
 
     string cmd;
-    if (has_print_r_option())
+    if (has_print_r_option() && expr != "")
 	cmd = "display -r";
     else
 	cmd = "display";
@@ -1309,7 +1315,7 @@ void GDBAgent::PanicHP (Agent *source, void *, void *call_data)
 
     GDBAgent *gdb = ptr_cast(GDBAgent, source);
     if (gdb != 0)
-	cerr << gdb->default_prompt() << msg << "\n";
+	cerr << gdb->prompt() << msg << "\n";
     else
 	cerr << source->path() << ": " << msg << "\n";
 }
