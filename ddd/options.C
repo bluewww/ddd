@@ -39,6 +39,7 @@ const char options_rcsid[] =
 #include "DataDisp.h"
 #include "GDBAgent.h"
 #include "GraphEdit.h"
+#include "SourceView.h"
 #include "cook.h"
 #include "ddd.h"
 #include "post.h"
@@ -128,6 +129,7 @@ void sourceToggleIgnoreSourcePathCB (Widget, XtPointer, XtPointer call_data)
     else
 	set_status("Referring to sources using full source file paths.");
 
+    source_arg->set_string(source_view->line_of_cursor());
     update_options();
     options_changed = true;
 }
