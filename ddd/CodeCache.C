@@ -35,7 +35,10 @@ char CodeCache_rcsid[] =
 #pragma implementation "DynArray.h"
 #endif
 
+#include <Xm/Xm.h>
 #include "CodeCache.h"
+
+static VarArray<XmTextPosition> please_instantiate_me_oh_mighty_gcc;
 
 // Return digit value
 inline int xdigit(char c)
