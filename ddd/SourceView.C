@@ -3069,7 +3069,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 		    for (i = 0; i < bps.size(); i++)
 		    {
 			BreakPoint* bp = bp_map.get(bps[i]);
-			assert (bp);
+			assert(bp != NULL);
 
 			bp_disp_pos += 2; // respect '#' and '_';
 			bp_disp_pos += itostring(bp->number()).length();
@@ -3138,7 +3138,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 		    for (i = 0; i < bps.size(); i++)
 		    {
 			BreakPoint* bp = bp_map.get(bps[i]);
-			assert (bp);
+			assert(bp != NULL);
 			bp_disp_pos += 2; // respect '#' and '_';
 			bp_disp_pos += itostring(bp->number()).length();
 			if (pos < bp_disp_pos)
