@@ -584,6 +584,9 @@ private:
     // Return breakpoint number of BP_INFO; 0 if new; -1 if none
     static int jdb_breakpoint(const string& bp_info);
 
+    // Get numbers of selected breakpoints
+    static void getBreakpointNumbers(IntArray& numbers);
+
 public:
     // Constructor
     SourceView(Widget parent);

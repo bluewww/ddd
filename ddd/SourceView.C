@@ -5630,6 +5630,27 @@ static string cond_filter(const string& cmd)
     return "";			// No condition
 }
 
+
+// Get selected breakpoint numbers
+void SourceView::getBreakpointNumbers(IntArray& breakpoint_nrs)
+{
+    if (breakpoint_list_w == 0)
+	return;
+
+    IntArray numbers;
+    getItemNumbers(breakpoint_list_w, numbers);
+
+    // Double-check each number for safety.  One may define commands
+    // as breakpoint numbers and cause DDD to crash.
+    for (int i = 0; i < numbers.size(); i++)
+    {
+	BreakPoint *bp = bp_map.get(numbers[i]);
+	if (bp != 0)
+	    breakpoint_nrs += numbers[i];
+    }
+}
+
+
 // Edit breakpoint properties
 void SourceView::EditBreakpointPropertiesCB(Widget, 
 					    XtPointer client_data, 
@@ -5638,9 +5659,7 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
     IntArray breakpoint_nrs;
     if (client_data == 0)
     {
-	if (breakpoint_list_w == 0)
-	    return;
-	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
+	getBreakpointNumbers(breakpoint_nrs);
     }
     else
     {
@@ -6081,7 +6100,8 @@ void SourceView::BreakpointCmdCB(Widget,
 	return;
 
     IntArray nrs;
-    getDisplayNumbers(breakpoint_list_w, nrs);
+    getBreakpointNumbers(nrs);
+
     if (nrs.size() == 0)
         return;
 
@@ -6104,7 +6124,7 @@ void SourceView::LookupBreakpointCB(Widget, XtPointer client_data, XtPointer)
 
     if (client_data == 0)
     {
-	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
+	getBreakpointNumbers(breakpoint_nrs);
     }
     else
     {
@@ -6112,7 +6132,7 @@ void SourceView::LookupBreakpointCB(Widget, XtPointer client_data, XtPointer)
 	    (BreakpointPropertiesInfo *)client_data;
 	breakpoint_nrs = info->nrs;
     }
-    if (breakpoint_nrs.size() < 1)
+    if (breakpoint_nrs.size() == 0)
 	return;
 
     BreakPoint *bp = bp_map.get(breakpoint_nrs[0]);
@@ -6140,7 +6160,7 @@ void SourceView::PrintWatchpointCB(Widget w, XtPointer client_data, XtPointer)
 
     if (client_data == 0)
     {
-	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
+	getBreakpointNumbers(breakpoint_nrs);
     }
     else
     {
@@ -6269,7 +6289,7 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
 	return;
 
     IntArray breakpoint_nrs;
-    getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
+    getBreakpointNumbers(breakpoint_nrs);
 
     // Update selection
     MapRef ref;
@@ -6303,14 +6323,16 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
 
     // Count selected ones
     BreakPoint *selected_bp = 0;
-    int selected = breakpoint_nrs.size();
-    int selected_enabled = 0;
+    int selected          = 0;
+    int selected_enabled  = 0;
     int selected_disabled = 0;
     for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
     {
 	if (bp->selected())
 	{
 	    selected_bp = bp;
+	    selected++;
+
 	    if (bp->enabled())
 		selected_enabled++;
 	    else
@@ -7003,7 +7025,7 @@ void SourceView::ThreadCommandCB(Widget w, XtPointer client_data, XtPointer)
 
     // Get the selected threads
     IntArray threads;
-    getDisplayNumbers(thread_list_w, threads);
+    getItemNumbers(thread_list_w, threads);
 
     for (int i = 0; i < threads.size(); i++)
 	command += " " + itostring(threads[i]);
@@ -7015,7 +7037,7 @@ void SourceView::SelectThreadCB(Widget w, XtPointer, XtPointer)
 {
     // Get the selected threads
     IntArray threads;
-    getDisplayNumbers(thread_list_w, threads);
+    getItemNumbers(thread_list_w, threads);
 
     if (threads.size() == 1)
     {
