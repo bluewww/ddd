@@ -413,12 +413,8 @@ XPMTOPPM   = xpmtoppm
 # The ImageMagick `convert' program (convert)
 CONVERT    = convert
 
-# The image extension (.gif or .jpg)
-IMGEXT     = .gif
-
-# GIF <=> PPM conversion
-GIFTOPPM   = giftoppm
-PPMTOGIF   = ppmtogif
+# The image extension (.png, .gif, or .jpg)
+IMGEXT     = .png
 
 # The face-generating program from the `compface' package.  (xbm2xface.pl)
 XBM2XFACE  = xbm2xface.pl
@@ -656,12 +652,15 @@ IMAGE_WIDTH = 600
 # We use giftoppm/ppmtogif to get optimal GIF compression.
 .eps.gif:
 	$(CONVERT) -geometry $(IMAGE_WIDTH) -interlace Line $< $@
-	$(GIFTOPPM) $@ | $(PPMTOGIF) -interlace > $@~ && $(MV) $@~ $@
+	$(GIFTOPNM) $@ | $(PPMTOGIF) -interlace > $@~ && $(MV) $@~ $@
 
 .eps.jpeg:
 	$(CONVERT) -geometry $(IMAGE_WIDTH) -interlace Line $< $@
 
 .eps.jpg:
+	$(CONVERT) -geometry $(IMAGE_WIDTH) -interlace Line $< $@
+
+.eps.png:
 	$(CONVERT) -geometry $(IMAGE_WIDTH) -interlace Line $< $@
 
 .fig.eps:
@@ -1038,6 +1037,7 @@ PICS = \
 IMAGES = \
 	$(picdir)/disclaimer$(IMGEXT)           \
 	$(picdir)/dddback$(IMGEXT)		\
+	$(picdir)/dddback.jpg		        \
 	$(picdir)/dddlogo$(IMGEXT)              \
 	$(picdir)/dddsplash$(IMGEXT)            \
 	$(picdir)/ddd-aliases$(IMGEXT)          \
@@ -1340,7 +1340,8 @@ uninstall-man:
 
 .PHONY: picsclean
 picsclean:
-	$(RM) $(picdir)/*.eps $(picdir)/*.gif $(picdir)/*.jpg ./#*#
+	$(RM) $(picdir)/*.eps \
+	$(picdir)/*.gif $(picdir)/*.jpg $(picdir)/*.png ./#*#
 	-cd $(picdir) && $(RM) $(CLEAN_STUFF) ./#*#
 
 .PHONY: iconclean
@@ -1966,9 +1967,12 @@ $(picdir)/dddsplash.eps: $(icondir)/dddsplash.xpm
 
 $(picdir)/dddsplash.gif: $(icondir)/dddsplash.xpm
 	$(CONVERT) $(icondir)/dddsplash.xpm $@
-	$(GIFTOPPM) $@ | $(PPMTOGIF) > $@~ && $(MV) $@~ $@
+	$(GIFTOPNM) $@ | $(PPMTOGIF) > $@~ && $(MV) $@~ $@
 
 $(picdir)/dddsplash.jpg: $(icondir)/dddsplash.xpm
+	$(CONVERT) $(icondir)/dddsplash.xpm $@
+
+$(picdir)/dddsplash.png: $(icondir)/dddsplash.xpm
 	$(CONVERT) $(icondir)/dddsplash.xpm $@
 
 $(picdir)/dddlogo.eps: $(icondir)/dddlogo.xpm
@@ -1976,9 +1980,12 @@ $(picdir)/dddlogo.eps: $(icondir)/dddlogo.xpm
 
 $(picdir)/dddlogo.gif: $(icondir)/dddlogo.xpm
 	$(CONVERT) $(icondir)/dddlogo.xpm $@
-	$(GIFTOPPM) $@ | $(PPMTOGIF) > $@~ && $(MV) $@~ $@
+	$(GIFTOPNM) $@ | $(PPMTOGIF) > $@~ && $(MV) $@~ $@
 
 $(picdir)/dddlogo.jpg: $(icondir)/dddlogo.xpm
+	$(CONVERT) $(icondir)/dddlogo.xpm $@
+
+$(picdir)/dddlogo.png: $(icondir)/dddlogo.xpm
 	$(CONVERT) $(icondir)/dddlogo.xpm $@
 
 $(picdir)/dddback.eps: $(icondir)/dddback.xpm
@@ -1986,9 +1993,12 @@ $(picdir)/dddback.eps: $(icondir)/dddback.xpm
 
 $(picdir)/dddback.gif: $(icondir)/dddback.xpm
 	$(CONVERT) $(icondir)/dddback.xpm $@
-	$(GIFTOPPM) $@ | $(PPMTOGIF) > $@~ && $(MV) $@~ $@
+	$(GIFTOPNM) $@ | $(PPMTOGIF) > $@~ && $(MV) $@~ $@
 
 $(picdir)/dddback.jpg: $(icondir)/dddback.xpm
+	$(CONVERT) $(icondir)/dddback.xpm $@
+
+$(picdir)/dddback.png: $(icondir)/dddback.xpm
 	$(CONVERT) $(icondir)/dddback.xpm $@
 
 
