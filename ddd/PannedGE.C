@@ -99,7 +99,7 @@ struct _PannedGraphEditClassRec pannedGraphEditClassRec = {
     /* superclass               */  portholeWidgetClass,
     /* class_name               */  (char *)"PannedGraphEdit",
     /* widget_size              */  sizeof(PannedGraphEditRec),
-    /* class_initialize         */  XawInitializeWidgetSet,
+    /* class_initialize         */  XtProc(XawInitializeWidgetSet),
     /* class_part_initialize    */  XtWidgetClassProc(0),
     /* class_inited             */  False,
     /* initialize               */  XtInitProc(0),

@@ -40,7 +40,6 @@ char logplayer_rcsid[] =
 #include "strclass.h"
 #include "cook.h"
 #include "config.h"
-#include "streampos.h"
 
 #include <iostream.h>
 #include <fstream.h>
@@ -48,6 +47,8 @@ char logplayer_rcsid[] =
 #include <stdio.h>
 #include <unistd.h>
 #include <ctype.h>
+
+#include "streampos.h"
 
 #include <setjmp.h>
 #include <signal.h>

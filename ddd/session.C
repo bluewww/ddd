@@ -83,6 +83,7 @@ char session_rcsid[] =
 #include "settings.h"
 #include "status.h"
 #include "string-fun.h"
+#include "tabs.h"
 #include "verify.h"
 #include "version.h"
 #include "windows.h"
@@ -982,7 +983,7 @@ static void open_session(const string& session)
 
     // Set options
     int tab_width = atoi(get_resource(db, XtNtabWidth, XtCTabWidth));
-    app_data.tab_width = tab_width ? tab_width : 8;
+    app_data.tab_width = tab_width ? tab_width : DEFAULT_TAB_WIDTH;
 
     update_options();
 

@@ -40,6 +40,7 @@ char resources_rcsid[] =
 #include "stty.h"
 #include "config.h"
 #include "resolveP.h"
+#include "tabs.h"
 
 #include <Xm/Xm.h>
 
@@ -416,7 +417,7 @@ XtResource ddd_resources[] = {
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, tab_width),
 	XmRImmediate,
-	XtPointer(8)
+	XtPointer(DEFAULT_TAB_WIDTH)
     },
 
     {
