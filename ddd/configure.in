@@ -372,23 +372,6 @@ fi
 AC_SUBST(XM_LIBS)
 dnl
 dnl
-dnl Check for LessTif and LessTif hacks
-ICE_CHECK_LESSTIF
-AC_ARG_ENABLE(lesstif-hacks,
-[  --enable-lesstif-hacks  enable LessTif bug workarounds])dnl
-if test "$enable_lesstif_hacks" = yes
-then
-AC_DEFINE(LESSTIF_HACKS)
-elif test "$ice_cv_have_lesstif" = yes
-then
-AC_MSG_WARN([You are using a LessTif library.  Unless you are using
-                    a LessTif version that is 100% Motif compatible, you
-                    should use the configure option '--enable-lesstif-hacks'.
-                    This enables some bug workarounds that make ${DDD} run
-                    with current LessTif releases.])
-fi
-dnl
-dnl 
 dnl
 dnl
 LIBS="$ice_save_LIBS"
