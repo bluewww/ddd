@@ -60,6 +60,10 @@ static bool try_arg(const string& cmd, string prefix, string& arg)
 	arg = cmd.after(prefix);
 	strip_space(arg);
 
+	// Strip format stuff
+	if (arg.contains('/', 0))
+	    arg = arg.after(' ');
+
 	if (arg.contains("'", 0))
 	{
 	    // Quoted arg -- add as unquoted
@@ -95,6 +99,7 @@ string arg_history_filter(const string& cmd)
     if (try_arg(cmd, gdb->print_command("", false), arg) ||
 	try_arg(cmd, gdb->display_command(""), arg) ||
 	try_arg(cmd, gdb->whatis_command(""), arg) ||
+	try_arg(cmd, "x", arg) ||
 	try_arg(cmd, "info line", arg) ||
 	try_arg(cmd, "list", arg))
     {
@@ -110,7 +115,7 @@ string arg_history_filter(const string& cmd)
 	return arg;
 
     arg = display_history_filter(cmd);
-    if (arg != "")
+    if (arg != "" && !arg.contains("`", 0))
 	return arg;
 
     return "";			// Not found
@@ -128,6 +133,13 @@ string break_history_filter(const string& cmd)
 	try_arg(cmd, "b", arg) ||
 	try_arg(cmd, "ba", arg))
     {
+	strip_space(arg);
+	if (arg.contains(" if "))
+	    arg = arg.before(" if ");
+	if (arg.contains(" -if "))
+	    arg = arg.before(" -if ");
+	if (arg.contains(" {if "))
+	    arg = arg.before(" {if ");
 	return arg;
     }
 
@@ -143,6 +155,7 @@ string watch_history_filter(const string& cmd)
 	try_arg(cmd, gdb->watch_command("", WATCH_WRITE), arg) ||
 	try_arg(cmd, gdb->watch_command("", WATCH_ACCESS), arg))
     {
+	strip_space(arg);
 	return arg;
     }
 
@@ -160,6 +173,14 @@ string display_history_filter(const string& cmd)
 	    arg = arg.before("now or");
 	if (arg.contains("when in"))
 	    arg = arg.before("when in");
+
+	strip_space(arg);
+
+	// Strip format stuff
+	if (arg.contains('/', 0))
+	    arg = arg.after(' ');
+
+	strip_space(arg);
 	return arg;
     }
 
