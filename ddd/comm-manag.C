@@ -630,6 +630,7 @@ void init_session(const string& restart, const string& settings,
 	Command c("source " + info->tempfile, Widget(0), 
 		  SourceDoneCB, (void *)info);
 	c.priority = COMMAND_PRIORITY_INIT;
+	c.check    = true;
 	gdb_command(c);
     }
     else
