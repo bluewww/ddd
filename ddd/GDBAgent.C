@@ -2283,8 +2283,9 @@ string GDBAgent::dereferenced_expr(string expr) const
 
     case LANGUAGE_PERL:
 	// Perl has three `dereferencing' operators, depending on the
-	// type of reference.  Return a generic name.
-	return "dereferenced " + expr;
+	// type of reference.  The `deref()' function provides a
+	// better solution.
+	return prepend_prefix("$", expr);
 
     case LANGUAGE_FORTRAN:
 	// GDB prints dereferenced pointers as `**X', but accepts them as `*X'.

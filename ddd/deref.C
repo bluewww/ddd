@@ -38,15 +38,19 @@ char deref_rcsid[] =
 #include "GDBAgent.h"
 #include "ddd.h"
 #include "buttons.h"
+#include "disp-read.h"
 #include "question.h"
 #include "regexps.h"
 #include "string-fun.h"
 
 // Return dereferenced EXPR.  Only useful in Perl.
-string deref(const string& expr)
+string deref(const string& expr, const string& sym)
 {
-    if (gdb->program_language() != LANGUAGE_PERL)
-	return gdb->dereferenced_expr(expr);
+    const string& symbol = (sym == "" ? expr : sym);
+
+    if (gdb->program_language() != LANGUAGE_PERL ||
+	is_file_pos(expr) || expr == "")
+	return gdb->dereferenced_expr(symbol);
 
     string ref = NO_GDB_ANSWER;
 
@@ -58,14 +62,16 @@ string deref(const string& expr)
 	    ref = val.through(rxidentifier);
     }
 
+#if 0
     if (ref == NO_GDB_ANSWER)
     {
 	// Try `ref' operator
 	ref = gdbValue("ref(" + expr + ")");
     }
+#endif
 
     if (ref == NO_GDB_ANSWER)
-	return expr;		// Cannot access debugger
+	return symbol;		// Cannot access debugger
 
     strip_space(ref);
     string prefix = "";
@@ -82,10 +88,10 @@ string deref(const string& expr)
     else if (ref == "GLOB")
 	prefix = "*";
     else
-	return expr;		// Unknown type
+	return symbol;		// Unknown type
 
-    if (expr.matches(rxsimple))
-	return prefix + expr;
+    if (symbol == "()" || symbol.matches(rxsimple))
+	return prefix + symbol;
     else
-	return prefix + "{" + expr + "}";
+	return prefix + "{" + symbol + "}";
 }

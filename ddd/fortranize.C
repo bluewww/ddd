@@ -35,6 +35,7 @@ char fortranize_rcsid[] =
 
 #include "fortranize.h"
 #include "ddd.h"
+#include "deref.h"
 #include "GDBAgent.h"
 #include "buttons.h"
 #include "regexps.h"
@@ -115,7 +116,7 @@ string fortranize(const string& id, bool globals_first)
     if (!is_invalid(value) && 
 	downcase(value).contains("ptr to") && 
 	!value.contains("0x0", -1))
-	return gdb->dereferenced_expr(name);
+	return deref(name);
     else
 	return name;
 }

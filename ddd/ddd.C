@@ -214,6 +214,7 @@ char ddd_rcsid[] =
 #include "cook.h"
 #include "data.h"
 #include "dbx-lookup.h"
+#include "deref.h"
 #include "disp-read.h"
 #include "editing.h"
 #include "environ.h"
@@ -4957,12 +4958,12 @@ void update_arg_buttons()
     set_sensitive(break_menu[BreakItems::RegexBreak].widget,
 		  gdb->type() == GDB);
 
-    MString print_ref_label("Print " + gdb->dereferenced_expr("()"));
+    MString print_ref_label("Print " + deref(arg, "()"));
     XtVaSetValues(print_menu[PrintItems::PrintRef].widget,
 		  XmNlabelString, print_ref_label.xmstring(),
 		  NULL);
 
-    MString disp_ref_label("Display " + gdb->dereferenced_expr("()"));
+    MString disp_ref_label("Display " + deref(arg, "()"));
     XtVaSetValues(display_menu[DispItems::DispRef].widget,
 		  XmNlabelString, disp_ref_label.xmstring(),
 		  NULL);
@@ -4980,6 +4981,7 @@ static void source_argHP(void *, void *, void *)
 {
     update_arg_buttons();
     data_disp->refresh_args();
+    data_disp->language_changedHP(gdb, 0, 0);
 }
 
 // Language changed - re-label buttons

@@ -36,7 +36,7 @@
 #include "strclass.h"
 
 // Return dereferenced EXPR
-extern string deref(const string& expr);
+extern string deref(const string& expr, const string& symbol = "");
 
 #endif // _DDD_deref_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
