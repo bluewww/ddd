@@ -383,16 +383,16 @@ void GDBAgent::do_start (OAProc  on_answer,
 void GDBAgent::start_plus (OAProc   on_answer,
 			   OACProc  on_answer_completion,
 			   void*    user_data,
-			   string   cmds [],
-			   void*    qu_datas [],
+			   const StringArray& cmds,
+			   const VoidArray& qu_datas,
 			   int      qu_count,
 			   OQACProc on_qu_array_completion,
 			   void*    qa_data)
 {
     if (qu_count > 0) {
 	questions_waiting = true;
-	init_qu_array
-	    (cmds, qu_datas, qu_count, on_qu_array_completion, qa_data);
+	init_qu_array(cmds, qu_datas, qu_count, 
+		      on_qu_array_completion, qa_data);
     }
 
     do_start(on_answer, on_answer_completion, user_data);
@@ -455,8 +455,8 @@ bool GDBAgent::send_user_ctrl_cmd(string cmd, void *user_data)
 }
 
 // Send command array CMDS to GDB, associated with QU_DATAS.
-bool GDBAgent::send_user_cmd_plus (string   cmds[],
-				   void*    qu_datas[],
+bool GDBAgent::send_user_cmd_plus (const StringArray& cmds,
+				   const VoidArray& qu_datas,
 				   int      qu_count,
 				   OQACProc on_qu_array_completion,
 				   void*    qa_data,
@@ -468,10 +468,11 @@ bool GDBAgent::send_user_cmd_plus (string   cmds[],
 
     if (user_data)
 	_user_data = user_data;
-    if (qu_count > 0) {
+    if (qu_count > 0)
+    {
 	questions_waiting = true;
-	init_qu_array
-	    (cmds, qu_datas, qu_count, on_qu_array_completion, qa_data);
+	init_qu_array(cmds, qu_datas, qu_count,
+		      on_qu_array_completion, qa_data);
     }
 
     // Process command
@@ -508,8 +509,8 @@ bool GDBAgent::send_question (string  cmd,
 }
 
 // Send CMDS to GDB; upon completion, call ON_QU_ARRAY_COMPLETION with QU_DATAS
-bool GDBAgent::send_qu_array (string   cmds [],
-			      void*    qu_datas [],
+bool GDBAgent::send_qu_array (const StringArray& cmds,
+			      const VoidArray& qu_datas,
 			      int      qu_count,
 			      OQACProc on_qu_array_completion,
 			      void*    qa_data)
@@ -523,7 +524,7 @@ bool GDBAgent::send_qu_array (string   cmds [],
     callHandlers(ReadyForQuestion, (void *)false);
     callHandlers(ReadyForCmd, (void *)false);
 
-    init_qu_array (cmds, qu_datas, qu_count, on_qu_array_completion, qa_data);
+    init_qu_array(cmds, qu_datas, qu_count, on_qu_array_completion, qa_data);
     
     // Send first question
     write(cmd_array[0]);
@@ -552,23 +553,28 @@ bool GDBAgent::trace_dialog (bool val)
 }
 
 // Initialize GDB question array
-void GDBAgent::init_qu_array (string   cmds [],
-			      void*    qu_datas [],
+void GDBAgent::init_qu_array (const StringArray& cmds,
+			      const VoidArray& qu_datas,
 			      int      qu_count,
 			      OQACProc on_qu_array_completion,
 			      void*    qa_data)
 {
     _on_qu_array_completion = on_qu_array_completion;
-    qu_index = 0;
+    qu_index  = 0;
     _qu_count = qu_count;
-    cmd_array = new string [qu_count];
-    _qu_datas = new (void* [qu_count]);
-    complete_answers = new string [qu_count];
-    _qa_data = qa_data;
+    _qa_data  = qa_data;
+
+    StringArray empty_s;
+    VoidArray   empty_v;
+
+    complete_answers = empty_s;
+    cmd_array        = empty_s;
+    _qu_datas        = empty_v;
     for (int i = 0; i < qu_count; i++)
     {
-	cmd_array[i] = cmds[i] + '\n';
-	_qu_datas[i] = qu_datas[i];
+	complete_answers += "";
+	cmd_array        += cmds[i] + '\n';
+	_qu_datas        += qu_datas[i];
     }
 }
 
@@ -1126,7 +1132,6 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	    if (gdb->qu_index == gdb->_qu_count)
 	    {
 		// Received all answers
-		delete[] gdb->cmd_array;
 
 		// Set new state
 		gdb->state = ReadyWithPrompt;
@@ -1146,9 +1151,8 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 
 		if (gdb->_on_qu_array_completion != 0)
 		{
-		    gdb->_on_qu_array_completion (gdb->complete_answers, 
+		    gdb->_on_qu_array_completion (gdb->complete_answers,
 						  gdb->_qu_datas,
-						  gdb->_qu_count,
 						  gdb->_qa_data);
 		}
 	    }
@@ -1198,7 +1202,6 @@ void GDBAgent::DiedHP(Agent *agent, void *, void *)
 	{
 	    gdb->_on_qu_array_completion(gdb->complete_answers, 
 					 gdb->_qu_datas,
-					 gdb->_qu_count,
 					 gdb->_qa_data);
 	}
 	break;

@@ -51,6 +51,8 @@
 #include "strclass.h"
 #include "bool.h"
 #include "assert.h"
+#include "StringA.h"
+#include "VoidArray.h"
 
 //-----------------------------------------------------------------------------
 // Debugger types
@@ -92,10 +94,9 @@ typedef void (* OQCProc) (const string& complete_answer,
 			  void*  qu_data);
 
 // Called from send_qu_array with the complete answers
-typedef void (* OQACProc) (string complete_answers[],
-			   void*  qu_datas[],
-			   int    count,
-			   void*  data);
+typedef void (* OQACProc) (const StringArray& complete_answers,
+			   const VoidArray& user_datas,
+			   void *user_data);
 
 //-----------------------------------------------------------------------------
 // Determine debugger type
@@ -212,8 +213,8 @@ public:
     void start_plus (OAProc   on_answer,
 		     OACProc  on_answer_completion,
 		     void*    user_data,
-		     string   cmds [],
-		     void*    qu_datas [],
+		     const StringArray& cmds,
+		     const VoidArray& user_datas,
 		     int      qu_count,
 		     OQACProc on_qu_array_completion,
 		     void*    qa_data);
@@ -232,19 +233,20 @@ public:
     // 3. Send CMDS, as in send_qu_array.
     // 4. When all replies have come in: call OACProc and OQACProc.
     //
-    bool send_user_cmd_plus (string   cmds [],
-			     void*    qu_datas [],
+    bool send_user_cmd_plus (const StringArray& cmds,
+			     const VoidArray& qu_datas,
 			     int      qu_count,
 			     OQACProc on_qu_array_completion,
 			     void*    qa_data,
-			     string user_cmd, void* user_data = 0);
+			     string user_cmd,
+			     void* user_data = 0);
 
     bool send_question (string  cmd,
 			OQCProc on_question_completion,
 			void*   qu_data);
 
-    bool send_qu_array (string   cmds [],
-			void*    qu_datas [],
+    bool send_qu_array (const StringArray& cmds,
+			const VoidArray& qu_datas,
 			int      qu_count,
 			OQACProc on_qu_array_completion,
 			void*    qa_data);
@@ -458,10 +460,11 @@ private:
 
     void* _qu_data;
 
-    int     qu_index, _qu_count;
-    string* cmd_array;
-    string* complete_answers;
-    void**  _qu_datas;
+    int     qu_index;
+    int    _qu_count;
+    StringArray cmd_array;
+    StringArray complete_answers;
+    VoidArray _qu_datas;
     void*   _qa_data;
 
     OAProc   _on_answer;
@@ -469,8 +472,8 @@ private:
     OQCProc  _on_question_completion;
     OQACProc _on_qu_array_completion;
 
-    void    init_qu_array (string   cmds [],
-			   void*    qu_datas [],
+    void    init_qu_array (const StringArray& cmds,
+			   const VoidArray& qu_datas,
 			   int      qu_count,
 			   OQACProc on_qu_array_completion,
 			   void*    qa_data);

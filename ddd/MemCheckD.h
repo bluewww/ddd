@@ -44,6 +44,9 @@ void *operator new(size_t nbytes)
 }
 
 void operator delete(void *p)
+#if HAVE_EXCEPTIONS
+    throw()
+#endif
 {
     MemCheck::free(p);
 }
@@ -56,6 +59,9 @@ void *operator new[](size_t nbytes)
 }
 
 void operator delete[](void *p)
+#if HAVE_EXCEPTIONS
+    throw()
+#endif
 {
     MemCheck::free(p);
 }

@@ -287,7 +287,7 @@ typedef struct PlusCmdData {
 
 static void user_cmdOA  (const string&, void *);
 static void user_cmdOAC (void *);
-static void plusOQAC (string [], void *[], int, void *);
+static void plusOQAC (const StringArray&, const VoidArray&, void *);
 
 // Handle graph command in CMD, with WHERE_ANSWER being the GDB reply
 // to a `where 1' command; return true iff recognized
@@ -1573,11 +1573,12 @@ static void process_config_program_language(string& lang)
 // Handle GDB answers to DDD questions sent after GDB command
 //-----------------------------------------------------------------------------
 
-void plusOQAC (string answers[],
-	       void*  qu_datas[],
-	       int    count,
+void plusOQAC (const StringArray& answers,
+	       const VoidArray& /* qu_datas */,
 	       void*  data)
 {
+    int count = answers.size();
+
     PlusCmdData* plus_cmd_data = (PlusCmdData *)data;
     int qu_count = 0;
     string file;
@@ -1596,13 +1597,8 @@ void plusOQAC (string answers[],
 	case GDB:
 	    {
 		// Handle `info line' output
-		assert (qu_count < count);
 		string info_line1 = answers[qu_count++];
-
-		assert (qu_count < count);
 		string list       = answers[qu_count++];
-
-		assert (qu_count < count);
 		string info_line2 = answers[qu_count++];
 
 		// Skip initial message lines like `Reading symbols...'
@@ -1626,7 +1622,6 @@ void plusOQAC (string answers[],
 	    break;
 
 	case XDB:
-	    assert (qu_count < count);
 	    source_view->process_info_line_main(answers[qu_count++]);
 	    break;
 
@@ -1635,125 +1630,79 @@ void plusOQAC (string answers[],
 	}
     }
 
-    if (plus_cmd_data->config_xdb) {
-	// Make sure XDB understands macros
-	assert (qu_count < count);
+    // Make sure XDB understands macros
+    if (plus_cmd_data->config_xdb)
 	process_config_tm(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_frame) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_frame)
 	process_config_frame(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_func) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_func)
 	process_config_func(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_run_io) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_run_io)
 	process_config_run_io(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_print_r) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_print_r)
 	process_config_print_r(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_where_h) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_where_h)
 	process_config_where_h(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_display) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_display)
 	process_config_display(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_clear) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_clear)
 	process_config_clear(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_handler) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_handler)
 	process_config_handler(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_pwd) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_pwd)
 	process_config_pwd(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_setenv) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_setenv)
 	process_config_setenv(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_edit) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_edit)
 	process_config_edit(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_make) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_make)
 	process_config_make(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_regs) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_regs)
 	process_config_regs(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_named_values) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_named_values)
 	process_config_named_values(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_when_semicolon) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_when_semicolon)
 	process_config_when_semicolon(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_delete_comma) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_delete_comma)
 	process_config_delete_comma(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_err_redirection) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_err_redirection)
 	process_config_err_redirection(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_givenfile) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_givenfile)
 	process_config_givenfile(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_cont_sig) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_cont_sig)
 	process_config_cont_sig(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_output) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_output)
 	process_config_output(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->config_program_language) {
-	assert (qu_count < count);
+    if (plus_cmd_data->config_program_language)
 	process_config_program_language(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->refresh_pwd) {
-	assert (qu_count < count);
+    if (plus_cmd_data->refresh_pwd)
 	source_view->process_pwd(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->refresh_file) {
+    if (plus_cmd_data->refresh_file)
+    {
 	assert (gdb->type() == DBX);
-	assert (qu_count < count);
 
 	file = answers[qu_count++];
 
@@ -1792,8 +1741,6 @@ void plusOQAC (string answers[],
 
     if (plus_cmd_data->refresh_line)
     {
-	assert (qu_count < count);
-
 	string listing = answers[qu_count++];
 
 	if (file != "")
@@ -1817,20 +1764,18 @@ void plusOQAC (string answers[],
 	}
     }
 
-    if (plus_cmd_data->refresh_bpoints) {
-	assert (qu_count < count);
+    if (plus_cmd_data->refresh_bpoints)
+    {
 	source_view->process_info_bp(answers[qu_count++], 
 				     plus_cmd_data->break_arg);
 	update_arg_buttons();
     }
 
-    if (plus_cmd_data->refresh_where) {
-	assert (qu_count < count);
+    if (plus_cmd_data->refresh_where)
 	source_view->process_where(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->refresh_frame) {
-	assert (qu_count < count);
+    if (plus_cmd_data->refresh_frame)
+    {
 	string& answer = answers[qu_count++];
 
 	if (plus_cmd_data->refresh_pc)
@@ -1845,23 +1790,18 @@ void plusOQAC (string answers[],
 	source_view->process_frame(answer);
     }
 
-    if (plus_cmd_data->refresh_registers) {
-	assert (qu_count < count);
+    if (plus_cmd_data->refresh_registers)
 	source_view->process_registers(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->refresh_threads) {
-	assert (qu_count < count);
+    if (plus_cmd_data->refresh_threads)
 	source_view->process_threads(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->refresh_data) {
+    if (plus_cmd_data->refresh_data)
+    {
 	string ans = "";
 	for (int i = 0; i < plus_cmd_data->n_refresh_data; i++)
-	{
-	    assert (qu_count < count);
 	    ans += answers[qu_count++];
-	}
+
 	if (plus_cmd_data->n_refresh_data > 0)
 	{
 	    bool disabling_occurred = false;
@@ -1882,23 +1822,17 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->refresh_addr)
 	data_disp->refresh_addr();
 
-    if (plus_cmd_data->refresh_disp_info) {
-	assert (qu_count < count);
+    if (plus_cmd_data->refresh_disp_info)
 	data_disp->process_info_display(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->refresh_history_filename) {
-	assert (qu_count < count);
+    if (plus_cmd_data->refresh_history_filename)
 	process_history_filename(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->refresh_history_size) {
-	assert (qu_count < count);
+    if (plus_cmd_data->refresh_history_size)
 	process_history_size(answers[qu_count++]);
-    }
 
-    if (plus_cmd_data->refresh_setting) {
-	assert (qu_count < count);
+    if (plus_cmd_data->refresh_setting)
+    {
 	string ans = answers[qu_count++];
 	process_show(plus_cmd_data->set_command, ans);
 
@@ -1912,6 +1846,4 @@ void plusOQAC (string answers[],
 	abort();
 
     delete plus_cmd_data;
-    delete[] answers;
-    delete[] qu_datas;
 }

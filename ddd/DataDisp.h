@@ -302,17 +302,15 @@ private:
     static void new_data_display_extraOQC(const string& answer, void* data);
     static void new_data_displaysSQA     (string display_expression, 
 					  void *data);
-    static void new_data_displaysOQAC    (string answers[], 
-					  void*  qu_datas[],
-					  int    count, 
-					  void*  data);
+    static void new_data_displaysOQAC    (const StringArray& answers, 
+					  const VoidArray& qu_datas,
+					  void* data);
 
     static void new_user_displayOQC  (const string& answer, void* data);
 
     static void refresh_displayOQC   (const string& answer, void*  data);
-    static void refresh_displayOQAC  (string answers[],
-				      void*  qu_datas[],
-				      int    count,
+    static void refresh_displayOQAC  (const StringArray& answers,
+				      const VoidArray& qu_datas,
 				      void*  data);
 
     static void disable_displayOQC   (const string& answer, void* data);
