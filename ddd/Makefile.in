@@ -1551,7 +1551,7 @@ $(srcdir)/tips.html: $(srcdir)/../TIPS
 
 
 # `make depend' fails to find this dependency :-(
-DispBox.$(OBJEXT): ddd.vsl.h
+DispBox.$(OBJEXT): $(srcdir)/ddd.vsl.h
 
 # And these are never computed:
 ddd.vsl.h: $(srcdir)/../vsllib/std.vsl
