@@ -1959,7 +1959,7 @@ inline std::ostream& operator<<(std::ostream& s, const subString& x)
 // A zillion comparison operators - for every combination of char,
 // char *, const char *, string, and subString.
 #define string_COMPARE(op, t1, t2) \
-inline int operator op(t1 x, t2 y) \
+inline bool operator op(t1 x, t2 y) \
 { \
     return compare(x, y) op 0; \
 }
