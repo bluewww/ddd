@@ -47,6 +47,8 @@ if [ $install = false ]; then
     exit 0;			# No installation required
 fi
 
+echo make-current[$$]: start at `date`
+
 # Fetch the date in ISO 8601 YYYY-MM-DD format.
 year=`date +"%Y"`
 month=`date +"%m"`
@@ -73,7 +75,7 @@ esac
 
 # We are working in /tmp/ddd.  In case of trouble, clean up.
 trap "exit 1" 1 2 15
-trap "echo -n 'Cleaning up...'; cd $tmpdir; rm -fr ddd; echo done." 0
+trap "set +x; echo -n 'Cleaning up...'; cd $tmpdir; rm -fr ddd; echo done." 0
 
 # Go ahead...
 echo "Creating ddd-$date.tar.gz (expires $expires)..."
@@ -124,6 +126,7 @@ if [ -f ddd-$date.tar.gz ]; then
     tail +$line $log > $target/ChangeLog.tail
     cp -p NEWS BUGS TODO $target
     echo "Creating ddd-$date.tar.gz (expires $expires)...done."
+    echo make-current[$$]: done at `date`
 fi
 
 # That's all, folks!
