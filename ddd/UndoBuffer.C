@@ -169,7 +169,7 @@ void UndoBuffer::add_status(const string& name, const string& value)
 	return;
 
 #if LOG_UNDO_BUFFER
-    clog << "Adding\t" << name << " = " << quote(value) << "\n";
+    clog << "Adding " << name << " = " << quote(value) << "\n";
 #endif
 
     if (force_new_entry || history.size() == 0)
@@ -245,7 +245,7 @@ void UndoBuffer::add_command(const string& command, bool exec)
     // We're called from undo or redo
 
 #if LOG_UNDO_BUFFER
-    clog << "Adding\t" << command_key << " = " << quote(command) << "\n";
+    clog << "Adding " << command_key << " = " << quote(command) << "\n";
 #endif
 
     assert (history.size() > 0);
@@ -381,9 +381,11 @@ void UndoBuffer::process_command(const UndoBufferEntry& entry, int direction)
     else
 	return;
 
-    int count = 0;
+    string original_commands = commands;
+    int bp_count = 0;
     own_processed = 0;
     own_direction = direction;
+
     while (commands != "")
     {
 	string cmd;
@@ -397,7 +399,7 @@ void UndoBuffer::process_command(const UndoBufferEntry& entry, int direction)
 	if (cmd.contains(REMAP_COMMAND, 0))
 	{
 	    int old_bp_nr = atoi(cmd.chars() + strlen(REMAP_COMMAND "@"));
-	    int new_bp_nr = source_view->next_breakpoint_number() + count++;
+	    int new_bp_nr = source_view->next_breakpoint_number() + bp_count++;
 
 	    remap_breakpoint(old_bp_nr, new_bp_nr);
 	    remap_breakpoint(commands, old_bp_nr, new_bp_nr);
@@ -421,8 +423,15 @@ void UndoBuffer::process_command(const UndoBufferEntry& entry, int direction)
 	c.priority = COMMAND_PRIORITY_SYSTEM;
 	gdb_command(c);
 
-	// Sync this to avoid problems with multiple undos
+	// Wait until this command is processed
 	syncCommandQueue();
+    }
+
+    if (original_commands != "" && own_processed == 0)
+    {
+	cerr << "Undo: warning: " 
+	     << quote(original_commands)
+	     << " did not leave redo commands\n";
     }
 
     own_direction = 0;
