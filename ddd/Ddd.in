@@ -222,7 +222,6 @@ Ddd*gdbInitCommands:	\
 set height 0\n\
 set width 0\n\
 set print pretty\n\
-set print array\n\
 set print repeats 0\n\
 set verbose off\n\
 set prompt (gdb) \n
