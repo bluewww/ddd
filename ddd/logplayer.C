@@ -84,6 +84,8 @@ static int intr(int sig)
 {
     signal(SIGINT, (SignalProc)intr);
     longjmp(main_loop_env, sig);
+
+    return 0;			// Never reached
 }
 
 static const char *usage = 
