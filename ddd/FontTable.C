@@ -70,7 +70,7 @@ XFontStruct *FontTable::operator[](string& name)
 
 	if (table[i].font == 0)
 	{
-	    cerr << "Warning: could not load font \"" << name << "\"";
+	    cerr << "Warning: Could not load font \"" << name << "\"";
 
 	    // Try default font
 	    GC default_gc = 
