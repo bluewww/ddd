@@ -399,6 +399,18 @@ Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
     info->list = XmCreateScrolledList(info->shell, "list", args, arg);
     XtManageChild(info->list);
+
+    // Set form height explicitly.  LessTif wants this.
+    XtWidgetGeometry size;
+    size.request_mode = CWHeight;
+    XtQueryGeometry(info->text, NULL, &size);
+    XtVaSetValues(form, XmNheight, size.height, NULL);
+
+    // Set frame height explicitly, too
+    Dimension shadow_thickness;
+    XtVaGetValues(info->top, XmNshadowThickness, &shadow_thickness, NULL);
+    XtVaSetValues(info->top, XmNheight, size.height + shadow_thickness * 2, 
+		  NULL);
 #endif
 
     // Give shell a little more border
