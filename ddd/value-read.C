@@ -602,8 +602,8 @@ string read_vtable_entries (string& value)
 // Return true iff NAME is a baseclass name (enclosed in <>).
 bool is_BaseClass_name (const string& name)
 {
-    static regex RXbase_class_name ("(<>|<[A-Za-z_][A-Za-z0-9_< >,:]*>)");
-    return name.matches (RXbase_class_name);
+    return name.length() >= 2
+	&& name[0] == '<' && name[name.length() - 1] == '>';
 }
 
 // Remove baseclass names. 
