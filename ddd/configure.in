@@ -677,29 +677,45 @@ if test "$builtin_app_defaults" != no; then
 AC_DEFINE(WITH_BUILTIN_APP_DEFAULTS)
 fi
 dnl
+dnl
 dnl Check for risky LessTif versions.
+dnl
 risky_lesstif=false
 ice_save_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 AC_TRY_CPP([#include <Xm/Xm.h>
 #ifdef LESSTIF_VERSION
-#if LESSTIF_VERSION < 1 && LESSTIF_REVISION < 87
-#error
+#if LESSTIF_VERSION == 0 && LESSTIF_REVISION <= 86
+#error LessTif 0.86 or earlier
 #endif
 #endif], risky_lesstif=false, risky_lesstif=true)
 CPPFLAGS="$ice_save_CPPFLAGS"
+dnl
 dnl
 dnl Check for risky CC versions.
 dnl
 risky_cc=false
 # Warn about old SGI CC versions.
-if test "$CXX" = "CC" && test "$host_vendor" = "sgi" && test "$ice_cv_have_bool" != yes; then
-risky_cc=true
-fi
+case "$CXX" in
+*CC)
+  if test "$host_vendor" = "sgi" && test "$ice_cv_have_bool" != yes; then
+    risky_cc=true
+  fi
+  ;;
+*)
+  ;;
+esac
+dnl
 # Warn about old xlC versions.
-if test "$CXX" = "xlC" && test "$ice_cv_have_bool" != yes; then
-risky_cc=true
-fi
+case "$CXX" in
+*xlC)
+  if test "$ice_cv_have_bool" != yes; then
+    risky_cc=true
+  fi
+  ;;
+*)
+  ;;
+esac
 dnl
 dnl
 dnl
@@ -711,19 +727,19 @@ dnl
 dnl Give some warnings
 dnl
 if test "$silent" != yes; then
-
+dnl
 if $risky_cc; then
 echo
 echo "configure: This $CXX version may not generate safe $DDD code."
 echo "Use GCC instead or continue at own risk."
 fi
-
+dnl
 if $risky_lesstif; then
 echo
 echo "configure: This $DDD release requires LessTif 0.87 or later."
 echo "Upgrade to a recent LessTif version or continue at own risk."
 fi
-
+dnl
 fi
 dnl
 dnl Give an indication of what to do next.
