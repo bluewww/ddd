@@ -921,7 +921,7 @@ Ddd*menubar.file*contextHelpString:	\
 @tt \267 @bf Open Source... @rm - open a source file.\n\
 \n\
 @tt \267 @bf Print Graph... @rm - print the data display graph.\n\
-@tt \267 @bf Quick Print @rm - print using the previous settings.\n\
+@tt \267 @bf Print Again @rm - print using the previous settings.\n\
 \n\
 @tt \267 @bf Close @rm - close this window.\n\
 @tt \267 @bf Exit @rm - exit DDD.
@@ -938,8 +938,8 @@ Ddd*menubar*fileMenu.open_source.mnemonic:    S
 Ddd*menubar*fileMenu.print.labelString:  Print Graph...
 Ddd*menubar*fileMenu.print.mnemonic:	 P
 
-Ddd*menubar*fileMenu.quickPrint.labelString: Quick Print
-Ddd*menubar*fileMenu.quickPrint.mnemonic: Q
+Ddd*menubar*fileMenu.quickPrint.labelString: Print Again
+Ddd*menubar*fileMenu.quickPrint.mnemonic: A
 
 Ddd*menubar*fileMenu.close.labelString:	 Close
 Ddd*menubar*fileMenu.close.mnemonic:	 C

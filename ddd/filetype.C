@@ -72,6 +72,16 @@ char filetype_rcsid[] =
 #define	S_ISDIR(m) (((m) & _IFMT) == _IFDIR)
 #endif
 
+// True if FILE_NAME is a regular file
+bool is_regular_file(const string& file_name)
+{
+    struct stat sb;
+    if (stat(file_name, &sb))
+	return false;		// cannot stat
+
+    return S_ISREG(sb.st_mode);
+}
+
 // True if FILE_NAME contains non-TEXT characters
 bool is_binary_file(const string& file_name)
 {

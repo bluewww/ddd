@@ -7212,9 +7212,9 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 	if (f == "")
 	    return;
 
-	if (access(f, W_OK) || client_data)
+	if (access(f, W_OK) || !is_regular_file(f) || client_data)
 	{
-	    // File does not exist or override is on
+	    // File does not exist, is special, or override is on
 	    if (convert(f, gc, print_selected_only) == 0)
 	    {
 		if (print_dialog)
@@ -7223,6 +7223,7 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 	}
 	else
 	{
+	    // File exists - request confirmation
 	    if (yn_dialog)
 		XtDestroyWidget(yn_dialog);
 	    yn_dialog = 
@@ -7234,7 +7235,7 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 			   (void *)1);
 	    XtAddCallback (yn_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
-	    string question = "Overwrite existing file\n" + quote(f) + "?";
+	    string question = "Overwrite existing file " + quote(f) + "?";
 	    XmString xmtext = XmStringCreateLtoR (question, "rm");
 	    XtVaSetValues (yn_dialog, XmNmessageString, xmtext, NULL);
 	    XmStringFree (xmtext);

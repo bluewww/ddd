@@ -32,6 +32,9 @@
 #include "bool.h"
 #include "strclass.h"
 
+// True if FILE_NAME is a regular file
+bool is_regular_file(const string& file_name);
+
 // True if FILE_NAME is an executable file
 bool is_exec_file(const string& file_name);
 
