@@ -9,6 +9,7 @@ DDD 3.1.6 fixes more minor problems in DDD 3.1.
 - DDD passes all options after `--' to the inferior debugger.
 - [Build] If available, use the GNU ld `-rpath' option instead of `-L'
   to specify library locations.
+- [Build] Minor code fixes for recent EGCS versions.
 
 There are no new features in DDD 3.1.6.  You don't need to upgrade
 unless you suffer from one of these problems.
