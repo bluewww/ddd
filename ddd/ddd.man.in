@@ -1586,7 +1586,9 @@ at the debugger prompt, where \fIdisplays...\fR is a space-separated
 list of display numbers to delete or a single display name.
 .PP
 If you are using stacked windows, deleting the last display from the
-data window also automatically closes the data window.
+data window also automatically closes the data window.  (You can
+change this via `\fBEdit\(->Preferences\(->Data\(->Close data window
+when deleting last display\fR'.)
 .\"
 .\"
 .SS "Examining Shared Data Structures"
@@ -2163,12 +2165,16 @@ To facilitate alignment of data displays, you can set the
 `\fBAuto-align displays\fR' option.  If auto-alignment is enabled,
 displays can be moved on grid positions only.
 .PP
+By default, the stacked data window is automatically closed when you
+delete the last data display.  You can keep the data window open by
+unsetting `\fBClose data window when deleting last display\fR'.
+.PP
+.PSPIC @srcdir@/PICS/ddd-data-prefs.ps 15.3cm
+.PP
 To enable a more compact layout, you can set the `\fBCompact
 Layout\fR' option.  This realizes an alternate layout algorithm, where
 successors are placed next to their parents.  This algorithm is
 suitable for homogeneous data structures only.
-.PP
-.PSPIC @srcdir@/PICS/ddd-data-prefs.ps 15.3cm
 .PP
 To enforce layout, you can set the `\fBRe-layout graph
 automatically\fR' option.  If automatic layout is enabled, the graph
@@ -3927,6 +3933,12 @@ If `\fBon\fR' (default), \s-1@DDD@\s+1 lays out two-dimensional arrays
 as tables, such that all array elements are aligned with each other.
 If `\fBoff\fR', \s-1@DDD@\s+1 treats a two-dimensional array as an
 array of one-dimensional arrays, each aligned on its own.
+.TP
+.B "autoCloseDataWindow (\fPclass\fB AutoClose)"
+If this is `\fBon\fR' (default) and \s-1@DDD@\s+1 is in stacked window
+mode, deleting the last display automatically closes the data window.
+If this is `\fBoff\fR', the data window stays open even after deleting
+the last display.
 .TP
 .B "bumpDisplays (\fPclass\fB BumpDisplays)"
 If some display \fID\fR changes size and this resource is `\fBon\fR'

@@ -545,6 +545,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNautoCloseDataWindow,
+	XtCAutoClose,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, auto_close_data_window),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNtermCommand,
 	XtCTermCommand,
 	XtRString,

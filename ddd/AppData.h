@@ -123,6 +123,8 @@
 #ifndef XtCWindow
 #define XtCWindow                "Window"
 #endif
+#define XtNautoCloseDataWindow   "autoCloseDataWindow"
+#define XtCAutoClose             "AutoClose"
 #define XtNtermCommand           "termCommand"
 #define XtCTermCommand           "TermCommand"
 #define XtNtermType              "termType"
@@ -382,6 +384,7 @@ struct AppData {
     Boolean   data_window;
     Boolean   source_window;
     Boolean   debugger_console;
+    Boolean   auto_close_data_window;
     String    term_command;
     String    term_type;
     Boolean   use_tty_command;

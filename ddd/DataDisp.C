@@ -3785,7 +3785,10 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
     if (disp_graph->firstVisibleNode() == 0)
     {
 	// Deleted last visible display
-	close_data_window();
+	if (app_data.auto_close_data_window)
+	{
+	    close_data_window();
+	}
     }
 
     if (do_prompt)

@@ -1035,12 +1035,23 @@ static MMDesc source_preferences_menu[] =
 
 
 // Data preferences
+static Widget graph_compact_layout_w;
+static Widget graph_auto_layout_w;
+
+static MMDesc layout_menu[] = 
+{
+    { "compact", MMToggle,  { graphToggleCompactLayoutCB },
+      NULL, &graph_compact_layout_w },
+    { "auto",    MMToggle,  { graphToggleAutoLayoutCB },
+      NULL, &graph_auto_layout_w },
+    MMEnd
+};
+
 static Widget graph_detect_aliases_w;
 static Widget graph_align_2d_arrays_w;
 static Widget graph_show_hints_w;
 static Widget graph_snap_to_grid_w;
-static Widget graph_compact_layout_w;
-static Widget graph_auto_layout_w;
+static Widget graph_auto_close_w;
 static Widget graph_grid_size_w;
 
 static MMDesc data_preferences_menu[] = 
@@ -1053,10 +1064,9 @@ static MMDesc data_preferences_menu[] =
       NULL, &graph_show_hints_w },
     { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB },
       NULL, &graph_snap_to_grid_w },
-    { "compactLayout", MMToggle,  { graphToggleCompactLayoutCB },
-      NULL, &graph_compact_layout_w },
-    { "autoLayout",    MMToggle,  { graphToggleAutoLayoutCB },
-      NULL, &graph_auto_layout_w },
+    { "autoClose", MMToggle,  { graphToggleAutoCloseCB },
+      NULL, &graph_auto_close_w },
+    { "layout",        MMButtonPanel, MMNoCB, layout_menu },
     { "gridSize",      MMScale,   { graphSetGridSizeCB },
       NULL, &graph_grid_size_w },
     MMEnd
@@ -3595,6 +3605,7 @@ void update_options()
     set_toggle(graph_show_hints_w, show_hints);
     set_toggle(graph_auto_layout_w, auto_layout);
     set_toggle(graph_compact_layout_w, layout_mode == CompactLayoutMode);
+    set_toggle(graph_auto_close_w, app_data.auto_close_data_window);
 
     if (graph_grid_size_w != 0)
 	XtVaSetValues(graph_grid_size_w, XmNvalue, show_grid ? grid_width : 0, 
@@ -3986,6 +3997,8 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(graph_compact_layout_w, 
 	       initial_layout_mode == CompactLayoutMode);
     notify_set_toggle(graph_auto_layout_w, initial_auto_layout);
+    notify_set_toggle(graph_auto_close_w,
+		      initial_app_data.auto_close_data_window);
 
     Dimension grid_width, grid_height;
     Boolean show_grid, show_hints;
@@ -4048,6 +4061,10 @@ static bool data_preferences_changed()
 	return true;
 
     if (auto_layout  != initial_auto_layout)
+	return true;
+
+    if (app_data.auto_close_data_window != 
+	initial_app_data.auto_close_data_window)
 	return true;
 
     if (grid_width   != initial_grid_width)

@@ -3115,6 +3115,8 @@ ITEM If LBL(Display two-dimensional arrays as tables) is set, the elements\n\
     Otherwise, two-dimensional arrays are displayed as nested linear arrays.\n\
 ITEM If LBL(Auto-align displays) is set,\n\
     each display is aligned on the nearest grid point.\n\
+ITEM If LBL(Close data window when deleting last display) is set,\n\
+    deleting the last display automatically closes the data window.\n\
 ITEM LBL(Compact layout) enables a compact layout,\n\
     suitable for homogeneous structures only.\n\
 ITEM LBL(Automatic layout) makes DDD layout the graph after each change.\n\
@@ -3132,10 +3134,14 @@ Ddd*preferences*showHints.labelString:	        \
 Show Edge Hints
 Ddd*preferences*snapToGrid.labelString:	        \
 Auto-Align Displays on Nearest Grid Point
-Ddd*preferences*compactLayout.labelString:      \
-Use Compact Layout (Homogeneous Structures Only)
-Ddd*preferences*autoLayout.labelString:	        \
-Re-Layout Graph Automatically After Each Change
+Ddd*preferences*autoClose.labelString:	        \
+Close Data Window when Deleting last Display
+Ddd*preferences*layout.labelString:             \
+Graph Layout
+Ddd*preferences*auto.labelString:	        \
+Automatic
+Ddd*preferences*compact.labelString:	        \
+Compact
 
 Ddd*preferences*gridSize.orientation:		XmHORIZONTAL
 Ddd*preferences*gridSize.minimum:		0

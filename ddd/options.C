@@ -402,6 +402,21 @@ void graphToggleAutoLayoutCB(Widget, XtPointer, XtPointer call_data)
     update_options();
 }
 
+void graphToggleAutoCloseCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.auto_close_data_window = info->set;
+
+    if (info->set)
+	set_status("Automatic closing on.");
+    else
+	set_status("Automatic closing off.");
+
+    update_options();
+}
+
 void graphSetGridSizeCB (Widget, XtPointer, XtPointer call_data)
 {
     XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
@@ -1817,6 +1832,8 @@ bool save_options(unsigned long flags)
     os << widget_value(data_disp->graph_edit, XtNshowHints)  << "\n";
     os << widget_value(data_disp->graph_edit, XtNlayoutMode) << "\n";
     os << widget_value(data_disp->graph_edit, XtNautoLayout) << "\n";
+    os << bool_app_value(XtNautoCloseDataWindow,
+			 app_data.auto_close_data_window) << "\n";
 
     Dimension grid_width, grid_height;
     XtVaGetValues(data_disp->graph_edit,
