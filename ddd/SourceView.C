@@ -162,7 +162,7 @@ extern "C" {
 
 
 // Additional macros
-inline int isid(char c)
+inline bool isid(char c)
 {
     return isalnum(c) || c == '_' || c == '$';
 }
