@@ -63,9 +63,8 @@
 // DDD includes
 #include "ArgField.h"
 #include "GDBAgent.h"
-#include "BreakPoint.h"
+#include "BreakPM.h"
 #include "CodeCache.h"
-#include "Map.h"
 #include "Delay.h"
 
 //-----------------------------------------------------------------------------
@@ -243,7 +242,7 @@ private:
     static int  code_indent_amount; // Machine code
 
     // The breakpoint map
-    static Map<int, BreakPoint> bp_map;
+    static BreakPointMap bp_map;
 
     // File attributes
     static string current_file_name;

@@ -31,7 +31,6 @@ char DataDisp_rcsid[] =
 
 #ifdef __GNUG__
 #pragma implementation
-#pragma implementation "Map.h"
 #endif
 
 #define LOG_DISPLAYS 0
@@ -61,6 +60,7 @@ char DataDisp_rcsid[] =
 #include "post.h"
 #include "question.h"
 #include "commandQ.h"
+#include "StringMap.h"
 
 // Motif includes
 #include <Xm/MessageB.h>
@@ -2243,7 +2243,7 @@ void DataDisp::process_info_display (string& info_display_answer)
     // Fremde Display-Infos rausschneiden, eigene speichern
 
     int disp_nr;
-    Map <int, string> info_disp_string_map;
+    StringMap info_disp_string_map;
     string *strptr;
 
     string next_disp_info = 
@@ -2329,7 +2329,7 @@ string DataDisp::process_displays (string& displays,
 
     // Fremde Displays rausschneiden, eigene speichern
     int    disp_nr = 0;
-    Map <int, string> disp_string_map;
+    StringMap disp_string_map;
     string *strptr;
 
 #if LOG_DISPLAYS

@@ -30,7 +30,6 @@
 #ifdef __GNUG__
 #pragma implementation
 #pragma implementation "Assoc.h"
-#pragma implementation "Map.h"
 #endif
 
 char SourceView_rcsid[] =

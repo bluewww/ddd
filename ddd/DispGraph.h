@@ -45,8 +45,7 @@
 #include "HandlerL.h"
 #include "LineGraphE.h"
 
-#include "Map.h"
-#include "DispNode.h"
+#include "DispNodeM.h"
 
 //-----------------------------------------------------------------------------
 
@@ -63,10 +62,11 @@ const unsigned DispGraph_NTypes = NoDisabled + 1;
 // Die Klasse DispGraph
 //-----------------------------------------------------------------------------
 class DispGraph: public Graph {
-    Map<int, DispNode> idMap;
-    HandlerList        handlers;
-    bool            no_enabled;
-    bool            no_disabled;
+    DispNodeMap  idMap;
+    HandlerList  handlers;
+    bool         no_enabled;
+    bool         no_disabled;
+
 public:
     // Constructor
     DispGraph();
