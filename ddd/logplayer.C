@@ -35,6 +35,7 @@ char logplayer_rcsid[] =
 
 #include "logplayer.h"
 
+#include "bool.h"
 #include "strclass.h"
 #include "cook.h"
 #include "config.h"
@@ -94,6 +95,7 @@ void logplayer(const string& logname)
     static string out;
     static string ddd_line;
     static string last_prompt;
+    static bool initializing = true;
     static bool scanning = false;
     static bool out_seen = false;
     static bool wrapped = false;
@@ -194,6 +196,7 @@ void logplayer(const string& logname)
 	    if (!scanning)
 	    {
 		last_input = scan_start;
+		initializing = false;
 
 		// Read command from DDD
 		cout << last_prompt;
@@ -213,6 +216,36 @@ void logplayer(const string& logname)
 
 		if (ddd_line.contains('q', 0))
 		    exit(EXIT_SUCCESS);
+
+		if (ddd_line.contains("list 1,", 0))
+		{
+		    // Send the log file instead of a source
+		    ifstream is(logname);
+		    int line = 1;
+		    bool at_start_of_line = true;
+
+		    for (;;)
+		    {
+			char c;
+			is.get(c);
+			if (is.eof())
+			    break;
+
+			if (at_start_of_line)
+			{
+			    cout << line << '\t';
+			    at_start_of_line = false;
+			}
+
+			cout << c;
+
+			if (c == '\n')
+			{
+			    line++;
+			    at_start_of_line = true;
+			}
+		    }
+		}
 	    }
 
 	    if (!scanning && ddd_line == ".")
@@ -251,6 +284,12 @@ void logplayer(const string& logname)
 		log.clear();
 		log.seekg(scan_start);
 		command_no = command_no_start;
+	    }
+	    else if (initializing)
+	    {
+		// No prompt found
+		cerr << logname << ": invalid or incomplete log\n";
+		exit(EXIT_FAILURE);
 	    }
 	    else
 	    {
