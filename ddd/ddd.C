@@ -557,8 +557,8 @@ static XrmOptionDescRec options[] = {
 { "--check-configuration",  XtNcheckConfiguration,   XrmoptionNoArg, S_true },
 { "-check-configuration",   XtNcheckConfiguration,   XrmoptionNoArg, S_true },
 
-{ "--lesstif-hacks",        XtNlessTifVersion,       XrmoptionNoArg, "81" },
-{ "-lesstif-hacks",         XtNlessTifVersion,       XrmoptionNoArg, "81" },
+{ "--lesstif-hacks",        XtNlessTifVersion,       XrmoptionNoArg, "999" },
+{ "-lesstif-hacks",         XtNlessTifVersion,       XrmoptionNoArg, "999" },
 
 { "--no-lesstif-hacks",     XtNlessTifVersion,       XrmoptionNoArg, "1000" },
 { "-no-lesstif-hacks",      XtNlessTifVersion,       XrmoptionNoArg, "1000" },
