@@ -151,12 +151,11 @@ Volunteers for these and other projects are welcome!
 075. Andre Cormeau <ac@enci.ucalgary.ca> says:
 
      Apparently ddd does not fully support fortran. A problem is in
-     variable names, with capital letters and underscores (not strict f77).
-     I need to change the variable names to small caps and add underscores
-     to the end of the names, which is a bit annoying after a while. 
-     Is there a filter to do this out there? 
-     If not, could someone give me a pointer in the source code of ddd
-     as where I could implement such a feature?
+     variable names, with capital letters and underscores (not strict
+     f77).  I need to change the variable names to small caps and add
+     underscores to the end of the names, which is a bit annoying
+     after a while.  Is there a filter to do this out there?
+     [This is a problem in the underlying debugger.  -AZ]
 
 076. Henrik Seidel <henrik@satchmo.physik.tu-berlin.de> says:
 
@@ -182,13 +181,25 @@ Volunteers for these and other projects are welcome!
 078. Have mirror sites for the DDD WWW page.  Maybe via the DDD FTP
      mirrors?
 
-080. Include the FAQ in the DDD manual.
+080. Include the FAQ in the DDD manual.  Better yet, include all
+     top-level documentation in the DDD manual (including news,
+     problems, etc.) and generate it from this single source.
 
-081. Pre-scan the X event buffer for ^C events.
+081. Pre-scan the X event queue for ^C events.  When ^C is found,
+     discard all other user input, and process ^C.
 
 082. For remote debugging, use an on-line `rlogin' connection,
      invoking the inferior debugger from the remote shell.
 
-083. Include graphplace support.
+083. Include graphplace (or other graph layout) support.
 
-084. (Insert your project idea here)
+084. Support DBXes that don't know the `display' command, such as
+     IBM and DEC dbx.  Use `print' instead whenever the prompt comes.
+
+085. Include xDuel support.  See `http://www.math.tau.ac.il/~frangy/'
+     for details.
+
+086. Move the status line to the bottom and give one-liner
+     explanations about items pointed at.
+
+087. (Insert your project idea here)
