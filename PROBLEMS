@@ -211,18 +211,20 @@ LessTif
     problems occur.  Unless otherwise noted, all problems refer to DDD
     2.1.1 compiled against LessTif 0.81 on a sparc-sunos-4.1.4.
  
-    011. The `F1' menu accelerator (Help|On Context) has no effect.
+    001. The `F1' menu accelerator (Help|On Context) has no effect.
          [behavioral]
    
-    020. Some of the dialog shells behave like top-level shells
+    002. Some of the dialog shells behave like top-level shells
          (e.g. they are decorated and placed by the user), for
          instance the display editor (Data|Edit Displays) and the
          breakpoint editor (Source|Edit Breakpoints).  [behavioral]
  
-    028. Menu items are not made insensitive as they ought to be.
+    003. Menu items are not made insensitive as they ought to be.
          [behavioral]
 
-    029. Glyphs are not shown.  Why?
+    004. If the insertion cursor is positioned using the mouse, the
+         text always scrolls such that the cursor is in the first
+         line. [behavioral]
  
 
 
