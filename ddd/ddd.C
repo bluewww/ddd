@@ -4291,6 +4291,15 @@ void update_arg_buttons()
 	set_label(break_menu[BreakItems::Enable].widget, 
 		  "Enable Breakpoint at ()");
 
+    set_sensitive(break_menu[BreakItems::Enable].widget,
+		  gdb->has_disable_command());
+    set_sensitive(break_menu[BreakItems::Condition].widget,
+		  gdb->has_breakpoint_conditions());
+    set_sensitive(break_menu[BreakItems::IgnoreCount].widget,
+		  gdb->has_ignore_command());
+    set_sensitive(break_menu[BreakItems::SetPC].widget,
+		  gdb->has_jump_command() || gdb->has_assign_command());
+
     bool have_watch = have_watchpoint_at_arg();
     if (have_watch)
 	set_label(arg_cmd_area[ArgItems::Watch].widget, "Unwatch ()");
