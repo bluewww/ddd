@@ -39,6 +39,10 @@
 struct MinMax {
     Dimension min;
     Dimension max;
+
+    MinMax()
+	: min(1), max(1000)
+    {}
 };
 
 typedef Assoc<Widget, MinMax> MinMaxAssoc;

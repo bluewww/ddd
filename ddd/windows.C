@@ -1171,24 +1171,26 @@ void manage_paned_child(Widget w)
 	if (is_internal_paned_child(child))
 	    continue;
 
-	Dimension minimum = 1;
-	Dimension maximum = 1000;
-	XtVaGetValues(children[i], XmNpaneMinimum, &minimum, 
-		      XmNpaneMaximum, &maximum, NULL);
-
 	MinMax& size = sizes[child];
-	size.min = minimum;
-	size.max = maximum;
+	XtVaGetValues(children[i], 
+		      XmNpaneMinimum, &size.min, 
+		      XmNpaneMaximum, &size.max,
+		      NULL);
 
 	// clog << XtName(child) 
 	//      << " min = " << size.min << ", max = " << size.max << '\n';
     }
 
-    // Ensure that each child keeps at least the minimum size
+    assert(sizes.has(w));
+    const MinMax& wsize = sizes[w];
+    static const MinMax no_constraints;
+
+    // Ensure that each child keeps at least the minimum size;
+    // don't make it larger than its preferred maximum size
     for (i = 0; i < numChildren; i++)
     {
 	Widget child = children[i];
-	if (child != w && !XtIsManaged(child))
+	if (!XtIsManaged(child) && child != w)
 	    continue;
 	if (!sizes.has(child))
 	    continue;
@@ -1196,7 +1198,19 @@ void manage_paned_child(Widget w)
 	const MinMax& size = sizes[child];
 	if (MIN_PANED_SIZE >= size.min && MIN_PANED_SIZE <= size.max)
 	{
-	    XtVaSetValues(children[i], XmNpaneMinimum, MIN_PANED_SIZE, NULL);
+	    XtVaSetValues(child, XmNpaneMinimum, MIN_PANED_SIZE, NULL);
+	}
+
+	if (child != w
+	    && wsize.min <= no_constraints.min 
+	    && wsize.max >= no_constraints.max)
+	{
+	    // New window is resizable: give all other windows their
+	    // preferred (= initial) height
+	    XtWidgetGeometry preferred_size;
+	    preferred_size.request_mode = CWHeight;
+	    XtQueryGeometry(child, NULL, &preferred_size);
+	    XtVaSetValues(child, XmNpaneMaximum, preferred_size.height, NULL);
 	}
     }
 
@@ -1213,11 +1227,10 @@ void manage_paned_child(Widget w)
 	    continue;
 
 	const MinMax& size = sizes[child];
-	if (size.min <= 1 && size.max >= 1000)
-	    continue;		// Default values
-
-	XtVaSetValues(child, XmNpaneMinimum, size.min, 
-		      XmNpaneMaximum, size.max, NULL);
+	XtVaSetValues(child,
+		      XmNpaneMinimum, size.min, 
+		      XmNpaneMaximum, size.max,
+		      NULL);
     }
 }
     
