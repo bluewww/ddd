@@ -1,4 +1,4 @@
-dnl Process this file with autoconf to produce a configure script.
+dnl Process this file with autoconf to produce a configure script. -*- m4 -*-
 dnl $Id$
 dnl 
 dnl Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
@@ -223,6 +223,10 @@ dnl
 dnl The `-liberty' library per definition contains only functions
 dnl missing in system libraries.
 LIBIBERTY="../libiberty/libiberty.a"
+dnl
+dnl Prefer the installed one over the one shipped with DDD.
+AC_CHECK_LIB(iberty, xstrerror, LIBIBERTY="-liberty")
+dnl
 AC_SUBST(LIBIBERTY)
 dnl
 dnl
