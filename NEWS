@@ -4,7 +4,8 @@ DDD News						-*- text -*-
 DDD 3.1 [in development]
 ========================
 
-DDD 3.1 brings edge annotations and a bunch of minor improvements.
+DDD 3.1 brings edge annotations, display clusters, and a bunch of
+minor improvements.
 
 
 Appearance
@@ -37,8 +38,14 @@ Data exploration
 - Edge annotations.  Edges are now annotated with the relation between
   the connected displays - i.e. the member name, array index or likewise.
 
-- You can disable titles on dependent displays, as they can be
-  inferred from edge annotations.
+- Titles on dependent displays are now disabled by default, as they
+  can be inferred from edge annotations.  Saves screen space.
+
+- Clusters.  You can combine several data displays in a cluster,
+  showing them like local variables or arguments and saving screen space.
+
+- When displaying a list A -> B -> C, the offset between items remains 
+  constant.
 
 - Several improvements in processing data output of the inferior debugger:
   * Many more data formats are recognized.
@@ -81,6 +88,11 @@ Printing
 - The default setting for printing is to print all displays.
 
 
+- Improved redirection handling.  You can redirect stderr away from
+  the execution window, using `run 2> FILE'.  The debugger command
+  `run 2> /dev/tty' will redirect stderr to the debugger console.
+
+
 Platforms
 ---------
 
@@ -100,11 +112,13 @@ Customization
 - Signal settings are saved with the current session.
 
 
-Key bindings
-------------
+Program Execution
+-----------------
 
-- The function keys F2-F9 have been assigned to frequently used
-  debugger commands:
+- This release brings major performance improvements, especially when
+  processing large chunks of data.
+
+- The function keys F2-F9 are bound to frequently used commands:
 
 	F2 Run
 	F3 Run Again
@@ -118,23 +132,15 @@ Key bindings
   The bindings from DDD 3.0 and earlier (Ctrl+E for Run, Ctrl+I for
   Step, etc.) are still available.
 
-- The `Home' and `End' keys work in all text fields.
-
 
 Bug fixes
 ---------
 
 - The `Disp *' button dereferences pointers as it should.
 
-- Improved redirection handling.  You can redirect stderr away from
-  the execution window, using `run 2> FILE'.  The debugger command
-  `run 2> /dev/tty' will redirect stderr to the debugger console.
-
 - In a separate window setting, data buttons are properly placed.
 
-- Minor performance improvements.
-
-
+- The `Home' and `End' keys work in all text fields.
 
 DDD 3.0
 =======
