@@ -60,6 +60,13 @@ Reported by: Jason A. Smith <smithj4@rpi.edu>
     c++: -bbigtoc: linker input file unused since linking not done
 
 
+Reported by:  Charlie Rusbridger <charlie@vampire.co.uk>
+
+    Just a small note, I find because of a bug in the AIX linker, I
+    have to add a C++ flag of '-mminimal-toc' or else the link fails
+    with something about a toc-overflow.
+
+
 Reported by:  Kai Engert <Kai.Engert@dresdner-bank.com>
 
     At the end of "make", linking of DDD stop withs the message "TOC
@@ -96,7 +103,7 @@ Reported by:	Jacek M. Holeczek <holeczek@us.edu.pl>
     need to remove the /usr/local/bin (or any other subdirectory where
     you keep gnu executables) from the PATH environment variable (so
     that the ./configure script will not find them, and it will find
-    standard AIX xlC, lex, and yacc) :
+    standard AIX xlC, lex, and yacc):
             export PATH=/usr/bin:/etc:/usr/sbin:/usr/ucb:/usr/bin/X11:/sbin
 
     Then run configure:
@@ -135,9 +142,19 @@ Reported by:	Jacek M. Holeczek <holeczek@us.edu.pl>
             int
             vslparse()
 
-    then run "make" again.  You should get no other warnings/errors except :
-      - when compiling ./ddd/mainloop.C :
-	63  1500-010: (W) WARNING in ddd_main_loop(): Infinite loop.  
+    In case you created ./ddd/rxscan.C with AIX 4.1 lex (from the
+    ./ddd/rxscan.L) you additionally need to modify one line in the
+    beginning of this file increasing YYLMAX from 200 to 8192 (this is
+    a result of a bug in AIX 4.1 lex, most probably not present on
+    both AIX 3.2 and AIX 4.2 - note here that you will not get any
+    compile time errors if you do not modify it, but your executable
+    will be broken):
+
+            # define YYLMAX 8192
+
+    then run "make" again.  You should get no other warnings/errors except:
+      - when compiling ./ddd/mainloop.C:
+	68  1500-010: (W) WARNING in ddd_main_loop(): Infinite loop.  
             Program may not stop.
         ( this is intentional, you can safely ignore it ).
     Finally run "make strip" and "make install".  Have fun ...
@@ -148,9 +165,9 @@ DEC
 Reported by: Pascal Quesseveur <abak@hol.fr>
 
     I have encountered some problems when compiling ddd on DEC Alpha 
-    station running Digital UNIX 4.0 with gcc version 2.7.2.2 :
+    station running Digital UNIX 4.0 with gcc version 2.7.2.2:
 
-    ddd/config.h created by configure is wrong : symbol 
+    ddd/config.h created by configure is wrong: symbol 
     HAVE_GETHOSTNAME_DECL must be defined in config.h since include file 
     /usr/include/unistd.h contains a prototype for gethostname. This 
     prototype is
@@ -160,9 +177,10 @@ Reported by: Pascal Quesseveur <abak@hol.fr>
     in the other cases. There is a conflict with the prototype defined in
     ddd/hostname.C.
 
-    ddd/Makefile created by configure is wrong : variables LIBNSL,
-    NON_XLIBS and LIBGEN have incorrect values : the values must be null 
-    to link ddd correctly.
+    The `ddd/Makefile' created by configure is wrong: variables
+    LIBNSL, NON_XLIBS and LIBGEN have incorrect values - the values
+    must be null to link ddd correctly.
+
 
 FreeBSD
 =======

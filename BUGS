@@ -104,4 +104,7 @@ Volunteers for fixing these and other bugs are welcome!
     the `graph' prefix confuses DDD - displays are considered
     `inactive'.
 
+300 Double-clicking on an empty line with zero source indentation does
+    not set a breakpoint.
+
 301 (Insert new bugs here)
