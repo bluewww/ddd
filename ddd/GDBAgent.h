@@ -678,6 +678,10 @@ public:
     string dump_command(const string& var) const;   // Perl: X var
     string get_dumped_var(const string& dump, const string& var) const;
 
+    // Split a Perl variable into its components
+    static void split_perl_var(const string& var,
+			       string& prefix, string& package, string& name);
+
     // Run program with given arguments
     string run_command(string args) const;	    // set args ARGS\nrun
 

@@ -153,6 +153,7 @@ char GDBAgent_rcsid[] =
 #include "string-fun.h"
 #include "regexps.h"
 #include "index.h"
+#include "isid.h"
 #include "home.h"
 
 #include <stdlib.h>
@@ -1496,7 +1497,12 @@ string GDBAgent::print_command(string expr, bool internal) const
 
     case XDB:
     case PYDB:
+	cmd = "p";
+	break;
+
     case PERL:
+	if (expr.matches(rxidentifier))
+	    return dump_command(expr);
 	cmd = "p";
 	break;
 
@@ -2639,22 +2645,38 @@ ProgramLanguage GDBAgent::program_language(string text)
 // Perl specials
 //-----------------------------------------------------------------------------
 
+void GDBAgent::split_perl_var(const string& var,
+			      string& prefix,
+			      string& package,
+			      string& name)
+{
+    name = var.from(rxalpha);
+    if (name == "")
+	name = var.from("_");
+    if (name == "")
+	return;
+    prefix = var.before(name);
+
+    package = "";
+    if (name.contains("::"))
+    {
+	package = name.before("::", -1);
+	name = name.after(package + "::");
+    }
+}
 
 // Return command to dump variable VAR
 string GDBAgent::dump_command(const string& var) const
 {
     if (type() != PERL || !var.matches(rxidentifier))
+	return print_command(var, false);
+
+    string prefix;
+    string package;
+    string name;
+    split_perl_var(var, prefix, package, name);
+    if (name == "")
 	return print_command(var);
-
-    // `V PACKAGE VAR' dumps variable VAR
-    string base = var.after(0);
-
-    string package = "";
-    if (base.contains("::"))
-    {
-	package = base.before("::", -1);
-	base = base.after(package + "::");
-    }
 
     string cmd;
     if (package == "")
@@ -2662,7 +2684,7 @@ string GDBAgent::dump_command(const string& var) const
     else
 	cmd = "V " + package + " ";
 
-    return cmd + base;
+    return cmd + name;
 }
 
 // Bring VALUE into a form that might be recognized by DDD
@@ -2705,6 +2727,10 @@ string GDBAgent::munch_perl_array(const string& value)
     }
 
     delete []lines;
+
+    if (!new_value.contains('(', 0))
+	new_value = '(' + new_value + ')';
+
     return new_value;
 }
 
@@ -2717,6 +2743,9 @@ string GDBAgent::munch_perl_hash(const string& value)
     new_value.gsub("\n)", ")");
     new_value.gsub("\n", ",");
 
+    if (!new_value.contains('(', 0))
+	new_value = '(' + new_value + ')';
+
     return new_value;
 }
 
@@ -2726,29 +2755,60 @@ string GDBAgent::get_dumped_var(const string& dump, const string& var) const
     if (type() != PERL || var == "")
 	return dump;
 
+    string prefix;
+    string package;
+    string name;
+    split_perl_var(var, prefix, package, name);
+    if (name == "")
+	return dump;
+
+    string base = prefix[prefix.length() - 1] + name;
+
     string value = dump;
 
     // Find the beginning
     value.prepend('\n');
-    value = value.from("\n" + var + " = ");
+    value = value.from("\n" + base + " = ");
     if (value == "")
 	return dump;		// Not found
 
-    string name = value.before(" = ");
     value = value.after(" = ");
 
-    string first_line = value.before('\n');
-    if (first_line.contains('(', -1))
-	value = value.through("\n)\n");
-    else
-	value = value.through("\n");
+    // Find the end - the first newline not followed by a space
+    int nl = value.index('\n');
+    while (nl > 0 && nl < int(value.length()) - 1 && isspace(value[nl + 1]))
+	nl = value.index('\n', nl + 1);
+    value = value.before(nl);
 
-    if (var[0] == '@')
+    // Dereference
+    for (int i = 0; i < int(prefix.length()) - 1; i++)
+    {
+	value = value.after("0x");
+	value = value.after("\n");
+	strip_leading_space(value);
+	if (value.contains("-> ", 0))
+	    value = value.after("-> ");
+    }
+
+    // If this is a reference, strip the referred object
+    int paren_index = value.index('(');
+    if (paren_index > 0 && paren_index < value.index('\n'))
+    {
+	string id   = value.before(paren_index);
+	string addr = value.after(paren_index);
+	if (id.matches(rxidentifier) && addr.contains(rxaddress, 0))
+	{
+	    // We have a Perl pointer
+	    value = value.before('\n');
+	}
+    }
+
+    if (prefix[0] == '@')
 	value = munch_perl_array(value);
-    else if (var[0] == '%')
+    else if (prefix[0] == '%')
 	value = munch_perl_hash(value);
 
-    return name + " = " + value;
+    return var + " = " + value;
 }
 
 
