@@ -783,7 +783,6 @@ void DispValue::clear()
 
     if (plotter() != 0)
     {
-	plotter()->removeHandler(Died, PlotterDiedHP, (void *)this);
 	plotter()->terminate();
 	_plotter = 0;
     }
@@ -1511,9 +1510,13 @@ void DispValue::plot3d(PlotAgent *plotter, int ndim) const
     plotter->end_plot();
 }
 
-void DispValue::PlotterDiedHP(Agent *, void *client_data, void *)
+void DispValue::PlotterDiedHP(Agent *source, void *client_data, void *)
 {
     DispValue *dv = (DispValue *)client_data;
+
+    assert(source == dv->plotter());
+
+    dv->plotter()->removeHandler(Died, PlotterDiedHP, (void *)dv);
     dv->_plotter = 0;
 }
 
