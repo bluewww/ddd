@@ -608,9 +608,9 @@ static void HighlightSectionCB(Widget, XtPointer client_data,
 }
 
 // Return true iff TEXT contains a manual header line at pos
-static bool has_header(const string& text, unsigned pos)
+static bool has_header(char *text, unsigned pos)
 {
-    if (pos < text.length() - 1
+    if (text[pos] != '\0'
 	&& !isspace(text[pos])
 	&& (pos == 0 || text[pos - 1] == '\n')
 	&& text[pos + 1] != '\b')
@@ -794,15 +794,25 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	wm_set_name(XtParent(text_dialog), title.str(), title.str());
     }
 
-    string text(unformatted_text);
-    bool manual = !text.contains("File:", 0) && text.freq('\n') > 1;
-    bool info   =  text.contains("File:", 0) && text.freq('\n') > 1;
-    int i;
+    string the_text(unformatted_text);
+
+    // For efficiency reasons, we access all data in-place via the TEXT ptr.
+    char *text = (char *)the_text.chars();
+
+    // Set i > 0 if TEXT contains more than one newline
+    int i = the_text.index('\n');
+    if (i >= 0)
+	i = the_text.index('\n', i + 1);
+
+    bool manual = !the_text.contains("File:", 0) && i > 0;
+    bool info   =  the_text.contains("File:", 0) && i > 0;
+
+    int size = the_text.length();
 
     if (manual)
     {
 	// Manual page: strip manual headers and footers
-	unsigned source = 0;
+	int source = 0;
 	int target = 0;
 
 	for (;;)
@@ -821,85 +831,98 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 		if (target > 0)
 		    text[target++] = '\n';
 
-		source = text.index('\n', source);
-		while (source < text.length() && text[source] == '\n')
+		while (text[source] != '\n')
 		    source++;
-
-		process_pending_events();
+		while (text[source] == '\n')
+		    source++;
 	    }
-	    if (source >= text.length())
+	    if (text[source] == '\0')
 		break;
 
 	    text[target++] = text[source++];
 
 	}
-	text.from(target) = "";
+	text[target] = '\0';
+	size = target;
+	while (target < int(the_text.length()))
+	    text[target++] = '\0';
     }
     else if (info)
     {
 	// Info file: strip menus
-	unsigned source = 0;
+	int source = 0;
 	int target = 0;
 
-	if (target % 100 == 0)
-	    process_pending_events();
-
-	while (source < text.length())
+	while (text[source] != '\0')
 	{
-	    while (text.contains("* ", source)
-		   && (source == 0 || text[source - 1] == '\n'))
+	    if (target % 100 == 0)
+		process_pending_events();
+
+	    while (text[source] == '*' && 
+		   text[source + 1] == ' ' && 
+		   (source == 0 || text[source - 1] == '\n'))
 	    {
 		// Skip menu item
 		while (text[source++] != '\n')
 		    ;
 	    }
+
 	    text[target++] = text[source++];
 	}
-	text.from(target) = "";
+
+	text[target] = '\0';
+	size = target;
+	while (target < int(the_text.length()))
+	    text[target++] = '\0';
     }
 
     if (info || manual)
     {
 	// Info and manual: kill multiple empty lines
-	unsigned source = 0;
+	int source = 0;
 	int target = 0;
-	while (source < text.length())
+
+	while (text[source] != '\0')
 	{
+	    if (target % 100 == 0)
+		process_pending_events();
+
 	    if (text[source] == '\n')
 	    {
-		while (source < text.length() - 2
+		while (text[source] != '\0'
 		       && text[source + 1] == '\n'
 		       && text[source + 2] == '\n')
 		    source++;
-
-		process_pending_events();
 	    }
 	    text[target++] = text[source++];
 	}
-	text.from(target) = "";
+	text[target] = '\0';
+	size = target;
+	while (target < int(the_text.length()))
+	    text[target++] = '\0';
     }
 
     if (manual)
     {
 	// Manual page: handle underlines
 
-	int size = text.length();
 	bool *underlined    = new bool[size];
 	bool *doublestriked = new bool[size];
 	for (i = 0; i < size; i++)
 	    underlined[i] = doublestriked[i] = false;
 
-	unsigned source = 0;
+	int source = 0;
 	int target = 0;
 
-	while (source < text.length())
+	while (text[source] != '\0')
 	{
+	    if (target % 100 == 0)
+		process_pending_events();
+
 	    char c = text[target++] = text[source++];
 
 	    if (c == '\b' && target >= 2)
 	    {
-		process_pending_events();
-
 		target -= 2;
 		if (text[target] == '_')
 		    underlined[target] = true;
@@ -907,10 +930,13 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 		    doublestriked[target] = true;
 	    }
 	}
-	text.from(target) = "";
+	text[target] = '\0';
+	size = target;
+	while (target < int(the_text.length()))
+	    text[target++] = '\0';
 
 	// Set text
-	XtVaSetValues(help_man, XmNvalue, text.chars(), NULL);
+	XtVaSetValues(help_man, XmNvalue, text, NULL);
 
 	// Set highlighting
 	XmTextSetHighlight(help_man, 0, XmTextGetLastPosition(help_man), 
@@ -918,7 +944,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
 	XmTextPosition underlining    = 0;
 	XmTextPosition doublestriking = 0;
-	for (i = 0; i < int(text.length()); i++)
+	for (i = 0; i < size; i++)
 	{
 	    if (i % 100 == 0)
 		process_pending_events();
@@ -948,7 +974,6 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	    {
 		XmTextSetHighlight(help_man, underlining, i, 
 				   XmHIGHLIGHT_SECONDARY_SELECTED);
-		process_pending_events();
 		underlining = 0;
 	    }
 	}
@@ -966,19 +991,22 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	// Manual page
 	int start_of_line = 0;
 
-	for (unsigned source = 0; source < text.length(); source++)
+	for (int source = 0; source < size; source++)
 	{
-	    if (text[source] == '\n')
-	    {
+	    if (source % 100 == 0)
 		process_pending_events();
 
+	    if (text[source] == '\n')
+	    {
 		if (source - start_of_line > 3)
 		{
 		    // Check manual title
 		    bool is_title = false;
 		
-		    if (text(start_of_line, 2) == "  "
-			&& text[start_of_line + 3] != ' ')
+		    if (text[start_of_line] == ' ' &&
+			text[start_of_line + 1] == ' ' &&
+			text[start_of_line + 2] != '\0' &&
+			text[start_of_line + 3] != ' ')
 			is_title = true; // .SS title
 		    else if (text[start_of_line] != ' '
 			     && source - start_of_line < 60)
@@ -986,8 +1014,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
 		    if (is_title)
 		    {
-			titles += text(start_of_line,
-						source - start_of_line);
+			titles += 
+			    the_text(start_of_line, source - start_of_line);
 			positions += start_of_line;
 		    }
 		}
@@ -1004,17 +1032,18 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	{
 	    process_pending_events();
 
-	    assert(text.contains("File: ", source));
+	    assert(the_text.contains("File: ", source));
 
 	    // Fetch title below `File: ' line
-	    int start_of_title = text.index("\n\n", source) + 2;
-	    int end_of_title   = text.index("\n", start_of_title);
-	    string title = text(start_of_title, end_of_title - start_of_title);
+	    int start_of_title = the_text.index("\n\n", source) + 2;
+	    int end_of_title   = the_text.index("\n", start_of_title);
+	    string title = 
+		the_text(start_of_title, end_of_title - start_of_title);
 
 	    // Fetch indent level, using the underline characters
-	    int start_of_underline = text.index('\n', start_of_title) + 1;
+	    int start_of_underline = the_text.index('\n', start_of_title) + 1;
 	    static string underlines = "*=-.";
-	    int indent = underlines.index(text[start_of_underline]);
+	    int indent = underlines.index(the_text[start_of_underline]);
 	    if (indent < 0)
 		indent = underlines.length();
 	    if (indent == 0)
@@ -1025,14 +1054,16 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	    positions += source;
 
 	    // Strip `File: ' line
-	    text.del(source, start_of_title - source);
+	    the_text.del(source, start_of_title - source);
 	    
 	    // Find next `File: ' line
-	    source = text.index("File: ", source);
+	    source = the_text.index("File: ", source);
 	}
+	text = (char *)the_text.chars();
+	size = the_text.length();
 
 	// Set text
-	XtVaSetValues(help_man, XmNvalue, text.chars(), NULL);
+	XtVaSetValues(help_man, XmNvalue, text, NULL);
 
 	// Info: no highlighting
 	XmTextSetHighlight(help_man, 0, XmTextGetLastPosition(help_man), 
@@ -1041,7 +1072,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     else
     {
 	// Something else
-	XtVaSetValues(help_man, XmNvalue, text.chars(), NULL);
+	XtVaSetValues(help_man, XmNvalue, text, NULL);
 
 	XmTextSetHighlight(help_man, 0, XmTextGetLastPosition(help_man), 
 			   XmHIGHLIGHT_NORMAL);
