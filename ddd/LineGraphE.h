@@ -101,6 +101,9 @@ public:
     // Destructor
     virtual ~LineGraphEdge() {}
 
+    // Printing
+    void _print(ostream& os, const GraphGC &gc) const;
+
     GraphEdge *dup() const
     {
 	return new LineGraphEdge(*this);

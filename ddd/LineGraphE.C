@@ -395,3 +395,15 @@ void LineGraphEdge::drawSelf(Widget w,
 
     drawArrowHead(w, exposed, gc, position, alpha);
 }
+
+void LineGraphEdge::_print(ostream& os, const GraphGC &gc) const
+{
+    if (from() == to())
+    {
+	static int warning = 0;
+	if (warning++ == 0)
+	    cerr << "Warning: arc printing is not supported\n";
+    }
+
+    GraphEdge::_print(os, gc);
+}

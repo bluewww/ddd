@@ -241,3 +241,12 @@ void ArcGraphEdge::drawLine(Widget w,
 	drawArrowHead(w, exposed, gc, pos_to, alpha);
     }
 }
+
+void ArcGraphEdge::_print(ostream& os, const GraphGC &gc) const
+{
+    static int warning = 0;
+    if (warning++ == 0)
+	cerr << "Warning: arc printing is not supported\n";
+
+    LineGraphEdge::_print(os, gc);
+}

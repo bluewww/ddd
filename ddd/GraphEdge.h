@@ -126,7 +126,7 @@ public:
     }
 
     // Printing
-    void _print(ostream& os, const GraphGC& gc) const;
+    virtual void _print(ostream& os, const GraphGC& gc) const;
 
     // representation invariant
     virtual bool OK() const;

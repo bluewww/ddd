@@ -64,6 +64,9 @@ public:
     // Destructor
     virtual ~ArcGraphEdge() {}
 
+    // Printing
+    void _print(ostream& os, const GraphGC &gc) const;
+
     // Duplicator
     GraphEdge *dup() const
     {
