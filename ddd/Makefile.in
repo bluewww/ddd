@@ -480,8 +480,8 @@ X_INCLUDE = @X_CFLAGS@
 INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 
 ## Implicit rules.
-.SUFFIXES: .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xpm .xface \
-	   .C~ .c~ .f .f~ .sh .sh~
+.SUFFIXES: .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xbmxx .xpm .xpmxx \
+	   .xface .C~ .c~ .f .f~ .sh .sh~
 .C.o:
 	$(COMPILE.cc) $(INCLUDE) -o $@ $<
 .cc.o:
@@ -555,7 +555,8 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 
 ## Script rules
 .txt.C:
-	( \
+	@$(ECHO) "Creating $@"
+	@( \
 	$(ECHO) '// $@ -- generated automatically from `$<'"'."; \
 	$(SED) '/^ *#/d' $< | \
 	$(SED) 's/^ *include \([^"][^.]*\)\..*$$/#include "\1.C"/' | \
@@ -570,25 +571,26 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 
 ## Icon rules
 .xpm.xbm:
-	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/[.]x[bp]m.*//'`; \
+	@$(ECHO) "Creating $@"
+	@-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/[.]x[bp]m.*//'`; \
 	$(SED) 's/[	 ][cg]4*[ 	][#a-zA-Z0-9][#a-zA-Z0-9]*//g' $< | \
 	$(SED) 's/[nN]one/white/g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
 	$(PBMTOXBM) | $(SED) "s/noname/$${base}/g" | \
 	$(SED) "s/static char/static unsigned char/g" > $@~
-	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
+	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
 .xbm.xface:
-	echo "X-Face:`$(XBM2XFACE) $<`" > $@
-
-# Old makes will fail on pattern rules.  No big deal, unless you want to
-# modify the icons.  In case of trouble, use GNU make.
+	@$(ECHO) "Creating $@"
+	@$(ECHO) "X-Face:`$(XBM2XFACE) $<`" > $@~
+	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
 # This jewel makes an `emboss' effect in two steps:
 # 1. Create a displaced mask in FILE-mask.pbm, using `pnmcut' and `pnmpaste'
 # 2. Add the mask to FILE.xbm, using `pnmarith'.
-%-xx.xpm: %.xbm
-	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
+.xbm.xpmxx:
+	@$(ECHO) "Creating $@"
+	@-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/[.]x[bp]m.*//'`; \
 	$(SED) 's/unsigned //' $< | \
 	$(XBMTOPBM) > $${base}-object.pbm; \
 	$(PNMMARGIN) 1 $${base}-object.pbm | \
@@ -606,10 +608,11 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 	$(SED) 's/c #FF*/c white  g white  m white/' | \
 	$(SED) "s/noname/$${base}_xx_xpm/" > $@~; \
 	$(RM) $${base}-object.pbm $${base}-mask.pbm $${base}-button.ppm
-	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
+	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
-%-xx.xbm: %.xpm
-	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
+.xpm.xbmxx:
+	@$(ECHO) "Creating $@"
+	@-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/[.]x[bp]m.*//'`; \
 	$(SED) 's/[ 	]c[	 ][#a-zA-Z0-9][#a-zA-Z0-9]*//' $< | \
 	$(SED) 's/ g black  / g grey50 /' | \
 	$(SED) 's/ g white  / g grey75 /' | \
@@ -618,7 +621,7 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
 	$(PBMTOXBM) | $(SED) "s/noname/$${base}_xx/" | \
 	$(SED) "s/static char/static unsigned char/g" > $@~
-	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
+	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
 
 
@@ -981,57 +984,57 @@ XBM_ICONS = \
 	$(toolbardir)/unwatch.xbm \
 	$(toolbardir)/watch.xbm 
 
-# XPM-XX icons are derived from XBM sources
+# XPMXX icons (insensitive XPM icons) are derived from XBM sources
 XPM_XX_ICONS = \
-	$(toolbardir)/breakat-xx.xpm \
-	$(toolbardir)/clearat-xx.xpm \
-	$(toolbardir)/delete-xx.xpm \
-	$(toolbardir)/deref-xx.xpm \
-	$(toolbardir)/disable-xx.xpm \
-	$(toolbardir)/display-xx.xpm \
-	$(toolbardir)/findbwd-xx.xpm \
-	$(toolbardir)/findfwd-xx.xpm \
-	$(toolbardir)/enable-xx.xpm \
-	$(toolbardir)/hide-xx.xpm \
-	$(toolbardir)/lookup-xx.xpm \
-	$(toolbardir)/maketemp-xx.xpm \
-	$(toolbardir)/newbreak-xx.xpm \
-	$(toolbardir)/newdisplay-xx.xpm \
-	$(toolbardir)/newwatch-xx.xpm \
-	$(toolbardir)/print-xx.xpm \
-	$(toolbardir)/properties-xx.xpm \
-	$(toolbardir)/rotate-xx.xpm \
-	$(toolbardir)/set-xx.xpm \
-	$(toolbardir)/show-xx.xpm \
-	$(toolbardir)/undisplay-xx.xpm \
-	$(toolbardir)/unwatch-xx.xpm \
-	$(toolbardir)/watch-xx.xpm 
+	$(toolbardir)/breakat.xpmxx \
+	$(toolbardir)/clearat.xpmxx \
+	$(toolbardir)/delete.xpmxx \
+	$(toolbardir)/deref.xpmxx \
+	$(toolbardir)/disable.xpmxx \
+	$(toolbardir)/display.xpmxx \
+	$(toolbardir)/findbwd.xpmxx \
+	$(toolbardir)/findfwd.xpmxx \
+	$(toolbardir)/enable.xpmxx \
+	$(toolbardir)/hide.xpmxx \
+	$(toolbardir)/lookup.xpmxx \
+	$(toolbardir)/maketemp.xpmxx \
+	$(toolbardir)/newbreak.xpmxx \
+	$(toolbardir)/newdisplay.xpmxx \
+	$(toolbardir)/newwatch.xpmxx \
+	$(toolbardir)/print.xpmxx \
+	$(toolbardir)/properties.xpmxx \
+	$(toolbardir)/rotate.xpmxx \
+	$(toolbardir)/set.xpmxx \
+	$(toolbardir)/show.xpmxx \
+	$(toolbardir)/undisplay.xpmxx \
+	$(toolbardir)/unwatch.xpmxx \
+	$(toolbardir)/watch.xpmxx 
 
-# XBM-XX icons are derived from XPM sources
+# XBMXX icons (insensitive XBM icons) are derived from XPM sources
 XBM_XX_ICONS = \
-	$(toolbardir)/breakat-xx.xbm \
-	$(toolbardir)/clearat-xx.xbm \
-	$(toolbardir)/delete-xx.xbm \
-	$(toolbardir)/deref-xx.xbm \
-	$(toolbardir)/disable-xx.xbm \
-	$(toolbardir)/display-xx.xbm \
-	$(toolbardir)/findbwd-xx.xbm \
-	$(toolbardir)/findfwd-xx.xbm \
-	$(toolbardir)/enable-xx.xbm \
-	$(toolbardir)/hide-xx.xbm \
-	$(toolbardir)/lookup-xx.xbm \
-	$(toolbardir)/maketemp-xx.xbm \
-	$(toolbardir)/newbreak-xx.xbm \
-	$(toolbardir)/newdisplay-xx.xbm \
-	$(toolbardir)/newwatch-xx.xbm \
-	$(toolbardir)/print-xx.xbm \
-	$(toolbardir)/properties-xx.xbm \
-	$(toolbardir)/rotate-xx.xbm \
-	$(toolbardir)/set-xx.xbm \
-	$(toolbardir)/show-xx.xbm \
-	$(toolbardir)/undisplay-xx.xbm \
-	$(toolbardir)/unwatch-xx.xbm \
-	$(toolbardir)/watch-xx.xbm
+	$(toolbardir)/breakat.xbmxx \
+	$(toolbardir)/clearat.xbmxx \
+	$(toolbardir)/delete.xbmxx \
+	$(toolbardir)/deref.xbmxx \
+	$(toolbardir)/disable.xbmxx \
+	$(toolbardir)/display.xbmxx \
+	$(toolbardir)/findbwd.xbmxx \
+	$(toolbardir)/findfwd.xbmxx \
+	$(toolbardir)/enable.xbmxx \
+	$(toolbardir)/hide.xbmxx \
+	$(toolbardir)/lookup.xbmxx \
+	$(toolbardir)/maketemp.xbmxx \
+	$(toolbardir)/newbreak.xbmxx \
+	$(toolbardir)/newdisplay.xbmxx \
+	$(toolbardir)/newwatch.xbmxx \
+	$(toolbardir)/print.xbmxx \
+	$(toolbardir)/properties.xbmxx \
+	$(toolbardir)/rotate.xbmxx \
+	$(toolbardir)/set.xbmxx \
+	$(toolbardir)/show.xbmxx \
+	$(toolbardir)/undisplay.xbmxx \
+	$(toolbardir)/unwatch.xbmxx \
+	$(toolbardir)/watch.xbmxx
 
 # All derived icons
 # Order is significant here!  First sources, then derived files.
@@ -1150,7 +1153,7 @@ install-info: $(INFO_BASES)
 	test -d $$parent || $(MKDIR) $$parent
 	-test -d $(infodir) || $(MKDIR) $(infodir)
 	for i in $(INFOS); do \
-	    test -f $$i && $(INSTALL_DATA) $$i $(infodir); \
+	    test -s $$i && $(INSTALL_DATA) $$i $(infodir); \
 	done
 
 .PHONY: uninstall-info
@@ -1769,13 +1772,14 @@ $(icondir)/ddd.xface: $(icondir)/ddd.xbm
 $(icondir)/dddmask.xbm: $(icondir)/dddmask.xpm
 
 $(icondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
-	-$(CAT) $(icondir)/dddsplash.xpm | \
+	@$(ECHO) "Creating $@"
+	@-$(CAT) $(icondir)/dddsplash.xpm | \
 	$(SED) 's/[	 ][cmg][ 	][#a-zA-Z0-9][#a-zA-Z0-9]*//g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PNMGAMMA) 0.4 | $(PPMTOPGM) | \
 	$(PGMENHANCE) -7 | \
 	$(PGMTOPBM) | $(PBMTOXBM) | $(SED) 's/noname/dddsplash/g' | \
 	$(SED) "s/static char/static unsigned char/g" > $@~
-	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
+	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
 
 
 ## Configuration stuff.
@@ -2002,7 +2006,7 @@ pub:	$(PROG_STUFF) configure $(PUB_DEST)/USERINFO
 
 # This is no longer needed, since we have `~/.ddd_userinfo'.
 # $(PUB_DEST)/USERINFO:
-# 	-echo 'DDD Development Team <ddd@ips.cs.tu-bs.de>' > $@~ && \
+# 	-$(ECHO) 'DDD Development Team <ddd@ips.cs.tu-bs.de>' > $@~ && \
 # 	$(MV) $@~ $@
 
 
