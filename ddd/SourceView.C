@@ -6893,6 +6893,9 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
 
     y -= (line_height(text_w) + glyph_height) / 2 - 2;
 
+    if (lesstif_version < 1000)
+	x += 2;
+
     if (x != old_x || y != old_y)
     {
 	if (change_glyphs)
