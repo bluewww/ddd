@@ -1065,7 +1065,7 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
     static Widget dependent_display_dialog = 
 	create_display_dialog(w, "dependent_display_dialog", info);
 
-    XmToggleButtonSetState(info.shortcut, False, False);
+    XmToggleButtonSetState(info.shortcut, True, False);
 
     info.display_expression = disp_value_arg->full_name();
     XmTextSetString(info.text, info.display_expression);
@@ -3587,8 +3587,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     value.gsub(rxnl, " ");
     strip_final_blanks(value);
 
-    MString prompt = tt(name);
-    prompt += bf(" value");
+    MString prompt = bf(name);
 
     Arg args[10];
     int arg = 0;
