@@ -6,4 +6,4 @@
 old_value_box(...) = value_box(...);
 
 #pragma override value_box
-value_box(value) -> color(value, "black", "#ffc0c0");
+value_box(value) -> color(old_value_box(value), "black", "#ffc0c0");
