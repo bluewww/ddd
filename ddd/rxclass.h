@@ -34,16 +34,24 @@
 #endif
 
 #include "config.h"
+#include "bool.h"
 
 extern "C" {
+#include <sys/types.h>
 #if defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_REGEX_H)
 #include <regex.h>		// POSIX.2 interface
 #elif defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_RX_H)
-#include <rx.h>	 	        // Header from GNU g++-include
+#include <rx.h>	 	        // Header from GNU rx 0.07
+#elif defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_RXPOSIX_H)
+#include <rxposix.h>		// Header from GNU rx 1.0 and later
 #else
-#include <rx/rxposix.h>		// Header from GNU rx 1.0 and later
+#include <librx/rx.h>		// Header from GNU rx 0.07, as shipped with DDD
 #endif
 }
+
+
+// The interface is similar to Doug Lea's libg++ `Regex' class, 
+// except that we use extended regexps and rely on POSIX.2 functions.
 
 class regex
 {
@@ -52,30 +60,52 @@ private:
     void operator = (const regex&) {} // no assignment
 
 protected:
-    regex_t compiled;		// The compiled regular expression
-    regmatch_t *matches;	// Matched sub-expressions
+    regex_t compiled;		// "^" + regexp
+    char prefix;                // constant prefix (for faster search)
 
-    size_t nmatches() const;	// Number of sub-expressions
+    regmatch_t *exprs;		// Matched expressions
+    size_t nexprs() const;	// Number of expressions
+
+    // Fatal error ERRCODE with regexp COMPILED
+    void fatal(int errcode);
+
+    // Create a prefix from T and FLAGS
+    static char get_prefix(const char *t, int flags);
 
 public:
-    regex(const char* t, int flags = REG_EXTENDED | REG_NEWLINE);
+    // Create and compile an (extended) regular expression in T.
+    regex(const char* t, int flags = REG_EXTENDED);
     ~regex();
 
+    // Iff T matches S at POS, return length of matched string;
+    // -1, otherwise.  LEN is the length of S.
     int match(const char* s, int len, int pos = 0) const;
+
+    // Search T in S; return position of first occurrence.
+    // If STARTPOS is positive, start search from that position.
+    // If STARTPOS is negative, perform reverse search from that position 
+    // and return last occurrence.
+    // LEN is the length of S.
+    // MATCHLEN contains the length of the matched expression.
+    // If T is not found, return -1.
     int search(const char* s, int len, 
 	       int& matchlen, int startpos = 0) const;
-    int match_info(regoff_t& start, regoff_t& length, int nth = 0) const;
 
-    int OK() const;  // representation invariant
+    // Return matching info for NTH expression in START and LENGTH
+    // Expression 0 is the entire regexp T; expression 1 and later are
+    // the subexpressions of T.  Returns true iff successful.
+    bool match_info(int& start, int& length, int nth = 0) const;
+
+    bool OK() const;  // representation invariant
 };
 
-// Return number of subexpressions
-inline size_t regex::nmatches() const
+// Return number of expressions
+inline size_t regex::nexprs() const
 {
 #if defined(HAVE_REGEX_T_RE_NSUB)
-    return compiled.re_nsub;
+    return compiled.re_nsub + 1;
 #elif defined(HAVE_REGEX_T_N_SUBEXPS)
-    return compiled.n_subexps;
+    return compiled.n_subexps + 1;
 #else
     return 32;  // Should be sufficient
 #endif
@@ -85,9 +115,9 @@ inline size_t regex::nmatches() const
 
 extern const regex rxwhite;          // = "[ \n\t\r\v\f]+"
 extern const regex rxint;            // = "-?[0-9]+"
-extern const regex rxdouble;         // = "-?\\(\\([0-9]+\\.[0-9]*\\)\\|
-                                     //    \\([0-9]+\\)\\|\\(\\.[0-9]+\\)\\)
-                                     //    \\([eE][---+]?[0-9]+\\)?"
+extern const regex rxdouble;         // = "-?(([0-9]+.[0-9]*)|
+                                     //    ([0-9]+)|(.[0-9]+))
+                                     //    ([eE][---+]?[0-9]+)?"
 extern const regex rxalpha;          // = "[A-Za-z]+"
 extern const regex rxlowercase;      // = "[a-z]+"
 extern const regex rxuppercase;      // = "[A-Z]+"

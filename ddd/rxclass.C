@@ -39,59 +39,102 @@ char regex_rcsid[] =
 #include "assert.h"
 
 #include <iostream.h>
+#include <ctype.h>
+
+char regex::get_prefix(const char *t, int flags)
+{
+    if (flags & REG_EXTENDED)
+    {
+	switch (t[0])
+	{
+	case '.':
+	case '(':
+	case '^':
+	case '$':
+	    return '\0';
+
+	case '[':
+	    if (t[1] != ']' && t[1] != '\0' && t[1] != '^' && t[2] == ']')
+		return t[1];
+	    return '\0';
+
+	case '\\':
+	    return t[1];
+
+	default:
+	    switch (t[1])
+	    {
+	    case '+':
+	    case '*':
+	    case '?':
+	    case '|':
+		return '\0';
+	    
+	    default:
+		return t[0];
+	    }
+	}
+    }
+    else
+    {
+	// FIXME: give some rules for ordinary regexps
+	return '\0';
+    }
+}
+
+void regex::fatal(int errcode)
+{
+    if (errcode == 0)
+	return;
+
+    size_t length = regerror(errcode, &compiled, (char *)0, 0);
+    char *buffer = new char[length];
+    regerror(errcode, &compiled, buffer, length);
+
+    cerr << "regex: " << buffer << "\n";
+    delete[] buffer;
+
+    abort();
+}
 
 regex::regex(const char* t, int flags)
+    : prefix(get_prefix(t, flags))
 {
-    int errcode = regcomp(&compiled, t, flags);
+    string rx = "^" + string(t);
+    int errcode = regcomp(&compiled, rx, flags);
     if (errcode)
-    {
-	size_t length = regerror(errcode, &compiled, NULL, 0);
-	char *buffer = new char[length];
-	regerror(errcode, &compiled, buffer, length);
+	fatal(errcode);
 
-	cerr << "regex: " << buffer << "\n";
-	delete[] buffer;
-
-	abort();
-	return;
-    }
-
-    matches = new regmatch_t[nmatches()];
+    exprs = new regmatch_t[nexprs()];
 }
 
 regex::~regex()
 {
     regfree(&compiled);
-    delete[] matches;
+    delete[] exprs;
 }
 
-int regex::match_info(regoff_t& start, regoff_t& length, int nth) const
-{
-    if ((unsigned)(nth) >= nmatches())
-	return 0;
-    else
-    {
-	start  = matches[nth].rm_so;
-	length = matches[nth].rm_eo - start;
-	return start >= 0 && length >= 0;
-    }
-}
-
+// Search T in S; return position of first occurrence.
+// If STARTPOS is positive, start search from that position.
+// If STARTPOS is negative, perform reverse search from that position 
+// and return last occurrence.
+// MATCHLEN contains the length of the matched expression.
+// If T is not found, return -1.
 int regex::search(const char* s, int len, int& matchlen, int startpos) const
 {
-    bool rightmost = false;
+    string substr;
+    int direction = +1;
 
     if (startpos < 0)
     {
 	startpos += len;
-	rightmost = true;
+	direction = -1;
     }
     if (startpos < 0 || startpos > len)
 	return -1;
 
     if (s[len] != '\0')
     {
-	static string substr;
 	substr = string(s, len);
 	s = (char *)substr;
     }
@@ -99,19 +142,25 @@ int regex::search(const char* s, int len, int& matchlen, int startpos) const
 
     int errcode = 0;
 
-    do {
-	errcode = regexec((regex_t *)&compiled, (char *)s + startpos,
-			  nmatches(), matches, 0);
-    } while (rightmost && errcode && --startpos >= 0);
+    for (; startpos >= 0 && startpos < len; startpos += direction)
+    {
+	if (prefix == '\0' || s[startpos] == prefix)
+	{
+	    errcode = regexec((regex_t *)&compiled, (char *)s + startpos, 
+			      nexprs(), exprs, 0);
+	    if (errcode == 0)
+		break;
+	}
+    }
 
-    if (errcode || startpos < 0)
+    if (startpos < 0 || startpos >= len)
 	return -1;
 
     int matchpos;
-    if (matches[0].rm_so >= 0)
+    if (exprs[0].rm_so >= 0)
     {
-	matchpos = matches[0].rm_so + startpos;
-	matchlen = matches[0].rm_eo - matches[0].rm_so;
+	matchpos = exprs[0].rm_so + startpos;
+	matchlen = exprs[0].rm_eo - exprs[0].rm_so;
     }
     else
     {
@@ -122,25 +171,48 @@ int regex::search(const char* s, int len, int& matchlen, int startpos) const
     return matchpos;
 }
 
-int regex::match(const char *s, int len, int startpos) const
+// Return length of matched string iff T matches S at POS, 
+// -1 otherwise.  LEN is the length of S.
+int regex::match(const char *s, int len, int pos) const
 {
-    if (startpos < 0)
-	startpos += len;
-    if (startpos > len)
+    string substr;
+    if (pos < 0)
+	pos += len;
+    if (pos > len)
 	return -1;
 
-    int matchlen;
-    int ret = search(s, len, matchlen, startpos);
-    if (ret < 0)
-	return ret;
+    if (s[len] != '\0')
+    {
+	substr = string(s, len);
+	s = (char *)substr;
+    }
+    assert(s[len] == '\0');
 
-    return matchlen;
+    int errcode = regexec((regex_t *)&compiled, (char *)s + pos, 
+			  nexprs(), exprs, 0);
+
+    if (errcode == 0 && exprs[0].rm_so >= 0)
+	return exprs[0].rm_eo - exprs[0].rm_so;
+
+    return -1;
 }
 
-int regex::OK() const
+bool regex::match_info(int& start, int& length, int nth) const
 {
-    assert(matches != 0);
-    return 1;
+    if ((unsigned)(nth) >= nexprs())
+	return false;
+    else
+    {
+	start  = exprs[nth].rm_so;
+	length = exprs[nth].rm_eo - start;
+	return start >= 0 && length >= 0;
+    }
+}
+
+bool regex::OK() const
+{
+    assert(exprs != 0);
+    return true;
 }
 
 
@@ -148,7 +220,8 @@ int regex::OK() const
 
 const regex rxwhite("[ \n\t\r\v\f]+");
 const regex rxint("-?[0-9]+");
-const regex rxdouble("-?(([0-9]+\\.[0-9]*)|([0-9]+)|(\\.[0-9]+))([eE][---+]?[0-9]+)?");
+const regex rxdouble("-?(([0-9]+\\.[0-9]*)|([0-9]+)|(\\.[0-9]+))"
+		     "([eE][---+]?[0-9]+)?");
 const regex rxalpha("[A-Za-z]+");
 const regex rxlowercase("[a-z]+");
 const regex rxuppercase("[A-Z]+");
