@@ -2,6 +2,7 @@
 // Own converters
 
 // Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001 Universitaet des Saarlandes, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -40,7 +41,9 @@ char converters_rcsid[] =
 
 #include <X11/CoreP.h>
 
+#include "assert.h"
 #include "bool.h"
+#include "cook.h"
 #include "home.h"
 #include "isid.h"
 #include "BindingS.h"
@@ -488,6 +491,7 @@ static Boolean CvtStringToXmString(Display *display,
     split(source, segments, n_segments, font_esc);
 
     MString buf(0, true);
+    string txtbuf = "";
     for (int i = 0; i < n_segments; i++)
     {
 	string segment;
@@ -507,10 +511,10 @@ static Boolean CvtStringToXmString(Display *display,
 		segment = segments[i].from(int(c.length()));
 		if (segment == "")
 		{
-		    // Found @MACRO@: process it
+		    // Found @MACRO@
 		    if (conversionMacroTable.has(c))
 		    {
-			// Replace macro by value
+			// Replace @MACRO@ by value
 			segment = conversionMacroTable[c] + segments[++i];
 		    }
 		    else
@@ -530,8 +534,7 @@ static Boolean CvtStringToXmString(Display *display,
 		{
 		    // Found @CHARSET: set new charset
 		    charset = c;
-		    if (segment.contains(' ', 0)
-			|| segment.contains('\t', 0))
+		    if (segment.contains(' ', 0) || segment.contains('\t', 0))
 			segment = segment.after(0);
 		}
 	    }
@@ -549,12 +552,18 @@ static Boolean CvtStringToXmString(Display *display,
 
 	while (segment.contains('\n'))
 	{
-	    buf += MString(segment.before('\n').chars(), charset) + cr();
+	    string seg = segment.before('\n');
 	    segment = segment.after('\n');
+
+	    buf    += MString(seg.chars(), charset) + cr();
+	    txtbuf += seg + '\n';
 	}
 
 	if (segment.length() > 0)
-	    buf += MString(segment, charset);
+	{
+	    buf    += MString(segment, charset);
+	    txtbuf += segment;
+	}
     }
 
     if (buf.isNull())
@@ -562,6 +571,16 @@ static Boolean CvtStringToXmString(Display *display,
 
     XmString target = XmStringCopy(buf.xmstring());
     delete[] segments;
+
+    if (buf.str() != txtbuf)
+    {
+	cerr << "Conversion error:\n"
+	     << quote(source) << "\n"
+	     << "should be\n"
+	     << quote(txtbuf) << "\n"
+	     << "but is"
+	     << quote(buf.str()) << "\n";
+    }
 
     if (target == 0)
     {
@@ -575,7 +594,7 @@ static Boolean CvtStringToXmString(Display *display,
     XtAppAddTimeOut(XtDisplayToApplicationContext(display),
 		    0, XmStringFreeCB, (XtPointer)target);
 #else
-    // It seems this does this apply to all Motif implementations...
+    // It seems this applies to all Motif implementations...
     (void) XmStringFreeCB;	// Use it
 #endif
     
