@@ -139,7 +139,7 @@ extern "C" {
 // Additional macros
 inline int isid(char c)
 {
-    return isalnum(c) || c == '_';
+    return isalnum(c) || c == '_' || c == '$';
 }
 
 // Test for regular file - see stat(3)
@@ -5125,7 +5125,8 @@ static string first_address(string s)
 
 static string last_address(string s)
 {
-    int index = s.index("\n0x", -1);
+    static regex rxnladdress("\n" RXADDRESS);
+    int index = s.index(rxnladdress, -1);
     if (index < 0)
 	return "";
 
@@ -5256,7 +5257,7 @@ void SourceView::refresh_codeWorkProc(XtPointer client_data, XtIntervalId *)
     }
 
     RefreshInfo *info = (RefreshInfo *)client_data;
-    bool ok = gdb->send_question("disassemble " + info->pc, 
+    bool ok = gdb->send_question(gdb->disassemble_command(info->pc),
 				 refresh_codeOQC, (void *)info);
 
     if (!ok)
@@ -5316,8 +5317,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode)
 	}
 
 	// Show new status
-	refresh_code_pending = 
-	    new StatusDelay("Disassembling location " + pc);
+	refresh_code_pending = new StatusDelay("Disassembling location " + pc);
 	return;
     }
 

@@ -130,7 +130,8 @@ DispValueType determine_type (string value)
     // GDB prepends the exact pointer type in parentheses.
     static regex 
 	RXpointer_value("([(].*[)] )?"
-			"(0(0|x)[0-9a-f]+|[(]nil[)]|NIL|16_[0-9a-f]+).*");
+			"(0(0|x)[0-9a-f]+|[0-9A-F]+H"
+			"|[(]nil[)]|NIL|16_[0-9a-f]+).*");
     if (value.matches(RXpointer_value))
 	return Pointer;
 
