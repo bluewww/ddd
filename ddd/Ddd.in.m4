@@ -1249,6 +1249,7 @@ Shift Ctrl<Key>A:	select-all()	    	    \n\
 Ctrl<Key>B:		gdb-isearch-prev()    	    \n\
 Ctrl<Key>C:		gdb-control(^C)		    \n\
 Ctrl<Key>D:		gdb-delete-or-control(^D)   \n\
+~Ctrl ~Shift<Key>Delete: delete-next-character()    \n\
 ~Shift Ctrl<Key>E:	gdb-end-of-line()           \n\
 Ctrl<Key>F:		gdb-isearch-next()     	    \n\
 Ctrl<Key>G:		gdb-control(^C)		    \n\
@@ -1300,6 +1301,7 @@ define(EMACS_TRANSLATIONS, [SHORTCUTS \
 Shift Ctrl<Key>A:	select-all()	    	    \n\
 Ctrl<Key>B:		gdb-backward-character()    \n\
 Ctrl<Key>D:		delete-next-character()     \n\
+~Ctrl ~Shift<Key>Delete:delete-next-character()     \n\
 Ctrl<Key>E:		end-of-line()               \n\
 Ctrl<Key>F:		gdb-forward-character()	    \n\
 Ctrl<Key>G:		gdb-control(^C)		    \n\
