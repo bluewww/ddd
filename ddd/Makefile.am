@@ -693,6 +693,7 @@ vsl_SOURCES       = vsl.C \
 	$(BOX_SOURCES) \
 	$(VSL_SOURCES)
 
+cxxtest_LDADD = $(LIBM)
 ddd_LDADD = $(ALL_X_LIBS) $(ALL_LIBS) 
 vsl_LDADD = $(ALL_X_LIBS) $(ALL_LIBS)
 X_INCLUDE = @X_CFLAGS@
