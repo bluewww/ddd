@@ -163,4 +163,8 @@ Volunteers for these and other projects are welcome!
 
 055. [done]
 
-056. (Insert your project idea here)
+056. Have current arguments (`info args') and local variables (`info
+     locals') be displayed.
+
+057. (Insert your project idea here)
+
