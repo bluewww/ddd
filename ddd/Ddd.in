@@ -4147,7 +4147,7 @@ as assigned by @GDB@.  @DDD@ will use a default number instead.
 
 Ddd*invalid_range_error.title: @DDD@: Invalid Range
 Ddd*invalid_range_error*helpString: \
-@rm You entered an invalid range X..Y, with X > Y.
+@rm You entered an invalid range @sl X@rm..@sl Y@rm, with @sl X@rm > @slY@rm.
 
 Ddd*paper_size_value_error.title: @DDD@: Unrecognized Paper Size
 Ddd*paper_size_value_error*helpString:	\
