@@ -312,19 +312,30 @@ dnl The `-liberty' library per definition contains only functions
 dnl missing in system libraries.
 LIBIBERTY="../libiberty/libiberty.a"
 dnl
-dnl Prefer the installed one over the one shipped with DDD.
+dnl If we have an installed library, prefer it over the one shipped with DDD.
 AC_CHECK_LIB(iberty, xstrerror, LIBIBERTY="-liberty")
 dnl
 AC_SUBST(LIBIBERTY)
 dnl
 dnl
+dnl Readline library (optional)
+dnl
+LIBREADLINE=""
+readline=yes
+AC_ARG_WITH(readline,
+[  --without-readline               do not support tty command line editing],
+	readline="$withval")
+if test "$readline" != no; then
+dnl
+dnl Find a readline library
 LIBREADLINE="../readline/libreadline.a"
 dnl
-dnl Prefer the installed one over the one shipped with DDD.
+dnl If we have an installed library, prefer it over the one shipped with DDD.
 AC_CHECK_LIB(readline, rl_callback_read_char, LIBREADLINE="-lreadline")
 dnl
+AC_DEFINE(WITH_READLINE)
+fi
 AC_SUBST(LIBREADLINE)
-dnl
 dnl
 dnl
 dnl
@@ -689,9 +700,6 @@ AC_ARG_ENABLE(builtin-manual,
 AC_ARG_ENABLE(builtin-app-defaults,
 [  --disable-builtin-app-defaults   do not compile app-defaults file into DDD],
 	builtin_app_defaults="$enableval", builtin_app_defaults=yes)
-AC_ARG_ENABLE(readline,
-[  --disable-readline               do not compile readline support into DDD],
-	readline="$enableval", readline=yes)
 dnl
 if test "$builtin_manual" != no; then
 AC_DEFINE(WITH_BUILTIN_MANUAL)
@@ -699,10 +707,6 @@ fi
 if test "$builtin_app_defaults" != no; then
 AC_DEFINE(WITH_BUILTIN_APP_DEFAULTS)
 fi
-if test "$readline" != no; then
-AC_DEFINE(WITH_READLINE)
-fi
-dnl
 dnl
 dnl Check for risky LessTif versions.
 dnl
