@@ -223,8 +223,9 @@ static XtIntervalId move_tool_shell_timer = 0;
 static BoxPoint last_tool_shell_position;
 static BoxPoint tool_shell_move_offset(0, 0);
 
-static void move_tool_shell(BoxPoint pos);
+static void move_tool_shell(BoxPoint pos, bool verify = true);
 
+// Verify shell position after movement
 static void VerifyToolShellPositionCB(XtPointer = 0, XtIntervalId *id = 0)
 {
     (void) id;			// Use it
@@ -240,12 +241,13 @@ static void VerifyToolShellPositionCB(XtPointer = 0, XtIntervalId *id = 0)
     if (diff != BoxPoint(0, 0))
     {
 	tool_shell_move_offset = -diff;
-	move_tool_shell(last_tool_shell_position);
+	move_tool_shell(last_tool_shell_position, false);
     }
 }
 
-// Move tool shell to POS
-static void move_tool_shell(BoxPoint pos)
+// Move tool shell to POS.  If VERIFY is set, verify and correct 
+// any displacement induced by the window manager.
+static void move_tool_shell(BoxPoint pos, bool verify)
 {
 #if 0
     // Make sure we don't move the tool shell off the screen
@@ -278,11 +280,17 @@ static void move_tool_shell(BoxPoint pos)
 
 	// Verify tool shell position
 	if (move_tool_shell_timer != 0)
+	{
 	    XtRemoveTimeOut(move_tool_shell_timer);
+	    move_tool_shell_timer = 0;
+	}
 
-	move_tool_shell_timer = 
-	    XtAppAddTimeOut(XtWidgetToApplicationContext(tool_shell),
-			    100, VerifyToolShellPositionCB, XtPointer(0));
+	if (verify)
+	{
+	    move_tool_shell_timer = 
+		XtAppAddTimeOut(XtWidgetToApplicationContext(tool_shell),
+				100, VerifyToolShellPositionCB, XtPointer(0));
+	}
     }
 }
 
