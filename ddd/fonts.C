@@ -374,7 +374,7 @@ static void title(const AppData& ad, const string& s)
     if (title_seen)
 	cout << "\n\n";
 
-    cout << s << "\n" << replicate("-", s.length()) << "\n\n";
+    cout << s << "\n" << replicate(string("-"), s.length()) << "\n\n";
 
     title_seen = true;
 }

@@ -40,6 +40,9 @@
 #include "GraphGC.h"
 #include <strstream.h>
 
+class GraphEdge;
+class Graph;
+
 class GraphNode {
 public:
     DECLARE_TYPE_INFO

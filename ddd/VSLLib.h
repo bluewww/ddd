@@ -163,6 +163,7 @@ const unsigned loopMask         = (1 << 0 | 1 << 1 | 1 << 2 | 1 << 3);
 const unsigned allOpts          = ((unsigned)-1) & ~loopMask;
 const unsigned stdOpt           = allOpts | 2;
 
+int VSLLib_parse(void);
 
 // The VSL library
 class VSLLib {

@@ -5643,7 +5643,7 @@ static string fmt(string s, unsigned size)
     if (s.length() > size)
 	s = s.before(int(size));
     else if (s.length() < size)
-	s += replicate(' ', size - s.length());
+	s += replicate(string(' '), size - s.length());
 
     assert(s.length() == size);
     return s;

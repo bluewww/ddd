@@ -2365,7 +2365,7 @@ String SourceView::read_indented(string& file_name, long& length,
 
     String indented_text = XtMalloc(indented_text_length + 1);
 
-    string line_no_s = replicate(' ', indent);
+    string line_no_s = replicate(string(' '), indent);
 
     t = 0;
     char *pos_ptr = indented_text; // Writing position in indented_text
@@ -2900,7 +2900,7 @@ void SourceView::refresh_code_bp_disp(bool reset = false)
 	int indent = indent_amount(code_text_w, pos);
 	if (indent > 0)
 	{
-	    string spaces = replicate(' ', indent);
+	    string spaces = replicate(string(' '), indent);
 	    XmTextReplace(code_text_w, pos, pos + indent, (String)spaces);
 	}
     }
@@ -2943,7 +2943,7 @@ void SourceView::refresh_code_bp_disp(bool reset = false)
 	int indent = indent_amount(code_text_w, pos);
 	if (indent > 0)
 	{
-	    insert_string += replicate(' ', indent);
+	    insert_string += replicate(string(' '), indent);
 	    insert_string = insert_string.before(indent);
 
 	    XmTextReplace(code_text_w, pos, pos + indent, 
@@ -6965,7 +6965,7 @@ void SourceView::setup_where_line(string& line)
 
     const int min_width = 40;
     if (int(line.length()) < min_width)
-	line += replicate(' ', min_width - line.length());
+	line += replicate(string(' '), min_width - line.length());
 }
 
 // Return current JDB frame; 0 if none
@@ -9337,7 +9337,7 @@ void SourceView::process_disassemble(const string& disassemble_output)
 	string& line = code_list[i];
 	untabify_if_needed(line);
 	if (line.length() > 0 && line[0] == '0')
-	    line = replicate(' ', indent_amount(code_text_w)) + line;
+	    line = replicate(string(' '), indent_amount(code_text_w)) + line;
 	indented_code += line + '\n';
     }
     delete[] code_list;

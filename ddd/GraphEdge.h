@@ -40,6 +40,9 @@
 #include "TypeInfo.h"
 #include "assert.h"
 
+class GraphNode;
+class Graph;
+
 class GraphEdge {
 public:
     DECLARE_TYPE_INFO

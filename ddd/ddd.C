@@ -2121,6 +2121,7 @@ int main(int argc, char *argv[])
 
 	argv = (char **)tmp_argv;
     }
+
     // All remaining args are passed to the inferior debugger.
     if (argc == 1 && app_data.open_selection)
     {
@@ -5069,7 +5070,7 @@ static void create_status(Widget parent)
     // the size of the status window to the length of the very first
     // message, so we give some huge string at the beginning.
     MString short_msg = rm("Hello, world!");
-    MString long_msg = short_msg + rm(replicate(' ', 90));
+    MString long_msg = short_msg + rm(replicate(string(' '), 90));
 
     arg = 0;
     XtSetArg(args[arg], XmNlabelString,      long_msg.xmstring()); arg++;
@@ -5751,7 +5752,7 @@ static void gdb_ctrl(char ctrl)
 	    const int TAB_WIDTH = 8;
 	    int column = promptPosition - startOfLine;
 	    int spaces = TAB_WIDTH - column % TAB_WIDTH;
-	    string spacing = replicate(' ', spaces);
+	    string spacing = replicate(string(' '), spaces);
 	
 	    XmTextInsert(gdb_w, promptPosition, (String)spacing);
 	    promptPosition += spacing.length();

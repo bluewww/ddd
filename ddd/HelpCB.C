@@ -1077,7 +1077,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 		title.upcase();
 
 	    // Add title and position
-	    titles += replicate(' ', indent * 2) + title;
+	    titles += replicate(string(' '), indent * 2) + title;
 	    positions += source;
 
 	    // Strip `File: ' line

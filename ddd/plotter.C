@@ -1484,7 +1484,7 @@ static void trace(const char *prefix, void *call_data)
     }
 
     s = quote(s);
-    string nl = string("\\n\"\n") + replicate(' ', strlen(prefix)) + "\"";
+    string nl = string("\\n\"\n") + replicate(string(' '), strlen(prefix)) + "\"";
     s.gsub("\\n", nl);
 
     if (s_ends_with_nl)
