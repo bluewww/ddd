@@ -131,8 +131,12 @@ static BoxPoint tool_shell_pos()
 }
 
 // Move tool shell to POS
-static void move_tool_shell(const BoxPoint& pos)
+static void move_tool_shell(BoxPoint pos)
 {
+    // Make sure we don't move the tool shell off the screen
+    pos[X] = max(pos[X], 0);
+    pos[Y] = max(pos[Y], 0);
+
     if (tool_shell == 0)
 	return;
 
@@ -387,7 +391,7 @@ static void raise_above(Display *display, Window win, Window sibling)
     Window win_frame     = frame(display, win);
     Window sibling_frame = frame(display, sibling);
 
-    if (win_frame != 0 && sibling_frame != 0)
+    if (win_frame != 0 && sibling_frame != 0 && win_frame != sibling_frame)
     {
 	// Raise WIN just above SIBLING
 	XWindowChanges changes;
@@ -399,7 +403,7 @@ static void raise_above(Display *display, Window win, Window sibling)
     }
     else
     {
-	// Raise WIN tool on top
+	// Raise WIN on top
 	XRaiseWindow(display, win);
     }
 }
