@@ -2491,11 +2491,12 @@ change effective for future \s-2@DDD@\s+2 sessions,
 or restart \s-2@DDD@\s+2 (using `\fBFile\fR' | `\fBRestart DDD\fR') to
 make it effective for the restarted \s-2@DDD@\s+2 session.
 .PP
-By default, \s-2@DDD@\s+2 uses one single window for commands, source,
-and data.  To have separate windows for source, data, and debugger
-console, set the `\fBWindows\fR' option to `\fBSeparate Windows\fR'.
-See also the `\fB\-\-attach-windows\fR' and
-`\fB\-\-separate-windows\fR' options, below.
+By default, \s-2@DDD@\s+2 stacks commands, source, and data in one
+single top-level window.  To have separate top-level windows for
+source, data, and debugger console, set the `\fBWindow Layout\fR'
+option to `\fBSeparate Windows\fR'.  See also the
+`\fB\-\-attach-windows\fR' and `\fB\-\-separate-windows\fR' options,
+below.
 .PP
 The \s-2@DDD@\s+2 toolbar buttons can be displayed using \fBImages\fR,
 showing a small symbol for each action, and/or \fBCaptions\fR, showing
@@ -2503,14 +2504,14 @@ the action name below the image.  If neither of these two is set,
 toolbar buttons are labeled like other buttons (with the exception of
 the common toolbar, which never shows ordinary labels).
 .PP
-\s-2@DDD@\s+2 can locate the tool buttons in the command tool (`\fBin
-command tool\fR') or in a \fIcommand tool bar\fR above the program
-source (`\fBin source window\fR').  Pick your choice.
+\s-2@DDD@\s+2 can locate the tool buttons in the command tool
+(`\fBcommand tool\fR') or in a \fIcommand tool bar\fR above the
+program source (`\fBsource window\fR').  Pick your choice.
 .PP
 By default, \s-2@DDD@\s+2 directs keyboard input to the item your
 mouse pointer points at.  If you prefer a click-to-type keyboard focus
 (that is, click on an item to make it accept keyboard input), set the
-`\fBKeyboard Focus\fR' option on `\fBClick to type\fR'.
+`\fBKeyboard Focus\fR' option on `\fBClick to Type\fR'.
 .PP
 By default, \s-2@DDD@\s+2 uses Motif scroll bars to scroll the data
 window.  Many people find this inconvenient, since you can scroll in
@@ -2532,11 +2533,11 @@ options and restarted \s-2@DDD@\s+2.  See also the `\fB\-\-gdb\fR',
 `\fB\-\-dbx\fR', `\fB\-\-xdb\fR', and `\fB\-\-jdb\fR' options, below.
 .PP
 If you want the \s-2@DDD@\s+2 splash screen shown upon startup, you
-can select between different versions.  The `\fBcolor\fR' version is
-the nicest, but requires several color cells.  The `\fBgrey\fR'
+can select between different versions.  The `\fBColor\fR' version is
+the nicest, but requires several color cells.  The `\fBGrey\fR'
 version requires some grey color cells, which are also used by
-\s-2@DDD@\s+2.  The `\fBgrey4\fR' version needs no additional color
-cells.  Selecting `\fBnone\fR' disables the splash screen completely.
+\s-2@DDD@\s+2.  The `\fBGrey4\fR' version needs no additional color
+cells.  Selecting `\fBNone\fR' disables the splash screen completely.
 .PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"

@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-//
+// DDD window management
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.

@@ -32,8 +32,8 @@ DDD 3.0 [in development]
     - DBX settings now also work with SGI DBX.
 
     Bug fixes:
-    - Using Sun DBX 3.x, data displays are no longer cluttered by DBX
-      warnings.
+    - Data displays are no longer cluttered by Sun DBX 3.0 warnings.
+    - Paned window management has been improved a lot.
     - DDD now works around a Motif 2.1/XFree86 bug that caused glyphs
       to disappear.  See the `cacheGlyphImages' resource for details.
 
@@ -45,8 +45,8 @@ DDD 3.0 [in development]
     - Some resources were renamed for clarity:
       The `toolBar' resource is now named `commandToolBar'.
       The `colorIcons' resource is now named `colorWMIcons'.
-      If you used these DDD resources somewhere, be sure to rename them.
-    - To enable the old DDD 2.x window layout, use
+      Please rename all references to these DDD resources.
+    - To enable a DDD 2.x style window layout, use
 
 	Ddd*commonToolBar:    off
 	Ddd*toolbarsAtBottom: on

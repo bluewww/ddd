@@ -389,4 +389,10 @@ Volunteers for these and other projects are welcome!
 257 Show whether a conditional jump (breakpoint?) will be taken or
     not.
 
-261 (Insert your project idea here)
+265*Make all toolbar actions accessible via alternate ways:
+    - Add `Rotate' to the Display Editor.
+    - Add `Lookup', `Find', and `Print' to the Source Menu.
+
+266 Include TAGS support.
+
+268 (Insert new project ideas here)

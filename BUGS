@@ -275,4 +275,7 @@ Volunteers for fixing these and other bugs are welcome!
     XmNadjustLast, the children of a one column row column will be
     automatically resized.'
 
-254 (Insert your bug here)
+254 The `info files' status display is not correctly shown (`:'
+    is recognized as member separator.)
+
+255 (Insert new bugs here)
