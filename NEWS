@@ -1,6 +1,13 @@
 DDD News						-*- text -*-
 ********
 
+DDD 2.2.4 [in development]
+--------------------------
+
+    User-visible changes to DDD 2.2.1:
+    - Java language support as included in future GDB versions.
+
+
 DDD 2.2.3
 ---------
 
