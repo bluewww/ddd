@@ -38,6 +38,7 @@ char PlotAgent_rcsid[] =
 #include "version.h"
 
 #include <float.h>
+#include <stdlib.h>		// atof()
 
 DEFINE_TYPE_INFO_1(PlotAgent, LiterateAgent)
 
