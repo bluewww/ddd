@@ -38,8 +38,15 @@ char annotation_rcsid[] =
 // Remove leading S from A
 static void strip_leading(string& a, const string& s)
 {
-    if (a.contains(s, 0))
+    if (a.length() > s.length() && a.contains(s, 0))
 	a = a.from(int(s.length()));
+}
+
+// Remove trailing S from A
+static void strip_trailing(string& a, const string& s)
+{
+    if (a.length() > s.length() && a.contains(s, -1))
+	a = a.before(int(a.length() - s.length()));
 }
 
 // In A, substitute 1st occurrence of S1 by S2
@@ -77,6 +84,8 @@ string annotation(const string& from, const string& to)
 	return "";		// No need to annotate this
 
     strip_leading(annotation, "()");
+    strip_trailing(annotation, "()");
+
     strip_leading(annotation, "*()");
     strip_leading(annotation, ".");
     strip_leading(annotation, "->");
