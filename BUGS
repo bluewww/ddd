@@ -157,11 +157,10 @@ Volunteers for fixing these and other bugs are welcome!
     be cleared at least?  Or contain a string (`not active')?
 
 346 Finish Perl support:
+    - After restarting Perl, the execution arrow has gone.
     - `Source->Info Breakpoints' lacks proper info.
-    - `Run' should set arguments.  Assign to $@?
-    - If inferior debugger exits, restart it.  Vital for Perl and JDB.
+    - `Run' should set arguments.  Assign to $ARGS?
     - Open Program.  Should be realized via `exec'.
-    - Open Source.  How do we get a list of modules?
     - Settings.
     - Operations.  How do we dereference something?
     - Displays.
