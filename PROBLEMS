@@ -28,60 +28,6 @@ Reported by:  bas@phys.uva.nl (Bas V. de Bakker),
     a quite different program.
 
 
-FreeBSD
-=======
-
-Reported by:  taob@gate.sinica.edu.tw (Brian Tao)
-
-    Use `gmake' (GNU make) instead of `make' for building DDD.
-
-
-HP-UX
-=====
-
-    Various linking problems have been reported.  This is probably due
-    to an error in the HP-UX linker.  According to some DDD users, the
-    problem can be solved by using GNU binutils (such as ld and ar)
-    instead of the HP-UX binutils.
-
-
-SunOS 4.1 and X11R6
-===================
-
-Reported by:  dmitzel@everest.hitc.com (Danny J. Mitzel) and
-    doko@cs.tu-berlin.de (Matthias Klose)
-
-    Using certain Motif and Athena libraries may cause
-    `_vendorShellWidgetClass' to be defined twice.  A possible
-    workaround is to configure DDD to run without Athena widgets
-    (i.e. in `config.h', undefine `HAVE_ATHENA_WIDGETS' and remove the
-    -lXaw flag from the `Makefile' linking command).
-
-
-X11R4
-=====
-
-Reported by:  mlj@gensym.com (Magnus Ljungberg)
-
-    You may need to prohibit the use of the _XEditResCheckMessages()
-    function by entering a line saying '#undef HAVE_X11_XMU_EDITRES_H' in
-    `ddd.C'.
-
-
-LINUX
-=====
-
-     Several Motif distributions for Linux have a bug causing DDD to
-     crash on some machines as soon as `Open Program...' is selected
-     (or any other file selection dialog is opened).  Go and complain
-     to your Motif vendor in order to get an upgrade.  
-     We have Linux DDD binaries linked with a fixed SWiM Motif 2.0
-     library available.  As a workaround, use the GDB `file' and
-     `core' commands; to open a specific source, use the GDB `info
-     file FUNCTION' command, where FUNCTION is a function defined in
-     that source file.
-
-
 Alpha OSF
 =========
 
@@ -110,9 +56,63 @@ Reported by:  Walter Tuppa <tuppa@iue.tuwien.ac.at>
      and avoid problems between integer and pointer conversion.
 
 
+FreeBSD
+=======
+
+Reported by:  taob@gate.sinica.edu.tw (Brian Tao)
+
+    Use `gmake' (GNU make) instead of `make' for building DDD.
+
+
 GCC 2.3, 2.4, 2.5
 =================
 
     Lots and lots of warnings; nearly all of them insignificant.
+
+
+HP-UX
+=====
+
+    Various linking problems have been reported.  This is probably due
+    to an error in the HP-UX linker.  According to some DDD users, the
+    problem can be solved by using GNU binutils (such as ld and ar)
+    instead of the HP-UX binutils.
+
+
+LINUX
+=====
+
+     Several Motif distributions for Linux have a bug causing DDD to
+     crash on some machines as soon as `Open Program...' is selected
+     (or any other file selection dialog is opened).  Go and complain
+     to your Motif vendor in order to get an upgrade.  
+     We have Linux DDD binaries linked with a fixed SWiM Motif 2.0
+     library available.  As a workaround, use the GDB `file' and
+     `core' commands; to open a specific source, use the GDB `info
+     file FUNCTION' command, where FUNCTION is a function defined in
+     that source file.
+
+
+SunOS 4.1 and X11R6
+===================
+
+Reported by:  dmitzel@everest.hitc.com (Danny J. Mitzel) and
+    doko@cs.tu-berlin.de (Matthias Klose)
+
+    Using certain Motif and Athena libraries may cause
+    `_vendorShellWidgetClass' to be defined twice.  A possible
+    workaround is to configure DDD to run without Athena widgets
+    (i.e. in `config.h', undefine `HAVE_ATHENA_WIDGETS' and remove the
+    -lXaw flag from the `Makefile' linking command).
+
+
+X11R4
+=====
+
+Reported by:  mlj@gensym.com (Magnus Ljungberg)
+
+    You may need to prohibit the use of the _XEditResCheckMessages()
+    function by entering a line saying '#undef HAVE_X11_XMU_EDITRES_H' in
+    `ddd.C'.
 
 $Id$
