@@ -185,6 +185,7 @@ char ddd_rcsid[] =
 #include "cook.h"
 #include "dbx-lookup.h"
 #include "editing.h"
+#include "environ.h"
 #include "exectty.h"
 #include "exit.h"
 #include "expired.h"
@@ -193,6 +194,7 @@ char ddd_rcsid[] =
 #include "gdbinit.h"
 #include "graph.h"
 #include "history.h"
+#include "host.h"
 #include "logo.h"
 #include "options.h"
 #include "post.h"
@@ -1633,6 +1635,34 @@ int main(int argc, char *argv[])
     argc += saved_options.size();
     argv[argc] = 0;
 
+    // Setup environment.
+    // Set the type of the execution tty.
+    switch (type)
+    {
+    case GDB:
+    case DBX:
+	// The debugger console has few capabilities.
+	// When starting the execution TTY, we set the correct type.
+	put_environment("TERM", "dumb");
+	break;
+
+    case XDB:
+	// In XDB, we have no means to set the TTY type afterwards;
+	// Set the execution TTY type right now.
+	put_environment("TERM", app_data.term_type);
+	break;
+    }
+
+    // Don't let TERMCAP settings override our TERM settings.
+    put_environment("TERMCAP", "");
+
+    // This avoids zillions of problems with debuggers that pipe
+    // their output through `more', `less', and likewise.
+    put_environment("PAGER", "cat");
+
+    // Let the debugger know that we're here
+    put_environment(DDD_NAME, ddd_NAME "-" DDD_VERSION "-" DDD_HOST);
+
     // Create GDB interface
     gdb = new_gdb(type, app_data, app_context, argc, argv);
     gdb->trace_dialog(app_data.trace_dialog);
@@ -1647,34 +1677,6 @@ int main(int argc, char *argv[])
 
     source_arg->addHandler (Changed, source_argHP);
     source_arg->callHandlers();
-
-    // Set the type of the execution tty.
-    static string term_env("TERM=");
-
-    switch (gdb->type())
-    {
-    case GDB:
-    case DBX:
-	// The debugger console has few capabilities.
-	// When starting the execution TTY, we set the correct type.
-	term_env += "dumb";
-	break;
-
-    case XDB:
-	// In XDB, we have no means to set the TTY type afterwards;
-	// Set the execution TTY type right now.
-	term_env += app_data.term_type;
-	break;
-    }
-    putenv(term_env);
-
-    // Environment.
-    // Don't let TERMCAP settings override our TERM settings.
-    putenv("TERMCAP=");
-
-    // This avoids tons of problems with debuggers that pipe
-    // their output through `more', `less', and likewise.
-    putenv("PAGER=cat");
 
     // Setup insertion position
     promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
@@ -2901,12 +2903,12 @@ static MString cmd(const string& title, const string& cmd)
     if (cmd == "")
 	return s + rm("-/-\n");
     else
-	return s + tt(quote(cmd)) + rm("\n");
+	return s + tt(cmd) + rm("\n");
 }
 
 static MString expr(const string& title, const string& expr)
 {
-    return bf(title + " expression: ") + tt(quote(expr)) + rm("\n");
+    return bf(title + " expression: ") + tt(expr) + rm("\n");
 }
 
 static MString option(const string& command, const string& opt, bool b)
@@ -2934,26 +2936,18 @@ static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
     MString status;
 
     status += sl("\nGENERAL DEBUGGER INFORMATION\n");
-    status += bf("Debugger type: ") + rm(gdb->title()) + rm("\n");
-
+    status += bf("Debugger: ") + tt(gdb->path()) + rm("\n");
+    status += bf("Process ID: ") + tt(itostring(gdb->pid())) + rm("\n");
+    status += bf("Master TTY: ") + tt(gdb->master_tty()) + rm("\n");
+    status += bf("Slave TTY: ") + tt(gdb->slave_tty()) + rm("\n");
     status += bf("Current state: ");
     if (gdb->isReadyWithPrompt())
 	status += rm("ready\n");
     else
 	status += rm("busy\n");
 
-    status += bf("Current language class: ");
-    switch (gdb->program_language())
-    {
-    case LANGUAGE_C:       status += rm("C"); break;
-    case LANGUAGE_PASCAL:  status += rm("Pascal"); break;
-    case LANGUAGE_CHILL:   status += rm("Chill"); break;
-    case LANGUAGE_FORTRAN: status += rm("FORTRAN"); break;
-    case LANGUAGE_OTHER:   status += rm("-/-"); break;
-    }
-    status += rm("\n");
-
     status += sl("\nDEBUGGER CAPABILITIES\n");
+    status += bf("Debugger type: ") + rm(gdb->title()) + rm("\n");
     status += has("clear",   gdb->has_clear_command());
     status += has("display", gdb->has_display_command());
     status += has("edit",    gdb->has_setenv_command());
@@ -2976,6 +2970,16 @@ static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
     status += cmd("Where",       gdb->where_command());
 
     status += sl("\nEXPRESSIONS\n");
+    status += bf("Current language class: ");
+    switch (gdb->program_language())
+    {
+    case LANGUAGE_C:       status += rm("C"); break;
+    case LANGUAGE_PASCAL:  status += rm("Pascal"); break;
+    case LANGUAGE_CHILL:   status += rm("Chill"); break;
+    case LANGUAGE_FORTRAN: status += rm("FORTRAN"); break;
+    case LANGUAGE_OTHER:   status += rm("-/-"); break;
+    }
+    status += rm("\n");
     status += expr("Address",     gdb->address_expr("EXPR"));
     status += expr("Dereference", gdb->dereferenced_expr("EXPR"));
 
