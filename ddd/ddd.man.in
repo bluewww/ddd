@@ -513,17 +513,17 @@ text.
 If you wish to lookup a specific function or variable definition whose
 name is visible in the source text, click with the \fIleft mouse
 button\fR on the function or variable name.  The name is copied to the
-argument field.  Click on the `\fBLookup()\fR' button to find its
+argument field.  Click on the `\fBGo to ()\fR' button to find its
 definition.
 .PP
 .PSPIC PICS/ddd-source-popup.ps 15.3cm
 .PP
 As a shorter alternative, you can simply press the \fIright mouse
-button\fR on the function name and select the `\fBlookup\fR' item from
+button\fR on the function name and select the `\fBGo to\fR' item from
 the source popup menu.
 .PP
 As another alternative, you can enter the function name in the
-argument field and click on the `\fBLookup()\fR' button to find its
+argument field and click on the `\fBGo to ()\fR' button to find its
 definition.
 .PP
 Finally, you can use the \s-2GDB\s+2 `\fBinfo line\fR' command.
@@ -549,8 +549,8 @@ option in the `\fBSource Options\fR' menu.
 .\"
 .SS "Looking up Previous Locations"
 .\"
-Use the `\fBBack\fR' and `\fBForward\fR' buttons to lookup previous or
-next looked-up locations.  The location found is underlined.
+Use the `\fBBack\fR' and `\fBForward\fR' buttons to go to previous or
+next locations.  The location found is underlined.
 .\"
 .\"
 .\"
@@ -690,13 +690,13 @@ the `\fB(gdb)\fR' prompt for details.
 .\"
 .SS "Finding Breakpoints"
 .\"
-If you wish to lookup a specific breakpoint, select the
-`\fBLookup\fR' item from the `\fBBreakpoints\fR' menu.  After
+If you wish to go to a specific breakpoint, select the
+`\fBGo to\fR' item from the `\fBBreakpoints\fR' menu.  After
 selecting a breakpoint from the list and clicking the
-`\fBLookup\fR' button, the breakpoint location is displayed.
+`\fBGo to\fR' button, the breakpoint location is displayed.
 .PP
 As an alternative, you can enter `\fB#\fIn\fR' in the argument field,
-where \fIn\fR is the breakpoint number and click on the `\fBLookup()\fR'
+where \fIn\fR is the breakpoint number and click on the `\fBGo to()\fR'
 button to find its definition.
 .\"
 .\"
@@ -1471,9 +1471,9 @@ usual popup menus are also available.  Breakpoints and the current
 execution position are displayed simultaneously in both source and
 machine code.
 .PP
-The `\fBLookup()\fR' button can be used to look up the machine code
+The `\fBGo to()\fR' button can be used to look up the machine code
 for a specific function\(em\&or the function for a specific address.
-Just click on the location in one window and press `\fBLookup()\fR'
+Just click on the location in one window and press `\fBGo to()\fR'
 to see the corresponding code in the other window.
 .PP
 If source code is not available, only the machine code window is
@@ -2514,10 +2514,10 @@ Show next command
 Send the given command to the debugger.
 .TP 10
 .B "Back"
-Lookup previously selected source position.
+Go to previously selected source position.
 .TP 10
 .B "Forward"
-Lookup next selected source position.
+Go to next selected source position.
 .TP 10
 .B "Edit"
 Edit current source file.
