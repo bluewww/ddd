@@ -386,4 +386,6 @@ Volunteers for fixing these and other bugs are welcome!
      dbx cannot handle `when at { }' without a command inside the
      parentheses (this should be `{ delete xx,yy }' anyway).
 
-180. (Insert your bug here)
+180. The Alt+L and Alt+U accelerators don't work.
+
+181. (Insert your bug here)
