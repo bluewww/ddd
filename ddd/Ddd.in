@@ -396,11 +396,11 @@ Ddd*graph_edit_panner.shadowColor: black
 ! The famous red and green buttons.
 Ddd*interrupt.foreground:          red4
 Ddd*run.foreground:                dark green
+Ddd*run_again.foreground:          dark green
 
 ! Highlight special dialogs
 Ddd*fatal_dialog*foreground: 	   red4
 Ddd*terminated_dialog*foreground:  red4
-Ddd*debugging_poem*foreground: 	   dark green
 
 ! Glyph colors
 Ddd*source_form_w.XmPushButton.background: grey90
