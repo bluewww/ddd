@@ -51,7 +51,6 @@ extern "C" {
 #include <ctype.h>
 #include <pwd.h>
 
-#define NO_UNAME_AGENTS
 #include "hostname.C"
 
 // Return true if C is a letter found in real user names.  Any
