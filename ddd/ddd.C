@@ -603,8 +603,6 @@ static MMDesc ddd_options_menu[] =
       NULL, group_iconify_w },
     { "globalTabCompletion", MMToggle, { dddToggleGlobalTabCompletionCB }, 
       NULL, global_tab_completion_w },
-    { "separateExecWindow",  MMToggle, { dddToggleSeparateExecWindowCB }, 
-      NULL, separate_exec_window_w },
     { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB }, 
       NULL, suppress_warnings_w },
     { "saveHistoryOnExit",   MMToggle, { dddToggleSaveHistoryOnExitCB }, 
@@ -614,10 +612,6 @@ static MMDesc ddd_options_menu[] =
 
 static MMDesc source_options_menu[] = 
 {
-    { "findWordsOnly",    MMToggle, { sourceToggleFindWordsOnlyCB }, 
-      NULL, find_words_only_w },
-    { "disassemble",     MMToggle,  { sourceToggleDisassembleCB },
-      NULL, disassemble_w },
     { "displayGlyphs",    MMToggle, { sourceToggleDisplayGlyphsCB }, 
       NULL, display_glyphs_w },
     { "cacheSourceFiles", MMToggle, { sourceToggleCacheSourceFilesCB }, 
@@ -697,6 +691,13 @@ static MMDesc options_menu [] =
     { "sourceOptions",  MMMenu, MMNoCB, source_options_menu  },
     { "dataOptions",    MMMenu, MMNoCB, data_options_menu    },
     { "startupOptions", MMMenu, MMNoCB, startup_options_menu },
+    MMSep,
+    { "separateExecWindow",  MMToggle, { dddToggleSeparateExecWindowCB }, 
+      NULL, separate_exec_window_w },
+    { "findWordsOnly",    MMToggle, { sourceToggleFindWordsOnlyCB }, 
+      NULL, find_words_only_w },
+    { "disassemble",     MMToggle,  { sourceToggleDisassembleCB },
+      NULL, disassemble_w },
     MMSep,
     { "saveOptions",    MMPush,   { DDDSaveOptionsCB }},
     MMEnd

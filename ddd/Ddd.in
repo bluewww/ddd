@@ -1170,33 +1170,20 @@ Ddd*menubar.options.mnemonic:		O
 Ddd*menubar.options*contextHelpString:	\
 @rm This is the @sl Options @rm menu.\n\
 \n\
-@sl General Options:@rm\n\
+@sl General Preferences:@rm\n\
 @tt \267 @rm If @bf Group Iconify @rm is set, all @DDD@ windows\n\
     are iconified as a group.  Otherwise, windows are iconified separately.\n\
 @tt \267 @rm If @bf Global Tab Completion @rm is set, \
 the @key TAB @rm key completes\n\
     arguments in all @DDD@ windows.  Otherwise, the  @key TAB @rm completes\n\
     in the @DDD@ console window only.\n\
-@tt \267 @rm If @bf Execution Window @rm is set, \
-the program is run in a separate\n\
-    terminal window; useful for programs using terminal I/O.  Otherwise,\n\
-    the program is run in the @DDD@ console window.\n\
-    This change takes effect the next time the program is run.\n\
 @tt \267 @rm If @bf Suppress X Warnings @rm is set, \
 X warnings are silently ignored.\n\
-@tt \267 @rm If @bf Save Options on Exit @rm is set, the options are\n\
-    automatically saved when @DDD@ exits.\
-  Otherwise, options are discarded.\n\
 @tt \267 @rm If @bf Save History on Exit @rm is set, the command history is\n\
     automatically saved when @DDD@ exits.\
   Otherwise, history is discarded.\n\
 \n\
-@sl Source Options:@rm\n\
-@tt \267 @rm If @bf Find Words Only @rm is set, \
-only complete words are found.\n\
-    Otherwise, arbitrary occurrences are found.\n\
-@tt \267 @rm If @bf Display Machine Code @rm is set, \
-current functions are disassembled.\n\
+@sl Source Preferences:@rm\n\
 @tt \267 @rm If @bf Display Glyphs @rm is set, \
 positions and breakpoints are shown as glyphs.\n\
     Otherwise, positions and breakpoints are shown as text.\n\
@@ -1207,7 +1194,7 @@ source texts are cached in memory.\n\
 disassembled code is cached in memory.\n\
     Otherwise, code is re-disassembled upon each function change.\n\
 \n\
-@sl Data Options:@rm\n\
+@sl Data Preferences:@rm\n\
 @tt \267 @rm If @bf Show Grid @rm is set, the grid is displayed.\n\
 @tt \267 @rm If @bf Show Edge Hints @rm is set, edge hints are displayed.\n\
 @tt \267 @rm If @bf Snap to Grid @rm is set, display alignment is enforced.\n\
@@ -1217,7 +1204,7 @@ disassembled code is cached in memory.\n\
 @tt \267 @rm If @bf Automatic Layout @rm is set, the graph is layouted\n\
     after each change.  Otherwise, layout can be invoked manually.\n\
 \n\
-@sl Startup Options:@rm\n\
+@sl Startup Preferences:@rm\n\
 (Note: these options take effect only after saving options\n\
 and restarting @DDD@)\n\
 @tt \267 @bf Windows @rm sets the window layout.\n\
@@ -1225,18 +1212,43 @@ and restarting @DDD@)\n\
 @tt \267 @bf Data Scrolling @rm sets the data window scrolling mode.\n\
 @tt \267 @bf Debugger Type @rm sets the type of inferior debugger to use.\n\
 \n\
-@bf Save Options @rm saves the options for the next use of @DDD@.
+@tt \267 @rm If @bf Run in Execution Window @rm is set, \
+the program is run in a separate\n\
+    terminal window; useful for programs using terminal I/O.  Otherwise,\n\
+    the program is run in the @DDD@ console window.\n\
+    This change takes effect the next time the program is run.\n\
+@tt \267 @rm If @bf Find Words Only @rm is set, \
+only complete words are found.\n\
+    Otherwise, arbitrary occurrences are found.\n\
+@tt \267 @rm If @bf Display Machine Code @rm is set, \
+the current function is automatically disassembled.\n\
+\n\
+@bf Save Options @rm saves options and preferences for the next use of @DDD@.
 
-Ddd*optionsMenu.generalOptions.labelString:  General Options
+
+Ddd*optionsMenu.separateExecWindow.labelString: Run in Execution Window
+Ddd*optionsMenu.separateExecWindow.mnemonic:    E
+
+Ddd*optionsMenu.findWordsOnly.labelString:     Find Words Only
+Ddd*optionsMenu.findWordsOnly.mnemonic:	       W
+Ddd*optionsMenu*findWordsOnly.accelerator:     Ctrl<Key>W
+Ddd*optionsMenu*findWordsOnly.acceleratorText: Ctrl+W
+
+Ddd*optionsMenu.disassemble.labelString:     Display Machine Code
+Ddd*optionsMenu.disassemble.mnemonic:        M
+Ddd*optionsMenu*disassemble.accelerator:     Ctrl<Key>M
+Ddd*optionsMenu*disassemble.acceleratorText: Ctrl+M
+
+Ddd*optionsMenu.generalOptions.labelString:  General Preferences
 Ddd*optionsMenu.generalOptions.mnemonic:     G
 
-Ddd*optionsMenu.sourceOptions.labelString:   Source Options
+Ddd*optionsMenu.sourceOptions.labelString:   Source Preferences
 Ddd*optionsMenu.sourceOptions.mnemonic:      S
 
-Ddd*optionsMenu.dataOptions.labelString:     Data Options
+Ddd*optionsMenu.dataOptions.labelString:     Data Preferences
 Ddd*optionsMenu.dataOptions.mnemonic:        D
 
-Ddd*optionsMenu.startupOptions.labelString:  Startup Options
+Ddd*optionsMenu.startupOptions.labelString:  Startup Preferences
 Ddd*optionsMenu.startupOptions.mnemonic:     u
 
 Ddd*optionsMenu.saveOptions.labelString:     Save Options
@@ -1250,9 +1262,6 @@ Ddd*generalOptionsMenu.globalTabCompletion.mnemonic:    T
 Ddd*generalOptionsMenu*disassemble.accelerator:	        Ctrl<Key>Tab
 Ddd*generalOptionsMenu*disassemble.acceleratorText:     Ctrl+Tab
 
-Ddd*generalOptionsMenu.separateExecWindow.labelString: Run in Execution Window
-Ddd*generalOptionsMenu.separateExecWindow.mnemonic:    E
-
 Ddd*generalOptionsMenu.suppressWarnings.labelString:   Suppress X Warnings
 Ddd*generalOptionsMenu.suppressWarnings.mnemonic:      W
 
@@ -1261,16 +1270,6 @@ Ddd*generalOptionsMenu.saveOptionsOnExit.mnemonic:     O
 
 Ddd*generalOptionsMenu.saveHistoryOnExit.labelString:  Save History on Exit
 Ddd*generalOptionsMenu.saveHistoryOnExit.mnemonic:     H
-
-Ddd*sourceOptionsMenu.findWordsOnly.labelString:       Find Words Only
-Ddd*sourceOptionsMenu.findWordsOnly.mnemonic:	       W
-Ddd*sourceOptionsMenu*findWordsOnly.accelerator:       Ctrl<Key>W
-Ddd*sourceOptionsMenu*findWordsOnly.acceleratorText:   Ctrl+W
-
-Ddd*sourceOptionsMenu.disassemble.labelString:         Display Machine Code
-Ddd*sourceOptionsMenu.disassemble.mnemonic:            M
-Ddd*sourceOptionsMenu*disassemble.accelerator:	       Ctrl<Key>M
-Ddd*sourceOptionsMenu*disassemble.acceleratorText:     Ctrl+M
 
 Ddd*sourceOptionsMenu.displayGlyphs.labelString:       Display Glyphs
 Ddd*sourceOptionsMenu.displayGlyphs.mnemonic:          G
@@ -1351,9 +1350,9 @@ Ddd*menubar.view.contextHelpString:	\
 @tt \267 @bf Program Execution... @rm - show input/output of the program.
 
 Ddd*viewMenu.tool.labelString:			Command Tool...
-Ddd*viewMenu.tool.mnemonic:			C
+Ddd*viewMenu.tool.mnemonic:			T
 Ddd*viewMenu.console.labelString:		Debugger Console...
-Ddd*viewMenu.console.mnemonic:			D
+Ddd*viewMenu.console.mnemonic:			C
 Ddd*viewMenu.source.labelString:		Program Source...
 Ddd*viewMenu.source.mnemonic:			S
 Ddd*viewMenu.data.labelString:			Program Data...
