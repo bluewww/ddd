@@ -12,6 +12,8 @@ DDD 2.3 [in development]
     - Watchpoint support.  You can now have the debugged program stop
       automatically whenever a particular variable is read or written.
     - DBX settings now also work with SGI DBX.
+    - The maximum number of glyphs is now configurable at startup time.
+      See the `maxGlyphs' resource for details.
 
 
 DDD 2.2.3

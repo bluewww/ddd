@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-03-05" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-03-09" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -2972,6 +2972,11 @@ Default is \fB3\fR.
 .B "maxDisassemble (\fPclass\fB MaxDisassemble)"
 Maximum number of bytes to disassemble (default: 1024).  If this is
 zero, the entire current function is disassembled.
+.TP
+.B "maxGlyphs (\fPclass\fB MaxGlyphs)"
+The maximum number of glyphs to be displayed (default: 10).  Raising
+this value causes more glyphs to be allocated, possibly wasting
+resources that are never needed.
 .TP
 .B "tabWidth (\fPclass\fB TabWidth)"
 The tab width used in the source window (default: \fB8\fR)

@@ -844,6 +844,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNmaxGlyphs,
+	XtCMaxGlyphs,
+	XtRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, max_glyphs),
+	XtRImmediate,
+	XtPointer(10)
+    },
+
+    {
 	XtNdisplayLineNumbers,
 	XtCDisplayLineNumbers,
 	XtRBoolean,

@@ -76,9 +76,6 @@ extern GDBAgent* gdb;
 extern ArgField* source_arg;
 
 
-// Maximum number of simultaneous glyphs on the screen
-#define MAX_GLYPHS 20
-
 //-----------------------------------------------------------------------------
 class SourceView {
     static void add_to_history(const string& file_name, int line);
@@ -445,19 +442,19 @@ public:
     static int multiple_stop_x_offset;
 
 private:
-    // Glyph locations: x[0] is source, x[1] is code
+    // Glyph locations: X[0] is source, X[1] is code
     static Widget plain_arrows[2];
     static Widget grey_arrows[2];
     static Widget signal_arrows[2];
     static Widget temp_arrows[2];
-    static Widget plain_stops[2][MAX_GLYPHS + 1];
-    static Widget grey_stops[2][MAX_GLYPHS + 1];
+    static WidgetArray plain_stops[2];
+    static WidgetArray grey_stops[2];
     static Widget temp_stops[2];
 
     // Map stop sign in W at position POS.  Get widget from STOPS[COUNT];
     // store location in POSITIONS.  Return mapped widget (0 if none)
     static Widget map_stop_at(Widget w, XmTextPosition pos,
-			      Widget stops[], int& count,
+			      WidgetArray& stops, int& count,
 			      TextPositionArray& positions);
 
     // Map arrow/temp arrow/temp stop in W at POS.  If ORIGIN is
@@ -634,6 +631,9 @@ public:
 
     // Set the tab width
     static void set_tab_width(int width);
+
+    // Set the max number of glyphs
+    static void set_max_glyphs(int max_glyphs);
 
     // Maximum length of expr in source popup
     static int max_popup_expr_length;

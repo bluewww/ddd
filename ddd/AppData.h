@@ -192,6 +192,8 @@
 #define XtCBlockTTYInput         "BlockTTYInput"
 #define XtNdisplayGlyphs         "displayGlyphs"
 #define XtCDisplayGlyphs         "DisplayGlyphs"
+#define XtNmaxGlyphs             "maxGlyphs"
+#define XtCMaxGlyphs             "MaxGlyphs"
 #define XtNdisplayLineNumbers    "displayLineNumbers"
 #define XtCDisplayLineNumbers    "DisplayLineNumbers"
 #define XtNdisassemble           "disassemble"
@@ -350,6 +352,7 @@ struct AppData {
     OnOff   block_tty_input;
     Boolean full_name_mode;
     Boolean display_glyphs;
+    Boolean max_glyphs;
     Boolean display_line_numbers;
     Boolean disassemble;
     int     max_disassemble;

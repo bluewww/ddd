@@ -630,6 +630,9 @@ Ddd*maxDisassemble: 1024
 ! Do we wish to display glyphs? (Makes DDD run somewhat slower)
 Ddd*displayGlyphs: true
 
+! What is the maximum number of glyphs at one time?
+Ddd*maxGlyphs: 10
+
 ! Do we wish to display line numbers? (Default in DDD 2.1.1 and earlier)
 Ddd*displayLineNumbers: false
 
@@ -5243,6 +5246,18 @@ GDB echoes back every character typed by DDD.\n\
 This is probably due to a bad DDD configuration.\n\
 \n\
 DDD can work around this problem, so you can continue working.
+
+Ddd*out_of_glyphs_warning_popup.title: DDD: Out of Glyphs
+Ddd*out_of_glyphs_warning*helpString: \
+@rm DDD can only display a limited amount of breakpoint symbols at one time.\n\
+The other breakpoints are still maintained, but not visible right now.\n\
+\n\
+To increase the maximum number VAR(N) of displayed breakpoint symbols, \
+include a line\n\
+\n\
+CODE([Ddd]*maxGlyphs: VAR(N))\n\
+\n\
+in your FILE(~/.[ddd]/init) file and restart DDD.
 
 
 !-----------------------------------------------------------------------------

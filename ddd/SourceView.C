@@ -2819,9 +2819,6 @@ SourceView::SourceView(XtAppContext app_context, Widget parent)
     while (toplevel_w != 0 && !XtIsWMShell(toplevel_w))
 	toplevel_w = XtParent(toplevel_w);
 
-    Arg args[10];
-    Cardinal arg = 0;
-
     // Install glyph images
     XmInstallImage(&arrow_image,        "plain_arrow");
     XmInstallImage(&grey_arrow_image,   "grey_arrow");
@@ -2844,6 +2841,9 @@ SourceView::SourceView(XtAppContext app_context, Widget parent)
 	XtManageChild(code_form_w);
 
     // Create breakpoint editor
+    Arg args[10];
+    Cardinal arg = 0;
+
     arg = 0;
     XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
     edit_breakpoints_dialog_w =
@@ -5732,6 +5732,41 @@ string SourceView::get_line(string position)
 // Glyph stuff
 //----------------------------------------------------------------------------
 
+// Change number of glyphs
+void SourceView::set_max_glyphs (int nmax)
+{
+    WidgetArray empty(nmax);
+
+    for (int k = 0; k < 2; k++)
+    {
+	int i;
+
+	// Destroy old widgets...
+	for (i = 0; i < plain_stops[k].size(); i++)
+	{
+	    if (plain_stops[k][i] != 0)
+		XtDestroyWidget(plain_stops[k][i]);
+	}
+	for (i = 0; i < grey_stops[k].size(); i++)
+	{
+	    if (grey_stops[k][i] != 0)
+		XtDestroyWidget(grey_stops[k][i]);
+	}
+
+	// ...make array empty...
+	plain_stops[k] = empty;
+	grey_stops[k] = empty;
+
+	// ...and make room for new widgets.  The last one is a null pointer.
+	for (i = 0; i < nmax + 1; i++)
+	{
+	    plain_stops[k] += Widget(0);
+	    grey_stops[k]  += Widget(0);
+	}
+    }
+}
+
+
 // Move text cursor at glyph position
 void SourceView::MoveCursorToGlyphPosCB(Widget w, 
 					XtPointer, 
@@ -6050,9 +6085,8 @@ Widget SourceView::grey_arrows[2]   = {0, 0};
 Widget SourceView::signal_arrows[2] = {0, 0};
 Widget SourceView::temp_arrows[2]   = {0, 0};
 Widget SourceView::temp_stops[2]    = {0, 0};
-Widget SourceView::plain_stops[2][MAX_GLYPHS + 1];
-Widget SourceView::grey_stops[2][MAX_GLYPHS + 1];
-
+WidgetArray SourceView::plain_stops[2];
+WidgetArray SourceView::grey_stops[2];
 
 
 // Create glyphs in the background
@@ -6120,7 +6154,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    continue;
 
 	int i;
-	for (i = 0; i < MAX_GLYPHS; i++)
+	for (i = 0; i < grey_stops[k].size() - 1; i++)
 	{
 	    if (grey_stops[k][i] == 0)
 	    {
@@ -6133,7 +6167,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	    }
 	}
 
-	for (i = 0; i < MAX_GLYPHS; i++)
+	for (i = 0; i < plain_stops[k].size() - 1; i++)
 	{
 	    if (plain_stops[k][i] == 0)
 	    {
@@ -6163,7 +6197,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 // Map stop sign in W at position POS.  Get widget from STOPS[COUNT];
 // store location in POSITIONS.  Return mapped widget (0 if none)
 Widget SourceView::map_stop_at(Widget w, XmTextPosition pos,
-			       Widget stops[], int& count,
+			       WidgetArray& stops, int& count,
 			       TextPositionArray& positions)
 {
     assert (is_source_widget(w) || is_code_widget(w));
@@ -6189,6 +6223,23 @@ Widget SourceView::map_stop_at(Widget w, XmTextPosition pos,
 	    map_glyph(glyph, x + stop_x_offset, y);
 	    positions += pos;
 	    return glyph;
+	}
+	else
+	{
+	    // Max number of glyphs exceeded
+	    string msg = "Out of glyphs (used " + 
+		itostring(stops.size() - 1) + " of "
+		itostring(stops.size() - 1) + ")";
+
+	    set_status(msg);
+
+	    static bool warning_posted = false;
+
+	    if (!warning_posted)
+	    {
+		post_warning(msg, "out_of_glyphs_warning", w);
+		warning_posted = true;
+	    }
 	}
     }
 
