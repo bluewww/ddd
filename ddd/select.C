@@ -152,7 +152,8 @@ static void select_from_gdb(string& question, string& reply)
     XtManageChild(gdb_selection_dialog);
 
     selection_reply = "";
-    while (selection_reply == "" && gdb->running())
+    while (selection_reply == "" 
+	   && gdb->running() && !gdb->isReadyWithPrompt())
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), XtIMAll);
 
     // Found a reply - return
