@@ -987,7 +987,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	int x_offset = 5;
 	int y_offset = 5;
 
-	int dx;
+	int dx = 0;
 	switch (placement)
 	{
 	case LeftBottom:
@@ -1008,7 +1008,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	    break;
 	}
 
-	int dy;
+	int dy = 0;
 	switch (placement)
 	{
 	case LeftBottom:
