@@ -3091,6 +3091,9 @@ Using LBL(Browse), you can select fonts using CODE(xfontsel).\n\
 Click on LBL(select) to select the chosen font.\n\
 Wildcard entries (LBL(*)) will be ignored.\n\
 \n\
+Note that font settings in pixels will be ignored.\n\
+Be sure to select an appropriate 1/10 points size.\n\
+\n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
 
@@ -3941,20 +3944,6 @@ Ddd*status_history.row.background:	Black
 ! Source View
 !-----------------------------------------------------------------------------
 
-Ddd*source_text_w_swindow.spacing:		0
-Ddd*source_text_w_swindow.borderWidth:		0
-Ddd*source_text_w_swindow.shadowThickness:	0
-Ddd*source_text_wSW.spacing:			0
-Ddd*source_text_wSW.borderWidth:		0
-Ddd*source_text_wSW.shadowThickness:		0
-
-Ddd*code_text_w_swindow.spacing:		0
-Ddd*code_text_w_swindow.borderWidth:		0
-Ddd*code_text_w_swindow.shadowThickness:	0
-Ddd*code_text_wSW.spacing:			0
-Ddd*code_text_wSW.borderWidth:			0
-Ddd*code_text_wSW.shadowThickness:		0
-
 Ddd*source_text_w.scrollHorizontal:	off
 Ddd*source_text_w.wordWrap:		on
 
@@ -4244,17 +4233,6 @@ Ddd.main_window.helpString: MAIN_WINDOW_HELP
 Ddd*gdb_w.value: \
 DDD @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
 Copyright \251 1998 Technische Universit\344t Braunschweig, Germany.\n
-
-Ddd*gdb_w_swindow.spacing:		0
-Ddd*gdb_w_swindow.borderWidth:		0
-Ddd*gdb_w_swindow.shadowThickness:	0
-Ddd*gdb_wSW.spacing:			0
-Ddd*gdb_wSW.borderWidth:		0
-Ddd*gdb_wSW.shadowThickness:		0
-
-! Don't resize the debugger console when resizing the main window
-Ddd*gdb_w_swindow.skipAdjust:		on
-Ddd*gdb_wSW.skipAdjust:			on
 
 Ddd*gdb_w.editable:			on
 Ddd*gdb_w.allowResize:			on

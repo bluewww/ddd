@@ -2192,9 +2192,9 @@ int main(int argc, char *argv[])
 	console_buttons_w = make_buttons(paned_work_w, "console_buttons", 
 					 app_data.console_buttons);
 
-    gdb_w = verify(XmCreateScrolledText(paned_work_w,
-					"gdb_w",
-					NULL, 0));
+    arg = 0;
+    gdb_w = verify(XmCreateScrolledText(paned_work_w, "gdb_w", args, arg));
+
     XtAddCallback (gdb_w,
 		   XmNmodifyVerifyCallback,
 		   gdbModifyCB,
@@ -2208,6 +2208,20 @@ int main(int argc, char *argv[])
 		   gdbChangeCB,
 		   NULL);
     XtManageChild (gdb_w);
+
+    if (!app_data.separate_source_window || !app_data.separate_data_window)
+    {
+	// Don't resize the debugger console when resizing the main
+	// window - resize source and/or data windows instead
+	XtVaSetValues(XtParent(gdb_w), XmNskipAdjust, True, NULL);
+    }
+
+    // Set up the scrolled window
+    XtVaSetValues(XtParent(gdb_w),
+		  XmNspacing,         0,
+		  XmNborderWidth,     0,
+		  XmNshadowThickness, 0,
+		  NULL);
 
     // Give the ScrolledWindow the size specified for the debugger console
     set_scrolled_window_size(gdb_w);

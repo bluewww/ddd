@@ -3342,6 +3342,13 @@ void SourceView::create_text(Widget parent, const string& base, bool editable,
     text = verify(XmCreateScrolledText(form, text_name, args, arg));
     XtManageChild(text);
 
+    // Set up the scrolled window
+    XtVaSetValues(XtParent(text),
+		  XmNspacing,         0,
+		  XmNborderWidth,     0,
+		  XmNshadowThickness, 0,
+		  NULL);
+
     // Give the form the size specified for the text
     set_scrolled_window_size(text, form);
 
