@@ -4,30 +4,30 @@
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
-// This file is part of the ICE Library.
+// This file is part of DDD.
 // 
-// The ICE Library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Library General Public
+// DDD is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
 // version 2 of the License, or (at your option) any later version.
 // 
-// The ICE Library is distributed in the hope that it will be useful,
+// DDD is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-// See the GNU Library General Public License for more details.
+// See the GNU General Public License for more details.
 // 
-// You should have received a copy of the GNU Library General Public
-// License along with the ICE Library -- see the file COPYING.LIB.
+// You should have received a copy of the GNU General Public
+// License along with DDD -- see the file COPYING.
 // If not, write to the Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // 
-// ICE is the incremental configuration environment.
-// For details, see the ICE World-Wide-Web page, 
-// `http://www.cs.tu-bs.de/softech/ice/',
-// or send a mail to the ICE developers <ice@ips.cs.tu-bs.de>.
+// DDD is the data display debugger.
+// For details, see the DDD World-Wide-Web page, 
+// `http://www.gnu.org/software/ddd/',
+// or send a mail to the DDD developers <ddd@gnu.org>.
 
-#ifndef _ICE_return_h
-#define _ICE_return_h
+#ifndef _DDD_return_h
+#define _DDD_return_h
 
 #include "config.h"
 
@@ -56,5 +56,5 @@
 
 #endif
 
-#endif // _ICE_return_h
+#endif // _DDD_return_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

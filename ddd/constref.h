@@ -4,28 +4,28 @@
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@gnu.org).
 // 
-// This file is part of the ICE Library.
+// This file is part of DDD.
 // 
-// The ICE Library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Library General Public
+// DDD is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
 // version 2 of the License, or (at your option) any later version.
 // 
-// The ICE Library is distributed in the hope that it will be useful,
+// DDD is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-// See the GNU Library General Public License for more details.
+// See the GNU General Public License for more details.
 // 
-// You should have received a copy of the GNU Library General Public
-// License along with the ICE Library -- see the file COPYING.LIB.
+// You should have received a copy of the GNU General Public
+// License along with DDD -- see the file COPYING.
 // If not, write to the Free Software Foundation, Inc.,
 // 675 Mass Ave, Cambridge, MA 02139, USA.
 // 
 // ICE is the incremental configuration engine.
-// Contact ice@ips.cs.tu-bs.de for details.
+// Contact ddd@gnu.org for details.
 
-#ifndef _ICE_constref_h
-#define _ICE_constref_h
+#ifndef _DDD_constref_h
+#define _DDD_constref_h
 
 #include "config.h"
 
@@ -41,5 +41,5 @@
 
 #define CONST_REF(type) const REF(type)
 
-#endif // _ICE_constref_h
+#endif // _DDD_constref_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

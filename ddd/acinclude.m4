@@ -5,27 +5,27 @@ dnl Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 dnl Copyright (C) 1999-2000 Universitaet Passau, Germany.
 dnl Written by Andreas Zeller <zeller@gnu.org>.
 dnl 
-dnl This file is part of the ICE Library.
+dnl This file is part of DDD.
 dnl 
-dnl The ICE Library is free software; you can redistribute it and/or
-dnl modify it under the terms of the GNU Library General Public
+dnl DDD is free software; you can redistribute it and/or
+dnl modify it under the terms of the GNU General Public
 dnl License as published by the Free Software Foundation; either
 dnl version 2 of the License, or (at your option) any later version.
 dnl 
-dnl The ICE Library is distributed in the hope that it will be useful,
+dnl DDD is distributed in the hope that it will be useful,
 dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
 dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-dnl See the GNU Library General Public License for more details.
+dnl See the GNU General Public License for more details.
 dnl 
-dnl You should have received a copy of the GNU Library General Public
-dnl License along with the ICE Library -- see the file COPYING.LIB.
+dnl You should have received a copy of the GNU General Public
+dnl License along with DDD -- see the file COPYING.
 dnl If not, write to the Free Software Foundation, Inc.,
 dnl 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 dnl 
-dnl ICE is the incremental configuration environment.
-dnl For details, see the ICE World-Wide-Web page, 
-dnl `http://www.cs.tu-bs.de/softech/ice/',
-dnl or send a mail to the ICE developers at `ice@ips.cs.tu-bs.de'.
+dnl DDD is the data display debugger.
+dnl For details, see the DDD World-Wide-Web page, 
+dnl `http://www.gnu.org/software/ddd/',
+dnl or send a mail to the DDD developers at `ddd@gnu.org'.
 dnl
 dnl DDD is the data display debugger.
 dnl For details, see the DDD World-Wide-Web page, 
