@@ -37,6 +37,7 @@ char shorten_rcsid[] =
 #include "cook.h"
 #include "regexps.h"
 #include "IntArray.h"
+#include <ctype.h>
 
 static string shorten_replacement = "...";
 
@@ -44,12 +45,29 @@ static string shorten_replacement = "...";
 void shorten(string& expr, unsigned max_length)
 {
     // Strip excessive whitespace
-    if (expr.contains(rxwhite))
-	expr.gsub(rxwhite, ' ');
-    while (expr.contains(' ', 0))
-	expr = expr.after(0);
-    while (expr.contains(' ', expr.length() - 1))
-	expr = expr.before(int(expr.length()) - 1);
+    int source = 0;
+    int target = 0;
+    bool at_space = true;
+
+    while (source < expr.length())
+    {
+	if (isspace(expr[source]))
+	{
+	    if (!at_space)
+		expr[target++] = ' ';
+	    
+	    at_space = true;
+	    source++;
+	}
+	else
+	{
+	    expr[target++] = expr[source++];
+	    at_space = false;
+	}
+    }
+    while (target > 0 && target <= expr.length() && expr[target - 1] == ' ')
+	target--;
+    expr.from(target) = "";
 
     // Remove text from the middle
     if (expr.length() > max_length)
