@@ -1,4 +1,5 @@
 \def\postscript{}\input texinfo @c -*- texinfo -*-
+% \input pdftexinfo
 @c $Id$
 @c DDD Manual
 
@@ -33,7 +34,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 1999-07-30
+@set DATE 1999-08-18
 
 @setfilename ddd.info
 @include config.texi
@@ -8468,6 +8469,13 @@ If @samp{on} (default), @value{DDD} will always keep the pull down menu
 on top of the @value{DDD} main window.  If this setting interferes with
 your window manager, or if your window manager does not auto-raise
 windows, set this resource to @samp{off}.
+@end defvr
+
+@defvr Resource autoRaiseMenuDelay (class AutoRaiseMenuDelay)
+The time (in ms) during which an initial auto-raised window blocks
+further auto-raises.  This is done to prevent two overlapping
+auto-raised windows from entering an @emph{auto-raise loop}.  Default is
+@code{50}.
 @end defvr
 
 
