@@ -43,7 +43,7 @@ Undoing commands
   backtrace, registers) is shown again.  Using undo/redo, you can
   easily determine how some variable changed in the last steps.
 
-- `Undo' and `Redo' supersedes the old `Back' and `Forward' functions.
+- `Undo' and `Redo' supersede the old `Back' and `Forward' functions.
 
 
 Data exploration
