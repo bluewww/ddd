@@ -310,4 +310,6 @@ Volunteers for these and other projects are welcome!
     Support plotting arrays of structs as well as plotting complex
     values (Check `complex' in ISO C++ and COMPLEX in FORTRAN).
 
-370 (Insert new project ideas here)
+370 Make sure the argument window does not grow too wide.
+
+371 (Insert new project ideas here)
