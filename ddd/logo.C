@@ -30,10 +30,6 @@
 char logo_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "logo.h"
 #include "config.h"
 

@@ -29,10 +29,6 @@
 char freeXmStringTable_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "freeXmST.h"
 #include "LessTifH.h"
 #include "config.h"

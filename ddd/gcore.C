@@ -29,10 +29,6 @@
 char gcore_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "config.h"
 #include "version.h"
 

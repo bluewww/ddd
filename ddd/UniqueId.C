@@ -29,11 +29,6 @@
 char UniqueId_rcsid[] =
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "UniqueId.h"
 #include "bool.h"
 

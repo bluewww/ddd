@@ -29,11 +29,6 @@
 #ifndef _DDD_FontTable_h
 #define _DDD_FontTable_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include <X11/Xlib.h>
 #include "strclass.h"
 #include "TypeInfo.h"

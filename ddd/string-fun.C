@@ -29,10 +29,6 @@
 char string_functions_rcsid[] =
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 //-----------------------------------------------------------------------------
 // Miscellaneous string functions
 //-----------------------------------------------------------------------------

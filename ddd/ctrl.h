@@ -29,10 +29,6 @@
 #ifndef _DDD_ctrl_h
 #define _DDD_ctrl_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 
 // Convert ^[character] sequence to control characters

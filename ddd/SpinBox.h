@@ -29,10 +29,6 @@
 #ifndef _DDD_SpinBox_h
 #define _DDD_SpinBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 
 // Create a spin box

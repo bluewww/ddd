@@ -29,10 +29,6 @@
 #ifndef _DDD_AutoRaise_h
 #define _DDD_AutoRaise_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 
 // Whether menus should be auto-raised

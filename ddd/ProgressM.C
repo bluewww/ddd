@@ -29,10 +29,6 @@
 char ProgressMeter_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "ProgressM.h"
 
 #include "Command.h"

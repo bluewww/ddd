@@ -29,10 +29,6 @@
 #ifndef _DDD_resources_h
 #define _DDD_resources_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 
 // DDD resource definitions

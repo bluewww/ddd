@@ -119,24 +119,16 @@ BASE_SRC = \
 # Instantiated templates
 TEMPLATE_SRC = \
 	Assoc.h      \
-	IntIntAA.C   \
 	IntIntAA.h   \
 	Queue.h      \
-	StatArray.C  \
 	StatArray.h  \
-	StringA.C    \
 	StringA.h    \
-	StringMap.C  \
 	StringMap.h  \
-	StringSA.C   \
 	StringSA.h   \
-	StringSAA.C  \
 	StringSAA.h  \
 	TextPosA.h   \
 	VarArray.h   \
-	VoidArray.C  \
 	VoidArray.h  \
-	WidgetSA.C   \
 	WidgetSA.h
 
 # Interprocess communication
@@ -348,7 +340,6 @@ GRAPH_SRC = \
 	BoxGraphN.h  \
 	EdgeA.C      \
 	EdgeA.h      \
-	EdgeAPA.C    \
 	EdgeAPA.h    \
 	Graph.C      \
 	Graph.h      \
@@ -362,7 +353,6 @@ GRAPH_SRC = \
 	GraphNode.C  \
 	GraphNode.h  \
 	GraphNodeI.h \
-	GraphNPA.C   \
 	GraphNPA.h   \
 	HintGraphN.C \
 	HintGraphN.h \
@@ -517,7 +507,6 @@ DDD_SRC = \
 	BindingS.h   \
 	BreakPoint.C \
 	BreakPoint.h \
-	BreakPM.C    \
 	BreakPM.h    \
 	CodeCache.C  \
 	CodeCache.h  \
@@ -533,16 +522,13 @@ DDD_SRC = \
 	DispGraph.h  \
 	DispNode.C   \
 	DispNode.h   \
-	DispNodeM.C  \
 	DispNodeM.h  \
 	DispValue.C  \
 	DispValue.h  \
-	DispValueA.C \
 	DispValueA.h \
 	DispValueT.C \
 	DispValueT.h \
 	DynArray.h   \
-	EntryType.C  \
 	EntryType.h  \
 	GDBAgent.C   \
 	GDBAgent.h   \
@@ -550,11 +536,9 @@ DDD_SRC = \
 	HelpCB.h     \
 	HistoryD.C   \
 	HistoryD.h   \
-	HistoryF.C   \
 	HistoryF.h   \
 	IntArray.h   \
 	Map.h        \
-	MinMaxA.C    \
 	MinMaxA.h    \
 	PlotAgent.C  \
 	PlotAgent.h  \
@@ -571,7 +555,6 @@ DDD_SRC = \
 	SourceO.h    \
 	SourceView.C \
 	SourceView.h \
-	StringTPA.C  \
 	StringTPA.h  \
 	ThemeM.C     \
 	ThemeM.h     \

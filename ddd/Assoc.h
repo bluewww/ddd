@@ -29,10 +29,6 @@
 #ifndef _DDD_Assoc_h
 #define _DDD_Assoc_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "bool.h"
 #include "assert.h"
 

@@ -29,9 +29,5 @@
 char RefreshDisassembleInfo_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "RefreshDI.h"
 

@@ -29,10 +29,6 @@
 #ifndef _DDD_my_dirent_h
 #define _DDD_my_Dirent_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "config.h"
 #include <sys/types.h>
 

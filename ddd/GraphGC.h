@@ -29,10 +29,6 @@
 #ifndef _DDD_GraphGC_h
 #define _DDD_GraphGC_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Xlib.h>
 #include "BoxPoint.h"
 #include "Box.h"

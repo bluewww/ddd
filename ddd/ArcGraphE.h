@@ -29,10 +29,6 @@
 #ifndef _DDD_ArcGraphEdge_h
 #define _DDD_ArcGraphEdge_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "LineGraphE.h"
 
 class ArcGraphEdge: public LineGraphEdge {

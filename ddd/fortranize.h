@@ -29,10 +29,6 @@
 #ifndef _DDD_fortranize_h
 #define _DDD_fortranize_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 
 // Return ID in `fortranized' form -- that is, in lower/upper case and

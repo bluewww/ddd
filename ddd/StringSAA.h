@@ -29,10 +29,6 @@
 #ifndef _DDD_StringStringArrayAssoc_h
 #define _DDD_StringStringArrayAssoc_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "StringA.h"
 #include "Assoc.h"
 

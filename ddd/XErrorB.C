@@ -29,10 +29,6 @@
 char XErrorBlocker_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "XErrorB.h"
 #include "assert.h"
 

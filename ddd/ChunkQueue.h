@@ -29,10 +29,6 @@
 #ifndef _DDD_ChunkQueue_h
 #define _DDD_ChunkQueue_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <stdio.h>
 #include <string.h>
 #include "TypeInfo.h"

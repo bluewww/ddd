@@ -29,10 +29,6 @@
 char selection_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "selection.h"
 #include "bool.h"
 #include "casts.h"

@@ -29,10 +29,6 @@
 char fortranize_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "fortranize.h"
 #include "ddd.h"
 #include "deref.h"

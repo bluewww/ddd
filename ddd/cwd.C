@@ -29,10 +29,6 @@
 char cwd_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "cwd.h"
 
 #include <sys/types.h>

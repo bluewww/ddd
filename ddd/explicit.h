@@ -29,10 +29,6 @@
 #ifndef _DDD_explicit_h
 #define _DDD_explicit_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "config.h"
 
 #if !HAVE_EXPLICIT

@@ -28,10 +28,6 @@
 // `http://www.gnu.org/software/ddd/',
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 char SourceView_rcsid[] =
     "$Id$";
 

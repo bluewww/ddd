@@ -29,10 +29,6 @@
 char MemCheck_rcsid[] =
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "MemCheck.h"
 #include "config.h"
 

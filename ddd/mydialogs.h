@@ -33,10 +33,6 @@
 #ifndef _DDD_mydialogs_h
 #define _DDD_mydialogs_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // Motif includes
 #include <Xm/Xm.h>
 

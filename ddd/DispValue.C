@@ -31,10 +31,6 @@
 char DispValue_rcsid[] =
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #ifndef LOG_CREATE_VALUES
 #define LOG_CREATE_VALUES 0
 #endif

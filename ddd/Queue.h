@@ -30,10 +30,6 @@
 #ifndef _DDD_Queue_h
 #define _DDD_Queue_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "bool.h"
 #include "assert.h"
 

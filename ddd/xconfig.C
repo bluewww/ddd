@@ -29,10 +29,6 @@
 char xconfig_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "xconfig.h"
 #include "strclass.h"
 #include "bool.h"

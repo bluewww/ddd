@@ -29,10 +29,6 @@
 #ifndef _DDD_SwallowerPrivate_h
 #define _DDD_SwallowerPrivate_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // This class
 #include "Swallower.h"
 

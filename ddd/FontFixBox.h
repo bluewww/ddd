@@ -29,11 +29,6 @@
 #ifndef _DDD_FontFixBox_h
 #define _DDD_FontFixBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include "HatBox.h"
 
 

@@ -29,10 +29,6 @@
 #ifndef _DDD_ungrab_h
 #define _DDD_ungrab_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "bool.h"
 
 // If START is true, initiate grab check.  If START is false, stop it.

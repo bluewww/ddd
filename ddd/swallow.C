@@ -29,10 +29,6 @@
 char swallow_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "findWindow.h"
 #include "Swallower.h"
 

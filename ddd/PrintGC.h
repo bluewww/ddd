@@ -29,10 +29,6 @@
 #ifndef _DDD_PrintGC_h
 #define _DDD_PrintGC_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "bool.h"
 #include "TypeInfo.h"
 

@@ -29,10 +29,6 @@
 char EdgeAnnotation_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "EdgeA.h"
 #include <X11/Intrinsic.h>
 

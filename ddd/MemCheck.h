@@ -29,10 +29,6 @@
 #ifndef _DDD_MemCheck_h
 #define _DDD_MemCheck_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <iostream>
 #include "strclass.h"
 

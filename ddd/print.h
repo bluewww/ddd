@@ -29,10 +29,6 @@
 #ifndef _DDD_print_h
 #define _DDD_print_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "ddd.h"
 
 extern void PrintGraphCB (Widget, XtPointer, XtPointer);

@@ -29,10 +29,6 @@
 #ifndef _DDD_TimeOut_h
 #define _DDD_TimeOut_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 
 // Like XtAppAddTimeOut(), but also register timer in internal list.

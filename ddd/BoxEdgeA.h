@@ -29,10 +29,6 @@
 #ifndef _DDD_BoxEdgeAnnotation_h
 #define _DDD_BoxEdgeAnnotation_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "EdgeA.h"
 #include "Box.h"
 #include "assert.h"

@@ -29,11 +29,6 @@
 #ifndef _DDD_StringBox_h
 #define _DDD_StringBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include "strclass.h"
 #include "Box.h"
 #include "PrimitiveB.h"

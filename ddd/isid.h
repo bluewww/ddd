@@ -29,10 +29,6 @@
 #ifndef _DDD_isid_h
 #define _DDD_isid_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "bool.h"
 #include <ctype.h>
 

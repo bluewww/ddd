@@ -29,10 +29,6 @@
 #ifndef _DDD_cmdtty_h
 #define _DDD_cmdtty_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "bool.h"
 #include "strclass.h"
 

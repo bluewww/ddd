@@ -33,10 +33,6 @@
 #ifndef _DDD_string_fun_h
 #define _DDD_string_fun_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // Misc includes
 #include "strclass.h"
 

@@ -29,10 +29,6 @@
 #ifndef _DDD_MinMaxAssoc_h
 #define _DDD_MinMaxAssoc_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 #include "Assoc.h"
 

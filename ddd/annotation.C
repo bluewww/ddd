@@ -29,10 +29,6 @@
 char annotation_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "annotation.h"
 
 #include "ddd.h"

@@ -29,11 +29,6 @@
 char StringBox_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "StringBox.h"
 #include "printBox.h"
 

@@ -29,10 +29,6 @@
 #ifndef _DDD_data_h
 #define _DDD_data_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 
 extern void graphAlignCB        (Widget, XtPointer, XtPointer);

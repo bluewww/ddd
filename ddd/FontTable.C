@@ -29,11 +29,6 @@
 char FontTable_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "assert.h"
 #include "hash.h"
 #include "strclass.h"

@@ -29,10 +29,6 @@
 char InitImage_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "InitImage.h"
 
 #include "config.h"

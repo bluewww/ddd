@@ -29,10 +29,6 @@
 #ifndef _DDD_AlignBox_h
 #define _DDD_AlignBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 
 // An AlignBox is a container for an alignment of boxes.
 

@@ -29,10 +29,6 @@
 char AutoRaise_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "AutoRaise.h"
 #include <Xm/Xm.h>
 #include <iostream>

@@ -29,10 +29,6 @@
 char HistoryDialog_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "HistoryD.h"
 
 #include "GDBAgent.h"

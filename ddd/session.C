@@ -30,10 +30,6 @@
 char session_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "session.h"
 
 #include "config.h"

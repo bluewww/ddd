@@ -29,10 +29,6 @@
 #ifndef _DDD_EdgeAnnotation_h
 #define _DDD_EdgeAnnotation_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "Box.h"
 #include "GraphGC.h"
 

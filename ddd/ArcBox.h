@@ -29,10 +29,6 @@
 #ifndef _DDD_ArcBox_h
 #define _DDD_ArcBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "LineBox.h"
 #include "Widget.h"
 

@@ -29,9 +29,5 @@
 char BoxDimension_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "BoxD.h"
 

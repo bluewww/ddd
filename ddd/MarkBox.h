@@ -29,10 +29,6 @@
 #ifndef _DDD_MarkBox_h
 #define _DDD_MarkBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 #include "bool.h"
 #include "mutable.h"

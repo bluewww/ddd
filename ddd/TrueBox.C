@@ -29,10 +29,6 @@
 char TrueBox_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "TrueBox.h"
 
 DEFINE_TYPE_INFO_1(TrueBox, SquareBox)

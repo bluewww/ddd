@@ -29,10 +29,6 @@
 #ifndef _DDD_DispValueArray_h
 #define _DDD_DispValueArray_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "VarArray.h"
 
 class DispValue;

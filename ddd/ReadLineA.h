@@ -29,10 +29,6 @@
 #ifndef _DDD_ReadLineAgent_h
 #define _DDD_ReadLineAgent_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "LiterateA.h"
 
 class ReadLineAgent: public LiterateAgent {

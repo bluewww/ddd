@@ -30,10 +30,6 @@
 #ifndef _DDD_tabs_h
 #define _DDD_tabs_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 
 // Standard tab width

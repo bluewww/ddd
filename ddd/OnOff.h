@@ -29,10 +29,6 @@
 #ifndef _DDD_OnOff_h
 #define _DDD_OnOff_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 enum OnOff { On, Off, Auto };
 #define XtROnOff "OnOff"
 

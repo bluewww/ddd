@@ -29,10 +29,6 @@
 #ifndef _DDD_session_h
 #define _DDD_session_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 #include "strclass.h"
 #include "version.h"

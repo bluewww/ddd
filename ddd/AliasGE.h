@@ -29,10 +29,6 @@
 #ifndef _DDD_AliasGraphEdge_h
 #define _DDD_AliasGraphEdge_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "ArcGraphE.h"
 
 class AliasGraphEdge: public ArcGraphEdge {

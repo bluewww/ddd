@@ -29,10 +29,6 @@
 #ifndef _DDD_logo_h
 #define _DDD_logo_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 #include "strclass.h"
 #include "version.h"

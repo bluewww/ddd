@@ -29,10 +29,6 @@
 char shell_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "shell.h"
 
 #include "ddd.h"

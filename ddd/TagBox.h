@@ -29,11 +29,6 @@
 #ifndef _DDD_TagBox_h
 #define _DDD_TagBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include "strclass.h"
 #include "bool.h"
 #include "Box.h"

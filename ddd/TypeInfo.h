@@ -29,10 +29,6 @@
 #ifndef _DDD_TypeInfo_h
 #define _DDD_TypeInfo_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "config.h"
 
 #if HAVE_TYPEINFO

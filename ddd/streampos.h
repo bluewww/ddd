@@ -30,10 +30,6 @@
 #ifndef _DDD_streampos_h
 #define _DDD_streampos_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // Older C++ releases defined `streampos' as a type for stream
 // positions; in some compilers, this is implementation-defined.  
 

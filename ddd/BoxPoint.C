@@ -29,10 +29,6 @@
 char BoxPoint_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "BoxPoint.h"
 
 std::ostream& operator << (std::ostream& stream, const BoxPoint& p)

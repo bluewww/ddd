@@ -29,10 +29,6 @@
 #ifndef _DDD_PlotArea_h
 #define _DDD_PlotArea_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 #include <X11/Intrinsic.h>
 #include "ChunkQueue.h"

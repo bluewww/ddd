@@ -29,10 +29,6 @@
 #ifndef _DDD_AsyncAgent_h
 #define _DDD_AsyncAgent_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 /*
     AsyncAgent(app_context, p)
     opens a three-way communication channel to the agent p (see Agent).

@@ -29,11 +29,6 @@
 #ifndef _DDD_ListBox_h
 #define _DDD_ListBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A ListBox is a list of boxes.
 
 

@@ -29,10 +29,6 @@
 #ifndef _DDD_DispNodeMap_h
 #define _DDD_DispNodeMap_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "Map.h"
 #include "DispNode.h"
 

@@ -29,10 +29,6 @@
 #ifndef _DDD_tips_h
 #define _DDD_tips_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 
 extern void TipOfTheDayCB(Widget w, XtPointer = 0, XtPointer = 0);

@@ -29,10 +29,6 @@
 #ifndef _DDD_RefreshDisassembleInfo_h
 #define _DDD_RefreshDisassembleInfo_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 #include "status.h"
 #include <Xm/Text.h>

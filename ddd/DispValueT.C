@@ -29,10 +29,6 @@
 char DispValueType_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "DispValueT.h"
 
 //-----------------------------------------------------------------------------

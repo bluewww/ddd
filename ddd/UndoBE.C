@@ -29,12 +29,6 @@
 char UndoBufferEntry_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#pragma implementation "DynArray.h"
-#pragma implementation "VarArray.h"
-#endif
-
 #include "UndoBE.h"
 
 bool UndoBufferEntry::operator == (const UndoBufferEntry& entry) const

@@ -29,11 +29,6 @@
 #ifndef _DDD_LetNode_h
 #define _DDD_LetNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A LetNode implements a LET..IN construct.
 
 // A LetNode contains a list of length 2.

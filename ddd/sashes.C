@@ -29,10 +29,6 @@
 char sashes_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "sashes.h"
 
 #include <Xm/Xm.h>

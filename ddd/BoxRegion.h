@@ -29,11 +29,6 @@
 #ifndef _DDD_BoxRegion_h
 #define _DDD_BoxRegion_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A BoxRegion is a rectangular area which has an ORIGIN and a SPACE.
 
 #include <iostream>

@@ -29,10 +29,6 @@
 #ifndef _DDD_layout_h
 #define _DDD_layout_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // All these should be defined in the LayouterExpert class,
 // but I can't get gcc 2.3.3 swallow it...
 enum EDGEARROW { Here, Other };

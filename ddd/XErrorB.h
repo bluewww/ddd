@@ -29,10 +29,6 @@
 #ifndef _DDD_XErrorBlocker_h
 #define _DDD_XErrorBlocker_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 extern "C" {
 #include <X11/Intrinsic.h>
 }

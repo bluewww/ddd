@@ -29,10 +29,6 @@
 #ifndef _DDD_ArgNode_h
 #define _DDD_ArgNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 
 // Upon run-time, an ArgNode evaluates an argument from the argument list
 

@@ -42,10 +42,6 @@ char TTYAgent_rcsid[] =
 //                                                 (Andreas Zeller)
 
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 // Options
 
 // If 1, synchronize parent and child by sending an initialization sequence

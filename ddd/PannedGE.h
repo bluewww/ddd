@@ -29,12 +29,7 @@
 #ifndef _DDD_PannedGraphEdit_h
 #define _DDD_PannedGraphEdit_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "GraphEdit.h"
-
 
 // Define any special resource names here that are not in <X11/StringDefs.h>
 

@@ -29,10 +29,6 @@
 #ifndef _DDD_BoxWeight_h
 #define _DDD_BoxWeight_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 typedef int BoxWeight;
 
 #endif // _DDD_BoxWeight_h

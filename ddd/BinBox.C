@@ -29,11 +29,6 @@
 char BinBox_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "BinBox.h"
 
 DEFINE_TYPE_INFO_1(BinBox, HatBox)

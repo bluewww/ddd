@@ -29,10 +29,6 @@
 #ifndef _DDD_options_h
 #define _DDD_options_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 #include "bool.h"
 #include <X11/Intrinsic.h>

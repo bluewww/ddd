@@ -29,10 +29,6 @@
 #ifndef _DDD_BoxPoint_h
 #define _DDD_BoxPoint_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // A BoxPoint is a pair of coordinates accessed by a BoxDimension (X
 // or Y).  A BoxPoint is typically used for positions, but is also a
 // base class for sizes (BoxSize) and extents (BoxExtend)

@@ -29,10 +29,6 @@
 #ifndef _DDD_Tool_h
 #define _DDD_Tool_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 
 // Create command tool

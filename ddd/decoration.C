@@ -29,10 +29,6 @@
 char decoration_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "decoration.h"
 
 #include <unistd.h>		// sleep()

@@ -29,10 +29,6 @@
 #ifndef _DDD_HintGraphNode_h
 #define _DDD_HintGraphNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "RegionGN.h"
 
 class HintGraphNode: public RegionGraphNode {

@@ -29,10 +29,6 @@
 char plotter_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "plotter.h"
 
 #include "assert.h"

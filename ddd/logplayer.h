@@ -29,10 +29,6 @@
 #ifndef _DDD_logplayer_h
 #define _DDD_logplayer_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 
 extern void logplayer(const string& logname);

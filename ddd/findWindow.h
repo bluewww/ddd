@@ -29,10 +29,6 @@
 #ifndef _DDD_findWindow_h
 #define _DDD_findWindow_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 #include "bool.h"
 

@@ -29,10 +29,6 @@
 char VSLBuiltin_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "VSLBuiltin.h"
 
 #include "assert.h"

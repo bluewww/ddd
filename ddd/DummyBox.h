@@ -29,11 +29,6 @@
 #ifndef _DDD_DummyBox_h
 #define _DDD_DummyBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A DummyBox is used in pattern matching.
 
 // If `DummyBox::matchesAll' is set, a DummyBox matches any other box

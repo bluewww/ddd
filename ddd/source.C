@@ -29,10 +29,6 @@
 char source_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "source.h"
 
 #include "AppData.h"

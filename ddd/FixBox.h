@@ -29,11 +29,6 @@
 #ifndef _DDD_FixBox_h
 #define _DDD_FixBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A HFixBox or VFixBox sets the extent of its child to zero.
 
 

@@ -29,10 +29,6 @@
 char TimeOut_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "TimeOut.h"
 #include "strclass.h"
 #include "assert.h"

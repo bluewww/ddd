@@ -29,10 +29,6 @@
 #ifndef _DDD_DispValueType_h
 #define _DDD_DispValueType_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <iostream>
 
 // Various types of elements that can be read

@@ -29,10 +29,6 @@
 #ifndef _DDD_TrueBox_h
 #define _DDD_TrueBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "bool.h"
 #include "Box.h"
 #include "PrimitiveB.h"

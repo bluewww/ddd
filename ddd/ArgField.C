@@ -29,10 +29,6 @@
 char ArgField_rcsid[] =
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 //-----------------------------------------------------------------------------
 #include "ArgField.h"
 #include <ctype.h>

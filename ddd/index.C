@@ -29,10 +29,6 @@
 char index_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "index.h"
 #include "misc.h"
 #include <string.h>

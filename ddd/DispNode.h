@@ -29,10 +29,6 @@
 #ifndef _DDD_DispNode_h
 #define _DDD_DispNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 //-----------------------------------------------------------------------------
 // A DispNode keeps all information about a single data display
 //-----------------------------------------------------------------------------

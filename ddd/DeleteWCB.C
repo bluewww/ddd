@@ -29,10 +29,6 @@
 char DeleteWindowCallBack_rcsid[] = 
     "$Id: DeleteWCB.C,v 1.1.1.1 2003/03/03 00:44:05 rockyb Exp $";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "DeleteWCB.h"
 #include "casts.h"
 

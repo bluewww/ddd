@@ -192,15 +192,7 @@ Reported by:	Jacek M. Holeczek <holeczek@us.edu.pl>
 Cygwin
 ======
 
-Reported by: Arnaud Desitter
-
-    Build on cygwin with gcc 3.3.1 fails as the C++ compiler has a bug related
-    to "#pragma implementation" and "#pragma interface".  A workaround consists
-    in commenting out the offending lines.
-    The convenient script below makes it easy.
-
-for f in `grep -rl '^#pragma implementation' .` ; do mv $f $f.old ; sed -e 's:^#pragma implementation://#pragma implementation:' < $f.old > $f ; rm $f.old ; done
-for f in `grep -rl '^#pragma interface' .` ; do mv $f $f.old ; sed -e 's:^#pragma interface://#pragma interface:' < $f.old > $f ; rm $f.old ; done
+    Cygwin is supported from ddd 3.3.9 on.
 
 
 DEC

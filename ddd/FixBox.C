@@ -29,11 +29,6 @@
 char FixBox_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "FixBox.h"
 
 

@@ -29,10 +29,6 @@
 #ifndef _DDD_StringStringAssoc_h
 #define _DDD_StringStringAssoc_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 #include "SourceO.h"
 #include "Assoc.h"

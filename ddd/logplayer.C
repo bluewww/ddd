@@ -29,10 +29,6 @@
 char logplayer_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "logplayer.h"
 
 #include "assert.h"

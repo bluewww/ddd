@@ -29,11 +29,6 @@
 #ifndef _DDD_DefCallNode_h
 #define _DDD_DefCallNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A DefCallNode evaluates a user-defined VSL function
 
 

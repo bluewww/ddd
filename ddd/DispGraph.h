@@ -29,10 +29,6 @@
 #ifndef _DDD_DispGraph_h
 #define _DDD_DispGraph_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 //-----------------------------------------------------------------------------
 // The `DispGraph' class keeps all displayed display expressions
 //-----------------------------------------------------------------------------

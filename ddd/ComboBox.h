@@ -29,10 +29,6 @@
 #ifndef _DDD_ComboBox_h
 #define _DDD_ComboBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 #include "StringA.h"
 

@@ -29,10 +29,6 @@
 char BoxGraphNode_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "BoxGraphN.h"
 #include "printBox.h"
 #include "CompositeB.h"

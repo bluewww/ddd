@@ -30,10 +30,6 @@
 char PlotAgent_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "PlotAgent.h"
 #include "cook.h"
 #include "version.h"

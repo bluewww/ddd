@@ -29,10 +29,6 @@
 char vsldoc_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "vsldoc.h"
 #include "string-fun.h"
 #include "basename.h"

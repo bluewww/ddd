@@ -29,10 +29,6 @@
 char fileSelectionBoxFilename_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "fileSBF.h"
 #include "MString.h"
 

@@ -31,10 +31,6 @@
 
 #include "bool.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // True if we have reached the main event loop
 extern bool main_loop_entered;
 

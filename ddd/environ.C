@@ -29,10 +29,6 @@
 char environ_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "environ.h"
 #include "StringA.h"
 #include "bool.h"

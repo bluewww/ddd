@@ -31,10 +31,6 @@
 char DispGraph_rcsid[] =
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 //-----------------------------------------------------------------------------
 // DispGraph stores information about all displayed display expressions.
 //-----------------------------------------------------------------------------

@@ -29,10 +29,6 @@
 #ifndef _DDD_sashes_h
 #define _DDD_sashes_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 
 // Sash killer

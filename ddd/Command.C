@@ -36,11 +36,6 @@
 char Command_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#pragma implementation "Queue.h"
-#endif
-
 #ifndef LOG_COMMAND_QUEUE
 #define LOG_COMMAND_QUEUE 0
 #endif

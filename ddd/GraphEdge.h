@@ -29,10 +29,6 @@
 #ifndef _DDD_GraphEdge_h
 #define _DDD_GraphEdge_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "UniqueId.h"
 #include "Box.h"
 #include "bool.h"

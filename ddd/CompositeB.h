@@ -29,10 +29,6 @@
 #ifndef _DDD_CompositeBox_h
 #define _DDD_CompositeBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // A CompositeBox is a box container.
 
 

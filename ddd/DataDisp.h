@@ -29,10 +29,6 @@
 #ifndef _DDD_DataDisp_h
 #define _DDD_DataDisp_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 //-----------------------------------------------------------------------------
 // The `DataDisp' class creates the data display and provides the
 // necessary callback functions.

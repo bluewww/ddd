@@ -29,10 +29,6 @@
 char ctrl_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "ctrl.h"
 #include "cook.h"
 #include <ctype.h>

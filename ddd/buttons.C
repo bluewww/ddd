@@ -30,10 +30,6 @@
 char buttons_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "buttons.h"
 
 #include "AppData.h"

@@ -29,10 +29,6 @@
 #ifndef _DDD_regexps_h
 #define _DDD_regexps_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "config.h"
 #include "rxclass.h"
 

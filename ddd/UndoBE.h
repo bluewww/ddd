@@ -29,10 +29,6 @@
 #ifndef _DDD_UndoBufferEntry_h
 #define _DDD_UndoBufferEntry_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "StringSA.h"
 #include "VarArray.h"
 #include "bool.h"

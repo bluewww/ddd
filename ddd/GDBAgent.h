@@ -41,10 +41,6 @@
 #ifndef _DDD_GDBAgent_h
 #define _DDD_GDBAgent_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "TTYAgent.h"
 #include "HandlerL.h"
 #include "strclass.h"

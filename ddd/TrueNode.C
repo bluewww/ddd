@@ -29,11 +29,6 @@
 char TrueNode_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "TrueNode.h"
 
 DEFINE_TYPE_INFO_1(EmptyListNode, ConstNode)

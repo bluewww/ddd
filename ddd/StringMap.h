@@ -29,10 +29,6 @@
 #ifndef _DDD_StringMap_h
 #define _DDD_StringMap_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 #include "Map.h"
 

@@ -140,10 +140,6 @@ char GDBAgent_rcsid[] =
 //      Ask them how they did it and
 //      See if they can do it again.
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 //-----------------------------------------------------------------------------
 // GDBAgent implementation
 //-----------------------------------------------------------------------------

@@ -29,10 +29,6 @@
 #ifndef _DDD_environ_h
 #define _DDD_environ_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 
 // Put NAME=VALUE into the environment

@@ -29,9 +29,5 @@
 char BoxExtend_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "BoxExtend.h"
 

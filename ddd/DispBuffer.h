@@ -29,10 +29,6 @@
 #ifndef _DDD_DispBuffer_h
 #define _DDD_DispBuffer_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 //-----------------------------------------------------------------------------
 // A `DispBuffer' filters display information from GDB output
 //-----------------------------------------------------------------------------

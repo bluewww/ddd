@@ -29,10 +29,6 @@
 #ifndef _DDD_freeXmStringTable_h
 #define _DDD_freeXmStringTable_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <Xm/Xm.h>
 
 // Free the XmString table XMLIST of length LIST_LENGTH

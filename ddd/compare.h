@@ -29,10 +29,6 @@
 #ifndef _DDD_compare_h
 #define _DDD_compare_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // compare(t1, t2) returns 1/0/-1 if t1 is greater/equal/less than t2
 // Was initially implemented as a template, but won't work correctly with gcc
 

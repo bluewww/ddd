@@ -29,10 +29,6 @@
 char cook_rcsid[] =
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include <ctype.h>
 #include <sstream>
 #include <stdio.h>

@@ -30,10 +30,6 @@
 char mainloop_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "mainloop.h"
 #include "exit.h"
 #include "status.h"

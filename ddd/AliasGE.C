@@ -29,10 +29,6 @@
 char AliasGraphEdge_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "AliasGE.h"
 
 DEFINE_TYPE_INFO_1(AliasGraphEdge, ArcGraphEdge);

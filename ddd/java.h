@@ -29,10 +29,6 @@
 #ifndef _DDD_java_h
 #define _DDD_java_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "StringA.h"
 
 // Store all classes in current use path in CLASSES_LIST.  If

@@ -29,10 +29,6 @@
 #ifndef _DDD_DynArray_h
 #define _DDD_DynArray_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "assert.h"
 #include "bool.h"
 

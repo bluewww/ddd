@@ -29,11 +29,6 @@
 #ifndef _DDD_PosGraphNode_h
 #define _DDD_PosGraphNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include "GraphNode.h"
 #include "BoxPoint.h"
 

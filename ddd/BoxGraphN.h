@@ -29,11 +29,6 @@
 #ifndef _DDD_BoxGraphNode_h
 #define _DDD_BoxGraphNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include "RegionGN.h"
 #include "Box.h"
 #include "MarkBox.h"

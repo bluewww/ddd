@@ -30,10 +30,6 @@
 char value_read_rcsid[] =
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #ifndef LOG_DETERMINE_TYPE
 #define LOG_DETERMINE_TYPE 0
 #endif

@@ -29,10 +29,6 @@
 #ifndef _DDD_WhatNextCB_h
 #define _DDD_WhatNextCB_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 #include "bool.h"
 #include "strclass.h"

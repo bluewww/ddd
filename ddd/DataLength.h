@@ -29,11 +29,6 @@
 #ifndef _DDD_DataLength_h
 #define _DDD_DataLength_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include <string.h>
 #include "TypeInfo.h"
 #include "assert.h"

@@ -29,10 +29,6 @@
 char regex_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "config.h"
 #include "bool.h"
 #include "strclass.h"

@@ -29,10 +29,6 @@
 char simpleMenu_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "simpleMenu.h"
 
 #include "config.h"

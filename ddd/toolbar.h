@@ -29,10 +29,6 @@
 #ifndef _DDD_toolbar_h
 #define _DDD_toolbar_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 #include "MakeMenu.h"
 #include "ArgField.h"

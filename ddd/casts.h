@@ -29,10 +29,6 @@
 #ifndef _DDD_casts_h
 #define _DDD_casts_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "config.h"
 
 #if HAVE_NEW_CASTS

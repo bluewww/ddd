@@ -29,10 +29,6 @@
 #ifndef _DDD_WidgetStringAssoc_h
 #define _DDD_WidgetStringAssoc_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 #include "Assoc.h"
 #include "strclass.h"

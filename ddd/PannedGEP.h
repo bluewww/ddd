@@ -30,10 +30,6 @@
 #ifndef _DDD_PannedGraphEditPrivate_h
 #define _DDD_PannedGraphEditPrivate_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <Xm/Xm.h>
 
 // Superclasses

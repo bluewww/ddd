@@ -29,10 +29,6 @@
 #ifndef _DDD_stty_h
 #define _DDD_stty_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // The `stty' command to be issued in remote mode
 #define STTY_COMMAND "stty -echo -onlcr"
 

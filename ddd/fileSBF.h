@@ -29,10 +29,6 @@
 #ifndef _DDD_fileSelectionBoxFilename_h
 #define _DDD_fileSelectionBoxFilename_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <Xm/Xm.h>
 #include "strclass.h"
 

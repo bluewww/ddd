@@ -29,10 +29,6 @@
 #ifndef _DDD_debugged_h
 #define _DDD_debugged_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "bool.h"
 
 extern bool being_debugged();

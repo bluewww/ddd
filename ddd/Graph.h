@@ -29,10 +29,6 @@
 #ifndef _DDD_Graph_h
 #define _DDD_Graph_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "assert.h"
 #include "GraphGC.h"
 #include "GraphNode.h"

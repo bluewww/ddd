@@ -29,10 +29,6 @@
 char ScrolledGraphEdit_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include <iostream>
 #include "ScrolleGEP.h"
 #include "GraphEdit.h"

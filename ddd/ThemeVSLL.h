@@ -29,10 +29,6 @@
 #ifndef _DDD_ThemedVSLLib_h
 #define _DDD_ThemedVSLLib_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "VSLLib.h"
 #include "StringA.h"
 

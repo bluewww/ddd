@@ -30,12 +30,6 @@
 char file_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#pragma implementation "DynArray"
-#pragma implementation "VarArray"
-#endif
-
 #include "file.h"
 
 #include "AppData.h"

@@ -30,11 +30,6 @@
 #ifndef _DDD_MString_h
 #define _DDD_MString_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // An "MString" is but a C++ wrapper around Motif composite strings.
 
 #include <Xm/Xm.h>

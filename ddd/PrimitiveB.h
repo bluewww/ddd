@@ -29,10 +29,6 @@
 #ifndef _DDD_PrimitiveBox_h
 #define _DDD_PrimitiveBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "Box.h"
 
 // PrimitiveBox

@@ -36,10 +36,6 @@
 #ifndef _DDD_Map_h
 #define _DDD_Map_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "bool.h"
 #include "assert.h"
 

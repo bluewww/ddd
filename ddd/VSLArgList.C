@@ -29,9 +29,5 @@
 char VSLArgList_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "VSLArgList.h"
 

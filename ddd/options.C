@@ -30,10 +30,6 @@
 char options_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "options.h"
 
 #include "config.h"

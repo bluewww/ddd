@@ -32,10 +32,6 @@
 char tictactoe_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "tictactoe.h"
 
 #include "icons/tictactoe/circle.xbm"

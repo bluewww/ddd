@@ -29,10 +29,6 @@
 #ifndef _DDD_ScrolledGraphEdit_h
 #define _DDD_ScrolledGraphEdit_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "GraphEdit.h"
 
 // Declare specific GraphEdit class and instance datatypes

@@ -29,10 +29,6 @@
 #ifndef _DDD_Agent_h
 #define _DDD_Agent_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 
 /*
     Agent(p) opens a three-channel communication interface to a process p

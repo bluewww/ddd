@@ -29,10 +29,6 @@
 char post_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "post.h"
 
 #include "AppData.h"

@@ -29,10 +29,6 @@
 #ifndef _DDD_source_h
 #define _DDD_source_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 #include "bool.h"
 #include "SourceView.h"

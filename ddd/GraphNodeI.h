@@ -29,11 +29,6 @@
 #ifndef _DDD_GraphNodeI_h
 #define _DDD_GraphNodeI_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include "UniqueId.h"
 #include "Box.h"
 #include "bool.h"

@@ -29,10 +29,6 @@
 #ifndef _DDD_DispBox_h
 #define _DDD_DispBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 //-----------------------------------------------------------------------------
 // Create display boxes via the VSL library
 //-----------------------------------------------------------------------------

@@ -29,10 +29,6 @@
 char GraphEdit_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>

@@ -29,10 +29,6 @@
 #ifndef _DDD_oldcxx_h
 #define _DDD_oldcxx_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // Provide a `bool' replacement
 #include "bool.h"
 

@@ -29,10 +29,6 @@
 #ifndef _DDD_ArgField_h
 #define _DDD_ArgField_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 //-----------------------------------------------------------------------------
 // An `ArgField' is a Text field with handler procs.
 //-----------------------------------------------------------------------------

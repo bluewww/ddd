@@ -29,10 +29,6 @@
 #ifndef _DDD_DispValue_h
 #define _DDD_DispValue_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 //-----------------------------------------------------------------------------
 // A DispValue reads and stores type and value of a displayed expression
 //-----------------------------------------------------------------------------

@@ -29,10 +29,6 @@
 #ifndef _DDD_strtoul_h
 #define _DDD_strtoul_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "config.h"
 #include <stdlib.h>
 

@@ -29,10 +29,6 @@
 #ifndef _DDD_BinBox_h
 #define _DDD_BinBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // A BinBox sets the alignment of its single child to 1, if it is > 1.
 
 #include "HatBox.h"

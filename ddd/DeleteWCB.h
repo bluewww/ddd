@@ -29,10 +29,6 @@
 #ifndef _DDD_DeleteWindowCallBack_h
 #define _DDD_DeleteWindowCallBack_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 
 extern void AddDeleteWindowCallback(Widget shell,

@@ -29,11 +29,6 @@
 char DummyNode_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "assert.h"
 #include "VSLLib.h"
 #include "VSLDef.h"

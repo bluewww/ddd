@@ -29,9 +29,5 @@
 char isid_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "isid.h"
 

@@ -125,10 +125,6 @@ char ddd_rcsid[] =
 // ...HP : Handler procedure (see `HandlerL.h' for details)
 //-----------------------------------------------------------------------------
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "config.h"
 // #include "MemCheckD.h"
 

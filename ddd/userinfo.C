@@ -29,10 +29,6 @@
 char userinfo_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "config.h"
 #include "hostname.h"
 #include "bool.h"

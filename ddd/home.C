@@ -29,10 +29,6 @@
 char home_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "home.h"
 #include "strclass.h"
 

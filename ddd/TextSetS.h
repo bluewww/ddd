@@ -29,10 +29,6 @@
 #ifndef _DDD_TextSetSelection_h
 #define _DDD_TextSetSelection_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>

@@ -29,10 +29,6 @@
 char ArcGraphEdge_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "ArcGraphE.h"
 #include "HintGraphN.h"
 #include "misc.h"

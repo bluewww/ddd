@@ -29,10 +29,6 @@
 char LiterateAgent_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "config.h"
 #include <iostream>
 #include <sys/types.h>

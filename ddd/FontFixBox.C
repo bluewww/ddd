@@ -29,11 +29,6 @@
 char FontFixBox_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "assert.h"
 #include <iostream>
 #include "FontFixBox.h"

@@ -29,10 +29,6 @@
 char ColorBox_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "ColorBox.h"
 #include "PrimitiveB.h"
 #include "cook.h"

@@ -29,12 +29,6 @@
 char Delay_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#pragma implementation "DynArray.h"
-#pragma implementation "VarArray.h"
-#endif
-
 #define LOG_DELAY 0
 
 #include "Delay.h"

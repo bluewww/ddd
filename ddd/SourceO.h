@@ -29,10 +29,6 @@
 #ifndef _DDD_SourceOrigin_h
 #define _DDD_SourceOrigin_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // Source origins
 enum SourceOrigin { 
     ORIGIN_LOCAL, 

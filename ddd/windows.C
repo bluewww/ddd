@@ -29,10 +29,6 @@
 char windows_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #define LOG_GEOMETRY 0
 #define LOG_EVENTS   0
 #define LOG_MOVES    0

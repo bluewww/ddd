@@ -29,10 +29,6 @@
 #ifndef _DDD_IntArray_h
 #define _DDD_IntArray_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "VarArray.h"
 #include "DynArray.h"
 

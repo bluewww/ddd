@@ -29,10 +29,6 @@
 #ifndef _DDD_fonts_h
 #define _DDD_fonts_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 #include "AppData.h"
 

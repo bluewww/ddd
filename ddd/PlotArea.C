@@ -44,10 +44,6 @@
 char PlotArea_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "PlotArea.h"
 
 #include "cook.h"

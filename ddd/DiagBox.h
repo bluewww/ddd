@@ -29,11 +29,6 @@
 #ifndef _DDD_DiagBox_h
 #define _DDD_DiagBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include "PrimitiveB.h"
 
 // DiagBox

@@ -29,11 +29,6 @@
 #ifndef _DDD_TransparentHatBox_h
 #define _DDD_TransparentHatBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A TransparentHatBox is a HatBox that is not considered during matching.
 
 #include "HatBox.h"

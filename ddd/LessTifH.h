@@ -29,10 +29,6 @@
 #ifndef _DDD_LessTifHacks_h
 #define _DDD_LessTifHacks_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // The LessTif version number: 1000 * version + revision
 extern int lesstif_version;
 

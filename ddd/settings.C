@@ -30,10 +30,6 @@
 char settings_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "settings.h"
 
 #include <Xm/Xm.h>

@@ -29,11 +29,6 @@
 char GraphEdge_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "GraphEdge.h"
 #include "GraphNode.h"
 #include "printBox.h"

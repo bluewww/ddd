@@ -29,10 +29,6 @@
 #ifndef _DDD_gdbinit_h
 #define _DDD_gdbinit_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "GDBAgent.h"
 #include "AppData.h"
 #include <X11/Intrinsic.h>

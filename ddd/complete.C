@@ -30,10 +30,6 @@
 char complete_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "complete.h"
 
 #include "AppData.h"

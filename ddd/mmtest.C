@@ -29,10 +29,6 @@
 char mmtest_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include <stdlib.h>
 #include "MakeMenu.h"
 

@@ -29,12 +29,6 @@
 char CodeCache_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#pragma implementation "VarArray.h"
-#pragma implementation "DynArray.h"
-#endif
-
 #include <Xm/Xm.h>
 #include "CodeCache.h"
 

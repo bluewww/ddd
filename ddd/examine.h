@@ -29,10 +29,6 @@
 #ifndef _DDD_examine_h
 #define _DDD_examine_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 
 extern void gdbExamineCB(Widget, XtPointer, XtPointer);

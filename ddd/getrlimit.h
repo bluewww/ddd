@@ -29,10 +29,6 @@
 #ifndef _DDD_getrlimit_h
 #define _DDD_getrlimit_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "config.h"
 
 #if HAVE_GETRLIMIT && HAVE_SETRLIMIT

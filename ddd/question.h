@@ -29,10 +29,6 @@
 #ifndef _DDD_question_h
 #define _DDD_question_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 #include "bool.h"
 

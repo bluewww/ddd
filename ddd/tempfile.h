@@ -29,10 +29,6 @@
 #ifndef _DDD_tempfile_h
 #define _DDD_tempfile_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 
 // Return the name of a temporary file.

@@ -29,10 +29,6 @@
 #ifndef _DDD_LineGraphEdge_h
 #define _DDD_LineGraphEdge_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "GraphEdge.h"
 #include "Box.h"
 #include "EdgeA.h"

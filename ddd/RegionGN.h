@@ -30,11 +30,6 @@
 #ifndef _DDD_RegionGraphNode_h
 #define _DDD_RegionGraphNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include "PosGraphN.h"
 #include "BoxRegion.h"
 

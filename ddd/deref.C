@@ -29,10 +29,6 @@
 char deref_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "deref.h"
 
 #include "GDBAgent.h"

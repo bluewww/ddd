@@ -29,10 +29,6 @@
 #ifndef _DDD_UndoBuffer_h
 #define _DDD_UndoBuffer_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "bool.h"
 #include "UndoBE.h"
 #include "string-fun.h"		// itostring()

@@ -29,11 +29,6 @@
 char LineGraphEdge_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "LineGraphE.h"
 
 #include "assert.h"

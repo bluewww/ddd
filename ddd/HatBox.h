@@ -29,11 +29,6 @@
 #ifndef _DDD_HatBox_h
 #define _DDD_HatBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A HatBox envelops a child (like a hat) to change specific
 // properties such as size or extent.
 

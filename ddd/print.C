@@ -30,10 +30,6 @@
 char print_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "print.h"
 
 #include "AppData.h"

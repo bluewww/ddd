@@ -29,11 +29,6 @@
 char Graph_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "Graph.h"
 #include "assert.h"
 

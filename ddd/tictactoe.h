@@ -29,10 +29,6 @@
 #ifndef _DDD_tictactoe_h
 #define _DDD_tictactoe_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 
 extern void TicTacToeCB(Widget w, XtPointer, XtPointer);

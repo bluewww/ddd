@@ -29,11 +29,6 @@
 #ifndef _DDD_GraphNode_h
 #define _DDD_GraphNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include "GraphNodeI.h"
 #include "GraphEdge.h"
 

@@ -29,10 +29,6 @@
 #ifndef _DDD_complete_h
 #define _DDD_complete_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 
 // Actions

@@ -37,10 +37,6 @@
 #ifndef _DDD_comm_manag_h
 #define _DDD_comm_manag_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "GDBAgent.h"
 #include "Command.h"
 

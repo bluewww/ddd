@@ -29,11 +29,6 @@
 #ifndef _DDD_Box_h
 #define _DDD_Box_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A Box is the base class for all graphical objects. It essentially
 // consists of a rectangle with a certain size and a certain
 // extensibility. The contents of the box are determined by the

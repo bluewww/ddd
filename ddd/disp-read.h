@@ -30,10 +30,6 @@
 #ifndef _DDD_disp_read_h
 #define _DDD_disp_read_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // Misc includes
 #include "strclass.h"
 #include "bool.h"

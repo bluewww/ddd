@@ -29,12 +29,6 @@
 char GraphNode_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#pragma implementation "GraphNodeI.h"
-#endif
-
-
 #include "GraphNode.h"
 
 DEFINE_TYPE_INFO_0(GraphNode)

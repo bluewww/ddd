@@ -29,10 +29,6 @@
 char MString_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "MString.h"
 
 Boolean MString::OK() const

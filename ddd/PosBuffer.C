@@ -31,10 +31,6 @@
 char PosBuffer_rcsid[] =
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 // Misc includes
 #include "assert.h"
 #include "cook.h"

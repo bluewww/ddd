@@ -29,10 +29,6 @@
 #ifndef _DDD_LineGraphEdgeSelfInfo_h
 #define _DDD_LineGraphEdgeSelfInfo_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "BoxRegion.h"
 #include "GraphGC.h"
 #include "explicit.h"

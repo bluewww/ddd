@@ -29,10 +29,6 @@
 #ifndef _DDD_home_h
 #define _DDD_home_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // Return home dir
 extern const char *gethome();
 

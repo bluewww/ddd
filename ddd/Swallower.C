@@ -29,10 +29,6 @@
 char Swallower_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "Swallower.h"
 #include "SwallowerP.h"
 

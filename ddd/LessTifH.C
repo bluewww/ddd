@@ -29,10 +29,6 @@
 char LessTifHacks_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "LessTifH.h"
 #include <Xm/Xm.h>
 

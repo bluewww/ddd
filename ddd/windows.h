@@ -29,10 +29,6 @@
 #ifndef _DDD_windows_h
 #define _DDD_windows_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 #include "bool.h"
 

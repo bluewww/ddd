@@ -29,10 +29,6 @@
 #ifndef _DDD_TTYAgent_h
 #define _DDD_TTYAgent_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "LiterateA.h"
 #include <unistd.h>
 #include <stdlib.h>

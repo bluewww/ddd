@@ -29,11 +29,6 @@
 char LineBox_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "LineBox.h"
 
 #include <X11/Xlib.h>

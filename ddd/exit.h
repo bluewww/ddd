@@ -30,10 +30,6 @@
 #ifndef _DDD_exit_h
 #define _DDD_exit_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 #include <iostream>
 

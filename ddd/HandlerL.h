@@ -29,10 +29,6 @@
 #ifndef _DDD_HandlerList_h
 #define _DDD_HandlerList_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "compare.h"
 #include "bool.h"
 #include "assert.h"

@@ -29,10 +29,6 @@
 #ifndef _DDD_ThemeManager_h
 #define _DDD_ThemeManager_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "StringTPA.h"
 #include "ThemeP.h"
 #include <iostream>

@@ -29,10 +29,6 @@
 #ifndef _DDD_IntIntArrayAssoc_h
 #define _DDD_IntIntArrayAssoc_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "Assoc.h"
 #include "IntArray.h"
 #include "strclass.h"

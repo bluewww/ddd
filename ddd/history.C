@@ -52,10 +52,6 @@
 char history_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "history.h"
 
 #include "AppData.h"

@@ -33,10 +33,6 @@
 #ifndef _DDD_AgentManager_h
 #define _DDD_AgentManager_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 
 #include <signal.h>
 #include "config.h"

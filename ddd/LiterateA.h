@@ -29,10 +29,6 @@
 #ifndef _DDD_LiterateAgent_h
 #define _DDD_LiterateAgent_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 /*
     LiterateAgent(app_context, p) opens an asynchronous three-way communication
     channel to the agent p (see Agent, AsyncAgent).

@@ -29,10 +29,6 @@
 char ungrab_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "ungrab.h"
 
 #include <X11/Xlib.h>

@@ -30,10 +30,6 @@
 char tips_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "tips.h"
 
 #include "AppData.h"

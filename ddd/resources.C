@@ -30,10 +30,6 @@
 char resources_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "resources.h"
 #include "version.h"
 #include "AppData.h"

@@ -29,11 +29,6 @@
 #ifndef _DDD_UniqueId_h
 #define _DDD_UniqueId_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // UniqueId manages unique identifiers
 
 #include <iostream>

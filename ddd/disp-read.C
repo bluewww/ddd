@@ -31,10 +31,6 @@
 char disp_read_rcsid[] =
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 //-----------------------------------------------------------------------------
 // Misc routines to process `display' output
 //-----------------------------------------------------------------------------

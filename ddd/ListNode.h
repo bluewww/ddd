@@ -29,10 +29,6 @@
 #ifndef _DDD_ListNode_h
 #define _DDD_ListNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 
 // A ListNode combines other nodes k_i to lists.  Upon run-time, a
 // ListNode creates a ListBox with the results of the k_i.

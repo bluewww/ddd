@@ -29,11 +29,6 @@
 char PrimitiveBox_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "PrimitiveB.h"
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>

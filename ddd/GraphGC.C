@@ -29,10 +29,6 @@
 char GraphGC_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "GraphGC.h"
 
 DEFINE_TYPE_INFO_0(GraphGC)

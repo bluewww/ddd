@@ -29,10 +29,6 @@
 char SpinBox_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 // #define as 0 to rely exclusively on our replacement routines
 #define USE_XM_SPINBOX 0
 

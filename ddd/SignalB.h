@@ -29,10 +29,6 @@
 #ifndef _DDD_SignalBlocker_h
 #define _DDD_SignalBlocker_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <sys/types.h>
 #include <signal.h>
 #include "assert.h"

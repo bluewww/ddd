@@ -29,10 +29,6 @@
 #ifndef _DDD_Delay_h
 #define _DDD_Delay_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 

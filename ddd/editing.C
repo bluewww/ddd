@@ -30,10 +30,6 @@
 char editing_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "editing.h"
 
 #include "AppData.h"

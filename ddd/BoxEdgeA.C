@@ -29,10 +29,6 @@
 char BoxEdgeAnnotation_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "BoxEdgeA.h"
 
 DEFINE_TYPE_INFO_1(BoxEdgeAnnotation, EdgeAnnotation)

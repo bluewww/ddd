@@ -29,10 +29,6 @@
 char examine_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "examine.h"
 
 #include "bool.h"

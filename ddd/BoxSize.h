@@ -29,11 +29,6 @@
 #ifndef _DDD_BoxSize_h
 #define _DDD_BoxSize_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A BoxSize denotes a two-dimensional size (especially box sizes).
 
 #include "BoxPoint.h"

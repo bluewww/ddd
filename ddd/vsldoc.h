@@ -29,10 +29,6 @@
 #ifndef _DDD_vsldoc_h
 #define _DDD_vsldoc_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 
 // Return initial comments from VSL file FILE; search it in PATH

@@ -29,10 +29,6 @@
 char DataLength_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "DataLength.h"
 
 DEFINE_TYPE_INFO_0(DataLength)

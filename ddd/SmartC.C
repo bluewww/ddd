@@ -29,10 +29,6 @@
 char SmartCompare_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "SmartC.h"
 #include "assert.h"
 

@@ -29,11 +29,6 @@
 #ifndef _DDD_LineBox_h
 #define _DDD_LineBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include "PrimitiveB.h"
 
 // LineBox

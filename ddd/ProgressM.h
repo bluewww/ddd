@@ -29,10 +29,6 @@
 #ifndef _DDD_ProgressMeter_h
 #define _DDD_ProgressMeter_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "bool.h"
 #include "strclass.h"
 #include "status.h"

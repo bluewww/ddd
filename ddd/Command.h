@@ -30,10 +30,6 @@
 #ifndef _DDD_Command_h
 #define _DDD_Command_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "GDBAgent.h"
 #include "question.h"		// NO_GDB_ANSWER
 

@@ -29,10 +29,6 @@
 char ChunkQueue_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "ChunkQueue.h"
 
 DEFINE_TYPE_INFO_0(ChunkQueue)

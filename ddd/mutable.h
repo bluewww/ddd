@@ -29,10 +29,6 @@
 #ifndef _DDD_mutable_h
 #define _DDD_mutable_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "config.h"
 
 #if !HAVE_MUTABLE

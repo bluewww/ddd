@@ -29,10 +29,6 @@
 char PannedGraphEdit_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "config.h"
 #include "misc.h"
 #include "PannedGE.h"

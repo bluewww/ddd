@@ -29,10 +29,6 @@
 #ifndef _DDD_hash_h
 #define _DDD_hash_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 unsigned int hashpjw(const char*);
 
 inline unsigned int multiplicativehash(int x)

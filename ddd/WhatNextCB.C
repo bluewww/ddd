@@ -29,10 +29,6 @@
 char WhatNextCB_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "WhatNextCB.h"
 
 #include "Command.h"

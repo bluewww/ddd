@@ -29,10 +29,6 @@
 #ifndef _DDD_PlotAgent_h
 #define _DDD_PlotAgent_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "LiterateA.h"
 #include "assert.h"
 #include "StringA.h"

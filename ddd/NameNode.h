@@ -29,10 +29,6 @@
 #ifndef _DDD_NameNode_h
 #define _DDD_NameNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 
 // A NameNode is a place holder for a variable name.
 

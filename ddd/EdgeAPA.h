@@ -29,10 +29,6 @@
 #ifndef _DDD_EdgeAnnotationPointerArray_h
 #define _DDD_EdgeAnnotationPointerArray_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "EdgeA.h"
 #include "VarArray.h"
 

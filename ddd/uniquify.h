@@ -29,10 +29,6 @@
 #ifndef _DDD_uniquify_h
 #define _DDD_uniquify_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "StringA.h"
 
 // Make each item in LABELS a base name of FILES, such that all

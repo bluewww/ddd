@@ -30,11 +30,6 @@
 #ifndef _DDD_VSLLib_h
 #define _DDD_VSLLib_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include <iostream>
 #include "strclass.h"
 

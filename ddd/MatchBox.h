@@ -29,10 +29,6 @@
 #ifndef _DDD_MatchBox_h
 #define _DDD_MatchBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 
 // A MatchBox is used in pattern matching.
 

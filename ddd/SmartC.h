@@ -29,10 +29,6 @@
 #ifndef _DDD_SmartCompare_h
 #define _DDD_SmartCompare_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "StringA.h"
 
 // Compare S1 and S2, taking numerals into account

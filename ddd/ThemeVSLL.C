@@ -29,10 +29,6 @@
 char ThemedVSLLib_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "ThemeVSLL.h"
 
 ThemedVSLLib::ThemedVSLLib()

@@ -31,10 +31,6 @@
 char show_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "show.h"
 
 #include "AppData.h"

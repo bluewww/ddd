@@ -29,10 +29,6 @@
 #ifndef _DDD_show_h
 #define _DDD_show_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "ddd.h"
 #include "GDBAgent.h"
 #include <X11/Intrinsic.h>

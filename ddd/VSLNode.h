@@ -29,11 +29,6 @@
 #ifndef _DDD_VSLNode_h
 #define _DDD_VSLNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A VSLNode is a node of an evaluation tree that represents the
 // expressions of a VSLL library.
 

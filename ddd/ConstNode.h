@@ -29,11 +29,6 @@
 #ifndef _DDD_ConstNode_h
 #define _DDD_ConstNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A ConstNode returns a constant box upon run-time
 
 

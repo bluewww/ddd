@@ -29,11 +29,6 @@
 char ConstNode_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include <iostream>
 #include "assert.h"
 #include "VSLLib.h"

@@ -29,10 +29,6 @@
 char fonts_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "fonts.h"
 #include "charsets.h"
 

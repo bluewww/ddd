@@ -29,10 +29,6 @@
 char gdbinit_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "gdbinit.h"
 
 #include <X11/Intrinsic.h>

@@ -29,10 +29,6 @@
 char status_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "status.h"
 
 #include "Command.h"

@@ -25,10 +25,6 @@ char strclass_rcsid[] =
   string class implementation
  */
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #ifndef MALLOC_DEBUG
 #define MALLOC_DEBUG 0
 #endif

@@ -29,10 +29,6 @@
 char SignalBlocker_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "SignalB.h"
 
 // The LINUX `sigfillset' macro definition causes a GCC warning.

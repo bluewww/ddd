@@ -29,11 +29,6 @@
 #ifndef _DDD_CallNode_h
 #define _DDD_CallNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A CallNode calls a VSL function (builtin or user-defined)
 
 #include "assert.h"

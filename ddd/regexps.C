@@ -29,10 +29,6 @@
 char regexps_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "regexps.h"
 #include "assert.h"
 #include "misc.h"		// min()

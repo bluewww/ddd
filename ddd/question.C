@@ -30,10 +30,6 @@
 char question_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "question.h"
 
 #include "assert.h"

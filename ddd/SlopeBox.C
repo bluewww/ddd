@@ -29,10 +29,6 @@
 char SlopeBox_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "SlopeBox.h"
 #include "printBox.h"
 

@@ -29,10 +29,6 @@
 #ifndef _DDD_ScrolledGraphEditPrivate_h
 #define _DDD_ScrolledGraphEditPrivate_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <Xm/Xm.h>
 
 // Superclasses

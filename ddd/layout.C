@@ -29,10 +29,6 @@
 char layout_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "layout.h"
 #include "assert.h"
 #include "casts.h"

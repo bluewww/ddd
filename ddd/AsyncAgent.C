@@ -29,11 +29,6 @@
 char AsyncAgent_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "AsyncAgent.h"
 #include "TimeOut.h"
 #include "misc.h"

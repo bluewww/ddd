@@ -29,10 +29,6 @@
 #ifndef _ICE_rxclass_h
 #define _ICE_rxclass_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "config.h"
 #include "bool.h"
 

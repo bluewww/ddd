@@ -29,10 +29,6 @@
 #ifndef _DDD_HistoryDialog_h
 #define _DDD_HistoryDialog_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 
 // Some useful history filters

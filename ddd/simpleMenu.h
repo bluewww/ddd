@@ -29,10 +29,6 @@
 #ifndef _DDD_simpleMenu_h
 #define _DDD_simpleMenu_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "MakeMenu.h"
 
 extern MMDesc simple_edit_menu[];

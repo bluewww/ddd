@@ -29,10 +29,6 @@
 char HintGraphNode_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "HintGraphN.h"
 
 #include <X11/Xlib.h>

@@ -29,10 +29,6 @@
 #ifndef _DDD_EntryType_h
 #define _DDD_EntryType_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "VarArray.h"
 
 enum EntryType

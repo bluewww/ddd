@@ -29,10 +29,6 @@
 char mydialogs_rcsid[] =
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 //-----------------------------------------------------------------------------
 // Create dialogs to select display expressions
 //-----------------------------------------------------------------------------

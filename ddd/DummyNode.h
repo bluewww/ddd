@@ -29,11 +29,6 @@
 #ifndef _DDD_DummyNode_h
 #define _DDD_DummyNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A DummyNode returns a DummyBox at run-time.
 // A DummyNode matches all other nodes if `DummyNode::matchesAll' is true.
 

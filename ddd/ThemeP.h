@@ -29,10 +29,6 @@
 #ifndef _DDD_ThemePattern_h
 #define _DDD_ThemePattern_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <iostream>
 #include "StringA.h"
 

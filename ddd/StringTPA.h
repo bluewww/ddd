@@ -29,10 +29,6 @@
 #ifndef _DDD_StringThemePatternAssoc_h
 #define _DDD_StringThemePatternAssoc_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "ThemeP.h"
 #include "Assoc.h"
 

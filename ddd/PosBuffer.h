@@ -29,10 +29,6 @@
 #ifndef _DDD_PosBuffer_h
 #define _DDD_PosBuffer_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 //-----------------------------------------------------------------------------
 // A `PosBuffer' filters position infos from GDB output.
 //-----------------------------------------------------------------------------

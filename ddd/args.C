@@ -29,10 +29,6 @@
 char args_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "args.h"
 
 #include "Delay.h"

@@ -29,10 +29,6 @@
 #ifndef _DDD_BoxExtend_h
 #define _DDD_BoxExtend_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // A `BoxExtend' denotes the extensibility of a box - that is, how
 // much the box extends to fill up available space.  An extensibility
 // of 0 means that the box will not extend at all.  The bigger the

@@ -29,10 +29,6 @@
 char ThemePattern_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "ThemeP.h"
 #include "cook.h"
 #include "glob.h"

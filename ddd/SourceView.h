@@ -47,10 +47,6 @@
 #ifndef _DDD_SourceView_h
 #define _DDD_SourceView_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // Motif includes
 #include <Xm/Xm.h>
 

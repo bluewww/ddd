@@ -29,10 +29,6 @@
 #ifndef _DDD_shorten_h
 #define _DDD_shorten_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 
 // Shorten expression in EXPR to MAX_LENGTH

@@ -29,11 +29,6 @@
 #ifndef _DDD_TestNode_h
 #define _DDD_TestNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A TestNode implements an if-then-else-fi construct.
 
 // A TestNode contains a List of length 3.  Upon evaluation, the wird

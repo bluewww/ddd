@@ -29,10 +29,6 @@
 char graph_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "data.h"
 #include "DataDisp.h"
 #include "ddd.h"

@@ -29,10 +29,6 @@
 #ifndef _DDD_select_h
 #define _DDD_select_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "Agent.h"
 #include <X11/Intrinsic.h>
 

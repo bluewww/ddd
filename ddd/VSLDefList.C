@@ -30,11 +30,6 @@
 char VSLDefList_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include <iostream>
 #include <sstream>
 #include "assert.h"

@@ -29,11 +29,6 @@
 #ifndef _DDD_SlopeBox_h
 #define _DDD_SlopeBox_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include "LineBox.h"
 #include "Widget.h"
 

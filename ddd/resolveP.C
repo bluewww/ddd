@@ -29,10 +29,6 @@
 char resolvePath_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "resolveP.h"
 #include "root.h"
 #include "filetype.h"

@@ -29,10 +29,6 @@
 char wm_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "wm.h"
 
 #include "Command.h"

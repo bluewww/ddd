@@ -29,10 +29,6 @@
 #ifndef _DDD_BindingStyle_h
 #define _DDD_BindingStyle_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 enum BindingStyle { KDEBindings, MotifBindings };
 #define XtRBindingStyle "BindingStyle"
 

@@ -29,10 +29,6 @@
 char tabs_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "tabs.h"
 
 //-----------------------------------------------------------------------

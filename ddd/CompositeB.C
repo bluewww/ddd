@@ -29,11 +29,6 @@
 char CompositeBox_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "assert.h"
 #include "misc.h"
 #include "CompositeB.h"

@@ -29,10 +29,6 @@
 #ifndef _DDD_frame_h
 #define _DDD_frame_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 
 // Find the WM frame surrounding WINDOW

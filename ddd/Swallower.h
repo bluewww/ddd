@@ -29,10 +29,6 @@
 #ifndef _DDD_Swallower_h
 #define _DDD_Swallower_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 

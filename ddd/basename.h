@@ -29,10 +29,6 @@
 #ifndef _DDD_basename_h
 #define _DDD_basename_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // Return the base name of FILE.  If SEP is given, use SEP as
 // component separator; otherwise, use the system default (such as `/')
 extern const char *file_basename(const char *file, const char sep = '\0');

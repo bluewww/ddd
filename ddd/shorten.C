@@ -29,10 +29,6 @@
 char shorten_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "shorten.h"
 #include "cook.h"
 #include "regexps.h"

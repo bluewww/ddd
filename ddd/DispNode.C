@@ -30,11 +30,6 @@
 char DispNode_rcsid[] =
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 //-----------------------------------------------------------------------------
 // A DispNode keeps all information about a single data display
 //-----------------------------------------------------------------------------

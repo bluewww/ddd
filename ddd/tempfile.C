@@ -29,10 +29,6 @@
 char tempfile_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "tempfile.h"
 #include "config.h"
 #include "version.h"

@@ -29,10 +29,6 @@
 #ifndef _DDD_index_h
 #define _DDD_index_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 
 // Return index of R in S, starting with POS; PREFIX is the constant

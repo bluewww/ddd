@@ -44,10 +44,6 @@ char DataDisp_rcsid[] =
 //					-- STEVE McCONNELL, Code Complete
 
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #ifndef LOG_DISPLAYS
 #define LOG_DISPLAYS 0
 #endif

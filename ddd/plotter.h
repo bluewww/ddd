@@ -29,10 +29,6 @@
 #ifndef _DDD_plotter_h
 #define _DDD_plotter_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "PlotAgent.h"
 #include "strclass.h"
 

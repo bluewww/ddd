@@ -29,11 +29,6 @@
 #ifndef _DDD_TrueNode_h
 #define _DDD_TrueNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include "ConstNode.h"
 #include "ListNode.h"
 

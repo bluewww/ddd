@@ -406,10 +406,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifndef _ICE_strclass_h
 #define _ICE_strclass_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <iostream>
 #include <sstream>
 #include "rxclass.h"

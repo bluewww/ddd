@@ -29,10 +29,6 @@
 char Logger_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "Logger.h"
 
 int _Logger::depth = 0;

@@ -29,10 +29,6 @@
 char PosGraphNode_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "PosGraphN.h"
 
 DEFINE_TYPE_INFO_1(PosGraphNode, GraphNode)

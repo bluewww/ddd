@@ -29,10 +29,6 @@
 #ifndef _DDD_Logger_h
 #define _DDD_Logger_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <iostream>
 #include "strclass.h"
 

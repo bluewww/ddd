@@ -29,11 +29,6 @@
 char AgentM_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
-
 #include "AgentM.h"
 #include "Agent.h"
 #include "SignalB.h"

@@ -29,10 +29,6 @@
 #ifndef _DDD_history_h
 #define _DDD_history_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 #include "bool.h"
 #include "StringA.h"

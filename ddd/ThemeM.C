@@ -29,10 +29,6 @@
 char ThemeManager_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "ThemeM.h"
 #include "string-fun.h"
 

@@ -29,10 +29,6 @@
 #ifndef _DDD_decoration_h
 #define _DDD_decoration_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 #include "bool.h"
 

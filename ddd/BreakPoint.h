@@ -29,10 +29,6 @@
 #ifndef _DDD_BreakPoint_h
 #define _DDD_BreakPoint_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 //-----------------------------------------------------------------------------
 // A `BreakPoint' stores information about an existing debugger breakpoint.
 //-----------------------------------------------------------------------------

@@ -29,10 +29,6 @@
 #ifndef _DDD_charsets_h
 #define _DDD_charsets_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "MString.h"
 
 // Character sets

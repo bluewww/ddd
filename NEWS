@@ -44,7 +44,7 @@ Specific flags for other compilers are documented in PROBLEMS.
 - Builds without -DNDEBUG (i.e. with "assert" enabled) now work.
   Default build enables assertions (i.e. -DNDEBUG is not used).
 - Several missing files in the distribution are now included.
-- Cygwin is supported again. See PROBLEMS.
+- Cygwin is supported again.
 
 (1) Written by Dmitri Dmitrienko and integrated by Rocky Bernstein.
 (2) Thanks to Saurabh Tendulkar for his patch.

@@ -30,11 +30,6 @@
 #ifndef _DDD_VSLDefList_h
 #define _DDD_VSLDefList_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 #include "assert.h"
 #include <limits.h>
 #include <iostream>

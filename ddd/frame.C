@@ -29,10 +29,6 @@
 char frame_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "frame.h"
 #include "bool.h"
 #include "XErrorB.h"

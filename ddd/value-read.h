@@ -33,10 +33,6 @@
 #ifndef _DDD_value_read_h
 #define _DDD_value_read_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 #include "bool.h"
 #include "DispValueT.h"

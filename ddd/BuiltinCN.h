@@ -29,11 +29,6 @@
 #ifndef _DDD_BuiltinCallNode_h
 #define _DDD_BuiltinCallNode_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 // A BuiltinCallNode calls a built-in VSL function upon run-time.
 
 

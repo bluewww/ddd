@@ -29,10 +29,6 @@
 #ifndef _DDD_wm_h
 #define _DDD_wm_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <X11/Intrinsic.h>
 #include "strclass.h"
 

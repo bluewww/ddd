@@ -29,10 +29,6 @@
 char TransparentHatBox_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "THatBox.h"
 
 DEFINE_TYPE_INFO_1(TransparentHatBox, HatBox)

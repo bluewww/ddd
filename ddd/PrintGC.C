@@ -29,10 +29,6 @@
 char PrintGC_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "PrintGC.h"
 
 DEFINE_TYPE_INFO_0(PrintGC)

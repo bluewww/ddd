@@ -31,10 +31,6 @@
 char comm_manager_rcsid[] =
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 //-----------------------------------------------------------------------------
 // GDB communication manager
 // Name conventions:

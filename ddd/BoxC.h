@@ -29,10 +29,6 @@
 #ifndef _DDD_BoxCoordinate_h
 #define _DDD_BoxCoordinate_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include <limits.h>
 
 typedef int BoxCoordinate;

@@ -29,10 +29,6 @@
 #ifndef _DDD_dbx_lookup_h
 #define _DDD_dbx_lookup_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 
 // Find location of FUNC_NAME using DBX

@@ -127,36 +127,6 @@ AC_SUBST(CXXLIBS)dnl
 LIBS="$ice_save_LIBS"
 ])dnl
 dnl
-dnl ICE_EXTERNAL_TEMPLATES
-dnl ----------------------
-dnl
-dnl If the C++ compiler accepts the `-fexternal-templates' flag,
-dnl set output variable `EXTERNAL_TEMPLATES' to `-fexternal-templates',
-dnl empty otherwise.
-dnl
-AC_DEFUN([ICE_EXTERNAL_TEMPLATES],
-[
-AC_REQUIRE([AC_PROG_CXX])
-if test "$GXX" = yes; then
-AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -fexternal-templates],
-[ice_cv_external_templates],
-[
-AC_LANG_PUSH(C++)
-ice_save_cxxflags="$CXXFLAGS"
-dnl Don't use if deprecated
-CXXFLAGS="-Werror -fexternal-templates"
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
-[ice_cv_external_templates=yes], [ice_cv_external_templates=no])
-CXXFLAGS="$ice_save_cxxflags"
-AC_LANG_POP(C++)
-])
-if test "$ice_cv_external_templates" = yes; then
-EXTERNAL_TEMPLATES=-fexternal-templates
-fi
-fi
-AC_SUBST(EXTERNAL_TEMPLATES)
-])dnl
-dnl
 dnl
 dnl
 dnl
@@ -1549,14 +1519,13 @@ AC_SUBST(CXXSTATIC_BINDING)dnl
 AC_SUBST(CXXDYNAMIC_BINDING)dnl
 dnl
 if test "$GXX" = yes; then
-ICE_EXTERNAL_TEMPLATES
 ICE_PERMISSIVE
 dnl ICE_NO_IMPLICIT_TEMPLATES
 ICE_ELIDE_CONSTRUCTORS
 ICE_CONSERVE_SPACE
 ICE_TRIGRAPHS
 fi
-CXXSTUFF="$CXXSTUFF $EXTERNAL_TEMPLATES $TRIGRAPHS"
+CXXSTUFF="$CXXSTUFF $TRIGRAPHS"
 AC_SUBST(CXXSTUFF)dnl
 ])dnl
 dnl

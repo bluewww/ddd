@@ -29,10 +29,6 @@
 char basename_rcsid[] =
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 // Just a modified `basename.c' from libiberty.
 
 #include "basename.h"

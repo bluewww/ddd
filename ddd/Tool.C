@@ -29,10 +29,6 @@
 char Tool_rcsid[] = 
     "$Id$";
 
-#ifdef __GNUG__
-#pragma implementation
-#endif
-
 #include "Tool.h"
 
 #include "AppData.h"

@@ -29,10 +29,6 @@
 #ifndef _DDD_VSLArgList_h
 #define _DDD_VSLArgList_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "ListBox.h"
 #include "assert.h"
 

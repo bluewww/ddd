@@ -29,10 +29,6 @@
 #ifndef _DDD_post_h
 #define _DDD_post_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "strclass.h"
 #include "bool.h"
 #include <X11/Intrinsic.h>

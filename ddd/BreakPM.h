@@ -29,10 +29,6 @@
 #ifndef _DDD_BreakPointMap_h
 #define _DDD_BreakPointMap_h
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "Map.h"
 #include "BreakPoint.h"
 
