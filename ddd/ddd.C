@@ -620,8 +620,8 @@ static MMDesc data_file_menu[]    = FILE_MENU;
 struct ProgramItems {
     enum ProgramItem { Run, RunAgain, Sep1,
 		       SeparateExecWindow, Sep2,
-		       Step, Stepi, Next, Nexti, Sep3,
-		       Cont, Finish, Until, Return, Sep4,
+		       Step, Stepi, Next, Nexti, Until, Sep3,
+		       Cont, Finish, Return, Sep4,
 		       Kill, Break, Quit
     };
 };
@@ -638,10 +638,10 @@ struct ProgramItems {
     { "stepi",       MMPush, { gdbCommandCB, "stepi" }}, \
     { "next",        MMPush, { gdbCommandCB, "next" }}, \
     { "nexti",       MMPush, { gdbCommandCB, "nexti" }}, \
+    { "until",       MMPush, { gdbCommandCB, "until" }}, \
     MMSep, \
     { "cont",        MMPush, { gdbCommandCB, "cont" }}, \
     { "finish",      MMPush, { gdbCommandCB, "finish" }}, \
-    { "until",       MMPush, { gdbCommandCB, "until" }}, \
     { "return",      MMPush, { gdbCommandCB, "return" }}, \
     MMSep, \
     { "kill",        MMPush, { gdbCommandCB, "kill" }}, \
@@ -4505,6 +4505,10 @@ static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
     set_sensitive(source_program_menu[ProgramItems::Nexti].widget,      ready);
     set_sensitive(data_program_menu[ProgramItems::Nexti].widget,        ready);
 
+    set_sensitive(command_program_menu[ProgramItems::Until].widget,     ready);
+    set_sensitive(source_program_menu[ProgramItems::Until].widget,      ready);
+    set_sensitive(data_program_menu[ProgramItems::Until].widget,        ready);
+
     set_sensitive(command_program_menu[ProgramItems::Cont].widget,      ready);
     set_sensitive(source_program_menu[ProgramItems::Cont].widget,       ready);
     set_sensitive(data_program_menu[ProgramItems::Cont].widget,         ready);
@@ -4513,9 +4517,9 @@ static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
     set_sensitive(source_program_menu[ProgramItems::Finish].widget,     ready);
     set_sensitive(data_program_menu[ProgramItems::Finish].widget,       ready);
 
-    set_sensitive(command_program_menu[ProgramItems::Until].widget,    ready);
-    set_sensitive(source_program_menu[ProgramItems::Until].widget,     ready);
-    set_sensitive(data_program_menu[ProgramItems::Until].widget,       ready);
+    set_sensitive(command_program_menu[ProgramItems::Return].widget,    ready);
+    set_sensitive(source_program_menu[ProgramItems::Return].widget,     ready);
+    set_sensitive(data_program_menu[ProgramItems::Return].widget,       ready);
 
     set_sensitive(command_program_menu[ProgramItems::Kill].widget,      ready);
     set_sensitive(source_program_menu[ProgramItems::Kill].widget,       ready);
