@@ -3740,10 +3740,10 @@ void SourceView::show_position(string position, bool silent)
 void SourceView::process_info_bp (string& info_output,
 				  const string& break_arg)
 {
-    // DEC dbx issues empty lines, which causes trouble
+    // DEC DBX issues empty lines, which causes trouble
     info_output.gsub("\n\n", "\n");
 
-    // SGI dbx issues `Process PID' before numbers
+    // SGI DBX issues `Process PID' before numbers
 #if RUNTIME_REGEX
     static regex rxprocess1("Process[ \t]+[0-9]+:[ \t]*");
 #endif
@@ -3931,10 +3931,16 @@ void SourceView::process_info_bp (string& info_output,
     for (i = 0; i < bps_not_read.size(); i++)
     {
 	BreakPoint *bp = bp_map.get(bps_not_read[i]);
-	undo_buffer.add_breakpoint_state(undo_commands, bp);
 
+	// Perl only lists breakpoints in the current file
+	if (gdb->type() == PERL && !bp_matches(bp, current_file_name))
+	    continue;
+
+	// Delete it
+	undo_buffer.add_breakpoint_state(undo_commands, bp);
 	delete bp;
 	bp_map.del(bps_not_read[i]);
+
 	changed = true;
     }
 
