@@ -1073,8 +1073,8 @@ fitting in the rectangle are selected when mouse button 1 is released.
 If the \fBShift\fR key is pressed while selecting, the existing
 selection is \fIextended\fR.
 .PP
-By double-clicking on a display, the display itself and all connected
-displays are automatically selected.
+By double-clicking on a display title, the display itself and all
+connected displays are automatically selected.
 .PP
 .PSPIC @srcdir@/PICS/ddd-select-display.ps 15.3cm
 .PP
@@ -4467,13 +4467,13 @@ debugged programs which change the default \s-2TTY\s+2 settings.
 .IP \(bu 2
 \s-2DBX\s+2 as found on SunOS 4.x (aka Solaris 1.x)
 .IP \(bu 2
-\s-2DBX\s+2 as found on SunOS 5.x (aka Solaris 2.x)
+\s-2DBX\s+2 as found on Solaris 2.x (aka SunOS 5.x)
 .IP \(bu 2
-\s-2DBX\s+2 as found on DEC systems
+\s-2DBX\s+2 as found on DEC systems (some variants only)
 .IP \(bu 2
-\s-2DBX\s+2 as found on AIX systems
+\s-2DBX\s+2 as found on AIX systems (some variants only)
 .IP \(bu 2
-\s-2DBX\s+2 as found on SGI systems
+\s-2DBX\s+2 as found on SGI systems (some variants only)
 .IP \(bu 2
 \s-2XDB\s+2 as found on HP-UX systems
 .PP
