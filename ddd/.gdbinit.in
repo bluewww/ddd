@@ -62,7 +62,9 @@
 
 # Setup DDD environment
 
-define ddd
+## General DDD project settings
+
+define ddd_settings
 # Conveniences
 set verbose on
 set print pretty on
@@ -77,12 +79,19 @@ set history size 1000
 # Paths, etc.
 directory @srcdir@
 
-# Default arguments
-set args --gdb --trace cxxtest
-
 # Environment
 set environment XUSERFILESEARCHPATH .
 set environment XAPPLRESDIR .
+end
+
+
+## Debug DDD
+
+define ddd
+ddd_settings
+
+# Default arguments
+set args --gdb --trace cxxtest
 
 # Stop on fatal errors
 b ddd_x_fatal
@@ -94,9 +103,30 @@ b ddd_signal
 # That's all!
 echo Enter `run' to start DDD.\n
 end
+
 document ddd
     Setup environment for debugging DDD
 end
+
+
+## Debug VSL
+
+define vsl
+ddd_settings
+
+# Default arguments
+set args -I @srcdir@/../vsllib @srcdir@/ddd.vsl
+
+# That's all!
+echo Enter `run' to start VSL.\n
+end
+
+document vsl
+    Setup environment for debugging VSL
+end
+
+
+## Debug DDD w/ Perl
 
 define perl
     ddd
@@ -107,12 +137,19 @@ document perl
 end
 
 
-# Facility for printing DDD string types
+# Print DDD string types
 define string
     p $.rep->s[0]@$.rep->len
 end
 document string
     Print value of last viewed DDD string
+end
+
+define pstring
+    p $arg0.rep->s[0]@$arg0.rep->len
+end
+document string
+    Print value of DDD string ARG
 end
 
 # Just let the user know we're here.
