@@ -1892,7 +1892,7 @@ PROG_STUFF = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
              $(vsldir)/ddd.vsl $(srcdir)/ddd.vsl.h \
              vr.h version.h bld.h build.h root.h configinfo.C \
              $(srcdir)/COPYING.gz.C $(srcdir)/NEWS.gz.C \
-	     $(srcdir)/ddd.info.txt.gz.C \
+	     $(srcdir)/ddd.info.txt.gz.C $(srcdir)/ddd.info \
              xlibdir.C eps-code.h .gdbinit
 
 # Additional files to be included in the distribution.
@@ -1907,7 +1907,6 @@ EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF)
 ddd.$(OBJEXT): $(PROG_STUFF)
 
 CLEANFILES = build.h ddd.?? ddd.??s ddd.ps ddd.pdf *.tmp ddd.html \
-	ddd.info ddd.info-* \
 	$(PS_IMAGES) $(PDF_IMAGES) $(HTML_IMAGES)
 DISTCLEANFILES = build.h host.h root.h
 
