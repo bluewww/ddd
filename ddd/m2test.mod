@@ -22,8 +22,10 @@
   If not, write to the Free Software Foundation, Inc.,
   675 Mass Ave, Cambridge, MA 02139, USA.
   
-  DDD is the GDB-based data display debugger.
-  Contact ddd@ips.cs.tu-bs.de for details.
+  DDD is the data display debugger.
+  For details, see the DDD World-Wide-Web page, 
+  `http://www.cs.tu-bs.de/softech/ddd/',
+  or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 *)
 
 (*--------------------------------------------------------------------------*)
