@@ -246,4 +246,9 @@ Volunteers for fixing these and other bugs are welcome!
     command tool when used under tvtwm.
     [I could not reproduce this. -AZ]
 
-238 (Insert your bug here)
+239 Paul Sydney <sydney@ulua.mhpcc.af.mil> states that in the DBX
+    preferences under IRIX 6.3, the text for each item is sometimes
+    too long for the dialog and important information about an item is
+    not visible.
+
+240 (Insert your bug here)
