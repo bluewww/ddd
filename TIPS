@@ -103,7 +103,7 @@ LBL(Edit, GDB Settings, Limit on array elements to print).
 If DDD cannot find a source, don't use LBL(File, Open Source).
 Instead, set the @GDB@ source path via LBL(Edit, @GDB@ Settings).
 
-You can quickly set and delete breakpoints 
+You can quickly set and edit breakpoints 
 by double-clicking in the breakpoint area.
 
 To see the EMPH(actual) type of a C++ object in GDB, set
@@ -117,9 +117,11 @@ To send a signal to the debuggee, use the GDB SAMP(signal) command.
 For instance, to continue execution with an interrupt signal, use
 KBD(signal SIGINT) or KBD(signal 2) at the GDB prompt.
 
-You can quickly look up items (functions, variables, etc.) by
-double-clicking on their names.
-Use LBL(Source, Back) to return to the previous location.
+You can quickly print variable values
+by double-clicking on the variable name.
+
+After looking up an item or stepping through the program, you can use
+LBL(Source, Back) and LBL(Source, Forward) to return to earlier locations.
 
 You can repeat the last command by hitting KEY_RETURN.
 Use KEY(Ctrl+B) and KEY(Ctrl+F) to search the command history.

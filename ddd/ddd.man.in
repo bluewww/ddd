@@ -390,19 +390,16 @@ text.
 .SS "Looking up Definitions"
 .\"
 If you wish to lookup a specific function or variable definition whose
-name is visible in the source text, click with \fImouse button 1\fR on the
-function or variable name.  The name is copied to the argument field.
-Click on the `\fBLookup ()\fR' button to find its definition.
+name is visible in the source text, click with \fImouse button 1\fR on
+the function or variable name.  The name is copied to the argument
+field.  Alter the name if desired and click on the `\fBLookup ()\fR'
+button to find its definition.
 .PP
 .PSPIC @srcdir@/PICS/ddd-source-popup.ps 15.3cm
 .PP
-As a shorter alternative, you can simply press \fImouse button 3\fR on the
+As a faster alternative, you can simply press \fImouse button 3\fR on the
 function name and select the `\fBLookup\fR' item from the source popup
 menu.
-.PP
-As another alternative, you can enter the function name in the
-argument field and click on the `\fBLookup ()\fR' button to find its
-definition.
 .\"
 .SS "Textual Search"
 .\"
@@ -442,14 +439,14 @@ If the source line is visible, click with \fImouse button 1\fR
 on the left of the source line and then on the `\fBBreak at ()\fR'
 button.
 .PP
-As an alternative, you can simply press \fImouse button 3\fR on the left of
-the source line and select the `\fBSet Breakpoint\fR' item from the
-line popup menu.
+As a faster alternative, you can simply press \fImouse button 3\fR on
+the left of the source line and select the `\fBSet Breakpoint\fR' item
+from the line popup menu.
 .PP
 .PSPIC @srcdir@/PICS/ddd-line-popup.ps 15.3cm
 .PP
-As another alternative, you can enter the file and line number in the
-argument field and click on the `\fBBreak at ()\fR' button.
+As an even faster alternative, you can sinply double-click on the left
+of the source line to set a breakpoint.
 .PP
 As yet another alternative, you can select `\fBSource\(->Edit
 Breakpoints\fR'.  Click on the `\fBBreak\fR' button and enter the
@@ -552,7 +549,7 @@ If the function name is visible, click with \fImouse button 1\fR on the
 function name.  The function name is copied to the argument field.
 Click on the `\fBClear at ()\fR' button to set a breakpoint there.
 .PP
-As a shorter alternative, you can simply press \fImouse button 3\fR on the
+As a faster alternative, you can simply press \fImouse button 3\fR on the
 breakpoint and select the `\fBDelete Breakpoint\fR' item from the
 popup menu.
 .PP
@@ -567,6 +564,9 @@ You can change all properties of a breakpoint by pressing \fImouse
 button 3\fR on the breakpoint symbol and select `\fBProperties\fR'
 from the breakpoint popup menu.  This will pop up a dialog showing the 
 current properties of the selected breakpoint.
+.PP
+As an even faster alternative, you can sinply double-click on the
+breakpoint.
 .PP
 .PSPIC @srcdir@/PICS/ddd-bp-properties.ps 15.3cm
 .PP
@@ -993,6 +993,9 @@ the variable name and select the `\fBPrint\fR' item from the popup
 menu.
 .PP
 .PSPIC @srcdir@/PICS/ddd-print-popup.ps 15.3cm
+.PP
+As an even faster alternative, you can also double-click on the
+variable name.
 .\"
 .\"
 .SS "Displaying Complex Values in the Data Window"
@@ -4608,6 +4611,9 @@ The following \s-1@DDD@\s+1 actions may be used in translation tables.
 .\"
 These actions are used to assign the keyboard focus.
 .TP
+.B ddd-get-focus ()
+Assign focus to the element that just received input.
+.TP
 .B ddd-next-tab-group ()
 Assign focus to the next tab group.
 .TP
@@ -4616,9 +4622,6 @@ Assign focus to the previous tab group.
 .TP
 .B ddd-previous-tab-group ()
 Assign focus to the previous tab group.
-.TP
-.B ddd-get-focus ()
-Assign focus to the element that just received input.
 .\"
 .\"
 .\"
@@ -4791,9 +4794,27 @@ character following the cursor is deleted.  Bound to \fBCtrl+D\fR.
 .B gdb-end-of-line ()
 Move cursor to the end of the current line.  Bound to \fBEnd\fR.
 .TP
+.B gdb-forward-character ()
+Move one character to the right.  Bound to \fBRight\fR.
+.TP
+.B gdb-insert-graph-arg ()
+Insert the contents of the data display argument field `\fB()\fR'.
+.TP
+.B gdb-insert-source-arg ()
+Insert the contents of the source argument field `\fB()\fR'.
+.TP
 .B gdb-interrupt ()
 If \s-1@DDD@\s+1 is in incremental search mode, exit it; otherwise
 call \fBgdb-control(^C)\fR.
+.TP
+.B gdb-isearch-prev ()
+Enter reverse incremental search mode.  Bound to \fBCtrl+B\fR.
+.TP
+.B gdb-isearch-next ()
+Enter incremental search mode.  Bound to \fBCtrl+F\fR.
+.TP
+.B gdb-isearch-exit ()
+Exit incremental search mode.  Bound to \s-1\fBESC\fR\s+1.
 .TP
 .B gdb-next-history ()
 Recall next command from history.  Bound to \fBDown\fR.
@@ -4811,24 +4832,6 @@ window, and the source window is editable, perform
 \fIaction\fB(\fIargs...\fB)\fR on the source window instead; if
 \fIaction\fR is not given, perform `\fBself-insert()\fR'.
 .TP
-.B gdb-forward-character ()
-Move one character to the right.  Bound to \fBRight\fR.
-.TP
-.B gdb-insert-graph-arg ()
-Insert the contents of the data display argument field `\fB()\fR'.
-.TP
-.B gdb-insert-source-arg ()
-Insert the contents of the source argument field `\fB()\fR'.
-.TP
-.B gdb-isearch-prev ()
-Enter reverse incremental search mode.  Bound to \fBCtrl+B\fR.
-.TP
-.B gdb-isearch-next ()
-Enter incremental search mode.  Bound to \fBCtrl+F\fR.
-.TP
-.B gdb-isearch-exit ()
-Exit incremental search mode.  Bound to \s-1\fBESC\fR\s+1.
-.TP
 .B gdb-set-line (\fIvalue\fB)
 Set the current line to \fIvalue\fR.  Bound to \fBCtrl+U\fR.
 .\"
@@ -4837,30 +4840,33 @@ Set the current line to \fIvalue\fR.  Bound to \fBCtrl+U\fR.
 .\"
 These actions are used in the source and code windows.
 .TP
-.B source-popup-menu ()
-Pop up a menu, depending on the location.
-.TP
-.B source-start-select-word ()
-Start selecting a word.
-.TP
-.B source-end-select-word ()
-End selecting a word.
-.TP
-.B source-update-glyphs ()
-Update all visible glyphs.  Usually invoked after a scrolling operation.
+.B source-delete-glyph ()
+Delete the breakpoint related to the glyph at cursor position.
 .TP
 .B source-drag-glyph ()
 Initiate a drag on the glyph at cursor position.
-.TP
-.B source-follow-glyph ()
-Continue a drag on the glyph at cursor position.  Usually bound to
-some motion event.
 .TP
 .B source-drop-glyph ([\fIaction\fR])
 Drop the dragged glyph at cursor position.  \fIaction\fR is either
 `\fBmove\fR', meaning to move the dragged glyph, or `\fBcopy\fR',
 meaning to copy the dragged glyph.  If no \fIaction\fR is given,
 `\fBmove\fR' is assumed.
+.TP
+.B source-end-select-word ()
+End selecting a word.
+.TP
+.B source-follow-glyph ()
+Continue a drag on the glyph at cursor position.  Usually bound to
+some motion event.
+.TP
+.B source-popup-menu ()
+Pop up a menu, depending on the location.
+.TP
+.B source-start-select-word ()
+Start selecting a word.
+.TP
+.B source-update-glyphs ()
+Update all visible glyphs.  Usually invoked after a scrolling operation.
 .\"
 .\"
 .\" ---------------

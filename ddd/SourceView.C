@@ -66,6 +66,8 @@ char SourceView_rcsid[] =
 // but does not refer to a specific project, bug, Sunday,
 // or brand of soft drink.
 
+#define LOG_POSITION_HISTORY 0
+
 
 //-----------------------------------------------------------------------------
 #include "Delay.h"		// must be included first for GCC 2.5.8
@@ -186,6 +188,7 @@ XtActionsRec SourceView::actions [] = {
     {"source-drag-glyph",        SourceView::dragGlyphAct       },
     {"source-follow-glyph",      SourceView::followGlyphAct     },
     {"source-drop-glyph",        SourceView::dropGlyphAct       },
+    {"source-delete-glyph",      SourceView::deleteGlyphAct     },
 };
 
 //-----------------------------------------------------------------------
@@ -382,12 +385,6 @@ XmTextPosition SourceView::last_pos_pc             = 0;
 XmTextPosition SourceView::last_start_highlight_pc = 0;
 XmTextPosition SourceView::last_end_highlight_pc   = 0;
 
-XmTextPosition SourceView::last_start_secondary_highlight = 0;
-XmTextPosition SourceView::last_end_secondary_highlight = 0;
-
-XmTextPosition SourceView::last_start_secondary_highlight_pc = 0;
-XmTextPosition SourceView::last_end_secondary_highlight_pc = 0;
-
 string SourceView::last_execution_file = "";
 int    SourceView::last_execution_line = 0;
 string SourceView::last_execution_pc   = "";
@@ -398,7 +395,7 @@ bool SourceView::frame_pos_locked = false;
 int SourceView::current_frame = -1;
 
 StringArray SourceView::history;
-int SourceView::history_position = 0;
+int SourceView::history_position = 1;
 bool SourceView::code_history_locked = false;
 bool SourceView::source_history_locked = false;
 
@@ -786,14 +783,14 @@ void SourceView::line_popup_set_pcCB(Widget w,
 
 // ***************************************************************************
 //
-void SourceView::move_pc(const string& a, Widget w)
+bool SourceView::move_pc(const string& a, Widget w)
 {
     string address = a;
 
     if (address.contains('*', 0))
     {
 	if (compare_address(address.after('*'), last_execution_pc) == 0)
-	    return;		// PC already at address
+	    return false;	// PC already at address
     }
     else
     {
@@ -802,7 +799,7 @@ void SourceView::move_pc(const string& a, Widget w)
 
 	if (file_matches(file, last_execution_file)
 	    && line == last_execution_line)
-	    return;		// PC already at address
+	    return false;	// PC already at address
     }
 
     if (gdb->has_jump_command())
@@ -813,16 +810,13 @@ void SourceView::move_pc(const string& a, Widget w)
 	// immediately since `jump' requires confirmation when jumping
 	// out of the current function.
 
-	if (gdb->type() != XDB)
-	{
-	    // GDB and DBX immediately resume execution, which we don't
-	    // want.  Create a temporary breakpoint at ADDRESS.
-	    create_temp_bp(address, w);
-	}
-
 	switch (gdb->type())
 	{
 	case DBX:
+	    // DBX immediately resumes execution - create a temp
+	    // breakpoint at ADDRESS
+	    create_temp_bp(address, w);
+
 	    // DBX `cont at ' requires a line number.
 	    gdb_command("file " + address.before(':'));
 	    // FALL THROUGH
@@ -833,10 +827,13 @@ void SourceView::move_pc(const string& a, Widget w)
 	    break;
 
 	case GDB:
+	    // GDB immediately resumes execution - create a temp
+	    // breakpoint at ADDRESS
+	    create_temp_bp(address, w);
 	    break;
 
 	case JDB:
-	    break;		// Unsupported
+	    break;		// Never reached
 	}
 
 	// Jump to the new address and clear the breakpoint again
@@ -845,10 +842,12 @@ void SourceView::move_pc(const string& a, Widget w)
 	c.callback = clearJumpBP;
 	c.data     = XtPointer(old_max_breakpoint_number_seen);
 	gdb_command(c);
+
+	return true;
     }
-    else if (gdb->has_assign_command())
+    else if (gdb->type() != JDB && gdb->has_assign_command())
     {
-	// Use the `set $pc = ADDR' alternative.
+	// Try the `set $pc = ADDR' alternative.
 	if (address.contains('*', 0))
 	{
 	    address = address.after('*');
@@ -861,13 +860,20 @@ void SourceView::move_pc(const string& a, Widget w)
 	}
 
 	if (address == "")
+	{
 	    set_status("Cannot determine address of " + a);
+	}
 	else
+	{
 	    gdb_command(gdb->assign_command("$pc", address), w);
+	    return true;
+	}
     }
+
+    return false;
 }
 
-void SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
+bool SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
 {
     string address = a;
 
@@ -875,20 +881,23 @@ void SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
 
     BreakPoint *bp = bp_map.get(bp_nr);
     if (bp == 0)
-	return;			// No such breakpoint
+	return false;		// No such breakpoint
 
-    if (address.contains('*', 0))
+    if (!copy)
     {
-	if (compare_address(address.after('*'), bp->address()) == 0)
-	    return;		// Breakpoint already at address
-    }
-    else
-    {
-	string file = address.before(':');
-	int line    = get_positive_nr(address.after(':'));
+	if (address.contains('*', 0))
+	{
+	    if (compare_address(address.after('*'), bp->address()) == 0)
+		return false;	// Breakpoint already at address
+	}
+	else
+	{
+	    string file = address.before(':');
+	    int line    = get_positive_nr(address.after(':'));
 
-	if (bp_matches(bp, file, line))
-	    return;		// Breakpoint already at address
+	    if (bp_matches(bp, file, line))
+		return false;	// Breakpoint already at address
+	}
     }
 
     // Create a new breakpoint at ADDRESS, making it inherit the
@@ -896,7 +905,7 @@ void SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
     ostrstream os;
     bool ok = bp->get_state(os, 0, false, address);
     if (!ok)
-	return;			// Command failed
+	return false;		// Command failed
 
     string commands(os);
     commands.gsub("@0@", itostring(next_breakpoint_number()));
@@ -913,6 +922,8 @@ void SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
 	// Delete old breakpoint
 	delete_bp(bp_nr);
     }
+
+    return true;
 }
 
 void SourceView::set_bp_cond(int bp_nr, const string& cond, Widget w)
@@ -1486,6 +1497,7 @@ void SourceView::set_source_argCB(Widget text_w,
 	endIndex = text.index('\n', endPos - text.length()) + 1;
 
     bool in_bp_area = false;
+    IntArray bp_found;
     if (selection_click
 	&& startIndex == endIndex
 	&& startPos < XmTextPosition(text.length())
@@ -1494,7 +1506,6 @@ void SourceView::set_source_argCB(Widget text_w,
 	&& text[endPos] != '\n')
     {
 	string pos = "";
-	bool bp_found = false;
 
 	if (text_w == source_text_w)
 	{
@@ -1519,7 +1530,15 @@ void SourceView::set_source_argCB(Widget text_w,
 		     bp != 0;
 		     bp = bp_map.next(ref))
 		{
-		    bp_found |= (bp->selected() = bp_matches(bp, line_nr));
+		    if (bp_matches(bp, line_nr))
+		    {
+			bp->selected() = true;
+			bp_found += bp->number();
+		    }
+		    else
+		    {
+			bp->selected() = false;
+		    }
 		}
 	    }
 	}
@@ -1544,17 +1563,24 @@ void SourceView::set_source_argCB(Widget text_w,
 		     bp != 0;
 		     bp = bp_map.next(ref))
 		{
-		    bp_found |= (bp->selected() = 
-				 (bp->type() == BREAKPOINT && 
-				  compare_address(pos, bp->address()) == 0));
+		    if (bp->type() == BREAKPOINT && 
+			compare_address(pos, bp->address()) == 0)
+		    {
+			bp->selected() = true;
+			bp_found += bp->number();
+		    }
+		    else
+		    {
+			bp->selected() = false;
+		    }
 		}
 	    }
 	}
 
 	if (in_bp_area && double_click)
 	{
-	    if (bp_found)
-		clear_bp(pos, text_w);
+	    if (bp_found.size() > 0)
+		edit_bps(bp_found, text_w);
 	    else
 		create_bp(pos, text_w);
 	}
@@ -1582,7 +1608,7 @@ void SourceView::set_source_argCB(Widget text_w,
 	{
 	    source_arg->set_string(s);
 	    if (double_click)
-		lookup(s);	// Doesn't work yet -- FIXME
+		gdb_command(gdb->print_command(s, false), text_w);
 	}
     }
 }
@@ -2491,7 +2517,6 @@ void SourceView::read_file (string file_name,
 		       0, XmTextGetLastPosition(source_text_w),
 		       XmHIGHLIGHT_NORMAL);
     last_top = last_pos = last_start_highlight = last_end_highlight = 0;
-    last_start_secondary_highlight = last_end_secondary_highlight = 0;
     update_glyphs(source_text_w);
 
     if (app_data.source_window)
@@ -3614,7 +3639,7 @@ void SourceView::show_position (string position, bool silent)
 	   
 	if (line > 0 && line <= line_count)
 	{
-	    add_to_history(file_name, line);
+ 	    add_to_history(file_name, line);
     
 	    XmTextPosition pos = pos_of_line(line);
 	    int indent = indent_amount(source_text_w, pos);
@@ -3917,6 +3942,8 @@ void SourceView::lookup(string s, bool silent)
 	int line = atoi(s);
 	if (line > 0 && line <= line_count)
 	{
+	    add_current_to_history();
+
 	    switch (gdb->type())
 	    {
 	    case GDB:
@@ -3963,6 +3990,7 @@ void SourceView::lookup(string s, bool silent)
 	    {
 		if (nr == bp->number())
 		{
+		    add_current_to_history();
 		    show_position(bp->pos());
 		    show_pc(bp->address());
 		    break;
@@ -3976,7 +4004,8 @@ void SourceView::lookup(string s, bool silent)
     }
     else if (is_file_pos(s))
     {
-	// File:line given
+	// FILE:LINE given
+	add_current_to_history();
 	if (gdb->type() == GDB)
 	{
 	    Command c("list " + s);
@@ -3991,6 +4020,7 @@ void SourceView::lookup(string s, bool silent)
     else
     {
 	// Function or *address given
+	add_current_to_history();
 	switch (gdb->type())
 	{
 	case GDB:
@@ -4097,6 +4127,8 @@ void SourceView::process_use(string& use_output)
 // Position history
 //-----------------------------------------------------------------------
 
+// All entries in the history have the format `FILE:LINE[:ADDRESS]'.
+
 // Add position to history
 void SourceView::add_to_history(const string& file_name, int line)
 {
@@ -4123,34 +4155,36 @@ void SourceView::add_to_history(const string& file_name, int line)
 
     string entry = source_name + ":" + itostring(line);
 
-    string last_entry;
-    if (history.size() > 0)
+    string current_entry = "";
+    if (history.size() > 0 && history_position > 0)
     {
-	last_entry = history[history.size() - 1];
-	if (last_entry.freq(':') == 2)
+	current_entry = history[history_position - 1];
+	if (current_entry.freq(':') == 2)
 	{
-	    int last_colon = last_entry.index(':', -1);
-	    last_entry = last_entry.before(last_colon);
+	    int last_colon = current_entry.index(':', -1);
+	    current_entry = current_entry.before(last_colon);
 	}
     }
 
-    if (entry != last_entry)
+    if (entry != current_entry)
     {
-	history += entry;
-	history_position = history.size();
+	if (history_position < history.size())
+	{
+	    history[history_position++] = entry;
+	}
+	else
+	{
+	    history += entry;
+	    history_position = history.size();
+	}
+
+	StringArray new_history;
+	for (int i = 0; i < history_position; i++)
+	    new_history += history[i];
+	history = new_history;
     }
 
-    if (last_start_secondary_highlight || last_end_secondary_highlight)
-    {
-	XmTextSetHighlight(source_text_w,
-			   last_start_secondary_highlight,
-			   last_end_secondary_highlight,
-			   XmHIGHLIGHT_NORMAL);
-
-	last_start_secondary_highlight = last_end_secondary_highlight = 0;
-    }
-
-#if 0
+#if LOG_POSITION_HISTORY
     clog << "Position history:\n";
     for (int i = 0; i < history.size(); i++)
 	clog << i << (i == history_position - 1 ? "* " : "  ") 
@@ -4168,43 +4202,86 @@ void SourceView::add_to_history(const string& address)
 	return;
     }
 
+    string new_entry = "";
+
     if (history.size() > 0)
     {
-	string& last_entry = history[history.size() - 1];
-	if (last_entry.freq(':') < 2)
+	string& current_entry = history[history_position - 1];
+	if (current_entry.freq(':') < 2)
 	{
-	    // Append address to this position
-	    last_entry += ":" + address;
+	    // Append address to current position
+	    current_entry += ":" + address;
 	}
 	else
 	{
 	    // Address already there
-	    int last_colon = last_entry.index(':', -1);
-	    string last_address = last_entry.after(last_colon);
-	    if (address != last_address)
+	    int last_colon = current_entry.index(':', -1);
+	    string current_address = current_entry.after(last_colon);
+	    if (address != current_address)
 	    {
 		// Add new entry
-		string new_entry = last_entry.through(last_colon) + address;
-
-		history += new_entry;
-		history_position = history.size();
+		new_entry = current_entry.through(last_colon) + address;
 	    }
 	}
     }
     else
     {
 	// No source position yet: add address
-	history += "::" + address;
-	history_position = history.size();
+	new_entry = "::" + address;
     }
 
-#if 0
+    if (new_entry != "")
+    {
+	if (history_position < history.size())
+	{
+	    history[history_position++] = new_entry;
+	}
+	else
+	{
+	    history += new_entry;
+	    history_position = history.size();
+	}
+
+	StringArray new_history;
+	for (int i = 0; i < history_position; i++)
+	    new_history += history[i];
+	history = new_history;
+    }
+
+
+#if LOG_POSITION_HISTORY
     clog << "Position history:\n";
     for (int i = 0; i < history.size(); i++)
 	clog << i << (i == history_position - 1 ? "* " : "  ") 
 	     << history[i] << "\n";
     clog << "\n";
 #endif
+}
+
+// Add current position to history
+void SourceView::add_current_to_history()
+{
+    XmTextPosition pos;
+    int line_nr;
+    bool in_text;
+    int bp_nr;
+    string address;
+    bool pos_found;
+
+    // Get position in source code
+    pos = XmTextGetInsertionPosition(source_text_w);
+    pos_found = get_line_of_pos(source_text_w, pos, line_nr, address, 
+				in_text, bp_nr);
+    if (pos_found)
+	add_to_history(current_source_name(), line_nr);
+
+
+    // Get position in machine code
+    pos = XmTextGetInsertionPosition(code_text_w);
+    pos_found = get_line_of_pos(code_text_w, pos, line_nr, address, 
+				in_text, bp_nr);
+    if (pos_found && address != "")
+	add_to_history(address);
 }
 
 // Lookup entry from position history
@@ -4249,38 +4326,9 @@ void SourceView::goto_entry(string entry)
 
 	if (is_current_file(file_name) && line > 0 && line <= line_count)
 	{
-	    XmTextSetHighlight(source_text_w,
-			       last_start_secondary_highlight,
-			       last_end_secondary_highlight,
-			       XmHIGHLIGHT_NORMAL);
-
-	    last_start_secondary_highlight = pos_of_line(line);
-	    last_end_secondary_highlight   = last_start_secondary_highlight;
-	    if (current_source != "")
-	    {
-		last_end_secondary_highlight 
-		    = current_source.index('\n', 
-					   last_start_secondary_highlight) + 1;
-	    }
-
-	    XmHighlightMode mode = XmHIGHLIGHT_SECONDARY_SELECTED;
-
-	    if (line == last_execution_line
-		&& file_name == last_execution_file)
-	    {
-		mode = display_glyphs ? 
-		    XmHIGHLIGHT_NORMAL : XmHIGHLIGHT_SELECTED;
-	    }
-
-	    XmTextSetHighlight(source_text_w,
-			       last_start_secondary_highlight,
-			       last_end_secondary_highlight,
-			       mode);
-
-	    int indent = indent_amount(source_text_w, 
-				       last_start_secondary_highlight);
-	    XmTextPosition pos = last_start_secondary_highlight + indent;
-	    SetInsertionPosition(source_text_w, pos, true);
+	    XmTextPosition pos = pos_of_line(line);
+	    int indent = indent_amount(source_text_w, pos);
+	    SetInsertionPosition(source_text_w, pos + indent, true);
 	}
     }
 
@@ -4290,10 +4338,10 @@ void SourceView::goto_entry(string entry)
 	code_history_locked = true;
 	show_pc(address, 
 		address == last_execution_pc ? 
-		XmHIGHLIGHT_SELECTED : XmHIGHLIGHT_SECONDARY_SELECTED);
+		XmHIGHLIGHT_SELECTED : XmHIGHLIGHT_NORMAL);
     }
 
-#if 0
+#if LOG_POSITION_HISTORY
     clog << "Position history:\n";
     for (int i = 0; i < history.size(); i++)
 	clog << i << (i == history_position - 1 ? "* " : "  ") 
@@ -4304,20 +4352,28 @@ void SourceView::goto_entry(string entry)
 
 void SourceView::go_back()
 {
-    if (history_position == history.size())
-	--history_position;
-    if (history_position > 0)
-	goto_entry(history[--history_position]);
+    if (history_position > 1 && history.size() > 0)
+    {
+	const string& entry = history[--history_position - 1];
+	goto_entry(entry);
+    }
     else
+    {
 	set_status("No previous source position.");
+    }
 }
 
 void SourceView::go_forward()
 {
-    if (history_position + 1 < history.size())
-	goto_entry(history[++history_position]);
+    if (history_position < history.size())
+    {
+	const string& entry = history[history_position++];
+	goto_entry(entry);
+    }
     else
+    {
 	set_status("No next source position.");
+    }
 }
 
 // Clear history
@@ -4325,7 +4381,7 @@ void SourceView::clear_history()
 {
     static StringArray empty;
     history               = empty;
-    history_position      = 0;
+    history_position      = 1;
     code_history_locked   = false;
     source_history_locked = false;
 }
@@ -5434,26 +5490,34 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
 					    XtPointer client_data, 
 					    XtPointer)
 {
-    if (breakpoint_list_w == 0)
-	return;
-
-    BreakpointPropertiesInfo *info = new BreakpointPropertiesInfo;
-    info->spin_locked = true;
-
+    IntArray breakpoint_nrs;
     if (client_data == 0)
     {
-	IntArray breakpoint_nrs;
-	getDisplayNumbers(breakpoint_list_w, info->nrs);
+	if (breakpoint_list_w == 0)
+	    return;
+	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
     }
     else
     {
-	info->nrs += *((int *)client_data);
+	breakpoint_nrs += *((int *)client_data);
     }
 
+    edit_bps(breakpoint_nrs);
+}
+
+void SourceView::edit_bps(IntArray& breakpoint_nrs, Widget /* origin */)
+{
+    if (breakpoint_nrs.size() == 0)
+	return;			// No breakpoints given
+
     // Check for first breakpoint
-    BreakPoint *bp = bp_map.get(info->nrs[0]);
+    BreakPoint *bp = bp_map.get(breakpoint_nrs[0]);
     if (bp == 0)
 	return;			// No such breakpoint
+
+    BreakpointPropertiesInfo *info = new BreakpointPropertiesInfo;
+    info->spin_locked = true;
+    info->nrs = breakpoint_nrs;
 
     Arg args[10];
     int arg = 0;
@@ -8210,19 +8274,23 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e,
     else
 	cerr << "source-drop-glyph: unknown parameter " << quote(p) << "\n";
 
+    bool changed = false;
     if (current_drag_breakpoint)
     {
 	// Move breakpoint
-	move_bp(current_drag_breakpoint, address, text_w, copy);
+	changed = move_bp(current_drag_breakpoint, address, text_w, copy);
     }
     else
     {
 	// Move exec pos
-	line_popup_set_pcCB(text_w, XtPointer(&address), XtPointer(0));
+	changed = move_pc(address, text_w);
     }
 
-    // Make sure this position is kept visible
-    SetInsertionPosition(text_w, pos);
+    if (changed)
+    {
+	// Make sure this position is kept visible
+	SetInsertionPosition(text_w, pos);
+    }
 
     current_drag_origin     = 0;
     current_drag_breakpoint = 0;
@@ -8299,6 +8367,23 @@ void SourceView::log_glyphs()
     }
 }
 
+
+// Delete glyph (breakpoints)
+
+void SourceView::deleteGlyphAct(Widget glyph, XEvent *, String *, Cardinal *)
+{
+    IntArray bps;
+    MapRef ref;
+    for (BreakPoint *bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+    {
+	if (glyph == bp->source_glyph() || glyph == bp->code_glyph())
+	{
+	    bps += bp->number();
+	}
+    }
+
+    delete_bps(bps, glyph);
+}
 
 
 //----------------------------------------------------------------------------
@@ -8645,17 +8730,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
     if (current_code != "")
 	pos_line_end = current_code.index('\n', pos) + 1;
 
-    // Clear old selections
-    if (last_start_secondary_highlight_pc)
-    {
-	XmTextSetHighlight (code_text_w,
-			    last_start_secondary_highlight_pc, 
-			    last_end_secondary_highlight_pc,
-			    XmHIGHLIGHT_NORMAL);
-	last_start_secondary_highlight_pc = 0;
-	last_end_secondary_highlight_pc   = 0;
-    }
-
+    // Clear old selection
     if (last_start_highlight_pc)
     {
 	XmTextSetHighlight (code_text_w,
@@ -8699,18 +8774,6 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	    }
 
 	    last_pos_pc = pos;
-	}
-    }
-    else if (mode == XmHIGHLIGHT_SECONDARY_SELECTED)
-    {
-	if (pos_line_end)
-	{
-	    XmTextSetHighlight (code_text_w,
-				pos, pos_line_end,
-				XmHIGHLIGHT_SECONDARY_SELECTED);
-
-	    last_start_secondary_highlight_pc = pos;
-	    last_end_secondary_highlight_pc   = pos_line_end;
 	}
     }
 

@@ -80,6 +80,8 @@ extern ArgField* source_arg;
 class SourceView {
     static void add_to_history(const string& file_name, int line);
     static void add_to_history(const string& address);
+    static void add_current_to_history();
+
     static void goto_entry(string entry);
 
     static void set_source_argCB         (Widget, XtPointer, XtPointer);
@@ -164,12 +166,12 @@ class SourceView {
     static void clearBP(void *client_data, XtIntervalId *timer);
     static void clearJumpBP(const string& answer, void *client_data);
 
-    // Move/Copy breakpoint NR to ADDRESS
-    static void move_bp(int nr, const string& address, Widget origin = 0,
+    // Move/Copy breakpoint NR to ADDRESS; return true if changed
+    static bool move_bp(int nr, const string& address, Widget origin = 0,
 			bool copy = false);
-    static void copy_bp(int nr, const string& address, Widget origin = 0)
+    static bool copy_bp(int nr, const string& address, Widget origin = 0)
     {
-	move_bp(nr, address, origin, true);
+	return move_bp(nr, address, origin, true);
     }
 
     // Set condition of breakpoint NR to COND
@@ -203,6 +205,7 @@ class SourceView {
     static void dragGlyphAct      (Widget, XEvent*, String*, Cardinal*);
     static void followGlyphAct    (Widget, XEvent*, String*, Cardinal*);
     static void dropGlyphAct      (Widget, XEvent*, String*, Cardinal*);
+    static void deleteGlyphAct    (Widget, XEvent*, String*, Cardinal*);
 
     //-----------------------------------------------------------------------
     // Timer procedures
@@ -234,12 +237,6 @@ class SourceView {
     static bool source_history_locked;
     static bool code_history_locked;
     static bool checking_scroll;
-
-    static XmTextPosition last_start_secondary_highlight;
-    static XmTextPosition last_end_secondary_highlight;
-
-    static XmTextPosition last_start_secondary_highlight_pc;
-    static XmTextPosition last_end_secondary_highlight_pc;
 
     static Widget toplevel_w;	 // Top-level widget
 
@@ -727,10 +724,11 @@ public:
     // Create a temporary breakpoint at A and continue execution.
     static void temp_n_cont(const string& a, Widget origin = 0);
 
-    // Enable/Disable/Delete breakpoints
+    // Enable/Disable/Delete/Edit breakpoints
     static void enable_bps     (IntArray& nrs, Widget origin = 0);
     static void disable_bps    (IntArray& nrs, Widget origin = 0);
     static void delete_bps     (IntArray& nrs, Widget origin = 0);
+    static void edit_bps       (IntArray& nrs, Widget origin = 0);
 
     inline static void enable_bp(int nr, Widget origin = 0)
     {
@@ -753,6 +751,13 @@ public:
 	delete_bps(nrs, origin);
     }
 
+    inline static void edit_bp(int nr, Widget origin = 0)
+    {
+	IntArray nrs;
+	nrs += nr;
+	edit_bps(nrs, origin);
+    }
+
     // Set breakpoint commands
     static void set_bp_commands(IntArray& nrs, const StringArray& commands,
 				Widget origin = 0);
@@ -768,8 +773,8 @@ public:
     static string all_numbers(const IntArray& nrs);
     static bool all_bps(const IntArray& nrs);
 	    
-    // Move PC to ADDRESS
-    static void move_pc(const string& address, Widget origin = 0);
+    // Move PC to ADDRESS; return true if changed.
+    static bool move_pc(const string& address, Widget origin = 0);
 
     // Return `clear ARG' command.  If CLEAR_NEXT is set, attempt to
     // guess the next event number and clear this one as well.
