@@ -813,8 +813,7 @@ void init_session(const string& restart, const string& settings,
 		init_commands = init_commands.after('\n');
 
 		if (!recording_defines && 
-		    (is_file_cmd(cmd, gdb) || is_core_cmd(cmd) || 
-		     cmd.contains("set confirm", 0)))
+		    (is_file_cmd(cmd, gdb) || is_core_cmd(cmd)))
 		{
 		    // This is a `file' command that is not part of
 		    // a definition: execute this command the ordinary way
