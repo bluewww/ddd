@@ -709,7 +709,11 @@ ProgramInfo::ProgramInfo()
     if ((file == NO_GDB_ANSWER || core == NO_GDB_ANSWER) && argc >= 2)
     {
 	string last_file = cmd_file(argv[argc - 1]);
-	if (is_exec_file(last_file))
+	if (gdb->type() == JDB)
+	{
+	    file = last_file;
+	}
+	else if (is_exec_file(last_file))
 	{
 	    file = last_file;
 	    core = "";

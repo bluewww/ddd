@@ -234,7 +234,7 @@ void load_history(const string& file)
 	    if (line[0] != '\0')
 	    {
 		bool added = false;
-		if (is_file_cmd(line, gdb))
+		if (is_file_cmd(line, gdb) && line[0] != '#')
 		{
 		    if (first_command)
 			first_is_file = true;
@@ -543,7 +543,11 @@ static StringArray recent_files;
 // Add FILE to recent file history
 void add_to_recent(const string& file)
 {
-    string full_path = SourceView::full_path(file);
+    string full_path;
+    if (gdb->type() != JDB)
+	full_path = SourceView::full_path(file);
+    else
+	full_path = file;
 
     if (recent_files.size() > 0 && 
 	recent_files[recent_files.size() - 1] == full_path)
@@ -551,7 +555,9 @@ void add_to_recent(const string& file)
 
     for (int i = 0; i < recent_files.size(); i++)
 	if (recent_files[i] == full_path ||
-	    !remote_gdb() && same_file(recent_files[i], full_path))
+	    (!remote_gdb() && 
+	     gdb->type() != JDB &&
+	     same_file(recent_files[i], full_path)))
 	    recent_files[i] = ""; // Clear old entry
 
     recent_files += full_path;
@@ -589,17 +595,17 @@ static const char *basename(const char *name)
 }
 
 // FULL_PATH is /X/Y/Z/NAME; expand NAME to Z/NAME.
-static bool expand_label(string& name, const string& full_path)
+static bool expand_label(string& name, const string& full_path, char sep)
 {
-    // Set index to the last `/' before NAME
+    // Set index to the last SEP before NAME
     int index = full_path.length() - name.length();
-    index = full_path.index('/', index - full_path.length() - 1);
+    index = full_path.index(sep, index - full_path.length() - 1);
 
     if (index >= 1)
     {
-	// Set index to the last `/' before Z
+	// Set index to the last SEP before Z
 	index--;
-	index = full_path.index('/', index - full_path.length() - 1);
+	index = full_path.index(sep, index - full_path.length() - 1);
     }
 
     if (index >= 1)
@@ -627,6 +633,10 @@ static void update_recent_menu(MMDesc *items)
 	labels += basename(recent_files[i]);
 
     // While there are any duplicate labels, add the directory names
+    char sep = '/';
+    if (gdb->type() == JDB)
+	sep = '.';
+
     i = 0;
     while (i < labels.size())
     {
@@ -635,12 +645,12 @@ static void update_recent_menu(MMDesc *items)
 	{
 	    if (labels[i] == labels[j])
 	    {
-		if (expand_label(labels[j], recent_files[j]))
+		if (expand_label(labels[j], recent_files[j], sep))
 		    expanded = true;
 	    }
 	}
 
-	if (expanded && expand_label(labels[i], recent_files[i]))
+	if (expanded && expand_label(labels[i], recent_files[i], sep))
 	{
 	    // Try again with expanded labels
 	}
@@ -659,7 +669,8 @@ static void update_recent_menu(MMDesc *items)
 	Widget w = items[i].widget;
 	set_label(w, label);
 
-	if (!remote_gdb() && !is_exec_file(recent_files[i]))
+	if (!remote_gdb() && gdb->type() != JDB && 
+	    !is_exec_file(recent_files[i]))
 	    set_sensitive(w, false); // File is not loadable now
 	else
 	    set_sensitive(w, true);
