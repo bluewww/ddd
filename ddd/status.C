@@ -56,9 +56,8 @@ char status_rcsid[] =
 #include <Xm/Label.h>
 #include <Xm/MenuShell.h>
 
-#if LESSTIF_HACKS
-#include <X11/IntrinsicP.h>
-#endif
+#include <X11/IntrinsicP.h>	// LessTif hacks
+#include "LessTifH.h"
 
 //-----------------------------------------------------------------------------
 // Data
@@ -227,20 +226,21 @@ Widget status_history(Widget parent)
 	} while (i != current_history);
     }
 
-#if LESSTIF_HACKS
-    // Some Motif versions (esp. LessTif 0.79) fail to resize the
-    // shell properly.  Use this hack instead.
-    XmFontList font_list;
-    XtVaGetValues(history_label, XmNfontList, &font_list, NULL);
+    if (lesstif_hacks_enabled)
+    {
+	// Some Motif versions (esp. LessTif 0.79) fail to resize the
+	// shell properly.  Use this hack instead.
+	XmFontList font_list;
+	XtVaGetValues(history_label, XmNfontList, &font_list, NULL);
     
-    Dimension history_width  = history_msg.width(font_list)  + 6;
-    Dimension history_height = history_msg.height(font_list) + 6;
+	Dimension history_width  = history_msg.width(font_list)  + 6;
+	Dimension history_height = history_msg.height(font_list) + 6;
 
-    XtResizeWidget(history_label, history_width, history_height, 0);
-    XtResizeWidget(history_row,   history_width, history_height, 0);
+	XtResizeWidget(history_label, history_width, history_height, 0);
+	XtResizeWidget(history_row,   history_width, history_height, 0);
 
-    XtResizeWidget(history_shell, history_width, history_height, 1);
-#endif
+	XtResizeWidget(history_shell, history_width, history_height, 1);
+    }
 
     XtVaSetValues(history_label, XmNlabelString, history_msg.xmstring(), 
 		  XtPointer(0));

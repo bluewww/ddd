@@ -29,6 +29,8 @@
 char MakeMenu_rcsid[] = 
     "$Id$";
 
+#include "MakeMenu.h"
+
 #include "assert.h"
 #include "strclass.h"
 #include "MString.h"
@@ -44,7 +46,7 @@ char MakeMenu_rcsid[] =
 #include <Xm/Scale.h>
 #include <Xm/Label.h>
 
-#include "MakeMenu.h"
+#include "LessTifH.h"
 #include "bool.h"
 #include "verify.h"
 
@@ -106,7 +108,7 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
 	    widget = verify(XmCreateCascadeButton(shell, name, args, arg));
 
-#if LESSTIF_HACKS
+            if (lesstif_hacks_enabled)
 	    {
 		// LessTif has a very tight packing of menu items;
 		// place a few spaces around the labels to increase
@@ -138,7 +140,6 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 				  NULL);
 		}
 	    }
-#endif	    
 	    break;
 
 	case MMRadioMenu:

@@ -59,10 +59,9 @@ char HelpCB_rcsid[] =
 
 #include <X11/cursorfont.h>
 #include <X11/StringDefs.h>
+#include <X11/IntrinsicP.h>	// LessTif hacks
 
-#if LESSTIF_HACKS
-#include <X11/IntrinsicP.h>
-#endif
+#include "LessTifH.h"
 
 #include "strclass.h"
 #include "cook.h"
@@ -1238,19 +1237,20 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XtPopdown(tip_shell);
     }
 
-#if LESSTIF_HACKS
-    // Some Motif versions (esp. LessTif 0.79) fail to resize the
-    // shell properly.  Use this hack instead.
-    XmFontList font_list;
-    XtVaGetValues(tip_label, XmNfontList, &font_list, NULL);
+    if (lesstif_hacks_enabled)
+    {
+	// Some Motif versions (esp. LessTif 0.79) fail to resize the
+	// shell properly.  Use this hack instead.
+	XmFontList font_list;
+	XtVaGetValues(tip_label, XmNfontList, &font_list, NULL);
     
-    Dimension tip_width  = tip.width(font_list)  + 6;
-    Dimension tip_height = tip.height(font_list) + 6;
+	Dimension tip_width  = tip.width(font_list)  + 6;
+	Dimension tip_height = tip.height(font_list) + 6;
 
-    XtResizeWidget(tip_label, tip_width, tip_height, 0);
-    XtResizeWidget(tip_row,   tip_width, tip_height, 0);
-    XtResizeWidget(tip_shell, tip_width, tip_height, 1);
-#endif
+	XtResizeWidget(tip_label, tip_width, tip_height, 0);
+	XtResizeWidget(tip_row,   tip_width, tip_height, 0);
+	XtResizeWidget(tip_shell, tip_width, tip_height, 1);
+    }
 
     XtVaSetValues(tip_label, XmNlabelString, tip.xmstring(), NULL);
 

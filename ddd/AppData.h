@@ -207,6 +207,8 @@
 #define XtNtoolRightOffset       "toolRightOffset"
 #define XtNtoolTopOffset         "toolTopOffset"
 #define XtCOffset                "Offset"
+#define XtNlessTifHacks          "lessTifHacks"
+#define XtCLessTifHacks          "LessTifHacks"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
 #define XtCVersion               "Version"
@@ -302,6 +304,7 @@ struct AppData {
     Boolean sticky_tool;
     int     tool_right_offset;
     int     tool_top_offset;
+    Boolean lesstif_hacks;
     String  dddinit_version;
     String  app_defaults_version;
 };

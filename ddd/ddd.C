@@ -166,17 +166,15 @@ char ddd_rcsid[] =
 #include <X11/Xmu/Editres.h>
 #endif
 
-#if LESSTIF_HACKS
-#include <X11/IntrinsicP.h>
-
+#include <X11/IntrinsicP.h>	// LessTif hacks
 extern "C" {
 #define new new_w
 #define class class_w
-#include <Xm/SashP.h>	  // XmIsSash()
+#include <Xm/SashP.h>		// XmIsSash(), for LessTif hacks
 #undef class
 #undef new
 }
-#endif
+#include "LessTifH.h"
 
 // Lots of DDD stuff
 #include "AgentM.h"
@@ -458,6 +456,12 @@ static XrmOptionDescRec options[] = {
 
 { "--check-configuration",  XtNcheckConfiguration,   XrmoptionNoArg, S_true },
 { "-check-configuration",   XtNcheckConfiguration,   XrmoptionNoArg, S_true },
+
+{ "--lesstif-hacks",        XtNlessTifHacks,         XrmoptionNoArg, S_true },
+{ "-lesstif-hacks",         XtNlessTifHacks,         XrmoptionNoArg, S_true },
+
+{ "--no-lesstif-hacks",     XtNlessTifHacks,         XrmoptionNoArg, S_false },
+{ "-no-lesstif-hacks",      XtNlessTifHacks,         XrmoptionNoArg, S_false },
 
 { "--help",                 XtNshowInvocation,       XrmoptionNoArg, S_true },
 { "-help",                  XtNshowInvocation,       XrmoptionNoArg, S_true },
@@ -1397,6 +1401,9 @@ int main(int argc, char *argv[])
     // Register own converters
     registerOwnConverters();
 
+    // Global variables: Set lesstif hacks
+    lesstif_hacks_enabled             = app_data.lesstif_hacks;
+
     // Global variables: Set maximum lengths for `shorten' calls
     max_value_tip_length              = app_data.max_value_tip_length;
     max_value_doc_length              = app_data.max_value_doc_length;
@@ -2200,8 +2207,10 @@ static void fix_status_size()
 		  XmNallowResize, False,
 		  NULL);
 
-#if LESSTIF_HACKS
-    // Simulate a drag of the lowest sash to the bottom.  Ugly hack.
+    if (!lesstif_hacks_enabled)
+	return;
+
+    // Simulate a drag of the lowest sash to the bottom.  Ugly LessTif hack.
 
     // Find the children of the paned window
     Widget paned = XtParent(status_form);
@@ -2237,6 +2246,7 @@ static void fix_status_size()
 
     if (sash == 0)
 	return;			// No sash found
+
 
     // Simulate a vertical drag of MOVEMENT pixels
     const Dimension movement = max(height, HeightOfScreen(XtScreen(sash)));
@@ -2295,7 +2305,6 @@ static void fix_status_size()
     event.xbutton.button      = Button1;
     event.xbutton.same_screen = True;
     XtDispatchEvent(&event);
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2988,10 +2997,12 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNresizable,          False); arg++;
     XtSetArg(args[arg], XmNfillOnSelect,       True); arg++;
     XtSetArg(args[arg], XmNset,                True); arg++;
-#if LESSTIF_HACKS
+
     MString spaces("   ");
-    XtSetArg(args[arg], XmNlabelString,        spaces.xmstring()); arg++;
-#endif
+    if (lesstif_hacks_enabled)
+    {
+	XtSetArg(args[arg], XmNlabelString,        spaces.xmstring()); arg++;
+    }
 
     led_w = verify(XmCreateToggleButton(status_form, "led", args, arg));
     XtManageChild(led_w);
@@ -3053,13 +3064,12 @@ static void create_status(Widget parent)
     XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
     Dimension new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
 					  size.height, unit_type);
-    XtVaSetValues(led_w,
-#if LESSTIF_HACKS
-		  XmNindicatorSize, new_height - 3,
-#else
-		  XmNindicatorSize, new_height - 1,
-#endif
-		  NULL);
+
+    if (lesstif_hacks_enabled)
+	XtVaSetValues(led_w, XmNindicatorSize, new_height - 3, NULL);
+    else
+	XtVaSetValues(led_w, XmNindicatorSize, new_height - 1, NULL);
+
     XtVaSetValues(arrow_w,
 		  XmNheight, new_height - 2,
 		  XmNwidth,  new_height - 2,

@@ -546,6 +546,7 @@ XSTUFF_OBJECTS = \
 	Delay.o      \
 	DestroyCB.o  \
 	ExitCB.o     \
+	LessTifH.o   \
 	MString.o    \
 	MakeMenu.o
 

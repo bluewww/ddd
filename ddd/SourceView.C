@@ -99,9 +99,9 @@ char SourceView_rcsid[] =
 #include <Xm/ToggleB.h>
 #include <X11/StringDefs.h>
 
-#if LESSTIF_HACKS
+// LessTif hacks
 #include <X11/IntrinsicP.h>
-#endif
+#include "LessTifH.h"
 
 // System stuff
 extern "C" {
@@ -3432,17 +3432,18 @@ void SourceView::set_text_popup_label(int item, const string& arg, bool sens)
 
 void SourceView::set_text_popup_resource(int item, const string& arg)
 {
-#if LESSTIF_HACKS
-    // Set up resources for yet-to-be-created popup menu
-    string db = string(DDD_CLASS_NAME "*text_popup.") 
-	+ text_popup[item].name + "." + XmNlabelString + ": "
-	+ "@rm " + text_cmd_labels[item] 
-	+ " @tt " + arg;
+    if (lesstif_hacks_enabled)
+    {
+	// Set up resources for yet-to-be-created popup menu
+	string db = string(DDD_CLASS_NAME "*text_popup.") 
+	    + text_popup[item].name + "." + XmNlabelString + ": "
+	    + "@rm " + text_cmd_labels[item] 
+	    + " @tt " + arg;
 
-    XrmDatabase res = XrmGetStringDatabase(db.chars());
-    XrmDatabase target = XtDatabase(XtDisplay(source_text_w));
-    XrmMergeDatabases(res, &target);
-#endif
+	XrmDatabase res = XrmGetStringDatabase(db.chars());
+	XrmDatabase target = XtDatabase(XtDisplay(source_text_w));
+	XrmMergeDatabases(res, &target);
+    }
 }
 
 
@@ -3625,16 +3626,17 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	shorten(current_arg, max_popup_expr_length);
 	string current_ref_arg = gdb->dereferenced_expr(current_arg);
 
-#if LESSTIF_HACKS
-	set_text_popup_resource(TextItms::Break,    current_arg);
-	set_text_popup_resource(TextItms::Clear,    current_arg);
-	set_text_popup_resource(TextItms::Print,    current_arg);
-	set_text_popup_resource(TextItms::Disp,     current_arg);
-	set_text_popup_resource(TextItms::PrintRef, current_ref_arg);
-	set_text_popup_resource(TextItms::DispRef,  current_ref_arg);
-	set_text_popup_resource(TextItms::Whatis,   current_arg);
-	set_text_popup_resource(TextItms::Lookup,   current_arg);
-#endif
+	if (lesstif_hacks_enabled)
+	{
+	    set_text_popup_resource(TextItms::Break,    current_arg);
+	    set_text_popup_resource(TextItms::Clear,    current_arg);
+	    set_text_popup_resource(TextItms::Print,    current_arg);
+	    set_text_popup_resource(TextItms::Disp,     current_arg);
+	    set_text_popup_resource(TextItms::PrintRef, current_ref_arg);
+	    set_text_popup_resource(TextItms::DispRef,  current_ref_arg);
+	    set_text_popup_resource(TextItms::Whatis,   current_arg);
+	    set_text_popup_resource(TextItms::Lookup,   current_arg);
+	}
 
 	Widget text_popup_w = 
 	    MMcreatePopupMenu(text_w, "text_popup", text_popup);

@@ -37,6 +37,8 @@ char resources_rcsid[] =
 #include "AppData.h"
 #include "stty.h"
 
+#include <Xm/Xm.h>
+
 // Application resource definitions
 XtResource ddd_resources[] = {
     { 
@@ -931,6 +933,20 @@ XtResource ddd_resources[] = {
 	XtOffsetOf(AppData, tool_top_offset),
 	XmRImmediate,
 	XtPointer(8)
+    },
+
+    {
+	XtNlessTifHacks,
+	XtCLessTifHacks,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, lesstif_hacks),
+	XmRImmediate,
+#if !defined(LesstifVersion) || LesstifVersion >= 1000
+	XtPointer(False)
+#else
+	XtPointer(True)
+#endif
     },
 
     {
