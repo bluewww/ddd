@@ -4485,6 +4485,18 @@ void SourceView::process_use(string& use_output)
     reload();
 }
 
+string SourceView::class_path()
+{
+    char *p = getenv("CLASSPATH");
+    if (p != 0)
+    {
+	string path = p;
+	if (!current_class_path.contains(path + ":", 0))
+	    current_class_path.prepend(path + ":");
+    }
+
+    return current_class_path;
+}
 
 
 //-----------------------------------------------------------------------

@@ -5917,6 +5917,9 @@ The execution pointer (stopped by signal).
 \s-1@DDD@\s+1 is controlled by the following environment variables:
 .PP
 .TP 20
+.B CLASSPATH
+A colon-separated list of directories in which to search for Java classes.
+.TP
 .B @DDD@_NO_SIGNAL_HANDLERS
 If set, \s-1@DDD@\s+1 does not catch fatal errors.  This is sometimes
 useful when debugging \s-1@DDD@\s+1.
