@@ -814,6 +814,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNungrabMousePointer,
+	XtCUngrabMousePointer,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, ungrab_mouse_pointer),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,

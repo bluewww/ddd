@@ -278,6 +278,21 @@ void graphToggleAutoLayoutCB(Widget, XtPointer, XtPointer call_data)
     update_options();
 }
 
+void graphSetGridSizeCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
+
+    Arg args[10];
+    Cardinal arg = 0;
+    XtSetArg(args[arg], XtNgridWidth,  info->value); arg++;
+    XtSetArg(args[arg], XtNgridHeight, info->value); arg++;
+    XtSetValues(data_disp->graph_edit, args, arg);
+
+    set_status("Grid size set to " + itostring(info->value) + ".");
+
+    update_options();
+}
+
 //-----------------------------------------------------------------------------
 // General Options
 //-----------------------------------------------------------------------------
@@ -324,6 +339,21 @@ void dddToggleSeparateExecWindowCB (Widget, XtPointer, XtPointer call_data)
     else
 	set_status("Debugged program will be executed in the " 
 		   DDD_NAME " debugger console.");
+
+    update_options();
+}
+
+void dddToggleUngrabMousePointerCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.ungrab_mouse_pointer = info->set;
+
+    if (info->set)
+	set_status("Automatic ungrabbing of mouse pointer enabled.");
+    else
+	set_status("Automatic ungrabbing of mouse pointer disabled.");
 
     update_options();
 }
@@ -749,6 +779,8 @@ void save_options(Widget origin)
 			 app_data.panned_graph_editor) << "\n";
     os << bool_app_value(XtNsuppressWarnings,
 			 app_data.suppress_warnings) << "\n";
+    os << bool_app_value(XtNungrabMousePointer,
+			 app_data.ungrab_mouse_pointer) << "\n";
     os << bool_app_value(XtNsaveHistoryOnExit,
 			 app_data.save_history_on_exit) << "\n";
     os << string_app_value(XtNdebugger,
@@ -778,6 +810,21 @@ void save_options(Widget origin)
     os << widget_value(data_disp->graph_edit, XtNshowHints)  << "\n";
     os << widget_value(data_disp->graph_edit, XtNlayoutMode) << "\n";
     os << widget_value(data_disp->graph_edit, XtNautoLayout) << "\n";
+
+    Dimension grid_width, grid_height;
+    XtVaGetValues(data_disp->graph_edit,
+		  XtNgridWidth, &grid_width,
+		  XtNgridHeight, &grid_height,
+		  NULL);
+    if (grid_width == grid_height)
+    {
+	os << int_app_value(XtCGridSize, grid_width) << "\n";
+    }
+    else
+    {
+	os << int_app_value(XtNgridWidth,  grid_width) << "\n";
+	os << int_app_value(XtNgridHeight, grid_height) << "\n";
+    }
 
     save_option_state();
     save_settings_state();

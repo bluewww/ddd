@@ -607,9 +607,6 @@ static MMDesc source_menu[] =
 // Preferences
 
 // General preferences
-static Widget group_iconify_w;
-static Widget suppress_warnings_w;
-static Widget save_history_on_exit_w;
 
 static Widget button_tips_w;
 static Widget button_docs_w;
@@ -641,6 +638,10 @@ static MMDesc completion_menu [] =
     MMEnd
 };
 
+static Widget group_iconify_w;
+static Widget suppress_warnings_w;
+static Widget save_history_on_exit_w;
+static Widget ungrab_mouse_pointer_w;
 
 static MMDesc general_preferences_menu[] = 
 {
@@ -651,6 +652,8 @@ static MMDesc general_preferences_menu[] =
       NULL, &group_iconify_w },
     { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB },
       NULL, &suppress_warnings_w },
+    { "ungrabMousePointer",  MMToggle, { dddToggleUngrabMousePointerCB },
+      NULL, &ungrab_mouse_pointer_w },
     { "saveHistoryOnExit",   MMToggle, { dddToggleSaveHistoryOnExitCB },
       NULL, &save_history_on_exit_w },
     MMEnd
@@ -706,19 +709,22 @@ static Widget graph_show_hints_w;
 static Widget graph_snap_to_grid_w;
 static Widget graph_compact_layout_w;
 static Widget graph_auto_layout_w;
+static Widget graph_grid_size_w;
 
 static MMDesc data_preferences_menu[] = 
 {
-    { "showGrid",   MMToggle,  { graphToggleShowGridCB }, 
+    { "showGrid",      MMToggle,  { graphToggleShowGridCB }, 
       NULL, &graph_show_grid_w },
-    { "showHints",  MMToggle,  { graphToggleShowHintsCB },
+    { "showHints",     MMToggle,  { graphToggleShowHintsCB },
       NULL, &graph_show_hints_w },
-    { "snapToGrid", MMToggle,  { graphToggleSnapToGridCB },
+    { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB },
       NULL, &graph_snap_to_grid_w },
-    { "compactLayout", MMToggle, { graphToggleCompactLayoutCB },
+    { "compactLayout", MMToggle,  { graphToggleCompactLayoutCB },
       NULL, &graph_compact_layout_w },
-    { "autoLayout", MMToggle,  { graphToggleAutoLayoutCB },
+    { "autoLayout",    MMToggle,  { graphToggleAutoLayoutCB },
       NULL, &graph_auto_layout_w },
+    { "gridSize",      MMScale,   { graphSetGridSizeCB },
+      NULL, &graph_grid_size_w },
     MMEnd
 };
 
@@ -1964,11 +1970,7 @@ static void set_option_widgets(DDDOption opt)
 // Reflect state in option menus
 void update_options()
 {
-    Arg args[10];
-    int arg = 0;
-
-    int i;
-    for (i = 1; i < 4; i++)
+    for (int i = 1; i < 4; i++)
     {
 	if (separate_exec_window_w[i] == 0)
 	    continue;		// Shell not realized
@@ -1996,6 +1998,8 @@ void update_options()
 		  XmNset, !app_data.global_tab_completion, NULL);
     XtVaSetValues(group_iconify_w,
 		  XmNset, app_data.group_iconify, NULL);
+    XtVaSetValues(ungrab_mouse_pointer_w,
+		  XmNset, app_data.ungrab_mouse_pointer, NULL);
     XtVaSetValues(save_history_on_exit_w,
 		  XmNset, app_data.save_history_on_exit, NULL);
 
@@ -2022,42 +2026,29 @@ void update_options()
     set_sensitive(set_refer_path_w, gdb->type() != GDB);
     set_sensitive(refer_sources_w,  gdb->type() != GDB);
 
-    Boolean state;
-    arg = 0;
-    XtSetArg(args[arg], XtNshowGrid, &state); arg++;
-    XtGetValues(data_disp->graph_edit, args, arg);
-    arg = 0;
-    XtSetArg(args[arg], XmNset, state); arg++;
-    XtSetValues(graph_show_grid_w, args, arg);
 
-    arg = 0;
-    XtSetArg(args[arg], XtNsnapToGrid, &state); arg++;
-    XtGetValues(data_disp->graph_edit, args, arg);
-    arg = 0;
-    XtSetArg(args[arg], XmNset, state); arg++;
-    XtSetValues(graph_snap_to_grid_w, args, arg);
+    Boolean show_grid, snap_to_grid, show_hints, auto_layout;
+    LayoutMode layout_mode;
+    Dimension grid_width, grid_height;
 
-    arg = 0;
-    XtSetArg(args[arg], XtNshowHints, &state); arg++;
-    XtGetValues(data_disp->graph_edit, args, arg);
-    arg = 0;
-    XtSetArg(args[arg], XmNset, state); arg++;
-    XtSetValues(graph_show_hints_w, args, arg);
+    XtVaGetValues(data_disp->graph_edit, 
+ 		  XtNshowGrid,   &show_grid,
+ 		  XtNsnapToGrid, &snap_to_grid,
+		  XtNshowHints,  &show_hints,
+		  XtNautoLayout, &auto_layout,
+		  XtNlayoutMode, &layout_mode,
+		  XtNgridWidth,  &grid_width,
+		  XtNgridHeight, &grid_height,
+		  NULL);
 
-    LayoutMode mode;
-    arg = 0;
-    XtSetArg(args[arg], XtNlayoutMode, &mode); arg++;
-    XtGetValues(data_disp->graph_edit, args, arg);
-    arg = 0;
-    XtSetArg(args[arg], XmNset, mode == CompactLayoutMode); arg++;
-    XtSetValues(graph_compact_layout_w, args, arg);
+    XtVaSetValues(graph_show_grid_w, XmNset, show_grid, NULL);
+    XtVaSetValues(graph_snap_to_grid_w, XmNset, snap_to_grid, NULL);
+    XtVaSetValues(graph_show_hints_w, XmNset, show_hints, NULL);
+    XtVaSetValues(graph_auto_layout_w, XmNset, auto_layout, NULL);
+    XtVaSetValues(graph_compact_layout_w, XmNset, 
+		  layout_mode == CompactLayoutMode, NULL);
+    XtVaSetValues(graph_grid_size_w, XmNvalue, grid_width, NULL);
 
-    arg = 0;
-    XtSetArg(args[arg], XtNautoLayout, &state); arg++;
-    XtGetValues(data_disp->graph_edit, args, arg);
-    arg = 0;
-    XtSetArg(args[arg], XmNset, state); arg++;
-    XtSetValues(graph_auto_layout_w, args, arg);
 
     unsigned char policy = '\0';
     XtVaGetValues(command_shell, 
@@ -2147,6 +2138,8 @@ static Boolean       initial_show_grid;
 static Boolean       initial_show_hints;
 static Boolean       initial_snap_to_grid;
 static Boolean       initial_auto_layout;
+static Dimension     initial_grid_width;
+static Dimension     initial_grid_height;
 static LayoutMode    initial_layout_mode;
 static unsigned char initial_focus_policy;
 
@@ -2170,6 +2163,8 @@ void save_option_state()
 		  XtNsnapToGrid, &initial_snap_to_grid,
 		  XtNlayoutMode, &initial_layout_mode, 
 		  XtNautoLayout, &initial_auto_layout,
+		  XtNgridWidth,  &initial_grid_width,
+		  XtNgridHeight, &initial_grid_height,
 		  NULL);
 
     XtVaGetValues(command_shell,
@@ -2191,6 +2186,7 @@ static void ResetGeneralPreferencesCB(Widget, XtPointer, XtPointer)
 	       !initial_app_data.global_tab_completion);
     set_toggle(group_iconify_w, initial_app_data.group_iconify);
     set_toggle(suppress_warnings_w, initial_app_data.suppress_warnings);
+    set_toggle(ungrab_mouse_pointer_w, initial_app_data.ungrab_mouse_pointer);
     set_toggle(save_history_on_exit_w, initial_app_data.save_history_on_exit);
 }
 
@@ -2204,6 +2200,8 @@ static bool general_preferences_changed()
 	    initial_app_data.global_tab_completion
 	|| app_data.group_iconify != initial_app_data.group_iconify
 	|| app_data.suppress_warnings != initial_app_data.suppress_warnings
+	|| app_data.ungrab_mouse_pointer != 
+	    initial_app_data.ungrab_mouse_pointer
 	|| app_data.save_history_on_exit != 
 	    initial_app_data.save_history_on_exit;
 }
@@ -2241,12 +2239,30 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
     set_toggle(graph_compact_layout_w, 
 	       initial_layout_mode == CompactLayoutMode);
     set_toggle(graph_auto_layout_w, initial_auto_layout);
+
+    Dimension grid_width, grid_height;
+
+    XtVaGetValues(data_disp->graph_edit, 
+		  XtNgridWidth,  &grid_width,
+		  XtNgridHeight, &grid_height,
+		  NULL);
+
+    if (grid_width != initial_grid_width || grid_height != initial_grid_height)
+    {
+	XtVaSetValues(data_disp->graph_edit,
+		      XtNgridWidth,  grid_width  = initial_grid_width,
+		      XtNgridHeight, grid_height = initial_grid_height,
+		      NULL);
+		      
+	update_options();
+    }
 }
 
 static bool data_preferences_changed()
 {
     Boolean show_grid, show_hints, snap_to_grid, auto_layout;
     LayoutMode layout_mode;
+    Dimension grid_width, grid_height;
 
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNshowGrid,   &show_grid,
@@ -2254,13 +2270,17 @@ static bool data_preferences_changed()
 		  XtNsnapToGrid, &snap_to_grid,
 		  XtNlayoutMode, &layout_mode, 
 		  XtNautoLayout, &auto_layout,
+		  XtNgridWidth,  &grid_width,
+		  XtNgridHeight, &grid_height,
 		  NULL);
 
     return show_grid    != initial_show_grid
 	|| show_hints   != initial_show_hints
 	|| snap_to_grid != initial_snap_to_grid
 	|| layout_mode  != initial_layout_mode 
-	|| auto_layout  != initial_auto_layout;
+	|| auto_layout  != initial_auto_layout
+	|| grid_width   != initial_grid_width
+	|| grid_height  != initial_grid_height;
 }
 
 static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
