@@ -2116,7 +2116,8 @@ ice_cv_motif_includes=
 # Locate it and put its directory in `motif_includes'
 #
 # /usr/include/Motif* are used on HP-UX (Motif).
-# /usr/include/X11* are used on HP-UX (X and Athena).
+# /usr/include/X11* are used on HP-UX (X).
+# /usr/contrib/X11* are used on HP-UX (Athena).
 # /usr/dt is used on Solaris (Motif).
 # /usr/openwin is used on Solaris (X and Athena).
 # Other directories are just guesses.
@@ -2178,7 +2179,8 @@ ice_cv_motif_libraries=
 # Locate it and put its directory in `motif_libraries'
 #
 # /usr/lib/Motif* are used on HP-UX (Motif).
-# /usr/lib/X11* are used on HP-UX (X and Athena).
+# /usr/lib/X11* are used on HP-UX (X).
+# /usr/contrib/X11* are used on HP-UX (Athena).
 # /usr/dt is used on Solaris (Motif).
 # /usr/lesstif is used on Linux (Lesstif).
 # /usr/openwin is used on Solaris (X and Athena).
@@ -2304,7 +2306,8 @@ ice_cv_athena_includes=
 # Locate it and put its directory in `athena_includes'
 #
 # /usr/include/Motif* are used on HP-UX (Motif).
-# /usr/include/X11* are used on HP-UX (X and Athena).
+# /usr/include/X11* are used on HP-UX (X).
+# /usr/contrib/X11* are used on HP-UX (Athena).
 # /usr/dt is used on Solaris (Motif).
 # /usr/openwin is used on Solaris (X and Athena).
 # Other directories are just guesses.
@@ -2312,6 +2315,7 @@ ice_cv_athena_includes=no
 for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
            /usr/include/Motif2.0 /usr/include/Motif1.2 /usr/include/Motif1.1 \
            /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
+           /usr/contrib/X11R6/include \
            /usr/dt/include /usr/openwin/include \
            /usr/dt/*/include /opt/*/include /usr/include/Motif* \
            /usr/*/include/X11R6 /usr/*/include/X11R5 /usr/*/include/X11R4 \
@@ -2367,13 +2371,15 @@ ice_cv_athena_libraries=
 #
 #
 # /usr/lib/Motif* are used on HP-UX (Motif).
-# /usr/lib/X11* are used on HP-UX (X and Athena).
+# /usr/lib/X11* are used on HP-UX (X).
+# /usr/contrib/X11* are used on HP-UX (Athena).
 # /usr/dt is used on Solaris (Motif).
 # /usr/openwin is used on Solaris (X and Athena).
 # Other directories are just guesses.
 for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
 	   /usr/lib/Motif2.0 /usr/lib/Motif1.2 /usr/lib/Motif1.1 \
 	   /usr/lib/X11R6 /usr/lib/X11R5 /usr/lib/X11R4 /usr/lib/X11 \
+           /usr/contrib/X11R6/lib \
            /usr/dt/lib /usr/openwin/lib \
 	   /usr/dt/*/lib /opt/*/lib /usr/lib/Motif* \
 	   /usr/*/lib/X11R6 /usr/*/lib/X11R5 /usr/*/lib/X11R4 /usr/*/lib/X11 \
@@ -2750,19 +2756,19 @@ fi
 ac_perl_version="$1"
 
 if test "x$PERL" != "x"; then
-  AC_MSG_CHECKING(for perl version greater than or equal to $ac_perl_version)
+  AC_MSG_CHECKING([for perl version greater than or equal to $ac_perl_version])
   # NB: It would be nice to log the error if there is one, but we cannot rely
   # on autoconf internals
   $PERL -e "use $ac_perl_version;" > /dev/null 2>&1
   if test $? -ne 0; then
-    AC_MSG_RESULT(no);
+    AC_MSG_RESULT([no]);
     $3
   else
-    AC_MSG_RESULT(ok);
+    AC_MSG_RESULT([ok]);
     $2
   fi
 else
-  AC_MSG_WARN(could not find perl)
+  AC_MSG_WARN([could not find perl])
 fi
 ])dnl
 dnl
