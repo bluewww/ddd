@@ -701,6 +701,7 @@ DDD_OBJECTS = \
 	hostname.o   \
 	index.o      \
 	logo.o       \
+	mainloop.o   \
 	mydialogs.o  \
 	options.o    \
 	post.o       \

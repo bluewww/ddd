@@ -226,6 +226,7 @@ extern "C" {
 #include "host.h"
 #include "logo.h"
 #include "longName.h"
+#include "mainloop.h"
 #include "options.h"
 #include "post.h"
 #include "print.h"
@@ -254,7 +255,6 @@ extern "C" {
 #include <stdlib.h>
 #include <iostream.h>
 #include <fstream.h>
-#include <setjmp.h>
 #include <time.h>
 
 #if HAVE_EXCEPTIONS && HAVE_STDEXCEPT
@@ -276,9 +276,6 @@ static void gdb_panicHP        (Agent *, void *, void *);
 static void gdb_echo_detectedHP(Agent *, void *, void *);
 static void language_changedHP (Agent *, void *, void *);
 static void source_argHP       (void *, void *, void *call_data);
-
-// Setup
-static Boolean ddd_setup_done(XtPointer client_data);
 
 // Warning proc
 static void ddd_xt_warning(String message);
@@ -377,8 +374,6 @@ static void setup_tty();
 static void setup_version_warnings();
 static void setup_core_limit();
 
-// Main loop
-static void ddd_main_loop();
 
 //-----------------------------------------------------------------------------
 // Xt Stuff
@@ -1295,10 +1290,6 @@ bool gdb_initialized;
 
 // The Xt Warning handler
 static XtErrorHandler ddd_original_xt_warning_handler;
-
-// Resume after fatal errors
-bool main_loop_entered = false;
-jmp_buf main_loop_env;
 
 // Initial delays
 static StatusMsg *init_delay = 0;
@@ -2252,31 +2243,6 @@ int main(int argc, char *argv[])
 }
 
 
-// Main loop.  This is placed in a separate procedure to avoid
-// longjmp() clobbering local variables.
-static void ddd_main_loop()
-{
-    main_loop_entered = false;
-    static int sig = 0;
-    if ((sig = setjmp(main_loop_env)) != 0)
-    {
-	main_loop_entered = false;
-	ddd_show_signal(sig);
-	reset_status_lock();
-    }
-
-    // Set `main_loop_entered' to true as soon 
-    // as DDD becomes idle again.
-    XtAppAddWorkProc(XtWidgetToApplicationContext(gdb_w), ddd_setup_done, 0);
-
-    // Main Loop
-    for (;;)
-	process_next_event();
-}
-
-
-
-
 //-----------------------------------------------------------------------------
 // Process next X Event
 //-----------------------------------------------------------------------------
@@ -2886,7 +2852,7 @@ static Boolean session_setup_done(XtPointer)
     return False;		// Get called again
 }
 
-static Boolean ddd_setup_done(XtPointer)
+Boolean ddd_setup_done(XtPointer)
 {
     if (emptyCommandQueue() && gdb->isReadyWithPrompt())
     {

@@ -86,6 +86,7 @@ char exit_rcsid[] =
 #include "history.h"
 #include "host.h"
 #include "longName.h"
+#include "mainloop.h"
 #include "misc.h"
 #include "options.h"
 #include "post.h"
@@ -477,7 +478,7 @@ static void ddd_fatal(int sig...)
 
     // Return to main event loop
     fatal_entered--;
-    longjmp(main_loop_env, have_core_file ? -sig : sig);
+    goto_main_loop(have_core_file ? -sig : sig);
 }
 
 
@@ -596,7 +597,7 @@ static void ddd_xt_error(String message = 0)
 
     // Return to main event loop
     entered--;
-    longjmp(main_loop_env, -1);
+    goto_main_loop(-1);
 }
 
 void ddd_install_xt_error(XtAppContext app_context)

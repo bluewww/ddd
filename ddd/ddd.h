@@ -34,7 +34,6 @@
 #endif
 
 #include "strclass.h"
-#include <setjmp.h>
 #include <fstream.h>
 
 #include <X11/Intrinsic.h>
@@ -81,12 +80,6 @@ extern bool private_gdb_output;
 // True if input is running
 extern bool private_gdb_input;
 
-// True if we have reached the main event loop
-extern bool main_loop_entered;
-
-// Longjmp environment to return to main event loop
-extern jmp_buf main_loop_env;
-
 // True if GDB issued initial prompt
 extern bool gdb_initialized;
 
@@ -104,6 +97,9 @@ extern string gdb_out_ignore;
 
 // Process next DDD event
 void process_next_event();
+
+// Setup is done
+Boolean ddd_setup_done(XtPointer client_data);
 
 #endif // _DDD_ddd_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
