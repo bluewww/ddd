@@ -11,8 +11,9 @@ Headers: `Followup-to: poster',
          `X-Face: [ddd/icons/ddd.xface]'
 
 * ddd-announce@ips.cs.tu-bs.de    (DDD announcements)
-  Cc: 	elf@ee.ryerson.ca         (X11 apps FAQ, `comp.windows.x.apps')
+  CC: 	elf@ee.ryerson.ca         (X11 apps FAQ, `comp.windows.x.apps')
 	bug-gdb@gnu.org           (for `gnu.gdb.bug')
+  Reply-To: ddd@ips.cs.tu-bs.de
 
 * lsm@execpc.com            	  (DDD lsm entry; subject `add')
 
@@ -30,8 +31,7 @@ WWW
 ---
 
 * DDD WWW Page
-
-* freshmeat.net  (enable cookies; reload after entering the password)
+* freshmeat.net (contribute -> appindex -> DDD)
 
 
 Where to install
