@@ -50,7 +50,7 @@ Widget findShellParent(Widget w)
     if (findParent_debug)
 	clog << "findShellParent(" << longName(w) << ") = ";
 
-    while (w != 0 && (XtIsObject(w)
+    while (w != 0 && (!XtIsWidget(w)
 		      || !XtIsShell(w)
 		      || XtDisplay(w) == 0
 		      || XtScreen(w) == 0
@@ -77,7 +77,7 @@ Widget findTopLevelShellParent(Widget w)
     if (findParent_debug)
 	clog << "findTopLevelShellParent(" << longName(w) << ") = ";
 
-    while (w != 0 && (XtIsObject(w)
+    while (w != 0 && (!XtIsWidget(w)
 		      || !XtIsTopLevelShell(w)
 		      || XtDisplay(w) == 0
 		      || XtScreen(w) == 0
@@ -108,7 +108,7 @@ Widget findTheTopLevelShell(Widget w)
 
     while (w != 0)
     {
-	if (!XtIsObject(w)
+	if (XtIsWidget(w)
 	    && XtIsTopLevelShell(w) 
 	    && XtDisplay(w) != 0
 	    && XtScreen(w) != 0
