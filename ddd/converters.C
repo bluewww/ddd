@@ -46,6 +46,7 @@ char converters_rcsid[] =
 #include "charsets.h"
 #include "StringSA.h"
 #include "string-fun.h"
+#include "MString.h"
 
 #include <Xm/Xm.h>
 
@@ -652,10 +653,17 @@ static Boolean CvtStringToXmFontList(Display *display,
 	string fontspec = segment.before('=');
 	string charset  = segment.after('=');
 
+	if (!segment.contains('='))	// "fixed" occurs in Motif 1.1
+	{
+	    fontspec = segment;
+	    charset  = MSTRING_DEFAULT_CHARSET;
+	}
+
 	strip_space(fontspec);
 	strip_space(charset);
 
-	if (fontspec == "" || charset == "")
+	if (fontspec == "" || 
+	    (charset == "" && charset != MSTRING_DEFAULT_CHARSET))
 	{
 	    Cardinal num_params = 1;
 	    String params = (String)segment.chars();
