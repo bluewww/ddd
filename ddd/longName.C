@@ -34,6 +34,9 @@ char longName_rcsid[] =
 
 string longName(Widget w)
 {
+    if (w == 0)
+	return "<none>";
+
     string ret = XtName(w);
 
     Widget parent = XtParent(w);
