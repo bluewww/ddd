@@ -1,8 +1,9 @@
 // $Id$
 // Store information about a single display espression
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
+// and Andreas Zeller <zeller@ips.cs.tu-bs.de>
 // 
 // This file is part of DDD.
 // 
@@ -68,7 +69,6 @@ DispNode::DispNode (int disp_nr,
       myaddr(""),
       myscope(scope),
       mydepends_on(""),
-      mystr(value),
       myactive(true),
       saved_node_hidden(false),
       mydeferred(false),
@@ -86,7 +86,6 @@ DispNode::DispNode (int disp_nr,
     {
 	string v = value;
 	disp_value = DispValue::parse(v, myname);
-	mystr = mystr.before(int(mystr.length() - v.length()));
 	set_addr(disp_value->addr());
     }
 
@@ -150,26 +149,14 @@ bool DispNode::update(string& value)
     if (disp_value == 0)
     { 
 	// We have not read a value yet
-	mystr = value;
 	disp_value = DispValue::parse(value, myname);
-	mystr = mystr.before(int(mystr.length() - value.length()));
 	set_addr(disp_value->addr());
 	changed = true;
     }
     else
     {
 	// Update existing value
-	if (DispValue::value_hook == 0 && value.contains(mystr, 0))
-	{
-	    // Same value as last time
-	    value = value.after(mystr);
-	    return false;
-	}
-
-	mystr = value;
 	disp_value = disp_value->update(value, changed, inited);
-	mystr = mystr.before(int(mystr.length() - value.length()));
-
 	if (addr() != disp_value->addr())
 	{
 	    set_addr(disp_value->addr());

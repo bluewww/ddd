@@ -80,7 +80,6 @@ private:
     string        myaddr;	      // Location of expression
     string        myscope;	      // Program location where created
     string        mydepends_on;	      // Display we depend upon (when deferred)
-    string        mystr;	      // Last value (as string)
     bool          myactive;	      // Flag: is display active (in scope)?
     bool          saved_node_hidden;  // Saved `hidden' flag of node
     bool          mydeferred;	      // Flag: is display deferred?
@@ -100,12 +99,12 @@ protected:
     static HandlerList handlers;
     static class TagBox *findTagBox(const Box *box, DispValue *dv);
     
-    virtual string str() const { return value_str(); }
+    virtual string str() const { return myname; }
 
 private:
     DispNode(const DispNode& node)
 	: BoxGraphNode(node),
-	  mydisp_nr(0), myname(), myaddr(), myscope(), mydepends_on(), mystr(),
+	  mydisp_nr(0), myname(), myaddr(), myscope(), mydepends_on(),
 	  myactive(false), saved_node_hidden(false),
 	  mydeferred(false), myclustered(0), myconstant(false),
 	  disp_value(0), myselected_value(0), disp_box(0),
@@ -161,7 +160,6 @@ public:
 
     DispValue* value()          const { return disp_value; }
     DispValue* selected_value() const { return myselected_value; }
-    const string& value_str()   const { return mystr; }
 
     // Handlers
     static void addHandler (unsigned    type,
