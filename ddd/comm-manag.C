@@ -2415,21 +2415,26 @@ static void extra_completed (const StringArray& answers,
 		if (!info_line.contains("Line ", 0))
 		    info_line = info_line2;
 
+		// Goto initial line
 		source_view->process_info_line_main(info_line);
 	    }
 	    break;
 	}
 
 	case XDB:
+	{
+	    // Goto initial line
 	    source_view->process_info_line_main(answers[qu_count++]);
 	    break;
+	}
 
 	case DBX:
 	case JDB:
 	case PYDB:
 	case PERL:
 	{
-	    string dummy;
+	    // Clear caches and such
+	    string dummy = "";
 	    source_view->process_info_line_main(dummy);
 	    break;
 	}

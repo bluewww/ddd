@@ -311,7 +311,7 @@ Volunteers for these and other projects are welcome!
     debugging C++; I found no easy way.
     [graph display `print *this` would help.  -AZ]
 
-329*Have a Display Editor shortcut from the data popup menu.
+329 Have a Display Editor shortcut from the data popup menu.
 
 334 When looking at a C++ identifier X, try `this->X' if `X' is not
     found.  Better yet, try `CLASS::X' if we're in a CLASS member.
