@@ -624,20 +624,7 @@ static void redirect_process(string& command,
     }
 
     case DBX:
-	// DBX has its own parsing, in several variants.
-	if (gdb->has_print_r_option())
-	{
-	    // SUN DBX 3.x interprets `COMMAND 2>&1' such that COMMAND
-	    // runs in the background.  Use this kludge instead.
-	    // Tuomo Takkula <tuomo@cs.chalmers.se> reports this also
-	    // happens for SUN DBX 4.0.
-
-	    if (!has_redirection(args, "2>"))
-		gdb_redirection += " 2> " + tty_name;
-	    if (!has_redirection(args, ">"))
-		gdb_redirection += " > " + tty_name;
-	}
-	else if (gdb->has_err_redirection())
+	if (gdb->has_err_redirection())
 	{
 	    // DEC DBX and AIX DBX use csh-style redirection.
 	    if (!has_redirection(args, ">"))
@@ -645,7 +632,13 @@ static void redirect_process(string& command,
 	}
 	else
 	{
-	    // SUN DBX 1.x does not allow to redirect stderr.  Play it safe.
+	    // SUN DBX 3.x interprets `COMMAND 2>&1' such that COMMAND
+	    // runs in the background.
+
+	    // Tuomo Takkula <tuomo@cs.chalmers.se> reports that SUN DBX
+	    // (4.0 and later) cannot even parse '2>' properly.
+
+	    // Consequence: Play it safe.  Do not redirect stderr.
 	    if (!has_redirection(args, ">"))
 		gdb_redirection += " > " + tty_name;
 	}
