@@ -1066,7 +1066,7 @@ void handle_graph_cmd (string cmd, Widget origin)
 		// Check for `at X, Y' or `at (X, Y)'
 		static regex 
 		    rxat("[)]?[0-9]*[1-9]-?[ \t]*,[ \t]*[0-9]*[1-9]-?[(]?"
-			 "+[ \t]+ta[ \t]+.*");
+			 "[ \t]+ta[ \t]+.*");
 		if (rcmd.matches(rxat))
 		{
 		    if (pos == 0)
