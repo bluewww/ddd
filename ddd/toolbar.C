@@ -40,6 +40,7 @@ char toolbar_rcsid[] =
 #include "verify.h"
 #include "HelpCB.h"
 #include "Delay.h"
+#include "AppData.h"
 #include "converters.h"
 
 #include <Xm/Xm.h>
@@ -127,7 +128,7 @@ Widget create_toolbar(Widget parent, string name,
 
     registerOwnConverters();
 
-    if (label_type == XmPIXMAP)
+    if (label_type == XmPIXMAP && app_data.flat_buttons)
     {
 	// Use flat buttons
 	flatten_buttons(items1);

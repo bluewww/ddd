@@ -848,6 +848,22 @@ void dddToggleButtonImagesCB(Widget w, XtPointer, XtPointer call_data)
     toggle_button_appearance(w, app_data.button_images, call_data);
 }
 
+void dddToggleFlatButtonsCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.flat_buttons = info->set;
+
+    if (info->set)
+	set_status(next_ddd_will_start_with + "flat buttons.");
+    else
+	set_status(next_ddd_will_start_with + "3-D buttons.");
+
+    update_options();
+    post_startup_warning(w);
+}
+
 
 
 
@@ -1705,6 +1721,8 @@ bool save_options(unsigned long flags)
 			 app_data.button_images)   << "\n";
     os << bool_app_value(XtNbuttonCaptions,
 			 app_data.button_captions) << "\n";
+    os << bool_app_value(XtNflatButtons,
+			 app_data.flat_buttons) << "\n";
 
     // Command tool
     os << "\n! Command tool\n";

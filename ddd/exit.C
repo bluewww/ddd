@@ -872,31 +872,7 @@ void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
     ddd_cleanup();
 
     XtCallbackProc closure = ddd_is_restarting ? RestartCB : ExitCB;
-
-    if (startup_preferences_changed() && !ddd_is_restarting)
-    {
-	// Startup options are still changed;
-	// request confirmation before exit
-	static Widget save_options_dialog = 0;
-	if (save_options_dialog == 0)
-	{
-	    save_options_dialog = 
-		verify(XmCreateQuestionDialog(find_shell(w), 
-					      "save_options_dialog", 0, 0));
-	    Delay::register_shell(save_options_dialog);
-	    XtAddCallback(save_options_dialog, XmNokCallback,
-			  SaveOptionsAndExitCB, client_data);
-	    XtAddCallback(save_options_dialog, XmNcancelCallback,
-			  closure, client_data);
-	    XtAddCallback(save_options_dialog, XmNhelpCallback,
-			  ImmediateHelpCB, 0);
-	}
-	manage_and_raise(save_options_dialog);
-    }
-    else
-    {
-	closure(w, client_data, call_data);
-    }
+    closure(w, client_data, call_data);
 }
 
 // `quit' has been canceled

@@ -992,12 +992,15 @@ static MMDesc window_mode_menu [] =
 
 static Widget set_button_images_w;
 static Widget set_button_captions_w;
+static Widget set_flat_buttons_w;
 static MMDesc button_appearance_menu [] = 
 {
     { "images",   MMToggle, { dddToggleButtonImagesCB },
       NULL, &set_button_images_w },
     { "captions", MMToggle, { dddToggleButtonCaptionsCB },
       NULL, &set_button_captions_w },
+    { "flat", MMToggle, { dddToggleFlatButtonsCB },
+      NULL, &set_flat_buttons_w },
     MMEnd
 };
 
@@ -3299,6 +3302,7 @@ void update_options()
 
     set_toggle(set_button_images_w,        app_data.button_images);
     set_toggle(set_button_captions_w,      app_data.button_captions);
+    set_toggle(set_flat_buttons_w,         app_data.flat_buttons);
 
     set_toggle(set_tool_buttons_in_toolbar_w,      app_data.command_toolbar);
     set_toggle(set_tool_buttons_in_command_tool_w, !app_data.command_toolbar);
@@ -3689,6 +3693,7 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
 
     notify_set_toggle(set_button_captions_w, initial_app_data.button_captions);
     notify_set_toggle(set_button_images_w,   initial_app_data.button_images);
+    notify_set_toggle(set_flat_buttons_w,    initial_app_data.flat_buttons);
 
     notify_set_toggle(set_focus_pointer_w, 
 		      initial_focus_policy == XmPOINTER);
@@ -3716,7 +3721,7 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
 }
 
 
-bool startup_preferences_changed()
+static bool startup_preferences_changed()
 {
     Boolean initial_separate = 
 	initial_app_data.separate_data_window 
@@ -3733,6 +3738,7 @@ bool startup_preferences_changed()
 	|| separate != initial_separate
 	|| app_data.button_images != initial_app_data.button_images
 	|| app_data.button_captions != initial_app_data.button_captions
+	|| app_data.flat_buttons != initial_app_data.flat_buttons
 	|| focus_policy != initial_focus_policy
 	|| app_data.panned_graph_editor != initial_app_data.panned_graph_editor
 	|| debugger_type(app_data.debugger)
@@ -3751,7 +3757,7 @@ static void ResetHelpersPreferencesCB(Widget, XtPointer, XtPointer)
     set_string(www_command_w,        initial_app_data.www_command);
 }
 
-bool helpers_preferences_changed()
+static bool helpers_preferences_changed()
 {
     return string(app_data.edit_command) 
 	   != string(initial_app_data.edit_command)
@@ -3899,6 +3905,26 @@ static Widget add_panel(Widget parent, Widget buttons,
     return button;
 }
 
+static void OfferRestartCB(Widget dialog, XtPointer, XtPointer)
+{
+    if (startup_preferences_changed())
+    {
+	static Widget restart_dialog = 0;
+	if (restart_dialog == 0)
+	{
+	    restart_dialog = 
+		verify(XmCreateQuestionDialog(find_shell(dialog), 
+					      "restart_dialog", 0, 0));
+	    Delay::register_shell(restart_dialog);
+	    XtAddCallback(restart_dialog, XmNokCallback,
+			  DDDRestartCB, 0);
+	    XtAddCallback(restart_dialog, XmNhelpCallback,
+			  ImmediateHelpCB, 0);
+	}
+	manage_and_raise(restart_dialog);
+    }
+}
+
 // Create preferences dialog
 static void make_preferences(Widget parent)
 {
@@ -3910,6 +3936,7 @@ static void make_preferences(Widget parent)
 	verify(XmCreatePromptDialog(parent, "preferences", args, arg));
     Delay::register_shell(preferences_dialog);
     XtVaSetValues(preferences_dialog, XmNdefaultButton, Widget(0), NULL);
+    XtAddCallback(preferences_dialog, XmNunmapCallback, OfferRestartCB, NULL);
 
     if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(preferences_dialog,

@@ -64,9 +64,6 @@ bool saving_options_excludes_data(unsigned long flags);
 bool save_options(unsigned long flags);
 
 
-// Return true iff the startup preferences have changed.
-extern bool startup_preferences_changed();
-
 // Lots and lots of callbacks
 extern void sourceToggleFindWordsOnlyCB     (Widget, XtPointer, XtPointer);
 extern void sourceToggleFindCaseSensitiveCB (Widget, XtPointer, XtPointer);
@@ -103,6 +100,7 @@ extern void dddToggleValueDocsCB            (Widget, XtPointer, XtPointer);
 
 extern void dddToggleButtonCaptionsCB       (Widget, XtPointer, XtPointer);
 extern void dddToggleButtonImagesCB         (Widget, XtPointer, XtPointer);
+extern void dddToggleFlatButtonsCB          (Widget, XtPointer, XtPointer);
 
 extern void dddSetGlobalTabCompletionCB     (Widget, XtPointer, XtPointer);
 extern void dddSetSeparateWindowsCB         (Widget, XtPointer, XtPointer);

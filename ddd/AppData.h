@@ -272,6 +272,8 @@
 #define XtCButtonCaptionGeometry "ButtonCaptionGeometry"
 #define XtNbuttonImageGeometry   "buttonImageGeometry"
 #define XtCButtonImageGeometry   "ButtonImageGeometry"
+#define XtNflatButtons           "flatButtons"
+#define XtCFlatButtons           "FlatButtons"
 #define XtNautoCommands          "autoCommands"
 #define XtCAutoCommands          "AutoCommands"
 #define XtNautoCommandPrefix     "autoCommandPrefix"
@@ -417,6 +419,7 @@ struct AppData {
     Boolean   button_images;
     String    button_caption_geometry;
     String    button_image_geometry;
+    Boolean   flat_buttons;
     Boolean   auto_commands;
     String    auto_command_prefix;
     int       max_breakpoint_number;

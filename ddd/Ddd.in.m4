@@ -273,7 +273,7 @@ Ddd*buttonImages:   on
 Ddd*buttonCaptions: on
 
 ! The image and caption areas within button images.
-Ddd*buttonImageGeometry:   25x21+2+0
+Ddd*buttonImageGeometry:   22x17+4+0
 Ddd*buttonCaptionGeometry: 29x7+0-0
 
 
@@ -2824,6 +2824,9 @@ Ddd*preferences*source*helpString:	\
 ITEM If LBL(Show position and breakpoints as glyphs) is set,\n\
     the current execution position and breakpoints are shown as glyphs.\n\
     Otherwise, they are shown as characters in the text.\n\
+ITEM The LBL(Tool Buttons) can be placed\n\
+    SUBITEM in the LBL(Command Tool) which can be moved around DDD, or\n\
+    SUBITEM in the LBL(Source Window), as line of buttons.\n\
 ITEM If LBL(Refer to program sources by full path name) is set, \n\
     source code locations are referred by full source file paths.\n\
     Otherwise, only the base name is used.\n\
@@ -2855,6 +2858,13 @@ Ddd*preferences*asText.labelString:		as text characters
 
 Ddd*preferences*showExecPos.width:		200
 Ddd*preferences*showExecPos.recomputeSize:	off
+
+Ddd*preferences*toolButtons.labelString:	Tool Buttons Location
+Ddd*toolButtonsMenu*commandTool.labelString:	Command Tool
+Ddd*toolButtonsMenu*sourceWindow.labelString:   Source Window
+
+Ddd*preferences*toolButtons.width:		200
+Ddd*preferences*toolButtons.recomputeSize:	off
 
 Ddd*preferences*referSources.labelString:	Refer to program sources
 Ddd*preferences*byPath.labelString:		by full path name
@@ -2951,43 +2961,30 @@ Ddd*preferences*gridSize.showValue:		on
 Ddd*preferences*gridSize.titleString:		Grid size
 
 Ddd*preferences*startup*helpString:   \
-@rm These are the EMPH(Startup Preferences).\n\
-\n\
-To make your changes take effect, select\n\
-ITEM LBL(Edit) | LBL(Save Options), affecting all future DDD sessions.\n\
-ITEM LBL(File) | LBL(Restart [DDD]), affecting the restarted \
-DDD session only.\n\
+@rm These are the EMPH(Startup Preferences), effective only after a restart.\n\
 \n\
 ITEM LBL(Window Layout) sets the window layout.\n\
     SUBITEM LBL(Stacked Windows) means to use one top-level window\n\
         where source, data, and the @GDB@ console are stacked.\n\
     SUBITEM LBL(Separate Windows) means to use a separate top-level window\n\
         for each of source, data, and the @GDB@ console.\n\
-\n\
 ITEM The LBL(Toolbar) can appear as\n\
     SUBITEM LBL(Images), showing a small symbol for each action, and/or\n\
     SUBITEM LBL(Captions), showing the action name below the image.\n\
-    If neither of these two is set, buttons are ordinarily labeled.\n\
-\n\
-ITEM The LBL(Tool Buttons) can be placed\n\
-    SUBITEM in the LBL(Command Tool) which can be moved around DDD, or\n\
-    SUBITEM in the LBL(Source Window), as in DDD 1.4 and earlier.\n\
-\n\
+    SUBITEM LBL(Flat), enabling the 3-D appearance only when entered.\n\
+    If neither LBL(Images) nor LBL(Captions) is set, \
+buttons have ordinary labels.\n\
 ITEM LBL(Keyboard Focus) sets the keyboard focus policy.\n\
     SUBITEM LBL(Click to Type) means that you must click on a window\n\
         to direct the keyboard focus to it.\n\
     SUBITEM LBL(Point to Type) means that pointing to the window suffices.\n\
-\n\
 ITEM LBL(Data Scrolling) sets the data window scrolling mode.\n\
     SUBITEM LBL(Panner) means to use a two-dimensional scrollbar\n\
         (not available in all DDD configurations).\n\
     SUBITEM LBL(Scrollbars) means to use two scrollbars.\n\
-\n\
 ITEM LBL(Debugger Type) sets the type of the inferior debugger.\n\
-\n\
 ITEM LBL(Splash Screen) lets you choose among different DDD splash screens,\n\
     or LBL(None), disabling it.\n\
-\n\
 ITEM LBL(Show Tip of the Day) determines whether DDD shows the tip \
 of the day\n\
     upon startup.\n\
@@ -3008,12 +3005,7 @@ Ddd*preferences*buttons.width:			200
 Ddd*preferences*buttons.recomputeSize:		off
 Ddd*buttonsMenu*images.labelString:		Images
 Ddd*buttonsMenu*captions.labelString:		Captions
-
-Ddd*preferences*toolButtons.labelString:	Tool Buttons Location
-Ddd*preferences*toolButtons.width:		200
-Ddd*preferences*toolButtons.recomputeSize:	off
-Ddd*toolButtonsMenu*commandTool.labelString:	Command Tool
-Ddd*toolButtonsMenu*sourceWindow.labelString:   Source Window
+Ddd*buttonsMenu*flat.labelString:		Flat
 
 Ddd*preferences*keyboardFocus.labelString:	Keyboard Focus
 Ddd*preferences*keyboardFocus.width:		200
@@ -3054,7 +3046,6 @@ ITEM LBL(Edit Sources) invokes an X editor for the current source file.\n\
     SAMP(@ FILE@ ) is replaced by the current file name.\n\
     SAMP(@ LINE@ ) is replaced by the current line.\n\
     Example: SAMP(xedit @ FILE@ )\n\
-\n\
 ITEM LBL(Get Core File) is a command to get a core file \
 from a running process.\n\
     SAMP(@ FILE@ ) is replaced by the base name of the target core file.\n\
@@ -3062,20 +3053,16 @@ from a running process.\n\
     The output must be written to SAMP(@ FILE@ .@ PID@ ).\n\
     Example: SAMP(gcore -o @ FILE@  @ PID@ )\n\
     Leave this empty if you have no SAMP(gcore) or similar command.\n\
-\n\
 ITEM LBL(List Processes) is a command to get a list of processes.\n\
     Example: SAMP(ps)\n\
-\n\
 ITEM LBL(Execution Window) is a command to start a terminal emulator.\n\
     To this command, DDD appends bourne shell commands to be executed\n\
     within the execution window.\n\
     Example: SAMP(xterm -e /bin/sh -c)\n\
-\n\
 ITEM LBL(Uncompress) is an uncompression command.\n\
     The command reads from standard input and writes to \
 standard output.\n\
     Example: SAMP(gunzip -c)\n\
-\n\
 ITEM LBL(Web Browser) invokes a WWW browser.\n\
     SAMP(@ URL@ ) is replaced by the URL to be shown.\n\
     Example: SAMP(netscape @ URL@ )\n\
@@ -5272,18 +5259,23 @@ Ddd*confirm_overwrite_dialog*helpString:	\
 @rm The file already exists.\n\
 Click on LBL(Yes) to overwrite the existing file.
 
-Ddd*save_options_dialog_popup.title: DDD: Save Options
-Ddd*save_options_dialog.messageString:	 \
+Ddd*restart_dialog_popup.title: DDD: Restart
+Ddd*restart_dialog.messageString:	 \
 @rm DDD startup preferences were modified.\n\
-Save them for the next DDD invocation?
-Ddd*save_options_dialog*okLabelString:	     Yes
-Ddd*save_options_dialog*cancelLabelString:   No
-Ddd*save_options_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
-Ddd*save_options_dialog*helpString:	\
-@rm You have changed some DDD startup preferences\n\
-(using LBL(Edit) | LBL(Preferences)).\n\
-To save them for the next DDD invocation, click on LBL(Yes).\n\
-To discard the changes, click on LBL(No).
+Restart DDD to see their effect?
+Ddd*restart_dialog*okLabelString:	Yes
+Ddd*restart_dialog*cancelLabelString:   No
+Ddd*restart_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
+Ddd*restart_dialog*helpString:	\
+@rm You have changed some DDD startup preferences.\n\
+\n\
+To make your changes take effect, you can\n\
+ITEM EMPH(Save Options), affecting all future DDD sessions.\n\
+ITEM EMPH(Restart [DDD]), affecting the restarted DDD session only.\n\
+\n\
+To see your changes take effect, click on LBL(Yes) to restart DDD.\n\
+Otherwise, click on LBL(No) and be sure to save your changes\n\
+using LBL(Edit) | LBL(Save Options).
 
 Ddd*set_dialog_popup.title: DDD: Set Value
 Ddd*set_dialog*helpString:	\
