@@ -119,6 +119,8 @@ extern void EnableButtonDocs(bool enable = true);
 // Enable or disable all installed text docs.
 extern void EnableTextDocs(bool enable = true);
 
+// Ignore N leave events (for temporary pointer grabs)
+extern void TipsIgnoreLeave(int n = 1);
 
 
 // Data

@@ -793,7 +793,9 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	int arg;
 
 	arg = 0;
-	XtSetArg(args[arg], XmNallowShellResize, true); arg++;
+	XtSetArg(args[arg], XmNallowShellResize, true);             arg++;
+	XtSetArg(args[arg], XmNx, WidthOfScreen(XtScreen(w)) + 1);  arg++;
+	XtSetArg(args[arg], XmNy, HeightOfScreen(XtScreen(w)) + 1); arg++;
 	tip_shell = verify(XtCreateWidget("tipShell",
 					  overrideShellWidgetClass, 
 					  findTheTopLevelShell(w), args, arg));
@@ -801,8 +803,6 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	arg = 0;
 	XtSetArg(args[arg], XmNlabelString, tip.xmstring());        arg++;
 	XtSetArg(args[arg], XmNrecomputeSize, true);                arg++;
-	XtSetArg(args[arg], XmNx, WidthOfScreen(XtScreen(w)) + 1);  arg++;
-	XtSetArg(args[arg], XmNy, HeightOfScreen(XtScreen(w)) + 1); arg++;
 	tip_label = XmCreateLabel(tip_shell, "tipLabel", args, arg);
 	XtManageChild(tip_label);
 
@@ -1202,6 +1202,16 @@ static void RaiseTip(Widget w, XEvent *event)
     }
 }
 
+static int tips_ignore_leave = 0;
+
+// Ignore next N enter/leave events.  This is required for temporary
+// pointer grabs.
+void TipsIgnoreLeave(int n)
+{
+    if (tip_popped_up || pending_tip_timer || pending_doc_timer)
+	tips_ignore_leave = n;
+}
+
 // Widget W has been entered or left.  Handle event.
 static void HandleTipEvent(Widget w,
 			   XtPointer /* client_data */,
@@ -1219,6 +1229,13 @@ static void HandleTipEvent(Widget w,
 	break;
 
     case LeaveNotify:
+	if (tips_ignore_leave > 0)
+	{
+	    tips_ignore_leave--;
+	    break;
+	}
+
+	// FALL THROUGH
     case ButtonPress:
     case ButtonRelease:
 	ClearTip(w, event);
