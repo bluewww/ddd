@@ -276,6 +276,16 @@ Ddd*buttonCaptions: on
 Ddd*buttonImageGeometry:   21x17+4+0
 Ddd*buttonCaptionGeometry: 29x7+0-0
 
+! Whether to use `flat' buttons that only have a 3d appearance when entered
+Ddd*flatButtons: on
+
+! The color key to use for buttons.
+!   Color (`c')  - color
+!   Grey  (`g')  - greyscale
+!   Mono  (`m')  - monochrome
+! See the XPM documentation for details.
+Ddd*buttonColorKey: g
+
 
 ! Newline-separated lists of GDB commands for which buttons are to be created.
 !
@@ -3004,6 +3014,7 @@ ITEM The LBL(Toolbar) can appear as\n\
     SUBITEM LBL(Images), showing a small symbol for each action, and/or\n\
     SUBITEM LBL(Captions), showing the action name below the image.\n\
     SUBITEM LBL(Flat), enabling the 3-D appearance only when entered.\n\
+    SUBITEM LBL(Color), enabling colored images.\n\
     If neither LBL(Images) nor LBL(Captions) is set, \
 buttons have ordinary labels.\n\
 ITEM LBL(Keyboard Focus) sets the keyboard focus policy.\n\
@@ -3034,6 +3045,7 @@ Ddd*preferences*buttons.labelString:		Toolbar Appearance
 Ddd*buttonsMenu*images.labelString:		Images
 Ddd*buttonsMenu*captions.labelString:		Captions
 Ddd*buttonsMenu*flat.labelString:		Flat
+Ddd*buttonsMenu*color.labelString:		Color
 
 Ddd*preferences*keyboardFocus.labelString:	Keyboard Focus
 Ddd*keyboardFocusMenu*explicit.labelString:	Click to Type

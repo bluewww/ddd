@@ -856,7 +856,26 @@ void dddToggleFlatButtonsCB(Widget w, XtPointer, XtPointer call_data)
     if (info->set)
 	set_status(next_ddd_will_start_with + "flat buttons.");
     else
-	set_status(next_ddd_will_start_with + "3-D buttons.");
+	set_status(next_ddd_will_start_with + "raised buttons.");
+
+    update_options();
+    post_startup_warning(w);
+}
+
+void dddToggleColorButtonsCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (info->set)
+	app_data.button_color_key = "c";
+    else
+	app_data.button_color_key = "g";
+
+    if (info->set)
+	set_status(next_ddd_will_start_with + "color buttons.");
+    else
+	set_status(next_ddd_will_start_with + "grey buttons.");
 
     update_options();
     post_startup_warning(w);
@@ -1722,6 +1741,8 @@ bool save_options(unsigned long flags)
 			 app_data.button_captions) << "\n";
     os << bool_app_value(XtNflatButtons,
 			 app_data.flat_buttons) << "\n";
+    os << string_app_value(XtNbuttonColorKey,
+			   app_data.button_color_key) << "\n";
 
     // Command tool
     os << "\n! Command tool\n";

@@ -1449,6 +1449,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNbuttonColorKey,
+	XtCColorKey,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, button_color_key),
+	XtRString,
+	XtPointer("g")
+    },
+
+    {
 	XtNautoCommands,
 	XtCAutoCommands,
 	XmRBoolean,
@@ -1504,7 +1514,7 @@ XtResource ddd_resources[] = {
 
     {
 	XtNshowStartupLogo,
-	XtCShowStartupLogo,
+	XtCColorKey,
 	XmRString,
 	sizeof(String),
 	XtOffsetOf(AppData, show_startup_logo),

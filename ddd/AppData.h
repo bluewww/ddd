@@ -295,6 +295,8 @@
 #define XtCButtonImageGeometry   "ButtonImageGeometry"
 #define XtNflatButtons           "flatButtons"
 #define XtCFlatButtons           "FlatButtons"
+#define XtNbuttonColorKey        "buttonColorKey"
+#define XtCColorKey              "ColorKey"
 #define XtNautoCommands          "autoCommands"
 #define XtCAutoCommands          "AutoCommands"
 #define XtNautoCommandPrefix     "autoCommandPrefix"
@@ -303,7 +305,6 @@
 #define XtNmaxDisplayNumber      "maxDisplayNumber"
 #define XtCMaxNumber             "MaxNumber"
 #define XtNshowStartupLogo       "showStartupLogo"
-#define XtCShowStartupLogo       "ShowStartupLogo"
 #define XtNcolorWMIcons          "colorWMIcons"
 #define XtCColorWMIcons          "ColorWMIcons"
 #define XtNlessTifVersion        "lessTifVersion"
@@ -453,6 +454,7 @@ struct AppData {
     String    button_caption_geometry;
     String    button_image_geometry;
     Boolean   flat_buttons;
+    String    button_color_key;
     Boolean   auto_commands;
     String    auto_command_prefix;
     int       max_breakpoint_number;

@@ -2910,7 +2910,7 @@ be iconified on its own.
 If `\fBon\fR' (default), the command history is automatically saved
 when \s-2@DDD@\s+2 exits.
 .TP
-.B "showStartupLogo (\fPclass\fB ShowStartupLogo)"
+.B "showStartupLogo (\fPclass\fB ColorKey)"
 If non-empty, show a \s-2@DDD@\s+2 splash screen upon start-up.
 Possible values include: `\fBc\fR' for a color visual, `\fBg\fR' for a
 multi-level greyscale visual, `\fBg4\fR' for a 4-level greyscale
@@ -3357,6 +3357,10 @@ enabled, toolbar buttons are shown using ordinary labels.  See also
 .B "buttonImageGeometry (\fPclass\fB ButtonImageGeometry)"
 The geometry of the image within the button icon.  Default is
 `\fB25x21+2+0\fR'.
+.TP
+.B "buttonColorKey (\fPclass\fB ColorKey)"
+The \s-2XPM\s+2 color key to use for buttons images.  `\fBc\fR' means
+color, `\fBg\fR' (default) means grey, and `\fBm\fR' means monochrome.
 .TP
 .B "commandToolBar (\fPclass\fB ToolBar)"
 Whether the tool buttons (see the `\fBtoolButtons\fR' resource, below)

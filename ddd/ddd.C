@@ -1002,6 +1002,7 @@ static MMDesc window_mode_menu [] =
 static Widget set_button_images_w;
 static Widget set_button_captions_w;
 static Widget set_flat_buttons_w;
+static Widget set_color_buttons_w;
 static MMDesc button_appearance_menu [] = 
 {
     { "images",   MMToggle, { dddToggleButtonImagesCB },
@@ -1010,6 +1011,8 @@ static MMDesc button_appearance_menu [] =
       NULL, &set_button_captions_w },
     { "flat", MMToggle, { dddToggleFlatButtonsCB },
       NULL, &set_flat_buttons_w },
+    { "color", MMToggle, { dddToggleColorButtonsCB },
+      NULL, &set_color_buttons_w },
     MMEnd
 };
 
@@ -1906,7 +1909,7 @@ int main(int argc, char *argv[])
     // From this point on, we have a true top-level window.
 
     // Install icon images
-    install_icons(command_shell);
+    install_icons(command_shell, app_data.button_color_key);
 
     // Create main window
     Widget main_window = 
@@ -3756,6 +3759,8 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_button_captions_w, initial_app_data.button_captions);
     notify_set_toggle(set_button_images_w,   initial_app_data.button_images);
     notify_set_toggle(set_flat_buttons_w,    initial_app_data.flat_buttons);
+    notify_set_toggle(set_color_buttons_w,   
+		      string(initial_app_data.button_color_key) == 'g');
 
     notify_set_toggle(set_focus_pointer_w, 
 		      initial_focus_policy == XmPOINTER);
@@ -3801,6 +3806,8 @@ static bool startup_preferences_changed()
 	|| app_data.button_images != initial_app_data.button_images
 	|| app_data.button_captions != initial_app_data.button_captions
 	|| app_data.flat_buttons != initial_app_data.flat_buttons
+	|| string(app_data.button_color_key) 
+	      != string(initial_app_data.button_color_key)
 	|| focus_policy != initial_focus_policy
 	|| app_data.panned_graph_editor != initial_app_data.panned_graph_editor
 	|| debugger_type(app_data.debugger)
