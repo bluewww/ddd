@@ -171,4 +171,10 @@ detail.
     interpretation.  This results in: `gdb: write failed: Resource
     temporarily unavailable' messages until I kill the ddd process'.
 
-722 (Insert new bugs here)
+722 Steffen Wieschalla <steffen.wieschalla@student.uni-tuebingen.de>
+    uses ddd-2.99.99 with tvtwm-pl11 on Solaris 2.5.1.  He says: `If I
+    start ddd, the window with the buttons "run", "stop", "step",
+    "stepi", ... appears for a short time and then disappears. On
+    e.g. fvwm it works correct. Does someone have an idea?'
+
+723 (Insert new bugs here)

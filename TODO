@@ -339,4 +339,15 @@ Volunteers for these and other projects are welcome!
 
 311*`Examine Memory' needs a manual entry.
 
-312 (Insert new project ideas here)
+312*Have a `break at regexp ()' entry.
+
+313 Rubber_Buccaneer@Galactic.Headquarters.org thinks that the window
+    containing the short cut buttons,i.e. step, next, etc.  should
+    always be displayed on top of the main window: `If the main window
+    is lowered the short cut box is lowered too, but when the main
+    window is raised the short cut box remains lowered. It was only
+    through accidentally clicking on the border of the tear-off help
+    menu that I discovered this, as the tear-off help window and the
+    short cuts box are clearly related.'
+
+313 (Insert new project ideas here)
