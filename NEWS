@@ -50,6 +50,8 @@ DDD 2.1 [in development; scheduled for April, 1997]
       reducing startup time drastically.
     - In the data window, the middle mouse button now toggles 
       the display selection instead of simply extending it.
+    - In the debugger console, the right mouse button invokes a small
+      popup menu which you can use to clear the line or the window.
     - Ever suffered from a frozen display while debugging a modal
       application?  DDD will now automatically make the debugged
       program ungrab the pointer, if it is interrupted in some modal
