@@ -273,6 +273,32 @@ fi
 ])dnl
 dnl
 dnl
+dnl If the C++ compiler supports placement new,
+dnl define `HAVE_PLACEMENT_NEW'.
+dnl
+AC_DEFUN(ICE_CXX_PLACEMENT_NEW,
+[
+AC_REQUIRE([AC_PROG_CXX])
+changequote(,)dnl
+AC_MSG_CHECKING(whether ${CXX} supports placement new)
+changequote([,])dnl
+AC_CACHE_VAL(ice_cv_have_placement_new,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([#include <new.h>],
+[int *pi = new (operator new (sizeof(int))) int;],
+ice_cv_have_placement_new=yes,
+ice_cv_have_placement_new=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_placement_new)
+if test "$ice_cv_have_placement_new" = yes; then
+AC_DEFINE(HAVE_PLACEMENT_NEW)
+fi
+])dnl
+dnl
+dnl
 dnl If the C++ compiler realizes ANSI C++ working paper conformant
 dnl lifetime of temporaries, define `HAVE_ANSI_LIFETIME_OF_TEMPORARIES'.
 dnl
@@ -749,7 +775,7 @@ AC_CHECK_HEADERS(regex.h rx.h rxposix.h)
 ICE_CHECK_DECL(regcomp, regex.h rx.h rxposix.h)
 ICE_CHECK_DECL(regexec, regex.h rx.h rxposix.h)
 ice_save_cppflags="$CPPFLAGS"
-CPPFLAGS="-I $srcdir/.. $CPPFLAGS"
+CPPFLAGS="-I$srcdir/.. $CPPFLAGS"
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 AC_MSG_CHECKING([re_nsub member of POSIX.2 regex_t type])
