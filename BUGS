@@ -131,14 +131,6 @@ Volunteers for fixing these and other bugs are welcome!
 069* Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
      [Linux 1.3.38 system, X11R6 (XFree 3.1.1), Motif 2.x]
 
-     1. When ddd is called with --exec-window and the execution window is
-        closed, the Execution... item in the Windows menu is not disabled
-        and when this item is then selected ddd aborts precipitately.
-          The same problem (seg. fault) happens if I close the window and
-        rerun the debugged program: a new execution window apears and then
-        ddd aborts.
-	[fixed in DDD 1.5 -AZ]
-
      2. The graph window behaves strangely when all logical windows are in
         a logical one: the scroller disappear sometimes and if the window
         is extended gray appears, not the graph window dotted background.
