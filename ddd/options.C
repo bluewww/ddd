@@ -523,22 +523,14 @@ void graphSetDisplayPlacementCB(Widget, XtPointer client_data,
 	unsigned char orientation = (unsigned char)(int)(long)client_data;
 	app_data.display_placement = orientation;
 
-	Arg args[10];
-	Cardinal arg = 0;
-
-	// Synchronize layout direction with placement
-	switch (orientation)
+	switch (app_data.display_placement)
 	{
 	case XmVERTICAL:
-	    XtSetArg(args[arg], (char *)XtNrotation, 0); arg++;
-	    XtSetValues(data_disp->graph_edit, args, arg);
 	    set_status("New displays will be placed "
 		       "below the downmost display.");
 	    break;
 	    
 	case XmHORIZONTAL:
-	    XtSetArg(args[arg], (char *)XtNrotation, 90); arg++;
-	    XtSetValues(data_disp->graph_edit, args, arg);
 	    set_status("New displays will be placed on the "
 		       "right of the rightmost display.");
 	    break;

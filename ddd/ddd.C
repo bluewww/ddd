@@ -4046,6 +4046,18 @@ void update_options()
 	// data_disp->refresh_display();
     }
 
+    // Synchronize layout direction with placement
+    switch (app_data.display_placement)
+    {
+    case XmVERTICAL:
+	XtVaSetValues(data_disp->graph_edit, XtNrotation, 0, NULL);
+	break;
+	    
+    case XmHORIZONTAL:
+	XtVaSetValues(data_disp->graph_edit, XtNrotation, 90, NULL);
+	break;
+    }
+
     if (app_data.command_toolbar && 
 	command_toolbar_w != 0 && !XtIsManaged(command_toolbar_w))
     {

@@ -1,6 +1,16 @@
 DDD News						-*- text -*-
 ********
 
+DDD 3.3.1
+=========
+
+Minor bug fixes:
+
+* DDD should compile using GCC 2.7.2.
+* The option to create new displays `left-to-right' is restored upon startup.
+
+
+
 DDD 3.3
 =======
 
