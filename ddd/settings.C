@@ -304,6 +304,8 @@ static void HelpOnThemeCB(Widget w, XtPointer client_data,
 
 static void ApplyThemesCB(Widget, XtPointer, XtPointer)
 {
+    Delay d;
+
     ThemeManager t;
 
     for (int i = 0; i < themes_entries.size(); i++)
