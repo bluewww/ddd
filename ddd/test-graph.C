@@ -117,6 +117,9 @@ Graph *myGraph()
     *g += n7;
     assert(g->OK());
 
+    *g += new LineGraphEdge(n0, n0);
+    assert(g->OK());
+
     *g += new LineGraphEdge(n1, n2);
     assert(g->OK());
 
