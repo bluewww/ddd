@@ -41,17 +41,12 @@ char filetype_rcsid[] =
 
 #include <fcntl.h>
 
-#ifdef HAVE_SYS_PARAM_H
-// HP-UX requires this before including <sys/user.h> (see below).
-// If this doesn't work, include neither <sys/param.h> nor <sys/user.h>.
-// Reported by neal@ctd.comsat.com (Neal Becker).
-#include <sys/param.h>
-#endif
-
-#ifdef HAVE_SYS_USER_H
-// AIX requires this before including <sys/core.h>.
+#ifdef _AIX
+// AIX requires <sys/user.h> being included before <sys/core.h>.
 // Reported by bas@phys.uva.nl (Bas V. de Bakker).
+#ifdef HAVE_SYS_USER_H
 #include <sys/user.h>
+#endif
 #endif
 
 #ifdef HAVE_SYS_CORE_H
