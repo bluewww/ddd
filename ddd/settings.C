@@ -85,6 +85,9 @@ char settings_rcsid[] =
 #include "version.h"
 #include "wm.h"
 
+#if !HAVE_PCLOSE_DECL
+extern "C" int pclose(FILE *stream);
+#endif
 
 //-----------------------------------------------------------------------
 // Constants

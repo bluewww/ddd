@@ -429,8 +429,23 @@ static void toggleOverstrikeAct (Widget, XEvent*, String*, Cardinal*) {}
 // Xt Stuff
 //-----------------------------------------------------------------------------
 
+// By this point some systems, notably SunOS 4.1.4 with IXI Motif 2.0.0
+// under gcc 2.95.2, have defined ON as 1 and OFF as 0, thus rendering
+// the static char definitions below invalid.
+//
+// 08-Feb-00 - Andrew Meredith <andrew@anvil.org>
+//
+#ifdef ON
+#undef ON
+#endif
+
+#ifdef OFF
+#undef OFF
+#endif
+
 static char ON[]  = "on";
 static char OFF[] = "off";
+
 
 // Options
 // Note: we support both the GDB '--OPTION' and the X '-OPTION' convention.

@@ -124,6 +124,10 @@ extern int raise(int sig);
 #define raise(sig) kill(getpid(), sig)
 #endif
 
+#if !HAVE_PCLOSE_DECL
+extern "C" int pclose(FILE *stream);
+#endif
+
 static void ddd_signal(int sig...);
 static void ddd_fatal(int sig...);
 static bool ddd_dump_core(int sig...);
