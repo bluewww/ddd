@@ -31,7 +31,7 @@ diff -c2 -r transfig.3.2.1/fig2dev/dev/readpcx.c transfig.3.2.1/fig2dev/dev/read
 *** transfig.3.2.1/fig2dev/dev/readpcx.c	Fri May 15 00:44:48 1998
 --- transfig.3.2.1/fig2dev/dev/readpcx.c	Tue May 11 19:51:40 1999
 ***************
-*** 72,76 ****
+76
       /* Read the PCX image file header information */
       if ((pcxfile = open_picfile(pic->file, &filtype)) == NULL) {
 ! 	close_picfile(pcxfile,filtype);
@@ -43,4 +43,96 @@ diff -c2 -r transfig.3.2.1/fig2dev/dev/readpcx.c transfig.3.2.1/fig2dev/dev/read
 ! 	/* close_picfile(pcxfile,filtype); */
   	return 0;
       }
+
+From andreas Fri Feb  4 10:38:13 2000
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <14490.40453.561148.944620@keywest.fmi.uni-passau.de>
+X-Mailer: VM 6.72 under 21.1 (patch 8) "Bryce Canyon" XEmacs Lucid
+Reply-To: zeller@gnu.org
+X-Face: #NChu>5Y'i4]ij,:]2`bIksKEG`Sr_==:yd?K5>QWFX9H]qhG3&2I<rhc`b3nB;V}^}A2h^
+ a.{_rvj-#m-HKW/]WQ>CCFpTT\@$guG5pN`&G<*h'-uy3NY2r+XPm}5EHDTHZURJ@.'|4'h](=MwHT
+ x[RZ3TI,)>*96Z):z5RR-R#0fT]MkFE41(D?`&\u44g%>>8~on|1Z)W#Yb6Yd|D)H0|CxktK>np,Ue
+ SK%
+From: Andreas Zeller <andreas.zeller@fmi.uni-passau.de>
+To: xfig-bugs@epb1.lbl.gov
+Subject: fig2dev patch (Transfig 3.2.1)
+Date: Fri, 4 Feb 2000 10:38:13 +0100 (CET)
 
+Hi!
+
+fig2dev as in Transfig 3.2.1 generates incorrect PostScript code when
+including XPM files -- the file contains an `%%EndDocument' directive,
+but not a `%%BeginDocument' directive.  This confuses various
+PostScript postprocessors such as `psnup' or `ps2ps'.  A patch is
+included.
+
+Greetings,
+
+Andreas Zeller
+
+-- 
+Andreas Zeller     Universitaet Passau
+                   http://www.fmi.uni-passau.de/st/staff/zeller/
+
+
+*** transfig.3.2.1/fig2dev/dev/genps.c.orig	Tue May 11 19:45:37 1999
+--- transfig.3.2.1/fig2dev/dev/genps.c	Fri Feb  4 10:23:15 2000
+***************
+*** 720,723 ****
+--- 720,724 ----
+  		if (ReadFromBitmapFile(l->pic->file, &dx, &dy, &l->pic->bitmap)) {
+  			fprintf(tfp, "%% Begin Imported X11 Bitmap File: %s\n", l->pic->file);
++ 			fprintf(tfp, "%%%%BeginDocument: %s\n", l->pic->file);
+  			fprintf(tfp, "%%\n");
+  			l->pic->subtype = P_XBM;
+***************
+*** 732,735 ****
+--- 733,738 ----
+  			/* yes, say so */
+  			fprintf(tfp, "%% Begin Imported XPM File: %s\n", l->pic->file);
++ 			fprintf(tfp, "%%%%BeginDocument: %s\n", l->pic->file);
++ 			fprintf(tfp, "%%\n");
+  			/* and set type */
+  			l->pic->subtype = P_XPM;
+***************
+*** 744,747 ****
+--- 747,752 ----
+  			/* yes, say so */
+  			fprintf(tfp, "%% Begin Imported GIF File: %s\n", l->pic->file);
++ 			fprintf(tfp, "%%%%BeginDocument: %s\n", l->pic->file);
++ 			fprintf(tfp, "%%\n");
+  
+  			llx = lly = 0;
+***************
+*** 753,756 ****
+--- 758,763 ----
+  			/* yes, say so */
+  			fprintf(tfp, "%% Begin Imported PCX File: %s\n", l->pic->file);
++ 			fprintf(tfp, "%%%%BeginDocument: %s\n", l->pic->file);
++ 			fprintf(tfp, "%%\n");
+  
+  			llx = lly = 0;
+***************
+*** 763,766 ****
+--- 770,775 ----
+  			/* yes, say so */
+  			fprintf(tfp, "%% Begin Imported JPEG File: %s\n", l->pic->file);
++ 			fprintf(tfp, "%%%%BeginDocument: %s\n", l->pic->file);
++ 			fprintf(tfp, "%%\n");
+  
+  			llx = lly = 0;
+***************
+1047
+  		fprintf(tfp, "restore grestore\n");
+  		fprintf(tfp, "%%\n");
+! 		fprintf(tfp, "%% End Imported PIC File: %s\n", l->pic->file);
+  		fprintf(tfp, "%%%%EndDocument\n");
+  		fprintf(tfp, "%%\n");
+--- 1052,1056 ----
+  		fprintf(tfp, "restore grestore\n");
+  		fprintf(tfp, "%%\n");
+! 		fprintf(tfp, "%% End Imported File: %s\n", l->pic->file);
+  		fprintf(tfp, "%%%%EndDocument\n");
+  		fprintf(tfp, "%%\n");
