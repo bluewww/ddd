@@ -760,9 +760,9 @@ public:
 
     // Friends & utilities
     // Split string into array RES at SEPARATORS; return number of elements
-    friend int split(const string& x, string res[], int maxn, 
+    friend int split(const string& x, string *res, int maxn, 
 		     const string& sep);
-    friend int split(const string& x, string res[], int maxn, 
+    friend int split(const string& x, string *res, int maxn, 
 		     const regex& sep);
 
     friend string common_prefix(const string& x, const string& y, 
@@ -771,7 +771,7 @@ public:
 				int startpos = -1);
     // friend string replicate(char c, int n);
     friend string replicate(const string& y, int n);
-    friend string join(string src[], int n, const string& sep);
+    friend string join(string *src, int n, const string& sep);
 
     // Simple builtin transformations
     friend inline string reverse(const string& x);

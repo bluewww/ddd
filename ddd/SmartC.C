@@ -109,7 +109,7 @@ void smart_sort(char *a[], int size)
 }
 
 // Sort array A, using smart_compare
-void smart_sort(string a[], int size)
+void smart_sort(string *a, int size)
 {
     SMART_SHELL_SORT(string, a, size);
 }

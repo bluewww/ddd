@@ -60,7 +60,7 @@ static Delay *completion_delay = 0;
 //-----------------------------------------------------------------------------
 
 // Remove adjacent duplicates in A
-static void uniq(string a[], int& size)
+static void uniq(string *a, int& size)
 {
     int j = 1;
     for (int i = 1; i < size; i++)

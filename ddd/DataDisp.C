@@ -4944,7 +4944,7 @@ void DataDisp::process_scope(const string& scope)
 //----------------------------------------------------------------------------
 
 // Sort LABELS and SELECTED
-static void sort(string labels[], bool selected[], int size)
+static void sort(string *labels, bool *selected, int size)
 {
     // Shell sort -- simple and fast
     int h = 1;

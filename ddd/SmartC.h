@@ -42,7 +42,7 @@ extern int smart_compare(const char *s1, const char *s2);
 // Sort array S, using smart_compare
 extern void smart_sort(StringArray& s);
 extern void smart_sort(char *a[], int size);
-extern void smart_sort(string a[], int size);
+extern void smart_sort(string *a, int size);
 
 // Remove adjacent duplicates in A
 extern void uniq(StringArray& a);

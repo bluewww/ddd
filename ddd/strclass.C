@@ -1046,7 +1046,7 @@ subString string::from(const char* t, int startpos)
  */
 
 
-int split(const string& src, string results[], int n, const string& sep)
+int split(const string& src, string *results, int n, const string& sep)
 {
     string x = src;
     const char* s = x.chars();
@@ -1065,7 +1065,7 @@ int split(const string& src, string results[], int n, const string& sep)
     return i;
 }
 
-int split(const string& src, string results[], int n, const regex& r)
+int split(const string& src, string *results, int n, const regex& r)
 {
     string x = src;
     const char* s = x.chars();
@@ -1085,7 +1085,7 @@ int split(const string& src, string results[], int n, const regex& r)
     return i;
 }
 
-string join(string src[], int n, const string& separator) RETURNS(x)
+string join(string *src, int n, const string& separator) RETURNS(x)
 {
     RETURN_OBJECT(string, x);
     string sep = separator;
