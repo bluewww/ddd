@@ -118,6 +118,7 @@ char DataDisp_rcsid[] =
 
 // Motif includes
 #include <Xm/List.h>
+#include <Xm/MessageB.h>
 #include <Xm/ToggleB.h>
 #include <Xm/RowColumn.h>	// XmMenuPosition()
 #include <Xm/SelectioB.h>	// XmCreatePromptDialog()
@@ -3130,7 +3131,7 @@ void DataDisp::refresh_builtin_user_displays()
 
 struct StatusShower {
     string msg;			// The message shown
-    StatusDelay *delay;		// The delay shown
+    StatusDelay delay;		// The delay shown
     int current;		// Current data to be processed
     int base;			// Data already processed
     int total;			// Total of data to be processed
@@ -3138,8 +3139,13 @@ struct StatusShower {
     bool (*old_background)(int); // DispValue bg proc
     bool aborted;		// True iff bg proc aborted
 
-    // Show delay when updating from at least THRESHOLD characters.
-    static const int THRESHOLD;
+    // Update status message every UPDATE_THRESHOLD characters.
+    static const int UPDATE_THRESHOLD;
+
+    // Show dialog when updating from at least DIALOG_THRESHOLD characters.
+    static const int DIALOG_THRESHOLD;
+
+    static Widget dialog;
 
     bool process(int remaining_length);
 
@@ -3149,15 +3155,31 @@ struct StatusShower {
 	return active->process(remaining_length);
     }
 
+    static void CancelCB(Widget, XtPointer, XtPointer);
+
     StatusShower(const string& _msg)
 	: msg(_msg),
-	  delay(0), current(0), base(0), total(0), last_shown(0),
+	  delay(_msg), current(0), base(0), total(0), last_shown(0),
 	  old_background(DispValue::background),
 	  aborted(false)
     {
 	DispValue::background = _process;
 	active = (StatusShower *)this;
-	delay = new StatusDelay(msg);
+
+	if (dialog == 0)
+	{
+	    Arg args[10];
+	    Cardinal arg = 0;
+	    XtSetArg(args[arg], XmNdialogStyle, 
+		     XmDIALOG_FULL_APPLICATION_MODAL); arg++;
+	    dialog = verify(XmCreateWorkingDialog(find_shell(), 
+						  "update_displays_dialog", 
+						  args, arg));
+	    XtUnmanageChild(XmMessageBoxGetChild(dialog, 
+						 XmDIALOG_OK_BUTTON));
+	    XtUnmanageChild(XmMessageBoxGetChild(dialog, 
+						 XmDIALOG_HELP_BUTTON));
+	}
     }
 
     ~StatusShower()
@@ -3165,29 +3187,41 @@ struct StatusShower {
 	DispValue::background = old_background;
 	active = 0;
 	if (aborted)
-	    delay->outcome = "aborted";
-	delete delay;
+	    delay.outcome = "aborted";
+	XtRemoveCallback(dialog, XmNcancelCallback, CancelCB, 
+			 XtPointer(&aborted));
+	XtUnmanageChild(dialog);
     }
 
 private:
-    StatusShower(const StatusShower&)
+    // No copy constructor
+    StatusShower(const StatusShower &)
 	: msg(),
-	  delay(0), current(0), base(0), total(0), last_shown(0),
+	  delay(""), current(0), base(0), total(0), last_shown(0),
 	  old_background(0),
 	  aborted(false)
     {
 	assert(0);
     }
 
-    StatusShower& operator = (const StatusShower&)
+    // No assignment
+    StatusShower& operator = (const StatusShower &)
     {
 	assert(0); return *this;
     }
 };
 
-const int StatusShower::THRESHOLD = 1024;
+const int StatusShower::UPDATE_THRESHOLD = 512;
+const int StatusShower::DIALOG_THRESHOLD = 4096;
+Widget StatusShower::dialog = 0;
 
 StatusShower *StatusShower::active = 0;
+
+void StatusShower::CancelCB(Widget, XtPointer client_data, XtPointer)
+{
+    bool *flag = (bool *)client_data;
+    *flag = true;
+}
 
 bool StatusShower::process(int remaining_length)
 {
@@ -3197,17 +3231,29 @@ bool StatusShower::process(int remaining_length)
     clog << "Processed " << processed << "/" <<  total << " characters\n";
 #endif
 
-    if (processed - last_shown >= THRESHOLD)
+    if (processed - last_shown >= UPDATE_THRESHOLD)
     {
-	// Another THRESHOLD characters processed.  Wow!
+	// Another bunch of characters processed.  Wow!
 	int percent = (processed * 100) / total;
 	set_status(msg + "... (" + itostring(percent) + "% processed)", true);
 	last_shown = processed;
     }
 
+    if (!aborted && total >= DIALOG_THRESHOLD && !XtIsManaged(dialog))
+    {
+	MString mmsg = rm(msg + "...");
+	XtVaSetValues(dialog, XmNmessageString, mmsg.xmstring(), NULL);
+	XtAddCallback(dialog, XmNcancelCallback, CancelCB, 
+		      XtPointer(&aborted));
+	manage_and_raise(dialog);
+    }
+
     // Interrupt if emergency
     if (!aborted && process_emergencies())
 	aborted = true;
+    if (!aborted)
+	process_pending_events();
+
     return aborted;
 }
 
