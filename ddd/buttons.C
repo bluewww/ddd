@@ -407,10 +407,19 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
     string tip = gdbHelp(help_name);
     if (tip == NO_GDB_ANSWER)
 	return MString(0, true);
+
     if (tip.contains(help_name, 0))
 	tip = tip.after(help_name);
+
     strip_through(tip, " # ");
     strip_through(tip, " - ");
+
+    if (gdb->type() == XDB)
+    {
+	// Get rid of XXX [number] as in `S [number] Single step, step...'
+	// Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
+	strip_through(tip, "]");
+    }
 
     tip = tip.from(rxalpha);
     if (tip.length() > 0)

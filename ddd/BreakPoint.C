@@ -195,6 +195,11 @@ BreakPoint::BreakPoint (string& info_output, string arg)
 
     case XDB:
 	{
+	    // Strip leading `:'.
+	    // Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
+	    if (info_output.contains(':', 0))
+		info_output = info_output.after(0);
+
 	    read_leading_blanks(info_output);
 
 	    // Skip `count: N'
@@ -208,9 +213,19 @@ BreakPoint::BreakPoint (string& info_output, string arg)
 	    
 	    // Check for `Active'
 	    if (info_output.contains("Active", 0))
+	    {
+		// Strip `Active'.
+		// Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
+		info_output = info_output.after("Active");
 		myenabled = true;
+	    }
 	    else if (info_output.contains("Suspended", 0))
+	    {
+		// Strip `Suspended'.
+		// Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
+		info_output = info_output.after("Suspended");
 		myenabled = false;
+	    }
 
 	    // Get function name and position
 	    info_output = info_output.after(RXblanks_or_tabs);
@@ -429,6 +444,9 @@ bool BreakPoint::update (string& info_output)
 	break;
 
     case XDB:
+	    if (info_output[0] == ':')
+		info_output = info_output.after(0);
+
 	{
 	    read_leading_blanks(info_output);
 
@@ -446,16 +464,19 @@ bool BreakPoint::update (string& info_output)
 		}
 	    }
 	    
-	    // Check for `Active'
+	    // Check for `Active' or `Suspended' and strip them
+	    // Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
 	    if (info_output.contains("Active", 0))
 	    {
-		changed   = myenabled_changed = !myenabled;
-		myenabled = true;
+		changed     = myenabled_changed = !myenabled;
+		info_output = info_output.after("Active");
+		myenabled   = true;
 	    }
 	    else if (info_output.contains("Suspended", 0))
 	    {
-		changed   = myenabled_changed = myenabled;
-		myenabled = false;
+		changed     = myenabled_changed = myenabled;
+		info_output = info_output.after("Suspended");
+		myenabled   = false;
 	    }
 
 	    // Get function name and position
