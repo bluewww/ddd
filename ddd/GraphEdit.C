@@ -159,6 +159,9 @@ static XtResource resources[] = {
     { XtNselfEdgeDirection, XtCSelfEdgeDirection, XtRSelfEdgeDirection,
 	sizeof(SelfEdgeDirection), offset(selfEdgeDirection), 
         XtRImmediate, XtPointer(Counterclockwise) },
+    { XtNdashedLines, XtCDashedLines, XtRBoolean,
+	sizeof(Boolean), offset(dashedLines), 
+        XtRImmediate, XtPointer(False) },
 
     { XtNdefaultCursor, XtCCursor, XtRCursor, sizeof(Cursor),
 	offset(defaultCursor), XtRImmediate, XtPointer(0)},
@@ -1121,7 +1124,7 @@ static void setGCs(Widget w)
     const Pixel frameColor          = _w->graphEdit.frameColor;
     const Pixel outlineColor        = _w->graphEdit.outlineColor;
     const Pixel selectColor         = _w->graphEdit.selectColor;
-
+    const Boolean dashedLines       = _w->graphEdit.dashedLines;
 
     // write-only
     GC& nodeGC                      = _w->graphEdit.nodeGC;
@@ -1131,17 +1134,20 @@ static void setGCs(Widget w)
     GC& frameGC                     = _w->graphEdit.frameGC;
     GC& outlineGC                   = _w->graphEdit.outlineGC;
 
+    int line_style = dashedLines ? LineOnOffDash : LineSolid;
+
     // set nodeGC
     XGCValues gcv;
     gcv.foreground = nodeColor;
     gcv.line_width = 1;
-    gcv.line_style = LineSolid;
+    gcv.line_style = line_style;
     nodeGC = XtGetGC(w, GCForeground | GCLineWidth | GCLineStyle, &gcv);
 
     // set edgeGC
     gcv.foreground = edgeColor;
     gcv.line_width = edgeWidth;
-    edgeGC = XtGetGC(w, GCForeground | GCLineWidth, &gcv);
+    gcv.line_style = line_style;
+    edgeGC = XtGetGC(w, GCForeground | GCLineWidth | GCLineStyle, &gcv);
 
     // set invertGC
     if (selectTile)
@@ -1377,16 +1383,27 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
 	}
     }
 
+    Boolean new_gcs = False;
+
     // reset GCs if changed
-    if (before->graphEdit.edgeWidth   != after->graphEdit.edgeWidth ||
-	before->graphEdit.selectTile  != after->graphEdit.selectTile)
+    if (before->graphEdit.edgeWidth    != after->graphEdit.edgeWidth ||
+	before->graphEdit.selectTile   != after->graphEdit.selectTile ||
+	before->graphEdit.dashedLines  != after->graphEdit.dashedLines ||
+	before->graphEdit.nodeColor    != after->graphEdit.nodeColor ||
+	before->graphEdit.edgeColor    != after->graphEdit.edgeColor ||
+	before->graphEdit.frameColor   != after->graphEdit.frameColor ||
+	before->graphEdit.outlineColor != after->graphEdit.outlineColor ||
+	before->graphEdit.gridColor    != after->graphEdit.gridColor ||
+	before->graphEdit.selectColor  != after->graphEdit.selectColor)
     {    
 	setGCs(new_w);
+	new_gcs = True;
 	redisplay = True;
     }
 
     // reset GraphGC if changed
-    if (before->graphEdit.arrowAngle      != after->graphEdit.arrowAngle     ||
+    if (new_gcs ||
+	before->graphEdit.arrowAngle      != after->graphEdit.arrowAngle     ||
 	before->graphEdit.arrowLength     != after->graphEdit.arrowLength    ||
 	before->graphEdit.showHints       != after->graphEdit.showHints      ||
 	before->graphEdit.hintSize        != after->graphEdit.hintSize       ||

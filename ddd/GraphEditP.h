@@ -130,6 +130,7 @@ typedef struct _GraphEditPart {
     LayoutMode layoutMode;	         // How to layout graphs
     SelfEdgePosition  selfEdgePosition;  // Position of self-pointing edges
     SelfEdgeDirection selfEdgeDirection; // Its direction
+    Boolean dashedLines;		 // Whether dashed lines are to be used
 
     // Cursors
     Cursor defaultCursor;	         // Standard cursor to use

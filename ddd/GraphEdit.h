@@ -94,6 +94,7 @@ class GraphNode;
 #define XtNselfEdgeDiameter         "selfEdgeDiameter"
 #define XtNselfEdgePosition         "selfEdgePosition"
 #define XtNselfEdgeDirection        "selfEdgeDirection"
+#define XtNdashedLines              "dashedLines"
 
 
 
@@ -124,6 +125,7 @@ class GraphNode;
 #define XtCSelfEdgeDiameter  "SelfEdgeDiameter"
 #define XtCSelfEdgePosition  "SelfEdgePosition"
 #define XtCSelfEdgeDirection "SelfEdgeDirection"
+#define XtCDashedLines       "DashedLines"
 
 
 // Representation types
