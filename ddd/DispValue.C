@@ -48,6 +48,8 @@ char DispValue_rcsid[] =
 #include "DynArray.h"
 #include "assert.h"
 #include "cook.h"
+#include "GDBAgent.h"
+#include "ddd.h"
 
 //-----------------------------------------------------------------------------
 // Typ-Deklarationen
@@ -321,10 +323,18 @@ string DispValue::dereferenced_name() const
 {
     if (mytype == Pointer)
     {
-	string f = full_name();
-	if (f.length() > 2 && f[0] == '/')
-	    f = f.from(2);
-	return "*(" + f + ")";
+	if (gdb->has_c_pointer_syntax())
+	{
+	    string f = full_name();
+	    if (f.length() > 2 && f[0] == '/')
+		f = f.from(2);
+	    return "*(" + f + ")";
+	}
+	else
+	{
+	    // Try Pascal/Modula pointer syntax
+	    return full_name() + "^";
+	}
     }
     else
 	return "";

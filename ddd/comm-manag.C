@@ -127,6 +127,7 @@ typedef struct PlusCmdData {
     bool     config_err_redirection;   // try 'help run'
     bool     config_page;	       // try 'set $page = 0'
     bool     config_xdb;	       // try XDB settings
+    bool     config_c_pointer_syntax;  // try 'show language'
 
     PlusCmdData () :
 	refresh_main(false),
@@ -154,7 +155,8 @@ typedef struct PlusCmdData {
 	config_when_semicolon(false),
 	config_err_redirection(false),
 	config_page(false),
-	config_xdb(false)
+	config_xdb(false),
+	config_c_pointer_syntax(false)
     {}
 };
 
@@ -181,6 +183,8 @@ void start_gdb()
     case GDB:
 	cmds += "info line main";
 	plus_cmd_data->refresh_main = true;
+	cmds += "show language";
+	plus_cmd_data->config_c_pointer_syntax = true;
 	cmds += "pwd";
 	plus_cmd_data->refresh_pwd = true;
 	cmds += "info breakpoints";
@@ -217,6 +221,7 @@ void start_gdb()
 	plus_cmd_data->config_err_redirection = true;
 	cmds += "set $page = 0";
 	plus_cmd_data->config_page = true;
+
 	cmds += "sh pwd";
 	plus_cmd_data->refresh_pwd = true;
 	cmds += "file";
@@ -550,6 +555,7 @@ void user_cmdSUC (string cmd, Widget origin)
     assert(!plus_cmd_data->config_err_redirection);
     assert(!plus_cmd_data->config_page);
     assert(!plus_cmd_data->config_xdb);
+    assert(!plus_cmd_data->config_c_pointer_syntax);
     
     // Setup additional trailing commands
     switch (gdb->type())
@@ -908,6 +914,14 @@ static void process_config_def(string&)
     // Nothing yet...
 }
 
+static void process_config_c_pointer_syntax(string& lang)
+{
+    // Ideally, this should be done after each frame change,
+    // when GDB issues `current language is ...'.  (FIXME)
+    gdb->has_c_pointer_syntax(!lang.contains("m3") 
+			      && !lang.contains("modula"));
+}
+
 
 // ***************************************************************************
 // Behandelt die Antworten auf die hinterhergeschickten Anfragen
@@ -1000,6 +1014,11 @@ void plusOQAC (string answers[],
 	process_config_def(answers[qu_count++]); // def step s
 	process_config_def(answers[qu_count++]); // def quit q
 	process_config_def(answers[qu_count++]); // def finish { ... }
+    }
+
+    if (plus_cmd_data->config_c_pointer_syntax) {
+	assert (qu_count < count);
+	process_config_c_pointer_syntax(answers[qu_count++]);
     }
 
     if (plus_cmd_data->refresh_pwd) {

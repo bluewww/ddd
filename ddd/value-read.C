@@ -80,13 +80,14 @@ DispValueType determine_type (string value)
     // XDB issues the struct address before each struct.
     static regex 
 	RXstr_or_cl_begin("(0(0|x)[0-9a-f]+|[(]nil[)])? *"
-			  "([(]|{\n|record\n|RECORD\n|struct|class|union).*");
+			  "([(]|{\n|record\n|RECORD\n|RECORD |OBJECT "
+			  "|struct|class|union).*");
     if (value.matches(RXstr_or_cl_begin))
     {
 	static regex 
-	    RXstr_or_cl_begin_s("([(]|{\n|record\n|RECORD\n)");
+	    RXstr_or_cl_begin_s("([(]|{\n|record\n|RECORD\n|RECORD |OBJECT )");
 	static regex 
-	    RXstr_or_cl_end_s("([)]|}\n|end\n|END\n)");
+	    RXstr_or_cl_end_s("([)]|}\n|end\n|END\n|END;)");
 
 	// DEC DBX uses `{' for arrays as well as for structs;
 	// likewise, AIX DBX uses `(' for arrays and structs.  To
@@ -107,7 +108,8 @@ DispValueType determine_type (string value)
     // XDB uses the pattern `00000000' for nil pointers.
     // GDB prepends the exact pointer type in parentheses.
     static regex 
-	RXpointer_value("([(].*[)] )?(0(0|x)[0-9a-f]+|[(]nil[)]).*");
+	RXpointer_value("([(].*[)] )?"
+			"(0(0|x)[0-9a-f]+|[(]nil[)]|NIL|16_[0-9a-f]+).*");
     if (value.matches(RXpointer_value))
 	return Pointer;
 
@@ -118,6 +120,8 @@ DispValueType determine_type (string value)
 	// (e.g. `{int ()} 0x2908 <main>'), so check for closing brace
 	// as well.
 	if (value.contains('{', 0) && value.contains('}', -1))
+	    return Array;
+	if (value.contains('[', 0) && value.contains(']', -1))
 	    return Array;
 	break;
 
@@ -134,6 +138,8 @@ DispValueType determine_type (string value)
 // ***************************************************************************
 
 static void read_token(const char *value, int& pos);
+static void read_leading_junk(string& value);
+static void read_leading_comment(string& value);
 
 // Read tokens up to character DELIM
 static void read_up_to(const char *value, int& pos, char delim)
@@ -260,6 +266,8 @@ static void read_token(const char *value, int& pos)
 		read_up_to(value, pos, "end");
 	    else if (name == "RECORD")
 		read_up_to(value, pos, "END");
+	    else if (name == "OBJECT")
+		read_up_to(value, pos, "END");
 	}
 	else if (isspace(value[0]))
 	{
@@ -296,7 +304,7 @@ string read_simple_value(string& value)
     // Read values up to [)}],\n]
 
     string old_value = value;
-    read_leading_blanks (value);
+    read_leading_junk (value);
 
     string ret;
     while (value != "" 
@@ -347,6 +355,8 @@ bool read_array_begin (string& value)
 	value = value.after("record");
     else if (value.contains("RECORD", 0))
 	value = value.after("RECORD");
+    else if (value.contains("OBJECT", 0))
+	value = value.after("OBJECT");
     else
 	return false;
 
@@ -371,7 +381,7 @@ bool read_array_next (string& value)
     if (value.contains('\n', 0))
 	following = true;
     
-    read_leading_blanks (value);
+    read_leading_junk (value);
 
     // DBX on DEC prepends `[N]' before array member N
     if (value.matches(RXindex))
@@ -380,14 +390,16 @@ bool read_array_next (string& value)
     if (value.contains(',', 0) || value.contains(';', 0))
     {
 	value = value.after(0);
-	return value != "";	// More stuff follows
+	read_leading_junk (value);
+	return value != "" && !value.contains("END", 0); // More stuff follows
     }
 
     if (value.contains('{', 0)
 	|| value.contains('(', 0)
 	|| value.contains('[', 0)
 	|| value.contains("record\n", 0)
-	|| value.contains("RECORD\n", 0))
+	|| value.contains("RECORD\n", 0)
+	|| value.contains("OBJECT\n", 0))
     {
 	// DBX on Solaris issues arrays of structs without special delimiter
 	return true;
@@ -408,16 +420,23 @@ bool read_array_next (string& value)
 // ***************************************************************************
 bool read_array_end (string& value)
 {
-    read_leading_blanks (value);
+    read_leading_junk (value);
 
     if (value.contains("end\n", 0))
     {
 	value = value.after("end");
 	return false;		// Array is done.
     }
+
     if (value.contains("END\n", 0))
     {
 	value = value.after("END");
+	return false;		// Array is done.
+    }
+
+    if (value.contains("END;\n", 0))
+    {
+	value = value.after("END;");
 	return false;		// Array is done.
     }
 
@@ -462,7 +481,7 @@ bool read_members_of_xy (string& value)
 {
     static regex RXmembers_of_nl   ("members of .+: ?\n");
 
-    read_leading_blanks (value);
+    read_leading_junk (value);
     if (!(value.index (RXmembers_of_nl) == 0))
 	return false;
     value = value.after (RXmembers_of_nl);
@@ -480,7 +499,7 @@ string read_member_name (string& value)
     {
 	// Anonymous union
 	value = value.after(0);
-	read_leading_blanks(value);
+	read_leading_junk(value);
 	return " ";
     }
 
@@ -497,7 +516,7 @@ string read_member_name (string& value)
     if (member_name.contains("("))
 	member_name = member_name.before("(");
 
-    read_leading_blanks (member_name);
+    read_leading_junk (member_name);
 
     if (member_name == "")
     {
@@ -547,4 +566,48 @@ void cut_BaseClass_name (string& full_name)
 	full_name = full_name.before(index);
 	full_name.prepend ("*");
     }
+}
+
+// Read blanks and M3 comments
+static void read_leading_junk (string& value)
+{
+    static regex M3Comment("\\(\\*.*\\*\\).*");
+  
+    read_leading_blanks(value);
+  
+    while (value.matches(M3Comment))
+    {
+	read_leading_comment(value);
+	read_leading_blanks(value);
+    }
+}
+
+static void read_leading_comment (string& value)
+{
+    int i = 2;
+    bool sf = false;
+
+    while (i < int(value.length()))
+    {
+	switch (value[i])
+	{
+	case '*': 
+	    sf = true;
+	    break;
+
+	case ')': 
+	    if (sf)
+	    {
+		value = value.from(i + 1);
+		return;
+	    }
+
+	default: 
+	    sf = false; 
+	    break;
+	}
+	i++;
+    }
+
+    value = value.from(i);
 }
