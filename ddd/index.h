@@ -38,7 +38,12 @@
 // Return index of R in S, starting with POS; PREFIX is the constant
 // prefix of R.
 extern int index(const string& s, const regex& r, 
-		 const string& prefix, int pos = 0);
+		 const char *prefix, int pos = 0);
+
+inline int index(const string& s, const regex& r, 
+		 const string& prefix, int pos = 0){
+  return index(s, r, prefix.chars(), pos);
+}
 
 #endif // _DDD_index_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

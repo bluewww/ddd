@@ -40,7 +40,7 @@ char index_rcsid[] =
 
 // Return index of R in S, starting with POS; PREFIX is the constant
 // prefix of R.
-int index(const string& s, const regex& r, const string& prefix, int startpos)
+int index(const string& s, const regex& r, const char *prefix, int startpos)
 {
     int direction = +1;
 
@@ -55,8 +55,8 @@ int index(const string& s, const regex& r, const string& prefix, int startpos)
     for (; startpos >= 0 && startpos < int(s.length()); startpos += direction)
     {
 	const char *t = s.chars() + startpos;
-	if (strncmp(t, prefix.chars(), min(prefix.length(), 
-				   s.length() - startpos)) == 0 
+	if (strncmp(t, prefix, min(strlen(prefix),
+			       s.length() - startpos)) == 0
 	    && r.match(s.chars(), s.length(), startpos) >= 0)
 	    return startpos;
     }
