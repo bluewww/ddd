@@ -1384,6 +1384,7 @@ bool is_known_command(const string& answer)
 	    && !ans.contains("ambiguous command")    // GDB
 	    && !ans.contains("not found")            // SUN DBX 3.0
 	    && !ans.contains("is unknown")           // SUN DBX 3.0
+	    && !ans.contains("not a known")          // AIX DBX 3.1
 	    && !ans.contains("unrecognized")         // AIX DBX & SUN DBX 1.0
 	    && !ans.contains("no help available")    // AIX DBX
 	    && !ans.contains("expected")             // SGI DBX
