@@ -3,10 +3,6 @@
 ! @configure_input@
 Ddd*appDefaultsVersion:  @VERSION@
 
-! =======================================================================
-! WARNING: This file contains 8-bit characters.  Be careful when editing.
-! =======================================================================
-! 
 ! Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 ! Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 ! 
@@ -123,12 +119,12 @@ Ddd*termType: xterm
 ! Basically, there are two ways to redirect process I/O.  Both have
 ! advantages and disadvantages.
 !
-! · GDB provides a `tty' command to redirect I/O to a separate tty TTY.
+! * GDB provides a `tty' command to redirect I/O to a separate tty TTY.
 !   This is portable, but on some systems, there is the nasty side-effect
 !   that redirection can not be undone.
 !   Set `useTTYCommand' to `true' to enable this behaviour.
 ! 
-! · As an alternative, DDD can redirect the process I/O explicitly,
+! * As an alternative, DDD can redirect the process I/O explicitly,
 !   without using the `tty' command.  This may fail if you use a
 !   non-standard shell.
 !   Set `useTTYCommand' to `false' to enable this behaviour.
@@ -203,7 +199,7 @@ Ddd*next.labelString:      Next
 Ddd*cont.labelString:      Continue
 Ddd*interrupt.labelString: Interrupt
 Ddd*kill.labelString:      Kill
-Ddd*until.labelString:    	Until
+Ddd*until.labelString:     Until
 Ddd*finish.labelString:    Finish
 Ddd*up.labelString:        Up
 Ddd*down.labelString:      Down
@@ -243,7 +239,7 @@ Ddd*dbxInitCommands:
 ! colon-separated list of directories where the VSL file and its
 ! includes can be found.
 Ddd*vslLibrary: 		builtin
-Ddd*vslPath:	 	.
+Ddd*vslPath:	 		.
 
 
 ! Graph Editor Defaults
@@ -255,7 +251,7 @@ Ddd*vslPath:	 	.
 ! scrollbars as a default: Many OSF/Motif installations choke
 ! on intermixed Motif/Athena applications and we don't want to get bug
 ! reports that should be directed to OSF.
-Ddd*pannedGraphEditor: 	false
+Ddd*pannedGraphEditor: 		false
 
 ! Nodes are moved when dragged more than 4 pixels.
 Ddd*graph_edit.moveDelta:	4
@@ -268,7 +264,7 @@ Ddd*graph_edit.moveDelta:	4
 Ddd*graph_edit.opaqueMove: 	false
 
 ! Do we wish a grid?
-Ddd*graph_edit.showGrid: 		true
+Ddd*graph_edit.showGrid: 	true
 
 ! Do we wish to snap the position to the grid?
 Ddd*graph_edit.snapToGrid: 	false
@@ -283,16 +279,16 @@ Ddd*graph_edit.layoutMode: 	regular
 Ddd*graph_edit.autoLayout: 	false
 
 ! Width and height of the grid
-Ddd*graph_edit.gridWidth: 		16
+Ddd*graph_edit.gridWidth: 	16
 Ddd*graph_edit.gridHeight: 	16
 
 
 ! Source defaults
 ! Do we wish to find complete words only?
-Ddd*findWordsOnly: 	true
+Ddd*findWordsOnly: 		true
 
 ! Do we wish to cache source files in memory?
-Ddd*cacheSourceFiles:	true
+Ddd*cacheSourceFiles:		true
 
 
 ! Focus policy
@@ -305,11 +301,11 @@ Ddd*cacheSourceFiles:	true
 ! 3. DDD users usually are wither novices or experienced programmers,
 !    who are often confused and/or embarrassed by explicit focus.
 ! Users unsatisfied with this setting can change it at run-time.
-Ddd*keyboardFocusPolicy: POINTER
+Ddd*keyboardFocusPolicy:	POINTER
 
 ! X Warnings
 ! Do we wish to suppress X warnings?
-Ddd*suppressWarnings:	false
+Ddd*suppressWarnings:		false
 
 
 !-----------------------------------------------------------------------------
@@ -698,22 +694,22 @@ Ddd*manual_help*contextHelpString: \
 Select titles from the index on the left to get help on a specific item.
 
 ! The official announcement.
-?.contextHelpString:	\
+Ddd.contextHelpString:	\
 @Logo @DDD@@logo, \
 the @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
-@rm by Dorothea Lütkehaus and Andreas Zeller.\n\
+@rm by Dorothea L\374tkehaus and Andreas Zeller.\n\
 \n\
 @DDD@ @VERSION@ (@host@),\n\
-Copyright © 1995 Technische Universität Braunschweig, Germany.\n\
+Copyright \251 1995 Technische Universit\344t Braunschweig, Germany.\n\
 @DDD@ is free software and you are welcome to distribute copies of it\n\
 under certain conditions; type `show copying' to see the conditions.\n\
 There is absolutely no warranty for @DDD@; type `show warranty' for details.\n\
 \n\
 If you appreciate this software, please send a picture postcard to:\n\
 \n\
-    Technische Universität Braunschweig\n\
+    Technische Universit\344t Braunschweig\n\
     Abteilung Softwaretechnologie\n\
-    Gaußstraße 17\n\
+    Gau\337stra\337e 17\n\
     D-38092 Braunschweig\n\
     @sl GERMANY @rm\n\
 \n\
@@ -748,16 +744,16 @@ Drag the sash with the @bf left mouse button @rm to resize window parts.
 Ddd*menubar.contextHelpString:		\
 @rm This is the @sl Menu bar@rm.\n\
 \n\
-@tt · @bf File @rm - select files and exit @DDD@.\n\
-@tt · @bf Edit @rm - cut, copy, and paste text.\n\
-@tt · @bf Options @rm - change @DDD@ settings.\n\
-@tt · @bf Windows @rm - raise @DDD@ windows.\n\
-@tt · @bf Program @rm - run the debugged program.\n\
-@tt · @bf Commands @rm - view command history.\n\
-@tt · @bf Stack @rm - view backtrace and select the current stack frame.\n\
-@tt · @bf Source @rm - edit breakpoints and go to previous positions.\n\
-@tt · @bf Data @rm - edit displays.\n\
-@tt · @bf Help @rm - on-line help and version information.
+@tt \267 @bf File @rm - select files and exit @DDD@.\n\
+@tt \267 @bf Edit @rm - cut, copy, and paste text.\n\
+@tt \267 @bf Options @rm - change @DDD@ settings.\n\
+@tt \267 @bf Windows @rm - raise @DDD@ windows.\n\
+@tt \267 @bf Program @rm - run the debugged program.\n\
+@tt \267 @bf Commands @rm - view command history.\n\
+@tt \267 @bf Stack @rm - view backtrace and select the current stack frame.\n\
+@tt \267 @bf Source @rm - edit breakpoints and go to previous positions.\n\
+@tt \267 @bf Data @rm - edit displays.\n\
+@tt \267 @bf Help @rm - on-line help and version information.
 
 
 Ddd*menubar.file.labelString:		File
@@ -766,15 +762,15 @@ Ddd*menubar.file*contextHelpString:	\
 \
 @rm This is the @sl File menu@rm.\n\
 \n\
-@tt · @bf Open Program... @rm - open the program to be debugged.\n\
-@tt · @bf Open Core... @rm - open a core dump.\n\
-@tt · @bf Open Source... @rm - open a source file.\n\
+@tt \267 @bf Open Program... @rm - open the program to be debugged.\n\
+@tt \267 @bf Open Core... @rm - open a core dump.\n\
+@tt \267 @bf Open Source... @rm - open a source file.\n\
 \n\
-@tt · @bf Print Graph... @rm - print the data display graph.\n\
-@tt · @bf Quick Print @rm - print using the previous settings.\n\
+@tt \267 @bf Print Graph... @rm - print the data display graph.\n\
+@tt \267 @bf Quick Print @rm - print using the previous settings.\n\
 \n\
-@tt · @bf Close @rm - close this window.\n\
-@tt · @bf Exit @rm - exit DDD.
+@tt \267 @bf Close @rm - close this window.\n\
+@tt \267 @bf Exit @rm - exit DDD.
 
 Ddd*menubar*fileMenu.open_file.labelString: Open Program...
 Ddd*menubar*fileMenu.open_file.mnemonic:	 O
@@ -806,13 +802,13 @@ Ddd*menubar.edit*contextHelpString:	\
 \
 @rm This is the @sl Edit menu@rm.\n\
 \n\
-@tt · @bf Cut @rm - remove the selected text to the clipboard.\n\
-@tt · @bf Copy @rm - copy the selected text to the clipboard\n\
+@tt \267 @bf Cut @rm - remove the selected text to the clipboard.\n\
+@tt \267 @bf Copy @rm - copy the selected text to the clipboard\n\
    without removing the original.\n\
-@tt · @bf Paste @rm - paste the clipboard contents into the text.\n\
+@tt \267 @bf Paste @rm - paste the clipboard contents into the text.\n\
 \n\
-@tt · @bf Clear @rm - delete the current input.\n\
-@tt · @bf Delete @rm - delete the selected text.
+@tt \267 @bf Clear @rm - delete the current input.\n\
+@tt \267 @bf Delete @rm - delete the selected text.
 
 Ddd*editMenu.cut.labelString:		Cut
 Ddd*editMenu.cut.mnemonic:			t
@@ -847,48 +843,48 @@ Ddd*menubar.options*contextHelpString:	\
 @rm This is the @sl Options @rm menu.\n\
 \n\
 @sl General Options:@rm\n\
-@tt · @rm If @bf Group Iconify @rm is set, all @DDD@ windows\n\
+@tt \267 @rm If @bf Group Iconify @rm is set, all @DDD@ windows\n\
   are iconified as a group.  Otherwise, windows are iconified separately.\n\
-@tt · @rm If @bf Global Tab Completion @rm is set, \
+@tt \267 @rm If @bf Global Tab Completion @rm is set, \
 the @key TAB @rm key completes\n\
   arguments in all @DDD@ windows.  Otherwise, the  @key TAB @rm completes\n\
   in the @DDD@ command window only.\n\
-@tt · @rm If @bf Execution Window @rm is set, \
+@tt \267 @rm If @bf Execution Window @rm is set, \
   the program is run in a separate\n\
   terminal window; useful for programs using terminal I/O.  Otherwise,\n\
   the program is run in the @DDD@ command window.\n\
   This change takes effect the next time the program is run.\n\
-@tt · @rm If @bf Suppress X Warnings @rm is set, \
+@tt \267 @rm If @bf Suppress X Warnings @rm is set, \
 X warnings are silently ignored.\n\
-@tt · @rm If @bf Save Options on Exit @rm is set, the options are\n\
+@tt \267 @rm If @bf Save Options on Exit @rm is set, the options are\n\
   automatically saved when @DDD@ exits.  Otherwise, options are discarded.\n\
-@tt · @rm If @bf Save History on Exit @rm is set, the command history is\n\
+@tt \267 @rm If @bf Save History on Exit @rm is set, the command history is\n\
   automatically saved when @DDD@ exits.  Otherwise, history is discarded.\n\
 \n\
 @sl Source Options:@rm\n\
-@tt · @rm If @bf Find Words Only @rm is set, only complete words are found.\n\
+@tt \267 @rm If @bf Find Words Only @rm is set, only complete words are found.\n\
   Otherwise, arbitrary occurrences are found.\n\
-@tt · @rm If @bf Cache Sources @rm is set, \
+@tt \267 @rm If @bf Cache Sources @rm is set, \
 source texts are cached in memory.\n\
   Otherwise, sources are re-read upon each source change.\n\
 \n\
 @sl Data Options:@rm\n\
-@tt · @rm If @bf Show Grid @rm is set, the grid is displayed.\n\
-@tt · @rm If @bf Show Edge Hints @rm is set, edge hints are displayed.\n\
-@tt · @rm If @bf Snap to Grid @rm is set, display alignment is enforced.\n\
-@tt · @rm If @bf Compact Layout @rm is set, the graph is layouted\n\
+@tt \267 @rm If @bf Show Grid @rm is set, the grid is displayed.\n\
+@tt \267 @rm If @bf Show Edge Hints @rm is set, edge hints are displayed.\n\
+@tt \267 @rm If @bf Snap to Grid @rm is set, display alignment is enforced.\n\
+@tt \267 @rm If @bf Compact Layout @rm is set, the graph is layouted\n\
   in a more compact fashion; suitable for homogenous structures only.\n\
   Otherwise, the standard layout algorithm is used.\n\
-@tt · @rm If @bf Automatic Layout @rm is set, the graph is layouted\n\
+@tt \267 @rm If @bf Automatic Layout @rm is set, the graph is layouted\n\
   after each change.  Otherwise, layout can be invoked manually.\n\
 \n\
 @sl Startup Options:@rm\n\
 (Note: these options take effect only after saving options\n\
 and restarting @DDD@)\n\
-@tt · @bf Windows @rm sets the window layout.\n\
-@tt · @bf Keyboard focus @rm sets the keyboard focus policy.\n\
-@tt · @bf Data Scrolling @rm sets the data window scrolling mode.\n\
-@tt · @bf Debugger Type @rm sets the default debugger to use.\n\
+@tt \267 @bf Windows @rm sets the window layout.\n\
+@tt \267 @bf Keyboard focus @rm sets the keyboard focus policy.\n\
+@tt \267 @bf Data Scrolling @rm sets the data window scrolling mode.\n\
+@tt \267 @bf Debugger Type @rm sets the default debugger to use.\n\
 \n\
 @bf Save Options @rm saves the options for the next use of @DDD@.
 
@@ -907,97 +903,94 @@ Ddd*optionsMenu.startupOptions.mnemonic:     u
 Ddd*optionsMenu.saveOptions.labelString:     Save Options
 Ddd*optionsMenu.saveOptions.mnemonic:        O
 
-Ddd*generalOptionsMenu.groupIconify.labelString:	    Group Iconify
-Ddd*generalOptionsMenu.groupIconify.mnemonic:	    G
+Ddd*generalOptionsMenu.groupIconify.labelString:       Group Iconify
+Ddd*generalOptionsMenu.groupIconify.mnemonic:	       G
 
 Ddd*generalOptionsMenu.globalTabCompletion.labelString: Global Tab Completion
-Ddd*generalOptionsMenu.globalTabCompletion.mnemonic:    T
+Ddd*generalOptionsMenu.globalTabCompletion.mnemonic:           T
 
 Ddd*generalOptionsMenu.separateExecWindow.labelString: Run in Execution Window
-Ddd*generalOptionsMenu.separateExecWindow.mnemonic:    E
+Ddd*generalOptionsMenu.separateExecWindow.mnemonic:           E
 
 Ddd*generalOptionsMenu.suppressWarnings.labelString:   Suppress X Warnings
-Ddd*generalOptionsMenu.suppressWarnings.mnemonic:	    W
+Ddd*generalOptionsMenu.suppressWarnings.mnemonic:	          W
 
 Ddd*generalOptionsMenu.saveOptionsOnExit.labelString:  Save Options on Exit
-Ddd*generalOptionsMenu.saveOptionsOnExit.mnemonic:     O
+Ddd*generalOptionsMenu.saveOptionsOnExit.mnemonic:          O
 
 Ddd*generalOptionsMenu.saveHistoryOnExit.labelString:  Save History on Exit
-Ddd*generalOptionsMenu.saveHistoryOnExit.mnemonic:     H
+Ddd*generalOptionsMenu.saveHistoryOnExit.mnemonic:          H
 
-Ddd*sourceOptionsMenu.findWordsOnly.labelString:	Find Words Only
-Ddd*sourceOptionsMenu.findWordsOnly.mnemonic:	W
+Ddd*sourceOptionsMenu.findWordsOnly.labelString:       Find Words Only
+Ddd*sourceOptionsMenu.findWordsOnly.mnemonic:	             W
 
-Ddd*sourceOptionsMenu.cacheSourceFiles.labelString: Cache Sources
-Ddd*sourceOptionsMenu.cacheSourceFiles.mnemonic:	C
+Ddd*sourceOptionsMenu.cacheSourceFiles.labelString:    Cache Sources
+Ddd*sourceOptionsMenu.cacheSourceFiles.mnemonic:       C
 
-Ddd*dataOptionsMenu*showGrid.labelString:		Show Grid
-Ddd*dataOptionsMenu*showGrid.mnemonic:		G
+Ddd*dataOptionsMenu*showGrid.labelString:	       Show Grid
+Ddd*dataOptionsMenu*showGrid.mnemonic:		            G
 
-Ddd*dataOptionsMenu*showHints.labelString:		Show Edge Hints
-Ddd*dataOptionsMenu*showHints.mnemonic:		E
+Ddd*dataOptionsMenu*showHints.labelString:	       Show Edge Hints
+Ddd*dataOptionsMenu*showHints.mnemonic:		            E
 
-Ddd*dataOptionsMenu*snapToGrid.labelString:	Snap to Grid
-Ddd*dataOptionsMenu*snapToGrid.mnemonic:		S
-Ddd*dataOptionsMenu*snapToGrid.accelerator:	Meta<Key>S
-Ddd*dataOptionsMenu*snapToGrid.acceleratorText:    Alt+S
+Ddd*dataOptionsMenu*snapToGrid.labelString:	       Snap to Grid
+Ddd*dataOptionsMenu*snapToGrid.mnemonic:	       S
+Ddd*dataOptionsMenu*snapToGrid.accelerator:	       Meta<Key>S
+Ddd*dataOptionsMenu*snapToGrid.acceleratorText:        Alt+S
 
-Ddd*dataOptionsMenu*compactLayout.labelString:	Compact Layout
-Ddd*dataOptionsMenu*compactLayout.mnemonic:	C
+Ddd*dataOptionsMenu*compactLayout.labelString:	       Compact Layout
+Ddd*dataOptionsMenu*compactLayout.mnemonic:	       C
 
-Ddd*dataOptionsMenu*autoLayout.labelString:	 Automatic Layout
-Ddd*dataOptionsMenu*autoLayout.mnemonic:		 A
+Ddd*dataOptionsMenu*autoLayout.labelString:	       Automatic Layout
+Ddd*dataOptionsMenu*autoLayout.mnemonic:	       A
 
-Ddd*startupOptionsMenu*windows.labelString:         Windows
-Ddd*startupOptionsMenu*windows.mnemonic:            W
+Ddd*startupOptionsMenu*windows.labelString:            Windows
+Ddd*startupOptionsMenu*windows.mnemonic:               W
 
-Ddd*startupOptionsMenu*keyboardFocus.labelString:   Keyboard Focus
-Ddd*startupOptionsMenu*keyboardFocus.mnemonic:      K
+Ddd*startupOptionsMenu*keyboardFocus.labelString:      Keyboard Focus
+Ddd*startupOptionsMenu*keyboardFocus.mnemonic:         K
 
-Ddd*startupOptionsMenu*dataScrolling.labelString:   Data Scrolling
-Ddd*startupOptionsMenu*dataScrolling.mnemonic:      S
+Ddd*startupOptionsMenu*dataScrolling.labelString:      Data Scrolling
+Ddd*startupOptionsMenu*dataScrolling.mnemonic:              S
 
-Ddd*startupOptionsMenu*debugger.labelString:        Debugger Type
-Ddd*startupOptionsMenu*debugger.mnemonic:           D
+Ddd*startupOptionsMenu*debugger.labelString:           Debugger Type
+Ddd*startupOptionsMenu*debugger.mnemonic:              D
 
-Ddd*windowsMenu*separate.labelString:          	 Separate Windows
-Ddd*windowsMenu*separate.mnemonic:                  S
+Ddd*windowsMenu*separate.labelString:          	       Separate Windows
+Ddd*windowsMenu*separate.mnemonic:                     S
 
-Ddd*windowsMenu*attached.labelString:          	 One Single Window
-Ddd*windowsMenu*attached.mnemonic:                  O
+Ddd*windowsMenu*attached.labelString:          	       One Single Window
+Ddd*windowsMenu*attached.mnemonic:                     O
 
-Ddd*keyboardFocusMenu*explicit.labelString:         Click To Type
-Ddd*keyboardFocusMenu*explicit.mnemonic:            C
+Ddd*keyboardFocusMenu*explicit.labelString:            Click To Type
+Ddd*keyboardFocusMenu*explicit.mnemonic:               C
 
-Ddd*keyboardFocusMenu*pointer.labelString:          Pointer Driven
-Ddd*keyboardFocusMenu*pointer.mnemonic:             P
+Ddd*keyboardFocusMenu*pointer.labelString:             Pointer Driven
+Ddd*keyboardFocusMenu*pointer.mnemonic:                P
 
-Ddd*keyboardFocusMenu*explicit.labelString:         Click To Type
-Ddd*keyboardFocusMenu*explicit.mnemonic:            C
+Ddd*dataScrollingMenu*panner.labelString:              Panner
+Ddd*dataScrollingMenu*panner.mnemonic:                 P
 
-Ddd*dataScrollingMenu*panner.labelString:           Panner
-Ddd*dataScrollingMenu*panner.mnemonic:              P
+Ddd*dataScrollingMenu*scrollbars.labelString:          Scrollbars
+Ddd*dataScrollingMenu*scrollbars.mnemonic:             S
 
-Ddd*dataScrollingMenu*scrollbars.labelString:       Scrollbars
-Ddd*dataScrollingMenu*scrollbars.mnemonic:          S
+Ddd*debuggerMenu*gdb.labelString:       	       GDB
+Ddd*debuggerMenu*gdb.mnemonic:			       G
 
-Ddd*debuggerMenu*gdb.labelString:       		 GDB
-Ddd*debuggerMenu*gdb.mnemonic:			 G
-
-Ddd*debuggerMenu*dbx.labelString:       		 DBX
-Ddd*debuggerMenu*dbx.mnemonic:			 D
+Ddd*debuggerMenu*dbx.labelString:       	       DBX
+Ddd*debuggerMenu*dbx.mnemonic:			       D
 
 
 Ddd*menubar.view.labelString:		Windows
-Ddd*menubar.view.mnemonic:			W
+Ddd*menubar.view.mnemonic:		W
 Ddd*menubar.view.contextHelpString:	\
 \
 @rm This is the @sl Windows menu@rm.\n\
 \n\
-@tt · @bf Command... @rm - show the debugger command window.\n\
-@tt · @bf Source... @rm - show the source window.\n\
-@tt · @bf Data... @rm - show the data window.\n\
-@tt · @bf Execution... @rm - show the execution window.
+@tt \267 @bf Command... @rm - show the debugger command window.\n\
+@tt \267 @bf Source... @rm - show the source window.\n\
+@tt \267 @bf Data... @rm - show the data window.\n\
+@tt \267 @bf Execution... @rm - show the execution window.
 
 Ddd*viewMenu.command.labelString:		Command...
 Ddd*viewMenu.command.mnemonic:		C
@@ -1015,35 +1008,35 @@ Ddd*menubar.program*contextHelpString:	\
 \
 @rm This is the @sl Program menu@rm.\n\
 \n\
-@tt · @bf Run @rm - start the debugged program.\n\
-@tt · @bf Step @rm - step program until it reaches a different source line.\n\
-@tt · @bf Next @rm - step program, proceeding through subroutine calls.\n\
-@tt · @bf Continue @rm - continue program after signal or breakpoint.\n\
-@tt · @bf Kill @rm - Kill execution of program being debugged.\n\
-@tt · @bf Interrupt @rm - interrupt program (or current debugger command).
+@tt \267 @bf Run @rm - start the debugged program.\n\
+@tt \267 @bf Step @rm - step program until it reaches a different source line.\n\
+@tt \267 @bf Next @rm - step program, proceeding through subroutine calls.\n\
+@tt \267 @bf Continue @rm - continue program after signal or breakpoint.\n\
+@tt \267 @bf Kill @rm - Kill execution of program being debugged.\n\
+@tt \267 @bf Interrupt @rm - interrupt program (or current debugger command).
 
-Ddd*menubar*programMenu.run.labelString: 	        Run
-Ddd*menubar*programMenu.run.mnemonic:	        R
+Ddd*menubar*programMenu.run.labelString: 	   Run
+Ddd*menubar*programMenu.run.mnemonic:	           R
 Ddd*menubar*programMenu.run.accelerator:           Ctrl<Key>R
 Ddd*menubar*programMenu.run.acceleratorText:       Ctrl+R
 
-Ddd*menubar*programMenu.step.labelString: 	        Step
-Ddd*menubar*programMenu.step.mnemonic:	        S
+Ddd*menubar*programMenu.step.labelString: 	   Step
+Ddd*menubar*programMenu.step.mnemonic:	           S
 Ddd*menubar*programMenu.step.accelerator:          Ctrl<Key>S
 Ddd*menubar*programMenu.step.acceleratorText:      Ctrl+S
 
-Ddd*menubar*programMenu.next.labelString: 	        Next
-Ddd*menubar*programMenu.next.mnemonic:	        N
+Ddd*menubar*programMenu.next.labelString: 	   Next
+Ddd*menubar*programMenu.next.mnemonic:	           N
 Ddd*menubar*programMenu.next.accelerator:          Ctrl<Key>X
 Ddd*menubar*programMenu.next.acceleratorText:      Ctrl+X
 
-Ddd*menubar*programMenu.cont.labelString:	        Continue
-Ddd*menubar*programMenu.cont.mnemonic:	        C
+Ddd*menubar*programMenu.cont.labelString:	   Continue
+Ddd*menubar*programMenu.cont.mnemonic:	           C
 Ddd*menubar*programMenu.cont.accelerator:          Ctrl<Key>O
 Ddd*menubar*programMenu.cont.acceleratorText:      Ctrl+O
 
-Ddd*menubar*programMenu.kill.labelString:	        Kill
-Ddd*menubar*programMenu.kill.mnemonic:	        K
+Ddd*menubar*programMenu.kill.labelString:	   Kill
+Ddd*menubar*programMenu.kill.mnemonic:	           K
 
 Ddd*menubar*programMenu.interrupt.labelString:     Interrupt
 Ddd*menubar*programMenu.interrupt.mnemonic:        I
@@ -1051,27 +1044,27 @@ Ddd*menubar*programMenu.interrupt.accelerator:     Ctrl<Key>C	 I
 Ddd*menubar*programMenu.interrupt.acceleratorText: Ctrl+C
 
 
-Ddd*menubar.commands.labelString:		Commands
+Ddd*menubar.commands.labelString:	Commands
 Ddd*menubar.commands.mnemonic:		C
 Ddd*menubar.commands*contextHelpString:	\
 \
 @rm This is the @sl Commands menu@rm.\n\
 \n\
-@tt · @bf Command History... @rm shows the previous commands.\n\
+@tt \267 @bf Command History... @rm shows the previous commands.\n\
 \n\
-@tt · @bf Previous @rm - show the previous command.\n\
-@tt · @bf Next @rm - show the next command.\n\
-@tt · @bf Complete @rm - complete the current command.
+@tt \267 @bf Previous @rm - show the previous command.\n\
+@tt \267 @bf Next @rm - show the next command.\n\
+@tt \267 @bf Complete @rm - complete the current command.
 
 Ddd*commandsMenu.history.labelString:	Command History...
 Ddd*commandsMenu.prev.mnemonic:		H
 
-Ddd*commandsMenu.prev.labelString:		Previous
+Ddd*commandsMenu.prev.labelString:	Previous
 Ddd*commandsMenu.prev.mnemonic:		P
 ! *commandsMenu.prev.accelerator:	Ctrl<Key>P
 Ddd*commandsMenu.prev.acceleratorText:	Ctrl+P
 
-Ddd*commandsMenu.next.labelString:		Next
+Ddd*commandsMenu.next.labelString:	Next
 Ddd*commandsMenu.next.mnemonic:		N
 ! *commandsMenu.next.accelerator:	Ctrl<Key>N
 Ddd*commandsMenu.next.acceleratorText:	Ctrl+N
@@ -1089,19 +1082,19 @@ Ddd*menubar.stack.contextHelpString:	\
 \
 @rm This is the @sl Stack menu@rm.\n\
 \n\
-@tt · @bf Show Backtrace... @rm - give a summary of how your program got \
+@tt \267 @bf Show Backtrace... @rm - give a summary of how your program got \
 where it is.\n\
 \n\
-@tt · @bf Up @rm - show the function that called the current one.\n\
-@tt · @bf Down @rm - show the function that was called by the current one.
+@tt \267 @bf Up @rm - show the function that called the current one.\n\
+@tt \267 @bf Down @rm - show the function that was called by the current one.
 
-Ddd*stackMenu.stack.labelString:		Show Backtrace...
+Ddd*stackMenu.stack.labelString:	Show Backtrace...
 Ddd*stackMenu.stack.mnemonic:		S
 
 Ddd*stackMenu.up.labelString:		Up
-Ddd*stackMenu.up.mnemonic:			U
+Ddd*stackMenu.up.mnemonic:		U
 Ddd*stackMenu.up.accelerator:		Ctrl<Key>Up
-Ddd*stackMenu.up.acceleratorText:		Ctrl+Up
+Ddd*stackMenu.up.acceleratorText:	Ctrl+Up
 
 Ddd*stackMenu.down.labelString:		Down
 Ddd*stackMenu.down.mnemonic:		D
@@ -1116,41 +1109,41 @@ Ddd*menubar.source.contextHelpString:	\
 \
 @rm This is the @sl Source menu@rm.\n\
 \n\
-@tt · @bf Edit Breakpoints... @rm - set, view, and edit breakpoints.\n\
+@tt \267 @bf Edit Breakpoints... @rm - set, view, and edit breakpoints.\n\
 \n\
-@tt · @bf Back @rm - show the previous source position.\n\
-@tt · @bf Forward @rm - show the next source position.
+@tt \267 @bf Back @rm - show the previous source position.\n\
+@tt \267 @bf Forward @rm - show the next source position.
 
 Ddd*sourceMenu.breakpoints.labelString:	Edit Breakpoints...
 Ddd*sourceMenu.breakpoints.mnemonic:	E
 
-Ddd*sourceMenu.back.labelString:		Back
+Ddd*sourceMenu.back.labelString:	Back
 Ddd*sourceMenu.back.mnemonic:		B
-Ddd*sourceMenu.back.accelerator:		Ctrl<Key>Left
+Ddd*sourceMenu.back.accelerator:	Ctrl<Key>Left
 Ddd*sourceMenu.back.acceleratorText:	Ctrl+Left
 
 Ddd*sourceMenu.forward.labelString:	Forward
-Ddd*sourceMenu.forward.mnemonic:		F
+Ddd*sourceMenu.forward.mnemonic:	F
 Ddd*sourceMenu.forward.accelerator:	Ctrl<Key>Right
 Ddd*sourceMenu.forward.acceleratorText:	Ctrl+Right
 
 
 Ddd*menubar.data.labelString:		Data
-Ddd*menubar.data.mnemonic:			D
+Ddd*menubar.data.mnemonic:		D
 Ddd*menubar.data*contextHelpString:	\
 \
 @rm This is the @sl Data menu@rm.\n\
 \n\
-@tt · @bf Edit Displays... @rm - select, enable and delete displays.\n\
+@tt \267 @bf Edit Displays... @rm - select, enable and delete displays.\n\
 \n\
-@tt · @bf Align Displays @rm - align all displays on the next grid point.\n\
-@tt · @bf Rotate Graph @rm - rotate the graph clockwise by 90 degrees.\n\
-@tt · @bf Layout Graph @rm - layout the graph.\n\
+@tt \267 @bf Align Displays @rm - align all displays on the next grid point.\n\
+@tt \267 @bf Rotate Graph @rm - rotate the graph clockwise by 90 degrees.\n\
+@tt \267 @bf Layout Graph @rm - layout the graph.\n\
 \n\
-@tt · @bf Select All @rm - select all displays.\n\
-@tt · @bf Refresh @rm - update all displays.
+@tt \267 @bf Select All @rm - select all displays.\n\
+@tt \267 @bf Refresh @rm - update all displays.
 
-Ddd*dataMenu.displays.labelString:		Edit Displays...
+Ddd*dataMenu.displays.labelString:	Edit Displays...
 Ddd*dataMenu.displays.mnemonic:		E
 
 Ddd*dataMenu.align.labelString:		Align Displays
@@ -1158,59 +1151,59 @@ Ddd*dataMenu.align.mnemonic:		A
 Ddd*dataMenu.align.accelerator:		Meta<Key>A
 Ddd*dataMenu.align.acceleratorText:	Alt+A
 
-Ddd*dataMenu.rotate.labelString:		Rotate Graph
+Ddd*dataMenu.rotate.labelString:	Rotate Graph
 Ddd*dataMenu.rotate.mnemonic:		R
-Ddd*dataMenu.rotate.accelerator:		Meta<Key>R
+Ddd*dataMenu.rotate.accelerator:	Meta<Key>R
 Ddd*dataMenu.rotate.acceleratorText:	Alt+R
 
-Ddd*dataMenu.layout.labelString:		Layout Graph
+Ddd*dataMenu.layout.labelString:	Layout Graph
 Ddd*dataMenu.layout.mnemonic:		L
-Ddd*dataMenu.layout.accelerator:		Meta<Key>L
+Ddd*dataMenu.layout.accelerator:	Meta<Key>L
 Ddd*dataMenu.layout.acceleratorText:	Alt+L
 
 Ddd*dataMenu.selectAll.labelString:	Select All
-Ddd*dataMenu.selectAll.mnemonic:		S
+Ddd*dataMenu.selectAll.mnemonic:	S
 Ddd*dataMenu.selectAll.accelerator:	Meta<Key>S
 Ddd*dataMenu.selectAll.acceleratorText:	Alt+S
 
-Ddd*dataMenu.refresh.labelString:		Refresh
+Ddd*dataMenu.refresh.labelString:	Refresh
 Ddd*dataMenu.refresh.mnemonic:		R
-Ddd*dataMenu.refresh.accelerator:		Ctrl<Key>L
+Ddd*dataMenu.refresh.accelerator:	Ctrl<Key>L
 Ddd*dataMenu.refresh.acceleratorText:	Ctrl+L
 
 
 
 Ddd*menubar.help.labelString:		Help
-Ddd*menubar.help.mnemonic:			H
+Ddd*menubar.help.mnemonic:		H
 Ddd*menubar.help*contextHelpString: \
 \
 @rm This is the @sl Help menu@rm.\n\
 \n\
-@tt · @bf On Context... @rm - click on an item and get help on it.\n\
-@tt · @bf On Window... @rm - help on the application itself.\n\
-@tt · @bf On Help... @rm - help on how to use the help facility.\n\
-@tt · @bf On Version... @rm - some general information about @DDD@.\n\
-@tt · @bf On Debugging... @rm - some general information about debugging.\n\
+@tt \267 @bf On Context... @rm - click on an item and get help on it.\n\
+@tt \267 @bf On Window... @rm - help on the application itself.\n\
+@tt \267 @bf On Help... @rm - help on how to use the help facility.\n\
+@tt \267 @bf On Version... @rm - some general information about @DDD@.\n\
+@tt \267 @bf On Debugging... @rm - some general information about debugging.\n\
 \n\
-@tt · @bf Index... @rm - the @DDD@ on-line manual.
+@tt \267 @bf Index... @rm - the @DDD@ on-line manual.
 
 Ddd*helpMenu.onContext.labelString:	On Context...
-Ddd*helpMenu.onContext.mnemonic:		C
+Ddd*helpMenu.onContext.mnemonic:	C
 Ddd*helpMenu.onContext.accelerator:	None<Key>F1
 ! *helpMenu.onContext.accelerator:	<Key>osfHelp
 Ddd*helpMenu.onContext.acceleratorText:	F1
 
-Ddd*helpMenu.onWindow.labelString:		On Window...
+Ddd*helpMenu.onWindow.labelString:	On Window...
 Ddd*helpMenu.onWindow.mnemonic:		W
 
-Ddd*helpMenu.onHelp.labelString:		On Help...
+Ddd*helpMenu.onHelp.labelString:	On Help...
 Ddd*helpMenu.onHelp.mnemonic:		H
 
 Ddd*helpMenu.onVersion.labelString:	On Version...
-Ddd*helpMenu.onVersion.mnemonic:		V
+Ddd*helpMenu.onVersion.mnemonic:	V
 
 Ddd*helpMenu.onDebugging.labelString:	On Debugging...
-Ddd*helpMenu.onDebugging.mnemonic:		D
+Ddd*helpMenu.onDebugging.mnemonic:	D
 
 Ddd*helpMenu.index.labelString:		Index...
 Ddd*helpMenu.index.mnemonic:		I
@@ -1223,23 +1216,23 @@ Ddd*helpMenu.index.mnemonic:		I
 ! Width and height for several Motif & Athena variants
 
 ! Motif 1.x, using ScrolledWindow
-Ddd*graph_edit_swindow.width:			620
-Ddd*graph_edit_swindow.height:			200
+Ddd*graph_edit_swindow.width:		620
+Ddd*graph_edit_swindow.height:		200
 
 ! Motif 2.0, using ScrolledWindow
-Ddd*graph_editSW.width:				620
-Ddd*graph_editSW.height:				200
+Ddd*graph_editSW.width:			620
+Ddd*graph_editSW.height:		200
 
 ! Motif 1.x, using Porthole
-Ddd*graph_edit_porthole.width:                     620
-Ddd*graph_edit_porthole.height:                    200
+Ddd*graph_edit_porthole.width:          620
+Ddd*graph_edit_porthole.height:         200
 
 ! Motif 2.0, using Porthole
-Ddd*graph_edit_form.width:                         620
-Ddd*graph_edit_form.height:                        200
+Ddd*graph_edit_form.width:              620
+Ddd*graph_edit_form.height:             200
 
-Ddd*graph_edit_panner.backgroundPixmap:		25_foreground
-Ddd*graph_edit_panner.defaultScale:		10
+Ddd*graph_edit_panner.backgroundPixmap:	25_foreground
+Ddd*graph_edit_panner.defaultScale:	10
 Ddd*graph_edit_panner.translations: \
 #override \
 <Btn1Down>:        ddd-get-focus() start()\n\
@@ -1254,54 +1247,54 @@ Ddd*graph_edit_panner.translations: \
 Shift<Key>Tab:     ddd-prev-tab-group()\n\
 <Key>Tab:     	   ddd-next-tab-group()\n
 
-Ddd*graph_edit.highlightOnEnter:			True
-Ddd*graph_edit.navigationType:			TAB_GROUP
+Ddd*graph_edit.highlightOnEnter:	True
+Ddd*graph_edit.navigationType:		TAB_GROUP
 
 Ddd*graph_edit.contextHelpString:	\
 @rm This is the @sl Data Window @rm \n\
 showing the data displays of the debugged program.\n\
 \n\
 @bf Left mouse button:@rm\n\
-@tt · @sl Click @rm on a display @sl DISPLAY  @rm to select @sl DISPLAY @rm.\n\
-@tt · @sl Double-click @rm on a display to select all connected displays.\n\
-@tt · @sl Double-click @rm on the background to select all displays.\n\
-@tt · @sl Drag @rm on a display to move selected displays.\n\
-@tt · @sl Drag @rm on the background to select framed displays.\n\
+@tt \267 @sl Click @rm on a display @sl DISPLAY  @rm to select @sl DISPLAY @rm.\n\
+@tt \267 @sl Double-click @rm on a display to select all connected displays.\n\
+@tt \267 @sl Double-click @rm on the background to select all displays.\n\
+@tt \267 @sl Drag @rm on a display to move selected displays.\n\
+@tt \267 @sl Drag @rm on the background to select framed displays.\n\
 \n\
 @bf Shift + Left mouse button:@rm\n\
-@tt · @sl Click @rm on a display @sl DISPLAY  @rm to add @sl DISPLAY  @rm \
+@tt \267 @sl Click @rm on a display @sl DISPLAY  @rm to add @sl DISPLAY  @rm \
 to the selection.\n\
-@tt · @sl Drag @rm on a display to move selected displays.\n\
-@tt · @sl Drag @rm on the background to add framed displays\n\
+@tt \267 @sl Drag @rm on a display to move selected displays.\n\
+@tt \267 @sl Drag @rm on the background to add framed displays\n\
   to the selection.\n\
 \n\
 @bf Right mouse button:@rm\n\
-@tt · @sl Click @rm on some display @sl DISPLAY @rm \
+@tt \267 @sl Click @rm on some display @sl DISPLAY @rm \
   to modify @sl DISPLAY @rm via a menu.\n\
-@tt · @sl Click @rm on the background to create new displays via a menu.
+@tt \267 @sl Click @rm on the background to create new displays via a menu.
 
 Ddd*data_disp_shell.contextHelpString:	\
 @rm This is the @sl Data Display @rm \n\
 showing the data displays of the debugged program.\n\
 \n\
 @bf Left mouse button:@rm\n\
-@tt · @sl Click @rm on a display @sl DISPLAY @rm to select @sl DISPLAY @rm.\n\
-@tt · @sl Double-click @rm on a display to select all connected displays.\n\
-@tt · @sl Double-click @rm on the background to select all displays.\n\
-@tt · @sl Drag @rm on a display to move selected displays.\n\
-@tt · @sl Drag @rm on the background to select framed displays.\n\
+@tt \267 @sl Click @rm on a display @sl DISPLAY @rm to select @sl DISPLAY @rm.\n\
+@tt \267 @sl Double-click @rm on a display to select all connected displays.\n\
+@tt \267 @sl Double-click @rm on the background to select all displays.\n\
+@tt \267 @sl Drag @rm on a display to move selected displays.\n\
+@tt \267 @sl Drag @rm on the background to select framed displays.\n\
 \n\
 @bf Middle mouse button:@rm\n\
-@tt · @sl Click @rm on a display @sl DISPLAY @rm to add @sl DISPLAY @rm \
+@tt \267 @sl Click @rm on a display @sl DISPLAY @rm to add @sl DISPLAY @rm \
 to the selection.\n\
-@tt · @sl Drag @rm on a display to move selected displays.\n\
-@tt · @sl Drag @rm on the background to add framed displays\n\
+@tt \267 @sl Drag @rm on a display to move selected displays.\n\
+@tt \267 @sl Drag @rm on the background to add framed displays\n\
   to the selection.\n\
 \n\
 @bf Right mouse button:@rm\n\
-@tt · @sl Click @rm on some display @sl DISPLAY @rm to modify @sl DISPLAY @rm \
+@tt \267 @sl Click @rm on some display @sl DISPLAY @rm to modify @sl DISPLAY @rm \
 via a menu.\n\
-@tt · @sl Click @rm on the background to create new displays via a menu.
+@tt \267 @sl Click @rm on the background to create new displays via a menu.
 
 Ddd*graph_edit_panner.contextHelpString:	\
 @rm The data window is too small to hold all displays.\n\
@@ -1316,13 +1309,13 @@ the visible part of the data window.
 Ddd*graph_popup.selectAll.labelString:	Select All
 Ddd*graph_popup.refresh.labelString:	Refresh
 Ddd*graph_popup.new_arg.labelString:	New ()
-Ddd*graph_popup.new.labelString:		New Display...
+Ddd*graph_popup.new.labelString:	New Display...
 
 Ddd*node_popup.dereference.labelString:	Dereference
 Ddd*node_popup.dependent.labelString:	Dependent Display...
-Ddd*node_popup.detail.labelString:		Show Detail
+Ddd*node_popup.detail.labelString:	Show Detail
 Ddd*node_popup.rotate.labelString: 	Rotate
-Ddd*node_popup.delete.labelString:		Delete Display
+Ddd*node_popup.delete.labelString:	Delete Display
 Ddd*node_popup.disable.labelString:	Disable Display
 
 
@@ -1334,24 +1327,24 @@ Ddd*graph_cmd_w*contextHelpString: \
 @rm Commands related to the data window.
 
 
-Ddd*graph_cmd_w.graph_arg_label.labelString:		():
-Ddd*graph_cmd_w.graph_arg.columns:                         20
-Ddd*graph_cmd_w*graph_arg.editable:			false
-Ddd*graph_cmd_w*graph_arg.contextHelpString:		\
+Ddd*graph_cmd_w.graph_arg_label.labelString:	():
+Ddd*graph_cmd_w.graph_arg.columns:              20
+Ddd*graph_cmd_w*graph_arg.editable:		false
+Ddd*graph_cmd_w*graph_arg.contextHelpString:	\
 @rm This is the argument @bf () @rm for the command buttons on the right.\n\
 This is an output-only window which displays the selection\n\
 in the data window above.
 
 
 
-Ddd*graph_cmd_w.orientation:				XmHORIZONTAL
-Ddd*graph_cmd_w.graph_cmd_area*orientation:		XmHORIZONTAL
+Ddd*graph_cmd_w.orientation:			XmHORIZONTAL
+Ddd*graph_cmd_w.graph_cmd_area*orientation:	XmHORIZONTAL
 
 Ddd*graph_cmd_w.graph_cmd_area*dependent.labelString:	Dependent ()
-Ddd*graph_cmd_w.graph_cmd_area*dereference.labelString: 	Dereference ()
-Ddd*graph_cmd_w.graph_cmd_area*detail.labelString:		Show ()
-Ddd*graph_cmd_w.graph_cmd_area*rotate.labelString:		Rotate ()
-Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:		Delete ()
+Ddd*graph_cmd_w.graph_cmd_area*dereference.labelString: Dereference ()
+Ddd*graph_cmd_w.graph_cmd_area*detail.labelString:	Show ()
+Ddd*graph_cmd_w.graph_cmd_area*rotate.labelString:	Rotate ()
+Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:	Delete ()
 Ddd*graph_cmd_w.graph_cmd_area*disable.labelString:	Disable ()
 
 Ddd*graph_cmd_w.graph_cmd_area*dependent.contextHelpString:\
@@ -1383,15 +1376,15 @@ Delete the selected displays.
 ! Source text
 !-----------------------------------------------------------------------------
 Ddd*status_w.alignment:			XmALIGNMENT_BEGINNING
-Ddd*status_w.labelString:			Ready.
+Ddd*status_w.labelString:		Ready.
 Ddd*status_w.contextHelpString:		\
 @rm This @sl status line @rm shows the last debugger message.
 
-Ddd*source_text_w.columns:			88
+Ddd*source_text_w.columns:		88
 Ddd*source_text_w.rows:			12
 Ddd*source_view_shell*source_text_w.rows:	20
 
-Ddd*source_text_wSW.width:			660
+Ddd*source_text_wSW.width:		660
 Ddd*source_text_wSW.height:		140
 Ddd*source_view_shell*source_text_wSW.height: 280
 
@@ -1418,8 +1411,8 @@ Click the @bf left mouse button @rm to select words.\n\
 Drag with the @bf left mouse button @rm to modify your selection.\n\
 \n\
 Click the @bf right mouse button @rm to get a popup menu:\n\
-@tt · @rm On the left side: set and modify breakpoints;\n\
-@tt · @rm On the right side: show values and lookup functions.
+@tt \267 @rm On the left side: set and modify breakpoints;\n\
+@tt \267 @rm On the right side: show values and lookup functions.
 
 
 Ddd*source_view_shell.contextHelpString:	\
@@ -1437,8 +1430,8 @@ Click the @bf left mouse button @rm to select words.\n\
 Drag with the @bf left mouse button @rm to modify your selection.\n\
 \n\
 Click the @bf right mouse button @rm to get a popup menu:\n\
-@tt · @rm On the left side: set and modify breakpoints;\n\
-@tt · @rm On the right side: show values and lookup functions.
+@tt \267 @rm On the left side: set and modify breakpoints;\n\
+@tt \267 @rm On the right side: show values and lookup functions.
 
 
 !-----------------------------------------------------------------------------
@@ -1448,16 +1441,16 @@ Click the @bf right mouse button @rm to get a popup menu:\n\
 Ddd*line_popup.set.labelString:		Set Breakpoint
 Ddd*line_popup.set_temp.labelString:	Set temporary Breakpoint
 
-Ddd*bp_popup.disable.labelString:		Disable Breakpoint
+Ddd*bp_popup.disable.labelString:	Disable Breakpoint
 Ddd*bp_popup.condition.labelString:	Set Condition
 Ddd*bp_popup.ignore_count.labelString:	Set Ignore Count
-Ddd*bp_popup.delete.labelString:		Delete Breakpoint
+Ddd*bp_popup.delete.labelString:	Delete Breakpoint
 
-Ddd*text_popup.print.labelString:		Print
-Ddd*text_popup.disp.labelString:		Display
-Ddd*text_popup.lookup.labelString:		Lookup
-Ddd*text_popup.break.labelString:		Break
-Ddd*text_popup.clear.labelString:		Clear
+Ddd*text_popup.print.labelString:	Print
+Ddd*text_popup.disp.labelString:	Display
+Ddd*text_popup.lookup.labelString:	Lookup
+Ddd*text_popup.break.labelString:	Break
+Ddd*text_popup.clear.labelString:	Clear
 
 
 !-----------------------------------------------------------------------------
@@ -1469,15 +1462,15 @@ Ddd*arg_cmd_w*contextHelpString: \
 Enter arguments for @sl name @rm() commands\n\
 in the @bf() @rm field.
 
-Ddd*arg_cmd_w.arg_label.labelString:			():
+Ddd*arg_cmd_w.arg_label.labelString:		():
 Ddd*arg_cmd_w.source_arg.contextHelpString:	\
 @rm This is the argument @bf () @rm for the command buttons on the right.\n\
 You can edit this field, or easily change its value\n\
 by selecting something in the source text above.
-Ddd*arg_cmd_w.source_arg.value:                            main
-Ddd*arg_cmd_w.source_arg.columns:                          20
+Ddd*arg_cmd_w.source_arg.value:                  main
+Ddd*arg_cmd_w.source_arg.columns:                20
 
-Ddd*arg_cmd_w.orientation:					XmHORIZONTAL
+Ddd*arg_cmd_w.orientation:				XmHORIZONTAL
 Ddd*arg_cmd_w.arg_cmd_area*orientation:			XmHORIZONTAL
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.labelString:		Lookup ()
@@ -1491,15 +1484,15 @@ Ddd*arg_cmd_w.arg_cmd_area*find_forward.labelString:	Search>> ()
 Ddd*arg_cmd_w.arg_cmd_area*lookup.contextHelpString:	\
 @bf Lookup ()@rm\n\
 Lookup a line, file, function, variable, or breakpoint.\n\
-@tt · @rm If the argument @bf () @rm is empty, \
+@tt \267 @rm If the argument @bf () @rm is empty, \
 show the current execution position.\n\
-@tt · @rm If @bf () @rm contains a number, \
+@tt \267 @rm If @bf () @rm contains a number, \
 lookup that line in the current source.\n\
-@tt · @rm If @bf () @rm contains @sl FILENAME@tt:@sl LINE@rm, lookup\n\
+@tt \267 @rm If @bf () @rm contains @sl FILENAME@tt:@sl LINE@rm, lookup\n\
   line number @sl LINE@rm in the source file @sl FILENAME@rm.\n\
-@tt · @rm If @bf () @rm contains @tt #@sl NUMBER@rm, lookup\n\
+@tt \267 @rm If @bf () @rm contains @tt #@sl NUMBER@rm, lookup\n\
   breakpoint number @sl NUMBER@rm.\n\
-@tt · @rm If @bf () @rm contains a function or variable name, lookup\n\
+@tt \267 @rm If @bf () @rm contains a function or variable name, lookup\n\
   the definition of that function or variable.
 
 Ddd*arg_cmd_w.arg_cmd_area*break.contextHelpString:	\
@@ -1534,13 +1527,13 @@ If the option @bf Find Words Only @rm is set, only complete words are found.
 !-----------------------------------------------------------------------------
 
 Ddd*gdb_w.value: \
-@DDD@ @VERSION@ (@host@), by Dorothea Lütkehaus and Andreas Zeller.\n\
-Copyright © 1995 Technische Universität Braunschweig, Germany.\n
+@DDD@ @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
+Copyright \251 1995 Technische Universit\344t Braunschweig, Germany.\n
 
 Ddd*gdb_w.rows:			10
-Ddd*gdb_w.columns:			88
+Ddd*gdb_w.columns:		88
 
-Ddd*gdb_wSW.width:			660
+Ddd*gdb_wSW.width:		660
 Ddd*gdb_wSW.height:		120
 
 Ddd*gdb_w.editable:		true
@@ -1630,7 +1623,7 @@ Show the next debugging command \
 
 Ddd*?*Apply.contextHelpString:	\
 @bf Apply@rm\n\
-Execute the current debugging command.  (Equivalent to @symbol ¿@rm).
+Execute the current debugging command.  (Equivalent to @symbol \277@rm).
 
 Ddd*?*Back.contextHelpString:	\
 @bf Back@rm\n\
@@ -1673,13 +1666,13 @@ Ddd*print*file_name.width:                    100
 Ddd*print*file_name.recomputeSize:            false
 Ddd*print*file_name_field.columns:            32
 Ddd*print*postscript.labelString:             PostScript
-Ddd*print*xfig.labelString:	   	   XFIG
+Ddd*print*xfig.labelString:	   	      XFIG
 
 Ddd*print*print_what.labelString:             Print:
 Ddd*print*print_what.width:                   100
 Ddd*print*print_what.recomputeSize:           false
-Ddd*print*all.labelString:	                   All Displays
-Ddd*print*selected.labelString:	           Selected Displays
+Ddd*print*all.labelString:	              All Displays
+Ddd*print*selected.labelString:	              Selected Displays
 
 Ddd*print*print_orientation.labelString:      Orientation:
 Ddd*print*print_orientation.width:            100
@@ -1692,22 +1685,22 @@ Ddd*print*paper_size.width:                   100
 Ddd*print*paper_size.recomputeSize:           false
 Ddd*print*paper_size_field.orientation:       XmVERTICAL
 Ddd*print*paper_size_field.numColumns:        2
-Ddd*print*a4.labelString:                     A4 (210mm × 297mm)
-Ddd*print*letter.labelString:		   Letter (8½" × 11")
-Ddd*print*legal.labelString:		   Legal (8½" × 14")
-Ddd*print*executive.labelString:		   Executive (7½" × 10")
+Ddd*print*a4.labelString:                     A4 (210mm \327 297mm)
+Ddd*print*letter.labelString:		      Letter (8\275" \327 11")
+Ddd*print*legal.labelString:		      Legal (8\275" \327 14")
+Ddd*print*executive.labelString:	      Executive (7\275" \327 10")
 
 Ddd*print.autoUnmanage:  false
 Ddd*print*okLabelString: Print
 
 Ddd*print*contextHelpString: \
-@rm You can print the graph on a PostScript@symbol ä @rm printer@rm\n\
+@rm You can print the graph on a PostScript@symbol \0344 @rm printer@rm\n\
 or print the graph in a file.\n\
 Enter the print command or the file name in the appropriate fields.\n\
 \n\
 Files can be created in the following formats:\n\
-@tt · @bf PostScript @rm - PostScript format\n\
-@tt · @bf XFIG @rm - XFIG format (from the @tt xfig(1) @rm program)\n\
+@tt \267 @bf PostScript @rm - PostScript format\n\
+@tt \267 @bf XFIG @rm - XFIG format (from the @tt xfig(1) @rm program)\n\
 \n\
 If you wish to print all displays, select @bf All Displays@rm.\n\
 If you wish to print selected displays only, select\
@@ -1781,13 +1774,13 @@ Ddd*edit_breakpoints_dialog*contextHelpString:       \
 \n\
 Select breakpoints on the left; operations on the right.\n\
 \n\
-@tt · @bf New... @rm - create a new breakpoint.\n\
-@tt · @bf Lookup @rm - look up the selected breakpoint.\n\
-@tt · @bf Enable @rm - enable all selected breakpoints.\n\
-@tt · @bf Disable @rm - disable all selected breakpoints.\n\
-@tt · @bf Condition... @rm - set or modify a breakpoint condition.\n\
-@tt · @bf Ignore Count... @rm - set or modify a breakpoint ignore count.\n\
-@tt · @bf Delete @rm - delete all selected breakpoints.
+@tt \267 @bf New... @rm - create a new breakpoint.\n\
+@tt \267 @bf Lookup @rm - look up the selected breakpoint.\n\
+@tt \267 @bf Enable @rm - enable all selected breakpoints.\n\
+@tt \267 @bf Disable @rm - disable all selected breakpoints.\n\
+@tt \267 @bf Condition... @rm - set or modify a breakpoint condition.\n\
+@tt \267 @bf Ignore Count... @rm - set or modify a breakpoint ignore count.\n\
+@tt \267 @bf Delete @rm - delete all selected breakpoints.
 
 Ddd*new_breakpoint_dialog_popup.title: @DDD@: New Breakpoint
 Ddd*new_breakpoint_dialog.selectionLabelString:	\
@@ -1928,15 +1921,15 @@ Ddd*edit_displays_dialog*contextHelpString:       \
 \n\
 Select displays on the left; operations on the right.\n\
 \n\
-@tt · @bf New... @rm - create a new display.\n\
-@tt · @bf Dependent... @rm - create a display \
+@tt \267 @bf New... @rm - create a new display.\n\
+@tt \267 @bf Dependent... @rm - create a display \
 dependent on the selected display.\n\
-@tt · @bf Dereference @rm - dereference the selected display.\n\
-@tt · @bf Show Detail @rm - show the details of all selected displays.\n\
-@tt · @bf Hide Detail @rm - hide the details of all selected displays.\n\
-@tt · @bf Enable @rm - enable all selected displays.\n\
-@tt · @bf Disable @rm - disable all selected displays.\n\
-@tt · @bf Delete @rm - delete all selected displays.
+@tt \267 @bf Dereference @rm - dereference the selected display.\n\
+@tt \267 @bf Show Detail @rm - show the details of all selected displays.\n\
+@tt \267 @bf Hide Detail @rm - hide the details of all selected displays.\n\
+@tt \267 @bf Enable @rm - enable all selected displays.\n\
+@tt \267 @bf Disable @rm - disable all selected displays.\n\
+@tt \267 @bf Delete @rm - delete all selected displays.
 
 
 Ddd*new_display_dialog_popup.title: @DDD@: New Display
@@ -1964,7 +1957,8 @@ Use assignment expressions to give values to convenience variables.\n\
 @tt{@sl TYPE@tt}@sl ADREXP @rm refers to a datum of data type\
  @sl TYPE@rm, located at address @sl ADREXP@rm.\n\
 \n\
-@tt @ @rm is a binary operator for treating consecutive data objects\n\
+@tt @ \
+ @rm is a binary operator for treating consecutive data objects\n\
 anywhere in memory as an array. @sl FOO@tt@ @sl NUM @rm\
  gives an array whose first\n\
 element is @sl FOO@rm, whose second element is stored in the space following\n\
@@ -1993,7 +1987,7 @@ Ddd*edit_displays_dialog*buttons*new.labelString:           New...
 Ddd*edit_displays_dialog*buttons*new.contextHelpString:     \
 @rm Create a new data display.
 
-Ddd*edit_displays_dialog*buttons*dependent.labelString:   	 Dependent...
+Ddd*edit_displays_dialog*buttons*dependent.labelString:     Dependent...
 Ddd*edit_displays_dialog*buttons*dereference.contextHelpString:  \
 @rm Create a data display dependent on the selected data display.
 
@@ -2203,6 +2197,7 @@ Please save options and restart @DDD@ to see the effects.
 
 Ddd*debugging_poem.title: @DDD@: Fixing Some Bugs on a Sunday Evening
 Ddd*debugging_poem.okLabelString: Close
+Ddd*debugging_poem.helpLabelString: Info
 Ddd*debugging_poem.messageString: \
 @Logo F@logo ixing @Logo S@logo ome @Logo B@logo ugs \
 on a @Logo S@logo unday @Logo E@logo vening\n\
