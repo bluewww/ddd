@@ -1523,6 +1523,10 @@ HTML_IMAGES = \
 	$(picdir)/tut-set$(IMGEXT)              \
 	$(picdir)/tut-value$(IMGEXT)
 
+# All derived pictures
+IMAGES = $(PS_IMAGES) $(PDF_IMAGES) $(HTML_IMAGES)
+
+
 # Included pictures
 
 $(picdir)/ddd-all.eps: \
@@ -1929,18 +1933,14 @@ EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF)
 ddd.$(OBJEXT): $(PROG_STUFF)
 
 # These should not go into the distribution.
-DISTCLEANFILES = build.h host.h root.h ../config.cache USERINFO
+DISTCLEANFILES = build.h host.h root.h ../config.cache USERINFO $(IMAGES)
 
-# `make picsclean' removes all derived pictures
-PICSCLEANFILES = $(PS_IMAGES) $(PDF_IMAGES) $(HTML_IMAGES)
+# `make mostlyclean' should also remove these temporary Texinfo files.
+MOSTLYCLEANFILES = ddd.au ddd.cm ddd.cms ddd.en ddd.fl ddd.fls ddd.lb ddd.lbs \
+	ddd.tmp ddd.html ddd.pdf ddd.ps 
 
-.PHONY:	picsclean
-picsclean:
-	$(RM) $(PICSCLEANFILES)
-
-# Have `make maintainer-clean' remove all derived files.
-MAINTAINERCLEANFILES = \
-	ddd.ps ddd.pdf ddd.html $(PROG_STUFF) $(PICSCLEANFILES)
+# Have `make maintainer-clean' remove _all_ derived files.
+MAINTAINERCLEANFILES = $(PROG_STUFF)
 
 # `make diststuff' creates all files required for a distribution.
 diststuff: $(EXTRA_DIST)
