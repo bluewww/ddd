@@ -1,7 +1,7 @@
-DDD 3.1.1 is available					-*- text -*-
+DDD 3.1.2 is available					-*- text -*-
 ======================
 
-Release 3.1.1 of DDD, the Data Display Debugger, is now available at
+Release 3.1.2 of DDD, the Data Display Debugger, is now available at
 
     ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
 
@@ -12,7 +12,10 @@ Please try a closer FTP site first; see below for a list.
 What's new in DDD?
 ------------------
 
-DDD 3.1.1 brings Perl support, Python support, data plotting, Undo/Redo,
+DDD 3.1.2 is a maintenance release for DDD 3.1.  It fixes a number of
+minor bugs, most of them related to Perl.
+
+DDD 3.1 brings Perl support, Python support, data plotting, Undo/Redo,
 advanced data exploration, and several more new features and bug fixes.
 
 For details, see the local NEWS file or the DDD WWW page at
@@ -23,11 +26,11 @@ For details, see the local NEWS file or the DDD WWW page at
 What do I need to build DDD?
 ----------------------------
 
-To build DDD 3.1.1 from sources, you need:
+To build DDD 3.1.2 from sources, you need:
 
-* The DDD 3.1.1 source package, `ddd-3.1.1.tar.gz'.  MD5 checksum:
+* The DDD 3.1.2 source package, `ddd-3.1.2.tar.gz'.  MD5 checksum:
 
-	30a75d3be96d919550c89d7dcedf4d9b  ddd-3.1.1.tar.gz
+	................................  ddd-3.1.2.tar.gz
 
 * Motif.  Typically LessTif (>= 0.87) or OSF/Motif (>= 1.2).
 * A C++ compiler.  Typically GCC (>= 2.7.2).
@@ -40,7 +43,7 @@ For details, see the local INSTALL file or the DDD WWW page at
 Where can I get a DDD binary?
 -----------------------------
 
-Self-contained DDD 3.1.1 binaries for several architectures are
+Self-contained DDD 3.1.2 binaries for several architectures are
 available at the DDD FTP sites.
 
 For details, see the `bin/README' file at the DDD FTP sites or
