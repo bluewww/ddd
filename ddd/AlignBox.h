@@ -81,7 +81,7 @@ protected:
 	CompositeBox::addChild(b);
 
 	// Groesse hinzufuegen (bzw. setzen, wenn erster)
-	if (nsons() == 1)
+	if (nchildren() == 1)
 	    setSize(b);     // erster Sohn: Groesse uebernehmen
 	else
 	    addSize(b);     // spaeterer Sohn: Groesse hinzufuegen
@@ -102,6 +102,12 @@ public:
     {}
 
     BoxSize corner() const { return _corner; }
+
+    AlignBox& operator += (Box *b)
+    {
+	addChild(b);
+	return *this;
+    }
 };
 
 
@@ -131,7 +137,8 @@ public:
 	AlignBox(initialSize, t) 
     {}
 
-    Box *dup() const { return new HAlignBox(*this); }
+    Box *dup() const  { return new HAlignBox(*this); }
+    Box *dup0() const { return new HAlignBox; }
 
     void addSize(Box *b);
 
@@ -175,7 +182,8 @@ public:
 	    AlignBox(initialSize, t)
     {}
 
-    Box *dup() const { return new VAlignBox(*this); }
+    Box *dup() const  { return new VAlignBox(*this); }
+    Box *dup0() const { return new VAlignBox; }
 
     void addSize(Box *b);
 
@@ -216,7 +224,8 @@ public:
 	AlignBox(initialSize, t)
     {}
 
-    Box *dup() const { return new UAlignBox(*this); }
+    Box *dup() const  { return new UAlignBox(*this); }
+    Box *dup0() const { return new UAlignBox; }
 
     void addSize(Box *b);
 
@@ -257,7 +266,8 @@ public:
 	AlignBox(initialSize, t)
     {}
 
-    Box *dup() const { return new TAlignBox(*this); }
+    Box *dup() const  { return new TAlignBox(*this); }
+    Box *dup0() const { return new TAlignBox; }
 
     void addSize(Box *b);
 

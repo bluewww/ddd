@@ -165,6 +165,9 @@ public:
     // Copy box
     virtual Box *dup() const = 0;
 
+    // Same, but only one level deep (if possible)
+    virtual Box *dup0() const { return dup(); }
+
     // Kill reference
     void unlink()
     {
@@ -211,7 +214,6 @@ public:
 						   BoxSize(INT_MAX, INT_MAX)), 
 	      GC gc = 0, 
 	      bool context_selected = false) const;
-
 
     // Print box; Header/trailer must be pre-/postfixed
     virtual void _print(ostream& os, 
@@ -260,7 +262,7 @@ public:
     bool selected(BoxPoint p = BoxPoint(-1,-1)) const;   // Flag: selected?
     string info(BoxPoint p = BoxPoint(-1,-1)) const;        // Debugging info
 
-    // return the box that is to be matched
+    // Return the box that is to be matched
     virtual const Box& matchMe() const { return *this; }
 
     // Search functions
