@@ -42,7 +42,7 @@ TERMCAP_DISTFILES = \
 
 TEXINFO_DISTFILES = \
 	texinfo/epsf.tex texinfo/gfdl.texinfo texinfo/gpl.texinfo \
-	texinfo/lgpl.texinfo texinfo/texinfo.tex 
+	texinfo/lgpl.texinfo texinfo/texinfo.tex ddd/PICS
 
 # Shared data installation
 dddrootdir   = $(pkgdatadir)-$(VERSION)
@@ -109,8 +109,8 @@ snapshot:
 	rm -fr proto-toplev; mkdir proto-toplev
 	( \
 	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
-	    ddd=`$(SED) -n < $(srcdir)/ddd/acinclude.m4 's/^ddd *= *//p'`; \
-	    VER=`$(SED) -n < $(srcdir)/ddd/acinclude.m4 's/^VERSION *= *//p'`; \
+	    ddd=`$(SED) -n < $(srcdir)/acinclude.m4 's/^ddd *= *//p'`; \
+	    VER=`$(SED) -n < $(srcdir)/acinclude.m4 's/^VERSION *= *//p'`; \
 	    VER=`echo $$VER | $(SED) 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
 	    echo "==> Making $$ddd-$$VER.tar.gz"; \
 	    rm -f $$ddd-$$VER.tar.gz; \
@@ -184,8 +184,8 @@ picsdist:
 	rm -fr proto-toplev; mkdir proto-toplev
 	( \
 	    srcroot=`cd $(srcdir); pwd`; export srcroot; \
-	    ddd=`$(SED) -n < ddd/acinclude.m4 's/^ddd *= *//p'`; \
-	    VER=`$(SED) -n < ddd/acinclude.m4 's/^VERSION *= *//p'`; \
+	    ddd=`$(SED) -n < acinclude.m4 's/^ddd *= *//p'`; \
+	    VER=`$(SED) -n < acinclude.m4 's/^VERSION *= *//p'`; \
 	    VER=`echo $$VER | $(SED) 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
 	    echo "==> Making $$ddd-$$VER-pics.tar.gz"; \
 	    rm -f $$ddd-$$VER-pics.tar.gz; \
