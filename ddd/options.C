@@ -1411,14 +1411,7 @@ bool save_options(unsigned long flags)
 	// Restart commands
 	os << "\n! Last " << DDD_NAME << " session\n";
 
-	ostrstream rs;
-
-	// Get exec and core file
 	ProgramInfo info;
-	string core = session_core_file(session);
-	if (!is_regular_file(core))
-	    core = "";
-
 	if (info.file == NO_GDB_ANSWER)
 	{
 	    if (interact)
@@ -1426,33 +1419,9 @@ bool save_options(unsigned long flags)
 			     "incomplete_save_warning");
 	    ok = false;
 	}
-	else
-	{
-	    switch (gdb->type())
-	    {
-	    case GDB:
-		rs << "set confirm off\n";
-		if (info.file != "")
-		    rs << "file " << info.file << "\n";
-		if (core != "")
-		    rs << "core " << core << "\n";
-		break;
 
-	    case DBX:
-		if (info.file != "")
-		{
-		    rs << "debug " << info.file;
-		    if (core != "")
-			rs << " " << core;
-		    rs << "\n";
-		}
-		break;
-
-	    case XDB:
-		// FIXME
-		break;
-	    }
-	}
+	// Stream to hold data and breakpoints
+	ostrstream rs;
 
 	// Get breakpoints and cursor position
 	bool breakpoints_ok = source_view->get_state(rs);
@@ -1467,12 +1436,13 @@ bool save_options(unsigned long flags)
 	// Get displays
 	StringArray scopes;
 	bool displays_ok = true;
+	bool core_ok = false;
 
 	if (displays_ok)
 	    displays_ok = data_disp->get_scopes(scopes);
 
 	if (save_core)
-	    get_core(session, flags);
+	    core_ok = get_core(session, flags);
 
 	if (displays_ok)
 	    displays_ok = data_disp->get_state(rs, scopes);
@@ -1485,7 +1455,38 @@ bool save_options(unsigned long flags)
 	    ok = false;
 	}
 
-	os << string_app_value(XtNrestartCommands, string(rs)) << "\n";
+	// Stream to hold exec and core file specs
+	ostrstream es;
+
+	// Get exec and core file
+	string core = session_core_file(session);
+	switch (gdb->type())
+	{
+	case GDB:
+	    es << "set confirm off\n";
+	    if (info.file != "")
+		es << "file " << info.file << "\n";
+	    if (core_ok)
+		es << "core " << core << "\n";
+	    break;
+
+	case DBX:
+	    if (info.file != "")
+	    {
+		es << "debug " << info.file;
+		if (core_ok)
+		    es << " " << core;
+		es << "\n";
+	    }
+	    break;
+
+	case XDB:
+	    // FIXME
+	    break;
+	}
+
+	os << string_app_value(XtNrestartCommands, 
+			       string(es) + string(rs)) << "\n";
     }
 
     save_option_state();

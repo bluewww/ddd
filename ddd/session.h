@@ -41,7 +41,7 @@
 const string DEFAULT_SESSION = "";
 
 // Name of restart session
-const string RESTART_SESSION = DDD_NAME;
+const string RESTART_SESSION = "." ddd_NAME;
 
 // Return session directories
 

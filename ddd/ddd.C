@@ -2563,6 +2563,9 @@ static void ddd_check_version()
 	return;
     checked = true;
 
+    if (restart_session() != "")
+	return; // We told the user in the previous DDD instance
+
     // Tell user once more about version mismatches
     if (!version_warnings.isEmpty())
     {
@@ -2944,10 +2947,6 @@ static Boolean session_setup_done(XtPointer)
 	// Delete initialization delay, if any
 	delete init_delay;
 	init_delay = 0;
-
-	// Delete temporary restart session, if any
-	if (restart_session() != "")
-	    delete_session(restart_session(), true);
 
 	if (app_data.initial_session != 0)
 	{

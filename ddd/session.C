@@ -97,6 +97,13 @@ extern "C" {
 
 
 // ---------------------------------------------------------------------------
+// How to present a default session to the user
+// ---------------------------------------------------------------------------
+
+const string NO_SESSION = "[none]";
+
+
+// ---------------------------------------------------------------------------
 // Session files
 // ---------------------------------------------------------------------------
 
@@ -333,8 +340,6 @@ static void get_sessions(StringArray& arr)
     }
 }
 
-const string NO_SESSION = "[none]";
-
 // Update state of `delete' button
 static void update_delete(Widget dialog)
 {
@@ -547,16 +552,14 @@ void set_session(const string& v)
 
     app_data.session = value;
 
+    string session_name;
     if (app_data.session == DEFAULT_SESSION)
-    {
-	set_status("No current session");
-    }
+	session_name = NO_SESSION;
     else
-    {
-	StatusDelay delay("Setting current session to " 
-			  + quote(app_data.session));
-	create_session_dir(app_data.session);
-    }
+	session_name = quote(app_data.session);
+
+    StatusDelay delay("Setting current session to " + session_name);
+    create_session_dir(app_data.session);
 }
 
 // Set the current session
