@@ -808,6 +808,14 @@ None<Key>osfBeginData:	gdb-beginning-of-line()	    \n\
 None<Key>osfEndData:	gdb-end-of-line()	    \n\
 None<Key>Home:		gdb-beginning-of-line()	    \n\
 None<Key>End:		gdb-end-of-line()	    \n\
+None<Key>osfPageUp:	previous-page()		    \n\
+None<Key>osfPageDown:	next-page()	            \n\
+None<Key>Prior:		previous-page()		    \n\
+None<Key>Next:		next-page()	            \n\
+Shift<Key>osfPageUp:	previous-page(extend)	    \n\
+Shift<Key>osfPageDown:	next-page(extend)           \n\
+Shift<Key>Prior:	previous-page(extend)	    \n\
+Shift<Key>Next:		next-page(extend)	    \n\
 None<Key>R7:		gdb-beginning-of-line()	    \n\
 None<Key>R13:		gdb-end-of-line()	    \n\
 None<Key>Tab:		gdb-complete-command()	    \n
@@ -1285,6 +1293,14 @@ Shift<Key>osfPageUp:	previous-page(extend)	    \
 			source-update-glyphs()	    \n\
 Shift<Key>osfPageDown:	next-page(extend)	    \
 			source-update-glyphs()	    \n\
+None<Key>Prior:		previous-page()		    \
+			source-update-glyphs()	    \n\
+None<Key>Next:		next-page()		    \
+			source-update-glyphs()	    \n\
+Shift<Key>Prior:	previous-page(extend)	    \
+			source-update-glyphs()	    \n\
+Shift<Key>Next:		next-page(extend)	    \
+			source-update-glyphs()	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
@@ -1311,6 +1327,14 @@ None<Key>osfPageDown:	next-page()		    \
 Shift<Key>osfPageUp:	previous-page(extend)	    \
 			source-update-glyphs()	    \n\
 Shift<Key>osfPageDown:	next-page(extend)	    \
+			source-update-glyphs()	    \n\
+None<Key>Prior:		previous-page()		    \
+			source-update-glyphs()	    \n\
+None<Key>Next:		next-page()		    \
+			source-update-glyphs()	    \n\
+Shift<Key>Prior:	previous-page(extend)	    \
+			source-update-glyphs()	    \n\
+Shift<Key>Next:		next-page(extend)	    \
 			source-update-glyphs()	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
