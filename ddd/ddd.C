@@ -6984,13 +6984,39 @@ static void setup_options(int& argc, char *argv[],
     int gdb_option_pos = -1;
     int gdb_option_offset = 2;
     int i;
+    bool save = false;
+
     for (i = 1; i < argc; i++)
     {
 	string arg = string(argv[i]);
 
 	if (arg == "--")
-	    break;		// End of options
+	{
+	    // Anything after `--' is a debugger option.  Skip `--'
+	    // and store all remaining options in SAVED_OPTIONS.
+	    for (int j = i; j <= argc - 1; j++)
+		argv[j] = argv[j + 1];
+	    argc--;
+	    i--;
 
+	    save = true;
+	    continue;
+	}
+
+	if (save)
+	{
+	    // Found `--' - save all remaining options
+	    saved_options += arg;
+
+	    for (int j = i; j <= argc - 1; j++)
+		argv[j] = argv[j + 1];
+	    argc--;
+	    i--;
+
+	    continue;
+	}
+
+	// Ordinary DDD options
 	if ((arg == "--debugger" || arg == "-debugger") && i < argc - 1)
 	{
 	    gdb_name = argv[i + 1];

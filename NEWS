@@ -1,6 +1,14 @@
 DDD News						-*- text -*-
 ********
 
+DDD 3.1.6
+=========
+
+DDD 3.1.6 fixes more minor problems in DDD 3.1.
+
+- DDD passes all options after `--' to the inferior debugger.
+
+
 DDD 3.1.5
 =========
 
