@@ -50,6 +50,7 @@ char VSLDefList_rcsid[] =
 #include "ListBox.h"
 
 #include "VSLNode.h"
+#include "UniqueId.h"
 
 DEFINE_TYPE_INFO_0(VSLDefList)
 
@@ -172,6 +173,16 @@ void VSLDefList::replace()
     // Reset pointers
     _first = _last = 0;
     _ndefs = 0;
+}
+
+// Override
+void VSLDefList::override()
+{
+    ostrstream os;
+    os << UniqueId();
+
+    _func_name += "'";
+    _func_name += string(os);     // Just append 'ID to the name
 }
 
 // Destroy definition *and all successors*

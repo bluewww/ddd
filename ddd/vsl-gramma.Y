@@ -785,20 +785,7 @@ override_identifier	:	function_identifier
 				    ASSERT($1->OK());
 
 				    string func_name = *$1;
-				    if (vsllib->override(func_name)
-					&& vsllib->override("#" + func_name))
-				    {
-					// Don't complain about misspelled
-					// functions here -- they will be
-					// uncovered with the following
-					// (overriding) definition.
-					if (false)
-					{
-					    VSLLib::parse_error(
-						"'" + func_name + 
-						"(...)' undefined");
-					}
-				    }
+				    vsllib->override(func_name);
 				}
 
 replace_declaration	:	REPLACE replace_list

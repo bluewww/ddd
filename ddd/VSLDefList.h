@@ -125,10 +125,7 @@ public:
     const Box *eval(Box *arg) const;
 
     // Rename
-    void override()     
-    { 
-	_func_name += '\'';     // Just append a ' to the name
-    }
+    void override();
 
     // Delete defs
     void replace();
