@@ -594,8 +594,13 @@ int ddd_man(ostream& os)
 
     return uncompress(os, MANUAL, sizeof(MANUAL) - 1);
 #else
-    // Try `man ddd' and `man xddd'.
-    FILE *fp = popen(sh_command("man " ddd_NAME " || man x" ddd_NAME), "r");
+
+    // Try `info ddd', `man ddd' and `man xddd'.
+    string cmd = 
+	"info --subnodes -o - -f " ddd_NAME " 2> /dev/null || "
+	"man " ddd_NAME " || man x" ddd_NAME;
+
+    FILE *fp = popen(sh_command(cmd), "r");
     if (fp == 0)
 	return -1;
 
@@ -644,11 +649,12 @@ void GDBManualCB(Widget w, XtPointer, XtPointer)
     if (gdb->type() == PERL)
 	key = "perldebug";
 
+    // Ordinary way: try `man dbx', etc.
     string cmd = "man " + key + " 2>&1";
 
     if (gdb->type() == GDB)
     {
-	// Try `info' first
+	// Try `info gdb' first
 	cmd.prepend("info --subnodes -o - -f " + key + " 2> /dev/null || ");
     }
 
