@@ -415,10 +415,14 @@ private:
 			      Widget stops[], int& count,
 			      TextPositionArray& stops);
 
-    // Map arrow/temp arrow/temp stop in W at POS.
+    // Map arrow/temp arrow/temp stop in W at POS.  If ORIGIN is
+    // given, use colors from ORIGIN.
     static Widget map_arrow_at     (Widget w, XmTextPosition pos);
-    static Widget map_temp_arrow_at(Widget w, XmTextPosition pos);
-    static Widget map_temp_stop_at (Widget w, XmTextPosition pos);
+    static Widget map_temp_arrow_at(Widget w, XmTextPosition pos,
+				    Widget origin = 0);
+    static Widget map_temp_stop_at (Widget w, XmTextPosition pos,
+				    Widget origin = 0);
+    static void copy_colors(Widget w, Widget origin);
 
     // True if code/source glyphs need to be updated
     static bool update_code_glyphs;

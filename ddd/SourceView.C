@@ -687,7 +687,7 @@ void SourceView::move_bp(int bp_nr, const string& a, Widget w)
 {
     string address = a;
 
-    clog << "Moving breakpoint " << bp_nr << " to " << address << '\n';
+    // clog << "Moving breakpoint " << bp_nr << " to " << address << '\n';
 
     BreakPoint *bp = bp_map.get(bp_nr);
     if (bp == 0)
@@ -5479,8 +5479,27 @@ Widget SourceView::map_arrow_at(Widget w, XmTextPosition pos)
     return 0;
 }
 
-// Map temporary stop sign at position POS.
-Widget SourceView::map_temp_stop_at(Widget w, XmTextPosition pos)
+// Copy glyph foreground and background colors from ORIGIN to W
+void SourceView::copy_colors(Widget w, Widget origin)
+{
+    if (origin == 0)
+	return;
+
+    Pixel background, foreground;
+    XtVaGetValues(origin,
+		  XmNforeground, &foreground,
+		  XmNbackground, &background,
+		  NULL);
+    XtVaSetValues(w,
+		  XmNforeground, foreground,
+		  XmNbackground, background,
+		  NULL);
+}
+
+// Map temporary stop sign at position POS.  If ORIGIN is given, use
+// colors from ORIGIN.
+Widget SourceView::map_temp_stop_at(Widget w, XmTextPosition pos, 
+				    Widget origin)
 {
     assert (is_source_widget(w) || is_code_widget(w));
     Position x, y;
@@ -5497,6 +5516,8 @@ Widget SourceView::map_temp_stop_at(Widget w, XmTextPosition pos)
 	    break;
     }
 
+    copy_colors(temp_stop, origin);
+
     if (pos_displayed)
 	map_glyph(temp_stop, x + stop_x_offset, y);
     else
@@ -5505,8 +5526,10 @@ Widget SourceView::map_temp_stop_at(Widget w, XmTextPosition pos)
     return temp_stop;
 }
 
-// Map temporary arrow at position POS.
-Widget SourceView::map_temp_arrow_at(Widget w, XmTextPosition pos)
+// Map temporary arrow at position POS.  If ORIGIN is given, use
+// colors from ORIGIN.
+Widget SourceView::map_temp_arrow_at(Widget w, XmTextPosition pos, 
+				     Widget origin)
 {
     assert (is_source_widget(w) || is_code_widget(w));
     Position x, y;
@@ -5522,6 +5545,8 @@ Widget SourceView::map_temp_arrow_at(Widget w, XmTextPosition pos)
 	if (CreateGlyphsWorkProc(0))
 	    break;
     }
+
+    copy_colors(temp_arrow, origin);
 
     if (pos_displayed)
 	map_glyph(temp_arrow, x + arrow_x_offset, y);
@@ -5874,7 +5899,7 @@ void SourceView::dragGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
 
     static Cursor move_cursor = XCreateFontCursor(XtDisplay(w), XC_fleur);
 
-    clog << "Dragging " << XtName(w) << " [" << w << "]\n";
+    // clog << "Dragging " << XtName(w) << " [" << w << "]\n";
 
     XDefineCursor(XtDisplay(w), XtWindow(w), move_cursor);
 
@@ -5918,9 +5943,9 @@ void SourceView::followGlyphAct  (Widget w, XEvent *e, String *, Cardinal *)
     CheckScrollCB(w, XtPointer(0), XtPointer(0));
 
     if (current_drag_breakpoint)
-	map_temp_stop_at(text_w, pos);
+	map_temp_stop_at(text_w, pos, w);
     else
-	map_temp_arrow_at(text_w, pos);
+	map_temp_arrow_at(text_w, pos, w);
 }
 
 void SourceView::dropGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
@@ -5978,8 +6003,8 @@ void SourceView::dropGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
 	address = current_source_name() + ':' + itostring(line_nr);
     }
 
-    clog << "Dropping " << XtName(w) << " [" << w << "] at " 
-	 << address << "\n";
+    // clog << "Dropping " << XtName(w) << " [" << w << "] at " 
+    //      << address << "\n";
 
     if (text_w == code_text_w)
     {
