@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // Modify debugger settings
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -62,6 +62,7 @@ char settings_rcsid[] =
 #include "question.h"
 #include "status.h"
 #include "verify.h"
+#include "version.h"
 #include "wm.h"
 #include "VarArray.h"
 #include "StringSA.h"
@@ -1261,13 +1262,21 @@ static void add_settings(Widget form, int& row, DebuggerType type,
 	// Some DBXes know `dbxenv'; others know `set'.  We cannot use
 	// is_invalid() or likewise here, since the output may contain
 	// `error' strings that would cause is_invalid() to fail.
-	// Just try both and use the longer reply.
+	// Just try both and use the longer reply (may take time).
+
+	// Exception: on Sun DBX, `set' causes a dump of all
+	// environment variables.  Don't use this.
 	string dbxenv = cached_gdb_question("dbxenv");
 	string set    = cached_gdb_question("set");
-	if (dbxenv.length() > set.length())
+	if (dbxenv.length() > set.length() ||
+	    set.contains(DDD_NAME "=" ddd_NAME))
+	{
 	    commands = dbxenv;
+	}
 	else
+	{
 	    commands = set;
+	}
 	break;
     }
     }
