@@ -119,7 +119,7 @@ static Box *not(ListBox *args)
 // Graphische Operatoren
 
 // Normalize alignment
-static Box *_normalize(AlignBox *box)
+static Box *normalize(AlignBox *box)
 {
     // Replace (&)(A) by A
     if (box->nchildren() == 1)
@@ -169,14 +169,6 @@ static Box *_normalize(AlignBox *box)
     }
 
     return box;
-}
-
-static Box *normalize(AlignBox *b)
-{
-    // clog << "normalize(" << *b << ") = ";
-    Box *ret = _normalize(b);
-    // clog << *ret << "\n";
-    return ret;
 }
 
 static Box *halign(ListBox *args)
