@@ -1,7 +1,7 @@
 // $Id$
 // Data Display
 
-// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@ips.cs.tu-bs.de>
 // 
@@ -3034,7 +3034,7 @@ void DataDisp::refresh_displayOQAC (const StringArray& answers,
 	    break;
 
 	case PROCESS_DATA:
-	    data_answers += answers[i];
+	    data_answers += answers[i] + '\n';
 	    data_answers_seen++;
 	    break;
 
