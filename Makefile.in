@@ -116,10 +116,10 @@ $(DDD_TARGETS): FORCE
 ### Distribution stuff
 
 .PHONY: dist
-dist:	diststuff distclean do-dist
+dist:	diststuff distclean snapshot
 
-.PHONY: do-dist
-do-dist:
+.PHONY: snapshot
+snapshot:
 	rm -fr proto-toplev; mkdir proto-toplev
 	( \
 	    ddd=`sed -n < ddd/configure.in 's/^ddd *= *//p'`; \
@@ -130,6 +130,15 @@ do-dist:
 	    ln -s .. proto-toplev/$$ddd-$$VER; \
 	    find . -name RCS -prune -o -name CVS -prune \
 		-o -name proto-toplev -prune \
+		-o -name '.[a-zA-Z0-9]*' -prune \
+		-o -name '*.o' -prune \
+		-o -name '*.a' -prune \
+		-o \( -name "$$ddd" -type l \) -prune \
+		-o -name "$$ddd-$$VER-*" -prune \
+		-o -name "userinfo" -prune \
+		-o -name "huffencode" -prune \
+		-o -name "ctest" -prune \
+		-o -name "cxxtest" -prune \
 		-o -type f -print -o -type l -print | \
 	        sed "s/^\./$$ddd-$$VER/" | sort > proto-toplev/FILES; \
 	    ( cd proto-toplev; gtar --create --dereference \
