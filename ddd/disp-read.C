@@ -997,6 +997,9 @@ bool is_valid(const string& value, GDBAgent *gdb)
     if (value.contains("not valid"))
 	return false;
 
+    if (value.contains("not a valid"))
+	return false;
+
     // In JDB 1.2, values start with `instance of'
     if (!value.contains("instance of", 0) && value.matches(rxinvalid_value))
 	return true;
