@@ -55,7 +55,7 @@
 \let\ptexdots=\dots
 \let\ptexend=\end
 \let\ptexequiv = \equiv
-\let\ptexi=\i
+\let\ptexi={\i}
 \let\ptexlbrace=\{
 \let\ptexrbrace=\}
 \let\ptexstar=\*
@@ -427,7 +427,7 @@
 \def\dotless#1{%
   \def\temp{#1}%
   \ifx\temp\imacro \ptexi
-  \else\ifx\temp\jmacro \j
+  \else\ifx\temp\jmacro {\j}
   \else \errmessage{@dotless can be used only with i or j}%
   \fi\fi
 }
@@ -1303,7 +1303,7 @@ where each line of input produces a line of output.}
 \def\smartitalicx{\ifx\next,\else\ifx\next-\else\ifx\next.\else\/\fi\fi\fi}
 \def\smartitalic#1{{\sl #1}\futurelet\next\smartitalicx}
 
-\let\i=\smartitalic
+\let{\i}=\smartitalic
 \let\var=\smartitalic
 \let\dfn=\smartitalic
 \let\emph=\smartitalic
@@ -1466,7 +1466,7 @@ where each line of input produces a line of output.}
 % @l was never documented to mean ``switch to the Lisp font'',
 % and it is not used as such in any manual I can find.  We need it for
 % Polish suppressed-l.  --karl, 22sep96.
-%\def\l#1{{\li #1}\null}
+%\def{\l}#1{{\li #1}\null}
 
 \def\r#1{{\rm #1}}              % roman font
 % Use of \lowercase was suggested.
@@ -1474,7 +1474,7 @@ where each line of input produces a line of output.}
 \def\ii#1{{\it #1}}             % italic font
 
 % @pounds{} is a sterling sign.
-\def\pounds{{\it\$}}
+\def{\pounds}{{\it\$}}
 
 
 \message{page headings,}
@@ -2303,17 +2303,17 @@ width0pt\relax} \fi
 \def\v{\realbackslash v}%
 \def\H{\realbackslash H}%
 % Take care of the plain tex special European modified letters.
-\def\oe{\realbackslash oe}%
-\def\ae{\realbackslash ae}%
-\def\aa{\realbackslash aa}%
-\def\OE{\realbackslash OE}%
-\def\AE{\realbackslash AE}%
-\def\AA{\realbackslash AA}%
-\def\o{\realbackslash o}%
-\def\O{\realbackslash O}%
-\def\l{\realbackslash l}%
-\def\L{\realbackslash L}%
-\def\ss{\realbackslash ss}%
+\def{\oe}{\realbackslash oe}%
+\def{\ae}{\realbackslash ae}%
+\def{\aa}{\realbackslash aa}%
+\def{\OE}{\realbackslash OE}%
+\def{\AE}{\realbackslash AE}%
+\def{\AA}{\realbackslash AA}%
+\def{\o}{\realbackslash o}%
+\def{\O}{\realbackslash O}%
+\def{\l}{\realbackslash l}%
+\def{\L}{\realbackslash L}%
+\def{\ss}{\realbackslash ss}%
 % Take care of texinfo commands likely to appear in an index entry.
 % (Must be a way to avoid doing expansion at all, and thus not have to
 % laboriously list every single command here.)
@@ -2347,7 +2347,7 @@ width0pt\relax} \fi
 \def\,##1{\realbackslash ,{##1}}%
 \def\t##1{\realbackslash t {##1}}%
 \def\r##1{\realbackslash r {##1}}%
-\def\i##1{\realbackslash i {##1}}%
+\def{\i}##1{\realbackslash i {##1}}%
 \def\b##1{\realbackslash b {##1}}%
 \def\sc##1{\realbackslash sc {##1}}%
 \def\cite##1{\realbackslash cite {##1}}%
@@ -2390,21 +2390,21 @@ width0pt\relax} \fi
 \let\H=\indexdummyfont
 \let\dotless=\indexdummyfont
 % Take care of the plain tex special European modified letters.
-\def\oe{oe}%
-\def\ae{ae}%
-\def\aa{aa}%
-\def\OE{OE}%
-\def\AE{AE}%
-\def\AA{AA}%
-\def\o{o}%
-\def\O{O}%
-\def\l{l}%
-\def\L{L}%
-\def\ss{ss}%
+\def{\oe}{oe}%
+\def{\ae}{ae}%
+\def{\aa}{aa}%
+\def{\OE}{OE}%
+\def{\AE}{AE}%
+\def{\AA}{AA}%
+\def{\o}{o}%
+\def{\O}{O}%
+\def{\l}{l}%
+\def{\L}{L}%
+\def{\ss}{ss}%
 \let\w=\indexdummyfont
 \let\t=\indexdummyfont
 \let\r=\indexdummyfont
-\let\i=\indexdummyfont
+\let{\i}=\indexdummyfont
 \let\b=\indexdummyfont
 \let\emph=\indexdummyfont
 \let\strong=\indexdummyfont
@@ -2815,7 +2815,7 @@ width0pt\relax} \fi
   \def\file##1{\realbackslash file{##1}}%
   \def\kbd##1{\realbackslash kbd{##1}}%
   % These are redefined because @smartitalic wouldn't work inside xdef.
-  \def\i##1{\realbackslash i{##1}}%
+  \def{\i}##1{\realbackslash i{##1}}%
   \def\cite##1{\realbackslash cite{##1}}%
   \def\var##1{\realbackslash var{##1}}%
   \def\emph##1{\realbackslash emph{##1}}%
@@ -3326,7 +3326,7 @@ width0pt\relax} \fi
       \catcode`\\=0  \catcode`\{=1  \catcode`\}=2  \catcode`\@=11
       % We can't do this, because then an actual ^ in a section
       % title fails, e.g., @chapter ^ -- exponentiation.  --karl, 9jul97.
-      %\catcode`\^=7 % to see ^^e4 as \"a etc. juha@piuha.ydi.vtt.fi
+      %\catcode`\^=7 % to see ^^e4 as {\"a} etc. juha@piuha.ydi.vtt.fi
       \raggedbottom             % Worry more about breakpoints than the bottom.
       \advance\hsize by -\contentsrightmargin % Don't use the full line length.
 }
@@ -3543,7 +3543,7 @@ width0pt\relax} \fi
 \def\enddots{\relax\ifmmode\endldots\else$\mathsurround=0pt \endldots\,$\fi}%
 \def\@{@}%
 \let\bullet=\ptexbullet
-\let\b=\ptexb \let\c=\ptexc \let\i=\ptexi \let\t=\ptext
+\let\b=\ptexb \let\c=\ptexc \let{\i}=\ptexi \let\t=\ptext
 %
 \let\Etex=\endgroup}
 
@@ -4956,4 +4956,5 @@ width0pt\relax} \fi
 
 @c Local variables:
 @c page-delimiter: "^\\\\message"
+@c x-symbol-mode: nil
 @c End:
