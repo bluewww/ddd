@@ -50,6 +50,7 @@ char exectty_rcsid[] =
 #include "windows.h"
 #include "wm.h"
 #include "Command.h"
+#include "SignalB.h"
 #include "cook.h"
 
 #include <fstream.h>
@@ -536,6 +537,20 @@ static void initialize_tty(const string& tty_name, const string& tty_term)
 {
     StatusDelay delay("Initializing execution window");
 
+#ifdef SIGTTOU
+    // Christopher Vickery <vickery@babbage.cs.qc.edu> says: On SunOS
+    // 5.5, if I run ddd in the background (using the tcsh shell), ddd
+    // cannot complete initialization of the execution window because
+    // it tries to write to stdout, which causes it to block until the
+    // job is returned to the foreground.  Nothing actually appears in
+    // the terminal window when the ddd job is put in the foreground,
+    // but the execution window finishes initializing OK.
+
+    // Solution: block SIGTTOU signals during this function.
+    SignalBlocker sb(SIGTTOU);
+#endif
+
+    // Send initialization sequence
     char buffer[2048];
     string init;
 
