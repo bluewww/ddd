@@ -12,13 +12,12 @@ DDD 2.2.2
       * ...on a pointer value: dereference it.
       * ...on a partially hidden value: show more detail.
       * ...on a fully shown value: hide it again.
-    - A display resize (due to value changes) automatically `bumps'
-      adjacent displays such that they are not obscured.  (Can be
-      disabled; see the `bumpDisplays' resource.)
+    - A display resize (due to value changes) now automatically
+      `bumps' adjacent displays such that they are not obscured.
     - The data display is now scope-sensitive: displays are
       automatically hidden as they become inactive (out of scope) and
-      redisplayed as they become active again.  (Can be disabled; see
-      the `hideInactiveDisplays' resource.)
+      redisplayed as they become active again.  This is handy when
+      maintaining a multitude of displays in different scopes.
     - DDD supports case-insensitive search in the source text.
 
     Bug fixes:
