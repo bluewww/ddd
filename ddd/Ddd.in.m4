@@ -5591,7 +5591,7 @@ Click on LBL(Filter) to apply the given filter.
 ! Breakpoint Editor
 !-----------------------------------------------------------------------------
 
-Ddd*edit_breakpoins_dialog.dialogTitle: DDD: Breakpoint and Watchpoint Editor
+Ddd*edit_breakpoints_dialog.dialogTitle: DDD: Breakpoint and Watchpoint Editor
 Ddd*edit_breakpoints_dialog.listLabelString: Breakpoints and Watchpoints
 Ddd*edit_breakpoints_dialog*buttons.orientation: XmHORIZONTAL
 Ddd*edit_breakpoints_dialog.okLabelString:	 Close
