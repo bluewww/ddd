@@ -408,7 +408,10 @@ string get_disp_value_str (/*const*/ string& display, GDBAgent *)
     static regex RXeqeq("[^{};,\n= ]+ = [^{}();,\n= ]+ = .*");
     if (d.matches(RXeqeq))
 	d = d.after(" = ");
-    if (d.contains(" = "))
+
+    int nl_index = d.index('\n');
+    int eq_index = d.index(" = ");
+    if (eq_index >= 0 && (eq_index < nl_index || nl_index < 0))
 	return d.after(" = ");
 
     return d;
