@@ -1273,10 +1273,6 @@ postscript: $(PSS)
 html:	$(HTML_BASES)
 	@:
 
-.PHONY: lib
-lib:	$(LIB)
-	@:
-
 .PHONY: readme
 readme:	$(README_FILES)
 	@:
