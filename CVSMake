@@ -19,8 +19,9 @@ autoheader
 libtoolize
 autoconf
 automake --include-deps --add-missing --verbose
-(cd readline && autoconf)
+(cd readline && autoheader && autoconf)
 (cd termcap && autoconf)
+(cd libiberty && autoheader && autoconf)
 
 # Configure the package once, using default arguments (or given arguments)
 sh ./configure "$@"
