@@ -104,10 +104,12 @@ DispValueType determine_type (string value)
     }
 
     // Structs.
-    // XDB issues the struct address before each struct.
+
+    // XDB and JDB prepend the address before each struct.  JDB also
+    // prepends the class name.
 #if RUNTIME_REGEX
     static regex rxstr_or_cl_begin(
-	"(0(0|x)[0-9a-f]+|[(]nil[)])? *"
+	"(" RXADDRESS ")? *"
 	"([(]|[{]|record\n|RECORD\n|RECORD |OBJECT "
 	"|struct|class|union).*");
     static regex rxstr_or_cl_end("([)]|[}]|end\n|END\n|end;|END;)");
@@ -124,7 +126,7 @@ DispValueType determine_type (string value)
 	// Check for leading keywords.
 #if RUNTIME_REGEX
 	static regex rxstruct_keyword_begin(
-	    "(0(0|x)[0-9a-f]+|[(]nil[)])? *"
+	    "(" RXADDRESS ")? *"
 	    "(record\n|RECORD\n|RECORD |OBJECT "
 	    "|struct|class|union).*");
 #endif
@@ -164,32 +166,39 @@ DispValueType determine_type (string value)
 
     // Pointers.
 
-    // GDB prepends the exact pointer type enclosed in `(...)'.  If
-    // the pointer type contains `(...)' itself (such as in pointers
-    // to functions), GDB uses '{...}' instead (as in `{int ()} 0x2908
-    // <main>').
-    int pointer_index = 0;
-
+    // GDB and JDB prepend the exact pointer type enclosed in `(...)'.
+    // If the pointer type contains `(...)' itself (such as in
+    // pointers to functions), GDB uses '{...}' instead (as in `{int
+    // ()} 0x2908 <main>').
     if (value.contains('(', 0) || value.contains('{', 0))
     {
 	int pos = 0;
 	read_token(value, pos);
-	if (pos < int(value.length()) && value.contains(' ', pos))
+	while (pos < int(value.length()) && value.contains(' ', pos))
+	    pos++;
+	int len = rxaddress.match(value, value.length(), pos);
+	if (len > 0)
 	{
-	    pointer_index = pos;
-	    while (value.contains(' ', pointer_index))
-		pointer_index++;
+	    // We have an address.
+	    // In JDB, an address may still be followed by a struct.
+	    int brace = value.index('{', pos + len);
+	    int nl    = value.index('\n', pos + len);
+	    if (brace >= 0 && nl >= 0 && brace < nl)
+		return StructOrClass;
+
+	    return Pointer;
 	}
     }
-    if (value.contains(rxaddress, pointer_index))
+
+    if (value.contains(rxaddress, 0))
 	return Pointer;
 
-    // In GDB, Java pointers are printed as `[TYPE]@ADDR'
+    // In GDB and JDB, Java pointers may be printed as `[TYPE]@ADDR'
     int at_index = value.index('@');
     if (at_index >= 0)
     {
 	if (value.before(at_index).matches(rxidentifier) &&
-	    value.from(at_index).matches(rxaddress))
+	    value.after(at_index).matches(rxaddress))
 	    return Pointer;
     }
 
@@ -431,8 +440,8 @@ bool read_array_begin (string& value)
 
     // DBX on DEC prepends `struct' or `class' before each struct;
     // XDB also appends the struct type name.
-    if (value.contains("struct", 0) 
-	|| value.contains("class", 0) 
+    if (value.contains("struct", 0)
+	|| value.contains("class", 0)
 	|| value.contains("union", 0))
 	value = value.from('{');
 
@@ -690,6 +699,7 @@ string read_member_name (string& value)
 
     // Strip leading qualifiers.  <Gyula.Kun-Szabo@eth.ericsson.se>
     // reports that his GDB reports static members as `static j = 45'.
+    // JDB also qualifies member names (`private String name = Ada`)
     strip_final_blanks(member_name);
     while (member_name.contains(' '))
 	member_name = member_name.after(' ');
