@@ -274,14 +274,6 @@ Widget status_history(Widget parent)
     return history_shell;
 }
 
-static bool is_prefix(char *s1, char *s2)
-{
-    while (*s1 != '\0' && *s1 == *s2)
-	s1++, s2++;
-    return *s1 == '\0';
-}
-
-
 // Return true iff S1 is a prefix of S2
 static bool is_prefix(const MString& m1, const MString& m2)
 {
@@ -299,35 +291,69 @@ static bool is_prefix(const MString& m1, const MString& m2)
 
     while (t1 != XmSTRING_COMPONENT_END && t2 != XmSTRING_COMPONENT_END)
     {
-	char *text1              = 0;
-	XmStringCharSet cs1      = 0;
+	char *s_text1            = 0;
+	XmStringCharSet s_cs1    = 0;
 	XmStringDirection d1     = XmSTRING_DIRECTION_DEFAULT;
 	XmStringComponentType u1 = XmSTRING_COMPONENT_UNKNOWN;
 	unsigned short ul1       = 0;
-	unsigned char *uv1       = 0;
+	unsigned char *s_uv1     = 0;
 	
-	t1 = XmStringGetNextComponent(c1, &text1, &cs1, &d1, &u1, &ul1, &uv1);
+	t1 = XmStringGetNextComponent(c1, &s_text1, &s_cs1, &d1, 
+				      &u1, &ul1, &s_uv1);
 
-	char *text2              = 0;
-	XmStringCharSet cs2      = 0;
+	char *s_text2            = 0;
+	XmStringCharSet s_cs2    = 0;
 	XmStringDirection d2     = XmSTRING_DIRECTION_DEFAULT;
 	XmStringComponentType u2 = XmSTRING_COMPONENT_UNKNOWN;
 	unsigned short ul2       = 0;
-	unsigned char *uv2       = 0;
+	unsigned char *s_uv2     = 0;
 
-	t2 = XmStringGetNextComponent(c2, &text2, &cs2, &d2, &u2, &ul2, &uv2);
+	t2 = XmStringGetNextComponent(c2, &s_text2, &s_cs2, &d2,
+				      &u2, &ul2, &s_uv2);
+
+	// Upon EOF In LessTif 0.82, XmStringGetNextComponent()
+	// returns XmSTRING_COMPONENT_UNKNOWN instead of
+	// XmSTRING_COMPONENT_END.  Work around this.
+	if (t1 == XmSTRING_COMPONENT_UNKNOWN && s_uv1 == 0)
+	    t1 = XmSTRING_COMPONENT_END;
+	if (t2 == XmSTRING_COMPONENT_UNKNOWN && s_uv2 == 0)
+	    t2 = XmSTRING_COMPONENT_END;
+
+	// Place string values in strings
+	string text1(s_text1 == 0 ? "" : s_text1);
+	string text2(s_text2 == 0 ? "" : s_text2);
+	string cs1(s_cs1 == 0 ? "" : s_cs1);
+	string cs2(s_cs2 == 0 ? "" : s_cs2);
+	string uv1;
+	string uv2;
+	if (s_uv1 != 0)
+	    uv1 = string((char *)s_uv1, ul1);
+	if (s_uv2 != 0)
+	    uv2 = string((char *)s_uv2, ul2);
+
+	// Free unused memory
+	XtFree(s_text1);
+	XtFree(s_text2);
+	XtFree(s_cs1);
+	XtFree(s_cs2);
+	XtFree((char *)s_uv1);
+	XtFree((char *)s_uv2);
 
 	if (t1 != t2)
-	    break;
+	{
+	    goto done;		// Differing tags
+	}
 
 	switch (t1)
 	{
 	case XmSTRING_COMPONENT_CHARSET:
 	{
-	    int diff = strcmp(cs1, cs2);
-	    XtFree(cs1);
-	    XtFree(cs2);
-	    if (diff)
+	    if (cs1 == "")	// In LessTif 0.82, XmStringGetNextComponent()
+		cs1 = text1;	// swaps CS and TEXT.  Work around this.
+	    if (cs2 == "")
+		cs2 = text2;
+
+	    if (cs1 != cs2)
 		goto done;	// Differing character sets
 	    break;
 	}
@@ -340,13 +366,20 @@ static bool is_prefix(const MString& m1, const MString& m2)
 	case XmSTRING_COMPONENT_WIDECHAR_TEXT:
 #endif
 	{
-	    bool is_pfx = is_prefix(text1, text2);
-	    XtFree(text1);
-	    XtFree(text2);
-	    if (!is_pfx)
+	    if (text1 == "")	// In LessTif 0.82, XmStringGetNextComponent()
+		text1 = cs1;	// swaps CS and TEXT.  Work around this.
+	    if (text2 == "")
+		text2 = cs2;
+
+	    if (!text2.contains(text1, 0))
 		goto done;
 	    XmStringComponentType next2 = XmStringPeekNextComponent(c2);
-	    if (next2 != XmSTRING_COMPONENT_END)
+
+	    // In LessTif 0.82, XmStringPeekNextComponent() returns
+	    // XmSTRING_COMPONENT_UNKNOWN instead of
+	    // XmSTRING_COMPONENT_END.  Work around this.
+	    if (next2 != XmSTRING_COMPONENT_END && 
+		next2 != XmSTRING_COMPONENT_UNKNOWN)
 		goto done;
 	    break;
 	}
@@ -362,6 +395,13 @@ static bool is_prefix(const MString& m1, const MString& m2)
 	case XmSTRING_COMPONENT_END:
 	{
 	    // These are the same by definition
+	    break;
+	}
+
+	case XmSTRING_COMPONENT_UNKNOWN:
+	{
+	    if (uv1 != uv2)
+		goto done;	// Differing unknown tags
 	    break;
 	}
 
