@@ -75,7 +75,7 @@ RM = rm -f
 LN_S = @LN_S@
 
 # The m4 command, preferably GNU m4.   (m4)
-M4 = M4PATH=$(srcdir) @M4@
+M4 = @M4@
 
 # The lex command (flex), its flags (-8), and its library (-lfl).
 LEX = @LEX@
@@ -1004,7 +1004,10 @@ Ddd.ad.h: Ddd $(srcdir)/ad2c.sed
 	$(AD2C) Ddd > Ddd.ad.h
 
 Ddd.in: Ddd.in.m4 macros.m4
-	$(M4) -Dsrcdir=$(srcdir) Ddd.in.m4 > $@
+	( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/Ddd.in.m4)dnl" \
+	) | $(M4) > $@
 
 
 ## The VSL header files.
@@ -1278,7 +1281,10 @@ $(srcdir)/stamp-h.in: \
 	$(DATE) > $@
 
 $(srcdir)/acconfig.h: $(srcdir)/acconfig.h.in $(srcdir)/acspecial.h
-	$(M4) $(srcdir)/acconfig.h.in > $@
+	( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/acconfig.h.in)dnl" \
+	) | $(M4) > $@
 
 $(srcdir)/acspecial.h: $(srcdir)/configure.in
 	$(GREP) '^ICE_[a-zA-Z0-9_]* *(' $(srcdir)/configure.in > $@

@@ -120,6 +120,6 @@ undef(translit(HAVE_$1_DECL, `abcdefghijklmnopqrstuvwxyz', dnl
 `ABCDEFGHIJKLMNOPQRSTUVWXYZ'))'
 )dnl
 define(`undef', `#undef $1')dnl
-include(acspecial.h)dnl
+include(ifdef(`srcdir',srcdir()/acspecial.h,acspecial.h))dnl
 #endif // _ICE_config_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
