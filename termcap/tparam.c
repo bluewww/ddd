@@ -20,10 +20,6 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "config.h"
 #else /* not HAVE_CONFIG_H */
 
-#if defined(HAVE_STRING_H) || defined(STDC_HEADERS)
-#define bcopy(s, d, n) memcpy ((d), (s), (n))
-#endif
-
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #include <string.h>
@@ -154,7 +150,7 @@ tparam1 (string, outstring, len, up, left, argp)
 	      outlen = len + 40;
 	      new = (char *) xmalloc (outlen);
 	      outend += 40;
-	      bcopy (outstring, new, op - outstring);
+	      memcpy (new, outstring, op - outstring);
 	    }
 	  else
 	    {
