@@ -11,6 +11,7 @@ Makefile
 USERINFO
 acconfig.h
 acspecial.h
+confdefs.h
 config.cache
 config.h
 config.h.in
