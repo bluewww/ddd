@@ -46,9 +46,3 @@ Where to install
 * ftp://metalab.unc.edu/incoming/Linux/
   [source + binaries + LSM entry from ftp/bin/linux/generic/ddd-x.y.* ]
   Typically, use `binary / hash / prompt / mput ddd-x.y.*'.
-
-
-Helpers
--------
-
-Richard Dermer <rdermer@Adobe.COM> offers to make PDFs of DDD docs.
