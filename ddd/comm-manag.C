@@ -2600,7 +2600,16 @@ static void process_config_pwd(string& answer)
 
 static void process_config_setenv(string& answer)
 {
-    gdb->has_setenv_command(is_known_command(answer));
+    if (gdb->is_ladebug())
+    {
+	// Thomas Anders <anders@hmi.de> reports that `setenv TERM dumb'
+	// causes a segmentation fault in Ladebug Debugger Version 4.0-48.
+	gdb->has_setenv_command(false);
+    }
+    else
+    {
+	gdb->has_setenv_command(is_known_command(answer));
+    }
 }
 
 static void process_config_edit(string& answer)
