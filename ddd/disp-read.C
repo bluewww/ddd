@@ -507,17 +507,25 @@ static bool next_is_nl(const string& displays)
 
 // Return next display from DISPLAYS ("" if none); remove it from
 // DISPLAYS
-string read_next_display (string& displays, GDBAgent *)
+string read_next_display (string& displays, GDBAgent *gdb)
 {
     string next_display;
 
     // string old_displays = displays;
     // clog << "read_next_display(" << quote(old_displays) << ")...\n";
 
-    do {
-	next_display += read_token(displays);
-    } while (displays != "" && !next_is_nl(displays));
-
+    if (is_disabling(displays, gdb))
+    {
+	// After a `disabling' message, `display' output finishes
+	next_display = displays;
+	displays = "";
+    }
+    else
+    {
+	do {
+	    next_display += read_token(displays);
+	} while (displays != "" && !next_is_nl(displays));
+    }
     displays = displays.after('\n');
 
     // clog << "read_next_display(" << quote(old_displays) << ") = "
