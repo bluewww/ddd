@@ -81,6 +81,8 @@ int     DispBox::max_display_title_length = 20;
 bool    DispBox::vsllib_initialized = false;
 bool    DispBox::align_2d_arrays = true;
 
+ThemeManager DispBox::theme_manager("");
+
 
 // ***************************************************************************
 //

@@ -42,6 +42,7 @@
 #include "VSLLib.h"
 #include "VSLArgList.h"
 #include "DispValue.h"
+#include "ThemeM.h"
 #include "assert.h"
 
 //-----------------------------------------------------------------------------
@@ -76,6 +77,9 @@ public:
 
     // Initialize VSL library, using BACKGROUND as work proc
     static void init_vsllib(void (*background)() = 0);
+
+    // Mapping of expressions to themes
+    static ThemeManager theme_manager;
 
     // Create a new box.  If DV == 0, create a disabled box.
     DispBox (int disp_nr, const string& title, 

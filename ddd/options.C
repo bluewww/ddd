@@ -54,6 +54,7 @@ extern int ptrace(int request, int pid, int addr, int data);
 #include "AppData.h"
 #include "DataDisp.h"
 #include "DestroyCB.h"
+#include "DispBox.h"
 #include "GDBAgent.h"
 #include "GraphEdit.h"
 #include "SourceView.h"
@@ -2581,8 +2582,10 @@ bool save_options(unsigned long flags)
 
     // Themes
     os << "\n! Themes.\n";
-    os << string_app_value(XtNthemes, app_data.themes, true)
-       << '\n';
+    ostrstream themes;
+    themes << DispBox::theme_manager;
+    string themes_s(themes);
+    os << string_app_value(XtNthemes, themes_s) << '\n';
 
     // Tips
     os << "\n! Tips.\n";

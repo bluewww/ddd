@@ -2193,6 +2193,9 @@ int main(int argc, char *argv[])
     DispBox::max_display_title_length = app_data.max_display_title_length;
     SourceView::max_popup_expr_length = app_data.max_popup_expr_length;
 
+    // Global variables: Setup theme manager
+    DispBox::theme_manager = ThemeManager(app_data.themes);
+
     // Global variables: Setup data display
     DataDisp::bump_displays           = app_data.bump_displays;
     DispValue::expand_repeated_values = app_data.expand_repeated_values;
