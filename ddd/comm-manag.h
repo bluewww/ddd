@@ -76,5 +76,8 @@ void internal_command(const string& command, OQCProc callback, void *data,
 string internal_command(const string& command);
 bool is_internal_command(const string& command);
 
+// True if the debuggee is running
+extern bool debuggee_running;
+
 #endif // _DDD_comm_manag_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

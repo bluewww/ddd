@@ -83,6 +83,14 @@ char comm_manager_rcsid[] =
 
 
 //-----------------------------------------------------------------------------
+// Data
+//-----------------------------------------------------------------------------
+
+// True if a running command is being executed
+bool debuggee_running = false;
+
+
+//-----------------------------------------------------------------------------
 // Types
 //-----------------------------------------------------------------------------
 
@@ -1125,6 +1133,9 @@ void send_gdb_command(string cmd, Widget origin,
 
 	// Any later input is user interaction.
 	gdb_input_at_prompt = false;
+
+	// Debuggee should now be running
+	debuggee_running = true;
     }
     else if (is_thread_cmd(cmd) || is_core_cmd(cmd))
     {

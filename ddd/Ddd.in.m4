@@ -6686,6 +6686,22 @@ or enter KBD(end) at the @GDB@ prompt.\n\
 ITEM To cancel the recording, select LBL(Program, Interrupt) \
 or press KEY(Esc).
 
+Ddd*busy.helpString: \
+@rm @GDB@ is busy on some debugger action.\n\
+\n\
+You may\n\
+ITEM wish to wait until the @GDB@ prompt appears, or\n\
+ITEM interrupt the current debugging command by selecting\n\
+    LBL(Program, Interrupt) (or typing KEY(Esc)).
+
+Ddd*running.helpString: \
+@rm @GDB@ is executing the debugged program.\n\
+\n\
+You may\n\
+ITEM interact with the program until a breakpoint is reached, or\n\
+ITEM interrupt program execution by selecting\n\
+    LBL(Program, Interrupt) (or typing KEY(Esc)).
+
 Ddd*program_not_running.helpString: \
 @rm Your program is not running.\n\
 \n\

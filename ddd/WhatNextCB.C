@@ -37,6 +37,7 @@ char WhatNextCB_rcsid[] =
 
 #include "Command.h"
 #include "converters.h"
+#include "comm-manag.h"
 #include "ddd.h"
 #include "editing.h"
 #include "exit.h"
@@ -166,9 +167,15 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
 	return;
     }
 
+    if (debuggee_running)
+    {
+	hint_on("running");
+	return;
+    }
+
     if (!gdb->isReadyWithPrompt())
     {
-	hint_on("busy_dialog");
+	hint_on("busy");
 	return;
     }
 
