@@ -75,12 +75,12 @@ Summary of DDD
     well-known commercial debuggers.
 
     DDD has been extensively beta-tested (especially by debugging
-    itself) and should configure, compile and run out-of-the-box for a
-    variety of UNIX brands, including AIX (powerpc-ibm-aix3,
+    itself) and configures, compiles and runs out-of-the-box on almost
+    every major UNIX brand, including AIX (powerpc-ibm-aix3,
     rs6000-ibm-aix3), HP-UX (hppa1.1-hp-hpux9), IRIX (mips-sgi-irix5),
     Linux (i386-unknown-linux, i486-unknown-linux), Solaris
     (i386-sun-solaris2 sparc-sun-solaris2), SunOS (sparc-sun-sunos4),
-    and ULTRIX (mips-dec-ultrix4).
+    and ULTRIX (mips-dec-ultrix4).  Only exception is OSF/1.
 
     DDD is free software, protected by the GNU general public license.
     It is actively maintained by its authors, Dorothea Luetkehaus and
