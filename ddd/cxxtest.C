@@ -161,6 +161,7 @@ void reference_test(Date& date, Date*& date_ptr)
 //--------------------------------------------------------------------------
 void array_test()
 {
+    // Play woth rotate and show/hide buttons
     DayOfWeek days_of_week[7] = {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
 
     char *twodim [2][3] = {{ "Pioneering", "women", "in"},
@@ -169,6 +170,7 @@ void array_test()
     (void) twodim;		// Use it
     (void) days_of_week;	// Use it
 
+    // Dereference this
     Date *date_ptrs[4];
     date_ptrs[0] = new Date(Thu, 1, 9, 1994);
     date_ptrs[1] = new Date(Tue, 10, 5, 1994);
@@ -176,10 +178,10 @@ void array_test()
     date_ptrs[3] = new Date(Sat, 24, 12, 1994);
 
     Date *date_ptr;
-    Date dates[4];
     for (int i = 0; i < 4; i++)
     {
-	date_ptr = dates + i;
+	// Dereference DATE_PTR to see it traverse the individual *DATE_PTRs
+	date_ptr = date_ptrs[i];
 	reference_test(*date_ptr, date_ptrs[i]);
     }
 }
