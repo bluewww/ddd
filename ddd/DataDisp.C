@@ -4785,13 +4785,13 @@ string DataDisp::process_displays(string& displays,
     int k;
     for (k = disp_graph->first_nr(ref); k != 0; k = disp_graph->next_nr(ref))
     {
-	DispNode* dn = disp_graph->get(k);
+	DispNode *dn = disp_graph->get(k);
 	if (dn->is_user_command() || dn->deferred())
 	    continue;
 
 	if (disp_string_map.contains(k))
 	{
-	    if (disp_graph->make_active(k))
+	    if (disp_graph->make_active(dn))
 	    {
 		// Now active
 		changed = activated = true;
@@ -4800,7 +4800,7 @@ string DataDisp::process_displays(string& displays,
 	else
 	{
 	    // Node is no more part of `display' output
-	    if (disp_graph->make_inactive(k))
+	    if (disp_graph->make_inactive(dn))
 	    {
 		// Now inactive
 		changed = true;
@@ -4904,7 +4904,7 @@ void DataDisp::update_displays(const StringArray& displays,
 	{
 	    if (!dn->active())
 	    {
-		disp_graph->make_active(dn->disp_nr());
+		disp_graph->make_active(dn);
 		changed = true;
 	    }
 	}
@@ -4912,7 +4912,7 @@ void DataDisp::update_displays(const StringArray& displays,
 	{
 	    if (dn->active())
 	    {
-		disp_graph->make_inactive(dn->disp_nr());
+		disp_graph->make_inactive(dn);
 		changed = true;
 	    }
 	}

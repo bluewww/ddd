@@ -109,15 +109,15 @@ public:
     // iff changed.
     bool unalias (int alias_disp_nr);
 
-    // (In)activate display DISP_NR.  Return true iff changed.
-    bool make_active (int disp_nr);
-    bool make_inactive (int disp_nr);
+    // (In)activate display NODE.  Return true iff changed.
+    bool make_active (DispNode *node);
+    bool make_inactive (DispNode *node);
 
-    // (Un)cluster display DN
-    void cluster(DispNode *dn, int cluster);
-    inline void uncluster(DispNode *dn)
+    // (Un)cluster display NODE into CLUSTER
+    void cluster(DispNode *node, int cluster);
+    inline void uncluster(DispNode *node)
     {
-	cluster(dn, 0);
+	cluster(node, 0);
     }
 
     // Determine default positions for NEW_NODE
@@ -209,6 +209,9 @@ private:
 
     // Find all hints in edges coming from NODE; store them in HINTS
     static void find_hints_from(GraphNode *node, GraphNodePointerArray& hints);
+
+    // Hide/Unhide all alias edges of NODE according to its status
+    void update_alias_edges(DispNode *node);
 };
 
 #endif // _DDD_DispGraph_h

@@ -1109,17 +1109,39 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
 
 
 //-----------------------------------------------------------------------------
+// Display clustering
+//-----------------------------------------------------------------------------
+
+// Hide/Unhide all alias edges of NODE according to its status
+void DispGraph::update_alias_edges(DispNode *node)
+{
+    for (GraphEdge *edge = firstEdge(); edge != 0; edge = nextEdge(edge))
+    {
+	AliasGraphEdge *e = ptr_cast(AliasGraphEdge, edge);
+	if (e != 0 && e->disp_nr() == node->disp_nr())
+	{
+	    if (e->to()->isHint())
+		e->to()->hidden() = node->hidden();
+	    e->hidden() = node->hidden();
+	}
+    }
+}
+
+void DispGraph::cluster(DispNode *dn, int cluster)
+{
+    dn->cluster(cluster);
+    update_alias_edges(dn);
+}
+
+
+//-----------------------------------------------------------------------------
 // Display activation
 //-----------------------------------------------------------------------------
 
 bool DispGraph::hide_inactive_displays = true;
 
-bool DispGraph::make_inactive(int disp_nr)
+bool DispGraph::make_inactive(DispNode *dn)
 {
-    DispNode *dn = get(disp_nr);
-    if (dn == 0)
-	return false;
-
     if (dn->active() && dn->enabled())
     {
 	if (!hide_inactive_displays)
@@ -1129,19 +1151,7 @@ bool DispGraph::make_inactive(int disp_nr)
 	else
 	{
 	    dn->make_inactive();
-
-	    // Hide all alias edges associated with this node
-	    for (GraphEdge *edge = firstEdge(); edge != 0; 
-		 edge = nextEdge(edge))
-	    {
-		AliasGraphEdge *e = ptr_cast(AliasGraphEdge, edge);
-		if (e != 0 && e->disp_nr() == disp_nr)
-		{
-		    if (e->to()->isHint())
-			e->to()->hidden() = true;
-		    e->hidden() = true;
-		}
-	    }
+	    update_alias_edges(dn);
 	}
 	return true;
     }
@@ -1149,31 +1159,12 @@ bool DispGraph::make_inactive(int disp_nr)
     return false;
 }
 
-bool DispGraph::make_active(int disp_nr)
+bool DispGraph::make_active(DispNode *dn)
 {
-    DispNode *dn = get(disp_nr);
-    if (dn == 0)
-	return false;
-
     if (!dn->active())
     {
 	dn->make_active();
-
-	if (dn->hidden())
-	{
-	    // Redisplay all alias edges associated with this node
-	    for (GraphEdge *edge = firstEdge(); edge != 0;
-		 edge = nextEdge(edge))
-	    {
-		AliasGraphEdge *e = ptr_cast(AliasGraphEdge, edge);
-		if (e != 0 && e->disp_nr() == disp_nr)
-		{
-		    if (e->to()->isHint())
-			e->to()->hidden() = false;
-		    e->hidden() = false;
-		}
-	    }
-	}
+	update_alias_edges(dn);
 
 	return true;
     }
@@ -1181,27 +1172,6 @@ bool DispGraph::make_active(int disp_nr)
     return false;
 }
 
-
-//-----------------------------------------------------------------------------
-// Display clustering
-//-----------------------------------------------------------------------------
-
-void DispGraph::cluster(DispNode *dn, int cluster)
-{
-    dn->cluster(cluster);
-
-    // Process all alias edges associated with this node
-    for (GraphEdge *edge = firstEdge(); edge != 0; edge = nextEdge(edge))
-    {
-	AliasGraphEdge *e = ptr_cast(AliasGraphEdge, edge);
-	if (e != 0 && e->disp_nr() == dn->disp_nr())
-	{
-	    if (e->to()->isHint())
-		e->to()->hidden() = (cluster != 0);
-	    e->hidden() = (cluster != 0);
-	}
-    }
-}
 
 
 //-----------------------------------------------------------------------------
