@@ -1960,9 +1960,10 @@ WIDGET(View Menu)\n\
 DESC(Command Tool..., [open and recenter the command tool])\n\
 DESC(Execution Window..., [open the execution window])\n\
 \n\
-DESC(Data Window, [toggle display of program data])\n\
+DESC(@GDB@ Console, [toggle display of debugger console])\n\
 DESC(Source Window, [toggle display of program source])\n\
-DESC(@GDB@ Console, [toggle display of debugger console])
+DESC(Data Window, [toggle display of program data])\n\
+DESC(Code Window, [toggle display of assembler code])
 ])dnl
 
 Ddd*menubar.views.helpString:	VIEWS_HELP
@@ -1971,38 +1972,45 @@ Ddd*viewsMenu*tearOffTitle:     View
 
 Ddd*viewsMenu.tool.labelString:			Command Tool...
 Ddd*viewsMenu.tool.mnemonic:			T
-Ddd*viewsMenu.tool.acceleratorText:		Alt+Shift+T
-Ddd*viewsMenu.tool.accelerator:			Shift Meta<Key>T
+Ddd*viewsMenu.tool.acceleratorText:		Alt+8
+Ddd*viewsMenu.tool.accelerator:			Meta<Key>8
 Ddd*viewsMenu.tool.documentationString: \
 @rm Open the command tool and move it to its original position
 
 Ddd*viewsMenu.exec.labelString:			Execution Window...
 Ddd*viewsMenu.exec.mnemonic:			x
-Ddd*viewsMenu.exec.acceleratorText:		Alt+Shift+X
-Ddd*viewsMenu.exec.accelerator:			Shift Meta<Key>X
+Ddd*viewsMenu.exec.acceleratorText:		Alt+9
+Ddd*viewsMenu.exec.accelerator:			Meta<Key>9
 Ddd*viewsMenu.exec.documentationString: \
 @rm Open the program execution window
 
-Ddd*viewsMenu.data.labelString:			Data Window
-Ddd*viewsMenu.data.mnemonic:			D
-Ddd*viewsMenu.data.acceleratorText:		Alt+Shift+D
-Ddd*viewsMenu.data.accelerator:			Shift Meta<Key>D
-Ddd*viewsMenu.data.documentationString: \
-@rm Toggle showing the data window
+Ddd*viewsMenu.console.labelString:		@GDB@ Console
+Ddd*viewsMenu.console.mnemonic:			C
+Ddd*viewsMenu.console.acceleratorText:		Alt+1
+Ddd*viewsMenu.console.accelerator:		Meta<Key>1
+Ddd*viewsMenu.console.documentationString: \
+@rm Toggle showing the @GDB@ console
 
 Ddd*viewsMenu.source.labelString:		Source Window
 Ddd*viewsMenu.source.mnemonic:			S
-Ddd*viewsMenu.source.acceleratorText:		Alt+Shift+S
-Ddd*viewsMenu.source.accelerator:		Shift Meta<Key>S
+Ddd*viewsMenu.source.acceleratorText:		Alt+2
+Ddd*viewsMenu.source.accelerator:		Meta<Key>2
 Ddd*viewsMenu.source.documentationString: \
 @rm Toggle showing the source window
 
-Ddd*viewsMenu.console.labelString:		@GDB@ Console
-Ddd*viewsMenu.console.mnemonic:			C
-Ddd*viewsMenu.console.acceleratorText:		Alt+Shift+C
-Ddd*viewsMenu.console.accelerator:		Shift Meta<Key>C
-Ddd*viewsMenu.console.documentationString: \
-@rm Toggle showing the @GDB@ console
+Ddd*viewsMenu.data.labelString:			Data Window
+Ddd*viewsMenu.data.mnemonic:			D
+Ddd*viewsMenu.data.acceleratorText:		Alt+3
+Ddd*viewsMenu.data.accelerator:			Meta<Key>3
+Ddd*viewsMenu.data.documentationString: \
+@rm Toggle showing the data window
+
+Ddd*viewsMenu.code.labelString:			Machine Code Window
+Ddd*viewsMenu.code.mnemonic:			M
+Ddd*viewsMenu.code.acceleratorText:		Alt+4
+Ddd*viewsMenu.code.accelerator:			Meta<Key>4
+Ddd*viewsMenu.code.documentationString: \
+@rm Toggle showing the machine code window
 
 
 ! View menu (for multi-window DDD)
@@ -2018,9 +2026,9 @@ WIDGET(View Menu)\n\
 DESC(Command Tool..., [open and recenter the command tool])\n\
 DESC(Execution Window..., [open the execution window])\n\
 \n\
-DESC(Data Window..., [open the program data window])\n\
+DESC(@GDB@ Console..., [open the debugger console window])\n\
 DESC(Source Window..., [open the program source window])\n\
-DESC(@GDB@ Console..., [open the debugger console window])
+DESC(Data Window..., [open the program data window])
 ])dnl
 
 Ddd*menubar.view.helpString:	VIEW_HELP
@@ -2029,38 +2037,38 @@ Ddd*viewMenu*tearOffTitle:      View
 
 Ddd*viewMenu.tool.labelString:			Command Tool...
 Ddd*viewMenu.tool.mnemonic:			T
-Ddd*viewMenu.tool.acceleratorText:		Alt+Shift+T
-Ddd*viewMenu.tool.accelerator:			Shift Meta<Key>T
+Ddd*viewMenu.tool.acceleratorText:		Alt+8
+Ddd*viewMenu.tool.accelerator:			Meta<Key>8
 Ddd*viewMenu.tool.documentationString: \
 @rm Open the command tool and move it to its original position
 
 Ddd*viewMenu.exec.labelString:			Execution Window...
 Ddd*viewMenu.exec.mnemonic:			x
-Ddd*viewMenu.exec.acceleratorText:		Alt+Shift+X
-Ddd*viewMenu.exec.accelerator:			Shift Meta<Key>X
+Ddd*viewMenu.exec.acceleratorText:		Alt+9
+Ddd*viewMenu.exec.accelerator:			Meta<Key>9
 Ddd*viewMenu.exec.documentationString: \
 @rm Open the program execution window
 
-Ddd*viewMenu.data.labelString:			Data Window...
-Ddd*viewMenu.data.mnemonic:			D
-Ddd*viewMenu.data.acceleratorText:		Alt+Shift+D
-Ddd*viewMenu.data.accelerator:			Shift Meta<Key>D
-Ddd*viewMenu.data.documentationString: \
-@rm Open the data window
+Ddd*viewMenu.console.labelString:		@GDB@ Console...
+Ddd*viewMenu.console.mnemonic:			C
+Ddd*viewMenu.console.acceleratorText:		Alt+1
+Ddd*viewMenu.console.accelerator:		Meta<Key>1
+Ddd*viewMenu.console.documentationString: \
+@rm Open the @GDB@ console
 
 Ddd*viewMenu.source.labelString:		Source Window...
 Ddd*viewMenu.source.mnemonic:			S
-Ddd*viewMenu.source.acceleratorText:		Alt+Shift+S
-Ddd*viewMenu.source.accelerator:		Shift Meta<Key>S
+Ddd*viewMenu.source.acceleratorText:		Alt+2
+Ddd*viewMenu.source.accelerator:		Meta<Key>2
 Ddd*viewMenu.source.documentationString: \
 @rm Open the source window
 
-Ddd*viewMenu.console.labelString:		@GDB@ Console...
-Ddd*viewMenu.console.mnemonic:			C
-Ddd*viewMenu.console.acceleratorText:		Alt+Shift+C
-Ddd*viewMenu.console.accelerator:		Shift Meta<Key>C
-Ddd*viewMenu.console.documentationString: \
-@rm Open the @GDB@ console
+Ddd*viewMenu.data.labelString:			Data Window...
+Ddd*viewMenu.data.mnemonic:			D
+Ddd*viewMenu.data.acceleratorText:		Alt+3
+Ddd*viewMenu.data.accelerator:			Meta<Key>3
+Ddd*viewMenu.data.documentationString: \
+@rm Open the data window
 
 
 ! Program menu
@@ -2375,29 +2383,29 @@ DESC(Forward, [move forward to next source position])
 Ddd*menubar.source.helpString:	SOURCE_HELP
 Ddd*sourceMenu.helpString:	SOURCE_HELP
 
-Ddd*sourceMenu.breakpoints.labelString:	Edit Breakpoints...
-Ddd*sourceMenu.breakpoints.mnemonic:	d
+Ddd*sourceMenu.breakpoints.labelString:		Edit Breakpoints...
+Ddd*sourceMenu.breakpoints.mnemonic:		d
 Ddd*sourceMenu.breakpoints.documentationString: \
 @rm Set, view, and edit breakpoints
 
 Ddd*sourceMenu.findWordsOnly.labelString:	Find Words Only
 Ddd*sourceMenu.findWordsOnly.mnemonic:		W
-Ddd*sourceMenu*findWordsOnly.accelerator:	Meta<Key>W
-Ddd*sourceMenu*findWordsOnly.acceleratorText:	Alt+W
+Ddd*sourceMenu.findWordsOnly.accelerator:	Meta<Key>W
+Ddd*sourceMenu.findWordsOnly.acceleratorText:	Alt+W
 Ddd*sourceMenu.findWordsOnly.documentationString:\
 @rm Switch between finding complete words and finding arbitrary occurrences
 
 Ddd*sourceMenu.findCaseSensitive.labelString:	Find Case Sensitive
 Ddd*sourceMenu.findCaseSensitive.mnemonic:	i
-Ddd*sourceMenu*findCaseSensitive.accelerator:	Meta<Key>I
-Ddd*sourceMenu*findCaseSensitive.acceleratorText: Alt+I
+Ddd*sourceMenu.findCaseSensitive.accelerator:	Meta<Key>I
+Ddd*sourceMenu.findCaseSensitive.acceleratorText: Alt+I
 Ddd*sourceMenu.findCaseSensitive.documentationString:\
 @rm Toggle case-sensitive search
 
 Ddd*sourceMenu.disassemble.labelString:		Display Machine Code
 Ddd*sourceMenu.disassemble.mnemonic:		M
-Ddd*sourceMenu*disassemble.accelerator:		Meta<Key>M
-Ddd*sourceMenu*disassemble.acceleratorText:	Alt+M
+Ddd*sourceMenu.disassemble.accelerator:		Meta<Key>4
+Ddd*sourceMenu.disassemble.acceleratorText:	Alt+4
 Ddd*sourceMenu.disassemble.documentationString:\
 @rm Toggle display of machine code window
 

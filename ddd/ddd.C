@@ -674,17 +674,24 @@ static MMDesc source_program_menu[]
 static MMDesc data_program_menu[]
     = PROGRAM_MENU(data_separate_exec_window_w);
 
-enum DDDWindow { ToolWindow, ExecWindow, DummySep,
-		 DataWindow, SourceWindow, GDBWindow, CommonWindow };
+enum DDDWindow { ToolWindow, 
+		 ExecWindow, 
+		 Sep,
+		 GDBWindow, 
+		 SourceWindow,
+		 DataWindow, 
+		 CodeWindow,
+		 CommonWindow };
 
 static MMDesc view_menu[] =
 {
-    { "tool",    MMPush, { gdbOpenToolWindowCB }},
-    { "exec",    MMPush, { gdbOpenExecWindowCB }},
+    { "tool",    MMPush,   { gdbOpenToolWindowCB }},
+    { "exec",    MMPush,   { gdbOpenExecWindowCB }},
     MMSep,
-    { "data",    MMPush, { gdbOpenDataWindowCB }},
-    { "source",  MMPush, { gdbOpenSourceWindowCB }},
-    { "console", MMPush, { gdbOpenCommandWindowCB }},
+    { "console", MMPush,   { gdbOpenCommandWindowCB }},
+    { "source",  MMPush,   { gdbOpenSourceWindowCB }},
+    { "data",    MMPush,   { gdbOpenDataWindowCB }},
+    { "code",    MMToggle | MMUnmanaged, { gdbToggleCodeWindowCB }},
     MMEnd
 };
 
@@ -693,9 +700,10 @@ static MMDesc views_menu[] =
     { "tool",    MMPush,   { gdbOpenToolWindowCB }},
     { "exec",    MMPush,   { gdbOpenExecWindowCB }},
     MMSep,
-    { "data",    MMToggle, { gdbToggleDataWindowCB }},
-    { "source",  MMToggle, { gdbToggleSourceWindowCB }},
     { "console", MMToggle, { gdbToggleCommandWindowCB }},
+    { "source",  MMToggle, { gdbToggleSourceWindowCB }},
+    { "data",    MMToggle, { gdbToggleDataWindowCB }},
+    { "code",    MMToggle, { gdbToggleCodeWindowCB }},
     MMEnd
 };
 
@@ -793,7 +801,7 @@ static MMDesc source_menu[] =
       NULL, &find_words_only_w },
     { "findCaseSensitive",   MMToggle, { sourceToggleFindCaseSensitiveCB }, 
       NULL, &find_case_sensitive_w },
-    { "disassemble",         MMToggle,  { sourceToggleDisassembleCB },
+    { "disassemble",         MMToggle,  { gdbToggleCodeWindowCB },
       NULL, &disassemble_w },
     MMSep,
     { "edit",       MMPush,  { gdbEditSourceCB }},
@@ -2209,6 +2217,27 @@ int main(int argc, char *argv[])
 				     + quote(app_data.session));
     }
 
+    if (!app_data.separate_source_window && !app_data.separate_data_window)
+    {
+	// In one-window mode, close source window until we have some
+	// source and close data window until we have some data.
+	save_preferred_paned_sizes(paned_work_w);
+
+	Widget widgets[10];
+	int w = 0;
+#if 0
+	widgets[w++] = source_view->code_form();
+	widgets[w++] = source_view->source_form();
+#endif
+	widgets[w++] = data_disp->graph_form();
+
+	if (data_disp->graph_cmd_w != arg_cmd_w)
+	    widgets[w++] = data_disp->graph_cmd_w;
+
+	while (w > 0)
+	    unmanage_paned_child(widgets[--w]);
+    }
+
     if (app_data.decorate_tool == Auto)
     {
 	// Check for decorated transient windows.  We can do this only
@@ -2243,27 +2272,6 @@ int main(int argc, char *argv[])
 
     // Create preference panels
     make_preferences(paned_work_w);
-
-    if (!app_data.separate_source_window && !app_data.separate_data_window)
-    {
-	// In one-window mode, close source window until we have some
-	// source and close data window until we have some data.
-	save_preferred_paned_sizes(paned_work_w);
-
-	Widget widgets[10];
-	int w = 0;
-#if 0
-	widgets[w++] = source_view->code_form();
-	widgets[w++] = source_view->source_form();
-#endif
-	widgets[w++] = data_disp->graph_form();
-
-	if (data_disp->graph_cmd_w != arg_cmd_w)
-	    widgets[w++] = data_disp->graph_cmd_w;
-
-	while (w > 0)
-	    unmanage_paned_child(widgets[--w]);
-    }
 
     // Save option states
     save_option_state();
@@ -3380,6 +3388,21 @@ void update_options()
 
     // Check for watchpoints
     set_sensitive(edit_watchpoints_w, gdb->has_watch_command());
+
+    // Check for source toolbar
+    Widget arg_cmd_w = XtParent(source_arg->widget());
+    if (data_disp->graph_cmd_w == arg_cmd_w)
+    {
+	// Don't close the common toolbar
+    }
+    else
+    {
+	if (XtIsManaged(source_view->source_form()) ||
+	    XtIsManaged(source_view->code_form()))
+	    manage_paned_child(arg_cmd_w);
+	else
+	    unmanage_paned_child(arg_cmd_w);
+    }
 
     update_reset_preferences();
     fix_status_size();
@@ -5054,9 +5077,11 @@ static void gdbUpdateViewsCB(Widget, XtPointer client_data, XtPointer)
     if (view_menu == 0 || view_menu[0].widget == 0)
 	return;
 
+    set_sensitive(view_menu[CodeWindow].widget, gdb->type() == GDB);
+
     set_toggle(view_menu[DataWindow].widget,   have_visible_data_window());
-    set_toggle(view_menu[SourceWindow].widget, 
-	       have_visible_source_window() || have_visible_tool_window());
+    set_toggle(view_menu[SourceWindow].widget, have_visible_source_window());
+    set_toggle(view_menu[CodeWindow].widget,   app_data.disassemble);
     set_toggle(view_menu[GDBWindow].widget,    have_visible_command_window());
 }
 
