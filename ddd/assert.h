@@ -31,7 +31,7 @@
 // Allow this file to be included multiple times with different
 // settings of NDEBUG.
 
-#if NDEBUG
+#ifdef NDEBUG
 #undef assert
 #undef _assert_fn
 #define assert(ignore)
