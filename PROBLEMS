@@ -96,6 +96,29 @@ Reported by:	Jacek M. Holeczek <holeczek@clri6f.gsi.de>
     Finally run "make strip" and "make install".  Have fun ...
 
 
+DEC
+===
+
+Reported by: Pascal Quesseveur <abak@hol.fr>
+
+    I have encountered some problems when compiling ddd on DEC Alpha 
+    station running Digital UNIX 4.0 with gcc version 2.7.2.2 :
+
+    ddd/config.h created by configure is wrong : symbol 
+    HAVE_GETHOSTNAME_DECL must be defined in config.h since include file 
+    /usr/include/unistd.h contains a prototype for gethostname. This 
+    prototype is
+        int gethostname(char *, size_t)
+    when symbol _XOPEN_SOURCE_EXTENDED is defined and
+        int gethostname (char *, int)
+    in the other cases. There is a conflict with the prototype defined in
+    ddd/hostname.C.
+
+    ddd/Makefile created by configure is wrong : variables LIBNSL,
+    NON_XLIBS and LIBGEN have incorrect values : the values must be null 
+    to link ddd correctly.
+
+
 
 FreeBSD
 =======
@@ -231,8 +254,10 @@ Linux
 Reported by:  Andreas Zeller <zeller@acm.org>
 
      The most recent release of the GNU C library does not work with
-     DDD: the GDB prompt does not appear.  This seems to be a bug in
-     the GNU C library; please let us know about any work-arounds.
+     DDD: the GDB prompt does not appear.  (In fact, DDD cannot
+     process GDB output without terminating newline). This might be a
+     bug in the GNU C library; please let us know about any
+     work-arounds.
 
 Reported by: Jim Van Zandt <jrv@vanzandt.mv.com>
 
@@ -260,6 +285,19 @@ Reported by:  Andreas Zeller <zeller@acm.org>
      pixmaps (for example, breakpoint symbols).  Being written for
      Motif 1.1, there is no special drag-and-drop handling in DDD; if
      DDD crashes upon drag-and-drop, this is a bug in your Motif library.
+
+
+SCO
+===
+
+Reported by:  Guillaume Proux <Guillaume.Proux@aar.alcatel-alsthom.fr>
+
+    DDD does not run correctly under SCO.  The DDD virtual TTY
+    interface (see TTYAgent.C) has not been ported to SCO systems yet.
+    With GDB, this results in GDB echoing every command, which DDD
+    cannot handle properly.
+
+    [Some SCO expert willing to fix this?  -AZ]
 
 
 SGI

@@ -80,6 +80,8 @@ DDD 2.2 [in development]
     - DDD no longer hangs while receiving large chunks of data.
     - Several speed-ups in processing debugger and program output.
     - Some memory leaks and some X resource leaks have been tightened.
+    - DDD no longer requires the librx library.  Hence, librx errors
+      can no more cause DDD to crash.
     - A serious bug that caused timers to be inadvertently removed has
       been fixed.  Bug effects included loss of console cursor, loss
       of data display contents, and loss of scrolling capabilities.

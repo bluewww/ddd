@@ -367,4 +367,15 @@ Volunteers for fixing these and other bugs are welcome!
      data window causes all other windows to (de-)iconify, *except*
      the command tool.
 
-196. (Insert your bug here)
+196* DDD started with the XDB debugger gets a segmentation fault during
+     startup.  This happens when XDB issues the following line:
+
+     <- "\r\e[K\e[7mStandard input: END\e[m"
+
+197* The most recent release of the GNU C library does not work with
+     DDD: the GDB prompt does not appear.  (In fact, DDD cannot
+     process GDB output without terminating newline). This might be a
+     bug in the GNU C library; please let us know about any
+     work-arounds.
+
+198. (Insert your bug here)
