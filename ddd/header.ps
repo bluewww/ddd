@@ -311,7 +311,7 @@ ddddict begin		% make dict active
 % draw an ellipse with center (cx,cy), radius dx dy, starting at start
 % and ending at end.
 %
-% start end dx dy cx cy width ARC*
+% start end dx dy cx cy width arc*
 
 /arc* {
 	gsave
@@ -335,6 +335,22 @@ ddddict begin		% make dict active
 } bind def
 
 
+% BEGINCOLOR* / ENDCOLOR*
+% Draw something using a specific foreground color
+%
+% red green blue begincolor* SOMETHING endcolor*
+
+/begincolor* {
+        currentrgbcolor         % red green blue red' green' blue'
+        6 3 roll                % red' green' blue' red green blue
+	setrgbcolor             % red' green' blue'
+} bind def
+
+/endcolor* {
+	setrgbcolor
+} bind def
+
+
 % Set up the right font to the right size
 
 /isofont+ isotable font+ isolatin1* 	% reencode font+
@@ -342,5 +358,6 @@ ddddict begin		% make dict active
 /isofont+ findfont
 [fontSize+ 0 0 fontSize+ neg 0 0] makefont
 setfont
+
 
 %%EndProlog

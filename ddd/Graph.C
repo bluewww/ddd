@@ -426,6 +426,39 @@ void Graph::draw(Widget w, const BoxRegion& exposed, const GraphGC& _gc) const
 
 
 // Print
+void Graph::begin_color(ostream& os, const PrintGC& gc,
+			unsigned short red,
+			unsigned short green,
+			unsigned short blue) const
+{
+    if (gc.isPostScript())
+    {
+	const PostScriptPrintGC &ps = 
+	    ref_cast(PostScriptPrintGC, (PrintGC&) gc);
+
+	if (ps.color)
+	{
+	    // Set edge color
+	    os << double(red)   / 65535.0 << " "
+	       << double(green) / 65535.0 << " "
+	       << double(blue)  / 65535.0 << " "
+	       << "begincolor*\n";
+	}
+    }
+}
+
+void Graph::end_color(ostream& os, const PrintGC& gc) const
+{
+    if (gc.isPostScript())
+    {
+	const PostScriptPrintGC &ps = 
+	    ref_cast(PostScriptPrintGC, (PrintGC&) gc);
+
+	if (ps.color)
+	    os << "endcolor*\n";
+    }
+}
+
 void Graph::_print(ostream& os, const GraphGC& _gc) const
 {
     // We cannot print hints, so leave them alone
@@ -433,23 +466,37 @@ void Graph::_print(ostream& os, const GraphGC& _gc) const
     gc.drawHints = false;
     gc.hintSize  = 0;
 
-    // Print all edges
-    // If printSelectedNodesOnly, print only edges between selected nodes
-    for (GraphEdge *edge = firstVisibleEdge(); edge != 0; 
-	 edge = nextVisibleEdge(edge))
+    if (firstVisibleEdge() != 0)
     {
-	if (!gc.printSelectedNodesOnly ||
-	    (edge->from()->selected() && edge->to()->selected()))
-	    edge->_print(os, gc);
+	// Print all edges
+	begin_color(os, *gc.printGC, gc.edge_red, gc.edge_green, gc.edge_blue);
+
+	// If printSelectedNodesOnly, print only edges between selected nodes
+	for (GraphEdge *edge = firstVisibleEdge(); edge != 0; 
+	     edge = nextVisibleEdge(edge))
+	{
+	    if (!gc.printSelectedNodesOnly ||
+		(edge->from()->selected() && edge->to()->selected()))
+		edge->_print(os, gc);
+	}
+
+	end_color(os, *gc.printGC);
     }
 
-    // Print all nodes
-    // If printSelectedNodesOnly, print only selected nodes
-    for (GraphNode *node = firstVisibleNode(); node != 0; 
-	 node = nextVisibleNode(node))
+    if (firstVisibleNode() != 0)
     {
-	if (!gc.printSelectedNodesOnly || node->selected())
-	    node->_print(os, gc);
+	// Print all nodes
+	begin_color(os, *gc.printGC, gc.node_red, gc.node_green, gc.node_blue);
+
+	// If printSelectedNodesOnly, print only selected nodes
+	for (GraphNode *node = firstVisibleNode(); node != 0; 
+	     node = nextVisibleNode(node))
+	{
+	    if (!gc.printSelectedNodesOnly || node->selected())
+		node->_print(os, gc);
+	}
+
+	end_color(os, *gc.printGC);
     }
 }
     

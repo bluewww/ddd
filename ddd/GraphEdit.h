@@ -91,6 +91,8 @@ class GraphNode;
 #define XtNoutlineColor             "outlineColor"
 #define XtNgridColor                "gridColor"
 #define XtNselectColor              "selectColor"
+#define XtNnodePrintColor           "nodePrintColor"
+#define XtNedgePrintColor           "edgePrintColor"
 #define XtNselfEdgeDiameter         "selfEdgeDiameter"
 #define XtNselfEdgePosition         "selfEdgePosition"
 #define XtNselfEdgeDirection        "selfEdgeDirection"

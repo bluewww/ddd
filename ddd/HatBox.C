@@ -41,36 +41,34 @@ DEFINE_TYPE_INFO_1(HatBox, Box)
 
 // HatBox
 
-// HatBox ausgeben
+// Draw
 void HatBox::_draw(Widget w, 
 		   const BoxRegion& r, 
 		   const BoxRegion& exposed, GC gc,
 		   bool context_selected) const
 {
-    BoxRegion sonRegion = r;
+    BoxRegion childRegion = r;
 
     // Wenn nicht erweiterbar, Platz auf minimalen Platz reduzieren
     if (extend(X) == 0)
-	sonRegion.space(X) = size(X);
+	childRegion.space(X) = size(X);
     if (extend(Y) == 0)
-	sonRegion.space(Y) = size(Y);
+	childRegion.space(Y) = size(Y);
 
-    _box->draw(w, sonRegion, exposed, gc, context_selected);
+    _box->draw(w, childRegion, exposed, gc, context_selected);
 }
 
-// print HatBox
+// Print
 void HatBox::_print(ostream& os, 
 		    const BoxRegion& region, 
 		    const PrintGC& gc) const
 {
-    BoxRegion sonRegion = region;
+    BoxRegion childRegion = region;
 
-    if (extend(X) == 0) {
-	sonRegion.space(X) = size(X) ;
-    }
-    if (extend(Y) == 0) {
-	sonRegion.space(Y) = size(Y) ;
-    }
+    if (extend(X) == 0)
+	childRegion.space(X) = size(X);
+    if (extend(Y) == 0)
+	childRegion.space(Y) = size(Y);
 	
-    _box->_print(os, sonRegion, gc);
+    _box->_print(os, childRegion, gc);
 }

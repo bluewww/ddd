@@ -50,6 +50,13 @@ private:
 
     Graph& operator = (const Graph&) { assert(0); return *this; }
 
+    void begin_color(ostream& os, const PrintGC& gc,
+		     unsigned short red,
+		     unsigned short green,
+		     unsigned short blue) const;
+    void end_color(ostream& os, const PrintGC& gc) const;
+
+
 protected:
     void addNodes(GraphNode* nodes);
     void addEdges(GraphEdge* edges);

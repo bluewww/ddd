@@ -86,6 +86,14 @@ struct GraphGC {
     PrintGC     *printGC;               // Graphics context for printing
     bool        printSelectedNodesOnly; // Flag: print selected nodes only?
 
+    unsigned short edge_red;	        // Colors to use for edges [0..65535]
+    unsigned short edge_green;
+    unsigned short edge_blue;
+
+    unsigned short node_red;	        // Colors to use for nodes [0..65535]
+    unsigned short node_green;
+    unsigned short node_blue;
+
     static PostScriptPrintGC defaultPrintGC;
 
     // Default Constructor
@@ -108,7 +116,13 @@ struct GraphGC {
 	selfEdgePosition(NorthEast),
 	selfEdgeDirection(Counterclockwise),
 	printGC(&defaultPrintGC),
-	printSelectedNodesOnly(false)
+	printSelectedNodesOnly(false),
+	edge_red(0),
+	edge_green(0),
+	edge_blue(0),
+	node_red(0),
+	node_green(0),
+	node_blue(0)
     {}
 
     // Copy Constructor
@@ -131,7 +145,13 @@ struct GraphGC {
 	selfEdgePosition(g.selfEdgePosition),
 	selfEdgeDirection(g.selfEdgeDirection),
 	printGC(g.printGC),
-	printSelectedNodesOnly(g.printSelectedNodesOnly)
+	printSelectedNodesOnly(g.printSelectedNodesOnly),
+	edge_red(g.edge_red),
+	edge_green(g.edge_green),
+	edge_blue(g.edge_blue),
+	node_red(g.node_red),
+	node_green(g.node_green),
+	node_blue(g.node_blue)
     {}
 
     // Assignment
@@ -158,6 +178,12 @@ struct GraphGC {
 	    selfEdgeDirection      = g.selfEdgeDirection;
 	    printGC                = g.printGC;
 	    printSelectedNodesOnly = g.printSelectedNodesOnly;
+	    edge_red               = g.edge_red;
+	    edge_green             = g.edge_green;
+	    edge_blue              = g.edge_blue;
+	    node_red               = g.node_red;
+	    node_green             = g.node_green;
+	    node_blue              = g.node_blue;
 	}
 	return *this;
     }

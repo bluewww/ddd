@@ -149,6 +149,10 @@ typedef struct _GraphEditPart {
     Pixel gridColor;		          // Color to use for grid
     Pixel selectColor;	                  // Color to use for selected nodes
 
+    // Printing colors
+    String nodePrintColor;	          // Color for printing nodes
+    String edgePrintColor;	          // Color for printing edges
+
     // Callbacks
     XtCallbackList positionChangedProc;   // Position changed
     XtCallbackList selectionChangedProc;  // Selection changed

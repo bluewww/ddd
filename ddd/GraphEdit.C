@@ -187,6 +187,11 @@ static XtResource resources[] = {
     { XtNselectColor, XtCColor, XtRPixel, sizeof(Pixel),
 	offset(selectColor), XtRCallProc, XtPointer(defaultForeground) },
 
+    { XtNnodePrintColor, XtCColor, XtRString, sizeof(String),
+	offset(nodePrintColor), XtRImmediate, 0 },
+    { XtNedgePrintColor, XtCColor, XtRString, sizeof(String),
+	offset(edgePrintColor), XtRImmediate, 0 },
+
     { XtNpositionChangedCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
 	offset(positionChangedProc), XtRCallback, XtPointer(0) },
     { XtNselectionChangedCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
@@ -488,8 +493,8 @@ const GraphGC& graphEditGetGraphGC(Widget w)
 {
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
-    const GraphEditWidget _w            = GraphEditWidget(w);
-    const GraphGC& graphGC              = _w->graphEdit.graphGC;
+    const GraphEditWidget _w = GraphEditWidget(w);
+    const GraphGC& graphGC   = _w->graphEdit.graphGC;
 
     return graphGC;
 }
@@ -1226,6 +1231,58 @@ static void setGraphGC(Widget w)
     graphGC.selfEdgeDiameter  = selfEdgeDiameter;
     graphGC.selfEdgePosition  = selfEdgePosition;
     graphGC.selfEdgeDirection = selfEdgeDirection;
+
+    // Get print colors
+
+    if (_w->graphEdit.nodePrintColor != 0)
+    {
+	XColor exact_def;
+	Status ok = 
+	    XParseColor(XtDisplay(w), _w->core.colormap, 
+			_w->graphEdit.nodePrintColor, &exact_def);
+
+	if (ok)
+	{
+	    graphGC.node_red   = exact_def.red;
+	    graphGC.node_green = exact_def.green;
+	    graphGC.node_blue  = exact_def.blue;
+	}
+	else
+	{
+	    Cardinal one = 1;
+
+	    XtAppWarningMsg(XtWidgetToApplicationContext(w),
+			    "GraphEdit::Initialize", "badColor",
+			    "XtToolkitError",
+			    "Cannot parse " XtNnodePrintColor " \"%s\"",
+			    (String *)&_w->graphEdit.nodePrintColor, &one);
+	}
+    }
+
+    if (_w->graphEdit.edgePrintColor != 0)
+    {
+	XColor exact_def;
+	Status ok = 
+	    XParseColor(XtDisplay(w), _w->core.colormap, 
+			_w->graphEdit.edgePrintColor, &exact_def);
+
+	if (ok)
+	{
+	    graphGC.edge_red   = exact_def.red;
+	    graphGC.edge_green = exact_def.green;
+	    graphGC.edge_blue  = exact_def.blue;
+	}
+	else
+	{
+	    Cardinal one = 1;
+
+	    XtAppWarningMsg(XtWidgetToApplicationContext(w),
+			    "GraphEdit::Initialize", "badColor",
+			    "XtToolkitError",
+			    "Cannot parse " XtNedgePrintColor " spec \"%s\"",
+			    (String *)&_w->graphEdit.edgePrintColor, &one);
+	}
+    }
 }
 
 
@@ -1382,15 +1439,15 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
     Boolean new_gcs = False;
 
     // reset GCs if changed
-    if (before->graphEdit.edgeWidth    != after->graphEdit.edgeWidth ||
-	before->graphEdit.selectTile   != after->graphEdit.selectTile ||
-	before->graphEdit.dashedLines  != after->graphEdit.dashedLines ||
-	before->graphEdit.nodeColor    != after->graphEdit.nodeColor ||
-	before->graphEdit.edgeColor    != after->graphEdit.edgeColor ||
-	before->graphEdit.frameColor   != after->graphEdit.frameColor ||
-	before->graphEdit.outlineColor != after->graphEdit.outlineColor ||
-	before->graphEdit.gridColor    != after->graphEdit.gridColor ||
-	before->graphEdit.selectColor  != after->graphEdit.selectColor)
+    if (before->graphEdit.edgeWidth      != after->graphEdit.edgeWidth ||
+	before->graphEdit.selectTile     != after->graphEdit.selectTile ||
+	before->graphEdit.dashedLines    != after->graphEdit.dashedLines ||
+	before->graphEdit.nodeColor      != after->graphEdit.nodeColor ||
+	before->graphEdit.edgeColor      != after->graphEdit.edgeColor ||
+	before->graphEdit.frameColor     != after->graphEdit.frameColor ||
+	before->graphEdit.outlineColor   != after->graphEdit.outlineColor ||
+	before->graphEdit.gridColor      != after->graphEdit.gridColor ||
+	before->graphEdit.selectColor    != after->graphEdit.selectColor)
     {    
 	setGCs(new_w);
 	new_gcs = True;
@@ -1408,6 +1465,12 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
     {
 	setGraphGC(new_w);
 	redisplay = True;
+    }
+
+    if (before->graphEdit.nodePrintColor != after->graphEdit.nodePrintColor ||
+	before->graphEdit.edgePrintColor != after->graphEdit.edgePrintColor)
+    {
+	setGraphGC(new_w);
     }
 
     // reset grid pixmap if changed

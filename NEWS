@@ -84,11 +84,17 @@ Data exploration
 
 - Anonymous unions are no longer prefixed by `='.
 
+- `Examine Memory' also works for Solaris DBX.
+
+
+Printing
+--------
+
 - Arc edges can now be printed.
 
-- The default setting for printing is to print all displays.
+- Color printing of graphs is supported.
 
-- `Examine Memory' also works for Solaris DBX.
+- The default setting for printing is to print all displays.
 
 
 Source exploration

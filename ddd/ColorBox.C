@@ -48,6 +48,24 @@ void ColorBox::convert_color(Widget w) const
     if (color_valid() || color_failed())
 	return;
 
+    Colormap colormap;
+    XtVaGetValues(w, XtNcolormap, &colormap, NULL);
+
+    XColor exact_def;
+    Status ok = 
+	XParseColor(XtDisplay(w), colormap, (String)color_name(), &exact_def);
+
+    if (ok)
+    {
+	((ColorBox *)this)->_red   = exact_def.red;
+	((ColorBox *)this)->_green = exact_def.green;
+	((ColorBox *)this)->_blue  = exact_def.blue;
+    }
+    else
+    {
+	// Let XtConvertAndStore generate an appropriate message
+    }
+
     XrmValue from, to;
     from.size = color_name().length();
     from.addr = (String)color_name();
@@ -98,8 +116,11 @@ void ForegroundColorBox::color_draw(Widget w,
     // Draw with new foreground color
     XSetForeground(XtDisplay(w), gc, color());
     TransparentHatBox::_draw(w, region, exposed, gc, context_selected);
+
+    // Restore old foreground
     XSetForeground(XtDisplay(w), gc, gc_values.foreground);
 }
+
 
 // Draw using background color
 void BackgroundColorBox::color_draw(Widget w, 
@@ -129,4 +150,41 @@ void BackgroundColorBox::color_draw(Widget w,
     XSetBackground(XtDisplay(w), gc, color());
     TransparentHatBox::_draw(w, region, exposed, gc, context_selected);
     XSetBackground(XtDisplay(w), gc, gc_values.background);
+}
+
+
+// Print using foreground color
+void ForegroundColorBox::_print(ostream& os, const BoxRegion& region, 
+				const PrintGC& gc) const
+{
+    // Set foreground color
+    if (gc.isPostScript())
+    {
+	const PostScriptPrintGC &ps = 
+	    ref_cast(PostScriptPrintGC, (PrintGC&) gc);
+
+	if (ps.color)
+	{
+	    // Set new color
+	    os << double(red())   / 65535.0 << " "
+	       << double(green()) / 65535.0 << " "
+	       << double(blue())  / 65535.0 << " "
+	       << "begincolor*\n";
+	}
+    }
+
+    ColorBox::_print(os, region, gc);
+
+    // Reset color
+    if (gc.isPostScript())
+    {
+	const PostScriptPrintGC &ps = 
+	    ref_cast(PostScriptPrintGC, (PrintGC&) gc);
+
+	if (ps.color)
+	{
+	    // Pop color from stack
+	    os << "endcolor*\n";
+	}
+    }
 }

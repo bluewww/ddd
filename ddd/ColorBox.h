@@ -55,6 +55,9 @@ private:
     Pixel _color;		// The color itself, as pixel
     bool _color_valid;		// True if COLOR is valid
     bool _color_failed;		// True if conversion failed
+    unsigned short _red;	// Exact color values, scaled 0..65535
+    unsigned short _green;
+    unsigned short _blue;
 
 protected:
     // Copy Constructor
@@ -63,7 +66,10 @@ protected:
 	_color_name(box._color_name),
 	_color(box._color),
 	_color_valid(box._color_valid),
-	_color_failed(box._color_failed)
+	_color_failed(box._color_failed),
+	_red(box._red),
+	_green(box._green),
+	_blue(box._blue)
     {}
 
     // Just draw the child
@@ -87,7 +93,8 @@ public:
     // Constructor
     ColorBox(Box *box, const string& name)
 	: TransparentHatBox(box), _color_name(name), _color(0),
-	_color_valid(false), _color_failed(false)
+	  _color_valid(false), _color_failed(false),
+	  _red(0), _green(0), _blue(0)
     {}
 
     // Resources
@@ -95,6 +102,9 @@ public:
     bool color_valid() const         { return _color_valid; }
     bool color_failed() const        { return _color_failed; }
     Pixel color() const              { assert(color_valid()); return _color; }
+    unsigned short red()   const     { return _red; }
+    unsigned short green() const     { return _green; }
+    unsigned short blue()  const     { return _blue; }
 };
 
 // Draw box using associated color as foreground
@@ -122,6 +132,8 @@ public:
     {}
 
     Box *dup() const { return new ForegroundColorBox(*this); }
+
+    void _print(ostream& os, const BoxRegion& region, const PrintGC& gc) const;
 };
 
 // Draw box using associated color as background

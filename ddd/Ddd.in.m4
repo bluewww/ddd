@@ -991,7 +991,9 @@ Ddd*drag_temp.foreground:    STOP_COLOR
 
 ! Graph colors
 Ddd*graph_edit.nodeColor:	FOREGROUND_COLOR
+Ddd*graph_edit.nodePrintColor:	FOREGROUND_COLOR
 Ddd*graph_edit.edgeColor:	DATA_COLOR
+Ddd*graph_edit.edgePrintColor:	DATA_COLOR
 Ddd*graph_edit.selectColor:	FOREGROUND_COLOR
 Ddd*graph_edit.gridColor:	FOREGROUND_COLOR
 Ddd*graph_edit.frameColor:	DISABLED_COLOR
