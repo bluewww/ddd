@@ -260,6 +260,13 @@ void load_history(const string& file)
 		if (get_files)
 		{
 		    string arg = line.after(rxwhite);
+		    if (gdb->type() == PERL)
+		    {
+			arg = arg.after(" -d ");
+			arg = arg.before('\"');
+			if (arg.contains(rxwhite))
+			    arg = arg.before(rxwhite);
+		    }
 		    add_to_recent(arg);
 		    added = first_is_file;
 		}
@@ -652,12 +659,18 @@ static void update_recent_menu(MMDesc *items)
 	Widget w = items[i].widget;
 	set_label(w, label);
 
-	if (!remote_gdb() && gdb->type() != JDB && gdb->type() != PYDB &&
-	    !is_exec_file(recent_files[i]))
-	    set_sensitive(w, false); // File is not loadable now
-	else
-	    set_sensitive(w, true);
+	const string& file = recent_files[i];
 
+	bool sens = true;
+	if (!remote_gdb())
+	{
+	    if (gdb->has_exec_files() && !is_exec_file(file))
+		sens = false;	// File not accessible
+	    else if (!gdb->has_classes() && !is_regular_file(file))
+		sens = false;	// File not accessible
+	}
+
+	set_sensitive(w, sens);
 	XtManageChild(w);
     }
 
