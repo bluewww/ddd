@@ -800,7 +800,7 @@ CFLAGS="$X_CFLAGS $CFLAGS"
 CPPFLAGS="$X_CFLAGS $CPPFLAGS"
 LDFLAGS="$X_LIBS $LDFLAGS"
 #
-AC_TRY_LINK([#include <Xm/Xm.h>],[int a;],
+AC_TRY_LINK([#include <Xm/Xm.h>],[XtToolkitInitialize();],
 [
 # libXm.a is in the standard search path.
 ice_cv_motif_libraries=
@@ -954,7 +954,7 @@ LDFLAGS="$X_LIBS $LDFLAGS"
 AC_TRY_LINK([
 #include <X11/Intrinsic.h>
 #include <X11/Xaw/Text.h>
-],[int a;],
+],[XtToolkitInitialize();],
 [
 # libXaw.a is in the standard search path.
 ice_cv_athena_libraries=
