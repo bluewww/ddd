@@ -1512,40 +1512,63 @@ DispNode *DataDisp::new_node (string& answer)
 //
 void DataDisp::new_displayOQC (const string& answer, void* data)
 {
+    if (answer == "")
+    {
+	if (gdb->has_display_command())
+	{
+	    // No display output (GDB bug).  Refresh displays explicitly.
+	    gdb->send_question (gdb->display_command(),
+				new_display_extraOQC,
+				data);
+	}
+	return;
+    }
+
     if (!contains_display (answer, gdb))
     {
 	post_gdb_message (answer, last_origin);
+	return;
     }
-    else {
-	// Unselect all nodes
-	for (GraphNode *gn = disp_graph->firstNode();
-	     gn != 0; gn = disp_graph->nextNode(gn))
-	{
-	    BoxGraphNode *bgn = ptr_cast(BoxGraphNode, gn);
-	    if (bgn)
-		bgn->selected() = false;
-	}
 
-	// DispNode erzeugen und ggf. disabling-Meldung ausgeben
-	string ans = answer;
-	DispNode *dn = new_node(ans);
-	if (dn == 0)
-	    return;
-
-	// BoxPoint berechnen
-	BoxPoint* p         = (BoxPoint *)data;
-	BoxPoint  box_point =
-	    (p == 0 || *p == BoxPoint(-1,-1)) ?
-	    disp_graph->default_new_box_point(dn, graph_edit) :
-	    (*p);
-	dn->moveTo(box_point);
-	dn->selected() = true;
-
-	// in den Graphen einfuegen
-	string nr = dn->disp_nr();
-	disp_graph->insert_new (get_positive_nr(nr), dn);
-	refresh_graph_edit();
+    // Unselect all nodes
+    for (GraphNode *gn = disp_graph->firstNode();
+	 gn != 0; gn = disp_graph->nextNode(gn))
+    {
+	BoxGraphNode *bgn = ptr_cast(BoxGraphNode, gn);
+	if (bgn)
+	    bgn->selected() = false;
     }
+
+    // DispNode erzeugen und ggf. disabling-Meldung ausgeben
+    string ans = answer;
+    DispNode *dn = new_node(ans);
+    if (dn == 0)
+	return;
+
+    // BoxPoint berechnen
+    BoxPoint* p         = (BoxPoint *)data;
+    BoxPoint  box_point =
+	(p == 0 || *p == BoxPoint(-1,-1)) ?
+	disp_graph->default_new_box_point(dn, graph_edit) :
+	(*p);
+    dn->moveTo(box_point);
+    dn->selected() = true;
+
+    // in den Graphen einfuegen
+    string nr = dn->disp_nr();
+    disp_graph->insert_new (get_positive_nr(nr), dn);
+    refresh_graph_edit();
+}
+
+// ***************************************************************************
+// Aus den Display-Ausdruecken den ersten (neuen) herausfischen, und dann
+// der normalen Verarbeitung zufuehren.
+//
+void DataDisp::new_display_extraOQC (const string& answer, void* data)
+{
+    string ans = answer;
+    string display = read_next_display (ans, gdb);
+    new_displayOQC (display, data);
 }
 
 // ***************************************************************************
@@ -1988,40 +2011,60 @@ void DataDisp::dependent_displaySQ (string display_expression, int disp_nr)
 //
 void DataDisp::dependent_displayOQC (const string& answer, void* data)
 {
+    if (answer == "")
+    {
+	if (gdb->has_display_command())
+	{
+	    // No display output (GDB bug).  Refresh displays explicitly.
+	    gdb->send_question(gdb->display_command(),
+			       dependent_display_extraOQC, data);
+	}
+	return;
+    }
+
     if (!contains_display (answer, gdb))
     {
 	post_gdb_message (answer, last_origin);
+	return;
     }
-    else
+
+    string ans = answer;
+
+    // Unselect all nodes
+    for (GraphNode *gn = disp_graph->firstNode();
+	 gn != 0; gn = disp_graph->nextNode(gn))
     {
-	string ans = answer;
-
-	// Unselect all nodes
-	for (GraphNode *gn = disp_graph->firstNode();
-	     gn != 0; gn = disp_graph->nextNode(gn))
-	{
-	    BoxGraphNode *bgn = ptr_cast(BoxGraphNode, gn);
-	    if (bgn)
-		bgn->selected() = false;
-	}
-
-	// DispNode erzeugen und ggf. disabling-Meldung merken
-	DispNode *dn = new_node(ans);
-	if (dn == 0)
-	    return;
-
-	int old_disp_nr = int (data);
-	BoxPoint box_point =
-	    disp_graph->default_dependent_box_point(dn, 
-						    graph_edit, old_disp_nr);
-	dn->moveTo(box_point);
-	dn->selected() = true;
-
-	// in den Graphen einfuegen
-	string nr = dn->disp_nr();
-	disp_graph->insert_dependent (get_positive_nr(nr), dn, old_disp_nr);
-	refresh_graph_edit();
+	BoxGraphNode *bgn = ptr_cast(BoxGraphNode, gn);
+	if (bgn)
+	    bgn->selected() = false;
     }
+
+    // DispNode erzeugen und ggf. disabling-Meldung merken
+    DispNode *dn = new_node(ans);
+    if (dn == 0)
+	return;
+
+    int old_disp_nr = int (data);
+    BoxPoint box_point = 
+	disp_graph->default_dependent_box_point(dn, graph_edit, old_disp_nr);
+    dn->moveTo(box_point);
+    dn->selected() = true;
+
+    // in den Graphen einfuegen
+    string nr = dn->disp_nr();
+    disp_graph->insert_dependent (get_positive_nr(nr), dn, old_disp_nr);
+    refresh_graph_edit();
+}
+
+// ***************************************************************************
+// Aus den Display-Ausdruecken den ersten (neuen) herausfischen, und dann
+// der normalen Verarbeitung zufuehren.
+//
+void DataDisp::dependent_display_extraOQC (const string& answer, void* data)
+{
+    string ans = answer;
+    string display = read_next_display (ans, gdb);
+    dependent_displayOQC (display, data);
 }
 
 // ***************************************************************************

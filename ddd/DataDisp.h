@@ -235,18 +235,21 @@ public:
 				     bool& disabling_occurred);
 private:
     static void new_displayOQC       (const string& answer, void* data);
+    static void new_display_extraOQC (const string& answer, void* data);
     static void new_displaysSQA      (string display_expression, BoxPoint* p);
-    static void new_displaysOQAC     (string answers[],
+    static void new_displaysOQAC     (string answers[], 
 				      void*  qu_datas[],
-				      int    count,
+				      int    count, 
 				      void*  data);
 
-    static void dependent_displayOQC (const string& answer, void* data);
-    static void dependent_displaysSQA (string display_expression, int disp_nr);
-    static void dependent_displaysOQAC(string answers[],
-				       void*  qu_datas[],
-				       int    count,
-				       void*  data);
+    static void dependent_displayOQC       (const string& answer, void* data);
+    static void dependent_display_extraOQC (const string& answer, void* data);
+    static void dependent_displaysSQA      (string display_expression, 
+					    int disp_nr);
+    static void dependent_displaysOQAC     (string answers[],
+					    void*  qu_datas[],
+					    int    count,
+					    void*  data);
 
     static void refresh_displayOQC   (const string& answer, void*  data);
     static void refresh_displayOQAC  (string answers[],
