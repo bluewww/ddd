@@ -96,6 +96,8 @@ Installation
 
 - A bad wildcard use in the Makefile has been fixed. (3)
 
+- A compilation problem in `PannedGE.C' with some GCC variants has been fixed.
+
 - ddd.texi rules in the Makefile have been fixed. (4)
 
 - The release includes the `libiberty' and `readline' packages as of GDB 5.0.
@@ -114,12 +116,14 @@ License
 Tracking Code Changes
 ---------------------
 
-- This release no longer includes ChangeLog files.  Instead, you can
+- This release no longer includes `ChangeLog' files.  Instead, you can
   directly access old and recent DDD versions (including a list of all
-  changes) via the public CVS interface at 
+  changes) via the public CVS interface at
 
       http://sourceforge.net/projects/ddd/
 
+- You can also download most recent DDD versions from the public CVS
+  interface.  See the file `README-CVS' in the CVS archive for details.
 
 
 Known Issues
