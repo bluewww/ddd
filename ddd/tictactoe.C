@@ -420,7 +420,7 @@ static void MoveCB(XtPointer client_data, XtIntervalId *id)
     repaint();
 }
 
-static const int THINKING_TIME = 750; // `Thinking' time in ms
+static const int THINKING_TIME = 0; // `Thinking' time in ms
 
 static void make_move(int move)
 {
