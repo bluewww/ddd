@@ -1982,6 +1982,7 @@ for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
            /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
            /usr/dt/include /usr/openwin/include \
            /usr/dt/*/include /opt/*/include /usr/include/Motif* \
+           /usr/*/include/X11R6 /usr/*/include/X11R5 /usr/*/include/X11R4 \
 	   "${prefix}"/*/include /usr/*/include /usr/local/*/include \
 	   "${prefix}"/include/* /usr/include/* /usr/local/include/*; do
 if test -f "$dir/Xm/Xm.h"; then
@@ -2044,6 +2045,7 @@ for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
            /usr/dt/lib /usr/openwin/lib \
 	   /usr/dt/*/lib /opt/*/lib /usr/lib/Motif* \
            /usr/lesstif*/lib /usr/lib/Lesstif* \
+	   /usr/*/lib/X11R6 /usr/*/lib/X11R5 /usr/*/lib/X11R4 /usr/*/lib/X11 \
 	   "${prefix}"/*/lib /usr/*/lib /usr/local/*/lib \
 	   "${prefix}"/lib/* /usr/lib/* /usr/local/lib/*; do
 if test -d "$dir" && test "`ls $dir/libXm.* 2> /dev/null`" != ""; then
@@ -2165,6 +2167,7 @@ for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
            /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
            /usr/dt/include /usr/openwin/include \
            /usr/dt/*/include /opt/*/include /usr/include/Motif* \
+           /usr/*/include/X11R6 /usr/*/include/X11R5 /usr/*/include/X11R4 \
 	   "${prefix}"/*/include /usr/*/include /usr/local/*/include \
 	   "${prefix}"/include/* /usr/include/* /usr/local/include/*; do
 if test -f "$dir/X11/Xaw/Text.h"; then
@@ -2226,6 +2229,7 @@ for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
 	   /usr/lib/X11R6 /usr/lib/X11R5 /usr/lib/X11R4 /usr/lib/X11 \
            /usr/dt/lib /usr/openwin/lib \
 	   /usr/dt/*/lib /opt/*/lib /usr/lib/Motif* \
+	   /usr/*/lib/X11R6 /usr/*/lib/X11R5 /usr/*/lib/X11R4 /usr/*/lib/X11 \
 	   "${prefix}"/*/lib /usr/*/lib /usr/local/*/lib \
 	   "${prefix}"/lib/* /usr/lib/* /usr/local/lib/*; do
 if test -d "$dir" && test "`ls $dir/libXaw.* 2> /dev/null`" != ""; then
@@ -2344,6 +2348,7 @@ for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
            /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
            /usr/dt/include /usr/openwin/include \
            /usr/dt/*/include /opt/*/include /usr/include/Motif* \
+           /usr/*/include/X11R6 /usr/*/include/X11R5 /usr/*/include/X11R4 \
 	   "${prefix}"/*/include /usr/*/include /usr/local/*/include \
 	   "${prefix}"/include/* /usr/include/* /usr/local/include/*; do
 if test -f "$dir/X11/xpm.h" || test -f "$dir/xpm.h"; then
@@ -2406,6 +2411,7 @@ for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
 	   /usr/lib/X11R6 /usr/lib/X11R5 /usr/lib/X11R4 /usr/lib/X11 \
            /usr/dt/lib /usr/openwin/lib \
 	   /usr/dt/*/lib /opt/*/lib /usr/lib/Motif* \
+	   /usr/*/lib/X11R6 /usr/*/lib/X11R5 /usr/*/lib/X11R4 /usr/*/lib/X11 \
 	   "${prefix}"/*/lib /usr/*/lib /usr/local/*/lib \
 	   "${prefix}"/lib/* /usr/lib/* /usr/local/lib/*; do
 if test -d "$dir" && test "`ls $dir/libXpm.* 2> /dev/null`" != ""; then
