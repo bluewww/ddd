@@ -173,18 +173,22 @@ static void gdb_set_command(string set_command, string value)
 	    gdb_command("set confirm on");
     }
 
-    if (value != "")
+    if (set_command.contains("O ", 0))
     {
-	if (set_command.contains("O ", 0))
-	    gdb_command(set_command + "=" + value); // Perl
-	else if (set_command.contains("set $", 0) && 
-		 !set_command.contains(" = "))
-	    gdb_command(set_command + " = " + value); // DBX
-	else
-	    gdb_command(set_command + " " + value); // GDB
+	gdb_command(set_command + "=" + value); // Perl
+    }
+    else if (set_command.contains("set $", 0) && !set_command.contains(" = "))
+    {
+	gdb_command(set_command + " = " + value); // DBX
+    }
+    else if (value != "")
+    {
+	gdb_command(set_command + " " + value); // GDB
     }
     else
+    {
 	gdb_command(set_command);
+    }
 }
 
 // OptionMenu reply
@@ -1302,6 +1306,14 @@ string show_command(const string& cmd, DebuggerType type)
     return show;
 }
 
+// In Perl, make these options insensitive
+static String perl_taboos[] = 
+{
+    "TTY",
+    "noTTY",
+    "ReadLine",
+    "NonStop"
+};
 
 // Add single button
 static void add_button(Widget form, int& row, Dimension& max_width,
@@ -1868,7 +1880,20 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	// Make entry insensitive if part of initialization commands.
 	string init = app_data.gdb_init_commands;
 	int idx = init.index(set_command);
-	if (idx == 0 || idx > 0 && init[idx - 1] == '\n')
+	bool insensitive = (idx == 0 || idx > 0 && init[idx - 1] == '\n');
+
+	// Make entry insensitive if one of Perl taboos
+	if (!insensitive && gdb->type() == PERL)
+	{
+	    for (int i = 0; i < int(XtNumber(perl_taboos)); i++)
+		if (base == perl_taboos[i])
+		{
+		    insensitive = true;
+		    break;
+		}
+	}
+
+	if (insensitive)
 	{
 	    set_sensitive(entry,  False);
 	    set_sensitive(label,  False);
@@ -2622,9 +2647,16 @@ static void get_setting(ostream& os, DebuggerType type,
 	break;
 
     case PERL:
-	// Add setting
-	os << base << '=' << value << '\n';
+    {
+	string option = base.after(rxwhite);
+	bool taboo = false;
+	for (int i = 0; !taboo && i < int(XtNumber(perl_taboos)); i++)
+	    taboo = (option == perl_taboos[i]);
+
+	if (!taboo)
+	    os << base << '=' << value << '\n';
 	break;
+    }
 
     case JDB:
 	if (base == "use")

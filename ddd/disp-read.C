@@ -681,6 +681,7 @@ static bool next_is_nl(const string& displays)
 string read_next_display (string& displays, GDBAgent *gdb)
 {
     string next_display;
+    strip_leading_space(displays);
 
     // string old_displays = displays;
     // clog << "read_next_display(" << quote(old_displays) << ")...\n";
@@ -712,7 +713,9 @@ string read_next_display (string& displays, GDBAgent *gdb)
 		break;		// At end of display
 	}
     }
+
     displays = displays.after('\n');
+    strip_leading_space(displays);
 
     // clog << "read_next_display(" << quote(old_displays) << ") = "
     //      << quote(next_display) << "\n";

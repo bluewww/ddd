@@ -70,6 +70,7 @@ char comm_manager_rcsid[] =
 #include "history.h"
 #include "home.h"
 #include "index.h"
+#include "options.h"
 #include "post.h"
 #include "question.h"
 #include "regexps.h"
@@ -128,6 +129,8 @@ public:
 
     bool        disabling_occurred; // Flag: GDB disabled displays
 
+    string      init_perl;	  // Perl restart commands
+
     XtIntervalId position_timer;  // Still waiting for partial position
     XtIntervalId display_timer;   // Still waiting for partial display
 
@@ -177,6 +180,8 @@ public:
 
 	  disabling_occurred(false),
 
+	  init_perl(""),
+
 	  position_timer(0),
 	  display_timer(0)
     {
@@ -222,6 +227,8 @@ private:
 	  recorded(false),
 
 	  disabling_occurred(false),
+
+	  init_perl(""),
 
 	  position_timer(0),
 	  display_timer(0)
@@ -422,7 +429,21 @@ inline String str(String s)
 static void StartDoneCB(const string& /* answer */, void * /* qu_data */)
 {
     // If we have an execution tty, use it.
-    gdb_reset_exec_tty();
+    reset_exec_tty();
+}
+
+static void start_done()
+{
+    // One last command to clear the delay, set up breakpoints and
+    // issue prompt
+    Command c("# reset");
+    c.priority = COMMAND_PRIORITY_INIT;
+    c.echo     = false;
+    c.verbose  = false;
+    c.prompt   = false;
+    c.check    = true;
+    c.callback = StartDoneCB;
+    gdb_command(c);
 }
 
 void start_gdb(bool config)
@@ -639,17 +660,7 @@ void start_gdb(bool config)
     // and don't care for detailed diagnostics, we allow the GDB
     // `source' command.
     init_session(restart, settings, app_data.source_init_commands);
-
-    // One last command to clear the delay, set up breakpoints and
-    // issue prompt
-    Command c("# reset");
-    c.priority = COMMAND_PRIORITY_INIT;
-    c.echo     = false;
-    c.verbose  = false;
-    c.prompt   = false;
-    c.check    = true;
-    c.callback = StartDoneCB;
-    gdb_command(c);
+    start_done();
 }
 
 struct InitSessionInfo {
@@ -1065,7 +1076,15 @@ void send_gdb_command(string cmd, Widget origin,
 
 	case PERL:
 	    if (!is_reset_cmd)
+	    {
+		// We're restarting Perl.  Make sure the state is preserved.
+		unsigned long flags = DONT_RELOAD_FILE;
+		get_restart_commands(cmd_data->init_perl, flags);
+		cmd_data->init_perl += get_settings(gdb->type());
+		cmd_data->init_perl.prepend(app_data.perl_init_commands);
+
 		cmd_data->new_exec_pos = true;
+	    }
 	    extra_data->refresh_initial_line = false;
 	    break;
 
@@ -1468,14 +1487,14 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += "info line";
 	}
 	if (extra_data->refresh_pwd)
-	    cmds += "pwd";
+	    cmds += gdb->pwd_command();
 	assert(!extra_data->refresh_class_path);
 	assert(!extra_data->refresh_file);
 	assert(!extra_data->refresh_line);
 	if (extra_data->refresh_breakpoints)
 	    cmds += "info breakpoints";
 	if (extra_data->refresh_where)
-	    cmds += "where";
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_frame)
 	    cmds += gdb->frame_command();
 	if (extra_data->refresh_registers)
@@ -1508,7 +1527,7 @@ void send_gdb_command(string cmd, Widget origin,
 
     case DBX:
 	if (extra_data->refresh_pwd)
-	    cmds += "pwd";
+	    cmds += gdb->pwd_command();
 	assert(!extra_data->refresh_class_path);
 	if (extra_data->refresh_file)
 	    cmds += "file";
@@ -1517,10 +1536,11 @@ void send_gdb_command(string cmd, Widget origin,
 	if (extra_data->refresh_breakpoints)
 	    cmds += "status";
 	if (extra_data->refresh_where)
-	    cmds += "where";
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_frame)
 	    cmds += gdb->frame_command();
-	assert (!extra_data->refresh_registers);
+	if (extra_data->refresh_registers)
+	    cmds += source_view->refresh_registers_command();
 	assert (!extra_data->refresh_threads);
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
@@ -1548,7 +1568,7 @@ void send_gdb_command(string cmd, Widget origin,
 	if (extra_data->refresh_breakpoints)
 	    cmds += "lb";
 	if (extra_data->refresh_where)
-	    cmds += "t";
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_frame)
 	    cmds += gdb->frame_command();
 	assert (!extra_data->refresh_registers);
@@ -1576,7 +1596,7 @@ void send_gdb_command(string cmd, Widget origin,
 	if (extra_data->refresh_breakpoints)
 	    cmds += "clear";
 	if (extra_data->refresh_where)
-	    cmds += "where";
+	    cmds += gdb->where_command();
 	assert (!extra_data->refresh_registers);
 	if (extra_data->refresh_threads)
 	    cmds += "threads";
@@ -1594,11 +1614,11 @@ void send_gdb_command(string cmd, Widget origin,
 
     case PYDB:
 	if (extra_data->refresh_pwd)
-	    cmds += "pwd";
+	    cmds += gdb->pwd_command();
 	if (extra_data->refresh_breakpoints)
 	    cmds += "info breakpoints";
 	if (extra_data->refresh_where)
-	    cmds += "where";
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -1614,6 +1634,8 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += gdb->pwd_command();
 	if (extra_data->refresh_breakpoints)
 	    cmds += "L";
+	if (extra_data->refresh_where)
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -1856,6 +1878,13 @@ static void command_completed(void *data)
     {
 	undo_buffer.add_command(cmd_data->undo_command, 
 				cmd_data->undo_is_exec);
+    }
+
+    if (cmd_data->init_perl != "")
+    {
+	init_session(cmd_data->init_perl, app_data.perl_settings, 
+		     app_data.source_init_commands);
+	start_done();
     }
 
     if (pos_buffer && pos_buffer->started_found())

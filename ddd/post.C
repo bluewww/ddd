@@ -389,6 +389,10 @@ Widget post_error(string text, String name, Widget w)
 Widget post_warning(string text, String name, Widget w)
 {
     strip_trailing_space(text);
+
+    dddlog << "!  " << text << '\n';
+    dddlog.flush();
+
     if (ddd_is_exiting)
     {
 	cerr << ddd_NAME << ": warning: " << text << "\n";

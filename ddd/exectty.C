@@ -482,19 +482,6 @@ static int gdb_set_tty(string tty_name = "",
     return 0;
 }
 
-// Reset TTY settings (after a restart, for instance)
-void gdb_reset_exec_tty()
-{
-    if (separate_tty_pid > 0)
-    {
-	gdb_set_tty(separate_tty_name, app_data.term_type);
-    }
-    else
-    {
-	gdb_set_tty();
-    }
-}
-
 // Add redirection commands for SH-like shell
 static void add_sh_redirection(string& gdb_redirection,
 			       const string& tty_name,
@@ -875,6 +862,20 @@ void startup_exec_tty()
 {
     string dummy = "";
     startup_exec_tty(dummy);
+}
+
+// Reset TTY settings after a restart
+void reset_exec_tty()
+{
+    if (separate_tty_pid > 0)
+    {
+	initialize_tty(separate_tty_name, separate_tty_term);
+	gdb_set_tty(separate_tty_name, app_data.term_type);
+    }
+    else
+    {
+	gdb_set_tty();
+    }
 }
 
 // Raise execution TTY with command COMMAND.
