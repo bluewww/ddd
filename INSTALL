@@ -9,8 +9,9 @@ Requirements
 
     To build a complete DDD from sources, you need:
 
-       * The GNU C++ compiler (GCC/G++), version 2.6.3, and a matching
-	 C++ I/O library (libg++, libstdc++, or libiostream).
+       * The GNU C++ compiler (GCC/G++), preferably version 2.6.3 or
+	 later, and a matching C++ I/O library (libg++, libstdc++, or
+	 libiostream).
 
          Some other C++ compilers have been reported to compile DDD as
          well, such as Sun CC 4.0.  Cfront 3.0 does not compile DDD.

@@ -45,7 +45,8 @@ Volunteers for these and other projects are welcome!
 
 009. Recognize shared data structures (that is, two displays
      referencing the same object).  This could be achieved by
-     comparing display addresses.
+     comparing display addresses.  See also the mail of
+     markusd@cs.tu-berlin.de (Markus Dahm).
 
 010. [done]
 
