@@ -707,7 +707,7 @@ void process_print_r(string& answer)
 {
     assert(gdb->type() == DBX);
 
-    if (answer.contains(print_r_cookie))
+    if (!answer.contains("error") && answer.contains(print_r_cookie))
 	gdb->set_version(DBX3);
     else
 	gdb->set_version(DBX1);
