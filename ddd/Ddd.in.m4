@@ -2759,7 +2759,8 @@ define(DATA_HELP, [\
 \
 WIDGET(Data Menu)\n\
 \n\
-DESC(Displays..., [select, enable and delete displays])\n\
+DESC(Displays..., [select, enable and delete data displays])\n\
+DESC(Themes..., [customize data displays])\n\
 DESC(Watchpoints..., [set, view, and edit watchpoints])\n\
 DESC(Examine Memory..., [examine memory in any of several formats])\n\
 \n\
@@ -2786,7 +2787,12 @@ Ddd*dataMenu*tearOffTitle:      Data
 Ddd*dataMenu.displays.labelString:	Displays...
 Ddd*dataMenu.displays.mnemonic:		D
 Ddd*dataMenu.displays.documentationString: \
-@rm Select, enable and delete displays
+@rm Select, enable and delete data displays
+
+Ddd*dataMenu.themes.labelString:	Themes...
+Ddd*dataMenu.themes.mnemonic:		T
+Ddd*dataMenu.themes.documentationString: \
+@rm Customize data displays
 
 Ddd*dataMenu.watchpoints.labelString:	Watchpoints...
 Ddd*dataMenu.watchpoints.mnemonic:	W

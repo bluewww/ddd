@@ -1485,6 +1485,7 @@ static Widget edit_watchpoints_w = 0;
 static MMDesc data_menu[] = 
 {
     { "displays",    MMPush,    { DataDisp::EditDisplaysCB, 0 }, 0, 0, 0, 0},
+    { "themes",      MMPush,    { dddPopupThemesCB, 0 }, 0, 0, 0, 0},
     { "watchpoints", MMPush,   { SourceView::EditBreakpointsCB, 0 }, 
                                  NULL, &edit_watchpoints_w, 0, 0 },
     { "examine",     MMPush,  { gdbExamineCB, 0 }, 0, &examine_w, 0, 0},
