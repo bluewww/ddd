@@ -4196,10 +4196,23 @@ frame; variables outside the current frame cannot be displayed.
 .\"
 If command output is sent to the debugger console, it is impossible
 for \s-2@DDD@\s+2 to distinguish between the output of the debugged
-program and the output of the inferior debugger.  For instance, if
-your program output includes debugger prompts or debugger-like output,
-\s-2@DDD@\s+2 will likely become confused.  To avoid such problems,
-use the separate execution window.
+program and the output of the inferior debugger.  This problem can be
+avoided by running the program in the separate execution window.
+.PP
+Output that confuses \s-2@DDD@\s+2 includes:
+.IP \(bu 2
+Primary debugger prompts (e.g. `\fB(gdb) \fR' or `\fB(dbx) \fR')
+.IP \(bu 2
+Secondary debugger prompts (e.g. `\fB>\fR')
+.IP \(bu 2 
+Confirmation prompts (e.g. `\fB(y or n) ?\fR')
+.IP \(bu 2
+Prompts for more output (e.g. `\fBPress RETURN to continue\fR')
+.IP \(bu 2
+Display output (e.g. `\fB$pc = 0x1234\fR')
+.PP
+If your program outputs any of these strings, you should run it in the
+separate execution window.
 .PP
 If the inferior debugger changes the default \s-2TTY\s+2 settings, for
 instance through a `\fBstty\fR' command in its initialization file,
