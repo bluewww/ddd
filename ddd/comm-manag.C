@@ -120,6 +120,7 @@ typedef struct PlusCmdData {
     bool     refresh_history_save;     // send 'show history save'
     bool     refresh_setting;	       // send 'show SETTING'
     string   set_command;	       // setting to update
+    int      n_refresh_disp;	       // # of displays to refresh
 
     bool     config_frame;	       // try 'frame'
     bool     config_run_io;	       // try 'dbxenv run_io'
@@ -151,6 +152,7 @@ typedef struct PlusCmdData {
 	refresh_history_save(false),
 	refresh_setting(false),
 	set_command(""),
+	n_refresh_disp(0),
 
 	config_frame(false),
 	config_run_io(false),
@@ -292,6 +294,8 @@ void user_rawSUC (string cmd, Widget origin)
     if (!send_ok)
 	post_gdb_busy(origin);
 }
+
+
 
 // ***************************************************************************
 // Send the GDB command CMD to GDB.
@@ -585,7 +589,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	if (plus_cmd_data->refresh_register)
 	    cmds += "info registers";
 	if (plus_cmd_data->refresh_disp)
-	    cmds += data_disp->refresh_display_command();
+	    plus_cmd_data->n_refresh_disp = 
+		data_disp->add_refresh_display_commands(cmds);
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds += "info display";
 	if (plus_cmd_data->refresh_history_filename)
@@ -630,7 +635,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	}
 	assert (!plus_cmd_data->refresh_register);
 	if (plus_cmd_data->refresh_disp)
-	    cmds += data_disp->refresh_display_command();
+	    plus_cmd_data->n_refresh_disp = 
+		data_disp->add_refresh_display_commands(cmds);
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds += gdb->display_command();
 	assert (!plus_cmd_data->refresh_history_filename);
@@ -654,7 +660,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	    cmds += gdb->frame_command();
 	assert (!plus_cmd_data->refresh_register);
 	if (plus_cmd_data->refresh_disp)
-	    cmds += data_disp->refresh_display_command();
+	    plus_cmd_data->n_refresh_disp = 
+		data_disp->add_refresh_display_commands(cmds);
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds += gdb->display_command();
 	assert (!plus_cmd_data->refresh_history_filename);
@@ -858,7 +865,7 @@ void handle_graph_cmd (string cmd, Widget origin)
 	data_disp->new_displaySQ(display_expression, 0, origin);
     }
     else if (is_refresh_cmd (cmd)) {
-	data_disp->refresh_displaySQA(origin);
+	data_disp->refresh_displaySQ(origin);
     }
     else {
 	user_cmdSUC(cmd, origin);
@@ -1178,53 +1185,45 @@ void plusOQAC (string answers[],
 	source_view->process_register(answers[qu_count++]);
     }
 
-    bool disabling_occurred = false;
     if (plus_cmd_data->refresh_disp) {
-	assert (qu_count < count);
-	data_disp->process_displays(answers[qu_count++], disabling_occurred);
-	if (disabling_occurred) {
-	    data_disp->refresh_displaySQ();
+	string ans = "";
+	for (int i = 0; i < plus_cmd_data->n_refresh_disp; i++)
+	{
+	    assert (qu_count < count);
+	    ans += answers[qu_count++];
+	}
+	if (plus_cmd_data->n_refresh_disp > 0)
+	{
+	    bool disabling_occurred = false;
+	    data_disp->process_displays(ans, disabling_occurred);
+	    if (disabling_occurred)
+		data_disp->refresh_displaySQ();
 	}
     }
 
     if (plus_cmd_data->refresh_disp_info) {
 	assert (qu_count < count);
-	if (!disabling_occurred)
-	    data_disp->process_info_display(answers[qu_count++]);
-	else
-	    qu_count++;
+	data_disp->process_info_display(answers[qu_count++]);
     }
 
     if (plus_cmd_data->refresh_history_filename) {
 	assert (qu_count < count);
-	if (!disabling_occurred)
-	    process_history_filename(answers[qu_count++]);
-	else
-	    qu_count++;
+	process_history_filename(answers[qu_count++]);
     }
 
     if (plus_cmd_data->refresh_history_size) {
 	assert (qu_count < count);
-	if (!disabling_occurred)
-	    process_history_size(answers[qu_count++]);
-	else
-	    qu_count++;
+	process_history_size(answers[qu_count++]);
     }
 
     if (plus_cmd_data->refresh_history_save) {
 	assert (qu_count < count);
-	if (!disabling_occurred)
-	    process_history_save(answers[qu_count++]);
-	else
-	    qu_count++;
+	process_history_save(answers[qu_count++]);
     }
 
     if (plus_cmd_data->refresh_setting) {
 	assert (qu_count < count);
-	if (!disabling_occurred)
-	    process_show(plus_cmd_data->set_command, answers[qu_count++]);
-	else
-	    qu_count++;
+	process_show(plus_cmd_data->set_command, answers[qu_count++]);
     }
 
     assert (qu_count == count);

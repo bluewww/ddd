@@ -69,6 +69,7 @@
 #include "DispGraph.h"
 #include "DispBox.h"
 #include "DispBox.h"
+#include "StringA.h"
 
 
 //-----------------------------------------------------------------------------
@@ -195,15 +196,10 @@ public:
 				     BoxPoint* p = 0,
 				     Widget origin = 0);
 
-    // sendet den Befehl "display" an den gdb,
-    // um Displays zu aktualisieren. (kein Loeschen von Displays)
-    //
-    static void refresh_displaySQ   ();
-
     // sendet die Befehle "info display" und "display" an den gdb,
     // um Displays zu aktualisieren.
     //
-    static void refresh_displaySQA  (Widget origin = 0);
+    static void refresh_displaySQ   (Widget origin = 0);
 
     // sendet den 'disable display'-Befehl mit den Nummern an den gdb
     // und aktualisiert den disp_graph.
@@ -239,27 +235,29 @@ public:
 				     bool& disabling_occurred);
 private:
     static void new_displayOQC       (const string& answer, void* data);
-    static void new_display_extraOQC (const string& answer, void* data);
     static void new_displaysSQA      (string display_expression, BoxPoint* p);
     static void new_displaysOQAC     (string answers[],
 				      void*  qu_datas[],
 				      int    count,
 				      void*  data);
-    static void refresh_displayOQC   (const string& answer, void*  data);
-    static void refresh_displayOQAC  (string answers[],
-				      void*  qu_datas[],
-				      int    count,
-				      void*  data);
-    static void disable_displayOQC   (const string& answer, void* data);
-    static void enable_displayOQC    (const string& answer, void* data);
-    static void delete_displayOQC    (const string& answer, void* data);
+
     static void dependent_displayOQC (const string& answer, void* data);
-    static void dependent_display_extraOQC (const string& answer, void* data);
     static void dependent_displaysSQA (string display_expression, int disp_nr);
     static void dependent_displaysOQAC(string answers[],
 				       void*  qu_datas[],
 				       int    count,
 				       void*  data);
+
+    static void refresh_displayOQC   (const string& answer, void*  data);
+    static void refresh_displayOQAC  (string answers[],
+				      void*  qu_datas[],
+				      int    count,
+				      void*  data);
+
+    static void disable_displayOQC   (const string& answer, void* data);
+    static void enable_displayOQC    (const string& answer, void* data);
+    static void delete_displayOQC    (const string& answer, void* data);
+
 
 
     //-----------------------------------------------------------------------
@@ -297,8 +295,8 @@ public:
     inline int count_all() { return disp_graph->count_all(); }
     static void refresh_graph_edit ();
 
-    // Command to re-print all displays
-    static string refresh_display_command();
+    // Command(s) to re-print all displays; return # of commands
+    static int add_refresh_display_commands(StringArray& cmds);
 
     // Callbacks for menu bar
     static void EditDisplaysCB(Widget, XtPointer, XtPointer);

@@ -61,6 +61,7 @@ char DataDisp_rcsid[] =
 #include "question.h"
 #include "commandQ.h"
 #include "StringMap.h"
+#include "VoidArray.h"
 
 // Motif includes
 #include <Xm/MessageB.h>
@@ -1512,15 +1513,7 @@ DispNode *DataDisp::new_node (string& answer)
 //
 void DataDisp::new_displayOQC (const string& answer, void* data)
 {
-    if (answer == "")
-    {
-	// Problemfall bei Start mit core-file, display-Ausgabe nur bei
-	// display-Befehl
-	gdb->send_question (refresh_display_command(),
-			    new_display_extraOQC,
-			    data);
-    }
-    else if (!contains_display (answer, gdb))
+    if (!contains_display (answer, gdb))
     {
 	post_gdb_message (answer, last_origin);
     }
@@ -1554,17 +1547,6 @@ void DataDisp::new_displayOQC (const string& answer, void* data)
 	disp_graph->insert_new (get_positive_nr(nr), dn);
 	refresh_graph_edit();
     }
-}
-
-// ***************************************************************************
-// Aus den Display-Ausdruecken den ersten (neuen) herausfischen, und dann
-// der normalen Verarbeitung zufuehren.
-//
-void DataDisp::new_display_extraOQC (const string& answer, void* data)
-{
-    string ans = answer;
-    string display = read_next_display (ans, gdb);
-    new_displayOQC (display, data);
 }
 
 // ***************************************************************************
@@ -1692,9 +1674,10 @@ void DataDisp::new_displaysOQAC (string answers[],
 // Den disp-graph auf aktuellen Stand bringen.
 //-----------------------------------------------------------------------------
 
-string DataDisp::refresh_display_command()
+int DataDisp::add_refresh_display_commands(StringArray& cmds)
 {
     string command;
+    int initial_size = cmds.size();
 
     switch (gdb->type())
     {
@@ -1702,95 +1685,56 @@ string DataDisp::refresh_display_command()
     case XDB:
 	{
 	    command = "";
-	    int i = 0;
 	    MapRef ref;
 	    for (DispNode* dn = disp_graph->first(ref); 
 		 dn != 0;
 		 dn = disp_graph->next(ref))
 	    {
-		if (i++)
-		    command += "; ";
-		command += gdb->print_command(dn->name());
+		cmds += gdb->print_command(dn->name());
 	    }
 	}
 	break;
 
     case GDB:
-	command = gdb->display_command();
+	cmds += gdb->display_command();
 	break;
     }
 
-    if (command == "")
-	command = gdb->print_command("42");
-
-    return command;
+    return cmds.size() - initial_size;
 }
 
 
-// ***************************************************************************
-// sendet den Befehl "display" an den gdb,
-// um Displays zu aktualisieren. (kein Loeschen von Displays)
-//
-void DataDisp::refresh_displaySQ () 
-{
-    bool ok = gdb->send_question(refresh_display_command(), 
-				 refresh_displayOQC, 0);
-    if (!ok)
-    {
-	// Don't complain; simply redraw display.
-	refresh_graph_edit();
-    }
-}
-
-// ***************************************************************************
-// Aktualisiert die Displays entsprechend.
-//
-void DataDisp::refresh_displayOQC (const string& answer, void *)
-{
-    bool disabling_occurred;
-
-    // Process 'display' output - this may disable some displays
-    string ans(answer);
-    string not_my_displays = process_displays (ans, disabling_occurred);
-
-    // If we had a `disabling' message, refresh again
-    if (disabling_occurred)
-    {
-	refresh_displaySQ();
-    }
-    else
-    {
-	refresh_graph_edit();
-    }
-}
 
 // ***************************************************************************
 // sendet die Befehle "info display" und "display" an den gdb,
 // um Displays zu aktualisieren.
 //
-void DataDisp::refresh_displaySQA (Widget origin)
+void DataDisp::refresh_displaySQ (Widget origin)
 {
     if (origin)
 	set_last_origin(origin);
 
-    string cmds[2];
-    void*  dummy[2];
+    StringArray cmds;
+    VoidArray dummy;
     bool ok = false;
 
     switch (gdb->type())
     {
     case GDB:
-	cmds[0] = "info display";
-	cmds[1] = refresh_display_command();
-	ok = gdb->send_qu_array(cmds, dummy, 2, refresh_displayOQAC, 0);
+	cmds += "info display";
+	add_refresh_display_commands(cmds);
 	break;
 
     case DBX:
     case XDB:
-	cmds[0] = refresh_display_command();
-	ok = gdb->send_qu_array(cmds, dummy, 1, refresh_displayOQAC, 0);
+	add_refresh_display_commands(cmds);
 	break;
     }
+
+    while (dummy.size() < cmds.size())
+	dummy += (void *)0;
+	    
+    ok = gdb->send_qu_array(cmds, dummy, cmds.size(), refresh_displayOQAC, 0);
 
     if (!ok)
     {
@@ -1807,28 +1751,28 @@ void DataDisp::refresh_displayOQAC (string answers[],
 				    int    count,
 				    void*  )
 {
-    if (count >= 1)
+    int n = 0;
+    if (gdb->type() == GDB)
     {
 	// Antwort auf 'info display' auswerten (evtl displays loeschen)
-	process_info_display (answers[0]);
+	process_info_display (answers[n++]);
     }
     
     // Antwort auf 'display' auswerten
+    string ans;
+    for (int i = n; i < count; i++)
+	ans += answers[i];
+
     bool disabling_occurred = false;
+    if (n < count)
+	process_displays (ans, disabling_occurred);
 
-    if (count >= 2)
-    {
-	process_displays (answers[1], disabling_occurred);
-    }
-
-    delete[]answers;
-    delete[]qu_datas;
+    delete[] answers;
+    delete[] qu_datas;
 
     // Bei Fehlermeldung (Disabling...) nochmal refresh.
     if (disabling_occurred)
-    {
 	refresh_displaySQ();
-    }
 }
 
 
@@ -2046,17 +1990,12 @@ void DataDisp::dependent_displaySQ (string display_expression, int disp_nr)
 //
 void DataDisp::dependent_displayOQC (const string& answer, void* data)
 {
-    if (answer == "")
+    if (!contains_display (answer, gdb))
     {
-	// Problemfall bei Start mit core-file, display-Ausgabe nur bei
-	// display-Befehl
-	gdb->send_question
-	    (refresh_display_command(), dependent_display_extraOQC, data);
-    }
-    else if (!contains_display (answer, gdb)) {
 	post_gdb_message (answer, last_origin);
     }
-    else {
+    else
+    {
 	string ans = answer;
 
 	// Unselect all nodes
@@ -2085,17 +2024,6 @@ void DataDisp::dependent_displayOQC (const string& answer, void* data)
 	disp_graph->insert_dependent (get_positive_nr(nr), dn, old_disp_nr);
 	refresh_graph_edit();
     }
-}
-
-// ***************************************************************************
-// Aus den Display-Ausdruecken den ersten (neuen) herausfischen, und dann
-// der normalen Verarbeitung zufuehren.
-//
-void DataDisp::dependent_display_extraOQC (const string& answer, void* data)
-{
-    string ans = answer;
-    string display = read_next_display (ans, gdb);
-    dependent_displayOQC (display, data);
 }
 
 // ***************************************************************************
