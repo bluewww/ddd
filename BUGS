@@ -222,8 +222,13 @@ Volunteers for fixing these and other bugs are welcome!
      coming up.
 
 058. Anonymous unions as struct members are not handled correctly.
+     Check bit fields as well.
 
 059. Having a newline ``stuck'' in the command line makes DDD execute
      each typed letter as a separate command.
 
-060. (Insert your bug here)
+060. Frank Dohrmann <frank@kaa.desy.de> says that on his Sun-Sparc
+     10/41 with SunOs 4.1.3, using `lpr' instead of `lp -c' to print
+     the graph hangs up DDD.
+
+061. (Insert your bug here)

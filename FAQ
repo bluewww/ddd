@@ -1,4 +1,4 @@
-DDD Frequently Asked Questions					-*- text -*-
+DDD Frequently Asked Questions                                  -*- text -*-
 ******************************
 
 1.  Can I dereference a multi-length array graphically via the mouse?
@@ -37,18 +37,19 @@ DDD Frequently Asked Questions					-*- text -*-
 
     By getting and installing the new GDB.  No changes to DDD are
     necessary, unless the GDB developers introduce incompatible
-    changes.
+    changes - in which case you'll have to wait until we patch DDD.
 
 
 4.  Does DDD work with DBX on other systems than Sun?
 
     DDD has been reported to run with Sun DBX as shipped with SunOS
-    4.x and Solaris 2.  Unfortunately, DBX is quite different across
-    machines since every vendor icorporated his own extensions.  As
-    long as some basics stay the same, DDD may work more or less with
-    other DBX versions as well.  If not, extending the DDD code to
-    support other DBX versions is not too difficult.  Use `ddd
-    --trace' to see the interaction.
+    4.x (aka Solaris 1.x) and SunOS 5.x (aka Solaris 2.x).
+    Unfortunately, DBX is quite different across machines since every
+    vendor icorporated his own extensions.  As long as some basics
+    stay the same, DDD may work more or less with other DBX versions
+    as well.  If not, extending the DDD code to support other DBX
+    versions should not be too difficult.  Use `ddd --trace' to see
+    the interaction.
 
 
 5.  I don't like the 'break point' symbol.  Can I change it?
@@ -116,13 +117,21 @@ DDD Frequently Asked Questions					-*- text -*-
     in the DDD distribution (type `./configure -v; cd ddd; make Ddd'
     to create it from scratch) in your `~/.dddinit' file.  For
     instance, to make the background less bright as in DDD 1.2 and
-    before, use:
+    before, insert the following lines in `~/.dddinit':
 
-	Ddd*XmText.background:             light grey
-	Ddd*XmTextField.background:        light grey
-	Ddd*GraphEdit.background:          light grey
-	Ddd*XmList.background:             light grey
+        Ddd*XmText.background:          light grey
+        Ddd*XmTextField.background:     light grey
+        Ddd*GraphEdit.background:       light grey
+        Ddd*XmList.background:          light grey
 
+    To set up the size and the placement of the DDD main windows, use:
+
+        Ddd*command_shell.geometry:     +0+0
+        Ddd*source_view_shell.geometry: +0+220
+        Ddd*data_disp_shell.geometry:   +0+670
+
+    (or similar values - see the X(1) manual page for details on
+     geometry specifications)
 
 
 11. I want to use DDD interprocess communication in my own
@@ -143,7 +152,6 @@ DDD Frequently Asked Questions					-*- text -*-
     Xt-based toolkit.
 
 
-
 12. I want to use the DDD graph editor in my own application.
     How do I proceed?
 
@@ -162,7 +170,6 @@ DDD Frequently Asked Questions					-*- text -*-
     in `BoxGraphN.h'; a box is a (possibly structured) rectangular
     entity holding strings, lines, or figures.  See also the DDD paper
     `doc/ddd-paper.ps' for details on boxes and how they are composed.
-
 
 
 $Id$
