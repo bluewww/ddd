@@ -14,7 +14,7 @@ Requirements
 
          Some other C++ compilers have been reported to compile DDD as
          well, such as Sun CC 4.0, AIX xlC and SGI CC.  Cfront 3.0
-         does not compile DDD.
+         does not compile DDD.  On SGI, GCC usage is preferred.
 
        * The X window library (Xlib) and X toolkit library (Xt),
          X11R4 or later.
@@ -44,7 +44,7 @@ Requirements
     As an alternative to GDB, DDD also supports the DBX debugger as
     found on SUN, DEC, AIX, and IRIX systems.  Using DBX, you can
     debug programs written in C, C++, Pascal, Fortran, and Modula-2.
-    DDD adapts itself to a wide range of other DBX variants.
+    DDD adapts automatically to a wide range of other DBX variants.
 
     As another alternative, DDD also supports the XDB debugger as
     found on HP-UX systems.  XDB usage has been tested for C programs

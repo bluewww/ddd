@@ -8,14 +8,14 @@ DDD 2.0
     interface as well as several new features and bug fixes.
 
     User-visible changes to DDD 1.4:
-    - Colored displays.  You can specify individual colors for
-      pointers, arrays, structs, and so on.
     - New command tool.  All command buttons that do not take
       arguments are now located in the command tool, a small separate
       window.  The command tool can be moved wherever appropriate,
       leaving more space for window contents.
     - User-defined buttons are now available.  These can also
       be used to re-install the old command buttons.
+    - Colored displays.  You can specify individual colors for
+      pointers, arrays, structs, and so on.
     - Variable values can now be altered interactively during program
       execution.
     - You can inquire the types of variables and functions (`whatis') 

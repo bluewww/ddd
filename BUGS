@@ -232,13 +232,6 @@ Volunteers for fixing these and other bugs are welcome!
      breakpoint; however the arrow didn't show up.  Upon continuation,
      the arrow showed up.  Minor cosmetic bug.
 
-110. Richard Dermer <rdermer@Adobe.COM> states:
-     I tried out ddd 2.0 beta 3 on sparc solaris 2.5 and I can't get
-     any displays to appear in the data window.  No matter which
-     mechanism I choose to create a display the data window always
-     remains empty and the 'edit displays' dialog says 'no displays'.
-     I don't have this problem with beta2.
-
 112. toader ovidiu nicolae <ovi@phys.ksu.edu> says:
      ddd-2.0 has a square but on the bottom edge of the assembler window
      and I could resize the assembler window in a strange way but only for 
@@ -247,4 +240,13 @@ Volunteers for fixing these and other bugs are welcome!
 113. Matthias Kurz <mk@baerlap.north.de> states:
      If I resize the data display the background doesn't get refreshed.
 
-114. (Insert your bug here)
+114. Avi Cohen Stuart <avi@baan.nl> noticed that "a lot of texts on
+     several windows are redisplayed more that two times, for example
+     texts in the source window, and the graphics window.  Is the
+     frequent redisplay a 'feature' or is it something that needs to
+     be fixed? N.B. for Motif1.2 there exists something like
+     XmText{Disable|Enable}Display (or something like this...) that
+     allows to do updates without immediate redisplay."
+     [You won't believe it, but the DDD developers still use Motif 1.1  -AZ]
+
+115. (Insert your bug here)
