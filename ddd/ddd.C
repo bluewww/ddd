@@ -478,8 +478,10 @@ static MMDesc file_menu[] =
     { "open_core",   MMPush, { gdbOpenCoreCB }},
     { "open_source", MMPush, { gdbOpenSourceCB }},
     MMSep,
-    { "print",      MMPush,  { graphPrintCB }},
-    { "quickPrint", MMPush,  { graphQuickPrintCB }},
+    { "print",       MMPush, { graphPrintCB }},
+    { "quickPrint",  MMPush, { graphQuickPrintCB }},
+    MMSep,
+    { "make",        MMPush, { gdbCommandCB, "make" }},
     MMSep,
     { "close",       MMPush, { DDDCloseCB }},
     { "restart",     MMPush, { DDDRestartCB }},
@@ -1433,7 +1435,7 @@ int main(int argc, char *argv[])
 
     Widget menubar_w = MMcreateMenuBar (main_window, "menubar", menubar);
     MMaddCallbacks(menubar);
-    verify_buttons(program_menu);
+    verify_buttons(menubar);
 
     set_option_widgets(CommandOptions);
 
@@ -1478,7 +1480,7 @@ int main(int argc, char *argv[])
 	data_menubar_w = 
 	    MMcreateMenuBar (data_main_window_w, "menubar", data_menubar);
 	MMaddCallbacks(data_menubar);
-	verify_buttons(program_menu);
+	verify_buttons(data_menubar);
 
 	set_option_widgets(DataOptions);
 
@@ -1540,7 +1542,7 @@ int main(int argc, char *argv[])
 	source_menubar_w = 
 	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
 	MMaddCallbacks(source_menubar);
-	verify_buttons(program_menu);
+	verify_buttons(source_menubar);
 
 	set_option_widgets(SourceOptions);
 
@@ -1578,8 +1580,8 @@ int main(int argc, char *argv[])
 		  ClearTextFieldCB, source_arg->widget());
 
     MMcreateWorkArea(arg_cmd_w, "arg_cmd_area", arg_cmd_area);
-    MMaddCallbacks (arg_cmd_area);
-    XtManageChild (arg_cmd_w);
+    MMaddCallbacks(arg_cmd_area);
+    XtManageChild(arg_cmd_w);
 
     XtAddCallback(source_arg->widget(), XmNactivateCallback, 
 		  ActivateCB, 
@@ -2075,10 +2077,14 @@ static void install_button_tips()
 // Verify buttons
 //-----------------------------------------------------------------------------
 
+static void verify_button(MMDesc *item, XtPointer)
+{
+    verify_button(item->widget);
+}
+
 static void verify_buttons(MMDesc *items)
 {
-    for (MMDesc *item = items; item != 0 && item->name != 0; item++)
-	verify_button(item->widget);
+    MMonItems(items, verify_button);
 }
 
 //-----------------------------------------------------------------------------

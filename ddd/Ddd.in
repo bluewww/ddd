@@ -1663,6 +1663,8 @@ Ddd*menubar.file*helpString:	\
 @tt \267 @bf Print Graph... @rm - print the data display graph.\n\
 @tt \267 @bf Print Again @rm - print using the previous settings.\n\
 \n\
+@tt \267 @bf Make @rm - run the `@tt make@rm' program.\n\
+\n\
 @tt \267 @bf Close @rm - close this window.\n\
 @tt \267 @bf Restart @rm - restart @DDD@.\n\
 @tt \267 @bf Exit @rm - exit @DDD@.
@@ -1697,6 +1699,12 @@ Ddd*menubar*fileMenu.quickPrint.mnemonic: A
 ! Ddd*menubar*fileMenu.quickPrint.acceleratorText:  Alt+Shift+P
 Ddd*menubar*fileMenu.quickPrint.documentationString:   \
 @rm Print the contents of the data display, using previous settings
+
+Ddd*menubar*fileMenu.make.labelString:	 Make
+Ddd*menubar*fileMenu.make.mnemonic:	 M
+! Ddd*menubar*fileMenu.make.accelerator:      Meta<Key>M
+! Ddd*menubar*fileMenu.make.acceleratorText:  Alt+M
+Ddd*menubar*fileMenu.make.documentationString:  
 
 Ddd*menubar*fileMenu.close.labelString:	 Close
 Ddd*menubar*fileMenu.close.mnemonic:	 C
