@@ -1360,6 +1360,9 @@ void DispValue::plot() const
     {
 	string title = make_title(full_name());
 	((DispValue *)this)->_plotter = new_plotter(title, (DispValue *)this);
+	if (plotter() == 0)
+	    return;
+
 	plotter()->addHandler(Died, PlotterDiedHP, (void *)this);
     }
 

@@ -625,17 +625,37 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, plot_command),
 	XtRString,
-	XtPointer("gnuplot")
+	XtPointer("gnuplot -name @NAME@")
     },
 
     {
-	XtNplotWindow,
-	XtCPlotWindow,
+	XtNplotTermType,
+	XtCPlotTermType,
 	XtRString,
 	sizeof(String),
-	XtOffsetOf(AppData, plot_window),
+	XtOffsetOf(AppData, plot_term_type),
+	XtRString,
+	XtPointer("xlib")
+    },
+
+    {
+	XtNplotWindowClass,
+	XtCPlotWindowClass,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, plot_window_class),
 	XtRString,
 	XtPointer("Gnuplot")
+    },
+
+    {
+	XtNplotWindowDelay,
+	XtCWindowDelay,
+	XtRCardinal,
+	sizeof(Cardinal),
+	XtOffsetOf(AppData, plot_window_delay),
+	XtRImmediate,
+	XtPointer(2000)
     },
 
     {
@@ -669,26 +689,6 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNdecoratePlot,
-	XtCDecorate,
-	XtRBoolean,
-	sizeof(Boolean),
-	XtOffsetOf(AppData, decorate_plot),
-	XtRImmediate,
-	XtPointer(True)
-    },
-
-    {
-	XtNbuiltinPlotWindow,
-	XtCBuiltinPlotWindow,
-	XtRBoolean,
-	sizeof(Boolean),
-	XtOffsetOf(AppData, builtin_plot_window),
-	XtRImmediate,
-	XtPointer(False)
-    },
-
-    {
 	XtNtermCommand,
 	XtCTermCommand,
 	XtRString,
@@ -716,16 +716,6 @@ XtResource ddd_resources[] = {
 	XtOffsetOf(AppData, use_tty_command),
 	XtRImmediate,
 	XtPointer(False)
-    },
-
-    {
-	XtNdecorateTerm,
-	XtCDecorate,
-	XtRBoolean,
-	sizeof(Boolean),
-	XtOffsetOf(AppData, decorate_term),
-	XtRImmediate,
-	XtPointer(True)
     },
 
     {

@@ -630,12 +630,26 @@ void dddToggleWarnIfLockedCB (Widget, XtPointer, XtPointer call_data)
 
 void dddSetBuiltinPlotWindowCB (Widget, XtPointer client_data, XtPointer)
 {
-    app_data.builtin_plot_window = bool((int)(long)client_data);
-
-    if (app_data.builtin_plot_window)
-	set_status("Plotting using builtin " DDD_NAME " window.");
+    if ((int)(long)client_data)
+	app_data.plot_term_type = "xlib";
     else
-	set_status("Plotting using external Gnuplot window.");
+	app_data.plot_term_type = "x11";
+
+    string plot_term_type = downcase(app_data.plot_term_type);
+
+    if (plot_term_type.contains("xlib", 0))
+    {
+	set_status("Next plot will be done in builtin " DDD_NAME " window.");
+    }
+    else if (plot_term_type.contains("x11", 0))
+    {
+	set_status("Next plot will be done in external " + 
+		   cook(app_data.plot_window_class) + " window.");
+    }
+    else
+    {
+	set_status("Next plot will be done in an unknown place.");
+    }
 
     clear_plot_window_cache();
     update_options();
@@ -2374,14 +2388,13 @@ bool save_options(unsigned long flags)
     os << string_app_value(XtNtermCommand,    app_data.term_command, true)
        << '\n';
     os << string_app_value(XtNuncompressCommand, app_data.uncompress_command,
-			   true)
-       << '\n';
+			   true) << '\n';
     os << string_app_value(XtNwwwCommand,     app_data.www_command, true) 
        << '\n';
     os << string_app_value(XtNplotCommand,    app_data.plot_command, true)
        << '\n';
-    os << bool_app_value(XtNbuiltinPlotWindow, 
-			 app_data.builtin_plot_window) << '\n';
+    os << string_app_value(XtNplotTermType,   app_data.plot_term_type)
+       << '\n';
     os << string_app_value(XtNprintCommand,   app_data.print_command, true) 
        << '\n';
 

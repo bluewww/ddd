@@ -3615,8 +3615,11 @@ void update_options()
     set_toggle(check_grabs_w,   	 app_data.check_grabs);
     set_toggle(suppress_warnings_w,      app_data.suppress_warnings);
     set_toggle(warn_if_locked_w,         app_data.warn_if_locked);
-    set_toggle(builtin_plot_window_w,    app_data.builtin_plot_window);
-    set_toggle(extern_plot_window_w,     !app_data.builtin_plot_window);
+
+    set_toggle(builtin_plot_window_w,
+	       string(app_data.plot_term_type) == "xlib");
+    set_toggle(extern_plot_window_w,
+	       string(app_data.plot_term_type) == "x11");
 
     set_toggle(cache_source_files_w,     app_data.cache_source_files);
     set_toggle(cache_machine_code_w,     app_data.cache_machine_code);
@@ -4402,7 +4405,7 @@ static void ResetHelpersPreferencesCB(Widget, XtPointer, XtPointer)
     set_string(plot_command_w,       initial_app_data.plot_command);
 
     notify_set_toggle(builtin_plot_window_w, 
-		      initial_app_data.builtin_plot_window);
+		      string(initial_app_data.plot_term_type) == "xlib");
 }
 
 static bool helpers_preferences_changed()
@@ -4430,7 +4433,8 @@ static bool helpers_preferences_changed()
     if (string(app_data.www_command) != string(initial_app_data.www_command))
 	return true;
 
-    if (app_data.builtin_plot_window != initial_app_data.builtin_plot_window)
+    if (string(app_data.plot_term_type) != 
+	string(initial_app_data.plot_term_type))
 	return true;
 
     return false;

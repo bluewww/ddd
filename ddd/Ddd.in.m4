@@ -208,6 +208,10 @@ Ddd*useTTYCommand: off
 Ddd*blockTTYInput: auto
 
 
+! The time (in seconds) to wait for synchronous GDB questions to complete
+Ddd*questionTimeout: 10
+
+
 ! The `rsh' command to invoke tty-based commands on other hosts.
 ! On some systems, this is called `remsh'; on others, `on'.
 ! You may want to consult your system documentation for details.
@@ -325,24 +329,26 @@ Ddd*plot3dSettings:   set border
 
 ! Which plot window to choose.
 !
-! `on' means to use the plot window built into DDD:
+! `xlib' means to use the plot window built into DDD:
 !      + no interference with window manager
 !      + requires less X resources than Gnuplot window
 !      - slower
 !      - no customization
-! `off' instructs DDD to `swallow' the plot window supplied by Gnuplot:
+! `x11' instructs DDD to `swallow' the plot window supplied by Gnuplot:
 !      + works just as Gnuplot users expect
 !      - swallowing interferes with some window managers such as MWM.
 !
-! Default is `on' due to problems with MWM.
-Ddd*builtinPlotWindow: on
+! Default is `xlib' due to problems with MWM.
+Ddd*plotTermType: xlib
 
-
-! The time (in seconds) to wait for synchronous GDB questions to complete
-Ddd*questionTimeout: 10
+! The time (in ms) to wait for notification that the swallowed plot window
+! has been created.  After this time has passed, DDD searches the plot window
+! among all windows, even without notification.
+Ddd*plotWindowDelay: 2000
 
 
 ! Tool Bar appearance.
+
 ! Whether to have one common tool bar for one-window configurations.
 Ddd*commonToolBar: on
 
@@ -379,6 +385,7 @@ Ddd*activeButtonColorKey: c
 ! Whether to check buttons if their commands are actually supported by
 ! the inferior debugger.
 Ddd*verifyButtons: on
+
 
 ! Newline-separated lists of GDB commands for which buttons are to be created.
 !
@@ -6532,6 +6539,17 @@ Ddd*export_failed_error_popup.title: DDD: Export Failed
 Ddd*export_failed_error*helpString:	\
 @rm The file holding the plot data could not be written.\n\
 The export has been cancelled.
+
+Ddd*export_failed_error_popup.title: DDD: Export Failed
+Ddd*export_failed_error*helpString:	\
+@rm The file holding the plot data could not be written.\n\
+The export has been cancelled.
+
+Ddd*unknown_plot_term_type_error: DDD: Unknown Plot Terminal Type
+Ddd*unknown_plot_term_type_error*helpString:	\
+@rm DDD does not know the plot terminal type specified in the\n\
+SAMP(.plotTermType) resource.\n\
+Possible values include SAMP(xlib) and SAMP(x11).
 
 Ddd*tty_exec_error_popup.title: DDD: No Execution Window
 Ddd*tty_exec_error*helpString:	\

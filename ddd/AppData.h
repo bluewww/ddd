@@ -136,24 +136,23 @@
 #define XtCAutoClose             "AutoClose"
 #define XtNplotCommand           "plotCommand"
 #define XtCPlotCommand           "PlotCommand"
+#define XtNplotTermType          "plotTermType"
+#define XtCPlotTermType          "PlotTermType"
 #define XtNplotInitCommands      "plotInitCommands"
 #define XtCPlotInitCommands      "PlotInitCommands"
 #define XtNplot2dSettings        "plot2dSettings"
 #define XtNplot3dSettings        "plot3dSettings"
 #define XtCPlotSettings          "PlotSettings"
-#define XtNdecoratePlot          "decoratePlot"
-#define XtCDecorate              "Decorate"
-#define XtNbuiltinPlotWindow     "builtinPlotWindow"
-#define XtCBuiltinPlotWindow     "BuiltinPlotWindow"
-#define XtNplotWindow            "plotWindow"
-#define XtCPlotWindow            "PlotWindow"
+#define XtNplotWindowClass       "plotWindowClass"
+#define XtCPlotWindowClass       "PlotWindowClass"
+#define XtNplotWindowDelay       "plotWindowDelay"
+#define XtCWindowDelay           "WindowDelay"
 #define XtNtermCommand           "termCommand"
 #define XtCTermCommand           "TermCommand"
 #define XtNtermType              "termType"
 #define XtCTermType              "TermType"
 #define XtNuseTTYCommand         "useTTYCommand"
 #define XtCUseTTYCommand         "UseTTYCommand"
-#define XtNdecorateTerm          "decorateTerm"
 #define XtNquestionTimeout       "questionTimeout"
 #define XtCQuestionTimeout       "QuestionTimeout"
 #define XtNsynchronousDebugger   "synchronousDebugger"
@@ -332,6 +331,7 @@
 #define XtNautoRaiseTool         "autoRaiseTool"
 #define XtCAutoRaiseTool         "AutoRaiseTool"
 #define XtNdecorateTool          "decorateTool"
+#define XtCDecorate              "Decorate"
 #define XtNstickyTool            "stickyTool"
 #define XtCStickyTool            "StickyTool"
 #define XtNtoolRightOffset       "toolRightOffset"
@@ -431,16 +431,15 @@ struct AppData {
     Boolean   debugger_console;
     Boolean   auto_close_data_window;
     String    plot_command;
-    String    plot_window;
+    String    plot_term_type;
+    String    plot_window_class;
+    Cardinal  plot_window_delay;
     String    plot_init_commands;
     String    plot_2d_settings;
     String    plot_3d_settings;
-    Boolean   decorate_plot;
-    Boolean   builtin_plot_window;
     String    term_command;
     String    term_type;
     Boolean   use_tty_command;
-    Boolean   decorate_term;
     int       question_timeout;
     Boolean   synchronous_gdb;
     Boolean   terminate_on_eof;

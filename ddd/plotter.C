@@ -108,8 +108,6 @@ static void SetContourCB(Widget, XtPointer, XtPointer);
 static void SetViewCB(Widget, XtPointer, XtPointer);
 static void SwallowCB(Widget, XtPointer, XtPointer);
 
-const int SWALLOW_TIMEOUT = 1000;   // Time to wait for swallow window (in ms)
-
 struct PlotWindowInfo {
     DispValue *source;		// The source we depend upon
     string window_name;		// The window name
@@ -492,7 +490,7 @@ static void SwallowCB(Widget swallower, XtPointer client_data,
 
     // Try any `Gnuplot' window just created
     if (window == None)
-	window = findWindow(display, root, app_data.plot_window);
+	window = findWindow(display, root, app_data.plot_window_class);
 
     if (window != None)
 	swallow(plot, window);
@@ -524,7 +522,7 @@ static void SwallowTimeOutCB(XtPointer client_data, XtIntervalId *id)
 	// Try again later
 	plot->timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(plot->swallower),
-			    SWALLOW_TIMEOUT, 
+			    app_data.plot_window_delay, 
 			    SwallowTimeOutCB, XtPointer(plot));
     }
 
@@ -546,7 +544,8 @@ static void SwallowAgainCB(Widget swallower, XtPointer client_data, XtPointer)
 
     plot->timer = 
 	XtAppAddTimeOut(XtWidgetToApplicationContext(plot->swallower),
-			SWALLOW_TIMEOUT, SwallowTimeOutCB, XtPointer(plot));
+			app_data.plot_window_delay, 
+			SwallowTimeOutCB, XtPointer(plot));
 }
 
 
@@ -734,8 +733,10 @@ static PlotWindowInfo *new_decoration(const string& name)
 
 	// Create work window
 	Widget work;
-	if (app_data.builtin_plot_window)
+	string plot_term_type = downcase(app_data.plot_term_type);
+	if (plot_term_type.contains("xlib", 0))
 	{
+	    // xlib type - create plot area to draw plot commands
 	    arg = 0;
 	    work = XmCreateDrawingArea(scroll, PLOT_AREA_NAME, args, arg);
 	    XtManageChild(work);
@@ -744,12 +745,21 @@ static PlotWindowInfo *new_decoration(const string& name)
 		new PlotArea(work, make_font(app_data, FixedWidthDDDFont));
 	    XtVaSetValues(work, XmNuserData, XtPointer(plot->area), NULL);
 	}
-	else
+	else if (plot_term_type.contains("x11", 0))
 	{
+	    // x11 type - swallow Gnuplot window
 	    arg = 0;
 	    work = plot->swallower = 
 		XtCreateManagedWidget(SWALLOWER_NAME, swallowerWidgetClass, 
 				      scroll, args, arg);
+	}
+	else
+	{
+	    // Unknown terminal type
+	    post_error("Unknown plot terminal type " + 
+		       quote(app_data.plot_term_type),
+		       "unknown_plot_term_type_error");
+	    return 0;
 	}
 
 	// Create scroll bars
@@ -808,7 +818,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 
 	plot->timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(plot->swallower),
-			    SWALLOW_TIMEOUT, SwallowTimeOutCB, 
+			    app_data.plot_window_delay, SwallowTimeOutCB, 
 			    XtPointer(plot));
     }
 
@@ -857,6 +867,9 @@ PlotAgent *new_plotter(string name, DispValue *source)
 
     // Create shell
     PlotWindowInfo *plot = new_decoration(name);
+    if (plot == 0)
+	return 0;
+
     plot->source      = source;
     plot->window_name = window_name;
     XtVaSetValues(plot->shell, XmNuserData, XtPointer(True), NULL);
@@ -904,10 +917,7 @@ PlotAgent *new_plotter(string name, DispValue *source)
     }
 
     string init = app_data.plot_init_commands;
-    if (plot->area != 0)
-	init.prepend("set term xlib\n");
-    else
-	init.prepend("set term x11\n");
+    init.prepend("set term " + string(app_data.plot_term_type) + "\n");
     if (init != "" && !init.contains('\n', -1))
 	init += '\n';
 
