@@ -184,13 +184,19 @@ The simplest way to compile DDD is:
  10. Optionally, type `make strip' to reduce the size of the `ddd'
      executable by stripping the debugging information.
 
- 11. Type `make install'.  This installs the DDD executable `ddd' in
+ 11. Please consider sharing your DDD binary with other people lacking
+     Motif or a sane build environment.  As the DDD maintainers have
+     access to a limited number of systems only, they cannot produce
+     binaries for every single configuration.  For details, see
+     `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/bin/'.
+
+ 12. Type `make install'.  This installs the DDD executable `ddd' in
      some public place (usually in `/usr/local/bin/') and the DDD
      manual page `ddd.1' (in `/usr/local/man/man1/').  See
      `Installation Names', below, on how to configure DDD to use other
      locations and names.
 
- 12. Like every good X citizen, DDD comes with an application defaults
+ 13. Like every good X citizen, DDD comes with an application defaults
      file, named `ddd/Ddd'.  By default, this file is already compiled
      into DDD, so you need not install it.
 
@@ -201,7 +207,7 @@ The simplest way to compile DDD is:
      want to install it, copy `Ddd' to a place where app-defaults
      files are commonly found.
 
- 13. You can remove the program binaries, libraries and object files
+ 14. You can remove the program binaries, libraries and object files
      from the source directory by typing `make clean'.
 
      To also remove the Makefiles, the header files containing
@@ -214,12 +220,6 @@ The simplest way to compile DDD is:
 
      (There is also `make ultraclean' that removes *every* derived
      file; don't use it unless you know what you do.)
-
- 14. Please consider sharing your DDD binary with other people lacking
-     Motif or a C++ compiler.  As the DDD maintainers have access to a
-     limited number of systems only, they cannot produce binaries for
-     every single configuration.  For details, see
-     `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/bin/'.
 
  15. You can remove DDD from your system by typing `make uninstall'.
 
