@@ -15,7 +15,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the GNU Library General Public License for more details.
 You should have received a copy of the GNU Library General Public
 License along with this library; if not, write to the Free Software
-Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 char strclass_rcsid[] = 
@@ -158,8 +158,16 @@ inline static strRep* string_Snew(int newsiz)
 	cerr << "string: requested length out of range\n";
 	abort();
     }
-    
+
+#if 0
+    // This change was introduced in libg++ 2.7.1.  I don't know which
+    // C++ compilers already support this `placement new' syntax, so I
+    // leave it out for the moment.  - AZ
+    strRep* rep = new (operator new (allocsiz)) strRep;
+#else
+    // Uglier, but more portable.
     strRep* rep = (strRep *) new char[allocsiz];
+#endif
     rep->sz = allocsiz - sizeof(strRep);
     return rep;
 }
