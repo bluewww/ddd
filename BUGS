@@ -130,8 +130,7 @@ Volunteers for fixing these and other bugs are welcome!
      Xxgdb, mxgdb and xde all display the full 64 bits of this data
      type.
 
-063. GDB versions earlier than GDB 4.13 do not always issue the
-     current PC after stopping.  Upgrade to a more recent GDB or enter
-     the line `display /x $pc' in `~/.gdbinit'.
+064. After changing the source code, the current execution glyph is
+     not cleared.
 
-064. (Insert your bug here)
+065. (Insert your bug here)
