@@ -730,8 +730,13 @@ void PosBuffer::filter (string& answer)
 		strip_final_blanks(line);
 
 		// Having reached a breakpoint, JDB uses a format like
-		// `(foo.bar.HelloWorld:3)'.
+		// `(HelloWorld:3)'.
 		// Having loaded a class, JDB uses `class(foo.bar.HelloWorld)'.
+
+		// This may be prefixed by the fully qualified class
+		// name (`path'), as in
+		// `GlobalView.Map.MapController.createMap (MapController:53)'.
+		// In such a case, prefer the fully qualified name.
 #if RUNTIME_REGEX
 		static regex 
 		    rxjdbpos("((class|interface)[(][A-Za-z][A-Za-z0-9.]*[)]|"
@@ -739,16 +744,41 @@ void PosBuffer::filter (string& answer)
 #endif
 		if (line.matches(rxjdbpos))
 		{
-		    line = line.from('(', -1);
-		    line = line.after('(');
-		    string file = line.before(')');
+		    string file = line.after('(');
+		    file = file.before(')');
 		    string line_no = "1";
 		    if (file.contains(':'))
 		    {
 			line_no = file.after(':');
 			file = file.before(':');
 		    }
-		    pos_buffer   = file + ":" + line_no;
+ 
+		    // Check whether a fully qualified class name is prepended
+		    int class_index = line.index('(') - 1;
+		    while (class_index >= 0 && line[class_index] == ' ')
+			class_index--;
+		    while (class_index >= 1 && line[class_index - 1] != ' ')
+			class_index--;
+		    if (class_index >= 0)
+		    {
+			string class_name = line.from(class_index);
+			class_name = class_name.before('(');
+			strip_final_blanks(class_name);
+			if (class_name.contains('.') && 
+			    class_name.matches(rxchain))
+			{
+			    // Strip method
+			    class_name = class_name.before('.', -1);
+
+			    if (class_name.contains("." + file), -1)
+			    {
+				// CLASS_NAME is more qualified - use it
+				file = class_name;
+			    }
+			}
+		    }
+
+		    pos_buffer	 = file + ":" + line_no;
 		    already_read = PosComplete;
 
 #if 0
