@@ -44,6 +44,7 @@ char ComboBox_rcsid[] =
 #include "verify.h"
 #include "wm.h"
 #include "TimeOut.h"
+#include "AutoRaise.h"
 
 #include <Xm/Xm.h>
 #include <Xm/ArrowB.h>
@@ -90,22 +91,6 @@ struct ComboBoxInfo
 
 
 #if !USE_XM_COMBOBOX
-// Make sure menu stays on top.  This prevents conflicts with
-// auto-raise windows which would otherwise hide menu panels.
-static void AutoRaiseEH(Widget w, XtPointer, XEvent *event, Boolean *)
-{
-
-    if (event->type != VisibilityNotify)
-	return;
-
-    switch (event->xvisibility.state)
-    {
-    case VisibilityFullyObscured:
-    case VisibilityPartiallyObscured:
-	XRaiseWindow(XtDisplay(w), frame(w));
-	break;
-    }
-}
 
 static void CloseWhenActivatedCB(XtPointer client_data, XtIntervalId *id)
 {
@@ -451,13 +436,13 @@ Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
 				     overrideShellWidgetClass,
 				     parent, args, arg);
 
-    XtAddEventHandler(info->shell, VisibilityChangeMask, False,
-		      AutoRaiseEH, XtPointer(0));
-
     arg = 0;
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
     info->list = XmCreateScrolledList(info->shell, "list", args, arg);
     XtManageChild(info->list);
+
+    // Keep shell on top
+    _auto_raise(info->shell);
 
     // Set form size explicitly.
     XtWidgetGeometry size;

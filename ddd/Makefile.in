@@ -690,6 +690,7 @@ XSTUFF_OBJECTS = \
 	selection.o  \
 	simpleMenu.o \
 	verify.o     \
+	AutoRaise.o  \
 	ComboBox.o   \
 	Delay.o      \
 	DestroyCB.o  \
