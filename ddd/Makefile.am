@@ -2057,11 +2057,11 @@ REL = 1
 
 # RPM spec
 .PHONY:	spec
-spec: ../$(ddd)-$(VERSION)-$(REL).spec
-../$(ddd)-$(VERSION)-$(REL).spec: $(srcdir)/../ddd.spec.in $(top_builddir)/config.status
-	CONFIG_FILES=../ddd.spec CONFIG_HEADERS= $(SHELL) $(top_builddir)/config.status
-	$(SED) 's/@REL@/$(REL)/g' ../ddd.spec > $@
-	$(RM) ../ddd.spec
+spec: $(srcdir)/../$(ddd)-$(VERSION)-$(REL).spec
+$(srcdir)/../$(ddd)-$(VERSION)-$(REL).spec: $(srcdir)/../ddd.spec.in $(top_builddir)/config.status
+	CONFIG_FILES=$(srcdir)/../ddd.spec CONFIG_HEADERS= $(SHELL) $(top_builddir)/config.status
+	$(SED) 's/@REL@/$(REL)/g' $(srcdir)/../ddd.spec > $@
+	$(RM) $(srcdir)/../ddd.spec
 
 # Architecture-independent files required for building DDD.
 # In a distribution, these should be already built.
@@ -2086,7 +2086,7 @@ PROG_STUFF = $(LEXTOCXX).flex $(LEXTOCXX).sun \
 	     .gdbinit $(ICONS)
 
 # Additional files to be included in the distribution.
-DIST_STUFF = ../$(ddd)-$(VERSION)-$(REL).spec \
+DIST_STUFF = $(srcdir)/../$(ddd)-$(VERSION)-$(REL).spec \
 	     $(srcdir)/header.ps $(srcdir)/trailer.ps \
 	     $(docdir)/ddd.ps $(docdir)/ddd.pdf \
 	     $(docdir)/ddd-themes.ps $(docdir)/ddd-themes.pdf \
