@@ -1029,47 +1029,47 @@ if test "$ice_cv_have_ansi_lifetime_of_temporaries" = yes; then
 AC_DEFINE(HAVE_ANSI_LIFETIME_OF_TEMPORARIES)
 fi
 ])dnl
-dnl
-dnl ICE_OSTRSTREAM_PCOUNT_BROKEN
-dnl ----------------------------
-dnl
-dnl If the C++ ostrstream::pcount() is increased by one after calling
-dnl ostrstream::str() (as in the SGI C++ I/O library), 
-dnl define `OSTRSTREAM_PCOUNT_BROKEN'.
-dnl
-dnlAC_DEFUN(ICE_OSTRSTREAM_PCOUNT_BROKEN,
-dnl[
-dnlAC_REQUIRE([AC_PROG_CXX])
-dnlAC_MSG_CHECKING(whether ostrstream::pcount() is broken)
-dnlAC_CACHE_VAL(ice_cv_ostrstream_pcount_broken,
-dnl[
-dnlAC_LANG_SAVE
-dnlAC_LANG_CPLUSPLUS
-dnlAC_TRY_RUN(
-dnl[
-dnl// Returns 0 if ostrstream::pcount() is broken; 1, otherwise.
-dnl#include <iostream>
-dnl#include <strstream>
-dnl
-dnlint main() 
-dnl{
-dnl    std::ostrstream os;
-dnl    os << 'a';           // os.pcount() == 1.
-dnl    char *s = os.str();  // In the SGI C++ I/O library, os.pcount() is now 2!
-dnl    return (os.pcount() == 2) ? 0 : 1;
-dnl}
-dnl], 
-dnlice_cv_ostrstream_pcount_broken=yes,
-dnlice_cv_ostrstream_pcount_broken=no,
-dnlice_cv_ostrstream_pcount_broken=no
-dnl)
-dnlAC_LANG_RESTORE
-dnl])
-dnlAC_MSG_RESULT($ice_cv_ostrstream_pcount_broken)
-dnlif test "$ice_cv_ostrstream_pcount_broken" = yes; then
-dnlAC_DEFINE(OSTRSTREAM_PCOUNT_BROKEN)
-dnlfi
-dnl])dnl
+##!dnl
+##!dnl ICE_OSTRSTREAM_PCOUNT_BROKEN
+##!dnl ----------------------------
+##!dnl
+##!dnl If the C++ ostrstream::pcount() is increased by one after calling
+##!dnl ostrstream::str() (as in the SGI C++ I/O library), 
+##!dnl define `OSTRSTREAM_PCOUNT_BROKEN'.
+##!dnl
+##!AC_DEFUN(ICE_OSTRSTREAM_PCOUNT_BROKEN,
+##![
+##!AC_REQUIRE([AC_PROG_CXX])
+##!AC_MSG_CHECKING(whether ostrstream::pcount() is broken)
+##!AC_CACHE_VAL(ice_cv_ostrstream_pcount_broken,
+##![
+##!AC_LANG_SAVE
+##!AC_LANG_CPLUSPLUS
+##!AC_TRY_RUN(
+##![
+##!// Returns 0 if ostrstream::pcount() is broken; 1, otherwise.
+##!#include <iostream>
+##!#include <strstream>
+##!
+##!int main() 
+##!{
+##!    std::ostrstream os;
+##!    os << 'a';           // os.pcount() == 1.
+##!    char *s = os.str();  // In the SGI C++ I/O library, os.pcount() is now 2!
+##!    return (os.pcount() == 2) ? 0 : 1;
+##!}
+##!], 
+##!ice_cv_ostrstream_pcount_broken=yes,
+##!ice_cv_ostrstream_pcount_broken=no,
+##!ice_cv_ostrstream_pcount_broken=no
+##!)
+##!AC_LANG_RESTORE
+##!])
+##!AC_MSG_RESULT($ice_cv_ostrstream_pcount_broken)
+##!if test "$ice_cv_ostrstream_pcount_broken" = yes; then
+##!AC_DEFINE(OSTRSTREAM_PCOUNT_BROKEN)
+##!fi
+##!])dnl
 dnl
 dnl
 dnl ICE_CXX_LONG_LONG
@@ -1745,108 +1745,108 @@ AC_MSG_WARN([[Please #define SIGHANDLERARGS in config.h]])
 fi
 AC_DEFINE_UNQUOTED(SIGHANDLERARGS, $ice_cv_type_sig_handler_args)
 ])dnl
-dnl
-dnl
-dnl
-dnl ICE_CHECK_FROZEN_OSTRSTREAM
-dnl ---------------------------
-dnl
-dnl If the C++ library has a ostrstream::frozen() function,
-dnl define HAVE_FROZEN_OSTRSTREAM.
-dnl
-dnlAC_DEFUN(ICE_CHECK_FROZEN_OSTRSTREAM,
-dnl[
-dnlAC_REQUIRE([AC_PROG_CXX])
-dnlAC_MSG_CHECKING([for ostrstream::frozen()])
-dnlAC_CACHE_VAL(ice_cv_frozen_ostrstream,
-dnl[
-dnlAC_LANG_SAVE
-dnlAC_LANG_CPLUSPLUS
-dnlAC_TRY_COMPILE([#include <strstream>],
-dnl[std::ostrstream os; int frozen = os.frozen();],
-dnlice_cv_frozen_ostrstream=yes, ice_cv_frozen_ostrstream=no)
-dnlAC_LANG_RESTORE
-dnl])
-dnlAC_MSG_RESULT($ice_cv_frozen_ostrstream)
-dnlif test "$ice_cv_frozen_ostrstream" = yes; then
-dnlAC_DEFINE(HAVE_FROZEN_OSTRSTREAM)
-dnlfi
-dnl])dnl
-dnl
-dnl ICE_CHECK_FREEZE_OSTRSTREAM
-dnl ---------------------------
-dnl
-dnl If the C++ library has a ostrstream::freeze() function,
-dnl define HAVE_FREEZE_OSTRSTREAM.
-dnl
-dnlAC_DEFUN(ICE_CHECK_FREEZE_OSTRSTREAM,
-dnl[
-dnlAC_REQUIRE([AC_PROG_CXX])
-dnlAC_MSG_CHECKING([for ostrstream::freeze()])
-dnlAC_CACHE_VAL(ice_cv_freeze_ostrstream,
-dnl[
-dnlAC_LANG_SAVE
-dnlAC_LANG_CPLUSPLUS
-dnlAC_TRY_COMPILE([#include <strstream>],
-dnl[std::ostrstream os; os.freeze(0);],
-dnlice_cv_freeze_ostrstream=yes, ice_cv_freeze_ostrstream=no)
-dnlAC_LANG_RESTORE
-dnl])
-dnlAC_MSG_RESULT($ice_cv_freeze_ostrstream)
-dnlif test "$ice_cv_freeze_ostrstream" = yes; then
-dnlAC_DEFINE(HAVE_FREEZE_OSTRSTREAM)
-dnlfi
-dnl])dnl
-dnl
-dnl ICE_CHECK_FROZEN_OSTRSTREAMBUF
-dnl ------------------------------
-dnl
-dnl If the C++ library has a ostrstreambuf::frozen() function,
-dnl define HAVE_FROZEN_OSTRSTREAMBUF.
-dnl
-dnlAC_DEFUN(ICE_CHECK_FROZEN_OSTRSTREAMBUF,
-dnl[
-dnlAC_REQUIRE([AC_PROG_CXX])
-dnlAC_MSG_CHECKING([for ostrstreambuf::frozen()])
-dnlAC_CACHE_VAL(ice_cv_frozen_ostrstreambuf,
-dnl[
-dnlAC_LANG_SAVE
-dnlAC_LANG_CPLUSPLUS
-dnlAC_TRY_COMPILE([#include <strstream>],
-dnl[std::ostrstream os; int frozen = os.rdbuf()->frozen();],
-dnlice_cv_frozen_ostrstreambuf=yes, ice_cv_frozen_ostrstreambuf=no)
-dnlAC_LANG_RESTORE
-dnl])
-dnlAC_MSG_RESULT($ice_cv_frozen_ostrstreambuf)
-dnlif test "$ice_cv_frozen_ostrstreambuf" = yes; then
-dnlAC_DEFINE(HAVE_FROZEN_OSTRSTREAMBUF)
-dnlfi
-dnl])dnl
-dnl
-dnl ICE_CHECK_FREEZE_OSTRSTREAMBUF
-dnl ------------------------------
-dnl
-dnl If the C++ library has a ostrstreambuf::freeze() function,
-dnl define HAVE_FREEZE_OSTRSTREAMBUF.
-dnl
-dnlAC_DEFUN(ICE_CHECK_FREEZE_OSTRSTREAMBUF,
-dnl[
-dnlAC_REQUIRE([AC_PROG_CXX])
-dnlAC_MSG_CHECKING([for ostrstreambuf::freeze()])
-dnlAC_CACHE_VAL(ice_cv_freeze_ostrstreambuf,
-dnl[
-dnlAC_LANG_SAVE
-dnlAC_LANG_CPLUSPLUS
-dnlAC_TRY_COMPILE([#include <strstream>],
-dnl[std::ostrstream os; os.rdbuf()->freeze(0);],
-dnlice_cv_freeze_ostrstreambuf=yes, ice_cv_freeze_ostrstreambuf=no)
-dnlAC_LANG_RESTORE
-dnl])
-dnlAC_MSG_RESULT($ice_cv_freeze_ostrstreambuf)
-dnlif test "$ice_cv_freeze_ostrstreambuf" = yes; then
-dnlAC_DEFINE(HAVE_FREEZE_OSTRSTREAMBUF)
-dnlfi
-dnl])dnl
+##!dnl
+##!dnl
+##!dnl
+##!dnl ICE_CHECK_FROZEN_OSTRSTREAM
+##!dnl ---------------------------
+##!dnl
+##!dnl If the C++ library has a ostrstream::frozen() function,
+##!dnl define HAVE_FROZEN_OSTRSTREAM.
+##!dnl
+##!AC_DEFUN(ICE_CHECK_FROZEN_OSTRSTREAM,
+##![
+##!AC_REQUIRE([AC_PROG_CXX])
+##!AC_MSG_CHECKING([for ostrstream::frozen()])
+##!AC_CACHE_VAL(ice_cv_frozen_ostrstream,
+##![
+##!AC_LANG_SAVE
+##!AC_LANG_CPLUSPLUS
+##!AC_TRY_COMPILE([#include <strstream>],
+##![std::ostrstream os; int frozen = os.frozen();],
+##!ice_cv_frozen_ostrstream=yes, ice_cv_frozen_ostrstream=no)
+##!AC_LANG_RESTORE
+##!])
+##!AC_MSG_RESULT($ice_cv_frozen_ostrstream)
+##!if test "$ice_cv_frozen_ostrstream" = yes; then
+##!AC_DEFINE(HAVE_FROZEN_OSTRSTREAM)
+##!fi
+##!])dnl
+##!dnl
+##!dnl ICE_CHECK_FREEZE_OSTRSTREAM
+##!dnl ---------------------------
+##!dnl
+##!dnl If the C++ library has a ostrstream::freeze() function,
+##!dnl define HAVE_FREEZE_OSTRSTREAM.
+##!dnl
+##!AC_DEFUN(ICE_CHECK_FREEZE_OSTRSTREAM,
+##![
+##!AC_REQUIRE([AC_PROG_CXX])
+##!AC_MSG_CHECKING([for ostrstream::freeze()])
+##!AC_CACHE_VAL(ice_cv_freeze_ostrstream,
+##![
+##!AC_LANG_SAVE
+##!AC_LANG_CPLUSPLUS
+##!AC_TRY_COMPILE([#include <strstream>],
+##![std::ostrstream os; os.freeze(0);],
+##!ice_cv_freeze_ostrstream=yes, ice_cv_freeze_ostrstream=no)
+##!AC_LANG_RESTORE
+##!])
+##!AC_MSG_RESULT($ice_cv_freeze_ostrstream)
+##!if test "$ice_cv_freeze_ostrstream" = yes; then
+##!AC_DEFINE(HAVE_FREEZE_OSTRSTREAM)
+##!fi
+##!])dnl
+##!dnl
+##!dnl ICE_CHECK_FROZEN_OSTRSTREAMBUF
+##!dnl ------------------------------
+##!dnl
+##!dnl If the C++ library has a ostrstreambuf::frozen() function,
+##!dnl define HAVE_FROZEN_OSTRSTREAMBUF.
+##!dnl
+##!AC_DEFUN(ICE_CHECK_FROZEN_OSTRSTREAMBUF,
+##![
+##!AC_REQUIRE([AC_PROG_CXX])
+##!AC_MSG_CHECKING([for ostrstreambuf::frozen()])
+##!AC_CACHE_VAL(ice_cv_frozen_ostrstreambuf,
+##![
+##!AC_LANG_SAVE
+##!AC_LANG_CPLUSPLUS
+##!AC_TRY_COMPILE([#include <strstream>],
+##![std::ostrstream os; int frozen = os.rdbuf()->frozen();],
+##!ice_cv_frozen_ostrstreambuf=yes, ice_cv_frozen_ostrstreambuf=no)
+##!AC_LANG_RESTORE
+##!])
+##!AC_MSG_RESULT($ice_cv_frozen_ostrstreambuf)
+##!if test "$ice_cv_frozen_ostrstreambuf" = yes; then
+##!AC_DEFINE(HAVE_FROZEN_OSTRSTREAMBUF)
+##!fi
+##!])dnl
+##!dnl
+##!dnl ICE_CHECK_FREEZE_OSTRSTREAMBUF
+##!dnl ------------------------------
+##!dnl
+##!dnl If the C++ library has a ostrstreambuf::freeze() function,
+##!dnl define HAVE_FREEZE_OSTRSTREAMBUF.
+##!dnl
+##!AC_DEFUN(ICE_CHECK_FREEZE_OSTRSTREAMBUF,
+##![
+##!AC_REQUIRE([AC_PROG_CXX])
+##!AC_MSG_CHECKING([for ostrstreambuf::freeze()])
+##!AC_CACHE_VAL(ice_cv_freeze_ostrstreambuf,
+##![
+##!AC_LANG_SAVE
+##!AC_LANG_CPLUSPLUS
+##!AC_TRY_COMPILE([#include <strstream>],
+##![std::ostrstream os; os.rdbuf()->freeze(0);],
+##!ice_cv_freeze_ostrstreambuf=yes, ice_cv_freeze_ostrstreambuf=no)
+##!AC_LANG_RESTORE
+##!])
+##!AC_MSG_RESULT($ice_cv_freeze_ostrstreambuf)
+##!if test "$ice_cv_freeze_ostrstreambuf" = yes; then
+##!AC_DEFINE(HAVE_FREEZE_OSTRSTREAMBUF)
+##!fi
+##!])dnl
 dnl
 dnl
 dnl ICE_TYPE_REGEX_T
