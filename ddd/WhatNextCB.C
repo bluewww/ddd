@@ -129,13 +129,6 @@ static bool program_running(string& state)
 // Give a help dependent on current DDD state
 void WhatNextCB(Widget, XtPointer, XtPointer)
 {
-    // Just a dream...
-    if (XmTextGetLastPosition(gdb_w) % 100 == 0)
-    {
-	hint_on("stuck");
-	return;
-    }
-
     // Special DDD states
     if (ddd_has_crashed)
     {
