@@ -1,5 +1,5 @@
 /* Defs for interface to demanglers.
-   Copyright 1992 Free Software Foundation, Inc.
+   Copyright 1992, 1995 Free Software Foundation, Inc.
    
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,13 +13,37 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 
 #if !defined (DEMANGLE_H)
 #define DEMANGLE_H
 
+#ifdef IN_GCC
+
+/* Add prototype support.  */
+#ifndef PROTO
+#if defined (USE_PROTOTYPES) ? USE_PROTOTYPES : defined (__STDC__)
+#define PROTO(ARGS) ARGS
+#else
+#define PROTO(ARGS) ()
+#endif
+#endif
+
+#define PARAMS(ARGS) PROTO(ARGS)
+
+#ifdef __STDC__
+#define PTR void *
+#else
+#ifndef const
+#define const
+#endif
+#define PTR char *
+#endif
+
+#else /* ! IN_GCC */
 #include <ansidecl.h>
+#endif /* IN_GCC */
 
 /* Options passed to cplus_demangle (in 2nd parameter). */
 
@@ -67,7 +91,13 @@ extern enum demangling_styles
 #define ARM_DEMANGLING (CURRENT_DEMANGLING_STYLE & DMGL_ARM)
 
 extern char *
-cplus_demangle PARAMS ((CONST char *mangled, int options));
+cplus_demangle PARAMS ((const char *mangled, int options));
+
+extern int
+cplus_demangle_opname PARAMS ((char *opname, char *result, int options));
+
+extern char *
+cplus_mangle_opname PARAMS ((char *opname, int options));
 
 /* Note: This sets global state.  FIXME if you care about multi-threading. */
 

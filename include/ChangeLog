@@ -1,3 +1,236 @@
+Mon Jul 10 13:26:49 1995  Eric Youngdale  <eric@aib.com>
+
+	* bfdlink.h (struct bfd_link_info): Add new field symbolic.
+
+Sun Jul  2 17:48:40 1995  Ian Lance Taylor  <ian@cygnus.com>
+
+	* bfdlink.h (struct bfd_link_info): Change type of base_file to
+	PTR.
+
+Thu Jun 29 00:02:45 1995  Steve Chamberlain  <sac@slash.cygnus.com>
+
+	* bfdlink.h (struct bfd_link_info): Added base_file member.
+
+Tue Jun 20 16:40:04 1995  Steve Chamberlain  <sac@slash.cygnus.com>
+
+	* ansidecl.h: win32s is ANSI enough.
+
+Thu May 18 04:25:50 1995  Ken Raeburn  <raeburn@kr-laptop.cygnus.com>
+
+	Wed May 10 14:28:16 1995 Richard Earnshaw (rearnsha@armltd.co.uk)
+
+	* dis-asm.h (print_insn_arm): Delete declaration.
+	(print_insn_{little,big}_arm): New declarations.
+
+	* floatformat.h (floatformat_arm_ext): Declare.
+
+Sat May 13 10:14:08 1995  Steve Chamberlain  <sac@slash.cygnus.com>
+
+	* coff/pe.h: New file.
+	* bfdlink.h (subsytem, stack_heap_parameters): New.
+	* coff/i386.h (NT_SECTION_ALIGNMENT, NT_FILE_ALIGNMENT,
+	NT_DEF_RESERVE, NT_DEF_COMMIT): New.
+	* coff/internal.h (internal_filehdr):  New fields for PE.
+	(IMAGE_DATA_DIRECTORY): New.
+	(internal_aouthdr): New fields for PE.
+
+Thu May  4 14:36:42 1995  Jason Merrill  <jason@phydeaux.cygnus.com>
+
+	* demangle.h: Don't include ansidecl.h if IN_GCC.
+
+
+Tue Feb 21 00:37:28 1995  Jeff Law  (law@snake.cs.utah.edu)
+
+	* hp-symtab.h: Don't use bitfield enumerations, the HP C compiler
+	does not handle them correctly.
+
+
+Thu Feb  9 14:20:27 1995  Ian Lance Taylor  <ian@cygnus.com>
+
+	* libiberty.h (basename): Don't declare parameter type; some
+	systems have this in their header files.
+
+Wed Feb  8 17:35:38 1995  Ian Lance Taylor  <ian@cygnus.com>
+
+	* bfdlink.h (struct bfd_link_hash_entry): Change format of common
+	symbol information, to remove restrictions on maximum size and
+	alignment power, by using a pointer to a structure instead.
+
+Mon Feb  6 14:55:32 1995  Ian Lance Taylor  <ian@cygnus.com>
+
+	* bfdlink.h (enum bfd_link_hash_type): Rename bfd_link_hash_weak
+	to bfd_link_hash_undefweak.  Add bfd_link_hash_defweak.
+
+Mon Jan 16 21:00:23 1995  Stan Shebs  <shebs@andros.cygnus.com>
+
+	* dis-asm.h (GDB_INIT_DISASSEMBLE_INFO, etc): Remove all
+	GDB-specific definitions.
+
+Sun Jan 15 18:39:35 1995  Steve Chamberlain  <sac@splat>
+
+	* dis-asm.h (print_insn_w65): Declare.
+
+Thu Jan 12 17:51:17 1995  Ken Raeburn  <raeburn@cujo.cygnus.com>
+
+	* libiberty.h (hex_p): Fix sense of test.
+
+Wed Jan 11 22:36:40 1995  Ken Raeburn  <raeburn@cujo.cygnus.com>
+
+	* libiberty.h (_hex_array_size, _hex_bad, _hex_value, hex_init,
+	hex_p, hex_value): New macros and declarations, for hex.c.
+
+Fri Jan  6 17:44:14 1995  Ian Lance Taylor  <ian@sanguine.cygnus.com>
+
+	* dis-asm.h: Make idempotent.
+
+Wed Dec 14 13:08:43 1994  Stan Shebs  <shebs@andros.cygnus.com>
+
+	* progress.h: New file, empty definitions for progress macros.
+
+
+Fri Nov 25 00:14:05 1994  Jeff Law  (law@snake.cs.utah.edu)
+
+	* hp-symtab.h: New file describing the debug symbols emitted
+	by the HP C compilers.  
+
+Fri Nov 11 15:48:37 1994  Ian Lance Taylor  <ian@sanguine.cygnus.com>
+
+	* bfdlink.h (struct bfd_link_hash_entry): Change u.c.size from 24
+	to 26 bits, and change u.c.alignment_power from 8 to 6 bits.  6
+	bit in the alignment power is enough for a 64 bit address space.
+
+Mon Oct 31 13:02:51 1994  Stan Shebs  (shebs@andros.cygnus.com)
+
+	* demangle.h (cplus_mangle_opname): Declare.
+
+Tue Oct 25 11:38:02 1994  Ian Lance Taylor  <ian@sanguine.cygnus.com>
+
+	* bfdlink.h (struct bfd_link_callbacks): Fix comments for
+	multiple_common field.
+
+Sun Sep 04 17:58:10 1994  Richard Earnshaw (rwe@pegasus.esprit.ec.org)
+
+	* aout/aout64.h: Only define QMAGIC if it isn't already defined.
+
+	* dis-asm.h: Add support for the ARM.
+
+Wed Aug 10 12:51:41 1994  Doug Evans  (dje@canuck.cygnus.com)
+
+	* libiberty.h (strsignal): Document its existence even if we
+	can't declare it.
+
+Tue Aug  2 14:40:03 1994  Jim Kingdon  (kingdon@lioth.cygnus.com)
+
+	* os9k.h: Remove u_int16, u_int32, and owner_id typedefs and
+	expand their uses.  Those names conflict with Mach headers.
+
+Fri Jul 22 14:17:12 1994  Ian Lance Taylor  (ian@sanguine.cygnus.com)
+
+	* bfdlink.h (struct bfd_link_hash_entry): Change u.c.size into a
+	bitfield.  Add field u.c.alignment_power.
+
+Sun Jul 10 00:26:39 1994  Ian Dall  (dall@hfrd.dsto.gov.au)
+
+	* dis-asm.h: Add print_insn_ns32k declaration.
+
+Mon Jun 20 17:13:29 1994  Ian Lance Taylor  (ian@sanguine.cygnus.com)
+
+	* bfdlink.h (bfd_link_hash_table): Make creator a const pointer.
+
+Sat Jun 18 16:09:32 1994  Stan Shebs  (shebs@andros.cygnus.com)
+
+	* demangle.h (cplus_demangle_opname): Declare.
+
+Thu Jun 16 15:19:03 1994  Ian Lance Taylor  (ian@tweedledumb.cygnus.com)
+
+	* bfdlink.h (struct bfd_link_info): Add new field shared.
+
+Mon Jun  6 14:39:44 1994  Ian Lance Taylor  (ian@tweedledumb.cygnus.com)
+
+	* bfdlink.h (struct bfd_link_hash_entry): Remove written field:
+	not needed for all backends.
+
+Thu Apr 28 19:06:50 1994  Ken Raeburn  (raeburn@cujo.cygnus.com)
+
+	* dis-asm.h (disassembler): Declare.
+
+Fri Apr  1 00:38:17 1994  Jim Wilson  (wilson@mole.gnu.ai.mit.edu)
+
+        * obstack.h: Delete use of IN_GCC to control whether
+        stddef.h or gstddef.h is included.
+
+Tue Mar 22 13:06:02 1994  Ian Lance Taylor  (ian@tweedledumb.cygnus.com)
+
+	* bfdlink.h (enum bfd_link_order_type): Add bfd_data_link_order.
+	(struct bfd_link_order): Add data field to union.
+
+Mon Mar 21 18:45:26 1994  Ian Lance Taylor  (ian@tweedledumb.cygnus.com)
+
+	* bfdlink.h (struct bfd_link_callbacks): Change bitsize argument
+	to add_to_set to reloc.  Remove bitsize argument from constructor.
+	Comment that reloc_overflow, reloc_dangerous and unattached_reloc
+	must handle NULL pointers for reloc location.
+	(enum bfd_link_order_type): Add bfd_section_reloc_link_order and
+	bfd_symbol_reloc_link_order.
+	(struct bfd_link_order): Add reloc field to union.
+	(struct bfd_link_order_reloc): Define.
+
+Mon Mar 14 12:27:50 1994  Ian Lance Taylor  (ian@cygnus.com)
+
+	* ieee-float.h: Removed; no longer used.
+
+Tue Mar  1 18:10:49 1994  Kung Hsu  (kung@mexican.cygnus.com)
+
+	* os9k.h: os9000 target specific header file, the header of the
+	object file is used now.
+
+Sun Feb 27 21:52:26 1994  Jim Kingdon  (kingdon@deneb.cygnus.com)
+
+	* floatformat.h: New file, intended to replace ieee-float.h.
+
+Sun Feb 20 17:15:42 1994  Ian Lance Taylor  (ian@lisa.cygnus.com)
+
+	* ansidecl.h (ANSI_PROTOTYPES): Define if using ANSI prototypes.
+
+Wed Feb 16 01:07:12 1994  Ian Lance Taylor  (ian@tweedledumb.cygnus.com)
+
+	* libiberty.h: Don't declare strsignal, to avoid conflicts with
+	Solaris system header files.
+
+Sat Feb 12 22:11:32 1994  Jeffrey A. Law  (law@snake.cs.utah.edu)
+
+	* libiberty.h (xexit): Use __volatile__ to avoid losing if
+	compiling with gcc -traditional.
+
+Thu Feb 10 14:05:41 1994  Ian Lance Taylor  (ian@cygnus.com)
+
+	* libiberty.h: New file.  Declares functions provided by
+	libiberty.
+
+Tue Feb  8 05:19:52 1994  David J. Mackenzie  (djm@thepub.cygnus.com)
+
+	Handle obstack_chunk_alloc returning NULL.  This allows
+	obstacks to be used by libraries, without forcing them
+	to call exit or longjmp.
+	* obstack.h (struct obstack): Add alloc_failed flag.
+	_obstack_begin, _obstack_begin_1): Declare to return int, not void.
+	(obstack_finish): If alloc_failed, return NULL.
+	(obstack_base, obstack_next_free, objstack_object_size): 
+	If alloc_failed, return 0.
+	(obstack_grow, obstack_grow0, obstack_1grow, obstack_ptr_grow,
+	obstack_int_grow, obstack_blank): If alloc_failed, do nothing that
+	could corrupt the obstack.
+
+Mon Jan 24 15:06:05 1994  Ian Lance Taylor  (ian@tweedledumb.cygnus.com)
+
+	* bfdlink.h (struct bfd_link_callbacks): Add name, reloc_name and
+	addend argments to reloc_overflow callback.
+
+Fri Jan 21 19:13:12 1994  Ian Lance Taylor  (ian@tweedledumb.cygnus.com)
+
+	* dis-asm.h (print_insn_big_powerpc, print_insn_little_powerpc,
+	print_insn_rs6000): Declare.
+
 Thu Jan  6 14:15:55 1994  Ian Lance Taylor  (ian@tweedledumb.cygnus.com)
 
 	* bfdlink.h (struct bfd_link_callbacks): Add bitsize argument to
@@ -649,3 +882,10 @@ Wed Aug 21 20:32:13 1991  John Gilmore  (gnu at cygint.cygnus.com)
 	* stab.def:  Update allocation table in comments at end,
 	to reflect reality as I know it.
 
+
+Local Variables:
+mode: indented-text
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

@@ -14,7 +14,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 /* ANSI and traditional C compatibility macros
 
@@ -27,6 +27,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
    VOLATILE	`volatile'		`'
    SIGNED	`signed'		`'
    PTRCONST	`void *const'		`char *'
+   ANSI_PROTOTYPES  1			not defined
 
    CONST is also defined, but is obsolete.  Just use const.
 
@@ -89,7 +90,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 /* LINTLIBRARY */
 
 
-#if defined (__STDC__) || defined (_AIX) || (defined (__mips) && defined (_SYSTYPE_SVR4))
+#if defined (__STDC__) || defined (_AIX) || (defined (__mips) && defined (_SYSTYPE_SVR4)) || defined(WIN32)
 /* All known AIX compilers implement these things (but don't always
    define __STDC__).  The RISC/OS MIPS compiler defines these things
    in SVR4 mode, but does not define __STDC__.  */
@@ -111,6 +112,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #define PROTO(type, name, arglist)	type name arglist
 #define PARAMS(paramlist)		paramlist
+#define ANSI_PROTOTYPES			1
 
 #else	/* Not ANSI C.  */
 
