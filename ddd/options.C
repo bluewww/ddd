@@ -351,7 +351,7 @@ void graphToggleShowHintsCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNshowHints), info->set); arg++;
+    XtSetArg(args[arg], ARGSTR(XtNshowHints), info->set); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -369,7 +369,7 @@ void graphToggleShowAnnotationsCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNshowAnnotations), info->set); arg++;
+    XtSetArg(args[arg], ARGSTR(XtNshowAnnotations), info->set); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -420,7 +420,7 @@ void graphToggleSnapToGridCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNsnapToGrid), info->set); arg++;
+    XtSetArg(args[arg], ARGSTR(XtNsnapToGrid), info->set); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -443,7 +443,7 @@ void graphToggleCompactLayoutCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNlayoutMode), mode); arg++;
+    XtSetArg(args[arg], ARGSTR(XtNlayoutMode), mode); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -461,7 +461,7 @@ void graphToggleAutoLayoutCB(Widget, XtPointer, XtPointer call_data)
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNautoLayout), info->set); arg++;
+    XtSetArg(args[arg], ARGSTR(XtNautoLayout), info->set); arg++;
     XtSetValues(data_disp->graph_edit, args, arg);
 
     if (info->set)
@@ -496,15 +496,15 @@ void graphSetGridSizeCB (Widget, XtPointer, XtPointer call_data)
 
     if (info->value >= 2)
     {
-	XtSetArg(args[arg], CONST_CAST(char *,XtNgridWidth),  info->value); arg++;
-	XtSetArg(args[arg], CONST_CAST(char *,XtNgridHeight), info->value); arg++;
-	XtSetArg(args[arg], CONST_CAST(char *,XtNshowGrid),   True); arg++;
+	XtSetArg(args[arg], ARGSTR(XtNgridWidth),  info->value); arg++;
+	XtSetArg(args[arg], ARGSTR(XtNgridHeight), info->value); arg++;
+	XtSetArg(args[arg], ARGSTR(XtNshowGrid),   True); arg++;
 	XtSetValues(data_disp->graph_edit, args, arg);
 	set_status("Grid size set to " + itostring(info->value) + ".");
     }
     else
     {
-	XtSetArg(args[arg], CONST_CAST(char *,XtNshowGrid), False); arg++;
+	XtSetArg(args[arg], ARGSTR(XtNshowGrid), False); arg++;
 	XtSetValues(data_disp->graph_edit, args, arg);
 	set_status("Grid off.");
     }

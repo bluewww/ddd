@@ -125,8 +125,8 @@ struct doc_resource_values {
 
 static XtResource help_subresources[] = {
     {
-	CONST_CAST(char *,XtNhelpString),
-	CONST_CAST(char *,XtCHelpString),
+	XTRESSTR(XtNhelpString),
+	XTRESSTR(XtCHelpString),
 	XmRXmString,
 	sizeof(XmString),
 	XtOffsetOf(help_resource_values, helpString),
@@ -135,8 +135,8 @@ static XtResource help_subresources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNhelpShowTitle),
-	CONST_CAST(char *,XtCHelpShowTitle),
+	XTRESSTR(XtNhelpShowTitle),
+	XTRESSTR(XtCHelpShowTitle),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(help_resource_values, showTitle),
@@ -147,8 +147,8 @@ static XtResource help_subresources[] = {
 
 static XtResource help_on_version_subresources[] = {
     {
-	CONST_CAST(char *,XtNhelpOnVersionString),
-	CONST_CAST(char *,XtCHelpOnVersionString),
+	XTRESSTR(XtNhelpOnVersionString),
+	XTRESSTR(XtCHelpOnVersionString),
 	XmRXmString,
 	sizeof(XmString),
 	XtOffsetOf(help_on_version_resource_values, helpOnVersionString),
@@ -157,8 +157,8 @@ static XtResource help_on_version_subresources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNhelpShowTitle),
-	CONST_CAST(char *,XtCHelpShowTitle),
+	XTRESSTR(XtNhelpShowTitle),
+	XTRESSTR(XtCHelpShowTitle),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(help_on_version_resource_values, showTitle),
@@ -169,8 +169,8 @@ static XtResource help_on_version_subresources[] = {
 
 static XtResource tip_subresources[] = {
     {
-	CONST_CAST(char *,XtNtipString),
-	CONST_CAST(char *,XtCTipString),
+	XTRESSTR(XtNtipString),
+	XTRESSTR(XtCTipString),
 	XmRXmString,
 	sizeof(XmString),
 	XtOffsetOf(tip_resource_values, tipString), 
@@ -181,8 +181,8 @@ static XtResource tip_subresources[] = {
 
 static XtResource doc_subresources[] = {
     {
-	CONST_CAST(char *,XtNdocumentationString),
-	CONST_CAST(char *,XtCDocumentationString),
+	XTRESSTR(XtNdocumentationString),
+	XTRESSTR(XtCDocumentationString),
 	XmRXmString,
 	sizeof(XmString),
 	XtOffsetOf(doc_resource_values, documentationString), 

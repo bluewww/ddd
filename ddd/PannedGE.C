@@ -70,15 +70,15 @@ static XtResource resources[] = {
 #define offset(field) XtOffsetOf(PannedGraphEditRec, pannedGraphEdit.field)
     // {name, class, type, size, offset, default_type, default_addr}
 
-    { CONST_CAST(char *,XtNminimumPannerWidth), CONST_CAST(char *,XtCMinimumPannerWidth), XtRDimension, 
+    { XTRESSTR(XtNminimumPannerWidth), XTRESSTR(XtCMinimumPannerWidth), XtRDimension, 
       sizeof(Dimension), offset(minimumPannerWidth), 
       XtRImmediate, XtPointer(50) },
 
-    { CONST_CAST(char *,XtNminimumPannerHeight), CONST_CAST(char *,XtCMinimumPannerHeight), XtRDimension, 
+    { XTRESSTR(XtNminimumPannerHeight), XTRESSTR(XtCMinimumPannerHeight), XtRDimension, 
       sizeof(Dimension), offset(minimumPannerHeight), 
       XtRImmediate, XtPointer(50) },
 
-    { CONST_CAST(char *,XtNmaximumScale), CONST_CAST(char *,XtCMaximumScale), XtRDimension, 
+    { XTRESSTR(XtNmaximumScale), XTRESSTR(XtCMaximumScale), XtRDimension, 
       sizeof(Dimension), offset(maximumScale), 
       XtRImmediate, XtPointer(33) }
 
@@ -177,31 +177,31 @@ Widget createPannedGraphEdit(Widget parent, const _XtString name,
 
     string form_name = string(name) + "_form";
     arg = 0;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNborderWidth),     0); arg++;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNdefaultDistance), 0); arg++;
+    XtSetArg(args[arg], ARGSTR(XtNborderWidth),     0); arg++;
+    XtSetArg(args[arg], ARGSTR(XtNdefaultDistance), 0); arg++;
     Widget form =
 	verify(XtCreateManagedWidget(form_name.chars(), 
 				     formWidgetClass, parent, args, arg));
 
     string panner_name = string(name) + "_panner";
     arg = 0;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNresize),    False);          arg++;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNresizable), True);           arg++;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNbottom),    XawChainBottom); arg++;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNtop),       XawChainBottom); arg++;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNleft),      XawChainRight);  arg++;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNright),     XawChainRight);  arg++;
+    XtSetArg(args[arg], ARGSTR(XtNresize),    False);          arg++;
+    XtSetArg(args[arg], ARGSTR(XtNresizable), True);           arg++;
+    XtSetArg(args[arg], ARGSTR(XtNbottom),    XawChainBottom); arg++;
+    XtSetArg(args[arg], ARGSTR(XtNtop),       XawChainBottom); arg++;
+    XtSetArg(args[arg], ARGSTR(XtNleft),      XawChainRight);  arg++;
+    XtSetArg(args[arg], ARGSTR(XtNright),     XawChainRight);  arg++;
     Widget panner = 
 	verify(XtCreateWidget(panner_name.chars(), 
 			      pannerWidgetClass, form, args, arg));
 
     string porthole_name = string(name) + "_porthole";
     arg = 0;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNresizable), True);           arg++;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNbottom),    XawChainBottom); arg++;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNtop),       XawChainTop);    arg++;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNleft),      XawChainLeft);   arg++;
-    XtSetArg(args[arg], CONST_CAST(char *,XtNright),     XawChainRight);  arg++;
+    XtSetArg(args[arg], ARGSTR(XtNresizable), True);           arg++;
+    XtSetArg(args[arg], ARGSTR(XtNbottom),    XawChainBottom); arg++;
+    XtSetArg(args[arg], ARGSTR(XtNtop),       XawChainTop);    arg++;
+    XtSetArg(args[arg], ARGSTR(XtNleft),      XawChainLeft);   arg++;
+    XtSetArg(args[arg], ARGSTR(XtNright),     XawChainRight);  arg++;
     Widget porthole = 
 	verify(XtCreateManagedWidget(porthole_name.chars(),
 				     pannedGraphEditWidgetClass, 
@@ -262,14 +262,14 @@ static void PortholeCB(Widget w,
     Widget graph_edit = children[0];
 
     arg = 0;
-    XtSetArg (args[arg], CONST_CAST(char *,XtNsliderX), report->slider_x); arg++;
-    XtSetArg (args[arg], CONST_CAST(char *,XtNsliderY), report->slider_y); arg++;
+    XtSetArg (args[arg], ARGSTR(XtNsliderX), report->slider_x); arg++;
+    XtSetArg (args[arg], ARGSTR(XtNsliderY), report->slider_y); arg++;
     if (report->changed != (XawPRSliderX | XawPRSliderY))
     {
-	XtSetArg (args[arg], CONST_CAST(char *,XtNsliderWidth),  report->slider_width);  arg++;
-	XtSetArg (args[arg], CONST_CAST(char *,XtNsliderHeight), report->slider_height); arg++;
-	XtSetArg (args[arg], CONST_CAST(char *,XtNcanvasWidth),  report->canvas_width);  arg++;
-	XtSetArg (args[arg], CONST_CAST(char *,XtNcanvasHeight), report->canvas_height); arg++;
+	XtSetArg (args[arg], ARGSTR(XtNsliderWidth),  report->slider_width);  arg++;
+	XtSetArg (args[arg], ARGSTR(XtNsliderHeight), report->slider_height); arg++;
+	XtSetArg (args[arg], ARGSTR(XtNcanvasWidth),  report->canvas_width);  arg++;
+	XtSetArg (args[arg], ARGSTR(XtNcanvasHeight), report->canvas_height); arg++;
     }
     XtSetValues (panner, args, arg);
 

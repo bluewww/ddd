@@ -1378,7 +1378,7 @@ static void SetTextCB(Widget, XtPointer, XtPointer)
 
     XmTextSetString(active_info->text, XMST(str.chars()));
 
-    *active_info->str = STATIC_CAST(String,XtNewString(str.chars()));
+    *active_info->str = XtNewString(str.chars());
     update_user_buttons();
 }
 
@@ -1622,7 +1622,7 @@ void refresh_button_editor()
     case XDB:  str = &app_data.xdb_display_shortcuts;  break;
     }
 
-    *str = STATIC_CAST(String,XtNewString(expr.chars()));
+    *str = XtNewString(expr.chars());
 
     if (active_info != 0 && active_info->str == CONST_CAST(char**,str))
 	XmTextSetString(active_info->text, XMST(*str));

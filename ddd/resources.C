@@ -47,8 +47,8 @@ char resources_rcsid[] =
 // Application resource definitions
 XtResource ddd_resources[] = {
     {
-	CONST_CAST(char *,XtNsession),
-	CONST_CAST(char *,XtCSessionID),
+	XTRESSTR(XtNsession),
+	XTRESSTR(XtCSessionID),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, session),
@@ -57,8 +57,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNinitialSession),
-	CONST_CAST(char *,XtCSessionID),
+	XTRESSTR(XtNinitialSession),
+	XTRESSTR(XtCSessionID),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, initial_session),
@@ -67,8 +67,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNdebugger),
-	CONST_CAST(char *,XtCDebugger),
+	XTRESSTR(XtNdebugger),
+	XTRESSTR(XtCDebugger),
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, debugger), 
@@ -77,8 +77,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNdebuggerCommand),
-	CONST_CAST(char *,XtCDebuggerCommand),
+	XTRESSTR(XtNdebuggerCommand),
+	XTRESSTR(XtCDebuggerCommand),
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, debugger_command), 
@@ -87,8 +87,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNautoDebugger), 
-	CONST_CAST(char *,XtCAutoDebugger), 
+	XTRESSTR(XtNautoDebugger), 
+	XTRESSTR(XtCAutoDebugger), 
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, auto_debugger),
@@ -97,8 +97,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNopenSelection), 
-	CONST_CAST(char *,XtCOpenSelection), 
+	XTRESSTR(XtNopenSelection), 
+	XTRESSTR(XtCOpenSelection), 
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, open_selection),
@@ -107,8 +107,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNtrace), 
-	CONST_CAST(char *,XtCTrace), 
+	XTRESSTR(XtNtrace), 
+	XTRESSTR(XtCTrace), 
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, trace),
@@ -117,8 +117,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNplayLog),
-	CONST_CAST(char *,XtCPlayLog),
+	XTRESSTR(XtNplayLog),
+	XTRESSTR(XtCPlayLog),
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, play_log), 
@@ -127,8 +127,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNgdbInitCommands), 
-	CONST_CAST(char *,XtCInitCommands), 
+	XTRESSTR(XtNgdbInitCommands), 
+	XTRESSTR(XtCInitCommands), 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, gdb_init_commands), 
@@ -141,8 +141,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNgdbSettings), 
-	CONST_CAST(char *,XtCSettings), 
+	XTRESSTR(XtNgdbSettings), 
+	XTRESSTR(XtCSettings), 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, gdb_settings), 
@@ -151,8 +151,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNdbxInitCommands), 
-	CONST_CAST(char *,XtCInitCommands), 
+	XTRESSTR(XtNdbxInitCommands), 
+	XTRESSTR(XtCInitCommands), 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, dbx_init_commands), 
@@ -161,8 +161,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNdbxSettings), 
-	CONST_CAST(char *,XtCSettings), 
+	XTRESSTR(XtNdbxSettings), 
+	XTRESSTR(XtCSettings), 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, dbx_settings), 
@@ -171,8 +171,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNxdbInitCommands), 
-	CONST_CAST(char *,XtCInitCommands), 
+	XTRESSTR(XtNxdbInitCommands), 
+	XTRESSTR(XtCInitCommands), 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, xdb_init_commands), 
@@ -181,8 +181,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNxdbSettings), 
-	CONST_CAST(char *,XtCSettings), 
+	XTRESSTR(XtNxdbSettings), 
+	XTRESSTR(XtCSettings), 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, xdb_settings), 
@@ -191,8 +191,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNjdbInitCommands), 
-	CONST_CAST(char *,XtCInitCommands), 
+	XTRESSTR(XtNjdbInitCommands), 
+	XTRESSTR(XtCInitCommands), 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, jdb_init_commands), 
@@ -201,8 +201,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNjdbSettings), 
-	CONST_CAST(char *,XtCSettings), 
+	XTRESSTR(XtNjdbSettings), 
+	XTRESSTR(XtCSettings), 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, jdb_settings), 
@@ -211,8 +211,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNpydbInitCommands), 
-	CONST_CAST(char *,XtCInitCommands), 
+	XTRESSTR(XtNpydbInitCommands), 
+	XTRESSTR(XtCInitCommands), 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, pydb_init_commands), 
@@ -221,8 +221,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNpydbSettings), 
-	CONST_CAST(char *,XtCSettings), 
+	XTRESSTR(XtNpydbSettings), 
+	XTRESSTR(XtCSettings), 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, pydb_settings), 
@@ -231,8 +231,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNperlInitCommands), 
-	CONST_CAST(char *,XtCInitCommands), 
+	XTRESSTR(XtNperlInitCommands), 
+	XTRESSTR(XtCInitCommands), 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, perl_init_commands), 
@@ -241,8 +241,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNperlSettings), 
-	CONST_CAST(char *,XtCSettings), 
+	XTRESSTR(XtNperlSettings), 
+	XTRESSTR(XtCSettings), 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, perl_settings),
@@ -251,8 +251,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNbashInitCommands), 
-	CONST_CAST(char *,XtCInitCommands), 
+	XTRESSTR(XtNbashInitCommands), 
+	XTRESSTR(XtCInitCommands), 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, bash_init_commands), 
@@ -261,8 +261,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNbashSettings), 
-	CONST_CAST(char *,XtCSettings), 
+	XTRESSTR(XtNbashSettings), 
+	XTRESSTR(XtCSettings), 
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, bash_settings),
@@ -271,8 +271,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNrestartCommands),
-	CONST_CAST(char *,XtCInitCommands),
+	XTRESSTR(XtNrestartCommands),
+	XTRESSTR(XtCInitCommands),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, restart_commands), 
@@ -281,8 +281,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNsourceInitCommands),
-	CONST_CAST(char *,XtCSourceInitCommands),
+	XTRESSTR(XtNsourceInitCommands),
+	XTRESSTR(XtCSourceInitCommands),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, source_init_commands),
@@ -291,8 +291,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNinitSymbols),
-	CONST_CAST(char *,XtCInitSymbols),
+	XTRESSTR(XtNinitSymbols),
+	XTRESSTR(XtCInitSymbols),
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, init_symbols),
@@ -301,8 +301,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNvslPath), 
-	CONST_CAST(char *,XtCVSLPath), 
+	XTRESSTR(XtNvslPath), 
+	XTRESSTR(XtCVSLPath), 
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, vsl_path),
@@ -311,8 +311,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNvslLibrary), 
-	CONST_CAST(char *,XtCVSLLibrary), 
+	XTRESSTR(XtNvslLibrary), 
+	XTRESSTR(XtCVSLLibrary), 
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, vsl_library), 
@@ -321,8 +321,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNdefaultFont), 
-	CONST_CAST(char *,XtCFont), 
+	XTRESSTR(XtNdefaultFont), 
+	XTRESSTR(XtCFont), 
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, default_font),
@@ -331,8 +331,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNvariableWidthFont), 
-	CONST_CAST(char *,XtCFont),
+	XTRESSTR(XtNvariableWidthFont), 
+	XTRESSTR(XtCFont),
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, variable_width_font),
@@ -341,7 +341,7 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNfixedWidthFont), 
+	XTRESSTR(XtNfixedWidthFont), 
 	XtCFont,
 	XtRString, 
 	sizeof(String),
@@ -351,7 +351,7 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNdataFont), 
+	XTRESSTR(XtNdataFont), 
 	XtCFont,
 	XtRString, 
 	sizeof(String),
@@ -361,8 +361,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdefaultFontSize),
-	CONST_CAST(char *,XtCFontSize),
+	XTRESSTR(XtNdefaultFontSize),
+	XTRESSTR(XtCFontSize),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, default_font_size),
@@ -371,8 +371,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNvariableWidthFontSize),
-	CONST_CAST(char *,XtCFontSize),
+	XTRESSTR(XtNvariableWidthFontSize),
+	XTRESSTR(XtCFontSize),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, variable_width_font_size),
@@ -381,8 +381,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNfixedWidthFontSize),
-	CONST_CAST(char *,XtCFontSize),
+	XTRESSTR(XtNfixedWidthFontSize),
+	XTRESSTR(XtCFontSize),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, fixed_width_font_size),
@@ -391,8 +391,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdataFontSize),
-	CONST_CAST(char *,XtCFontSize),
+	XTRESSTR(XtNdataFontSize),
+	XTRESSTR(XtCFontSize),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, data_font_size),
@@ -401,8 +401,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNfontSelectCommand), 
-	CONST_CAST(char *,XtCFontSelectCommand),
+	XTRESSTR(XtNfontSelectCommand), 
+	XTRESSTR(XtCFontSelectCommand),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, font_select_command),
@@ -411,8 +411,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNvslDefs), 
-	CONST_CAST(char *,XtCVSLDefs), 
+	XTRESSTR(XtNvslDefs), 
+	XTRESSTR(XtCVSLDefs), 
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, vsl_defs),
@@ -421,8 +421,8 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	CONST_CAST(char *,XtNvslBaseDefs), 
-	CONST_CAST(char *,XtCVSLDefs), 
+	XTRESSTR(XtNvslBaseDefs), 
+	XTRESSTR(XtCVSLDefs), 
 	XtRString, 
 	sizeof(String),
 	XtOffsetOf(AppData, vsl_base_defs),
@@ -431,8 +431,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNtabWidth),
-	CONST_CAST(char *,XtCTabWidth),
+	XTRESSTR(XtNtabWidth),
+	XTRESSTR(XtCTabWidth),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, tab_width),
@@ -441,8 +441,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNlinesAboveCursor),
-	CONST_CAST(char *,XtCLinesAboveCursor),
+	XTRESSTR(XtNlinesAboveCursor),
+	XTRESSTR(XtCLinesAboveCursor),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, lines_above_cursor),
@@ -451,8 +451,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNlinesBelowCursor),
-	CONST_CAST(char *,XtCLinesBelowCursor),
+	XTRESSTR(XtNlinesBelowCursor),
+	XTRESSTR(XtCLinesBelowCursor),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, lines_below_cursor),
@@ -461,8 +461,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNindentSource),
-	CONST_CAST(char *,XtCIndent),
+	XTRESSTR(XtNindentSource),
+	XTRESSTR(XtCIndent),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, indent_source),
@@ -471,8 +471,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNindentScript),
-	CONST_CAST(char *,XtCIndent),
+	XTRESSTR(XtNindentScript),
+	XTRESSTR(XtCIndent),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, indent_script),
@@ -481,8 +481,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNindentCode),
-	CONST_CAST(char *,XtCIndent),
+	XTRESSTR(XtNindentCode),
+	XTRESSTR(XtCIndent),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, indent_code),
@@ -491,8 +491,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNlineNumberWidth),
-	CONST_CAST(char *,XtCLineNumberWidth),
+	XTRESSTR(XtNlineNumberWidth),
+	XTRESSTR(XtCLineNumberWidth),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, line_number_width),
@@ -501,8 +501,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNsourceEditing),
-	CONST_CAST(char *,XtCSourceEditing),
+	XTRESSTR(XtNsourceEditing),
+	XTRESSTR(XtCSourceEditing),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, source_editing),
@@ -511,8 +511,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNlineBufferedConsole),
-	CONST_CAST(char *,XtCLineBuffered),
+	XTRESSTR(XtNlineBufferedConsole),
+	XTRESSTR(XtCLineBuffered),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, line_buffered_console),
@@ -521,9 +521,9 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNconsoleHasFocus),
-	CONST_CAST(char *,XtCConsoleHasFocus),
-	CONST_CAST(char *,XtROnOff),
+	XTRESSTR(XtNconsoleHasFocus),
+	XTRESSTR(XtCConsoleHasFocus),
+	XTRESSTR(XtROnOff),
 	sizeof(OnOff),
 	XtOffsetOf(AppData, console_has_focus),
 	XmRImmediate,
@@ -531,8 +531,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNbashDisplayShortcuts),
-	CONST_CAST(char *,XtCDisplayShortcuts),
+	XTRESSTR(XtNbashDisplayShortcuts),
+	XTRESSTR(XtCDisplayShortcuts),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, bash_display_shortcuts),
@@ -541,8 +541,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdbgDisplayShortcuts),
-	CONST_CAST(char *,XtCDisplayShortcuts),
+	XTRESSTR(XtNdbgDisplayShortcuts),
+	XTRESSTR(XtCDisplayShortcuts),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, dbg_display_shortcuts),
@@ -551,8 +551,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdbxDisplayShortcuts),
-	CONST_CAST(char *,XtCDisplayShortcuts),
+	XTRESSTR(XtNdbxDisplayShortcuts),
+	XTRESSTR(XtCDisplayShortcuts),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, dbx_display_shortcuts),
@@ -561,8 +561,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNgdbDisplayShortcuts),
-	CONST_CAST(char *,XtCDisplayShortcuts),
+	XTRESSTR(XtNgdbDisplayShortcuts),
+	XTRESSTR(XtCDisplayShortcuts),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, gdb_display_shortcuts),
@@ -571,8 +571,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNjdbDisplayShortcuts),
-	CONST_CAST(char *,XtCDisplayShortcuts),
+	XTRESSTR(XtNjdbDisplayShortcuts),
+	XTRESSTR(XtCDisplayShortcuts),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, jdb_display_shortcuts),
@@ -581,8 +581,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNperlDisplayShortcuts),
-	CONST_CAST(char *,XtCDisplayShortcuts),
+	XTRESSTR(XtNperlDisplayShortcuts),
+	XTRESSTR(XtCDisplayShortcuts),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, perl_display_shortcuts),
@@ -591,8 +591,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNpydbDisplayShortcuts),
-	CONST_CAST(char *,XtCDisplayShortcuts),
+	XTRESSTR(XtNpydbDisplayShortcuts),
+	XTRESSTR(XtCDisplayShortcuts),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, pydb_display_shortcuts),
@@ -601,8 +601,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNxdbDisplayShortcuts),
-	CONST_CAST(char *,XtCDisplayShortcuts),
+	XTRESSTR(XtNxdbDisplayShortcuts),
+	XTRESSTR(XtCDisplayShortcuts),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, xdb_display_shortcuts),
@@ -611,8 +611,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNconsoleButtons),
-	CONST_CAST(char *,XtCButtons),
+	XTRESSTR(XtNconsoleButtons),
+	XTRESSTR(XtCButtons),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, console_buttons),
@@ -621,8 +621,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNsourceButtons),
-	CONST_CAST(char *,XtCButtons),
+	XTRESSTR(XtNsourceButtons),
+	XTRESSTR(XtCButtons),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, source_buttons),
@@ -631,8 +631,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdataButtons),
-	CONST_CAST(char *,XtCButtons),
+	XTRESSTR(XtNdataButtons),
+	XTRESSTR(XtCButtons),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, data_buttons),
@@ -641,8 +641,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNtoolButtons),
-	CONST_CAST(char *,XtCButtons),
+	XTRESSTR(XtNtoolButtons),
+	XTRESSTR(XtCButtons),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, tool_buttons),
@@ -658,8 +658,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNlabelDelimiter),
-	CONST_CAST(char *,XtCLabelDelimiter),
+	XTRESSTR(XtNlabelDelimiter),
+	XTRESSTR(XtCLabelDelimiter),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, label_delimiter),
@@ -668,8 +668,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNcommandToolBar),
-	CONST_CAST(char *,XtCToolBar),
+	XTRESSTR(XtNcommandToolBar),
+	XTRESSTR(XtCToolBar),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, command_toolbar),
@@ -678,8 +678,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNcommonToolBar),
-	CONST_CAST(char *,XtCToolBar),
+	XTRESSTR(XtNcommonToolBar),
+	XTRESSTR(XtCToolBar),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, common_toolbar),
@@ -688,8 +688,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNseparateDataWindow),
-	CONST_CAST(char *,XtCSeparate),
+	XTRESSTR(XtNseparateDataWindow),
+	XTRESSTR(XtCSeparate),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, separate_data_window),
@@ -698,8 +698,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNseparateSourceWindow),
-	CONST_CAST(char *,XtCSeparate),
+	XTRESSTR(XtNseparateSourceWindow),
+	XTRESSTR(XtCSeparate),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, separate_source_window),
@@ -708,8 +708,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNseparateExecWindow),
-	CONST_CAST(char *,XtCSeparate),
+	XTRESSTR(XtNseparateExecWindow),
+	XTRESSTR(XtCSeparate),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, separate_exec_window),
@@ -718,8 +718,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNopenDataWindow),
-	CONST_CAST(char *,XtCWindow),
+	XTRESSTR(XtNopenDataWindow),
+	XTRESSTR(XtCWindow),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, data_window),
@@ -728,8 +728,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNopenSourceWindow),
-	CONST_CAST(char *,XtCWindow),
+	XTRESSTR(XtNopenSourceWindow),
+	XTRESSTR(XtCWindow),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, source_window),
@@ -738,8 +738,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNopenDebuggerConsole),
-	CONST_CAST(char *,XtCWindow),
+	XTRESSTR(XtNopenDebuggerConsole),
+	XTRESSTR(XtCWindow),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, debugger_console),
@@ -748,8 +748,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNautoCloseDataWindow),
-	CONST_CAST(char *,XtCAutoClose),
+	XTRESSTR(XtNautoCloseDataWindow),
+	XTRESSTR(XtCAutoClose),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, auto_close_data_window),
@@ -758,8 +758,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNplotCommand),
-	CONST_CAST(char *,XtCPlotCommand),
+	XTRESSTR(XtNplotCommand),
+	XTRESSTR(XtCPlotCommand),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, plot_command),
@@ -768,8 +768,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNplotTermType),
-	CONST_CAST(char *,XtCPlotTermType),
+	XTRESSTR(XtNplotTermType),
+	XTRESSTR(XtCPlotTermType),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, plot_term_type),
@@ -778,8 +778,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNplotWindowClass),
-	CONST_CAST(char *,XtCPlotWindowClass),
+	XTRESSTR(XtNplotWindowClass),
+	XTRESSTR(XtCPlotWindowClass),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, plot_window_class),
@@ -788,8 +788,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNplotWindowDelay),
-	CONST_CAST(char *,XtCWindowDelay),
+	XTRESSTR(XtNplotWindowDelay),
+	XTRESSTR(XtCWindowDelay),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, plot_window_delay),
@@ -798,8 +798,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNplotInitCommands),
-	CONST_CAST(char *,XtCPlotInitCommands),
+	XTRESSTR(XtNplotInitCommands),
+	XTRESSTR(XtCPlotInitCommands),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, plot_init_commands),
@@ -808,8 +808,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNplot2dSettings),
-	CONST_CAST(char *,XtCPlotSettings),
+	XTRESSTR(XtNplot2dSettings),
+	XTRESSTR(XtCPlotSettings),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, plot_2d_settings),
@@ -818,8 +818,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNplot3dSettings),
-	CONST_CAST(char *,XtCPlotSettings),
+	XTRESSTR(XtNplot3dSettings),
+	XTRESSTR(XtCPlotSettings),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, plot_3d_settings),
@@ -828,8 +828,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNtermCommand),
-	CONST_CAST(char *,XtCTermCommand),
+	XTRESSTR(XtNtermCommand),
+	XTRESSTR(XtCTermCommand),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, term_command),
@@ -838,8 +838,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNtermType),
-	CONST_CAST(char *,XtCTermType),
+	XTRESSTR(XtNtermType),
+	XTRESSTR(XtCTermType),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, term_type),
@@ -848,8 +848,8 @@ XtResource ddd_resources[] = {
    },
 
    {
-	CONST_CAST(char *,XtNuseTTYCommand),
-	CONST_CAST(char *,XtCUseTTYCommand),
+	XTRESSTR(XtNuseTTYCommand),
+	XTRESSTR(XtCUseTTYCommand),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, use_tty_command),
@@ -858,8 +858,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNquestionTimeout),
-	CONST_CAST(char *,XtCQuestionTimeout),
+	XTRESSTR(XtNquestionTimeout),
+	XTRESSTR(XtCQuestionTimeout),
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, question_timeout),
@@ -868,8 +868,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNpositionTimeout),
-	CONST_CAST(char *,XtCPositionTimeout),
+	XTRESSTR(XtNpositionTimeout),
+	XTRESSTR(XtCPositionTimeout),
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, position_timeout),
@@ -878,8 +878,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdisplayTimeout),
-	CONST_CAST(char *,XtCDisplayTimeout),
+	XTRESSTR(XtNdisplayTimeout),
+	XTRESSTR(XtCDisplayTimeout),
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, display_timeout),
@@ -888,8 +888,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNsynchronousDebugger),
-	CONST_CAST(char *,XtCSynchronousDebugger),
+	XTRESSTR(XtNsynchronousDebugger),
+	XTRESSTR(XtCSynchronousDebugger),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, synchronous_gdb),
@@ -898,8 +898,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNterminateOnEOF),
-	CONST_CAST(char *,XtCTerminateOnEOF),
+	XTRESSTR(XtNterminateOnEOF),
+	XTRESSTR(XtCTerminateOnEOF),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, terminate_on_eof),
@@ -908,8 +908,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNstopAndContinue),
-	CONST_CAST(char *,XtCStopAndContinue),
+	XTRESSTR(XtNstopAndContinue),
+	XTRESSTR(XtCStopAndContinue),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, stop_and_continue),
@@ -918,8 +918,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNrunInterruptDelay),
-	CONST_CAST(char *,XtCInterruptDelay),
+	XTRESSTR(XtNrunInterruptDelay),
+	XTRESSTR(XtCInterruptDelay),
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, run_interrupt_delay),
@@ -928,8 +928,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNcontInterruptDelay),
-	CONST_CAST(char *,XtCInterruptDelay),
+	XTRESSTR(XtNcontInterruptDelay),
+	XTRESSTR(XtCInterruptDelay),
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, cont_interrupt_delay),
@@ -938,8 +938,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNpollChildStatus),
-	CONST_CAST(char *,XtCPollChildStatus),
+	XTRESSTR(XtNpollChildStatus),
+	XTRESSTR(XtCPollChildStatus),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, poll_child_status),
@@ -948,8 +948,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNdebuggerHost),
-	CONST_CAST(char *,XtCDebuggerHost),
+        XTRESSTR(XtNdebuggerHost),
+	XTRESSTR(XtCDebuggerHost),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, debugger_host),
@@ -958,8 +958,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNdebuggerHostLogin),
-	CONST_CAST(char *,XtCDebuggerHostLogin),
+        XTRESSTR(XtNdebuggerHostLogin),
+	XTRESSTR(XtCDebuggerHostLogin),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, debugger_host_login),
@@ -968,8 +968,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNrHostInitCommands),
-	CONST_CAST(char *,XtCRHostInitCommands),
+        XTRESSTR(XtNrHostInitCommands),
+	XTRESSTR(XtCRHostInitCommands),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, rhost_init_commands),
@@ -978,8 +978,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNdebuggerRHost),
-	CONST_CAST(char *,XtCDebuggerRHost),
+        XTRESSTR(XtNdebuggerRHost),
+	XTRESSTR(XtCDebuggerRHost),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, debugger_rhost),
@@ -988,8 +988,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNrshCommand),
-	CONST_CAST(char *,XtCRshCommand),
+        XTRESSTR(XtNrshCommand),
+	XTRESSTR(XtCRshCommand),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, rsh_command),
@@ -998,8 +998,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNfilterFiles),
-	CONST_CAST(char *,XtCFilterFiles),
+	XTRESSTR(XtNfilterFiles),
+	XTRESSTR(XtCFilterFiles),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, filter_files),
@@ -1008,8 +1008,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNlistExecCommand),
-	CONST_CAST(char *,XtCListExecCommand),
+        XTRESSTR(XtNlistExecCommand),
+	XTRESSTR(XtCListExecCommand),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, list_exec_command),
@@ -1018,8 +1018,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNlistSourceCommand),
-	CONST_CAST(char *,XtCListSourceCommand),
+        XTRESSTR(XtNlistSourceCommand),
+	XTRESSTR(XtCListSourceCommand),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, list_source_command),
@@ -1028,8 +1028,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNlistCoreCommand),
-	CONST_CAST(char *,XtCListCoreCommand),
+        XTRESSTR(XtNlistCoreCommand),
+	XTRESSTR(XtCListCoreCommand),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, list_core_command),
@@ -1038,8 +1038,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNlistDirCommand),
-	CONST_CAST(char *,XtCListDirCommand),
+        XTRESSTR(XtNlistDirCommand),
+	XTRESSTR(XtCListDirCommand),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, list_dir_command),
@@ -1048,8 +1048,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNuncompressCommand),
-	CONST_CAST(char *,XtCUncompressCommand),
+        XTRESSTR(XtNuncompressCommand),
+	XTRESSTR(XtCUncompressCommand),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, uncompress_command),
@@ -1058,8 +1058,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNpsCommand),
-	CONST_CAST(char *,XtCPsCommand),
+        XTRESSTR(XtNpsCommand),
+	XTRESSTR(XtCPsCommand),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, ps_command),
@@ -1068,8 +1068,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNwwwPage),
-	CONST_CAST(char *,XtCWWWPage),
+        XTRESSTR(XtNwwwPage),
+	XTRESSTR(XtCWWWPage),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, www_page),
@@ -1078,8 +1078,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNwwwCommand),
-	CONST_CAST(char *,XtCWWWCommand),
+        XTRESSTR(XtNwwwCommand),
+	XTRESSTR(XtCWWWCommand),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, www_command),
@@ -1088,8 +1088,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNshowInvocation),
-	CONST_CAST(char *,XtCShowInvocation),
+        XTRESSTR(XtNshowInvocation),
+	XTRESSTR(XtCShowInvocation),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_invocation),
@@ -1098,8 +1098,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNshowVersion),
-	CONST_CAST(char *,XtCShowVersion),
+        XTRESSTR(XtNshowVersion),
+	XTRESSTR(XtCShowVersion),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_version),
@@ -1108,8 +1108,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNshowConfiguration),
-	CONST_CAST(char *,XtCShowConfiguration),
+        XTRESSTR(XtNshowConfiguration),
+	XTRESSTR(XtCShowConfiguration),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_configuration),
@@ -1118,8 +1118,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNshowManual),
-	CONST_CAST(char *,XtCShowManual),
+        XTRESSTR(XtNshowManual),
+	XTRESSTR(XtCShowManual),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_manual),
@@ -1128,8 +1128,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNshowLicense),
-	CONST_CAST(char *,XtCShowLicense),
+        XTRESSTR(XtNshowLicense),
+	XTRESSTR(XtCShowLicense),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_license),
@@ -1138,8 +1138,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNshowNews),
-	CONST_CAST(char *,XtCShowNews),
+        XTRESSTR(XtNshowNews),
+	XTRESSTR(XtCShowNews),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_news),
@@ -1148,8 +1148,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNshowFonts),
-	CONST_CAST(char *,XtCShowFonts),
+        XTRESSTR(XtNshowFonts),
+	XTRESSTR(XtCShowFonts),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_fonts),
@@ -1158,8 +1158,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNcheckConfiguration),
-	CONST_CAST(char *,XtCCheckConfiguration),
+        XTRESSTR(XtNcheckConfiguration),
+	XTRESSTR(XtCCheckConfiguration),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, check_configuration),
@@ -1168,8 +1168,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNprintCommand),
-	CONST_CAST(char *,XtCPrintCommand),
+        XTRESSTR(XtNprintCommand),
+	XTRESSTR(XtCPrintCommand),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, print_command),
@@ -1178,8 +1178,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNpaperSize),
-	CONST_CAST(char *,XtCPaperSize),
+        XTRESSTR(XtNpaperSize),
+	XTRESSTR(XtCPaperSize),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, paper_size),
@@ -1188,8 +1188,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNgetCoreCommand),
-	CONST_CAST(char *,XtCGetCoreCommand),
+        XTRESSTR(XtNgetCoreCommand),
+	XTRESSTR(XtCGetCoreCommand),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, get_core_command),
@@ -1198,8 +1198,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNeditCommand),
-	CONST_CAST(char *,XtCEditCommand),
+        XTRESSTR(XtNeditCommand),
+	XTRESSTR(XtCEditCommand),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, edit_command),
@@ -1208,8 +1208,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNpannedGraphEditor),
-	CONST_CAST(char *,XtCPannedGraphEditor),
+        XTRESSTR(XtNpannedGraphEditor),
+	XTRESSTR(XtCPannedGraphEditor),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, panned_graph_editor),
@@ -1218,8 +1218,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNfindWordsOnly),
-	CONST_CAST(char *,XtCFindWordsOnly),
+        XTRESSTR(XtNfindWordsOnly),
+	XTRESSTR(XtCFindWordsOnly),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, find_words_only),
@@ -1228,8 +1228,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-        CONST_CAST(char *,XtNfindCaseSensitive),
-	CONST_CAST(char *,XtCFindCaseSensitive),
+        XTRESSTR(XtNfindCaseSensitive),
+	XTRESSTR(XtCFindCaseSensitive),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, find_case_sensitive),
@@ -1238,8 +1238,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNgroupIconify),
-	CONST_CAST(char *,XtCGroupIconify),
+	XTRESSTR(XtNgroupIconify),
+	XTRESSTR(XtCGroupIconify),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, group_iconify),
@@ -1248,8 +1248,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNuniconifyWhenReady),
-	CONST_CAST(char *,XtCUniconifyWhenReady),
+	XTRESSTR(XtNuniconifyWhenReady),
+	XTRESSTR(XtCUniconifyWhenReady),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, uniconify_when_ready),
@@ -1258,8 +1258,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNtransientDialogs),
-	CONST_CAST(char *,XtCTransientDialogs),
+	XTRESSTR(XtNtransientDialogs),
+	XTRESSTR(XtCTransientDialogs),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, transient_dialogs),
@@ -1268,8 +1268,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNglobalTabCompletion),
-	CONST_CAST(char *,XtCGlobalTabCompletion),
+	XTRESSTR(XtNglobalTabCompletion),
+	XTRESSTR(XtCGlobalTabCompletion),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, global_tab_completion),
@@ -1278,8 +1278,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNsaveHistoryOnExit),
-	CONST_CAST(char *,XtCSaveOnExit),
+	XTRESSTR(XtNsaveHistoryOnExit),
+	XTRESSTR(XtCSaveOnExit),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, save_history_on_exit),
@@ -1288,8 +1288,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNsaveOptionsOnExit),
-	CONST_CAST(char *,XtCSaveOnExit),
+	XTRESSTR(XtNsaveOptionsOnExit),
+	XTRESSTR(XtCSaveOnExit),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, save_options_on_exit),
@@ -1298,8 +1298,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNcacheSourceFiles),
-	CONST_CAST(char *,XtCCacheSourceFiles),
+	XTRESSTR(XtNcacheSourceFiles),
+	XTRESSTR(XtCCacheSourceFiles),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, cache_source_files),
@@ -1308,8 +1308,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNcacheMachineCode),
-	CONST_CAST(char *,XtCCacheMachineCode),
+	XTRESSTR(XtNcacheMachineCode),
+	XTRESSTR(XtCCacheMachineCode),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, cache_machine_code),
@@ -1318,8 +1318,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNsuppressWarnings),
-	CONST_CAST(char *,XtCSuppressWarnings),
+	XTRESSTR(XtNsuppressWarnings),
+	XTRESSTR(XtCSuppressWarnings),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, suppress_warnings),
@@ -1328,8 +1328,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNwarnIfLocked),
-	CONST_CAST(char *,XtCWarnIfLocked),
+	XTRESSTR(XtNwarnIfLocked),
+	XTRESSTR(XtCWarnIfLocked),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, warn_if_locked),
@@ -1338,8 +1338,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNcheckOptions),
-	CONST_CAST(char *,XtCCheckOptions),
+	XTRESSTR(XtNcheckOptions),
+	XTRESSTR(XtCCheckOptions),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, check_options),
@@ -1348,8 +1348,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNttyMode),
-	CONST_CAST(char *,XtCTTYMode),
+	XTRESSTR(XtNttyMode),
+	XTRESSTR(XtCTTYMode),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, tty_mode),
@@ -1358,9 +1358,9 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNblockTTYInput),
-	CONST_CAST(char *,XtCBlockTTYInput),
-	CONST_CAST(char *,XtROnOff),
+	XTRESSTR(XtNblockTTYInput),
+	XTRESSTR(XtCBlockTTYInput),
+	XTRESSTR(XtROnOff),
 	sizeof(OnOff),
 	XtOffsetOf(AppData, block_tty_input),
 	XmRImmediate,
@@ -1368,9 +1368,9 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNbufferGDBOutput),
-	CONST_CAST(char *,XtCBufferGDBOutput),
-	CONST_CAST(char *,XtROnOff),
+	XTRESSTR(XtNbufferGDBOutput),
+	XTRESSTR(XtCBufferGDBOutput),
+	XTRESSTR(XtROnOff),
 	sizeof(OnOff),
 	XtOffsetOf(AppData, buffer_gdb_output),
 	XmRImmediate,
@@ -1378,8 +1378,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNannotate),
-	CONST_CAST(char *,XtCAnnotate),
+	XTRESSTR(XtNannotate),
+	XTRESSTR(XtCAnnotate),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, annotate),
@@ -1388,8 +1388,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdisplayGlyphs),
-	CONST_CAST(char *,XtCDisplayGlyphs),
+	XTRESSTR(XtNdisplayGlyphs),
+	XTRESSTR(XtCDisplayGlyphs),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, display_glyphs),
@@ -1398,8 +1398,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNmaxGlyphs),
-	CONST_CAST(char *,XtCMaxGlyphs),
+	XTRESSTR(XtNmaxGlyphs),
+	XTRESSTR(XtCMaxGlyphs),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_glyphs),
@@ -1408,8 +1408,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNcacheGlyphImages),
-	CONST_CAST(char *,XtCCacheGlyphImages),
+	XTRESSTR(XtNcacheGlyphImages),
+	XTRESSTR(XtCCacheGlyphImages),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, cache_glyph_images),
@@ -1423,8 +1423,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNglyphUpdateDelay),
-	CONST_CAST(char *,XtCGlyphUpdateDelay),
+	XTRESSTR(XtNglyphUpdateDelay),
+	XTRESSTR(XtCGlyphUpdateDelay),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, glyph_update_delay),
@@ -1433,8 +1433,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdisplayLineNumbers),
-	CONST_CAST(char *,XtCDisplayLineNumbers),
+	XTRESSTR(XtNdisplayLineNumbers),
+	XTRESSTR(XtCDisplayLineNumbers),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, display_line_numbers),
@@ -1443,8 +1443,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdisassemble),
-	CONST_CAST(char *,XtCDisassemble),
+	XTRESSTR(XtNdisassemble),
+	XTRESSTR(XtCDisassemble),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, disassemble),
@@ -1453,8 +1453,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNmaxDisassemble),
-	CONST_CAST(char *,XtCMaxDisassemble),
+	XTRESSTR(XtNmaxDisassemble),
+	XTRESSTR(XtCMaxDisassemble),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_disassemble),
@@ -1463,8 +1463,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNuseSourcePath),
-	CONST_CAST(char *,XtCUseSourcePath),
+	XTRESSTR(XtNuseSourcePath),
+	XTRESSTR(XtCUseSourcePath),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, use_source_path),
@@ -1473,8 +1473,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNallRegisters),
-	CONST_CAST(char *,XtCAllRegisters),
+	XTRESSTR(XtNallRegisters),
+	XTRESSTR(XtCAllRegisters),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, all_registers),
@@ -1483,8 +1483,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNbuttonTips),
-	CONST_CAST(char *,XtCTips),
+	XTRESSTR(XtNbuttonTips),
+	XTRESSTR(XtCTips),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, button_tips),
@@ -1493,8 +1493,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNvalueTips),
-	CONST_CAST(char *,XtCTips),
+	XTRESSTR(XtNvalueTips),
+	XTRESSTR(XtCTips),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, value_tips),
@@ -1503,8 +1503,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNbuttonDocs),
-	CONST_CAST(char *,XtCDocs),
+	XTRESSTR(XtNbuttonDocs),
+	XTRESSTR(XtCDocs),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, button_docs),
@@ -1513,8 +1513,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNvalueDocs),
-	CONST_CAST(char *,XtCDocs),
+	XTRESSTR(XtNvalueDocs),
+	XTRESSTR(XtCDocs),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, value_docs),
@@ -1523,8 +1523,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNstartupTips),
-	CONST_CAST(char *,XtCStartupTips),
+	XTRESSTR(XtNstartupTips),
+	XTRESSTR(XtCStartupTips),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, startup_tips),
@@ -1533,8 +1533,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNstartupTipCount),
-	CONST_CAST(char *,XtCStartupTipCount),
+	XTRESSTR(XtNstartupTipCount),
+	XTRESSTR(XtCStartupTipCount),
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, startup_tip_count),
@@ -1543,8 +1543,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNstatusAtBottom),
-	CONST_CAST(char *,XtCStatusAtBottom),
+	XTRESSTR(XtNstatusAtBottom),
+	XTRESSTR(XtCStatusAtBottom),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, status_at_bottom),
@@ -1553,8 +1553,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNtoolbarsAtBottom),
-	CONST_CAST(char *,XtCToolbarsAtBottom),
+	XTRESSTR(XtNtoolbarsAtBottom),
+	XTRESSTR(XtCToolbarsAtBottom),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, toolbars_at_bottom),
@@ -1563,8 +1563,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNmaxDisplayTitleLength),
-	CONST_CAST(char *,XtCMaxLength),
+	XTRESSTR(XtNmaxDisplayTitleLength),
+	XTRESSTR(XtCMaxLength),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_display_title_length),
@@ -1573,8 +1573,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNmaxPopupExprLength),
-	CONST_CAST(char *,XtCMaxLength),
+	XTRESSTR(XtNmaxPopupExprLength),
+	XTRESSTR(XtCMaxLength),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_popup_expr_length),
@@ -1583,8 +1583,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNmaxValueTipLength),
-	CONST_CAST(char *,XtCMaxLength),
+	XTRESSTR(XtNmaxValueTipLength),
+	XTRESSTR(XtCMaxLength),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_value_tip_length),
@@ -1593,8 +1593,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNmaxValueDocLength),
-	CONST_CAST(char *,XtCMaxLength),
+	XTRESSTR(XtNmaxValueDocLength),
+	XTRESSTR(XtCMaxLength),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, max_value_doc_length),
@@ -1603,8 +1603,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNbuttonTipDelay),
-	CONST_CAST(char *,XtCTipDelay),
+	XTRESSTR(XtNbuttonTipDelay),
+	XTRESSTR(XtCTipDelay),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, button_tip_delay),
@@ -1613,8 +1613,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNvalueTipDelay),
-	CONST_CAST(char *,XtCTipDelay),
+	XTRESSTR(XtNvalueTipDelay),
+	XTRESSTR(XtCTipDelay),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, value_tip_delay),
@@ -1623,8 +1623,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNbuttonDocDelay),
-	CONST_CAST(char *,XtCDocDelay),
+	XTRESSTR(XtNbuttonDocDelay),
+	XTRESSTR(XtCDocDelay),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, button_doc_delay),
@@ -1633,8 +1633,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNvalueDocDelay),
-	CONST_CAST(char *,XtCDocDelay),
+	XTRESSTR(XtNvalueDocDelay),
+	XTRESSTR(XtCDocDelay),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, value_doc_delay),
@@ -1643,8 +1643,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNclearDocDelay),
-	CONST_CAST(char *,XtCClearDelay),
+	XTRESSTR(XtNclearDocDelay),
+	XTRESSTR(XtCClearDelay),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, clear_doc_delay),
@@ -1653,8 +1653,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNclearTipDelay),
-	CONST_CAST(char *,XtCClearDelay),
+	XTRESSTR(XtNclearTipDelay),
+	XTRESSTR(XtCClearDelay),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, clear_tip_delay),
@@ -1663,8 +1663,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNblinkWhileBusy),
-	CONST_CAST(char *,XtCBlinkWhileBusy),
+	XTRESSTR(XtNblinkWhileBusy),
+	XTRESSTR(XtCBlinkWhileBusy),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, blink_while_busy),
@@ -1673,8 +1673,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNbusyBlinkRate),
-	CONST_CAST(char *,XmCBlinkRate),
+	XTRESSTR(XtNbusyBlinkRate),
+	XTRESSTR(XmCBlinkRate),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, busy_blink_rate),
@@ -1683,8 +1683,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNcheckGrabs),
-	CONST_CAST(char *,XtCCheckGrabs),
+	XTRESSTR(XtNcheckGrabs),
+	XTRESSTR(XtCCheckGrabs),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, check_grabs),
@@ -1693,8 +1693,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNcheckGrabDelay),
-	CONST_CAST(char *,XtCCheckGrabDelay),
+	XTRESSTR(XtNcheckGrabDelay),
+	XTRESSTR(XtCCheckGrabDelay),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, check_grab_delay),
@@ -1703,8 +1703,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNgrabActionDelay),
-	CONST_CAST(char *,XtCGrabActionDelay),
+	XTRESSTR(XtNgrabActionDelay),
+	XTRESSTR(XtCGrabActionDelay),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, grab_action_delay),
@@ -1713,8 +1713,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNgrabAction),
-	CONST_CAST(char *,XtCGrabAction),
+	XTRESSTR(XtNgrabAction),
+	XTRESSTR(XtCGrabAction),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, grab_action),
@@ -1723,8 +1723,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdetectAliases),
-	CONST_CAST(char *,XtCDetectAliases),
+	XTRESSTR(XtNdetectAliases),
+	XTRESSTR(XtCDetectAliases),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, detect_aliases),
@@ -1733,8 +1733,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNtypedAliases),
-	CONST_CAST(char *,XtCTypedAliases),
+	XTRESSTR(XtNtypedAliases),
+	XTRESSTR(XtCTypedAliases),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, typed_aliases),
@@ -1743,8 +1743,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdeleteAliasDisplays),
-	CONST_CAST(char *,XtCDeleteAliasDisplays),
+	XTRESSTR(XtNdeleteAliasDisplays),
+	XTRESSTR(XtCDeleteAliasDisplays),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, delete_alias_displays),
@@ -1753,8 +1753,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNalign2dArrays),
-	CONST_CAST(char *,XtCAlign2dArrays),
+	XTRESSTR(XtNalign2dArrays),
+	XTRESSTR(XtCAlign2dArrays),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, align_2d_arrays),
@@ -1763,8 +1763,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNarrayOrientation),
-	CONST_CAST(char *,XtCOrientation),
+	XTRESSTR(XtNarrayOrientation),
+	XTRESSTR(XtCOrientation),
 	XtROrientation,
 	sizeof(unsigned char),
 	XtOffsetOf(AppData, array_orientation),
@@ -1773,8 +1773,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNstructOrientation),
-	CONST_CAST(char *,XtCOrientation),
+	XTRESSTR(XtNstructOrientation),
+	XTRESSTR(XtCOrientation),
 	XtROrientation,
 	sizeof(unsigned char),
 	XtOffsetOf(AppData, struct_orientation),
@@ -1783,8 +1783,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNshowMemberNames),
-	CONST_CAST(char *,XtCShowMemberNames),
+	XTRESSTR(XtNshowMemberNames),
+	XTRESSTR(XtCShowMemberNames),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_member_names),
@@ -1793,8 +1793,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNexpandRepeatedValues),
-	CONST_CAST(char *,XtCExpandRepeatedValues),
+	XTRESSTR(XtNexpandRepeatedValues),
+	XTRESSTR(XtCExpandRepeatedValues),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, expand_repeated_values),
@@ -1803,8 +1803,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNbumpDisplays),
-	CONST_CAST(char *,XtCBumpDisplays),
+	XTRESSTR(XtNbumpDisplays),
+	XTRESSTR(XtCBumpDisplays),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, bump_displays),
@@ -1813,8 +1813,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNhideInactiveDisplays),
-	CONST_CAST(char *,XtCHideInactiveDisplays),
+	XTRESSTR(XtNhideInactiveDisplays),
+	XTRESSTR(XtCHideInactiveDisplays),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, hide_inactive_displays),
@@ -1823,8 +1823,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNshowBaseDisplayTitles),
-	CONST_CAST(char *,XtCShowDisplayTitles),
+	XTRESSTR(XtNshowBaseDisplayTitles),
+	XTRESSTR(XtCShowDisplayTitles),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_base_display_titles),
@@ -1833,8 +1833,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNshowDependentDisplayTitles),
-	CONST_CAST(char *,XtCShowDisplayTitles),
+	XTRESSTR(XtNshowDependentDisplayTitles),
+	XTRESSTR(XtCShowDisplayTitles),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, show_dependent_display_titles),
@@ -1843,8 +1843,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNclusterDisplays),
-	CONST_CAST(char *,XtCClusterDisplays),
+	XTRESSTR(XtNclusterDisplays),
+	XTRESSTR(XtCClusterDisplays),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, cluster_displays),
@@ -1853,8 +1853,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdisplayPlacement),
-	CONST_CAST(char *,XtCOrientation),
+	XTRESSTR(XtNdisplayPlacement),
+	XTRESSTR(XtCOrientation),
 	XtROrientation,
 	sizeof(unsigned char),
 	XtOffsetOf(AppData, display_placement),
@@ -1863,8 +1863,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNstatusHistorySize),
-	CONST_CAST(char *,XtCHistorySize),
+	XTRESSTR(XtNstatusHistorySize),
+	XTRESSTR(XtCHistorySize),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, status_history_size),
@@ -1873,8 +1873,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNpopdownHistorySize),
-	CONST_CAST(char *,XtCHistorySize),
+	XTRESSTR(XtNpopdownHistorySize),
+	XTRESSTR(XtCHistorySize),
 	XtRCardinal,
 	sizeof(Cardinal),
 	XtOffsetOf(AppData, popdown_history_size),
@@ -1883,8 +1883,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNsortPopdownHistory),
-	CONST_CAST(char *,XtCSortPopdownHistory),
+	XTRESSTR(XtNsortPopdownHistory),
+	XTRESSTR(XtCSortPopdownHistory),
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, sort_popdown_history),
@@ -1893,8 +1893,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNverifyButtons),
-	CONST_CAST(char *,XtCVerifyButtons),
+	XTRESSTR(XtNverifyButtons),
+	XTRESSTR(XtCVerifyButtons),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, verify_buttons),
@@ -1903,8 +1903,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNautoRaiseTool),
-	CONST_CAST(char *,XtCAutoRaiseTool),
+	XTRESSTR(XtNautoRaiseTool),
+	XTRESSTR(XtCAutoRaiseTool),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, auto_raise_tool),
@@ -1913,9 +1913,9 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdecorateTool),
-	CONST_CAST(char *,XtCDecorate),
-	CONST_CAST(char *,XtROnOff),
+	XTRESSTR(XtNdecorateTool),
+	XTRESSTR(XtCDecorate),
+	XTRESSTR(XtROnOff),
 	sizeof(OnOff),
 	XtOffsetOf(AppData, decorate_tool),
 	XmRImmediate,
@@ -1923,8 +1923,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNstickyTool),
-	CONST_CAST(char *,XtCStickyTool),
+	XTRESSTR(XtNstickyTool),
+	XTRESSTR(XtCStickyTool),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, sticky_tool),
@@ -1933,8 +1933,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNtoolRightOffset),
-	CONST_CAST(char *,XtCToolOffset),
+	XTRESSTR(XtNtoolRightOffset),
+	XTRESSTR(XtCToolOffset),
 	XmRPosition,
 	sizeof(Position),
 	XtOffsetOf(AppData, tool_right_offset),
@@ -1943,8 +1943,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNtoolTopOffset),
-	CONST_CAST(char *,XtCToolOffset),
+	XTRESSTR(XtNtoolTopOffset),
+	XTRESSTR(XtCToolOffset),
 	XmRPosition,
 	sizeof(Position),
 	XtOffsetOf(AppData, tool_top_offset),
@@ -1953,8 +1953,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNbuttonCaptions),
-	CONST_CAST(char *,XtCButtonCaptions),
+	XTRESSTR(XtNbuttonCaptions),
+	XTRESSTR(XtCButtonCaptions),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, button_captions),
@@ -1963,8 +1963,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNbuttonImages),
-	CONST_CAST(char *,XtCButtonImages),
+	XTRESSTR(XtNbuttonImages),
+	XTRESSTR(XtCButtonImages),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, button_images),
@@ -1973,8 +1973,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNbuttonCaptionGeometry),
-	CONST_CAST(char *,XtCButtonCaptionGeometry),
+	XTRESSTR(XtNbuttonCaptionGeometry),
+	XTRESSTR(XtCButtonCaptionGeometry),
 	XmRString,
 	sizeof(String),
 	XtOffsetOf(AppData, button_caption_geometry),
@@ -1983,8 +1983,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNbuttonImageGeometry),
-	CONST_CAST(char *,XtCButtonImageGeometry),
+	XTRESSTR(XtNbuttonImageGeometry),
+	XTRESSTR(XtCButtonImageGeometry),
 	XmRString,
 	sizeof(String),
 	XtOffsetOf(AppData, button_image_geometry),
@@ -1993,8 +1993,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNflatToolbarButtons),
-	CONST_CAST(char *,XtCFlatButtons),
+	XTRESSTR(XtNflatToolbarButtons),
+	XTRESSTR(XtCFlatButtons),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, flat_toolbar_buttons),
@@ -2003,8 +2003,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNflatDialogButtons),
-	CONST_CAST(char *,XtCFlatButtons),
+	XTRESSTR(XtNflatDialogButtons),
+	XTRESSTR(XtCFlatButtons),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, flat_dialog_buttons),
@@ -2013,8 +2013,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNbuttonColorKey),
-	CONST_CAST(char *,XtCColorKey),
+	XTRESSTR(XtNbuttonColorKey),
+	XTRESSTR(XtCColorKey),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, button_color_key),
@@ -2023,8 +2023,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNactiveButtonColorKey),
-	CONST_CAST(char *,XtCColorKey),
+	XTRESSTR(XtNactiveButtonColorKey),
+	XTRESSTR(XtCColorKey),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, active_button_color_key),
@@ -2033,8 +2033,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNsplashScreenColorKey),
-	CONST_CAST(char *,XtCColorKey),
+	XTRESSTR(XtNsplashScreenColorKey),
+	XTRESSTR(XtCColorKey),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, splash_screen_color_key),
@@ -2043,8 +2043,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNautoCommands),
-	CONST_CAST(char *,XtCAutoCommands),
+	XTRESSTR(XtNautoCommands),
+	XTRESSTR(XtCAutoCommands),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, auto_commands),
@@ -2053,8 +2053,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNautoCommandPrefix),
-	CONST_CAST(char *,XtCAutoCommandPrefix),
+	XTRESSTR(XtNautoCommandPrefix),
+	XTRESSTR(XtCAutoCommandPrefix),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, auto_command_prefix),
@@ -2063,8 +2063,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNmaxBreakpointNumber),
-	CONST_CAST(char *,XtCMaxNumber),
+	XTRESSTR(XtNmaxBreakpointNumber),
+	XTRESSTR(XtCMaxNumber),
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, max_breakpoint_number),
@@ -2073,8 +2073,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNmaxDisplayNumber),
-	CONST_CAST(char *,XtCMaxNumber),
+	XTRESSTR(XtNmaxDisplayNumber),
+	XTRESSTR(XtCMaxNumber),
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, max_display_number),
@@ -2083,8 +2083,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNsplashScreen),
-	CONST_CAST(char *,XtCSplashScreen),
+	XTRESSTR(XtNsplashScreen),
+	XTRESSTR(XtCSplashScreen),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, splash_screen),
@@ -2093,8 +2093,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNcolorWMIcons),
-	CONST_CAST(char *,XtCColorWMIcons),
+	XTRESSTR(XtNcolorWMIcons),
+	XTRESSTR(XtCColorWMIcons),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, color_wm_icons),
@@ -2103,9 +2103,9 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNcutCopyPasteBindings),
-	CONST_CAST(char *,XtCBindingStyle),
-	CONST_CAST(char *,XtRBindingStyle),
+	XTRESSTR(XtNcutCopyPasteBindings),
+	XTRESSTR(XtCBindingStyle),
+	XTRESSTR(XtRBindingStyle),
 	sizeof(BindingStyle),
 	XtOffsetOf(AppData, cut_copy_paste_bindings),
 	XmRImmediate,
@@ -2113,9 +2113,9 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNselectAllBindings),
-	CONST_CAST(char *,XtCBindingStyle),
-	CONST_CAST(char *,XtRBindingStyle),
+	XTRESSTR(XtNselectAllBindings),
+	XTRESSTR(XtCBindingStyle),
+	XTRESSTR(XtRBindingStyle),
 	sizeof(BindingStyle),
 	XtOffsetOf(AppData, select_all_bindings),
 	XmRImmediate,
@@ -2123,8 +2123,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNmaxUndoDepth),
-	CONST_CAST(char *,XtCMaxUndoDepth),
+	XTRESSTR(XtNmaxUndoDepth),
+	XTRESSTR(XtCMaxUndoDepth),
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, max_undo_depth),
@@ -2133,8 +2133,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNmaxUndoSize),
-	CONST_CAST(char *,XtCMaxUndoSize),
+	XTRESSTR(XtNmaxUndoSize),
+	XTRESSTR(XtCMaxUndoSize),
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, max_undo_size),
@@ -2143,8 +2143,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNthemes),
-	CONST_CAST(char *,XtCThemes),
+	XTRESSTR(XtNthemes),
+	XTRESSTR(XtCThemes),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, themes),
@@ -2153,8 +2153,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNsuppressTheme),
-	CONST_CAST(char *,XtCTheme),
+	XTRESSTR(XtNsuppressTheme),
+	XTRESSTR(XtCTheme),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, suppress_theme),
@@ -2163,8 +2163,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNmaintenance),
-	CONST_CAST(char *,XtCMaintenance),
+	XTRESSTR(XtNmaintenance),
+	XTRESSTR(XtCMaintenance),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, maintenance),
@@ -2173,8 +2173,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdumpCore),
-	CONST_CAST(char *,XtCDumpCore),
+	XTRESSTR(XtNdumpCore),
+	XTRESSTR(XtCDumpCore),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, dump_core),
@@ -2183,8 +2183,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdebugCoreDumps),
-	CONST_CAST(char *,XtCDebugCoreDumps),
+	XTRESSTR(XtNdebugCoreDumps),
+	XTRESSTR(XtCDebugCoreDumps),
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, debug_core_dumps),
@@ -2193,8 +2193,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNlessTifVersion),
-	CONST_CAST(char *,XtCLessTifVersion),
+	XTRESSTR(XtNlessTifVersion),
+	XTRESSTR(XtCLessTifVersion),
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, lesstif_version),
@@ -2207,8 +2207,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNdddinitVersion),
-	CONST_CAST(char *,XtCVersion),
+	XTRESSTR(XtNdddinitVersion),
+	XTRESSTR(XtCVersion),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, dddinit_version),
@@ -2217,8 +2217,8 @@ XtResource ddd_resources[] = {
     },
 
     {
-	CONST_CAST(char *,XtNappDefaultsVersion),
-	CONST_CAST(char *,XtCVersion),
+	XTRESSTR(XtNappDefaultsVersion),
+	XTRESSTR(XtCVersion),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(AppData, app_defaults_version),

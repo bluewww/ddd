@@ -68,8 +68,8 @@ struct plot_resource_values {
 
 static XtResource plot_subresources[] = {
     {
-	CONST_CAST(char *,"font"),
-	CONST_CAST(char *,"Font"),
+	XTRESSTR("font"),
+	XTRESSTR("Font"),
 	XtRString,
 	sizeof(String),
 	XtOffsetOf(plot_resource_values, font),
@@ -77,8 +77,8 @@ static XtResource plot_subresources[] = {
 	XtPointer("fixed")
     },
     {
-	CONST_CAST(char *,"pointsize"),
-	CONST_CAST(char *,"Pointsize"),
+	XTRESSTR("pointsize"),
+	XTRESSTR("Pointsize"),
 	XtRInt,
 	sizeof(int),
 	XtOffsetOf(plot_resource_values, pointsize),

@@ -81,8 +81,8 @@ static void PopupPushMenuAct(Widget w, XEvent* e, String *, Cardinal *);
 static void DecoratePushMenuAct(Widget w, XEvent* e, String *, Cardinal *);
 
 static XtActionsRec actions [] = {
-    {CONST_CAST(char *,"popup-push-menu"),            PopupPushMenuAct },
-    {CONST_CAST(char *,"decorate-push-menu"),         DecoratePushMenuAct },
+    {XTARECSTR("popup-push-menu"),            PopupPushMenuAct },
+    {XTARECSTR("decorate-push-menu"),         DecoratePushMenuAct },
 };
 
 static const char *pushMenuTranslations = 
@@ -1237,8 +1237,8 @@ struct subresource_values {
 
 static XtResource subresources[] = {
     {
-	CONST_CAST(char *,XtNpushMenuPopupTime),
-	CONST_CAST(char *,XtCPushMenuPopupTime),
+	XTRESSTR(XtNpushMenuPopupTime),
+	XTRESSTR(XtCPushMenuPopupTime),
 	XmRInt,
 	sizeof(int),
 	XtOffsetOf(subresource_values, push_menu_popup_time), 

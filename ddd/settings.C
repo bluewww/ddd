@@ -2473,7 +2473,7 @@ static void fix_clip_window_translations(Widget scroll)
     if (!have_clip_actions)
     {
 	static XtActionsRec clip_actions[] = {
-	    {CONST_CAST(char *,"clip-do"), ClipDo}
+	    {XTARECSTR("clip-do"), ClipDo}
 	};
 
 	XtAppAddActions(XtWidgetToApplicationContext(scroll), 
@@ -2610,24 +2610,24 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     Delay::register_shell(panel);
 
     // create a paned widget in it
-    Widget pane = XtVaCreateWidget(CONST_CAST(char *,"pane"),
+    Widget pane = XtVaCreateWidget("pane",
                                    xmPanedWindowWidgetClass, panel,
                                    XmNsashWidth, 1,
                                    XmNsashHeight, 1,
                                    XtPointer(0));
 
     // create a form widget in the top half
-    Widget form0 = XtVaCreateWidget(CONST_CAST(char *,"form0"),
+    Widget form0 = XtVaCreateWidget("form0",
                                     xmFormWidgetClass, pane, XtPointer(0));
 
     // create another form widget in the bottom half
-    Widget form1 = XtVaCreateWidget(CONST_CAST(char *,"form1"),
+    Widget form1 = XtVaCreateWidget("form1",
                                     xmFormWidgetClass, pane,
                                     XmNfractionBase, 9,
                                     XtPointer(0));
 
     Widget apply_button =
-        XtVaCreateManagedWidget(CONST_CAST(char *,"Apply"),
+        XtVaCreateManagedWidget("Apply",
                                 xmPushButtonWidgetClass,   form1,
                                 XmNtopAttachment,          XmATTACH_FORM,
                                 XmNbottomAttachment,       XmATTACH_FORM,
@@ -2640,7 +2640,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
                                 XtPointer(0));
 
     Widget reset_button =
-        XtVaCreateManagedWidget(CONST_CAST(char *,"Reset"),
+        XtVaCreateManagedWidget("Reset",
                                 xmPushButtonWidgetClass,   form1,
                                 XmNtopAttachment,          XmATTACH_FORM,
                                 XmNbottomAttachment,       XmATTACH_FORM,
@@ -2653,7 +2653,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
                                 XtPointer(0));
 
     Widget close_button =
-        XtVaCreateManagedWidget(CONST_CAST(char *,"Close"),
+        XtVaCreateManagedWidget("Close",
                                 xmPushButtonWidgetClass,   form1,
                                 XmNsensitive,              True,
                                 XmNtopAttachment,          XmATTACH_FORM,
@@ -2667,7 +2667,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
                                 XtPointer(0));
 
     Widget help_button =
-        XtVaCreateManagedWidget(CONST_CAST(char *,"Help"),
+        XtVaCreateManagedWidget("Help",
                                 xmPushButtonWidgetClass,   form1,
                                 XmNtopAttachment,          XmATTACH_FORM,
                                 XmNbottomAttachment,       XmATTACH_FORM,

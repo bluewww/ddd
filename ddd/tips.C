@@ -68,8 +68,8 @@ static MString get_tip_of_the_day(Widget w, int n)
     const string tip_name = "tip" + itostring(n);
 
     XtResource r;
-    r.resource_name   = CONST_CAST(char*,tip_name.chars());
-    r.resource_class  = CONST_CAST(char*,"Tip");
+    r.resource_name   = XTRESSTR(tip_name.chars());
+    r.resource_class  = XTRESSTR("Tip");
     r.resource_type   = XmRXmString;
     r.resource_size   = sizeof(XmString);
     r.resource_offset = XtOffsetOf(tip_of_the_day_resource_values, tip);

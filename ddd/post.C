@@ -107,8 +107,8 @@ Widget post_gdb_yn(string question, Widget w)
 						  XMST("yn_dialog"), 
 						  args, arg));
 	Delay::register_shell(yn_dialog);
-	XtAddCallback (yn_dialog, XmNokCallback,     YnCB, STATIC_CAST(void *,CONST_CAST(char*,"yes")));
-	XtAddCallback (yn_dialog, XmNcancelCallback, YnCB, STATIC_CAST(void *,CONST_CAST(char*,"no")));
+	XtAddCallback (yn_dialog, XmNokCallback,     YnCB, XtPointer("yes"));
+	XtAddCallback (yn_dialog, XmNcancelCallback, YnCB, XtPointer("no"));
 	XtAddCallback (yn_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 
 	// If the dialog is closed, assume `no'.

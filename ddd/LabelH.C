@@ -69,7 +69,7 @@ static GC _bottomShadowGC(XmLabelWidget _label);
 #define PrimOffset(field) XtOffset(XmLabelHackWidget, primitive.field)
 static XtResource resources[] =
 {
-    {CONST_CAST(char *,XmNinsensitive3D), CONST_CAST(char *,XmCInsensitive3D), XmRBoolean, sizeof(Boolean),
+    {XTRESSTR(XmNinsensitive3D), XTRESSTR(XmCInsensitive3D), XmRBoolean, sizeof(Boolean),
      TheOffset(insensitive3D), XmRImmediate, (XtPointer)TRUE},
 };
 

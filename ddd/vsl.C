@@ -205,8 +205,8 @@ int main(int argc, char *argv[])
     // Create Viewport
     Arg arglist[10];        // Arguments
     int a = 0;              // Argument counter
-    XtSetArg(arglist[a], CONST_CAST(char *,XtNallowHoriz), true); a++;
-    XtSetArg(arglist[a], CONST_CAST(char *,XtNallowVert),  true); a++;
+    XtSetArg(arglist[a], ARGSTR(XtNallowHoriz), true); a++;
+    XtSetArg(arglist[a], ARGSTR(XtNallowVert),  true); a++;
     Widget viewport = XtCreateManagedWidget("viewport", viewportWidgetClass, 
 					    toplevel, arglist, a);
 

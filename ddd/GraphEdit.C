@@ -95,131 +95,131 @@ static void defaultForeground(Widget w, int, XrmValue *value)
 static XtResource resources[] = {
 #define offset(field) XtOffsetOf(_GraphEditRec::Res, graphEdit.field)
     // {name, class, type, size, offset, default_type, default_addr}
-    { CONST_CAST(char *,XtNgraph), CONST_CAST(char *,XtCGraph), XtRPointer, sizeof(Graph *),
+    { XTRESSTR(XtNgraph), XTRESSTR(XtCGraph), XtRPointer, sizeof(Graph *),
         offset(graph), XtRImmediate, XtPointer(0) },
-    { CONST_CAST(char *,XtNmoveDelta), CONST_CAST(char *,XtCMoveDelta), XtRDimension, sizeof(Dimension),
+    { XTRESSTR(XtNmoveDelta), XTRESSTR(XtCMoveDelta), XtRDimension, sizeof(Dimension),
 	offset(moveDelta), XtRImmediate, XtPointer(4) },
-    { CONST_CAST(char *,XtNrubberEdges), CONST_CAST(char *,XtCRubberEdges), XtRBoolean, sizeof(Boolean),
+    { XTRESSTR(XtNrubberEdges), XTRESSTR(XtCRubberEdges), XtRBoolean, sizeof(Boolean),
 	offset(rubberEdges), XtRImmediate, XtPointer(True) },
-    { CONST_CAST(char *,XtNrubberArrows), CONST_CAST(char *,XtCRubberEdges), XtRBoolean, sizeof(Boolean),
+    { XTRESSTR(XtNrubberArrows), XTRESSTR(XtCRubberEdges), XtRBoolean, sizeof(Boolean),
 	offset(rubberArrows), XtRImmediate, XtPointer(False) },
-    { CONST_CAST(char *,XtNrubberAnnotations), CONST_CAST(char *,XtCRubberAnnotations), XtRBoolean, sizeof(Boolean),
+    { XTRESSTR(XtNrubberAnnotations), XTRESSTR(XtCRubberAnnotations), XtRBoolean, sizeof(Boolean),
 	offset(rubberAnnotations), XtRImmediate, XtPointer(False) },
-    { CONST_CAST(char *,XtNopaqueMove), CONST_CAST(char *,XtCOpaqueMove), XtRBoolean, sizeof(Boolean),
+    { XTRESSTR(XtNopaqueMove), XTRESSTR(XtCOpaqueMove), XtRBoolean, sizeof(Boolean),
 	offset(opaqueMove), XtRImmediate, XtPointer(False) },
 
-    { CONST_CAST(char *,XtNautoRaise), CONST_CAST(char *,XtCAutoRaise), XtRBoolean, sizeof(Boolean),
+    { XTRESSTR(XtNautoRaise), XTRESSTR(XtCAutoRaise), XtRBoolean, sizeof(Boolean),
 	offset(autoRaise), XtRImmediate, XtPointer(True) },
 
-    {CONST_CAST(char *, XtNshowHints), CONST_CAST(char *,XtCShowHints), XtRBoolean, sizeof(Boolean),
+    {XTRESSTR( XtNshowHints), XTRESSTR(XtCShowHints), XtRBoolean, sizeof(Boolean),
 	offset(showHints), XtRImmediate, XtPointer(False) },
-    { CONST_CAST(char *,XtNhintSize), CONST_CAST(char *,XtCHintSize), XtRDimension, sizeof(Dimension),
+    { XTRESSTR(XtNhintSize), XTRESSTR(XtCHintSize), XtRDimension, sizeof(Dimension),
 	offset(hintSize), XtRImmediate, XtPointer(6) },
 
-    { CONST_CAST(char *,XtNshowAnnotations), CONST_CAST(char *,XtCShowAnnotations), XtRBoolean, sizeof(Boolean),
+    { XTRESSTR(XtNshowAnnotations), XTRESSTR(XtCShowAnnotations), XtRBoolean, sizeof(Boolean),
 	offset(showAnnotations), XtRImmediate, XtPointer(True) },
 
-    { CONST_CAST(char *,XtNgridWidth), CONST_CAST(char *,XtCGridSize), XtRDimension, sizeof(Dimension),
+    { XTRESSTR(XtNgridWidth), XTRESSTR(XtCGridSize), XtRDimension, sizeof(Dimension),
 	offset(gridWidth), XtRImmediate, XtPointer(16) },
-    { CONST_CAST(char *,XtNgridHeight), CONST_CAST(char *,XtCGridSize), XtRDimension, sizeof(Dimension),
+    { XTRESSTR(XtNgridHeight), XTRESSTR(XtCGridSize), XtRDimension, sizeof(Dimension),
 	offset(gridHeight), XtRImmediate, XtPointer(16) },
 
-    { CONST_CAST(char *,XtNshowGrid), CONST_CAST(char *,XtCShowGrid), XtRBoolean, sizeof(Boolean),
+    { XTRESSTR(XtNshowGrid), XTRESSTR(XtCShowGrid), XtRBoolean, sizeof(Boolean),
 	offset(showGrid), XtRImmediate, XtPointer(False) },
-    { CONST_CAST(char *,XtNsnapToGrid), CONST_CAST(char *,XtCSnapToGrid), XtRBoolean, sizeof(Boolean),
+    { XTRESSTR(XtNsnapToGrid), XTRESSTR(XtCSnapToGrid), XtRBoolean, sizeof(Boolean),
 	offset(snapToGrid), XtRImmediate, XtPointer(False) },
 
-    { CONST_CAST(char *,XtNautoLayout), CONST_CAST(char *,XtCAutoLayout), XtRBoolean, sizeof(Boolean),
+    { XTRESSTR(XtNautoLayout), XTRESSTR(XtCAutoLayout), XtRBoolean, sizeof(Boolean),
 	offset(autoLayout), XtRImmediate, XtPointer(False) },
 
-    { CONST_CAST(char *,XtNrotation), CONST_CAST(char *,XtCRotation), XtRCardinal, sizeof(Cardinal),
+    { XTRESSTR(XtNrotation), XTRESSTR(XtCRotation), XtRCardinal, sizeof(Cardinal),
 	offset(rotation), XtRImmediate, XtPointer(0)},
 
-    { CONST_CAST(char *,XtNedgeWidth), CONST_CAST(char *,XtCEdgeWidth), XtRDimension, sizeof(Dimension),
+    { XTRESSTR(XtNedgeWidth), XTRESSTR(XtCEdgeWidth), XtRDimension, sizeof(Dimension),
 	offset(edgeWidth), XtRImmediate, XtPointer(0) },
-    { CONST_CAST(char *,XtNarrowAngle), CONST_CAST(char *,XtCArrowAngle), XtRDimension, sizeof(Dimension),
+    { XTRESSTR(XtNarrowAngle), XTRESSTR(XtCArrowAngle), XtRDimension, sizeof(Dimension),
 	offset(arrowAngle), XtRImmediate, XtPointer(30) },
-    { CONST_CAST(char *,XtNarrowLength), CONST_CAST(char *,XtCArrowLength), XtRDimension, sizeof(Dimension),
+    { XTRESSTR(XtNarrowLength), XTRESSTR(XtCArrowLength), XtRDimension, sizeof(Dimension),
 	offset(arrowLength), XtRImmediate, XtPointer(10) },
-    { CONST_CAST(char *,XtNselfEdgeDiameter), CONST_CAST(char *,XtCSelfEdgeDiameter), XtRDimension, 
+    { XTRESSTR(XtNselfEdgeDiameter), XTRESSTR(XtCSelfEdgeDiameter), XtRDimension, 
         sizeof(Dimension), offset(selfEdgeDiameter), 
         XtRImmediate, XtPointer(32) },
 
-    { CONST_CAST(char *,XtNextraWidth), CONST_CAST(char *,XtCExtraSize), XtRDimension, sizeof(Dimension),
+    { XTRESSTR(XtNextraWidth), XTRESSTR(XtCExtraSize), XtRDimension, sizeof(Dimension),
 	offset(extraWidth), XtRImmediate, XtPointer(0) },
-    { CONST_CAST(char *,XtNextraHeight), CONST_CAST(char *,XtCExtraSize), XtRDimension, sizeof(Dimension),
+    { XTRESSTR(XtNextraHeight), XTRESSTR(XtCExtraSize), XtRDimension, sizeof(Dimension),
 	offset(extraHeight), XtRImmediate, XtPointer(0) },
 
-    { CONST_CAST(char *,XtNrequestedWidth), CONST_CAST(char *,XtCRequestedSize), XtRDimension, sizeof(Dimension),
+    { XTRESSTR(XtNrequestedWidth), XTRESSTR(XtCRequestedSize), XtRDimension, sizeof(Dimension),
 	offset(requestedWidth), XtRImmediate, XtPointer(0) },
-    { CONST_CAST(char *,XtNrequestedHeight), CONST_CAST(char *,XtCRequestedSize), XtRDimension, sizeof(Dimension),
+    { XTRESSTR(XtNrequestedHeight), XTRESSTR(XtCRequestedSize), XtRDimension, sizeof(Dimension),
 	offset(requestedHeight), XtRImmediate, XtPointer(0) },
 
-    { CONST_CAST(char *,XtNselectTile), CONST_CAST(char *,XtCBitmap), XtRBitmap, sizeof(Pixmap),
+    { XTRESSTR(XtNselectTile), XTRESSTR(XtCBitmap), XtRBitmap, sizeof(Pixmap),
 	offset(selectTile), XtRImmediate, XtPointer(0)},
 
-    { CONST_CAST(char *,XtNedgeAttachMode), CONST_CAST(char *,XtCEdgeAttachMode), CONST_CAST(char *,XtREdgeAttachMode),
+    { XTRESSTR(XtNedgeAttachMode), XTRESSTR(XtCEdgeAttachMode), XTRESSTR(XtREdgeAttachMode),
 	sizeof(EdgeAttachMode), offset(edgeAttachMode), 
         XtRImmediate, XtPointer(Straight) },
-    { CONST_CAST(char *,XtNlayoutMode), CONST_CAST(char *,XtCLayoutMode), CONST_CAST(char *,XtRLayoutMode),
+    { XTRESSTR(XtNlayoutMode), XTRESSTR(XtCLayoutMode), XTRESSTR(XtRLayoutMode),
 	sizeof(LayoutMode), offset(layoutMode), 
         XtRImmediate, XtPointer(RegularLayoutMode) },
-    { CONST_CAST(char *,XtNselfEdgePosition), CONST_CAST(char *,XtCSelfEdgePosition), CONST_CAST(char *,XtRSelfEdgePosition),
+    { XTRESSTR(XtNselfEdgePosition), XTRESSTR(XtCSelfEdgePosition), XTRESSTR(XtRSelfEdgePosition),
 	sizeof(SelfEdgePosition), offset(selfEdgePosition), 
         XtRImmediate, XtPointer(NorthEast) },
-    { CONST_CAST(char *,XtNselfEdgeDirection), CONST_CAST(char *,XtCSelfEdgeDirection), CONST_CAST(char *,XtRSelfEdgeDirection),
+    { XTRESSTR(XtNselfEdgeDirection), XTRESSTR(XtCSelfEdgeDirection), XTRESSTR(XtRSelfEdgeDirection),
 	sizeof(SelfEdgeDirection), offset(selfEdgeDirection), 
         XtRImmediate, XtPointer(Counterclockwise) },
-    { CONST_CAST(char *,XtNdashedLines), CONST_CAST(char *,XtCDashedLines), XtRBoolean,
+    { XTRESSTR(XtNdashedLines), XTRESSTR(XtCDashedLines), XtRBoolean,
 	sizeof(Boolean), offset(dashedLines), 
         XtRImmediate, XtPointer(False) },
 
-    { CONST_CAST(char *,XtNdefaultCursor), CONST_CAST(char *,XtCCursor), XtRCursor, sizeof(Cursor),
+    { XTRESSTR(XtNdefaultCursor), XTRESSTR(XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(defaultCursor), XtRImmediate, XtPointer(0)},
-    { CONST_CAST(char *,XtNmoveCursor), CONST_CAST(char *,XtCCursor), XtRCursor, sizeof(Cursor),
+    { XTRESSTR(XtNmoveCursor), XTRESSTR(XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(moveCursor), XtRImmediate, XtPointer(0)},
-    { CONST_CAST(char *,XtNselectCursor), CONST_CAST(char *,XtCCursor), XtRCursor, sizeof(Cursor),
+    { XTRESSTR(XtNselectCursor), XTRESSTR(XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(selectCursor), XtRImmediate, XtPointer(0)},
-    { CONST_CAST(char *,XtNselectBottomLeftCursor), CONST_CAST(char *,XtCCursor), XtRCursor, sizeof(Cursor),
+    { XTRESSTR(XtNselectBottomLeftCursor), XTRESSTR(XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(selectBottomLeftCursor), XtRImmediate, XtPointer(0)},
-    { CONST_CAST(char *,XtNselectBottomRightCursor), CONST_CAST(char *,XtCCursor), XtRCursor, sizeof(Cursor),
+    { XTRESSTR(XtNselectBottomRightCursor), XTRESSTR(XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(selectBottomRightCursor), XtRImmediate, XtPointer(0)},
-    { CONST_CAST(char *,XtNselectTopLeftCursor), CONST_CAST(char *,XtCCursor), XtRCursor, sizeof(Cursor),
+    { XTRESSTR(XtNselectTopLeftCursor), XTRESSTR(XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(selectTopLeftCursor), XtRImmediate, XtPointer(0)},
-    { CONST_CAST(char *,XtNselectTopRightCursor), CONST_CAST(char *,XtCCursor), XtRCursor, sizeof(Cursor),
+    { XTRESSTR(XtNselectTopRightCursor), XTRESSTR(XtCCursor), XtRCursor, sizeof(Cursor),
 	offset(selectTopRightCursor), XtRImmediate, XtPointer(0)},
 
-    { CONST_CAST(char *,XtNnodeColor), CONST_CAST(char *,XtCColor), XtRPixel, sizeof(Pixel),
+    { XTRESSTR(XtNnodeColor), XTRESSTR(XtCColor), XtRPixel, sizeof(Pixel),
 	offset(nodeColor), XtRCallProc, XtPointer(defaultForeground) },
-    { CONST_CAST(char *,XtNedgeColor), CONST_CAST(char *,XtCColor), XtRPixel, sizeof(Pixel),
+    { XTRESSTR(XtNedgeColor), XTRESSTR(XtCColor), XtRPixel, sizeof(Pixel),
 	offset(edgeColor), XtRCallProc, XtPointer(defaultForeground) },
-    { CONST_CAST(char *,XtNframeColor), CONST_CAST(char *,XtCColor), XtRPixel, sizeof(Pixel),
+    { XTRESSTR(XtNframeColor), XTRESSTR(XtCColor), XtRPixel, sizeof(Pixel),
 	offset(frameColor), XtRCallProc, XtPointer(defaultForeground) },
-    { CONST_CAST(char *,XtNoutlineColor), CONST_CAST(char *,XtCColor), XtRPixel, sizeof(Pixel),
+    { XTRESSTR(XtNoutlineColor), XTRESSTR(XtCColor), XtRPixel, sizeof(Pixel),
 	offset(outlineColor), XtRCallProc, XtPointer(defaultForeground) },
-    { CONST_CAST(char *,XtNgridColor), CONST_CAST(char *,XtCColor), XtRPixel, sizeof(Pixel),
+    { XTRESSTR(XtNgridColor), XTRESSTR(XtCColor), XtRPixel, sizeof(Pixel),
 	offset(gridColor), XtRCallProc, XtPointer(defaultForeground) },
-    { CONST_CAST(char *,XtNselectColor), CONST_CAST(char *,XtCColor), XtRPixel, sizeof(Pixel),
+    { XTRESSTR(XtNselectColor), XTRESSTR(XtCColor), XtRPixel, sizeof(Pixel),
 	offset(selectColor), XtRCallProc, XtPointer(defaultForeground) },
 
-    { CONST_CAST(char *,XtNnodePrintColor), CONST_CAST(char *,XtCColor), XtRString, sizeof(String),
+    { XTRESSTR(XtNnodePrintColor), XTRESSTR(XtCColor), XtRString, sizeof(String),
 	offset(nodePrintColor), XtRImmediate, 0 },
-    { CONST_CAST(char *,XtNedgePrintColor), CONST_CAST(char *,XtCColor), XtRString, sizeof(String),
+    { XTRESSTR(XtNedgePrintColor), XTRESSTR(XtCColor), XtRString, sizeof(String),
 	offset(edgePrintColor), XtRImmediate, 0 },
 
-    { CONST_CAST(char *,XtNpositionChangedCallback), CONST_CAST(char *,XtCCallback), XtRCallback, sizeof(XtPointer),
+    { XTRESSTR(XtNpositionChangedCallback), XTRESSTR(XtCCallback), XtRCallback, sizeof(XtPointer),
 	offset(positionChangedProc), XtRCallback, XtPointer(0) },
-    { CONST_CAST(char *,XtNselectionChangedCallback), CONST_CAST(char *,XtCCallback), XtRCallback, sizeof(XtPointer),
+    { XTRESSTR(XtNselectionChangedCallback), XTRESSTR(XtCCallback), XtRCallback, sizeof(XtPointer),
 	offset(selectionChangedProc), XtRCallback, XtPointer(0) },
-    { CONST_CAST(char *,XtNsizeChangedCallback), CONST_CAST(char *,XtCCallback), XtRCallback, sizeof(XtPointer),
+    { XTRESSTR(XtNsizeChangedCallback), XTRESSTR(XtCCallback), XtRCallback, sizeof(XtPointer),
 	offset(sizeChangedProc), XtRCallback, XtPointer(0) },
-    { CONST_CAST(char *,XtNcompareNodesCallback), CONST_CAST(char *,XtCCallback), XtRCallback, sizeof(XtPointer),
+    { XTRESSTR(XtNcompareNodesCallback), XTRESSTR(XtCCallback), XtRCallback, sizeof(XtPointer),
 	offset(compareNodesProc), XtRCallback, XtPointer(0) },
-    { CONST_CAST(char *,XtNpreLayoutCallback), CONST_CAST(char *,XtCCallback), XtRCallback, sizeof(XtPointer),
+    { XTRESSTR(XtNpreLayoutCallback), XTRESSTR(XtCCallback), XtRCallback, sizeof(XtPointer),
 	offset(preLayoutProc), XtRCallback, XtPointer(0) },
-    { CONST_CAST(char *,XtNpostLayoutCallback), CONST_CAST(char *,XtCCallback), XtRCallback, sizeof(XtPointer),
+    { XTRESSTR(XtNpostLayoutCallback), XTRESSTR(XtCCallback), XtRCallback, sizeof(XtPointer),
 	offset(postLayoutProc), XtRCallback, XtPointer(0) },
-    { CONST_CAST(char *,XtNpreSelectionCallback), CONST_CAST(char *,XtCCallback), XtRCallback, sizeof(XtPointer),
+    { XTRESSTR(XtNpreSelectionCallback), XTRESSTR(XtCCallback), XtRCallback, sizeof(XtPointer),
 	offset(preSelectionProc), XtRCallback, XtPointer(0) },
 
 #undef offset
@@ -257,30 +257,30 @@ static void _Normalize  (Widget, XEvent *, String *, Cardinal *);
 // Actions table
 
 static XtActionsRec actions[] = {
-    { CONST_CAST(char *,"select"),         Select },        // select()
-    { CONST_CAST(char *,"extend"),         Extend },        // extend()
-    { CONST_CAST(char *,"toggle"),         Toggle },        // toggle()
-    { CONST_CAST(char *,"select-or-move"), SelectOrMove },	 // select-or-move()
-    { CONST_CAST(char *,"extend-or-move"), ExtendOrMove },	 // extend-or-move()
-    { CONST_CAST(char *,"toggle-or-move"), ToggleOrMove },	 // toggle-or-move()
-    { CONST_CAST(char *,"move-selected"),  MoveSelected },	 // move-selected(X, Y)
-    { CONST_CAST(char *,"follow"),		Follow },        // follow()
-    { CONST_CAST(char *,"end"),		End },           // end()
-    { CONST_CAST(char *,"show-edges"),	ShowEdges },     // show-edges([any|both|from|to])
-    { CONST_CAST(char *,"hide-edges"), 	HideEdges },     // hide-edges([any|both|from|to])
-    { CONST_CAST(char *,"select-all"), 	SelectAll },     // select-all()
-    { CONST_CAST(char *,"select-first"), 	SelectFirst },   // select-first()
-    { CONST_CAST(char *,"select-next"), 	SelectNext },    // select-next()
-    { CONST_CAST(char *,"select-prev"), 	SelectPrev },    // select-prev()
-    { CONST_CAST(char *,"unselect-all"), 	UnselectAll },   // unselect-all()
-    { CONST_CAST(char *,"snap-to-grid"),	SnapToGrid },    // snap-to-grid()
-    { CONST_CAST(char *,"_snap-to-grid"),	_SnapToGrid },
-    { CONST_CAST(char *,"rotate"),		Rotate },        // rotate([[+|-]DEGREES])
-    { CONST_CAST(char *,"_rotate"),	_Rotate },
-    { CONST_CAST(char *,"layout"),		DoLayout },      // layout([regular|compact],
-    { CONST_CAST(char *,"_layout"),	_Layout },       //         [[+|-]DEGREES]])
-    { CONST_CAST(char *,"normalize"),	Normalize },     // normalize()
-    { CONST_CAST(char *,"_normalize"),	_Normalize },
+    { XTARECSTR("select"),         Select },        // select()
+    { XTARECSTR("extend"),         Extend },        // extend()
+    { XTARECSTR("toggle"),         Toggle },        // toggle()
+    { XTARECSTR("select-or-move"), SelectOrMove },	 // select-or-move()
+    { XTARECSTR("extend-or-move"), ExtendOrMove },	 // extend-or-move()
+    { XTARECSTR("toggle-or-move"), ToggleOrMove },	 // toggle-or-move()
+    { XTARECSTR("move-selected"),  MoveSelected },	 // move-selected(X, Y)
+    { XTARECSTR("follow"),		Follow },        // follow()
+    { XTARECSTR("end"),		End },           // end()
+    { XTARECSTR("show-edges"),	ShowEdges },     // show-edges([any|both|from|to])
+    { XTARECSTR("hide-edges"), 	HideEdges },     // hide-edges([any|both|from|to])
+    { XTARECSTR("select-all"), 	SelectAll },     // select-all()
+    { XTARECSTR("select-first"), 	SelectFirst },   // select-first()
+    { XTARECSTR("select-next"), 	SelectNext },    // select-next()
+    { XTARECSTR("select-prev"), 	SelectPrev },    // select-prev()
+    { XTARECSTR("unselect-all"), 	UnselectAll },   // unselect-all()
+    { XTARECSTR("snap-to-grid"),	SnapToGrid },    // snap-to-grid()
+    { XTARECSTR("_snap-to-grid"),	_SnapToGrid },
+    { XTARECSTR("rotate"),		Rotate },        // rotate([[+|-]DEGREES])
+    { XTARECSTR("_rotate"),	_Rotate },
+    { XTARECSTR("layout"),		DoLayout },      // layout([regular|compact],
+    { XTARECSTR("_layout"),	_Layout },       //         [[+|-]DEGREES]])
+    { XTARECSTR("normalize"),	Normalize },     // normalize()
+    { XTARECSTR("_normalize"),	_Normalize },
 };
 
 

@@ -46,11 +46,11 @@ char Swallower_rcsid[] =
 static XtResource resources[] = {
 #define offset(field) XtOffsetOf(SwallowerRec, swallower.field)
     // {name, class, type, size, offset, default_type, default_addr}
-    { CONST_CAST(char*,XtNwindow), XtCWindow, XtRPointer, sizeof(Window),
+    { XTRESSTR(XtNwindow), XtCWindow, XtRPointer, sizeof(Window),
         offset(window), XtRImmediate, XtPointer(None) },
-    { CONST_CAST(char*,XtNwindowGoneCallback), XtCCallback, XtRCallback, sizeof(XtPointer),
+    { XTRESSTR(XtNwindowGoneCallback), XtCCallback, XtRCallback, sizeof(XtPointer),
 	offset(windowGoneProc), XtRCallback, XtPointer(0) },
-    { CONST_CAST(char*,XtNwindowCreatedCallback), XtCCallback, XtRCallback, sizeof(XtPointer),
+    { XTRESSTR(XtNwindowCreatedCallback), XtCCallback, XtRCallback, sizeof(XtPointer),
 	offset(windowCreatedProc), XtRCallback, XtPointer(0) },
 #undef offset
 };

@@ -45,8 +45,20 @@
 #  define REINTERPRET_CAST(TYPE,OBJ) ((TYPE)(OBJ))
 #endif
 
-// Motif does not use "const _XtString" and leads to many const_cast.
+// Motif does not use "const _XtString" and this leads to many const_cast.
 #define XMST(OBJ) CONST_CAST(char *,OBJ)
+
+// first three fields of XtResource are char*.
+#define XTRESSTR(OBJ) CONST_CAST(char *,OBJ)
+
+// first field of XtActionsRec is char*.
+#define XTARECSTR(OBJ) CONST_CAST(char *,OBJ)
+
+// first two fields of XrmOptionDescRec are char*.
+#define XRMOPTSTR(OBJ) CONST_CAST(char *,OBJ)
+
+// Arg.name is char*.
+#define ARGSTR(OBJ) CONST_CAST(char *,OBJ)
 
 #endif // _DDD_casts_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

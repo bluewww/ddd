@@ -145,17 +145,17 @@ char DataDisp_rcsid[] =
 // Xt Stuff
 //-----------------------------------------------------------------------
 XtActionsRec DataDisp::actions [] = {
-    {CONST_CAST(char*,"graph-select"),         DataDisp::graph_selectAct},
-    {CONST_CAST(char*,"graph-select-or-move"), DataDisp::graph_select_or_moveAct},
-    {CONST_CAST(char*,"graph-extend"),         DataDisp::graph_extendAct},
-    {CONST_CAST(char*,"graph-extend-or-move"), DataDisp::graph_extend_or_moveAct},
-    {CONST_CAST(char*,"graph-toggle"),         DataDisp::graph_toggleAct},
-    {CONST_CAST(char*,"graph-toggle-or-move"), DataDisp::graph_toggle_or_moveAct},
-    {CONST_CAST(char*,"graph-popup-menu"),     DataDisp::graph_popupAct},
-    {CONST_CAST(char*,"graph-dereference"),    DataDisp::graph_dereferenceAct},
-    {CONST_CAST(char*,"graph-detail"),         DataDisp::graph_detailAct},
-    {CONST_CAST(char*,"graph-rotate"),         DataDisp::graph_rotateAct},
-    {CONST_CAST(char*,"graph-dependent"),      DataDisp::graph_dependentAct}
+    {XTARECSTR("graph-select"),         DataDisp::graph_selectAct},
+    {XTARECSTR("graph-select-or-move"), DataDisp::graph_select_or_moveAct},
+    {XTARECSTR("graph-extend"),         DataDisp::graph_extendAct},
+    {XTARECSTR("graph-extend-or-move"), DataDisp::graph_extend_or_moveAct},
+    {XTARECSTR("graph-toggle"),         DataDisp::graph_toggleAct},
+    {XTARECSTR("graph-toggle-or-move"), DataDisp::graph_toggle_or_moveAct},
+    {XTARECSTR("graph-popup-menu"),     DataDisp::graph_popupAct},
+    {XTARECSTR("graph-dereference"),    DataDisp::graph_dereferenceAct},
+    {XTARECSTR("graph-detail"),         DataDisp::graph_detailAct},
+    {XTARECSTR("graph-rotate"),         DataDisp::graph_rotateAct},
+    {XTARECSTR("graph-dependent"),      DataDisp::graph_dependentAct}
 };
 
 
@@ -6955,7 +6955,7 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
     // Create graph editor
     Arg args[10];
     int arg = 0;
-    XtSetArg (args[arg], CONST_CAST(char *,XtNgraph), (Graph *)disp_graph); arg++;
+    XtSetArg (args[arg], ARGSTR(XtNgraph), (Graph *)disp_graph); arg++;
 
     if (app_data.panned_graph_editor)
     {

@@ -181,16 +181,16 @@ extern "C" {
 // Xt stuff
 //-----------------------------------------------------------------------
 XtActionsRec SourceView::actions [] = {
-    {CONST_CAST(char*,"source-popup-menu"),        SourceView::srcpopupAct        },
-    {CONST_CAST(char*,"source-start-select-word"), SourceView::startSelectWordAct },
-    {CONST_CAST(char*,"source-end-select-word"),   SourceView::endSelectWordAct   },
-    {CONST_CAST(char*,"source-update-glyphs"),     SourceView::updateGlyphsAct    },
-    {CONST_CAST(char*,"source-drag-glyph"),        SourceView::dragGlyphAct       },
-    {CONST_CAST(char*,"source-follow-glyph"),      SourceView::followGlyphAct     },
-    {CONST_CAST(char*,"source-drop-glyph"),        SourceView::dropGlyphAct       },
-    {CONST_CAST(char*,"source-delete-glyph"),      SourceView::deleteGlyphAct     },
-    {CONST_CAST(char*,"source-double-click"),      SourceView::doubleClickAct     },
-    {CONST_CAST(char*,"source-set-arg"),           SourceView::setArgAct          },
+    {XTARECSTR("source-popup-menu"),        SourceView::srcpopupAct        },
+    {XTARECSTR("source-start-select-word"), SourceView::startSelectWordAct },
+    {XTARECSTR("source-end-select-word"),   SourceView::endSelectWordAct   },
+    {XTARECSTR("source-update-glyphs"),     SourceView::updateGlyphsAct    },
+    {XTARECSTR("source-drag-glyph"),        SourceView::dragGlyphAct       },
+    {XTARECSTR("source-follow-glyph"),      SourceView::followGlyphAct     },
+    {XTARECSTR("source-drop-glyph"),        SourceView::dropGlyphAct       },
+    {XTARECSTR("source-delete-glyph"),      SourceView::deleteGlyphAct     },
+    {XTARECSTR("source-double-click"),      SourceView::doubleClickAct     },
+    {XTARECSTR("source-set-arg"),           SourceView::setArgAct          },
 };
 
 //-----------------------------------------------------------------------
