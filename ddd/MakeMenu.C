@@ -93,17 +93,29 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	string panelName   = string(name) + "Panel";
 	Widget subMenu  = 0;
 	Widget label    = 0;
+	widget = 0;
 
 	switch(type & MMTypeMask) 
 	{
 	case MMPush:
 	    // Create a PushButton
-	    if (subitems != 0)
-		subMenu = MMcreatePopupMenu(shell, subMenuName, subitems);
-
 	    arg = 0;
-	    XtSetArg(args[arg], XmNuserData, subMenu); arg++;
 	    widget = verify(XmCreatePushButton(shell, name, args, arg));
+
+	    if (subitems != 0)
+	    {
+		// Add a menu to this PushButton
+		arg = 0;
+		subMenu = 
+		    verify(XmCreatePopupMenu(widget, subMenuName, args, arg));
+		arg = 0;
+		Widget clone = 
+		    verify(XmCreatePushButton(subMenu, name, args, arg));
+		XtManageChild(clone);
+		addItems(shell, subMenu, subitems);
+	    }
+
+	    XtVaSetValues(widget, XmNuserData, subMenu, XtPointer(0));
 	    break;
 
 	case MMToggle:
@@ -543,30 +555,38 @@ void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
     XtVaGetValues(w, XmNuserData, &subMenu, XtPointer(0));
     if (subMenu == 0)
 	return;
-
     Widget shell = XtParent(subMenu);
 
-    // Attempt to place menu below button
+    // Update label and callbacks of clone entry
+    Widget clone = XtNameToWidget(subMenu, XtName(w));
+    if (clone != 0)
+    {
+	XmString label;
+	XtCallbackList activate_callback;
+	XtVaGetValues(w, 
+		      XmNlabelString, &label,
+		      XmNactivateCallback, &activate_callback,
+		      XtPointer(0));
+	XtVaSetValues(clone,
+		      XmNlabelString, label,
+		      XmNactivateCallback, activate_callback,
+		      XtPointer(0));
+	XmStringFree(label);
+    }
+
+    // Attempt to place menu in place of button
     Position button_x, button_y;
     XtTranslateCoords(w, 0, 0, &button_x, &button_y);
 
-    XtWidgetGeometry size;
-    size.request_mode = CWHeight;
-    unsigned char unit_type;
-
-    XtQueryGeometry(w, NULL, &size);
-    XtVaGetValues(w, XmNunitType, &unit_type, NULL);
-    Dimension button_height = XmConvertUnits(w, XmVERTICAL, XmPIXELS,
-					     size.height, unit_type);
-    Position x = button_x;
-    Position y = button_y + button_height;
-
-    event->xbutton.x_root = x;
-    event->xbutton.y_root = y;
+    event->xbutton.x_root = button_x;
+    event->xbutton.y_root = button_y;
     XmMenuPosition(subMenu, &event->xbutton);
 
     XtManageChild(subMenu);
     XtPopup(shell, XtGrabNone);
+
+    if (clone != 0)
+	XtCallActionProc(clone, "BtnDown", event, 0, 0);
 }
 
 
