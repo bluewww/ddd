@@ -1461,7 +1461,7 @@ Ddd*manual_help*find.labelString:	Find@small>>
 Ddd*manual_help*find.tipString:		Find next occurrence in manual
 Ddd*manual_help*key.borderWidth:	0
 Ddd*manual_help*key.topOffset:		8
-Ddd*manual_help*find.topOffset:		8
+Ddd*manual_help*find.bottomOffset:	3
 Ddd*manual_help*find.rightOffset:	4
 Ddd*manual_help*find.leftOffset:	2
 

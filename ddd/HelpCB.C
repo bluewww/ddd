@@ -546,8 +546,6 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 	XtSetArg(args[arg], XmNleftWidget,       key);               arg++;
 	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
 	XtSetArg(args[arg], XmNrightWidget,      help_man);          arg++;
-	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_WIDGET);   arg++;
-	XtSetArg(args[arg], XmNtopWidget,        help_index);        arg++;
 	Widget find = verify(XmCreatePushButton(form, "find", args, arg));
 	XtManageChild(find);
 
