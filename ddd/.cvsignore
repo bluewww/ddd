@@ -32,6 +32,7 @@ ddd.man.txt
 ddd.man.txt.gz
 ddd.man.txt.gz.C
 ddd.syms
+ddd.syms.log
 ddd.vsl.h
 eps-code.h
 header.str
