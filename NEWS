@@ -10,6 +10,10 @@ DDD 3.2 brings not much yet.
 - `Breakpoint Properties', `Define Command', and `Debugger Settings'
   have an `Apply' button that applies changes to text fields.
 - In TTY mode, you can edit and complete the command line as in GDB.
+- DDD now uses the locale as specified by the environment (such as
+  $LANG).  This allows input of locale characters in DDD dialogs;
+  error messages may also come up in your locale.  If you experience
+  any problems, set LANG=C when invoking DDD.
 - [Perl] DDD supports temporary breakpoints in Perl.
 - [GDB] DDD saves the GDB source directory path with the current session.
 - [JDB] DDD saves the JDB class path only with the current session.

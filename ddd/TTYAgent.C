@@ -248,7 +248,8 @@ extern "C" {
     //  has an ioctl() decl.
 #else
     int ioctl(int fd, int request, ...);
-#endif
+#endif // __GLIBC__
+#endif // HAVE_IOCTL
 #if HAVE_FCNTL && !HAVE_FCNTL_DECL && !defined(fcntl)
     int fcntl(int fd, int command, ...);
 #endif

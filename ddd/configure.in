@@ -581,7 +581,8 @@ dnl
 dnl
 dnl
 AC_HEADER_STDC
-AC_CHECK_HEADERS(alloca.h fcntl.h limits.h malloc.h netdb.h pwd.h regex.h rx.h)
+AC_CHECK_HEADERS(alloca.h fcntl.h limits.h locale.h malloc.h netdb.h pwd.h)
+AC_CHECK_HEADERS(regex.h rx.h)
 AC_CHECK_HEADERS(stdlib.h string.h strings.h termio.h termios.h unistd.h)
 AC_CHECK_HEADERS(sys/ioctl.h sys/int_types.h sys/param.h sys/resource.h)
 AC_CHECK_HEADERS(sys/stat.h sys/stropts.h sys/vty.h sys/sysmacros.h sys/core.h)
@@ -642,6 +643,7 @@ ICE_CHECK_DECL(rand, stdlib.h)
 ICE_CHECK_DECL(random, stdlib.h)
 ICE_CHECK_DECL(readlink, unistd.h)
 ICE_CHECK_DECL(setbuf, stdio.h)
+ICE_CHECK_DECL(setlocale, locale.h)
 ICE_CHECK_DECL(setpgid, unistd.h)
 ICE_CHECK_DECL(setpgrp, unistd.h)
 ICE_CHECK_DECL(setpgrp2, unistd.h)

@@ -173,4 +173,9 @@ detail.
     clicking button 1 on a variable does not copy it to the ():
     argument field.
 
-741 (Insert new bugs here)
+741 DDD under solaris 7 works so far, but there is no green arrow or
+    the stop sign ddd uses to mark the actual line or breakpoints.
+    ddd dumps a lot of error-msgs to stdout when starting, stuff like
+    "blabla cannot be converted to pixmap" or similar.
+
+742 (Insert new bugs here)

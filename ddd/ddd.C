@@ -273,6 +273,10 @@ char ddd_rcsid[] =
 #include <time.h>
 #include <signal.h>
 
+#if HAVE_LOCALE_H
+#include <locale.h>
+#endif
+
 #include <limits.h>
 #ifndef ARG_MAX
 #define ARG_MAX 4096
@@ -1717,6 +1721,12 @@ int main(int argc, char *argv[])
     // As this is a C++ program, execution does not begin here.  At
     // this point, all global data objects already have been properly
     // initialized.
+
+#ifdef LC_ALL
+    // Let DDD locales be controlled by the locale-specific
+    // environment variables -- especially $LANG.
+    setlocale(LC_ALL, "");
+#endif
 
     // Save environment for restart.
     register_argv(argv);
