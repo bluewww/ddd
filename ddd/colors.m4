@@ -83,6 +83,9 @@ dnl
 dnl TIP_COLOR is the color for toolbar and value tips.
 define([TIP_COLOR], [#ffffcc])dnl
 dnl
+dnl SHADOW_COLOR is the color for shadows.
+define([SHADOW_COLOR], [grey])dnl
+dnl
 dnl
 dnl Some warnings
 dnl -------------

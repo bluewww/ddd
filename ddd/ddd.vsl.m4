@@ -39,12 +39,6 @@ DDD_VSL_WARNING
 stdfontfamily() = family_typewriter();
 small(...) = rm(...);
 
-// Shadow effects
-shadow(box, thickness) =
-  box & (square(thickness) | vrule(thickness))
-| square(thickness) & hrule(thickness);
-shadow(box) = shadow(box, 1);
-
 // Colors
 display_color(box)   = color(box, "FOREGROUND_COLOR", "DISPLAY_COLOR");
 title_color(box)     = color(box, "FOREGROUND_COLOR");
@@ -57,6 +51,13 @@ list_color(box)      = color(box, "FOREGROUND_COLOR");
 array_color(box)     = color(box, "DATA_COLOR");
 reference_color(box) = color(box, "DATA_COLOR");
 changed_color(box)   = color(box, "FOREGROUND_COLOR", "CHANGED_COLOR");
+shadow_color(box)    = color(box, "SHADOW_COLOR");
+
+// Shadow effects
+shadow(box, thickness) =
+  box & (square(thickness) | shadow_color(vrule(thickness)))
+| square(thickness) & shadow_color(hrule(thickness));
+shadow(box) = shadow(box, 1);
 
 // Non-expanding alignments
 fixed_hlist(_) = hnull();
