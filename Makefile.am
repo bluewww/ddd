@@ -55,9 +55,8 @@ SUBDIRS = @subdirs@
 
 # Build a DDD distribution from CVS archive.
 .PHONY: cvsdist
-cvsdist: diststuff disttouch distclean snapshot \
-	htmldist \
-	picsclean picsdist
+cvsdist: diststuff disttouch distclean \
+	snapshot htmldist picsdist
 
 # Create architecture-independent files in DDD subdirectory.
 .PHONY: diststuff
@@ -82,11 +81,6 @@ disttouch:
 	    else exit 1; fi; \
           else true; fi; \
         done
-
-# `make picsclean' removes all derived pictures
-.PHONY: picsclean
-picsclean:
-	( cd ./ddd; $(MAKE) picsclean )
 
 # Create a snapshot distribution from the current DDD development tree.
 .PHONY: snapshot
