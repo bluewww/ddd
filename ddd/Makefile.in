@@ -477,7 +477,8 @@ X_INCLUDE = @X_CFLAGS@
 INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 
 ## Implicit rules.
-.SUFFIXES: .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xpm .xface
+.SUFFIXES: .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xpm .xface \
+	   .C~ .c~ .f .f~ .sh .sh~
 .C.o:
 	$(COMPILE.cc) $(INCLUDE) -o $@ $<
 .cc.o:
@@ -534,6 +535,27 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 	$(LEXTOCXX)
 	$(COMPILE.cc) -o $@ lex.yy.C
 	$(RM) lex.yy.C lex.yy.c
+
+
+# Jacek M. Holeczek <holeczek@heracles.cto.us.edu.pl> says these `dummy'
+# rules are required to disable default rules under AIX MAKE.
+.C:
+	@:
+.C~:
+	@:
+.c:
+	@:
+.c~:
+	@:
+.f:
+	@:
+.f~:
+	@:
+.sh:
+	@:
+.sh~:
+	@:
+
 
 ## Script rules
 .txt.C:
