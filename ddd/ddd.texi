@@ -8588,6 +8588,11 @@ button 3} on the display and select the @samp{Undisplay} item.
 When a display is deleted, its immediate ancestors and descendants are
 automatically selected, so that you can easily delete entire graphs.
 
+@cindex Theme, for suppressing values
+@cindex Values, suppressing
+@cindex Display, suppressing
+@cindex Suppressing values
+@lbindex Suppress Values
 If you have selected only part of a display, clicking on the
 @samp{Undisp} button allows you to @emph{suppress} this part---by
 applying the @emph{Suppress Values} theme on the part.  You'll be asked
@@ -9136,13 +9141,17 @@ applied to individual displays or to a number of displays.  The themes
 installed with @DDD{} include:
 
 @table @samp
-@item Small titles
+@item Small Titles
+@lbindex Small Titles
 Apply this theme to show display titles in a smaller font.
-@item Small values
+@item Small Values
+@lbindex Small Values
 Apply this theme to display values in a smaller font.
-@item Tiny values
+@item Tiny Values
+@lbindex Tiny Values
 Apply this theme to display values in a tiny font.
-@item Suppress values
+@item Suppress Values
+@lbindex Suppress Values
 Apply this theme to display values not at all.
 @end table
 
@@ -9184,6 +9193,7 @@ Suppose, for instance, that you don't want to see @samp{vptr} members
 anymore.  Then you'd apply the theme @emph{Suppress Values} on all
 similar values.
 
+@lbindex Red Background
 On the other hand, if you want to highlight one single value only, you'd
 apply the theme @emph{Red Background} on only one single value.
 
@@ -9217,6 +9227,7 @@ applied, and unapplies it otherwise.
 @node Editing Themes
 @subsubsection Editing Themes
 
+@cindex Theme, editing
 Each theme can be globally activated or not.  If a theme is activated,
 it is applied to all expressions that match its @emph{pattern}.
 
@@ -9255,8 +9266,8 @@ To revert the themes to the last saved, click on @samp{Reset}.
 @node Writing Data Themes
 @subsubsection Writing Data Themes
 
-@xref{Top,,, ddd-themes, Writing DDD Themes}, for details on how to
-write your own data themes.
+You can write your own data themes, customizing the display to match
+your need.  @xref{Top,,, ddd-themes, Writing DDD Themes}, for details.
 
 
 @node Display Resources

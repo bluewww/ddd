@@ -202,7 +202,8 @@ Send bug reports to @email{bug-ddd@@gnu.org}. @*
 @top Writing @value{DDD} Themes
 
 @DDD{} is a graphical front-end for @GDB{} and other command-line
-debuggers.  This manual describes how to customize its data display.
+debuggers.  This manual describes how to write @emph{themes,} that is,
+modifiers that change the visual appearance of data.
 
 This is the @value{EDITION} Edition of @cite{Writing @DDD{} Themes},
 @value{DATE}, for @DDD{} Version @value{VERSION}.
