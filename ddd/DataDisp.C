@@ -418,6 +418,9 @@ bool DataDisp::needs_refresh(DispNode *cluster)
     if (!is_cluster(cluster))
 	return true;
 
+    if (cluster->last_refresh() == 0)
+	return true;
+
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
 	 dn != 0;
@@ -4272,6 +4275,15 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
 	DispNode *node = disp_graph->get(nr);
 	if (node == 0)
 	    continue;		// Already deleted or bad number
+
+	if (node->clustered())
+	{
+	    // Deleting a clustered node:
+	    // force its cluster to be redisplayed
+	    DispNode *cluster = disp_graph->get(node->clustered());
+	    if (cluster != 0)
+		cluster->set_last_refresh();
+	}
 
 	if (is_cluster(node))
 	{

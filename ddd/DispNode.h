@@ -157,6 +157,10 @@ public:
     int last_change() const  { return mylast_change; }
     int last_refresh() const { return mylast_refresh; }
 
+    // These can be used to force updates
+    void set_last_change(int value = 0)  { mylast_change  = value; }
+    void set_last_refresh(int value = 0) { mylast_refresh = value; }
+
     bool is_user_command() const { return ::is_user_command(name()); }
     string user_command() const  { return ::user_command(name()); }
 
