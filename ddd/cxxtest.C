@@ -329,6 +329,12 @@ void reference_test(Date& date, Date*& date_ptr)
 }
 
 //--------------------------------------------------------------------------
+void string_test()
+{
+    char data[]="one plus two = three";	// Display this
+}
+
+//--------------------------------------------------------------------------
 void array_test()
 {
     // Play with rotate and show/hide buttons
@@ -492,6 +498,8 @@ int main(int /* argc */, char ** /* argv */)
     list_test(i);
     i++;
     array_test();
+    i++;
+    string_test();
     i++;
     plot_test();
     i++;
