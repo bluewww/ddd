@@ -1065,7 +1065,8 @@ SYMS = $(ddd).syms $(ddd_canonical).syms
 # Order is significant here!  First source files, then derived files.
 PROG_STUFF       = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
 	 	   acconfig.h acspecial.h stamp-h.in config.h \
-		   $(srcdir)/tips.m4 $(srcdir)/Ddd.in Ddd.ad.h host.h \
+		   $(srcdir)/tips.m4 $(srcdir)/tips.html \
+		   $(srcdir)/Ddd.in Ddd.ad.h host.h \
 		   ddd.vsl ddd.vsl.h vr.h version.h configinfo.C \
 		   ddd.1 ddd.man.txt ddd.man.txt.gz ddd.man.txt.gz.C \
                    COPYING.gz.C NEWS.gz.C xlibdir.C eps-code.h .gdbinit
@@ -1369,6 +1370,17 @@ ddd.vsl: $(srcdir)/ddd.vsl.m4 $(srcdir)/colors.m4
 
 $(srcdir)/tips.m4: $(srcdir)/../TIPS $(srcdir)/tips2m4.awk
 	$(AWK) -f $(srcdir)/tips2m4.awk $(srcdir)/../TIPS > $@~ && $(MV) $@~ $@
+
+$(srcdir)/tips.html: $(srcdir)/../TIPS
+	( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "define(macros, \`$(srcdir)/html.m4')dnl"; \
+		echo "include(srcdir()/../TIPS)dnl" \
+	) | $(M4) | $(AWK) -f $(srcdir)/tips2html.awk | \
+	$(SED) 's/\\133/\[/g' | $(SED) 's/\\135/\]/g' | \
+	$(SED) 's/@\([A-Z][A-Z]*\)@/\1/g' | $(SED) 's/@ /@/g' \
+	> $@~ && $(MV) $@~ $@
+
 
 # `make depend' fails to find this dependency :-(
 DispBox.o: ddd.vsl.h

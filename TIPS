@@ -44,7 +44,8 @@
 # - Tips should be concise: 3 lines or less.
 
 # Include Macro definitions
-include(ifdef(`srcdir',srcdir()/macros.m4,macros.m4))dnl
+include(ifdef(`macros',macros(),ifdef(`srcdir',srcdir()/macros.m4,macros.m4)))
+
 
 ! Initial tip (number 0) - shown after wrap-around.
 
