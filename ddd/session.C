@@ -282,6 +282,10 @@ static void create_session_state_dir(ostream& msg)
     // Create session base directory
     if (!is_directory(session_base_dir()))
 	makedir(session_base_dir(), msg);
+
+    // Create themes directory
+    if (!is_directory(session_themes_dir()))
+	makedir(session_themes_dir(), msg);
 }
 
 // Create session directory
