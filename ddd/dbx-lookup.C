@@ -77,7 +77,7 @@ string dbx_lookup(const string& func_name)
     if (reply == NO_GDB_ANSWER)
     {
 	// post_gdb_busy();
-	return reply;
+	return "";
     }
 
     string file = "";
