@@ -1322,9 +1322,28 @@ int main(int argc, char *argv[])
     source_arg->addHandler (Changed, source_argHP);
     source_arg->callHandlers();
 
-    // Set the terminal type
-    static string term_env = string("TERM=") + app_data.term_type;
+    // Set the type of the execution tty.
+    static string term_env("TERM=");
+
+    switch (gdb->type())
+    {
+    case GDB:
+	// In GDB, we use `dumb' while operating in the command window;
+	// when starting the execution TTY, we set the correct type.
+	term_env += "dumb";
+	break;
+
+    case DBX:
+    case XDB:
+	// In DBX, we have no means to set the TTY type afterwards;
+	// set the execution TTY type right now.
+	term_env += app_data.term_type;
+	break;
+    }
     putenv(term_env);
+
+    // Don't let TERMCAP settings override our TERM settings.
+    putenv("TERMCAP=");
 
     // Setup insertion position
     promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
