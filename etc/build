@@ -2,7 +2,7 @@
 # $Id$
 # rebuild package in batch mode -- useful for the night
 
-# Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+# Copyright (C) 1996,1997 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 # 
 # This file is part of ICE.
@@ -71,11 +71,11 @@ fi
 # We use env and make -e to set macro values, since this also works
 # in nested Makefiles.
 
-cat < /dev/null > $log
+exec < /dev/null > $log 2>&1
 hostname=`uname -n || hostname`
-(
-(
-echo build[pid $$]: start at `date`
+{
+pid=$$
+echo build[pid $pid]: start at `date`
 echo ${hostname}% cd `pwd`
 if [ ! -f Makefile ]; then
   echo ${hostname}% ./configure -v
@@ -84,13 +84,13 @@ fi
 echo ${hostname}% "$invoke"
 set -x
 nice $niceval env - $env make -e $options$targets 2>&1
-echo build[pid $$]: done at `date`
-) > $log 2>&1
-(
+set +x
+echo build[pid $pid]: done at `date`
+{
 echo "To: $USER"; 
 echo "Subject: Building$targets on $hostname"; 
 echo
 cat $log
-) | mail $USER
-) &
+} | mail $USER
+} &
 exit 0
