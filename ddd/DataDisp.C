@@ -2169,14 +2169,16 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     // Argument
     bool arg_ok  = false;
     bool plot_ok = false;
+    string arg;
     if (disp_value_arg != 0)
     {
+	arg = disp_value_arg->full_name();
 	arg_ok = true;
 	plot_ok = disp_value_arg->can_plot();
     }
     else
     {
-	string arg = source_arg->get_string();
+	arg = source_arg->get_string();
 	arg_ok = (arg != "") && !is_file_pos(arg);
 	plot_ok = arg_ok && !undoing;
     }
@@ -2192,7 +2194,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 #endif
     if (dereference_ok)
     {
-	string label("Display " + gdb->dereferenced_expr("()"));
+	string label("Display " + deref(arg, "()"));
 	set_label(graph_cmd_area[CmdItms::New].widget, label, DISPREF_ICON);
     }
     else
@@ -5595,7 +5597,11 @@ void DataDisp::language_changedHP(Agent *source, void *, void *)
     GDBAgent *gdb = ptr_cast(GDBAgent, source);
     assert(gdb != 0);
 
-    string label("Display " + gdb->dereferenced_expr("()"));
+    string arg = source_arg->get_string();
+    if (selected_value() != 0)
+	arg = selected_value()->full_name();
+
+    string label("Display " + deref(arg, "()"));
 
     set_label(shortcut_menu[ShortcutItms::Dereference2].widget, label);
     set_label(node_popup[NodeItms::Dereference].widget, label);
@@ -5990,6 +5996,9 @@ bool DataDisp::check_aliases()
 	     k = disp_graph->next_nr(ref))
     {
 	DispNode *dn = disp_graph->get(k);
+	if (dn->value() == 0)
+	    continue;
+
 	if (dn != 0 && dn->alias_ok())
 	{
 	    IntArrayArray& list = equivalences[dn->addr()];
@@ -6002,6 +6011,9 @@ bool DataDisp::check_aliases()
 		assert (displays.size() > 0);
 
 		DispNode *d1 = disp_graph->get(displays[0]);
+		if (d1->value() == 0)
+		    continue;
+
 		if (!app_data.typed_aliases ||
 		    dn->value()->structurally_equal(d1->value()))
 		{
