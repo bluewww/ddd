@@ -153,6 +153,10 @@ collapsed_struct_value () ->
 empty_struct_value () ->
   struct_color(vcenter(rm("{}") & hfill()));
 
+// Unnamed struct
+horizontal_unnamed_struct (...) -> horizontal_array(...);
+vertical_unnamed_struct   (...) -> horizontal_array(...);
+
 // Struct member name
 struct_member_name (name) -> 
   struct_color(rm(name));
@@ -161,6 +165,10 @@ struct_member_name (name) ->
 struct_member (name, sep, value, name_width) -> 
   vcenter(rm(name) | hspace(name_width)) 
   & vcenter(rm(sep)) & rm(value);
+
+// Same, but with suppressed member name
+struct_member (value) -> 
+  rm(value);
 
 // List value
 list_value (...) -> 
@@ -174,6 +182,10 @@ collapsed_list_value () ->
 empty_list_value () -> 
   list_color(vcenter(rm("") & hfill()));
 
+// Unnamed list
+horizontal_unnamed_list (...) -> horizontal_array(...);
+vertical_unnamed_list  (...)  -> horizontal_array(...);
+
 // List member name
 list_member_name (name) -> 
   list_color(rm(name));
@@ -182,6 +194,10 @@ list_member_name (name) ->
 list_member (name, sep, value, name_width) -> 
   vcenter(rm(name) | hspace(name_width)) 
   & vcenter(rm(sep)) & rm(value) & hfill();
+
+// Same, but with suppressed member name
+list_member (value) -> 
+  rm(value);
 
 // Sequence
 sequence_value (...) -> 

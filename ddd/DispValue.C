@@ -147,7 +147,7 @@ DispValue::DispValue (DispValue* parent,
 		      DispValueType given_type)
     : mytype(UnknownType), myexpanded(true), myenabled(true),
       myfull_name(f_n), print_name(p_n), changed(false), myrepeats(1),
-      _value(""), _dereferenced(false), _children(0),
+      _value(""), _dereferenced(false), _member_names(true), _children(0),
       _index_base(0), _have_index_base(false), _alignment(Horizontal),
       _has_plot_alignment(false), _plotter(0), 
       _cached_box(0), _cached_box_change(0),
@@ -165,7 +165,8 @@ DispValue::DispValue (const DispValue& dv)
       myenabled(dv.myenabled), myfull_name(dv.myfull_name),
       print_name(dv.print_name), myaddr(dv.myaddr),
       changed(false), myrepeats(dv.myrepeats),
-      _value(dv.value()), _dereferenced(false), _children(dv.nchildren()), 
+      _value(dv.value()), _dereferenced(false), 
+      _member_names(dv.member_names()), _children(dv.nchildren()), 
        _index_base(dv._index_base), 
       _have_index_base(dv._have_index_base), _alignment(dv._alignment),
       _has_plot_alignment(false), _plotter(0),
@@ -484,6 +485,9 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	// FALL THROUGH
     case Struct:
     {
+	_alignment = Vertical;
+	_member_names = true;
+
 	bool found_struct_begin   = false;
 	bool read_multiple_values = false;
 	
@@ -946,6 +950,15 @@ void DispValue::set_alignment(DispValueAlignment alignment)
 	plot();
 }
 
+void DispValue::set_member_names(bool value)
+{
+    if (_member_names == value)
+	return;
+
+    _member_names = value;
+    clear_cached_box();
+}
+
 
 //-----------------------------------------------------------------------------
 // Update values
@@ -1151,6 +1164,7 @@ DispValue *DispValue::_update(DispValue *source,
 	ret->align_vertical();
     if (horizontal_aligned())
 	ret->align_horizontal();
+    ret->set_member_names(member_names());
 
     unlink();
     return ret;

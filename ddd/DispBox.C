@@ -495,36 +495,52 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 	String value           = (dv->type() == List ? 
 				  (String)"list_value" :
 				  (String)"struct_value");
+	String horizontal      = (dv->type() == List ? 
+				  (String)"horizontal_unnamed_list" :
+				  (String)"horizontal_unnamed_struct");
+	String vertical        = (dv->type() == List ? 
+				  (String)"vertical_unnamed_list" :
+				  (String)"vertical_unnamed_struct");
+
+	int count = dv->nchildren();
 
 	if (dv->collapsed())
 	    vbox = eval(collapsed_value);
+	else if (count == 0)
+	    vbox = eval(empty_value);
+	else if (!dv->member_names())
+	{
+	    // Create object with unnamed members
+	    VSLArgList args;
+	    for (int i = 0; i < count; i++)
+		args += create_value_box(dv->child(i), dv);
+
+	    if (dv->vertical_aligned())
+		vbox = eval(vertical, args);
+	    else
+		vbox = eval(horizontal, args);
+	}
 	else
 	{
-	    int count = dv->nchildren();
-	    if (count == 0)
-		vbox = eval(empty_value);
-	    else
+	    // Determine maximum member name width
+	    int max_member_name_width = 0;
+	    int i;
+	    for (i = 0; i < count; i++)
 	    {
-		// Determine maximum member name width
-		int max_member_name_width = 0;
-		int i;
-		for (i = 0; i < count; i++)
-		{
-		    string child_member_name = dv->child(i)->name();
-		    Box *box = eval(member_name, child_member_name);
-		    max_member_name_width = 
-			max(max_member_name_width, box->size(X));
-		    box->unlink();
-		}
-
-		// Create children
-		VSLArgList args;
-		for (i = 0; i < count; i++)
-		    args += create_value_box(dv->child(i), dv,
-					     max_member_name_width);
-
-		vbox = eval(value, args);
+		string child_member_name = dv->child(i)->name();
+		Box *box = eval(member_name, child_member_name);
+		max_member_name_width = 
+		    max(max_member_name_width, box->size(X));
+		box->unlink();
 	    }
+
+	    // Create children
+	    VSLArgList args;
+	    for (i = 0; i < count; i++)
+		args += create_value_box(dv->child(i), dv,
+					 max_member_name_width);
+
+	    vbox = eval(value, args);
 	}
 	break;
     }
@@ -597,14 +613,20 @@ Box *DispBox::create_value_box (const DispValue *dv,
 	switch (parent->type())
 	{
 	case List:
-	    vbox = eval("list_member", dv->name(), " = ", 
-			vbox, member_name_width);
+	    if (parent->member_names())
+		vbox = eval("list_member", dv->name(), " = ", 
+			    vbox, member_name_width);
+	    else
+		vbox = eval("list_member", vbox);
 	    break;
 
 	case Struct:
-	    vbox = eval("struct_member", 
-			dv->name(), gdb->member_separator(), 
-			vbox, member_name_width);
+	    if (parent->member_names())
+		vbox = eval("struct_member", 
+			    dv->name(), gdb->member_separator(), 
+			    vbox, member_name_width);
+	    else
+		vbox = eval("struct_member", vbox);
 	    break;
 
 	case Sequence:

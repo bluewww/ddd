@@ -63,6 +63,7 @@ class DispValue {
     // Type-dependent members
     string _value;		// Value of basic types
     bool _dereferenced;		// True iff pointer is dereferenced
+    bool _member_names;	// True iff struct shows member names
     DispValueArray _children;	// Array or Struct members 
     int _index_base;		// First index
     bool _have_index_base;	// True if INDEX_BASE is valid
@@ -265,10 +266,14 @@ public:
 
     // Simple or Pointer
     const string& value() const { return _value; }
-    
+
     // Pointer
     bool dereferenced() const { return _dereferenced; }
     string dereferenced_name() const;
+
+    // Struct
+    bool member_names() const { return _member_names; }
+    void set_member_names(bool value);
 
     // Array, Struct, List, Sequence ...
     int nchildren() const { return _children.size(); }

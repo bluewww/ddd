@@ -9,6 +9,7 @@ DDD 3.2 brings not much yet.
 - Breakpoint commands are also supported for DBX, Perl, and XDB.
 - `Breakpoint Properties', `Define Command', and `Debugger Settings'
   have an `Apply' button that applies changes to text fields.
+- Structs can now be rotated, showing their values like a horizontal array.
 - In TTY mode, you can edit and complete the command line as in GDB.
   (Uses GNU readline library.)
 - DDD uses the locale as specified by the environment (such as $LANG).

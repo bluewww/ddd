@@ -796,9 +796,15 @@ void DataDisp::toggle_rotate(DispValue *dv, bool all)
 	return;
 
     if (dv->horizontal_aligned())
+    {
 	dv->align_vertical();
+	dv->set_member_names(true);
+    }
     else
+    {
 	dv->align_horizontal();
+	dv->set_member_names(false);
+    }
 
     if (all)
 	for (int i = 0; i < dv->nchildren(); i++)
@@ -2179,13 +2185,13 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	    dereference_ok = true;
 	    break;
 
-	case Array:
-	    rotate_ok = disp_value_arg->expanded();
+	case Sequence:
 	    break;
 
-	case Sequence:
+	case Array:
 	case List:
 	case Struct:
+	    rotate_ok = disp_value_arg->expanded();
 	    break;
 
 	case UnknownType:
