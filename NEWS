@@ -4,21 +4,29 @@ DDD News						-*- text -*-
 DDD 2.2.2
 ---------
 
-    DDD 2.2.2 brings a slightly improved data display and fixes some
-    more minor bugs introduced in DDD 2.2.
+    DDD 2.2.2 brings an improved data display and fixes some minor
+    bugs introduced in DDD 2.2.
 
     User-visible changes to DDD 2.2.1:
-    - Improved data display:
-      * Double-clicking on a pointer value dereferences the pointer.
-      * Double-clicking on a partially hidden value shows more detail.
-      * Double-clicking on a fully shown value hides it again.
-      * Size changes no longer requires rearranging displays.
+    - Faster data exploration with double-clicking...
+      * ...on a pointer value: dereference it.
+      * ...on a partially hidden value: show more detail.
+      * ...on a fully shown value: hide it again.
+    - A display resize (due to value changes) automatically `bumps'
+      adjacent displays such that they are not obscured.  See the
+      `bumpDisplays' resource for documentation.
+    - A display that gets out of scope is automatically hidden.  See
+      the `hideDisplays' resource for documentation.
     - DDD supports case-insensitive search in the source text.
 
     Bug fixes:
     - Getting and identifying core dumps now works on Solaris, AIX and
       other architectures.
+    - `Edit' no longer causes DDD to crash.
     - The separate execution TTY now works with Sun DBX 4.0.
+
+    There are also some more minor improvements and bug fixes; see the
+    `ChangeLog' file for details.
 
 
 

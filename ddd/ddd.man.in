@@ -3380,6 +3380,11 @@ Otherwise, the label is `\fBDisplay \fIexpression\fR'.  Upon
 activation, the string `\fB()\fR' in \fIexpression\fR is replaced by
 the name of the currently selected display.
 .TP
+.B "hideDisplays (\fPclass\fB HideDisplays)"
+If some display gets out of scope and this resource is \fBtrue\fR
+(default), \s-2@DDD@\s+2 removes it from the data display.  If this 
+is \fBfalse\fR, it is simply disabled.
+.TP
 .B "labelDelimiter (\fPclass\fB LabelDelimiter)"
 The string used to separate labels from commands and shortcuts.
 Default is `\fB//\fR'.

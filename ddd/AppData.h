@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // DDD application data
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -233,6 +233,8 @@
 #define XtCAlign2dArrays         "Align2dArrays"
 #define XtNbumpDisplays          "bumpDisplays"
 #define XtCBumpDisplays          "BumpDisplays"
+#define XtNhideDisplays          "hideDisplays"
+#define XtCHideDisplays          "HideDisplays"
 #define XtNstatusHistorySize     "statusHistorySize"
 #define XtCStatusHistorySize     "StatusHistorySize"
 #define XtNverifyButtons         "verifyButtons"
@@ -370,6 +372,7 @@ struct AppData {
     Boolean detect_aliases;
     Boolean align_2d_arrays;
     Boolean bump_displays;
+    Boolean hide_displays;
     int     status_history_size;
     Boolean verify_buttons;
     Boolean auto_raise_tool;

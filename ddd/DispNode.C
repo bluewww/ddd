@@ -56,6 +56,7 @@ DispNode::DispNode (int disp_nr,
       myaddr(""),
       myscope(scope),
       myenabled(true),
+      myshown(true),
       mynodeptr(0),
       disp_value(0),
       myselected_value(0),
@@ -221,9 +222,10 @@ void DispNode::select(DispValue *dv)
 // Disable display
 void DispNode::disable()
 {
-    if (myenabled) {
+    if (enabled())
+    {
 	myenabled = false;
-	handlers.call(DispNode_Disabled, this, (void*)true);
+	handlers.call(DispNode_Disabled, this, (void *)true);
 	disp_box->set_value();
 	mynodeptr->setBox (disp_box->box());
     }
@@ -232,14 +234,33 @@ void DispNode::disable()
 // Enable display
 void DispNode::enable()
 {
-    if (!myenabled)
+    if (disabled())
     {
 	myenabled = true;
-	handlers.call(DispNode_Disabled, this, (void*)false);
+	handlers.call(DispNode_Disabled, this, (void *)false);
 	refresh();
     }
 }
 
+// Show display
+void DispNode::show()
+{
+    if (hidden())
+    {
+	myshown = true;
+	mynodeptr->hidden() = false;
+    }
+}
+
+// Hide display
+void DispNode::hide()
+{
+    if (shown())
+    {
+	myshown = false;
+	mynodeptr->hidden() = true;
+    }
+}
 
 // Update address with NEW_ADDR
 void DispNode::set_addr(const string& new_addr)

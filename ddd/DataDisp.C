@@ -277,7 +277,8 @@ Widget     DataDisp::shortcut_popup_w       = 0;
 
 bool DataDisp::detect_aliases = false;
 
-int DataDisp::next_display_number = 1;
+int DataDisp::next_ddd_display_number = 1;
+int DataDisp::next_gdb_display_number = 1;
 
 XtIntervalId DataDisp::refresh_args_timer       = 0;
 XtIntervalId DataDisp::refresh_addr_timer       = 0;
@@ -286,6 +287,9 @@ XtIntervalId DataDisp::refresh_graph_edit_timer = 0;
 // Array of shortcut expressions and their labels
 StringArray DataDisp::shortcut_exprs;
 StringArray DataDisp::shortcut_labels;
+
+// Whether to hide disabled displays
+bool DataDisp::hide_displays = true;
 
 
 //----------------------------------------------------------------------------
@@ -2414,7 +2418,7 @@ void DataDisp::read_number_and_name(string& answer, string& nr, string& name)
 	if (nr == "")
 	{
 	    // Assign a default number
-	    nr = itostring(next_display_number++);
+	    nr = itostring(next_ddd_display_number++);
 	}
 	break;
     }
@@ -2575,7 +2579,7 @@ DispNode *DataDisp::new_user_node(const string& name,
 				  const string& answer)
 {
     // Assign a default number
-    int nr = -(next_display_number++);
+    int nr = -(next_ddd_display_number++);
 
     StatusShower s("Creating status display");
     s.total   = answer.length();
@@ -2602,16 +2606,9 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 
     if (answer == "")
     {
-	if (gdb->has_display_command())
-	{
-	    // No display output (GDB bug).  Refresh displays explicitly.
-	    gdb_command(gdb->display_command(), last_origin,
-			new_data_display_extraOQC, data);
-	}
-	else
-	{
-	    delete info;
-	}
+	// No display output (GDB bug).  Get it via `print'
+	gdb_command(gdb->print_command(info->display_expression), 
+		    last_origin, new_data_display_extraOQC, data);
 	return;
     }
 
@@ -2703,10 +2700,7 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
     delete info;
 }
 
-// ***************************************************************************
-// Aus den Display-Ausdruecken den ersten (neuen) herausfischen, und dann
-// der normalen Verarbeitung zufuehren.
-//
+// Create new display value from `print' output
 void DataDisp::new_data_display_extraOQC (const string& answer, void* data)
 {
     NewDisplayInfo *info = (NewDisplayInfo *)data;
@@ -2717,11 +2711,9 @@ void DataDisp::new_data_display_extraOQC (const string& answer, void* data)
 	return;
     }
 
-    string ans = answer;
-    string display = read_next_display (ans, gdb);
-
-    if (display != "")
-	new_data_displayOQC(display, data);
+    string display = itostring(next_gdb_display_number) + ": " 
+	+ info->display_expression + " = " + answer;
+    new_data_displayOQC(display, data);
 }
 
 
@@ -3305,18 +3297,15 @@ void DataDisp::delete_displayOQC (const string& answer, void *data)
 
 
 //-----------------------------------------------------------------------------
-// 'info display'-Ausgabe verarbeiten 
+// Handle output of 'info display'
 //-----------------------------------------------------------------------------
 
-// ***************************************************************************
 void DataDisp::process_info_display (string& info_display_answer)
 {
-    // Antwort auf 'info display' auswerten (evtl displays loeschen)
-    // Fremde Display-Infos rausschneiden, eigene speichern
-
     int disp_nr;
     StringMap info_disp_string_map;
     string *strptr;
+    int max_disp_nr = 0;
 
     string next_disp_info = 
 	read_first_disp_info (info_display_answer, gdb);
@@ -3325,20 +3314,22 @@ void DataDisp::process_info_display (string& info_display_answer)
 	disp_nr = get_positive_nr (next_disp_info);
 	if (disp_nr >= 0)
 	{
+	    max_disp_nr = max(max_disp_nr, disp_nr);
+
 	    if (disp_graph->contains(disp_nr)) 
 	    {
-		// Eigenes display-info
-		strptr = 
-		    new string(get_info_disp_str(next_disp_info, gdb));
+		// This is a DDD display
+		strptr = new string(get_info_disp_str(next_disp_info, gdb));
 		info_disp_string_map.insert (disp_nr, strptr);
 	    }
 	}
 	next_disp_info = 
 	    read_next_disp_info(info_display_answer, gdb);
     }
+    next_gdb_display_number = max_disp_nr + 1;
 
 
-    // Eigene Display-Infos verarbeiten
+    // Process DDD displays
     bool changed = false;
     bool deleted = false;
     MapRef ref;
@@ -3381,7 +3372,7 @@ void DataDisp::process_info_display (string& info_display_answer)
 	}
     }
 
-    assert (info_disp_string_map.length() == 0); // alles verarbeitet ?
+    assert (info_disp_string_map.length() == 0);
 
     if (deleted)
     {
@@ -3401,8 +3392,8 @@ void DataDisp::process_info_display (string& info_display_answer)
 //-----------------------------------------------------------------------------
 
 // ***************************************************************************
-string DataDisp::process_displays (string& displays,
-				   bool& disabling_occurred)
+string DataDisp::process_displays(string& displays,
+				  bool& disabling_occurred)
 {
     string not_my_displays;
     static string disabling_error_msgs;
@@ -3536,10 +3527,16 @@ string DataDisp::process_displays (string& displays,
 	DispNode* dn = disp_graph->get(k);
 	if (!dn->is_user_command())
 	{
-	    if (!disp_string_map.contains (k))
+	    if (!disp_string_map.contains(k))
 	    {
-		// Node is no more shown - disable it
-		if (dn->enabled())
+		// Node is out of scope or disabled
+		if (hide_displays && dn->shown() && !dn->nodeptr()->hidden() &&
+		    dn->enabled())
+		{
+		    dn->hide();
+		    changed = true;
+		}
+		if (dn->shown() && dn->enabled())
 		{
 		    dn->disable();
 		    changed = true;
@@ -3552,12 +3549,21 @@ string DataDisp::process_displays (string& displays,
 		s.current = strptr->length();
 
 		if (dn->update(*strptr))
+		{
+		    // New value
 		    changed = true;
-		if (*strptr != "" && !(strptr->matches (rxwhite)))
+		}
+		if (dn->hidden())
+		{
+		    // Now in scope
+		    dn->show();
+		    changed = true;
+		}
+		if (*strptr != "" && !(strptr->matches(rxwhite)))
 		{
 		    // After the `display' output, more info followed
 		    // (e.g. the returned value when `finish'ing)
-		    not_my_displays += strptr->after (rxwhite);
+		    not_my_displays += strptr->after(rxwhite);
 		}
 
 		s.base += s.current;

@@ -76,6 +76,7 @@ private:
     string        myaddr;	      // Location of expression
     string        myscope;	      // Program location where created
     bool          myenabled;	      // Flag: is display enabled?
+    bool          myshown;	      // Flag: is display shown?
     BoxGraphNode* mynodeptr;	      // Associated graph node 
     DispValue*    disp_value;	      // Associated value
     DispValue*    myselected_value;   // Selected value within DISP_VALUE
@@ -94,9 +95,9 @@ protected:
 private:
     DispNode(const DispNode&)
 	: mydisp_nr(0), myname(), myaddr(), myscope(),
-	  myenabled(false), mynodeptr(0), disp_value(0),
-	myselected_value(0), disp_box(0), mylast_change(0),
-	alias_of(0)
+	  myenabled(false), myshown(false), mynodeptr(0), 
+	  disp_value(0), myselected_value(0), disp_box(0),
+	  mylast_change(0), alias_of(0)
     {
 	assert(0);
     }
@@ -121,6 +122,9 @@ public:
 
     bool enabled()  const   { return myenabled; }
     bool disabled() const   { return !myenabled; }
+    bool shown() const      { return myshown; }
+    bool hidden() const     { return !myshown; }
+
     int last_change() const { return mylast_change; }
 
     bool is_user_command() const { return ::is_user_command(name()); }
@@ -163,6 +167,10 @@ public:
     // Disable and enable manually
     void disable();
     void enable();
+
+    // Show and hide manually
+    void show();
+    void hide();
 };
 
 #endif // _DDD_DispNode_h

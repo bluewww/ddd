@@ -334,7 +334,8 @@ private:
     static Delay *delay;
     static Widget last_origin;
     static Time last_select_time;
-    static int next_display_number;
+    static int next_ddd_display_number;
+    static int next_gdb_display_number;
     static bool detect_aliases;
 
     static Widget graph_popup_w;
@@ -392,6 +393,7 @@ public:
     static Widget graph_selection_w;
     static ArgField *graph_arg;
     static bool bump_displays;
+    static bool hide_displays;
 
     // Constructor
     DataDisp (XtAppContext app_context,

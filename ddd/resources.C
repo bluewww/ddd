@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // DDD application resources
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -1099,6 +1099,16 @@ XtResource ddd_resources[] = {
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, bump_displays),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
+	XtNhideDisplays,
+	XtCHideDisplays,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, hide_displays),
 	XmRImmediate,
 	XtPointer(True)
     },
