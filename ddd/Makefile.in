@@ -670,6 +670,7 @@ DDD_OBJECTS = \
 	source.o     \
 	status.o     \
 	string-fun.o \
+	ungrab.o     \
 	value-read.o \
 	windows.o    \
 	wm.o         \

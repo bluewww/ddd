@@ -75,16 +75,6 @@ Volunteers for these and other projects are welcome!
 037. Group dereference.  If multiple pointers are selected,
      dereference them all.
 
-044. Disable pointer grabs from the debugged application as soon as
-     the debugger prompt reappears.  But how?
-
-     Vadim Rogozin  <dima@mercury.co.il> suggests to call from GDB:
-
-	call XUngrabPointer(_XHeadOfDisplayList,0)
-        call XFlush(_XHeadOfDisplayList)
-
-     He checked it for Solaris and it does work.
-
 049. albrecht@igpm.rwth-aachen.de (Harald Albrecht):
      The dialog windows (especially the backtrace dialog) should not
      exceed a specific size (at least, they should not be larger than
@@ -190,7 +180,7 @@ Volunteers for these and other projects are welcome!
 085. Include xDuel support.  See `http://www.math.tau.ac.il/~frangy/'
      for details.
 
-088. Some suggestions by Oyvind Yrke <oyvind@stavanger.geoquest.slb.com>:
+088* Some suggestions by Oyvind Yrke <oyvind@stavanger.geoquest.slb.com>:
 
      o When setting a breakpoint, it should be possible to select from
        a list matching a regexp.  This feature would be particularly

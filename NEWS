@@ -29,6 +29,9 @@ DDD 2.1 (in development)
       avoid confusion with the `Break At' button.  The `Quit' menu
       item is now named `Abort', to avoid confusion with the `Exit'
       menu item (which issues a `quit' command).
+    - If the debugged program is interrupted while grabbing the
+      pointer (while being in a popup menu or in a modal dialog, for
+      instance), DDD will automatically make the program ungrab it.
     - Several single-letter options like `-d DIR' are now passed down to the
       inferior debugger.
 

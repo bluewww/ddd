@@ -205,6 +205,7 @@ char ddd_rcsid[] =
 #include "status.h"
 #include "strclass.h"
 #include "string-fun.h"
+#include "ungrab.h"
 #include "verify.h"
 #include "version.h"
 #include "windows.h"
@@ -2522,7 +2523,6 @@ static void create_status(Widget parent)
 		  NULL);
 }
 
-
 //-----------------------------------------------------------------------------
 // Helpers
 //-----------------------------------------------------------------------------
@@ -2543,7 +2543,6 @@ void source_argHP (void *_arg_field, void *, void *)
     set_sensitive(arg_cmd_area[ArgItems::Print].widget, can_print);
     set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);
 }
-
 
 //-----------------------------------------------------------------------------
 // Handlers
@@ -2572,6 +2571,9 @@ void gdb_ready_for_questionHP (void*, void*, void* call_data)
 	if (!emptyCommandQueue())
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
 			    processCommandQueue, XtPointer(0));
+
+	// If the debugged program has grabbed the pointer, ungrab it
+	ungrab_mouse_pointer();
 
 	// Completion is done
 	clear_completion_delay();
