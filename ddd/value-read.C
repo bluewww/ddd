@@ -61,7 +61,7 @@ DispValueType determine_type (string value)
 	value = value.after(']');
 
     static regex 
-	RXreference("([(][^)]*[)] )? *@ *(0x?[0-9a-f]+|[(]nil[)]) *:.*");
+	RXreference("([(][^)]*[)] )? *@ *(0(0|x)[0-9a-f]+|[(]nil[)]) *:.*");
     if (value.matches(RXreference))
 	return Reference;
 
@@ -72,19 +72,22 @@ DispValueType determine_type (string value)
 	// enumerations.
 	if (value.matches("(scalar = ", 0))
 	    return Simple;
+
     default:
 	break;
     }
 
+    // XDB issues the struct address before each struct.
     static regex 
-	RXstr_or_cl_begin("(0x?[0-9a-f]+|[(]nil[)])? *"
-			  "({\n|record\n|RECORD\n|struct|class|union).*");
+	RXstr_or_cl_begin("(0(0|x)[0-9a-f]+|[(]nil[)])? *"
+			  "([(]|{\n|record\n|RECORD\n|struct|class|union).*");
     if (value.matches(RXstr_or_cl_begin))
     {
 	static regex 
-	    RXstr_or_cl_begin_s("({\n|record\n|RECORD\n)");
+	    RXstr_or_cl_begin_s("([(]|{\n|record\n|RECORD\n)");
 
-	// DEC DBX uses `{' for arrays as well as for structs.  So, we
+	// DEC DBX uses `{' for arrays as well as for structs;
+	// likewise, AIX DBX uses `(' for arrays and structs.  So, we
 	// check for some member of this struct -- that is, a ` = '
 	// before any other sub-structure.
 	string v = value.after(RXstr_or_cl_begin_s);
@@ -95,8 +98,10 @@ DispValueType determine_type (string value)
 	    return StructOrClass;
     }
 
+    // XDB uses the pattern `00000000' for nil pointers.
+    // GDB prepends the exact pointer type in parentheses.
     static regex 
-	RXpointer_value("([(][^)]*[)] )?(0x?[0-9a-f]+|[(]nil[)]).*");
+	RXpointer_value("([(].*[)] )?(0(0|x)[0-9a-f]+|[(]nil[)]).*");
     if (value.matches(RXpointer_value))
 	return Pointer;
 
@@ -110,13 +115,11 @@ DispValueType determine_type (string value)
 	    return Array;
 	break;
 
+    case XDB:
     case DBX:
 	if (value.contains('{', 0) || value.contains('(', 0))
 	    return Array;
 	break;
-
-    case XDB:
-	break;			// FIXME
     }
 
     return Simple;
