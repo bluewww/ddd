@@ -787,9 +787,9 @@ struct EditItems {
 
 #define EDIT_MENU(win) \
 { \
-    { "undo",        MMPush | MMInsensitive }, \
-    { "redo",        MMPush | MMInsensitive }, \
-    MMSep, \
+    { "undo",        MMPush | MMUnmanaged }, \
+    { "redo",        MMPush | MMUnmanaged }, \
+    { "separator",   MMSeparator | MMUnmanaged }, \
     { "cut",         MMPush,  { gdbCutSelectionCB,    XtPointer(win) }}, \
     { "copy",        MMPush,  { gdbCopySelectionCB,   XtPointer(win) }}, \
     { "paste",       MMPush,  { gdbPasteClipboardCB,  XtPointer(win) }}, \
