@@ -181,6 +181,12 @@ Reported by: Pascal Quesseveur <abak@hol.fr>
     LIBNSL, NON_XLIBS and LIBGEN have incorrect values - the values
     must be null to link ddd correctly.
 
+Jim Tarrant <jtarrant@inri.co.uk> reports:
+
+    To compile DDD-3.0 on our Digital Unix 4.0D workstations with GCC
+    2.8.1, I had to turn optimization off while building (use `make
+    CXXOPT=-DNDEBUG' to build DDD).
+
 
 FreeBSD
 =======
