@@ -537,7 +537,9 @@ void BreakPoint::process_perl(string& info_output)
 	if (info.contains("break if ", 0))
 	{
 	    string cond = info.after(" if ");
-	    if (cond == "(1)")
+	    while (cond.contains('(', 0) && cond.contains(')', -1))
+		cond = unquote(cond);
+	    if (cond == "1")
 		cond = "";
 	    mycondition = cond;
 	}
@@ -763,9 +765,14 @@ string BreakPoint::false_value()
     {
     case LANGUAGE_C:
     case LANGUAGE_PYTHON:
-    case LANGUAGE_PERL:
     case LANGUAGE_OTHER:
 	return "0";
+
+    case LANGUAGE_PERL:
+	// In Perl, giving a breakpoint a condition of `0' is not
+	// accepted by the debugger.  So, we use the string "0"
+	// instead, which Perl also evaluates to False.
+	return "\"0\"";
 
     case LANGUAGE_FORTRAN:
 	return ".FALSE.";
