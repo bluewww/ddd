@@ -1830,6 +1830,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 {
     (void) timer_id;		// Use it
     assert(*timer_id == refresh_args_timer);
+    refresh_args_timer = 0;
 
     DataDispCount count(disp_graph);
 
@@ -2076,8 +2077,6 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	XmTextSetSelection(graph_selection_w, 
 			   0, XmTextGetLastPosition(graph_selection_w), tm);
     }
-
-    refresh_args_timer = 0;
 }
 
 
