@@ -4847,27 +4847,19 @@ static void gdb_strangeHP(Agent *source, void *, void *call_data)
 
 static void gdb_echo_detectedHP(Agent *, void *, void *)
 {
-#if 0
-    if (!remote_gdb())
-    {
-	static bool warned = false;
+    static bool tried = false;
 
-	if (!warned)
-	{
-	    // Echo should not happen with a local DDD.
-	    post_warning(gdb->title() + " is running in echo mode.",
-			 "gdb_echo_warning");
-	    warned = true;
-	}
-    }
-#endif
+    if (tried)
+	return;
 
     // Here is a more subtle warning.
     set_status(gdb->title() + " is running in echo mode.");
 
-    // Disable echo mode explicitly via stty command.
+    // Attempt to disable echo mode explicitly via stty command.
     gdb_command(gdb->shell_command("stty -echo -onlcr"), 0, 0, 0, 
 		false, false, COMMAND_PRIORITY_AGAIN);
+
+    tried = true;
 }
 
 static void gdb_recordingHP(Agent *, void *, void *call_data)

@@ -5954,14 +5954,6 @@ This is probably due to a bad DDD configuration.\n\
 \n\
 DDD can work around this problem, so you may continue working.
 
-Ddd*gdb_echo_warning_popup.title: DDD: Echo mode Active
-Ddd*gdb_echo_warning*helpString: \
-@rm The communication between @GDB@ and DDD does not work correctly - \n\
-@GDB@ echoes back every character typed by DDD.\n\
-This is probably due to a bad DDD configuration.\n\
-\n\
-DDD can work around this problem, so you can continue working.
-
 Ddd*out_of_glyphs_warning_popup.title: DDD: Out of Glyphs
 Ddd*out_of_glyphs_warning*helpString: \
 @rm DDD can only display a limited amount of breakpoint symbols at one time.\n\
