@@ -34,6 +34,7 @@ char resources_rcsid[] =
 #endif
 
 #include "resources.h"
+#include "version.h"
 #include "AppData.h"
 #include "stty.h"
 
@@ -1003,6 +1004,26 @@ XtResource ddd_resources[] = {
 	XtOffsetOf(AppData, tool_top_offset),
 	XmRImmediate,
 	XtPointer(8)
+    },
+
+    {
+	XtNautoCommands,
+	XtCAutoCommands,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, auto_commands),
+	XmRImmediate,
+	XtPointer(False)
+    },
+
+    {
+	XtNautoCommandPrefix,
+	XtCAutoCommandPrefix,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, auto_command_prefix),
+	XtRString,
+	XtPointer(ddd_NAME ": ")
     },
 
     {

@@ -391,10 +391,10 @@ Ddd*indentCode:	        4
 ! Line numbers wider than this value extend into the breakpoint space.
 Ddd*lineNumberWidth:	4
 
-The minimum number of lines to show before the current location.
+! The minimum number of lines to show before the current location.
 Ddd*linesAboveCursor:	2
 
-The minimum number of lines to show after the current location.
+! The minimum number of lines to show after the current location.
 Ddd*linesBelowCursor:	3
 
 
@@ -449,6 +449,23 @@ def finish { bu \\1t ; c ; L }\n
 
 ! The XDB settings.  Usually overridden in `~/.dddinit'.
 Ddd*xdbSettings:
+
+
+! Auto-command defaults
+
+! Are auto-commands enabled?  If yes, any output of the inferior debugger
+! in the form `ddd: COMMAND' will cause ddd to execute the so-called 
+! auto-command COMMAND.  This is useful for defining own DDD command 
+! sequences.
+! Unfortunately, this is also a security problem - just imagine some
+! malicuous program to issue a string like `ddd: shell rm foobar'.
+! Consequently, this feature is disabled by default.
+Ddd*autoCommands: false
+
+! The prefix of auto-commands (by default, `ddd: ').  You are encouraged
+! to change this value in your `~/.dddinit' file.
+Ddd*autoCommandPrefix: @ddd@:\ 
+
 
 
 ! Graph Editor Defaults

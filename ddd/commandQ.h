@@ -35,13 +35,35 @@
 
 #include "GDBAgent.h"
 
-// Send COMMAND to GDB, if GDB is ready; queue in COMMAND, otherwise
-extern void gdb_command(const string& command, Widget origin = 0,
-			OQCProc callback = 0, void *data = 0);
+// Send COMMAND to GDB, if GDB is ready; queue in COMMAND, otherwise.
+// Upon completion, invoke CALLBACK with DATA (if CALLBACK is
+// non-zero).  If VERBOSE is set, issue command in GDB console.  If
+// CHECK is set, add appropriate GDB commands to get GDB state.
+extern void gdb_command(const string& command, Widget origin,
+			OQCProc callback, void *data = 0, 
+			bool verbose = false, bool check = false);
+
+// Custom call.  Send COMMAND to GDB, if GDB is ready; queue in
+// COMMAND, otherwise.
+inline void gdb_command(const string& command, Widget origin = 0)
+{
+    gdb_command(command, origin, OQCProc(0), 0, true, true);
+}
+
 
 // Send COMMAND to GDB (unconditionally)
-extern void _gdb_command(string command, Widget origin = 0,
-			 OQCProc callback = 0, void *qu_data = 0);
+extern void _gdb_command(string command, Widget origin,
+			 OQCProc callback, void *data = 0,
+			 bool verbose = false, bool check = false);
+
+// Custom call.  Send COMMAND to GDB (unconditionally)
+inline void _gdb_command(const string& command, Widget origin = 0)
+{
+    _gdb_command(command, origin, OQCProc(0), 0, true, true);
+}
+
+// Execute commands in CMD as soon as GDB is idle
+extern void gdb_batch(const string& command);
 
 // Pass the COMMAND given in CLIENT_DATA to gdb_command()
 void gdbCommandCB(Widget w, XtPointer call_data, XtPointer client_data);
@@ -58,6 +80,7 @@ void syncCommandQueue();
 // Return a shell widget according to last command origin
 Widget find_shell(Widget w = 0);
 
+// Process next element from command queue
 void processCommandQueue(XtPointer, XtIntervalId *);
 
 #endif // _DDD_commandQueue_h

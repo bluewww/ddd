@@ -110,9 +110,16 @@ void tty_full_name(const string& pos)
 
 void prompt()
 {
-    _gdb_out(gdb->prompt());
-    if (tty_gdb_input)
-	_tty_out(gdb->prompt());
+    String s = XmTextGetString(gdb_w);
+    string message = s;
+    XtFree(s);
+
+    if (!message.contains(gdb->prompt(), -1))
+    {
+	_gdb_out(gdb->prompt());
+	if (tty_gdb_input)
+	    _tty_out(gdb->prompt());
+    }
 }
 
 void init_command_tty()

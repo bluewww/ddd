@@ -38,6 +38,7 @@ char commandQueue_rcsid[] =
 #include "comm-manag.h"
 #include "status.h"
 #include "exectty.h"
+#include "cmdtty.h"
 #include "findParent.h"
 #include "history.h"
 #include "ddd.h"
@@ -46,6 +47,7 @@ char commandQueue_rcsid[] =
 #include "GDBAgent.h"
 
 #include <ctype.h>
+#include <string.h>
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <X11/StringDefs.h>
@@ -63,7 +65,8 @@ static void ClearOriginCB(Widget w, XtPointer, XtPointer)
 	gdb_last_origin = 0;
 }
 
-void _gdb_command(string command, Widget origin, OQCProc callback, void *data)
+void _gdb_command(string command, Widget origin, OQCProc callback, 
+		  void *data, bool verbose, bool check)
 {
     if (gdb->isReadyWithPrompt())
     {
@@ -97,7 +100,7 @@ void _gdb_command(string command, Widget origin, OQCProc callback, void *data)
 		      ClearOriginCB, 0);
     }
 
-    user_cmdSUC(command, origin, callback, data);
+    user_cmdSUC(command, origin, callback, data, verbose, check);
     messagePosition = XmTextGetLastPosition(gdb_w);
 }
 
@@ -113,6 +116,8 @@ struct Command
     Widget origin;		// Origin
     OQCProc callback;		// Associated callback
     void *data;			// Data for callback
+    bool verbose;		// Flag: verbose output?
+    bool check;			// Flag: append GDB commands?
 
 private:
     static void clear_origin(Widget w, XtPointer client_data, 
@@ -133,14 +138,21 @@ private:
     }
 
 public:
-    Command(const string& cmd, Widget w = 0, OQCProc cb = 0, void *d = 0)
-	: command(cmd), origin(w), callback(cb), data(d)
+    Command(const string& cmd, Widget w, OQCProc cb, void *d = 0, 
+	    bool v = false, bool c = false)
+	: command(cmd), origin(w), callback(cb), data(d), verbose(v), check(c)
+    {
+	add_destroy_callback();
+    }
+    Command(const string& cmd, Widget w)
+	: command(cmd), origin(w), callback(0), data(0), 
+	  verbose(true), check(true)
     {
 	add_destroy_callback();
     }
     Command(const Command& c)
-	: command(c.command), origin(c.origin), 
-	  callback(c.callback), data(c.data)
+	: command(c.command), origin(c.origin), callback(c.callback), 
+	  data(c.data), verbose(c.verbose), check(c.check)
     {
 	add_destroy_callback();
     }
@@ -158,6 +170,8 @@ public:
 	    origin   = c.origin;
 	    callback = c.callback;
 	    data     = c.data;
+	    verbose  = c.verbose;
+	    check    = c.check;
 
 	    add_destroy_callback();
 	}
@@ -166,8 +180,12 @@ public:
     bool operator == (const Command& c)
     {
 	return this == &c || 
-	    command == c.command && origin == c.origin 
-	    && callback == c.callback && data == c.data;
+	    command == c.command 
+	    && origin == c.origin 
+	    && callback == c.callback 
+	    && data == c.data
+	    && verbose == c.verbose
+	    && check == c.check;
     }
 };
 
@@ -195,11 +213,11 @@ bool emptyCommandQueue()
 }
 
 void gdb_command(const string& cmd, Widget origin, 
-		 OQCProc callback, void *data)
+		 OQCProc callback, void *data, bool verbose, bool check)
 {
     if (cmd.length() == 1 && iscntrl(cmd[0]) || cmd == "no" || cmd == "yes")
     {
-	_gdb_command(cmd, origin, callback, data);
+	_gdb_command(cmd, origin, callback, data, verbose, check);
 
 	if (cmd != "yes")
 	{
@@ -214,10 +232,10 @@ void gdb_command(const string& cmd, Widget origin,
 	if (callback == 0)
 	    add_to_history(cmd);
 
-	_gdb_command(cmd, origin, callback, data);
+	_gdb_command(cmd, origin, callback, data, verbose, check);
     }
     else
-	commandQueue += Command(cmd, origin, callback, data);
+	commandQueue += Command(cmd, origin, callback, data, verbose, check);
 }
 
 void processCommandQueue(XtPointer, XtIntervalId *)
@@ -282,4 +300,55 @@ Widget find_shell(Widget w)
 	return command_shell;
 
     return parent;
+}
+
+
+
+// Batch management
+
+static void auto_cmd_done(const string& answer, void *)
+{
+    if (answer != "")
+    {
+	// Dumb hack to ensure we don't issue the output after the prompt
+	gdb_out("\r");
+	messagePosition = XmTextGetLastPosition(gdb_w);
+	gdb_out(answer);
+	prompt();
+    }
+}
+
+static bool get_line(string& source, string& cmd)
+{
+    int index = source.index('\n');
+    if (index >= 0)
+    {
+	cmd = source.before(index);
+	source = source.after(index);
+    }
+    else
+    {
+	cmd = source;
+	source = "";
+    }
+    return cmd.length() > 0;
+}
+
+static void ProcessBatch(XtPointer client_data, XtIntervalId *)
+{
+    string source = (char *)client_data;
+    delete[] (char *)client_data;
+
+    // Debugger issued DDD command(s).  Enqueue them.
+    string cmd;
+    while (get_line(source, cmd))
+	gdb_command(cmd, gdb_w, auto_cmd_done, 0, false, true);
+}
+
+// Process auto commands
+void gdb_batch(const string& cmd)
+{
+    char *data = strcpy(new char[cmd.length() + 1], cmd.chars());
+    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
+		    0, ProcessBatch, XtPointer(data));
 }

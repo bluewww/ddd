@@ -26,12 +26,13 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
+
 //-----------------------------------------------------------------------------
-// Kommunikation mit dem gdb.
-// Namenskonventionen: 
-// ...SUC : ruft send_user_cmd() des gdb auf.
-// ...OA  : fuer on_answer, Typ: OAProc, siehe gdbAgent.
-// ...OAC : fuer on_answer_completion, Typ: OACProc, siehe gdbAgent.
+// GDB communication manager
+// Name conventions:
+// ...SUC : calls send_user_cmd() of GDBAgent *gdb.
+// ...OA  : an OAProc used in GDBAgent::on_answer
+// ...OAC : an OACProc used in GDBAgent::on_answer_completion()
 //-----------------------------------------------------------------------------
 
 #ifndef _DDD_comm_manag_h
@@ -43,30 +44,19 @@
 
 #include "GDBAgent.h"
 
+// Note: `commandQ.h' is the preferred way of interacting with GDB.
 
-//-----------------------------------------------------------------------------
-// Deklarationen
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-// Ruft gdb->start mit den noetigen Parametern.
-//
+// Call gdb->start() with required parameters
 void start_gdb ();
 
-//-----------------------------------------------------------------------------
-// Behandlung der Benutzer-Befehle (am Prompt oder mit Knopf eingegeben)
-// Schickt den Benutzter-Befehl cmd an den gdb.
-// Setzt Filtering , ruft ggf. handle_graph_cmd, setzt insensitiv und delay,
-// schreibt Befehlstext ins gdb_w und schickt Befehl an gdb.
-//
-void user_cmdSUC (string cmd, Widget origin = 0,
-		  OQCProc callback = 0, void *data = 0);
+// Send user command CMD to GDB.  Invoke CALLBACK with DATA upon
+// completion.  If VERBOSE is set, issue command in GDB console.
+// If CHECK is set, add appropriate GDB commands to get GDB state.
+void user_cmdSUC (string cmd, Widget origin,
+		  OQCProc callback, void *data,
+		  bool verbose, bool check);
 
-
-// ***************************************************************************
-// Behandlung von Benutzer-Eingaben
-// Schickt die Benutzer-Eingabe CMD unveraendert an den gdb.
-//
+// Send user input CMD to GDB (unchanged).
 void user_rawSUC (string cmd, Widget origin = 0);
 
 // Return FALSE if ANSWER is an error message indicating an unknown command

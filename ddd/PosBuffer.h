@@ -44,7 +44,7 @@
 class PosBuffer {
     // What was in the previous answer?
     enum ReadState {Null, PosPart, PosComplete};
-    
+
     string pos_buffer;
     string func_buffer;
     string answer_buffer;	// Possible parts of positions
@@ -55,52 +55,51 @@ class PosBuffer {
     bool terminated;		// Program has terminated
     bool recompiled;		// Program has been recompiled
 
+    string auto_cmd_buffer;	// AutoCommand found
+
 public:
+    // Call this before filtering any new output.
+    void clear()
+    {
+	pos_buffer      = "";
+	func_buffer     = "";
+	answer_buffer   = "";
+	pc_buffer       = "";
+	already_read    = Null;
+	started         = false;
+	terminated      = false;
+	recompiled      = false;
+	auto_cmd_buffer = "";
+    }
+
     // Constructor
-    PosBuffer () :
-	pos_buffer(""),
-	func_buffer(""),
-	answer_buffer(""),
-	pc_buffer(""),
-	already_read(Null),
-	started(false),
-	terminated(false),
-	recompiled(false)
-    {}
+    PosBuffer()
+    {
+	clear();
+    }
 
     // Filter positions from ANSWER and buffer them.  ANSWER contains
     // any remaining parts.
-    void filter (string& answer);
+    void filter(string& answer);
 
     // GDB output has ended.  Return any non-position parts.
-    string answer_ended ();
+    string answer_ended();
 
     // Did we find a position in the last output?
-    bool pos_found () const { return already_read == PosComplete; }
-    bool pc_found ()  const { return pc_buffer != ""; }
+    bool pos_found() const      { return already_read == PosComplete; }
+    bool pc_found()  const      { return pc_buffer != ""; }
+    bool auto_cmd_found() const { return auto_cmd_buffer != ""; }
 
     // Return the position found.
-    const string& get_position () const { return pos_buffer; }
-    const string& get_function () const { return func_buffer; }
-    const string& get_pc ()       const { return pc_buffer; }
+    const string& get_position() const { return pos_buffer; }
+    const string& get_function() const { return func_buffer; }
+    const string& get_pc()       const { return pc_buffer; }
+    const string& get_auto_cmd() const { return auto_cmd_buffer; }
 
     // Other properties.
     bool started_found()    const { return started; }
     bool terminated_found() const { return terminated; }
     bool recompiled_found() const { return recompiled; }
-
-    // Call this before filtering any new output.
-    void clear ()
-    {
-	pos_buffer    = "";
-	func_buffer   = "";
-	answer_buffer = "";
-	pc_buffer     = "";
-	already_read  = Null;
-	started       = false;
-	terminated    = false;
-	recompiled    = false;
-    }
 };
 
 // A regex for C addresses ("0xdead"), Modula-2 addresses ("0BEEFH"),

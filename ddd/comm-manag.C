@@ -41,13 +41,13 @@ char comm_manager_rcsid[] =
 // ...OA  : an OAProc used in GDBAgent::on_answer
 // ...OAC : an OACProc used in GDBAgent::on_answer_completion()
 // ...HP  : A handler procedure; see HandlerL.h
-//
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 #include "comm-manag.h"
 
 #include "bool.h"
+#include "commandQ.h"
 #include "ddd.h"
 #include "dbx-lookup.h"
 #include "disp-read.h"
@@ -68,7 +68,9 @@ char comm_manager_rcsid[] =
 
 #include <ctype.h>
 
-static void handle_graph_cmd (string cmd, Widget origin);
+static void handle_graph_cmd (string cmd, Widget origin,
+			      OQCProc callback, void *data, 
+			      bool verbose, bool check);
 
 //-----------------------------------------------------------------------------
 // Sollen Displays aus der Antwort herausgefiltert werden ?
@@ -90,6 +92,7 @@ typedef struct CmdData {
     string      user_answer;	  // Buffer for the complete answer
     OQCProc     user_callback;	  // User callback
     void *      user_data;	  // User data
+    bool        user_verbose;	  // Flag as given to user_cmdSUC
 
     CmdData (Filtering   fd = TryFilter,
 	     DispBuffer* db = 0,
@@ -106,7 +109,8 @@ typedef struct CmdData {
 	set_frame_func(""),
 	user_answer(""),
 	user_callback(0),
-	user_data(0)
+	user_data(0),
+	user_verbose(true)
     {}
 };
 
@@ -361,16 +365,19 @@ void user_rawSUC (string cmd, Widget origin)
 
 
 // ***************************************************************************
-// Send the GDB command CMD to GDB.
-// Handle filters, internal commands, control characters, echoing etc.
+// Send user command CMD to GDB.  Invoke CALLBACK with DATA upon
+// completion.  If VERBOSE is set, issue command in GDB console.
+// If CHECK is set, add appropriate GDB commands to get GDB state.
 
-void user_cmdSUC (string cmd, Widget origin, OQCProc callback, void *data)
+void user_cmdSUC (string cmd, Widget origin,
+		  OQCProc callback, void *data,
+		  bool verbose, bool check)
 {
     // Pass control commands unprocessed to GDB.
     if (cmd.length() == 1 && iscntrl(cmd[0]))
     {
 	// Don't issue control characters at the GDB prompt
-	if (!gdb->isReadyWithPrompt())
+	if (verbose && !gdb->isReadyWithPrompt())
 	{
 	    char c = cmd[0];
 
@@ -412,7 +419,7 @@ void user_cmdSUC (string cmd, Widget origin, OQCProc callback, void *data)
     // Catch internal commands
     if (is_graph_cmd (cmd))
     {
-	handle_graph_cmd (cmd, origin);
+	handle_graph_cmd(cmd, origin, callback, data, verbose, check);
 	return;
     }
 
@@ -424,6 +431,7 @@ void user_cmdSUC (string cmd, Widget origin, OQCProc callback, void *data)
     cmd_data->pos_buffer    = new PosBuffer;
     cmd_data->user_callback = callback;
     cmd_data->user_data     = data;
+    cmd_data->user_verbose  = verbose;
 
     PlusCmdData* plus_cmd_data     = new PlusCmdData;
 
@@ -458,7 +466,7 @@ void user_cmdSUC (string cmd, Widget origin, OQCProc callback, void *data)
 	cmd_data->filter_disp = NoFilter;
     }
 
-    if (callback != 0 || is_nop_cmd(cmd))
+    if (!check || is_nop_cmd(cmd))
     {
 	cmd_data->filter_disp            = NoFilter;
 	plus_cmd_data->refresh_bpoints   = false;
@@ -683,7 +691,7 @@ void user_cmdSUC (string cmd, Widget origin, OQCProc callback, void *data)
 	plus_cmd_data->refresh_threads   = false;
     }
 
-    if (callback == 0)
+    if (verbose)
     {
 	gdb_out(cmd);
 	gdb_out("\n");
@@ -879,10 +887,9 @@ void user_cmdOA (const string& answer, void* data)
 
     cmd_data->user_answer += ans;
 
-    if (cmd_data->user_callback == 0)
+    if (cmd_data->user_verbose)
 	gdb_out(ans);
 }
-
 
 // ***************************************************************************
 // Schreibt den prompt ins gdb_w, nachdem ggf. gebufferte Displays abgearbeitet
@@ -922,6 +929,12 @@ void user_cmdOAC (void* data)
 	source_view->clear_file_cache();
 	source_view->clear_execution_position();
 	source_view->reload();
+    }
+
+    if (cmd_data->pos_buffer->auto_cmd_found())
+    {
+	// Program (or GDB) issued command to be executed by DDD
+	gdb_batch(cmd_data->pos_buffer->get_auto_cmd());
     }
 
     // Set execution position
@@ -997,39 +1010,42 @@ void user_cmdOAC (void* data)
 	// Invoke user-defined callback
 	cmd_data->user_callback(cmd_data->user_answer, cmd_data->user_data);
     }
-    else
+
+    if (cmd_data->user_verbose)
     {
 	// Show answer
 	gdb_out(answer);
+    }
 
-	// Process displays
-	if (cmd_data->filter_disp != NoFilter)
-	{
+    // Process displays
+    if (cmd_data->filter_disp != NoFilter)
+    {
+	if (cmd_data->user_verbose)
 	    gdb_out(cmd_data->disp_buffer->answer_ended());
 
-	    if (cmd_data->filter_disp == Filter
-		|| cmd_data->disp_buffer->displays_found())
-	    {
+	if (cmd_data->filter_disp == Filter
+	    || cmd_data->disp_buffer->displays_found())
+	{
+	    bool disabling_occurred;
+	    string displays = cmd_data->disp_buffer->get_displays();
+	    string not_my_displays = 
+		data_disp->process_displays(displays, disabling_occurred);
 
-		bool disabling_occurred;
-		string displays = cmd_data->disp_buffer->get_displays();
-		string not_my_displays = 
-		    data_disp->process_displays(displays, disabling_occurred);
+	    if (cmd_data->user_verbose)
 		gdb_out(not_my_displays);
 	    
-		cmd_data->disp_buffer->clear();
+	    cmd_data->disp_buffer->clear();
 
-		// War letztes display disabling.... ?
-		if (disabling_occurred)
-		{
-		    cmd_data->filter_disp = Filter;
-		    gdb->send_user_cmd(gdb->display_command());
-		}
+	    // Did GDB disable any display?
+	    if (disabling_occurred)
+	    {
+		cmd_data->filter_disp = Filter;
+		gdb->send_user_cmd(gdb->display_command());
 	    }
 	}
-
-	prompt();
     }
+
+    prompt();
 
     cmd_data->pos_buffer->clear();
     delete cmd_data;
@@ -1045,9 +1061,13 @@ void read_numbers(string command, IntArray& numbers)
 	numbers += atoi(read_nr_str(command));
 }
 
-void handle_graph_cmd (string cmd, Widget origin)
+void handle_graph_cmd (string cmd, Widget origin, 
+		       OQCProc callback, void *data, 
+		       bool verbose, bool check)
 {
-    gdb_out(cmd + "\n");
+    if (verbose)
+	gdb_out(cmd + "\n");
+
     cmd = cmd.after ("graph ");
     if (is_display_cmd(cmd))
     {
@@ -1095,10 +1115,10 @@ void handle_graph_cmd (string cmd, Widget origin)
 
 	    break;
 	}
-	    
+
 	cmd = reverse(rcmd);
 
-	string display_expression = get_display_expression (cmd);
+	string display_expression = get_display_expression(cmd);
 	data_disp->new_displaySQ(display_expression, pos, depends_on, origin);
 	return;
     }
@@ -1130,8 +1150,8 @@ void handle_graph_cmd (string cmd, Widget origin)
 	    return;
 	}
     }
-    
-    user_cmdSUC(cmd, origin);
+
+    user_cmdSUC(cmd, origin, callback, data, verbose, check);
 }
 
 

@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "01 Aug 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "04 Aug 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -1761,9 +1761,84 @@ to start a debugging session.  Proceed as usual.
 Invoke \fBxxgdb\fR as
 .br
 .sp
- \fBxxgdb \-db_name @ddd@ \-db_prompt '(gdb) '
+  \fBxxgdb \-db_name @ddd@ \-db_prompt '(gdb) '
 .sp
 .br
+.\"
+.\" ---------------
+.SH "USER-DEFINED COMMANDS"
+.\" ---------------
+.\"
+If your debugger allows you to define own command sequences, you can
+also use these \fIuser-defined commands\fR within \s-2@DDD@\s+2; just
+enter them at the debugger prompt.  However, you may encounter some
+problems:
+.IP \(bu 2
+In contrast to the well-documented commands of the inferior debugger, 
+\s-2@DDD@\s+2 does not know what your specific command does.  This may 
+lead to inconsistencies between \s-2@DDD@\s+2 and the inferior
+debugger.  For instance, if your own command `\fBbp\fR' sets a
+breakpoint, \s-2@DDD@\s+2 may not display it immediately, because
+\s-2@DDD@\s+2 does not know that `\fBbp\fR' changes the breakpoint
+state.
+.br
+.IP \(bu 2
+You cannot use \s-2@DDD@\s+2 \fBgraph\fR commands within user-defined
+commands.  This is only natural, because user-defined commands are
+interpreted by the inferior debugger, which does not know about
+\s-2@DDD@\s+2 commands.
+.PP
+As a solution, \s-2@DDD@\s+2 provides a simple facility called
+\fIauto-commands\fR.  If \s-2@DDD@\s+2 receives any output from the
+inferior debugger in the form `\fB@ddd@: \fIcommand\fR', it will
+interpret \fIcommand\fR as if it had been entered at the debugger
+prompt.
+.PP
+Suppose you want to define a \s-2GDB\s+2 command `\fBdispfoo\fR' that
+creates a data display containing the variable \fIfoo\fR.  All
+\fBdispfoo\fR has to do is to issue a string
+.br
+.sp
+  \fBddd: graph display foo\fR
+.sp
+.br
+In \s-2GDB\s+2, this can be achieved using the \fBecho\fR command.  In 
+your \fB$HOME/.gdbinit\fR file, insert the lines
+.br
+.sp
+  \fBdefine dispfoo
+    echo ddd: graph display foo
+  end\fR
+.sp
+.br
+Entering \fBdispfoo\fR will now have the same effect as entering
+\fBgraph display foo\fR at the debugger prompt.
+.PP
+Unfortunately, auto-commands also raise a security problem, since
+arbitrary commands can be executed.  Just imagine some malicuous
+program issuing a string like `\fBddd: shell rm -fr $HOME\fR' when
+being debugged!  Consequently, auto-commands are \fIdisabled\fR by
+default and must be enabled explicitly.
+.PP
+To enable auto-commands, write in your `\fB$HOME/.dddinit\fR' file:
+.br
+.sp
+  \fB@Ddd@*autoCommands: on\fR
+.sp
+.br
+The default prefix of auto-commands is `\fBddd: \fR'.  You are
+encouraged to change this value in your `\fB.dddinit\fR' file.  To use 
+a prefix of, say, `\fBmagic123: \fR', write:
+.br
+.sp
+  \fBDdd*autoCommandPrefix: magic123:\\ \fR
+.sp
+.br
+Leave a space after the final `\fB\\\fR'.  Be sure to enable
+auto-commands only if you have defined own commands; be sure to set up
+an individual auto-command prefix to avoid security problems.
+.\"
+.\"
 .\" ---------------
 .SH "PREFERENCES"
 .\" ---------------
@@ -2374,6 +2449,16 @@ options, below.
 .SS "Debugger Settings"
 .\"
 The following resources determine the inferior debugger.
+.TP
+.B "autoCommands (\fPclass\fB AutoCommands)"
+If this is true `\fBtrue\fR', each line output by the inferior
+debugger beginning with the value of the `\fBautoCommandPrefix\fR'
+resource (see below) will be taken as \s-2@DDD@\s+2 command and
+executed.  Useful for user-defined commands; see\fB USER-DEFINED
+COMMANDS\fR, above.  By default, `\fBfalse\fR'.
+.TP
+.B "autoCommandPrefix (\fPclass\fB AutoCommandPrefix)"
+The prefix for auto-commands.  By default, `\fB@ddd@: \fR'.
 .TP
 .B "dbxInitCommands (\fPclass\fB DBXInitCommands)"
 This string contains a list of newline-separated commands that are

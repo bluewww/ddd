@@ -220,6 +220,10 @@
 #define XtNtoolRightOffset       "toolRightOffset"
 #define XtNtoolTopOffset         "toolTopOffset"
 #define XtCOffset                "Offset"
+#define XtNautoCommands          "autoCommands"
+#define XtCAutoCommands          "AutoCommands"
+#define XtNautoCommandPrefix     "autoCommandPrefix"
+#define XtCAutoCommandPrefix     "AutoCommandPrefix"
 #define XtNlessTifHacks          "lessTifHacks"
 #define XtCLessTifHacks          "LessTifHacks"
 #define XtNdddinitVersion        "dddinitVersion"
@@ -324,6 +328,8 @@ struct AppData {
     Boolean sticky_tool;
     int     tool_right_offset;
     int     tool_top_offset;
+    Boolean auto_commands;
+    String  auto_command_prefix;
     Boolean lesstif_hacks;
     String  dddinit_version;
     String  app_defaults_version;

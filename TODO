@@ -19,11 +19,6 @@ Volunteers for these and other projects are welcome!
 
 004. Have interactive help -- a wrapper to the GDB `help' command.
 
-006. With GDB 4.14 and later, define `graph display' command such that
-     a special code is issued which causes DDD to show the display.
-     Thus, one could use `graph display' in own definitions.
-     See also 067, below.
-
 008. Have buttons arranged such that they do not disappear when the
      window is narrowed.
 
@@ -74,21 +69,6 @@ Volunteers for these and other projects are welcome!
 
 060. When using a dynamic version of libstdc++, configure fails
      to add its location to the -R flag.
-
-067. Andy Gill (andy@dcs.gla.ac.uk) wants more options to
-     `graph display': ``for example,
-
-        graph display[x=100,y=100,rotate] foo
-
-     where foo is an array. This means put the object at location
-     (x=100,y=100), and rotate the array.  Using this in conjunction
-     with with the TODO 006 means that when restarting a program that
-     you are debugging you could have a script of what vars you are
-     looking at, and where you want them to go on your
-     canvas. Furthermore, there could be an option on the graph window
-     that let you dump such scripts automatically generated from the
-     current layout on the canvas.''
-     [See also 076 -AZ]
 
 069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
 
@@ -147,7 +127,6 @@ Volunteers for these and other projects are welcome!
      name. That way, it shouldn't be too difficult to save the
      displayed variables and find the corresponding variables even
      after recompiling.
-     [See also 067 -AZ]
 
 078. Have mirror sites for the DDD WWW page.  Maybe via the DDD FTP
      mirrors?
