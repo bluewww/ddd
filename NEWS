@@ -8,6 +8,7 @@ DDD 3.1.7 fixes a number of minor bugs.
 
 - Auto-raise of menus works much better (and is enabled by default).
 - Value tips of strings containing ` = ' are displayed correctly.
+- [JDB] Thread names with dashes are handled correctly.
 - [HP-UX] Renaming the `~/.ddd/init' file during saving options works.
 - [Build] DDD checks whether -fpermissive is required for old X headers.
 
