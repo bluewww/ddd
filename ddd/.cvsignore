@@ -49,6 +49,7 @@ stamp-h
 stamp-h.in
 stringify
 trailer.str
+ttytest
 userinfo
 version.h
 vr.h
