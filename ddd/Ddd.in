@@ -156,12 +156,10 @@ Ddd*paperSize: 210mm x 297mm
 ! The `edit' command to invoke an editor on the specific file.
 ! `@LINE@' is replaced by the current line number,
 ! `@FILE@' by the file name.  Default is to invoke $XEDITOR first,
-! then EMACS variations, then $EDITOR, then VI.
+! then $EDITOR, then VI.
 Ddd*editCommand: \
-${XEDITOR-false} +@LINE@ @FILE@ \
-|| gnuclient +@LINE@ @FILE@ \
-|| emacsclient +@LINE@ @FILE@ \
-|| xterm -e ${EDITOR-vi} +@LINE@ @FILE@
+${XEDITOR=false} +@LINE@ @FILE@ \
+|| xterm -e ${EDITOR=vi} +@LINE@ @FILE@
 
 
 ! Commands to list all executable/source/core/directory
