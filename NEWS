@@ -94,6 +94,9 @@ Data exploration
 - You can use the FROM..TO notation in arbitrary values, and also multiple
   times; `graph display 1..5 * 1..5' creates a multiplication table.
 
+- To select multiple displays, it suffices that the selection rectangle
+  touches a display (rather than enclosing it entirely).
+
 
 Running the Program
 -------------------

@@ -2259,11 +2259,11 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 	    {
 		if (!node->selected())
 		{
-		    // Both corners must be inside frame
-		    BoxPoint nw = node->region(graphGC).origin();
-		    BoxPoint se = nw + node->region(graphGC).space() - 1;
+		    // Intersection must be non-empty
+		    BoxRegion intersection = 
+			selected & node->region(graphGC);
 
-		    if (nw <= selected && se <= selected)
+		    if (!intersection.isEmpty())
 		    {
 			have_unselected_nodes = True;
 			node->selected() = True;
@@ -2281,11 +2281,11 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 		{
 		    if (node->selected())
 		    {
-			// Both corners must be inside frame
-			BoxPoint nw = node->region(graphGC).origin();
-			BoxPoint se = nw + node->region(graphGC).space() - 1;
+			// Intersection must be non-empty
+			BoxRegion intersection = 
+			    selected & node->region(graphGC);
 
-			if (nw <= selected && se <= selected)
+			if (!intersection.isEmpty())
 			{
 			    node->selected() = False;
 			    graphEditRedrawNode(w, node);
