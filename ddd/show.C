@@ -372,9 +372,6 @@ static void show_configuration(ostream& os, bool version_only)
 #if WITH_BUILTIN_APP_DEFAULTS
 	", app-defaults"
 #endif
-#if WITH_DEBUGGING_DDD
-	", debugging"
-#endif
 #ifdef XpmFormat
 	", XPM " stringize(XpmFormat) "." stringize(XpmVersion) 
 	"." stringize(XpmRevision)

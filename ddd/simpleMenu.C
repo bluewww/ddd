@@ -342,10 +342,6 @@ MMDesc simple_help_menu[] =
     MMSep,
     {"license",     MMPush, { DDDLicenseCB, 0}, 0, 0, 0, 0},
     {"www",         MMPush, { DDDWWWPageCB, 0}, 0, 0, 0, 0},
-#if WITH_DEBUGGING_DDD
-    MMSep,
-    {"debug",       MMPush, { DDDDebugCB, 0}, 0, 0, 0, 0},
-#endif
     MMSep,
     {"onVersion",   MMPush, { HelpOnVersionCB, 0}, 0, 0, 0, 0},
     MMEnd

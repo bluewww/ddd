@@ -160,9 +160,6 @@
    executable. */
 #undef WITH_BUILTIN_APP_DEFAULTS
 
-/* Define if you want to enable DDD menu entries for debugging itself. */
-#undef WITH_DEBUGGING_DDD
-
 
 // @BOTTOM@
 
