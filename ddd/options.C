@@ -2584,7 +2584,9 @@ bool save_options(unsigned long flags)
     os << "\n! Themes.\n";
     ostrstream themes;
     themes << DispBox::theme_manager;
-    string themes_s(themes);
+    static string themes_s;
+    themes_s = themes;
+    app_data.themes = themes_s;
     os << string_app_value(XtNthemes, themes_s) << '\n';
 
     // Tips

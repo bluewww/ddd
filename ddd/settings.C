@@ -297,41 +297,6 @@ static void SendSignalCB(Widget, XtPointer client_data, XtPointer)
     gdb_command(string("signal ") + XtName(Widget(client_data)));
 }
 
-static void HelpOnThemeCB(Widget w, XtPointer client_data, 
-			  XtPointer call_data)
-{
-    // Fetch text from file
-    string file = XtName((Widget)client_data);
-    string text = vsldoc(file, DispBox::vsllib_path);
-    if (text == "")
-	text = "No help available on this theme.";
-
-    MString mtext = bf(basename(file)) + cr() + cr() + rm(text);
-    MStringHelpCB(w, XtPointer(mtext.xmstring()), call_data);
-}
-
-static void ApplyThemesCB(Widget, XtPointer, XtPointer)
-{
-    Delay d;
-
-    ThemeManager t;
-
-    for (int i = 0; i < themes_entries.size(); i++)
-    {
-	Widget button = themes_labels[i];
-	bool active = XmToggleButtonGetState(button);
-
-	Widget entry  = themes_entries[i];
-	String value_s = XmTextFieldGetString(entry);
-	string value = value_s;
-	XtFree(value_s);
-
-	t.add(basename(XtName(entry)), ThemePattern(value, active));
-    }
-
-    data_disp->set_theme_manager(t);
-}
-
 
 static string handle_command(Widget w, bool set)
 {
@@ -515,12 +480,18 @@ static void update_themes_buttons()
     if (apply_themes_button == 0 || reset_themes_button == 0)
 	return;
 
+    bool apply_is_sensitive = false;
+    bool reset_is_sensitive = false;
+
     int i;
+
+    ThemeManager old_tm(app_data.themes);
 
     for (i = 0; i < themes_entries.size(); i++)
     {
 	Widget entry = themes_entries[i];
-	string theme = XtName(entry);
+	Widget button = themes_labels[i];
+	string theme = basename(XtName(entry));
 	ThemePattern p;
 
 	if (DispBox::theme_manager.has_pattern(theme))
@@ -528,36 +499,60 @@ static void update_themes_buttons()
 
 	ostrstream os;
 	os << p;
-	string old_value = string(os);
+	string current_value = string(os);
 
 	String value_s = XmTextFieldGetString(entry);
 	string value(value_s);
 	XtFree(value_s);
 
+	string old_value;
+	bool old_set = false;
+
+	bool have_pattern = old_tm.has_pattern(theme);
+	if (have_pattern)
+	{
+	    ThemePattern p = old_tm.pattern(theme);
+	    old_set = p.active();
+	    ostrstream os;
+	    os << p;
+	    old_value = string(os);
+	}
+
+	if (value != current_value)
+	    apply_is_sensitive = True;
+
 	if (value != old_value)
-	{
-	    set_sensitive(apply_themes_button, True);
-	    set_sensitive(reset_themes_button, True);
-	    return;
-	}
+	    reset_is_sensitive = True;
+
+	if (apply_is_sensitive && reset_is_sensitive)
+	    break;
     }
 
-    for (i = 0; i < themes_labels.size(); i++)
+    if (!reset_is_sensitive)
     {
-	Widget button = themes_labels[i];
-	string theme = XtName(button);
-	bool old_set = DispBox::theme_manager.has_pattern(theme);
-
-	if (XmToggleButtonGetState(button) != old_set)
+	for (i = 0; i < themes_labels.size(); i++)
 	{
-	    set_sensitive(apply_themes_button, True);
-	    set_sensitive(reset_themes_button, True);
-	    return;
+	    Widget button = themes_labels[i];
+	    string theme = basename(XtName(button));
+	    bool old_set = old_tm.has_pattern(theme);
+
+	    if (old_set)
+	    {
+		ThemePattern p = old_tm.pattern(theme);
+		if (!p.active())
+		    old_set = false;
+	    }
+
+	    if (XmToggleButtonGetState(button) != old_set)
+	    {
+		reset_is_sensitive = True;
+		break;
+	    }
 	}
     }
 
-    set_sensitive(apply_themes_button, False);
-    set_sensitive(reset_themes_button, False);
+    set_sensitive(apply_themes_button, apply_is_sensitive);
+    set_sensitive(reset_themes_button, reset_is_sensitive);
 }
 
 
@@ -607,6 +602,50 @@ static void UpdateThemesButtonsCB(Widget w, XtPointer client_data,
     // The TextField value has not yet changed.  Call again later.
     XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
 		    UpdateThemesButtonsNowCB, client_data);
+}
+
+static void HelpOnThemeCB(Widget w, XtPointer client_data, 
+			  XtPointer call_data)
+{
+    // Fetch text from file
+    string file = XtName((Widget)client_data);
+    string text = vsldoc(file, DispBox::vsllib_path);
+    if (text == "")
+	text = "No help available on this theme.";
+
+    MString mtext = bf(basename(file)) + cr() + cr() + rm(text);
+    MStringHelpCB(w, XtPointer(mtext.xmstring()), call_data);
+}
+
+static void ApplyThemesCB(Widget, XtPointer, XtPointer)
+{
+    Delay d;
+
+    ThemeManager t;
+
+    for (int i = 0; i < themes_entries.size(); i++)
+    {
+	Widget button = themes_labels[i];
+	bool active = XmToggleButtonGetState(button);
+
+	Widget entry  = themes_entries[i];
+	String value_s = XmTextFieldGetString(entry);
+	string value = value_s;
+	XtFree(value_s);
+
+	t.add(basename(XtName(entry)), ThemePattern(value, active));
+    }
+
+    data_disp->set_theme_manager(t);
+    update_themes_buttons();
+}
+
+static void ResetThemesCB(Widget w, XtPointer client_data, 
+			  XtPointer call_data)
+{
+    data_disp->set_theme_manager(ThemeManager(app_data.themes));
+    update_themes();
+    ApplyThemesCB(w, client_data, call_data);
 }
 
 
@@ -2390,6 +2429,8 @@ static void fix_clip_window_translations(Widget scroll)
 // Themes
 static void get_themes(StringArray& themes)
 {
+    StringArray bases;
+
     string path = DispBox::vsllib_path;
     int n = path.freq(':');
     string *dirs = new string[n + 1];
@@ -2418,7 +2459,19 @@ static void get_themes(StringArray& themes)
 
 	    for (int i = 0; i < count; i++)
 	    {
-		themes += files[i];
+		string base = basename(files[i]);
+
+		bool duplicate = false;
+		for (int j = 0; !duplicate && j < bases.size(); j++)
+		    if (bases[j] == base)
+			duplicate = true;
+
+		if (!duplicate)
+		{
+		    themes += files[i];
+		    bases  += base;
+		}
+
 		free(files[i]);
 	    }
 	    free((char *)files);
@@ -2494,8 +2547,8 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     switch (stype)
     {
     case SETTINGS:
-	XtAddCallback(panel, XmNapplyCallback, ResetSettingsCB, 0);
 	XtAddCallback(panel, XmNokCallback, ApplySettingsCB, 0);
+	XtAddCallback(panel, XmNapplyCallback, ResetSettingsCB, 0);
 	apply_settings_button = apply_button;
 	break;
 
@@ -2511,7 +2564,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 
     case THEMES:
 	XtAddCallback(panel, XmNokCallback,    ApplyThemesCB, 0);
-	XtAddCallback(panel, XmNapplyCallback, ApplyThemesCB, 0);
+	XtAddCallback(panel, XmNapplyCallback, ResetThemesCB, 0);
 	apply_themes_button = apply_button;
 	break;
     }
@@ -2649,6 +2702,7 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     case THEMES:
 	reset_themes_button = reset_button;
 	update_themes();
+	update_themes_buttons();
 	break;
     }
 
