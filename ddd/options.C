@@ -1667,7 +1667,8 @@ bool save_options(unsigned long flags)
 
     // Command tool
     os << "\n! Command tool\n";
-    get_tool_offset();
+    if (have_visible_tool_window())
+	get_tool_offset();
     os << bool_app_value(XtNcommandToolBar,
 			 app_data.command_toolbar) << "\n";
     os << int_app_value(XtNtoolRightOffset,
@@ -1708,17 +1709,17 @@ bool save_options(unsigned long flags)
     // Widget sizes.
     os << "\n! Window sizes\n";
 
-    // We must enable all PanedWindow children in order to get the
+    // We must manage all PanedWindow children in order to get the
     // correct sizes.  Ugly hack.
     popups_disabled  = true;
     bool had_data    = have_data_window();
     bool had_source  = have_source_window();
-    bool had_code    = XtIsManaged(source_view->code_form());
+    bool had_code    = have_code_window();
     bool had_command = have_command_window();
 
     gdbOpenDataWindowCB(gdb_w, 0, 0);
     gdbOpenSourceWindowCB(gdb_w, 0, 0);
-    manage_paned_child(source_view->code_form());
+    gdbOpenCodeWindowCB(gdb_w, 0, 0);
     gdbOpenCommandWindowCB(gdb_w, 0, 0);
 
     os << widget_size(data_disp->graph_edit)           << "\n";
@@ -1738,7 +1739,7 @@ bool save_options(unsigned long flags)
     if (!had_source)
 	gdbCloseSourceWindowCB(gdb_w, 0, 0);
     if (!had_code)
-	unmanage_paned_child(source_view->code_form());
+	gdbCloseCodeWindowCB(gdb_w, 0, 0);
     if (!had_command)
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
     popups_disabled = false;

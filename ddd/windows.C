@@ -952,8 +952,13 @@ void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 		  NULL);
 
     popup_shell(tool_shell);
-    wait_until_mapped(tool_shell);
-    RecenterToolShellCB();
+
+    if (!popups_disabled)
+    {
+	wait_until_mapped(tool_shell);
+	RecenterToolShellCB();
+    }
+
     update_options();
 }
 
@@ -1135,7 +1140,8 @@ static bool get_tool_offset(Widget ref, int& top_offset, int& right_offset)
 	ref = source_view->code();
 
     if (ref == 0 || tool_shell == 0 || 
-	!XtIsRealized(ref) || !XtIsRealized(tool_shell))
+	!XtIsRealized(ref) || !XtIsRealized(tool_shell) || 
+	!XtIsManaged(tool_buttons_w))
 	return false;
 
     Window ref_window  = XtWindow(ref);
@@ -1206,9 +1212,12 @@ static bool get_tool_offset(Widget ref, int& top_offset, int& right_offset)
 void get_tool_offset()
 {
     initialize_offsets();
-    get_tool_offset(0, last_top_offset, last_right_offset);
-    app_data.tool_top_offset   = last_top_offset;
-    app_data.tool_right_offset = last_right_offset;
+
+    if (get_tool_offset(0, last_top_offset, last_right_offset))
+    {
+	app_data.tool_top_offset   = last_top_offset;
+	app_data.tool_right_offset = last_right_offset;
+    }
 }
 
 
