@@ -1298,7 +1298,8 @@ PROG_STUFF       = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
 		   $(srcdir)/Ddd.in Ddd.ad.h host.h \
 		   $(srcdir)/ddd.vsl $(srcdir)/ddd.vsl.h \
 		   vr.h version.h bld.h build.h configinfo.C \
-                   COPYING.gz.C NEWS.gz.C xlibdir.C eps-code.h .gdbinit
+                   COPYING.gz.C NEWS.gz.C ddd.info.txt.gz.C \
+                   xlibdir.C eps-code.h .gdbinit
 
 # Extra files to be built for the distribution
 # In a distribution, these should be already built.
