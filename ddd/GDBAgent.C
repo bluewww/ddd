@@ -291,10 +291,10 @@ bool GDBAgent::send_question (string  cmd,
 
 // ***************************************************************************
 bool GDBAgent::send_qu_array (string   cmds [],
-				 void*    qu_datas [],
-				 int      qu_count,
-				 OQACProc on_qu_array_completion,
-				 void*    qa_data)
+			      void*    qu_datas [],
+			      int      qu_count,
+			      OQACProc on_qu_array_completion,
+			      void*    qa_data)
 {
     if (state != ReadyWithPrompt || qu_count == 0)
 	return false;
@@ -385,6 +385,14 @@ bool GDBAgent::ends_with_prompt (const string& answer)
 }
 
 // ***************************************************************************
+bool GDBAgent::ends_with_secondary_prompt (const string& answer)
+{
+    static regex secondary_prompt("\\(.\\|\n\\)*\n> ", true);
+
+    return answer.matches(secondary_prompt);
+}
+
+// ***************************************************************************
 void GDBAgent::cut_off_prompt (string& answer)
 {
     answer = answer.before('(', -1);
@@ -464,7 +472,7 @@ void GDBAgent::strip_comments(string& s)
 // ***************************************************************************
 // Received data from GDB
 //
-void GDBAgent::InputHP (Agent *, void* client_data, void* call_data)
+void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 {
     GDBAgent*   gdb   = (GDBAgent *) client_data;
     DataLength* dl    = (DataLength *) call_data;
@@ -482,13 +490,14 @@ void GDBAgent::InputHP (Agent *, void* client_data, void* call_data)
 
     case BusyOnInitialCmds:
     case BusyOnCmd:
-	if ( !gdb->ends_with_prompt (answer) ) {
-
+	if (!gdb->ends_with_prompt(answer))
+	{
             // Received only part of the answer
 	    if (gdb->_on_answer != 0)
 		gdb->_on_answer (answer, gdb->_user_data);
 	}
-	else {
+	else
+	{
             // Received complete answer (GDB issued prompt)
 	    gdb->cut_off_prompt (answer);
 	    gdb->strip_comments (answer);
@@ -542,12 +551,28 @@ void GDBAgent::InputHP (Agent *, void* client_data, void* call_data)
 	break;
 
     case BusyOnQuestion:
-	if ( !gdb->ends_with_prompt (answer) ) {
+	if (gdb->ends_with_secondary_prompt(answer))
+	{
+	    // GDB requires more information here: probably the
+	    // selection of an ambiguous C++ name.
+	    // We simply try the first alternative here:
+	    // - in GDB, this means `all'
+	    // - in DBX, this is a non-deterministic selection.
 
+	    string answer = "1\n";
+	    gdb->write(answer, answer.length());
+	    gdb->flush();
+
+	    // Ignore the info yet received
+	    gdb->complete_answer = "";
+	}
+	else if (!gdb->ends_with_prompt(answer))
+	{
             // Received only part of the answer
 	    gdb->complete_answer += answer;
 	}
-	else {
+	else
+	{
             // Received complete answer (GDB issued prompt)
 	    gdb->cut_off_prompt (answer);
 	    gdb->strip_comments (answer);
@@ -566,8 +591,8 @@ void GDBAgent::InputHP (Agent *, void* client_data, void* call_data)
 	break;
 
     case BusyOnQuArray:
-	if ( !gdb->ends_with_prompt (answer) ) {
-
+	if (!gdb->ends_with_prompt(answer))
+	{
             // Received only part of the answer
 	    gdb->complete_answers[gdb->qu_index] += answer;
 	}
@@ -622,6 +647,35 @@ void GDBAgent::InputHP (Agent *, void* client_data, void* call_data)
 	assert(0);
 	break;
     }
+}
+
+// ***************************************************************************
+
+// DBX3 wants `print -r' instead of `print' for C++
+string GDBAgent::print_command()
+{
+    if (type() == DBX && version() != DBX1)
+	return "print -r";
+    else
+	return "print";
+}
+
+// DBX3 wants `display -r' instead of `display' for C++
+string GDBAgent::display_command()
+{
+    if (type() == DBX && version() != DBX1)
+	return "display -r";
+    else
+	return "display";
+}
+
+// DBX3 wants `where -h' instead of `where'
+string GDBAgent::where_command()
+{
+    if (type() == DBX && version() != DBX1)
+	return "where -h";
+    else
+	return "where";
 }
 
 // ***************************************************************************

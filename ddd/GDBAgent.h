@@ -163,21 +163,21 @@ public:
     // Nach Beendigung aller Antworten: Aufruf von OACProc und OQACProc.
     //
     bool send_user_cmd_plus (string   cmds [],
-				void*    qu_datas [],
-				int      qu_count,
-				OQACProc on_qu_array_completion,
-				void*    qa_data,
-				string user_cmd, void* user_data = 0);
+			     void*    qu_datas [],
+			     int      qu_count,
+			     OQACProc on_qu_array_completion,
+			     void*    qa_data,
+			     string user_cmd, void* user_data = 0);
 
     bool send_question (string  cmd,
-			   OQCProc on_question_completion,
-			   void*   qu_data);
+			OQCProc on_question_completion,
+			void*   qu_data);
 
     bool send_qu_array (string   cmds [],
-			   void*    qu_datas [],
-			   int      qu_count,
-			   OQACProc on_qu_array_completion,
-			   void*    qa_data);
+			void*    qu_datas [],
+			int      qu_count,
+			OQACProc on_qu_array_completion,
+			void*    qa_data);
 
 
     // Zustandsabfragen
@@ -207,6 +207,11 @@ public:
     void set_trace_dialog (bool trace);
     void set_version (DebuggerVersion v) { _version = v; } 
 
+    // Properties
+    string print_command();
+    string display_command();
+    string where_command();
+
 private:
     bool trace_dialog;
 
@@ -231,6 +236,7 @@ private:
 			   OQACProc on_qu_array_completion,
 			   void*    qa_data);
     bool ends_with_prompt (const string& answer);
+    bool ends_with_secondary_prompt (const string& answer);
     void cut_off_prompt (string& answer);
     void strip_comments (string& answer);
 
