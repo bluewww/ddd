@@ -633,6 +633,7 @@ AC_EGREP_CPP(yes,
 yes
 #endif
 ], ice_cv_have_core_magic=yes, ice_cv_have_core_magic=no))
+AC_MSG_RESULT($ice_cv_have_core_magic)
 if test "$ice_cv_have_core_magic" = yes; then
 AC_DEFINE(HAVE_CORE_MAGIC)
 fi
