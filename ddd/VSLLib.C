@@ -362,9 +362,11 @@ VSLLib *VSLLib::dup() const
 // Assignment
 VSLLib& VSLLib::operator = (const VSLLib& lib)
 {
-    clear();
-    assert(OK());
-    init_from(lib);
+    if (this != &lib) {
+      clear();
+      assert(OK());
+      init_from(lib);
+    }
 
     return *this;
 }

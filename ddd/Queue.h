@@ -219,7 +219,8 @@ public:
     {}
     QueueIter<E>& operator = (const QueueIter<E>& iter)
     {
-	rec = iter.rec;
+        if (this != &iter)
+	  rec = iter.rec;
 	return *this;
     }
     QueueIter<E>& operator = (const Queue<E>& queue)
