@@ -283,9 +283,14 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
     messagePosition = XmTextGetLastPosition(gdb_w);
 }
 
+static bool processing_gdb_commands = false;
+
 // True if GDB can run a command
 bool can_do_gdb_command()
 {
+    if (processing_gdb_commands)
+	return false;
+
     if (gdb->isReadyWithPrompt())
 	return true;		// GDB is ready
 
@@ -297,9 +302,11 @@ bool can_do_gdb_command()
     return false;		// Wait until later...
 }
 
-// Same, but interrupting if needed
+// Process command C; do it right now.  Interrupt if needed.
 static void do_gdb_command(Command& given_c, bool is_command = true)
 {
+    processing_gdb_commands = true;
+
     Command c(given_c);
 
     if (c.command.contains('\n'))
@@ -317,16 +324,18 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
     }
 
     if (c.command == "")
+    {
+	processing_gdb_commands = false;
 	return;
+    }
 
     if (gdb->isReadyWithPrompt() || c.priority == COMMAND_PRIORITY_NOW)
     {
 	// Process command right now
 	_do_gdb_command(c, is_command);
+	processing_gdb_commands = false;
 	return;
     }
-
-    assert(can_do_gdb_command());
 
     app_data.stop_and_continue = False;
 
@@ -362,6 +371,8 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
     }
 
     app_data.stop_and_continue = True;
+
+    processing_gdb_commands = false;
 }
 
 bool userInteractionSeen()

@@ -2,6 +2,7 @@
 // DDD interface to GDB commands
 
 // Copyright (C) 1996-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -39,12 +40,12 @@
 // Priorities.  The higher the priority, the earlier the command
 // will be executed.
 #define COMMAND_PRIORITY_WORK  -2  // Work procedures
-#define COMMAND_PRIORITY_CONT  -1  // Continue after interrupt
 #define COMMAND_PRIORITY_USER   0  // User-initiated commands
 #define COMMAND_PRIORITY_BATCH  1  // Batch jobs (auto commands)
 #define COMMAND_PRIORITY_INIT   2  // Init commands
 #define COMMAND_PRIORITY_SYSTEM 3  // System-initiated commands
 #define COMMAND_PRIORITY_AGAIN  5  // Try again
+#define COMMAND_PRIORITY_CONT   7  // Continue after interrupt
 #define COMMAND_PRIORITY_MULTI  8  // Multi-Line Command
 #define COMMAND_PRIORITY_READY  9  // Wait until ready
 #define COMMAND_PRIORITY_NOW   10  // Do it now
