@@ -1049,7 +1049,7 @@ void send_gdb_command(string cmd, Widget origin,
     {
 	cmd_data->filter_disp = NoFilter;
 
-	if (check)
+	if (check && (gdb->recording() || !is_info_line_cmd(cmd)))
 	{
 	    delete cmd_data->pos_buffer;
 	    cmd_data->pos_buffer = 0;
@@ -1064,7 +1064,11 @@ void send_gdb_command(string cmd, Widget origin,
 	    set_need_save_defines(true);
 	}
 
+#if 0				// Why would `end' change breakpoints?
 	extra_data->refresh_breakpoints = ends_recording(cmd);
+#else
+	extra_data->refresh_breakpoints = false;
+#endif
 	extra_data->refresh_addr        = false;
 	extra_data->refresh_user        = false;
 	extra_data->refresh_where       = false;

@@ -51,6 +51,9 @@ bool is_single_display_cmd(const string& cmd, GDBAgent *gdb);
 // True if CMD has no side effects.
 bool is_nop_cmd(const string& cmd);
 
+// True if CMD is `info line' command.
+bool is_info_line_cmd(const string& cmd);
+
 // True if CMD creates a data display
 bool is_display_cmd(const string& cmd);
 

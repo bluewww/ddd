@@ -94,14 +94,21 @@ bool is_nop_cmd(const string& cmd)
     }
 
 #if RUNTIME_REGEX
-    // All these command have no effect on DDD state...
+    // All these command have no effect on DDD state
     static regex rxnop_cmd("[ \t]*(echo|help|show|info|where|shell|sh|x)([ \t]+.*)?");
+#endif
 
-    // ... except for this one.
+    return cmd.matches(rxnop_cmd);
+}
+
+// True if CMD is `info line' cmd
+bool is_info_line_cmd(const string& cmd)
+{
+#if RUNTIME_REGEX
     static regex rxop_cmd("[ \t]*(info[ \t]+line)([ \t]+.*)?");
 #endif
 
-    return cmd.matches(rxnop_cmd) && !cmd.matches(rxop_cmd);
+    return cmd.matches(rxop_cmd);
 }
 
 // True if CMD changes program state
