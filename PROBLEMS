@@ -209,42 +209,20 @@ LessTif
 
     When linking with LessTif instead of OSF/Motif, the following
     problems occur.  Unless otherwise noted, all problems refer to DDD
-    2.1.1 compiled against LessTif 0.79 on a sparc-sunos-4.1.4.
-
-    006. `Preferences' buttons (Options|Preferences) stick out.
-         There should be no 3d-border around the four preferences
-         buttons.  [visual]
+    2.1.1 compiled against LessTif 0.81 on a sparc-sunos-4.1.4.
  
     011. The `F1' menu accelerator (Help|On Context) has no effect.
          [behavioral]
-    
-    012. Moving `Up' or `Down' in the `Backtrace' window
-         (Status|Backtrace) does not clear the last selection.  Only
-         one line should be selected.  Same applies to other List
-         Widgets (e.g. Commands|Command History).  [visual]
- 
-    017. It is not possible to change values of the OptionButton in the 
-         `Print' panel (File|Print Graph).  [behavioral]
- 
-    018. In the `Settings' panel, the scrolled window border is etched
-         out instead of etched in.  [visual]
- 
+   
     020. Some of the dialog shells behave like top-level shells
          (e.g. they are decorated and placed by the user), for
          instance the display editor (Data|Edit Displays) and the
          breakpoint editor (Source|Edit Breakpoints).  [behavioral]
  
-    024. Let A be a child of a PanedWindow.  In LessTif, if A is
-         unmanaged, its space is occupied by the last child of the
-         PanedWindow (regardless of paneMaximum settings - this is a
-         bug).  In Motif, the space is occupied by A's predecessor.
-         [behavioral]
- 
-    027. Several warnings about invalid scrollbar values.
-         [behavioral]
- 
     028. Menu items are not made insensitive as they ought to be.
          [behavioral]
+
+    029. Glyphs are not shown.  Why?
  
 
 

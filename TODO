@@ -362,7 +362,10 @@ Volunteers for these and other projects are welcome!
 
 206. `manage_and_raise' should deiconify dialogs.
 
-212. Show progress of data display inits and updates.  Make it
+212* Show progress of data display inits and updates.  Make it
      interruptible (or process in background?)
 
-213. (Insert your project idea here)
+213. Support the Solaris DBX `handler' command to enable and disable
+     breakpoints.
+
+215. (Insert your project idea here)

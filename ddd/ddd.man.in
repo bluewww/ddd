@@ -1207,14 +1207,14 @@ the text is empty, the `\fBNew Display\fR' menu will be empty, too.
 .PP
 \s-2@DDD@\s+2 also allows you to specify individual labels for
 user-defined buttons.  You can write such a label after the
-expression, separated by a \s-2TAB\s+2 character.  This feature is
-used in the default contents of the `\fBNew Display\fR' menu, where each of
-the base conversions has a label:
+expression, separated by `\fB//\fR'.  This feature is used in the
+default contents of the `\fBNew Display\fR' menu, where each of the
+base conversions has a label:
 .br
 .sp
-    \fB/d ()\s-2<TAB>\s+2Convert to Dec
-    /x ()\s-2<TAB>\s+2Convert to Hex
-    /o ()\s-2<TAB>\s+2Convert to Oct\fR
+    \fB/d ()	// Convert to Dec
+    /x ()	// Convert to Hex
+    /o ()	// Convert to Oct\fR
 .sp
 .br
 Feel free to add other conversions here.  \s-2@DDD@\s+2 supports up to 
@@ -2968,9 +2968,10 @@ The string `\fB()\fR' is replaced by the current contents
 of the argument field `()'.
 .br
 .IP \(bu 2
-A \s-2TAB\s+2 character separates the command name from the button
-label.  If no \s-2TAB\s+2 character is used, the capitalized command
-will be used as button label.
+The string specified in the `\fBlabelDelimiter\fR' resource (usually
+`\fB//\fR') separates the command name from the button label.  If no
+button label is specified, the capitalized command will be used as
+button label.
 .RE
 .sp
 .RS
@@ -3073,15 +3074,14 @@ This setting creates some buttons which are not found on the command tool:
   whatis ()\\nptype ()\\nwatch ()\\nuntil\\nshell\fR
 .br
 .sp
-An even more professional setting uses customized button labels.  (You
-may wish to replace \fB\\011\fR by actual \s-2TAB\s+2 characters.)
+An even more professional setting uses customized button labels.
 .sp
 .br
   \fB@Ddd@*sourceButtons: \\
-  print *(())\\011Print *()\\n\\
-  graph display *(())\\011Display *()\\n\\
+  print *(()) // Print *()\\n\\
+  graph display *(()) // Display *()\\n\\
   print /x ()\\n\\
-  whatis ()\\011What is ()\\n\\
+  whatis () // What is ()\\n\\
   ptype ()\\n\\
   watch ()\\n\\
   until\\n\\
@@ -3173,14 +3173,19 @@ checking is done: all commands are accepted `as is'.
 The following resources control the data display.
 .\"
 .TP
+.B "labelDelimiter (\fPclass\fB LabelDelimiter)"
+The string used to separate labels from commands and shortcuts.
+Default is `\fB//\fR'.
+.TP
 .B "displayShortcuts (\fPclass\fB DisplayShortcuts)"
 A newline-separated list of display expressions to be included in the
-`\fBNew Display\fR' menu.  If a line contains a \s-2TAB\s+2 character,
-the string before the \s-2TAB\s+2 is used as \fIexpression\fR, and the
-string after the \s-2TAB\s+2 is used as label.  Otherwise, the label
-is `\fBDisplay \fIexpression\fR'.  Upon activation, the string
-`\fB()\fR' in \fIexpression\fR is replaced by the name of the
-currently selected display.
+`\fBNew Display\fR' menu.  If a line contains a label delimiter (the
+string `\fB//\fR'; can be changed via the `\fBlabelDelimiter\fR'
+resource), the string before the delimiter is used as
+\fIexpression\fR, and the string after the delimiter is used as label.
+Otherwise, the label is `\fBDisplay \fIexpression\fR'.  Upon
+activation, the string `\fB()\fR' in \fIexpression\fR is replaced by
+the name of the currently selected display.
 .TP
 .B "pannedGraphEditor (\fPclass\fB PannedGraphEditor)"
 What shall \s-2@DDD@\s+2 use if the graph gets too large to be
