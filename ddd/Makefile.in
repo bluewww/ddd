@@ -755,7 +755,11 @@ ULTRACLEAN_STUFF = $(REALCLEAN_STUFF) \
 
 ## Targets as specified in GNU standards.
 .PHONY: all
-all:	$(PROG_STUFF) $(PROGS)
+all:	ddd-message $(PROG_STUFF) $(PROGS)
+
+.PHONY: ddd-message
+ddd-message:
+	@$(ECHO) "Building $(ddd_canonical)"
 
 .PHONY: install
 install: install-prog install-man
@@ -901,19 +905,15 @@ ddd.vsl.h: $(srcdir)/../vsllib/std.vsl
 ddd.vsl.h: $(srcdir)/../vsllib/fonts.vsl
 ddd.vsl.h: $(srcdir)/../vsllib/colors.vsl
 ddd.vsl.h: $(srcdir)/../vsllib/builtin.vsl
-	
+
 
 ## The programs.
 
 $(ddd):	$(ddd_canonical)
 	$(RM) $@; $(LN_S) $(ddd_canonical) $@
 
-$(ddd_canonical): ddd-message ddd.o $(OBJECTS)
+$(ddd_canonical): ddd.o $(OBJECTS)
 	$(LINK.cc) -o $@ ddd.o $(OBJECTS) $(ALL_X_LIBS) $(LIBS)
-
-.PHONY: ddd-message
-ddd-message:
-	@$(ECHO) "Building $(ddd_canonical)."
 
 
 ## The demonstration programs.
