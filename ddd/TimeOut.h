@@ -49,6 +49,11 @@ extern void MyRemoveTimeOut(XtIntervalId timer,
 			    String file = 0,
 			    int line = 0);
 
+// Be sure not to intermix these!  A timer added with MyAppAddTimeOut()
+// must be removed with MyRemoveTimeOut(); a timer added with
+// XtAppAddTimeOut() must be removed with XtRemoveTimeOut().
+
+
 // Unless NDEBUG is defined (as usually in optimization), use our
 // replacement routines instead of the Xt functions.
 #if !defined(NDEBUG)

@@ -31,7 +31,6 @@ char TimeOut_rcsid[] =
 
 #ifdef __GNUG__
 #pragma implementation
-#pragma implementation "VarArray"
 #endif
 
 #include "TimeOut.h"
@@ -45,10 +44,12 @@ char TimeOut_rcsid[] =
 #undef XtAppAddTimeOut
 #undef XtRemoveTimeOut
 
+// Set this to 1 to log all timer actions
 #define LOG_TIMERS 0
 
 struct TimerInfo {
-    XtIntervalId timer;		// The timer
+    XtIntervalId timer;		// The id as received from XtAppAddTimeOut()
+    XtIntervalId tic;		// The unique id we use instead
     unsigned long interval;	// INTERVAL arg given to XtAppAddTimeOut()
     XtTimerCallbackProc proc;   // PROC     arg given to XtAppAddTimeOut()
     XtPointer closure;		// CLOSURE  arg given to XtAppAddTimeOut()
@@ -60,8 +61,21 @@ struct TimerInfo {
 // List of active timers
 static TimerInfo *active_timers = 0;
 
+// Counter
+static XtIntervalId timer_tics = 0;
+
+// Return number of active timers (i.e. not yet called)
+int MyActiveTimers()
+{
+    int count = 0;
+    for (TimerInfo *ti = active_timers; ti != 0; ti = ti->next)
+	count++;
+
+    return count;
+}
+
 // When timer is called, remove TimerInfo from list
-static void MyTimerProc(XtPointer client_data, XtIntervalId *id)
+static void MyTimerProc(XtPointer client_data, XtIntervalId *)
 {
     TimerInfo *tm = (TimerInfo *)client_data;
 
@@ -85,57 +99,65 @@ static void MyTimerProc(XtPointer client_data, XtIntervalId *id)
     assert (removed);
 
 #if LOG_TIMERS
-    clog << "TimeOut: " << tm->file << ":" << tm->line 
-	 << ": timer " << tm->timer << " called\n";
+    clog << "TimeOut: " << tm->file << ":" << tm->line << ": timer " 
+	 << tm->tic << " (" << XtPointer(tm->timer) << ")"
+	 << " expired (" << MyActiveTimers() << " still active)\n";
 #endif
 
-    tm->proc(tm->closure, id);
+    tm->proc(tm->closure, &tm->tic);
 
     delete tm;
     return;
 }
 
-// Like XtAppAddTimeOut(), but also register timer in our list
+// Like XtAppAddTimeOut(), but also register timer in internal list.
 XtIntervalId MyAppAddTimeOut(XtAppContext app_context,
 			     unsigned long interval,
 			     XtTimerCallbackProc proc,
 			     XtPointer closure,
 			     String file, int line)
 {
-    TimerInfo *ti = new TimerInfo;
-    ti->timer    = XtAppAddTimeOut(app_context, interval, 
-				   MyTimerProc, XtPointer(ti));
-    ti->interval = interval;
-    ti->proc     = proc;
-    ti->closure  = closure;
-    ti->file     = file ? "" : file;
-    ti->line     = line;
+    TimerInfo *tm = new TimerInfo;
+    tm->timer    = XtAppAddTimeOut(app_context, interval, 
+				   MyTimerProc, XtPointer(tm));
+    tm->interval = interval;
+    tm->proc     = proc;
+    tm->closure  = closure;
+    tm->file     = (file ? file : "");
+    tm->line     = line;
+    tm->tic      = ++timer_tics;
 
-    ti->next = active_timers;
-    active_timers = ti;
+    tm->next = active_timers;
+    active_timers = tm;
 
 #if LOG_TIMERS
     clog << "TimeOut: " 
-	 << file << ":" << line << ": timer " << ti->timer << " added\n";
+	 << file << ":" << line << ": timer " 
+	 << tm->tic << " (" << XtPointer(tm->timer) << ") added "
+	 << "(" << MyActiveTimers() << " still active)\n";
 #endif
 
-    return ti->timer;
+    // Note: we return a private XtIntervalId instead of the one
+    // returned by XtAppAddInput.  This gives every timer a unique id
+    // and thus enables us to check for expired timers.
+    return tm->tic;
 }
 
 // Like XtRemoveTimeOut(), but unregister TIMER from internal list. 
 // Trigger an error if TIMER is not found (i.e. expired or removed)
-extern void MyRemoveTimeOut(XtIntervalId timer, String file, int line)
+extern void MyRemoveTimeOut(XtIntervalId tic, String file, int line)
 {
     TimerInfo *tp = 0;
     for (TimerInfo *ti = active_timers; ti != 0; tp = ti, ti = ti->next)
     {
-	if (timer == ti->timer)
+	if (tic == ti->tic)
 	{
 #if LOG_TIMERS
-	    clog << "TimeOut: " << file << ":" << line
-		 << ": timer " << ti->timer << " removed\n"
+	    clog << "TimeOut: " << file << ":" << line << ": timer "
+		 << ti->tic << " (" << XtPointer(ti->timer) << ") removed "
+		 << "(" << MyActiveTimers() << " still active)\n"
 		 << "TimeOut: " << ti->file << ":" << ti->line
-		 << ": this is the location where the timer was added.";
+		 << ": this is the location where the timer was added.\n";
 #endif
 
 	    XtRemoveTimeOut(ti->timer);
@@ -152,7 +174,7 @@ extern void MyRemoveTimeOut(XtIntervalId timer, String file, int line)
 
     // Timer not found - either already called or removed
     cerr << "TimeOut: " << file << ":" << line << ": timer " 
-	 << timer << " expired\n";
+	 << tic << " expired\n";
 
     // `It is an error to remove a timer that has already gone off.'
     // (Asente/Swick, X WINDOW SYSTEM TOOLKIT, 6.4 `Timers').
