@@ -6072,7 +6072,7 @@ occurrence).\n\
 ITEM You can display all local variables at once using \
 LBL(Data, Display Local Variables).\n\
 ITEM To set and clear further breakpoints, use \
-LBL(Source. Edit Breakpoints).\n\
+LBL(Source, Edit Breakpoints).\n\
     As a shortcut, you may also press BUTTON(3) on a\n\
     location or breakpoint to get a popup menu.])dnl
 
