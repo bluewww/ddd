@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Exit DDD
+// Exit DDD (including fatal exits)
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -32,6 +32,40 @@ char exit_rcsid[] =
 #ifdef __GNUG__
 #pragma implementation
 #endif
+
+// Debug the Debugger
+// ------------------
+// 
+// I appreciate that the April 1997 _Communications_
+// covers the issue of debugging
+// and hope we programmers can be relieved
+// from the pain of debugging
+// with the help of advanced tools.
+// However, all I'm looking for today
+// is a well-debugged debugger.
+// I have been working
+// with C/C++ debuggers from several Unix vendors
+// as well as a Microsoft Windows-based debugger.
+// All of them more than occasionally fail
+// to perform some very basic function,
+// such as setting a break point,
+// displaying a data structure,
+// evaluating an expression,
+// and looking up a symbol.
+// Some of them simply crash too often.
+//
+// My observation is that the debugger
+// is often buggier
+// than the program being debugged.
+// One debugging difficulty Eisenstadt points out
+// is the inability of the debugging tool.
+// This is certainly true.
+// I should emphasize that the difficulty
+// is often a debugger-reliability problem
+// rather than a capability problem.
+//
+// W. QUOCK, San Mateo, California
+// Communications of the ACM, August 1997/Vol.40, No. 8, p. 31
 
 #include "exit.h"
 
