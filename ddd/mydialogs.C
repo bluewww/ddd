@@ -272,7 +272,9 @@ static void freeXmStringTable (XmStringTable xmlist, int list_length)
 	xmlist++;
     }
 
-    XtFree((char *)xmlist);
+    // Some Motif versions want this to be freed, others (notably
+    // Lesstif) do not.  Play it safe, at the risk of a minor memory leak.
+    // XtFree((char *)xmlist);
 }
 
 
