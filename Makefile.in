@@ -1,0 +1,165 @@
+# $Id$
+# DDD top-level Makefile
+
+# Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+# Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+# 
+# This file is part of DDD.
+# 
+# DDD is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+# 
+# DDD is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with DDD -- see the file COPYING.
+# If not, write to the Free Software Foundation, Inc.,
+# 675 Mass Ave, Cambridge, MA 02139, USA.
+# 
+# DDD is the GDB-based data display debugger.
+# Contact ddd@ips.cs.tu-bs.de for details.
+
+# $Log$
+# Revision 1.1  1995/05/01 15:47:05  zeller
+# Initial revision
+#
+# Revision 1.2  1995/03/30  10:55:32  zeller
+# Fix: dist should now be ok
+#
+# Revision 1.1  1995/03/30  10:46:26  zeller
+# Initial revision
+
+### The source directory
+
+srcdir = .
+
+
+### Subdirectories
+
+SUBDIRS = "this is set via configure, don't edit this"
+
+
+### Default target: build all
+
+.PHONY: default
+default: all
+	@:
+
+
+### Recursive targets
+
+FLAGS_TO_PASS=\
+"host_canonical=$(host_canonical)"\
+"target_canonical=$(target_canonical)"
+
+
+
+## distclean, realclean -- must cleanup top-level directory
+
+DISTCLEAN_TARGETS = distclean realclean
+
+.PHONY: $(DISTCLEAN_TARGETS)
+$(DISTCLEAN_TARGETS): FORCE
+	@target=$@; \
+	rootme=`pwd`; export rootme; \
+	srcroot=`cd $(srcdir); pwd`; export srcroot; \
+	for i in $(SUBDIRS); do \
+	  rm -f ./$$i/config.cache ./$$i/config.log; \
+	  if [ -f ./$$i/Makefile ]; then \
+	    echo "==> Making $$target in ./$$i..."; \
+	    if (cd ./$$i; $(MAKE) $(FLAGS_TO_PASS) $${target}); then true; \
+	    else exit 1; fi; \
+          else true; fi; \
+        done
+	rm -f config.status config.cache config.log Makefile MakeOut .gdbhist
+
+
+## other recursive targets
+
+OTHER_TARGETS = all clean mostlyclean TAGS
+
+.PHONY: $(OTHER_TARGETS)
+$(OTHER_TARGETS): FORCE
+	@target=$@; \
+	rootme=`pwd`; export rootme; \
+	srcroot=`cd $(srcdir); pwd`; export srcroot; \
+	for i in $(SUBDIRS); do \
+	  if [ -f ./$$i/Makefile ]; then \
+	    echo "==> Making $$target in ./$$i..."; \
+	    if (cd ./$$i; $(MAKE) $(FLAGS_TO_PASS) $${target}); then true; \
+	    else exit 1; fi; \
+          else true; fi; \
+        done
+
+
+
+### DDD-only targets
+
+DDD_TARGETS = \
+	check tests strip dvi ps man html \
+	install install-prog install-lib install-man install-info \
+	install-c++-lib install-c++-includes \
+	uninstall uninstall-prog uninstall-lib uninstall-man uninstall-info \
+	uninstall-c++-lib uninstall-c++-includes
+
+.PHONY: $(DDD_TARGETS)
+$(DDD_TARGETS): FORCE
+	@target=$@; \
+	rootme=`pwd`; export rootme; \
+	srcroot=`cd $(srcdir); pwd`; export srcroot; \
+	echo "==> Making $$target in ./ddd..."; \
+	cd ./ddd; $(MAKE) $${target}
+
+
+### Distribution stuff
+
+.PHONY: dist
+dist:	diststuff distclean do-dist
+
+.PHONY: do-dist
+do-dist:
+	rm -fr proto-toplev; mkdir proto-toplev
+	( \
+	    ddd=`sed -n < ddd/configure.in 's/^ddd *= *//p'`; \
+	    VER=`sed -n < ddd/configure.in 's/^VERSION *= *//p'`; \
+	    VER=`echo $$VER | sed 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
+	    echo "==> Making $$ddd-$$VER.tar.gz"; \
+	    rm -f $$ddd-$$VER.tar.gz; \
+	    ln -s .. proto-toplev/$$ddd-$$VER; \
+	    find . -name RCS -prune -o -name CVS -prune \
+		-o -name proto-toplev -prune \
+		-o -type f -print -o -type l -print | \
+	        sed "s/^\./$$ddd-$$VER/" | sort > proto-toplev/FILES; \
+	    ( cd proto-toplev; gtar --create --dereference \
+		--verbose --files-from FILES \
+		--file - ) | gzip -v -9 > $$ddd-$$VER.tar.gz; \
+	)
+	rm -fr proto-toplev
+
+.PHONY: diststuff
+diststuff:
+	@target=$@; \
+	rootme=`pwd`; export rootme; \
+	srcroot=`cd $(srcdir); pwd`; export srcroot; \
+	echo "==> Making $@ in ./ddd..."; \
+	( cd ./ddd; $(MAKE) diststuff );
+
+
+## Configuration stuff.
+
+Makefile: Makefile.in config.status
+	$(SHELL) ./config.status
+config.status: ./configure
+	$(SHELL) ./configure -v
+
+
+## FORCE target
+
+.PHONY: FORCE
+FORCE:
+	@:
