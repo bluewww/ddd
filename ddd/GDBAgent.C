@@ -1267,7 +1267,10 @@ void GDBAgent::handle_input(string& answer)
 	    if (ends_with_prompt(complete_answer))
 		normalize_answer(answer);
 	    else
+	    {
 		strip_control(answer);
+		strip_dbx_comments(answer);
+	    }
 	    _on_answer(answer, _user_data);
 	}
 
