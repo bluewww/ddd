@@ -1279,12 +1279,22 @@ void save_preferred_paned_sizes(Widget paned)
 	    continue;
 
 	// Fetch preferred (= initial) height
-	XtWidgetGeometry size;
-	size.request_mode = CWHeight;
-	XtQueryGeometry(child, NULL, &size);
+	Dimension height = 0;
+	XtVaGetValues(child, XmNheight, &height, NULL);
+	{
+	    XtWidgetGeometry size;
+	    size.request_mode = CWHeight;
+	    XtQueryGeometry(child, NULL, &size);
+	    height = max(height, size.height);
+	}
+
+#if LOG_GEOMETRY
+	clog << XtName(paned) << ": child " << XtName(child) 
+	     << " has preferred height " << height << '\n';
+#endif
 
 	MinMax& preferred_size = preferred_sizes[child];
-	preferred_size.min = preferred_size.max = size.height;
+	preferred_size.min = preferred_size.max = height;
     }
 }
 
@@ -1314,6 +1324,12 @@ void manage_paned_child(Widget w)
 
 #if LOG_GEOMETRY
     clog << XtName(paned) << ": managing child " << XtName(w) << "\n";
+    if (preferred_sizes.has(w))
+    {
+	const MinMax& preferred_size = preferred_sizes[w];
+	clog << XtName(paned) << ": child " << XtName(w) 
+	     << " has preferred height " << preferred_size.max << '\n';
+    }
 #endif
 
     // Fetch children
