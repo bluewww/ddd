@@ -236,7 +236,7 @@ void PosBuffer::filter (string& answer)
 	    }
 	}
 
-	while (has_prefix(answer, pfx))
+	while (answer.contains(pfx, 0))
 	{
 	    int index = answer.index(pfx);
 	    string cmd = answer.from(index);
