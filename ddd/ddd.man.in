@@ -4225,7 +4225,10 @@ in slightly better performance on single-processor systems.
 .TP
 .B \-\-trace
 Show the interaction between \s-2@DDD@\s+2 and the inferior debugger
-on standard error.  This is useful for debugging \s-2@DDD@\s+2.
+on standard error.  This is useful for debugging \s-2@DDD@\s+2.  If
+`\fB\-\-trace\fR' is not specified, this information is written into
+`\fB$HOME/.@ddd@/log\fR', such that you can also do a post-mortem
+debugging.
 .TP
 .B \-\-tty
 Enable \s-2TTY\s+2 interface, taking additional debugger commands from
@@ -5176,10 +5179,10 @@ caused by the inferior debugger, run \s-2@DDD@\s+2 as
 .sp
 .br
 This shows the interaction between \s-2@DDD@\s+2 and the inferior
-debugger on standard error while \s-2@DDD@\s+2 is running.  (This
-interaction is also logged in `\fB$HOME/.@ddd@/log\fR'.) Compare the
-debugger output to the output of \s-2@DDD@\s+2 and determine which one
-is wrong.
+debugger on standard error while \s-2@DDD@\s+2 is running.  (If
+`\fB\-\-trace\fR' is not given, this interaction is logged in
+`\fB$HOME/.@ddd@/log\fR'.)  Compare the debugger output to the output
+of \s-2@DDD@\s+2 and determine which one is wrong.
 .\"
 .SS "How to Report Bugs"
 .\"
@@ -5245,9 +5248,10 @@ data window\*(lq.
 .br
 .IP \(bu 2
 A \fIlog file\fR showing the interaction between \s-2@DDD@\s+2 and the
-inferior debugger.  This interaction is logged by default in
+inferior debugger.  By default, this interaction is logged in
 `\fB$HOME/.@ddd@/log\fR'.  Include all trace output from the
-\s-2@DDD@\s+2 invocation up to the first bug occurrence.
+\s-2@DDD@\s+2 invocation up to the first bug occurrence; insert own
+comments where necessary.
 .br
 .IP \(bu 2
 If you wish to suggest changes to the \s-2@DDD@\s+2 source, send us context
