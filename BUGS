@@ -166,11 +166,8 @@ Volunteers for fixing these and other bugs are welcome!
 333 Text character breakpoints are not displayed in empty lines
     with zero indentation.
 
-334 The Box engine has a memory leak - rotating a large array
-    continually increases DDD memory size.
-
 335 Hiding a cluster and re-showing it does not work correctly.
 
 336 Deleting a display does not cause its cluster to be updated.
 
-337 (Insert new bugs here)
+338 (Insert new bugs here)
