@@ -25,8 +25,11 @@ What's new in DDD?
 DDD-3.3.8
 ========
 
+- A memory corruption has been fixed in strclass.h.
 - Speed improvements, partly by avoiding the creation of temporary objects.
-- Several bugs were squashed.
+- Bug fixes in perl mode (1).
+
+(1) Thanks to Christian Hattemer and Peter Ernst.
 
 DDD-3.3.7
 ========

@@ -2,13 +2,16 @@ DDD News						-*- text -*-
 ********
 
 DDD-3.3.8
-========
+=========
 
 - A memory corruption has been fixed in strclass.h.
 - Speed improvements, partly by avoiding the creation of temporary objects.
+- Bug fixes in perl mode (1).
+
+(1) Thanks to Christian Hattemer and Peter Ernst.
 
 DDD-3.3.7
-========
+=========
 
 - libiberty was missing from the 3.3.6 release
 - libtermcap was built but not linked on systems which needed it
