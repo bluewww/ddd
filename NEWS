@@ -4,15 +4,18 @@ DDD News						-*- text -*-
 DDD-3.3.9
 =========
 
-- Support for PHP debugger has been added (1). This is essentially not tested.
+- Support for PHP debugger has been added (1).  This is essentially not
+  tested.
 - Builds with IBM xlC and on X11R5 based systems should be OK.
 - Builds without Motif/Lesstif available abort with an adequate message.
 - Builds with readline support now work.
 - Several missing files in the distribution are now included.
 - The libiberty distributed with ddd has been upgraded to the one released
   with gcc-3.3.2.
+- configure has a new option '--without-libiberty' that avoids linking ddd
+  against libiberty.  It can be useful to workaround configuration problems.
 - The configure machinery has been updated to conform more closely to the
-  autoconf 2.5x requirements. That should help the Cygwin port.
+  autoconf 2.5x requirements.  That should help the Cygwin port.
 
 (1) Written by Dmitri Dmitrienko and integrated by Rocky Bernstein.
 

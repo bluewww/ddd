@@ -379,7 +379,8 @@ dnl
 dnl Check for -lreadline (optional)
 readline_support=no
 AC_ARG_WITH(readline,
-AC_HELP_STRING([--with-readline],[do use the readline library default=no]),[
+AC_HELP_STRING([--with-readline],
+               [do use the readline library default=no]),[
   if test "$withval" = "no"; then
     readline_support=no
   else
@@ -446,13 +447,27 @@ dnl
 dnl
 dnl The `-liberty' library per definition contains only functions
 dnl missing in system libraries.
+libiberty_support=yes
+AC_ARG_WITH(libiberty,
+AC_HELP_STRING([--with-libiberty],
+               [do use the libiberty library default=yes]),[
+  if test "$withval" = "no"; then
+    libiberty_support=no
+  else
+    libiberty_support=yes
+  fi
+])
+dnl
 LIBIBERTY="../libiberty/libiberty.a"
-dnl
+if test "${libiberty_support}" = "yes"; then
 dnl If we have an installed library, prefer it over the one shipped with DDD.
-AC_CHECK_LIB(iberty, xstrerror,
-	     [LIBIBERTY="-liberty"
-	      ddd_have_libiberty=true])
-dnl
+  AC_CHECK_LIB(iberty, xstrerror,
+	       [LIBIBERTY="-liberty"
+	       ddd_have_libiberty=true])
+else
+  ddd_have_libiberty=true
+  LIBIBERTY=""
+fi
 AC_SUBST(LIBIBERTY)
 dnl
 dnl

@@ -584,9 +584,11 @@ Reported by: Martin Opel and Arnaud Desitter
     On systems without a pre-installed libiberty, configure process may fail,
     for example if CFLAGS and CXXFLAGS are defined and contain spaces.
     ddd 3.3.8 requires autoconf 2.53 and later and the bundled libiberty uses
-    autoconf 2.13 which leads to this problem.  The easier workaround when
-    the normal process fails is to configure manually libiberty by typing
-    the proper configure command in the "libiberty" directory.
+    autoconf 2.13 which leads to this problem.  The easier workaround is to
+    attempt a build without libiberty.  For that purpose, use './configure
+    --without-libiberty'. If the previous method is not successful, revert to
+    the former method and when it fails, configure manually libiberty by
+    typing the proper configure command in the "libiberty" directory.
 
 
 Cygwin
