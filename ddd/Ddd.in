@@ -193,6 +193,11 @@ Ddd*listDirCommand:   \
 	file @MASK@ | grep '.*:.*directory.*' | cut -d: -f1
 
 
+! Command to uncompress the DDD manual.  Reads from standard input and
+! writes to standard output.
+Ddd*uncompressCommand: @UNCOMPRESS@
+
+
 ! The DDD WWW page.
 Ddd*wwwPage: http://www.cs.tu-bs.de/softech/ddd/
 

@@ -105,6 +105,19 @@ AC_CHECK_PROGS(M4, gm4 m4)
 AC_CHECK_PROGS(SED, gsed sed)
 AC_CHECK_PROGS(DIFF, gdiff diff)
 AC_CHECK_PROGS(DVIPS, dvips dvi2ps)
+AC_CHECK_PROGS(COMPRESS, gzip compress)
+COMPRESS="$COMPRESS -c"
+case "$COMPRESS" in
+*gzip*) COMPRESS="$COMPRESS -9";;
+esac
+AC_CHECK_PROGS(UNCOMPRESS, gzip gunzip gzcat zcat uncompress)
+case "$UNCOMPRESS" in
+*gzip*)       UNCOMPRESS="$UNCOMPRESS -d";;
+esac
+case "$UNCOMPRESS" in
+*zip*)        UNCOMPRESS="$UNCOMPRESS -c";;
+*uncompress*) UNCOMPRESS="$UNCOMPRESS -c";;
+esac
 AC_PATH_PROGS(RSH, remsh rsh on)
 AC_CHECK_PROGS(LPR, lp lpr)
 if test "$LPR" = "lpr"; then

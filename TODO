@@ -349,9 +349,6 @@ Volunteers for these and other projects are welcome!
 
 171. Use double-buffering to display the graph.  Even less flickering.
 
-172. Use external `gzip' to compress and uncompress the built-in
-     manual.  Saves lots of space in the executable.
-
 174. Realize Arg buttons as cascade buttons, showing a pulldown menu
      with additional functions - i.e. base conversions under `New
      Display', `Show 1' under `Show', etc.

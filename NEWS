@@ -8,6 +8,10 @@ DDD 2.2 [in development]
     - Source line numbers can be turned on and off (default: off).
     - The `Disable ()' button for disabling displays has gone;
       displays can now be enabled or disabled via `Show ()/Hide ()'.
+    - The `Break at ()' and `Clear at ()' buttons have been merged
+      into one.
+    - The manual compiled within DDD now uses `gzip' format, relying
+      on an external `gzip' program.  Executables are 100k smaller.
 
 
 DDD 2.1.1

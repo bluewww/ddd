@@ -1,4 +1,6 @@
 .gdbhist
+COPYING.gz
+COPYING.gz.C
 COPYING.huff.C
 Ddd
 Ddd.ad.h
@@ -27,6 +29,7 @@ ddd.man
 ddd.man-nopics
 ddd.man.huff.C
 ddd.man.txt
+ddd.man.txt.gz
 ddd.syms
 ddd.vsl.h
 eps-code.h
@@ -36,6 +39,7 @@ huffdecode
 huffencode
 stamp-h
 stamp-h.in
+stringify
 trailer.str
 userinfo
 version.h

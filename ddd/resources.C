@@ -486,6 +486,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+        XtNuncompressCommand,
+	XtCUncompressCommand,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, uncompress_command),
+	XtRString,
+	XtPointer("gzip -d -c")
+    },
+
+    {
         XtNwwwPage,
 	XtCWWWPage,
 	XtRString,

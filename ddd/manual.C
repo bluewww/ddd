@@ -55,12 +55,32 @@ char manual_rcsid[] =
 // Manual
 //-----------------------------------------------------------------------------
 
-#define HUFFTEXT "ddd.man.huff.C"
-#include "huffdecode.C"
-
 void ddd_man(ostream& os)
 {
-    huffdecode(os);
+    static const char MANUAL[] =
+#include "ddd.man.txt.gz.C"
+	;
+
+    string tempfile = tmpnam(0);
+    FILE *fp = fopen(tempfile, "w");
+    for (int i = 0; i < int(sizeof(MANUAL)) - 1; i++)
+	putc(MANUAL[i], fp);
+    fclose(fp);
+
+    FILE *uncompress = 
+	popen(string(app_data.uncompress_command) + " < " + tempfile, "r");
+    if (uncompress == 0)
+    {
+	perror(app_data.uncompress_command);
+	return;
+    }
+
+    int c;
+    while ((c = getc(fp)) != EOF)
+	os << (char)c;
+    pclose(fp);
+
+    unlink(tempfile);
 }
 
 void show_manual()
