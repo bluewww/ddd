@@ -54,7 +54,8 @@ Documentation
 Debuggers and Languages
 -----------------------
 
-- The DEC `ladebug' debugger is supported.
+- This release contains partial support for DEC's `ladebug' debugger.
+  Please send in bug reports listing remaining problems.
 
 
 User Interface
@@ -171,7 +172,7 @@ Where can you get it?  How can you compile it?
 The ddd-3.2.tar.gz distribution file has been placed on `ftp.gnu.org'
 in `gnu/ddd'.
 
-DDD 3.2 requires LessTif 0.88 or higher (see http://www.lesstif.org/)
+DDD 3.2 requires LessTif 0.89 or higher (see http://www.lesstif.org/)
 and GCC 2.7.2 or higher.
 
 The most recent (not necessarily tested) snapshots of DDD will be
