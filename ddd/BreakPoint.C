@@ -51,8 +51,8 @@ char BreakPoint_rcsid[] =
 #include "dbx-lookup.h"
 #include "GDBAgent.h"
 
-regex RXnl_int ("\n[1-9]", true);
-regex RXname_colon_int_nl ("[^ ]+:[0-9]+\n", true);
+regex RXnl_int ("\n[1-9]");
+regex RXname_colon_int_nl ("[^ ]+:[0-9]+\n");
 
 BreakPoint::BreakPoint (string& info_output)
     : mytype(BREAKPOINT),

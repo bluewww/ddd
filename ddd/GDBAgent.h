@@ -123,7 +123,6 @@ private:
     DebuggerVersion _version;
     void*           _user_data;
     HandlerList     busy_handlers;
-    regex           _prompt;
 
 public:
     GDBAgent (XtAppContext app_context,
@@ -198,8 +197,6 @@ public:
 			    void        *client_data = 0);
 
     void callBusyHandlers ();
-
-    const regex& prompt() const { return _prompt; }
     string default_prompt() const;
 
 

@@ -1732,40 +1732,51 @@ void gdb_ready_for_cmdHP (void *, void *, void *)
 // Output
 //-----------------------------------------------------------------------------
 
-static regex RXcontrol("["
-		       "\001"  // SOH
-		       "\002"  // STX
-		       "\003"  // ETX
-		       "\004"  // EOT
-		       "\005"  // ENQ
-		       "\006"  // ACK
-		       "\007"  // BEL
-		       "\010"  // BS
-		       "\011"  // HT
-		       // "\012"  // NL
-		       "\013"  // VT
-		       "\014"  // NP
-		       "\015"  // CR
-		       "\016"  // SO
-		       "\017"  // SI
-		       "\020"  // DLE
-		       "\021"  // DC1
-		       "\022"  // DC2
-		       "\023"  // DC3
-		       "\024"  // DC4
-		       "\025"  // NAK
-		       "\026"  // SYN
-		       "\027"  // ETB
-		       "\030"  // CAN
-		       "\031"  // EM
-		       "\032"  // SUB
-		       "\033"  // ESC
-		       "\034"  // FS
-		       "\035"  // GS
-		       "\036"  // RS
-		       "\037"  // US
-		       "\177"  // DEL
-		       "]", true);
+// Return index of first control character; -1 if not found
+static int index_control(const string& text)
+{
+    for (unsigned i = 0; i < text.length(); i++)
+    {
+	switch (text[i])
+	{
+	case '\001':		// SOH
+	case '\002':		// STX
+	case '\003':		// ETX
+	case '\004':		// EOT
+	case '\005':		// ENQ
+	case '\006':		// ACK
+	case '\007':		// BEL
+	case '\010':		// BS
+	case '\011':		// HT
+     // case '\012':		// NL
+	case '\013':		// VT
+	case '\014':		// NP
+	case '\015':		// CR
+	case '\016':		// SO
+	case '\017':		// SI
+	case '\020':		// DLE
+	case '\021':		// DC1
+	case '\022':		// DC2
+	case '\023':		// DC3
+	case '\024':		// DC4
+	case '\025':		// NAK
+	case '\026':		// SYN
+	case '\027':		// ETB
+	case '\030':		// CAN
+	case '\031':		// EM
+	case '\032':		// SUB
+	case '\033':		// ESC
+	case '\034':		// FS
+	case '\035':		// GS
+	case '\036':		// RS
+	case '\037':		// US
+	case '\177':		// DEL
+	    return i;
+	}
+    }
+
+    return -1;
+}
 
 // Process control character
 void gdb_ctrl(char ctrl)
@@ -1858,7 +1869,7 @@ void _gdb_out(string text)
     char ctrl;
     do {
 	string block = text;
-	int i = block.index(RXcontrol);
+	int i = index_control(block);
 	ctrl = '\0';
 	if (i >= 0)
 	{

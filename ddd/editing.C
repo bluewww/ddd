@@ -367,9 +367,10 @@ void gdbClearWindowCB(Widget, XtPointer, XtPointer)
     string s = str;
     XtFree(str);
 
-    int index = s.index(gdb->prompt(), -1);
+    int index = s.index("\n(", -1);
     if (index < 0)
 	return;
+    index++;
 
     private_gdb_output = true;
 

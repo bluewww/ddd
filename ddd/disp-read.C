@@ -59,8 +59,8 @@ char disp_read_rcsid[] =
 bool is_single_display_cmd (const string& cmd, DebuggerType type)
 {
     static regex RXsingle_display_cmd(
-	"[ \t]*disp\\(lay?\\|l\\)?[ \t]+[^ ]+",
-	true);
+        "[ \t]*"
+	"(disp|displ|displa|display)[ \t]+[^ ]+");
 
     switch (type)
     {
@@ -77,16 +77,7 @@ bool is_single_display_cmd (const string& cmd, DebuggerType type)
 
 bool is_nop_cmd(const string& cmd)
 {
-    static regex RXnop_cmd(
-	"[ \t]*"
-	"\\("
-	"echo"
-	"\\|print"
-	"\\|help"
-	"\\|show"
-	"\\|info"
-	"\\)\\([ \t].*\\)?",
-	true);
+    static regex RXnop_cmd("[ \t]*(echo|print|help|show|info)([ \t]+.*)?");
 
     return cmd.matches(RXnop_cmd);
 }
@@ -97,20 +88,17 @@ bool is_running_cmd (const string& cmd, DebuggerType type)
 {
     static regex RXrunning_cmd(
 	"[ \t]*"
-	"\\(r\\|run?"
-	"\\|rerun"
-	"\\|c\\|cont\\(inue?\\|in?\\)?"
-	"\\|u\\|unt\\(il?\\)?"
-	"\\|si?\\|stepi?"
-	"\\|ni?\\|nexti?"
-	"\\|fin\\(ish?\\|i\\)?"
-	"\\)\\([ \t].*\\)?",
-	true);
-
+	"(r|ru|run"
+	"|rer|rerun"
+	"|c|cont|contin|continu|continue"
+	"|u|unt|unti|until"
+	"|s|si|step|stepi"
+	"|n|ni|next|nexti"
+	"|fin|fini|finis|finish"
+	")([ \t]+.*)?");
 
     static regex RXdisplay(
-	"[ \t]*disp\\(lay?\\|l\\)?",
-	true);
+	"[ \t]*(disp|displ|displa|display)([ \t]+.*)?");
 
     switch (type)
     {
@@ -130,8 +118,7 @@ bool is_running_cmd (const string& cmd, DebuggerType type)
 bool is_run_cmd (const string& cmd)
 {
     static regex RXrun_cmd(
-	"[ \t]*r\\(er\\)?\\(un?\\)?\\([ \t].*\\)?",
-	true);
+	"[ \t]*(r|rer|rerun|ru|run)([ \t]+.*)?");
 
     return cmd.matches (RXrun_cmd);
 }
@@ -139,8 +126,7 @@ bool is_run_cmd (const string& cmd)
 bool is_set_args_cmd (const string& cmd)
 {
     static regex RXset_args_cmd(
-	"[ \t]*set[ \t][ \t]*args\\([ \t].*\\)?",
-	true);
+	"[ \t]*set[ \t]+args([ \t]+.*)?");
 
     return cmd.matches (RXset_args_cmd);
 }
@@ -151,8 +137,7 @@ bool is_set_args_cmd (const string& cmd)
 bool is_display_cmd (const string& cmd)
 {
     static regex RXdisplay_cmd_and_args(
-	"[ \t]*disp\\(lay?\\|l\\)?[ \t]+.*",
-	true);
+	"[ \t]*(disp|displ|displa|display)[ \t]+.*");
 
     return cmd.matches (RXdisplay_cmd_and_args);
 }
@@ -163,29 +148,24 @@ bool is_frame_cmd (const string& cmd)
 {
     static regex RXframe_cmd(
 	"[ \t]*"
-	"\\(up"
-	"\\|do\\(wn?\\)?"
-	"\\|f\\(rame?\\|ra?\\)?"
-	"\\)\\([ \t].*\\)?",
-	true);
+	"(up"
+	"|do|down|"
+	"|f|fra|fram|frame"
+	")([ \t]+.*)?");
 
     return cmd.matches (RXframe_cmd);
 }
 
 bool is_up_cmd (const string& cmd)
 {
-    static regex RXup_cmd(
-	"[ \t]*up\\([ \t].*\\)?",
-	true);
+    static regex RXup_cmd("[ \t]*up([ \t]+.*)?");
 
     return cmd.matches (RXup_cmd);
 }
 
 bool is_down_cmd (const string& cmd)
 {
-    static regex RXdown_cmd(
-	"[ \t]*do\\(wn?\\)?\\([ \t].*\\)?",
-	true);
+    static regex RXdown_cmd("[ \t]*(do|down)([ \t]+.*)?");
 
     return cmd.matches (RXdown_cmd);
 }
@@ -194,9 +174,7 @@ bool is_down_cmd (const string& cmd)
 // 
 bool is_set_cmd (const string& cmd)
 {
-    static regex RXset_cmd(
-	"[ \t]*\\(set\\|assign\\)\\([ \t].*\\)?",
-	true);
+    static regex RXset_cmd("[ \t]*(set|assign)([ \t]+.*)?");
 
     return cmd.matches (RXset_cmd);
 }
@@ -205,13 +183,9 @@ bool is_set_cmd (const string& cmd)
 // 
 bool is_file_cmd (const string& cmd, DebuggerType type)
 {
-    static regex RXfile_cmd(
-	"[ \t]*file\\([ \t].*\\)?",
-	true);
+    static regex RXfile_cmd("[ \t]*file([ \t]+.*)?");
 
-    static regex RXdebug_cmd(
-	"[ \t]*debug\\([ \t].*\\)?",
-	true);
+    static regex RXdebug_cmd("[ \t]*debug([ \t]+.*)?");
 
     switch (type)
     {
@@ -229,9 +203,7 @@ bool is_file_cmd (const string& cmd, DebuggerType type)
 // 
 bool is_graph_cmd (const string& cmd)
 {
-    static regex RXgraph_cmd(
-	"[ \t]*graph[ \t]+.*",
-	true); 
+    static regex RXgraph_cmd("[ \t]*graph[ \t]+.*"); 
 
     return cmd.matches(RXgraph_cmd);
 }
@@ -240,11 +212,9 @@ bool is_graph_cmd (const string& cmd)
 // 
 bool is_refresh_cmd (const string& cmd)
 {
+    static regex RXrefresh_cmd("[ \t]*refresh([ \t]+.*)?");
 
-static regex RXrefresh_cmd(
-    "[ \t]*refresh",
-    true);
-    return (cmd.index (RXrefresh_cmd) == 0);
+    return cmd.matches(RXrefresh_cmd);
 }
 
 // ***************************************************************************
@@ -253,35 +223,30 @@ bool is_break_cmd (const string& cmd)
 {
     static regex RXbreak_cmd(
 	"[ \t]*"
-	"\\("
-	"[th]*\\(b\\|br\\|bre\\|brea\\|break\\)"
-	"\\|cl\\|cle\\|clea\\|clear"
-	"\\|info[ \t]+\\(li\\|lin\\|line\\)"
-	"\\|stop"
-	"\\)",
-	true);
+	"("
+	"[th]*(b|br|bre|brea|break)"
+	"|cl|cle|clea|clear"
+	"|info[ \t]+(li|lin|line)"
+	"|stop"
+	")([ \t]+.*)?");
 
-    return (cmd.index (RXbreak_cmd) == 0);
+    return cmd.matches(RXbreak_cmd);
 }
 
 // ***************************************************************************
 // 
 bool is_lookup_cmd (const string& cmd)
 {
-    static regex RXlookup_cmd(
-	"[ \t]*func[ \t]+",
-	true);
+    static regex RXlookup_cmd("[ \t]*func[ \t]+.*");
 
-    return (cmd.index (RXlookup_cmd) == 0);
+    return cmd.matches(RXlookup_cmd);
 }
 
 // ***************************************************************************
 // 
 string get_display_expression (const string& display_cmd)
 {
-    static regex RXdisplay_cmd(
-	"[ \t]*disp\\(lay?\\|l\\)?[ \t]+",
-	true);
+    static regex RXdisplay_cmd("[ \t]*(disp|displ|displa|display)[ \t]+");
 
     string d(display_cmd);
     return d.after(RXdisplay_cmd);
@@ -292,95 +257,76 @@ string get_display_expression (const string& display_cmd)
 // fuer das Erkennen von Displayausdruecken
 //----------------------------------------------------------------------------
 
-static regex RXgdb_begin_of_display(
-    "^[1-9][0-9]*:  *[^ ]",
-    true);
-
-static regex RXdbx_begin_of_display(
-    "\\(^\\|\n\\)[^ \t\n)}][^=\n]* = ",
-    true);
-
 // ***************************************************************************
 // -1, wenn gdb_answer kein display enthaelt, 
 // sonst den index des ersten displays.
 // 
-static int _display_index (const string& gdb_answer, DebuggerType type)
+int display_index (const string& gdb_answer, DebuggerType type)
 {
+    static regex RXgdb_begin_of_display("[1-9][0-9]*:  *[^ ]");
+    static regex RXdbx_begin_of_display("[^ \t\n)}][^=\n]* = ");
+
+    regex *prx = 0;
+
     switch (type)
     {
-    case GDB:
-	return gdb_answer.index (RXgdb_begin_of_display);
-
+    case GDB: 
+	prx = &RXgdb_begin_of_display;
+	break;
     case DBX:
-	return gdb_answer.index (RXdbx_begin_of_display);
+	prx = &RXdbx_begin_of_display;
+	break;
+
+    default:
+	assert(0);
+	abort();
     }
+
+    regex& rx = *prx;
+
+    for (unsigned i = 0; i < gdb_answer.length(); i++)
+	if (i == 0 || gdb_answer[i - 1] == '\n')
+	    if (gdb_answer.contains(rx, i))
+		return i;
+
     return -1;
-}
-
-int display_index(const string& gdb_answer, DebuggerType type)
-{
-    int index = _display_index(gdb_answer, type);
-    if (index >= 0 && gdb_answer[index] == '\n')
-	index++;
-
-    // clog << "display_index(" << quote(gdb_answer) << ") = " 
-    //      << index << "\n";
-    return index;
 }
 
 // ***************************************************************************
 // 
 int contains_display (const string& gdb_answer, DebuggerType type)
 {
-    int ret = -1;
-    switch (type)
-    {
-    case GDB:
-	ret = gdb_answer.index (RXgdb_begin_of_display) != -1;
-	break;
-
-    case DBX:
-	ret = gdb_answer.index (RXdbx_begin_of_display) != -1;
-	break;
-    }
-
-    // clog << "contains_display(" << quote(gdb_answer) << ") = " 
-    //      << ret << "\n";
-    return ret;
+    return display_index(gdb_answer, type) >= 0;
 }
 
 // ***************************************************************************
 // gibt index zurueck, an dem ein Display anfangen koennte (d.h. index eines
 // moeglichen Display-Anfangs
 // 
-static int _possible_begin_of_display (string gdb_answer, DebuggerType type)
+int possible_begin_of_display (string gdb_answer, DebuggerType type)
 {
-    const regex& RXbegin_of_display =
-	type == GDB ? RXgdb_begin_of_display : RXdbx_begin_of_display;
+    int index = -1;
 
-    if (contains_display (gdb_answer, type))
-	return gdb_answer.index (RXbegin_of_display);
-    gdb_answer += "a";
-    if (contains_display (gdb_answer, type))
-	return gdb_answer.index (RXbegin_of_display);
-    gdb_answer.at ("a", -1) = " a";
-    if (contains_display (gdb_answer, type))
-	return gdb_answer.index (RXbegin_of_display);
-    gdb_answer.at (" a", -1) = ": a";
-    if (contains_display (gdb_answer, type))
-	return gdb_answer.index (RXbegin_of_display);
+    if (index == -1)
+	index = display_index(gdb_answer, type);
 
-    return -1;
-}
+    if (index == -1)
+    {
+	gdb_answer += "a";
+	index = display_index(gdb_answer, type);
+    }
 
-int possible_begin_of_display(string gdb_answer, DebuggerType type)
-{
-    int index = _possible_begin_of_display(gdb_answer, type);
-    if (index >= 0 && gdb_answer[index] == '\n')
-	index++;
+    if (index == -1)
+    {
+	gdb_answer.at ("a", -1) = " a";
+	index = display_index(gdb_answer, type);
+    }
 
-    // clog << "possible_begin_of_display(" << quote(gdb_answer) 
-    //      << ") = " << index << "\n";
+    if (index == -1)
+    {
+	gdb_answer.at (" a", -1) = ": a";
+	index = display_index(gdb_answer, type);
+    }
 
     return index;
 }
@@ -418,13 +364,40 @@ string get_disp_value_str (/*const*/ string& display, DebuggerType)
 // fuer das Erkennen der Ausdruecke bei info display
 //----------------------------------------------------------------------------
 
-static regex RXgdb_begin_of_display_info(
-    "^[1-9][0-9]*:   ",
-    true);
+// ***************************************************************************
+// -1, wenn gdb_answer kein display enthaelt, 
+// sonst den index des ersten displays.
+// 
+int display_info_index (const string& gdb_answer, DebuggerType type)
+{
+    static regex RXgdb_begin_of_display_info("[1-9][0-9]*:   ");
+    static regex RXdbx_begin_of_display_info("[(][1-9][0-9]*[)] ");
 
-static regex RXdbx_begin_of_display_info(
-    "^([1-9][0-9]*) ",
-    true);
+    regex *prx = 0;
+
+    switch (type)
+    {
+    case GDB: 
+	prx = &RXgdb_begin_of_display_info;
+	break;
+    case DBX:
+	prx = &RXdbx_begin_of_display_info;
+	break;
+
+    default:
+	assert(0);
+	abort();
+    }
+
+    regex& rx = *prx;
+
+    for (unsigned i = 0; i < gdb_answer.length(); i++)
+	if (i == 0 || gdb_answer[i - 1] == '\n')
+	    if (gdb_answer.contains(rx, i))
+		return i;
+
+    return -1;
+}
 
 // ***************************************************************************
 // gibt den ersten Display-Info aus 
@@ -433,19 +406,7 @@ static regex RXdbx_begin_of_display_info(
 // 
 string read_first_disp_info (string& gdb_answer, DebuggerType type)
 {
-    int i = 0;
-
-    switch(type)
-    {
-    case GDB:
-	i = gdb_answer.index (RXgdb_begin_of_display_info);
-	break;
-
-    case DBX:
-	i = gdb_answer.index (RXdbx_begin_of_display_info);
-	break;
-    }
-
+    int i = display_info_index(gdb_answer, type);
     if (i > 0) {
 	gdb_answer = gdb_answer.from (i);
 	return read_next_disp_info (gdb_answer, type);
@@ -466,9 +427,11 @@ string read_next_disp_info (string& gdb_answer, DebuggerType type)
     {
     case GDB:
     {
+	static regex RXgdb_next_display_info("\n[1-9][0-9]*:   ");
+
 	string next_disp_info;
 	int startpos = gdb_answer.index (": ");
-	int i = gdb_answer.index (RXgdb_begin_of_display_info, startpos + 2);
+	int i = gdb_answer.index (RXgdb_next_display_info, startpos + 2);
 	if (i > 0) {
 	    next_disp_info = gdb_answer.before (i);
 	    gdb_answer = gdb_answer.from (i);
@@ -511,7 +474,7 @@ string get_info_disp_str (string& display_info, DebuggerType type)
     switch (type)
     {
     case GDB:
-	return display_info.after (RXgdb_begin_of_display_info);
+	return display_info.after (":   ");
 
     case DBX:
 	return display_info.after (") ");
@@ -524,13 +487,10 @@ string get_info_disp_str (string& display_info, DebuggerType type)
 //
 int disp_is_disabled (const string& info_disp_str, DebuggerType type)
 {
-    static regex RXy_or_n("[yn]", true);
-
     switch (type)
     {
     case GDB:
-	assert ((info_disp_str.index (RXy_or_n) == 0));
-	return (info_disp_str.index ("n") == 0);
+	return info_disp_str.length() > 0 && info_disp_str[0] == 'n';
 
     case DBX:
 	return false;		// no display disabling in dbx
@@ -553,9 +513,7 @@ string  read_disp_nr_str (string& display, DebuggerType type)
     {
     case GDB:
     {
-	static regex RXgdb_disp_nr(
-	    "[1-9][0-9]*",
-	    true);
+	static regex RXgdb_disp_nr("[1-9][0-9]*");
 
 	string disp_nr = display.through (RXgdb_disp_nr);
 	display = display.after (": ");

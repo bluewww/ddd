@@ -137,7 +137,7 @@ void DispValue::init(string& value)
     }
     case Array: {
 
-	static regex RXsimple("\\([][a-zA-Z0-9_().]\\|->\\)*", true);
+	static regex RXsimple("([][a-zA-Z0-9_().]|->)*");
 
 	string base = myfull_name;
 	if (!base.matches(RXsimple))

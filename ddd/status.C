@@ -75,10 +75,8 @@ void set_buttons_from_gdb(Widget buttons, string& text)
     if (buttons == 0)
 	return;
 
-    static regex rxyn("(y[es]* or n[o]*) *$", true);
-
-    int yn_index = text.index(rxyn);
-    bool yn = (yn_index >= 0);
+    bool yn = text.contains("(y or n) ", -1) 
+	|| text.contains("(yes or no) ", -1);
 
     if (yn && !gdb_keyboard_command)
     {
@@ -94,7 +92,7 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 
 	XmTextReplace(gdb_w, pos, XmTextGetLastPosition(gdb_w), "");
 
-	prompt = prompt.from(pos) + text.before(rxyn);
+	prompt = prompt.from(pos) + text.before('(', -1);
 	post_gdb_yn(prompt);
 	text = "";
 	return;
@@ -147,9 +145,11 @@ void SelectCB(Widget dialog, XtPointer, XtPointer)
 
 void set_selection_from_gdb(string& text)
 {
-    static regex rxselect("\\(\n\\|.\\)*\n> ", true);
+    if (gdb_keyboard_command)
+	return;
 
-    if (gdb_keyboard_command || !text.matches(rxselect))
+    int last_gt = text.index("\n> ", -1);
+    if (last_gt < 0)
 	return;
 
     // Fetch previous output lines, in case this is a multi-line message.
@@ -157,7 +157,6 @@ void set_selection_from_gdb(string& text)
     string prompt(s);
     XtFree(s);
 
-    int last_gt = text.index("\n>", -1);
     prompt = prompt.from(int(messagePosition)) + text.before(last_gt);
 
     XmTextReplace(gdb_w, messagePosition, 
@@ -217,7 +216,7 @@ void set_status_from_gdb(const string& text)
     if (private_gdb_input)
 	return;
 
-    if (!show_next_line_in_status && !text.matches(gdb->prompt()))
+    if (!show_next_line_in_status && !text.contains(") ", -1))
 	return;
 
     // Fetch line before prompt in GDB window

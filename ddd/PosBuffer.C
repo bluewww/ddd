@@ -134,8 +134,7 @@ void PosBuffer::filter (string& answer)
 		if (pc_buffer == "")
 		{
 		    // `$pc = ADDRESS'
-		    static regex rxpc("\\$pc  *=  *0x[a-fA-F0-9][a-fA-F0-9]*",
-				      true);
+		    static regex rxpc("\\$pc  *=  *0x[a-fA-F0-9][a-fA-F0-9]*");
 		    int pc_index = answer.index(rxpc);
 		    if (pc_index >= 0)
 		    {
@@ -162,8 +161,7 @@ void PosBuffer::filter (string& answer)
 		{
 		    // `Breakpoint N, ADDRESS in FUNCTION'
 		    static regex rxstopped("Breakpoint  *[1-9][0-9]*,  *"
-					   "0x[a-fA-F0-9][a-fA-F0-9]*",
-					   true);
+					   "0x[a-fA-F0-9][a-fA-F0-9]*");
 		    int pc_index = answer.index(rxstopped);
 		    if (pc_index >= 0)
 		    {
@@ -177,8 +175,8 @@ void PosBuffer::filter (string& answer)
 		{
 		    // `#FRAME ADDRESS in FUNCTION'
 		    static regex 
-			rxframe("#[0-9][0-9]*  *0x[a-fA-F0-9][a-fA-F0-9]*",
-				true);
+			rxframe("#[0-9][0-9]*  *0x[a-fA-F0-9][a-fA-F0-9]*");
+
 		    int pc_index = answer.index(rxframe);
 		    if (pc_index == 0
 			|| pc_index > 0 && answer[pc_index - 1] == '\n')
@@ -194,8 +192,8 @@ void PosBuffer::filter (string& answer)
 		    // `No line number available for 
 		    // address ADDRESS <FUNCTION>'
 		    static regex 
-			rxaddress("address  *0x[a-fA-F0-9][a-fA-F0-9]*",
-				  true);
+			rxaddress("address  *0x[a-fA-F0-9][a-fA-F0-9]*");
+
 		    int pc_index = answer.index(rxaddress);
 		    if (pc_index >= 0)
 		    {
@@ -208,8 +206,7 @@ void PosBuffer::filter (string& answer)
 		if (pc_buffer == "")
 		{
 		    // `ADDRESS in FUNCTION'
-		    static regex rxsignal("0x[a-fA-F0-9][a-fA-F0-9]*",
-					  true);
+		    static regex rxsignal("0x[a-fA-F0-9][a-fA-F0-9]*");
 		    int pc_index = answer.index(rxsignal);
 		    if (pc_index == 0 
 		        || pc_index > 0 && answer[pc_index - 1] == '\n')

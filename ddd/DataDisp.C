@@ -1389,7 +1389,7 @@ void DataDisp::CompareNodesCB(Widget, XtPointer, XtPointer call_data)
 // Erzeugung von neuen (unabhaengigen) Displays
 //-----------------------------------------------------------------------------
 
-regex RXmore_than_one ("\\[[0-9]+\\.\\.[0-9]+\\]", true);
+regex RXmore_than_one ("\\[[0-9]+\\.\\.[0-9]+\\]");
 
 // ***************************************************************************
 // sendet den Display-Befehl an den gdb

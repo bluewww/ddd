@@ -55,8 +55,7 @@ DispValueType determine_type (string value)
     strip_final_blanks (value);
 
     static regex 
-	RXreference("\\((.*) \\)? *@ *\\(0x[0-9a-f]+\\|(nil)\\) *:[^\001]*",
-		    true);
+	RXreference("([(][^)]*[)] )? *@ *(0x[0-9a-f]+|[(]nil[)]) *:.*");
     if (value.matches(RXreference))
 	return Reference;
 
@@ -72,15 +71,14 @@ DispValueType determine_type (string value)
 	    return Simple;
     }
 
-    // We use [^\001]* for matching everything, including '\n'
     static regex 
-	RXstr_or_cl_begin("\\({\n\\|record\n\\|RECORD\n\\)[^\001]*", true);
+	RXstr_or_cl_begin("({\n|record\n|RECORD\n).*");
 
     if (value.matches(RXstr_or_cl_begin))
 	return StructOrClass;
 
     static regex 
-	RXpointer_value("\\((.*) \\)?\\(0x[0-9a-f]+\\|(nil)\\)[^\001]*", true);
+	RXpointer_value("([(][^)]*[)] )?(0x[0-9a-f]+|[(]nil[)]).*");
     if (value.matches(RXpointer_value))
 	return Pointer;
 
@@ -401,7 +399,7 @@ bool read_str_or_cl_end (string& value)
 // ***************************************************************************
 bool read_members_of_xy (string& value)
 {
-    static regex RXmembers_of_nl   ("members of .+: ?\n", true);
+    static regex RXmembers_of_nl   ("members of .+: ?\n");
 
     read_leading_blanks (value);
     if (!(value.index (RXmembers_of_nl) == 0))
@@ -415,9 +413,6 @@ bool read_members_of_xy (string& value)
 // Read member name; return "" upon error
 string read_member_name (string& value)
 {
-    // We use [^\001]* for matching everything, including '\n'
-    static regex RXmember_name(".* = [^\001]*", true);
-
     read_leading_blanks (value);
 
     if (value.length() > 0 && value[0] == '=')
@@ -428,7 +423,7 @@ string read_member_name (string& value)
 	return " ";
     }
 
-    if (!value.matches(RXmember_name))
+    if (!value.contains(" = "))
 	return "";
 
     string member_name = value.before (" = ");
@@ -455,9 +450,7 @@ string read_member_name (string& value)
 // Return "" upon error
 string read_vtable_entries (string& value)
 {
-    // We use [^\001]* for matching everything, including '\n'
-    static regex RXvtable_entries(".*[0-9][0-9]* vtable entries,[^\001]*", 
-				  true);
+    static regex RXvtable_entries(".*[0-9][0-9]* vtable entries,.*");
 
     read_leading_blanks (value);
     if (!value.matches(RXvtable_entries))
@@ -475,7 +468,7 @@ string read_vtable_entries (string& value)
 // 
 bool is_BaseClass_name (const string& name)
 {
-    static regex RXbase_class_name ("<>\\|<[A-Za-z_][A-Za-z0-9_< >,]*>", true);
+    static regex RXbase_class_name ("(<>|<[A-Za-z_][A-Za-z0-9_< >,:]*>)");
     return name.matches (RXbase_class_name);
 }
 

@@ -52,8 +52,11 @@ const char exectty_rcsid[] =
 #include <signal.h>
 #include <unistd.h>
 
-// GNU stuff
 extern "C" {
+// The GNU termcap declarations should also work for non-GNU termcap
+// implementations.  We do not include the system declaration files here
+// (i.e. <curses.h> or <term.h>), since these include lots of other
+// macros and declarations cluttering our namespace.
 #include <termcap/termcap.h>
 }
 
@@ -376,8 +379,8 @@ void redirect_process(string& command,
 	{
 	case GDB:
 	{
-	    static regex RXcsh(".*csh$", true);
-	    static regex RXrc(".*rc$", true);
+	    static regex RXcsh(".*csh$");
+	    static regex RXrc(".*rc$");
 
 	    if (shell.matches(RXcsh))
 	    {

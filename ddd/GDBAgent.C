@@ -81,9 +81,6 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _version(tp == GDB ? GDB4 : DBX1),
       _user_data(0),
       busy_handlers (BusyNTypes),
-      _prompt(tp == GDB ?  "\\(.\\|\n\\)*([^)]*gdb[^)]*) " :
-	      (tp == DBX ? "\\(.\\|\n\\)*([^)]*dbx[^)]*) " : 
-	       "\\(.\\|\n\\)*([^)]*) "), true),
       trace_dialog(false),
       questions_waiting(false),
       _qu_data(0),
@@ -350,15 +347,22 @@ void GDBAgent::init_qu_array (string   cmds [],
 // ***************************************************************************
 bool GDBAgent::ends_with_prompt (const string& answer)
 {
-    return answer.matches(prompt());
+    unsigned beginning_of_line = answer.index('\n', -1) + 1;
+
+    return beginning_of_line < answer.length()
+	&& answer.length() > 3
+        && answer[beginning_of_line] == '(' 
+	&& answer[answer.length() - 2] == ')'
+	&& answer[answer.length() - 1] == ' ';
 }
 
 // ***************************************************************************
 bool GDBAgent::ends_with_secondary_prompt (const string& answer)
 {
-    static regex secondary_prompt("\\(.\\|\n\\)*\n> ", true);
-
-    return answer.matches(secondary_prompt);
+    return answer.length() > 3
+	&& answer[answer.length() - 3] == '\n'
+	&& answer[answer.length() - 2] == '>'
+	&& answer[answer.length() - 1] == ' ';
 }
 
 // ***************************************************************************
