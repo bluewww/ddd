@@ -167,6 +167,9 @@ MemCheckHeader *MemCheck::morecore(unsigned nunits)
 // Free a block previously returned by alloc -- a la K&R
 void MemCheck::free(void *ap)
 {
+    if (ap == 0)
+	return;
+
     init();
 
     MemCheckHeader *bp = (MemCheckHeader *)ap - 1;
