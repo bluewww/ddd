@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-01-06" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-01-21" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -1748,7 +1748,7 @@ whether to include a core dump of the debugged program.
 Including a core dump is necessary for restoring data displays.
 .PP
 After clicking on `\fBSave\fR', the session is saved in 
-`\fB$HOME/.ddd/sessions/\fIsession\fR'.
+`\fB$HOME/.@ddd@/sessions/\fIsession\fR'.
 .PP
 .PSPIC @srcdir@/PICS/ddd-save-session.ps 15.3cm
 .PP
@@ -1758,12 +1758,12 @@ as session defaults:
 .br
 .IP \(bu 2
 User options will be saved in
-`\fB$HOME/.ddd/sessions/\fIsession\fB/init\fR' instead of
-`\fB$HOME/.ddd/init\fR'; see `\fBSaving Options\fR', below, for details.
+`\fB$HOME/.@ddd@/sessions/\fIsession\fB/init\fR' instead of
+`\fB$HOME/.@ddd@/init\fR'; see `\fBSaving Options\fR', below, for details.
 .IP \(bu 2
 The \s-2@DDD@\s+2 command history will be saved in
-`\fB$HOME/.ddd/sessions/\fIsession\fB/history\fR' instead of
-`\fB$HOME/.ddd/history\fR'; see `\fBEntering Commands\fR', above, for
+`\fB$HOME/.@ddd@/sessions/\fIsession\fB/history\fR' instead of
+`\fB$HOME/.@ddd@/history\fR'; see `\fBEntering Commands\fR', above, for
 details.
 .PP
 To make the current session inactive, open the \fIdefault session\fR
@@ -2134,14 +2134,14 @@ program issuing a string like `\fBddd: shell rm -fr $HOME\fR' when
 being debugged!  Consequently, auto-commands are \fIdisabled\fR by
 default and must be enabled explicitly.
 .PP
-To enable auto-commands, write in your `\fB$HOME/.ddd/init\fR' file:
+To enable auto-commands, write in your `\fB$HOME/.@ddd@/init\fR' file:
 .br
 .sp
   \fB@Ddd@*autoCommands: on\fR
 .sp
 .br
 The default prefix of auto-commands is `\fBddd: \fR'.  You are
-encouraged to change this value in your `\fB.ddd/init\fR' file.  To use 
+encouraged to change this value in your `\fB.@ddd@/init\fR' file.  To use 
 a prefix of, say, `\fBmagic123: \fR', write:
 .br
 .sp
@@ -2452,14 +2452,14 @@ Buttons\fR' in the `\fBRESOURCES\fR' section, below.
 .SS "Saving Options"
 .\"
 You can save the current option settings by selecting `\fBEdit | Save
-Options\fR'.  Options are saved in a file named `\fB.ddd/init\fR' in
+Options\fR'.  Options are saved in a file named `\fB.@ddd@/init\fR' in
 your home directory.  If a session \fIsession\fR is active, options 
-will be saved in `\fB$HOME/.ddd/sessions/\fIsession\fB/init\fR' instead.
+will be saved in `\fB$HOME/.@ddd@/sessions/\fIsession\fB/init\fR' instead.
 .\"
 .SS "Other Customizations"
 .\"
 Other personal \s-2@DDD@\s+2 resources can also be set in your
-`\fB.ddd/init\fR' file.  See the `\fBRESOURCES\fR' section, below.
+`\fB.@ddd@/init\fR' file.  See the `\fBRESOURCES\fR' section, below.
 .PP
 The inferior debugger can be customized via `\fBEdit |
 Settings\fR'.  See the `\fBDEBUGGER SETTINGS\fR' section, below.
@@ -2605,7 +2605,7 @@ The \s-2@DDD@\s+2 logo font (lowercase letters).
 The symbol font.  In help texts.
 .PP
 Here is an alternative, resolution-independent setting, which you may
-copy into your `\fB$HOME/.ddd/init\fR' file:
+copy into your `\fB$HOME/.@ddd@/init\fR' file:
 .sp
 .br
   \fB@Ddd@*fontList: \\
@@ -2663,7 +2663,7 @@ The resolution-independent alternative looks like this:
 .br
 .sp
 Pick your choice and copy and modify the appropriate resources to your
-`\fB$HOME/.ddd/init\fR' file.  For fonts within the data display, see
+`\fB$HOME/.@ddd@/init\fR' file.  For fonts within the data display, see
 the `\fBvslDefs\fR' resource, below.
 .\"
 .\"
@@ -2710,7 +2710,7 @@ These are the most important color resources used in \s-2@DDD@\s+2:
 .B grey50
 .PP
 Again, you can copy and modify the appropriate resources to your
-`\fB$HOME/.ddd/init\fR' file.  For colors within the data display, see
+`\fB$HOME/.@ddd@/init\fR' file.  For colors within the data display, see
 the `\fBvslDefs\fR' resource, below.
 .\"
 .\"
@@ -3196,7 +3196,7 @@ visible only if the debugger asks a yes/no question.
 The default resource value is empty\(em\&no console buttons are
 created.
 .PP
-Here are some examples to insert into your `\fB$HOME/.ddd/init\fR' file.
+Here are some examples to insert into your `\fB$HOME/.@ddd@/init\fR' file.
 These are the settings of \s-2@DDD@\s+2 1.x:
 .sp
 .br
@@ -3234,7 +3234,7 @@ console.  Each button issues the command given by its name.  See the
 The default resource value is empty\(em\&no source buttons are
 created.
 .PP
-Here are some example to insert into your `\fB$HOME/.ddd/init\fR' file.
+Here are some example to insert into your `\fB$HOME/.@ddd@/init\fR' file.
 These are the settings of \s-2@DDD@\s+2 1.x:
 .sp
 .br
@@ -3566,14 +3566,14 @@ by the file name.  The default is to invoke \fB$XEDITOR\fR first, then
 .br
 .sp
 .br
-This `\fB.ddd/init\fR' setting invokes an editing session
+This `\fB.@ddd@/init\fR' setting invokes an editing session
 for an \fIXEmacs\fR editor running \fIgnuserv\fR:
 .sp
 .br
   \fB@Ddd@*editCommand: gnuclient +@LINE@ @FILE@\fR
 .br
 .sp
-This `\fB.ddd/init\fR' setting invokes an editing session for an
+This `\fB.@ddd@/init\fR' setting invokes an editing session for an
 \fIEmacs\fR editor running \fIemacsserver\fR:
 .sp
 .br
@@ -3737,7 +3737,7 @@ the `\fB\-\-check-configuration\fR' option, below.
 .TP
 .B "dddinitVersion (\fPclass\fB Version)"
 The version of the \s-2@DDD@\s+2 executable that last wrote the
-`\fB$HOME/.ddd/init\fR' file.  If this string does not match the
+`\fB$HOME/.@ddd@/init\fR' file.  If this string does not match the
 version of the current \s-2@DDD@\s+2 executable, \s-2@DDD@\s+2 issues
 a warning.
 .TP
@@ -4268,26 +4268,33 @@ Run \s-2XDB\s+2 as inferior debugger.
 .\"
 .PD 0
 .TP 20
-.B $HOME/.ddd/
+.B $HOME/.@ddd@/
 \s-2@DDD@\s+2 resource directory.
 .TP
-.B $HOME/.ddd/init
+.B $HOME/.@ddd@/init
 Individual \s-2@DDD@\s+2 resource file.  \s-2@DDD@\s+2 options are
 saved here.
 .TP
-.B $HOME/.ddd/history
+.B $HOME/.@ddd@/history
 Default \s-2@DDD@\s+2 command history file.
 .TP
-.B $HOME/.ddd/sessions/
+.B $HOME/.@ddd@/lock
+\s-2@DDD@\s+2 lock file; indicates that a \s-2@DDD@\s+2 is running.
+.TP
+.B $HOME/.@ddd@/log
+Trace of the current interaction between \s-2@DDD@\s+2 and the
+inferior debugger.
+.TP
+.B $HOME/.@ddd@/sessions/
 \s-2@DDD@\s+2 session directory.  One subdirectory per session.
 .TP
-.B $HOME/.ddd/sessions/\fIsession\fB/@ddd@core
+.B $HOME/.@ddd@/sessions/\fIsession\fB/@ddd@core
 \s-2@DDD@\s+2 core file for \fIsession\fR.
 .TP
-.B $HOME/.ddd/sessions/\fIsession\fB/init
+.B $HOME/.@ddd@/sessions/\fIsession\fB/init
 \s-2@DDD@\s+2 resource file for \fIsession\fR.
 .TP
-.B $HOME/.ddd/sessions/\fIsession\fB/history
+.B $HOME/.@ddd@/sessions/\fIsession\fB/history
 \s-2@DDD@\s+2 command history for \fIsession\fR.
 .TP
 .B $HOME/.gdbinit
@@ -4302,9 +4309,9 @@ Alternate \s-2DBX\s+2 initialization file.
 .B $HOME/.xdbrc
 \s-2XDB\s+2 initialization file.
 .TP
-.B $HOME/.dddinit
+.B $HOME/.@ddd@init
 Old-style \s-2@DDD@\s+2 initialization file; used only if
-\fB$HOME/.ddd/init\fR does not exist.
+\fB$HOME/.@ddd@/init\fR does not exist.
 .PD
 .\"
 .\" ---------------
@@ -4477,7 +4484,7 @@ To cope with the large variety of \s-2DBX\s+2 flavors, \s-2@DDD@\s+2
 determines the \s-2DBX\s+2 capabilities dynamically at run-rime;
 \s-2@DDD@\s+2 should thus adapt automatically to other \s-2DBX\s+2
 variants.  Please let us know your experiences; use `\fB@ddd@
---trace\fR' to see the \s-2@DDD@/DBX\s+2 interaction.
+\-\-trace\fR' to see the \s-2@DDD@/DBX\s+2 interaction.
 .\"
 .SS "Can I use @DDD@ with Ada?"
 Matthew Majka <\fBmmajka@cs5.dasd.honeywell.com\fR> says:  It works
@@ -4537,7 +4544,7 @@ elements.
 .\"
 .SS "My window manager crashes when running @DDD@!"
 This is due to a bug in the window manager.  You may try the following
-resources in your `\fB$HOME/.ddd/init\fR' file to minimize
+resources in your `\fB$HOME/.@ddd@/init\fR' file to minimize
 interference with the window manager; the first ones listed are the
 ones that are most likely to cause interferences.
 .sp
@@ -4556,7 +4563,7 @@ See `\fBRESOURCES\fR', above, for a discussion of these resources.
 .PP
 .SS "My X display freezes when running @DDD@!"
 This is due to a bug in Motif.  You may try the following resources in
-your `\fB$HOME/.ddd/init\fR' file to minimize interference with Motif:
+your `\fB$HOME/.@ddd@/init\fR' file to minimize interference with Motif:
 .sp
 .br
   \fBDdd*autoRaiseMenu:      false
@@ -4709,8 +4716,9 @@ caused by the inferior debugger, run \s-2@DDD@\s+2 as
   \fB@ddd@ \-\-trace\fR
 .sp
 .br
-This shows the dialog between \s-2@DDD@\s+2 and the inferior debugger
-on standard error while \s-2@DDD@\s+2 is running.  Compare the
+This shows the interaction between \s-2@DDD@\s+2 and the inferior
+debugger on standard error while \s-2@DDD@\s+2 is running.  (This
+interaction is also logged in `\fB$HOME/.@ddd@/log\fR'.) Compare the
 debugger output to the output of \s-2@DDD@\s+2 and determine which one
 is wrong.
 .\"
@@ -4772,16 +4780,15 @@ The compiler you used to compile \s-2@DDD@\s+2 and its version (e.g.,
 .br
 .IP \(bu 2
 A description of what behavior you observe that you believe is
-incorrect.  For example, \*(lq\s-2@DDD@\s+2 gets a fatal signal\*(rq or
-\*(lq\s-2@DDD@\s+2 exits immediately after attempting to create the data
-window\*(lq.
+incorrect.  For example, \*(lq\s-2@DDD@\s+2 gets a fatal signal\*(rq
+or \*(lq\s-2@DDD@\s+2 exits immediately after attempting to create the
+data window\*(lq.
 .br
 .IP \(bu 2
-If possible, include a \fIdialog trace\fR showing the interaction
-between \s-2@DDD@\s+2 and the inferior debugger.  Such a dialog
-trace is created by invoking \s-2@DDD@\s+2 with the `\fB\-\-trace\fR'
-option.  Include all trace output from the \s-2@DDD@\s+2 invocation up
-to the first bug occurrence.
+A \fIlog file\fR showing the interaction between \s-2@DDD@\s+2 and the
+inferior debugger.  This interaction is logged by default in
+`\fB$HOME/.@ddd@/log\fR'.  Include all trace output from the
+\s-2@DDD@\s+2 invocation up to the first bug occurrence.
 .br
 .IP \(bu 2
 If you wish to suggest changes to the \s-2@DDD@\s+2 source, send us context

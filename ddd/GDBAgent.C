@@ -257,6 +257,11 @@ GDBAgent::GDBAgent (XtAppContext app_context,
     addHandler(Strange, StrangeHP);
     addHandler(Died,    DiedHP);
     addHandler(Input,   InputHP);
+
+    // Add trace handlers
+    addHandler(Input,  traceInputHP);     // GDB => DDD
+    addHandler(Output, traceOutputHP);    // DDD => GDB
+    addHandler(Error,  traceErrorHP);     // GDB Errors => DDD
 }
 
 // Copy constructor
@@ -325,7 +330,7 @@ string GDBAgent::title() const
 }
 
 // Trace communication
-static void trace(char *prefix, void *call_data)
+void GDBAgent::trace(char *prefix, void *call_data) const
 {
     DataLength* dl    = (DataLength *) call_data;
     string s(dl->data, dl->length);
@@ -344,23 +349,35 @@ static void trace(char *prefix, void *call_data)
     if (s_ends_with_nl)
 	s(s.length() - 1, 0) = "\\n";
 
-    clog << prefix << s << '\n';
-    clog.flush();
+    if (_trace_dialog)
+    {
+	clog << prefix << s << '\n';
+	clog.flush();
+    }
+
+    dddlog << prefix << s << '\n';
+    dddlog.flush();
 }
     
-void GDBAgent::traceInputHP(Agent *, void *, void *call_data)
+void GDBAgent::traceInputHP(Agent *source, void *, void *call_data)
 {
-    trace("<- ", call_data);
+    GDBAgent *gdb = ptr_cast(GDBAgent, source);
+    if (gdb != 0)
+	gdb->trace("<- ", call_data);
 }
 
-void GDBAgent::traceOutputHP(Agent *, void *, void *call_data)
+void GDBAgent::traceOutputHP(Agent *source, void *, void *call_data)
 {
-    trace("-> ", call_data);
+    GDBAgent *gdb = ptr_cast(GDBAgent, source);
+    if (gdb != 0)
+	gdb->trace("-> ", call_data);
 }
 
-void GDBAgent::traceErrorHP (Agent *, void *, void *call_data)
+void GDBAgent::traceErrorHP(Agent *source, void *, void *call_data)
 {
-    trace("<= ", call_data);
+    GDBAgent *gdb = ptr_cast(GDBAgent, source);
+    if (gdb != 0)
+	gdb->trace("<= ", call_data);
 }
 
 // Start GDBAgent
@@ -541,6 +558,7 @@ bool GDBAgent::send_qu_array (const StringArray& cmds,
 // Add handlers for tracing GDB I/O
 bool GDBAgent::trace_dialog (bool val)
 {
+#if 0
     if (val && !trace_dialog())
     {
  	addHandler(Input,  traceInputHP);     // GDB => DDD
@@ -553,6 +571,7 @@ bool GDBAgent::trace_dialog (bool val)
  	removeHandler(Output, traceOutputHP); // DDD => GDB
  	removeHandler(Error,  traceErrorHP);  // GDB Errors => DDD
     }
+#endif
 
     return _trace_dialog = val;
 }

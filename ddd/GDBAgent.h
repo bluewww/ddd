@@ -190,6 +190,9 @@ protected:
     // Return EXPR + SUFFIX, parenthesizing EXPR if needed
     static string append_suffix(const string& expr, const string& suffix);
 
+    // General trace function
+    void trace(char *prefix, void *call_data) const;
+
 public:
     // Constructor
     GDBAgent (XtAppContext app_context,

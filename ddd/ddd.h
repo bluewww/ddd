@@ -35,6 +35,7 @@
 
 #include "strclass.h"
 #include <setjmp.h>
+#include <fstream.h>
 
 #include <X11/Intrinsic.h>
 #include <Xm/Xm.h>
@@ -95,6 +96,9 @@ extern class DataDisp   *data_disp;
 extern class SourceView *source_view;
 extern class ArgField   *source_arg;
 
+// Where to log DDD I/O
+extern ofstream dddlog;
+
 // Text to ignore upon output
 extern string gdb_out_ignore;
 
@@ -103,4 +107,3 @@ void process_next_event();
 
 #endif // _DDD_ddd_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
-

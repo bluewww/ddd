@@ -35,6 +35,7 @@ char shell_rcsid[] =
 
 #include "shell.h"
 
+#include "ddd.h"
 #include "AppData.h"
 #include "hostname.h"
 #include "windows.h"
@@ -117,7 +118,11 @@ string sh_command(string command, bool force_local)
 {
     string ret = _sh_command(command, force_local);
     if (app_data.trace_shell_commands)
-	clog << "+ " << ret << "\n";
-    clog.flush();
+    {
+	clog << "+  " << ret << "\n";
+	clog.flush();
+    }
+    dddlog << "+  " << ret << "\n";
+    dddlog.flush();
     return ret;
 }

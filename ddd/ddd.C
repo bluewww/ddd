@@ -1298,7 +1298,7 @@ bool main_loop_entered = false;
 jmp_buf main_loop_env;
 
 // Initial delays
-static Delay *init_delay = 0;
+static StatusMsg *init_delay = 0;
 
 // Logo stuff
 static string last_shown_startup_logo;
@@ -1308,6 +1308,10 @@ const int STRUCTURE_MASK = StructureNotifyMask | VisibilityChangeMask;
 
 // The atom for the delete-window protocol
 static Atom WM_DELETE_WINDOW;
+
+// Logging stuff
+ofstream dddlog;
+
 
 //-----------------------------------------------------------------------------
 // Set sensitivity
@@ -1668,17 +1672,14 @@ int main(int argc, char *argv[])
 	|| app_data.show_manual)
 	return EXIT_SUCCESS;
 
-    if (app_data.trace_dialog || app_data.trace_shell_commands)
-    {
-	// Show DDD invocation
-	clog << "$";
-	for (int i = 0; saved_argv()[i] != 0; i++)
-	    clog << " " << cook(saved_argv()[i]);
-	clog << '\n';
-
-	// Always include the configuration in `--trace' output
-	show_configuration(clog);
-    }
+    // Create a `~/.ddd/log' file for this session; 
+    // log invocation and configuration
+    dddlog.open(session_log_file());
+    show_configuration(dddlog);
+    dddlog << "$ ";
+    for (int i = 0; saved_argv()[i] != 0; i++)
+	dddlog << " " << cook(saved_argv()[i]);
+    dddlog << '\n';
 
     // From this point on, we'll be running under X.
 
@@ -2087,7 +2088,7 @@ int main(int argc, char *argv[])
 
     // Create initial delay
     if (app_data.session == DEFAULT_SESSION)
-	init_delay = new Delay;
+	init_delay = new StatusMsg("Initializing " + gdb->title());
     else
 	init_delay = new StatusDelay("Opening session " 
 				     + quote(app_data.session));
@@ -2856,6 +2857,7 @@ static Boolean session_setup_done(XtPointer)
 	// Delete initialization delay, if any
 	delete init_delay;
 	init_delay = 0;
+	set_status_mstring(rm("Welcome to " DDD_NAME " " DDD_VERSION "!"));
 
 	if (app_data.initial_session != 0)
 	{
@@ -2870,13 +2872,6 @@ static Boolean session_setup_done(XtPointer)
 
 static Boolean ddd_setup_done(XtPointer)
 {
-    if (app_data.session == DEFAULT_SESSION)
-    {
-	// Clear delay now
-	delete init_delay;
-	init_delay = 0;
-    }
-
     if (emptyCommandQueue() && gdb->isReadyWithPrompt())
     {
 	// Some WMs have trouble with early decorations.  Just re-decorate.
@@ -3759,7 +3754,7 @@ static void create_status(Widget parent)
     // Give some `dummy' status message.  Some Motif versions limit
     // the size of the status window to the length of the very first
     // message, so we give some huge string at the beginning.
-    MString short_msg = rm("Welcome to " DDD_NAME " " DDD_VERSION "!");
+    MString short_msg = rm("Hello, world!");
     MString long_msg = short_msg + rm(replicate(' ', 90));
 
     arg = 0;

@@ -69,6 +69,11 @@ inline string session_lock_file(const string& session)
     return session_file(session, "lock");
 }
 
+inline string session_log_file()
+{
+    return session_file(DEFAULT_SESSION, "log");
+}
+
 // Create session directory for SESSION; leave messages in MSG
 void create_session_dir(const string& session, ostream& msg);
 

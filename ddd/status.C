@@ -311,7 +311,7 @@ static bool is_prefix(const MString& m1, const MString& m2)
 	t2 = XmStringGetNextComponent(c2, &s_text2, &s_cs2, &d2,
 				      &u2, &ul2, &s_uv2);
 
-	// Upon EOF In LessTif 0.82, XmStringGetNextComponent()
+	// Upon EOF in LessTif 0.82, XmStringGetNextComponent()
 	// returns XmSTRING_COMPONENT_UNKNOWN instead of
 	// XmSTRING_COMPONENT_END.  Work around this.
 	if (t1 == XmSTRING_COMPONENT_UNKNOWN && s_uv1 == 0)
@@ -417,6 +417,72 @@ static bool is_prefix(const MString& m1, const MString& m2)
     XmStringFreeContext(c1);
 
     return t1 == XmSTRING_COMPONENT_END;
+}
+
+
+// Return all characters in M
+static string str(const MString& _m)
+{
+    string s = "";
+
+    XmString m = _m.xmstring();
+    XmStringContext c;
+    XmStringInitContext(&c, m);
+    XmStringComponentType t = XmSTRING_COMPONENT_UNKNOWN;
+
+    while (t != XmSTRING_COMPONENT_END)
+    {
+	char *s_text            = 0;
+	XmStringCharSet s_cs    = 0;
+	XmStringDirection d     = XmSTRING_DIRECTION_DEFAULT;
+	XmStringComponentType u = XmSTRING_COMPONENT_UNKNOWN;
+	unsigned short ul       = 0;
+	unsigned char *s_uv     = 0;
+	
+	t = XmStringGetNextComponent(c, &s_text, &s_cs, &d, &u, &ul, &s_uv);
+
+	// Upon EOF in LessTif 0.82, XmStringGetNextComponent()
+	// returns XmSTRING_COMPONENT_UNKNOWN instead of
+	// XmSTRING_COMPONENT_END.  Work around this.
+	if (t == XmSTRING_COMPONENT_UNKNOWN && s_uv == 0)
+	    t = XmSTRING_COMPONENT_END;
+
+	// Place string values in strings
+	string text(s_text == 0 ? "" : s_text);
+	string cs(s_cs == 0 ? "" : s_cs);
+	string uv;
+	if (s_uv != 0)
+	    uv = string((char *)s_uv, ul);
+
+	// Free unused memory
+	XtFree(s_text);
+	XtFree(s_cs);
+	XtFree((char *)s_uv);
+
+	switch (t)
+	{
+	case XmSTRING_COMPONENT_TEXT:
+#if XmVersion >= 1002
+	case XmSTRING_COMPONENT_LOCALE_TEXT:
+#endif
+#if XmVersion >= 2000
+	case XmSTRING_COMPONENT_WIDECHAR_TEXT:
+#endif
+	    s += text;
+	    break;
+
+	case XmSTRING_COMPONENT_SEPARATOR:
+	    s += "\n";
+	    break;
+
+	default:
+	    break;
+	}
+    }
+
+    XmStringFreeContext(c);
+
+    return s;
 }
 
 static void add_to_status_history(const MString& message)
@@ -535,6 +601,17 @@ void set_status_mstring(MString message, bool temporary)
 		  NULL);
     XFlush(XtDisplay(status_w));
     XmUpdateDisplay(status_w);
+
+    if (!temporary)
+    {
+	// Log status message
+	string s = str(message);
+	if (s != "" && s != " ")
+	{
+	    dddlog << "#  " << s << "\n";
+	    dddlog.flush();
+	}
+    }
 }
 
 const MString& current_status()
