@@ -273,7 +273,7 @@ Ddd*buttonImages:   on
 Ddd*buttonCaptions: on
 
 ! The image and caption areas within button images.
-Ddd*buttonImageGeometry:   22x17+4+0
+Ddd*buttonImageGeometry:   21x17+4+0
 Ddd*buttonCaptionGeometry: 29x7+0-0
 
 
@@ -1740,7 +1740,7 @@ DESC(Edit, [cut, copy, and paste text, and change DDD options])\n\
 DESC(View, [view DDD windows])\n\
 DESC(Program, [run the debugged program])\n\
 DESC(Commands, [view command history])\n\
-DESC(Stack, [view backtrace and select the current stack frame])\n\
+DESC(Status, [show program status (backtrace, registers, threads)])\n\
 DESC(Source, [edit breakpoints and lookup previous positions])\n\
 DESC(Data, [edit displays])\n\
 DESC(Help, [on-line help and version information])

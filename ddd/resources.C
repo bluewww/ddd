@@ -1315,7 +1315,7 @@ XtResource ddd_resources[] = {
 	sizeof(String),
 	XtOffsetOf(AppData, button_image_geometry),
 	XmRImmediate,
-	XtPointer("22x17+4+0")
+	XtPointer("21x17+4+0")
     },
 
     {
