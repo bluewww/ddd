@@ -32,8 +32,6 @@ char DispValue_rcsid[] =
 
 #ifdef __GNUG__
 #pragma implementation
-#pragma implementation "DynArray.h"
-#pragma implementation "VarArray.h"
 #endif
 
 #define LOG_CREATE_VALUES 0
@@ -46,6 +44,7 @@ char DispValue_rcsid[] =
 //-----------------------------------------------------------------------------
 
 #include "DispValue.h"
+#include "DispValueA.h"
 #include "string-fun.h" // itostring
 #include "DynArray.h"
 #include "assert.h"
@@ -62,9 +61,6 @@ char DispValue_rcsid[] =
 //-----------------------------------------------------------------------------
 // Type decls
 //-----------------------------------------------------------------------------
-
-// An array of disp values
-typedef DynArray<DispValue*> DispValueArray;
 
 enum Alignment {Vertical, Horizontal};
 
