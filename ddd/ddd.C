@@ -152,6 +152,7 @@ char ddd_rcsid[] =
 #include <Xm/Form.h>
 #include <Xm/ToggleB.h>
 #include <Xm/PushB.h>
+#include <Xm/ArrowB.h>
 #include <X11/Shell.h>
 
 #ifdef HAVE_X11_XMU_EDITRES_H
@@ -2639,6 +2640,7 @@ static void create_status(Widget parent)
 	verify(XmCreateForm(parent, "status_form", args, arg));
     XtManageChild(status_form);
 
+    // Create LED
     arg = 0;
     XtSetArg(args[arg], XmNtopAttachment,      XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNbottomAttachment,   XmATTACH_FORM); arg++;
@@ -2650,6 +2652,18 @@ static void create_status(Widget parent)
     XtManageChild(led_w);
 
     XtAddCallback(led_w, XmNvalueChangedCallback, ToggleBlinkCB, XtPointer(0));
+
+    // Create `Get more status messages' button
+    arg = 0;
+    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET); arg++;
+    XtSetArg(args[arg], XmNrightWidget,      led_w); arg++;
+    XtSetArg(args[arg], XmNarrowDirection, 
+	     (app_data.status_at_bottom ? XmARROW_UP : XmARROW_UP)); arg++;
+    Widget arrow_w = 
+	verify(XmCreateArrowButton(status_form, "arrow", args, arg));
+    XtManageChild(arrow_w);
 
     // Give some `dummy' status message.  Some Motif versions limit
     // the size of the status window to the length of the very first
@@ -2663,7 +2677,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET); arg++;
-    XtSetArg(args[arg], XmNrightWidget,      led_w); arg++;
+    XtSetArg(args[arg], XmNrightWidget,      arrow_w); arg++;
     XtSetArg(args[arg], XmNresizable,        True); arg++;
     status_w = verify(XmCreatePushButton(status_form, "status", args, arg));
     XtManageChild(status_w);
@@ -2679,15 +2693,26 @@ static void create_status(Widget parent)
     XtAddCallback(status_w, XmNdisarmCallback, 
 		  PopdownStatusHistoryCB, XtPointer(0));
 
+    XtAddCallback(arrow_w, XmNarmCallback, 
+		  PopupStatusHistoryCB, XtPointer(0));
+    XtAddCallback(arrow_w, XmNdisarmCallback, 
+		  PopdownStatusHistoryCB, XtPointer(0));
+
     XtWidgetGeometry size;
+    unsigned char unit_type;
+
     size.request_mode = CWHeight;
     XtQueryGeometry(status_w, NULL, &size);
-    unsigned char unit_type;
     XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
     int new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
 				    size.height, unit_type);
     XtVaSetValues(led_w,
 		  XmNheight, new_height,
+		  XmNwidth,  new_height,
+		  NULL);
+    XtVaSetValues(arrow_w,
+		  XmNheight, new_height,
+		  XmNwidth,  new_height,
 		  NULL);
     XtVaSetValues(status_form,
 		  XmNpaneMaximum, new_height,

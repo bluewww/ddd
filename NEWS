@@ -25,10 +25,13 @@ DDD 2.1 [in development; scheduled for April, 1997]
       `toolbar tips' or `button help'.  (optional)
     - Value tips.  Moving the mouse pointer over a variable causes a
       small window to raise showing the current variable value.  (optional)
-    - The info shown in the tips is also displayed in the status line.
-    - The status line has moved to the bottom.  (can be restored)
-    - The status line contains a debugger status indicator, blinking
-      whenever the inferior debugger is busy.  (can be turned off)
+    - The status line has been reworked and extended:
+      + It displays information about the selected item.
+      + It has moved to the bottom, such that menu entries can be
+        described.  (can be restored)
+      + It contains a debugger status indicator, blinking whenever
+	the inferior debugger is busy.  (can be turned off)
+      + You can re-display the most recent messages.
     - The register window can display floating-point registers.
     - Thread support.  You can inquire existing threads and switch
       among them.  (requires GDB and operating system thread support)

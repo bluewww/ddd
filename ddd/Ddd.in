@@ -2921,23 +2921,18 @@ blinks while the inferior debugger is busy.\n\
 You can disable it by clicking on the indicator.
 
 Ddd*status_form*borderWidth:		0
+Ddd*status_form*marginWidth:		0
+Ddd*status_form*marginHeight:		0
+Ddd*status_form*marginTop:		0
+Ddd*status_form*marginBottom:		0
+Ddd*status_form*spacing:		0
+Ddd*status_form*highlightThickness: 	0
 
 Ddd*status_form.status.alignment:	XmALIGNMENT_BEGINNING
-Ddd*status_form.status.marginWidth:	0
-Ddd*status_form.status.marginHeight:	0
-Ddd*status_form.status.marginTop:	0
-Ddd*status_form.status.marginBottom:	0
 Ddd*status_form.status.labelString:	Ready.
-Ddd*status_form.status.highlightThickness: 0
 Ddd*status_form.status.shadowThickness: 0
-Ddd*status_form.status.spacing:		0
 Ddd*status_form.status.fillOnArm:	false
 
-Ddd*status_form.led.marginWidth:	0
-Ddd*status_form.led.marginHeight:	0
-Ddd*status_form.led.marginTop:		0
-Ddd*status_form.led.marginBottom:	0
-Ddd*status_form.led.spacing:		0
 Ddd*status_form.led.highlightThickness: 0
 Ddd*status_form.led.labelString:
 Ddd*status_form.led.visibleWhenOff:	false
@@ -2947,6 +2942,11 @@ Ddd*status_form.led.tipString:	\
 Ddd*status_form.led.documentationString: \
 @rm Debugger status: blinks while inferior debugger is busy \
 (click to disable or enable)
+
+Ddd*status_form.arrow.tipString: \
+@rm Show recent messages
+Ddd*status_form.arrow.documentationString: \
+@rm Show most recent messages from the status line
 
 Ddd*status_lines.marginWidth:		0
 Ddd*status_lines.marginHeight:		0
