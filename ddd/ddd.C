@@ -334,6 +334,10 @@ static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
 // Drag and drop
 static void CheckDragCB(Widget, XtPointer client_data, XtPointer call_data);
 
+// Help on context
+static void DDDHelpOnContextCB(Widget, XtPointer client_data, 
+			       XtPointer call_data);
+
 // Verify whether buttons are active
 static void verify_buttons(MMDesc *items);
 
@@ -1124,7 +1128,7 @@ static MMDesc help_menu[] =
 {
     {"whatNext",    MMPush, { WhatNextCB }},
     MMSep,
-    {"onContext",   MMPush, { HelpOnContextCB }},
+    {"onContext",   MMPush, { DDDHelpOnContextCB }},
     {"onWindow",    MMPush, { HelpOnWindowCB }},
     {"onHelp",      MMPush, { HelpOnHelpCB }},
     MMSep,
@@ -2982,6 +2986,29 @@ static void CheckDragCB(Widget, XtPointer, XtPointer call_data)
     }
 #endif // XmNdragStartCallback
 }
+
+
+//-----------------------------------------------------------------------------
+// Context help
+//-----------------------------------------------------------------------------
+
+static void DDDHelpOnContextCB(Widget w, XtPointer, XtPointer call_data)
+{
+    MString saved_status_message = current_status();
+    Widget item = 0;
+
+    set_status("Please click on the item you want information for.");
+    XFlush(XtDisplay(w));
+    HelpOnContextCB(w, (XtPointer)&item, call_data);
+    set_status_mstring(saved_status_message, true);
+
+    if (item != 0)
+    {
+	MString msg = rm("Selected ") + tt(longName(item));
+	set_status_mstring(msg);
+    }
+}
+
 
 //-----------------------------------------------------------------------------
 // Option handling
