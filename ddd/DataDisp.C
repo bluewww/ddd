@@ -1388,7 +1388,7 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint* p,
     {
     case GDB:
     {
-	string cmd = "display " + display_expression;
+	string cmd = gdb->display_command() + " " + display_expression;
 	int i = gdb->send_question (cmd, new_displayOQC, p);
 	if (i == 0) {
 	    post_gdb_busy(last_origin);
@@ -1398,8 +1398,8 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint* p,
 
     case DBX:
     {
-	gdb_question("display " + display_expression);
-	string cmd = "print " + display_expression;
+	gdb_question(gdb->display_command() + " " + display_expression);
+	string cmd = gdb->print_command() + " " + display_expression;
 	int i = gdb->send_question (cmd, new_displayOQC, p);
 	if (i == 0) {
 	    post_gdb_busy(last_origin);
@@ -1453,7 +1453,7 @@ void DataDisp::new_displayOQC (const string& answer, void* data)
     if (answer == "") {
 	// Problemfall bei Start mit core-file, display-Ausgabe nur bei
 	// display-Befehl
-	gdb->send_question ("display",
+	gdb->send_question (gdb->display_command(),
 			    new_display_extraOQC,
 			    data);
     }
@@ -1530,9 +1530,11 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
     int j = 0;
     for (int i = start; i < stop + 1; i++) {
 	display_cmds[j] = 
-	    "display " + prefix + "[" + itostring (i) + "]" + postfix;
+	    gdb->display_command() + " " 
+	    + prefix + "[" + itostring (i) + "]" + postfix;
 	print_cmds[j] = 
-	    "print " + prefix + "[" + itostring (i) + "]" + postfix;
+	    gdb->print_command() + " "
+	    + prefix + "[" + itostring (i) + "]" + postfix;
 	j++;
     }
 
@@ -1633,10 +1635,9 @@ void DataDisp::new_displaysOQAC (string answers[],
 //
 void DataDisp::refresh_displaySQ () 
 {
-    int i = gdb->send_question ("display", refresh_displayOQC, 0);
-    if (i == 0) {
+    int i = gdb->send_question(gdb->display_command(), refresh_displayOQC, 0);
+    if (i == 0)
 	post_gdb_busy(last_origin);
-    }
 }
 
 // ***************************************************************************
@@ -1677,17 +1678,16 @@ void DataDisp::refresh_displaySQA (Widget origin)
     {
     case GDB:
 	cmds[n++] = "info display";
-	cmds[n++] = "display";
+	cmds[n++] = gdb->display_command();
 	break;
 
     case DBX:
-	cmds[n++] = "display";
+	cmds[n++] = gdb->display_command();
     };
 
     int i = gdb->send_qu_array(cmds, dummy, n, refresh_displayOQAC, 0);
-    if (i == 0) {
+    if (i == 0)
 	post_gdb_busy(last_origin);
-    }
 }
 
 // ***************************************************************************
@@ -1901,7 +1901,7 @@ void DataDisp::dependent_displaySQ (string display_expression, int disp_nr)
     {
     case GDB:
     {
-	string cmd = "display " + display_expression;
+	string cmd = gdb->display_command() + " " + display_expression;
 	int i = gdb->send_question(cmd, dependent_displayOQC, 
 				   (void *) disp_nr);
 	if (i == 0) {
@@ -1912,8 +1912,8 @@ void DataDisp::dependent_displaySQ (string display_expression, int disp_nr)
 
     case DBX:
     {
-	gdb_question("display " + display_expression);
-	string cmd = "print " + display_expression;
+	gdb_question(gdb->display_command() + " " + display_expression);
+	string cmd = gdb->print_command() + " " + display_expression;
 	int i = gdb->send_question(cmd, dependent_displayOQC, 
 				   (void *) disp_nr);
 	if (i == 0) {
@@ -1933,7 +1933,7 @@ void DataDisp::dependent_displayOQC (const string& answer, void* data)
 	// Problemfall bei Start mit core-file, display-Ausgabe nur bei
 	// display-Befehl
 	gdb->send_question
-	    ("display", dependent_display_extraOQC, data);
+	    (gdb->display_command(), dependent_display_extraOQC, data);
     }
     else if (!contains_display (answer, gdb->type())) {
 	post_gdb_message (answer, last_origin);
@@ -2008,9 +2008,11 @@ void DataDisp::dependent_displaysSQA (string display_expression,
     int j = 0;
     for (int i = start; i < stop + 1; i++) {
 	display_cmds[j] = 
-	    "display " + prefix + "[" + itostring (i) + "]" + postfix;
+	    gdb->display_command() + " "
+	    + prefix + "[" + itostring (i) + "]" + postfix;
 	print_cmds[j] = 
-	    "print " + prefix + "[" + itostring (i) + "]" + postfix;
+	    gdb->print_command() + " " 
+	    + prefix + "[" + itostring (i) + "]" + postfix;
 	j++;
     }
 
