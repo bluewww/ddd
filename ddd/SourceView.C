@@ -455,7 +455,9 @@ void SourceView::line_popup_set_tempCB (Widget w,
 	break;
 
     case XDB:
-	break;			// FIXME
+	gdb_command("b " + current_source_name() + ":" + itostring(line_nr)
+		    + " \\1t", w);
+	break;
     }
 }
 
@@ -480,7 +482,8 @@ void SourceView::address_popup_set_tempCB (Widget w,
 	break;
 
     case XDB:
-	break;			// FIXME
+	gdb_command("ba " + address + " \\1t", w);
+	break;
     }
 }
 
@@ -566,10 +569,23 @@ void SourceView::bp_popup_disableCB (Widget w,
     int bp_nr = *((int *)client_data);
 
     string cmd;
-    if (bp_map.get(bp_nr)->enabled())
-	cmd = "disable ";
-    else
-	cmd = "enable ";
+    switch (gdb->type())
+    {
+    case GDB:
+    case DBX:
+	if (bp_map.get(bp_nr)->enabled())
+	    cmd = "disable ";
+	else
+	    cmd = "enable ";
+	break;
+
+    case XDB:
+	if (bp_map.get(bp_nr)->enabled())
+	    cmd = "sb ";
+	else
+	    cmd = "ab ";
+	break;
+    }
 
     cmd += itostring(bp_nr);
     gdb_command(cmd, w);
@@ -2208,8 +2224,7 @@ void SourceView::process_info_bp (string& info_output)
 
     while (info_output != "") 
     {
-	int bp_nr;
-	string bp_nr_s;
+	int bp_nr = -1;
 	switch(gdb->type())
 	{
 	case GDB:
@@ -2223,22 +2238,26 @@ void SourceView::process_info_bp (string& info_output)
 	    break;
 
 	case DBX:
-	    if (!info_output.contains('(', 0)
-		&& !info_output.contains('[', 0))
 	    {
-		// Skip this line
-		info_output = info_output.after('\n');
-		continue;
+		if (!info_output.contains('(', 0)
+		    && !info_output.contains('[', 0))
+		{
+		    // Skip this line
+		    info_output = info_output.after('\n');
+		    continue;
+		}
+		string bp_nr_s = info_output.after(0);
+		bp_nr = get_positive_nr (bp_nr_s);
 	    }
-	    bp_nr_s = info_output.after(0);
-	    bp_nr = get_positive_nr (bp_nr_s);
 	    break;
 
+
 	case XDB:
-	    break;			// FIXME
+	    bp_nr = get_positive_nr(info_output);
+	    break;
 	}
 
-	if (bp_nr < 0)
+	if (bp_nr <= 0)
 	{
 	    info_output = info_output.after('\n');
 	    continue;
@@ -2997,15 +3016,12 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    switch (gdb->type())
 	    {
 	    case GDB:
+	    case XDB:
 		bp_popup = bp_popup_gdb;
 		break;
 
 	    case DBX:
 		bp_popup = bp_popup_dbx;
-		break;
-
-	    case XDB:
-		bp_popup = bp_popup_dbx; // FIXME
 		break;
 	    }
 
@@ -3016,20 +3032,18 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	switch (gdb->type())
 	{
 	case GDB:
-	{
-	    MString label(bp_map.get(bp_nr)->enabled() ? 
-			  "Disable Breakpoint" : "Enable Breakpoint");
-	    XtVaSetValues(bp_popup_gdb[BPItms::Disable].widget,
-			  XmNlabelString, label.xmstring(),
-			  NULL);
-	}
-	break;
+	case XDB:
+	    {
+		MString label(bp_map.get(bp_nr)->enabled() ? 
+			      "Disable Breakpoint" : "Enable Breakpoint");
+		XtVaSetValues(bp_popup_gdb[BPItms::Disable].widget,
+			      XmNlabelString, label.xmstring(),
+			      NULL);
+	    }
+	    break;
 
 	case DBX:
 	    break;
-
-	case XDB:
-	    break;			// FIXME
 	}
 
 	XmMenuPosition (bp_popup_w, event);
@@ -3440,6 +3454,17 @@ void SourceView::BreakpointCmdCB(Widget,
 	return;
 
     string cmd = (String)client_data;
+
+    if (gdb->type() == XDB)
+    {
+	if (cmd == "delete")
+	    cmd = "db ";
+	else if (cmd == "enable")
+	    cmd = "ab";
+	else if (cmd == "disable")
+	    cmd = "sb";
+    }
+
     int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
     if (breakpoint_nrs[0] > 0)
     {
@@ -3485,13 +3510,9 @@ void SourceView::fill_labels(const string& info_output)
     bool select = false;
     for (int i = 0; i < count; i++)
     {
-	if (label_list[i] != "" && 
-	    (isdigit(label_list[i][0])
-	     || label_list[i][0] == '('
-	     || label_list[i][0] == '['))
+	int bp_number = get_positive_nr(label_list[i]);
+	if (bp_number > 0)
 	{
-	    int bp_number = get_positive_nr(label_list[i]);
-
 	    MapRef ref;
 	    for (BreakPoint* bp = bp_map.first(ref);
 		 bp != 0;
@@ -3554,13 +3575,13 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer, XtPointer)
     XtSetSensitive(bp_area[BPButtons::Lookup].widget,
 		   count == 1);
     XtSetSensitive(bp_area[BPButtons::Enable].widget,      
-		   gdb->type() == GDB && count > 0);
+		   gdb->type() != DBX && count > 0);
     XtSetSensitive(bp_area[BPButtons::Disable].widget,     
-		   gdb->type() == GDB && count > 0);
+		   gdb->type() != DBX && count > 0);
     XtSetSensitive(bp_area[BPButtons::Condition].widget,   
-		   gdb->type() == GDB && count > 0);
+		   gdb->type() != DBX && count > 0);
     XtSetSensitive(bp_area[BPButtons::IgnoreCount].widget, 
-		   gdb->type() == GDB && count > 0);
+		   gdb->type() != DBX && count > 0);
     XtSetSensitive(bp_area[BPButtons::Delete].widget,
 		   count > 0);
 }

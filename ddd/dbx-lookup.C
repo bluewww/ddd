@@ -55,46 +55,85 @@ string dbx_lookup(const string& func_name)
     if (pos_cache.has(func_name))
 	return pos_cache[func_name];
 
-    string reply = gdb_question("func " + func_name);
+    string reply;
+    switch (gdb->type())
+    {
+    case GDB:
+    case DBX:
+	reply = gdb_question("func " + func_name);
+	break;
+
+    case XDB:
+	reply = gdb_question("v " + func_name);
+	break;
+    }
+
     if (reply == NO_GDB_ANSWER)
     {
 	post_gdb_busy();
 	return "";
     }
 
-    string listing;
-    static regex RXcolon_and_line_number(": *[0-9][0-9]*");
-    if (reply.contains(RXcolon_and_line_number))
+    string file;
+    string line;
+    switch (gdb->type())
     {
-	// DEC DBX issues line number immediately after `func'
-	listing = reply.after(":");
-	listing = itostring(atoi(listing));
+    case GDB:
+    case DBX:
+	{
+	    static regex RXcolons(": *[0-9][0-9]*");
+	    if (reply.contains(RXcolons))
+	    {
+		// DEC DBX issues line number immediately after `func'
+		line = reply.after(":");
+		line = itostring(atoi(line));
+	    }
+	    else
+	    {
+		if (reply != "")
+		{
+		    post_gdb_message(reply);
+		    return "";
+		}
+
+		if (gdb->has_line_command())
+		{
+		    line = gdb_question("line");
+		}
+		else
+		{
+		    line = gdb_question("list");
+
+		    // DBX 1.0 lists 10 lines; the current line is the 5th one.
+		    line = itostring(atoi(line) + 5);
+		}
+	    }
+
+	    file = gdb_question("file");
+	    strip_final_blanks(file);
+	}
+	break;
+
+    case XDB:
+	{
+	    static regex RXcolons("[^:]*:[^:]*: *[0-9][0-9]*.*");
+	    if (reply.matches(RXcolons))
+	    {
+		file = reply.before(':');
+		reply = reply.after(':'); // Skip file
+		reply = reply.after(':'); // Skip function
+		read_leading_blanks(reply);
+		line = reply.before(':');
+	    }
+	    else
+	    {
+		post_gdb_message(reply);
+		return "";
+	    }
+	}
     }
-    else
-    {
-	if (reply != "")
-	{
-	    post_gdb_message(reply);
-	    return "";
-	}
 
-	if (gdb->has_line_command())
-	{
-	    listing = gdb_question("line");
-	}
-	else
-	{
-	    listing = gdb_question("list");
-
-	    // DBX 1.0 lists 10 lines; the current line is the 5th one.
-	    listing = itostring(atoi(listing) + 5);
-	}
-    }
-
-    string file = gdb_question("file");
-    strip_final_blanks(file);
-
-    string pos = file + ":" + listing;
+    string pos = file + ":" + line;
 
     pos_cache[func_name] = pos;
     return pos;

@@ -91,7 +91,8 @@ void gdbBreakArgCmdCB(Widget w, XtPointer, XtPointer)
 	break;
 
     case XDB:
-	break;			// FIXME
+	gdb_command("b " + arg, w);
+	break;
     }
 }
 
@@ -132,7 +133,8 @@ void gdbClearArgCmdCB(Widget w, XtPointer, XtPointer)
 	break;
 
     case XDB:
-	break;			// FIXME
+	gdb_command(SourceView::clear_command(arg), w);
+	break;
     }
 }
 

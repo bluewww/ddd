@@ -352,6 +352,7 @@ void redirect_process(string& command,
 	switch (gdb->type())
 	{
 	case GDB:
+	case XDB:
 	{
 	    static regex RXcsh(".*csh$");
 	    static regex RXrc(".*rc$");
@@ -384,9 +385,6 @@ void redirect_process(string& command,
 		gdb_redirection += " 2>&1";
 	    }
 	    break;
-
-	case XDB:
-	    break;		// FIXME
 	}
     }
 

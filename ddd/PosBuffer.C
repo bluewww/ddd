@@ -371,15 +371,19 @@ void PosBuffer::filter (string& answer)
 
 	    case XDB:
 		{
-		    static regex RXxdbpos("[^: \t]*:[^:]*: [1-9][0-9]*: .*\n");
-		    if (answer.matches(RXxdbpos))
+		    string last_line = answer;
+		    strip_final_blanks(last_line);
+		    if (last_line.contains('\n'))
+			last_line = last_line.after('\n', -1);
+
+		    static regex RXxdbpos("[^: \t]*:[^:]*: [1-9][0-9]*: .*");
+		    if (last_line.matches(RXxdbpos))
 		    {
-			string file = answer.before(':');
-			answer = answer.after(':');
-			string func = answer.before(':');
-			answer = answer.after(':');
-			string line = answer.before(':');
-			answer = answer.after('\n');
+			string file = last_line.before(':');
+			last_line = last_line.after(':');
+			string func = last_line.before(':');
+			last_line = last_line.after(':');
+			string line = last_line.before(':');
 			
 			read_leading_blanks(func);
 			read_leading_blanks(line);
@@ -387,6 +391,11 @@ void PosBuffer::filter (string& answer)
 			pos_buffer   = file + ":" + line;
 			func_buffer  = func;
 			already_read = PosComplete;
+
+			// Delete this line from output
+			if (answer.contains('\n', -1))
+			    answer = answer.before('\n', -1);
+			answer = answer.through('\n', -1);
 		    }
 		    else if (answer.contains(':'))
 		    {
