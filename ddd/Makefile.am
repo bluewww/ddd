@@ -850,19 +850,19 @@ $(srcdir)/ddd.info.txt.gz.C: $(srcdir)/ddd.info.txt.gz
 
 # License.
 $(srcdir)/COPYING.gz: $(srcdir)/../COPYING
-	$(COMPRESS) $(srcdir)/../COPYING > $@
+	$(COMPRESS) $? > $@
 
-$(srcdir)/COPYING.gz.C: COPYING.gz
+$(srcdir)/COPYING.gz.C: $(srcdir)/COPYING.gz
 	$(MAKE) stringify$(EXEEXT)
-	-./stringify < COPYING.gz > $@~ && $(MV) $@~ $@
+	-./stringify < $? > $@~ && $(MV) $@~ $@
 
 # News.
 $(srcdir)/NEWS.gz: $(srcdir)/../NEWS
-	$(COMPRESS) $(srcdir)/../NEWS > $@~ && $(MV) $@~ $@
+	$(COMPRESS) $? > $@~ && $(MV) $@~ $@
 
-$(srcdir)/NEWS.gz.C: NEWS.gz
+$(srcdir)/NEWS.gz.C: $(srcdir)/NEWS.gz
 	$(MAKE) stringify$(EXEEXT)
-	-./stringify < NEWS.gz > $@~ && $(MV) $@~ $@
+	-./stringify < $? > $@~ && $(MV) $@~ $@
 
 show.$(OBJEXT): COPYING.gz.C NEWS.gz.C ddd.info.txt.gz.C
 
