@@ -126,6 +126,7 @@ extern "C" {
 #include "question.h"
 #include "status.h"
 #include "file.h"
+#include "AppData.h"
 
 // Glyphs
 #include "arrow.xbm"
@@ -1339,12 +1340,13 @@ void SourceView::read_file (string file_name,
     last_top = last_pos = last_start_highlight = last_end_highlight = 0;
     last_start_secondary_highlight = last_end_secondary_highlight = 0;
 
-    if (source_view_shell)
+    if (source_view_shell || app_data.tty_mode)
     {
 	static bool initial_popup = true;
 	if (initial_popup)
 	{
-	    initial_popup_shell(source_view_shell);
+	    initial_popup_shell(source_view_shell ? 
+				source_view_shell : command_shell);
 	    initial_popup = false;
 
 	    recenter_tool_shell(source_text_w);

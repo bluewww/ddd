@@ -1484,7 +1484,7 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
 
 	recenter_tool_shell(source_view->source());
 
-	if (source_view_shell || iconic)
+	if (source_view_shell || iconic || app_data.tty_mode)
 	{
 	    // We don't need the command tool right now 
 	    // - wait for source window to map
