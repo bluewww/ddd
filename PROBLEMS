@@ -14,6 +14,7 @@ Table of Contents
     * GCC
       + GCC optimization errors
       + GCC and libg++
+      + EGCS 1.1
     * HP-UX
     * LessTif
     * Linux
@@ -216,6 +217,16 @@ GCC and LIBG++
     If you have multiple copies of gcc and/or libg++ installed, be
     sure that the referenced versions match each other.  This is a
     common source for various problems.
+
+EGCS 1.1
+--------
+
+    If you get EGCS errors like 
+
+	warning: ANSI C++ forbids declaration `__in' with no type
+
+    This is an EGCS bug, which has been fixed for the upcoming
+    egcs-1.1.1 release.  Your code should compile without any errors.
 
 HP-UX
 =====
@@ -401,6 +412,13 @@ Reported by:  Andreas Zeller <zeller@acm.org>
 
 Solaris 2.x
 ===========
+
+Reported by: Joe VanAndel <vanandel@ucar.edu>
+
+    When compiling for Solaris (SPARC) with X11R6.1 on Solaris 2.5.1, 
+    LDFLAGS='-lICE -lSM -lsocket' ./configure  <configure_flags>
+    
+    so that all the necessary X libraries are linked in.
 
 Reported by:  Matthias Klose <doko@cs.tu-berlin.de>
 

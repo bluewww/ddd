@@ -347,6 +347,9 @@ Volunteers for these and other projects are welcome!
     This may be done by traversing all values; for every pointer
     found, assign its value as address to the referenced display.
 
-356 Have a `Default' button in preferences, restoring factory settings.
+356 Have a `Default' button in preferences, restoring factory
+    settings.
 
-357 (Insert new project ideas here)
+357 Make the `locked' warning less intrusive.
+
+358 (Insert new project ideas here)

@@ -2336,7 +2336,7 @@ There are two ways to examine the values:
 .IP \(bu 2
 You can dump the memory in the debugger console (using `\fBPrint\fR').
 If you repeat the resulting `\fBx\fR' command by pressing
-\fBReturn\fR, the following area of memory is shown.
+\s-1\fBRETURN\fR\s+1, the following area of memory is shown.
 .IP \(bu 2
 You can also display the memory dump in the data window (using
 `\fBDisplay\fR').  If you choose to display the values, the values
@@ -6004,7 +6004,7 @@ Secondary debugger prompts (e.g. `\fB>\fR')
 .IP \(bu 2 
 Confirmation prompts (e.g. `\fB(y or n) \fR')
 .IP \(bu 2
-Prompts for more output (e.g. `\fBPress RETURN to continue\fR')
+Prompts for more output (e.g. `\fBPress \s-1RETURN\s+1 to continue\fR')
 .IP \(bu 2
 Display output (e.g. `\fB$pc = 0x1234\fR')
 .PP
