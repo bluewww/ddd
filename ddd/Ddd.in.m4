@@ -774,15 +774,29 @@ Ddd*maxValueDocLength: 80
 
 ! Focus Policy
 ! POINTER means point-and-type, EXPLICIT means click-and-type.
-! We accept the user's default setting here.
-! Ddd*keyboardFocusPolicy:	POINTER
+Ddd*keyboardFocusPolicy:	POINTER
 
 ! X Warnings
 ! Do we wish to suppress X warnings?
 Ddd*suppressWarnings: off
 
-! Shall DDD ungrab the mouse pointer when interrupting a modal X application?
-Ddd*ungrabMousePointer: off
+
+! Grab checking.
+
+! Shall DDD check for grabbed (frozen) mouse pointers
+! when interrupting a modal X application?
+Ddd*checkGrabs: on
+
+! The delay to check for grabs after the last GDB prompt.
+Ddd*checkGrabDelay: 5000
+
+! The delay to wait for effective action.
+Ddd*grabActionDelay:   10000
+
+! The debugger command to execute when the pointer is still grabbed.
+Ddd*grabAction:  cont
+
+
 
 ! A little less highlighting
 Ddd*highlightThickness: 1
@@ -1870,14 +1884,14 @@ Ddd*menubar*fileMenu.make.mnemonic:	 M
 Ddd*menubar*fileMenu.make.accelerator:      ~Shift Ctrl<Key>M
 Ddd*menubar*fileMenu.make.acceleratorText:  Ctrl+M
 Ddd*menubar*fileMenu.make.documentationString:  \
-@rm Run the ``make'' program
+@rm Run the CODE(make) program
 
 Ddd*menubar*fileMenu.makeAgain.labelString:	 Make Again
 Ddd*menubar*fileMenu.makeAgain.mnemonic:	 i
 Ddd*menubar*fileMenu.makeAgain.accelerator:      Shift Ctrl<Key>M
 Ddd*menubar*fileMenu.makeAgain.acceleratorText:  Ctrl+Shift+M
 Ddd*menubar*fileMenu.makeAgain.documentationString:  \
-@rm Run the ``make'' program, using previous settings
+@rm Run the CODE(make) program with the most recently given arguments
 
 Ddd*menubar*fileMenu.close.labelString:	 Close
 Ddd*menubar*fileMenu.close.mnemonic:	 C
@@ -2820,8 +2834,8 @@ ITEM If LBL(TAB key completes in all windows) is set, the KEY(TAB) key\n\
     completes arguments in all DDD windows.\n\
     Otherwise, the KEY(TAB) key completes in the @GDB@ console only.\n\
 ITEM If LBL(Suppress X warnings) is set, X warnings are silently ignored.\n\
-ITEM If LBL(Ungrab mouse pointer) is set, DDD will automatically\n\
-    ungrab the mouse pointer when interrupting a modal X application.\n\
+ITEM If LBL(Continue automatically...) is set, DDD will continue execution\n\
+    of programs that were interrupted while grabbing the mouse pointer.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
@@ -2855,8 +2869,8 @@ Ddd*preferences*uniconifyWhenReady.labelString:	 \
 Uniconify when ready
 Ddd*preferences*suppressWarnings.labelString:	 \
 Suppress X warnings
-Ddd*preferences*ungrabMousePointer.labelString:	 \
-Ungrab mouse pointer when interrupting modal X application
+Ddd*preferences*checkGrabs.labelString:	 \
+Continue automatically when mouse pointer is frozen
 
 
 Ddd*preferences*source*helpString:	\
@@ -4473,6 +4487,15 @@ Ddd*?*Edit.tipString: \
 Ddd*?*Edit.documentationString: \
 @rm Invoke text editor for the current source
 
+Ddd*?*Make.helpString:	\
+LBL(Make)\n\
+\n\
+Run the CODE(make) program with the most recently given arguments.
+Ddd*?*Make.tipString: \
+@rm Run the CODE(make) program
+Ddd*?*Make.documentationString: \
+@rm Run the CODE(make) program with the most recently given arguments.
+
 Ddd*?*Reload.helpString:	\
 LBL(Reload)\n\
 \n\
@@ -5615,6 +5638,15 @@ Ddd*print_warning_popup.title: DDD: Print Command Output
 Ddd*print_warning*helpString:	\
 @rm This is the output of your printing command.\n\
 For more details, consult your system documentation.
+
+Ddd*grab_warning_popup.title: DDD: Frozen Pointer
+Ddd*grab_warning*helpString: \
+@rm DDD has detected a frozen (grabbed) mouse pointer.\n\
+\n\
+This may be because @GDB@ has interrupted the debuggee\n\
+while it was grabbing the mouse pointer.\n\
+If DDD remains in this state, further interaction will\n\
+probably be impossible.
 
 Ddd*no_display_number_warning_popup.title: DDD: No Display Number
 Ddd*no_display_number_warning*helpString: \
