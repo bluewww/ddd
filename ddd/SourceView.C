@@ -1276,21 +1276,23 @@ void SourceView::show_execution_position (string position)
 	return;
 
     if (file_name != current_file_name)
-    {
-	read_file (file_name, line);
-    }
-    else if (bp_indent_amount > 0)
-    {
-	// Alte Markierung entfernen
-	String sep = " ";
-	XmTextReplace (source_text_w,
-		       last_pos + bp_indent_amount - 1,
-		       last_pos + bp_indent_amount,
-		       sep);
-    }
+	read_file(file_name, line);
 
-    // Zeilennummer usw. anzeigen
-    _show_execution_position(file_name, line);
+    if (file_name == current_file_name)
+    {
+	if (bp_indent_amount > 0)
+	{
+	    // Alte Markierung entfernen
+	    String sep = " ";
+	    XmTextReplace (source_text_w,
+			   last_pos + bp_indent_amount - 1,
+			   last_pos + bp_indent_amount,
+			   sep);
+	}
+
+	// Zeilennummer usw. anzeigen
+	_show_execution_position(file_name, line);
+    }
 }
 
 
