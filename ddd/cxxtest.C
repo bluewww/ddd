@@ -375,7 +375,7 @@ void array_test()
 }
 
 //--------------------------------------------------------------------------
-#define numbers(x) (sizeof((x)) / sizeof((x)[0]))
+#define numbers(x) (int)(sizeof((x)) / sizeof((x)[0]))
 
 void shell_sort(int a[], int size)
 {
