@@ -61,7 +61,7 @@ public:
 	_mstring(XmStringCreateLtoR((String)text, charset))
     {}
 
-    MString(XmString text):
+    MString(XmString text, bool):
 	_mstring(XmStringCopy(text))
     {}
 
@@ -179,7 +179,7 @@ public:
 // Addition
 inline MString operator + (const MString& m1, const MString& m2)
 {
-    return MString(XmStringConcat(m1.xmstring(), m2.xmstring()));
+    return MString(XmStringConcat(m1.xmstring(), m2.xmstring()), true);
 }
 
 inline MString operator + (const MString& m, String s)

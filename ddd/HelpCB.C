@@ -94,7 +94,7 @@ static MString get_help_string(Widget widget)
 			      subresources, XtNumber(subresources), 
 			      NULL, 0);
 
-    MString text = values.helpString;
+    MString text(values.helpString, true);
     if ((text.xmstring() == 0 || text.isEmpty()) && DefaultHelpText != 0)
 	text = DefaultHelpText(widget);
     if (text.xmstring() == 0 || text.isEmpty())
