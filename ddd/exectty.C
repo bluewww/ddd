@@ -71,7 +71,8 @@ extern "C" {
 // implementations.  We do not include the system declaration files here
 // (i.e. <curses.h> or <term.h>), since these include lots of other
 // macros and declarations cluttering our namespace.
-#include <termcap/termcap.h>
+  int tgetent (char *buffer, const char *termtype);
+  char *tgetstr (const char *name, char **area);
 }
 
 #if !HAVE_POPEN_DECL
