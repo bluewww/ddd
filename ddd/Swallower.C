@@ -56,13 +56,6 @@ static XtResource resources[] = {
 
 
 
-// Action function declarations
-
-static XtActionsRec actions[] = {};
-
-static char defaultTranslations[] = "";
-
-
 // Method function declarations
 
 static void ClassInitialize();
@@ -100,8 +93,8 @@ SwallowerClassRec swallowerClassRec = {
     /* initialize               */  Initialize,
     /* initialize_hook          */  NULL,
     /* realize                  */  Realize,
-    /* actions                  */  actions,
-    /* num_actions              */  XtNumber(actions),
+    /* actions                  */  NULL,
+    /* num_actions              */  0,
     /* resources                */  resources,
     /* num_resources            */  XtNumber(resources),
     /* xrm_class                */  NULLQUARK,
@@ -119,7 +112,7 @@ SwallowerClassRec swallowerClassRec = {
     /* accept_focus             */  NULL,
     /* version                  */  XtVersion,
     /* callback_private         */  NULL,
-    /* tm_table                 */  defaultTranslations,
+    /* tm_table                 */  NULL,
     /* query_geometry           */  XtInheritQueryGeometry,
     /* display_accelerator      */  XtInheritDisplayAccelerator,
     /* extension                */  NULL,
