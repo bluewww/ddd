@@ -3980,7 +3980,7 @@ void SourceView::find(const string& s,
     XmTextPosition initial_cursor = cursor;
     int wraps = 0;
 
-    if (current_source == "")
+    if (!have_source())
     {
 	post_error("No source.", "no_source_error", source_text_w);
 	return;
