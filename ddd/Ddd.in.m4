@@ -1188,7 +1188,7 @@ Click on LBL(Close) to close the help window.
 Ddd*helpOnVersionString:	\
 @Logo DDD@logo: \
 The @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
-@rm by Dorothea L\374tkehaus and Andreas Zeller.\n\
+@rm by Dorothea Krabiell, n\351e L\374tkehaus, and Andreas Zeller.\n\
 \n\
 DDD @VERSION@ (@host@),\n\
 Copyright \251 1997 Technische Universit\344t Braunschweig, Germany.\n
@@ -2931,19 +2931,11 @@ Ddd*line_popup.set_temp.documentationString:	\
 
 Ddd*line_popup.temp_n_cont.labelString:		Continue Until Here
 Ddd*line_popup.temp_n_cont.documentationString:	\
-@rm Execute until the program reaches this line or returns from the function
+@rm Set a temporary breakpoint and resume execution
 
-Ddd*address_popup.set.labelString:		Set Breakpoint
-Ddd*address_popup.set.documentationString:	\
-@rm Set a breakpoint at the selected address
-
-Ddd*address_popup.set_temp.labelString:		Set Temporary Breakpoint
-Ddd*address_popup.set_temp.documentationString:	\
-@rm Set a temporary breakpoint which will be deleted when reached
-
-Ddd*address_popup.temp_n_cont.labelString:	Continue Until Here
-Ddd*line_popup.temp_n_cont.documentationString:	\
-@rm Execute until the program reaches this address or returns from the function
+Ddd*line_popup.set_pc.labelString:		Set Execution Position
+Ddd*line_popup.set_pc.documentationString:	\
+@rm Set the current execution position to the selected position
 
 Ddd*bp_popup.disable.labelString:		Disable Breakpoint
 Ddd*bp_popup.disable.documentationString:	\
@@ -2960,6 +2952,10 @@ Ddd*bp_popup.ignore_count.documentationString:	\
 Ddd*bp_popup.delete.labelString:		Delete Breakpoint
 Ddd*bp_popup.delete.documentationString:	\
 @rm Delete the selected breakpoint
+
+Ddd*bp_popup.set_pc.labelString:		Set Execution Position
+Ddd*bp_popup.set_pc.documentationString:	\
+@rm Set the current execution position to the selected position
 
 Ddd*text_popup.print.documentationString: \
 @rm Print the value of the selected item in the @GDB@ console
@@ -3194,7 +3190,7 @@ help on any of these areas.
 !-----------------------------------------------------------------------------
 
 Ddd*gdb_w.value: \
-DDD @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
+DDD @VERSION@ (@host@), by Dorothea Krabiell and Andreas Zeller.\n\
 Copyright \251 1997 Technische Universit\344t Braunschweig, Germany.\n
 
 Ddd*gdb_w.rows:			10
