@@ -5388,6 +5388,8 @@ void _gdb_out(const string& txt)
 
     string text(txt);
     gdb_input_at_prompt = gdb->ends_with_prompt(text);
+    if (gdb_input_at_prompt)
+	debuggee_running = false;
 
     if (promptPosition == 0)
 	promptPosition = XmTextGetLastPosition(gdb_w);
@@ -6069,6 +6071,18 @@ static void gdbUpdateViewsCB(Widget w, XtPointer client_data,
     set_toggle(view_menu[GDBWindow].widget,    have_command_window());
 }
 
+void update_edit_menus()
+{
+    if (gdb_w == 0)
+	return;
+
+    XtPointer call_data = 0;
+
+    gdbUpdateEditCB(gdb_w, XtPointer(GDBWindow),    call_data);
+    gdbUpdateEditCB(gdb_w, XtPointer(SourceWindow), call_data);
+    gdbUpdateEditCB(gdb_w, XtPointer(DataWindow),   call_data);
+}
+
 // In case we have tear-off menus, all these menus must be updated at
 // all times.
 static void gdbUpdateAllMenus()
@@ -6076,11 +6090,9 @@ static void gdbUpdateAllMenus()
     if (mapped_menus() == 0)
 	return;			// No mapped menu
 
-    XtPointer call_data = 0;
+    update_edit_menus();
 
-    gdbUpdateEditCB(gdb_w, XtPointer(GDBWindow),         call_data);
-    gdbUpdateEditCB(gdb_w, XtPointer(SourceWindow),      call_data);
-    gdbUpdateEditCB(gdb_w, XtPointer(DataWindow),        call_data);
+    XtPointer call_data = 0;
 
     gdbUpdateFileCB(gdb_w, XtPointer(command_file_menu), call_data);
     gdbUpdateFileCB(gdb_w, XtPointer(source_file_menu),  call_data);

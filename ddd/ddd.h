@@ -65,6 +65,9 @@ extern void update_arg_buttons();
 // Update user-defined buttons
 extern void update_user_buttons();
 
+// Update `Edit' menu (esp. Undo and Redo actions)
+extern void update_edit_menus();
+
 // Save current option state
 extern void save_option_state();
 

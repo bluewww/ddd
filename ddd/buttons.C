@@ -999,6 +999,8 @@ void refresh_buttons()
 		      undo_buffer.redo_action() != NO_GDB_ANSWER);
     for (i = 0; i < edit_buttons.size(); i++)
 	set_sensitive(edit_buttons[i], source_view->have_source());
+
+    update_edit_menus();
 }
 
 static void RemoveFromArrayCB(Widget w, XtPointer client_data, XtPointer)
