@@ -652,6 +652,7 @@ XSTUFF_OBJECTS = \
 	DestroyCB.o  \
 	ExitCB.o     \
 	InitImage.o  \
+	LabelH.o     \
 	LessTifH.o   \
 	MString.o    \
 	MakeMenu.o   \

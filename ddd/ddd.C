@@ -189,6 +189,7 @@ char ddd_rcsid[] =
 #include "GraphEdit.h"
 #include "GDBAgent.h"
 #include "HistoryD.h"
+#include "LabelH.h"
 #include "MakeMenu.h"
 #include "SourceView.h"
 #include "TimeOut.h"
@@ -1719,6 +1720,10 @@ int main(int argc, char *argv[])
     session_id = app_data.session;
 
     // From this point on, APP_DATA is valid.
+
+    // Setup label hack
+    arg = 0;
+    XtCreateWidget("label_hack", xmLabelHackWidgetClass, toplevel, args, arg);
 
     // Set key bindings
     setup_cut_copy_paste_bindings(XtDatabase(XtDisplay(toplevel)));
