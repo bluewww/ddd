@@ -57,6 +57,7 @@ char buttons_rcsid[] =
 #include "disp-read.h"
 #include "editing.h"
 #include "fortranize.h"
+#include "history.h"
 #include "question.h"
 #include "regexps.h"
 #include "select.h"
@@ -588,6 +589,17 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 	return shortcut_help;
 
     string help_name = gdbHelpName(widget);
+
+    if (help_name.length() == 2 && 
+	help_name[0] == 'r' && isdigit(help_name[1]))
+    {
+	// Return help on `recent file' item
+	StringArray recent_files;
+	get_recent(recent_files);
+	int index = help_name[1] - '1';
+	if (index >= 0 && index < recent_files.size())
+	    return rm(recent_files[index]);
+    }
 
     string tip = NO_GDB_ANSWER;
     if (tip == NO_GDB_ANSWER)
