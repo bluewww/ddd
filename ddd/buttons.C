@@ -648,7 +648,7 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
     // "\tStart executing the object file, passing arguments as\n"
     // "\tcommand line arguments [...]"
 
-    if (tip.contains(help_name, 0) || tip.contains('<') || tip.contains('>'))
+    if (tip.contains(help_name, 0))
     {
 	string new_tip = tip.from(rxuppercase);
 	new_tip.gsub('\n', ' ');
