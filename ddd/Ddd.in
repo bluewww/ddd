@@ -1848,27 +1848,27 @@ Ddd*menubar.view.helpString:	\
 Ddd*viewMenu.tool.labelString:			Command Tool...
 Ddd*viewMenu.tool.mnemonic:			T
 Ddd*viewMenu.tool.documentationString: \
-@rm Open the command tool
+@rm Show and recenter the command tool
 
 Ddd*viewMenu.console.labelString:		Debugger Console...
 Ddd*viewMenu.console.mnemonic:			C
 Ddd*viewMenu.console.documentationString: \
-@rm Open the debugger console
+@rm Show the debugger console and attached windows
 
 Ddd*viewMenu.source.labelString:		Program Source...
 Ddd*viewMenu.source.mnemonic:			S
 Ddd*viewMenu.source.documentationString: \
-@rm Open the source window
+@rm Show the source window
 
 Ddd*viewMenu.data.labelString:			Program Data...
 Ddd*viewMenu.data.mnemonic:			D
 Ddd*viewMenu.data.documentationString: \
-@rm Open the data window
+@rm Show the data window
 
 Ddd*viewMenu.exec.labelString:			Program Execution...
 Ddd*viewMenu.exec.mnemonic:			E
 Ddd*viewMenu.exec.documentationString: \
-@rm Open the program execution window
+@rm Show the program execution window
 
 
 ! Program menu

@@ -1065,6 +1065,16 @@ static XtErrorHandler ddd_original_xt_warning_handler;
 bool main_loop_entered = false;
 jmp_buf main_loop_env;
 
+//-----------------------------------------------------------------------------
+// Set sensitivity
+//-----------------------------------------------------------------------------
+
+inline void set_sensitive(Widget w, bool state)
+{
+    if (w != 0)
+	XtSetSensitive(w, state);
+}
+
 
 //-----------------------------------------------------------------------------
 // DDD main program
@@ -1606,11 +1616,25 @@ int main(int argc, char *argv[])
     if (app_data.status_at_bottom && !app_data.separate_source_window)
 	create_status(source_view_parent);
 
-    // `Help on Window' item
+    // Set up `Help on Window' item
     if (!app_data.separate_source_window && !app_data.separate_data_window)
     {
 	// Whole DDD in one window - `Help on Window' makes no sense
 	XtUnmanageChild(help_on_window_w);
+    }
+
+    // Set up `Windows' menus
+    if (!app_data.separate_source_window)
+    {
+	set_sensitive(command_view_menu[SourceWindow].widget, false);
+	set_sensitive(source_view_menu[SourceWindow].widget, false);
+	set_sensitive(data_view_menu[SourceWindow].widget, false);
+    }
+    if (!app_data.separate_data_window)
+    {
+	set_sensitive(command_view_menu[DataWindow].widget, false);
+	set_sensitive(source_view_menu[DataWindow].widget, false);
+	set_sensitive(data_view_menu[DataWindow].widget, false);
     }
 
     // Paned Window is done
@@ -2033,16 +2057,6 @@ static Boolean ddd_setup_done(XtPointer)
     return True;		// Remove from the list of work procs
 }
 
-
-//-----------------------------------------------------------------------------
-// Set sensitivity
-//-----------------------------------------------------------------------------
-
-inline void set_sensitive(Widget w, bool state)
-{
-    if (w != 0)
-	XtSetSensitive(w, state);
-}
 
 
 //-----------------------------------------------------------------------------
