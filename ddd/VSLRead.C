@@ -137,6 +137,10 @@ void VSLLib::update(istream& s)
 
     if (VSEFlags::verbose)
 	cout << ", done.\n";
+
+    // Reset name and file number
+    vsllinenumber = 0;
+    vslfilename   = "";
 }
 
 
@@ -184,8 +188,10 @@ void VSLLib::parse_echo(const string& msg)
 {
     ostrstream os;
     ostream& s = os;
-    
-    s << vslfilename << ":" << vsllinenumber << ": " << msg;
+
+    if (vsllinenumber > 0)
+	s << vslfilename << ":" << vsllinenumber << ": ";
+    s << msg;
     echo(os);
 }
 
