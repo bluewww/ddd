@@ -362,22 +362,10 @@ Volunteers for these and other projects are welcome!
 
 326 Mihai Budiu <mihaib@gs41.sp.cs.cmu.edu> reports:
 
-    2) The history for the () remembers too much; after a while it is
-       too cluttered to be useful; can this be controlled to cache the
-       latest items only?
-
-       [Provide an appropriate resource.]
-
     4) It would be nice if you had a short-cut to display 'this' when
        debugging C++; I found no easy way.
 
        [graph display `print *this` would help.]
-
-    5) Related to 4) and 2): the history of the 'New display' window
-       is too large to be useful.  I think it should be sorted
-       most-recent-first rather than alphabetically.
-
-       [Provide an appropriate resource for sorting.]
 
 
 327 (Insert new project ideas here)
