@@ -1462,13 +1462,13 @@ Ddd.iconName:				DDD
 
 ! Separate windows
 Ddd*command_shell.title:		DDD: Debugger Console
-Ddd*command_shell.iconName:		DDD: Debugger Console
+Ddd*command_shell.iconName:		DDD: Console
 
 Ddd*source_view_shell.title:		DDD: Program Source
-Ddd*source_view_shell.iconName:		DDD: Program Source
+Ddd*source_view_shell.iconName:		DDD: Source
 
 Ddd*data_disp_shell.title:		DDD: Program Data
-Ddd*data_disp_shell.iconName:		DDD: Program Data
+Ddd*data_disp_shell.iconName:		DDD: Data
 
 ! Command tool
 Ddd*tool_shell.title:			DDD
