@@ -309,7 +309,9 @@ void TTYAgent::open_master()
 		_raiseIOMsg("unlockpt " + string(line));
 	    else if (access(line, R_OK | W_OK))
 		_raiseIOMsg("access " + string(line));
+	    else
 	    {
+		// Everything ok - proceed
 		_master_tty = ttyname(master);
 		_slave_tty  = line;
 #ifdef TIOCFLUSH
