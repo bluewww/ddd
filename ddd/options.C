@@ -697,8 +697,8 @@ void dddSetEditCommandCB(Widget w, XtPointer, XtPointer)
     XtFree(s);
 
     app_data.edit_command = command;
-    set_status("Edit Sources command is " + quote(command));
-    update_options();
+    // set_status("Edit Sources command is " + quote(command));
+    update_reset_preferences();
 }
 
 
@@ -710,8 +710,8 @@ void dddSetGetCoreCommandCB(Widget w, XtPointer, XtPointer)
     XtFree(s);
 
     app_data.get_core_command = command;
-    set_status("Get Core command is " + quote(command));
-    update_options();
+    // set_status("Get Core command is " + quote(command));
+    update_reset_preferences();
 }
 
 
@@ -723,8 +723,8 @@ void dddSetPSCommandCB(Widget w, XtPointer, XtPointer)
     XtFree(s);
 
     app_data.ps_command = command;
-    set_status("List Processes command is " + quote(command));
-    update_options();
+    // set_status("List Processes command is " + quote(command));
+    update_reset_preferences();
 }
 
 
@@ -736,8 +736,8 @@ void dddSetTermCommandCB(Widget w, XtPointer, XtPointer)
     XtFree(s);
 
     app_data.term_command = command;
-    set_status("Execution Window command is " + quote(command));
-    update_options();
+    // set_status("Execution Window command is " + quote(command));
+    update_reset_preferences();
 }
 
 
@@ -749,8 +749,8 @@ void dddSetUncompressCommandCB(Widget w, XtPointer, XtPointer)
     XtFree(s);
 
     app_data.uncompress_command = command;
-    set_status("Uncompress command is " + quote(command));
-    update_options();
+    // set_status("Uncompress command is " + quote(command));
+    update_reset_preferences();
 }
 
 
@@ -762,8 +762,8 @@ void dddSetWWWCommandCB(Widget w, XtPointer, XtPointer)
     XtFree(s);
 
     app_data.www_command = command;
-    set_status("Web Browser is " + quote(command));
-    update_options();
+    // set_status("Web Browser is " + quote(command));
+    update_reset_preferences();
 }
 
 

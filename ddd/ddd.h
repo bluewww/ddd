@@ -56,6 +56,9 @@ extern void _gdb_out(string text);
 // Update option menus
 extern void update_options();
 
+// Update `Reset' button in preferences panel
+extern void update_reset_preferences();
+
 // Update argument buttons
 extern void update_arg_buttons();
 

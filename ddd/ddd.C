@@ -283,7 +283,6 @@ static void gdbUpdateViewsCB     (Widget, XtPointer, XtPointer);
 // Preferences
 static void make_preferences (Widget parent);
 static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer);
-static void update_reset_preferences();
 
 // User emergencies (Ctrl-C)
 bool process_emergencies();
@@ -3150,6 +3149,32 @@ void save_option_state()
 {
     initial_app_data = app_data;
 
+    // Make sure the helper command strings are really duplicated
+    static string edit_command;
+    edit_command = initial_app_data.edit_command;
+    initial_app_data.edit_command = edit_command;
+
+    static string get_core_command;
+    get_core_command = initial_app_data.get_core_command;
+    initial_app_data.get_core_command = get_core_command;
+
+    static string ps_command;
+    ps_command = initial_app_data.ps_command;
+    initial_app_data.ps_command = ps_command;
+
+    static string term_command;
+    term_command = initial_app_data.term_command;
+    initial_app_data.term_command = term_command;
+
+    static string uncompress_command;
+    uncompress_command = initial_app_data.uncompress_command;
+    initial_app_data.uncompress_command = uncompress_command;
+
+    static string www_command;
+    www_command = initial_app_data.www_command;
+    initial_app_data.www_command = www_command;
+
+    // Fetch data display resources
     XtVaGetValues(data_disp->graph_edit, 
 		  XtNshowGrid,   &initial_show_grid,
 		  XtNshowHints,  &initial_show_hints,
@@ -3356,8 +3381,35 @@ bool startup_preferences_changed()
 	      != string(initial_app_data.show_startup_logo);
 }
 
+static void ResetHelpersPreferencesCB(Widget, XtPointer, XtPointer)
+{
+    set_string(edit_command_w,       initial_app_data.edit_command);
+    set_string(get_core_command_w,   initial_app_data.get_core_command);
+    set_string(ps_command_w,         initial_app_data.ps_command);
+    set_string(term_command_w,       initial_app_data.term_command);
+    set_string(uncompress_command_w, initial_app_data.uncompress_command);
+    set_string(www_command_w,        initial_app_data.www_command);
+}
+
+bool helpers_preferences_changed()
+{
+    return string(app_data.edit_command) 
+	   != string(initial_app_data.edit_command)
+	|| string(app_data.get_core_command) 
+	   != string(initial_app_data.get_core_command)
+	|| string(app_data.ps_command) 
+	   != string(initial_app_data.ps_command)
+	|| string(app_data.term_command) 
+	   != string(initial_app_data.term_command)
+	|| string(app_data.uncompress_command) 
+	   != string(initial_app_data.uncompress_command)
+	|| string(app_data.www_command) 
+	   != string(initial_app_data.www_command);
+}
+
+
 static void ResetPreferencesCB(Widget w, XtPointer client_data, 
-			       XtPointer call_data)
+  			       XtPointer call_data)
 {
     Widget panel = (Widget)client_data;
     string panel_name = XtName(panel);
@@ -3370,9 +3422,11 @@ static void ResetPreferencesCB(Widget w, XtPointer client_data,
 	ResetDataPreferencesCB(w, client_data, call_data);
     else if (panel_name == "startup")
 	ResetStartupPreferencesCB(w, client_data, call_data);
+    else if (panel_name == "helpers")
+	ResetHelpersPreferencesCB(w, client_data, call_data);
 }
 
-static void update_reset_preferences()
+void update_reset_preferences()
 {
     if (current_panel != 0 && reset_preferences_w != 0 && option_state_saved)
     {
@@ -3388,6 +3442,8 @@ static void update_reset_preferences()
 	    sensitive = data_preferences_changed();
 	else if (panel_name == "startup")
 	    sensitive = startup_preferences_changed();
+	else if (panel_name == "helpers")
+	    sensitive = helpers_preferences_changed();
 
 	XtSetSensitive(reset_preferences_w, sensitive);
     }
