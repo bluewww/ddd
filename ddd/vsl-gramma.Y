@@ -265,7 +265,7 @@ function_identifier	:	identifier
 				{ $$ = new string("(not)"); }
 ;
 identifier		:	IDENTIFIER
-				{ $$ = new string((char *)vsltext); }
+				{ $$ = new string((const char *)vsltext); }
 ;
 function_definition	:	local_definition
 			|	global_definition
@@ -530,7 +530,7 @@ const_expression	:	string_constant
 ;
 string_constant		:	VSL_STRING
 				{
-				    $$ = new string(unquote((char *)vsltext));
+				    $$ = new string(unquote((const char *)vsltext));
 				    ASSERT($$->OK());
 				}
 			|	string_constant VSL_STRING
@@ -538,14 +538,14 @@ string_constant		:	VSL_STRING
 				    ASSERT($1->OK());
 
 				    $$ = $1;
-				    *$$ += unquote((char *)vsltext);
+				    *$$ += unquote((const char *)vsltext);
 
 				    ASSERT($$->OK());
 				}
 ;
 numeric_constant	:	INTEGER
 				{
-				    $$ = atoi((char *)vsltext);
+				    $$ = atoi((const char *)vsltext);
 				}
 ;
 function_call		:	function_identifier function_argument
