@@ -50,6 +50,7 @@ char value_read_rcsid[] =
 DispValueType determine_type (string value)
 {
     read_leading_blanks (value);
+    strip_final_blanks (value);
 
     switch(gdb->type())
     {
@@ -78,7 +79,10 @@ DispValueType determine_type (string value)
     switch(gdb->type())
     {
     case GDB:
-	if (value.contains('{', 0))
+	// GDB has a special format for pointers to functions:
+	// (e.g. `{int ()} 0x2908 <main>'), so check for closing brace
+	// as well.
+	if (value.contains('{', 0) && value.contains('}', -1))
 	    return Array;
 	break;
 
