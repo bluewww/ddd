@@ -313,6 +313,7 @@ Volunteers for these and other projects are welcome!
     * Remote debugging: remote, tfind.
     * Return from frame: return.
     * Shell command: shell.
+    * File command options: `-readnow' and `-mapped'
 
 313 Rubber_Buccaneer@Galactic.Headquarters.org thinks that the window
     containing the short cut buttons,i.e. step, next, etc.  should
@@ -358,4 +359,4 @@ Volunteers for these and other projects are welcome!
 
 321 Allow `()' expansion in auto-commands.
 
-322 (Insert new project ideas here)
+323 (Insert new project ideas here)
