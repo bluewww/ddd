@@ -1038,7 +1038,8 @@ void send_gdb_command(string cmd, Widget origin,
     else if (is_file_cmd(cmd, gdb))
     {
 	// File may change: display main() function and update displays
-	if (cmd != "# reset")
+	bool is_reset_cmd = (cmd == "# reset");
+	if (!is_reset_cmd)
 	    extra_data->refresh_initial_line = true;
 
 	extra_data->refresh_data = true;
@@ -1055,7 +1056,8 @@ void send_gdb_command(string cmd, Widget origin,
 	    break;
 
 	case PERL:
-	    cmd_data->new_exec_pos = true;
+	    if (!is_reset_cmd)
+		cmd_data->new_exec_pos = true;
 	    extra_data->refresh_initial_line = false;
 	    break;
 
