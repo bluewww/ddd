@@ -2236,7 +2236,9 @@ int main(int argc, char *argv[])
 
     if (app_data.decorate_tool == Auto)
     {
-	// Check for decorated transient windows
+	// Check for decorated transient windows.  We can do this only
+	// after the command shell has been realized, because
+	// otherwise the init shell might always be decorated.
 	start_have_decorated_transients(command_shell);
     }
 
@@ -5211,10 +5213,13 @@ static void start_have_decorated_transients(Widget parent)
     init_shell = verify(XmCreateDialogShell(parent, "init_shell", args, arg));
 
     arg = 0;
+    MString label(DDD_NAME " " DDD_VERSION);
+    XtSetArg(args[arg], XmNlabelString, label.xmstring()); arg++;
     init_label = verify(XmCreateLabel(init_shell, ddd_NAME, args, arg));
     XtManageChild(init_label);
 
-    XFlush(XtDisplay(init_label));
+    wait_until_mapped(init_label, init_shell);
+    XmUpdateDisplay(init_label);
 }
 
 static bool have_decorated_transients()
@@ -5222,18 +5227,39 @@ static bool have_decorated_transients()
     if (init_label == 0 || init_shell == 0)
 	start_have_decorated_transients(command_shell);
 
-    wait_until_mapped(init_label, init_shell);
-    XmUpdateDisplay(init_label);
-    XSync(XtDisplay(init_label), False);
-
     XWindowAttributes shell_attributes;
     XGetWindowAttributes(XtDisplay(init_shell), XtWindow(init_shell), 
 			 &shell_attributes);
 
+#if 0
+    clog << "shell window: " << XtWindow(init_shell)
+	 << ", size: " << BoxPoint(shell_attributes.width, 
+				       shell_attributes.height) << "\n";
+#endif
+
+    // Wait up to 5 seconds until WM has decorated the init shell.
+    // Problem: If we have no WM or a non-decorating WM, this delays
+    // DDD for 5 seconds; this can be avoided by using an explicit
+    // `decorateTool' resource value.
+    Window frame_window = 0;
+    for (int trial = 1; trial < 5; trial++)
+    {
+	frame_window = frame(XtDisplay(init_shell), XtWindow(init_shell));
+	if (frame_window != XtWindow(init_shell))
+	    break;
+	XSync(XtDisplay(init_label), False);
+	sleep(1);
+    }
+
     XWindowAttributes frame_attributes;
-    XGetWindowAttributes(XtDisplay(init_shell), 
-			 frame(XtDisplay(init_shell), XtWindow(init_shell)), 
+    XGetWindowAttributes(XtDisplay(init_shell), frame_window,
 			 &frame_attributes);
+
+#if 0
+    clog << "frame window: " << frame_window 
+	 << ", size: " << BoxPoint(frame_attributes.width, 
+				       frame_attributes.height) << "\n";
+#endif
 
     XtUnmapWidget(init_shell);
     DestroyWhenIdle(init_shell);

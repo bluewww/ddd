@@ -9,10 +9,11 @@ DDD 2.2.1 [in development]
     Changes to DDD 2.2:
     - Auto-raised menus have been disabled by default; use
       `Ddd*autoRaiseMenu: true' in `~/.ddd/init' to re-enable them.
-    - The `gcore' method for getting core files now works.
 
     Bug fixes:
     - DDD now works with Linux libc 5.4.38 and later.
+    - The `gcore' method for getting core files now works.
+    - Improved way of creating decorated command tool.
 
     And again, a couple of minor improvements and bug fixes.  See the
     ChangeLog for details.
