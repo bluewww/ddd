@@ -4455,12 +4455,18 @@ static void gdb_echo_detectedHP(Agent *, void *, void *)
 {
     if (!remote_gdb())
     {
-	// Echo should not happen with a local DDD.
-	post_warning(gdb->title() + " is running in echo mode.",
-		     "gdb_echo_warning");
+	static bool warned = false;
+
+	if (!warned)
+	{
+	    // Echo should not happen with a local DDD.
+	    post_warning(gdb->title() + " is running in echo mode.",
+			 "gdb_echo_warning");
+	    warned = true;
+	}
     }
 
-    // Attempt to disable echo mode explicitly via stty command.
+    // Disable echo mode explicitly via stty command.
     gdb_command(gdb->shell_command("stty -echo -onlcr"), 0, 0, 0, 
 		false, false, COMMAND_PRIORITY_AGAIN);
 }
