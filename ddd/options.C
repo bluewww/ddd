@@ -676,7 +676,7 @@ void save_options(Widget origin)
     // Some settable top-level defaults
     os << bool_app_value(XtNfindWordsOnly,
 			 app_data.find_words_only) << "\n";
-    os << bool_app_value(XtNtabWidth,
+    os << int_app_value(XtNtabWidth,
 			 app_data.tab_width) << "\n";
     os << bool_app_value(XtNcacheSourceFiles,
 			 app_data.cache_source_files) << "\n";
