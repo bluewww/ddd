@@ -111,7 +111,7 @@ $(OTHER_TARGETS): FORCE
 ## DDD-only targets
 
 DDD_TARGETS = \
-	check debug it depend strip dvi ps man html \
+	love check debug it depend strip dvi ps man html \
 	install install-prog install-lib install-man install-info \
 	install-c++-lib install-c++-includes \
 	uninstall uninstall-prog uninstall-lib uninstall-man uninstall-info \
@@ -125,6 +125,11 @@ $(DDD_TARGETS): FORCE
 	echo "==> Making $$target in ./ddd..."; \
 	cd ./ddd; $(MAKE) $${target}
 
+
+## Dummy targets
+.PHONY: scratch
+scratch: clean all depend it
+	@:
 
 ### Distribution stuff
 
