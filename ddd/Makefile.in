@@ -765,7 +765,7 @@ PROGS = $(ddd)
 
 ## Extra demonstration files.
 DEMOS = userinfo stringify huffencode huffdecode cxxtest ctest test-file \
-	test-graph vsl ttytest bug ptest m2test dnrm2 tString mmtest gcore
+	test-graph vsl ttytest bug ptest m2test ftest tString mmtest gcore
 
 ## Where to find texinfo files and so
 MAKEINFO_FLAGS = \
@@ -884,12 +884,12 @@ DISTCLEAN_STUFF	 = $(CLEAN_STUFF) \
 
 # Any files that can be reconstructed, except configure script
 REALCLEAN_STUFF	 = $(DISTCLEAN_STUFF) $(DIST_STUFF) \
-		   header.str trailer.str eps-code.h vr.h
+		   header.str trailer.str eps-code.h vr.h $(MANS)
 
 # All files that can be reconstructed (but may require special programs)
 ULTRACLEAN_STUFF = $(REALCLEAN_STUFF) \
 		   config.h.in stamp-h.in configure Makedeps \
-		   $(MANS) $(README_FILES) $(HTMLS) $(srcdir)/Ddd.in
+		   $(README_FILES) $(HTMLS) $(srcdir)/Ddd.in
 
 
 ## Targets as specified in GNU standards.
