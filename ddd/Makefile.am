@@ -905,10 +905,24 @@ $(srcdir)/eps-code.h: \
 # Demos.
 # -----------------------------------------------------------------------------
 
+# `make check' commands.
+
+# A debugger for debugging DDD.  (gdb)
+DEBUGGER = @DEBUGGER@
+
+# The options for DDD when invoking `make check'.  ()
+DDD_OPTIONS = @DEBUGGER_OPTION@
+
 # For demonstration and debugging purposes
 .PHONY: check
 check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT)
-	XUSERFILESEARCHPATH=%N XAPPLRESDIR=. ./$(ddd)$(EXEEXT) $(DDD_OPTIONS) cxxtest$(EXEEXT)
+	DDD_HOME=$(srcdir)/.. XUSERFILESEARCHPATH=%N XAPPLRESDIR=. \
+	./$(ddd)$(EXEEXT) $(DDD_OPTIONS) cxxtest$(EXEEXT)
+
+.PHONY: debug
+debug: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) .gdbinit
+	DDD_HOME=$(srcdir)/.. XUSERFILESEARCHPATH=%N XAPPLRESDIR=. \
+$(DEBUGGER) ./$(ddd)$(EXEEXT)
 
 # We don't want no optimizing, but debugging info in our test files
 MAKE_DEBUG = \
