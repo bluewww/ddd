@@ -264,35 +264,12 @@
 ! FONTS
 ! ----------------------------------------------------------------------------
 
-! Font sizes.  Here are some resolution-independent alternatives.
-! Ddd*fontList: \
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset,\n\
-! -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\n\
-! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=tt,\n\
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\n\
-! -*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=rm,\n\
-! -*-helvetica-medium-o-*-*-*-90-*-*-*-*-*-*=sl,\n\
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=bf,\n\
-! -*-helvetica-bold-o-*-*-*-90-*-*-*-*-*-*=bs,\n\
-! -*-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*=Logo,\n\
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=logo,\n\
-! -*-symbol-*-*-*-*-90-*-*-*-*-*-*=symbol
-! Ddd*XmTextField.FontList: \
-! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
-! Ddd*XmText.FontList: \
-! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
-! Ddd*tool_buttons.run.fontList: \
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
-! Ddd*tool_buttons.break.fontList: \
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
-! Ddd*tool_buttons*fontList: \
-! -*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset
-! Ddd*vslDefs: \
-! #pragma replace stdfontsize\n\
-! #pragma replace stdfontpoints\n\
-! stdfontsize() = 0;\n\
-! stdfontpoints() = 100;
 
+! Here are some nice alternatives.  Try these.
+
+! Ddd*defaultFont:       helvetica-medium
+! Ddd*fixedWidthFont:    courier
+! Ddd*variableWidthFont: times
 
 
 ! Local Variables:

@@ -2708,16 +2708,17 @@ classes.  The following resources are specific to \s-2@DDD@\s+2.
 .TP
 .B "defaultFont (\fPclass\fR Font)"
 The default \s-2@DDD@\s+2 font to use for labels, menus, buttons, etc.
-The font is specified either as an X font spec, or as a triple
-`\fIfamily\fB-\fIweight\fB-\fIslant\fR'.  Default value is
-`\fBhelvetica-bold-r\fR'.
+The font is specified as an X font spec, where the initial
+'\fIFoundry\fB-\fR' specification may be omitted, as well as any
+specification after `\fIFamily\fR'.
+Default value is `\fBhelvetica-bold\fR'.
 .sp
 .br
 To set the default \s-2@DDD@\s+2 font to, say,
 \fBhelvetica medium\fR, insert a line
 .sp
 .br
-  \fB@Ddd@*defaultFont: helvetica-medium-r\fR
+  \fB@Ddd@*defaultFont: helvetica-medium\fR
 .br
 .sp
 in your `\fB$HOME/.@ddd@/init\fR' file.
@@ -2730,8 +2731,9 @@ ressource overrides any font size specification in the
 .TP
 .B "variableWidthFont (\fPclass\fR Font)"
 The variable width \s-2@DDD@\s+2 font to use for help texts and messages.
-The font is specified either as an X font spec, or as a triple
-`\fIfamily\fB-\fIweight\fB-\fIslant\fR'.
+The font is specified as an X font spec, where the initial
+'\fIFoundry\fB-\fR' specification may be omitted, as well as any
+specification after `\fIFamily\fR'.
 Defaults to `\fBhelvetica-medium-r\fR'.
 .sp
 .br
@@ -2739,7 +2741,7 @@ To set the variable width \s-2@DDD@\s+2 font family to, say,
 \fBtimes\fR, insert a line
 .sp
 .br
-  \fB@Ddd@*fixedWidthFont: times-medium-r\fR
+  \fB@Ddd@*fixedWidthFont: times-medium\fR
 .br
 .sp
 in your `\fB$HOME/.@ddd@/init\fR' file.
@@ -2751,17 +2753,20 @@ This ressource overrides any font size specification in the
 \fB90\fR for a 9.0 point font.
 .TP
 .B "fixedWidthFont (\fPclass\fR Font)"
-The fixed width \s-2@DDD@\s+2 font to use for source code, text fields
-and data displays.  The font is specified either as an X font spec, or
-as a triple `\fIfamily\fB-\fIweight\fB-\fIslant\fR'.  Defaults to
-`\fBlucidatypewriter-medium-r\fR'.
+The fixed width \s-2@DDD@\s+2 font to use for source code, the
+debugger console, text fields, data displays, and the execution
+window.
+The font is specified as an X font spec, where the initial
+'\fIFoundry\fB-\fR' specification may be omitted, as well as any
+specification after `\fIFamily\fR'.
+Defaults to `\fBlucidatypewriter-medium\fR'.
 .sp
 .br
 To set the fixed width \s-2@DDD@\s+2 font family to, say,
 \fBcourier\fR, insert a line
 .sp
 .br
-  \fB@Ddd@*fixedWidthFont: courier-medium-r\fR
+  \fB@Ddd@*fixedWidthFont: courier-medium\fR
 .br
 .sp
 in your `\fB$HOME/.@ddd@/init\fR' file.
@@ -3922,10 +3927,12 @@ hosts.  Usually, `\fBremsh\fR', `\fBrsh\fR', or `\fBon\fR'.
 .B "termCommand (\fPclass\fB TermCommand)"
 The command to invoke a separate tty for showing the input/output of
 the debugged program.  A bourne shell command to run in the separate
-tty is appended this string.  A simple value is
+tty is appended to this string.  The string `\fB@FONT@\fR' is replaced
+by the name of the fixed width font used by \s-2@DDD@\s+2.  A simple
+value is
 .sp
 .br
-  \fB@Ddd@*termCommand: xterm \-e /bin/sh \-c\fR
+  \fB@Ddd@*termCommand: xterm \-fn @FONT@ \-e /bin/sh \-c\fR
 .br
 .TP
 .B "uncompressCommand (\fPclass\fB UncompressCommand)"
