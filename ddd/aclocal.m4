@@ -892,9 +892,9 @@ AC_TRY_COMPILE(
 [
 #include <sys/types.h>
 #include <signal.h>
-RETSIGTYPE handler(int, ...);],
+RETSIGTYPE handler(int ...);],
 [signal(1, handler);], 
-ice_cv_type_sig_handler_args="int, ...")
+ice_cv_type_sig_handler_args="int ...")
 fi
 AC_LANG_RESTORE
 ]

@@ -88,7 +88,7 @@
 
 /* Define to the signal handler type accepted by signal(). 
    See the `signal' man page and the decl in <signal.h> for the exact type.
-   Typically values are `int', `...', and `int, ...'. */
+   Typically values are `int', `...', and `int ...'. */
 #undef SIGHANDLERARGS
 
 /* Define if `regcomp()' from <regex.h> does not work. */
