@@ -555,6 +555,7 @@ static void print_x_error(Display *display, XErrorEvent *event, ostream& os)
     case BadColor:
     case BadGC:
     case BadIDChoice:
+    case BadMatch:
 	os << "  "
 	   << xtext(display, "ResourceID", "ResourceID 0x%x", 
 		    event->resourceid)
@@ -572,6 +573,15 @@ static void print_x_error(Display *display, XErrorEvent *event, ostream& os)
 	os << "  "
 	   << xtext(display, "AtomID", "AtomID 0x%x", event->resourceid)
 	   << "\n";
+	break;
+
+    case BadAccess:
+    case BadAlloc:
+    case BadImplementation:
+    case BadLength:
+    case BadName:
+    case BadRequest:
+	// Nothing special
 	break;
     }
 
