@@ -242,4 +242,6 @@ Volunteers for fixing these and other bugs are welcome!
     options. At that point DDD dies and the options file is not
     updated.
 
-240 (Insert your bug here)
+240 If a member name contains `.', quote it. (vtables on GDB/Linux)
+
+241 (Insert your bug here)
