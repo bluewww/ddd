@@ -37,6 +37,7 @@ char shell_rcsid[] =
 
 #include "AppData.h"
 #include "hostname.h"
+#include "windows.h"
 
 #include <stdlib.h>
 #include <iostream.h>
@@ -63,7 +64,7 @@ string _sh_command(string command, bool force_local,
 		   bool force_display_settings)
 {
     // Fetch display settings
-    string display = getenv("DISPLAY");
+    string display = XDisplayString(XtDisplay(command_shell));
 
     // Make sure display contains host name
     if (display.contains("unix:", 0) || display.contains(":", 0))
