@@ -705,6 +705,7 @@ Meta<Key>V:		previous-page()		    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 Ctrl<Key>Y:		unkill()		    \n\
+Ctrl<Key>backslash:	gdb-control(^\\)	    \n\
 None<Key>osfUp:		gdb-previous-history()	    \n\
 None<Key>osfDown:	gdb-next-history()	    \n\
 None<Key>osfLeft:	gdb-backward-character()    \n\
