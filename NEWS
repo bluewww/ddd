@@ -78,6 +78,8 @@ DDD 2.2 [in beta test]
       * Faster scrolling.  While scrolling source or machine code at
         high speed, glyphs are now unmapped.  Slow scrolling still
         shows glyphs.
+    - When used with SUN DBX, DDD now supports disabling breakpoints
+      and ignore counts.
     - User-defined DDD commands.  DDD now provides a simple facility
       that allows the inferior debugger to execute DDD commands.  For
       details, see `User-Defined Commands' in the DDD manual.
@@ -100,6 +102,7 @@ DDD 2.2 [in beta test]
     - DDD now runs on Linux with GNU libc 5.4.38 and later.
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
       Wiegand <wiegand@kong.gsfc.nasa.gov>.
+    - Support for SUN DBX 3.2 included.
     - DDD no longer hangs while receiving large chunks of data.
     - DDD is now also works with echoing TTY connections.
     - Significant speed-ups in processing debugger and program output.
