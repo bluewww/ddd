@@ -57,11 +57,15 @@ string vsldoc(const string& file)
     while (contents.contains("//", 0))
     {
 	string line = contents.after("//");
-	line = line.through("\n");
+	line = line.before("\n");
 	if (line.contains(" ", 0))  // Strip initial space.
 	    line = line.after(0);
 	if (!line.contains("$", 0)) // RCS comment
+	{
+	    if (doc != "")
+		doc += "\n";
 	    doc += line;
+	}
 	contents = contents.after("\n");
     }
 
