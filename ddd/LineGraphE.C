@@ -233,7 +233,7 @@ void LineGraphEdge::drawLine(Widget w,
 	      l1[X], l1[Y], l2[X], l2[Y]);
 
     // Draw annotation at mid-distance
-    if (gc.drawAnnotations && annotation() != 0)
+    if (annotation() != 0)
     {
 	if (from()->isHint() && to()->isHint())
 	{
@@ -352,7 +352,7 @@ void LineGraphEdge::drawSelf(Widget w,
 	     arcpos[Y], diameter, diameter,
 	     start * 64, extend * 64);
 
-    if (gc.drawAnnotations && annotation() != 0)
+    if (annotation() != 0)
     {
 	// Draw annotation
 	annotation()->draw(w, anno, exposed, gc.edgeGC);
@@ -438,4 +438,34 @@ void LineGraphEdge::_print(ostream& os, const GraphGC &gc) const
     }
 
     GraphEdge::_print(os, gc);
+
+    // Print annotation at mid-distance
+    if (annotation() != 0)
+    {
+	BoxPoint pos1     = from()->pos();
+	BoxRegion region1 = from()->region(gc);
+
+	BoxPoint pos2     = to()->pos();
+	BoxRegion region2 = to()->region(gc);
+
+	BoxPoint l1, l2;
+	findLine(pos1, pos2, region1, region2, l1, l2, gc);
+	if (l1 != l2)
+	{
+	    if (from()->isHint() && to()->isHint())
+	    {
+		// Between two hints -- don't draw anything
+	    }
+	    else if (to()->isHint())
+	    {
+		// Draw at hint position
+		annotation()->_print(os, to()->pos(), gc);
+	    }
+	    else
+	    {
+		// Draw at mid-distance
+		annotation()->_print(os, l1 + (l2 - l1) / 2, gc);
+	    }
+	}
+    }
 }

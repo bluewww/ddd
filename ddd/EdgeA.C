@@ -39,12 +39,11 @@ char EdgeAnnotation_rcsid[] =
 DEFINE_TYPE_INFO_0(EdgeAnnotation)
 
 void EdgeAnnotation::draw(Widget w, const BoxPoint& p,
-			  const BoxRegion& exposed, GC gc) const
+			  const BoxRegion& exposed, const GraphGC& gc) const
 {
-    // Use default GC if needed
-    if (gc == 0)
-	gc = DefaultGCOfScreen(XtScreen(w));
-
-    // Now go and draw.
-    _draw(w, p, exposed, gc);
+    if (gc.drawAnnotations)
+    {
+	// Go and draw.
+	_draw(w, p, exposed, gc);
+    }
 }

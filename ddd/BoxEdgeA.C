@@ -37,14 +37,27 @@ char BoxEdgeAnnotation_rcsid[] =
 
 DEFINE_TYPE_INFO_1(BoxEdgeAnnotation, EdgeAnnotation)
 
-void BoxEdgeAnnotation::_draw(Widget w, const BoxPoint& p,
-			      const BoxRegion& exposed, GC gc) const
+BoxRegion BoxEdgeAnnotation::region(const BoxPoint& p, const GraphGC&) const
 {
     // Center box horizontally 2 pixels above P
     BoxPoint origin(p);
-    origin[X] -= _box->size()[X] / 2;
-    origin[Y] -= _box->size()[Y] + 2;
+    origin[X] -= box()->size()[X] / 2;
+    origin[Y] -= box()->size()[Y] + 2;
 
-    BoxRegion r(origin, _box->size());
-    _box->draw(w, r, exposed, gc);
+    return BoxRegion(origin, box()->size());
+}
+
+void BoxEdgeAnnotation::_draw(Widget w, const BoxPoint& p,
+			      const BoxRegion& exposed, 
+			      const GraphGC& gc) const
+{
+    box()->draw(w, region(p, gc), exposed, gc.edgeGC);
+}
+
+
+// Print
+void BoxEdgeAnnotation::_print(ostream& os, const BoxPoint& p,
+			       const GraphGC& gc) const
+{
+    box()->_print(os, region(p, gc), *gc.printGC);
 }

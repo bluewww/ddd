@@ -45,7 +45,7 @@ private:
 
 protected:
     virtual void _draw(Widget w, const BoxPoint& p,
-		       const BoxRegion& exposed, GC gc) const;
+		       const BoxRegion& exposed, const GraphGC& gc) const;
 
     BoxEdgeAnnotation(const BoxEdgeAnnotation &src)
 	: _box(0)
@@ -53,6 +53,8 @@ protected:
 	if (src._box != 0)
 	    _box = src._box->dup();
     }
+
+    virtual BoxRegion region(const BoxPoint& p, const GraphGC& gc) const;
 
 public:
     BoxEdgeAnnotation(Box *box)
@@ -69,6 +71,13 @@ public:
     {
 	return new BoxEdgeAnnotation(*this);
     }
+
+    // Resources
+    Box *box() const { return _box; }
+
+    // Print
+    virtual void _print(ostream& os, const BoxPoint& p, 
+			const GraphGC& gc) const;
 };
 
 #endif // _DDD_BoxEdgeAnnotation_h

@@ -39,7 +39,7 @@
 class EdgeAnnotation {
 protected:
     virtual void _draw(Widget w, const BoxPoint& p,
-		       const BoxRegion& exposed, GC gc) const = 0;
+		       const BoxRegion& exposed, const GraphGC& gc) const = 0;
 
 public:
     DECLARE_TYPE_INFO
@@ -48,9 +48,20 @@ public:
 
     // Draw annotation centered around P
     virtual void draw(Widget w, const BoxPoint& p,
-		      const BoxRegion& exposed = 
-		      BoxRegion(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX)),
-		      GC gc = 0) const;
+		      const BoxRegion& exposed,
+		      const GraphGC& gc) const;
+
+    // Custom function
+    void draw(Widget w, const BoxPoint& p,
+	      const BoxRegion& exposed = 
+	      BoxRegion(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX)))
+    {
+	draw(w, p, exposed, GraphGC());
+    }
+
+    // Print
+    virtual void _print(ostream& os, const BoxPoint& p, 
+			const GraphGC& gc) const = 0;
 
     // Duplication
     virtual EdgeAnnotation *dup() const = 0;

@@ -251,10 +251,8 @@ void ArcGraphEdge::drawLine(Widget w,
     if (to()->isHint())
     {
 	// Draw annotation at hint position
-	if (gc.drawAnnotations && annotation() != 0)
-	{
+	if (annotation() != 0)
 	    annotation()->draw(w, to()->pos(), exposed, gc.edgeGC);
-	}
     }
 }
 
