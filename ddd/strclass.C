@@ -1310,7 +1310,7 @@ constSubString string::from(const char *t, int startpos) const
 
 int split(const string& src, string *results, int n, const string& sep)
 {
-    string x = src;
+    const string& x = src;
     const char* s = x.chars();
     int sl = x.length();
     int i = 0;
@@ -1329,7 +1329,7 @@ int split(const string& src, string *results, int n, const string& sep)
 
 int split(const string& src, string *results, int n, const regex& r)
 {
-    string x = src;
+    const string& x = src;
     const char* s = x.chars();
     int sl = x.length();
     int i = 0;
