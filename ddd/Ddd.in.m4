@@ -851,6 +851,8 @@ Ddd*terminated_dialog*foreground:  red4
 Ddd*no_debugger_dialog*foreground: red4
 
 ! Glyph colors
+! Note: In Motif 1.2 and later, colors of dragged glyphs 
+! (temp_*) are taken from the drag source.
 Ddd*source_form_w.XmPushButton.background: grey90
 Ddd*source_form_w.plain_arrow.foreground:  DarkGreen
 Ddd*source_form_w.grey_arrow.foreground:   DarkGreen
@@ -3141,52 +3143,70 @@ Ddd*code_form_w.XmPushButton.marginWidth:	   0
 Ddd*code_form_w.XmPushButton.borderWidth:	   0
 
 Ddd*source_form_w.plain_arrow*helpString: \
-STRONG(Plain arrow)\n\
-shows the current execution position in the lowest frame.
+STRONG(Current Execution Position)\n\
+The plain arrow shows the current execution position in the lowest frame.\n\
+\n\
+To change the execution position, drag it with the BUTTON(left mouse button).
 Ddd*source_form_w.plain_arrow*tipString: \
 @rm Current execution position
+Ddd*source_form_w.plain_arrow*documentationString: \
+@rm Current execution position (drag to change)
 
 Ddd*code_form_w.plain_arrow*helpString: \
-STRONG(Plain arrow)\n\
-@rm shows the current program counter in the lowest frame.
+STRONG(Current Program Counter)\n\
+The plain arrow shows the current program counter in the lowest frame.\n\
+\n\
+To change the program counter, drag it with the BUTTON(left mouse button).
 Ddd*code_form_w.plain_arrow*tipString: \
 @rm Current program counter
-
-Ddd*code_form_w.grey_arrow*helpString: \
-STRONG(Grey arrow)\n\
-shows the last program counter in the selected frame.
-Ddd*code_form_w.grey_arrow*tipString: \
-@rm Last program counter in selected frame
+Ddd*code_form_w.plain_arrow*documentationString: \
+@rm Current program counter (drag to change)
 
 Ddd*source_form_w.grey_arrow*helpString: \
-STRONG(Grey arrow)\n\
-shows the last execution position in the selected frame.
+STRONG(Last Execution Position)\n\
+The grey arrow shows the last execution position in the current frame.
 Ddd*source_form_w.grey_arrow*tipString: \
-@rm Last execution position in selected frame
+@rm Last execution position in current frame
+
+Ddd*code_form_w.grey_arrow*helpString: \
+STRONG(Last Program Counter)\n\
+The grey arrow shows the last program counter in the current frame.
+Ddd*code_form_w.grey_arrow*tipString: \
+@rm Last program counter in current frame
 
 Ddd*source_form_w.signal_arrow*helpString: \
-STRONG(Lightning arrow)\n\
-shows the current execution position after being stopped by a signal.
+STRONG(Current Execution Position (signaled))\n\
+The lightning arrow shows the current execution position after being\n\
+stopped by a signal.\n\
+\n\
+To change the execution position, drag it with the BUTTON(left mouse button).
 Ddd*source_form_w.signal_arrow*tipString: \
 @rm Current execution position (stopped by signal)
 
 Ddd*code_form_w.signal_arrow*helpString: \
-STRONG(Lightning arrow)\n\
-shows the current program counter after being stopped by a signal.
+STRONG(Current Program Counter (signaled))\n\
+The lightning arrow shows the current program counter after being\n\
+stopped by a signal.\n\
+\n\
+To change the program counter, drag it with the BUTTON(left mouse button).
 Ddd*code_form_w.signal_arrow*tipString: \
 @rm Current program counter (stopped by signal)
 
 Ddd*plain_stop.helpString: \
-STRONG(Plain stop sign)\n\
-A breakpoint (enabled).\n\
-Press the BUTTON(right mouse button) to change its properties.
+STRONG(Breakpoint (enabled))\n\
+The debugged program will stop when reaching this location.\n\
+\n\
+To change the breakpoint properties, press the BUTTON(right mouse button).\n\
+To move it to another location, drag it using the BUTTON(left mouse button).
 Ddd*plain_stop.tipString: 
 Ddd*plain_stop.documentationString: 
 
 Ddd*grey_stop.helpString: \
-STRONG(Grey stop sign)\n\
-A breakpoint (disabled).\n\
-Press the BUTTON(right mouse button) to change its properties.
+STRONG(Breakpoint (disabled))\n\
+A disabled breakpoint has no effect until reenabled.\n\
+\n\
+To change the breakpoint properties, press the BUTTON(right mouse button).\n\
+To move it to another location, drag it using the BUTTON(left mouse button).
 Ddd*grey_stop.tipString: 
 Ddd*grey_stop.documentationString: 
 
