@@ -95,6 +95,10 @@ struct LockInfo {
     LockInfo()
 	: hostname(), display(), pid(0), uid(0), username()
     {}
+
+    // This should avoid link warnings on SGI
+    // as reported by Mike Tosti <tosti@cinesite.com>
+    ~LockInfo() {}
 };
 
 // Lock session.  Return true iff successful.  Otherwise, return

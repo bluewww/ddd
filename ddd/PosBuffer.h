@@ -105,6 +105,10 @@ public:
 	// clear();
     }
 
+    // This should avoid link warnings on SGI
+    // as reported by Mike Tosti <tosti@cinesite.com>
+    ~PosBuffer() {}
+
     // Filter positions from ANSWER and buffer them.  ANSWER contains
     // any remaining parts.
     void filter(string& answer);

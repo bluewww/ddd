@@ -189,7 +189,7 @@ public:
     }
 
     // Assignment
-    _Assoc<K, V> operator = (const _Assoc<K,V>& m)
+    _Assoc<K, V>& operator = (const _Assoc<K,V>& m)
     {
 	if (this != &m)
 	{
@@ -200,6 +200,7 @@ public:
 	    for (AssocRec<K,V> *e = m.entries; e != 0; e = e->next)
 		(*this)[e->key] = e->value;
 	}
+
 	return *this;
     }
 };
@@ -309,6 +310,26 @@ public:
 	}
 
 	entries = e;
+    }
+
+    // Constructor
+    Assoc()
+	: _Assoc() 
+    {}
+
+    // Destructor
+    ~Assoc() {}
+
+    // Copy
+    Assoc(const Assoc<K,V>& m)
+	: _Assoc(m)
+    {}
+
+    // Assignment
+    Assoc<K, V>& operator = (const Assoc<K,V>& m)
+    {
+	_Assoc<K, V>::operator =(m);
+	return *this;
     }
 };
 

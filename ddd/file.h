@@ -68,6 +68,10 @@ struct ProgramInfo {
     string state;		// Verbose state description
 
     ProgramInfo();		// Initialize
+
+    // This should avoid link warnings on SGI
+    // as reported by Mike Tosti <tosti@cinesite.com>
+    ~ProgramInfo() {}
 };
 
 #endif // _DDD_file_h

@@ -137,6 +137,10 @@ public:
     BreakPoint (string& info_output, char *arg = "",
 		int number = 0, char *file = "");
 
+    // This should avoid link warnings on SGI
+    // as reported by Mike Tosti <tosti@cinesite.com>
+    ~BreakPoint() {}
+
     // Breakpoint number.
     int number() const               { return mynumber; }
 
