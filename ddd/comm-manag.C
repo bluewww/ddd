@@ -931,7 +931,13 @@ void send_gdb_command(string cmd, Widget origin,
 	}
 
 	if (is_define_cmd(cmd))
+	{
+	    string name = cmd.after(rxwhite);
+	    strip_space(name);
+
+	    update_define_later(name);
 	    set_need_save_defines(true);
+	}
 
 	extra_data->refresh_breakpoints = ends_recording(cmd);
 	extra_data->refresh_addr        = false;

@@ -2790,38 +2790,19 @@ static void update_defineHP(Agent *, void *client_data, void *call_data)
     }
 }
 
-static void update_define_later(const string& command)
+// This one is called by send_gdb_command() when seeing `define'
+void update_define_later(const string& command)
 {
     char *c = new char[command.length() + 1];
     strcpy(c, (char *)command);
 
     gdb->addHandler(ReadyForQuestion, update_defineHP, (void *)c);
-}
-
-
-// Log recording state
-static void RecordingHP(Agent *, void *, void *call_data)
-{
-    bool recording = bool(call_data);
-
-    if (!recording)
-    {
-	// Recording is over.  Don't get called again.
-	gdb->removeHandler(Recording, RecordingHP);
-
-	// Fetch new command definition
-	string name = current_name();
-	update_define_later(name);
-    }
 
     UpdateDefinePanelCB();
 }
 
 static void RecordCommandDefinitionCB(Widget w, XtPointer, XtPointer)
 {
-    gdb->removeHandler(Recording, RecordingHP);
-    gdb->addHandler(Recording, RecordingHP);
-
     string name = current_name();
     gdb_command("define " + name, w);
 }

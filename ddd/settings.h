@@ -119,6 +119,9 @@ extern string get_defines(DebuggerType type);
 // True if defined command
 extern bool is_defined_cmd(const string& command);
 
+// Update definition of COMMAND at next GDB prompt
+void update_define_later(const string& command);
+
 // Define command
 extern void dddDefineCommandCB(Widget, XtPointer, XtPointer);
 
