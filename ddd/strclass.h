@@ -803,7 +803,24 @@ inline string::string(const subString& y)
 inline string::string(char c) 
   : rep(string_Salloc(0, &c, 1, 1)) {}
 
-inline string::~string() { if (rep != &_nilstrRep) delete[] (char *)rep; }
+// For HAVE_PLACEMENT_NEW, if using placement new, use operator
+// delete instead of vector delete.
+// 
+// According to wiegand@kong.gsfc.nasa.gov (Robert Wiegand - 520),
+// Purify was flagging this and it does result in undefined behavior.
+inline void string_DeleteRep(strRep *rep)
+{
+#ifdef HAVE_PLACEMENT_NEW
+    operator delete(rep);
+#else
+    delete[] (char *) rep;
+#endif
+}
+
+inline string::~string()
+{
+    if (rep != &_nilstrRep) string_DeleteRep(rep);
+}
 
 inline subString::subString(const subString& x)
   :S(x.S), pos(x.pos), len(x.len) {}

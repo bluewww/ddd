@@ -202,7 +202,8 @@ strRep* string_Salloc(strRep* old, const char* src, int srclen, int newlen)
     rep->len = newlen;
     ncopy0(src, rep->s, srclen);
 
-    if (old != rep && old != 0) delete[] (char *)old;
+    if (old != rep && old != 0)
+	string_DeleteRep(old);
 
     return rep;
 }
@@ -225,7 +226,7 @@ static strRep *string_Sresize(strRep* old, int newlen)
     {
 	rep = string_Snew(newlen);
 	ncopy0(old->s, rep->s, old->len);
-	delete[] (char *)old;
+	string_DeleteRep(old);
     }
     else
 	rep = old;
@@ -267,7 +268,8 @@ strRep* string_Scopy(strRep* old, strRep* s)
 	unsigned newlen = s->len;
 	if (old == 0 || newlen > old->sz)
 	{
-	    if (old != 0) delete[] (char *)old;
+	    if (old != 0) 
+		string_DeleteRep(old);
 	    rep = string_Snew(newlen);
 	}
 	else
@@ -307,7 +309,8 @@ strRep* string_Scat(strRep* old,
     ncopy(s, rep->s, srclen);
     ncopy0(t, &(rep->s[srclen]), tlen);
 
-    if (old != rep && old != 0) delete[] (char *)old;
+    if (old != rep && old != 0)
+	string_DeleteRep(old);
 
     return rep;
 }
@@ -341,7 +344,8 @@ strRep* string_Scat(strRep* old, const char* s, int srclen,
     ncopy(t, &(rep->s[srclen]), tlen);
     ncopy0(u, &(rep->s[srclen+tlen]), ulen);
 
-    if (old != rep && old != 0) delete[] (char *)old;
+    if (old != rep && old != 0)
+	string_DeleteRep(old);
 
     return rep;
 }
@@ -378,7 +382,8 @@ strRep* string_Sprepend(strRep* old, const char* t, int tlen)
     revcopy(&(s[srclen]), &(rep->s[newlen]), srclen+1);
     ncopy(t, rep->s, tlen);
 
-    if (old != rep && old != 0) delete[] (char *)old;
+    if (old != rep && old != 0)
+	string_DeleteRep(old);
 
     return rep;
 }
@@ -571,7 +576,7 @@ void subString::assign(strRep* ysrc, const char* ys, int ylen)
 	ncopy(oldtarg->s, targ->s, pos);
 	ncopy(ys, &(targ->s[pos]), ylen);
 	scopy(&(oldtarg->s[pos + len]), &(targ->s[pos + ylen]));
-	delete[] (char *)oldtarg;
+	string_DeleteRep(oldtarg);
     }
     else if (len == unsigned(ylen))
 	ncopy(ys, &(targ->s[pos]), len);
@@ -656,11 +661,11 @@ int string::_gsub(const char* pat, int pl, const char* r, int rl)
     {
 	rep->len = nrep->len;
 	ncopy0(nrep->s, rep->s, rep->len);
-	delete[] (char *)nrep;
+	string_DeleteRep(nrep);
     }
     else
     {
-	delete[] (char *)rep;
+	string_DeleteRep(rep);
 	rep = nrep;
     }
     return nmatches;
@@ -728,11 +733,11 @@ int string::_gsub(const regex& pat, const char* r, int rl)
     {
 	rep->len = nrep->len;
 	ncopy0(nrep->s, rep->s, rep->len);
-	delete[] (char *)nrep;
+	string_DeleteRep(nrep);
     }
     else
     {
-	delete[] (char *)rep;
+	string_DeleteRep(rep);
 	rep = nrep;
     }
     return nmatches;
