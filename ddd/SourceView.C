@@ -6468,13 +6468,20 @@ void SourceView::dragGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
     {
 	if (w == grey_arrows[k])
 	{
-	    set_status("Cannot drag last execution position");
+	    // Cannot drag last execution position
 	    return;
 	}
-
-	if (w == temp_stops[k] || w == temp_arrows[k])
+	else if (w == plain_arrows[k])
 	{
-	    set_status("Cannot drag temp glyph");
+	    if (!gdb->has_jump_command() && !gdb->has_assign_command())
+	    {
+		// Execution position cannot be dragged
+		return;
+	    }
+	}
+	else if (w == temp_stops[k] || w == temp_arrows[k])
+	{
+	    // Temp glyph cannot be dragged
 	    return;
 	}
     }
