@@ -1072,8 +1072,8 @@ Ddd*grey_cond.labelPixmap:	grey_cond
 ! stdfontpoints() = 90;	\n\
 ! stdfontweight() = weight_medium();
 
-! Default setting: set up font sizes
-Ddd*vslDefs: \
+! Predefined changes: set up font sizes
+Ddd*vslBaseDefs: \
 #replace stdfontsize\n\
 #replace stdfontpoints\n\
 stdfontsize()   = VSL_PIXELS;\n\

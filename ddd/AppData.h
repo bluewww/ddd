@@ -67,6 +67,7 @@
 #define XtNvslLibrary            "vslLibrary"
 #define XtCVSLLibrary            "VSLLibrary"
 #define XtNvslDefs               "vslDefs"
+#define XtNvslBaseDefs           "vslBaseDefs"
 #define XtCVSLDefs               "VSLDefs"
 #define XtNtabWidth              "tabWidth"
 #define XtCTabWidth              "TabWidth"
@@ -317,6 +318,7 @@ struct AppData {
     String    vsl_path;
     String    vsl_library;
     String    vsl_defs;
+    String    vsl_base_defs;
     Cardinal  tab_width;
     Cardinal  lines_above_cursor;
     Cardinal  lines_below_cursor;

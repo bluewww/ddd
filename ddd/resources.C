@@ -216,6 +216,16 @@ XtResource ddd_resources[] = {
 	XtPointer("")
     },
 
+    { 
+	XtNvslBaseDefs, 
+	XtCVSLDefs, 
+	XtRString, 
+	sizeof(String),
+	XtOffsetOf(AppData, vsl_base_defs),
+	XtRString, 
+	XtPointer("")
+    },
+
     {
 	XtNtabWidth,
 	XtCTabWidth,

@@ -3636,14 +3636,21 @@ options, below.
 The paper size used for printing, in format \fIwidth\fR x
 \fIheight\fR.  The default is A4 format, or `\fB210mm x 297mm\fR'.
 .TP
+.B "vslBaseDefs (\fPclass\fB VSLDefs)"
+A string with additional \s-2VSL\s+2 definitions that are appended to
+the builtin \s-2VSL\s+2 library.  This resource is prepended to the
+`\fBvslDefs\fR' resource below and set in the \s-2@DDD@\s+2
+application defaults file; don't change it.
+.TP
 .B "vslDefs (\fPclass\fB VSLDefs)"
 A string with additional \s-2VSL\s+2 definitions that are appended to
-the builtin \s-2VSL\s+2 library.  This resource can be used to
-override specific \s-2VSL\s+2 definitions that affect the data display.
+the builtin \s-2VSL\s+2 library.  The default value is an empty
+string.  This resource can be used to override specific \s-2VSL\s+2
+definitions that affect the data display.
 .RS
 .PP
-The general pattern to replace a function definition \fIfunction\fR with a new
-definition \fInew_def\fR is:
+The general pattern to replace a function definition \fIfunction\fR
+with a new definition \fInew_def\fR is:
 .sp
 .br
 \fB#pragma replace \fIfunction\fR

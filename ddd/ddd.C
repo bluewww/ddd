@@ -2004,7 +2004,8 @@ int main(int argc, char *argv[])
     data_disp = new DataDisp(data_disp_parent,
 			     app_data.vsl_path, 
 			     app_data.vsl_library,
-			     app_data.vsl_defs,
+			     string(app_data.vsl_base_defs) + 
+			     string(app_data.vsl_defs),
 			     app_data.panned_graph_editor,
 			     app_data.toolbars_at_bottom,
 			     label_type);
