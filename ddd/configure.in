@@ -161,8 +161,9 @@ if test "$ddd_check_both" = 1; then
   AC_CHECK_FUNC(accept, checknsl=0, LIBS=$ddd_old_libs)
 fi
 AC_CHECK_FUNC(gethostbyname, , AC_CHECK_LIB(nsl, main, [LIBS="$LIBS -lnsl"]))
+dnl
+dnl If we use gcc or g++, link with -lg++ if it exists
 if test "$GXX" = yes; then
-# Using gcc or g++: Link with -lg++ if it exists
 AC_CHECK_LIB(g++, main, LIBS="$LIBS -lg++")
 fi
 dnl
@@ -172,10 +173,15 @@ dnl
 AC_CHECK_LIB(c, main, LIBC="-lc")
 AC_SUBST(LIBC)
 dnl
-dnl On Linux ELF systems, -lncurses is preferred to -ltermcap.
+dnl On Linux ELF systems, `-lncurses' is preferred to `-ltermcap'.
 dnl Reported by jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
 LIBTERMCAP="../termcap/libtermcap.a"
-AC_CHECK_LIB(ncurses, main, LIBTERMCAP="-lncurses")
+AC_CHECK_LIB(ncurses, tgetent, LIBTERMCAP="-lncurses")
+dnl
+dnl On FreeBSD systems, `-lmytinfo' is preferred to `-lncurses'.
+dnl Reported by Vincenzo Capuano <vcapuano@esoc.esa.de>
+AC_CHECK_LIB(mytinfo, tgetent, LIBTERMCAP="-lmytinfo")
+dnl
 AC_SUBST(LIBTERMCAP)
 dnl
 LIBIBERTY="../libiberty/libiberty.a"
