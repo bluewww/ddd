@@ -161,29 +161,30 @@ static void auto_raise(Widget shell)
 // The currently unflattened button
 static Widget active_button = 0;
 
-static const int SHADOW_THICKNESS = 2;
-
 static void flatten_button(Widget w, bool switch_colors = true)
 {
-    Dimension highlight = SHADOW_THICKNESS;
-    Dimension shadow    = 0;
+    Pixel background;
     Pixmap highlight_pixmap, label_pixmap;
+    Pixmap bottom_shadow_pixmap;
     XtVaGetValues(w,
-		  XmNhighlightThickness, &highlight,
-		  XmNshadowThickness,    &shadow,
+		  XmNbackground,         &background,
 		  XmNlabelPixmap,        &label_pixmap,
 		  XmNhighlightPixmap,    &highlight_pixmap,
+		  XmNbottomShadowPixmap, &bottom_shadow_pixmap,
 		  NULL);
 
-    if (highlight != SHADOW_THICKNESS || shadow != 0)
+    if (bottom_shadow_pixmap == XmUNSPECIFIED_PIXMAP)
     {
 	// clog << "Flattening " << XtName(w) << "\n";
 
 	Arg args[10];
 	Cardinal arg = 0;
 
-	XtSetArg(args[arg], XmNhighlightThickness, SHADOW_THICKNESS); arg++;
-	XtSetArg(args[arg], XmNshadowThickness,    0);                arg++;
+	Pixmap empty = XmGetPixmap(XtScreen(w), "background", 
+				   background, background);
+
+	XtSetArg(args[arg], XmNbottomShadowPixmap, empty); arg++;
+	XtSetArg(args[arg], XmNtopShadowPixmap,    empty); arg++;
 
 	if (switch_colors)
 	{
@@ -197,25 +198,27 @@ static void flatten_button(Widget w, bool switch_colors = true)
 
 static void unflatten_button(Widget w, bool switch_colors = true)
 {
-    Dimension highlight = 0;
-    Dimension shadow    = SHADOW_THICKNESS;
+    Pixel background;
     Pixmap highlight_pixmap, label_pixmap;
+    Pixmap bottom_shadow_pixmap;
     XtVaGetValues(w,
-		  XmNhighlightThickness, &highlight,
-		  XmNshadowThickness, &shadow,
-		  XmNlabelPixmap, &label_pixmap,
-		  XmNhighlightPixmap, &highlight_pixmap,
+		  XmNbackground,         &background,
+		  XmNlabelPixmap,        &label_pixmap,
+		  XmNhighlightPixmap,    &highlight_pixmap,
+		  XmNbottomShadowPixmap, &bottom_shadow_pixmap,
 		  NULL);
 
-    if (highlight != 0 || shadow != SHADOW_THICKNESS)
+    if (bottom_shadow_pixmap != XmUNSPECIFIED_PIXMAP)
     {
 	// clog << "Unflattening " << XtName(w) << "\n";
 
 	Arg args[10];
 	Cardinal arg = 0;
 
-	XtSetArg(args[arg], XmNhighlightThickness, 0);                arg++;
-	XtSetArg(args[arg], XmNshadowThickness,    SHADOW_THICKNESS); arg++;
+	XtSetArg(args[arg], XmNbottomShadowPixmap, 
+		 XmUNSPECIFIED_PIXMAP); arg++;
+	XtSetArg(args[arg], XmNtopShadowPixmap,
+		 XmUNSPECIFIED_PIXMAP); arg++;
 
 	if (switch_colors)
 	{
@@ -270,9 +273,17 @@ static void FlattenCB(Widget w, XtPointer client_data, XtPointer)
 
     bool set = bool(client_data);
     if (set)
+    {
+	// clog << "Arming " << XtName(w) << "\n";
+
 	flatten_button(w, false);
+    }
     else
+    {
+	// clog << "Disarming " << XtName(w) << "\n";
+
 	unflatten_button(w, false);
+    }
 }
 
 static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data, 
@@ -344,9 +355,19 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    arg = 0;
 	    if (flat)
 	    {
-		XtSetArg(args[arg], XmNshadowThickness,    0); arg++;
-		XtSetArg(args[arg], XmNhighlightThickness, 
-			 SHADOW_THICKNESS); arg++;
+		Pixel background;
+		XtVaGetValues(shell, XmNbackground, &background, NULL);
+		Pixmap empty = XmGetPixmap(XtScreen(shell), "background", 
+					   background, background);
+
+		XtSetArg(args[arg], XmNbottomShadowPixmap, empty); arg++;
+		XtSetArg(args[arg], XmNtopShadowPixmap,    empty); arg++;
+		XtSetArg(args[arg], XmNhighlightThickness, 0);     arg++;
+	    }
+	    else
+	    {
+		XtSetArg(args[arg], 
+			 XmNhighlightPixmap, XmUNSPECIFIED_PIXMAP); arg++;
 	    }
 
 	    PushMenuInfo *info = 0;

@@ -912,12 +912,14 @@ void set_label(Widget w, const MString& new_label, char *image)
 	{
 	    Pixel foreground = 0;
 	    Pixel background = 0;
-	    Dimension shadow = 0;
+	    Dimension shadow_thickness    = 0;
+	    Dimension highlight_thickness = 0;
 
 	    XtVaGetValues(w,
 			  XmNforeground, &foreground,
 			  XmNbackground, &background,
-			  XmNshadowThickness, &shadow,
+			  XmNshadowThickness, &shadow_thickness,
+			  XmNhighlightThickness, &highlight_thickness,
 			  NULL);
 
 	    string s1 = image;
@@ -930,7 +932,7 @@ void set_label(Widget w, const MString& new_label, char *image)
 	    Pixmap p3 = XmGetPixmap(XtScreen(w), s3, foreground, background);
 	    Pixmap p4 = XmGetPixmap(XtScreen(w), s4, foreground, background);
 
-	    if (shadow != 0)
+	    if (shadow_thickness != 0)
 	    {
 		// The button is active - pixmaps are swapped
 		Pixmap swap = p4;
@@ -950,7 +952,7 @@ void set_label(Widget w, const MString& new_label, char *image)
 	    {
 		XtSetArg(args[arg], XmNarmPixmap, p3); arg++;
 	    }
-	    if (p4 != XmUNSPECIFIED_PIXMAP)
+	    if (p4 != XmUNSPECIFIED_PIXMAP && highlight_thickness == 0)
 	    {
 		XtSetArg(args[arg], XmNhighlightPixmap, p4); arg++;
 	    }
