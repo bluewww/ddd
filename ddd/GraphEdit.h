@@ -47,7 +47,7 @@
 #define XtNrubberArrows             "rubberArrows"
 #define XtNrubberAnnotations        "rubberAnnotations"
 #define XtNshowHints                "showHints"
-#define XtNshowAnnnotations         "showAnnotations"
+#define XtNshowAnnotations          "showAnnotations"
 #define XtNhintSize                 "hintSize"
 #define XtNopaqueMove               "opaqueMove"
 #define XtNautoRaise                "autoRaise"
