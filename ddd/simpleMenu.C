@@ -100,7 +100,7 @@ static Boolean paste(Widget w, Widget dest)
     Boolean editable = False;
     XtVaGetValues(dest, XmNeditable, &editable, NULL);
     if (!editable)
-	return;
+	return False;
 
     Boolean success = False;
 
