@@ -204,12 +204,13 @@ Volunteers for fixing these and other bugs are welcome!
      crashes after receiving too much data from GDB (e.g. `info
      functions').
 
-078. Rubber banding problems.  "C. Thewalt" <thewalt@ce.Berkeley.EDU>
+078. Rubber banding problems.  C. Thewalt <thewalt@ce.Berkeley.EDU>
      says: When dragging with the left button down in the data window
      to select several objects the rubber band outline gets all messed
      up. The outline draws in the wrong place, not just within the
      selected rectangle, but also in the upper left corner of the
      window regardles of where the selection rectangle starts.
+     [Fixed in DDD 1.5 - AZ]
 
 079. Window resize problems.  louie@dbmx.com (Lewis Alderton) says: I
      am running using FVWM ( virtual window manager ) and when the
@@ -222,4 +223,7 @@ Volunteers for fixing these and other bugs are welcome!
      redraw is such a manner as to hide all the breakpoints, once this
      has happened, I can never see breakpoints in this window again.
 
-080. (Insert your bug here)
+080. Suppress those bison/flex warnings and have users report any remaining
+     warnings they encounter.
+
+081. (Insert your bug here)

@@ -58,7 +58,8 @@ DDD Frequently Asked Questions                                  -*- text -*-
 6.  Does DDD work with DBX on other systems than Sun?
 
     DDD has been reported to run with Sun DBX as shipped with SunOS
-    4.x (aka Solaris 1.x) and SunOS 5.x (aka Solaris 2.x).
+    4.x (aka Solaris 1.x) and SunOS 5.x (aka Solaris 2.x).  It only
+    works partially with DEC DBX (no breakpoints, no data display).
     Unfortunately, DBX is quite different across machines since every
     vendor icorporated his own extensions.  As long as some basics
     stay the same, DDD may work more or less with other DBX versions
@@ -118,7 +119,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
 11. Will DDD compile under LessTif?
 
     As of LessTif 0.33, it will.  But it will not run, due to lacking
-    LessTif features.  See also question 9, above.
+    LessTif features.  See also question #10, above.
 
 
 12. DDD reports `imake' and/or `xmkmf' problems when being started.
@@ -202,7 +203,8 @@ DDD Frequently Asked Questions                                  -*- text -*-
     The font settings in DDD 1.4c do not work well on a variety of X
     displays.  The general scheme is to see the `Fonts' resources in
     the `Ddd' file and copy/modify the appropriate lines to your
-    `.dddinit' file.
+    `.dddinit' file.  (Note: This won't work for the data display.
+    See question #18, below.)
 
     These are the settings from DDD 1.4b:
 
@@ -243,6 +245,58 @@ DDD Frequently Asked Questions                                  -*- text -*-
     -*-lucidatypewriter-medium-r-*-*-*-120-*-*-*-*-*-*=charset
     Ddd*XmText.FontList:      \
     -*-lucidatypewriter-medium-r-*-*-*-120-*-*-*-*-*-*=charset
+
+
+17. How do I set up my own VSL library?
+
+
+    1. Set up a `vsl' directory that holds the VSL libraries
+       (e.g. `/home/tom/lib/vsl/').
+
+    2. From the DDD source distribution, copy the files `vsllib/*.vsl' and
+       `ddd/ddd.vsl' to the `vsl' directory.
+
+    3. Add the following lines to your `~/.dddinit' file:
+
+           Ddd*vslLibrary: 	(full path of `ddd.vsl')
+           Ddd*vslPath:	 	(name of your VSL directory goes here)
+
+       For example, if you have installed the VSL files in
+       `/home/tom/lib/vsl/', write:
+
+           Ddd*vslLibrary: 	/home/tom/lib/vsl/ddd.vsl
+           Ddd*vslPath:	 	/home/tom/lib/vsl
+
+    4. Due to a bug in DDD 1.4d and earlier, the `vslPath' resource is
+       ignored.  In these DDD releases, you must set the environment
+       variable VSL_INCLUDE to the name of your VSL directory before
+       invoking DDD.  For example:
+
+           (sh)  $ VSL_INCLUDE=/home/tom/lib/vsl; export VSL_INCLUDE
+           (csh) % setenv VSL_INCLUDE /home/tom/lib/vsl
+
+       (In releases later than DDD 1.4d, the `vslPath' resource
+        overrides the VSL_INCLUDE environment variable).
+
+    5. In DDD 1.4d and later, you can use the `--vsl-verbose' option
+       to see which files are actually accessed:
+
+           $ ddd --vsl-verbose
+           /home/tom/lib/vsl/ddd.vsl: reading(/home/tom/lib/vsl/ddd.vsl
+           (/home/tom/lib/vsl/std.vsl(/home/tom/lib/vsl/builtin.vsl))
+           (/home/tom/lib/vsl/fonts.vsl)), done.
+
+    6. Go and change `ddd.vsl' (or any other VSL file) as you wish.
+
+
+18. How do I set up font sizes in the data display?
+
+    First set up your own VSL library (see question #17, above).
+    Then, in the file `fonts.vsl', change the line
+
+        stdfontsize() = 12;
+
+    to the appropriate value.
 
 
 $Id$

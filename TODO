@@ -146,7 +146,10 @@ Volunteers for these and other projects are welcome!
         colors ?
 
 070. Matthias Kurz <mk@baerlap.north.de> suggests an option to set
-     debuggee arguments when invoking DDD.
+     debuggee arguments when invoking DDD.  A simple way of
+     implementing that would be: if more than one argument is given,
+     or if the 1st argument is neither a core file nor a process ID,
+     use the remaining arguments as debugee execution arguments.
 
 071. Matthias Kurz <mk@baerlap.north.de> suggests code annotations
      (i.e. comments and graphics that are associated with certain
@@ -193,12 +196,6 @@ Volunteers for these and other projects are welcome!
 078. Have mirror sites for the DDD WWW page.  Maybe via the DDD FTP
      mirrors?
 
-079. Try the `-fconserve-space' flag in G++:
-     Put uninitialized or runtime-initialized global variables into the
-     common segment, as C does.  This saves space in the executable at
-     the cost of not diagnosing duplicate definitions.  If you compile
-     with this flag and your program mysteriously crashes after
-     `main()' has completed, you may have an object that is being
-     destroyed twice because two definitions were merged.
+080. Include the FAQ in the DDD manual.
 
-080. (Insert your project idea here)
+081. (Insert your project idea here)
