@@ -197,4 +197,52 @@ DDD Frequently Asked Questions                                  -*- text -*-
     `doc/ddd-paper.ps' for details on boxes and how they are composed.
 
 
+16. How do I set fonts in DDD?  How do I change the font size?
+
+    The font settings in DDD 1.4c do not work well on a variety of X
+    displays.  The general scheme is to see the `Fonts' resources in
+    the `Ddd' file and copy/modify the appropriate lines to your
+    `.dddinit' file.
+
+    These are the settings from DDD 1.4b:
+
+    Ddd*fontList: \
+    -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset,\
+    -*-lucida sans typewriter-medium-r-*-*-12-*-*-*-*-*-*-*=tt,\
+    -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=key,\
+    -*-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*=rm,\
+    -*-helvetica-medium-o-*-*-12-*-*-*-*-*-*-*=sl,\
+    -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=bf,\
+    -*-helvetica-bold-o-*-*-12-*-*-*-*-*-*-*=bs,\
+    -*-helvetica-bold-r-*-*-18-*-*-*-*-*-*-*=Logo,\
+    -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=logo,\
+    -*-symbol-*-*-*-*-12-*-*-*-*-*-*-*=symbol
+
+    Ddd*XmTextField.FontList: \
+    -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+    Ddd*XmText.FontList:      \
+    -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+
+
+    Vinnie Shelton <shelton@icd.teradyne.com> suggests the following
+    resolution-independent settings:
+
+    Ddd*fontList: \
+    -*-helvetica-bold-r-*-*-*-120-*-*-*-*-iso8859-*=charset,\
+    -*-lucida sans typewriter-medium-r-*-*-*-120-*-*-*-*-iso8859-*=tt,\
+    -*-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*=key,\
+    -*-helvetica-medium-r-*-*-*-120-*-*-*-*-*-*=rm,\
+    -*-helvetica-medium-o-*-*-*-120-*-*-*-*-*-*=sl,\
+    -*-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*=bf,\
+    -*-helvetica-bold-o-*-*-*-120-*-*-*-*-*-*=bs,\
+    -*-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*=Logo,\
+    -*-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*=logo,\
+    -*-symbol-*-*-*-*-*-120-*-*-*-*-*-*=symbol
+
+    Ddd*XmTextField.FontList: \
+    -*-lucidatypewriter-medium-r-*-*-*-120-*-*-*-*-*-*=charset
+    Ddd*XmText.FontList:      \
+    -*-lucidatypewriter-medium-r-*-*-*-120-*-*-*-*-*-*=charset
+
+
 $Id$

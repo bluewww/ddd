@@ -115,10 +115,6 @@ Volunteers for fixing these and other bugs are welcome!
      10/41 with SunOs 4.1.3, using `lpr' instead of `lp -c' to print
      the graph hangs up DDD.
 
-061. Michael Schmitz <mc@col.sw-ley.de> states that using DDD V1.3a on
-     a HP9000/856 running HP/UX 9.0.4 sometimes crashes the system.
-     The problem does occur only if you use the data window.
-
 062. Seth J. Bradley <sbradley@scic.intel.com> says that DDD only
      displays the upper 32 bits of "unsigned long long" data.
      Xxgdb, mxgdb and xde all display the full 64 bits of this data

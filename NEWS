@@ -1,8 +1,20 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 1.4c (NOT YET RELEASED)
----------------------------
+DDD 1.4d
+--------
+
+    Bug fix release; fixes problems introduced in DDD 1.4c.
+
+    Changes to DDD 1.4c:
+    - Several people have reported problems accessing the fonts
+      specified in DDD 1.4c.  We have thus now re-enabled the scheme
+      from DDD 1.4b; how to change fonts is explained in the DDD FAQ.
+    - Various fixes for C++ compilers other than GCC included.
+
+
+DDD 1.4c
+--------
 
     Bug fix release.  No user-visible changes.
 
