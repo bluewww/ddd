@@ -225,6 +225,10 @@ void ddd_install_fatal(char *program_name)
     signal(SIGBUS, SignalProc(ddd_fatal));
 #endif
 
+#ifdef SIGABRT
+    signal(SIGABRT, SignalProc(ddd_fatal));
+#endif
+
 #ifdef SIGIOT
     signal(SIGIOT, SignalProc(ddd_fatal));
 #endif
@@ -468,10 +472,10 @@ static bool ddd_dump_core(int sig...)
 	if (sig == SIGUSR1)
 	{
 	    // SIGUSR1 does not cause a core dump; use abort() instead
-#if defined(SIGIOT)
-	    sig = SIGIOT;
-#elif defined(SIGABRT)
+#if defined(SIGABRT)
 	    sig = SIGABRT;
+#elif defined(SIGIOT)
+	    sig = SIGIOT;
 #endif // defined(SIGIOT)
 	}
 #endif // defined(SIGUSR1)
