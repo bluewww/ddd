@@ -319,8 +319,6 @@ Volunteers for these and other projects are welcome!
 
 321 Allow `()' expansion in auto-commands.
 
-322*Add support for the Perl debugger.
-
 325 Allow `snapshots' of the currently displayed data.  Just create
     `frozen' copies of displays that simply display the original data
     (graph display `a = 16`) and are no longer updated.  See also 176.
