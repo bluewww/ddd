@@ -528,15 +528,11 @@ Ddd*XmTextField.FontList: \
 	-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
 Ddd*XmText.FontList:	  \
 	-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
-Ddd*XmFileSelectionDialog*XmList.FontList:	  \
-	-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
 
 ! The resolution-independent alternative.
 ! Ddd*XmTextField.FontList: \
 ! 	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
 ! Ddd*XmText.FontList:	  \
-! 	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
-! Ddd*XmFileSelectionDialog*XmList.FontList:	  \
 ! 	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
 
 

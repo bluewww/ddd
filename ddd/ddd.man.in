@@ -1541,15 +1541,13 @@ copy into your `\fB$HOME/.dddinit\fR' file:
   -*-symbol-*-*-*-*-90-*-*-*-*-*-*=symbol\fR
 .br
 .sp
-The fonts in text fields and lists are specified as follows:
+The fonts in text fields are specified as follows:
 .sp
 .br
   \fB@Ddd@*XmTextField.FontList: \\
   -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
   @Ddd@*XmText.FontList: \\
   -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
-  @Ddd@*XmList.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset\fR
 .br
 .sp
 And here is another resolution-independent alternative:
@@ -1559,8 +1557,6 @@ And here is another resolution-independent alternative:
   -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
   @Ddd@*XmText.FontList: \\
   -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
-  @Ddd@*XmList.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset\fR
 .br
 .sp
 These are the fonts in the command tool:
