@@ -43,7 +43,7 @@
 void set_status(string message);
 
 // Same, but use an MString.
-void set_status_mstring(const MString& text);
+void set_status_mstring(MString text);
 
 // Return current contents of status line
 extern const MString& current_status();

@@ -372,7 +372,7 @@ void set_status(string message)
 }
 
 // Same, but use an MString.
-void set_status_mstring(const MString& message)
+void set_status_mstring(MString message)
 {
     if (status_w == 0)
 	return;
