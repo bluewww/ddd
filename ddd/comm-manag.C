@@ -1012,7 +1012,7 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmd_data->pos_buffer = 0;
 	}
 
-	if (is_define_cmd(cmd))
+	if (check && is_define_cmd(cmd))
 	{
 	    string name = cmd.after(rxwhite);
 	    strip_space(name);
