@@ -34,7 +34,7 @@ Ddd*appDefaultsVersion: 2.1.90
 ! NOTE: If you're looking here for things to customize, look
 ! under the DDD `Preferences' menu first.  Many things are customizable
 ! from there.  Things which are settable via the Preferences dialog
-! are stored in the ~/.dddinit file.
+! are stored in the `~/.dddinit' file.
 ! =================================================================
 !
 ! This file lists the default resources built into DDD.	 You can use the
@@ -78,7 +78,8 @@ undefine([index])dnl
 undefine([format])dnl
 dnl
 dnl
-dnl Some stuff we frequently need
+dnl Typesetting
+dnl -----------
 dnl
 dnl ITEM issues a simple centered dot.
 define(ITEM,@tt \267 @rm)dnl
@@ -146,8 +147,15 @@ dnl POSTSCRIPT includes a (TM) symbol
 define(POSTSCRIPT,PostScript@symbol \344 @rm )dnl
 dnl
 dnl KEY_RETURN is the symbol of the return key
-define(KEY_RETURN,`@symbol \277@rm')dnl
-
+define(KEY_RETURN,KEY(RETURN @symbol \277))dnl
+dnl
+dnl ONE_HALF is the 1/2 symbol.
+define(ONE_HALF,\275)
+dnl
+dnl TIMES is the x symbol.
+define(TIMES,\327)
+dnl
+dnl
 !-----------------------------------------------------------------------------
 ! User-settable resources
 !-----------------------------------------------------------------------------
@@ -991,10 +999,10 @@ None<Key>osfBeginData:	gdb-beginning-of-line()	    \n\
 None<Key>osfEndData:	gdb-end-of-line()	    \n\
 None<Key>Home:		gdb-beginning-of-line()	    \n\
 None<Key>End:		gdb-end-of-line()	    \n\
-None<Key>osfPageUp:	previous-page()		    \n\
-None<Key>osfPageDown:	next-page()	            \n\
-None<Key>Prior:		previous-page()		    \n\
-None<Key>Next:		next-page()	            \n\
+~Shift<Key>osfPageUp:	previous-page()		    \n\
+~Shift<Key>osfPageDown:	next-page()	            \n\
+~Shift<Key>Prior:	previous-page()		    \n\
+~Shift<Key>Next:	next-page()	            \n\
 Shift<Key>osfPageUp:	previous-page(extend)	    \n\
 Shift<Key>osfPageDown:	next-page(extend)           \n\
 Shift<Key>Prior:	previous-page(extend)	    \n\
@@ -1003,254 +1011,81 @@ None<Key>R7:		gdb-beginning-of-line()	    \n\
 None<Key>R13:		gdb-end-of-line()	    \n\
 None<Key>Tab:		gdb-complete-command()	    \n
 
-! Have some of these in argument fields as well
-Ddd*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+dnl Basic translations for all other texts and text fields
+define(EMACS_TRANSLATIONS,
+[Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
 Ctrl<Key>B:		backward-character()	    \n\
 Ctrl<Key>D:		delete-next-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
-Ctrl<Key>T:		gdb-complete-arg(print)	    \n\
 Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 None<Key>R7:		beginning-of-line()	    \n\
 None<Key>R13:		end-of-line()		    \n\
-None<Key>Tab:		gdb-complete-tab(print)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n
-
-! Have some of these in other texts as well
-Ddd*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
-Ctrl<Key>B:		backward-character()	    \n\
-Ctrl<Key>D:		delete-next-character()	    \n\
-Ctrl ~Shift<Key>E:	end-of-line()		    \n\
-Ctrl<Key>F:		forward-character()	    \n\
-Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>K:		delete-to-end-of-line()	    \n\
-Ctrl<Key>U: 		beginning-of-line()	    \
-			delete-to-end-of-line()	    \n\
-Ctrl<Key>V:		next-page()		    \n\
+None<Key>End:		end-of-line()		    \n])dnl
+dnl
+dnl Same, but with TAB completion
+define(COMPLETE_TRANSLATIONS,[#override] \
+EMACS_TRANSLATIONS[\
+Ctrl<Key>T:		gdb-complete-arg($1)	    \n\
+None<Key>Tab:		gdb-complete-tab($1)	    \n])dnl
+dnl
+dnl Same, but with extra pageup/pagedown
+define(TEXT_TRANSLATIONS,[#override] \
+EMACS_TRANSLATIONS[\
 Meta<Key>V:		previous-page()		    \n\
-Ctrl<Key>W:		delete-previous-word()	    \n\
-Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
-None<Key>R7:		beginning-of-line()	    \n\
-None<Key>R13:		end-of-line()		    \n\
-None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n\
-None<Key>Home:		gdb-beginning-of-line()	    \n\
-None<Key>End:		gdb-end-of-line()	    \n\
-None<Key>osfPageUp:	previous-page()		    \n\
-None<Key>osfPageDown:	next-page()	            \n\
-None<Key>Prior:		previous-page()		    \n\
-None<Key>Next:		next-page()	            \n\
+Ctrl<Key>V:		next-page()		    \n\
+~Shift<Key>Prior:	previous-page()		    \n\
+~Shift<Key>Next:	next-page()	            \n\
 Shift<Key>osfPageUp:	previous-page(extend)	    \n\
 Shift<Key>osfPageDown:	next-page(extend)           \n\
 Shift<Key>Prior:	previous-page(extend)	    \n\
-Shift<Key>Next:		next-page(extend)	    \n
+Shift<Key>Next:		next-page(extend)	    \n])dnl
+
+! Have some of these in argument fields as well
+Ddd*XmText.translations: COMPLETE_TRANSLATIONS(print)
 
 
-! In breakpoint dialogs, use a different completion
-Ddd*new_breakpoint_dialog*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
-Ctrl<Key>B:		backward-character()	    \n\
-Ctrl<Key>D:		delete-next-character()	    \n\
-Ctrl ~Shift<Key>E:	end-of-line()		    \n\
-Ctrl<Key>F:		forward-character()	    \n\
-Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>K:		delete-to-end-of-line()	    \n\
-Ctrl<Key>T:		gdb-complete-arg(break)	    \n\
-Ctrl<Key>U: 		beginning-of-line()	    \
-			delete-to-end-of-line()	    \n\
-Ctrl<Key>W:		delete-previous-word()	    \n\
-Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
-Ctrl<Key>Y:		unkill()		    \n\
-None<Key>R7:		beginning-of-line()	    \n\
-None<Key>R13:		end-of-line()		    \n\
-None<Key>Tab:		gdb-complete-tab(break)	    \n\
-None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n
+! Have some of these in other texts as well
+Ddd*XmText.translations: TEXT_TRANSLATIONS
 
-Ddd*new_breakpoint_dialog*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
-Ctrl<Key>B:		backward-character()	    \n\
-Ctrl<Key>D:		delete-next-character()	    \n\
-Ctrl ~Shift<Key>E:	end-of-line()		    \n\
-Ctrl<Key>F:		forward-character()	    \n\
-Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>K:		delete-to-end-of-line()	    \n\
-Ctrl<Key>T:		gdb-complete-arg(break)	    \n\
-Ctrl<Key>U: 		beginning-of-line()	    \
-			delete-to-end-of-line()	    \n\
-Ctrl<Key>W:		delete-previous-word()	    \n\
-Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
-None<Key>R7:		beginning-of-line()	    \n\
-None<Key>R13:		end-of-line()		    \n\
-None<Key>Tab:		gdb-complete-tab(break)	    \n\
-None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n
 
-! In file dialogs, use a different completion
-Ddd*XmFileSelectionBox*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
-Ctrl<Key>B:		backward-character()	    \n\
-Ctrl<Key>D:		delete-next-character()	    \n\
-Ctrl ~Shift<Key>E:	end-of-line()		    \n\
-Ctrl<Key>F:		forward-character()	    \n\
-Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>K:		delete-to-end-of-line()	    \n\
-Ctrl<Key>T:		gdb-complete-arg(file)	    \n\
-Ctrl<Key>U: 		beginning-of-line()	    \
-			delete-to-end-of-line()	    \n\
-Ctrl<Key>W:		delete-previous-word()	    \n\
-Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
-Ctrl<Key>Y:		unkill()		    \n\
-None<Key>R7:		beginning-of-line()	    \n\
-None<Key>R13:		end-of-line()		    \n\
-None<Key>Tab:		gdb-complete-tab(file)	    \n\
-None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n
+! In breakpoint dialogs, use a `break' completion
+Ddd*new_breakpoint_dialog*XmText.translations:   COMPLETE_TRANSLATIONS(break)
 
-Ddd*XmFileSelectionBox*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
-Ctrl<Key>B:		backward-character()	    \n\
-Ctrl<Key>D:		delete-next-character()	    \n\
-Ctrl ~Shift<Key>E:	end-of-line()		    \n\
-Ctrl<Key>F:		forward-character()	    \n\
-Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>K:		delete-to-end-of-line()	    \n\
-Ctrl<Key>T:		gdb-complete-arg(file)	    \n\
-Ctrl<Key>U: 		beginning-of-line()	    \
-			delete-to-end-of-line()	    \n\
-Ctrl<Key>W:		delete-previous-word()	    \n\
-Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
-None<Key>R7:		beginning-of-line()	    \n\
-None<Key>R13:		end-of-line()		    \n\
-None<Key>Tab:		gdb-complete-tab(file)	    \n\
-None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n
+Ddd*new_breakpoint_dialog*XmTextField.translations: \
+COMPLETE_TRANSLATIONS(break)
 
-Ddd*print_popup*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
-Ctrl<Key>B:		backward-character()	    \n\
-Ctrl<Key>D:		delete-next-character()	    \n\
-Ctrl ~Shift<Key>E:	end-of-line()		    \n\
-Ctrl<Key>F:		forward-character()	    \n\
-Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>K:		delete-to-end-of-line()	    \n\
-Ctrl<Key>T:		gdb-complete-arg(file)      \n\
-Ctrl<Key>U: 		beginning-of-line()	    \
-			delete-to-end-of-line()	    \n\
-Ctrl<Key>W:		delete-previous-word()	    \n\
-Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
-None<Key>R7:		beginning-of-line()	    \n\
-None<Key>R13:		end-of-line()		    \n\
-None<Key>Tab:		gdb-complete-tab(file)	    \n\
-None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n
 
-Ddd*print_popup*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
-Ctrl<Key>B:		backward-character()	    \n\
-Ctrl<Key>D:		delete-next-character()	    \n\
-Ctrl ~Shift<Key>E:	end-of-line()		    \n\
-Ctrl<Key>F:		forward-character()	    \n\
-Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>K:		delete-to-end-of-line()	    \n\
-Ctrl<Key>T:		gdb-complete-arg(file)      \n\
-Ctrl<Key>U: 		beginning-of-line()	    \
-			delete-to-end-of-line()	    \n\
-Ctrl<Key>W:		delete-previous-word()	    \n\
-Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
-None<Key>R7:		beginning-of-line()	    \n\
-None<Key>R13:		end-of-line()		    \n\
-None<Key>Tab:		gdb-complete-tab(file)	    \n\
-None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n
+! In file dialogs, use a `file' completion
+Ddd*XmFileSelectionBox*XmText.translations:      COMPLETE_TRANSLATIONS(file)
 
-Ddd*make_dialog*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
-Ctrl<Key>B:		backward-character()	    \n\
-Ctrl<Key>D:		delete-next-character()	    \n\
-Ctrl ~Shift<Key>E:	end-of-line()		    \n\
-Ctrl<Key>F:		forward-character()	    \n\
-Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>K:		delete-to-end-of-line()	    \n\
-Ctrl<Key>T:		gdb-complete-arg(file)	    \n\
-Ctrl<Key>U: 		beginning-of-line()	    \
-			delete-to-end-of-line()	    \n\
-Ctrl<Key>W:		delete-previous-word()	    \n\
-Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
-None<Key>R7:		beginning-of-line()	    \n\
-None<Key>R13:		end-of-line()		    \n\
-None<Key>Tab:		gdb-complete-tab(file)	    \n\
-None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n
+Ddd*XmFileSelectionBox*XmTextField.translations: COMPLETE_TRANSLATIONS(file)
 
-Ddd*make_dialog*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
-Ctrl<Key>B:		backward-character()	    \n\
-Ctrl<Key>D:		delete-next-character()	    \n\
-Ctrl ~Shift<Key>E:	end-of-line()		    \n\
-Ctrl<Key>F:		forward-character()	    \n\
-Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>K:		delete-to-end-of-line()	    \n\
-Ctrl<Key>T:		gdb-complete-arg(file)	    \n\
-Ctrl<Key>U: 		beginning-of-line()	    \
-			delete-to-end-of-line()	    \n\
-Ctrl<Key>W:		delete-previous-word()	    \n\
-Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
-None<Key>R7:		beginning-of-line()	    \n\
-None<Key>R13:		end-of-line()		    \n\
-None<Key>Tab:		gdb-complete-tab(file)	    \n\
-None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n
 
-Ddd*XmSelectionBox*XmText.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
-Ctrl<Key>B:		backward-character()	    \n\
-Ctrl<Key>D:		delete-next-character()	    \n\
-Ctrl ~Shift<Key>E:	end-of-line()		    \n\
-Ctrl<Key>F:		forward-character()	    \n\
-Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>K:		delete-to-end-of-line()	    \n\
-Ctrl<Key>T:		gdb-complete-arg(shell)     \n\
-Ctrl<Key>U: 		beginning-of-line()	    \
-			delete-to-end-of-line()	    \n\
-Ctrl<Key>W:		delete-previous-word()	    \n\
-Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
-Ctrl<Key>Y:		unkill()		    \n\
-None<Key>R7:		beginning-of-line()	    \n\
-None<Key>R13:		end-of-line()		    \n\
-None<Key>Tab:		gdb-complete-tab(shell)	    \n\
-None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n
+! In `print' and `make' dialogs, use a `file' completion, too.
+Ddd*print_popup*XmText.translations: 		 COMPLETE_TRANSLATIONS(file)
 
-Ddd*XmSelectionBox*XmTextField.translations: #override \
-Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
-Ctrl<Key>B:		backward-character()	    \n\
-Ctrl<Key>D:		delete-next-character()	    \n\
-Ctrl ~Shift<Key>E:	end-of-line()		    \n\
-Ctrl<Key>F:		forward-character()	    \n\
-Ctrl<Key>H:		delete-previous-character() \n\
-Ctrl<Key>K:		delete-to-end-of-line()	    \n\
-Ctrl<Key>T:		gdb-complete-arg(shell)     \n\
-Ctrl<Key>U: 		beginning-of-line()	    \
-			delete-to-end-of-line()	    \n\
-Ctrl<Key>W:		delete-previous-word()	    \n\
-Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
-None<Key>R7:		beginning-of-line()	    \n\
-None<Key>R13:		end-of-line()		    \n\
-None<Key>Tab:		gdb-complete-tab(shell)	    \n\
-None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n
+Ddd*print_popup*XmTextField.translations:        COMPLETE_TRANSLATIONS(file)
+
+Ddd*make_dialog*XmText.translations: 		 COMPLETE_TRANSLATIONS(file)
+
+Ddd*make_dialog*XmTextField.translations:        COMPLETE_TRANSLATIONS(file)
+
+
+! In selection boxes, use `shell' completion.
+Ddd*XmSelectionBox*XmText.translations: 	 COMPLETE_TRANSLATIONS(shell)
+
+Ddd*XmSelectionBox*XmTextField.translations:     COMPLETE_TRANSLATIONS(shell)
+
 
 ! The source window is especially tuned for word selection.
-Ddd*source_text_w.translations: #override \
+define(SOURCE_TRANSLATIONS,[#override \
 None<Btn3Down>:		source-popup-menu() \n\
 None<Btn1Down>:		source-start-select-word()  \n\
 None<Btn1Up>:		source-end-select-word()    \n\
@@ -1273,51 +1108,19 @@ Shift<Key>osfPageUp:	previous-page(extend)	    \
 			source-update-glyphs()	    \n\
 Shift<Key>osfPageDown:	next-page(extend)	    \
 			source-update-glyphs()	    \n\
-None<Key>Prior:		previous-page()		    \
+~Shift<Key>Prior:	previous-page()		    \
 			source-update-glyphs()	    \n\
-None<Key>Next:		next-page()		    \
+~Shift<Key>Next:	next-page()		    \
 			source-update-glyphs()	    \n\
 Shift<Key>Prior:	previous-page(extend)	    \
 			source-update-glyphs()	    \n\
 Shift<Key>Next:		next-page(extend)	    \
 			source-update-glyphs()	    \n\
-None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n
+~Shift<Key>Home:	beginning-of-line()	    \n\
+~Shift<Key>End:		end-of-line()		    \n])dnl
+Ddd*source_text_w.translations: SOURCE_TRANSLATIONS
 
-! The machine code window is tuned as well.
-Ddd*code_text_w.translations: #override \
-None<Btn3Down>:		source-popup-menu() \n\
-None<Btn1Down>:		source-start-select-word()  \n\
-None<Btn1Up>:		source-end-select-word()    \n\
-Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
-Ctrl<Key>B:		backward-character()	    \n\
-Ctrl ~Shift<Key>E:	end-of-line()		    \n\
-Ctrl<Key>F:		forward-character()	    \n\
-Ctrl<Key>V:		next-page()		    \
-			source-update-glyphs()	    \n\
-Meta<Key>V:		previous-page()		    \
-			source-update-glyphs()	    \n\
-None<Key>R7:		beginning-of-line()	    \n\
-None<Key>R13:		end-of-line()		    \n\
-None<Key>Tab:		PrimitiveNextTabGroup()	    \n\
-None<Key>osfPageUp:	previous-page()		    \
-			source-update-glyphs()	    \n\
-None<Key>osfPageDown:	next-page()		    \
-			source-update-glyphs()	    \n\
-Shift<Key>osfPageUp:	previous-page(extend)	    \
-			source-update-glyphs()	    \n\
-Shift<Key>osfPageDown:	next-page(extend)	    \
-			source-update-glyphs()	    \n\
-None<Key>Prior:		previous-page()		    \
-			source-update-glyphs()	    \n\
-None<Key>Next:		next-page()		    \
-			source-update-glyphs()	    \n\
-Shift<Key>Prior:	previous-page(extend)	    \
-			source-update-glyphs()	    \n\
-Shift<Key>Next:		next-page(extend)	    \
-			source-update-glyphs()	    \n\
-None<Key>Home:		beginning-of-line()	    \n\
-None<Key>End:		end-of-line()		    \n
+Ddd*code_text_w.translations:   SOURCE_TRANSLATIONS
 
 
 ! Make sure glyphs popup as well
@@ -1399,7 +1202,7 @@ Ddd*text_help_popup.iconName:   DDD License
 
 ! Help on help.
 Ddd*help_popup.help*helpString: \
-@rm This is the EMPH(Help Window)\n\
+@rm This is the EMPH(Help Window).\n\
 \n\
 To find out something specific about an item, press KEY(F1) and click\n\
 on the item.  Its functionality will be explained here.\n\
@@ -1426,7 +1229,7 @@ Ddd*helpString:	\
 
 ! Some trival help
 Ddd*XmScrollBar.helpString: \
-@rm This is a EMPH(Scroll Bar.)\n\
+@rm This is a EMPH(Scroll Bar).\n\
 \n\
 Click or hold the BUTTON(left mouse button) on an arrow button\n\
 to scroll the window in the arrow direction.\n\
@@ -1437,14 +1240,14 @@ visible part of the window.
 ! @rm Scroll window
 
 Ddd*XmSash.helpString: \
-@rm This is a EMPH(Paned Window Sash.)\n\
+@rm This is a EMPH(Paned Window Sash).\n\
 \n\
 Drag the sash with the BUTTON(left mouse button) to resize window parts.
 Ddd*XmSash.tipString: \
 @rm Resize window
 
 Ddd*arg_label.helpString: \
-@rm This is an EMPH(Argument Prompt.)\n\
+@rm This is an EMPH(Argument Prompt).\n\
 \n\
 Enter the argument LBL(()) on the right.\n\
 Click on LBL(():) to clear the argument LBL(()).
@@ -1515,7 +1318,7 @@ Ddd*manual_help*findForward.documentationString:	\
 @rm Search the next occurrence of LBL(()) in the manual
 
 Ddd*manual_help*helpString: \
-@rm This is the EMPH(DDD Manual Browser.)\n\
+@rm This is the EMPH(DDD Manual Browser).\n\
 \n\
 To view a specific section, select its title from the index at the top.\n\
 \n\
@@ -1572,7 +1375,7 @@ Ddd*tipShell.borderWidth: 1
 !-----------------------------------------------------------------------------
 
 Ddd*menubar.helpString:		\
-@rm This is the EMPH(Menu Bar.)\n\
+@rm This is the EMPH(Menu Bar).\n\
 \n\
 DESC(File, [select files and exit DDD])\n\
 DESC(Edit, [cut, copy, and paste text, and change DDD options])\n\
@@ -1595,7 +1398,7 @@ Ddd*menubar.file*documentationString:	\
 Ddd*menubar.file.mnemonic:		F
 Ddd*menubar.file*helpString:	\
 \
-@rm This is the EMPH(File Menu.)\n\
+@rm This is the EMPH(File Menu).\n\
 \n\
 DESC(Open Program..., [open the program to be debugged])\n\
 DESC(Open Core Dump..., [open a core dump])\n\
@@ -1701,7 +1504,7 @@ Ddd*menubar.edit*documentationString:	\
 @rm Cut, copy, paste from and to the clipboard
 Ddd*menubar.edit*helpString:	\
 \
-@rm This is the EMPH(Edit Menu.)\n\
+@rm This is the EMPH(Edit Menu).\n\
 \n\
 DESC(Cut, [remove the selected text to the clipboard])\n\
 DESC(Copy, [copy the selected text to the clipboard\n\
@@ -1785,7 +1588,7 @@ Ddd*menubar.view*documentationString:	\
 @rm Open and close DDD windows
 Ddd*menubar.views.helpString:	\
 \
-@rm This is the EMPH(View Menu.)\n\
+@rm This is the EMPH(View Menu).\n\
 \n\
 DESC(Command Tool..., [open and recenter the command tool])\n\
 DESC(Execution Window..., [open the execution window])\n\
@@ -1827,7 +1630,7 @@ Ddd*menubar.view*documentationString:	\
 @rm Open DDD windows
 Ddd*menubar.view.helpString:	\
 \
-@rm This is the EMPH(View Menu.)\n\
+@rm This is the EMPH(View Menu).\n\
 \n\
 DESC(Command Tool..., [open and recenter the command tool])\n\
 DESC(Execution Window..., [open the execution window])\n\
@@ -1869,7 +1672,7 @@ Ddd*menubar.program*documentationString:	\
 @rm Control the execution of the debugged program
 Ddd*menubar.program*helpString:	\
 \
-@rm This is the EMPH(Program Menu.)\n\
+@rm This is the EMPH(Program Menu).\n\
 \n\
 DESC(Run..., [start the debugged program])\n\
 DESC(Run Again, [run with current arguments])\n\
@@ -1978,7 +1781,7 @@ Ddd*menubar.commands*documentationString: \
 @rm Enter and modify @GDB@ commands
 Ddd*menubar.commands*helpString:	\
 \
-@rm This is the EMPH(Commands Menu.)\n\
+@rm This is the EMPH(Commands Menu).\n\
 \n\
 DESC(Command History..., [show all previous commands])\n\
 \n\
@@ -2071,7 +1874,7 @@ Ddd*menubar.stack*documentationString:  \
 @rm Show the current program state
 Ddd*menubar.stack.helpString:	\
 \
-@rm This is the EMPH(Status Menu.)\n\
+@rm This is the EMPH(Status Menu).\n\
 \n\
 DESC(Backtrace..., [give a summary of how your program got where it is])\n\
 DESC(Registers..., [show current processor registers])\n\
@@ -2118,7 +1921,7 @@ Ddd*menubar.source*documentationString: \
 @rm Set and edit breakpoints in source files
 Ddd*menubar.source.helpString:	\
 \
-@rm This is the EMPH(Source Menu.)\n\
+@rm This is the EMPH(Source Menu).\n\
 \n\
 DESC(Edit Breakpoints..., [set, view, and edit breakpoints])\n\
 \n\
@@ -2189,7 +1992,7 @@ Ddd*menubar.data*documentationString:   \
 @rm Create and modify data displays
 Ddd*menubar.data*helpString:	\
 \
-@rm This is the EMPH(Data Menu.)\n\
+@rm This is the EMPH(Data Menu).\n\
 \n\
 DESC(Edit Displays..., [select, enable and delete displays])\n\
 \n\
@@ -2299,7 +2102,7 @@ Ddd*menubar.help*documentationString:   \
 @rm Get more information
 Ddd*menubar.help*helpString: \
 \
-@rm This is the EMPH(Help Menu.)\n\
+@rm This is the EMPH(Help Menu).\n\
 \n\
 DESC(What Next..., [give help on what to do next])\n\
 \n\
@@ -2393,7 +2196,7 @@ Ddd*preferences*buttons*data.labelString:	Data Preferences
 Ddd*preferences*buttons*startup.labelString:	Startup Preferences
 
 Ddd*preferences*general*helpString:	\
-@rm These are the EMPH(General Preferences.)\n\
+@rm These are the EMPH(General Preferences).\n\
 \n\
 ITEM When you move the mouse pointer over a button, \
 DDD can automatically\n\
@@ -2463,7 +2266,7 @@ Save command history on exit
 
 
 Ddd*preferences*source*helpString:	\
-@rm These are the EMPH(Source Preferences.)\n\
+@rm These are the EMPH(Source Preferences).\n\
 \n\
 ITEM If LBL(Show position and breakpoints as glyphs) is set,\n\
     the current execution position and breakpoints are shown as glyphs.\n\
@@ -2517,7 +2320,7 @@ Ddd*preferences*tabWidth.titleString:		Tab width
 
 
 Ddd*preferences*data*helpString:	\
-@rm These are the EMPH(Data Preferences.)\n\
+@rm These are the EMPH(Data Preferences).\n\
 \n\
 ITEM If LBL(Detect aliases) is set, DDD detects displays with the same\n\
     physical address and suppresses all aliases except the one that was\
@@ -2557,7 +2360,7 @@ Ddd*preferences*gridSize.showValue:		true
 Ddd*preferences*gridSize.titleString:		Grid size
 
 Ddd*preferences*startup*helpString:   \
-@rm These are the EMPH(Startup Preferences.)\n\
+@rm These are the EMPH(Startup Preferences).\n\
 \n\
 ITEM LBL(Windows) sets the window layout.\n\
     SUBITEM LBL(separate windows) means to use one source window,\n\
@@ -2680,7 +2483,7 @@ Ddd*settings*scroll*helpString:
 
 ! The panel itself has a help button, too.
 Ddd*settings*helpString: \
-@rm These are the EMPH(@GDB@ Settings)\n\
+@rm These are the EMPH(@GDB@ Settings).\n\
 \n\
 All settings (except source and object paths) can be saved\n\
 using LBL(Edit) | LBL(Save Options).\n\
@@ -2719,7 +2522,7 @@ Ddd*infos*scroll*helpString:
 
 ! The panel itself has a help button, too.
 Ddd*infos*helpString: \
-@rm This is the list of EMPH(Status Displays.)\n\
+@rm This is the list of EMPH(Status Displays).\n\
 \n\
 A EMPH(status display) shows things about the program being debugged\n\
 in the data window.  Please pick your choice from the list.\n\
@@ -2792,8 +2595,8 @@ Shift<Key>Tab:	   ddd-prev-tab-group()\n\
 Ddd*graph_edit.highlightOnEnter:	True
 Ddd*graph_edit.navigationType:		TAB_GROUP
 
-Ddd*graph_edit.helpString:	\
-@rm This is the EMPH(Data Window.)\n\
+define(GRAPH_EDIT_HELP,[\
+@rm This is the EMPH(Data Window).\n\
 It shows the data displays of the debugged program.\n\
 \n\
 STRONG(Selecting displays)\n\
@@ -2803,9 +2606,9 @@ ITEM Double-click on a display to select all connected displays.\n\
 ITEM Double-click on the background to select all displays.\n\
 ITEM Drag on the background to select several displays.\n\
 \n\
-Using the middle mouse button (or Shift + Left mouse button) instead\n\
-of the left mouse button EMPH(toggles) the selection \
-instead of setting it.\n\
+Using the BUTTON(middle mouse button) \
+(or KEY(Shift) + BUTTON(Left mouse button)) instead\n\
+EMPH(toggles) the selection rather than setting it.\n\
 \n\
 STRONG(Moving displays)\n\
 ITEM Using the BUTTON(left mouse button), drag on a display to move\n\
@@ -2818,33 +2621,10 @@ to modify it.\n\
 STRONG(Creating displays)\n\
 ITEM Using the BUTTON(right mouse button), click on the background\n\
     to create new displays via a popup menu.
+])dnl
 
-Ddd*data_disp_shell.helpString:	\
-@rm This is the EMPH(Data Window.)\n\
-It shows the data displays of the debugged program.\n\
-\n\
-STRONG(Selecting displays)\n\
-ITEM Using the BUTTON(left mouse button), click on a display \
-to select it.\n\
-ITEM Double-click on a display to select all connected displays.\n\
-ITEM Double-click on the background to select all displays.\n\
-ITEM Drag on the background to select several displays.\n\
-\n\
-Using the middle mouse button (or Shift + Left mouse button) instead\n\
-of the left mouse button EMPH(toggles) the selection \
-instead of setting it.\n\
-\n\
-STRONG(Moving displays)\n\
-ITEM Using the BUTTON(left mouse button), drag on a display to move\n\
-    all selected displays.\n\
-\n\
-STRONG(Modifying displays)\n\
-ITEM Using the BUTTON(right mouse button), click on some display \
-to modify it.\n\
-\n\
-STRONG(Creating displays)\n\
-ITEM Using the BUTTON(right mouse button), click on the background\n\
-    to create new displays via a popup menu.
+Ddd*graph_edit.helpString:	GRAPH_EDIT_HELP
+Ddd*data_disp_shell.helpString:	GRAPH_EDIT_HELP
 
 Ddd*graph_edit_panner.helpString:	\
 @rm This is a EMPH(panner).\n\
@@ -2987,7 +2767,7 @@ Ddd*graph_cmd_w.graph_cmd_area*delete.documentationString:	\
 !-----------------------------------------------------------------------------
 
 Ddd*status_form*helpString: \
-@rm This is the EMPH(Status Line.)\n\
+@rm This is the EMPH(Status Line).\n\
 \n\
 It shows the last @GDB@ message as well as short DDD messages.\n\
 To view tthe most recent messages, just click on the status line.\n\
@@ -3071,7 +2851,7 @@ Ddd*code_text_w.scrollHorizontal:	false
 Ddd*code_text_w.wordWrap:		true
 
 Ddd*source_text_w.helpString:	\
-@rm This is the EMPH(Source Text Window.)\n\
+@rm This is the EMPH(Source Text Window).\n\
 It shows the source text of the debugged program.\n\
 \n\
 STRONG(Left side)\n\
@@ -3095,7 +2875,7 @@ Click the BUTTON(right mouse button) to show values and lookup places.\n\
 To view a specific source, use the LBL(Lookup ()) button below.
 
 Ddd*code_text_w.helpString:	\
-@rm This is the EMPH(Machine Code Window.)\n\
+@rm This is the EMPH(Machine Code Window).\n\
 It shows the machine code of the debugged program.\n\
 \n\
 STRONG(Left side)\n\
@@ -3110,7 +2890,7 @@ Click the BUTTON(left mouse button) to select addresses.\n\
 Click the BUTTON(right mouse button) to set and modify breakpoints.\n\
 \n\
 STRONG(Right side)\n\
-The EMPH(right side) contains the source code.\n\
+The EMPH(right side) contains the machine code.\n\
 \n\
 Click the BUTTON(left mouse button) to select words.\n\
 Drag with the BUTTON(left mouse button) to extend your selection.\n\
@@ -3120,7 +2900,7 @@ To disassemble a specific function or address,\n\
 use the LBL(Lookup ()) button below.
 
 Ddd*source_view_shell.helpString:	\
-@rm This is the EMPH(Source Window.)\n\
+@rm This is the EMPH(Source Window).\n\
 The source window displays the source and machine code of the \
 debugged program.\n\
 \n\
@@ -3383,7 +3163,7 @@ Ddd*grey_stop.documentationString:
 !-----------------------------------------------------------------------------
 
 Ddd.helpString:				\
-@rm This is the EMPH(DDD Main Window.)\n\
+@rm This is the EMPH(DDD Main Window).\n\
 \n\
 From top to bottom, it shows the following areas:\n\
 \n\
@@ -3432,7 +3212,7 @@ Ddd*gdb_w.wordWrap:		true
 Ddd*gdb_w.autoShowCursorPosition:	true
 Ddd*gdb_w.cursorPositionVisible:	true
 
-Ddd*gdb_w.helpString:		\
+define(CONSOLE_HELP,[\
 @rm This is the EMPH(@GDB@ Console).\n\
 \n\
 The @GDB@ console shows the @GDB@ input and output\n\
@@ -3442,17 +3222,10 @@ You can enter @GDB@ commands here.\n\
 \n\
 To get a list of @GDB@ commands, enter KBD(help) at the @GDB@ prompt.\n\
 See the LBL(Commands) menu for the most important editing commands.
+])dnl
 
-Ddd*command_shell.helpString:		\
-@rm This is the EMPH(@GDB@ Console).\n\
-\n\
-The @GDB@ console shows the @GDB@ input and output\n\
-as well as the input and output of the debugged program.\n\
-\n\
-You can enter @GDB@ commands here.\n\
-\n\
-To get a list of @GDB@ commands, enter KBD(help) at the @GDB@ prompt.\n\
-See the LBL(Commands) menu for the most important editing commands.
+Ddd*gdb_w.helpString:		CONSOLE_HELP
+Ddd*command_shell.helpString:	CONSOLE_HELP
 
 
 !-----------------------------------------------------------------------------
@@ -3477,14 +3250,14 @@ Ddd*gdb_popup.clear_window.documentationString:	\
 Ddd*tool_shell*saveUnder: true
 
 Ddd*tool_shell.helpString:		\
-@rm This is the EMPH(Command Tool.)\n\
+@rm This is the EMPH(Command Tool).\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
 The context sensitive help for the buttons gives a short command description.
 
 Ddd*tool_buttons.helpString:\
-@rm This is the EMPH(Command Tool.)\n\
+@rm This is the EMPH(Command Tool).\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
@@ -3495,21 +3268,21 @@ The context sensitive help for the buttons gives a short command description.
 !-----------------------------------------------------------------------------
 
 Ddd*source_buttons.helpString:\
-@rm This is a EMPH(command area.)\n\
+@rm This is a EMPH(command area).\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
 The context sensitive help for the buttons gives a short command description.
 
 Ddd*command_buttons.helpString:\
-@rm This is a EMPH(command area.)\n\
+@rm This is a EMPH(command area).\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
 The context sensitive help for the buttons gives a short command description.
 
 Ddd*data_buttons.helpString:\
-@rm This is a EMPH(command area.)\n\
+@rm This is a EMPH(command area).\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
@@ -3704,11 +3477,11 @@ Ddd*print*paper_size.width:		      120
 Ddd*print*paper_size.recomputeSize:	      false
 Ddd*print*paper_size_field.orientation:	      XmVERTICAL
 Ddd*print*paper_size_field.numColumns:	      3
-Ddd*print*a4.labelString:		      A4 (210mm \327 297mm)
-Ddd*print*a3.labelString:		      A3 (297mm \327 420mm)
-Ddd*print*letter.labelString:		      Letter (8\275" \327 11")
-Ddd*print*legal.labelString:		      Legal (8\275" \327 14")
-Ddd*print*executive.labelString:	      Executive (7\275" \327 10")
+Ddd*print*a4.labelString:		      A4 (210mm TIMES 297mm)
+Ddd*print*a3.labelString:		      A3 (297mm TIMES 420mm)
+Ddd*print*letter.labelString:		      Letter (8ONE_HALF" TIMES 11")
+Ddd*print*legal.labelString:		      Legal (8ONE_HALF" TIMES 14")
+Ddd*print*executive.labelString:	      Executive (7ONE_HALF" TIMES 10")
 Ddd*print*custom.labelString:		      Other...
 
 Ddd*print.autoUnmanage:	 false
@@ -3716,7 +3489,7 @@ Ddd*print*okLabelString: Print
 
 Ddd*print*helpString: \
 @rm You can print the graph on a POSTSCRIPT printer \
-or print the graph in a file.\n\
+or print the graph in a file.\n\4
 Enter the print command or the file name in the appropriate fields.\n\
 \n\
 Files can be created in the following formats:\n\
@@ -3738,7 +3511,7 @@ Ddd*paper_size_dialog.selectionLabelString: \
 Ddd*paper_size_dialog*helpString: \
 @rm Please enter the paper size in the format \n\
 \n\
-       KBD(VAR(WIDTH) x VAR(HEIGHT)).\n\
+       KBD(VAR(WIDTH) CODE(x) VAR(HEIGHT)).\n\
 \n\
 Examples:\n\
 KBD(42cm x 59.4cm) - A2 paper\n\
@@ -3824,8 +3597,7 @@ Ddd*source_files_popup*helpString:    \
 The source file is shown in the source window and may be used\n\
 for setting or clearing breakpoints.\n\
 \n\
-Before using LBL(Open Core), you should use LBL(File) | \
-LBL(Open Program)\n\
+Before using LBL(Open Core), you should use LBL(File) | LBL(Open Program)\n\
 to specify the executable program, and to load its symbol table.\n\
 \n\
 Click on LBL(Open) to open the selected source file.\n\
@@ -3851,7 +3623,7 @@ Ddd*edit_breakpoints_dialog*buttons.marginHeight:  0
 Ddd*edit_breakpoints_dialog.okLabelString:	 Close
 
 Ddd*edit_breakpoints_dialog*helpString:	     \
-@rm This is the EMPH(Breakpoint Editor.)\n\
+@rm This is the EMPH(Breakpoint Editor).\n\
 \n\
 Select breakpoints on the left; operations on the right.\n\
 \n\
@@ -3958,7 +3730,7 @@ Ddd*stack_dialog.cancelLabelString:	  Down
 Ddd*stack_dialog*visibleItemCount:	  10
 
 Ddd*stack_dialog*helpString:	  \
-@rm This window shows the current EMPH(Backtrace.)\n\
+@rm This window shows the current EMPH(Backtrace).\n\
 \n\
 The backtrace is a summary of how your program got where it is.\n\
 It shows one line per stack frame, for many frames, starting with\n\
@@ -3988,7 +3760,7 @@ Ddd*register_dialog*all_registers.labelString: All registers
 Ddd*register_dialog*int_registers.labelString: Integer registers
 
 Ddd*register_dialog*helpString:	     \
-@rm This window shows the EMPH(Machine Registers.)\n\
+@rm This window shows the EMPH(Machine Registers).\n\
 Select any register to have its name copied to the argument LBL(()).\n\
 \n\
 If LBL(Integer registers) is set, integer registers are shown.\n\
@@ -4009,7 +3781,7 @@ Ddd*thread_dialog*box.marginHeight: 0
 Ddd*thread_dialog*box.marginWidth:  0
 
 Ddd*thread_dialog*helpString:	     \
-@rm This window shows the current EMPH(Execution Threads.)\n\
+@rm This window shows the current EMPH(Execution Threads).\n\
 \n\
 The current thread is highlighted.\n\
 All debugging commands show information from the perspective\n\
@@ -4029,7 +3801,7 @@ Ddd*history_dialog.applyLabelString:	    Apply
 Ddd*history_dialog*visibleItemCount:	    10
 
 Ddd*history_dialog*helpString:	    \
-@rm This window shows the EMPH(Command History.)\n\
+@rm This window shows the EMPH(Command History).\n\
 \n\
 DDD keeps track of the commands you type during your debugging\n\
 sessions, so that you can be certain of precisely what happened.\n\
@@ -4057,7 +3829,7 @@ Ddd*edit_displays_dialog*buttons.marginHeight:	0
 Ddd*edit_displays_dialog.okLabelString:	      Close
 
 Ddd*edit_displays_dialog*helpString:	  \
-@rm This is the EMPH(Display Editor.)\n\
+@rm This is the EMPH(Display Editor).\n\
 \n\
 Select displays on the left, operations on the right.\n\
 \n\
@@ -4550,7 +4322,7 @@ Ddd*expired_warning.title: DDD: DDD Expired
 Ddd*expired_warning*helpString: \
 @rm DDD 2.1.90 has been superseded by a newer DDD version.\n\
 DDD 2.1.90 should no longer be used.\n\
-To get the most recent DDD version, see the DDD WWW page.
+To get the most recent DDD version, see the LBL(Help) | LBL(DDD WWW Page).
 
 
 !-----------------------------------------------------------------------------
@@ -4640,10 +4412,8 @@ ITEM Using GDB, you can continue at machine code level \
 by enabling the\n\
     Machine Code Window.  Use LBL(Source) | LBL(Display Machine Code).
 
-Ddd*stopped_at_passed_signal.helpString: \
-@rm Your program @PROGRAM_STATE@.\n\
-\n\
-ITEM To find out how you got here, use LBL(Status) | LBL(Backtrace).\n\
+define(STOPPED_HELP,
+[ITEM To find out how you got here, use LBL(Status) | LBL(Backtrace).\n\
 ITEM To examine a variable value, select it first (click on an \
 occurrence).\n\
     Then use LBL(Print ()) (for simple values) and LBL(Display ()) \
@@ -4656,7 +4426,12 @@ LBL(Data) | LBL(Display\n\
 ITEM To set and clear further breakpoints, use \
 LBL(Source) | LBL(Edit Breakpoints).\n\
     As a shortcut, you may also press the BUTTON(right mouse button) on a\n\
-    location or breakpoint to get a popup menu.\n\
+    location or breakpoint to get a popup menu.\n])dnl
+
+Ddd*stopped_at_passed_signal.helpString: \
+@rm Your program @PROGRAM_STATE@.\n\
+\n\
+STOPPED_HELP\
 \n\
 When resuming execution, the @SIGNAL_DESCRIPTION@ signal \
 will be passed to the program.\n\
@@ -4668,20 +4443,7 @@ use the @GDB@ command KBD(info handle).
 Ddd*stopped_at_ignored_signal.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
 \n\
-ITEM To find out how you got here, use LBL(Status) | LBL(Backtrace).\n\
-ITEM To examine a variable value, select it first (click on an \
-occurrence).\n\
-    Then use LBL(Print ()) (for simple values) and LBL(Display ()) \
-(for complex\n\
-    values).  As a shortcut, you may also press the BUTTON(right mouse\n\
-    button) to get a popup menu.\n\
-ITEM You can display all local variables at once using \
-LBL(Data) | LBL(Display\n\
-    Local Variables).\n\
-ITEM To set and clear further breakpoints, use \
-LBL(Source) | LBL(Edit Breakpoints).\n\
-    As a shortcut, you may also press the BUTTON(right mouse button) on a\n\
-    location or breakpoint to get a popup menu.\n\
+STOPPED_HELP\
 \n\
 When resuming execution, the @SIGNAL_DESCRIPTION@ signal \
 will EMPH(not) be passed to the program.\n\
@@ -4693,19 +4455,6 @@ use the @GDB@ command KBD(info handle).
 Ddd*stopped.helpString: \
 @rm Your program @PROGRAM_STATE@.\n\
 \n\
-ITEM To find out how you got here, use \LBL(Status) | LBL(Backtrace).\n\
-ITEM To examine a variable value, select it first (click on an \
-occurrence).\n\
-    Then use LBL(Print ()) (for simple values) and LBL(Display ()) \
-(for complex\n\
-    values).  As a shortcut, you may also press the BUTTON(right mouse\n\
-    button) to get a popup menu.\n\
-ITEM You can display all local variables at once using \
-LBL(Data) | LBL(Display\n\
-    Local Variables).\n\
-ITEM To set and clear further breakpoints, use \
-LBL(Source) | LBL(Edit Breakpoints).\n\
-    As a shortcut, you may also press the BUTTON(right mouse button) on a\n\
-    location or breakpoint to get a popup menu.\n\
+STOPPED_HELP\
 ITEM Use the functions of the LBL(Program) menu to resume execution\n\
     and step through your program.
