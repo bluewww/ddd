@@ -104,6 +104,7 @@ enum SettingsType { SETTINGS, INFOS, SIGNALS };
 static Widget            settings_panel = 0;
 static Widget            settings_form  = 0;
 static Widget            reset_settings_button = 0;
+static Widget            apply_settings_button = 0;
 static WidgetArray       settings_entries;
 static EntryTypeArray    settings_entry_types;
 static WidgetStringAssoc settings_values;
@@ -183,16 +184,6 @@ static void gdb_set_command(string set_command, string value)
     }
     else
 	gdb_command(set_command);
-}
-
-// TextField reply
-static void SetTextCB(Widget w, XtPointer client_data, XtPointer)
-{
-    String value_s = XmTextFieldGetString(w);
-    string value(value_s);
-    XtFree(value_s);
-
-    gdb_set_command((String)client_data, value);
 }
 
 // OptionMenu reply
@@ -385,7 +376,22 @@ static void update_reset_settings_button()
     for (int i = 0; i < settings_entries.size(); i++)
     {
 	Widget entry = settings_entries[i];
-	if (settings_initial_values[entry] != settings_values[entry])
+
+	string value = settings_values[entry];
+	if (settings_entry_types[i] == TextFieldEntry)
+	{
+	    String value_s = XmTextFieldGetString(entry);
+	    value = value_s;
+	    XtFree(value_s);
+
+	    if (value != settings_values[entry])
+	    {
+		set_sensitive(reset_settings_button, True);
+		return;
+	    }
+	}
+
+	if (value != settings_initial_values[entry])
 	{
 	    set_sensitive(reset_settings_button, True);
 	    return;
@@ -393,6 +399,32 @@ static void update_reset_settings_button()
     }
 
     set_sensitive(reset_settings_button, False);
+}
+
+static void update_apply_settings_button()
+{
+    if (apply_settings_button == 0)
+	return;
+
+    for (int i = 0; i < settings_entries.size(); i++)
+    {
+	if (settings_entry_types[i] != TextFieldEntry)
+	    continue;
+
+	Widget entry = settings_entries[i];
+
+	String value_s = XmTextFieldGetString(entry);
+	string value(value_s);
+	XtFree(value_s);
+
+	if (value != settings_values[entry])
+	{
+	    set_sensitive(apply_settings_button, True);
+	    return;
+	}
+    }
+
+    set_sensitive(apply_settings_button, False);
 }
 
 static void update_reset_signals_button()
@@ -431,6 +463,21 @@ void update_infos()
     if (reset_infos_button != 0)
 	set_sensitive(reset_infos_button, have_info);
 }
+
+static void UpdateSettingsButtonsNowCB(XtPointer, XtIntervalId *)
+{
+    update_apply_settings_button();
+    update_reset_settings_button();
+}
+
+// TextField reply
+static void UpdateSettingsButtonsCB(Widget w, XtPointer client_data, XtPointer)
+{
+    // The TextField value has not yet changed.  Call again later.
+    XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0,
+		    UpdateSettingsButtonsNowCB, client_data);
+}
+
 
 // Register additional info button
 void register_info_button(Widget w)
@@ -1737,8 +1784,9 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
 	entry = verify(XmCreateTextField(form, set_command, args, arg));
 	XtManageChild(entry);
-	XtAddCallback(entry, XmNactivateCallback, 
-		      SetTextCB, XtPointer(set_command_s));
+
+	XtAddCallback(entry, XmNvalueChangedCallback, UpdateSettingsButtonsCB,
+		      NULL);
     }
     }
 
@@ -1956,18 +2004,33 @@ void update_settings()
 }
 
 // Reset settings
-static void ResetSettingsCB (Widget, XtPointer, XtPointer)
+static void ResetSettingsCB(Widget, XtPointer, XtPointer)
 {
     for (int i = 0; i < settings_entries.size(); i++)
     {
 	Widget entry = settings_entries[i];
-	if (settings_initial_values[entry] != settings_values[entry])
+
+	string value = settings_values[entry];
+	if (settings_entry_types[i] == TextFieldEntry)
+	{
+	    String value_s = XmTextFieldGetString(entry);
+	    value = value_s;
+	    XtFree(value_s);
+
+	    if (value != settings_values[entry])
+	    {
+		value = settings_values[entry];
+		XmTextFieldSetString(entry, (String)value);
+	    }
+	}
+
+	if (value != settings_initial_values[entry])
 	    gdb_set_command(XtName(entry), settings_initial_values[entry]);
     }
 }
 
 // Reset signals
-static void ResetSignalsCB (Widget, XtPointer, XtPointer)
+static void ResetSignalsCB(Widget, XtPointer, XtPointer)
 {
     for (int i = 0; i < signals_entries.size(); i++)
     {
@@ -1977,6 +2040,25 @@ static void ResetSignalsCB (Widget, XtPointer, XtPointer)
 	    bool set = (signals_initial_values[entry] == "yes");
 	    gdb_command(handle_command(entry, set));
 	}
+    }
+}
+
+// Apply settings
+static void ApplySettingsCB(Widget, XtPointer, XtPointer)
+{
+    for (int i = 0; i < settings_entries.size(); i++)
+    {
+	if (settings_entry_types[i] != TextFieldEntry)
+	    continue;
+
+	Widget entry = settings_entries[i];
+
+	String value_s = XmTextFieldGetString(entry);
+	string value(value_s);
+	XtFree(value_s);
+
+	if (value != settings_values[entry])
+	    gdb_set_command(XtName(entry), value);
     }
 }
 
@@ -2081,36 +2163,35 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
 					       dialog_name, args, arg));
     Delay::register_shell(panel);
 
-    if (lesstif_version <= 79)
-	XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_APPLY_BUTTON));
+    Widget apply_button = XmSelectionBoxGetChild(panel, XmDIALOG_OK_BUTTON);
+    set_sensitive(apply_button, False);
+
+    Widget reset_button = XmSelectionBoxGetChild(panel, XmDIALOG_APPLY_BUTTON);
+    XtManageChild(reset_button);
 
     // Remove old prompt
     XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_TEXT));
     XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_SELECTION_LABEL));
 
     XtAddCallback(panel, XmNhelpCallback, ImmediateHelpCB, 0);
-    XtAddCallback(panel, XmNokCallback, UnmanageThisCB, 
-    	      XtPointer(panel));
-
-    Widget cancel = XmSelectionBoxGetChild(panel, XmDIALOG_CANCEL_BUTTON);
+    XtAddCallback(panel, XmNcancelCallback, UnmanageThisCB, XtPointer(panel));
 
     switch (stype)
     {
     case SETTINGS:
-	XtRemoveAllCallbacks(cancel, XmNactivateCallback);
-	XtAddCallback(cancel, XmNactivateCallback, ResetSettingsCB, 0);
-	XtVaSetValues(panel, XmNdefaultButton, Widget(0), NULL);
+	XtAddCallback(panel, XmNapplyCallback, ResetSettingsCB, 0);
+	XtAddCallback(panel, XmNokCallback, ApplySettingsCB, 0);
+	apply_settings_button = apply_button;
 	break;
 
     case INFOS:
-	XtRemoveAllCallbacks(cancel, XmNactivateCallback);
-	XtAddCallback(cancel, XmNactivateCallback, DeleteAllInfosCB, 0);
+	XtAddCallback(panel, XmNapplyCallback, DeleteAllInfosCB, 0);
+	XtUnmanageChild(apply_button); // No text entries
 	break;
 
     case SIGNALS:
-	XtRemoveAllCallbacks(cancel, XmNactivateCallback);
-	XtAddCallback(cancel, XmNactivateCallback, ResetSignalsCB, 0);
-	XtVaSetValues(panel, XmNdefaultButton, Widget(0), NULL);
+	XtAddCallback(panel, XmNapplyCallback, ResetSignalsCB, 0);
+	XtUnmanageChild(apply_button); // No text entries
 	break;
     }
 
@@ -2218,17 +2299,17 @@ static Widget create_panel(DebuggerType type, SettingsType stype)
     switch (stype)
     {
     case SETTINGS:
-	reset_settings_button = cancel;
+	reset_settings_button = reset_button;
 	update_reset_settings_button();
 	break;
 
     case INFOS:
-	reset_infos_button = cancel;
+	reset_infos_button = reset_button;
 	update_infos();
 	break;
 
     case SIGNALS:
-	reset_signals_button = cancel;
+	reset_signals_button = reset_button;
 	update_reset_signals_button();
 	break;
     }

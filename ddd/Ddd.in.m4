@@ -3583,8 +3583,9 @@ Ddd*preferences*text.columns:			47
 !-----------------------------------------------------------------------------
 
 Ddd*settings_popup.title: DDD: Debugger Settings
-! Ddd*settings.okLabelString: Close
-Ddd*settings.cancelLabelString: Reset
+Ddd*settings.okLabelString: Apply
+Ddd*settings.applyLabelString: Reset
+Ddd*settings.cancelLabelString: Close
 Ddd*settings.textAccelerators:
 
 Ddd*settings*help.labelString:		?
@@ -3622,17 +3623,19 @@ using LBL(Edit, Save Options).\n\
 Click on LBL(?) near an item to get further information.\n\
 In a text field, press the KEY_RETURN key to commit the changes.\n\
 \n\
+Click on LBL(Apply) to apply changed text settings.\n\
 Click on LBL(Reset) to restore the saved settings.\n\
-Click on LBL(OK) to close this window.
+Click on LBL(Close) to close this window.
 
 
 !-----------------------------------------------------------------------------
 ! Status displays
 !-----------------------------------------------------------------------------
 
-! Ddd*infos.okLabelString: Close
-Ddd*infos.cancelLabelString: Reset
 Ddd*infos_popup.title: DDD: Status Displays
+Ddd*infos.okLabelString:     Apply
+Ddd*infos.applyLabelString:  Reset
+Ddd*infos.cancelLabelString: Close
 
 Ddd*infos*help.labelString:			?
 Ddd*infos*help.tipString:\
@@ -3652,7 +3655,7 @@ in the data window.  Please pick your choice from the list.\n\
 Click on LBL(?) near an item to get further information.\n\
 \n\
 Click on LBL(Reset) to delete all status displays.\n\
-Click on LBL(OK) to close this window.
+Click on LBL(Close) to close this window.
 
 
 
@@ -3661,8 +3664,10 @@ Click on LBL(OK) to close this window.
 !-----------------------------------------------------------------------------
 
 ! Ddd*signals.okLabelString: Close
-Ddd*signals.cancelLabelString: Reset
 Ddd*signals_popup.title: DDD: Signal Handling
+Ddd*signals.okLabelString:     Apply
+Ddd*signals.applyLabelString:  Reset
+Ddd*signals.cancelLabelString: Close
 
 Ddd*signals*send.labelString:	   Send
 Ddd*signals*send.rightOffset:	   5
@@ -3695,7 +3700,7 @@ Use LBL(All Signals) to modify all signals at once.\n\
 Click on LBL(?) to get further information on the specific signal.\n\
 \n\
 Click on LBL(Reset) to restore the original settings.\n\
-Click on LBL(OK) to close this window.
+Click on LBL(Close) to close this window.
 
 
 !-----------------------------------------------------------------------------
