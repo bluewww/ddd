@@ -2079,6 +2079,13 @@ static void command_completed(void *data)
 	    string command = auto_commands.before('\n');
 	    auto_commands = auto_commands.after('\n');
 
+	    if (command.contains("\\n", -1))
+	    {
+		// Not a command.  This may happen when reading
+		// breakpoint auto-commands via `info breakpoint'.
+		continue;
+	    }
+
 	    Command c(command, cmd_data->origin);
 	    c.priority = COMMAND_PRIORITY_BATCH;
 	    c.echo    = false;
