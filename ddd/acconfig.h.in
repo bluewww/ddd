@@ -59,8 +59,8 @@
 /* Define if MAXPATHLEN is defined or declared in <sys/param.h>. */
 #undef HAVE_MAXPATHLEN
 
-/* Define if you have XPM widgets. */
-#undef HAVE_XPM_WIDGETS
+/* Define if you have the XPM library. */
+#undef HAVE_XPM
 
 /* Define if you have Motif widgets. */
 #undef HAVE_MOTIF_WIDGETS
