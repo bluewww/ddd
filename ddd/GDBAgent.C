@@ -256,12 +256,13 @@ bool GDBAgent::send_user_ctrl_cmd(string cmd, void *user_data)
 }
 
 // ***************************************************************************
-bool GDBAgent::send_user_cmd_plus (string   cmds [],
-				      void*    qu_datas [],
-				      int      qu_count,
-				      OQACProc on_qu_array_completion,
-				      void*    qa_data,
-				      string user_cmd, void* user_data)
+bool GDBAgent::send_user_cmd_plus (string   cmds[],
+				   void*    qu_datas[],
+				   int      qu_count,
+				   OQACProc on_qu_array_completion,
+				   void*    qa_data,
+				   string   user_cmd,
+				   void* user_data)
 {
     if (state != ReadyWithPrompt) 
 	return false;
@@ -364,14 +365,14 @@ void GDBAgent::callBusyHandlers ()
 void GDBAgent::set_trace_dialog (bool trace)
 {
     if (trace && !trace_dialog) {
- 	addHandler (Input,  traceInputHP); //gdb-Ausgaben
- 	addHandler (Output, traceOutputHP); //Eingabe an gdb
- 	addHandler (Error,  traceErrorHP); //gdb-FehlerAusgaben
+ 	addHandler (Input,  traceInputHP);  // GDB => DDD
+ 	addHandler (Output, traceOutputHP); // DDD => GDB
+ 	addHandler (Error,  traceErrorHP);  // GDB Errors => DDD
     }
     else if (!trace && trace_dialog) {
- 	removeHandler (Input,  traceInputHP); //gdb-Ausgaben
- 	removeHandler (Output, traceOutputHP); //Eingabe an gdb
- 	removeHandler (Error,  traceErrorHP); //gdb-FehlerAusgaben
+ 	removeHandler (Input,  traceInputHP);  // GDB => DDD
+ 	removeHandler (Output, traceOutputHP); // DDD => GDB
+ 	removeHandler (Error,  traceErrorHP);  // GDB Errors => DDD
     }
     trace_dialog = trace;
 }
