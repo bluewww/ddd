@@ -610,9 +610,9 @@ bool BreakPoint::update(string& info_output,
     if (new_bp.myenabled != myenabled)
     {
 	changed = myenabled_changed = true;
-	myenabled = new_bp.enabled();
+	myenabled = new_bp.myenabled;
 
-	if (new_bp.myenabled)
+	if (myenabled)
 	{
 	    if (gdb->has_disable_command())
 		undo_commands << gdb->disable_command(num) << "\n";
@@ -680,7 +680,7 @@ bool BreakPoint::update(string& info_output,
 	myignore_count = new_bp.ignore_count();
     }
 
-    if (new_bp.real_condition() != real_condition())
+    if (new_bp.mycondition != mycondition)
     {
 	if (gdb->has_condition_command())
 	    undo_commands << gdb->condition_command(num, condition()) << "\n";
@@ -688,7 +688,7 @@ bool BreakPoint::update(string& info_output,
 	    need_total_undo = true;
 
 	changed = myenabled_changed = true;
-	mycondition = new_bp.real_condition();
+	mycondition = new_bp.mycondition;
     }
 
     if (!equal(new_bp.commands(), commands()))
