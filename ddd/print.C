@@ -88,6 +88,7 @@ static int convert(string filename, BoxPrintGC& gc, bool selectedOnly)
     {
 	post_error("No displays to print.", "print_empty_graph_error", 
 		   data_disp->graph_edit);
+	delay.outcome = "failed";
 	return -1;
     }
 
@@ -105,6 +106,7 @@ static int convert(string filename, BoxPrintGC& gc, bool selectedOnly)
 		   "print_failed_error", data_disp->graph_edit);
 	if (fp)
 	    fclose(fp);
+	delay.outcome = strerror(errno);
 	return -1;
     }
 

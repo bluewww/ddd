@@ -184,8 +184,11 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 	pid = -1;
 
     if (pid < 0)
+    {
 	post_error("Could not start execution window", 
 		   "tty_exec_error", origin);
+	delay.outcome = "failed";
+    }
 
     // Set icon and group leader
     if (windowid)
@@ -569,8 +572,11 @@ static void initialize_tty(const string& tty_name, const string& tty_term)
     {
 	string command = sh_command("cat > " + tty_name);
 	FILE *fp = popen(command, "w");
-	fwrite((char *)init, init.length(), sizeof(char), fp);
-	pclose(fp);
+	if (fp != NULL)
+	{
+	    fwrite((char *)init, init.length(), sizeof(char), fp);
+	    pclose(fp);
+	}
     }
     else
     {

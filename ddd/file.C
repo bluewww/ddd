@@ -246,10 +246,16 @@ static void searchRemote(Widget fs,
 
     String mask;
     if (!XmStringGetLtoR(cbs->mask, MSTRING_DEFAULT_CHARSET, &mask))
+    {
+	delay.outcome = "failed";
 	return;
+    }
     String dir;
     if (!XmStringGetLtoR(cbs->dir, MSTRING_DEFAULT_CHARSET, &dir))
+    {
+	delay.outcome = "failed";
 	return;
+    }
 
     if (search_dirs)
     {
@@ -271,7 +277,7 @@ static void searchRemote(Widget fs,
     FILE *fp = search.inputfp();
     if (fp == 0)
     {
-	perror(command);
+	delay.outcome = strerror(errno);
 	return;
     }
 
@@ -845,6 +851,11 @@ static void update_processes(Widget processes, bool keep_selection)
 
     string cmd = sh_command(app_data.ps_command) + " 2>&1";
     FILE *fp = popen(cmd.chars(), "r");
+    if (fp == 0)
+    {
+	delay.outcome = strerror(errno);
+	return;
+    }
 
     StringArray process_list;
     int c;

@@ -235,6 +235,7 @@ void save_history(const string& file, Widget origin)
 	{
 	    post_error("Cannot save history in " + quote(file),
 		       "history_save_error", origin);
+	    delay.outcome = "failed";
 	    return;
 	}
 

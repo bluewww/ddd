@@ -946,7 +946,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    return true;		// Will probably work
 
 	// Get new core file from running process
-	StatusDelay delay("Getting core file");
+	StatusDelay delay("Getting core file via `ptrace()'");
 
 	// 1. Stop the program being debugged, using a STOP signal.
 	kill(info.pid, SIGSTOP);
@@ -958,8 +958,10 @@ static bool _get_core(const string& session, unsigned long flags,
 	string gcore_target = target + "." + itostring(info.pid);
 	int ok = ptrace(PTRACE_ATTACH, info.pid, 0, 0);
 	if (ok < 0)
+	{
 	    cerr << ddd_NAME ": PTRACE_ATTACH: "
 		 << strerror(errno) << "\n";
+	}
 	else
 	{
 	    // 4. Get a core file from the running process
@@ -967,16 +969,20 @@ static bool _get_core(const string& session, unsigned long flags,
 			int(gcore_target.chars()), 0);
 
 	    if (ok < 0)
+	    {
 		cerr << ddd_NAME ": PTRACE_DUMPCORE: "
 		     << strerror(errno) << "\n";
-
+	    }
+	    
 	    // 5. Detach from the debuggee, leaving it stopped
 	    kill(info.pid, SIGSTOP);
 	    ok = ptrace(PTRACE_DETACH, info.pid, 0x1, SIGSTOP);
 
 	    if (ok < 0)
+	    {
 		cerr << ddd_NAME ": PTRACE_DETACH: "
 		     << strerror(errno) << "\n";
+	    }
 	}
 
 	// 6. Attach GDB to the debuggee again.
@@ -985,6 +991,8 @@ static bool _get_core(const string& session, unsigned long flags,
 
 	if (is_core_file(gcore_target) && move(gcore_target, target))
 	    return true;
+
+	delay.outcome = "failed";
     }
 #endif
 
@@ -997,7 +1005,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    return true;	// Will probably work
 
  	// Get new core file from running process
-  	StatusDelay delay("Getting core file");
+  	StatusDelay delay("Getting core file via `gcore'");
 
 	// 1. Stop the program being debugged, using a STOP signal.
 	kill(info.pid, SIGSTOP);
@@ -1035,6 +1043,8 @@ static bool _get_core(const string& session, unsigned long flags,
 
   	if (is_core_file(gcore_target) && move(gcore_target, target))
   	    return true;
+
+	delay.outcome = "failed";
     }
 #endif
 
@@ -1352,6 +1362,7 @@ bool save_options(unsigned long flags)
 	if (interact)
 	    post_error("Cannot save " + options + " in " + quote(workfile),
 		       "options_save_error");
+	delay.outcome = "failed";
 	return false;
     }
 

@@ -568,6 +568,7 @@ void delete_session(const string& session, bool silent)
     {
 	post_error("Could not delete " + quote(session_dir(session)) + ": " 
 		   + strerror(errno), "delete_session_error");
+	delay.outcome = strerror(errno);
     }
 }
 

@@ -1500,6 +1500,7 @@ String SourceView::read_local(const string& file_name, long& length,
 	if (!silent)
 	    post_error (file_name + ": " + strerror(errno), 
 			"source_file_error", source_text_w);
+	delay.outcome = strerror(errno);
         return 0;
     }
 
@@ -1509,6 +1510,7 @@ String SourceView::read_local(const string& file_name, long& length,
 	if (!silent)
 	    post_error (file_name + ": " + strerror(errno), 
 			"source_file_error", source_text_w);
+	delay.outcome = strerror(errno);
 	return 0;
     }
 
@@ -1518,6 +1520,7 @@ String SourceView::read_local(const string& file_name, long& length,
 	if (!silent)
 	    post_error (file_name + ": not a regular file", 
 			"source_file_error", source_text_w);
+	delay.outcome = "failed";
 	return 0;
     }
 
@@ -1530,6 +1533,7 @@ String SourceView::read_local(const string& file_name, long& length,
 	if (!silent)
 	    post_error (file_name + ": " + strerror(errno),
 			"source_trunc_error", source_text_w);
+	delay.outcome = strerror(errno);
     }
     close(fd);
 
@@ -1540,6 +1544,7 @@ String SourceView::read_local(const string& file_name, long& length,
 	if (!silent)
 	    post_warning(file_name + ": empty file",
 			 "source_empty_warning", source_text_w);
+	delay.outcome = "failed";
     }
 
     return text;
@@ -1561,7 +1566,10 @@ String SourceView::read_remote(const string& file_name, long& length,
 
     FILE *fp = cat.inputfp();
     if (fp == 0)
+    {
+	delay.outcome = "failed";
 	return 0;
+    }
 
     String text = XtMalloc(1);
 
@@ -1577,6 +1585,7 @@ String SourceView::read_remote(const string& file_name, long& length,
 	if (!silent)
 	    post_error("Cannot access remote file " + quote(file_name), 
 		       "remote_file_error", source_text_w);
+	delay.outcome = "failed";
     }
 
     return text;
@@ -6395,7 +6404,7 @@ XmTextPosition SourceView::find_pc(const string& pc)
 struct RefreshInfo {
     string pc;
     XmHighlightMode mode;
-    Delay *delay;
+    StatusDelay *delay;
 };
 
 // Process `disassemble' output
@@ -6403,7 +6412,11 @@ void SourceView::refresh_codeOQC(const string& answer, void *client_data)
 {
     RefreshInfo *info = (RefreshInfo *)client_data;
 
-    if (answer != NO_GDB_ANSWER)
+    if (answer == NO_GDB_ANSWER)
+    {
+	info->delay->outcome = "failed";
+    }
+    else
     {
 	process_disassemble(answer);
 
