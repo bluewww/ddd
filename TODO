@@ -383,6 +383,7 @@ Volunteers for these and other projects are welcome!
 
 265*Make all toolbar actions accessible via alternate ways:
     - Add `Rotate' to the Display Editor.
+    - Add `Print ()' and `Display ()' to the `Data' menu.
 
 266 Include TAGS support.
 

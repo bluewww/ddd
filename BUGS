@@ -245,7 +245,7 @@ Volunteers for fixing these and other bugs are welcome!
 
    The 'configure', process is not correct in that the Makefiles
    generated are not "clean". What I mean is this:
-
+	
    a. When I have done my first complete compilation, I have all the
       *.o everywhere I need (I have also the ddd/ddd* absolute). From
       now on whenever I 'touch' a particular ddd/xxx.c file, I would
@@ -278,4 +278,12 @@ Volunteers for fixing these and other bugs are welcome!
 255 In Java programs, the `info set' status display is treated as
     variable list.
 
-256 (Insert new bugs here)
+256*Eric Blood <e.blood@citr.com> reports that on
+    sparc-sun-solaris2.5.1, the ddd-1998-04-13 snapshot fails to start
+    the debugger subprocess.
+
+257 Marco Hess <marcoh@senet.com.au> says that sometimes, the source
+    window locks in scroll mode until it reaches the top or bottom of
+    the file.
+
+258 (Insert new bugs here)

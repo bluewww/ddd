@@ -37,16 +37,24 @@
 
 #if HAVE_GETRLIMIT && HAVE_SETRLIMIT
 #if HAVE_SYS_RESOURCE_H
+
 #if HAVE_SYS_TIME_H
 #include <sys/time.h>		// SunOS wants this
 #endif // HAVE_SYS_TIME_H
+
+// Harry Mangalam <hjm@darwin.bio.uci.edu> says he had to comment out
+// the following line `on an Alpha PC164LX system running Linux kernel
+// ver 2.0.33 to get it to compile (otherwise a bunch of RLIMIT errors
+// stopped it).'
 #include <sys/resource.h>
+
 #if HAVE_GETRLIMIT && !HAVE_GETRLIMIT_DECL
 extern "C" int getrlimit (int resource, struct rlimit *rlp);
 #endif // HAVE_GETRLIMIT && !HAVE_GETRLIMIT_DECL
 #if HAVE_SETRLIMIT && !HAVE_SETRLIMIT_DECL
 extern "C" int setrlimit (int resource, struct rlimit *rlp);
 #endif // HAVE_SETRLIMIT && !HAVE_SETRLIMIT_DECL
+
 #endif // HAVE_SYS_RESOURCE_H
 #endif // HAVE_GETRLIMIT && HAVE_SETRLIMIT
 
