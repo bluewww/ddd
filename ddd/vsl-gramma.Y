@@ -131,7 +131,7 @@ VSLNode *VSLLib::call(const string& name,
 %left AND			/* and */
 %left EQ NE			/* = <> */
 %left LE LT GE GT		/* <= < >= > */
-%right CONS			/* : */
+%right CONS			/* :: */
 %left VALIGN			/* | */
 %left UALIGN			/* ^ */
 %left TALIGN			/* ~ */
@@ -425,7 +425,7 @@ var_definition		:	box_expression EQ box_expression
 				}
 
 
-/*** basic expresions ***/
+/*** basic expressions ***/
 
 box_expression		:	'(' box_expression_with_defs ')'
 				{ $$ = $2; }
