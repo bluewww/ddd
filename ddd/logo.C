@@ -298,6 +298,8 @@ Pixmap dddlogo(Widget w, const string& color_key)
 	    XFreePixmap(XtDisplay(w), logo);
 	logo = 0;
     }
+#else
+    (void) color_key;		// Use it
 #endif // defined(XpmVersion)
 
     logo = XCreatePixmapFromBitmapData(XtDisplay(w), XtWindow(w),
