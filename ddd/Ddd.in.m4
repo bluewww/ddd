@@ -3566,9 +3566,7 @@ Ddd*shortcut_popup*documentationString:
 Ddd*arg_label.labelString:	():
 
 Ddd*arg.value:			main
-Ddd*common.arg.columns:		10
-Ddd*source.arg.columns:		22
-Ddd*graph.arg.columns:		22
+Ddd*arg*Text.value:		main
 
 Ddd*arg.helpString:	\
 WIDGET(Argument)\n\
