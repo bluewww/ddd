@@ -299,8 +299,7 @@ static bool obscures(Widget top, Widget bottom)
     if (top == 0 || bottom == 0)
 	return false;
 
-    if (visibility(top) != VisibilityUnobscured
-	|| visibility(bottom) == VisibilityUnobscured)
+    if (visibility(bottom) == VisibilityUnobscured)
 	return false;
 
     return region(bottom) <= region(top);
@@ -458,15 +457,35 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    || obscures(data_disp_shell, tool_shell)
 	    || obscures(source_view_shell, tool_shell))
 	{
-	    // Command tool is obscured by some DDD shell - raise it
-
+	    // Command tool is obscured by some DDD shell
 	    if (XmIsMotifWMRunning(tool_shell) && XmIsDialogShell(tool_shell))
 	    {
 		// We have MWM and a Dialog Shell - let MWM handle this
 	    }
 	    else
 	    {
-		XRaiseWindow(XtDisplay(tool_shell), XtWindow(tool_shell));
+		// Raise command tool
+		Widget shell = 
+		    source_view_shell ? source_view_shell : command_shell;
+
+		Window tool_frame  = frame(tool_shell);
+		Window shell_frame = frame(shell);
+
+		if (tool_frame != 0 && shell_frame != 0)
+		{
+		    // Raise command tool just above the DDD shell
+		    XWindowChanges changes;
+		    changes.stack_mode = Above;
+		    changes.sibling    = shell_frame;
+
+		    XConfigureWindow(XtDisplay(tool_shell), tool_frame,
+				     CWSibling | CWStackMode, &changes);
+		}
+		else
+		{
+		    // Raise command tool on top
+		    XRaiseWindow(XtDisplay(tool_shell), XtWindow(tool_shell));
+		}
 	    }
 	}
 	break;
@@ -837,8 +856,8 @@ Window frame(Display *display, Window window)
 	Window parent;
 	Window *children = 0;
 	unsigned int nchildren;
-	Status ok = XQueryTree(display, w, 
-			       &root, &parent, &children, &nchildren);
+	Status ok = 
+	    XQueryTree(display, w, &root, &parent, &children, &nchildren);
 	XFree(children);
 
 	if (!ok)
@@ -853,12 +872,6 @@ Window frame(Display *display, Window window)
     return window;		// Not found
 }
 
-// Find WM frame surrounding the tool shell
-static Window frame_tool_shell()
-{
-    return frame(XtDisplay(tool_shell), XtWindow(tool_shell));
-}
-
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref)
 {
@@ -867,7 +880,7 @@ static void recenter_tool_shell(Widget ref)
 
     Window ref_window  = XtWindow(ref);
     Window tool_window = XtWindow(tool_shell);
-    Window tool_frame  = frame_tool_shell();
+    Window tool_frame  = frame(tool_shell);
 
     // Get location of upper right edge of REF
     XWindowAttributes ref_attributes;
@@ -919,7 +932,7 @@ void get_tool_offset()
 
     Window ref_window  = XtWindow(ref);
     Window tool_window = XtWindow(tool_shell);
-    Window tool_frame  = frame_tool_shell();
+    Window tool_frame  = frame(tool_shell);
 
     // Get location of upper right edge of REF
     XWindowAttributes ref_attributes;
