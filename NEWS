@@ -15,6 +15,8 @@ DDD 3.1.1 fixes a number of minor bugs in DDD 3.1:
 - Handle incomplete DBX output correctly, such as prompts of the
   debugged program.  For details, see the new `positionTimeout' and
   `displayTimeout' resources.
+- Under certain circumstances, DDD could hang searching for a Java
+  class.
 
 There are no new features in DDD 3.1.1.
 

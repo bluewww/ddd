@@ -421,7 +421,7 @@ string java_class_file(const string& class_name, bool search_classes)
 			src_class = class_file(start, i - start);
 
 			// Search for this class file instead.
-			c = java_class_file(src_class, trial);
+			c = java_class_file(src_class, false);
 			if (c != "")
 			    return c;
 
