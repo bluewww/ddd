@@ -484,6 +484,7 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 	if (callbacks[i].callback == gdbCommandCB)
 	{
 	    bool first_time = !help_cache.has(cmd);
+	    (void) first_time;	// Use it
 
 	    string answer = gdbHelp(cmd);
 	    if (answer == NO_GDB_ANSWER)
@@ -497,15 +498,16 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 	    if (!is_known_command(answer))
 	    {
 		enable = false;
-
+#if 0
 		if (first_time)
 		{
 		    MString msg = rm("Disabling ") + labelString
 			+ rm(" button (not supported on " 
 			     + gdb->title() + ")");
 		    set_status_mstring(msg);
-		    break;
 		}
+#endif
+		break;
 	    }
 	}
     }
