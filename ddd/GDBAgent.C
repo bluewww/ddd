@@ -2409,10 +2409,8 @@ string GDBAgent::member_separator() const
     case LANGUAGE_C:
     case LANGUAGE_PYTHON:
     case LANGUAGE_OTHER:
-	return " = ";
-
     case LANGUAGE_JAVA:
-	return ": ";
+	return " = ";
 
     case LANGUAGE_ADA:
     case LANGUAGE_PERL:
