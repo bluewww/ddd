@@ -8,8 +8,7 @@ let me know what happens.
 This looks like a problem of the inferior debugger (i.e. GDB).
 Remember that DDD is only a front-end.  See your debugger
 documentation for details on reporting bugs and getting assistance.
-If you are using GDB, try the GDB documentation at
-`http://www.cs.tu-bs.de/softech/info/gdb_19.html'.
+(For GDB, send a bug report to `bug-gdb@prep.ai.mit.edu'.)
 
 This will be in the next DDD release.  In fact, it already has been
 implemented.  If you really need this feature, you can try out the
@@ -46,6 +45,11 @@ There is a patch which might fix this problem.  See the list at:
     ftp://ftp.gre.ac.uk/pub/tools/debuggers/ddd/patches/
     ftp://uiarchive.cso.uiuc.edu/pub/packages/ddd/patches/
     ftp://richb-pc.acc.qc.edu/pub/ddd/patches/
+
+When using GCC 2.8.0, `ddd/VSLRead.o' must be generated without `-O'
+flag.  Type `cd ddd; rm VSLRead.o; make CXXOPT=-DNDEBUG VSLRead.o' and
+re-build DDD.
+
 
 Thanks for your support,
 

@@ -394,4 +394,9 @@ Volunteers for these and other projects are welcome!
 289 Enable drop actions.  Dropping an action on the text causes the
     action to perform on the object (or vice versa?)
 
-291 (Insert new project ideas here)
+291 Rich Homolka <rich@stg.com> suggests: When displaying a class
+    variable, to be able to toggle between showing only member var's
+    defined in that class, or all member variables, including those
+    inherited from superclasses.
+
+292 (Insert new project ideas here)

@@ -181,15 +181,6 @@ GCC Optimization Errors
     to re-build DDD.
 
 
-GCC 2.8.0 on SunOS
-------------------
-
-    When using GCC 2.8.0 (or EGCS 1.0) on a sparc-sun-sunos4.1.4
-    system, the file `VSLRead.o' must be generated without `-O' flag.
-    Just type `cd ddd; rm VSLRead.o; make CXXOPT=-DNDEBUG VSLRead.o'
-    and re-build DDD.
-
-
 Early GCC versions
 ------------------
 
