@@ -2577,30 +2577,47 @@ void DataDisp::UpdateGraphEditorSelectionCB(Widget, XtPointer, XtPointer)
 	DispNode *cluster = disp_graph->get(dn->clustered());
 
 	if (cluster == 0)
-	    continue;
+	    continue;		// No such cluster
+
+	if (cluster->selected() && cluster->selected_value() == 0)
+	    continue;		// Entire cluster selected
 
 	DispValue *dv = cluster->value();
 	if (dv == 0)
 	    continue;
 
-	for (int i = 0; i < dv->nchildren(); i++)
+	// Find the display numbers in this cluster
+	IntArray cluster_children;
+	MapRef ref;
+	for (DispNode *dn2 = disp_graph->first(ref); 
+	     dn2 != 0; dn2 = disp_graph->next(ref))
 	{
-	    DispValue *child = dv->child(i);
-	    if (child->name() == dn->name())
+	    if (dn2->clustered() == cluster->disp_nr())
+		cluster_children += dn2->disp_nr();
+	}
+	sort(cluster_children);
+
+	// The number of children of the main cluster List should be
+	// the same as the number of displays we just found.
+	assert(dv->nchildren() == cluster_children.size());
+
+	for (int i = 0; i < cluster_children.size(); i++)
+	{
+	    if (cluster_children[i] == dn->disp_nr())
 	    {
 		// Got it
 		cluster->selected() = true;
 		if (cluster->selected_value() == 0)
 		{
 		    // Select this child
-		    cluster->select(child);
+		    cluster->select(dv->child(i));
 		}
 		else
 		{
 		    // Multiple nodes selected -- select them all
 		    cluster->select(0);
-		    break;
 		}
+		break;
 	    }
 	}
 
