@@ -264,9 +264,7 @@ Volunteers for these and other projects are welcome!
      output to display types graphically; dereference type names as
      required.  -AZ]
 
-111. Include `Settings' support for DBX.
-
-112* Have a user-settable tab width in the source window.
+111* Include `Settings' support for DBX.
 
 113. In DBX, use `setenv EDITOR echo' and `edit' to determine the
      full path of the current source file.  Be sure to reset EDITOR to
