@@ -837,8 +837,13 @@ DispValue *DispValue::update(string& value,
 DispValue *DispValue::update(DispValue *source, 
 			     bool& was_changed, bool& was_initialized)
 {
-    // Note: if SOURCE == THIS holds, we still traverse the tree
-    // in order to clear the change flags.
+    if (source == this)
+    {
+	// We're updated from ourselves -- ignore it all.  
+	// This happens when a cluster is updated from the values of
+	// the clustered dislays.
+	return this;
+    }
 
     if (changed)
     {
