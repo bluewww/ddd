@@ -223,6 +223,13 @@ static string gdbHelpName(Widget widget)
     return name;
 }
 
+// Having retrieved the global help text, we can configure JDB
+static void ConfigureJDBCB(XtPointer, XtIntervalId *)
+{
+    const string& all_help = help_cache["<ALL>"];
+    configure_jdb(all_help);
+}
+
 static string gdbHelp(string original_command)
 {
     string help = NO_GDB_ANSWER;
@@ -285,10 +292,10 @@ static string gdbHelp(string original_command)
 	    if (all_help == NO_GDB_ANSWER)
 		return NO_GDB_ANSWER; // try again later
 
-	    // Configure debugger
-	    gdb->has_debug_command(all_help.contains("load "));
-	    gdb->has_watch_command(
-		all_help.contains("watch ") ? WATCH_ACCESS | WATCH_CHANGE : 0);
+	    // We have the help text - configure JDB
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w),
+			    0, ConfigureJDBCB, 0);
+
 	    update_arg_buttons();
 	}
 

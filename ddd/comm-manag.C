@@ -68,6 +68,7 @@ char comm_manager_rcsid[] =
 #include "exectty.h"
 #include "exit.h"
 #include "file.h"
+#include "gdbinit.h"
 #include "history.h"
 #include "home.h"
 #include "index.h"
@@ -3096,4 +3097,29 @@ static void AsyncAnswerHP(Agent *source, void *, void *call_data)
     }
 
     _gdb_out(answer);
+}
+
+
+//-----------------------------------------------------------------------------
+// JDB is configured when help is retrieved
+//-----------------------------------------------------------------------------
+
+// Configure JDB
+void configure_jdb(const string& all_help)
+{
+    gdb->has_debug_command(all_help.contains("load "));
+    gdb->has_watch_command(
+	all_help.contains("watch ") ? WATCH_ACCESS | WATCH_CHANGE : 0);
+
+    if (!gdb->has_debug_command())
+    {
+	// Load initial source
+	char **argv = saved_argv();
+	int argc = 0;
+	while (argv[argc] != 0)
+	    argc++;
+	DebuggerInfo info(argc, argv);
+	if (info.arg != "")
+	    gdb_command(gdb->debug_command(info.arg));
+    }
 }

@@ -82,5 +82,8 @@ string buffered_gdb_output();
 // True if the debuggee is running
 extern bool debuggee_running;
 
+// Configure JDB
+extern void configure_jdb(const string& all_help);
+
 #endif // _DDD_comm_manag_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
