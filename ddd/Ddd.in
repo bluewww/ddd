@@ -3888,7 +3888,7 @@ Ddd*history_dialog*helpString:	    \
 sessions, so that you can be certain of precisely what happened.\n\
 Use this window to manage the @DDD@ command history facility.\n\
 \n\
-Select a specific command to have it copied at the command prompt.\n\
+Select a specific command to have it copied at the debugger prompt.\n\
 Click on @bf Apply @rm to execute the current command.
 
 
@@ -4070,8 +4070,7 @@ Ddd*busy_dialog.messageString:		\
 @rm The debugger is busy!
 Ddd*busy_dialog*helpString:	\
 @rm The inferior debugger (i.e. GDB, XDB, or DBX) is busy on some commands.\n\
-Please try again when the `@tt (gdb)@rm' or `@tt (dbx)@rm' \
-or `@tt >@rm' prompt appears.\n\
+Please try again when the debugger prompt appears.\n\
 \n\
 You may also interrupt the current debugging command by selecting\n\
 @bf Interrupt @rm from the @bf Program @rm menu.
