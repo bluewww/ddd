@@ -693,12 +693,12 @@ Ddd*showDependentDisplayTitles: off
 ! library compiled into DDD, named `ddd.vsl'.  If you wish to use
 ! another VSL library, put its name here and set `vslPath' to a
 ! colon-separated list of directories where the VSL file and its
-! includes can be found.
+! includes can be found.  `themes' stands for `~/.ddd/themes'.
 !
 ! If you use the builtin library, you can use the `vslDefs' resource,
 ! to override (customize) certain settings.  See `colors', below.
 Ddd*vslLibrary:			builtin
-Ddd*vslPath:			.
+Ddd*vslPath:			themes:.
 
 ! What shall we use if the graph gets too large to be displayed?
 ! If on, an Athena panner is used (a kind of two-directional scrollbar).
@@ -6659,7 +6659,8 @@ To cancel saving the session, click on LBL(No).
 
 Ddd*confirm_restart_dialog.dialogTitle: DDD: Restart Session
 Ddd*confirm_restart_dialog.messageString: \
-@rm The program being debugged is running.  Restart anyway (and kill it)?
+@rm The program being debugged has been started already.\n\
+Restart anyway (and kill it)?
 Ddd*confirm_restart_dialog.okLabelString:     Yes
 Ddd*confirm_restart_dialog.cancelLabelString: No
 Ddd*confirm_restart_dialog*helpString: \
