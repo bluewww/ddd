@@ -36,7 +36,7 @@
 #include "StringA.h"
 
 // Make each item in LABELS a base name of FILES, such that all
-// items have unique names.  Also sort LABELS and FILES.
+// items have unique names.
 extern void uniquify(StringArray& files, 
 		     StringArray& labels, 
 		     char sep = '/');

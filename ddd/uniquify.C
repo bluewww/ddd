@@ -77,54 +77,6 @@ static bool expand_label(string& name, const string& full_path, char sep)
 }
 
 
-// Remove adjacent duplicates in A1
-static void uniq(StringArray& a1, StringArray& a2)
-{
-    StringArray b1;
-    StringArray b2;
-
-    for (int i = 0; i < a1.size(); i++)
-    {
-	if (i == 0 || a1[i - 1] != a1[i])
-	{
-	    b1 += a1[i];
-	    b2 += a2[i];
-	}
-    }
-    
-    a1 = b1;
-    a2 = b2;
-}
-
-// Sort A1 and A2 according to the values in A1
-static void sort(StringArray& a1, StringArray& a2)
-{
-    // Shell sort -- simple and fast
-    int h = 1;
-    do {
-	h = h * 3 + 1;
-    } while (h <= a1.size());
-    do {
-	h /= 3;
-	for (int i = h; i < a1.size(); i++)
-	{
-	    string v1 = a1[i];
-	    string v2 = a2[i];
-	    int j;
-	    for (j = i; j >= h && smart_compare(a1[j - h], v1) > 0; j -= h)
-	    {
-		a1[j] = a1[j - h];
-		a2[j] = a2[j - h];
-	    }
-	    if (i != j)
-	    {
-		a1[j] = v1;
-		a2[j] = v2;
-	    }
-	}
-    } while (h != 1);
-}
-
 // Make each item in LABELS a base name of FILES, such that all
 // items have unique names.
 extern void uniquify(StringArray& files, StringArray& labels, char sep)
@@ -159,7 +111,4 @@ extern void uniquify(StringArray& files, StringArray& labels, char sep)
 	    i++;
 	}
     }
-
-    sort(labels, files);
-    uniq(labels, files);
 }
