@@ -24,7 +24,7 @@
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 char buttons_rcsid[] = 
     "$Id$";
@@ -36,7 +36,9 @@ char buttons_rcsid[] =
 #include "buttons.h"
 
 #include "AppData.h"
+#include "DataDisp.h"
 #include "Delay.h"
+#include "DestroyCB.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
 #include "SourceView.h"
@@ -49,6 +51,7 @@ char buttons_rcsid[] =
 #include "ddd.h"
 #include "disp-read.h"
 #include "editing.h"
+#include "commandQ.h"
 #include "question.h"
 #include "regexps.h"
 #include "select.h"
@@ -58,10 +61,15 @@ char buttons_rcsid[] =
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"
+#include "wm.h"
 #include "TimeOut.h"
+#include "LessTifH.h"
 
 #include <Xm/Xm.h>
+#include <Xm/Label.h>
+#include <Xm/Frame.h>
 #include <Xm/RowColumn.h>
+#include <Xm/SelectioB.h>
 #include <Xm/PushB.h>
 #include <Xm/ToggleB.h>
 #include <Xm/Text.h>
@@ -435,10 +443,15 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 				    bool for_documentation)
 {
     MString bp_help = source_view->help_on_glyph(widget, for_documentation);
-    if (bp_help.xmstring() != 0)
+    if (!bp_help.isNull())
 	return bp_help;
 
+    MString shortcut_help = data_disp->shortcut_help(widget);
+    if (!shortcut_help.isNull())
+	return shortcut_help;
+
     string help_name = gdbHelpName(widget);
+
     string tip = gdbHelp(help_name);
     if (tip == NO_GDB_ANSWER)
 	return MString(0, true);
@@ -596,14 +609,12 @@ void verify_button(Widget button)
 
 // Create a button work area from BUTTON_LIST named NAME
 Widget make_buttons(Widget parent, const string& name, 
-		    const string& button_list)
+		    String button_list)
 {
-    if (button_list == "")
-	return 0;
-
     Arg args[10];
     int arg = 0;
     XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
+    XtSetArg(args[arg], XmNuserData, XtPointer("")); arg++;
     Widget buttons = verify(XmCreateWorkArea(parent, name, args, arg));
     if (buttons == 0)
     {
@@ -611,27 +622,55 @@ Widget make_buttons(Widget parent, const string& name,
 	buttons = verify(XmCreateRowColumn(parent, name, args, arg));
     }
 
-    add_buttons(buttons, button_list);
+    set_buttons(buttons, button_list);
 
-    XtManageChild(buttons);
-
-    XtWidgetGeometry size;
-    size.request_mode = CWHeight;
-    XtQueryGeometry(buttons, NULL, &size);
-    unsigned char unit_type;
-    XtVaGetValues(buttons, XmNunitType, &unit_type, NULL);
-    int new_height = XmConvertUnits(buttons, XmVERTICAL, XmPIXELS, 
-				    size.height, unit_type);
-    XtVaSetValues(buttons,
-		  XmNpaneMaximum, new_height,
-		  XmNpaneMinimum, new_height,
-		  NULL);
+    if (XtIsManaged(buttons))
+    {
+	XtWidgetGeometry size;
+	size.request_mode = CWHeight;
+	XtQueryGeometry(buttons, NULL, &size);
+	unsigned char unit_type;
+	XtVaGetValues(buttons, XmNunitType, &unit_type, NULL);
+	int new_height = XmConvertUnits(buttons, XmVERTICAL, XmPIXELS, 
+					size.height, unit_type);
+	XtVaSetValues(buttons,
+		      XmNpaneMaximum, new_height,
+		      XmNpaneMinimum, new_height,
+		      NULL);
+    }
 
     return buttons;
 }
 
-void add_buttons(Widget buttons, const string& _button_list)
+void set_buttons(Widget buttons, String _button_list)
 {
+    XtPointer user_data;
+    XtVaGetValues(buttons, XmNuserData, &user_data, NULL);
+
+    if (user_data != 0)
+    {
+	String s = (String)user_data;
+	if (s == _button_list || string(s) == string(_button_list))
+	    return;		// Unchanged value
+    }
+
+    // Destroy all existing children (= buttons)
+    WidgetList children   = 0;
+    Cardinal num_children = 0;
+
+    XtVaGetValues(buttons,
+		  XtNchildren, &children,
+		  XtNnumChildren, &num_children,
+		  NULL);
+
+    int i;
+    for (i = 0; i < int(num_children); i++)
+    {
+	XtUnmanageChild(children[i]);
+	DestroyWhenIdle(children[i]);
+    }
+
+    // Add new buttons
     string button_list = _button_list;
 
     if (button_list.contains(':'))
@@ -643,15 +682,21 @@ void add_buttons(Widget buttons, const string& _button_list)
 	     << "to new format " << quote(button_list) << "\n";
     }
 
-    int colons = button_list.freq('\n') + 1;
-    string *commands = new string[colons];
-    split(button_list, commands, colons, '\n');
+    int lines = button_list.freq('\n') + 1;
+    string *commands = new string[lines];
+    split(button_list, commands, lines, '\n');
 
-    for (int i = 0; i < colons; i++)
+    int number_of_buttons = 0;
+    for (i = 0; i < lines; i++)
     {
 	XtCallbackProc callback = gdbCommandCB;
 
 	string name = commands[i];
+	read_leading_blanks(name);
+	strip_final_blanks(name);
+
+	if (name == "")
+	    continue;
 
 	MString label(0, true);
 	if (name.contains('\t'))
@@ -693,6 +738,7 @@ void add_buttons(Widget buttons, const string& _button_list)
 
 	Widget button = verify(XmCreatePushButton(buttons, name, 0, 0));
 	XtManageChild(button);
+	number_of_buttons++;
 
 	// A user-specified labelString overrides the given label
 	XmString xmlabel;
@@ -738,15 +784,22 @@ void add_buttons(Widget buttons, const string& _button_list)
 	else if (name == "Reload")
 	    callback = gdbReloadSourceCB;
 
-	// Verify later whether the button actually exists
+	// Be sure to verify whether the button actually exists
 	verify_button(button);
 
 	// We remove all callbacks to avoid popping down DialogShells
 	XtRemoveAllCallbacks(button, XmNactivateCallback);
 	XtAddCallback(button, XmNactivateCallback, callback,
-		      (XtPointer)XtNewString((String)command));
+		      (XtPointer)XtNewString(command.chars()));
     }
     delete[] commands;
+
+    if (number_of_buttons > 0)
+	XtManageChild(buttons);
+    else
+	XtUnmanageChild(buttons); // No buttons at all
+
+    XtVaSetValues(buttons, XmNuserData, XtPointer(_button_list), NULL);
 
     // Register default help command
     DefaultHelpText           = gdbDefaultHelpText;
@@ -755,4 +808,281 @@ void add_buttons(Widget buttons, const string& _button_list)
     TextPosOfEvent            = textPosOfEvent;
 
     DisplayDocumentation      = showDocumentationInStatusLine;
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Button Editor
+//-----------------------------------------------------------------------------
+
+// Remove garbage from S
+static string normalize(string s)
+{
+    // DDD 2.1 and earlier used `:' to separate buttons
+    s.gsub(':', '\n');
+
+    int lines = s.freq('\n') + 1;
+    string *commands = new string[lines];
+    split(s, commands, lines, '\n');
+
+    string ret = "";
+    for (int i = 0; i < lines; i++)
+    {
+	string& cmd = commands[i];
+	read_leading_blanks(cmd);
+	strip_final_blanks(cmd);
+	if (cmd == "")
+	    continue;
+
+	if (ret.length() > 0)
+	    ret += '\n';
+	ret += cmd;
+    }
+
+    return ret;
+}
+
+static Widget buttons_dialog = 0;
+static Widget button_box     = 0;
+static Widget shortcut_label = 0;
+static Widget console_w, shortcut_w;
+
+struct ChangeTextInfo {
+    String *str;
+    Widget dialog;
+    Widget text;
+    Widget vfy;
+    bool shortcuts;
+};
+
+static ChangeTextInfo *active_info = 0;
+
+static void SetTextCB(Widget, XtPointer, XtPointer)
+{
+    if (active_info == 0)
+	return;
+
+    String _str = XmTextGetString(active_info->text);
+    string str(_str);
+    XtFree(_str);
+
+    str = normalize(str);
+
+    XmTextSetString(active_info->text, str);
+
+    *active_info->str = (String)XtNewString(str.chars());
+    update_user_buttons();
+}
+
+static void ResetTextCB(Widget, XtPointer, XtPointer)
+{
+    if (active_info == 0)
+	return;
+
+    XmTextSetString(active_info->text, *active_info->str);
+    update_user_buttons();
+}
+
+static void ChangeTextCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+    ChangeTextInfo *info = (ChangeTextInfo *)client_data;
+
+    if (cbs->set)
+    {
+	// When changing, treat like `Apply'
+	SetTextCB(w, XtPointer(0), XtPointer(0));
+
+	active_info = info;
+
+	string str = normalize(*info->str);
+	XmTextSetString(info->text, (char *)str.chars());
+	XtAddCallback(info->dialog, XmNhelpCallback, 
+		      HelpOnThisCB, XtPointer(w));
+
+	if (info->shortcuts)
+	    XtUnmanageChild(info->vfy);
+	else
+	    XtManageChild(info->vfy);
+    }
+    else
+    {
+	XtRemoveCallback(info->dialog, XmNhelpCallback, 
+			 HelpOnThisCB, XtPointer(w));
+    }
+}
+
+static void SetVerifyButtonsCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.verify_buttons = cbs->set;
+}
+
+
+static Widget add_button(String name, 
+			 Widget dialog, Widget buttons, 
+			 Widget text, Widget vfy,
+			 String& str, bool shortcuts = false)
+{
+    Arg args[10];
+    Cardinal arg = 0;
+    Widget button = XmCreateToggleButton(buttons, name, args, arg);
+    XtManageChild(button);
+
+    ChangeTextInfo *info = new ChangeTextInfo;
+    info->dialog    = dialog;
+    info->str       = &str;
+    info->text      = text;
+    info->vfy       = vfy;
+    info->shortcuts = shortcuts;
+
+    XtAddCallback(button, XmNvalueChangedCallback, ChangeTextCB, 
+		  XtPointer(info));
+
+    return button;
+}
+
+static void create_buttons_dialog(Widget parent)
+{
+    if (buttons_dialog != 0)
+	return;
+
+    Arg args[10];
+    Cardinal arg = 0;
+    XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
+    buttons_dialog = 
+	verify(XmCreatePromptDialog(find_shell(parent), 
+				    "edit_buttons", args, arg));
+
+    XtAddCallback(buttons_dialog, XmNokCallback,     SetTextCB, 0);
+    XtAddCallback(buttons_dialog, XmNapplyCallback,  SetTextCB, 0);
+    XtAddCallback(buttons_dialog, XmNcancelCallback, ResetTextCB, 0);
+
+#if XmVersion >= 1002
+    XtManageChild(XmSelectionBoxGetChild(buttons_dialog, 
+					 XmDIALOG_APPLY_BUTTON));
+#endif
+
+    XtUnmanageChild(XmSelectionBoxGetChild(buttons_dialog,
+					   XmDIALOG_SELECTION_LABEL));
+    XtUnmanageChild(XmSelectionBoxGetChild(buttons_dialog, 
+					   XmDIALOG_TEXT));
+    Delay::register_shell(buttons_dialog);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+    XtSetArg(args[arg], XmNadjustMargin, False); arg++;
+    Widget box = 
+	verify(XmCreateRowColumn(buttons_dialog, "box", args, arg));
+    XtManageChild(box);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+    XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
+    shortcut_label = verify(XmCreateLabel(box, "shortcuts", args, arg));
+    XtManageChild(shortcut_label);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+    XtSetArg(args[arg], XmNorientation,  XmHORIZONTAL); arg++;
+    button_box = 
+	verify(XmCreateRadioBox(box, "buttons", args, arg));
+    XtManageChild(button_box);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT); arg++;
+    Widget text = verify(XmCreateScrolledText(box, "text", args, arg));
+    XtManageChild(text);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNset, app_data.verify_buttons); arg++;
+    Widget vfy = verify(XmCreateToggleButton(box, "verify", args, arg));
+    XtManageChild(vfy);
+    XtAddCallback(vfy, XmNvalueChangedCallback, SetVerifyButtonsCB, 0);
+
+    console_w = 
+	add_button("console", buttons_dialog, button_box, text, vfy,
+		   app_data.console_buttons);
+    Widget source_w = 
+	add_button("source", buttons_dialog, button_box, text, vfy,
+		   app_data.source_buttons);
+    Widget data_w = 
+	add_button("data", buttons_dialog, button_box, text, vfy,
+		   app_data.data_buttons);
+    shortcut_w = 
+	add_button("shortcuts", buttons_dialog, button_box, text, vfy,
+		   app_data.display_shortcuts, true);
+
+    XmToggleButtonSetState(source_w, True, False);
+    (void) data_w;
+}
+
+// We use one single editor for both purposes, since this saves space.
+void dddEditButtonsCB(Widget w, XtPointer, XtPointer)
+{
+    create_buttons_dialog(w);
+    XtUnmanageChild(buttons_dialog);
+
+    XtManageChild(button_box);
+    XtManageChild(shortcut_w);
+
+    XmToggleButtonSetState(console_w, Boolean(True), True);
+    ResetTextCB(w, 0, 0);
+
+    XtManageChild(button_box);
+    XtUnmanageChild(shortcut_w);
+    XtUnmanageChild(shortcut_label);
+
+    XtVaSetValues(XtParent(buttons_dialog), XmNtitle, 
+		  DDD_NAME ": Button Editor", NULL);
+
+    manage_and_raise(buttons_dialog);
+}
+
+void dddEditShortcutsCB(Widget w, XtPointer, XtPointer)
+{
+    create_buttons_dialog(w);
+    XtUnmanageChild(buttons_dialog);
+
+    XtManageChild(button_box);
+    XtManageChild(shortcut_w);
+
+    XmToggleButtonSetState(shortcut_w, Boolean(True), True);
+    ResetTextCB(w, 0, 0);
+
+    XtManageChild(shortcut_label);
+    XtUnmanageChild(button_box);
+
+    XtVaSetValues(XtParent(buttons_dialog), XmNtitle, 
+		  DDD_NAME ": Shortcut Editor", NULL);
+
+    manage_and_raise(buttons_dialog);
+}
+
+void refresh_button_editor()
+{
+    StringArray exprs;
+    data_disp->get_shortcut_menu(exprs);
+    string expr;
+    for (int i = 0; i < exprs.size(); i++)
+    {
+	if (i > 0)
+	    expr += '\n';
+	expr += exprs[i];
+    }
+
+    app_data.display_shortcuts = (String)XtNewString(expr.chars());
+
+    if (active_info != 0 && active_info->str == &app_data.display_shortcuts)
+	XmTextSetString(active_info->text, app_data.display_shortcuts);
 }

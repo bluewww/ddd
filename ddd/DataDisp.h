@@ -200,15 +200,14 @@ class DataDisp {
     //-----------------------------------------------------------------------
     static MMDesc graph_popup[];
     static MMDesc node_popup[];
-    static MMDesc shortcut_popup[];
+    static MMDesc shortcut_popup1[];
+    static MMDesc shortcut_popup2[];
     static MMDesc graph_cmd_area[];
     static MMDesc display_area[];
     static MMDesc detail_menu[];
     static MMDesc shortcut_menu[];
 
     static const int DataDisp::shortcut_items;
-    static const int DataDisp::shortcut_menu_base;
-    static const int DataDisp::shortcut_popup_base;
 
 
     // Array of shortcut expressions
@@ -326,6 +325,7 @@ private:
 
     static Widget graph_popup_w;
     static Widget node_popup_w;
+    static Widget shortcut_popup_w;
 
     static Widget edit_displays_dialog_w;
     static Widget display_list_w;
@@ -432,6 +432,10 @@ public:
 
     // Return true if a core dump is needed to restore displays
     static bool need_core_to_restore();
+
+    // Return documentation string for shortcut menu item W. 
+    // Returns 0 if W is no shortcut menu item.
+    static MString shortcut_help(Widget w);
 
     // Reset all
     static void reset();

@@ -56,8 +56,11 @@ extern void _gdb_out(string text);
 // Update option menus
 extern void update_options();
 
-// Update buttons
+// Update argument buttons
 extern void update_arg_buttons();
+
+// Update user-defined buttons
+extern void update_user_buttons();
 
 // Save current option state
 extern void save_option_state();

@@ -63,6 +63,7 @@ char DataDisp_rcsid[] =
 #include "VoidArray.h"
 #include "assert.h"
 #include "bool.h"
+#include "buttons.h"
 #include "charsets.h"
 #include "cmdtty.h"
 #include "commandQ.h"
@@ -139,67 +140,45 @@ MMDesc DataDisp::graph_popup[] =
     MMEnd
 };
 
-// Index of first shortcut item
-const int DataDisp::shortcut_menu_base = 0;
-
-MMDesc DataDisp::shortcut_menu[] =
-{
-    {"1",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(1)  }},
-    {"2",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(2)  }},
-    {"3",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(3)  }},
-    {"4",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(4)  }},
-    {"5",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(5)  }},
-    {"6",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(6)  }},
-    {"7",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(7)  }},
-    {"8",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(8)  }},
-    {"9",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(9)  }},
-    {"10", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(10) }},
-    {"11", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(11) }},
-    {"12", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(12) }},
-    {"13", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(13) }},
-    {"14", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(14) }},
-    {"15", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(15) }},
-    {"16", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(16) }},
-    {"17", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(17) }},
-    {"18", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(18) }},
-    {"19", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(19) }},
-    {"20", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(20) }},
-    MMEnd,
-};
-
 // Number of shortcut items
-const int DataDisp::shortcut_items = 
-    (XtNumber(DataDisp::shortcut_menu) - 1) - shortcut_menu_base;
+const int DataDisp::shortcut_items = 20;
 
-// Index of first shortcut menu
-const int DataDisp::shortcut_popup_base = 2;
+#define SHORTCUT_MENU \
+{ \
+    {"s1",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(1)  }}, \
+    {"s2",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(2)  }}, \
+    {"s3",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(3)  }}, \
+    {"s4",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(4)  }}, \
+    {"s5",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(5)  }}, \
+    {"s6",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(6)  }}, \
+    {"s7",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(7)  }}, \
+    {"s8",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(8)  }}, \
+    {"s9",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(9)  }}, \
+    {"s10", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(10) }}, \
+    {"s11", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(11) }}, \
+    {"s12", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(12) }}, \
+    {"s13", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(13) }}, \
+    {"s14", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(14) }}, \
+    {"s15", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(15) }}, \
+    {"s16", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(16) }}, \
+    {"s17", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(17) }}, \
+    {"s18", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(18) }}, \
+    {"s19", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(19) }}, \
+    {"s20", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(20) }}, \
+    {"other", MMPush, { DataDisp::dependentCB }}, \
+    MMSep, \
+    {"edit",  MMPush, { dddEditShortcutsCB }}, \
+    MMEnd, \
+}
 
-MMDesc DataDisp::shortcut_popup[] =
-{
-    {"new",      MMPush,   { DataDisp::dependentCB }},
-    MMSep,
-    {"1",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(1)  }},
-    {"2",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(2)  }},
-    {"3",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(3)  }},
-    {"4",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(4)  }},
-    {"5",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(5)  }},
-    {"6",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(6)  }},
-    {"7",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(7)  }},
-    {"8",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(8)  }},
-    {"9",  MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(9)  }},
-    {"10", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(10) }},
-    {"11", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(11) }},
-    {"12", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(12) }},
-    {"13", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(13) }},
-    {"14", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(14) }},
-    {"15", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(15) }},
-    {"16", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(16) }},
-    {"17", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(17) }},
-    {"18", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(18) }},
-    {"19", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(19) }},
-    {"20", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(20) }},
-    MMEnd,
-};
+// The menu used in the `New Display' button.
+MMDesc DataDisp::shortcut_menu[]   = SHORTCUT_MENU;
+
+// A stand-alone popup menu.
+MMDesc DataDisp::shortcut_popup1[] = SHORTCUT_MENU;
+
+// The sub-menu in the `New Display' item.
+MMDesc DataDisp::shortcut_popup2[] = SHORTCUT_MENU;
 
 struct PopupItms { enum Itms {Dereference, New, Sep1, Detail, Rotate, Set,
 			      Sep2, Delete }; };
@@ -207,7 +186,7 @@ struct PopupItms { enum Itms {Dereference, New, Sep1, Detail, Rotate, Set,
 MMDesc DataDisp::node_popup[] =
 {
     {"dereference",   MMPush,   {DataDisp::dereferenceCB}},
-    {"new",           MMMenu,   MMNoCB, DataDisp::shortcut_popup },
+    {"new",           MMMenu,   MMNoCB, DataDisp::shortcut_popup2, },
     MMSep,
     {"detail",        MMPush,   {DataDisp::toggleDetailCB, XtPointer(-1)}},
     {"rotate",        MMPush,   {DataDisp::toggleRotateCB}},
@@ -271,6 +250,7 @@ Widget     DataDisp::edit_displays_dialog_w = 0;
 Widget     DataDisp::display_list_w         = 0;
 Widget     DataDisp::graph_popup_w          = 0;
 Widget     DataDisp::node_popup_w           = 0;
+Widget     DataDisp::shortcut_popup_w       = 0;
 
 bool DataDisp::detect_aliases = false;
 
@@ -818,44 +798,90 @@ void DataDisp::shortcutCB(Widget w, XtPointer client_data, XtPointer)
 // Set shortcut menu to expressions EXPRS
 void DataDisp::set_shortcut_menu(const StringArray& exprs)
 {
+    if (exprs.size() > shortcut_items)
+    {
+	post_warning("Shortcut menu capacity exceeded.",
+		     "too_many_shortcuts_warning", last_origin);
+    }
+
     for (int i = 0; i < shortcut_items; i++)
     {
-	Widget popup_item = shortcut_popup[shortcut_popup_base + i].widget;
-	Widget menu_item  = shortcut_menu [shortcut_menu_base  + i].widget;
+	Widget popup1_item = shortcut_popup1[i].widget;
+	Widget popup2_item = shortcut_popup2[i].widget;
+	Widget menu_item   = shortcut_menu[i].widget;
 
 	if (i < exprs.size())
 	{
 	    string expr = exprs[i];
-	    MString label("Display " + expr);
+
+	    string label;
 	    if (expr.contains('\t'))
-	    {
-		label = MString(expr.after('\t'));
-	    }
+		label = expr.after('\t');
+	    else
+		label = "Display " + expr;
 
-	    XtVaSetValues(popup_item, XmNlabelString, label.xmstring(), NULL);
-	    XtVaSetValues(menu_item,  XmNlabelString, label.xmstring(), NULL);
+	    set_label(popup1_item, label);
+	    set_label(popup2_item, label);
+	    set_label(menu_item,   label);
 
-	    XtManageChild(popup_item);
+	    XtManageChild(popup1_item);
+	    XtManageChild(popup2_item);
 	    XtManageChild(menu_item);
 	}
 	else
 	{
 	    // Unmanage widgets
-	    XtUnmanageChild(popup_item);
+	    XtUnmanageChild(popup1_item);
+	    XtUnmanageChild(popup2_item);
 	    XtUnmanageChild(menu_item);
 	}
     }
 
     shortcut_exprs = exprs;
+    refresh_args();
 }
 
 // Add one expr to shortcut menus
 void DataDisp::add_shortcut_expr(const string& expr)
 {
-    shortcut_exprs += expr;
+    // Insert as first item in SHORTCUT_EXPRS
+    shortcut_exprs += string("");
+    for (int i = shortcut_exprs.size() - 1; i > 0; i--)
+	shortcut_exprs[i] = shortcut_exprs[i - 1];
+    shortcut_exprs[0] = expr;
+
     set_shortcut_menu(shortcut_exprs);
+    refresh_button_editor();
     refresh_args();
 }
+
+MString DataDisp::shortcut_help(Widget w)
+{
+    for (int i = 0; i < shortcut_items; i++)
+    {
+	if (w == shortcut_menu[i].widget
+	    || w == shortcut_popup1[i].widget
+	    || w == shortcut_popup2[i].widget)
+	{
+	    MString ret = rm("Display ");
+	    string expr = shortcut_exprs[i];
+	    if (expr.contains('\t'))
+		expr = expr.before('\t');
+
+	    while (expr.contains("()"))
+	    {
+		ret += tt(expr.before("()"));
+		ret += bf("()");
+		expr = expr.after("()");
+	    }
+	    ret += tt(expr);
+	    return ret;
+	}
+    }
+
+    return MString(0, true);	// Not found
+}
+
 
 
 //-----------------------------------------------------------------------------
@@ -924,15 +950,21 @@ void DataDisp::new_displayDCB (Widget dialog, XtPointer client_data, XtPointer)
     string expr(inp);
     XtFree(inp);
 
+    read_leading_blanks(expr);
+    strip_final_blanks(expr);
+
     if (expr != "")
+    {
 	new_display(expr, info->point_ptr, info->depends_on, info->origin);
 
-    if (info->shortcut != 0 && XmToggleButtonGetState(info->shortcut))
-    {
-	// Add expression to shortcut menu
-	expr.gsub("()", "( )");
-	expr.gsub(info->display_expression, string("()"));
-	add_shortcut_expr(expr);
+	if (info->shortcut != 0 && XmToggleButtonGetState(info->shortcut))
+	{
+	    // Add expression to shortcut menu
+	    expr.gsub("()", "( )");
+	    if (expr != info->display_expression)
+		expr.gsub(info->display_expression, string("()"));
+	    add_shortcut_expr(expr);
+	}
     }
 }
 
@@ -1256,28 +1288,42 @@ void DataDisp::graph_toggle_or_moveAct (Widget, XEvent* event, String* args,
 			ToggleSelection);
 }
 
-void DataDisp::graph_popupAct (Widget, XEvent* event, String*, Cardinal*)
+void DataDisp::graph_popupAct (Widget, XEvent* event, String *args, 
+			       Cardinal *num_args)
 {
     static BoxPoint* p = 0;
     if (p == 0)
     {
 	p = new BoxPoint;
 
-	MMaddCallbacks(graph_popup, XtPointer(p));
-	MMaddCallbacks(node_popup,  XtPointer(p));
+	MMaddCallbacks(graph_popup,     XtPointer(p));
+	MMaddCallbacks(node_popup,      XtPointer(p));
+	MMaddCallbacks(shortcut_popup1, XtPointer(p));
     }
     *p = point(event);
 
     set_args(*p, SetSelection);
 
-    Widget popup = 0;
-    if (selected_node() == 0)
-	popup = graph_popup_w;
-    else
-	popup = node_popup_w;
+    string arg = "";
+    if (num_args != 0 && *num_args > 0)
+	arg = downcase(args[0]);
 
-    XmMenuPosition(popup, &event->xbutton);
-    XtManageChild(popup);
+    Widget popup = 0;
+    if (arg == "graph" || selected_node() == 0)
+	popup = graph_popup_w;
+    else if (arg == "shortcut" 
+	     || (arg == "" && event->xbutton.state & ShiftMask))
+	popup = shortcut_popup_w;
+    else if (arg == "node" || arg == "")
+	popup = node_popup_w;
+    else
+	cerr << "graph-popup: bad argument " << quote(arg) << "\n";
+
+    if (popup != 0)
+    {
+	XmMenuPosition(popup, &event->xbutton);
+	XtManageChild(popup);
+    }
 }
 
 void DataDisp::set_args(BoxPoint p, SelectionMode mode)
@@ -1520,7 +1566,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     if (count_selected_expanded > 0 && count_selected_collapsed == 0)
     {
 	// Only expanded displays selected
-	set_label(node_popup[PopupItms::Detail].widget, "Hide Detail");
+	set_label(node_popup[PopupItms::Detail].widget, "Hide All");
 	set_label(graph_cmd_area[CmdItms::Detail].widget, "Hide ()");
 	set_sensitive(node_popup[PopupItms::Detail].widget, true);
 	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
@@ -1528,7 +1574,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     else if (count_selected_collapsed > 0)
     {
 	// Some collapsed displays selected
-	set_label(node_popup[PopupItms::Detail].widget, "Show Detail");
+	set_label(node_popup[PopupItms::Detail].widget, "Show All");
 	set_label(graph_cmd_area[CmdItms::Detail].widget, "Show ()");
 	set_sensitive(node_popup[PopupItms::Detail].widget, true);
 	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
@@ -1578,8 +1624,9 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	else if (disp_node_arg)
 	    sens = true;	// Exactly one expression selected
 
-	set_sensitive(shortcut_popup[shortcut_popup_base + i].widget, sens);
-	set_sensitive(shortcut_menu [shortcut_menu_base  + i].widget, sens);
+	set_sensitive(shortcut_popup1[i].widget, sens);
+	set_sensitive(shortcut_popup2[i].widget, sens);
+	set_sensitive(shortcut_menu  [i].widget, sens);
     }
 
     // Argument field
@@ -3540,9 +3587,8 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     value.gsub(rxnl, " ");
     strip_final_blanks(value);
 
-    MString prompt = rm("Enter new value for ");
-    prompt += tt(name);
-    prompt += rm(":");
+    MString prompt = tt(name);
+    prompt += bf(" value");
 
     Arg args[10];
     int arg = 0;
@@ -4103,11 +4149,17 @@ DataDisp::DataDisp (XtAppContext app_context,
     set_last_origin(graph_edit);
 
     // Create menus
-    graph_popup_w = MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
+    graph_popup_w = 
+	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
     InstallButtonTips(graph_popup_w);
 
-    node_popup_w = MMcreatePopupMenu(graph_edit, "node_popup", node_popup);
+    node_popup_w = 
+	MMcreatePopupMenu(graph_edit, "node_popup", node_popup);
     InstallButtonTips(node_popup_w);
+
+    shortcut_popup_w = 
+	MMcreatePopupMenu(graph_edit, "shortcut_popup", shortcut_popup1);
+    InstallButtonTips(shortcut_popup_w);
 
     disp_graph->callHandlers();
 

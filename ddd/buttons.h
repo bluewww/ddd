@@ -37,10 +37,10 @@
 #include <X11/Intrinsic.h>
 
 // Create a button row named NAME with buttons as specified in LIST
-Widget make_buttons(Widget parent, const string& name, const string& list);
+Widget make_buttons(Widget parent, const string& name, String list);
 
-// Add buttons as specified in LIST to BUTTONS
-void add_buttons(Widget buttons, const string& list);
+// Assign BUTTONS the buttons specified in LIST
+void set_buttons(Widget buttons, String list);
 
 // Make BUTTON insensitive if it is not supported
 void verify_button(Widget button);
@@ -51,6 +51,13 @@ extern int max_value_doc_length;
 
 // Clear value cache after some change in the program state
 extern void clear_value_cache();
+
+// Invoke button and shortcut editors
+void dddEditButtonsCB  (Widget, XtPointer, XtPointer);
+void dddEditShortcutsCB(Widget, XtPointer, XtPointer);
+
+// Refresh button editor after external change
+void refresh_button_editor();
 
 #endif // _DDD_buttons_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

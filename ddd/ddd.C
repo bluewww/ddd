@@ -690,6 +690,7 @@ static Widget apply_w;
 static MMDesc command_menu[] =
 {
     { "history",  MMPush, { gdbHistoryCB }},
+    { "buttons",  MMPush, { dddEditButtonsCB }},
     MMSep,
     { "prev",     MMPush, { gdbPrevCB }},
     { "next",     MMPush, { gdbNextCB }},
@@ -2305,7 +2306,7 @@ int main(int argc, char *argv[])
 	arg = 0;
 	tool_buttons_w = 
 	    verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
-	add_buttons(tool_buttons_w, app_data.tool_buttons);
+	set_buttons(tool_buttons_w, app_data.tool_buttons);
 
 	XtManageChild(tool_buttons_w);
 	XtRealizeWidget(tool_shell);
@@ -2579,7 +2580,15 @@ static void set_shortcut_menu(DataDisp *data_disp, string exprs)
 
     StringArray items_s;
     for (int i = 0; i < newlines; i++)
-	items_s += items[i];
+    {
+	string item = items[i];
+	read_leading_blanks(item);
+	strip_final_blanks(item);
+	if (item == "")
+	    continue;
+
+	items_s += item;
+    }
 
     data_disp->set_shortcut_menu(items_s);
 
@@ -3271,7 +3280,7 @@ bool startup_preferences_changed()
 	|| app_data.tool_bar != initial_app_data.tool_bar
 	|| focus_policy != initial_focus_policy
 	|| app_data.panned_graph_editor != initial_app_data.panned_graph_editor
-	|| debugger_type(app_data.debugger) 
+	|| debugger_type(app_data.debugger)
   	      != debugger_type(initial_app_data.debugger)
 	|| string(app_data.show_startup_logo)
 	      != string(initial_app_data.show_startup_logo);
@@ -3959,6 +3968,15 @@ static void source_argHP(void *, void *, void *)
 {
     update_arg_buttons();
 }
+
+void update_user_buttons()
+{
+    set_buttons(data_buttons_w,    app_data.data_buttons);
+    set_buttons(source_buttons_w,  app_data.source_buttons);
+    set_buttons(console_buttons_w, app_data.console_buttons);
+    set_shortcut_menu(data_disp,   app_data.display_shortcuts);
+}
+
 
 //-----------------------------------------------------------------------------
 // Handlers

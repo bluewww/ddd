@@ -1215,6 +1215,17 @@ bool save_options(unsigned long flags)
 			    + XtNgridHeight, grid_height) << "\n";
     }
 
+    // Buttons
+    os << "\n! Buttons\n";
+    os << string_app_value(XtNconsoleButtons, app_data.console_buttons) 
+       << '\n';
+    os << string_app_value(XtNsourceButtons, app_data.source_buttons)
+       << '\n';
+    os << string_app_value(XtNdataButtons, app_data.data_buttons)
+       << '\n';
+    os << bool_app_value(XtNverifyButtons, app_data.verify_buttons)
+       << '\n';
+
     // Shortcut expressions
     os << "\n! Display shortcuts\n";
     {
