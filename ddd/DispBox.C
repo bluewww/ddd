@@ -171,28 +171,31 @@ void DispBox::set_value(const DispValue* dv, const DispValue *parent)
     assert_ok(mybox->OK());
 }
 
-void DispBox::set_title(int disp_nr, string name)
+void DispBox::shorten_title(string& name)
 {
-    if (name != "")
-    {
-	if (!is_user_command(name))
-	{
-	    // Strip DBX scope information from title
-#if RUNTIME_REGEX
-	    static regex rxdbx_scope("[a-zA-Z_0-9]*`");
-#endif
-	    int i = 0;
-	    while (int(name.length()) > max_display_title_length 
-		   && ((i = name.index(rxdbx_scope)) >= 0))
-	    {
-		name = name.before(i) + name.after('`');
-	    }
-	}
+    if (name == "")
+	return;
 
-	// Shorten remainder
-	shorten(name, max_display_title_length);
+    if (!is_user_command(name))
+    {
+	// Strip DBX scope information from title
+#if RUNTIME_REGEX
+	static regex rxdbx_scope("[a-zA-Z_0-9]*`");
+#endif
+	int i = 0;
+	while (int(name.length()) > max_display_title_length 
+	       && ((i = name.index(rxdbx_scope)) >= 0))
+	{
+	    name = name.before(i) + name.after('`');
+	}
     }
 
+    // Shorten remainder
+    shorten(name, max_display_title_length);
+}
+
+void DispBox::set_title(int disp_nr, string name)
+{
     if (title_box != 0)
     {
 	title_box->unlink();
@@ -209,12 +212,14 @@ void DispBox::set_title(int disp_nr, string name)
 	{
 	    // User command: use NAME
 	    string title = DispValue::make_title(name);
+	    shorten_title(title);
 	    args[arg++] = tag(title);
 	}
 	else
 	{
 	    // Normal title: use NUMBER: NAME
 	    args[arg++] = itostring(disp_nr);
+	    shorten_title(name);
 	    args[arg++] = tag(name);
 	}
 

@@ -118,6 +118,8 @@ protected:
     // Evaluation functions
     static Box *check(const string& func_name, const Box *box);
 
+    static void shorten_title(string& title);
+
 public:
     static Box *eval(const string& func_name, const VSLArgList& args)
     {
