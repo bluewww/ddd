@@ -6,7 +6,7 @@ DDD_APP_WARNING
 Ddd*appDefaultsVersion: @VERSION@
 
 ! Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
-! Copyright (C) 1999-2000 Universitaet Passau, Germany.
+! Copyright (C) 1999-2001 Universitaet Passau, Germany.
 ! Written by Andreas Zeller <zeller@gnu.org>.
 ! 
 ! This file is part of DDD.
@@ -7173,18 +7173,23 @@ Ddd*no_vsllib_error*helpString: \
 and will not be able to show data displays.\n\
 \n\
 This error typically happens when DDD installation is (yet) incomplete.\n\
-You can work around this error by\n\
+Did you already type LBL(make install)?\n\
+\n\
+If you don't want to install DDD, you can work around this error by\n\
 ITEM installing the file FILE(vsllib/[ddd].vsl)\n\
     into FILE(@ROOT@/vsllib/[ddd].vsl), or\n\
 ITEM have the environment variable VAR(DDD_HOME) point at the place\n\
-    where the FILE(vsllib) directory resides.
+    where the FILE(vsllib) directory resides.\n\
+\n\
+To get a DDD demo before installation, simply type LBL(make check).\n\
+If this error persists, something else has gone wrong.
 
 Ddd*vsl_message.dialogTitle: DDD: VSL Messages
 Ddd*vsl_message*helpString:	\
 The VSL interpreter issued a message while parsing and/or evaluating\n\
 VSL expressions.  Your data displays may not be rendered successfully.\n\
 \n\
-Please note: This dialog only lists the EMPH(first) problem encountered.\n\
+STRONG(Please note:) This dialog only lists the EMPH(first) problem encountered.\n\
 For further diagnostics, see the status line (and the FILE(~/.[ddd]/log) file).
 
 
