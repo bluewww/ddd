@@ -18,19 +18,8 @@ Volunteers for fixing these and other bugs are welcome!
 003. Using Motif 1.1 or earlier, the command window is scrolled
      whenever obscured.  [This seems to be a Motif bug.]
 
-013. Raising windows using the `Views' menu does not assign them `mwm'
+013. Raising windows using the `View' menu does not assign them `mwm'
      input focus.  [Anyone willing to give me a hint here?  -AZ]
-
-015. On Motif 1.2 or later, using DDD with both explicit keyboard
-     focus and a panned graph editor causes problems: Keyboard
-     traversal of the graph editor does not work; on
-     mips-dec-ultrix4.4 (and others?), pointer selection of an
-     arbitrary display causes DDD to crash.  [It seems that it is
-     generally not wise to combine explicit keyboard focus and panned
-     data displays, since this means involving Athena widgets in Motif
-     keyboard traversal.  A simple workaround: If you want panners,
-     don't use explicit keyboard focus; if you want explicit keyboard
-     focus, use scrollbars.]
 
 021. Using Sun DBX, attempting to dereference a `(nil)' pointer
      results in an error message and no new display.  However, the
@@ -39,102 +28,13 @@ Volunteers for fixing these and other bugs are welcome!
 026. Using DBX with PASCAL or Modula-2, selected array elements are
      always counted from zero, instead of the starting index of the array.
 
-037. Paul Eggert (eggert@twinsun.com) states:
-
-     The first time I ran ddd, my X server dumped core!  Ack!
-
-     Here are the details.  I was running on `shade', a SunOS 4.1.4
-     sparc, using the old X News server.  ddd was running on a Solaris
-     2.4 host, with the DISPLAY='shade:0'.
-
-     I managed to narrow it down to the following.  Use the .Xdefaults
-     at the end of this message.  This should be the only file in your
-     home directory.  Log in to a SunOS 4.1.x (x = 3 or 4) host ONE.
-     Type `/usr/openwin/bin/openwin' to start up Open Windows.  Click
-     in the command tool, and type `rlogin TWO' where TWO is a Solaris
-     2.4 host.  Then type `setenv DISPLAY ONE:0' (where ONE is the
-     SunOS 4.1.x host).  Then run `ddd'.  This will make the SunOS
-     4.1.x X server dump core.  [I could not reproduce this.  Anyone
-     willing to give me a hint here?  -AZ]
-
-040. dmitzel@everest.hitc.com (Danny J. Mitzel) states:
-     I'm running the DDD 1.1 sparc-sun-sunos4.1.1 prebuilt binary on a
-     Sun4/300 SunOS4.1.3_U1.  I notice that once I have typed any
-     commands in the 'DDD Command Window' and then bring up the
-     'Command History' list that there is always an extra entry at the
-     bottom of the list, usually it's blank sometimes there's garbage.
-     anyways, selecting that entry leads to 'Internal error
-     (Segmentation fault).'  no core dump.  I've attached the
-     '--configuration' and '--check-configuration' report.  let me
-     know if you need any other info.
-     [A bug in Motif 1.1 - does not occur in later Motif versions].
-
 041. Starting a multi-window DDD iconified under vtwm and fvwm causes
      trouble with group iconification.
-
-043. vickery@babbage.cs.qc.edu (Christopher Vickery) states: The
-     display() operation generates a segmentation fault if the
-     variable to be displayed is an uninitialized pointer.  [I could
-     not reproduce this bug.  Can anyone clarify this?  -AZ]
 
 049. The bounding box is computed for all boxes, even if only selected
      boxes are to be printed.
 
-050. jcrupi@mystech.com (John Crupi) states: When trying to
-     dereference (using the mouse) a very large structure, ddd locks
-     up.  It usually happens if I quickly select 'dereference' after I
-     display the pointer.  The structure contains unions.  Machine is
-     sparc-sun-solaris2.4.  [I could not reproduce this bug.  Can
-     anyone clarify this?  -AZ]
-
-051. grant@isgtec.com (Grant McDorman) has run purify on DDD 1.2 and
-     reported some memory leaks as well as bad memory accesses.
-     [Could someone do this for a recent DDD release?  -AZ]
-
 056. `Select All' does not select hints.
-
-060. Frank Dohrmann <frank@kaa.desy.de> says that on his Sun-Sparc
-     10/41 with SunOS 4.1.3, using `lpr' instead of `lp -c' to print
-     the graph hangs up DDD.
-     [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
-
-062. Seth J. Bradley <sbradley@scic.intel.com> says that DDD only
-     displays the upper 32 bits of "unsigned long long" data.
-     Xxgdb, mxgdb and xde all display the full 64 bits of this data
-     type.
-     [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
-
-079. Window resize problems.  louie@dbmx.com (Lewis Alderton) says: I
-     am running using FVWM (virtual window manager) and when the
-     breakpoints and stack-frame windows pop up, they appear as the
-     width of the virtual screen, which is twice as wide as the actual
-     screen.
-
-     With the stackframe window I can resize the frame and it is OK,
-     but with the breakpoints window, resize causes the window to
-     redraw is such a manner as to hide all the breakpoints, once this
-     has happened, I can never see breakpoints in this window again.
-
-     [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
-
-085. Lassi A. Tuura <Lassi.Tuura@cern.ch> states:
-
-     - There is a bug somewhere in graph layout code that manifests
-       only on highest KCC optimization levels (+K2 and +K3).  The
-       result is that if I dereference any pointer, the following
-       happens:
-         - the arrow is drawn to extreme left, beyond the left edge
-         - the panner window becomes very wide and the current view
-           is just a thin line in the panner
-         - moving the panner handle has no effect -- no scrolling is
-           ever done; thus I cannot make the target of the pointer
-           visible
-       This is very repeatable, as it happens every time.  DDD does
-       not crash, however.  My first guess is that somehow something
-       goes either negative or to extremely large positive value.  I
-       could try to narrow down the location of the bug if someone
-       would be nice enough to tell me which functions to look at.
-     [This is a bug in KCC.  Don't know how to fix this  -AZ]
 
 086. mayer@paradigml.com (Ron Mayer) says:
 
@@ -156,23 +56,6 @@ Volunteers for fixing these and other bugs are welcome!
          in the gdb window ddd seems to lock up very often.
      [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
 
-107. Jonathan Edwards <edwards@blight.IntraNet.com> says that DDD/DBX
-     hangs up on his powerpc-ibm-aix4.2.0.0 box after a few `step's.
-     [I could not reproduce this bug on a rs6000-ibm-aix4.1.4.0.
-      Does this also happen on other configurations?  -AZ]
-
-108. Satish Chandra <am939@gobhp1.fs.cummins.com> says that on his
-     alpha-dec-osf3.2, sometimes ddd/gdb seems to hang for no
-     apprarent reason and needs to be killed.
-     [Anyone willing to give me a hint here?  -AZ]
-
-109. Satish Chandra <am939@gobhp1.fs.cummins.com> says
-     (alpha-dec-osf3.2, make check): After setting up several
-     breakpoints, I clicked on Run.  The debugger stopped at the first
-     breakpoint; however the arrow didn't show up.  Upon continuation,
-     the arrow showed up.  Minor cosmetic bug.
-     [I cannot reproduce this.  Can anyone comment?  -AZ]
-
 113. Matthias Kurz <mk@baerlap.north.de> states:
      If I resize the data display the background doesn't get
      refreshed.  [Use an Athena Panner instead of Motif scrollbars  -AZ]
@@ -188,12 +71,6 @@ Volunteers for fixing these and other bugs are welcome!
      my sparc-sun-solaris2.5.1, have DDD run with `--exec-window' in
      the background.  Starting the execution TTY causes DDD to stop
      with `Suspended (tty output)'.
-
-123. David Bianchi <bianchi@pllb.inet.it> states: Using DDD 2.0 on
-     hppa1.1-hp-hpux9.07, a SIGSEGV appears whenever we choose the
-     menu item "Open Program..." as well as "Open Core Dump..." from
-     the menu bar.  [Motif bug?  HP-UX bug?  Obviously, this should
-     not happen.  But I doubt that the problem is within DDD.  -AZ]
 
 126. Flashing data window.  Thomas Liefke
      <liefke@cdc.Informatik.TH-Darmstadt.DE> says: 
@@ -277,10 +154,6 @@ Volunteers for fixing these and other bugs are welcome!
 131. `Find<<' and `Find>>' should be in the `Edit' menu (at least for
      sources)
 
-139. With Solaris 2.5.1, DDD recurses endlessly in glob_filename().
-     Reported by Deepak Mulchandani <dmm@jurassic.eng.sun.com>
-     [Can anyone reproduce this?  -AZ]
-
 150. In GDB Modula-2-mode, DDD displays are named `^tree' instead of
      `tree^'.  [This is a GDB bug.  Here's a patch for GDB 4.16:
 
@@ -335,14 +208,6 @@ Volunteers for fixing these and other bugs are welcome!
      - Often the first graph display is not completely inside the
        window; after selecting 'layout graph' things are right
      [I could not reproduce this. -AZ]
-
-174. Command tool placement problems.  Graham Gough
-     <graham@cs.man.ac.uk> states: I'm running fvwm2 with a 2x2
-     virtual screen arrangement. If I start DDD 2.1 in the top left
-     screen, the command pad always appears in the bottom left screen
-     (in the top right corner). DDD 2.0 doesn't give this behaviour:
-     the command pad pops up in the screen on which I start it.
-     [Should be fixed in DDD 2.2  -AZ]
 
 175. Harry Mangalam <mangalam@uci.edu> reports: As soon as I click on
      a variable to try to highlight a structure name, DDD 2.1 goes
@@ -403,6 +268,8 @@ Volunteers for fixing these and other bugs are welcome!
         debugged program and it seems as though by this time the pty
         12 is already reserved.
 
+     [Should be fixed in DDD 2.2  -AZ]
+
 214. The check for decorated transients sometimes fails with the
      AfterStep WM.
 
@@ -413,4 +280,8 @@ Volunteers for fixing these and other bugs are welcome!
      flashing cursor in the gdb console window ought to stop flashing
      during user input.  [Tell the Motif people  -AZ]
 
-217. (Insert your bug here)
+217* Using LessTif, placing the insertion cursor by clicking the mouse 
+     always scrolls the text window such that the insertion cursor is
+     in the first line.  [LessTif bug?  alwaysShowCursorPosition?  -AZ]
+
+218. (Insert your bug here)

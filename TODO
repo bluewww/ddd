@@ -120,10 +120,7 @@ Volunteers for these and other projects are welcome!
 078. Have mirror sites for the DDD WWW page.  Maybe via the DDD FTP
      mirrors?
 
-080. Include the FAQ in the DDD manual.  Better yet, include all
-     top-level documentation in the DDD manual (including news,
-     problems, etc.) and generate it from this single source.
-     Even better, convert it to texinfo, as in ICE, resulting in an
+080. Convert the DDD manual to texinfo, as in ICE, resulting in an
      HTML manual.  See also 102.
 
 083. Include graphplace (or other graph layout) support.
@@ -149,6 +146,7 @@ Volunteers for these and other projects are welcome!
        these variables will not save much screen space.  So if I can
        select some of the variable boxes in the data display, and save
        them for later retrieval would be use very useful.
+       [Use Cut/Copy/Paste -AZ]
 
      o Display of variables are disabled when stepping into a new
        function, i.e. variables in functions "above" the current frame
@@ -169,9 +167,6 @@ Volunteers for these and other projects are welcome!
        in the data window too specifying the full path of the data box
        where the cursor is pointing.
         
-     o Since you supply ddd binaries, why not supply gdb binaries as
-       well?
-
 094. Have a VSL 'string()' function that extracts the string from a
      box.  With an additional VSL 'matches()' function that matches
      regexps, one may display different types in different
@@ -226,17 +221,11 @@ Volunteers for these and other projects are welcome!
 131. Include the Athena Panner widget in the DDD distribution, such
      that Athena/Motif conflicts are removed.
 
-132. Include NEWS, INSTALL, COPYING and the FAQ in the DDD Manual,
-     and have the DDD `Help' menu items invoke the appropriate
-     sections.
-
 135. Have node reference points be at the upper left instead of the
      center.
 
 143. Have a list of regexes that suppress or hide displays when
      matched.  See also #128 and #088.
-
-144. When moving the source window, move the command tool, too.
 
 152. When dereferencing, make new displays inherit the show/hide,
      enable/disable state of their ancestors.  How about selection
@@ -357,10 +346,10 @@ Volunteers for these and other projects are welcome!
        DBX is buggy in handling I/O redirection, according to Sun's
        support guy. "2> <tty>" will not be parsed correctly, but ">
        <tty>" will handle stderr as well. The fix is in `exectty.C'.
-     * Another comment, while the data display graph is nice
-       sometimes. Very often, I found myself spending quite a lot of
-       time arranging each "display box". It will cool if we can also
-       have a normal text list display for variable values.
+       [Should be fixed in DDD 2.2  -AZ]
+     * Very often, I found myself spending quite a lot of time
+       arranging each "display box". It will cool if we can also have
+       a normal text list display for variable values.
 
 218. Roy Dragseth <royd@math.uit.no> reports on DDD 2.1.90:
      The command buttons come up off screen under fvwm 
