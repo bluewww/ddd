@@ -443,4 +443,16 @@ DDD Frequently Asked Questions                                  -*- text -*-
     Ddd*tool_buttons.kill.rightPosition:            8
     ---- cut here ----
 
+
+20. How do I pass ^C to the debugged program ?
+
+    Assuming you use GDB as inferior debugger, typing `signal 2' at
+    the `(gdb)' prompt will resume program execution with a SIGINT
+    signal.
+
+    If it's the character rather than the signal you're interested in,
+    run your program in the separate execution window (see the
+    `Options' menu) and type ^C there.
+
+
 $Id$

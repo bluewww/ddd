@@ -321,7 +321,10 @@ Volunteers for fixing these and other bugs are welcome!
 
 093* `Up' and `Down' in XDB mode won't work.
 
-094* <regex.h> conflicts with libg++ <regex.h>.  `configure' should
-     link `/usr/include/regex.h' into the local directory.
+095* DDD 1.5 with AIX DBX and ctest:
+     - the `func' line is += 5
+     - double `(nil)' in `tree_test' won't work
+     - up/down won't work
+     - displaying `dates' causes seg fault.
 
-095. (Insert your bug here)
+096. (Insert your bug here)
