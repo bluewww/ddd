@@ -1,6 +1,45 @@
 Changes in DDD						-*- text -*-
 **************
 
+DDD 2.1 (in development)
+------------------------
+
+    DDD 2.1 brings a further improved user interface and several bug
+    fixes.
+
+    User-visible changes to DDD 2.0:
+    - Button tips.  Moving the mouse pointer over a button causes a
+      small hint window to raise.  This feature is also known as
+      `toolbar tips' or `button help'.  (can be disabled)
+    - Help on buttons, menu items, etc. in the status line.  
+      The status line has moved to the bottom.  (can be restored)
+    - User-settable tab width.
+    - Display of floating-point registers.
+    - The `Break' button is now named `Interrupt' (as in DDD 1.x), to
+      avoid confusion with the `Break At' button.  The `Quit' menu
+      item is now named `Abort', to avoid confusion with the `Exit'
+      menu item (which issues a `quit' command).
+    - Several single-letter options like `-d DIR' are now passed down to the
+      inferior debugger.
+
+    Changes in configuration and building:
+    - DDD 2.1 uses improved configuration checks from Autoconf 2.11.
+    - DDD no longer installs in the `gcc' location by default, but in
+      an existing DDD location; otherwise, in `/usr/local/bin'.
+    - Improved means of determining builder's e-mail address.
+    - Beta releases expire after a few months.
+
+    Bug fixes:
+    - Using DBX, comments were stripped from source code under certain
+      circumstances.  Fixed.
+    - The sash to resize the assembler window is back again.
+    - With XDB, sources are found in alternate directories, too.
+    - With DBX, the current source line was omitted from the listing
+      under certain circumstances.  Fixed.
+    - `Help on Version' no longer includes the entire DDD configuration.
+    - The `vsl' and `test-graph' programs can again be built.
+
+
 DDD 2.0
 -------
 
