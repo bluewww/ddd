@@ -2902,7 +2902,7 @@ void DataDisp::refresh_display_list()
 	nums += itostring(k) + ":";
 
 	if (dn->nodeptr()->hidden())
-	    states += "-> " + itostring(dn->alias_of);
+	    states += "alias of " + itostring(dn->alias_of) + " ";
 	else if (dn->enabled())
 	    states += "enabled";
 	else
@@ -3218,6 +3218,9 @@ void DataDisp::process_addr (StringArray& answers)
 	check_aliases();
 	force_check_aliases = false;
     }
+
+    if (changed)
+	refresh_display_list();
 }
 
 // Check for aliases after change
