@@ -1685,6 +1685,8 @@ static XtIntervalId check_options_timer = 0;
 
 static void CheckOptionsFileCB(XtPointer client_data, XtIntervalId *id)
 {
+    (void) id;			// Use it
+
     assert(*id == check_options_timer);
     check_options_timer = 0;
 
