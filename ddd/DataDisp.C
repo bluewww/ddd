@@ -3172,7 +3172,7 @@ private:
     }
 };
 
-const int StatusShower::THRESHOLD = 512;
+const int StatusShower::THRESHOLD = 1024;
 
 StatusShower *StatusShower::active = 0;
 
