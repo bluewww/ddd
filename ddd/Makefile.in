@@ -239,7 +239,7 @@ LIBX11 = @X_PRE_LIBS@ @X11_LIBS@ @X_EXTRA_LIBS@
 
 # All libraries shown above
 ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXP) $(LIBXPM) $(LIBXAW) $(LIBXEXT) \
-$(LIBXT) $(LIBX) $(LIBX11) $(LIBGEN)
+$(LIBXT) $(LIBX11) $(LIBGEN)
 
 
 ## Installation commands.
