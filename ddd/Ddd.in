@@ -443,6 +443,7 @@ Ctrl<Key>U:     	gdb-set-line("")            \n\
 Ctrl<Key>V:     	next-page()                 \n\
 Meta<Key>V:     	previous-page()             \n\
 Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 Ctrl<Key>Y:     	unkill()                    \n\
 None<Key>osfUp:		gdb-previous-history()      \n\
 None<Key>osfDown:	gdb-next-history()          \n\
@@ -473,10 +474,13 @@ Ctrl<Key>K:     	delete-to-end-of-line()     \n\
 Ctrl<Key>U:     	beginning-of-line() 	    \
 			delete-to-end-of-line()     \n\
 Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		gdb-complete-tab(print)     \n\
-None<Key>Escape:	gdb-complete-arg(print)     \n
+None<Key>Escape:	gdb-complete-arg(print)     \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
 
 
 ! Have some of these in breakpoint and display dialogs
@@ -493,11 +497,14 @@ Ctrl<Key>K:     	delete-to-end-of-line()     \n\
 Ctrl<Key>U:     	beginning-of-line() 	    \
 			delete-to-end-of-line()     \n\
 Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 Ctrl<Key>Y:     	unkill()                    \n\
 None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		gdb-complete-tab(break)     \n\
-None<Key>Escape:	gdb-complete-arg(break)     \n
+None<Key>Escape:	gdb-complete-arg(break)     \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
 
 Ddd*edit_breakpoint_condition_dialog*XmText.translations: #override \
 Ctrl<Key>A:		beginning-of-line()         \n\
@@ -511,11 +518,14 @@ Ctrl<Key>K:     	delete-to-end-of-line()     \n\
 Ctrl<Key>U:     	beginning-of-line() 	    \
 			delete-to-end-of-line()     \n\
 Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 Ctrl<Key>Y:     	unkill()                    \n\
 None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		gdb-complete-tab(print)     \n\
-None<Key>Escape:	gdb-complete-arg(print)     \n
+None<Key>Escape:	gdb-complete-arg(print)     \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
 
 Ddd*edit_breakpoint_ignore_count_dialog*XmText.translations: #override \
 Ctrl<Key>A:		beginning-of-line()         \n\
@@ -529,9 +539,12 @@ Ctrl<Key>K:     	delete-to-end-of-line()     \n\
 Ctrl<Key>U:     	beginning-of-line() 	    \
 			delete-to-end-of-line()     \n\
 Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 Ctrl<Key>Y:     	unkill()                    \n\
 None<Key>R7:		beginning-of-line()         \n\
-None<Key>R13:		end-of-line()               \n
+None<Key>R13:		end-of-line()               \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
 
 Ddd*new_breakpoint_dialog*XmText.translations: #override \
 Ctrl<Key>A:		beginning-of-line()         \n\
@@ -545,11 +558,14 @@ Ctrl<Key>K:     	delete-to-end-of-line()     \n\
 Ctrl<Key>U:     	beginning-of-line() 	    \
 			delete-to-end-of-line()     \n\
 Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 Ctrl<Key>Y:     	unkill()                    \n\
 None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		gdb-complete-tab(break)     \n\
-None<Key>Escape:	gdb-complete-arg(break)     \n
+None<Key>Escape:	gdb-complete-arg(break)     \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
 
 Ddd*new_display_dialog*XmText.translations: #override \
 Ctrl<Key>A:		beginning-of-line()         \n\
@@ -563,11 +579,14 @@ Ctrl<Key>K:     	delete-to-end-of-line()     \n\
 Ctrl<Key>U:     	beginning-of-line() 	    \
 			delete-to-end-of-line()     \n\
 Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 Ctrl<Key>Y:     	unkill()                    \n\
 None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		gdb-complete-tab(print)     \n\
-None<Key>Escape:	gdb-complete-arg(print)     \n
+None<Key>Escape:	gdb-complete-arg(print)     \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
 
 Ddd*dependent_display_dialog*XmText.translations: #override \
 Ctrl<Key>A:		beginning-of-line()         \n\
@@ -581,11 +600,14 @@ Ctrl<Key>K:     	delete-to-end-of-line()     \n\
 Ctrl<Key>U:     	beginning-of-line() 	    \
 			delete-to-end-of-line()     \n\
 Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 Ctrl<Key>Y:     	unkill()                    \n\
 None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		gdb-complete-tab(print)     \n\
-None<Key>Escape:	gdb-complete-arg(print)     \n
+None<Key>Escape:	gdb-complete-arg(print)     \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
 
 
 ! Have some of these in file dialogs (with different completion)
@@ -601,11 +623,14 @@ Ctrl<Key>K:     	delete-to-end-of-line()     \n\
 Ctrl<Key>U:     	beginning-of-line() 	    \
 			delete-to-end-of-line()     \n\
 Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 Ctrl<Key>Y:     	unkill()                    \n\
 None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		gdb-complete-tab(file)      \n\
-None<Key>Escape:	gdb-complete-arg(file)      \n
+None<Key>Escape:	gdb-complete-arg(file)      \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
 
 Ddd*core_files_popup*XmText.translations: #override \
 Ctrl<Key>A:		beginning-of-line()         \n\
@@ -619,11 +644,14 @@ Ctrl<Key>K:     	delete-to-end-of-line()     \n\
 Ctrl<Key>U:     	beginning-of-line() 	    \
 			delete-to-end-of-line()     \n\
 Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 Ctrl<Key>Y:     	unkill()                    \n\
 None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		gdb-complete-tab(core-file) \n\
-None<Key>Escape:	gdb-complete-arg(core-file) \n
+None<Key>Escape:	gdb-complete-arg(core-file) \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
 
 Ddd*source_files_popup*XmText.translations: #override \
 Ctrl<Key>A:		beginning-of-line()         \n\
@@ -637,11 +665,14 @@ Ctrl<Key>K:     	delete-to-end-of-line()     \n\
 Ctrl<Key>U:     	beginning-of-line() 	    \
 			delete-to-end-of-line()     \n\
 Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 Ctrl<Key>Y:     	unkill()                    \n\
 None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		gdb-complete-tab(file)      \n\
-None<Key>Escape:	gdb-complete-arg(file)      \n
+None<Key>Escape:	gdb-complete-arg(file)      \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
 
 Ddd*print_popup*XmTextField.translations: #override \
 Ctrl<Key>A:		beginning-of-line()         \n\
@@ -655,10 +686,13 @@ Ctrl<Key>K:     	delete-to-end-of-line()     \n\
 Ctrl<Key>U:     	beginning-of-line() 	    \
 			delete-to-end-of-line()     \n\
 Ctrl<Key>W:     	delete-previous-word()      \n\
+Ctrl<Key>osfBackSpace:  delete-previous-word()      \n\
 None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		gdb-complete-tab(file)      \n\
-None<Key>Escape:	gdb-complete-arg(file)      \n
+None<Key>Escape:	gdb-complete-arg(file)      \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
 
 ! The source window is especially tuned for word selection.
 Ddd*source_text_w.translations: #override \
@@ -683,7 +717,9 @@ None<Key>osfPageDown:   next-page()     	    \
 Shift<Key>osfPageUp:    previous-page(extend)       \
 			source-update-glyphs()      \n\
 Shift<Key>osfPageDown:  next-page(extend)     	    \
-			source-update-glyphs()      \n
+			source-update-glyphs()      \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
 
 ! The machine code window is tuned as well.
 Ddd*code_text_w.translations: #override \
@@ -708,7 +744,10 @@ None<Key>osfPageDown:   next-page()     	    \
 Shift<Key>osfPageUp:    previous-page(extend)       \
 			source-update-glyphs()      \n\
 Shift<Key>osfPageDown:  next-page(extend)     	    \
-			source-update-glyphs()      \n
+			source-update-glyphs()      \n\
+None<Key>Home:		beginning-of-line()         \n\
+None<Key>End:		end-of-line()               \n
+
 
 ! Make sure glyphs popup as well
 Ddd*source_form_w.XmPushButton.translations: #override \
@@ -1020,6 +1059,8 @@ Ddd*generalOptionsMenu.groupIconify.mnemonic:	       G
 
 Ddd*generalOptionsMenu.globalTabCompletion.labelString: Global Tab Completion
 Ddd*generalOptionsMenu.globalTabCompletion.mnemonic:    T
+Ddd*generalOptionsMenu*disassemble.accelerator:	        Ctrl<Key>Tab
+Ddd*generalOptionsMenu*disassemble.acceleratorText:     Ctrl+Tab
 
 Ddd*generalOptionsMenu.separateExecWindow.labelString: Run in Execution Window
 Ddd*generalOptionsMenu.separateExecWindow.mnemonic:    E
@@ -1035,9 +1076,13 @@ Ddd*generalOptionsMenu.saveHistoryOnExit.mnemonic:     H
 
 Ddd*sourceOptionsMenu.findWordsOnly.labelString:       Find Words Only
 Ddd*sourceOptionsMenu.findWordsOnly.mnemonic:	       W
+Ddd*sourceOptionsMenu*findWordsOnly.accelerator:       Ctrl<Key>W
+Ddd*sourceOptionsMenu*findWordsOnly.acceleratorText:   Ctrl+W
 
 Ddd*sourceOptionsMenu.disassemble.labelString:         Display Machine Code
-Ddd*sourceOptionsMenu.disassemble.mnemonic:            D
+Ddd*sourceOptionsMenu.disassemble.mnemonic:            M
+Ddd*sourceOptionsMenu*disassemble.accelerator:	       Ctrl<Key>M
+Ddd*sourceOptionsMenu*disassemble.acceleratorText:     Ctrl+M
 
 Ddd*sourceOptionsMenu.displayGlyphs.labelString:       Display Glyphs
 Ddd*sourceOptionsMenu.displayGlyphs.mnemonic:          G
@@ -1046,7 +1091,7 @@ Ddd*sourceOptionsMenu.cacheSourceFiles.labelString:    Cache Source Files
 Ddd*sourceOptionsMenu.cacheSourceFiles.mnemonic:       S
 
 Ddd*sourceOptionsMenu.cacheMachineCode.labelString:    Cache Machine Code
-Ddd*sourceOptionsMenu.cacheMachineCode.mnemonic:       M
+Ddd*sourceOptionsMenu.cacheMachineCode.mnemonic:       C
 
 Ddd*dataOptionsMenu*showGrid.labelString:	       Show Grid
 Ddd*dataOptionsMenu*showGrid.mnemonic:		       G
@@ -1537,9 +1582,6 @@ Ddd*status_w.alignment:			XmALIGNMENT_BEGINNING
 Ddd*status_w.labelString:		Ready.
 Ddd*status_w.contextHelpString:		\
 @rm This @sl status line @rm shows the last debugger message.
-
-Ddd*source_text_w.value:		No source code.
-Ddd*code_text_w.value:		        No machine code.
 
 Ddd*source_text_w.columns:		88
 Ddd*source_text_w.rows:			12
