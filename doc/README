@@ -13,25 +13,37 @@ ddd-paper.ps -- `DDD---A Free Graphical Front-End for UNIX Debuggers'
     Included in the DDD source distribution.
 
 
-ddd.man.ps -- `DDD---The Data Display Debugger'
+ddd.ps -- `Debugging with DDD'
 
-    The DDD manual page, in PostScript format.  The official,
-    up-to-date DDD reference.  The PostScript version includes more
-    than 30 screen shots highlighting DDD usage.
-
-    Note: some printers have trouble printing this file, so we also
-    provide a non-picture version below.
+    The DDD manual, in PostScript format.  The official, up-to-date
+    DDD reference.  Includes several screen shots.
 
     Included in the DDD source distribution.
 
 
-ddd.man-nopics.ps -- `DDD---The Data Display Debugger'
+html/index.html -- `Debugging with DDD'
 
-    The DDD manual page, in PostScript format, but without pictures.
-
-    Use this version if your printer has trouble printing `ddd.man.ps'.
+    The DDD manual, in HTML format.  Suitable for viewing with a HTML
+    browser, such as Mozilla or Netscape.  Includes several screen
+    shots.
 
     Included in the DDD source distribution.
+
+
+ddd.info -- `Debugging with DDD'
+
+    The DDD manual, in Info format.  Suitable for viewing with an Info
+    browser, such as `info' or Emacs.
+
+    Included in the DDD source distribution.
+
+
+ddd.man -- `DDD manual page'
+
+    The DDD manual page.  Just a short reference.
+
+    Included in the DDD source distribution.
+
 
 
 ddd-thesis.ps -- `DDD - ein Debugger mit graphischer Datendarstellung'
