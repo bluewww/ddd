@@ -1512,17 +1512,17 @@ swallow$(EXEEXT): swallow.o findWindow.o Swallower.o
 	$(ALL_X_LIBS) $(LIBS)
 
 # We don't want no optimizing, but debugging info in our test files
-bug.o:	$(srcdir)/bug.C
-	$(CXX) $(INCLUDE) -g -c -o $@ $(srcdir)/bug.C
-
 cxxtest.o: $(srcdir)/cxxtest.C
-	$(CXX) $(INCLUDE) -g -c -o $@ $(srcdir)/cxxtest.C
-
-grabtest.o: $(srcdir)/grabtest.C
-	$(CXX) $(X_INCLUDE) -g -c -o $@ $(srcdir)/grabtest.C
+	$(CXX) $(INCLUDE) @CXXDEBUG@ -c -o $@ $(srcdir)/cxxtest.C
 
 ctest.o: $(srcdir)/ctest.c
 	$(CC) $(INCLUDE) -g -c -o $@ $(srcdir)/ctest.c
+
+grabtest.o: $(srcdir)/grabtest.C
+	$(CXX) $(X_INCLUDE) @CXXDEBUG@ -c -o $@ $(srcdir)/grabtest.C
+
+bug.o:	$(srcdir)/bug.C
+	$(CXX) $(INCLUDE) @CXXDEBUG@ -c -o $@ $(srcdir)/bug.C
 
 huffdecode.o: $(srcdir)/huffdecode.C ddd.man.huff.C
 	$(COMPILE.cc) -DMAIN -DHUFFTEXT='"$(srcdir)/ddd.man.huff.C"' \

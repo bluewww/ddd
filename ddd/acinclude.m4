@@ -322,6 +322,38 @@ AC_SUBST(WARN_NO_UNINITIALIZED)
 dnl
 dnl
 dnl
+dnl ICE_XS_DEBUG_INFO
+dnl -----------------
+dnl
+dnl If the C++ compiler accepts the `-xs' flag (as Sun CC)
+dnl set output variable `XS_DEBUG_INFO' to `-xs'.  Otherwise, 
+dnl leave it empty.
+dnl
+AC_DEFUN(ICE_XS_DEBUG_INFO,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -xs)
+AC_CACHE_VAL(ice_cv_xs_debug_info,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_cxxflags="$CXXFLAGS"
+CXXFLAGS=-xs
+AC_TRY_COMPILE(,[int a;],
+ice_cv_xs_debug_info=yes, ice_cv_xs_debug_info=no)
+CXXFLAGS="$ice_save_cxxflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_xs_debug_info)
+if test "$ice_cv_xs_debug_info" = yes; then
+XS_DEBUG_INFO=-xs
+fi
+AC_SUBST(XS_DEBUG_INFO)
+])dnl
+dnl
+dnl
+dnl
+dnl
 dnl
 dnl ICE_CXX_PROBLEMATIC_VERSION
 dnl ---------------------------
@@ -1122,8 +1154,9 @@ if test "$GXX" = yes; then
     esac
   done
 else
+  ICE_XS_DEBUG_INFO
   CXXOPT="-DNDEBUG"
-  CXXDEBUG=
+  CXXDEBUG="${XS_DEBUG_INFO}"
   CXXWARNINGS=
   CXXSTATIC_BINDING="-static"
   CXXDYNAMIC_BINDING=
@@ -1131,7 +1164,7 @@ else
   for flag in $CXXFLAGS; do
     case $flag in
       -O*) CXXOPT="$CXXOPT $flag";;
-      -g*) CXXDEBUG="$flag";;
+      -g*) CXXDEBUG="$CXXDEBUG $flag";;
       -W*) CXXWARNINGS="$CXXWARNINGS $flag";;
       *)   CXXSTUFF="$CXXSTUFF $flag";;
     esac
@@ -1141,6 +1174,8 @@ AC_MSG_CHECKING(for C++ compiler (${CXX}) warning options)
 AC_MSG_RESULT(${CXXWARNINGS})
 AC_MSG_CHECKING(for C++ compiler (${CXX}) optimizing options)
 AC_MSG_RESULT(${CXXOPT})
+AC_MSG_CHECKING(for C++ compiler (${CXX}) debugging options)
+AC_MSG_RESULT(${CXXDEBUG})
 AC_MSG_CHECKING(for C++ compiler (${CXX}) extra libraries)
 AC_MSG_RESULT(${CXXLIBS})
 AC_MSG_CHECKING(for C++ compiler (${CXX}) static binding options)
