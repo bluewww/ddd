@@ -17,6 +17,7 @@ ddd-layout.ps
 ddd-line-popup.ps
 ddd-locals.ps
 ddd-new-display.ps
+ddd-open-session.ps
 ddd-open.ps
 ddd-prefs-menu.ps
 ddd-print-graph.ps
@@ -24,6 +25,7 @@ ddd-print-output.ps
 ddd-print-popup.ps
 ddd-registers.ps
 ddd-rotate-display.ps
+ddd-save-session.ps
 ddd-select-display.ps
 ddd-set.ps
 ddd-settings.ps
