@@ -61,15 +61,15 @@ dnl
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 ice_save_LIBS="$LIBS"
-AC_CHECK_LIB(m, sin)
-AC_CHECK_LIB(stdc++, cout)
+AC_CHECK_LIB(m, sin, LIBS="-lm $LIBS")
+AC_CHECK_LIB(stdc++, cout, LIBS="-lstdc++ $LIBS")
 case "$LIBS" in
 *-lstdc++*)
 dnl -lstdc++ found - proceed
 ;;
 *)
 dnl -lstdc++ not found - try -lg++ instead
-AC_CHECK_LIB(g++, cout)
+AC_CHECK_LIB(g++, cout, LIBS="-lg++ $LIBS")
 ;;
 esac
 AC_LANG_RESTORE
@@ -114,7 +114,7 @@ esac
 if test "$ice_need_cxxlibs" = yes
 then
 dnl These libraries are required for all C++ programs.
-    CXXLIBS="$CXXLIBS $LIBS"
+CXXLIBS="$CXXLIBS $LIBS"
 fi
 AC_SUBST(CXXLIBS)dnl
 LIBS="$ice_save_LIBS"

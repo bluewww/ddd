@@ -241,13 +241,4 @@ Volunteers for fixing these and other bugs are welcome!
 
 101* `graph display int' results in an empty box.  No warning.
 
-103* configure: if CXX=gcc and -lstdc++ is found, `configure' defines
-     HAVE_LIBSTDC++ - trouble!
-
-104* James_Kingdon <J.B.Kingdon@pac.soton.ac.uk> says:
-     The ddd/configure script searches for includes using 'prefix' as
-     the root. If called from the toplevel configure, prefix is set to
-     /usr/local and most of the includes won't be found. If you call
-     ddd/configure directly, or set prefix to /usr all works well.
-
 105. (Insert your bug here)
