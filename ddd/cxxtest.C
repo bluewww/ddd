@@ -275,7 +275,7 @@ public:
 //--------------------------------------------------------------------------
 // Simple threaded tree
 
-void tree_test()
+static void tree_test()
 {
     Tree *tree = 0;
 
@@ -301,7 +301,7 @@ void tree_test()
 
 //--------------------------------------------------------------------------
 // Simple circular list.  Examine `list' with alias detection enabled.
-void list_test(int start)
+static void list_test(int start)
 {
     List *list = 0;
 
@@ -318,28 +318,31 @@ void list_test(int start)
 }
 
 // Test disambiguation
-void list_test(double d)
+static void list_test(double d)
 {
     list_test(int(d));
 }
 
 //--------------------------------------------------------------------------
-void reference_test(Date& date, Date*& date_ptr)
+static void reference_test(Date& date, Date*& date_ptr)
 {
     date = *date_ptr;
     delete date_ptr;
     date_ptr = 0;
+
+    if (false)
+	list_test(1.0);
 }
 
 //--------------------------------------------------------------------------
-void string_test()
+static void string_test()
 {
     char data[]="one plus two = three";	// Display this
     (void) data;		// Use it
 }
 
 //--------------------------------------------------------------------------
-void array_test()
+static void array_test()
 {
     // Play with rotate and show/hide buttons
     DayOfWeek days_of_week[7] = {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
@@ -387,7 +390,7 @@ void array_test()
 //--------------------------------------------------------------------------
 #define numbers(x) (int)(sizeof((x)) / sizeof((x)[0]))
 
-void shell_sort(int a[], int size)
+static void shellsort(int a[], int size)
 {
     int h = 1;
     do {
@@ -407,17 +410,109 @@ void shell_sort(int a[], int size)
     } while (h != 1);
 }
 
-void plot_test()
+static void merge(int a[], int l, int m, int r)
+{
+    int i;
+    int s1 = l;
+    int s2 = m + 1;
+    int *b = new int[r + 1];
+    int c = 0;
+
+    for (i = 0; i <= r; i++)
+	b[i] = 0;
+
+    while (s1 <= m || s2 <= r)
+    {
+	if (s2 > r)
+	    b[c++] = a[s1++];
+	else if (s1 > m)
+	    b[c++] = a[s2++];
+	else if (a[s1] < a[s2])
+	    b[c++] = a[s1++];
+	else
+	    b[c++] = a[s2++];
+    }
+
+    for (i = 0; i < c; i++)
+	a[l + i] = b[i];
+
+    delete[] b;
+}
+
+static void _mergesort(int a[], int l, int r)
+{
+    if (r > l)
+    {
+        int m = (l + r) / 2;
+        _mergesort(a, l, m);
+        _mergesort(a, m + 1, r);
+        merge(a, l, m, r);
+    }
+}
+
+static void mergesort(int a[], int size)
+{
+    _mergesort(a, 0, size - 1);
+}
+
+inline void swap(int& x, int& y)
+{
+    int t = x;
+    x = y;
+    y = t;
+}
+
+static int partition(int a[], int p, int r)
+{
+    int x = a[p];
+    int i = p - 1;
+    int j = r + 1;
+
+    for (;;)
+    {
+	do j--; while (a[j] > x);
+	do i++; while (a[i] < x);
+	if (i < j)
+	    swap(a[i], a[j]);
+	else
+	    return j;
+    }
+}
+
+void _quicksort(int a[], int p, int r)
+{
+    if (p < r)
+    {
+	int q = partition(a, p, r);
+	_quicksort(a, p, q);
+	_quicksort(a, q + 1, r);
+    }
+}
+
+static void quicksort(int a[], int size)
+{
+    _quicksort(a, 0, size - 1);
+}
+
+static void plot_test()
 {
     static int ir[100];
 
     int i;
+
     for (i = 0; i < numbers(ir); i++)
 	ir[i] = rnd(100);
-
-    shell_sort(ir, numbers(ir));
-
     (void) ir;			// Plot this
+
+    mergesort(ir, numbers(ir));
+
+    for (i = 0; i < numbers(ir); i++)
+	ir[i] = rnd(100);
+    quicksort(ir, numbers(ir));
+
+    for (i = 0; i < numbers(ir); i++)
+	ir[i] = rnd(100);
+    shellsort(ir, numbers(ir));
 
     static double dr[10][100];
     double pi = 3.14159265358979323846;
@@ -439,7 +534,7 @@ void plot_test()
 }
 
 //--------------------------------------------------------------------------
-void type_test()
+static void type_test()
 {
     Holiday new_years_eve(Sat, 31, 12, 1994, 
 			  "May all acquaintance be forgot");
@@ -494,7 +589,7 @@ void type_test()
 }
 
 //--------------------------------------------------------------------------
-void cin_cout_test()
+static void cin_cout_test()
 {
     // Simple I/O
     char name[1024];
