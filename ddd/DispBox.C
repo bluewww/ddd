@@ -95,13 +95,13 @@ void DispBox::init_vsllib()
 
     if (string(vsllib_name) != "builtin")
     {
-	StatusDelay("Reading VSL library " + quote(vsllib_name));
+	StatusDelay delay("Reading VSL library " + quote(vsllib_name));
 	vsllib_ptr = new VSLLib (vsllib_name);
     }
 
     if (vsllib_ptr == 0)
     {
-	StatusDelay("Reading builtin VSL library");
+	StatusDelay delay("Reading builtin VSL library");
 	istrstream is(builtin_def);
 	vsllib_ptr = new VSLLib(is);
     }
