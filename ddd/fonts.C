@@ -144,9 +144,10 @@ static string font_type(DDDFont font)
  	return "fixed width font";
     case SymbolDDDFont:
  	return "symbol font";
-    default:
-	assert(0);
     }
+
+    assert(0);
+    return "";			// Never reached
 }
 
 // defaults to use if nothing is specified
@@ -165,7 +166,7 @@ static string fallbackfont(DDDFont font)
     }
 
     assert(0);
-    return "";
+    return "";			// Never reached
 }
 
 // Fetch a component
