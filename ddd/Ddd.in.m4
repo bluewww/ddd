@@ -4221,7 +4221,7 @@ Ddd*code_form_w.signal_arrow*tipString: \
 define(BREAKPOINT_HELP, [\n\
 To change the breakpoint properties, press BUTTON(3).\n\
 To move it to another location, drag it using BUTTON(1).\n\
-To copy iy to another location, drag it using KEY(Shift)+BUTTON(1).])
+To copy it to another location, drag it using KEY(Shift)+BUTTON(1).])
 
 Ddd*plain_stop.helpString: \
 STRONG(Breakpoint (enabled))\n\
