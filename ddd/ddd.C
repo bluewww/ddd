@@ -4879,7 +4879,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNset,                True); arg++;
 
     MString spaces("   ");
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 87)
     {
 	XtSetArg(args[arg], XmNlabelString, spaces.xmstring()); arg++;
     }
@@ -6158,10 +6158,11 @@ static int _mapped_menus = 0;
 
 static int mapped_menus()
 {
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 87)
     {
-	// LessTif does not issue a XmCR_MAP callback when mapping
-	// RowColumn menus.  Hence, assume we have a mapped menu.
+	// LessTif 0.87 and earlier does not issue a XmCR_MAP callback
+	// when mapping RowColumn menus.  Hence, we always assume we
+	// have some mapped menu.
 	return 1;
     }
 

@@ -1543,12 +1543,12 @@ void SourceView::set_source_argCB(Widget text_w,
 
     if (have_selection && lesstif_version < 1000)
     {
-	// In LessTif 0.87, the unmanaged DataDisp::graph_selection_w
-	// text widget is not notified that it just has lost the
-	// selection.  The effect is that selecting an item from the
-	// source (or a selection in any other window) does *not*
-	// clear the selection in the data window, as it should.
-	// As a workaround, notify explicitly.
+	// In LessTif, the unmanaged DataDisp::graph_selection_w text
+	// widget is not notified that it just has lost the selection.
+	// The effect is that selecting an item from the source (or a
+	// selection in any other window) does *not* clear the
+	// selection in the data window, as it should.  As a
+	// workaround, notify explicitly.
 	data_disp->SelectionLostCB();
     }
 
@@ -7661,7 +7661,7 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
 
     y -= (line_height(text_w) + glyph_height) / 2 - 2;
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 87)
 	x += 2;
 
     if (x != old_x || y != old_y)
@@ -8177,7 +8177,7 @@ Widget SourceView::map_drag_stop_at(Widget glyph, XmTextPosition pos,
 
 	    Position origin_x = -1;
  	    XtVaGetValues(origin, XmNx, &origin_x, NULL);
-	    if (lesstif_version < 1000)
+	    if (lesstif_version <= 87)
 		origin_x -= 2;
 
 	    if (origin_x >= 0)
