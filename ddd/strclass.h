@@ -978,6 +978,13 @@ inline string& string::operator = (const char* t)
 	rep->len -= len;
 	rep->s = (char *)t;
     }
+    else if (t >= &(rep->mem[0]) && t < rep->s)
+    {
+	// Assignment of older base mem
+	int len = (rep->s - t);
+	rep->len += len;
+	rep->s = (char *)t;
+    }
     else
     {
 	assert(!consuming());
@@ -1034,7 +1041,10 @@ inline string& string::operator = (ostrstream& os)
 }
 
 inline string::string(ostrstream& os)
-    : rep(&_nilstrRep) 
+    : rep(&_nilstrRep)
+#if STRING_CHECK_CONSUME
+    , consume(false) 
+#endif
 {
     operator=(os);
 }
