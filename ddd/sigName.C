@@ -43,6 +43,12 @@ extern "C" {
 #include "strclass.h"
 #include "sigName.h"
 
+#if HAVE_UNISTD_H
+extern "C" {
+#include <unistd.h>
+}
+#endif
+
 #if HAVE_STRSIGNAL && !HAVE_STRSIGNAL_DECL
 extern "C" const char *strsignal(int signo);
 #endif
