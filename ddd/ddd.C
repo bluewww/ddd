@@ -4407,7 +4407,7 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 	{
 	    // Uniconify the command shell.  If `iconify all windows
 	    // at once' is set, this also uniconifies the other windows.
-	    popup_shell(command_shell);
+	    uniconify_shell(command_shell);
 	}
     }
 
