@@ -45,7 +45,8 @@
 #define UB_THREADS   "threads"   // Current threads
 
 // Prefix for current displays; followed by display name
-#define UB_DISPLAY_PREFIX "display "
+#define UB_DISPLAY_PREFIX         "display "  // Display value
+#define UB_DISPLAY_ADDRESS_PREFIX "&display " // Display address
 
 class UndoBuffer {
 
@@ -103,6 +104,11 @@ public:
     static void add_display(const string& name, const string& value)
     {
 	add(UB_DISPLAY_PREFIX + name, value);
+    }
+
+    static void add_display_address(const string& name, const string& addr)
+    {
+	add(UB_DISPLAY_ADDRESS_PREFIX + name, addr);
     }
 
     // Lookup previous/next position; return true iff successful

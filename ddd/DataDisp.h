@@ -581,7 +581,8 @@ public:
 
     // Update and activate displays manually (from undo)
     static void update_displays(const StringArray& names, 
-				const StringArray& values);
+				const StringArray& values,
+				const StringArray& addrs);
 };
 
 inline bool DataDisp::get_selection(ostream& os, bool include_position)

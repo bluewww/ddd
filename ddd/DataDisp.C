@@ -4636,9 +4636,11 @@ string DataDisp::process_displays(string& displays,
 //-----------------------------------------------------------------------------
 
 void DataDisp::update_displays(const StringArray& displays, 
-			       const StringArray& values)
+			       const StringArray& values,
+			       const StringArray& addrs)
 {
     assert(displays.size() == values.size());
+    assert(displays.size() == addrs.size());
 
     if (displays.size() == 0)
     {
@@ -4657,7 +4659,8 @@ void DataDisp::update_displays(const StringArray& displays,
 
     StatusShower s("Restoring displays");
 
-    bool changed = false;
+    bool changed      = false;
+    bool addr_changed = false;
 
     // Check `active' status
     MapRef ref;
@@ -4691,6 +4694,7 @@ void DataDisp::update_displays(const StringArray& displays,
     {
 	const string& name  = displays[i];
 	const string& value = values[i];
+	const string& addr  = addrs[i];
 
 	MapRef ref;
 	for (DispNode *dn = disp_graph->first(ref);
@@ -4702,14 +4706,27 @@ void DataDisp::update_displays(const StringArray& displays,
 	    string v = value;
 	    if (dn->update(v))
 		changed = true;
+
+	    if (dn->addr() != addr)
+	    {
+		dn->set_addr(addr);
+		addr_changed = true;
+	    }
 	}
     }
+
+    bool suppressed = false;
+    if (addr_changed)
+	suppressed = check_aliases();
 
     if (changed)
     {
 	refresh_graph_edit();
 	refresh_builtin_user_displays();
     }
+
+    if (addr_changed)
+	refresh_display_list(suppressed);
 }
 
 
@@ -5738,6 +5755,8 @@ void DataDisp::process_addr (StringArray& answers)
 
 	    addr = addr.from(rxaddress);
 	    addr = addr.through(rxaddress);
+
+	    undo_buffer.add_display_address(dn->name(), addr);
 
 	    if (dn->addr() != addr)
 	    {

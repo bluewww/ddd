@@ -196,15 +196,23 @@ void UndoBuffer::process(const UndoBufferEntry& entry)
     // Process displays
     StringArray displays;
     StringArray values;
+    StringArray addrs;
     for (StringStringAssocIter iter(entry); iter.ok(); iter++)
     {
 	if (iter.key().contains(UB_DISPLAY_PREFIX, 0))
 	{
-	    displays += iter.key().after(UB_DISPLAY_PREFIX);
-	    values += iter.value();
+	    string name = iter.key().after(UB_DISPLAY_PREFIX);
+	    const string& value = iter.value();
+	    string addr = "";
+	    if (entry.has(UB_DISPLAY_ADDRESS_PREFIX + name))
+		addr = entry[UB_DISPLAY_ADDRESS_PREFIX + name];
+
+	    displays += name;
+	    values   += value;
+	    addrs    += addr;
 	}
     }
-    data_disp->update_displays(displays, values);
+    data_disp->update_displays(displays, values, addrs);
 
     // Process threads
     if (entry.has(UB_THREADS))
