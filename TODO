@@ -34,9 +34,6 @@ Volunteers for these and other projects are welcome!
     LENS (see ftp.cc.gatech.edu:pub/people/stasko).  Suggested by
     bruce@liverpool.ac.uk (Bruce Stephens).
 
-060 When using a dynamic version of libstdc++, configure fails
-    to add its location to the -R flag.
-
 069 Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
     Let one colorize the displays. By using regexps on types or names
     of the fields, it would already be extremely useful (or with a
@@ -56,9 +53,6 @@ Volunteers for these and other projects are welcome!
 071 Matthias Kurz <mk@baerlap.north.de> suggests code annotations
     (i.e. comments and graphics that are associated with certain
     variable/function names in the code).
-
-078 Have mirror sites for the DDD WWW page.  Maybe via the DDD FTP
-    mirrors?
 
 080 Convert the DDD manual to texinfo, as in ICE, resulting in an
     HTML manual.  See also 102.
@@ -82,17 +76,7 @@ Volunteers for these and other projects are welcome!
 
 115 Have links from help texts to appropriate sections of the DDD manual.
 
-117 Paul Courbis <plc@lexem.fr> says: upon dereferencing a pointer, 
-    it would be nice to have a menu to say: display hex data for 255 bytes.
-
-119 Try whether the `-fno-implement-inlines' option in DDD reduces
-    executable size.
-
-120 Check whether `dbxenv output_short_file_name off' helps in
-    debugging with DBX.
-
-126 `shorten' may need some improvements (count `(' and `)'
-    occurrences, etc.)
+126 `shorten' may need some improvements (count `(' and `)' occurrences, etc.)
 
 129 Detect self-modifying code.
 
@@ -179,9 +163,6 @@ Volunteers for these and other projects are welcome!
 241 Include a mail reader.  See also `feeping creaturism'.
 
 242 Make programs dump core by forking and killing them.
-
-246 Martin Fick <fick@fgm.com> suggests that breakpoints should be
-    toggled by double-clicking on the beginning of a line of code.
 
 249 `Rotate' should be enabled as soon as there is exactly one child
     that can be rotated.
@@ -298,8 +279,8 @@ Volunteers for these and other projects are welcome!
 
 349 Access Java `.jar' class archives.
 
-350 Harri Pasanen <harri@trema.com> suggests:
-    - Incremental search for the source window is also something I miss.
+350 Harri Pasanen <harri@trema.com> suggests incremental search for
+    the source window.  (Could this be bound to Ctrl+B/Ctrl+F?)
 
 351 Oliver Eichler <oliver.eichler@regensburg.netsurf.de> suggests
     that `Displays' clusters should have two or more columns in order
@@ -315,8 +296,6 @@ Volunteers for these and other projects are welcome!
     settings.
 
 358 Delay `plot' commands until Gnuplot is done sending plot data.
-
-359 Check the GNU `screen' package for more PTY handling options.
 
 361 Zdenek Sekera <zs@sgi.com> suggests to have the cursor jump to
     some specific location (such as the end of main()) when the
