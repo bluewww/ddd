@@ -152,7 +152,7 @@ void write_huffman(HuffNode *tree)
     if (tree->isleaf)
     {
 	tree->number = tics++;
-	cout << "const HuffCode _huff" << tree->number 
+	cout << "static const HuffCode _huff" << tree->number 
 	     << " = { '" << cook(tree->l.c) << "', 0, 0 };\n";
     }
     else
@@ -161,7 +161,7 @@ void write_huffman(HuffNode *tree)
 	write_huffman(tree->i.right);
 
 	tree->number = tics++;
-	cout << "const HuffCode _huff" << tree->number 
+	cout << "static const HuffCode _huff" << tree->number 
 	     << " = { '\\0', &_huff" << tree->i.left->number 
 	     << ", &_huff" << tree->i.right->number << " };\n";
     }
@@ -229,7 +229,7 @@ string encode(const string& text, HuffNode *tree)
 
 void write_encoding(const string& byte_encoding)
 {
-    cout << "const char hufftext[" 
+    cout << "static const char hufftext[" 
 	 << byte_encoding.length() + 1 << "] = \n\"";
 
     int p = 0;
@@ -267,10 +267,10 @@ int main()
     cout << "\n";
     write_huffman(tree);
     cout << "\n";
-    cout << "const HuffCode *const huffcode = &_huff" 
+    cout << "static const HuffCode *const huffcode = &_huff" 
 	 << tree->number << ";\n";
     cout << "\n";
-    cout << "const int hufflength = " << text.length() << ";\n";
+    cout << "static const int hufflength = " << text.length() << ";\n";
 
     write_encoding(encoding);
 

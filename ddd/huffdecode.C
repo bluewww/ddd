@@ -26,7 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-const char huffdecode_rcsid[] = 
+static const char huffdecode_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
@@ -45,6 +45,8 @@ struct HuffCode { char c; const HuffCode *left; const HuffCode *right; };
 
 static void huffdecode(ostream& os)
 {
+    (void) huffdecode_rcsid;	  // Use it
+
     int p = 0;			  // Run across hufftext
     int i = 7;			  // Run across bits
     const HuffCode *h = huffcode; // Run around in the code
