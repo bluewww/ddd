@@ -42,5 +42,11 @@ inline bool isid(char c)
     return isalnum((unsigned char)c) || c == '_' || c == '$';
 }
 
+// True if C is a Perl prefix character
+inline bool is_perl_prefix(char c)
+{
+    return c == '@' || c == '%' || c == '$' || c == '*';
+}
+
 #endif // _DDD_isid_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
