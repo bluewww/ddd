@@ -5,13 +5,17 @@ DDD 2.2 [in development]
 ------------------------
 
     User-visible changes to DDD 2.1:
-    - Source line numbers can be turned on and off (default: off).
-    - The `Disable ()' button for disabling displays has gone;
-      displays can now be enabled or disabled via `Show ()/Hide ()'.
-    - The `Break at ()' and `Clear at ()' buttons have been merged
-      into one.
+    - The DDD windows now use less horizontal space:
+      + Source line numbers have been turned off (can be restored);
+        the breakpoint area extends to the first non-blank character.
+      + The `Disable ()' button for disabling displays has gone;
+        displays are now enabled or disabled via `Show ()/Hide ()'.
+      + The `Break at ()' and `Clear at ()' buttons have been merged
+        into one single dynamic button.
+      If you already have a ~/.dddinit file, you must resize DDD
+      manually and save options.
     - The manual compiled within DDD now uses `gzip' format, relying
-      on an external `gzip' program.  Executables are 100k smaller.
+      on an external `gzip' program.
 
 
 DDD 2.1.1

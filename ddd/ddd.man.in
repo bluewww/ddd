@@ -2953,6 +2953,13 @@ tty is appended this string.  A simple value is
   \fB@Ddd@*termCommand: xterm \-e /bin/sh \-c\fR
 .br
 .TP
+.B "uncompressCommand (\fPclass\fB UncompressCommand)"
+The command to uncompress the built-in \s-2@DDD@\s+2 manual and the
+\s-2@DDD@\s+2 license.  Takes a compressed text from standard input
+and writes the uncompressed text to standard output.  The default
+value is `\fBgzip -d -c\fR'; typical values include `\fBzcat\fR' and
+`\fBgunzip -c\fR'.
+.TP
 .B "termType (\fPclass\fB TermType)"
 The terminal type provided by the `\fBtermCommand\fR'
 resource\(em\&that is, the value of the \fBTERM\fR environment
