@@ -38,7 +38,7 @@
 
 #ifdef __GNUC__
 // Set this to 1 to enable TypeInfo table construction at link time
-// instead of run-time (GNU-C only)
+// instead of run-time (GCC 2.7.0 or lower only)
 // #define IMMEDIATE_TYPE_INFO 1
 #endif
 
