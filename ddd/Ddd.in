@@ -151,9 +151,9 @@ Ddd*printCommand: @PRINT_COMMAND@
 ! `@FILE@' by the file name.  Default is to invoke $XEDITOR first,
 ! then EMACS variations, then $EDITOR, then VI.
 Ddd*editCommand: \
-   ${XEDITOR-false} +@LINE@ @FILE@      \
-|| gnuclient +@LINE@ @FILE@             \
-|| emacsclient +@LINE@ @FILE@           \
+${XEDITOR-false} +@LINE@ @FILE@ \
+|| gnuclient +@LINE@ @FILE@ \
+|| emacsclient +@LINE@ @FILE@ \
 || xterm -e ${EDITOR-vi} +@LINE@ @FILE@
 
 
