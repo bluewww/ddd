@@ -1103,7 +1103,7 @@ void GDBAgent::strip_control(string& answer) const
 	    }
 	    break;
 
-	case '\033':
+	case '\033':		// aka `\e'
 	    // XDB `more' sends VT100 escape sequences like `\e[m',
 	    // `\e[22;1H', `\e[7m', `\e[K', regardless of TERM
 	    // settings.  We simply weed out everything up to and

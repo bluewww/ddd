@@ -157,10 +157,10 @@ Volunteers for fixing these and other bugs are welcome!
     be cleared at least?  Or contain a string (`not active')?
 
 346 Finish Perl support:
-    - `Run' should set arguments.  Assign to $ARGS?
+    - `Run' should set arguments (i.e. restart).
+    - Lookup functions.
     - Settings.
-    - Operations.  `ref(THING)' returns the type of a reference;
-      one would have to add `$', `@', or `%' dependent on the type.
+    - Display lists of lists.
 
 347*Verify buttons clears *all buttons* in SGI DBX, even basic ones
     such as `step' or `run'.  Suggestion: if `help run' doesn't give
