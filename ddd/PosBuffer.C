@@ -509,20 +509,30 @@ void PosBuffer::filter (string& answer)
 	{
 	    string file;	// File name found
 	    string line;	// Line number found
-	    
-	    if (answer.contains('(', 0) || answer.contains('[', 0))
-	    {
-		// Get breakpoint position
-		string ans = answer;
-		int num = read_positive_nr(ans);
-		string pos = source_view->bp_pos(num);
-		if (pos != "")
+
+	    // When reaching a breakpoint, DBX issues the breakpoint
+	    // number before the status line.  Check for this and
+	    // initialize defaults.
+	    int nl_index = -1;
+	    do {
+		if (answer.contains('(', nl_index + 1) || 
+		    answer.contains('[', nl_index + 1))
 		{
-		    file = pos.before(':');
-		    line = pos.after(':');
+		    // Get breakpoint position
+		    string ans = answer.from(nl_index + 1);
+		    int num = read_positive_nr(ans);
+		    string pos = source_view->bp_pos(num);
+		    if (pos != "")
+		    {
+			file = pos.before(':');
+			line = pos.after(':');
+			break;
+		    }
 		}
-	    }
-	    
+
+		nl_index = answer.index('\n', nl_index + 1);
+	    } while (nl_index >= 0);
+		
 #if RUNTIME_REGEX
 	    static regex rxdbxfunc2(
 		".*line  *[1-9][0-9]*  *in  *(file  *)?\"[^\"]*\"\n.*");
