@@ -105,8 +105,14 @@ private:
     }
 
 private:
-    Map(const Map&): _length(0), _first(0) { assert(0); }
-    Map& operator = (const Map&) { assert(0); return *this; }
+    Map(const Map<Key, Contents>&): _length(0), _first(0)
+    {
+	assert(0);
+    }
+    Map<Key, Contents>& operator = (const Map<Key, Contents>&)
+    {
+	assert(0); return *this;
+    }
 };
 
 
