@@ -639,7 +639,9 @@ fi
 fi
 if test "$XAW_LIBS" != ""; then
 AC_CHECK_HEADERS(X11/Xaw/Form.h X11/Xaw/Panner.h X11/Xaw/Porthole.h)
-AC_CHECK_HEADERS(X11/Xmu/Editres.h)
+AC_CHECK_HEADERS(X11/Xmu/Editres.h,[],[],
+[[#include <X11/Intrinsic.h>
+]])
 fi
 AC_SUBST(XAW_LIBS)
 dnl
