@@ -1012,7 +1012,8 @@ inline string& string::operator = (const char* t)
 
 inline string& string::operator = (char *t)
 {
-    return operator = ((const char *)t);
+    (void) operator = ((const char *)t);
+    return *this;
 }
 
 inline string& string::operator = (const subString&  y)

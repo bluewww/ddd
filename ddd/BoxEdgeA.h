@@ -64,7 +64,21 @@ public:
 
     virtual ~BoxEdgeAnnotation()
     {
-	_box->unlink();
+	if (_box != 0)
+	    _box->unlink();
+    }
+
+    BoxEdgeAnnotation& operator=(const BoxEdgeAnnotation& src)
+    {
+	Box *new_box = 0;
+	if (src._box != 0)
+	    new_box = src._box->dup();
+
+	if (_box != 0)
+	    _box->unlink();
+	_box = new_box;
+
+	return *this;
     }
 
     // Duplication

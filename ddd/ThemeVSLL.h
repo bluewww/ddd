@@ -42,6 +42,20 @@ private:
     unsigned _optimizeMode;
     StringArray _theme_list;
 
+    // Assignment
+    ThemedVSLLib& operator=(const ThemedVSLLib&)
+    {
+	assert(0);
+	return *this;
+    }
+
+    // Copy constructor
+    ThemedVSLLib(const ThemedVSLLib& lib)
+	: VSLLib(lib), _original_lib(0), _optimizeMode(0), _theme_list()
+    {
+	assert(0);
+    }
+
 public:
     // Build
     ThemedVSLLib();

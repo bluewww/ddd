@@ -48,6 +48,20 @@ class XErrorBlocker {
     static int handler(Display *, XErrorEvent *);
     static XErrorBlocker *active;
 
+    XErrorBlocker(const XErrorBlocker&)
+	: _display(0), _error_occurred(false), _event(), 
+	  saved_handler(), saved_active(0)
+    {
+	assert(0);
+    }
+
+    XErrorBlocker& operator=(const XErrorBlocker&)
+    {
+	assert(0);
+	return *this;
+    }
+	
+
 protected:
     virtual int handle(Display *, XErrorEvent *);
     virtual void sync() const { XSync(_display, False); }

@@ -42,9 +42,10 @@ char SignalBlocker_rcsid[] =
 
 // Constructor - block signal SIGNUM
 SignalBlocker::SignalBlocker(int signum)
-#ifndef SIG_SETMASK
-    // BSD interface
-    : old_mask(sigblock(sigmask(signum)));
+#ifdef SIG_SETMASK
+    : old_set()			// POSIX interface
+#else
+    : old_mask(sigblock(sigmask(signum))); // BSD interface
 #endif
 {
 #ifdef SIG_SETMASK
@@ -59,9 +60,10 @@ SignalBlocker::SignalBlocker(int signum)
 
 // Constructor - block all signals
 SignalBlocker::SignalBlocker()
-#ifndef SIG_SETMASK
-    // BSD interface
-    : old_mask(sigblock(~0));
+#ifdef SIG_SETMASK
+    : old_set()			// POSIX interface
+#else
+    : old_mask(sigblock(~0));	// BSD interface
 #endif
 {
 #ifdef SIG_SETMASK

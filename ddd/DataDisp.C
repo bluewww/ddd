@@ -5912,6 +5912,23 @@ struct SetInfo {
     Widget text;		// The widget containing the value
     Widget dialog;		// The prompt dialog used
     bool running;		// True if a command has been submitted
+
+    SetInfo()
+	: name(""), text(0), dialog(0), running(false)
+    {}
+
+private:
+    SetInfo(SetInfo&)
+	: name(""), text(0), dialog(0), running(false)
+    {
+	assert(0);
+    }
+
+    SetInfo& operator=(const SetInfo&)
+    {
+	assert(0);
+	return *this;
+    }
 };
 
 void DataDisp::DeleteSetInfoCB(Widget, XtPointer client_data, XtPointer)

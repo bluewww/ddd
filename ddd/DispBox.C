@@ -211,6 +211,20 @@ struct VSLLibCache {
 	delete next;
 	delete lib;
     }
+
+private:
+    VSLLibCache(const VSLLibCache&)
+	: themes(), lib(0), next(0)
+    {
+	assert(0);
+    }
+
+    VSLLibCache& operator= (const VSLLibCache&)
+    {
+	assert(0);
+	return *this;
+    }
+
 } *DispBox::vsllib_cache = 0;
 
 VSLLib *DispBox::vsllib(const DispValue *dv)

@@ -102,6 +102,19 @@ struct PushMenuInfo {
     PushMenuInfo(Widget w, Widget s, bool f)
 	: widget(w), subMenu(s), flat(f), timer(0)
     {}
+
+private:
+    PushMenuInfo(const PushMenuInfo&)
+	: widget(0), subMenu(0), flat(false), timer(0)
+    {
+	assert(0);
+    }
+
+    PushMenuInfo& operator= (const PushMenuInfo&)
+    {
+	assert(0);
+	return *this;
+    }
 };
 
 //-----------------------------------------------------------------------

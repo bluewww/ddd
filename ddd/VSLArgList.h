@@ -34,10 +34,23 @@
 #endif
 
 #include "ListBox.h"
+#include "assert.h"
 
 // A simple wrapper around a ListBox used for arguments
 class VSLArgList {
     ListBox *_list;
+
+    VSLArgList& operator=(const VSLArgList&)
+    {
+	assert(0);
+	return *this;
+    }
+
+    VSLArgList(const VSLArgList&)
+	: _list(0)
+    {
+	assert(0);
+    }
 
 public:
     VSLArgList()

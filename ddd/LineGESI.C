@@ -42,6 +42,10 @@ char LineGraphEdgeSelfInfo_rcsid[] =
 
 LineGraphEdgeSelfInfo::LineGraphEdgeSelfInfo(const BoxRegion& region,
 					     const GraphGC& gc)
+    : radius(0), diameter(0), arc_pos(), arc_center(),
+      arc_start(0), arc_extend(0),
+      anno_pos(), arrow_pos(),
+      arrow_angle(0), arrow_alpha(0.0)
 {
     // Find edge position
     diameter = gc.selfEdgeDiameter;

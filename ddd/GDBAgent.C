@@ -312,6 +312,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _recording(gdb.recording()),
       _detect_echos(gdb.detect_echos()),
       _buffer_gdb_output(gdb.buffer_gdb_output()),
+      _flush_next_output(gdb.flush_next_output()),
       last_prompt(""),
       last_written(""),
       echoed_characters(-1),

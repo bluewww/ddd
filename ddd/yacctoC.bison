@@ -49,14 +49,28 @@ s!^typedef union\(.*\)$!typedef struct _YYSTYPE \1!
 struct YYMEMHANDLER {\
     YYSTYPE *kill;\
 \
-    YYMEMHANDLER():\
-	kill(0)\
+    YYMEMHANDLER()\
+	: kill(0)\
     {}\
+\
     ~YYMEMHANDLER()\
     {\
 	if (kill != 0)\
-    	delete[] kill;\
+    	    delete[] kill;\
         kill = 0;\
+    }\
+\
+private:\
+    YYMEMHANDLER(const YYMEMHANDLER&)\
+	: kill(0)\
+    {\
+	assert(0);\
+    }\
+\
+    YYMEMHANDLER& operator=(const YYMEMHANDLER&)\
+    {\
+	assert(0);\
+	return *this;\
     }\
 };\
 

@@ -98,6 +98,13 @@ private:
     static void clipToCircle(const BoxRegion& b, int side, 
 			     BoxPoint& p, const BoxPoint& c);
 
+    // Assignment
+    LineGraphEdge& operator=(const LineGraphEdge&)
+    {
+	assert(0);
+	return *this;
+    }
+
 public:
     // Constructor
     LineGraphEdge(GraphNode *f, GraphNode *t, EdgeAnnotation *ann = 0):

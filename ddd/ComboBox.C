@@ -89,6 +89,20 @@ struct ComboBoxInfo
 	: top(0), text(0), button(0), list(0), shell(0), 
 	  timer(0), popped_up(false)
     {}
+
+private:
+    ComboBoxInfo(const ComboBoxInfo&)
+	: top(0), text(0), button(0), list(0), shell(0), 
+	  timer(0), popped_up(false)
+    {
+	assert(0);
+    }
+
+    ComboBoxInfo& operator= (const ComboBoxInfo&)
+    {
+	assert(0);
+	return *this;
+    }
 };
 
 

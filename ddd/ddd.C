@@ -5510,7 +5510,8 @@ struct WhenReadyInfo {
 	: message(msg),
 	  proc(p),
 	  client_data(cl_data),
-	  cbs(c)
+	  cbs(c),
+	  event()
     {
 	// Copy event
 	if (c.event == 0)
@@ -5522,6 +5523,19 @@ struct WhenReadyInfo {
 	    memcpy(cbs.event, c.event, sizeof(cbs.event));
 	    cbs.event = &event;
 	}
+    }
+
+private:
+    WhenReadyInfo(WhenReadyInfo&)
+	: message(), proc(0), client_data(0), cbs(), event()
+    {
+	assert(0);
+    }
+
+    WhenReadyInfo& operator= (const WhenReadyInfo&)
+    {
+	assert(0);
+	return *this;
     }
 };
 

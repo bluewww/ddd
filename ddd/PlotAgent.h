@@ -89,7 +89,8 @@ public:
     PlotAgent(XtAppContext app_context, const string& pth,
 	      unsigned nTypes = PlotAgent_NTypes)
 	: LiterateAgent(app_context, pth, nTypes),
-	  files(), titles(), plot_os(), ndim(0), 
+	  files(), titles(), values(), dims(),
+	  plot_os(), ndim(0), 
 	  x_min(0.0), x_max(0.0),
 	  y_min(0.0), y_max(0.0),
 	  v_min(0.0), v_max(0.0),
