@@ -250,8 +250,4 @@ Volunteers for fixing these and other bugs are welcome!
 
 101* `graph display int' results in an empty box.  No warning.
 
-102* SGI DBX: when a function in a separate file is called, the source
-     window does not switch to the appropriate file.  [Check this with
-     DEC DBX -AZ]
-
-102. (Insert your bug here)
+103. (Insert your bug here)
