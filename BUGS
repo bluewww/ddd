@@ -263,4 +263,7 @@ Volunteers for fixing these and other bugs are welcome!
 231. According to Ronald Wahl <Ronald.Wahl@Informatik.TU-Chemnitz.DE>, 
      DDD gets into a busy loop when used with libc-5.4.41 under Linux.
 
-231. (Insert your bug here)
+232. The error message of `graph display foo' is not shown in the
+     status line.
+
+233. (Insert your bug here)
