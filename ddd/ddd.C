@@ -3921,11 +3921,13 @@ static Widget add_panel(Widget parent, Widget buttons,
 
     // Add panel
     Widget panel = MMcreatePanel(form, "panel", items);
+    MMadjustPanel(items);
     MMaddCallbacks(items);
     MMaddHelpCallback(items, ImmediateHelpCB);
     XtManageChild(panel);
     register_menu_shell(items);
 
+    // Fetch panel geometry
     XtWidgetGeometry size;
     size.request_mode = CWHeight | CWWidth;
     XtQueryGeometry(form, NULL, &size);

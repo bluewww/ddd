@@ -107,6 +107,8 @@ Widget MMcreatePanel             (Widget parent, String name, MMDesc items[]);
 Widget MMcreateRadioPanel        (Widget parent, String name, MMDesc items[]);
 Widget MMcreateButtonPanel       (Widget parent, String name, MMDesc items[]);
 
+void   MMadjustPanel(MMDesc items[], Dimension space = 15);
+
 void   MMaddCallbacks   (MMDesc items[], XtPointer default_closure = 0);
 void   MMaddHelpCallback(MMDesc items[], XtCallbackProc proc);
 void   MMonItems        (MMDesc items[], MMItemProc proc, 

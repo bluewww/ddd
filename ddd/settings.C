@@ -73,6 +73,22 @@ char settings_rcsid[] =
 #include "DataDisp.h"
 #include "LessTifH.h"
 
+
+//-----------------------------------------------------------------------
+// Constants
+//-----------------------------------------------------------------------
+
+const Dimension EXTRA_SPACE     = 10;   // Minimum space between label / entry
+const Dimension SCROLLBAR_WIDTH = 24;   // Additional space for scrollbar
+const Dimension MARGIN_WIDTH    =  4;   // Additional space for ScrolledWindow
+const Dimension MAX_HEIGHT     = 300;   // Maximum height of window
+
+
+
+//-----------------------------------------------------------------------
+// Data
+//-----------------------------------------------------------------------
+
 static Widget            settings_panel = 0;
 static Widget            settings_form  = 0;
 static Widget            reset_settings_button = 0;
@@ -86,6 +102,11 @@ static Widget            infos_panel        = 0;
 static Widget            reset_infos_button = 0;
 static WidgetArray       infos_entries;
 
+
+
+//-----------------------------------------------------------------------
+// Functions
+//-----------------------------------------------------------------------
 
 // Reset it all
 void reset_settings()
@@ -887,12 +908,30 @@ static string get_dbx_doc(string dbxenv, string base)
     return dbx_doc;
 }
 
-static void add_settings(Widget form, int& row, DebuggerType type, 
-			 EntryType entry_filter, string gdb_class = "set");
+static Dimension preferred_width(Widget w)
+{
+    XtWidgetGeometry size;
+    size.request_mode = CWWidth;
+    XtQueryGeometry(w, NULL, &size);
+    return size.width;
+}
+
+static Dimension preferred_height(Widget w)
+{
+    XtWidgetGeometry size;
+    size.request_mode = CWHeight;
+    XtQueryGeometry(w, NULL, &size);
+    return size.height;
+}
+
+static void add_settings(Widget form, int& row, Dimension& max_width,
+			 DebuggerType type, EntryType entry_filter, 
+			 string gdb_class = "set");
 
 // Add single button
-static void add_button(Widget form, int& row, DebuggerType type,
-		       EntryType entry_filter, string line)
+static void add_button(Widget form, int& row, Dimension& max_width,
+		       DebuggerType type, EntryType entry_filter,
+		       string line)
 {
     if (line == "")
 	return;
@@ -936,7 +975,8 @@ static void add_button(Widget form, int& row, DebuggerType type,
 		{
 		    // Generic command or `set variable' - list `set'
 		    // subcommands
-		    add_settings(form, row, type, entry_filter, set_command);
+		    add_settings(form, row, max_width, 
+				 type, entry_filter, set_command);
 		    return;
 		}
 
@@ -944,7 +984,8 @@ static void add_button(Widget form, int& row, DebuggerType type,
 		if (is_set && value.freq('\n') > 1)
 		{
 		    // Generic command - list `set' subcommands
-		    add_settings(form, row, type, entry_filter, set_command);
+		    add_settings(form, row, max_width,
+				 type, entry_filter, set_command);
 		    return;
 		}
 
@@ -1320,6 +1361,11 @@ static void add_button(Widget form, int& row, DebuggerType type,
     if (entry != label)
 	rightmost = entry;
 
+    Dimension width = preferred_width(label);
+    if (entry != label)
+	width += preferred_width(entry);
+    width += preferred_width(help);
+
     // Add leader
     arg = 0;
     XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_WIDGET);   arg++;
@@ -1361,13 +1407,16 @@ static void add_button(Widget form, int& row, DebuggerType type,
 	infos_entries        += entry;
     }
 
+    max_width = max(width, max_width);
+
     row++;
 }
 
 
 // Add buttons
-static void add_settings(Widget form, int& row, DebuggerType type,
-			 EntryType entry_filter, string gdb_class)
+static void add_settings(Widget form, int& row, Dimension& max_width,
+			 DebuggerType type, EntryType entry_filter,
+			 string gdb_class)
 {
     string commands;
 
@@ -1407,7 +1456,7 @@ static void add_settings(Widget form, int& row, DebuggerType type,
     case JDB:
     {
 	// In JDB, all we have is the `use' command.
-	add_button(form, row, type, entry_filter, "use");
+	add_button(form, row, max_width, type, entry_filter, "use");
 	break;
     }
     }
@@ -1416,7 +1465,7 @@ static void add_settings(Widget form, int& row, DebuggerType type,
     {
 	string line = commands.before('\n');
 	commands    = commands.after('\n');
-	add_button(form, row, type, entry_filter, line);
+	add_button(form, row, max_width, type, entry_filter, line);
     }
 }
 
@@ -1544,50 +1593,52 @@ static Widget create_panel(DebuggerType type, bool create_settings)
     }
 
     // Add setting buttons to the button box.
+    Dimension max_width = 0;
     int row = 0;
     int last_row = row;
 
     if (create_settings)
     {
-	add_settings(form, row, type, OnOffToggleButtonEntry);
-	add_settings(form, row, type, TrueFalseToggleButtonEntry);
-	add_settings(form, row, type, SensitiveToggleButtonEntry);
-	add_settings(form, row, type, NumToggleButtonEntry);
-	add_settings(form, row, type, NoNumToggleButtonEntry);
+	add_settings(form, row, max_width, type, OnOffToggleButtonEntry);
+	add_settings(form, row, max_width, type, TrueFalseToggleButtonEntry);
+	add_settings(form, row, max_width, type, SensitiveToggleButtonEntry);
+	add_settings(form, row, max_width, type, NumToggleButtonEntry);
+	add_settings(form, row, max_width, type, NoNumToggleButtonEntry);
 	if (row != last_row)
 	    add_separator(form, row);
 
 	last_row = row;
-	add_settings(form, row, type, TargetOptionMenuEntry);
+	add_settings(form, row, max_width, type, TargetOptionMenuEntry);
 	if (row != last_row)
 	    add_separator(form, row);
 
 	last_row = row;
-	add_settings(form, row, type, OtherOptionMenuEntry);
+	add_settings(form, row, max_width, type, OtherOptionMenuEntry);
 	if (row != last_row)
 	    add_separator(form, row);
 
 	last_row = row;
-	add_settings(form, row, type, CheckOptionMenuEntry);
+	add_settings(form, row, max_width, type, CheckOptionMenuEntry);
 	if (row != last_row)
 	    add_separator(form, row);
 
 	if (type == GDB)
 	{
 	    last_row = row;
-	    add_button(form, row, type, TextFieldEntry, 
+	    add_button(form, row, max_width, type, TextFieldEntry, 
 		       get_help_line("dir", type));
-	    add_button(form, row, type, TextFieldEntry, 
+	    add_button(form, row, max_width, type, TextFieldEntry, 
 		       get_help_line("path", type));
 	    if (row != last_row)
 		add_separator(form, row);
 	}
 
-	add_settings(form, row, type, TextFieldEntry);
+	add_settings(form, row, max_width, type, TextFieldEntry);
     }
     else
     {
-	add_settings(form, row, type, DisplayToggleButtonEntry, "info");
+	add_settings(form, row, max_width, type, 
+		     DisplayToggleButtonEntry, "info");
     }
 
     // Clean up cached documentation stuff
@@ -1605,9 +1656,34 @@ static Widget create_panel(DebuggerType type, bool create_settings)
 	update_infos();
     }
 
+    // Set number of rows
     if (row > 0)
 	XtVaSetValues(form, XmNfractionBase, row, NULL);
     XtManageChild(form);
+
+    // Set sizes
+    max_width += EXTRA_SPACE;
+    XtVaSetValues(form, 
+		  XmNwidth, max_width, NULL);
+
+    Dimension height = preferred_height(form);
+    if (height + MARGIN_WIDTH > MAX_HEIGHT)
+    {
+	// Form must be scrolled
+	XtVaSetValues(scroll,
+		      XmNheight, MAX_HEIGHT,
+		      XmNwidth, max_width + MARGIN_WIDTH + SCROLLBAR_WIDTH,
+		      NULL);
+    }
+    else
+    {
+	// Form need not be scrolled
+	XtVaSetValues(scroll,
+		      XmNheight, height + MARGIN_WIDTH,
+		      XmNwidth, max_width + MARGIN_WIDTH,
+		      NULL);
+    }
+
     XtManageChild(scroll);
 
     InstallButtonTips(panel);

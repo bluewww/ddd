@@ -2799,7 +2799,7 @@ Ddd*preferences*buttons*shadowThickness:	2
 Ddd*preferences*buttons*alignment:		XmALIGNMENT_CENTER
 Ddd*preferences*panel*XmRowColumn.marginHeight: 0
 
-Ddd*preferences*buttons*general.labelString:	\ \ \ \ \ \ General\ \ \ \ \ \ 
+Ddd*preferences*buttons*general.labelString:	\ \ \ \ \ General\ \ \ \ \ 
 Ddd*preferences*buttons*source.labelString:	Source
 Ddd*preferences*buttons*data.labelString:	Data
 Ddd*preferences*buttons*startup.labelString:	Startup
@@ -2854,15 +2854,6 @@ TAB key completes
 Ddd*preferences*inAllWindows.labelString: in all windows
 Ddd*preferences*inConsole.labelString:    in console only
 
-Ddd*preferences*buttonHints.width:      	240
-Ddd*preferences*buttonHints.recomputeSize:	off
-
-Ddd*preferences*valueHints.width:      		240
-Ddd*preferences*valueHints.recomputeSize:	off
-
-Ddd*preferences*tabCompletion.width:      	240
-Ddd*preferences*tabCompletion.recomputeSize:	off
-
 Ddd*preferences*groupIconify.labelString:	 \
 Iconify all windows at once
 Ddd*preferences*uniconifyWhenReady.labelString:	 \
@@ -2911,36 +2902,21 @@ Ddd*preferences*showExecPos.labelString:	Show position and breakpoints
 Ddd*preferences*asGlyphs.labelString:		as glyphs
 Ddd*preferences*asText.labelString:		as text characters
 
-Ddd*preferences*showExecPos.width:		200
-Ddd*preferences*showExecPos.recomputeSize:	off
-
 Ddd*preferences*toolButtons.labelString:	Tool Buttons Location
 Ddd*toolButtonsMenu*commandTool.labelString:	Command Tool
 Ddd*toolButtonsMenu*sourceWindow.labelString:   Source Window
-
-Ddd*preferences*toolButtons.width:		200
-Ddd*preferences*toolButtons.recomputeSize:	off
 
 Ddd*preferences*referSources.labelString:	Refer to program sources
 Ddd*preferences*byPath.labelString:		by full path name
 Ddd*preferences*byBase.labelString:		by base name only
 
-Ddd*preferences*referSources.width:		200
-Ddd*preferences*referSources.recomputeSize:	off
-
 Ddd*preferences*cache.labelString:	        Cache
 Ddd*preferences*cacheSource.labelString:	source files
 Ddd*preferences*cacheCode.labelString:		machine code
 
-Ddd*preferences*cache.width:		        200
-Ddd*preferences*cache.recomputeSize:	        off
-
 Ddd*preferences*find.labelString:	        Find
 Ddd*preferences*wordsOnly.labelString:		words only
 Ddd*preferences*caseSensitive.labelString:	case sensitive
-
-Ddd*preferences*find.width:		        200
-Ddd*preferences*find.recomputeSize:	        off
 
 Ddd*preferences*displayLineNumbers.labelString:	 \
 Display source line numbers
@@ -3050,32 +3026,23 @@ Click on LBL(Reset) to restore the saved preferences.
 Ddd*preferences*startup*adjustMargin:		off
 
 Ddd*preferences*windows.labelString:		Window Layout
-Ddd*preferences*windows.width:			200
-Ddd*preferences*windows.recomputeSize:		off
 Ddd*windowsMenu*attached.labelString:		Stacked Windows
 Ddd*windowsMenu*separate.labelString:		Separate Windows
 
 Ddd*preferences*buttons.labelString:		Toolbar Appearance
-Ddd*preferences*buttons.width:			200
-Ddd*preferences*buttons.recomputeSize:		off
 Ddd*buttonsMenu*images.labelString:		Images
 Ddd*buttonsMenu*captions.labelString:		Captions
 Ddd*buttonsMenu*flat.labelString:		Flat
 
 Ddd*preferences*keyboardFocus.labelString:	Keyboard Focus
-Ddd*preferences*keyboardFocus.width:		200
-Ddd*preferences*keyboardFocus.recomputeSize:	off
 Ddd*keyboardFocusMenu*explicit.labelString:	Click to Type
 Ddd*keyboardFocusMenu*pointer.labelString:	Point to Type
 
 Ddd*preferences*dataScrolling.labelString:	Data Scrolling
-Ddd*preferences*dataScrolling.width:		200
-Ddd*preferences*dataScrolling.recomputeSize:	off
 Ddd*dataScrollingMenu*panner.labelString:	Panner
 Ddd*dataScrollingMenu*scrollbars.labelString:	Scrollbars
 
 Ddd*preferences*debugger.labelString:		Debugger Type
-Ddd*preferences*debugger.width:			200
 Ddd*preferences*debugger.recomputeSize:		off
 Ddd*debuggerMenu*gdb.labelString:		GDB
 Ddd*debuggerMenu*dbx.labelString:		DBX
@@ -3083,7 +3050,6 @@ Ddd*debuggerMenu*xdb.labelString:		XDB
 Ddd*debuggerMenu*jdb.labelString:		JDB
 
 Ddd*preferences*showStartupLogo.labelString:	DDD Splash Screen
-Ddd*preferences*showStartupLogo.width:		200
 Ddd*preferences*showStartupLogo.recomputeSize:	off
 
 Ddd*showStartupLogoMenu*color.labelString:	Color
@@ -3131,8 +3097,6 @@ Ddd*preferences*ps*labelString:			List Processes
 Ddd*preferences*term*labelString:		Execution Window
 Ddd*preferences*uncompress*labelString:		Uncompress
 Ddd*preferences*www*labelString:		Web Browser
-Ddd*preferences*helpers*label.width:		150
-Ddd*preferences*helpers*label.recomputeSize:	off
 Ddd*preferences*text.columns:			50
 
 
@@ -3147,9 +3111,6 @@ Ddd*settings_popup.title: DDD: Debugger Settings
 Ddd*settings_popup.autoUnmanage: off
 
 Ddd*settings*scroll.scrollingPolicy:		XmAUTOMATIC
-Ddd*settings*scroll.height:			293
-Ddd*settings*scroll.width:			528
-Ddd*settings*form.width:			500
 Ddd*settings*help.labelString:			?
 Ddd*settings*XmTextField.columns:		10
 Ddd*settings*sep.bottomOffset:			10
@@ -3275,9 +3236,6 @@ Ddd*infos_popup.title: DDD: Status Displays
 Ddd*infos_popup.autoUnmanage: off
 
 Ddd*infos*scroll.scrollingPolicy:		XmAUTOMATIC
-Ddd*infos*scroll.height:			293
-Ddd*infos*scroll.width:				428
-Ddd*infos*form.width:				400
 Ddd*infos*help.labelString:			?
 Ddd*infos*sep.bottomOffset:			10
 Ddd*infos*leader.bottomOffset:			4
@@ -4882,21 +4840,15 @@ Ddd*breakpoint_properties.okLabelString:    		Close
 Ddd*breakpoint_properties.cancelLabelString:    	Delete
 
 Ddd*breakpoint_properties*title.labelString:		Breakpoint
-Ddd*breakpoint_properties*title.width:			120
-Ddd*breakpoint_properties*title.recomputeSize:		off
 
 Ddd*breakpoint_properties*enabled.labelString:		Enabled
 Ddd*breakpoint_properties*temporary.labelString:	Temporary
 Ddd*breakpoint_properties*lookup.labelString:		\ \ Lookup\ \ 
 
 Ddd*breakpoint_properties*condition.label.labelString:	Condition
-Ddd*breakpoint_properties*condition.label.width:	120
-Ddd*breakpoint_properties*condition.label.recomputeSize: off
 Ddd*breakpoint_properties*condition.text.columns:       32
 
 Ddd*breakpoint_properties*ignore.label.labelString:	Ignore Count
-Ddd*breakpoint_properties*ignore.label.width:		120
-Ddd*breakpoint_properties*ignore.label.recomputeSize:	off
 Ddd*breakpoint_properties*ignore*text.columns:          4
 Ddd*breakpoint_properties*ignore*text.maximumValue:	9999
 
@@ -4906,8 +4858,6 @@ Ddd*breakpoint_properties*spin.marginWidth:		0
 Ddd*breakpoint_properties*spin.marginHeight:		0
 
 Ddd*breakpoint_properties*commands.labelString:		Commands
-Ddd*breakpoint_properties*commands.width:		120
-Ddd*breakpoint_properties*commands.recomputeSize:	off
 
 Ddd*breakpoint_properties*commandsMenu.packing:		XmPACK_COLUMN
 Ddd*breakpoint_properties*commandsMenu.entryAlignment:	XmALIGNMENT_CENTER

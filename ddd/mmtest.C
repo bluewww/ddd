@@ -77,6 +77,7 @@ int main(int argc, char *argv[])
         XtPointer(0), 0, &argc, argv, XtPointer(0), XtPointer(0), 0);
 
     Widget panel = MMcreatePanel(toplevel, "panel", items);
+    MMadjustPanel(items);
     (void) panel;
 
     XtRealizeWidget(toplevel);

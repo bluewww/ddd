@@ -169,7 +169,6 @@ inline int isid(char c)
 #endif
 
 
-// ***************************************************************************
 //-----------------------------------------------------------------------
 // Xt stuff
 //-----------------------------------------------------------------------
@@ -5399,6 +5398,8 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
     MMaddCallbacks(panel_menu, XtPointer(info));
 
     update_properties_panel(info);
+
+    MMadjustPanel(panel_menu);
 
     XtAddCallback(info->dialog, XmNokCallback,
 		  UnmanageThisCB, info->dialog);

@@ -35,6 +35,7 @@ char MakeMenu_rcsid[] =
 #include "strclass.h"
 #include "MString.h"
 #include "TimeOut.h"
+#include "misc.h"
 
 #include <stdlib.h>
 #include <Xm/Xm.h>
@@ -690,6 +691,37 @@ Widget MMcreatePanel(Widget parent, String name, MMDesc items[])
     XtManageChild(panel);
 
     return panel;
+}
+
+void MMadjustPanel(MMDesc items[], Dimension space)
+{
+    // Align labels
+    Dimension max_label_width = 0;
+    MMDesc *item;
+    for (item = items; item != 0 && item->name != 0; item++)
+    {
+	if (item->label == 0)
+	    continue;
+
+	XtWidgetGeometry size;
+	size.request_mode = CWWidth;
+	XtQueryGeometry(item->label, NULL, &size);
+	max_label_width = max(max_label_width, size.width);
+    }
+
+    // Leave some extra space
+    max_label_width += space;
+
+    for (item = items; item != 0 && item->name != 0; item++)
+    {
+	if (item->label == 0)
+	    continue;
+
+	XtVaSetValues(item->label,
+		      XmNrecomputeSize, False,
+		      XmNwidth, max_label_width,
+		      XtPointer(0));
+    }
 }
 
 // Create radio panel from items
