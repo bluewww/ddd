@@ -380,7 +380,7 @@ Volunteers for these and other projects are welcome!
 
 252 Print via the X Printer extension (-lXp).
 
-253 According to the CDE style guide, 
+253*Realize CDE style guide requirements.  In particular,
     - F1 should give help on the element that has the focus; 
       Shift+F1 should give context help.
     - Use `Over_v_iew' instead of `Main Window'; make this the 1st
@@ -391,6 +391,7 @@ Volunteers for these and other projects are welcome!
 
 254 If an XEmacs is running, use its frame for displaying the text.
 
-256 Add a `hint of the day' that might be shown at start-up.
+256*Add a `hint of the day' that might be shown at start-up.  Ask on
+    DDD announce for possible hints.
 
 257 (Insert your project idea here)
