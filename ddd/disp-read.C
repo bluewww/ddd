@@ -985,9 +985,6 @@ bool is_valid(const string& value, GDBAgent *gdb)
     if (value.contains("Name unknown"))
 	return false;
 
-    if (value.contains("Was expexting"))
-	return false;
-
     if (value.contains("not active"))
 	return false;
 
@@ -997,11 +994,17 @@ bool is_valid(const string& value, GDBAgent *gdb)
     if (value.contains("not valid"))
 	return false;
 
+    if (value.contains("Was expecting"))
+	return false;		// JDB 1.2
+
     if (value.contains("incorrect type"))
-	return false;
+	return false;		// JDB 1.2
 
     if (value.contains("not a valid"))
-	return false;
+	return false;		// JDB 1.2
+
+    if (value.contains("Encountered \"", 0))
+	return false;		// JDB 1.2
 
     // In JDB 1.2, values start with `instance of'
     if (!value.contains("instance of", 0) && value.matches(rxinvalid_value))
