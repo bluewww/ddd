@@ -898,14 +898,28 @@ static bool _get_core(const string& session, unsigned long flags,
 	StatusDelay delay("Killing process");
 
 	string core = SourceView::full_path("core");
-	string core_backup = core + "~" + itostring(getpid());
+	string core_backup = core + "~";
 
 	bool had_a_core_file = false;
 	if (is_regular_file(core) || is_directory(core))
 	{
 	    // There is already a file named `core'.  Preserve it.
 	    had_a_core_file = true;
-	    move(core, core_backup);
+
+	    // Try `core~', `core1', `core2', etc., until we find a
+	    // file name that is not being used yet.
+	    int suffix = 0;
+	    for (;;)
+	    {
+		if (!is_regular_file(core_backup)
+		    && !is_directory(core_backup))
+		{
+		    move(core, core_backup);
+		    break;
+		}
+
+		core_backup = "core" + itostring(++suffix);
+	    }
 	}
 
 	// Try 10 times to kill the process
