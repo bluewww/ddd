@@ -1,0 +1,47 @@
+DDD Icons						-*- text -*-
+*********
+
+This directory contains `official' DDD icons in XPM format, for use
+with an X window manager that can display XPM icons (such as FVWM or
+derived).
+
+Install these files in one of the pixmap directories searched by your
+X window manager (FVWM: look for the `IconPath' resource in your
+~/.fvwmrc).  For details on window manager setup, see the WWW site
+`http://www.plig.org/xwinman/'.
+
+
+ddd.xpm - The `official' DDD icon
+---------------------------------
+
+    This icon can be associated with DDD windows.  It is a colored
+    version of the black-and-white icon used by DDD.  Insert a line
+
+        Style "DDD*" Icon ddd.xpm
+
+    in your ~/.fvwmrc, ~/.fvwm2rc, or ~/.fvwm2rc95 file.
+
+
+mini-ddd.xpm - A miniature DDD icon
+-----------------------------------
+
+    This icon can be used in window titles, using 
+
+        Style "DDD*" Icon ddd.xpm TitleIcon mini-ddd.xpm
+
+    in your ~/.fvwm2rc or ~/.fvwm2rc95 file.  It can also be used in
+    menus by placing a line
+
+        + "DDD%mini-ddd.xpm%"	        Exec ddd &
+
+    in the appropriate menu description.
+
+
+ddd.xbm - The `official' DDD icon (monochrome)
+----------------------------------------------
+
+    This is the monochrome DDD icon in X Bitmap format as used by the
+    DDD executable.
+
+
+$Id$
