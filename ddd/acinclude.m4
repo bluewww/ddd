@@ -1980,3 +1980,30 @@ test "$xpm_includes_result" = "no" &&
 AC_MSG_RESULT(
   [libraries $xpm_libraries_result, headers $xpm_includes_result])
 ])dnl
+dnl
+dnl
+dnl
+dnl ICE_TRANSLATION_RESOURCE
+dnl ------------------------
+dnl 
+dnl If Xt supports base translations, set @TRANSLATIONS@ to `baseTranslations',
+dnl otherwise, to `translations'.
+dnl
+AC_DEFUN(ICE_TRANSLATION_RESOURCE,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(for the name of the translation resource)
+AC_CACHE_VAL(ice_cv_translations,
+[
+AC_TRY_COMPILE([#include <X11/Intrinsic.h>],[
+#if XtSpecificationRelease < 5
+#error baseTranslation resource only in X11R5 and later
+#endif
+],
+ice_cv_translations=baseTranslations, 
+ice_cv_translations=translations)
+])
+AC_MSG_RESULT($ice_cv_translations)
+TRANSLATIONS=$ice_cv_translations
+AC_SUBST(TRANSLATIONS)
+])dnl

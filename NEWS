@@ -151,7 +151,7 @@ Miscellaneous
 - `File->Open Recent' allows you to re-open the nine most recently
   debugged programs.
 
-- All dialogs can be properly resized.
+- All selection dialogs can be properly resized.
 
 - You can have the most important dialogs be realized as
   non-transient windows, allowing the DDD main window to obscure
@@ -191,6 +191,10 @@ Bug fixes
 - GDB in annotation mode is properly handled.
 
 - The data window with Motif scrollbars no longer ignores resizes.
+
+- In X11R5 and later, DDD uses the `baseTranslations' resource instead
+  of `translations'.  This allows users to provide their own
+  translations without having to copy existing translations.
 
 - The DDD splash screen (and all other XPM stuff, too) now also
   accepts `close' colors.

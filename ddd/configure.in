@@ -446,6 +446,9 @@ fi
 AC_SUBST(XP_LIBS)
 AC_SUBST(XM_LIBS)
 dnl
+dnl Check for `baseTranslations' resource
+ICE_TRANSLATION_RESOURCE
+dnl
 dnl
 dnl
 dnl
