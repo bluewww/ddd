@@ -2292,10 +2292,17 @@ void SourceView::process_info_bp (string& info_output)
 
 	case DBX:
 	    {
+		// SGI IRIX DBX issues `Process PID: ' 
+		// before status lines.
+		static regex rxprocess("Process [0-9]+:");
+		if (info_output.contains(rxprocess, 0))
+		    info_output = info_output.after(':');
+		read_leading_blanks(info_output);
+		    
 		if (!info_output.contains('(', 0)
 		    && !info_output.contains('[', 0))
 		{
-		    // Skip this line
+		    // No breakpoint info - skip this line
 		    info_output = info_output.after('\n');
 		    continue;
 		}

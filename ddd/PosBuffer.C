@@ -325,7 +325,7 @@ void PosBuffer::filter (string& answer)
 		    }
 		    else if (answer.contains("["))
 		    {
-			// DEC dbx output format
+			// DEC dbx and SGI dbx output format
 			string line = answer.after("[");
 			func_buffer = line.before(":");
 			line = line.after(":");

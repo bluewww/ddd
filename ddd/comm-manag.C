@@ -853,14 +853,17 @@ void handle_graph_cmd (string cmd, Widget origin)
 // ***************************************************************************
 // Process output of configuration commands
 
-static bool is_known_command(string& answer)
+static bool is_known_command(const string& answer)
 {
-    return answer.contains("program is not active") // DBX
-	|| (!answer.contains("syntax")              // DEC DBX
-	    && !answer.contains("help")             // GDB & SUN DBX 1.0
-	    && !answer.contains("not found")        // SUN DBX 3.0
-	    && !answer.contains("unrecognized")     // AIX DBX
-	    && !answer.contains("Unknown", 0));     // XDB
+    string ans = downcase(answer);
+
+    return ans.contains("program is not active") // DBX
+	|| (!ans.contains("syntax")              // DEC DBX
+	    && !ans.contains("help")             // GDB & SUN DBX 1.0
+	    && !ans.contains("not found")        // SUN DBX 3.0
+	    && !ans.contains("unrecognized")     // AIX DBX
+	    && !ans.contains("expected")         // SGI DBX
+	    && !ans.contains("unknown", 0));     // XDB
 }
 
 static void process_config_frame(string& answer)
@@ -906,7 +909,8 @@ static void process_config_named_values(string& answer)
 
 static void process_config_when_semicolon(string& answer)
 {
-    gdb->has_when_semicolon(answer.contains(';'));
+    static regex rxsemicolon_and_brace("; *}");
+    gdb->has_when_semicolon(answer.contains(rxsemicolon_and_brace));
 }
 
 static void process_config_err_redirection(string& answer)
