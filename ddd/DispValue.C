@@ -868,6 +868,7 @@ DispValue *DispValue::update(DispValue *source,
 	case Simple:
 	case Text:
 	case Pointer:
+	    // Atomic values
 	    if (_value != source->value())
 	    {
 		_value = source->value();
@@ -876,27 +877,83 @@ DispValue *DispValue::update(DispValue *source,
 	    return this;
 
 	case Array:
+	    // Array.  Check for 1st element, too.
 	    if (_have_index_base != source->_have_index_base &&
 		(_have_index_base && _index_base != source->_index_base))
 		break;
 
 	    // FALL THROUGH
-	case List:
-	case Struct:
-	case Sequence:
 	case Reference:
+	case Sequence:
+	    // Numbered children.  If size changed, we assume
+	    // the whole has been changed.
 	    if (nchildren() == source->nchildren())
 	    {
 		for (int i = 0; i < nchildren(); i++)
 		{
-		    _children[i] = 
-			_children[i]->update(source->child(i),
-					     was_changed,
-					     was_initialized);
+		    // Update each child
+		    _children[i] = child(i)->update(source->child(i),
+						    was_changed,
+						    was_initialized);
 		}
 		return this;
 	    }
 	    break;
+
+	case List:
+	case Struct:
+	{
+	    // Named children.  Check whether names are the same.
+	    bool same_members = (nchildren() == source->nchildren());
+
+	    for (int i = 0; same_members && i < nchildren(); i++)
+	    {
+		if (child(i)->full_name() != source->child(i)->full_name())
+		    same_members = false;
+	    }
+
+	    if (same_members)
+	    {
+		// Update each child
+		for (int i = 0; i < nchildren(); i++)
+		{
+		    _children[i] = child(i)->update(source->child(i),
+						    was_changed,
+						    was_initialized);
+		}
+		return this;
+	    }
+
+	    // Members have changed.
+	    // Be sure to mark only those members that actually have changed
+	    // (i.e. don't mark the entire struct and don't mark new members)
+	    // We do so by creating a new list of children.  `Old' children
+	    // that still are reported get updated; `new' children are added.
+	    DispValueArray new_children;
+	    for (int j = 0; j < source->nchildren(); j++)
+	    {
+		bool found = false;
+		for (int i = 0; !found && i < nchildren(); i++)
+		{
+		    if (child(i)->full_name() == source->child(j)->full_name())
+		    {
+			new_children += child(i)->update(source->child(j),
+							 was_changed,
+							 was_initialized);
+			found = true;
+		    }
+		}
+
+		if (!found)
+		{
+		    // New child
+		    new_children += source->child(j)->link();
+		}
+	    }
+	    _children = new_children;
+	    was_changed = was_initialized = true;
+	    return this;
+	}
 
 	case UnknownType:
 	    assert(0);

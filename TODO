@@ -350,8 +350,6 @@ Volunteers for these and other projects are welcome!
     [graph display `print *this` would help.  -AZ]
 
 328*Finish display clustering:
-    - Improve and verify change display in cluster (or, more general,
-      Lists).
     - Alias hints of clustered displays remain in place.
     - Document it all.
 
