@@ -89,7 +89,11 @@ DDD 2.2 [in beta test]
     - For `Continue Until Here', DDD now sets a temporary breakpoint
       and continues (instead of using the GDB `until' command).  If
       the temporary breakpoint is not reached, it is deleted.
-    - A restarted DDD now inherits all settings from the previous instance.
+    - A restarted DDD now inherits and restores all settings (data
+      displays, execution position, etc.) from the previous instance.
+    - When DDD becomes ready after a user command, it automatically
+      uniconifies itself.  Hence, you can iconify DDD while it runs a
+      program; DDD pops up again as soon as a breakpoint is hit.
     - Resource files have been renamed.  All files are now located
       under `~/.ddd/'.  The file `~/.dddinit' has been replaced by
       `~/.ddd/init'; `~/.ddd_history' is now `~/.ddd/history'.  The
