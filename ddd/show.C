@@ -539,7 +539,7 @@ int ddd_man(ostream& os)
     return uncompress(os, MANUAL, sizeof(MANUAL) - 1);
 #else
     // Try `man ddd' and `man xddd'.
-    FILE *fp = popen(sh_command("man " ddd_NAME || "man x" ddd_NAME), "r");
+    FILE *fp = popen(sh_command("man " ddd_NAME " || man x" ddd_NAME), "r");
     if (fp == 0)
 	return -1;
 
