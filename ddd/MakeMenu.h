@@ -61,11 +61,12 @@ const MMType MMTypeMask    = 31; // mask to find type
 
 typedef int MMAttr;
 
-const MMAttr MMHelp           =  32; // Mark as help button
-const MMAttr MMInsensitive    =  64; // Make item insensitive
-const MMAttr MMUnmanaged      = 128; // Make item unmanaged
-const MMAttr MMUnmanagedLabel = 256; // Don't manage label (in panels)
-const MMAttr MMIgnore         = 512; // Don't create item
+const MMAttr MMHelp           =   32; // Mark as help button
+const MMAttr MMInsensitive    =   64; // Make item insensitive
+const MMAttr MMUnmanaged      =  128; // Make item unmanaged
+const MMAttr MMUnmanagedLabel =  256; // Don't manage label (in panels)
+const MMAttr MMIgnore         =  512; // Don't create item
+const MMAttr MMVertical       = 1024; // Make panel vertical
 const MMAttr MMAttrMask       = ~MMTypeMask;
 
 
@@ -125,11 +126,14 @@ Widget MMcreatePushMenu          (Widget parent, String name, MMDesc items[],
 void MMadjustPanel(MMDesc items[], Dimension space = 15);
 
 // Add callbacks
-void MMaddCallbacks(MMDesc items[], XtPointer default_closure = 0);
-void MMaddHelpCallback(MMDesc items[], XtCallbackProc proc);
+void MMaddCallbacks(MMDesc items[],
+		    XtPointer default_closure = 0,
+		    int depth = -1);
+void MMaddHelpCallback(MMDesc items[], XtCallbackProc proc, int depth = -1);
 
 // Apply PROC on all ITEMS
-void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure = 0);
+void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure = 0,
+	       int depth = -1);
 
 // Add ITEMS to SHELL.  If IGNORE_SEPS is set, all separators are ignored.
 void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false);

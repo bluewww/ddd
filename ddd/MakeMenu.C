@@ -512,7 +512,8 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    assert(subitems != 0);
 
 	    arg = 0;
-	    XtSetArg(args[arg], XmNorientation,     XmHORIZONTAL); arg++;
+	    XtSetArg(args[arg], XmNorientation, 
+		     (flags & MMVertical) ? XmVERTICAL : XmHORIZONTAL); arg++;
 	    XtSetArg(args[arg], XmNborderWidth,     0); arg++;
 	    XtSetArg(args[arg], XmNentryBorder,     0); arg++;
 	    XtSetArg(args[arg], XmNspacing,         0); arg++;
@@ -803,8 +804,11 @@ Widget MMcreateButtonPanel(Widget parent, String name, MMDesc items[],
 }
 
 // Perform proc on items
-void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure)
+void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure, int depth)
 {
+    if (depth == 0)
+	return;
+
     for (MMDesc *item = items; item != 0 && item->name != 0; item++)
     {
 	if (item->type & MMIgnore)
@@ -813,7 +817,7 @@ void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure)
 	proc(item, closure);
 
 	if (item->items)
-	    MMonItems(item->items, proc, closure);
+	    MMonItems(item->items, proc, closure, depth - 1);
     }
 }
 
@@ -994,9 +998,9 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
     }
 }
 
-void MMaddCallbacks(MMDesc items[], XtPointer default_closure)
+void MMaddCallbacks(MMDesc items[], XtPointer default_closure, int depth)
 {
-    MMonItems(items, addCallback, default_closure);
+    MMonItems(items, addCallback, default_closure, depth);
 }
 
 
@@ -1009,9 +1013,9 @@ static void addHelpCallback(MMDesc *item, XtPointer closure)
     XtAddCallback(widget, XmNhelpCallback, proc, XtPointer(0));
 }
 
-void MMaddHelpCallback(MMDesc items[], XtCallbackProc proc)
+void MMaddHelpCallback(MMDesc items[], XtCallbackProc proc, int depth)
 {
-    MMonItems(items, addHelpCallback, XtPointer(proc));
+    MMonItems(items, addHelpCallback, XtPointer(proc), depth);
 }
 
 
