@@ -613,6 +613,21 @@ static void gdbDeleteFontSelectAgent(XtPointer client_data, XtIntervalId *)
     delete font_select_agent;
 }
 
+static string output_buffer;
+
+static void FontSelectionErrorHP(Agent *, void *, void *call_data)
+{
+    DataLength *input = (DataLength *)call_data;
+    output_buffer += string(input->data, input->length);
+    while (output_buffer.contains('\n'))
+    {
+	set_status(output_buffer.before('\n'));
+	output_buffer = output_buffer.after('\n');
+    }
+    if (output_buffer != "")
+	set_status(output_buffer);
+}
+
 static void DeleteAgentHP(Agent *agent, void *client_data, void *)
 {
     FontSelectInfo *info = (FontSelectInfo *)client_data;
@@ -624,15 +639,10 @@ static void DeleteAgentHP(Agent *agent, void *client_data, void *)
 
     // Destroy the text
     DestroyWhenIdle(info->text);
-}
 
-static void FontSelectionErrorHP(Agent *, void *, void *call_data)
-{
-    // Fetch stderr output from font selector
-    DataLength *input = (DataLength *)call_data;
-    post_warning(string(input->data, input->length), "font_selector_warning");
+    if (output_buffer != "")
+	set_status("");
 }
-
 
 static void process_font(DDDFont font, string fontspec)
 {
@@ -756,6 +766,9 @@ void BrowseFontCB(Widget w, XtPointer client_data, XtPointer call_data)
     // Invoke a font selector
     LiterateAgent *font_select_agent = 
 	new LiterateAgent(XtWidgetToApplicationContext(w), cmd);
+
+    output_buffer = "";
+
     font_select_agent->removeAllHandlers(Died);
     font_select_agent->addHandler(Died,
 				  DeleteAgentHP, (void *)info);

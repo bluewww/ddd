@@ -353,26 +353,33 @@ static void gdbDeleteEditAgent(XtPointer client_data, XtIntervalId *)
     delete edit_agent;
 }
 
-static void gdbEditDoneHP(Agent *edit_agent, void *client_data, void *)
-{
-    // Editor has terminated: reload current source file
-    string *pfile = (string *)client_data;
-    // post_gdb_message("Editing of " + quote(*pfile) + " done.");
-    delete pfile;
-
-    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
-		    gdbDeleteEditAgent, 
-		    XtPointer(edit_agent));
-    gdbReloadSourceCB(gdb_w, 0, 0);
-}
-
-static string edit_output_buffer;
+static string output_buffer;
 
 static void gdbEditOutputHP(Agent *, void *, void *call_data)
 {
     DataLength *input = (DataLength *)call_data;
-    edit_output_buffer += string(input->data, input->length);
-    post_warning(edit_output_buffer, "edit_warning");
+    output_buffer += string(input->data, input->length);
+    while (output_buffer.contains('\n'))
+    {
+	set_status(output_buffer.before('\n'));
+	output_buffer = output_buffer.after('\n');
+    }
+    if (output_buffer != "")
+	set_status(output_buffer);
+}
+
+static void gdbEditDoneHP(Agent *edit_agent, void *, void *)
+{
+    // Editor has terminated: reload current source file
+
+    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
+		    gdbDeleteEditAgent, 
+		    XtPointer(edit_agent));
+
+    gdbReloadSourceCB(gdb_w, 0, 0);
+
+    edit_agent->removeHandler(InputEOF, gdbEditDoneHP);
+    edit_agent->removeHandler(Died,     gdbEditDoneHP);
 }
 
 void gdbEditSourceCB  (Widget w, XtPointer, XtPointer)
@@ -394,15 +401,17 @@ void gdbEditSourceCB  (Widget w, XtPointer, XtPointer)
     cmd.gsub("@LINE@", line);
     cmd = sh_command(cmd);
 
-    edit_output_buffer = "";
-
     // Invoke an editor in the background
     LiterateAgent *edit_agent = 
 	new LiterateAgent(XtWidgetToApplicationContext(w), cmd);
+
+    output_buffer = "";
+
     edit_agent->removeAllHandlers(Died);
-    edit_agent->addHandler(InputEOF, gdbEditDoneHP, (void *)new string(file));
-    edit_agent->addHandler(Input, gdbEditOutputHP);
-    edit_agent->addHandler(Error, gdbEditOutputHP);
+    edit_agent->addHandler(InputEOF, gdbEditDoneHP);
+    edit_agent->addHandler(Died,     gdbEditDoneHP);
+    edit_agent->addHandler(Input,    gdbEditOutputHP);
+    edit_agent->addHandler(Error,    gdbEditOutputHP);
     edit_agent->start();
 }
 

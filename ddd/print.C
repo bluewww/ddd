@@ -137,6 +137,8 @@ static void unlinkPrintFile(XtPointer client_data, XtIntervalId *)
     delete tempfile;
 }
 
+static string output_buffer;
+
 static void printDoneHP(Agent *print_agent, void *client_data, void *)
 {
     // Printing is done: remove temporary file
@@ -144,16 +146,22 @@ static void printDoneHP(Agent *print_agent, void *client_data, void *)
 		    XtPointer(print_agent));
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, unlinkPrintFile, 
 		    XtPointer(client_data));
+
+    if (output_buffer != "")
+	set_status("");
 }
-
-
-static string print_output_buffer;
 
 static void printOutputHP(Agent *, void *, void *call_data)
 {
     DataLength *input = (DataLength *)call_data;
-    print_output_buffer += string(input->data, input->length);
-    post_warning(print_output_buffer, "print_warning");
+    output_buffer += string(input->data, input->length);
+    while (output_buffer.contains('\n'))
+    {
+	set_status(output_buffer.before('\n'));
+	output_buffer = output_buffer.after('\n');
+    }
+    if (output_buffer != "")
+	set_status(output_buffer);
 }
 
 // Print according to given BoxPrintGC
@@ -168,10 +176,11 @@ static int print(string command, BoxPrintGC& gc, bool selectedOnly)
 
     command = command + " " + tempfile;
 
-    print_output_buffer = "";
-
     LiterateAgent *print_agent = 
 	new LiterateAgent(XtWidgetToApplicationContext(gdb_w), command);
+
+    output_buffer = "";
+
     print_agent->removeAllHandlers(Died);
     print_agent->addHandler(InputEOF, printDoneHP, 
 			   (void *)new string(tempfile));

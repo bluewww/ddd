@@ -6201,21 +6201,6 @@ Ddd*startup_warning*helpString: \
 @rm This setting cannot be changed while DDD is running.\n\
 Please save options and restart DDD to see the effects.
 
-Ddd*print_warning_popup.title: DDD: Print Command Message
-Ddd*print_warning*helpString:	\
-@rm This is a message of your printing command.\n\
-For more details, consult your system documentation.
-
-Ddd*font_selector_warning_popup.title: DDD: Font Selector Message
-Ddd*font_selector_warning*helpString:	\
-@rm This is a message of the font selection program.\n\
-For more details, consult your system documentation.
-
-Ddd*edit_warning_popup.title: DDD: Editor Message
-Ddd*edit_warning*helpString:	\
-@rm This is a message of your editor command.\n\
-For more details, consult your system documentation.
-
 Ddd*grab_warning_popup.title: DDD: Pointer Frozen
 Ddd*grab_warning*helpString: \
 @rm DDD has detected a frozen (grabbed) mouse pointer.\n\
