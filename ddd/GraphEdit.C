@@ -176,8 +176,10 @@ static XtResource resources[] = {
 
 static void Select      (Widget, XEvent *, String *, Cardinal *);
 static void Extend      (Widget, XEvent *, String *, Cardinal *);
+static void Toggle      (Widget, XEvent *, String *, Cardinal *);
 static void SelectOrMove(Widget, XEvent *, String *, Cardinal *);
 static void ExtendOrMove(Widget, XEvent *, String *, Cardinal *);
+static void ToggleOrMove(Widget, XEvent *, String *, Cardinal *);
 static void MoveSelected(Widget, XEvent *, String *, Cardinal *);
 static void Follow      (Widget, XEvent *, String *, Cardinal *);
 static void End         (Widget, XEvent *, String *, Cardinal *);
@@ -203,8 +205,10 @@ static void _Normalize  (Widget, XEvent *, String *, Cardinal *);
 static XtActionsRec actions[] = {
     { "select",         Select },        // select()
     { "extend",         Extend },        // extend()
+    { "toggle",         Toggle },        // toggle()
     { "select-or-move", SelectOrMove },	 // select-or-move()
     { "extend-or-move", ExtendOrMove },	 // extend-or-move()
+    { "toggle-or-move", ToggleOrMove },	 // toggle-or-move()
     { "move-selected",  MoveSelected },	 // move-selected(X, Y)
     { "follow",		Follow },        // follow()
     { "end",		End },           // end()
@@ -229,11 +233,11 @@ static XtActionsRec actions[] = {
 // Default translation table
 
 static char defaultTranslations[] =
-    "Shift<Btn1Down>:	extend-or-move()\n"
+    "Shift<Btn1Down>:	toggle()\n"
     "<Btn1Down>:	select-or-move()\n"
     "<Btn1Motion>:	follow()\n"
     "<Btn1Up>:		end()\n"
-    "<Btn2Down>:	extend-or-move()\n"
+    "<Btn2Down>:	toggle()\n"
     "<Btn2Motion>:	follow()\n"
     "<Btn2Up>:		end()\n"
     "Ctrl<Key>KP_1:     move-selected(-grid, +grid)\n"
@@ -1465,36 +1469,57 @@ static void UnselectAll(Widget w, XEvent *event, String *params,
 	selectionChanged(w);
 }
 
+// Find nodes connected to ROOT
+static void find_connected_nodes(GraphNode *root, VarArray<GraphNode *>& nodes)
+{
+    for (int i = 0; i < nodes.size(); i++)
+	if (nodes[i] == root)
+	    return;
+
+    nodes += root;
+
+    GraphEdge *edge;
+    for (edge = root->firstFrom(); edge != 0; edge = root->nextFrom(edge))
+	find_connected_nodes(edge->to(), nodes);
+
+    for (edge = root->firstTo(); edge != 0; edge = root->nextTo(edge))
+	find_connected_nodes(edge->from(), nodes);
+}
+
 // Select an entire subgraph
-bool select_graph(Widget w, GraphNode *node)
+static bool select_graph(Widget w, GraphNode *root, bool set = true)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     const GraphGC& graphGC   = _w->graphEdit.graphGC;
 
+    // Find all connected nodes
+    VarArray<GraphNode *> nodes;
+    find_connected_nodes(root, nodes);
+
+    // Select them
     bool changed = false;
-
-    if (!node->selected())
+    for (int i = 0; i < nodes.size(); i++)
     {
-	node->selected() = true;
-	node->draw(w, EVERYWHERE, graphGC);
-	changed = true;
+	GraphNode *node = nodes[i];
+	if (node->selected() != set)
+	{
+	    node->selected() = set;
+	    node->draw(w, EVERYWHERE, graphGC);
+	    changed = true;
+	}
     }
-
-    GraphEdge *edge;
-    for (edge = node->firstFrom(); edge != 0; edge = node->nextFrom(edge))
-	if (!edge->to()->selected())
-	    changed = select_graph(w, edge->to()) || changed;
-
-    for (edge = node->firstTo(); edge != 0; edge = node->nextTo(edge))
-	if (!edge->from()->selected())
-	    changed = select_graph(w, edge->from()) || changed;
 
     return changed;
 }
 
+inline bool unselect_graph(Widget w, GraphNode *root)
+{
+    return select_graph(w, root, false);
+}
+
 // Begin selecting or moving
 static void _SelectOrMove(Widget w, XEvent *event, String *params,
-    Cardinal *num_params, bool select, bool follow)
+    Cardinal *num_params, SelectionMode mode, bool follow)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     const GraphGC& graphGC   = _w->graphEdit.graphGC;
@@ -1522,13 +1547,19 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
     if (node == 0)
     {
 	// On the background
-
-	if (select)
+	switch (mode)
 	{
+	case SetSelection:
 	    if (double_click)
 		SelectAll(w, event, params, num_params);
 	    else
 		UnselectAll(w, event, params, num_params);
+	    break;
+
+	case ExtendSelection:
+	case ToggleSelection:
+	    // Nothing to do on background
+	    break;
 	}
 
 	if (follow)
@@ -1544,25 +1575,51 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
     {
 	// On a node
 	bool changed = false;
-
-	// Create new selection
-	if (!node->selected() && select)
-	    changed = _UnselectAll(w, event, params, num_params);
-
-	if (double_click)
+	switch (mode)
 	{
-	    // Select all connected nodes
-	    changed = select_graph(w, node);
-	}
-	else
-	{
-	    // Select single node
+	case SetSelection:
 	    if (!node->selected())
-	    {		
-		node->selected() = true;
+	    {
+		// Create new selection
+		changed = _UnselectAll(w, event, params, num_params);
+	    }
+	    // FALL THROUGH
+
+	case ExtendSelection:
+	    if (double_click)
+	    {
+		// Select all connected nodes
+		changed = select_graph(w, node);
+	    }
+	    else
+	    {
+		// Select single node
+		if (!node->selected())
+		{		
+		    node->selected() = true;
+		    node->draw(w, EVERYWHERE, graphGC);
+		    changed = true;
+		}
+	    }
+	    break;
+
+	case ToggleSelection:
+	    if (double_click)
+	    {
+		// Toggle all connected modes
+		if (node->selected())
+		    changed = select_graph(w, node);
+		else
+		    changed = unselect_graph(w, node);
+	    }
+	    else
+	    {
+		// Toggle single node
+		node->selected() = !node->selected();
 		node->draw(w, EVERYWHERE, graphGC);
 		changed = true;
 	    }
+	    break;
 	}
 
 	if (changed)
@@ -1582,25 +1639,37 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 static void SelectOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
-    _SelectOrMove(w, event, params, num_params, true, true);
+    _SelectOrMove(w, event, params, num_params, SetSelection, true);
 }
 
 static void ExtendOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
-    _SelectOrMove(w, event, params, num_params, false, true);
+    _SelectOrMove(w, event, params, num_params, ExtendSelection, true);
+}
+
+static void ToggleOrMove(Widget w, XEvent *event, String *params,
+    Cardinal *num_params)
+{
+    _SelectOrMove(w, event, params, num_params, ToggleSelection, true);
 }
 
 static void Select(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
-    _SelectOrMove(w, event, params, num_params, true, false);
+    _SelectOrMove(w, event, params, num_params, SetSelection, false);
 }
 
 static void Extend(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
-    _SelectOrMove(w, event, params, num_params, false, false);
+    _SelectOrMove(w, event, params, num_params, ExtendSelection, false);
+}
+
+static void Toggle(Widget w, XEvent *event, String *params,
+    Cardinal *num_params)
+{
+    _SelectOrMove(w, event, params, num_params, ToggleSelection, false);
 }
 
 // Keep on acting...
@@ -1711,6 +1780,7 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 	    endAction = point(event);
 
 	    BoxRegion selected = frameRegion(w);
+	    bool have_unselected_nodes = false;
 
 	    // Find all nodes in frame and select them
 	    for (GraphNode *node = graph->firstNode(); node != 0;
@@ -1718,15 +1788,38 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 	    {
 		if (!node->selected())
 		{
-		    // both corners must be inside frame
+		    // Both corners must be inside frame
 		    BoxPoint nw = node->region(graphGC).origin();
 		    BoxPoint se = nw + node->region(graphGC).space() - 1;
 
 		    if (nw <= selected && se <= selected)
 		    {
-			node->selected()  = true;
+			have_unselected_nodes = true;
+			node->selected() = true;
 			node->draw(w, EVERYWHERE, graphGC);
 			selectionChanged(w);
+		    }
+		}
+	    }
+
+	    if (!have_unselected_nodes)
+	    {
+		// All selected nodes are already selected - unselect them
+		for (GraphNode *node = graph->firstNode(); node != 0;
+		     node = graph->nextNode(node))
+		{
+		    if (node->selected())
+		    {
+			// Both corners must be inside frame
+			BoxPoint nw = node->region(graphGC).origin();
+			BoxPoint se = nw + node->region(graphGC).space() - 1;
+
+			if (nw <= selected && se <= selected)
+			{
+			    node->selected() = false;
+			    node->draw(w, EVERYWHERE, graphGC);
+			    selectionChanged(w);
+			}
 		    }
 		}
 	    }

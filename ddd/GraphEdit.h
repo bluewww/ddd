@@ -168,8 +168,14 @@ struct GraphEditCompareNodesInfo {
 
 // Modes
 enum LayoutMode {
-    RegularLayoutMode,	// use regular Sugiyama/Misue layout method
-    CompactLayoutMode 	// use a more compact alternative
+    RegularLayoutMode,		// use regular Sugiyama/Misue layout method
+    CompactLayoutMode		// use a more compact alternative
+};
+
+enum SelectionMode { 
+    SetSelection,		// set the selection
+    ExtendSelection,		// extend the selection
+    ToggleSelection		// toggle the selection
 };
 
 // declare the class constant

@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "27 January 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "09 February 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -2758,6 +2758,15 @@ is \fBany\fR.
 .TP
 .B snap\-to\-grid ()
 Place all nodes on the nearest grid position.
+.TP
+.B toggle ()
+Toggle the current selection\(em\&if the node pointed at is selected,
+it will be unselected, and vice versa.  Bound to a button down event.
+.TP
+.B toggle\-or\-move ()
+Toggle the current selection\(em\&if the node pointed at is selected,
+it will be unselected, and vice versa.  Bound to a button down event.
+If the pointer is dragged, move the selection.
 .TP
 .B unselect\-all ()
 Clear the selection.

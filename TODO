@@ -245,10 +245,6 @@ Volunteers for these and other projects are welcome!
      source window.  I believe that "ddd" should work this way.  Is there a
      way to get this behavior, or is it simply not designed for this?
 
-109. N. Dan Zou <zou@hooked.net> wrote: there's no way to toggle the 
-     selection state of a box without disturbing the other selected
-     boxes.  [Place this on Button2 or Shift+Button1?  -AZ]
-
 110. N. Dan Zou <zou@hooked.net> suggests a way to display the class
      structure of an existing program graphically.  [Should be
      implemented as follows: use the `ptype' output to display types

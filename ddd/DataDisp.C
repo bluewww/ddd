@@ -99,6 +99,10 @@ char DataDisp_rcsid[] =
 XtActionsRec DataDisp::actions [] = {
     {"graph-select",         DataDisp::graph_selectAct},
     {"graph-select-or-move", DataDisp::graph_select_or_moveAct},
+    {"graph-extend",         DataDisp::graph_extendAct},
+    {"graph-extend-or-move", DataDisp::graph_extend_or_moveAct},
+    {"graph-toggle",         DataDisp::graph_toggleAct},
+    {"graph-toggle-or-move", DataDisp::graph_toggle_or_moveAct},
     {"graph-popup-menu",     DataDisp::graph_popupAct},
     {"graph-dereference",    DataDisp::graph_dereferenceAct},
     {"graph-detail",         DataDisp::graph_detailAct},
@@ -880,34 +884,63 @@ void DataDisp::graph_dependentAct (Widget w, XEvent*, String*, Cardinal*)
 
 Time DataDisp::last_select_time = 0;
 
-// The GraphEdit `select' action with some data display magic prepended
-void DataDisp::graph_selectAct (Widget w,
-				XEvent* event,
-				String* args,
-				Cardinal* num_args)
+// The GraphEdit actions with some data display magic prepended
+void DataDisp::call_selection_proc(Widget w,
+				   String name,
+				   XEvent* event,
+				   String* args,
+				   Cardinal num_args,
+				   SelectionMode mode)
 {
     // Let multi-clicks pass right through
     Time t = time(event);
     if (Time(t - last_select_time) > Time(XtGetMultiClickTime(XtDisplay(w))))
-	set_args(point(event));
+	set_args(point(event), mode);
     last_select_time = t;
 
-    XtCallActionProc(graph_edit, "select", event, args, *num_args);
+    XtCallActionProc(w, name, event, args, num_args);
 }
 
-// The GraphEdit `select-or-move' action with some data display magic prepended
-void DataDisp::graph_select_or_moveAct (Widget w,
-					XEvent* event,
-					String* args,
+void DataDisp::graph_selectAct (Widget, XEvent* event, String* args, 
+				Cardinal* num_args)
+{
+    call_selection_proc(graph_edit, "select", event, args, *num_args, 
+			SetSelection);
+}
+
+void DataDisp::graph_select_or_moveAct (Widget, XEvent* event, String* args, 
 					Cardinal* num_args)
 {
-    // Let multi-clicks pass right through
-    Time t = time(event);
-    if (Time(t - last_select_time) > Time(XtGetMultiClickTime(XtDisplay(w))))
-	set_args(point(event));
-    last_select_time = t;
+    call_selection_proc(graph_edit, "select-or-move", event, args, *num_args,
+			SetSelection);
+}
 
-    XtCallActionProc(graph_edit, "select-or-move", event, args, *num_args);
+void DataDisp::graph_extendAct (Widget, XEvent* event, String* args, 
+				Cardinal* num_args)
+{
+    call_selection_proc(graph_edit, "extend", event, args, *num_args,
+			ExtendSelection);
+}
+
+void DataDisp::graph_extend_or_moveAct (Widget, XEvent* event, String* args, 
+					Cardinal* num_args)
+{
+    call_selection_proc(graph_edit, "extend-or-move", event, args, *num_args,
+			ExtendSelection);
+}
+
+void DataDisp::graph_toggleAct (Widget, XEvent* event, String* args, 
+				Cardinal* num_args)
+{
+    call_selection_proc(graph_edit, "toggle", event, args, *num_args,
+			ToggleSelection);
+}
+
+void DataDisp::graph_toggle_or_moveAct (Widget, XEvent* event, String* args, 
+					Cardinal* num_args)
+{
+    call_selection_proc(graph_edit, "toggle-or-move", event, args, *num_args,
+			ToggleSelection);
 }
 
 void DataDisp::graph_popupAct (Widget, XEvent* event, String*, Cardinal*)
@@ -922,7 +955,7 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String*, Cardinal*)
     }
     *p = point(event);
 
-    set_args(*p);
+    set_args(*p, SetSelection);
 
     Widget popup = 0;
     if (selected_node() == 0)
@@ -934,7 +967,7 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String*, Cardinal*)
     XtManageChild(popup);
 }
 
-void DataDisp::set_args(BoxPoint p)
+void DataDisp::set_args(BoxPoint p, SelectionMode mode)
 {
     DispNode*  disp_node   = 0;
     DispValue* disp_value  = 0;
@@ -955,30 +988,33 @@ void DataDisp::set_args(BoxPoint p)
 	graphEditRedrawNode(graph_edit, disp_bgn);
     }
 
-    // Clear other highlights and selections
-    MapRef ref;
-    for (DispNode* dn = disp_graph->first(ref); 
-	 dn != 0;
-	 dn = disp_graph->next(ref))
+    if (mode == SetSelection)
     {
-	if (dn != disp_node)
+	// Clear other highlights and selections
+	MapRef ref;
+	for (DispNode* dn = disp_graph->first(ref); 
+	     dn != 0;
+	     dn = disp_graph->next(ref))
 	{
-	    BoxGraphNode *node = dn->nodeptr();
-	    bool redraw = false;
-
-	    if (!was_selected)
+	    if (dn != disp_node)
 	    {
+		BoxGraphNode *node = dn->nodeptr();
+		bool redraw = false;
+
+		if (!was_selected)
+		{
+		    if (!redraw)
+			redraw = node->selected();
+		    dn->nodeptr()->selected() = false;
+		}
+
 		if (!redraw)
-		    redraw = node->selected();
-		dn->nodeptr()->selected() = false;
+		    redraw = (node->highlight() != 0);
+		dn->select(0);
+
+		if (redraw)
+		    graphEditRedrawNode(graph_edit, node);
 	    }
-
-	    if (!redraw)
-		redraw = (node->highlight() != 0);
-	    dn->select(0);
-
-	    if (redraw)
-		graphEditRedrawNode(graph_edit, node);
 	}
     }
 

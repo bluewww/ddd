@@ -67,6 +67,7 @@
 #include "ArgField.h"
 #include "GDBAgent.h"
 #include "DispGraph.h"
+#include "GraphEdit.h"
 #include "DispBox.h"
 #include "DispBox.h"
 #include "StringA.h"
@@ -141,7 +142,8 @@ class DataDisp {
     static void graph_unselectHP (void*, void*, void*);
     static void gdb_ready_for_questionHP (void*, void*, void*);
 
-    static void set_args(BoxPoint p = BoxPoint(-1, -1));
+    static void set_args(BoxPoint p = BoxPoint(-1, -1),
+			 SelectionMode mode = SetSelection);
     static void refresh_args();
     static void fill_labels();
 
@@ -165,11 +167,18 @@ private:
     static XtActionsRec actions [];
     static void graph_selectAct         (Widget, XEvent*, String*, Cardinal*);
     static void graph_select_or_moveAct (Widget, XEvent*, String*, Cardinal*);
+    static void graph_extendAct         (Widget, XEvent*, String*, Cardinal*);
+    static void graph_extend_or_moveAct (Widget, XEvent*, String*, Cardinal*);
+    static void graph_toggleAct         (Widget, XEvent*, String*, Cardinal*);
+    static void graph_toggle_or_moveAct (Widget, XEvent*, String*, Cardinal*);
     static void graph_popupAct          (Widget, XEvent*, String*, Cardinal*);
     static void graph_dereferenceAct    (Widget, XEvent*, String*, Cardinal*);
     static void graph_detailAct         (Widget, XEvent*, String*, Cardinal*);
     static void graph_rotateAct         (Widget, XEvent*, String*, Cardinal*);
     static void graph_dependentAct      (Widget, XEvent*, String*, Cardinal*);
+
+    static void call_selection_proc(Widget, String, XEvent*, String*, Cardinal,
+				    SelectionMode mode);
 
     //-----------------------------------------------------------------------
     // Menus

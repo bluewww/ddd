@@ -1329,6 +1329,7 @@ None<Btn3Down>:	source-popup-menu()
 ! This defines the popup menus in the graph window.
 Ddd*graph_edit.translations: #override \
 None<Btn1Down>:		graph-select-or-move()\n\
+None<Btn2Down>:		graph-toggle-or-move()\n\
 None<Btn3Down>:		graph-select() graph-popup-menu()\n
 
 
@@ -2477,22 +2478,20 @@ Ddd*graph_edit.helpString:	\
 showing the data displays of the debugged program.\n\
 \n\
 @bf Left mouse button:@rm\n\
-@tt \267 @sl Click @rm on a display @sl DISPLAY	 @rm to select @sl DISPLAY @rm.\n\
+@tt \267 @sl Click @rm on a display to select it.\n\
 @tt \267 @sl Double-click @rm on a display to select all connected displays.\n\
 @tt \267 @sl Double-click @rm on the background to select all displays.\n\
 @tt \267 @sl Drag @rm on a display to move selected displays.\n\
-@tt \267 @sl Drag @rm on the background to select framed displays.\n\
+@tt \267 @sl Drag @rm on the background to select several displays.\n\
 \n\
-@bf Shift + Left mouse button:@rm\n\
-@tt \267 @sl Click @rm on a display @sl DISPLAY	 @rm to add @sl DISPLAY	 @rm \
-to the selection.\n\
+@bf Middle mouse button (or Shift + Left mouse button):@rm\n\
+@tt \267 @sl Click @rm on a display to toggle its selection state.\n\
+@tt \267 @sl Double-click @rm on a display to toggle all connected displays.\n\
 @tt \267 @sl Drag @rm on a display to move selected displays.\n\
-@tt \267 @sl Drag @rm on the background to add framed displays\n\
-    to the selection.\n\
+@tt \267 @sl Drag @rm on the background to toggle several displays.\n\
 \n\
 @bf Right mouse button:@rm\n\
-@tt \267 @sl Click @rm on some display @sl DISPLAY @rm \
-    to modify @sl DISPLAY @rm via a menu.\n\
+@tt \267 @sl Click @rm on some display to modify it.\n\
 @tt \267 @sl Click @rm on the background to create new displays via a menu.
 
 Ddd*data_disp_shell.helpString:	\
@@ -3719,7 +3718,7 @@ Ddd*busy_display_dialog_popup.title: @DDD@: Debugger Busy
 Ddd*busy_dialog.messageString:		\
 @rm The debugger is busy!
 Ddd*busy_dialog*helpString:	\
-@rm The inferior debugger is busy on some commands.\n\
+@rm The inferior debugger (i.e. GDB, XDB, or DBX) is busy on some commands.\n\
 Please try again when the `@tt (gdb)@rm' or `@tt (dbx)@rm' \
 or `@tt >@rm' prompt appears.\n\
 \n\
@@ -3728,12 +3727,12 @@ You may also interrupt the current debugging command by selecting\n\
 
 Ddd*quit_dialog_popup.title: @DDD@: Debugger Still Busy
 Ddd*quit_dialog.messageString:	 \
-@rm The debugger is still busy.	 Exit anyway (and kill it)?
+@rm The debugger is still busy.  Exit anyway (and kill it)?
 Ddd*quit_dialog*okLabelString:	     Yes
 Ddd*quit_dialog*cancelLabelString:   No
 Ddd*quit_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*quit_dialog*helpString:	\
-@rm The inferior debugger is busy and does not react\n\
+@rm The inferior debugger (i.e. GDB, XDB, or DBX) is busy and does not react\n\
 to the ``quit'' command.\n\
 The debugged process is probably still running.\n\
 \n\
