@@ -861,7 +861,7 @@ DispValue *DispValue::update(DispValue *source,
 	// are merely a change in the view, not a change in the data.
     }
 
-    if (source->type() == type())
+    if (source->full_name() == full_name() && source->type() == type())
     {
 	switch (type())
 	{
@@ -904,7 +904,7 @@ DispValue *DispValue::update(DispValue *source,
 	}
     }
 
-    // Type or structure have changed -- use SOURCE instead of original
+    // Type, name or structure have changed -- use SOURCE instead of original
     DispValue *ret = source->link();
     ret->changed = was_changed = was_initialized = true;
 
