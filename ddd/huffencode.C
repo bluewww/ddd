@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // Huffman-encode standard input
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -31,6 +31,7 @@ char huffencode_rcsid[] =
 
 #include <limits.h>
 #include <iostream.h>
+#include <strstream.h>
 #include <iomanip.h>
 #include <stdlib.h>
 
@@ -234,21 +235,21 @@ static string encode(const string& text, HuffNode *tree)
 	}
     }
 
-    string bit_encoding;
+    ostrstream bit_encoding_os;
     int i;
     for (i = 0; i < int(text.length()); i++)
-	bit_encoding += codes[(unsigned char)text[i]];
+	bit_encoding_os << codes[(unsigned char)text[i]];
+    string bit_encoding(bit_encoding_os);
 
     // cout << "\n// " << bit_encoding << "\n";
 
-    string byte_encoding;
+    ostrstream byte_encoding;
     for (i = 0; i < int(bit_encoding.length()) - BITS_PER_CHAR; 
 	 i += BITS_PER_CHAR)
     {
-	byte_encoding +=
-	    bits_to_byte(bit_encoding.at(i, BITS_PER_CHAR));
+	byte_encoding << bits_to_byte(bit_encoding.at(i, BITS_PER_CHAR));
     }
-    byte_encoding += bits_to_byte(bit_encoding.from(i));
+    byte_encoding << bits_to_byte(bit_encoding.from(i));
 
     return byte_encoding;
 }
@@ -278,10 +279,13 @@ static void write_encoding(const string& byte_encoding)
 // Read the string S from standard input
 static void read_input(string& s)
 {
+    ostrstream os;
     char c;
 
     while (cin.get(c))
-	s += c;
+	os << c;
+
+    s = os;
 }
 
 // Main program.  Read a text from standard input, write huffman tree
