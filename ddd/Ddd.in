@@ -251,6 +251,9 @@ Ddd*sourceButtons:
 ! run:step:next:stepi:nexti:cont:finish:kill:\
 ! up:down:Back:Forward:Edit:interrupt^C
 
+! The data window buttons (none: no buttons)
+Ddd*dataButtons:
+
 ! The command tool buttons, as of DDD 2.0 and later.
 Ddd*toolButtons: \
 run:break^C:step:stepi:next:nexti:cont:finish:\
@@ -2438,21 +2441,21 @@ Ddd*arg_cmd_w.arg_cmd_area*breakAt.tipString:	\
 
 Ddd*arg_cmd_w.arg_cmd_area*clearAt.helpString:	\
 @bf Clear at ()@rm\n\
-Clear the breakpoint at the argument @bf ()@rm.
+Delete the breakpoint at the argument @bf ()@rm.
 Ddd*arg_cmd_w.arg_cmd_area*clearAt.tipString:	\
-@rm Clear breakpoint at ()
+@rm Delete breakpoint at ()
 
 Ddd*arg_cmd_w.arg_cmd_area*print.helpString:	\
 @bf Print ()@rm\n\
 Print the argument @bf () @rm in the debugger console.
 Ddd*arg_cmd_w.arg_cmd_area*print.tipString:	\
-@rm Print value of ()
+@rm Print () in the debugger console
 
 Ddd*arg_cmd_w.arg_cmd_area*display.helpString:	\
 @bf Display ()@rm\n\
 Display the argument @bf () @rm in the data display window.
 Ddd*arg_cmd_w.arg_cmd_area*display.tipString:	\
-@rm Display value of ()
+@rm Display () in the data window
 
 Ddd*arg_cmd_w.arg_cmd_area*findBackward.helpString:	\
 @bf Find@small<< @bf()@rm\n\
@@ -2624,29 +2627,45 @@ the corresponding command is sent to the inferior debugger.\n\
 The context sensitive help for the buttons\n\
 gives a short command description.\n
 
+Ddd*data_buttons.helpString:\
+@rm This is a @sl command area @rm.\n\
+\n\
+By clicking on one of the buttons,\n\
+the corresponding command is sent to the inferior debugger.\n\
+The context sensitive help for the buttons\n\
+gives a short command description.\n
+
 ! An empty help string means that the help text for this button
 ! is to be requested from GDB (via the GDB `help' command).
 Ddd*source_buttons*XmPushButton.helpString:
 Ddd*console_buttons*XmPushButton.helpString:
+Ddd*data_buttons*XmPushButton.helpString:
 Ddd*tool_buttons*XmPushButton.helpString:
 
 Ddd*source_buttons*XmPushButton.tipString:
 Ddd*console_buttons*XmPushButton.tipString:
+Ddd*data_buttons*XmPushButton.tipString:
 Ddd*tool_buttons*XmPushButton.tipString:
 
 ! Special spacing
 Ddd*source_buttons.spacing:	    0
 Ddd*console_buttons.spacing:	    0
+Ddd*data_buttons.spacing:	    0
 Ddd*source_buttons.packing:	    XmPACK_TIGHT
 Ddd*console_buttons.packing:	    XmPACK_TIGHT
+Ddd*data_buttons.packing:	    XmPACK_TIGHT
 Ddd*source_buttons.entryAlignment:  XmALIGNMENT_CENTER
 Ddd*console_buttons.entryAlignment: XmALIGNMENT_CENTER
+Ddd*data_buttons.entryAlignment:    XmALIGNMENT_CENTER
 Ddd*source_buttons*alignment:	    XmALIGNMENT_CENTER
 Ddd*console_buttons*alignment:	    XmALIGNMENT_CENTER
+Ddd*data_buttons*alignment:	    XmALIGNMENT_CENTER
 ! Ddd*source_buttons*marginTop:	      1
 ! Ddd*source_buttons*marginBottom:    1
 ! Ddd*console_buttons*marginTop:      1
 ! Ddd*console_buttons*marginBottom:   1
+! Ddd*data_buttons*marginTop:      1
+! Ddd*data_buttons*marginBottom:   1
 
 ! Some buttons have a special meaning; 
 ! so we must provide help on ourselves.
@@ -2662,13 +2681,13 @@ Ddd*?*Yes.helpString:	\
 @bf Yes\n\
 @rm Confirm the question of the inferior debugger.
 Ddd*?*Yes.tipString: \
-@rm Confirm question
+@rm Just say yes
 
 Ddd*?*No.helpString:	\
 @bf No\n\
 @rm Do @sl not @rm confirm the question of the inferior debugger.
 Ddd*?*No.tipString: \
-@rm Do @sl not @rm confirm question
+@rm Just say no
 
 Ddd*?*Complete.helpString:	\
 @bf Complete@rm\n\
@@ -2684,17 +2703,17 @@ Ddd*?*Clear.tipString: \
 
 Ddd*?*Prev.helpString:	\
 @bf Prev@rm\n\
-Show the previous debugging command \
+Get the previous debugging command \
 (Equivalent to @key Ctrl+P @rm or @key Up@rm).
 Ddd*?*Prev.tipString: \
-@rm Show previous command
+@rm Get previous command
 
 Ddd*?*Next.helpString:	\
 @bf Next@rm\n\
-Show the next debugging command \
+Get the next debugging command \
 (Equivalent to @key Ctrl+N @rm or @key Down@rm).
 Ddd*?*Next.tipString: \
-@rm Show next command
+@rm Get next command
 
 Ddd*?*Apply.helpString:	\
 @bf Apply@rm\n\

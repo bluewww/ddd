@@ -45,6 +45,7 @@ char buttons_rcsid[] =
 #include "source.h"
 #include "status.h"
 #include "string-fun.h"
+#include "disp-read.h"
 #include "verify.h"
 #include "GDBAgent.h"
 
@@ -96,6 +97,15 @@ static string gdbHelp(string command)
 	    command = "s";
 	else if (command == "quit")
 	    command = "q";
+    }
+
+    if (is_graph_cmd(command))
+    {
+	string cmd = command.after("graph ") + " dummy";
+	if (is_refresh_cmd(cmd))
+	    return "Refresh data window.";
+	else if (is_display_cmd(cmd))
+	    return "Display expression in the data window.";
     }
 
     string help = gdb_question("help " + command, 0, true);
