@@ -351,6 +351,7 @@ Volunteers for these and other projects are welcome!
 
 328*Finish display clustering:
     - Alias hints of clustered displays remain in place.
+    - Clusters should be persistent.
     - Document it all.
 
 329*Have a Display Editor shortcut from the data popup menu.
