@@ -1107,7 +1107,7 @@ CPPFLAGS="$ice_save_cppflags"
 fi)dnl
 dnl
 dnl
-dnl ICE_FIND_MOTIF: find OSF/Motif libraries and headers
+dnl ICE_FIND_MOTIF: find Motif libraries and headers
 dnl put Motif include directory in motif_includes
 dnl put Motif library directory in motif_libraries
 dnl and add appropriate flags to X_CFLAGS and X_LIBS
@@ -1133,7 +1133,7 @@ motif_includes="$withval")
 AC_ARG_WITH(motif-libraries,
 [  --with-motif-libraries=DIR   Motif libraries are in DIR],
 motif_libraries="$withval")
-AC_MSG_CHECKING(for OSF/Motif)
+AC_MSG_CHECKING(for Motif)
 #
 #
 # Search the include files.
@@ -1270,7 +1270,7 @@ AC_MSG_RESULT(
 ])dnl
 dnl
 dnl
-dnl ICE_FIND_ATHENA: find OSF/Athena libraries and headers
+dnl ICE_FIND_ATHENA: find Athena libraries and headers
 dnl put Athena include directory in athena_includes
 dnl put Athena library directory in athena_libraries
 dnl and add appropriate flags to X_CFLAGS and X_LIBS
