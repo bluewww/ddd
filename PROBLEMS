@@ -305,9 +305,9 @@ LessTif
     currently known:
 
     * Dialogs may enter an endless resize loop.  The dialog box tries
-     to close, but it gets stuck in a state where it is constantly
-     "rolling up" from the bottom, then redrawing itself at full size
-     and rolling up again.
+      to close, but it gets stuck in a state where it is constantly
+      "rolling up" from the bottom, then redrawing itself at full size
+      and rolling up again.
 
       Sending a SIGINT signal to the DDD process (i.e. Ctrl-C from the
       invoking shell) will make DDD resume.
