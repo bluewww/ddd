@@ -78,7 +78,7 @@ void srand(unsigned int seed);
 // Obscure Features
 //-----------------------------------------------------------------------------
 
-static void meltdown(Display *dpy);
+static void meltdown(Display *dpy, const WidgetArray& ws);
 
 static bool dungeon_collapsed = false;
 
@@ -107,7 +107,12 @@ static void DungeonCollapseCB(XtPointer client_data, XtIntervalId *)
 
     sleep(2);
 
-    meltdown(XtDisplay(w));
+    WidgetArray ws;
+    for (int i = Delay::shells().size() - 1; i >= 0; i--)
+	ws += Delay::shells()[i];
+    ws += Widget(-1);
+
+    meltdown(XtDisplay(w), ws);
 
     dungeon_collapsed = true;
 }
@@ -162,7 +167,7 @@ static void WumpusCB(XtPointer client_data, XtIntervalId *)
     XtManageChild(wumpus_dialog);
 }
 
-static void NothingHappensCB(XtPointer client_data, XtIntervalId *)
+static void NothingHappensCB(XtPointer, XtIntervalId *)
 {
     post_gdb_message("Nothing happens.");
 }
@@ -200,31 +205,32 @@ void handle_obscure_commands(string& cmd, Widget origin)
 	&& CMP(1, 0, 1) && CMP(3, 0, 2)	&& CMP(4, 3, -1) && CMP(2, 1, 1)
 	&& cmd[0] + cmd[1] + cmd[2] + cmd[3] + cmd[4] + '<' == 666)
     {
-	Widget w = origin ? origin : command_shell;
+	init_random_seed();
+	XtTimerCallbackProc callback;
 
-	if (dungeon_collapsed)
+	switch (dungeon_collapsed ? 0 : rnd(10))
 	{
-	    XtAppAddTimeOut(XtWidgetToApplicationContext(w), 100,
-			    NothingHappensCB, XtPointer(w));
-	}
-	else
-	{
-	    init_random_seed();
-	    switch (rnd(2))
-	    {
-	    case 0:
-		XtAppAddTimeOut(XtWidgetToApplicationContext(w), 1000,
-				AdventureCB, XtPointer(w));
-		break;
-
-	    case 1:
-		XtAppAddTimeOut(XtWidgetToApplicationContext(w), 1000,
-				WumpusCB, XtPointer(w));
-		break;
-	    }
+	case 0:
+	    callback = NothingHappensCB;
+	    break;
+	case 1:
+	    callback = AdventureCB;
+	    break;
+	case 2:
+	    callback = WumpusCB;
+	    break;
+	default:
+	    callback = 0;
+	    break;
 	}
 
-	// cmd = " ";		// Ignore this command
+	if (callback)
+	{
+	    Widget w = origin ? origin : command_shell;
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(w), 500,
+			    callback, XtPointer(w));
+	    cmd = gdb->echo_command("");
+	}
     }
 }
 
@@ -266,111 +272,164 @@ void handle_obscure_commands(string& cmd, Widget origin)
 
 // Melt down screen
 
-const int MIN_SIZE = 10;
-const int MAX_SIZE = 100;
+const int MIN_SIZE = 5;		// 10 - original value for entire screen
+const int MAX_SIZE = 10;	// 20
 
-const int MIN_DIST = 10;
+const int MIN_DIST = 5;		// 10
 
-const int MIN_WIDTH = 30;
-const int WIDTH_ADD = 20;
+const int MIN_WIDTH = 15;	// 30
+const int WIDTH_ADD = 10;	// 20
 
-const int FINISHED = 50;
+const int FINISHED = 50;	// 50
 
-static void meltdown(Display *dpy)
+// Meltdown the windows of the widgets in WS.  A widget value of 0 is
+// ignored; a widget value of (Widget)-1 means to melt down the root
+// window.
+static void meltdown(Display *dpy, const WidgetArray& ws)
 {
     init_random_seed();
-    int screen = DefaultScreen(dpy);
+    int wi;
 
-    XSetWindowAttributes xswat;
-    xswat.override_redirect = True;
-    xswat.do_not_propagate_mask = KeyPressMask | KeyReleaseMask |
-	ButtonPressMask | ButtonReleaseMask;
+    Window *windows = new Window[ws.size()];
+    for (wi = 0; wi < ws.size(); wi++)
+	windows[wi] = 0;
 
-    unsigned long vmask;
-    vmask = CWOverrideRedirect | CWDontPropagate;
-    Window win = 
-	XCreateWindow(dpy, RootWindow(dpy, screen), 0, 0, 
-		      DisplayWidth(dpy, screen), DisplayHeight(dpy, screen),
-		      0, CopyFromParent, CopyFromParent, CopyFromParent,
-		      vmask, &xswat);
-    Cursor cursor = XCreateFontCursor(dpy, XC_top_left_arrow);
-    XDefineCursor(dpy, win, cursor);
-    XMapWindow(dpy, win);
+    for (wi = 0; wi < ws.size(); wi++)
+    {
+	int screen   = DefaultScreen(dpy);
+	Window src   = RootWindow(dpy, screen);
+	Widget w     = ws[wi];
 
-    XGCValues	gcvals;
-    gcvals.graphics_exposures = False;
+	if (w == 0)
+	    continue;
+	if (w != Widget(-1))
+	{
+	    if (!XtIsRealized(w))
+		continue;
 
-    // Copyplane gc wants to leave the data alone
-    gcvals.foreground = 1;
-    gcvals.background = 0;
-    GC copygc = XCreateGC(dpy, win, 
-			  GCForeground | GCBackground | GCGraphicsExposures,
-			  &gcvals);
-
-    gcvals.foreground = BlackPixel(dpy, screen);
-    GC fillgc = XCreateGC(dpy, win, GCForeground, &gcvals);
-
-
-    XSync(dpy, 0);
-    sleep(1);
-
-    short *heights = new short[DisplayWidth(dpy, screen)];
-    int i;
-    for (i = 0; i < DisplayWidth(dpy, screen); i++)
-	heights[i] = 0;
-
-    int	finished = 0;
-    for (;;) {
-	int width = rnd(MIN_WIDTH) + WIDTH_ADD;
-
-	// Give values near edges a better chance
-	int xloc = rnd(DisplayWidth(dpy, screen) + MIN_WIDTH) - MIN_WIDTH;
-
-	if ((xloc + width) > DisplayWidth(dpy, screen))
-	    xloc = DisplayWidth(dpy, screen) - width;
-	else if (xloc < 0)
-	    xloc = 0;
-
-	int yloc = DisplayHeight(dpy, screen);
-	for (i = xloc; i < (xloc + width); i++)	{
-	    yloc = min(yloc, heights[i]);
+	    screen = XScreenNumberOfScreen(XtScreen(w));
+	    src    = XtWindow(w);
 	}
-	if (yloc == DisplayHeight(dpy, screen))
+
+	XWindowAttributes attr;
+	if (XGetWindowAttributes(dpy, src, &attr) == 0
+	    || attr.map_state != IsViewable)
 	    continue;
 
-	int dist = rnd(yloc/10 + MIN_DIST);
-	int size = rnd(max(yloc + MIN_SIZE, MAX_SIZE));
-
-	XCopyArea(dpy, win, win, copygc, 
-		  xloc, yloc, 
-		  width, size,
-		  xloc, yloc + dist);
-	XFillRectangle(dpy, win, fillgc, 
-		       xloc, yloc, 
-		       width, dist);
-	yloc += dist;
-	for (i = xloc; i < (xloc + width); i++)	{
-	    if ((heights[i] < (DisplayHeight(dpy, screen) - MIN_SIZE))
-		&& (yloc >= (DisplayHeight(dpy, screen) - MIN_SIZE)))
-		finished++;
-
-	    heights[i] = max(heights[i], yloc);
+	if (w != Widget(-1))
+	{
+	    Position x, y;
+	    XtVaGetValues(w, XmNx, &x, XmNy, &y, NULL);
+	    attr.x = x;
+	    attr.y = y;
 	}
-	if (finished >= (DisplayWidth(dpy, screen) - FINISHED))	{
-	    XSync(dpy, 0);
-	    break;
+
+	XSetWindowAttributes xswat;
+	xswat.override_redirect = True;
+	xswat.do_not_propagate_mask = KeyPressMask | KeyReleaseMask |
+	    ButtonPressMask | ButtonReleaseMask;
+
+	unsigned long vmask;
+	vmask = CWOverrideRedirect | CWDontPropagate;
+
+	Window& win = windows[wi];
+	win = XCreateWindow(dpy, RootWindow(dpy, screen), attr.x, attr.y,
+			    attr.width + attr.border_width,
+			    attr.height + attr.border_width,
+			    0, CopyFromParent, CopyFromParent, CopyFromParent,
+			    vmask, &xswat);
+
+	XGCValues gcvals;
+	gcvals.graphics_exposures = False;
+
+	// Copyplane gc wants to leave the data alone
+	gcvals.foreground = 1;
+	gcvals.background = 0;
+	GC copygc = 
+	    XCreateGC(dpy, win, 
+		      GCForeground | GCBackground | GCGraphicsExposures,
+		      &gcvals);
+
+	gcvals.foreground = BlackPixel(dpy, screen);
+	GC fillgc = XCreateGC(dpy, win, GCForeground, &gcvals);
+
+	Cursor cursor = XCreateFontCursor(dpy, XC_top_left_arrow);
+	XDefineCursor(dpy, win, cursor);
+	XMapWindow(dpy, win);
+
+	// XSync(dpy, 0);
+
+	short *heights = new short[attr.width];
+	int i;
+	for (i = 0; i < attr.width; i++)
+	    heights[i] = 0;
+
+	int finished = 0;
+	for (;;) {
+	    int width = rnd(MIN_WIDTH) + WIDTH_ADD;
+
+	    // Give values near edges a better chance
+	    int xloc = rnd(attr.width + MIN_WIDTH) - MIN_WIDTH;
+
+	    if ((xloc + width) > attr.width)
+		xloc = attr.width - width;
+	    else if (xloc < 0)
+		xloc = 0;
+
+	    int yloc = attr.height;
+	    for (i = xloc; i < (xloc + width); i++)	{
+		yloc = min(yloc, heights[i]);
+	    }
+	    if (yloc == attr.height)
+		continue;
+
+	    int dist = rnd(yloc/10 + MIN_DIST);
+	    int size = rnd(max(yloc + MIN_SIZE, MAX_SIZE));
+
+	    XCopyArea(dpy, win, win, copygc, 
+		      xloc, yloc, 
+		      width, size,
+		      xloc, yloc + dist);
+	    XFillRectangle(dpy, win, fillgc, 
+			   xloc, yloc, 
+			   width, dist);
+
+	    yloc += dist;
+	    for (i = xloc; i < (xloc + width); i++)	{
+		if ((heights[i] < (attr.height - MIN_SIZE))
+		    && (yloc >= (attr.height - MIN_SIZE)))
+		    finished++;
+
+		heights[i] = max(heights[i], yloc);
+	    }
+	    if (finished >= (attr.width - FINISHED))	{
+		XSync(dpy, 0);
+		break;
+	    }
 	}
+
+	delete[] heights;
+	XFreeGC(dpy, copygc);
+	XFreeGC(dpy, fillgc);
+	XFreeCursor(dpy, cursor);
+
+	// sleep(1);
     }
 
     sleep(5);
 
     // Cleanup
-    delete[] heights;
-    XFreeGC(dpy, copygc);
-    XFreeGC(dpy, fillgc);
-    XFreeCursor(dpy, cursor);
-    XUnmapWindow(dpy, win);
-    XDestroyWindow(dpy, win);
+    for (wi = ws.size() - 1; wi >= 0; wi--)
+    {
+	Window win = windows[wi];
+	if (win != 0)
+	{
+	    XUnmapWindow(dpy, win);
+	    XDestroyWindow(dpy, win);
+	}
+    }
+
+    delete[] windows;
 
     return;
 }
