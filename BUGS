@@ -233,9 +233,27 @@ Volunteers for fixing these and other bugs are welcome!
 
 107. Jonathan Edwards <edwards@blight.IntraNet.com> says that DDD/DBX
      hangs up on his powerpc-ibm-aix4.2.0.0 box after a few `step's.
-     Besides that, the source window does not respond to movement in
-     the backtrace window.
-     [I could not reproduce this bug.  Does this also happen on 
-      other configurations?  -AZ]
+     [I could not reproduce this bug on a rs6000-ibm-aix4.1.4.0.
+      Does this also happen on other configurations?  -AZ]
 
-108. (Insert your bug here)
+108. Satish Chandra <am939@gobhp1.fs.cummins.com> says that on his
+     alpha-dec-osf3.2, sometimes ddd/gdb seems to hang for no
+     apprarent reason and needs to be killed.
+
+109. Satish Chandra <am939@gobhp1.fs.cummins.com> says
+     (alpha-dec-osf3.2, make check): After setting up several
+     breakpoints, I clicked on Run.  The debugger stopped at the first
+     breakpoint; however the arrow didn't show up.  Upon continuation,
+     the arrow showed up.  Minor cosmetic bug.
+
+110. Richard Dermer <rdermer@Adobe.COM> states:
+     I tried out ddd 2.0 beta 3 on sparc solaris 2.5 and I can't get
+     any displays to appear in the data window.  No matter which
+     mechanism I choose to create a display the data window always
+     remains empty and the 'edit displays' dialog says 'no displays'.
+     I don't have this problem with beta2.
+
+111. On AIX with DBX, the backtrace window does not reflect the
+     current frame when using `up' or `down'.
+
+112. (Insert your bug here)
