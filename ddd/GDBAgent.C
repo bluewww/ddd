@@ -82,8 +82,9 @@ DebuggerType debugger_type(const string& type)
 // Constructor
 GDBAgent::GDBAgent (XtAppContext app_context,
 		    const string& gdb_call,
-		    DebuggerType tp)
-    : TTYAgent (app_context, gdb_call),
+		    DebuggerType tp,
+		    unsigned int nTypes)
+    : TTYAgent (app_context, gdb_call, nTypes),
       state(BusyOnInitialCmds),
       _type(tp),
       _user_data(0),
@@ -254,8 +255,9 @@ void GDBAgent::do_start (OAProc  on_answer,
     _on_answer_completion = on_answer_completion;
     _user_data = user_data;
     TTYAgent::start();
-    busy_handlers.call(ReadyForQuestion, 0, (void*)false);
-    busy_handlers.call(ReadyForCmd, 0, (void*)false);
+    busy_handlers.call(ReadyForQuestion, 0, (void *)false);
+    busy_handlers.call(ReadyForCmd, 0, (void *)false);
+    callHandlers(LanguageChanged, (void *)this);
 }
 
 // ***************************************************************************
@@ -1115,21 +1117,50 @@ string GDBAgent::whatis_command(string text) const
 }
 
 // Dereference an expression.
-string GDBAgent::dereferenced_expr(string text) const
+string GDBAgent::dereferenced_expr(string expr) const
 {
     switch (program_language())
     {
+    case LANGUAGE_FORTRAN:	// FIXME
     case LANGUAGE_C:
-	return "*(" + text + ")";
-
-    case LANGUAGE_FORTRAN:
-	return "*(" + text + ")"; // FIXME
+	if (expr.matches(rxidentifier)
+	    || expr.contains("(", 0) && expr.contains(")", -1))
+	    return "*" + expr;
+	else if (expr == "")
+	    return "*";
+	else
+	    return "*(" + expr + ")";
 
     case LANGUAGE_PASCAL:
-	return text + "^";
+	return expr + "^";
 
     case LANGUAGE_OTHER:
-	return "";			// All other languages
+	return "";		// All other languages
+    }
+
+    return "";			// All other languages
+}
+
+// Give the address of an expression.
+string GDBAgent::address_expr(string expr) const
+{
+    switch (program_language())
+    {
+    case LANGUAGE_FORTRAN:	// FIXME
+    case LANGUAGE_C:
+	if (expr.matches(rxidentifier)
+	    || expr.contains("(", 0) && expr.contains(")", -1))
+	    return "&" + expr;
+	else if (expr == "")
+	    return "&";
+	else
+	    return "&(" + expr + ")";
+
+    case LANGUAGE_PASCAL:
+	return "ADR(" + expr + ")"; // Modula-2 address operator
+
+    case LANGUAGE_OTHER:
+	return "";		// All other languages
     }
 
     return "";			// All other languages
@@ -1173,6 +1204,34 @@ string GDBAgent::assign_command(string var, string expr) const
     return cmd + " " + expr;
 }
 
+// Return disassemble command
+string GDBAgent::disassemble_command(string pc) const
+{
+    // In C, hexadecimal integers are specified by a leading "0x".
+    // In Modula-2, hexadecimal integers are specified by a trailing "H".
+
+    pc.downcase();
+    if (pc.contains("0", 0))
+	pc = pc.after("0");
+    if (pc.contains("x", 0))
+	pc = pc.after("x");
+    if (pc.contains("h", -1))
+	pc = pc.before(int(pc.length()) - 1);
+
+    switch (program_language())
+    {
+    case LANGUAGE_C:
+    case LANGUAGE_FORTRAN:
+    case LANGUAGE_OTHER:
+	return "disassemble 0x" + pc;
+
+    case LANGUAGE_PASCAL:
+	return "disassemble 0" + upcase(pc) + "H";
+    }
+
+    return "";			// All other languages
+}
+
 
 // ***************************************************************************
 ProgramLanguage GDBAgent::program_language(string text)
@@ -1193,8 +1252,19 @@ ProgramLanguage GDBAgent::program_language(string text)
 	{
 	    program_language(LANGUAGE_FORTRAN);
 	}
-	else   
+	else if (text.contains("c"))
+	{
 	    program_language(LANGUAGE_C);
+	}
+	else if (text.contains("auto"))
+	{
+	    // Do nothing -- keep old setting
+	}
+	else
+	{
+	    // Default setting
+	    program_language(LANGUAGE_C);
+	}
     }
 
     return program_language();

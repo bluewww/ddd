@@ -315,6 +315,10 @@ public:
     static bool have_user_display(const string& name);
     static void new_user_display(const string& name);
     static void delete_user_display(const string& name);
+
+    // Callbacks for language changes
+    static void language_changedHP(Agent *source, void *client_data, 
+				   void *call_data);
 };
 
 #endif // _DDD_DataDisp_h

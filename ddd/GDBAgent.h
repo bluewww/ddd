@@ -106,11 +106,14 @@ string build_gdb_call(DebuggerType debugger_type,
 		      int argc, char *argv[],
 		      string myArguments = "");
 
-// Handlers - called whenever GDB state changes
-static const unsigned ReadyForQuestion = 0;
-static const unsigned ReadyForCmd      = ReadyForQuestion + 1;
+// Busy handlers - called whenever GDB state changes
+const unsigned ReadyForQuestion = 0;
+const unsigned ReadyForCmd      = ReadyForQuestion + 1;
+const unsigned BusyNTypes       = ReadyForCmd + 1;
 
-static const unsigned BusyNTypes       = ReadyForCmd + 1;
+// Other handlers
+const unsigned LanguageChanged  = TTYAgent_NTypes;
+const unsigned GDBAgent_NTypes  = LanguageChanged + 1;
 
 
 //-----------------------------------------------------------------------------
@@ -160,7 +163,8 @@ public:
     // Constructor
     GDBAgent (XtAppContext app_context,
 	      const string& gdb_call,
-	      DebuggerType type);
+	      DebuggerType type,
+	      unsigned nTypes = GDBAgent_NTypes);
 
     // Duplicator
     GDBAgent (const GDBAgent& gdb);
@@ -224,15 +228,13 @@ public:
     bool isBusyOnQuestion()   const { return state == BusyOnQuestion
 					  || state == BusyOnQuArray; }
 
-    // Handlers
+    // Busy handlers
     void addBusyHandler (unsigned    type,
 			 HandlerProc proc,
 			 void*       client_data = 0);
-
     void removeBusyHandler (unsigned    type,
 			    HandlerProc proc,
 			    void        *client_data = 0);
-
     void callBusyHandlers ();
     string default_prompt() const;
 
@@ -298,7 +300,12 @@ public:
     ProgramLanguage program_language() const   { return _program_language; }
     ProgramLanguage program_language(ProgramLanguage val) 
     {
-	return _program_language = val;
+	if (_program_language != val)
+	{
+	    _program_language = val;
+	    callHandlers(LanguageChanged, (void *)this);
+	}
+	return program_language();
     }
     ProgramLanguage program_language(string text);
 
@@ -319,10 +326,12 @@ public:
     string pwd_command() const;	                    // GDB: "pwd "
     string frame_command(string depth = "") const;  // GDB: "frame DEPTH"
     string echo_command(string text) const;         // GDB: "echo TEXT"
-    string whatis_command(string text) const;       // GDB: "whatis TEXT"
+    string whatis_command(string expr) const;       // GDB: "whatis EXPR"
     string dereferenced_expr(string expr) const;    // GDB: "*EXPR"
+    string address_expr(string expr) const;         // GDB: "&EXPR"
     string info_locals_command() const;	            // GDB: "info locals"
     string info_args_command() const;	            // GDB: "info args"
+    string disassemble_command(string pc) const;    // GDB: "disassemble PC"
 
     // Usually "set variable VAR = EXPR"
     string assign_command(string var, string expr) const;

@@ -2949,8 +2949,33 @@ void DataDisp::delete_user_display(const string& name)
 
 
 //----------------------------------------------------------------------------
+// Language changed - re-label buttons
+//----------------------------------------------------------------------------
+
+void DataDisp::language_changedHP(Agent *, void *, void *call_data)
+{
+    GDBAgent *gdb = (GDBAgent *)call_data;
+
+    MString dereference_label("Display " + gdb->dereferenced_expr(""));
+    XtVaSetValues(node_popup[ValueItms::Dereference].widget,
+		  XmNlabelString, dereference_label.xmstring(),
+		  NULL);
+
+    XtVaSetValues(display_area[DisplayItms::Dereference].widget,
+		  XmNlabelString, dereference_label.xmstring(),
+		  NULL);
+
+    MString dereference_arg_label("Display " + gdb->dereferenced_expr("()"));
+    XtVaSetValues(graph_cmd_area[ValueItms::Dereference].widget,
+		  XmNlabelString, dereference_arg_label.xmstring(),
+		  NULL);
+}
+
+
+//----------------------------------------------------------------------------
 // Constructor
 //----------------------------------------------------------------------------
+
 DataDisp::DataDisp (XtAppContext app_context,
 		    Widget parent,
 		    String vsl_path,

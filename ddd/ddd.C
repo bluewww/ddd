@@ -1621,6 +1621,7 @@ int main(int argc, char *argv[])
     gdb->addBusyHandler(ReadyForCmd,      gdb_ready_for_cmdHP);
     gdb->addHandler    (InputEOF,         gdb_eofHP);
     gdb->addHandler    (ErrorEOF,         gdb_eofHP);
+    gdb->addHandler    (LanguageChanged,  DataDisp::language_changedHP);
     DataDisp::set_handlers();
 
     source_arg->addHandler (Changed, source_argHP);

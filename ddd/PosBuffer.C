@@ -91,6 +91,10 @@ void PosBuffer::filter (string& answer)
 	index = answer.index("Current language: ");
 	if (index == 0 || index > 0 && answer[index - 1] == '\n')
 	    gdb->program_language(answer);
+
+	index = answer.index("The current source language is ");
+	if (index == 0 || index > 0 && answer[index - 1] == '\n')
+	    gdb->program_language(answer);
     }
     else if (gdb->type() == DBX)
     {

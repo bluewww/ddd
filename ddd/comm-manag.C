@@ -1383,7 +1383,12 @@ void plusOQAC (string answers[],
 
     if (plus_cmd_data->refresh_setting) {
 	assert (qu_count < count);
-	process_show(plus_cmd_data->set_command, answers[qu_count++]);
+	string ans = answers[qu_count++];
+	process_show(plus_cmd_data->set_command, ans);
+
+	// Just in case we've changed the source language
+	PosBuffer pb;
+	pb.filter(ans);
     }
 
     assert (qu_count == count);
