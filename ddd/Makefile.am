@@ -933,7 +933,9 @@ check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT) check-now
 
 .PHONY: check-now
 check-now:
-	DDD_HOME=$(srcdir)/.. XUSERFILESEARCHPATH=%N XAPPLRESDIR=. \
+	MALLOC_CHECK_=2 \
+	DDD_HOME=$(srcdir)/.. \
+	XUSERFILESEARCHPATH=%N XAPPLRESDIR=. \
 	./$(ddd)$(EXEEXT) $(DDDFLAGS) cxxtest$(EXEEXT)
 
 .PHONY: debug
