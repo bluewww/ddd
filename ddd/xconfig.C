@@ -249,6 +249,7 @@ static String resolve_dirname(Display *display, String type, String name)
 
 static int check_xnlspath(Display *display, bool verbose)
 {
+#if XlibSpecificationRelease == 5
     if (verbose)
     {
 	(void) xlibdir(display, verbose);
@@ -345,6 +346,15 @@ static int check_xnlspath(Display *display, bool verbose)
     }
 
     return 1;
+#else // XlibSpecificationRelease != 5
+
+    (void) display;		// Use it
+    (void) verbose;
+
+    // In X11R4, there was no nls directory; X11R6 has a `locale' dir instead.
+    return 0;
+
+#endif // XlibSpecificationRelease != 5
 }
 
 
@@ -358,10 +368,8 @@ int check_x_configuration(Widget toplevel, bool verbose)
     // This is required for all Motif programs.
     ret = check_xkeysymdb(display, verbose) || ret;
 
-#if XtSpecificationRelease >= 5 || XlibSpecificationRelease >= 5
     // This is required for executables linked against X11R5 or later.
     ret = check_xnlspath(display, verbose) || ret;
-#endif
 
     if (verbose)
     {
