@@ -1800,6 +1800,29 @@ bool save_options(unsigned long flags)
 	os << string_app_value(XtNdisplayShortcuts, expr) << "\n";
     }
 
+    // Fonts
+    os << "\n! Fonts\n";
+    os << string_app_value(XtNdefaultFont,
+			   app_data.default_font) << "\n";
+    os << string_app_value(XtNvariableWidthFont, 
+			   app_data.variable_width_font) << "\n";
+    os << string_app_value(XtNfixedWidthFont,
+			   app_data.fixed_width_font) << "\n";
+    if (app_data.default_font_size == app_data.variable_width_font_size &&
+	app_data.default_font_size == app_data.fixed_width_font_size)
+    {
+	os << int_app_value(XtCFontSize, app_data.default_font_size) << "\n";
+    }
+    else
+    {
+	os << int_app_value(XtNdefaultFontSize, 
+			    app_data.default_font_size) << "\n";
+	os << int_app_value(XtNvariableWidthFontSize, 
+			    app_data.variable_width_font_size) << "\n";
+	os << int_app_value(XtNfixedWidthFontSize, 
+			    app_data.fixed_width_font_size) << "\n";
+    }
+
     // Widget sizes.
     os << "\n! Window sizes\n";
 
