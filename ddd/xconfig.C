@@ -232,6 +232,20 @@ static int check_xkeysymdb(Display *display, bool verbose)
     return 1;
 }
 
+static String resolve_dirname(Display *display, String type, String name)
+{
+    String ret = XtResolvePathname(display, type, name, "", 
+				   NULL, NULL, 0, NULL);
+
+    if (ret != 0)
+    {
+	static string dir;
+	dir = dirname(ret);
+	ret = (char *)dir.chars();
+    }
+
+    return ret;
+}
 
 static int check_xnlspath(Display *display, bool verbose)
 {
@@ -253,9 +267,22 @@ static int check_xnlspath(Display *display, bool verbose)
 
     if (xnlspath == 0)
 	xnlspath = getenv("XNLSPATH");
+
+#if __hpux__
+    // On HP-UX, checking for nonexistent files (notably,
+    // `nls/nls.dir') causes `illegal instruction' crashes.  The
+    // following call, however, works on HP-UX.  Reported by
+    // Tobias Mangold <mangold@hft.e-technik.tu-muenchen.de>.
     if (xnlspath == 0)
-	xnlspath = XtResolvePathname(display, "nls", "", "",
+	xnlspath = XtResolvePathname(display, "nls", "", "", 
 				     NULL, NULL, 0, NULL);
+#else
+    // Check for `nls/C' or `nls/nls.dir'
+    if (xnlspath == 0)
+	xnlspath = resolve_dirname(display, "nls", "C");
+    if (xnlspath == 0)
+	xnlspath = resolve_dirname(display, "nls", "nls.dir");
+#endif
 
     if (xnlspath)
     {
@@ -275,7 +302,7 @@ static int check_xnlspath(Display *display, bool verbose)
     if (xlibdir(display, verbose) != 0)
     {
 	string path = string(xlibdir(display, verbose)) + "/nls";
-	if (is_directory(path))
+	if (!is_directory(path))
 	{
 	    if (verbose)
 	    {
