@@ -579,6 +579,7 @@ void start_gdb()
 	break;
 
     case PERL:
+	// Perl starts immediately with the execution.
 	cmd_data->new_exec_pos = true;
 
 	cmds += gdb->pwd_command();
@@ -1348,12 +1349,6 @@ void send_gdb_command(string cmd, Widget origin,
 
 	if (!gdb->has_display_command())
 	    extra_data->refresh_data = true;
-    }
-
-    if (gdb->type() == PERL)
-    {
-	// All positions issued by Perl are execution positions
-	cmd_data->new_exec_pos = true;
     }
 
     if (!gdb->has_regs_command())
