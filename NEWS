@@ -41,7 +41,10 @@ Data exploration
   * Value changes in status displays are flagged more precisely.
   * Creating and updating data displays uses a common code base.
 
-- `Set ()' allows to set structs as a whole.
+- `Set ()' dialog improvements:
+  * You can now set structs as a whole.
+  * A drop down selection of previously set values is available.
+  * Invalid values cause the dialog to remain open.
 
 - Anonymous unions are no longer prefixed by `='.
 

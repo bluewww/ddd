@@ -186,3 +186,21 @@ string display_history_filter(const string& cmd)
 
     return "";
 }
+
+string set_history_filter(const string& cmd)
+{
+    string arg;
+
+    if (cmd.contains(" = "))
+	arg = cmd.after(" = ");
+    else if (cmd.contains(" := "))
+	arg = cmd.after(" := ");
+
+    if (arg != "")
+    {
+	strip_space(arg);
+	return arg;
+    }
+
+    return "";
+}

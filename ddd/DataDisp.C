@@ -4592,6 +4592,29 @@ void DataDisp::EditDisplaysCB(Widget, XtPointer, XtPointer)
 // Value Editor
 //----------------------------------------------------------------------------
 
+struct SetInfo {
+    string name;		// The variable to be set
+    Widget text;		// The widget containing the value
+    Widget dialog;		// The prompt dialog used
+    bool running;		// True if a command has been submitted
+};
+
+void DataDisp::DeleteSetInfoCB(Widget, XtPointer client_data, XtPointer)
+{
+    SetInfo *info = (SetInfo *)client_data;
+    info->dialog = 0;
+    info->text   = 0;
+
+    if (info->running)
+    {
+	// The command is still running - don't delete info now
+    }
+    else
+    {
+	delete info;
+    }
+}
+
 void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 {
     if (!gdb->has_assign_command())
@@ -4655,51 +4678,110 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 
     strip_space(value);
 
-    MString prompt = bf("Set value of ") + tt(name);
+    SetInfo *info = new SetInfo;
+    info->name = name;
+    info->running = false;
 
     Arg args[10];
     int arg = 0;
 
     XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
-    XtSetArg(args[arg], XmNselectionLabelString, prompt.xmstring()); arg++;
-    Widget set_dialog = 
+    XtSetArg(args[arg], XmNautoUnmanage,   False);     arg++;
+    info->dialog = 
 	verify(XmCreatePromptDialog(find_shell(w), "set_dialog", args, arg));
 
-    Delay::register_shell(set_dialog);
+    Delay::register_shell(info->dialog);
+
+    XtAddCallback(info->dialog, XmNdestroyCallback, 
+		  DeleteSetInfoCB, XtPointer(info));
 
     if (lesstif_version <= 79)
-	XtUnmanageChild(XmSelectionBoxGetChild(set_dialog,
+	XtUnmanageChild(XmSelectionBoxGetChild(info->dialog,
 					       XmDIALOG_APPLY_BUTTON));
+    XtUnmanageChild(XmSelectionBoxGetChild(info->dialog, 
+					   XmDIALOG_TEXT));
+    XtUnmanageChild(XmSelectionBoxGetChild(info->dialog, 
+					   XmDIALOG_SELECTION_LABEL));
 
-    String name_s = (String)XtNewString(name.chars());
+    arg = 0;
+    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+    XtSetArg(args[arg], XmNadjustMargin, False); arg++;
+    Widget box = verify(XmCreateRowColumn(info->dialog, "box", args, arg));
+    XtManageChild(box);
 
-    // FIXME: NAME_S is not freed when the dialog is canceled
-    // FIXME: The dialog is not destroyed after OK
+    arg = 0;
+    MString prompt = bf("Set value of ") + tt(name);
+    XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
+    XtSetArg(args[arg], XmNlabelString, prompt.xmstring());   arg++;
+    Widget label = verify(XmCreateLabel(box, "label", args, arg));
+    XtManageChild(label);
 
-    XtAddCallback(set_dialog, XmNokCallback,     setDCB, name_s);
-    XtAddCallback(set_dialog, XmNapplyCallback,  setDCB, name_s);
-    XtAddCallback(set_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
-    XtAddCallback(set_dialog, XmNcancelCallback, DestroyThisCB,
-		  (XtPointer)set_dialog);
+    arg = 0;
+    XtSetArg(args[arg], XmNvalue, value.chars()); arg++;
+    info->text = verify(CreateComboBox(box, "text", args, arg));
+    XtManageChild(info->text);
 
-    Widget apply = XmSelectionBoxGetChild(set_dialog, XmDIALOG_APPLY_BUTTON);
+    tie_combo_box_to_history(info->text, set_history_filter);
+
+    XtAddCallback(info->dialog, XmNokCallback,     setDCB, XtPointer(info));
+    XtAddCallback(info->dialog, XmNapplyCallback,  setDCB, XtPointer(info));
+    XtAddCallback(info->dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+
+    XtAddCallback(info->dialog, XmNcancelCallback,
+		  DestroyThisCB, XtPointer(info->dialog));
+
+    Widget apply = XmSelectionBoxGetChild(info->dialog, XmDIALOG_APPLY_BUTTON);
     XtManageChild(apply);
-    manage_and_raise(set_dialog);
-
-    Widget text = XmSelectionBoxGetChild(set_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text, value);
+    manage_and_raise(info->dialog);
 }
 
-void DataDisp::setDCB(Widget set_dialog, XtPointer client_data, XtPointer)
+void DataDisp::SetDone(const string& complete_answer, void *qu_data)
 {
-    String name_s = (String)client_data;
+    SetInfo *info = (SetInfo *)qu_data;
+    info->running = false;
 
-    Widget text = XmSelectionBoxGetChild(set_dialog, XmDIALOG_TEXT);
-    String value_s = XmTextGetString(text);
+    if (info->dialog == 0)
+    {
+	// Dialog has been destroyed while the command was in the queue
+	delete info;
+	return;
+    }
+
+    if (complete_answer == NO_GDB_ANSWER)
+	return;			// Command was canceled - keep dialog open
+    if (is_invalid(complete_answer))
+	return;			// Bad value - keep dialog open
+
+    // All done - pop down dialog
+    XtDestroyWidget(info->dialog);
+}
+
+void DataDisp::setDCB(Widget, XtPointer client_data, XtPointer call_data)
+{
+    SetInfo *info = (SetInfo *)client_data;
+
+    if (info->running)
+	return;			// Already running with a value
+
+    XmSelectionBoxCallbackStruct *cbs = 
+	(XmSelectionBoxCallbackStruct *)call_data;
+
+    String value_s = XmTextFieldGetString(info->text);
     string value(value_s);
     XtFree(value_s);
 
-    gdb_command(gdb->assign_command(name_s, value), last_origin);
+    Command c(gdb->assign_command(info->name, value), last_origin);
+    if (cbs->reason != XmCR_APPLY)
+    {
+	// We've pressed OK => destroy widget as soon as command completes.
+
+	info->running = true;
+	c.callback    = SetDone;
+	c.data        = XtPointer(info);
+    }
+    gdb_command(c);
 }
 
 

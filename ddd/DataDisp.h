@@ -125,7 +125,6 @@ class DataDisp {
     static void popup_new_argCB         (Widget, XtPointer, XtPointer);
     static void popup_newCB             (Widget, XtPointer, XtPointer);
     static void new_displayDCB          (Widget, XtPointer, XtPointer);
-    static void setDCB                  (Widget, XtPointer, XtPointer);
 
     //-----------------------------------------------------------------------
     // Callbacks of the display editor
@@ -204,6 +203,10 @@ class DataDisp {
 
     static void toggle_rotate(DispValue *dv, bool all = false);
 
+    // Setting values
+    static void setDCB (Widget, XtPointer, XtPointer);
+    static void DeleteSetInfoCB(Widget, XtPointer client_data, XtPointer);
+    static void SetDone(const string& answer, void *qu_data);
 
     //-----------------------------------------------------------------------
     // Actions

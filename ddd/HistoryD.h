@@ -40,6 +40,7 @@ string arg_history_filter(const string& cmd);
 string break_history_filter(const string& cmd);
 string watch_history_filter(const string& cmd);
 string display_history_filter(const string& cmd);
+string set_history_filter(const string& cmd);
 
 #endif // _DDD_HistoryDialog_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
