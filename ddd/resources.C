@@ -1287,6 +1287,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNbufferGDBOutput,
+	XtCBufferGDBOutput,
+	XtROnOff,
+	sizeof(OnOff),
+	XtOffsetOf(AppData, buffer_gdb_output),
+	XmRImmediate,
+	XtPointer(Auto)
+    },
+
+    {
 	XtNannotate,
 	XtCAnnotate,
 	XtRCardinal,

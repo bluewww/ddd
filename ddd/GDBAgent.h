@@ -204,6 +204,8 @@ private:
     bool _verbatim;		// True if in verbatim mode
     bool _recording;		// True if we are recording commands
     bool _detect_echos;		// True if echos are to be detected
+    bool _buffer_gdb_output;	// True if GDB output is to be buffered
+    bool _flush_next_output;	// True if next GDB output is to be flushed
 
     string last_prompt;		// Last prompt received
     string last_written;	// Last command sent
@@ -674,6 +676,15 @@ public:
     // True if checking for echos
     bool detect_echos() const        { return _detect_echos; }
     bool detect_echos(bool val)      { return _detect_echos = val; }
+
+    // True if buffering partial answers
+    bool buffer_gdb_output() const       { return _buffer_gdb_output; }
+    bool buffer_gdb_output(bool val)     { return _buffer_gdb_output = val; }
+
+    // True if next answer is to be flushed
+    bool flush_next_output() const       { return _flush_next_output; }
+    bool flush_next_output(bool val)     { return _flush_next_output = val; }
+
 
     // Several commands
 				                    // GDB command

@@ -48,7 +48,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2000-11-22
+@set DATE 2000-12-01
 
 
 @c Macros
@@ -3386,6 +3386,18 @@ via the pseudo-tty interface.  Most @UNIX{} systems except @GNU{}/Linux
 @samp{off}.  The value @samp{auto} (default) will always select the
 ``best'' choice (that is, the best choice known to the @DDD{}
 developers).
+@end defvr
+
+@defvr Resource bufferGDBOutput (class BufferGDBOutput)
+If this is @samp{on}, all output from the inferior debugger is buffered
+until a debugger prompt appears.  This makes it easier for @DDD{} to
+parse the output, but has the drawback that interaction with a running
+debuggee in the debugger console is not possible.  If @samp{off}, output
+is shown as soon as it arrives, enabling interaction, but making it
+harder for @DDD{} to parse the output.  If @samp{auto} (default), output
+is buffered if and only if the execution window is open, which redirects
+debuggee output and thus enables interaction.  @xref{Using the execution
+window}, for details.
 @end defvr
 
 @defvr Resource displayTimeout (class DisplayTimeout)
@@ -7149,6 +7161,12 @@ shown.@footnote{The execution window is not available in @JDB{}.}
 
 To activate the execution window, select @samp{Program @result{} Run in
 Execution Window}.
+
+Using the execution window has an important side effect: The output of
+your program no longer gets intermixed with the output of the inferior
+debugger.  This makes it far easier for @DDD{} to parse the debugger
+output correctly.  @xref{Debugger Communication}, for details on the
+@samp{bufferGDBOutput} resource.
 
 The execution window is opened automatically as soon as you start the
 debugged program.  While the execution window is active, @DDD{}
@@ -12377,6 +12395,10 @@ bin>ls -l gdb*
 @end example
 
 This way @DDD{} will start the correct version of @GDB{} automatically.
+
+It is also suggested that you use @DDD{}'s execution window to
+facilitate parsing of @GDB{} output.  @xref{Debugger Communication}, for
+details.
 
 Tornado reads the default TCL scripts first, then the ones in the users
 @file{.wind} directory.  The following procedures can be cut and pasted into

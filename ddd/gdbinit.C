@@ -145,6 +145,23 @@ GDBAgent *new_gdb(DebuggerType type,
 	break;
     }
 
+    // Set up Agent resources
+    switch (app_data.buffer_gdb_output)
+    {
+    case On:
+	gdb->buffer_gdb_output(true);
+	break;
+
+    case Off:
+	gdb->buffer_gdb_output(false);
+	break;
+
+    case Auto:
+	// Tie buffering to existence of separate window
+	gdb->buffer_gdb_output(app_data.separate_exec_window);
+	break;
+    }
+
     return gdb;
 }
 

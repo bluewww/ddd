@@ -225,6 +225,8 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _verbatim(false),
       _recording(false),
       _detect_echos(true),
+      _buffer_gdb_output(false),
+      _flush_next_output(false),
       last_prompt(""),
       last_written(""),
       echoed_characters(-1),
@@ -309,6 +311,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _verbatim(gdb.verbatim()),
       _recording(gdb.recording()),
       _detect_echos(gdb.detect_echos()),
+      _buffer_gdb_output(gdb.buffer_gdb_output()),
       last_prompt(""),
       last_written(""),
       echoed_characters(-1),
@@ -1347,6 +1350,9 @@ bool GDBAgent::recording(bool val)
 
 void GDBAgent::handle_input(string& answer)
 {
+    bool had_a_prompt;
+    int old_complete_answer_length = complete_answer.length();
+
     handle_echo(answer);
     handle_more(answer);
     handle_reply(answer);
@@ -1380,22 +1386,40 @@ void GDBAgent::handle_input(string& answer)
     case BusyOnCmd:
 	complete_answer += answer;
 
+	had_a_prompt = ends_with_prompt(complete_answer);
+
 	if (_on_answer != 0)
 	{
-	    if (ends_with_prompt(complete_answer))
+	    bool ready_to_process = 
+		!buffer_gdb_output() || 
+		had_a_prompt ||
+		answer.contains("(y or n)");
+
+	    if (ready_to_process && buffer_gdb_output())
+		answer = complete_answer;
+
+	    if (had_a_prompt)
 	    {
 		set_exception_state(false);
 		normalize_answer(answer);
 	    }
-	    else
+
+	    if (ready_to_process || flush_next_output())
 	    {
 		strip_control(answer);
 		strip_dbx_comments(answer);
+		_on_answer(answer, _user_data);
+
+	        if (flush_next_output())
+		{
+		    flush_next_output(false);
+		    complete_answer = 
+			complete_answer.before(old_complete_answer_length);
+		}
 	    }
-	    _on_answer(answer, _user_data);
 	}
 
-	if (ends_with_prompt(complete_answer))
+	if (had_a_prompt)
 	{
 	    exception_state = false;
 

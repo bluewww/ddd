@@ -85,7 +85,14 @@ static XtResource resources[] = {
 
 // Class record initialization
 
-PannedGraphEditClassRec pannedGraphEditClassRec = {
+// Use `struct _PannedGraphEditClassRec' here instead of 
+// the more appropriate `PannedGraphEditClassRec' due to a bug in GCC 2.96.
+// GCC 2.96 message is:
+// PannedGE.C: In function `void __static_initialization_and_destruction_0
+// (int, int)':
+// PannedGE.C:88: non-lvalue in unary `&'
+
+struct _PannedGraphEditClassRec pannedGraphEditClassRec = {
   {	 /* core fields */
     /* superclass               */  portholeWidgetClass,
     /* class_name               */  "PannedGraphEdit",

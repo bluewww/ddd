@@ -1528,6 +1528,13 @@ void send_gdb_command(string cmd, Widget origin,
 	    gdb_input_at_prompt = false;
     }
 
+    if (next_input_goes_to_debuggee)
+    {
+	// Even if GDB buffers all output, we still want to handle and see
+	// the `Starting program:' and `Continuing' messages.
+	gdb->flush_next_output(true);
+    }
+
     if (abort_undo)
 	undo_buffer.restore_current_state();
 

@@ -263,6 +263,8 @@
 #define XtCAnnotate              "Annotate"
 #define XtNblockTTYInput         "blockTTYInput"
 #define XtCBlockTTYInput         "BlockTTYInput"
+#define XtNbufferGDBOutput       "bufferGDBOutput"
+#define XtCBufferGDBOutput       "BufferGDBOutput"
 #define XtNdisplayGlyphs         "displayGlyphs"
 #define XtCDisplayGlyphs         "DisplayGlyphs"
 #define XtNmaxGlyphs             "maxGlyphs"
@@ -533,6 +535,7 @@ struct AppData {
     Cardinal  check_options;
     Boolean   tty_mode;
     OnOff     block_tty_input;
+    OnOff     buffer_gdb_output;
     Cardinal  annotate;
     Boolean   display_glyphs;
     Cardinal  max_glyphs;

@@ -2,6 +2,7 @@
 // Execution TTY
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -868,6 +869,16 @@ void startup_exec_tty()
     startup_exec_tty(dummy);
 }
 
+// Tie GDB buffering to existence of execution window
+static void set_buffer_gdb_output()
+{
+    if (app_data.buffer_gdb_output == Auto)
+    {
+        // Buffer GDB output iff we have a separate exec window
+	gdb->buffer_gdb_output(separate_tty_pid > 0);
+    }
+}
+
 // Reset TTY settings after a restart
 void reset_exec_tty()
 {
@@ -880,6 +891,8 @@ void reset_exec_tty()
     {
 	gdb_set_tty();
     }
+
+    set_buffer_gdb_output();
 }
 
 // Raise execution TTY with command COMMAND.
@@ -931,6 +944,8 @@ void startup_exec_tty(string& command, Widget origin)
 
     if (command != "")
 	gdb_run_command = command;
+
+    set_buffer_gdb_output();
 }
 
 // Set TTY title to TEXT
@@ -980,6 +995,8 @@ void kill_exec_tty(bool killed)
 
     separate_tty_pid    = 0;
     separate_tty_window = 0;
+
+    set_buffer_gdb_output();
 }
 
 // Verify if execution tty is still running
