@@ -3288,8 +3288,11 @@ DispNode *DataDisp::new_user_node(const string& name,
 
     open_data_window();
 
-    undo_buffer.add_display(name, answer);
-    undo_buffer.add_command(delete_display_cmd(name), true);
+    if (!is_cluster(dn))
+    {
+	undo_buffer.add_display(name, answer);
+	undo_buffer.add_command(delete_display_cmd(name), true);
+    }
 
     return dn;
 }
@@ -4243,11 +4246,16 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
 	DispNode *node = disp_graph->get(nr);
 	if (node == 0)
 	    continue;		// Already deleted or bad number
+	if (is_cluster(node))
+	    continue;		// Saving clusters is a bad idea
 
 	// Save current state
 	get_node_state(undo_commands, node, true);
     }
-    undo_buffer.add_command(string(undo_commands), true);
+
+    string u = string(undo_commands);
+    if (u != "")
+	undo_buffer.add_command(u, true);
 
     // Delete nodes
     for (i = 0; i < display_nrs.size(); i++)
@@ -4724,6 +4732,9 @@ void DataDisp::update_displays(const StringArray& displays,
     for (DispNode *dn = disp_graph->first(ref);
 	 dn != 0; dn = disp_graph->next(ref))
     {
+	if (is_cluster(dn))
+	    continue;
+
 	bool found = false;
 	for (int i = 0; !found && i < displays.size(); i++)
 	    found = (displays[i] == dn->name());
