@@ -7372,7 +7372,9 @@ static void setup_version_info()
 		    "Copyright \251 1999-2001 "
 		    "Universit\344t Passau, Germany.\n"
 		    "Copyright \251 2001 "
-		    "Universit\344t des Saarlandes, Germany.\n"));
+		    "Universit\344t des Saarlandes, Germany.\n"
+		    "Copyright \251 2003 "
+		    "Free Software Fundation, Inc.\n"));
 #endif
 }
 
