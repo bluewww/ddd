@@ -1067,11 +1067,49 @@ string GDBAgent::dereferenced_expr(string text) const
     case LANGUAGE_PASCAL:
 	return text + "^";
 
-    default:
-	break;
+    case LANGUAGE_OTHER:
+	return "";			// All other languages
     }
 
     return "";			// All other languages
+}
+
+// Return assignment command
+string GDBAgent::assign_command(string var, string expr) const
+{
+    string cmd;
+
+    switch (type())
+    {
+    case GDB:
+	cmd = "set variable";
+	break;
+
+    case DBX:
+	cmd = "assign";
+	break;
+
+    case XDB:
+	cmd = "pq";
+	break;
+    }
+
+    cmd += " " + var + " ";
+
+    switch (program_language())
+    {
+    case LANGUAGE_C:
+    case LANGUAGE_FORTRAN:
+    case LANGUAGE_OTHER:
+	cmd += "=";
+	break;
+
+    case LANGUAGE_PASCAL:
+	cmd += ":=";
+	break;
+    }
+
+    return cmd + " " + expr;
 }
 
 

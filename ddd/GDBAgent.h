@@ -278,7 +278,7 @@ public:
     bool has_err_redirection() const   { return _has_err_redirection; }
     bool has_err_redirection(bool val) { return _has_err_redirection = val; }
 
-    // True if debugger uses *X for dereferencing X
+    // Current program language
     ProgramLanguage program_language() const   { return _program_language; }
     ProgramLanguage program_language(ProgramLanguage val) 
     {
@@ -304,6 +304,9 @@ public:
     string echo_command(string text) const;         // Usually "echo TEXT"
     string whatis_command(string text) const;       // Usually "whatis TEXT"
     string dereferenced_expr(string expr) const;    // Usually "*EXPR"
+
+    // Usually "set variable VAR = EXPR"
+    string assign_command(string var, string expr) const;
 
 private:
     bool questions_waiting;

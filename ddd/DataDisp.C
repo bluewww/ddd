@@ -2610,27 +2610,8 @@ void DataDisp::setDCB(Widget set_dialog, XtPointer client_data, XtPointer)
     string value(value_s);
     XtFree(value_s);
 
-    string cmd;
-    switch (gdb->type())
-    {
-    case GDB:
-	cmd = "set variable " + disp_value->full_name() + " = " + value;
-	break;
-
-    case DBX:
-	cmd = "assign " + disp_value->full_name() + " = " + value;
-	break;
-
-    case XDB:
-	cmd = "pq " + disp_value->full_name() + " = " + value;
-	break;
-    }
-
-
-    gdb_command(cmd);
+    gdb_command(gdb->assign_command(disp_value->full_name(), value));
 }
-
-
 
 
 //----------------------------------------------------------------------------
