@@ -115,6 +115,17 @@ string current_line()
     return input;
 }
 
+// Helpers
+static void clear_isearch_after_motion(XtPointer, XtIntervalId *)
+{
+    clear_isearch(false);
+}
+
+static void set_isearch_motion_ok(XtPointer client_data, XtIntervalId *)
+{
+    isearch_motion_ok = bool(client_data);
+}
+
 // Show prompt according to current mode
 static void show_isearch()
 {
@@ -312,20 +323,18 @@ static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
 	    have_isearch_line = true;
 	}
 
-	// Redraw current line with appropriate prompt
+	// Redraw current line with appropriate prompt.
 	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
 			isearch_done, XtPointer(history));
 
-	// Don't quit upon the following call to gdbMotionCB()
-	isearch_motion_ok = (change->currInsert != change->newInsert);
+	// Upon the next call to gdbMotionCB(), clear ISearch mode,
+	// unless it immediately follows this one.
+	isearch_motion_ok = true;
+	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 10,
+			set_isearch_motion_ok, XtPointer(false));
     }
 
     return processed;
-}
-
-static void clear_isearch_after_motion(XtPointer, XtIntervalId *)
-{
-    clear_isearch(false);
 }
 
 
@@ -407,22 +416,26 @@ void get_focusAct (Widget w, XEvent*, String*, Cardinal*)
 
 void beginning_of_lineAct(Widget, XEvent*, String*, Cardinal*)
 {
+    clear_isearch();
     XmTextSetInsertionPosition(gdb_w, promptPosition);
 }
 
 void end_of_lineAct(Widget, XEvent*, String*, Cardinal*)
 {
+    clear_isearch();
     XmTextSetInsertionPosition(gdb_w, XmTextGetLastPosition(gdb_w));
 }
 
 void forward_characterAct(Widget w, XEvent *e, 
 			  String *args, Cardinal *num_args)
 {
+    clear_isearch();
     XtCallActionProc(w, "forward-character", e, args, *num_args);
 }
 
 void backward_characterAct(Widget, XEvent*, String*, Cardinal*)
 {
+    clear_isearch();
     XmTextPosition pos = XmTextGetInsertionPosition(gdb_w);
     if (pos > promptPosition)
 	XmTextSetInsertionPosition(gdb_w, pos - 1);
@@ -430,6 +443,7 @@ void backward_characterAct(Widget, XEvent*, String*, Cardinal*)
 
 void set_lineAct(Widget, XEvent*, String* params, Cardinal* num_params)
 {
+    clear_isearch();
     string input = "";
     if (num_params && *num_params > 0)
 	input = params[0];
@@ -440,6 +454,7 @@ void set_lineAct(Widget, XEvent*, String* params, Cardinal* num_params)
 void delete_or_controlAct(Widget w, XEvent *e, 
 			  String *args, Cardinal *num_args)
 {
+    clear_isearch();
     string input = current_line();
     strip_final_newlines(input);
     if (input == "")
