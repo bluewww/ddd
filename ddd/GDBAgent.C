@@ -69,6 +69,9 @@ DebuggerType debugger_type(const string& type)
 
     cerr << "Unknown debugger type " << quote(type) << "\n";
     exit(EXIT_FAILURE);
+
+    // Never reached
+    return GDB;
 }
 
 
@@ -189,6 +192,9 @@ bool GDBAgent::send_user_cmd(string cmd, void *user_data)  //ohne \n
 	return false;
 	break;
     }
+
+    // Never reached
+    return false;
 }
 
 // ***************************************************************************
