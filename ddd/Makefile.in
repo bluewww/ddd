@@ -1870,9 +1870,10 @@ pub:	$(PROG_STUFF) configure $(PUB_DEST)/USERINFO
 	    fi; \
 	done
 
-$(PUB_DEST)/USERINFO:
-	-echo 'DDD Development Team <ddd@ips.cs.tu-bs.de>' > $@~ && \
-	$(MV) $@~ $@
+# This is no longer needed, since we have `~/.dddinfo'.
+# $(PUB_DEST)/USERINFO:
+# 	-echo 'DDD Development Team <ddd@ips.cs.tu-bs.de>' > $@~ && \
+# 	$(MV) $@~ $@
 
 
 ## Make dependency stuff.
