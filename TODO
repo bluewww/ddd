@@ -242,4 +242,9 @@ Volunteers for these and other projects are welcome!
 099. Add a history mechanism to the `()' fields (cursor up / cursor
      down).
 
-102. (Insert your project idea here)
+102. Have a WWW tutorial for DDD.  Any volunteers?
+
+103. In the `registers' window, optionally display floating-point
+     registers as well  (`info all-registers').
+
+104. (Insert your project idea here)
