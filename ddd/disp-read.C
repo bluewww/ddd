@@ -369,6 +369,9 @@ bool is_break_cmd (const string& cmd)
 	"[th]*(b|br|bre|brea|break|b[a-z])"
 	"|cl|cle|clea|clear|d[a-z]"
 	"|info[ \t]+(li|lin|line)"
+	"|ignore"
+	"|cond|condition"
+	"|when"
 	"|stop"
 	")([ \t]+.*)?");
 #endif

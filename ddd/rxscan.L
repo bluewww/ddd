@@ -196,7 +196,7 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 09{w}?					RETURN(&rxblank);
 10[ ]+		 			RETURN(&rxblanks);
 11{W}					RETURN(&rxblanks_or_tabs);
-12{_}([th]*(b|bre|brea|break|b[a-z])|cl|cle|clea|clear|d[a-z]|info{W}(li|lin|line)|stop)({W}{C})?			RETURN(&rxbreak_cmd);
+12{_}([th]*(b|bre|brea|break|b[a-z])|cl|cle|clea|clear|d[a-z]|info{W}(li|lin|line)|ignore|cond|condition|when|stop)({W}{C})?	RETURN(&rxbreak_cmd);
 13{_}cd({W}{C})?			RETURN(&rxcd_cmd);
 14[^:]*:[^:]*:{_}{D}{C}			RETURN(&rxcolons);
 15{C}:{C}core{C}		 	RETURN(&rxcore);
