@@ -157,6 +157,10 @@ DDD 3.0 [in beta test]
       in your `~/.ddd/init' file.  For a full DDD 2.x look, disable images
       and captions via `Edit | Preferences | Startup | Toolbar Appareance'.
 
+    - Source line numbers are now automatically enabled as soon as you
+      set the source indentation amount to 8 characters or more.  See
+      `Edit | Preferences | Source | Source indentation'.
+
     - Be sure not to leave `Ddd' app-defaults files from previous
       versions behind.  DDD does not require app-defaults files; in
       fact, we recommend strongly *NOT* to use or install them.

@@ -3006,12 +3006,11 @@ source texts are cached in memory.\n\
 ITEM If LBL(Cache machine code) is set, \
 disassembled code is cached in memory.\n\
     Otherwise, code is re-disassembled upon each function change.\n\
-ITEM If LBL(Display source line numbers) is set, \n\
-    each source line is prefixed by its number.\n\
 ITEM In LBL(Tab width), you can set the spacing of tab stops.\n\
     Setting the tab width to 8 sets a tab stop every 8 characters.\n\
 ITEM In LBL(Indentation), you can indent the source and machine code,\n\
     giving additional room for the breakpoint area.\n\
+    Setting the source indentation to 8 or more also enables line numbers.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
@@ -3044,14 +3043,14 @@ Ddd*preferences*tabWidth.minimum:		1
 Ddd*preferences*tabWidth.maximum:		32
 Ddd*preferences*tabWidth.showValue:		on
 Ddd*preferences*tabWidth.titleString:		\
-Tab width\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+Tab width
 
 Ddd*preferences*sourceIndent.orientation:	XmHORIZONTAL
 Ddd*preferences*sourceIndent.minimum:		0
 Ddd*preferences*sourceIndent.maximum:		16
 Ddd*preferences*sourceIndent.showValue:		on
 Ddd*preferences*sourceIndent.titleString:	\
-Source indentation\ \ \ \ \ \ \ \ \ \ \ 
+Source indentation
 
 Ddd*preferences*codeIndent.orientation:		XmHORIZONTAL
 Ddd*preferences*codeIndent.minimum:		0
@@ -3120,7 +3119,7 @@ ITEM LBL(Window Layout) sets the window layout.\n\
 ITEM The LBL(Toolbar) can appear as\n\
     SUBITEM LBL(Images), showing a small symbol for each action, and/or\n\
     SUBITEM LBL(Captions), showing the action name below the image.\n\
-    SUBITEM LBL(Flat), enabling the 3-D appearance only when entered.\n\
+    SUBITEM LBL(Flat), enabling the button border only when entered.\n\
     SUBITEM LBL(Color), enabling colored images.\n\
     If neither LBL(Images) nor LBL(Captions) is set, \
 buttons have ordinary labels.\n\
