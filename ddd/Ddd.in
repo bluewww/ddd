@@ -2492,6 +2492,7 @@ Select displays on the left; operations on the right.\n\
 @tt \267 @bf Display * @rm - dereference the selected display.\n\
 @tt \267 @bf Show Detail @rm - show the details of all selected displays.\n\
 @tt \267 @bf Hide Detail @rm - hide the details of all selected displays.\n\
+@tt \267 @bf Set Value @rm - change a value in the selected display.\n\
 @tt \267 @bf Enable @rm - enable all selected displays.\n\
 @tt \267 @bf Disable @rm - disable all selected displays.\n\
 @tt \267 @bf Delete @rm - delete all selected displays.
@@ -2563,6 +2564,10 @@ Ddd*edit_displays_dialog*buttons*show_detail.contextHelpString:  \
 Ddd*edit_displays_dialog*buttons*hide_detail.labelString:   Hide Detail
 Ddd*edit_displays_dialog*buttons*hide_detail.contextHelpString:  \
 @rm Hide detail on the selected data display(s).
+
+Ddd*edit_displays_dialog*buttons*set.labelString:   	    Set Value
+Ddd*edit_displays_dialog*buttons*hide_detail.contextHelpString:  \
+@rm Change a value in the selected data display.
 
 Ddd*edit_displays_dialog*buttons*disable.labelString:       Disable
 Ddd*edit_displays_dialog*buttons*disable.contextHelpString:  \
@@ -2705,7 +2710,7 @@ To discard the changes, click on @bf No@rm.
 
 Ddd*set_dialog_popup.title: @DDD@: Set Value
 Ddd*graph_cmd_w*set_dialog*contextHelpString:	\
-@rm You can now change the value of the selected variable.\n\
+@rm You can now change a value in the selected display.\n\
 If you want to keep it unchanged, press @bf Cancel @rm.
 
 
