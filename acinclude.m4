@@ -1951,7 +1951,9 @@ dnl
 AC_DEFUN([ICE_FIND_MOTIF],
 [
 AC_REQUIRE([AC_PATH_XTRA])
-AC_REQUIRE([ICE_FIND_XEXTRA])
+AC_REQUIRE([ICE_FIND_XEXT])
+AC_REQUIRE([ICE_FIND_XP])
+AC_REQUIRE([ICE_FIND_XMU])
 AC_REQUIRE([ICE_CXX_ISYSTEM])
 motif_includes=
 motif_libraries=
@@ -2140,7 +2142,7 @@ AC_DEFUN([ICE_FIND_ATHENA],
 [
 AC_REQUIRE([AC_PATH_XTRA])
 AC_REQUIRE([ICE_CXX_ISYSTEM])
-AC_REQUIRE([ICE_FIND_XEXTRA])
+AC_REQUIRE([ICE_FIND_XEXT])
 AC_REQUIRE([ICE_FIND_XPM])
 athena_includes=
 athena_libraries=
@@ -2176,7 +2178,8 @@ ice_athena_save_LDFLAGS="$LDFLAGS"
 #
 ice_athena_libxpm=
 test "$xpm_libraries" != "no" && ice_athena_libxpm=-lXpm
-LIBS="-lXaw $ice_xextra_libxmu -lXt $ice_athena_libxpm $ice_xextra_libxext $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
+# libXmu is alway needed by libXaw.
+LIBS="-lXaw -lXmu -lXt $ice_athena_libxpm $ice_xextra_libxext $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
 CFLAGS="$X_CFLAGS $CFLAGS"
 CPPFLAGS="$X_CFLAGS $CPPFLAGS"
 LDFLAGS="$X_LIBS $LDFLAGS"
@@ -2240,7 +2243,8 @@ ice_athena_save_LDFLAGS="$LDFLAGS"
 #
 ice_athena_libxpm=
 test "$xpm_libraries" != "no" && ice_athena_libxpm=-lXpm
-LIBS="-lXaw $ice_xextra_libxmu -lXt $ice_athena_libxpm $ice_xextra_libxext $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
+# libXmu is alway needed by libXaw.
+LIBS="-lXaw -lXmu -lXt $ice_athena_libxpm $ice_xextra_libxext $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
 CFLAGS="$X_CFLAGS $CFLAGS"
 CPPFLAGS="$X_CFLAGS $CPPFLAGS"
 LDFLAGS="$X_LIBS $LDFLAGS"
@@ -2505,27 +2509,77 @@ AC_MSG_RESULT(
 ])dnl
 dnl
 dnl
-dnl ICE_FIND_XEXTRA
-dnl ---------------
+dnl ICE_FIND_XEXT
+dnl ------------
 dnl
-dnl Define ice_xextra_libxmu, ice_xextra_libxext, ice_xextra_libxp
+dnl Define ice_xextra_libxext
 dnl
-dnl
-AC_DEFUN([ICE_FIND_XEXTRA],
+AC_DEFUN([ICE_FIND_XEXT],
 [
 AC_REQUIRE([AC_PATH_XTRA])
-ice_xextra_libxext=
-ice_xextra_libxp=
-ice_xextra_libxmu=
-ice_save_LDFLAGS=$LDFLAGS
-test -n "$x_libraries" && LDFLAGS="$LDFLAGS -L$x_libraries"
-AC_CHECK_LIB([Xext],[XShapeQueryVersion],[ice_xextra_libxext="-lXext"],[],
-	[${X_PRE_LIBS} -lX11 ${X_EXTRA_LIBS}])
-AC_CHECK_LIB([Xp],[XpSelectInput],[ice_xextra_libxp="-lXp"],[],
-	[${ice_xextra_libxext} ${X_PRE_LIBS} -lX11 ${X_EXTRA_LIBS}])
-AC_CHECK_LIB([Xmu],[XmuCvtStringToOrientation],[ice_xextra_libxmu="-lXmu"],[],
-	[-lXt ${ice_xextra_libxext} ${X_PRE_LIBS} -lX11 ${X_EXTRA_LIBS}])
+AC_CACHE_CHECK([whether libXext is in the standard X library path],
+[ice_cv_find_xext],
+[ice_save_LDFLAGS=$LDFLAGS
+ice_save_LIBS=$LIBS
+LIBS="-lXext ${X_PRE_LIBS} -lX11 ${X_EXTRA_LIBS} $LIBS"
+test -n "$x_libraries" && LDFLAGS="-L$x_libraries $LDFLAGS"
+AC_LINK_IFELSE([AC_LANG_CALL([], [XShapeQueryVersion])],
+	       [ice_cv_find_xext=yes],[ice_cv_find_xext=no])
 LDFLAGS=$ice_save_LDFLAGS
+LIBS=$ice_save_LIBS
+])
+ice_xextra_libxext=
+test "$ice_cv_find_xext" = yes && ice_xextra_libxext='-lXext'
+])
+dnl
+dnl
+dnl ICE_FIND_XP
+dnl -----------
+dnl
+dnl Define ice_xextra_libxp
+dnl
+AC_DEFUN([ICE_FIND_XP],
+[
+AC_REQUIRE([AC_PATH_XTRA])
+AC_REQUIRE([ICE_FIND_XEXT])
+AC_CACHE_CHECK([whether libXp is in the standard X library path],
+[ice_cv_find_xp],
+[ice_save_LDFLAGS=$LDFLAGS
+ice_save_LIBS=$LIBS
+LIBS="-lXp ${ice_xextra_libxext} ${X_PRE_LIBS} -lX11 ${X_EXTRA_LIBS} $LIBS"
+test -n "$x_libraries" && LDFLAGS="-L$x_libraries $LDFLAGS"
+AC_LINK_IFELSE([AC_LANG_CALL([], [XpSelectInput])],
+	       [ice_cv_find_xp=yes],[ice_cv_find_xp=no])
+LDFLAGS=$ice_save_LDFLAGS
+LIBS=$ice_save_LIBS
+])
+ice_xextra_libxp=
+test "$ice_cv_find_xp" = yes && ice_xextra_libxp='-lXp'
+])
+dnl
+dnl
+dnl ICE_FIND_XMU
+dnl ------------
+dnl
+dnl Define ice_xextra_libxmu
+dnl
+AC_DEFUN([ICE_FIND_XMU],
+[
+AC_REQUIRE([AC_PATH_XTRA])
+AC_REQUIRE([ICE_FIND_XEXT])
+AC_CACHE_CHECK([whether libXmu is in the standard X library path],
+[ice_cv_find_xmu],
+[ice_save_LDFLAGS=$LDFLAGS
+ice_save_LIBS=$LIBS
+LIBS="-lXmu -lXt ${ice_xextra_libxext} ${X_PRE_LIBS} -lX11 ${X_EXTRA_LIBS} $LIBS"
+test -n "$x_libraries" && LDFLAGS="-L$x_libraries $LDFLAGS"
+AC_LINK_IFELSE([AC_LANG_CALL([], [XmuCvtStringToOrientation])],
+	       [ice_cv_find_xmu=yes],[ice_cv_find_xmu=no])
+LDFLAGS=$ice_save_LDFLAGS
+LIBS=$ice_save_LIBS
+])
+ice_xextra_libxmu=
+test "$ice_cv_find_xmu" = yes && ice_xextra_libxmu='-lXmu'
 ])
 dnl
 dnl ICE_TRANSLATION_RESOURCE
