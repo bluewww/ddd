@@ -1418,9 +1418,14 @@ dnl GDB_TRANSLATIONS
 ! Combo Boxes
 !-----------------------------------------------------------------------------
 
-! The default number of items in a combo box
+! The default number of visinle items in a combo box
 Ddd*XmComboBox*visibleItemCount:    5
 Ddd*comboBoxShell*visibleItemCount: 5
+
+! Have somewhat lighter combo box arrows
+Ddd*XmComboBox.arrowSize:  15
+Ddd*comboBoxArrow.width:   15
+Ddd*comboBoxArrow.height:  15
 
 
 !-----------------------------------------------------------------------------
@@ -4987,7 +4992,7 @@ Ddd*breakpoint_properties*delete.tipString:           \
 @rm Delete breakpoint
 
 Ddd*breakpoint_properties*condition.label.labelString:	Condition
-Ddd*breakpoint_properties*condition.text*columns:       29
+Ddd*breakpoint_properties*condition.text*columns:       30
 
 Ddd*breakpoint_properties*ignore.label.labelString:	Ignore Count
 Ddd*breakpoint_properties*ignore*text.columns:          4
@@ -5060,7 +5065,7 @@ Ddd*define_command_popup.title:    		DDD: Define Command
 Ddd*define_command.cancelLabelString:    	Apply
 
 Ddd*define_command*name.label.labelString:	Command
-Ddd*define_command*name.text*columns:       	29
+Ddd*define_command*name.text*columns:       	30
 
 Ddd*define_command*commands.labelString:	Definition
 Ddd*define_command*commandsMenu.packing:	XmPACK_COLUMN
