@@ -1029,7 +1029,7 @@ FORCE:
 ## The resource header and app-default files.
 
 Ddd.ad.h: Ddd $(srcdir)/ad2c.sed
-	$(AD2C) Ddd > Ddd.ad.h
+	$(AD2C) Ddd > $@
 
 $(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/macros.m4
 	( \
