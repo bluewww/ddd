@@ -4,7 +4,7 @@
 # if -l NAME is given, author is NAME 
 
 # Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
-# Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+# Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 # 
 # This file is part of ICE.
 # 
@@ -56,7 +56,7 @@ for file in "$@"; do
     fullname=`ypmatch $logname passwd | cut -d: -f5 | cut -d, -f1`
     mailname=$logname@`domainname | sed 's/[^\.]*\.//'`
   else
-    fullname=`echo "$written" | sed 's/.*Written by *\([^(]*\) *(.*/\1/
+    fullname=`echo "$written" | sed 's/.*Written by *\<[^(]*\> *(.*/\1/
 s/ $//g'`
     mailname=`echo "$written" | sed 's/.*(\([^)]*\)).*/\1/
 s/ $//g'`
@@ -108,7 +108,7 @@ Contact foobar@kremvax.su.org for details.';;
   fi
 
   text='Copyright (C) '$year' Technische Universitaet Braunschweig, Germany.\
-Written by '"$fullname ($mailname)"'.\
+Written by '"$fullname <$mailname>"'.\
 \
 This file is part of '$what'.\
 \

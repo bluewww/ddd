@@ -2,7 +2,7 @@ dnl $Id$
 dnl Local autoconf macros
 dnl 
 dnl Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
-dnl Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+dnl Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 dnl 
 dnl This file is part of the ICE Library.
 dnl 

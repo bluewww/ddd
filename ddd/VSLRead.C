@@ -2,7 +2,7 @@
 // read in VSL library
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+// Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
 // 

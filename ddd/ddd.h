@@ -2,7 +2,7 @@
 // DDD application resources
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Dorothea Luetkehaus (luetke@ips.cs.tu-bs.de).
+// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
 // 

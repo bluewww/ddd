@@ -474,7 +474,7 @@ DDD 1.3
       the main event loop.  This leaves you a chance for exiting the
       debugged program properly.
     - New `Help on Debugging' item.
-      Written by David A. Lyons (dlyons@apple.com).
+      Written by David A. Lyons <dlyons@apple.com>.
     - Colours slightly reworked: text background is a little brighter.
     - A short DDD survey, including lots of screen shots, is included
       in `doc/ddd-paper.ps'.  The paper also highlights some internal

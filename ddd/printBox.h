@@ -3,7 +3,7 @@
 // comments in /*...*/ taken from xfig-spec-2.1
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Christian Lindig (lindig@ips.cs.tu-bs.de).
+// Written by Christian Lindig <lindig@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
 // 
