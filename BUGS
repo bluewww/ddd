@@ -157,7 +157,8 @@ Volunteers for fixing these and other bugs are welcome!
     be cleared at least?  Or contain a string (`not active')?
 
 346*Finish Perl support:
-    - Displays (esp. lists of lists).
+    - Refresh displays.
+    - Alias detection.
     - `Run' should set arguments (i.e. restart).
     - Lookup functions.
     - Settings.
