@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# $Id$
 
 # pydb.py -- a Python debugger!
 # Modified original pdb.py
@@ -731,10 +732,13 @@ class Pdb(bdb.Bdb, pydbcmd.Cmd):
                 #Discard symbol table from `/work/.../ddd/cxxtest'? (y or n) n
                 # XXX 
                 # del module
+                sys.path = self.originalpath[:]
                 self.filetodebug == ""
         else:
             path, module = os.path.split(fname)
             module = string.split(module, '.')[0]
+            sys.path = self.originalpath[:]
+            sys.path.insert(0, path)
             # XXX how to clean up name space ??
             if self.moduletodebug:
                 try:
@@ -1050,6 +1054,7 @@ if __name__=='__main__':
     outer.alldie = 0
     outer.display = Display()
     outer.reset()
+    outer.originalpath = sys.path[:]
     while not outer.alldie:
         try:
           1 + ''

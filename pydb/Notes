@@ -55,6 +55,14 @@ executable.  From such choices, the possible relevant source files can be
 determined.  For Python, you just get a list of .py files in the
 current directory, from which you can select one. 
 
+RESTRICTION:  Currently, the .py file is both imported and executed.
+This means that pydb will prematurely run the code if the file ends
+in something like
+  main() .  To allow for the import and to be able to 'run' the .py
+code once breakpoints are in place, the code should read
+  if __name__ == '__main__':
+     main()
+
 6) Set a breakpoint or two, and click on the 'Run' button on the
 detached command toolbar.  Note that window that shows part of the
 chatter between DDD and pydb says to issue a continue command.  Click
@@ -107,6 +115,7 @@ Things for later:
 
     No "until" capability
     Display of "structures" (lists, etc.) doesn't work properly (yet)
+    Pydb shouldn't require the "if __name__ == '__main__'" construct
     Sessions don't handle displays correctly.
     No class Browser
     No ability to define your own commands
@@ -140,5 +149,3 @@ home directory (unless you changed the default): ~/.ddd/log.  All the
 dialog between pydb and DDD is recorded there, along with some DDD
 state changes.  For complex problems, I'll need that file and your
 Python code to debug the debugger.
-
-$Id$
