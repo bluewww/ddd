@@ -417,22 +417,28 @@ string read_token(string& value)
     return token;
 }
 
+static bool is_ending(const string& value)
+{
+    return value.contains('}', 0)
+	|| value.contains(')', 0)
+	|| value.contains(']', 0)
+	|| value.contains("end\n", 0)
+	|| value.contains("END\n", 0)
+	|| value == "end"
+	|| value == "END";
+}
+
 // Read a simple value from VALUE.
 string read_simple_value(string& value, int depth, bool ignore_repeats)
 {
     // Read values up to [)}],\n]
 
-    string old_value = value;
-    read_leading_junk (value);
+    read_leading_junk(value);
 
-    string ret;
-    while (value != "" 
-	   && value[0] != '\n'
-	   && (depth == 0 || (value[0] != ')'
-			      && value[0] != ']'
-			      && value[0] != '}'
-			      && value[0] != ','
-			      && value[0] != ';')))
+    string ret = "";
+    while (value != "" && value[0] != '\n' && 
+	   (depth == 0 || 
+	    (!is_ending(value) && value[0] != ',' && value[0] != ';')))
     {
 	ret += read_token(value);
 
@@ -566,13 +572,7 @@ bool read_array_next (string& value)
 	return true;
     }
 
-    if (value.contains('}', 0)
-	|| value.contains(')', 0)
-        || value.contains(']', 0)
-	|| value.contains("end\n", 0)
-	|| value.contains("END\n", 0)
-	|| value == "end"
-	|| value == "END")
+    if (is_ending(value))
     {
 	return false;		// Array is done.
     }
@@ -906,6 +906,7 @@ ostream& operator<<(ostream& os, DispValueType type)
     case StructOrClass:	os << "StructOrClass"; break;
     case BaseClass:     os << "BaseClass";     break;
     case Reference:     os << "Reference";     break;
+    case Sequence:   	os << "Sequence";      break;
     case List:   	os << "List";	       break;
     case Text:          os << "Text";	       break;
     }
