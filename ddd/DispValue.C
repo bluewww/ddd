@@ -218,7 +218,7 @@ bool DispValue::sequence_pending(const string& value,
 static string normalize_base(const string& base)
 {
 #if RUNTIME_REGEX
-    static regex rxsimple("([][a-zA-Z0-9_$@%().]|->)*");
+    static regex rxsimple("([][a-zA-Z0-9_$@%().`]|->)*");
 #endif
 
     bool perl = gdb->program_language() == LANGUAGE_PERL;
@@ -484,7 +484,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 #if LOG_CREATE_VALUES
 	clog << mytype << " " << quote(myfull_name) << "\n";
 #endif
-	string member_prefix = normalize_base(myfull_name);
+	string member_prefix = myfull_name;
 	string member_suffix = "";
 	if (mytype == List)
 	{
@@ -500,8 +500,12 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		{
 		    // Use the C `->' operator instead
 		    member_prefix.del("*");
+		    if (member_prefix.contains('(', 0) &&
+			member_prefix.contains(')', -1))
+			member_prefix = unquote(member_prefix);
+
 #if RUNTIME_REGEX
-		    static regex rxchain("[-a-zA-Z0-9::_>.]+");
+		    static regex rxchain("[-a-zA-Z0-9::_>.`]+");
 #endif
 		    if (member_prefix.matches(rxchain))
 		    {
@@ -523,12 +527,13 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    else if (gdb->program_language() == LANGUAGE_PERL)
 	    {
 		// In Perl, members of A are accessed as A{...}
-		member_prefix += "{";
+		member_prefix = normalize_base(member_prefix) + "{";
 		member_suffix = "}";
 	    }
 	    else
 	    {
-		member_prefix += ".";
+		// In all other languages, members are accessed as A.B
+		member_prefix = normalize_base(member_prefix) + ".";
 	    }
 
 	    // In case we do not find a struct beginning, read only one value

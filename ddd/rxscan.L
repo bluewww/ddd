@@ -314,7 +314,7 @@ J	[A-Za-z_$][A-Za-z0-9_$.]*
 91{_}(set|p|print|output){W}[^=]+=[^=]{C}	RETURN(&rxset2_cmd);
 92{_}set{W}args({W}{C})?		RETURN(&rxset_args_cmd);
 93{_}(set|dbxenv|O){W}{C} 		RETURN(&rxsetting_cmd);
-94([][a-zA-Z0-9_$@%().]|->)*		RETURN(&rxsimple);
+94([][a-zA-Z0-9_$@%().`]|->|::)*	RETURN(&rxsimple);
 95{_}disp(lay){W}[^ ]+			RETURN(&rxsingle_display_cmd);
 96{C}(--More--|line{w}{d}).* 		RETURN(&rxspace);
 97Breakpoint{W}{P}\,{W}{A}		RETURN(&rxstopped_addr);
@@ -333,7 +333,7 @@ A9[ \n\t\r\v\f]+		 	RETURN(&rxwhite);
 B0{C}Standard{W}input:{W}END{C} 	RETURN(&rxxdb);
 B1[^ \t]*:.*:{w}{P}[: ]{C} 	        RETURN(&rxxdbpos);
 B2[<]repeats{W}{P}{W}times[>]       	RETURN(&rxrepeats);
-B3{I}(([.]|->|::){I})*			RETURN(&rxchain);
+B3({I}|`)(([.]|->|::|`){I})*		RETURN(&rxchain);
 B4{W}ni{W}nehw{W}(ro{W}won{W})?     	RETURN(&rxwhen);
 B5Breakpoint{W}{P}\,{W}			RETURN(&rxstopped_func);
 B6#{D}{W}{I}[^ \f\t\n]*{W}[(]		RETURN(&rxframe_func);
