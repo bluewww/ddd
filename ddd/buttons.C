@@ -1067,6 +1067,10 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
     }
     delete sp;
 
+    StatusDelay *delay = 0;
+    if (gdb_initialized)
+	delay = new StatusDelay("Setting buttons");
+
     // Destroy all existing children (= buttons)
     int i;
     for (i = 0; i < int(num_children); i++)
@@ -1273,6 +1277,8 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 
     // Update `define' panel
     UpdateDefinePanelCB();
+
+    delete delay;
 }
 
 
