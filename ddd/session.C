@@ -897,7 +897,7 @@ static void open_session(const string& session)
 	settings = get_resource(db, XtNjdbSettings, XtCSettings);
 	break;
     }
-    init_session(restart, settings);
+    init_session(restart, settings, app_data.source_init_commands);
 
     // One last command to clear the delay and set up breakpoints
     c.command  = "# reset";

@@ -606,59 +606,77 @@ void init_session(const string& restart, const string& settings,
 {
     string init_commands = restart + settings;
 
+    InitSessionInfo *info = 0;
+
     if (try_source && !remote_gdb() && gdb->type() == GDB)
     {
 	// Source start-up commands from temp file
-	InitSessionInfo *info = new InitSessionInfo;
+	info = new InitSessionInfo;
 	info->restart  = restart;
 	info->settings = settings;
 	info->tempfile = tmpnam(0);
+
+	string file_commands = "";
 
 	{
 	    ofstream os(info->tempfile);
 	    while (init_commands != "")
 	    {
 		string cmd = init_commands.before('\n');
-		fix_symbols(cmd);
-		if (is_graph_cmd(cmd))
-		    add_auto_command_prefix(cmd);
-		os << cmd << "\n";
 		init_commands = init_commands.after('\n');
+
+		if (is_file_cmd(cmd, gdb) || is_core_cmd(cmd))
+		{
+		    // Use this command the ordinary way
+		    file_commands += cmd + "\n";
+		}
+		else
+		{
+		    // Source this command
+		    fix_symbols(cmd);
+		    if (is_graph_cmd(cmd))
+			add_auto_command_prefix(cmd);
+		    os << cmd << "\n";
+		}
 	    }
 	}
 
+	init_commands = file_commands;
+    }
+
+    // Process all start-up commands.  These should load the file, etc.
+    while (init_commands != "")
+    {
+	Command c(init_commands.before('\n'), Widget(0), OQCProc(0));
+	c.priority = COMMAND_PRIORITY_INIT;
+	if (is_file_cmd(c.command, gdb) || is_core_cmd(c.command))
+	{
+	    // Give feedback on the files used and their state
+	    c.verbose = true;
+	    c.echo    = true;
+	    c.prompt  = true;
+	    c.check   = true;
+	}
+	else if (gdb->type() == JDB && is_use_cmd(c.command))
+	{
+	    c.check = true;
+	}
+
+	// Translate breakpoint numbers to the current base.
+	fix_symbols(c.command);
+	gdb_command(c);
+
+	init_commands = init_commands.after('\n');
+    }
+
+    if (info != 0)
+    {
+	// Source remaining commands
 	Command c("source " + info->tempfile, Widget(0), 
 		  SourceDoneCB, (void *)info);
 	c.priority = COMMAND_PRIORITY_INIT;
 	c.check    = true;
 	gdb_command(c);
-    }
-    else
-    {
-	// Process all start-up commands.  These should load the file, etc.
-	while (init_commands != "")
-	{
-	    Command c(init_commands.before('\n'), Widget(0), OQCProc(0));
-	    c.priority = COMMAND_PRIORITY_INIT;
-	    if (is_file_cmd(c.command, gdb) || is_core_cmd(c.command))
-	    {
-		// Give feedback on the files used and their state
-		c.verbose = true;
-		c.echo    = true;
-		c.prompt  = true;
-		c.check   = true;
-	    }
-	    else if (gdb->type() == JDB && is_use_cmd(c.command))
-	    {
-		c.check = true;
-	    }
-
-	    // Translate breakpoint numbers to the current base.
-	    fix_symbols(c.command);
-	    gdb_command(c);
-
-	    init_commands = init_commands.after('\n');
-	}
     }
 }
 
