@@ -194,8 +194,9 @@ static void gdb_set_command(const string& set_command, string value)
     {
 	if (value.contains('\'', 0) && value.contains('\'', -1))
 	    value = unquote(value);
-	if (value == "N/A")
-	    value = "";
+// removed for perl-5.8.x
+//	if (value == "N/A")
+//	    value = "";
 
 	gdb_command(set_command + "=" + value); // Perl
     }
@@ -1497,7 +1498,12 @@ static const _XtString const perl_taboos[] =
     "noTTY",
     "ReadLine",
     "NonStop",
-    "ornaments"
+    "ornaments",
+    "compactDump",
+    "veryCompact",
+    "hashDepth",
+    "arrayDepth",
+    "dumpDepth"
 };
 
 // Add single button
@@ -1723,8 +1729,9 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 
 	    value = unquote(line.after(" = "));
 
-	    if (value == "N/A")
-		value = "";
+// removed for perl-5.8.x
+//	    if (value == "N/A")
+//		value = "";
 
 	    set_command  = "o " + base;
 	    show_command = "o " + base + "?";
@@ -3196,8 +3203,9 @@ static void get_setting(std::ostream& os, DebuggerType type,
 
     case PERL:
     {
-	if (value == "N/A")
-	    value = "";
+// removed for perl-5.8.x
+//	if (value == "N/A")
+//	    value = "";
 
 	string option = base.after(rxwhite);
 	bool taboo = false;

@@ -2567,7 +2567,8 @@ string GDBAgent::debug_command(const char *program, string args) const
 	return string("load ") + program;
 
     case PERL:
-	return "exec " + quote(debugger() + " -d " + program + args);
+//	return "exec " + quote(debugger() + " -d " + program + args);
+	return "R";
 
     case BASH:
 	return string("debug ") + program + args;
