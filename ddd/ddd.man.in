@@ -225,7 +225,7 @@ multiple times shows one possible expansion after the other.
 .PP
 Here are some of the most frequently needed debugger commands.
 .\"
-.SS "GDB commands"
+.SS "Common GDB commands"
 .TP
 .B break \fR[\|\fIfile\fB:\fR\|]\fIfunction
 \&
@@ -281,7 +281,7 @@ The same text is available online as the \c
 \& program.
 .PP
 .\"
-.SS "DBX commands"
+.SS "Common DBX commands"
 .B stop in \fIfunction
 \&
 Set a breakpoint at \c
@@ -334,7 +334,7 @@ Exit \s-2@DDD@\s+2.
 For full details on \s-2DBX\s+2 commands, see the \s-2DBX\s+2
 documentation.
 .\"
-.SS "XDB commands"
+.SS "Common XDB commands"
 .TP
 .B b \fR[\|\fIfile\fB:\fR\|]\fIline
 \&
@@ -480,7 +480,7 @@ Finally, you can use the \s-2GDB\s+2 `\fBbreak\fR' command or the
 prompt) for details.  The \s-2XDB\s+2 `\fBb\fR' command works as well.
 .\"
 .\"
-.SS "Disabling and Enabling Breakpoints"
+.SS "Disabling Breakpoints"
 .\"
 Note: \s-2DBX\s+2 does not support breakpoint disabling.
 .PP
@@ -578,7 +578,7 @@ Type `\fBhelp info line\fR' at the `\fB(gdb)\fR' prompt for
 details.
 .\"
 .\"
-.SS "Searching Items in the Source Text"
+.SS "Textual Search"
 .\"
 If the item you wish to search is visible in the source text, click
 with the \fIleft mouse button\fR on it.  The identifier is copied to

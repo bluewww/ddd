@@ -1450,8 +1450,8 @@ int main(int argc, char *argv[])
 "    D-38092 Braunschweig\n"
 "    GERMANY\n"
 "\n"
-"Send bug reports to <" ddd_NAME "-bugs@ips.cs.tu-bs.de>; see the \n"
-DDD_NAME " manual for details on reporting bugs.\n"
+"Send bug reports to <" ddd_NAME "-bugs@ips.cs.tu-bs.de>;\n"
+"see the " DDD_NAME " manual for details on reporting bugs.\n"
 "Send comments and suggestions to <" ddd_NAME "@ips.cs.tu-bs.de>.", "rm");
 
     // Realize all top-level widgets
