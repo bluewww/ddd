@@ -646,9 +646,8 @@ AC_CHECK_LIB([Xext],[XShapeQueryVersion],[XEXT_LIBS="-lXext"],[],
 	[${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS}])
 AC_SUBST(XEXT_LIBS)
 XMU_LIBS=""
-AC_CHECK_LIB([Xmu],[XmuCvtStringToOrientation],
-	[XMU_LIBS="-lXmu"],[],
-	[${XMU_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS}])
+AC_CHECK_LIB([Xmu],[XmuCvtStringToOrientation],[XMU_LIBS="-lXmu"],[],
+	[${XT_LIBS} ${XEXT_LIBS} ${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS}])
 AC_SUBST(XMU_LIBS)
 dnl
 dnl
@@ -679,7 +678,7 @@ AC_CHECK_LIB([Xaw],[XawTextSetInsertionPoint],
 	[XAW_LIBS="-lXaw ${XAW_LIBS}"
 	AC_DEFINE([HAVE_ATHENA],1,[Define if you have the X Athena widgets.])],
         [],
-	[${XAW_LIBS} ${XMU_LIBS} ${XT_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS}])
+	[${XMU_LIBS} ${XT_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS}])
 if test "$XAW_LIBS" = ""; then
 dnl A warning suffices here -- DDD also works without Athena.
 AC_MSG_WARN([The Athena widgets library '-lXaw' could not be found.
