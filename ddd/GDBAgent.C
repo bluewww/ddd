@@ -103,6 +103,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_edit_command(tp == DBX),
       _has_make_command(tp == GDB || tp == DBX),
       _has_jump_command(true),
+      _has_regs_command(tp == GDB),
       _has_named_values(tp == GDB || tp == DBX),
       _has_when_command(tp == DBX),
       _has_when_semicolon(tp == DBX),
@@ -159,6 +160,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_edit_command(gdb.has_edit_command()),
       _has_make_command(gdb.has_make_command()),
       _has_jump_command(gdb.has_jump_command()),
+      _has_regs_command(gdb.has_regs_command()),
       _has_named_values(gdb.has_named_values()),
       _has_when_command(gdb.has_when_command()),
       _has_when_semicolon(gdb.has_when_semicolon()),
@@ -1364,6 +1366,30 @@ string GDBAgent::jump_command(string pos) const
 
     case DBX:
 	return "cont at " + pos;
+    }
+
+    return "";			// Never reached
+}
+
+// Show registers
+string GDBAgent::regs_command(bool all) const
+{
+    if (!has_regs_command())
+	return "";
+
+    switch (type())
+    {
+    case GDB:
+	if (all)
+	    return "info all-registers";
+	else
+	    return "info registers";
+   
+    case DBX:
+	return "regs";		// Sun DBX 4.0
+
+    case XDB:
+	return "";		// FIXME
     }
 
     return "";			// Never reached

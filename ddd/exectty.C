@@ -395,86 +395,84 @@ static void redirect_process(string& command,
 
     if (!args.contains(">"))
     {
-	switch (gdb->type())
+	if (gdb->type() == GDB || 
+	    (gdb->type() == DBX && gdb->has_regs_command()))
 	{
-	case GDB:
+	    // GDB or SUN DBX 4.0: COMMAND is interpreted by the user's shell.
+	    static string shell;
+
+	    if (shell == "")
 	    {
-		// In GDB, COMMAND is interpreted by the user's shell.
-		static string shell;
-
-		if (shell == "")
+		// The shell is determined only once, as it cannot change.
+		if (remote_gdb())
 		{
-		    // The shell is determined only once, as it cannot change.
-		    if (remote_gdb())
-		    {
-			string sh = 
-			    gdb_question(gdb->shell_command("echo $SHELL"));
-			if (sh != NO_GDB_ANSWER)
-			    shell = sh.before('\n');
-		    }
-		    else
-		    {
-			char *shell_s = getenv("SHELL");
-			if (shell_s == 0)
-			    shell_s = "/bin/sh";
-			shell = shell_s;
-		    }
-		}
-
-		if (shell.contains("csh"))
-		{
-		    // csh, tcsh
-		    gdb_redirection += " >&! " + tty_name;
-		}
-		else if (shell.contains("rc"))
-		{
-		    // rc (from tim@pipex.net)
-		    gdb_redirection += " > " + tty_name + " >[2=1]";
-		}
-		else if (shell.contains("sh"))
-		{
-		    // sh, bsh, ksh, bash, zsh, sh5, ...
-		    gdb_redirection += " > " + tty_name + " 2>&1";
+		    string sh = 
+			gdb_question(gdb->shell_command("echo $SHELL"));
+		    if (sh != NO_GDB_ANSWER)
+			shell = sh.before('\n');
 		}
 		else
 		{
-		    // Unknown shell - play it safe
-		    gdb_redirection += " > " + tty_name;
+		    char *shell_s = getenv("SHELL");
+		    if (shell_s == 0)
+			shell_s = "/bin/sh";
+		    shell = shell_s;
 		}
 	    }
-	    break;
 
-	case DBX:
+	    if (shell.contains("csh"))
 	    {
-		// DBX has its own parsing, in several variants.
-		if (gdb->has_print_r_option())
-		{
-		    // SUN DBX 3.x uses ksh style redirection.
-
- 		    // DBX interprets `COMMAND 2>&1' such that COMMAND
- 		    // runs in the background.  Use this kludge instead.
- 		    gdb_redirection = "2> " + tty_name + " " 
-			+ gdb_redirection + " > " + tty_name;
-		}
-		else if (gdb->has_err_redirection())
-		{
-		    // DEC DBX and AIX DBX use csh style redirection.
-		    gdb_redirection +=  " >& " + tty_name;
-		}
-		else
-		{
-		    // SUN DBX 1.x does not allow to redirect stderr.
-		    gdb_redirection += " > " + tty_name;
-		}
+		// csh, tcsh
+		gdb_redirection += " >&! " + tty_name;
 	    }
-	    break;
-
-	case XDB:
+	    else if (shell.contains("rc"))
 	    {
-		// XDB uses ksh style redirection.
+		// rc (from tim@pipex.net)
+		gdb_redirection += " > " + tty_name + " >[2=1]";
+	    }
+	    else if (shell.contains("sh"))
+	    {
+		// sh, bsh, ksh, bash, zsh, sh5, ...
 		gdb_redirection += " > " + tty_name + " 2>&1";
 	    }
-	    break;
+	    else
+	    {
+		// Unknown shell - play it safe
+		gdb_redirection += " > " + tty_name;
+	    }
+	}
+	else if (gdb->type() == DBX)
+        {
+	    // DBX has its own parsing, in several variants.
+	    if (gdb->has_print_r_option())
+	    {
+		// SUN DBX 3.x uses ksh style redirection.
+
+		// DBX interprets `COMMAND 2>&1' such that COMMAND
+		// runs in the background.  Use this kludge instead.
+		gdb_redirection = "2> " + tty_name + " " 
+		    + gdb_redirection + " > " + tty_name;
+	    }
+	    else if (gdb->has_err_redirection())
+	    {
+		// DEC DBX and AIX DBX use csh style redirection.
+		gdb_redirection +=  " >& " + tty_name;
+	    }
+	    else
+	    {
+		// SUN DBX 1.x does not allow to redirect stderr.
+		gdb_redirection += " > " + tty_name;
+	    }
+	}
+	else if (gdb->type() == XDB)
+	{
+	    // XDB uses ksh style redirection.
+	    gdb_redirection += " > " + tty_name + " 2>&1";
+	}
+	else
+	{
+	    // Unsupported
+	    assert(0);
 	}
     }
 

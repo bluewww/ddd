@@ -431,18 +431,18 @@ void PosBuffer::filter (string& answer)
 
 #if RUNTIME_REGEX
 		static regex rxdbxfunc2(
-		    ".*line  *[1-9][0-9]*  *in  *\"[^\"]*\"\n.*");
+		    ".*line  *[1-9][0-9]*  *in  *(file  *)?\"[^\"]*\"\n.*");
 #endif
 		if (answer.matches(rxdbxfunc2))
 		{
 		    // AIX DBX issues `up', `down' and `func' output
-		    // in the format `FUNCTION(ARGS), line LINE in "FILE"'
+		    // in the format `FUNCTION(ARGS), line LINE in "FILE"'.
+		    // SUN DBX uses `line LINE in file "FILE"' instead.
 
 		    line = answer.after("line ");
 		    line = line.through(rxint);
 
-		    file = answer.after("in ");
-		    file = file.after('\"');
+		    file = answer.after('\"');
 		    file = file.before('\"');
 
 		    already_read = PosComplete;
@@ -455,7 +455,7 @@ void PosBuffer::filter (string& answer)
 #endif
 		if (answer.contains(rxdbxpos))
 		{
-		    // DEC dbx issues breakpoint lines in the format
+		    // DEC DBX issues breakpoint lines in the format
 		    // "[new_tree:113 ,0x400858] \ttree->right = NULL;"
 
 		    line = answer.from(rxdbxpos);

@@ -4814,6 +4814,10 @@ void SourceView::process_frame (string& frame_output)
 
 	case DBX:
 	    frame_nr = frame_output;
+
+	    // Sun DBX 4.0 issues `=>' before current frame
+	    if (frame_nr.contains("=>", 0))
+		frame_nr = frame_nr.after("=>");
 	    break;
 
 	case XDB:
@@ -4986,7 +4990,7 @@ void SourceView::refresh_registers()
 
 string SourceView::refresh_registers_command()
 {
-    return all_registers ? "info all-registers" : "info registers";
+    return gdb->regs_command(all_registers);
 }
 
 void SourceView::ViewRegistersCB(Widget, XtPointer, XtPointer)

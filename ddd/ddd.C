@@ -4283,7 +4283,7 @@ static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
     bool ready = gdb->isReadyWithPrompt() && emptyCommandQueue();
 
     set_sensitive(stack_w,        ready);
-    set_sensitive(registers_w,    ready && gdb->type() == GDB);
+    set_sensitive(registers_w,    ready && gdb->has_regs_command());
     set_sensitive(threads_w,      ready && gdb->type() == GDB);
     set_sensitive(infos_w,        ready && gdb->type() == GDB);
     set_sensitive(up_w,           ready);
