@@ -80,6 +80,7 @@ private:
     bool          myactive;	      // Flag: is display active (in scope)?
     bool          saved_node_hidden;  // Saved `hidden' flag of node
     bool          mydeferred;	      // Flag: is display deferred?
+    int           myclustered;	      // Flag: is display clustered?
     BoxGraphNode* mynodeptr;	      // Associated graph node 
     DispValue*    disp_value;	      // Associated value
     DispValue*    myselected_value;   // Selected value within DISP_VALUE
@@ -99,7 +100,7 @@ private:
     DispNode(const DispNode&)
 	: mydisp_nr(0), myname(), myaddr(), myscope(), mydepends_on(),
 	  myenabled(false), myactive(false), saved_node_hidden(false),
-	  mydeferred(false), mynodeptr(0), disp_value(0), 
+	  mydeferred(false), myclustered(0), mynodeptr(0), disp_value(0), 
 	  myselected_value(0), disp_box(0), mylast_change(0), alias_of(0)
     {
 	assert(0);
@@ -138,6 +139,7 @@ public:
     bool active() const     { return myactive; }
     bool deferred() const   { return mydeferred; }
     bool& deferred()        { return mydeferred; }
+    int clustered() const   { return myclustered; }
 
     int last_change() const { return mylast_change; }
 
@@ -188,6 +190,9 @@ public:
     // Show and hide manually
     void make_active();
     void make_inactive();
+
+    // Cluster display into TARGET
+    void cluster(int target = 0);
 
     // Toggle titles.  If ASSUME_DEPEND is set, assume we're dependent
     // on some other node.  Return true iff changed.

@@ -65,6 +65,7 @@ DispNode::DispNode (int disp_nr,
       myactive(true),
       saved_node_hidden(false),
       mydeferred(false),
+      myclustered(false),
       mynodeptr(0),
       disp_value(0),
       myselected_value(0),
@@ -281,8 +282,11 @@ void DispNode::make_inactive()
 {
     if (active())
     {
-	saved_node_hidden = mynodeptr->hidden();
-	mynodeptr->hidden() = true;
+	if (!clustered())
+	{
+	    saved_node_hidden = mynodeptr->hidden();
+	    mynodeptr->hidden() = true;
+	}
 	myactive = false;
     }
 
@@ -296,8 +300,29 @@ void DispNode::make_active()
     if (!active())
     {
 	myactive = true;
+	if (!clustered())
+	    mynodeptr->hidden() = saved_node_hidden;
+    }
+}
+
+// Cluster display into TARGET
+void DispNode::cluster(int target)
+{
+    if (clustered() == 0 && target != 0)
+    {
+	saved_node_hidden = mynodeptr->hidden();
+	mynodeptr->hidden() = true;
+    }
+    else if (clustered() != 0 && target == 0)
+    {
 	mynodeptr->hidden() = saved_node_hidden;
     }
+
+    // Set new target
+    myclustered = target;
+
+    // Unselect it
+    mynodeptr->selected() = false;
 }
 
 // Update address with NEW_ADDR
@@ -324,7 +349,7 @@ bool DispNode::alias_ok() const
 	&& !name().contains('(', 0);
 }
 
-// Toggle titles
+// Toggle titles.  Return true if changed.
 bool DispNode::refresh_title(bool assume_dependent)
 {
     bool is_dependent = assume_dependent;
@@ -368,4 +393,6 @@ bool DispNode::refresh_title(bool assume_dependent)
 	// Show new box
 	mynodeptr->setBox(disp_box->box());
     }
+
+    return changed;
 }
