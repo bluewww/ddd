@@ -143,6 +143,9 @@ fi
 
 # Configure the package.
 ln -s $CVSROOT/CVSROOT/ddd-log ChangeLog
+ln -s $CVSROOT/CVSROOT/ddd-log-97 ChangeLog-97
+ln -s $CVSROOT/CVSROOT/ddd-log-96 ChangeLog-96
+ln -s $CVSROOT/CVSROOT/ddd-log-95 ChangeLog-95
 autoconf
 (cd ddd && autoconf)
 (cd librx && autoconf)
