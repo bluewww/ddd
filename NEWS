@@ -50,6 +50,11 @@ DDD 2.1 [in beta test; scheduled for May, 1997]
         to avoid confusion with the `Break At' button.
       + The `Quit' menu item is now named `Abort', to avoid confusion
         with the `Exit' menu item (which issues a `quit' command).
+    - Some key bindings have been re-assigned.  Generally, the CTRL
+      key is now associated with debugger commands, and the ALT key is
+      associated with debugger settings.  Hence, Ctrl+M invokes `make'
+      and Ctrl+Q invokes `quit', while Alt+M enables or disables the
+      machine code window.  `Run' is now on Ctrl+X (for eXecute).
     - DBX settings can now be viewed and changed at run time, using
       the `Settings' panel.
     - In GDB, there is a `status displays' panel for displaying 
@@ -62,7 +67,7 @@ DDD 2.1 [in beta test; scheduled for May, 1997]
       invoked via the debugger console.  For instance, the command
       `graph display *next at (50, 50) dependent on 1' creates a new
       dependent display at (50, 50).  In the long term, this feature
-      will serve to save and restore display state.
+      will be used to save and restore display state.
     - In the debugger console, the right mouse button invokes a small
       popup menu which you can use to clear the line or the window.
     - Ever suffered from a frozen display while debugging a modal
@@ -78,9 +83,11 @@ DDD 2.1 [in beta test; scheduled for May, 1997]
       lets you select from all alternatives.
     - Buttons not supported on certain debuggers (for instance,
       `Finish' on DBX) are now made insensitive.  (optional)
-    - You can now invoke `make' from DDD, using an argument history.
+    - You can now invoke `make' from DDD, reusing old `make' arguments
+      from the command history if desired.
     - There is a new integrated manual browser showing manual pages
       and info files for DDD as well as for the inferior debugger.
+      A simple search facility is also included.
 
     Documentation:
     - The PostScript copy of the manual has been enriched with more
@@ -93,7 +100,7 @@ DDD 2.1 [in beta test; scheduled for May, 1997]
     - DDD no longer installs in the `gcc' location by default, but in
       an existing DDD location; otherwise, in `/usr/local/bin'.
     - Improved means of determining builder's e-mail address.
-    - Beta releases and DDD snapshots expire after a few weeks.
+    - DDD beta releases and DDD snapshots expire after a few weeks.
 
     Bug fixes:
     - Using DBX, comments were stripped from source code under certain
@@ -113,7 +120,7 @@ DDD 2.1 [in beta test; scheduled for May, 1997]
     - Line continuations (i.e. lines ending in `\') are properly handled.
     - Problems in building the `vsl' and `test-graph' programs are fixed.
     - On Linux, drag-and-drop of pixmaps has been disabled explicitly.
-      (Several Linux Motif libraries are broken in this aspect.)
+      (Several Linux Motif configurations are broken in this aspect.)
     - DDD now sets the WM_COMMAND resource such that X session
       managers can save and restore DDD state.
     - The data window now uses a command queue for operations on data

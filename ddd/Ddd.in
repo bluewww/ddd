@@ -1208,7 +1208,7 @@ Click on @bf Close @rm to close the help window.
 ! Build information (from `USERINFO') is appended to this text.
 Ddd*helpOnVersionString:	\
 @Logo @DDD@@logo: \
-the @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
+The @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
 @rm by Dorothea L\374tkehaus and Andreas Zeller.\n\
 \n\
 @DDD@ @VERSION@ (@host@),\n\
@@ -1430,17 +1430,17 @@ Ddd*menubar*fileMenu.printAgain.mnemonic: A
 Ddd*menubar*fileMenu.printAgain.documentationString:   \
 @rm Print the contents of the data display, using previous settings
 
-Ddd*menubar*fileMenu.make.labelString:	 Make Program...
+Ddd*menubar*fileMenu.make.labelString:	 Make...
 Ddd*menubar*fileMenu.make.mnemonic:	 M
-! Ddd*menubar*fileMenu.make.accelerator:      Meta<Key>M
-! Ddd*menubar*fileMenu.make.acceleratorText:  Alt+M
+Ddd*menubar*fileMenu.make.accelerator:      ~Shift Ctrl<Key>M
+Ddd*menubar*fileMenu.make.acceleratorText:  Ctrl+M
 Ddd*menubar*fileMenu.make.documentationString:  \
 @rm Run the ``make'' program
 
 Ddd*menubar*fileMenu.makeAgain.labelString:	 Make Again
 Ddd*menubar*fileMenu.makeAgain.mnemonic:	 g
-! Ddd*menubar*fileMenu.makeAgain.accelerator:      Meta<Key>M
-! Ddd*menubar*fileMenu.makeAgain.acceleratorText:  Alt+M
+Ddd*menubar*fileMenu.makeAgain.accelerator:      Shift Ctrl<Key>M
+Ddd*menubar*fileMenu.makeAgain.acceleratorText:  Ctrl+Shift+M
 Ddd*menubar*fileMenu.makeAgain.documentationString:  \
 @rm Run the ``make'' program, using previous settings
 
@@ -1453,15 +1453,15 @@ Ddd*menubar*fileMenu.close.documentationString:   \
 
 Ddd*menubar*fileMenu.restart.labelString: Restart
 Ddd*menubar*fileMenu.restart.mnemonic:	 R
-Ddd*menubar*fileMenu.restart.accelerator:      Shift Meta<Key>Q
-Ddd*menubar*fileMenu.restart.acceleratorText:  Alt+Shift+Q
+Ddd*menubar*fileMenu.restart.accelerator:      Shift Ctrl<Key>Q
+Ddd*menubar*fileMenu.restart.acceleratorText:  Ctrl+Shift+Q
 Ddd*menubar*fileMenu.restart.documentationString:   \
 @rm Close all windows and restart @DDD@ from scratch
 
 Ddd*menubar*fileMenu.exit.labelString:	 Exit
 Ddd*menubar*fileMenu.exit.mnemonic:	 x
-Ddd*menubar*fileMenu.exit.accelerator:	    ~Shift Meta<Key>Q
-Ddd*menubar*fileMenu.exit.acceleratorText:  Alt+Q
+Ddd*menubar*fileMenu.exit.accelerator:	    ~Shift Ctrl<Key>Q
+Ddd*menubar*fileMenu.exit.acceleratorText:  Ctrl+Q
 Ddd*menubar*fileMenu.exit.documentationString:   \
 @rm Close all windows and exit @DDD@
 
@@ -1560,22 +1560,22 @@ Ddd*optionsMenu.settings.documentationString:\
 
 Ddd*optionsMenu.separateExecWindow.labelString:		Run in Execution Window
 Ddd*optionsMenu.separateExecWindow.mnemonic:		E
-Ddd*optionsMenu*separateExecWindow.accelerator:		Ctrl<Key>X
-Ddd*optionsMenu*separateExecWindow.acceleratorText:	Ctrl+X
+Ddd*optionsMenu*separateExecWindow.accelerator:		Alt<Key>X
+Ddd*optionsMenu*separateExecWindow.acceleratorText:	Alt+X
 Ddd*optionsMenu.separateExecWindow.documentationString:\
 @rm Toggle execution of debugged program in separate window
 
 Ddd*optionsMenu.findWordsOnly.labelString:		Find Words Only
 Ddd*optionsMenu.findWordsOnly.mnemonic:			W
-Ddd*optionsMenu*findWordsOnly.accelerator:		Ctrl<Key>W
-Ddd*optionsMenu*findWordsOnly.acceleratorText:		Ctrl+W
+Ddd*optionsMenu*findWordsOnly.accelerator:		Alt<Key>Y
+Ddd*optionsMenu*findWordsOnly.acceleratorText:		Alt+Y
 Ddd*optionsMenu.findWordsOnly.documentationString:\
 @rm Switch between finding complete words and finding arbitrary occurrences
 
 Ddd*optionsMenu.disassemble.labelString:		Display Machine Code
 Ddd*optionsMenu.disassemble.mnemonic:			M
-Ddd*optionsMenu*disassemble.accelerator:		Ctrl<Key>M
-Ddd*optionsMenu*disassemble.acceleratorText:		Ctrl+M
+Ddd*optionsMenu*disassemble.accelerator:		Alt<Key>M
+Ddd*optionsMenu*disassemble.acceleratorText:		Alt+M
 Ddd*optionsMenu.disassemble.documentationString:\
 @rm Toggle display of machine code window
 
@@ -1655,15 +1655,15 @@ but proceed through subroutine calls.\n\
 
 Ddd*menubar*programMenu.run.labelString:	   Run...
 Ddd*menubar*programMenu.run.mnemonic:		   R
-Ddd*menubar*programMenu.run.accelerator:	   Ctrl ~Shift<Key>Z
-Ddd*menubar*programMenu.run.acceleratorText:	   Ctrl+Z
+Ddd*menubar*programMenu.run.accelerator:	   Ctrl ~Shift<Key>X
+Ddd*menubar*programMenu.run.acceleratorText:	   Ctrl+X
 Ddd*menubar*programMenu.run.documentationString: \
 @rm Start debugged program.  You may specify arguments to give it.
 
 Ddd*menubar*programMenu.run_again.labelString:	   Run Again
 Ddd*menubar*programMenu.run_again.mnemonic:	   A
-Ddd*menubar*programMenu.run_again.accelerator:	   Ctrl Shift<Key>Z
-Ddd*menubar*programMenu.run_again.acceleratorText: Ctrl+Shift+Z
+Ddd*menubar*programMenu.run_again.accelerator:	   Ctrl Shift<Key>X
+Ddd*menubar*programMenu.run_again.acceleratorText: Ctrl+Shift+X
 Ddd*menubar*programMenu.run_again.documentationString: \
 @rm Restart debugged program, using the previous arguments.
 
@@ -1755,14 +1755,14 @@ Ddd*commandsMenu.history.documentationString: \
 Ddd*commandsMenu.prev.labelString:	        Previous
 Ddd*commandsMenu.prev.mnemonic:		        P
 ! *commandsMenu.prev.accelerator:	        Ctrl<Key>P
-Ddd*commandsMenu.prev.acceleratorText:	        Ctrl+P
+Ddd*commandsMenu.prev.acceleratorText:	        Up
 Ddd*commandsMenu.prev.documentationString: \
 @rm Get previous command
 
 Ddd*commandsMenu.next.labelString:	        Next
 Ddd*commandsMenu.next.mnemonic:		        N
 ! *commandsMenu.next.accelerator:	        Ctrl<Key>N
-Ddd*commandsMenu.next.acceleratorText:	        Ctrl+N
+Ddd*commandsMenu.next.acceleratorText:	        Down
 Ddd*commandsMenu.next.documentationString: \
 @rm Get next command
 
