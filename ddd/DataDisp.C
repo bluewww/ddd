@@ -330,16 +330,6 @@ XtIntervalId DataDisp::refresh_graph_edit_timer = 0;
 StringArray DataDisp::shortcut_exprs;
 StringArray DataDisp::shortcut_labels;
 
-inline bool selected(DispNode *dn)
-{
-    // Don't treat a cluster as selected if only a member is selected
-    if (is_cluster(dn) && dn->selected() && dn->selected_value() != 0)
-	return false;
-    else
-	return dn->selected();
-}
-
-
 //----------------------------------------------------------------------------
 // Helpers
 //----------------------------------------------------------------------------
@@ -408,6 +398,38 @@ void DataDisp::set_last_origin(Widget w)
     }
 }
 
+
+
+//----------------------------------------------------------------------------
+// DispNode functions
+//-----------------------------------------------------------------------------
+
+bool DataDisp::selected(DispNode *dn)
+{
+    // Don't treat a cluster as selected if only a member is selected
+    if (is_cluster(dn) && dn->selected() && dn->selected_value() != 0)
+	return false;
+    else
+	return dn->selected();
+}
+
+bool DataDisp::needs_refresh(DispNode *cluster)
+{
+    if (!is_cluster(cluster))
+	return true;
+
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->clustered() == cluster->disp_nr() &&
+	    dn->last_refresh() > cluster->last_refresh())
+	    return true;
+    }
+
+    return false;
+}
 
 
 //----------------------------------------------------------------------------
@@ -593,10 +615,7 @@ void DataDisp::toggleDetailCB(Widget dialog,
 	disable_display(disp_nrs, dialog);
 
     if (changed)
-    {
-	refresh_builtin_user_displays();
 	refresh_graph_edit();
-    }
 }
 
 void DataDisp::showDetailCB (Widget dialog, XtPointer client_data, XtPointer)
@@ -670,10 +689,7 @@ void DataDisp::show(Widget dialog, int depth, int more)
     enable_display(disp_nrs, dialog);
 
     if (changed)
-    {
-	refresh_builtin_user_displays();
 	refresh_graph_edit();
-    }
 }
 
 
@@ -720,10 +736,7 @@ void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
     disable_display(disp_nrs, dialog);
 
     if (changed)
-    {
-	refresh_builtin_user_displays();
 	refresh_graph_edit();
-    }
 }
 
 
@@ -755,7 +768,6 @@ void DataDisp::rotateCB(Widget w, XtPointer, XtPointer)
 
     disp_node_arg->refresh();
 
-    refresh_builtin_user_displays();
     refresh_graph_edit();
 }
 
@@ -772,7 +784,6 @@ void DataDisp::rotateAllCB(Widget w, XtPointer, XtPointer)
 
     disp_node_arg->refresh();
 
-    refresh_builtin_user_displays();
     refresh_graph_edit();
 }
 
@@ -1141,7 +1152,7 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 	if (!dn->hidden())
 	    visible++;
 
-	if (::selected(dn))
+	if (DataDisp::selected(dn))
 	{
 	    selected++;
 
@@ -1570,6 +1581,7 @@ void DataDisp::refresh_graph_edit(bool silent)
 			    0, RefreshGraphEditCB, XtPointer(&state));
     }
 
+    refresh_builtin_user_displays();
     refresh_args();
     refresh_display_list(silent);
 }
@@ -3126,37 +3138,40 @@ DispValue *DataDisp::update_hook(string& value)
 
 void DataDisp::refresh_builtin_user_displays()
 {
-    bool changed = false;
-
     DispValue::value_hook = update_hook;
 
-    ProgressMeter s("Updating clusters");
+    ProgressMeter *s = 0;
 
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	bool node_changed = false;
-	if (dn->is_user_command())
-	{
-	    string cmd = dn->user_command();
-	    if (is_builtin_user_command(cmd))
-	    {
-		string answer = builtin_user_command(cmd, dn);
-		if (answer != NO_GDB_ANSWER && dn->update(answer))
-		{
-		    node_changed = changed = true;
-		    // Clear old local selection
-		    dn->select(0);
-		}
+	if (!dn->is_user_command())
+	    continue;
 
-		// FIXME: redraw only if the original node has changed
-		dn->refresh();
-		graphEditRedrawNode(graph_edit, dn);
-	    }
+	if (is_cluster(dn) && !needs_refresh(dn))
+	    continue;
+
+	string cmd = dn->user_command();
+	if (!is_builtin_user_command(cmd))
+	    continue;
+
+	if (s == 0)
+	    s = new ProgressMeter("Updating clusters");
+
+	string answer = builtin_user_command(cmd, dn);
+	if (answer != NO_GDB_ANSWER && dn->update(answer))
+	{
+	    // Clear old local selection
+	    dn->select(0);
 	}
+
+	dn->refresh();
+	graphEditRedrawNode(graph_edit, dn);
     }
+
+    delete s;
 
     DispValue::value_hook = 0;
 }
@@ -3788,7 +3803,6 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose, bool do_prompt)
     if (!ok || cmds.size() == 0)
     {
 	// Simply redraw display
-	refresh_builtin_user_displays();
 	refresh_graph_edit();
 	if (do_prompt)
 	    prompt();
@@ -3852,8 +3866,6 @@ void DataDisp::refresh_displayOQAC (const StringArray& answers,
 
     if (user_answers.size() > 0)
 	process_user(user_answers);
-
-    refresh_builtin_user_displays();
 
     if (addr_answers.size() > 0)
     {
@@ -3987,10 +3999,8 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose,
     if (disabled_data_displays == 0)
     {
 	if (disabled_user_displays > 0)
-	{
-	    refresh_builtin_user_displays();
 	    refresh_graph_edit();
-	}
+
 	if (do_prompt)
 	    prompt();
     }
@@ -4008,7 +4018,6 @@ void DataDisp::disable_displayOQC (const string& answer, void *data)
     if (info->prompt)
 	prompt();
 
-    refresh_builtin_user_displays();
     refresh_graph_edit();
 }
 
@@ -4072,7 +4081,6 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose,
 
     if (enabled_data_displays == 0)
     {
-	refresh_builtin_user_displays();
 	refresh_graph_edit();
 
 	if (do_prompt)
@@ -4090,7 +4098,6 @@ void DataDisp::enable_displayOQC (const string& answer, void *data)
     if (info->verbose)
 	post_gdb_message(answer, false);
 
-    refresh_builtin_user_displays();
     refresh_displaySQ(0, info->verbose, info->prompt);
 }
 
@@ -4293,7 +4300,6 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
 	    refresh_args();
 
 	// Refresh editor
-	refresh_builtin_user_displays();
 	refresh_graph_edit();
 
 	// Refresh addresses now
@@ -4486,10 +4492,7 @@ void DataDisp::process_info_display(string& info_display_answer,
     }
 
     if (changed)
-    {
-	refresh_builtin_user_displays();
 	refresh_graph_edit();
-    }
 
     refresh_display_list();
 }
@@ -4684,11 +4687,9 @@ string DataDisp::process_displays(string& displays,
 	force_check_aliases = true;
 	refresh_addr();
     }
+
     if (changed)
-    {
 	refresh_graph_edit();
-	refresh_builtin_user_displays();
-    }
 
     return not_my_displays;
 }
@@ -4789,10 +4790,7 @@ void DataDisp::update_displays(const StringArray& displays,
 	suppressed = check_aliases();
 
     if (changed)
-    {
 	refresh_graph_edit();
-	refresh_builtin_user_displays();
-    }
 
     if (addr_changed)
 	refresh_display_list(suppressed);
@@ -4852,10 +4850,7 @@ void DataDisp::process_user (StringArray& answers)
     }
 
     if (changed)
-    {
-	refresh_builtin_user_displays();
 	refresh_graph_edit();
-    }
 }
 
 
@@ -5437,7 +5432,6 @@ void DataDisp::delete_user_display(const string& name)
 
     delete_display(killme);
 
-    refresh_builtin_user_displays();
     refresh_graph_edit();
 }
 
@@ -5512,10 +5506,7 @@ void DataDisp::set_cluster_displays(bool value)
 	}
 
 	if (target_cluster != 0)
-	{
-	    refresh_builtin_user_displays();
 	    refresh_graph_edit();
-	}
     }
     else
     {
@@ -5614,7 +5605,6 @@ void DataDisp::clusterSelectedCB(Widget, XtPointer, XtPointer)
 	    dn->cluster(target_cluster);
     }
 
-    refresh_builtin_user_displays();
     refresh_graph_edit();
 }
 
@@ -5653,10 +5643,7 @@ void DataDisp::set_detect_aliases(bool value)
 	}
 
 	if (changed)
-	{
-	    refresh_builtin_user_displays();
 	    refresh_graph_edit();
-	}
     }
 }
 
@@ -5893,10 +5880,7 @@ bool DataDisp::check_aliases()
     }
 
     if (changed)
-    {
-	refresh_builtin_user_displays();
 	refresh_graph_edit(suppressed);
-    }
 
     return suppressed;
 }

@@ -92,6 +92,8 @@ class RegionGraphNode;
 //-----------------------------------------------------------------------------
 class DataDisp {
 
+    friend class DataDispCount;
+
     //-----------------------------------------------------------------------
     // Callbacks
     //-----------------------------------------------------------------------
@@ -219,6 +221,10 @@ class DataDisp {
     static bool is_builtin_user_command(const string& cmd);
     static string builtin_user_command(const string& cmd, DispNode *dn = 0);
     static void refresh_builtin_user_displays();
+
+    // DispNode properties
+    static bool needs_refresh(DispNode *dn);
+    static bool selected(DispNode *dn);
 
     //-----------------------------------------------------------------------
     // Actions
