@@ -73,9 +73,11 @@ void PosBuffer::filter (string& answer)
     if (answer.length() == 0)
 	return;
 
-    if (gdb->type() == GDB)
+    switch (gdb->type())
     {
-	// If gdb prints a "Current function" line, it overrides whatever
+    case GDB:
+    {
+	// If GDB prints a "Current function" line, it overrides whatever
 	// came before (e.g. "stopped in").
 
 	int index;
@@ -86,6 +88,10 @@ void PosBuffer::filter (string& answer)
 	index = answer.index("Starting program: ");
 	if (index == 0 || index > 0 && answer[index - 1] == '\n')
 	    started = true;
+
+	index = answer.index("The program no longer exists");
+	if (index == 0 || index > 0 && answer[index - 1] == '\n')
+	    terminated = true;
 
 	index = answer.index("has changed; re-reading symbols");
 	if (index > 0)
@@ -99,7 +105,9 @@ void PosBuffer::filter (string& answer)
 	if (index == 0 || index > 0 && answer[index - 1] == '\n')
 	    gdb->program_language(answer);
     }
-    else if (gdb->type() == DBX)
+    break;
+
+    case DBX:
     {
 	int index;
 	index = answer.index("Running: ");
@@ -110,9 +118,25 @@ void PosBuffer::filter (string& answer)
 	if (index > 0)
 	    recompiled = true;
     }
+    break;
+    
+    case XDB:
+	break;			// FIXME
+    }
+
+    static regex rxterminated("(.*\n)?([Tt]he )?[Pp]rogram "
+			      "(exited|terminated"
+			      "|is not being run|no longer exists).*");
+    if (answer.matches(rxterminated))
+	terminated = true;
+
+    if (answer.contains("no active process") ||
+	answer.contains("execution completed"))
+	terminated = true;
 
     // Fetch and store position info, return remainder
-    switch (already_read) {
+    switch (already_read)
+    {
     case PosComplete:
 	// Nothing more to filter
 	assert (pos_buffer != "");

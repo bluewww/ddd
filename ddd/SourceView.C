@@ -2562,6 +2562,18 @@ void SourceView::show_execution_position (string position, bool stopped,
     }
 }
 
+// Unset current execution position (program terminated)
+void SourceView::clear_execution_position()
+{
+    show_execution_position();
+
+    last_execution_file = "";
+    last_execution_line = 0;
+    last_execution_pc   = "";
+
+    update_glyphs();
+}
+
 
 void SourceView::_show_execution_position(string file, int line, bool silent)
 {

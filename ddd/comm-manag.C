@@ -35,12 +35,12 @@ char comm_manager_rcsid[] =
 #endif
 
 //-----------------------------------------------------------------------------
-// Implementierung von comm-manag.h
-// Namenskonventionen: 
-// ...SUC : ruft send_user_cmd() des gdb auf.
-// ...OA  : fuer on_answer, Typ: OAProc, siehe gdbAgent.
-// ...OAC : fuer on_answer_completion, Typ: OACProc, siehe gdbAgent.
-// ...HP  : Handler-Prozedur. Typ: HandlerProc, siehe HandlerL.h
+// GDB communication manager
+// Name conventions:
+// ...SUC : calls send_user_cmd() of GDBAgent *gdb.
+// ...OA  : an OAProc used in GDBAgent::on_answer
+// ...OAC : an OACProc used in GDBAgent::on_answer_completion()
+// ...HP  : A handler procedure; see HandlerL.h
 //
 //-----------------------------------------------------------------------------
 
@@ -908,12 +908,19 @@ void user_cmdOAC (void* data)
 	source_view->clear_history();
     }
 
+    if (cmd_data->pos_buffer->terminated_found())
+    {
+	// Program has been terminated - clear execution position
+	source_view->clear_execution_position();
+    }
+
     if (cmd_data->pos_buffer->recompiled_found())
     {
-	// Program has been recompiled - 
-	// clear code and source cache and reload current source.
+	// Program has been recompiled - clear code and source cache,
+	// clear execution position, and reload current source.
 	source_view->clear_code_cache();
 	source_view->clear_file_cache();
+	source_view->clear_execution_position();
 	source_view->reload();
     }
 
@@ -1029,9 +1036,7 @@ void user_cmdOAC (void* data)
 }
 
 // ***************************************************************************
-// Behandelt die Programmeigenen graph-Befehle (insbes. graph display ... und
-// graph refresh).
-//
+// Process DDD `graph' commands (graph display, graph refresh).
 
 // Fetch display numbers from COMMAND
 void read_numbers(string command, IntArray& numbers)
@@ -1264,7 +1269,7 @@ static void process_config_program_language(string& lang)
 
 
 // ***************************************************************************
-// Behandelt die Antworten auf die hinterhergeschickten Anfragen
+// Handle GDB answers to DDD questions sent after GDB command
 //
 void plusOQAC (string answers[],
 	       void*  qu_datas[],

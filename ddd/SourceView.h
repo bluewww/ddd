@@ -365,6 +365,9 @@ public:
 					 bool stopped = false,
 					 bool silent = false);
 
+    // Unset current execution position (program terminated)
+    static void clear_execution_position();
+
     // Set cursor position, based on the GDB position info POSITION
     static void show_position (string position, bool silent = false);
 

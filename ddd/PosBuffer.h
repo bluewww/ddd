@@ -52,6 +52,7 @@ class PosBuffer {
     ReadState already_read;
 
     bool started;		// Program has started
+    bool terminated;		// Program has terminated
     bool recompiled;		// Program has been recompiled
 
 public:
@@ -63,6 +64,7 @@ public:
 	pc_buffer(""),
 	already_read(Null),
 	started(false),
+	terminated(false),
 	recompiled(false)
     {}
 
@@ -84,6 +86,7 @@ public:
 
     // Other properties.
     bool started_found()    const { return started; }
+    bool terminated_found() const { return terminated; }
     bool recompiled_found() const { return recompiled; }
 
     // Call this before filtering any new output.
@@ -95,6 +98,7 @@ public:
 	pc_buffer     = "";
 	already_read  = Null;
 	started       = false;
+	terminated    = false;
 	recompiled    = false;
     }
 };
