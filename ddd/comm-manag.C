@@ -1652,6 +1652,8 @@ void user_cmdOAC(void *data)
 // Fetch display numbers from COMMAND into NUMBERS
 static bool read_displays(string command, IntArray& numbers, bool verbose)
 {
+    int size = numbers.size();
+
     while (has_nr(command))
 	numbers += atoi(read_nr_str(command));
 
@@ -1664,13 +1666,22 @@ static bool read_displays(string command, IntArray& numbers, bool verbose)
 	numbers += nr;
     }
 
+    if (size == numbers.size())
+    {
+	// No argument.
+	// GDB gives no diagnostics in this case.  So, nor do we.
+	if (verbose)
+	    prompt();
+	return false;
+    }
+
     return true;		// Ok
 }
 
 // Handle graph command in CMD, with WHERE_ANSWER being the GDB reply
 // to a `where 1' command; return true iff recognized
 static bool handle_graph_cmd(string& cmd, const string& where_answer, 
-			     Widget origin, bool verbose, bool prompt)
+			     Widget origin, bool verbose, bool do_prompt)
 {
     string scope;
     if (gdb->has_func_command())
@@ -1753,22 +1764,31 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	cmd = reverse(rcmd);
 	string display_expression = get_display_expression(cmd);
 
+	if (display_expression == "")
+	{
+	    // No argument.
+	    // GDB gives no diagnostics in this case.  So, nor do we.
+	    if (verbose)
+		prompt();
+	    return true;
+	}
+
 	if (when_in != "" && when_in != scope)
 	{
 	    data_disp->new_displaySQ(display_expression, when_in, pos,
 				     depends_on, deferred, origin, 
-				     verbose, prompt);
+				     verbose, do_prompt);
 	}
 	else
 	{
 	    data_disp->new_displaySQ(display_expression, scope, pos,
 				     depends_on, deferred, origin,
-				     verbose, prompt);
+				     verbose, do_prompt);
 	}
     }
     else if (is_refresh_cmd(cmd))
     {
-	data_disp->refresh_displaySQ(origin, verbose, prompt);
+	data_disp->refresh_displaySQ(origin, verbose, do_prompt);
     }
     else if (is_data_cmd(cmd))
     {
@@ -1778,15 +1798,15 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	{
 	    if (is_delete_display_cmd(cmd))
 	    {
-		data_disp->delete_displaySQ(numbers, verbose, prompt);
+		data_disp->delete_displaySQ(numbers, verbose, do_prompt);
 	    }
 	    else if (is_disable_display_cmd(cmd))
 	    {
-		data_disp->disable_displaySQ(numbers, verbose, prompt);
+		data_disp->disable_displaySQ(numbers, verbose, do_prompt);
 	    }
 	    else if (is_enable_display_cmd(cmd))
 	    {
-		data_disp->enable_displaySQ(numbers, verbose, prompt);
+		data_disp->enable_displaySQ(numbers, verbose, do_prompt);
 	    }
 	}
     }
@@ -1796,6 +1816,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	return false;
     }
 
+    // Command done
     return true;
 }
 
