@@ -81,18 +81,19 @@ void unmanage_sashes(Widget paned, int ignore)
 // Disable traversal for all sashes of PANED
 void untraverse_sashes(Widget paned)
 {
-    if (!XmIsPanedWindow(paned))
+    if (paned == 0 || !XmIsPanedWindow(paned))
 	return;
 
-    WidgetList children;
-    int num_children;
+    WidgetList children = 0;
+    int num_children    = 0;
 
     XtVaGetValues(paned,
 		  XtNchildren, &children,
 		  XtNnumChildren, &num_children,
 		  NULL);
 
-    for (int i = 0; i < num_children; i++)
-	if (XmIsSash(children[i]))
-	    XtVaSetValues(children[i], XmNtraversalOn, False, NULL);
+    if (children)
+	for (int i = 0; i < num_children; i++)
+	    if (XmIsSash(children[i]))
+		XtVaSetValues(children[i], XmNtraversalOn, False, NULL);
 }
