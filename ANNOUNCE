@@ -1,10 +1,10 @@
-DDD 2.3 is available					-*- text -*-
+DDD 3.0 is available					-*- text -*-
 ====================
 
-    Release 2.3 of the Data Display Debugger (DDD), the popular
+    Release 3.0 of the Data Display Debugger (DDD), the popular
     graphical front-end for UNIX debuggers, is now available at
 
-        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-2.3.tar.gz
+        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-3.0.tar.gz
 
     Diffs from earlier versions are in
 
@@ -24,28 +24,81 @@ DDD 2.3 is available					-*- text -*-
 What's new in DDD?
 ==================
 
-    DDD 2.3 brings Java support, JDB support, and watchpoints.
+    DDD 3.0 brings a new window layout, Java support, and JDB support.
 
     User-visible changes to DDD 2.2.3:
+    - New look.  The DDD 2.x button rows are replaced by an icon
+      toolbar at the top, saving vertical and horizontal space.
+    - Configurable fonts.  You can easily customize font families and
+      font sizes using just a few resources;, `ddd --fontsize 120'
+      starts DDD with 12-point fonts.  See `Setting DDD fonts' in the
+      DDD manual for details.
     - JDB support.  DDD now also supports JDB as inferior debugger.
       All important JDB features are available via the GUI.
     - Java support.  Requires GDB 4.17 or later (or JDB, of course).
       All data display features are available in Java.
     - Watchpoints.  You can have the debugged program stop
       automatically whenever a particular variable is read or written.
-    - DBX settings now also work with SGI DBX.
-    - The maximum number of glyphs is now configurable at startup time.
-      See the `maxGlyphs' resource for details.
+    - Deferred displays.  DDD now can maintain displays whose creation
+      is deferred until a particular scope is entered.  Benefits:
+      * Displays are now persistent across recompilations.
+      * In sessions, displays can also be restored without core dump.
     - Tear-off menus are supported (and enabled by default).
+    - Breakpoint properties.  There is an editor panel to set and
+      change all properties for a breakpoint at once.
+    - Breakpoint commands.  You can record and edit commands to be
+      executed when a breakpoint is reached.
+    - On popular demand, the command tool now has `until' and `make' buttons.
     - Conditional breakpoints and breakpoints with ignore counts are now
       indicated by special breakpoint symbols.
+    - When detecting a grabbed (frozen) mouse pointer after reaching a
+      breakpoint, DDD now automatically continues execution, rather
+      than attempting to ungrab the pointer.
+    - Improved help system: In accordance with the Motif style guide,
+      F1 invokes help on the item pointed at, while Shift+F1 lets you
+      choose an item.
+    - Tips of the day.  Upon startup, DDD shows a useful hint for DDD usage.
+    - Value tips and selections now work for struct members, too: you
+      can point at `A.B' or `A->B' and get the current value.
+    - The maximum number of glyphs is now configurable at startup time.
+      See the `maxGlyphs' resource for details.
+    - DDD no longer indents the source code, leaving more horizontal
+      space.  To change this, see `Edit | Preferences | Source |
+      Source indentation'.
+    - DBX settings now also work with SGI DBX.
 
     Bug fixes:
-    - Using Sun DBX 3.x, data displays are no longer cluttered by DBX
-      warnings.
+    - Data displays are no longer cluttered by Sun DBX 3.0 warnings.
+    - Paned window management has been improved a lot.
+    - DDD now works around a Motif 2.1/XFree86 bug that caused glyphs
+      to disappear.  See the `cacheGlyphImages' resource for details.
+    - The `endless scrolling' problem may now be prevented by delaying
+      glyph updates.  See the `glyphUpdateDelay' resource for details.
+    - DDD no longer terminates the inferior debugger when receiving an 
+      EOF on input.   See the `terminateOnEOF' resource for details.
+    - The new grab detection mechanism no longer interferes with grabs
+      on Motif popup and pulldown menus.
+    - One-letter options like `-b BPS' or `-x FILE' work again.
 
     Changes in configuration and building:
-    - LessTif 0.83 is supported.  See `patches/' for some useful patches.
+    - LessTif 0.83 is supported (and a standard test environment of
+      the DDD developers).  See `patches/' for some useful patches.
+
+    Compatibility notes:
+    - Some resources were renamed for clarity:
+      The `toolBar' resource is now named `commandToolBar'.
+      The `colorIcons' resource is now named `colorWMIcons'.
+      Please rename all references to these DDD resources.
+    - To enable a DDD 2.x style window layout, use
+
+	Ddd*commonToolBar:    off
+	Ddd*toolbarsAtBottom: on
+
+      in your `~/.ddd/init' file.  For a full DDD 2.x look, disable images
+      and captions via `Edit | Preferences | Startup | Toolbar Appareance'.
+
+    And once more, several more minor improvements and bug fixes; see
+    the `ChangeLog' file for details.
 
 
 What is DDD, anyway?
@@ -85,38 +138,34 @@ What is DDD, anyway?
 What do I need to build DDD?
 ============================
 
-
     To build a complete DDD from sources, you need:
 
-       * The GNU C++ compiler (GCC/G++), preferably version 2.7.2 or
-	 later, and a matching C++ I/O library (libstdc++ or libg++).
+       * The GNU C++ compiler (2.7.2 or later), including a matching
+         C++ I/O runtime library (libstdc++ or libg++).
 
          Some other C++ compilers have been reported to compile DDD as
          well.  Good results have been reported with Sun CC 4.0.  SGI
          CC and AIX xlC compile DDD, but introduce some subtle errors.
          Cfront 3.0 does not compile DDD.  In doubt, GCC is preferred.
 
+       * A Motif Widget library, either LessTif (0.83 or later) or
+         OSF/Motif (1.1 or later).  See the DDD WWW site and the
+         `patches/' directory for useful LessTif patches.  LessTif is
+         available via `http://www.lesstif.org/'.
+
        * The X window library (Xlib) and X toolkit library (Xt), X11R4
          or later.
 
-       * A Motif Widget library, version 1.1 or later.  Best results
-         are obtained using OSF/Motif 2.0 or later.
 
-         DDD also compiles and runs with LessTif, a free Motif clone,
-         release 0.83 or later, without loss of functionality.  Be
-         sure to check the DDD WWW site and the `patches/' directory
-         for useful patches.  LessTif is available via
-         `http://www.lesstif.org/'.
+    The following packages are recommended, but not required:
 
-       * Optionally, in addition to the Motif widget library, the
-         Athena Widget library (release 5 or later).  Having the
+       * The Athena Widget library (from X11R5 or later).  Having the
          Athena Widget library is convenient for supporting
          two-dimensional scrollbars and the `editres' protocol.
 
-       * Optionally, the XPM library (release 3.2 or later).  The XPM
-         library brings support for multi-color icons and logos.
+       * The XPM library (3.2 or later).  The XPM library brings
+         support for multi-color icons and logos.
 
-       * Lots of virtual memory.
 
     To run DDD, you need an inferior command-line debugger.  Best
     results are achieved with GDB, the GNU debugger.  (GDB 4.x is

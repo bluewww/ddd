@@ -281,4 +281,14 @@ Volunteers for fixing these and other bugs are welcome!
 264 (LessTif bug): In a DialogShell, setting the defautButton to 0
     won't work.
 
-265 (Insert new bugs here)
+265 Using OSF/Motif 1.2, the glyph positions are not updated after a
+    management change in the scrolled window.
+
+266 Using OSF/Motif 1.2, the `flat' toolbar flickers considerably when 
+    using large fonts.
+
+267*The DDD icon is grey.
+
+268*reverse-i-search does not work.
+
+269 (Insert new bugs here)
