@@ -62,7 +62,7 @@ static regex rxname_colon_int_nl ("[^ ]+:[0-9]+\n");
 
 // Create new breakpoint from INFO_OUTPUT
 BreakPoint::BreakPoint (string& info_output, string arg, int number)
-    : mynumber_str(number > 0 ? itostring(number) : ""),
+    : mynumber_str(number > 0 ? itostring(number) : string("")),
       mynumber(number),
       mytype(BREAKPOINT),
       mydispo(BPKEEP),
