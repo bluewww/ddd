@@ -101,6 +101,9 @@ Data exploration
   type.  That is, you can have different menus for GDB, DBX, Perl,
   etc.  There are also suitable defaults for each of these.
 
+- Ctrl+Double Click dereferences a pointer `in place' - the original
+  display is replaced by the dereferenced display.
+
 - Anonymous unions are no longer prefixed by `='.
 
 - `Examine Memory' also works for Solaris DBX.
@@ -118,6 +121,12 @@ Source exploration
   `Source' preferences.
 
 - Dragging breakpoints works much better with scrolling.
+
+- Ctrl+Double Click in the breakpoint area sets a temporary breakpoint.
+
+- Ctrl+Double Click on a breakpoint deletes the breakpoint.
+
+- Ctrl+Double Click on a variable looks up the variable definition.
 
 
 Printing
@@ -163,6 +172,9 @@ User Interface
 
   The bindings from DDD 3.0 and earlier (Ctrl+E for Run, Ctrl+I for
   Step, etc.) are still available.
+
+- Ctrl+Double Click is bound to some extra functions.  See `Source
+  exploration' and `Data exploration', above.
 
 - You can configure the Ctrl+C (`Interrupt' vs. `Copy') and Ctrl+A
   (`Select All' vs. `Beginning of Line') key bindings via Preferences.

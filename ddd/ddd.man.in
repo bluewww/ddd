@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-11\-27" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-12\-01" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -579,6 +579,9 @@ reached.  To set a temporary breakpoint, press \fImouse button 3\fR on the
 left of the source line and select the `\fBSet Temporary
 Breakpoint\fR' item from the popup menu.
 .PP
+As a faster alternative, you can simply double-click on the left of
+the source line while holding \fBCtrl\fR.
+.PP
 Temporary breakpoints are convenient to make the program continue up
 to a specific location: just set the temporary breakpoint at this
 location and continue execution.
@@ -613,6 +616,9 @@ popup menu.
 As yet another alternative, you can select the breakpoint and click on
 `\fBDelete\fR' in the Breakpoint editor (invoked through
 `\fBSource\(->Edit Breakpoints\fR').
+.PP
+As an even faster alternative, you can simply double-click on the
+breakpoint while holding \fBCtrl\fR.
 .\"
 .\"
 .SS "Editing Breakpoint Properties"
@@ -1105,7 +1111,7 @@ Click on `\fBSuspend\fR' to suspend execution of the selected threads;
 .IP \(bu 2
 Click on `\fBResume\fR' to resume execution of the selected threads.
 .PP
-For more information on threads, see the \s-1JDB\s+1 and \s-1GDB\s+2
+For more information on threads, see the \s-1JDB\s+1 and \s-1GDB\s+1
 documentation.
 .\"
 .\"
@@ -1129,7 +1135,7 @@ the signal.  \fBSIGINT\fR does not indicate an error in your program,
 but it is normally fatal so it can carry out the purpose of the
 interrupt: to kill the program.
 .PP
-\s-1GDB\s+2 has the ability to detect any occurrence of a signal in
+\s-1GDB\s+1 has the ability to detect any occurrence of a signal in
 your program.  You can tell \s-1GDB\s+1 in advance what to do for each
 kind of signal.
 .PP
@@ -1543,12 +1549,15 @@ To dereference a pointer, select the originating pointer value or name
 and click on the `\fBDisplay *()\fR' button.  A new display showing
 the dereferenced pointer value is created.
 .PP
-As a faster alternative, you can also press \fImouse button 3\fR on the
-originating pointer value or name and select the `\fBDisplay *\fR'
+As a faster alternative, you can also press \fImouse button 3\fR on
+the originating pointer value or name and select the `\fBDisplay *\fR'
 menu item.
 .PP
 As an even faster alternative, you can also double-click \fImouse
-button 1\fR on the originating pointer value or name.
+button 1\fR on the originating pointer value or name.  If you press
+\fBCtrl\fR while double-clicking, the display will be dereferenced
+\fIin place\fR--that is, it will be replaced by the dereferenced
+display.
 .PP
 The `\fBDisplay *()\fR' function is also accessible by pressing and
 holding the `\fBDisplay ()\fR' button.
