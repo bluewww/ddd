@@ -140,6 +140,9 @@ public:
 
     // Clear all execution positions
     static void clear_exec_pos();
+
+    // Invariant
+    static bool OK();
 };
 
 extern UndoBuffer undo_buffer;
