@@ -854,7 +854,7 @@ void SaveSmSessionCB(Widget w, XtPointer, XtPointer call_data)
     {
 	// Prepare for shutdown
 	if (interact)
-	    XtAddCallback(w, XtNinteractCallback, AskShutdownSmSessionCB, 0);
+	    XtAddCallback(w, XtNinteractCallback, AskSmShutdownCB, 0);
 	else
 	{
 	    if (!gdb->isReadyWithPrompt())
@@ -906,7 +906,7 @@ static void CancelSaveSmSessionCB(Widget, XtPointer client_data, XtPointer)
 
 // 2. If the checkpoint was part of a shutdown, make sure the
 //     debugged program is killed properly.
-static void AskShutdownSmSessionCB(Widget w, XtPointer, XtPointer call_data)
+static void AskSmShutdownCB(Widget w, XtPointer, XtPointer call_data)
 {
     XtCheckpointToken token = XtCheckpointToken(call_data);
 
@@ -926,32 +926,33 @@ static void AskShutdownSmSessionCB(Widget w, XtPointer, XtPointer call_data)
     {
 	// Debugger is still running; request confirmation
 	ask(gdb->title() + " is still busy.  Shutdown anyway (and kill it)?",
-	    "quit_dialog", token, w, ConfirmShutdownSmSessionCB, 
-	    CancelShutdownSmSessionCB);
+	    "quit_dialog", token, w, ConfirmSmShutdownCB, 
+	    CancelSmShutdownCB);
 	return;
     }
 
-    if (program_running())
+    ProgramInfo info;
+    if (info.running)
     {
 	// Program is still running; request confirmation
 	ask("The program is running.  Shutdown anyway (and kill it)?",
-	    "shutdown_dialog", token, w, ConfirmShutdownSmSessionCB, 
-	    CancelShutdownSmSessionCB);
+	    "shutdown_dialog", token, w, ConfirmSmShutdownCB, 
+	    CancelSmShutdownCB);
 	return;
     }
 
-    ConfirmShutdownSmSessionCB(w, XtPointer(token), call_data);
+    // Okay, go ahead.
+    ConfirmSmShutdownCB(w, XtPointer(token), call_data);
 }
 
 // 3. Confirm or cancel shutdown.
-static void ConfirmShutdownSmSessionCB(Widget, XtPointer client_data, 
-				       XtPointer)
+static void ConfirmSmShutdownCB(Widget, XtPointer client_data, XtPointer)
 {
     XtCheckpointToken token = XtCheckpointToken(client_data);
     XtSessionReturnToken(token);
 }
 
-static void CancelShutdownSmSessionCB(Widget, XtPointer client_data, XtPointer)
+static void CancelSmShutdownCB(Widget, XtPointer client_data, XtPointer)
 {
     XtCheckpointToken token = XtCheckpointToken(client_data);
     token->request_cancel = true;
