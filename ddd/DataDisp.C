@@ -4178,7 +4178,11 @@ int DataDisp::add_refresh_addr_commands(StringArray& cmds, DispNode *dn)
     if (dn != 0)
     {
  	if (dn->active() && !dn->is_user_command())
-	    cmds += gdb->print_command(gdb->address_expr(dn->name()));
+	{
+	    string addr = gdb->address_expr(dn->name());
+	    if (addr != "")
+		cmds += gdb->print_command(addr);
+	}
     }
     else
     {
