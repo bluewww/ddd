@@ -818,6 +818,24 @@ ProgramInfo::ProgramInfo()
 	file = source_view->line_of_cursor();
 	file = file.before(":");
 	core = "";
+
+	// Save whether JDB's VM is running
+	static int last_jdb_pid = -1;
+	static bool jvm_running = false;
+
+	if (gdb->pid() != last_jdb_pid)
+	{
+	    // New JDB: reset info
+	    jvm_running = false;
+	    last_jdb_pid = gdb->pid();
+	}
+
+	// The VM is running iff the prompt contains a backtrace
+	// level ("[n]").
+	if (!jvm_running && gdb->prompt().contains("["))
+	    jvm_running = true;
+
+	running = jvm_running;
 	break;
     }
 
