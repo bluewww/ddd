@@ -334,6 +334,8 @@ static void CheckDragCB(Widget, XtPointer client_data, XtPointer call_data);
 // Help on context
 static void DDDHelpOnContextCB(Widget, XtPointer client_data, 
 			       XtPointer call_data);
+static void DDDHelpOnItemCB(Widget, XtPointer client_data, 
+			    XtPointer call_data);
 
 // Verify whether buttons are active
 static void verify_buttons(MMDesc *items);
@@ -1124,11 +1126,13 @@ static MMDesc data_menu[] =
 // Help
 static MMDesc help_menu[] = 
 {
-    {"whatNext",    MMPush, { WhatNextCB }},
+    {"onHelp",      MMPush, { HelpOnHelpCB }},
     MMSep,
+    {"onItem",      MMPush, { DDDHelpOnItemCB }},
     {"onContext",   MMPush, { DDDHelpOnContextCB }},
     {"onWindow",    MMPush, { HelpOnWindowCB }},
-    {"onHelp",      MMPush, { HelpOnHelpCB }},
+    MMSep,
+    {"whatNext",    MMPush, { WhatNextCB }},
     MMSep,
     {"dddManual",   MMPush, { DDDManualCB }},
     {"news",        MMPush, { DDDNewsCB }},
@@ -3015,6 +3019,24 @@ static void DDDHelpOnContextCB(Widget w, XtPointer, XtPointer call_data)
     set_status_mstring(saved_status_message, true);
 
     if (item != 0)
+    {
+	MString msg = rm("Selected ") + tt(longName(item));
+	set_status_mstring(msg);
+    }
+}
+
+static void DDDHelpOnItemCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
+{
+    Widget item = 0;
+    HelpOnThisContextCB(w, (XtPointer)&item, call_data);
+
+    if (item == 0)
+    {
+	// No item found -- try tracking help
+	DDDHelpOnContextCB(w, client_data, call_data);
+    }
+    else
     {
 	MString msg = rm("Selected ") + tt(longName(item));
 	set_status_mstring(msg);
@@ -5435,10 +5457,9 @@ static void setup_command_tool(bool iconic)
 	    verify(XtCreateWidget("tool_shell", vendorShellWidgetClass,
 				  tool_shell_parent, args, arg));
     }
-    
+
     XmAddWMProtocolCallback(tool_shell, WM_DELETE_WINDOW, 
 			    gdbCloseToolWindowCB, 0);
-
 
     arg = 0;
     tool_buttons_w = 

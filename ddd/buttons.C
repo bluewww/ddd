@@ -935,6 +935,10 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 	XtRemoveAllCallbacks(button, XmNactivateCallback);
 	XtAddCallback(button, XmNactivateCallback, callback,
 		      (XtPointer)XtNewString(command.chars()));
+
+	// Add a help callback
+	XtAddCallback(button, XmNhelpCallback, HelpOnThisContextCB, 
+		      XtPointer(0));
     }
     delete[] commands;
 

@@ -26,6 +26,32 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
+// The following copyright applies to the GetWhichWidget() amnd
+// GetWidgetChild() functions:
+//
+// (C) COPYRIGHT International Business Machines Corp. 1993 (IBM)
+//                        All rights reserved
+// Permission to use, copy, modify and distribute this material for
+// any purpose and without fee is hereby granted, provided that the
+// above copyright notice and this permission notice appear in all
+// copies, and that the name of IBM not be used in advertising
+// or publicity pertaining to this material without the specific,
+// prior written permission of an authorized representative of
+// IBM.
+//
+// IBM MAKES NO REPRESENTATIONS AND EXTENDS NO WARRANTIES, EX-
+// PRESS OR IMPLIED, WITH RESPECT TO THE SOFTWARE, INCLUDING, BUT
+// NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+// FITNESS FOR ANY PARTICULAR PURPOSE, AND THE WARRANTY AGAINST IN-
+// FRINGEMENT OF PATENTS OR OTHER INTELLECTUAL PROPERTY RIGHTS.  THE
+// SOFTWARE IS PROVIDED "AS IS", AND IN NO EVENT SHALL IBM OR
+// ANY OF ITS AFFILIATES BE LIABLE FOR ANY DAMAGES, INCLUDING ANY
+// LOST PROFITS OR OTHER INCIDENTAL OR CONSEQUENTIAL DAMAGES RELAT-
+// ING TO THE SOFTWARE.
+//
+// Author: Jay Schmidgall, IBM Rochester, jay@vnet.ibm.com
+
+
 char HelpCB_rcsid[] =
     "$Id$";
 
@@ -63,8 +89,14 @@ char HelpCB_rcsid[] =
 #include <X11/IntrinsicP.h>	// LessTif hacks
 #include <X11/Shell.h>
 
-#include "LessTifH.h"
+// These are needed by GetWhichWidget()
+#include <X11/IntrinsicP.h>
+#include <X11/CoreP.h>
+#include <Xm/MenuShellP.h>
+#include <Xm/RowColumnP.h>
 
+// Misc DDD includes
+#include "LessTifH.h"
 #include "strclass.h"
 #include "cook.h"
 #include "events.h"
@@ -76,6 +108,7 @@ char HelpCB_rcsid[] =
 #include "post.h"
 #include "mydialogs.h"
 #include "ArgField.h"
+
 
 extern void process_pending_events();
 
@@ -1198,6 +1231,53 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 }
 
 
+//-----------------------------------------------------------------------------
+// Context-sensitive help
+//-----------------------------------------------------------------------------
+
+// Return the widget related to the mouse event EV
+static Widget EventToWidget(Widget widget, XEvent *ev)
+{
+    // If the button was clicked outside of this programs windows, the
+    // widget that grabbed the pointer will get the event.  So, we
+    // check the bounds of the widget against the coordinates of the
+    // event.  If they're outside, we return 0.  Otherwise we
+    // return the widget in which the event occured.
+
+    switch (ev->type)
+    {
+    case KeyPress:
+    case KeyRelease:
+    case ButtonPress:
+    case ButtonRelease:
+	break;
+
+    default:
+	return 0;		// No window
+    }
+
+    Position x, y;
+    Dimension width, height;
+    XtVaGetValues(widget, XmNx, &x, XmNy, &y,
+		  XmNwidth, &width, XmNheight, &height,
+		  NULL);
+
+    if (ev->xbutton.window == XtWindow(widget) &&
+	(ev->xbutton.x < x ||
+	 ev->xbutton.y < y ||
+	 ev->xbutton.x > x + width ||
+	 ev->xbutton.y > y + height))
+    {
+	return 0;
+    }
+    else
+    {
+	return XtWindowToWidget(XtDisplay(widget),
+				ev->xbutton.window);
+    }
+}
+
+
 // In LessTif, XmTrackingEvent() is somewhat broken - it returns on
 // KeyRelease events, and it does not return the event.  Here's an
 // improved implementation.
@@ -1225,8 +1305,8 @@ TrackingEvent(Widget widget, Cursor cursor,
 		      GrabModeAsync, GrabModeAsync,
 		      confine_to_this, cursor, time) != GrabSuccess)
     {
-	cerr << "XmTrackingEvent: Could not grab pointer\n";
-	return NULL;
+	cerr << "TrackingEvent: Could not grab pointer\n";
+	return 0;
     }
 
     while (True)
@@ -1234,46 +1314,21 @@ TrackingEvent(Widget widget, Cursor cursor,
 	XtAppNextEvent(XtWidgetToApplicationContext(widget), &ev);
 	time = XtLastTimestampProcessed(XtDisplay(widget));
 
-	if (ev.xbutton.type == KeyPress)
+	if (ev.type == KeyPress)
 	{
-	    /* Avoid exiting upon releasing the key that caused
-               XmTrackingEvent() to be invoked */
+	    // Avoid exiting upon releasing the key that caused
+	    // XmTrackingEvent() to be invoked
 	    key_pressed = True;
 	}
-	else if ((ev.xbutton.type == KeyRelease && key_pressed) ||
-		 (ev.xbutton.type == ButtonRelease && ev.xbutton.button == 1))
+	else if ((ev.type == KeyRelease && key_pressed) ||
+		 (ev.type == ButtonRelease && ev.xbutton.button == 1))
 	{
-	    if (event_return != NULL)
+	    if (event_return != 0)
 		*event_return = ev;
 
 	    XtUngrabPointer(widget, time);
 
-	    /* If the button was clicked outside of this programs windows,
-	     * the widget that grabbed the pointer will get the event.  So,
-	     * we check the bounds of the widget against the coordinates of
-	     * the event.  If they're outside, we return NULL.  Otherwise we
-	     * return the widget in which the event occured.
-	     */
-
-	    Position x, y;
-	    Dimension width, height;
-	    XtVaGetValues(widget, XmNx, &x, XmNy, &y,
-			  XmNwidth, &width, XmNheight, &height,
-			  NULL);
-
-	    if (ev.xbutton.window == XtWindow(widget)
-		&& (ev.xbutton.x < x
-		    || ev.xbutton.y < y
-		    || ev.xbutton.x > x + width
-		    || ev.xbutton.y > y + height))
-	    {
-		return NULL;
-	    }
-	    else
-	    {
-		return XtWindowToWidget(XtDisplay(widget),
-					ev.xbutton.window);
-	    }
+	    return EventToWidget(widget, &ev);
 	}
     }
 }
@@ -1317,6 +1372,230 @@ void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
 	*widget_return = item;
 }
 
+
+// Return the child widget EX/EY is in, starting with WIDGET.
+// Based on ftp://ftp.ora.com/pub/examples/xresource/issue6/helpdemo.tar.Z
+// See header for copyright and permissions
+static Widget GetWidgetChild(Widget w, int ex, int ey)
+{
+    Widget next_child = 0;
+    do
+    {
+	WidgetList children;
+	Cardinal numChildren = 0;
+
+	if (XtIsComposite(w))
+	{
+	    XtVaGetValues(w, XmNchildren, &children,
+			  XmNnumChildren, &numChildren, NULL);
+	}
+
+	next_child = 0;
+	Dimension next_cx, next_cy;
+	for (Cardinal m = 0; m < numChildren; m++)
+	{
+	    Dimension cx, cy, cw, ch;
+	    XtVaGetValues(children[m],
+			  XmNx, &cx, XmNy, &cy,
+			  XmNwidth, &cw, XmNheight, &ch,
+			  NULL);
+
+	    if (XtIsManaged(children[m]) &&
+		(cx <= ex && ex <= (cx+cw)) &&
+		(cy <= ey && ey <= (cy+ch)))
+	    {
+		// In a form, we may have multiple children
+		// overlapping each other.  In this case, use the last
+		// child, as it will also be the one on top.
+		next_child = children[m];
+		next_cx    = cx;
+		next_cy    = cy;
+	    }
+	}
+
+	if (next_child != 0)
+	{
+	    w = next_child;
+	    ex -= next_cx;
+	    ey -= next_cy;
+	}
+
+    } while (next_child != 0);
+
+    return w;
+}
+
+// Returns the widget the pointer is over, or 0 if the pointer is over
+// a shell widget, or cannot be determined.  Also returns the menu
+// shell widget if present.
+//
+// Side effect: Pop down a menu if one is visible when requesting
+// help.
+//
+// Based on ftp://ftp.ora.com/pub/examples/xresource/issue6/helpdemo.tar.Z
+// See header for copyright and permissions
+static Widget GetWhichWidget(XKeyEvent *evt, Widget toplevel, 
+			     Widget& menu_shell)
+{
+    Widget post_from = 0;
+
+    Widget on_widget = XtWindowToWidget(evt->display, evt->window);
+
+    if (XmIsMenuShell(on_widget))
+    {
+	WidgetList children;
+
+	// Get the child of the menu shell
+	XtVaGetValues(on_widget,
+		      XmNchildren, &children,
+		      NULL);
+
+	// Find out what posted us
+	if (XmIsRowColumn(children[0]))
+	    if (!(post_from = XmGetPostedFromWidget(children[0])))
+		post_from = RC_CascadeBtn(children[0]);
+
+	// Save menu shell
+	menu_shell = on_widget;
+
+	// Check if pointer is contained in the menu which
+	// contains the post_from widget
+	Window unused;
+	Widget cur = XtParent(post_from);
+	int ex, ey;
+	XTranslateCoordinates(evt->display, evt->window,
+			      XtWindow(cur), evt->x, evt->y,
+			      &ex, &ey, &unused);
+
+	Dimension cx, cy, cw, ch;
+	XtVaGetValues(cur,
+		      XmNx, &cx, XmNy, &cy,
+		      XmNwidth, &cw, XmNheight, &ch,
+		      NULL);
+
+	// We check if the pointer x,y coords are bounded by the menu
+	// pane width and height -- we need not check the menu pane
+	// x,y since we just translated the event x,y into its frame
+	// of reference.
+	//
+	// If false, then the pointer is not within the menu pane.  So
+	// it must be somewhere else and we'll look for it beginning
+	// with the toplevel widget.
+	//
+	// If true, the pointer is within the menu pane so we start
+	// with that.
+	if (!((0 <= ex && ex <= cw) && (0 <= ey && ey <= ch)))
+	    cur = toplevel;
+
+	bool done = false;
+	while (!done)
+	{
+	    WidgetList child;
+	    int numChildren;
+
+	    XtVaGetValues(cur, XmNchildren, &child,
+			  XmNnumChildren, &numChildren, NULL);
+
+	    int m;
+	    for (m = 0; m < numChildren; m++)
+	    {
+		XtVaGetValues(child[m],
+			      XmNx, &cx, XmNy, &cy,
+			      XmNwidth, &cw, XmNheight, &ch,
+			      NULL);
+
+		if (XtIsComposite(child[m]))
+		{
+		    XTranslateCoordinates(evt->display, evt->window,
+					  XtWindow(child[m]), evt->x, evt->y,
+					  &ex, &ey, &unused);
+
+		    // See if pointer x,y is contained by this widget */
+		    if ((0 <= ex && ex <= cw) && (0 <= ey && ey <= ch))
+		    {
+			cur = child[m];
+			break;
+		    }
+		}
+		else
+		{
+		    XTranslateCoordinates(evt->display, evt->window,
+					  XtWindow(cur), evt->x, evt->y,
+					  &ex, &ey, &unused);
+		    
+		    if ((cx <= ex && ex <= (cx+cw)) &&
+			(cy <= ey && ey <= (cy+ch)))
+		    {
+			cur = child[m];
+			done = true;
+			break;
+		    }
+		}
+	    }
+
+	    // If we've checked all the children, we're done.
+	    if (m == numChildren)
+		done = True;
+	};
+
+	on_widget = cur;	
+    }
+    else if (XtIsComposite(on_widget))
+    {
+	on_widget = GetWidgetChild(on_widget, evt->x, evt->y);
+    }
+    
+    if (XtIsVendorShell(on_widget))
+	on_widget = 0;
+    
+    return on_widget;
+}
+
+void HelpOnThisContextCB(Widget widget, XtPointer client_data, 
+			 XtPointer call_data)
+{
+    Widget *widget_return = (Widget *)client_data;
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    Widget toplevel = findTheTopLevelShell(widget);
+
+    if (widget_return != 0)
+	*widget_return = 0;
+
+    if (cbs == 0)
+	return;
+
+    if (cbs->event == 0)
+	return;
+
+    if (toplevel == 0)
+	return;
+
+    if (cbs->event->type != KeyPress && cbs->event->type != KeyRelease)
+	return;
+
+    // Motif style guide says Shift+F1 should invoke tracking help.
+    if (cbs->event->xkey.state & ShiftMask != 0)
+	return;
+
+    Widget menu_shell = 0;
+    Widget item = GetWhichWidget(&cbs->event->xkey, toplevel, menu_shell);
+    if (item == 0)
+	item = toplevel;
+
+    ImmediateHelpCB(item, client_data, call_data);
+
+    if (menu_shell != 0)
+    {
+	// Popdown menu shell
+	if (((XmMenuShellWidget)menu_shell)->shell.popped_up)
+	    XtCallActionProc(menu_shell,
+			     "MenuShellPopdownDone",
+			     NULL, NULL, 0);
+    }
+
+    if (widget_return != 0)
+	*widget_return = item;
+}
 
 
 //-----------------------------------------------------------------------------

@@ -61,6 +61,11 @@
 extern void HelpOnContextCB(Widget widget, XtPointer client_data, 
 			    XtPointer call_data);
 
+// Call help on context on the widget that got the help key.
+// May be used in a menu entry "Help On Context".
+extern void HelpOnThisContextCB(Widget widget, XtPointer client_data, 
+				XtPointer call_data);
+
 // Call help on current shell window.
 // May be used in a menu entry "Help On Window".
 extern void HelpOnWindowCB(Widget widget, XtPointer client_data, 

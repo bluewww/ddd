@@ -410,6 +410,7 @@ Ddd*tool_buttons*Forward.labelString:   Fwd
 Ddd*tool_bar*Cont.labelString:   Continue
 
 
+
 ! Command tool stuff.
 
 ! Do we want a sticky command tool?  If true, the command tool follows
@@ -1468,8 +1469,8 @@ Ddd*manual_help_popup*okLabelString: 	Close
 
 ! Titles
 Ddd*help_popup.title:           DDD Help
-Ddd*manual_help_popup.title:    DDD Manual
-Ddd*manual_help_popup.iconName: DDD Manual
+Ddd*manual_help_popup.title:    DDD Reference
+Ddd*manual_help_popup.iconName: DDD Reference
 Ddd*license_popup.title:        DDD License
 Ddd*license_popup.iconName:     DDD License
 Ddd*news_popup.title:           DDD News
@@ -1477,15 +1478,15 @@ Ddd*news_popup.iconName:     	DDD News
 
 ! Help on help.
 Ddd*help_popup.help*helpString: \
-@rm This is the EMPH(Help Window).\n\
+@rm Welcome to DDD Help\!\n\
 \n\
-To find out something specific about an item, press KEY(F1) and click\n\
-on the item.  Its functionality will be explained here.\n\
+To get help about an item, just point on it and press KEY(F1).\n\
+The item's functionality will be explained here.\n\
 \n\
-To find out what you can do next, press KEY(Shift+F1).  Depending on\n\
+To find out what you can do next, press KEY(Ctrl+F1).  Depending on\n\
 the current DDD state, you will be given some general advice.\n\
 \n\
-Click on LBL(Close) to close the help window.
+Have fun with DDD!
 
 
 ! The official announcement.
@@ -1518,6 +1519,13 @@ Drag the sash with BUTTON(1) to resize window parts.
 Ddd*XmSash.tipString: \
 @rm Resize window
 
+Ddd*Separator.helpString: \
+@rm This is a EMPH(Paned Window Sash).\n\
+\n\
+Drag the sash with BUTTON(1) to resize window parts.
+Ddd*Separator.tipString: \
+@rm Resize window
+
 Ddd*arg_label.helpString: \
 @rm This is an EMPH(Argument Prompt).\n\
 \n\
@@ -1546,7 +1554,7 @@ Ddd*XmSash.traversalOn:			false
 
 Ddd*manual_help*form.borderWidth:	0
 
-Ddd*manual_help*title.labelString:	DDD Manual
+Ddd*manual_help*title.labelString:	DDD Reference
 Ddd*manual_help*title.alignment:	XmALIGNMENT_BEGINNING
 
 Ddd*manual_help*area.borderWidth:	0
@@ -2515,16 +2523,17 @@ Ddd*menubar.help*documentationString:   \
 define(HELP_HELP, [\
 \
 @rm This is the EMPH(Help Menu).\n\
+DESC(Overview, [help on how to use the help facility])\n\
+\n\
+DESC(On Item...,   [give help on the current item])\n\
+DESC(On Context...,[click on an item and get help on it])\n\
+DESC(On Window..., [help on the application itself])\n\
 \n\
 DESC(What Now?..., [give help on what to do now])\n\
 \n\
-DESC(On Context..., [click on an item and get help on it])\n\
-DESC(On Window..., [help on the application itself])\n\
-DESC(On Help..., [help on how to use the help facility])\n\
-\n\
-DESC([[DDD]] Manual..., [the DDD on-line manual])\n\
+DESC([[DDD]] Reference..., [the DDD on-line manual])\n\
 DESC([[DDD]] News..., [what's new in DDD])\n\
-DESC(@GDB@ Manual..., [the @GDB@ on-line manual])\n\
+DESC(@GDB@ Reference..., [the @GDB@ on-line manual])\n\
 \n\
 DESC([[DDD]] License..., [copying, distributing, and modifying DDD])\n\
 DESC([[DDD]] WWW Page..., [the DDD WWW page])\n\
@@ -2535,18 +2544,24 @@ DESC(About [[DDD]]..., [some general information about DDD])
 Ddd*menubar.help*helpString: HELP_HELP
 Ddd*helpMenu*helpString:     HELP_HELP
 
-Ddd*helpMenu.whatNext.labelString:		What Now?...
-Ddd*helpMenu.whatNext.mnemonic:			N
-Ddd*helpMenu.whatNext.accelerator:		Shift ~Ctrl<Key>F1
-Ddd*helpMenu.whatNext.acceleratorText:		Shift+F1
-Ddd*helpMenu.whatNext.documentationString:	\
-@rm Explain the current situation and suggest what to do next
+Ddd*helpMenu.onHelp.labelString:		Overview...
+Ddd*helpMenu.onHelp.mnemonic:			v
+Ddd*helpMenu.onHelp.documentationString:	\
+@rm How to use the help facility
+
+Ddd*helpMenu.onItem.labelString:		On Item...
+Ddd*helpMenu.onItem.mnemonic:			O
+Ddd*helpMenu.onItem.accelerator:		~Shift ~Ctrl<Key>F1
+! *helpMenu.onItem.accelerator:		        <Key>osfHelp
+Ddd*helpMenu.onItem.acceleratorText:	        F1
+Ddd*helpMenu.onItem.documentationString:	\
+@rm Get help on the current item
 
 Ddd*helpMenu.onContext.labelString:		On Context...
 Ddd*helpMenu.onContext.mnemonic:		C
-Ddd*helpMenu.onContext.accelerator:		~Shift ~Ctrl<Key>F1
+Ddd*helpMenu.onContext.accelerator:		Shift ~Ctrl<Key>F1
 ! *helpMenu.onContext.accelerator:		<Key>osfHelp
-Ddd*helpMenu.onContext.acceleratorText:	F1
+Ddd*helpMenu.onContext.acceleratorText:	        Shift+F1
 Ddd*helpMenu.onContext.documentationString:	\
 @rm Click on an item and get help on it
 
@@ -2555,13 +2570,15 @@ Ddd*helpMenu.onWindow.mnemonic:			W
 Ddd*helpMenu.onWindow.documentationString:	\
 @rm Information about the current window
 
-Ddd*helpMenu.onHelp.labelString:		On Help...
-Ddd*helpMenu.onHelp.mnemonic:			H
-Ddd*helpMenu.onHelp.documentationString:	\
-@rm How to use the context-sensitive help
+Ddd*helpMenu.whatNext.labelString:		What Now?...
+Ddd*helpMenu.whatNext.mnemonic:			N
+Ddd*helpMenu.whatNext.accelerator:		~Shift Ctrl<Key>F1
+Ddd*helpMenu.whatNext.acceleratorText:		Ctrl+F1
+Ddd*helpMenu.whatNext.documentationString:	\
+@rm Explain the current situation and suggest what to do next
 
-Ddd*helpMenu.dddManual.labelString:		DDD Manual...
-Ddd*helpMenu.dddManual.mnemonic:		D
+Ddd*helpMenu.dddManual.labelString:		DDD Reference...
+Ddd*helpMenu.dddManual.mnemonic:		R
 Ddd*helpMenu.dddManual.documentationString:	\
 @rm The DDD reference manual
 
@@ -2570,8 +2587,8 @@ Ddd*helpMenu.news.mnemonic:			e
 Ddd*helpMenu.news.documentationString:		\
 @rm What's new in this DDD version
 
-Ddd*helpMenu.gdbManual.labelString:		@GDB@ Manual...
-Ddd*helpMenu.gdbManual.mnemonic:		M
+Ddd*helpMenu.gdbManual.labelString:		@GDB@ Reference...
+Ddd*helpMenu.gdbManual.mnemonic:		B
 Ddd*helpMenu.gdbManual.documentationString:	\
 @rm The @GDB@ reference manual
 
@@ -2587,8 +2604,6 @@ Ddd*helpMenu.www.documentationString:	\
 
 Ddd*helpMenu.onVersion.labelString:		About DDD...
 Ddd*helpMenu.onVersion.mnemonic:		A
-Ddd*helpMenu.onVersion.accelerator:		~Shift Ctrl<Key>F1
-Ddd*helpMenu.onVersion.acceleratorText:		Ctrl+F1
 Ddd*helpMenu.onVersion.documentationString:	\
 @rm General information about this DDD version
 
@@ -3572,7 +3587,7 @@ debugged program.\n\
 The upper area shows the source code.\n\
 The lower area shows the machine code.\n\
 \n\
-Use LBL(Help) | LBL(On Context) to get\n\
+Use LBL(Help) | LBL(On Item) to get\n\
 detailed help on each of these areas.
 
 
@@ -3989,7 +4004,7 @@ ITEM At the bottom, the EMPH(@GDB@ Console) allows for \
 interaction\n\
     with @GDB@ and the debugged program.\n\
 \n\
-Use LBL(Help) | LBL(On Context) to get detailed \
+Use LBL(Help) | LBL(On Item) to get detailed \
 help on any of these areas.])dnl
 
 Ddd.helpString:	            MAIN_WINDOW_HELP
@@ -4984,7 +4999,8 @@ ITEM DDD passes all unknown options to @GDB@.  If @GDB@ choked on\n\
 ITEM If @GDB@ could not be invoked due to some communication failure,\n\
     try changing the SAMP(.blockTTYInput) resource.\n\
 For details on options and resources, see the DDD manual: select\n\
-LBL(Help) | LBL([DDD] Manual) or invoke DDD with the SAMP(--manual) option.\n\
+LBL(Help) | LBL([DDD] Reference) \
+or invoke DDD with the SAMP(--manual) option.\n\
 \n\
 Click on LBL(Exit) to exit DDD.
 
