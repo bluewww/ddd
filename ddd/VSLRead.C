@@ -122,7 +122,8 @@ void VSLLib::update(istream& s)
     vsllib = this;
 
     vslstream = &s;
-    vslfilename = _lib_name;
+    if (vslfilename == "")
+	vslfilename = _lib_name;
 
     // Read it
     vslnameSet.reset();
