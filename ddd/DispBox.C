@@ -78,12 +78,11 @@ DispBox::DispBox (int disp_nr, const string& t, const DispValue *dv)
 #if RUNTIME_REGEX
 	static regex rxdbx_scope("[a-zA-Z_0-9]*`");
 #endif
+	int i;
 	while (int(title.length()) > max_display_title_length 
-	       && title.contains(rxdbx_scope))
+	       && ((i = title.index(rxdbx_scope)) >= 0))
 	{
-	    string postfix = title.after(rxdbx_scope);
-	    title = title.before(rxdbx_scope);
-	    title += postfix;
+	    title = title.before(i) + title.after('`');
 	}
     }
 
