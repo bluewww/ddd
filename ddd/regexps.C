@@ -37,6 +37,7 @@ char regexps_rcsid[] =
 #include "assert.h"
 #include "misc.h"		// min()
 #include <string.h>
+#include <iostream.h>
 
 // The first DATA_LEN characters are used to choose the actual regexp.
 #define DATA_LEN 2
