@@ -905,15 +905,16 @@ void DataDisp::set_args(BoxPoint p)
     DispValue* disp_value  = 0;
     BoxGraphNode *disp_bgn = 0;
 
+    bool was_selected = false;
+
     int disp_nr = getDispNrAtPoint(p);
     if (disp_nr)
     {
 	disp_node = disp_graph->get (disp_nr);
 	disp_value = (DispValue *)disp_node->box()->data(p);
-	if (disp_value == 0)
-	    disp_value = disp_node->value();
 	    
 	disp_bgn = disp_node->nodeptr();
+	was_selected = disp_bgn->selected() && disp_value == 0;
 
 	disp_node->select(disp_value);
 	graphEditRedrawNode(graph_edit, disp_bgn);
@@ -928,9 +929,15 @@ void DataDisp::set_args(BoxPoint p)
 	if (dn != disp_node)
 	{
 	    BoxGraphNode *node = dn->nodeptr();
-	    bool redraw = (node->selected() || node->highlight() != 0);
+	    bool redraw = false;
 
-	    dn->nodeptr()->selected() = false;
+	    if (!was_selected)
+	    {
+		redraw |= node->selected();
+		dn->nodeptr()->selected() = false;
+	    }
+
+	    redraw |= (node->highlight() != 0);
 	    dn->select(0);
 
 	    if (redraw)
