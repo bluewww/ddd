@@ -225,7 +225,9 @@ void set_status_from_gdb(const string& text)
     if (private_gdb_input)
 	return;
 
-    if (!show_next_line_in_status && !text.contains(") ", -1))
+    if (!show_next_line_in_status 
+	&& (gdb->type() == XDB || !text.contains(") ", -1))
+	&& (gdb->type() != XDB || !text.contains(">", -1)))
 	return;
 
     // Fetch line before prompt in GDB window
