@@ -15,16 +15,16 @@ Summary of DDD
 ==============
 
     The Data Display Debugger (DDD) is a novel graphical user
-    interface to GDB and DBX, the popular UNIX C/C++ debuggers.
-    Besides ``usual'' features such as viewing source texts and
-    breakpoints, DDD provides a *graphical data display*, where data
-    structures are displayed as graphs.  A simple mouse click
-    dereferences pointers or views structure contents.  Complex data
-    structures can be explored incrementally and interactively, using
-    automatic layout if preferred.  Each time the program stops, the
-    data display reflects the current variable values.  Using DDD, you
-    can reason about your application by viewing its data, not just by
-    viewing it execute lines of source code.
+    interface to GDB and DBX, the popular UNIX debuggers.  Besides
+    ``usual'' features such as viewing source texts and breakpoints,
+    DDD provides a *graphical data display*, where data structures are
+    displayed as graphs.  A simple mouse click dereferences pointers
+    or views structure contents.  Complex data structures can be
+    explored incrementally and interactively, using automatic layout
+    if preferred.  Each time the program stops, the data display
+    reflects the current variable values.  Using DDD, you can reason
+    about your application by viewing its data, not just by viewing it
+    execute lines of source code.
 
     Other DDD features include: debugging of programs written in C,
     C++, Pascal, or Modula-2; hypertext source navigation and lookup;
