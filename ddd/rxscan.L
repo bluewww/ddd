@@ -331,7 +331,7 @@ z       [^a-zA-Z0-9_$]
 98{x}?{_}([(]|[{]|record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct{z}|class{z}|interface{z}|union{z}){C}	RETURN(&rxstruct_begin);
 99(>|[[][1-9][0-9]*[]])[ ]          	RETURN(&rxjdbprompt_nothread);
 A0([)]|[}]|end\n|END\n|end;|END;)	RETURN(&rxstruct_end);
-A1{x}?{_}(record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct{z}|class{z}|interface{z}|union{z}){C} RETURN(&rxstruct_keyword_begin);
+A1{x}?{_}(record\n|RECORD\n|RECORD{w}|OBJECT{w}){C} RETURN(&rxstruct_keyword_begin);
 A2([Tt]he{W})?[Pp]rogram{W}(exited|terminated|is{W}not{W}being{W}run|no{W}longer{W}exists){C} RETURN(&rxterminated);
 A3{_}(thread|threadgroup|suspend|resume)({W}{C})? RETURN(&rxthread_cmd);
 A4{_}(delete{W}|un)display({W}{C})?	RETURN(&rxundisplay);

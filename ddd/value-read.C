@@ -124,7 +124,7 @@ static DispValueType _determine_type (string& value)
     static regex rxstruct_begin(
 	"(" RXADDRESS ")? *"
 	"([(]|[{]|record\n|RECORD\n|RECORD |OBJECT "
-	"|struct|class|union).*");
+	"|struct|class|union|interface).*");
     static regex rxstruct_end("([)]|[}]|end\n|END\n|end;|END;)");
 #endif
 
@@ -132,6 +132,7 @@ static DispValueType _determine_type (string& value)
     {
 	// Check for empty struct.
 	char *v = value;
+	value.consuming(true);
 	string addr;
 	bool ok = (read_struct_begin(value, addr) && 
 		   value.contains(rxstruct_end, 0));
@@ -139,15 +140,28 @@ static DispValueType _determine_type (string& value)
 	if (ok)
 	    return Struct;
 
-	// Check for leading keywords.
+	switch (gdb->program_language())
+	{
+	case LANGUAGE_PASCAL:
+	case LANGUAGE_ADA:
+	case LANGUAGE_CHILL:
+	{
+	    // Check for keywords introducing a struct (not
+	    // necessarily followed by braces or likewise)
 #if RUNTIME_REGEX
-	static regex rxstruct_keyword_begin(
-	    "(" RXADDRESS ")? *"
-	    "(record\n|RECORD\n|RECORD |OBJECT "
-	    "|struct|class|union).*");
+	    static regex rxstruct_keyword_begin(
+		"(" RXADDRESS ")? *"
+		"(record\n|RECORD\n|RECORD |OBJECT).*");
 #endif
-	if (value.matches(rxstruct_keyword_begin))
-	    return Struct;
+	    if (value.matches(rxstruct_keyword_begin))
+		return Struct;
+
+	    break;
+	}
+
+	default:
+	    break;		// Don't care
+	}
 
 	// Check for leading braces.  DEC DBX uses `{' for arrays as
 	// well as for structs; likewise, AIX DBX uses `(' for arrays
@@ -289,6 +303,7 @@ DispValueType determine_type(const string& value)
 #endif
 
     char *v = value;
+    ((string &)value).consuming(true);
     DispValueType type = _determine_type((string &)value);
     ((string &)value) = v;
 
@@ -601,10 +616,17 @@ bool read_array_begin(string& value, string& addr)
 
     // DBX on DEC prepends `struct' or `class' before each struct;
     // XDB also appends the struct type name.
-    if (value.contains("struct", 0)
-	|| value.contains("class", 0)
-	|| value.contains("union", 0))
+    if (value.contains("struct", 0) ||
+	value.contains("class", 0) ||
+	value.contains("union", 0) ||
+	value.contains("interface", 0))
+    {
+	// Skip prefix
+	if (!value.contains('{'))
+	    return false;
+
 	value = value.from('{');
+    }
 
     if (!gdb->has_array_braces() && value.matches(rxindex))
     {
@@ -624,8 +646,6 @@ bool read_array_begin(string& value, string& addr)
 	value = value.after("RECORD");
     else if (value.contains("OBJECT", 0))
 	value = value.after("OBJECT");
-    else if (value.contains("interface", 0))
-	value = value.after("interface");
     else
 	return false;
 
