@@ -64,6 +64,14 @@ char exit_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
 
+#if defined(HAVE_RAISE)
+#if !defined(HAVE_RAISE_DECL)
+extern int raise(int sig);
+#endif
+#else // !HAVE_RAISE
+#define raise(sig) kill(getpid(), sig)
+#endif
+
 static void ddd_signal(int sig...);
 static void ddd_fatal(int sig...);
 
@@ -205,7 +213,7 @@ static void ddd_signal(int sig...)
 {
     ddd_cleanup();
     signal(sig, SignalProc(SIG_DFL));
-    kill(getpid(), sig);
+    raise(sig);
 }
 
 // Fatal signal handler: issue error message and re-raise signal
