@@ -156,3 +156,24 @@ dnl an alternate name for DDD.
 define([DDD], [[@DDD@]])dnl
 define([Ddd], [[@Ddd@]])dnl
 define([ddd], [[@ddd@]])dnl
+dnl
+dnl
+dnl Font sizes
+dnl ----------
+dnl
+ifelse(FONT_RESOLUTION,points,
+dnl Resolution-independent settings.
+dnl Default: use 80 (SMALL), 90 (NORMAL), and 120 (LARGE)  1/10 point fonts.
+define(FONT_SMALL,   *-80)dnl
+define(FONT_NORMAL,  *-90)dnl
+define(FONT_LARGE,  *-120)dnl
+define(VSL_POINTS,     90)dnl
+define(VSL_PIXELS,      0)dnl 0 means to ignore pixels and use points instead
+,dnl
+dnl Resolution-dependent settings.
+dnl Default: use 10 (SMALL), 12 (NORMAL), and 14 (LARGE) pixel fonts.
+define(FONT_SMALL,  10-*)dnl
+define(FONT_NORMAL, 12-*)dnl
+define(FONT_LARGE,  14-*)dnl
+define(VSL_POINTS,     0)dnl 0 means to ignore points and use pixels instead
+define(VSL_PIXELS,   12))dnl

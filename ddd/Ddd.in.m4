@@ -126,7 +126,7 @@ Ddd*saveOptionsOnExit: off
 ! run in the execution window.
 Ddd*termCommand: xterm \
 -bg 'grey90' -fg 'black' -cr 'DarkGreen' \
--fn '-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*' \
+-fn '-*-lucidatypewriter-medium-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*' \
 -title 'DDD: Execution Window' -e /bin/sh -c
 
 
@@ -853,77 +853,51 @@ Ddd*maxDisplayNumber:    99
 ! Note: LessTif 0.79 always wants `FONTLIST_DEFAULT_TAG_STRING' 
 ! instead of `charset' for TextField and Text widgets; this must also 
 ! be the first font specified.
+!
+! Note: To switch between resolution-independent and resolution-dependent
+! settings, run
+! * `rm Ddd.in; make RESOLUTION=pixels Ddd' - resolution-dependent setting
+! * `rm Ddd.in; make RESOLUTION=points Ddd' - resolution-independent setting
+! Also see the file `ddd/macros.m4' for setting font sizes.
 
+! General font definitions.
 Ddd*fontList: \
--*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset,\
--*-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*=small,\
--*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=tt,\
--*-lucidatypewriter-bold-r-*-*-12-*-*-*-*-*-*-*=tb,\
--*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=key,\
--*-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*=rm,\
--*-helvetica-medium-o-*-*-12-*-*-*-*-*-*-*=sl,\
--*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=bf,\
--*-helvetica-bold-o-*-*-12-*-*-*-*-*-*-*=bs,\
--*-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*=Logo,\
--*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=logo,\
--*-symbol-*-*-*-12-*-*-*-*-*-*-*=symbol
+-*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=FONTLIST_DEFAULT_TAG_STRING,\
+-*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=charset,\
+-*-helvetica-bold-r-*-*-FONT_SMALL-*-*-*-*-iso8859-*=small,\
+-*-lucidatypewriter-medium-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=tt,\
+-*-lucidatypewriter-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=tb,\
+-*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=key,\
+-*-helvetica-medium-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=rm,\
+-*-helvetica-medium-o-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=sl,\
+-*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=bf,\
+-*-helvetica-bold-o-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=bs,\
+-*-helvetica-bold-r-*-*-FONT_LARGE-*-*-*-*-iso8859-*=Logo,\
+-*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=logo,\
+-*-symbol-*-*-*-*-FONT_NORMAL-*-*-*-*-*-*=symbol
 
-! An alternate, resolution-independent setting.
-! Ddd*fontList: \
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset,\
-! -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\
-! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=tt,\
-! -*-lucidatypewriter-bold-r-*-*-*-90-*-*-*-*-*-*=tb,\
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\
-! -*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=rm,\
-! -*-helvetica-medium-o-*-*-*-90-*-*-*-*-*-*=sl,\
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=bf,\
-! -*-helvetica-bold-o-*-*-*-90-*-*-*-*-*-*=bs,\
-! -*-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*=Logo,\
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=logo,\
-! -*-symbol-*-*-*-*-90-*-*-*-*-*-*=symbol
 
 ! Fixed-width fonts.  `lucidatypewriter' is the font the DDD developers
 ! prefer; another popular choice is `courier'.
 Ddd*XmTextField.FontList: \
--*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+-*-lucidatypewriter-medium-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=FONTLIST_DEFAULT_TAG_STRING,\
+-*-lucidatypewriter-medium-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=charset
 Ddd*XmText.FontList:	  \
--*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
-
-! The resolution-independent alternative.
-! Ddd*XmTextField.FontList: \
-! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
-! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
-! Ddd*XmText.FontList:	  \
-! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
-! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+-*-lucidatypewriter-medium-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=FONTLIST_DEFAULT_TAG_STRING,\
+-*-lucidatypewriter-medium-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=charset
 
 
 ! Command tool fonts.  Slightly smaller.
 Ddd*tool_buttons.run.fontList: \
--*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
-Ddd*tool_buttons.break.fontList:  \
--*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
-Ddd*tool_buttons*fontList:  \
--*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*=charset
+-*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=FONTLIST_DEFAULT_TAG_STRING,\
+-*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=charset
+Ddd*tool_buttons.break.fontList: \
+-*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=FONTLIST_DEFAULT_TAG_STRING,\
+-*-helvetica-bold-r-*-*-FONT_NORMAL-*-*-*-*-iso8859-*=charset
+Ddd*tool_buttons*fontList: \
+-*-helvetica-medium-r-*-*-FONT_SMALL-*-*-*-*-iso8859-*=FONTLIST_DEFAULT_TAG_STRING,\
+-*-helvetica-medium-r-*-*-FONT_SMALL-*-*-*-*-iso8859-*=charset
 
-! The resolution-independent alternative.
-! Ddd*tool_buttons.run.fontList: \
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
-! Ddd*tool_buttons.break.fontList: \
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
-! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
-! Ddd*tool_buttons*fontList: \
-! -*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
-! -*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset
 
 ! For fonts in the execution window, see the `termCommand' resource, above.
 ! For fonts in the data display, see the `vslDefs' resource, below.
@@ -1079,9 +1053,16 @@ Ddd*grey_cond.labelPixmap:	grey_cond
 ! #replace stdfontpoints\n\
 ! #replace stdfontweight\n\
 ! stdfontfamily() = family_typewriter();\n\
-! stdfontsize()   = 12;	\n\
-! stdfontpoints() = 0;	\n\
+! stdfontsize()   = 0;	\n\
+! stdfontpoints() = 90;	\n\
 ! stdfontweight() = weight_medium();
+
+! Default setting: set up font sizes
+Ddd*vslDefs: \
+#replace stdfontsize\n\
+#replace stdfontpoints\n\
+stdfontsize()   = VSL_PIXELS;\n\
+stdfontpoints() = VSL_POINTS;
 
 ! See the file `ddd.vsl' for further definitions to override here.
 
@@ -3547,6 +3528,7 @@ Ddd*toolbar*hide_detail.labelString: 	Hide ()
 Ddd*toolbar*rotate.labelString:		Rotate ()
 Ddd*toolbar*rotateAll.labelString:	Rotate All ()
 Ddd*toolbar*new.labelString:		Undisplay ()
+Ddd*toolbar*deref.labelString:		Display *()
 Ddd*toolbar*set.labelString:		Set ()
 Ddd*toolbar*delete.labelString:		Undisplay ()
 
