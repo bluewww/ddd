@@ -48,14 +48,18 @@ void ExitCB(Widget, XtPointer client_data, XtPointer)
     exit(int(client_data));
 }
 
-static char **saved_argv    = 0;
-static char **saved_environ = 0;
+static char **_saved_argv    = 0;
+static char **_saved_environ = 0;
+
+// Return environment
+char **saved_argv()    { return _saved_argv; }
+char **saved_environ() { return _saved_environ; }
 
 // Restart program
 void RestartCB(Widget, XtPointer, XtPointer)
 {
-    environ = saved_environ;
-    execvp(saved_argv[0], saved_argv);
+    environ = saved_environ();
+    execvp(saved_argv()[0], saved_argv());
     exit(EXIT_FAILURE);
 }
 
@@ -67,23 +71,23 @@ void register_restart(char *argv[])
     while (argv[argc] != 0)
 	argc++;
 
-    saved_argv = new char *[argc + 1];
+    _saved_argv = new char *[argc + 1];
     for (i = 0; i < argc; i++)
     {
-	saved_argv[i] = new char[strlen(argv[i]) + 1];
-	strcpy(saved_argv[i], argv[i]);
+	_saved_argv[i] = new char[strlen(argv[i]) + 1];
+	strcpy(_saved_argv[i], argv[i]);
     }
-    saved_argv[argc] = 0;
+    _saved_argv[argc] = 0;
 
     int envc = 0;
     while (environ[envc] != 0)
 	envc++;
 
-    saved_environ = new char *[envc + 1];
+    _saved_environ = new char *[envc + 1];
     for (i = 0; i < envc; i++)
     {
-	saved_environ[i] = new char[strlen(environ[i]) + 1];
-	strcpy(saved_environ[i], environ[i]);
+	_saved_environ[i] = new char[strlen(environ[i]) + 1];
+	strcpy(_saved_environ[i], environ[i]);
     }
-    saved_environ[envc] = 0;
+    _saved_environ[envc] = 0;
 }

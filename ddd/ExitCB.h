@@ -48,6 +48,10 @@ extern void RestartCB(Widget, XtPointer, XtPointer);
 // Save environment
 extern void register_restart(char *argv[]);
 
+// Return saved environment
+extern char **saved_argv();
+extern char **saved_environ();
+
 #endif // _DDD_ExitCB_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
 
