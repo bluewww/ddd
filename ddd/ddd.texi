@@ -493,7 +493,7 @@ $ ./sample 8000 7000 5000 1000 4000
 Although the output is sorted and contains the right number of
 arguments, some arguments are missing and replaced by bogus numbers;
 here, @code{8000} is missing and replaced by
-@code{1913}.@footnote{Actual numbers and behaviour on your system may
+@code{1913}.@footnote{Actual numbers and behavior on your system may
 vary.}
 
 Let us use @value{DDD} to see what is going on.  First, you must compile
@@ -548,7 +548,7 @@ line 31.
 
 @page
 The next thing to do is to actually @dfn{execute} the program, such that
-you can examine its behaviour (@pxref{Running}).  Select @samp{Program
+you can examine its behavior (@pxref{Running}).  Select @samp{Program
 @result{} Run} to execute the program; the @samp{Run Program} dialog
 appears.
 
@@ -560,7 +560,7 @@ appears.
 
 In @samp{Run with Arguments}, you can now enter arguments for the
 @file{sample} program.  Enter the arguments resulting in erroneous
-behaviour here---that is, @samp{8000 7000 5000 1000 4000}.  Click on
+behavior here---that is, @samp{8000 7000 5000 1000 4000}.  Click on
 @samp{Run} to start execution with the arguments you just entered.
 
 GDB now starts @file{sample}.  Execution stops after a few moments as
@@ -6300,7 +6300,7 @@ Layouting the graph may introduce @dfn{edge hints}; that is, edges are
 no more straight lines, but lead to an edge hint and from there to their
 destination.  Edge hints can be moved around like arbitrary displays.
 
-@cindex Comact Layout
+@cindex Compact Layout
 To enable a more compact layout, you can set the @samp{Edit @result{}
 Preferences @result{} Data @result{} Compact Layout} option.  This
 realizes an alternate layout algorithm, where successors are placed next
@@ -6812,7 +6812,7 @@ There are two ways to examine the values:
 @item
 You can dump the memory in the debugger console (using @samp{Print}).
 If you repeat the resulting @samp{x} command by pressing @key{Return} in
-the debugger console (@pxref{Repeating Commands}), the following area of
+the debugger console (@pxref{Command History}), the following area of
 memory is shown.
 
 @item
@@ -7012,14 +7012,16 @@ soon as possible, to prevent accidental alterations to machine code.
 @node Commands
 @chapter The Command-Line Interface
 
-...
+All the buttons you click within @value{DDD} get eventually translated
+into some debugger command, shown in the debugger console.  You can also
+type in and edit these commands directly.
 
 @menu
 * Entering Commands::           
 * TTY mode::                    
 * Integrating DDD::             
-* Defining Commands::           
 * Defining Buttons::            
+* Defining Commands::           
 @end menu
 
 @node Entering Commands
@@ -7034,49 +7036,321 @@ arbitrary debugger commands; use the @key{Return} key to enter them.
 
 @menu
 * Command Completion::          
-* Repeating Commands::          
 * Command History::             
 @end menu
 
 @node Command Completion
 @subsection Command Completion
+@cindex Completion of commands
+@cindex Command completion
 
-@node Repeating Commands
-@subsection Repeating Commands
+When using GDB or Perl, you can use the @key{TAB} key for
+@emph{completing} commands and arguments.  This works in the debugger
+console as well as in all other text windows.
+
+GDB can fill in the rest of a word in a command for you, if there is
+only one possibility; it can also show you what the valid possibilities
+are for the next word in a command, at any time.  This works for GDB
+commands, GDB subcommands, and the names of symbols in your program.
+
+Press the @key{TAB} key whenever you want GDB to fill out the rest
+of a word.  If there is only one possibility, GDB fills in the
+word, and waits for you to finish the command (or press @key{RET} to
+enter it).  For example, if you type
+@example
+(gdb) info bre @key{TAB}
+@end example
+
+@noindent
+GDB fills in the rest of the word @samp{breakpoints}, since that is
+the only @code{info} subcommand beginning with @samp{bre}:
+
+@example
+(gdb) info breakpoints
+@end example
+
+@noindent
+You can either press @key{RET} at this point, to run the @code{info
+breakpoints} command, or backspace and enter something else, if
+@samp{breakpoints} does not look like the command you expected.  (If you
+were sure you wanted @code{info breakpoints} in the first place, you
+might as well just type @key{RET} immediately after @samp{info bre},
+to exploit command abbreviations rather than command completion).
+
+If there is more than one possibility for the next word when you press
+@key{TAB}, @value{DDD} sounds a bell.  You can either supply more
+characters and try again, or just press @key{TAB} a second time; GDB
+displays all the possible completions for that word.  For example, you
+might want to set a breakpoint on a subroutine whose name begins with
+@samp{make_}, but when you type @kbd{b make_@key{TAB}}, @value{DDD} just
+sounds the bell.  Typing @key{TAB} again displays all the function names
+in your program that begin with those characters.  If you type @key{TAB} 
+again, you cycle through the list of completions, for example:
+
+@example
+(gdb) b make_ @key{TAB}
+@exdent @value{DDD} sounds bell; press @key{TAB} again, to see:
+make_a_section_from_file     make_environ               
+make_abs_section             make_function_type         
+make_blockvector             make_pointer_type          
+make_cleanup                 make_reference_type        
+make_command                 make_symbol_completion_list
+(gdb) b make_ @key{TAB}
+@exdent @value{DDD} presents one expansion after the other:
+(gdb) b make_a_section_from_file @key{TAB}
+(gdb) b make_abs_section @key{TAB}
+(gdb) b make_blockvector @key{TAB}
+@end example
+
+@noindent
+After displaying the available possibilities, GDB copies your partial
+input (@samp{b make_} in the example) so you can finish the command---by 
+pressing @key{TAB} again, or by entering the remainder manually.
+
+@cindex Quotes in commands
+@cindex Completion of quoted strings
+Sometimes the string you need, while logically a ``word'', may contain
+parentheses or other characters that GDB normally excludes from its
+notion of a word.  To permit word completion to work in this situation,
+you may enclose words in @code{'} (single quote marks) in GDB commands.
+
+The most likely situation where you might need this is in typing the
+name of a C++ function.  This is because C++ allows function overloading
+(multiple definitions of the same function, distinguished by argument
+type).  For example, when you want to set a breakpoint you may need to
+distinguish whether you mean the version of @code{name} that takes an
+@code{int} parameter, @code{name(int)}, or the version that takes a
+@code{float} parameter, @code{name(float)}.  To use the word-completion
+facilities in this situation, type a single quote @code{'} at the
+beginning of the function name.  This alerts GDB that it may need to
+consider more information than usual when you press @key{TAB} to request
+word completion:
+
+@example
+(gdb) b 'bubble( @key{TAB}
+bubble(double,double)    bubble(int,int)
+(gdb) b 'bubble(
+@end example
+
+In some cases, @value{DDD} can tell that completing a name requires
+using quotes.  When this happens, @value{DDD} inserts the quote for you
+(while completing as much as it can) if you do not type the quote in the
+first place:
+
+@example
+(gdb) b bub @key{TAB}
+@exdent @value{DDD} alters your input line to the following, and rings a bell:
+(gdb) b 'bubble(
+@end example
+
+@noindent
+In general, @value{DDD} can tell that a quote is needed (and inserts it)
+if you have not yet started typing the argument list when you ask for
+completion on an overloaded symbol.
+
+If you prefer to use the @key{TAB} key for switching between items,
+unset @samp{Edit @result{} Preferences @result{} General @result{} TAB
+Key completes in All Windows}.  This is useful if you have
+pointer-driven keyboard focus (see below) and no special usage for the
+@key{TAB} key.  If the option is set, the @key{TAB} key completes in the
+debugger console only.
+
 
 @node Command History
-@subsection The Command History
+@subsection Command History
+
+@cindex Command, repeating
+@cindex Command, searching
+@cindex Command history
+@cindex Searching commands
+@kindex Up
+@kindex Down
+@kindex Return
+You can @emph{repeat} previous and next commands by pressing the
+@key{Up} and @key{Down} arrow keys, respectively.  This presents you
+previous and later commands on the command line; use @key{Return} to
+apply the current command.
+
+If you enter an empty line (just use @key{Return} at the debugger
+prompt), the last command is repeated as well.
+
+@samp{Commands @result{} Command History} shows the command history.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-history, 16cm}
+@sp 1
+@end ifnotinfo
+
+@kindex Ctrl+B
+@kindex Ctrl+F
+@kindex ESC
+You can @emph{search} for previous commands by pressing @key{Ctrl+B}.
+This invokes @emph{incremental search mode,} where you can enter a
+string to be searched in previous commands.  Press @key{Ctrl+B} again to
+repeat the search, or @key{Ctrl+F} to search in the reverse direction.
+To return to normal mode, press @key{ESC}, or use any cursor command.
+
+The command history is automatically saved when exiting @value{DDD}.
+
+... (more on history)
 
 
 @node TTY mode
 @section Entering Commands at the TTY
+@cindex TTY interface
+
+Rather than entering commands at the debugger console, you may prefer to
+enter commands at the terminal window @value{DDD} was invoked from.
+
+When @value{DDD} is invoked using the @samp{--tty} option, it enables
+its @emph{TTY interface}, taking additional debugger commands from
+standard input and forwarding debugger output to standard output, just
+as if the inferior debugger had been invoked directly.  All remaining
+@value{DDD} functionality stays unchanged.
+
+By default, the debugger console remains closed if @value{DDD} is
+invoked using the @samp{--tty} option.  Use @samp{View @result{}
+Debugger Console} to open it.
+
+
+@cindex Readline
+DDD can be configured to use the @samp{readline} library for reading in
+commands from standard input.  This @sc{gnu} library provides consistent
+behavior for programs which provide a command line interface to the
+user.  Advantages are @sc{gnu} Emacs-style or @dfn{vi}-style inline
+editing of commands, @code{csh}-like history substitution, and a storage
+and recall of command history across debugging sessions.  @xref{Command
+Line Editing, Command Line Editing, Command Line Editing, gdb, Debugging
+with GDB}, for details on command-line editing via the TTY interface.
+
+
 
 @node Integrating DDD
 @section Integrating @value{DDD}
+@cindex Integrating @value{DDD}
 
-@menu
-* Using DDD with GNU Emacs::    
-* Using DDD with XEmacs::       
-* Using DDD with XXGDB::        
-@end menu
+You can run @value{DDD} as an inferior debugger in other debugger
+front-ends, combining their special abilities with those of @value{DDD}.
 
-@node Using DDD with GNU Emacs
+To have @value{DDD} run as an inferior debugger in other front-ends, the
+general idea is to set up your debugger front-end such that
+@samp{@value{ddd} --tty} is invoked instead of the inferior debugger.
+When @value{DDD} is invoked using the @samp{--tty} option, it enables
+its @emph{TTY interface}, taking additional debugger commands from
+standard input and forwarding debugger output to standard output, just
+as if the inferior debugger had been invoked directly.  All remaining
+@value{DDD} functionality stays unchanged.
+
+In case your debugger front-end uses the GDB @samp{-fullname} option to
+have GDB report source code positions, the @samp{--tty} option is not
+required.  @value{DDD} recognizes the @samp{-fullname} option, finds
+that it has been invoked from a debugger front-end and automatically
+enables the TTY interface.
+
+If @value{DDD} is invoked with the @samp{-fullname} option, the debugger
+console and the source window are initially disabled, as their
+facilities are supposed to be provided by the integrating front-end.  In
+case of need, you can use the @samp{View} menu to re-enable these
+windows.
+
+
 @subsection Using @value{DDD} with GNU Emacs
+@cindex Emacs, integrating @value{DDD}
+@pindex emacs
+To integrate @value{DDD} with GNU Emacs, use @samp{M-x gdb} or @samp{M-x
+dbx} in Emacs to start a debugging session.  At the prompt, enter
+@samp{@value{ddd} --tty} (followed by @samp{--dbx} or @samp{--gdb}, if
+required), and the name of the program to be debugged.  Proceed as
+usual.
 
-@node Using DDD with XEmacs
+
 @subsection Using @value{DDD} with XEmacs
+@cindex XEmacs, integrating @value{DDD}
+@pindex xemacs
+To integrate @value{DDD} with XEmacs, set the variable
+@code{gdb-command-name} to @samp{"ddd"}, by inserting the following line
+in your @file{~/.emacs} file:
 
-@node Using DDD with XXGDB
+@example
+(setq gdb-command-name "@value{ddd}")
+@end example
+
+You can also evaluate this expression by pressing @key{ESC} @key{:} and
+entering it directly (@key{ESC} @key{ESC} for XEmacs 19.13 and earlier).
+
+To start a @value{DDD} debugging session in XEmacs, use @samp{M-x gdb} or
+@samp{M-x gdbsrc}.  Proceed as usual.
+
+
+
 @subsection Using @value{DDD} with XXGDB
+@cindex XXGDB, integrating @value{DDD}
+@pindex xxgdb
+To integrate @value{DDD} with @code{xxgdb}, invoke @code{xxgdb} as
 
-
-@node Defining Commands
-@section Defining Commands
+@example
+xxgdb -db_name @value{ddd} -db_prompt '(gdb) '
+@end example
 
 
 @node Defining Buttons
 @section Defining Buttons
+@cindex Buttons, defining
 
+To facilitate interaction, you can add own command buttons to
+@value{DDD}.  These buttons can be added below the debugger console
+(@samp{Console Buttons}), the source window (@samp{Source Buttons}), or
+the data window (@samp{Data Buttons}).
+
+@cindex Button editor
+To define individual buttons, use the @emph{Button Editor}, invoked via
+@samp{Commands @result{} Edit Buttons}.  The button editor displays a
+text, where each line contains the command for exactly one button.
+Clicking on @samp{OK} creates the appropriate buttons from the text.  If
+the text is empty (the default), no button is created.
+
+@lbindex Edit Buttons
+As a simple example, assume you want to create a @samp{print i}
+button.  Invoke @samp{Commands @result{} Edit Buttons} and enter a line
+saying @samp{print i} in the button editor.  Then click on
+@samp{OK}.  A button named @samp{Print i} will now appear below the
+debugger console---try it!  To remove the button, reopen the button
+editor, clear the @samp{print i} line and press @samp{OK} again.
+
+If a button command contains @samp{()}, the string @samp{()} will
+automatically be replaced by the contents of the argument field.  For
+instance, a button named @samp{return ()} will execute the GDB
+@samp{return} command with the current content of the argument field as
+argument.
+
+@lbindex Enable supported buttons only
+By default, @value{DDD} disables buttons whose commands are not
+supported by the inferior debugger.  To enable such buttons, unset the
+@samp{Enable supported buttons only} toggle in the button editor.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-button-editor, 16cm}
+@sp 1
+@end ifnotinfo
+
+@value{DDD} also allows you to specify control sequences and special
+labels for user-defined buttons.  @xref{Customizing Buttons}, for
+details.
+
+
+@node Defining Commands
+@section Defining Commands
+@cindex Command, defining
+@cindex Command, user-defined
+@cindex User-defined command
+
+Aside from breakpoint commands (@pxref{Breakpoint Commands}),
+@value{DDD} also allows you to define user-defined commands.  A
+@emph{user-defined command} is a sequence of commands to which you
+assign a new name as a command.  This new command can be entered at the
+debugger prompt or invoked via a button.
 
 @menu
 * GDB Simple Commands::         
@@ -7086,14 +7360,232 @@ arbitrary debugger commands; use the @key{Return} key to enter them.
 
 @node GDB Simple Commands
 @subsection Defining Simple Commands using GDB
+@cindex Command, defining in GDB
+
+Aside from breakpoint commands (see @samp{Breakpoint commands},
+above), @value{DDD} also allows you to store sequences of commands
+as a user-defined GDB command.  A @emph{user-defined command}
+is a sequence of GDB commands to which you assign a new name
+as a command.  Using @value{DDD}, this is done via the @emph{Command
+Editor}, invoked via @samp{Commands @result{} Define Command}.
+
+A GDB command is created in five steps:
+
+@enumerate
+@item
+@lbindex Command
+Enter the name of the command in the @samp{Command} field.  Use the
+drop-down list on the right to select from already defined commands.
+
+@item
+@lbindex Record
+@cindex Recording commands
+@cindex Command, recording
+Click on @samp{Record} to begin the recording of the command sequence.
+
+@item
+Now interact with @value{DDD}.  While recording, @value{DDD} does not
+execute commands, but simply records them to be executed when the
+breakpoint is hit.  The recorded debugger commands are shown in the
+debugger console.
+
+@item
+@lbindex End
+To stop the recording, click on @samp{End} or enter @samp{end} at
+the GDB prompt.  To @emph{cancel} the recording, click on
+@samp{Interrupt} or press @key{ESC}.
+
+@item
+@lbindex Edit >>
+@lbindex Edit <<
+Click on @samp{Edit >>} to edit the recorded commands.
+When done with editing, click on @samp{Edit <<} to close the
+commands editor.
+@end enumerate
+
+@lbindex Apply
+After the command is defined, you can enter it at the GDB prompt.  You
+may also click on @samp{Apply} to apply the given user-defined command.
+
+@lbindex Button
+For convenience, you can assign a button to the defined command.
+Enabling one of the @samp{Button} locations will add a button with the
+given command to the specified location.  If you want to edit the
+button, select @samp{Commands @result{} Edit Buttons}.  @xref{Defining
+Buttons}, for a discussion.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-define-command, 16cm}
+@sp 1
+@end ifnotinfo
+
+When user-defined GDB commands are executed, the commands of the
+definition are not printed.  An error in any command stops execution of
+the user-defined command.@footnote{If you use @value{DDD} commands
+within command definitions, or if you include debugger commands that
+resume execution, these commands will be realized transparently as
+@dfn{auto-commands}---that is, they won't be executed directly by the
+inferior debugger, but result in a command string being sent to
+@value{DDD}.  This command string is then interpreted by @value{DDD} and
+sent back to the inferior debugger, possibly prefixed by some other
+commands such that @value{DDD} can update its state.  @xref{Commands
+with Other Debuggers}, for a discussion.}
+
+If used interactively, commands that would ask for confirmation
+proceed without asking when used inside a user-defined command.  Many
+GDB commands that normally print messages to say what they are
+doing omit the messages when used in a user-defined command.
+
+To save all command definitions, use @samp{Edit @result{} Save Options}.
+
 
 @node GDB Argument Commands
 @subsection Defining Argument Commands using GDB
+@cindex Command, argument
+
+@lbindex ()
+If you want to pass arguments to user-defined commands, you can enable 
+the @samp{()} toggle button in the Command Editor.  Enabling
+@samp{()} has two effects:
+
+@itemize @bullet
+@item
+While recording commands, all references to the argument field are taken
+@emph{symbolically} instead of literally.  The argument field value is
+frozen to @samp{$arg0}, which is how GDB denotes the argument of a
+user-defined command.  When GDB executes the command, it will replace
+@samp{$arg0} by the current command argument.
+
+@item
+When assigning a button to the command, the command will be suffixed by
+the current contents of the argument field.
+@end itemize
+
+While defining a command, you can toggle the @samp{()} button as you
+wish to switch between using the argument field symbolically and
+literally.
+
+@cmindex contuntil
+As an example, let us define a command @samp{contuntil} that will set a
+breakpoint in the given argument and continue execution.
+
+@enumerate
+@item
+Enter @samp{contuntil} in the @samp{Command} field.
+
+@item
+Enable the @samp{()} toggle button.
+
+@item
+Now click on @samp{Record} to start recording.  Note that the
+contents of the argument field change to @samp{$arg0}.
+
+@item
+Click on @samp{Break at ()} to create a breakpoint.  Note that the
+recorded breakpoint command refers to @samp{$arg0}.
+
+@item
+Click on @samp{Cont} to continue execution.
+
+@item
+Click on @samp{End} to end recording.  Note that the argument field
+is restored to its original value.
+
+@item
+Finally, click on one of the @samp{Button} locations.  This creates a 
+@samp{Contuntil ()} button where @samp{()} will be replaced by the
+current contents of the argument field---and thus passed to the
+@samp{contuntil} command.
+
+@item
+You can now either use the @samp{Contuntil ()} button or enter a
+@samp{contuntil} command at the GDB prompt.  (If you plan to
+use the command frequently, you may wish to define a @samp{cu}
+command, which again calls @samp{contuntil} with its argument.  This
+is a nice exercise.)
+@end enumerate
+
+There is a little drawback with argument commands: a user-defined
+command in GDB has no means to access the argument list as a whole; only
+the first argument (up to whitespace) is processed.  This may change in
+future GDB releases.
+
 
 @node Commands with Other Debuggers
 @subsection Defining Commands using Other Debuggers
+@cindex Command, defining with other debuggers
 
+If your inferior debugger allows you to define own command sequences,
+you can also use these user-defined commands within @value{DDD}; just
+enter them at the debugger prompt.
 
+However, you may encounter some problems:
+
+@itemize @bullet
+@item
+In contrast to the well-documented commands of the inferior debugger,
+@value{DDD} does not know what a user-defined command does.  This may
+lead to inconsistencies between @value{DDD} and the inferior debugger.
+For instance, if your the user-defined command @samp{bp} sets a
+breakpoint, @value{DDD} may not display it immediately, because
+@value{DDD} does not know that @samp{bp} changes the breakpoint state.
+
+@item
+You cannot use @value{DDD} @strong{graph} commands within user-defined
+commands.  This is only natural, because user-defined commands are
+interpreted by the inferior debugger, which does not know about
+@value{DDD} commands.
+@end itemize
+
+@cindex Auto-command
+@cindex Command, auto
+As a solution, @value{DDD} provides a simple facility called
+@dfn{auto-commands}.  If @value{DDD} receives any output from the
+inferior debugger in the form @samp{@var{prefix} @var{command}}, it will
+interpret @var{command} as if it had been entered at the debugger
+prompt.  @var{prefix} is a user-defined string, for example
+@samp{@value{ddd}: }.
+
+@cmindex gd
+Suppose you want to define a command @samp{gd} that serves as
+abbreviation for @samp{graph display}.  All the command @strong{gd} has
+to do is to issue a string
+
+@example
+@value{ddd}: graph display @var{argument}
+@end example
+
+where @emph{argument} is the argument given to @samp{gd}.  Using
+GDB, this can be achieved using the @strong{echo} command.  In
+your @strong{~/.gdbinit} file, insert the lines
+
+@example
+define gd
+  echo @value{ddd}: graph display $arg0\n
+end
+@end example
+
+To complete the setting, you must also set the @samp{autoCommandPrefix}
+resource to the @samp{@value{ddd}: } prefix you gave in your command.
+In @samp{~/.ddd/init}, write:
+
+@example
+Ddd*autoCommandPrefix: @value{ddd}:\ 
+@end example
+
+@noindent
+(Be sure to leave a space after the trailing backslash.)
+
+Entering @samp{gd foo} will now have the same effect as entering
+@samp{graph display foo} at the debugger prompt.
+
+Please note: In your commands, you should choose some other prefix than
+@samp{@value{ddd}: }.  This is because auto-commands raise a security
+problem, since arbitrary commands can be executed.  Just imagine some
+malicious program issuing a string like @samp{@var{prefix} shell rm -fr
+~} when being debugged!  As a consequence, be sure to choose your own
+@var{prefix}; it must be at least three characters long.
 
 
 @node Customizing
@@ -7118,6 +7610,7 @@ full list of @value{DDD} resources.
 * Customizing the Tool Bar::    
 * Customizing the Menu Bar::    
 * Customizing the Command Tool::  
+* Customizing Buttons::         
 * Customizing Debugger Interaction::  
 * Customizing Source::          
 * Customizing Machine Code::    
@@ -7904,8 +8397,9 @@ The Command Tool can be customized in various ways.
 * Disabling the Command Tool::  
 * Customizing Tool Position::   
 * Customizing Tool Decoration::  
-* Customizing Tool Buttons::    
 @end menu
+
+@xref{Customizing Buttons}, for details on customizing the tool buttons.
 
 @node Disabling the Command Tool
 @subsection Disabling the Command Tool
@@ -7992,10 +8486,150 @@ extra check takes some time.
 @end defvr
 
 
-@node Customizing Tool Buttons
-@subsection Customizing Command Tool Buttons
+@node Customizing Buttons
+@section Customizing Buttons
 
-The following resources control the command tool buttons:
+The following resources control user-defined buttons:
+
+@defvr Resource consoleButtons (class Buttons)
+A newline-separated list of buttons to be added under the debugger
+console.  Each button issues the command given by its name.
+
+The following characters have special meanings:
+@itemize @bullet
+@item
+Commands ending with '@strong{...} insert their name, followed by a space, in
+the debugger console.
+
+@item
+Commands ending with a control character (that is, @samp{^} followed
+by a letter or @samp{?}) insert the given control character.
+
+@item
+The string @samp{()} is replaced by the current contents 
+of the argument field @samp{()}.
+
+@item
+The string specified in the @samp{labelDelimiter} resource (usually
+@samp{//}) separates the command name from the button label.  If no
+button label is specified, the capitalized command will be used as
+button label.
+@end itemize
+
+The following button names are reserved:
+
+@table @samp
+@item Apply
+Send the given command to the debugger.
+
+@item Back
+Lookup previously selected source position.
+
+@item Clear
+Clear current command
+
+@item Complete
+Complete current command.
+
+@item Edit
+Edit current source file.
+
+@item Forward
+Lookup next selected source position.
+
+@item Make
+Invoke the @samp{make} program, using the most recently given arguments.
+
+@item Next
+Show next command
+
+@item No
+Answer current debugger prompt with @samp{no}.  This button is
+visible only if the debugger asks a yes/no question.
+
+@item Prev
+Show previous command
+
+@item Reload
+Reload source file.
+
+@item Yes
+Answer current debugger prompt with @samp{yes}.  This button is
+visible only if the debugger asks a yes/no question.
+@end table
+
+The default resource value is empty---no console buttons are
+created.
+
+Here are some examples to insert into your @samp{~/.@value{ddd}/init} file.
+These are the settings of @value{DDD} 1.x:
+@example
+@value{Ddd}*consoleButtons: Yes\nNo\nbreak^C
+@end example
+
+This setting creates some more buttons:
+@example
+  @strong{@value{Ddd}*consoleButtons: \
+  Yes\nNo\nrun\nClear\nPrev\nNext\nApply\nbreak^C}
+@end example
+
+See also the @samp{dataButtons}, @samp{sourceButtons} and
+@samp{toolButtons} resources.
+@end defvr
+
+@defvr Resource dataButtons (class Buttons)
+A newline-separated list of buttons to be added under the data display.
+Each button issues the command given by its name.  See the
+@samp{consoleButtons} resource, above, for details on button syntax.
+
+The default resource value is empty---no source buttons are
+created.
+@end defvr
+
+
+@defvr Resource sourceButtons (class Buttons)
+A newline-separated list of buttons to be added under the debugger
+console.  Each button issues the command given by its name.  See the
+@samp{consoleButtons} resource, above, for details on button syntax.
+
+The default resource value is empty---no source buttons are
+created.
+
+Here are some example to insert into your @samp{~/.@value{ddd}/init} file.
+These are the settings of @value{DDD} 1.x:
+
+@example
+@value{Ddd}*sourceButtons: \
+  run\nstep\nnext\nstepi\nnexti\ncont\n\
+  finish\nkill\nup\ndown\n\
+  Back\nForward\nEdit\ninterrupt^C
+@end example
+
+This setting creates some buttons which are not found on the command tool:
+
+@example
+  @value{Ddd}*sourceButtons: \
+  print *()\ngraph display *()\nprint /x ()\n\
+  whatis ()\nptype ()\nwatch ()\nuntil\nshell
+@end example
+
+An even more professional setting uses customized button labels.
+
+@example
+  @value{Ddd}*sourceButtons: \
+  print *(()) // Print *()\n\
+  graph display *(()) // Display *()\n\
+  print /x ()\n\
+  whatis () // What is ()\n\
+  ptype ()\n\
+  watch ()\n\
+  until\n\
+  shell
+@end example
+
+See also the @samp{consoleButtons} and @samp{dataButtons} resources,
+above, and the @samp{toolButtons} resource, below.
+@end defvr
 
 @defvr Resource toolButtons (class Buttons)
 A newline-separated list of buttons to be included in the command tool
@@ -8020,8 +8654,13 @@ If the @samp{toolButtons} resource value is empty, the command tool is
 not created.
 @end defvr
 
-The following resources control whether command tool buttons are made
-insensitive:
+
+The following resources set up button details:
+
+@defvr Resource labelDelimiter (class LabelDelimiter)
+The string used to separate labels from commands and shortcuts.
+Default is @samp{//}.
+@end defvr
 
 @defvr Resource verifyButtons (class VerifyButtons)
 If @samp{on} (default), verify for each button whether its command is
@@ -8569,12 +9208,12 @@ A newline-separated list of display expressions to be included in the
 @samp{New Display} menu for DBX.  
 
 If a line contains a label delimiter (the string @samp{//}; can be
-changed via the @samp{labelDelimiter} resource), the string before the
-delimiter is used as @var{expression}, and the string after the
-delimiter is used as label.  Otherwise, the label is @samp{Display
-@var{expression}}.  Upon activation, the string @samp{()} in
-@var{expression} is replaced by the name of the currently selected
-display.
+changed via the @samp{labelDelimiter} resource; @pxref{Customizing
+Buttons}), the string before the delimiter is used as @var{expression},
+and the string after the delimiter is used as label.  Otherwise, the
+label is @samp{Display @var{expression}}.  Upon activation, the string
+@samp{()} in @var{expression} is replaced by the name of the currently
+selected display.
 @end defvr
 
 @defvr Resource gdbDisplayShortcuts (class DisplayShortcuts)
@@ -8587,11 +9226,6 @@ A newline-separated list of display expressions to be included in the
 A newline-separated list of display expressions to be included in the
 @samp{New Display} menu for JDB.  See the description of
 @samp{dbxDisplayShortcuts}, above.
-@end defvr
-
-@defvr Resource labelDelimiter (class LabelDelimiter)
-The string used to separate labels from commands and shortcuts.
-Default is @samp{//}.
 @end defvr
 
 @defvr Resource perlDisplayShortcuts (class DisplayShortcuts)
