@@ -146,11 +146,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 316 Alias hints of clustered displays remain in place.
 
-320 Finish Undo/Redo:
-    - [`delete', Undo, Redo] does not work properly with multiple
-      breakpoints.
-    - Make Undo/Redo buttons sensitive only if action is possible.
-    - Add a hint in Undo/Redo menu item which action is to be undone.
-    - Add undo support for displays and settings.
+320*Finish Undo/Redo:
+    - Add undo support for displays.
 
 321 (Insert new bugs here)

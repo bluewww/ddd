@@ -65,6 +65,7 @@ char settings_rcsid[] =
 #include "SmartC.h"
 #include "SourceView.h"
 #include "StringSA.h"
+#include "UndoBuffer.h"
 #include "VarArray.h"
 #include "WidgetSA.h"
 #include "buttons.h"
@@ -125,6 +126,10 @@ static WidgetArray       infos_entries;
 //-----------------------------------------------------------------------
 // Functions
 //-----------------------------------------------------------------------
+
+static void get_setting(ostream& os, DebuggerType type,
+			const string& base, string value);
+
 
 // Find widget for command COMMAND
 static Widget command_to_widget(Widget ref, string command)
@@ -542,6 +547,15 @@ void process_show(string command, string value, bool init)
 
     if (button != 0)
     {
+	if (!init)
+	{
+	    // Save current state in undo buffer
+	    ostrstream command;
+	    get_setting(command, gdb->type(), XtName(button), 
+			settings_values[button]);
+	    undo_buffer.add_command(string(command));
+	}
+
 	settings_values[button] = value;
 	if (init)
 	    settings_initial_values[button] = value;
@@ -2308,6 +2322,83 @@ void reset_signals()
     }
 }
 
+static void get_setting(ostream& os, DebuggerType type,
+			const string& base, string value)
+{
+    if (value == "unlimited")
+	value = "0";
+
+    switch (type)
+    {
+    case GDB:
+    case DBX:
+	if (base == "dbxenv disassembler_version" ||
+	    base == "dbxenv rtc_error_log_file_name" ||
+	    base == "dbxenv output_log_file_name")
+	{
+	    // Do nothing (DBX) - dependent on the current machine etc.
+	}
+	else if (base == "set remotelogfile" && value == "")
+	{
+	    // This is the default setting - do nothing (GDB)
+	}
+	else if (base == "set remotedevice" && value == "")
+	{
+	    // This is the default setting - do nothing (GDB)
+	}
+	else if (base.contains("set $cur", 0) ||
+		 base.contains("set $new", 0) ||
+		 base.contains("set $pid", 0))
+	{
+	    // Do nothing - dependent on the current file (DEC DBX)
+	}
+	else if (base == "set $defaultin" ||
+		 base == "set $defaultout" ||
+		 base == "set $historyevent")
+	{
+	    // Do nothing - dependent on the current state (SGI DBX)
+	}
+	else if (base.contains("set $", 0))
+	{
+	    // Add setting (DBX).
+	    os << base << " = " << value << '\n';
+	}
+	else if (base.contains("set ", 0))
+	{
+	    // Add setting (GDB).
+
+	    // Jonathan Edwards <edwards@intranet.com> states:
+	    // DDD gets all confused with gdb radix settings. When
+	    // it configures gdb it assumes a decimal radix. But
+	    // if you specify a non-decimal radix, then all
+	    // settings made after that are incorrect.  I would
+	    // suggest prefixing "0d" to all decimal numbers.
+	    if (value.matches(rxint) && atoi(value) > 1)
+		value.prepend("0d");
+
+	    os << base << " " << value << '\n';
+	}
+	else if (base.contains("dbxenv ", 0))
+	{
+	    // Add setting (DBX).
+	    os << base << " " << value << '\n';
+	}
+	else
+	{
+	    // `dir' and `path' values are not saved, since they are
+	    // dependent on the current machine and the current
+	    // executable (GDB).
+	}
+	break;
+
+    case XDB:
+    case JDB:
+	// Add setting
+	os << base << ' ' << value << '\n';
+	break;
+    }
+}
+
 // Fetch GDB settings string
 string get_settings(DebuggerType type)
 {
@@ -2315,88 +2406,16 @@ string get_settings(DebuggerType type)
     if (settings == 0)
 	return "";
 
-    string command = "";
+    ostrstream command;
     for (int i = 0; i < settings_entries.size(); i++)
     {
 	Widget entry = settings_entries[i];
 	string value = settings_values[entry];
-	if (value == "unlimited")
-	    value = "0";
 
-	string base = XtName(entry);
-
-	switch (type)
-	{
-	case GDB:
-	case DBX:
-	    if (base == "dbxenv disassembler_version" ||
-		base == "dbxenv rtc_error_log_file_name" ||
-		base == "dbxenv output_log_file_name")
-	    {
-		// Do nothing (DBX) - dependent on the current machine etc.
-	    }
-	    else if (base == "set remotelogfile" && value == "")
-	    {
-		// This is the default setting - do nothing (GDB)
-	    }
-	    else if (base == "set remotedevice" && value == "")
-	    {
-		// This is the default setting - do nothing (GDB)
-	    }
-	    else if (base.contains("set $cur", 0) ||
-		     base.contains("set $new", 0) ||
-		     base.contains("set $pid", 0))
-	    {
-		// Do nothing - dependent on the current file (DEC DBX)
-	    }
-	    else if (base == "set $defaultin" ||
-		     base == "set $defaultout" ||
-		     base == "set $historyevent")
-	    {
-		// Do nothing - dependent on the current state (SGI DBX)
-	    }
-	    else if (base.contains("set $", 0))
-	    {
-		// Add setting (DBX).
-		command += base + " = " + value + '\n';
-	    }
-	    else if (base.contains("set ", 0))
-	    {
-		// Add setting (GDB).
-
-		// Jonathan Edwards <edwards@intranet.com> states:
-		// DDD gets all confused with gdb radix settings. When
-		// it configures gdb it assumes a decimal radix. But
-		// if you specify a non-decimal radix, then all
-		// settings made after that are incorrect.  I would
-		// suggest prefixing "0d" to all decimal numbers.
-		if (value.matches(rxint) && atoi(value) > 1)
-		    value.prepend("0d");
-
-		command += base + " " + value + '\n';
-	    }
-	    else if (base.contains("dbxenv ", 0))
-	    {
-		// Add setting (DBX).
-		command += base + " " + value + '\n';
-	    }
-	    else
-	    {
-		// `dir' and `path' values are not saved, since they are
-		// dependent on the current machine and the current
-		// executable (GDB).
-	    }
-	    break;
-
-	case XDB:
-	case JDB:
-	    // Add setting
-	    command += base + ' ' + value + '\n';
-	    break;
-	}
+	get_setting(command, type, XtName(entry), value);
     }
 
-    return command;
+    return string(command);
 }
 
 // Fetch GDB signal handling string
