@@ -538,23 +538,16 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 
 
 # Jacek M. Holeczek <holeczek@heracles.cto.us.edu.pl> says these `dummy'
-# rules are required to disable default rules under AIX MAKE.
+# rules are required to disable default rules under AIX MAKE.  They
+# should do no harm using other MAKEs.
 .C:
-	@:
 .C~:
-	@:
 .c:
-	@:
 .c~:
-	@:
 .f:
-	@:
 .f~:
-	@:
 .sh:
-	@:
 .sh~:
-	@:
 
 
 ## Script rules
