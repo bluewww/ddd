@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-// Lookup DBX cache
+// Lookup a DBX function
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -57,6 +57,10 @@ static StringStringAssoc pos_cache;
 
 string dbx_lookup(const string& func_name, bool silent)
 {
+    // Protect against `1' or `' being looked up as function names
+    if (!func_name.contains(rxidentifier, 0))
+	return "";		// Bad function name
+
     if (pos_cache.has(func_name))
     {
 	string pos = pos_cache[func_name];
