@@ -319,6 +319,7 @@ private:
     static void enable_displayOQC    (const string& answer, void* data);
     static void delete_displayOQC    (const string& answer, void* data);
 
+    static void add_aliases(IntArray& a);
     static void sort_and_check(IntArray& a);
 
     static void select_with_all_descendants(GraphNode *node);

@@ -2871,6 +2871,29 @@ void DataDisp::new_data_displaysOQAC (string answers[],
 // Refresh graph
 //-----------------------------------------------------------------------------
 
+class RefreshInfo {
+public:
+    bool verbose;
+
+    RefreshInfo()
+	: verbose(false)
+    {}
+
+    ~RefreshInfo()
+    {}
+
+private:
+    RefreshInfo(const RefreshInfo&)
+	: verbose(false)
+    {
+	assert(0);
+    }
+    RefreshInfo& operator = (const RefreshInfo&)
+    {
+	assert(0); return *this;
+    }
+};
+
 int DataDisp::add_refresh_data_commands(StringArray& cmds)
 {
     int initial_size = cmds.size();
@@ -2950,9 +2973,12 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose)
     add_refresh_addr_commands(cmds);
     while (dummy.size() < cmds.size())
 	dummy += (void *)PROCESS_ADDR;
-	    
+
+    static RefreshInfo info;
+    info.verbose = verbose;
+
     bool ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
-				 refresh_displayOQAC, (void *)verbose);
+				 refresh_displayOQAC, (void *)&info);
 
     if (!ok || cmds.size() == 0)
     {
@@ -2960,6 +2986,17 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose)
 	refresh_graph_edit();
 	if (verbose)
 	    prompt();
+    }
+    else
+    {
+	// Unmerge all displays
+	MapRef ref;
+	for (int k = disp_graph->first_nr(ref); 
+	     k != 0;
+	     k = disp_graph->next_nr(ref))
+	{
+	    unmerge_display(k);
+	}
     }
 }
 
@@ -2973,7 +3010,7 @@ void DataDisp::refresh_displayOQAC (string answers[],
     StringArray user_answers;
     StringArray addr_answers;
 
-    bool verbose = bool(data);
+    RefreshInfo *info = (RefreshInfo *)data;
 
     for (int i = 0; i < count; i++)
     {
@@ -3012,8 +3049,8 @@ void DataDisp::refresh_displayOQAC (string answers[],
 	// If we had a `disabling' message, refresh displays once more
 	if (disabling_occurred)
 	{
-	    refresh_displaySQ(0, verbose);
-	    verbose = false;	// No more prompts
+	    refresh_displaySQ(0, info->verbose);
+	    info->verbose = false;	// No more prompts
 	}
     }
 
@@ -3021,12 +3058,15 @@ void DataDisp::refresh_displayOQAC (string answers[],
 	process_user(user_answers);
 
     if (addr_answers.size() > 0)
+    {
+	force_check_aliases = true;
 	process_addr(addr_answers);
+    }
 
     delete[] answers;
     delete[] qu_datas;
 
-    if (verbose)
+    if (info->verbose)
 	prompt();
 }
 
@@ -3036,6 +3076,7 @@ void DataDisp::refresh_displayOQAC (string answers[],
 // Disabling Displays
 //-----------------------------------------------------------------------------
 
+// Convert A to a space-separated string
 string DataDisp::numbers(IntArray& a)
 {
     sort(a);
@@ -3051,6 +3092,7 @@ string DataDisp::numbers(IntArray& a)
     return ret;
 }
 
+// Sort and verify the display numbers in DISPLAY_NRS
 void DataDisp::sort_and_check(IntArray& display_nrs)
 {
     sort(display_nrs);
@@ -3067,8 +3109,37 @@ void DataDisp::sort_and_check(IntArray& display_nrs)
     }
 }
 
+// For all nodes in DISPLAY_NRS, add their aliases
+void DataDisp::add_aliases(IntArray& display_nrs)
+{
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->nodeptr()->hidden())
+	{
+	    bool have_alias = false;
+	    bool need_alias = false;
+
+	    for (int i = 0; i < display_nrs.size(); i++)
+	    {
+		if (display_nrs[i] == dn->disp_nr())
+		    have_alias = true;
+		if (display_nrs[i] == dn->alias_of)
+		    need_alias = true;
+	    }
+
+	    if (need_alias && !have_alias)
+		display_nrs += dn->disp_nr();
+	}
+    }
+}
+
 void DataDisp::disable_display(IntArray& display_nrs)
 {
+    add_aliases(display_nrs);
+
     if (display_nrs.size() > 0)
 	gdb_command("graph disable display " + numbers(display_nrs));
 }
@@ -3132,6 +3203,8 @@ void DataDisp::disable_displayOQC (const string& answer, void *data)
 
 void DataDisp::enable_display(IntArray& display_nrs)
 {
+    add_aliases(display_nrs);
+
     if (display_nrs.size() > 0)
 	gdb_command("graph enable display " + numbers(display_nrs));
 }
@@ -4130,8 +4203,10 @@ void DataDisp::RefreshAddrCB(XtPointer client_data, XtIntervalId *id)
 	while (dummy.size() < cmds.size())
 	    dummy += (void *)PROCESS_ADDR;
 
+	static RefreshInfo info;
+	info.verbose = false;
 	ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
-				refresh_displayOQAC, (void *)false);
+				refresh_displayOQAC, (void *)&info);
 
 	sent = cmds.size() > 0;
     }
