@@ -38,7 +38,7 @@ char regex_rcsid[] =
 
 #include <ctype.h>
 #include <new.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <iostream.h>
 #include <string.h>
 

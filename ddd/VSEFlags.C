@@ -31,7 +31,6 @@ char VSEFlags_rcsid[] =
 #include <stdio.h>
 #include <string.h>
 #include <strstream.h>
-#include <malloc.h>
 #include <X11/Intrinsic.h>
 
 #include "assert.h"

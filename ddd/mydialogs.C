@@ -38,7 +38,6 @@ char mydialogs_rcsid[] =
 //-----------------------------------------------------------------------------
 #include "mydialogs.h"
 
-#include <malloc.h>
 #include <stdlib.h>
 
 // includes von Motif-Zeugs
