@@ -55,7 +55,7 @@ string MString::str() const
     if (m == 0)
 	return "";
 
-    string s = "";
+    string s;
 
     XmStringContext c;
     XmStringInitContext(&c, m);

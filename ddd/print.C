@@ -220,7 +220,7 @@ static int print_to_printer(string command, PrintGC& gc,
 
     StatusDelay delay(msg(tmpfile, displays, false));
 
-    command = command + " " + tmpfile;
+    command += " " + tmpfile;
 
     LiterateAgent *print_agent = 
 	new LiterateAgent(XtWidgetToApplicationContext(gdb_w), command);

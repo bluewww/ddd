@@ -1461,6 +1461,19 @@ strRep* string_Scapitalize(strRep* src, strRep* dest)
     return dest;
 }
 
+string replicate(char y, int n)
+{
+    string w;
+    w.rep = string_Sresize(w.rep, n);
+    char* p = w.rep->s;
+    while (n-- > 0)
+    {
+        *p++ = y;
+    }
+    *p = 0;
+    return w;
+}
+
 string replicate(const string& y, int n)
 {
     string w;

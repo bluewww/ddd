@@ -55,7 +55,9 @@ static void trace(const string& prefix, void *call_data)
     }
 
     s = quote(s);
-    string nl = string("\\n\"\n") + replicate(' ', prefix.length()) + "\"";
+    string nl = "\\n\"\n";
+    nl += replicate(' ', prefix.length());
+    nl += "\"";
     s.gsub("\\n", nl);
 
     if (s_ends_with_nl)

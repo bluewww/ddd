@@ -388,7 +388,9 @@ void GDBAgent::trace(const char *prefix, void *call_data) const
     }
 
     s = quote(s);
-    string nl = string("\\n\"\n") + replicate(string(' '), strlen(prefix)) + "\"";
+    string nl = "\\n\"\n";
+    nl += replicate(' ', strlen(prefix));
+    nl += "\"";
     s.gsub("\\n", nl);
 
     if (s_ends_with_nl)

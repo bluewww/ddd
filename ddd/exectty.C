@@ -714,7 +714,7 @@ static void unredirect_process(string& command,
 		string new_args;
 		add_sh_redirection(new_args, "/dev/tty", args);
 		if (!args.empty())
-		    new_args = new_args + " " + args;
+		    new_args += " " + args;
 		command = gdb->run_command(new_args);
 	    }
 	}

@@ -100,7 +100,7 @@ static string component(string name, FontComponent n)
     while (n >= Foundry && (i = name.index('-', i + 1)) >= 0)
 	n--;
 
-    string w = "";
+    string w;
     if (i >= 0)
     {
 	w = name.after(i);
@@ -378,7 +378,7 @@ static void title(const AppData& ad, const string& s)
     if (title_seen)
 	std::cout << "\n\n";
 
-    std::cout << s << "\n" << replicate(string("-"), s.length()) << "\n\n";
+    std::cout << s << "\n" << replicate('-', s.length()) << "\n\n";
 
     title_seen = true;
 }

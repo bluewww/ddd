@@ -546,7 +546,9 @@ string VSEFlags::explain(bool vsl_prefix_required)
 
 	if (entry.type == TITLE)
 	{
-	    s = s + "\n" + entry.usage + "\n";
+	    s += '\n';
+	    s += entry.usage;
+	    s += '\n';
 	    continue;
 	}
 

@@ -923,7 +923,7 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 
 	for (int j = 0; callbacks != 0 && callbacks[j].callback != 0; j++)
 	{
-	    string cmd = "";
+	    string cmd;
 
 	    if (callbacks[j].callback == gdbCommandCB)
 	    {

@@ -2309,7 +2309,7 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
     else
     {
 	// Ladebug gives us all settings in one line.
-	commands = commands + '$';
+	commands += '$';
 	while (!commands.empty())
 	{
 	    commands = commands.from('$');

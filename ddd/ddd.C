@@ -3366,7 +3366,9 @@ XrmDatabase GetFileDatabase(const string& filename)
 
 	    for (int i = 0; copy && i < int(XtNumber(do_not_copy)); i++)
 	    {
-		const string res = string(".") + do_not_copy[i] + ":";
+		string res(".");
+		res += do_not_copy[i];
+		res += ":";
 		if (line.contains(res) && version_mismatch)
 		{
 #if 0
@@ -5301,7 +5303,7 @@ static void create_status(Widget parent)
     // the size of the status window to the length of the very first
     // message, so we give some huge string at the beginning.
     MString short_msg = rm("Hello, world!");
-    MString long_msg = short_msg + rm(replicate(string(' '), 90));
+    MString long_msg = short_msg + rm(replicate(' ', 90));
 
     arg = 0;
     XtSetArg(args[arg], XmNlabelString,      long_msg.xmstring()); arg++;
@@ -5977,9 +5979,9 @@ static void gdb_ctrl(char ctrl)
 	{
 	    // Go to next tab position
 	    const int TAB_WIDTH = DEFAULT_TAB_WIDTH;
-	    int column = promptPosition - startOfLine;
-	    int spaces = TAB_WIDTH - column % TAB_WIDTH;
-	    string spacing = replicate(string(' '), spaces);
+	    const int column = promptPosition - startOfLine;
+	    const int spaces = TAB_WIDTH - column % TAB_WIDTH;
+	    const string spacing = replicate(' ', spaces);
 	
 	    XmTextInsert(gdb_w, promptPosition, CONST_CAST(char*,spacing.chars()));
 	    promptPosition += spacing.length();

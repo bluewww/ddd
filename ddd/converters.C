@@ -501,23 +501,24 @@ static Boolean CvtStringToXmString(Display *display,
 				   XrmValue *fromVal, XrmValue *toVal,
 				   XtPointer *)
 {
-    const string font_esc = "@";
+    static const string font_esc = "@";
 
     // Get string
-    string source = str(fromVal, false);
+    const string source = str(fromVal, false);
     string charset = (String)MSTRING_DEFAULT_CHARSET;
 
-    int n_segments = source.freq(font_esc) + 1;
+    const int n_segments = source.freq(font_esc) + 1;
     string *segments = new string[n_segments];
     
     split(source, segments, n_segments, font_esc);
 
     MString buf(0, true);
-    string txtbuf = "";
+    string txtbuf;
     for (int i = 0; i < n_segments; i++)
     {
-	string segment;
+        string segment;
 
+	// set segment
 	if (i == 0)
 	{
 	    // At beginning of text
@@ -529,7 +530,7 @@ static Boolean CvtStringToXmString(Display *display,
 	    if (len > 0)
 	    {
 		// Found @[font-id] <segment>: process it
-		string c = segments[i].before(len);
+		const string c = segments[i].before(len);
 		segment = segments[i].from(int(c.length()));
 		if (segment.empty())
 		{
@@ -537,7 +538,8 @@ static Boolean CvtStringToXmString(Display *display,
 		    if (conversionMacroTable.has(c))
 		    {
 			// Replace @MACRO@ by value
-			segment = conversionMacroTable[c] + segments[++i];
+		        segment = conversionMacroTable[c];
+		        segment += segments[++i];
 		    }
 		    else
 		    {
@@ -549,7 +551,8 @@ static Boolean CvtStringToXmString(Display *display,
 					"XtToolkitError",
 					"No such macro: @%s@",
 					&params, &num_params);
-			segment = font_esc + segment + font_esc;
+			segment.prepend(font_esc);
+			segment += font_esc;
 		    }
 		}
 		else
@@ -563,7 +566,8 @@ static Boolean CvtStringToXmString(Display *display,
 	    else if (segments[i].contains(' ', 0))
 	    {
 		// found @[space]: remove space
-		segment = font_esc + segments[i].from(1);
+		segment = font_esc;
+		segment += segments[i].from(1);
 	    }
 	    else
 	    {
@@ -572,9 +576,10 @@ static Boolean CvtStringToXmString(Display *display,
 	    }
 	}
 
+	// parse segment and set bud and textbuf
 	while (segment.contains('\n'))
 	{
-	    string seg = segment.before('\n');
+	    const string seg = segment.before('\n');
 	    segment = segment.after('\n');
 
 	    buf    += MString(seg.chars(), 
@@ -596,14 +601,15 @@ static Boolean CvtStringToXmString(Display *display,
     XmString target = XmStringCopy(buf.xmstring());
     delete[] segments;
 
-    if (buf.str() != txtbuf)
+    const string bufstr(buf.str());
+    if (bufstr != txtbuf)
     {
 	std::cerr << "Conversion error:\n"
 	     << quote(source) << "\n"
 	     << "should be\n"
 	     << quote(txtbuf) << "\n"
 	     << "but is"
-	     << quote(buf.str()) << "\n";
+	     << quote(bufstr) << "\n";
     }
 
     if (target == 0)
@@ -695,9 +701,9 @@ static Boolean CvtStringToXmFontList(Display *display,
 				     XtPointer *)
 {
     // Get string
-    string source = str(fromVal, false);
+    const string source = str(fromVal, false);
 
-    int n_segments = source.freq(',') + 1;
+    const int n_segments = source.freq(',') + 1;
     string *segments = new string[n_segments];
     
     split(source, segments, n_segments, ',');

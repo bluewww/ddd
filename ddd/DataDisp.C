@@ -4266,11 +4266,11 @@ void DataDisp::insert_data_node(DispNode *dn, int depend_nr,
 // Create a new cluster named NAME and return its number
 int DataDisp::new_cluster(const string& name, bool plotted)
 {
-    string cmd = plotted ? "plot" : "display";
+    const string cmd = plotted ? "plot" : "display";
 
     string base = CLUSTER_COMMAND;
     if (!name.empty())
-	base = base + " " + name;
+	base += " " + name;
 
     gdb_command("graph " + cmd + " `"  + base + "`", last_origin, 0);
     return -next_ddd_display_number;
@@ -5638,7 +5638,7 @@ static string fmt(string s, unsigned size)
     if (s.length() > size)
 	s = s.before(int(size));
     else if (s.length() < size)
-	s += replicate(string(' '), size - s.length());
+	s += replicate(' ', size - s.length());
 
     assert(s.length() == size);
     return s;

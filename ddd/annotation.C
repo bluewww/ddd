@@ -127,8 +127,8 @@ static bool sub1(string& a, string s1, const char *s2)
     {
 	for (int p = 0; p < 2; p++)
 	{
-	    const string open  = replicate(string("([{"[p]), depth);
-	    const string close = replicate(string(")]}"[p]), depth);
+	    const string open  = replicate("([{"[p], depth);
+	    const string close = replicate(")]}"[p], depth);
 
 	    if (_sub1(a, prefix + open + s1 + close, s2))
 		return true;

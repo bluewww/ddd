@@ -819,7 +819,7 @@ public:
 				int startpos = 0);
     friend string common_suffix(const string& x, const string& y, 
 				int startpos = -1);
-    // friend string replicate(char c, int n);
+    friend string replicate(char c, int n);
     friend string replicate(const string& y, int n);
     friend string join(const string *src, int n, const string& sep);
 
