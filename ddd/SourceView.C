@@ -81,6 +81,7 @@ char SourceView_rcsid[] =
 #include "cook.h"
 #include "misc.h"
 #include "shorten.h"
+#include "tabs.h"
 #include "wm.h"
 
 // Motif stuff
@@ -389,60 +390,6 @@ string& SourceView::current_text(Widget w)
 	return current_source;
 }
 
-
-//-----------------------------------------------------------------------
-// Tabulator stuff
-//-----------------------------------------------------------------------
-
-// Replace first '\t' by filling up spaces until POS is reached
-static void tabto(string& s, int pos)
-{
-    for (int i = 0; unsigned(i) < s.length() && i < pos; i++)
-    {
-	if (s[i] == '\t')
-	{
-	    int offset = pos - i;
-	    s(i, 1) = replicate(' ', offset);
-	    return;
-	}
-    }
-}
-    
-// Replace all '\t' by filling up spaces until multiple of TAB_WIDTH is reached
-static void untabify(string& str, int tab_width = 8)
-{
-    char *buffer = 
-	new char[str.length() + str.freq('\t') * (tab_width - 1) + 1];
-    char *b = buffer;
-
-    int column = 0;
-    int spaces;
-    const char *s = str.chars();
-    while (*s != '\0')
-    {
-	switch (*s)
-	{
-	case '\t':
-	    spaces = tab_width - (column % tab_width);
-	    while (spaces-- > 0)
-		*b++ = ' ';
-	    break;
-
-	default:
-	    *b++ = *s;
-	    break;
-	}
-
-	if (*s++ == '\n')
-	    column = 0;
-	else
-	    column++;
-    }
-    *b++ = '\0';
-
-    s = buffer;
-    delete[] buffer;
-}
 
 
 //-----------------------------------------------------------------------
@@ -3714,13 +3661,13 @@ void SourceView::EditBreakpointConditionDCB(Widget,
 
     if (client_data == 0)
     {
-	int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
-	for (int i = 0; breakpoint_nrs[i] > 0; i++)
+	IntArray breakpoint_nrs;
+	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
+	for (int i = 0; i < breakpoint_nrs.size(); i++)
 	{
 	    gdb_command("cond " + itostring(breakpoint_nrs[i])
 			+ " " + input);
 	}
-	delete[] breakpoint_nrs;
     }
     else
     {
@@ -3764,9 +3711,9 @@ void SourceView::EditBreakpointConditionCB(Widget,
     int *bp_nr_ptr = (int *)client_data;
     if (bp_nr_ptr == 0)
     {
-	int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
+	IntArray breakpoint_nrs;
+	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
 	bp_nr = breakpoint_nrs[0];
-	delete[] breakpoint_nrs;
     }
     else
     {
@@ -3832,12 +3779,10 @@ void SourceView::EditBreakpointIgnoreCountDCB(Widget,
 
     if (client_data == 0)
     {
-	int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
-	for (int i = 0; breakpoint_nrs[i] > 0; i++)
-	{
+	IntArray breakpoint_nrs;
+	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
+	for (int i = 0; i < breakpoint_nrs.size(); i++)
 	    gdb_command(ignore + itostring(breakpoint_nrs[i]) + " " + input);
-	}
-	delete[] breakpoint_nrs;
     }
     else
     {
@@ -3881,9 +3826,9 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
     int *bp_nr_ptr = (int *)client_data;
     if (bp_nr_ptr == 0)
     {
-	int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
+	IntArray breakpoint_nrs;
+	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
 	bp_nr = breakpoint_nrs[0];
-	delete[] breakpoint_nrs;
     }
     else
     {
@@ -3961,15 +3906,15 @@ void SourceView::BreakpointCmdCB(Widget,
 	    cmd = "sb";
     }
 
-    int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
-    if (breakpoint_nrs[0] > 0)
+    IntArray breakpoint_nrs;
+    getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
+    if (breakpoint_nrs.size() > 0)
     {
-	for (int i = 0; breakpoint_nrs[i] > 0; i++)
+	for (int i = 0; i < breakpoint_nrs.size(); i++)
 	    cmd += " " + itostring(breakpoint_nrs[i]);
 
 	gdb_command(cmd);
     }
-    delete[] breakpoint_nrs;
 }
 
 void SourceView::LookupBreakpointCB(Widget, XtPointer, XtPointer)
@@ -3977,12 +3922,10 @@ void SourceView::LookupBreakpointCB(Widget, XtPointer, XtPointer)
     if (breakpoint_list_w == 0)
 	return;
 
-    int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
-    if (breakpoint_nrs[0] > 0 && breakpoint_nrs[1] == 0)
-    {
+    IntArray breakpoint_nrs;
+    getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
+    if (breakpoint_nrs.size() == 1)
 	lookup("#" + itostring(breakpoint_nrs[0]));
-    }
-    delete[] breakpoint_nrs;
 }
 
 // Create labels for the list
@@ -4037,10 +3980,8 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer, XtPointer)
     if (edit_breakpoints_dialog_w == 0)
 	return;
 
-    int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
-    int count;
-    for (count = 0; breakpoint_nrs[count] != 0; count++)
-	;
+    IntArray breakpoint_nrs;
+    getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
 
     // Update selection
     MapRef ref;
@@ -4049,7 +3990,7 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer, XtPointer)
 	 bp = bp_map.next(ref))
 	bp->selected() = false;
 
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < breakpoint_nrs.size(); i++)
     {
 	int bp_number = breakpoint_nrs[i];
 	MapRef ref;
@@ -4065,21 +4006,19 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer, XtPointer)
 	}
     }
 
-    delete[] breakpoint_nrs;
-
     // Update buttons
     XtSetSensitive(bp_area[BPButtons::Lookup].widget,
-		   count == 1);
+		   breakpoint_nrs.size() == 1);
     XtSetSensitive(bp_area[BPButtons::Enable].widget,      
-		   gdb->type() != DBX && count > 0);
+		   gdb->type() != DBX && breakpoint_nrs.size() > 0);
     XtSetSensitive(bp_area[BPButtons::Disable].widget,     
-		   gdb->type() != DBX && count > 0);
+		   gdb->type() != DBX && breakpoint_nrs.size() > 0);
     XtSetSensitive(bp_area[BPButtons::Condition].widget,   
-		   gdb->type() == GDB && count > 0);
+		   gdb->type() == GDB && breakpoint_nrs.size() > 0);
     XtSetSensitive(bp_area[BPButtons::IgnoreCount].widget, 
-		   gdb->type() != DBX && count > 0);
+		   gdb->type() != DBX && breakpoint_nrs.size() > 0);
     XtSetSensitive(bp_area[BPButtons::Delete].widget,
-		   count > 0);
+		   breakpoint_nrs.size() > 0);
 }
 
 void SourceView::EditBreakpointsCB(Widget, XtPointer, XtPointer)

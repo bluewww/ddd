@@ -504,6 +504,7 @@ BASE_OBJECTS = \
 	rxclass.o    \
 	sigName.o    \
 	strclass.o   \
+	tabs.o       \
 	SignalB.o    \
 	TypeInfo.o   \
 	UniqueId.o   \
