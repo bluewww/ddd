@@ -52,7 +52,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2001-01-09
+@set DATE 2001-01-15
 
 @c Index stuff
 @c Labels
@@ -11084,9 +11084,9 @@ When done with editing, click on @samp{Edit <<} to close the
 commands editor.
 @end enumerate
 
-@lbindex Apply
+@lbindex Execute
 After the command is defined, you can enter it at the @GDB{} prompt.  You
-may also click on @samp{Apply} to apply the given user-defined command.
+may also click on @samp{Execute} to test the given user-defined command.
 
 @lbindex Button
 For convenience, you can assign a button to the defined command.

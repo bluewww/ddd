@@ -6042,6 +6042,7 @@ Click on LBL(Close) to close this window.
 
 Ddd*define_command.dialogTitle:    		DDD: Define Command
 
+Ddd*define_command.applyLabelString:    	Execute
 Ddd*define_command.cancelLabelString:    	Close
 
 Ddd*define_command*name.labelString:		Command
@@ -6104,7 +6105,7 @@ ITEM Use LBL(Button) to place the new command on a button.\n\
 To define a command with argument, enable the LBL(()) toggle.\n\
 This will make the command use LBL(()) as symbolic argument.\n\
 \n\
-Click on LBL(Apply) to apply the new command.\n\
+Click on LBL(Execute) to run the new command.\n\
 Click on LBL(Close) to close this window.
 
 
