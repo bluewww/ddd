@@ -2536,7 +2536,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 
     const string& name = disp_value->full_name();
     string value = gdb_question("print " + name);
-    if (value == string(-1))
+    if (value == NO_GDB_ANSWER)
     {
 	post_gdb_busy();
 	return;
