@@ -49,7 +49,9 @@ DDD 3.0 [in beta test]
     - DDD no longer indents the source code, leaving more horizontal
       space.  To change this, see `Edit | Preferences | Source |
       Source indentation'.
-    - Saving options is much, much faster.
+    - Save Options improvements.  DDD now saves whether a window is
+      open or closed and restores this setting upon start-up.  Saving
+      options is also much, much faster.
     - DBX settings now also work with SGI DBX.
 
     Bug fixes:
