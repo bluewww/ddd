@@ -183,15 +183,15 @@ void DispNode::refresh ()
 // In BOX, find outermost TagBox for given DispValue DV
 TagBox *DispNode::findTagBox(const Box *box, DispValue *dv)
 {
-    TagBox *tb = ptr_cast(TagBox, box);
+    TagBox *tb = ptr_cast(TagBox, (Box *)box);
     if (tb && tb->__data() == (void *)dv)
 	return tb;
 
-    HatBox *hb = ptr_cast(HatBox, box);
+    HatBox *hb = ptr_cast(HatBox, (Box *)box);
     if (hb)
 	return findTagBox(hb->box(), dv);
 
-    CompositeBox *cb = ptr_cast(CompositeBox, box);
+    CompositeBox *cb = ptr_cast(CompositeBox, (Box *)box);
     if (cb)
     {
 	for (int i = 0; i < cb->nchildren(); i++)
