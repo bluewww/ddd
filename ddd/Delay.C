@@ -52,9 +52,9 @@ char Delay_rcsid[] =
 DEFINE_TYPE_INFO_0(_Delay);
 DEFINE_TYPE_INFO_0(Delay);
 
-#define SMALL_HOURGLASS_CURSOR
+#define SMALL_HOURGLASS_CURSOR 1
 
-#if defined(SMALL_HOURGLASS_CURSOR) || defined(LARGE_HOURGLASS_CURSOR)
+#if SMALL_HOURGLASS_CURSOR || LARGE_HOURGLASS_CURSOR
 #include "time16.xbm"
 #include "time16m.xbm"
 #if time16_width != time16m_width || time16_height != time16m_height
@@ -62,7 +62,7 @@ DEFINE_TYPE_INFO_0(Delay);
 #endif
 #endif
 
-#ifdef LARGE_HOURGLASS_CURSOR
+#if LARGE_HOURGLASS_CURSOR
 #include "time32.xbm"
 #include "time32m.xbm"
 #if time32_width != time32m_width || time32_height != time32m_height
@@ -82,18 +82,18 @@ Cursor _Delay::hourglass_cursor()
 
     Display *display = XtDisplay(widget);
 
-#if defined(SMALL_HOURGLASS_CURSOR) || defined(LARGE_HORGLASS_CURSOR)
+#if SMALL_HOURGLASS_CURSOR || LARGE_HORGLASS_CURSOR
     Screen *screen = XtScreen(widget);
     Window rootWindow = RootWindowOfScreen(screen);
 
-    char *cursor_bits             = time16_bits;
-    char *cursor_mask_bits        = time16m_bits;
-    unsigned int cursor_width     = time16_width;
-    unsigned int cursor_height    = time16_height;
-    unsigned int cursor_x_hot     = time16_x_hot;
-    unsigned int cursor_y_hot     = time16_y_hot;
+    unsigned char *cursor_bits      = time16_bits;
+    unsigned char *cursor_mask_bits = time16m_bits;
+    unsigned int cursor_width       = time16_width;
+    unsigned int cursor_height      = time16_height;
+    unsigned int cursor_x_hot       = time16_x_hot;
+    unsigned int cursor_y_hot       = time16_y_hot;
 
-#ifdef LARGE_HOURGLASS_CURSOR
+#if LARGE_HOURGLASS_CURSOR
     // Fetch cursor shape
     unsigned int width, height;
     XQueryBestCursor(display, rootWindow, 32, 32, &width, &height);
@@ -110,10 +110,10 @@ Cursor _Delay::hourglass_cursor()
 #endif
 
     Pixmap cursor_pixmap = 
-	XCreateBitmapFromData(display, rootWindow, cursor_bits,
+	XCreateBitmapFromData(display, rootWindow, (char *)cursor_bits,
 			      cursor_width, cursor_height);
     Pixmap cursor_mask_pixmap = 
-	XCreateBitmapFromData(display, rootWindow, cursor_mask_bits,
+	XCreateBitmapFromData(display, rootWindow, (char *)cursor_mask_bits,
 			      cursor_width, cursor_height);
     
     XColor cursor_colors[2];
