@@ -1595,7 +1595,7 @@ int main()
 	return 1;
     
     char somedouble[] = "3.141529e+0";
-    return regexec(&compiled, somedouble, 0, (void *)0, 0);
+    return regexec(&compiled, somedouble, 0, 0, 0);
 }
 ], ice_cv_regcomp_broken=no, ice_cv_regcomp_broken=yes,
 ice_cv_regcomp_broken=yes)])dnl
