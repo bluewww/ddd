@@ -27,7 +27,7 @@
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 //-----------------------------------------------------------------------------
-// Erzeugung von Motif-Dialogen zur Auswahl von Display-Ausdruecken
+// Create dialogs to select display expressions
 //-----------------------------------------------------------------------------
 
 #ifndef _DDD_mydialogs_h

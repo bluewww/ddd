@@ -1,5 +1,5 @@
 // $Id$
-// Implementation Klasse VSLLib
+// List of VSLDefs
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -54,8 +54,8 @@ DEFINE_TYPE_INFO_0(VSLDefList)
 
 // VSLDefList
 
+// Evaluate expression
 const Box *VSLDefList::eval(Box *arg) const
-// Ausdruck auswerten
 {
     VSLDef *d = def(arg);
 
@@ -73,52 +73,48 @@ const Box *VSLDefList::eval(Box *arg) const
     return d ? d->eval(arg) : 0;
 }
 
+// Append def to list; if a new def was appended, set newFlag
 VSLDef* VSLDefList::add(bool &newFlag, VSLNode *pattern, VSLNode *expr,
-    string filename, int lineno)
-// Definition an Definitionsliste anhaengen;
-// Wenn neue Definition hinzugekommen, newFlag setzen
+			string filename, int lineno)
 {
     VSLDef *newdef = new VSLDef(this, pattern, expr, filename, lineno);
 
-    // Pruefen, ob bereits deklariert
+    // Check if already declared
     for (VSLDef *d = _first; d != 0; d = d->listnext())
 	if (*(d->node_pattern()) == *(newdef->node_pattern()))
 	{
-	    // Deklaration besteht bereits; 
-	    // Neue Definition loeschen
+	    // There is already a declaration: delete new definition
 	    newFlag = false;
-	    newdef->expr() = 0; // Ausdruck erhalten
+	    newdef->expr() = 0; // keep expression
 	    delete newdef;
 
 	    if (expr == 0)
 	    {
-		// n-te (n > 1) Deklaration: ignorieren
+		// n-th (n > 1) Declaration: ignore
 		return d;
 	    }
 
 	    if (d->expr() == 0)
 	    {
-		// Bisher nur deklariert, nicht aber definiert
-		// Definition eintragen und fertig.
-
+		// Only declared, but not yet defined: Insert def
 		d->expr() = expr;
 		return d;
 	    }
 
 	    if (*expr != *(d->expr()))
 	    {
-		// Bereits (abweichend) definiert
+		// Already defined
 		VSLLib::parse_error("'" + d->f_name() + "\' already defined");
 		VSLLib::eval_echo("(this is the previous definition)", d);
 		delete expr; return 0;
 	    }
 
-	    // Sonst: wie Neudeklaration behandeln
+	    // Otherwise: treat like a new declaration
 	    delete expr; return d;
 	}
 
-    // Neue Definitionen werden hintenangehaengt. Damit wird stets die *erste* 
-    // (und nicht etwa die letzte) passende Definition ausgewaehlt.
+    // New defs are appended at end.  Thus, we always choose the first
+    // matching def (and not the last, for instance).
     if (_last == 0)
 	_first = _last = newdef;
     else
@@ -131,7 +127,7 @@ VSLDef* VSLDefList::add(bool &newFlag, VSLNode *pattern, VSLNode *expr,
 }
 
 
-// Passende Definition auswaehlen
+// Choose suitable def
 VSLDef *VSLDefList::def(Box *arg) const
 {
     for (VSLDef *d = _first; d != 0; d = d->listnext())
@@ -142,15 +138,15 @@ VSLDef *VSLDefList::def(Box *arg) const
 }
 
 
+// Delete all definitions
 void VSLDefList::replace()
-// Alle Definitionen loeschen
 {
-    // Definitionen ausketten
+    // Detach all defs
     for (VSLDef *son = first(); son != 0; son = son->listnext())
     {
 	assert (son->deflist == this);
 
-	// Nachfolger anpassen
+	// Adapt successors
 	if (son->libnext())
 	    son->libnext()->libprev() = son->libprev();
 	else
@@ -159,7 +155,7 @@ void VSLDefList::replace()
 	    lib->_last = son->libprev();
 	}
 
-	// Vorgaenger anpassen
+	// Adapt predecessors
 	if (son->libprev())
 	    son->libprev()->libnext() = son->libnext();
 	else
@@ -169,17 +165,17 @@ void VSLDefList::replace()
 	}
     }
 
-    // Alle VSLDef's in dieser VSLDefList loeschen
+    // Delete all VSLDef's in this VSLDefList
     delete _first;
 
-    // Zeiger zuruecksetzen
+    // Reset pointers
     _first = _last = 0;
     _ndefs = 0;
 }
 
 
+// Destroy definition *and all successors*
 VSLDefList::~VSLDefList()
-// Definition *und alle Nachfolger* zerstoeren
 {
     if (_next)
 	delete _next;
@@ -188,13 +184,13 @@ VSLDefList::~VSLDefList()
 }
 
 
+// Representation invariant
 bool VSLDefList::OK() const
-// Pruefen, ob alles in Ordnung (*inklusive* Nachfolger)
 {
     VSLDef *d = _first;
     unsigned count = 0;
 
-    // Pruefen, ob _ndefs und _last ok
+    // Check whether _ndefs and _last are ok
     while (d != 0)
     {
 	d = d->listnext();
@@ -202,7 +198,7 @@ bool VSLDefList::OK() const
     }
     assert (count == _ndefs);
 
-    // Pruefen, ob Zeiger auf DefList ok
+    // Check whether Pointer to DefList is ok
     d = _first;
     while (d != 0)
     {
@@ -210,7 +206,7 @@ bool VSLDefList::OK() const
 	d = d->listnext();
     }
 
-    // Pruefen, ob Definitionen ok
+    // Check whether defs are ok
     for (d = _first; d != 0; d = d->listnext())
 	assert (d->OK());
 

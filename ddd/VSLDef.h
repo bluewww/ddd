@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse VSLDef
+// VSL definition
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -50,30 +50,30 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    VSLNode *_expr;             // Ausdruck (Definitionskoerper)
+    VSLNode *_expr;             // Expr (definition body)
     VSLNode *_node_pattern;     // Pattern
-    Box *_box_pattern;          // Compiliertes Pattern
+    Box *_box_pattern;          // Compiled pattern
 
-    unsigned _nargs;            // Anzahl Argumente
-    bool _straight;          // Flag: Argumentliste direkt uebernehmen?
+    unsigned _nargs;            // Number of args
+    bool _straight;		// Flag: Can we use arg list `as is'?
 
-    string _filename;           // Position Definition
+    string _filename;           // Position of definition
     int _lineno;
 
-    VSLDef *_listnext;          // naechste Definition in VSLDefList
-    VSLDef *_libnext;           // naechste Definition in VSLLib
-    VSLDef *_libprev;           // vorige Definition in VSLLib
+    VSLDef *_listnext;          // next definition in VSLDefList
+    VSLDef *_libnext;           // next definition in VSLLib
+    VSLDef *_libprev;           // previous definition in VSLLib
 
-    string args() const;        // Argumentliste erzeugen
+    string args() const;        // Create argument list
 
-    bool being_compiled;     // Schutz gegen rekursives compilePattern()
+    bool being_compiled;	// Protect against recursive compilePattern()
 
 public:
-    VSLDefList *deflist;        // Vater
+    VSLDefList *deflist;        // Parent
 
     // Constructor
     VSLDef(VSLDefList* l, VSLNode *pattern, VSLNode *e = 0,
-	string filename = "builtin", int lineno = 0);
+	   string filename = "builtin", int lineno = 0);
 
 private:
     // `Dummy' copy constructor
@@ -83,7 +83,7 @@ private:
     VSLDef& operator = (const VSLDef&);
 
 public:
-    // Ressourcen
+    // Resources
     VSLNode*& expr()            { return _expr; }
     VSLNode*& node_pattern()    { return _node_pattern; }
     Box*& box_pattern()         { return _box_pattern; }
@@ -98,21 +98,21 @@ public:
     VSLDef* libnext() const     { return _libnext; }
     VSLDef* libprev() const     { return _libprev; }
 
-    string func_name() const;     // Interner Name (incl. Argumenten)
-    string f_name() const;        // Externer Name (incl. Argumenten)
-    string longname() const;      // Externer Name (incl. Argumenten und Datei)
+    string func_name() const;     // internal name (including args)
+    string f_name() const;        // external name (including args)
+    string longname() const;      // externak name (including args and loc)
 
-    // Auswerten
+    // Evaluate
     const Box *eval(Box *arg) const;
 
-    // Backtrace (bei Fehlern)
+    // Backtrace (in error handling)
     static const VSLDef **backtrace;
     static const Box **backtrace_args;
 
-    // box_pattern erzeugen
+    // Create box_pattern
     void compilePattern() const;
 
-    // box_pattern zerstoeren
+    // Destroy box_pattern
     void uncompilePattern() const
     {
 	if (_box_pattern) 
@@ -120,23 +120,23 @@ public:
 	((VSLDef *)this)->_box_pattern = 0;
     }
 
-    // Namen aufloesen
+    // Resolve names
     int resolveNames();
 
-    // Pruefen, ob Definition gematched wird
+    // Check if def matches ARG
     bool matches(const Box *arg) const;
     bool matches(const VSLNode *arg) const;
 
-    // Argument in Argumentliste konvertieren
+    // Convert arg into argument list
     ListBox *arglist(const Box *arg) const;
 
-    // Instanzen extrahieren
+    // Extract instances
     VSLNode **nodelist(const VSLNode *arg) const;
 
-    // Zerstoeren
+    // Destructor
     virtual ~VSLDef();
 
-    // Repraesentations-Invariante
+    // Representation invariant
     virtual bool OK() const;
 };
 

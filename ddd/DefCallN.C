@@ -1,5 +1,5 @@
 // $Id$
-// DefCallNode class
+// Calling user-defined VSL functions
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -55,40 +55,40 @@ DEFINE_TYPE_INFO_1(DefCallNode, CallNode)
 
 // DefCallNode
 
-// DefCallNode erzeugen
+// Constructor
 DefCallNode::DefCallNode(VSLDef *def, VSLNode *a, char *type):
     CallNode(a, type), _def(def), _deflist(def->deflist)
 {
     _deflist->references++;
 }
 
-// DefCallNode erzeugen
+// Constructor
 DefCallNode::DefCallNode(VSLDefList *deflist, VSLNode *a, char *type):
     CallNode(a, type), _def(0), _deflist(deflist)
 {
     _deflist->references++;
 }
 
-// DefCallNode kopieren
+// Copy
 DefCallNode::DefCallNode(const DefCallNode& node):
     CallNode(node), _def(node._def), _deflist(node._deflist)
 {
     _deflist->references++;
 }
 
-// DefCallNode zerstoeren
+// Destructor
 DefCallNode::~DefCallNode()
 {
     assert(_deflist->references >= 0);
     _deflist->references--;
 }
 
-// Selbstdefinierte Funktion auswerten
+// Call user-defined function
 const Box *DefCallNode::call(Box *a) const
 {
     const Box *box;
 
-    // Funktion finden und aufrufen
+    // Find function and call it
     if (_def)
 	box = _def->eval(a);
     else
@@ -97,36 +97,36 @@ const Box *DefCallNode::call(Box *a) const
     return box;
 }
 
-// Funktionsnamen zurueckgeben
+// Return function name
 char *DefCallNode::func_name() const
 {
     return (char *)_deflist->f_name();
 }
 
 
-// Optimierung
+// Optimization
 
-// resolveDefs: DefCalls verkuerzen
-// Alle Aufrufe f(arg1, arg2, ...), bei denen nur *eine* Definition fuer 
-// f() in Frage kommt, durch einen direkten Aufruf dieser Definition ersetzen.
+// resolveDefs: shorten DefCalls
+// Replace all calls f(arg1, arg2, ...), where there can be only *one*
+// possible def of f(), by a direct call of f()
 
 int DefCallNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
 {
-    // Auf Argument anwenden
+    // Apply to arg
     int changes = CallNode::resolveDefs(cdef, complain_recursive);
 
-    if (_def)               // Bereits eindeutig?
+    if (_def)               // Are we unambiguous already?
 	return changes;
 
-    // In beide Richtungen matchen
+    // Match in both directions
     bool old_bothSidesCanMatch = VSLNode::bothSidesCanMatch;
     VSLNode::bothSidesCanMatch = true;
 
-    // Alle Argumente...
+    // All arguments...
     bool old_ArgNodeMatchesAll = ArgNode::matchesAll;
     ArgNode::matchesAll = true;
 
-    // und alle Funktionsaufrufe koennen matchen
+    // ... and all function calls can match
     bool old_CallNodeMatchesAll = CallNode::matchesAll;
     CallNode::matchesAll = true;
 
@@ -135,10 +135,10 @@ int DefCallNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
     for (def = _deflist->first(); def != 0; def = def->listnext())
 	if (def->matches(arg()))
 	    if (found == 0)
-		found = def;        // Erste passende Definition
+		found = def;        // First matching def
 	    else
 	    {
-		found = 0;          // Zweite passende: Abbruch
+		found = 0;          // Second matching def: abort
 		break;
 	    }
 
@@ -163,7 +163,7 @@ int DefCallNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
     if (found == 0)
 	return changes;
 
-    // Neue Definition setzen
+    // Set new definition
     _def = found;
 
     if (VSEFlags::show_optimize)
@@ -173,29 +173,27 @@ int DefCallNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
 	cout.flush();
     }
 
-    // und fertig.
     return ++changes;
 }
 
 
 
-// resolveSynonyms: Synonyme aufloesen
-// Alle Aufrufe f() mit f(...) = g(...), g(...) = h(...)
-// durch h() ersetzen.
+// resolveSynonyms: Resolve synonyms
+// Replace all calls f() with f(...) = g(...), g(...) = h(...) by h()
 
 int DefCallNode::resolveSynonyms(VSLDef *cdef, VSLNode **node)
 {
     assert (this == *node);
 
-    // Auf allen Argumenten ausfuehren
+    // Apply to all args
     int changes = CallNode::resolveSynonyms(cdef, node);
 
-    // Wenn nicht eindeutig, abbrechen
+    // If ambiguous, we're done
     if (_def == 0)
 	return changes;
 
-    // Sei f() die aufgerufene Funktion: 
-    // Wenn f() nicht definiert ist als f() = g(), abbrechen
+    // Let f() be the called function;
+    // If f() is not defined as f() = g(), abort
 
     VSLNode *syn = _def->expr();
     if (syn == 0 || !syn->isCallNode())
@@ -203,8 +201,7 @@ int DefCallNode::resolveSynonyms(VSLDef *cdef, VSLNode **node)
 
     CallNode *call_syn = (CallNode *)syn;   // dirty trick
 
-    // Pruefen: Wenn f() nicht definiert ist als
-    // f(<pattern>) = g(<pattern>), abbrechen
+    // If f() is not defined as f(<pattern>) = g(<pattern>), abort
 
     VSLNode *my_pattern = _def->node_pattern();
     VSLNode *his_pattern = call_syn->arg();
@@ -222,11 +219,11 @@ int DefCallNode::resolveSynonyms(VSLDef *cdef, VSLNode **node)
     {
 	DefCallNode *defcall_syn = (DefCallNode *)call_syn; // dirty trick
 
-	// f(a1, ..., an) ist definiert als g(a1, ..., an)
-	// Aufruf f() durch Aufruf g() ersetzen.
+	// f(a1, ..., an) is defined as g(a1, ..., an)
+	// Replace call to f() call to g()
 
-	// DefCallNode durch anderen DefCallNode ersetzen
-	// (einfach: nur Definitionszeiger austauschen)
+	// Replace DefCallNode by other DefCallNode;
+	// (simply change the deflist pointers)
 
 	defcall_syn->_deflist->references++;
 	_deflist->references--;
@@ -241,11 +238,11 @@ int DefCallNode::resolveSynonyms(VSLDef *cdef, VSLNode **node)
 	BuiltinCallNode *builtin_syn = 
 	    (BuiltinCallNode *)call_syn; // dirty trick
 
-	// f(a1, ..., an) ist definiert als g(a1, ..., an)
-	// Aufruf f() durch Aufruf g() ersetzen.
+	// f(a1, ..., an) is defined as g(a1, ..., an)
+	// Replace call to f() by call to g().
 
-	// DefCallNode durch BuiltinCallNode ersetzen
-	// (konkretes Auswechseln)
+	// Replace DefCallNode by BuiltinCallNode
+	// (actual node change)
 
 	BuiltinCallNode *newNode = new BuiltinCallNode(*builtin_syn, arg());
 
@@ -265,39 +262,42 @@ int DefCallNode::resolveSynonyms(VSLDef *cdef, VSLNode **node)
 }
 
 
-// inlineFuncs: Funktionsaufrufe durch Funktionskoerper ersetzen
-// Etwa: f(a, b, c, d) = max(a, b) + max(c, d) mit 
-// max(a, b) = if a > b then a else b fi durch
+// inlineFuncs: Replace function calls by function bodies
+//
+// For example: Replace 
+//            f(a, b, c, d) = max(a, b) + max(c, d) 
+// with
+//            max(a, b) = if a > b then a else b fi
+// by
 // f(a, b, c, d) = (if a > b then a else b fi) + (if c > d then c else d fi)
-// ersetzen.
 
 int DefCallNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
 {
     assert (this == *node);
     int changes = 0;
 
-    // Zunaechst: Auf allen Argumenten ausfuehren
+    // Apply to all arguments
     changes += CallNode::inlineFuncs(cdef, node);
 
-    // Wenn nicht eindeutig, fertig
+    // If we're ambiguous, we're done
     if (_def == 0 || _def->expr() == 0)
 	return changes;
 
-    // Instanz-Liste bilden: wenn nicht eindeutig, fertig
+    // Create list of instances; if ambiguous, we're done
     VSLNode **values = _def->nodelist(arg());
     if (values == 0)
 	return changes;
 
-    // Instanzen-Zaehler erzeugen
+    // Create instance counter
     int *instances = new int [_def->nargs()];
     unsigned i;
     for (i = 0; i < _def->nargs(); i++)
 	instances[i] = 0;
 
-    // Zaehlen, wie oft einzelne Variablen benutzt werden
+    // Count how often each arg is used
     _def->expr()->countArgNodes(cdef, instances, 0, _def->nargs());
 
-    // Pruefen, ob jede Instantiierung definiert
+    // Each instance must be defined
     bool fail = false;
     for (i = 0; i < _def->nargs(); i++)
 	if (instances[i] > 0 && values[i] == 0)
@@ -308,14 +308,12 @@ int DefCallNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
 	    fail = true;
 	}
 
-    // Fuer eine effiziente Instantiierung darf
-    // jedes Argument maximal 1x verwendet werden.
+    // Each instance must be used only once (efficiency)
     for (i = 0; i < _def->nargs(); i++)
 	if (values[i] && instances[i] > 1)
 	{
-	    // Wenn wir ein Argument jedoch durch eine Konstante
-	    // oder ein anderes Argument ersetzen,
-	    // erlauben wir auch mehrfache Instantiierungen.
+	    // However, if we replace an arg by a constant or another
+	    // arg, the arg may be instantiated multiple times.
 
 	    if (!values[i]->isConstNode() && !values[i]->isArgNode())
 		fail = true;
@@ -326,27 +324,25 @@ int DefCallNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
     if (fail)
 	return changes;
     
-    // Sonst: eigentliche Ersetzung vornehmen
+    // Now perform inlining.
 
-    // Kopie des Funktionskoerpers holen
+    // Copy function body
     VSLNode *body = _def->expr()->dup();
 
-    // Die ArgNodes im Funktionskoerper verweisen auf Argumente
-    // der Funktion expr, nicht der Funktion, der dieser DefCallNode
-    // angehoert. Deshalb ersetzen wir sie durch die Argumente
-    // des DefCallNodes.
+    // The arg nodes in BODY refer to EXPR; not to the function of
+    // this DefCallNode.  We must replace them by the arguments of
+    // this DefCallNode.
 
     body->instantiateArgs(cdef, &body, values, 0, _def->nargs());
 
-    // Verbleibende ArgNodes im Funktionskoerper verweisen auf
-    // LET-Konstrukte. Wenn die aktuelle Funktion und newbody
-    // eine unterschiedliche Anzahl Argumente haben, kann es Aerger geben.
-    // Deshalb nehmen wir eine Umbenennung der ArgNode's vor.
+    // Remaining arg nides in BODY refer to LET constructs.  If the
+    // current funtion and the new body have a different number of
+    // args, we'll get into trouble.  So, renumber the arg nodes.
 
     body->reBase(cdef, _base);
 
 
-    // Ersetzung vornehmen
+    // Here's the actual replacement
     *node = body;
 
     if (VSEFlags::show_optimize)
@@ -364,8 +360,7 @@ int DefCallNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
 
 
 
-// countSelfReferences: Referenzen auf Funktionen zaehlen,
-// die innerhalb der Funktionsdefinition auftreten.
+// countSelfReferences: Call references to outside functions
 
 int DefCallNode::countSelfReferences(VSLDef *cdef, VSLDefList *deflist)
 {
@@ -392,13 +387,13 @@ int DefCallNode::countSelfReferences(VSLDef *cdef, VSLDefList *deflist)
 
 // Debugging
 
+// Representation invariant
 bool DefCallNode::OK() const
-// Pruefen, ob alles in Ordnung
 {
     assert (_deflist != 0);
     assert (_def == 0 || _def->deflist == _deflist);
 
-    // assert (_def->OK()); // koennte unendliche Schleife erzeugen
+    // assert (_def->OK()); // may result in endless loop
     assert (CallNode::OK());
 
     return true;

@@ -27,9 +27,9 @@
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 //-----------------------------------------------------------------------------
-// Template fuer eine Map.
-// Key sollte nicht 0 sein, da dies fuer first() und next() besondere
-// Bedeutung hat. Ausserdem muss '==' fuer Key definiert sein.
+// A Map Template
+// The Key should not be 0, since this value has special meaning for
+// first() and next().  Also, '==' must be defined for Key.
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------

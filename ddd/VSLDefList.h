@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse VSLDefList
+// List of VSLDefs
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -50,22 +50,21 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    string _func_name;      // Name der Funktion
-    VSLDef *_first;         // erste Definition fuer diesen Funktionsnamen
-    VSLDef *_last;          // ...letzte
-    unsigned _ndefs;        // Anzahl Definitionen
-    VSLDefList *_next;      // Naechster Funktionsname
-    bool _global;        // Sichtbarkeitsbereich: global?
+    string _func_name;      // Function name
+    VSLDef *_first;         // first definition for this name
+    VSLDef *_last;          // last definition for this name
+    unsigned _ndefs;        // Number of definitions
+    VSLDefList *_next;      // Next function name
+    bool _global;	    // True iff global
 
 public:
-    VSLLib *lib;            // Library, zu der dieser Knoten gehoert
-    unsigned hashcode;      // Index in Hash-Tabelle der Library
+    VSLLib *lib;            // Library of this node
+    unsigned hashcode;      // Index into has table of library
 
-    int references;         // #Auftreten Funktion in VSLNode's
-    int self_references;    // #Auftreten Funktion in eigenen Definitionen
-			    // (-1: unbekannt)
+    int references;         // #occurrences in VSLNode's
+    int self_references;    // #occurrences in own defs (-1: unknown)
 
-    // Erzeugen
+    // Constructor
     VSLDefList(VSLLib* l, unsigned hash, 
 	string func_nm, bool g = false)
 	: _func_name(func_nm), _first(0), _last(0), _ndefs(0),
@@ -89,16 +88,16 @@ private:
     }
 
 public:
-    // Hinzufuegen
+    // Add new function
     VSLDef *add(bool& newFlag,
-	VSLNode *pattern, VSLNode *expr = 0,
-	string filename = "builtin", int lineno = 0);
+		VSLNode *pattern, VSLNode *expr = 0,
+		string filename = "builtin", int lineno = 0);
 
-    // Herausholen
+    // Get a function def
     VSLDef *def(Box *arglist) const;
     VSLDef *firstdef() const { assert (_ndefs == 1); return _first; }
 
-    // Ressourcen
+    // Resources
     string func_name() const { return _func_name; }
     bool &global()        { return _global; }
     bool global() const   { return _global; }
@@ -118,22 +117,22 @@ public:
     VSLDefList*& next() { return _next; }
     unsigned ndefs()    { return _ndefs; }
 
-    // Auswerten
+    // Evaluate
     const Box *eval(Box *arg) const;
 
-    // Umbenennen
+    // Rename
     void override()     
     { 
-	_func_name += '\'';     // Wir haengen einfach ein ' hinten an
+	_func_name += '\'';     // Just append a ' to the name
     }
 
-    // Definitionen Loeschen
+    // Delete defs
     void replace();
 
-    // Zerstoeren
+    // Destroy
     virtual ~VSLDefList();
 
-    // Repraesentations-Invariante
+    // Representation invariant
     bool OK() const;
 };
 

@@ -1,5 +1,5 @@
 // $Id$
-// Implementation Klasse VSLNode
+// VSL Nodes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -46,20 +46,20 @@ DEFINE_TYPE_INFO_0(VSLNode)
 
 // VSLNode
 
-// Flag: Seiteneffekte zugelassen?
+// Flag: Are side effects allowed?
 bool VSLNode::sideEffectsProhibited = false;
 
-// Flag: Seiteneffekte aufgetreten?
+    // Flag: have side effects been observed?
 bool VSLNode::sideEffectsOccured    = false;
 
-// Baum ausgeben
+// Dump VSL expression
 ostream& operator << (ostream& s, const VSLNode& node)
 {
     node.dump(s);
     return s;
 }
 
-// ...in Baum-Notation
+// ...as tree
 void VSLNode::dumpTree(ostream& s) const
 {
     static unsigned depth = 1;
@@ -76,7 +76,7 @@ void VSLNode::dumpTree(ostream& s) const
 }
 
 
-// Knoten auswerten
+// Evaluate
 const Box *VSLNode::eval(ListBox *arglist) const
 {
     if (VSEFlags::show_tiny_eval)
@@ -109,7 +109,7 @@ const Box *VSLNode::eval(ListBox *arglist) const
 }
 
 
-// Boxen vergleichen
+// Compare boxes
 
 bool VSLNode::bothSidesCanMatch = false;
 
@@ -142,8 +142,8 @@ bool VSLNode::operator == (const VSLNode &node) const
 
 // Debugging
 
+// Representation invariant
 bool VSLNode::OK() const
-// Pruefen, ob alles in Ordnung
 {
     assert (_type != 0);
     return true;

@@ -38,32 +38,32 @@ char VSLErr_rcsid[] =
 
 
 
-// Allgemeine Fehler-Schnittstelle
+// General error interface
 
-// Fehlerbehandlung
+// Error handling
 void VSLLib::echo(const string& msg)
 {
     cerr << msg << '\n';
 }
 
-// Meldung beim Auswerten
+// Evaluation errors
 void VSLLib::eval_echo(const string& errmsg, const VSLDef *d)
 {
     if (d == 0 && VSLDef::backtrace)
     {
-	// Oberste Definition suchen
+	// Find topmost def
 	for (int i = 0; VSLDef::backtrace[i] != 0; i++)
 	    d = VSLDef::backtrace[i];
     }
 
-    // Fehlermeldung ausgeben
+    // Issue error message
     if (d)
 	echo(d->longname() + ": " + errmsg);
     else
 	echo(errmsg);
 
 
-    // Backtrace ausgeben, wenn gewuenscht
+    // Issue backtrace if desired
     if (VSLDef::backtrace && VSLDef::backtrace[0])
     {
 	static char line[] = "------------------------------";
@@ -88,13 +88,13 @@ void VSLLib::eval_echo(const string& errmsg, const VSLDef *d)
     }
 }
 
-// Fehler bei Auswertung
+// Error during evaluation
 void VSLLib::eval_error(const string& errmsg, const VSLDef *d)
 {
     eval_echo(errmsg, d);
 }
 
-// Warnung bei Auswertung
+// Warning during evaluation
 void VSLLib::eval_warning(const string& errmsg, const VSLDef *d)
 {
     eval_echo("warning: " + errmsg, d);

@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse BuiltinCallNode
+// Calling built-in VSL functions
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,8 +34,7 @@
 #endif
 
 
-// Ein BuiltinCallNode wertet zur Laufzeit eine der eingebauten
-// Funktionen aus.
+// A BuiltinCallNode calls a built-in VSL function upon run-time.
 
 
 #include "assert.h"
@@ -75,18 +74,18 @@ protected:
     }
 
 public:
-    // Neuen Knoten erzeugen
+    // Constructor
     BuiltinCallNode(int i, VSLNode *a,
-	char *type = "BuiltinCallNode"): 
-	CallNode(a, type), _index(i)
+		    char *type = "BuiltinCallNode")
+	: CallNode(a, type), _index(i)
     {}
 
     BuiltinCallNode(BuiltinCallNode &node, VSLNode *a,
-	char *type = "BuiltinCallNode"):
-	CallNode(a, type), _index(node._index)
+		    char *type = "BuiltinCallNode")
+	: CallNode(a, type), _index(node._index)
     {}
 
-    // BuiltinCallNode kopieren
+    // Copy
     VSLNode *dup() const
     {
 	return new BuiltinCallNode(*this);
@@ -97,7 +96,7 @@ public:
 
     bool isBuiltinCallNode() const { return true; }
 
-    // Repraesentations-Invariante
+    // Representation invariant
     bool OK() const;
 };
 

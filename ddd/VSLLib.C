@@ -1,5 +1,5 @@
 // $Id$
-// Implementation Klasse VSLLib
+// The VSL Library
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -56,9 +56,9 @@ DEFINE_TYPE_INFO_0(VSLLib)
 
 // VSLLib
 
-// Daten
+// Data
 
-void (*VSLLib::background)() = 0;   // Hintergrund-Prozedur
+void (*VSLLib::background)() = 0;   // Background proc
 
 #define BACKGROUND() do { if (background) background(); } while (false)
 #define ASSERT_OK() \
@@ -73,16 +73,16 @@ do { \
 } while (false)
 
 
-// Initialisierung
+// Initialization
 
-// Hashtabelle initialisieren
+// Init hash table
 void VSLLib::initHash()
 {
     for (int i = 0; i < hashSize; i++)
 	defs[i] = 0;
 }
 
-// VSL-Bibliothek initialisieren
+// Init VSL library
 VSLLib::VSLLib()
     : _lib_name(""), _first(0), _last(0)
 {
@@ -90,7 +90,7 @@ VSLLib::VSLLib()
 }
 
 
-// VSL-Bibliothek initialisieren und einlesen
+// Init VSL library and read from file
 VSLLib::VSLLib(const string& lib_name, unsigned optimize)
     : _lib_name(lib_name), _first(0), _last(0)
 {
@@ -99,7 +99,7 @@ VSLLib::VSLLib(const string& lib_name, unsigned optimize)
 }
 
 
-// VSL-Bibliothek initialisieren und einlesen
+// Init VSL library and read from stream
 VSLLib::VSLLib(istream& i, unsigned optimize)
     : _lib_name(""), _first(0), _last(0)
 {
@@ -108,52 +108,50 @@ VSLLib::VSLLib(istream& i, unsigned optimize)
 }
 
 
-// Funktionsliste fuer gegebenen Namen zurueckgeben;
-// wenn Name undefiniert, 0
+// Return list of defs for FUNC_NAME; 0 if not found
 VSLDefList* VSLLib::deflist(const string& func_name) const
 {
     unsigned hashcode = hashpjw(func_name) % hashSize;
 
-    // Definitionsliste mit passendem Namen suchen
     VSLDefList *d;
     for (d = defs[hashcode];
-	d != 0 && d->func_name() != func_name; d = d->next())
+	 d != 0 && d->func_name() != func_name; d = d->next())
 	;
 
     return d;
 }
 
 
-// Definition zu Bibliothek hinzufuegen
+// Add definition to library
 VSLDef *VSLLib::add(const string& func_name,
     VSLNode *pattern, VSLNode *expr, 
     bool global, const string& filename, int lineno)
 {
     BACKGROUND();
 
-    // DefList zu Funktionsnamen suchen
+    // Find DefList for function name
     VSLDefList *d = deflist(func_name);
     
     if (d == 0)
     {
-	// Nicht gefunden? Dann neue Definitionsliste einfuegen
+	// Not found?  Create a new DefList...
 	unsigned hashcode = hashpjw(func_name) % hashSize;
 
 	d = defs[hashcode];
 	defs[hashcode] = new VSLDefList(this, hashcode, func_name, global);
 	defs[hashcode]->next() = d;
 
-	// und zurueckgeben
+	// ...and return it
 	d = defs[hashcode];
     }
 
-    // Definition an DefList anhaengen
+    // Append new def to DefList
     bool newFlag;
     VSLDef* newdef = d->add(newFlag, pattern, expr, filename, lineno);
 
     if (newFlag)
     {
-	// Definition in globale Liste einhaengen
+	// Insert def into global list
 	if (_last == 0)
 	    _first = newdef;
 	else
@@ -164,16 +162,14 @@ VSLDef *VSLLib::add(const string& func_name,
 	_last = newdef;
     }
 
-    // Sichtbarkeit anpassen:
-    // Die Sichtbarkeit der Funktion ist global, 
-    // wenn irgendeine Definition global war.
+    // Setup scope: Scope is global if any def is global.
     d->global() = d->global() || global;
 
     return newdef;
 }
 
 
-// Funktionsnamen umbenennen
+// Rename function name
 int VSLLib::override(const string& func_name)
 {
     VSLDefList *d = deflist(func_name);
@@ -185,7 +181,7 @@ int VSLLib::override(const string& func_name)
     return 0;
 }
 
-// Funktionsdefinitionen loeschen
+// Delete function def
 int VSLLib::replace(const string& func_name)
 {
     VSLDefList *d = deflist(func_name);
@@ -201,7 +197,7 @@ int VSLLib::replace(const string& func_name)
 
 
 
-// Definition zu gegebenem Funktionsnamen und Argument zurueckgeben
+// Return definition for given function name and argument
 VSLDef *VSLLib::def(const string& func_name, Box *a) const
 {
     VSLDefList *d = deflist(func_name);
@@ -261,7 +257,7 @@ const Box *VSLLib::eval(const string& func_name,
     return eval(func_name, args);
 }
 
-// Ausgewerteten Ausdruck fuer Ausgabe vorbereiten
+// Prepare expression for output
 void VSLLib::output(Box *&a)
 {
     if (a == 0)
@@ -278,7 +274,7 @@ void VSLLib::output(Box *&a)
 }
     
 
-// VSLLib zerstoeren
+// Destructor
 VSLLib::~VSLLib()
 {
     for (int i = 0; i < hashSize; i++)
@@ -287,8 +283,8 @@ VSLLib::~VSLLib()
 
 
 // Binder
-// Definitionen der eingebauten Funktionen hinzufuegen
-// Immer noch undefinierte Funktionen mit Default-Wert vorbelegen
+// Add definitions of builtin functions;
+// assign default value to still undefined functions
 int VSLLib::bind()
 {
     int changes = 0;
@@ -297,23 +293,22 @@ int VSLLib::bind()
 	{
 	    BACKGROUND();
 
-	    // Deklaration ohne Definition? 
-	    // Dann passende eingebaute Funktion suchen...
+	    // Deklaration without definition? Find suitable builtin function
 	    int idx = VSLBuiltin::resolve(cdef->deflist->func_name());
 
 	    if (idx < 0)
 	    {
 		eval_error("function declared, but not defined", cdef);
 		
-		// Fuer fehlende Definition Aufruf "__undef()" einsetzen
+		// Replace missing def by "__undef()" call
 		cdef->expr() = call("__undef");
 		if (cdef->expr() == 0)
 		    cdef->expr() = new ConstNode(new StringBox("???"));
 	    }
 	    else
 	    {
-		// Alle der Deklaration uebergebenen Argumente
-		// auch der eingebauten Funktion uebergeben
+		// All args passed to the declaration must be passed
+		// to the builtin function as well
 		cdef->expr() = new BuiltinCallNode(idx, 
 		    cdef->node_pattern()->dup());
 	    }
@@ -325,7 +320,7 @@ int VSLLib::bind()
 }
 
 
-// Namen an Variablen binden
+// Bind names to variables
 int VSLLib::resolveNames()
 {
     int changes = 0;
@@ -341,36 +336,36 @@ int VSLLib::resolveNames()
 }
 
 
-// Pattern aller Funktionen (neu) erzeugen
+// (Re)create all function patterns
 int VSLLib::compilePatterns()
 {
     int changes = 0;
 
-    // Zunaechst alle Pattern loeschen.
+    // First, delete all patterns
     VSLDef *cdef;
     for (cdef = _first; cdef != 0; cdef = cdef->libnext())
     {
 	BACKGROUND();
 
-	// Funktions-Pattern
+	// Function pattern
 	cdef->uncompilePattern();
 	ASSERT_OK();
 
-	// LET- und WHERE-Pattern
+	// LET and WHERE patterns
 	cdef->expr()->uncompilePatterns(cdef);
 	ASSERT_OK();
     }
 
-    // Jetzt alle Pattern neu erzeugen.
+    // Now recreate all patterns
     for (cdef = _first; cdef != 0; cdef = cdef->libnext())
     {
 	BACKGROUND();
 
-	// Funktions-Pattern
+	// Function pattern
 	cdef->compilePattern();
 	ASSERT_OK();
 
-	// LET- und WHERE-Pattern
+	// LET and WHERE patterns
 	cdef->expr()->compilePatterns(cdef);
 	ASSERT_OK();
 
@@ -381,7 +376,7 @@ int VSLLib::compilePatterns()
 }
 
 
-// Funktionsaufrufe eindeutig machen
+// Make function calls unambiguous
 int VSLLib::resolveDefs()
 {
     int changes = 0;
@@ -396,7 +391,7 @@ int VSLLib::resolveDefs()
     return changes;
 }
 
-// Synonyme aufloesen
+// Resolve synonyms
 int VSLLib::resolveSynonyms()
 {
     int changes = 0;
@@ -411,7 +406,7 @@ int VSLLib::resolveSynonyms()
     return changes;
 }
 
-// Grosse Operanden machen
+// Make big operands
 int VSLLib::foldOps()
 {
     int changes = 0;
@@ -427,7 +422,7 @@ int VSLLib::foldOps()
 }
 
 
-// Konstanten bilden
+// Build constants
 int VSLLib::foldConsts()
 {
     int changes = 0;
@@ -444,7 +439,7 @@ int VSLLib::foldConsts()
 }
 
 
-// Funktionskoerper einbinden
+// Perform function inlining
 int VSLLib::inlineFuncs()
 {
     int changes = 0;
@@ -459,12 +454,12 @@ int VSLLib::inlineFuncs()
     return changes;
 }
 
-// Interne Referenzen bestimmen
+// Detect self references
 int VSLLib::countSelfReferences()
 {
     int changes = 0;
 
-    // Zunaechst alle self_references auf 0 setzen
+    // Set all self_references to zero
     VSLDef *cdef;
     for (cdef = _first; cdef != 0; cdef = cdef->libnext())
     {
@@ -472,7 +467,7 @@ int VSLLib::countSelfReferences()
 	dflist->self_references = 0;
     }
 
-    // Jetzt self_references hochzaehlen
+    // Now go and count the self_references
     for (cdef = _first; cdef != 0; cdef = cdef->libnext())
     {
 	BACKGROUND();
@@ -484,7 +479,7 @@ int VSLLib::countSelfReferences()
     return changes;
 }
 
-// Lokale unbenutzte Funktionen entfernen
+// Delete unused local defs
 int VSLLib::cleanup()
 {
     int changes = 0;
@@ -499,9 +494,9 @@ int VSLLib::cleanup()
 	    (dflist->references == 0 || 
 	     dflist->references == dflist->self_references))
 	{   
-	    // Funktion ist ausserhalb ihrer Definition unbenutzt: loeschen.
+	    // Function is unused except its def: delete it
 
-	    // 'd' verschieben, bis nicht mehr auf dflist
+	    // move D until it is beyond DFLIST
 	    while (d != 0 && d->deflist == dflist)
 		d = d->libprev();
 
@@ -512,7 +507,7 @@ int VSLLib::cleanup()
 		cout.flush();
 	    }
 
-	    // Zeiger vom Vorgaenger suchen und auf Nachfolger setzen.
+	    // Find pointer from predecessor and have it point to the successor
 	    if (defs[dflist->hashcode] == dflist)
 		defs[dflist->hashcode] = dflist->next();
 	    else
@@ -525,16 +520,16 @@ int VSLLib::cleanup()
 		prev->next() = dflist->next();
 	    }
 
-	    // VSLDef's loeschen
+	    // Delete VSLDefs
 	    dflist->replace();
 
-	    // VSLDeflist loeschen.
+	    // Delete VSLDeflist
 	    dflist->next() = 0; delete dflist;
 	    changes++;
 	}
 	else
 	{
-	    // Naechste Definition untersuchen
+	    // Check next definition
 	    d = d->libprev();
 	}
 
@@ -545,11 +540,13 @@ int VSLLib::cleanup()
 }
 
 
-// Steuerprogramm
+// Optimization
+
+// Processor
 void VSLLib::process(unsigned mode)
 {
     /* 
-	Die hier gewaehlte Reihenfolge der Optimierungen ist:
+	The sequence of optimizations is:
 
 	1. resolveDefs
 	2. resolveSynonyms
@@ -558,42 +555,38 @@ void VSLLib::process(unsigned mode)
 	5. inlineFuncs ---------+
 	6. countSelfReferences
 
-	( (*): bis keine Aenderungen mehr aufgetreten)
+	((*): until no more changes occur)
 
-	Je zwischen zwei Optimierungsschritten werden unbenutzte
-	Funktionen entfernt (cleanup), um die Optimierung zu beschleunigen.
+	Between two optimization steps, unused functions are deleted
+	(cleanup).  This speeds up optimization.
 
-	Die Reihenfolge der Optimierungsschritte ist im Prinzip
-	beliebig. Tatsaechlich gelten aber folgende Einschraenkungen:
+	In general, the sequence of optimization steps is arbitrary.
+	In practice, we have the following constraints:
 
-	* resolveDefs ist Vorbedingung fuer inlineFuncs und resolveSynonyms.
+	* resolveDefs is precondition for inlineFuncs and resolveSynonyms.
 
-	* resolveSynonyms erledigt eine Teilmenge von inlineFuncs,
-	  dies aber viel schneller und weniger platzintensiv,
-	  von daher sollte es von inlineFuncs aufgerufen werden;
+	* resolveSynonyms does a subset of inlineFuncs, but much
+	  faster and less resource-intensive.  Thus, it should be
+	  called before inlineFuncs.
 
-	* foldOps und foldConsts koennen ihre
-	  Wirkung am besten auf grossen, komplexen Ausdruecken
-	  zeigen, wie sie von inlineFuncs geliefert werden;
+	* foldOps und foldConsts work best on large, complex
+	  expressions, as resulting from inlineFuncs.
 
-	* foldConsts ist sehr zeitaufwendig und sollte daher
-	  am besten von allen vorangegangenen Optimierungen
-	  profitieren;
+	* foldConsts is quite time-consuming and should profit
+	  from all earlier optimizations.
 
-	Aus diesen Einschraenkungen ergibt sich die obige Reihenfolge.
+	These constraints determine the sequence as shown above.
 
-	Stehen einzelne Optimierungen zur Auswahl, benoetigen
-	resolveSynonyms und foldOps wenig Zeit;
-	die Bibliothek wird geringfuegig kleiner und die 
-	Auswertung geringfuegig beschleunigt.
+	If only single optimizations are chosen: resolveSynonyms and
+	foldOps require the least time, but also have the least
+	effects; the library shrinks slightly and evaluation speeds up
+	slightly.
 
-	foldConsts benoetigt viel Zeit; die Bibliothek wird
-	u.U. erheblich kleiner (Konstanten werden ge'shared)
-	und die Zeit wird erheblich beschleunigt.
+	foldConsts requires much time; the library may become much
+	smaller (constants are shared); evaluation time shrinks a lot.
 
-	inlineFuncs benoetigt ebenfalls viel Zeit; die
-	Bibliothek wird erheblich groesser und die Zeit
-	wird ein wenig beschleunigt.
+	inlineFuncs also requires much time; the library
+	becomes much larger and evaluation speeds up slightly.
     */
 
     bind();
@@ -642,7 +635,7 @@ void VSLLib::process(unsigned mode)
 	    }
 
 	if (sum == 0)
-	    break;      // Keine Veraenderungen mehr aufgetreten
+	    break;      // No more changes
     }
 
     if (mode & _CountSelfReferences)
@@ -656,7 +649,7 @@ void VSLLib::process(unsigned mode)
 
 // Debugging
 
-// VSLLib ausgeben
+// Dump
 ostream& operator << (ostream& s, const VSLLib& lib)
 {
     s << "// " << lib._lib_name << "\n\n";
@@ -667,7 +660,7 @@ ostream& operator << (ostream& s, const VSLLib& lib)
 
     for (; d != 0; d = d->libnext())
     {
-	// Kommentar ausgeben
+	// Dump comment
 	s << "// " << d->longname() << " (hashcode: "
 	    << d->deflist->hashcode << ") ";
 	    
@@ -681,20 +674,18 @@ ostream& operator << (ostream& s, const VSLLib& lib)
 	else
 	    s << "(not straight)\n";
 
-	// Funktionsnamen (mit Argumenten) ausgeben
+	// Function name (with args)
 	s << d->f_name();
 
-	// Wenn nur Deklaration, jetzt nichts mehr ausgeben
 	if (d->expr() != 0)
 	{
-	    // Pfeil ausgeben
 	    if (d->deflist->global())
 		s << " -> ";
 	    else
 		s << " = ";
 	    s.flush();
 
-	    // Definition ausgeben
+	    // Definition
 	    s << *(d->expr());
 	}
 
@@ -706,7 +697,7 @@ ostream& operator << (ostream& s, const VSLLib& lib)
 }
 
 
-// ...als Baum
+// ...as tree
 void VSLLib::dumpTree(ostream& s) const
 {
     bool old = StringBox::quoted;
@@ -723,7 +714,7 @@ void VSLLib::dumpTree(ostream& s) const
 
     for (; d != 0; d = d->libnext())
     {
-	// Kommentar ausgeben
+	// Comment
 	s << "// " << d->longname() << " (hashcode: "
 	    << d->deflist->hashcode << ") ";
 	    
@@ -738,35 +729,35 @@ void VSLLib::dumpTree(ostream& s) const
 	    s << "(not straight)\n";
 
 
-	// Header ausgeben
+	// Header
 	s << "VSLDef(";
 	
-	// 1. Parameter: Name, Ort (als Text)
+	// 1st parameter: name and location (as text)
 	s << "\"" << d->longname() << "\"";
 	s << ", ";
 
-	// 2. Parameter: Pattern (als Text)
+	// 2nd parameter: pattern (as text)
 	if (d->node_pattern() != 0)
 	    s << "\"" << *d->node_pattern() << "\"";
 	else
 	    s << "NoPatternText()";
 	s << ", ";
 
-	// 3. Parameter: Definition (als Text)
+	// 3rd parameter: definition (as text)
 	if (d->expr() != 0)
 	    s << "\"" << *d->expr() << "\"";
 	else
 	    s << "NoDefText()";
 	s << ", ";
 
-	// 4. Parameter: Pattern (als VSL-Ausdruck)
+	// 4th parameter: pattern (as VSL expr)
 	if (d->node_pattern() != 0)
 	    d->node_pattern()->dumpTree(s);
 	else
 	    s << "NoPatternTree()";
 	s << ", ";
 
-	// 5. Parameter: Definition (als VSL-Ausdruck)
+	// 5th parameter: definition (as VSL expr)
 	if (d->expr() != 0)
 	    d->expr()->dumpTree(s);
 	else
@@ -783,21 +774,21 @@ void VSLLib::dumpTree(ostream& s) const
 }
 
 
-// Pruefen, ob alles in Ordnung
+// Representation invariant
 bool VSLLib::OK() const
 {
-    // 1. Schleife: ueber Hash-Tabelle
+    // Loop #1: over hash table
     for (int i = 0; i < hashSize; i++)
 	if (defs[i] != 0)
 	{
-	    // Pruefen, ob Zeiger auf Lib ok
+	    // Check pointer to lib
 	    assert (defs[i]->lib == this);
 
-	    // Pruefen, ob Deflist ok
+	    // Check Deflist
 	    assert (defs[i]->OK());
 	}
 
-    // 2. Schleife: ueber interne Liste
+    // Loop #2: over internal list
     for (VSLDef *d = _first; d != 0; d = d->libnext())
 	assert (d->OK());
 

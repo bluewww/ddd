@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse VSLNode
+// VSL Nodes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,8 +34,8 @@
 #endif
 
 
-// Ein VSLNode ist ein Knoten eines Auswertungsbaumes, der die Ausdruecke
-// der VSLLib repraesentiert.
+// A VSLNode is a node of an evaluation tree that represents the
+// expressions of a VSLL library.
 
 
 #include "assert.h"
@@ -58,26 +58,26 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    char *_type;    // Typ
+    char *_type;    // Type
 
 protected:
-    unsigned _base; // Anzahl Argumente im Kontext
+    unsigned _base; // Number of arguments in context
 
-    // Flag: Seiteneffekte zugelassen?
+    // Flag: are side effects allowed?
     static bool sideEffectsProhibited;
 
-    // Flag: Seiteneffekte aufgetreten?
+    // Flag: have side effects been observed?
     static bool sideEffectsOccured;
 
-    // Knoten kopieren
+    // Copy
     VSLNode(const VSLNode& node):
 	_type(node._type),
 	_base(node._base)
     {}
 
-    // Knoten ausgeben
-    virtual void dump(ostream& s) const = 0;      // als VSL-Ausdruck
-    virtual void _dumpTree(ostream&) const {}     // als Baum (default: nichts)
+    // Dump
+    virtual void dump(ostream& s) const = 0;      // as VSL epxr
+    virtual void _dumpTree(ostream&) const {}     // as tree
 
     virtual bool matches(const VSLNode& node) const
     {
@@ -87,26 +87,25 @@ private:
     VSLNode& operator = (const VSLNode &) { assert(0); return *this; }
 
 public:
-    // Knoten erzeugen
-    VSLNode(char *type = "VSLNode"):
-	_type(type),
-	_base(0)
+    // Constructor
+    VSLNode(char *type = "VSLNode")
+	: _type(type), _base(0)
     {}
 
-    // Default-Destruktor
+    // Default destructor
     virtual ~VSLNode()
     {
-	_type = 0;  // Schutz gegen weitere Referenzen
+	_type = 0;  // Protect against further references
     }
 
-    // Knoten kopieren
+    // Copy
     virtual VSLNode *dup() const = 0;
 
-    // Knoten auswerten
+    // Evaluate
     virtual const Box *eval(ListBox *arglist) const;
     virtual const Box *_eval(ListBox *arglist) const = 0;
 
-    // Optimierungs-Funktionen (Default: nichts tun)
+    // Optimize (default: nop)
     virtual int resolveDefs(VSLDef *, bool = true)      { return 0; }
     virtual int resolveSynonyms(VSLDef *, VSLNode **)   { return 0; }
     virtual int foldOps(VSLDef *, VSLNode **)           { return 0; }
@@ -126,7 +125,7 @@ public:
 	return changes;
     }
 
-    // Sonstige Baum-Operationen (Default: nichts tun)
+    // Other tree ops (default: nop)
     virtual void compilePatterns(VSLDef *) const            { return; }
     virtual void uncompilePatterns(VSLDef *) const          { return; }
     virtual int resolveName(VSLDef *, VSLNode **, 
@@ -140,7 +139,7 @@ public:
 
     virtual string firstName() const          { return ""; }
 
-    // Pruef-Funktionen
+    // Check type
     virtual bool isConst() const = 0;
 
     virtual bool isArgNode() const         { return false; }
@@ -156,10 +155,10 @@ public:
 
     virtual bool isStraight() const        { return false; }
 
-    // #NameNode's zurueckgeben
+    // # of NameNodes
     virtual unsigned nargs() const            { return 0; }
 
-    // Match-Funktionen
+    // Match functions
     static bool bothSidesCanMatch;
     bool operator == (const VSLNode& node) const;
     bool operator != (const VSLNode& node) const
@@ -167,10 +166,10 @@ public:
 	return !(operator == (node)); 
     }
 
-    // Repraesentations-Invariante
+    // Representation invariant
     virtual bool OK() const;
 
-    // Baum ausgeben
+    // Dump
     friend ostream& operator << (ostream& s, const VSLNode& node); // als VSL
     void dumpTree(ostream& s) const;                               // als Baum
 };

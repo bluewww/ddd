@@ -60,7 +60,7 @@ DEFINE_TYPE_INFO_1(StringBox, PrimitiveBox)
 FontTable *StringBox::fontTable = 0;
 bool StringBox::quoted = false;
 
-// Groesse neu berechnen
+// Recompute size
 Box *StringBox::resize()
 {
     if (_font != 0)
@@ -86,7 +86,7 @@ Box *StringBox::resize()
     return this;
 }
 
-// StringBox anzeigen
+// Draw
 void StringBox::_draw(Widget w, 
 		      const BoxRegion& r, 
 		      const BoxRegion&, 
@@ -130,7 +130,7 @@ void StringBox::newFont(const string& fontname)
 	_newFont((*fontTable)[_fontname]);
 }
 
-// StringBox drucken
+// Print
 typedef struct fontmap {
 	char *xfont ;
 	char *psfont ;

@@ -1,5 +1,5 @@
 // $Id$
-// Implementation Klasse ListNode
+// ListNode class
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -54,7 +54,7 @@ DEFINE_TYPE_INFO_1(ListNode, VSLNode)
 
 // ListNode
 
-// Constructors
+// Constructor
 ListNode::ListNode(VSLNode *hd, VSLNode *tl, char *type)
     : VSLNode(type), _head(hd), _tail(tl)
 {
@@ -69,7 +69,7 @@ ListNode::ListNode(const ListNode& node)
 {}
 
 
-// Liste auswerten
+// Evaluate
 const Box *ListNode::_eval(ListBox *arglist) const
 {
     const Box *hd = _head->eval(arglist);
@@ -94,17 +94,17 @@ const Box *ListNode::_eval(ListBox *arglist) const
     return ret;
 }
 
-// Liste ausgeben
+// Dump
 void ListNode::dump(ostream &s) const
 {
     if (VSEFlags::include_list_info)
     {
-	// Liste formal ausgeben
+	// Formal list
 	s << "[" << *head() << "|" << *tail() << "]";
     }
     else
     {
-	// Etwas geschickter formatieren
+	// Somewhat cuter
 
 	EmptyListNode *empty = new EmptyListNode;
 
@@ -141,19 +141,19 @@ void ListNode::dump(ostream &s) const
     }
 }
 
-// ...in Baum-Notation
+// ...as tree
 void ListNode::_dumpTree(ostream& s) const
 {
     if (VSEFlags::include_list_info)
     {
-	// Liste formal ausgeben
+	// Formal list
 	head()->dumpTree(s);
 	s << ",";
 	tail()->dumpTree(s);
     }
     else
     {
-	// Etwas geschickter formulieren
+	// Somewhat cuter
 
 	EmptyListNode *empty = new EmptyListNode;
 
@@ -186,31 +186,31 @@ void ListNode::_dumpTree(ostream& s) const
 }
 
 
-// Pruefen, ob Funktionsausdruck konstant
+// Check if constant
 bool ListNode::isConst() const
 {
     return _head->isConst() && _tail->isConst();
 }
 
-// #NameNodes zurueckgeben
+// Return number of NameNodes
 unsigned ListNode::nargs() const
 {
     return _head->nargs() + _tail->nargs();
 }
 
-// Pruefen, ob Argumentliste direkt uebernommen werden kann
+// Check if argument list can be used `as is'
 bool ListNode::isStraight() const
 {
-    // Pruefen, ob Liste der Form [arg | tail]
+    // Check if list has the form [arg | tail]
     return ( _head->isArgNode() || _head->isNameNode() )
 	&& _tail->isStraight();
 }
 
 
-// Liste anhaengen
+// Append to list
 int ListNode::append(VSLNode *list)
 {
-    // Ende der Liste suchen
+    // Search end of list
     ListNode *nprev = this;
     VSLNode *node = tail();
     while (node->isListNode())
@@ -219,12 +219,12 @@ int ListNode::append(VSLNode *list)
 	node = nprev->tail();
     }
 
-    // Wenn letztes Listenelement != [], Abbruch (kein Anhaengen moeglich)
+    // If last element != [], abort (cannot append)
     EmptyListNode empty;
     if (*node != empty)
 	return -1;
 
-    // [] durch list ersetzen
+    // Replace [] by LIST
     delete nprev->tail();
     nprev->tail() = list;
 
@@ -233,14 +233,15 @@ int ListNode::append(VSLNode *list)
 
 
 
-// Optimierung
+// Optimization
 
-// Im Allgemeinen: Auf Kopf und Schwanz der Liste ausfuehren.
+// In general: Apply optimization to head and tail of the list
+
 int ListNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
 {
     int changes = 0;
 
-    // Auf gesamter Liste ausfuehren
+    // Apply to entire list
     changes += head()->resolveDefs(cdef, complain_recursive);
     changes += tail()->resolveDefs(cdef, complain_recursive);
 
@@ -253,7 +254,7 @@ int ListNode::resolveSynonyms(VSLDef *cdef, VSLNode ** /* node */)
 
     // assert (this == *node);
 
-    // Auf gesamter Liste ausfuehren
+    // Apply to entire list
     changes += head()->resolveSynonyms(cdef, &head());
     changes += tail()->resolveSynonyms(cdef, &tail());
 
@@ -266,7 +267,7 @@ int ListNode::foldOps(VSLDef *cdef, VSLNode ** /* node */)
 
     // assert (this == *node);
 
-    // Auf gesamter Liste ausfuehren
+    // Apply to entire list
     changes += head()->foldOps(cdef, &head());
     changes += tail()->foldOps(cdef, &tail());
 
@@ -279,7 +280,7 @@ int ListNode::inlineFuncs(VSLDef *cdef, VSLNode ** /* node */)
 
     // assert (this == *node);
 
-    // Auf gesamter Liste ausfuehren
+    // Apply to entire list
     changes += head()->inlineFuncs(cdef, &head());
     changes += tail()->inlineFuncs(cdef, &tail());
 
@@ -293,7 +294,7 @@ int ListNode::instantiateArgs(VSLDef *cdef, VSLNode ** /* node */,
 
     // assert (this == *node);
 
-    // Auf gesamter Liste ausfuehren
+    // Apply to entire list
     changes += head()->instantiateArgs(cdef, &head(), values, base, n);
     changes += tail()->instantiateArgs(cdef, &tail(), values, base, n);
 
@@ -303,21 +304,21 @@ int ListNode::instantiateArgs(VSLDef *cdef, VSLNode ** /* node */,
 void ListNode::countArgNodes(VSLDef *cdef, int instances[], unsigned base,
     unsigned n)
 {
-    // Auf gesamter Liste ausfuehren
+    // Apply to entire list
     head()->countArgNodes(cdef, instances, base, n);
     tail()->countArgNodes(cdef, instances, base, n);
 }
 
 void ListNode::compilePatterns(VSLDef *cdef) const
 {
-    // Auf gesamter Liste ausfuehren
+    // Apply to entire list
     head()->compilePatterns(cdef);
     tail()->compilePatterns(cdef);
 }
 
 void ListNode::uncompilePatterns(VSLDef *cdef) const
 {
-    // Auf gesamter Liste ausfuehren
+    // Apply to entire list
     head()->uncompilePatterns(cdef);
     tail()->uncompilePatterns(cdef);
 }
@@ -326,7 +327,7 @@ int ListNode::countSelfReferences(VSLDef *cdef, VSLDefList *deflist)
 {
     int changes = 0;
 
-    // Auf gesamter Liste ausfuehren
+    // Apply to entire list
     changes += head()->countSelfReferences(cdef, deflist);
     changes += tail()->countSelfReferences(cdef, deflist);
 
@@ -340,7 +341,7 @@ int ListNode::resolveName(VSLDef *cdef, VSLNode **/* node */, string& name,
 
     // assert (this == *node);
 
-    // Auf gesamter Liste ausfuehren
+    // Apply to entire list
     changes += head()->resolveName(cdef, &head(), name, id);
     changes += tail()->resolveName(cdef, &tail(), name, id);
 
@@ -351,7 +352,7 @@ int ListNode::_resolveNames(VSLDef *cdef, unsigned base)
 {
     int changes = 0;
 
-    // Auf gesamter Liste ausfuehren
+    // Apply to entire list
     changes += head()->resolveNames(cdef, base);
     changes += tail()->resolveNames(cdef, base);
 
@@ -362,7 +363,7 @@ int ListNode::_reBase(VSLDef *cdef, unsigned newBase)
 {
     int changes = 0;
 
-    // Auf gesamter Liste ausfuehren
+    // Apply to entire list
     changes += head()->reBase(cdef, newBase);
     changes += tail()->reBase(cdef, newBase);
 
@@ -379,8 +380,7 @@ string ListNode::firstName() const RETURNS(s)
 }
 
 
-// foldConsts: Funktionen mit konstanten Argumenten sofort auswerten
-// Etwa: f(2 + 2) durch f(4) ersetzen.
+// foldConsts: Evaluate functions with constant args now
 
 int ListNode::foldConsts(VSLDef *cdef, VSLNode **node)
 {
@@ -388,16 +388,16 @@ int ListNode::foldConsts(VSLDef *cdef, VSLNode **node)
 
     assert (this == *node);
 
-    // Auf gesamter Liste ausfuehren
+    // Apply to entire list
     changes += head()->foldConsts(cdef, &head());
     changes += tail()->foldConsts(cdef, &tail());
 
-    // Pruefen, ob Liste jetzt konstant;
-    // wenn nicht, Abbruch
+    // If list is still not constant, abort
     if (!isConst())
 	return changes;
 
-    // Sonst: Liste auswerten (hierbei Seiteneffekte vermeiden)
+
+    // Otherwise: evaluate lust, avoiding side effects
 
     sideEffectsProhibited = true;
     sideEffectsOccured = false;
@@ -415,7 +415,7 @@ int ListNode::foldConsts(VSLDef *cdef, VSLNode **node)
 	    cout.flush();
 	}
 
-	// CallNode durch Konstante ersetzen
+	// Replace CallNode by constant
 	*node = new ConstNode((Box *)result);
 
 	if (VSEFlags::show_optimize)
@@ -426,7 +426,7 @@ int ListNode::foldConsts(VSLDef *cdef, VSLNode **node)
 	
 	changes++;
 
-	// ListNode und daranhaengenden Teilbaum loeschen
+	// Delete ListNode and its subtree
 	delete this;
     }
 
@@ -438,7 +438,7 @@ int ListNode::foldConsts(VSLDef *cdef, VSLNode **node)
 
 // Debugging
 
-// Pruefen, ob alles in Ordnung
+// Representation invariant
 bool ListNode::OK() const
 {
     assert (VSLNode::OK());

@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse ArgNode
+// ArgNode class
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,12 +34,12 @@
 #endif
 
 
-// Ein ArgNode wertet zur Laufzeit ein Argument aus der Argumentliste aus.
+// Upon run-time, an ArgNode evaluates an argument from the argument list
 
-// ArgNode's koennen fuer Pattern-Matching verwendet werden. 
-// Ist 'matchAll' gesetzt, so matcht ein ArgNode alle anderen Knoten.
-// Ist 'matchCallback' gesetzt, wird beim Matchen eine Funktion aufgerufen,
-// die den gematch'ten Knoten erhaelt.
+// ArgNodes may be used for pattern matching.
+// If 'ArgNode::matchAll' is set, an ArgNode matches all other VSL nodes.
+// If 'ArgNode::matchCallback' is set, matching calls a function with
+// the matched node as argument.
 
 
 #include "assert.h"
@@ -73,15 +73,15 @@ protected:
     void _dumpTree(ostream& s) const;
 
 public:
-    // ArgNode erzeugen
+    // Constructor
     ArgNode(unsigned i, char *type = "ArgNode"):
 	DummyNode(type), _id(i)
     {}
 
-    // ArgNode kopieren
+    // Copy
     VSLNode *dup() const { return new ArgNode(*this); }
 
-    // Auswerten
+    // Evaluate
     const Box *_eval(ListBox *arglist) const;
 
     int instantiateArgs(VSLDef *cdef, VSLNode **node, VSLNode *values[],
@@ -96,7 +96,7 @@ public:
 
     unsigned nargs() const    { return 1; }
 
-    static ArgNodeFunc matchCallback; // Flag: bei Matching Funktion aufrufen?
+    static ArgNodeFunc matchCallback; // Call when matching
 };
 
 #endif

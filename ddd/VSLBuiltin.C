@@ -43,7 +43,7 @@ char VSLBuiltin_rcsid[] =
 #include "VSLBuiltin.h"
 #include "VSLLib.h"
 
-// zillions of boxes...
+// Zillions of boxes...
 #include "AlignBox.h"
 #include "ArcBox.h"
 #include "BinBox.h"
@@ -58,11 +58,11 @@ char VSLBuiltin_rcsid[] =
 #include "DummyBox.h"
 
 
-// Typ-Pruefungen
+// Type checks
 
 #ifndef NDEBUG
-inline bool checkAtoms(ListBox *args)
-// Prueft, ob alle Argumente Atome sind
+// True iff all args are atoms
+static bool checkAtoms(ListBox *args)
 {
     for (ListBox *b = args; !b->isEmpty(); b = b->tail())
     {
@@ -82,8 +82,8 @@ inline bool checkAtoms(ListBox *args)
 #endif
 
 
-inline bool checkSize(ListBox *args)
-// Prueft, ob alle Argumente Groesse haben
+// True iff all args have some size
+static bool checkSize(ListBox *args)
 {
     for (ListBox *b = args; !b->isEmpty(); b = b->tail())
     {
@@ -98,12 +98,12 @@ inline bool checkSize(ListBox *args)
 #define CHECK_SIZE(args) { if (!checkSize(args)) return new DummyBox; }
 
 
-// Vordefinierte Funktionen VSL
+// Predefined VSL functions
 
-// Logische Operatoren
+// Logical ops
 
+// Logical `not'
 static Box *op_not(ListBox *args)
-// Logisches nicht
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -115,7 +115,7 @@ static Box *op_not(ListBox *args)
 }
 
 
-// Graphische Operatoren
+// Graphical ops
 
 // Normalize alignment
 static Box *normalize(AlignBox *box)
@@ -170,12 +170,12 @@ static Box *normalize(AlignBox *box)
     return box;
 }
 
+// Horizontal alignment
 static Box *op_halign(ListBox *args)
-// Horizontale Anordnung
 {
     CHECK_ATOMS(args);
 
-    HAlignBox *ret = 0;     // Rueckgabewert
+    HAlignBox *ret = 0;     // Return value
 
     for (ListBox *b = args; !b->isEmpty(); b = b->tail())
     {
@@ -185,11 +185,11 @@ static Box *op_halign(ListBox *args)
 	*ret &= box;
     }
 
-    // Wenn kein Sohn gefunden, NullBox zurueckgeben
+    // No child?  Return null box.
     if (ret == 0)
 	return new NullBox;
 
-    // Wenn 1 Sohn gefunden, diesen zurueckgeben
+    // One child?  Return it.
     if (ret->nchildren() == 1)
     {
 	Box *child = (*ret)[0]->link();
@@ -201,12 +201,12 @@ static Box *op_halign(ListBox *args)
     return normalize(ret);
 }
 
+// Textual alignment
 static Box *op_talign(ListBox *args)
-// Textuelle Anordnung
 {
     CHECK_ATOMS(args);
 
-    TAlignBox *ret = 0;     // Rueckgabewert
+    TAlignBox *ret = 0;     // Return value
 
     for (ListBox *b = args; !b->isEmpty(); b = b->tail())
     {
@@ -216,11 +216,11 @@ static Box *op_talign(ListBox *args)
 	*ret &= box;
     }
 
-    // Wenn kein Sohn gefunden, NullBox zurueckgeben
+    // No child?  Return null box.
     if (ret == 0)
 	return new NullBox;
 
-    // Wenn 1 Sohn gefunden, diesen zurueckgeben
+    // One child?  Return it.
     if (ret->nchildren() == 1)
     {
 	Box *child = (*ret)[0]->link();
@@ -232,8 +232,8 @@ static Box *op_talign(ListBox *args)
     return normalize(ret);
 }
 
+// Vertical alignment
 static Box *op_valign(ListBox *args)
-// Vertikale Anordnung
 {
     CHECK_ATOMS(args);
 
@@ -247,11 +247,11 @@ static Box *op_valign(ListBox *args)
 	*ret |= box;
     }
 
-    // Wenn kein Sohn gefunden, NullBox zurueckgeben
+    // No child?  Return null box.
     if (ret == 0)
 	return new NullBox;
 
-    // Wenn 1 Sohn gefunden, diesen zurueckgeben
+    // One child?  Return it.
     if (ret->nchildren() == 1)
     {
 	Box *child = (*ret)[0]->link();
@@ -263,8 +263,8 @@ static Box *op_valign(ListBox *args)
     return normalize(ret);
 }
 
+// Stacked alignment
 static Box *op_ualign(ListBox *args)
-// Gestapelte Anordnung
 {
     CHECK_ATOMS(args);
 
@@ -278,11 +278,11 @@ static Box *op_ualign(ListBox *args)
 	*ret ^= box;
     }
 
-    // Wenn kein Sohn gefunden, NullBox zurueckgeben
+    // No child?  Return null box.
     if (ret == 0)
 	return new NullBox;
 
-    // Wenn 1 Sohn gefunden, diesen zurueckgeben
+    // One child?  Return it.
     if (ret->nchildren() == 1)
     {
 	Box *child = (*ret)[0]->link();
@@ -296,10 +296,10 @@ static Box *op_ualign(ListBox *args)
 
 
 
-// Arithmetische Operatoren
+// Arithmetic ops
 
-static Box *op_plus(ListBox *args)
 // Addition
+static Box *op_plus(ListBox *args)
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -314,8 +314,8 @@ static Box *op_plus(ListBox *args)
     return new SpaceBox(sum);
 }
 
+// Multiplication
 static Box *op_mult(ListBox *args)
-// Multiplikation
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -330,8 +330,8 @@ static Box *op_mult(ListBox *args)
     return new SpaceBox(product);
 }
 
+// Subtraction
 static Box *op_minus(ListBox *args)
-// Subtraktion
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -340,8 +340,8 @@ static Box *op_minus(ListBox *args)
 	(*args)[0]->size() - (*args)[1]->size());
 }
 
+// (Integer) division
 static Box *op_div(ListBox *args)
-// (ganzzahlige) Division
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -356,8 +356,8 @@ static Box *op_div(ListBox *args)
 	(*args)[0]->size() / (*args)[1]->size());
 }
 
+// Remainder
 static Box *op_mod(ListBox *args)
-// Rest Division
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -374,10 +374,10 @@ static Box *op_mod(ListBox *args)
 
 
 
-// Vergleichsoperatoren
+// Comparison
 
+// Equality
 static Box *op_eq(ListBox *args)
-// Test auf Gleichheit
 {
     if (*(*args)[0] == *(*args)[1])
 	return new TrueBox;
@@ -385,8 +385,8 @@ static Box *op_eq(ListBox *args)
 	return new FalseBox;
 }
 
+// Inequality
 static Box *op_ne(ListBox *args)
-// Test auf Ungleichheit
 {
     if (*(*args)[0] != *(*args)[1])
 	return new TrueBox;
@@ -394,8 +394,8 @@ static Box *op_ne(ListBox *args)
 	return new FalseBox;
 }
 
+// Greater than
 static Box *op_gt(ListBox *args)
-// Test >
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -406,8 +406,8 @@ static Box *op_gt(ListBox *args)
 	return new FalseBox;
 }
 
+// Greater or equal
 static Box *op_ge(ListBox *args)
-// Test >=
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -418,8 +418,8 @@ static Box *op_ge(ListBox *args)
 	return new FalseBox;
 }
 
+// Less than
 static Box *op_lt(ListBox *args)
-// Test <
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -430,8 +430,8 @@ static Box *op_lt(ListBox *args)
 	return new FalseBox;
 }
 
+// Less or equal
 static Box *op_le(ListBox *args)
-// Test <=
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -443,10 +443,10 @@ static Box *op_le(ListBox *args)
 }
 
 
-// Listen-Operatoren
+// List ops
 
+// Cons lists
 static Box *op_cons(ListBox *args)
-// Listen verketten
 {
     ListBox *ret = 0;
 
@@ -464,16 +464,16 @@ static Box *op_cons(ListBox *args)
 
 	if (!((ListBox *)box)->isEmpty())
 	{
-	    // Anzuhaengende Liste erzeugen: 
-	    // Wenn box letztes Argument, genuegt link
+	    // Create list to append
+	    // If box is last arg, a link suffices
 	    ListBox *box2;
 	    if (b->tail()->isEmpty())
 		box2 = (ListBox *)box->link();
 	    else
 		box2 = (ListBox *)box->dup();
 
-	    // Liste anhaengen: 
-	    // Wenn box erstes Argument, box kopieren
+	    // Append list: 
+	    // If box is first arg, copy box
 	    if (ret == 0)
 		ret = box2;
 	    else
@@ -484,7 +484,7 @@ static Box *op_cons(ListBox *args)
 	}
     }
 
-    // Wenn keine Argumente: [] zurueckgeben
+    // No args? return []
     if (ret == 0)
 	ret = new ListBox;
 
@@ -492,10 +492,10 @@ static Box *op_cons(ListBox *args)
 }
 
 
-// Standard-Funktionen
+// Standard functions
 
-static Box *hspace(ListBox *args)
 // hspace(box)
+static Box *hspace(ListBox *args)
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -504,8 +504,8 @@ static Box *hspace(ListBox *args)
     return new SpaceBox(BoxSize(child->size(X), 0));
 }
 
-static Box *vspace(ListBox *args)
 // vspace(box)
+static Box *vspace(ListBox *args)
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -514,55 +514,52 @@ static Box *vspace(ListBox *args)
     return new SpaceBox(BoxSize(0, child->size(Y)));
 }
 
-static Box *hfix(ListBox *args)
 // hfix(box)
+static Box *hfix(ListBox *args)
 {
     CHECK_ATOMS(args);
 
     return new HFixBox((Box *)(*args)[0]);
 }
 
-static Box *vfix(ListBox *args)
 // vfix(box)
+static Box *vfix(ListBox *args)
 {
     CHECK_ATOMS(args);
 
     return new VFixBox((Box *)(*args)[0]);
 }
 
-static Box *op_bin(ListBox *args)
 // bin(box)
+static Box *op_bin(ListBox *args)
 {
     CHECK_ATOMS(args);
 
     return new BinBox((Box *)(*args)[0]);
 }
 
-
-// Name Knotentyp im Dokument zurueckgeben
-
-static Box *tag(ListBox *args)
 // tag(box)
+static Box *tag(ListBox *args)
 {
     return new StringBox((*args)[0]->name());
 }
 
 
-// Zeichenkette aus Kasten extrahieren
+// Return string from box
 
-static Box *str(ListBox *args)
 // str(box)
+static Box *str(ListBox *args)
 {
     return new StringBox((*args)[0]->str());
 }
 
 
-// Font setzen
+// Set font
 
-static Box *font(ListBox *args)
 // font(box, font)
+static Box *font(ListBox *args)
 {
-    // Erstes Argument kopieren, dann dessen Font umstellen.
+    // Copy first arg and set its font
 
     Box *ret = ((Box *)(*args)[0])->dup();
     ret->newFont((*args)[1]->str());
@@ -570,11 +567,14 @@ static Box *font(ListBox *args)
     return ret;
 }
 
-static Box *fontfix(ListBox *args)
 // fontfix(box)
+static Box *fontfix(ListBox *args)
 {
     return new FontFixBox((Box *)(*args)[0]);
 }
+
+
+// Set color
 
 // background(box, color_name)
 static Box *background(ListBox *args)
@@ -588,10 +588,11 @@ static Box *foreground(ListBox *args)
     return new ForegroundColorBox((Box *)(*args)[0], (*args)[1]->str());
 }
 
-// Standard-Boxen
 
-static Box *rise(ListBox *args)
+// Standard boxes
+
 // rise(linethickness)
+static Box *rise(ListBox *args)
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -599,8 +600,8 @@ static Box *rise(ListBox *args)
     return new RiseBox((*args)[0]->size(X));
 }
 
-static Box *fall(ListBox *args)
 // fall(linethickness)
+static Box *fall(ListBox *args)
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -608,8 +609,8 @@ static Box *fall(ListBox *args)
     return new FallBox((*args)[0]->size(X));
 }
 
-static Box *arc(ListBox *args)
 // arc(start, length, linethickness)
+static Box *arc(ListBox *args)
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -619,8 +620,8 @@ static Box *arc(ListBox *args)
 	(*args)[2]->size(X));
 }
 
+// Square box from maximal height and width
 static Box *square(ListBox *args)
-// Quadratische Box aus maximaler Hoehe und Breite
 {
     CHECK_ATOMS(args);
     CHECK_SIZE(args);
@@ -629,39 +630,38 @@ static Box *square(ListBox *args)
     return new SquareBox(max(arg->size(X), arg->size(Y)));
 }
 
-static Box *fill(ListBox *)
 // fill()
+static Box *fill(ListBox *)
 {
     return new FillBox;
 }
 
-static Box *rule(ListBox *)
 // rule()
+static Box *rule(ListBox *)
 {
     return new RuleBox;
 }
 
-static Box *diag(ListBox *)
 // diag()
+static Box *diag(ListBox *)
 {
     return new DiagBox;
 }
 
 
-// Default-Boxen
+// Default boxes
 
+// Place holder for an undefined box
 static Box *undef(ListBox *)
-// Platzhalter fuer undefinierte Box
 {
     return new StringBox("???");
 }
 
 
-// Fehlerbehandlung
+// Error handling
 
+// Make evaluation fail; issue error message
 static Box *fail(ListBox *args)
-// Berechnung scheitern lassen;
-// Fehlermeldung (sofern vorhanden) ausgeben
 {
     CHECK_ATOMS(args);
 
@@ -674,21 +674,21 @@ static Box *fail(ListBox *args)
 }
 
 
-// Tabelle der vordefinierten Funktionen
+// Table of predefined functions
 
 struct BuiltinRec {
-    char* ext_name;         // Funktionsname (extern; 0 = func_name)
-    char* func_name;        // Funktionsname (intern)
-    bool isAssoc;           // Flag: Assoziativ?
-    bool hasSideEffects;    // Flag: Seiteneffekte?
-    bool isInfix;           // Flag: Infix ausgeben?
-    BuiltinFunc eval_func;  // Aufzurufende Funktion
+    char* ext_name;         // Function name (external; 0 = func_name)
+    char* func_name;        // Function name (internal)
+    bool isAssoc;           // Flag: associative?
+    bool hasSideEffects;    // Flag: side effects?
+    bool isInfix;           // Flag: dump infix?
+    BuiltinFunc eval_func;  // Function to be called
 
 };
 
 static BuiltinRec builtins[] = {
 
-// n-stellige Operatoren
+// n-ary ops
 { "(&)",    "__op_halign",  true,   false,  false,  op_halign },
 { "(|)",    "__op_valign",  true,   false,  false,  op_valign },
 { "(^)",    "__op_ualign",  true,   false,  false,  op_ualign },
@@ -697,7 +697,7 @@ static BuiltinRec builtins[] = {
 { "(*)",    "__op_mult",    true,   false,  false,  op_mult },
 { "(::)",   "__op_cons",    true,   false,  false,  op_cons },
 
-// 2-stellige Operatoren
+// binary ops
 { "(-)",    "__op_minus",   false,  false,  false,  op_minus },
 { "(/)",    "__op_div",     false,  false,  false,  op_div },
 { "(%)",    "__op_mod",     false,  false,  false,  op_mod },
@@ -709,10 +709,10 @@ static BuiltinRec builtins[] = {
 { "(<=)",   "__op_le",      false,  false,  false,  op_le },
 { 0,        "__op_bin",     false,  false,  false,  op_bin },
 
-// 1-stellige Operatoren
+// unary ops
 { "not",    "__op_not",     false,  false,  false,  op_not },
 
-// Funktionen
+// functions
 { 0,    "__hspace",     false,  false,  false,  hspace },
 { 0,    "__vspace",     false,  false,  false,  vspace },
 { 0,    "__hfix",       false,  false,  false,  hfix },
@@ -728,10 +728,10 @@ static BuiltinRec builtins[] = {
 { 0,    "__background", false,  false,  false,  background },
 { 0,    "__foreground", false,  false,  false,  foreground },
 
-// Funktionen mit Seiteneffekten
+// functions with side effects
 { 0,    "__fail",       false,  true,   false,  fail },
 
-// Konstanten
+// constants
 { 0,    "__fill",       false,  false,  false,  fill },
 { 0,    "__rule",       false,  false,  false,  rule },
 { 0,    "__diag",       false,  false,  false,  diag },
@@ -740,18 +740,16 @@ static BuiltinRec builtins[] = {
 };
 
 
-// Zugriffsfunktionen
+// Access functions
 
+// Return function name index for FUNC_NM; or -1 if not found
 int VSLBuiltin::resolve(const string& func_nm)
-// fuer gegebenen Namen Funktionszeiger zurueckgeben;
-// wenn nicht gefunden, 0 zurueckgeben.
 {
     for (int i = 0; i < int(sizeof(builtins) / sizeof(builtins[0])); i++)
 	if (func_nm == builtins[i].func_name)
 	    return i;
 
-    // nicht gefunden
-    return -1;
+    return -1;			// not found
 }
 
 BuiltinFunc VSLBuiltin::func(int idx)

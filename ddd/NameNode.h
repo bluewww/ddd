@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse NameNode
+// VSL Variable names
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,7 +34,7 @@
 #endif
 
 
-// Ein NameNode ist ein Platzhalter fuer einen Variablennamen.
+// A NameNode is a place holder for a variable name.
 
 
 #include "assert.h"
@@ -51,7 +51,7 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    string _name;           // Variablenname
+    string _name;           // Variable name
 
 protected:
     NameNode(const NameNode& node):
@@ -63,28 +63,28 @@ protected:
     void _dumpTree(ostream& s) const;
 
 public:
-    // NameNode erzeugen
+    // Constructor
     NameNode(string nm, char *type = "NameNode"):
 	VSLNode(type), _name(nm)
     {}
 
-    // NameNode kopieren
+    // Copy
     VSLNode *dup() const { return new NameNode(*this); }
 
-    // Auswerten
+    // Evaluate
     const Box *_eval(ListBox *) const        { assert(0); return 0; }
 
-    // Ressourcen
+    // Properties
     bool isConst() const   { return false; }
     bool isNameNode() const { return true; }
 
     unsigned nargs() const    { return 1; }
 
-    // Namen durch Variable ersetzen
+    // Replace name by variable
     int resolveName(VSLDef *cdef, VSLNode **node, string& name, unsigned id);
     string firstName() const { return _name; }
 
-    // Repraesentations-Invariante
+    // Representation invariant
     bool OK() const;
 };
 

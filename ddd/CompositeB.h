@@ -1,5 +1,5 @@
 // $Id$
-// Klasse CompositeBox (Deklaration)
+// Composite boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -33,7 +33,7 @@
 #pragma interface
 #endif
 
-// Eine CompositeBox ist ein Behaelter fuer eine Anordnung von Boxen.
+// A CompositeBox is a box container.
 
 
 #include "assert.h"
@@ -56,39 +56,41 @@ private:
     CompositeBox& operator = (const CompositeBox&) { assert(0); return *this; }
 
 protected:
-    // Box als Kind hinzufuegen
+    // Add box as child
     virtual void addChild(Box *b)
     {
-	// Kind in Array eintragen
 	if (_nchildren >= _size)
 	    grow();
 	boxes[_nchildren++] = b->link();
     }
 
-    // Direkt-Zugriff auf Kind
-    Box *&_child(int nchild) {
-	assert(nchild >= 0 && nchild < _nchildren);
-	return boxes[nchild];
-    }
-    // Direkt-Zugriff auf Kind
-    const Box *_child(int nchild) const {
+    // Direct child access
+    Box *&_child(int nchild)
+    {
 	assert(nchild >= 0 && nchild < _nchildren);
 	return boxes[nchild];
     }
 
-    // CompositeBox kopieren
+    // Direct child access
+    const Box *_child(int nchild) const
+    {
+	assert(nchild >= 0 && nchild < _nchildren);
+	return boxes[nchild];
+    }
+
+    // Copy
     CompositeBox(const CompositeBox& box):
 	Box(box), 
 	_size(box._size),
 	_nchildren(box._nchildren),
 	boxes(new Box* [box._size])
     {
-	// Soehne kopieren und eintragen
+	// Copy children
 	for (int i = 0; i < _nchildren; i++)
 	    boxes[i] = box.boxes[i]->dup();
     }
 
-    // CompositeBox ausgeben
+    // Dump
     void dumpComposite(ostream& s, 
 	char *sep = ", ", char *head = "(", char *tail = ") ") const;
 
@@ -115,16 +117,16 @@ public:
 	delete[] boxes;
     }
 
-    // string zurueckgeben
+    // return string
     virtual string str() const;
 
-    // Groesse neu berechnen
+    // Recompute size
     Box *resize();
 
-    // Font propagieren
+    // propagate font
     void newFont(const string& font);
 
-    // Ressourcen
+    // Resources
     int nchildren() const { return _nchildren; }
     Box *operator[] (int nchild) { return _child(nchild); }
     const Box *operator[] (int nchild) const { return _child(nchild); }

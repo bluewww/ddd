@@ -1,5 +1,5 @@
 // $Id$
-// VSLDef class
+// VSL definition
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -99,11 +99,11 @@ VSLDef& VSLDef::operator = (const VSLDef&)
 }
 
 
-// Pattern-Matching
+// Pattern matching
 
 const int max_instances = 256;
 
-// Pattern-Matching mit Knoten
+// Pattern matching with nodes
 
 static VSLNode *node_instances[max_instances];
 
@@ -112,11 +112,11 @@ static void node_matches(int data, const VSLNode *node)
     node_instances[data] = (VSLNode *)node;
 }
 
-// Pruefen, ob Definition mit Aufruf 'arg' uebereinstimmt;
-// hierbei gematchte Werte aus arg in node_instances ablegen
+// Check if definition is conformant to argument ARG;
+// store matched values from arg in node_instances
 bool VSLDef::matches(const VSLNode *arg) const
 {
-    // Fuer Dauer des Vergleiches sind fuer alle x: ArgNode == x
+    // While comparing, for all X, ArgNode == X holds.
 
     ArgNodeFunc oldCB = ArgNode::matchCallback;
     ArgNode::matchCallback = node_matches;
@@ -148,7 +148,7 @@ bool VSLDef::matches(const VSLNode *arg) const
     return ret;
 }
 
-// mit 'arg' gematch'te Knoten zurueckgeben
+// Return nodes matched against A
 VSLNode **VSLDef::nodelist(const VSLNode *arg) const
 {
     for (unsigned i = 0; i < nargs(); i++)
@@ -162,7 +162,8 @@ VSLNode **VSLDef::nodelist(const VSLNode *arg) const
 }
 
 
-// Pattern-Matching mit Boxen
+
+// Pattern matching with boxes
 
 static Box *box_instances[max_instances];
 
@@ -171,13 +172,13 @@ static void box_matches(int data, const Box *box)
     box_instances[data] = (Box *)box;
 }
 
-// Pruefen, ob Definition mit Parameter 'arg' uebereinstimmt;
-// hierbei gematchte Werte aus arg in box_instances ablegen
+// Check if definition is conformant to argument ARG;
+// store matched values from arg in box_instances
 bool VSLDef::matches(const Box *arg) const
 {
     bool ret = false;
 
-    // Fuer Dauer des Vergleiches gilt fuer alle x: MatchBox == x
+    // While comparing, for all X, MatchBox == X holds.
 
     MatchBoxFunc oldCB = MatchBox::matchCallback;
     MatchBox::matchCallback = box_matches;
@@ -213,10 +214,10 @@ bool VSLDef::matches(const Box *arg) const
 }
 
 
-// node_pattern in box_pattern umwandeln
+// Convert node_pattern into box_pattern
 void VSLDef::compilePattern() const
 {
-    // Schutz gegen Pattern der Form f(f(a)) = ...
+    // Protect against patterns like f(f(a)) = ...
     if (being_compiled)
     {
 	VSLLib::eval_error("recursive pattern", this);
@@ -225,7 +226,7 @@ void VSLDef::compilePattern() const
 
     uncompilePattern();
 
-    // Als Argumente Liste von MatchBoxen uebergeben
+    // Use a list of match boxes as argument
     ListBox *list = new ListBox;
     unsigned i;
     for (i = 0; i < nargs(); i++)
@@ -241,13 +242,12 @@ void VSLDef::compilePattern() const
 
     list->unlink();
 
-
-    // Pruefen, ob Resultat gueltig
+    // Check if valid
     if (result == 0)
 	VSLLib::eval_error("cannot evaluate pattern", this);
     else
     {
-	// MatchBoxen zaehlen: Jede muss genau 1x vorkommen
+	// Each MatchBox must be used exactly once
 	int *instances = new int [nargs()];
 	for (i = 0; i < nargs(); i++)
 	    instances[i] = 0;
@@ -278,7 +278,7 @@ void VSLDef::compilePattern() const
 
 
 
-// Auswertung
+// Evaluation
 
 // Backtrace
 
@@ -286,12 +286,12 @@ const VSLDef **VSLDef::backtrace = 0;
 const Box **VSLDef::backtrace_args = 0;
 // (doesn't work without initializing --  why?)
 
-// Definition auswerten
+// Evaluate def
 const Box *VSLDef::eval(Box *arg) const
 {
     static int depth = 0;
 
-    // Backtrace anlegen
+    // Create backtrace
     if (backtrace == 0)
     {
 	backtrace = new const VSLDef *[VSEFlags::max_eval_nesting + 2];
@@ -300,7 +300,7 @@ const Box *VSLDef::eval(Box *arg) const
 
     backtrace[depth] = this;
     backtrace_args[depth] = arg->link();
-    backtrace[depth + 1] = 0;   // Ende-Kennzeichen
+    backtrace[depth + 1] = 0;   // End marker
 
     // Debugging
     if (VSEFlags::show_large_eval)
@@ -313,7 +313,7 @@ const Box *VSLDef::eval(Box *arg) const
 	cout.flush();
     }
 
-    // Eigentliche Funktion
+    // Actual function
     const Box *box = 0;
 
     if (depth < VSEFlags::max_eval_nesting)
@@ -354,15 +354,14 @@ const Box *VSLDef::eval(Box *arg) const
 	cout.flush();
     }
 
-    // Backtrace loeschen
+    // Delete backtrace
     backtrace[depth] = 0;
     ((Box *)backtrace_args[depth])->unlink();
 
     return box;
 }
 
-// Argumentliste in ein Format konvertieren, dass ArgNode's
-// darauf zugreifen koennen.
+// Convert argument list into a format suitable for ArgNode instances.
 ListBox *VSLDef::arglist(const Box *arg) const
 {
     if (straight())
@@ -391,26 +390,25 @@ ListBox *VSLDef::arglist(const Box *arg) const
 
 
 
-// Namen aufloesen
+// Resolve function names
 int VSLDef::resolveNames()
 {
-    // Zunaechst im Koerper anwenden
+    // Apply to body
     int changes = expr()->resolveNames(this, nargs());
 
-    // Jetzt alle NameNode's im Pattern durch entsprechende
-    // ArgNode's ersetzen.
+    // Now replace all NameNodes in the pattern by equivalent ArgNodes.
     string s = "";
     unsigned offset = 0;
 
     while ((s = node_pattern()->firstName(), s) != "")
     {
-	// Im Koerper ersetzen
+	// Replace in body
 	int ch = expr()->resolveName(this, &expr(), s, offset);
 	if (ch == 0)
 	    VSLLib::eval_warning("`" + s + "' unused", this);
 	changes += ch;
 
-	// Im Pattern ersetzen
+	// Replace in pattern
 	ch = node_pattern()->resolveName(this, &node_pattern(), s, offset);
 	assert(ch > 0);
 	if (ch > 1)
@@ -421,7 +419,7 @@ int VSLDef::resolveNames()
 
     assert(offset == nargs());
 
-    // Verbleibende NameNode's entfernen (durch arg0 ersetzen)
+    // Remove remaining NameNodes (replace them by arg0)
     while ((s = expr()->firstName(), s) != "")
     {
 	VSLLib::eval_error("`" + s + "' undefined", this);
@@ -432,12 +430,12 @@ int VSLDef::resolveNames()
 }
 
 
-// Ressourcen
+// Resources
 
-// Funktionsargumente bilden (fuer Fehlermeldungen etc.)
+// Create function args (for error messages, etc.)
 string VSLDef::args() const
 {
-    // Konstante: hat kein Argument
+    // Konstant: has no arg
     if ((deflist->func_name())[0] == '#')
 	return string("");
 
@@ -451,19 +449,19 @@ string VSLDef::args() const
     return os;
 }
 
-// Internen Funktionsnamen zurueckgeben
+// Internal function name
 string VSLDef::func_name() const
 {
     return deflist->func_name() + args();
 }
 
-// Externen Funktionsnamen zurueckgeben
+// External function name
 string VSLDef::f_name() const
 {
     return deflist->f_name() + args();
 }
 
-// Externen Funktionsnamen incl. Auftreten zurueckgeben
+// External function name, including location
 string VSLDef::longname() const
 {
     ostrstream os;
@@ -476,7 +474,7 @@ string VSLDef::longname() const
     return os;
 }
 
-// Definition *und alle Nachfolger* zerstoeren
+// Delete definition *and all successors*
 VSLDef::~VSLDef()
 {
     if (_listnext)      delete _listnext;
@@ -485,15 +483,15 @@ VSLDef::~VSLDef()
     if (_box_pattern)   _box_pattern->unlink();
 }
 
-// Pruefen, ob alles in Ordnung (*ohne* Nachfolger)
+// Representation invariant (*without* successors)
 bool VSLDef::OK() const
 {
-    // Pruefen, ob Ausdruecke ok
+    // Check expressions
     assert (_expr == 0 || _expr->OK());
     assert (_node_pattern && _node_pattern->OK());
     assert (_box_pattern == 0 || _box_pattern->OK());
 
-    // Pruefen, ob Zeiger auf Vorgaenger und Nachfolger ok
+    // Check pointers to successor and predecessor
     assert (libnext() == 0 || libnext()->libprev() == this);
     assert (libprev() == 0 || libprev()->libnext() == this);
 

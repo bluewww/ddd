@@ -1,5 +1,5 @@
 // $Id$
-// LetNode class
+// LET..IN construct in VSL
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -54,14 +54,14 @@ DEFINE_TYPE_INFO_1(WhereNode, LetNode)
 
 // LetNode
 
-// Let ausgeben
+// Dump Let
 void LetNode::dump(ostream& s) const
 {
     s << "let " << *node_pattern() << " = "  << *args() 
       << "\n  in " << *body();
 }
 
-// where ausgeben
+// Dump where
 void WhereNode::dump(ostream& s) const
 {
     s << *body() 
@@ -69,7 +69,7 @@ void WhereNode::dump(ostream& s) const
 }
 
 
-// ...als Baum
+// ...as tree
 void LetNode::_dumpTree(ostream& s) const
 {
     node_pattern()->dumpTree(s);
@@ -80,7 +80,7 @@ void LetNode::_dumpTree(ostream& s) const
 }
 
 
-// Let auswerten
+// Evaluate
 const Box *LetNode::_eval(ListBox *arglst) const
 {
     const Box *result = 0;
@@ -88,17 +88,17 @@ const Box *LetNode::_eval(ListBox *arglst) const
     if (arglst)
 	assert(int(_base) == arglst->length());
 
-    // Argumente fuer Pattern bilden
+    // Create arguments for pattern
     const Box *patternArgs = args()->eval(arglst);
 
-    // Neue Argumentliste bilden
+    // Create new argument list
     ListBox *moreArgs = arglist(patternArgs);
 
     if (moreArgs)
     {
 	ListBox *attach = 0;
 
-	// Neue Argumentliste ggf. an bestehende anhaengen
+	// If needed, append new arg list to existing one
 	if (arglst && !(arglst->isEmpty()))
 	{
 	    attach = arglst->cons(moreArgs);
@@ -109,7 +109,7 @@ const Box *LetNode::_eval(ListBox *arglst) const
 	result = body()->eval(moreArgs);
 	moreArgs->unlink();
 
-	// Neue Argumentliste wieder entfernen
+	// Remove new arg list
 	if (attach)
 	    arglst->uncons(attach);
     }
@@ -121,12 +121,12 @@ const Box *LetNode::_eval(ListBox *arglst) const
 }
 
 
-// Pattern-Matching
+// Pattern matching
 
-const int max_instances = 256;
+const int max_instances = 256;	// Max number of args
 
 
-// Pattern-Matching mit Boxen
+// Pattern matching with boxes
 
 static Box *box_instances[max_instances];
 
@@ -135,13 +135,13 @@ static void box_matches(int data, const Box *box)
     box_instances[data] = (Box *)box;
 }
 
-// Pruefen, ob Definition mit Parameter 'a' uebereinstimmt;
-// hierbei gematchte Werte aus arg in box_instances ablegen
+// Check if definition is conformant to argument A;
+// store matched values from arg in box_instances
 bool LetNode::domatch(const Box *a) const
 {
     bool ret = false;
 
-    // Fuer Dauer des Vergleiches gilt fuer alle x: MatchBox == x
+    // While comparing, for all X, MatchBox == X holds.
 
     MatchBoxFunc oldCB = MatchBox::matchCallback;
     MatchBox::matchCallback = box_matches;
@@ -161,20 +161,20 @@ bool LetNode::domatch(const Box *a) const
 }
 
 
-// Pattern-Matching mit Knoten
+// Pattern matching with nodes
 
 static VSLNode *node_instances[max_instances];
 
+// Check if definition is conformant to argument A;
+// store matched values from arg in node_instances
 static void node_matches(int data, const VSLNode *node)
 {
     node_instances[data] = (VSLNode *)node;
 }
 
-// Pruefen, ob Definition mit Aufruf 'a' uebereinstimmt;
-// hierbei gematchte Werte aus a in node_instances ablegen
 bool LetNode::domatch(const VSLNode *a) const
 {
-    // Fuer Dauer des Vergleiches sind fuer alle x: ArgNode == x
+    // While comparing, for all X, ArgNode == X holds.
 
     ArgNodeFunc oldCB = ArgNode::matchCallback;
     ArgNode::matchCallback = node_matches;
@@ -190,7 +190,7 @@ bool LetNode::domatch(const VSLNode *a) const
     return ret;
 }
 
-// mit 'a' gematch'te Knoten zurueckgeben
+// Return nodes matched against A
 VSLNode **LetNode::nodelist(const VSLNode *a) const
 {
     for (unsigned i = _base; i < _base + _nargs; i++)
@@ -204,8 +204,7 @@ VSLNode **LetNode::nodelist(const VSLNode *a) const
 }
 
 
-// Argumentliste in ein Format konvertieren, dass ArgNode's
-// darauf zugreifen koennen.
+// Convert argument list into a format suitable for ArgNode instances.
 ListBox* LetNode::arglist(const Box *a) const
 {
     if (_straight)
@@ -233,13 +232,13 @@ ListBox* LetNode::arglist(const Box *a) const
 }
 
 
-// node_pattern in box_pattern umwandeln
+// Convert node_pattern into box_pattern
 void LetNode::compilePatterns(VSLDef *cdef) const
 {
-    // Zunaechst Argumente compilieren
+    // Compile args first
     CallNode::compilePatterns(cdef);
 
-    // Schutz gegen Pattern der Form f(f(a)) = ...
+    // Protect against patterns like f(f(a)) = ...
     if (being_compiled)
     {
 	VSLLib::eval_error("recursive pattern", cdef);
@@ -248,7 +247,7 @@ void LetNode::compilePatterns(VSLDef *cdef) const
 
     uncompilePatterns(cdef);
 
-    // Als Argumente Liste von MatchBoxen uebergeben
+    // Use a list of match boxes as argument
     ListBox *list = new ListBox;
     unsigned i;
     for (i = 0; i < _base + _nargs; i++)
@@ -264,12 +263,12 @@ void LetNode::compilePatterns(VSLDef *cdef) const
 
     list->unlink();
 
-    // Pruefen, ob Resultat gueltig
+    // Check if valid
     if (result == 0)
 	VSLLib::eval_error("cannot evaluate pattern", cdef);
     else
     {
-	// MatchBoxen zaehlen: Jede muss genau 1x vorkommen
+	// Each MatchBox must be used exactly once
 	int *instances = new int [_base + _nargs];
 	for (i = _base; i < _base + _nargs; i++)
 	    instances[i] = 0;
@@ -302,34 +301,33 @@ void LetNode::compilePatterns(VSLDef *cdef) const
 
 
 
-// Namen aufloesen
+// Resolve function names
 int LetNode::_resolveNames(VSLDef *cdef, unsigned base)
 {
     if (_nargs == 0)
 	VSLLib::eval_warning("pattern without variables", cdef);
 
-    // Zunaechst im Koerper und Pattern-Argumenten anwenden
-    // Im Koerper Basis erhoehen: Wenn wir den Koerper auswerten,
-    // haben wir _nargs Variablen mehr.
+    // First apply to body and pattern args
+    // Within body, increase the base: While evaluating the body,
+    // we have _nargs more variables.
     int changes = 0;
     
     changes += args()->resolveNames(cdef, base);
     changes += body()->resolveNames(cdef, base + _nargs);
 
-    // Jetzt alle NameNode's im Pattern durch entsprechende
-    // ArgNode's ersetzen.
+    // Now replace all NameNodes in the pattern by equivalent ArgNodes.
     string s = "";
     unsigned offset = 0;
 
     while ((s = node_pattern()->firstName(), s) != "")
     {
-	// Im Koerper ersetzen
+	// Replace in body
 	int ch = body()->resolveName(cdef, &body(), s, base + offset);
 	if (ch == 0)
 	    VSLLib::eval_warning("`" + s + "' is unused", cdef);
 	changes += ch;
 
-	// Im Pattern ersetzen
+	// Replace in pattern
 	ch = node_pattern()->resolveName(cdef, &node_pattern(), s, 
 	    base + offset);
 	assert(ch > 0);
@@ -345,34 +343,34 @@ int LetNode::_resolveNames(VSLDef *cdef, unsigned base)
 }
 
 
-// Optimierung
+// Optimization
 
-// inlineFuncs: Pattern-Variablen durch Funktionskoerper ersetzen
-// Etwa: let a = 45 in a + a durch 45 + 45 ersetzen
+// inlineFuncs: Replace pattern vars by function body
+// Example: Replace `let a = 45 in a + a' by `45 + 45'
 
 int LetNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
 {
     assert (this == *node);
     int changes = 0;
 
-    // Zunaechst: Auf allen Argumenten ausfuehren
+    // Apply to all args
     changes += CallNode::inlineFuncs(cdef, node);
 
-    // Instanz-Liste bilden: wenn nicht eindeutig, fertig.
+    // Create instance list: abort if ambiguous
     VSLNode **values = nodelist(args());
     if (values == 0)
 	return changes;
 
-    // Instanzen-Zaehler erzeugen
+    // Create instance counter
     int *instances = new int [_base + _nargs];
     unsigned i;
     for (i = 0; i < _base + _nargs; i++)
 	instances[i] = 0;
 
-    // Zaehlen, wie oft einzelne Variablen benutzt werden
+    // Count how often the variables are used
     body()->countArgNodes(cdef, instances, _base, _nargs);
 
-    // Pruefen, ob jede Instantiierung definiert
+    // Check if each instantiation is defined
     bool fail = false;
     for (i = _base; i < _base + _nargs; i++)
 	if (instances[i] > 0 && values[i] == 0)
@@ -383,14 +381,12 @@ int LetNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
 	    fail = true;
 	}
 
-    // Fuer eine effiziente Instantiierung darf
-    // jedes Argument maximal 1x verwendet werden.
+    // Each instance must be used only once (efficiency)
     for (i = _base; i < _base + _nargs; i++)
 	if (values[i] && instances[i] > 1)
 	{
-	    // Wenn wir ein Argument jedoch durch eine Konstante
-	    // oder ein anderes Argument ersetzen,
-	    // erlauben wir auch mehrfache Instantiierungen.
+	    // However, if we replace an arg by a constant or another
+	    // arg, the arg may be instantiated multiple times.
 
 	    if (!values[i]->isConstNode() && !values[i]->isArgNode())
 		fail = true;
@@ -401,28 +397,26 @@ int LetNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
     if (fail)
 	return changes;
 
-    // Sonst: eigentliche Ersetzung vornehmen
+    // Now perform inlining.
 
-    // Kopie des Funktionskoerpers holen
+    // Copy function body
     VSLNode *newbody = body()->dup();
 
-    // Die ArgNodes im Funktionskoerper verweisen auf Argumente
-    // der Funktion expr, nicht der Funktion, der dieser DefCallNode
-    // angehoert. Deshalb ersetzen wir sie durch die Argumente
-    // des DefCallNodes.
+    // The arg nodes in BODY refer to EXPR; not to the function of
+    // this DefCallNode.  We must replace them by the arguments of
+    // this DefCallNode.
 
     newbody->instantiateArgs(cdef, &newbody, values, _base, _nargs);
 
 
-    // Verbleibende ArgNodes im Funktionskoerper verweisen auf
-    // LET-Konstrukte. Wenn die aktuelle Funktion und newbody
-    // eine unterschiedliche Anzahl Argumente haben, kann es Aerger geben.
-    // Deshalb nehmen wir eine Umbenennung der ArgNode's vor.
+    // Remaining arg nides in BODY refer to LET constructs.  If the
+    // current funtion and NEWBODY have a different number of args,
+    // we'll get into trouble.  So, renumber the arg nodes.
 
     newbody->reBase(cdef, _base);
 
 
-    // Ersetzung vornehmen
+    // Here's the actual replacement
     *node = newbody;
 
     if (VSEFlags::show_optimize)
@@ -438,22 +432,21 @@ int LetNode::inlineFuncs(VSLDef *cdef, VSLNode **node)
 }
 
 
-// Neue Basis setzen
+// Set a new base
 int LetNode::_reBase(VSLDef *cdef, unsigned newBase)
 {
     int changes = 0;
 
-    // Alle LET-Variablen umbenennen: arg_i -> arg_(i + offset):
+    // Rename all LET variables: arg_i -> arg_(i + offset):
     int offset = newBase - _base;
 
     if (offset == 0)
 	return changes;
 
-    // Auf Pattern-Argument anwenden
+    // Apply to pattern args
     args()->reBase(cdef, newBase);
 
-    // Wenn offset > 0, zuerst Koerper umbenennen
-    // (um Kollisionen zu vermeiden)
+    // If offset > 0, rename in body first (to prevent collisions)
     if (offset > 0)
 	changes = body()->reBase(cdef, newBase + _nargs);
 
@@ -470,10 +463,10 @@ int LetNode::_reBase(VSLDef *cdef, unsigned newBase)
 	cout.flush();
     }
 
-    // Variablen im Koerper umbenennen
+    // Rename vars in body
     body()->instantiateArgs(cdef, &body(), argnodes, _base, _nargs);
 
-    // Variablen im Pattern umbenennen
+    // Rename vars in pattern
     node_pattern()->instantiateArgs(cdef, &node_pattern(), 
 	argnodes, _base, _nargs);
 
@@ -487,11 +480,11 @@ int LetNode::_reBase(VSLDef *cdef, unsigned newBase)
 	delete argnodes[i];
     delete[] argnodes;
 
-    // Wenn offset < 0, jetzt Koerper umbenennen
+    // If offset < 0, now rename vars in body
     if (offset < 0)
 	changes = body()->reBase(cdef, newBase + _nargs);
 
-    // Pattern neu uebersetzen
+    // Recompile pattern
     _base = newBase;
     compilePatterns(cdef);
 
@@ -501,19 +494,19 @@ int LetNode::_reBase(VSLDef *cdef, unsigned newBase)
 
 // Debugging
 
-// Pruefen, ob alles in Ordnung
+// Representation invariant
 bool LetNode::OK() const
 {
     EmptyListNode empty;
 
     assert (CallNode::OK());
 
-    // Pruefen, ob Argument 2-stellige Liste
+    // Arg must be list of length 2
     assert (arg() && arg()->isListNode());
     assert (_args() && _args()->tail() && _args()->tail()->isListNode());
     assert (_body() && _body()->tail() && *(_body()->tail()) == empty);
 
-    // Pruefen, ob Listenelemente existieren
+    // All list elems must exist
     assert (args());
     assert (body());
     assert (node_pattern());

@@ -1,5 +1,5 @@
 // $Id$ 
-// Klasse "UniqueId" (Implementation)
+// Unique identifiers
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.

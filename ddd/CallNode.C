@@ -1,5 +1,5 @@
 // $Id$
-// Implementation Klasse CallNode
+// VSL function calls
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -50,7 +50,7 @@ DEFINE_TYPE_INFO_1(CallNode, VSLNode)
 bool CallNode::matchesAll = false;
 
 
-// Funktion ausgeben
+// Dump function name
 void CallNode::dump(ostream& s) const
 {
     s << func_name();
@@ -64,22 +64,22 @@ void CallNode::dump(ostream& s) const
 	    s << *_arg;
 }
 
-// ...in Baum-Notation
+// ...as tree
 void CallNode::_dumpTree(ostream& s) const
 {
     s << "\"" << func_name() << "\", ";
     _arg->dumpTree(s);
 }
 
-// Funktion auswerten
+// Evaluate function
 const Box *CallNode::_eval(ListBox *arglist) const
 {
-    // Argument auswerten
+    // Evaluate arg
     const Box *myarg = _arg->eval(arglist);
     if (myarg == 0)
 	return 0;
 
-    // Funktion aufrufen
+    // Call function
     const Box *box = call((Box *)myarg);
 
     ((Box *)myarg)->unlink();
@@ -89,9 +89,10 @@ const Box *CallNode::_eval(ListBox *arglist) const
 
 
 
-// Optimierung
+// Optimization
 
-// im Allgemeinen: Funktion auf Argumenten ausfuehren
+// In general, all these apply the optimization on the function arguments
+
 int CallNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
 {
     return arg()->resolveDefs(cdef, complain_recursive);
@@ -167,22 +168,20 @@ string CallNode::firstName() const
 
 
 
-// Konstanten zusammenziehen
+// Fold constants
 int CallNode::foldConsts(VSLDef *cdef, VSLNode **node)
 {
     assert (this == *node);
     int changes = 0;
 
-    // Auf allen Argumenten ausfuehren
+    // Apply on all aguments
     changes += arg()->foldConsts(cdef, &arg());
 
-    // Pruefen, ob Ausdruck jetzt konstant;
-    // wenn nicht, Abbruch
+    // If still non-constant, return
     if (!isConst())
 	return changes;
 
-    // Sonst: Funktion auswerten (hierbei Seiteneffekte vermeiden)
-
+    // Otherwise: evaluate function, avoiding all side effects
     sideEffectsProhibited = true;
     sideEffectsOccured = false;
 
@@ -192,7 +191,7 @@ int CallNode::foldConsts(VSLDef *cdef, VSLNode **node)
     {
 	assert(!sideEffectsOccured);
 
-	// CallNode durch Konstante ersetzen
+	// Replace CallNode by constant
 	if (VSEFlags::show_optimize)
 	{
 	    cout << "\n" << cdef->longname() << ": foldConsts: replacing\n" 
@@ -200,7 +199,6 @@ int CallNode::foldConsts(VSLDef *cdef, VSLNode **node)
 	    cout.flush();
 	}
 
-	// CallNode durch Konstante ersetzen
 	*node = new ConstNode((Box *)result);
 
 	if (VSEFlags::show_optimize)
@@ -211,7 +209,7 @@ int CallNode::foldConsts(VSLDef *cdef, VSLNode **node)
 	
 	changes++;
 
-	// CallNode und daranhaengenden Teilbaum loeschen
+	// Delete old CallNode and its subtree
 	delete this;
     }
 
@@ -224,7 +222,7 @@ int CallNode::foldConsts(VSLDef *cdef, VSLNode **node)
 
 // Debugging
 
-// Pruefen, ob alles in Ordnung
+// Representation invariant
 bool CallNode::OK() const
 {
       assert (VSLNode::OK());

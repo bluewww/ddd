@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse ConstNode
+// Constants
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,7 +34,7 @@
 #endif
 
 
-// Ein ConstNode gibt zur Laufzeit eine Konstante zurueck.
+// A ConstNode returns a constant box upon run-time
 
 
 #include "assert.h"
@@ -73,18 +73,18 @@ private:
     }
 
 public:
-    // ConstNode erzeugen
+    // Constructor
     ConstNode(Box *box, char *type = "ConstNode"): 
 	VSLNode(type), _box(box)
     {}
 
-    // ConstNode zerstoeren
+    // Destructor
     ~ConstNode()
     {
 	_box->unlink();
     }
 
-    // ConstNode kopieren
+    // Copy
     VSLNode *dup() const
     {
 	return new ConstNode(*this);
@@ -97,7 +97,7 @@ public:
 
     bool isStraight() const;
 
-    // Repraesentations-Invariante
+    // Representation invariant
     bool OK() const;
 };
 

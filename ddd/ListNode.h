@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse ListNode
+// ListNode class
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,8 +34,8 @@
 #endif
 
 
-// Ein ListNode fasst andere Knoten k_i zu Listen zusammen. Zur Laufzeit
-// erzeugt ein ListNode eine ListBox mit den Ergebnissen der k_i.
+// A ListNode combines other nodes k_i to lists.  Upon run-time, a
+// ListNode creates a ListBox with the results of the k_i.
 
 
 #include "assert.h"
@@ -72,14 +72,14 @@ public:
     ListNode(VSLNode *hd, VSLNode *tl, char *type = "ListNode");
     VSLNode *dup() const { return new ListNode(*this); }
 
-    // ListNode zerstoeren: inklusive Argumenten!
+    // Destructor (including args)
     ~ListNode()
     {
 	if (_head) delete _head;
 	if (_tail) delete _tail;
     }
 
-    // Ressourcen
+    // Resources
     VSLNode*& head() { return _head; }
     VSLNode*& tail() { return _tail; }
     VSLNode* head() const { return _head; }
@@ -87,7 +87,7 @@ public:
 
     const Box *_eval(ListBox *arglist) const;
 
-    // Optimierung
+    // Optimization
     int countSelfReferences(VSLDef *cdef, VSLDefList *deflist);
     int resolveDefs(VSLDef *cdef, bool complain_recursive);
     int resolveSynonyms(VSLDef *cdef, VSLNode **node);
@@ -100,28 +100,28 @@ public:
 	unsigned base, unsigned n);
     int _reBase(VSLDef *cdef, unsigned newBase);
 
-    // Sonstige Baum-Funktionen
+    // Other tree functions
     void compilePatterns(VSLDef *cdef) const;
     void uncompilePatterns(VSLDef *cdef) const;
     int resolveName(VSLDef *cdef, VSLNode **node, string& name, unsigned id);
     int _resolveNames(VSLDef *cdef, unsigned base);
     string firstName() const;
 
-    // Liste anhaengen
+    // Append to list
     int append(VSLNode *node);
 
-    // Namen ausgeben
+    // Dump
     void dump(ostream& s) const;
     void _dumpTree(ostream& s) const;
 
+    // Properties
     bool isConst() const;
     bool isListNode() const { return true; }
-
     bool isStraight() const;
 
     unsigned nargs() const;
 
-    // Repraesentations-Invariante
+    // Representation invariant
     bool OK() const;
 };
 

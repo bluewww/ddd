@@ -1,5 +1,5 @@
 // $Id$
-// Implementation Klasse BuiltinCallNode
+// Builtin call VSL nodes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -50,31 +50,30 @@ DEFINE_TYPE_INFO_1(BuiltinCallNode, CallNode)
 
 // BuiltinCallNode
 
-// Eingebaute Funktion auswerten
+// Evaluate builtin function
 const Box *BuiltinCallNode::call(Box *a) const
 {
     assert (a->isListBox());
 
-    // Wenn Funktion Seiteneffekte hat, dies vermerken
-    // und "Fehler" zurueckgeben, wenn verboten
+    // If side effects are prohibited, return error.
     if (sideEffectsProhibited && VSLBuiltin::hasSideEffects(_index))
     {
 	sideEffectsOccured = true;
 	return 0;
     }
 
-    // Funktion ueber Zeiger aufrufen
+    // Call function via function pointer
     BuiltinFunc func = VSLBuiltin::func(_index);
     return func((ListBox *)a);
 }
 
 
-// Optimierung
+// Optimization
 
-// foldOps: Fuer eingebaute Operationen grosse Argumentlisten bilden
-// Allgemein: f(a, f(...), b) durch f(a, ..., b) ersetzen.
+// foldOps: Build `large' argument lists
+// In general: replace f(a, f(...), b) by f(a, ..., b)
 
-// Diese Implementation beruecksichtigt nur Faelle der Form
+// This Implementation only considers the case
 // f(f(a...), b...) => f(a..., b...)
 
 int BuiltinCallNode::foldOps(VSLDef *cdef, VSLNode** node)
@@ -82,36 +81,36 @@ int BuiltinCallNode::foldOps(VSLDef *cdef, VSLNode** node)
     assert (this == *node);
     int changes = 0;
 
-    // Auf allen Argumenten ausfuehren
+    // Apply on all arguments
     changes += CallNode::foldOps(cdef, node);
 
-    // Wenn keine Zusammenfassung moeglich (nicht-assoziativ), zurueckkehren
+    // If non-associative, return
     if (!VSLBuiltin::isAssoc(_index))
 	return changes;
 
-    // Wenn Argument kein Listenknoten, zurueckkehren
+    // If arg is not a list, return
     if (!arg()->isListNode())
 	return changes;
 
     ListNode *args = (ListNode *)arg(); // dirty trick
 
-    // Wenn erstes Argument kein BuiltinCall, zurueckkehren
+    // First arg must be a builtin call
     if (!args->head()->isBuiltinCallNode())
 	return changes;
 
     BuiltinCallNode *callee = (BuiltinCallNode *)args->head(); // dirty trick
 
-    // Wenn nicht gleiche Funktion, ebenfalls zurueckkehren
+    // First arg must call the same function
     if (_index != callee->_index)
 	return changes;
 
-    // Wenn Argument kein Listenknoten, ebenfalls zurueckkehren
+    // Arg must be a list
     if (!callee->arg()->isListNode())
 	return changes;
 
     ListNode *callArgs = (ListNode *)callee->arg(); // dirty trick
 
-    // Sonst: Liste einfuegen
+    // Insert list
     if (VSEFlags::show_optimize)
     {
 	cout << "\n" << cdef->longname() << ": foldOps: replacing\n" 
@@ -146,24 +145,24 @@ int BuiltinCallNode::foldOps(VSLDef *cdef, VSLNode** node)
 }
 
 
-// foldConsts: Funktionen mit konstanten Argumenten sofort auswerten
-// Etwa: f(2 + 2) durch f(4) ersetzen.
+// foldConsts: Evaluate functions with constant args right now
+// Example: replace f(2 + 2) by f(4)
 
 int BuiltinCallNode::foldConsts(VSLDef *cdef, VSLNode** node)
 {
-    // Zunaechst Standard-Optimierung anwenden
+    // Apply standard optimization
     int changes = CallNode::foldConsts(cdef, node);
 
-    // Wenn Optimierung gelungen: fertig
+    // If optimization was a success, return
     if (*node != this || isConst())
 	return changes;
 
-    // Wenn nicht assoziativ: fertig
+    // If non-associative, return
     if (!VSLBuiltin::isAssoc(_index))
 	return changes;
 
-    // Sonst: konstante Teile in eigenen Unterausdruecken isolieren
-    // und getrennt optimieren.
+    // Otherwise: isolate constant args in constant subexpressions and
+    // optimize them separately
     for (VSLNode *a = arg();
 	 a->isListNode() && ((ListNode *)a)->tail()->isListNode();
 	 a = ((ListNode *)a)->tail())
@@ -183,15 +182,14 @@ int BuiltinCallNode::foldConsts(VSLDef *cdef, VSLNode** node)
 		cout.flush();
 	    }
 
-	    // 2 Argumente arg1, arg2 gefunden, die beide konstant sind
-	    // Jetzt f(..., arg1, arg2, ...) durch
-	    // f(..., f(arg1, arg2), ...) ersetzen
+	    // Found 2 args arg1, arg2 that are both constant: Replace
+	    // f(..., arg1, arg2, ...) by f(..., f(arg1, arg2), ...)
 
-	    // f(arg1, arg2) anlegen
+	    // Create f(arg1, arg2)
 	    ListNode *new_args = new FixListNode(arg1, arg2);
 	    BuiltinCallNode *new_f = new BuiltinCallNode(_index, new_args);
 
-	    // nextarg in f(arg, nextarg) verschieben
+	    // Move nextarg into f(arg, nextarg)
 	    list->head() = new_f;
 	    list->tail() = tail->tail();
 
@@ -207,7 +205,7 @@ int BuiltinCallNode::foldConsts(VSLDef *cdef, VSLNode** node)
 	}
     }
 
-    // Jetzt noch einmal den Knoten selbst und alle Argumente optimieren
+    // Now try optimization once again
     changes += CallNode::foldConsts(cdef, node);
 
     return changes;
@@ -217,8 +215,8 @@ int BuiltinCallNode::foldConsts(VSLDef *cdef, VSLNode** node)
 
 // Debugging
 
+// Invariant
 bool BuiltinCallNode::OK() const
-// Pruefen, ob alles in Ordnung
 {
     assert (CallNode::OK());
     return true;

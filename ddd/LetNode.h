@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse LetNode
+// LET..IN construct in VSL
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,11 +34,11 @@
 #endif
 
 
-// Ein LetNode implementiert ein let-in Konstrukt.
-// Ein LetNode enthaelt eine Liste der Laenge 2. 
-// Bei der Auswertung wird das erste Element der Liste gegen
-// ein Pattern gematcht; die so gefundenen Variablen werden
-// fuer die Auswertung des zweiten Elements verwendet.
+// A LetNode implements a LET..IN construct.
+
+// A LetNode contains a list of length 2.
+// Upon evaluation, the first list element is matched against a pattern.
+// The variables found this way are used in evaluating the second element.
 
 
 #include "assert.h"
@@ -58,21 +58,22 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    VSLNode *_node_pattern; // Pattern
-    Box *_box_pattern;      // Compiliertes Pattern
+    VSLNode *_node_pattern;	// Pattern
+    Box *_box_pattern;		// Compiled pattern
 
-    unsigned _nargs;        // Anzahl Argumente
-    bool _straight;      // Flag: Argumentliste direkt uebernehmen?
+    unsigned _nargs;		// Number of args
+    bool _straight;		// Flag: use argument list `as is'?
 
-    bool being_compiled; // Schutz gegen rekursive Pattern
+    bool being_compiled;	// Protect against recursive patterns
 
     ListNode *_args() const      { return (ListNode *)arg(); }
     ListNode *_body() const      { return (ListNode *)(_args()->tail()); }
 
-    ListBox *arglist(const Box *arg) const;       // Argumentliste bilden (Box)
-    VSLNode **nodelist(const VSLNode *arg) const; // dito (Knoten)
-    bool domatch(const Box *arg) const;        // Matching mit Box
-    bool domatch(const VSLNode *arg) const;    // Matching mit Ausdruck
+    ListBox *arglist(const Box *arg) const;       // Build arg list (Box)
+    VSLNode **nodelist(const VSLNode *arg) const; // same, with nodes
+
+    bool domatch(const Box *arg) const;        // Match against Box
+    bool domatch(const VSLNode *arg) const;    // Match against Ausdruck
 
 protected:
     void dump(ostream& s) const;
@@ -90,7 +91,7 @@ protected:
 	    _box_pattern = node._box_pattern->link();
     }
 
-    // Dummy-Funktionen (werden nie aufgerufen)
+    // Never called
     char *func_name() const       { assert(0); return "let"; }
     const Box *call(Box *) const  { assert(0); return 0; }
 
@@ -98,7 +99,7 @@ private:
     LetNode& operator = (const LetNode&) { assert(0); return *this; }
 
 public:
-    // LetNode erzeugen
+    // Constructor
     LetNode(VSLNode *p, VSLNode *a, VSLNode *b, char *type = "LetNode"):
 	CallNode(new FixListNode(a, b), type),
 	_node_pattern(p),
@@ -108,14 +109,14 @@ public:
 	being_compiled(false)
     {}
 
-    // LetNode zerstoeren
+    // Destructor
     ~LetNode()
     {
 	if (_node_pattern) delete _node_pattern;
 	if (_box_pattern) _box_pattern->unlink();
     }
 
-    // Ressourcen
+    // Resources
     VSLNode *&node_pattern()    { return _node_pattern; }
     Box *&box_pattern()         { return _box_pattern; }
     VSLNode *&args()            { return _args()->head(); }
@@ -126,10 +127,10 @@ public:
     const VSLNode *args() const           { return _args()->head(); }
     const VSLNode *body() const           { return _body()->head(); }
 
-    // Compilierung
+    // Compilation
     void compilePatterns(VSLDef *cdef) const;
 
-    // box_pattern zerstoeren
+    // Destroy BOX_PATTERN
     void uncompilePatterns(VSLDef *cdef) const
     {
 	CallNode::uncompilePatterns(cdef);
@@ -139,27 +140,27 @@ public:
 	((LetNode *)this)->_box_pattern = 0;
     }
 
-    // Namen aufloesen
+    // Resolve all names
     int _resolveNames(VSLDef *cdef, unsigned base);
 
-    // Optimierung
+    // Optimization
     int inlineFuncs(VSLDef *cdef, VSLNode **node);
     int _reBase(VSLDef *cdef, unsigned newBase);
 
-    // LetNode kopieren
+    // Copy
     VSLNode *dup() const { return new LetNode(*this); }
 
     const Box *_eval(ListBox *arglist) const;
     
     bool isLetNode() const { return true; }
 
-    // Repraesentations-Invariante
+    // Representation invariant
     bool OK() const;
 };
 
 
-// Ein WhereNode ist identisch mit einem LetNode,
-// nur wird er in der Form "where" statt "let" ausgegeben.
+// A WhereNode is identical to a LetNode, but is dumped as "where"
+// instead of "let".
 
 class WhereNode: public LetNode {
 public:
@@ -168,13 +169,13 @@ public:
 protected:
     void dump(ostream& s) const;
 
-    // WhereNode kopieren
+    // Copy
     WhereNode(WhereNode& node):
 	LetNode(node)
     {}
 
 public:
-    // WhereNode erzeugen
+    // Create
     WhereNode(VSLNode *p, VSLNode *a, VSLNode *b):
 	LetNode(p, a, b)
     {}

@@ -1,5 +1,5 @@
 // $Id$ 
-// Klasse "UniqueId" (Deklaration)
+// Unique identifiers
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,41 +34,43 @@
 #endif
 
 
-// UniqueId definiert eine Klasse zum Verwalten von eindeutigen Id's.
+// UniqueId manages unique identifiers
 
 #include <iostream.h>
 #include "bool.h"
 
 class UniqueId {
 private:
-    unsigned long _id;              // Aktuelle Id
-    static unsigned long tics;      // Letzte vergebende Id
-    static unsigned long ids;       // Zaehler existierende Id's
+    unsigned long _id;              // Current Id
+    static unsigned long tics;      // Least recently used Id
+    static unsigned long ids;       // Counter existing Id's
 public:
 
     static bool debug;
 
 #ifdef NDEBUG
-    // Optimierte Version
-    // UniqueId anlegen
+    // Optimized variant
+
+    // Create UniqueId
     UniqueId(): _id(tics++) {}
 
-    // UniqueId zerstoeren
+    // Destroy UniqueId
     ~UniqueId() {}
 #else
-    // Debugging-Version
-    // UniqueId anlegen
+    // Debugging variant
+
+    // Create UniqueId
     UniqueId();
 
-    // UniqueId zerstoeren
+    // Destroy UniqueId
     ~UniqueId();
 #endif
 
-    // Wert zurueckgeben
+    // Return value
     operator unsigned long() const { return _id; }
 
-    // Statistik
-    static unsigned long inUse()   { return ids; }     // #Existierende Id's
+    // Statistics
+    static unsigned long inUse()   { return ids; }     // # of existing Ids
 };
 
 #endif

@@ -34,9 +34,7 @@
 #endif
 
 //-----------------------------------------------------------------------------
-// ArgField realisiert ein TextField. 
-// Es koennen Handler-Prozeduren angemeldet werden, die aufgerufen werden,
-// wenn das Textfeld leer wird, gefuellt wird bzw. geandert wird.
+// An `ArgField' is a Text field with handler procs.
 //-----------------------------------------------------------------------------
 
 // Motif includes

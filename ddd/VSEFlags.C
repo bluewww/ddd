@@ -1,5 +1,5 @@
 // $Id$
-// global flags for VSL evaluation (and the old VSE editor)
+// Global flags for VSL evaluation (and the old VSE editor)
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -139,7 +139,7 @@ int VSEFlags::loops                      = 1;
 char *VSEFlags::include_search_path      = "";
 
 
-// Tabelle Optionen <-> Namen
+// Table options <-> names
 VSEOptionTableEntry VSEFlags::optionTable[] = {
 
 // Help options
@@ -401,7 +401,7 @@ bool VSEFlags::_parse(int& argc, char**& argv, bool vsl_prefix_required)
 		    }
 
 		    default:
-			// darf nicht auftreten
+			// This can't happen
 			assert(2 + 2 == 5);
 			break;
 		}
@@ -450,8 +450,8 @@ bool VSEFlags::_parse(int& argc, char**& argv, bool vsl_prefix_required)
 }
 
 
+// Read default options from .vserc, ~/.vserc, /usr/lib/vse/vse-options
 void VSEFlags::getDefaults(bool warn)
-// Default-Optionen aus .vserc, ~/.vserc, /usr/lib/vse/vse-options lesen
 {
 
     string filename = ".vserc";
@@ -531,10 +531,10 @@ void VSEFlags::getDefaults(bool warn)
 }
 
 
+// Explain options (and report default values)
 string VSEFlags::explain(bool vsl_prefix_required)
-// Optionen erklaeren (und defaults ausgeben)
 {
-    help = false;   // Stets '-help' ausgeben (sonst kaeme -no-help)
+    help = false;   // Always report '-help' (we'd get `-no-help' otherwise)
 
     string s = "Options include:\n";
     if (vsl_prefix_required)
@@ -614,7 +614,7 @@ string VSEFlags::explain(bool vsl_prefix_required)
 	    }
 	
 	    default:
-		// darf nicht auftreten
+		// This can't happen.
 		assert(1 + 1 == 3);
 		break;
 	}
@@ -637,8 +637,8 @@ string VSEFlags::explain(bool vsl_prefix_required)
 }
 
 
+// Return optimization mode
 unsigned VSEFlags::optimize_mode()
-// Optimierungs-Modus zurueckgeben
 {
     unsigned mode = 0;
     

@@ -1,5 +1,5 @@
 // $Id$
-// Implementation Klasse ConstNode
+// Constants
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -47,13 +47,13 @@ DEFINE_TYPE_INFO_1(ConstNode, VSLNode)
 
 // ConstNode
 
-// Konstante auswerten
+// Evaluate
 const Box *ConstNode::_eval(ListBox *) const
 {
     return _box->link();
 }
 
-// Konstante ausgeben
+// Dump
 void ConstNode::dump(ostream& s) const
 {
     if (VSEFlags::include_const_info)
@@ -62,7 +62,7 @@ void ConstNode::dump(ostream& s) const
 	s << "const_" << _box->id();
 }
 
-// ...in Baum-Notation
+// ...as tree
 void ConstNode::_dumpTree(ostream& s) const
 {
     bool old = StringBox::quoted;
@@ -71,17 +71,17 @@ void ConstNode::_dumpTree(ostream& s) const
     StringBox::quoted = old;
 }
 
-// Pruefen, ob Argumentliste direkt uebernommen werden kann
+// Check whether argument list can be used directly
 bool ConstNode::isStraight() const
 {
-    // Auf leere Liste pruefen
+    // Check for empty list
     return (_box->isListBox() && ((ListBox *)_box)->isEmpty());
 }
 
 
 // Debugging
 
-// Pruefen, ob alles in Ordnung
+// Representation invariant
 bool ConstNode::OK() const
 {
     assert (VSLNode::OK());

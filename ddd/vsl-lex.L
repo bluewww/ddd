@@ -30,20 +30,20 @@
 char VSL_lex_rcsid[] = 
     "$Id$";
 
-// BAD_ISTREAM != 0 definieren, falls istream::open()
-// bei nicht existierender Datei abbricht
+// Define BAD_ISTREAM != 0, if istream::open() aborts upon
+// non-existing file
 #define BAD_ISTREAM 1
 
 #include <stdio.h>
 #include <errno.h>
 #include "strclass.h"
 
-static const int max_include_nesting = 40;    // max. Verschachtelungstiefe
+static const int max_include_nesting = 40;    // max include nesting
 
-static istream	*streamstack[max_include_nesting]; // Dateideskriptoren
-static string	namestack[max_include_nesting];	   // Dateinamen
-static int	linestack[max_include_nesting];	   // Dateizeilen
-static int	topstack = 0;			   // Naechste freie Position
+static istream	*streamstack[max_include_nesting]; // File descriptors
+static string	namestack[max_include_nesting];	   // File names
+static int	linestack[max_include_nesting];	   // File lines
+static int	topstack = 0;			   // Next free position
 
 #ifdef FLEX_SCANNER
 static YY_BUFFER_STATE bufstack[max_include_nesting]; // Buffer states
@@ -191,7 +191,7 @@ W			[ \f\t]*
 			switchup(start, false);
 			BREAK
 		}
-^{W}#{W}line[ \f\t]{W}.* {		// #line LINE ["FILE"]
+^{W}#{W}line[ \f\t]{W}.* {			// #line LINE ["FILE"]
 			string buf((char *)yytext);
 			buf = buf.after("line");
 			char *s = (char *)buf.chars();
@@ -213,10 +213,10 @@ W			[ \f\t]*
 			BREAK
 		}
 
-^{W}#{W}override   return OVERRIDE;		// Andere Manipulatoren
+^{W}#{W}override   return OVERRIDE;		// Other manipulators
 ^{W}#{W}undef	   return OVERRIDE;
 ^{W}#{W}replace	   return REPLACE;
-^{W}#{W}pragma{W}override   return OVERRIDE;	// Andere Manipulatoren
+^{W}#{W}pragma{W}override   return OVERRIDE;	// Other manipulators
 ^{W}#{W}pragma{W}undef	    return OVERRIDE;
 ^{W}#{W}pragma{W}replace    return REPLACE;
 
@@ -251,9 +251,9 @@ where		return WHERE;
 
 {N}		return INTEGER;
 
-{W}		BREAK				// Whitespace (ignorieren)
-"\n"		BREAK				// dito
-.		return yytext[0];		// Alle anderen Zeichen
+{W}		BREAK				// Whitespace (ignore)
+"\n"		BREAK				// Likewise
+.		return yytext[0];		// All other characters
 %%
 class yyNameSet {
 private:
@@ -280,7 +280,7 @@ private:
     }
 } yynameSet("xyzzy");
 
-// Namenmenge loeschen
+// Delete name set
 void yyNameSet::reset()
 { 
     if (_next) 
@@ -288,8 +288,7 @@ void yyNameSet::reset()
     _next = 0; 
 }
 
-// Neuen Namen zur Namenmenge hinzufuegen; 
-// wenn bereits dabei, -1 zurueckgeben
+// Add to name set; if already there, return -1
 int yyNameSet::add(const char *name)
 {
     if (strcmp(_name.chars(), name) == 0)
@@ -302,14 +301,14 @@ int yyNameSet::add(const char *name)
     return 0;
 }
 
-// Namens-Menge leeren
+// Clear name set
 static void switchreset()
 {
     yynameSet.reset();
 }
 
 
-// Zur urspruenglichen Datei zurueckkehren
+// Return to original file
 static int switchdown() 
 {
     if (topstack <= 0)
@@ -343,18 +342,18 @@ static int switchdown()
 #define VSL_INCLUDE_PATH "/usr/local/lib/vsl-include"
 #endif
 
-// Datei in Verzeichnissen -I, $VSL_INCLUDE suchen 
-// sowie in ".", wenn thisdir == true
-// Wenn nicht gefunden, filename zurueckgeben
+// Search file in directories -I, $VSL_INCLUDE suchen
+// as well as in ".", if THISDIR == true
+// If not found, return FILENAME
 static char *searchpath(char *filename, bool thisDir)
 {
     char includeList[BUFSIZ];
 
-    // Wenn "-I" angegeben, diesen Pfad waehlen
+    // If "-I" is given, use this path
     char *s = VSEFlags::include_search_path;
     if (s == NULL || s[0] == '\0')
     {
-	// Sonst: Aus Umgebung nehmen, ggf. Default-Pfad setzen
+	// Otherwise: Use environment or default path
 	s = getenv("VSL_INCLUDE");
 	if (s == NULL)
 	{
@@ -371,16 +370,14 @@ static char *searchpath(char *filename, bool thisDir)
 	}
     }
 
-    // Wenn dieses Verzeichnis dazugehoeren soll,
-    // ".:" an Anfang der Liste setzen
+    // If this dir is supposed to be searched, prepend ".:"
     if (thisDir)
 	strcpy(includeList, ".:");
     else
 	strcpy(includeList, "");
     strncat(includeList, s, BUFSIZ - 2);
 
-    // Verzeichnisse durchgehen; wenn Datei geoeffnet werden kann,
-    // kompletten Pfad zurueckgeben
+    // Check dirs; if file can be opened, return full path
     for (char *p = strtok(includeList, ":"); p != NULL; p = strtok(NULL, ":"))
     {
 	static char path[BUFSIZ];
@@ -391,7 +388,7 @@ static char *searchpath(char *filename, bool thisDir)
 	FILE *fp = fopen(path, "r");
 	if (fp != NULL && fclose(fp) != EOF)
 	{
-	    // Fuehrende "./" entfernen
+	    // Remove "./" prefix
 	    if (path[0] == '.' && path[1] == '/')
 		return path + 2;
 	    else
@@ -402,21 +399,21 @@ static char *searchpath(char *filename, bool thisDir)
     return filename;
 }
 
-// In Datei 'filename' wechseln
+// Switch to file FILENAME
 static int switchup(char *filename, bool thisdir) 
 {
     if (string(filename) != "")
     {
-	// Dateinamen um Pfad erweitern
+	// Search file
 	filename = searchpath(filename, thisdir);
 
-	// Namen zur Namenmenge hinzufuegen;
-	// wenn bereits enthalten, kein Wechsel
+	// Add to name set; if we already have read it, don't care
 	if (yynameSet.add(filename))
 	    return 0;
     }
 
-    if (topstack >= max_include_nesting) {
+    if (topstack >= max_include_nesting)
+    {
 	VSLLib::parse_error("too many #include's");
 	return -1;
     }
@@ -466,7 +463,7 @@ static int switchup(char *filename, bool thisdir)
     }
 
 #if BAD_ISTREAM
-    // Jetzt kann yystream sicher geoeffnet werden
+    // yystream can now be opened
     yystream = new ifstream(filename, ios::in);
 #endif
     }

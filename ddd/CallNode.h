@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse CallNode
+// Function call VSL nodes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,8 +34,7 @@
 #endif
 
 
-// Ein CallNode wertet zur Laufzeit eine Funktion aus
-// (eingebaut oder selbstdefiniert)
+// A CallNode calls a VSL function (builtin or user-defined)
 
 #include "assert.h"
 #include <iostream.h>
@@ -60,17 +59,17 @@ protected:
 	_arg(node._arg->dup())
     {}
 
-    // Funktionsaufruf
+    // Call function
     virtual const Box *call(Box *arg) const = 0;
 
-    // Namen ausgeben
+    // Dump name
     void dump(ostream& s) const;
     void _dumpTree(ostream& s) const;
 
-    // Namen der aufgerufenen Funktion zurueckgeben
+    // Return name of callee
     virtual char *func_name() const = 0;
 
-    // Flag: Namen infix ausgeben?
+    // Flag: Dump function name infix?
     virtual bool isInfix() const { return false; }
 
     bool matches(const VSLNode& node) const
@@ -87,16 +86,16 @@ private:
     }
 
 public:
-    // Ressourcen
+    // Resources
     VSLNode*& arg() { return _arg; }
     VSLNode* arg() const { return _arg; }
 
-    // CallNode erzeugen
+    // Constructor
     CallNode(VSLNode *a, char *type = "CallNode"):
 	VSLNode(type), _arg(a)
     {}
 
-    // CallNode zerstoeren: inklusive Argument!
+    // Destructor (includes arg)
     ~CallNode()
     {
 	if (_arg) delete _arg;
@@ -104,7 +103,7 @@ public:
 
     const Box *_eval(ListBox *arglist) const;
 
-    // Optimierung
+    // Optimization
     int countSelfReferences(VSLDef *cdef, VSLDefList *deflist);
     int resolveDefs(VSLDef *cdef, bool complain_recursive);
     int resolveSynonyms(VSLDef *cdef, VSLNode **node);
@@ -117,7 +116,7 @@ public:
 	unsigned base, unsigned n);
     int _reBase(VSLDef *cdef, unsigned newBase);
 
-    // Sonstige Baumfunktionen
+    // Other tree functions
     void compilePatterns(VSLDef *cdef) const;
     void uncompilePatterns(VSLDef *cdef) const;
     int resolveName(VSLDef *cdef, VSLNode **node, string& name, unsigned id);
@@ -131,7 +130,7 @@ public:
 
     static bool matchesAll;
 
-    // Repraesentations-Invariante
+    // Representation invariant
     bool OK() const;
 };
 

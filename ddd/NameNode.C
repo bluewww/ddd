@@ -1,5 +1,5 @@
 // $Id$
-// Implementation Klasse NameNode
+// VSL Variable names
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -46,30 +46,30 @@ DEFINE_TYPE_INFO_1(NameNode, VSLNode)
 
 // NameNode
 
-// NameNode ausgeben
+// Dump
 void NameNode::dump(ostream& s) const
 {
     s << _name;
 }
 
-// ...in Baum-Notation
+// ...as tree
 void NameNode::_dumpTree(ostream& s) const
 {
     s << "\"" << _name << "\"";
 }
 
 
-// Ersetzen
+// Replace
 
-// Namen durch Variable ersetzen
+// Replace name by variable
 int NameNode::resolveName(VSLDef *cdef, VSLNode **node, string& name, 
-    unsigned id)
+			  unsigned id)
 {
     assert (this == *node);
 
     if (_name == name)
     {
-	// NameNode durch ArgNode(id) ersetzen
+	// Replace NameNode by ArgNode(id)
 	*node = new ArgNode(id);
 
 	if (VSEFlags::show_vars)
@@ -88,8 +88,8 @@ int NameNode::resolveName(VSLDef *cdef, VSLNode **node, string& name,
 
 // Debugging
 
+// Representation invariant
 bool NameNode::OK() const
-// Pruefen, ob alles in Ordnung
 {
     assert (VSLNode::OK());
     return true;

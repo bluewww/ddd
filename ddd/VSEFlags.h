@@ -1,5 +1,5 @@
 // $Id$
-// Globale Steuerungsflags fuer VSE
+// Global flags for VSL evaluation (and the old VSE editor)
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -32,20 +32,20 @@
 #include "bool.h"
 #include "strclass.h"
 
-// Muss oeffentlich sein, um Compiler nicht zu verwirren
+// GCC 2.5.x wants this to be global
 enum VSEEntryType { LAST, BOOLEAN, INT, STRING, TITLE };
 
-// Tabelle Optionen <-> Namen
+// Table Options <-> Names
 struct VSEOptionTableEntry {
-    VSEEntryType type;  // Typ
+    VSEEntryType type;  // Type
     char *name;         // Name
-    char *usage;        // Benutzung (Bedeutung)
-    void *flag;         // Zeiger auf entsprechenden Flag
+    char *usage;        // Usage (Meaning)
+    void *flag;         // Pointer to corresponding flag
 };
 
 class VSEFlags {
 private:
-    // Abbildung Name -> Flag
+    // Map name -> flag
     static VSEOptionTableEntry optionTable[];
 
 public:
@@ -126,7 +126,7 @@ public:
     static int max_info_nesting;
     static int loops;
 
-    // Unterfunktionen
+    // Helpers
     static bool _parse(int& argc, char**& argv, bool vsl_prefix_required);
     static void getDefaults(bool warn = false);
     static string explain(bool vsl_prefix_required = false);
@@ -140,7 +140,7 @@ public:
 };
 
 
-// Makro fuer die Abfrage von zeitkritischen Debugging-Optionen
+// Makro for accessing time-critical debugging options
 
 #ifndef NDEBUG
 #define VSEFlag(x)  (VSEFlags::x)

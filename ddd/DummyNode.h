@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse DummyNode
+// A DummyNode returns a DummyBox
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,8 +34,8 @@
 #endif
 
 
-// Ein DummyNode gibt zur Laufzeit eine DummyBox zurueck.
-// Ein DummyNode matcht alle anderen Knoten, wenn matchesAll == true.
+// A DummyNode returns a DummyBox at run-time.
+// A DummyNode matches all other nodes if `DummyNode::matchesAll' is true.
 
 #include "assert.h"
 #include <iostream.h>
@@ -66,12 +66,12 @@ protected:
     }
 
 public:
-    // DummyNode erzeugen
-    DummyNode(char *type = "DummyNode"): 
-	VSLNode(type)
+    // Constructor
+    DummyNode(char *type = "DummyNode")
+	: VSLNode(type)
     {}
 
-    // DummyNode kopieren
+    // Copy
     VSLNode *dup() const
     {
 	return new DummyNode(*this);

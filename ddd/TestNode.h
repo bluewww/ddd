@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse TestNode
+// VSL if..then..else..fi construct
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,10 +34,11 @@
 #endif
 
 
-// Ein TestNode implementiert ein if-then-else-fi Konstrukt.
-// Ein TestNode  enthaelt eine Liste der Laenge 3; bei der Auswertung
-// wird das erste Element der Liste ausgewertet; ist es != 0, ist das
-// Ergebnis das zweite, sonst das dritte Element der Liste.
+// A TestNode implements an if-then-else-fi construct.
+
+// A TestNode contains a List of length 3.  Upon evaluation, the wird
+// first list elem is evaluated.  If it is != 0, the result is the
+// second list element; otherise, the third element in the list.
 
 
 #include "assert.h"
@@ -69,18 +70,18 @@ protected:
 	CallNode(node)
     {}
 
-    // Dummy-Funktionen (werden nie aufgerufen)
+    // Dummy functions (never called)
     char *func_name() const       { assert(0); return "test"; }
     const Box *call(Box *) const  { assert(0); return 0; }
 
 public:
-    // TestNode erzeugen
+    // Constructor
     TestNode(VSLNode *tst, VSLNode *t, VSLNode *f, 
-	char *type = "TestNode"):
-	CallNode(new FixListNode(tst, t, f), type)
+	     char *type = "TestNode")
+	: CallNode(new FixListNode(tst, t, f), type)
     {}
 
-    // Ressourcen
+    // Resources
     VSLNode *&test()     { return _test()->head();  }
     VSLNode *&thetrue()  { return _true()->head();  }
     VSLNode *&thefalse() { return _false()->head(); }
@@ -89,7 +90,7 @@ public:
     VSLNode *thetrue() const  { return _true()->head();  }
     VSLNode *thefalse() const { return _false()->head(); }
 
-    // TestNode kopieren
+    // Copy
     VSLNode *dup() const { return new TestNode(*this); }
 
     const Box *_eval(ListBox *arglist) const;
@@ -99,7 +100,7 @@ public:
 
     bool isTestNode() const { return true; }
 
-    // Repraesentations-Invariante
+    // Representation invariant
     bool OK() const;
 };
 

@@ -1,5 +1,5 @@
 // $Id$
-// read in VSL library
+// Read in VSL library
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -69,9 +69,9 @@ char VSLRead_rcsid[] =
 #include "config.h"
 
 
-static VSLLib*  vsllib = 0;                    // Einzulesende VSL-Bibliothek
+static VSLLib *vsllib = 0;	// The VSL library to read
 
-static string vslfilename = "standard input";   // Aktueller Dateiname
+static string vslfilename = "standard input";   // Current file name
 
 
 // GNU C++ complains about the declaration of VSLSTYPE, so leave it alone
@@ -101,9 +101,9 @@ static string vslfilename = "standard input";   // Aktueller Dateiname
 
 #undef vslparse
 
-// Bibliothek einlesen
+// Read library
 
-// Bibliothek aus geoeffnetem Strom einlesen
+// Read library from stream
 VSLLib& VSLLib::read(istream& s, unsigned optimizeMode)
 {
     vsllib = this;
@@ -122,18 +122,17 @@ VSLLib& VSLLib::read(istream& s, unsigned optimizeMode)
 	cout.flush();
     }
 
-    // Nachbearbeitung (Binden, optimieren, usw.)
+    // Post-processing (Binding, optimization, etc.)
     process(optimizeMode);
 
     if (VSEFlags::verbose)
 	cout << ", done.\n";
 
-    // und fertig.
     return *this;
 }
 
 
-// Bibliothek aus gegebenem Dateinamen einlesen
+// Read library from file
 VSLLib& VSLLib::read(const string& lib_name, unsigned optimizeMode)
 {
     if (VSEFlags::verbose)
@@ -161,9 +160,9 @@ VSLLib& VSLLib::read(const string& lib_name, unsigned optimizeMode)
 }
 
 
-// Fehlerbehandlung
+// Error handling
 
-// Yacc-interne Fehlerbehandlung
+// Yacc-specific error handling
 void vslerror(char *s)
 {
     string errmsg = s;
@@ -174,7 +173,7 @@ void vslerror(char *s)
     VSLLib::parse_error(errmsg);
 }
 
-// Meldung beim Parsen
+// Parsing message
 void VSLLib::parse_echo(const string& msg)
 {
     ostrstream os;
@@ -184,13 +183,13 @@ void VSLLib::parse_echo(const string& msg)
     echo(os);
 }
 
-// Fehler beim Parsen
+// Parsing error
 void VSLLib::parse_error(const string& errmsg)
 {
     parse_echo(errmsg);
 }
 
-// Warnung beim Parsen
+// Parsing warning
 void VSLLib::parse_warning(const string& errmsg)
 {
     parse_echo("warning: " + errmsg);

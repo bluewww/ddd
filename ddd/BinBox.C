@@ -1,5 +1,5 @@
 // $Id$
-// Implementation Klasse BinBox
+// Bin boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.

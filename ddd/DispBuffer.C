@@ -34,7 +34,7 @@ char DispBuffer_rcsid[] =
 #endif
 
 //-----------------------------------------------------------------------------
-// Implementation von DispBuffer.h
+// Filter displays from GDB output
 //-----------------------------------------------------------------------------
 
 #include "DispBuffer.h"
@@ -52,36 +52,37 @@ void DispBuffer::filter (string& answer)
 {
     int index;
 
-    // Displays abfangen und puffern, Rest zurueckgeben
+    // Fetch and buffer displays, return remainder
     switch (already_read) {
     case DisplayPart:
 	answer.prepend (answer_buffer);
 	answer_buffer = "";
 	already_read = Null;
-	// weiter wie bei Null
+	// FALL THROUGH
+
     case Null:
 	index = display_index(answer, gdb);
 
 	if (index == 0) {
-	    // Antwort besteht nur aus displays
+	    // We only have displays
 	    display_buffer = answer;
 	    already_read = DisplayFound;
 
 	    answer = "";
 	}
 	else if (index > 0) {
-	    // Ein Teil der Antwort sind Displays
+	    // Displays are a part of the answer
 	    display_buffer = answer.from(index);
 	    already_read = DisplayFound;
 
 	    answer = answer.before(index);
 	}
 	else {
-	    // Vielleicht ein Display-Teil am Ende der Antwort ?
+	    // Maybe there is a display part at the end of the answer?
 	    index = possible_begin_of_display (answer, gdb);
 
 	    if (index == -1) {
-		// nichts gefunden -> answer bleibt unveraendert
+		// nothing found -> answer remains unchanged
 	    }
 	    else {
 		answer_buffer = answer.from(index);
@@ -91,14 +92,15 @@ void DispBuffer::filter (string& answer)
 	    }
 	}
 	break;
+
     case DisplayFound:
 	display_buffer += answer;
 
 	answer = "";
 	break;
+
     default:
-	// Fehler!
-	assert(0);
+	assert(0);		// This can't happen.
 	break;
     }
 
@@ -120,8 +122,7 @@ string DispBuffer::answer_ended ()
 	return "";
 
     default:
-	// Fehler!
-	assert(0);
+	assert(0);		// This can't happen
 	break;
     }
     return "";

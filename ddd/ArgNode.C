@@ -47,7 +47,7 @@ DEFINE_TYPE_INFO_1(ArgNode, DummyNode)
 ArgNodeFunc ArgNode::matchCallback = 0;
 
 
-// Argument auswerten
+// Evaluate argument
 const Box *ArgNode::_eval(ListBox *arglist) const
 {
     const Box *box = 0;
@@ -69,13 +69,13 @@ const Box *ArgNode::_eval(ListBox *arglist) const
     return box;
 }
 
-// ArgNode ausgeben
+// Dump ArgNode
 void ArgNode::dump(ostream& s) const
 {
     s << "arg" << _id;
 }
 
-// ...in Baum-Notation
+// Dump as tree
 void ArgNode::_dumpTree(ostream& s) const
 {
     s << _id;
@@ -94,18 +94,18 @@ bool ArgNode::matches(const VSLNode &node) const
 }
 
 
-// Optimierung
+// Optimization
 
-// instantiateArgs: In Ausdruecken der Form f(arg1, arg2, ...) 
-// arg1 .. argn durch konkrete Argumente ersetzen
+ // instantiateArgs: in expressions f(arg1, arg2, ...), replace
+// arg1 .. argn by actual arguments
 
+// Replace NODE by corresponding expr from VALUES
 int ArgNode::instantiateArgs(VSLDef *, VSLNode **node, VSLNode *values[],
-    unsigned base, unsigned n)
-// Knoten durch entsprechenden Ausdruck aus 'values' ersetzen
+			     unsigned base, unsigned n)
 {
     assert(this == *node);
 
-    // Wenn nicht im Bereich, abbrechen
+    // Abort if out of area
     if (_id < base || _id >= base + n)
 	return 0;
 
@@ -124,17 +124,17 @@ int ArgNode::instantiateArgs(VSLDef *, VSLNode **node, VSLNode *values[],
     }
 #endif
 
-    // ArgNode loeschen
+    // Delete ArgNode
     delete this;
 
     return 1;
 }
 
+// Increase instance counter
 void ArgNode::countArgNodes(VSLDef *, int instances[],
-    unsigned base, unsigned n)
-// Instanzen-Zaehler hinaufsetzen
+			    unsigned base, unsigned n)
 {
-    // Wenn nicht im Bereich, abbrechen
+    // Ignore if out of area
     if (_id < base || _id >= base + n)
 	return;
 

@@ -1,5 +1,5 @@
 // $Id$
-// Deklaration Klasse DefCallNode
+// Calling user-defined VSL functions
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -34,7 +34,7 @@
 #endif
 
 
-// Ein DefCallNode wertet zur Laufzeit eine selbstdefinierte Funktion aus.
+// A DefCallNode evaluates a user-defined VSL function
 
 
 #include "assert.h"
@@ -53,8 +53,8 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    VSLDef *_def;           // Wenn eindeutig: Zeiger auf Definition, sonst 0
-    VSLDefList *_deflist;   // Zeiger auf Definitionsliste
+    VSLDef *_def;           // points to definition if unambiguous, else 0
+    VSLDefList *_deflist;   // points to possible definitions
 
 protected:
     DefCallNode(const DefCallNode& node);
@@ -77,19 +77,19 @@ private:
     }
 
 public:
-    // DefCallNode kopieren
+    // Copy
     VSLNode *dup() const
     {
 	return new DefCallNode(*this);
     }
 
-    // DefCallNode aus Definition erzeugen
+    // Create from def
     DefCallNode(VSLDef *def, VSLNode *arg, char *type = "DefCallNode");
 
-    // DefCallNode aus Definitionsliste erzeugen
+    // Create from list of defs
     DefCallNode(VSLDefList *deflist, VSLNode *arg, char *type = "DefCallNode");
 
-    // DefCallNode zerstoeren
+    // Destructor
     ~DefCallNode();
 
     int countSelfReferences(VSLDef *cdef, VSLDefList *deflist);
@@ -99,7 +99,7 @@ public:
 
     bool isDefCallNode() const { return true; }
 
-    // Repraesentations-Invariante
+    // Representation invariant
     bool OK() const;
 };
 

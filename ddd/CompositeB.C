@@ -1,5 +1,5 @@
 // $Id$
-// Klasse CompositeBox (Implementation)
+// Composite boxes
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -42,8 +42,8 @@ DEFINE_TYPE_INFO_1(CompositeBox, Box)
 
 // CompositeBox
 
+// Grow by 1.5
 void CompositeBox::grow()
-// vergroessert die Boxanzahl auf das Anderthalbfache
 {
     unsigned newSize = _size + _size / 2 + 1;
     Box **newBoxes = new Box* [newSize];
@@ -55,7 +55,7 @@ void CompositeBox::grow()
     _size = newSize;
 }
 
-// Font propagieren
+// Propagate font
 void CompositeBox::newFont(const string& font)
 {
     for (int i = 0; i < nchildren(); i++)
@@ -66,8 +66,8 @@ void CompositeBox::newFont(const string& font)
     resize();
 }
 
+// Recompute size
 Box *CompositeBox::resize()
-// Groesse neu berechnen
 {
     for (int i = 0; i < nchildren(); i++)
     {
@@ -77,7 +77,7 @@ Box *CompositeBox::resize()
     return this;
 }
 
-// string aus Box bilden
+// Create string from Box
 string CompositeBox::str() const
 {
     string s("");
@@ -89,7 +89,7 @@ string CompositeBox::str() const
     return s;
 }
 
-// TagBox zu Punkt p in CompositeBox suchen
+// Find TagBox for point P
 const TagBox *CompositeBox::findTag(const BoxPoint& p) const
 {
     if (p != BoxPoint(-1, -1))
@@ -98,12 +98,12 @@ const TagBox *CompositeBox::findTag(const BoxPoint& p) const
 	    const Box *child = (*this)[i];
 	    const TagBox *t = child->findTag(p);
 	    if (t != 0)
-		return t;   // gefunden
+		return t;   // found
 	}
-    return 0; // nicht gefunden
+    return 0; // not found
 }
 
-// MatchBoxes zaehlen
+// Count MatchBoxes
 void CompositeBox::countMatchBoxes(int instances[]) const
 {
     for (int i = 0; i < nchildren(); i++)
@@ -113,11 +113,10 @@ void CompositeBox::countMatchBoxes(int instances[]) const
     }
 }
 
-// Auf Gleichheit pruefen
+// Check for equality
 bool CompositeBox::matches (const Box &b, const Box *) const
 {
-    // Groesse und BoxExtend nicht vergleichen,
-    // da MatchBoxen die Groesse 0 haben
+    // Don't compare size and extend, as MatchBoxen have zero size
     if (strcmp(type(), b.type()))
 	return false;
 
@@ -132,7 +131,7 @@ bool CompositeBox::matches (const Box &b, const Box *) const
     return true;
 }
 
-// Alignment ausgeben
+// Dump
 void CompositeBox::dumpComposite(ostream& s, 
 				 char *sep, char *head, char *tail) const
 {
@@ -148,8 +147,8 @@ void CompositeBox::dumpComposite(ostream& s,
 }
 
 
+// Representation invariant
 bool CompositeBox::OK() const
-// Pruefen, ob alles in Ordnung
 {
     assert (boxes != 0);
     assert (_nchildren >= 0);

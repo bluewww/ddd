@@ -1,5 +1,5 @@
-// $Id$ U%
-// Implementation Klasse TestNode
+// $Id$
+// VSL if..then..else..fi construct
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -48,8 +48,8 @@ DEFINE_TYPE_INFO_1(TestNode, CallNode)
 
 // TestNode
 
+// Dump
 void TestNode::dump(ostream& s) const
-// Test ausgeben
 {
     s << "if "    << *test()
       << " then " << *thetrue()
@@ -57,7 +57,7 @@ void TestNode::dump(ostream& s) const
       << " fi";
 }
 
-// ...als Baum
+// ...as tree
 void TestNode::_dumpTree(ostream& s) const
 {
     test()->dumpTree(s);
@@ -67,10 +67,10 @@ void TestNode::_dumpTree(ostream& s) const
     thefalse()->dumpTree(s);
 }
 
+// Evaluate
 const Box *TestNode::_eval(ListBox *arglist) const
-// Test auswerten
 {
-    // Tester auswerten
+    // Evaluate tester
     const Box *flagBox = test()->eval(arglist);
     if (flagBox == 0)
 	return 0;
@@ -92,29 +92,28 @@ const Box *TestNode::_eval(ListBox *arglist) const
 }
 
 
-// Optimierung
+// Optimization
 
-// foldConsts: Funktionen mit konstanten Argumenten sofort auswerten
-// Etwa: f(2 + 2) durch f(4) ersetzen.
+// foldConsts: Evaluate function with constant args
 
 int TestNode::foldConsts(VSLDef *cdef, VSLNode **node)
 {
     int changes = 0;
 
-    // Zunaechst auf Argumente anwenden.
-    // (CallNode::foldConsts() wuerde die Listenstruktur zerstoeren)
+    // Apply to args
+    // (CallNode::foldConsts() would destroy the list structure)
     changes += test()->foldConsts(cdef, &test());
     changes += thetrue()->foldConsts(cdef, &thetrue());
     changes += thefalse()->foldConsts(cdef, &thefalse());
 
-    // Wenn Test nicht konstant: fertig
+    // Is test constant?  If not, we're done
     if (!test()->isConst())
 	return changes;
 
-    // Sonst: Abhaengig vom Test-Ergebnis durch true-Ast oder
-    // false-Ast ersetzen.
+    // Otherwise: Depending on result, replace by first or second
+    // alternative.
 
-    // Tester auswerten
+    // Evaluate tester
 
     sideEffectsProhibited = true;
     sideEffectsOccured = false;
@@ -130,7 +129,6 @@ int TestNode::foldConsts(VSLDef *cdef, VSLNode **node)
 
 	if (size.isValid())
 	{
-	    // TestNode durch Konstante ersetzen
 	    if (VSEFlags::show_optimize)
 	    {
 		cout << "\n" << cdef->longname() << ": foldConsts: replacing\n" 
@@ -138,7 +136,7 @@ int TestNode::foldConsts(VSLDef *cdef, VSLNode **node)
 		cout.flush();
 	    }
 
-	    // 'this' durch entsprechenden Ast ersetzen
+	    // Replace TestNode by first or second alternative
 	    if (size != 0)
 		*node = thetrue(), thetrue() = 0;
 	    else
@@ -153,7 +151,7 @@ int TestNode::foldConsts(VSLDef *cdef, VSLNode **node)
 		
 	    changes++;
 
-	    // TestNode und daranhaengenden Teilbaum loeschen
+	    // Delete TestNode and its subtree
 	    delete this;
 	}
 	else
@@ -166,8 +164,7 @@ int TestNode::foldConsts(VSLDef *cdef, VSLNode **node)
 }
 
 
-// resolveDefs: Unterhalb eines TestNode nicht mehr ueber
-// unendliche Rekursion laestern
+// resolveDefs: below a TestNode, don't complain about endless recursion
 int TestNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
 {
     int changes = 0;
@@ -182,20 +179,20 @@ int TestNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
 
 // Debugging
 
-// Pruefen, ob alles in Ordnung
+// Representation invariant
 bool TestNode::OK() const
 {
     EmptyListNode empty;
 
     assert (CallNode::OK());
 
-    // Pruefen, ob Argument 3-stellige Liste
+    // Check if argument is 3-element list
     assert (arg() && arg()->isListNode());
     assert (_test() && _test()->tail() && _test()->tail()->isListNode());
     assert (_true() && _true()->tail() && _true()->tail()->isListNode());
     assert (_false() && _false()->tail() && *(_false()->tail()) == empty);
 
-    // Pruefen, ob Listenelemente existieren
+    // Check if list elements exist
     assert (test());
     assert (thetrue());
     assert (thefalse());

@@ -29,7 +29,7 @@
 #ifndef _ICE_misc_h
 #define _ICE_misc_h
 
-// Diverse Standard-Funktionen
+// Miscellaneous utilities
 
 inline int min(int a, int b)
 {

@@ -1,5 +1,5 @@
 // $Id$ 
-// VSL-Bibliothek einlesen und ausfuehren
+// Read and evaluate VSL library
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -62,7 +62,7 @@ char vsl_rcsid[] =
 
 
 
-// Grafik-Funktionen
+// Graphics functions
 void Flush(Widget w)
 {
     Display *display = XtDisplay(w);
@@ -70,14 +70,14 @@ void Flush(Widget w)
     XFlush(display);
 }
 
-// Standard-Ressourcen
+// Standard resources
 String fallback_resources[] = 
     { "*Viewport.width:    400", "*Viewport.height: 400", NULL };
 
-// Diese sollten eigentlich in ExposeCB stehen...
+// These should be part of ExposeCB...
 static Box *thebox = 0;
 
-// clock()-Funktion
+// clock() function
 #if !HAVE_CLOCK_DECL
 extern "C" clock_t clock();
 #endif
@@ -86,7 +86,7 @@ extern "C" clock_t clock();
 #define CLOCKS_PER_SEC 1000000
 #endif
 
-// Neuanzeige...
+// Redraw
 void redraw(Widget w, BoxRegion r, BoxRegion exposed)
 {
     if (VSEFlags::verbose)
@@ -95,7 +95,6 @@ void redraw(Widget w, BoxRegion r, BoxRegion exposed)
 	cout.flush();
     }
 
-    // ...und anzeigen
     clock_t starttime = clock();
     thebox->draw(w, r, exposed);
     clock_t endtime = clock();
@@ -107,17 +106,17 @@ void redraw(Widget w, BoxRegion r, BoxRegion exposed)
     Flush(w);
 }
 
-// Callback bei Expose
+// Expose Callback
 void ExposeCB(Widget w, XtPointer, XtPointer call_data)
 {
-    // Groesse anpassen
+    // Set size
     Arg arglist[10];
     int a = 0;
     XtSetArg(arglist[a], XtNwidth,  thebox->size(X)); a++;
     XtSetArg(arglist[a], XtNheight, thebox->size(Y)); a++;
     XtSetValues(w, arglist, a);
 
-    // Expose-BoxRegion holen
+    // Get region
     XExposeEvent* event = (XExposeEvent *)call_data;
     BoxPoint expose_origin = BoxPoint(event->x, event->y);
     BoxSize  expose_space  = BoxSize(event->width, event->height);
@@ -126,7 +125,7 @@ void ExposeCB(Widget w, XtPointer, XtPointer call_data)
     redraw(w, BoxRegion(BoxPoint(0,0), thebox->size()), exposed);
 }
 
-// Bei Auswahl: *Gesamtes* Bild anzeigen (fuer Statistiken)
+// When selecting: redraw all (for statistics)
 void SelectCB(Widget w, XtPointer, XtPointer)
 {
     XClearArea(XtDisplay(w), XtWindow(w), 0, 0, 0, 0, false);
@@ -139,7 +138,7 @@ void SelectCB(Widget w, XtPointer, XtPointer)
 
 XtAppContext app_con;
 
-// Callback bei Ende
+// Callback when done
 void QuitCB(Widget, XtPointer, XtPointer)
 {
     if (VSEFlags::verbose)
@@ -149,18 +148,18 @@ void QuitCB(Widget, XtPointer, XtPointer)
     }
     XtDestroyApplicationContext(app_con);
 
-    // Box loeschen
+    // Clear box
     if (thebox) 
 	thebox->unlink();
 
-    // Pruefen, ob auch tatsaechlich alles geloescht
+    // Check if we really deleted everything
     if (UniqueId::inUse() > 0)
 	cerr << "Warning: " << UniqueId::inUse() << " IDs still in use\n";
 
     exit(EXIT_SUCCESS);
 }
 
-// Argumentliste erzeugen
+// Create argument list
 ListBox *vsl_args(int argc, char *argv[])
 {
     ListBox *args = new ListBox;
@@ -174,37 +173,37 @@ ListBox *vsl_args(int argc, char *argv[])
     return args;
 }
 
-// Hauptprogramm
+// Main VSL program
 int main(int argc, char *argv[])
 {
-    // Flags setzen
+    // Set flags
     VSEFlags::parse(argc, argv, "vsllib");
 
-    // Toolkit initialisieren
-    Widget toplevel = XtAppInitialize(&app_con, "Xhw", NULL, ZERO, 
-		      &argc, argv, fallback_resources, 
-		      NULL, ZERO);
+    // Init toolkit
+    Widget toplevel = XtAppInitialize(&app_con, "Vsl", NULL, ZERO, 
+				      &argc, argv, fallback_resources, 
+				      NULL, ZERO);
 
-    // Viewport erzeugen
-    Arg arglist[10];        // Argumente
-    int a = 0;              // Argumentzaehler
+    // Create Viewport
+    Arg arglist[10];        // Arguments
+    int a = 0;              // Argument counter
     XtSetArg(arglist[a], XtNallowHoriz, true); a++;
     XtSetArg(arglist[a], XtNallowVert,  true); a++;
     Widget viewport = XtCreateManagedWidget("viewport", viewportWidgetClass, 
-	toplevel, arglist, a);
+					    toplevel, arglist, a);
 
-    // DocSpace erzeugen
+    // Create DocSpace
     a = 0;
     Widget docSpace = XtCreateManagedWidget("docSpace", docSpaceWidgetClass, 
-	viewport, arglist, a);
+					    viewport, arglist, a);
     XtAddCallback(docSpace, XtNcallback, SelectCB, 0);
     XtAddCallback(docSpace, XtNexposeCallback, ExposeCB, 0);
     XtAddCallback(docSpace, XtNquitCallback, QuitCB, 0);
 
-    // Font-Tabelle setzen
+    // Set font table
     StringBox::fontTable = new FontTable(XtDisplay(toplevel));
 
-    // Namen finden
+    // Fetch name
     string library_file = VSEFlags::library_file;
     if (argc > 1)
     {
@@ -218,14 +217,13 @@ int main(int argc, char *argv[])
 	}
     }
 	
-    // Bild in 'thebox' erzeugen
+    // Create pic in THEBOX
     {
-	// Bibliothek einlesen
+	// Read library
 	long starttime = clock();
 	VSLLib lib(library_file, VSEFlags::optimize_mode());
 	long endtime = clock();
 
-	// Einlesezeit ausgeben
 	if (VSEFlags::show_optimizing_time)
 	    cout << "\nRead & optimizing time: " 
 		<< (endtime - starttime) / 1000 << " ms\n";
@@ -242,7 +240,7 @@ int main(int argc, char *argv[])
 	if (VSEFlags::suppress_eval)
 	    return EXIT_SUCCESS;
 
-	// Letzte Funktionsdefinition (gewoehnlich "main") finden
+	// Fetch last function def (typically "main")
 	VSLDef* def = lib.lastdef();
 
 	if (def == 0)
@@ -251,7 +249,7 @@ int main(int argc, char *argv[])
 	    return EXIT_FAILURE;
 	}
 
-	// Funktion auswerten
+	// Eval function
 	ListBox *arg = vsl_args(argc, argv);
 
 	starttime = clock();
@@ -266,7 +264,7 @@ int main(int argc, char *argv[])
 	endtime = clock();
 	arg->unlink();
 
-	// Berechnungszeit ausgeben
+	// Show eval time
 	if (VSEFlags::show_eval_time)
 	    cout << "\nEvaluation time: " 
 		<< (endtime - starttime) / 1000 << " ms\n";
@@ -277,7 +275,7 @@ int main(int argc, char *argv[])
 
 	thebox = result;
 
-	// Stack und Library werden ab hier geloescht
+	// Stack and library are destroyed upon leaving this block
     }
 
     if (thebox && !thebox->size().isValid())
@@ -293,10 +291,10 @@ int main(int argc, char *argv[])
 	return EXIT_FAILURE;
     }
 
-    // Widget realisieren
+    // Realize Widget
     XtRealizeWidget(toplevel);
 
-    // Events abbauen
+    // Process events
     XtAppMainLoop(app_con);
 
     // Never reached...

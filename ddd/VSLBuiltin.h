@@ -41,26 +41,26 @@
 typedef Box * (*BuiltinFunc)(ListBox *);
 
 struct VSLBuiltin {
+    // Return index of given function
     static int resolve(const string& func_name);
-    // Index zu gegebener Funktion zurueckgeben
 
+    // Return function call of given index
     static BuiltinFunc func(int index);
-    // Funktionsaufruf zu gegebenem Index zurueckgeben
 
+    // True if associative
     static bool isAssoc(int functionIndex);
-    // Flag: ist Funktion assoziativ?
 
+    // True if has side effects
     static bool hasSideEffects(int functionIndex);
-    // Flag: hat Funktion Seiteneffekte?
 
+    // Internal representation ("__op_halign")
     static char *func_name(int functionIndex);
-    // Name fuer interne Repraesentation ("__op_halign")
 
+    // External representation ("(&)")
     static char *ext_name(int functionIndex);
-    // Name fuer externe Repraesentation ("(&)")
 
+    // Flag: dump EXT_NAME infix?
     static bool isInfix(int functionIndex);
-    // Flag: ext_name infix ausgeben?
 };
 
 #endif
