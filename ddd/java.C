@@ -34,10 +34,27 @@ char java_rcsid[] =
 #endif
 
 #include "java.h"
-#include "filetype.h"
+
+#include "SmartC.h"
 #include "SourceView.h"
+#include "assert.h"
 #include "ddd.h"
+#include "filetype.h"
 #include "glob.h"
+#include "regexps.h"
+
+#include <iostream.h>
+
+
+
+//-----------------------------------------------------------------------------
+// Constants
+//-----------------------------------------------------------------------------
+
+// Suffixes for Java sources and classes
+#define JAVA_SRC_SUFFIX   ".java"
+#define JAVA_CLASS_SUFFIX ".class"
+
 
 //-----------------------------------------------------------------------------
 // Helpers
@@ -61,47 +78,133 @@ static const char *file_basename(const char *name)
 #define basename file_basename
 
 
-
-static void sortClasses(StringArray& a)
-{
-    // Shell sort -- simple and fast
-    int h = 1;
-    do {
-	h = h * 3 + 1;
-    } while (h <= a.size());
-    do {
-	h /= 3;
-	for (int i = h; i < a.size(); i++)
-	{
-	    string v = a[i];
-	    int j;
-	    for (j = i; j >= h && a[j - h] > v; j -= h)
-		a[j] = a[j - h];
-	    if (i != j)
-		a[j] = v;
-	}
-    } while (h != 1);
-}
-
 static bool is_archive(const string& loc)
 {
     return loc.contains(".jar", -1) || loc.contains(".zip", -1);
 }
 
+static string concat_dir(const string& dir, const string& file)
+{
+    string mask;
+    if (dir == "")
+	mask = file;
+    else if (dir.contains('/', -1))
+	mask = dir + file;
+    else
+	mask = dir + "/" + file;
+
+    return mask;
+}
+
+// Store all classes in DIR in CLASSES_LIST.  BASE is the initial dir.  If
+// WITH_SOURCE_ONLY is set, consider only classes with loadable sources.
+static void get_java_classes(const string& dir, const string& base,
+			     StringArray& classes_list, bool with_source_only)
+{
+    // clog << "Scanning " << dir << " for classes\n";
+
+    assert((base == "" && dir == "") || dir.contains(base, 0));
+
+    string mask = concat_dir(dir, "*" JAVA_CLASS_SUFFIX);
+
+    // Check for `.class' files in this directory.
+    char **files = glob_filename(mask);
+    if (files == (char **)0)
+    {
+	cerr << mask << ": glob failed\n";
+    }
+    if (files == (char **)-1)
+    {
+	// No `*.class' in this directory
+    }
+    else
+    {
+	for (int i = 0; files[i] != 0; i++)
+	{
+	    string file = files[i];
+
+	    // Build a class name from file name
+	    string class_name;
+	    if (base == "")
+	    {
+		class_name = file;
+	    }
+	    else
+	    {
+		class_name = file.after((int)base.length());
+		if (class_name.contains('/', 0))
+		    class_name = class_name.after('/');
+	    }
+
+	    strip_java_suffix(class_name);
+	    class_name.gsub('/', '.');
+
+	    bool have_source = true;
+	    if (with_source_only)
+	    {
+		// Check whether we have some .java source for
+		// this class
+		string class_file = java_class_file(class_name);
+		have_source = (class_file != "");
+	    }
+
+	    if (have_source)
+	    {
+		// Okay - we have a class and a corresponding
+		// .java source file.  Go for it.
+		classes_list += class_name;
+	    }
+
+	    free(files[i]);
+	}
+
+	free((char *)files);
+    }
+
+    // Check for `.class' files in subdirectories.
+    mask = concat_dir(dir, "*");
+    files = glob_filename(mask);
+    if (files == (char **)0)
+    {
+	cerr << mask << ": glob failed\n";
+    }
+    else if (files == (char **)-1)
+    {
+	// No `*' in this directory
+    }
+    else
+    {
+	for (int i = 0; files[i] != 0; i++)
+	{
+	    string file = basename(files[i]);
+	    free(files[i]);
+
+	    if (file.matches(rxidentifier))
+	    {
+		file = concat_dir(dir, file);
+		if (is_directory(file))
+		    get_java_classes(file, base, classes_list, 
+				     with_source_only);
+	    }
+	}
+
+	free((char *)files);
+    }
+}
 
 
 //-----------------------------------------------------------------------------
 // Main functions
 //-----------------------------------------------------------------------------
 
-// Store all classes matching MASK in CLASSES_LIST.  If WITH_SOURCE_ONLY
-// is set, only those classes with loadable sources are considered.
-void get_java_classes(StringArray& classes_list, const string& mask,
-		      bool with_source_only)
+// Store all classes in current use path in CLASSES_LIST.  If
+// WITH_SOURCE_ONLY is set, consider only classes with loadable sources.
+void get_java_classes(StringArray& classes_list, bool with_source_only)
 {
     string use = source_view->class_path();
     while (use != "")
     {
+	// Determine current USE entry
 	string loc;
 	if (use.contains(':'))
 	    loc = use.before(':');
@@ -112,64 +215,21 @@ void get_java_classes(StringArray& classes_list, const string& mask,
 	if (is_archive(loc))
 	{
 	    // Archive file.
-	    // Should we search this for sources? (FIXME)
+	    // Should we search this for classes? (FIXME)
+	    continue;
 	}
-	else
+
+	if (!is_directory(loc))
 	{
-	    string dir_mask;
-
-	    if (loc == "" || loc == ".")
-	    {
-		dir_mask = mask;
-	    }
-	    else
-	    {
-		if (!loc.contains('/', -1))
-		    loc += '/';
-		dir_mask = loc + mask;
-	    }
-
-	    char **files = glob_filename(dir_mask);
-	    if (files == (char **)0)
-	    {
-		cerr << dir_mask << ": glob failed\n";
-	    }
-	    else if (files == (char **)-1)
-	    {
-		// No `*.class' in this directory
-	    }
-	    else
-	    {
-		for (int i = 0; files[i] != 0; i++)
-		{
-		    string file = files[i];
-		    string class_name = basename(file);
-		    strip_java_suffix(class_name);
-
-		    bool have_source = true;
-		    if (with_source_only)
-		    {
-			// Check whether we have some .java source for
-			// this class
-			string class_file = java_class_file(class_name);
-			have_source = (class_file != "");
-		    }
-
-		    if (have_source)
-		    {
-			// Okay - we have a class and a corresponding
-			// .java source file.  Go for it.
-			classes_list += class_name;
-		    }
-
-		    free(files[i]);
-		}
-		free((char *)files);
-	    }
+	    // Not a directory.
+	    continue;
 	}
+
+	// Get all classes in this directory
+	get_java_classes(loc, loc, classes_list, with_source_only);
     }
 
-    sortClasses(classes_list);
+    smart_sort(classes_list);
 }
 
 // Remove `.java' and `.class' suffix from S
@@ -300,12 +360,17 @@ string java_class_file(const string& class_name, bool search_classes)
 	    if (is_archive(loc))
 	    {
 		// Archive file.
-		// Should we search this for sources? (FIXME)
+		// Should we search this for classes? (FIXME)
+		continue;
+	    }
+
+	    if (!is_directory(loc))
+	    {
+		// Not a directory.
 		continue;
 	    }
 
 	    string file_name;
-
 	    if (loc == "" || loc == ".")
 	    {
 		file_name = base;

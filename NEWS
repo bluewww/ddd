@@ -20,7 +20,8 @@ Debuggers and Languages
 
 - Using JDB, `File->Open Class' no longer searches the class path for
   .java source files; instead, it searches for .class files and
-  returns all classes with accessible .java sources.
+  returns all classes with accessible .java sources.  Subdirectories
+  are also searched.
 
 
 Data exploration

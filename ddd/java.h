@@ -35,15 +35,9 @@
 
 #include "StringA.h"
 
-// Suffixes for Java sources and classes
-#define JAVA_SRC_SUFFIX   ".java"
-#define JAVA_CLASS_SUFFIX ".class"
-
-// Store all classes matching MASK in CLASSES_LIST.  If WITH_SOURCE_ONLY
-// is set, only those classes with loadable sources are considered.
-void get_java_classes(StringArray& classes_list,
-		      const string& mask = "*" JAVA_CLASS_SUFFIX,
-		      bool with_source_only = true);
+// Store all classes in current use path in CLASSES_LIST.  If
+// WITH_SOURCE_ONLY is set, consider only classes with loadable sources.
+void get_java_classes(StringArray& classes_list, bool with_source_only = true);
 
 // Return source file of CLASS_NAME; "" if none
 string java_class_file(const string& class_name, bool search_classes = true);
