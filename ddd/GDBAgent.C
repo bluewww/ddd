@@ -1326,7 +1326,6 @@ bool GDBAgent::recording(bool val)
 void GDBAgent::handle_input(string& answer)
 {
     bool had_a_prompt;
-    int old_complete_answer_length = complete_answer.length();
 
     OAProc  on_answer = _on_answer;
     OACProc on_answer_completion = _on_answer_completion;
@@ -1382,13 +1381,14 @@ void GDBAgent::handle_input(string& answer)
 
 		if (flush_next_output() && !ready_to_process)
 		{
-		    // Flush this output
+		    // Flush this answer
 		    flush_next_output(false);
 		    ready_to_process = true;
 
 		    // Don't include it in the complete answer
 		    complete_answer = 
-			complete_answer.before(old_complete_answer_length);
+			complete_answer.before(int(complete_answer.length() - 
+						   answer.length()));
 		}
 		else
 		{
