@@ -1190,7 +1190,9 @@ static MMDesc command_menu[] =
     MMSep,
     { "prev",     MMPush, { gdbPrevCB }},
     { "next",     MMPush, { gdbNextCB }},
+    MMSep,
     { "complete", MMPush, { gdbCompleteCB }},
+    { "apply",    MMPush, { gdbApplyCB }},
     MMEnd
 };
 

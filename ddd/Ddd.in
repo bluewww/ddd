@@ -1265,7 +1265,9 @@ Ddd*menubar.commands*contextHelpString:	\
 \n\
 @tt \267 @bf Previous @rm - show the previous command.\n\
 @tt \267 @bf Next @rm - show the next command.\n\
-@tt \267 @bf Complete @rm - complete the current command.
+\n\
+@tt \267 @bf Complete @rm - complete the current command.\n\
+@tt \267 @bf Apply @rm - execute the current command.
 
 Ddd*commandsMenu.history.labelString:	Command History...
 Ddd*commandsMenu.history.mnemonic:	H
@@ -1286,6 +1288,10 @@ Ddd*commandsMenu.complete.mnemonic:	C
 ! *commandsMenu.complete.accelerator:	Ctrl<Key>I
 Ddd*commandsMenu.complete.acceleratorText:	Tab
 
+Ddd*commandsMenu.apply.labelString:	Apply
+Ddd*commandsMenu.apply.mnemonic:	A
+! *commandsMenu.apply.accelerator:	None<Key>Return
+Ddd*commandsMenu.apply.acceleratorText: Return
 
 Ddd*menubar.stack.labelString:		Stack
 Ddd*menubar.stack.mnemonic:		t
