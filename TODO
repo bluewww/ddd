@@ -368,8 +368,12 @@ Volunteers for these and other projects are welcome!
      `http://www.igpm.rwth-aachen.de/~albrecht/mnem.html')
 
 202* More session stuff:
-     History is not yet saved per-session.
-     Exiting a session with changes should require confirmation.
-     DDD should overwrite its own history file and the GDB one.
+     * History is not yet saved per-session.  DDD should overwrite the
+       pre-session own history file *as well as* the GDB history file,
+       but load from its per-session history file only.
+     * Exiting a session with changes should require confirmation.
+     * Don't show status messages while restoring a session.  A `lock
+       status line' flag in StatusDelays may be helpful (i.e. add to
+       history, but don't show).
 
 205. (Insert your project idea here)

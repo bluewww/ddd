@@ -1317,13 +1317,13 @@ Ddd*text_help*textSW.width:		600
 Ddd*text_help*textSW.height:		320
 
 Ddd*text_help*helpString: \
-@rm This is the EMPH([DDD] License,) a GNU General Public License.\n\
+@rm This is the EMPH([DDD] License), a GNU General Public License.\n\
 \n\
-It describes the terms and conditions for copying, distributing\n\
-and modifying DDD.\n\
+It describes the terms and conditions for copying,\n\
+distributing and modifying DDD.\n\
 \n\
-Please see section 11, TEXT(NO WARRANTY), for the various kind of warranty\n\
-you do not have.
+Please see section 11, TEXT(NO WARRANTY), for the\n\
+various kind of warranty you do not have.
 
 
 !-----------------------------------------------------------------------------
