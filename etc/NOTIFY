@@ -14,7 +14,10 @@ E-Mail
   Cc: 	elf@ee.ryerson.ca         (X11 apps FAQ, `comp.windows.x.apps')
 	bug-gdb@gnu.org           (for `gnu.gdb.bug')
 
-* lsm@execpc.com            (DDD lsm entry; subject `add')
+* lsm@execpc.com            	  (DDD lsm entry; subject `add')
+
+* ~/lib/reply/ddd                 (update news)
+* ~/lib/reply/ddd-bugs
 
 
 Major releases only (no more than twice a year)
