@@ -154,34 +154,24 @@ public:
 	return point[dimension];
     }
 
-    // true, wenn beide Dimensionen die Bedingung erfuellen
-    friend static bool operator == (const BoxPoint& p1, const BoxPoint& p2);
-
-    // true, wenn eine BoxDimension die Bedingung erfuellt
-    friend static bool operator != (const BoxPoint& p1, const BoxPoint& p2);
-    friend static bool operator > (const BoxPoint& p1, const BoxPoint& p2);
-    friend static bool operator < (const BoxPoint& p1, const BoxPoint& p2);
-    friend static bool operator >= (const BoxPoint& p1, const BoxPoint& p2);
-    friend static bool operator <= (const BoxPoint& p1, const BoxPoint& p2);
-
     friend ostream& operator << (ostream& stream, 
 				 const BoxPoint& point);
 };
 
 inline bool operator == (const BoxPoint& p1, const BoxPoint& p2)
 {
-    return p1.point[X] == p2.point[X] && p1.point[Y] == p2.point[Y];
+    return p1[X] == p2[X] && p1[Y] == p2[Y];
 }
 
 inline bool operator != (const BoxPoint& p1, const BoxPoint& p2)
 {
-    return p1.point[X] != p2.point[X] || p1.point[Y] != p2.point[Y];
+    return p1[X] != p2[X] || p1[Y] != p2[Y];
 }
 
 inline bool operator > (const BoxPoint& p1, const BoxPoint& p2)
 {
     if (p1.isValid() && p2.isValid())
-	return p1.point[X] > p2.point[X] || p1.point[Y] > p2.point[Y];
+	return p1[X] > p2[X] || p1[Y] > p2[Y];
     else
 	return false;
 }
@@ -189,7 +179,7 @@ inline bool operator > (const BoxPoint& p1, const BoxPoint& p2)
 inline bool operator < (const BoxPoint& p1, const BoxPoint& p2)
 {
     if (p1.isValid() && p2.isValid())
-	return p1.point[X] < p2.point[X] || p1.point[Y] < p2.point[Y];
+	return p1[X] < p2[X] || p1[Y] < p2[Y];
     else
 	return false;
 }
@@ -197,7 +187,7 @@ inline bool operator < (const BoxPoint& p1, const BoxPoint& p2)
 inline bool operator >= (const BoxPoint& p1, const BoxPoint& p2)
 {
     if (p1.isValid() && p2.isValid())
-	return p1.point[X] >= p2.point[X] || p1.point[Y] >= p2.point[Y];
+	return p1[X] >= p2[X] || p1[Y] >= p2[Y];
     else
 	return false;
 }
@@ -205,7 +195,7 @@ inline bool operator >= (const BoxPoint& p1, const BoxPoint& p2)
 inline bool operator <= (const BoxPoint& p1, const BoxPoint& p2)
 {
     if (p1.isValid() && p2.isValid())
-	return p1.point[X] <= p2.point[X] || p1.point[Y] <= p2.point[Y];
+	return p1[X] <= p2[X] || p1[Y] <= p2[Y];
     else
 	return false;
 }
