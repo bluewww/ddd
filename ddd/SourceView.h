@@ -721,9 +721,9 @@ public:
     static void temp_n_cont(const string& a, Widget origin = 0);
 
     // Enable/Disable/Delete breakpoints
-    static void enable_bps (IntArray& nrs,  Widget origin = 0);
-    static void disable_bps(IntArray& nrs, Widget origin = 0);
-    static void delete_bps (IntArray& nrs, Widget origin = 0);
+    static void enable_bps     (IntArray& nrs, Widget origin = 0);
+    static void disable_bps    (IntArray& nrs, Widget origin = 0);
+    static void delete_bps     (IntArray& nrs, Widget origin = 0);
 
     inline static void enable_bp(int nr, Widget origin = 0)
     {
@@ -744,6 +744,17 @@ public:
 	IntArray nrs;
 	nrs += nr;
 	delete_bps(nrs, origin);
+    }
+
+    // Set breakpoint commands
+    static void set_bp_commands(IntArray& nrs, const StringArray& commands,
+				Widget origin = 0);
+    inline static void set_bp_commands(int nr, const StringArray& commands,
+				       Widget origin = 0)
+    {
+	IntArray nrs;
+	nrs += nr;
+	set_bp_commands(nrs, commands, origin);
     }
 
     static string numbers(IntArray& nrs);

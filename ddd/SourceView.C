@@ -5082,6 +5082,7 @@ struct BreakpointPropertiesInfo {
     Widget editor;
     XtIntervalId timer;
     bool spin_locked;
+    bool sync_commands;
     BreakpointPropertiesInfo *next; // Next info in list
 
     static BreakpointPropertiesInfo *all; // List of all infos
@@ -5090,7 +5091,7 @@ struct BreakpointPropertiesInfo {
 	: nrs(),
 	  dialog(0), title(0), enabled(0), temp(0), lookup(0), 
 	  ignore(0), condition(0), record(0), edit(0), editor(0),
-	  timer(0), spin_locked(false), next(all)
+	  timer(0), spin_locked(false), sync_commands(false), next(all)
     {
 	all = this;
     }
@@ -5283,6 +5284,13 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     set_sensitive(info->end,       gdb->recording());
     set_sensitive(info->edit,      can_record);
     set_sensitive(info->editor,    can_record);
+
+    if (info->sync_commands)
+    {
+	for (int i = 1; i < info->nrs.size(); i++)
+	    set_bp_commands(info->nrs[i], bp->commands());
+	info->sync_commands = false;
+    }
 }
 
 // Edit breakpoint properties
@@ -5341,7 +5349,8 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
     Delay::register_shell(info->dialog);
 
     if (lesstif_version <= 79)
-	XtUnmanageChild(XmSelectionBoxGetChild(info->dialog, XmDIALOG_APPLY_BUTTON));
+	XtUnmanageChild(XmSelectionBoxGetChild(info->dialog, 
+					       XmDIALOG_APPLY_BUTTON));
 
     MMDesc commands_menu[] =
     {
@@ -5568,8 +5577,54 @@ void SourceView::RecordingHP(Agent *, void *client_data, void *call_data)
     {
 	// Recording is over.  Don't get called again.
 	gdb->removeHandler(Recording, RecordingHP, XtPointer(info));
+
+	// Upon next panel update, propagate command to other breakpoints
+	info->sync_commands = true;
     }
 }
+
+// Set breakpoint commands
+void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
+				 Widget origin)
+{
+    for (int i = 0; i < nrs.size(); i++)
+    {
+	// Check for breakpoint
+	MapRef ref;
+	BreakPoint *bp = 0;
+	for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+	{
+	    if (bp->number() == nrs[i])
+		break;
+	}
+	if (bp == 0)
+	    continue;		// No such breakpoint
+
+	if (commands.size() == bp->commands().size())
+	{
+	    bool same_commands = true;
+	    for (int j = 0; same_commands && j < bp->commands().size(); j++)
+	    {
+		string c1 = bp->commands()[j];
+		strip_auto_command_prefix(c1);
+		string c2 = commands[j];
+		strip_auto_command_prefix(c2);
+
+		if (c1 != c2)
+		    same_commands = false;
+	    }
+
+	    if (same_commands)
+		continue;	// Commands unchanged
+	}
+
+	gdb_command("commands " + itostring(nrs[i]), origin);
+	for (int j = 0; j < commands.size(); j++)
+	    gdb_command(commands[j], origin);
+	gdb_command("end", origin);
+    }
+}
+
 
 // Edit breakpoint commands
 void SourceView::EditBreakpointCommandsCB(Widget w,
@@ -5589,46 +5644,17 @@ void SourceView::EditBreakpointCommandsCB(Widget w,
 	string cmd = _commands;
 	XtFree(_commands);
 
-	// Check for first breakpoint
-	MapRef ref;
-	BreakPoint *bp = 0;
-	for (bp = bp_map.first(ref);
-	     bp != 0;
-	     bp = bp_map.next(ref))
+	if (!cmd.contains('\n', -1))
+	    cmd += '\n';
+	StringArray commands;
+	while (cmd != "")
 	{
-	    if (bp->number() == info->nrs[0])
-	    {
-		break;
-	    }
+	    string c = cmd.before('\n');
+	    if (c != "")
+		commands += c;
+	    cmd = cmd.after('\n');
 	}
-	if (bp == 0)
-	    return;			// No such breakpoint
-
-	string old_cmd = "";
-	for (int i = 0; i < bp->commands().size(); i++)
-	{
-	    string cmd = bp->commands()[i];
-	    strip_auto_command_prefix(cmd);
-	    old_cmd += cmd + "\n";
-	}
-
-	if (cmd != old_cmd)
-	{
-	    gdb_command("commands " + itostring(info->nrs[0]), w);
-
-	    if (!cmd.contains("\n"))
-		cmd += "\n";
-
-	    while (cmd != "")
-	    {
-		string line = cmd.before('\n');
-		if (line != "")
-		    gdb_command(line, w);
-		cmd = cmd.after('\n');
-	    }
-
-	    gdb_command("end", w);
-	}
+	set_bp_commands(info->nrs, commands, w);
     }
     else
     {
