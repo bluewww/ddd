@@ -824,7 +824,12 @@ AC_CACHE_VAL(ice_cv_have_std_exceptions,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([#include <stdexcept>],
+dnl On SGI, EGCS <exception> included by <stdexcept> conflicts with <math.h>.
+dnl Check for this.
+AC_TRY_COMPILE([
+#include <stdexcept>
+#include <math.h>
+],
 [try { throw runtime_error("too many fingers on keyboard"); }
  catch(const exception& e) { const char *s = e.what(); }],
 ice_cv_have_std_exceptions=yes,
@@ -851,7 +856,12 @@ AC_CACHE_VAL(ice_cv_have_typeinfo,
 [
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE([#include <typeinfo>],
+dnl On SGI, EGCS <exception> included by <typeinfo> conflicts with <math.h>.
+dnl Check for this.
+AC_TRY_COMPILE([
+#include <typeinfo>
+#include <math.h>
+],
 [int x; const char *s = typeid(x).name();],
 ice_cv_have_typeinfo=yes,
 ice_cv_have_typeinfo=no)
