@@ -57,7 +57,7 @@ extern "C" {
 // Return true if C is a letter found in real user names
 inline bool is_letter(char c)
 {
-    return isalpha(c) || isspace(c) || c == '.' || c == '-';
+    return c && (isalpha(c) || isspace(c) || c == '.' || c == '-');
 }
 
 int userinfo(char *arg = 0)
@@ -103,14 +103,14 @@ int userinfo(char *arg = 0)
 
 	    if (*s)
 	    {
-		// User id is a real name => capitalize it.
-		fputc(toupper(pwd->pw_name[0]), stdout);
+		// User id contains non-letters and is probably a
+		// symbolic name => leave it unchanged.
 		fputs(pwd->pw_name + 1, stdout);
 	    }
 	    else
 	    {
-		// User id contains non-letters and is probably a
-		// symbolic name => leave it unchanged.
+		// User id is a real name => capitalize it.
+		fputc(toupper(pwd->pw_name[0]), stdout);
 		fputs(pwd->pw_name + 1, stdout);
 	    }
 	}
