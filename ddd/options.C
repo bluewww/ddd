@@ -1230,13 +1230,17 @@ bool save_options(unsigned long flags)
     os << "\n! Display shortcuts\n";
     {
 	StringArray exprs;
-	data_disp->get_shortcut_menu(exprs);
+	StringArray labels;
+	data_disp->get_shortcut_menu(exprs, labels);
 	string expr;
 	for (int i = 0; i < exprs.size(); i++)
 	{
 	    if (i > 0)
 		expr += '\n';
 	    expr += exprs[i];
+	    if (labels[i] != "")
+		expr += string('\t') + app_data.label_delimiter + ' ' 
+		    + labels[i];
 	}
 	os << string_app_value(XtNdisplayShortcuts, expr) << "\n";
     }

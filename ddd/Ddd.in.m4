@@ -433,9 +433,9 @@ Ddd*autoRaiseTool: true
 ! A newline-separated list of expressions to be included in the
 ! `New Display' menu.  This is usually edited at run-time.
 Ddd*displayShortcuts: \
-/d ()	Convert to Dec\n\
-/x ()	Convert to Hex\n\
-/o ()	Convert to Oct
+/d ()	// Convert to Dec\n\
+/x ()	// Convert to Hex\n\
+/o ()	// Convert to Oct
 
 
 ! Tab width in source texts
@@ -2596,14 +2596,14 @@ Ddd*edit_buttons*helpString: \
 \n\
 Each line specifies a user-defined button, in the format\n\
 \n\
-    VAR(command)CODE(<TAB>)VAR(label)\n\
+    VAR(command) CODE(//) VAR(label)\n\
 \n\
-If SAMP(<TAB>VAR(label)) is omitted, VAR(command) is used as label.\n\
+If SAMP(// VAR(label)) is omitted, VAR(command) is used as label.\n\
 \n\
 The following strings have a special meaning in VAR(command):\n\
 \n\
 ITEM SAMP(()) is replaced by the current argument field.\n\
-    Example: SAMP(print *(())<TAB>Print *())\n\
+    Example: SAMP(print *(()) // Print *())\n\
 ITEM SAMP(^VAR(character)) causes VAR(command) to issue \
 KEY(Ctrl+VAR(character)).\n\
     Example: SAMP(Interrupt^C)\n\
@@ -2622,9 +2622,9 @@ Ddd*edit_buttons*shortcuts*helpString: \
 \n\
 Each line specifies a display shortcut, in the format\n\
 \n\
-    VAR(expression)CODE(<TAB>)VAR(label)\n\
+    VAR(expression)CODE( // )VAR(label)\n\
 \n\
-If SAMP(<TAB>VAR(label)) is omitted, LBL(Display VAR(expression)) \
+If SAMP(// VAR(label)) is omitted, LBL(Display VAR(expression)) \
 is used as label.\n\
 In VAR(expression), SAMP(()) is replaced by the current argument field.\n\
 \n\

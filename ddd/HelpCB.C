@@ -685,7 +685,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
 	text_dialog = create_text_dialog(toplevel, "manual_help", args, arg);
 
-	if (lesstif_version < 1000)
+	if (lesstif_version <= 79)
 	    XtUnmanageChild(XmSelectionBoxGetChild(text_dialog,
 						   XmDIALOG_APPLY_BUTTON));
 
@@ -1110,7 +1110,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 	XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
 	text_dialog = create_text_dialog(toplevel, "text_help", args, arg);
 
-	if (lesstif_version < 1000)
+	if (lesstif_version <= 79)
 	    XtUnmanageChild(XmSelectionBoxGetChild(text_dialog,
 						   XmDIALOG_APPLY_BUTTON));
 

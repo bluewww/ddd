@@ -2579,18 +2579,32 @@ static void set_shortcut_menu(DataDisp *data_disp, string exprs)
     split(exprs, items, newlines, '\n');
 
     StringArray items_s;
+    StringArray labels_s;
     for (int i = 0; i < newlines; i++)
     {
-	string item = items[i];
+	string item  = items[i];
+	string label = "";
+
+	if (item.contains(app_data.label_delimiter))
+	{
+	    label = item.after(app_data.label_delimiter);
+	    item  = item.before(app_data.label_delimiter);
+	}
+
 	read_leading_blanks(item);
 	strip_final_blanks(item);
+
+	read_leading_blanks(label);
+	strip_final_blanks(label);
+
 	if (item == "")
 	    continue;
 
-	items_s += item;
+	items_s  += item;
+	labels_s += label;
     }
 
-    data_disp->set_shortcut_menu(items_s);
+    data_disp->set_shortcut_menu(items_s, labels_s);
 
     delete[] items;
 }
@@ -2623,10 +2637,11 @@ static void fix_status_size()
 		  XmNallowResize, False,
 		  NULL);
 
-    if (lesstif_version >= 1000)
+    if (lesstif_version > 79)
 	return;
 
-    // Simulate a drag of the lowest sash to the bottom.  Ugly LessTif hack.
+    // For LessTif 0.79 and earlier, simulate a drag of the lowest
+    // sash to the bottom.  Ugly LessTif hack.
 
     // Find the children of the paned window
     Widget paned = XtParent(status_form);
@@ -3423,7 +3438,7 @@ static void make_preferences(Widget parent)
 	verify(XmCreatePromptDialog(parent, "preferences", args, arg));
     Delay::register_shell(preferences_dialog);
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(preferences_dialog,
 					       XmDIALOG_APPLY_BUTTON));
 

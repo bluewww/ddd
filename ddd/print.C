@@ -592,7 +592,7 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 	verify(XmCreatePromptDialog(find_shell(w), "print", ArgList(0), 0));
     Delay::register_shell(print_dialog);
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(print_dialog,
 					       XmDIALOG_APPLY_BUTTON));
 
@@ -806,7 +806,7 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 				    ArgList(0), 0));
     Delay::register_shell(paper_size_dialog);
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(paper_size_dialog,
 					       XmDIALOG_APPLY_BUTTON));
 

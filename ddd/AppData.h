@@ -86,6 +86,8 @@
 #define XtNdataButtons           "dataButtons"
 #define XtNtoolButtons           "toolButtons"
 #define XtCButtons               "Buttons"
+#define XtNlabelDelimiter        "labelDelimiter"
+#define XtCLabelDelimiter        "LabelDelimiter"
 #define XtNtoolBar               "toolBar"
 #define XtCToolBar               "ToolBar"
 #define XtNseparateDataWindow    "separateDataWindow"
@@ -276,6 +278,7 @@ struct AppData {
     String  source_buttons;
     String  data_buttons;
     String  tool_buttons;
+    String  label_delimiter;
     Boolean tool_bar;
     Boolean separate_data_window;
     Boolean separate_source_window;

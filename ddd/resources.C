@@ -324,6 +324,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNlabelDelimiter,
+	XtCLabelDelimiter,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, label_delimiter),
+	XtRString,
+	XtPointer("//")
+    },
+
+    {
 	XtNtoolBar,
 	XtCToolBar,
 	XtRBoolean,

@@ -2531,7 +2531,7 @@ SourceView::SourceView(XtAppContext app_context, Widget parent)
 				    args, arg));
     Delay::register_shell(edit_breakpoints_dialog_w);
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(edit_breakpoints_dialog_w,
 					       XmDIALOG_APPLY_BUTTON));
 
@@ -2796,7 +2796,16 @@ void SourceView::create_text(Widget parent,
     XtSetArg(args[arg], XmNeditMode,          XmMULTI_LINE_EDIT); arg++;
     XtSetArg(args[arg], XmNautoShowCursorPosition, True);         arg++;
     XtSetArg(args[arg], XmNcursorPositionVisible, True);          arg++;
-    XtSetArg(args[arg], XmNeditable, lesstif_version < 1000);     arg++;
+
+    if (lesstif_version <= 79)
+    {
+	// LessTif 0.79 has trouble with non-editable text windows
+	XtSetArg(args[arg], XmNeditable, True); arg++;
+    }
+    else
+    {
+	XtSetArg(args[arg], XmNeditable, False); arg++;
+    }
 
     string text_name = base + "_text_w";
     text = verify(XmCreateScrolledText(form, text_name, args, arg));
@@ -4231,7 +4240,7 @@ void SourceView::NewBreakpointCB(Widget, XtPointer, XtPointer)
 					NULL, 0));
 	Delay::register_shell(new_breakpoint_dialog);
 
-	if (lesstif_version < 1000)
+	if (lesstif_version <= 79)
 	    XtUnmanageChild(XmSelectionBoxGetChild(new_breakpoint_dialog,
 						   XmDIALOG_APPLY_BUTTON));
 
@@ -4296,7 +4305,7 @@ void SourceView::EditBreakpointConditionCB(Widget,
 					NULL, 0));
 	Delay::register_shell(edit_breakpoint_condition_dialog);
 
-	if (lesstif_version < 1000)
+	if (lesstif_version <= 79)
 	    XtUnmanageChild(XmSelectionBoxGetChild(
 		edit_breakpoint_condition_dialog, XmDIALOG_APPLY_BUTTON));
 
@@ -4419,7 +4428,7 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
 					NULL, 0));
 	Delay::register_shell(edit_breakpoint_ignore_count_dialog);
 
-	if (lesstif_version < 1000)
+	if (lesstif_version <= 79)
 	    XtUnmanageChild(XmSelectionBoxGetChild(
 		edit_breakpoint_ignore_count_dialog, XmDIALOG_APPLY_BUTTON));
 

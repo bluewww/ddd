@@ -115,6 +115,9 @@ public:
     bool is_user_command() const { return ::is_user_command(name()); }
     string user_command() const  { return ::user_command(name()); }
 
+    // Return `true' if this expression can be aliased
+    bool alias_ok() const;
+
     BoxGraphNode* nodeptr() const { return mynodeptr; }
     const Box*    box()     const { return mynodeptr->box(); }
     DispValue*    value()   const { return disp_value; }

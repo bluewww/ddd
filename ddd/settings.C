@@ -1335,7 +1335,7 @@ static Widget create_panel(DebuggerType type, bool create_settings)
 					       args, arg));
     Delay::register_shell(panel);
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(panel, XmDIALOG_APPLY_BUTTON));
 
     // Remove old prompt

@@ -260,8 +260,9 @@ XtIntervalId DataDisp::refresh_args_timer       = 0;
 XtIntervalId DataDisp::refresh_addr_timer       = 0;
 XtIntervalId DataDisp::refresh_graph_edit_timer = 0;
 
-// Array of shortcut expressions
+// Array of shortcut expressions and their labels
 StringArray DataDisp::shortcut_exprs;
+StringArray DataDisp::shortcut_labels;
 
 
 //----------------------------------------------------------------------------
@@ -771,8 +772,6 @@ void DataDisp::shortcutCB(Widget w, XtPointer client_data, XtPointer)
     set_last_origin(w);
 
     string expr = shortcut_exprs[number];
-    if (expr.contains('\t'))
-	expr = expr.before('\t');
 
     string depends_on = "";
 
@@ -796,13 +795,22 @@ void DataDisp::shortcutCB(Widget w, XtPointer client_data, XtPointer)
 }
 
 // Set shortcut menu to expressions EXPRS
-void DataDisp::set_shortcut_menu(const StringArray& exprs)
+void DataDisp::set_shortcut_menu(const StringArray& exprs,
+				 const StringArray& labels)
 {
+    shortcut_labels = labels;
+    shortcut_exprs  = exprs;
+
+    while (shortcut_labels.size() < exprs.size())
+	shortcut_labels += "";
+
+#if 0
     if (exprs.size() > shortcut_items)
     {
 	post_warning("Shortcut menu capacity exceeded.",
 		     "too_many_shortcuts_warning", last_origin);
     }
+#endif
 
     for (int i = 0; i < shortcut_items; i++)
     {
@@ -812,12 +820,10 @@ void DataDisp::set_shortcut_menu(const StringArray& exprs)
 
 	if (i < exprs.size())
 	{
-	    string expr = exprs[i];
+	    string& expr  = shortcut_exprs[i];
+	    string& label = shortcut_labels[i];
 
-	    string label;
-	    if (expr.contains('\t'))
-		label = expr.after('\t');
-	    else
+	    if (label == "")
 		label = "Display " + expr;
 
 	    set_label(popup1_item, label);
@@ -837,7 +843,6 @@ void DataDisp::set_shortcut_menu(const StringArray& exprs)
 	}
     }
 
-    shortcut_exprs = exprs;
     refresh_args();
 }
 
@@ -845,12 +850,18 @@ void DataDisp::set_shortcut_menu(const StringArray& exprs)
 void DataDisp::add_shortcut_expr(const string& expr)
 {
     // Insert as first item in SHORTCUT_EXPRS
-    shortcut_exprs += string("");
+    shortcut_exprs  += string("");
+    shortcut_labels += string("");
     for (int i = shortcut_exprs.size() - 1; i > 0; i--)
-	shortcut_exprs[i] = shortcut_exprs[i - 1];
-    shortcut_exprs[0] = expr;
+    {
+	shortcut_exprs[i]  = shortcut_exprs[i - 1];
+	shortcut_labels[i] = shortcut_labels[i - 1];
+    }
 
-    set_shortcut_menu(shortcut_exprs);
+    shortcut_exprs[0]  = expr;
+    shortcut_labels[0] = "";
+
+    set_shortcut_menu(shortcut_exprs, shortcut_labels);
     refresh_button_editor();
     refresh_args();
 }
@@ -865,8 +876,6 @@ MString DataDisp::shortcut_help(Widget w)
 	{
 	    MString ret = rm("Display ");
 	    string expr = shortcut_exprs[i];
-	    if (expr.contains('\t'))
-		expr = expr.before('\t');
 
 	    while (expr.contains("()"))
 	    {
@@ -978,7 +987,7 @@ Widget DataDisp::create_display_dialog(Widget parent, String name,
 						name, args, arg));
     Delay::register_shell(dialog);
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON));
 
     XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
@@ -3599,7 +3608,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 
     Delay::register_shell(set_dialog);
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(set_dialog,
 					       XmDIALOG_APPLY_BUTTON));
 
@@ -3882,10 +3891,8 @@ bool DataDisp::check_aliases()
 	     k = disp_graph->next_nr(ref))
     {
 	DispNode *dn = disp_graph->get(k);
-	if (dn != 0 && !dn->is_user_command())
-	{
+	if (dn != 0 && dn->alias_ok())
 	    equivalences[dn->addr()] += k;
-	}
     }
 
     // Merge displays with identical address.
@@ -4206,7 +4213,7 @@ DataDisp::DataDisp (XtAppContext app_context,
 				    "edit_displays_dialog", 
 				    NULL, 0));
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 79)
 	XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,
 					       XmDIALOG_APPLY_BUTTON));
 

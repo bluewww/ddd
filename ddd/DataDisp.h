@@ -212,6 +212,7 @@ class DataDisp {
 
     // Array of shortcut expressions
     static StringArray shortcut_exprs;
+    static StringArray shortcut_labels;
 
     static void add_shortcut_expr(const string& expr);
 
@@ -274,10 +275,12 @@ public:
     static void process_addr(StringArray& answers);
 
     // Set shortcut menu to expressions EXPRS
-    static void set_shortcut_menu(const StringArray& exprs);
+    static void set_shortcut_menu(const StringArray& exprs,
+				  const StringArray& labels);
 
     // Return current shortcut menu items
-    static void get_shortcut_menu(StringArray& exprs);
+    static void get_shortcut_menu(StringArray& exprs,
+				  StringArray& labels);
 
 private:
     // Call me back again
@@ -452,9 +455,11 @@ inline bool DataDisp::get_state(ostream& os, const StringArray& scopes)
     return get_state(os, true, scopes);
 }
 
-inline void DataDisp::get_shortcut_menu(StringArray& exprs)
+inline void DataDisp::get_shortcut_menu(StringArray& exprs,
+					StringArray& labels)
 {
-    exprs = shortcut_exprs;
+    exprs  = shortcut_exprs;
+    labels = shortcut_labels;
 }
 
 #endif // _DDD_DataDisp_h

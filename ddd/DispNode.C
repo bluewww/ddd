@@ -253,4 +253,13 @@ void DispNode::set_addr(const string& new_addr)
 #endif
     }
 }
-	
+
+// Return `true' if this expression can be aliased.
+bool DispNode::alias_ok() const
+{
+    // We avoid merging displays that are derived from other displays,
+    // such as `/FMT EXPR' or `(TYPE) EXPR'.
+    return !is_user_command()
+	&& !name().contains('/', 0) 
+	&& !name().contains('(', 0);
+}

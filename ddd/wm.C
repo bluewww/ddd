@@ -67,10 +67,13 @@ void wm_set_icon(Display *display, Window shell, Pixmap icon, Pixmap mask)
 
 void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 {
-    XtVaSetValues(shell,
-		  XmNiconPixmap, icon,
-		  XmNiconMask, mask,
-		  NULL);
+    if (XtIsWMShell(shell))
+    {
+	XtVaSetValues(shell,
+		      XmNiconPixmap, icon,
+		      XmNiconMask, mask,
+		      NULL);
+    }
 
 #if 0				// This should be done by the shell.
     wm_set_icon(XtDisplay(shell), XtWindow(shell), icon, mask);

@@ -699,10 +699,15 @@ void set_buttons(Widget buttons, String _button_list)
 	    continue;
 
 	MString label(0, true);
-	if (name.contains('\t'))
+	if (name.contains(app_data.label_delimiter))
 	{
-	    label = MString(name.after('\t'));
-	    name  = name.before('\t');
+	    string label_s = name.after(app_data.label_delimiter);
+	    name = name.before(app_data.label_delimiter);
+	    read_leading_blanks(label_s);
+	    strip_final_blanks(label_s);
+	    read_leading_blanks(name);
+	    strip_final_blanks(name);
+	    label = MString(label_s);
 	}
 
 	string command = name;
@@ -1072,13 +1077,17 @@ void dddEditShortcutsCB(Widget w, XtPointer, XtPointer)
 void refresh_button_editor()
 {
     StringArray exprs;
-    data_disp->get_shortcut_menu(exprs);
+    StringArray labels;
+
+    data_disp->get_shortcut_menu(exprs, labels);
     string expr;
     for (int i = 0; i < exprs.size(); i++)
     {
 	if (i > 0)
 	    expr += '\n';
 	expr += exprs[i];
+	if (labels[i] != "")
+	    expr += string('\t') + app_data.label_delimiter + ' ' + labels[i];
     }
 
     app_data.display_shortcuts = (String)XtNewString(expr.chars());
