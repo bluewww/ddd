@@ -282,10 +282,22 @@ void processCommandQueue(XtPointer, XtIntervalId *)
 }
 
 static bool ddd_is_idle = false;
+
+static void LeaveLoop(XtPointer, XtIntervalId *) {}
+
 static Boolean ddd_idle(XtPointer)
 {
     ddd_is_idle = emptyCommandQueue() && gdb->isReadyWithPrompt();
-    return ddd_is_idle;		// If idle, remove from the list of work procs
+
+    if (ddd_is_idle)
+    {
+	// Be sure that XtAppProcessEvent exits once more
+	XtAppAddTimeOut(XtWidgetToApplicationContext(command_shell),
+			0, LeaveLoop, 0);
+	return True;		// Remove from the list of work procs
+    }
+    
+    return False;		// Try again later
 }
 
 // Wait for command queue to drain
@@ -295,9 +307,15 @@ void syncCommandQueue()
     XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
 		     ddd_idle, 0);
 
-    while (!ddd_is_idle)
+    for (;;)
     {
+	if (ddd_is_idle)
+	    break;
+
 	processCommandQueue();
+	if (ddd_is_idle)
+	    break;
+
 	XtAppProcessEvent(XtWidgetToApplicationContext(command_shell),
 			  XtIMTimer | XtIMAlternateInput);
     }
