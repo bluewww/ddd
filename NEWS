@@ -15,6 +15,10 @@ DDD 2.3 [in development]
     - The maximum number of glyphs is now configurable at startup time.
       See the `maxGlyphs' resource for details.
 
+    Bug fixes:
+    - Using Sun DBX 3.x, data displays are no longer cluttered by DBX
+      warnings.
+
 
 DDD 2.2.3
 ---------
