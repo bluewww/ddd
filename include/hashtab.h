@@ -1,5 +1,5 @@
 /* An expandable hash tables datatype.  
-   Copyright (C) 1999 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2002 Free Software Foundation, Inc.
    Contributed by Vladimir Makarov (vmakarov@cygnus.com).
 
 This program is free software; you can redistribute it and/or modify
@@ -36,12 +36,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 extern "C" {
 #endif /* __cplusplus */
 
-#include <ansidecl.h>
+#include "ansidecl.h"
+
+#ifndef GTY
+#define GTY(X)
+#endif
+
+/* The type for a hash code.  */
+typedef unsigned int hashval_t;
 
 /* Callback function pointer types.  */
 
 /* Calculate hash of a table entry.  */
-typedef unsigned int (*htab_hash) PARAMS ((const void *));
+typedef hashval_t (*htab_hash) PARAMS ((const void *));
 
 /* Compare a table entry with a possible entry.  The entry already in
    the table always comes first, so the second element can be of a
@@ -60,12 +67,21 @@ typedef void (*htab_del) PARAMS ((void *));
    htab_traverse.  Return 1 to continue scan, 0 to stop.  */
 typedef int (*htab_trav) PARAMS ((void **, void *));
 
+/* Memory-allocation function, with the same functionality as calloc().
+   Iff it returns NULL, the hash table implementation will pass an error
+   code back to the user, so if your code doesn't handle errors,
+   best if you use xcalloc instead.  */
+typedef PTR (*htab_alloc) PARAMS ((size_t, size_t));
+
+/* We also need a free() routine.  */
+typedef void (*htab_free) PARAMS ((PTR));
+
 /* Hash tables are of the following type.  The structure
    (implementation) of this type is not needed for using the hash
    tables.  All work with hash table should be executed only through
    functions mentioned below. */
 
-struct htab
+struct htab GTY(())
 {
   /* Pointer to hash function.  */
   htab_hash hash_f;
@@ -77,7 +93,7 @@ struct htab
   htab_del del_f;
 
   /* Table itself.  */
-  void **entries;
+  PTR * GTY ((use_param (""), length ("%h.size"))) entries;
 
   /* Current size (in entries) of the hash table */
   size_t size;
@@ -95,23 +111,38 @@ struct htab
   /* The following member is used for debugging.  Its value is number
      of collisions fixed for time of work with the hash table. */
   unsigned int collisions;
+
+  /* Pointers to allocate/free functions.  */
+  htab_alloc alloc_f;
+  htab_free free_f;
 };
 
 typedef struct htab *htab_t;
 
+/* An enum saying whether we insert into the hash table or not.  */
+enum insert_option {NO_INSERT, INSERT};
+
 /* The prototypes of the package functions. */
 
-extern htab_t	htab_create	PARAMS ((size_t, htab_hash,
-					 htab_eq, htab_del));
+extern htab_t	htab_create_alloc	PARAMS ((size_t, htab_hash,
+						 htab_eq, htab_del,
+						 htab_alloc, htab_free));
+
+/* Backward-compatibility functions.  */
+extern htab_t htab_create PARAMS ((size_t, htab_hash, htab_eq, htab_del));
+extern htab_t htab_try_create PARAMS ((size_t, htab_hash, htab_eq, htab_del));
+
 extern void	htab_delete	PARAMS ((htab_t));
 extern void	htab_empty	PARAMS ((htab_t));
 
-extern void    *htab_find	PARAMS ((htab_t, const void *));
-extern void   **htab_find_slot	PARAMS ((htab_t, const void *, int));
-extern void    *htab_find_with_hash		PARAMS ((htab_t, const void *,
-							 unsigned int));
-extern void   **htab_find_slot_with_hash	PARAMS ((htab_t, const void *,
-							 unsigned int, int));
+extern PTR	htab_find	PARAMS ((htab_t, const void *));
+extern PTR     *htab_find_slot	PARAMS ((htab_t, const void *,
+					 enum insert_option));
+extern PTR	htab_find_with_hash	  PARAMS ((htab_t, const void *,
+						   hashval_t));
+extern PTR     *htab_find_slot_with_hash  PARAMS ((htab_t, const void *,
+						   hashval_t,
+						   enum insert_option));
 extern void	htab_clear_slot	PARAMS ((htab_t, void **));
 extern void	htab_remove_elt	PARAMS ((htab_t, void *));
 
@@ -120,6 +151,15 @@ extern void	htab_traverse	PARAMS ((htab_t, htab_trav, void *));
 extern size_t	htab_size	PARAMS ((htab_t));
 extern size_t	htab_elements	PARAMS ((htab_t));
 extern double	htab_collisions	PARAMS ((htab_t));
+
+/* A hash function for pointers.  */
+extern htab_hash htab_hash_pointer;
+
+/* An equality function for pointers.  */
+extern htab_eq htab_eq_pointer;
+
+/* A hash function for null-terminated strings.  */
+extern hashval_t htab_hash_string PARAMS ((const PTR));
 
 #ifdef __cplusplus
 }
