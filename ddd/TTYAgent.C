@@ -244,6 +244,7 @@ int TTYAgent::open_master()
 	    _slave_tty   = line;
 	    return master;
 	}
+	close(master);
     }
 #endif
 
