@@ -45,7 +45,6 @@ char StringBox_rcsid[] =
 #include <X11/Intrinsic.h>
 #include <ctype.h>
 #include <strstream.h>
-#include <iomanip.h>
 
 #include "VSEFlags.h"
 

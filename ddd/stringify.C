@@ -29,8 +29,7 @@
 char stringify_rcsid[] = 
     "$Id$";
 
-#include <iostream.h>
-#include <iomanip.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #ifndef EXIT_SUCCESS
@@ -43,22 +42,22 @@ char stringify_rcsid[] =
 
 int main()
 {
-    cout << "\"";
+    printf("\"");
 
     int p = 0;
 
     int c;
-    while ((c = cin.get()) != EOF)
+    while ((c = getchar()) != EOF)
     {
 	if (p > 0 && p % 16 == 0)
-	    cout << "\"\n\"";
+	    printf("\"\n\"");
 
-	cout << "\\" << oct << setw(3) << setfill('0') << c;
+	printf("\\%03o", c);
 
 	p++;
     }
 
-    cout << "\"\n";
+    printf("\"\n");
 
     return EXIT_SUCCESS;
 }

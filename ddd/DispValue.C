@@ -1366,18 +1366,18 @@ bool DispValue::can_plot2d() const
     if (nchildren() > 0)
     {
 	// If we have a list of indexed names, then we can plot in 2d.
-
+	int i;
 	string prefix, suffix;
 	get_index_surroundings(prefix, suffix);
 	
-	for (int i = 0; i < nchildren(); i++)
+	for (i = 0; i < nchildren(); i++)
 	{
 	    string idx = child(i)->index(prefix, suffix);
 	    if (!idx.matches(rxdouble) && !idx.matches(rxint))
 		return false;
 	}
 
-	for (int i = 0; i < nchildren(); i++)
+	for (i = 0; i < nchildren(); i++)
 	{
 	    if (!child(i)->can_plot1d())
 		return false;

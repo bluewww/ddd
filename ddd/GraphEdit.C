@@ -38,7 +38,6 @@ char GraphEdit_rcsid[] =
 #include <stdio.h>
 #include <iostream.h>
 #include <strstream.h>
-#include <iomanip.h>
 
 #include <Xm/Xm.h>
 #include <Xm/ScrolledW.h>

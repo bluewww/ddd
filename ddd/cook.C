@@ -35,7 +35,7 @@ char cook_rcsid[] =
 
 #include <ctype.h>
 #include <strstream.h>
-#include <iomanip.h>
+#include <stdio.h>
 
 #include "bool.h"
 #include "cook.h"
@@ -110,7 +110,11 @@ string _cook(const string& raw, bool for_postscript)
 	    if (isascii(c) && isprint(c))
 		cooked << c;
 	    else
-		cooked << "\\" << oct << setw(3) << setfill('0') << int(c);
+	    {
+		char buffer[256];
+		sprintf(buffer, "\\%03o", int(c));
+		cooked << buffer;
+	    }
 	    break;
 	}
     }

@@ -32,8 +32,8 @@ char huffencode_rcsid[] =
 #include <limits.h>
 #include <iostream.h>
 #include <strstream.h>
-#include <iomanip.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "assert.h"
 #include "strclass.h"
@@ -267,8 +267,9 @@ static void write_encoding(const string& byte_encoding)
 	if (p > 0 && p % 16 == 0)
 	    cout << "\"\n\"";
 
-	cout << "\\" << oct << setw(3) 
-	     << setfill('0') << int((unsigned char)byte_encoding[p]);
+	static char buffer[256];
+	sprintf(buffer, "\\%03o", int((unsigned char)byte_encoding[p]));
+	cout << buffer;
 
 	p++;
     }

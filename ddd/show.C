@@ -53,7 +53,6 @@ char show_rcsid[] =
 #include "filetype.h"
 
 #include <iostream.h>
-#include <iomanip.h>
 #include <fstream.h>
 #include <string.h>
 #include <errno.h>

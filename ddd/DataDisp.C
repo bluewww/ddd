@@ -132,7 +132,6 @@ char DataDisp_rcsid[] =
 // System includes
 #include <iostream.h>
 #include <fstream.h>		// ofstream
-#include <iomanip.h>
 #include <ctype.h>
 
 

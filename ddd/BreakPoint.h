@@ -50,7 +50,7 @@ enum BPType {
     BREAKPOINT,			// Breakpoint
     WATCHPOINT,			// Watchpoint
     TRACEPOINT,			// Tracepoint (as in GDB)
-    ACTIONPOINT,		// Actionpoint (`when' in DBX, action in Perl)
+    ACTIONPOINT 		// Actionpoint (`when' in DBX, action in Perl)
 };
 
 // What to do when breakpoint is reached

@@ -43,7 +43,6 @@ char logplayer_rcsid[] =
 
 #include <iostream.h>
 #include <fstream.h>
-#include <iomanip.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -228,8 +227,10 @@ void logplayer(const string& logname)
 			(c == '/' && (pattern == "" || in.contains(pattern))))
 		    {
 			// Report line
+			char buffer[256];
+			sprintf(buffer, "%4d", command_no);
 			ostrstream os;
-			os << setw(4) << command_no << " " << in << "\n";
+			os << buffer << " " << in << "\n";
 			put(os);
 
 			if (c == '/' || pattern != "")
