@@ -511,7 +511,7 @@ void PosBuffer::filter_gdb(string& answer)
 	    
     // ANSWER contains position info
     int index2 = answer.index ("\n", index1);
-	    
+
     if (index2 == -1)
     {
 	// Position info is incomplete
@@ -520,9 +520,9 @@ void PosBuffer::filter_gdb(string& answer)
 	answer = answer.before (index1);
 	return;
     }
-	    
+
     assert (index1 < index2);
-	    
+
     // Position info is complete
     pos_buffer = answer.at(index1 + 2, index2 - (index1 + 2));
 
@@ -564,7 +564,35 @@ void PosBuffer::filter_dbx(string& answer)
 	    line = pos.after(':');
 	}
     }
-		
+
+    // DEC DBX way issue warnings like
+    // `warning: "./cxxtest.C":157 has no code associated with it'
+    // right within the position info.
+
+    int start_of_warning = answer.index("\nwarning");
+    if (start_of_warning >= 0)
+    {
+	int open_bracket  = answer.index('[');
+	int close_bracket = answer.index(']');
+	if (open_bracket >= 0 && open_bracket < start_of_warning &&
+	    close_bracket >= 0 && close_bracket > start_of_warning)
+	{
+	    // Remove warning
+
+	    int end_of_warning = answer.index('\n', start_of_warning + 1);
+	    while (end_of_warning < int(answer.length()) && 
+		   answer[end_of_warning] == '\n')
+		end_of_warning++;
+
+	    while (start_of_warning > 0 && 
+		   answer[start_of_warning - 1] == '\n')
+		start_of_warning--;
+
+	    int warning_length = end_of_warning - start_of_warning;
+	    answer.at(start_of_warning, warning_length) = "";
+	}
+    }
+
 #if RUNTIME_REGEX
     static regex rxdbxfunc2(
 	".*line  *[1-9][0-9]*  *in  *(file  *)?\"[^\"]*\"\n.*");
@@ -588,7 +616,7 @@ void PosBuffer::filter_dbx(string& answer)
 	    // answer = answer.after("\n");
 	}
     }
-	    
+
 #if RUNTIME_REGEX
     static regex rxdbxpos("[[][^]]*:[1-9][0-9]*[^]]*[]].*");
 #endif
@@ -675,7 +703,7 @@ void PosBuffer::filter_dbx(string& answer)
 	    filter_line(answer, atoi(line));
 	}
     }
-	    
+
 #if RUNTIME_REGEX
     static regex rxdbxfunc("[a-zA-Z_][^[]*: *[1-9][0-9]*  *.*");
 #endif
@@ -724,6 +752,16 @@ void PosBuffer::filter_dbx(string& answer)
 	    answer = "";
 	    already_read = PosPart;
 	}
+    }
+
+    if (already_read != PosComplete && 
+	answer.contains('[') && !answer.contains(']'))
+    {
+	// Position info is incomplete
+	already_read = PosPart;
+	answer_buffer = answer.from('[');
+	answer = answer.before('[');
+	return;
     }
 
     if (already_read == PosComplete && line != "")
