@@ -2653,57 +2653,41 @@ void process_next_event()
     // Check for emergencies
     process_emergencies();
 
-    // Update tear-off menus
-    gdbUpdateAllMenus();
-
     // Restart blinker
     blink(gdb->recording() || !gdb->isReadyWithPrompt());
 
+    // Get X event
     XtAppContext app_context = XtWidgetToApplicationContext(command_shell);
 
-    if ((XtAppPending(app_context) & XtIMXEvent) != 0)
+    XEvent event;
+    XtAppNextEvent(app_context, &event);
+
+    // Check for grabs.
+    switch (event.type)
     {
-	XEvent event;
+    case MotionNotify:
+    case ButtonPress:
+    case ButtonRelease:
+    case EnterNotify:
+    case LeaveNotify:
+    case KeyPress:
+    case KeyRelease:
 
-	if (XtAppPeekEvent(app_context, &event))
-	{
-	    // We have an X event pending.  Check it.
-	    switch (event.type)
-	    {
-	    case MotionNotify:
-	    case ButtonPress:
-	    case ButtonRelease:
-	    case EnterNotify:
-	    case LeaveNotify:
-	    case KeyPress:
-	    case KeyRelease:
+	// User interaction - the pointer cannot be grabbed,
+	// since we receive input events.
+	check_grabs(false);
+	break;
 
-		// The pointer cannot be grabbed, since we receive
-		// input events.
-		check_grabs(false);
-		break;
-
-	    default:
-		break;
-	    }
-	}
+    default:
+	break;
     }
 
-    if (app_data.synchronous_gdb && gdb->isBusyOnQuestion())
-    {
-	// Synchronous mode: wait for GDB to answer question
-	XtAppProcessEvent(app_context, XtIMAlternateInput);
-    }
-    else if ((XtAppPending(app_context) & (XtIMXEvent | XtIMTimer)) != 0)
-    {
-	// Process next X event
-	XtAppProcessEvent(app_context, XtIMXEvent | XtIMTimer);
-    }
-    else
-    {
-	// Process pending GDB output
-	XtAppProcessEvent(app_context, XtIMAll);
-    }
+    // Dispatch event.
+    XtDispatchEvent(&event);
+
+    // Update tear-off menus.
+    gdbUpdateAllMenus();
+
 #if HAVE_EXCEPTIONS
     }
 #if HAVE_STD_EXCEPTIONS
@@ -3367,14 +3351,6 @@ Boolean ddd_setup_done(XtPointer)
 	    else
 		gdbOpenCommandWindowCB(gdb_w, 0, 0);
 	}
-
-	// Initialize `views' menu.  LessTif needs this.
- 	gdbUpdateViewsCB(0, XtPointer(views_menu),        0);
-
-	// Initialize `view' menus.  LessTif needs this.
- 	gdbUpdateViewCB(0,  XtPointer(command_view_menu), 0);
- 	gdbUpdateViewCB(0,  XtPointer(source_view_menu),  0);
- 	gdbUpdateViewCB(0,  XtPointer(data_view_menu),    0);
 
 	main_loop_entered = true;
 
@@ -5794,7 +5770,55 @@ static void setup_cut_copy_paste_bindings(XrmDatabase db)
 // Update menu entries
 //-----------------------------------------------------------------------------
 
-static void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer)
+static int _mapped_menus = 0;
+
+static int mapped_menus()
+{
+    if (lesstif_version < 1000)
+    {
+	// LessTif does not issue a XmCR_MAP callback when mapping
+	// RowColumn menus.  Hence, assume we have a mapped menu.
+	return 1;
+    }
+
+    return _mapped_menus;
+}
+
+static void count_mapped_menus(Widget, XtPointer, XtPointer call_data)
+{
+    XmRowColumnCallbackStruct *cbs = (XmRowColumnCallbackStruct *)call_data;
+    if (cbs == 0)
+	return;
+
+    switch (cbs->reason)
+    {
+    case XmCR_MAP:
+	_mapped_menus++;
+	break;
+
+    case XmCR_UNMAP:
+	_mapped_menus--;
+	break;
+
+#if XmVersion >= 1002
+    case XmCR_TEAR_OFF_ACTIVATE:
+	_mapped_menus++;
+	break;
+
+    case XmCR_TEAR_OFF_DEACTIVATE:
+	_mapped_menus--;
+	break;
+#endif
+
+    default:
+	break;
+    }
+
+    // clog << _mapped_menus << " mapped menus\n";
+}
+
+static void gdbUpdateEditCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
 {
     DDDWindow win = ddd_window(client_data);
 
@@ -5821,6 +5845,8 @@ static void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer)
 
     if (menu == 0 || menu[0].widget == 0)
 	return;
+
+    count_mapped_menus(w, client_data, call_data);
 
     // Check if we have something to cut
     XmTextPosition start, end;
@@ -5867,11 +5893,14 @@ static void gdbUpdateEditCB(Widget w, XtPointer client_data, XtPointer)
     set_sensitive(menu[EditItems::Delete].widget, can_cut);
 }
 
-static void gdbUpdateFileCB(Widget, XtPointer client_data, XtPointer)
+static void gdbUpdateFileCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
 {
     MMDesc *file_menu = (MMDesc *)client_data;
     if (file_menu == 0 || file_menu[0].widget == 0)
 	return;
+
+    count_mapped_menus(w, client_data, call_data);
 
     // Check whether we can print something
     Graph *graph = graphEditGetGraph(data_disp->graph_edit);
@@ -5891,11 +5920,14 @@ static void gdbUpdateFileCB(Widget, XtPointer client_data, XtPointer)
 #endif
 }
 
-static void gdbUpdateViewCB(Widget, XtPointer client_data, XtPointer)
+static void gdbUpdateViewCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
 {
     MMDesc *view_menu = (MMDesc *)client_data;
     if (view_menu == 0 || view_menu[0].widget == 0)
 	return;
+
+    count_mapped_menus(w, client_data, call_data);
 
     set_sensitive(view_menu[CodeWindow].widget, gdb->type() == GDB);
     set_sensitive(view_menu[ExecWindow].widget, gdb->has_redirection());
@@ -5920,16 +5952,25 @@ static void gdbUpdateViewsCB(Widget w, XtPointer client_data,
 // all times.
 static void gdbUpdateAllMenus()
 {
-    gdbUpdateEditCB(gdb_w, XtPointer(GDBWindow), NULL);
-    gdbUpdateEditCB(gdb_w, XtPointer(SourceWindow), NULL);
-    gdbUpdateEditCB(gdb_w, XtPointer(DataWindow), NULL);
-    gdbUpdateFileCB(gdb_w, XtPointer(command_file_menu), NULL);
-    gdbUpdateFileCB(gdb_w, XtPointer(source_file_menu), NULL);
-    gdbUpdateFileCB(gdb_w, XtPointer(data_file_menu), NULL);
+    if (mapped_menus() == 0)
+	return;			// No mapped menu
 
-    gdbUpdateViewsCB(gdb_w, XtPointer(views_menu), NULL);
+    XtPointer call_data = 0;
+
+    gdbUpdateEditCB(gdb_w, XtPointer(GDBWindow),         call_data);
+    gdbUpdateEditCB(gdb_w, XtPointer(SourceWindow),      call_data);
+    gdbUpdateEditCB(gdb_w, XtPointer(DataWindow),        call_data);
+
+    gdbUpdateFileCB(gdb_w, XtPointer(command_file_menu), call_data);
+    gdbUpdateFileCB(gdb_w, XtPointer(source_file_menu),  call_data);
+    gdbUpdateFileCB(gdb_w, XtPointer(data_file_menu),    call_data);
+
+    gdbUpdateViewsCB(gdb_w, XtPointer(views_menu),       call_data);
+
+    gdbUpdateViewCB(gdb_w, XtPointer(command_view_menu), call_data);
+    gdbUpdateViewCB(gdb_w, XtPointer(source_view_menu),  call_data);
+    gdbUpdateViewCB(gdb_w, XtPointer(data_view_menu),    call_data);
 }
-
 
 //-----------------------------------------------------------------------------
 // Configure new shell
