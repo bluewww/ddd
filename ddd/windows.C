@@ -1267,6 +1267,9 @@ static void paned_changed(Widget /* paned */)
 
     // Make sure the current command line is visible
     end_of_lineAct(gdb_w, 0, 0, 0);
+
+    // Redisplay source and code glyphs
+    source_view->update_glyphs();
 }
 
 void manage_paned_child(Widget w)
