@@ -338,4 +338,6 @@ Volunteers for these and other projects are welcome!
 356 Have a `Default' button in preferences, restoring factory
     settings.
 
-358 (Insert new project ideas here)
+358 Delay `plot' commands until Gnuplot is done sending plot data.
+
+359 (Insert new project ideas here)
