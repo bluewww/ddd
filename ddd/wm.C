@@ -111,7 +111,7 @@ void wm_set_name(Widget shell, string title, string icon)
 // Wait until W is mapped
 void wait_until_mapped(Widget w, Widget shell)
 {
-    XSync(XtDisplay(w), false);
+    XSync(XtDisplay(w), False);
     XmUpdateDisplay(w);
 
     if (shell == 0)
@@ -134,7 +134,7 @@ void wait_until_mapped(Widget w, Widget shell)
 	}
     }
 
-    XSync(XtDisplay(w), false);
+    XSync(XtDisplay(w), False);
     XmUpdateDisplay(w);
 }
 
