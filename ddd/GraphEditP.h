@@ -85,6 +85,9 @@ typedef struct _GraphEditPart {
     Boolean rubberArrows;      // Draw arrows when moving
     Boolean opaqueMove;	       // Draw nodes  when moving
 
+    // Selection stuff
+    Boolean autoRaise;	       // Raise selected nodes?
+
     // Hint stuff
     Boolean showHints;         // Display hints?
 
@@ -171,4 +174,5 @@ typedef struct _GraphEditRec {
     GraphEditPart   graphEdit;
 } GraphEditRec;
 
-#endif
+#endif // _DDD_GraphEditP_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

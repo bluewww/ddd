@@ -48,6 +48,7 @@
 #define XtNshowHints                "showHints"
 #define XtNhintSize                 "hintSize"
 #define XtNopaqueMove               "opaqueMove"
+#define XtNautoRaise                "autoRaise"
 #define XtNgridWidth                "gridWidth"
 #define XtNgridHeight               "gridHeight"
 #define XtNextraWidth               "extraWidth"
@@ -91,6 +92,7 @@
 #define XtCShowHints       "ShowHints"
 #define XtCHintSize        "HintSize"
 #define XtCOpaqueMove      "OpaqueMove"
+#define XtCAutoRaise       "AutoRaise"
 #define XtCGridSize        "GridSize"
 #define XtCExtraSize       "ExtraSize"
 #define XtCShowGrid        "ShowGrid"
@@ -204,4 +206,8 @@ extern void graphEditRedraw(Widget w);
 // Redraw a single node
 extern void graphEditRedrawNode(Widget w, GraphNode *node);
 
-#endif
+// Raise a single node
+extern void graphEditRaiseNode(Widget w, GraphNode *node);
+
+#endif // _DDD_GraphEdit_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

@@ -1,7 +1,7 @@
 // $Id$
 // GraphEdit Widget
 
-// Copyright (C) 1995, 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 // 
 // This file is part of the DDD Library.
@@ -58,6 +58,7 @@ char GraphEdit_rcsid[] =
 #include "VarArray.h"
 #include "layout.h"
 #include "misc.h"
+#include "cook.h"
 
 
 static BoxRegion EVERYWHERE(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX));
@@ -82,14 +83,17 @@ static XtResource resources[] = {
     { XtNmoveDelta, XtCMoveDelta, XtRDimension, sizeof(Dimension),
 	offset(moveDelta), XtRImmediate, XtPointer(4) },
     { XtNrubberEdges, XtCRubberEdges, XtRBoolean, sizeof(Boolean),
-	offset(rubberEdges), XtRImmediate, XtPointer(true) },
+	offset(rubberEdges), XtRImmediate, XtPointer(True) },
     { XtNrubberArrows, XtCRubberEdges, XtRBoolean, sizeof(Boolean),
-	offset(rubberArrows), XtRImmediate, XtPointer(false) },
+	offset(rubberArrows), XtRImmediate, XtPointer(False) },
     { XtNopaqueMove, XtCOpaqueMove, XtRBoolean, sizeof(Boolean),
-	offset(opaqueMove), XtRImmediate, XtPointer(false) },
+	offset(opaqueMove), XtRImmediate, XtPointer(False) },
+
+    { XtNautoRaise, XtCAutoRaise, XtRBoolean, sizeof(Boolean),
+	offset(autoRaise), XtRImmediate, XtPointer(True) },
 
     { XtNshowHints, XtCShowHints, XtRBoolean, sizeof(Boolean),
-	offset(showHints), XtRImmediate, XtPointer(false) },
+	offset(showHints), XtRImmediate, XtPointer(False) },
     { XtNhintSize, XtCHintSize, XtRDimension, sizeof(Dimension),
 	offset(hintSize), XtRImmediate, XtPointer(6) },
 
@@ -99,12 +103,12 @@ static XtResource resources[] = {
 	offset(gridHeight), XtRImmediate, XtPointer(16) },
 
     { XtNshowGrid, XtCShowGrid, XtRBoolean, sizeof(Boolean),
-	offset(showGrid), XtRImmediate, XtPointer(false) },
+	offset(showGrid), XtRImmediate, XtPointer(False) },
     { XtNsnapToGrid, XtCSnapToGrid, XtRBoolean, sizeof(Boolean),
-	offset(snapToGrid), XtRImmediate, XtPointer(false) },
+	offset(snapToGrid), XtRImmediate, XtPointer(False) },
 
     { XtNautoLayout, XtCAutoLayout, XtRBoolean, sizeof(Boolean),
-	offset(autoLayout), XtRImmediate, XtPointer(false) },
+	offset(autoLayout), XtRImmediate, XtPointer(False) },
 
     { XtNrotation, XtCRotation, XtRCardinal, sizeof(Cardinal),
 	offset(rotation), XtRImmediate, XtPointer(0)},
@@ -506,6 +510,8 @@ static void setGrid(Widget w, Boolean reset = false)
 // Redraw all
 void graphEditRedraw(Widget w)
 {
+    XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
+
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->graphEdit.graph;
     const GraphGC& graphGC     = _w->graphEdit.graphGC;
@@ -527,6 +533,8 @@ void graphEditRedraw(Widget w)
 // Redraw a specific region
 void graphEditRedrawNode(Widget w, GraphNode *node)
 {
+    XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
+
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->graphEdit.graph;
     const GraphGC& graphGC     = _w->graphEdit.graphGC;
@@ -1095,6 +1103,8 @@ static void Destroy(Widget)
 // Find node at point
 GraphNode *graphEditGetNodeAtPoint(Widget w, BoxPoint p)
 {
+    XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
+
     const GraphEditWidget _w  = GraphEditWidget(w);
     const Graph* graph        = _w->graphEdit.graph;
     GraphGC& graphGC          = _w->graphEdit.graphGC;
@@ -1517,6 +1527,28 @@ inline bool unselect_graph(Widget w, GraphNode *root)
     return select_graph(w, root, false);
 }
 
+// Raise node NODE such that it is placed on top of all others
+void graphEditRaiseNode(Widget w, GraphNode *node)
+{
+    XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
+
+    const GraphEditWidget _w = GraphEditWidget(w);
+    Graph* graph             = _w->graphEdit.graph;
+
+    // The last node in the list is drawn last (i.e. on top)
+    graph->makeNodeLast(node);
+}
+
+// Same, but only if the autoRaise resource is set
+static void raise_node(Widget w, GraphNode *node)
+{
+    const GraphEditWidget _w = GraphEditWidget(w);
+    bool autoRaise           = _w->graphEdit.autoRaise;
+
+    if (autoRaise)
+	graphEditRaiseNode(w, node);
+}
+
 // Begin selecting or moving
 static void _SelectOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params, SelectionMode mode, bool follow)
@@ -1598,6 +1630,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 		{		
 		    node->selected() = true;
 		    node->draw(w, EVERYWHERE, graphGC);
+		    raise_node(w, node);
 		    changed = true;
 		}
 	    }
@@ -1617,6 +1650,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 		// Toggle single node
 		node->selected() = !node->selected();
 		node->draw(w, EVERYWHERE, graphGC);
+		raise_node(w, node);
 		changed = true;
 	    }
 	    break;
@@ -1941,6 +1975,7 @@ static void select_single_node(Widget w, GraphNode *selectNode)
     {
 	selectNode->selected() = true;
 	changed = true;
+	raise_node(w, selectNode);
     }
 
     if (changed)
@@ -2455,7 +2490,8 @@ static void considerEdges(Widget w, XEvent *, String *params,
     else if (p == "both")
 	themode = Both;
     else
-	cerr << "show-edges(" << themode << "): bad mode \"" << themode << "\"\n";
+	cerr << "show-edges(" << themode << "): bad mode " 
+	     << quote(themode) << "\n";
 
     for (GraphEdge *edge = graph->firstEdge(); edge != 0;
 	edge = graph->nextEdge(edge))
@@ -2464,8 +2500,7 @@ static void considerEdges(Widget w, XEvent *, String *params,
 
 	switch (themode)
 	{
-	    // there should be a better way of coding this,
-	    // but I don't know it...
+	    // There should be a better way of coding this, but I don't know...
 
 	    case From:
 		set = edge->from()->selected();
