@@ -169,7 +169,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     manage_and_raise(dialog);
     wait_until_mapped(dialog);
 
-    StatusDelay delay("Starting Execution Window");
+    StatusDelay delay("Starting execution window");
 
     // Fill in defaults
     ttyname = "";
@@ -251,9 +251,13 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
 
     if (pid < 0)
     {
-	post_error("Could not start execution window", 
-		   "tty_exec_error", origin);
-	delay.outcome = "failed";
+	if (!canceled)
+	{
+	    post_error("The execution window could not be started.", 
+		       "tty_exec_error", origin);
+	}
+
+	delay.outcome = (canceled ? "canceled" : "failed");
     }
 
     // Set icon and group leader
@@ -777,6 +781,8 @@ void startup_exec_tty()
 // Raise execution TTY with command COMMAND.
 void startup_exec_tty(string& command, Widget origin)
 {
+    bool started = false;
+
     if (app_data.separate_exec_window 
 	&& separate_tty_pid >= 0
 	&& gdb->isReadyWithPrompt()
@@ -789,23 +795,26 @@ void startup_exec_tty(string& command, Widget origin)
 			    separate_tty_window,
 			    origin);
 
-	if (separate_tty_pid < 0)
-	    return;
+	if (separate_tty_pid >= 0)
+	{
+	    // Initialize tty
+	    initialize_tty(separate_tty_name, separate_tty_term);
 
-	// Initialize tty
-	initialize_tty(separate_tty_name, separate_tty_term);
+	    // Set title from `starting program...' message
+	    show_starting_line_in_tty = true;
 
-	// Set title from `starting program...' message
-	show_starting_line_in_tty = true;
+	    // Tell GDB to redirect process I/O to this tty
+	    redirect_process(command, separate_tty_name, origin);
 
-	// Tell GDB to redirect process I/O to this tty
-	redirect_process(command, separate_tty_name, origin);
+	    // Reflect setting in options
+	    app_data.separate_exec_window = True;
+	    update_options();
 
-	// Reflect setting in options
-	app_data.separate_exec_window = True;
-	update_options();
+	    started = true;
+	}
     }
-    else
+
+    if (!started)
     {
 	// Close running tty
 	kill_exec_tty();
@@ -853,7 +862,9 @@ void kill_exec_tty()
 	    agent.wait();
 	}
 	else
+	{
 	    kill(separate_tty_pid, SIGHUP);
+	}
     }
 
     separate_tty_pid    = 0;
