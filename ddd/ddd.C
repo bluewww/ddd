@@ -5765,16 +5765,21 @@ static void sync_args(ArgField *source, ArgField *target)
 // Argument filter
 //-----------------------------------------------------------------------------
 
-static bool try_arg(const string& cmd, const string& prefix, string& arg)
+static bool try_arg(const string& cmd, string prefix, string& arg)
 {
-    if (cmd.contains(prefix + " ", 0))
+    if (prefix == "")
+	return false;		// No such command
+    if (!prefix.contains(" ", -1))
+	prefix += " ";
+
+    if (cmd.contains(prefix, 0))
     {
-	arg = cmd.after(prefix + " ");
+	arg = cmd.after(prefix);
 	if (arg.contains("'", 0))
 	    arg = unquote(arg);
 	if (arg.contains(':') || arg.contains("::"))
 	{
-	    // Ignore file:line args
+	    // Ignore FILE:LINE args
 	}
 	else
 	{
@@ -5793,16 +5798,16 @@ static string arg_filter(const string& cmd)
     if (try_arg(cmd, gdb->print_command("", false), arg) ||
 	try_arg(cmd, gdb->display_command(""), arg) ||
 	try_arg(cmd, gdb->whatis_command(""), arg) ||
-	try_arg(cmd, gdb->watch_command("", WATCH_CHANGE), arg) ||
-	try_arg(cmd, gdb->watch_command("", WATCH_READ), arg) ||
-	try_arg(cmd, gdb->watch_command("", WATCH_WRITE), arg) ||
-	try_arg(cmd, gdb->watch_command("", WATCH_ACCESS), arg) ||
 	try_arg(cmd, "info line", arg) ||
 	try_arg(cmd, "break", arg) ||
 	try_arg(cmd, "tbreak", arg) ||
 	try_arg(cmd, "clear", arg) ||
 	try_arg(cmd, "stop in", arg) ||
 	try_arg(cmd, "stop at", arg) ||
+	try_arg(cmd, gdb->watch_command("", WATCH_CHANGE), arg) ||
+	try_arg(cmd, gdb->watch_command("", WATCH_READ), arg) ||
+	try_arg(cmd, gdb->watch_command("", WATCH_WRITE), arg) ||
+	try_arg(cmd, gdb->watch_command("", WATCH_ACCESS), arg) ||
 	try_arg(cmd, "b", arg) ||
 	try_arg(cmd, "ba", arg))
     {
