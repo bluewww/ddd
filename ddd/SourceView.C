@@ -1064,7 +1064,8 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
 	break;
 
     case XDB:
-	break;			// FIXME
+	command = "w 1000000";
+	break;
     }
     string listing = gdb_question(command, -1, true);
 
@@ -1077,14 +1078,23 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
     length = 0;
     while (i < int(listing.length()))
     {
-	while (i < int(listing.length()) && isspace(listing[i]))
+	// Skip leading spaces.  Some debuggers also issue `*' and `='
+	// to indicate the current position.
+	while (i < int(listing.length())
+	       && (isspace(listing[i])
+		   || listing[i] == '=' || listing[i] == '*'))
 	    i++;
 
 	if (isdigit(listing[i]))
 	{
-	    // Skip line number
 	    int count = 0;
+
+	    // Skip line number
 	    while (i < int(listing.length()) && isdigit(listing[i]))
+		i++, count++;
+
+	    // Skip `:' (XDB output)
+	    if (count < 8 && i < int(listing.length()) && listing[i] == ':')
 		i++, count++;
 
 	    // Break at first non-blank character or after 8 characters
@@ -1114,7 +1124,9 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
 		i++;
 
 	    string msg = listing.from(start);
-	    post_gdb_message(msg, source_text_w);
+	    msg = msg.before('\n');
+	    if (!msg.contains("end of file")) // XDB issues this
+		post_gdb_message(msg, source_text_w);
 	}
     }
 
