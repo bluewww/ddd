@@ -395,6 +395,9 @@ Volunteers for these and other projects are welcome!
     and will be a great help to pinpoint troublesome code.
 
 277 Allow in-place editing.  There is already a simple `editSource' resource,
-    but we'd have to do a lot more to realize decent editing capabilities.
+    but we'd have to do a lot more to realize decent editing
+    capabilities.
 
-278 (Insert new project ideas here)
+278 Support GDB `enable once' and `enable delete' commands.
+
+279 (Insert new project ideas here)
