@@ -780,8 +780,8 @@ the item's functions are explained here.\n\
 Click on @bf Close @rm to close the help window.
 
 ! DDD manual.
-Ddd*manual_help.area.orientation:                 XmHORIZONTAL
-Ddd*manual_help*index.selectionPolicy:            XmSINGLE_SELECT
+Ddd*manual_help.area.orientation:       XmHORIZONTAL
+Ddd*manual_help*index.selectionPolicy:  XmSINGLE_SELECT
 
 Ddd*manual_help*text.columns:           72
 Ddd*manual_help*text.rows:              25
@@ -793,6 +793,7 @@ Ddd*manual_help*contextHelpString: \
 Select titles from the index on the left to get help on a specific item.
 
 ! The official announcement.
+! Build information (from `USERINFO') is appended to this text.
 Ddd.contextHelpString:	\
 @Logo @DDD@@logo, \
 the @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
@@ -813,7 +814,8 @@ If you appreciate this software, please send a picture postcard to:\n\
     @sl GERMANY @rm\n\
 \n\
 Send bug reports to `@tt ddd-bugs@ ips.cs.tu-bs.de@rm'\n\
-Send comments and suggestions to `@tt ddd@ ips.cs.tu-bs.de@rm'
+Send comments and suggestions to `@tt ddd@ ips.cs.tu-bs.de@rm'\n\
+\n
 
 ! The default Help Text.
 Ddd*contextHelpString:	\
@@ -1332,7 +1334,6 @@ Ddd*menubar.help*contextHelpString: \
 @tt \267 @bf On Window... @rm - help on the application itself.\n\
 @tt \267 @bf On Help... @rm - help on how to use the help facility.\n\
 @tt \267 @bf On Version... @rm - some general information about @DDD@.\n\
-@tt \267 @bf On Debugging... @rm - some general information about debugging.\n\
 \n\
 @tt \267 @bf @DDD@ WWW Page... @rm - the @DDD@ WWW page.\
 \n\
@@ -1352,9 +1353,6 @@ Ddd*helpMenu.onHelp.mnemonic:		H
 
 Ddd*helpMenu.onVersion.labelString:	On Version...
 Ddd*helpMenu.onVersion.mnemonic:	V
-
-Ddd*helpMenu.onDebugging.labelString:	On Debugging...
-Ddd*helpMenu.onDebugging.mnemonic:	D
 
 Ddd*helpMenu.www.labelString:		@DDD@ WWW Page...
 Ddd*helpMenu.www.mnemonic:		P
@@ -1621,20 +1619,18 @@ The lower area shows the machine code.
 ! Source Text Popup Menus
 !-----------------------------------------------------------------------------
 
-Ddd*line_popup.set.labelString:		Set Breakpoint
-Ddd*line_popup.set_temp.labelString:	Set Temporary Breakpoint
-Ddd*line_popup.temp_n_cont.labelString:	Continue Until Here
+Ddd*line_popup.set.labelString:			Set Breakpoint
+Ddd*line_popup.set_temp.labelString:		Set Temporary Breakpoint
+Ddd*line_popup.temp_n_cont.labelString:		Continue Until Here
 
-Ddd*bp_popup.disable.labelString:	Disable Breakpoint
-Ddd*bp_popup.condition.labelString:	Set Condition
-Ddd*bp_popup.ignore_count.labelString:	Set Ignore Count
-Ddd*bp_popup.delete.labelString:	Delete Breakpoint
+Ddd*address_popup.set.labelString:		Set Breakpoint
+Ddd*address_popup.set_temp.labelString:		Set Temporary Breakpoint
+Ddd*address_popup.temp_n_cont.labelString:	Continue Until Here
 
-Ddd*text_popup.print.labelString:	Print
-Ddd*text_popup.disp.labelString:	Display
-Ddd*text_popup.lookup.labelString:	Lookup
-Ddd*text_popup.break.labelString:	Break
-Ddd*text_popup.clear.labelString:	Clear
+Ddd*bp_popup.disable.labelString:		Disable Breakpoint
+Ddd*bp_popup.condition.labelString:		Set Condition
+Ddd*bp_popup.ignore_count.labelString:		Set Ignore Count
+Ddd*bp_popup.delete.labelString:		Delete Breakpoint
 
 
 !-----------------------------------------------------------------------------
@@ -1671,11 +1667,13 @@ Lookup a line, file, function, variable, or breakpoint.\n\
 @tt \267 @rm If the argument @bf () @rm is empty, \
 show the current execution position.\n\
 @tt \267 @rm If @bf () @rm contains a number, \
-lookup that line in the current source.\n\
+lookup that line number in the current source.\n\
 @tt \267 @rm If @bf () @rm contains @sl FILENAME@tt:@sl LINE@rm, lookup\n\
     line number @sl LINE @rm in the source file @sl FILENAME@rm.\n\
 @tt \267 @rm If @bf () @rm contains @tt #@sl NUMBER@rm, lookup\n\
     breakpoint number @sl NUMBER@rm.\n\
+@tt \267 @rm If @bf () @rm contains an address, \
+lookup that address.\n\
 @tt \267 @rm If @bf () @rm contains a function or variable name, lookup\n\
     the definition of that function or variable.
 
@@ -2502,41 +2500,6 @@ Run `@tt ddd --configuration@rm' to get it.\n\
 See also the section ``Reporting Bugs'' in the @DDD@ manual.\n\
 \n\
 We thank you for your support.
-
-Ddd*debugging_poem.title: @DDD@: Fixing Some Bugs on a Sunday Evening
-Ddd*debugging_poem.okLabelString: Close
-Ddd*debugging_poem.helpLabelString: Info
-Ddd*debugging_poem.messageString: \
-@Logo F@logo ixing @Logo S@logo ome @Logo B@logo ugs \
-on a @Logo S@logo unday @Logo E@logo vening\n\
-\n\
-@rm Whose bugs these are I think I know,\n\
-But now he works at 3DO;\n\
-He will not see me working here\n\
-To fix his code and make it go.\n\
-\n\
-The saner folk must think it queer\n\
-To trace without the source code near\n\
-After a launch and frozen mouse\n\
-The weirdest stack crawl of the year.\n\
-\n\
-I give my nodding head a shake\n\
-To see if I can stay awake\n\
-The only other thing to do\n\
-Is find some more coffeine to take.\n\
-\n\
-This bug is pretty hard to nip,\n\
-But I have other ones to fix,\n\
-And tons to go before we ship,\n\
-And tons to go before we ship.
-
-Ddd*debugging_poem*contextHelpString: \
-@rm Written by David A. Lyons (dlyons@ apple.com), January 1994\n\
-(with apologies to Robert Frost)\n\
-\n\
-Hey, it's fiction.  Close to reality in spirit,\n\
-but does not refer to a specific project, bug, Sunday,\n\
-or brand of soft drink.
 
 Ddd*dungeon_collapse_error_popup.title: @DDD@: Dungeon Kaputt
 Ddd*dungeon_collapse_error*contextHelpString:	\
