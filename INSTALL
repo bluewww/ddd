@@ -25,7 +25,7 @@ To build a complete DDD from sources, you need:
      LessTif release is available via `http://www.lesstif.org/'.
 
    * The X window library (Xlib) and X toolkit library (Xt), X11R4 or
-     later.  Best results are obtained with X11R6.3.
+     later.  Best results are obtained with X11R6.3 and later.
 
    * A `make' program.  GNU make is recommended.
 
@@ -86,7 +86,7 @@ The following recommended helper applications should be in the user path:
    * An X terminal emulator program (`xterm' or likewise).  DDD needs
      this for running programs in the separate execution window.
 
-   * The GNU `info' program as well as well as various info files.
+   * The GNU `info' program as well as various info files.
 
      - `info -f gdb' should show the GDB Manual.  DDD uses this to
        display the GDB Reference.
@@ -416,7 +416,7 @@ versions.  To disable the builtin application defaults file, use the
 
 You can configure DDD such that the DDD manual will not be compiled
 into the DDD executable.  This reduces the size of the DDD executable
-by about 60k.  `Help->DDD Reference' will then invoke `man ddd' to get
+by about 80k.  `Help->DDD Reference' will then invoke `man ddd' to get
 the DDD manual.  Note that this only works well if you use GNU `groff'
 to format your manual pages.  To disable the builtin DDD manual, use
 the `configure' option `--disable-builtin-manual'.

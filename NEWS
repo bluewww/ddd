@@ -1,8 +1,8 @@
 DDD News						-*- text -*-
 ********
 
-DDD 3.1 [in development]
-========================
+DDD 3.1 [in beta test]
+======================
 
 DDD 3.1 brings Perl support, Python support, data plotting, Undo/Redo,
 and advanced data exploration.
@@ -42,7 +42,7 @@ Plotting
 
 - Array plots.  You can plot one- and two-dimensional numeric arrays
   via the `Plot' button.  This gives a totally new meaning to `data
-  display debugger'.  Requires Gnuplot.
+  display debugger'.  Requires Gnuplot 3.5 or later.
 
 - History plots.  You can plot the history of a numerical variable,
   i.e. the sequence of previous values.
@@ -50,8 +50,8 @@ Plotting
 - Plots can be animated, visualizing algorithm effects.
 
 
-Undoing commands
-----------------
+Undo/Redo
+---------
 
 - All commands affecting debugger state (breakpoint settings,
   displays, debugger settings) can be undone and redone, using

@@ -86,6 +86,8 @@ void show_invocation(const string& gdb_command, ostream& os)
     if (!type_ok)
 	type = GDB;
 
+    string args = "executable-file [core-file | process-id]";
+
     switch (type)
     {
     case GDB:
@@ -149,6 +151,7 @@ void show_invocation(const string& gdb_command, ostream& os)
 	title = "JDB";
 	base  = "JDB, the Java debugger.";
 	options = "  [JDB options]      Pass option to JDB.\n";
+	args = "[class]";
     }
     break;
 
@@ -157,6 +160,7 @@ void show_invocation(const string& gdb_command, ostream& os)
 	title = "PYDB";
 	base  = "PYDB, the Python debugger.";
 	options = "  [PYDB options]     Pass option to PYDB.\n";
+	args = "program-file";
     }
     break;
 
@@ -165,6 +169,7 @@ void show_invocation(const string& gdb_command, ostream& os)
 	title = "Perl";
 	base  = "the Perl debugger.";
 	options = "  [Perl options]     Pass option to Perl.\n";
+	args = "program-file [args]";
     }
     break;
 
@@ -232,12 +237,11 @@ void show_invocation(const string& gdb_command, ostream& os)
 	"This is " DDD_NAME ", the data display debugger, based on "
 	<< base << "\n" << 
 	"Usage:\n"
-	"    " ddd_NAME " [options...]"
-	" executable-file [core-file or process-id]]\n"
+	"    " ddd_NAME " [options...] " << args << "\n"
 	"Options:\n"
 	<< options <<
-	"  --dbx              Invoke DBX as inferior debugger.\n"
 	"  --gdb              Invoke GDB as inferior debugger.\n"
+	"  --dbx              Invoke DBX as inferior debugger.\n"
 	"  --xdb              Invoke XDB as inferior debugger.\n"
 	"  --jdb              Invoke JDB as inferior debugger.\n"
 	"  --pydb             Invoke PYDB as inferior debugger.\n"

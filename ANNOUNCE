@@ -1,7 +1,7 @@
-DDD 3.0 is available					-*- text -*-
+DDD 3.1 is available					-*- text -*-
 ====================
 
-Release 3.0 of the Data Display Debugger (DDD), the popular graphical
+Release 3.1 of the Data Display Debugger (DDD), the popular graphical
 front-end for UNIX debuggers, is now available at
 
     ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
@@ -13,9 +13,8 @@ Please try a closer FTP site first; see below for a list.
 What's new in DDD?
 ------------------
 
-DDD 3.0 brings a new `clean' look, Java support, JDB support,
-breakpoint commands, watchpoints, a further improved help system, and
-several more new features and bug fixes.
+DDD 3.1 brings Perl support, Python support, data plotting, Undo/Redo,
+advanced data exploration, and several more new features and bug fixes.
 
 For details, see the local NEWS file or the DDD WWW page at
 
@@ -25,11 +24,12 @@ For details, see the local NEWS file or the DDD WWW page at
 What do I need to build DDD?
 ----------------------------
 
-Ideally, nothing - Binaries of DDD 3.0 for several architectures are
+Ideally, nothing - Binaries of DDD 3.1 for several architectures are
 available at the DDD FTP sites.
 
-To build DDD from sources, you need Motif - either LessTif (>= 0.83)
-or OSF/Motif (>= 1.2) - and a C++ compiler, preferably GCC (>= 2.7.2).
+To build DDD from sources, you need:
+* Motif.  Either LessTif 0.83 or later or OSF/Motif 1.2 or later.
+* A C++ compiler.  Preferably GCC 2.7.2 or later.
 
 For details, see the local INSTALL file or the DDD WWW page at
 
