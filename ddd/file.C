@@ -62,6 +62,7 @@ char file_rcsid[] =
 #include "strclass.h"
 #include "status.h"
 #include "string-fun.h"
+#include "uniquify.h"
 #include "verify.h"
 #include "wm.h"
 
@@ -1127,15 +1128,16 @@ static void warn_if_no_program(Widget popdown)
 }
 
 
+
 //-----------------------------------------------------------------------------
-// Classes (JDB only)
+// Helpers for class and source selection
 //-----------------------------------------------------------------------------
 
-// Get the selected class ids
-static void get_classes(Widget selectionList, StringArray& classids)
+// Get the selected item ids
+static void get_items(Widget selectionList, StringArray& itemids)
 {
     static StringArray empty;
-    classids = empty;
+    itemids = empty;
 
     XmStringTable selected_items;
     int selected_items_count = 0;
@@ -1154,23 +1156,28 @@ static void get_classes(Widget selectionList, StringArray& classids)
 	string item(_item);
 	XtFree(_item);
 
-	classids += item;
+	itemids += item;
     }
 }
 
-// Get the class from the selection list in CLIENT_DATA
-static string get_class(Widget, XtPointer client_data, XtPointer)
+// Get the item from the selection list in CLIENT_DATA
+static string get_item(Widget, XtPointer client_data, XtPointer)
 {
-    StringArray classids;
-    Widget classes = Widget(client_data);
-    if (classes != 0)
-	get_classes(classes, classids);
+    StringArray itemids;
+    Widget itemes = Widget(client_data);
+    if (itemes != 0)
+	get_items(itemes, itemids);
 
-    if (classids.size() == 1)
-	return classids[0];
+    if (itemids.size() == 1)
+	return itemids[0];
 
     return "";
 }
+
+
+//-----------------------------------------------------------------------------
+// Classes (JDB only)
+//-----------------------------------------------------------------------------
 
 // Select a class
 static void SelectClassCB(Widget w, XtPointer client_data, 
@@ -1180,7 +1187,7 @@ static void SelectClassCB(Widget w, XtPointer client_data,
     int pos = cbs->item_position;
     ListSetAndSelectPos(w, pos);
 
-    string cls = get_class(w, client_data, call_data);
+    string cls = get_item(w, client_data, call_data);
     if (cls == "")
 	set_status("");
     else
@@ -1214,7 +1221,7 @@ static void gdbUpdateClassesCB(Widget, XtPointer client_data, XtPointer)
 static void openClassDone(Widget w, XtPointer client_data, 
 			  XtPointer call_data)
 {
-    string cls = get_class(w, client_data, call_data);
+    string cls = get_item(w, client_data, call_data);
     if (cls == "")
     {
 	gdbUpdateClassesCB(w, client_data, call_data);	
@@ -1224,6 +1231,111 @@ static void openClassDone(Widget w, XtPointer client_data,
     XtUnmanageChild(w);
 
     gdb_command(gdb->debug_command(cls));
+}
+
+
+//-----------------------------------------------------------------------------
+// Lookup sources and functions (GDB only)
+//-----------------------------------------------------------------------------
+
+static StringArray all_sources;
+
+// Select a source; show the full path name in the status line
+static void SelectSourceCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
+    int pos = cbs->item_position;
+    ListSetAndSelectPos(w, pos);
+
+    pos--;
+    if (pos < 0)
+	pos = all_sources.size() - 1;
+    set_status(all_sources[pos]);
+}
+
+// Get list of sources into SOURCES_LIST
+void get_gdb_sources(StringArray& sources_list)
+{
+    static StringArray empty;
+    sources_list = empty;
+
+    string ans = gdb_question("info sources");
+    if (ans != NO_GDB_ANSWER)
+    {
+	// Create a newline-separated list of sources
+	string new_ans;
+	while (ans != "")
+	{
+	    string line = ans.before('\n');
+	    ans = ans.after('\n');
+
+	    if (line == "" || line.contains(':', -1))
+		continue;
+
+	    line.gsub(", ", "\n");
+	    new_ans += line + '\n';
+	}
+
+	ans = new_ans;
+	while (ans != "")
+	{
+	    string line = ans.before('\n');
+	    ans = ans.after('\n');
+	    
+	    sources_list += line;
+	}
+
+	smart_sort(sources_list);
+	uniq(sources_list);
+    }
+}
+
+static void update_sources(Widget sources)
+{
+    StatusDelay delay("Getting sources");
+    get_gdb_sources(all_sources);
+
+    StringArray labels;
+    uniquify(all_sources, labels);
+
+    // Now set the selection.
+    bool *selected = new bool[labels.size()];
+    for (int i = 0; i < labels.size(); i++)
+	selected[i] = false;
+
+    setLabelList(sources, labels.values(),
+		 selected, labels.size(), false, false);
+
+    delete[] selected;
+}
+
+static void gdbUpdateSourcesCB(Widget, XtPointer client_data, XtPointer)
+{
+    Widget sources = Widget(client_data);
+    update_sources(sources);
+}
+
+// OK pressed in `Lookup Source'
+static void lookupSourceDone(Widget w, XtPointer client_data, XtPointer)
+{
+    Widget sources = Widget(client_data);
+    int *position_list;
+    int position_count;
+    if (XmListGetSelectedPos(sources, &position_list, &position_count))
+    {
+	if (position_count == 1)
+	{
+	    int pos = position_list[0];
+	    pos--;
+	    if (pos < 0)
+		pos = all_sources.size() - 1;
+
+	    XtUnmanageChild(w);
+	    source_view->lookup(all_sources[pos] + ":1");
+	}
+
+	XtFree((char *)position_list);
+    }
 }
 
 
@@ -1376,6 +1488,58 @@ void gdbOpenClassCB(Widget w, XtPointer, XtPointer)
 
     update_classes(classes);
     manage_and_raise(dialog);
+}
+
+void gdbLookupSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    if (gdb->type() != GDB)
+    {
+	gdbOpenSourceCB(w, client_data, call_data);
+	return;
+    }
+
+    static Widget dialog = 0;
+    static Widget sources = 0;
+
+    if (dialog == 0)
+    {
+	Arg args[10];
+	int arg = 0;
+    
+	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
+	dialog = verify(XmCreateSelectionDialog(find_shell(w), 
+						"sources", args, arg));
+
+	Delay::register_shell(dialog);
+
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
+					       XmDIALOG_SELECTION_LABEL));
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
+					       XmDIALOG_TEXT));
+
+	sources = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
+
+	XtAddCallback(sources, XmNsingleSelectionCallback,
+		      SelectSourceCB, XtPointer(sources));
+	XtAddCallback(sources, XmNmultipleSelectionCallback,
+		      SelectSourceCB, XtPointer(sources));
+	XtAddCallback(sources, XmNextendedSelectionCallback,
+		      SelectSourceCB, XtPointer(sources));
+	XtAddCallback(sources, XmNbrowseSelectionCallback,
+		      SelectSourceCB, XtPointer(sources));
+
+	XtAddCallback(dialog, XmNokCallback, 
+		      lookupSourceDone, XtPointer(sources));
+	XtAddCallback(dialog, XmNapplyCallback, 
+		      gdbUpdateSourcesCB, XtPointer(sources));
+	XtAddCallback(dialog, XmNcancelCallback, 
+		      UnmanageThisCB, XtPointer(dialog));
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+    }
+
+    update_sources(sources);
+    manage_and_raise(dialog);
+    warn_if_no_program(dialog);
 }
 
 // Synchronize file dialogs with current directory

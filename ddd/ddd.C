@@ -648,7 +648,7 @@ struct FileItems {
     { "open_class",    MMPush | MMUnmanaged, { WhenReady, gdbOpenClassCB }}, \
     { "recent",        MMMenu, MMNoCB, recent_menu }, \
     { "open_core",     MMPush, { WhenReady, gdbOpenCoreCB }}, \
-    { "open_source",   MMPush, { gdbOpenSourceCB }}, \
+    { "open_source",   MMPush, { gdbLookupSourceCB }}, \
     MMSep, \
     { "open_session",  MMPush, { WhenReady, OpenSessionCB }}, \
     { "save_session",  MMPush, { WhenReady, SaveSessionAsCB }}, \

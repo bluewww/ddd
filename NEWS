@@ -81,6 +81,9 @@ Source exploration
 - Entering `list X' at the debugger prompt shows X in the source
   window.
 
+- Using GDB, `File->Open Source' now lists the available source files
+  for the debuggee, rather than scanning the file system for sources.
+
 - DDD no longer indents the source code, leaving more horizontal
   space.  See `Edit->Preferences->Source->Source indentation'.
 

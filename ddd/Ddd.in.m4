@@ -4705,7 +4705,7 @@ Ddd*source_files*helpString:    \
 The source file is shown in the source window and may be used\n\
 for setting or clearing breakpoints.\n\
 \n\
-Before using LBL(Open Core), you should use LBL(File, Open Program)\n\
+Before using LBL(Open Source), you should use LBL(File, Open Program)\n\
 to specify the executable program, and to load its symbol table.\n\
 \n\
 Click on LBL(Open) to open the selected source file.\n\
@@ -4756,6 +4756,22 @@ and add their directories to the class path.\n\
 Click on LBL(Open) to open the selected class.\n\
 Click on LBL(Update) to scan the class path once more.
 
+
+Ddd*sources_popup.title: 		DDD: Open Source
+Ddd*sources.listLabelString:		Sources
+Ddd*sources.selectionLabelString: 	Open Source
+Ddd*sources*selectionPolicy:		XmSINGLE_SELECT
+Ddd*sources*okLabelString:	 	Open
+Ddd*sources*applyLabelString:	 	Update
+Ddd*sources*helpString:	\
+@rm Please select a source to be opened.\n\
+\n\
+These are the accessible source files of your program.\n\
+To search for other sources, select LBL(Edit, @GDB@ Settings)\n\
+and add their directories to the source path.\n\
+\n\
+Click on LBL(Open) to open the selected source.\n\
+Click on LBL(Update) to update the list of sources.
 
 
 Ddd*sessions_to_open_popup.title: 		DDD: Open Session

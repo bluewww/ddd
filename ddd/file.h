@@ -35,14 +35,19 @@
 
 #include <X11/Intrinsic.h>
 #include "strclass.h"
+#include "StringA.h"
 
 // Open file, process, core, source ...
-extern void gdbOpenFileCB   (Widget, XtPointer, XtPointer);
-extern void gdbOpenRecentCB (Widget, XtPointer, XtPointer);
-extern void gdbOpenClassCB  (Widget, XtPointer, XtPointer);
-extern void gdbOpenProcessCB(Widget, XtPointer, XtPointer);
-extern void gdbOpenCoreCB   (Widget, XtPointer, XtPointer);
-extern void gdbOpenSourceCB (Widget, XtPointer, XtPointer);
+extern void gdbOpenFileCB     (Widget, XtPointer, XtPointer);
+extern void gdbOpenRecentCB   (Widget, XtPointer, XtPointer);
+extern void gdbOpenClassCB    (Widget, XtPointer, XtPointer);
+extern void gdbOpenProcessCB  (Widget, XtPointer, XtPointer);
+extern void gdbOpenCoreCB     (Widget, XtPointer, XtPointer);
+extern void gdbOpenSourceCB   (Widget, XtPointer, XtPointer);
+extern void gdbLookupSourceCB (Widget, XtPointer, XtPointer);
+
+// Get all sources from GDB
+void get_gdb_sources(StringArray& sources_list);
 
 // When entering `cd', change path in file selection boxes
 extern void process_cd(string pwd);
