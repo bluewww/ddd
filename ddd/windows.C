@@ -33,6 +33,9 @@ char windows_rcsid[] =
 #pragma implementation
 #endif
 
+#define LOG_GEOMETRY 0
+#define LOG_EVENTS   0
+
 #include "windows.h"
 
 #include "AppData.h"
@@ -54,6 +57,8 @@ char windows_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>
 #include <Xm/PanedW.h>
+#include <Xm/MainW.h>
+#include <Xm/ScrollBar.h>
 #if XmVersion >= 1002
 #include <Xm/VendorS.h>		// XmIsMotifWMRunning()
 #else
@@ -478,13 +483,17 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
     else if (w == tool_shell)
 	synthetic = (tool_shell_state == Transient);
 
-    // if (synthetic)
-    //    clog << "synthetic event: ";
+#if LOG_EVENTS
+    if (synthetic)
+	clog << "synthetic event: ";
+#endif
 
     switch (event->type)
     {
     case MapNotify:
-	// clog << XtName(w) << " is mapped\n";
+#if LOG_EVENTS
+	clog << XtName(w) << " is mapped\n";
+#endif
 
 	// Reflect state
 	if (w == command_shell)
@@ -542,7 +551,9 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	break;
 
     case UnmapNotify:
-	// clog << XtName(w) << " is unmapped\n";
+#if LOG_EVENTS
+	clog << XtName(w) << " is unmapped\n";
+#endif
 
 	// Reflect state
 	if (w == command_shell
@@ -659,7 +670,9 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    if (w == tool_shell)
 	    {
 		// Command tool has been moved
-		// clog << "Tool has been moved to " << point(event) << "\n";
+#if LOG_EVENTS
+		clog << "Tool has been moved to " << point(event) << "\n";
+#endif
 
 		// Record offset
 		get_tool_offset(0, last_top_offset, last_right_offset);
@@ -669,7 +682,9 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 		w == command_shell && source_view_shell == 0)
 	    {
 		// Source shell has been moved -- let command tool follow
-		// clog << "Shell has been moved to " << point(event) << "\n";
+#if LOG_EVENTS
+		clog << "Shell has been moved to " << point(event) << "\n";
+#endif
 
 		follow_tool_shell();
 	    }
@@ -705,7 +720,7 @@ int running_shells()
 
 
 // Generic close callback
-void DDDCloseCB(Widget w, XtPointer, XtPointer)
+void DDDCloseCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     if (running_shells() == 1)
     {
@@ -714,7 +729,17 @@ void DDDCloseCB(Widget w, XtPointer, XtPointer)
     }
 
     Widget shell = findTopLevelShellParent(w);
-    popdown_shell(shell);
+
+    if (shell == command_shell)
+	gdbCloseCommandWindowCB(w, client_data, call_data);
+    else if (shell == data_disp_shell)
+	gdbCloseDataWindowCB(w, client_data, call_data);
+    else if (shell == source_view_shell)
+	gdbCloseSourceWindowCB(w, client_data, call_data);
+    else if (shell == tool_shell)
+	gdbCloseToolWindowCB(w, client_data, call_data);
+    else
+	popdown_shell(shell);
 }
 
 
@@ -1285,6 +1310,10 @@ void manage_paned_child(Widget w)
 	return;
     }
 
+#if LOG_GEOMETRY
+    clog << XtName(paned) << ": managing child " << XtName(w) << "\n";
+#endif
+
     // Fetch children
     WidgetList children;
     Cardinal numChildren = 0;
@@ -1307,8 +1336,11 @@ void manage_paned_child(Widget w)
 		      XmNpaneMaximum, &size.max,
 		      NULL);
 
-	// clog << XtName(child) 
-	//      << " min = " << size.min << ", max = " << size.max << '\n';
+#if LOG_GEOMETRY
+	clog << XtName(paned) << ": child " << XtName(child) 
+	     << " is managed (min = " << size.min 
+	     << ", max = " << size.max << ")\n";
+#endif
     }
 
     assert(sizes.has(w));
@@ -1346,14 +1378,17 @@ void manage_paned_child(Widget w)
 		current_max = preferred_size.max;
 	    }
 
-	    // clog << XtName(child) 
-	    //      << " preferred = " << preferred_size.max << '\n';
+#if LOG_GEOMETRY
+	    clog << XtName(paned) << ": child " << XtName(child) 
+	         << " has preferred height " << preferred_size.max << '\n';
+#endif
 	}
 
 	// Make each child (including W) at least MIN_PANED_SIZE high
-	if (MIN_PANED_SIZE > size.min && MIN_PANED_SIZE <= current_max)
+	if (MIN_PANED_SIZE > size.min)
 	{
-	    XtSetArg(args[arg], XmNpaneMinimum, MIN_PANED_SIZE); arg++;
+	    XtSetArg(args[arg], XmNpaneMinimum,
+		     min(MIN_PANED_SIZE, current_max)); arg++;
 	}
 
 	if (arg > 0)
@@ -1422,8 +1457,8 @@ static int resizable_children(Widget paned)
     return n;
 }
 
-    
-// Unamanage W, but be sure the command window doesn't grow.
+
+// Unmanage W, but be sure the command window doesn't grow.
 void unmanage_paned_child(Widget w)
 {
     Widget paned = XtParent(w);
@@ -1432,6 +1467,10 @@ void unmanage_paned_child(Widget w)
 	XtUnmanageChild(w);
 	return;
     }
+
+#if LOG_GEOMETRY
+    clog << XtName(paned) << ": unmanaging child " << XtName(w) << "\n";
+#endif
 
     Widget command = XtParent(gdb_w);
 
@@ -1467,6 +1506,161 @@ void unmanage_paned_child(Widget w)
 }
 
 
+// Set the width of PANED to the maximum width of its children
+
+// Fetch the maximum width.  Do this for each paned window.
+void get_paned_window_width(Widget paned, Dimension& max_width)
+{
+    if (paned == 0 || !XtIsSubclass(paned, xmPanedWindowWidgetClass))
+	return;
+
+    WidgetList children   = 0;
+    Cardinal num_children = 0;
+
+    XtVaGetValues(paned,
+		  XtNchildren, &children,
+		  XtNnumChildren, &num_children,
+		  NULL);
+
+    for (Cardinal i = 0; i < num_children; i++)
+    {
+	Widget child = children[i];
+	if (is_internal_paned_child(child) || !XtIsManaged(child))
+	    continue;
+
+	// Fetch preferred width
+	XtWidgetGeometry size;
+	size.request_mode = CWWidth;
+	XtQueryGeometry(child, NULL, &size);
+
+#if LOG_GEOMETRY
+	clog << XtName(paned) << ": child " << XtName(child)
+	     << " wants width " << size.width << "\n";
+#endif
+
+	max_width = max(size.width, max_width);
+    }
+}
+
+// Set the found value.
+void set_paned_window_size(Widget paned, Dimension max_width)
+{
+    if (paned == 0 || !XtIsSubclass(paned, xmPanedWindowWidgetClass))
+	return;
+
+    XtVaSetValues(paned, XmNwidth, max_width, NULL);
+
+    WidgetList children     = 0;
+    Cardinal num_children   = 0;
+    Dimension spacing       = 8;
+    Dimension margin_width  = 3;
+    Dimension margin_height = 3;
+
+    XtVaGetValues(paned,
+		  XtNchildren, &children,
+		  XtNnumChildren, &num_children,
+		  XmNspacing, &spacing,
+		  XmNmarginWidth, &margin_width,
+		  XmNmarginHeight, &margin_height,
+		  NULL);
+
+    Dimension total_height = 0;
+    int managed_children = 0;
+    for (Cardinal i = 0; i < num_children; i++)
+    {
+	Widget child = children[i];
+	if (is_internal_paned_child(child))
+	    continue;
+
+	// Fetch preferred width
+	Dimension width  = 0;
+	Dimension height = 0;
+	XtVaGetValues(child, XmNwidth, &width, XmNheight, &height, NULL);
+
+	{
+	    XtWidgetGeometry size;
+	    size.request_mode = CWWidth | CWHeight;
+	    XtQueryGeometry(child, NULL, &size);
+
+	    width  = max(width, size.width);
+	    height = max(height, size.height);
+	}
+
+#if LOG_GEOMETRY
+	clog << XtName(paned) << ": child " << XtName(child) 
+	     << " wants height " << height << "\n";
+#endif
+
+	if (managed_children > 0)
+	    total_height += spacing;
+
+	total_height += height;
+	managed_children++;
+    }
+
+    XtVaSetValues(paned,
+		  XmNwidth, max_width + 2 * margin_width,
+		  XmNheight, total_height + 2 * margin_height,
+		  NULL);
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Main Window stuff
+//-----------------------------------------------------------------------------
+
+// Set main window size
+void set_main_window_size(Widget main)
+{
+    if (main == 0 || !XtIsSubclass(main, xmMainWindowWidgetClass))
+	return;
+
+    WidgetList children   = 0;
+    Cardinal num_children = 0;
+
+    XtVaGetValues(main,
+		  XtNchildren, &children,
+		  XtNnumChildren, &num_children,
+		  NULL);
+
+    Dimension max_width    = 0;
+    Dimension total_height = 0;
+    for (Cardinal i = 0; i < num_children; i++)
+    {
+	Widget child = children[i];
+	if (is_internal_paned_child(child))
+	    continue;
+	if (XmIsScrollBar(child))
+	    continue;
+
+	// Fetch sizes
+	Dimension width  = 0;
+	Dimension height = 0;
+	XtVaGetValues(child, XmNwidth, &width, XmNheight, &height, NULL);
+
+	{
+	    XtWidgetGeometry size;
+	    size.request_mode = CWWidth | CWHeight;
+	    XtQueryGeometry(child, NULL, &size);
+
+	    width  = max(width, size.width);
+	    height = max(height, size.height);
+	}
+
+#if LOG_GEOMETRY
+	clog << XtName(main) << ": child " << XtName(child) << " wants " 
+	     << BoxSize(width, height) << "\n";
+#endif
+
+	max_width = max(width, max_width);
+	total_height += height;
+    }
+
+    XtVaSetValues(main, XmNwidth, max_width, XmNheight, total_height, NULL);
+}
+
+
 //-----------------------------------------------------------------------------
 // Scrolled Window stuff
 //-----------------------------------------------------------------------------
@@ -1481,11 +1675,16 @@ void set_scrolled_window_size(Widget child, Widget target)
     Dimension scrollbar_width = 15;   // Additional space for scrollbar
 
     Widget vertical_scroll_bar = 0;
-    Dimension spacing = 4;
+    Dimension spacing          = 4;
+    Dimension margin_width     = 2;
+    Dimension margin_height    = 2;
     XtVaGetValues(scroll, 
 		  XmNverticalScrollBar, &vertical_scroll_bar,
 		  XmNspacing, &spacing,
+		  XmNmarginWidth, &margin_width,
+		  XmNmarginHeight, &margin_height,
 		  NULL);
+
     if (vertical_scroll_bar != 0)
     {
 	XtWidgetGeometry size;
@@ -1502,8 +1701,29 @@ void set_scrolled_window_size(Widget child, Widget target)
     if (target == 0)
 	target = scroll;
 
-    XtVaSetValues(target,
-		  XmNwidth,  size.width + spacing + scrollbar_width,
-		  XmNheight, size.height,
+#if LOG_GEOMETRY
+    clog << XtName(target) << ": child " << XtName(child) << " wants " 
+	 << BoxSize(size.width, size.height) << "\n";
+#endif
+
+    Dimension border_width     = 1;
+    Dimension shadow_thickness = 2;
+    XtVaGetValues(child,
+		  XmNborderWidth, &border_width,
+		  XmNshadowThickness, &shadow_thickness,
 		  NULL);
+
+    Dimension width = size.width +
+	border_width * 2 +
+	// shadow_thickness * 2 +
+	spacing +
+	scrollbar_width +
+	margin_width * 2;
+
+    Dimension height = size.height +
+	border_width * 2 +
+	// shadow_thickness * 2 +
+	margin_height * 2;
+
+    XtVaSetValues(target, XmNwidth,  width, XmNheight, height, NULL);
 }

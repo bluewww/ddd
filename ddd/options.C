@@ -1395,7 +1395,7 @@ static string widget_value(Widget w, String name)
     return string_app_value(string(XtName(w)) + "." + name, value);
 }
 
-static string widget_size(Widget w)
+static string widget_size(Widget w, bool height_only = false)
 {
     string s;
 
@@ -1404,9 +1404,10 @@ static string widget_size(Widget w)
 	// Store rows and columns
 	short columns = 0;
 	XtVaGetValues(w, XmNcolumns, &columns, NULL);
-	if (columns > 0)
+	if (!height_only && columns > 0)
 	{
-	    s += '\n';
+	    if (s != "")
+		s += '\n';
 	    s += int_app_value(string(XtName(w)) + "." + XmNcolumns, columns);
 	}
 
@@ -1416,7 +1417,8 @@ static string widget_size(Widget w)
 	    XtVaGetValues(w, XmNrows, &rows, NULL);
 	    if (rows > 0)
 	    {
-		s += '\n';
+		if (s != "")
+		    s += '\n';
 		s += int_app_value(string(XtName(w)) + "." + XmNrows, rows);
 	    }
 	}
@@ -1428,15 +1430,23 @@ static string widget_size(Widget w)
 	Dimension height = 0;
 	XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, NULL);
 
-	s += int_app_value(string(XtName(w)) + "." + XmNwidth, width);
-	s += '\n';
+	if (!height_only)
+	    s += int_app_value(string(XtName(w)) + "." + XmNwidth, width);
+
+	if (s != "")
+	    s += '\n';
 	s += int_app_value(string(XtName(w)) + "." + XmNheight, height);
     }
 
     return s;
 }
 
-static string widget_geometry(Widget w)
+inline string widget_height(Widget w)
+{
+    return widget_size(w, true);
+}
+
+static string widget_geometry(Widget w, bool include_size = false)
 {
     Dimension width, height;
     XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, NULL);
@@ -1445,7 +1455,9 @@ static string widget_geometry(Widget w)
     XGetWindowAttributes(XtDisplay(w), frame(w), &attr);
 
     ostrstream geometry;
-    geometry << width << "x" << height << "+" << attr.x << "+" << attr.y;
+    if (include_size)
+	geometry << width << "x" << height;
+    geometry << "+" << attr.x << "+" << attr.y;
     string geo(geometry);
 
     return string_app_value(string(XtName(w)) + ".geometry", geo);
@@ -1840,10 +1852,10 @@ bool save_options(unsigned long flags)
     // Window sizes.
     os << "\n! Window sizes\n";
 
-    os << widget_size(data_disp->graph_edit);
-    os << widget_size(source_view->source());
-    os << widget_size(source_view->code());
-    os << widget_size(gdb_w);
+    os << widget_height(data_disp->graph_edit) << "\n";
+    os << widget_size(source_view->source())   << "\n";
+    os << widget_size(source_view->code())     << "\n";
+    os << widget_size(gdb_w)                   << "\n";
 
     if (save_geometry)
     {

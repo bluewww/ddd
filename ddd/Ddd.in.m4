@@ -3301,16 +3301,7 @@ Ddd*XmPanedWindow.spacing:		4
 ! Graph Editor
 !-----------------------------------------------------------------------------
 
-Ddd*graph_edit.width:		        560
-Ddd*graph_edit.height:		        170
-
-Ddd*graph_edit_swindow.spacing:		0
-Ddd*graph_edit_swindow.borderWidth:	0
-Ddd*graph_edit_swindow.shadowThickness:	0
-Ddd*graph_editSW.spacing:		0
-Ddd*graph_editSW.borderWidth:		0
-Ddd*graph_editSW.shadowThickness:	0
-
+Ddd*graph_edit.height:		        100
 
 Ddd*graph_edit_panner.backgroundPixmap:	25_foreground
 Ddd*graph_edit_panner.defaultScale:	10
