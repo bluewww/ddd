@@ -1437,6 +1437,10 @@ editor, or for conversion into other formats (among others
 using the \s-2TRANSFIG\s+2 or \s-2FIG2DEV\s+2 package.
 .PP
 .PSPIC PICS/ddd-print-output.ps 15.3cm
+.PP
+Note: Arcs cannot be printed (yet).  Arcs joining two displays are
+printed using straight lines; arcs joining a display with itself are
+suppressed.
 .\"
 .\"
 .\" ---------------
@@ -2906,12 +2910,12 @@ Netscape first, then to invoke a new Netscape process, then to let a
 running Emacs do the job, then to invoke Mosaic, then to invoke Lynx.
 .RS
 .PP
-To specify `\fBnetscape-3.0\fR' as browser, use the setting:
+To specify `\fBnetscape-4.0\fR' as browser, use the setting:
 .sp
 .br
   \fB@Ddd@*wwwCommand: \\
-  netscape\-3.0 \-remote 'openURL(@URL@)' \\
-  || netscape\-3.0 '@URL@'\fR
+  netscape\-4.0 \-remote 'openURL(@URL@)' \\
+  || netscape\-4.0 '@URL@'\fR
 .br
 .sp
 This command first tries to connect to a running \fBnetscape-3.0\fR browser;
@@ -3403,7 +3407,7 @@ Alternate \s-2DBX\s+2 initialization file.
 .PP
 .RB "`\|" gdb "\|'"
 entry in
-.B info.
+.B info
 .PP
 .I
 Using \s-2GDB\s+2: A Guide to the \s-2GNU\s+2 Source-Level Debugger\c
@@ -3415,28 +3419,25 @@ Using \s-2GDB\s+2: A Guide to the \s-2GNU\s+2 Source-Level Debugger\c
 95-07, Technische Universit\o'"a't Braunschweig, 1995.
 .PP
 .I
-\s-2DDD\s+2 \(em ein Debugger mit graphischer Datendarstellung\c
+\s-2DDD\s+2 \(en ein Debugger mit graphischer Datendarstellung\c
 \&, by Dorothea L\o'"u'tkehaus, Diploma Thesis, Technische
 Universit\o'"a't Braunschweig, 1994.
 .PP
-The \s-2@DDD@\s+2 
-.IR "\s-2FTP\s+2 site" ,
+The \s-2@DDD@\s+2 \fI\s-2FTP\s+2 site,\fR
 .sp
 .br
   \fBftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/\fR
 .br
 .sp
 .PP
-The \s-2@DDD@\s+2
-.IR "World-Wide-Web page" ,
+The \s-2@DDD@\s+2 \fI\s-2WWW\s+2 page,\fR
 .sp
 .br
   \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR
 .br
 .sp
 .PP
-The \s-2@DDD@\s+2
-.IR "Mailing List" ,
+The \s-2@DDD@\s+2 \fIMailing List,\fR
 .sp
 .br
    \fBddd-users@ips.cs.tu-bs.de\fR
@@ -3445,7 +3446,7 @@ The \s-2@DDD@\s+2
 For more information on this list, send a mail to
 .sp
 .br
-   \fBddd-users-request@ips.cs.tu-bs.de\fR  .
+   \fBddd-users-request@ips.cs.tu-bs.de\fR .
 .br
 .sp
 .PP
@@ -3757,8 +3758,8 @@ please send us a picture postcard.  Our address is:
 .br
 .DE
 .PP
-You may also leave a message in the \s-2@DDD@\s+2 Guestbook.
-It is accessible via our \s-2@DDD@\s+2 \s-2WWW\s+2 page,
+You may also leave a message in the \fI\s-2@DDD@\s+2 Guestbook.\fR It
+is accessible via our \s-2@DDD@\s+2 \s-2WWW\s+2 page,
 .sp
 .br
   \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR .

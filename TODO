@@ -333,5 +333,8 @@ Volunteers for these and other projects are welcome!
 
 164. It would be very nice if the data displayed in the Display window was
      color highlighted whenever it changes.
+
+165. Have an optional mode where line numbers are shown in the status line.
+     The source layout may be changed such that line numbers are shown no more.
  
-165. (Insert your project idea here)
+166. (Insert your project idea here)
