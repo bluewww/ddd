@@ -160,7 +160,7 @@ class DataDisp {
     static DispValue *selected_value();
     static DispNode  *selected_node();
 
-    static DispNode  *new_data_node(string& answer);
+    static DispNode  *new_data_node(const string& name, string& answer);
     static DispNode  *new_user_node(const string& name, string& answer);
 
     static int getDispNrAtPoint (BoxPoint point);

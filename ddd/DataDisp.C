@@ -38,7 +38,7 @@ char DataDisp_rcsid[] =
 #define LOG_COMPARE  0
 
 //-----------------------------------------------------------------------------
-// Implementation von DataDisp.h
+// Data Display Implementation
 //-----------------------------------------------------------------------------
 
 #include "DataDisp.h"
@@ -341,10 +341,25 @@ void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
 	    DispValue *dv = dn->selected_value();
 	    if (dv == 0)
 		dv = dn->value();
-	    if (dv == 0)
-		continue;
 
-	    if (dv->collapsedAll() > 0)
+	    if (dv == 0)
+	    {
+		// No value -- just enable or disable
+		string nr = dn->disp_nr();
+		disp_nrs += get_nr(nr);
+
+		if (dn->disabled())
+		{
+		    // Enable display
+		    do_disable = false;
+		}
+		else
+		{
+		    // Disable display
+		    do_enable = false;
+		}
+	    }
+	    else if (dv->collapsedAll() > 0)
 	    {
 		dv->expandAll();
 
@@ -1661,6 +1676,7 @@ class NewDisplayInfo {
 public:
     StatusDelay *delay;
     string display_expression;
+    StringArray display_expressions;
     BoxPoint point;
     BoxPoint *point_ptr;
     string depends_on;
@@ -1838,13 +1854,13 @@ void DataDisp::new_display(string display_expression, BoxPoint *p,
     gdb_command(cmd, origin);
 }
 
-DispNode *DataDisp::new_data_node(string& answer)
+DispNode *DataDisp::new_data_node(const string& given_name, string& answer)
 {
     string nr;
-    string name;
+    string display_name;
 
-    read_number_and_name(answer, nr, name);
-    if (nr == "" || name == "")
+    read_number_and_name(answer, nr, display_name);
+    if (nr == "" || display_name == "")
     {
 	post_gdb_message(answer, last_origin);
 	return 0;
@@ -1852,14 +1868,28 @@ DispNode *DataDisp::new_data_node(string& answer)
 
     DispNode* dn = 0;
 
-    if (is_disabling (answer, gdb))
+#if 1
+    // Naming a data display after the GDB display name cause trouble
+    // when displaying functions: `display tree_test' creates a
+    // display named `tree_test(void)', and while `print tree_test'
+    // works fine, `print tree_test(void)' fails.  We may use quotes,
+    // as in `print 'tree_test(void)'', but it is too hard to
+    // determine where quotes are needed, and where not - just
+    // consider `print tree_test(42)'.  Hence, we use the name
+    // specified by the user, not the name supplied by GDB.
+    string title = given_name;
+#else
+    string title = display_name;
+#endif
+
+    if (is_disabling(answer, gdb))
     {
 	post_gdb_message(answer, last_origin);
-	dn = new DispNode(nr, name);
+	dn = new DispNode(nr, title);
     }
     else
     {
-	dn = new DispNode(nr, name, answer);
+	dn = new DispNode(nr, title, answer);
     }
 
     return dn;
@@ -1921,7 +1951,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 
     // DispNode erzeugen und ggf. disabling-Meldung ausgeben
     string ans = answer;
-    DispNode *dn = new_data_node(ans);
+    DispNode *dn = new_data_node(info->display_expression, ans);
     if (dn == 0)
     {
 	delete info;
@@ -2052,11 +2082,12 @@ void DataDisp::new_data_displaysSQA (string display_expression,
 
     for (int i = start; i < stop + 1; i++)
     {
-	display_cmds += 
-	    gdb->display_command(prefix + "[" + itostring (i) + "]" + postfix);
-	print_cmds += 
-	    gdb->print_command(prefix + "[" + itostring (i) + "]" + postfix);
+	string expr = prefix + "[" + itostring (i) + "]" + postfix;
+	info->display_expressions += expr;
+	display_cmds              += gdb->display_command(expr);
+	print_cmds                += gdb->print_command(expr);
     }
+
     VoidArray dummy;
     while (dummy.size() < display_cmds.size())
 	dummy += (void *)0;
@@ -2120,7 +2151,8 @@ void DataDisp::new_data_displaysOQAC (string answers[],
 	else
 	{
 	    // Create new display and remember disabling-message
-	    DispNode *dn = new_data_node(answers[i]);
+	    DispNode *dn = new_data_node(info->display_expressions[i],
+					 answers[i]);
 	    if (dn == 0)
 		continue;
 
