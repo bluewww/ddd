@@ -48,7 +48,7 @@ dnl
 ddd=ddd
 Ddd=Ddd
 DDD=DDD
-VERSION=1.3c
+VERSION=1.3d
 dnl
 AC_SUBST(ddd)dnl
 AC_SUBST(Ddd)dnl
@@ -136,6 +136,7 @@ dnl ICE_CXX_INCLUDE_DIR
 dnl ICE_CXX_LIB_DIR
 ICE_CXX_OPTIONS
 ICE_CXX_BOOL
+ICE_CXX_LONG_LONG
 ICE_CXX_NAMED_RETURN_VALUES
 ICE_CXX_PRETTY_FUNCTION
 ICE_CXX_ARRAY_OPERATOR_NEW
@@ -147,8 +148,25 @@ dnl Locate Libraries
 dnl
 dnl
 AC_CHECK_LIB(nsl, gethostbyname, LIBS="${LIBS} -lnsl")
-AC_CHECK_LIB(m, main, LIBS="$LIBS -lm")
 AC_CHECK_LIB(g++, main, LIBS="$LIBS -lg++")
+dnl
+AC_CHECK_LIB(m, main, LIBM="-lm")
+AC_SUBST(LIBM)
+dnl
+AC_CHECK_LIB(c, main, LIBC="-lc")
+AC_SUBST(LIBC)
+dnl
+dnl On Linux ELF systems, -lncurses is preferred to -ltermcap.
+dnl Reported by jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
+LIBTERMCAP="../termcap/libtermcap.a"
+AC_CHECK_LIB(ncurses, main, LIBTERMCAP="-lncurses")
+AC_SUBST(LIBTERMCAP)
+dnl
+LIBIBERTY="../libiberty/libiberty.a"
+AC_SUBST(LIBIBERTY)
+dnl
+LIBRX="../librx/librx.a"
+AC_SUBST(LIBRX)
 dnl
 dnl
 dnl Check for X stuff

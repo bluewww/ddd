@@ -176,11 +176,11 @@ LDFLAGS = @LDFLAGS@
 
 # Bug reported and fixed by neal@ctd.comsat.com (Neal Becker).
 
-LIBRX      = ../librx/librx.a
-LIBTERMCAP = ../termcap/libtermcap.a
-LIBIBERTY  = ../libiberty/libiberty.a
-LIBM       = -lm
-LIBC       = -lc
+LIBRX      = @LIBRX@
+LIBTERMCAP = @LIBTERMCAP@
+LIBIBERTY  = @LIBIBERTY@
+LIBM       = @LIBM@
+LIBC       = @LIBC@
 LIBS = $(LIBC) $(LIBRX) $(LIBTERMCAP) $(LIBIBERTY) $(LIBM) $(LIBC)
 
 
