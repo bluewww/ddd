@@ -356,8 +356,4 @@ Volunteers for these and other projects are welcome!
 
 336 Plot array data using gnuplot.  See also 273.
 
-337*Hobi <hobelsbe@forwiss.uni-passau.de> suggests that selecting text
-    in the debugger console should be copied to `()'.
-    (Have a general action bound to Btn1Up that copies the selection)
-
 339 (Insert new project ideas here)
