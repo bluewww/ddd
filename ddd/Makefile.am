@@ -912,13 +912,13 @@ show.$(OBJEXT): COPYING.gz.C NEWS.gz.C ddd.info.txt.gz.C
 
 
 # Configuration info stuff
-configinfo.C: USERINFO $(srcdir)/config-info
-	$(SHELL) $(srcdir)/config-info $(srcdir)/USERINFO USERINFO > $@~ && \
+configinfo.C: USERINFO.txt $(srcdir)/config-info
+	$(SHELL) $(srcdir)/config-info $(srcdir)/USERINFO.txt USERINFO.txt > $@~ && \
 	$(MV) $@~ $@
 
 
 # If `~/.ddd_userinfo' exists, use this file as personal identification.
-USERINFO: userinfo$(EXEEXT)
+USERINFO.txt: userinfo$(EXEEXT)
 	-(cat $$HOME/.ddd_userinfo 2> /dev/null || \
 	./userinfo || echo '(unknown)') > $@~ && $(MV) $@~ $@
 	@$(ECHO) ""
@@ -2119,7 +2119,7 @@ EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF) $(IMAGES)
 ddd.$(OBJEXT): $(PROG_STUFF)
 
 # These should not go into the distribution.
-DISTCLEANFILES = build.h host.h root.h ../config.cache USERINFO \
+DISTCLEANFILES = build.h host.h root.h ../config.cache USERINFO.txt \
 	$(top_builddir)/ddd/stamp-h $(man_MANS) configinfo.C \
 	version.h Ddd.ad.h
 

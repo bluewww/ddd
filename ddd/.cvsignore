@@ -16,7 +16,7 @@ Makefile.in
 NEWS.gz
 NEWS.gz.C
 OldMakefile
-USERINFO
+USERINFO.txt
 aclocal.m4
 autom4te.cache
 bld.h

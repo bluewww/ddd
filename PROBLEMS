@@ -429,6 +429,7 @@ MacOS X
 =======
 
     Build may fail on case sensitive file systems as ddd and Ddd conflict.
+    See http://mail.gnu.org/archive/html/ddd/2002-09/msg00024.html.
     Patches are welcome.
 
 
