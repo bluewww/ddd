@@ -161,7 +161,10 @@ if test "$ddd_check_both" = 1; then
   AC_CHECK_FUNC(accept, checknsl=0, LIBS=$ddd_old_libs)
 fi
 AC_CHECK_FUNC(gethostbyname, , AC_CHECK_LIB(nsl, main, [LIBS="$LIBS -lnsl"]))
+if test "$GXX" = yes; then
+# Using gcc or g++: Link with -lg++ if it exists
 AC_CHECK_LIB(g++, main, LIBS="$LIBS -lg++")
+fi
 dnl
 AC_CHECK_LIB(m, main, LIBM="-lm")
 AC_SUBST(LIBM)
