@@ -62,7 +62,7 @@ static regex rxname_colon_int_nl ("[^ ]+:[0-9]+\n");
 #endif
 
 // Create new breakpoint from INFO_OUTPUT
-BreakPoint::BreakPoint (string& info_output, string arg, int number)
+BreakPoint::BreakPoint(string& info_output, string arg, int number)
     : mynumber(number),
       mytype(BREAKPOINT),
       mydispo(BPKEEP),
@@ -86,26 +86,6 @@ BreakPoint::BreakPoint (string& info_output, string arg, int number)
       mysource_glyph(0),
       mycode_glyph(0)
 {
-    ostrstream dummy;
-    bool need_total_undo;
-    update(info_output, dummy, need_total_undo);
-}
-
-
-// Update breakpoint information
-bool BreakPoint::update(string& info_output,
-			ostream& undo_commands,
-			bool& need_total_undo)
-{
-    bool changed       = false;
-    myenabled_changed  = false;
-    myposition_changed = false;
-    myfile_changed     = false;
-    myaddress_changed  = false;
-    need_total_undo    = false;
-
-    string num = "@" + itostring(number()) + "@";
-
     if (gdb->type() != JDB)
     {
 	// Read leading breakpoint number
@@ -113,13 +93,9 @@ bool BreakPoint::update(string& info_output,
 	string number_str = read_nr_str (info_output);
 	int number = get_positive_nr (number_str);
 	if (number < 0)
-	    return false;
+	    return;
 
-	if (number != mynumber)
-	{
-	    mynumber = number;
-	    need_total_undo = changed = true;
-	}
+	mynumber = number;
     }
     strip_leading_space (info_output);
 
@@ -135,11 +111,7 @@ bool BreakPoint::update(string& info_output,
 	if (word1.contains("watchpoint", 0) || 
 	    word2.contains("watchpoint", 0))
 	{
-	    if (mytype != WATCHPOINT)
-	    {
-		need_total_undo = changed = myenabled_changed = true;
-		mytype = WATCHPOINT;
-	    }
+	    mytype = WATCHPOINT;
 
 	    // Fetch breakpoint mode detail (`acc' or `read')
 	    if (word1.contains("acc ", 0))
@@ -152,11 +124,7 @@ bool BreakPoint::update(string& info_output,
 	else if (word1.contains("breakpoint", 0) || 
 		 word2.contains("breakpoint", 0))
 	{
-	    if (mytype != BREAKPOINT)
-	    {
-		need_total_undo = changed = myenabled_changed = true;
-		mytype = BREAKPOINT;
-	    }
+	    mytype = BREAKPOINT;
 	}
 	info_output = info_output.after("point");
 	info_output = info_output.after(rxblanks_or_tabs);
@@ -164,50 +132,26 @@ bool BreakPoint::update(string& info_output,
 	// Read disposition (`dis', `del', or `keep')
 	if (info_output.contains("dis", 0))
 	{
-	    if (mydispo != BPDIS)
-	    {
-		need_total_undo = changed = myenabled_changed = true;
-		mydispo = BPDIS;
-	    }
+	    mydispo = BPDIS;
 	}
 	else if (info_output.contains("del", 0))
 	{
-	    if (mydispo != BPDEL)
-	    {
-		need_total_undo = changed = myenabled_changed = true;
-		mydispo = BPDEL;
-	    }
+	    mydispo = BPDEL;
 	}
 	else if (info_output.contains("keep", 0))
 	{
-	    if (mydispo != BPKEEP)
-	    {
-		need_total_undo = changed = myenabled_changed = true;
-		mydispo = BPKEEP;
-	    }
+	    mydispo = BPKEEP;
 	}
 	info_output = info_output.after(rxblanks_or_tabs);
 
 	// Read enabled flag (`y' or `n')
 	if (info_output.contains('y', 0))
 	{
-	    if (!myenabled)
-	    {
-		changed = myenabled_changed = true;
-		myenabled = true;
-
-		undo_commands << gdb->disable_command(num) << "\n";
-	    }
+	    myenabled = true;
 	}
 	else if (info_output.contains('n', 0))
 	{
-	    if (myenabled)
-	    {
-		changed = myenabled_changed = true;
-		myenabled = false;
-
-		undo_commands << gdb->enable_command(num) << "\n";
-	    }
+	    myenabled = false;
 	}
 	info_output = info_output.after(rxblanks_or_tabs);
 
@@ -215,15 +159,9 @@ bool BreakPoint::update(string& info_output,
 	if (mytype == BREAKPOINT) 
 	{
 	    // Read address
-	    string new_address = info_output.through(rxalphanum);
+	    myaddress = info_output.through(rxalphanum);
 
-	    if (myaddress != new_address)
-	    {
-		changed = myaddress_changed = true;
-		myaddress = new_address;
-	    }
-
-	    info_output = info_output.after(new_address);
+	    info_output = info_output.after(myaddress);
 	    strip_leading_space(info_output);
 
 	    if (info_output.contains("in ", 0))
@@ -236,43 +174,21 @@ bool BreakPoint::update(string& info_output,
 		    func = func.before(" at ");
 		strip_space(func);
 
-		if (myfunc != func)
-		{
-		    changed = myposition_changed = true;
-		    myfunc = func;
-		}
+		myfunc = func;
 	    }
 
 	    // Location
 	    info_output = info_output.from(rxname_colon_int_nl);
-	    if (myfile_name != info_output.before(":"))
-	    {
-		changed = myposition_changed = myfile_changed = true;
-		myfile_name = info_output.before(":");
-	    }
+	    myfile_name = info_output.before(":");
+
 	    info_output = info_output.after (":");
 	    if (info_output != "" && isdigit(info_output[0]))
-	    {
-		int new_line_nr = get_positive_nr(info_output);
-		if (new_line_nr < 0)
-		    return false;
-
-		if (myline_nr != new_line_nr)
-		{
-		    changed = myposition_changed = true;
-		    myline_nr = new_line_nr;
-		}
-	    }
+		myline_nr = get_positive_nr(info_output);
 	}
 	else if (mytype == WATCHPOINT)
 	{
 	    // Read watched expression
-	    string new_expr = info_output.before('\n');
-	    if (myexpr != new_expr)
-	    {
-		changed = true;
-		myexpr = new_expr;
-	    }
+	    myexpr = info_output.before('\n');
 	}
 
 	// That's all in this line
@@ -349,52 +265,10 @@ bool BreakPoint::update(string& info_output,
 	    delete[] lines;
 	}
 
-	if (new_info != myinfos)
-	{
-	    changed = true;
-	    myinfos = new_info;
-	}
-
-	if (ignore_count != myignore_count)
-	{
-	    undo_commands << gdb->ignore_command(num, myignore_count) << "\n";
-	    changed = myenabled_changed = true;
-	    myignore_count = ignore_count;
-	}
-
-	if (cond != mycondition)
-	{
-	    undo_commands << gdb->condition_command(num, condition()) << "\n";
-	    changed = myenabled_changed = true;
-	    mycondition = cond;
-	}
-
-	StringArray old_commands = mycommands;
-	bool commands_changed = false;
-
-	if (commands.size() != mycommands.size())
-	{
-	    changed = myenabled_changed = true;
-	    mycommands = commands;
-	    commands_changed = true;
-	}
-	else
-	{
-	    for (int i = 0; i < commands.size(); i++)
-		if (commands[i] != mycommands[i])
-		{
-		    changed = myenabled_changed = true;
-		    mycommands[i] = commands[i];
-		    commands_changed = true;
-		}
-	}
-	if (commands_changed)
-	{
-	    undo_commands << "commands " << number() << '\n';
-	    for (int i = 0; i < old_commands.size(); i++)
-		undo_commands << old_commands[i] << '\n';
-	    undo_commands << "end\n";
-	}
+	myinfos = new_info;
+	myignore_count = ignore_count;
+	mycondition = cond;
+	mycommands = commands;
     }
     break;
 
@@ -432,24 +306,14 @@ bool BreakPoint::update(string& info_output,
 		if (info_output != "" && isdigit(info_output[0]))
 		    new_line_nr = get_positive_nr(info_output);
 
-		if (file_name != "" && file_name != myfile_name)
-		{
+		if (file_name != "")
 		    myfile_name = file_name;
-		    changed = myposition_changed = myfile_changed = true;
-		}
 
-		if (new_line_nr && new_line_nr != myline_nr)
-		{
+		if (new_line_nr != 0)
 		    myline_nr = new_line_nr;
-		    changed = myposition_changed = true;
-		}
 
 		// DBX issues either locations or functions
-		if (myfunc != "")
-		{
-		    myfunc = "";
-		    changed = myposition_changed = true;
-		}
+		myfunc = "";
 	    }
 	    else if (info_output.contains ("in ", 0))
 	    {
@@ -458,12 +322,10 @@ bool BreakPoint::update(string& info_output,
 		if (func.contains('\n'))
 		    func = func.before('\n');
 		strip_space(func);
+		myfunc = func;
 
-		if (myfunc != func)
-		{
-		    myfunc = func;
-		    changed = myposition_changed = true;
-		}
+		myfile_name = "";
+		myline_nr = 0;
 
 		// Attempt to get exact position
 		string pos = dbx_lookup(func);
@@ -473,20 +335,9 @@ bool BreakPoint::update(string& info_output,
 		    string line_s    = pos.after(":");
 		    int new_line_nr  = get_positive_nr(line_s);
 
-		    if (file_name != myfile_name)
-		    {
-			myfile_name = file_name;
-			changed 
-			    = myposition_changed 
-			    = myfile_changed 
-			    = true;
-		    }
-
-		    if (new_line_nr && new_line_nr != myline_nr)
-		    {
+		    myfile_name = file_name;
+		    if (new_line_nr != 0)
 			myline_nr = new_line_nr;
-			changed = myposition_changed = true;
-		    }
 		}
 	    }
 	    else
@@ -513,16 +364,7 @@ bool BreakPoint::update(string& info_output,
 	    else
 		options = info_output;
 	    bool new_enabled = !options.contains(" -disable");
-	    if (new_enabled != myenabled)
-	    {
-		myenabled = new_enabled;
-		changed = myenabled_changed = true;
-
-		if (new_enabled)
-		    undo_commands << gdb->disable_command(num) << "\n";
-		else
-		    undo_commands << gdb->enable_command(num) << "\n";
-	    }
+	    myenabled = new_enabled;
 
 	    myinfos = "";
 	    if (options.contains(" -count "))
@@ -535,15 +377,7 @@ bool BreakPoint::update(string& info_output,
 		myinfos = "count " + count;
 		if (count.contains('/'))
 		    count = count.after('/');
-		int ignore_count = atoi(count);
-
-		if (ignore_count != myignore_count)
-		{
-		    undo_commands << gdb->ignore_command(num, myignore_count)
-				  << "\n";
-		    myignore_count = ignore_count;
-		    changed = true;
-		}
+		myignore_count = atoi(count);
 	    }
 
 	    if (options.contains(" if ") || options.contains(" -if "))
@@ -552,11 +386,7 @@ bool BreakPoint::update(string& info_output,
 		if (myinfos != "")
 		    myinfos += '\n';
 		myinfos += "stop only if " + cond;
-		if (cond != mycondition)
-		{
-		    mycondition = cond;
-		    need_total_undo = changed = true;
-		}
+		mycondition = cond;
 	    }
 	}
 	info_output = info_output.after('\n');
@@ -580,73 +410,34 @@ bool BreakPoint::update(string& info_output,
 	    string count = info_output.before(rxblanks_or_tabs);
 	    info_output = info_output.after(rxblanks_or_tabs);
 
-	    int ignore_count = atoi(count);
-	    if (myignore_count != ignore_count)
-	    {
-		changed = true;
-
-		undo_commands << gdb->ignore_command(num, myignore_count) 
-			      << "\n";
-
-		myignore_count = ignore_count;
-	    }
+	    myignore_count = atoi(count);
 	}
 	    
 	// Check for `Active' or `Suspended' and strip them
 	// Bob Wiegand <robert.e.wiegand.1@gsfc.nasa.gov>
 	if (info_output.contains("Active", 0))
 	{
-	    if (!myenabled)
-	    {
-		changed = myenabled_changed = true;
-
-		undo_commands << gdb->disable_command(num) << "\n";
-	    }
-
 	    info_output = info_output.after("Active");
 	    myenabled   = true;
 	}
 	else if (info_output.contains("Suspended", 0))
 	{
-	    if (myenabled)
-	    {
-		changed = myenabled_changed = true;
-
-		undo_commands << gdb->disable_command(num) << "\n";
-	    }
-
 	    info_output = info_output.after("Suspended");
 	    myenabled   = false;
 	}
 
 	// Get function name and position
 	info_output = info_output.after(rxblanks_or_tabs);
-	string func = info_output.before(": ");
+	myfunc = info_output.before(": ");
 
-	if (myfunc != func)
-	{
-	    changed = myposition_changed = true;
-	    func = myfunc;
-	}
-
-	string pos = dbx_lookup(func);
+	string pos = dbx_lookup(myfunc);
 	if (pos != "")
 	{
-	    string file_name = pos.before(":");
-	    if (file_name != myfile_name)
-	    {
-		changed = myposition_changed = myfile_changed = true;
-		myfile_name = file_name;
-	    }
+	    myfile_name = pos.before(":");
 	}
 
 	info_output = info_output.after(": ");
-	int line_nr = get_positive_nr(info_output);
-	if (line_nr != myline_nr)
-	{
-	    changed = myposition_changed = true;
-	    myline_nr = line_nr;
-	}
+	myline_nr = get_positive_nr(info_output);
 
 	info_output = info_output.after('\n');
 
@@ -661,11 +452,7 @@ bool BreakPoint::update(string& info_output,
 		string cond = commands.after("{if ");
 		cond = cond.before('{');
 		strip_space(cond);
-		if (cond != mycondition)
-		{
-		    mycondition = cond;
-		    need_total_undo = changed = true;
-		}
+		mycondition = cond;
 	    }
 
 	    // Skip this line, too
@@ -683,14 +470,8 @@ bool BreakPoint::update(string& info_output,
 	    int line_no = get_positive_nr(info_output.after(colon));
 	    if (line_no >= 0 && class_name != "")
 	    {
-		if (line_no != myline_nr || class_name != myfile_name)
-		{
-		    need_total_undo = changed = 
-			myposition_changed = myfile_changed = true;
-
-		    myfile_name = class_name;
-		    myline_nr   = line_no;
-		}
+		myfile_name = class_name;
+		myline_nr   = line_no;
 
 		// Kill this line
 		int beginning_of_line = colon;
@@ -709,6 +490,156 @@ bool BreakPoint::update(string& info_output,
 	}
 	break;
     }
+    }
+}
+
+static bool equal(const StringArray& s1, const StringArray& s2)
+{
+    if (s1.size() != s2.size())
+	return false;
+    for (int i = 0; i < s1.size(); i++)
+	if (s1[i] != s2[i])
+	    return false;
+
+    return true;
+}
+
+// Update breakpoint information
+bool BreakPoint::update(string& info_output,
+			ostream& undo_commands,
+			bool& need_total_undo)
+{
+    BreakPoint new_bp(info_output);
+
+    bool changed       = false;
+    myenabled_changed  = false;
+    myposition_changed = false;
+    myfile_changed     = false;
+    myaddress_changed  = false;
+    need_total_undo    = false;
+
+    string num = "@" + itostring(number()) + "@";
+
+    if (new_bp.number() != number())
+    {
+	mynumber = new_bp.number();
+	need_total_undo = changed = true;
+    }
+
+    if (new_bp.type() != type())
+    {
+	mytype = new_bp.type();
+	need_total_undo = changed = myenabled_changed = true;
+    }
+
+    if (new_bp.dispo() != dispo())
+    {
+	need_total_undo = changed = myenabled_changed = true;
+	mydispo = new_bp.dispo();
+    }
+
+    if (new_bp.watch_mode() != watch_mode())
+    {
+	need_total_undo = changed = myenabled_changed = true;
+	mywatch_mode = new_bp.watch_mode();
+    }
+
+    if (new_bp.myenabled != myenabled)
+    {
+	changed = myenabled_changed = true;
+	myenabled = new_bp.enabled();
+
+	if (new_bp.myenabled)
+	{
+	    if (gdb->has_disable_command())
+		undo_commands << gdb->disable_command(num) << "\n";
+	    else
+		need_total_undo = true;
+	}
+	else
+	{
+	    if (gdb->has_enable_command())
+		undo_commands << gdb->enable_command(num) << "\n";
+	    else
+		need_total_undo = true;
+	}
+    }
+
+    if (type() == BREAKPOINT)
+    {
+	if (new_bp.address() != address())
+	{
+	    changed = myaddress_changed = true;
+	    myaddress = new_bp.address();
+	}
+
+	if (new_bp.func() != func())
+	{
+	    changed = myposition_changed = true;
+	    myfunc = new_bp.func();
+	}
+
+	if (new_bp.file_name() != file_name())
+	{
+	    changed = myposition_changed = myfile_changed = true;
+	    myfile_name = new_bp.file_name();
+	}
+
+	if (new_bp.line_nr() != line_nr())
+	{
+	    changed = myposition_changed = true;
+	    myline_nr = new_bp.line_nr();
+	}
+    }
+    else if (type() == WATCHPOINT)
+    {
+	if (new_bp.expr() != expr())
+	{
+	    changed = true;
+	    myexpr = new_bp.expr();
+	}
+    }
+
+    if (new_bp.infos() != infos())
+    {
+	changed = true;
+	myinfos = new_bp.infos();
+    }
+
+    if (new_bp.ignore_count() != ignore_count())
+    {
+	if (gdb->has_ignore_command())
+	    undo_commands << gdb->ignore_command(num, myignore_count) << "\n";
+	else
+	    need_total_undo = true;
+
+	changed = myenabled_changed = true;
+	myignore_count = new_bp.ignore_count();
+    }
+
+    if (new_bp.real_condition() != real_condition())
+    {
+	if (gdb->has_condition_command())
+	    undo_commands << gdb->condition_command(num, condition()) << "\n";
+	else
+	    need_total_undo = true;
+
+	changed = myenabled_changed = true;
+	mycondition = new_bp.real_condition();
+    }
+
+    if (!equal(new_bp.commands(), commands()))
+    {
+	if (gdb->type() == GDB)
+	{
+	    undo_commands << "commands " << num << '\n';
+	    for (int i = 0; i < commands().size(); i++)
+		undo_commands << commands()[i] << '\n';
+	    undo_commands << "end\n";
+	}
+
+	changed = myenabled_changed = true;
+	mycommands = new_bp.commands();
     }
 
     return changed;
