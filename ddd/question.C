@@ -39,6 +39,7 @@ char question_rcsid[] =
 #include "AppData.h"
 #include "GDBAgent.h"
 #include "Delay.h"
+#include "TimeOut.h"
 
 #include <X11/Intrinsic.h>
 

@@ -54,6 +54,11 @@ DDD 2.2 [in development]
       Wiegand <wiegand@kong.gsfc.nasa.gov>.
     - DDD no longer hangs while receiving large chunks of data.
     - Several speed-ups in processing debugger and program output.
+    - A serious bug involving timer management has been fixed.  On
+      X11R4 (and possibly other X implementations), this bug caused
+      timers to be inadvertently removed, with effects including loss
+      of console cursor, loss of data display contents, and loss of
+      scrolling capabilities.
     - Again, several dozens of minor improvements and bug fixes.
 
 

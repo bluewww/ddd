@@ -34,18 +34,19 @@ char windows_rcsid[] =
 #endif
 
 #include "windows.h"
-#include "wm.h"
 
-#include "assert.h"
-#include "exectty.h"
-#include "cmdtty.h"
 #include "AppData.h"
 #include "BoxRegion.h"
-#include "exit.h"
-#include "ddd.h"
 #include "DataDisp.h"
 #include "SourceView.h"
+#include "TimeOut.h"
+#include "assert.h"
+#include "cmdtty.h"
+#include "ddd.h"
+#include "exectty.h"
+#include "exit.h"
 #include "findParent.h"
+#include "wm.h"
 
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>

@@ -59,6 +59,7 @@ char GraphEdit_rcsid[] =
 #include "layout.h"
 #include "misc.h"
 #include "cook.h"
+#include "TimeOut.h"
 
 
 static BoxRegion EVERYWHERE(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX));

@@ -46,6 +46,7 @@ char commandQueue_rcsid[] =
 #include "Queue.h"
 #include "windows.h"
 #include "GDBAgent.h"
+#include "TimeOut.h"
 
 #include <ctype.h>
 #include <string.h>

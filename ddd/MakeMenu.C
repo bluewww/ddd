@@ -34,6 +34,7 @@ char MakeMenu_rcsid[] =
 #include "assert.h"
 #include "strclass.h"
 #include "MString.h"
+#include "TimeOut.h"
 
 #include <stdlib.h>
 #include <Xm/Xm.h>

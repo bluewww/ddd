@@ -40,6 +40,7 @@ char print_rcsid[] =
 #include "DestroyCB.h"
 #include "GraphEdit.h"
 #include "LiterateA.h"
+#include "TimeOut.h"
 #include "commandQ.h"
 #include "cook.h"
 #include "filetype.h"

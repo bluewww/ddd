@@ -37,6 +37,7 @@ char editing_rcsid[] =
 
 #include "ArgField.h"
 #include "DataDisp.h"
+#include "TimeOut.h"
 #include "status.h"
 #include "commandQ.h"
 #include "complete.h"

@@ -56,6 +56,7 @@ char buttons_rcsid[] =
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"
+#include "TimeOut.h"
 
 #include <Xm/Xm.h>
 #include <Xm/RowColumn.h>

@@ -188,6 +188,7 @@ extern "C" {
 #include "GDBAgent.h"
 #include "MakeMenu.h"
 #include "SourceView.h"
+#include "TimeOut.h"
 #include "VSEFlags.h"
 #include "WhatNextCB.h"
 #include "args.h"
@@ -3263,31 +3264,33 @@ static void blink(bool set)
     if (!XmToggleButtonGetState(led_w))
 	return;			// Button is not active
 
-    // The blinker hangs up occasionally - that is, BLINK_TIMER != 0
-    // holds, but BlinkCB() is never called.  Hence, we check for the
-    // time elapsed since we added the BlinkCB() timeout.
-    time_t seconds_since_timer_call = 
-	(time((time_t *)0) - blink_timer_called);
-    bool timer_should_have_been_called = 
-	seconds_since_timer_call >= app_data.busy_blink_rate / 1000 + 1;
-
-    if (timer_should_have_been_called && blink_timer != 0)
+    if (blink_timer == 0)
     {
-#if 0
-	clog << "Restarting blink timer (waiting since " 
-	     << seconds_since_timer_call << "s)\n";
-#endif
-
-	// Remove timer and re-activate it again
-	XtRemoveTimeOut(blink_timer);
-	BlinkCB(XtPointer(int(blinker_active)), &blink_timer);
+	if (blinker_active)
+	{
+	    // Restart blink timer
+	    BlinkCB(XtPointer(int(true)), &blink_timer);
+	}
     }
+#if 0
     else
     {
-	// Start blinking if active
-	if (blink_timer == 0 && blinker_active)
-	    BlinkCB(XtPointer(int(true)), &blink_timer);
+	// The blinker hangs up occasionally - that is, BLINK_TIMER != 0
+	// holds, but BlinkCB() is never called.  Hence, we check for the
+	// time elapsed since we added the BlinkCB() timeout.
+	time_t seconds_since_timer_call = 
+	    (time((time_t *)0) - blink_timer_called);
+	bool timer_should_have_been_called = 
+	    seconds_since_timer_call >= app_data.busy_blink_rate / 1000 + 1;
+
+	if (timer_should_have_been_called && blink_timer != 0)
+	{
+	    // Remove timer and re-activate it again
+	    XtRemoveTimeOut(blink_timer);
+	    BlinkCB(XtPointer(int(blinker_active)), &blink_timer);
+	}
     }
+#endif
 }
 
 static void DisableBlinkHP(Agent *, void *, void *)
@@ -3560,8 +3563,15 @@ static void source_argHP(void *, void *, void *)
 //-----------------------------------------------------------------------------
 
 // Make DDD menu entries sensitive or insensitive
-static void ReadyCB(XtPointer = 0, XtIntervalId * = 0)
+static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
 {
+    if (id != 0)
+    {
+	XtIntervalId& timer = *((XtIntervalId *)client_data);
+	assert(timer == *id);
+	timer = 0;
+    }
+
     bool ready = gdb->isReadyWithPrompt() && emptyCommandQueue();
 
     set_sensitive(stack_w,        ready);
@@ -3702,7 +3712,7 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
     {
 	// Get ready in 50ms
 	ready_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w),
-				      50, ReadyCB, 0);
+				      50, ReadyCB, XtPointer(&ready_timer));
     }
 
     // Some stuff that must be executed every other time

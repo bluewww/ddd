@@ -41,6 +41,7 @@ char exit_rcsid[] =
 #include "ExitCB.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
+#include "TimeOut.h"
 #include "charsets.h"
 #include "commandQ.h"
 #include "converters.h"
@@ -49,6 +50,7 @@ char exit_rcsid[] =
 #include "findParent.h"
 #include "history.h"
 #include "host.h"
+#include "longName.h"
 #include "options.h"
 #include "post.h"
 #include "question.h"
@@ -84,6 +86,9 @@ bool ddd_is_restarting = false;
 
 // True if DDD has crashed and needs restarting
 bool ddd_has_crashed = false;
+
+static void DDDDoneAnywayCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data);
 
 
 //-----------------------------------------------------------------------------
@@ -355,7 +360,8 @@ static string xtext(Display *display, char *code, char *def, int arg = 0)
 }
 
 // Give a diagnostic on EVENT on OS.  Patterned after
-// _XPrintDefaultError(dpy, event, fp) in X11R6.3.
+// _XPrintDefaultError(dpy, event, fp) in X11R6.3, but also issue the
+// widget associated with the resource (as in Netscape).
 static void print_x_error(Display *display, XErrorEvent *event, ostream& os)
 {
     char buffer[BUFSIZ];
@@ -376,6 +382,7 @@ static void print_x_error(Display *display, XErrorEvent *event, ostream& os)
 	os << xtext(display, "MinorCode", "Request Minor code %d\n",
 		    event->minor_code);
 
+    int resourceid = 0;
     switch (event->error_code)
     {
     case BadWindow:
@@ -390,6 +397,7 @@ static void print_x_error(Display *display, XErrorEvent *event, ostream& os)
 	   << xtext(display, "ResourceID", "ResourceID 0x%x", 
 		    event->resourceid)
 	   << "\n";
+	resourceid = event->resourceid;
 	break;
 
     case BadValue:
@@ -412,6 +420,17 @@ static void print_x_error(Display *display, XErrorEvent *event, ostream& os)
        << xtext(display, "CurrentSerial", "Current Serial #%d", 
 		NextRequest(display) - 1) 
        << "\n";
+
+    if (resourceid != 0)
+    {
+	os << "  Widget hierarchy of resource:  ";
+	Widget w = XtWindowToWidget(display, resourceid);
+	if (w == 0)
+	    os << "unknown";
+	else
+	    os << longName(w);
+	os << '\n';
+    }
 }
 
 static int (*old_x_error_handler)(Display *, XErrorEvent *) = 0;
@@ -647,11 +666,22 @@ static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
     quit_dialog = verify(XmCreateQuestionDialog(find_shell(w),
 					      "quit_dialog", args, arg));
     Delay::register_shell(quit_dialog);
-    XtAddCallback(quit_dialog, XmNokCallback,   _DDDExitCB, client_data);
+    XtAddCallback(quit_dialog, XmNokCallback,   DDDDoneAnywayCB, client_data);
     XtAddCallback(quit_dialog, XmNcancelCallback, UnmanageThisCB, quit_dialog);
     XtAddCallback(quit_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
     manage_and_raise(quit_dialog);
+}
+
+// Exit immediately if DDD is not ready
+static void DDDDoneAnywayCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
+{
+    // If GDB has gotten ready in between, use controlled exit.
+    if (gdb && gdb->isReadyWithPrompt())
+	DDDDoneCB(w, client_data, call_data);
+    else
+	_DDDExitCB(w, client_data, call_data);
 }
 
 // Exit after confirmation

@@ -39,6 +39,7 @@ char source_rcsid[] =
 #include "ArgField.h"
 #include "GDBAgent.h"
 #include "SourceView.h"
+#include "TimeOut.h"
 #include "commandQ.h"
 #include "cook.h"
 #include "ctrl.h"

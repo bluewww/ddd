@@ -31,6 +31,7 @@ char DestroyCB_rcsid[] =
 
 #include "findParent.h"
 #include "DestroyCB.h"
+#include "TimeOut.h"
 
 static void DestroyCB(XtPointer client_data, XtIntervalId *)
 {

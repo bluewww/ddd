@@ -83,6 +83,7 @@ char SourceView_rcsid[] =
 #include "shorten.h"
 #include "tabs.h"
 #include "wm.h"
+#include "TimeOut.h"
 
 // Motif stuff
 #include <Xm/Xm.h>
@@ -5115,6 +5116,7 @@ void SourceView::update_glyphs(Widget w)
 			    UpdateGlyphsWorkProc, XtPointer(&update_glyph_id));
 	update_glyph_called = time((time_t *)0);
     }
+#if 0
     else
     {
 	// update_glyph() occasionally hangs - that is,
@@ -5130,6 +5132,7 @@ void SourceView::update_glyphs(Widget w)
 				 &update_glyph_id);
 	}
     }
+#endif
 }
 
 
@@ -5152,6 +5155,7 @@ void SourceView::CheckScrollCB(Widget, XtPointer, XtPointer)
 			    CheckScrollWorkProc, XtPointer(&check_scroll_id));
 	check_scroll_called = time((time_t *)0);
     }
+#if 0
     else
     {
 	// CheckScrollCB() occasionally hangs - that is,
@@ -5166,6 +5170,7 @@ void SourceView::CheckScrollCB(Widget, XtPointer, XtPointer)
 	    CheckScrollWorkProc(XtPointer(&check_scroll_id), &check_scroll_id);
 	}
     }
+#endif
 }
     
 void SourceView::CheckScrollWorkProc(XtPointer client_data, XtIntervalId *id)

@@ -340,9 +340,6 @@ Volunteers for fixing these and other bugs are welcome!
 173. Matthias Kurz <mk@baerlap.north.de> says:
      - Often the first graph display is not completely inside the
        window; after selecting 'layout graph' things are right
-     - The debugger console often looses the text cursor; typing
-       commands is still possible; 'clear window' brings the cursor
-       back.
      [I could not reproduce this. -AZ]
 
 174. Command tool placement problems.  Graham Gough
@@ -368,4 +365,4 @@ Volunteers for fixing these and other bugs are welcome!
      dbx cannot handle `when at { }' without a command inside the
      parentheses (this should be `{ delete xx,yy }' anyway).
 
-188. (Insert your bug here)
+189. (Insert your bug here)
