@@ -43,6 +43,7 @@
 .RB "[\|" \-\-dbx "\|]"
 .RB "[\|" \-\-xdb "\|]"
 .RB "[\|" \-\-jdb "\|]"
+.RB "[\|" \-\-pydb "\|]"
 .RB "[\|" \-\-debugger
 .I name\c
 \&\|]
@@ -123,7 +124,7 @@ effects of one bug and go on to learn about another.
 debugger (\s-1GDB\s+1) provide a command-line interface and a
 multitude of commands for these and other debugging purposes.
 \s-1@DDD@\s+1 is a comfortable \fIgraphical user interface\fR around
-an inferior \s-1GDB\s+1, \s-1DBX\s+1, \s-1XDB\s+1, or \s-1JDB\s+1
+an inferior \s-1GDB\s+1, \s-1DBX\s+1, \s-1XDB\s+1, \s-1JDB\s+1, or \s-1PYDB\s+1
 debugger.
 .\"
 .\"
@@ -181,8 +182,15 @@ or
   \fB@ddd@\ \-\-jdb \fIclass\fR
 .br
 .sp
+or
+.sp
+.br
+  \fB@ddd@\ \-\-pydb \fImodule\fR
+.br
+.sp
 .\"
-to run \s-1DBX\s+1 or \s-1XDB\s+1 or \s-1JDB\s+1 as inferior debugger.
+to run \s-1DBX\s+1 or \s-1XDB\s+1 or \s-1JDB\s+1 or \s-1PYDB\s+1
+as inferior debugger.
 .PP
 To learn more about \s-1@DDD@\s+1 options, run
 .sp
@@ -2031,7 +2039,8 @@ In the \fIdebugger console\fR, you can interact with the command
 interface of the inferior debugger.  Enter commands at the \fIdebugger
 prompt\fR\(em\&that is, `\fB(gdb)\fR' for \s-1GDB\s+1, `\fB(dbx)\fR'
 for \s-1DBX\s+1, `\fB>\fR' for \s-1XDB\s+1, and `\fB>\fR' or
-`\fIthread\fB[\fIdepth\fB]\fR' for \s-1JDB\s+1.  You can use arbitrary
+`\fIthread\fB[\fIdepth\fB]\fR' for \s-1JDB\s+1, or `\fB(Pydb)\fR'
+for \s-1PYDB\s+1.  You can use arbitrary
 debugger commands; use the \s-1\fBRETURN\fR\s+1 key to enter them.
 .PP
 .PSPIC @srcdir@/PICS/ddd-console.ps 15.3cm
@@ -2325,7 +2334,7 @@ See also the `\fB\-\-panned-graph-editor\fR' and
 By default, \s-1@DDD@\s+1 runs with \s-1GDB\s+1 as inferior debugger.
 To change this default, set the `\fBDebugger Type\fR' option to
 another debugger.  See also the `\fB\-\-gdb\fR', `\fB\-\-dbx\fR',
-`\fB\-\-xdb\fR', and `\fB\-\-jdb\fR' options, below.
+`\fB\-\-xdb\fR', `\fB\-\-jdb\fR', and `\fB\-\-pydb\fR' options, below.
 .PP
 If you want the \s-1@DDD@\s+1 splash screen shown upon startup, enable 
 `\fBDDD Splash Screen\fR'.
@@ -3584,9 +3593,9 @@ also initially sent to \s-1DBX\s+1.  By default, it is empty.
 .TP
 .B "debugger (\fPclass\fB Debugger)"
 The type of the inferior debugger (`\fBgdb\fR', `\fBdbx\fR',
-`\fBxdb\fR', or `\fBjdb\fR').  Default value is `\fBgdb\fR'.  This
+`\fBxdb\fR', `\fBjdb\fR' or `\fBpydb\fR').  Default value is `\fBgdb\fR'.  This
 resource is usually set through the `\fB\-\-gdb\fR', `\fB\-\-dbx\fR',
-`\fB\-\-xdb\fR', and `\fB\-\-jdb\fR' options; see below for details.
+`\fB\-\-xdb\fR', `\fB\-\-jdb\fR', and `\fB\-\-pydb\fR' options; see below for details.
 .TP
 .B "debuggerCommand (\fPclass\fB DebuggerCommand)"
 The name under which the inferior debugger is to be invoked.  If this
@@ -3664,6 +3673,19 @@ This string contains a list of newline-separated commands that are
 also initially sent to \s-1JDB\s+1.  By default, it is empty.
 .sp
 This resource is used by \s-1@DDD@\s+1 to save and restore \s-1JDB\s+1
+settings.
+.TP
+.B "pydbInitCommands (\fPclass\fB InitCommands)"
+This string contains a list of newline-separated commands that are
+initially sent to \s-1PYDB\s+1.  By default, it is empty.
+.br
+This resource may be used to customize \s-1PYDB\s+1.
+.TP
+.B "pydbSettings (\fPclass\fB Settings)"
+This string contains a list of newline-separated commands that are
+also initially sent to \s-1PYDB\s+1.  By default, it is empty.
+.sp
+This resource is used by \s-1@DDD@\s+1 to save and restore \s-1PYDB\s+1
 settings.
 .TP
 .B "questionTimeout (\fPclass\fB QuestionTimeout)"
@@ -4561,9 +4583,9 @@ Run the \s-1DBX\s+1 debugger as inferior debugger.
 .B \-\-debugger \fIname\fR
 Invoke the inferior debugger \fIname\fR.  This is useful if you have
 several debugger versions around, or if the inferior debugger cannot
-be invoked as `\fBgdb\fR', `\fBdbx\fR', `\fBxdb\fR', or `\fBjdb\fR',
-respectively.  This option can also be used to pass options to the
-inferior debugger that would otherwise conflict with \s-1@DDD@\s+1
+be invoked as `\fBgdb\fR', `\fBdbx\fR', `\fBxdb\fR', `\fBjdb\fR',
+or `\fBpydb\fR', respectively.  This option can also be used to pass options
+to the inferior debugger that would otherwise conflict with \s-1@DDD@\s+1
 options.  For instance, to pass a `\fB\-d \fIdirectory\fR' option to
 \s-1XDB\s+1, use:
 .sp
@@ -4573,8 +4595,8 @@ options.  For instance, to pass a `\fB\-d \fIdirectory\fR' option to
 .sp
 If you use the `\fB\-\-debugger\fR' option, be sure that the type of
 inferior debugger is specified as well.  That is, use one of the
-options `\fB\-\-gdb\fR', `\fB\-\-dbx\fR', `\fB\-\-xdb\fR', or
-`\fB\-\-jdb\fR'\(em\&unless the default setting works fine.
+options `\fB\-\-gdb\fR', `\fB\-\-dbx\fR', `\fB\-\-xdb\fR',
+`\fB\-\-jdb\fR'\, or `\fB\-\-pydb\fR'\(em\&unless the default setting works fine.
 .TP
 .B \-\-debugger-console
 Create the debugger console upon start-up.
@@ -4678,6 +4700,9 @@ Disable value tips.
 .B \-\-nw
 Do not use the X window interface.  Start the inferior debugger on
 the local host.
+.TP
+.B \-\-pydb
+Run \s-1PYDB\s+1 as inferior debugger.
 .TP
 .B \-\-panned-graph-editor
 Use an Athena panner to scroll the data window.  Most people prefer
@@ -5351,6 +5376,10 @@ Java Language Debugging\c
 \&, at \fBhttp://java.sun.com/\fR and its mirrors in 
 \fBproducts/jdk/1.1/debugging/\fR
 .PP
+.PP
+.I
+The Python Language\c
+\&, at \fBhttp://www.python.org/\fR and its mirrors.
 .I
 \s-1DDD\s+1\(em\&A Free Graphical Front-End for \s-1UNIX\s+1 Debuggers\c
 \&, by Andreas Zeller and Dorothea Lütkehaus, Computer Science Report

@@ -342,5 +342,6 @@ B8{_}(l|li|lis|list)({W}{C})?	 	RETURN(&rxlist_cmd);
 B9{D}{_}\,{_}{D}	 		RETURN(&rxlist_range);
 C0.*:{P}	 			RETURN(&rxfilepos);
 C1{_}{I}[^({\n=]*:[(]			RETURN(&rxdbx_baseclass);
+C2{_}[^=]+=[^=]{C}			RETURN(&rxset3_cmd);
 (.|\n)				        RETURN(0);  // Anything else
 %%

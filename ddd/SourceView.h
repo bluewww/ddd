@@ -835,6 +835,9 @@ public:
     // Return current class path
     static string class_path() { return current_class_path; }
 
+    // Return current source file name
+    static string name_of_source() { return current_source_name(); }
+
     // Return source text and machine code widget (read-only)
     static Widget source() { return source_text_w; }
     static Widget code()   { return code_text_w; }

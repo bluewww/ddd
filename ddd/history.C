@@ -645,7 +645,7 @@ static void update_recent_menu(MMDesc *items)
 	Widget w = items[i].widget;
 	set_label(w, label);
 
-	if (!remote_gdb() && gdb->type() != JDB && 
+	if (!remote_gdb() && gdb->type() != JDB && gdb->type() != PYDB &&
 	    !is_exec_file(recent_files[i]))
 	    set_sensitive(w, false); // File is not loadable now
 	else

@@ -438,6 +438,7 @@ static int gdb_set_tty(string tty_name = "",
 
     case XDB:
     case JDB:
+    case PYDB:	// for now
 	// No way to set environment variables
 	break;
     }
@@ -612,7 +613,10 @@ static void redirect_process(string& command,
 	break;
 
     case JDB:
-	break;		// No redirection in JDB
+	break;			// No redirection in JDB
+
+    case PYDB:
+	break;			// No redirection in PYDB (for now)
     }
 
     string new_args;

@@ -71,6 +71,7 @@ bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
     case DBX:
     case XDB:
     case JDB:
+    case PYDB:
 	return false;
     }
 
@@ -132,6 +133,7 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
     case DBX:
     case XDB:
     case JDB:
+    case PYDB:
 	return cmd.matches (rxrunning_cmd)
 	    || is_display_cmd(cmd);
     }
@@ -285,10 +287,12 @@ bool is_set_cmd (const string& cmd, GDBAgent *gdb)
 #if RUNTIME_REGEX
     static regex rxset1_cmd("[ \t]*(set[ \t]+var[a-z]*|assign|pq)([ \t]+.*)?");
     static regex rxset2_cmd("[ \t]*(set|p|print|output)[ \t]+[^=]+=[^=].*");
+    static regex rxset3_cmd("[ \t]*[^=]+=[^=].*");
 #endif
 
     return cmd.matches(rxset1_cmd) || 
-	(gdb->type() == GDB && cmd.matches(rxset2_cmd));
+	(gdb->type() == GDB && cmd.matches(rxset2_cmd)) ||
+	(gdb->type() == PYDB && cmd.matches(rxset3_cmd));
 }
 
 // True if CMD changes debugger settings
@@ -330,6 +334,7 @@ bool is_file_cmd (const string& cmd, GDBAgent *gdb)
     switch (gdb->type())
     {
     case GDB:
+    case PYDB:
     {
 #if RUNTIME_REGEX
 	static regex rxfile_cmd("[ \t]*file([ \t]+.*)?");
@@ -560,6 +565,7 @@ int display_index (const string& gdb_answer, GDBAgent *gdb)
     switch (gdb->type())
     {
     case GDB: 
+    case PYDB:
 	prx = &rxgdb_begin_of_display;
 	break;
 
@@ -709,6 +715,7 @@ int display_info_index (const string& gdb_answer, GDBAgent *gdb)
     switch (gdb->type())
     {
     case GDB: 
+    case PYDB:
 	prx = &rxgdb_begin_of_display_info;
 	break;
 
@@ -751,6 +758,7 @@ string read_next_disp_info (string& gdb_answer, GDBAgent *gdb)
     switch (gdb->type())
     {
     case GDB:
+    case PYDB:
     {
 	int startpos = gdb_answer.index (": ");
 	int i = startpos + 2;
@@ -811,6 +819,7 @@ string get_info_disp_str (string& display_info, GDBAgent *gdb)
     switch (gdb->type())
     {
     case GDB:
+    case PYDB:
 	return display_info.after (":   ");
 
     case DBX:
@@ -830,6 +839,7 @@ bool disp_is_disabled (const string& info_disp_str, GDBAgent *gdb)
     switch (gdb->type())
     {
     case GDB:
+    case PYDB:
 	return info_disp_str.length() > 0 && info_disp_str[0] == 'n';
 
     case DBX:
@@ -855,6 +865,7 @@ string  read_disp_nr_str (string& display, GDBAgent *gdb)
     switch (gdb->type())
     {
     case GDB:
+    case PYDB:
     {
 #if RUNTIME_REGEX
 	static regex rxgdb_disp_nr("[1-9][0-9]*");

@@ -864,6 +864,10 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer call_data)
     case JDB:
 	app_data.debugger = "jdb";
 	break;
+
+    case PYDB:
+	app_data.debugger = "pydb";
+	break;
     }
 
     set_status(next_ddd_will_start_with + "a " 
@@ -1800,6 +1804,7 @@ bool save_options(unsigned long flags)
     string dbx_settings = app_data.dbx_settings;
     string xdb_settings = app_data.xdb_settings;
     string jdb_settings = app_data.jdb_settings;
+    string pydb_settings = app_data.pydb_settings;
 
     if (need_settings() || need_save_defines())
     {
@@ -1826,13 +1831,18 @@ bool save_options(unsigned long flags)
 	case JDB:
 	    jdb_settings = settings;
 	    break;
+
+	case PYDB:
+	    pydb_settings = settings;
+	    break;
 	}
     }
 
-    os << string_app_value(XtNgdbSettings, gdb_settings, true) << '\n';
-    os << string_app_value(XtNdbxSettings, dbx_settings, true) << '\n';
-    os << string_app_value(XtNxdbSettings, xdb_settings, true) << '\n';
-    os << string_app_value(XtNjdbSettings, jdb_settings, true) << '\n';
+    os << string_app_value(XtNgdbSettings, gdb_settings, true)  << '\n';
+    os << string_app_value(XtNdbxSettings, dbx_settings, true)  << '\n';
+    os << string_app_value(XtNxdbSettings, xdb_settings, true)  << '\n';
+    os << string_app_value(XtNjdbSettings, jdb_settings, true)  << '\n';
+    os << string_app_value(XtNjdbSettings, pydb_settings, true) << '\n';
 
     os << "\n! Source.\n";
     os << bool_app_value(XtNfindWordsOnly,
@@ -2211,6 +2221,7 @@ bool save_options(unsigned long flags)
 
 	case XDB:
 	case JDB:
+	case PYDB:
 	    // FIXME
 	    break;
 	}

@@ -68,7 +68,7 @@ Ddd*appDefaultsVersion: @VERSION@
 ! User-settable resources
 !-----------------------------------------------------------------------------
 
-! The inferior debugger type (dbx, gdb, xdb, or jdb; defaults to gdb)
+! The inferior debugger type (dbx, gdb, xdb, jdb, or pydb; defaults to gdb)
 Ddd*debugger:
 
 
@@ -505,6 +505,13 @@ Ddd*jdbInitCommands:
 
 ! The JDB settings.  Usually overridden in `~/.ddd/init'.
 Ddd*jdbSettings:
+
+
+! The PYDB initialization commands.  Nothing special.
+Ddd*pydbInitCommands:
+
+! The PYDB settings.  Usually overridden in `~/.ddd/init'.
+Ddd*pydbSettings:
 
 
 ! If on, let GDB source all initialization commands from a temporary file.
@@ -3241,6 +3248,7 @@ Ddd*debuggerMenu*gdb.labelString:		GDB
 Ddd*debuggerMenu*dbx.labelString:		DBX
 Ddd*debuggerMenu*xdb.labelString:		XDB
 Ddd*debuggerMenu*jdb.labelString:		JDB
+Ddd*debuggerMenu*pydb.labelString:		PYDB
 
 Ddd*preferences*show.labelString:	        Startup Windows
 Ddd*preferences*splashScreen.labelString:	DDD Splash Screen
@@ -5794,7 +5802,7 @@ You may wish to examine the diagnostic messages before exiting DDD.\n\
 Here are some hints that may help you out:\n\
 ITEM If DDD looked for the wrong inferior debugger, re-invoke DDD,\n\
     but use one of the SAMP(--gdb), SAMP(--dbx), SAMP(--xdb), \
-or SAMP(--jdb) options to specify\n\
+SAMP(--jdb), or SAMP(--pydb) options to specify\n\
     the inferior debugger.\n\
 ITEM If @GDB@ is the correct inferior debugger, \
 but could not be found,\n\
@@ -5803,7 +5811,8 @@ specify\n\
     the full @GDB@ path VAR(path).\n\
 ITEM If you used the SAMP(--debugger VAR(path)) option, be sure to specify \
 one of\n\
-    the SAMP(--gdb), SAMP(--dbx), SAMP(--xdb), or SAMP(--jdb) options \
+    the SAMP(--gdb), SAMP(--dbx), SAMP(--xdb), SAMP(--jdb), \
+or SAMP(--pydb) options \
 as well.\n\
 ITEM If you started DDD without arguments, re-invoke DDD,\n\
     but give it an executable as argument.  XDB and some DBX versions\n\

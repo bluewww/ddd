@@ -185,6 +185,7 @@ void PosBuffer::filter (string& answer)
     
     case XDB:
     case JDB:
+    case PYDB:
 	break;			// FIXME
     }
 
@@ -264,6 +265,7 @@ void PosBuffer::filter (string& answer)
 
 	case XDB:
 	case JDB:
+	case PYDB:
 	    break;		// FIXME
 	}
 	break;
@@ -401,6 +403,7 @@ void PosBuffer::filter (string& answer)
 	    if (check_func && func_buffer == "")
 	    {
 		// `Breakpoint N, FUNCTION (ARGS...)'
+		// This regex used for PYDB as well.
 #if RUNTIME_REGEX
 		static regex rxstopped_func("Breakpoint  *[1-9][0-9]*,  *");
 #endif
@@ -842,6 +845,47 @@ void PosBuffer::filter (string& answer)
 		    if (index >= 0)
 			index++;
 		}
+	    }
+	    break;
+	}
+	case PYDB:
+	{
+	    string result;
+	    // `Breakpoint N, FUNCTION (ARGS...) at file:line_no'
+	    // rxstopped_func defined for GDB...if it changes, change here
+	    int fn_index = index(answer, rxstopped_func, "Breakpoint");
+	    if (fn_index >= 0)
+	    {
+		fetch_function(answer, fn_index, func_buffer);
+	    } else {
+		// `#FRAME FUNCTION(args) at file:line_no'
+		// Likewise rxframe_func defined for GDB
+		int frame_index = index(answer, rxframe_addr, "#");
+		if (frame_index == 0
+		    || frame_index > 0 && answer[frame_index - 1] == '\n')
+		{
+		    fetch_function(answer, frame_index, func_buffer);
+		}
+	    }
+	    int lineinfo  = answer.index("Lineinfo");
+	    // Lineinfo <function> at file:lineno
+	    if (lineinfo == 0
+		|| lineinfo > 0 && answer[lineinfo - 1] == '\n')
+	    {
+		answer = answer.after('<');
+		func_buffer = answer.before('>');
+	    }
+	    result = answer.after(" at ");
+	    result = result.before('\n');
+	    if (result.contains(':'))
+	    {
+		pos_buffer = result;
+		already_read = PosComplete;
+	    }
+	    // Don't need the answer anymore when line matches 'Lineinfo'
+	    if (lineinfo >=0)
+	    {
+		answer = "";
 	    }
 	    break;
 	}

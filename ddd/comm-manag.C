@@ -426,6 +426,11 @@ void start_gdb()
 	init     = str(app_data.jdb_init_commands);
 	settings = str(app_data.jdb_settings);
 	break;
+
+    case PYDB:
+	init     = str(app_data.pydb_init_commands);
+	settings = str(app_data.pydb_settings);
+	break;
     }
     string restart = str(app_data.restart_commands);
 
@@ -543,6 +548,13 @@ void start_gdb()
 	extra_data->refresh_initial_line = true;
 	cmds += "use";
 	extra_data->refresh_class_path = true;
+	break;
+
+    case PYDB:
+	cmds += "pwd";
+	extra_data->refresh_pwd = true;
+	cmds += "info breakpoints";
+	extra_data->refresh_breakpoints = true;
 	break;
     }
 
@@ -861,6 +873,7 @@ void send_gdb_command(string cmd, Widget origin,
 		switch (gdb->type())
 		{
 		case GDB:
+		case PYDB:
 		    // No need to list lines in the debugger console;
 		    // translate `list' to `info line'.
 		    cmd = "info line " + arg;
@@ -949,6 +962,7 @@ void send_gdb_command(string cmd, Widget origin,
 	case GDB:
 	case XDB:
 	case JDB:
+	case PYDB:
 	    break;		// FIXME
 	}
     }
@@ -1400,6 +1414,17 @@ void send_gdb_command(string cmd, Widget origin,
 	assert (!extra_data->refresh_setting);
 	assert (!extra_data->refresh_handle);
 	break;
+
+    case PYDB:
+	if (extra_data->refresh_pwd)
+	    cmds += "pwd";
+	if (extra_data->refresh_breakpoints)
+	    cmds += "info breakpoints";
+	if (extra_data->refresh_where)
+	    cmds += "where";
+	if (extra_data->refresh_disp_info)
+	    cmds += gdb->info_display_command();
+	break;
     }
 
     while (dummy.size() < cmds.size())
@@ -1614,6 +1639,7 @@ static void command_completed(void *data)
 		break;
 
 	    case JDB:
+	    case PYDB:
 		// FIXME
 		break;
 	    }
@@ -2156,6 +2182,7 @@ static void extra_completed (const StringArray& answers,
 
 	case DBX:
 	case JDB:
+	case PYDB:
 	    break;
 	}
     }

@@ -136,6 +136,7 @@ extern const regex rxsemicolon_and_brace;
 extern const regex rxsep;
 extern const regex rxset1_cmd;
 extern const regex rxset2_cmd;
+extern const regex rxset3_cmd;
 extern const regex rxset_args_cmd;
 extern const regex rxsetting_cmd;
 extern const regex rxsimple;

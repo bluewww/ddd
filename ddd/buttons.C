@@ -386,6 +386,7 @@ static string gdbSettingsValue(string command)
     case DBX:
     case XDB:
     case JDB:
+    case PYDB:
 	return NO_GDB_ANSWER;		// FIXME
     }
 

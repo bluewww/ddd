@@ -236,6 +236,7 @@ static void gdbRunDCB(Widget, XtPointer, XtPointer)
 	break;
 
     case JDB:
+    case PYDB:
 	gdb_command("run " + args, run_dialog);
 	break;
 
@@ -439,10 +440,21 @@ void add_running_arguments(string& cmd)
 
     strip_leading_space(cmd);
     string args = cmd.after(rxwhite);
-    if (args == "")
+    switch (gdb->type()) 
     {
-	// JDB requires at least a class name after the `run' command.
-	ProgramInfo info;
-	cmd += " " + info.file;
+    case JDB:
+	if (args == "")
+	{
+	    // JDB requires at least a class name after the `run' command.
+	    ProgramInfo info;
+	    cmd += " " + info.file;
+	}
+	break;
+
+    case XDB:
+    case DBX:
+    case GDB:
+    case PYDB:
+	break;
     }
 }

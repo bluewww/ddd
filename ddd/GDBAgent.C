@@ -186,6 +186,8 @@ DebuggerType debugger_type(const string& type)
 	return XDB;
     if (type.contains("jdb"))
 	return JDB;
+    if (type.contains("pydb"))
+	return PYDB;
 
     cerr << "Unknown debugger type " << quote(type) << "\n";
     exit(EXIT_FAILURE);
@@ -214,10 +216,10 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_print_r_option(false),
       _has_output_command(false),
       _has_where_h_option(false),
-      _has_display_command(tp == GDB || tp == DBX),
+      _has_display_command(tp == GDB || tp == DBX || tp == PYDB),
       _has_clear_command(tp == GDB || tp == DBX || tp == JDB),
       _has_handler_command(false),
-      _has_pwd_command(tp == GDB || tp == DBX),
+      _has_pwd_command(tp == GDB || tp == DBX || tp == PYDB),
       _has_setenv_command(tp == DBX),
       _has_edit_command(tp == DBX),
       _has_make_command(tp == GDB || tp == DBX),
@@ -232,7 +234,9 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_givenfile_command(false),
       _has_cont_sig_command(false),
       _has_examine_command(tp == GDB || tp == DBX),
-      _program_language(tp == JDB ? LANGUAGE_JAVA : LANGUAGE_C),
+      _program_language((tp == JDB) ? LANGUAGE_JAVA :
+			(tp == PYDB) ? LANGUAGE_PYTHON : 
+			LANGUAGE_C),
       _verbatim(false),
       _recording(false),
       _detect_echos(true),
@@ -344,6 +348,8 @@ string GDBAgent::title() const
 	return "XDB";
     case JDB:
 	return "JDB";
+    case PYDB:
+	return "PYDB";
     }
 
     return "debugger";
@@ -622,6 +628,7 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 
 	// FALL THROUGH
     case DBX:
+    case PYDB:
     {
 	// Any line ending in `(gdb) ' or `(dbx) ' is a prompt.
 	int i = answer.length() - 1;
@@ -770,11 +777,9 @@ bool GDBAgent::ends_with_secondary_prompt (const string& ans)
 	return answer == "> " || ends_in(answer, "\n> ");
 	
     case XDB:
-	// Is there any secondary prompt in XDB? (FIXME)
-	return false;
-
     case JDB:
-	// Is there any secondary prompt in XDB? (FIXME)
+    case PYDB:
+	// Is there any secondary prompt in [XJP]DB? (FIXME)
 	return false;
     }
 
@@ -869,6 +874,7 @@ void GDBAgent::cut_off_prompt(string& answer) const
 
 	// FALL THROUGH
     case DBX:
+    case PYDB:
 	answer = answer.before('(', -1);
 	break;
 
@@ -1473,6 +1479,7 @@ string GDBAgent::print_command(string expr, bool internal) const
 	break;
 
     case XDB:
+    case PYDB:
 	cmd = "p";
 	break;
 
@@ -1500,6 +1507,7 @@ string GDBAgent::print_command(string expr, bool internal) const
 		break;
 
 	    case JDB:
+	    case PYDB:		// May need changing
 		// JDB has named values
 		break;
 	    }
@@ -1538,6 +1546,7 @@ string GDBAgent::where_command(int count) const
     case GDB:
     case DBX:
     case JDB:
+    case PYDB:
 	if (has_where_h_option())
 	    cmd = "where -h";
 	else
@@ -1560,6 +1569,7 @@ string GDBAgent::info_locals_command() const
     switch (type())
     {
     case GDB:
+    case PYDB:
 	return "info locals";
 
     case DBX:
@@ -1580,6 +1590,7 @@ string GDBAgent::info_args_command() const
     switch (type())
     {
     case GDB:
+    case PYDB:
 	return "info args";
 
     default:
@@ -1605,6 +1616,7 @@ string GDBAgent::pwd_command() const
     {
     case GDB:
     case DBX:
+    case PYDB:
 	if (has_pwd_command())
 	    return "pwd";
 	else
@@ -1615,6 +1627,7 @@ string GDBAgent::pwd_command() const
 
     case JDB:
 	return "";
+
     }
 
     return "";			// Never reached
@@ -1639,6 +1652,7 @@ string GDBAgent::make_command(string args) const
 	break;
 
     case JDB:
+    case PYDB:
 	return "";		// Not available
     }
 
@@ -1670,6 +1684,7 @@ string GDBAgent::jump_command(string pos) const
 	return "cont at " + pos;
 
     case JDB:
+    case PYDB:
 	return "";		// Not available
     }
 
@@ -1698,6 +1713,7 @@ string GDBAgent::regs_command(bool all) const
 
     case XDB:
     case JDB:
+    case PYDB:
 	return "";		// Not available
     }
 
@@ -1743,6 +1759,7 @@ string GDBAgent::watch_command(string expr, WatchMode w) const
 	return "";
 
     case JDB:
+    case PYDB:
 	return "";		// Not available
     }
 
@@ -1760,6 +1777,9 @@ string GDBAgent::kill_command() const
    
     case XDB:
 	return "k";
+
+    case PYDB:
+	return "";		// Not available
 
     case JDB:
 	return "";		// Not available
@@ -1781,6 +1801,9 @@ string GDBAgent::frame_command() const
 
     case XDB:
 	return print_command("$depth");
+
+    case PYDB:
+	return where_command(0);
 
     case JDB:
 	return "";		// Not available
@@ -1804,6 +1827,7 @@ string GDBAgent::frame_command(int num) const
 	return "V " + itostring(num);
 
     case JDB:
+    case PYDB:
 	return "";		// Not available
     }
 
@@ -1817,6 +1841,7 @@ string GDBAgent::func_command() const
     case GDB:
     case XDB:
     case JDB:
+    case PYDB:
 	return frame_command();
 
     case DBX:
@@ -1841,6 +1866,7 @@ string GDBAgent::echo_command(string text) const
 	return quote(text);
 
     case JDB:
+    case PYDB:
 	return "";		// Not available
     }
 
@@ -1856,6 +1882,7 @@ string GDBAgent::whatis_command(string text) const
 	return "ptype " + text;
 
     case DBX:
+    case PYDB:
 	if (has_print_r_option())
 	    return "whatis -r " + text;
 	else
@@ -1880,6 +1907,7 @@ string GDBAgent::enable_command(string bp) const
     switch (type())
     {
     case GDB:
+    case PYDB:
 	return "enable" + bp;
 
     case DBX:
@@ -1907,6 +1935,7 @@ string GDBAgent::disable_command(string bp) const
     switch (type())
     {
     case GDB:
+    case PYDB:
 	return "disable" + bp;
 
     case DBX:
@@ -1935,6 +1964,7 @@ string GDBAgent::delete_command(string bp) const
     {
     case DBX:
     case GDB:
+    case PYDB:
 	return "delete" + bp;
 
     case XDB:
@@ -1953,6 +1983,7 @@ string GDBAgent::ignore_command(string bp, int count) const
     switch (type())
     {
     case GDB:
+    case PYDB:
 	return "ignore " + bp + " " + itostring(count);
 
     case DBX:
@@ -1977,6 +2008,7 @@ string GDBAgent::condition_command(string bp, string expr) const
     switch (type())
     {
     case GDB:
+    case PYDB:
 	return "condition " + bp + " " + expr;
 
     case DBX:
@@ -2003,6 +2035,7 @@ string GDBAgent::shell_command(string cmd) const
 	return "!" + cmd;
 
     case JDB:
+    case PYDB:
 	return "";		// Not available
     }
     return "";			// Never reached
@@ -2014,6 +2047,7 @@ string GDBAgent::debug_command(string program) const
     switch (type())
     {
     case GDB:
+    case PYDB:
 	return "file " + program;
 
     case DBX:
@@ -2051,6 +2085,7 @@ string GDBAgent::signal_command(int sig) const
 	return "p $signal = " + n + "; C";
 
     case JDB:
+    case PYDB:
 	return "";		// Not available
     }
 
@@ -2120,6 +2155,9 @@ string GDBAgent::dereferenced_expr(string expr) const
 	// GDB 4.16.gnat.1.13 prepends `*' as in C
 	return prepend_prefix("*", expr);
 
+    case LANGUAGE_PYTHON:
+	return "";		// Not supported by Python/PYDB
+
     case LANGUAGE_OTHER:
 	return expr;		// All other languages
     }
@@ -2149,6 +2187,9 @@ string GDBAgent::address_expr(string expr) const
 
     case LANGUAGE_JAVA:
 	return "";		// Not supported in GDB
+
+    case LANGUAGE_PYTHON:
+	return "";		// Not supported in Python
 
     case LANGUAGE_ADA:
 	return "";		// Not supported in GNAT/Ada
@@ -2190,6 +2231,7 @@ int GDBAgent::default_index_base() const
     case LANGUAGE_ADA:
     case LANGUAGE_C:
     case LANGUAGE_JAVA:
+    case LANGUAGE_PYTHON:
     case LANGUAGE_OTHER:
 	return 0;
     }
@@ -2216,6 +2258,10 @@ string GDBAgent::assign_command(string var, string expr) const
 	cmd = "pq";
 	break;
 
+    case PYDB:
+	cmd = "";	// No command needed
+	break;
+
     case JDB:
 	return "";		// Not available
     }
@@ -2227,6 +2273,7 @@ string GDBAgent::assign_command(string var, string expr) const
     case LANGUAGE_C:
     case LANGUAGE_JAVA:
     case LANGUAGE_FORTRAN:
+    case LANGUAGE_PYTHON:	// FIXME: vrbl names can conflict with commands
     case LANGUAGE_OTHER:
 	cmd += "=";
 	break;
@@ -2265,6 +2312,7 @@ void GDBAgent::normalize_address(string& addr) const
 	case LANGUAGE_JAVA:
 	case LANGUAGE_FORTRAN:
 	case LANGUAGE_ADA:
+	case LANGUAGE_PYTHON:
 	case LANGUAGE_OTHER:
 	    addr.prepend("0x");
 	    break;
@@ -2313,6 +2361,7 @@ string GDBAgent::history_file() const
 
     case DBX:
     case JDB:
+    case PYDB:
 	return "";		// Unknown
 
     case XDB:
@@ -2374,6 +2423,7 @@ ProgramLanguage GDBAgent::program_language(string text)
 	{ "modula",  LANGUAGE_PASCAL },
 	{ "m",       LANGUAGE_PASCAL }, // M2, M3 or likewise
 	{ "ada",     LANGUAGE_ADA },
+	{ "python",  LANGUAGE_PYTHON },
 	{ "c",       LANGUAGE_C },
 	{ "c++",     LANGUAGE_C },
 	{ "auto",    LANGUAGE_OTHER }  // Keep current language
