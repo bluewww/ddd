@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "1 May 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "2 May 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -978,6 +978,11 @@ By default, \s-2@DDD@\s+2 finds only complete words.  This is
 convenient for clicking on an identifier in the source text and search
 for exactly this identifier.  If you want to find all occurrences,
 including word parts, unset the `\fBFind Words Only\fR' option.
+.PP
+By default, \s-2@DDD@\s+2 caches source files in memory.  This is
+convenient for remote debugging, since remote file access may be slow.
+If you want to reduce memory usage, unset the `\fBCache Sources\fR'
+option.
 
 .SS "Data Options"
 By default, \s-2@DDD@\s+2 displays a grid in the data window to
