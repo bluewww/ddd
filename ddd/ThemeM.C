@@ -48,7 +48,7 @@ string ThemeManager::read_word(string& value)
 	if (token == "")
 	    return "";
 	strip_space(token);
-    } while (token == "");
+    } while (token == "" || token == "\n");
 
     return token;
 }
@@ -61,28 +61,30 @@ ThemeManager::ThemeManager(const string& value)
     StringStringArrayAssoc a_map;
 
     string v = value;
-    while (v != "")
+    for (;;)
     {
 	string token = read_word(v);
-
-	if (token == "pattern")
+	if (token == "")
+	{
+	    // End of text
+	    break;
+	}
+	else if (token == "pattern")
 	{
 	    pattern = unquote(read_word(v));
+	    StringArray empty;
+	    themes = empty;
 	}
 	else if (token == "theme")
 	{
 	    themes += unquote(read_word(v));
-	    a_map[pattern] = themes;
+	    map[pattern] = themes;
 	}
 	else
 	{
 	    cerr << "themes: syntax error at " << quote(token) << "\n";
 	}
     }
-
-    // Be sure all entries are in correct order
-    for (StringStringArrayAssocIter i(a_map); i.ok(); i = i.next())
-	map[i.key()] = i.value();
 }
 
 ostream& operator<<(ostream& os, const ThemeManager& t)
@@ -91,7 +93,11 @@ ostream& operator<<(ostream& os, const ThemeManager& t)
     {
 	os << "pattern " << quote(i.key()) << " ";
 	for (int j = 0; j < i.value().size(); j++)
+	{
+	    if (j > 0)
+		os << " ";
 	    os << "theme " << quote(i.value()[j]);
+	}
 	os << "\n";
     }
 
