@@ -2377,8 +2377,8 @@ void DataDisp::new_displaySQ (string display_expression,
 	{
 	case GDB:
 	    {
-		string cmd = gdb->display_command(display_expression);
-		gdb_command(cmd, last_origin, new_data_displayOQC, info);
+		gdb_command(gdb->display_command(display_expression),
+			    last_origin, new_data_displayOQC, info);
 	    }
 	    break;
 
@@ -2386,10 +2386,10 @@ void DataDisp::new_displaySQ (string display_expression,
 	case XDB:
 	case JDB:
 	    {
-		gdb_question(gdb->display_command(display_expression));
-		string cmd;
-		cmd = gdb->print_command(display_expression);
-		gdb_command(cmd, last_origin, new_data_displayOQC, info);
+		gdb_command(gdb->display_command(display_expression),
+			    last_origin, OQCProc(0), (void *)0);
+		gdb_command(gdb->print_command(display_expression),
+			    last_origin, new_data_displayOQC, info);
 	    }
 	    break;
 	}
@@ -2417,8 +2417,8 @@ void DataDisp::read_number_and_name(string& answer, string& nr, string& name)
 	if (gdb->has_display_command())
 	{
 	    // Fetch number from `display' output
-	    string ans = gdb_question(gdb->display_command());
-	    int index = ans.index(name + "\n", -1);
+	    string ans = gdb_question(gdb->display_command(), -1);
+	    int index  = ans.index(name + "\n", -1);
 	    if (index > 0)
 	    {
 		while (index > 0 && ans[index - 1] != '\n')
