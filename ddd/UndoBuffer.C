@@ -49,6 +49,10 @@ char UndoBuffer_rcsid[] =
 #include "status.h"
 #include "string-fun.h"
 
+#ifndef LOG_UNDO_BUFFER
+#define LOG_UNDO_BUFFER 0
+#endif
+
 // This is the DDD Undo Buffer, a nasty and obfusticating piece of
 // DDD.  Basically, it attempts to combine the two concepts of a
 // command-based undo buffer (for undoing commands) and a state-based
@@ -109,10 +113,6 @@ char UndoBuffer_rcsid[] =
 // Upon Redo, DDD executes the command and recreates the state at
 // HISTORY_POSITION.
 
-
-#ifndef LOG_UNDO_BUFFER
-#define LOG_UNDO_BUFFER 0
-#endif
 
 #define REMAP_COMMAND "@remap "
 
@@ -492,6 +492,9 @@ bool UndoBuffer::process_command(UndoBufferEntry& entry)
 	    int j = cmd.index('@', i + 1);
 	    cmd.at(i, j - i + 1) = itostring(num);
 	}
+
+	if (cmd.contains("set confirm"), 0)
+	    confirm = false;	// Don't overwrite
 
 	// Execute command.  This will result in new redo command(s)
 	// being passed to add_command().
