@@ -6211,11 +6211,16 @@ static void setup_version_warnings()
     // Check for app-defaults
     if (app_data.app_defaults_version == 0)
     {
-	cerr << "Warning: no version information in `" 
-	     << DDD_CLASS_NAME "' app-defaults-file\n";
+	cerr << "Error: No `" DDD_CLASS_NAME "' application defaults file\n"
+	    "To resolve this problem, you can:\n"
+	    "* install the `" DDD_CLASS_NAME "' file in the X "
+	    "application defaults directory, or\n"
+	    "* set the `" DDD_CLASS_NAME "' location "
+	    "in the XAPPLRESDIR environment variable, or\n"
+	    "* recompile " DDD_NAME " with builtin app-defaults file;\n"
+	    "  see the `--enable-builtin-app-defaults' option for details.\n";
 
-	version_warnings += rm("No version information in `")
-	    + tt(DDD_CLASS_NAME) + rm("' app-defaults-file") + cr();
+	exit(EXIT_FAILURE);
     }
     else if (string(app_data.app_defaults_version) != DDD_VERSION)
     {

@@ -137,6 +137,13 @@
    too.  Requires WITH_RUNTIME_REGEX to be set.  Required in ICE.  */
 #undef RUNTIME_REGEX
 
+/* Define if you want the manual to be compiled into the executable. */
+#undef WITH_BUILTIN_MANUAL
+
+/* Define if you want the app-defaults file to be compiled into the
+   executable. */
+#undef WITH_BUILTIN_APP_DEFAULTS
+
 
 // @BOTTOM@
 

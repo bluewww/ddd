@@ -343,16 +343,19 @@ void show_configuration(ostream& os)
 #endif
 
     // Optional stuff
-    s = "@(#)Includes " DDD_NAME " manual"
+    s = "@(#)Includes " DDD_NAME " core"
+#if WITH_BUILTIN_MANUAL
+	", " DDD_NAME " manual"
+#endif
+#if WITH_BUILTIN_APP_DEFAULTS
+	", " DDD_NAME " app-defaults"
+#endif
 #ifdef XpmFormat
 	", XPM " stringize(XpmFormat) "." stringize(XpmVersion) 
 	"." stringize(XpmRevision)
 #endif
 #if HAVE_ATHENA
 	", Athena widgets"
-#endif
-#if !RUNTIME_REGEX
-	", compile-time regexps"
 #endif
 	"\n";
     s.gsub(sccs, string(""));
@@ -528,11 +531,30 @@ void DDDNewsCB(Widget w, XtPointer, XtPointer call_data)
 
 int ddd_man(ostream& os)
 {
+#if WITH_BUILTIN_MANUAL
     static const char MANUAL[] =
 #include "ddd.man.txt.gz.C"
 	;
 
     return uncompress(os, MANUAL, sizeof(MANUAL) - 1);
+#else
+    // Try `man ddd' and `man xddd'.
+    FILE *fp = popen(sh_command("man " ddd_NAME || "man x" ddd_NAME), "r");
+    if (fp == 0)
+	return -1;
+
+    int c;
+    int i = 0;
+    while ((c = getc(fp)) != EOF)
+    {
+	if (i % 100 == 0)
+	    process_pending_events();
+	os << char(c);
+	i++;
+    }
+    pclose(fp);
+    return 0;
+#endif
 }
 
 void DDDManualCB(Widget w, XtPointer, XtPointer)
@@ -547,8 +569,15 @@ void DDDManualCB(Widget w, XtPointer, XtPointer)
     ManualStringHelpCB(w, title, s);
 
     if (ret != 0 || !s.contains(DDD_NAME))
-	post_error("The manual could not be uncompressed.", 
+    {
+#if WITH_BUILTIN_MANUAL
+	post_error("The " DDD_NAME " manual could not be uncompressed.", 
 		   "no_ddd_manual_error", w);
+#else
+	post_error("The " DDD_NAME " manual could not be accessed.",
+		   "no_ddd_man_page_error", w);
+#endif
+    }
 }
 
 void GDBManualCB(Widget w, XtPointer, XtPointer)

@@ -567,11 +567,28 @@ fi
 AC_SUBST(LIBRX)
 dnl
 dnl
-dnl Anyway: As of DDD 2.2, we don't need all this RX stuff, but use
+dnl As of DDD 2.2, we don't need all this RX stuff, but use
 dnl a LEX-generated scanner for regexps.
 dnl
 AC_DEFINE(WITH_RUNTIME_REGEX, 0)
 AC_DEFINE(RUNTIME_REGEX, 0)
+dnl
+dnl
+dnl User-defined options
+enable_builtin_manual=yes
+enable_builtin_app_defaults=yes
+dnl
+AC_ARG_ENABLE(builtin-manual, 
+[  --disable-builtin-manual         do not compile manual into DDD])
+AC_ARG_ENABLE(builtin-app-defaults, 
+[  --disable-builtin-app-defaults   do not compile app-defaults file into DDD])
+dnl
+if test "$enable_builtin_manual" != no; then
+AC_DEFINE(WITH_BUILTIN_MANUAL)
+fi
+if test "$enable_builtin_app_defaults" != no; then
+AC_DEFINE(WITH_BUILTIN_APP_DEFAULTS)
+fi
 dnl
 dnl
 dnl That's all, folks!

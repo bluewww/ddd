@@ -5859,6 +5859,10 @@ Ddd*no_ddd_manual_error_popup.title: DDD: No Manual
 Ddd*no_ddd_manual_error*helpString:	\
 @rm The DDD manual COULD_NOT_BE_UNCOMPRESSED
 
+Ddd*no_ddd_man_page_error_popup.title: DDD: No Manual
+Ddd*no_ddd_man_page_error*helpString:	\
+@rm It seems the DDD manual page is not installed.
+
 Ddd*startup_warning_popup.title: DDD: New Startup Required
 Ddd*startup_warning*helpString: \
 @rm This setting cannot be changed while DDD is running.\n\
