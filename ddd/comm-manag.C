@@ -529,7 +529,7 @@ void start_gdb()
     // Enqueue restart and settings commands.  Since we're starting up
     // and don't care for detailed diagnostics, we allow the GDB
     // `source' command.
-    init_session(restart, settings, true);
+    init_session(restart, settings, app_data.source_init_commands);
 
     // One last command to clear the delay, set up breakpoints and
     // issue prompt

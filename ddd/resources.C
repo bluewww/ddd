@@ -187,6 +187,16 @@ XtResource ddd_resources[] = {
 	XtPointer("")
     },
 
+    {
+	XtNsourceInitCommands,
+	XtCSourceInitCommands,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, source_init_commands),
+	XtRImmediate,
+	XtPointer(False)
+    },
+
     { 
 	XtNvslPath, 
 	XtCVSLPath, 

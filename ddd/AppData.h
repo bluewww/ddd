@@ -62,6 +62,8 @@
 #define XtNjdbSettings           "jdbSettings"
 #define XtNrestartCommands       "restartCommands"
 #define XtCInitCommands          "InitCommands"
+#define XtNsourceInitCommands    "sourceInitCommands"
+#define XtCSourceInitCommands    "SourceInitCommands"
 #define XtCSettings              "Settings"
 #define XtNvslPath               "vslPath"
 #define XtCVSLPath               "VSLPath"
@@ -338,6 +340,7 @@ struct AppData {
     String    jdb_init_commands;
     String    jdb_settings;
     String    restart_commands;
+    Boolean   source_init_commands;
     String    vsl_path;
     String    vsl_library;
     String    vsl_defs;

@@ -497,6 +497,11 @@ Ddd*jdbInitCommands:
 Ddd*jdbSettings:
 
 
+! If on, let GDB source all initialization commands from a temporary file.
+! This is somewhat faster, but gives bad diagnostics.
+Ddd*sourceInitCommands: off
+
+
 ! Auto-command defaults
 
 ! Are auto-commands enabled?  If yes, any output of the inferior debugger

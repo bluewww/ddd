@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-06\-09" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-06\-11" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -3677,6 +3677,14 @@ the remote terminal such that it suits \s-1@DDD@\s+1:
 .sp
 You may add other commands here\(em\&for instance, to set the
 executable path or to invoke a suitable shell.
+.TP
+.B "sourceInitCommands (\fPclass\fB SourceInitCommands)"
+If `\fBon\fR', \s-1@DDD@\s-1 writes all \s-1GDB\s+1 initialization
+commands into a temporary file and makes \s-1GDB\s+1 read this file,
+rather than sending each initialization command separately.  Right
+now, this feature is experimental; it results in faster startup
+(especially if you have several user-defined commands), but gives poor
+diagnostics.  Default is `\fBoff\fR'.
 .TP
 .B "synchronousDebugger (\fPclass\fB SynchronousDebugger)"
 If `\fBon\fR', X events are not processed while the debugger is
