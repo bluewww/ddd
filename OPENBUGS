@@ -172,4 +172,17 @@ detail.
 726 jik- <fract@sprintmail.com> reports that calling `editres' on DDD
     makes it dump core.
 
-727 (Insert new bugs here)
+727 Mihai Budiu <mihaib@gs41.sp.cs.cmu.edu> reports:
+
+    1) The history window of '()' (which you can pop down using the
+       arrow in the right) won't go away unless you type something in
+       the () box; the history window remains on top even if you lower
+       the whole DDD window.
+
+    6) Sometimes when I display '*this' after each 'Next' or 'Step'
+       all the displayed fields of '*this' are automatically hidden,
+       which is very annoying.  This doesn't happen always, and I'm
+       not sure if it happens with other pointers than 'this'.  I
+       could not reproduce the bug now.
+
+728 (Insert new bugs here)
