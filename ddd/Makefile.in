@@ -469,7 +469,7 @@ X_INCLUDE = @X_CFLAGS@
 INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 
 ## Implicit rules.
-.SUFFIXES: .C .cc .c .mod .p .Y .YY .L .txt .i
+.SUFFIXES: .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xpm
 .C.o:
 	$(COMPILE.cc) $(INCLUDE) -o $@ $<
 .cc.o:
@@ -539,6 +539,26 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 	) > tmp.C; \
 	$(CPP) -C -P -undef $(CPPFLAGS) $(DEFS) $(INCLUDE) tmp.C > $@; \
 	$(RM) tmp.C
+
+## Icon rules
+.xpm.xbm:
+	base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/[.]x[bp]m.*//'`; \
+	$(SXPM) -nod -o - -mono $< | $(SED) 's/[nN]one/white/g' | \
+	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
+	$(PBMTOXBM) | $(SED) "s/noname/$${base}/g" > $@~
+	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
+
+# Old makes will fail on these rules.  In case of trouble, use GNU make.
+%-xx.xpm: %.xpm
+	base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
+	$(SED) 's/c black /c grey50/' $< | $(SED) "s/$$base/&_xx/" > $@
+
+%-xx.xbm: %-xx.xpm
+	base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/-xx[.]x[bp]m.*//'`; \
+	$(SED) 's/[nN]one/white/g' $< | \
+	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
+	$(PBMTOXBM) | $(SED) "s/noname/$${base}_xx/g" > $@~
+	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
 
 
 
@@ -845,7 +865,56 @@ MANS = ddd.man
 
 ## The (derived) icons
 icondir = $(srcdir)/../icons
-ICONS = $(icondir)/ddd.xbm $(icondir)/dddmask.xbm $(icondir)/dddlogo.xbm
+toolbardir = $(icondir)/toolbar
+ICONS = \
+	$(icondir)/ddd.xbm \
+	$(icondir)/dddmask.xbm \
+	$(icondir)/dddlogo.xbm \
+	$(toolbardir)/breakat-xx.xpm \
+	$(toolbardir)/clearat-xx.xpm \
+	$(toolbardir)/deref-xx.xpm \
+	$(toolbardir)/display-xx.xpm \
+	$(toolbardir)/findbwd-xx.xpm \
+	$(toolbardir)/findfwd-xx.xpm \
+	$(toolbardir)/hide-xx.xpm \
+	$(toolbardir)/lookup-xx.xpm \
+	$(toolbardir)/print-xx.xpm \
+	$(toolbardir)/rotate-xx.xpm \
+	$(toolbardir)/set-xx.xpm \
+	$(toolbardir)/show-xx.xpm \
+	$(toolbardir)/undisplay-xx.xpm \
+	$(toolbardir)/unwatch-xx.xpm \
+	$(toolbardir)/watch-xx.xpm \
+	$(toolbardir)/breakat.xbm \
+	$(toolbardir)/clearat.xbm \
+	$(toolbardir)/deref.xbm \
+	$(toolbardir)/display.xbm \
+	$(toolbardir)/findbwd.xbm \
+	$(toolbardir)/findfwd.xbm \
+	$(toolbardir)/hide.xbm \
+	$(toolbardir)/lookup.xbm \
+	$(toolbardir)/print.xbm \
+	$(toolbardir)/rotate.xbm \
+	$(toolbardir)/set.xbm \
+	$(toolbardir)/show.xbm \
+	$(toolbardir)/undisplay.xbm \
+	$(toolbardir)/unwatch.xbm \
+	$(toolbardir)/watch.xbm \
+	$(toolbardir)/breakat-xx.xbm \
+	$(toolbardir)/clearat-xx.xbm \
+	$(toolbardir)/deref-xx.xbm \
+	$(toolbardir)/display-xx.xbm \
+	$(toolbardir)/findbwd-xx.xbm \
+	$(toolbardir)/findfwd-xx.xbm \
+	$(toolbardir)/hide-xx.xbm \
+	$(toolbardir)/lookup-xx.xbm \
+	$(toolbardir)/print-xx.xbm \
+	$(toolbardir)/rotate-xx.xbm \
+	$(toolbardir)/set-xx.xbm \
+	$(toolbardir)/show-xx.xbm \
+	$(toolbardir)/undisplay-xx.xbm \
+	$(toolbardir)/unwatch-xx.xbm \
+	$(toolbardir)/watch-xx.xbm
 
 ## Readme files built from ddd.texinfo
 README_FILES = 
@@ -1474,27 +1543,34 @@ $(picdir)/dddlogo.ps: $(icondir)/dddlogo.xpm
 
 ## Icons and logos.
 
+.PHONY: icons
+icons:	$(ICONS)
+	@:
+
 # All X bitmaps are derived from the XPM sources.
 
 $(icondir)/ddd.xbm: $(icondir)/ddd.xpm
-	-$(SXPM) -nod -o - -mono $(srcdir)/../icons/ddd.xpm | \
+	-$(SXPM) -nod -o - -mono $(icondir)/ddd.xpm | \
 	$(SED) 's/[nN]one/white/g' | $(SED) 's/gr[ae]y/white/g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
-	$(PBMTOXBM) | $(SED) 's/noname/ddd/g' > tmp.xbm
-	test -s tmp.xbm && $(MV) tmp.xbm $@ || ($(RM) tmp.xbm; false)
+	$(PBMTOXBM) | $(SED) 's/noname/ddd/g' > $@~
+	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
 
 $(icondir)/dddmask.xbm: $(icondir)/ddd.xpm
-	-$(SXPM) -nod -o - -mono $(srcdir)/../icons/ddd.xpm | \
+	-$(SXPM) -nod -o - -mono $(icondir)/ddd.xpm | \
 	$(SED) 's/[nN]one/white/g' | $(SED) 's/gr[ae]y/black/g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
-	$(PBMTOXBM) | $(SED) 's/noname/dddmask/g' > tmp.xbm
-	test -s tmp.xbm && $(MV) tmp.xbm $@ || ($(RM) tmp.xbm; false)
+	$(PBMTOXBM) | $(SED) 's/noname/dddmask/g' > $@~
+	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
 
 $(icondir)/dddlogo.xbm: $(icondir)/dddlogo.xpm
 	$(SXPM) -nod -o - -grey $(icondir)/dddlogo.xpm | $(XPMTOPPM) | \
 	$(PNMDEPTH) 255 | $(PNMGAMMA) 0.75 | $(PPMTOPGM) | $(PGMENHANCE) -7 | \
-	$(PGMTOPBM) | $(PBMTOXBM) | $(SED) 's/noname/dddlogo/g' > tmp.xbm
-	test -s tmp.xbm && $(MV) tmp.xbm $@ || ($(RM) tmp.xbm; false)
+	$(PGMTOPBM) | $(PBMTOXBM) | $(SED) 's/noname/dddlogo/g' > $@~
+	test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; false)
+
+
+
 
 
 ## Configuration stuff.
