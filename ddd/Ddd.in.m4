@@ -1419,7 +1419,8 @@ dnl GDB_TRANSLATIONS
 !-----------------------------------------------------------------------------
 
 ! The default number of items in a combo box
-Ddd*XmComboBox*visibleItemCount: 5
+Ddd*XmComboBox*visibleItemCount:    5
+Ddd*comboBoxShell*visibleItemCount: 5
 
 
 !-----------------------------------------------------------------------------
@@ -5058,8 +5059,7 @@ Ddd*define_command.okLabelString:    		Close
 Ddd*define_command.cancelLabelString:    	Apply
 
 Ddd*define_command*name.label.labelString:	Command
-Ddd*define_command*name.text.columns:       	31
-Ddd*define_command*name.text.Text.columns:     	28
+Ddd*define_command*name.text*columns:       	29
 
 Ddd*define_command*commands.labelString:	Definition
 Ddd*define_command*commandsMenu.packing:	XmPACK_COLUMN
