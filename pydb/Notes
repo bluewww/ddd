@@ -140,3 +140,5 @@ home directory (unless you changed the default): ~/.ddd/log.  All the
 dialog between pydb and DDD is recorded there, along with some DDD
 state changes.  For complex problems, I'll need that file and your
 Python code to debug the debugger.
+
+$Id$

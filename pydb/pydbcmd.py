@@ -1,3 +1,4 @@
+# $Id$
 # Support functions for ddd
 #
 # A generic class to build line-oriented command interpreters

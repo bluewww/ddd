@@ -43,3 +43,5 @@ Comments, suggestions, and bug reports are welcome.
 
 <P> <A HREF="daikon.tuc.noao.edu/python">pydb 1.0</A> Python debugger based
 on pdb.py with DDD, a widely used X-windows based front end.(25-8-98)
+
+$Id$
