@@ -1192,7 +1192,7 @@ void GDBAgent::handle_echo(string& answer)
 
 	    // ECHO_THRESHOLD is 4 because the inferior debugger might
 	    // not echo short interludes like `yes\n', `no\n' or `^C'.
-	    const int ECHO_THRESHOLD = 4;
+	    const unsigned int ECHO_THRESHOLD = 4;
 
 	    if (last_written.length() > ECHO_THRESHOLD)
 	    {

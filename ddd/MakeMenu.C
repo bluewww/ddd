@@ -643,7 +643,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	if (!(flags & MMUnmanaged))
 	    XtManageChild(panel);
 
-	if (widgetptr)
+	if (widgetptr != 0)
 	    *widgetptr = widget;
     }
 }

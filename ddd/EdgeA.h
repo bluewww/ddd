@@ -41,10 +41,17 @@ protected:
     virtual void _draw(Widget w, const BoxPoint& p,
 		       const BoxRegion& exposed, const GraphGC& gc) const = 0;
 
+protected:
+    // Constructor.  Only for derived classes.
+    EdgeAnnotation() {}
+
+    // Copy constructor.  Only for derived classes.
+    EdgeAnnotation(const EdgeAnnotation &) {}
+
 public:
     DECLARE_TYPE_INFO
 
-    virtual ~EdgeAnnotation() {};
+    virtual ~EdgeAnnotation() {}
 
     // Draw annotation centered around P
     virtual void draw(Widget w, const BoxPoint& p,

@@ -49,7 +49,7 @@ protected:
 		       const BoxRegion& exposed, const GraphGC& gc) const;
 
     BoxEdgeAnnotation(const BoxEdgeAnnotation &src)
-	: _box(0)
+	: EdgeAnnotation(src), _box(0)
     {
 	if (src._box != 0)
 	    _box = src._box->dup();
@@ -57,7 +57,7 @@ protected:
 
 public:
     BoxEdgeAnnotation(Box *box)
-	: _box(box)
+	: EdgeAnnotation(), _box(box)
     {
 	assert(box != 0);
     }

@@ -67,11 +67,11 @@ private:
     //
     // `history' contains:
     //
-    // 0                       \
+    // 0                       \ 
     // 1                        > entries (state or commands) to be undone
     // ...                     /
     // (history_position - 1)     current entry; always state
-    // ...                     \
+    // ...                     \ 
     // ...                      > entries (state or commands) to be redone
     // (history.size() - 1)    /
     //

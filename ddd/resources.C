@@ -1849,7 +1849,7 @@ struct AppDataInitializer {
 AppDataInitializer::AppDataInitializer()
 {
     // Copy resources to appropriate fields in APP_DATA
-    for (Cardinal i = 0; i < ddd_resources_size; i++)
+    for (int i = 0; i < int(ddd_resources_size); i++)
     {
 	XtResource& res = ddd_resources[i];
 	XtPointer src = res.default_addr;
