@@ -207,9 +207,9 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 20[(]{P}[)]{w}				RETURN(&rxdbx_begin_of_display_info);
 21[a-zA-Z_$0-9]*`			RETURN(&rxdbx_scope);
 22[a-zA-Z_$][a-zA-Z_$0-9]*[(]{C}[)]{C}([[]{C}[]]|\,{w}line{w}{C})	RETURN(&rxdbxframe);
-23[a-zA-Z_$][^:]*:{_}{P}{W}{C}		RETURN(&rxdbxfunc);
+23[a-zA-Z_$][^[]*:{_}{P}{W}{C}		RETURN(&rxdbxfunc);
 24{C}line{W}{P}{W}in{W}(file{W})?\"[^\"]*\"\n{C}	RETURN(&rxdbxfunc2);
-25[[][^]]*:{P}[^]]*]{C}			RETURN(&rxdbxpos);
+25[[][^\133]*:{P}[^\133]*[]]{C}		RETURN(&rxdbxpos);
 26dbx:{W}warning:.*option{W}only{W}recognized{W}for.*\n	RETURN(&rxdbxwarn1);
 27dbx:{W}warning:.*unknown{W}language.*\n	RETURN(&rxdbxwarn2);
 28{_}(debug|givenfile)({W}{C})?		RETURN(&rxdebug_cmd);
