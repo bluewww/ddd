@@ -185,13 +185,14 @@ public:
 
     // Update breakpoint from breakpoint info INFO_OUTPUT.  Return
     // true iff changes occurred.  Delete own info from INFO_OUTPUT.
-    bool update (string& info_output);
+    bool update(string& info_output, ostream& undo_commands);
 
-    // Return commands to restore this breakpoint.  If AS_DUMMY is
-    // set, delete the breakpoint immediately in order to increase the
-    // breakpoint number.  If ADDR is set, use ADDR as (fake) address.
-    // If COND is set, use COND as (fake) condition.
-    bool get_state(ostream& os, int num, bool as_dummy = false, 
+    // Return commands to restore this breakpoint, using the dummy
+    // number NR.  If AS_DUMMY is set, delete the breakpoint
+    // immediately in order to increase the breakpoint number.  If
+    // ADDR is set, use ADDR as (fake) address.  If COND is set, use
+    // COND as (fake) condition.  Return true iff successful.
+    bool get_state(ostream& os, int nr, bool as_dummy = false, 
 		   string addr = "", string cond = char(-1));
 
     // Stuff for constructing `false' breakpoint conditions

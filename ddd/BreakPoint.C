@@ -86,12 +86,13 @@ BreakPoint::BreakPoint (string& info_output, string arg, int number)
       mysource_glyph(0),
       mycode_glyph(0)
 {
-    update(info_output);
+    ostrstream dummy;
+    update(info_output, dummy);
 }
 
 
 // Update breakpoint information
-bool BreakPoint::update (string& info_output)
+bool BreakPoint::update(string& info_output, ostream& undo_commands)
 {
     bool changed       = false;
     myenabled_changed  = false;
@@ -188,6 +189,8 @@ bool BreakPoint::update (string& info_output)
 	    {
 		changed = myenabled_changed = true;
 		myenabled = true;
+
+		undo_commands << "disable " << number() << "\n";
 	    }
 	}
 	else if (info_output.contains('n', 0))
@@ -196,6 +199,8 @@ bool BreakPoint::update (string& info_output)
 	    {
 		changed = myenabled_changed = true;
 		myenabled = false;
+
+		undo_commands << "enable " << number() << "\n";
 	    }
 	}
 	info_output = info_output.after(rxblanks_or_tabs);
@@ -346,20 +351,30 @@ bool BreakPoint::update (string& info_output)
 
 	if (ignore_count != myignore_count)
 	{
+	    undo_commands << "ignore " << number() << " " 
+			  << myignore_count << "\n";
+
 	    changed = myenabled_changed = true;
 	    myignore_count = ignore_count;
 	}
 
 	if (cond != mycondition)
 	{
+	    undo_commands << "condition " << number() << " " 
+			  << condition() << "\n";
+
 	    changed = myenabled_changed = true;
 	    mycondition = cond;
 	}
+
+	StringArray old_commands = mycommands;
+	bool commands_changed = false;
 
 	if (commands.size() != mycommands.size())
 	{
 	    changed = myenabled_changed = true;
 	    mycommands = commands;
+	    commands_changed = true;
 	}
 	else
 	{
@@ -368,9 +383,16 @@ bool BreakPoint::update (string& info_output)
 		{
 		    changed = myenabled_changed = true;
 		    mycommands[i] = commands[i];
+		    commands_changed = true;
 		}
 	}
-			
+	if (commands_changed)
+	{
+	    undo_commands << "commands " << number() << '\n';
+	    for (int i = 0; i < old_commands.size(); i++)
+		undo_commands << old_commands[i] << '\n';
+	    undo_commands << "end\n";
+	}
     }
     break;
 
@@ -790,10 +812,11 @@ string BreakPoint::make_false(const string& cond)
 // Session stuff
 //-----------------------------------------------------------------------------
 
-// Return commands to restore this breakpoint.  If AS_DUMMY is set,
-// delete the breakpoint immediately in order to increase the
-// breakpoint number.  If ADDR is set, use ADDR as (fake) address.  If
-// COND is set, use COND as (fake) condition.
+// Return commands to restore this breakpoint, using the dummy number
+// NR.  If AS_DUMMY is set, delete the breakpoint immediately in order
+// to increase the breakpoint number.  If ADDR is set, use ADDR as
+// (fake) address.  If COND is set, use COND as (fake) condition.
+// Return true iff successful.
 bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 			   string pos, string cond)
 {

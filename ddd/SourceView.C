@@ -3720,6 +3720,7 @@ void SourceView::process_info_bp (string& info_output,
 
     bool changed = false;
     bool added   = false;
+    ostrstream undo_commands;
 
     while (info_output != "")
     {
@@ -3795,9 +3796,9 @@ void SourceView::process_info_bp (string& info_output,
 	{
 	    // Update existing breakpoint
 	    bps_not_read -= bp_nr;
-	    if (bp_map.get(bp_nr)->update(info_output)
-		&& (bp_map.get(bp_nr)->position_changed()
-		    || bp_map.get(bp_nr)->enabled_changed()))
+	    BreakPoint *bp = bp_map.get(bp_nr);
+	    if (bp->update(info_output, undo_commands)
+		&& (bp->position_changed() || bp->enabled_changed()))
 	    {
 		changed = true;
 	    }
@@ -3806,8 +3807,10 @@ void SourceView::process_info_bp (string& info_output,
 	{
 	    // New breakpoint
 	    changed = true;
-	    BreakPoint* new_bp = new BreakPoint(info_output, break_arg, bp_nr);
+	    BreakPoint *new_bp = new BreakPoint(info_output, break_arg, bp_nr);
 	    bp_map.insert(bp_nr, new_bp);
+
+	    undo_commands << delete_command(bp_nr) << '\n';
 
 	    if (!added)
 	    {
@@ -3831,9 +3834,13 @@ void SourceView::process_info_bp (string& info_output,
     info_output = keep_me;
 
     // Delete all breakpoints not found now
+    int deleted_nr = 1;
     for (i = 0; i < bps_not_read.size(); i++)
     {
-	delete bp_map.get(bps_not_read[i]);
+	BreakPoint *bp = bp_map.get(bps_not_read[i]);
+	bp->get_state(undo_commands, deleted_nr++);
+
+	delete bp;
 	bp_map.del(bps_not_read[i]);
 	changed = true;
     }
@@ -3843,6 +3850,8 @@ void SourceView::process_info_bp (string& info_output,
 
     // Set up breakpoint editor contents
     process_breakpoints(last_info_output);
+
+    undo_buffer.add_command(string(undo_commands));
 
     // Set up existing panels
     update_properties_panels();
@@ -7621,7 +7630,7 @@ Widget SourceView::map_arrow_at(Widget glyph, XmTextPosition pos)
 
     if (pos_displayed)
     {
-	if (!undo_buffer.at_last_exec_pos())
+	if (undo_buffer.at_past_exec_pos())
 	{
 	    map_glyph(past_arrow, x + arrow_x_offset, y);
 	    unmap_glyph(grey_arrow);
