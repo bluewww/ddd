@@ -1407,6 +1407,8 @@ PS_IMAGES = \
 	$(picdir)/ddd-source.eps           \
 	$(picdir)/ddd-startup-prefs.eps    \
 	$(picdir)/ddd-status-displays.eps  \
+	$(picdir)/ddd-suppress.eps         \
+	$(picdir)/ddd-themes.eps           \
 	$(picdir)/ddd-threads.eps          \
 	$(picdir)/ddd-tool.eps             \
 	$(picdir)/ddd-toolbar.eps          \
@@ -1473,6 +1475,8 @@ PDF_IMAGES = \
 	$(picdir)/ddd-source.pdf           \
 	$(picdir)/ddd-startup-prefs.pdf    \
 	$(picdir)/ddd-status-displays.pdf  \
+	$(picdir)/ddd-suppress.pdf         \
+	$(picdir)/ddd-themes.pdf           \
 	$(picdir)/ddd-threads.pdf          \
 	$(picdir)/ddd-tool.pdf             \
 	$(picdir)/ddd-toolbar.pdf          \
@@ -1539,10 +1543,12 @@ HTML_IMAGES = \
 	$(picdir)/ddd-source$(IMGEXT)           \
 	$(picdir)/ddd-startup-prefs$(IMGEXT)    \
 	$(picdir)/ddd-status-displays$(IMGEXT)  \
-	$(picdir)/ddd-threads$(IMGEXT)          \
+	$(picdir)/ddd-suppress$(IMGEXT)         \
 	$(picdir)/ddd-tool$(IMGEXT)             \
 	$(picdir)/ddd-toolbar$(IMGEXT)          \
 	$(picdir)/ddd-toolbars$(IMGEXT)         \
+	$(picdir)/ddd-themes$(IMGEXT)           \
+	$(picdir)/ddd-threads$(IMGEXT)          \
 	$(picdir)/ddd-value-tip$(IMGEXT)        \
 	$(picdir)/tut-backtrace$(IMGEXT)        \
 	$(picdir)/tut-display$(IMGEXT)          \
@@ -1674,6 +1680,18 @@ $(picdir)/ddd-toolbars.eps: \
 	$(picdir)/ddd-toolbar-2.xpm \
 	$(picdir)/ddd-toolbar-3.xpm \
 	$(picdir)/ddd-toolbar-4.xpm
+$(picdir)/ddd-themes.eps: \
+	$(picdir)/ddd-themes.fig \
+	$(picdir)/theme-none.ps \
+	$(picdir)/theme-backgrounds.ps \
+	$(picdir)/theme-small-titles.ps \
+	$(picdir)/theme-small-values.ps \
+	$(picdir)/theme-tiny-values.ps \
+	$(picdir)/theme-suppress.ps
+$(picdir)/ddd-suppress.eps: \
+	$(picdir)/ddd-suppress.fig \
+	$(picdir)/theme-tree-full.ps \
+	$(picdir)/theme-tree-part.ps
 $(picdir)/tut-backtrace.eps: \
 	$(picdir)/tut-backtrace.fig $(picdir)/tut-backtrace.xpm
 $(picdir)/tut-display.eps: \
@@ -1745,7 +1763,9 @@ $(picdir)/ddd-signals$(IMGEXT):          $(picdir)/ddd-signals.eps
 $(picdir)/ddd-examine$(IMGEXT):          $(picdir)/ddd-examine.eps
 $(picdir)/ddd-clusters$(IMGEXT):         $(picdir)/ddd-clusters.eps
 $(picdir)/ddd-plots$(IMGEXT):            $(picdir)/ddd-plots.eps
+$(picdir)/ddd-suppress$(IMGEXT):         $(picdir)/ddd-suppress.eps
 $(picdir)/ddd-toolbars$(IMGEXT):         $(picdir)/ddd-toolbars.eps
+$(picdir)/ddd-themes$(IMGEXT):           $(picdir)/ddd-themes.eps
 $(picdir)/tut-backtrace$(IMGEXT):	 $(picdir)/tut-backtrace.eps
 $(picdir)/tut-display$(IMGEXT):	         $(picdir)/tut-display.eps
 $(picdir)/tut-finish$(IMGEXT):	         $(picdir)/tut-finish.eps
@@ -1812,7 +1832,9 @@ $(picdir)/ddd-signals.pdf:          $(picdir)/ddd-signals.eps
 $(picdir)/ddd-examine.pdf:          $(picdir)/ddd-examine.eps
 $(picdir)/ddd-clusters.pdf:         $(picdir)/ddd-clusters.eps
 $(picdir)/ddd-plots.pdf:            $(picdir)/ddd-plots.eps
+$(picdir)/ddd-suppress.pdf:         $(picdir)/ddd-suppress.eps
 $(picdir)/ddd-toolbars.pdf:         $(picdir)/ddd-toolbars.eps
+$(picdir)/ddd-themes.pdf:           $(picdir)/ddd-themes.eps
 $(picdir)/tut-backtrace.pdf:	    $(picdir)/tut-backtrace.eps
 $(picdir)/tut-display.pdf:          $(picdir)/tut-display.eps
 $(picdir)/tut-finish.pdf:           $(picdir)/tut-finish.eps

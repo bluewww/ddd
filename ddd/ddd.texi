@@ -2,7 +2,7 @@
 @c $Id$
 @c DDD Manual
 
-@c Copyright (C) 1999-2000 Universitaet Passau, Germany.
+@c Copyright (C) 1999-2001 Universitaet Passau, Germany.
 @c Written by Andreas Zeller <zeller@gnu.org>.
 @c 
 @c This file is part of DDD.
@@ -52,7 +52,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2000-12-19
+@set DATE 2001-01-09
 
 @c Index stuff
 @c Labels
@@ -560,6 +560,7 @@ Customizing Displays
 * Editing Themes::              
 * Writing Data Themes::         
 * Display Resources::           
+* VSL Resources::               
 
 Layouting the Graph
 
@@ -1025,7 +1026,7 @@ command tool.
 @item January, 2000
 @DDD{} 3.2: New manual, Readline support, Ladebug support.
 
-@item December, 2000
+@item January, 2001
 @DDD{} 3.3: Data themes, JDB 1.2 support, VxWorks support.
 @end table
 
@@ -2214,14 +2215,14 @@ Load the @VSL{} library @var{library} instead of using the
 display shapes and fonts.
 
 Giving this option is equivalent to setting the @DDD{} @samp{vslLibrary}
-resource to @var{library}.  @xref{Display Resources}, for details.
+resource to @var{library}.  @xref{VSL Resources}, for details.
 
 
 @item --vsl-path @var{path}
 Search @VSL{} libraries in @var{path} (a colon-separated directory list).
 
 Giving this option is equivalent to setting the @DDD{} @samp{vslPath}
-resource to @var{path}.  @xref{Display Resources}, for details.
+resource to @var{path}.  @xref{VSL Resources}, for details.
 
 
 @item --vsl-help
@@ -8598,6 +8599,12 @@ If you have selected only part of a display, clicking on the
 applying the @emph{Suppress Values} theme on the part.  You'll be asked
 for confirmation first.  @xref{Using Data Themes}, for details.
 
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-suppress, 16cm}
+@sp 1
+@end ifnotinfo
+
 To delete several displays at once, use the @samp{Undisp} button in the
 Display Editor (invoked via @samp{Data @result{} Displays}).  Select any
 number of display items in the usual way and delete them by pressing
@@ -9125,6 +9132,7 @@ A newline-separated list of display expressions to be included in the
 * Editing Themes::              
 * Writing Data Themes::         
 * Display Resources::           
+* VSL Resources::               
 @end menu
 
 @node Using Data Themes
@@ -9156,6 +9164,12 @@ Apply this theme to display values not at all.
 @end table
 
 Each of these themes can be applied for specific displays.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-themes, 16cm}
+@sp 1
+@end ifnotinfo
 
 @lbindex Theme
 To apply a theme on a display,
@@ -9270,6 +9284,7 @@ You can write your own data themes, customizing the display to match
 your need.  @xref{Top,,, ddd-themes, Writing DDD Themes}, for details.
 
 
+
 @node Display Resources
 @subsubsection Display Resources
 
@@ -9323,6 +9338,9 @@ A newline-separated list of themes.  Each theme has the format
 @end defvr
 
 
+
+@node VSL Resources
+@subsubsection VSL Resources
 
 The following resources control the @VSL{} interpreter:
 
