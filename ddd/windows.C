@@ -1003,13 +1003,16 @@ bool have_exec_window()
 // Tool window
 void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
 {
+    if (tool_shell == 0 || !XtIsRealized(tool_shell))
+	return;
+
     popdown_shell(tool_shell);
     update_options();
 }
 
 void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 {
-    if (tool_shell == 0)
+    if (tool_shell == 0 || !XtIsRealized(tool_shell))
 	return;
 
     XtVaSetValues(tool_shell,
