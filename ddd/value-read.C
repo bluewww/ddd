@@ -82,7 +82,7 @@ DispValueType determine_type (string value)
     if (value.matches(RXstr_or_cl_begin))
     {
 	static regex 
-	    RXstr_or_cl_begin_s("({\n|record\n|RECORD\n|struct|class|union)");
+	    RXstr_or_cl_begin_s("({\n|record\n|RECORD\n)");
 
 	// DEC DBX uses `{' for arrays and structs.  So, we check for
 	// some member of this struct -- that is, a ` = ' before
