@@ -30,7 +30,8 @@ DDD-3.3.9
   enables the libiberty support if required.
 - The libiberty distributed with ddd has been upgraded to the one included
   in GCC 3.4 20040116. It fixes some configuration problems.
-- Builds with IBM xlC, with GCC 3.4 and on X11R5 based systems should be OK.
+- Builds with GCC 3.4, with IBM xlC, with Compaq/HP cxx on Tru64 and on
+  X11R5 based systems should be OK.
 - Builds on HP-UX should now work out-of-the-box. Motif is linked statically
   and the Athena libraries are now found by default.
 - Builds without Motif/Lesstif available abort with an adequate message.

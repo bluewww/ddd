@@ -205,6 +205,8 @@ for f in `grep -rl '^#pragma interface' .` ; do mv $f $f.old ; sed -e 's:^#pragm
 DEC
 ===
 
+(See Tru64 section)
+
 Reported by: Tim Mooney <mooney@dogbert.cc.ndsu.NoDak.edu>
 
     When using DEC's C++ compiler 6.0, more than 99% of the warnings I
@@ -481,10 +483,9 @@ Tru64
 Reported by: Tim Mooney <mooney@dogbert.cc.ndsu.NoDak.edu>
 
     Using the Compaq C++ compiler Version 6.5, it is necessary
-    to use "CXX='cxx' CXXFLAGS='-D__USE_STD_IOSTREAM -nousing_std'
-    ./configure" to build ddd 3.3.8 and later. However, this compiler
-    has problems with namespaces and the build may fail. Workarounds
-    are welcome.
+    to use "CXX='cxx' CXXFLAGS='-std ansi -D__USE_STD_IOSTREAM -nousing_std'
+    ./configure" to build ddd 3.3.9 and later
+    (CXXFLAGS='-std strict_ansi -nopure_cname' should do as well).
 
 
 UNIXWARE

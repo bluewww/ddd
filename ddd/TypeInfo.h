@@ -37,9 +37,7 @@
 
 #if HAVE_TYPEINFO
 
-#define string stdstring
 #include <typeinfo>
-#undef string
 
 // Public interface.  Defined according to: Stroustrup, the C++
 // Programming Language, 2nd Ed., Section 13.5
@@ -172,7 +170,7 @@ class TypeInfo {
 
 private:
     // Data
-    char *_name;		// Name of this class
+    const char *_name;		// Name of this class
     BaseList _direct_bases;	// List of direct base classes
     BaseList *_all_bases;	// Ptr to list of all base classes
     unsigned int _hash;		// 1Hash code (0 if not yet built)
@@ -214,7 +212,7 @@ private:
 public:
 #if !IMMEDIATE_TYPE_INFO
     // Construction
-    TypeInfo(char *name, BaseList direct_bases, BaseList *all_bases):
+    TypeInfo(const char *name, BaseList direct_bases, BaseList *all_bases):
 	_name(name), _direct_bases(direct_bases), _all_bases(all_bases),
 	_hash(0)
     {}
