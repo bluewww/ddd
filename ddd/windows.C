@@ -40,6 +40,7 @@ char windows_rcsid[] =
 #include "exectty.h"
 #include "cmdtty.h"
 #include "AppData.h"
+#include "BoxRegion.h"
 #include "exit.h"
 #include "ddd.h"
 #include "DataDisp.h"
@@ -230,6 +231,44 @@ void iconify_tty(Widget shell)
     }
 }
 
+static int visibility(Widget w)
+{
+    if (w == command_shell)
+	return command_shell_visibility;
+    else if (w == data_disp_shell)
+	return data_disp_shell_visibility;
+    else if (w == source_view_shell)
+	return source_view_shell_visibility;
+    else if (w == tool_shell)
+	return tool_shell_visibility;
+    else
+	return VisibilityFullyObscured;
+}
+
+static BoxRegion region(Widget w)
+{
+    XWindowAttributes attr;
+
+    Status ok;
+    ok = XGetWindowAttributes(XtDisplay(w), XtWindow(w), &attr);
+    if (!ok)
+	return BoxRegion();
+
+    return BoxRegion(BoxPoint(attr.x, attr.y), 
+		     BoxSize(attr.width, attr.height));
+}
+
+static bool obscures(Widget top, Widget bottom)
+{
+    if (top == 0 || bottom == 0)
+	return false;
+
+    if (visibility(top) != VisibilityUnobscured
+	|| visibility(bottom) == VisibilityUnobscured)
+	return false;
+
+    return region(bottom) <= region(top);
+}
 
 void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 {
@@ -368,6 +407,16 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	    source_view_shell_visibility = event->xvisibility.state;
 	else if (w == tool_shell)
 	    tool_shell_visibility = event->xvisibility.state;
+
+	// Check whether command tool is obscured
+	if (obscures(command_shell, tool_shell)
+	    || obscures(data_disp_shell, tool_shell)
+	    || obscures(source_view_shell, tool_shell))
+	{
+	    // Command tool is obscured by some DDD shell - raise it
+	    XRaiseWindow(XtDisplay(tool_shell), 
+			 XtWindow(tool_shell));
+	}
     }
 
     default:
@@ -687,7 +736,7 @@ static Window frame_window(Window window)
     {
 	Window root;
 	Window parent;
-	Window *children;
+	Window *children = 0;
 	unsigned int nchildren;
 	Status ok = XQueryTree(XtDisplay(tool_shell), w, 
 			       &root, &parent, &children, &nchildren);
