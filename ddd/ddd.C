@@ -339,6 +339,9 @@ static void set_settings_title(Widget w);
 static void popup_startup_logo(Widget parent, string color_key);
 static void popdown_startup_logo(XtPointer data = 0, XtIntervalId *id = 0);
 
+// Read in database from FILENAME.  Upon version mismatch, ignore some
+// resources such as window sizes.
+static XrmDatabase GetFileDatabase(char *filename);
 
 //-----------------------------------------------------------------------------
 // Xt Stuff
@@ -1453,7 +1456,7 @@ int main(int argc, char *argv[])
 
     // Read ~/.ddd/init resources
     XrmDatabase dddinit = 
-	XrmGetFileDatabase(session_state_file(DEFAULT_SESSION));
+	GetFileDatabase(session_state_file(DEFAULT_SESSION));
     if (dddinit == 0)
 	dddinit = XrmGetStringDatabase("");
 
@@ -1517,8 +1520,9 @@ int main(int argc, char *argv[])
     XrmDatabase session_db = 0;
     if (session_id != 0)
     {
-	// Merge in session resources
-	session_db = XrmGetFileDatabase(session_state_file(session_id));
+	// Merge in session resources; these override `~/.ddd/init' as
+	// well as the command-line options.
+	session_db = GetFileDatabase(session_state_file(session_id));
 	if (session_db != 0)
 	    XrmMergeDatabases(session_db, &dddinit);
     }
@@ -1702,8 +1706,6 @@ int main(int argc, char *argv[])
 	    + rm(app_data.dddinit_version) + cr()
 	    + rm("(this is " DDD_NAME " " DDD_VERSION ").  "
 		 "Please save options.");
-	
-	
     }
 
     // Register own converters
@@ -2556,6 +2558,93 @@ static void ddd_check_version()
 	post_warning(string(msg), "expired_warning");
     }
 }
+
+// Read in database from FILENAME.  Upon version mismatch, ignore some
+// resources such as window sizes.
+XrmDatabase GetFileDatabase(char *filename)
+{
+    string version_found = "";
+
+    string tempfile = tmpnam(0);
+    ofstream os(tempfile);
+    ifstream is(filename);
+
+#if 0
+    clog << "Copying " << filename << " to " << tempfile << "\n";
+#endif
+
+    // Resources to ignore upon copying
+    static char *do_not_copy[] = 
+    { 
+	XmNwidth, XmNheight,	              // Shell sizes
+	XmNcolumns, XmNrows,	              // Text window sizes
+	XtNtoolRightOffset, XtNtoolTopOffset  // Command tool offset
+    };
+
+    bool version_mismatch = false;
+    while (is)
+    {
+	char _line[BUFSIZ];
+	_line[0] = '\0';
+	is.getline(_line, sizeof(_line));
+	string line = _line;
+
+	bool copy = true;
+	if (line.contains('!', 0))
+	{
+	    // Comment -- proceed
+	}
+	else
+	{
+	    if (line.contains(XtNdddinitVersion ":"))
+	    {
+		version_found = line.after(":");
+		read_leading_blanks(version_found);
+		strip_final_blanks(version_found);
+
+		if (version_found != DDD_VERSION)
+		    version_mismatch = true;
+	    }
+	    else
+	    {
+		for (int i = 0; copy && i < int(XtNumber(do_not_copy)); i++)
+		{
+		    string res = string(".") + do_not_copy[i] + ":";
+		    if (line.contains(res) && version_mismatch)
+		    {
+#if 0
+			cerr << "Warning: ignoring " << line 
+			     << " in " << filename << "\n";
+#endif
+			copy = false;
+		    }
+		}
+	    }
+	}
+
+	if (copy)
+	    os << line << '\n';
+    }
+
+    // Flush them all
+    os.close();
+    is.close();
+
+    if (version_mismatch)
+    {
+	// Read database from filtered file
+	XrmDatabase db = XrmGetFileDatabase(tempfile);
+	unlink(tempfile);
+	return db;
+    }
+    else
+    {
+	// No version mismatch - read from original file
+	unlink(tempfile);
+	return XrmGetFileDatabase(filename);
+    }
+}
+
 
 
 //-----------------------------------------------------------------------------
