@@ -2428,10 +2428,8 @@ static void DeleteAllInfosCB (Widget, XtPointer, XtPointer)
 }
 
 // Fetch help for specific COMMAND
-static string get_help_line(const string& command, DebuggerType type)
+static string get_help_line(const string& command, DebuggerType /*type*/)
 {
-    (void) type;
-
     string reply = cached_gdb_question("help " + command);
     reply = reply.before('\n');
     if (reply.contains('.'))
@@ -2474,7 +2472,7 @@ static void fix_clip_window_translations(Widget scroll)
 	have_clip_actions = true;
     }
 
-    String clip_translations =
+    const _XtString const clip_translations =
 	"<Key>osfPageUp:         clip-do(PageUpOrLeft, 0)\n"
 	"<Key>osfPageDown:       clip-do(PageDownOrRight, 0)\n"
 	"Ctrl <Key>osfBeginLine: clip-do(TopOrBottom)\n"
