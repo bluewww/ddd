@@ -232,7 +232,7 @@ int TTYAgent::open_master()
 #ifdef HAVE__GETPTY
     // _getpty() - an SGI feature
     line = _getpty(&master, O_RDWR, 0600, 0);
-    if (line != 0)
+    if (line != 0 && master >= 0)
     {
 	// Verify slave side is usable
 	if (access(line, R_OK | W_OK) == 0)
