@@ -610,7 +610,7 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 	    if (!enabled() && gdb->has_disable_command())
 		os << gdb->disable_command(num) << "\n";
 	    int ignore = ignore_count();
-	    if (ignore >= 0 && gdb->has_ignore_command())
+	    if (ignore > 0 && gdb->has_ignore_command())
 		os << gdb->ignore_command(num, ignore) << "\n";
 	    if (cond != "" && gdb->has_condition_command())
 		os << gdb->condition_command(num, cond) << "\n";
@@ -654,7 +654,7 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 	    if (!enabled() && gdb->has_disable_command())
 		os << gdb->disable_command(num) << "\n";
 	    int ignore = ignore_count();
-	    if (ignore >= 0 && gdb->has_ignore_command())
+	    if (ignore > 0 && gdb->has_ignore_command())
 		os << gdb->ignore_command(num, ignore) << "\n";
 	}
 	break;
@@ -683,7 +683,7 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 	    if (!enabled() && gdb->has_disable_command())
 		os << gdb->disable_command(num) << "\n";
 	    int ignore = ignore_count();
-	    if (ignore >= 0 && gdb->has_ignore_command())
+	    if (ignore > 0 && gdb->has_ignore_command())
 		os << gdb->ignore_command(num, ignore) << "\n";
 	}
 	break;
