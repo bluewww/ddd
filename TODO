@@ -120,15 +120,14 @@ Volunteers for these and other projects are welcome!
 
 041. [done]
 
-042. jcrupi@mystech.com (John Crupi) would like to
-     change the 'break point' symbol.
+042. jcrupi@mystech.com (John Crupi) wants to change the 'break point' symbol.
 
 043. [done]
 
 044. Disable pointer grabs from the debugged application as soon as
      the Debugger prompt reappears.  But how?
 
-045. Collect output of printing command and show it in a dialog box.
+045. [done]
 
 046. Apply GNU Library Public license to all of DDD?
 
@@ -152,6 +151,6 @@ Volunteers for these and other projects are welcome!
      LENS (see ftp.cc.gatech.edu:pub/people/stasko).  Suggested by
      bruce@liverpool.ac.uk (Bruce Stephens).
 
-051. [fixed]
+051. [done]
 
 052. (Insert your project idea here)
