@@ -68,11 +68,14 @@ Examining Data
 User Interface
 --------------
 
+- Interrupts (Ctrl+C) from the controlling TTY can be issued multiple times.
+
 - In LessTif, combo boxes (drop-down text boxes) no longer shrink.
 
 - In LessTif, Text selection works better.
 
-- Interrupts (Ctrl+C) from the controlling TTY can be issued multiple times.
+- In LessTif, the Backspace and Delete keys in the debugger console 
+  work better.
 
 - Forwarding of keyboard events from the source window into the
   debugger console is now optional.  See the `consoleHasFocus' resource. (10)
@@ -135,12 +138,6 @@ Tracking Code Changes
 
 - You can also download most recent DDD versions from the public CVS
   interface.  See the file `README-CVS' in the CVS archive for details.
-
-
-Known Issues
-------------
-
-- Data themes are not documented yet.
 
 
 Acknowledgments
