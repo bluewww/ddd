@@ -75,7 +75,13 @@ public:
 
 
 private:
-    VSLDefList(const VSLDefList&);
+    VSLDefList(const VSLDefList&)
+	: _func_name(), _first(0), _last(0), _ndefs(0),
+	_next(0), _global(false), lib(0), hashcode(0), 
+	references(0), self_references(0)
+    {
+	assert(0);
+    }
 
     VSLDefList& operator = (const VSLDefList&) 
     { 
@@ -93,7 +99,7 @@ public:
     VSLDef *firstdef() const { assert (_ndefs == 1); return _first; }
 
     // Duplicate
-    VSLDefList *dup() const;
+    VSLDefList *dup(const VSLLib *lib) const;
 
     // Resources
     string func_name() const { return _func_name; }
@@ -131,7 +137,7 @@ public:
     virtual ~VSLDefList();
 
     // Representation invariant
-    bool OK() const;
+    virtual bool OK() const;
 };
 
 #endif

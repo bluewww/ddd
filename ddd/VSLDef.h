@@ -71,7 +71,6 @@ private:
 
 public:
     VSLDefList *deflist;        // Parent
-    VSLDef *duplicated_into;	// After duplicating, leave pointer here
 
     // Constructor
     VSLDef(VSLDefList* l, VSLNode *pattern, VSLNode *e = 0,
@@ -89,6 +88,11 @@ public:
     VSLNode*& expr()            { return _expr; }
     VSLNode*& node_pattern()    { return _node_pattern; }
     Box*& box_pattern()         { return _box_pattern; }
+
+    VSLNode* expr() const           { return _expr; }
+    VSLNode* node_pattern() const   { return _node_pattern; }
+    Box* box_pattern() const        { return _box_pattern; }
+
     unsigned nargs() const      { return _nargs; }
     bool straight() const       { return _straight; }
 
@@ -104,8 +108,8 @@ public:
     string f_name() const;        // external name (including args)
     string longname() const;      // external name (including args and loc)
 
-    // Duplicate
-    VSLDef *dup() const;
+    string filename() const     { return _filename; }
+    int lineno() const          { return _lineno; }
 
     // Evaluate
     const Box *eval(Box *arg) const;

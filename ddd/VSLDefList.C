@@ -174,44 +174,6 @@ void VSLDefList::replace()
     _ndefs = 0;
 }
 
-// Duplicate
-VSLDefList::VSLDefList(const VSLDefList& dl)
-    : _func_name(dl._func_name),
-      _first(0),
-      _last(0),
-      _ndefs(dl._ndefs),
-      _next(0),
-      _global(dl._global),
-      lib(0),
-      hashcode(dl.hashcode),
-      references(dl.references),
-      self_references(dl.self_references)
-{
-    VSLDef *prev_d = 0;
-    for (VSLDef *d = dl._first; d != 0; d = d->listnext())
-    {
-	VSLDef *new_d = d->dup();
-	_last = new_d;
-	new_d->deflist = this;
-
-	if (d == dl._first)
-	    _first = new_d;
-	
-	new_d->listnext() = 0;
-	if (prev_d != 0)
-	    prev_d->listnext() = new_d;
-	prev_d = new_d;
-    }
-
-    assert(OK());
-}
-
-// Duplicate
-VSLDefList *VSLDefList::dup() const
-{
-    return new VSLDefList(*this);
-}
-
 // Destroy definition *and all successors*
 VSLDefList::~VSLDefList()
 {

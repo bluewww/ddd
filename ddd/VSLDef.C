@@ -72,40 +72,31 @@ VSLDef::VSLDef(VSLDefList* l, VSLNode *pattern, VSLNode *e,
       _lineno(lineno),
 	_listnext(0), _libnext(0), _libprev(0),
       being_compiled(false),
-      deflist(l),
-      duplicated_into(0)
+      deflist(l)
 {}
+
+// `Dummy' copy constructor
+VSLDef::VSLDef(const VSLDef&)
+    : _expr(0),
+      _node_pattern(0),
+      _box_pattern(0),
+      _nargs(0),
+      _straight(0),
+      _filename(),
+      _lineno(0),
+      _listnext(0), _libnext(0), _libprev(0),
+      being_compiled(false),
+      deflist(0)
+{
+    assert(0);
+    abort();
+}
 
 // `Dummy' assignment
 VSLDef& VSLDef::operator = (const VSLDef&)
 {
     assert(0);
     return *this;
-}
-
-
-// Copy constructor
-VSLDef::VSLDef(const VSLDef& d)
-    : _expr(d._expr ? d._expr->dup() : 0),
-      _node_pattern(d._node_pattern->dup()),
-      _box_pattern(d._box_pattern ? d._box_pattern->dup() : 0),
-      _nargs(d._nargs),
-      _straight(d._straight),
-      _filename(d._filename),
-      _lineno(d._lineno),
-      _listnext(0), _libnext(0), _libprev(0),
-      being_compiled(d.being_compiled),
-      deflist(0),
-      duplicated_into(0)
-{
-    ((VSLDef &)d).duplicated_into = this;
-    assert(OK());
-}
-
-// Duplicate
-VSLDef *VSLDef::dup() const
-{
-    return new VSLDef(*this);
 }
 
 // Pattern matching
