@@ -1135,7 +1135,7 @@ void plusOQAC (string answers[],
 	if (file != "")
 	{
 	    int line;
-	    if (plus_cmd_data->refresh_initial_line)
+	    if (plus_cmd_data->refresh_initial_line && atoi(listing) > 0)
 		line = atoi(listing);
 	    else
 		line = line_of_listing(listing);

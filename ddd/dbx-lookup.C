@@ -38,6 +38,7 @@ const char dbx_lookup_rcsid[] =
 #include "Assoc.h"
 #include "ddd.h"
 #include "post.h"
+#include "misc.h"
 #include "question.h"
 #include "string-fun.h"
 #include "GDBAgent.h"
@@ -124,7 +125,10 @@ void clear_dbx_lookup_cache()
 int line_of_listing(string& listing)
 {
     string message;
-    while (listing != "" && atoi(listing) == 0)
+    while (listing != ""
+	   && !listing.contains('>', 0) 
+	   && !listing.contains('*', 1) 
+	   && atoi(listing) == 0)
     {
 	message += listing.through('\n');
 	listing = listing.after('\n');
@@ -133,32 +137,42 @@ int line_of_listing(string& listing)
     if (message != "")
 	post_gdb_message(message);
 
-    // DEC DBX issues a `>' before the current line, which is quite useful
-    int line;
-    int idx = listing.index("\n>");
-    if (idx >= 0)
+    int idx = -1;
+
+    if (idx < 0)
     {
-	string current_line = listing.after(idx);
-	current_line = current_line.after('>');
-	line = atoi(current_line);
+	// SGI DBX issues `*' in column 2 before the `list'ed line.
+	// Quite useful.
+	static regex nlstar("\n.[*]");
+	int idx = listing.index(nlstar);
+	if (idx < 0 && listing.contains('*', 1))
+	    idx = 1;
     }
-    else if (listing.contains('>', 0))
+
+    if (idx < 0)
     {
-	string current_line = listing.after('>');
-	line = atoi(current_line);
+	// DEC and SGI DBX issue `>' in column 1 before the current
+	// execution line.  Quite useful.
+	int idx = listing.index("\n>");
+	if (idx < 0 && listing.contains('>', 0))
+	    idx = 0;
     }
-    else
+
+    // Use the first number found.
+    int num_idx = listing.index(rxint, max(idx, 0));
+    int line = 0;
+    if (num_idx >= 0)
+	line = atoi(listing.chars() + num_idx);
+
+    if (line == 0)
     {
-	line = atoi(listing);
-	if (line == 0)
-	{
-	    // Weird.  No source?
-	}
-	else
-	{
-	    // The position we are looking for is in the middle
-	    line += (listing.freq('\n') + 1) / 2 - 1;
-	}
+	// Weird.  No source?
+    }
+    else if (idx < 0)
+    {
+	// No indicator found - 
+	// the position we are looking for is in the middle
+	line += (listing.freq('\n') + 1) / 2 - 1;
     }
 
     return line;
