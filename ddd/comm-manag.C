@@ -1031,10 +1031,10 @@ bool is_known_command(const string& answer)
     return ans.contains("program is not active")  // DBX
 	|| (!ans.contains("syntax")               // DEC DBX
 	    && !ans.contains("invalid keyword")   // DEC DBX
-	    && !ans.contains("help")              // GDB & SUN DBX 1.0
+	    && !ans.contains("undefined command") // GDB
 	    && !ans.contains("not found")         // SUN DBX 3.0
 	    && !ans.contains("is unknown")        // SUN DBX 3.0
-	    && !ans.contains("unrecognized")      // AIX DBX
+	    && !ans.contains("unrecognized")      // AIX DBX, SUN DBX 1.0
 	    && !ans.contains("no help available") // AIX DBX
 	    && !ans.contains("expected")          // SGI DBX
 	    && !ans.contains("unknown", 0));      // XDB
