@@ -2164,6 +2164,12 @@ Whether to cache source files (`\fBtrue\fR', default) or not
 (`\fBfalse\fR').  Caching source files requires more memory, but makes
 \s-2@DDD@\s+2 run faster.
 .TP
+.B "dataWindow (\fPclass\fB Window)"
+If `\fBfalse\fR', no data window is created upon start-up.
+.TP
+.B "debuggerConsole (\fPclass\fB Window)"
+If `\fBfalse\fR', no debugger console is created upon start-up.
+.TP
 .B "disassemble (\fPclass\fB Disassemble)"
 If this is `\fBtrue\fR', the source code is automatically
 disassembled.  The default is `\fBfalse\fR'.  See also the
@@ -2233,6 +2239,9 @@ realized in different top-level windows.  If `\fBfalse\fR' (default),
 the source window is attached to the debugger console.  See also the
 `\fB\-\-attach\-windows\fR' and `\fB\-\-attach\-source\-window\fR'
 options, below.
+.TP
+.B "sourceWindow (\fPclass\fB Window)"
+If `\fBfalse\fR', no source window is created upon start-up.
 .TP
 .B "statusAtBottom (\fPclass\fB StatusAtBottom)"
 If `\fBtrue\fR' (default), the status line is placed at the bottom of
@@ -3251,6 +3260,12 @@ Show this manual page and exit.
 .B \-\-no\-button\-tips
 Disable button tips.
 .TP
+.B \-\-no\-data\-window
+Do not create the data window upon start-up.
+.TP
+.B \-\-no\-debugger\-console
+Do not create the debugger console upon start-up.
+.TP
 .B \-\-no\-disassemble
 Do not disassemble the source code.
 .TP
@@ -3262,6 +3277,9 @@ little terminal input/output, or for remote debugging.
 .B \-\-no\-glyphs
 Display the current execution position and breakpoints as text
 characters.  Do not use glyphs.
+.TP
+.B \-\-no\-source\-window
+Do not create the source window upon start-up.
 .TP
 .B \-\-no\-value\-tips
 Disable value tips.

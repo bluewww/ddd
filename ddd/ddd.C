@@ -362,6 +362,15 @@ static XrmOptionDescRec options[] = {
 { "--no-exec-window",       XtNseparateExecWindow,   XrmoptionNoArg, S_false },
 { "-no-exec-window",        XtNseparateExecWindow,   XrmoptionNoArg, S_false },
 
+{ "--no-source-window",     XtNsourceWindow,         XrmoptionNoArg, S_false },
+{ "-no-source-window",      XtNsourceWindow,         XrmoptionNoArg, S_false },
+
+{ "--no-data-window",       XtNdataWindow,           XrmoptionNoArg, S_false },
+{ "-no-data-window",        XtNdataWindow,           XrmoptionNoArg, S_false },
+
+{ "--no-debugger-console",  XtNdebuggerConsole,      XrmoptionNoArg, S_false },
+{ "-no-debugger-console",   XtNdebuggerConsole,      XrmoptionNoArg, S_false },
+
 { "--button-tips",          XtNbuttonTips,           XrmoptionNoArg, S_true },
 { "-button-tips",           XtNbuttonTips,           XrmoptionNoArg, S_true },
 
@@ -1898,6 +1907,14 @@ int main(int argc, char *argv[])
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
     }
 
+    // Close windows explicitly requested
+    if (!app_data.data_window)
+	gdbCloseDataWindowCB(gdb_w, 0, 0);
+    if (!app_data.source_window)
+	gdbCloseSourceWindowCB(gdb_w, 0, 0);
+    if (!app_data.debugger_console)
+	gdbCloseCommandWindowCB(gdb_w, 0, 0);
+
     // If some window is iconified, iconify all others as well
     const int structure_mask = StructureNotifyMask | VisibilityChangeMask;
     if (command_shell)
@@ -1957,6 +1974,10 @@ int main(int argc, char *argv[])
 	if (app_data.tool_bar)
 	{
 	    // The command tool is not needed, as we have a tool bar.
+	}
+	else if (!app_data.source_window)
+	{
+	    // We have no source window, and thus no command tool.
 	}
 	else if (source_view_shell || iconic)
 	{
@@ -2334,13 +2355,15 @@ void update_options()
 
     if (app_data.tool_bar && tool_bar_w != 0 && !XtIsManaged(tool_bar_w))
     {
-	XtManageChild(tool_bar_w);
+	if (app_data.source_window)
+	    XtManageChild(tool_bar_w);
 	gdbCloseToolWindowCB(command_shell, 0, 0);
     }
     else if (!app_data.tool_bar && tool_bar_w != 0 && XtIsManaged(tool_bar_w))
     {
 	XtUnmanageChild(tool_bar_w);
-	gdbOpenToolWindowCB(command_shell, 0, 0);
+	if (app_data.source_window)
+	    gdbOpenToolWindowCB(command_shell, 0, 0);
     }
 
     EnableButtonTips(app_data.button_tips);

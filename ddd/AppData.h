@@ -82,6 +82,12 @@
 #define XtNseparateSourceWindow  "separateSourceWindow"
 #define XtNseparateExecWindow    "separateExecWindow"
 #define XtCSeparate              "Separate"
+#define XtNdataWindow            "dataWindow"
+#define XtNsourceWindow          "sourceWindow"
+#define XtNdebuggerConsole       "debuggerConsole"
+#ifndef XtCWindow
+#define XtCWindow                "Window"
+#endif
 #define XtNtermCommand           "termCommand"
 #define XtCTermCommand           "TermCommand"
 #define XtNtermType              "termType"
@@ -229,6 +235,9 @@ struct AppData {
     Boolean separate_data_window;
     Boolean separate_source_window;
     Boolean separate_exec_window;
+    Boolean data_window;
+    Boolean source_window;
+    Boolean debugger_console;
     String  term_command;
     String  term_type;
     Boolean use_tty_command;

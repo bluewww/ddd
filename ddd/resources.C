@@ -274,6 +274,36 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNdataWindow,
+	XtCWindow,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, data_window),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
+	XtNsourceWindow,
+	XtCWindow,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, source_window),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
+	XtNdebuggerConsole,
+	XtCWindow,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, debugger_console),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNtermCommand,
 	XtCTermCommand,
 	XtRString,
