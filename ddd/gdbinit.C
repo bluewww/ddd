@@ -244,7 +244,8 @@ DebuggerType guess_debugger_type(int argc, char *argv[])
     bool have_python = have_cmd("python");
 
     // Check for Perl and Python scripts
-    for (int i = 1; i < argc; i++)
+    int i;
+    for (i = 1; i < argc; i++)
     {
 	string arg = argv[i];
 
@@ -269,25 +270,65 @@ DebuggerType guess_debugger_type(int argc, char *argv[])
 	}
     }
 
-    // Check for Java classes
+    // Check for executables.
+    for (i = 1; i < argc; i++)
+    {
+	string arg = argv[i];
+
+	if (arg.contains('-', 0))
+	    continue;		// Option
+
+	if (is_exec_file(arg))
+	{
+	    if (have_cmd("gdb"))
+		return GDB;
+
+	    if (have_cmd("dbx"))
+		return DBX;
+
+	    if (have_cmd("xdb"))
+		return XDB;
+	}
+    }
+
+    // Search class path for Java classes.
     if (have_cmd("jdb"))
     {
-	for (int i = 1; i < argc; i++)
+	for (i = 1; i < argc; i++)
 	{
 	    string arg = argv[i];
 
 	    if (arg.contains('-', 0))
 		continue;		// Option
+	    if (arg.contains('/', 0))
+		continue;		// File
 
-	    if (is_regular_file(arg + ".java"))
-		return JDB;
+	    string classpath = 
+		getenv("CLASSPATH") != 0 ? getenv("CLASSPATH") : ".";
+	    while (classpath != "")
+	    {
+		string dir;
+		if (classpath.contains(':'))
+		    dir = classpath.before(':');
+		else
+		    dir = classpath;
+		classpath = classpath.after(':');
 
-	    if (is_regular_file(arg + ".class"))
-		return JDB;
+		if (dir == "")
+		    dir = ".";
+		if (!dir.contains('/', -1))
+		    dir += '/';
+
+		if (is_regular_file(dir + arg + ".java"))
+		    return JDB;
+
+		if (is_regular_file(dir + arg + ".class"))
+		    return JDB;
+	    }
 	}
     }
 
-    // Return an appropriate inferior debugger
+    // Return a default inferior debugger
     if (have_cmd("gdb"))
 	return GDB;
 
