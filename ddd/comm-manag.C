@@ -2662,7 +2662,9 @@ static void extra_completed (const StringArray& answers,
 	{
 	    const string& cmd = extra_data->extra_commands[qu_count];
 	    string var = cmd.after(rxwhite);
-	    ans += var + " = ";
+
+	    if (!gdb->has_named_values())
+		ans += var + " = ";
 
 	    string value = answers[qu_count++];
 	    gdb->munch_value(value, var);
