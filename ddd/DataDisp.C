@@ -4113,6 +4113,7 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
 	    refresh_args();
 
 	// Refresh editor
+	refresh_builtin_user_displays();
 	refresh_graph_edit();
 
 	// Refresh addresses now
