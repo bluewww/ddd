@@ -3116,7 +3116,7 @@ enough place to display breakpoint locations.  Default: \fB4\fR.
 .TP
 .B "indentSource (\fPclass\fB Indent)"
 The number of columns to indent the source code, such that there is
-enough place to display breakpoint locations.  Default: \fB4\fR.
+enough place to display breakpoint locations.  Default: \fB0\fR.
 .TP
 .B "lineNumberWidth (\fPclass\fB LineNumberWidth)"
 The number of columns to use for line numbers (if displaying line
@@ -3132,13 +3132,13 @@ The minimum number of lines to show after the current location.
 Default is \fB3\fR.
 .TP
 .B "maxDisassemble (\fPclass\fB MaxDisassemble)"
-Maximum number of bytes to disassemble (default: 256).  If this is
-zero, the entire current function is disassembled.
+Maximum number of bytes to disassemble (default: \fB256\fR).  If this
+is zero, the entire current function is disassembled.
 .TP
 .B "maxGlyphs (\fPclass\fB MaxGlyphs)"
-The maximum number of glyphs to be displayed (default: 10).  Raising
-this value causes more glyphs to be allocated, possibly wasting
-resources that are never needed.
+The maximum number of glyphs to be displayed (default: \fB10\fR).
+Raising this value causes more glyphs to be allocated, possibly
+wasting resources that are never needed.
 .TP
 .B "tabWidth (\fPclass\fB TabWidth)"
 The tab width used in the source window (default: \fB8\fR)
@@ -3394,7 +3394,7 @@ session, using the `\fB\-\-rhost\fR' option.  By default, it sets up
 the remote terminal such that it suits \s-2@DDD@\s+2:
 .sp
 .br
-  \fB@Ddd@*rHostInitCommands: stty -echo -onlcr\fR
+  \fB@Ddd@*rHostInitCommands: stty \-echo \-onlcr\fR
 .br
 .sp
 You may add other commands here\(em\&for instance, to set the
