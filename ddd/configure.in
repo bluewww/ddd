@@ -48,7 +48,7 @@ dnl
 ddd=ddd
 Ddd=Ddd
 DDD=DDD
-VERSION=1.3d
+VERSION=1.3e
 dnl
 AC_SUBST(ddd)dnl
 AC_SUBST(Ddd)dnl
@@ -147,7 +147,20 @@ dnl
 dnl Locate Libraries
 dnl
 dnl
-AC_CHECK_LIB(nsl, gethostbyname, LIBS="${LIBS} -lnsl")
+dnl Check socket libraries
+dnl Configure code adapted from tk's configure.in
+dnl We need to check whether we need the libraries because IRIX5 ships
+dnl with bogus versions.
+AC_CHECK_FUNC(connect, , ddd_check_socket=1)
+if test "$ddd_check_socket" = 1; then
+  AC_CHECK_LIB(socket, main, LIBS="$LIBS -lsocket", ddd_check_both=1)
+fi
+if test "$ddd_check_both" = 1; then
+  ddd_old_libs=$LIBS
+  LIBS="$LIBS -lsocket -lnsl"
+  AC_CHECK_FUNC(accept, checknsl=0, LIBS=$ddd_old_libs)
+fi
+AC_CHECK_FUNC(gethostbyname, , AC_CHECK_LIB(nsl, main, [LIBS="$LIBS -lnsl"]))
 AC_CHECK_LIB(g++, main, LIBS="$LIBS -lg++")
 dnl
 AC_CHECK_LIB(m, main, LIBM="-lm")
@@ -239,6 +252,17 @@ AC_CHECK_HEADERS(X11/Xmu/Editres.h)
 fi
 dnl
 dnl
+dnl Check for Xpm widget libraries
+dnl
+dnl
+XPM_LIBS=""
+AC_CHECK_LIB(Xpm, XpmCreatePixmapFromXpmImage,
+	XPM_LIBS='-lXpm'
+	AC_DEFINE(HAVE_XPM_WIDGETS),,
+	${X11_LIBS})
+AC_SUBST(XPM_LIBS)
+dnl
+dnl
 dnl Check for Motif widget libraries
 dnl
 dnl
@@ -246,7 +270,7 @@ XM_LIBS=""
 AC_CHECK_LIB(Xm, XtToolkitInitialize(); XmCreateOptionMenu, 
 	XM_LIBS="-lXm"
 	AC_DEFINE(HAVE_MOTIF_WIDGETS),,
-	${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
+	${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
 AC_SUBST(XM_LIBS)
 if test "$XM_LIBS" = ""; then
 AC_MSG_WARN(could not find Motif library)
