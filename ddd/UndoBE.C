@@ -37,3 +37,33 @@ char UndoBufferEntry_rcsid[] =
 
 #include "UndoBE.h"
 
+bool UndoBufferEntry::operator == (const UndoBufferEntry& entry) const
+{
+    if (&entry == this)
+	return true;
+
+    if (exec_pos != entry.exec_pos)
+	return false;		// Differing EXEC_POS values
+
+    StringStringAssocIter iter1(status);
+    StringStringAssocIter iter2(entry.status);
+
+    // This assumes both Assocs have the same ordering.
+    while (iter1.ok() && iter2.ok())
+    {
+	if (iter1.key() != iter2.key())
+	    return false;	// Differing keys
+	if (iter1.value() != iter2.value())
+	    return false;	// Differing values
+
+	iter1++;
+	iter2++;
+    }
+
+    if (iter1.ok())
+	return false;		// Still keys/values in THIS
+    if (iter2.ok())
+	return false;		// Still keys/values in ENTRY
+
+    return true;
+}

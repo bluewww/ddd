@@ -577,7 +577,11 @@ public:
     static int display_number(const string& name, bool verbose = false);
 
     // Refresh titles after change in APP_DATA
-    void refresh_titles();
+    static void refresh_titles();
+
+    // Update and activate displays manually (from undo)
+    static void update_displays(const StringArray& names, 
+				const StringArray& values);
 };
 
 inline bool DataDisp::get_selection(ostream& os, bool include_position)

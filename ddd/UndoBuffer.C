@@ -40,6 +40,7 @@ char UndoBuffer_rcsid[] =
 #include "cook.h"
 #include "ddd.h"
 #include "string-fun.h"
+#include "misc.h"
 
 #ifndef LOG_UNDO_BUFFER
 #define LOG_UNDO_BUFFER 0
@@ -99,35 +100,9 @@ void UndoBuffer::add(const UndoBufferEntry& entry)
     }
 }
 
-// Add position to history
-void UndoBuffer::add_position(const string& source_name, int line,
-				   bool exec_pos)
-{
-    if (locked)
-	return;
-
-    UndoBufferEntry new_entry;
-    new_entry.file     = source_name;
-    new_entry.line     = line;
-    new_entry.exec_pos = exec_pos;
-
-    UndoBufferEntry current_entry;
-    if (history.size() > 0 && history_position > 0)
-    {
-	current_entry = history[history_position - 1];
-	current_entry.address = "";
-	if (exec_pos)
-	    current_entry.exec_pos = true;
-    }
-
-    if (new_entry != current_entry)
-	add(new_entry);
-
-    log();
-}
-
-// Add address to history
-void UndoBuffer::add_address(const string& address, bool exec_pos)
+// Add status NAME/VALUE to history
+void UndoBuffer::add_status(const string& name, const string& value, 
+			    bool exec_pos)
 {
     if (locked)
 	return;
@@ -138,99 +113,26 @@ void UndoBuffer::add_address(const string& address, bool exec_pos)
     if (history.size() > 0)
     {
 	UndoBufferEntry& current_entry = history[history_position - 1];
-	if (current_entry.address == "")
+	if (!current_entry.status.has(name))
 	{
-	    // Append address to current position
-	    current_entry.address  = address;
+	    // Add NAME/VALUE to current position
+	    current_entry.status[name] = value;
 	    if (exec_pos)
 		current_entry.exec_pos = true;
 	}
-	else if (current_entry.address != address)
+	else if (current_entry.status[name] != value)
 	{
-	    // Create new entry
-	    new_entry = current_entry;
-	    new_entry.address = address;
+	    // VALUE has changed - use new entry instead
+	    new_entry.status[name] = value;
 	}
     }
     else
     {
-	// No source position yet: add address
-	new_entry.address = address;
+	// No history yet: create new entry
+	new_entry.status[name] = value;
     }
 
-    if (new_entry.address != "")
-	add(new_entry);
-
-    log();
-}
-
-
-// Add displays to history
-void UndoBuffer::add_displays(const string& displays)
-{
-    if (locked)
-	return;
-
-    UndoBufferEntry new_entry;
-
-    if (history.size() > 0)
-    {
-	UndoBufferEntry& current_entry = history[history_position - 1];
-	if (current_entry.displays == NO_GDB_ANSWER)
-	{
-	    // Append displays to current position
-	    current_entry.displays = displays;
-	}
-	else if (current_entry.displays != displays)
-	{
-	    // Create new entry
-	    new_entry = current_entry;
-	    new_entry.displays = displays;
-	}
-    }
-    else
-    {
-	// No position yet: add displays
-	new_entry.displays = displays;
-    }
-
-    if (new_entry.displays != NO_GDB_ANSWER)
-	add(new_entry);
-
-    log();
-}
-
-
-// Add single display to history
-void UndoBuffer::add_display(const string& display)
-{
-    if (locked)
-	return;
-
-    UndoBufferEntry new_entry;
-
-    if (history.size() > 0)
-    {
-	UndoBufferEntry& current_entry = history[history_position - 1];
-	if (current_entry.displays == NO_GDB_ANSWER)
-	{
-	    // Append display to current position
-	    current_entry.displays = display;
-	}
-	else if (!current_entry.displays.contains(display))
-	{
-	    // Create new entry, adding the new display
-	    new_entry = current_entry;
-	    new_entry.displays += display;
-	}
-    }
-    else
-    {
-	// No position yet: add displays
-	new_entry.displays = display;
-    }
-
-    if (new_entry.displays != NO_GDB_ANSWER)
+    if (new_entry.status.has(name))
 	add(new_entry);
 
     log();
@@ -243,6 +145,10 @@ void UndoBuffer::log()
     clog << "Undo buffer:\n";
     for (int i = 0; i < history.size(); i++)
     {
+	// Only log the first 2 items around the current position
+	if (abs(i - (history_position - 1)) > 2)
+	    continue;
+
 	const UndoBufferEntry& entry = history[i];
 
 	if (i == history_position - 1)
@@ -254,16 +160,14 @@ void UndoBuffer::log()
 	    clog << "*";
 	clog << '\t';
 
-	if (entry.file != "")
-	    clog << entry.file << ":" << entry.line;
-	else
-	    clog << ":";
-
-       	clog << ":" << entry.address;
-
- 	if (entry.displays != NO_GDB_ANSWER)
-	    clog << ":" << quote(entry.displays);
-
+	bool first_line = true;
+	for (StringStringAssocIter iter(entry.status); iter.ok(); iter++)
+	{
+	    if (!first_line)
+		clog << "\n\t";
+	    clog << iter.key() << " = " << quote(iter.value());
+	    first_line = false;
+	}
 	clog << "\n";
     }
     clog << "\n";
@@ -275,16 +179,33 @@ void UndoBuffer::goto_entry(const UndoBufferEntry& entry)
     locked = true;
 
     // Lookup position in source
-    source_view->goto_entry(entry.file, entry.line, entry.address, 
-			    entry.exec_pos);
+    string pos = "";
+    string address = "";
+    if (entry.status.has(UB_POS))
+	pos = entry.status[UB_POS];
+    if (entry.status.has(UB_ADDRESS))
+	address = entry.status[UB_ADDRESS];
+
+    if (pos != "" || address != "")
+    {
+	string file = pos.before(':');
+	string line = pos.after(':');
+	source_view->goto_entry(file, atoi(line.chars()), 
+				address, entry.exec_pos);
+    }
 
     // Re-process displays
-    if (entry.displays != NO_GDB_ANSWER)
+    StringArray displays;
+    StringArray values;
+    for (StringStringAssocIter iter(entry.status); iter.ok(); iter++)
     {
-	string displays = entry.displays;
-	bool disabling_occurred = false;
-	data_disp->process_displays(displays, disabling_occurred);
+	if (iter.key().contains(UB_DISPLAY_PREFIX, 0))
+	{
+	    displays += iter.key().after(UB_DISPLAY_PREFIX);
+	    values += iter.value();
+	}
     }
+    data_disp->update_displays(displays, values);
 
     locked = false;
 

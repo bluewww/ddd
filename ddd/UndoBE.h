@@ -33,47 +33,32 @@
 #pragma interface
 #endif
 
-#include "strclass.h"
+#include "StringSA.h"
 #include "VarArray.h"
 #include "bool.h"
 #include "question.h"
 
 struct UndoBufferEntry {
-    string file;		// Source position
-    int line;
-    string address;		// Machine code position
-    string displays;		// Displayed values
+    StringStringAssoc status;	// Status fields
     bool exec_pos;		// True if execution position
 
     UndoBufferEntry()
-	: file(""), line(0), address(""), displays(NO_GDB_ANSWER),
-	  exec_pos(false)
+	: status(), exec_pos(false)
     {}
 
     UndoBufferEntry(const UndoBufferEntry& entry)
-	: file(entry.file), line(entry.line), address(entry.address),
-	  displays(entry.displays), exec_pos(entry.exec_pos)
+	: status(entry.status), exec_pos(entry.exec_pos)
     {}
 
     UndoBufferEntry& operator = (const UndoBufferEntry& entry)
     {
-	file     = entry.file;
-	line     = entry.line;
-	address  = entry.address;
-	displays = entry.displays;
+	status   = entry.status;
 	exec_pos = entry.exec_pos;
 
 	return *this;
     }
 
-    bool operator == (const UndoBufferEntry& entry) const
-    {
-	return (file == entry.file && 
-		line == entry.line &&
-		address == entry.address &&
-		displays == entry.displays &&
-		exec_pos == entry.exec_pos);
-    }
+    bool operator == (const UndoBufferEntry& entry) const;
 
     bool operator != (const UndoBufferEntry& entry) const
     {

@@ -3176,8 +3176,6 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 				  const string& scope,
 				  const string& answer)
 {
-    undo_buffer.add_display(answer);
-
     string value = answer;
     string nr_s;
     string display_name;
@@ -3226,6 +3224,8 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 	disabling_occurred = true;
     }
 
+    undo_buffer.add_display(title, value);
+
     StatusShower s("Creating display");
     s.total   = value.length();
     s.current = value.length();
@@ -3253,11 +3253,16 @@ DispNode *DataDisp::new_user_node(const string& name,
     s.total   = answer.length();
     s.current = answer.length();
 
-    // User displays work regardless of scope
-    if (name == "`displays`")
+    // Set cluster update hook
+    if (name == "`" CLUSTER_COMMAND "`")
 	DispValue::value_hook = update_hook;
 
-    DispNode *dn = new DispNode(nr, name, "", answer);
+    undo_buffer.add_display(name, answer);
+
+    // User displays work regardless of scope
+    static const string scope = "";
+
+    DispNode *dn = new DispNode(nr, name, scope, answer);
     DispValue::value_hook = 0;
 
     open_data_window();
@@ -4438,8 +4443,6 @@ void DataDisp::process_info_display(string& info_display_answer,
 string DataDisp::process_displays(string& displays,
 				  bool& disabling_occurred)
 {
-    undo_buffer.add_displays(displays);
-
     string not_my_displays;
     disabling_occurred = false;
 
@@ -4447,16 +4450,11 @@ string DataDisp::process_displays(string& displays,
     {
 	bool have_displays = false;
 	MapRef ref;
-	for (int k = disp_graph->first_nr(ref); 
-	     k != 0;
-	     k = disp_graph->next_nr(ref))
+	for (DispNode* dn = disp_graph->first(ref); 
+	     !have_displays && dn != 0;
+	     dn = disp_graph->next(ref))
 	{
-	    DispNode* dn = disp_graph->get(k);
-	    if (!dn->is_user_command() && dn->active())
-	    {
-		have_displays = true;
-		break;
-	    }
+	    have_displays = (!dn->is_user_command() && dn->active());
 	}
 
 	if (!have_displays)
@@ -4597,6 +4595,8 @@ string DataDisp::process_displays(string& displays,
 	string *strptr = disp_string_map.get(k);
 	s.current = strptr->length();
 
+	undo_buffer.add_display(dn->name(), *strptr);
+
 	if (dn->update(*strptr))
 	{
 	    // New value
@@ -4628,6 +4628,88 @@ string DataDisp::process_displays(string& displays,
     }
 
     return not_my_displays;
+}
+
+
+//-----------------------------------------------------------------------------
+// Undo stuff
+//-----------------------------------------------------------------------------
+
+void DataDisp::update_displays(const StringArray& displays, 
+			       const StringArray& values)
+{
+    assert(displays.size() == values.size());
+
+    if (displays.size() == 0)
+    {
+	bool have_displays = false;
+	MapRef ref;
+	for (DispNode* dn = disp_graph->first(ref); 
+	     !have_displays && dn != 0;
+	     dn = disp_graph->next(ref))
+	{
+	    have_displays = dn->active();
+	}
+
+	if (!have_displays)
+	    return;		// No data and no displays
+    }
+
+    StatusShower s("Restoring displays");
+
+    bool changed = false;
+
+    // Check `active' status
+    MapRef ref;
+    for (DispNode *dn = disp_graph->first(ref);
+	 dn != 0; dn = disp_graph->next(ref))
+    {
+	bool found = false;
+	for (int i = 0; !found && i < displays.size(); i++)
+	    found = (displays[i] == dn->name());
+
+	if (found)
+	{
+	    if (!dn->active())
+	    {
+		disp_graph->make_active(dn->disp_nr());
+		changed = true;
+	    }
+	}
+	else
+	{
+	    if (dn->active())
+	    {
+		disp_graph->make_inactive(dn->disp_nr());
+		changed = true;
+	    }
+	}
+    }
+
+    // Update values
+    for (int i = 0; i < displays.size(); i++)
+    {
+	const string& name  = displays[i];
+	const string& value = values[i];
+
+	MapRef ref;
+	for (DispNode *dn = disp_graph->first(ref);
+	     dn != 0; dn = disp_graph->next(ref))
+	{
+	    if (dn->name() != name)
+		continue;
+
+	    string v = value;
+	    if (dn->update(v))
+		changed = true;
+	}
+    }
+
+    if (changed)
+    {
+	refresh_graph_edit();
+	refresh_builtin_user_displays();
+    }
 }
 
 
@@ -4676,6 +4758,8 @@ void DataDisp::process_user (StringArray& answers)
 	    !dn->deferred() && !dn->constant())
 	{
 	    string answer = answers[i++];
+
+	    undo_buffer.add_display(dn->name(), answer);
 
 	    s.current = answer.length();
 

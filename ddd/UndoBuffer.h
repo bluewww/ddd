@@ -35,6 +35,12 @@
 
 #include "bool.h"
 #include "UndoBE.h"
+#include "string-fun.h"
+
+// Special value keys
+#define UB_POS            "pos"
+#define UB_ADDRESS        "address"
+#define UB_DISPLAY_PREFIX "display "
 
 class UndoBuffer {
 
@@ -58,16 +64,26 @@ protected:
     static void log();
 
 public:
-    // Add position to history.  If EXEC_POS is set, this is a new
+    // Add status NAME/VALUE to history.
+    static void add_status(const string& name, const string& value, 
+			   bool exec_pos = false);
+
+    // Add position to history.  If EXEC_POS is set, mark this as new
     // execution position.
-    static void add_position(const string& file_name, int line, bool exec_pos);
-    static void add_address(const string& address, bool exec_pos);
+    static void add_position(const string& file_name, int line, bool exec_pos)
+    {
+	add_status(UB_POS, file_name + ":" + itostring(line), exec_pos);
+    }
 
-    // Add list of displays to history
-    static void add_displays(const string& displays);
+    static void add_address(const string& address, bool exec_pos)
+    {
+	add_status(UB_ADDRESS, address, exec_pos);
+    }
 
-    // Add single new display to history
-    static void add_display(const string& display);
+    static void add_display(const string& name, const string& value)
+    {
+	add_status(UB_DISPLAY_PREFIX + name, value);
+    }
 
     // Lookup previous/next position; return true iff successful
     static bool undo();
