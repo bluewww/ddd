@@ -1824,7 +1824,7 @@ void check_options_file()
 // Write state
 //-----------------------------------------------------------------------------
 
-static bool is_fallback_value(string resource, const string& val)
+static bool is_fallback_value(string resource, string val)
 {
     XrmDatabase default_db = app_defaults(XtDisplay(find_shell()));
 
@@ -1848,8 +1848,10 @@ static bool is_fallback_value(string resource, const string& val)
     {
 	char *str = (char *)xrmvalue.addr;
 	int len   = xrmvalue.size - 1; // includes the final `\0'
-	default_val = cook(string(str, len));
+	default_val = string(str, len);
     }
+
+    val = uncook(val);
 
 #if 0
     if (val != default_val)
@@ -2549,17 +2551,51 @@ bool save_options(unsigned long flags)
 	StringArray exprs;
 	StringArray labels;
 	data_disp->get_shortcut_menu(exprs, labels);
-	string expr;
+	string expr = "";
+
 	for (int i = 0; i < exprs.size(); i++)
 	{
 	    if (i > 0)
 		expr += '\n';
+
 	    expr += exprs[i];
+
 	    if (labels[i] != "")
-		expr += string('\t') + app_data.label_delimiter + ' ' 
-		    + labels[i];
+	    {
+		expr += string('\t') + app_data.label_delimiter + ' ' + 
+		    labels[i];
+	    }
 	}
-	os << string_app_value(XtNdisplayShortcuts, expr) << '\n';
+
+	string gdb_display_shortcuts  = app_data.gdb_display_shortcuts;
+	string dbx_display_shortcuts  = app_data.dbx_display_shortcuts;
+	string xdb_display_shortcuts  = app_data.xdb_display_shortcuts;
+	string jdb_display_shortcuts  = app_data.jdb_display_shortcuts;
+	string pydb_display_shortcuts = app_data.pydb_display_shortcuts;
+	string perl_display_shortcuts = app_data.perl_display_shortcuts;
+
+	switch (gdb->type())
+	{
+	case GDB:  gdb_display_shortcuts  = expr; break;
+	case DBX:  dbx_display_shortcuts  = expr; break;
+	case XDB:  xdb_display_shortcuts  = expr; break;
+	case JDB:  jdb_display_shortcuts  = expr; break;
+	case PYDB: pydb_display_shortcuts = expr; break;
+	case PERL: perl_display_shortcuts = expr; break;
+	}
+
+	os << string_app_value(XtNgdbDisplayShortcuts, 
+			       gdb_display_shortcuts, true) << '\n';
+	os << string_app_value(XtNdbxDisplayShortcuts,
+			       dbx_display_shortcuts, true) << '\n';
+	os << string_app_value(XtNxdbDisplayShortcuts,
+			       xdb_display_shortcuts, true) << '\n';
+	os << string_app_value(XtNjdbDisplayShortcuts,
+			       jdb_display_shortcuts, true) << '\n';
+	os << string_app_value(XtNpydbDisplayShortcuts,
+			       pydb_display_shortcuts, true) << '\n';
+	os << string_app_value(XtNperlDisplayShortcuts,
+			       perl_display_shortcuts, true) << '\n';
     }
 
     // Fonts
