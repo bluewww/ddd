@@ -626,6 +626,34 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 	    strip_leading_space(tip);
 	}
     }
+
+    if (gdb->type() == DBX && tip != "" && !isupper(tip[0]))
+    {
+	// Avoid giving help like `step <count>' on `step'.  This happens
+	// with AIX DBX, where the help looks like
+	// "run [<arguments>] [< <filename>] [> <filename>] \n"
+	// "                    [>> <filename>] [>! <filename>] \n"
+	// "                    [2> <filename>] [2>> <filename>] \n"
+	// "                    [>& <filename>] [>>& <filename>] \n"
+	// "\tStart executing the object file, passing arguments as\n"
+	// "\tcommand line arguments [...]"
+
+	string t = tip.from(rxuppercase);
+	t.gsub('\n', ' ');
+	t.gsub('\t', ' ');
+	t.gsub("  ", " ");
+
+	if (t.contains('.'))
+	    t = t.before('.');
+	if (t.contains(';'))
+	    t = t.before(';');
+
+	// Trim AIX `down' help
+	t.gsub(", which is used for resolving names,", "");
+
+	if (t.length() > 0)
+	    tip = t;
+    }
     
     strip_through(tip, " # ");
     strip_through(tip, " - ");
@@ -638,35 +666,6 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
     }
 
     tip = tip.from(rxalpha);
-
-    // Avoid giving help like `step <count>' on `step'.  This happens
-    // with AIX DBX, where the help looks like
-    // "run [<arguments>] [< <filename>] [> <filename>] \n"
-    // "                    [>> <filename>] [>! <filename>] \n"
-    // "                    [2> <filename>] [2>> <filename>] \n"
-    // "                    [>& <filename>] [>>& <filename>] \n"
-    // "\tStart executing the object file, passing arguments as\n"
-    // "\tcommand line arguments [...]"
-
-    if (tip.contains(help_name, 0))
-    {
-	string new_tip = tip.from(rxuppercase);
-	new_tip.gsub('\n', ' ');
-	new_tip.gsub('\t', ' ');
-	new_tip.gsub("  ", " ");
-
-	if (new_tip.contains('.'))
-	    new_tip = new_tip.before('.');
-	if (new_tip.contains(';'))
-	    new_tip = new_tip.before(';');
-
-	// Trim AIX `down' help
-	new_tip.gsub(", which is used for resolving names,", "");
-
-	if (new_tip.length() > 0)
-	    tip = new_tip;
-    }
-
     strip_space(tip);
 
     if (tip.length() > 0)
