@@ -1476,75 +1476,6 @@ the item's functions are explained here.\n\
 \n\
 Click on @bf Close @rm to close the help window.
 
-! DDD manual.
-Ddd*manual_help*form.borderWidth:	0
-
-Ddd*manual_help*title.labelString:	@DDD@ Manual
-Ddd*manual_help*title.alignment:	XmALIGNMENT_BEGINNING
-
-Ddd*manual_help*area.borderWidth:	0
-Ddd*manual_help*area.marginWidth:	0
-Ddd*manual_help*area.marginHeight:	0
-
-Ddd*manual_help*index.selectionPolicy:	XmSINGLE_SELECT
-Ddd*manual_help*index.visibleItemCount:	5
-
-Ddd*manual_help*text.columns:		72
-Ddd*manual_help*text.rows:		25
-Ddd*manual_help*text.wordWrap:		true
-Ddd*manual_help*text.scrollHorizontal:	false
-Ddd*manual_help*scrollBarDisplayPolicy: XmAS_NEEDED
-
-Ddd*manual_help*search.orientation:	XmHORIZONTAL
-Ddd*manual_help*search.borderWidth:	0
-Ddd*manual_help*search.spacing:		0
-Ddd*manual_help*search.packing:		XmPACK_TIGHT
-Ddd*manual_help*search.entryAlignment:	XmALIGNMENT_CENTER
-Ddd*manual_help*search*alignment:	XmALIGNMENT_CENTER
-
-Ddd*manual_help*label.labelString:	():
-Ddd*manual_help*label.borderWidth:	0
-Ddd*manual_help*key.columns:		60
-Ddd*manual_help*findBackward.labelString: Find@small<< @bf()
-Ddd*manual_help*findBackward.tipString:	  \
-@rm Find previous @bf() @rm in manual
-Ddd*manual_help*findBackward.documentationString:	\
-@rm Search the previous occurrence of @bf () @rm in the @DDD@ manual
-Ddd*manual_help*findForward.labelString:  Find@small>> @bf()
-Ddd*manual_help*findForward.tipString:	  \
-@rm Find next @bf() @rm in manual
-Ddd*manual_help*findForward.documentationString:	\
-@rm Search the next occurrence of @bf () @rm in the @DDD@ manual
-
-Ddd*manual_help*helpString: \
-@rm This is the @sl @DDD@ Manual.@rm\n\
-\n\
-To view a specific section, select its title from the index at the top.\n\
-\n\
-To find a string in the manual, enter it in the @bf() @rm argument field \
-and press @key RETURN@rm.\n\
-Click on @bf Find@small>> @bf() @rm to search the next occurrence of \
-@bf ()@rm.\n\
-Click on @bf Find@small<< @bf() @rm to search the previous occurrence of \
-@bf ()@rm.
-
-! DDD license.
-Ddd*text_help*form.borderWidth:	0
-
-Ddd*text_help*title.labelString:      @DDD@ License
-Ddd*text_help*title.alignment:	      XmALIGNMENT_BEGINNING
-
-Ddd*text_help*text.columns:	      80
-Ddd*text_help*text.rows:	      25
-Ddd*text_help*text.wordWrap:	      true
-Ddd*text_help*text.scrollHorizontal:  false
-Ddd*text_help*scrollBarDisplayPolicy: XmAS_NEEDED
-
-Ddd*text_help*helpString: \
-@rm This is the @sl @DDD@ License.@rm\n\
-\n\
-It describes the terms and conditions\n\
-for copying, distributing and modifying @DDD@.
 
 ! The official announcement.
 ! Build information (from `USERINFO') is appended to this text.
@@ -1578,6 +1509,93 @@ Ddd*XmSash.helpString: \
 Drag the sash with the @bf left mouse button @rm to resize window parts.
 Ddd*XmSash.tipString: \
 @rm Resize window
+
+
+!-----------------------------------------------------------------------------
+! DDD manual
+!-----------------------------------------------------------------------------
+
+Ddd*manual_help*form.borderWidth:	0
+
+Ddd*manual_help*title.labelString:	@DDD@ Manual
+Ddd*manual_help*title.alignment:	XmALIGNMENT_BEGINNING
+
+Ddd*manual_help*area.borderWidth:	0
+Ddd*manual_help*area.marginWidth:	0
+Ddd*manual_help*area.marginHeight:	0
+Ddd*manual_help*area.allowResize:	true
+
+Ddd*manual_help*index.selectionPolicy:	XmSINGLE_SELECT
+Ddd*manual_help*index.visibleItemCount:	5
+
+Ddd*manual_help*indexSW.height:		90
+
+Ddd*manual_help*text.columns:		72
+Ddd*manual_help*text.rows:		25
+Ddd*manual_help*text.wordWrap:		true
+Ddd*manual_help*text.scrollHorizontal:	false
+Ddd*manual_help*scrollBarDisplayPolicy: XmAS_NEEDED
+
+Ddd*manual_help*textSW.width:		500
+Ddd*manual_help*textSW.height:		342
+
+Ddd*manual_help*search.orientation:	XmHORIZONTAL
+Ddd*manual_help*search.borderWidth:	0
+Ddd*manual_help*search.spacing:		0
+Ddd*manual_help*search.packing:		XmPACK_TIGHT
+Ddd*manual_help*search.entryAlignment:	XmALIGNMENT_CENTER
+Ddd*manual_help*search*alignment:	XmALIGNMENT_CENTER
+
+Ddd*manual_help*label.labelString:	():
+Ddd*manual_help*label.borderWidth:	0
+Ddd*manual_help*key.columns:		50
+Ddd*manual_help*findBackward.labelString: Find@small<< @bf()
+Ddd*manual_help*findBackward.tipString:	  \
+@rm Find previous @bf() @rm in manual
+Ddd*manual_help*findBackward.documentationString:	\
+@rm Search the previous occurrence of @bf () @rm in the @DDD@ manual
+Ddd*manual_help*findForward.labelString:  Find@small>> @bf()
+Ddd*manual_help*findForward.tipString:	  \
+@rm Find next @bf() @rm in manual
+Ddd*manual_help*findForward.documentationString:	\
+@rm Search the next occurrence of @bf () @rm in the @DDD@ manual
+
+Ddd*manual_help*helpString: \
+@rm This is the @sl @DDD@ Manual.@rm\n\
+\n\
+To view a specific section, select its title from the index at the top.\n\
+\n\
+To find a string in the manual, enter it in the @bf() @rm argument field \
+and press @key RETURN@rm.\n\
+Click on @bf Find@small>> @bf() @rm to search the next occurrence of \
+@bf ()@rm.\n\
+Click on @bf Find@small<< @bf() @rm to search the previous occurrence of \
+@bf ()@rm.
+
+
+!-----------------------------------------------------------------------------
+! DDD license
+!-----------------------------------------------------------------------------
+
+Ddd*text_help*form.borderWidth:	0
+
+Ddd*text_help*title.labelString:      @DDD@ License
+Ddd*text_help*title.alignment:	      XmALIGNMENT_BEGINNING
+
+Ddd*text_help*text.columns:	      80
+Ddd*text_help*text.rows:	      25
+Ddd*text_help*text.wordWrap:	      true
+Ddd*text_help*text.scrollHorizontal:  false
+Ddd*text_help*scrollBarDisplayPolicy: XmAS_NEEDED
+
+Ddd*text_help*textSW.width:		600
+Ddd*text_help*textSW.height:		320
+
+Ddd*text_help*helpString: \
+@rm This is the @sl @DDD@ License.@rm\n\
+\n\
+It describes the terms and conditions\n\
+for copying, distributing and modifying @DDD@.
 
 
 !-----------------------------------------------------------------------------
