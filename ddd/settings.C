@@ -67,6 +67,7 @@ char settings_rcsid[] =
 #include "cook.h"
 #include "comm-manag.h"
 #include "ddd.h"
+#include "mydialogs.h"
 #include "logo.h"
 #include "question.h"
 #include "regexps.h"
@@ -2092,6 +2093,14 @@ static void refresh_toggles()
     refresh_toggle(ConsoleTarget);
 }
 
+static void refresh_combo_box()
+{
+    // Refresh combo box
+    StringArray commands;
+    for (AssocIter<string, string> iter(defs); iter.ok(); iter++)
+	commands += iter.key();
+    MMsetComboBoxList(name_w, commands);
+}
 
 // Editing stuff
 
@@ -2108,7 +2117,8 @@ void UpdateDefinePanelCB(Widget, XtPointer, XtPointer)
     set_sensitive(end_w,    gdb->recording());
     set_sensitive(edit_w,   !gdb->recording() && name != "" && defs.has(name));
 
-    XmTextFieldSetEditable(name_w, !gdb->recording());
+    set_sensitive(name_w, !gdb->recording());
+    set_sensitive(XtParent(name_w), !gdb->recording());
     set_sensitive(editor_w, !gdb->recording());
 
     refresh_toggles();
@@ -2126,6 +2136,7 @@ static void update_defineHP(Agent *, void *client_data, void *call_data)
 	{
 	    // Update buttons
 	    UpdateDefinePanelCB();
+	    refresh_combo_box();
 
 	    // Don't get called again
 	    gdb->removeHandler(ReadyForQuestion, update_defineHP, client_data);
@@ -2192,7 +2203,8 @@ static void EditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
     if (XtIsManaged(XtParent(editor_w)))
     {
 	XtUnmanageChild(XtParent(editor_w));
-	XmTextFieldSetEditable(name_w, True);
+	set_sensitive(name_w, True);
+	set_sensitive(XtParent(name_w), True);
 
 	MString label = "Edit " + MString(">>", "small");
 	set_label(edit_w, label);
@@ -2231,7 +2243,8 @@ static void EditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
     else
     {
 	// update_define(name);
-	XmTextFieldSetEditable(name_w, False);
+	set_sensitive(name_w, False);
+	set_sensitive(XtParent(name_w), False);
 
 	string def = "";
 	if (defs.has(name))
@@ -2266,7 +2279,7 @@ MMDesc commands_menu[] =
 
 static MMDesc panel_menu[] = 
 {
-    { "name",     MMTextField, { UpdateDefinePanelCB }, 0, &name_w },
+    { "name",     MMComboBox, { UpdateDefinePanelCB }, 0, &name_w },
     { "commands", MMButtonPanel, MMNoCB, commands_menu },
     { "button",   MMButtonPanel, MMNoCB, button_menu },
     MMEnd
@@ -2337,5 +2350,6 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
     }
 
     UpdateDefinePanelCB();
+    refresh_combo_box();
     manage_and_raise(dialog);
 }
