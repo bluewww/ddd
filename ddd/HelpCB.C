@@ -1487,7 +1487,7 @@ void (*PreHelpOnContextHook)(Widget w, XtPointer client_data,
 void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     Widget item = 0;
-    Widget toplevel = findTheTopLevelShell(widget);
+    Widget toplevel = findTopLevelShellParent(widget);
 
     if (toplevel == 0)
     {
