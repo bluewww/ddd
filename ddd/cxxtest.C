@@ -691,6 +691,21 @@ static void type_test()
     mine.down = &mine;
 
     (void) mine;		// Display this
+
+
+    // Another test: test for `interface'
+    typedef enum { normal_op, interface } op_type;
+
+    typedef struct
+    {
+	op_type ot;
+    } test_struct;
+
+    test_struct ts;
+    ts.ot = normal_op;		//  (*) BREAK here: everything is all right
+    ts.ot = interface;		// (**) BREAK here: oops
+
+    (void) ts;			// Display this
 }
 
 //--------------------------------------------------------------------------
