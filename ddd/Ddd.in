@@ -1121,19 +1121,19 @@ Ddd*menubar.edit*contextHelpString:	\
 
 Ddd*editMenu.cut.labelString:		Cut
 Ddd*editMenu.cut.mnemonic:		t
-Ddd*editMenu.cut.accelerator:		Shift<Key>osfDelete
+Ddd*editMenu.cut.accelerator:		Shift<Key>Delete
 ! *editMenu.cut.accelerator:		<Key>osfCut
 Ddd*editMenu.cut.acceleratorText:	Shift+Del
 
 Ddd*editMenu.copy.labelString:		Copy
 Ddd*editMenu.copy.mnemonic:		C
-Ddd*editMenu.copy.accelerator:		Ctrl<Key>osfInsert
+Ddd*editMenu.copy.accelerator:		Ctrl<Key>Insert
 ! *editMenu.copy.accelerator:		<Key>osfPrimaryCopy
 Ddd*editMenu.copy.acceleratorText:	Ctrl+Ins
 
 Ddd*editMenu.paste.labelString:		Paste
 Ddd*editMenu.paste.mnemonic:		P
-Ddd*editMenu.paste.accelerator:		Shift<Key>osfInsert
+Ddd*editMenu.paste.accelerator:		Shift<Key>Insert
 ! *editMenu.paste.accelerator:		<Key>osfPaste
 Ddd*editMenu.paste.acceleratorText: 	Shift+Ins
 
