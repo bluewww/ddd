@@ -201,6 +201,8 @@ Bug fixes
 
 - DDD handles unbuffered echo TTY modes as set by some DBX flavours.
 
+- Promptless input from the debugger console is now handled correctly.
+
 - The `Disp *' button dereferences pointers as it should.
 
 - In a separate window setting, data buttons are properly placed.
