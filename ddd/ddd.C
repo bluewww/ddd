@@ -3073,13 +3073,25 @@ static void ddd_check_version()
 	TipOfTheDayCB(gdb_w);
 }
 
+#if HAVE_MKSTEMP && !HAVE_MKSTEMP_DECL
+extern "C" int mkstemp(char *template);
+#endif
+
 // Read in database from FILENAME.  Upon version mismatch, ignore some
 // resources such as window sizes.
 XrmDatabase GetFileDatabase(char *filename)
 {
     string version_found = "";
 
+#if HAVE_MKSTEMP
+    char templ[100];
+    strcpy(templ, "/usr/tmp/dddXXXXXX");
+    int tempfd = mkstemp(templ);
+    string tempfile = templ;
+#else
     string tempfile = tmpnam(0);
+#endif
+
     ofstream os(tempfile);
     ifstream is(filename);
 
@@ -3149,19 +3161,25 @@ XrmDatabase GetFileDatabase(char *filename)
     os.close();
     is.close();
 
+    XrmDatabase db;
     if (version_mismatch)
     {
 	// Read database from filtered file
-	XrmDatabase db = XrmGetFileDatabase(tempfile);
-	unlink(tempfile);
-	return db;
+	db = XrmGetFileDatabase(tempfile);
     }
     else
     {
 	// No version mismatch - read from original file
-	unlink(tempfile);
-	return XrmGetFileDatabase(filename);
+	db = XrmGetFileDatabase(filename);
     }
+
+#if HAVE_MKSTEMP
+    close(tempfd);
+#else
+    unlink(tempfile);
+#endif
+
+    return db;
 }
 
 
