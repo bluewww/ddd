@@ -950,7 +950,7 @@ static MMDesc source_preferences_menu[] =
     { "referSources",     MMRadioPanel, MMNoCB, refer_menu, &refer_sources_w },
     { "find",             MMButtonPanel, MMNoCB, find_preferences_menu },
     { "cache",            MMButtonPanel, MMNoCB, cache_menu },
-    { "",       	  MMPanel, MMNoCB, scales_menu },
+    { "scales",       	  MMPanel | MMUnmanagedLabel, MMNoCB, scales_menu },
     MMEnd
 };
 
