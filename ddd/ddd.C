@@ -253,11 +253,12 @@ extern "C" {
 //-----------------------------------------------------------------------------
 
 // Callbacks
-static void gdb_readyHP       (Agent *, void *, void *);
-static void gdb_strangeHP     (Agent *, void *, void *);
-static void gdb_panicHP       (Agent *, void *, void *);
-static void language_changedHP(Agent *, void *, void *);
-static void source_argHP      (void *, void *, void *call_data);
+static void gdb_readyHP        (Agent *, void *, void *);
+static void gdb_strangeHP      (Agent *, void *, void *);
+static void gdb_panicHP        (Agent *, void *, void *);
+static void gdb_echo_detectedHP(Agent *, void *, void *);
+static void language_changedHP (Agent *, void *, void *);
+static void source_argHP       (void *, void *, void *call_data);
 
 // Setup
 static Boolean ddd_setup_done(XtPointer client_data);
@@ -1776,6 +1777,7 @@ int main(int argc, char *argv[])
     gdb->addHandler(ReplyRequired,    gdb_selectHP);
     gdb->addHandler(Panic,            gdb_panicHP);
     gdb->addHandler(Strange,          gdb_strangeHP);
+    gdb->addHandler(EchoDetected,     gdb_echo_detectedHP);
 
     // Set default history file (never read, only overwritten)
     set_gdb_history_file(gdb->history_file());
@@ -4390,24 +4392,36 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 // I/O warnings
 //-----------------------------------------------------------------------------
 
-static void gdb_panicHP(Agent *source, void *, void *call_data)
+static void gdb_msgHP(Agent *source, void *call_data, char *name)
 {
+    if (source->pid() == 0)
+    {
+	// We're the child.  Don't use the parent's X display.
+        return;
+    }
+
     string msg = (char *)call_data;
     string path = source->path();
     GDBAgent *gdb = ptr_cast(GDBAgent, source);
     if (gdb != 0)
 	path = downcase(gdb->title());
-    post_error(path + ": " + msg, "gdb_io_error");
+    post_error(path + ": " + msg, name);
+}
+
+static void gdb_panicHP(Agent *source, void *, void *call_data)
+{
+    gdb_msgHP(source, call_data, "gdb_io_error");
 }
 
 static void gdb_strangeHP(Agent *source, void *, void *call_data)
 {
-    string msg = (char *)call_data;
-    string path = source->path();
-    GDBAgent *gdb = ptr_cast(GDBAgent, source);
-    if (gdb != 0)
-	path = downcase(gdb->title());
-    post_warning(path + ": " + msg, "gdb_io_warning");
+    gdb_msgHP(source, call_data, "gdb_io_warning");
+}
+
+static void gdb_echo_detectedHP(Agent *, void *, void *)
+{
+    post_warning(gdb->title() + " is running in echo mode.",
+		 "gdb_echo_warning");
 }
 
 
