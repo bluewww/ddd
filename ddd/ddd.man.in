@@ -51,7 +51,7 @@
 .RB "[\|" \-\-debugger
 .I name\c
 \&\|]
-.RB "[\|" \-\- "[" r "]" host " ["\c
+.RB "[\|" \-\- "[" r "]" host " [\|[\|"\c
 .I username\c
 .B @\c
 \&]\c
