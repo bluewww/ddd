@@ -76,7 +76,7 @@ struct HuffNode {
     }
 };
 
-void insert(HuffNode*& queue, HuffNode *node)
+static void insert(HuffNode*& queue, HuffNode *node)
 {
     if (queue == 0)
     {
@@ -93,32 +93,33 @@ void insert(HuffNode*& queue, HuffNode *node)
     }
 }
 
-HuffNode *extract_min(HuffNode*& queue)
+static HuffNode *extract_min(HuffNode*& queue)
 {
     HuffNode *node = queue;
-    queue = queue->next;
+    if (queue != 0)
+	queue = queue->next;
     return node;
 }
 
-HuffNode *initial_queue(const string& s)
+static HuffNode *initial_queue(const string& s)
 {
-    int occurrences[CHAR_MAX - CHAR_MIN];
+    int occurrences[UCHAR_MAX + 1];
 
-    char c;
-    for (c = CHAR_MIN; c < CHAR_MAX; c++)
-	occurrences[c - CHAR_MIN] = 0;
+    unsigned int c;
+    for (c = 0; c < UCHAR_MAX + 1; c++)
+	occurrences[c] = 0;
     for (int i = 0; i < int(s.length()); i++)
-	occurrences[s[i] - CHAR_MIN]++;
+	occurrences[(unsigned char)s[i]]++;
 
     HuffNode *queue = 0;
-    for (c = CHAR_MIN; c < CHAR_MAX; c++)
-	if (occurrences[c - CHAR_MIN] > 0)
-	    insert(queue, new HuffNode(c, occurrences[c - CHAR_MIN]));
+    for (c = 0; c < UCHAR_MAX + 1; c++)
+	if (occurrences[c] > 0)
+	    insert(queue, new HuffNode(c, occurrences[c]));
 
     return queue;
 }
 
-int length(HuffNode *queue)
+static int length(HuffNode *queue)
 {
     int len = 0;
     while (queue != 0)
@@ -130,7 +131,7 @@ int length(HuffNode *queue)
     return len;
 }
 
-HuffNode *huffman(const string& s)
+static HuffNode *huffman(const string& s)
 {
     HuffNode *queue = initial_queue(s);
     int n = length(queue);
@@ -145,9 +146,12 @@ HuffNode *huffman(const string& s)
     return extract_min(queue);
 }
 
-void write_huffman(HuffNode *tree)
+static void write_huffman(HuffNode *tree)
 {
     static int tics = 0;
+
+    if (tree == 0)
+	return;
 
     if (tree->isleaf)
     {
@@ -167,11 +171,14 @@ void write_huffman(HuffNode *tree)
     }
 }
 
-void init_codes(string codes[], HuffNode *tree, string prefix = "")
+static void init_codes(string codes[], HuffNode *tree, string prefix = "")
 {
+    if (tree == 0)
+	return;
+
     if (tree->isleaf)
     {
-	codes[tree->l.c] = prefix;
+	codes[(unsigned char)tree->l.c] = prefix;
     }
     else
     {
@@ -180,7 +187,7 @@ void init_codes(string codes[], HuffNode *tree, string prefix = "")
     }
 }
 
-char bits_to_byte(string bits)
+static char bits_to_byte(string bits)
 {
     unsigned char c = 0;
 
@@ -194,24 +201,28 @@ char bits_to_byte(string bits)
 
 const int BITS_PER_CHAR = 8;
 
-string encode(const string& text, HuffNode *tree)
+static string encode(const string& text, HuffNode *tree)
 {
-    string codes[CHAR_MAX - CHAR_MIN];
+    string codes[UCHAR_MAX + 1];
 
     init_codes(codes, tree);
 
-    int i;
-    cout << "// Encoding:\n";
-    for (i = 0; i < CHAR_MAX - CHAR_MIN; i++)
+    if (tree != 0)
     {
-	if (codes[i] != "")
-	    cout << "// '" << cook(char(i))
-		 << "'\t" << codes[i] << "\n";
+	unsigned int c;
+	cout << "// Encoding:\n";
+	for (c = 0; c < UCHAR_MAX + 1; c++)
+	{
+	    if (codes[c] != "")
+		cout << "// '" << cook((char)(unsigned char)c)
+		     << "'\t" << codes[c] << "\n";
+	}
     }
 
     string bit_encoding;
+    int i;
     for (i = 0; i < int(text.length()); i++)
-	bit_encoding += codes[text[i]];
+	bit_encoding += codes[(unsigned char)text[i]];
 
     // cout << "\n// " << bit_encoding << "\n";
 
@@ -227,7 +238,7 @@ string encode(const string& text, HuffNode *tree)
     return byte_encoding;
 }
 
-void write_encoding(const string& byte_encoding)
+static void write_encoding(const string& byte_encoding)
 {
     cout << "static const char hufftext[" 
 	 << byte_encoding.length() + 1 << "] = \n\"";
@@ -248,7 +259,7 @@ void write_encoding(const string& byte_encoding)
     cout << "\";\n";
 }    
 
-void read_input(string& s)
+static void read_input(string& s)
 {
     char c;
 
@@ -264,12 +275,19 @@ int main()
     HuffNode *tree = huffman(text);
     string encoding = encode(text, tree);
 
-    cout << "\n";
-    write_huffman(tree);
-    cout << "\n";
-    cout << "static const HuffCode *const huffcode = &_huff" 
-	 << tree->number << ";\n";
-    cout << "\n";
+    if (tree != 0)
+    {
+	cout << "\n";
+	write_huffman(tree);
+	cout << "\n";
+	cout << "static const HuffCode *const huffcode = &_huff" 
+	     << tree->number << ";\n";
+    }
+    else
+    {
+	cout << "static const HuffCode *const huffcode = 0;\n";
+    }
+
     cout << "static const int hufflength = " << text.length() << ";\n";
 
     write_encoding(encoding);
