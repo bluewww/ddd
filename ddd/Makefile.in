@@ -883,6 +883,11 @@ install-man: ddd.man
 uninstall-man:
 	$(RM) $(man1dir)/`$(ECHO) ddd$(man1ext) | $(SED) '$(transform)'`
 
+.PHONY: picsclean
+picsclean:
+	$(RM) $(PICS) ./#*#
+	-test -d PICS && cd PICS && $(RM) $(CLEAN_STUFF) ./#*#
+
 .PHONY: clean
 clean:
 	$(RM) $(CLEAN_STUFF) ./#*#
