@@ -1102,9 +1102,9 @@ GraphNode *graphEditGetNodeAtEvent(Widget w, XEvent *event)
 // Get frame region
 static BoxRegion frameRegion(Widget w)
 {
-    const GraphEditWidget _w   = GraphEditWidget(w);
-    const BoxPoint startAction = _w->graphEdit.startAction;
-    const BoxPoint endAction   = _w->graphEdit.endAction;
+    const GraphEditWidget _w    = GraphEditWidget(w);
+    const BoxPoint& startAction = _w->graphEdit.startAction;
+    const BoxPoint& endAction   = _w->graphEdit.endAction;
 
     BoxPoint origin(min(startAction[X], endAction[X]),
 	min(startAction[Y], endAction[Y]));
