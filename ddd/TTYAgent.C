@@ -580,7 +580,9 @@ int TTYAgent::setupChildCommunication()
 	_raiseIOMsg("cannot get slave terminal settings");
     else
     {
+#ifdef ECHO
 	settings.c_lflag &= ~ECHO;      // No echo
+#endif
 #ifdef ISIG
 	settings.c_lflag |= ISIG;       // Enable signals
 #endif
@@ -591,31 +593,31 @@ int TTYAgent::setupChildCommunication()
 	settings.c_oflag &= ~ONLCR;     // Do not map NL to CR-NL on output
 #endif
 #ifdef VDSUSP
-	settings.c_cc[VSUSP] = '\031';  // Set DELAYED SUSPEND to ^Y
+	settings.c_cc[VSUSP] = '\031';  // Set DELAYED SUSPEND to `^Y'
 #endif
 #ifdef VEOF
-	settings.c_cc[VEOF] = '\004';   // Set EOF character to ^D
+	settings.c_cc[VEOF] = '\004';   // Set EOF character to `^D'
 #endif
 #ifdef VERASE
-	settings.c_cc[VERASE] = '\010'; // Set ERASE character to ^H
+	settings.c_cc[VERASE] = '\010'; // Set ERASE character to `^H'
 #endif
 #ifdef VINTR
-	settings.c_cc[VINTR] = '\003';  // Set INTERRUPT to ^C
+	settings.c_cc[VINTR] = '\003';  // Set INTERRUPT to `^C'
 #endif
 #ifdef VKILL
-	settings.c_cc[VKILL] = '\025';  // Set KILL character to ^U
+	settings.c_cc[VKILL] = '\025';  // Set KILL character to `^U'
 #endif
 #ifdef VQUIT
-	settings.c_cc[VQUIT] = '\034';  // Set QUIT to ^\  
+	settings.c_cc[VQUIT] = '\034';  // Set QUIT to `^\'
 #endif
 #ifdef VSUSP
-	settings.c_cc[VSUSP] = '\032';  // Set SUSPEND to ^Z
+	settings.c_cc[VSUSP] = '\032';  // Set SUSPEND to `^Z'
 #endif
 #ifdef VREPRINT
-	settings.c_cc[VREPRINT] = '\022'; // Set REPRINT character to ^R
+	settings.c_cc[VREPRINT] = '\022'; // Set REPRINT character to `^R'
 #endif
 #ifdef VWERASE
-	settings.c_cc[VWERASE] = '\027'; // Set WERASE character to ^W
+	settings.c_cc[VWERASE] = '\027'; // Set WERASE character to `^W'
 #endif
 	result = tcsetattr(slave, TCSANOW, &settings);
 	if (result < 0)
@@ -629,8 +631,10 @@ int TTYAgent::setupChildCommunication()
 	_raiseIOMsg("cannot get slave terminal settings");
     else
     {
+#ifdef ECHO
 	settings.sg_flags &= ~ECHO;	// No echo
-#if defined(ISIG)
+#endif
+#ifdef ISIG
 	settings.sg_flags |= ISIG;      // Enable signals
 #endif
 #ifdef CRMOD
@@ -647,7 +651,9 @@ int TTYAgent::setupChildCommunication()
 	_raiseIOMsg("cannot get slave terminal settings");
     else
     {
+#ifdef ECHO
 	settings.c_lflag &= ~ECHO;      // No echo
+#endif
 #ifdef ISIG
 	settings.c_lflag |= ISIG;       // Enable signals
 #endif
@@ -658,31 +664,31 @@ int TTYAgent::setupChildCommunication()
 	settings.c_oflag &= ~ONLCR;	// Do not map NL to CR-NL on output
 #endif
 #ifdef VDSUSP
-	settings.c_cc[VSUSP] = '\031';  // Set DELAYED SUSPEND to ^Y
+	settings.c_cc[VSUSP] = '\031';  // Set DELAYED SUSPEND to `^Y'
 #endif
 #ifdef VEOF
-	settings.c_cc[VEOF] = '\004';   // Set EOF character to ^D
+	settings.c_cc[VEOF] = '\004';   // Set EOF character to `^D'
 #endif
 #ifdef VERASE
-	settings.c_cc[VERASE] = '\010'; // Set ERASE character to ^H
+	settings.c_cc[VERASE] = '\010'; // Set ERASE character to `^H'
 #endif
 #ifdef VINTR
-	settings.c_cc[VINTR] = '\003';  // Set INTERRUPT to ^C
+	settings.c_cc[VINTR] = '\003';  // Set INTERRUPT to `^C'
 #endif
 #ifdef VKILL
-	settings.c_cc[VKILL] = '\025';  // Set KILL character to ^U
+	settings.c_cc[VKILL] = '\025';  // Set KILL character to `^U'
 #endif
 #ifdef VQUIT
-	settings.c_cc[VQUIT] = '\034';  // Set QUIT to ^\  
+	settings.c_cc[VQUIT] = '\034';  // Set QUIT to `^\'
 #endif
 #ifdef VSUSP
-	settings.c_cc[VSUSP] = '\032';  // Set SUSPEND to ^Z
+	settings.c_cc[VSUSP] = '\032';  // Set SUSPEND to `^Z'
 #endif
 #ifdef VREPRINT
-	settings.c_cc[VREPRINT] = '\022'; // Set REPRINT character to ^R
+	settings.c_cc[VREPRINT] = '\022'; // Set REPRINT character to `^R'
 #endif
 #ifdef VWERASE
-	settings.c_cc[VWERASE] = '\027'; // Set WERASE character to ^W
+	settings.c_cc[VWERASE] = '\027'; // Set WERASE character to `^W'
 #endif
 
 
