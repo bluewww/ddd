@@ -347,4 +347,8 @@ Volunteers for these and other projects are welcome!
 
 354 In Windows, compare file names regardless of case.
 
-355 (Insert new project ideas here)
+355 Realize alias detection in languages without address operators.
+    This may be done by traversing all values; for every pointer
+    found, assign its value as address to the referenced display.
+
+356 (Insert new project ideas here)
