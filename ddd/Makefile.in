@@ -2150,9 +2150,8 @@ $(docdir)/ddd.pdf: ddd-pdf.texi $(PDF_IMAGES)
 	$(INSTALL_DATA) ddd-pdf.pdf $@
 
 # pdftexinfo cannot expand @value{...} in PDF primitives, so we do it by hand
-PDFTEXINFO = $(srcdir)/../texinfo/pdftexinfo.tex
-ddd-pdf.texi: $(srcdir)/ddd.texi $(PDFTEXINFO)
-	$(SED) 's,\\input texinfo,\\input $(PDFTEXINFO),' $(srcdir)/ddd.texi |\
+ddd-pdf.texi: $(srcdir)/ddd.texi $(INCLUDES)
+	$(SED) 's,\\input texinfo,\\input pdftexinfo,' $(srcdir)/ddd.texi |\
 	$(SED) 's/@value{DDD}/@DDD@/g' | \
 	$(SED) 's/@value{Ddd}/@Ddd@/g' | \
 	$(SED) 's/@value{ddd}/@ddd@/g' > $@~ && \
@@ -2165,6 +2164,7 @@ INCLUDES = \
 	gpl.texinfo \
 	lgpl.texinfo \
 	texinfo.tex \
+	pdftexinfo.tex \
 	epsf.tex \
 	xepsf.tex
 
@@ -2175,19 +2175,22 @@ ddd.dvi: ddd.texi $(INCLUDES) $(PS_IMAGES)
 texidir = $(srcdir)/../texinfo
 
 gpl.texinfo: $(texidir)/gpl.texinfo
-	$(LN_S) $(texidir)/gpl.texinfo $@
+	$(RM) $@; $(LN_S) $(texidir)/gpl.texinfo $@
 
 lgpl.texinfo: $(texidir)/lgpl.texinfo
-	$(LN_S) $(texidir)/lgpl.texinfo $@
+	$(RM) $@; $(LN_S) $(texidir)/lgpl.texinfo $@
 
 texinfo.tex: $(texidir)/texinfo.tex
-	$(LN_S) $(texidir)/texinfo.tex $@
+	$(RM) $@; $(LN_S) $(texidir)/texinfo.tex $@
+
+pdftexinfo.tex: $(texidir)/pdftexinfo.tex
+	$(RM) $@; $(LN_S) $(texidir)/pdftexinfo.tex $@
 
 epsf.tex: $(texidir)/epsf.tex
-	$(LN_S) $(texidir)/epsf.tex $@
+	$(RM) $@; $(LN_S) $(texidir)/epsf.tex $@
 
 xepsf.tex: epsf.tex
-	$(LN_S) epsf.tex $@
+	$(RM) $@; $(LN_S) epsf.tex $@
 
 
 ## The DDD manual in HTML format.
