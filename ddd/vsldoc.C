@@ -57,6 +57,7 @@ string vsldoc(string file, const string& path)
 	    if (fp != 0)
 		break;
 	}
+	delete[] dirs;
     }
 
     if (fp == 0)
