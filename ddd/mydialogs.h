@@ -64,7 +64,7 @@ void getItemNumbers(Widget selectionList, IntArray& arr);
 //
 void setLabelList (Widget  selectionList,
 		   const string  label_list[],
-		   bool    selected[],
+		   const bool selected[],
 		   int     list_length,
 		   bool    highlight_title,
 		   bool    notify);
@@ -72,7 +72,7 @@ void setLabelList (Widget  selectionList,
 // Replace all elements in SELECTIONLIST with the corresponding
 // entries in LABEL_LIST (i.e. with the same leading number).
 void updateLabelList (Widget  selectionList,
-		      string  label_list[],
+		      const string  label_list[],
 		      int     list_length);
 
 // The default list charset
