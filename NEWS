@@ -12,6 +12,7 @@ DDD 1.4 (NOT YET RELEASED)
       and DDD facilities at your disposition.
     - Breakpoints and the current execution position can be
       displayed as symbols (``glyphs'') instead of text.
+    - Displays with format expressions (`/x') are properly dereferenced.
     - Again, several minor bugs were fixed.
 
 
