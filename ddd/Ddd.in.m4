@@ -1400,9 +1400,9 @@ dnl ~Ctrl<Btn1Up>:        Activate() Disarm()\n])dnl
 dnl
 dnl Ddd*tool_shell*XmPushButton.translations: \
 dnl BUTTON_TRANSLATIONS GDB_TRANSLATIONS
-dnl Ddd*graph_cmd_area*XmPushButton.translations: \
+dnl Ddd*graph_buttons*XmPushButton.translations: \
 dnl BUTTON_TRANSLATIONS GDB_TRANSLATIONS
-dnl Ddd*arg_cmd_area*XmPushButton.translations: \
+dnl Ddd*source_buttons*XmPushButton.translations: \
 dnl BUTTON_TRANSLATIONS GDB_TRANSLATIONS
 dnl
 dnl Ddd*XmLabel.translations: \
@@ -3323,18 +3323,14 @@ Ddd*shortcut_popup*documentationString:
 ! Graph Buttons
 !-----------------------------------------------------------------------------
 
-! Ddd*graph_cmd_w*helpString: \
+! Ddd*graph_toolbar*helpString: \
 ! @rm Commands related to the data window.
 
-Ddd*graph_cmd_w.marginWidth:	 0
-Ddd*graph_cmd_w.marginHeight:	 0
-Ddd*graph_cmd_area.marginWidth:	 0
+Ddd*graph_toolbar.arg_label.labelString:	():
 
-Ddd*graph_cmd_w.arg_label.labelString:	():
-
-Ddd*graph_cmd_w.graph_arg.columns:		22
-Ddd*graph_cmd_w*graph_arg.editable:		false
-Ddd*graph_cmd_w*graph_arg.helpString:	\
+Ddd*graph_arg.columns:			22
+Ddd*graph_arg.editable:			false
+Ddd*graph_arg.helpString:	\
 WIDGET(Argument)\n\
 \n\
 This is the argument LBL(()) for the command buttons on the right.\n\
@@ -3342,47 +3338,39 @@ This is the argument LBL(()) for the command buttons on the right.\n\
 Set LBL(()) by selecting data displays.\n\
 Clear LBL(()) by clicking on the prompt LBL(():).
 
-Ddd*graph_cmd_w.orientation:		XmHORIZONTAL
-Ddd*graph_cmd_area.orientation:		XmHORIZONTAL
-Ddd*graph_cmd_area.spacing:		0
-Ddd*graph_cmd_w.spacing:		0
-Ddd*graph_cmd_area.packing:		XmPACK_TIGHT
-Ddd*graph_cmd_area.entryAlignment:	XmALIGNMENT_CENTER
-Ddd*graph_cmd_area.alignment:		XmALIGNMENT_CENTER
+Ddd*graph_buttons*dereference.labelString: 	Display *()
+Ddd*graph_buttons*detail.labelString:		Show ()
+Ddd*graph_buttons*show_more.labelString:   	Show More ()
+Ddd*graph_buttons*show_just.labelString:   	Show Just ()
+Ddd*graph_buttons*show_detail.labelString: 	Show All ()
+Ddd*graph_buttons*hide_detail.labelString: 	Hide ()
+Ddd*graph_buttons*rotate.labelString:		Rotate ()
+Ddd*graph_buttons*rotateAll.labelString:	Rotate All ()
+Ddd*graph_buttons*new.labelString:		New Display
+Ddd*graph_buttons*set.labelString:		Set ()
+Ddd*graph_buttons*delete.labelString:		Delete ()
 
-Ddd*graph_cmd_area*dereference.labelString: 	Display *()
-Ddd*graph_cmd_area*detail.labelString:		Show ()
-Ddd*graph_cmd_area*show_more.labelString:   	Show More ()
-Ddd*graph_cmd_area*show_just.labelString:   	Show Just ()
-Ddd*graph_cmd_area*show_detail.labelString: 	Show All ()
-Ddd*graph_cmd_area*hide_detail.labelString: 	Hide ()
-Ddd*graph_cmd_area*rotate.labelString:		Rotate ()
-Ddd*graph_cmd_area*rotateAll.labelString:	Rotate All ()
-Ddd*graph_cmd_area*new.labelString:		New Display
-Ddd*graph_cmd_area*set.labelString:		Set ()
-Ddd*graph_cmd_area*delete.labelString:		Delete ()
+Ddd*graph_buttons*dereference.labelPixmap: 		dispref
+Ddd*graph_buttons*dereference.labelInsensitivePixmap:	dispref-xx
 
-Ddd*graph_cmd_area*dereference.labelPixmap: 		dispref
-Ddd*graph_cmd_area*dereference.labelInsensitivePixmap:	dispref-xx
+Ddd*graph_buttons*detail.labelPixmap:			show
+Ddd*graph_buttons*detail.labelInsensitivePixmap:	show-xx
 
-Ddd*graph_cmd_area*detail.labelPixmap:			show
-Ddd*graph_cmd_area*detail.labelInsensitivePixmap:	show-xx
+Ddd*graph_buttons*rotate.labelPixmap:			rotate
+Ddd*graph_buttons*rotate.labelInsensitivePixmap:	rotate-xx
 
-Ddd*graph_cmd_area*rotate.labelPixmap:			rotate
-Ddd*graph_cmd_area*rotate.labelInsensitivePixmap:	rotate-xx
+Ddd*graph_buttons*new.labelPixmap:			display
+Ddd*graph_buttons*new.labelInsensitivePixmap:		display-xx
 
-Ddd*graph_cmd_area*new.labelPixmap:			display
-Ddd*graph_cmd_area*new.labelInsensitivePixmap:		display-xx
+Ddd*graph_buttons*set.labelPixmap:			set
+Ddd*graph_buttons*set.labelInsensitivePixmap:		set-xx
 
-Ddd*graph_cmd_area*set.labelPixmap:			set
-Ddd*graph_cmd_area*set.labelInsensitivePixmap:		set-xx
-
-Ddd*graph_cmd_area*delete.labelPixmap:			undisplay
-Ddd*graph_cmd_area*delete.labelInsensitivePixmap:	undisplay-xx
+Ddd*graph_buttons*delete.labelPixmap:			undisplay
+Ddd*graph_buttons*delete.labelInsensitivePixmap:	undisplay-xx
 
 
-! Ddd*graph_cmd_area*marginTop:	  	1
-! Ddd*graph_cmd_area*marginBottom:	1
+! Ddd*graph_buttons*marginTop:	  	1
+! Ddd*graph_buttons*marginBottom:	1
 
 define(ANNOUNCE_PULLDOWN,[\
 Pulldown menu functions (press and hold BUTTON(1)):\
@@ -3397,7 +3385,7 @@ DESC(Other..., [Enter new shortcut])\n\
 DESC(Edit..., [Edit shortcuts])
 ])dnl
 
-Ddd*graph_cmd_area*new.helpString:\
+Ddd*graph_buttons*new.helpString:\
 LBL(New Display)\n\
 \n\
 Create a new display dependent on the selected display part.\n\
@@ -3406,18 +3394,18 @@ ANNOUNCE_PULLDOWN\n\
 NEW_DISPLAY_HELP
 Ddd*newMenu*helpString: NEW_DISPLAY_HELP
 
-Ddd*graph_cmd_area*new.tipString:\
+Ddd*graph_buttons*new.tipString:\
 @rm Create new display
-Ddd*graph_cmd_area*new.documentationString:\
+Ddd*graph_buttons*new.documentationString:\
 @rm Create a new (dependent) display MORE_PULLDOWN()
 
-Ddd*graph_cmd_area*dereference.helpString:\
+Ddd*graph_buttons*dereference.helpString:\
 LBL(Display *())\n\
 \n\
 Dereference the selected display.
-Ddd*graph_cmd_area*dereference.tipString:\
+Ddd*graph_buttons*dereference.tipString:\
 @rm Dereference selected display
-Ddd*graph_cmd_area*dereference.documentationString:\
+Ddd*graph_buttons*dereference.documentationString:\
 @rm Dereference the selected display
 
 define(DETAIL_HELP, [\
@@ -3427,7 +3415,7 @@ DESC(Show All, [Show all details, including substructures])\n\
 DESC(Hide, [Hide Details])
 ])dnl
 
-Ddd*graph_cmd_area*detail.helpString:	\
+Ddd*graph_buttons*detail.helpString:	\
 LBL(Show ()) / LBL(Hide ())\n\
 \n\
 Show/Hide details of the selected displays.\n\
@@ -3437,25 +3425,25 @@ DETAIL_HELP
 
 Ddd*detailMenu*helpString:	DETAIL_HELP
 
-Ddd*graph_cmd_area*detail.tipString:	\
+Ddd*graph_buttons*detail.tipString:	\
 @rm Show/Hide selected details
-Ddd*graph_cmd_area*detail.documentationString: \
+Ddd*graph_buttons*detail.documentationString: \
 @rm Show/Hide details of the selected displays MORE_PULLDOWN()
 
-Ddd*graph_cmd_area*show_more.documentationString: \
+Ddd*graph_buttons*show_more.documentationString: \
 @rm Show more details of the selected displays
-Ddd*graph_cmd_area*show_just.documentationString: \
+Ddd*graph_buttons*show_just.documentationString: \
 @rm Show details of the selected displays, hiding substructures
-Ddd*graph_cmd_area*show_detail.documentationString: \
+Ddd*graph_buttons*show_detail.documentationString: \
 @rm Show all details of the selected displays, including substructures
-Ddd*graph_cmd_area*hide_detail.documentationString: \
+Ddd*graph_buttons*hide_detail.documentationString: \
 @rm Hide details of the selected displays
 
 define(ROTATE_HELP, [\
 DESC(Rotate All, [Rotate substructures too])
 ])dnl
 
-Ddd*graph_cmd_area*rotate.helpString:	\
+Ddd*graph_buttons*rotate.helpString:	\
 LBL(Rotate ())\n\
 \n\
 Rotate the selected displays.\n\
@@ -3465,29 +3453,29 @@ ROTATE_HELP
 
 Ddd*rotateMenu*helpString:	ROTATE_HELP
 
-Ddd*graph_cmd_area*rotate.tipString:	\
+Ddd*graph_buttons*rotate.tipString:	\
 @rm Rotate selected displays
-Ddd*graph_cmd_area*rotate.documentationString: \
+Ddd*graph_buttons*rotate.documentationString: \
 @rm Rotate the selected displays MORE_PULLDOWN()
-Ddd*graph_cmd_area*rotateAll.documentationString: \
+Ddd*graph_buttons*rotateAll.documentationString: \
 @rm Rotate the selected displays, including substructures
 
-Ddd*graph_cmd_area*set.helpString:	\
+Ddd*graph_buttons*set.helpString:	\
 LBL(Set ())\n\
 \n\
 Change the selected display value.
-Ddd*graph_cmd_area*set.tipString:	\
+Ddd*graph_buttons*set.tipString:	\
 @rm Set display value
-Ddd*graph_cmd_area*set.documentationString:	\
+Ddd*graph_buttons*set.documentationString:	\
 @rm Change the selected display value
 
-Ddd*graph_cmd_area*delete.helpString:	\
+Ddd*graph_buttons*delete.helpString:	\
 LBL(Delete ())\n\
 \n\
 Delete the selected displays.
-Ddd*graph_cmd_area*delete.tipString:	\
+Ddd*graph_buttons*delete.tipString:	\
 @rm Delete selected displays
-Ddd*graph_cmd_area*delete.documentationString:	\
+Ddd*graph_buttons*delete.documentationString:	\
 @rm Delete the selected displays
 
 
@@ -3715,16 +3703,12 @@ Ddd*text_popup.clearAt.documentationString: \
 
 
 !-----------------------------------------------------------------------------
-! Source Text Commands
+! Source Toolbar
 !-----------------------------------------------------------------------------
 
-Ddd*arg_cmd_w.marginWidth:     0
-Ddd*arg_cmd_w.marginHeight:    0
-Ddd*arg_cmd_area.marginWidth:  0
+Ddd*source_toolbar.arg_label.labelString:		():
 
-Ddd*arg_cmd_w.arg_label.labelString:		():
-
-Ddd*arg_cmd_w.source_arg.helpString:	\
+Ddd*source_arg.helpString:	\
 WIDGET(Argument)\n\
 \n\
 This is the argument LBL(()) for the command buttons on the right.\n\
@@ -3733,60 +3717,52 @@ Edit LBL(()) using the usual editing functions.\n\
 Set LBL(()) by selecting items from the source window or the data window.\n\
 Clear LBL(()) by clicking on the prompt LBL(():).
 
-Ddd*arg_cmd_w.source_arg.value:			main
-Ddd*arg_cmd_w.source_arg.columns:		22
+Ddd*source_arg.value:				main
+Ddd*source_arg.columns:				22
 
-Ddd*arg_cmd_w.orientation:			XmHORIZONTAL
-Ddd*arg_cmd_area.orientation:			XmHORIZONTAL
-Ddd*arg_cmd_area.spacing:			0
-Ddd*arg_cmd_w*spacing:				0
-Ddd*arg_cmd_area.packing:			XmPACK_TIGHT
-Ddd*arg_cmd_area.entryAlignment:		XmALIGNMENT_CENTER
-Ddd*arg_cmd_area*alignment:			XmALIGNMENT_CENTER
+Ddd*source_buttons*lookup.labelString:		Lookup ()
+Ddd*source_buttons*breakAt.labelString:		Break at ()
+Ddd*source_buttons*tempBreakAt.labelString:	Set Temporary Breakpoint at ()
+Ddd*source_buttons*contUntil.labelString:	Continue Until ()
+Ddd*source_buttons*enable.labelString:		Enable Breakpoint at ()
+Ddd*source_buttons*condition.labelString:	Set Condition at ()...
+Ddd*source_buttons*ignore_count.labelString:	Set Ignore Count at ()...
+Ddd*source_buttons*setPC.labelString:		Set Execution Position to ()
+Ddd*source_buttons*watch.labelString:		Unwatch ()
+Ddd*source_buttons*cwatch.labelString:		Set watchpoint on ()
+Ddd*source_buttons*rwatch.labelString:		Set read watchpoint on ()
+Ddd*source_buttons*awatch.labelString:		Set access watchpoint on ()
+Ddd*source_buttons*print.labelString:		Print ()
+Ddd*source_buttons*printRef.labelString:	Print *()
+Ddd*source_buttons*whatis.labelString:		Whatis ()
+Ddd*source_buttons*display.labelString:		Display ()
+Ddd*source_buttons*dispRef.labelString:		Display *()
+Ddd*source_buttons*find.labelString:		LBL_FIND_FORWARD
+Ddd*source_buttons*findBackward.labelString:	LBL_FIND_BACKWARD
+Ddd*source_buttons*findForward.labelString:	LBL_FIND_FORWARD
 
-Ddd*arg_cmd_area*lookup.labelString:		Lookup ()
-Ddd*arg_cmd_area*breakAt.labelString:		Break at ()
-Ddd*arg_cmd_area*tempBreakAt.labelString:	Set Temporary Breakpoint at ()
-Ddd*arg_cmd_area*contUntil.labelString:		Continue Until ()
-Ddd*arg_cmd_area*enable.labelString:		Enable Breakpoint at ()
-Ddd*arg_cmd_area*condition.labelString:		Set Condition at ()...
-Ddd*arg_cmd_area*ignore_count.labelString:	Set Ignore Count at ()...
-Ddd*arg_cmd_area*setPC.labelString:		Set Execution Position to ()
-Ddd*arg_cmd_area*watch.labelString:		Unwatch ()
-Ddd*arg_cmd_area*cwatch.labelString:		Set watchpoint on ()
-Ddd*arg_cmd_area*rwatch.labelString:		Set read watchpoint on ()
-Ddd*arg_cmd_area*awatch.labelString:		Set access watchpoint on ()
-Ddd*arg_cmd_area*print.labelString:		Print ()
-Ddd*arg_cmd_area*printRef.labelString:		Print *()
-Ddd*arg_cmd_area*whatis.labelString:		Whatis ()
-Ddd*arg_cmd_area*display.labelString:		Display ()
-Ddd*arg_cmd_area*dispRef.labelString:		Display *()
-Ddd*arg_cmd_area*find.labelString:		LBL_FIND_FORWARD
-Ddd*arg_cmd_area*findBackward.labelString:	LBL_FIND_BACKWARD
-Ddd*arg_cmd_area*findForward.labelString:	LBL_FIND_FORWARD
+Ddd*source_buttons*lookup.labelPixmap:			lookup
+Ddd*source_buttons*lookup.labelInsensitivePixmap:	lookup-xx
 
-Ddd*arg_cmd_area*lookup.labelPixmap:			lookup
-Ddd*arg_cmd_area*lookup.labelInsensitivePixmap:		lookup-xx
+Ddd*source_buttons*breakAt.labelPixmap:		 	break_at
+Ddd*source_buttons*breakAt.labelInsensitivePixmap: 	break_at-xx
 
-Ddd*arg_cmd_area*breakAt.labelPixmap:		 	break_at
-Ddd*arg_cmd_area*breakAt.labelInsensitivePixmap: 	break_at-xx
+Ddd*source_buttons*watch.labelPixmap:		 	watch
+Ddd*source_buttons*watch.labelInsensitivePixmap: 	watch-xx
 
-Ddd*arg_cmd_area*watch.labelPixmap:		 	watch
-Ddd*arg_cmd_area*watch.labelInsensitivePixmap: 		watch-xx
+Ddd*source_buttons*print.labelPixmap:		 	print
+Ddd*source_buttons*print.labelInsensitivePixmap: 	print-xx
 
-Ddd*arg_cmd_area*print.labelPixmap:		 	print
-Ddd*arg_cmd_area*print.labelInsensitivePixmap: 		print-xx
+Ddd*source_buttons*display.labelPixmap:		 	display
+Ddd*source_buttons*display.labelInsensitivePixmap: 	display-xx
 
-Ddd*arg_cmd_area*display.labelPixmap:		 	display
-Ddd*arg_cmd_area*display.labelInsensitivePixmap: 	display-xx
+Ddd*source_buttons*dispRef.labelPixmap:		 	dispref
+Ddd*source_buttons*dispRef.labelInsensitivePixmap: 	dispref-xx
 
-Ddd*arg_cmd_area*dispRef.labelPixmap:		 	dispref
-Ddd*arg_cmd_area*dispRef.labelInsensitivePixmap: 	dispref-xx
+Ddd*source_buttons*find.labelPixmap:		 	find_forward
+Ddd*source_buttons*find.labelInsensitivePixmap: 	find_forward-xx
 
-Ddd*arg_cmd_area*find.labelPixmap:		 	find_forward
-Ddd*arg_cmd_area*find.labelInsensitivePixmap: 		find_forward-xx
-
-Ddd*arg_cmd_area*lookup.helpString:	\
+Ddd*source_buttons*lookup.helpString:	\
 LBL(Lookup ())\n\
 \n\
 Lookup a line, file, function, variable, or breakpoint in the source.\n\
@@ -3805,9 +3781,9 @@ ITEM If LBL(()) contains a function or variable name, lookup \
 the definition\n\
     of that function or variable.
 
-Ddd*arg_cmd_area*lookup.tipString:	\
+Ddd*source_buttons*lookup.tipString:	\
 @rm Lookup LBL(()) in the source
-Ddd*arg_cmd_area*lookup.documentationString:	\
+Ddd*source_buttons*lookup.documentationString:	\
 @rm Lookup a line, file, function, variable or breakpoint in the source
 
 define(BREAK_HELP, [\
@@ -3819,7 +3795,7 @@ DESC(Set Ignore Count at ()..., [set breakpoint ignore count])\n\
 DESC(Set Execution Position to (), [move execution position])
 ])dnl
 
-Ddd*arg_cmd_area*breakAt.helpString:	\
+Ddd*source_buttons*breakAt.helpString:	\
 LBL(Break at ()) / LBL(Clear at ())\n\
 \n\
 Set or delete a breakpoint at the argument LBL(()).\n\
@@ -3829,22 +3805,22 @@ BREAK_HELP
 
 Ddd*breakAtMenu*helpString:	BREAK_HELP
 
-Ddd*arg_cmd_area*breakAt.tipString:	\
+Ddd*source_buttons*breakAt.tipString:	\
 @rm Set/Delete breakpoint at LBL(())
-Ddd*arg_cmd_area*breakAt.documentationString:	\
+Ddd*source_buttons*breakAt.documentationString:	\
 @rm Set or delete a breakpoint at the argument LBL(()) MORE_PULLDOWN()
 
-Ddd*arg_cmd_area*tempBreakAt.documentationString: \
+Ddd*source_buttons*tempBreakAt.documentationString: \
 @rm Set a temporary breakpoint at the argument LBL(())
-Ddd*arg_cmd_area*contUntil.documentationString: \
+Ddd*source_buttons*contUntil.documentationString: \
 @rm Set a temporary breakpoint at LBL(()) and resume execution
-Ddd*arg_cmd_area*enable.documentationString: \
+Ddd*source_buttons*enable.documentationString: \
 @rm Enable or disable the breakpoint at the argument LBL(())
-Ddd*arg_cmd_area*condition.documentationString: \
+Ddd*source_buttons*condition.documentationString: \
 @rm Specify a condition for the breakpoint at LBL(())
-Ddd*arg_cmd_area*ignore_count.documentationString: \
+Ddd*source_buttons*ignore_count.documentationString: \
 @rm Specify how many crossings of the breakpoint at LBL(()) are to be ignored
-Ddd*arg_cmd_area*setPC.documentationString: \
+Ddd*source_buttons*setPC.documentationString: \
 @rm Set the current execution position to LBL(())
 
 define(PRINT_HELP, [\
@@ -3852,7 +3828,7 @@ DESC(Print *(), [print dereferenced argument])\n\
 DESC(Whatis (), [print type of argument])
 ])dnl
 
-Ddd*arg_cmd_area*print.helpString:	\
+Ddd*source_buttons*print.helpString:	\
 LBL(Print ())\n\
 \n\
 Print the argument LBL(()) in the @GDB@ console.\n\
@@ -3861,20 +3837,20 @@ ANNOUNCE_PULLDOWN\n\
 PRINT_HELP
 Ddd*printMenu*helpString:	PRINT_HELP
 
-Ddd*arg_cmd_area*print.tipString:	\
+Ddd*source_buttons*print.tipString:	\
 @rm Print LBL(()) in the debugger console
-Ddd*arg_cmd_area*print.documentationString:	\
+Ddd*source_buttons*print.documentationString:	\
 @rm Print the argument LBL(()) in the @GDB@ console MORE_PULLDOWN()
-Ddd*arg_cmd_area*printRef.documentationString:	\
+Ddd*source_buttons*printRef.documentationString:	\
 @rm Print the dereferenced argument LBL(()) in the @GDB@ console
-Ddd*arg_cmd_area*whatis.documentationString:	\
+Ddd*source_buttons*whatis.documentationString:	\
 @rm Print the type of the argument LBL(()) in the @GDB@ console
 
 define(DISPLAY_HELP, [\
 DESC(Display *(), [display dereferenced argument])
 ])dnl
 
-Ddd*arg_cmd_area*display.helpString:	\
+Ddd*source_buttons*display.helpString:	\
 LBL(Display ())\n\
 \n\
 Display the argument LBL(()) in the data window.\n\
@@ -3884,11 +3860,11 @@ DISPLAY_HELP
 Ddd*displayMenu*helpString:	DISPLAY_HELP
 
 
-Ddd*arg_cmd_area*display.tipString:	\
+Ddd*source_buttons*display.tipString:	\
 @rm Display LBL(()) in the data window
-Ddd*arg_cmd_area*display.documentationString:	\
+Ddd*source_buttons*display.documentationString:	\
 @rm Display the argument LBL(()) in the data window MORE_PULLDOWN()
-Ddd*arg_cmd_area*dispRef.documentationString:	\
+Ddd*source_buttons*dispRef.documentationString:	\
 @rm Display the dereferenced argument LBL(()) in the data window
 
 define(WATCH_HELP, [\
@@ -3900,7 +3876,7 @@ Unless you have special hardware support, watchpoints slow down the\n\
 debugged program by about two orders of magnitude.
 ])dnl
 
-Ddd*arg_cmd_area*watch.helpString:	\
+Ddd*source_buttons*watch.helpString:	\
 LBL(Watch ()) / LBL(Unwatch())\n\
 \n\
 Stop whenever the value of LBL(()) changes.\n\
@@ -3915,15 +3891,15 @@ ANNOUNCE_PULLDOWN\n\
 WATCH_HELP
 Ddd*watchMenu*helpString:	WATCH_HELP
 
-Ddd*arg_cmd_area*watch.tipString:	\
+Ddd*source_buttons*watch.tipString:	\
 @rm Stop whenever LBL(()) changes
-Ddd*arg_cmd_area*watch.documentationString:	\
+Ddd*source_buttons*watch.documentationString:	\
 @rm Stop whenever the value of LBL(()) changes MORE_PULLDOWN()
-Ddd*arg_cmd_area*cwatch.documentationString:	\
+Ddd*source_buttons*cwatch.documentationString:	\
 @rm Stop whenever the value of LBL(()) changes
-Ddd*arg_cmd_area*rwatch.documentationString:	\
+Ddd*source_buttons*rwatch.documentationString:	\
 @rm Stop whenever LBL(()) is read (requires hardware support)
-Ddd*arg_cmd_area*awatch.documentationString:	\
+Ddd*source_buttons*awatch.documentationString:	\
 @rm Stop whenever LBL(()) is either read or written (requires hardware support)
 
 define(FIND_HELP, [\
@@ -3931,7 +3907,7 @@ DESC(LBL_FIND_BACKWARD, [find backwards])\n\
 DESC(LBL_FIND_FORWARD, [find forwards])
 ])dnl
 
-Ddd*arg_cmd_area*find.helpString:	\
+Ddd*source_buttons*find.helpString:	\
 LBL(LBL_FIND_BACKWARD / LBL_FIND_FORWARD)\n\
 \n\
 Search an occurrence of LBL(()) in the current source text.\n\
@@ -3942,13 +3918,13 @@ ANNOUNCE_PULLDOWN\n\
 FIND_HELP
 Ddd*findMenu*helpString:	FIND_HELP
 
-Ddd*arg_cmd_area*find.tipString:	\
+Ddd*source_buttons*find.tipString:	\
 @rm Find LBL(()) in source
-Ddd*arg_cmd_area*find.documentationString:	\
+Ddd*source_buttons*find.documentationString:	\
 @rm Search LBL(()) in the current source MORE_PULLDOWN()
-Ddd*arg_cmd_area*findBackward.documentationString:	\
+Ddd*source_buttons*findBackward.documentationString:	\
 @rm Search the previous occurrence of LBL(()) in the source
-Ddd*arg_cmd_area*findForward.documentationString:	\
+Ddd*source_buttons*findForward.documentationString:	\
 @rm Search the next occurrence of LBL(()) in the source
 
 

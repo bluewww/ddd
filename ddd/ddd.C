@@ -245,6 +245,7 @@ extern "C" {
 #include "status.h"
 #include "strclass.h"
 #include "string-fun.h"
+#include "toolbar.h"
 #include "ungrab.h"
 #include "verify.h"
 #include "version.h"
@@ -1982,38 +1983,18 @@ int main(int argc, char *argv[])
 		       NULL);
     }
 
-    // Argument field and commands
-    arg_cmd_w = 
-	verify(XmCreateRowColumn(source_view_parent, "arg_cmd_w", NULL, 0));
+    // Source tool bar
+    Widget arg_label;
+    arg_cmd_w = create_toolbar(source_view_parent, "source",
+			       arg_cmd_area, arg_label, source_arg);
 
-    Widget arg_label = create_arg_label(arg_cmd_w);
-    source_arg = new ArgField (arg_cmd_w, "source_arg");
     XtAddCallback(arg_label, XmNactivateCallback, 
 		  ClearTextFieldCB, source_arg->widget());
-
-    MMcreateWorkArea(arg_cmd_w, "arg_cmd_area", arg_cmd_area);
-    MMaddCallbacks(arg_cmd_area);
-    MMaddHelpCallback(arg_cmd_area, ImmediateHelpCB);
-    XtManageChild(arg_cmd_w);
-    register_menu_shell(arg_cmd_area);
-
     XtAddCallback(source_arg->widget(), XmNactivateCallback, 
 		  ActivateCB, 
 		  XtPointer(arg_cmd_area[ArgItems::Lookup].widget));
 
-    XtWidgetGeometry size;
-    size.request_mode = CWHeight;
-    XtQueryGeometry(arg_cmd_w, NULL, &size);
-    unsigned char unit_type;
-    XtVaGetValues(arg_cmd_w, XmNunitType, &unit_type, NULL);
-    Dimension new_height = XmConvertUnits(arg_cmd_w, XmVERTICAL, XmPIXELS, 
-					  size.height, unit_type);
-    XtVaSetValues(arg_cmd_w,
-		  XmNpaneMaximum, new_height,
-		  XmNpaneMinimum, new_height,
-		  NULL);
-
-    // Tool bar (optional)
+    // Command tool bar (optional)
     command_tool_bar_w = make_buttons(source_view_parent, "command_tool_bar", 
 				      app_data.tool_buttons);
     if (command_tool_bar_w != 0)

@@ -717,6 +717,7 @@ DDD_OBJECTS = \
 	cmdtty.o     \
 	comm-manag.o \
 	complete.o   \
+	configinfo.o \
 	ctrl.o       \
 	dbx-lookup.o \
 	disp-read.o  \
@@ -750,10 +751,10 @@ DDD_OBJECTS = \
 	shell.o      \
 	shorten.o    \
 	show.o       \
-	configinfo.o \
 	source.o     \
 	status.o     \
 	string-fun.o \
+	toolbar.o    \
 	ungrab.o     \
 	value-read.o \
 	windows.o    \

@@ -91,14 +91,12 @@ char DataDisp_rcsid[] =
 #include "version.h"
 
 // Motif includes
-#include <Xm/MessageB.h>
+#include <Xm/List.h>
+#include <Xm/ToggleB.h>
 #include <Xm/RowColumn.h>	// XmMenuPosition()
 #include <Xm/SelectioB.h>	// XmCreatePromptDialog()
 #include <Xm/TextF.h>		// XmTextFieldGetString()
-#include <Xm/Text.h>
 #include <Xm/Label.h>
-#include <Xm/List.h>
-#include <Xm/ToggleB.h>
 #include <X11/StringDefs.h>
 
 // DDD includes
@@ -111,6 +109,7 @@ char DataDisp_rcsid[] =
 #include "ddd.h"
 #include "ArgField.h"
 #include "verify.h"
+#include "toolbar.h"
 #include "windows.h"
 #include "wm.h"
 #include "LessTifH.h"
@@ -4919,33 +4918,12 @@ DataDisp::DataDisp(Widget parent,
     XtManageChild (graph_edit);
 
     // Create buttons
+    registerOwnConverters();
+    Widget arg_label;
     graph_cmd_w = 
-	verify(XmCreateRowColumn(parent, "graph_cmd_w", NULL, 0));
-
-    Widget arg_label = create_arg_label(graph_cmd_w);
-    graph_arg = new ArgField (graph_cmd_w, "graph_arg");
+	create_toolbar(parent, "graph", graph_cmd_area, arg_label, graph_arg);
     XtAddCallback(arg_label, XmNactivateCallback, 
 		  SelectionLostCB, XtPointer(0));
-
-    registerOwnConverters();
-
-    MMcreateWorkArea(graph_cmd_w, "graph_cmd_area", graph_cmd_area);
-    MMaddCallbacks(graph_cmd_area);
-    MMaddHelpCallback(graph_cmd_area, ImmediateHelpCB);
-    XtManageChild(graph_cmd_w);
-    register_menu_shell(graph_cmd_area);
-
-    XtWidgetGeometry size;
-    size.request_mode = CWHeight;
-    XtQueryGeometry(graph_cmd_w, NULL, &size);
-    unsigned char unit_type;
-    XtVaGetValues(graph_cmd_w, XmNunitType, &unit_type, NULL);
-    int new_height = XmConvertUnits(graph_cmd_w, XmVERTICAL, XmPIXELS, 
-				    size.height, unit_type);
-    XtVaSetValues(graph_cmd_w,
-		  XmNpaneMaximum, new_height,
-		  XmNpaneMinimum, new_height,
-		  NULL);
 
     // Create (unmanaged) selection widget
     graph_selection_w =
