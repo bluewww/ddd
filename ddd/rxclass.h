@@ -42,20 +42,46 @@ extern "C" {
 // Avoid conflicts with `regex()' function
 #define regex c_regex
 
+// Don't include old libg++ `regex.h' contents
+#define __REGEXP_LIBRARY
+
 #ifndef __STDC__
 #define __STDC__ 1              // Reguired for KCC when using GNU includes
 #endif
-#if defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_REGEX_H)
+
+#if defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && !defined(REGCOMP_BROKEN)
+
+// Some old versions of libg++ contain a `regex.h' file.  Avoid this.
+#if !defined(REG_EXTENDED) && defined(HAVE_REGEX_H)
 #include <regex.h>		// POSIX.2 interface
-#elif defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_RX_H)
+#endif
+
+// Try hard-wired path to get native <regex.h>.
+#if !defined(REG_EXTENDED) && defined(HAVE_REGEX_H)
+#include </usr/include/regex.h>	// POSIX.2 interface
+#endif
+
+// Some more GNU headers.
+#if !defined(REG_EXTENDED) && defined(HAVE_RX_H)
 #include <rx.h>	 	        // Header from GNU rx 0.07
-#elif defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_RXPOSIX_H)
+#endif
+
+#if !defined(REG_EXTENDED) && defined(HAVE_RXPOSIX_H)
 #include <rxposix.h>		// Header from GNU rx 1.0 and later
-#else
+#endif
+
+#endif // !defined(REGCOMP_BROKEN)
+
+// Use GNU rx as shipped with DDD.
+#if !defined(REG_EXTENDED)
 #include <librx/rx.h>		// Header from GNU rx 0.07, as shipped with DDD
 #endif
 
 #undef regex
+
+#ifdef RE_DUP_MAX
+#undef RE_DUP_MAX		// Avoid trouble with later redefinitions
+#endif
 }
 
 
