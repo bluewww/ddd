@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-08\-12" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-08\-13" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -1064,6 +1064,10 @@ is fatal and not handled.
 .sp
 If unset, \s-1GDB\s+1 should not allow your program to see this
 signal.
+.PP
+The entry `\fBAll Signals\fR' is special.  Changing a setting here
+affects \fIall signals at once\fR\(em\&except those used by the
+debugger, typically SIGTRAP and SIGINT.
 .PP
 When a signal stops your program, the signal is not visible until you
 continue.  Your program sees the signal then, if `\fBPass\fR' is in

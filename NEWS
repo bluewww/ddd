@@ -135,6 +135,9 @@ Program Execution
   the execution window, using `run 2> FILE'.  The debugger command
   `run 2> /dev/tty' will redirect stderr to the debugger console.
 
+- Using `Status->Signals->All Signals', you can modify signal handling 
+  for all signals at once.
+
 
 Performance
 -----------

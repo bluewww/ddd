@@ -3415,6 +3415,13 @@ Ddd*signals*help.labelString:	   ?
 Ddd*signals*help.tipString: \
 @rm Get help on this signal
 
+! Help for `All signals'
+Ddd*signals*all*helpString: \
+WIDGET(All Signals)\n\
+\n\
+Use these settings to modify all signals at once - expect those\n\
+used by the debugger, typically SIGTRAP and SIGINT.
+
 ! The panel itself has a help button, too.
 Ddd*signals*helpString: \
 WIDGET(Signal Handling)\n\
@@ -3426,6 +3433,7 @@ DESC(Print, [print a message in the @GDB@ console if this signal happens])\n\
 DESC(Pass, [let program see this signal; otherwise program doesn't know])\n\
 DESC(Send, [continue program execution with this signal])\n\
 \n\
+Use LBL(All Signals) to modify all signals at once.\n\
 Click on LBL(?) to get further information on the specific signal.\n\
 \n\
 Click on LBL(Reset) to restore the original settings.\n\
