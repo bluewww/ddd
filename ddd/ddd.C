@@ -1345,6 +1345,10 @@ int main(int argc, char *argv[])
     // Don't let TERMCAP settings override our TERM settings.
     putenv("TERMCAP=");
 
+    // This avoids tons of problems with debuggers that pipe
+    // their output through `more', `less', and likewise.
+    putenv("PAGER=cat");
+
     // Setup insertion position
     promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
     XmTextSetInsertionPosition(gdb_w, messagePosition);
@@ -1937,7 +1941,8 @@ void _gdb_out(string text)
     private_gdb_output = true;
 
     // Don't care for CR if followed by NL
-    text.gsub("\r\n", "\n");
+    static regex RXcrlf("\r\r*\n");
+    text.gsub(RXcrlf, "\n");
 
     // Don't care for strings to be ignored
     static string empty;
