@@ -136,6 +136,8 @@ Volunteers for fixing these and other bugs are welcome!
     likewise), DDD considers the pointer to be frozen, such that it
     continues execution.
 
-371 Is the command shell raised each time a new display is created?
+370 Is the command shell raised each time a new display is created?
+
+371 Reduce flickering when setting options.
 
 373 (Insert new bugs here)

@@ -54,9 +54,6 @@ Volunteers for these and other projects are welcome!
     (i.e. comments and graphics that are associated with certain
     variable/function names in the code).
 
-080 Convert the DDD manual to texinfo, as in ICE, resulting in an
-    HTML manual.  See also 102.
-
 083 Include graphplace (or other graph layout) support.
 
 085 Include xDuel support.  See `http://www.math.tau.ac.il/~frangy/'
@@ -66,8 +63,6 @@ Volunteers for these and other projects are welcome!
     box.  With an additional VSL 'matches()' function that matches
     regexps, one may display different types in different
     colors, fonts, etc.
-
-102 Have a WWW tutorial for DDD.  See also 080.
 
 110 N. Dan Zou <zou@hooked.net> suggests a way to display the class
     structure of an existing program graphically.  [Should be
@@ -318,4 +313,9 @@ Volunteers for these and other projects are welcome!
 
 373 Allow `--display' as alias for `-display'.
 
-375 (Insert new project ideas here)
+375 In the new DDD manual, have an image map for the DDD windows.
+
+376 In DBX (at least on AIX), `cont 0' continues with no signal.
+    There is also `cont sig 0' on SunOS DBX.
+
+377 (Insert new project ideas here)

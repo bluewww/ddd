@@ -690,6 +690,7 @@ BASE_OBJECTS = \
 # Instantiated templates
 TEMPLATE_OBJECTS = \
 	IntIntAA.$(OBJEXT)   \
+	StatArray.$(OBJEXT)  \
 	StringA.$(OBJEXT)    \
 	StringMap.$(OBJEXT)  \
 	StringSA.$(OBJEXT)   \

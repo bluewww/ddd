@@ -37,6 +37,7 @@ char java_rcsid[] =
 
 #include "SmartC.h"
 #include "SourceView.h"
+#include "StatArray.h"
 #include "assert.h"
 #include "cook.h"
 #include "ddd.h"
@@ -102,8 +103,24 @@ static string concat_dir(const string& dir, const string& file)
 // Store all classes in DIR in CLASSES_LIST.  BASE is the initial dir.  If
 // WITH_SOURCE_ONLY is set, consider only classes with loadable sources.
 static void get_java_classes(const string& dir, const string& base,
-			     StringArray& classes_list, bool with_source_only)
+			     StringArray& classes_list, bool with_source_only,
+			     StatArray& dirs_seen)
 {
+    struct stat sb;
+    if (stat(dir, &sb))
+	return;			// Cannot stat
+
+    for (int i = 0; i < dirs_seen.size(); i++)
+    {
+	if (dirs_seen[i].st_ino == sb.st_ino &&
+	    dirs_seen[i].st_dev == sb.st_dev)
+	{
+	    return;		// Already considered
+	}
+    }
+
+    dirs_seen += sb;
+
     StatusDelay delay("Scanning " + quote(dir) + " for classes");
 
     assert((base == "" && dir == "") || dir.contains(base, 0));
@@ -187,7 +204,7 @@ static void get_java_classes(const string& dir, const string& base,
 		file = concat_dir(dir, file);
 		if (is_directory(file))
 		    get_java_classes(file, base, classes_list, 
-				     with_source_only);
+				     with_source_only, dirs_seen);
 	    }
 	}
 
@@ -229,7 +246,8 @@ void get_java_classes(StringArray& classes_list, bool with_source_only)
 	}
 
 	// Get all classes in this directory
-	get_java_classes(loc, loc, classes_list, with_source_only);
+	StatArray dirs_seen;
+	get_java_classes(loc, loc, classes_list, with_source_only, dirs_seen);
     }
 
     smart_sort(classes_list);

@@ -55,7 +55,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 1999-01-03
+@set DATE 1999-01-07
 
 @ifinfo
 @c This is a dir.info fragment to support semi-automated addition of
@@ -201,17 +201,11 @@ This is the @value{EDITION} Edition of @cite{Debugging with
 * Machine-Level Debugging::     Examining machine code and registers.
 * Changing the Program::        Changing source and object code.
 * Commands::                    Entering and editing @value{DDD} commands.
-* Persistent Sessions::         Saving and resuming @value{DDD} sessions.
 * Customizing::                 Customizing @value{DDD}.
 
 * License::                     The @value{DDD} license.
 * Reporting Bugs::              How and when to report @value{DDD} bugs.
-* Diagnostics::                 
-* Extending::                   
-* Actions::                     
-* Images::                      
-* Limitations::                 
-* Printing this Manual::        
+* Configurations::              
 * Label Index::                 Index.
 * Key Index::                   
 * Command Index::               
@@ -310,11 +304,45 @@ inferior debugger.  @xref{Sample Session}, for getting a first
 impression of @value{DDD}.
 
 @menu
+* About this Manual::           
 * Free Software::               
 * Contributors::                
 * History::                     
 * Support::                     
 @end menu
+
+
+@node About this Manual
+@unnumberedsec About this Manual
+
+This manual comes in three formats:
+
+@itemize @bullet
+@item
+The @emph{Info} format is used for browsing on character devices.  You
+should have a local copy installed, which you can browse via Emacs, the
+standalone @file{info} program, or from DDD via @samp{Help @result{}
+@value{DDD} Manual}.  Info files can be downloaded via
+@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW page}.
+
+@item
+The @emph{HTML} format is used for browsing on bitmap devices; it
+includes several pictures.  You can view it using a HTML browser,
+typically from a local copy.  Online copies for browsing are available
+via @uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW
+page}; you can also download HTML files for local installation
+(recommended).
+
+@item
+The @emph{PostScript} format is used for printing on paper; it also
+comes with pictures.  The PostScript format can be downloaded via
+@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW page}.
+@end itemize
+
+...
+
+... Also: move all indexes *before* paragraphs!
+
 
 @node Free Software
 @unnumberedsec Free software
@@ -400,7 +428,7 @@ command tool.
 @value{DDD} 2.1: Alias detection, button tips, status displays.
 
 @item November, 1997
-@value{DDD} 2.2: Persistent sessions, display shortcuts.
+@value{DDD} 2.2: Sessions, display shortcuts.
 
 @item June, 1998
 @value{DDD} 3.0: Icon tool bar, Java support, JDB support.
@@ -855,16 +883,17 @@ The essentials are:
 
 @itemize @bullet
 @item 
-Type @samp{@value{ddd}} to start DDD.
+Type @samp{@value{ddd}} to start DDD (@pxref{Invoking}).
 @item 
-Use @samp{File @result{} Exit} or @kbd{Ctrl+Q} to exit.
 @kindex Ctrl+Q
+Use @samp{File @result{} Exit} or @kbd{Ctrl+Q} to exit (@pxref{Quitting}).
 @end itemize
 
 @menu
 * Invoking::                    
-* Remote Debugging::            
 * Quitting::                    
+* Sessions::                    
+* Remote Debugging::            
 @end menu
 
 @node Invoking
@@ -1487,11 +1516,12 @@ details.
 
 
 @item --session @var{session}
-Load @var{session} upon start-up.  @xref{Opening Sessions}, for details.
+Load @var{session} upon start-up.  @xref{Resuming Sessions}, for
+details.
 @cindex Session, setting when invoking @value{DDD}
 
 Giving this option is equivalent to setting the @value{DDD}
-@samp{session} resource to @var{session}.  @xref{Opening Sessions}, for
+@samp{session} resource to @var{session}.  @xref{Resuming Sessions}, for
 details.
 
 
@@ -1851,6 +1881,82 @@ enables several important warnings.  For further options, see the
 
 
 
+
+@node Quitting
+@section Quitting @value{DDD}
+
+@kindex Ctrl+D
+@kindex Ctrl+Q
+@lbindex Exit
+@cindex Exiting
+@cindex Quitting
+@cmindex quit
+To exit @value{DDD}, select @samp{File @result{} Exit}.  You may also
+type the @samp{quit} command at the debugger prompt or press
+@key{Ctrl+Q}.  GDB and XDB also accept the @samp{q} command or an
+end-of-file character (usually @key{Ctrl+D}).  Closing the last
+@value{DDD} window will also exit @value{DDD}.
+
+@kindex ESC
+@cindex Interrupting execution
+@cindex Execution, interrupting
+An interrupt (@key{ESC} or @samp{Interrupt}) does not exit from
+@value{DDD}, but rather terminates the action of any debugger command
+that is in progress and returns to the debugger command level.  It is
+safe to type the interrupt character at any time because the debugger
+does not allow it to take effect until a time when it is safe.
+
+@kindex Ctrl+\
+@lbindex Abort
+@cindex Aborting execution
+@cindex Execution, aborting
+In case an ordinary interrupt does not succeed, you can also use an
+abort (@key{Ctrl+\} or @samp{Abort}), which sends a QUIT signal to the
+inferior debugger.  Use this in emergencies only; the inferior debugger
+may be left inconsistent or even exit after a QUIT signal.
+
+@kindex Ctrl+C
+@cindex Interrupting @value{DDD}
+@cindex Signal, sending to @value{DDD}
+@cindex Killing @value{DDD}
+As a last resort (if @value{DDD} hangs, for example), you may also
+interrupt @value{DDD} itself using an interrupt signal (@code{SIGINT}).
+This can be done by typing the interrupt character (usually
+@key{Ctrl+C}) in the shell @value{DDD} was started from, or by using the
+UNIX @samp{kill} command.  An interrupt signal interrupts any
+@value{DDD} action; the inferior debugger is interrupted as well.  Since
+this interrupt signal can result in internal inconsistencies, use this
+as a last resort in emergencies only; save your work as soon as possible
+and restart @value{DDD}.
+
+
+@node Sessions
+@section Persistent Sessions
+
+...
+
+@menu
+* Saving Sessions::             
+* Resuming Sessions::           
+* Deleting Sessions::           
+@end menu
+
+@node Saving Sessions
+@subsection Saving Sessions
+
+Also: X sessions
+
+@node Resuming Sessions
+@subsection Resuming Sessions
+
+Also: Starting DDD with a Session
+
+@node Deleting Sessions
+@subsection Deleting Sessions
+
+
+
+
 @node Remote Debugging
 @section Remote Debugging
 
@@ -1998,56 +2104,6 @@ paths, etc.
 Of course, you can also combine @value{DDD} remote mode and GDB remote
 mode, running @value{DDD}, GDB, and the debugged program each on a
 different machine.
-
-
-@node Quitting
-@section Quitting @value{DDD}
-
-To exit @value{DDD}, select @samp{File @result{} Exit}.  You may also
-type the @samp{quit} command at the debugger prompt or press
-@key{Ctrl+Q}.  GDB and XDB also accept the @samp{q} command or an
-end-of-file character (usually @key{Ctrl+D}).  Closing the last
-@value{DDD} window will also exit @value{DDD}.
-@kindex Ctrl+D
-@kindex Ctrl+Q
-@lbindex Exit
-@cindex Exiting
-@cindex Quitting
-@cmindex quit
-
-An interrupt (@key{ESC} or @samp{Interrupt}) does not exit from
-@value{DDD}, but rather terminates the action of any debugger command
-that is in progress and returns to the debugger command level.  It is
-safe to type the interrupt character at any time because the debugger
-does not allow it to take effect until a time when it is safe.
-@kindex ESC
-@cindex Interrupting execution
-@cindex Execution, interrupting
-
-In case an ordinary interrupt does not succeed, you can also use an
-abort (@key{Ctrl+\} or @samp{Abort}), which sends a QUIT signal to the
-inferior debugger.  Use this in emergencies only; the inferior debugger
-may be left inconsistent or even exit after a QUIT signal.
-@kindex Ctrl+\
-@lbindex Abort
-@cindex Aborting execution
-@cindex Execution, aborting
-
-As a last resort (if @value{DDD} hangs, for example), you may also
-interrupt @value{DDD} itself using an interrupt signal (@code{SIGINT}).
-This can be done by typing the interrupt character (usually
-@key{Ctrl+C}) in the shell @value{DDD} was started from, or by using the
-UNIX @samp{kill} command.  An interrupt signal interrupts any
-@value{DDD} action; the inferior debugger is interrupted as well.  Since
-this interrupt signal can result in internal inconsistencies, use this
-as a last resort in emergencies only; save your work as soon as possible
-and restart @value{DDD}.
-@kindex Ctrl+C
-@cindex Interrupting @value{DDD}
-@cindex Signal, sending to @value{DDD}
-@cindex Killing @value{DDD}
-
-
 
 
 @node Windows
@@ -2239,7 +2295,7 @@ Source Files}, for details.
 
 @item Open Session
 @lbindex Open Session
-Open a previously saved @value{DDD} session.  @xref{Opening Sessions},
+Resume a previously saved @value{DDD} session.  @xref{Resuming Sessions},
 for details.
 
 @item Save Session As
@@ -2884,11 +2940,11 @@ You can select a @emph{previously used argument} from the drop-down
 menu at the right of the argument field.
 @end itemize
 
+@kindex TAB
 Using GDB and Perl, the argument field provides a completion mechanism.
 You can enter the first few characters of an item an press the @key{TAB}
 key to complete it.  Pressing @key{TAB} again shows alternative
 completions.
-@kindex TAB
 
 After having entered an argument, you can select one of the buttons on
 the right.  Most of these buttons also have menus associated with them;
@@ -3191,12 +3247,12 @@ recent messages.
 @cindex Status line
 
 @item
-You can get detailed help on any visible @value{DDD} item.  Just
-point on the item you want help and press the @samp{F1} key.  This
-pops up a detailed help text.
 @cindex Help, on items
 @cindex Context-sensitive help
 @kindex F1
+You can get detailed help on any visible @value{DDD} item.  Just
+point on the item you want help and press the @samp{F1} key.  This
+pops up a detailed help text.
 
 @item
 The @value{DDD} dialogs all contain @samp{Help} buttons that give
@@ -3211,13 +3267,13 @@ commands.
 @cmindex help
 
 @item
+@lbindex What Now?
+@kindex Ctrl+F1
+@cindex Help, when stuck
 If you are totally stuck, try @samp{Help @result{} What Now?} (the
 @samp{What Now?} item in the @samp{Help} menu) or press @key{Ctrl+F1}.
 Depending on the current state, @value{DDD} will give you some hints on
 what you can do next.
-@lbindex What Now?
-@kindex Ctrl+F1
-@cindex Help, when stuck
 
 @item
 Of course, you can always refer to the @emph{on-line documentation}:
@@ -4062,15 +4118,15 @@ argument field and click the @samp{Unwatch} button.
 @node Interrupting
 @section Interrupting
 
+@lbindex Interrupt
+@kindex ESC
+@kindex Ctrl+C
 If the program is already running (@pxref{Running}), you can interrupt
 it any time by clicking the @samp{Interrupt} button or typing @key{ESC}
 in a @value{DDD} window.@footnote{If @key{Ctrl+C} is not bound to
 @samp{Copy} (@pxref{Customizing the Edit Menu}), you can also use
 @key{Ctrl+C} to interrupt the running program.}  Using GDB, this is
 equivalent to sending a SIGINT (Interrupt) signal.
-@lbindex Interrupt
-@kindex ESC
-@kindex Ctrl+C
 
 @samp{Interrupt} and @key{ESC} also interrupt a running debugger
 command, such as printing data.
@@ -4258,6 +4314,42 @@ pipes to pass the output of the program you are debugging to another
 program; if you attempt this, @value{DDD} is likely to wind up debugging
 the wrong program.  @xref{Attaching to a Process}, for an alternative.
 @cindex Pipes
+
+If command output is sent to the debugger console, it is impossible for
+@value{DDD} to distinguish between the output of the debugged program
+and the output of the inferior debugger.
+
+Program output that confuses @value{DDD} includes:
+@cindex Program output, confusing
+
+@itemize @bullet
+@item
+Primary debugger prompts (e.g. @samp{(gdb) } or @samp{(dbx) })
+
+@item
+Secondary debugger prompts (e.g. @samp{>})
+
+@item 
+Confirmation prompts (e.g. @samp{(y or n) })
+
+@item
+Prompts for more output (e.g. @samp{Press RETURN to continue})
+
+@item
+Display output (e.g. @samp{$pc = 0x1234})
+@end itemize
+
+If your program outputs any of these strings, you may encounter problems
+with @value{DDD} mistaking them for debugger output.  These problems can
+easily be avoided by redirecting program I/O, for instance to the
+separate execution window (@pxref{Using the Execution Window}).
+
+@cindex TTY settings
+If the inferior debugger changes the default TTY settings, for instance
+through a @samp{stty} command in its initialization file, @value{DDD}
+may also become confused.  The same applies to debugged programs which
+change the default TTY settings.
+@pindex stty
 
 
 @node Using the Execution Window
@@ -4638,13 +4730,13 @@ The @samp{Down} button selects the function that was called by
 the current one---that is, it moves one frame down.
 @lbindex Down
 
-You can also directly type the @samp{up} and @samp{down} commands at
-the debugger prompt.  Typing @key{Ctrl+Up} and @key{Ctrl+Down},
-respectively, will also move you through the stack.
 @cmindex up
 @cmindex down
 @kindex Ctrl+Up
 @kindex Ctrl+Down
+You can also directly type the @samp{up} and @samp{down} commands at
+the debugger prompt.  Typing @key{Ctrl+Up} and @key{Ctrl+Down},
+respectively, will also move you through the stack.
 
 @samp{Up} and @samp{Down} actions can be undone via @samp{Edit @result{}
 Undo}.
@@ -5153,20 +5245,20 @@ button 1}.
 @cindex Display, selecting
 @cindex Selecting single displays
 
+@cindex Extending display selection
+@cindex Display selection
+@kindex Shift
 You can @emph{extend} an existing selection by pressing the @key{Shift}
 key while selecting.  You can also @emph{toggle} an existing selection
 by pressing the @key{Shift} key while selecting already selected
 displays.
-@cindex Extending display selection
-@cindex Display selection
-@kindex Shift
 
-Single displays may also be selected by using the arrow keys @key{Up},
-@key{Down}, @key{Left}, and @key{Right}.
 @kindex Up
 @kindex Down
 @kindex Left
 @kindex Right
+Single displays may also be selected by using the arrow keys @key{Up},
+@key{Down}, @key{Left}, and @key{Right}.
 
 @emph{Multiple displays} are selected by pressing and holding
 @emph{mouse button 1} somewhere on the window background.  By moving the
@@ -5175,9 +5267,9 @@ displays fitting in the rectangle are selected when mouse button 1 is
 released.
 @cindex Selecting multiple displays
 
+@kindex Shift
 If the @key{Shift} key is pressed while selecting, the existing
 selection is @emph{extended}.
-@kindex Shift
 
 By double-clicking on a display title, the display itself and all
 connected displays are automatically selected.
@@ -6577,7 +6669,9 @@ be updated automatically each time the program stop.
 @node Machine-Level Debugging
 @chapter Machine-Level Debugging
 
-...
+Sometimes, it is desirable to examine a program not only at the source
+level, but also at the machine level.  @value{DDD} provides special
+machine code and register windows for this task.
 
 @menu
 * Machine Code::                
@@ -6587,18 +6681,99 @@ be updated automatically each time the program stop.
 
 @node Machine Code
 @section Examining Machine Code
+@cindex Machine code, examining
+
+To enable machine-level support, select @samp{Source @result{} Display
+Machine Code}.  With machine code enabled, an additional @emph{machine
+code window} shows up, displaying the machine code of the current
+function.@footnote{The machine code window is available with GDB only.}
+By moving the sash at the right of the separating line between source
+and machine code, you can resize the source and machine code windows.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-code, 16cm}
+@sp 1
+@end ifnotinfo
+
+The machine code window works very much like the source window.  You can
+set, clear, and change breakpoints by selecting the address and pressing
+a @samp{Break} or @samp{Clear} button; the usual popup menus are also
+available.  Breakpoints and the current execution position are displayed
+simultaneously in both source and machine code.
+
+The @samp{Lookup} button can be used to look up the machine code for a
+specific function---or the function for a specific address.  Just click
+on the location in one window and press @samp{Lookup} to see the
+corresponding code in the other window.
+
+If source code is not available, only the machine code window is
+updated.
+
+You can customize various aspects of the disassembling window.
+@xref{Customizing Machine Code}, for details.
+
 
 @node Machine Code Execution
 @section Machine Code Execution
+@cindex Machine code, executing
+
+All execution facilities available in the source code window are
+available in the machine code window as well.  Two special facilities
+are convenient for machine-level debugging:
+
+To execute just one machine instruction, click on the @samp{Stepi}
+button or select @samp{Program @result{} Step Instruction}.
+@lbindex Stepi
+@lbindex Step Instruction
+@cindex Instruction, stepping
+
+To continue to the next instruction in the current function, click on
+the @samp{Nexti} button select @samp{Program @result{} Next
+Instruction}..  This is similar to @samp{Stepi}, but any subroutine
+calls are executed without stopping.
+@lbindex Nexti
+@lbindex Next Instruction
+
+Using GDB, it is often useful to do 
+
+@example
+graph display /i $pc
+@end example
+
+@noindent
+when stepping by machine instructions.  This makes @value{DDD}
+automatically display the next instruction to be executed, each time
+your program stops.
+@cindex Program counter, displaying
+
 
 @node Registers
 @section Examining Registers
+@cindex Registers, examining
+
+@value{DDD} provides a @emph{register window} showing the machine
+register values after each program stop.  To enable the register window,
+select @samp{Status @result{} Registers}.@footnote{The machine code
+window is available with GDB and some DBX variants only.}
+@lbindex Registers
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-registers, 16cm}
+@sp 1
+@end ifnotinfo
+
+By selecting one of the registers, its name is copied to the argument
+field.  You can use it as value for @samp{Display}, for instance, to
+have its value displayed in the data window.
 
 
 @node Changing the Program
 @chapter Changing the Program
 
-...
+@value{DDD} offers some basic facilities to edit and recompile the
+source code, as well as patching executables and core files.
 
 @menu
 * Editing Source Code::         
@@ -6608,12 +6783,73 @@ be updated automatically each time the program stop.
 
 @node Editing Source Code
 @section Editing Source Code
+@cindex Editing source code
+@cindex Source code, editing
+
+In @value{DDD} itself, you cannot change the source file currently
+displayed.  Instead, @value{DDD} allows you to invoke a @emph{text
+editor}.  To invoke a text editor for the current source file, select
+the @samp{Edit} button or @samp{Source @result{} Edit Source}.
+@lbindex Edit
+@lbindex Edit Source
+
+By default, @value{DDD} tries a number of common editors.  You can
+customize @value{DDD} to use your favourite editor via @samp{Edit
+@result{} Preferences @result{} Helpers @result{} Edit Sources}.
+@xref{Customizing Editing}, for details.
+@lbindex Edit Sources
+
+After the editor has exited, the source code shown is automatically
+updated.
+
+If you have @value{DDD} and an editor running in parallel, you can also
+update the source code manually via @samp{Source @result{} Reload
+Source}.  This reloads the source code shown from the source file.
+Since @value{DDD} automatically reloads the source code if the debugged
+program has been recompiled, this should seldom be necessary.
+@lbindex Reload Source
+
 
 @node Recompiling
 @section Recompiling
+@cindex Recompiling
+@cindex Source code, recompiling
+
+To recompile the source code using @code{make}, you can select
+@samp{File @result{} Make}.  This pops up a dialog where you can enter a
+@emph{Make Target}---typically the name of the executable.  Clicking on
+the @samp{Make} button invokes the @code{make} program with the given
+target.
+@pindex make
+@lbindex Make
+@cindex Make, invoking
+
+The @samp{Make} button on the command tool re-invokes @code{make} with
+the most recently given arguments.
+
 
 @node Patching
 @section Patching
+@cindex Patching
+@cindex Program, patching
+
+Using GDB, you can open your program's executable code (and the core
+file) for both reading and writing.  This allows alterations to machine
+code, such that you can intentionally patch your program's binary.  For
+example, you might want to turn on internal debugging flags, or even to
+make emergency repairs.
+@cindex Emergency repairs
+@cindex Debugging flags
+
+To patch the binary, enable @samp{Edit @result{} GDB Settings @result{}
+Writing into executable and core files}.  This makes GDB open executable
+and core files for both reading and writing.  If you have already loaded
+a file, you must load it again (using @samp{Edit @result{} Open File} or
+@samp{Edit @result{} Open Core}), for your new setting to take effect.
+@lbindex Writing into executable and core files
+
+Be sure to turn off @samp{Writing into executable and core files} as
+soon as possible, to prevent accidental alterations to machine code.
 
 
 @node Commands
@@ -6631,6 +6867,13 @@ be updated automatically each time the program stop.
 
 @node Entering Commands
 @section Entering Commands
+
+In the @emph{debugger console}, you can interact with the command
+interface of the inferior debugger.  Enter commands at the
+@emph{debugger prompt}---that is, @samp{(gdb)} for GDB, @samp{(dbx)} for
+DBX, @samp{>} for XDB, @samp{>} and @samp{@var{thread}[@var{depth}]} for
+JDB, or @samp{(Pydb)} for PYDB, or @samp{DB<>} for Perl.  You can use
+arbitrary debugger commands; use the @key{Return} key to enter them.
 
 @menu
 * Command Completion::          
@@ -6695,33 +6938,6 @@ be updated automatically each time the program stop.
 
 
 
-@node Persistent Sessions
-@chapter Persistent Sessions
-
-...
-
-@menu
-* Saving Sessions::             
-* Opening Sessions::            
-* Deleting Sessions::           
-* Starting DDD with a Session::  
-@end menu
-
-@node Saving Sessions
-@section Saving Sessions
-
-Also: X sessions
-
-@node Opening Sessions
-@section Opening Sessions
-
-@node Deleting Sessions
-@section Deleting Sessions
-
-@node Starting DDD with a Session
-@section Starting @value{DDD} with a Session
-
-
 
 @node Customizing
 @chapter Customizing @value{DDD}
@@ -6747,6 +6963,7 @@ full list of @value{DDD} resources.
 * Customizing the Command Tool::  
 * Customizing Debugger Interaction::  
 * Customizing Source::          
+* Customizing Machine Code::    
 * Customizing Execution::       
 * Customizing Remote Debugging::  
 * Customizing Data::            
@@ -6754,6 +6971,8 @@ full list of @value{DDD} resources.
 * Customizing Customization::   
 * Customizing the Debugger Console::  
 * Customizing Sessions::        
+* Application Defaults::        
+* Extending::                   
 * Other Customizations::        
 @end menu
 
@@ -7450,40 +7669,40 @@ windows, set this resource to @samp{off}.
 
 In the Menu Bar, the @samp{Edit} Menu can be customized in various ways.
 
-The @key{Ctrl+C} key can be bound to different actions, each in
-accordance with a specific style guide.
 @kindex Ctrl+C
 @lbindex Ctrl+C is
+The @key{Ctrl+C} key can be bound to different actions, each in
+accordance with a specific style guide.
 
 @table @code
 @item Copy
+@kindex ESC
 This setting binds @key{Ctrl+C} to the Copy operation, as specified by
 the KDE style guide.  In this setting, use @key{ESC} to interrupt the
 debuggee.
-@kindex ESC
 
 @item Interrupt
+@kindex Ctrl+C
+@end table
 This (default) setting binds @key{Ctrl+C} to the Interrupt operation, as
 used in several UNIX command-line programs.  In this setting, use
 @key{Ctrl+Ins} to copy text to the clipboard.
-@kindex Ctrl+C
-@end table
 
 The @key{Ctrl+A} key can be bound to different actions, too.
 @lbindex Ctrl+A is
 
 @table @code
 @item Select All
+@kindex Home
 This (default) setting binds @key{Ctrl+A} to the @samp{Select All}
 operation, as specified by the KDE style guide.  In this setting, use
 @key{Home} to move the cursor to the beginning of a line.
-@kindex Home
 
 @item Beginning of Line
+@kindex Ctrl+Shift+A
 This setting binds @key{Ctrl+A} to the @samp{Beginning of Line}
 operation, as used in several UNIX text-editing programs.  In this
 setting, use @key{Ctrl+Shift+A} to select all text.
-@kindex Ctrl+Shift+A
 @end table
 
 Here are the related @value{DDD} resources:
@@ -7784,22 +8003,10 @@ is @samp{off} for Motif 2.1 or later on Linux machines, and
 @samp{on} otherwise.
 @end defvr
 
-@defvr Resource cacheMachineCode (class CacheMachineCode)
-Whether to cache disassembled machine code (@samp{on}, default) or
-not (@samp{off}).  Caching machine code requires more memory, but
-makes @value{DDD} run faster.
-@end defvr
-
 @defvr Resource cacheSourceFiles (class CacheSourceFiles)
 Whether to cache source files (@samp{on}, default) or not
 (@samp{off}).  Caching source files requires more memory, but makes
 @value{DDD} run faster.
-@end defvr
-
-@defvr Resource disassemble (class Disassemble)
-If this is @samp{on}, the source code is automatically disassembled.
-The default is @samp{off}.  @xref{DDD Options}, for the @samp{--disassemble}
-and @samp{--no-disassemble} options.
 @end defvr
 
 @defvr Resource displayGlyphs (class DisplayGlyphs)
@@ -7831,11 +8038,6 @@ being scrolled with the text, a large value disables glyphs while
 scrolling and makes scrolling faster.  Default: @code{10}.
 @end defvr
 
-@defvr Resource indentCode (class Indent)
-The number of columns to indent the machine code, such that there is
-enough place to display breakpoint locations.  Default: @code{4}.
-@end defvr
-
 @defvr Resource indentSource (class Indent)
 The number of columns to indent the source code, such that there is
 enough place to display breakpoint locations.  Default: @code{0}.
@@ -7862,10 +8064,6 @@ The minimum number of lines to show after the current location.
 Default is @code{3}.
 @end defvr
 
-@defvr Resource maxDisassemble (class MaxDisassemble)
-Maximum number of bytes to disassemble (default: @code{256}).  If this
-is zero, the entire current function is disassembled.
-@end defvr
 
 @defvr Resource maxGlyphs (class MaxGlyphs)
 The maximum number of glyphs to be displayed (default: @code{10}).
@@ -7890,6 +8088,41 @@ source code locations only by their base names.  If this is
 @end defvr
 
 ...
+
+
+@node Customizing Machine Code
+@section Customizing Machine Code
+
+...
+
+@defvr Resource cacheMachineCode (class CacheMachineCode)
+Whether to cache disassembled machine code (@samp{on}, default) or
+not (@samp{off}).  Caching machine code requires more memory, but
+makes @value{DDD} run faster.
+@end defvr
+
+@defvr Resource disassemble (class Disassemble)
+If this is @samp{on}, the source code is automatically disassembled.
+The default is @samp{off}.  @xref{DDD Options}, for the @samp{--disassemble}
+and @samp{--no-disassemble} options.
+@end defvr
+
+@defvr Resource indentCode (class Indent)
+The number of columns to indent the machine code, such that there is
+enough place to display breakpoint locations.  Default: @code{4}.
+@end defvr
+
+The @samp{maxDisassemble} resource controls how much is to be
+disassembled.  If @samp{maxDisassemble} is set to 256 (default) and the
+current function is larger than 256 bytes, @value{DDD} only disassembles
+the first 256 bytes below the current location.  You can set the
+@samp{maxDisassemble} resource to a larger value if you prefer to have a
+larger machine code view.
+
+@defvr Resource maxDisassemble (class MaxDisassemble)
+Maximum number of bytes to disassemble (default: @code{256}).  If this
+is zero, the entire current function is disassembled.
+@end defvr
 
 
 @node Customizing Execution
@@ -8565,6 +8798,54 @@ Leave this entry empty if you have no @samp{gcore} or similar command.
 @end defvr
 
 
+@node Application Defaults
+@section The @file{@value{Ddd}} Application Defaults
+
+...
+
+
+@menu
+* Actions::                     
+* Images::                      
+@end menu
+
+@node Actions
+@subsection Actions
+
+...
+
+@menu
+* General Actions::             
+* Data Display Actions::        
+* Debugger Console Actions::    
+* Source Window Actions::       
+@end menu
+
+@node General Actions
+@subsubsection General Actions
+
+@node Data Display Actions
+@subsubsection Data Display Actions
+
+@node Debugger Console Actions
+@subsubsection Debugger Console Actions
+
+@node Source Window Actions
+@subsubsection Source Window Actions
+
+
+@node Images
+@subsection Images
+
+...
+
+
+@node Extending
+@section Extending DDD
+
+...
+
+
 @node Other Customizations
 @section Other Customizations
 
@@ -8600,9 +8881,12 @@ to do so effectively, you must know when and how to do it.
 
 @section What to Include in a Bug Report
 
+@menu
+* Diagnostics::                 
+@end menu
 
 @node Diagnostics
-@appendix Getting Diagnostics
+@section Getting Diagnostics
 
 ...
 
@@ -8696,65 +8980,32 @@ Options}, for the @samp{--trace} option.
 
 
 
-@node Extending
-@appendix Extending DDD
-
-
-@node Actions
-@appendix Actions used by @value{DDD}
+@node Configurations
+@appendix Configuration Notes
 
 @menu
-* General Actions::             
-* Data Display Actions::        
-* Debugger Console Actions::    
-* Source Window Actions::       
-@end menu
-
-@node General Actions
-@section General Actions
-
-@node Data Display Actions
-@section Data Display Actions
-
-@node Debugger Console Actions
-@section Debugger Console Actions
-
-@node Source Window Actions
-@section Source Window Actions
-
-@node Images
-@appendix Images used by @value{DDD}
-
-@node Limitations
-@appendix Limitations
-
-@menu
-* General Limitations::         
-* Limitations using GDB::       
-* Limitations using DBX::       
-* Limitations using XDB::       
-* Limitations using JDB::       
-* Limitations using Perl::      
+* GDB::                         
+* DBX::                         
+* XDB::                         
+* JDB::                         
+* Perl::                        
 * LessTif::                     
 @end menu
 
-@node General Limitations
-@section General Limitations
+@node GDB
+@section Using @value{DDD} with GDB
 
-@node Limitations using GDB
-@section Limitations using GDB
+@node DBX
+@section Using @value{DDD} with DBX
 
-@node Limitations using DBX
-@section Limitations using DBX
+@node XDB
+@section Using @value{DDD} with XDB
 
-@node Limitations using XDB
-@section Limitations using XDB
+@node JDB
+@section Using @value{DDD} with JDB
 
-@node Limitations using JDB
-@section Limitations using JDB
-
-@node Limitations using Perl
-@section Limitations using Perl
+@node  Perl
+@section Using @value{DDD} with Perl
 
 @node LessTif
 @section Using @value{DDD} with LessTif
@@ -8777,11 +9028,6 @@ value of the @samp{LessTifVersion} macro in @file{<Xm/Xm.h>}.  If
 @code{1000}, disabling all LessTif-specific hacks.
 @end defvr
 
-
-@node Printing this Manual
-@appendix Printing this Manual
-
-...
 
 @node Label Index
 @unnumbered Label Index

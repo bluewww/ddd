@@ -1266,7 +1266,7 @@ void send_gdb_command(string cmd, Widget origin,
 
 	extra_data->refresh_setting     = true;
 	extra_data->set_command         = cmd;
-	extra_data->refresh_data        = false;
+	extra_data->refresh_data        = true;
 	extra_data->refresh_addr        = false;
 	extra_data->refresh_breakpoints = false;
 

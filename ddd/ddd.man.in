@@ -2210,7 +2210,7 @@ resuming execution.
 .PP
 This way, you can set a \(lqcontinue\(rq breakpoint at some decisive
 point within an array-processing algorithm and have \s-1@DDD@\s+1
-display the progress graphically.  When your program has topped for
+display the progress graphically.  When your program has stopped for
 good, you can use `\fBUndo\fR' and `\fRRedo\fR' to redisplay and
 examine previous program states.
 .\"
