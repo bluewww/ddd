@@ -54,7 +54,7 @@ char show_rcsid[] =
 #include <string.h>
 #include <errno.h>
 
-#include "xpm.h"
+#include "Xpm.h"
 #include "HelpCB.h"
 
 extern void process_pending_events();

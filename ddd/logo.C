@@ -35,7 +35,7 @@ char logo_rcsid[] =
 
 #include "logo.h"
 #include "config.h"
-#include "xpm.h"
+#include "Xpm.h"
 #include "assert.h"
 
 // X bitmaps
