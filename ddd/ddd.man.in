@@ -284,8 +284,8 @@ menu at the right of the argument field.
 .PP
 Using \s-1GDB\s+1 and Perl, the argument field provides a completion
 mechanism.  You can enter the first few characters of an item an press
-the `\s-1TAB\s+1' key to complete it.  Pressing `\s-1TAB\s+1' again
-shows alternative completions.
+the \s-1\fBTAB\fR\s+1 key to complete it.  Pressing \s-1\fBTAB\fR\s+1
+again shows alternative completions.
 .PP
 After having entered an argument, you can select one of the buttons on
 the right.  Most of these buttons also have menus associated with
@@ -430,8 +430,8 @@ function definition.
 .\"
 If the item you wish to search is visible in the source text, click
 with \fImouse button 1\fR on it.  The identifier is copied to the argument
-field.  Click on the `\fBFind\s-1>>\s+1 ()\fR' button to find
-following occurrences and on the `\fBFind\s-1<<\s+1 ()\fR' button to
+field.  Click on the `\fBFind\s-2>>\s+2 ()\fR' button to find
+following occurrences and on the `\fBFind\s-2<<\s+2 ()\fR' button to
 find previous occurrences.
 .PP
 As an alternative, you can enter the item in the argument field and
@@ -684,10 +684,10 @@ debugger console.
 .IP \(bu 2
 To stop the recording, click on `\fBEnd\fR' or enter `\fBend\fR' at
 the \s-1GDB\s+1 prompt.  To \fIcancel\fR the recording, click on
-`\fBInterrupt\fR' or press \fBEsc\fR.
+`\fBInterrupt\fR' or press \s-1\fBESC\fR\s+1.
 .IP \(bu 2
-Click on `\fBEdit \s-1>>\s+1\fR' to edit the recorded commands.
-When done with editing, click on `\fBEdit \s-1<<\s+1\fR' to close the
+Click on `\fBEdit \s-2>>\s+2\fR' to edit the recorded commands.
+When done with editing, click on `\fBEdit \s-2<<\s+2\fR' to close the
 commands editor.
 .PP
 .\"
@@ -912,7 +912,7 @@ The program stops as soon as a breakpoint is reached.  The current
 execution position is highlighted by an arrow.
 .PP
 You can interrupt a running program any time by clicking the
-`\fBInterrupt\fR' button or typing \fBEsc\fR in a \s-1@DDD@\s+1
+`\fBInterrupt\fR' button or typing \s-1\fBESC\fR\s+1 in a \s-1@DDD@\s+1
 window.
 .\"
 .\"
@@ -2398,18 +2398,18 @@ You can \fIrepeat\fR previous and next commands by pressing the
 empty line, the last command is repeated as well.
 `\fBCommands\(->Command History\fR' shows the command history.
 .PP
-You can \fIsearch\fR for previous commands by pressing `\fBCtrl+B\fR'.
+You can \fIsearch\fR for previous commands by pressing \fBCtrl+B\fR.
 This invokes \fIincremental search mode,\fR where you can enter a
-string to be searched in previous commands.  Press `\fBCtrl+B\fR'
-again to repeat the search, or `\fBCtrl+F\fR' to search in the reverse
+string to be searched in previous commands.  Press \fBCtrl+B\fR again
+to repeat the search, or \fBCtrl+F\fR to search in the reverse
 direction.  To return to normal mode, press \s-1\fBESC\fR\s+1, or use
 any cursor command.
 .PP
 .PSPIC @srcdir@/PICS/ddd-history.ps 15.3cm
 .PP
 Using \s-1GDB\s+1 and Perl, you can also \fIcomplete\fR commands and
-arguments by pressing the `\s-1\fBTAB\fR\s+1' key; pressing the
-`\s-1\fBTAB\fR\s+1' key multiple times shows one possible expansion
+arguments by pressing the \s-1\fBTAB\fR\s+1 key; pressing the
+\s-1\fBTAB\fR\s+1 key multiple times shows one possible expansion
 after the other.
 .\"
 .\"
@@ -2576,6 +2576,8 @@ the name can be deduced from edge annotations.  If you want all
 dependent displays to have a title, set `\fBShow Titles of Dependent
 Displays\fR'.
 .PP
+.PSPIC @srcdir@/PICS/ddd-data-prefs.ps 15.3cm
+.PP
 To enable a more compact layout, you can set the `\fBCompact
 Layout\fR' option.  This realizes an alternate layout algorithm, where
 successors are placed next to their parents.  This algorithm is
@@ -2603,8 +2605,6 @@ displays can be moved on grid positions only.
 By default, the stacked data window is automatically closed when you
 delete the last data display.  You can keep the data window open by
 unsetting `\fBClose data window when deleting last display\fR'.
-.PP
-.PSPIC @srcdir@/PICS/ddd-data-prefs.ps 15.3cm
 .PP
 In the `\fBGrid Size\fR' scale, you can change the spacing of grid points.
 A spacing of 0 disables the grid.  Default is 16.
@@ -2643,7 +2643,7 @@ bindings, each in accordance with a specific style guide.
 This binds the Cut/Copy/Paste operations to
 \fBCtrl+X\fR/\fBCtrl+C\fR/\fBCtrl+V\fR.  These key bindings are
 conformant to the \s-1KDE\s+1 style guide.  Note that this means that
-\fBCtrl+C\fR no longer interrupts the debuggee; use \fBEsc\fR instead.
+\fBCtrl+C\fR no longer interrupts the debuggee; use \s-1\fBESC\fR\s+1 instead.
 .TP
 .B "Motif-style bindings"
 This (default) setting binds Cut/Copy/Paste to
@@ -2724,8 +2724,6 @@ can select fonts and attributes interactively.  Clicking `\fBquit\fR'
 or `\fBselect\fR' in the font selector causes all non-default values
 to be transferred to the \s-1@DDD@\s+1 font preferences panel.
 .PP
-.PSPIC @srcdir@/PICS/ddd-font-prefs.ps 15.3cm
-.PP
 The following fonts can be set using the preferences panel:
 .TP
 .B "Default Font"
@@ -2751,6 +2749,8 @@ effective for future \s-1@DDD@\s+1 sessions,
 or restart \s-1@DDD@\s+1 (using `\fBFile\(->Restart \s-1DDD\s+1\fR')
 to make it effective for the restarted \s-1@DDD@\s+1 session.
 .PP
+.PSPIC @srcdir@/PICS/ddd-font-prefs.ps 15.3cm
+.PP
 After having made changes in the panel, \s-1@DDD@\s+1 will
 automatically offer you to restart itself, such that you can see the
 changes taking effect.  Note that even after restarting, you still
@@ -2763,8 +2763,6 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 \s-1@DDD@\s+1 relies on some external applications (called
 \fIhelpers\fR) for specific tasks.  Through the `\fBHelpers\fR' panel,
 you can choose and customize these applications.
-.PP
-.PSPIC @srcdir@/PICS/ddd-helpers.ps 15.3cm
 .PP
 In `\fBEdit Sources\fR', you can select an X editor to be invoked via
 the \s-1@DDD@\s+1 `\fBEdit\fR' button.  `\fB@FILE@\fR' is replaced by
@@ -2803,25 +2801,27 @@ the \s-1@DDD@\s+1 \s-1WWW\s+1 page.  `\fB@URL@\fR' is replaced by the
 \s-1URL\s+1 (web page) to be shown.  A simple value is `\fBnetscape
 @URL@\fR'.  See also the `\fBwwwCommand\fR' resource, below.
 .PP
+.PSPIC @srcdir@/PICS/ddd-helpers.ps 15.3cm
+.PP
 `\fBPlot\fR' is the name of a Gnuplot program to invoke.
 \s-1@DDD@\s+1 can run Gnuplot in two ways:
 .IP \(bu 2
-\s-1@DDD@\s+1 can use an \fIexternal\fR window, i.e. the plot window
-as supplied by Gnuplot.  \s-1@DDD@\s+1 incorporates or
+\s-1@DDD@\s+1 can use an \fBExternal Plot Window\fR, i.e. the plot
+window as supplied by Gnuplot.  \s-1@DDD@\s+1 incorporates or
 \(lqswallows\(rq the Gnuplot output window into its own user
 interface.  To make the swallowing smooth, Gnuplot should be prevented
 from mapping its window by giving an appropriate (large) geometry.
 Nonetheless, some window managers may have trouble with this
 technique.
 .IP \(bu 2
-\s-1@DDD@\s+1 can supply a \fIbuiltin\fR plot window instead.  The
+\s-1@DDD@\s+1 can supply a \fBBuiltin Plot Window\fR instead.  The
 advantage is that there can be no interferences with window managers;
 the \s-1@DDD@\s+1 builtin plot window also requires less resources
 than the Gnuplot window.  The disadvantage is that plots are slower
 and less customizable.
 .PP
-See also the `\fBplotCommand\fR' and `\fBbuiltinPlot\fR' resources,
-below.
+Pick your choice from the menu.  See also the `\fBplotCommand\fR' and
+`\fBbuiltinPlot\fR' resources, below.
 .\"
 .\"
 .SS "Saving Options"
@@ -2850,8 +2850,6 @@ debugger, you can change its settings using `\fBEdit\(->Settings\fR'.
 Using the settings editor, you can determine whether C++ names are to
 be demangled, how many array elements are to print, and so on.
 .PP
-.PSPIC @srcdir@/PICS/ddd-settings.ps 15.3cm
-.PP
 The capabilities of the settings editor depend on the capabilities of
 your inferior debugger\(em\&that is, your \s-1GDB\s+1 or \s-1DBX\s+1
 version.  Clicking on `\fB?\fR' gives an an explanation on the
@@ -2859,6 +2857,8 @@ specific item; the \s-1GDB\s+1 documentation gives more details.
 .PP
 Use `\fBEdit\(->Undo\fR' to undo changes.  Clicking on `\fBReset\fR'
 restores the most recently saved settings.
+.PP
+.PSPIC @srcdir@/PICS/ddd-settings.ps 15.3cm
 .PP
 Some debugger settings are insensitive and cannot be changed, because
 doing so would endanger \s-1@DDD@\s+1 operation.  See the
@@ -2919,9 +2919,7 @@ is a sequence of \s-1GDB\s+1 commands to which you assign a new name
 as a command.  Using \s-1@DDD@\s+1, this is done via the \fICommand
 Editor\fR, invoked via `\fBCommands\(->Define Command\fR'.
 .PP
-.PSPIC @srcdir@/PICS/ddd-define-command.ps 15.3cm
-.PP
-A \s-1GDB\s+1 command is created in three steps:
+A \s-1GDB\s+1 command is created in five steps:
 .IP \(bu 2
 Enter the name of the command in the `\fBCommand\fR' field.  Use the
 drop-down list on the right to select from already defined commands.
@@ -2935,10 +2933,10 @@ debugger console.
 .IP \(bu 2
 To stop the recording, click on `\fBEnd\fR' or enter `\fBend\fR' at
 the \s-1GDB\s+1 prompt.  To \fIcancel\fR the recording, click on
-`\fBInterrupt\fR' or press \fBEsc\fR.
+`\fBInterrupt\fR' or press \s-1\fBESC\fR\s+1.
 .IP \(bu 2
-Click on `\fBEdit \s-1>>\s+1\fR' to edit the recorded commands.
-When done with editing, click on `\fBEdit \s-1<<\s+1\fR' to close the
+Click on `\fBEdit \s-2>>\s+2\fR' to edit the recorded commands.
+When done with editing, click on `\fBEdit \s-2<<\s+2\fR' to close the
 commands editor.
 .PP
 After the command is defined, you can enter it at the \s-1GDB\s+1
@@ -2950,6 +2948,8 @@ Enabling one of the `\fBButton\fR' locations will add a button with
 the given command to the specified location.  If you want to edit the
 button, select `\fBCommands\(->Edit Buttons\fR'; see also `\fBDefining
 Buttons\fR', above.
+.PP
+.PSPIC @srcdir@/PICS/ddd-define-command.ps 15.3cm
 .PP
 When user-defined \s-1GDB\s+1 commands are executed, the commands of
 the definition are not printed.  An error in any command stops
@@ -2975,9 +2975,9 @@ the `\fB()\fR' toggle button in the Command Editor.  Enabling
 .IP \(bu 2
 While recording commands, all references to the argument field are
 taken \fIsymbolically\fR instead of literally.  The argument field
-value is frozen to \fB$arg0\fR, which is how \s-1GDB\s+1 denotes the
+value is frozen to `\fB$arg0\fR', which is how \s-1GDB\s+1 denotes the
 argument of a user-defined command.  When \s-1GDB\s+1 executes the
-command, it will replace \fB$arg0\fR by the current command argument.
+command, it will replace `\fB$arg0\fR' by the current command argument.
 .IP \(bu 2
 When assigning a button to the command, the command will be suffixed
 by the current contents of the argument field.
@@ -3100,7 +3100,7 @@ the `\fBquit\fR' command at the debugger prompt or press \fBCtrl+Q\fR.
 end-of-file character (usually \fBCtrl+D\fR).  Closing the last
 \s-1@DDD@\s+1 window will also exit \s-1@DDD@\s+1.
 .PP
-An interrupt (\fBEsc\fR or \fBInterrupt\fR) does not exit from
+An interrupt (\s-1\fBESC\fR\s+1 or \fBInterrupt\fR) does not exit from
 \s-1@DDD@\s+1, but rather terminates the action of any debugger
 command that is in progress and returns to the debugger command level.
 It is safe to type the interrupt character at any time because the
@@ -3707,7 +3707,7 @@ the Motif style guide.
 If this is `\fBKDE\fR', Cut/Copy/Paste is on
 \fBCtrl+X\fR/\fBCtrl+C\fR/\fBCtrl+V\fR.  This is conformant to the
 \s-1KDE\s+1 style guide.  Note that this means that \fBCtrl+C\fR no
-longer interrupts the debuggee; use \fBEsc\fR instead.
+longer interrupts the debuggee; use \s-1\fBESC\fR\s+1 instead.
 .RE
 .TP
 .B "globalTabCompletion (\fPclass\fB GlobalTabCompletion)"
@@ -5708,10 +5708,10 @@ A temporary breakpoint (being dragged).
 `\fBEnable\fR' button.
 .TP
 .B "find_forward"
-`\fBFind\s-1>>\s+1 ()\fR' button.
+`\fBFind\s-2>>\s+2 ()\fR' button.
 .TP
 .B "find_backward"
-`\fBFind\s-1<<\s+1 ()\fR' button.
+`\fBFind\s-2<<\s+2 ()\fR' button.
 .TP
 .B "grey_arrow"
 The execution pointer (not in lowest frame).
