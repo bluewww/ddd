@@ -6388,7 +6388,7 @@ void SelectCB(Widget dialog, XtPointer, XtPointer)
     string choice = itostring(numbers[0]);
     delete[] numbers;
 
-    clog << quote(choice) << "\n";
+    // clog << quote(choice) << "\n";
 
     _gdb_command(choice, dialog);
 }
