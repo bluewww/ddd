@@ -4132,16 +4132,9 @@ static void make_preferences(Widget parent)
     add_panel(change, buttons, "helpers", helpers_preferences_menu, 
 	      max_width, max_height, false);
 
-    unsigned char unit_type;
-    XtVaGetValues(change, XmNunitType, &unit_type, NULL);
-    int new_height = XmConvertUnits(change, XmVERTICAL, XmPIXELS, 
-				    max_height, unit_type);
-    int new_width  = XmConvertUnits(change, XmHORIZONTAL, XmPIXELS, 
-				    max_width, unit_type);
-
     XtVaSetValues(change,
-		  XmNwidth, new_width,
-		  XmNheight, new_height,
+		  XmNwidth, max_width,
+		  XmNheight, max_height,
 		  XmNresizeWidth, False,
 		  XmNresizeHeight, False,
 		  NULL);
@@ -4237,26 +4230,21 @@ static void create_status(Widget parent)
 		  PopdownStatusHistoryCB, XtPointer(0));
 
     XtWidgetGeometry size;
-    unsigned char unit_type;
-
     size.request_mode = CWHeight;
     XtQueryGeometry(status_w, NULL, &size);
-    XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
-    Dimension new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
-					  size.height, unit_type);
 
     if (lesstif_version < 1000)
-	XtVaSetValues(led_w, XmNindicatorSize, new_height - 4, NULL);
+	XtVaSetValues(led_w, XmNindicatorSize, size.height - 4, NULL);
     else
-	XtVaSetValues(led_w, XmNindicatorSize, new_height - 1, NULL);
+	XtVaSetValues(led_w, XmNindicatorSize, size.height - 1, NULL);
 
     XtVaSetValues(arrow_w,
-		  XmNheight, new_height - 2,
-		  XmNwidth,  new_height - 2,
+		  XmNheight, size.height - 2,
+		  XmNwidth,  size.height - 2,
 		  NULL);
     XtVaSetValues(status_form,
-		  XmNpaneMaximum, new_height,
-		  XmNpaneMinimum, new_height,
+		  XmNpaneMaximum, size.height,
+		  XmNpaneMinimum, size.height,
 		  NULL);
 
     set_toggle(led_w, app_data.blink_while_busy);
@@ -4372,29 +4360,20 @@ static void PopupStatusHistoryCB(Widget w, XtPointer client_data,
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
-    unsigned char unit_type;
-
-    XtQueryGeometry(status_w, NULL, &size);
-    XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
-    Dimension status_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS,
-					     size.height, unit_type);
-
-    XtQueryGeometry(history_shell, NULL, &size);
-    XtVaGetValues(history_shell, XmNunitType, &unit_type, NULL);
-    Dimension history_height = XmConvertUnits(history_shell, XmVERTICAL,
-					      XmPIXELS,
-					      size.height, unit_type);
-
     Position x, y;
     if (app_data.status_at_bottom)
     {
+	XtQueryGeometry(history_shell, NULL, &size);
+
 	x = shell_x;
-	y = status_y - history_height - y_popup_offset;
+	y = status_y - size.height - y_popup_offset;
     }
     else
     {
+	XtQueryGeometry(status_w, NULL, &size);
+
 	x = shell_x;
-	y = status_y + status_height + y_popup_offset;
+	y = status_y + size.height + y_popup_offset;
     }
 
     XtVaSetValues(history_shell, XmNx, x, XmNy, y, XtPointer(0));

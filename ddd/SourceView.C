@@ -6747,12 +6747,8 @@ Widget SourceView::create_glyph(Widget form_w,
 
     XtManageChild(w);
 
-    unsigned char unit_type;
-    XtVaGetValues(w, XmNunitType, &unit_type, NULL);
-    int new_width  = XmConvertUnits(w, XmHORIZONTAL, XmPIXELS, 
-				    width + 1 + motif_offset, unit_type);
-    int new_height = XmConvertUnits(w, XmVERTICAL, XmPIXELS, 
-				    height + 1 + motif_offset, unit_type);
+    int new_width  = width  + 1 + motif_offset;
+    int new_height = height + 1 + motif_offset;
 
     Pixel background;
     XtVaGetValues(w, XmNbackground, &background, NULL);

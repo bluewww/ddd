@@ -854,13 +854,9 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	XtWidgetGeometry size;
 	size.request_mode = CWHeight;
 	XtQueryGeometry(toolbar, NULL, &size);
-	unsigned char unit_type;
-	XtVaGetValues(toolbar, XmNunitType, &unit_type, NULL);
-	int new_height = XmConvertUnits(toolbar, XmVERTICAL, XmPIXELS, 
-					size.height, unit_type);
 	XtVaSetValues(toolbar,
-		      XmNpaneMaximum, new_height,
-		      XmNpaneMinimum, new_height,
+		      XmNpaneMaximum, size.height,
+		      XmNpaneMinimum, size.height,
 		      NULL);
 
 	XtAddCallback(help_index, XmNsingleSelectionCallback,

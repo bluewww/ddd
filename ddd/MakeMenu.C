@@ -1049,13 +1049,10 @@ static void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
     XtTranslateCoords(w, 0, 0, &button_x, &button_y);
 
     Dimension height = 0;
-    unsigned char unit_type;
-    XtVaGetValues(w, XmNheight, &height, XmNunitType, &unit_type, NULL);
-    Dimension button_height = 
-	XmConvertUnits(w, XmVERTICAL, XmPIXELS, height, unit_type);
+    XtVaGetValues(w, XmNheight, &height, NULL);
 
     Position x = button_x;
-    Position y = button_y + button_height;
+    Position y = button_y + height;
 
     event->xbutton.x_root = x;
     event->xbutton.y_root = y;

@@ -55,14 +55,12 @@ char toolbar_rcsid[] =
 //-----------------------------------------------------------------------
 
 // Return the preferred height of W
-static int preferred_height(Widget w)
+static Dimension preferred_height(Widget w)
 {
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
     XtQueryGeometry(w, NULL, &size);
-    unsigned char unit_type;
-    XtVaGetValues(w, XmNunitType, &unit_type, NULL);
-    return XmConvertUnits(w, XmVERTICAL, XmPIXELS, size.height, unit_type);
+    return size.height;
 }
 
 static void set_label_type(MMDesc items[], unsigned char label_type)
@@ -214,14 +212,14 @@ Widget create_toolbar(Widget parent, string /* name */,
     if (items2 != 0)
 	register_menu_shell(items2);
 
-    // Check geometry
-    int button_height = preferred_height(items1[0].widget);
-    int arg_height    = preferred_height(argfield->widget());
-
     if (XmIsPanedWindow(parent))
     {
+	// Check geometry
+	Dimension button_height = preferred_height(items1[0].widget);
+	Dimension arg_height    = preferred_height(argfield->widget());
+
 	// Make sure the toolbar cannot be resized
-	int toolbar_height = max(button_height, arg_height);
+	Dimension toolbar_height = max(button_height, arg_height);
 
 	XtVaSetValues(toolbar,
 		      XmNpaneMaximum, toolbar_height,
