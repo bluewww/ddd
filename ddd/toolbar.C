@@ -292,12 +292,14 @@ Widget create_toolbar(Widget parent, string /* name */,
 
     // Set form constraints
     XtVaSetValues(label,
+		  XmNresizable,        False,
 		  XmNleftAttachment,   XmATTACH_FORM,
 		  XmNtopAttachment,    XmATTACH_FORM,
 		  XmNbottomAttachment, XmATTACH_FORM,
 		  NULL);
 
     XtVaSetValues(combobox,
+		  XmNresizable,        False,
 		  XmNleftAttachment,   XmATTACH_WIDGET,
 		  XmNleftWidget,       label,
 		  XmNrightAttachment,  XmATTACH_WIDGET,
