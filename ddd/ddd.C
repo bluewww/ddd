@@ -3793,7 +3793,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNset,                True); arg++;
 
     MString spaces("   ");
-    if (lesstif_version <= 82)
+    if (lesstif_version < 1000)
     {
 	XtSetArg(args[arg], XmNlabelString, spaces.xmstring()); arg++;
     }
@@ -3859,8 +3859,8 @@ static void create_status(Widget parent)
     Dimension new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
 					  size.height, unit_type);
 
-    if (lesstif_version <= 82)
-	XtVaSetValues(led_w, XmNindicatorSize, new_height - 3, NULL);
+    if (lesstif_version < 1000)
+	XtVaSetValues(led_w, XmNindicatorSize, new_height - 4, NULL);
     else
 	XtVaSetValues(led_w, XmNindicatorSize, new_height - 1, NULL);
 
