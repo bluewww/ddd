@@ -5288,6 +5288,56 @@ void DataDisp::set_cluster_displays(bool value)
 	return;
 
     cluster_displays = value;
+
+    if (cluster_displays)
+    {
+	if (current_cluster == 0 || disp_graph->get(current_cluster) == 0)
+	{
+	    // No cluster -- create a new one
+	    current_cluster = new_cluster();
+	}
+
+	// Cluster all independent data displays
+	MapRef ref;
+	for (DispNode *dn = disp_graph->first(ref); 
+	     dn != 0; dn = disp_graph->next(ref))
+	{
+	    if (dn->is_user_command())
+		continue;	// no data display
+
+	    if (dn->firstTo() != 0 && dn->firstTo()->from() != dn)
+		continue;	// dependent display
+
+	    if (dn->clustered())
+		continue;	// already clustered
+
+	    dn->cluster(current_cluster);
+	}
+
+	refresh_builtin_user_displays();
+	refresh_graph_edit();
+    }
+    else
+    {
+	// Uncluster all
+	IntArray all_clusters;
+	get_all_clusters(all_clusters);
+
+	IntArray killme;
+
+	for (int i = 0; i < all_clusters.size(); i++)
+	{
+	    DispNode *cluster = disp_graph->get(all_clusters[i]);
+	    if (cluster != 0)
+	    {
+		// Delete cluster
+		killme += all_clusters[i];
+	    }
+	}
+
+	delete_display(killme);
+	refresh_graph_edit();
+    }
 }
 
 void DataDisp::toggleClusterSelectedCB(Widget w, XtPointer client_data, 
