@@ -138,4 +138,18 @@ Volunteers for these and other projects are welcome!
 
 047. Have a `Reload' button to reload the current source file.
 
-048. (Insert your project idea here)
+048. From bruno@nsipo.nasa.gov (Eric Bruno):
+     Under the program menu and a menu option with a dialog
+     to be used with a set args line which would be issued with
+     before each run request.
+     A history list would also be used for this dialog, so if one
+     was testing different command lines it would be just a point
+     and click.
+
+049. albrecht@igpm.rwth-aachen.de (Harald Albrecht) suggests that the
+     dialog windows (especially the backtrace dialog) should not
+     exceed a specific size (at least, they should not be larger than
+     the screen :-).  Also, the DDD dialogs should be iconified on
+     their own, without always laying on top of the main windows.
+
+050. (Insert your project idea here)

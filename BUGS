@@ -238,4 +238,11 @@ Volunteers for fixing these and other bugs are welcome!
 054. tbe@glenlivet.fokus.gmd.de (Thomas Berndes) says that DDD crashes
      after failing to allocate the `grey' colormap.
 
-055. (Insert your bug here)
+055. Jochen Schuetze <schuetze@alpha.ivkt.ing.tu-bs.de>:
+     If I close all the separate DDD-Windows, DDD itself keeps on running; the
+     only way to access it now is to press ^C in the terminal window where I
+     have started it. That's a bit strange, although not dangerous, I believe.
+
+056. `Select All' does not select hints.
+
+057. (Insert your bug here)

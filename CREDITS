@@ -10,6 +10,19 @@ If you really like DDD, do not forget to send us a picture postcard.
 				-- Andreas Zeller + Dorothea Luetkehaus
 
 
+rms@gnu.ai.mit.edu (Richard Stallman):
+
+    This does sound good.  If you convert DDD to work with other
+    widgets, and assuming DDD is cleanly written and can be cleanly
+    merged into GDB, I would definitely like to see that happen.
+
+shebs@cygnus.com (Stan Shebs):
+
+    Hi, I'm currently maintaining GDB for the FSF.  We took a look at
+    DDD and were very impressed!  In fact, we noticed that it made a
+    good test for regression in G++; our current G++ version wouldn't
+    compile DDD, and we had to fix it.
+
 rossmann@penthesilea.uni-trier.de (Jan Rossmann):
 
     ... wonderful tool, from what I saw by now ...
