@@ -99,8 +99,10 @@ class SourceView {
 
     static void text_popup_printCB       (Widget, XtPointer, XtPointer);
     static void text_popup_dispCB        (Widget, XtPointer, XtPointer);
+    static void text_popup_watchCB       (Widget, XtPointer, XtPointer);
     static void text_popup_print_refCB   (Widget, XtPointer, XtPointer);
     static void text_popup_disp_refCB    (Widget, XtPointer, XtPointer);
+    static void text_popup_watch_refCB   (Widget, XtPointer, XtPointer);
     static void text_popup_whatisCB      (Widget, XtPointer, XtPointer);
     static void text_popup_lookupCB      (Widget, XtPointer, XtPointer);
     static void text_popup_breakCB       (Widget, XtPointer, XtPointer);
@@ -699,7 +701,10 @@ public:
     static string bp_pos(int num);
 
     // Return the breakpoint at POS (0 if none)
-    static BreakPoint *bp_at(string pos);
+    static BreakPoint *breakpoint_at(string pos);
+
+    // Return the watchpoint at EXPR (0 if none)
+    static BreakPoint *watchpoint_at(string expr);
 
     // Get the word at position of EVENT
     static string get_word_at_event(Widget w,

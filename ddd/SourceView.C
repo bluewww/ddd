@@ -225,9 +225,11 @@ struct TextItms {
     enum Itms {
 	Print, 
 	Disp, 
+	Watch,
 	Dummy1, 
 	PrintRef, 
 	DispRef,
+	WatchRef,
 	Dummy2,
 	Whatis,
 	Dummy3,
@@ -241,14 +243,16 @@ static String text_cmd_labels[] =
 {
     "Print ", 
     "Display ", 
-    "", 
+    "Watch ",
+    "",
     "Print ", 
     "Display ", 
+    "Watch ",
     "",
     "What is ",
     "",
-    "Lookup " , 
-    "Break at ", 
+    "Lookup " ,
+    "Break at ",
     "Clear at "
 };
 
@@ -256,9 +260,11 @@ MMDesc SourceView::text_popup[] =
 {
     {"print",      MMPush, {SourceView::text_popup_printCB}},
     {"disp",       MMPush, {SourceView::text_popup_dispCB}},
+    {"watch",      MMPush | MMUnmanaged, {SourceView::text_popup_watchCB}},
     MMSep,
     {"printRef",   MMPush, {SourceView::text_popup_print_refCB}},
     {"dispRef",    MMPush, {SourceView::text_popup_disp_refCB}},
+    {"watchRef",   MMPush | MMUnmanaged, {SourceView::text_popup_watch_refCB}},
     MMSep,
     {"whatis",     MMPush, {SourceView::text_popup_whatisCB}},
     MMSep,
@@ -1121,6 +1127,29 @@ void SourceView::text_popup_print_refCB (Widget w,
 
 // ***************************************************************************
 //
+void SourceView::text_popup_watchCB (Widget w, 
+				     XtPointer client_data, 
+				     XtPointer)
+{
+    string* word_ptr = (string*)client_data;
+    assert(word_ptr->length() > 0);
+
+    gdb_command(gdb->watch_command(fortranize(*word_ptr)), w);
+}
+
+void SourceView::text_popup_watch_refCB (Widget w, 
+					 XtPointer client_data, XtPointer)
+{
+    string* word_ptr = (string*)client_data;
+    assert(word_ptr->length() > 0);
+
+    gdb_command(gdb->watch_command(gdb->dereferenced_expr(
+	fortranize(*word_ptr))), w);
+}
+
+
+// ***************************************************************************
+//
 void SourceView::text_popup_dispCB (Widget w, XtPointer client_data, XtPointer)
 {
     string* word_ptr = (string*)client_data;
@@ -1437,11 +1466,14 @@ void SourceView::set_source_argCB(Widget text_w,
     }
 }
 
-BreakPoint *SourceView::bp_at(string arg)
+BreakPoint *SourceView::breakpoint_at(string arg)
 {
     MapRef ref;
     for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
     {
+	if (bp->type() != BREAKPOINT)
+	    continue;
+
 	if (arg.matches(rxint))
 	{
 	    // Line number for current source given
@@ -1472,6 +1504,24 @@ BreakPoint *SourceView::bp_at(string arg)
 		    && bp->line_nr() == atoi(line))
 		    return bp;
 	    }
+	}
+    }
+
+    return 0;
+}
+
+BreakPoint *SourceView::watchpoint_at(string expr)
+{
+    MapRef ref;
+    for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+    {
+	if (bp->type() != WATCHPOINT)
+	    continue;
+
+	if (bp->expr() == expr)
+	{
+	    // Function matches
+	    return bp;
 	}
     }
 
@@ -4503,14 +4553,16 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
 	if (lesstif_version < 1000)
 	{
-	    set_text_popup_resource(TextItms::Break,    current_arg);
-	    set_text_popup_resource(TextItms::Clear,    current_arg);
 	    set_text_popup_resource(TextItms::Print,    current_arg);
 	    set_text_popup_resource(TextItms::Disp,     current_arg);
+	    set_text_popup_resource(TextItms::Watch,    current_arg);
 	    set_text_popup_resource(TextItms::PrintRef, current_ref_arg);
 	    set_text_popup_resource(TextItms::DispRef,  current_ref_arg);
+	    set_text_popup_resource(TextItms::WatchRef, current_ref_arg);
 	    set_text_popup_resource(TextItms::Whatis,   current_arg);
 	    set_text_popup_resource(TextItms::Lookup,   current_arg);
+	    set_text_popup_resource(TextItms::Break,    current_arg);
+	    set_text_popup_resource(TextItms::Clear,    current_arg);
 	}
 
 	Widget text_popup_w = 
@@ -4522,15 +4574,18 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	Widget shell = XtParent(text_popup_w);
 	XtAddCallback(shell, XtNpopdownCallback, DestroyThisCB, shell);
 
-	bool sens = (word.length() > 0);
-	set_text_popup_label(TextItms::Break,    current_arg, sens);
-	set_text_popup_label(TextItms::Clear,    current_arg, sens);
-	set_text_popup_label(TextItms::Print,    current_arg, sens);
-	set_text_popup_label(TextItms::Disp,     current_arg, sens);
-	set_text_popup_label(TextItms::PrintRef, current_ref_arg, sens);
-	set_text_popup_label(TextItms::DispRef,  current_ref_arg, sens);
-	set_text_popup_label(TextItms::Whatis,   current_arg, sens);
-	set_text_popup_label(TextItms::Lookup,   current_arg, sens);
+	bool has_arg = (word.length() > 0);
+	bool has_watch = has_arg && gdb->has_watch_command();
+	set_text_popup_label(TextItms::Print,    current_arg, has_arg);
+	set_text_popup_label(TextItms::Disp,     current_arg, has_arg);
+	set_text_popup_label(TextItms::Watch,    current_arg, has_watch);
+	set_text_popup_label(TextItms::PrintRef, current_ref_arg, has_arg);
+	set_text_popup_label(TextItms::DispRef,  current_ref_arg, has_arg);
+	set_text_popup_label(TextItms::WatchRef, current_ref_arg, has_watch);
+	set_text_popup_label(TextItms::Whatis,   current_arg, has_arg);
+	set_text_popup_label(TextItms::Lookup,   current_arg, has_arg);
+	set_text_popup_label(TextItms::Break,    current_arg, has_arg);
+	set_text_popup_label(TextItms::Clear,    current_arg, has_arg);
 
 	XmMenuPosition (text_popup_w, event);
 	XtManageChild (text_popup_w);
