@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-06\-17" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-06\-25" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -2203,10 +2203,13 @@ This lets each toolbar button show an image illustrating the action.
 This shows the action name below the image.
 .PP
 The default is to have images as well as captions, but you can choose
-to have only images (saving space) or only captions.  If neither of
-these two options is set, tool bar buttons are labeled like other
-buttons, as in \s-1@DDD@\s+1 2.x (with the exception of the common tool
-bar, which never shows ordinary labels).
+to have only images (saving space) or only captions.
+.PP
+If you choose to have neither images nor captions, tool bar buttons
+are labeled like other buttons, as in \s-1@DDD@\s+1 2.x.  Note that
+this implies that in the stacked window configuration, the common
+toolbar cannot be displayed; it is replaced by two separate toolbars,
+as in \s-1@DDD@\s+1 2.x.
 .PP
 If you enable `\fBFlat\fR' buttons (default), the border of toolbar
 buttons will appear only if the mouse pointer is over them.  This

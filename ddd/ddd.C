@@ -2022,6 +2022,9 @@ int main(int argc, char *argv[])
 	label_type = XmPIXMAP;
 
     // Common toolbar
+    if (!app_data.button_captions && !app_data.button_images)
+	app_data.common_toolbar = false;
+
     Widget arg_label = 0;
     if (!app_data.separate_source_window &&
 	!app_data.separate_data_window &&
