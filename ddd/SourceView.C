@@ -1656,16 +1656,41 @@ BreakPoint *SourceView::breakpoint_at(string arg)
 
 BreakPoint *SourceView::watchpoint_at(string expr)
 {
-    MapRef ref;
-    for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+    for (int trial = 0; trial <= 2; trial++)
     {
-	if (bp->type() != WATCHPOINT)
-	    continue;
-
-	if (bp->expr() == expr)
+	MapRef ref;
+	for (BreakPoint* bp = bp_map.first(ref); bp != 0; 
+	     bp = bp_map.next(ref))
 	{
-	    // Function matches
-	    return bp;
+	    if (bp->type() != WATCHPOINT)
+		continue;
+
+	    switch (trial)
+	    {
+	    case 0:
+		if (bp->expr() == expr)
+		{
+		    // Expression matches exactly
+		    return bp;
+		}
+		break;
+
+	    case 1:
+		if (bp->expr().contains('(') && bp->expr().before('(') == expr)
+		{
+		    // Expr matches EXPR(...)  (e.g. a qualified function name)
+		    return bp;
+		}
+
+	    case 2:
+		if (bp->expr().contains("`" + expr, -1) ||
+		    bp->expr().contains("::" + expr, -1))
+		{
+		    // Expr matches ...`EXPR (a Sun DBX identifier)
+		    // or ...::EXPR (an SGI DBX identifier)
+		    return bp;
+		}
+	    }
 	}
     }
 
