@@ -44,7 +44,7 @@
 #include "HandlerL.h"
 #include "LineGraphE.h"
 #include "PosGraphN.h"
-
+#include "GraphNPA.h"
 #include "DispNodeM.h"
 
 //-----------------------------------------------------------------------------
@@ -157,6 +157,10 @@ protected:
 			GraphNode *from, GraphNode *to,
 			EdgeAnnotation *anno);
 
+    // Remove node or edge from memory as well as from graph
+    void delete_node(GraphNode *node);
+    void delete_edge(GraphEdge *edge);
+
 private:
     static void disp_node_disabledHP(void *, void *, void *);
 
@@ -184,6 +188,12 @@ private:
     bool hint_positions_ok(Widget w,
 			   PosGraphNode *from, PosGraphNode *to,
 			   const BoxPoint& p1, const BoxPoint& p2) const;
+
+    // Find all hints in edges leading to NODE; store them in HINTS
+    static void find_hints_to(GraphNode *node, GraphNodePointerArray& hints);
+
+    // Find all hints in edges coming from NODE; store them in HINTS
+    static void find_hints_from(GraphNode *node, GraphNodePointerArray& hints);
 };
 
 #endif // _DDD_DispGraph_h

@@ -56,6 +56,7 @@ char DispGraph_rcsid[] =
 #include "BoxEdgeA.h"
 #include "annotation.h"
 #include "DispBox.h"
+#include "EdgeAPA.h"
 
 
 // ***************************************************************************
@@ -455,7 +456,7 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 // ***************************************************************************
 
 // Find all hints in edges leading to NODE; store them in HINTS
-static void find_hints_to(GraphNode *node, VarArray<GraphNode *>& hints)
+void DispGraph::find_hints_to(GraphNode *node, GraphNodePointerArray& hints)
 {
     for (GraphEdge *edge = node->firstTo();
 	 edge != 0;
@@ -470,7 +471,7 @@ static void find_hints_to(GraphNode *node, VarArray<GraphNode *>& hints)
 }
 
 // Find all hints in edges coming from NODE; store them in HINTS
-static void find_hints_from(GraphNode *node, VarArray<GraphNode *>& hints)
+void DispGraph::find_hints_from(GraphNode *node, GraphNodePointerArray& hints)
 {
     for (GraphEdge *edge = node->firstFrom();
 	 edge != 0;
@@ -484,43 +485,62 @@ static void find_hints_from(GraphNode *node, VarArray<GraphNode *>& hints)
     }
 }
 
+// Remove an edge from graph and from memory
+void DispGraph::delete_edge(GraphEdge *edge)
+{
+    *this -= edge;
+    delete edge;
+}
+
+// Remove a node and all its edges
+void DispGraph::delete_node(GraphNode *node)
+{
+    // Remove all edges
+    GraphEdge *e;
+    while ((e = node->firstFrom()) != 0)
+	delete_edge(e);
+    while ((e = node->firstTo()) != 0)
+	delete_edge(e);
+
+    // Remove node from graph
+    *this -= node;
+    delete node;
+}
+
 // Delete display
 bool DispGraph::del (int disp_nr)
 {
-    if (idMap.contains (disp_nr))
-    {
-	unalias(disp_nr);
-	DispNode* dn = idMap.get (disp_nr);
+    if (!idMap.contains (disp_nr))
+	return false;
 
-	VarArray<GraphNode *> hints;
+    unalias(disp_nr);
+    DispNode* dn = idMap.get(disp_nr);
 
-	find_hints_from(dn, hints);
-	find_hints_to(dn, hints);
-	for (int i = 0; i < hints.size(); i++)
-	    *this -= hints[i];
-	    
-	*this -= dn;
-	delete dn;
-	idMap.del (disp_nr);
+    GraphNodePointerArray hints;
 
-	if (idMap.length() == 0)
-	    handlers.call(DispGraph_Empty, this, (void*)true);
-	if (!no_enabled)
-	    if ((no_enabled = (count_all(Enabled) == 0)))
-		handlers.call(NoEnabled, this, (void*)true);
-	if (!no_disabled)
-	    if ((no_disabled = (count_all(Disabled) == 0)))
-		handlers.call(NoDisabled, this, (void*)true);
+    find_hints_from(dn, hints);
+    find_hints_to(dn, hints);
+    for (int i = 0; i < hints.size(); i++)
+	delete_node(hints[i]);
 
-	refresh_titles();
+    delete_node(dn);
+    idMap.del(disp_nr);
 
-	return true;
-    }
-    return false;
+    if (idMap.length() == 0)
+	handlers.call(DispGraph_Empty, this, (void*)true);
+    if (!no_enabled)
+	if ((no_enabled = (count_all(Enabled) == 0)))
+	    handlers.call(NoEnabled, this, (void*)true);
+    if (!no_disabled)
+	if ((no_disabled = (count_all(Disabled) == 0)))
+	    handlers.call(NoDisabled, this, (void*)true);
+
+    refresh_titles();
+    return true;
 }
 
 // ***************************************************************************
-int DispGraph::get_nr (BoxGraphNode *node) const
+int DispGraph::get_nr(BoxGraphNode *node) const
 {
     DispNode *dn = ptr_cast(DispNode, node);
     return dn == 0 ? 0 : dn->disp_nr();
@@ -725,10 +745,10 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
 
     // Hide ordinary hints and insert new alias edges
     GraphEdge *edge;
-    VarArray<GraphNode *> from_nodes;
-    VarArray<GraphNode *> to_nodes;
-    VarArray<EdgeAnnotation *> from_annotations;
-    VarArray<EdgeAnnotation *> to_annotations;
+    GraphNodePointerArray from_nodes;
+    GraphNodePointerArray to_nodes;
+    EdgeAnnotationPointerArray from_annotations;
+    EdgeAnnotationPointerArray to_annotations;
     int i;
 
     for (edge = dn->firstFrom(); edge != 0; edge = dn->nextFrom(edge))
