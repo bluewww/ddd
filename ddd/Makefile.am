@@ -593,8 +593,6 @@ show.o: build.h
 LIBRX      =
 # termcap routines (from system or ../termcap/libtermcap.a)
 LIBTERMCAP = @LIBTERMCAP@
-# -liberty library (../libiberty/libiberty.a)
-LIBIBERTY  = @LIBIBERTY@
 # -lreadline library (from system)
 LIBREADLINE = @LIBREADLINE@
 # Yacc library (-ly)
@@ -614,7 +612,7 @@ NON_X_LIBS = @LIBS@
 
 # All libraries shown above
 ALL_LIBS = $(CXXLIBS) $(LIBREADLINE) $(LIBSOCKET) $(LIBNSL) $(LIBRX) \
-	$(LIBTERMCAP) $(LIBY) $(LIBIBERTY) $(LIBM) $(LIBELF)
+	$(LIBTERMCAP) $(LIBY) $(LIBM) $(LIBELF)
 
 
 

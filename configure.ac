@@ -333,7 +333,6 @@ dnl
 dnl If we already have -liberty, -ltermcap, etc.,
 dnl there is no need to build them.
 ddd_have_termcap=false
-ddd_have_libiberty=false
 dnl
 dnl check for ncurses
 ncurses_includes=
@@ -456,32 +455,6 @@ dnl readline has not been found, test if readline is available on the system
 fi
 AC_SUBST(LIBREADLINE)
 dnl
-dnl
-dnl The `-liberty' library per definition contains only functions
-dnl missing in system libraries.
-libiberty_support=no
-AC_ARG_WITH(libiberty,
-AS_HELP_STRING([--with-libiberty],
-               [do use the libiberty library default=no]),[
-  if test "$withval" = "no"; then
-    libiberty_support=no
-  else
-    libiberty_support=yes
-  fi
-])
-dnl
-if test "${libiberty_support}" = "yes"; then
-  LIBIBERTY="../libiberty/libiberty.a"
-dnl If we have an installed library, prefer it over the one shipped with DDD.
-  AC_CHECK_LIB(iberty, xstrerror,
-	       [LIBIBERTY="-liberty"
-	       ddd_have_libiberty=true])
-else
-  ddd_have_libiberty=true
-  LIBIBERTY=""
-fi
-AC_SUBST(LIBIBERTY)
-dnl
 dnl valgrind leak check support
 dnl It enables a leak check of ddd in the maintenance menu.
 dnl
@@ -502,10 +475,6 @@ if test "x${ddd_valgrind_include_found}" != "xno"; then
 fi
 dnl
 dnl
-if test "$ddd_have_libiberty" != true; then
-    AC_MSG_NOTICE([Using bundled libiberty library.])
-    AC_CONFIG_SUBDIRS([libiberty])
-fi
 if test "$ddd_have_termcap" != true; then
     AC_MSG_NOTICE([Using bundled termcap library.])
     AC_CONFIG_SUBDIRS([termcap])
@@ -1144,11 +1113,6 @@ dnl
 if $risky_lesstif; then
 AC_MSG_WARN([This $DDD release requires LessTif 0.87 or later.
 Upgrade to a recent LessTif version or continue at own risk.])
-fi
-dnl
-if test $libiberty_support != no; then
-AC_MSG_WARN([You requested libiberty support, which will be phased-out.
-If you really need it, could you send a message to $PACKAGE_BUGREPORT?])
 fi
 dnl
 dnl Give an indication of what to do next.

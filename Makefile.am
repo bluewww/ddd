@@ -224,16 +224,12 @@ EXTRA_DIST = \
 	ddd.spec.in \
 	$(TERMCAP_DISTFILES) \
 	$(TEXINFO_DISTFILES) \
-	libiberty \
-        include \
 	$(CVS2CL) \
 	$(USERMAP) \
         PROBLEMS \
         CREDITS
 
 dist-hook:
-	rm -rf `find $(distdir)/include -name CVS -o -name .cvsignore`
-	rm -rf `find $(distdir)/libiberty -name CVS -o -name .cvsignore`
 	rm -rf `find $(distdir)/ddd/PICS -name CVS -o -name .cvsignore -o -name \*.jpg -o -name \*.pdf -o -name \*.eps`
 
 # -----------------------------------------------------------------------------

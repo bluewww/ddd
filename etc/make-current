@@ -148,16 +148,13 @@ automake --gnu --add-missing --copy --verbose
 (cd ddd && autoconf && automake --foreign --add-missing --copy --verbose)
 (cd vsllib && autoconf -l ../ddd && automake --foreign --verbose)
 (cd themes && autoconf -l ../ddd && automake --foreign --verbose)
-(cd readline && autoconf)
 (cd termcap && autoconf)
 
 # Configure the package.
 sh ./configure -v
 
 # Build libraries.
-(cd libiberty && test -f Makefile && make)
 (cd termcap   && test -f Makefile && make)
-(cd readline  && test -f Makefile && make)
 
 # Build DDD.  (We have to build all in order to get correct dependencies.)
 (cd ddd
