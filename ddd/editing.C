@@ -426,7 +426,9 @@ void processAct(Widget w, XEvent *e, String *params, Cardinal *num_params)
 
     running = true;
 
-    clear_isearch();
+#if 0
+    clear_isearch();		// Why would this be needed???  -AZ
+#endif
 
     // Give focus to GDB console
     XmProcessTraversal(gdb_w, XmTRAVERSE_CURRENT);
