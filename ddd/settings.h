@@ -88,5 +88,8 @@ extern string get_defines(DebuggerType type);
 // Define command
 extern void dddDefineCommandCB(Widget, XtPointer, XtPointer);
 
+// Update define buttons
+void UpdateDefinePanelCB(Widget = 0, XtPointer = 0, XtPointer = 0);
+
 #endif // _DDD_settings_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

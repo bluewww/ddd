@@ -66,6 +66,7 @@ char buttons_rcsid[] =
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"
+#include "windows.h"
 #include "wm.h"
 
 #include <Xm/Xm.h>
@@ -300,6 +301,12 @@ static string gdbHelp(string command)
 	help_cache[command] = help;
 
     return help;
+}
+
+void clear_help_cache(const string& command)
+{
+    if (help_cache.has(command))
+	help_cache.remove(command);
 }
 
 
@@ -763,16 +770,11 @@ Widget make_buttons(Widget parent, const string& name,
     XtSetArg(args[arg], XmNuserData, XtPointer(""));   arg++;
     XtSetArg(args[arg], XmNmarginWidth, 0);            arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0);           arg++;
-    XtSetArg(args[arg], XmNspacing, 2);                arg++;
+    XtSetArg(args[arg], XmNspacing, 0);                arg++;
     XtSetArg(args[arg], XmNborderWidth, 0);            arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0);     arg++;
     XtSetArg(args[arg], XmNshadowThickness, 0);        arg++;
-    Widget buttons = verify(XmCreateWorkArea(parent, name, args, arg));
-    if (buttons == 0)
-    {
-	// Not available in LessTif 0.1
-	buttons = verify(XmCreateRowColumn(parent, name, args, arg));
-    }
+    Widget buttons = verify(XmCreateRowColumn(parent, name, args, arg));
 
     set_buttons(buttons, button_list);
 
@@ -792,25 +794,29 @@ Widget make_buttons(Widget parent, const string& name,
 
 void set_buttons(Widget buttons, String _button_list, bool manage)
 {
-    XtPointer user_data;
-    XtVaGetValues(buttons, XmNuserData, &user_data, NULL);
+    XtPointer user_data   = 0;
+    WidgetList children   = 0;
+    Cardinal num_children = 0;
+
+    XtVaGetValues(buttons,
+		  XmNuserData, &user_data,
+		  XtNchildren, &children,
+		  XtNnumChildren, &num_children,
+		  NULL);
 
     if (user_data != 0)
     {
 	String s = (String)user_data;
 	if (s == _button_list || string(s) == string(_button_list))
-	    return;		// Unchanged value
+	{
+	    // Unchanged value - only re-verify all buttons
+	    for (int i = 0; i < int(num_children); i++)
+		verify_button(children[i]);
+	    return;
+	}
     }
 
     // Destroy all existing children (= buttons)
-    WidgetList children   = 0;
-    Cardinal num_children = 0;
-
-    XtVaGetValues(buttons,
-		  XtNchildren, &children,
-		  XtNnumChildren, &num_children,
-		  NULL);
-
     int i;
     for (i = 0; i < int(num_children); i++)
     {
@@ -960,9 +966,24 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
     if (manage)
     {
 	if (number_of_buttons > 0)
-	    XtManageChild(buttons);
+	{
+	    // Manage buttons, giving them their preferred height
+	    XtWidgetGeometry size;
+	    size.request_mode = CWHeight;
+	    XtQueryGeometry(buttons, NULL, &size);
+
+	    XtVaSetValues(buttons,
+			  XmNpaneMinimum, size.height, 
+			  XmNpaneMaximum, size.height,
+			  NULL);
+	    
+	    manage_paned_child(buttons);
+	}
 	else
-	    XtUnmanageChild(buttons); // No buttons at all
+	{
+	    // No buttons at all
+	    unmanage_paned_child(buttons);
+	}
     }
 
     XtVaSetValues(buttons, XmNuserData, XtPointer(_button_list), NULL);
@@ -977,6 +998,9 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 
     // Install tips
     InstallButtonTips(buttons);
+
+    // Update `define' panel
+    UpdateDefinePanelCB();
 }
 
 

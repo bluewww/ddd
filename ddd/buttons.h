@@ -66,5 +66,8 @@ string gdbValue(const string& expr);
 // Create a flat PushButton named NAME
 Widget create_flat_button(Widget parent, const string& name);
 
+// Remove command from help cache.
+void clear_help_cache(const string& command);
+
 #endif // _DDD_buttons_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -5008,6 +5008,7 @@ Click on LBL(Close) to close this window.
 Ddd*define_command_popup.title:    		DDD: Define Command
 
 Ddd*define_command.okLabelString:    		Close
+Ddd*define_command.cancelLabelString:    	Apply
 
 Ddd*define_command*name.label.labelString:	Command
 Ddd*define_command*name.text.columns:       	31
@@ -5036,11 +5037,17 @@ Ddd*define_command*edit.tipString: \
 Ddd*define_command*text.columns: 		40
 Ddd*define_command*scrollBarDisplayPolicy: 	XmAS_NEEDED
 
+Ddd*define_command*button.labelString:		Button
+Ddd*define_command*console.labelString:		Console
+Ddd*define_command*source.labelString:		Source
+Ddd*define_command*data.labelString:		Data
+
 Ddd*define_command*helpString:		\
 @rm WIDGET(Define Command)\n\
 \n\
 DESC(Command, [the name of the @GDB@ command being defined])\n\
 DESC(Definition, [record and edit the command definition])\n\
+DESC(Buttons, [assign buttons to this command])\n\
 \n\
 To define a @GDB@ command, follow these steps:\n\
 ITEM Enter the command name in the LBL(Command) field.\n\
@@ -5049,7 +5056,9 @@ ITEM Now interact with DDD.\n\
    The recorded @GDB@ commands are shown in the @GDB@ console.\n\
 ITEM Click on LBL(End) to stop the recording.\n\
 ITEM Use LBL(Edit @small>>) to edit the command definition.\n\
+ITEM Use LBL(Buttons) to place the new command on a button.\n\
 \n\
+Click on LBL(Apply) to apply the new command.\n\
 Click on LBL(Close) to close this window.
 
 

@@ -63,7 +63,9 @@ char settings_rcsid[] =
 #include "StringSA.h"
 #include "VarArray.h"
 #include "WidgetSA.h"
+#include "buttons.h"
 #include "cook.h"
+#include "comm-manag.h"
 #include "ddd.h"
 #include "logo.h"
 #include "question.h"
@@ -1855,6 +1857,10 @@ bool need_defines()
 
 static bool update_define(const string& command)
 {
+    // We have a new command - update user buttons.
+    clear_help_cache(command);
+    update_user_buttons();
+
     string text = gdb_question("show user " + command);
     if (text == NO_GDB_ANSWER)
 	return false;
@@ -1965,11 +1971,14 @@ string get_defines(DebuggerType type)
 // Edit Command Definitions
 //-----------------------------------------------------------------------
 
+// Data
+
 static Widget name_w;		// Name of defined command
-static Widget record_w;		// Record button
-static Widget end_w;		// End button
-static Widget edit_w;		// Edit>> button
-static Widget editor_w;		// Editor
+static Widget record_w;		// `Record' button
+static Widget end_w;		// `End' button
+static Widget edit_w;		// `Edit>>' button
+static Widget editor_w;		// Command definition editor
+static Widget apply_w;		// `Apply' button
 
 static string current_name()
 {
@@ -1980,17 +1989,129 @@ static string current_name()
     return name;
 }
 
-// Text field has changed -- update buttons
-static void UpdateButtonsCB(Widget = 0, XtPointer = 0, XtPointer = 0)
+
+// Button stuff
+
+static void add_button(string name, String& menu)
 {
+    string s = menu;
+    if (s != "" && !s.contains('\n', -1))
+	s += '\n';
+    s += name + "\n";
+    menu = (String)XtNewString(s.chars());
+}
+
+static void remove_button(string name, String& menu)
+{
+    string s = string("\n") + menu;
+    s.gsub("\n" + name + "\n", string("\n"));
+    menu = (String)XtNewString(s.chars() + 1);
+}
+
+enum ButtonTarget { ConsoleTarget, SourceTarget, DataTarget };
+
+static String &target_string(ButtonTarget t)
+{
+    switch (t)
+    {
+    case ConsoleTarget:
+	return app_data.console_buttons;
+	break;
+
+    case SourceTarget:
+	return app_data.source_buttons;
+	break;
+
+    case DataTarget:
+	return app_data.data_buttons;
+	break;
+    }
+
+    static String null = 0;
+    return null;
+}
+
+static void ToggleButtonCB(Widget, XtPointer client_data, XtPointer call_data)
+{
+    string name = current_name();
+    ButtonTarget target = (ButtonTarget) (long) client_data;
+
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    String& str = target_string(target);
+
+    if (info->set)
+    {
+	add_button(name, str);
+    }
+    else
+    {
+	remove_button(name, str);
+    }
+
+    update_user_buttons();
+}
+
+MMDesc button_menu[] =
+{
+    { "console", MMToggle, { ToggleButtonCB, XtPointer(ConsoleTarget) }},
+    { "source",  MMToggle, { ToggleButtonCB, XtPointer(SourceTarget) }},
+    { "data",    MMToggle, { ToggleButtonCB, XtPointer(DataTarget) }},
+    MMEnd
+};
+
+static void refresh_toggle(ButtonTarget t)
+{
+    Widget& w = button_menu[t].widget;
+    string s = string("\n") + target_string(t);
+    string name = current_name();
+
+    Boolean old_state;
+    XtVaGetValues(w, XmNset, &old_state, NULL);
+
+    Boolean new_state = s.contains("\n" + name + "\n");
+    if (old_state != new_state)
+	XtVaSetValues(w, XmNset, new_state, NULL);
+
+#if 1
+    set_sensitive(w, name != "");
+#else
+    string answer = gdbHelp(name);
+    if (answer != NO_GDB_ANSWER)
+    {
+	set_sensitive(w, is_known_command(answer));
+    }
+#endif
+}
+
+static void refresh_toggles()
+{
+    refresh_toggle(SourceTarget);
+    refresh_toggle(DataTarget);
+    refresh_toggle(ConsoleTarget);
+}
+
+
+// Editing stuff
+
+// Text field has changed -- update buttons
+void UpdateDefinePanelCB(Widget, XtPointer, XtPointer)
+{
+    if (name_w == 0)
+	return;			// Not yet created
+
     string name = current_name();
 
     set_sensitive(record_w, !gdb->recording() && name != "");
-    set_sensitive(end_w, gdb->recording());
-    set_sensitive(edit_w, !gdb->recording() && name != "" && defs.has(name));
+    set_sensitive(apply_w,  !gdb->recording() && name != "" && defs.has(name));
+    set_sensitive(end_w,    gdb->recording());
+    set_sensitive(edit_w,   !gdb->recording() && name != "" && defs.has(name));
 
     XmTextFieldSetEditable(name_w, !gdb->recording());
     set_sensitive(editor_w, !gdb->recording());
+
+    refresh_toggles();
 }
 
 static void update_defineHP(Agent *, void *client_data, void *call_data)
@@ -2004,7 +2125,7 @@ static void update_defineHP(Agent *, void *client_data, void *call_data)
 	if (ok)
 	{
 	    // Update buttons
-	    UpdateButtonsCB();
+	    UpdateDefinePanelCB();
 
 	    // Don't get called again
 	    gdb->removeHandler(ReadyForQuestion, update_defineHP, client_data);
@@ -2037,7 +2158,7 @@ static void RecordingHP(Agent *, void *, void *call_data)
 	update_define_later(name);
     }
 
-    UpdateButtonsCB();
+    UpdateDefinePanelCB();
 }
 
 static void RecordCommandDefinitionCB(Widget w, XtPointer, XtPointer)
@@ -2124,6 +2245,14 @@ static void EditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
     }
 }
 
+// Apply the given command
+static void ApplyCB(Widget, XtPointer, XtPointer)
+{
+    string name = current_name();
+    if (name != "")
+ 	gdb_command(name);
+}
+
 MMDesc commands_menu[] =
 {
     { "record", MMPush, \
@@ -2137,8 +2266,9 @@ MMDesc commands_menu[] =
 
 static MMDesc panel_menu[] = 
 {
-    { "name", MMTextField, { UpdateButtonsCB, 0 }, 0, &name_w },
+    { "name",     MMTextField, { UpdateDefinePanelCB }, 0, &name_w },
     { "commands", MMButtonPanel, MMNoCB, commands_menu },
+    { "button",   MMButtonPanel, MMNoCB, button_menu },
     MMEnd
 };
 
@@ -2152,6 +2282,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
     {
 	Arg args[10];
 	int arg = 0;
+	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
 	dialog = verify(XmCreatePromptDialog(find_shell(w),
 					     "define_command",
 					     args, arg));
@@ -2169,8 +2300,7 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 	if (lesstif_version <= 79)
 	    XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
 						   XmDIALOG_APPLY_BUTTON));
-	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
-					       XmDIALOG_CANCEL_BUTTON));
+	apply_w = XmSelectionBoxGetChild(dialog, XmDIALOG_CANCEL_BUTTON);
 	
 	arg = 0;
 	XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
@@ -2195,6 +2325,9 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 
 	MMadjustPanel(panel_menu);
 
+	XtAddCallback(dialog, XmNokCallback, UnmanageThisCB, 
+		      XtPointer(dialog));
+	XtAddCallback(dialog, XmNcancelCallback, ApplyCB, NULL);
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
 	XtAddCallback(name_w, XmNactivateCallback, ActivateCB, 
 		      XtPointer(record_w));
@@ -2203,6 +2336,6 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 	update_defines();
     }
 
-    UpdateButtonsCB();
+    UpdateDefinePanelCB();
     manage_and_raise(dialog);
 }
