@@ -3923,11 +3923,12 @@ Ddd*grey_stop.tipString:
 Ddd*grey_stop.documentationString: 
 
 
+
 !-----------------------------------------------------------------------------
 ! Main Window
 !-----------------------------------------------------------------------------
 
-Ddd.helpString:				\
+define(MAIN_WINDOW_HELP, [\
 @rm This is the EMPH([DDD] Main Window).\n\
 \n\
 From top to bottom, it shows the following areas:\n\
@@ -3944,7 +3945,10 @@ interaction\n\
     with @GDB@ and the debugged program.\n\
 \n\
 Use LBL(Help) | LBL(On Context) to get detailed \
-help on any of these areas.
+help on any of these areas.])dnl
+
+Ddd.helpString:	            MAIN_WINDOW_HELP
+Ddd.main_window.helpString: MAIN_WINDOW_HELP
 
 
 
