@@ -797,8 +797,8 @@ static bool valid_ps_line(const string& line, const string& ps_command)
 	return false;		// Neither should you debug GDB by itself.
 
     string ps = ps_command;	// Don't issue lines containing `ps'...
-    if (ps.contains(rxwhite))	// ... or whatever the first word in
-	ps = ps.before(rxwhite);// ps_command is.
+    if (ps.contains(' '))	// ... or whatever the first word in
+	ps = ps.before(' ');	// ps_command is.
     ps = basename(ps);
 
     int index = line.index(ps);
