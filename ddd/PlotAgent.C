@@ -147,7 +147,7 @@ int PlotAgent::flush()
 
 	case 1:
 	case 2:
-	    if (ndim != last_ndim && plot_2d_settings != "")
+	    if (ndim != last_ndim && !plot_2d_settings.empty())
 	    {
 		cmd << plot_2d_settings << "\n";
 		last_ndim = ndim;
@@ -156,7 +156,7 @@ int PlotAgent::flush()
 	    break;
 
 	case 3:
-	    if (ndim != last_ndim && plot_3d_settings != "")
+	    if (ndim != last_ndim && !plot_3d_settings.empty())
 	    {
 		cmd << plot_3d_settings << "\n";
 		last_ndim = ndim;
@@ -173,7 +173,7 @@ int PlotAgent::flush()
 
 	    const string& v = values[i];
 	    int dim = dims[i];
-	    if (v != "")
+	    if (!v.empty())
 	    {
 		// Plot scalar value
 		if (ndim == 3)
@@ -385,7 +385,7 @@ void PlotAgent::dispatch(int type, const char *data, int length)
 void PlotAgent::set_state(const string& state)
 {
     string title;
-    if (state != "")
+    if (!state.empty())
 	title = " " + quote('(' + state + ')');
 
     const string c = "set title" + title + "\nreplot\n";

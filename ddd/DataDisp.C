@@ -1796,7 +1796,7 @@ void DataDisp::new_displayDCB (Widget dialog, XtPointer client_data, XtPointer)
     strip_leading_space(expr);
     strip_trailing_space(expr);
 
-    if (expr != "")
+    if (!expr.empty())
     {
 	new_display(expr, info->point_ptr, info->depends_on, info->clustered,
 		    info->plotted, info->origin);
@@ -2652,7 +2652,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     {
 	// No node selected
 	arg = source_arg->get_string();
-	arg_ok = (arg != "") && !is_file_pos(arg);
+	arg_ok = (!arg.empty()) && !is_file_pos(arg);
 	plot_ok = arg_ok && !undoing;
     }
 
@@ -2696,7 +2696,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(display_area[DisplayItms::Dereference].widget,
 		  dereference_ok && !undoing);
 
-    bool can_dereference = (gdb->dereferenced_expr("") != "");
+    bool can_dereference = !gdb->dereferenced_expr("").empty();
     manage_child(shortcut_menu[ShortcutItms::Dereference2].widget,
 		 can_dereference);
 
@@ -2885,10 +2885,10 @@ bool DataDisp::get_scopes(StringArray& scopes)
 {
     // Fetch current backtrace and store scopes in SCOPES
     string backtrace = gdb_question(gdb->where_command(), -1, true);
-    while (backtrace != "")
+    while (!backtrace.empty())
     {
 	string scope = get_scope(backtrace);
-	if (scope != "")
+	if (!scope.empty())
 	    scopes += scope;
 	backtrace = backtrace.after('\n');
     }
@@ -2970,7 +2970,7 @@ void DataDisp::write_restore_scope_command(std::ostream& os,
 	msg += rm(itostring(dn->disp_nr()) + ": ");
 	msg += tt(dn->name());
 
-	if (dn->scope() != "")
+	if (!(dn->scope().empty()))
 	{
 	   msg += rm(" because ");
 	   msg += tt(dn->scope());
@@ -3047,11 +3047,11 @@ void DataDisp::get_node_state(std::ostream& os, DispNode *dn, bool include_posit
 	    }
 	}
     }
-    if (depends_on != "")
+    if (!depends_on.empty())
 	os << " dependent on " << depends_on;
 
     // Write scope
-    if (dn->scope() != "")
+    if (!(dn->scope().empty()))
 	os << " now or when in " << dn->scope();
 
     os << '\n';
@@ -3120,7 +3120,7 @@ bool DataDisp::need_core_to_restore()
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (!dn->deferred() && dn->scope() != "")
+      if (!dn->deferred() && !(dn->scope().empty()))
 	    return true;
     }
 
@@ -3457,7 +3457,7 @@ void DataDisp::new_displaySQ (const string& display_expression,
     CommandGroup cg;
 
     // Check arguments
-    if (deferred != DeferAlways && depends_on != "")
+    if (deferred != DeferAlways && !depends_on.empty())
     {
 	int depend_nr = display_number(depends_on, verbose);
 	if (depend_nr == 0)
@@ -3637,7 +3637,7 @@ void DataDisp::read_number_and_name(string& answer, string& nr, string& name)
     if (gdb->has_numbered_displays())
     {
 	nr = read_disp_nr_str(answer, gdb);
-	if (nr != "")
+	if (!nr.empty())
 	    name = read_disp_name(answer, gdb);
     }
     else
@@ -3690,7 +3690,7 @@ string DataDisp::new_display_cmd(const string& display_expression,
 	cmd += " clustered ";
     if (p != 0 && *p != BoxPoint())
 	cmd += " at (" + itostring((*p)[X]) + ", " + itostring((*p)[Y]) + ")";
-    if (depends_on != "")
+    if (!depends_on.empty())
 	cmd += " dependent on " + depends_on;
 
     return cmd;
@@ -4131,7 +4131,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     bool clustered = info->clustered;
     bool plotted   = info->plotted;
 
-    if (info->cluster_name != "")
+    if (!(info->cluster_name.empty()))
     {
 	clustered = false;
 	plotted   = false;
@@ -4234,7 +4234,7 @@ void DataDisp::new_data_display_extraOQC (const string& answer, void* data)
     string ans = answer;
     string display = read_next_display(ans, gdb);
 
-    if (display != "")
+    if (!display.empty())
 	new_data_displayOQC(display, data);
 }
 
@@ -4269,7 +4269,7 @@ int DataDisp::new_cluster(const string& name, bool plotted)
     string cmd = plotted ? "plot" : "display";
 
     string base = CLUSTER_COMMAND;
-    if (name != "")
+    if (!name.empty())
 	base = base + " " + name;
 
     gdb_command("graph " + cmd + " `"  + base + "`", last_origin, 0);
@@ -4330,7 +4330,7 @@ int DataDisp::add_refresh_data_commands(StringArray& cmds)
 	    if (!dn->is_user_command() && !dn->deferred())
 	    {
 		string cmd = gdb->print_command(dn->name());
-		while (cmd != "")
+		while (!cmd.empty())
 		{
 		    string line = cmd;
 		    if (line.contains('\n'))
@@ -4869,7 +4869,7 @@ void DataDisp::delete_displayOQC (const string& answer, void *data)
 
 	// Upon `undisplay', Sun DBX redisplays remaining displays
 	// with values.  Process them.
-	if (answer != "" && !answer.contains("no such expression"))
+	if (!answer.empty() && !answer.contains("no such expression"))
 	{
 	    bool disabling_occurred;
 	    process_displays(ans, disabling_occurred);
@@ -4903,7 +4903,7 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
     }
 
     string u = string(undo_commands);
-    if (u != "")
+    if (!u.empty())
 	undo_buffer.add_command(u, true);
 
     // Delete nodes
@@ -4989,7 +4989,7 @@ void DataDisp::process_info_display(string& info_display_answer,
 
     string next_disp_info = 
 	read_first_disp_info (info_display_answer, gdb);
-    while (next_disp_info != "")
+    while (!next_disp_info.empty())
     {
 	disp_nr = get_positive_nr (next_disp_info);
 	if (disp_nr >= 0)
@@ -5189,7 +5189,7 @@ string DataDisp::process_displays(string& displays,
 #endif
 
     string next_display = read_next_display (displays, gdb);
-    while (next_display != "") 
+    while (!next_display.empty()) 
     {
 #if LOG_DISPLAYS
         clog << "Updating display " << quote(next_display);
@@ -5203,7 +5203,7 @@ string DataDisp::process_displays(string& displays,
 	    disp_nr = 0;
 	    string disp_name = next_display;
 	    disp_name = read_disp_name(disp_name, gdb);
-	    if (disp_name != "")
+	    if (!disp_name.empty())
 	    {
 		MapRef ref;
 		for (DispNode* dn = disp_graph->first(ref); 
@@ -5322,7 +5322,7 @@ string DataDisp::process_displays(string& displays,
 	    // New value
 	    changed = true;
 	}
-	if (*strptr != "" && !(strptr->matches(rxwhite)))
+	if (!(*strptr).empty() && !(strptr->matches(rxwhite)))
 	{
 	    // After the `display' output, more info followed
 	    // (e.g. the returned value when `finish'ing)
@@ -5835,13 +5835,13 @@ void DataDisp::RefreshDisplayListCB(XtPointer client_data, XtIntervalId *id)
 		msg += tt(title);
 
 		msg += rm(" (" + states[index_selected]);
-		if (scopes[index_selected] != "")
+		if (!scopes[index_selected].empty())
 		{
 		    msg += rm(", scope ");
 		    msg += tt(scopes[index_selected]);
 		}
 
-		if (detect_aliases && addrs[index_selected] != "")
+		if (detect_aliases && !addrs[index_selected].empty())
 		{
 		    msg += rm(", address ");
 		    msg += tt(addrs[index_selected]);
@@ -5946,7 +5946,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     else
 	name = source_arg->get_string();
 
-    bool can_set = (name != "") && !is_file_pos(name);
+    bool can_set = (!name.empty()) && !is_file_pos(name);
     if (!can_set)
 	return;
 
@@ -6366,7 +6366,7 @@ int DataDisp::add_refresh_addr_commands(StringArray& cmds, DispNode *dn)
  	if (dn->active() && !dn->is_user_command())
 	{
 	    string addr = gdb->address_expr(dn->name());
-	    if (addr != "")
+	    if (!addr.empty())
 		cmds += gdb->print_command(addr);
 	}
     }

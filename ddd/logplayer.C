@@ -187,7 +187,7 @@ void logplayer(const string& logname)
 		// Continuation line
 		out += unquote(log_line.from('"'));
 	    }
-	    else if (out != "")
+	    else if (!out.empty())
 	    {
 		// Send out accumulated output
 		if (!scanning)
@@ -221,7 +221,7 @@ void logplayer(const string& logname)
 		    static string pattern;
 		    char c = ddd_line[0];
 		    string p = ddd_line.after(0);
-		    if (p != "" || c == ':')
+		    if (!p.empty() || c == ':')
 			pattern = p;
 		    if (pattern.empty() ||
 			(c == ':' && command_no == atoi(pattern.chars())) ||
@@ -234,7 +234,7 @@ void logplayer(const string& logname)
 			os << buffer << " " << in << "\n";
 			put(os);
 
-			if (c == '/' || pattern != "")
+			if (c == '/' || !pattern.empty())
 			{
 			    // Stop here
 			    scanning = false;
@@ -253,7 +253,7 @@ void logplayer(const string& logname)
 		    if (last_output.contains('\n'))
 		    {
 			string prompt = last_output.after('\n', -1);
-			if (prompt != "" && !prompt.contains('\\', 0))
+			if (!prompt.empty() && !prompt.contains('\\', 0))
 			{
 			    if (prompt.contains('('))
 				prompt = prompt.from('(', -1);
@@ -280,7 +280,7 @@ void logplayer(const string& logname)
 		    if (ddd_line.contains('\n', -1))
 			ddd_line = ddd_line.before('\n', -1);
 
-		    if (echoing && ddd_line != "" && !isalpha(ddd_line[0]))
+		    if (echoing && !ddd_line.empty() && !isalpha(ddd_line[0]))
 			put(ddd_line + "\r\n");
 
 		    if (ddd_line.contains('q', 0))

@@ -101,7 +101,7 @@ static int passed_to_program(const string& program_state)
     string signal = program_state.from("SIG");
     signal = signal.through(rxalpha);
 
-    if (signal != "")
+    if (!signal.empty())
     {
 	string signal_description = program_state.after(signal);
 	signal_description = signal_description.after(rxwhite);
@@ -212,7 +212,7 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
 	return;
     }
 
-    if (current_line() != "")
+    if (!current_line().empty())
     {
 	hint_on("command_entered");
 	return;

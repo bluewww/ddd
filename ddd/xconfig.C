@@ -177,7 +177,7 @@ static int check_xkeysymdb(Display *display, bool verbose)
 	XtFree(s);
     }
 
-    if (xkeysymdb != "")
+    if (!xkeysymdb.empty())
     {
 	if (verbose)
 	{

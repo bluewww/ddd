@@ -223,7 +223,7 @@ static Widget file_dialog(Widget w, const string& name,
 
     Widget filter = XmFileSelectionBoxGetChild(dialog, XmDIALOG_FILTER_TEXT);
     file_filters += filter;
-    if (current_file_filter != "")
+    if (!current_file_filter.empty())
 	XmTextSetString(filter, CONST_CAST(char*,current_file_filter.chars()));
     XtAddCallback(filter, XmNvalueChangedCallback, SyncFiltersCB, 0);
 
@@ -630,7 +630,7 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 	    break;
 
 	case DBX:
-	    if (info.file != NO_GDB_ANSWER && info.file != "")
+	    if (info.file != NO_GDB_ANSWER && !info.file.empty())
 		gdb_command(gdb->debug_command(info.file) + " " + 
 			    gdb->quote_file(info.core));
 	    else
@@ -1484,7 +1484,7 @@ void get_gdb_sources(StringArray& sources_list)
     {
 	// Create a newline-separated list of sources
 	string new_ans;
-	while (ans != "")
+	while (!ans.empty())
 	{
 	    string line = ans.before('\n');
 	    ans = ans.after('\n');
@@ -1497,7 +1497,7 @@ void get_gdb_sources(StringArray& sources_list)
 	}
 
 	ans = new_ans;
-	while (ans != "")
+	while (!ans.empty())
 	{
 	    string line = ans.before('\n');
 	    ans = ans.after('\n');
@@ -1650,7 +1650,7 @@ static void lookupSourceDone(Widget w,
 	}
     }
 
-    if (source != "")
+    if (!source.empty())
     {
 	source_view->lookup(source + ":1");
 

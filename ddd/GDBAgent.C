@@ -1338,7 +1338,7 @@ void GDBAgent::handle_more(string& answer)
 {
     // Check for `More' prompt
     string reply = requires_reply(answer);
-    if (reply != "")
+    if (!reply.empty())
     {
 	// Oops - this should not happen.  Just hit the reply key.
 	write(reply);
@@ -1623,7 +1623,7 @@ int GDBAgent::write_cmd(const string& cmd)
 	p = p.after("exec ");
 	if (p.contains('\'', 0) || p.contains('\"', 0))
 	    p = unquote(p);
-	if (p != "")
+	if (!p.empty())
 	    _path = p;
     }
 
@@ -1709,7 +1709,7 @@ string GDBAgent::print_command(const string& expr, bool internal) const
 	break;
     }
 
-    if (expr != "")
+    if (!expr.empty())
 	cmd += " " + expr;
 
     return cmd;
@@ -1722,12 +1722,12 @@ string GDBAgent::display_command(const string& expr) const
 	return "";
 
     string cmd;
-    if (has_print_r_option() && expr != "")
+    if (has_print_r_option() && !expr.empty())
 	cmd = "display -r";
     else
 	cmd = "display";
 
-    if (expr != "")
+    if (!expr.empty())
 	cmd += " " + expr;
 
     return cmd;
@@ -2182,7 +2182,7 @@ string GDBAgent::whatis_command(const string& text) const
 // Enable breakpoint BP
 string GDBAgent::enable_command(string bp) const
 {
-    if (bp != "")
+    if (!bp.empty())
 	bp.prepend(' ');
 
     switch (type())
@@ -2214,7 +2214,7 @@ string GDBAgent::enable_command(string bp) const
 // Disable breakpoint BP
 string GDBAgent::disable_command(string bp) const
 {
-    if (bp != "")
+    if (!bp.empty())
 	bp.prepend(' ');
 
     switch (type())
@@ -2246,7 +2246,7 @@ string GDBAgent::disable_command(string bp) const
 // Delete breakpoint BP
 string GDBAgent::delete_command(string bp) const
 {
-    if (bp != "")
+    if (!bp.empty())
 	bp.prepend(' ');
 
     switch (type())
@@ -2439,7 +2439,7 @@ string GDBAgent::quote_file(const string& file) const
 // Return command to debug PROGRAM
 string GDBAgent::debug_command(const string& program, string args) const
 {
-    if (args != "" && !args.contains(' ', 0))
+    if (!args.empty() && !args.contains(' ', 0))
 	args = " " + args;
 
     switch (type())
@@ -2519,7 +2519,7 @@ string GDBAgent::nop_command(const string& comment) const
 // Run program with given ARGS
 string GDBAgent::run_command(string args) const
 {
-    if (args != "" && !args.contains(' ', 0))
+    if (!args.empty() && !args.contains(' ', 0))
 	args = " " + args;
 
     switch (type())
@@ -2765,7 +2765,7 @@ string GDBAgent::index_expr(const string& expr, const string& index) const
 	return expr + "(" + index + ")";
 
     case LANGUAGE_PERL:
-	if (expr != "" && expr[0] == '@')
+	if (!expr.empty() && expr[0] == '@')
 	    return '$' + expr.after(0) + "[" + index + "]";
 	else
 	    return expr + "[" + index + "]";
@@ -2855,14 +2855,14 @@ string GDBAgent::assign_command(const string& var, const string& expr) const
 	break;
 
     case PERL:
-	if (var != "" && !is_perl_prefix(var[0]))
+	if (!var.empty() && !is_perl_prefix(var[0]))
 	    return "";		// Cannot set this
 
 	cmd = "";		// No command needed
 	break;
 
     case BASH:
-	if (var != "" && !is_bash_prefix(var[0]))
+	if (!var.empty() && !is_bash_prefix(var[0]))
 	    return "";		// Cannot set this
 
 	cmd = "eval ";
@@ -2916,7 +2916,7 @@ void GDBAgent::normalize_address(string& addr) const
     if (addr.contains("h", -1))
 	addr = addr.before(int(addr.length()) - 1);
 
-    if (addr != "")
+    if (!addr.empty())
     {
 	switch (program_language())
 	{
@@ -2951,7 +2951,7 @@ string GDBAgent::disassemble_command(string start, string end) const
     normalize_address(start);
     string cmd = "disassemble " + start;
 
-    if (end != "")
+    if (!end.empty())
     {
 	normalize_address(end);
 	cmd += " " + end;
@@ -3170,9 +3170,9 @@ void GDBAgent::munch_value(string& value, const string& var) const
 	return;
 
     // Special treatment
-    if (var != "" && var[0] == '@')
+    if (!var.empty() && var[0] == '@')
 	munch_perl_array(value, false);
-    else if (var != "" && var[0] == '%')
+    else if (!var.empty() && var[0] == '%')
 	munch_perl_array(value, true);
     else
 	munch_perl_scalar(value);

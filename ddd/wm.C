@@ -87,9 +87,9 @@ void wm_set_name(Display *display, Window shell_window,
     strip_space(title);
     strip_space(icon);
 
-    if (title != "")
+    if (!title.empty())
 	XStoreName(display, shell_window, title.chars());
-    if (icon != "")
+    if (!icon.empty())
 	XSetIconName(display, shell_window, icon.chars());
 }
 

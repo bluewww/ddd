@@ -435,7 +435,7 @@ static MString gdbDefaultHelpText(Widget widget)
     const string name = gdbHelpName(widget);
 
     MString msg;
-    if (name != "" && islower(name[0]))
+    if (!name.empty() && islower(name[0]))
 	msg = bf(toupper(name[0]) + name.after(0));
     else
 	msg = bf(name);
@@ -635,7 +635,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     if (gdb->program_language() == LANGUAGE_PERL)
     {
 	// In Perl, all variables begin with `$', `@', or `%'.
-	if (expr != "" &&  !is_perl_prefix(expr[0]))
+	if (!expr.empty() &&  !is_perl_prefix(expr[0]))
 	    return clear;
     }
 
@@ -772,7 +772,7 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 	    // Solaris DBX first describes `kill -l', then `kill'.
 	    // Check for this.
 	    string t = tip.from(command + "  ", 0);
-	    if (t != "")
+	    if (!t.empty())
 		tip = t;
 	}
     }
@@ -799,7 +799,7 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
     if (tip.contains(command, 0))
     {
 	const string t = tip.after(command);
-	if (t != "" && !isalpha(t[0]))
+	if (!t.empty() && !isalpha(t[0]))
 	{
 	    tip = t;
 	    strip_leading_space(tip);
@@ -809,7 +809,7 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
     strip_through(tip, " # ");
     strip_through(tip, " - ");
 
-    if (gdb->type() == DBX && tip != "" && !isupper(tip[0]))
+    if (gdb->type() == DBX && !tip.empty() && !isupper(tip[0]))
     {
 	// Avoid giving help like `step <count>' on `step'.  This happens
 	// with AIX DBX, where the help looks like
@@ -931,7 +931,7 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 		cmd = cmd.through(rxidentifier);
 	    }
 
-	    if (cmd != "")
+	    if (!cmd.empty())
 	    {
 		int next_invocation = 0;
 		XtAppContext app_context = 
@@ -1158,7 +1158,7 @@ void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 	    command = ctrl(name.from('^'));
 	    name = name.before('^');
 	}
-	else if (name != "" && iscntrl(name[name.length() - 1]))
+	else if (!name.empty() && iscntrl(name[name.length() - 1]))
 	{
 	    command = string(name[name.length() - 1]);
 	    name = name.before(-1);
@@ -1168,7 +1168,7 @@ void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 	{
 	    // Create default label from name
 	    string label_s = name;
-	    if (label_s != "")
+	    if (!label_s.empty())
 		label_s[0] = toupper(label_s[0]);
 	    label = MString(label_s);
 	}
@@ -1603,7 +1603,7 @@ void refresh_button_editor()
 	if (i > 0)
 	    expr += '\n';
 	expr += exprs[i];
-	if (labels[i] != "")
+	if (!(labels[i].empty()))
 	    expr += string('\t') + app_data.label_delimiter + ' ' + labels[i];
     }
 

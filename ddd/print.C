@@ -192,7 +192,7 @@ static void printDoneHP(Agent *print_agent, void *client_data, void *)
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, unlinkPrintFile, 
 		    XtPointer(client_data));
 
-    if (output_buffer != "")
+    if (!output_buffer.empty())
 	set_status("");
 }
 
@@ -205,7 +205,7 @@ static void printOutputHP(Agent *, void *, void *call_data)
 	set_status(output_buffer.before('\n'));
 	output_buffer = output_buffer.after('\n');
     }
-    if (output_buffer != "")
+    if (!output_buffer.empty())
 	set_status(output_buffer);
 }
 
@@ -523,7 +523,7 @@ static int points(string s)
 {
     int points = 0;
 
-    while (s != "")
+    while (!s.empty())
     {
 	const char *start = s.chars();
 	char *tailptr;
@@ -685,7 +685,7 @@ static void SetPaperSizeCB(Widget w, XtPointer, XtPointer call_data)
     }
 
     int ok = true;
-    if (s != "")
+    if (!s.empty())
 	ok = set_paper_size(s);
 
     if (ok)
@@ -734,7 +734,7 @@ static void SetPrintFileNameCB(Widget w,
 			       XtPointer call_data)
 {
     string target = get_file(w, client_data, call_data);
-    if (target != "")
+    if (!target.empty())
     {
 	set_print_file_name(target);
 	XtUnmanageChild(w);

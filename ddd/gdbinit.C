@@ -387,7 +387,7 @@ DebuggerInfo::DebuggerInfo(int argc, const char * const argv[])
 	    path_s = ".";
 
 	string path = path_s;
-	while (path != "")
+	while (!path.empty())
 	{
 	    string dir;
 	    if (path.contains(':'))
@@ -449,7 +449,7 @@ DebuggerInfo::DebuggerInfo(int argc, const char * const argv[])
 		classpath_s = ".";
 
 	    string classpath = classpath_s;
-	    while (classpath != "")
+	    while (!classpath.empty())
 	    {
 		string dir;
 		if (classpath.contains(':'))

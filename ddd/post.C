@@ -283,7 +283,7 @@ struct PostInfo {
 static void GDBOutCB(XtPointer client_data, XtIntervalId *)
 {
     PostInfo *info = (PostInfo *)client_data;
-    if (info->text != "")
+    if (!info->text.empty())
     {
 	gdb_out("\r" + info->text + "\n");
 	if (info->prompt)
@@ -304,7 +304,7 @@ Widget post_gdb_message(string text, bool prompt, Widget w)
 
     if (ddd_is_exiting)
     {
-	if (text != "")
+	if (!text.empty())
 	    std::cerr << ddd_NAME << ": " << text << "\n";
 	return 0;
     }

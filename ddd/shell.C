@@ -53,7 +53,7 @@ string gdb_host;		  // non-empty if separate host
 
 bool remote_gdb()
 {
-    return gdb_host != "";
+    return !gdb_host.empty();
 }
 
 string sh_quote(string s)
@@ -88,7 +88,7 @@ string _sh_command(string command, bool force_local,
     }
 
     string settings = "";
-    if (display != "")
+    if (!display.empty())
     {
 	settings += 
 	    "DISPLAY=${DISPLAY-" + sh_quote(display) + "}; export DISPLAY; ";
@@ -106,12 +106,12 @@ string _sh_command(string command, bool force_local,
 
     string rsh = app_data.rsh_command;
     const string login = app_data.debugger_host_login;
-    if (login != "")
+    if (!login.empty())
 	rsh += " -l " + login;
 
     rsh += " " + gdb_host;
 
-    if (command != "")
+    if (!command.empty())
 	rsh += " /bin/sh -c " + sh_quote(sh_quote(settings + command));
 
     return rsh;

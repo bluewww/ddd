@@ -319,7 +319,7 @@ int LetNode::_resolveNames(VSLDef *cdef, unsigned base)
     string s = "";
     unsigned offset = 0;
 
-    while ((s = node_pattern()->firstName(), s) != "")
+    while (!(s = node_pattern()->firstName(), s).empty())
     {
 	// Replace in body
 	int ch = body()->resolveName(cdef, &body(), s, base + offset);

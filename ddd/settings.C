@@ -157,7 +157,7 @@ static void set_arg();
 static Widget command_to_widget(Widget ref, string command)
 {
     Widget found = 0;
-    while (command != "" && (found = XtNameToWidget(ref, command.chars())) == 0)
+    while (!command.empty() && (found = XtNameToWidget(ref, command.chars())) == 0)
     {
 	// Strip last word (command argument)
 	int index = command.index(rxwhite, -1);
@@ -173,7 +173,7 @@ static void gdb_set_command(const string& set_command, string value)
     if (gdb->type() == GDB && value == "unlimited")
 	value = "0";
 
-    if (gdb->type() == GDB && set_command == "dir" && value != "")
+    if (gdb->type() == GDB && set_command == "dir" && !value.empty())
     {
 	// `dir' in GDB works somewhat special: it prepends its
 	// argument to the source path instead of simply setting it.
@@ -204,7 +204,7 @@ static void gdb_set_command(const string& set_command, string value)
     {
 	gdb_command(set_command + " = " + value); // DBX
     }
-    else if (value != "")
+    else if (!value.empty())
     {
 	gdb_command(set_command + " " + value); // GDB
     }
@@ -875,7 +875,7 @@ void process_handle(string output, bool init)
 
     string undo_command = "";
 
-    while (output != "")
+    while (!output.empty())
     {
 	string line = output;
 	if (line.contains('\n'))
@@ -911,7 +911,7 @@ void process_handle(string output, bool init)
 	    if (!init && signals_values[w] != value)
 	    {
 		// Save undoing command
-		if (undo_command != "")
+		if (!undo_command.empty())
 		    undo_command += '\n';
 		undo_command += handle_command(w, !set);
 	    }
@@ -924,7 +924,7 @@ void process_handle(string output, bool init)
 	}
     }
 
-    if (undo_command != "")
+    if (!undo_command.empty())
 	undo_buffer.add_command(undo_command);
 
     update_reset_signals_button();
@@ -1879,7 +1879,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	options = options.from('(');
 	options = options.before(')');
 
-	while (options != "")
+	while (!options.empty())
 	{
 	    string option = options.after(0);
 	    option = option.through(rxalpha);
@@ -2005,7 +2005,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    return;		// FIXME
 	}
 
-	while (options != "")
+	while (!options.empty())
 	{
 	    string option = options;
 	    if (option.contains(separator))
@@ -2299,7 +2299,7 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
 
     if (commands.contains('\n'))
     {
-	while (commands != "")
+	while (!commands.empty())
 	{
 	    string line = commands.before('\n');
 	    commands    = commands.after('\n');
@@ -2310,7 +2310,7 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
     {
 	// Ladebug gives us all settings in one line.
 	commands = commands + '$';
-	while (commands != "")
+	while (!commands.empty())
 	{
 	    commands = commands.from('$');
 	    int idx = commands.index('$');
@@ -3285,7 +3285,7 @@ static bool update_define(const string& command, bool undo = false)
 
     string def  = "";
 
-    while (text != "")
+    while (!text.empty())
     {
 	string line = text.before('\n');
 	text        = text.after('\n');
@@ -3313,7 +3313,7 @@ static void update_defines()
     if (commands == NO_GDB_ANSWER)
 	return;
 
-    while (commands != "")
+    while (!commands.empty())
     {
 	string line = commands.before('\n');
 	commands    = commands.after('\n');
@@ -3435,7 +3435,7 @@ static void add_button(string name, const _XtString& menu)
 	name += " ()";
 
     string s = menu;
-    if (s != "" && !s.contains('\n', -1))
+    if (!s.empty() && !s.contains('\n', -1))
 	s += '\n';
     s += name + "\n";
     menu = (String)XtNewString(s.chars());
@@ -3517,7 +3517,7 @@ static void refresh_toggle(ButtonTarget t)
 	XtVaSetValues(w, XmNset, new_state, XtPointer(0));
 
 #if 1
-    set_sensitive(w, name != "");
+    set_sensitive(w, !name.empty());
 #else
     string answer = gdbHelp(name);
     if (answer != NO_GDB_ANSWER)
@@ -3557,10 +3557,10 @@ void UpdateDefinePanelCB(Widget w, XtPointer, XtPointer)
 
     string name = current_name();
 
-    set_sensitive(record_w, !gdb->recording() && name != "");
+    set_sensitive(record_w, !gdb->recording() && !name.empty());
     set_sensitive(apply_w,  !gdb->recording() && defs.has(name));
     set_sensitive(end_w,    gdb->recording());
-    set_sensitive(edit_w,   !gdb->recording() && name != "");
+    set_sensitive(edit_w,   !gdb->recording() && !name.empty());
 
     set_sensitive(name_w, !gdb->recording());
     set_sensitive(XtParent(name_w), !gdb->recording());
@@ -3643,13 +3643,13 @@ static void DoneEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
     if (!cmd.contains('\n', -1))
 	cmd += '\n';
 
-    if ((cmd != "" && !defs.has(name)) || cmd != defs[name])
+    if ((!cmd.empty() && !defs.has(name)) || cmd != defs[name])
     {
 	StringArray commands;
-	while (cmd != "")
+	while (!cmd.empty())
 	{
 	    string c = cmd.before('\n');
-	    if (c != "")
+	    if (!c.empty())
 		commands += c;
 	    cmd = cmd.after('\n');
 	}
@@ -3708,7 +3708,7 @@ static void ApplyCB(Widget w, XtPointer client_data, XtPointer call_data)
     DoneEditCommandDefinitionCB(w, client_data, call_data);
 
     string cmd = current_name();
-    if (cmd != "")
+    if (!cmd.empty())
     {
 	if (XmToggleButtonGetState(arg_w))
 	    cmd += " " + source_arg->get_string();

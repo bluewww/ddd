@@ -213,7 +213,7 @@ bool DispValue::sequence_pending(const string& value,
     string v = value;
     strip_leading_space(v);
 
-    if (v != "" && parent == 0)
+    if (!v.empty() && parent == 0)
 	return true;		// Still more to read
 
     if (!is_delimited(value))
@@ -235,7 +235,7 @@ string DispValue::normalize_base(const string& base)
 
     // Fetch one-letter Perl prefix
     string prefix;
-    if (perl && ref != "" && is_perl_prefix(ref[0]))
+    if (perl && !ref.empty() && is_perl_prefix(ref[0]))
     {
 	prefix = ref[0];
 	ref = ref.after(0);
@@ -398,7 +398,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 
 	// Check for `vtable entries' prefix.
 	string vtable_entries = read_vtable_entries(value);
-	if (vtable_entries != "")
+	if (!vtable_entries.empty())
 	{
 	    _children += parse_child(depth, vtable_entries, myfull_name);
 	}
@@ -707,7 +707,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 
 		    string v = child->value();
 		    strip_space(v);
-		    if (v != "")
+		    if (!v.empty())
 			_children += child;
 		}
 		else
@@ -725,7 +725,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    }
 	}
 
-	if (mytype == List && value != "")
+	if (mytype == List && !value.empty())
 	{
 	    // Add remaining value as text
 	    _children += parse_child(depth, value, "");
@@ -839,7 +839,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
     if (gdb->program_language() == LANGUAGE_PERL && is_perl_prefix(perl_type))
     {
 	// Set new type
-	if (myfull_name != "" && is_perl_prefix(myfull_name[0]))
+	if (!myfull_name.empty() && is_perl_prefix(myfull_name[0]))
 	    myfull_name[0] = perl_type;
     }
 

@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
     string command;
     for (int i = 1; i < argc; i++)
     {
-	if (command != "")
+	if (!command.empty())
 	    command += " ";
 	command += argv[i];
     }

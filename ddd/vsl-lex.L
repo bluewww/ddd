@@ -107,7 +107,7 @@ static int do_input(void)
 // Switch to file FILENAME
 static int switchup(const char *filename, bool thisdir) 
 {
-    if (string(filename) != "")
+    if (!string(filename).empty())
     {
 	// Search file
 	filename = searchpath(filename, thisdir);
@@ -300,7 +300,7 @@ W			[ \f\t]*
 			    yylinenumber = line;
 
 			buf = buf.after('"');
-			if (buf != "")
+			if (!buf.empty())
 			{
 			    buf = buf.before('"');
 			    if (buf == "")

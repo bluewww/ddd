@@ -228,7 +228,7 @@ void BreakPoint::process_gdb(string& info_output)
  	myfile_name = remainder.before(":");
 
  	remainder = remainder.after(":");
- 	if (remainder != "" && isdigit(remainder[0]))
+ 	if (!remainder.empty() && isdigit(remainder[0]))
  	    myline_nr = get_positive_nr(remainder);
     }
     else if (mytype == WATCHPOINT)
@@ -242,7 +242,7 @@ void BreakPoint::process_gdb(string& info_output)
     string cond      = "";
     StringArray commands;
 
-    if (info_output != "" && !isdigit(info_output[0]))
+    if (!info_output.empty() && !isdigit(info_output[0]))
     {
 	// Extra info follows
 	int next_nl = index(info_output, rxnl_int, "\n");
@@ -267,7 +267,7 @@ void BreakPoint::process_gdb(string& info_output)
 	    bool save_info = true;
 
 	    string line = lines[i];
-	    bool starts_with_space = (line != "" && isspace(line[0]));
+	    bool starts_with_space = (!line.empty() && isspace(line[0]));
 	    strip_leading_space(line);
 
 	    if (line.contains("ignore next ", 0))
@@ -356,10 +356,10 @@ void BreakPoint::process_dbx(string& info_output)
 	    }
 
 	    int new_line_nr = 0;
-	    if (info_output != "" && isdigit(info_output[0]))
+	    if (!info_output.empty() && isdigit(info_output[0]))
 		new_line_nr = get_positive_nr(info_output);
 
-	    if (file_name != "")
+	    if (!file_name.empty())
 		myfile_name = file_name;
 
 	    if (new_line_nr != 0)
@@ -401,7 +401,7 @@ void BreakPoint::process_dbx(string& info_output)
 
 		// Attempt to get exact position of FUNC
 		const string pos = dbx_lookup(myfunc);
-		if (pos != "")
+		if (!pos.empty())
 		{
 		    const string file_name = pos.before(":");
 		    const string line_s    = pos.after(":");
@@ -456,7 +456,7 @@ void BreakPoint::process_dbx(string& info_output)
 	if (options.contains(" if ") || options.contains(" -if "))
 	{
 	    string cond = options.after("if ");
-	    if (myinfos != "")
+	    if (!myinfos.empty())
 		myinfos += '\n';
 	    myinfos += "stop only if " + cond;
 	    mycondition = cond;
@@ -505,7 +505,7 @@ void BreakPoint::process_xdb(string& info_output)
     myfunc = info_output.before(": ");
 
     const string pos = dbx_lookup(myfunc);
-    if (pos != "")
+    if (!pos.empty())
     {
 	myfile_name = pos.before(":");
     }
@@ -541,7 +541,7 @@ void BreakPoint::process_jdb(string& info_output)
     {
 	string class_name = info_output.before(colon);
 	int line_no = get_positive_nr(info_output.after(colon));
-	if (line_no >= 0 && class_name != "")
+	if (line_no >= 0 && !class_name.empty())
 	{
 	    // Strip JDB 1.2 info like `breakpoint', etc.
 	    strip_space(class_name);
@@ -617,7 +617,7 @@ void BreakPoint::process_perl(string& info_output)
 		mydispo = BPDEL; // Temporary breakpoint
 
 	    string command = "";
-	    while (commands != "")
+	    while (!commands.empty())
 	    {
 		const string token = read_token(commands);
 		if (token != ";")
@@ -626,7 +626,7 @@ void BreakPoint::process_perl(string& info_output)
 		if (token == ";" || commands.empty())
 		{
 		    strip_space(command);
-		    if (command != "")
+		    if (!command.empty())
 		    {
 			mycommands += command;
 			command = "";
@@ -817,7 +817,7 @@ string BreakPoint::symbol() const
     char c;
     if (!enabled())
 	c = '_';
-    else if (condition() != "" || ignore_count() != 0)
+    else if (!condition().empty() || ignore_count() != 0)
 	c = '?';
     else
 	c = '#';
@@ -1020,7 +1020,7 @@ bool BreakPoint::get_state(std::ostream& os, int nr, bool as_dummy,
 	    int ignore = ignore_count();
 	    if (ignore > 0 && gdb->has_ignore_command())
 		os << gdb->ignore_command(num, ignore) << "\n";
-	    if (cond != "" && gdb->has_condition_command())
+	    if (!cond.empty() && gdb->has_condition_command())
 		os << gdb->condition_command(num, cond) << "\n";
 	    if (commands().size() != 0)
 	    {
@@ -1036,7 +1036,7 @@ bool BreakPoint::get_state(std::ostream& os, int nr, bool as_dummy,
     case DBX:
     {
 	string cond_suffix = "";
-	if (cond != "")
+	if (!cond.empty())
 	{
 	    if (gdb->has_handler_command())
 		cond_suffix = " -if " + cond;
@@ -1047,7 +1047,7 @@ bool BreakPoint::get_state(std::ostream& os, int nr, bool as_dummy,
 	switch (type())
 	{
 	case BREAKPOINT:
-	    if (func() != "")
+	    if (!func().empty())
 	    {
 		os << "stop in " << func() << "\n";
 	    }
@@ -1095,7 +1095,7 @@ bool BreakPoint::get_state(std::ostream& os, int nr, bool as_dummy,
     case XDB:
     {
 	string cond_suffix;
-	if (cond != "" && !gdb->has_condition_command())
+	if (!cond.empty() && !gdb->has_condition_command())
 	    cond_suffix = " {if " + cond + " {} {Q;c}}";
 
 	if (pos.contains('*', 0))
@@ -1118,7 +1118,7 @@ bool BreakPoint::get_state(std::ostream& os, int nr, bool as_dummy,
     case PERL:
     {
 	string cond_suffix;
-	if (cond != "")
+	if (!cond.empty())
 	    cond_suffix = " " + cond;
 
 	os << "f " << pos.before(':') << "\n";

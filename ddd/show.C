@@ -168,7 +168,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
 		    option = buf;
 		    if (option.contains("For more information"))
 			state = Done;
-		    else if (option != "")
+		    else if (!option.empty())
 			options += option;
 		    break;
 

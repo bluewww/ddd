@@ -109,7 +109,7 @@ void strip_auto_command_prefix(string& cmd)
     if ((i = cmd.index(echo_prefix)) >= 0)
     {
 	cmd.at(i, echo_prefix.length()) = "";
-	if (echo_suffix != "")
+	if (!echo_suffix.empty())
 	{
 	    int suffix = cmd.index(echo_suffix, i);
 	    if (suffix >= 0)

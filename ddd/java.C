@@ -150,7 +150,7 @@ static void get_java_classes(const string& dir, const string& base,
 		// Check whether we have some .java source for
 		// this class
 		string class_file = java_class_file(class_name);
-		have_source = (class_file != "");
+		have_source = !class_file.empty();
 	    }
 
 	    if (have_source)
@@ -207,7 +207,7 @@ static void get_java_classes(const string& dir, const string& base,
 void get_java_classes(StringArray& classes_list, bool with_source_only)
 {
     string use = source_view->class_path();
-    while (use != "")
+    while (!use.empty())
     {
 	// Determine current USE entry
 	string loc;
@@ -357,7 +357,7 @@ static string _java_class_file(const string& class_name, bool search_classes)
 	}
 
 	string use = source_view->class_path();
-	while (use != "")
+	while (!use.empty())
 	{
 	    string loc;
 	    if (use.contains(':'))
@@ -431,7 +431,7 @@ static string _java_class_file(const string& class_name, bool search_classes)
 
 			// Search for this class file instead.
 			c = java_class_file(src_class, false);
-			if (c != "")
+			if (!c.empty())
 			    return c;
 
 			// JDK javac places source file names as \001
@@ -444,7 +444,7 @@ static string _java_class_file(const string& class_name, bool search_classes)
 			src_class = class_file.at(start, i - start);
 			    
 			c = java_class_file(src_class, false);
-			if (c != "")
+			if (!c.empty())
 			    return c;
 		    }
 		}

@@ -319,7 +319,7 @@ void create_session_dir(const string& session)
     std::ostringstream messages;
     create_session_dir(session, messages);
     string msg(messages);
-    while (msg != "")
+    while (!msg.empty())
     {
 	string line = msg.before('\n');
 	set_status(line);
@@ -748,7 +748,7 @@ static void SetGCoreSensitivityCB(Widget = 0, XtPointer = 0, XtPointer = 0)
 
     set_sensitive(may_kill_w, set);
     set_sensitive(may_gcore_w, set && gdb->type() == GDB &&
-		   string(app_data.get_core_command) != "");
+		   !string(app_data.get_core_command).empty());
 #if HAVE_PTRACE_DUMPCORE
     set_sensitive(may_ptrace_w, set && gdb->type() == GDB);
 #else
@@ -832,7 +832,7 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
 
     ProgramInfo info;
     bool have_data = 
-	info.running || (info.core != NO_GDB_ANSWER && info.core != "");
+	info.running || (info.core != NO_GDB_ANSWER && !info.core.empty());
     XmToggleButtonSetState(dump_core_w, have_data, True);
     set_sensitive(dump_core_w, info.running);
     SetGCoreSensitivityCB();
@@ -1384,7 +1384,7 @@ static void ask(const string& text, const _XtString name, XtCheckpointToken toke
 
     arg = 0;
     MString msg = rm(text);
-    if (text != "")
+    if (!text.empty())
     {
 	XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     }

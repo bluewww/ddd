@@ -110,7 +110,7 @@ static string perl_prefix(string& expr)
 
     string prefix;
 
-    while (expr != "" && is_perl_prefix(expr[0]))
+    while (!expr.empty() && is_perl_prefix(expr[0]))
     {
 	prefix += expr[0];
 	expr = expr.after(0);

@@ -499,7 +499,7 @@ void start_gdb(bool config)
     string restart = str(app_data.restart_commands);
 
     // Place init commands in CMDS array
-    while (init != "")
+    while (!init.empty())
     {
 	const string command = init.before('\n');
 	if (is_graph_cmd(command))
@@ -720,7 +720,7 @@ void init_session(const string& restart, const string& settings,
 
 	{
 	    std::ofstream os(info->tempfile.chars());
-	    while (init_commands != "")
+	    while (!init_commands.empty())
 	    {
 		string cmd = init_commands.before('\n');
 		init_commands = init_commands.after('\n');
@@ -752,7 +752,7 @@ void init_session(const string& restart, const string& settings,
     }
 
     // Process all start-up commands (load file, etc.)
-    while (init_commands != "")
+    while (!init_commands.empty())
     {
 	Command c(init_commands.before('\n'), Widget(0), OQCProc(0));
 	c.priority = COMMAND_PRIORITY_INIT;
@@ -1145,7 +1145,7 @@ void send_gdb_command(string cmd, Widget origin,
 		// JDB 1.2 cannot load classes.  Lookup source instead.
 		string cls = cmd.after(" ");
 		strip_space(cls);
-		if (cls != "")
+		if (!cls.empty())
 		{
 		    source_view->read_file(cls);
 
@@ -1282,7 +1282,7 @@ void send_gdb_command(string cmd, Widget origin,
 
 	// Set up appropriate undoing command
 	string var = get_assign_variable(cmd);
-	if (var != "")
+	if (!var.empty())
 	{
 	    string value = assignment_value(gdbValue(var));
 	    if (value != NO_GDB_ANSWER)
@@ -1747,7 +1747,7 @@ void send_gdb_command(string cmd, Widget origin,
     while (dummy.size() < cmds.size())
 	dummy += (void *)0;
 
-    if (cmd_data->graph_cmd != "")
+    if (!cmd_data->graph_cmd.empty())
     {
 	// Instead of DDD `graph' commands, we send a `func', `frame'
 	// or `where' command to get the current scope.
@@ -1979,20 +1979,20 @@ static void command_completed(void *data)
 	cmd_data->user_answer += answer;
     }
 
-    if (cmd_data->undo_command != "")
+    if (!cmd_data->undo_command.empty())
     {
 	undo_buffer.add_command(cmd_data->undo_command, 
 				cmd_data->undo_is_exec);
     }
 
-    if (cmd_data->init_perl != "")
+    if (!cmd_data->init_perl.empty())
     {
 	init_session(cmd_data->init_perl, app_data.perl_settings, 
 		     app_data.source_init_commands);
 	start_done();
     }
 
-    if (cmd_data->init_bash != "")
+    if (!cmd_data->init_bash.empty())
     {
 	init_session(cmd_data->init_bash, app_data.bash_settings, 
 		     app_data.source_init_commands);
@@ -2035,7 +2035,7 @@ static void command_completed(void *data)
 	if (!auto_commands.contains('\n', -1))
 	    auto_commands += '\n';
 
-	while (auto_commands != "")
+	while (!auto_commands.empty())
 	{
 	    string command = auto_commands.before('\n');
 	    auto_commands = auto_commands.after('\n');
@@ -2059,7 +2059,7 @@ static void command_completed(void *data)
 	do_prompt = false;
     }
 
-    if (cmd_data->graph_cmd != "")
+    if (!cmd_data->graph_cmd.empty())
     {
 	// Process graph command
 	string cmd = cmd_data->graph_cmd;
@@ -2093,7 +2093,7 @@ static void command_completed(void *data)
 	string pos  = pos_buffer->get_position();
 	const string func = pos_buffer->get_function();
 
-	if (func != "")
+	if (!func.empty())
 	{
 	    // clog << "Current function is " << quote(func) << "\n";
 	    data_disp->process_scope(func);
@@ -2102,7 +2102,7 @@ static void command_completed(void *data)
 	last_pos_found = pos;
 	tty_full_name(pos);
 
-	if (!pos.contains(':') && func != "")
+	if (!pos.contains(':') && !func.empty())
 	{
 	    string file = "";
 
@@ -2127,7 +2127,7 @@ static void command_completed(void *data)
 		break;
 	    }
 
-	    if (file != "")
+	    if (!file.empty())
 		pos = file + ':' + pos;
 	}
 
@@ -2162,7 +2162,7 @@ static void command_completed(void *data)
     // Up/Down is done: set frame position in backtrace window
     if (cmd_data->set_frame_pos)
     {
-	if (cmd_data->set_frame_func != "")
+	if (!cmd_data->set_frame_func.empty())
 	    source_view->set_frame_func(cmd_data->set_frame_func);
 	else
 	    source_view->set_frame_pos(cmd_data->set_frame_arg);
@@ -2235,7 +2235,7 @@ static void command_completed(void *data)
 	ProgramInfo info;
     }
 
-    if (cmd_data->lookup_arg != "")
+    if (!cmd_data->lookup_arg.empty())
     {
 	// As a side effect of `list X', lookup X in the source
 	source_view->lookup(cmd_data->lookup_arg, false);
@@ -2290,7 +2290,7 @@ static bool read_displays(string arg, IntArray& numbers, bool verbose)
     }
 
     strip_space(arg);
-    if (arg != "")
+    if (!arg.empty())
     {
 	int nr = data_disp->display_number(arg, verbose);
 	if (nr == 0)
@@ -2407,7 +2407,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	    return true;
 	}
 
-	if (when_in != "" && when_in != scope)
+	if (!when_in.empty() && when_in != scope)
 	{
 	    data_disp->new_displaySQ(display_expression, when_in, pos,
 				     depends_on, deferred, clustered, plotted,
@@ -2842,7 +2842,7 @@ static void extra_completed (const StringArray& answers,
 	    string info_line2 = answers[qu_count++];
 
 	    // Skip initial message lines like `Reading symbols...'
-	    while (list != "" && !has_nr(list))
+	    while (!list.empty() && !has_nr(list))
 		list = list.after('\n');
 
 	    if (atoi(list.chars()) == 0)
@@ -2994,7 +2994,7 @@ static void extra_completed (const StringArray& answers,
 	if (file.contains(' '))
 	    file = "";
 
-	if (file != "" && !extra_data->refresh_line)
+	if (!file.empty() && !extra_data->refresh_line)
 	{
 	    string current_file = source_view->file_of_cursor().before(':');
 	    if (current_file != file)
@@ -3024,7 +3024,7 @@ static void extra_completed (const StringArray& answers,
     {
 	string listing = answers[qu_count++];
 
-	if (file != "")
+	if (!file.empty())
 	{
 	    int line;
 	    if (extra_data->refresh_initial_line && atoi(listing.chars()) > 0)
@@ -3257,7 +3257,7 @@ void configure_jdb(const string& all_help)
 	while (argv[argc] != 0)
 	    argc++;
 	DebuggerInfo info(argc, argv);
-	if (info.arg != "")
+	if (!info.arg.empty())
 	    gdb_command(gdb->debug_command(info.arg));
     }
 }

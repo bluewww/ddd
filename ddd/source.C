@@ -98,7 +98,7 @@ void gdbPrintCB(Widget w, XtPointer client_data, XtPointer)
 
     string arg = current_arg();
 
-    if (arg != "" && !arg.matches(rxwhite))
+    if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->print_command(arg, internal), w);
 }
 
@@ -108,7 +108,7 @@ void gdbPrintRefCB(Widget w, XtPointer client_data, XtPointer)
 
     string arg = current_arg();
 
-    if (arg != "" && !arg.matches(rxwhite))
+    if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->print_command(deref(arg), internal), w);
 }
 
@@ -116,7 +116,7 @@ void gdbDisplayCB(Widget w, XtPointer, XtPointer)
 {
     string arg = current_arg();
 
-    if (arg != "" && !arg.matches(rxwhite))
+    if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command("graph display " + arg, w);
 }
 
@@ -124,7 +124,7 @@ void gdbDispRefCB(Widget w, XtPointer, XtPointer)
 {
     string arg = current_arg();
 
-    if (arg != "" && !arg.matches(rxwhite))
+    if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command("graph display " + deref(arg), w);
 }
 
@@ -132,7 +132,7 @@ void gdbWhatisCB(Widget w, XtPointer, XtPointer)
 {
     string arg = current_arg();
 
-    if (arg != "" && !arg.matches(rxwhite))
+    if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->whatis_command(arg), w);
 }
 
@@ -264,7 +264,7 @@ void gdbWatchCB(Widget w, XtPointer client_data, XtPointer call_data)
     }
 #endif
 
-    if (arg != "" && !arg.matches(rxwhite))
+    if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->watch_command(arg, 
 				       WatchMode((int)(long)client_data)), w);
 }
@@ -273,7 +273,7 @@ void gdbWatchRefCB(Widget w, XtPointer, XtPointer)
 {
     string arg = current_arg();
 
-    if (arg != "" && !arg.matches(rxwhite))
+    if (!arg.empty() && !arg.matches(rxwhite))
 	gdb_command(gdb->watch_command(deref(arg)), w);
 }
 
@@ -283,7 +283,7 @@ void gdbUnwatchCB(Widget, XtPointer, XtPointer)
     {
 	// JDB 1.2 has an `unwatch' command
 	string arg = current_arg();
-	if (arg != "" && !arg.matches(rxwhite))
+	if (!arg.empty() && !arg.matches(rxwhite))
 	{
 	    gdb_command("unwatch all " + arg);
 	    gdb_command("unwatch access " + arg);
@@ -382,7 +382,7 @@ static void gdbEditOutputHP(Agent *, void *, void *call_data)
 	set_status(output_buffer.before('\n'));
 	output_buffer = output_buffer.after('\n');
     }
-    if (output_buffer != "")
+    if (!output_buffer.empty())
 	set_status(output_buffer);
 }
 

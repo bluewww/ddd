@@ -357,7 +357,7 @@ void load_history(const string& file)
 // Save history into history file
 void save_history(const string& file, Widget origin)
 {
-    if (file != "")
+    if (!file.empty())
     {
 	StatusDelay delay("Saving history in " + quote(file));
 	std::ofstream os(file.chars());
@@ -619,7 +619,7 @@ static void update_combo_boxes(const string& new_entry)
     {
 	HistoryFilter filter = iter.value();
 	string arg = filter(new_entry);
-	if (arg != "")
+	if (!arg.empty())
 	    update_combo_box(iter.key(), iter.value());
     }
 }

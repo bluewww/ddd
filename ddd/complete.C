@@ -220,7 +220,7 @@ static void complete(Widget w, XEvent *e, const string& input, string cmd)
 
     if (completions_size > 0 
 	&& completions
-	&& completions[0] != ""
+	&& !(completions[0].empty())
 	&& w == last_completion_w)
     {
 	// Check if this is to be the next completion
@@ -252,7 +252,7 @@ static void complete(Widget w, XEvent *e, const string& input, string cmd)
 	    }
 	}
 
-	if (next_completion != "")
+	if (!next_completion.empty())
 	{
 	    set_completion(info, next_completion);
 	    completion_done(info);
@@ -346,7 +346,7 @@ static void complete_reply(const string& complete_answer, void *qu_data)
 		completions[i] = completions[i].after(' ');
 	}
 
-	if (info.prefix != "")
+	if (!info.prefix.empty())
 	{
 	    // Add prefix again
 	    for (int i = 0; i < completions_size; i++)
@@ -498,7 +498,7 @@ static void _complete_argAct(Widget w,
 	}
     }
 
-    if (base != "")
+    if (!base.empty())
 	complete(w, e, input, base + " " + input);
     else
 	complete(w, e, input, input);

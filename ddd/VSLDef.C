@@ -375,7 +375,7 @@ int VSLDef::resolveNames()
     string s = "";
     unsigned offset = 0;
 
-    while ((s = node_pattern()->firstName(), s) != "")
+    while (!(s = node_pattern()->firstName(), s).empty())
     {
 	// Replace in body
 	int ch = expr()->resolveName(this, &expr(), s, offset);
@@ -395,7 +395,7 @@ int VSLDef::resolveNames()
     assert(offset == nargs());
 
     // Remove remaining NameNodes (replace them by arg0)
-    while ((s = expr()->firstName(), s) != "")
+    while (!(s = expr()->firstName(), s).empty())
     {
 	VSLLib::eval_error("`" + s + "' undefined", this);
 	expr()->resolveName(this, &expr(), s, 0);
@@ -441,7 +441,7 @@ string VSLDef::longname() const
 {
     std::ostringstream os;
     
-    if (_filename != "")
+    if (!_filename.empty())
 	os << _filename << ":" << _lineno << ": ";
     os << f_name();
 

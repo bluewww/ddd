@@ -64,7 +64,7 @@ string dbx_lookup(const string& func_name, bool silent)
     if (pos_cache.has(func_name))
     {
 	string pos = pos_cache[func_name];
-	if (silent || pos != "")
+	if (silent || !pos.empty())
 	    return pos;
     }
 
@@ -202,7 +202,7 @@ void clear_dbx_lookup_cache()
 int line_of_listing(string& listing, bool silent)
 {
     string message;
-    while (listing != ""
+    while (!listing.empty()
 	   && !listing.contains('>', 0) 
 	   && !listing.contains('*', 1) 
 	   && atoi(listing.chars()) == 0)

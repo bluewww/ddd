@@ -93,7 +93,7 @@ static bool has_prefix(const string& answer, const string& prefix)
 // Store first address in ANSWER after INDEX in BUFFER
 static void fetch_address(const string& answer, int index, string& buffer)
 {
-    if (buffer != "")
+    if (!buffer.empty())
 	return;			// Already have an address
 
     while (index < int(answer.length()) && !is_address_start(answer[index]))
@@ -114,7 +114,7 @@ static void fetch_address(const string& answer, int index, string& buffer)
 static void fetch_function(const string& answer, int index, string& buffer,
 			   bool in_required = false)
 {
-    if (buffer != "")
+    if (!buffer.empty())
 	return;			// Already have a function
 
     string line = answer.from(index);
@@ -128,7 +128,7 @@ static void fetch_function(const string& answer, int index, string& buffer,
     int ws_index = line.index(' ', -1) + 1;
     line = line.from(ws_index);
     strip_leading_space(line);
-    if (line != "" && line.contains(rxidentifier, 0))
+    if (!line.empty() && line.contains(rxidentifier, 0))
 	buffer = line;
 }
 
@@ -209,7 +209,6 @@ void PosBuffer::filter (string& answer)
     case XDB:
     case JDB:
     case PYDB:
-    case PERL:
 	break;			// Nothing special
     }
 
@@ -243,7 +242,7 @@ void PosBuffer::filter (string& answer)
 
 	string pfx = app_data.auto_command_prefix;
 
-	if (auto_cmd_buffer != "" && !auto_cmd_buffer.contains('\n', -1))
+	if (!auto_cmd_buffer.empty() && !auto_cmd_buffer.contains('\n', -1))
 	{
 	    // Complete pending auto command
 	    if (answer.contains('\n'))
@@ -418,13 +417,13 @@ void PosBuffer::filter_gdb(string& answer)
 		string line = answer.from(pc_index);
 		line = line.after('<');
 		line = line.before('>');
-		if (line != "")
+		if (!line.empty())
 		    func_buffer = line;
 	    }
 	}
     }
 
-    if (check_pc && pc_buffer.empty() && answer != "")
+    if (check_pc && pc_buffer.empty() && !answer.empty())
     {
 	// `ADDRESS in FUNCTION'
 #if RUNTIME_REGEX
@@ -543,11 +542,11 @@ void PosBuffer::filter_gdb(string& answer)
 	// which is the output of an 'info line' command
 	string line = answer.after("Line ");
 	string file = answer.after('\"');
-	if (line != "" && file != "")
+	if (!line.empty() && !file.empty())
 	{
 	    line = line.before(" of");
 	    file = file.before('\"') + ":" + line;
-	    if (line != "" && file != "")
+	    if (!line.empty() && !file.empty())
 	    {
 		pos_buffer = file;
 		already_read = PosComplete;
@@ -567,7 +566,7 @@ void PosBuffer::filter_gdb(string& answer)
 	    // Try to construct position from `at FILE:POS' (vxworks)
 	    string file = answer.after(" at ");
 	    file = file.before('\n');
-	    if (file != "")
+	    if (!file.empty())
 	    {
 		pos_buffer = file;
 		already_read = PosComplete;
@@ -610,7 +609,7 @@ void PosBuffer::filter_gdb(string& answer)
     pc_buffer = pc_buffer.through(rxaddress);
 
     answer.at(index1, index2 - index1 + 1) = "";
-    if (pos_buffer != "")
+    if (!pos_buffer.empty())
 	already_read = PosComplete;
 }
 
@@ -630,7 +629,7 @@ void PosBuffer::filter_dbx(string& answer)
 	string ans = answer;
 	int num = read_positive_nr(ans);
 	string pos = source_view->bp_pos(num);
-	if (pos != "")
+	if (!pos.empty())
 	{
 	    file = pos.before(':');
 	    line = pos.after(':');
@@ -682,7 +681,7 @@ void PosBuffer::filter_dbx(string& answer)
 	file = answer.after('\"');
 	file = file.before('\"');
 
-	if (line != "")
+	if (!line.empty())
 	{
 	    already_read = PosComplete;
 	    // answer = answer.after("\n");
@@ -711,7 +710,7 @@ void PosBuffer::filter_dbx(string& answer)
 		line = line.after("::");
 	    line = line.after(":");
 	    line = line.through(rxint);
-	    if (line != "")
+	    if (!line.empty())
 	    {
 		if (answer.index('\n', dbxpos_index) >= 0)
 		{
@@ -786,7 +785,7 @@ void PosBuffer::filter_dbx(string& answer)
 	    func_buffer = func;
 	}
 
-	if (func_buffer != "")
+	if (!func_buffer.empty())
 	{
 	    // With DEC's `ladebug', the function name is fully qualified,
 	    // as in `stopped at [void tree_test(void):277 0x120003f44]'
@@ -804,12 +803,12 @@ void PosBuffer::filter_dbx(string& answer)
 	{
 	    line = answer.after("at line ", stopped_index);
 	    line = line.through(rxint);
-	    if ((file != "" || func_buffer != "") &&
+	    if ((!file.empty() || !func_buffer.empty()) &&
 		!answer.contains("at line "))
 		line = "0";
 	}
 
-	if (line != "")
+	if (!line.empty())
 	    already_read = PosComplete;
     }
 
@@ -831,7 +830,7 @@ void PosBuffer::filter_dbx(string& answer)
 	if (line.contains(rxint, 0))
 	{
 	    line = line.through(rxint);
-	    if (line != "")
+	    if (!line.empty())
 	    {
 		if (answer.contains('\n'))
 		{
@@ -856,7 +855,7 @@ void PosBuffer::filter_dbx(string& answer)
     {
 	// Up/Down command entered
 	string nr = answer.after("\n");
-	if (nr != "")
+	if (!nr.empty())
 	{
 	    line = itostring(atoi(nr.chars()));
 	    already_read = PosComplete;
@@ -887,9 +886,9 @@ void PosBuffer::filter_dbx(string& answer)
 	return;
     }
 
-    if (already_read == PosComplete && line != "")
+    if (already_read == PosComplete && !line.empty())
     {
-	if (file != "")
+	if (!file.empty())
 	    pos_buffer = file + ":" + line;
 	else
 	    pos_buffer = line;
@@ -913,7 +912,7 @@ void PosBuffer::filter_xdb(string& answer)
 
     // INDEX points at the start of a line
     int index = 0;
-    while (index >= 0 && answer != "")
+    while (index >= 0 && !answer.empty())
     {
 	string line = answer.from(index);
 	if (line.contains('\n'))
@@ -989,7 +988,7 @@ void PosBuffer::filter_jdb(string& answer)
     }
 
     int index = 0;
-    while (index >= 0 && answer != "")
+    while (index >= 0 && !answer.empty())
     {
 	string line = answer.from(index);
 	if (line.contains('\n'))
@@ -1196,7 +1195,7 @@ void PosBuffer::filter_perl(string& answer)
 
 	// INDEX points at the start of a line
 	int index = 0;
-	while (index >= 0 && answer != "")
+	while (index >= 0 && !answer.empty())
 	{
 	    string line = answer.from(index);
 	    if (line.contains('\n'))
@@ -1280,7 +1279,7 @@ void PosBuffer::filter_bash(string& answer)
 
 	// INDEX points at the start of a line
 	int index = 0;
-	while (index >= 0 && answer != "")
+	while (index >= 0 && !answer.empty())
 	{
 	    string line = answer.from(index);
 	    if (line.contains('\n'))
@@ -1337,7 +1336,7 @@ string PosBuffer::answer_ended ()
 
     case PosComplete:
     {
-	assert (pos_buffer != "");
+	assert (!pos_buffer.empty());
 	return auto_cmd_part;
     }
 

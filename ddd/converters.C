@@ -415,7 +415,7 @@ static string bitmapPath()
 {
     static string path = "";
 
-    if (path != "")
+    if (!path.empty())
 	return path;
 
     path = BASENAME;

@@ -649,7 +649,7 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
     static StringArray find_keys;
 
     int next_occurrence = -1;
-    if (key != "")
+    if (!key.empty())
     {
 	find_keys += key;
 	smart_sort(find_keys);
@@ -787,7 +787,7 @@ static void SetSelectionCB(Widget w, XtPointer client_data,
 	    selection = string(text + startpos, endpos - startpos);
     }
 
-    if (selection != "")
+    if (!selection.empty())
     {
 	selection.downcase();
 	while (selection.contains('\n'))

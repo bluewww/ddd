@@ -497,7 +497,7 @@ void set_status_from_gdb(const string& text)
     else
     {
 	// Show first line only
-	while (message != "" && message[0] == '\n')
+	while (!message.empty() && message[0] == '\n')
 	    message = message.after('\n');
 	if (message.contains('\n'))
 	    message = message.before('\n');
@@ -555,7 +555,7 @@ void set_status_mstring(MString message, bool temporary)
     {
 	// Log status message
 	string s = message.str();
-	if (s != "" && s != " ")
+	if (!s.empty() && s != " ")
 	{
 	    dddlog << "#  " << s << "\n";
 	    dddlog.flush();

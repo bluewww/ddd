@@ -611,7 +611,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	case DBX:
 	{
 	    string cond_suffix = "";
-	    if (cond != "")
+	    if (!cond.empty())
 	    {
 		if (gdb->has_handler_command())
 		    cond_suffix = " -if " + cond;
@@ -674,7 +674,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 		    }
 		}
 
-		if (temp && line != "")
+		if (temp && !line.empty())
 		{
 		    syncCommandQueue();
 		    const string clear_cmd = clear_command(line, true, new_bps);
@@ -705,7 +705,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	    if (temp)
 		command += " \\1t";
 
-	    if (cond != "" && !gdb->has_condition_command())
+	    if (!cond.empty() && !gdb->has_condition_command())
 		command += " {if " + cond + " {} {Q;c}}";
 
 	    gdb_command(command, w);
@@ -724,7 +724,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	    }
 
 	    string command = "b " + address;
-	    if (cond != "" && !gdb->has_condition_command())
+	    if (!cond.empty() && !gdb->has_condition_command())
 		command += " " + cond;
 
 	    gdb_command(command, w);
@@ -746,7 +746,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 	}
 	}
 
-	if (cond != "" && gdb->has_condition_command())
+	if (!cond.empty() && gdb->has_condition_command())
 	{
 	    // Add condition
 	    gdb_command(gdb->condition_command(itostring(new_bps), cond), w);
@@ -1333,7 +1333,7 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 	if (bp->number() >= first_bp
 	    && bp_matches(bp, file, line_no))
 	    {
-		if (bps != "")
+		if (!bps.empty())
 		    bps += gdb->wants_delete_comma() ? ", " : " ";
 		bps += itostring(bp->number());
 		max_bp_nr = max(max_bp_nr, bp->number());
@@ -1360,7 +1360,7 @@ void SourceView::bp_popup_set_pcCB(Widget w, XtPointer client_data,
 {
     int bp_nr = *((int *)client_data);
     BreakPoint *bp = bp_map.get(bp_nr);
-    if (bp != 0 && bp->address() != "")
+    if (bp != 0 && !bp->address().empty())
     {
 	string address = string('*') + bp->address();
 	line_popup_set_pcCB(w, XtPointer(&address), call_data);
@@ -1769,7 +1769,7 @@ void SourceView::set_source_argCB(Widget text_w,
 	while (s.contains('\n'))
 	    s = s.after('\n');
 
-	if (s != "")
+	if (!s.empty())
 	    source_arg->set_string(s);
     }
 }
@@ -2078,7 +2078,7 @@ String SourceView::read_class(const string& class_name,
 
     file_name = java_class_file(class_name);
 
-    if (file_name != "")
+    if (!file_name.empty())
     {
 	if (remote_gdb())
 	    text = read_remote(file_name, length, true);
@@ -2568,7 +2568,7 @@ void SourceView::reload()
     refresh_bp_disp(true);
 
     // Restore execution position
-    if (last_execution_file != "")
+    if (!last_execution_file.empty())
 	show_execution_position(last_execution_file + ":" + 
 				itostring(last_execution_line),
 				at_lowest_frame, signal_received);
@@ -2588,7 +2588,7 @@ void SourceView::set_tab_width(int width)
 	// Make sure the tab width stays within reasonable ranges
 	tab_width = min(max(width, 1), MAX_TAB_WIDTH);
 
-	if (current_file_name != "")
+	if (!current_file_name.empty())
 	{
 	    StatusDelay delay("Reformatting");
 	    reload();
@@ -2609,7 +2609,7 @@ void SourceView::set_indent(int source_indent, int code_indent)
     if (source_indent != source_indent_amount)
     {
 	source_indent_amount = min(max(source_indent, 0), MAX_INDENT);
-	if (current_file_name != "")
+	if (!current_file_name.empty())
 	{
 	    StatusDelay delay("Reformatting");
 	    reload();
@@ -3870,7 +3870,7 @@ void SourceView::_show_execution_position(const string& file, int line,
     }
 
     XmTextPosition pos_line_end = 0;
-    if (current_source != "")
+    if (!current_source.empty())
 	pos_line_end = current_source.index('\n', pos) + 1;
 
     if (!display_glyphs && 
@@ -4002,7 +4002,7 @@ void SourceView::process_info_bp (string& info_output,
     std::ostringstream undo_commands;
     string file = current_file_name;
 
-    while (info_output != "")
+    while (!info_output.empty())
     {
 	int bp_nr = -1;
 	switch(gdb->type())
@@ -4269,7 +4269,7 @@ void SourceView::check_remainder(string& info_output)
 
 void SourceView::lookup(string s, bool silent)
 {
-    if (s != "" && isspace(s[0]))
+    if (!s.empty() && isspace(s[0]))
 	s = s.after(rxwhite);
 
     undo_buffer.start("lookup");
@@ -4277,7 +4277,7 @@ void SourceView::lookup(string s, bool silent)
     if (s.empty())
     {
 	// Empty argument given
-	if (last_execution_pc != "")
+	if (!last_execution_pc.empty())
 	{
 	    // Show last PC
 	    show_pc(last_execution_pc, XmHIGHLIGHT_SELECTED);
@@ -4289,7 +4289,7 @@ void SourceView::lookup(string s, bool silent)
 				 XmTextGetInsertionPosition(code_text_w));
 	}
 
-	if (last_execution_file != "")
+	if (!last_execution_file.empty())
 	{
 	    // Show last execution position
 	    _show_execution_position(last_execution_file, 
@@ -4428,7 +4428,7 @@ void SourceView::lookup(string s, bool silent)
 	case JDB:
 	{
 	    string pos = dbx_lookup(s, silent);
-	    if (pos != "")
+	    if (!pos.empty())
 		show_position(pos);
 	    break;
 	}
@@ -4473,7 +4473,7 @@ void SourceView::add_current_to_history()
     pos = XmTextGetInsertionPosition(code_text_w);
     pos_found = get_line_of_pos(code_text_w, pos, line_nr, address, 
 				in_text, bp_nr);
-    if (pos_found && address != "")
+    if (pos_found && !address.empty())
 	undo_buffer.add_address(address, false);
 }
 
@@ -4510,7 +4510,7 @@ void SourceView::goto_entry(const string& file_name, int line,
 #if 0
     // Show position in status line
     string msg = "";
-    if (file_name != "")
+    if (!file_name.empty())
 	msg = "File " + quote(file_name);
     if (line != 0)
     {
@@ -4520,7 +4520,7 @@ void SourceView::goto_entry(const string& file_name, int line,
 	    msg += ", line ";
 	msg += itostring(line);
     }
-    if (address != "")
+    if (!address.empty())
     {
 	if (msg.empty())
 	    msg = "Address ";
@@ -4531,7 +4531,7 @@ void SourceView::goto_entry(const string& file_name, int line,
     set_status(msg);
 #endif
 
-    if (file_name != "")
+    if (!file_name.empty())
     {
 	// Lookup source
 	if (!is_current_file(file_name))
@@ -4554,7 +4554,7 @@ void SourceView::goto_entry(const string& file_name, int line,
 	}
     }
 
-    if (address != "")
+    if (!address.empty())
     {
 	// Lookup address
 	show_pc(address, 
@@ -4573,7 +4573,7 @@ void SourceView::process_pwd(string& pwd_output)
 {
     strip_space(pwd_output);
 
-    while (pwd_output != "")
+    while (!pwd_output.empty())
     {
 	string pwd;
 	if (pwd_output.contains('\n'))
@@ -4865,7 +4865,7 @@ string SourceView::current_source_name()
 		    }
 
 		    ans = source_name_cache[all_sources];
-		    if (ans != "")
+		    if (!ans.empty())
 		    {
 			int n = ans.freq('\n');
 			string *sources = new string[n + 1];
@@ -5168,7 +5168,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	XtManageChild(bp_popup_w);
     }
     else if (pos_found 
-	     && (line_nr > 0 || address != "") 
+	     && (line_nr > 0 || !address.empty()) 
 	     && (!in_text || right_of_text))
     {
 	// Create popup menu for selected line
@@ -6478,7 +6478,7 @@ void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 		action += "; ";
 
 	    string cmd;
-	    if (bp->func() != "")
+	    if (!bp->func().empty())
 		cmd = "when in " + bp->func();
 	    else
 	    {
@@ -6540,10 +6540,10 @@ void SourceView::EditBreakpointCommandsCB(Widget w,
 	    cmd += '\n';
 	StringArray commands;
 
-	while (cmd != "")
+	while (!cmd.empty())
 	{
 	    string c = cmd.before('\n');
-	    if (c != "")
+	    if (!c.empty())
 		commands += c;
 	    cmd = cmd.after('\n');
 	}
@@ -7119,7 +7119,7 @@ void SourceView::showing_earlier_state(bool set)
 // Process `frame' (or `up'/`down') output
 void SourceView::process_frame(string& frame_output)
 {
-    if (frame_output != "" 
+    if (!frame_output.empty() 
 	&& (frame_output[0] == '#' || gdb->type() != GDB))
     {
 	string frame_nr;
@@ -7315,13 +7315,13 @@ bool SourceView::thread_required()   { return thread_dialog_popped_up; }
 
 bool SourceView::can_go_up()
 {
-    return gdb->relative_frame_command(1) != "" && 
+    return !gdb->relative_frame_command(1).empty() && 
 	(!where_required() || XtIsSensitive(up_w));
 }
 
 bool SourceView::can_go_down()
 {
-    return gdb->relative_frame_command(-1) != "" && 
+    return !gdb->relative_frame_command(-1).empty() && 
 	(!where_required() || XtIsSensitive(down_w));
 }
 
@@ -7398,7 +7398,7 @@ void SourceView::SelectRegisterCB (Widget, XtPointer, XtPointer call_data)
     string item(_item);
     XtFree(_item);
 
-    if (item != "" && item[item.length() - 1] != '.')
+    if (!item.empty() && item[item.length() - 1] != '.')
     {
 	string regname = item.through(rxidentifier);
 	strip_space(regname);
@@ -7466,7 +7466,7 @@ void SourceView::process_threads(string& threads_output)
 	    {
 		// Format is: `Group THREADGROUP:'
 
-		if (current_threadgroup != "")
+		if (!current_threadgroup.empty())
 		{
 		    // Multiple threadgroups are shown
 		    current_threadgroup = "system";
@@ -8665,7 +8665,7 @@ void SourceView::update_glyphs_now()
 	// Show current PC
 	XmTextPosition pos = XmTextPosition(-1);
 
-	if (display_glyphs && last_execution_pc != "")
+	if (display_glyphs && !last_execution_pc.empty())
 	    pos = find_pc(last_execution_pc);
 
 	map_arrow_at(code_text_w, pos);
@@ -8732,7 +8732,7 @@ void SourceView::update_glyphs_now()
 			bp_glyph = map_stop_at(text_w, pos, grey_temps[k],
 					       grey_temps_count, positions);
 		}
-		else if (bp->condition() != "" || bp->ignore_count() != 0)
+		else if (!bp->condition().empty() || bp->ignore_count() != 0)
 		{
 		    // Conditional breakpoint
 		    if (bp->enabled())
@@ -8826,10 +8826,10 @@ void SourceView::set_display_glyphs(bool set)
 	    StatusDelay delay(set ? "Enabling glyphs" : "Disabling glyphs");
 
 	    refresh_bp_disp(true);
-	    if (file != "")
+	    if (!file.empty())
 		show_execution_position(file + ":" + itostring(line), 
 					stopped, signaled);
-	    if (pc != "")
+	    if (!pc.empty())
 		show_pc(pc, XmHIGHLIGHT_SELECTED);
 	}
     }
@@ -8898,7 +8898,7 @@ MString SourceView::help_on_bp(int bp_nr, bool detailed)
 	strip_space(infos);
 	infos.gsub("\n", "; ");
 
-	if (bp->infos() != "")
+	if (!bp->infos().empty())
 	    info += rm("; " + infos);
 
 	switch (bp->dispo())
@@ -9400,8 +9400,8 @@ void SourceView::process_disassemble(const string& disassemble_output)
 	     last_address(disassemble_output));
 
     if (cache_machine_code
-	&& current_code_start != ""
-	&& current_code_end   != "")
+	&& !current_code_start.empty()
+	&& !current_code_end.empty())
 	code_cache += CodeCacheEntry(current_code_start, 
 				     current_code_end, 
 				     current_code);
@@ -9630,7 +9630,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	}
 
 	string msg = "Disassembling location " + start;
-	if (end != "")
+	if (!end.empty())
 	    msg += " to " + end;
 
 	RefreshDisassembleInfo *info = 
@@ -9647,7 +9647,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
     SetInsertionPosition(code_text_w, pos + indent_amount(code_text_w));
 
     XmTextPosition pos_line_end = 0;
-    if (current_code != "")
+    if (!current_code.empty())
 	pos_line_end = current_code.index('\n', pos) + 1;
 
     // Clear old selection
@@ -9715,9 +9715,9 @@ void SourceView::set_disassemble(bool set)
 	{
 	    manage_paned_child(code_form_w);
 
-	    if (last_execution_pc != "")
+	    if (!last_execution_pc.empty())
 		show_pc(last_execution_pc, XmHIGHLIGHT_SELECTED);
-	    else if (last_shown_pc != "")
+	    else if (!last_shown_pc.empty())
 		show_pc(last_shown_pc);
 	    else
 		lookup(line_of_cursor());

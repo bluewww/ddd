@@ -320,7 +320,7 @@ static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
     else if (change->endPos - change->startPos == 1)
     {
 	// Backspace - remove last character from search string
-	if (isearch_string != "")
+	if (!isearch_string.empty())
 	    isearch_string.after(int(isearch_string.length()) - 2) = "";
 	else
 	    clear_isearch(true, false);

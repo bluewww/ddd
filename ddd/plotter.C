@@ -397,7 +397,7 @@ static void configure_plot(PlotWindowInfo *plot)
     const StringArray& sources = plot->plotter->data_files();
     for (i = 0; i < sources.size(); i++)
     {
-	if (sources[i] != "")
+	if (!sources[i].empty())
 	{
 	    if (have_source)
 		can_export  = false; // Multiple source files
@@ -1015,7 +1015,7 @@ PlotAgent *new_plotter(const string& name, DispValue *source)
 
     string init = app_data.plot_init_commands;
     init.prepend("set term " + string(app_data.plot_term_type) + "\n");
-    if (init != "" && !init.contains('\n', -1))
+    if (!init.empty() && !init.contains('\n', -1))
 	init += '\n';
 
     // Add trace handlers
@@ -1208,7 +1208,7 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
     string title  = "";
     for (int i = 0; source.empty() && i < sources.size(); i++)
     {
-	if (sources[i] != "")
+	if (!sources[i].empty())
 	{
 	    source = sources[i];
 	    title  = titles[i];
@@ -1450,7 +1450,7 @@ static void SetStatusHP(Agent *, void *client_data, void *call_data)
 	XmCommandError(plot->command, xmsg.xmstring());
     }
 
-    while (s != "")
+    while (!s.empty())
     {
 	string line;
 	if (s.contains('\n'))
@@ -1460,7 +1460,7 @@ static void SetStatusHP(Agent *, void *client_data, void *call_data)
 	s = s.after('\n');
 	strip_space(line);
 
-	if (line != "")
+	if (!line.empty())
 	    set_status(line);
     }
 }

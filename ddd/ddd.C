@@ -2130,7 +2130,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	}
     }
 
-    if (restart_session() != "")
+    if (!restart_session().empty())
     {
 	// A session is given in $DDD_SESSION: override everything.
 	XrmDatabase session_db = 
@@ -2247,7 +2247,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     if (app_data.session == 0)
 	app_data.session = DEFAULT_SESSION.chars();
-    if (restart_session() != "")
+    if (!restart_session().empty())
     {
 	static string s;
 	s = restart_session();
@@ -2341,7 +2341,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Determine debugger type
     DebuggerType debugger_type = DebuggerType(-1);
 
-    if (debugger_type == DebuggerType(-1) && gdb_name != "")
+    if (debugger_type == DebuggerType(-1) && !gdb_name.empty())
     {
 	// Use given debugger
 	get_debugger_type(gdb_name, debugger_type);
@@ -2370,7 +2370,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 
     if (app_data.debugger_command[0] == '\0')
     {
-	if (gdb_name != "")
+	if (!gdb_name.empty())
 	    app_data.debugger_command = gdb_name.chars();
 	else
 	    app_data.debugger_command = 
@@ -2392,7 +2392,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
 	gdb_host = gdb_host.after('@');
     }
 
-    if (gdb_host.empty() && string(app_data.debugger_host_login) != "")
+    if (gdb_host.empty() && !string(app_data.debugger_host_login).empty())
     {
 	std::cerr << argv[0] << ": --login requires --rhost or --host\n";
 	return DDD_EXIT_FAILURE;
@@ -3100,7 +3100,7 @@ ddd_exit_t pre_main_loop(int argc, char *argv[])
     // Make sure we see all messages accumulated so far
     {
 	string msg(messages);
-	while (msg != "")
+	while (!msg.empty())
 	{
 	    string line = msg.before('\n');
 	    set_status(line);
@@ -3258,7 +3258,7 @@ static void ddd_check_version()
 	return;
     checked = true;
 
-    if (restart_session() != "")
+    if (!restart_session().empty())
 	return; // We told the user in the previous DDD instance
 
     // Tell user once more about version mismatches
@@ -3832,7 +3832,7 @@ static bool lock_ddd(Widget parent, LockInfo& info)
     XtAddCallback(lock_dialog, XmNcancelCallback, ExitCB, 
 		  XtPointer(EXIT_FAILURE));
 
-    if (geometry != "")
+    if (!geometry.empty())
     {
 	Widget shell = lock_dialog;
 	while (!XmIsDialogShell(shell))
@@ -5520,14 +5520,14 @@ void update_arg_buttons()
 {
     string arg = source_arg->get_string();
 
-    bool can_find = (arg != "") && !is_file_pos(arg) && 
+    bool can_find = (!arg.empty()) && !is_file_pos(arg) && 
 	source_view->have_source();
     set_sensitive(arg_cmd_area[ArgItems::Find].widget, can_find);
     set_sensitive(find_forward_w, can_find);
     set_sensitive(find_backward_w, can_find);
 
     bool undoing = undo_buffer.showing_earlier_state();
-    bool can_print = (arg != "") && !is_file_pos(arg) && !undoing;
+    bool can_print = (!arg.empty()) && !is_file_pos(arg) && !undoing;
     set_sensitive(arg_cmd_area[ArgItems::Print].widget, can_print);
     set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);
     set_sensitive(print_w,   can_print);
@@ -5625,7 +5625,7 @@ void update_arg_buttons()
 		  XmNlabelString, disp_ref_label.xmstring(),
 		  XtPointer(0));
 
-    bool can_dereference = (gdb->dereferenced_expr("") != "");
+    bool can_dereference = !gdb->dereferenced_expr("").empty();
     manage_child(print_ref_w, can_dereference);
     manage_child(disp_ref_w,  can_dereference);
 
@@ -6044,7 +6044,7 @@ void _gdb_out(const string& txt)
 
     string text(txt);
     string buffered = buffered_gdb_output();
-    if (buffered != "")
+    if (!buffered.empty())
 	text.prepend(buffered);
 
     gdb_input_at_prompt = gdb->ends_with_prompt(text);
@@ -6058,7 +6058,7 @@ void _gdb_out(const string& txt)
 
     // Don't care for strings to be ignored
     static string empty;
-    if (gdb_out_ignore != "")
+    if (!gdb_out_ignore.empty())
 	text.gsub(gdb_out_ignore, empty);
 
     // Pass TEXT to various functions
@@ -6144,7 +6144,7 @@ void _gdb_out(const string& txt)
 		gdb_ctrl(ctrl);
 	    }
 	}
-    } while (text != "");
+    } while (!text.empty());
 
     XmTextPosition lastPos = XmTextGetLastPosition(gdb_w);
     XmTextSetInsertionPosition(gdb_w, lastPos);
@@ -7292,7 +7292,7 @@ static void setup_version_info()
     }
 
     string expires = ddd_expiration_date();
-    if (expires != "")
+    if (!expires.empty())
     {
 	// Add expiration date
 	string expired_msg = DDD_NAME " " DDD_VERSION " ";
@@ -7420,7 +7420,7 @@ static void add_arg_from_selection(Widget toplevel, int& argc, const char **&arg
 	new_argv[2] = 0;
 
 	DebuggerInfo info(new_argc, new_argv);
-	if (info.arg != "")
+	if (!(info.arg.empty()))
 	{
 	    // Selection is valid for some debugger.  Go for it.
 	    argc = new_argc;

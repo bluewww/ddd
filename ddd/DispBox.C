@@ -158,7 +158,7 @@ void DispBox::init_vsllib(void (*background)())
 	name = "vsllib/" ddd_NAME ".vsl";
 	vsllib_ptr = new ThemedVSLLib();
 	string path = resolvePath(name);
-	if (path != "")
+	if (!path.empty())
 	{
 	    vsllib_ptr->update(path);
 
@@ -383,7 +383,7 @@ void DispBox::set_title(const DispValue *dv, int disp_nr, const string& name)
     }
 
     // Create title
-    if (name != "")
+    if (!name.empty())
     {
 	VSLArg args[3];
 	int arg = 0;
@@ -783,7 +783,7 @@ Box *DispBox::create_value_box (const DispValue *dv,
     // Add member name
     if (dv != 0 && parent != 0 && 
 	dv->type() != Text &&
-	dv->name() != "" &&
+	!dv->name().empty() &&
 	!dv->name().matches(rxwhite))
     {
 	switch (parent->type())

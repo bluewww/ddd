@@ -326,7 +326,7 @@ static int set_term_env(const string& cmd, const string& term_type,
 			 + quote(term_type), "tty_type_error", origin);
 	}
     }
-    else if (reply != "")
+    else if (!reply.empty())
     {
 	if (!silent)
 	    post_gdb_message(reply, true, origin);
@@ -372,7 +372,7 @@ static int gdb_set_tty(string tty_name = "",
 			       "tty_command_error", origin);
 		return -1;
 	    }
-	    else if (reply != "")
+	    else if (!reply.empty())
 	    {
 		if (!silent)
 		    post_gdb_message(reply, true, origin);
@@ -409,7 +409,7 @@ static int gdb_set_tty(string tty_name = "",
 				   "tty_command_error", origin);
 		    return -1;
 		}
-		else if (reply != "")
+		else if (!reply.empty())
 		{
 		    if (!silent)
 			post_gdb_message(reply, true, origin);
@@ -428,7 +428,7 @@ static int gdb_set_tty(string tty_name = "",
 				       "tty_command_error", origin);
 			return -1;
 		    }
-		    else if (reply != "")
+		    else if (!reply.empty())
 		    {
 			if (!silent)
 			    post_gdb_message(reply, true, origin);
@@ -555,7 +555,7 @@ static void redirect_process(string& command,
     string args;
     get_args(command, base, args);
 
-    if (gdb_redirection != "")
+    if (!gdb_redirection.empty())
     {
 	static string empty;
 	args.gsub(gdb_redirection, empty);
@@ -661,7 +661,7 @@ static void redirect_process(string& command,
     }
 
     string new_args;
-    if (gdb_redirection != "" && !has_redirection(args, gdb_redirection))
+    if (!gdb_redirection.empty() && !has_redirection(args, gdb_redirection))
     {
 	if (args.empty())
 	    new_args = gdb_redirection;
@@ -669,7 +669,7 @@ static void redirect_process(string& command,
 	    new_args = gdb_redirection + " " + args;
     }
 
-    if (gdb_redirection != "")
+    if (!gdb_redirection.empty())
 	gdb_out_ignore = " " + gdb_redirection;
 
     if (gdb->type() == PERL)
@@ -691,7 +691,7 @@ static void unredirect_reply(const string& answer, void *)
 static void unredirect_process(string& command,
 			       Widget origin = 0)
 {
-    if (gdb_redirection != "")
+    if (!gdb_redirection.empty())
     {
 	// Disable output redirection upon next run
 	string base;
@@ -713,7 +713,7 @@ static void unredirect_process(string& command,
 		// redirected to /dev/tty.
 		string new_args;
 		add_sh_redirection(new_args, "/dev/tty", args);
-		if (args != "")
+		if (!args.empty())
 		    new_args = new_args + " " + args;
 		command = gdb->run_command(new_args);
 	    }
@@ -795,14 +795,14 @@ static void set_tty_title(string message, Window tty_window)
 
     message = message.after(": ");
     static string empty;
-    if (gdb_out_ignore != "")
+    if (!gdb_out_ignore.empty())
 	message.gsub(gdb_out_ignore, empty);
 
     string program = message;
     if (program.contains(' '))
 	program = program.before(' ');
 
-    if (program != "")
+    if (!program.empty())
     {
 	string program_base = program;
 	if (program_base.contains('/'))
@@ -940,7 +940,7 @@ void startup_exec_tty(string& command, Widget origin)
 	unredirect_process(command, origin);
     }
 
-    if (command != "")
+    if (!command.empty())
 	gdb_run_command = command;
 
     set_buffer_gdb_output();

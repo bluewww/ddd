@@ -511,7 +511,7 @@ bool UndoBuffer::process_command(UndoBufferEntry& entry)
 
     bool confirm = false;
 
-    if (commands != "" && gdb->type() == GDB)
+    if (!commands.empty() && gdb->type() == GDB)
     {
 	gdb_command("show confirm", 0, get_confirm, &confirm);
 	syncCommandQueue();
@@ -523,7 +523,7 @@ bool UndoBuffer::process_command(UndoBufferEntry& entry)
 	gdb_question("set confirm off");
     }
 
-    while (commands != "")
+    while (!commands.empty())
     {
 	string cmd;
 	if (commands.contains('\n'))
@@ -599,7 +599,7 @@ bool UndoBuffer::process_state(UndoBufferEntry& entry)
     else if (entry.has(UB_EXEC_ADDRESS))
 	address = entry[UB_EXEC_ADDRESS];
 
-    if (pos != "" || address != "")
+    if (!pos.empty() || !address.empty())
     {
 	string file = pos.before(':');
 	string line = pos.after(':');
@@ -686,7 +686,7 @@ bool UndoBuffer::process_pos(UndoBufferEntry& entry)
     if (entry.has(UB_ADDRESS))
 	address = entry[UB_ADDRESS];
 
-    if (pos != "" || address != "")
+    if (!pos.empty() || !address.empty())
     {
 	string file = pos.before(':');
 	string line = pos.after(':');
@@ -1008,7 +1008,7 @@ string UndoBuffer::display_history(const string& name)
 
 	if (entry.has(key) && entry[key] != last_value)
 	{
-	    if (answer != "")
+	    if (!answer.empty())
 		answer += ", ";
 	    answer += entry[key];
 	    last_value = entry[key];

@@ -108,15 +108,15 @@ string arg_history_filter(const string& cmd)
     }
 
     arg = break_history_filter(cmd);
-    if (arg != "")
+    if (!arg.empty())
 	return arg;
 
     arg = watch_history_filter(cmd);
-    if (arg != "")
+    if (!arg.empty())
 	return arg;
 
     arg = display_history_filter(cmd);
-    if (arg != "" && !arg.contains("`", 0))
+    if (!arg.empty() && !arg.contains("`", 0))
 	return arg;
 
     return "";			// Not found
@@ -197,7 +197,7 @@ string set_history_filter(const string& cmd)
     else if (cmd.contains(" := "))
 	arg = cmd.after(" := ");
 
-    if (arg != "")
+    if (!arg.empty())
     {
 	strip_space(arg);
 	return arg;

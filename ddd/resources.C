@@ -2335,7 +2335,7 @@ XrmDatabase app_defaults(Display *display)
     static string own_app_defaults_file = 
 	resolvePath(string(ddd_NAME) + "/" + app_class);
 
-    if (own_app_defaults_file != "")
+    if (!own_app_defaults_file.empty())
     {
 	// We have an application defaults file installed in the
 	// standard place.  Use it.

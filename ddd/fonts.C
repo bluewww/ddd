@@ -702,7 +702,7 @@ static void FontSelectionErrorHP(Agent *, void *, void *call_data)
 	set_status(output_buffer.before('\n'));
 	output_buffer = output_buffer.after('\n');
     }
-    if (output_buffer != "")
+    if (!output_buffer.empty())
 	set_status(output_buffer);
 }
 
@@ -718,7 +718,7 @@ static void DeleteAgentHP(Agent *agent, void *client_data, void *)
     // Destroy the text
     DestroyWhenIdle(info->text);
 
-    if (output_buffer != "")
+    if (!output_buffer.empty())
 	set_status("");
 }
 

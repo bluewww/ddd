@@ -198,7 +198,7 @@ static void CheckUngrabCB(XtPointer client_data, XtIntervalId *)
 	if (!cmd.contains("\n"))
 	    cmd += "\n";
 
-	while (cmd != "")
+	while (!cmd.empty())
 	{
 	    string line = cmd.before('\n');
 	    gdb_command(line);

@@ -279,7 +279,7 @@ static void gdbRunDCB(Widget, XtPointer, XtPointer)
     XtFree(_args);
 
     string cmd = gdb->run_command(args);
-    while (cmd != "")
+    while (!cmd.empty())
     {
 	string c;
 	if (cmd.contains('\n'))

@@ -174,7 +174,7 @@ void DispGraph::add_edge(DispNode *from, DispNode *to)
 {
     string a = annotation(from->name(), to->name());
     BoxEdgeAnnotation *ann = 0;
-    if (a != "")
+    if (!a.empty())
 	ann = new BoxEdgeAnnotation(DispBox::eval(from->value(), 
 						  "annotation", a));
 

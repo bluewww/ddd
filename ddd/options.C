@@ -1413,7 +1413,7 @@ static bool _get_core(const string& session, unsigned long flags,
     if (!info.running)
     {
 	// The program is not running.
-	if (info.core != "" && info.core != NO_GDB_ANSWER)
+	if (!info.core.empty() && info.core != NO_GDB_ANSWER)
 	{
 	    // We already have some core file.
 	    if (dont_save)
@@ -1524,7 +1524,7 @@ static bool _get_core(const string& session, unsigned long flags,
     {
 	// Try `gcore' command
 	string gcore = app_data.get_core_command;
-	if (gcore != "" && gdb->type() == GDB && info.pid > 0)
+	if (!gcore.empty() && gdb->type() == GDB && info.pid > 0)
 	{
 	    if (dont_save)
 		return true;	// Will probably work
@@ -1990,7 +1990,7 @@ static string app_value(const string& resource, const string& value,
     else
 	s += "*" + resource + ": " + value;
 
-    if (prefix != "")
+    if (!prefix.empty())
 	s.gsub('\n', "\n" + prefix);
 
     return s;
@@ -2105,7 +2105,7 @@ static string paned_widget_size(Widget w, bool height_only = false)
 	XtVaGetValues(w, XmNcolumns, &columns, XtPointer(0));
 	if (!height_only && columns > 0)
 	{
-	    if (s != "")
+	    if (!s.empty())
 		s += '\n';
 	    s += int_app_value(string(XtName(w)) + "." + XmNcolumns, columns,
 			       check_default);
@@ -2117,7 +2117,7 @@ static string paned_widget_size(Widget w, bool height_only = false)
 	    XtVaGetValues(w, XmNrows, &rows, XtPointer(0));
 	    if (rows > 0)
 	    {
-		if (s != "")
+		if (!s.empty())
 		    s += '\n';
 		s += int_app_value(string(XtName(w)) + "." + XmNrows, rows,
 				   check_default);
@@ -2143,7 +2143,7 @@ static string paned_widget_size(Widget w, bool height_only = false)
 	    s += int_app_value(string(XtName(w)) + "." + XmNwidth, width,
 			       check_default);
 
-	if (s != "")
+	if (!s.empty())
 	    s += '\n';
 	s += int_app_value(string(XtName(w)) + "." + XmNheight, height,
 			   check_default);
@@ -2242,7 +2242,7 @@ bool get_restart_commands(string& restart, unsigned long flags)
     bool core_ok = false;
     string core;
     bool have_data = 
-	info.running || (info.core != "" && info.core != NO_GDB_ANSWER);
+	info.running || (!info.core.empty() && info.core != NO_GDB_ANSWER);
 
     bool have_data_displays = (data_disp->count_data_displays() > 0);
 
@@ -2289,17 +2289,17 @@ bool get_restart_commands(string& restart, unsigned long flags)
 	{
 	case GDB:
 	    es << "set confirm off\n";
-	    if (info.file != "" && info.file != NO_GDB_ANSWER)
+	    if (!info.file.empty() && info.file != NO_GDB_ANSWER)
 		es << "file " << gdb->quote_file(info.file) << '\n';
 	    if (core_ok)
 		es << "core " << gdb->quote_file(core) << '\n';
 	    break;
 
 	case DBX:
-	    if (info.file != "" && info.file != NO_GDB_ANSWER)
+	    if (!info.file.empty() && info.file != NO_GDB_ANSWER)
 	    {
 		string cmd = gdb->debug_command(info.file);
-		if (cmd != "")
+		if (!cmd.empty())
 		{
 		    es << cmd;
 		    if (core_ok)
@@ -2312,10 +2312,10 @@ bool get_restart_commands(string& restart, unsigned long flags)
 	case PERL:
 	case BASH:
 	case JDB:
-	    if (info.file != "" && info.file != NO_GDB_ANSWER)
+	    if (!info.file.empty() && info.file != NO_GDB_ANSWER)
 	    {
 		string cmd = gdb->debug_command(info.file);
-		if (cmd != "")
+		if (!cmd.empty())
 		    es << cmd << '\n';
 	    }
 	    break;
@@ -2723,7 +2723,7 @@ bool save_options(unsigned long flags)
 
 	    expr += exprs[i];
 
-	    if (labels[i] != "")
+	    if (!labels[i].empty())
 	    {
 		expr += string('\t') + app_data.label_delimiter + ' ' + 
 		    labels[i];

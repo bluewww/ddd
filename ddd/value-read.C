@@ -554,7 +554,7 @@ string read_simple_value(string& value, int depth, bool ignore_repeats)
     read_leading_junk(value);
 
     string ret = "";
-    while (value != "" && value[0] != '\n' && 
+    while (!value.empty() && value[0] != '\n' && 
 	   (depth == 0 || !is_delimited(value)))
     {
 	ret += read_token(value);
@@ -691,7 +691,7 @@ bool read_array_next(string& value)
 	}
 
 	read_leading_junk (value);
-	return value != "" && !is_ending(value); // More stuff follows
+	return !value.empty() && !is_ending(value); // More stuff follows
     }
 
     if (value.contains('{', 0)
@@ -705,7 +705,7 @@ bool read_array_next(string& value)
 	return true;
     }
 
-    return value != "" && !is_ending(value);
+    return !value.empty() && !is_ending(value);
 }
 
 // Read end of array from VALUE.  Return false iff done.
@@ -818,7 +818,7 @@ static string get_member_name(string& value, const string& sep)
     string prefix = value.before(sep);
 
     string member_name = "";
-    while (prefix != "" && prefix[0] != '\n' && !is_ending(prefix))
+    while (!prefix.empty() && prefix[0] != '\n' && !is_ending(prefix))
 	member_name += read_token(prefix);
 
     if (is_ending(prefix))
@@ -926,7 +926,7 @@ string read_member_name (string& value, bool picky)
 	    m = m.after("::");
 	if (m.index("(") > 1)
 	    m = m.before("(");
-	if (m != "")
+	if (!m.empty())
 	    member_name = m;
     }
 
@@ -974,7 +974,7 @@ string read_member_name (string& value, bool picky)
 	{
 	    strip_space(member_name);
 	    string qualifier = member_name.before(' ');
-	    if (qualifier != "" && qualifier.matches(rxidentifier))
+	    if (!qualifier.empty() && qualifier.matches(rxidentifier))
 		member_name = member_name.after(' ');
 	    else
 		break;

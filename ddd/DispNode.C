@@ -84,7 +84,7 @@ DispNode::DispNode (int disp_nr,
       mylast_refresh(++tics),
       alias_of(0)
 {
-    if (val != "")
+    if (!val.empty())
     {
 	string v = val;
 	disp_value = DispValue::parse(v, myname);
@@ -168,7 +168,7 @@ bool DispNode::update(string& value)
     {
 	// Update existing value
 	disp_value = disp_value->update(value, changed, inited);
-	if (disp_value->addr() != "" && addr() != disp_value->addr())
+	if (!disp_value->addr().empty() && addr() != disp_value->addr())
 	{
 	    set_addr(disp_value->addr());
 	    changed = true;

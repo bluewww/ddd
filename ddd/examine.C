@@ -288,7 +288,7 @@ void gdbExamineCB(Widget w, XtPointer, XtPointer)
     }
 
     string arg = source_arg->get_string();
-    if (!is_file_pos(arg) && arg != "")
+    if (!is_file_pos(arg) && !arg.empty())
 	XmTextFieldSetString(address_w, CONST_CAST(char*,arg.chars()));
 
     manage_and_raise(dialog);
