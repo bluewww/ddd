@@ -2,6 +2,7 @@
 // Use the Source, Luke.
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -2223,6 +2224,13 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
 	    if (!msg.contains("end of file")) // XDB issues this
 		post_gdb_message(msg, true, source_text_w);
 	}
+    }
+
+    if (text[0] == 'i' && text[1] == 'n' && text[2] == ' ')
+    {
+	// GDB 5.0 issues only `LINE_NUMBER in FILE_NAME'.  Treat this
+	// like an error message.
+	length = 0;
     }
 
     text[length] = '\0';  // be sure to null-terminate
@@ -4779,7 +4787,13 @@ string SourceView::current_source_name()
 		ans = ans.before('\n');
 		ans = ans.after(' ', -1);
 
-		if (base_matches(ans, current_file_name))
+		if (gdb->is_windriver_gdb())
+		{
+		    // `info source' output already contains the file name.
+ 		    source = ans;
+ 		    return source;
+		}
+		else if (base_matches(ans, current_file_name))
 		{
 		    // For security, we request that source and current
 		    // file have the same basename.

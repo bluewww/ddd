@@ -217,6 +217,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_attach_command(tp == GDB || tp == DBX),
       _has_addproc_command(false),
       _has_debug_command(true),
+      _is_windriver_gdb(false),
       _program_language((tp == JDB) ? LANGUAGE_JAVA :
 			(tp == PYDB) ? LANGUAGE_PYTHON : 
 			(tp == PERL) ? LANGUAGE_PERL : 
@@ -303,6 +304,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_attach_command(gdb.has_attach_command()),
       _has_addproc_command(gdb.has_addproc_command()),
       _has_debug_command(gdb.has_debug_command()),
+      _is_windriver_gdb(gdb.is_windriver_gdb()),
       _program_language(gdb.program_language()),
       _verbatim(gdb.verbatim()),
       _recording(gdb.recording()),
@@ -2319,6 +2321,11 @@ string GDBAgent::debug_command(string program, string args) const
     switch (type())
     {
     case GDB:
+	if (is_windriver_gdb())
+	    return "load " + program;
+	else
+	    return "file " + program;
+
     case PYDB:
 	return "file " + program;
 

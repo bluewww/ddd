@@ -4,9 +4,11 @@ DDD News						-*- text -*-
 DDD 3.2.2
 =========
 
-DDD 3.2.2 brings support for JDB as of JDK 1.2 and some bug fixes.
+DDD 3.2.2 brings support for new debugger variants and some bug fixes.
 
-- [JDB] DDD supports JDB as of JDK 1.2.
+- DDD supports JDB as of JDK 1.2.
+- DDD can now be used within Tornado, i.e. WindRiver's version of GDB (5).
+  See the DDD Reference for details.
 - [GDB] DDD supports GDB 5.0.
 - [GDB] Improved breakpoint parsing. (2)
 - [DBX] Attaching to processes works with SGI DBX, Sun DBX and other
@@ -22,6 +24,7 @@ Thanks to: (1) Arnaud Desitter <arnaud@nag.co.uk>
            (2) Hiro Sugawara <hiro@lynx.com>
 	   (3) Yann Dirson <Yann.Dirson@france.sun.com>
 	   (4) H. Nanosecond <aldomel@ix.netcom.com>
+	   (5) Gary Cliff <gary.cliff@cdott.com>
 
 
 DDD 3.2.1

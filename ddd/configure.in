@@ -298,6 +298,10 @@ AC_CHECK_LIB(c, open, LIBC="-lc")
 AC_SUBST(LIBC)
 dnl
 dnl
+dnl Check for -lelf library.  For vxworks.
+AC_CHECK_LIB(elf, elf_version, LIBELF="-lelf")
+AC_SUBST(LIBELF)
+dnl
 dnl
 dnl Marc Lepage <mlepage@kingston.hummingbird.com> reports that
 dnl the Digital UNIX native compiler wants -lcxxinst to get
@@ -460,12 +464,13 @@ dnl
 if test "$with_x" != no; then
 ice_save_LIBS="$LIBS"
 ice_save_CFLAGS="$CFLAGS"
+ice_save_CXXFLAGS="$CXXFLAGS"
 ice_save_CPPFLAGS="$CPPFLAGS"
 ice_save_LDFLAGS="$LDFLAGS"
 dnl
 ICE_PERMISSIVE
-ice_save_CXXFLAGS="$CXXFLAGS"
 CXXFLAGS="$CXXFLAGS $PERMISSIVE"
+dnl
 AC_PATH_XTRA
 dnl
 dnl Autoconf bug fix: GCC 2.95 and later want -isystem for including X files
@@ -474,7 +479,6 @@ dnl
 ICE_FIND_MOTIF
 ICE_FIND_ATHENA
 ICE_FIND_XPM
-CXXFLAGS="$ice_save_cxxflags"
 ICE_X_PERMISSIVE
 CXXFLAGS="$CXXFLAGS $X_PERMISSIVE"
 dnl
@@ -650,6 +654,7 @@ dnl
 dnl
 LIBS="$ice_save_LIBS"
 CFLAGS="$ice_save_CFLAGS"
+CXXFLAGS="$ice_save_CXXFLAGS"
 CPPFLAGS="$ice_save_CPPFLAGS"
 LDFLAGS="$ice_save_LDFLAGS"
 fi
@@ -703,7 +708,7 @@ dnl
 dnl
 AC_HEADER_STDC
 AC_CHECK_HEADERS(alloca.h fcntl.h limits.h locale.h malloc.h netdb.h pwd.h)
-AC_CHECK_HEADERS(regex.h rx.h)
+AC_CHECK_HEADERS(regex.h rx.h libelf.h elf.h sys/elf.h)
 AC_CHECK_HEADERS(stdlib.h string.h strings.h termio.h termios.h unistd.h)
 AC_CHECK_HEADERS(sys/ioctl.h sys/int_types.h sys/param.h sys/resource.h)
 AC_CHECK_HEADERS(sys/stat.h sys/stropts.h sys/vty.h sys/sysmacros.h sys/core.h)

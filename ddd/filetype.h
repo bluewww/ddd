@@ -2,6 +2,7 @@
 // Determine file type
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -41,6 +42,9 @@ bool is_binary_file(const string& file_name);
 
 // True if FILE_NAME is an executable binary file
 bool is_exec_file(const string& file_name);
+
+// True if FILE_NAME is an executable binary debuggee
+bool is_debuggee_file(const string& file_name);
 
 // True if FILE_NAME is an executable file or script
 bool is_cmd_file(const string& file_name);

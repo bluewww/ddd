@@ -511,6 +511,10 @@ static void searchLocalExecFiles(Widget fs,
 	searchLocal(fs, cbs, is_perl_file);
 	break;
 
+    case GDB:
+	searchLocal(fs, cbs, is_debuggee_file);
+	break;
+
     default:
 	searchLocal(fs, cbs, is_exec_file);
     }
@@ -855,7 +859,7 @@ ProgramInfo::ProgramInfo()
 	    string arg = argv[i];
 	    if (is_core_file(arg))
 		core = arg;
-	    else if (is_exec_file(arg))
+	    else if (is_debuggee_file(arg))
 		file = arg;
 	}
     }

@@ -627,8 +627,19 @@ Ddd*sourceInitCommands: on
 ! Startup symbol
 ! When DDD loads a file, and GDB does not report a source file,
 ! DDD looks for these symbols.
-Ddd*initSymbols: main\nMAIN\nmain_\nMAIN_\nmain__\nMAIN__\n\
-_main\n_MAIN\n__main\n__MAIN
+Ddd*initSymbols: \
+main\n\
+MAIN\n\
+main_\n\
+MAIN_\n\
+main__\n\
+MAIN__\n\
+_main\n\
+_MAIN\n\
+__main\n\
+__MAIN\n\
+vxworks_main\n\
+main_vxworks
 
 ! Auto-command defaults
 

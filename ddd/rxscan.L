@@ -267,7 +267,7 @@ J	[A-Za-z_$][A-Za-z0-9_$.]*
 37{_}do(wn)?({W}{C})?			RETURN(&rxdown_cmd);
 38{_}enable{W}display({W}{C})?	RETURN(&rxenable);
 39[^{};,\n= ]+{W}={W}[^{}();,\n= ]+{W}={W}{C} RETURN(&rxeqeq);
-40{_}file({W}{C})?			RETURN(&rxfile_cmd);
+40{_}(file|load)({W}{C})?		RETURN(&rxfile_cmd);
 41[^ "'`/]*\/				RETURN(&rxfilepath);
 42{_}use{W}{C}				RETURN(&rxuse_cmd);
 43#{D}{W}{A}				RETURN(&rxframe_addr);

@@ -509,7 +509,22 @@ void PosBuffer::filter_gdb(string& answer)
 	    already_read = PosComplete;
 	    return;
 	}
-		
+
+	// Try to construct position from `Line xxxx of "filename"' (vxworks)
+	string line = answer.after("Line ");
+	string file = answer.after('\"');
+	if (line != "" && file != "")
+	{
+	    line = line.before(" of");
+	    file = file.before('\"') + ":" + line;
+	    if (line != "" && file != "")
+	    {
+		pos_buffer = file;
+		already_read = PosComplete;
+		return;
+	    }
+	}
+	
 	// Nothing found
 	return;
     }

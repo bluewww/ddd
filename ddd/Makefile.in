@@ -222,6 +222,8 @@ LIBM       = @LIBM@
 LIBC       = @LIBC@
 # Socket library (-lsocket)
 LIBSOCKET  = @LIBSOCKET@
+# ELF library (-lelf)
+LIBELF     = @LIBELF@
 # NSL library (-lnsl)
 LIBNSL     = @LIBNSL@
 # Additional libraries required for non-X programs (-lsocket -lnsl)
@@ -229,7 +231,7 @@ NON_X_LIBS = @LIBS@
 
 # All libraries shown above
 LIBS = $(CXXLIBS) $(LIBREADLINE) $(LIBSOCKET) $(LIBNSL) $(LIBRX) \
-       $(LIBTERMCAP) $(LIBY) $(LIBIBERTY) $(LIBM)
+       $(LIBTERMCAP) $(LIBY) $(LIBIBERTY) $(LIBM) $(LIBELF)
 
 
 ## X Libraries

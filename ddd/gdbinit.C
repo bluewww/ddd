@@ -275,7 +275,7 @@ DebuggerInfo::DebuggerInfo(int argc, char *argv[])
 	if (arg.contains('-', 0))
 	    continue;		// Option
 
-	if (is_exec_file(arg))
+	if (is_debuggee_file(arg))
 	{
 	    if (fallback == GDB || fallback == DBX || fallback == XDB)
 	    {
@@ -364,7 +364,7 @@ DebuggerInfo::DebuggerInfo(int argc, char *argv[])
 	    if (!dir.contains('/', -1))
 		dir += '/';
 
-	    if (is_exec_file(dir + arg))
+	    if (is_debuggee_file(dir + arg))
 	    {
 		if (fallback == GDB || fallback == DBX || fallback == XDB)
 		{

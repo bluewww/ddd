@@ -2,6 +2,7 @@
 // Determine file type
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -52,6 +53,13 @@ extern "C" {
 
 #include <fcntl.h>
 }
+
+#if HAVE_LIBELF_H
+#include  <libelf.h>
+#ifndef EM_PPC
+#define EM_PPC 20
+#endif
+#endif // HAVE_LIBELF_H
 
 #include "regexps.h"
 
@@ -129,6 +137,55 @@ bool is_cmd_file(const string& file_name)
 bool is_exec_file(const string& file_name)
 {
     return is_cmd_file(file_name) && is_binary_file(file_name);
+}
+
+// True if FILE_NAME is a PPC file
+static bool is_ppc_file(const string& file_name)
+{
+    (void) file_name;		// Use it
+
+#if HAVE_LIBELF_H
+    Elf32_Ehdr *   ehdr;
+    Elf *          elf;
+    int       	   fd;
+
+    bool ret_code = true;
+
+    if ((fd = open(file_name, O_RDONLY)) == -1)
+	return false;		// cannot open
+
+    // Obtain the ELF descriptor
+    (void) elf_version(EV_CURRENT);
+    if ((elf = elf_begin(fd, ELF_C_READ, NULL)) == NULL)
+	ret_code = false;		// cannot get descriptor
+
+    // Obtain ELF header
+    else if ((ehdr = elf32_getehdr(elf)) == NULL)
+	ret_code = false;		// cannot get header
+
+    else if (ehdr->e_type != ET_REL)
+	ret_code = false;		// not relocatable
+    
+    else if (ehdr->e_machine != EM_PPC)
+	ret_code = false;		// not a PowerPC
+    
+    else
+	ret_code = true;		// not a PowerPC
+    
+    if (elf)
+	elf_end(elf);
+
+    close(fd);
+    return ret_code;
+#else
+    return false;
+#endif // HAVE_LIBELF_H
+}
+
+// True if FILE_NAME is an executable binary debuggee
+bool is_debuggee_file(const string& file_name)
+{
+    return is_ppc_file(file_name) || is_exec_file(file_name);
 }
 
 // True if FILE_NAME is a core file

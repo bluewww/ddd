@@ -2,6 +2,7 @@
 // DDD command history
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -720,7 +721,7 @@ static void update_recent_menu(MMDesc *items)
 	bool sens = true;
 	if (!remote_gdb())
 	{
-	    if (gdb->has_exec_files() && !is_exec_file(file))
+	    if (gdb->has_exec_files() && !is_debuggee_file(file))
 		sens = false;	// File not accessible
 	    else if (!gdb->has_classes() && !is_regular_file(file))
 		sens = false;	// File not accessible

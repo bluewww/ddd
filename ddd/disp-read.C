@@ -377,7 +377,7 @@ bool is_file_cmd (const string& cmd, GDBAgent *gdb)
     case PYDB:
     {
 #if RUNTIME_REGEX
-	static regex rxfile_cmd("[ \t]*file([ \t]+.*)?");
+	static regex rxfile_cmd("[ \t]*(file|load)([ \t]+.*)?");
 #endif
 	return cmd.matches (rxfile_cmd);
     }

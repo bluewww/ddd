@@ -315,6 +315,7 @@ public:
     bool     config_xdb;	       // try XDB settings
     bool     config_output;            // try 'output'
     bool     config_program_language;  // try 'show language'
+    bool     config_gdb_version;       // try 'show version'
 
     OACProc  user_callback;	       // callback
     void     *user_data;	       // user data
@@ -373,6 +374,7 @@ public:
 	  config_xdb(false),
 	  config_output(false),
 	  config_program_language(false),
+	  config_gdb_version(false),
 
 	  user_callback(0),
 	  user_data(0)
@@ -548,6 +550,8 @@ void start_gdb(bool config)
 	extra_data->config_output = true;
 	cmds += "show language";
 	extra_data->config_program_language = true;
+	cmds += "show version";
+	extra_data->config_gdb_version = true;
 	cmds += "pwd";
 	extra_data->refresh_pwd = true;
 	cmds += "info breakpoints";
@@ -1522,6 +1526,7 @@ void send_gdb_command(string cmd, Widget origin,
     assert(!extra_data->config_xdb);
     assert(!extra_data->config_output);
     assert(!extra_data->config_program_language);
+    assert(!extra_data->config_gdb_version);
 
     // Annotate state
     if (extra_data->refresh_breakpoints)
@@ -2638,6 +2643,11 @@ static void process_config_program_language(string& lang)
     gdb->program_language(lang);
 }
 
+static void process_config_gdb_version(string& answer)
+{
+    gdb->is_windriver_gdb(answer.contains("vxworks"));
+}
+
 
 
 //-----------------------------------------------------------------------------
@@ -2665,7 +2675,7 @@ static void FindSourceCB(const string& answer, void *)
     }
 
     string current_file = source_view->file_of_cursor().before(':');
-    if (current_file == "")
+    if (current_file == "" || gdb->is_windriver_gdb())
 	gdb_command(string("list ") + init_symbol, gdb_w, 
 		    FindSourceCB, 0, false, true);
 }
@@ -2843,6 +2853,9 @@ static void extra_completed (const StringArray& answers,
 
     if (extra_data->config_program_language)
 	process_config_program_language(answers[qu_count++]);
+
+    if (extra_data->config_gdb_version)
+	process_config_gdb_version(answers[qu_count++]);
 
     if (extra_data->refresh_pwd)
 	source_view->process_pwd(answers[qu_count++]);
