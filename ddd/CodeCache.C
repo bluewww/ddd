@@ -26,11 +26,6 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-// $Log$
-// Revision 1.1  1995/12/13 13:16:47  zeller
-// New: machine code caching
-//
-
 char CodeCache_rcsid[] = 
     "$Id$";
 
