@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Assoc<int, VarArray<int> >
+// XmTextPosition Array
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
@@ -26,16 +26,22 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-const char IntIntArrayAssoc_rcsid[] = 
-    "$Id$";
+#ifndef _DDD_TextPosArray_h
+#define _DDD_TextPosArray_h
 
 #ifdef __GNUG__
-#pragma implementation
-#pragma implementation "Assoc.h"
-#pragma implementation "DynArray.h"
-#pragma implementation "VarArray.h"
+#pragma interface
 #endif
 
-#include "IntIntAA.h"
-#include "TextPosA.h"
+#include "VarArray.h"
+#include "DynArray.h"
 
+#include <Xm/Xm.h>
+
+typedef VarArray<XmTextPosition> VarTextPositionArray;
+typedef DynArray<XmTextPosition> DynTextPositionArray;
+
+typedef VarIntArray TextPositionArray;
+
+#endif // _DDD_TextPosArray_h
+// DON'T ADD ANYTHING BEHIND THIS #endif
