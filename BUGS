@@ -106,9 +106,10 @@ Volunteers for fixing these and other bugs are welcome!
 
 290 (Motif 1.1) The `Settings' dialog is too wide.
 
-292*If the helper for the separate exec window (`xterm') cannot be
-    found, issue a diagnostic.  A timeout solution might be appropriate.
+294 Terence P. Spielman <terence@GlobeSet.com> reports:
+    I like to NOT see the DDD command window.  I would like the option
+    of getting rid of it altogether.  I simply type commands in the
+    gdb window to step, run, etc...  How can I get rid of it?  If I
+    kill it and save preferences, it still comes back on restart.
 
-293*Ctrl+A in the data window does not select all.
-
-294 (Insert new bugs here)
+295 (Insert new bugs here)

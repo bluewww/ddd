@@ -125,7 +125,6 @@ detail.
 
     [Could we check for the frame that actually adds a border?  -AZ]
 
-
 714 Michael Marxmeier <mike@msede.com> writes: I discovered that ddd
     2.99.1 "run again" discards any arguments specified previously
     with "run".  This works fine with gdb so i assume ddd is
@@ -135,12 +134,6 @@ detail.
     1) I can accidentally paste material into the source window.  Once
        this is done, the gdb (debugger) window becomes unstable.
        Standard GDB cmds no longer work as expected.
-
-    2) I like to NOT see the DDD command window.  I would like the
-       option of getting rid of it altogether.  I simply type commands
-       in the gdb window to step, run, etc...  How can I get rid of
-       it?  If I kill it and save preferences, it still comes back on
-       restart.
 
     3) If a program is NOT running, yet I view the execution window
        (Alt+9) and then kill the window, ddd seg faults.
