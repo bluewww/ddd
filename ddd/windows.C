@@ -138,6 +138,12 @@ static WindowState& state(Widget w)
     return dummy;
 }
 
+static bool popped_down(Widget w)
+{
+    WindowState st = state(w);
+    return st == PoppedDown || st == UnknownShell;
+}
+
 static void set_state(WindowState& var, WindowState state)
 {
     if (state == PoppingUp && var == PoppedUp)
@@ -736,11 +742,11 @@ int running_shells()
 {
     int shells = 0;
 
-    if (state(command_shell) != PoppedDown)
+    if (!popped_down(command_shell))
 	shells++;
-    if (state(source_view_shell) != PoppedDown)
+    if (!popped_down(source_view_shell))
 	shells++;
-    if (state(data_disp_shell) != PoppedDown)
+    if (!popped_down(data_disp_shell))
 	shells++;
 
     return shells;
