@@ -528,7 +528,7 @@ Ddd*XmTextField.FontList: \
 	-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
 Ddd*XmText.FontList:	  \
 	-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
-Ddd*XmList.FontList:	  \
+Ddd*XmFileSelectionDialog*XmList.FontList:	  \
 	-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
 
 ! The resolution-independent alternative.
@@ -536,7 +536,7 @@ Ddd*XmList.FontList:	  \
 ! 	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
 ! Ddd*XmText.FontList:	  \
 ! 	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
-! Ddd*XmList.FontList:	  \
+! Ddd*XmFileSelectionDialog*XmList.FontList:	  \
 ! 	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
 
 
@@ -1316,6 +1316,8 @@ Ddd*manual_help*index.selectionPolicy:	XmSINGLE_SELECT
 
 Ddd*manual_help*text.columns:		72
 Ddd*manual_help*text.rows:		25
+Ddd*manual_help*text.wordWrap:		true
+Ddd*manual_help*text.scrollHorizontal:	false
 Ddd*manual_help*scrollBarDisplayPolicy: XmAS_NEEDED
 
 Ddd*manual_help*contextHelpString: \
@@ -1327,6 +1329,8 @@ to get help on a specific item.
 ! DDD license.
 Ddd*text_help*text.columns:	      80
 Ddd*text_help*text.rows:	      25
+Ddd*text_help*text.wordWrap:	      true
+Ddd*text_help*text.scrollHorizontal:  false
 Ddd*text_help*scrollBarDisplayPolicy: XmAS_NEEDED
 
 Ddd*text_help*contextHelpString: \
@@ -1981,12 +1985,16 @@ Ddd*settings_popup*okLabelString: Close
 Ddd*settings_popup.title: @DDD@: Debugger Settings
 Ddd*settings_popup.autoUnmanage: false
 
+Ddd*settings*title.labelString:			Debugger Settings
 Ddd*settings*scroll.scrollingPolicy:		XmAUTOMATIC
-Ddd*settings*scroll.height:			292
-Ddd*settings*scroll.width:			570
-Ddd*settings*form.width:			540
+Ddd*settings*scroll.height:			293
+Ddd*settings*scroll.width:			528
+Ddd*settings*form.width:			500
 Ddd*settings*help.labelString:			?
 Ddd*settings*XmTextField.columns:		10
+Ddd*settings*sep.bottomOffset:			10
+Ddd*settings*leader.bottomOffset:		4
+Ddd*settings*leader.separatorType:		XmSINGLE_DASHED_LINE
 
 ! An empty help string means that the help text for this command
 ! is to be requested from GDB (via the GDB `help' command).
