@@ -194,6 +194,7 @@ class DataDisp {
     static int getDispNrAtPoint(BoxPoint point);
 
     static string numbers(IntArray& a);
+    static bool all_display_numbers(IntArray& numbers);
 
     static void show(Widget dialog, int depth, int more);
 
@@ -337,9 +338,10 @@ public:
 	gdb_command(delete_display_cmd(name), origin);
     }
 
-    // Process 'info display' output in INFO_DISPLAY_ANSWER.  Deletes
-    // displays if needed.
-    static void process_info_display (string& info_display_answer);
+    // Process 'info display' output in INFO_DISPLAY_ANSWER.  If
+    // DEFER_DELETED is set, defer displays that have been deleted.
+    static void process_info_display (string& info_display_answer, 
+				      bool defer_deleted = true);
 
     // Process `display' output in DISPLAY_ANSWER.  Remaining
     // (non-display) output is returned.  If DISABLING_OCCURRED is set
@@ -392,6 +394,8 @@ private:
     static void disable_displayOQC   (const string& answer, void* data);
     static void enable_displayOQC    (const string& answer, void* data);
     static void delete_displayOQC    (const string& answer, void* data);
+
+    static void deletion_done(IntArray& display_nrs, bool do_prompt);
 
     static void add_aliases(IntArray& a);
     static bool sort_and_check(IntArray& a);
@@ -476,6 +480,7 @@ public:
     void create_shells();
 
     static int count_data_displays();
+    static void get_all_display_numbers(IntArray& numbers);
     static void refresh_graph_edit (bool silent = false);
     static Widget graph_form() { return graph_form_w; }
 

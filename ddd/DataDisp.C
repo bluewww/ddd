@@ -396,6 +396,19 @@ int DataDisp::count_data_displays()
     return count;
 }
 
+// Get all display numbers
+void DataDisp::get_all_display_numbers(IntArray& numbers)
+{
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (!dn->deferred())
+	    numbers += dn->disp_nr();
+    }
+}
+
 
 //-----------------------------------------------------------------------------
 // Button Callbacks
@@ -3216,9 +3229,10 @@ class RefreshInfo {
 public:
     bool verbose;
     bool prompt;
+    IntArray display_nrs;
 
     RefreshInfo()
-	: verbose(false), prompt(false)
+	: verbose(false), prompt(false), display_nrs()
     {}
 
     ~RefreshInfo()
@@ -3226,7 +3240,7 @@ public:
 
 private:
     RefreshInfo(const RefreshInfo&)
-	: verbose(false), prompt(false)
+	: verbose(false), prompt(false), display_nrs()
     {
 	assert(0);
     }
@@ -3635,6 +3649,22 @@ string DataDisp::delete_display_cmd(const string& name)
     return "graph undisplay " + name;
 }
 
+bool DataDisp::all_display_numbers(IntArray& display_nrs)
+{
+    IntArray all_display_nrs;
+    get_all_display_numbers(all_display_nrs);
+
+    if (display_nrs.size() != all_display_nrs.size())
+	return false;
+
+    sort(all_display_nrs);
+    for (int i = 0; i < display_nrs.size(); i++)
+	if (display_nrs[i] != all_display_nrs[i])
+		return false;
+
+    return true;
+}
+
 void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose, 
 				bool do_prompt)
 {
@@ -3645,27 +3675,88 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose,
     string cmd = "undisplay";
 
     int deleted_data_displays = 0;
-    int i;
-    for (i = 0; i < display_nrs.size(); i++)
+
+    if (gdb->type() == GDB && verbose && 
+	display_nrs.size() >= 2 && all_display_numbers(display_nrs))
     {
-	if (display_nrs[i] > 0)
+	// We want to delete all displays.  Use GDB `undisplay'
+	// command without args; this will ask for confirmation.
+	deleted_data_displays = display_nrs.size();
+    }
+    else
+    {
+	// Build command
+	for (int i = 0; i < display_nrs.size(); i++)
 	{
-	    if (deleted_data_displays++ > 0 && gdb->wants_display_comma())
-		cmd += ",";
-	    cmd += " " + itostring(display_nrs[i]);
+	    if (display_nrs[i] > 0)
+	    {
+		if (deleted_data_displays++ > 0 && gdb->wants_display_comma())
+		    cmd += ",";
+		cmd += " " + itostring(display_nrs[i]);
+	    }
 	}
     }
 
     if (deleted_data_displays > 0 && gdb->has_display_command())
     {
 	static RefreshInfo info;
-	info.verbose = verbose;
-	info.prompt  = do_prompt;
-	
-	gdb_command(cmd, last_origin, delete_displayOQC, (void *)&info);
+	info.verbose     = verbose;
+	info.prompt      = do_prompt;
+	info.display_nrs = display_nrs;
+
+	Command c(cmd, last_origin, delete_displayOQC, (void *)&info);
+	c.verbose = verbose;
+	gdb_command(c);
+    }
+    else
+    {
+	deletion_done(display_nrs, do_prompt);
+    }
+}
+
+void DataDisp::delete_displayOQC (const string& answer, void *data)
+{
+    if (answer == NO_GDB_ANSWER)
+	return;			// Command was canceled
+
+    RefreshInfo *info = (RefreshInfo *)data;
+
+    if (gdb->type() == GDB && answer.contains("(y or n)"))
+    {
+	// The `undisplay' command required confirmation.
+	// Unfortunately, GDB gives us no notice whether the
+	// `undisplay' was successful, so we refresh the info
+	// explicitly, deleting all displays not listed.
+
+	string info_display = gdb_question(gdb->info_display_command());
+
+	if (info_display != NO_GDB_ANSWER)
+	{
+	    process_info_display(info_display, false);
+
+	    // No further deletions, please
+	    static IntArray empty;
+	    info->display_nrs = empty;
+	}
     }
 
-    for (i = 0; i < display_nrs.size(); i++)
+    if (gdb->has_redisplaying_undisplay())
+    {
+	// Upon `undisplay', DBX redisplays remaining displays with values
+	if (answer != "" && !answer.contains("no such expression"))
+	{
+	    bool disabling_occurred;
+	    string ans = answer;
+	    process_displays(ans, disabling_occurred);
+	}
+    }
+
+    deletion_done(info->display_nrs, info->prompt);
+}
+
+void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
+{
+    for (int i = 0; i < display_nrs.size(); i++)
     {
 	DispNode *dn = disp_graph->get(display_nrs[i]);
 	if (dn != 0)
@@ -3678,7 +3769,7 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose,
 	close_data_window();
     }
 
-    if (deleted_data_displays == 0 || !gdb->has_display_command())
+    if (display_nrs.size() > 0)
     {
 	// Refresh editor
 	refresh_graph_edit();
@@ -3686,53 +3777,21 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose,
 	// Refresh addresses now
 	force_check_aliases = true;
 	refresh_addr();
-	if (do_prompt)
-	    prompt();
     }
+
+    if (do_prompt)
+	prompt();
 
     update_infos();
 }
-
-void DataDisp::delete_displayOQC (const string& answer, void *data)
-{
-    if (answer == NO_GDB_ANSWER)
-	return;			// Command was canceled
-
-    RefreshInfo *info = (RefreshInfo *)data;
-
-    string ans = answer;
-
-    if (gdb->has_redisplaying_undisplay())
-    {
-	// Upon `undisplay', DBX redisplays remaining displays with values
-	if (answer != "" && !answer.contains("no such expression"))
-	{
-	    bool disabling_occurred;
-	    process_displays(ans, disabling_occurred);
-	}
-    }
-
-    // Anything remaining is an error message
-    if (info->verbose)
-	post_gdb_message(ans, false);
-    if (info->prompt)
-	prompt();
-
-    // Refresh editor
-    refresh_graph_edit();
-
-    // Refresh remaining addresses
-    force_check_aliases = true;
-    refresh_addr();
-}
-
 
 
 //-----------------------------------------------------------------------------
 // Handle output of 'info display'
 //-----------------------------------------------------------------------------
 
-void DataDisp::process_info_display(string& info_display_answer)
+void DataDisp::process_info_display(string& info_display_answer,
+				    bool defer_deleted)
 {
     int disp_nr;
     StringMap info_disp_string_map;
@@ -3779,8 +3838,9 @@ void DataDisp::process_info_display(string& info_display_answer)
 		// The DDD display is not contained in the GDB
 		// `display' output.  This happens if the debuggee has
 		// changed; in this case, GDB deletes all displays.
-		// We simply defer the existing displays such that
-		// they can be restored later.
+		// If DEFER_DELETED is set, we simply defer the
+		// existing displays such that they can be restored
+		// later.
 		deleted_displays += dn->disp_nr();
 	    }
 	    else
@@ -3815,7 +3875,7 @@ void DataDisp::process_info_display(string& info_display_answer)
     sort(deleted_displays);
 
     // Give an appropriate message
-    if (deleted_displays.size() >= 1)
+    if (defer_deleted && deleted_displays.size() >= 1)
     {
 	MString msg = rm("Deferring display");
 	if (deleted_displays.size() >= 2)
@@ -3846,39 +3906,41 @@ void DataDisp::process_info_display(string& info_display_answer)
 	set_status_mstring(msg);
     }
 
-    // Create new deferred displays
-    int i;
-    for (i = 0; i < deleted_displays.size(); i++)
+    if (defer_deleted)
     {
-	DispNode *dn = disp_graph->get(deleted_displays[i]);
-
-	// Fetch old position and dependent info
-	BoxPoint pos = dn->nodeptr()->pos();
-
-	string depends_on = "";
-	for (GraphEdge *edge = dn->nodeptr()->firstTo();
-	     edge != 0; edge = dn->nodeptr()->nextTo(edge))
+	// Create new deferred displays
+	for (int i = 0; i < deleted_displays.size(); i++)
 	{
-	    BoxGraphNode *ancestor = ptr_cast(BoxGraphNode, edge->from());
-	    if (ancestor != 0)
+	    DispNode *dn = disp_graph->get(deleted_displays[i]);
+
+	    // Fetch old position and dependent info
+	    BoxPoint pos = dn->nodeptr()->pos();
+
+	    string depends_on = "";
+	    for (GraphEdge *edge = dn->nodeptr()->firstTo();
+		 edge != 0; edge = dn->nodeptr()->nextTo(edge))
 	    {
-		int depnr = disp_graph->get_nr(ancestor);
-		DispNode *depnode = disp_graph->get(depnr);
-		if (depnode != 0)
+		BoxGraphNode *ancestor = ptr_cast(BoxGraphNode, edge->from());
+		if (ancestor != 0)
 		{
-		    depends_on = depnode->name();
-		    break;
+		    int depnr = disp_graph->get_nr(ancestor);
+		    DispNode *depnode = disp_graph->get(depnr);
+		    if (depnode != 0)
+		    {
+			depends_on = depnode->name();
+			break;
+		    }
 		}
 	    }
-	}
 
-	// Create new deferred node
-	new_displaySQ(dn->name(), dn->scope(), &pos,
-		      depends_on, DeferIfNeeded, 0, false);
+	    // Create new deferred node
+	    new_displaySQ(dn->name(), dn->scope(), &pos,
+			  depends_on, DeferIfNeeded, 0, false);
+	}
     }
 
-    // Delete old displays
-    for (i = 0; i < deleted_displays.size(); i++)
+    // Delete remaining (= undeferred) displays
+    for (int i = 0; i < deleted_displays.size(); i++)
     {
 	disp_graph->del(deleted_displays[i]);
 	changed = true;

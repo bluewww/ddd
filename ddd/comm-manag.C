@@ -1652,8 +1652,6 @@ void user_cmdOAC(void *data)
 // Fetch display numbers from COMMAND into NUMBERS
 static bool read_displays(string command, IntArray& numbers, bool verbose)
 {
-    int size = numbers.size();
-
     while (has_nr(command))
 	numbers += atoi(read_nr_str(command));
 
@@ -1664,15 +1662,6 @@ static bool read_displays(string command, IntArray& numbers, bool verbose)
 	if (nr == 0)
 	    return false;	// No such display
 	numbers += nr;
-    }
-
-    if (size == numbers.size())
-    {
-	// No argument.
-	// GDB gives no diagnostics in this case.  So, nor do we.
-	if (verbose)
-	    prompt();
-	return false;
     }
 
     return true;		// Ok
@@ -1796,6 +1785,10 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	bool ok = read_displays(cmd.after("display"), numbers, verbose);
 	if (ok)
 	{
+	    // If no arg is given, apply command to all numbers
+	    if (numbers.size() == 0)
+		data_disp->get_all_display_numbers(numbers);
+	    
 	    if (is_delete_display_cmd(cmd))
 	    {
 		data_disp->delete_displaySQ(numbers, verbose, do_prompt);
@@ -1807,6 +1800,11 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	    else if (is_enable_display_cmd(cmd))
 	    {
 		data_disp->enable_displaySQ(numbers, verbose, do_prompt);
+	    }
+	    else
+	    {
+		// Unknown command
+		return false;
 	    }
 	}
     }
