@@ -44,7 +44,7 @@ VSLNode *VSLLib::_call(const string& func_name, VSLNode *arg)
     VSLDefList* def = deflist(func_name);
     if (def == 0)
     {
-	VSLLib::parse_error("'" + func_name + "(...)' undefined");
+	VSLLib::parse_error(string("'") + func_name + "(...)' undefined");
 	delete arg;
 	arg = 0;
     }
@@ -213,7 +213,7 @@ function_header		:	function_identifier function_argument
 				}
 			|	function_identifier
 				{
-				  $$.id      = new string("#" + *$1);
+				  $$.id      = new string(string("#") + *$1);
 				  $$.pattern = new EmptyListNode;
 				  $$.file    = new string(yyfilename);
 				  $$.line    = yylinenumber;
@@ -573,8 +573,8 @@ argument_or_function	:	identifier
 				    // Wenn Funktion definiert, diese nehmen;
 				    // sonst Platzhalter Variable bilden.
 
-				    if (vsllib->deflist("#" + *$1))
-				      $$ = vsllib->call("#" + *$1);
+				    if (vsllib->deflist(string("#") + *$1))
+				      $$ = vsllib->call(string("#") + *$1);
 				    else
 				      $$ = new NameNode(*$1);
 				  }
@@ -596,7 +596,7 @@ override_identifier	:	function_identifier
 				  if (vsllib->override(func_name)
 				    && vsllib->override(
 				      string("#") + func_name))
-				    VSLLib::parse_error("'" + func_name + 
+				    VSLLib::parse_error(string("'") + func_name + 
 				      "(...)' undefined");
 				}
 
@@ -611,7 +611,7 @@ replace_identifier	:	function_identifier
 				  if (vsllib->replace(func_name)
 				    && vsllib->replace(
 				      string("#") + func_name))
-				    VSLLib::parse_error("'" + func_name + 
+				    VSLLib::parse_error(string("'") + func_name + 
 				      "(...)' undefined");
 				}
 

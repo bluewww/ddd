@@ -62,7 +62,7 @@
 //		@(#)meltdown.c	1.2	90/02/22
 
 
-const char obscure_rcsid[] = 
+char obscure_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

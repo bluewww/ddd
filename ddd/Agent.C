@@ -282,7 +282,7 @@ int Agent::setupParentCommunication()
 void Agent::executeChild()
 {
     // start child
-    string exec_str = "exec " + path();
+    string exec_str = string("exec ") + path();
     char *exec_cmd = exec_str;
     execl("/bin/sh", "sh", "-c", exec_cmd, (char *)0);
 

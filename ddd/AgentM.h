@@ -46,7 +46,7 @@
 #define SIGCHLD SIGCLD
 #endif
 
-typedef void (*SignalProc)(int);
+typedef void (*SignalProc)(...);
 
 class Agent;
 

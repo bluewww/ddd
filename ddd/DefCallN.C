@@ -153,7 +153,7 @@ int DefCallNode::resolveDefs(VSLDef *cdef, bool complain_recursive)
 	ostrstream s(buffer, sizeof buffer);
 	s << *this << '\0';
 
-	VSLLib::eval_warning("no suitable definition for " + 
+	VSLLib::eval_warning(string("no suitable definition for ") + 
 	    string(buffer), cdef);
     }
 

@@ -326,7 +326,7 @@ int LetNode::_resolveNames(VSLDef *cdef, unsigned base)
 	// Im Koerper ersetzen
 	int ch = body()->resolveName(cdef, &body(), s, base + offset);
 	if (ch == 0)
-	    VSLLib::eval_warning("`" + s + "' is unused", cdef);
+	    VSLLib::eval_warning(string("`") + s + "' is unused", cdef);
 	changes += ch;
 
 	// Im Pattern ersetzen
@@ -334,7 +334,7 @@ int LetNode::_resolveNames(VSLDef *cdef, unsigned base)
 	    base + offset);
 	assert(ch > 0);
 	if (ch > 1)
-	    VSLLib::eval_error("`" + s + "' is used several times", cdef);
+	    VSLLib::eval_error(string("`") + s + "' is used several times", cdef);
 
 	offset++;
     }

@@ -309,17 +309,17 @@ static string getHome()
 
 // Note: <percent>B<percent> is expanded by SCCS -- thus inserting ""
 static string BASENAME = "%B""%S";
+static string DELIMITER = ":";
 
 // add default search paths to path
 static void addDefaultPaths(string& path, string root)
 {
-    string delimiter = ":";
-    path += delimiter + root + "/%L/%T/%N/" + BASENAME;
-    path += delimiter + root + "/%l/%T/%N/" + BASENAME;
-    path += delimiter + root + "/%T/%N/"    + BASENAME;
-    path += delimiter + root + "/%L/%T/"    + BASENAME;
-    path += delimiter + root + "/%l/%T/"    + BASENAME;
-    path += delimiter + root + "/%T/"       + BASENAME;
+    path += DELIMITER + root + "/%L/%T/%N/" + BASENAME;
+    path += DELIMITER + root + "/%l/%T/%N/" + BASENAME;
+    path += DELIMITER + root + "/%T/%N/"    + BASENAME;
+    path += DELIMITER + root + "/%L/%T/"    + BASENAME;
+    path += DELIMITER + root + "/%l/%T/"    + BASENAME;
+    path += DELIMITER + root + "/%T/"       + BASENAME;
 }
 
 // locate path
@@ -343,9 +343,9 @@ static string bitmapPath()
 	else
 	    addDefaultPaths(path, home);
 
-	path += ":" + home + BASENAME;
+	path += DELIMITER + home + BASENAME;
 	addDefaultPaths(path, "/usr/lib/X11");
-	path += ":/usr/include/X11/%T/" + BASENAME;
+	path += DELIMITER + "/usr/include/X11/%T/" + BASENAME;
     }
     else
 	path = xbmlangpath;

@@ -26,7 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-const char shell_rcsid[] = 
+char shell_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
@@ -78,7 +78,7 @@ string _sh_command(string command, bool force_local,
 	display = string(fullhostname(host)) + display.from(":");
     }
 
-    string settings = "DISPLAY='" + display + "'; export DISPLAY; ";
+    string settings = string("DISPLAY='") + display + "'; export DISPLAY; ";
 
     if (force_local || !remote_gdb())
     {
@@ -86,18 +86,18 @@ string _sh_command(string command, bool force_local,
 	    return "";
 	if (force_display_settings)
 	    command = settings + command;
-	return "/bin/sh -c " + sh_quote(command);
+	return string("/bin/sh -c ") + sh_quote(command);
     }
 
     string rsh = app_data.rsh_command;
     string login = app_data.debugger_host_login;
     if (login != "")
-	rsh += " -l " + login;
+	rsh += string(" -l ") + login;
 
-    rsh += " " + gdb_host;
+    rsh += string(" ") + gdb_host;
 
     if (command != "")
-	rsh += " /bin/sh -c " + sh_quote(sh_quote(settings + command));
+	rsh += string(" /bin/sh -c ") + sh_quote(sh_quote(settings + command));
 
     return rsh;
 }

@@ -798,7 +798,7 @@ string GDBAgent::print_command(string expr) const
 	    switch (type())
 	    {
 	    case DBX:
-		cmd += " " + quote(expr + " =") + ",";
+		cmd += string(" ") + quote(expr + " =") + ",";
 		break;
 
 	    case GDB:
@@ -808,7 +808,7 @@ string GDBAgent::print_command(string expr) const
 	    }
 	}
 
-	cmd += " " + expr;
+	cmd += string(" ") + expr;
     }
 
     return cmd;
@@ -827,7 +827,7 @@ string GDBAgent::display_command(string expr) const
 	cmd = "display";
 
     if (expr != "")
-	cmd += " " + expr;
+	cmd += string(" ") + expr;
 
     return cmd;
 }
@@ -883,13 +883,13 @@ string GDBAgent::frame_command(string depth) const
 	if (depth == "")
 	    return "frame";
 	else
-	    return "frame " + depth;
+	    return string("frame ") + depth;
 
     case XDB:
 	if (depth == "")
 	    return print_command("$depth");
 	else
-	    return "V " + depth;
+	    return string("V ") + depth;
     }
 
     return "";			// Never reached
@@ -901,7 +901,7 @@ string GDBAgent::echo_command(string text) const
     switch (type())
     {
     case GDB:
-	return "echo " + cook(text);
+	return string("echo ") + cook(text);
 
     case DBX:
 	return print_command() + " " + quote(text);
@@ -919,16 +919,16 @@ string GDBAgent::whatis_command(string text) const
     switch (type())
     {
     case GDB:
-	return "ptype " + text;
+	return string("ptype ") + text;
 
     case DBX:
 	if (has_print_r_command())
-	    return "whatis -r " + text;
+	    return string("whatis -r ") + text;
 	else
-	    return "whatis " + text;
+	    return string("whatis ") + text;
 
     case XDB:
-	return "p " + text + "\\T";
+	return string("p ") + text + "\\T";
     }
 
     return "";			// Never reached
@@ -940,10 +940,10 @@ string GDBAgent::dereferenced_expr(string text) const
     switch (program_language())
     {
     case LANGUAGE_C:
-	return "*(" + text + ")";
+	return string("*(") + text + ")";
 
     case LANGUAGE_FORTRAN:
-	return "*(" + text + ")"; // FIXME
+	return string("*(") + text + ")"; // FIXME
 
     case LANGUAGE_PASCAL:
 	return text + "^";

@@ -103,7 +103,7 @@ void DispBox::init_vsllib()
     // Load library
     if (string(vsllib_name) != "builtin")
     {
-	StatusDelay delay("Reading VSL library " + quote(vsllib_name));
+	StatusDelay delay(string("Reading VSL library ") + quote(vsllib_name));
 	vsllib_ptr = new VSLLib (vsllib_name);
     }
 
@@ -296,5 +296,5 @@ Box *DispBox::dup(const string& func_name, const Box *box)
     if (box)
 	return ((Box *)box)->link();
     else
-	return new StringBox("<?" + func_name + ">"); // box not found
+	return new StringBox(string("<?") + func_name + ">"); // box not found
 }

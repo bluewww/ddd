@@ -26,7 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-const char print_rcsid[] = 
+char print_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
@@ -71,7 +71,7 @@ const char print_rcsid[] =
 // Convert according to given BoxPrintGC
 static int convert(string filename, BoxPrintGC& gc, bool selectedOnly)
 {
-    StatusDelay delay("Printing graph to " + quote(filename));
+    StatusDelay delay(string("Printing graph to ") + quote(filename));
 
     // Get the graph
     Graph *graph = graphEditGetGraph(data_disp->graph_edit);
@@ -92,7 +92,8 @@ static int convert(string filename, BoxPrintGC& gc, bool selectedOnly)
     if (os.bad())
     {
 	FILE *fp = fopen(filename, "w");
-	post_error("Cannot open " + quote(filename) + ": " + strerror(errno), 
+	post_error(string("Cannot open ") 
+		   + quote(filename) + ": " + strerror(errno), 
 		   "print_failed_error", data_disp->graph_edit);
 	if (fp)
 	    fclose(fp);
@@ -141,7 +142,7 @@ static int print(string command, BoxPrintGC& gc, bool selectedOnly)
     if (ret)
 	return ret;
 
-    StatusDelay delay("Printing graph " + quote(tempfile));
+    StatusDelay delay(string("Printing graph ") + quote(tempfile));
 
     command = command + " " + tempfile;
 
@@ -245,7 +246,7 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 			   (void *)1);
 	    XtAddCallback (yn_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
-	    string question = "Overwrite existing file " + quote(f) + "?";
+	    string question = string("Overwrite existing file ") + quote(f) + "?";
 	    XmString xmtext = XmStringCreateLtoR (question, "rm");
 	    XtVaSetValues (yn_dialog, XmNmessageString, xmtext, NULL);
 	    XmStringFree (xmtext);
@@ -418,7 +419,7 @@ static int points(string s)
 	    factor = 72.0 * 1/2.54 * 100000 * 3.085678e+13;
 	else
 	{
-	    post_error("Unrecognized unit \"" + unit + "\".",
+	    post_error(string("Unrecognized unit \"") + unit + "\".",
 		       "paper_size_unit_error");
 	    return -1;
 	}

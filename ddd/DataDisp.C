@@ -1793,7 +1793,7 @@ void DataDisp::disable_displaySQ (int display_nrs[], int count)
     int j;
     string cmd = "disable display ";
     for (j = 0; j < count; j++) {
-	cmd += " " + itostring(display_nrs[j]);
+	cmd += string(" ") + itostring(display_nrs[j]);
     }
     bool ok = gdb->send_question (cmd, disable_displayOQC, 0);
     if (!ok)
@@ -1833,7 +1833,7 @@ void DataDisp::enable_displaySQ (int display_nrs[], int count)
     int j;
     string cmd = "enable display";
     for (j = 0; j < count; j++) {
-	cmd += " " + itostring(display_nrs[j]);
+	cmd += string(" ") + itostring(display_nrs[j]);
     }
     bool ok = gdb->send_question (cmd, enable_displayOQC, 0);
     if (!ok)
@@ -1874,7 +1874,7 @@ void DataDisp::delete_displaySQ (int display_nrs[], int count)
     case GDB:
 	for (j = 0; j < count; j++)
 	{
-	    cmd += " " + itostring(display_nrs[j]);
+	    cmd += string(" ") + itostring(display_nrs[j]);
 	}
 	break;
 
@@ -1889,7 +1889,7 @@ void DataDisp::delete_displaySQ (int display_nrs[], int count)
 		{
 		    if (c++)
 			cmd += ", ";
-		    cmd += " " + dn->name();
+		    cmd += string(" ") + dn->name();
 		}
 	    }
 	}
@@ -2574,15 +2574,15 @@ void DataDisp::setDCB(Widget set_dialog, XtPointer client_data, XtPointer)
     switch (gdb->type())
     {
     case GDB:
-	cmd = "set variable " + disp_value->full_name() + " = " + value;
+	cmd = string("set variable ") + disp_value->full_name() + " = " + value;
 	break;
 
     case DBX:
-	cmd = "assign " + disp_value->full_name() + " = " + value;
+	cmd = string("assign ") + disp_value->full_name() + " = " + value;
 	break;
 
     case XDB:
-	cmd = "pq " + disp_value->full_name() + " = " + value;
+	cmd = string("pq ") + disp_value->full_name() + " = " + value;
 	break;
     }
 

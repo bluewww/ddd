@@ -214,7 +214,7 @@ void start_gdb()
 	plus_cmd_data->config_frame = true;
 	cmds += "dbxenv run_io";
 	plus_cmd_data->config_run_io = true;
-	cmds += "print -r " + print_r_cookie;
+	cmds += string("print -r ") + print_r_cookie;
 	plus_cmd_data->config_print_r = true;
 	cmds += "where -h";
 	plus_cmd_data->config_where_h = true;

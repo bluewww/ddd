@@ -26,7 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-const char show_rcsid[] = 
+char show_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
@@ -179,7 +179,7 @@ void show_invocation(DebuggerType type)
 			if (option == "")
 			    state = Done;
 			else
-			    options += "  " + option.after(rxwhite) + "\n";
+			    options += string("  ") + option.after(rxwhite) + "\n";
 			break;
 
 		    case Done:
@@ -296,7 +296,7 @@ void DDDWWWPageCB(Widget, XtPointer, XtPointer)
     string url = app_data.www_page;
     string cmd = app_data.www_command;
 
-    StatusDelay delay("Invoking WWW browser for " + quote(url));
+    StatusDelay delay(string("Invoking WWW browser for ") + quote(url));
 
     cmd.gsub("@URL@", url);
     cmd += " &";
@@ -332,7 +332,7 @@ void show_license()
 	char *env_pager = getenv("PAGER");
 	if (env_pager != 0)
 	    cmd = string(env_pager) + " || " + cmd;
-	cmd = "( " + cmd + " )";
+	cmd = string("( ") + cmd + " )";
 	pager = popen(cmd, "w");
     }
 

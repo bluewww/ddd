@@ -96,7 +96,7 @@ static String xlibdir(Display *display, bool verbose = false)
     if (verbose)
 	cout << "Checking for X11 library directory... ";
 
-    FILE *fp = popen("/bin/sh -c " + sh_quote(shell_command), "r");
+    FILE *fp = popen(string("/bin/sh -c ") + sh_quote(shell_command), "r");
     if (fp == 0)
     {
 	if (verbose)
@@ -178,7 +178,7 @@ static int check_xkeysymdb(Display *display, bool verbose)
 
 	    // Fix it
 	    static string env;
-	    env = "XKEYSYMDB=" + path;
+	    env = string("XKEYSYMDB=") + path;
 	    putenv(env);
 	    return 0;
 	}
@@ -257,7 +257,7 @@ static int check_xnlspath(Display *display, bool verbose)
 	string path;
 	path = xlibdir(display, verbose);
 	path += "/nls";
-	if (is_file(path + "/" + nls_file))
+	if (is_file(path + string("/") + nls_file))
 	{
 	    if (verbose)
 	    {
@@ -273,7 +273,7 @@ static int check_xnlspath(Display *display, bool verbose)
 
 	    // Fix it now
 	    static string env;
-	    env = "XNLSPATH=" + path;
+	    env = string("XNLSPATH=") + path;
 	    putenv(env);
 	    return 0;
 	}

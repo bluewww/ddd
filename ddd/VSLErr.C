@@ -97,5 +97,5 @@ void VSLLib::eval_error(const string& errmsg, const VSLDef *d)
 // Warnung bei Auswertung
 void VSLLib::eval_warning(const string& errmsg, const VSLDef *d)
 {
-    eval_echo("warning: " + errmsg, d);
+    eval_echo(string("warning: ") + errmsg, d);
 }

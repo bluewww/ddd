@@ -2341,7 +2341,7 @@ static void considerEdges(Widget w, XEvent *, String *params,
     const Graph* graph       = _w->graphEdit.graph;
 
     // get the mode
-    enum { Nope = 0, Both = 1, From = 2, To = 3, Any = 4 } mode = Nope;
+    enum { Nope = 0, Both = 1, From = 2, To = 3, Any = 4 } themode = Nope;
     bool changedSomething = false;
 
     string p = "all";
@@ -2349,22 +2349,22 @@ static void considerEdges(Widget w, XEvent *, String *params,
 	p = params[0];
 
     if (p == "from")
-	mode = From;
+	themode = From;
     else if (p == "to")
-	mode = To;
+	themode = To;
     else if (p == "any")
-	mode = Any;
+	themode = Any;
     else if (p == "both")
-	mode = Both;
+	themode = Both;
     else
-	cerr << "show-edges(" << mode << "): bad mode \"" << mode << "\"\n";
+	cerr << "show-edges(" << themode << "): bad mode \"" << themode << "\"\n";
 
     for (GraphEdge *edge = graph->firstEdge(); edge != 0;
 	edge = graph->nextEdge(edge))
     {
 	bool set = false;
 
-	switch (mode)
+	switch (themode)
 	{
 	    // there should be a better way of coding this,
 	    // but I don't know it...

@@ -26,7 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-const char manual_rcsid[] = 
+char manual_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
@@ -78,7 +78,7 @@ void show_manual()
 	char *env_pager = getenv("PAGER");
 	if (env_pager != 0)
 	    cmd = string(env_pager) + " || " + cmd;
-	cmd = "( " + cmd + " )";
+	cmd = string("( ") + cmd + " )";
 	pager = popen(cmd, "w");
     }
 

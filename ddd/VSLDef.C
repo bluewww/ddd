@@ -367,14 +367,14 @@ int VSLDef::resolveNames()
 	// Im Koerper ersetzen
 	int ch = expr()->resolveName(this, &expr(), s, offset);
 	if (ch == 0)
-	    VSLLib::eval_warning("`" + s + "' unused", this);
+	    VSLLib::eval_warning(string("`") + s + "' unused", this);
 	changes += ch;
 
 	// Im Pattern ersetzen
 	ch = node_pattern()->resolveName(this, &node_pattern(), s, offset);
 	assert(ch > 0);
 	if (ch > 1)
-	    VSLLib::eval_error("`" + s + "' used several times", this);
+	    VSLLib::eval_error(string("`") + s + "' used several times", this);
 
 	offset += ch;
     }
@@ -384,7 +384,7 @@ int VSLDef::resolveNames()
     // Verbleibende NameNode's entfernen (durch arg0 ersetzen)
     while ((s = expr()->firstName(), s) != "")
     {
-	VSLLib::eval_error("`" + s + "' undefined", this);
+	VSLLib::eval_error(string("`") + s + "' undefined", this);
 	expr()->resolveName(this, &expr(), s, 0);
     }
 

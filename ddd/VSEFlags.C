@@ -578,7 +578,7 @@ string VSEFlags::explain(bool vsl_prefix_required)
 			    optName = optName.through("vsl-") + "no-" 
 				 + optName.after("vsl-");
 			else
-			    optName = "no-" + optName;
+			    optName = string("no-") + optName;
 
 			usage[0] = tolower(usage[0]);
 			usage.prepend("Don't ");
@@ -621,7 +621,7 @@ string VSEFlags::explain(bool vsl_prefix_required)
 		break;
 	}
 
-	optName = "--" + optName + optArg + ":";
+	optName = string("--") + optName + optArg + ":";
 	while (optName.length() < 36)
 	    optName += " ";
 	s += optName;

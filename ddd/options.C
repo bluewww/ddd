@@ -26,7 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-const char options_rcsid[] = 
+char options_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
@@ -469,7 +469,7 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
 	break;
     }
 
-    set_status("Next " DDD_NAME " invocation will start-up with a " +
+    set_status(string("Next " DDD_NAME " invocation will start-up with a ") +
 	       upcase(app_data.debugger) + " debugger.");
 
     update_options();
@@ -491,10 +491,12 @@ inline string bool_app_value(const string& name, bool value)
     return string(DDD_CLASS_NAME) + "*" + name + ": " + bool_value(value);
 }
 
+#if 0
 inline string int_app_value(const string& name, int value)
 {
     return string(DDD_CLASS_NAME) + "*" + name + ": " + itostring(value);
 }
+#endif
 
 string string_app_value(const string& name, string value)
 {
@@ -504,7 +506,7 @@ string string_app_value(const string& name, string value)
 	value.gsub("\\n", "\\n\\\n");
 	if (value.contains("\\\n", -1))
 	    value = value.before(int(value.length()) - 2);
-	value = "\\\n" + value;
+	value = string("\\\n") + value;
     }
 
     return string(DDD_CLASS_NAME) + "*" + name + ": " + value;
@@ -539,7 +541,7 @@ string options_file()
 
 void save_options(Widget origin)
 {
-    StatusDelay delay("Saving options in " + quote(options_file()));
+    StatusDelay delay(string("Saving options in ") + quote(options_file()));
     string file = options_file();
 
     const char delimiter[] = "! DO NOT ADD ANYTHING BELOW THIS LINE";
@@ -573,7 +575,7 @@ void save_options(Widget origin)
     ofstream os(file);
     if (os.bad())
     {
-	post_error("Cannot save options in " + quote(file),
+	post_error(string("Cannot save options in ") + quote(file),
 		   "options_save_error", origin);
 	return;
     }

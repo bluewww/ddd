@@ -26,7 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-const char source_rcsid[] = 
+char source_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
@@ -63,15 +63,15 @@ void gdbBreakArgCmdCB(Widget w, XtPointer, XtPointer)
     {
     case GDB:
 	if (arg != "" && arg[0] == '0')
-	    arg = "*" + arg; // Address given
-	gdb_command("break " + arg, w);
+	    arg = string("*") + arg; // Address given
+	gdb_command(string("break ") + arg, w);
 	break;
 
     case DBX:
 	if (arg.matches(rxint))
 	{
 	    // Line number given
-	    gdb_command("stop at " + arg, w);
+	    gdb_command(string("stop at ") + arg, w);
 	}
 	else if (arg.contains(":") && !arg.contains("::"))
 	{
@@ -86,13 +86,13 @@ void gdbBreakArgCmdCB(Widget w, XtPointer, XtPointer)
 
 	if (pos != "")
 	{
-	    gdb_command("file " + pos.before(":"), w);
-	    gdb_command("stop at " + pos.after(":"), w);
+	    gdb_command(string("file ") + pos.before(":"), w);
+	    gdb_command(string("stop at ") + pos.after(":"), w);
 	}
 	break;
 
     case XDB:
-	gdb_command("b " + arg, w);
+	gdb_command(string("b ") + arg, w);
 	break;
     }
 }
@@ -105,7 +105,7 @@ void gdbClearArgCmdCB(Widget w, XtPointer, XtPointer)
     {
     case GDB:
 	if (arg != "" && arg[0] == '0')
-	    arg = "*" + arg; // Address given
+	    arg = string("*") + arg; // Address given
 	gdb_command(SourceView::clear_command(arg));
 	break;
 
@@ -128,7 +128,7 @@ void gdbClearArgCmdCB(Widget w, XtPointer, XtPointer)
 
 	if (pos != "")
 	{
-	    gdb_command("file " + pos.before(":"), w);
+	    gdb_command(string("file ") + pos.before(":"), w);
 	    gdb_command(SourceView::clear_command(pos.after(":")), w);
 	}
 	break;
@@ -201,7 +201,7 @@ static void gdbEditDoneHP(Agent *edit_agent, void *client_data, void *)
 {
     // Editor has terminated: reload current source file
     string *pfile = (string *)client_data;
-    // post_gdb_message("Editing of " + quote(*pfile) + " done.");
+    // post_gdb_message(string("Editing of ") + quote(*pfile) + " done.");
     delete pfile;
 
     XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
@@ -222,7 +222,7 @@ void gdbEditSourceCB  (Widget w, XtPointer, XtPointer)
 	return;
     }
 
-    StatusDelay delay("Invoking editor for " + quote(file));
+    StatusDelay delay(string("Invoking editor for ") + quote(file));
 
     string cmd = app_data.edit_command;
     cmd.gsub("@FILE@", file);

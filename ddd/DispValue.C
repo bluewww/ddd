@@ -143,7 +143,7 @@ void DispValue::init(string& value)
 
 	string base = myfull_name;
 	if (!base.matches(RXsimple))
-	    base = "(" + base + ")";
+	    base = string("(") + base + ")";
 
 	v.array = new ArrayDispValue;
 	myexpanded = (mydepth > 0) ? false : true;
@@ -170,7 +170,7 @@ void DispValue::init(string& value)
 	string member_name;
 	int i = 0;
 	do {
- 	    member_name = "[" + itostring (i++) + "]";
+ 	    member_name = string("[") + itostring (i++) + "]";
  	    v.array->members[v.array->member_count++] = 
 		new DispValue (this, mydepth + 1,
 			       value, 
@@ -255,7 +255,7 @@ void DispValue::init(string& value)
 
 	v.str_or_cl->members[0] = 
 	    new DispValue(this, mydepth + 1, ref, 
-			  "&" + myfull_name, myfull_name);
+			  string("&") + myfull_name, myfull_name);
 	v.str_or_cl->members[1] = 
 	    new DispValue(this, mydepth + 1, value,
 			  myfull_name, myfull_name);

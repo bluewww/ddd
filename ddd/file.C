@@ -26,7 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-const char file_rcsid[] = 
+char file_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
@@ -479,11 +479,11 @@ static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
 	switch(gdb->type())
 	{
 	case GDB:
-	    gdb_command("file " + filename);
+	    gdb_command(string("file ") + filename);
 	    break;
 
 	case DBX:
-	    gdb_command("debug " + filename);
+	    gdb_command(string("debug ") + filename);
 	    break;
 
 	case XDB:
@@ -506,7 +506,7 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 	switch(gdb->type())
 	{
 	case GDB:
-	    gdb_command("core-file " + corefile);
+	    gdb_command(string("core-file ") + corefile);
 	    break;
 
 	case DBX:
@@ -518,7 +518,7 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 		{
 		    file = file.after(": ");
 		    strip_final_blanks(file);
-		    gdb_command("debug " + file + " " + corefile);
+		    gdb_command(string("debug ") + file + " " + corefile);
 		}
 		else
 		    post_gdb_message(file);

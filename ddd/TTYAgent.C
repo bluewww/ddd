@@ -304,11 +304,11 @@ void TTYAgent::open_master()
 	    if (line == NULL)
 		_raiseIOMsg("ptsname");
 	    else if (grantpt(master))
-		_raiseIOMsg("grantpt " + string(line));
+		_raiseIOMsg(string("grantpt ") + string(line));
 	    else if (unlockpt(master))
-		_raiseIOMsg("unlockpt " + string(line));
+		_raiseIOMsg(string("unlockpt ") + string(line));
 	    else if (access(line, R_OK | W_OK))
-		_raiseIOMsg("access " + string(line));
+		_raiseIOMsg(string("access ") + string(line));
 	    else
 	    {
 		// Everything ok - proceed
@@ -370,8 +370,8 @@ void TTYAgent::open_master()
 	    for (int j = 0; j < int(p2.length()); j++)
 	    {
 		string nr  = string(p1[i]) + p2[j];
-		string pty = "/dev/ptym/pty" + nr;
-		string tty = "/dev/pty/tty" + nr;
+		string pty = string("/dev/ptym/pty") + nr;
+		string tty = string("/dev/pty/tty") + nr;
 		
 		master = open((char *)pty, O_RDWR);
 		if (master >= 0)
@@ -395,8 +395,8 @@ void TTYAgent::open_master()
 	for (int j = 0; j < int(p2.length()); j++)
 	{
 	    string nr  = string(p1[i]) + p2[j];
-	    string pty = "/dev/pty" + nr;
-	    string tty = "/dev/tty" + nr;
+	    string pty = string("/dev/pty") + nr;
+	    string tty = string("/dev/tty") + nr;
 		
 	    master = open((char *)pty, O_RDWR);
 	    if (master >= 0)
@@ -425,7 +425,7 @@ void TTYAgent::open_slave()
 {
     if ((slave = open((char *)slave_tty(), O_RDWR)) < 0)
     {
-	_raiseIOMsg("cannot open " + slave_tty());
+	_raiseIOMsg(string("cannot open ") + slave_tty());
 	return;
     }
 
@@ -446,16 +446,16 @@ void TTYAgent::open_slave()
     {
 	// Finish STREAMS setup.
 	if (ioctl(slave, I_PUSH, "ptem"))
-	    _raiseIOWarning("ioctl ptem " + slave_tty());
+	    _raiseIOWarning(string("ioctl ptem ") + slave_tty());
 	if (ioctl(slave, I_PUSH, "ldterm"))
-	    _raiseIOWarning("ioctl ldterm " + slave_tty());
+	    _raiseIOWarning(string("ioctl ldterm ") + slave_tty());
 	if (ioctl(slave, I_PUSH, "ttcompat"))
 	{
 	    // On HP-UX and other systems, this call always fails.
 	    // Fortunately, it seems we can live without as well.  Hence,
 	    // we suppress the warning message to avoid confusion.
 #if 0
-	    _raiseIOWarning("ioctl ttcompat " + slave_tty());
+	    _raiseIOWarning(string("ioctl ttcompat ") + slave_tty());
 #endif
 	}
     }

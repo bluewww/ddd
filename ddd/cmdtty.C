@@ -26,7 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-const char cmdtty_rcsid[] = 
+char cmdtty_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
@@ -98,7 +98,7 @@ void tty_full_name(const string& pos)
 
     if (app_data.full_name_mode)
     {
-	_tty_out("\032\032" + pos + "\n");
+	_tty_out(string("\032\032") + pos + "\n");
     }
     else
     {

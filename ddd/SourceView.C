@@ -402,17 +402,17 @@ void SourceView::line_popup_setCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("break " + current_source_name() + ":" + 
+	gdb_command(string("break ") + current_source_name() + ":" + 
 		    itostring(line_nr), w);
 	break;
 	
     case DBX:
-	gdb_command("file " + current_source_name(), w);
-	gdb_command("stop at " + itostring(line_nr), w);
+	gdb_command(string("file ") + current_source_name(), w);
+	gdb_command(string("stop at ") + itostring(line_nr), w);
 	break;
 
     case XDB:
-	gdb_command("b " + current_source_name() + ":" + 
+	gdb_command(string("b ") + current_source_name() + ":" + 
 		    itostring(line_nr), w);
     }
 }
@@ -425,15 +425,15 @@ void SourceView::address_popup_setCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("break *" + address, w);
+	gdb_command(string("break *") + address, w);
 	break;
 	
     case DBX:
-	gdb_command("stopi at " + address, w);
+	gdb_command(string("stopi at ") + address, w);
 	break;
 
     case XDB:
-	gdb_command("b " + address, w);
+	gdb_command(string("b ") + address, w);
 	break;
     }
 }
@@ -448,25 +448,25 @@ void SourceView::line_popup_set_tempCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("tbreak " + current_source_name() + ":" + 
+	gdb_command(string("tbreak ") + current_source_name() + ":" + 
 		    itostring(line_nr), w);
 	break;
 
     case DBX:
-	gdb_command("file " + current_source_name(), w);
-	gdb_command("stop at " + itostring(line_nr), w);
+	gdb_command(string("file ") + current_source_name(), w);
+	gdb_command(string("stop at ") + itostring(line_nr), w);
 
 	// Make sure we get the number of the temporary breakpoint
 	syncCommandQueue();
 	{
 	    string line = itostring(line_nr);
-	    gdb_command("when at " + line + " " 
+	    gdb_command(string("when at ") + line + " " 
 			+ command_list(clear_command(line)), w);
 	}
 	break;
 
     case XDB:
-	gdb_command("b " + current_source_name() + ":" + itostring(line_nr)
+	gdb_command(string("b ") + current_source_name() + ":" + itostring(line_nr)
 		    + " \\1t", w);
 	break;
     }
@@ -480,20 +480,20 @@ void SourceView::address_popup_set_tempCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("tbreak *" + address, w);
+	gdb_command(string("tbreak *") + address, w);
 	break;
 
     case DBX:
-	gdb_command("stopi at " + address, w);
+	gdb_command(string("stopi at ") + address, w);
 
 	// Make sure we get the number of the temporary breakpoint
 	syncCommandQueue();
-	gdb_command("when $pc == " + address + " "
+	gdb_command(string("when $pc == ") + address + " "
 		    + command_list(clear_command(address)), w);
 	break;
 
     case XDB:
-	gdb_command("ba " + address + " \\1t", w);
+	gdb_command(string("ba ") + address + " \\1t", w);
 	break;
     }
 }
@@ -508,7 +508,7 @@ void SourceView::line_popup_temp_n_contCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("until " + current_source_name() + ":" + 
+	gdb_command(string("until ") + current_source_name() + ":" + 
 		    itostring(line_nr), w);
 	break;
     
@@ -518,7 +518,7 @@ void SourceView::line_popup_temp_n_contCB (Widget w,
 	break;
 
     case XDB:
-	gdb_command("c " + current_source_name() + ":" + 
+	gdb_command(string("c ") + current_source_name() + ":" + 
 		    itostring(line_nr), w);
 	break;
     }
@@ -532,7 +532,7 @@ void SourceView::address_popup_temp_n_contCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("until *" + address, w);
+	gdb_command(string("until *") + address, w);
 	break;
     
     case DBX:
@@ -541,7 +541,7 @@ void SourceView::address_popup_temp_n_contCB (Widget w,
 	break;
 
     case XDB:
-	gdb_command("c " + address, w);
+	gdb_command(string("c ") + address, w);
 	break;
     }
 }
@@ -615,20 +615,20 @@ void SourceView::text_popup_breakCB (Widget w,
     switch (gdb->type())
     {
     case GDB:
-	gdb_command("break " + *word_ptr, w);
+	gdb_command(string("break ") + *word_ptr, w);
 	break;
 
     case DBX:
 	pos = dbx_lookup(*word_ptr);
 	if (pos != "")
 	{
-	    gdb_command("file " + pos.before(':'), w);
-	    gdb_command("stop at " + pos.after(':'), w);
+	    gdb_command(string("file ") + pos.before(':'), w);
+	    gdb_command(string("stop at ") + pos.after(':'), w);
 	}
 	break;
 
     case XDB:
-	gdb_command("b " + *word_ptr, w);
+	gdb_command(string("b ") + *word_ptr, w);
 	break;
     }
 }
@@ -652,7 +652,7 @@ void SourceView::text_popup_clearCB (Widget w,
 	pos = dbx_lookup(*word_ptr);
 	if (pos != "")
 	{
-	    gdb_command("file " + pos.before(':'), w);
+	    gdb_command(string("file ") + pos.before(':'), w);
 	    gdb_command(clear_command(pos.after(':')), w);
 	}
 	break;
@@ -690,7 +690,7 @@ void SourceView::text_popup_dispCB (Widget w, XtPointer client_data, XtPointer)
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command("graph display " + *word_ptr, w);
+    gdb_command(string("graph display ") + *word_ptr, w);
 }
 
 void SourceView::text_popup_disp_refCB (Widget w, 
@@ -699,7 +699,7 @@ void SourceView::text_popup_disp_refCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command("graph display " + gdb->dereferenced_expr(*word_ptr), w);
+    gdb_command(string("graph display ") + gdb->dereferenced_expr(*word_ptr), w);
 }
 
 // ***************************************************************************
@@ -948,7 +948,7 @@ void SourceView::SetInsertionPosition(Widget text_w,
 String SourceView::read_local(const string& file_name, long& length,
 			      bool silent)
 {
-    StatusDelay delay("Reading file " + quote(file_name));
+    StatusDelay delay(string("Reading file ") + quote(file_name));
     length = 0;
 
     // Make sure the file is a regular text file and open it
@@ -996,7 +996,7 @@ String SourceView::read_local(const string& file_name, long& length,
     if (statb.st_size == 0)
     {
 	if (!silent)
-	    post_warning("File " + quote(file_name) + " is empty.", 
+	    post_warning(string("File ") + quote(file_name) + " is empty.", 
 			 "source_empty_warning", source_text_w);
     }
 
@@ -1008,7 +1008,7 @@ String SourceView::read_local(const string& file_name, long& length,
 String SourceView::read_remote(const string& file_name, long& length, 
 			       bool silent)
 {
-    StatusDelay delay("Reading file " + 
+    StatusDelay delay(string("Reading file ") + 
 		      quote(file_name) + " from remote host");
     length = 0;
 
@@ -1033,7 +1033,7 @@ String SourceView::read_remote(const string& file_name, long& length,
     if (length == 0)
     {
 	if (!silent)
-	    post_error("Cannot access remote file " + quote(file_name), 
+	    post_error(string("Cannot access remote file ") + quote(file_name), 
 		       "remote_file_error", source_text_w);
     }
 
@@ -1050,13 +1050,13 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
     if (!gdb->isReadyWithPrompt())
 	return 0;
 
-    StatusDelay delay("Reading file " + quote(file_name));
+    StatusDelay delay(string("Reading file ") + quote(file_name));
 
     string command;
     switch (gdb->type())
     {
     case GDB:
-	command = "list " + file_name + ":1,1000000";
+	command = string("list ") + file_name + ":1,1000000";
 	break;
 
     case DBX:
@@ -1268,7 +1268,7 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
 
 	int null_count = current_source.freq('\0');
 	if (null_count > 0 && !silent)
-	    post_warning("File " + quote(file_name) + " is a binary file.", 
+	    post_warning(string("File ") + quote(file_name) + " is a binary file.", 
 			 "source_binary_warning", source_text_w);
     }
 
@@ -1319,7 +1319,7 @@ void SourceView::reload()
     string line = file.after(':');
     file        = file.before(':');
 
-    StatusDelay delay("Reloading " + quote(file));
+    StatusDelay delay(string("Reloading ") + quote(file));
 
     read_file(file, atoi(line), true);
 }
@@ -2501,7 +2501,7 @@ void SourceView::lookup(string s, bool silent)
 	if (line > 0 && line <= line_count)
 	{
 	    if (gdb->type() == GDB)
-		gdb_command("info line " + current_source_name()
+		gdb_command(string("info line ") + current_source_name()
 			    + ":" + itostring(line));
 	    else
 		show_position(full_path(current_file_name) 
@@ -2551,7 +2551,7 @@ void SourceView::lookup(string s, bool silent)
     {
 	// File:line given
 	if (gdb->type() == GDB)
-	    gdb_command("info line " + s);
+	    gdb_command(string("info line ") + s);
 	else
 	    show_position(s);
     }
@@ -2562,10 +2562,10 @@ void SourceView::lookup(string s, bool silent)
 	{
 	case GDB:
 	    if (s[0] == '0')	// Address given
-		s = "*" + s;
+		s = string("*") + s;
 	    if (s.length() > 0 && s[0] != '\'' && s[0] != '*')
 		s = string('\'') + s + '\'';
-	    gdb_command("info line " + s);
+	    gdb_command(string("info line ") + s);
 	    break;
 
 	case DBX:
@@ -2577,7 +2577,7 @@ void SourceView::lookup(string s, bool silent)
 	    break;
 
 	case XDB:
-	    gdb_command("v " + s);
+	    gdb_command(string("v ") + s);
 	    break;
 	}
     }
@@ -2693,7 +2693,7 @@ void SourceView::add_to_history(const string& address)
 	if (last_entry.freq(':') < 2)
 	{
 	    // Append address to this position
-	    last_entry += ":" + address;
+	    last_entry += string(":") + address;
 	}
 	else
 	{
@@ -2713,7 +2713,7 @@ void SourceView::add_to_history(const string& address)
     else
     {
 	// No source position yet: add address
-	history += "::" + address;
+	history += string("::") + address;
 	history_position = history.size();
     }
 
@@ -3403,21 +3403,21 @@ void SourceView::NewBreakpointDCB(Widget w, XtPointer, XtPointer call_data)
     {
     case GDB:
 	if (input[0] == '0')
-	    input = "*" + input; // Address given
-	gdb_command("break " + input);
+	    input = string("*") + input; // Address given
+	gdb_command(string("break ") + input);
 	break;
 
     case DBX:
 	if (isdigit(input[0]))
 	{
 	    // Line number given
-	    gdb_command("stop at " + input);
+	    gdb_command(string("stop at ") + input);
 	}
 	else if (input.contains(':') && !input.contains("::"))
 	{
 	    // File:pos given
-	    gdb_command("file " + input.before(':'), w);
-	    gdb_command("stop at " + input.after(':'), w);
+	    gdb_command(string("file ") + input.before(':'), w);
+	    gdb_command(string("stop at ") + input.after(':'), w);
 	}
 	else
 	{
@@ -3425,13 +3425,13 @@ void SourceView::NewBreakpointDCB(Widget w, XtPointer, XtPointer call_data)
 	    string pos = dbx_lookup(input);
 	    if (pos != "")
 	    {
-		gdb_command("file " + pos.before(':'), w);
-		gdb_command("stop at " + pos.after(':'), w);
+		gdb_command(string("file ") + pos.before(':'), w);
+		gdb_command(string("stop at ") + pos.after(':'), w);
 	    }
 	}
 
     case XDB:
-	gdb_command("b " + input);
+	gdb_command(string("b ") + input);
 	break;
     }
 }
@@ -3658,7 +3658,7 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
 	case GDB:
 	    {
 		string info = 
-		    gdb_question("info breakpoint " + itostring(bp_nr));
+		    gdb_question(string("info breakpoint ") + itostring(bp_nr));
 		if (info == NO_GDB_ANSWER)
 		    return;
 
@@ -3725,7 +3725,7 @@ void SourceView::BreakpointCmdCB(Widget,
     if (breakpoint_nrs[0] > 0)
     {
 	for (int i = 0; breakpoint_nrs[i] > 0; i++)
-	    cmd += " " + itostring(breakpoint_nrs[i]);
+	    cmd += string(" ") + itostring(breakpoint_nrs[i]);
 
 	gdb_command(cmd);
     }
@@ -3740,7 +3740,7 @@ void SourceView::LookupBreakpointCB(Widget, XtPointer, XtPointer)
     int *breakpoint_nrs = getDisplayNumbers(breakpoint_list_w);
     if (breakpoint_nrs[0] > 0 && breakpoint_nrs[1] == 0)
     {
-	lookup("#" + itostring(breakpoint_nrs[0]));
+	lookup(string("#") + itostring(breakpoint_nrs[0]));
     }
     delete[] breakpoint_nrs;
 }
@@ -3901,11 +3901,11 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	    if (offset == -1)
 		gdb_command("up");
 	    else if (offset < 0)
-		gdb_command("up " + itostring(-offset));
+		gdb_command(string("up ") + itostring(-offset));
 	    else if (offset == 1)
 		gdb_command("down");
 	    else if (offset > 0)
-		gdb_command("down " + itostring(offset));
+		gdb_command(string("down ") + itostring(offset));
 
 	    // Call `set_frame_pos' now.
 	    frame_pos_locked = false;
@@ -4246,7 +4246,7 @@ void SourceView::SelectRegisterCB (Widget, XtPointer, XtPointer call_data)
 
     if (item != "" && item[item.length() - 1] != '.')
     {
-	item = "/x $" + item.through(rxalphanum);
+	item = string("/x $") + item.through(rxalphanum);
 	source_arg->set_string(item);
     }
 }
@@ -4997,7 +4997,7 @@ void SourceView::refresh_codeWorkProc(XtPointer client_data, XtIntervalId *)
     }
 
     RefreshInfo *info = (RefreshInfo *)client_data;
-    bool ok = gdb->send_question("disassemble " + info->pc, 
+    bool ok = gdb->send_question(string("disassemble ") + info->pc, 
 				 refresh_codeOQC, (void *)info);
 
     if (!ok)
@@ -5058,7 +5058,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode)
 
 	// Show new status
 	refresh_code_pending = 
-	    new StatusDelay("Disassembling location " + pc);
+	    new StatusDelay(string("Disassembling location ") + pc);
 	return;
     }
 
@@ -5165,7 +5165,7 @@ void SourceView::set_disassemble(bool set)
 string SourceView::clear_command(string pos)
 {
     if (gdb->has_clear_command())
-	return "clear " + pos;
+	return string("clear ") + pos;
 
     string file = current_file_name;
     string line = pos;
@@ -5217,9 +5217,9 @@ string SourceView::clear_command(string pos)
 string SourceView::command_list(string cmd)
 {
     if (gdb->has_when_semicolon())
-	return "{ " + cmd + "; }";
+	return string("{ ") + cmd + "; }";
     else
-	return "{ " + cmd + " }";
+	return string("{ ") + cmd + " }";
 }
 
 // Get the position of breakpoint NUM

@@ -26,7 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-const char exit_rcsid[] = 
+char exit_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
@@ -81,11 +81,11 @@ bool ddd_is_restarting = false;
 void ddd_install_signal()
 {
 #ifdef SIGHUP
-    signal(SIGHUP, ddd_signal);
+    signal(SIGHUP, SignalProc(ddd_signal));
 #endif
 
 #ifdef SIGTERM
-    signal(SIGTERM, ddd_signal);
+    signal(SIGTERM, SignalProc(ddd_signal));
 #endif
 }
 
@@ -103,39 +103,39 @@ void ddd_install_fatal(char *program_name)
 
     // Install signal handlers
 #ifdef SIGINT
-    signal(SIGINT, ddd_fatal);
+    signal(SIGINT, SignalProc(ddd_fatal));
 #endif
 
 #ifdef SIGFPE
-    signal(SIGFPE, ddd_fatal);
+    signal(SIGFPE, SignalProc(ddd_fatal));
 #endif
 
 #ifdef SIGILL
-    signal(SIGILL, ddd_fatal);
+    signal(SIGILL, SignalProc(ddd_fatal));
 #endif
 
 #ifdef SIGSEGV
-    signal(SIGSEGV, ddd_fatal);
+    signal(SIGSEGV, SignalProc(ddd_fatal));
 #endif
 
 #ifdef SIGBUS
-    signal(SIGBUS, ddd_fatal);
+    signal(SIGBUS, SignalProc(ddd_fatal));
 #endif
 
 #ifdef SIGIOT
-    signal(SIGIOT, ddd_fatal);
+    signal(SIGIOT, SignalProc(ddd_fatal));
 #endif
 
 #ifdef SIGTRAP
-    signal(SIGTRAP, ddd_fatal);
+    signal(SIGTRAP, SignalProc(ddd_fatal));
 #endif
 
 #ifdef SIGEMT
-    signal(SIGEMT, ddd_fatal);
+    signal(SIGEMT, SignalProc(ddd_fatal));
 #endif
 
 #ifdef SIGSYS
-    signal(SIGSYS, ddd_fatal);
+    signal(SIGSYS, SignalProc(ddd_fatal));
 #endif
 }
 

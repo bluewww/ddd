@@ -26,7 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-const char commandQueue_rcsid[] = 
+char commandQueue_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__

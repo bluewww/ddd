@@ -119,7 +119,7 @@ void regex::fatal(int errcode, const char *src)
 
 regex::regex(const char* t, int flags)
 {
-    string rx = "^" + string(t);
+    string rx = string("^") + string(t);
     int errcode = regcomp(&compiled, rx, flags);
     if (errcode)
 	fatal(errcode, rx.chars());
