@@ -71,6 +71,22 @@ static WindowState tool_shell_state        = PoppedDown;
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref);
 
+static void RecenterToolShellCB(Widget, XtIntervalId *)
+{
+    XWindowAttributes attr;
+    XGetWindowAttributes(XtDisplay(tool_buttons_w), 
+			 XtWindow(tool_buttons_w), &attr);
+    if (attr.map_state != IsViewable)
+    {
+	// Try again in 200 ms
+	XtAppAddTimeOut(XtWidgetToApplicationContext(tool_shell), 200,
+			RecenterToolShellCB, XtPointer(0));
+	return;
+    }
+
+    recenter_tool_shell(source_view->source());
+}
+
 // Popup initial shell
 void initial_popup_shell(Widget w)
 {
@@ -114,14 +130,15 @@ void initial_popup_shell(Widget w)
     {
 	if (iconic)
 	{
-	    popdown_shell(w);
+	    popdown_shell(tool_shell);
 	}
 	else
 	{
 	    XtManageChild(tool_buttons_w);
-	    XtManageChild(w);
-	    XtPopup(w, XtGrabNone);
-	    recenter_tool_shell(source_view->source());
+	    XtManageChild(tool_shell);
+	    XtPopup(tool_shell, XtGrabNone);
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(tool_shell), 0,
+			    RecenterToolShellCB, XtPointer(0));
 	}
     }
     else if (w != toplevel)
@@ -447,6 +464,7 @@ void gdbOpenExecWindowCB(Widget, XtPointer, XtPointer)
 void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 {
     popup_shell(tool_shell);
+    wait_until_mapped(tool_shell);
     recenter_tool_shell(source_view->source());
 }
 
@@ -455,36 +473,84 @@ void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 // Command tool placement
 //-----------------------------------------------------------------------------
 
+// Find the WM frame surrounding WINDOW
+static Window frame_window(Window window)
+{
+    // Find WM frame surrounding tool shell
+    Window w = window;
+    for (;;)
+    {
+	Window root;
+	Window parent;
+	Window *children;
+	unsigned int nchildren;
+	Status ok = XQueryTree(XtDisplay(tool_shell), w, 
+			       &root, &parent, &children, &nchildren);
+	XFree(children);
+
+	if (!ok)
+	    break;
+
+	if (parent == root)
+	    return w;		// Got it
+
+	w = parent;
+    }
+
+    return window;		// Not found
+}
+
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref)
 {
-    const int offset = 10;
+    const int offset = 8;	// Distance from REF edge
 
     if (ref == 0 || tool_shell == 0)
 	return;
 
+    Window ref_window  = XtWindow(ref);
+    Window tool_window = XtWindow(tool_shell);
+    Window tool_frame  = frame_window(tool_window);
+
     // Get location of upper right edge of REF
     XWindowAttributes ref_attributes;
-    XGetWindowAttributes(XtDisplay(ref), XtWindow(ref),
-			 &ref_attributes);
-    XWindowAttributes tool_attributes;
-    XGetWindowAttributes(XtDisplay(tool_shell), XtWindow(tool_shell),
-			 &tool_attributes);
+    XGetWindowAttributes(XtDisplay(ref), ref_window, &ref_attributes);
 
-    int x, y;
+    // Get tool shell attributes
+    XWindowAttributes tool_attributes;
+    XGetWindowAttributes(XtDisplay(tool_shell), tool_window, &tool_attributes);
+
+    // Get tool frame attributes
+    XWindowAttributes frame_attributes;
+    XGetWindowAttributes(XtDisplay(tool_shell), tool_frame, 
+			 &frame_attributes);
+
+    // Determine new position relative to REF
+    int x = ref_attributes.width - tool_attributes.width - offset;
+    int y = offset;
+
+    // Correct them relative to frame thickness
+    int frame_x, frame_y;
+    Window frame_child;
+    XTranslateCoordinates(XtDisplay(ref), tool_window,
+			  tool_frame,
+			  tool_attributes.width, 0, &frame_x, &frame_y,
+			  &frame_child);
+
+    x -= frame_attributes.width - frame_x + frame_attributes.border_width;
+    y += frame_y + frame_attributes.border_width;
+
+    // Get root coordinates
+    int root_x, root_y;
     Window ref_child;
-    XTranslateCoordinates(XtDisplay(ref), XtWindow(ref), 
+    XTranslateCoordinates(XtDisplay(ref), ref_window, 
 			  ref_attributes.root,
-			  ref_attributes.width 
-			  - tool_attributes.width 
-			  - offset,
-			  offset,
-			  &x, &y,
+			  x, y, &root_x, &root_y,
 			  &ref_child);
 
-    // Move tool shell to X, Y
+    // Move tool shell to ROOT_X, ROOT_Y
     XtVaSetValues(tool_shell,
-		  XmNx, x,
-		  XmNy, y,
+		  XmNx, root_x,
+		  XmNy, root_y,
 		  NULL);
 }
