@@ -297,7 +297,7 @@ Volunteers for fixing these and other bugs are welcome!
      like ["test_dxdb.f":49], it is omitted from the listing.
      Reported by Clemmitt Sigler <siglercm@alphamb.phys.vt.edu>.
 
-138. With DBX as the inferior debugger, deleting a node disables all
+138* With DBX as the inferior debugger, deleting a node disables all
      other nodes.  Reported by Ira Cooper <ilcooper@tasc.com>.
 
 139. With Solaris 2.5.1, DDD recurses endlessly in glob_filename().
@@ -309,4 +309,4 @@ Volunteers for fixing these and other bugs are welcome!
      the way to the top or bottom of the window before it scrolls to
      the desired place.
 
-149. (Insert your bug here)
+150. (Insert your bug here)
