@@ -1363,15 +1363,17 @@ FIG2PDF = $(FIG2DEV) -L pdf
 .fig.pdf:
 	(cd `dirname $<` && $(FIG2PDF) `basename $<` ) > $@
 
+# Our `texinfo.tex' must reside in the current directory, otherwise
+# texi2dvi will use the default.
 .texi.pdf:
 	@-test -d PICS || $(LN_S) $(picdir) .
-	TEXINPUTS=$(top_srcdir)/../texinfo:$$TEXINPUTS \
-	  MAKEINFO='$(MAKEINFO) -I $(srcdir)' $(TEXI2PDF) $<
+	@-test -f texinfo.tex || $(LN_S) $(texidir)/texinfo.tex .
+	$(TEXI2PDF) --pdf -I $(srcdir) -I $(texidir) $<
 
 .texi.dvi:
 	@-test -d PICS || $(LN_S) $(picdir) .
-	TEXINPUTS=$(top_srcdir)/../texinfo:$$TEXINPUTS \
-	  MAKEINFO='$(MAKEINFO) -I $(srcdir)' $(TEXI2DVI) $<
+	@-test -f texinfo.tex || $(LN_S) $(texidir)/texinfo.tex .
+	$(TEXI2DVI) -I $(srcdir) -I $(texidir) $<
 
 # PostScript pictures in the DDD manual.
 # All of these are generated from FIG and XPM files.
