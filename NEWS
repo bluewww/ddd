@@ -54,8 +54,8 @@ DDD 2.1 [in development; scheduled for April, 1997]
       state.
 
     Documentation:
-    - The PostScript copy of the manual has been enriched with several
-      color pictures showing DDD usage.  [work in progress]
+    - The PostScript copy of the manual has been enriched with more
+      than 30 color screen shots showing DDD usage.
 
     Changes in configuration and building:
     - DDD 2.1 uses improved configuration checks from Autoconf 2.11.
