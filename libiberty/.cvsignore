@@ -8,3 +8,5 @@ lneeded-list
 needed-list
 needed.awk
 needed2.awk
+stamp-picdir
+xhost-mkfrag
