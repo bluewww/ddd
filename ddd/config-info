@@ -34,8 +34,8 @@ echo '#include "configinfo.h"'
 echo 
 echo "const char *config_info = "
 (
-    echo "Binary built by `cat ./USERINFO`"
-    echo "on `date`"
+    echo "Built by `cat ./USERINFO`"
+    echo "on `date`."
 
     echo
     echo Features:
