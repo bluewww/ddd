@@ -1193,7 +1193,20 @@ if test "$GXX" = yes; then
     esac
   done
 else
-  ICE_XS_DEBUG_INFO
+  case "$CXX" in
+    *CC)
+      case "$host_os" in
+	*solaris*)
+	  # We're using CC on Solaris.  Debugging with GDB requires -xs.
+	  ICE_XS_DEBUG_INFO
+	  ;;
+	*)
+	  ;;
+      esac
+      ;;
+    *)
+      ;;
+  esac
   CXXOPT="-DNDEBUG"
   CXXDEBUG="${XS_DEBUG_INFO}"
   CXXWARNINGS=
