@@ -362,13 +362,6 @@ Volunteers for these and other projects are welcome!
 
 235. L. Peter Deutsch <ghost@aladdin.com> suggests:
 
-     * I propose adding some double-click support to the data display.
-       Specifically, I would like to see double-clicking on a pointer
-       value do the equivalent of "Display *()", double-clicking on a
-       composite value with hidden substructure do the equivalent of
-       "Show 1 level in-line", and double-clicking on a composite
-       value with visible substructure do the equivalent of "Hide".
-
      * There are 4 different styles of command selection in the GUI:
        menu bar (at the top), individual command buttons (2 rows),
        floating 2-D button panel (Run, Interrupt, etc.), and pop-up
@@ -385,7 +378,5 @@ Volunteers for these and other projects are welcome!
       visible in the data window.  ddd already has a nice
       "preferences" facility: this would be an obvious place to add
       this capability.
-
-236. Support getting core dumps via the /proc file system.
 
 238. (Insert your project idea here)

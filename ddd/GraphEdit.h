@@ -73,6 +73,7 @@
 #define XtNcompareNodesCallback     "compareNodes"
 #define XtNpreLayoutCallback        "preLayout"
 #define XtNpostLayoutCallback       "postLayout"
+#define XtNpreSelectionCallback     "preSelection"
 #define XtNselectTile               "selectTile"
 #define XtNrotation		    "rotation"
 #define XtNautoLayout		    "autoLayout"
@@ -160,7 +161,7 @@ struct GraphEditPositionChangedInfo {
         new_position(info.new_position),
         is_last(info.is_last)
     {}
-    const GraphEditPositionChangedInfo& 
+    GraphEditPositionChangedInfo& 
         operator = (const GraphEditPositionChangedInfo& info)
     {
 	graph        = info.graph;
@@ -172,22 +173,31 @@ struct GraphEditPositionChangedInfo {
     }
 };
 
-struct GraphEditSelectionChangedInfo {
+struct GraphEditPreSelectionInfo {
     Graph     *graph;		// Graph this node is in
+    GraphNode *node;		// Selected node
+    Boolean   double_click;	// Double-click?
+    Boolean   doit;		// Flag: do default action?
 
-    GraphEditSelectionChangedInfo():
-        graph(0)
+    GraphEditPreSelectionInfo():
+        graph(0), node(0), double_click(False), doit(True)
     {}
-    GraphEditSelectionChangedInfo(const GraphEditSelectionChangedInfo& info):
-        graph(info.graph)
+    GraphEditPreSelectionInfo(const GraphEditPreSelectionInfo& info):
+        graph(info.graph), node(info.node), double_click(info.double_click),
+	doit(info.doit)
     {}
-    const GraphEditSelectionChangedInfo& 
-        operator = (const GraphEditSelectionChangedInfo& info)
+    GraphEditPreSelectionInfo& 
+        operator = (const GraphEditPreSelectionInfo& info)
     {
-	graph = info.graph;
+	graph        = info.graph;
+	node         = info.node;
+	double_click = info.double_click;
+	doit         = info.doit;
 	return *this;
     }
 };
+
+typedef GraphEditPreSelectionInfo GraphEditSelectionChangedInfo;
 
 struct GraphEditLayoutInfo {
     Graph     *graph;		// Graph this node is in
@@ -200,7 +210,7 @@ struct GraphEditLayoutInfo {
     GraphEditLayoutInfo(const GraphEditLayoutInfo& info):
         graph(info.graph), mode(info.mode), rotation(info.rotation)
     {}
-    const GraphEditLayoutInfo& 
+    GraphEditLayoutInfo& 
         operator = (const GraphEditLayoutInfo& info)
     {
 	graph    = info.graph;
@@ -228,7 +238,7 @@ struct GraphEditCompareNodesInfo {
 	node2(info.node2),
 	result(info.result)
     {}
-    const GraphEditCompareNodesInfo& 
+    GraphEditCompareNodesInfo& 
         operator = (const GraphEditCompareNodesInfo& info)
     {
         graph  = info.graph;

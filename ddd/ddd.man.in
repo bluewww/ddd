@@ -1131,6 +1131,12 @@ aggregate and select the appropriate menu item.
 .PP
 .PSPIC @srcdir@/PICS/ddd-hide-display.ps 15.3cm
 .PP
+As an even faster alternative, you can also double-click \fImouse
+button 1\fR on a value.  If some part of the value is hidden, more
+details will be shown; if the entire value is shown, double-clicking
+will \fIhide\fR the value instead.  This way, you can double-click on
+a value until you get the right amount of details.
+.PP
 If \fIall\fR details of a display are hidden, the display is
 considered \fIdisabled\fR.  Displays can be disabled or enabled via
 the \s-2@DDD@\s+2 commands
@@ -1244,7 +1250,7 @@ a new expression to be displayed.
 .\"
 .SS "Dereferencing Pointers"
 .\"
-There is a special shortcut for creating dependent displays showing
+There are special shortcuts for creating dependent displays showing
 the value of a dereferenced pointer.  This allows for rapid
 examination of pointer-based data structures.
 .PP
@@ -1255,6 +1261,9 @@ the dereferenced pointer value is created.
 As a faster alternative, you can also press \fImouse button 3\fR on the
 originating pointer value or name and select the `\fBDisplay *\fR'
 menu item.
+.PP
+As an even faster alternative, you can also double-click \fImouse
+button 1\fR on the originating pointer value or name.
 .PP
 The `\fBDisplay *()\fR' function is also accessible by pressing and
 holding the `\fBDisplay ()\fR' button.

@@ -4,7 +4,7 @@
 include(ifdef(`srcdir',srcdir()/macros.m4,macros.m4))dnl
 Ddd*appDefaultsVersion: @VERSION@
 
-! Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+! Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 ! Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 ! 
 ! This file is part of the DDD Library.
@@ -1459,7 +1459,7 @@ The @Logo D@logo ata @Logo D@logo isplay @Logo D@logo ebugger\n\
 @rm by Dorothea L\374tkehaus and Andreas Zeller.\n\
 \n\
 DDD @VERSION@ (@host@),\n\
-Copyright \251 1997 Technische Universit\344t Braunschweig, Germany.\n
+Copyright \251 1998 Technische Universit\344t Braunschweig, Germany.\n
 
 ! The default Help Text.
 Ddd*helpString:	\
@@ -3096,7 +3096,7 @@ It shows the data displays of the debugged program.\n\
 STRONG(Selecting displays)\n\
 ITEM Using BUTTON(1), click on a display \
 to select it.\n\
-ITEM Double-click on a display to select all connected displays.\n\
+ITEM Double-click on a display title to select all connected displays.\n\
 ITEM Double-click on the background to select all displays.\n\
 ITEM Drag on the background to select several displays.\n\
 \n\
@@ -3108,12 +3108,13 @@ ITEM Using BUTTON(1), drag on a display to move\n\
     all selected displays.\n\
 \n\
 STRONG(Modifying displays)\n\
-ITEM Using BUTTON(3), click on some display \
-to modify it.\n\
+ITEM Using BUTTON(1), double-click on a value for details.\n\
+ITEM Using BUTTON(3), click on some display to modify it.\n\
 ITEM Using KEY(Shift) + BUTTON(3), select modifications from\n\
     a shortcut menu.\n\
 \n\
 STRONG(Creating displays)\n\
+ITEM Using BUTTON(1), double-click on a pointer to dereference it.\n\
 ITEM Using BUTTON(3), click on the background\n\
     to create new displays via a popup menu.
 ])dnl
@@ -3785,7 +3786,7 @@ help on any of these areas.
 
 Ddd*gdb_w.value: \
 DDD @VERSION@ (@host@), by Dorothea L\374tkehaus and Andreas Zeller.\n\
-Copyright \251 1997 Technische Universit\344t Braunschweig, Germany.\n
+Copyright \251 1998 Technische Universit\344t Braunschweig, Germany.\n
 
 Ddd*gdb_w.rows:			10
 Ddd*gdb_w.columns:		80

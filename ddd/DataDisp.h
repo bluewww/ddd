@@ -120,6 +120,7 @@ class DataDisp {
     static void UpdateDisplayEditorSelectionCB (Widget, XtPointer, XtPointer);
     static void PreLayoutCB                    (Widget, XtPointer, XtPointer);
     static void PostLayoutCB                   (Widget, XtPointer, XtPointer);
+    static void DoubleClickCB                  (Widget, XtPointer, XtPointer);
 
     //-----------------------------------------------------------------------
     // Timers and timer callbacks

@@ -185,6 +185,8 @@ static XtResource resources[] = {
 	offset(preLayoutProc), XtRCallback, XtPointer(0) },
     { XtNpostLayoutCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
 	offset(postLayoutProc), XtRCallback, XtPointer(0) },
+    { XtNpreSelectionCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
+	offset(preSelectionProc), XtRCallback, XtPointer(0) },
 
 #undef offset
 };
@@ -1686,13 +1688,14 @@ static void moveTo(Widget w,
 }
 
 // Call ``selection changed'' callbacks
-static void selectionChanged(Widget w)
+static void selectionChanged(Widget w, Boolean double_click)
 {
     const GraphEditWidget _w  = GraphEditWidget(w);
     Graph* graph              = _w->graphEdit.graph;
 
     GraphEditSelectionChangedInfo info;
-    info.graph = graph;
+    info.graph        = graph;
+    info.double_click = double_click;
 
     XtCallCallbacks(w, XtNselectionChangedCallback, caddr_t(&info));
 }
@@ -1725,7 +1728,7 @@ static void SelectAll(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     if (_SelectAll(w, event, params, num_params))
-	selectionChanged(w);
+	selectionChanged(w, False);
 }
 
 
@@ -1754,7 +1757,7 @@ static void UnselectAll(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
     if (_UnselectAll(w, event, params, num_params))
-	selectionChanged(w);
+	selectionChanged(w, False);
 }
 
 // Find nodes connected to ROOT
@@ -1830,6 +1833,8 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params, SelectionMode mode, Boolean follow)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
+
+    Graph* graph             = _w->graphEdit.graph;
     Cursor moveCursor        = _w->graphEdit.moveCursor;
 
     GraphEditState& state    = _w->graphEdit.state;
@@ -1850,6 +1855,20 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
     lastSelectTime = t;
 
     GraphNode *node = graphEditGetNodeAtPoint(w, p);
+
+    if (mode == SetSelection)
+    {
+	GraphEditPreSelectionInfo info;
+	info.graph        = graph;
+	info.node         = node;
+	info.doit         = True;
+	info.double_click = double_click;
+
+	XtCallCallbacks(w, XtNpreSelectionCallback, caddr_t(&info));
+
+	if (!info.doit)
+	    return;
+    }
 
     if (node == 0 || node->hidden())
     {
@@ -1932,7 +1951,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 	}
 
 	if (changed)
-	    selectionChanged(w);
+	    selectionChanged(w, double_click);
 
 	if (follow)
 	{
@@ -2161,7 +2180,7 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
     }
 
     if (changed)
-	selectionChanged(w);
+	selectionChanged(w, False);
 
     defineCursor(w, defaultCursor);
 }
@@ -2261,7 +2280,7 @@ static void select_single_node(Widget w, GraphNode *selectNode)
     }
 
     if (changed)
-	selectionChanged(w);
+	selectionChanged(w, False);
 }
 
 // Select first node

@@ -943,12 +943,106 @@ MString DataDisp::shortcut_help(Widget w)
 }
 
 
+//-----------------------------------------------------------------------------
+// Double click callback
+//-----------------------------------------------------------------------------
+
+// Counter
+struct DataDispCount {
+    int all;			// Total # of displays
+    int selected;		// # of selected displays
+    int selected_expanded;	// # of selected and expanded displays
+    int selected_collapsed;	// # of selected and collapsed displays
+    int selected_data;		// # of selected user displays
+
+    DataDispCount(DispGraph *disp_graph);
+};
+
+DataDispCount::DataDispCount(DispGraph *disp_graph)
+    : all(0), selected(0),
+      selected_expanded(0),
+      selected_collapsed(0),
+      selected_data(0)
+{
+
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	all++;
+
+	if (dn->selected())
+	{
+	    selected++;
+	    if (!dn->is_user_command())
+		selected_data++;
+
+	    if (dn->disabled())
+		selected_collapsed++;
+	    else
+	    {
+		DispValue *dv = dn->selected_value();
+		if (dv == 0)
+		    dv = dn->value();
+		if (dv != 0)
+		{
+		    selected_expanded  += int(dv->expanded());
+		    selected_collapsed += dv->collapsedAll();
+		}
+	    }
+	}
+    }
+}
+
+void DataDisp::DoubleClickCB(Widget w, XtPointer client_data, 
+			     XtPointer call_data)
+{
+    DataDisp *data_disp = (DataDisp *)client_data;
+    GraphEditPreSelectionInfo *info = (GraphEditPreSelectionInfo *)call_data;
+
+    if (!info->double_click)
+	return;			// Single click
+
+    if (info->node == 0)
+	return;			// Double-click on background
+
+    DispNode *disp_node_arg   = data_disp->selected_node();
+    if (disp_node_arg == 0)
+	return;			// No selection
+
+    DispValue *disp_value_arg;
+
+    // Do the right thing
+    if (disp_node_arg->disabled())
+    {
+	showMoreDetailCB(w, XtPointer(1), 0); // Show 1 level more
+    }
+    else
+    {
+	disp_value_arg = disp_node_arg->selected_value();
+	if (disp_value_arg == 0)
+	    return;			// No selected value within node
+
+	DataDispCount count(disp_graph);
+	
+	if (disp_value_arg->type() == Pointer && !disp_value_arg->collapsed())
+	    data_disp->dereferenceCB(w, 0, 0);    // Dereference
+	else if (count.selected_collapsed > 0)
+	    showMoreDetailCB(w, XtPointer(1), 0); // Show 1 level more
+	else
+	    hideDetailCB(w, XtPointer(-1), 0);    // Hide all
+    }
+
+    // Don't do the default action
+    info->doit = False;
+}
+
 
 //-----------------------------------------------------------------------------
-// Popup-Callbacks
+// Popup menu callbacks
 //-----------------------------------------------------------------------------
-// ***************************************************************************
-//
+
 void DataDisp::popup_new_argCB (Widget    display_dialog,
 				XtPointer client_data,
 				XtPointer)
@@ -960,8 +1054,6 @@ void DataDisp::popup_new_argCB (Widget    display_dialog,
 }
 
 
-// ***************************************************************************
-//
 void DataDisp::popup_newCB (Widget    display_dialog,
 			    XtPointer client_data,
 			    XtPointer)
@@ -1432,7 +1524,7 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
     {
 	disp_node = disp_graph->get (disp_nr);
 	disp_value = (DispValue *)disp_node->box()->data(p);
-	    
+
 	disp_bgn = disp_node->nodeptr();
 	was_selected = disp_bgn->selected() && disp_value == 0;
 
@@ -1454,7 +1546,7 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
 	    // FALL THROUGH
 
 	case SetSelection:
-	    if (disp_value != selected_value())
+	    if (disp_value != disp_node->selected_value())
 	    {
 		disp_node->select(disp_value);
 		graphEditRedrawNode(graph_edit, disp_bgn);
@@ -1525,7 +1617,11 @@ DispValue *DataDisp::selected_value()
 	return 0;
 
     DispValue *dv = dn->selected_value();
-    return dv ? dv : dn->value();
+    if (dv != 0)
+	return dv;
+
+    // We treat the selected node just like the selected top value
+    return dn->value();
 }
 
 void DataDisp::refresh_args()
@@ -1543,44 +1639,10 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     (void) timer_id;		// Use it
     assert(*timer_id == refresh_args_timer);
     refresh_args_timer = 0;
-    
-    int count_selected           = 0;
-    int count_all                = 0;
-    int count_selected_expanded  = 0;
-    int count_selected_collapsed = 0;
-    int count_selected_data      = 0;
 
-    MapRef ref;
-    for (DispNode* dn = disp_graph->first(ref); 
-	 dn != 0;
-	 dn = disp_graph->next(ref))
-    {
-	count_all++;
+    DataDispCount count(disp_graph);
 
-	if (dn->selected())
-	{
-	    count_selected++;
-	    if (!dn->is_user_command())
-		count_selected_data++;
-
-
-	    if (dn->disabled())
-		count_selected_collapsed++;
-	    else
-	    {
-		DispValue *dv = dn->selected_value();
-		if (dv == 0)
-		    dv = dn->value();
-		if (dv)
-		{
-		    count_selected_expanded  += int(dv->expanded());
-		    count_selected_collapsed += dv->collapsedAll();
-		}
-	    }
-	}
-    }
-
-    if (count_selected > 1)
+    if (count.selected > 1)
     {
 	// Clear all local highlights
 	MapRef ref;
@@ -1604,8 +1666,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     set_sensitive(graph_popup[GraphItms::NewArg].widget, !source_arg->empty());
 
     // Refresh (), Select All ()
-    set_sensitive(graph_popup[GraphItms::Refresh].widget,   count_all > 0);
-    set_sensitive(graph_popup[GraphItms::SelectAll].widget, count_all > 0);
+    set_sensitive(graph_popup[GraphItms::Refresh].widget,   count.all > 0);
+    set_sensitive(graph_popup[GraphItms::SelectAll].widget, count.all > 0);
 
     Boolean dereference_ok  = False;
     Boolean rotate_ok       = False;
@@ -1662,7 +1724,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  rotate_ok);
 
     // Show/Hide Detail
-    if (count_selected_expanded > 0 && count_selected_collapsed == 0)
+    if (count.selected_expanded > 0 && count.selected_collapsed == 0)
     {
 	// Only expanded displays selected
 	set_label(node_popup[PopupItms::Detail].widget, "Hide All");
@@ -1670,7 +1732,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	set_sensitive(node_popup[PopupItms::Detail].widget, true);
 	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
     }
-    else if (count_selected_collapsed > 0)
+    else if (count.selected_collapsed > 0)
     {
 	// Some collapsed displays selected
 	set_label(node_popup[PopupItms::Detail].widget, "Show All");
@@ -1686,28 +1748,28 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     }
 
     set_sensitive(display_area[DisplayItms::ShowDetail].widget, 
-		  count_selected_collapsed > 0);
+		  count.selected_collapsed > 0);
     set_sensitive(display_area[DisplayItms::HideDetail].widget, 
-		  count_selected_expanded > 0);
+		  count.selected_expanded > 0);
 
     set_sensitive(detail_menu[DetailItms::ShowMore].widget, 
-		  count_selected_collapsed > 0);
+		  count.selected_collapsed > 0);
     set_sensitive(detail_menu[DetailItms::ShowJust].widget, 
-		  count_selected > 0);
+		  count.selected > 0);
     set_sensitive(detail_menu[DetailItms::ShowDetail].widget, 
-		  count_selected_collapsed > 0);
+		  count.selected_collapsed > 0);
     set_sensitive(detail_menu[DetailItms::HideDetail].widget, 
-		  count_selected_expanded > 0);
+		  count.selected_expanded > 0);
 
     // Delete
-    set_sensitive(graph_cmd_area[CmdItms::Delete].widget, count_selected);
-    set_sensitive(display_area[DisplayItms::Delete].widget, count_selected);
+    set_sensitive(graph_cmd_area[CmdItms::Delete].widget, count.selected);
+    set_sensitive(display_area[DisplayItms::Delete].widget, count.selected);
 
     // Set
     set_sensitive(graph_cmd_area[CmdItms::Set].widget, 
-		  count_selected == 1 && count_selected_data == 1);
+		  count.selected == 1 && count.selected_data == 1);
     set_sensitive(display_area[DisplayItms::Set].widget, 
-		  count_selected == 1 && count_selected_data == 1);
+		  count.selected == 1 && count.selected_data == 1);
 
     // Shortcut menu
     for (int i = 0; i < shortcut_items && i < shortcut_exprs.size(); i++)
@@ -1716,7 +1778,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	bool sens = false;
 	if (!expr.contains("()"))
 	    sens = true;	// Argument not needed
-	else if (count_selected == 0)
+	else if (count.selected == 0)
 	    sens = false;	// Nothing selected
 	else if (disp_value_arg)
 	    sens = true;	// Exactly one value selected
@@ -1729,7 +1791,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     }
 
     // Argument field
-    if (count_selected > 0)
+    if (count.selected > 0)
     {
 	string arg;
 	if (disp_value_arg)
@@ -1745,7 +1807,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	else
 	{
 	    ostrstream arg_os;
-	    arg_os << "(" << count_selected << " displays)";
+	    arg_os << "(" << count.selected << " displays)";
 	    arg = arg_os;
 	}
 	graph_arg->set_string(arg);
@@ -3682,24 +3744,24 @@ void DataDisp::refresh_display_list(bool silent)
     bool *selected     = new bool[number_of_displays + 1];
 
     // Set titles
-    int count = 0;
+    int display_count = 0;
     string line;
     if (number_of_displays > 0)
     {
-	line = fmt(nums[count], nums_width) 
-	    + " " + fmt(exprs[count], exprs_width)
-	    + " " + fmt(states[count], states_width)
-	    + " " + fmt(scopes[count], scopes_width);
+	line = fmt(nums[display_count], nums_width) 
+	    + " " + fmt(exprs[display_count], exprs_width)
+	    + " " + fmt(states[display_count], states_width)
+	    + " " + fmt(scopes[display_count], scopes_width);
 	if (detect_aliases)
-	    line += " " + fmt(addrs[count], addrs_width);
+	    line += " " + fmt(addrs[display_count], addrs_width);
     }
     else
     {
 	line = "No displays.                           ";
     }
-    label_list[count] = line;
-    selected[count] = false;
-    count++;
+    label_list[display_count] = line;
+    selected[display_count] = false;
+    display_count++;
 
     int selected_displays = 0;	// Number of selected displays
     int index_selected    = -1;	// Index of single selected display
@@ -3708,28 +3770,28 @@ void DataDisp::refresh_display_list(bool silent)
     for (k = disp_graph->first_nr(ref); k != 0; k = disp_graph->next_nr(ref))
     {
 	DispNode* dn = disp_graph->get(k);
-	line = fmt(nums[count], nums_width) 
-	    + " " + fmt(exprs[count], exprs_width)
-	    + " " + fmt(states[count], states_width)
-	    + " " + fmt(scopes[count], scopes_width);
+	line = fmt(nums[display_count], nums_width) 
+	    + " " + fmt(exprs[display_count], exprs_width)
+	    + " " + fmt(states[display_count], states_width)
+	    + " " + fmt(scopes[display_count], scopes_width);
 	if (detect_aliases)
-	    line += " " + fmt(addrs[count], addrs_width);
+	    line += " " + fmt(addrs[display_count], addrs_width);
 
-	label_list[count] = line;
-	selected[count]   = dn->selected();
+	label_list[display_count] = line;
+	selected[display_count]   = dn->selected();
 
 	if (dn->selected())
 	{ 
 	    selected_displays++;
-	    index_selected = count;
+	    index_selected = display_count;
 	}
 
-	count++;
+	display_count++;
     }
 
-    sort(label_list + 1, selected + 1, count - 1);
+    sort(label_list + 1, selected + 1, display_count - 1);
 
-    setLabelList(display_list_w, label_list, selected, count, 
+    setLabelList(display_list_w, label_list, selected, display_count, 
 		 number_of_displays > 0, false);
 
     if (!silent)
@@ -3740,20 +3802,60 @@ void DataDisp::refresh_display_list(bool silent)
 	if (selected_displays == 1)
 	{
 	    // Show info about single selected display
-	    msg = rm("Display " + nums[index_selected] + " ");
-	    msg += tt(exprs[index_selected]);
-	    msg += rm(" (" + states[index_selected]);
-	    if (scopes[index_selected] != "")
+	    DispNode *dn = selected_node();
+	    DispValue *dv = 0;
+	    if (dn != 0)
 	    {
-		msg += rm(", scope ");
-		msg += tt(scopes[index_selected]);
+		if (dn->disabled())
+		    dv = dn->value();
+		else
+		    dv = dn->selected_value();
 	    }
-	    if (detect_aliases && addrs[index_selected] != "")
+
+	    if (dv != 0)
 	    {
-		msg += rm(", address ");
-		msg += tt(addrs[index_selected]);
+		DataDispCount count(disp_graph);
+
+		// Value within display selected
+		msg = rm("In display " + nums[index_selected] + " ");
+
+		string title = dv->full_name();
+		// shorten(title, DispBox::max_display_title_length);
+		msg += tt(title);
+		msg += rm(" (double-click to ");
+		if (dv->type() == Pointer && !dv->collapsed())
+		    msg += rm("dereference");
+		else if (count.selected_collapsed > 0)
+		    msg += rm("show more");
+		else
+		    msg += rm("hide");
+
+		msg += rm(")");
 	    }
-	    msg += rm(")");
+	    else
+	    {
+		// Display selected
+		msg = rm("Display " + nums[index_selected] + " ");
+
+		string title = exprs[index_selected];
+		// shorten(title, DispBox::max_display_title_length);
+		msg += tt(title);
+
+		msg += rm(" (" + states[index_selected]);
+		if (scopes[index_selected] != "")
+		{
+		    msg += rm(", scope ");
+		    msg += tt(scopes[index_selected]);
+		}
+
+		if (detect_aliases && addrs[index_selected] != "")
+		{
+		    msg += rm(", address ");
+		    msg += tt(addrs[index_selected]);
+		}
+
+		msg += rm(")");
+	    }
 	}
 	else if (selected_displays > 1)
 	{
@@ -4479,6 +4581,8 @@ DataDisp::DataDisp (XtAppContext app_context,
     XtManageChild (form1);
 
     // Add callbacks
+    XtAddCallback(graph_edit, XtNpreSelectionCallback,
+		  DoubleClickCB, XtPointer(this));
     XtAddCallback(graph_edit, XtNselectionChangedCallback,
 		  UpdateDisplayEditorSelectionCB, XtPointer(this));
     XtAddCallback(graph_edit, XtNcompareNodesCallback,

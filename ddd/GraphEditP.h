@@ -147,6 +147,7 @@ typedef struct _GraphEditPart {
     XtCallbackList compareNodesProc;      // Compare nodes (for layouting)
     XtCallbackList preLayoutProc;         // Called before layouting
     XtCallbackList postLayoutProc;        // Called after layouting
+    XtCallbackList preSelectionProc;      // Called before selection
 
     // Private state
     GraphEditState state;	// Current state
