@@ -109,6 +109,9 @@ bool is_file_cmd(const string& cmd, GDBAgent *gdb);
 // True if CMD changes breakpoints.
 bool is_break_cmd(const string& cmd);
 
+// True if CMD lists source.
+bool is_list_cmd(const string& cmd);
+
 // True if CMD changes the current position.
 bool is_lookup_cmd(const string& cmd);
 

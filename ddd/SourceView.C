@@ -3847,7 +3847,7 @@ void SourceView::lookup(string s, bool silent)
     if (s != "" && isspace(s[0]))
 	s = s.after(rxwhite);
 
-    if (s == "")
+    if (s.length() == 0)
     {
 	// Empty argument given
 	if (last_execution_pc != "")
@@ -3890,6 +3890,7 @@ void SourceView::lookup(string s, bool silent)
 			  itostring(line));
 		c.verbose = !silent;
 		c.prompt  = !silent;
+		c.echo    = !silent;
 		gdb_command(c);
 		break;
 	    }
@@ -3946,6 +3947,7 @@ void SourceView::lookup(string s, bool silent)
 	    Command c("info line " + s);
 	    c.verbose = !silent;
 	    c.prompt  = !silent;
+	    c.echo    = !silent;
 	    gdb_command(c);
 	}
 	else
@@ -3960,11 +3962,12 @@ void SourceView::lookup(string s, bool silent)
 	{
 	    if (s[0] == '0')	// Address given
 		s = "*" + s;
-	    if (s.length() > 0 && s[0] != '\'' && s[0] != '*')
+	    if (s[0] != '\'' && s[0] != '*')
 		s = string('\'') + s + '\'';
 	    Command c("info line " + s);
 	    c.verbose = !silent;
 	    c.prompt  = !silent;
+	    c.echo    = !silent;
 	    gdb_command(c);
 	    break;
 	}
@@ -3983,6 +3986,7 @@ void SourceView::lookup(string s, bool silent)
 	    Command c("v " + s);
 	    c.verbose = !silent;
 	    c.prompt  = !silent;
+	    c.echo    = !silent;
 	    gdb_command(c);
 	    break;
 	}

@@ -61,6 +61,7 @@ DDD 3.0 [in beta test]
     - You can have the most important dialogs be realized as
       non-transient windows, allowing the DDD main window to obscure
       them.  See the `transientDialogs' resource for details.
+    - Entering `list X' at the debugger prompt shows X in the source window.
     - The maximum number of glyphs is now configurable at startup time.
       See the `maxGlyphs' resource for details.
     - DDD no longer indents the source code, leaving more horizontal

@@ -214,3 +214,4 @@ const regex rxwhen                      (rx_matcher, (void *)"B4");
 const regex rxstopped_func              (rx_matcher, (void *)"B5");
 const regex rxframe_func                (rx_matcher, (void *)"B6");
 const regex rxdefine_cmd                (rx_matcher, (void *)"B7");
+const regex rxlist_cmd                  (rx_matcher, (void *)"B8");

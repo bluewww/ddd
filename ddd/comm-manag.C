@@ -97,6 +97,7 @@ public:
     int         set_frame_arg;    // Argument: 0: reset, +/-N: move N frames
     string      set_frame_func;   // Argument: new function
     string      graph_cmd;	  // Graph command
+    string      list_arg;	  // Argument when listing sources
 
     string      user_answer;	  // Buffer for the complete answer
     OQCProc     user_callback;	  // User callback
@@ -137,6 +138,7 @@ public:
 	  set_frame_arg(0),
 	  set_frame_func(""),
 	  graph_cmd(""),
+	  list_arg(""),
 
 	  user_answer(""),
 	  user_callback(0),
@@ -169,6 +171,7 @@ private:
 	  set_frame_arg(0),
 	  set_frame_func(""),
 	  graph_cmd(""),
+	  list_arg(""),
 
 	  user_answer(""),
 	  user_callback(0),
@@ -873,6 +876,17 @@ void send_gdb_command(string cmd, Widget origin,
 	if (!gdb->has_display_command())
 	    plus_cmd_data->refresh_data = true;
     }
+    else if (is_list_cmd(cmd))
+    {
+	// As a side effect of `list X', lookup X in the source
+	cmd_data->list_arg = cmd.after(rxwhite);
+
+	plus_cmd_data->refresh_breakpoints = false;
+	plus_cmd_data->refresh_where       = false;
+	plus_cmd_data->refresh_registers   = false;
+	plus_cmd_data->refresh_threads     = false;
+	plus_cmd_data->refresh_addr        = false;
+    }
     else if (is_cd_cmd(cmd))
     {
 	plus_cmd_data->refresh_pwd         = true;
@@ -1497,8 +1511,15 @@ void user_cmdOAC(void *data)
 
     if (gdb->type() == JDB)
     {
-	// Get a current program info to update the `recent files' list
+	// Get a current program info to update the `recent files' list.
+	// (In JDB, there will be no debugger interaction.)
 	ProgramInfo info;
+    }
+
+    if (cmd_data->list_arg != "")
+    {
+	// As a side effect of `list X', lookup X in the source
+	source_view->lookup(cmd_data->list_arg, true);
     }
 
     delete cmd_data;

@@ -389,6 +389,16 @@ bool is_lookup_cmd (const string& cmd)
     return cmd.matches(rxlookup_cmd);
 }
 
+// True if CMD changes current cursor position
+bool is_list_cmd (const string& cmd)
+{
+#if RUNTIME_REGEX
+    static regex rxlist_cmd("[ \t]*(l|li|lis|list)[ \t]+.*");
+#endif
+
+    return cmd.matches(rxlist_cmd);
+}
+
 // True if CMD changes directory
 bool is_cd_cmd (const string& cmd)
 {

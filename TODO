@@ -131,12 +131,6 @@ Volunteers for these and other projects are welcome!
 
 102 Have a WWW tutorial for DDD.  See also 080.
 
-108 David M. Karr <dkarr@nmo.gtegsc.com> suggests:
-    In the SparcWorks debugger, if I use the "list" command at the
-    internal dbx prompt, it lists the object or lines I specify in the
-    source window.  I believe that "ddd" should work this way.  Is there a
-    way to get this behavior, or is it simply not designed for this?
-
 110 N. Dan Zou <zou@hooked.net> suggests a way to display the class
     structure of an existing program graphically.  [Should be
     implemented as follows: use the `ptype' output to display types
@@ -218,8 +212,6 @@ Volunteers for these and other projects are welcome!
     (such as running or making the program as well as shell commands)
     should be ignored.
 
-168 Rename `Lookup' to `List' and recognize the `list' command.  See also #108.
-
 171 Use double-buffering to display the graph.  Even less flickering.
 
 175 Theodore Papadopoulo <papadop@sophia.inria.fr> suggests a smaller 
@@ -244,7 +236,7 @@ Volunteers for these and other projects are welcome!
 183 Have a way to re-dereference until no more changes occur.
 
 187 Have a `commands' menu listing up all debugger commands.  Could
-     be organized according to `help' classes.
+    be organized according to `help' classes.
 
 193 Have a way to unfold trees and graphs.  For instance, `Display
     *()' applied to a struct could dereference all contained pointers
@@ -351,7 +343,7 @@ Volunteers for these and other projects are welcome!
     This will allow to have a visual overview of the program behavior 
     and will be a great help to pinpoint troublesome code.
 
-277 Allow in-place editing.  There is already a simple `editSource'
+277 Allow in-place editing.  There is already a simple `sourceEditing'
     resource, but we'd have to do a lot more to realize decent editing
     capabilities.
 

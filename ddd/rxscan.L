@@ -302,5 +302,6 @@ B4{W}ni{W}nehw{W}(ro{W}won{W})?     	RETURN(&rxwhen);
 B5Breakpoint{W}{P}\,{W}			RETURN(&rxstopped_func);
 B6#{D}{W}{I}[^ \f\t\n]*{W}[(]		RETURN(&rxframe_func);
 B7{_}(define|document){W}{C}		RETURN(&rxdefine_cmd);
+B8{_}(l|li|lis|list){W}{C}	 	RETURN(&rxlist_cmd);
 (.|\n)				        RETURN(0);  // Anything else
 %%
