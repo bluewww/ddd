@@ -604,9 +604,9 @@ GRAPH_OBJECTS = \
 	RegionGN.o   \
 	ScrolledGE.o
 
-# All these objects were originally part of the NORA library and are now
-# maintained as part of DDD.
-NORA_OBJECTS = \
+# All these objects were originally part of the NORA library; they are
+# now maintained as part of DDD.
+LIB_OBJECTS = \
 	$(BASE_OBJECTS)   \
 	$(ARRAY_OBJECTS)  \
 	$(AGENT_OBJECTS)  \
@@ -675,7 +675,7 @@ USERINFO_OBJECTS =
 HUFFMAN_OBJECTS = strclass.o cook.o rxclass.o
 
 ## All objects.
-OBJECTS = $(NORA_OBJECTS) $(DDD_OBJECTS)
+OBJECTS = $(LIB_OBJECTS) $(DDD_OBJECTS)
 
 ## The program files.
 PROGS = $(ddd)
@@ -920,18 +920,18 @@ huffdecode: huffdecode.o $(HUFFMAN_OBJECTS)
 test-file: test-file.o
 	$(LINK.cc) -o $@ test-file.o $(ALL_X_LIBS)
 
-test-graph: test-graph.o $(NORA_OBJECTS) 
-	$(LINK.cc) -o $@ test-graph.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
+test-graph: test-graph.o $(LIB_OBJECTS) 
+	$(LINK.cc) -o $@ test-graph.o $(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
-vsl:	vsl.o DocSpace.o $(NORA_OBJECTS)
-	$(LINK.cc) -o $@ vsl.o DocSpace.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
+vsl:	vsl.o DocSpace.o $(LIB_OBJECTS)
+	$(LINK.cc) -o $@ vsl.o DocSpace.o $(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
 ttytest: ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS)
 	$(LINK.cc) -o $@ ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS) \
 	$(ALL_X_LIBS) $(LIBS)
 
-bug:	bug.o  $(NORA_OBJECTS)
-	$(LINK.cc) -o $@ bug.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
+bug:	bug.o  $(LIB_OBJECTS)
+	$(LINK.cc) -o $@ bug.o $(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
 tString: tString.o  $(HUFFMAN_OBJECTS)
 	$(LINK.cc) -o $@ tString.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
@@ -1078,7 +1078,7 @@ host.h: $(srcdir)/host.h.in config.status
 .PHONY: loc stats
 loc stats:
 	cd $(srcdir); \
-	for list in '$(NORA_OBJECTS)' '$(DDD_OBJECTS)' '$(OBJECTS)'; do \
+	for list in '$(LIB_OBJECTS)' '$(DDD_OBJECTS)' '$(OBJECTS)'; do \
 	pattern=`$(ECHO) $$list | $(SED) 's/\([a-zA-Z0-9_]*\)\.o/\1\\.*/g'`; \
 	$(ECHO) "Lines of code for $$pattern"; \
 	$(CAT) `$(LS) $$pattern | grep '\.[ChLY]'` | \
@@ -1126,6 +1126,48 @@ pub:	$(PROG_STUFF) configure
 		echo done.; \
 	    fi; \
 	done
+
+## Build on a variety of machines.  For development only.
+
+NICE=20
+TARGET=all
+
+.PHONY: everywhere
+everywhere: ultrix solaris aix hpux
+
+.PHONY: ultrix
+ultrix:	
+	@echo '### zeller@infbsps0.ips.cs.tu-bs.de (mips-dec-ultrix4.4)'
+	rsh -l zeller infbsps0.ips.cs.tu-bs.de $(SHELL) -c \
+		\''cd $$HOME/tmp/ddd/ddd; \
+		MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
+		nice -$(NICE) gmake CXXFLAGS="$(CXXFLAGS)" $(TARGET)'\'
+
+.PHONY:	solaris
+solaris:
+	@echo '### aze@whoopi.rob.cs.tu-bs.de (sparc-sun-solaris2.4)'
+	rsh -l aze whoopi.rob.cs.tu-bs.de      $(SHELL) -c \
+		\''cd $$HOME/ddd/ddd; \
+		PATH=/usr/local/bin:/bin:/usr/bin:/usr/ccs/bin:/usr/openwin/bin:/opt/SUNWspro/bin:/usr/ucb; export PATH; \
+		MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
+		nice -$(NICE) make CXXFLAGS="$(CXXFLAGS)" $(TARGET)'\'
+
+.PHONY: hpux
+hpux:
+	@echo '### i1092301@rzab1.rz.tu-bs.de (m68k-hp-hpux9.00)'
+	rsh -l i1092301 rzab1.rz.tu-bs.de      $(SHELL) -c \
+		\''PATH=/usr/local/gnu/hp400/bin:$$PATH; export PATH; \
+		cd $$HOME/ddd/ddd; \
+		MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
+		nice -$(NICE) make CXXFLAGS="$(CXXFLAGS)" $(TARGET)'\'
+
+.PHONY: aix
+aix:
+	@echo '### pp969098@rzcipa01.rz.tu-bs.de (rs6000-ibm-aix4.1.4.0)'
+	rsh -l pp969098 rzcipa01.rz.tu-bs.de   $(SHELL) -c \
+		\''cd $$HOME/ddd/ddd; \
+		MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
+		nice -$(NICE) make CXXFLAGS="$(CXXFLAGS)" $(TARGET)'\'
 
 
 ## Make dependency stuff.
