@@ -2978,6 +2978,14 @@ void SourceView::find_word_bounds (Widget text_w,
 	    // Select A->B as a whole
 	    startpos -= 2;
 	}
+	else if (startpos > 3 && 
+		 isid(text[startpos - 3]) &&
+		 text[startpos - 2] == ':' &&
+		 text[startpos - 1] == ':')
+	{
+	    // Select A::B as a whole
+	    startpos -= 2;
+	}
 	else
 	    break;
     }
