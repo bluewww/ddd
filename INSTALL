@@ -24,7 +24,7 @@ Requirements
          are achieved using OSF/Motif 2.0 or later.
 
          DDD also compiles and runs with LessTif, a free Motif clone,
-         release 0.82 or later, without loss of functionality.  Be
+         release 0.83 or later, without loss of functionality.  Be
          sure to check the DDD WWW site and the `patches/' directory
          for patches required to make DDD run.  LessTif is available
          via `http://www.lesstif.org/'.

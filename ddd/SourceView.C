@@ -3118,7 +3118,7 @@ void SourceView::create_text(Widget parent,
     XtSetArg(args[arg], XmNeditMode,          XmMULTI_LINE_EDIT); arg++;
     XtSetArg(args[arg], XmNcursorPositionVisible, True);          arg++;
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 82)
     {
 	// LessTif 0.81 has a bad implementation of auto-show
 	// position: rather than scrolling only when needed, the line
@@ -4405,7 +4405,7 @@ void SourceView::set_text_popup_label(int item, const string& arg, bool sens)
 
 void SourceView::set_text_popup_resource(int item, const string& arg)
 {
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 82)
     {
 	// Set up resources for yet-to-be-created popup menu
 	string db = string(DDD_CLASS_NAME "*text_popup.") 
@@ -4555,7 +4555,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	shorten(current_arg, max_popup_expr_length);
 	string current_ref_arg = gdb->dereferenced_expr(current_arg);
 
-	if (lesstif_version < 1000)
+	if (lesstif_version <= 82)
 	{
 	    set_text_popup_resource(TextItms::Print,    current_arg);
 	    set_text_popup_resource(TextItms::Disp,     current_arg);

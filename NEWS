@@ -19,6 +19,9 @@ DDD 2.3 [in development]
     - Using Sun DBX 3.x, data displays are no longer cluttered by DBX
       warnings.
 
+    Changes in configuration and building:
+    - LessTif 0.83 is supported.
+
 
 DDD 2.2.3
 ---------

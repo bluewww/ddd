@@ -1329,10 +1329,10 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XtPopdown(tip_shell);
     }
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 82)
     {
-	// LessTif 0.79 fails to resize the shell properly.  Use this
-	// hack instead.
+	// LessTif 0.82 and earlier fail to resize the shell properly.
+	// Use this hack instead.
 	XmFontList font_list;
 	XtVaGetValues(tip_label, XmNfontList, &font_list, NULL);
     

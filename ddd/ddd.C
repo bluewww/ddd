@@ -2658,128 +2658,133 @@ static void fix_status_size()
 		  XmNallowResize, False,
 		  NULL);
 
-    if (lesstif_version > 79)
-	return;
-
-    // For LessTif 0.79 and earlier, simulate a drag of the lowest
-    // sash to the bottom.  Ugly LessTif hack.
-
-    // Find the children of the paned window
-    Widget paned = XtParent(status_form);
-    WidgetList children;
-    Cardinal num_children = 0;
-    
-    XtVaGetValues(paned, 
-		  XmNchildren, &children,
-		  XmNnumChildren, &num_children,
-		  NULL);
-
-    // The sash controlling the status line is the lowest of all
-    Widget sash = 0;
-    for (Cardinal i = 0; i < num_children; i++)
+    if (lesstif_version <= 79)
     {
-	Widget child = children[i];
+	// For LessTif 0.79 and earlier, simulate a drag of the lowest
+	// sash to the bottom.  Ugly LessTif hack.
 
-	if (XmIsSash(child) && XtIsRealized(child) && XtIsManaged(child))
+	// Find the children of the paned window
+	Widget paned = XtParent(status_form);
+	WidgetList children;
+	Cardinal num_children = 0;
+    
+	XtVaGetValues(paned, 
+		      XmNchildren, &children,
+		      XmNnumChildren, &num_children,
+		      NULL);
+
+	// The sash controlling the status line is the lowest of all
+	Widget sash = 0;
+	for (Cardinal i = 0; i < num_children; i++)
 	{
-	    Position sash_y  = 0;
-	    Position child_y = 1;
+	    Widget child = children[i];
 
-	    if (sash != 0)
+	    if (XmIsSash(child) && XtIsRealized(child) && XtIsManaged(child))
 	    {
-		XtVaGetValues(sash,  XmNy, &sash_y, NULL);
-		XtVaGetValues(child, XmNy, &child_y, NULL);
+		Position sash_y  = 0;
+		Position child_y = 1;
+
+		if (sash != 0)
+		{
+		    XtVaGetValues(sash,  XmNy, &sash_y, NULL);
+		    XtVaGetValues(child, XmNy, &child_y, NULL);
+		}
+
+		if (child_y > sash_y)
+		    sash = child;
+	    }
+	}
+
+	if (sash != 0 && XtIsRealized(sash))
+	{
+	    // Simulate a vertical drag of MOVEMENT pixels
+	    const Dimension movement = 
+		max(height, HeightOfScreen(XtScreen(sash)));
+
+	    // Press button 1 ...
+	    XEvent event;
+	    event.type                = ButtonPress;
+	    event.xbutton.serial      = 0;
+	    event.xbutton.display     = XtDisplay(sash);
+	    event.xbutton.window      = XtWindow(sash);
+	    event.xbutton.root        = RootWindowOfScreen(XtScreen(sash));
+	    event.xbutton.subwindow   = None;
+	    event.xbutton.time        = 
+		XtLastTimestampProcessed(XtDisplay(sash));
+	    event.xbutton.x           = 0;
+	    event.xbutton.y           = 0;
+	    event.xbutton.x_root      = 0;
+	    event.xbutton.y_root      = 0;
+	    event.xbutton.state       = Button1Mask;
+	    event.xbutton.button      = Button1;
+	    event.xbutton.same_screen = True;
+	    XtDispatchEvent(&event);
+
+	    // ... move down ...
+	    for (Dimension y = 0; y < movement; y += 5)
+	    {
+		event.type                = MotionNotify;
+		event.xmotion.serial      = 0;
+		event.xmotion.display     = XtDisplay(sash);
+		event.xmotion.window      = XtWindow(sash);
+		event.xmotion.root        = 
+		    RootWindowOfScreen(XtScreen(sash));
+		event.xmotion.subwindow   = None;
+		event.xmotion.time        = 
+		    XtLastTimestampProcessed(XtDisplay(sash));
+		event.xmotion.x           = 0;
+		event.xmotion.y           = y;
+		event.xmotion.x_root      = 0;
+		event.xmotion.y_root      = y;
+		event.xmotion.state       = Button1Mask;
+		event.xmotion.is_hint     = NotifyNormal;
+		event.xmotion.same_screen = True;
+		XtDispatchEvent(&event);
 	    }
 
-	    if (child_y > sash_y)
-		sash = child;
+	    // ... until target position is reached ...
+	    event.type                = MotionNotify;
+	    event.xmotion.serial      = 0;
+	    event.xmotion.display     = XtDisplay(sash);
+	    event.xmotion.window      = XtWindow(sash);
+	    event.xmotion.root        = RootWindowOfScreen(XtScreen(sash));
+	    event.xmotion.subwindow   = None;
+	    event.xmotion.time        = 
+		XtLastTimestampProcessed(XtDisplay(sash));
+	    event.xmotion.x           = 0;
+	    event.xmotion.y           = movement;
+	    event.xmotion.x_root      = 0;
+	    event.xmotion.y_root      = movement;
+	    event.xmotion.state       = Button1Mask;
+	    event.xmotion.is_hint     = NotifyNormal;
+	    event.xmotion.same_screen = True;
+	    XtDispatchEvent(&event);
+
+	    // ... and release button1 again.
+	    event.type                = ButtonRelease;
+	    event.xbutton.serial      = 0;
+	    event.xbutton.display     = XtDisplay(sash);
+	    event.xbutton.window      = XtWindow(sash);
+	    event.xbutton.root        = RootWindowOfScreen(XtScreen(sash));
+	    event.xbutton.subwindow   = None;
+	    event.xbutton.time        = 
+		XtLastTimestampProcessed(XtDisplay(sash));
+	    event.xbutton.x           = 0;
+	    event.xbutton.y           = movement;
+	    event.xbutton.x_root      = 0;
+	    event.xbutton.y_root      = movement;
+	    event.xbutton.state       = Button1Mask;
+	    event.xbutton.button      = Button1;
+	    event.xbutton.same_screen = True;
+	    XtDispatchEvent(&event);
 	}
     }
-
-    if (sash == 0 || !XtIsRealized(sash))
-	return;			// No sash found
-
-
-    // Simulate a vertical drag of MOVEMENT pixels
-    const Dimension movement = max(height, HeightOfScreen(XtScreen(sash)));
-
-    // Press button 1 ...
-    XEvent event;
-    event.type                = ButtonPress;
-    event.xbutton.serial      = 0;
-    event.xbutton.display     = XtDisplay(sash);
-    event.xbutton.window      = XtWindow(sash);
-    event.xbutton.root        = RootWindowOfScreen(XtScreen(sash));
-    event.xbutton.subwindow   = None;
-    event.xbutton.time        = XtLastTimestampProcessed(XtDisplay(sash));
-    event.xbutton.x           = 0;
-    event.xbutton.y           = 0;
-    event.xbutton.x_root      = 0;
-    event.xbutton.y_root      = 0;
-    event.xbutton.state       = Button1Mask;
-    event.xbutton.button      = Button1;
-    event.xbutton.same_screen = True;
-    XtDispatchEvent(&event);
-
-    // ... move down ...
-    for (Dimension y = 0; y < movement; y += 5)
-    {
-	event.type                = MotionNotify;
-	event.xmotion.serial      = 0;
-	event.xmotion.display     = XtDisplay(sash);
-	event.xmotion.window      = XtWindow(sash);
-	event.xmotion.root        = RootWindowOfScreen(XtScreen(sash));
-	event.xmotion.subwindow   = None;
-	event.xmotion.time        = XtLastTimestampProcessed(XtDisplay(sash));
-	event.xmotion.x           = 0;
-	event.xmotion.y           = y;
-	event.xmotion.x_root      = 0;
-	event.xmotion.y_root      = y;
-	event.xmotion.state       = Button1Mask;
-	event.xmotion.is_hint     = NotifyNormal;
-	event.xmotion.same_screen = True;
-	XtDispatchEvent(&event);
-    }
-
-    // ... until target position is reached ...
-    event.type                = MotionNotify;
-    event.xmotion.serial      = 0;
-    event.xmotion.display     = XtDisplay(sash);
-    event.xmotion.window      = XtWindow(sash);
-    event.xmotion.root        = RootWindowOfScreen(XtScreen(sash));
-    event.xmotion.subwindow   = None;
-    event.xmotion.time        = XtLastTimestampProcessed(XtDisplay(sash));
-    event.xmotion.x           = 0;
-    event.xmotion.y           = movement;
-    event.xmotion.x_root      = 0;
-    event.xmotion.y_root      = movement;
-    event.xmotion.state       = Button1Mask;
-    event.xmotion.is_hint     = NotifyNormal;
-    event.xmotion.same_screen = True;
-    XtDispatchEvent(&event);
-
-    // ... and release button1 again.
-    event.type                = ButtonRelease;
-    event.xbutton.serial      = 0;
-    event.xbutton.display     = XtDisplay(sash);
-    event.xbutton.window      = XtWindow(sash);
-    event.xbutton.root        = RootWindowOfScreen(XtScreen(sash));
-    event.xbutton.subwindow   = None;
-    event.xbutton.time        = XtLastTimestampProcessed(XtDisplay(sash));
-    event.xbutton.x           = 0;
-    event.xbutton.y           = movement;
-    event.xbutton.x_root      = 0;
-    event.xbutton.y_root      = movement;
-    event.xbutton.state       = Button1Mask;
-    event.xbutton.button      = Button1;
-    event.xbutton.same_screen = True;
-    XtDispatchEvent(&event);
 }
 
 
-//-----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 // Locking stuff
-//-----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 static bool continue_despite_lock = false;
 static int lock_dialog_x = -1;
@@ -3788,9 +3793,9 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNset,                True); arg++;
 
     MString spaces("   ");
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 82)
     {
-	XtSetArg(args[arg], XmNlabelString,        spaces.xmstring()); arg++;
+	XtSetArg(args[arg], XmNlabelString, spaces.xmstring()); arg++;
     }
 
     led_w = verify(XmCreateToggleButton(status_form, "led", args, arg));
@@ -3854,7 +3859,7 @@ static void create_status(Widget parent)
     Dimension new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
 					  size.height, unit_type);
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 82)
 	XtVaSetValues(led_w, XmNindicatorSize, new_height - 3, NULL);
     else
 	XtVaSetValues(led_w, XmNindicatorSize, new_height - 1, NULL);
