@@ -36,38 +36,137 @@
 #include "GDBAgent.h"
 #include "question.h"		// NO_GDB_ANSWER
 
-// Send COMMAND to GDB, if GDB is ready; queue in COMMAND, otherwise.
-// If VERBOSE is set, issue command in GDB console.  If CHECK is set,
-// add appropriate GDB commands to get GDB state.
-//
-// If CALLBACK is non-zero: After COMMAND is executed, invoke CALLBACK
-// with GDB answer and DATA.  If COMMAND was not executed, invoke
-// CALLBACK with NO_GDB_ANSWER and DATA instead.
-extern void gdb_command(const string& command, Widget origin,
-			OQCProc callback, void *data = 0, 
-			bool verbose = false, bool check = false);
+#define COMMAND_PRIORITY_WORK  -1 // work procedures
+#define COMMAND_PRIORITY_USER   0 // user-initiated commands
+#define COMMAND_PRIORITY_BATCH  1 // batch jobs (auto commands)
+#define COMMAND_PRIORITY_INIT   2 // init commands
+#define COMMAND_PRIORITY_SYSTEM 3 // system-initiated commands
+#define COMMAND_PRIORITY_AGAiN 99 // try again
 
-// Custom call.  Send COMMAND to GDB, if GDB is ready; queue in
-// COMMAND, otherwise.
+// Commands
+struct Command
+{
+    string command;		// Command text
+    Widget origin;		// Origin
+    OQCProc callback;		// Associated callback; will be called after
+				// completion
+    void *data;			// Data for callback
+    bool verbose;		// Flag: issue command in GDB console?
+    bool check;			// Flag: add commands to get GDB state?
+    int priority;		// Priority (highest get executed first)
+
+private:
+    static void clear_origin(Widget w, XtPointer client_data, 
+			     XtPointer call_data);
+    void add_destroy_callback();
+    void remove_destroy_callback();
+
+public:
+    Command(const string& cmd, Widget w, OQCProc cb, void *d = 0, 
+	    bool v = false, bool c = false, int p = COMMAND_PRIORITY_SYSTEM)
+	: command(cmd), origin(w), callback(cb), data(d), 
+	  verbose(v), check(c), priority(p)
+    {
+	add_destroy_callback();
+    }
+    Command(const string& cmd, Widget w)
+	: command(cmd), origin(w), callback(0), data(0), 
+	  verbose(true), check(true), priority(COMMAND_PRIORITY_USER)
+    {
+	add_destroy_callback();
+    }
+    Command(const Command& c)
+	: command(c.command), origin(c.origin), callback(c.callback), 
+	  data(c.data), verbose(c.verbose), check(c.check), 
+	  priority(c.priority)
+    {
+	add_destroy_callback();
+    }
+    ~Command()
+    {
+	remove_destroy_callback();
+    }
+    Command& operator = (const Command& c)
+    {
+	if (this != &c)
+	{
+	    remove_destroy_callback();
+
+	    command  = c.command;
+	    origin   = c.origin;
+	    callback = c.callback;
+	    data     = c.data;
+	    verbose  = c.verbose;
+	    check    = c.check;
+	    priority = c.priority;
+
+	    add_destroy_callback();
+	}
+	return *this;
+    }
+    bool operator == (const Command& c)
+    {
+	return this == &c || 
+	    command == c.command 
+	    && origin == c.origin 
+	    && callback == c.callback 
+	    && data == c.data
+	    && verbose == c.verbose
+	    && check == c.check
+	    && priority == c.priority;
+    }
+};
+
+
+// Enqueue COMMAND in command queue
+extern void gdb_command(const Command& command);
+
+// Execute COMMAND right now (unconditionally).
+extern void _gdb_command(const Command& command);
+
+// Custom calls
+inline void gdb_command(const string& command, Widget origin,
+			OQCProc callback, void *data = 0, 
+			bool verbose = false, bool check = false,
+			int priority = COMMAND_PRIORITY_SYSTEM)
+{
+    gdb_command(Command(command, origin, callback, data, 
+			verbose, check, priority));
+}
+
 inline void gdb_command(const string& command, Widget origin = 0)
 {
-    gdb_command(command, origin, OQCProc(0), 0, true, true);
+    gdb_command(Command(command, origin));
 }
 
+inline void _gdb_command(const string& command, Widget origin,
+			 OQCProc callback, void *data = 0, 
+			 bool verbose = false, bool check = false,
+			 int priority = COMMAND_PRIORITY_SYSTEM)
+{
+    _gdb_command(Command(command, origin, callback, data, 
+			 verbose, check, priority));
+}
 
-// Send COMMAND to GDB (unconditionally).  Same parameters as gdb_command().
-extern void _gdb_command(string command, Widget origin,
-			 OQCProc callback, void *data = 0,
-			 bool verbose = false, bool check = false);
-
-// Custom call.  Send COMMAND to GDB (unconditionally)
 inline void _gdb_command(const string& command, Widget origin = 0)
 {
-    _gdb_command(command, origin, OQCProc(0), 0, true, true);
+    _gdb_command(Command(command, origin));
 }
 
-// Execute commands in CMD as soon as GDB is idle
-extern void gdb_batch(const string& command);
+inline void gdb_batch(const string& command, Widget origin,
+		       OQCProc callback, void *data = 0,
+		       bool verbose = false, bool check = false,
+		       int priority = COMMAND_PRIORITY_BATCH)
+{
+    gdb_command(Command(command, origin, callback, data, 
+			verbose, check, priority));
+}
+
+inline void gdb_batch(const string& command, Widget origin = 0)
+{
+    gdb_command(Command(command, origin, OQCProc(0), 0, 
+			false, true, COMMAND_PRIORITY_BATCH));
+}
 
 // Pass the COMMAND given in CLIENT_DATA to gdb_command()
 void gdbCommandCB(Widget w, XtPointer call_data, XtPointer client_data);

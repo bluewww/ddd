@@ -69,20 +69,28 @@ static void ClearOriginCB(Widget w, XtPointer, XtPointer)
 	gdb_last_origin = 0;
 }
 
-void _gdb_command(string command, Widget origin, OQCProc callback, 
-		  void *data, bool verbose, bool check)
+void _gdb_command(const Command& c)
 {
+    string cmd = c.command;
     if (gdb->isReadyWithPrompt())
     {
-	if (verbose)
+	if (c.verbose)
 	    set_status("");
 
-	if (command.length() == 1 && iscntrl(command[0]))
+	if (cmd.length() == 1 && iscntrl(cmd[0]))
+	{
 	    promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
+	}
+	else if (c.command.length() > 0 
+		 && c.verbose 
+		 && c.priority == COMMAND_PRIORITY_USER)
+	{
+	    add_to_history(cmd);
+	}
 
-	handle_running_commands(command, origin);
+	handle_running_commands(cmd, c.origin);
 
-	if (command.length() == 0)
+	if (cmd.length() == 0)
 	{
 	    _gdb_out(gdb->prompt());
 	    return;
@@ -97,7 +105,7 @@ void _gdb_command(string command, Widget origin, OQCProc callback,
 			 ClearOriginCB, 0);
     }
 
-    gdb_last_origin = find_shell(gdb_keyboard_command ? gdb_w : origin);
+    gdb_last_origin = find_shell(gdb_keyboard_command ? gdb_w : c.origin);
 
     if (gdb_last_origin != 0)
     {
@@ -105,7 +113,7 @@ void _gdb_command(string command, Widget origin, OQCProc callback,
 		      ClearOriginCB, 0);
     }
 
-    user_cmdSUC(command, origin, callback, data, verbose, check);
+    user_cmdSUC(cmd, c.origin, c.callback, c.data, c.verbose, c.check);
     messagePosition = XmTextGetLastPosition(gdb_w);
 }
 
@@ -114,85 +122,19 @@ void _gdb_command(string command, Widget origin, OQCProc callback,
 // Command queue
 //-----------------------------------------------------------------------------
 
-// Command queue
-struct Command
+void Command::add_destroy_callback()
 {
-    string command;		// Command text
-    Widget origin;		// Origin
-    OQCProc callback;		// Associated callback
-    void *data;			// Data for callback
-    bool verbose;		// Flag: verbose output?
-    bool check;			// Flag: append GDB commands?
+    if (origin != 0)
+	XtAddCallback(origin, XtNdestroyCallback, clear_origin, 
+		      (XtPointer)this);
+}
 
-private:
-    static void clear_origin(Widget w, XtPointer client_data, 
-			     XtPointer call_data);
-
-    void add_destroy_callback()
-    {
-	if (origin != 0)
-	    XtAddCallback(origin, XtNdestroyCallback, clear_origin, 
-			  (XtPointer)this);
-    }
-
-    void remove_destroy_callback()
-    {
-	if (origin != 0)
-	    XtRemoveCallback(origin, XtNdestroyCallback, clear_origin,
-			     (XtPointer)this);
-    }
-
-public:
-    Command(const string& cmd, Widget w, OQCProc cb, void *d = 0, 
-	    bool v = false, bool c = false)
-	: command(cmd), origin(w), callback(cb), data(d), verbose(v), check(c)
-    {
-	add_destroy_callback();
-    }
-    Command(const string& cmd, Widget w)
-	: command(cmd), origin(w), callback(0), data(0), 
-	  verbose(true), check(true)
-    {
-	add_destroy_callback();
-    }
-    Command(const Command& c)
-	: command(c.command), origin(c.origin), callback(c.callback), 
-	  data(c.data), verbose(c.verbose), check(c.check)
-    {
-	add_destroy_callback();
-    }
-    ~Command()
-    {
-	remove_destroy_callback();
-    }
-    Command& operator = (const Command& c)
-    {
-	if (this != &c)
-	{
-	    remove_destroy_callback();
-
-	    command  = c.command;
-	    origin   = c.origin;
-	    callback = c.callback;
-	    data     = c.data;
-	    verbose  = c.verbose;
-	    check    = c.check;
-
-	    add_destroy_callback();
-	}
-	return *this;
-    }
-    bool operator == (const Command& c)
-    {
-	return this == &c || 
-	    command == c.command 
-	    && origin == c.origin 
-	    && callback == c.callback 
-	    && data == c.data
-	    && verbose == c.verbose
-	    && check == c.check;
-    }
-};
+void Command::remove_destroy_callback()
+{
+    if (origin != 0)
+	XtRemoveCallback(origin, XtNdestroyCallback, clear_origin,
+			 (XtPointer)this);
+}
 
 void Command::clear_origin(Widget w, XtPointer client_data, XtPointer)
 {
@@ -221,7 +163,7 @@ static ostream& operator<<(ostream& os, const CommandQueue& queue)
 	else
 	    os << ", ";
 
-	os << quote(i().command);
+	os << quote(i().command) << "<" << i().priority << ">";
     }
     return os << "]";
 }
@@ -234,9 +176,9 @@ void clearCommandQueue()
 	const Command& cmd = commandQueue.first();
 	if (cmd.callback != 0)
 	{
-	    // We're deleting a command with associated callback Call
-	    // callback with NO_GDB_ANSWER such that it can clean up
-	    // the associated data.
+	    // We're deleting a command with associated callback.
+	    // Call callback with NO_GDB_ANSWER such that it can clean
+	    // up the associated data.
 	    cmd.callback(NO_GDB_ANSWER, cmd.data);
 	}
 	commandQueue -= cmd;
@@ -252,14 +194,15 @@ bool emptyCommandQueue()
     return commandQueue.isEmpty();
 }
 
-void gdb_command(const string& cmd, Widget origin, 
-		 OQCProc callback, void *data, bool verbose, bool check)
+void gdb_command(const Command& c)
 {
-    if (cmd.length() == 1 && iscntrl(cmd[0]) || cmd == "no" || cmd == "yes")
+    if (c.command.length() == 1 && iscntrl(c.command[0]) 
+	|| c.command == "no" || c.command == "yes")
     {
-	_gdb_command(cmd, origin, callback, data, verbose, check);
+	// User interaction -- execute immediately
+	_gdb_command(c);
 
-	if (cmd != "yes")
+	if (c.command != "yes")
 	{
 	    // Probably some canceling command - clear remaining commands
 	    clearCommandQueue();
@@ -269,40 +212,41 @@ void gdb_command(const string& cmd, Widget origin,
 
     if (gdb->isReadyWithPrompt() && emptyCommandQueue())
     {
-	if (callback == 0)
-	    add_to_history(cmd);
-
-	_gdb_command(cmd, origin, callback, data, verbose, check);
+	_gdb_command(c);
     }
     else
     {
-	Command c(cmd, origin, callback, data, verbose, check);
+	// Enqueue before first command with lower priority.  This
+	// ensures that user commands are placed at the end.
+	CommandQueueIter i(commandQueue);
+	CommandQueueIter pos(commandQueue);
 
-	if (callback != 0)
+	while (i.ok() && c.priority <= i().priority)
 	{
-	    // Enqueue before first command without callback.  This
-	    // ensures that user commands are placed at the end.
-	    CommandQueueIter pos = commandQueue;
-	    bool have_pos = false;
+	    pos = i; i = i.next();
+	}
 
-	    for (CommandQueueIter i = commandQueue; i.ok(); i = i.next())
-	    {
-		if (i().callback == 0)
-		    break;
+	if (!i.ok())
+	{
+	    assert(!pos.ok() || pos().priority >= c.priority);
 
-		pos = i;
-		have_pos = true;
-	    }
+	    // End of queue reached
+	    commandQueue.enqueue_at_end(c);
+	}
+	else if (pos().priority >= c.priority)
+	{
+	    assert(pos().priority >= c.priority && c.priority > i().priority);
 
-	    if (have_pos)
-		commandQueue.enqueue_after(c, pos);
-	    else
-		commandQueue.enqueue_at_start(c);
+	    // Enqueue after POS
+	    commandQueue.enqueue_after(c, pos);
 	}
 	else
 	{
-	    // Enqueue command at end
-	    commandQueue.enqueue_at_end(c);
+	    CommandQueueIter start(commandQueue);
+	    assert(!start.ok() || start().priority < c.priority);
+
+	    // Higher priority than first element
+	    commandQueue.enqueue_at_start(c);
 	}
 
 #if LOG_QUEUE
@@ -327,9 +271,7 @@ void processCommandQueue(XtPointer, XtIntervalId *)
 	Command cmd(c);
 	commandQueue.dequeue(c);
 
-	add_to_history(cmd.command);
-	_gdb_command(cmd.command, cmd.origin, cmd.callback, 
-		     cmd.data, cmd.verbose, cmd.check);
+	_gdb_command(cmd);
 
 	gdb_keyboard_command = false;
 
@@ -379,55 +321,4 @@ Widget find_shell(Widget w)
 	return command_shell;
 
     return parent;
-}
-
-
-
-// Batch management
-
-static void auto_cmd_done(const string& answer, void *)
-{
-    if (answer != "")
-    {
-	// Dumb hack to ensure we don't issue the output after the prompt
-	gdb_out("\r");
-	messagePosition = XmTextGetLastPosition(gdb_w);
-	gdb_out(answer);
-	prompt();
-    }
-}
-
-static bool get_line(string& source, string& cmd)
-{
-    int index = source.index('\n');
-    if (index >= 0)
-    {
-	cmd = source.before(index);
-	source = source.after(index);
-    }
-    else
-    {
-	cmd = source;
-	source = "";
-    }
-    return cmd.length() > 0;
-}
-
-static void ProcessBatch(XtPointer client_data, XtIntervalId *)
-{
-    string source = (char *)client_data;
-    delete[] (char *)client_data;
-
-    // Debugger issued DDD command(s).  Enqueue them.
-    string cmd;
-    while (get_line(source, cmd))
-	gdb_command(cmd, gdb_w, auto_cmd_done, 0, false, true);
-}
-
-// Process auto commands
-void gdb_batch(const string& cmd)
-{
-    char *data = strcpy(new char[cmd.length() + 1], cmd.chars());
-    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
-		    0, ProcessBatch, XtPointer(data));
 }
