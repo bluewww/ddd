@@ -162,6 +162,13 @@ detail.
       everything shows fine.
 
 720 Jens Albrecht <Jens.Albrecht@informatik.uni-erlangen.de> complains 
-    that using DBX, the `file' command does not change the source file.
+    that using DBX, the `file' command does not change the source
+    file.
 
-721 (Insert new bugs here)
+721 Johan Vermeire <jvme@se.bel.alcatel.be> reports: `In ddd I
+    tried to copy the whole contents of the command output buffer via
+    the "select all" in ddd and to paste it into a UNIX editor for
+    interpretation.  This results in: `gdb: write failed: Resource
+    temporarily unavailable' messages until I kill the ddd process'.
+
+722 (Insert new bugs here)
