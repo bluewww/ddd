@@ -90,7 +90,7 @@ private:
     static void clear_exec_commands();
 
     // Remove all entries with no effect
-    static void clear_nop_commands();
+    static void cleanup();
 
 
 protected:
@@ -115,6 +115,9 @@ protected:
     static bool has_effect(const UndoBufferEntry& entry);
 
 public:
+    // Maximum depth (-1: unlimited)
+    static int max_history_depth;
+
     // Set source command.
     static void set_source(const string& command);
 

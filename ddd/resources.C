@@ -691,7 +691,7 @@ XtResource ddd_resources[] = {
     {
 	XtNquestionTimeout,
 	XtCQuestionTimeout,
-	XtRInt,
+	XmRInt,
 	sizeof(int),
 	XtOffsetOf(AppData, question_timeout),
 	XtRImmediate,
@@ -1821,6 +1821,16 @@ XtResource ddd_resources[] = {
 	XtOffsetOf(AppData, cut_copy_paste_bindings),
 	XmRImmediate,
 	XtPointer(KDEBindings)
+    },
+
+    {
+	XtNundoDepth,
+	XtCUndoDepth,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, undo_depth),
+	XmRImmediate,
+	XtPointer(100)
     },
 
     {

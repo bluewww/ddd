@@ -803,10 +803,13 @@ Ddd*maxValueTipLength: 60
 Ddd*maxValueDocLength: 80
 
 
+! Undo and Redo
+! How many actions should we be able to undo?  (0: none, <0: unlimited).
+Ddd*undoDepth: 100
 
 ! Focus Policy
 ! POINTER means point-and-type, EXPLICIT means click-and-type.
-Ddd*keyboardFocusPolicy:	POINTER
+Ddd*keyboardFocusPolicy: POINTER
 
 ! X Warnings
 ! Do we wish to suppress X warnings?

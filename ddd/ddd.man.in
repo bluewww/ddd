@@ -3675,6 +3675,12 @@ different X or Motif configuration.  By default, this is
 .B "tip\fIn\fR (\fPclass\fB Tip)"
 The tip of the day numbered \fIn\fR (a string).
 .TP
+.B "undoDepth (\fPclass\fB UndoDepth)"
+The number of actions that can be undone, and the number of states
+that can be shown in historic mode.  This is useful for limiting
+\s-1@DDD@\s+1 memory usage.  A negative value means to place no limit.
+Default is \fB100\fR.
+.TP
 .B "uniconifyWhenReady (\fPclass\fB UniconifyWhenReady)"
 If this is `\fBon\fR' (default), the \s-1@DDD@\s+1 windows are
 uniconified automatically whenever \s-1GDB\s+1 becomes ready.  This

@@ -1957,8 +1957,11 @@ int main(int argc, char *argv[])
     DispGraph::hide_inactive_displays = app_data.hide_inactive_displays;
 
     // Global variables: Setup plot settings
-    PlotAgent::plot_2d_settings   = app_data.plot_2d_settings;
-    PlotAgent::plot_3d_settings   = app_data.plot_3d_settings;
+    PlotAgent::plot_2d_settings = app_data.plot_2d_settings;
+    PlotAgent::plot_3d_settings = app_data.plot_3d_settings;
+
+    // Global variables: Setup undo buffer
+    UndoBuffer::max_history_depth = app_data.undo_depth;
 
     // Global variables: Set delays for button and value tips
     help_button_tip_delay = app_data.button_tip_delay;

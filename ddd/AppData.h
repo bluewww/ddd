@@ -354,6 +354,8 @@
 #define XtCColorWMIcons          "ColorWMIcons"
 #define XtNcutCopyPasteBindings  "cutCopyPasteBindings"
 #define XtCBindingStyle          "BindingStyle"
+#define XtNundoDepth             "undoDepth"
+#define XtCUndoDepth             "UndoDepth"
 #define XtNlessTifVersion        "lessTifVersion"
 #define XtCLessTifVersion        "LessTifVersion"
 #define XtNdddinitVersion        "dddinitVersion"
@@ -537,6 +539,7 @@ struct AppData {
     Boolean   splash_screen;
     Boolean   color_wm_icons;
     BindingStyle cut_copy_paste_bindings;
+    int       undo_depth;
     int       lesstif_version;
     String    dddinit_version;
     String    app_defaults_version;

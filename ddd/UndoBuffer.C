@@ -126,6 +126,9 @@ int UndoBuffer::history_position = 0;
 // Current entry we're processing
 int UndoBuffer::current_entry = 0;
 
+// Maximum depth (< 0 means unlimited)
+int UndoBuffer::max_history_depth = 100;
+
 // True if we're undoing
 bool UndoBuffer::undoing = false;
 
@@ -163,7 +166,7 @@ bool UndoBuffer::has_effect(const UndoBufferEntry& entry)
 // Remove all later entries, except for exec positions
 void UndoBuffer::clear_after_position()
 {
-    UndoBufferArray new_history;
+    UndoBufferArray new_history(history.size());
     for (int i = 0; i < history.size(); i++)
     {
 	if (i < history_position || 
@@ -197,15 +200,17 @@ void UndoBuffer::clear_exec_commands()
 }
 
 // Remove all entries with no effect
-void UndoBuffer::clear_nop_commands()
+void UndoBuffer::cleanup()
 {
-    UndoBufferArray new_history;
+    UndoBufferArray new_history(history.size());
     int old_history_position = history_position;
     for (int i = 0; i < history.size(); i++)
     {
 	UndoBufferEntry& entry = history[i];
 
-	if (has_effect(entry))
+	if ((max_history_depth < 0 || 
+	     (i >= history.size() - max_history_depth)) &&
+	    has_effect(entry))
 	{
 	    new_history += entry;
 	}
@@ -223,18 +228,21 @@ void UndoBuffer::clear_nop_commands()
 // Add new entry to history
 void UndoBuffer::add_entry(const UndoBufferEntry& entry)
 {
+    if (max_history_depth == 0)
+	return;
+
     // Remove all later entries
     clear_after_position();
 
     if (!entry.has_command() && !entry.has_pos() && entry.has_state())
 	clear_exec_commands();
 
-    // Clear commands without effect
-    clear_nop_commands();
-
     // Add at end
     history += entry;
     history_position = history.size();
+
+    // Clear commands without effect
+    cleanup();
 
     done();
 }
@@ -843,7 +851,7 @@ void UndoBuffer::clear_exec_pos()
     if (locked)
 	return;
 
-    UndoBufferArray new_history;
+    UndoBufferArray new_history(history.size());
     int old_history_position = history_position;
     for (int i = 0; i < history.size(); i++)
     {
