@@ -1759,7 +1759,24 @@ int main(int argc, char *argv[])
     helpOnVersionPixmapProc = versionlogo;
 
     // Setup version info
-    helpOnVersionExtraText = rm(string(config_info).through("\n"));
+    string cinfo = string(config_info).before("\n");
+    while (cinfo.contains(' ', -1))
+	cinfo = cinfo.before(int(cinfo.length()) - 1);
+
+    int cinfo_lt = cinfo.index('<');
+    int cinfo_gt = cinfo.index('>');
+    if (cinfo_lt >= 0 && cinfo_gt >= 0)
+    {
+	helpOnVersionExtraText = rm(cinfo.through(cinfo_lt));
+	helpOnVersionExtraText += tt(cinfo(cinfo_lt + 1, 
+					   cinfo_gt - cinfo_lt - 1));
+	helpOnVersionExtraText += rm(cinfo.from(cinfo_gt));
+    }
+    else
+    {
+	helpOnVersionExtraText = rm(cinfo);
+    }
+    helpOnVersionExtraText += cr();
 
     string expires = ddd_expiration_date();
     if (expires != "")
@@ -1770,7 +1787,7 @@ int main(int argc, char *argv[])
 	else
 	    expired_msg += "expires " + expires;
 
-	helpOnVersionExtraText += rm(expired_msg + ".\n");
+	helpOnVersionExtraText += rm(expired_msg + ".") + cr();
     }
 
     helpOnVersionExtraText += cr() 
@@ -1791,12 +1808,14 @@ int main(int argc, char *argv[])
 	+ rm("    D-38092 Braunschweig") + cr()
 	+ rm("    GERMANY") + cr()
 	+ cr()
-	+ rm("Send bug reports "
-	     "to <" ddd_NAME "-bugs@ips.cs.tu-bs.de>;") + cr()
+	+ rm("Send bug reports to <")
+	+ tt(ddd_NAME "-bugs@ips.cs.tu-bs.de") + rm(">;") + cr()
 	+ rm("see the " DDD_NAME " manual "
 	     "for details on reporting bugs.") + cr()
-	+ rm("Send comments and suggestions "
-	     "to <" ddd_NAME "@ips.cs.tu-bs.de>.");
+	+ rm("Send comments and suggestions to <")
+	+ tt(ddd_NAME "@ips.cs.tu-bs.de") + rm(">.") + cr()
+	+ cr()
+	+ rm (DDD_NAME " WWW page: ") + tt(app_data.www_page);
 
     // Customize `settings' title.
     MString settings_title(gdb->title() + " Settings...");
@@ -2086,8 +2105,12 @@ static void ddd_check_version()
     if (app_data.dddinit_version == 0 ||
 	string(app_data.dddinit_version) != DDD_VERSION)
     {
-	// We have no ~/.dddinit file or an old one: show license
-	DDDLicenseCB(gdb_w, 0, 0);
+	// We have no ~/.dddinit file or an old one: show version info
+	HelpOnVersionCB(gdb_w, 0, 0);
+
+	// We have no ~/.dddinit file: create a simple one
+	if (app_data.dddinit_version == 0)
+	    create_options(gdb_w);
     }
 
     if (ddd_expired())

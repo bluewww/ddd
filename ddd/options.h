@@ -39,7 +39,11 @@
 
 // Options
 string options_file();
-void save_options(Widget origin);
+void save_options(Widget origin, bool create = false);
+inline void create_options(Widget origin)
+{
+    save_options(origin, true);
+}
 extern bool startup_preferences_changed();
 
 extern void sourceToggleFindWordsOnlyCB    (Widget, XtPointer, XtPointer);

@@ -730,10 +730,11 @@ string options_file()
     return string(home) + "/.dddinit";
 }
 
-void save_options(Widget origin)
+void save_options(Widget origin, bool create)
 {
-    StatusDelay delay("Saving options in " + quote(options_file()));
     string file = options_file();
+    string msg = (create ? "Creating " : "Saving options in ");
+    StatusDelay delay(msg + quote(file));
 
     const char delimiter[] = "! DO NOT ADD ANYTHING BELOW THIS LINE";
 
@@ -776,6 +777,12 @@ void save_options(Widget origin)
     // The version
     os << string_app_value(XtNdddinitVersion,
 			   DDD_VERSION) << "\n";
+
+    if (create)
+    {
+	app_data.dddinit_version = DDD_VERSION;
+	return;
+    }
 
     // Debugger settings
     string gdb_settings = app_data.gdb_settings;
@@ -953,8 +960,6 @@ void save_options(Widget origin)
 
     save_option_state();
     save_settings_state();
-
-    app_data.dddinit_version = DDD_VERSION;
 }
 
 void DDDSaveOptionsCB (Widget w, XtPointer, XtPointer)
