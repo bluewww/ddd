@@ -4,7 +4,7 @@ DDD 1.0 is available
     Release 1.0 of the Data Display Debugger (DDD), a graphical
     front-end for GDB and DBX debuggers, is now available by anonymous
     FTP from `ftp.ips.cs.tu-bs.de` [134.169.32.1] in the file
-    `/pub/local/softech/ddd/ddd-1.0.tar.gz' (1.1 MB).  Diffs from
+    `/pub/local/softech/ddd/ddd-1.0.tar.gz' (0.9 MB).  Diffs from
     earlier versions are in `/pub/local/softech/ddd/diffs/`.  Binaries
     for various architectures are in `/pub/local/softech/ddd/bin/`.
     Please try a closer FTP site first; see below for a list.
@@ -53,12 +53,13 @@ Requirements
 
     To build a complete DDD system from sources, you need:
 
-       * The GNU C++ compiler, preferably GNU CC (GCC) version 2.6.3
-	 or later, and a matching C++ standard library (libg++ or
-	 libstdc++).
-    
-         (Ideally, any recent C++ compiler should compile DDD.  In
-         practice, we recommend you to get and install GCC instead.)
+       * The GNU C++ compiler (GCC/G++), version 2.6.3, and a matching
+	 C++ I/O library (libg++, libstdc++, or libiostream).
+
+	 GCC version 2.6.0, 2.6.1, and 2.6.2 have been reported to
+	 compile DDD, but the resulting executable may fail due to
+	 bugs in these GCC versions.  GCC 2.5.8 may work.  No one has
+	 tried yet to compile DDD using a C++ compiler other than GCC.
 
        * The X window library (Xlib) and X toolkit library (Xt),
          X11R4 or later.
@@ -77,7 +78,7 @@ Requirements
 
     As an alternative, DDD also supports Sun's DBX debugger.  Using
     DBX, you can additionally debug programs written in Pascal and
-    Modula-2.
+    Modula-2.  DBX debuggers on other systems may work, too.
 
 
 More Information
@@ -147,8 +148,11 @@ DDD Binary FTP sites
 ====================
 
     DDD pre-compiled binaries are available for a variety of
-    architectures.  However, we recommend to compile DDD on your
-    machine instead.  Use binaries as a last resort only.
+    architectures.  This may be useful for people who lack GCC or
+    Motif.  However, compiling DDD on your machine is strongly
+    preferred.  Use binaries as a last resort only.
+
+    The `README' file contains a list of available binaries.
 
 Europe
 ------
