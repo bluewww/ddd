@@ -42,6 +42,7 @@ char ArgField_rcsid[] =
 
 #include "verify.h"
 #include "charsets.h"
+#include "AppData.h"
 #include "buttons.h"
 #include "string-fun.h"		// strip_space()
 #include "tabs.h"		// strip_space()
@@ -51,10 +52,18 @@ char ArgField_rcsid[] =
 ArgField::ArgField (Widget parent, const char* name)
     : arg_text_field(0), handlers(ArgField_NTypes), is_empty(true)
 {
-    arg_text_field = verify(XtVaCreateManagedWidget (name,
-						     xmTextFieldWidgetClass,
-						     parent,
-						     NULL));
+    Arg args[10];
+    Cardinal arg = 0;
+
+    if (!app_data.button_captions)
+    {
+	// Make argument field a little less high
+	XtSetArg(args[arg], XmNmarginHeight, 2); arg++;
+    }
+
+    arg_text_field = verify(XmCreateTextField(parent, name, args, arg));
+    XtManageChild(arg_text_field);
+
     XtAddCallback(arg_text_field, XmNvalueChangedCallback,
 		  valueChangedCB, this);
     XtAddCallback(arg_text_field, XmNlosePrimaryCallback,
@@ -66,12 +75,7 @@ string ArgField::get_string () const
     String arg = XmTextFieldGetString (arg_text_field);
     string str(arg);
     XtFree (arg);
-
-    // Strip final whitespace
-    while (str.length() > 0 &&
-	   isspace(str[str.length() - 1]))
-	str = str.before(int(str.length() - 1));
-
+    strip_space(str);
     return str;
 }
 
