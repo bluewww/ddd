@@ -36,6 +36,8 @@ char PlotAgent_rcsid[] =
 #include "PlotAgent.h"
 #include "cook.h"
 
+#include <float.h>
+
 DEFINE_TYPE_INFO_1(PlotAgent, LiterateAgent)
 
 string PlotAgent::plot_2d_settings = "";
@@ -48,11 +50,27 @@ void PlotAgent::start(const string& init)
     write(init.chars(), init.length());
 }
 
+// Reset for next plot
+void PlotAgent::reset()
+{
+    // Clear storage
+    titles = StringArray();
+    values = StringArray();
+    dims   = IntArray();
+    ndim   = 0;
+
+    // Clear range
+    x_min = y_min = v_min = +DBL_MAX;
+    x_max = y_max = v_max = -DBL_MAX;
+}
+
 // Start a new plot
 void PlotAgent::start_plot(const string& title, int n)
 {
     titles += title;
     values += "";
+    dims   += 0;
+
     ndim = n;
 
     while (files.size() < titles.size())
@@ -72,6 +90,25 @@ void PlotAgent::end_plot()
     plot_os.close();
 }
 
+string PlotAgent::var(char *name, double min, double max)
+{
+    ostrstream os;
+
+    if (min < +DBL_MAX && max > -DBL_MAX)
+    {
+	if (min != 0.0)
+	    os << min << " + ";
+	os << name << " * " << (max - min);
+    }
+    else
+    {
+	// Stick to default range
+	os << name;
+    }
+
+    return string(os);
+}
+
 // Flush it all
 int PlotAgent::flush()
 {
@@ -81,7 +118,8 @@ int PlotAgent::flush()
     }
     else
     {
-	string cmd;
+	// Issue plot command
+	ostrstream cmd;
 	switch (ndim)
 	{
 	case 0:
@@ -89,50 +127,86 @@ int PlotAgent::flush()
 
 	case 1:
 	case 2:
-	    cmd = "set noparametric\nplot ";
 	    if (plot_2d_settings != "")
-		cmd.prepend(plot_2d_settings + "\n");
+		cmd << plot_2d_settings << "\n";
+	    cmd << "plot ";
 	    break;
 
 	case 3:
-	    cmd = "set parametric\nsplot ";
 	    if (plot_3d_settings != "")
-		cmd.prepend(plot_3d_settings + "\n");
+		cmd << plot_3d_settings << "\n";
+	    cmd << "splot ";
 	    break;
 	}
 
+	// Issue functions
 	for (int i = 0; i < titles.size(); i++)
 	{
 	    if (i > 0)
-		cmd += ", ";
+		cmd << ", ";
 
 	    const string& v = values[i];
+	    int dim = dims[i];
 	    if (v != "")
 	    {
-		// Plot atomic value
+		// Plot scalar value
 		if (ndim == 3)
-		    cmd += "0,0," + v;
+		{
+		    switch (dim)
+		    {
+		    case 0:	// u, v, VALUE - a horizontal plain
+			cmd << var("u", x_min, x_max) << ", "
+			    << var("v", y_min, y_max) << ", " 
+			    << v;
+			break;
+
+		    case 1:	// u, VALUE, v - a vertical plain
+			cmd << var("u", x_min, x_max) << ", "
+			    << v << ", "
+			    << var("v", v_min, v_max);
+			break;
+
+ 		    case 2:	// VALUE, u, v - a vertical plain
+			cmd << v << ", "
+			    << var("u", y_min, y_max) << ", "
+			    << var("v", v_min, v_max);
+			break;
+		    }
+		}
 		else
-		    cmd += v;
+		{
+		    switch (dim)
+		    {
+		    case 0:	// t, VALUE - a horizontal line
+			cmd << var("t", x_min, x_max) << ", "
+			    << v;
+			break;
+
+		    case 1:	// VALUE, t - a vertical line
+		    case 2:
+			cmd << v << ", "
+			    << var("t", v_min, v_max);
+			break;
+		    }
+		}
 	    }
 	    else
 	    {
 		// Plot a file
-		cmd += quote(files[i]);
+		cmd << quote(files[i]);
 	    }
-	    cmd += " title " + quote(titles[i]);
 
-	    if (v != "" && ndim == 3)
-		cmd += " with points";
+	    // Add title
+	    cmd << " title " << quote(titles[i]);
 	}
-	cmd += "\n";
+	cmd << "\n";
 
-	write(cmd.chars(), cmd.length());
+	// That's all, folks!
+	string c(cmd);
+	write(c.chars(), c.length());
     }
 
-    // Clear titles
-    static StringArray empty;
-    titles = empty;
+    reset();
 
     return LiterateAgent::flush();
 }
@@ -148,14 +222,50 @@ void PlotAgent::abort()
     LiterateAgent::abort();
 }
 
+inline double min(double a, double b)
+{
+#if defined(__GNUG__) && !defined(__STRICT_ANSI__)
+    return a <? b;
+#else
+    return a < b ? a : b;
+#endif
+}
+
+inline double max(double a, double b)
+{
+#if defined(__GNUG__) && !defined(__STRICT_ANSI__)
+    return a >? b;
+#else
+    return a > b ? a : b;
+#endif
+}
+
+// Check value
+void PlotAgent::add_v(double v)
+{
+    v_min = min(v_min, v);
+    v_max = max(v_max, v);
+}
+
+void PlotAgent::add_x(double x)
+{
+    x_min = min(x_min, x);
+    x_max = max(x_max, x);
+}
+
+void PlotAgent::add_y(double y)
+{
+    y_min = min(y_min, y);
+    y_max = max(y_max, y);
+}
 
 // Add plot point
-void PlotAgent::add_point(const string& v)
+void PlotAgent::add_point(const string& v, int dim)
 {
-    if (ndim > 1)
-	add_point(0, v);
-    else
-	values[values.size() - 1] = v;
+    values[values.size() - 1] = v;
+    dims[dims.size() - 1] = dim;
+
+    add_v(atof(v));
 }
 
 void PlotAgent::add_point(int x, const string& v)
@@ -163,7 +273,11 @@ void PlotAgent::add_point(int x, const string& v)
     if (ndim > 2)
 	add_point(x, 0, v);
     else
+    {
 	plot_os << x << '\t' << v << '\n';
+	add_x(x);
+	add_v(atof(v));
+    }
 }
 
 void PlotAgent::add_point(int x, int y, const string& v)
@@ -171,6 +285,9 @@ void PlotAgent::add_point(int x, int y, const string& v)
     assert(ndim == 3);
 
     plot_os << x << '\t' << y << '\t' << v << '\n';
+    add_x(x);
+    add_y(y);
+    add_v(atof(v));
 }
 
 void PlotAgent::add_break()

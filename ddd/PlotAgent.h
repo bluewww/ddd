@@ -36,6 +36,7 @@
 #include "LiterateA.h"
 #include "assert.h"
 #include "StringA.h"
+#include "IntArray.h"
 
 #include <fstream.h>
 
@@ -47,9 +48,21 @@ public:
 private:
     StringArray files;		// Temporary files allocated by this Agent
     StringArray titles;		// Titles currently plotted
-    StringArray values;		// One-dimensional values
+    StringArray values;		// Scalars
+    IntArray dims;		// Dimensions of scalars
     ofstream plot_os;		// Stream used for adding data
     int ndim;			// Number of dimensions used so far
+    double x_min, x_max;	// Minimum and maximum values
+    double y_min, y_max;
+    double v_min, v_max;
+
+protected:
+    void add_v(double v);
+    void add_x(double x);
+    void add_y(double y);
+
+    void reset();
+    string var(char *name, double min, double max);
 
 public:
     static string plot_2d_settings;
@@ -59,8 +72,13 @@ public:
     PlotAgent(XtAppContext app_context, const string& pth,
 	      unsigned nTypes = LiterateAgent_NTypes)
 	: LiterateAgent(app_context, pth, nTypes),
-	  files(), titles(), plot_os(), ndim(0)
-    {}
+	  files(), titles(), plot_os(), ndim(0), 
+	  x_min(0.0), x_max(0.0),
+	  y_min(0.0), y_max(0.0),
+	  v_min(0.0), v_max(0.0)
+    {
+	reset();
+    }
 
     // Start and initialize
     void start(const string& init);
@@ -72,7 +90,7 @@ public:
     void start_plot(const string& title, int ndim);
 
     // Add plot point
-    void add_point(const string& v);
+    void add_point(const string& v, int dim);
     void add_point(int x, const string& v);
     void add_point(int x, int y, const string& v);
 

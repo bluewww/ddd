@@ -229,7 +229,11 @@ Ddd*paperSize: 210mm x 297mm
 ! The `gnuplot' command.
 ! The string `@FONT@' is replaced by the current DDD default font.
 Ddd*plotCommand: gnuplot -font '@FONT@' -geometry +5000+5000
-Ddd*plotInitCommands: 
+Ddd*plotInitCommands: \
+set parametric\n\
+set urange \1330:1\135\n\
+set vrange \1330:1\135\n\
+set trange \1330:1\135\n
 Ddd*plot2dSettings:   set noborder
 Ddd*plot3dSettings:   set border
 

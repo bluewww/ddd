@@ -1234,7 +1234,7 @@ string DispValue::num_value() const
 void DispValue::plot1d(PlotAgent *plotter, int ndim) const
 {
     plotter->start_plot(full_name(), ndim);
-    plotter->add_point(num_value());
+    plotter->add_point(num_value(), horizontal_aligned() ? 0 : 1);
     plotter->end_plot();
 }
 
