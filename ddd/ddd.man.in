@@ -27,10 +27,10 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "19 Sep 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "29 Sep 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
-.PSPIC PICS/dddlogo.ps 10cm
+.PSPIC @srcdir@/PICS/dddlogo.ps 10cm
 .SH SYNOPSIS
 .na
 .TP
@@ -40,6 +40,9 @@
 .RB "[\|" \-\-dbx "\|]"
 .RB "[\|" \-\-xdb "\|]"
 .RB "[\|" \-\-debugger
+.I name\c
+\&\|]
+.RB "[\|" \-\-session
 .I name\c
 \&\|]
 .RB "[\|" \-\-host
@@ -197,7 +200,7 @@ section, below.
 .SH "THE DDD WINDOWS"
 .\" ---------------
 .\"
-.PSPIC PICS/ddd-all.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-all.ps 15.3cm
 \s-2@DDD@\s+2 is composed of three main windows:
 .br
 .IP \(bu 2
@@ -285,7 +288,7 @@ prompt\fR\(em\&that is, `\fB(gdb)\fR' for \s-2GDB\s+2, `\fB(dbx)\fR'
 for \s-2DBX\s+2, and `\fB>\fR' for \s-2XDB\s+2.  You can use arbitrary
 debugger commands; use the \s-2\fBRETURN\fR\s+2 key to enter them.
 .PP
-.PSPIC PICS/ddd-console.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-console.ps 15.3cm
 .PP
 You can \fIrepeat\fR previous and next commands by pressing the
 `\fBUp\fR' and `\fBDown\fR' arrow keys, respectively.  If you enter an
@@ -299,7 +302,7 @@ again to repeat the search, or `\fBCtrl+S\fR' to search in the reverse
 direction.  To return to normal mode, press \s-2\fBESC\fR\s+2, or use
 any cursor command.
 .PP
-.PSPIC PICS/ddd-history.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-history.ps 15.3cm
 .PP
 Using \s-2GDB\s+2, you can also \fIcomplete\fR commands and arguments
 by pressing the `\s-2\fBTAB\fR\s+2' key; pressing the `\s-2\fBTAB\fR\s+2'
@@ -479,7 +482,7 @@ If you did not invoke \s-2@DDD@\s+2 specifying a program to be debugged,
 you can use the `\fBFile\fR' menu to open programs, core dumps and
 sources.
 .PP
-.PSPIC PICS/ddd-open.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-open.ps 15.3cm
 .PP
 To open a program to be debugged, select `\fBFile | Open Program\fR'.
 .PP
@@ -517,7 +520,7 @@ button\fR on the function or variable name.  The name is copied to the
 argument field.  Click on the `\fBLookup ()\fR' button to find its
 definition.
 .PP
-.PSPIC PICS/ddd-source-popup.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-source-popup.ps 15.3cm
 .PP
 As a shorter alternative, you can simply press the \fIright mouse
 button\fR on the function name and select the `\fBLookup\fR' item from
@@ -546,7 +549,7 @@ By default, \s-2@DDD@\s+2 finds only complete words.  To search for
 arbitrary substrings, change the value of the `\fBSource | Find Words
 Only\fR' option.
 .PP
-.PSPIC PICS/ddd-source.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-source.ps 15.3cm
 .\"
 .SS "Looking up Previous Locations"
 .\"
@@ -573,7 +576,7 @@ As an alternative, you can simply press the \fIright mouse button\fR
 on the left of the source line and select the `\fBSet Breakpoint\fR' item
 from the line popup menu.
 .PP
-.PSPIC PICS/ddd-line-popup.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-line-popup.ps 15.3cm
 .PP
 As another alternative, you can enter the line number in the argument
 field (indicated by `\fB():\fR') and click on the `\fBBreak at ()\fR'
@@ -633,7 +636,7 @@ button\fR on the breakpoint name and select the `\fBDisable
 Breakpoint\fR' item from the breakpoint popup menu.  To enable it
 again, select `\fBEnable Breakpoint\fR'.
 .PP
-.PSPIC PICS/ddd-bp-popup.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-bp-popup.ps 15.3cm
 .PP
 As an alternative, you can select the breakpoint and click on
 `\fBDisable\fR' or `\fBEnable\fR' in the Breakpoint editor (invoked
@@ -714,7 +717,7 @@ To set a breakpoint condition, select the appropriate breakpoint in
 the Breakpoint Editor and click on the `\fBCondition\fR' button.
 You can then enter (or change) the condition in a special dialog.
 .PP
-.PSPIC PICS/ddd-cond.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-cond.ps 15.3cm
 .PP
 As a faster alternative, you can also press the \fIright mouse
 button\fR on the breakpoint in the source code and select the `\fBSet
@@ -753,7 +756,7 @@ program.  You can either select from a list of previously used
 arguments or enter own arguments in the text field.  Afterwards, press
 the `\fBOK\fR' button to start execution with the selected arguments.
 .PP
-.PSPIC PICS/ddd-arguments.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-arguments.ps 15.3cm
 .PP
 To run your program again, with the same arguments, select `\fBProgram
 | Run Again\fR' or press the `\fBRun\fR' button on the command tool.
@@ -774,7 +777,7 @@ If the debugged program is already running in some process, you can
 a list of processes.  Afterwards, press the `\fBAttach\fR' button to
 attach to the specified process.
 .PP
-.PSPIC PICS/ddd-attach.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-attach.ps 15.3cm
 .PP
 The first thing \s-2@DDD@\s+2 does after arranging to debug the
 specified process is to stop it. You can examine and modify an
@@ -826,7 +829,7 @@ stopping.
 To continue running until the current function returns, use the
 `\fBFinish\fR' button.  The returned value (if any) is printed.
 .PP
-.PSPIC PICS/ddd-tool.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-tool.ps 15.3cm
 .PP
 To continue running until a line after the current source line is
 reached, use the `\fBContinue Until Here\fR' facility from the line
@@ -853,7 +856,7 @@ You can also directly type the `\fBup\fR' and `\fBdown\fR' commands at
 the debugger prompt.  Typing \fBCtrl+Up\fR and \fBCtrl+Down\fR,
 respectively, will also move you through the stack.
 .PP
-.PSPIC PICS/ddd-backtrace.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-backtrace.ps 15.3cm
 .\"
 .\"
 .SS "Examining Threads"
@@ -878,7 +881,7 @@ To view all currently active threads in your program, select
 `\fBStatus | Threads\fR'.  The current thread is highlighted.  Select
 any thread to make it the current thread.
 .PP
-.PSPIC PICS/ddd-threads.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-threads.ps 15.3cm
 .PP
 For more information on threads, see the section `\fBDebugging
 programs with multiple threads\fR' in the \s-2GDB\s+2 documentation.
@@ -918,7 +921,7 @@ pops up showing the value of the variable pointed at.  The window
 disappears as soon as you move the mouse pointer away from the
 variable.  The value is also shown in the status line.
 .PP
-.PSPIC PICS/ddd-value-tip.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-value-tip.ps 15.3cm
 .PP
 The variable value can also be printed in the debugger console, making
 it available for further operations.  To print a variable value,
@@ -931,7 +934,7 @@ As a shorter alternative, you can simply press the \fIright mouse
 button\fR on the variable name and select the `\fBPrint\fR' item from
 the popup menu.
 .PP
-.PSPIC PICS/ddd-print-popup.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-print-popup.ps 15.3cm
 .\"
 .SS "Displaying Complex Values"
 .\"
@@ -957,7 +960,7 @@ If the data window is visible, you may click on the `\fBNew
 Display\fR' button.  Enter the expression to be displayed in the
 resulting prompt dialog.
 .PP
-.PSPIC PICS/ddd-new-display.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-new-display.ps 15.3cm
 .PP
 Finally, you may also enter
 .sp
@@ -969,9 +972,9 @@ on \fIdisplay\fR\|]
 \&at the debugger prompt.  If the suffix `\fBat \fB(\fIx, y\fB)\fR' is
 specified, the new data display is created at the position (\fIx\fR,
 \fIy\fR); otherwise, a default position is assigned.  If the suffix
-`\fBdependent on \fIdisplay\fR' is given, an edge from display
-numbered \fIdisplay\fR to the new display is created; otherwise, no
-edge is created.
+`\fBdependent on \fIdisplay\fR' is given, an edge from the display
+numbered or named \fIdisplay\fR to the new display is created;
+otherwise, no edge is created.
 .\"
 .\"
 .SS "Selecting Displays"
@@ -1006,7 +1009,7 @@ selection is \fIextended\fR.
 By double-clicking on a display, the display itself and all connected
 displays are automatically selected.
 .PP
-.PSPIC PICS/ddd-select-display.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-select-display.ps 15.3cm
 .PP
 .\"
 .\"
@@ -1039,7 +1042,7 @@ the \fIleft mouse button\fR on its name or value and click on the
 As a faster alternative, you can also press the \fIright mouse
 button\fR on the aggregate and select the appropriate menu item.
 .PP
-.PSPIC PICS/ddd-hide-display.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-hide-display.ps 15.3cm
 .PP
 If \fIall\fR details of a display are hidden, this display is
 considered \fIdisabled\fR.   Displays can be disabled or enabled via
@@ -1067,7 +1070,7 @@ alignment of an array, select it and then click on the `\fBRotate
 As a faster alternative, you can also press the \fIright mouse
 button\fR on the array and select the `\fBRotate\fR' menu item.
 .PP
-.PSPIC PICS/ddd-rotate-display.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-rotate-display.ps 15.3cm
 .PP
 .\"
 .\"
@@ -1125,7 +1128,7 @@ The display showing the local variables can be manipulated just like
 any other data display.  Individual variables can be selected and
 dereferenced.
 .PP
-.PSPIC PICS/ddd-locals.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-locals.ps 15.3cm
 .PP
 .\"
 .\"
@@ -1152,7 +1155,7 @@ If you are using \s-2GDB\s+2, \s-2@DDD@\s+2 provides a panel from
 which you can choose useful status displays.  Select `\fBData |
 Status Displays\fR' and pick your choice from the list.
 .PP
-.PSPIC PICS/ddd-status-displays.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-status-displays.ps 15.3cm
 .PP
 Note that status displays are quite time-consuming, so you
 should delete them as soon as you don't need them any more.
@@ -1203,7 +1206,7 @@ Note that most inferior debuggers have no support for changing entire
 structures; you must change each primitive structure member
 separately.
 .PP
-.PSPIC PICS/ddd-set.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-set.ps 15.3cm
 .\"
 .\"
 .SS "Deleting Displays"
@@ -1228,7 +1231,7 @@ As an alternative, you can also type
 .br
 at the debugger prompt, where \fIdisplays...\fR is a space-separated
 list of display numbers to delete.
-
+.\"
 .\"
 .SS "Examining Shared Data Structures"
 .\"
@@ -1266,14 +1269,14 @@ clicking on `\fBDelete ()\fR'.
 Edge hints can be made invisible by disabling `\fBEdit | Preferences | Data
 Preferences | Show Edge Hints\fR'.
 .PP
-.PSPIC PICS/ddd-aliases.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-aliases.ps 15.3cm
 .PP
 To access suppressed display aliases, you can also use the Display
 Editor.  Suppressed displays are listed in the Display Editor as
 \fIaliases\fR of the original data display.  Via the Display Editor,
 you can select, change, and delete suppressed displays.
 .PP
-.PSPIC PICS/ddd-edit-displays.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-edit-displays.ps 15.3cm
 .PP
 Suppressed displays become visible again as soon as
 .br
@@ -1314,11 +1317,11 @@ restore edges and data displays when switching modes.
 .\"
 .SS "Refreshing the Data Window"
 .\"
-Although the data window refreshes itself automatically each time the
-program stops, there are some situations where you should refresh it
-explicitly.
+The data window refreshes itself automatically each time the program
+stops.  Values that have changed are highlighted.
 .PP
-The data window should be refreshed whenever:
+However, there are some situations where you should refresh the data
+window explicitly.  The data window should be refreshed whenever:
 .br
 .IP \(bu 2
 you disabled, enabled or deleted displays items at the debugger
@@ -1331,7 +1334,7 @@ the display stays unchanged although all items should be deleted
 .IP \(bu 2
 you think it could be useful.
 .PP
-You can refresh the data window by selecting the `\fBData | Refresh
+You can refresh the data window by selecting `\fBData | Refresh
 Displays\fR'.
 .PP
 As an alternative, you can press the \fIright mouse button\fR
@@ -1413,7 +1416,7 @@ You can enforce layout by setting `\fBEdit | Preferences | Data
 Preferences | Re-layout graph automatically\fR'.  If automatic layout
 is enabled, the graph is layouted after each change.
 .PP
-.PSPIC PICS/ddd-layout.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-layout.ps 15.3cm
 .\"
 .\"
 .SS "Rotating the Display Graph"
@@ -1430,11 +1433,12 @@ Subsequent layouts will respect the direction of the last rotation.
 \s-2@DDD@\s+2 allows for printing the graph picture on PostScript
 printers or into files.  This is useful for documenting program states.
 .PP
-.PSPIC PICS/ddd-print-graph.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-print-graph.ps 15.3cm
 .PP
 To print the graph on a PostScript printer, select `\fBFile | Print
 Graph\fR'.  Enter the printing command in the `\fBPrint Command\fR'
-field.  Click on the `\fBPrint\fR' button to start printing.
+field.  Click on the `\fBOK\fR' or the `\fBApply\fR' button to start
+printing.
 .PP
 To re-print the display graph using the previous settings, select the
 `\fBFile | Print Again\fR'.
@@ -1454,7 +1458,7 @@ editor, or for conversion into other formats (among others
 \s-2IBMGL\s+2, \s-2L\s-2A\s+2T\dE\uX\s+2, \s-2PIC\s+2), 
 using the \s-2TRANSFIG\s+2 or \s-2FIG2DEV\s+2 package.
 .PP
-.PSPIC PICS/ddd-print-output.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-print-output.ps 15.3cm
 .PP
 Note: Arcs cannot be printed (yet).  Arcs joining two displays are
 printed using straight lines; arcs joining a display with itself are
@@ -1509,7 +1513,7 @@ To continue to the next instruction in the current function, click on
 the `\fBNexti\fR' button.  This is similar to `\fBStepi\fR', but any
 subroutine calls are executed without stopping.
 .PP
-.PSPIC PICS/ddd-code.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-code.ps 15.3cm
 .\"
 .\"
 .SS "Registers"
@@ -1522,7 +1526,7 @@ By selecting one of the registers, its name is copied to the argument
 field.  You can use it as value for `\fBDisplay ()\fR', for instance,
 to have its value displayed in the data window.
 .PP
-.PSPIC PICS/ddd-registers.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-registers.ps 15.3cm
 .\"
 .\"
 .\" ---------------------
@@ -1564,6 +1568,99 @@ also update the source code manually via `\fBSource | Reload
 Source\fR'.  This reloads the source code shown from the source file.
 As \s-2@DDD@\s+2 automatically reloads the source code if the debugged
 program has been recompiled, this should seldom be necessary.
+.\"
+.\"
+.\" ---------------
+.SH "PERSISTENT SESSIONS"
+.\" ---------------
+.\"
+If you want to interrupt your current \s-2@DDD@\s+2 session, you can
+save its entire \s-2@DDD@\s+2 state in a file and restore it later.
+.\"
+.SS "Saving Sessions"
+To save a session, select `\fBFile | Save Session As\fR'.  You will 
+be asked for
+.br
+.IP \(bu 2 
+a symbolic session name \fINAME\fR and
+.br
+.IP \(bu 2 
+whether to include a core dump of the debugged program.
+Including a core dump is necessary for restoring data displays.
+.PP
+After clicking on `\fBSave\fR', the session is saved in 
+`\fB$HOME/.ddd/sessions/\fINAME\fR'.
+.PP
+.PSPIC @srcdir@/PICS/ddd-save-session.ps 15.3cm
+.PP
+After saving the current state as a session, the session becomes
+\fIactive\fR.  This means that \s-2@DDD@\s+2 state will be saved 
+as session defaults:
+.br
+.IP \(bu 2
+User options will be saved in
+`\fB$HOME/.ddd/sessions/\fINAME\fB/init\fR' instead of
+`\fB$HOME/.ddd/init\fR'; see \fISaving Options\fR below for details.
+.IP \(bu 2
+The \s-2@DDD@\s+2 command history will be saved in
+`\fB$HOME/.ddd/sessions/\fINAME\fB/history\fR' instead of
+`\fB$HOME/.ddd/history\fR'; see \fIEntering Commands\fR above for
+details.
+.PP
+To make the current session inactive, open the \fIdefault session\fR
+named `\fB[None]\fR'; see below for details on opening sessions.
+.PP
+If a core file is to be included in the session, \s-2@DDD@\s+2 must
+kill the debugged program in order to get a core file.  This means
+that you cannot continue program execution after saving a session.
+.\"
+.SS "Opening Sessions"
+To resume a previously saved session, select `\fBFile | Open
+Session\fR' and choose a session name from the list.  After clicking
+on `\fBOpen\fR', the entire \s-2@DDD@\s+2 state will be restored from
+the given session.
+.PP
+The session named `\fB[None]\fR' is the \fIdefault session\fR which is
+active when starting \s-2@DDD@\s+2.  To save options for default
+sessions, open the default session and save options; see \fISaving
+Options\fR below for details.
+.PP
+.PSPIC @srcdir@/PICS/ddd-open-session.ps 15.3cm
+.PP
+If a core file was included in the restored session, the program being
+debugged will be in the same state at the time the session was saved;
+in particular, you can examine the data of the program being debugged.
+However, you will not be able to resume execution of the debugged
+program since its environment (open files, resources, etc.) will be
+lost.  You can restart it instead, re-using the restored breakpoints
+and data displays.
+.\"
+.SS "Deleting Sessions"
+To delete sessions that are no longer needed, select `\fBFile | Open
+Session\fR' or `\fBFile | Save Session\fR'.  Select the sessions you
+want to delete and click on `\fBDelete\fR'.
+.PP
+The default session cannot be deleted.
+.\"
+.SS "Starting @DDD@ with a Session"
+To start-up \s-2@DDD@\s+2 with a given session named \fINAME\fR
+instead of the default session, use
+.sp
+.br
+  \fB@ddd@\ \-\-session\ \fINAME\fR
+.br
+.sp
+There is also a shortcut that opens the session \fINAME\fR and also
+invokes the inferior debugger on \fINAME\fR (in case the session
+\fINAME\fR cannot be opened):
+.sp
+.br
+  \fB@ddd@\ =\fINAME\fR
+.br
+.sp
+There is no need to give further command-line options when restarting
+a session, as they will be overridden by the options saved in the
+session.
 .\"
 .\"
 .\" ---------------
@@ -1820,14 +1917,14 @@ program issuing a string like `\fBddd: shell rm -fr $HOME\fR' when
 being debugged!  Consequently, auto-commands are \fIdisabled\fR by
 default and must be enabled explicitly.
 .PP
-To enable auto-commands, write in your `\fB$HOME/.dddinit\fR' file:
+To enable auto-commands, write in your `\fB$HOME/.ddd/init\fR' file:
 .br
 .sp
   \fB@Ddd@*autoCommands: on\fR
 .sp
 .br
 The default prefix of auto-commands is `\fBddd: \fR'.  You are
-encouraged to change this value in your `\fB.dddinit\fR' file.  To use 
+encouraged to change this value in your `\fB.ddd/init\fR' file.  To use 
 a prefix of, say, `\fBmagic123: \fR', write:
 .br
 .sp
@@ -1850,9 +1947,6 @@ preferences for a later \s-2@DDD@\s+2 invocation.  Frequently used
 preferences can also be found in the individual menus.
 .\"
 .SS "Frequently Used Preferences"
-.PP
-.PSPIC PICS/ddd-prefs-menu.ps 15.3cm
-.PP
 If you want to run your debugged process in a separate terminal
 emulator window, set `\fBProgram | Run in Execution Window\fR'.
 This is useful for programs that have special terminal requirements
@@ -1868,12 +1962,12 @@ If you wish to display machine code of selected funtions, set
 `\fBSource | Display Machine Code\fR'.  This makes \s-2@DDD@\s+2 run
 a little slower, so it is disabled by default.
 .PP
-Through `\fBEdit | Preferences\fR' item, you can set up more
-\s-2@DDD@\s+2 preferences, which are dicussed here.
+Through `\fBEdit | Preferences\fR', you can set up more \s-2@DDD@\s+2
+preferences, which are dicussed here.
 .\"
 .SS "General Preferences"
 .PP
-.PSPIC PICS/ddd-general-prefs.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-general-prefs.ps 15.3cm
 .PP
 By default, when you move the pointer over a button, \s-2@DDD@\s+2
 gives a hint on the button's meaning in a small window.  Experienced
@@ -1926,7 +2020,7 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Source Preferences"
 .PP
-.PSPIC PICS/ddd-source-prefs.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-source-prefs.ps 15.3cm
 .PP
 In the source text, the current execution position and breakpoints are
 indicated by symbols (``glyphs'').  As an alternative, \s-2@DDD@\s+2
@@ -1961,7 +2055,7 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Data Preferences"
 .PP
-.PSPIC PICS/ddd-data-prefs.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-data-prefs.ps 15.3cm
 .PP
 If you want \s-2@DDD@\s+2 to detect aliases, set the `\fBDetect
 Aliases\fR' option.  Note that alias detection makes \s-2@DDD@\s+2 run
@@ -1994,7 +2088,7 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Startup Preferences"
 .PP
-.PSPIC PICS/ddd-startup-prefs.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-startup-prefs.ps 15.3cm
 .PP
 By default, \s-2@DDD@\s+2 uses one single window for commands, source,
 and data.  To have separate windows for source, data, and debugger
@@ -2004,7 +2098,7 @@ restarted \s-2@DDD@\s+2.  See also the `\fB\-\-attach\-windows\fR' and
 `\fB\-\-separate\-windows\fR' options, below.
 .PP
 \s-2@DDD@\s+2 can display the status line at the bottom (`\fBat
-bottom\fR') or at the top (`\fBat top\fR').  This change
+bottom\fR') or at the top (`\fBat top\fR') of the source.  This change
 takes only effect after you have saved options and restarted
 \s-2@DDD@\s+2.  Pick your choice.
 .PP
@@ -2035,23 +2129,25 @@ options and restarted \s-2@DDD@\s+2.  See also the `\fB\-\-gdb\fR',
 `\fB\-\-dbx\fR', and `\fB\-\-xdb\fR' options, below.
 .PP
 If you want the \s-2@DDD@\s+2 logo shown upon startup, you can select
-between different versions.  The \fBcolor\fR version is the nicest,
-but requires several color cells.  The \fBgrey4\fR version needs no
-additional color cells.  Selecting \fBnone\fR disables the logo
-completely.
+between different versions.  The `\fBcolor\fR' version is the nicest,
+but requires several color cells.  The `\fBgrey\fR' version requires
+some grey color cells, which are also used by \s-2@DDD@\s+2.  The
+`\fBgrey4\fR' version needs no additional color cells.  Selecting
+`\fBnone\fR' disables the logo completely.
 .PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Saving Options"
 .\"
-You can save the current option settings by selecting `\fBEdit |
-Save Options\fR'.  Options are saved in a file named `\fB.dddinit\fR'
-in your home directory.
+You can save the current option settings by selecting `\fBEdit | Save
+Options\fR'.  Options are saved in a file named `\fB.ddd/init\fR' in
+your home directory.  If a session \fINAME\fR is active, options 
+will be saved in `\fB$HOME/.ddd/sessions/\fINAME\fB/init\fR' instead.
 .\"
 .SS "Other Customizations"
 .\"
 Other personal \s-2@DDD@\s+2 resources can also be set in your
-`\fB.dddinit\fR' file.  See the `\fBRESOURCES\fR' section, below.
+`\fB.ddd/init\fR' file.  See the `\fBRESOURCES\fR' section, below.
 .PP
 The inferior debugger can be customized via `\fBEdit |
 Settings\fR'.  See the `\fBDEBUGGER SETTINGS\fR' section, below.
@@ -2066,7 +2162,7 @@ Settings\fR'.  Using the settings editor, you can determine whether
 C++ names are to be demangled, how many array elements are to print,
 and so on.
 .PP
-.PSPIC PICS/ddd-settings.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-settings.ps 15.3cm
 .PP
 The capabilities of the settings editor depend on the capabilities of
 your inferior debugger\(em\&that is, your \s-2GDB\s+2 or \s-2DBX\s+2
@@ -2180,7 +2276,7 @@ The \s-2@DDD@\s+2 logo font (lowercase letters).
 The symbol font.  In help texts.
 .PP
 Here is an alternative, resolution-independent setting, which you may
-copy into your `\fB$HOME/.dddinit\fR' file:
+copy into your `\fB$HOME/.ddd/init\fR' file:
 .sp
 .br
   \fB@Ddd@*fontList: \\
@@ -2238,7 +2334,7 @@ The resolution-independent alternative looks like this:
 .br
 .sp
 Pick your choice and copy and modify the appropriate resources to your
-`\fB$HOME/.dddinit\fR' file.  For fonts within the data display, see
+`\fB$HOME/.ddd/init\fR' file.  For fonts within the data display, see
 the `\fBvslDefs\fR' resource, below.
 .\"
 .\"
@@ -2285,7 +2381,7 @@ These are the most important color resources used in \s-2@DDD@\s+2:
 .B grey50
 .PP
 Again, you can copy and modify the appropriate resources to your
-`\fB$HOME/.dddinit\fR' file.  For colors within the data display, see
+`\fB$HOME/.ddd/init\fR' file.  For colors within the data display, see
 the `\fBvslDefs\fR' resource, below.
 .\"
 .\"
@@ -2525,6 +2621,15 @@ COMMANDS\fR, above.  By default, `\fBfalse\fR'.
 .B "autoCommandPrefix (\fPclass\fB AutoCommandPrefix)"
 The prefix for auto-commands.  By default, `\fB@ddd@: \fR'.
 .TP
+.B "blockTTYInput (\fPclass\fB BlockTTYInput)"
+Whether \s-2@DDD@\s+2 should block when reading data from the inferior
+debugger via the pseudo-tty interface.  Some systems \fIrequire\fR
+this, such as Linux with libc 5.4.33 and earlier; set it to
+`\fBtrue\fR'.  Some other systems \fIprohibit\fR this, such as Linux
+with GNU libc 6 and later; set it to `\fBfalse\fR'.  The value
+`\fBauto\fR' (default) will select the `best' choice (that is, the
+best choice known to the \s-2@DDD@\s+2 developers).
+.TP
 .B "dbxInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
 initially sent to \s-2DBX\s+2.  By default, it is empty.
@@ -2742,7 +2847,7 @@ button specification is used as label.
 The default resource value is empty\(em\&no console buttons are
 created.
 .PP
-Here are some examples to insert into your `\fB$HOME/.dddinit\fR' file.
+Here are some examples to insert into your `\fB$HOME/.ddd/init\fR' file.
 These are the settings of \s-2@DDD@\s+2 1.x:
 .sp
 .br
@@ -2780,7 +2885,7 @@ console.  Each button issues the command given by its name.  See the
 The default resource value is empty\(em\&no source buttons are
 created.
 .PP
-Here are some example to insert into your `\fB$HOME/.dddinit\fR' file.
+Here are some example to insert into your `\fB$HOME/.ddd/init\fR' file.
 These are the settings of \s-2@DDD@\s+2 1.x:
 .sp
 .br
@@ -2957,6 +3062,10 @@ Default: \fBcolor(\fIBOX\fB, "blue4")
 The color used for references.
 Default: \fBcolor(\fIBOX\fB, "blue4")
 .TP 10
+.B "changed_color(\fIBOX\fB)"
+The color used for changed values.
+Default: \fBcolor(\fIBOX\fB, "black", "#ffffcc")
+.TP 10
 .B "stdfontfamily()"
 The font family used.  One of \fBfamily_times()\fR, 
 \fBfamily_courier()\fR, \fBfamily_helvetica()\fR, 
@@ -3068,15 +3177,15 @@ by the file name.  The default is to invoke \fB$XEDITOR\fR first, then
 .br
 .sp
 .br
-This `\fB.dddinit\fR' setting invokes an editing session
+This `\fB.ddd/init\fR' setting invokes an editing session
 for an \fIXEmacs\fR editor running \fIgnuserv\fR:
 .sp
 .br
   \fB@Ddd@*editCommand: gnuclient +@LINE@ @FILE@\fR
 .br
 .sp
-This `\fB.dddinit\fR' setting invokes an editing session
-for an \fIEmacs\fR editor running \fIemacsserver\fR:
+This `\fB.ddd/init\fR' setting invokes an editing session for an
+\fIEmacs\fR editor running \fIemacsserver\fR:
 .sp
 .br
   \fB@Ddd@*editCommand: emacsclient +@LINE@ @FILE@\fR
@@ -3222,7 +3331,7 @@ the `\fB\-\-check\-configuration\fR' option, below.
 .TP
 .B "dddinitVersion (\fPclass\fB Version)"
 The version of the \s-2@DDD@\s+2 executable that last wrote the
-`\fB$HOME/.dddinit\fR' file.  If this string does not match the
+`\fB$HOME/.ddd/init\fR' file.  If this string does not match the
 version of the current \s-2@DDD@\s+2 executable, \s-2@DDD@\s+2 issues
 a warning.
 .TP
