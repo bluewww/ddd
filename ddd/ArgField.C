@@ -51,7 +51,8 @@ char ArgField_rcsid[] =
 
 // Constructor
 ArgField::ArgField (Widget parent, const char* name)
-    : arg_text_field(0), handlers(ArgField_NTypes), is_empty(true)
+    : arg_text_field(0), handlers(ArgField_NTypes), is_empty(true), 
+      locked(false)
 {
     Arg args[10];
     Cardinal arg = 0;
@@ -81,6 +82,9 @@ string ArgField::get_string () const
 
 void ArgField::set_string(string s)
 {
+    if (locked)
+	return;
+
     // Strip blanks
     strip_space(s);
 
@@ -105,6 +109,7 @@ void ArgField::set_string(string s)
 	    XmTextFieldShowPosition(arg_text_field, last_pos);
 	}
     }
+
     XtFree(old_s);
 }
 
@@ -130,6 +135,13 @@ void ArgField::valueChangedCB(Widget,
 	arg_field->is_empty = false;
 	arg_field->handlers.call(Empty, arg_field, (void *)false);
     }
+}
+
+void ArgField::lock(bool arg)
+{
+    locked = arg;
+    XtSetSensitive(top(), !locked);
+    XtSetSensitive(text(), !locked);
 }
 
 void ArgField::losePrimaryCB(Widget,

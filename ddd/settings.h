@@ -37,6 +37,7 @@
 #include "bool.h"
 #include "strclass.h"
 #include "GDBAgent.h"
+#include "StringA.h"
 #include "options.h"
 
 // Debugger settings
@@ -109,6 +110,9 @@ extern void reset_signals();
 
 
 // Theme Handling
+
+// Return all available themes
+void get_themes(StringArray& themes);
 
 // Update theme table
 extern void update_themes();

@@ -59,6 +59,7 @@ class ArgField {
     Widget      arg_text_field;
     HandlerList handlers;
     bool     is_empty;
+    bool     locked;
 
     static void valueChangedCB(Widget w,
 			       XtPointer client_data, 
@@ -69,7 +70,13 @@ class ArgField {
 
 private:
     ArgField(const ArgField&): 
-	arg_text_field(0), handlers(), is_empty(false) { assert(0); }
+	arg_text_field(0), 
+	handlers(), 
+	is_empty(false),
+	locked(false)
+    {
+	assert(0);
+    }
     ArgField& operator = (const ArgField&)       { assert(0); return *this; }
 
 public:
@@ -79,8 +86,9 @@ public:
     bool empty () const { return is_empty; }
 
     string get_string () const;
-
     void set_string(string s);
+
+    void lock(bool locked = true);
 
     Widget text() const { return arg_text_field; };
     Widget top()  const;

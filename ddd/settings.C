@@ -2438,7 +2438,9 @@ static void fix_clip_window_translations(Widget scroll)
 
 
 // Themes
-static void get_themes(StringArray& themes)
+
+// Return all available themes
+void get_themes(StringArray& themes)
 {
     StringArray bases;
 
@@ -2826,15 +2828,6 @@ static void reload_all_signals()
 	process_handle(info, true);
 }
 
-void update_signals()
-{
-    if (signals_panel != 0 && XtIsManaged(signals_panel))
-    {
-	reload_all_signals();
-	need_reload_signals = false;
-    }
-}
-
 // Create signal editor
 static Widget create_signals(DebuggerType type)
 {
@@ -2851,6 +2844,37 @@ static Widget create_signals(DebuggerType type)
     }
 
     return signals_panel;
+}
+
+void update_signals()
+{
+    if (signals_panel != 0 && XtIsManaged(signals_panel))
+    {
+	reload_all_signals();
+	need_reload_signals = false;
+    }
+}
+
+// Create themes editor
+static Widget create_themes(DebuggerType type)
+{
+    check_options_file();
+
+    if (themes_panel != 0)
+	XtDestroyWidget(themes_panel);
+
+    // Reset variables
+    static WidgetArray empty;
+    themes_panel        = 0;
+    reset_themes_button = 0;
+    apply_themes_button = 0;
+    themes_entries = empty;
+    themes_labels  = empty;
+
+    themes_panel = create_panel(type, THEMES);
+
+    update_themes();
+    return themes_panel;
 }
 
 // Update themes
@@ -2886,28 +2910,6 @@ void update_themes()
     }
 }
 
-
-// Create themes editor
-static Widget create_themes(DebuggerType type)
-{
-    check_options_file();
-
-    if (themes_panel != 0)
-	XtDestroyWidget(themes_panel);
-
-    // Reset variables
-    static WidgetArray empty;
-    themes_panel        = 0;
-    reset_themes_button = 0;
-    apply_themes_button = 0;
-    themes_entries = empty;
-    themes_labels  = empty;
-
-    themes_panel = create_panel(type, THEMES);
-
-    update_themes();
-    return themes_panel;
-}
 
 
 // Popup editor for debugger settings
@@ -3698,12 +3700,12 @@ static void set_arg()
 	}
 
 	source_arg->addHandler(Changed, ForceArg0HP);
-	set_sensitive(source_arg->top(), False);
+	source_arg->lock();
     }
     else
     {
 	source_arg->removeHandler(Changed, ForceArg0HP);
-	set_sensitive(source_arg->top(), True);
+	source_arg->lock(false);
 
 	if (have_saved_arg)
 	{
