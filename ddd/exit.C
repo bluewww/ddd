@@ -354,7 +354,7 @@ static void DDDDoneCB(Widget w, XtPointer client_data, XtPointer call_data)
     arg = 0;
     MString msg = rm(gdb->title() + " is still busy.  "
 		     + (ddd_is_restarting ? "Restart" : "Exit")
-		     + "anyway (and kill it)?");
+		     + " anyway (and kill it)?");
     XtSetArg(args[arg], XmNmessageString, msg.xmstring()); arg++;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
