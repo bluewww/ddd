@@ -545,6 +545,11 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		member_prefix = normalize_base(member_prefix) + "{'";
 		member_suffix = "'}";
 	    }
+	    else if (gdb->program_language() == LANGUAGE_FORTRAN)
+	    {
+		// In Fortran, members of A are accessed as A%B
+		member_prefix = normalize_base(member_prefix) + "%";
+	    }
 	    else
 	    {
 		// In all other languages, members are accessed as A.B
