@@ -627,7 +627,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    panel = widget;
 
 	if (flags & MMInsensitive)
-	    set_sensitive(panel, False);
+	    set_sensitive(panel, false);
 
 	if (!(flags & MMUnmanaged))
 	    XtManageChild(panel);
@@ -871,7 +871,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 			  callback.callback, 
 			  callback.closure);
 	else
-	    set_sensitive(widget, False);
+	    set_sensitive(widget, false);
 	break;
     }
 
@@ -884,7 +884,7 @@ static void addCallback(const MMDesc *item, XtPointer default_closure)
 			  callback.callback, 
 			  callback.closure);
 	else
-	    set_sensitive(widget, False);
+	    set_sensitive(widget, false);
 	break;
     }
 
@@ -1293,7 +1293,7 @@ void set_sensitive(Widget w, bool state)
 {
     if (w != 0)
     {
-	XtSetSensitive(w, state);
+	XtSetSensitive(w, state?True:False);
 
 	if (!state && w == active_button)
 	{

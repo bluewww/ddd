@@ -6708,25 +6708,25 @@ static void gdbUpdateEditCB(Widget w, XtPointer client_data,
     if (undo_action == NO_GDB_ANSWER)
     {
 	set_label(menu[EditItems::Undo].widget, "Undo");
-	set_sensitive(menu[EditItems::Undo].widget, False);
+	set_sensitive(menu[EditItems::Undo].widget, false);
     }
     else
     {
 	MString label("Undo " + undo_action);
 	set_label(menu[EditItems::Undo].widget, label);
-	set_sensitive(menu[EditItems::Undo].widget, True);
+	set_sensitive(menu[EditItems::Undo].widget, true);
     }
 
     if (redo_action == NO_GDB_ANSWER)
     {
 	set_label(menu[EditItems::Redo].widget, "Redo");
-	set_sensitive(menu[EditItems::Redo].widget, False);
+	set_sensitive(menu[EditItems::Redo].widget, false);
     }
     else
     {
 	MString label("Redo " + redo_action);
 	set_label(menu[EditItems::Redo].widget, label);
-	set_sensitive(menu[EditItems::Redo].widget, True);
+	set_sensitive(menu[EditItems::Redo].widget, true);
     }
 
 
@@ -6786,12 +6786,12 @@ static void gdbUpdateFileCB(Widget w, XtPointer client_data,
 
     // Check whether we can print something
     Graph *graph = graphEditGetGraph(data_disp->graph_edit);
-    Boolean can_print = (graph->firstNode() != 0);
+    bool can_print = (graph->firstNode() != 0);
     set_sensitive(file_menu[FileItems::Print].widget,      can_print);
     set_sensitive(file_menu[FileItems::PrintAgain].widget, can_print);
 
     // Check whether we can close something
-    Boolean can_close = (running_shells() > 1);
+    bool can_close = (running_shells() > 1);
     set_sensitive(file_menu[FileItems::Close].widget, can_close);
 
 #if 0
@@ -6881,10 +6881,10 @@ static void setup_new_shell(Widget w)
 
 #if HAVE_X11_XMU_EDITRES_H
     // Make the shell handle EditRes messages
-    XtRemoveEventHandler(shell, EventMask(0), true,
+    XtRemoveEventHandler(shell, EventMask(0), True,
 			 XtEventHandler(_XEditResCheckMessages), 
 			 XtPointer(0));
-    XtAddEventHandler(shell, EventMask(0), true,
+    XtAddEventHandler(shell, EventMask(0), True,
 		      XtEventHandler(_XEditResCheckMessages),
 		      XtPointer(0));
 #endif
@@ -7788,7 +7788,7 @@ static void setup_options()
     set_sensitive(set_refer_path_w, gdb->type() != GDB && gdb->type() != DBG);
     set_sensitive(refer_sources_w,  gdb->type() != GDB && gdb->type() != DBG);
     
-    set_sensitive(edit_watchpoints_w, gdb->has_watch_command());
+    set_sensitive(edit_watchpoints_w, gdb->has_watch_command() != 0);
 
     set_sensitive(command_separate_exec_window_w, gdb->has_redirection());
     set_sensitive(source_separate_exec_window_w,  gdb->has_redirection());
