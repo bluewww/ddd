@@ -2474,42 +2474,41 @@ void SourceView::read_file (string file_name,
 
     XtManageChild(source_text_w);
 
-    ostrstream os;
+    MString msg;
     switch (current_origin)
     {
     case ORIGIN_LOCAL:
-	os << "File " << quote(file_name);
+	msg += rm("File " + quote(file_name));
 	if (remote_gdb())
-	    os << " (from local host)";
+	    msg += rm(" (from local host)");
 	break;
 
     case ORIGIN_REMOTE:
-	os << "File " << quote(file_name) 
-	   << " (from " << gdb_host << ")";
+	msg += rm("File " + quote(file_name));
+	msg += rm(" (from " + gdb_host + ")");
 	break;
 
     case ORIGIN_GDB:
-	os << "Source " << quote(file_name) 
-	   << " (from " << gdb->title() << ")";
+	msg += rm("Source " + quote(file_name));
+	msg += rm(" (from " + gdb->title() + ")");
 	break;
 
     case ORIGIN_NONE:
-	os << quote(file_name);
+	msg += tt(file_name);
 	break;
     }
-    os << ' ';
+    msg += rm(" ");
 
     if (line_count == 1)
-	os << "1 line, ";
+	msg += rm("1 line, ");
     else
-	os << line_count << " lines, ";
+	msg += rm(itostring(line_count) + " lines, ");
     if (current_source.length() == 1)
-	os << "1 character";
+	msg += rm("1 character");
     else
-	os << current_source.length() << " characters";
+	msg += rm(itostring(current_source.length()) + " characters");
 
-    string status(os);
-    set_status(status);
+    set_status_mstring(msg);
 
     XmTextClearSelection(source_text_w, 
 			 XtLastTimestampProcessed(XtDisplay(source_text_w)));
@@ -6841,10 +6840,7 @@ string SourceView::get_line(string position)
 	end = current_source.length();
 
     string text = current_source.at(int(start), end - start);
-
-    ostrstream buf;
-    buf << line << '\t' << text;
-    return string(buf);
+    return itostring(line) + "\t" + text;
 }
 
 
