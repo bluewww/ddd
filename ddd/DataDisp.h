@@ -118,6 +118,9 @@ class DataDisp {
     static void setCB                   (Widget, XtPointer, XtPointer);
     static void shortcutCB              (Widget, XtPointer, XtPointer);
     static void deleteArgCB		(Widget, XtPointer, XtPointer);
+    static void clusterSelectedCB       (Widget, XtPointer, XtPointer);
+    static void unclusterSelectedCB     (Widget, XtPointer, XtPointer);
+    static void toggleClusterSelectedCB (Widget, XtPointer, XtPointer);
 
     //-----------------------------------------------------------------------
     // Popup menu callbacks
@@ -484,7 +487,7 @@ private:
     // Clustering stuff
     static void insert_data_node(DispNode *dn, int depend_nr);
     static int new_cluster();
-    static void clusterSelectedCB(Widget, XtPointer, XtPointer);
+
     static DispValue *update_hook(string& value);
 
 public:
@@ -522,8 +525,7 @@ public:
 
     // Helpers for user displays
     static bool have_user_display(const string& name);
-    static void new_user_display(const string& name,
-				 bool check_duplicates = true);
+    static void new_user_display(const string& name);
     static void delete_user_display(const string& name);
 
     // Callbacks for language changes
