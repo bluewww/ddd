@@ -42,5 +42,8 @@ extern const int ddd_resources_size;
 // Resources to use if `Ddd' app-defaults are not found
 extern String ddd_fallback_resources[];
 
+// Default resources
+extern XrmDatabase app_defaults(Display *display);
+
 #endif // _DDD_resources_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

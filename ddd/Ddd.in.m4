@@ -932,13 +932,6 @@ Ddd*startupTips: on
 Ddd*startupTipCount: 1
 
 
-
-! The `endOfPreferences' pseudo-resource marks the end of
-! user-settable preferences.  When saving options, DDD checks anything
-! up to this resource for default values.
-END-OF-USER-PREFERENCES: here
-
-
 !-----------------------------------------------------------------------------
 ! Colors
 !-----------------------------------------------------------------------------

@@ -1974,3 +1974,34 @@ String ddd_fallback_resources[] = {
 #endif
 0
 };
+
+// Return a database of default settings
+XrmDatabase app_defaults(Display *display)
+{
+    static XrmDatabase db = NULL;
+    if (db != NULL)
+	return db;
+
+    // Add builtin fallback defaults.
+    int i = 0;
+    while (ddd_fallback_resources[i] != 0)
+	XrmPutLineResource(&db, ddd_fallback_resources[i]);
+
+    // Add app-defaults file, overriding fallback defaults.
+    static String app_name  = 0;
+    static String app_class = 0;
+
+    if (app_name == 0)
+	XtGetApplicationNameAndClass(display, &app_name, &app_class);
+
+    String app_defaults_file = 
+	XtResolvePathname(display, NULL, app_class, NULL, NULL, NULL, 0, NULL);
+    if (app_defaults_file != NULL)
+    {
+	XrmDatabase db2 = XrmGetFileDatabase(app_defaults_file);
+	if (db2 != 0)
+	    XrmMergeDatabases(db2, &db);
+    }
+
+    return db;
+}

@@ -33,8 +33,6 @@ char options_rcsid[] =
 #pragma implementation
 #endif
 
-#define LOG_FALLBACKS 0
-
 #include "options.h"
 
 #include "config.h"
@@ -1467,47 +1465,38 @@ static bool must_kill_to_get_core()
 // Write state
 //-----------------------------------------------------------------------------
 
-static bool is_fallback_value(string app_class, 
-			      string resource, const string& val)
+static bool is_fallback_value(string resource, const string& val)
 {
-    static string endOfPreferences = "END-OF-USER-PREFERENCES";
+#if 1
+    // Not tested yet
+    return false;
+#else
+    XrmDatabase db = app_defaults(XtDisplay(find_shell()));
 
-    string value = uncook(val);
+    static String app_name  = 0;
+    static String app_class = 0;
 
-    // FIXME: This has a complexity of O(N^2), with N being the number
-    // of options.  We should better use an XrmDatabase here.
+    if (app_name == 0)
+	XtGetApplicationNameAndClass(XtDisplay(find_shell()), 
+				     &app_name, &app_class);
 
-    for (int i = 0; ddd_fallback_resources[i] != 0; i++)
+    string str_name  = string(app_name)  + "*" + resource;
+    string str_class = string(app_class) + "*" + resource;
+
+    char *type;
+    XrmValue xrmvalue;
+    Bool success = XrmGetResource(db, str_name, str_class, &type, &xrmvalue);
+    string found = "";
+
+    if (success)
     {
-	string fallback_resource = uncook(ddd_fallback_resources[i]);
-	if (fallback_resource.contains(endOfPreferences, 0))
-	    break;
-
-	if (fallback_resource.contains(resource + ":", 0) ||
-	    fallback_resource.contains(app_class + "*" + resource + ":", 0) ||
-	    fallback_resource.contains(app_class + "." + resource + ":", 0))
-	{
-	    string fallback_value = fallback_resource.after(':');
-	    strip_space(fallback_value);
-
-	    if (fallback_value != value)
-	    {
-#if LOG_FALLBACKS
-		clog << app_class << "*" << cook(resource) << ": "
-		     << cook(fallback_value) << " => " << cook(value) << '\n';
-#endif
-	    }
-
-	    return fallback_value == value;
-	}
+	char *str = (char *)xrmvalue.addr;
+	int len   = xrmvalue.size - 1; // includes the final `\0'
+	found = string(str, len);
     }
 
-#if LOG_FALLBACKS
-    clog << app_class << "*" << cook(resource) 
-	 << ": <none> => " << cook(value) << '\n';
+    return found == val;
 #endif
-
-    return false;
 }
 
 static string app_value(string resource, const string& value, 
@@ -1521,7 +1510,7 @@ static string app_value(string resource, const string& value,
 				     &app_name, &app_class);
 
     string prefix = "";
-    if (ignore_default && is_fallback_value(app_class, resource, value))
+    if (ignore_default && is_fallback_value(resource, value))
 	prefix = "! ";
 
     string s = prefix + app_class;
