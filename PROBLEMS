@@ -421,7 +421,7 @@ Reported by:  Blair Zajac <blair@olympia.gps.caltech.edu>
 Reported by:  Andreas Zeller <zeller@acm.org>
 
     Solaris CC (SC4.0 18 Oct 1995 C++ 4.1) is safe for compiling DDD.
-    Executables are larger compared to those compiled with GCC.
+    Executables are larger than those compiled with GCC.
 
 
 SunOS
