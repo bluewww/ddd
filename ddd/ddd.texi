@@ -9737,15 +9737,14 @@ contains nothing but a scalar simply draws the scalar's value as a
 @var{y} constant---that is, a horizontal line.
 
 So why care about scalars at all?  @DDD{} allows you to combine
-multiple values into one plot.  The basic idea is: if you want to plot
-something that is neither an array nor a scalar, @DDD{} takes
-all numerical sub-values it can find and plots them all together in one
+@emph{multiple values into one plot.}  The basic idea is: if you want to
+plot something that is neither an array nor a scalar, @DDD{} takes all
+numerical sub-values it can find and plots them all together in one
 window.  For instance, you can plot all local variables by selecting
 @samp{Data @result{} Display Local Variables}, followed by @samp{Plot}.
-This will create a plot containing all numerical values as found in
-the current local variables.  Likewise, you can plot all numeric
-members contained in a structure by selecting it, followed by
-@samp{Plot}.
+This will create a plot containing all numerical values as found in the
+current local variables.  Likewise, you can plot all numeric members
+contained in a structure by selecting it, followed by @samp{Plot}.
 
 @cindex Cluster, and plotting
 If you want more control about what to include in a plot and what not,
