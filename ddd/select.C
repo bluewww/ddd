@@ -71,9 +71,47 @@ static void CancelCB(Widget, XtPointer client_data, XtPointer)
 
 
 // Answer GDB question
-static string select_from_gdb(string& question)
+static void select_from_gdb(string& question, string& reply)
 {
-    static string selection_reply = "";
+    int count       = question.freq('\n') + 1;
+    string *choices = new string[count];
+    bool *selected  = new bool[count];
+
+    split(question, choices, count, '\n');
+
+    // Highlight choice #1 by default
+    for (int i = 0; i < count; i++)
+    {
+	if (!has_nr(choices[i]))
+	{
+	    // Choice has no number (prompt) - remove it
+	    for (int j = i; j < count - 1; j++)
+		choices[j] = choices[j + 1];
+	    count--;
+	    i--;
+	}
+	else
+	{
+	    selected[i] = (get_positive_nr(choices[i]) == 1);
+	}
+    }
+
+    if (count < 2)
+    {
+	// Nothing to choose from
+	if (count == 1)
+	{
+	    // Take the first choice.
+	    reply = itostring(atoi(choices[0])) + "\n";
+	}
+	
+	delete[] choices;
+	delete[] selected;
+	return;
+    }
+
+    // Popup selection dialog
+    static string selection_reply;
 
     if (gdb_selection_dialog == 0)
     {
@@ -106,29 +144,6 @@ static string select_from_gdb(string& question)
 		      XmNhelpCallback, ImmediateHelpCB, 0);
     }
 
-    int count       = question.freq('\n') + 1;
-    string *choices = new string[count];
-    bool *selected  = new bool[count];
-
-    split(question, choices, count, '\n');
-
-    // Highlight choice #1 by default
-    for (int i = 0; i < count; i++)
-    {
-	if (!has_nr(choices[i]))
-	{
-	    // Choice has no number (prompt) - remove it
-	    for (int j = i; j < count - 1; j++)
-		choices[j] = choices[j + 1];
-	    count--;
-	    i--;
-	}
-	else
-	{
-	    selected[i] = (get_positive_nr(choices[i]) == 1);
-	}
-    }
-
     setLabelList(gdb_selection_list_w, choices, selected, count, false, false);
 
     delete[] choices;
@@ -140,7 +155,8 @@ static string select_from_gdb(string& question)
     while (selection_reply == "" && gdb->running())
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), XtIMAll);
 
-    return selection_reply;
+    // Found a reply - return
+    reply = selection_reply;
 }
 
 void gdb_selectHP(Agent *, void *, void *call_data)
@@ -167,6 +183,6 @@ void gdb_selectHP(Agent *, void *, void *call_data)
     info->question = "";
 
     // Set and issue reply
-    info->reply = select_from_gdb(prompt);
+    select_from_gdb(prompt, info->reply);
     _gdb_out(info->reply);
 }
