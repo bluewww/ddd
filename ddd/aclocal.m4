@@ -203,6 +203,33 @@ AC_SUBST(ELIDE_CONSTRUCTORS)
 ])dnl
 dnl
 dnl
+dnl If the C++ compiler accepts the `-fconserve-space' flag,
+dnl set output variable `CONSERVE_SPACE' to `-fconserve-space',
+dnl empty otherwise.
+dnl
+AC_DEFUN(ICE_CONSERVE_SPACE,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether ${CXX} accepts the -fconserve-space flag)
+AC_CACHE_VAL(ice_cv_conserve_space,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_cxxflags="$CXXFLAGS"
+CXXFLAGS=-fconserve-space
+AC_TRY_COMPILE(,[int a;],
+ice_cv_conserve_space=yes, ice_cv_conserve_space=no)
+CXXFLAGS="$ice_save_cxxflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_conserve_space)
+if test "$ice_cv_conserve_space" = yes; then
+CONSERVE_SPACE=-fconserve-space
+fi
+AC_SUBST(CONSERVE_SPACE)
+])dnl
+dnl
+dnl
 dnl If this is GNU C++ earlier than 2.5, issue a warning.
 dnl
 AC_DEFUN(ICE_CXX_PROBLEMATIC_VERSION,
@@ -726,7 +753,7 @@ if test "$GXX" = yes; then
   CXXSTUFF=
   for flag in $CXXFLAGS; do
     case $flag in
-      -O)  CXXOPT="$CXXOPT -O2";;
+      -O)  CXXOPT="$CXXOPT -O3";;
       -O*) CXXOPT="$CXXOPT $flag";;
       -g*) CXXDEBUG="$flag";;
       -W*) CXXWARNINGS="$CXXWARNINGS $flag";;
@@ -770,8 +797,9 @@ if test "$GXX" = yes; then
 ICE_EXTERNAL_TEMPLATES
 ICE_NO_IMPLICIT_TEMPLATES
 ICE_ELIDE_CONSTRUCTORS
+ICE_CONSERVE_SPACE
 fi
-CXXSTUFF="$EXTERNAL_TEMPLATES $ELIDE_CONSTRUCTORS"
+CXXSTUFF="$EXTERNAL_TEMPLATES $ELIDE_CONSTRUCTORS $CONSERVE_SPACE"
 AC_SUBST(CXXSTUFF)dnl
 ])dnl
 dnl
