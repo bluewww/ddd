@@ -35,6 +35,7 @@ char frame_rcsid[] =
 
 #include "bool.h"
 #include "frame.h"
+#include "XErrorB.h"
 
 // Find the WM frame surrounding WINDOW.
 Window frame(Display *display, Window window)
@@ -46,6 +47,8 @@ Window frame(Display *display, Window window)
     Window root = 0;
     XWindowAttributes root_attr;
     bool have_root_attr = false;
+
+    XErrorBlocker blocker(display);
 
     Window w = window;
     for (;;)

@@ -53,6 +53,7 @@ char windows_rcsid[] =
 #include "frame.h"
 #include "wm.h"
 #include "MinMaxA.h"
+#include "XErrorB.h"
 
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>
@@ -452,6 +453,8 @@ void popup_tty(Widget shell)
 {
     if (exec_tty_window())
     {
+	XErrorBlocker blocker(XtDisplay(shell));
+
 	// Uniconify window
 	XMapWindow(XtDisplay(shell), exec_tty_window());
 
@@ -530,6 +533,8 @@ static void raise_above(Display *display, Window win, Window sibling)
 {
     if (win == 0 || sibling == 0)
 	return;
+
+    XErrorBlocker blocker(display);
 
     Window win_frame     = frame(display, win);
     Window sibling_frame = frame(display, sibling);
