@@ -331,10 +331,9 @@ Volunteers for these and other projects are welcome!
     `http://sourceware.cygnus.com/gdb/onlinedocs/gdbmi_toc.html'.
 
 384 Finish themes support:
-    * Be sure to clear cache when recomputing
     * Scan entire VSL include path for themes
     * Cache computed VSL libraries (clear when changed)
     * Populate user's DDD directory with themes
-    * Make `Suppress' more easily accessible
+    * Make `Suppress' more easily accessible (as `Delete'?)
 
 385 (Insert new project ideas here)
