@@ -40,8 +40,7 @@ What's new in DDD?
       For instance, local variable displays are realized via
       "graph display `info locals`".
     - Button tips.  Moving the mouse pointer over a button causes a
-      small hint window to raise.  This feature is also known as
-      `toolbar tips' or `bubble help'.  (optional)
+      small hint window (aka `balloon help') to raise.  (optional)
     - Value tips.  Moving the mouse pointer over a variable causes a
       small window to raise showing the current value.  (optional)
     - The status line has been reworked and extended:

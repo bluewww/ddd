@@ -311,6 +311,7 @@ Volunteers for these and other projects are welcome!
      - Recognize 'complete' variables; example "ptr->struct.field": if
        one points inside this string always show the value of
        ptr->struct.field.
+     [ A selection followed by a click on `Print ()' will do. - AZ]
      - Selection: Double click to select words - moving the mouse then
        expands on the basis of words
      - possibility to select the base (dec, hex, oct ...) for
