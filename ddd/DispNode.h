@@ -226,7 +226,7 @@ public:
 // The command to use for clusters
 #define CLUSTER_COMMAND "displays"
 
-inline bool is_cluster(DispNode *dn)
+inline bool is_cluster(const DispNode *dn)
 {
     return dn->is_user_command() && 
 	dn->user_command().contains(CLUSTER_COMMAND, 0);
