@@ -29,8 +29,9 @@ What's new in DDD?
     There are no user-visible changes to DDD 2.2.1.
 
     Bug fixes:
-    - Getting and identifying core dumps on Sun Solaris now works.
-    - Improved support for Sun DBX 4.0.
+    - Getting and identifying core dumps now works on Solaris, AIX and
+      other architectures.
+    - The separate execution TTY now works with Sun DBX 4.0.
 
 
 What is DDD, anyway?
