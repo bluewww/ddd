@@ -74,18 +74,27 @@ static void SetSizeCB(Widget w, XtPointer, XtPointer)
 
 static Widget octal_w;		// Initial items
 static Widget byte_w;
+static Widget long_w;
+
+static Widget unsigned_char_w;
+static Widget binary_w;
+static Widget address_format_w;
+static Widget wide_char_w;
+static Widget wide_string_w;
 
 static MMDesc format_menu[] = { 
     { "o", MMPush, { SetFormatCB }, NULL, &octal_w },
     { "x", MMPush, { SetFormatCB }},
     { "d", MMPush, { SetFormatCB }},
-    { "u", MMPush, { SetFormatCB }},
-    { "t", MMPush, { SetFormatCB }},
+    { "u", MMPush, { SetFormatCB }, NULL, &unsigned_char_w },
+    { "t", MMPush, { SetFormatCB }, NULL, &binary_w },
     { "f", MMPush, { SetFormatCB }},
-    { "a", MMPush, { SetFormatCB }},
+    { "a", MMPush, { SetFormatCB }, NULL, &address_format_w },
     { "i", MMPush, { SetFormatCB }},
     { "c", MMPush, { SetFormatCB }},
+    { "C", MMPush, { SetFormatCB }, NULL, &wide_char_w },
     { "s", MMPush, { SetFormatCB }},
+    { "W", MMPush, { SetFormatCB }, NULL, &wide_string_w },
     MMEnd
 };
 
@@ -94,6 +103,7 @@ static MMDesc size_menu[] = {
     { "h", MMPush, { SetSizeCB }},
     { "w", MMPush, { SetSizeCB }},
     { "g", MMPush, { SetSizeCB }},
+    { "G", MMPush, { SetSizeCB }, NULL, &long_w },
     MMEnd
 };
 
@@ -104,6 +114,51 @@ static MMDesc examine_menu[] = {
     { "address", MMComboBox,   MMNoCB, NULL, &address_w },
     MMEnd
 };
+
+static string format(const string& format, const string& size)
+{
+    switch (gdb->type())
+    {
+    case GDB:
+	return format + size;
+
+    case DBX:
+	// Handle bytes
+	if (format == 'o' && size == 'b')
+	    return "b";
+
+	// Handle wide characters
+	if (format == "C")
+	    return "w";
+
+	// Handle float lengths
+	if (format == 'f' && size == 'w')
+	    return "f";
+	if (format == 'f' && size == 'g')
+	    return "g";
+	if (format == 'f' && size == 'G')
+	    return "E";
+
+	// Handle size
+	if (format == 'd' || format == 'o' || format == 'x')
+	{
+	    if (size == 'w')
+		return "l" + format;
+	    if (size == 'g')
+		return "L" + format;
+	}
+
+	// Ignore size in all other cases
+	return format;
+
+    case XDB:
+    case JDB:
+	// No way
+	break;
+    }
+
+    return "";
+}
 
 static string examine_command()
 {
@@ -118,7 +173,8 @@ static string examine_command()
     strip_space(repeat);
     strip_space(address);
 
-    return string("x /") + repeat + the_format + the_size + " " + address;
+    return string("x /") + repeat + 
+	format(the_format, the_size) + " " + address;
 }
 
 static void DisplayExaminedCB(Widget w, XtPointer, XtPointer)
@@ -162,6 +218,13 @@ void gdbExamineCB(Widget w, XtPointer, XtPointer)
 	(void) panel;
 	MMaddCallbacks(examine_menu);
 	MMaddHelpCallback(examine_menu, ImmediateHelpCB);
+
+	manage_child(unsigned_char_w,  gdb->type() == GDB);
+	manage_child(binary_w,         gdb->type() == GDB);
+	manage_child(address_format_w, gdb->type() == GDB);
+	manage_child(wide_char_w,      gdb->type() == DBX);
+	manage_child(wide_string_w,    gdb->type() == DBX);
+	manage_child(long_w,           gdb->type() == DBX);
 
 	// Initialize: use `o' and `b' as default menu items
 	XtCallActionProc(octal_w, "ArmAndActivate", 

@@ -70,6 +70,8 @@ Data exploration
 
 - Anonymous unions are no longer prefixed by `='.
 
+- `Examine Memory' also works for Solaris DBX.
+
 
 Source exploration
 ------------------

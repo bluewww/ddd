@@ -258,6 +258,7 @@ public:
     bool     config_err_redirection;   // try 'help run'
     bool     config_givenfile;         // try 'help givenfile'
     bool     config_cont_sig;          // try 'help cont'
+    bool     config_examine;           // try 'help examine'
     bool     config_xdb;	       // try XDB settings
     bool     config_output;            // try 'output'
     bool     config_program_language;  // try 'show language'
@@ -309,6 +310,7 @@ public:
 	  config_err_redirection(false),
 	  config_givenfile(false),
 	  config_cont_sig(false),
+	  config_examine(false),
 	  config_xdb(false),
 	  config_output(false),
 	  config_program_language(false)
@@ -500,6 +502,8 @@ void start_gdb()
 	plus_cmd_data->config_givenfile = true;
 	cmds += "help cont";
 	plus_cmd_data->config_cont_sig = true;
+	cmds += "help examine";
+	plus_cmd_data->config_examine = true;
 	cmds += "language";
 	plus_cmd_data->config_program_language = true;
 
@@ -1214,6 +1218,7 @@ void send_gdb_command(string cmd, Widget origin,
     assert(!plus_cmd_data->config_err_redirection);
     assert(!plus_cmd_data->config_givenfile);
     assert(!plus_cmd_data->config_cont_sig);
+    assert(!plus_cmd_data->config_examine);
     assert(!plus_cmd_data->config_xdb);
     assert(!plus_cmd_data->config_output);
     assert(!plus_cmd_data->config_program_language);
@@ -2032,6 +2037,11 @@ static void process_config_cont_sig(string& answer)
     gdb->has_cont_sig_command(answer.contains("[sig "));
 }
 
+static void process_config_examine(string& answer)
+{
+    gdb->has_examine_command(is_known_command(answer));
+}
+
 static void process_config_tm(string& answer)
 {
     // If the `tm' command we just sent SUSPENDED macros instead of
@@ -2169,6 +2179,9 @@ void plusOQAC (const StringArray& answers,
 
     if (plus_cmd_data->config_cont_sig)
 	process_config_cont_sig(answers[qu_count++]);
+
+    if (plus_cmd_data->config_examine)
+	process_config_examine(answers[qu_count++]);
 
     if (plus_cmd_data->config_output)
 	process_config_output(answers[qu_count++]);

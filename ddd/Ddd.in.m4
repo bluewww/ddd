@@ -5571,12 +5571,15 @@ Ddd*examine_dialog*f.labelString:	float
 Ddd*examine_dialog*a.labelString:	address
 Ddd*examine_dialog*i.labelString:	instruction
 Ddd*examine_dialog*c.labelString:	char
+Ddd*examine_dialog*C.labelString:	wide char
 Ddd*examine_dialog*s.labelString:	string
+Ddd*examine_dialog*W.labelString:	wide string
 
 Ddd*examine_dialog*b.labelString:	bytes
-Ddd*examine_dialog*h.labelString:	halfwords
-Ddd*examine_dialog*w.labelString:	words
-Ddd*examine_dialog*g.labelString:	giants
+Ddd*examine_dialog*h.labelString:	halfwords (2)
+Ddd*examine_dialog*w.labelString:	words (4)
+Ddd*examine_dialog*g.labelString:	giants (8)
+Ddd*examine_dialog*G.labelString:	longs (16)
 
 Ddd*examine_dialog*address.label.labelString: from
 

@@ -188,6 +188,7 @@ private:
     bool _has_err_redirection;
     bool _has_givenfile_command;
     bool _has_cont_sig_command;
+    bool _has_examine_command;
 
     ProgramLanguage _program_language; // Current program language
 
@@ -383,6 +384,10 @@ public:
     // True if debugger has `cont sig' command
     bool has_cont_sig_command() const   { return _has_cont_sig_command; }
     bool has_cont_sig_command(bool val) { return _has_cont_sig_command = val; }
+
+    // True if debugger has `examine' or `x' command
+    bool has_examine_command() const   { return _has_examine_command; }
+    bool has_examine_command(bool val) { return _has_examine_command = val; }
 
     // Current program language
     ProgramLanguage program_language() const   { return _program_language; }

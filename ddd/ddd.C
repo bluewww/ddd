@@ -6769,8 +6769,8 @@ static void setup_options()
 {
     set_sensitive(disassemble_w,        gdb->type() == GDB);
     set_sensitive(code_indent_w,        gdb->type() == GDB);
-    set_sensitive(examine_w,            gdb->type() == GDB);
-    set_sensitive(print_examine_w,      gdb->type() == GDB);
+    set_sensitive(examine_w,            gdb->has_examine_command());
+    set_sensitive(print_examine_w,      gdb->has_examine_command());
     set_sensitive(cache_machine_code_w, gdb->type() == GDB);
 
     set_sensitive(set_refer_base_w, gdb->type() != GDB);
