@@ -1386,7 +1386,7 @@ struct ArgItems {
 static MMDesc arg_cmd_area[] = 
 {
     {"lookup",        MMPush,  { gdbLookupCB       }},
-    {"find",          MMPush,  { gdbFindAgainCB    }, find_menu },
+    {"find",          MMPush | MMInsensitive, { gdbFindAgainCB }, find_menu },
     {"breakAt",       MMPush,  { gdbToggleBreakCB  }, break_menu   },
     {"watch",         MMPush,  { gdbToggleWatchCB, XtPointer(WATCH_CHANGE) }, 
                                  watch_menu },
