@@ -4188,12 +4188,17 @@ static void create_status(Widget parent)
 
     XtAddCallback(led_w, XmNvalueChangedCallback, ToggleBlinkCB, XtPointer(0));
 
+    Pixel arrow_foreground;
+    XtVaGetValues(status_form, XmNbackground, &arrow_foreground, 0);
+
     // Create `Get more status messages' button
     arg = 0;
     XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNresizable,        False); arg++; 
+    XtSetArg(args[arg], XmNresizable,        False); arg++;
+    XtSetArg(args[arg], XmNshadowThickness,  0); arg++;
+    XtSetArg(args[arg], XmNforeground,       arrow_foreground); arg++;
     XtSetArg(args[arg], XmNarrowDirection, 
 	     (app_data.status_at_bottom ? XmARROW_UP : XmARROW_DOWN)); arg++;
     Widget arrow_w = 

@@ -3990,9 +3990,6 @@ Ddd*status_form.led.documentationString: \
 @rm @GDB@ status indicator: blinks while @GDB@ is busy \
 (click to disable or enable)
 
-Ddd*status_form.arrow.shadowThickness:  0
-Ddd*status_form.arrow.foreground:  	grey
-
 Ddd*status_lines.marginWidth:		0
 Ddd*status_lines.marginHeight:		0
 Ddd*status_lines.borderWidth:		0
