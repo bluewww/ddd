@@ -240,4 +240,8 @@ Volunteers for fixing these and other bugs are welcome!
      `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/patches/message-box'
      to fix it.]
 
+077. oyvind@stavanger.Geco-Prakla.slb.com (Oyvind Yrke) says that DDD
+     crashes after receiving too much data from GDB (e.g. `info
+     functions').
+
 078. (Insert your bug here)

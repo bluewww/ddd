@@ -1,6 +1,25 @@
 Changes in DDD						-*- text -*-
 **************
 
+DDD 1.4c
+--------
+
+    Bug fix release.
+
+    Changes to DDD 1.4b:
+    - Major restructuring of `ddd.C', the major DDD file; compilation
+      should now require slightly more time, but much less memory.
+      Due to the large number of new files, diffs should be somewhat
+      larger than usual.
+    - Patches for DBX 3.x included.  Thanks to Grant McDorman
+      <grant@isgtec.com>.
+    - Patches for DEC Alpha/OSF included.  Thanks to Phil Brooks
+      <phil_brooks@MENTORG.COM>.
+    - Font sizes are now resolution-independent.  This may lead to
+      different font sizes on some displays.
+    - Various bugs fixed, one of them serious (raising a message box
+      could lead to a segmentation fault).
+
 DDD 1.4b
 --------
 
