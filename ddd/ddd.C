@@ -241,6 +241,8 @@ void gdbDeleteSelectionCB (Widget, XtPointer, XtPointer);
 void gdbUpdateEditCB      (Widget, XtPointer, XtPointer);
 void gdbUpdateViewCB      (Widget, XtPointer, XtPointer);
 
+// User emergencies (Ctrl-C)
+static void check_emergencies();
 
 //-----------------------------------------------------------------------------
 // Xt Stuff
@@ -1464,6 +1466,9 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
 	// Check if the separate TTY is still running
 	exec_tty_running();
 
+	// Check for emergencies
+	check_emergencies();
+
 	if (app_data.synchronous_gdb && gdb->isBusyOnQuestion())
 	{
 	    // Synchronous mode: wait for GDB to answer question
@@ -1477,7 +1482,7 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
 	else
 	{
 	    // Process pending GDB output
-	    XtAppProcessEvent(app_context, XtIMAll);
+ 	    XtAppProcessEvent(app_context, XtIMAll);
 	}
     }
 
@@ -1840,14 +1845,16 @@ void gdb_ctrl(char ctrl)
     }
     }
 
-    XmTextShowPosition(gdb_w, promptPosition);
+    // XmTextShowPosition(gdb_w, promptPosition);
 }
-	
+
 
 // Append TEXT to GDB output
 void _gdb_out(string text)
 {
     if (text == "")
+	return;
+    if (private_gdb_output)
 	return;
 
     gdb_input_at_prompt = false;
@@ -1871,6 +1878,8 @@ void _gdb_out(string text)
 
     char ctrl;
     do {
+	check_emergencies();
+
 	string block = text;
 	int i = index_control(block);
 	ctrl = '\0';
@@ -1885,7 +1894,7 @@ void _gdb_out(string text)
 
 	XmTextInsert(gdb_w, promptPosition, (String)block);
 	promptPosition += block.length();
-	XmTextShowPosition(gdb_w, promptPosition);
+	// XmTextShowPosition(gdb_w, promptPosition);
 
 	if (ctrl)
 	    gdb_ctrl(ctrl);
@@ -2111,5 +2120,45 @@ static void ddd_xt_warning(String message)
 		 << "in the DDD `Options` menu.)\n";
 	    informed = true;
 	}
+    }
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Emergency
+//-----------------------------------------------------------------------------
+
+static Bool is_emergency(Display *, XEvent *event, char *)
+{
+    switch (event->type)
+    {
+    case KeyPress:
+	{
+	    char buffer[1024];
+	    KeySym keysym;
+
+	    int len = XLookupString((XKeyEvent *)event, buffer, sizeof buffer,
+				    &keysym, NULL);
+	    if (len == 1 && buffer[0] == '\003')
+	    {
+		// Interrupt: Ctrl-C found in queue
+		return True;
+	    }
+	}
+	return False;
+
+    default:
+	return False;
+    }
+}
+
+void check_emergencies()
+{
+    XEvent event;
+    if (XCheckIfEvent(XtDisplay(gdb_w), &event, is_emergency, 0))
+    {
+	// Emergency: process this event immediately
+	XtDispatchEvent(&event);
     }
 }
