@@ -1752,6 +1752,8 @@ static void HandleTipEvent(Widget w,
 	}
 	break;
 
+    case KeyPress:
+    case KeyRelease:
     case ButtonPress:
     case ButtonRelease:
 	ClearTip(w, event);
@@ -1799,7 +1801,8 @@ static void InstallButtonTipEvents(Widget w, bool install)
 #endif
 
     EventMask event_mask = 
-	EnterWindowMask | LeaveWindowMask | ButtonPress | ButtonRelease;
+	EnterWindowMask | LeaveWindowMask | ButtonPress | ButtonRelease 
+	| KeyPress | KeyRelease;
     if (install)
     {
 	XtAddEventHandler(w, event_mask, False, 
@@ -1927,7 +1930,8 @@ void InstallTextTips(Widget w, bool install)
 #endif
 
     EventMask event_mask = EnterWindowMask | LeaveWindowMask 
-	| ButtonPress | ButtonRelease | PointerMotionMask;
+	| ButtonPress | ButtonRelease | PointerMotionMask
+	| KeyPress | KeyRelease;
 
     if (install)
     {
