@@ -386,16 +386,36 @@ void commandAct(Widget w, XEvent*, String *params, Cardinal *num_params)
     gdb_keyboard_command = true;
 }
 
-void processAct(Widget, XEvent *e, String *, Cardinal *)
+void processAct(Widget w, XEvent *e, String *, Cardinal *)
 {
     if (e->type != KeyPress && e->type != KeyRelease)
 	return;
 
+    static bool running = false;
+
+    if (running)
+    {
+	// Ignore event
+	return;
+    }
+
+    running = true;
+
     clear_isearch();
 
+    // Give focus to GDB console
+    XmProcessTraversal(gdb_w, XmTRAVERSE_CURRENT);
+
     // Forward event to GDB console
+    Window old_window = e->xkey.window;
     e->xkey.window = XtWindow(gdb_w);
     XtDispatchEvent(e);
+    e->xkey.window = old_window;
+
+    // Return focus to original widget
+    XmProcessTraversal(w, XmTRAVERSE_CURRENT);
+
+    running = false;
 }
 
 void insert_source_argAct   (Widget w, XEvent*, String*, Cardinal*)
