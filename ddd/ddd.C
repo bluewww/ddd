@@ -2102,18 +2102,29 @@ int main(int argc, char *argv[])
     }
 
     // Set up VSL resources
-    if (VSEFlags::parse_vsl(argc, (const char**)argv))
     {
-	// Show VSL usage...
-	cout << VSEFlags::explain(true);
-	return EXIT_FAILURE;
-    }
+	// SGI CC wants this:
+	const char **tmp_argv = (const char **)argv;
 
+	if (VSEFlags::parse_vsl(argc, tmp_argv))
+	{
+	    // Show VSL usage...
+	    cout << VSEFlags::explain(true);
+	    return EXIT_FAILURE;
+	}
+
+	argv = (char **)tmp_argv;
+    }
     // All remaining args are passed to the inferior debugger.
     if (argc == 1 && app_data.open_selection)
     {
+	// SGI CC wants this:
+	const char **tmp_argv = (const char**)argv;
+
 	// No args given - try to get one from current selection
-	add_arg_from_selection(toplevel, argc, (const char**)argv);
+	add_arg_from_selection(toplevel, argc, tmp_argv);
+
+	argv = (char **)tmp_argv;
     }
 
     // Check the X configuration

@@ -2,6 +2,7 @@
 // Read and evaluate VSL library
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -188,7 +189,12 @@ ListBox *vsl_args(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     // Set flags
-    VSEFlags::parse(argc, (const char**)argv, "vsllib");
+    {
+	// SGI CC wants this:
+	const char** tmp_argv = (const char**)argv;
+	VSEFlags::parse(argc, tmp_argv, "vsllib");
+	argv = (char **)tmp_argv;
+    }
 
     // Init toolkit
     Widget toplevel = XtAppInitialize(&app_con, "Vsl", NULL, ZERO, 
