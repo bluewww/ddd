@@ -1597,6 +1597,8 @@ void SourceView::set_source_argCB(Widget text_w,
 		}
 	    }
 	}
+
+	selection_click = false;
     }
 
     if (in_bp_area)
@@ -1604,7 +1606,7 @@ void SourceView::set_source_argCB(Widget text_w,
 	// Update breakpoint selection
 	process_breakpoints(last_info_output);
     }
-    else if (!motion)
+    else if (!motion && !selection_click)
     {
 	// Selection from source or code
 	string s;
