@@ -512,6 +512,13 @@ static void CancelPlotCB(Widget, XtPointer client_data, XtPointer)
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
     popdown_plot_shell(plot);
 
+    if (plot->swallower != 0)
+    {
+	// Don't wait for window to swallow
+	XtRemoveAllCallbacks(plot->swallower, XtNwindowCreatedCallback);
+	XtRemoveAllCallbacks(plot->swallower, XtNwindowGoneCallback);
+    }
+
     if (plot->plotter != 0)
     {
 	// Terminate plotter
