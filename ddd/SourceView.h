@@ -120,6 +120,8 @@ class SourceView {
     static void CheckScrollCB(Widget, XtPointer, XtPointer);
     static void CheckScrollWorkProc(XtPointer, XtIntervalId *);
 
+    static void InhibitModificationCB      (Widget, XtPointer, XtPointer);
+
     static void StackDialogPoppedDownCB    (Widget, XtPointer, XtPointer);
     static void CodeDialogPoppedDownCB     (Widget, XtPointer, XtPointer);
     static void RegisterDialogPoppedDownCB (Widget, XtPointer, XtPointer);

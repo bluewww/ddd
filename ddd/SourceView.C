@@ -2323,10 +2323,11 @@ SourceView::SourceView (XtAppContext app_context,
 
 // LessTif 0.79 doesn't like setting `editable' to false, hence prohibit
 // changes via this callback
-static void InhibitModificationCB(Widget, XtPointer, XtPointer call_data)
+void SourceView::InhibitModificationCB(Widget, XtPointer, XtPointer call_data)
 {
     XmTextVerifyCallbackStruct *cbs = (XmTextVerifyCallbackStruct *)call_data;
-    cbs->doit = False;
+    if (cbs->event != 0)
+	cbs->doit = False;
 }
 
 // Create source or code window
