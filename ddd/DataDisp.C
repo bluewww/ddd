@@ -1934,14 +1934,14 @@ void DataDisp::refresh_displaySQ (Widget origin)
     {
     case GDB:
 	cmds += "info display";
-	add_refresh_data_commands(cmds);
 	break;
-
+	
     case DBX:
     case XDB:
-	add_refresh_data_commands(cmds);
 	break;
     }
+    add_refresh_data_commands(cmds);
+    add_refresh_user_commands(cmds);
 
     while (dummy.size() < cmds.size())
 	dummy += (void *)0;
