@@ -1545,7 +1545,10 @@ void SourceView::set_source_argCB(Widget text_w,
     {
 	// In LessTif 0.87, the unmanaged DataDisp::graph_selection_w
 	// text widget is not notified that it just has lost the
-	// selection.  Notify explicitly.
+	// selection.  The effect is that selecting an item from the
+	// source (or a selection in any other window) does *not*
+	// clear the selection in the data window, as it should.
+	// As a workaround, notify explicitly.
 	data_disp->SelectionLostCB();
     }
 
