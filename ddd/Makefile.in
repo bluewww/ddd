@@ -1141,11 +1141,20 @@ demos:	$(DEMOS)
 	@:
 
 
-## A TECO-ism
+## A TECO-ism: `make love'
 
 .PHONY: love
 love:
 	@$(ECHO) 'not war?'
+
+
+## Another joke: `make money fast'
+
+.PHONY: money fast
+money:
+	@$(ECHO) '$$1,000,000'
+fast:
+	@:
 
 
 ## A joke.
@@ -1165,7 +1174,7 @@ love:
 # browse the RHF pages and archives on the web.
 
 .PHONY: joke fun
-joke fun money fast:
+joke fun:
 	@$(ECHO)
 	@$(ECHO)
 	@$(ECHO)
