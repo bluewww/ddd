@@ -46,5 +46,8 @@ const string NO_GDB_ANSWER(char(-1));
 
 extern bool gdb_question_running; // Is gdb_question running?
 
+// Helper: weed out GDB `verbose' stuff.
+void filter_junk(string& answer);
+
 #endif // _DDD_question_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

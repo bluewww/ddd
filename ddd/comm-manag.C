@@ -2104,6 +2104,9 @@ static void command_completed(void *data)
 
     if (cmd_data->user_callback != 0)
     {
+	// Filter out junk from GDB answer
+	filter_junk(cmd_data->user_answer);
+
 	// Invoke user-defined callback
 	cmd_data->user_callback(cmd_data->user_answer, cmd_data->user_data);
     }
@@ -2577,6 +2580,8 @@ static void extra_completed (const StringArray& answers,
 			     void*  data)
 {
     int count = answers.size();
+    for (int i = 0; i < count; i++)
+	filter_junk(answers[i]);
 
     ExtraData* extra_data = (ExtraData *)data;
     int qu_count = 0;

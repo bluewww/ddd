@@ -51,8 +51,8 @@ char question_rcsid[] =
 bool gdb_question_running = false; // Flag: is gdb_question() running?
 
 struct GDBReply {
-    string answer;    // The answer text (NO_GDB_ANSWER if timeout)
-    bool received;    // true iff we found an answer
+    string answer;		// The answer text (NO_GDB_ANSWER if timeout)
+    bool received;		// True iff we found an answer
 
     GDBReply()
 	: answer(NO_GDB_ANSWER), received(false)
@@ -73,6 +73,25 @@ static void gdb_reply(const string& complete_answer, void *qu_data)
     GDBReply *reply = (GDBReply *)qu_data;
     reply->answer   = complete_answer;
     reply->received = true;
+
+    // Weed out GDB junk
+    filter_junk(reply->answer);
+}
+
+// Weed out GDB `verbose' junk from ANSWER
+void filter_junk(string& answer)
+{
+    if (gdb->type() == GDB)
+    {
+	while (answer.contains("Reading in symbols ", 0) ||
+	       answer.contains("Mapping symbols ", 0))
+	{
+	    if (answer.contains("done.\n"))
+		answer = answer.after("done.\n");
+	    else
+		break;
+	}
+    }
 }
 
 // Send COMMAND to GDB; return answer (NO_GDB_ANSWER if none)
