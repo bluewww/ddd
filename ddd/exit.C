@@ -86,6 +86,7 @@ char exit_rcsid[] =
 #include "history.h"
 #include "host.h"
 #include "longName.h"
+#include "misc.h"
 #include "options.h"
 #include "post.h"
 #include "question.h"
@@ -127,7 +128,10 @@ bool ddd_has_crashed = false;
 
 static void DDDDoneAnywayCB(Widget w, XtPointer client_data, 
 			    XtPointer call_data);
-
+static void StartSOSCB(Widget w, XtPointer client_data = 0, 
+		       XtPointer call_data = 0);
+static void StopSOSCB(Widget w, XtPointer client_data = 0, 
+		      XtPointer call_data = 0);
 
 //-----------------------------------------------------------------------------
 // General clean-up actions before exiting DDD
@@ -156,6 +160,10 @@ void ddd_cleanup()
     // Now write the session-specific DDD history file.
     if (app_data.save_history_on_exit)
 	save_history(session_history_file(app_data.session));
+
+    // Stop SOS blinking
+    if (gdb_w != 0)
+	StopSOSCB(gdb_w);
 
     // Unlock `~/.ddd'.
     unlock_session_dir(DEFAULT_SESSION);
@@ -241,6 +249,10 @@ static void post_fatal(string title, string cause, string cls)
 	XtAddCallback(fatal_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 	XtAddCallback(fatal_dialog, XmNokCallback, 
 		      DDDExitCB, XtPointer(EXIT_FAILURE));
+	XtAddCallback(fatal_dialog, XmNcancelCallback, 
+		      StopSOSCB, XtPointer(0));
+	XtAddCallback(fatal_dialog, XmNokCallback, 
+		      StopSOSCB, XtPointer(0));
 
 #if XmVersion >= 1002
 	Widget restart = 
@@ -248,6 +260,8 @@ static void post_fatal(string title, string cause, string cls)
 	XtManageChild(restart);
 	XtAddCallback(restart, XmNactivateCallback,
 		      DDDRestartCB, XtPointer(EXIT_FAILURE));
+	XtAddCallback(restart, XmNactivateCallback, 
+		      StopSOSCB, XtPointer(0));
 #endif
     }
 
@@ -262,6 +276,8 @@ static void post_fatal(string title, string cause, string cls)
 		   0);
 
     manage_and_raise(fatal_dialog);
+
+    StartSOSCB(fatal_dialog);
 
     // Wait until dialog is mapped and synchronize, such that DDD will
     // exit if we get another signal or X error during that time.
@@ -862,4 +878,81 @@ void DDDRestartCB(Widget w, XtPointer, XtPointer call_data)
     }
     else
 	_DDDRestartCB(w, XtPointer(flags), call_data);
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Morse SOS on LED #1
+//-----------------------------------------------------------------------------
+
+// See `http://dplinux.sund.ac.uk/~manga/refer/alphabet.html' for a reference.
+static const short DOT          = 1000 / 10; // officially: 1000 / 24
+static const short DASH         = DOT * 3;
+static const short PAUSE        = -DASH;
+static const short LETTER       = PAUSE * 2;
+static const short SPACE        = PAUSE * 4;
+
+static short sos_theme[] = {
+    DOT,  PAUSE, DOT,  PAUSE, DOT,  LETTER,  // S
+    DASH, PAUSE, DASH, PAUSE, DASH, LETTER,  // O
+    DOT,  PAUSE, DOT,  PAUSE, DOT,  SPACE,   // S
+};
+
+static int next_letter = 0;
+
+static void set_led(Display *display, bool state)
+{
+    XKeyboardControl control;
+
+    control.led = 1;
+    control.led_mode = state ? LedModeOn : LedModeOff;
+    XChangeKeyboardControl(display, KBLed | KBLedMode, &control);
+    XFlush(display);
+}
+
+static int get_led(Display *display)
+{
+    XKeyboardState state;
+
+    XGetKeyboardControl(display, &state);
+    return (state.led_mask & 1) ? LedModeOn : LedModeOff;
+}
+
+static XtIntervalId morse_timer = 0;
+
+static void morseCB(XtPointer client_data, XtIntervalId *)
+{
+    Widget w = (Widget)client_data;
+
+    short letter = sos_theme[next_letter++];
+    if (next_letter >= int(XtNumber(sos_theme)))
+	next_letter = 0;
+
+    set_led(XtDisplay(w), letter > 0);
+    morse_timer = 
+	XtAppAddTimeOut(XtWidgetToApplicationContext(w), abs(letter), 
+			morseCB, client_data);
+}
+
+static int old_led_state = LedModeOff;
+
+static void StartSOSCB(Widget w, XtPointer, XtPointer)
+{
+    StopSOSCB(w);
+
+    old_led_state = get_led(XtDisplay(w));
+
+    morse_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(w), 0, 
+				  morseCB, XtPointer(w));
+}
+
+static void StopSOSCB(Widget w, XtPointer, XtPointer)
+{
+    if (morse_timer != 0)
+    {
+	XtRemoveTimeOut(morse_timer);
+	morse_timer = 0;
+	set_led(XtDisplay(w), old_led_state);
+    }
 }
