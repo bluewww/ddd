@@ -2207,6 +2207,13 @@ applications, you may like to set the `\fBIconify all windows at
 once\fR' option.  This way, all \s-2@DDD@\s+2 windows are iconified
 and deiconified as a group.
 .PP
+If you want to keep \s-2@DDD@\s+2 off your desktop during a longer
+computation, you may like to set the `\fBUniconify when ready\fR'
+option.  This way, you can iconify \s-2@DDD@\s+2 while it is busy on a
+command (e.g. running a program); \s-2@DDD@\s+2 will automatically pop
+up again after becoming ready (e.g. after the debugged program has
+stopped at a breakpoint).
+.PP
 If you are bothered by X warnings, you can suppress them by setting
 the `\fBSuppress X warnings\fR' option.
 .PP
@@ -2217,9 +2224,6 @@ application\fR' option is set, \s-2@DDD@\s+2 will check after each
 interaction whether the pointer is grabbed.  If this is so,
 \s-2@DDD@\s+2 will instruct the debugged program to ungrab the mouse
 pointer such that you can continue to use your display.
-.PP
-If you want to save the command history for the next \s-2@DDD@\s+2
-invocation, set the `\fBSave command history on exit\fR' option.
 .PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
@@ -2705,10 +2709,17 @@ arguments in all windows.  If this is `\fBfalse\fR', the
 only.
 .TP
 .B "groupIconify (\fPclass\fB GroupIconify)"
-If this is `\fBtrue\fR', (de)iconifying any \s-2@DDD@\s+2 window
-causes all other \s-2@DDD@\s+2 windows to (de)iconify as well.
+If this is `\fBtrue\fR', (un)iconifying any \s-2@DDD@\s+2 window
+causes all other \s-2@DDD@\s+2 windows to (un)iconify as well.
 Default is `\fBfalse\fR', meaning that each \s-2@DDD@\s+2 window can
 be iconified on its own.
+.TP
+.B "uniconifyWhenReady (\fPclass\fB UniconifyWhenReady)"
+If this is `\fBtrue\fR' (default), the \s-2@DDD@\s+2 windows are
+uniconified automatically whenever \s-2GDB\s+2 becomes ready.  This
+way, you can iconify \s-2@DDD@\s+2 during some longer operation and
+have it uniconify itself as soon as the program stops.  Setting this
+to `\fBfalse\fR' leaves the \s-2@DDD@\s+2 windows iconified.
 .TP
 .B "saveHistoryOnExit (\fPclass\fB SaveHistoryOnExit)"
 If `\fBtrue\fR' (default), the command history is automatically saved
@@ -4376,6 +4387,188 @@ debugged programs which change the default \s-2TTY\s+2 settings.
 .\"
 .\"
 .\"
+.\" ---------------
+.SH "FREQUENTLY ASKED QUESTIONS (FAQ)"
+.\" ---------------
+.\"
+.\" TOPIC: CONFIGURATIONS
+.SS "Which debuggers does @DDD@ support?"
+@DDD@ has been tested with the following debuggers:
+.IP \(bu 2
+\s-2GDB\s+2 (\s-2GNU\s+2 debugger) from the Free Software Foundation
+.IP \(bu 2
+\s-2DBX\s+2 as found on SunOS 4.x (aka Solaris 1.x)
+.IP \(bu 2
+\s-2DBX\s+2 as found on SunOS 5.x (aka Solaris 2.x)
+.IP \(bu 2
+\s-2DBX\s+2 as found on DEC systems
+.IP \(bu 2
+\s-2DBX\s+2 as found on AIX systems
+.IP \(bu 2
+\s-2DBX\s+2 as found on SGI systems
+.IP \(bu 2
+\s-2XDB\s+2 as found on HP-UX systems
+.PP
+\s-2@DDD@\s+2 functionality largely depends on the capabilities of the
+underlying debugger; best results are obtained with \s-2GDB\s+2.
+.PP
+To cope with the large variety of \s-2DBX\s+2 flavors, \s-2@DDD@\s+2
+determines the \s-2DBX\s+2 capabilities dynamically at run-rime;
+\s-2@DDD@\s+2 should thus adapt automatically to other \s-2DBX\s+2
+variants.  Please let us know your experiences; use `\fB@ddd@
+--trace\fR' to see the \s-2@DDD@/DBX\s+2 interaction.
+.\"
+.SS "Can I use @DDD@ with Ada?"
+Matthew Majka <\fBmmajka@cs5.dasd.honeywell.com\fR> says:  It works
+very well.  You just need an Ada-aware version of GDB.  You can get
+the patches from `\fBftp://cs.nyu.edu/pub/gnat/gdb/\fR'.
+.\"
+.SS "Is there an Athena Widgets port of @DDD@?"
+No.  If you want \s-2@DDD@\s+2 running with a free widget set, you
+should support the Hungry Programmer's Team - they develop LessTif, a
+free Motif-compliant widget set.  Check out their \s-2WWW\s+2 page at
+`\fBhttp://www.lesstif.org/\fR'.
+.\"
+.SS "Will @DDD@ work with LessTif?"
+As of LessTif 0.81, the resulting \s-2@DDD@\s+2 executable is quite
+usable; there are several \s-2@DDD@\s+2 users who use a \s-2@DDD@\s+2
+built with LessTif.  See the file `\s-2PROBLEMS\s+2' for a recent list
+of problems and fixes.
+.\"
+.SS "Should I compile @DDD@ myself or should I use an executable?"
+Compiling \s-2@DDD@\s+2 on your machine is the preferred way, because
+the resulting \s-2@DDD@\s+2 executable will be perfectly adapted to
+your system.  However, if your production environment is buggy, or if
+you lack the resources for compiling \s-2@DDD@\s+2, a thoroughly
+tested precompiled \s-2@DDD@\s+2 executable may be a better choice.
+.\"
+.\" TOPIC: EVERYDAY PROBLEMS
+.SS "How can I display a variable-length array?"
+The problem is that \s-2GDB\s+2 does not know the actual length of the
+array; you have to supply it by hand (i.e. using the keyboard).  You
+can use the \s-2@DDD@\s+2 \*(lqdisplay successive array elements\*(rq
+or the \s-2GDB\s+2 \*(lqartificial array\*(rq mechanism.  If you have
+a pointer, say:
+.sp
+.br
+  \fBint *pi;\fR
+.br
+.sp
+pointing to an array of 10 ints, you can see the integers by
+entering
+.sp
+.br
+  \fBgraph display pi[0..9]\fR
+.br
+.sp
+at the debugger prompt (or entering `\fBpi[0..9]\fR` in the `\fBNew
+Display\fR' dialog).
+.PP
+As an alternative, you can use the GDB \*(lqartificial array\*(rq
+mechanism by entering
+.sp
+.br
+  \fBgraph display pi[0]@10\fR
+.br
+.sp  
+This will create an array starting with \fBpi\fR showing the first 10
+elements.
+.\"
+.SS "My window manager crashes when running @DDD@!"
+This is due to a bug in the window manager.  Try the following
+resources in your `\fB$HOME/.ddd/init\fR' file to minimize
+interference with the window manager:
+.sp
+.br
+  \fBDdd*colorIcons:         false
+  Ddd*groupIconify:       false
+  Ddd*uniconifyWhenReady: false
+  Ddd*showStartupLogo:    
+  Ddd*autoRaiseTool:      false
+  Ddd*stickyTool:         false
+  Ddd*decoratedTool:      false\fR
+.br
+.sp
+See `\fBRESOURCES\fR', above, for a discussion of these resources.
+.PP
+.\"
+.SS "How do I pass ^C to the debugged program?"
+Assuming you use GDB as inferior debugger, typing `signal 2' at the
+`\fB(gdb)\fR' prompt will resume program execution with a \fBSIGINT\fR
+signal.
+.PP
+If it's the character rather than the signal you're interested in, run
+your program in the separate execution window (via `\fBView |
+Execution Window\fR') and type \fBCtrl+C\fR there.
+.\"
+.SS "In C++, how do I see the \fIactual\fR type of an object?"
+In the \s-2GDB\s+2 settings (`\fBEdit | GDB Settings\fR'), enable
+`\fBSet printing of object's derived type based on vtable info\fR'.
+.\"
+.\" TOPIC: HACKING @DDD@
+.SS "I want to use @DDD@ interprocess communication in my own application!"
+There is a demonstration program named `\fBttytest\fR' in the
+\s-2@DDD@\s+2 package.  Just type `\fBmake ttytest\fR'.  It should be
+relatively easy to customize this application.
+.PP
+Here are some pointers: If you want to talk with a separate process,
+use the `\fBTTYAgent\fR' class, as defined in `\fBTTYAgent.C\fR'.
+Using the `\fBwrite\fR' method, you can send arbitrary data to the
+process; you can define an `\fBInput\fR' handler that will be called
+each time the process sends data to you.  The header files of
+`\fBTTYAgent\fR' and its superclasses should contain sufficient
+information.  As all communication is handled asynchronously, you can
+realize a usual Xt-based interface using Athena widgets, Motif
+widgets, or another Xt-based toolkit.
+.\"
+.SS "I want to use the @DDD@ graph editor in my own application!"
+There is a demonstration program named `\fBtest-graph\fR' in the DDD
+source distribution.  Just type `make \fBtest-graph\fR'.  It should be
+relatively easy to customize this application.
+.PP
+Here are some pointers: The `\fBGraphEdit\fR' widget, as defined in
+`\fBGraphEdit.h\fR' contains the \s-2@DDD@\s+2 graph editor.  Variants
+with Athena panners and Motif scrollbars are found in
+`\fBPannedGE.h\fR' and `\fBScrolledGE.h\fR', respectively.  The
+`\fBGraphEdit\fR' widget works on a `\fBGraph\fR' structure, which is
+defined in `\fBGraph.h\fR'; a graph is composed of nodes and edges,
+both forming class hierarchies whose top classes are defined in
+`\fBGraphNode.h\fR' and `\fBGraphEdge.h\fR', respectively.  The graph
+nodes in \s-2@DDD@\s+2 are Box graph nodes, defined in
+`\fBBoxGraphN.h\fR'; a box is a (possibly structured) rectangular
+entity holding strings, lines, or figures.  See also the \s-2@DDD@\s+2
+paper `\fBdoc/ddd-paper.ps\fR' for details on boxes and how they are
+composed.
+.\"
+.\" TOPIC: RESOURCE USAGE
+.SS "How can I speed up @DDD@?"
+To get the maximum \s-2@DDD@\s+2 performance,
+.IP \(bu 2
+Use the latest \s-2@DDD@\s+2 version, compiled with optimization enabled.
+.IP \(bu 2
+Enable caching of source code and machine code.
+.IP \(bu 2
+Disable glyphs.
+.IP \(bu 2
+Disable machine code.
+.IP \(bu 2
+Disable alias detection.
+.IP \(bu 2
+Disable all status displays.
+.IP \(bu 2
+Delete all displays you do not need.
+.IP \(bu 2
+Do not use remote debugging.
+.PP
+.\"
+.SS "How can I reduce @DDD@ memory size?"
+To get a minimal \s-2@DDD@\s+2 memory usage,
+.IP \(bu 2
+Use \s-2@DDD@\s+2 2.2 or later (30% memory savings)
+.IP \(bu 2
+Hack \s-2@DDD@\s+2 such that this manual and the resource files are
+stored externally.  (Make it configurable and send us your changes)
+.PP
 .\" ---------------
 .SH "REPORTING BUGS"
 .\" ---------------
