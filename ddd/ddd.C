@@ -3588,9 +3588,6 @@ static void ReadyCB(XtPointer = 0, XtIntervalId * = 0)
     set_sensitive(command_program_menu[ProgramItems::Kill].widget, ready);
     set_sensitive(source_program_menu[ProgramItems::Kill].widget,  ready);
     set_sensitive(data_program_menu[ProgramItems::Kill].widget,    ready);
-
-    blink(!ready);
-    fix_status_size();
 }
 
 static void gdb_readyHP(Agent *, void *, void *call_data)
@@ -3651,6 +3648,10 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 	ready_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w),
 				      50, ReadyCB, 0);
     }
+
+    // Some stuff that must be executed every other time
+    blink(!ready);
+    fix_status_size();
 }
 
 
