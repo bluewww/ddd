@@ -44,7 +44,7 @@ char environ_rcsid[] =
 static StringArray environment_names;
 
 // Put NAME=VALUE into the environment
-extern void put_environment(string name, string value)
+void put_environment(string name, string value)
 {
     string env_s = name + "=" + value;
     char *env = new char[env_s.length() + 1];
@@ -60,7 +60,7 @@ extern void put_environment(string name, string value)
 }
 
 // Return NAME1=VALUE1 NAME2=VALUE2 for each name defined by PUT_ENVIRONMENT
-extern string set_environment_command()
+string set_environment_command()
 {
     string cmd;
 

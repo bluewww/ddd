@@ -165,7 +165,7 @@ XtIntervalId MyAppAddTimeOut(XtAppContext app_context,
 
 // Like XtRemoveTimeOut(), but unregister TIMER from internal list. 
 // Trigger an error if TIMER is not found (i.e. expired or removed)
-extern void MyRemoveTimeOut(XtIntervalId tic, String file, int line)
+void MyRemoveTimeOut(XtIntervalId tic, String file, int line)
 {
     TimerInfo *tp = 0;
     for (TimerInfo *ti = pending_timers; ti != 0; tp = ti, ti = ti->next)
