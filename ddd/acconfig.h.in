@@ -2,6 +2,7 @@
 // General configuration file.
 
 // Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of the ICE Library.
@@ -84,6 +85,9 @@
 
 /* Define if MAXPATHLEN is defined or declared in <sys/param.h>. */
 #undef HAVE_MAXPATHLEN
+
+/* Define if the `streampos' type is defined or declared in <iostream.h>. */
+#undef HAVE_STREAMPOS
 
 /* Define if you have the XP library (X11R6.3 print server).
    Required by Motif 2.1 and later. */

@@ -2,7 +2,7 @@ dnl $Id$ -*- autoconf -*-
 dnl ICE and DDD autoconf macros
 dnl 
 dnl Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
-dnl Copyright (C) 1999 Universitaet Passau, Germany.
+dnl Copyright (C) 1999-2000 Universitaet Passau, Germany.
 dnl Written by Andreas Zeller <zeller@gnu.org>.
 dnl 
 dnl This file is part of the ICE Library.
@@ -912,6 +912,34 @@ AC_LANG_RESTORE
 AC_MSG_RESULT($ice_cv_have_array_operator_new)
 if test "$ice_cv_have_array_operator_new" = yes; then
 AC_DEFINE(HAVE_ARRAY_OPERATOR_NEW)
+fi
+])dnl
+dnl
+dnl ICE_STREAMPOS
+dnl -------------
+dnl
+dnl If <iostream.h> defines a `streampos' type (as type of os.tellp(), 
+dnl os.tellg(), etc.), define `HAVE_STREAMPOS'.
+dnl
+AC_DEFUN(ICE_STREAMPOS,
+[
+AC_REQUIRE([AC_PROG_CXX])
+changequote(,)dnl
+AC_MSG_CHECKING(for streampos)
+changequote([,])dnl
+AC_CACHE_VAL(ice_cv_have_streampos,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([#include <iostream.h>],
+[streampos scan_start;],
+ice_cv_have_streampos=yes,
+ice_cv_have_streampos=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_streampos)
+if test "$ice_cv_have_streampos" = yes; then
+AC_DEFINE(HAVE_STREAMPOS)
 fi
 ])dnl
 dnl

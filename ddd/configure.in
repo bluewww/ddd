@@ -350,6 +350,10 @@ fi
 AC_SUBST(LIBREADLINE)
 dnl
 dnl
+dnl `streampos' type
+ICE_STREAMPOS
+dnl
+dnl
 dnl
 dnl
 dnl Check for X stuff
