@@ -6596,13 +6596,30 @@ To cancel saving the session, click on LBL(No).
 
 Ddd*confirm_restart_dialog.dialogTitle: DDD: Restart Session
 Ddd*confirm_restart_dialog.messageString: \
-@rm The program is running.  Restart anyway (and kill it)?
+@rm The program being debugged is running.  Restart anyway (and kill it)?
 Ddd*confirm_restart_dialog.okLabelString:     Yes
 Ddd*confirm_restart_dialog.cancelLabelString: No
 Ddd*confirm_restart_dialog*helpString: \
-WIDGET(@GDB@ Message)\n\
+WIDGET(Restart Session)\n\
 \n\
 For details on this @GDB@ message, consult the @GDB@ documentation.
+
+Ddd*confirm_restart_gdb_dialog.dialogTitle: DDD: Restart Debugger
+Ddd*confirm_restart_gdb_dialog.messageString: \
+@rm The program being debugged has been started already.\n\
+Start it from the beginning (and restart @GDB@)?
+Ddd*confirm_restart_gdb_dialog.okLabelString:     Yes
+Ddd*confirm_restart_gdb_dialog.cancelLabelString: No
+Ddd*confirm_restart_gdb_dialog*helpString: \
+WIDGET(Restart Debugger)\n\
+\n\
+@GDB@ can only handle one program run per session.\n\
+To rerun the program being debugged, DDD must restart @GDB@.\n\
+Essential @GDB@ settings (such as breakpoints) will be restored,\n\
+but other settings may be lost.\n\
+\n\
+To rerun your program (and restart @GDB@), click on LBL(Yes).\n\
+To cancel restarting the program, click on LBL(No).
 
 Ddd*data_not_saved_dialog.dialogTitle: DDD: Save Session
 Ddd*data_not_saved_dialog.messageString: \

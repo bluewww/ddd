@@ -787,8 +787,8 @@ void gdb_button_command(const string& command, Widget origin)
     {
 	string c = command;
 	c.gsub("()", source_arg->get_string());
-	add_running_arguments(c);
-	gdb_command(c, origin);
+	if (add_running_arguments(c, origin))
+	    gdb_command(c, origin);
     }
 }
 

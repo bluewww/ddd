@@ -35,6 +35,7 @@
 
 #include <X11/Intrinsic.h>
 #include "strclass.h"
+#include "bool.h"
 
 void gdbRunCB(Widget w, XtPointer, XtPointer);
 
@@ -46,7 +47,7 @@ void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer);
 void add_to_arguments(string line);
 void update_arguments();
 
-void add_running_arguments(string& cmd);
+bool add_running_arguments(string& cmd, Widget origin = 0);
 
 #endif // _DDD_args_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -47,12 +47,14 @@ char args_rcsid[] =
 #include "options.h"
 #include "cook.h"
 #include "regexps.h"
+#include "session.h"
 #include "string-fun.h"
 #include "verify.h"
 #include "wm.h"
 
 #include <Xm/Xm.h>
 #include <Xm/List.h>
+#include <Xm/MessageB.h>
 #include <Xm/SelectioB.h>
 #include <Xm/Text.h>
 
@@ -270,6 +272,7 @@ void update_arguments()
 // Run program with given arguments
 static void gdbRunDCB(Widget, XtPointer, XtPointer)
 {
+
     Widget text  = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
     String _args = XmTextGetString(text);
     string args(_args);
@@ -475,32 +478,62 @@ void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer)
 // `run' arguments
 //-----------------------------------------------------------------------------
 
-void add_running_arguments(string& cmd)
+static void RestartAndRunCB(Widget w, 
+			    XtPointer client_data, XtPointer call_data)
+{
+    RestartDebuggerCB(w, client_data, call_data);
+
+    string& cmd = *((string *)client_data);
+    gdb_command(cmd, w);
+}
+
+bool add_running_arguments(string& cmd, Widget origin)
 {
     if (cmd == "run")
 	cmd = gdb->rerun_command();
 
-    if (gdb->type() != JDB || !is_run_cmd(cmd))
-	return;
+    if (gdb->type() != JDB)
+	return true;		// Ok, perform the command
+
+    if (!is_run_cmd(cmd))
+	return true;		// Ok, perform the command
 
     strip_leading_space(cmd);
     string args = cmd.after(rxwhite);
-    switch (gdb->type()) 
-    {
-    case JDB:
-	if (args == "")
-	{
-	    // JDB requires at least a class name after the `run' command.
-	    ProgramInfo info;
-	    cmd += " " + info.file;
-	}
-	break;
 
-    case XDB:
-    case DBX:
-    case GDB:
-    case PYDB:
-    case PERL:
-	break;
+    ProgramInfo info;
+
+    if (args == "" && gdb->has_debug_command())
+    {
+	// JDB 1.1 requires at least a class name after the `run' command.
+	cmd += " " + info.file;
     }
+
+    if (info.running && !gdb->has_debug_command())
+    {
+	// JDB 1.2 cannot rerun a program after it has been started.
+	// Offer to restart JDB instead.
+	static Widget restart_jdb = 0;
+	static string saved_run_command;
+
+	if (restart_jdb == 0)
+	{
+	    restart_jdb = 
+		verify(XmCreateQuestionDialog(find_shell(origin),
+					      "confirm_restart_gdb_dialog", 
+					      NULL, 0));
+	    Delay::register_shell(restart_jdb);
+	    XtAddCallback(restart_jdb, XmNhelpCallback,   
+			  ImmediateHelpCB, NULL);
+	    XtAddCallback(restart_jdb, XmNokCallback,     
+			  RestartAndRunCB, (XtPointer)&saved_run_command);
+	}
+
+	saved_run_command = cmd;
+	XtManageChild(restart_jdb);
+
+	return false;		// Don't perform the command yet
+    }
+
+    return true;
 }
