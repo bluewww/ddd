@@ -131,4 +131,7 @@ Volunteers for these and other projects are welcome!
 
 043. An `Edit' button launching emacs or vi on the current file and line.
 
-044. (Insert your project idea here)
+044. Disable pointer grabs from the debugged application as soon as
+     the Debugger prompt reappears.
+
+045. (Insert your project idea here)

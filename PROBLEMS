@@ -40,7 +40,10 @@ HP-UX
 =====
 
     Various linking problems have been reported.  This is probably due
-    to an error in the HP-UX linker.
+    to an error in the HP-UX linker.  According to
+    moik@ivev.bau.tu-bs.de (Adam Moik), the problem can be solved by
+    using GNU binutils (such as ld and ar) instead of the HP-UX
+    binutils.
 
 
 SunOS 4.1 and X11R6

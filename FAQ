@@ -107,4 +107,17 @@ You'll have to find out this one for yourself.  Use the source, Luke.
 No.
 
 
+11. Why does my DDD call `xmkmf' when being started?
+
+To run properly, OSF/Motif requires a file called `XKeysymDB' in the X
+project root.  Since we distribute DDD binaries, the X project root
+compiled into the X libraries (and thus hard-coded in the DDD binary)
+may not be valid on the actual machine.  DDD tries to repair this
+situation by calling `xmkmf' and thus determining the X project root.
+Usually, this is not required if DDD runs on the machine it was
+compiled on.  You may run `ddd --check-configuration' to find out why
+DDD finds it necessary to determine the X project root.  The code for
+this hack can be found in `xconfig.C'.
+
+
 $Id$

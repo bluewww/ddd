@@ -162,7 +162,6 @@ Volunteers for fixing these and other bugs are welcome!
 039. [fixed]
 
 040. dmitzel@everest.hitc.com (Danny J. Mitzel) states:
-
      I'm running the DDD 1.1 sparc-sun-sunos4.1.1 prebuilt binary on a
      Sun4/300 SunOS4.1.3_U1.  I notice that once I have typed any
      commands in the 'DDD Command Window' and then bring up the
@@ -185,4 +184,12 @@ Volunteers for fixing these and other bugs are welcome!
      The display() operation generates a segmentation fault if the variable
      to be displayed is an uninitialized pointer.
 
-044. (Insert your bug here)
+044. DDD does not run on a DEC Alpha running OSF/1.  As
+     bjtong@cse.unsw.edu.au (Banchong Harangsri) states, when coming
+     to starting it up, DDD just hung over, i.e., it didn't accept any
+     of the keyboard or mouse that the user types in.  Also, there
+     were lots of warnings in the rx library.
+     hannu@roope.cctap.carel.fi (Hannu Mallat) states that DDD usually
+     kept crashing right in the start or a bit later.
+
+045. (Insert your bug here)

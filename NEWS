@@ -1,6 +1,19 @@
 Changes in DDD						-*- text -*-
 **************
 
+DDD 1.3 (not released yet)
+-------
+
+    More and more minor bugs fixed.  See the `ChangeLog' file for
+    details.
+
+    Changes to DDD 1.2:
+    - DBX support on Solaris improved.
+    - DDD-specific application defaults now override user's general
+      application defaults.
+    - `Help on Debugging' item.
+
+
 DDD 1.2
 -------
 
