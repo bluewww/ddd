@@ -979,11 +979,29 @@ bool is_valid(const string& value, GDBAgent *gdb)
 				 ")\n?");
 #endif
 
-    return !value.contains("Unknown name") 
-	&& !value.contains("not active")
-	&& !value.contains("not defined")
-	&& !value.contains("not valid")
-	&& !value.matches(rxinvalid_value);
+    if (value.contains("Unknown name"))
+	return false;
+
+    if (value.contains("Name unknown"))
+	return false;
+
+    if (value.contains("Was expexting"))
+	return false;
+
+    if (value.contains("not active"))
+	return false;
+
+    if (value.contains("not defined"))
+	return false;
+
+    if (value.contains("not valid"))
+	return false;
+
+    // In JDB 1.2, values start with `instance of'
+    if (!value.contains("instance of", 0) && value.matches(rxinvalid_value))
+	return true;
+
+    return true;
 }
 
 
