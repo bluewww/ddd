@@ -630,7 +630,7 @@ DIST_STUFF	 = $(PROG_STUFF) $(MANS) depend TAGS \
 
 # Temporary Files to be cleaned, keeping configuration intact
 CLEAN_STUFF	 = $(PROGS) $(DEMOS) core *.o *.a *.s *.i \
-		   tmp* *.tmp .*hist* LOG *.syms \
+		   tmp* *.tmp .*hist* *.syms \
 		   *.aux *.cp *.cps *.fn *.fns *.flc \
 		   *.ky *.kys *.log *.pg *.pgs *.toc *.tp *.tps *.vr *.vrs \
 		   *.tar *.tar.gz *~ lex.* y.tab.* site.* *.sum \
@@ -639,7 +639,7 @@ CLEAN_STUFF	 = $(PROGS) $(DEMOS) core *.o *.a *.s *.i \
 # Files to be deleted from distribution
 DISTCLEAN_STUFF	 = $(CLEAN_STUFF) ddd.man.ps \
 		   config.status config.h host.h paths.h \
-		   Makefile MakeOut LOG \
+		   Makefile MakeOut LOG OOBR OOBR-FTR \
 		   config.log config.cache configinfo.C stamp-h \
 		   Ddd Ddd.ad.h ddd.man vr.h
 
