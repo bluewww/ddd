@@ -404,7 +404,7 @@ static void ddd_fatal(int sig...)
 	    char *title = sigName(sig);
 	    char cause[BUFSIZ];
 	    sprintf(cause, "`%s' signal", title);
-	    print_fatal_msg(title, cause, "internal error");
+	    print_fatal_msg(title, cause, "Internal error");
 	}
 
 	// Re-raise signal.  This should kill us as we return.
