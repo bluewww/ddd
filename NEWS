@@ -45,8 +45,13 @@ DDD 2.2 [in development]
     - User-defined DDD commands.  DDD now provides a simple facility
       that allows the inferior debugger to execute DDD commands.  For
       details, see `User-Defined Commands' in the DDD manual.
-    - For `Continue until here', DDD now sets a temporary breakpoints
-      and continues (instead of using the GDB `until' command).
+    - For `Continue Until Here', DDD now sets a temporary breakpoint
+      and continues (instead of using the GDB `until' command).  If
+      the temporary breakpoint is not reached, it is deleted.
+    - Using GDB, you can now alter the current execution position
+      interactively.  This allows you to back up - perhaps with more
+      breakpoints set-over a portion of a program that has already
+      executed, in order to examine its execution in more detail.
     - Improved display of breakpoints and execution positions:
       + The current execution position is now properly cleared if
         undetermined (no source, program terminated, etc.)
@@ -61,8 +66,8 @@ DDD 2.2 [in development]
        directory `~/.ddd/sessions/' contains saved DDD sessions.
     - Your window manager running DDD should now show multi-color
       DDD icons.  (requires XPM)
-    - During start-up, DDD shows its logo in a transient window
-      (can be disabled).
+    - During start-up, DDD shows a multi-color logo in a transient
+      window (can be disabled).
 
     Bug fixes:
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
