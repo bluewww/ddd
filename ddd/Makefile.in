@@ -1309,7 +1309,7 @@ CLEAN_STUFF	 = $(ddd)-$(VERSION)-* $(PROGS) $(DEMOS) \
 		   *.au *.aus *.aux *.cm *.cms *.cp *.cps *.en *.ens \
 		   *.fl *.flc *.fls *.fn *.fns *.ky *.kys *.lb *.lbs \
 		   *.log *.pg *.pgs *.toc *.tp *.tps *.vr *.vrs \
-		   *.info* *.html *.dvi \
+		   *.info* *.html *.dvi *.pdf *.tmp \
 		   gpl.texinfo lgpl.texinfo texinfo.tex epsf.tex xepsf.tex \
 		   *.tar *.tar.gz *~ lex.* y.tab.* site.* *.sum \
 		   *.diff *.private USERINFO *.huff.C \
@@ -2364,6 +2364,22 @@ ddd.man.huff.C: ddd.man.txt
 ddd.man-nopics: ddd.man
 	$(GREP) -v '^\.PSPIC' ddd.man > ddd.man-nopics
 
+## The info file, in text format
+# ddd.info.txt does NOT depend on ddd.info since we don't want it to get
+# re-created after each configuration.
+ddd.info.txt: $(srcdir)/ddd.texi configure.in
+	$(MAKE) $(INFO)
+	info --subnodes -o - -f $(INFO) > $@~ && $(MV) $@~ $@
+
+# ddd.man.txt may reside in $(srcdir) or `.' , hence the `$?'
+ddd.info.txt.gz: ddd.info.txt
+	$(COMPRESS) $? > $@~ && $(MV) $@~ $@
+
+ddd.info.txt.gz.C: ddd.info.txt.gz
+	$(MAKE) stringify$(EXEEXT)
+	-./stringify < $? > $@~ && $(MV) $@~ $@
+
+
 # COPYING.huff.C does NOT depend on huffencode since we don't want it
 # to get re-created after each configuration.
 COPYING.huff.C: $(srcdir)/../COPYING
@@ -2393,7 +2409,7 @@ NEWS.gz.C: NEWS.gz
 	-./stringify < NEWS.gz > $@~ && $(MV) $@~ $@
 
 # `make depend' fails to find this dependency :-(
-show.$(OBJEXT): COPYING.gz.C NEWS.gz.C
+show.$(OBJEXT): COPYING.gz.C NEWS.gz.C ddd.info.txt.gz.C
 
 
 ## The xlibdir script
