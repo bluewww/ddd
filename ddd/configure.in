@@ -73,9 +73,9 @@ AC_SUBST(DDD)dnl
 AC_SUBST(VERSION)dnl
 AC_SUBST(EXPIRES)dnl
 if test "$EXPIRES" = ""; then
-AC_MSG_RESULT("${DDD} ${VERSION}")
+AC_MSG_RESULT(${DDD} ${VERSION})
 else
-AC_MSG_RESULT("${DDD} ${VERSION} (expires ${EXPIRES})")
+AC_MSG_RESULT(${DDD} ${VERSION} (expires ${EXPIRES}))
 fi
 dnl
 dnl

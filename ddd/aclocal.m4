@@ -1265,7 +1265,7 @@ test "$motif_libraries_result" = "no" &&
 test "$motif_includes_result" = "no" && 
   motif_includes_result="(none)"
 AC_MSG_RESULT(
-  [libraries "$motif_libraries_result", headers "$motif_includes_result"])
+  [libraries $motif_libraries_result, headers $motif_includes_result])
 ])dnl
 dnl
 dnl
@@ -1435,5 +1435,5 @@ test "$athena_libraries_result" = "no" &&
 test "$athena_includes_result" = "no" && 
   athena_includes_result="(none)"
 AC_MSG_RESULT(
-  [libraries "$athena_libraries_result", headers "$athena_includes_result"])
+  [libraries $athena_libraries_result, headers $athena_includes_result])
 ])dnl
