@@ -39,7 +39,8 @@ DDD 2.0 (in beta test)
     - The `Save Options on Exit' function has been removed, as it
       also saved options given upon DDD invocation like `--dbx' or
       `--exec-window'.  Options must now always be saved explicitly.
-    - Ctrl+C has now the highest priority of all processed events.
+    - Ypu can press Ctrl+\ to interrupt programs using a QUIT signal.
+    - Ctrl+C and Ctrl+\ now have the highest priority of all events.
     - Improved remote debugging.  In contrast to `--host', the new
       `--rhost' option uses `rsh' without arguments (aka `rlogin') 
       to access the remote debugger.  DEC and SGI DBX require this.
