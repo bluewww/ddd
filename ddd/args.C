@@ -92,7 +92,7 @@ void update_arguments()
     delete[] selected;
 
     Widget text_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text_w, last_arguments);
+    XmTextSetString(text_w, (String)last_arguments);
 
     arguments_updated = true;
 }
@@ -173,7 +173,7 @@ static void SelectArgsCB(Widget, XtPointer, XtPointer call_data)
     const string& args = gdb_arguments[pos];
     
     Widget text_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text_w, args);
+    XmTextSetString(text_w, (String)args);
 }
 
 // Create `Run' dialog
