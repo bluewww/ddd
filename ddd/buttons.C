@@ -133,6 +133,8 @@ static void showDocumentationInStatusLine(const MString& doc)
 // Default help texts (especially buttons)
 //-----------------------------------------------------------------------------
 
+const int help_timeout = 1;	// Timeout for short queries (in s)
+
 static string gdbHelpName(Widget widget)
 {
     string name = XtName(widget);
@@ -182,7 +184,7 @@ static string gdbHelp(string command)
     if (help == NO_GDB_ANSWER)
     {
 	// Ask debugger for help
-	help = gdb_question("help " + command, 0, true);
+	help = gdb_question("help " + command, help_timeout, true);
 	strip_final_blanks(help);
     }
 
@@ -227,7 +229,7 @@ static string gdbValue(const string& expr)
     if (value == NO_GDB_ANSWER)
     {
 	// Ask debugger for value
-	value = gdb_question(gdb->print_command(expr));
+	value = gdb_question(gdb->print_command(expr), help_timeout);
     }
 
     if (value != NO_GDB_ANSWER)
