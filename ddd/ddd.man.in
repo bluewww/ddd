@@ -2415,6 +2415,7 @@ also initially sent to \s-2XDB\s+2.  By default, it is empty.
 .br
 In future \s-2@DDD@\s+2 releases, this resource will be used to save
 and restore debugger settings.
+.PP
 .\"
 .\"
 .\"
@@ -3412,6 +3413,7 @@ For more information on this list, send a mail to
    \fBddd-users-request@ips.cs.tu-bs.de\fR  .
 .br
 .sp
+.PP
 .\"
 .\" ---------------
 .SH LIMITATIONS
@@ -3754,6 +3756,7 @@ manual page on \s-2UNIX\s+2 systems (as
 `\fB/usr/local/man/man1/ddd.1\fR' or similar), is included in the
 \s-2@DDD@\s+2 source distribution.
 .sp
+.PP
 .\"
 .\"
 .\" ---------------
