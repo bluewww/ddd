@@ -1724,7 +1724,7 @@ int main(int argc, char *argv[])
 	version_warnings += rm("Using `") + tt(DDD_CLASS_NAME)
 	    + rm("' app-defaults file for " DDD_NAME " ")
 	    + rm(app_data.app_defaults_version)
-	    + rm(" (this is " DDD_NAME " " DDD_VERSION ")");
+	    + rm(" (this is " DDD_NAME " " DDD_VERSION ")") + cr();
     }
 
     if (app_data.dddinit_version && 
