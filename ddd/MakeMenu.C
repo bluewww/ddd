@@ -990,7 +990,7 @@ struct addHelpCallback_t {
 static void addHelpCallback(const MMDesc *item, XtPointer closure)
 {
     Widget widget       = item->widget;
-    XtCallbackProc proc = STATIC_CAST(const addHelpCallback_t*,closure)->proc;
+    XtCallbackProc proc = STATIC_CAST(addHelpCallback_t*,closure)->proc;
 
     XtAddCallback(widget, XmNhelpCallback, proc, XtPointer(0));
 }
