@@ -728,7 +728,7 @@ PROG_STUFF       = config.h vsl-lex.C vsl-gramma.h vsl-gramma.C \
 
 # Extra files to be built for the distribution
 # In a distribution, these should be already built.
-DIST_STUFF	 = $(PROG_STUFF) $(MANS) depend TAGS \
+DIST_STUFF	 = $(PROG_STUFF) $(MANS) depend \
 		   $(srcdir)/../doc/ddd.man.ps
 
 # Temporary Files to be cleaned, keeping configuration intact
@@ -838,9 +838,6 @@ realclean:
 ultraclean:
 	$(RM) $(ULTRACLEAN_STUFF) ./#*#
 
-.PHONY: TAGS
-TAGS:
-
 .PHONY: info
 info:	$(INFO_BASES)
 	@:
@@ -875,7 +872,7 @@ readme:	$(README_FILES)
 
 .PHONY: diststuff
 diststuff: $(DIST_STUFF)
-	@:
+	for file in $(DIST_STUFF); do test -f $$file && touch $$file; done
 
 .PHONY: dist
 dist:	
@@ -1038,7 +1035,7 @@ Ddd: Ddd.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 $(srcdir)/configure: $(srcdir)/configure.in $(srcdir)/aclocal.m4
-	cd $(srcdir) && $(AUTOCONF)
+	-cd $(srcdir) && $(AUTOCONF)
 config.status: $(srcdir)/configure
 	-$(SHELL) ./config.status --recheck || $(SHELL) $(srcdir)/configure -v
 

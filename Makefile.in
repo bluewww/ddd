@@ -128,9 +128,33 @@ $(DDD_TARGETS): FORCE
 
 ### Distribution stuff
 
+# Build a DDD distribution.
 .PHONY: dist
-dist:	diststuff distclean snapshot
+dist:	diststuff disttouch distclean snapshot
 
+# Create architecture-independent files in DDD subdirectory.
+.PHONY: diststuff
+diststuff:
+	@target=$@; \
+	rootme=`pwd`; export rootme; \
+	srcroot=`cd $(srcdir); pwd`; export srcroot; \
+	echo "==> Making $@ in ddd..."; \
+	( cd ./ddd; $(MAKE) diststuff )
+
+# Touch `configure' files souch that they don't get re-created.
+.PHONY: disttouch
+disttouch:
+	@for i in $(SUBDIRS); do \
+	  if test -f ./$$i/Makefile && test -f ./$$i/configure; then \
+   	    echo "==> Making configure in $$i..."; \
+	    if (cd ./$$i; $(MAKE) configure); then true; \
+	    else exit 1; fi; \
+	    if (cd ./$$i; touch configure); then true; \
+	    else exit 1; fi; \
+          else true; fi; \
+        done
+
+# Create a snapshot distribution from the current DDD development tree.
 .PHONY: snapshot
 snapshot:
 	rm -fr proto-toplev; mkdir proto-toplev
@@ -162,14 +186,6 @@ snapshot:
 	)
 	rm -fr proto-toplev
 
-.PHONY: diststuff
-diststuff:
-	@target=$@; \
-	rootme=`pwd`; export rootme; \
-	srcroot=`cd $(srcdir); pwd`; export srcroot; \
-	echo "==> Making $@ in ./ddd..."; \
-	( cd ./ddd; $(MAKE) diststuff );
-
 
 ## Configuration stuff.
 
@@ -177,7 +193,7 @@ Makefile: Makefile.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 $(srcdir)/configure: $(srcdir)/ddd/aclocal.m4 $(srcdir)/configure.in
-	cd $(srcdir) && $(AUTOCONF) -l $(srcdir)/ddd
+	-cd $(srcdir) && $(AUTOCONF) -l $(srcdir)/ddd
 
 config.status: $(srcdir)/configure
 	-$(SHELL) ./config.status --recheck || $(SHELL) $(srcdir)/configure -v
