@@ -138,10 +138,4 @@ Volunteers for fixing these and other bugs are welcome!
 
 371 Reduce flickering when setting options.
 
-372 C. Scott Ananian <cananian@lesser-magoo.lcs.mit.edu> says: DDD
-    hangs looking for source files because it enters an infinite loop
-    circling from . to jdb/ to jdb/harpoon/, which is really . again.
-    You need to call 'pwd' to get a canonical name for each directory
-    and check for loops; alternatively don't follow symlinks.
-
 373 (Insert new bugs here)
