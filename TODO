@@ -311,13 +311,7 @@ Volunteers for these and other projects are welcome!
     `http://sourceware.cygnus.com/gdb/onlinedocs/gdbmi_toc.html'.
 
 384 Finish themes support:
-    * Populate user's DDD directory with themes.
-    * Cache VSL docs.
     * Allow for interaction between VSL and DDD.
     * Document it all.
-
-385 Finish external resources:
-    * Report if `ddd.vsl' is not found.
-    * Document it all
 
 386 (Insert new project ideas here)
