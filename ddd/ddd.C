@@ -1030,19 +1030,17 @@ static MMDesc combined_menubar[] =
 
 
 struct ArgItems {
-    enum ArgCmd { Lookup, Break, Clear, Print, Display, 
-		  FindForward, FindBackward };
+    enum ArgCmd { Lookup, Break, Print, Display, FindForward, FindBackward };
 };
 
 static MMDesc arg_cmd_area[] = 
 {
-    {"lookup",        MMPush,  { gdbLookupCB        }},
-    {"breakAt",       MMPush,  { gdbBreakArgCmdCB   }},
-    {"clearAt",       MMPush | MMUnmanaged,  { gdbClearArgCmdCB   }},
-    {"print",         MMPush,  { gdbPrintArgCmdCB   }},
-    {"display",       MMPush,  { gdbDisplayArgCmdCB }},
-    {"findBackward",  MMPush,  { gdbFindBackwardCB  }},
-    {"findForward",   MMPush,  { gdbFindForwardCB   }},
+    {"lookup",        MMPush,  { gdbLookupCB            }},
+    {"breakAt",       MMPush,  { gdbToggleBreakArgCmdCB }},
+    {"print",         MMPush,  { gdbPrintArgCmdCB       }},
+    {"display",       MMPush,  { gdbDisplayArgCmdCB     }},
+    {"findBackward",  MMPush,  { gdbFindBackwardCB      }},
+    {"findForward",   MMPush,  { gdbFindForwardCB       }},
     MMEnd
 };
 
@@ -3423,10 +3421,23 @@ static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
 // Helpers
 //-----------------------------------------------------------------------------
 
-static void source_argHP (void *_arg_field, void *, void *)
+static void set_label(Widget w, string label)
 {
-    ArgField *arg_field = (ArgField *)_arg_field;
-    string arg = arg_field->get_string();
+    MString new_label(label);
+    XmString old_label;
+    XtVaGetValues(w, XmNlabelString, &old_label, NULL);
+    if (!XmStringCompare(new_label.xmstring(), old_label))
+    {
+	XtVaSetValues(w,
+		      XmNlabelString, new_label.xmstring(),
+		      NULL);
+    }
+    XmStringFree(old_label);
+}
+
+void update_arg_buttons()
+{
+    string arg = source_arg->get_string();
 
     bool can_find = (arg != "");
 
@@ -3438,6 +3449,16 @@ static void source_argHP (void *_arg_field, void *, void *)
 
     set_sensitive(arg_cmd_area[ArgItems::Print].widget, can_print);
     set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);
+
+    if (have_break_at_arg())
+	set_label(arg_cmd_area[ArgItems::Break].widget, "Clear at ()");
+    else
+	set_label(arg_cmd_area[ArgItems::Break].widget, "Break at ()");
+}
+
+static void source_argHP(void *, void *, void *)
+{
+    update_arg_buttons();
 }
 
 //-----------------------------------------------------------------------------

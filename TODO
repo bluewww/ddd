@@ -352,6 +352,8 @@ Volunteers for these and other projects are welcome!
 172. Use external `gzip' to compress and uncompress the built-in
      manual.  Saves lots of space in the executable.
 
-173. Have one single `Break at()' / `Clear at()' button.
+174. Realize Arg buttons as cascade buttons, showing a pulldown menu
+     with additional functions - i.e. base conversions under `New
+     Display', `Show 1' under `Show', etc.
 
-174. (Insert your project idea here)
+175. (Insert your project idea here)

@@ -2654,7 +2654,7 @@ Ddd*graph_cmd_area.marginWidth:	 0
 
 Ddd*graph_cmd_w.arg_label.labelString:	():
 
-Ddd*graph_cmd_w.graph_arg.columns:		20
+Ddd*graph_cmd_w.graph_arg.columns:		22
 Ddd*graph_cmd_w*graph_arg.editable:		false
 Ddd*graph_cmd_w*graph_arg.helpString:	\
 @rm This is the argument @bf () @rm for the command buttons on the right.\n\
@@ -2927,10 +2927,7 @@ Ddd*text_popup.lookup.documentationString: \
 @rm Lookup definition of the selected item
 
 Ddd*text_popup.breakAt.documentationString: \
-@rm Set a breakpoint at the selected function
-
-Ddd*text_popup.clearAt.documentationString: \
-@rm Clear the breakpoint at the selected function
+@rm Set or delete a breakpoint at the selected function
 
 
 !-----------------------------------------------------------------------------
@@ -2956,7 +2953,7 @@ Set @bf () @rm by selecting items from the source window or the data window.\n\
 Clear @bf () @rm by clicking on the prompt @bf (): @rm.
 
 Ddd*arg_cmd_w.source_arg.value:			 main
-Ddd*arg_cmd_w.source_arg.columns:		 20
+Ddd*arg_cmd_w.source_arg.columns:		 22
 
 Ddd*arg_cmd_w.orientation:				XmHORIZONTAL
 Ddd*arg_cmd_w.arg_cmd_area.orientation:			XmHORIZONTAL
@@ -2968,7 +2965,6 @@ Ddd*arg_cmd_w.arg_cmd_area*alignment:			XmALIGNMENT_CENTER
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.labelString:		Lookup ()
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.labelString:		Break at ()
-Ddd*arg_cmd_w.arg_cmd_area*clearAt.labelString:		Clear at ()
 Ddd*arg_cmd_w.arg_cmd_area*print.labelString:		Print ()
 Ddd*arg_cmd_w.arg_cmd_area*display.labelString:		Display ()
 Ddd*arg_cmd_w.arg_cmd_area*findBackward.labelString:	Find@small<< @bf()
@@ -2995,20 +2991,12 @@ Ddd*arg_cmd_w.arg_cmd_area*lookup.documentationString:	\
 @rm Lookup a line, file, function, variable or breakpoint in the source
 
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.helpString:	\
-@bf Break at ()@rm\n\
-Set a breakpoint at the argument @bf ()@rm.
+@bf Break at ()@rm / @bf Clear at ()@rm\n\
+Set or delete a breakpoint at the argument @bf ()@rm.
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.tipString:	\
-@rm Set breakpoint at @bf ()
+@rm Set/Delete breakpoint at @bf ()
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.documentationString:	\
-@rm Set a breakpoint at the argument @bf ()
-
-Ddd*arg_cmd_w.arg_cmd_area*clearAt.helpString:	\
-@bf Clear at ()@rm\n\
-Delete the breakpoint at the argument @bf ()@rm.
-Ddd*arg_cmd_w.arg_cmd_area*clearAt.tipString:	\
-@rm Delete breakpoint at @bf ()
-Ddd*arg_cmd_w.arg_cmd_area*clearAt.documentationString:	\
-@rm Delete the breakpoint at the argument @bf ()
+@rm Set or delete a breakpoint at the argument @bf ()
 
 Ddd*arg_cmd_w.arg_cmd_area*print.helpString:	\
 @bf Print ()@rm\n\

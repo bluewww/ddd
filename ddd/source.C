@@ -53,8 +53,12 @@ char source_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 
+bool have_break_at_arg()
+{
+    return source_view->bp_at(source_arg->get_string()) != 0;
+}
 
-void gdbBreakArgCmdCB(Widget w, XtPointer, XtPointer)
+static void set_break_at_arg(Widget w, bool set)
 {
     string arg = source_arg->get_string();
     string pos;
@@ -64,14 +68,20 @@ void gdbBreakArgCmdCB(Widget w, XtPointer, XtPointer)
     case GDB:
 	if (arg != "" && arg[0] == '0')
 	    arg = "*" + arg; // Address given
-	gdb_command("break " + arg, w);
+	if (set)
+	    gdb_command("break " + arg, w);
+	else
+	    gdb_command(SourceView::clear_command(arg));
 	break;
 
     case DBX:
 	if (arg.matches(rxint))
 	{
 	    // Line number given
-	    gdb_command("stop at " + arg, w);
+	    if (set)
+		gdb_command("stop at " + arg, w);
+	    else
+		gdb_command(SourceView::clear_command(arg));
 	}
 	else if (arg.contains(":") && !arg.contains("::"))
 	{
@@ -87,64 +97,36 @@ void gdbBreakArgCmdCB(Widget w, XtPointer, XtPointer)
 	if (pos != "")
 	{
 	    gdb_command("file " + pos.before(":"), w);
-	    gdb_command("stop at " + pos.after(":"), w);
+	    if (set)
+		gdb_command("stop at " + pos.after(":"), w);
+	    else
+		gdb_command(SourceView::clear_command(pos.after(":")), w);
 	}
 	break;
 
     case XDB:
-	gdb_command("b " + arg, w);
+	if (set)
+	    gdb_command("b " + arg, w);
+	else
+	    gdb_command(SourceView::clear_command(arg), w);
 	break;
     }
+}
+
+
+void gdbBreakArgCmdCB(Widget w, XtPointer, XtPointer)
+{
+    set_break_at_arg(w, true);
 }
 
 void gdbClearArgCmdCB(Widget w, XtPointer, XtPointer)
 {
-    string pos;
-    string arg = source_arg->get_string();
-    switch (gdb->type())
-    {
-    case GDB:
-	if (arg != "" && arg[0] == '0')
-	    arg = "*" + arg; // Address given
-	gdb_command(SourceView::clear_command(arg));
-	break;
-
-    case DBX:
-	if (arg.matches(rxint))
-	{
-	    // Line number given
-	    gdb_command(SourceView::clear_command(arg));
-	}
-	else if (arg.contains(":") && !arg.contains("::"))
-	{
-	    // Function:Line given
-	    pos = arg;
-	}
-	else
-	{
-	    // Function name given
-	    pos = dbx_lookup(arg);
-	}
-
-	if (pos != "")
-	{
-	    gdb_command("file " + pos.before(":"), w);
-	    gdb_command(SourceView::clear_command(pos.after(":")), w);
-	}
-	break;
-
-    case XDB:
-	gdb_command(SourceView::clear_command(arg), w);
-	break;
-    }
+    set_break_at_arg(w, false);
 }
 
-void gdbLineArgCmdCB(Widget w, XtPointer client_data, XtPointer)
+void gdbToggleBreakArgCmdCB(Widget w, XtPointer, XtPointer)
 {
-    string cmd = (String)client_data;
-    string arg = source_arg->get_string();
-
-    gdb_command(cmd + arg, w);
+    set_break_at_arg(w, !have_break_at_arg());
 }
 
 void gdbPrintArgCmdCB(Widget w, XtPointer, XtPointer)
