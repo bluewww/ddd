@@ -8,24 +8,25 @@
 
 
 # Set up a suitable background
-s!<BODY>!<BODY BACKGROUND="PICS/dddback.gif" BGCOLOR="#f5f5f5">!
+# KDE browsers have trouble with PNG backgrounds, so use JPG instead
+s!<BODY>!<BODY BACKGROUND="PICS/dddback.jpg" BGCOLOR="#ffffff">!
 
 # Set up a header
-\!<p>Go to!i\
+\!^Go to the!i\
 <ADDRESS>\
 <SMALL CLASS=header>
-\!<p>Go to!a\
+\!Go to the!a\
 </SMALL>\
 </ADDRESS>
 s!<P><HR><P>!!
 
 # Add the WWW page to the `go to' line
-s!^<p>\(Go to .*\)\.$!\1, <A HREF="http://www.fmi.uni-passau.de/st/ddd/">DDD home page</A>!
+s!^\(Go to the .*\)\.$!\1, <A HREF="http://www.fmi.uni-passau.de/st/ddd/">DDD home page</A>!
 
 # Add a logo before first header
 \!<H1>!i\
 <HR>\
-<IMG ALT="DDD - The Data Display Debugger" WIDTH=410 HEIGHT=140 SRC="PICS/dddlogo.gif">\
+<IMG ALT="DDD - The Data Display Debugger" WIDTH=410 HEIGHT=140 SRC="PICS/dddlogo.png">\
 <HR>
 
 \!^This document was generated.*!i\
@@ -46,3 +47,5 @@ s/@ss/\&szlig;/g
 
 # Trailing stuff
 s/@ifnotinfo//
+s/@ifnottex//
+s/\\def\\.*//
