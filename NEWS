@@ -85,7 +85,7 @@ DDD 2.2 [in development]
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
       Wiegand <wiegand@kong.gsfc.nasa.gov>.
     - DDD no longer hangs while receiving large chunks of data.
-    - Several speed-ups in processing debugger and program output.
+    - Significant speed-ups in processing debugger and program output.
     - Some memory leaks and some X resource leaks have been tightened.
     - DDD no longer requires the librx library.  Hence, librx errors
       can no more cause DDD to crash.
