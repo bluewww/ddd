@@ -167,6 +167,9 @@ _Delay::_Delay(Widget w):
 
 _Delay::~_Delay()
 {
+  // TODO: race condition here
+  // Need to flush the events, put a lock, do the test below, delete
+  // the call back and release the lock.
     if (widget == 0 || old_cursor == 0)
 	return;
 
