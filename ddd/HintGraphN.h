@@ -44,10 +44,20 @@ protected:
 			   const BoxRegion& exposed,
 			   const GraphGC& gc) const;
 
+    // Copy Constructor
+    HintGraphNode(const HintGraphNode &node):
+	RegionGraphNode(node)
+    {}
+
 public:
     HintGraphNode(const BoxPoint& initialPos = BoxPoint()):
        RegionGraphNode(initialPos, BoxSize(0,0))
     {}
+
+    GraphNode *dup() const
+    {
+	return new HintGraphNode(*this);
+    }
 
     virtual bool isHint() const { return true; }
 

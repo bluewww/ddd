@@ -44,6 +44,13 @@ public:
 private:
     BoxPoint _pos;	// position
 
+protected:
+    // Copy Constructor
+    PosGraphNode(const PosGraphNode& node):
+	GraphNode(node),
+	_pos(node._pos)
+    {}
+
 public:
     // Constructor
     PosGraphNode(const BoxPoint& initialPos = BoxPoint()):

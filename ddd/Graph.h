@@ -52,9 +52,15 @@ private:
 protected:
     void addNodes(GraphNode* nodes);
     void addEdges(GraphEdge* edges);
+    void addUsedEdges(GraphEdge* edges);
 
     void removeNode(GraphNode* node);
     void removeEdge(GraphEdge* edge);
+
+    // needed by the Copy-Constructor
+    GraphNode *getNode(GraphNode *node, const Graph& graph) const;
+    
+    Graph(const Graph& graph);
 
 public:
     // Constructors
@@ -64,14 +70,26 @@ public:
 
     // Destructor
     virtual ~Graph();
+  
+    // Duplication
+    virtual Graph *dup() const
+    {
+	return new Graph (*this);
+    }
 
     // Add Graph
-    void operator += (Graph& graph)
+    void operator += (const Graph& g)
     {
-	if (graph._firstNode)
-	    addNodes(graph._firstNode);
-	if (graph._firstEdge)
-	    addEdges(graph._firstEdge);
+	Graph *graph = g.dup();
+
+	if (graph->_firstNode)
+	    addNodes(graph->_firstNode);
+	if (graph->_firstEdge)
+	    addEdges(graph->_firstEdge);
+
+	graph->_firstNode = 0;
+	graph->_firstEdge = 0;
+	delete graph;
     }
 
     // Add Node

@@ -35,6 +35,7 @@ char BoxGraphNode_rcsid[] =
 
 #include "BoxGraphN.h"
 #include "printBox.h"
+#include "CompositeB.h"
 
 
 DEFINE_TYPE_INFO_1(BoxGraphNode, RegionGraphNode)
@@ -82,3 +83,52 @@ void BoxGraphNode::_print(ostream& os, const GraphGC& gc) const
 	endCompound(os);
 }
 
+// MARK is a MarkBox in SRC.  Find equivalent box in DUP.
+MarkBox *BoxGraphNode::find_mark(Box *dup, Box *src, Box *mark)
+{
+    if (src == mark)
+    {
+	MarkBox *dup_mb = ptr_cast(MarkBox, dup);
+	assert(dup_mb != 0);
+	return dup_mb;
+    }
+
+    // Try Composite children
+    CompositeBox *src_cb = ptr_cast(CompositeBox, src);
+    if (src_cb != 0)
+    {
+	CompositeBox *dup_cb = ptr_cast(CompositeBox, dup);
+	assert(dup_cb != 0);
+	assert(src_cb->nchildren() == dup_cb->nchildren());
+
+	for (int i = 0; i < src_cb->nchildren(); i++)
+	{
+	    MarkBox *mb = 
+		find_mark((*dup_cb)[i], (*src_cb)[i], mark);
+	    if (mb)
+		return mb;
+	}
+
+	return 0;
+    }
+
+    // Try HatBox child
+    HatBox *src_hb = ptr_cast(HatBox, src);
+    if (src_hb != 0)
+    {
+	HatBox *dup_hb = ptr_cast(HatBox, dup);
+	assert(dup_hb != 0);
+
+	return find_mark(dup_hb->box(), src_hb->box(), mark);
+    }
+
+    return 0;
+}
+	
+
+// Copy Constructor
+BoxGraphNode::BoxGraphNode(const BoxGraphNode& node):
+    RegionGraphNode(node),
+    _box(node._box->dup()),
+    _highlight(find_mark(_box, node._box, node._highlight))
+{}

@@ -54,6 +54,12 @@ protected:
     // center around position
     void center();
 
+    // Copy Constructor
+    RegionGraphNode(const RegionGraphNode& node):
+        PosGraphNode(node),
+        _region(node._region)
+    {}
+
 public:
     // Constructor
     RegionGraphNode(const BoxPoint& initialPos = BoxPoint(),

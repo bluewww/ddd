@@ -53,11 +53,11 @@ char test_graph_rcsid[] =
 #include "HintGraphN.h"
 #include "LineGraphE.h"
 
-// build a simple graph
+// Build a simple graph
 Graph *myGraph()
 {
-    MarkBox *hugo    = new MarkBox(new StringBox("Hugo"));
-    Box *berta       = new StringBox("Berta");
+    MarkBox *hugo    = new MarkBox(new StringBox("Select"));
+    Box *berta       = new StringBox("Me");
     HAlignBox *hbox  = new HAlignBox();
     *hbox &= hugo;
     *hbox &= berta;
@@ -163,7 +163,11 @@ Graph *myGraph()
     assert(g->OK());
 #endif
 
-    return g;
+    Graph *g2 = g->dup();
+    assert(g->OK());
+    assert(g2->OK());
+
+    return g2;
 }
 
 static String fallback_resources[] = {
@@ -171,7 +175,7 @@ static String fallback_resources[] = {
     NULL
 };
 
-void PositionChanged(Widget w, XtPointer client_data, XtPointer call_data)
+void PositionChanged(Widget, XtPointer, XtPointer call_data)
 {
     GraphEditPositionChangedInfo *info = 
 	(GraphEditPositionChangedInfo *)call_data;
@@ -187,17 +191,17 @@ void PositionChanged(Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
-static void OneCB(Widget widget, XtPointer client_data, XtPointer call_data)
+static void OneCB(Widget widget, XtPointer, XtPointer)
 {
     cout << longName(widget) << "\n";
 }
 
-static void TwoCB(Widget widget, XtPointer client_data, XtPointer call_data)
+static void TwoCB(Widget widget, XtPointer, XtPointer)
 {
     cout << longName(widget) << "\n";
 }
 
-static void ThreeCB(Widget widget, XtPointer client_data, XtPointer call_data)
+static void ThreeCB(Widget widget, XtPointer, XtPointer)
 {
     cout << longName(widget) << "\n";
 }
@@ -212,7 +216,7 @@ static MMDesc simpleMenu[] =
     MMEnd
 };
 
-void Popup(Widget w, XEvent *event, String *params, Cardinal *num_params)
+void Popup(Widget w, XEvent *event, String *, Cardinal *)
 {
     if (event->type != ButtonPress && event->type != ButtonRelease)
     {

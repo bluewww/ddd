@@ -78,6 +78,19 @@ protected:
     // Dequeue from node lists
     void dequeue();
 
+    // Copy Constructor
+    GraphEdge(const GraphEdge& edge):
+        _from(0),
+        _to(0),
+	_hidden(edge._hidden),
+        _nextFrom(0),
+        _nextTo(0),
+        _prevFrom(0),
+        _prevTo(0),
+        next(0),
+        prev(0)
+    {}
+
 public:
     // Constructor
     GraphEdge(GraphNode *f, GraphNode *t):
@@ -87,6 +100,9 @@ public:
         _prevFrom(0), _prevTo(0),
         next(0), prev(0)
     {}
+
+    // Duplication
+    virtual GraphEdge *dup() const = 0;
 
     // Resources
     GraphNode *from() const 	{ return _from; }

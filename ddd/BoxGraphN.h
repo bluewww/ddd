@@ -52,6 +52,12 @@ protected:
 			   const BoxRegion& exposed, 
 			   const GraphGC& gc) const;
 
+    // MARK is a MarkBox in SRC.  Find equivalent box in DUP.
+    MarkBox *find_mark(Box *dup, Box *src, Box *mark);
+
+    // Copy Constructor
+    BoxGraphNode(const BoxGraphNode& node);
+
 public:
     // Constructor
     BoxGraphNode(Box *b, const BoxPoint& initialPos = BoxPoint(), 
@@ -60,6 +66,11 @@ public:
 	_box(b->link()),
         _highlight(h)
     {}
+
+    GraphNode *dup() const
+    {
+	return new BoxGraphNode(*this);
+    }
 
     // Destructor
     virtual ~BoxGraphNode()
@@ -107,4 +118,3 @@ public:
 };
 
 #endif
-

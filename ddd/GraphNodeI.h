@@ -60,6 +60,17 @@ private:
     GraphNode *next;		// For collectors
     GraphNode *prev;		// For collectors
 
+protected:
+    // Copy Constructor
+    GraphNode(const GraphNode& node):
+	_selected(node._selected),
+	_hidden(node._hidden),
+	_firstFrom(0),
+	_firstTo(0),
+	next(0),
+	prev(0)
+    {}
+
 public:
     int count;			// #predecessors (used in layout algorithms)
 
@@ -68,6 +79,9 @@ public:
 	_selected(false), _hidden(false),
 	_firstFrom(0), _firstTo(0), next(0), prev(0), count(0)
     {}
+
+    // Duplication
+    virtual GraphNode *dup() const = 0;
 
     // Resources
     unsigned long id() const { return _id; }
@@ -123,13 +137,11 @@ public:
 	    GraphGC());
     }
 
-
     // printing
     virtual void _print(ostream&, const GraphGC&) const
     {
 	// default: do nothing
     }
-
 
     // representation invariant
     virtual bool OK() const;

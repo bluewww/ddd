@@ -53,11 +53,21 @@ protected:
 		       const BoxRegion& exposed, 
 		       const GraphGC& gc) const;
 
+    // Copy Constructor
+    LineGraphEdge(const LineGraphEdge &edge):
+	GraphEdge(edge)
+    {}
+
 public:
     // Constructor
     LineGraphEdge(GraphNode *f, GraphNode *t):
 	GraphEdge(f, t)
     {}
+
+    GraphEdge *dup() const
+    {
+	return new LineGraphEdge(*this);
+    }
 };
 
 #endif

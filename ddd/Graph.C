@@ -63,6 +63,82 @@ Graph::~Graph()
     }
 }
 
+// Copy Constructor
+Graph::Graph(const Graph &org_graph)
+{
+    GraphNode *node, *new_node; 
+
+    // Copy Nodes
+    _firstNode = 0; // for addNodes
+
+    node = org_graph._firstNode;
+   
+    if (node != 0)
+    {
+	do
+	{
+	    new_node = node->dup();  // copy node
+	    assert(new_node->next == 0);
+	    new_node->next = new_node;	     
+	    new_node->prev = new_node;
+	    addNodes(new_node); // add new_node to graph
+	    node = node->next;
+
+	} while(node != org_graph._firstNode);
+    }
+     
+    GraphEdge *edge, *new_edge;
+    
+    // Copy Edges
+    _firstEdge = 0;
+    edge = org_graph._firstEdge;
+    
+    if (edge != 0)
+    {
+	do {
+	    new_edge = edge->dup();
+	    assert(new_edge->next == 0);	// edge must not be used yet
+	    new_edge->next = new_edge;		// now it is used
+	    new_edge->prev = new_edge;
+	    addUsedEdges(new_edge); // because of "enqueue" in addEdges()
+	    edge = edge->next;
+
+	} while(edge != org_graph._firstEdge);
+    }
+
+    if (_firstEdge != 0)
+    {
+	// equal edge in original graph 
+	GraphEdge *org_edge = org_graph._firstEdge;
+    	edge = _firstEdge;
+	GraphNode *from_node, *to_node;     
+     
+	// setup source and target of edges
+	do { 
+            // setup source node
+	    from_node = getNode(org_edge->_from, org_graph);
+	    edge->_from = from_node;
+
+	    // setup target node
+	    to_node = getNode(org_edge->_to, org_graph);	
+	    edge->_to = to_node;
+	
+	    edge = edge->next;
+	    org_edge = org_graph.nextEdge(org_edge);
+
+	} while(edge != _firstEdge);
+
+	// Enqueue edges
+	edge = _firstEdge; 
+
+	do{
+	    edge->enqueue();
+	    edge = edge->next;
+	} while(edge != _firstEdge);
+    }
+}
+  
+
 
 // Add Nodes
 void Graph::addNodes(GraphNode *nodes)
@@ -93,6 +169,25 @@ void Graph::addEdges(GraphEdge *edges)
 	e = e->next;
     } while (e != edges);
 	
+    // Add edges
+    if (_firstEdge == 0)
+	_firstEdge = edges;
+    else
+    {
+	// setup next chain
+	_firstEdge->prev->next = edges;
+	edges->prev->next = _firstEdge;
+
+	// setup prev chain
+	GraphEdge *old_prev = edges->prev;
+	edges->prev = _firstEdge->prev;
+	_firstEdge->prev = old_prev;
+    }
+}
+
+// Add used Edges, i.e. add edges of a graph
+void Graph::addUsedEdges(GraphEdge *edges)
+{
     // Add edges
     if (_firstEdge == 0)
 	_firstEdge = edges;
@@ -163,7 +258,21 @@ void Graph::removeEdge(GraphEdge *edge)
     edge->prev = 0;
 }
 
-
+// Get the equal node to "org_node"
+// needed by the Copy-Constructor
+GraphNode *Graph::getNode(GraphNode *org_node, const Graph& org_graph) const
+{
+    GraphNode *search_node = org_graph._firstNode;
+    GraphNode *dup_node = _firstNode;
+     
+     while (search_node != org_node)
+     {
+	 dup_node = dup_node->next;
+	 search_node = search_node->next;
+     }
+ 
+     return dup_node;
+}
 
 // Draw
 void Graph::draw(Widget w, const BoxRegion& exposed, const GraphGC& _gc) const
