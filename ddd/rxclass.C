@@ -37,15 +37,18 @@ char regex_rcsid[] =
 #include "bool.h"
 #include "strclass.h"
 #include "assert.h"
+#include "misc.h"
 
 #include <iostream.h>
 #include <ctype.h>
+#include <string.h>		// strncmp()
 
-char regex::get_prefix(const char *t, int flags)
+// Get a prefix character from T; let T point at the next prefix character.
+char regex::get_prefix(const char *& t, int flags)
 {
     if (flags & REG_EXTENDED)
     {
-	switch (t[0])
+	switch (*t++)
 	{
 	case '.':
 	case '(':
@@ -54,15 +57,20 @@ char regex::get_prefix(const char *t, int flags)
 	    return '\0';
 
 	case '[':
-	    if (t[1] != ']' && t[1] != '\0' && t[1] != '^' && t[2] == ']')
-		return t[1];
+	    if (*t != ']' && *t != '\0' && *t != '^' && t[1] == ']')
+	    {
+		char ret = *t;
+		t += 2;
+		return ret;
+	    }
 	    return '\0';
 
 	case '\\':
-	    return t[1];
+	    return *t++;
 
 	default:
-	    switch (t[1])
+	    // Ordinary character
+	    switch (*t)
 	    {
 	    case '+':
 	    case '*':
@@ -71,7 +79,7 @@ char regex::get_prefix(const char *t, int flags)
 		return '\0';
 	    
 	    default:
-		return t[0];
+		return t[-1];
 	    }
 	}
     }
@@ -98,7 +106,6 @@ void regex::fatal(int errcode)
 }
 
 regex::regex(const char* t, int flags)
-    : prefix(get_prefix(t, flags))
 {
     string rx = "^" + string(t);
     int errcode = regcomp(&compiled, rx, flags);
@@ -106,6 +113,13 @@ regex::regex(const char* t, int flags)
 	fatal(errcode);
 
     exprs = new regmatch_t[nexprs()];
+
+    unsigned int i = 0;
+    const char *s = t;
+    while ((prefix[i++] = get_prefix(s, flags)) != '\0'
+	   && i < sizeof(prefix) - 1)
+	;
+    prefix[i] = '\0';
 }
 
 regex::~regex()
@@ -141,10 +155,11 @@ int regex::search(const char* s, int len, int& matchlen, int startpos) const
     assert(s[len] == '\0');
 
     int errcode = 0;
+    int prefix_len = strlen(prefix);
 
     for (; startpos >= 0 && startpos < len; startpos += direction)
     {
-	if (prefix == '\0' || s[startpos] == prefix)
+	if (strncmp(s, prefix, min(prefix_len, len - startpos)) == 0)
 	{
 	    errcode = regexec((regex_t *)&compiled, (char *)s + startpos, 
 			      nexprs(), exprs, 0);

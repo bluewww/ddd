@@ -66,7 +66,7 @@ private:
 
 protected:
     regex_t compiled;		// "^" + regexp
-    char prefix;                // constant prefix (for faster search)
+    char prefix[32];		// constant prefix (for faster search)
 
     regmatch_t *exprs;		// Matched expressions
     size_t nexprs() const;	// Number of expressions
@@ -75,7 +75,7 @@ protected:
     void fatal(int errcode);
 
     // Create a prefix from T and FLAGS
-    static char get_prefix(const char *t, int flags);
+    static char get_prefix(const char *& t, int flags);
 
 public:
     // Create and compile an (extended) regular expression in T.
