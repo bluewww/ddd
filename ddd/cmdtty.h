@@ -33,6 +33,7 @@
 #pragma interface
 #endif
 
+#include "bool.h"
 #include "strclass.h"
 
 // Initialize command tty

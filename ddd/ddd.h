@@ -39,6 +39,8 @@
 #include <X11/Intrinsic.h>
 #include <Xm/Xm.h>
 
+#include "bool.h"
+
 // GDB command widget
 extern Widget gdb_w;
 

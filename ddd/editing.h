@@ -34,6 +34,7 @@
 #endif
 
 #include <X11/Intrinsic.h>
+#include "bool.h"
 
 // Actions
 extern void controlAct           (Widget, XEvent*, String*, Cardinal*);
