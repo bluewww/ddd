@@ -67,7 +67,7 @@ protected:
     {
 	return matchesAll ||
 	    (CallNode::matches(node) &&
-		_deflist == ((DefCallNode *)&node)->_deflist); // dirty trick
+		_deflist == ((const DefCallNode *)&node)->_deflist); // dirty trick
     }
 
 private:

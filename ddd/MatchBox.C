@@ -49,7 +49,7 @@ bool MatchBox::matches (const Box &box, const Box *callbackArg) const
 {
     bool ret = matchesAll ||
 	DummyBox::matches(box) &&
-	    _data == ((MatchBox *)&box)->_data; // dirty trick
+	    _data == ((const MatchBox *)&box)->_data; // dirty trick
 
     if (ret && matchCallback)
     {

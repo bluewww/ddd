@@ -85,7 +85,7 @@ bool ArgNode::matches(const VSLNode &node) const
 {
     bool ret = matchesAll ||
 	VSLNode::matches(node) &&
-	    _id == ((ArgNode *)&node)->_id; // dirty trick
+	    _id == ((const ArgNode *)&node)->_id; // dirty trick
 
     if (ret && matchCallback)
 	matchCallback(_id, &node);

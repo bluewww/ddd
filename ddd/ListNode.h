@@ -61,8 +61,8 @@ protected:
     bool matches(const VSLNode& node) const
     {
 	return VSLNode::matches(node) &&
-	    *_head == *(((ListNode *)&node)->_head) && 
-	    *_tail == *(((ListNode *)&node)->_tail);    // dirty trick
+	    *_head == *(((const ListNode *)&node)->_head) && 
+	    *_tail == *(((const ListNode *)&node)->_tail);    // dirty trick
     }
 
 private:

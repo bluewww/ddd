@@ -70,7 +70,7 @@ protected:
     bool matches (const VSLNode& node) const
     {
 	return matchesAll || (CallNode::matches(node) &&
-	    _index == ((BuiltinCallNode *)&node)->_index);  // dirty trick
+	    _index == ((const BuiltinCallNode *)&node)->_index);  // dirty trick
     }
 
 public:

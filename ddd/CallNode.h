@@ -76,7 +76,7 @@ protected:
     {
 	return matchesAll ||
 	    (VSLNode::matches(node) &&
-	    *_arg == *(((CallNode *)(&node))->_arg));   // dirty trick
+	    *_arg == *(((const CallNode *)(&node))->_arg));   // dirty trick
     }
 
 private:

@@ -63,7 +63,7 @@ protected:
     bool matches(const VSLNode& node) const
     {
 	return VSLNode::matches(node) &&
-		*_box == *(((ConstNode *)&node)->_box); // dirty trick
+		*_box == *(((const ConstNode *)&node)->_box); // dirty trick
     }
 
 private:
