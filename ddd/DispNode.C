@@ -325,11 +325,12 @@ bool DispNode::alias_ok() const
 }
 
 // Toggle titles
-void DispNode::refresh_title()
+bool DispNode::refresh_title(bool assume_dependent)
 {
-    bool is_dependent = false;
+    bool is_dependent = assume_dependent;
     for (GraphEdge *e = nodeptr()->firstTo();
-	 e != 0; e = nodeptr()->nextTo(e))
+	 !is_dependent && e != 0;
+	 e = nodeptr()->nextTo(e))
     {
 	if (e->from() == nodeptr())
 	    continue;		// Self edge
@@ -337,7 +338,6 @@ void DispNode::refresh_title()
 	    continue;		// Alias edge
 
 	is_dependent = true;
-	break;
     }
 
     bool need_title = false;

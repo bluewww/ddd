@@ -549,6 +549,9 @@ public:
 
     // Get number of display NAME
     static int display_number(const string& name, bool verbose = false);
+
+    // Refresh titles after change in APP_DATA
+    void refresh_titles();
 };
 
 inline bool DataDisp::get_selection(ostream& os, bool include_position)

@@ -1110,7 +1110,7 @@ DataDispCount::DataDispCount(DispGraph *disp_graph)
 	    else
 	    {
 		DispValue *dv = dn->selected_value();
-		if (dv == 0)
+		if (dv == 0 || dv == dn->value())
 		    selected_titles++;
 
 		if (!dn->is_user_command())
@@ -3012,9 +3012,8 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	if (info->deferred == DeferIfNeeded)
 	{
 	    // Create deferred display now
-	    DispNode *dn = new_deferred_node(info->display_expression,
-					     info->scope,
-					     info->point, info->depends_on);
+	    dn = new_deferred_node(info->display_expression, info->scope,
+				   info->point, info->depends_on);
 	    
 	    // Insert deferred node into graph
 	    disp_graph->insert(dn->disp_nr(), dn);
@@ -3029,8 +3028,11 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	return;
     }
 
-    // Determine position
+    // Set title
     int depend_nr = disp_graph->get_by_name(info->depends_on);
+    dn->refresh_title(depend_nr != 0);
+
+    // Determine position
     BoxPoint box_point = info->point;
     if (box_point == BoxPoint())
 	box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
@@ -3072,8 +3074,11 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
     DispNode *dn = new_user_node(info->display_expression, info->scope, ans);
     if (dn != 0)
     {
-	// Determine new position
+	// Determine title
 	int depend_nr = disp_graph->get_by_name(info->depends_on);
+	dn->refresh_title(depend_nr != 0);
+
+	// Determine new position
 	BoxPoint box_point = info->point;
 	if (box_point == BoxPoint())
 	    box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
@@ -3211,6 +3216,7 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
 	    if (dn == 0)
 		continue;
 
+	    dn->refresh_title(depend_nr != 0);
 	    BoxPoint box_point = info->point;
 	    if (box_point == BoxPoint())
 	    {
@@ -4858,6 +4864,28 @@ void DataDisp::language_changedHP(Agent *source, void *, void *)
 }
 
 
+
+
+//----------------------------------------------------------------------------
+// Titles
+//----------------------------------------------------------------------------
+
+// Refresh titles after change in APP_DATA
+void DataDisp::refresh_titles()
+{
+    bool changed = false;
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0; dn = disp_graph->next(ref))
+    {
+	if (dn->refresh_title())
+	    changed = true;
+    }
+
+    if (changed)
+	refresh_graph_edit();
+}
+
 //----------------------------------------------------------------------------
 // Alias Detection
 //----------------------------------------------------------------------------
@@ -5355,6 +5383,9 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
 {
     if (!bump_displays)
 	return true;		// Okay
+
+    if (node->pos() == BoxPoint())
+	return true;		// No valid position yet
 
     const GraphGC& gc = graphEditGetGraphGC(graph_edit);
     BoxRegion oldRegion = node->region(gc);

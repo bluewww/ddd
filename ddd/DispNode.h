@@ -189,8 +189,9 @@ public:
     void make_active();
     void make_inactive();
 
-    // Toggle titles
-    void refresh_title();
+    // Toggle titles.  If ASSUME_DEPEND is set, assume we're dependent
+    // on some other node.  Return true iff changed.
+    bool refresh_title(bool assume_dependent = false);
 };
 
 #endif // _DDD_DispNode_h

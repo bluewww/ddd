@@ -371,6 +371,8 @@ void graphToggleShowDependentTitlesCB(Widget, XtPointer, XtPointer call_data)
     else
 	set_status("Dependent titles off.");
 
+    data_disp->refresh_titles();
+
     update_options();
 }
 
