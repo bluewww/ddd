@@ -76,12 +76,17 @@ extern "C" {
 #include "glob.h"
 
 // Other headers, hopefully more portable
-#include <sys/types.h>
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+}
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-}
 
 #if defined(HAVE_MEMCPY) && !defined(HAVE_MEMCPY_DECL)
 extern "C" void *memcpy(void *to, const void *from, size_t size);
