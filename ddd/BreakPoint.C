@@ -315,6 +315,8 @@ void BreakPoint::process_dbx(string& info_output)
     if (info_output.contains("stop ", 0) || 
 	info_output.contains("stopped ", 0))
     {
+	// Breakpoint
+
 	info_output = info_output.after(rxblanks_or_tabs);
 	strip_leading_space (info_output);
 	if (info_output.contains ("at ", 0))
@@ -427,6 +429,7 @@ void BreakPoint::process_dbx(string& info_output)
 	    mycondition = cond;
 	}
     }
+
     info_output = info_output.after('\n');
 }
 
@@ -549,6 +552,7 @@ void BreakPoint::process_perl(string& info_output)
     mycommands = empty;
     myline_nr = atoi(info_output);
     info_output = info_output.after('\n');
+    bool break_seen = false;
     while (info_output.contains("  ", 0))
     {
 	string info = info_output.before('\n');
@@ -563,11 +567,15 @@ void BreakPoint::process_perl(string& info_output)
 	    if (cond == "1")
 		cond = "";
 	    mycondition = cond;
+	    break_seen = true;
 	}
 	else if (info.contains("action: ", 0))
 	{
 	    string commands = info.after(':');
 	    strip_space(commands);
+
+	    if (commands.contains("d " + itostring(line_nr())))
+		mydispo = BPDEL; // Temporary breakpoint
 
 	    string command = "";
 	    while (commands != "")
@@ -592,6 +600,9 @@ void BreakPoint::process_perl(string& info_output)
 	    myinfos += info + '\n';
 	}
     }
+
+    if (!break_seen)
+	mytype = ACTIONPOINT;
 }
 
 static bool equal(const StringArray& s1, const StringArray& s2)
@@ -854,6 +865,26 @@ string BreakPoint::and_op()
     return " && ";
 }
 
+string BreakPoint::title() const
+{
+    switch (type())
+    {
+    case BREAKPOINT:
+	return "Breakpoint";
+
+    case TRACEPOINT:
+	return "Tracepoint";
+
+    case ACTIONPOINT:
+	return "Actionpoint";
+
+    case WATCHPOINT:
+	return "Watchpoint";
+    }
+
+    return "";			// Never reached
+}
+
 // True if COND is `false' or starts with `false and'
 bool BreakPoint::is_false(const string& cond)
 {
@@ -930,6 +961,13 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 	    os << gdb->watch_command(expr(), watch_mode()) << "\n";
 	    break;
 	}
+
+	case TRACEPOINT:
+	case ACTIONPOINT:
+	{
+	    // Not handled - FIXME
+	    break;
+	}
 	}
 
 	if (!as_dummy)
@@ -985,6 +1023,13 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 	case WATCHPOINT:
 	    os << "stop " << expr() << cond_suffix << '\n';
 	    break;
+
+	case TRACEPOINT:
+	case ACTIONPOINT:
+	{
+	    // Not handled - FIXME
+	    break;
+	}
 	}
 
 	if (!as_dummy)
@@ -1035,7 +1080,9 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 	    cond_suffix = " " + cond;
 
 	os << "f " << pos.before(':') << "\n";
-	os << "b " << pos.after(':')  << cond_suffix << "\n";
+
+	if (type() == BREAKPOINT)
+	    os << "b " << pos.after(':')  << cond_suffix << "\n";
 
 	if (commands().size() != 0)
 	{
