@@ -363,6 +363,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 		XtSetArg(args[arg], XmNbottomShadowPixmap, empty); arg++;
 		XtSetArg(args[arg], XmNtopShadowPixmap,    empty); arg++;
 		XtSetArg(args[arg], XmNhighlightThickness, 0);     arg++;
+		XtSetArg(args[arg], XmNshadowThickness,    2);     arg++;
 	    }
 	    else
 	    {

@@ -3056,12 +3056,13 @@ Ddd*tool_buttons*bottomAttachment:		XmATTACH_POSITION
 Ddd*tool_buttons*leftAttachment:		XmATTACH_POSITION
 Ddd*tool_buttons*rightAttachment:		XmATTACH_POSITION
 
-! Make command tool and buttons a little lighter
+! Make command tool and tool bar buttons a little lighter
 Ddd*tool_buttons*shadowThickness:		1
 Ddd*source_buttons*shadowThickness:		1
 Ddd*console_buttons*shadowThickness:		1
 Ddd*data_buttons*shadowThickness:		1
 Ddd*command_toolbar*shadowThickness:		1
+Ddd*toolbar.?.shadowThickness:			1
 
 
 !-----------------------------------------------------------------------------
