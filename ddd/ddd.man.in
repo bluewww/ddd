@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-12\-18" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-12\-29" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -3317,11 +3317,9 @@ the \s-1TTY\s+1 interface.
 .PP
 You may also invoke `\fB@ddd@ \-\-tty\fR' directly, entering
 \s-1@DDD@\s+1 commands from your \s-1TTY\s+1, or use \s-1@DDD@\s+1 as
-the end of a pipe, controlled by a remote program.  Be aware, however,
-that the \s-1TTY\s+1 interface does not support line editing and
-command completion and that \s-1@DDD@\s+1 exits as soon as it detects
-an \s-1EOF\s+1 condition on its standard input.  Also, do not try to
-run \s-1@DDD@\s+1 with \s-1@DDD@\s+1 as inferior debugger.
+the end of a pipe, controlled by a remote program.  \s-1@DDD@\s+1
+command line capabilities are all available on the \s-1TTY\s+1,
+provided by the \s-1GNU\s+1 readline library.
 .PP
 Using \s-1@DDD@\s+1 in \s-1TTY\s+1 mode automatically disables some
 \s-1@DDD@\s+1 windows, because it is assumed that their facilities are 
@@ -6047,6 +6045,9 @@ Alternate \s-1DBX\s+1 initialization file.
 .TP
 .B $HOME/.xdbrc
 \s-1XDB\s+1 initialization file.
+.TP
+.B $HOME/.inputrc
+Readline initialization file.  Used when reading commands from a \s-1TTY\s+1.
 .TP
 .B $HOME/.gnuplot
 Gnuplot initialization file.
