@@ -22,8 +22,10 @@
     If not, write to the Free Software Foundation, Inc.,
     59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-    ICE is the incremental configuration engine.
-    Contact ice@ips.cs.tu-bs.de for details.
+    ICE is the incremental configuration environment.
+    For details, see the ICE World-Wide-Web page, 
+    `http://www.cs.tu-bs.de/softech/ice/',
+    or send a mail to the ICE developers <ice@ips.cs.tu-bs.de>.
 */
 
 void *dlopen(path, mode)

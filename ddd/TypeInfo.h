@@ -24,7 +24,7 @@
 // ICE is the incremental configuration environment.
 // For details, see the ICE World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ice/',
-// or send a mail to the ICE developers at `ice@ips.cs.tu-bs.de'.
+// or send a mail to the ICE developers <ice@ips.cs.tu-bs.de>.
 
 #ifndef _ICE_TypeInfo_h
 #define _ICE_TypeInfo_h
