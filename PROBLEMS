@@ -118,6 +118,17 @@ GCC and LIBG++
 HP-UX
 =====
 
+Reported by:  Graham Hudspith <ghudspit@mltsa.uk.lucent.com>
+
+    On HP-UX 10.20, use `-O2' instead of `-O3' to compile. In
+    `ddd/Makefile', change CXXOPT from being '-DNDEBUG -O3' to be
+    '-DNDEBUG -O2'.  When DDD is compiled with -O3 on HPs under HP-UX
+    10.20, it will crash at start-up; when compiled with -O2,
+    everything is fine.
+
+
+Reported by:  (various)
+
     Various linking problems have been reported.  This is probably due
     to an error in the HP-UX linker.  According to some DDD users, the
     problem can be solved by using patched versions of the GNU
