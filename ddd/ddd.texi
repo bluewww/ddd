@@ -43,7 +43,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 1999-10-06
+@set DATE 1999-10-19
 
 
 @c Macros
@@ -1039,8 +1039,8 @@ approximates a blow-by-blow account.
 The history of @DDD{} is a story of code recycling.  The oldest parts of
 @DDD{} were written in 1990, when @emph{Andreas Zeller} designed @VSL{},
 a box-based visual structure language for visualizing data and program
-structures.  The @acronym{@VSL{}} interpreter and the Box library became
-part of Andreas' Diploma Thesis, a graphical syntax editor based on the
+structures.  The @VSL{} interpreter and the Box library became part of
+Andreas' Diploma Thesis, a graphical syntax editor based on the
 Programming System Generator @acronym{PSG}.
 
 @auindex Lütkehaus, Dorothea
