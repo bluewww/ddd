@@ -1174,7 +1174,10 @@ ICONS = \
 # -----------------------------------------------------------------------------
 
 info_TEXINFOS = ddd.texi
-ddd_TEXINFOS = $(srcdir)/config.texi $(srcdir)/gpl.texinfo
+ddd_TEXINFOS = \
+	$(srcdir)/config.texi \
+	$(srcdir)/gpl.texinfo \
+	$(srcdir)/gfdl.texinfo
 texidir = $(srcdir)/../texinfo
 TEXINFO_TEX = $(texidir)
 
@@ -1184,6 +1187,9 @@ $(srcdir)/config.texi: cfg.texi
 
 $(srcdir)/gpl.texinfo: $(texidir)/gpl.texinfo
 	$(RM) $@; $(LN_S) $(texidir)/gpl.texinfo $@
+
+$(srcdir)/gfdl.texinfo: $(texidir)/gfdl.texinfo
+	$(RM) $@; $(LN_S) $(texidir)/gfdl.texinfo $@
 
 ddd.dvi: $(PS_IMAGES)
 

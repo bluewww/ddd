@@ -11,6 +11,11 @@
 @c the terms of the GNU General Public License as published by the Free
 @c Software Foundation; either version 2 of the License, or (at your
 @c option) any later version.
+@c
+@c This document is free documentation; you can redistribute it and/or 
+@c modify it under the terms of the GNU Free Documentation License 
+@c as published by the Free Software Foundation; either version 1.1 
+@c of the License, or (at your option) any later version.
 @c 
 @c DDD is distributed in the hope that it will be useful, but WITHOUT ANY
 @c WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -43,7 +48,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2000-11-16
+@set DATE 2000-11-22
 
 
 @c Macros
@@ -183,28 +188,12 @@ USA
 @uref{http://www.gnu.org/software/ddd/, the @DDD{} @WWW{} page}.
 @end group
 
-Permission is granted to make and distribute verbatim copies of
-this manual provided the copyright notice and this permission notice
-are preserved on all copies.
-
-@ignore
-Permission is granted to process this file through TeX and print the
-results, provided the printed document carries copying permission
-notice identical to this one except for the removal of this paragraph
-(this paragraph not being relevant to the printed manual).
-
-@end ignore
-Permission is granted to copy and distribute modified versions of this
-manual under the conditions for verbatim copying, provided also that the
-sections entitled ``Copying'' and ``GNU General Public License''
-(@pxref{License}) are included exactly as in the original, and provided
-that the entire resulting derived work is distributed under the terms of
-a permission notice identical to this one.
-     
-Permission is granted to copy and distribute translations of this manual
-into another language, under the above conditions for modified versions,
-except that this permission notice may be stated in a translation
-approved by the Free Software Foundation.
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License".
 
 Send questions, comments, suggestions, etc. to @email{ddd@@gnu.org}. @*
 Send bug reports to @email{bug-ddd@@gnu.org}. @*
@@ -258,21 +247,12 @@ USA
 @DDD{} and this manual are available via @*
 @uref{http://www.gnu.org/software/ddd/, the @DDD{} @WWW{} page}.
 
-Permission is granted to make and distribute verbatim copies of
-this manual provided the copyright notice and this permission notice
-are preserved on all copies.
-     
-Permission is granted to copy and distribute modified versions of this
-manual under the conditions for verbatim copying, provided also that the
-sections entitled ``Copying'' and ``GNU General Public License''
-(@pxref{License}) are included exactly as in the original, and provided
-that the entire resulting derived work is distributed under the terms of
-a permission notice identical to this one.
-     
-Permission is granted to copy and distribute translations of this manual
-into another language, under the above conditions for modified versions,
-except that this permission notice may be stated in a translation
-approved by the Free Software Foundation.
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts and no Back-Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License''; @xref{Documentation License}, for details.
 
 Send questions, comments, suggestions, etc. to
 @email{ddd@@gnu.org}. @*
@@ -322,6 +302,7 @@ lists all the lower level nodes in the document.
 * FAQ::                         Frequently Answered Questions.
 * License::                     The @DDD{} license.
 * Help and Assistance::         Mailing Lists and other resources.
+* Documentation License::       The license of this document.
 
 * Label Index::                 All labels shown on the @DDD{} @acronym{GUI}.
 * Key Index::                   Keys used to control @DDD{}.
@@ -778,28 +759,12 @@ USA
 @uref{http://www.gnu.org/software/ddd/, the @DDD{} @WWW{} page}.
 @end group
 
-Permission is granted to make and distribute verbatim copies of
-this manual provided the copyright notice and this permission notice
-are preserved on all copies.
-
-@ignore
-Permission is granted to process this file through TeX and print the
-results, provided the printed document carries copying permission
-notice identical to this one except for the removal of this paragraph
-(this paragraph not being relevant to the printed manual).
-
-@end ignore
-Permission is granted to copy and distribute modified versions of this
-manual under the conditions for verbatim copying, provided also that the
-sections entitled ``Copying'' and ``GNU General Public License''
-(@pxref{License}) are included exactly as in the original, and provided
-that the entire resulting derived work is distributed under the terms of
-a permission notice identical to this one.
-     
-Permission is granted to copy and distribute translations of this manual
-into another language, under the above conditions for modified versions,
-except that this permission notice may be stated in a translation
-approved by the Free Software Foundation.
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts and no Back-Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License''; @xref{Documentation License}, for details.
 
 Send questions, comments, suggestions, etc. to @email{ddd@@gnu.org}. @*
 Send bug reports to @email{bug-ddd@@gnu.org}. @*
@@ -1113,6 +1078,9 @@ command tool.
 
 @item January, 2000
 @DDD{} 3.2: New manual, Readline support, Ladebug support.
+
+@item December, 2000
+@DDD{} 3.3: Data themes, JDB 1.2 support, VxWorks support.
 @end table
 
 
@@ -12667,6 +12635,9 @@ frequently answered questions not covered in this manual.
 @node Help and Assistance
 @appendix Help and Assistance
 
+@cindex Mailing list
+@cindex Help
+@cindex Assistance
 We have set up a @emph{mailing list} for general @DDD{}
 discussions.  If you need help and assistance for solving a @DDD{}
 problem, you find the right people here.
@@ -12688,6 +12659,12 @@ send a mail to
 See also @uref{http://www.gnu.org/software/ddd/, the @DDD{} @WWW{}
 page} for recent announcements and other news related to @DDD{}.
 
+
+@node Documentation License
+@appendix GNU Free Documentation License
+
+@cindex License, Documentation
+@include gfdl.texinfo
 
 
 @node Label Index
