@@ -234,7 +234,7 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 	{
 	    // File exists - request confirmation
 	    if (yn_dialog)
-		XtDestroyWidget(yn_dialog);
+		DestroyWhenIdle(yn_dialog);
 	    yn_dialog = 
 		verify(XmCreateQuestionDialog(find_shell(w),
 					      "confirm_overwrite_dialog", 

@@ -32,31 +32,43 @@ char DestroyCB_rcsid[] =
 #include "findParent.h"
 #include "DestroyCB.h"
 
-
-// callbacks
-
-// destroy the surrounding shell
-void DestroyShellCB(Widget widget, XtPointer, XtPointer)
-{
-    Widget shell = findShellParent(widget);
-    XtDestroyWidget(shell);
-}
-
-// destroy specific widget
-void DestroyThisCB(Widget, XtPointer client_data, XtPointer)
+static void DestroyCB(XtPointer client_data, XtIntervalId *)
 {
     Widget w = Widget(client_data);
     XtDestroyWidget(w);
 }
 
-// unmanage the surrounding shell
+// Destroy WIDGET as soon as we are idle
+void DestroyWhenIdle(Widget widget)
+{
+    XtAppAddTimeOut(XtWidgetToApplicationContext(widget), 0, DestroyCB, 
+		    XtPointer(widget));
+}
+
+// Callbacks
+
+// Destroy the surrounding shell
+void DestroyShellCB(Widget widget, XtPointer, XtPointer)
+{
+    Widget shell = findShellParent(widget);
+    DestroyWhenIdle(shell);
+}
+
+// Destroy specific widget
+void DestroyThisCB(Widget, XtPointer client_data, XtPointer)
+{
+    Widget w = Widget(client_data);
+    DestroyWhenIdle(w);
+}
+
+// Unmanage the surrounding shell
 void UnmanageShellCB(Widget widget, XtPointer, XtPointer)
 {
     Widget shell = findShellParent(widget);
     XtUnmanageChild(shell);
 }
 
-// unmanage specific widget
+// Unmanage specific widget
 void UnmanageThisCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget w = Widget(client_data);

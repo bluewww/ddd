@@ -38,6 +38,7 @@ const char exit_rcsid[] =
 #include "AppData.h"
 #include "ExitCB.h"
 #include "HelpCB.h"
+#include "DestroyCB.h"
 #include "MString.h"
 #include "commandQ.h"
 #include "ddd.h"
@@ -155,7 +156,7 @@ void ddd_show_signal(int sig)
     {
 	static Widget fatal_dialog = 0;
 	if (fatal_dialog)
-	    XtDestroyWidget(fatal_dialog);
+	    DestroyWhenIdle(fatal_dialog);
 	fatal_dialog = 
 	    verify(XmCreateErrorDialog (find_shell(),
 					"fatal_dialog", 0, 0));
@@ -303,7 +304,7 @@ void _DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
     {
 	// Startup options are still changed; request confirmation
 	if (yn_dialog)
-	    XtDestroyWidget(yn_dialog);
+	    DestroyWhenIdle(yn_dialog);
 	yn_dialog = 
 	    verify(XmCreateQuestionDialog(find_shell(w), 
 					  "save_options_dialog", 0, 0));
@@ -334,7 +335,7 @@ void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     // Debugger is still running; request confirmation
     if (yn_dialog)
-	XtDestroyWidget(yn_dialog);
+	DestroyWhenIdle(yn_dialog);
     yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
 					      "quit_dialog", 0, 0));
     Delay::register_shell(yn_dialog);

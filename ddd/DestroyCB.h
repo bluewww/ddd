@@ -31,19 +31,22 @@
 
 #include <X11/Intrinsic.h>
 
-// destroy the surrounding shell
+// Destroy WIDGET as soon as we are idle
+extern void DestroyWhenIdle(Widget widget);
+
+// Destroy the surrounding shell
 extern void DestroyShellCB(Widget widget, XtPointer client_data,
 			   XtPointer call_data);
 
-// destroy specific widget
+// Destroy specific widget
 extern void DestroyThisCB(Widget widget, XtPointer client_data,
 			  XtPointer call_data);
 
-// unmanage the surrounding shell
+// Unmanage the surrounding shell
 extern void UnmanageShellCB(Widget widget, XtPointer client_data,
 			    XtPointer call_data);
 
-// unmanage specific widget
+// Unmanage specific widget
 extern void UnmanageThisCB(Widget widget, XtPointer client_data,
 			   XtPointer call_data);
 

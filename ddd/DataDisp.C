@@ -68,6 +68,7 @@ char DataDisp_rcsid[] =
 #include <Xm/TextF.h>      // fuer XmTextFieldGetString()
 #include <Xm/Label.h>
 #include <Xm/List.h>
+#include <X11/StringDefs.h>
 
 // includes eigener Sachen
 #include "DispNode.h" // fuer Konstruktoren
@@ -173,6 +174,27 @@ bool DataDisp::ignore_update_display_editor_selection = false;
 
 
 //----------------------------------------------------------------------------
+// Origin
+//-----------------------------------------------------------------------------
+
+void DataDisp::ClearOriginCB(Widget w, XtPointer, XtPointer)
+{
+    if (last_origin == w)
+	last_origin = 0;
+}
+
+void DataDisp::set_last_origin(Widget w)
+{
+    last_origin = w;
+
+    if (last_origin != 0)
+    {
+	XtRemoveCallback(last_origin, XtNdestroyCallback, ClearOriginCB, 0);
+	XtAddCallback(last_origin, XtNdestroyCallback, ClearOriginCB, 0);
+    }
+}
+
+//----------------------------------------------------------------------------
 // Sensitivity
 //-----------------------------------------------------------------------------
 
@@ -202,7 +224,7 @@ static void set_label(Widget w, string label)
 //-----------------------------------------------------------------------------
 void DataDisp::dereferenceCB(Widget w, XtPointer, XtPointer)
 {
-    last_origin = w;
+    set_last_origin(w);
 
     DispNode *disp_node_arg   = selected_node();
     DispValue *disp_value_arg = selected_value();
@@ -219,7 +241,7 @@ void DataDisp::dereferenceCB(Widget w, XtPointer, XtPointer)
 
 void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
 {
-    last_origin = dialog;
+    set_last_origin(dialog);
 
     bool changed = false;
     MapRef ref;
@@ -250,7 +272,7 @@ void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
 
 void DataDisp::showDetailCB (Widget dialog, XtPointer, XtPointer)
 {
-    last_origin = dialog;
+    set_last_origin(dialog);
 
     bool changed = false;
     MapRef ref;
@@ -281,7 +303,7 @@ void DataDisp::showDetailCB (Widget dialog, XtPointer, XtPointer)
 
 void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 {
-    last_origin = dialog;
+    set_last_origin(dialog);
 
     bool changed = false;
     MapRef ref;
@@ -312,7 +334,7 @@ void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 
 void DataDisp::toggleRotateCB(Widget w, XtPointer, XtPointer)
 {
-    last_origin = w;
+    set_last_origin(w);
 
     DispNode *disp_node_arg   = selected_node();
     DispValue *disp_value_arg = selected_value();
@@ -331,7 +353,7 @@ void DataDisp::toggleRotateCB(Widget w, XtPointer, XtPointer)
 
 void DataDisp::toggleDisableCB (Widget dialog, XtPointer, XtPointer)
 {
-    last_origin = dialog;
+    set_last_origin(dialog);
 
     int *disp_nrs = new int[disp_graph->count_all()];
 
@@ -393,7 +415,7 @@ static void select_with_all_ancestors(GraphNode *node)
 // Upon deletion, select the ancestor and all siblings
 void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
 {
-    last_origin = dialog;
+    set_last_origin(dialog);
 
     int count = disp_graph->count_all();
     int *disp_nrs = new int[count];
@@ -457,7 +479,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
 
 void DataDisp::dependentCB(Widget w, XtPointer, XtPointer)
 {
-    last_origin = w;
+    set_last_origin(w);
 
     DispNode *disp_node_arg   = selected_node();
     DispValue *disp_value_arg = selected_value();
@@ -498,13 +520,13 @@ void DataDisp::dependentCB(Widget w, XtPointer, XtPointer)
 
 void DataDisp::refreshCB(Widget w, XtPointer, XtPointer)
 {
-    last_origin = w;
+    set_last_origin(w);
     refresh_displaySQ();
 }
 
 void DataDisp::selectAllCB(Widget w, XtPointer, XtPointer)
 {
-    last_origin = w;
+    set_last_origin(w);
     XtCallActionProc(graph_edit, 
 		     "select-all", (XEvent *)0, (String *)0, 0);
     refresh_graph_edit();
@@ -512,13 +534,13 @@ void DataDisp::selectAllCB(Widget w, XtPointer, XtPointer)
 
 void DataDisp::newCB(Widget w, XtPointer, XtPointer)
 {
-    last_origin = w;
+    set_last_origin(w);
     new_displayCD();
 }
 
 void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
 {
-    last_origin = w;
+    set_last_origin(w);
 
     int *disp_nrs = new int[disp_graph->count_all()];
 
@@ -543,7 +565,7 @@ void DataDisp::enableCB(Widget w, XtPointer, XtPointer)
 
 void DataDisp::disableCB(Widget w, XtPointer, XtPointer)
 {
-    last_origin = w;
+    set_last_origin(w);
 
     int *disp_nrs = new int[disp_graph->count_all()];
 
@@ -575,7 +597,7 @@ void DataDisp::popup_new_argCB (Widget    display_dialog,
 				XtPointer client_data,
 				XtPointer)
 {
-    last_origin = display_dialog;
+    set_last_origin(display_dialog);
 
     BoxPoint* p = (BoxPoint *) client_data;
     new_displaySQ (source_arg->get_string(), p);
@@ -588,7 +610,7 @@ void DataDisp::popup_newCB (Widget    display_dialog,
 			    XtPointer client_data,
 			    XtPointer)
 {
-    last_origin = display_dialog;
+    set_last_origin(display_dialog);
 
     BoxPoint* p = (BoxPoint *) client_data;
     new_displayCD (*p);
@@ -601,7 +623,7 @@ void DataDisp::dependent_displayDCB (Widget    dialog,
 				     XtPointer client_data, 
 				     XtPointer call_data)
 {
-    last_origin = dialog;
+    set_last_origin(dialog);
 
     int* disp_nr_ptr = (int *) client_data;
     XmSelectionBoxCallbackStruct *cbs = 
@@ -629,7 +651,7 @@ void DataDisp::new_displayDCB (Widget    display_dialog,
 			       XtPointer client_data,
 			       XtPointer call_data)
 {
-    last_origin = display_dialog;
+    set_last_origin(display_dialog);
 
     BoxPoint* p = (BoxPoint *) client_data;
     XmSelectionBoxCallbackStruct *cbs = 
@@ -1378,7 +1400,7 @@ void DataDisp::new_displaySQ (string display_expression, BoxPoint* p,
 			      Widget origin)
 {
     if (origin)
-	last_origin = origin;
+	set_last_origin(origin);
 
     if (display_expression == "")
 	return;
@@ -1688,7 +1710,7 @@ void DataDisp::refresh_displayOQC (const string& answer, void *)
 void DataDisp::refresh_displaySQA (Widget origin)
 {
     if (origin)
-	last_origin = origin;
+	set_last_origin(origin);
 
     string cmds[2];
     void*  dummy[2];
@@ -2499,7 +2521,7 @@ DataDisp::DataDisp (XtAppContext app_context,
     else
 	graph_edit = createScrolledGraphEdit(parent, "graph_edit", args, arg);
 
-    last_origin = graph_edit;
+    set_last_origin(graph_edit);
 
     graph_popup_w = 
 	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);

@@ -34,22 +34,28 @@ char findParent_rcsid[] =
 
 #include "findParent.h"
 #include "longName.h"
+#include "bool.h"
 
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
 #undef XtIsRealized
 #endif
 
-// Set this to 1 to allow debugging
-int findParent_debug = 0;
+// Set this to true to allow debugging
+bool findParent_debug = false;
 
-// find a realized Shell
+// Find a realized Shell
 Widget findShellParent(Widget w)
 {
     if (findParent_debug)
 	clog << "findShellParent(" << longName(w) << ") = ";
 
-    while (w != 0 && !(XtIsShell(w) && XtIsRealized(w)))
+    while (w != 0 && (XtIsObject(w)
+		      || !XtIsShell(w)
+		      || XtDisplay(w) == 0
+		      || XtScreen(w) == 0
+		      || XtWindow(w) == 0
+		      || !XtIsRealized(w)))
 	w = XtParent(w);
 
     if (findParent_debug)
@@ -71,7 +77,12 @@ Widget findTopLevelShellParent(Widget w)
     if (findParent_debug)
 	clog << "findTopLevelShellParent(" << longName(w) << ") = ";
 
-    while (w != 0 && !(XtIsTopLevelShell(w) && XtIsRealized(w)))
+    while (w != 0 && (XtIsObject(w)
+		      || !XtIsTopLevelShell(w)
+		      || XtDisplay(w) == 0
+		      || XtScreen(w) == 0
+		      || XtWindow(w) == 0
+		      || !XtIsRealized(w)))
 	w = XtParent(w);
 
     if (findParent_debug)
@@ -97,7 +108,12 @@ Widget findTheTopLevelShell(Widget w)
 
     while (w != 0)
     {
-	if (XtIsTopLevelShell(w) && XtIsRealized(w))
+	if (!XtIsObject(w)
+	    && XtIsTopLevelShell(w) 
+	    && XtDisplay(w) != 0
+	    && XtScreen(w) != 0
+	    && XtWindow(w) != 0
+	    && XtIsRealized(w))
 	    found = w;
 	w = XtParent(w);
     }

@@ -275,6 +275,9 @@ private:
     static Widget edit_displays_dialog_w;
     static Widget display_list_w;
 
+    static void ClearOriginCB(Widget, XtPointer, XtPointer);
+    static void set_last_origin(Widget origin);
+
 public:
     static Widget graph_edit;
     static Widget graph_cmd_w;

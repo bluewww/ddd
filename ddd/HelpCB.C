@@ -32,6 +32,7 @@ char HelpCB_rcsid[] =
 #include "config.h"
 
 #include "HelpCB.h"
+#include "DestroyCB.h"
 #include "findParent.h"
 #include "longName.h"
 #include "Agent.h"
@@ -211,7 +212,7 @@ static void _MStringHelpCB(Widget widget,
 
     if (help_dialog && (shell != help_shell || pixmap != help_pixmap))
     {
-	XtDestroyWidget(help_dialog);
+	DestroyWhenIdle(help_dialog);
 	help_dialog = 0;
     }
 

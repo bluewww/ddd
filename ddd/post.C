@@ -38,6 +38,7 @@ const char post_rcsid[] =
 #include "ddd.h"
 #include "Delay.h"
 #include "HelpCB.h"
+#include "DestroyCB.h"
 #include "commandQ.h"
 #include "exit.h"
 #include "AppData.h"
@@ -70,7 +71,7 @@ void post_gdb_yn(string question, Widget w)
 	return;
 
     if (yn_dialog)
-	XtDestroyWidget(yn_dialog);
+	DestroyWhenIdle(yn_dialog);
     yn_dialog = verify(XmCreateQuestionDialog(find_shell(w),
 					      "yn_dialog", NULL, 0));
     Delay::register_shell(yn_dialog);
@@ -92,7 +93,7 @@ void post_gdb_busy(Widget w)
 
     static Widget busy_dialog = 0;
     if (busy_dialog)
-	XtDestroyWidget(busy_dialog);
+	DestroyWhenIdle(busy_dialog);
 
     busy_dialog = 
 	verify(XmCreateWorkingDialog (find_shell(w), 
@@ -127,7 +128,7 @@ void post_gdb_died(string reason, Widget w)
 
     static Widget died_dialog = 0;
     if (died_dialog)
-	XtDestroyWidget(died_dialog);
+	DestroyWhenIdle(died_dialog);
     died_dialog = 
 	verify(XmCreateErrorDialog (find_shell(w), 
 				    "terminated_dialog", NULL, 0));
@@ -163,7 +164,7 @@ void post_gdb_message(string text, Widget w)
 
     static Widget gdb_message_dialog = 0;
     if (gdb_message_dialog)
-	XtDestroyWidget(gdb_message_dialog);
+	DestroyWhenIdle(gdb_message_dialog);
     gdb_message_dialog = 
 	verify(XmCreateWarningDialog (find_shell(w), 
 				      "gdb_message_dialog", NULL, 0));
@@ -205,7 +206,7 @@ void post_error (string text, String name, Widget w)
 
     static Widget ddd_error = 0;
     if (ddd_error)
-	XtDestroyWidget(ddd_error);
+	DestroyWhenIdle(ddd_error);
     ddd_error = 
 	verify(XmCreateErrorDialog (find_shell(w), name, NULL, 0));
     Delay::register_shell(ddd_error);
@@ -243,7 +244,7 @@ void post_warning (string text, String name, Widget w)
 
     static Widget ddd_warning = 0;
     if (ddd_warning)
-	XtDestroyWidget(ddd_warning);
+	DestroyWhenIdle(ddd_warning);
     ddd_warning = 
 	verify(XmCreateWarningDialog (find_shell(w), name, NULL, 0));
     Delay::register_shell(ddd_warning);

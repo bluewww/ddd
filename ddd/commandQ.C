@@ -49,6 +49,7 @@ const char commandQueue_rcsid[] =
 #include <ctype.h>
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
+#include <X11/StringDefs.h>
 
 // Origin of last command
 static Widget gdb_last_origin;
@@ -56,6 +57,12 @@ static Widget gdb_last_origin;
 //-----------------------------------------------------------------------------
 // GDB command management
 //-----------------------------------------------------------------------------
+
+static void ClearOriginCB(Widget w, XtPointer, XtPointer)
+{
+    if (gdb_last_origin == w)
+	gdb_last_origin = 0;
+}
 
 void _gdb_command(string command, Widget origin)
 {
@@ -69,6 +76,15 @@ void _gdb_command(string command, Widget origin)
 
     gdb_keyboard_command = private_gdb_input;
     gdb_last_origin = (gdb_keyboard_command ? gdb_w : origin);
+
+    if (gdb_last_origin != 0)
+    {
+	XtRemoveCallback(gdb_last_origin, XtNdestroyCallback, 
+			 ClearOriginCB, 0);
+	XtAddCallback(gdb_last_origin, XtNdestroyCallback, 
+		      ClearOriginCB, 0);
+    }
+
     user_cmdSUC(command, origin);
     messagePosition = XmTextGetLastPosition(gdb_w);
 }
@@ -161,10 +177,6 @@ void processCommandQueue(XtPointer, XtIntervalId *)
 // Shell finder
 Widget find_shell(Widget w)
 {
-    // Make sure W is a real widget...
-    while (w != 0 && XtIsObject(w))
-	w = XtParent(w);
-
     if (w == 0)
 	w = gdb_last_origin;
     if (w == 0)
@@ -172,14 +184,6 @@ Widget find_shell(Widget w)
 
     Widget parent = findTopLevelShellParent(w);
     if (parent == 0)
-	return command_shell;
-
-    // Gerco Ballintijn <ballinti@afal01.cern.ch> says that the screen
-    // of PARENT may be null...
-    if (!XtIsRealized(parent)
-	|| XtDisplay(parent) == 0
-	|| XtScreen(parent) == 0
-	|| XtWindow(parent) == 0)
 	return command_shell;
 
     XWindowAttributes xwa;

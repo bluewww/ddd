@@ -74,6 +74,7 @@ const char obscure_rcsid[] =
 #include "config.h"
 #include "Delay.h"
 #include "HelpCB.h"
+#include "DestroyCB.h"
 #include "MString.h"
 #include "commandQ.h"
 #include "ddd.h"
@@ -121,7 +122,7 @@ static void DungeonCollapseCB(XtPointer client_data, XtIntervalId *)
 
     static Widget dungeon_error = 0;
     if (dungeon_error)
-	XtDestroyWidget(dungeon_error);
+	DestroyWhenIdle(dungeon_error);
 
     Widget shell = find_shell(w);
     dungeon_error = 
