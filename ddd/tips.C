@@ -98,15 +98,16 @@ static void SaveTipCountCB(Widget, XtPointer = 0, XtPointer = 0)
     ofstream os(file);
     os << 
 	"! " DDD_NAME " tips file\n"
-	"! This file is overwritten each time " DDD_NAME " is started.\n"
 	"\n"
-       << app_value(XtNstartupTipCount, 
+       << app_value(XtNstartupTips, 
+		    (app_data.startup_tips ? "on" : "off")) << "\n"
+       << app_value(XtNstartupTipCount,
 		    itostring(++app_data.startup_tip_count)) << "\n";
 
     os.close();
     if (os.bad())
     {
-	post_error("Cannot save tip count in " + quote(file),
+	post_error("Cannot save tip resources in " + quote(file),
 		   "options_save_error");
     }
 }
@@ -157,6 +158,14 @@ static void NextTipCB(Widget w, XtPointer, XtPointer)
     refresh_tip_dialog(w);
 }
 
+void SetStartupTipsCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.startup_tips = info->set;
+}
+
 void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
 {
     static Widget tip_dialog = 0;
@@ -170,11 +179,11 @@ void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
 	    verify(XmCreateInformationDialog(find_shell(w), "tip_dialog", 
 					     args, arg));
 
-	XtAddCallback(tip_dialog, XmNokCallback,       PrevTipCB, 0);
-	XtAddCallback(tip_dialog, XmNcancelCallback,   NextTipCB, 0);
-	XtAddCallback(tip_dialog, XmNhelpCallback,     UnmanageThisCB, 
-		      XtPointer(tip_dialog));
-	XtAddCallback(tip_dialog, XmNunmapCallback,    SaveTipCountCB, 0);
+	XtAddCallback(tip_dialog, XmNokCallback,     PrevTipCB, 0);
+	XtAddCallback(tip_dialog, XmNcancelCallback, NextTipCB, 0);
+	XtAddCallback(tip_dialog, XmNunmapCallback,  SaveTipCountCB, 0);
+	XtAddCallback(tip_dialog, XmNhelpCallback,
+		      UnmanageThisCB, XtPointer(tip_dialog));
     }
 
     bool ok = refresh_tip_dialog(tip_dialog);
