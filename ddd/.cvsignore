@@ -20,6 +20,7 @@ ddd-2.1-sparc-sun-sunos4.1.4
 ddd-2.1.1-sparc-sun-sunos4.1.4
 ddd-2.1beta2-sparc-sun-sunos4.1.4
 ddd-2.1beta3-sparc-sun-sunos4.1.4
+ddd.1
 ddd.man
 ddd.man-nopics
 ddd.man.huff.C
@@ -29,6 +30,7 @@ ddd.vsl.h
 eps-code.h
 header.str
 host.h
+huffdecode
 huffencode
 stamp-h
 stamp-h.in
