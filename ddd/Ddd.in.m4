@@ -3238,11 +3238,9 @@ Ddd*settings_popup.title: DDD: Debugger Settings
 ! Ddd*settings.okLabelString: Close
 Ddd*settings.cancelLabelString: Reset
 
-Ddd*settings*help.labelString:			?
-Ddd*settings*XmTextField.columns:		10
-Ddd*settings*sep.bottomOffset:			10
-Ddd*settings*leader.bottomOffset:		4
-Ddd*settings*leader.separatorType:		XmSINGLE_DASHED_LINE
+Ddd*settings*help.labelString:		?
+Ddd*settings*XmTextField.columns:	10
+Ddd*settings*XmTextField.marginHeight:	3
 
 ! Settings for special fields
 Ddd*settings*dir.columns:        36
@@ -3276,6 +3274,70 @@ Click on LBL(?) near an item to get further information.\n\
 In a text field, press the KEY_RETURN key to commit the changes.\n\
 \n\
 Click on LBL(Reset) to restore the saved settings.\n\
+Click on LBL(OK) to close this window.
+
+
+!-----------------------------------------------------------------------------
+! Status displays
+!-----------------------------------------------------------------------------
+
+! Ddd*infos.okLabelString: Close
+Ddd*infos.cancelLabelString: Reset
+Ddd*infos_popup.title: DDD: Status Displays
+
+Ddd*infos*help.labelString:			?
+Ddd*infos*help.tipString:\
+@rm Get help on this status display
+
+! An empty help string means that the help text for this command
+! is to be requested from GDB (via the GDB `help' command).
+Ddd*infos*scroll*helpString:
+
+! The panel itself has a help button, too.
+Ddd*infos*helpString: \
+WIDGET(Status Displays)\n\
+\n\
+A EMPH(status display) shows things about the program being debugged\n\
+in the data window.  Please pick your choice from the list.\n\
+\n\
+Click on LBL(?) near an item to get further information.\n\
+\n\
+Click on LBL(Reset) to delete all status displays.\n\
+Click on LBL(OK) to close this window.
+
+
+
+!-----------------------------------------------------------------------------
+! Signals
+!-----------------------------------------------------------------------------
+
+! Ddd*signals.okLabelString: Close
+Ddd*signals.cancelLabelString: Reset
+Ddd*signals_popup.title: DDD: Signal Handling
+
+Ddd*signals*send.labelString:	   Send
+Ddd*signals*send.rightOffset:	   5
+Ddd*signals*send.tipString: \
+@rm Continue execution with this signal
+
+Ddd*signals*help.labelString:	   ?
+Ddd*signals*help.tipString: \
+@rm Get help on this signal
+
+! The panel itself has a help button, too.
+Ddd*signals*helpString: \
+WIDGET(Signal Handling)\n\
+\n\
+This panel controls how signals are handled by @GDB@.\n\
+\n\
+DESC(Stop, [interrupt program if this signal happens (implies LBL(Print))])\n\
+DESC(Print, [print a message in the @GDB@ console if this signal happens])\n\
+DESC(Pass, [let program see this signal; otherwise program doesn't know])\n\
+DESC(Send, [continue program execution with this signal])\n\
+\n\
+Click on LBL(?) to get further information on the specific signal.\n\
+\n\
+Click on LBL(Reset) to restore the original settings.\n\
 Click on LBL(OK) to close this window.
 
 
@@ -3351,72 +3413,6 @@ member points at.\n\
 Click on LBL(OK) to apply the changes and close this window.\n\
 Use LBL(Edit, Save Options) to save all shortcuts.
 
-
-
-!-----------------------------------------------------------------------------
-! Status displays
-!-----------------------------------------------------------------------------
-
-! Ddd*infos.okLabelString: Close
-Ddd*infos.cancelLabelString: Reset
-Ddd*infos_popup.title: DDD: Status Displays
-
-Ddd*infos*help.labelString:			?
-Ddd*infos*sep.bottomOffset:			10
-Ddd*infos*leader.bottomOffset:			4
-Ddd*infos*leader.separatorType:			XmSINGLE_DASHED_LINE
-
-Ddd*infos*help.tipString:\
-@rm Get help on this status display
-
-! An empty help string means that the help text for this command
-! is to be requested from GDB (via the GDB `help' command).
-Ddd*infos*scroll*helpString:
-
-! The panel itself has a help button, too.
-Ddd*infos*helpString: \
-WIDGET(Status Displays)\n\
-\n\
-A EMPH(status display) shows things about the program being debugged\n\
-in the data window.  Please pick your choice from the list.\n\
-\n\
-Click on LBL(?) near an item to get further information.\n\
-\n\
-Click on LBL(Reset) to delete all status displays.\n\
-Click on LBL(OK) to close this window.
-
-
-
-!-----------------------------------------------------------------------------
-! Signals
-!-----------------------------------------------------------------------------
-
-! Ddd*signals.okLabelString: Close
-Ddd*signals.cancelLabelString: Reset
-Ddd*signals_popup.title: DDD: Signal Handling
-
-Ddd*signals*send.labelString:	   Send
-Ddd*signals*help.labelString:	   ?
-Ddd*signals*sep.bottomOffset:	   10
-Ddd*signals*leader.bottomOffset:   4
-Ddd*signals*leader.separatorType:  XmSINGLE_DASHED_LINE
-Ddd*signals*signal0.labelString:   Continue execution without giving a signal
-
-! The panel itself has a help button, too.
-Ddd*signals*helpString: \
-WIDGET(Signal Handling)\n\
-\n\
-This panel controls how signals are handled by @GDB@.\n\
-\n\
-DESC(Stop, [interrupt program if this signal happens (implies LBL(Print))])\n\
-DESC(Print, [print a message in the @GDB@ console if this signal happens])\n\
-DESC(Pass, [let program see this signal; otherwise program doesn't know])\n\
-DESC(Send, [continue program execution with this signal])\n\
-\n\
-Click on LBL(?) to get further information on the specific signal.\n\
-\n\
-Click on LBL(Reset) to restore the original settings.\n\
-Click on LBL(OK) to close this window.
 
 
 

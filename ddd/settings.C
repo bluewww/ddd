@@ -311,10 +311,18 @@ static void SignalCB(Widget w, XtPointer, XtPointer call_data)
 static void HelpOnSignalCB(Widget w, XtPointer client_data, 
 			   XtPointer call_data)
 {
-    string sig = XtName(Widget(client_data));
-    string cmd = "info -f libc -n 'Variable Index' " + sig + " -o -";
+    Widget label = Widget(client_data);
+    string sig = XtName(label);
+
+    // libc info has one common node for sigusr1 and sigusr2
+    string sigindex = sig;
+    if (sigindex == "SIGUSR1")
+	sigindex = "SIGUSR2";
+
+    string cmd = "info -f libc -n 'Variable Index' " + sigindex + " -o -";
 
     string s;
+    StatusDelay delay("Retrieving signal documentation");
 
     FILE *fp = popen(sh_command(cmd), "r");
     if (fp != 0)
@@ -333,6 +341,11 @@ static void HelpOnSignalCB(Widget w, XtPointer client_data,
 	if (end >= 0)
 	    s = s.before(end);
 
+	s.gsub("ee *Note ", "ee `");
+	s.gsub("*Note ", "See `");
+	s.gsub("::", "' in libc info");
+	s.gsub("`C-", "`Ctrl+");
+
 	strip_space(s);
 	while (s.contains("  "))
 	    s.gsub("  ", " ");
@@ -342,7 +355,12 @@ static void HelpOnSignalCB(Widget w, XtPointer client_data,
     if (s == "")
 	s = "No help available on this signal.";
 
-    MString text = bf(sig + " signal");
+    XmString xmdoc = 0;
+    XtVaGetValues(label, XmNlabelString, &xmdoc, NULL);
+    MString doc(xmdoc, true);
+    XmStringFree(xmdoc);
+
+    MString text = bf(sig + ": ") + doc;
     text += cr() + cr() + rm(s);
 
     MStringHelpCB(w, XtPointer(text.xmstring()), call_data);
@@ -1049,7 +1067,13 @@ static Dimension preferred_width(Widget w)
     XtWidgetGeometry size;
     size.request_mode = CWWidth;
     XtQueryGeometry(w, NULL, &size);
-    return size.width;
+
+    int left_offset  = 0;
+    int right_offset = 0;
+    XtVaGetValues(w, XmNleftOffset, &left_offset, 
+		  XmNrightOffset, &right_offset, NULL);
+
+    return size.width + left_offset + right_offset;
 }
 
 static Dimension preferred_height(Widget w)
@@ -1592,15 +1616,35 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     width += preferred_width(help);
 
     // Add leader
+
+    // Align leader with label font baseline
+    XmFontList font_list   = 0;
+    XmString xmlabel       = 0;
+    Dimension marginHeight = 0;
+    Dimension marginTop    = 0;
+    XtVaGetValues(label,
+		  XmNfontList,     &font_list,
+		  XmNlabelString,  &xmlabel,
+		  XmNmarginHeight, &marginHeight,
+		  XmNmarginTop,    &marginTop,
+		  NULL);
+
+    Dimension baseline = XmStringBaseline(font_list, xmlabel);
+    static const Dimension leaderHeight = 2;
+
+    Dimension top_offset = baseline + marginHeight + marginTop - leaderHeight;
+    XmStringFree(xmlabel);
+
     arg = 0;
+    XtSetArg(args[arg], XmNseparatorType,    XmSINGLE_DASHED_LINE); arg++;
     XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_WIDGET);   arg++;
     XtSetArg(args[arg], XmNleftWidget,       label);             arg++;
     XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET);   arg++;
     XtSetArg(args[arg], XmNrightWidget,      rightmost);         arg++;
-    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
-    XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
-    Widget leader = 
-	verify(XmCreateSeparator(form, "leader", args, arg));
+    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_OPPOSITE_WIDGET); arg++;
+    XtSetArg(args[arg], XmNtopWidget,        label);             arg++;
+    XtSetArg(args[arg], XmNtopOffset,        top_offset);        arg++;
+    Widget leader = verify(XmCreateSeparator(form, "leader", args, arg));
     XtManageChild(leader);
 
     // Add help callback
@@ -1722,6 +1766,8 @@ static void add_separator(Widget form, int& row)
     int arg = 0;
     XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
     XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
+    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_POSITION); arg++;
+    XtSetArg(args[arg], XmNtopPosition,      row);               arg++;
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION); arg++;
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);           arg++;
     Widget sep = verify(XmCreateSeparator(form, "sep", args, arg));
