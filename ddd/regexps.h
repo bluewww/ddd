@@ -148,6 +148,7 @@ extern const regex rxstr_or_cl_end;
 extern const regex rxstruct_keyword_begin;
 extern const regex rxterminated;
 extern const regex rxthread_cmd;
+extern const regex rxdbx_baseclass;
 extern const regex rxundisplay;
 extern const regex rxup_cmd;
 extern const regex rxuppercase;
