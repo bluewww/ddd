@@ -360,18 +360,24 @@ To re-open a recently debugged program or class, select
 `\fBFile\(->Open Recent\fR' and choose a program or class from the
 list.
 .PP
+Note: With \s-1XDB\s+1 and some \s-1DBX\s+1 versions, the debugged
+program must be specified upon invocation and cannot be changed at run
+time.
+.PP
 To open a core dump for the program, select `\fBFile\(->Open Core
 Dump\fR'.  Before `\fBOpen Core Dump\fR', you should first use
 `\fBFile\(->Open Program\fR' to specify the program that generated the
 core dump and to load its symbol table.
 .PP
-To open an arbitrary source file, select `\fBFile\(->Open Source\fR'.
-You can use the source file for debugging purposes only if the given
-source file is actually related to the debugged program.
+To open a source file of the debugged program, select `\fBFile\(->Open
+Source\fR'.
+.IP \(bu 2
+Using \s-1GDB\s+1, this gives you a list of the sources used for
+compiling your program.
+.IP \(bu 2
+Using other inferior debuggers, this gives you a list of accessible
+source files, which may or may not be related to your program.
 .PP
-Note: With \s-1XDB\s+1 and some \s-1DBX\s+1 versions, the debugged
-program must be specified upon invocation and cannot be changed at run
-time.
 .\"
 .\"
 .\" ---------------
