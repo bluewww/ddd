@@ -33,14 +33,15 @@ char VSLBuiltin_rcsid[] =
 #pragma implementation
 #endif
 
+#include "VSLBuiltin.h"
 
 #include "assert.h"
+
 #include <limits.h>
 #include <math.h>
 #include <iostream.h>
 
 #include "bool.h"
-#include "VSLBuiltin.h"
 #include "VSLLib.h"
 
 // Zillions of boxes...
