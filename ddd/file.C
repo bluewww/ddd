@@ -44,6 +44,7 @@ char file_rcsid[] =
 #include "DestroyCB.h"
 #include "ExitCB.h"
 #include "HelpCB.h"
+#include "SmartC.h"
 #include "SourceView.h"
 #include "VarArray.h"
 #include "Command.h"
@@ -390,27 +391,6 @@ static void searchRemoteDirectories(Widget fs,
     searchRemote(fs, cbs, app_data.list_dir_command, true);
 }
 
-static void sortFiles(char *a[], int size)
-{
-    // Shell sort -- simple and fast
-    int h = 1;
-    do {
-	h = h * 3 + 1;
-    } while (h <= size);
-    do {
-	h /= 3;
-	for (int i = h; i < size; i++)
-	{
-	    char *v = a[i];
-	    int j;
-	    for (j = i; j >= h && strcmp(a[j - h], v) > 0; j -= h)
-		a[j] = a[j - h];
-	    if (i != j)
-		a[j] = v;
-	}
-    } while (h != 1);
-}
-
 // Search for local files and directories, using the predicate IS_OKAY
 static void searchLocal(Widget fs,
 			XmFileSelectionBoxCallbackStruct *cbs,
@@ -436,7 +416,7 @@ static void searchLocal(Widget fs,
 	int count;
 	for (count = 0; files[count] != 0; count++)
 	    ;
-	sortFiles(files, count);
+	smart_sort(files, count);
 
 	XmStringTable items = 
 	    XmStringTable(XtMalloc(count * sizeof(XmString)));

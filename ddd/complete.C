@@ -37,6 +37,7 @@ char complete_rcsid[] =
 
 #include "AppData.h"
 #include "Delay.h"
+#include "SmartC.h"
 #include "ddd.h"
 #include "disp-read.h"
 #include "editing.h"
@@ -57,28 +58,6 @@ static Delay *completion_delay = 0;
 //-----------------------------------------------------------------------------
 // Line Completion
 //-----------------------------------------------------------------------------
-
-// Sort A
-static void sort(string a[], int size)
-{
-    // Shell sort -- simple and fast
-    int h = 1;
-    do {
-	h = h * 3 + 1;
-    } while (h <= size);
-    do {
-	h /= 3;
-	for (int i = h; i < size; i++)
-	{
-	    string v = a[i];
-	    int j;
-	    for (j = i; j >= h && a[j - h] > v; j -= h)
-		a[j] = a[j - h];
-	    if (i != j)
-		a[j] = v;
-	}
-    } while (h != 1);
-}
 
 // Remove adjacent duplicates in A
 static void uniq(string a[], int& size)
@@ -306,7 +285,7 @@ static void complete_reply(const string& complete_answer, void *qu_data)
     int lines = complete_answer.freq('\n') + 1;
     completions      = new string[lines];
     completions_size = split(complete_answer, completions, lines, '\n');
-    sort(completions, completions_size);
+    smart_sort(completions, completions_size);
     uniq(completions, completions_size);
 
     if (completions_size == 0 || completions[0] == "")

@@ -44,6 +44,7 @@ char history_rcsid[] =
 #include "HelpCB.h"
 #include "MString.h"
 #include "MakeMenu.h"
+#include "SmartC.h"
 #include "SourceView.h"
 #include "StringA.h"
 #include "VoidArray.h"
@@ -482,42 +483,6 @@ void goto_history(int pos)
 // Combo Box Histories
 //-----------------------------------------------------------------------------
 
-static void sort(StringArray& a)
-{
-    // Shell sort -- simple and fast
-    int h = 1;
-    do {
-	h = h * 3 + 1;
-    } while (h <= a.size());
-    do {
-	h /= 3;
-	for (int i = h; i < a.size(); i++)
-	{
-	    string v = a[i];
-	    int j;
-	    for (j = i; j >= h && a[j - h] > v; j -= h)
-		a[j] = a[j - h];
-	    if (i != j)
-		a[j] = v;
-	}
-    } while (h != 1);
-}
-
-// Remove adjacent duplicates in A
-static void uniq(StringArray& a)
-{
-    StringArray b;
-
-    for (int i = 0; i < a.size(); i++)
-    {
-	if (i == 0 || a[i - 1] != a[i])
-	    b += a[i];
-    }
-    
-    a = b;
-}
-
-
 static void update_combo_box(Widget text, HistoryFilter filter)
 {
     StringArray entries;
@@ -533,7 +498,7 @@ static void update_combo_box(Widget text, HistoryFilter filter)
 	}
     }
 
-    sort(entries);
+    smart_sort(entries);
     uniq(entries);
     ComboBoxSetList(text, entries);
 }

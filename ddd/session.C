@@ -57,6 +57,7 @@ char session_rcsid[] =
 #include "GDBAgent.h"
 #include "HelpCB.h"
 #include "MakeMenu.h"
+#include "SmartC.h"
 #include "SourceView.h"
 #include "charsets.h"
 #include "Command.h"
@@ -365,27 +366,6 @@ bool unlock_session_dir(const string& session)
 // Session selection
 // ---------------------------------------------------------------------------
 
-static void sort(char *a[], int size)
-{
-    // Shell sort -- simple and fast
-    int h = 1;
-    do {
-	h = h * 3 + 1;
-    } while (h <= size);
-    do {
-	h /= 3;
-	for (int i = h; i < size; i++)
-	{
-	    char *v = a[i];
-	    int j;
-	    for (j = i; j >= h && strcmp(a[j - h], v) > 0; j -= h)
-		a[j] = a[j - h];
-	    if (i != j)
-		a[j] = v;
-	}
-    } while (h != 1);
-}
-
 static void get_sessions(StringArray& arr)
 {
     string mask = session_state_file("*");
@@ -405,7 +385,7 @@ static void get_sessions(StringArray& arr)
 	int count;
 	for (count = 0; files[count] != 0; count++)
 	    ;
-	sort(files, count);
+	smart_sort(files, count);
 
 	for (int i = 0; i < count; i++)
 	{
@@ -619,7 +599,6 @@ static void DeleteSessionsCB(Widget dialog, XtPointer client_data, XtPointer)
 static string get_chosen_session(Widget dialog)
 {
     Widget text     = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
-    Widget sessions = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
 
     String v = 0;
     if (XmIsText(text))
@@ -652,7 +631,7 @@ void set_session(const string& v)
 }
 
 // Set the current session
-static void SetSessionCB(Widget dialog, XtPointer, XtPointer call_data)
+static void SetSessionCB(Widget dialog, XtPointer, XtPointer)
 {
     set_session(get_chosen_session(dialog));
     update_sessions(dialog);
@@ -676,10 +655,10 @@ static void SetSessionCB(Widget dialog, XtPointer, XtPointer call_data)
     }
 }
 
-static Widget dump_core_w  = 0;
-static Widget may_kill_w   = 0;
-static Widget may_gcore_w  = 0;
-static Widget may_ptrace_w = 0;
+static Widget dump_core_w     = 0;
+static Widget may_kill_w      = 0;
+static Widget may_gcore_w     = 0;
+static Widget may_ptrace_w    = 0;
 static Widget gcore_methods_w = 0;
 
 static void SetGCoreSensitivityCB(Widget = 0, XtPointer = 0, XtPointer = 0)

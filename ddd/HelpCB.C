@@ -36,6 +36,7 @@ char HelpCB_rcsid[] =
 #include "DestroyCB.h"
 #include "HelpCB.h"
 #include "MakeMenu.h"
+#include "SmartC.h"
 #include "TimeOut.h"
 #include "ddd.h"		// process_pending_events()
 #include "findParent.h"
@@ -620,41 +621,6 @@ struct FindInfo {
 
 static bool lock_update_arg = false;
 
-static void sort(StringArray& a)
-{
-    // Shell sort -- simple and fast
-    int h = 1;
-    do {
-	h = h * 3 + 1;
-    } while (h <= a.size());
-    do {
-	h /= 3;
-	for (int i = h; i < a.size(); i++)
-	{
-	    string v = a[i];
-	    int j;
-	    for (j = i; j >= h && a[j - h] > v; j -= h)
-		a[j] = a[j - h];
-	    if (i != j)
-		a[j] = v;
-	}
-    } while (h != 1);
-}
-
-// Remove adjacent duplicates in A
-static void uniq(StringArray& a)
-{
-    StringArray b;
-
-    for (int i = 0; i < a.size(); i++)
-    {
-	if (i == 0 || a[i - 1] != a[i])
-	    b += a[i];
-    }
-    
-    a = b;
-}
-
 static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
 		   bool forward)
 {
@@ -670,7 +636,7 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
 
     static StringArray find_keys;
     find_keys += key;
-    sort(find_keys);
+    smart_sort(find_keys);
     uniq(find_keys);
     ComboBoxSetList(fi->key, find_keys);
 
