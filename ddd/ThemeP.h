@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Theme Manager
+// Theme Pattern
 
 // Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
@@ -26,61 +26,49 @@
 // `http://www.gnu.org/software/ddd/',
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
-#ifndef _DDD_ThemeManager_h
-#define _DDD_ThemeManager_h
+#ifndef _DDD_ThemePattern_h
+#define _DDD_ThemePattern_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
-#include "StringTPA.h"
 #include <iostream.h>
+#include "StringA.h"
 
-class ThemeManager {
+class ThemePattern {
 private:
-    StringThemePatternAssoc map;
-
-protected:
-    static string read_word(string& value);
+    StringArray patterns;
 
 public:
     // Create as empty
-    ThemeManager()
-	: map()
+    ThemePattern()
+	: patterns()
     {}
 
     // Create from external representation REP
-    ThemeManager(const string& rep);
+    ThemePattern(const string& rep);
 
     // Copy constructor
-    ThemeManager(const ThemeManager& t)
-	: map(t.map)
+    ThemePattern(const ThemePattern& t)
+	: patterns(t.patterns)
     {}
 
     // Assignment
-    ThemeManager& operator = (const ThemeManager& t)
+    ThemePattern& operator = (const ThemePattern& t)
     {
-	map = t.map;
+	patterns = t.patterns;
 	return *this;
     }
 
     // Convert into external representation
-    friend ostream& operator<<(ostream& os, const ThemeManager& t);
+    friend ostream& operator<<(ostream& os, const ThemePattern& t);
 
-    // Get list of themes for an expression
-    StringArray themes(const string& expr);
-
-    // Get all themes
-    StringArray themes();
-
-    // Get pattern of theme
-    ThemePattern pattern(const string& theme)
-    {
-	return map[theme];
-    }
+    // True if EXPR matches
+    bool matches(const string& expr) const;
 };
 
-ostream& operator<<(ostream& os, const ThemeManager& t);
+ostream& operator<<(ostream& os, const ThemePattern& t);
 
-#endif // _DDD_ThemeManager_h
+#endif // _DDD_ThemePattern_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

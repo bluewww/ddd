@@ -940,7 +940,9 @@ DDD_OBJECTS = \
 	RefreshDI.$(OBJEXT)  \
 	SmartC.$(OBJEXT)     \
 	SourceView.$(OBJEXT) \
+	StringTPA.$(OBJEXT)  \
 	ThemeM.$(OBJEXT)     \
+	ThemeP.$(OBJEXT)     \
 	Tool.$(OBJEXT)       \
 	UndoBuffer.$(OBJEXT) \
 	UndoBE.$(OBJEXT)     \

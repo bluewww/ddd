@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Theme Manager
+// Assoc<string, ThemePattern>
 
 // Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
@@ -26,61 +26,12 @@
 // `http://www.gnu.org/software/ddd/',
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
-#ifndef _DDD_ThemeManager_h
-#define _DDD_ThemeManager_h
+char StringThemePatternAssoc_rcsid[] = 
+    "$Id$";
 
 #ifdef __GNUG__
-#pragma interface
+#pragma implementation
+#pragma implementation "Assoc.h"
 #endif
 
 #include "StringTPA.h"
-#include <iostream.h>
-
-class ThemeManager {
-private:
-    StringThemePatternAssoc map;
-
-protected:
-    static string read_word(string& value);
-
-public:
-    // Create as empty
-    ThemeManager()
-	: map()
-    {}
-
-    // Create from external representation REP
-    ThemeManager(const string& rep);
-
-    // Copy constructor
-    ThemeManager(const ThemeManager& t)
-	: map(t.map)
-    {}
-
-    // Assignment
-    ThemeManager& operator = (const ThemeManager& t)
-    {
-	map = t.map;
-	return *this;
-    }
-
-    // Convert into external representation
-    friend ostream& operator<<(ostream& os, const ThemeManager& t);
-
-    // Get list of themes for an expression
-    StringArray themes(const string& expr);
-
-    // Get all themes
-    StringArray themes();
-
-    // Get pattern of theme
-    ThemePattern pattern(const string& theme)
-    {
-	return map[theme];
-    }
-};
-
-ostream& operator<<(ostream& os, const ThemeManager& t);
-
-#endif // _DDD_ThemeManager_h
-// DON'T ADD ANYTHING BEHIND THIS #endif

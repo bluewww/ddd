@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Theme Manager
+// Theme Pattern
 
 // Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
@@ -26,85 +26,54 @@
 // `http://www.gnu.org/software/ddd/',
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
-char ThemeManager_rcsid[] = 
+char ThemePattern_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation
 #endif
 
-#include "ThemeM.h"
+#include "ThemeP.h"
 #include "cook.h"
 #include "glob.h"
 #include "string-fun.h"
 
-ThemeManager::ThemeManager(const string& rep)
-    : map()
+ThemePattern::ThemePattern(const string& rep)
+    : patterns()
 {
-    int count    = rep.freq('\n') + 1;
+    int count    = rep.freq(';') + 1;
     string *subs = new string[count];
 
-    split(rep, subs, count, '\n');
+    split(rep, subs, count, ';');
 
     for (int i = 0; i < count; i++)
     {
-	string& s = subs[i];
-	strip_space(s);
-	string theme;
-
-	if (s.contains('\t'))
-	{
-	    theme = s.before('\t');
-	    s = s.after('\t');
-	}
-	else if (s.contains(' '))
-	{
-	    theme = s.before(' ');
-	    s = s.after(' ');
-	}
-	else
-	{
-	    theme = s;
-	    s = "";
-	}
-	
-	strip_space(theme);
-	strip_space(s);
-	map[theme] = ThemePattern(s);
+	strip_space(subs[i]);
+	patterns += subs[i];
     }
 
     delete[] subs;
 }
 
-ostream& operator<<(ostream& os, const ThemeManager& t)
+ostream& operator<<(ostream& os, const ThemePattern& p)
 {
-    for (StringThemePatternAssocIter i(t.map); i.ok(); i = i.next())
-	os << i.key() << "\t" << i.value() << "\n";
+    for (int i = 0; i < p.patterns.size(); i++)
+    {
+	if (i > 0)
+	    os << ';';
+	os << p.patterns[i];
+    }
 
     return os;
 }
 
-// Get list of themes for an expression
-StringArray ThemeManager::themes(const string& expr)
+bool ThemePattern::matches(const string& expr) const
 {
-    StringArray ret;
+    for (int i = 0; i < patterns.size(); i++)
+    {
+	if (glob_match(patterns[i], expr, 0))
+	    return true;
+    }
 
-    for (StringThemePatternAssocIter i(map); i.ok(); i = i.next())
-	if (i.value().matches(expr))
-	    ret += i.key();
-
-    return ret;
+    return false;
 }
-
-// Get all themes
-StringArray ThemeManager::themes()
-{
-    StringArray ret;
-
-    for (StringThemePatternAssocIter i(map); i.ok(); i = i.next())
-	ret += i.key();
-
-    return ret;
-}
-
-
