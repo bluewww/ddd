@@ -962,6 +962,23 @@ void set_restart_session(const string& session)
 
 
 // ---------------------------------------------------------------------------
+// Core file
+// ---------------------------------------------------------------------------
+
+string session_core_file(const string& session)
+{
+    // Several UNIX systems have cron jobs that remove files named
+    // `core' after a period of time.  So we use `dddcore' instead.
+
+    string core = session_file(session, "core");
+    if (is_core_file(core))
+	return core;
+
+    return session_file(session, ddd_NAME "core");
+}
+
+
+// ---------------------------------------------------------------------------
 // X11R6 Session management
 // ---------------------------------------------------------------------------
 

@@ -57,10 +57,7 @@ inline string session_state_file(const string& session)
     return session_file(session, "init");
 }
 
-inline string session_core_file(const string& session)
-{
-    return session_file(session, "core");
-}
+string session_core_file(const string& session);
 
 inline string session_history_file(const string& session)
 {
