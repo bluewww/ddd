@@ -9,11 +9,10 @@ fi
 
 for file in $files; do
   echo -n "$file: "
-  sed 's/ #e5e5e5/ white/
-  s/ gray90/ white/
+  sed 's/ gray90/ white/
   s/ grey90/ white/
-  s/ #e7e7e7/ white/
-  s/ #f2f2f2/ white/' $file | sxpm -nod -o $file@
+  s/ #e.e.e./ white/
+  s/ #f.f.f./ white/' $file | sxpm -nod -o $file@
   if [ -f $file@ ]; then
     if cmp $file@ $file; then
       echo unchanged.
