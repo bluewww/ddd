@@ -1182,6 +1182,8 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
     string target = get_file(w, client_data, call_data);
+    if (target == "")
+	return;
 
     const StringArray& titles  = plot->plotter->data_titles();
     const StringArray& sources = plot->plotter->data_files();
