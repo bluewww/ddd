@@ -54,9 +54,6 @@ extern void save_history(Widget origin = 0);
 // Last command from history
 extern string last_command_from_history();
 
-// Return current GDB command line
-extern string current_line();
-
 // History actions
 extern void prev_historyAct      (Widget, XEvent*, String*, Cardinal*);
 extern void next_historyAct      (Widget, XEvent*, String*, Cardinal*);

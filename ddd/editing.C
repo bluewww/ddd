@@ -98,6 +98,22 @@ static XmTextPosition start_of_line()
 enum ISearchState { ISEARCH_NONE = 0, ISEARCH_NEXT = 1, ISEARCH_PREV = -1 };
 static ISearchState isearch_state = ISEARCH_NONE;
 static string isearch_string = "";
+static string isearch_line = "";
+static bool have_isearch_line = false;
+static bool isearch_motion_ok = false;
+
+// Return current line
+string current_line()
+{
+    if (have_isearch_line)
+	return isearch_line;
+
+    String str = XmTextGetString(gdb_w);
+    string input(str + promptPosition, 
+		 XmTextGetLastPosition(gdb_w) - promptPosition);
+    XtFree(str);
+    return input;
+}
 
 // Show prompt according to current mode
 static void show_isearch()
@@ -130,7 +146,6 @@ static void show_isearch()
     bool old_private_gdb_output = private_gdb_output;
     private_gdb_output = true;
     XmTextReplace(gdb_w, start, XmTextGetLastPosition(gdb_w), (String)line);
-    private_gdb_output = old_private_gdb_output;
     promptPosition = start + prompt.length();
 
     XmTextPosition pos = promptPosition;
@@ -161,6 +176,8 @@ static void show_isearch()
 
     XmTextSetInsertionPosition(gdb_w, pos);
     XmTextShowPosition(gdb_w, pos);
+    have_isearch_line = false;
+    private_gdb_output = old_private_gdb_output;
 }
 
 // When i-search is done, show history position given in client_data
@@ -173,6 +190,7 @@ static void isearch_done(XtPointer client_data, XtIntervalId *)
 	bool old_private_gdb_output = private_gdb_output;
 	private_gdb_output = true;
 	goto_history(history);
+	have_isearch_line = false;
 	private_gdb_output = old_private_gdb_output;
     }
 
@@ -219,23 +237,32 @@ void isearch_exitAct(Widget, XEvent *, String *, Cardinal *)
 }
 
 // Exit i-search mode and return to normal mode
-void clear_isearch()
+void clear_isearch(bool reset, bool show)
 {
     if (isearch_state != ISEARCH_NONE)
     {
 	isearch_state = ISEARCH_NONE;
-	show_isearch();
+	if (show)
+	    show_isearch();
+
+	if (reset)
+	{
+	    set_history_from_line(current_line());
+	    goto_history();
+	}
     }
+
+    isearch_motion_ok = false;
 }
 
-// Handle incremental searches; return TRUE if processed
+// Handle incremental searches; return true if processed
 static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
 {
     if (isearch_state == ISEARCH_NONE)
 	return false;
 
-    bool processed = false;
     string saved_isearch_string = isearch_string;
+    bool processed = false;
 
     if (change->startPos == change->endPos)
     {
@@ -254,41 +281,51 @@ static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
 	if (isearch_string != "")
 	    isearch_string.after(int(isearch_string.length()) - 2) = "";
 	else
-	    clear_isearch();
+	    clear_isearch(true, false);
 
 	processed = true;
     }
 
     if (processed)
     {
-	// Make this a no-op
-	change->startPos = change->endPos = change->newInsert
-	    = change->currInsert = promptPosition;
-	change->text->length = 0;
-
-	string line = current_line();
-	if (isearch_string == "" || line.contains(isearch_string))
+	int history = -1;
+	if (isearch_string == "" || current_line().contains(isearch_string))
 	{
 	    // Search string found in current line
-	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
-			    isearch_done, XtPointer(-1));
+	    history = -1;
 	}
 	else
 	{
-	    int history = search_history(isearch_string, int(isearch_state));
+	    history = search_history(isearch_string, int(isearch_state));
 	    if (history < 0)
 	    {
 		// Search string not found in history
 		XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
 		isearch_string = saved_isearch_string;
 	    }
-
-	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
-			    isearch_done, XtPointer(history));
 	}
+
+	// Make this a no-op
+	if (!have_isearch_line)
+	{
+	    isearch_line = current_line();
+	    have_isearch_line = true;
+	}
+
+	// Redraw current line with appropriate prompt
+	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
+			isearch_done, XtPointer(history));
+
+	// Don't quit upon the following call to gdbMotionCB()
+	isearch_motion_ok = (change->currInsert != change->newInsert);
     }
 
     return processed;
+}
+
+static void clear_isearch_after_motion(XtPointer, XtIntervalId *)
+{
+    clear_isearch(false);
 }
 
 
@@ -370,30 +407,22 @@ void get_focusAct (Widget w, XEvent*, String*, Cardinal*)
 
 void beginning_of_lineAct(Widget, XEvent*, String*, Cardinal*)
 {
-    clear_isearch();
-
     XmTextSetInsertionPosition(gdb_w, promptPosition);
 }
 
 void end_of_lineAct(Widget, XEvent*, String*, Cardinal*)
 {
-    clear_isearch();
-
     XmTextSetInsertionPosition(gdb_w, XmTextGetLastPosition(gdb_w));
 }
 
 void forward_characterAct(Widget w, XEvent *e, 
 			  String *args, Cardinal *num_args)
 {
-    clear_isearch();
-
     XtCallActionProc(w, "forward-character", e, args, *num_args);
 }
 
 void backward_characterAct(Widget, XEvent*, String*, Cardinal*)
 {
-    clear_isearch();
-
     XmTextPosition pos = XmTextGetInsertionPosition(gdb_w);
     if (pos > promptPosition)
 	XmTextSetInsertionPosition(gdb_w, pos - 1);
@@ -401,8 +430,6 @@ void backward_characterAct(Widget, XEvent*, String*, Cardinal*)
 
 void set_lineAct(Widget, XEvent*, String* params, Cardinal* num_params)
 {
-    clear_isearch();
-
     string input = "";
     if (num_params && *num_params > 0)
 	input = params[0];
@@ -413,8 +440,6 @@ void set_lineAct(Widget, XEvent*, String* params, Cardinal* num_params)
 void delete_or_controlAct(Widget w, XEvent *e, 
 			  String *args, Cardinal *num_args)
 {
-    clear_isearch();
-
     string input = current_line();
     strip_final_newlines(input);
     if (input == "")
@@ -483,22 +508,34 @@ void gdbMotionCB(Widget, XtPointer, XtPointer call_data)
     XmTextVerifyCallbackStruct *change = 
 	(XmTextVerifyCallbackStruct *)call_data;
 
-    // We are before the current prompt: don't change the cursor
-    // position if a key was pressed.
-    if (change->newInsert < promptPosition
-	&& change->event != NULL
+    if (isearch_state != ISEARCH_NONE)
+    {
+	if (!isearch_motion_ok)
+	{
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
+			    clear_isearch_after_motion, XtPointer(0));
+	}
+	isearch_motion_ok = false;
+    }
+
+    if (change->event != NULL
 	&& (change->event->type == KeyPress 
 	    || change->event->type == KeyRelease))
     {
+	if (change->newInsert < promptPosition)
+	{
+	    // We are before the current prompt: don't change the cursor
+	    // position if a key was pressed.
 #if 0
-	// With Motif, this causes a core dump on Solaris.  - AZ
-	change->doit = false;
+	    // With Motif, this causes a core dump on Solaris.  - AZ
+	    change->doit = false;
 #else
-	// Make it a no-op.
-	XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
-	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
-			move_to_pos, XtPointer(promptPosition));
+	    // Make it a no-op.
+	    XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
+			    move_to_pos, XtPointer(promptPosition));
 #endif
+	}
     }
 }
 
@@ -512,7 +549,7 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
 	gdb_input_at_prompt = true;
 
     string input = current_line();
-	
+
     int newlines = input.freq('\n');
     string *lines = new string[newlines + 1];
     split(input, lines, newlines, '\n');
@@ -629,7 +666,6 @@ void gdbISearchNextCB  (Widget w, XtPointer, XtPointer call_data)
 
 void gdbClearCB  (Widget w, XtPointer, XtPointer call_data)
 {
-    clear_isearch();
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
 
     String args[1] = {""};

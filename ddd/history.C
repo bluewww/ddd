@@ -99,15 +99,6 @@ void init_history_file()
 	gdb_history_file = string(home) + "/.ddd_history";
 }
 
-string current_line()
-{
-    String str = XmTextGetString(gdb_w);
-    string input(str + promptPosition, 
-		 XmTextGetLastPosition(gdb_w) - promptPosition);
-    XtFree(str);
-    return input;
-}
-
 void set_line_from_history()
 {
     private_gdb_history = true;

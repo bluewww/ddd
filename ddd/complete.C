@@ -39,7 +39,7 @@ char complete_rcsid[] =
 #include "Delay.h"
 #include "ddd.h"
 #include "disp-read.h"
-#include "history.h"
+#include "editing.h"
 #include "post.h"
 
 #include <ctype.h>

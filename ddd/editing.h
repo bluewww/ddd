@@ -35,6 +35,7 @@
 
 #include <X11/Intrinsic.h>
 #include "bool.h"
+#include "strclass.h"
 
 // Actions
 extern void controlAct           (Widget, XEvent*, String*, Cardinal*);
@@ -67,11 +68,15 @@ extern void gdbCompleteCB        (Widget, XtPointer, XtPointer);
 extern void gdbApplyCB           (Widget, XtPointer, XtPointer);
 extern void gdbClearWindowCB     (Widget, XtPointer, XtPointer);
 
-// True if last input was at gdb prompt
+// Return current GDB command line.
+extern string current_line();
+
+// True if last input was at GDB prompt.
 extern bool gdb_input_at_prompt;
 
-// Clear isearch mode
-extern void clear_isearch();
+// Clear isearch mode.
+// RESET means to reset the history; SHOW means to redisplay.
+extern void clear_isearch(bool reset = false, bool show = true);
 
 #endif // _DDD_editing_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
