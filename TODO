@@ -87,14 +87,6 @@ Volunteers for these and other projects are welcome!
 060. When using a dynamic version of libstdc++, configure fails
      to add its location to the -R flag.
 
-061. Have the on-line manual in compressed form.  May be done using zlib.
-     zlib is a complete (re)-implementation of the guts of gzip as a
-     part of the PNG (portable network graphics) specification. done
-     by jean-loup gailly and mark adler. sources for zlib is available
-     from the home directory of PNG as
-     ftp://swrinde.nde.swri.edu:/pub/png. also see
-     http://quest.jpl.nasa.gov/PNG.
-
 063. Have a (generic) panel for GDB options.  Inquire setting and
      documentation strings via `show'.
 
@@ -117,7 +109,7 @@ Volunteers for these and other projects are welcome!
      looking at, and where you want them to go on your
      canvas. Furthermore, there could be an option on the graph window
      that let you dump such scripts automatically generated from the
-     current layout on the canvas.''  See also 067.
+     current layout on the canvas.''  See also 076.
 
 068. Matthias Kurz <mk@baerlap.north.de>: Have `ptype' (in DBX:
      `whatis') inserted into the source popup menu, such that users

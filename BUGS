@@ -178,7 +178,8 @@ Volunteers for fixing these and other bugs are welcome!
         (the GUD Emacs mode exhibits the same bug ;-)). Thus // in
         file pathes must be changed to / (or Emacs changed so that
         only interactively-called versions of visit-file and friends
-        do that, but I don't think this will be done...).
+        do that, but I don't think this will be done...).  
+	[Fixed in DDD 1.4c  -AZ]
 
 070. Matthias Kurz <mk@baerlap.north.de> complains: When glyphs are
      enabled, I have endless scrolling as soon as I press a `repeat'
@@ -212,7 +213,7 @@ Volunteers for fixing these and other bugs are welcome!
      Andreas Zeller <zeller@acm.org>.
 
 074. If there is no `less', `ddd --manual' will not work.  [Fixed for
-     DDD 1.5 -AZ]
+     DDD 1.4c]
 
 075. On Linux boxes, attempting to drag & drop a breakpoint symbol
      causes a core dump.  [Motif/Linux bug?]
@@ -236,9 +237,9 @@ Volunteers for fixing these and other bugs are welcome!
      do the same thing with the right mouse button: left click (or
      sweep) the name in the source window and then right click and
      select "Display xxx".  "Internal Error (Segmentation Fault)"!
-     [Use the patch
+     [Fixed in DDD 1.4c; use the patch
      `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/patches/message-box'
-     to fix it.]
+     to fix it.  -AZ]
 
 077. oyvind@stavanger.Geco-Prakla.slb.com (Oyvind Yrke) says that DDD
      crashes after receiving too much data from GDB (e.g. `info
