@@ -54,6 +54,7 @@ char logo_rcsid[] =
 #include <X11/Xlib.h>
 #include <X11/StringDefs.h>
 #include <Xm/Xm.h>
+#include <Xm/Label.h>
 
 // ANSI C++ doesn't like the XtIsRealized() macro
 #ifdef XtIsRealized
@@ -493,7 +494,7 @@ void install_icons(Widget shell, const string& color_key)
 		 clearat_bits, clearat_xx_bits, 
 		 clearat_width, clearat_height, color_key);
 
-    install_icon(shell, DEREF_ICON, 
+    install_icon(shell, DISPREF_ICON, 
 		 deref_xpm, deref_xx_xpm,
 		 deref_bits, deref_xx_bits, 
 		 deref_width, deref_height, color_key);
@@ -503,12 +504,12 @@ void install_icons(Widget shell, const string& color_key)
 		 display_bits, display_xx_bits, 
 		 display_width, display_height, color_key);
 
-    install_icon(shell, FIND_PREV_ICON, 
+    install_icon(shell, FIND_BACKWARD_ICON, 
 		 findbwd_xpm, findbwd_xx_xpm,
 		 findbwd_bits, findbwd_xx_bits, 
 		 findbwd_width, findbwd_height, color_key);
 
-    install_icon(shell, FIND_NEXT_ICON, 
+    install_icon(shell, FIND_FORWARD_ICON, 
 		 findfwd_xpm, findfwd_xx_xpm,
 		 findfwd_bits, findfwd_xx_bits, 
 		 findfwd_width, findfwd_height, color_key);
@@ -557,4 +558,67 @@ void install_icons(Widget shell, const string& color_key)
 		 watch_xpm, watch_xx_xpm,
 		 watch_bits, watch_xx_bits, 
 		 watch_width, watch_height, color_key);
+}
+
+
+
+//-----------------------------------------------------------------------
+// Set pixmap
+//-----------------------------------------------------------------------
+
+void set_pixmap(Widget w, string image_name)
+{
+    if (w == 0)
+	return;
+
+    assert(XtIsSubclass(w, xmLabelWidgetClass));
+
+    Pixel foreground = 0;
+    Pixel background = 0;
+    Pixmap p1 = XmUNSPECIFIED_PIXMAP;
+    Pixmap p2 = XmUNSPECIFIED_PIXMAP;
+
+    XtVaGetValues(w,
+		  XmNforeground, &foreground,
+		  XmNbackground, &background,
+		  XmNlabelPixmap, &p1,
+		  XmNlabelInsensitivePixmap, &p2,
+		  NULL);
+    
+    Pixmap new_p1 = XmGetPixmap(XtScreen(w), image_name, 
+				foreground, background);
+    Pixmap new_p2 = XmGetPixmap(XtScreen(w), image_name + "-xx", 
+				foreground, background);
+
+    Arg args[10];
+    Cardinal arg = 0;
+
+    if (new_p1 != XmUNSPECIFIED_PIXMAP && new_p1 != p1)
+    {
+	XtSetArg(args[arg], XmNlabelPixmap, new_p1); arg++;
+    }
+    if (new_p2 != XmUNSPECIFIED_PIXMAP && new_p2 != p2)
+    {
+	XtSetArg(args[arg], XmNlabelInsensitivePixmap, new_p2); arg++;
+    }
+    if (arg > 0)
+	XtSetValues(w, args, arg);
+}
+
+void set_label(Widget w, const MString& new_label)
+{
+    if (w == 0)
+	return;
+
+    assert(XtIsSubclass(w, xmLabelWidgetClass));
+
+    XmString old_label;
+    XtVaGetValues(w, XmNlabelString, &old_label, NULL);
+    if (XmStringCompare(new_label.xmstring(), old_label) == 0)
+    {
+	XtVaSetValues(w,
+		      XmNlabelString, new_label.xmstring(),
+		      NULL);
+    }
+    XmStringFree(old_label);
 }
