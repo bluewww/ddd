@@ -319,6 +319,20 @@ Reported by:  J.H.M. Dassen <jdassen@wi.leidenuniv.nl>
      
     There might be some problems left but 2.1.61/2.0.32 fix most of
     the known ones.  See the BUGS file for other known problems.
+
+
+Pmac
+----
+
+Reported by:  Ryan Ware <ware@shocking.com>
+
+    I just wanted to let you know that (unlike previous versions of
+    DDD) 2.99 compiles almost straight out of the box for linux-pmac.
+    The only thing I had to change was the optimization level to O1.
+    O2 broke the compiler.  It looks and runs great.  Thanks.  I look
+    forward to many hours of using it.
+
+
 
 SGI
 ===

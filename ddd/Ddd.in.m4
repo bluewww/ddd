@@ -3098,9 +3098,6 @@ Using LBL(Browse), you can select fonts using CODE(xfontsel).\n\
 Click on LBL(select) to select the chosen font.\n\
 Wildcard entries (LBL(*)) will be ignored.\n\
 \n\
-Note that font settings in pixels will be ignored.\n\
-Be sure to select an appropriate 1/10 points size.\n\
-\n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
 

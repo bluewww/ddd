@@ -276,4 +276,12 @@ Volunteers for fixing these and other bugs are welcome!
 
 278 The `--fonts' option needs documentation.
 
-279 (Insert new bugs here)
+279 Brian Dowtin <Private_User@gilbarco.com> reports that on 
+    SCO Server 5 and running DDD somehow the breakpoint pixmap
+    'sticks' to the window.  Sometime after setting a breakpoint, The
+    stop sign, stays in one spot. If I scroll up or down, its
+    there. If I delete the actual breakpoint its still there. If I
+    resize/close//reopen source window, its still there. If I load a
+    different source file - you get the picture.
+
+280 (Insert new bugs here)
