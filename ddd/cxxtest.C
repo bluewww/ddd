@@ -110,10 +110,11 @@ public:
 	value(v), self(this), next(this)
     {}
 };
+
 //--------------------------------------------------------------------------
+// Simple binary tree
 void tree_test ()
 {
-    // Simple binary tree
     Tree *tree = 0;
     tree =              new Tree (7, "Ada");      // Byron Lovelace
     tree->left =        new Tree (1, "Grace");    // Murray Hopper
@@ -126,10 +127,11 @@ void tree_test ()
 
     delete tree;
 }
+
 //--------------------------------------------------------------------------
+// Simple circular list.  Examine `list' with alias detection enabled.
 void list_test (int start)
 {
-    // Simple circular list.  Examine `list' with alias detection enabled.
     List *list = 0;
 
     list                         = new List(start++);
@@ -141,6 +143,7 @@ void list_test (int start)
     delete list->next;
     delete list;
 }
+
 //--------------------------------------------------------------------------
 void reference_test (Date& date, Date*& date_ptr)
 {
@@ -174,8 +177,8 @@ void array_test ()
 	reference_test(*date_ptr, date_ptrs[i]);
     }
 }
-//--------------------------------------------------------------------------
 
+//--------------------------------------------------------------------------
 void type_test ()
 {
     Holiday new_years_eve (Sat, 31, 12, 1994, 
@@ -223,14 +226,13 @@ void type_test ()
     guni.bit2 = 1;
     guni.bit3 = 0;
 
-    float f        = 0.0;
-    double d       = 0.0;
+    float pi       = 3.14159265358979323846;
+    double sqrt2   = 1.41421356237309504880;
     signed char sc = 'a';
 
-    (void) f;			// Use it
-    (void) d;			// Use it
-    (void) sc;			// Use it
+    guni.ii = int(pi * sqrt2 * sc);
 }
+
 //--------------------------------------------------------------------------
 void cin_cout_test ()
 {
@@ -240,6 +242,7 @@ void cin_cout_test ()
     cin >> name;
     cout << "Hello, " << name << "!\n";
 }
+
 //--------------------------------------------------------------------------
 int main (int /* argc */, char ** /* argv */)
 {
