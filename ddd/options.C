@@ -692,7 +692,7 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetStartupLogoCB (Widget w, XtPointer client_data, XtPointer)
 {
-    app_data.show_startup_logo = String(client_data);
+    app_data.show_startup_logo = (String)client_data;
 
     update_options();
     post_startup_warning(w);

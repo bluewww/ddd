@@ -593,7 +593,7 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 
 	    if (callbacks[j].callback == gdbCommandCB)
 	    {
-		cmd = String(callbacks[j].closure);
+		cmd = (String)(callbacks[j].closure);
 		cmd = cmd.through(rxidentifier);
 	    }
 
