@@ -5368,6 +5368,9 @@ void SourceView::DeleteInfoCB(Widget, XtPointer client_data,
 	// Finish entering commands.  Since W is being destroyed, pass
 	// SOURCE_TEXT_W as reference.
 	EditBreakpointCommandsCB(source_text_w, client_data, call_data);
+
+	// Update all remaining panels in the next run
+	gdb->addHandler(Recording, RecordingHP, XtPointer(0));
     }
 
     delete info;
@@ -5984,7 +5987,10 @@ void SourceView::RecordingHP(Agent *, void *client_data, void *call_data)
     bool recording = bool(call_data);
 
     // Refresh buttons
-    update_properties_panel(info);
+    if (info == 0)
+	update_properties_panels();
+    else
+	update_properties_panel(info);
 
     if (!recording)
     {
@@ -5994,8 +6000,11 @@ void SourceView::RecordingHP(Agent *, void *client_data, void *call_data)
 	// Update breakpoints
 	gdb->addHandler(ReadyForQuestion, RefreshBreakpointsHP);
 
-	// Upon next panel update, propagate command to other breakpoints
-	info->sync_commands = true;
+	if (info != 0)
+	{
+	    // Upon next panel update, propagate command to other breakpoints
+	    info->sync_commands = true;
+	}
     }
 }
 
