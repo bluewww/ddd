@@ -33,7 +33,7 @@ this=`basename $0`
 path=`dirname $0`
 
 incremental=true
-logname=`logname`
+logname=$LOGNAME
 force_name=false
 
 # Process options
