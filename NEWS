@@ -4,7 +4,7 @@ DDD News						-*- text -*-
 DDD 2.2.1
 ---------
 
-    DDD 2.2.1 fixes some minor bugs introduced in DDD 2.2:
+    DDD 2.2.1 fixes some minor bugs introduced in DDD 2.2.
 
     User-visible changes to DDD 2.2:
     - When saving a session, you can now select the method for getting
@@ -37,7 +37,9 @@ DDD 2.2.1
       with all X window managers.
 
     Changes in configuration and building:
-    - EGCS 1.0 compiles DDD (see http://www.cygnus.com/egcs/)
+    - libiberty has been updated to the state found in EGCS 1.0.
+    - configure scripts have been updated to the state found in EGCS 1.0.
+    - The EGCS 1.0 compiler is supported (see http://www.cygnus.com/egcs/)
 
     There are also some more minor improvements and bug fixes.  See
     the ChangeLog for details.

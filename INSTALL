@@ -27,7 +27,9 @@ Requirements
          release 0.81 or later, without loss of functionality.
          LessTif is available via `http://www.lesstif.org/'.  Note
          that DDD/LessTif usability varies with the LessTif version;
-         until LessTif 1.x is ready, OSF/Motif is preferred.
+         until LessTif 1.x is ready, OSF/Motif is preferred.  See the
+         DDD WWW site `http://www.cs.tu-bs.de/softech/ddd/' for
+         DDD-specific to recent LessTif releases.
 
        * Optionally, in addition to the Motif widget library, the
          Athena Widget library (release 5 or later).  Having the
