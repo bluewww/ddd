@@ -38,6 +38,8 @@ char HelpCB_rcsid[] =
 #include "longName.h"
 #include "Agent.h"
 #include "TimeOut.h"
+#include "MakeMenu.h"
+#include "toolbar.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -767,7 +769,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 {
     // Delay delay;
 
-    Arg args[10];
+    Arg args[15];
     Cardinal arg = 0;
 
     Widget help_man     = 0;
@@ -791,6 +793,10 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 						   XmDIALOG_APPLY_BUTTON));
 
 	arg = 0;
+	XtSetArg(args[arg], XmNmarginWidth,        0); arg++;
+	XtSetArg(args[arg], XmNmarginHeight,       0); arg++;
+	XtSetArg(args[arg], XmNborderWidth,        0); arg++;
+	XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
 	Widget form =
 	    verify(XmCreateForm(text_dialog, "form", args, arg));
 
@@ -802,13 +808,16 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	XtManageChild(dialog_title);
 
 	arg = 0;
+	XtSetArg(args[arg], XmNmarginWidth,      0);                 arg++;
+	XtSetArg(args[arg], XmNmarginHeight,     0);                 arg++;
+	XtSetArg(args[arg], XmNborderWidth,      0);                 arg++;
+	XtSetArg(args[arg], XmNallowResize,      True);              arg++;
  	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_WIDGET);   arg++;
  	XtSetArg(args[arg], XmNtopWidget,        dialog_title);      arg++;
 	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
 	XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
 	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
-	Widget area = 
-	    verify(XmCreatePanedWindow(form, "area", args, arg));
+	Widget area = verify(XmCreatePanedWindow(form, "area", args, arg));
 	XtManageChild(area);
 
 	arg = 0;
@@ -822,35 +831,34 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	help_man = verify(XmCreateScrolledText(area, "text", args, arg));
 	XtManageChild(help_man);
 
-	arg = 0;
-	Widget search = verify(XmCreateRowColumn(area, "search", args, arg));
-	XtManageChild(search);
+	FindInfo *fi = new FindInfo;
+	fi->text = help_man;
+	XtAddCallback(text_dialog, XmNdestroyCallback,
+		      DeleteFindInfoCB, XtPointer(fi));
 
-	Widget arg_label = create_arg_label(search);
-	arg = 0;
-	Widget key = verify(XmCreateTextField(search, "key", args, arg));
-	XtManageChild(key);
+	MMDesc items [] = 
+	{
+	    { "findBackward", MMPush, { FindBackwardCB, XtPointer(fi) } },
+	    { "findForward",  MMPush, { FindForwardCB, XtPointer(fi) } },
+	    MMEnd
+	};
+
+	Widget arg_label;
+	ArgField *arg_field;
+	Widget toolbar = create_toolbar(area, "manual", items, 0, arg_label,
+					arg_field, XmPIXMAP);
+	fi->key = arg_field->widget();
 	XtAddCallback(arg_label, XmNactivateCallback, 
-		      ClearTextFieldCB, key);
-
-	arg = 0;
-	Widget findBackward = 
-	    verify(XmCreatePushButton(search, "findBackward", args, arg));
-	XtManageChild(findBackward);
-
-	arg = 0;
-	Widget findForward = 
-	    verify(XmCreatePushButton(search, "findForward", args, arg));
-	XtManageChild(findForward);
+		      ClearTextFieldCB, fi->key);
 
 	XtWidgetGeometry size;
 	size.request_mode = CWHeight;
-	XtQueryGeometry(search, NULL, &size);
+	XtQueryGeometry(toolbar, NULL, &size);
 	unsigned char unit_type;
-	XtVaGetValues(search, XmNunitType, &unit_type, NULL);
-	int new_height = XmConvertUnits(search, XmVERTICAL, XmPIXELS, 
+	XtVaGetValues(toolbar, XmNunitType, &unit_type, NULL);
+	int new_height = XmConvertUnits(toolbar, XmVERTICAL, XmPIXELS, 
 					size.height, unit_type);
-	XtVaSetValues(search,
+	XtVaSetValues(toolbar,
 		      XmNpaneMaximum, new_height,
 		      XmNpaneMinimum, new_height,
 		      NULL);
@@ -869,18 +877,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	XtAddCallback(help_man, XmNmotionVerifyCallback,
 		      HighlightSectionCB, XtPointer(help_index));
 
-	XtAddCallback(key, XmNactivateCallback, ActivateCB, 
-		      XtPointer(findForward));
-
-	FindInfo *fi = new FindInfo;
-	fi->key  = key;
-	fi->text = help_man;
-	XtAddCallback(text_dialog, XmNdestroyCallback,
-		      DeleteFindInfoCB, XtPointer(fi));
-	XtAddCallback(findForward, XmNactivateCallback, 
-		      FindForwardCB, XtPointer(fi));
-	XtAddCallback(findBackward, XmNactivateCallback, 
-		      FindBackwardCB, XtPointer(fi));
+	XtAddCallback(fi->key, XmNactivateCallback, ActivateCB,
+		      XtPointer(items[1].widget));
 
 	XtVaSetValues(text_dialog, XmNdefaultButton, Widget(0), NULL);
 

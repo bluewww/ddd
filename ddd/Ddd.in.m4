@@ -1525,14 +1525,9 @@ Ddd*XmSash.traversalOn:			off
 ! DDD manual
 !-----------------------------------------------------------------------------
 
-Ddd*manual_help*form.borderWidth:	0
-
 Ddd*manual_help*title.labelString:	DDD Reference
 Ddd*manual_help*title.alignment:	XmALIGNMENT_BEGINNING
 
-Ddd*manual_help*area.borderWidth:	0
-Ddd*manual_help*area.marginWidth:	0
-Ddd*manual_help*area.marginHeight:	0
 Ddd*manual_help*area.allowResize:	on
 
 Ddd*manual_help*index.selectionPolicy:	XmSINGLE_SELECT
@@ -1558,13 +1553,25 @@ Ddd*manual_help*search*alignment:	XmALIGNMENT_CENTER
 
 Ddd*manual_help*arg_label.labelString:	():
 
-Ddd*manual_help*key.columns:		58
+Ddd*manual_help*arg.columns:		64
+
 Ddd*manual_help*findBackward.labelString: LBL_FIND_BACKWARD
+Ddd*manual_help*findBackward.labelType:              XmPIXMAP
+Ddd*manual_help*findBackward.labelPixmap:            find_backward
+Ddd*manual_help*findBackward.labelInsensitivePixmap: find_backward-xx
+Ddd*manual_help*findBackward.armPixmap:              find_backward-arm
+
 Ddd*manual_help*findBackward.tipString:	  \
 @rm Find previous LBL(()) in manual
 Ddd*manual_help*findBackward.documentationString:	\
 @rm Search the previous occurrence of LBL(()) in the manual
+
 Ddd*manual_help*findForward.labelString:  LBL_FIND_FORWARD
+Ddd*manual_help*findForward.labelType:              XmPIXMAP
+Ddd*manual_help*findForward.labelPixmap:            find_forward
+Ddd*manual_help*findForward.labelInsensitivePixmap: find_forward-xx
+Ddd*manual_help*findForward.armPixmap:              find_forward-arm
+
 Ddd*manual_help*findForward.tipString:	  \
 @rm Find next LBL(()) in manual
 Ddd*manual_help*findForward.documentationString:	\
