@@ -630,7 +630,7 @@ public:
 
     static void lookup(const string& s = "", bool silent = false)
     {
-	lookup(s, !silent, !silent, !silent);
+	lookup(s, !silent, !silent, false);
     }
 
     // Read file FILE_NAME; place cursor at INITIAL_LINE.
