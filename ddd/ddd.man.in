@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "23 November 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "09 December 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -58,6 +58,8 @@
 .RB "[\|" \-\-separate\-windows "\|]"
 .RB "[\|" \-\-scrolled\-graph "\|]"
 .RB "[\|" \-\-panned\-graph "\|]"
+.RB "[\|" \-\-tty "\|]"
+.RB "[\|" \-\-fullname "\|]"
 .RB "[\|" \-\-version "\|]"
 .RB "[\|" \-\-configuration "\|]"
 .RB "[\|" \-\-manual "\|]"
@@ -133,7 +135,7 @@ effects of one bug and go on to learn about another.
 \*(lqClassical\*(rq \s-2UNIX\s+2 debuggers such as the \s-2GNU\s+2
 debugger (\s-2GDB\s+2) provide a command-line interface and a
 multitude of commands for these and other debugging purposes.
-\s-2@DDD@\s+2 is a \fIwrapper\fR around an underlying \s-2GDB\s+2 or
+\s-2@DDD@\s+2 is a \fIwrapper\fR around an inferior \s-2GDB\s+2 or
 \s-2DBX\s+2 debugger.  In addition to the \s-2GDB\s+2 or \s-2DBX\s+2
 command-line interface, \s-2@DDD@\s+2 provides a \fIgraphical user
 interface\fR to support common debugging tasks.  The \s-2@DDD@\s+2
@@ -177,14 +179,14 @@ named `\|\c
 \&\|'; \s-2@DDD@\s+2 does check for a core file first).
 .\"
 .PP
-By default, \s-2@DDD@\s+2 uses \s-2GDB\s+2 as underlying debugger.  Use
+By default, \s-2@DDD@\s+2 uses \s-2GDB\s+2 as inferior debugger.  Use
 .sp
 .br
   \fB@ddd@\ \-\-dbx program\fR
 .br
 .sp
 .\"
-to run \s-2DBX\s+2 as underlying debugger for the program.
+to run \s-2DBX\s+2 as inferior debugger for the program.
 .PP
 To learn more about \s-2@DDD@\s+2 options, run
 .sp
@@ -977,7 +979,7 @@ You may also interrupt \s-2@DDD@\s+2 using an interrupt signal
 (\s-2SIGINT\s+2)\(em\&for instance by pressing \fBCtrl+C\fR in the shell
 \s-2@DDD@\s+2 was started from, or by using the \s-2UNIX\s+2
 `\fBkill\fR' command.  This interrupts any \s-2@DDD@\s+2 action; the
-underlying \s-2GDB\s+2 or \s-2DBX\s+2 debugger is interrupted as well.
+inferior \s-2GDB\s+2 or \s-2DBX\s+2 debugger is interrupted as well.
 Use this as a last resort in emergencies only\(em\&if \s-2@DDD@\s+2
 hangs, for example.
 
@@ -991,7 +993,7 @@ It is possible to have \s-2GDB\s+2 or \s-2DBX\s+2 run on a remote
 network connection or when \s-2@DDD@\s+2 is available on the local host
 only.
 .PP
-In order to run the underlying debugger on a remote host, you need
+In order to run the inferior debugger on a remote host, you need
 `\fBremsh\fR' (called `\fBrsh\fR' on \s-2BSD\s+2 systems) access on
 the remote host.
 .PP
@@ -1037,6 +1039,64 @@ To help you find problems due to remote execution, run \s-2@DDD@\s+2 with the
 commands issued by \s-2@DDD@\s+2 on standard error.
 
 
+.\" ---------------
+.SH "INTEGRATING DDD"
+.\" ---------------
+.\"
+You can run \s-2@DDD@\s+2 as an inferior debugger in other debugger
+front-ends, combining their special abilities with those of
+\s-2@DDD@\s+2.
+.PP
+.SS "General Information"
+To have \s-2@DDD@\s+2 run as an inferior debugger in other front-ends,
+set up your debugger front-end such that `\fB@ddd@ \-\-tty\fR'
+is invoked instead of \s-2GDB\s+2 resp. \s-2DBX\s+2.  When
+\s-2@DDD@\s+2 is invoked using the `\fB\-\-tty\fR' option, it enables
+its \fI\s-2TTY\s+2 interface\fR, taking additional debugger commands from
+standard input and forwarding debugger output to standard output, just
+as if the inferior debugger had been invoked directly.  All
+remaining \s-2@DDD@\s+2 functionality stays unchanged.
+.PP
+In case your debugger front-end uses the \s-2GDB\s+2
+`\fB\-fullname\fR' option to have \s-2GDB\s+2 report source code
+positions, the `\fB\-\-tty\fR' option is not required.  \s-2@DDD@\s+2
+recognizes the `\fB\-fullname\fR' option, finds that it has been
+invoked from a debugger front-end and automatically enables
+the \s-2TTY\s+2 interface.
+.PP
+You may also invoke `\fB@ddd@ \-\-tty\fR' directly, entering
+\s-2@DDD@\s+2 commands from your \s-2TTY\s+2, or use \s-2@DDD@\s+2 as
+the end of a pipe, controlled by a remote program.  Be aware, however,
+that the \s-2TTY\s+2 interface does not support line editing and
+command completion and that \s-2@DDD@\s+2 exits as soon as it receives
+a \s-2EOF\s+2 on its standard input.  Also, do not try to run
+\s-2@DDD@\s+2 with \s-2@DDD@\s+2 as inferior debugger.
+.PP
+.SS "Using @DDD@ with FSF Emacs"
+Use `\fBM-x gdb\fR' or `\fBM-x dbx\fR' to start a debugging session.
+At the prompt, enter `\fB@ddd@ \-\-tty\fR', followed by
+`\fB\-\-dbx\fR' or `\fB\-\-gdb\fR', if required, and the name of the
+program to be debugged.  Proceed as usual.
+.PP
+.SS "Using @DDD@ with XEmacs"
+Set the variable \fBgdb-command-name\fR to \fB"ddd"\fR, by inserting
+the following line in your \fB$HOME/.emacs\fR file or evaluating it
+via \fBESC ESC\fR:
+.br
+.sp
+  \fB(setq gdb-command-name "@ddd@")\fR
+.sp
+.br
+Use `\fBM-x gdb\fR' to start a debugging session.  Proceed as usual.
+.PP
+.SS "Using @DDD@ with XXGDB"
+Invoke \fBxxgdb\fR as
+.br
+.sp
+ \fBxxgdb \-db_name ddd -db_prompt '(gdb) '
+.sp
+.br
+.PP
 .\" ---------------
 .SH "CUSTOMIZING @DDD@"
 .\" ---------------
@@ -1133,7 +1193,7 @@ This change takes only effect after you have saved options and
 restarted \s-2@DDD@\s+2.  See also the `\fB\-\-panned\-graph\fR' and
 `\fB\-\-scrolled\-graph\fR' options, below.
 .PP
-By default, \s-2@DDD@\s+2 runs with \s-2GDB\s+2 as underlying
+By default, \s-2@DDD@\s+2 runs with \s-2GDB\s+2 as inferior
 debugger.  To change this default, set the `\fBDebugger Type\fR'
 option to another debugger.  This change takes only effect after you
 have saved options and restarted \s-2@DDD@\s+2.  See also the
@@ -1204,8 +1264,9 @@ You may also leave a message in the DDD guestbook (accessible via the
 .\" ---------------
 .\"
 You can use the following options when starting \s-2@DDD@\s+2.  All
-options may be abbreviated, as long as they are unambiguous.  Options
-not listed here are passed to the underlying debugger.
+options may be abbreviated, as long as they are unambiguous; single
+dashes may also be used.  Options not listed here are passed to the
+inferior debugger.
 
 .TP
 .B \-\-attach\-windows
@@ -1227,10 +1288,10 @@ Check the \s-2@DDD@\s+2 environment (in particular, the X configuration),
 report any possible problem causes and exit.
 .TP
 .B \-\-dbx
-Run the \s-2DBX\s+2 debugger as underlying debugger.
+Run the \s-2DBX\s+2 debugger as inferior debugger.
 .TP
 .B \-\-debugger \fIname\fR
-Invoke the underlying debugger \fIname\fR.  This is useful if you have
+Invoke the inferior debugger \fIname\fR.  This is useful if you have
 several debugger versions around, or if \s-2GDB\s+2 and \s-2DBX\s+2
 cannot be invoked as `\fBgdb\fR' or `\fBdbx\fR', respectively.
 .TP
@@ -1240,15 +1301,21 @@ This is useful for programs that have special terminal requirements
 not provided by the debugger window, as raw keyboard processing or
 terminal control sequences.
 .TP
+.B \-\-fullname
+Enable \s-2TTY\s+2 interface, taking additional debugger commands
+from standard input and forwarding debugger output on standard output.
+Current positions are issued in \s-2GDB\s+2 `\fB\-fullname\fR' format
+suitable for debugger front-ends.
+.TP
 .B \-\-gdb
-Run the \s-2GDB\s+2 debugger as underlying debugger.
+Run the \s-2GDB\s+2 debugger as inferior debugger.
 .TP
 .B \-\-help
 Give a list of frequently used options.  Show options of the
-underlying debugger as well.
+inferior debugger as well.
 .TP
 .B \-\-host \fIhostname\fR
-Run the underlying debugger on the remote host \fIhostname\fR.  See
+Run the inferior debugger on the remote host \fIhostname\fR.  See
 \fBREMOTE MODE\fR, above.
 .TP
 .B \-\-login \fIusername\fR
@@ -1263,7 +1330,7 @@ window; use the command window instead.  Useful for programs that have
 little terminal input/output, or for remote debugging.
 .TP
 .B \-\-nw
-Do not use the X window interface.  Start the underlying debugger on
+Do not use the X window interface.  Start the inferior debugger on
 the local host.
 .TP
 .B \-\-panned\-graph
@@ -1287,7 +1354,7 @@ Do not process X events while the debugger is busy.  This may result
 in slightly better performance on single-processor systems.
 .TP
 .B \-\-trace\-dialog
-Show the interaction between \s-2@DDD@\s+2 and the underlying debugger
+Show the interaction between \s-2@DDD@\s+2 and the inferior debugger
 on standard error.  This is useful for debugging \s-2@DDD@\s+2.
 .TP
 .B \-\-trace\-shell
@@ -1296,6 +1363,11 @@ is useful for debugging \s-2@DDD@\s+2.
 .TP
 .B \-\-trace
 Show both interaction and shell commands.
+.TP
+.B \-\-tty
+Enable \s-2TTY\s+2 interface, taking additional debugger commands
+from standard input and forwarding debugger output on standard output.
+Current positions are issued in a format readable for humans.
 .TP
 .B \-\-version
 Show the \s-2@DDD@\s+2 version and exit.
@@ -1488,7 +1560,7 @@ bugs in the X server or Motif itself.  Running \s-2@DDD@\s+2 as
 .br
 checks for common problems and gives hints on how to repair them.
 .PP
-Another potential cause of problems is the underlying \s-2GDB\s+2 or
+Another potential cause of problems is the inferior \s-2GDB\s+2 or
 \s-2DBX\s+2 debugger; although unlikely, they may have bugs.  To find
 out whether a bug was caused by \s-2GDB\s+2 or \s-2DBX\s+2, run
 \s-2@DDD@\s+2 as
@@ -1497,7 +1569,7 @@ out whether a bug was caused by \s-2GDB\s+2 or \s-2DBX\s+2, run
   \fB@ddd@ \-\-trace\-dialog\fR
 .sp
 .br
-This shows the dialog between \s-2@DDD@\s+2 and the underlying
+This shows the dialog between \s-2@DDD@\s+2 and the inferior
 debugger on standard error while \s-2@DDD@\s+2 is running.  Compare
 the debugger output to the \s-2@DDD@\s+2 output and determine which
 one is wrong.
@@ -1564,7 +1636,7 @@ window\*(lq.
 .br
 .IP \(bu 2
 If possible, include a \fIdialog trace\fR showing the interaction
-between \s-2@DDD@\s+2 and the underlying debugger.  Such a dialog
+between \s-2@DDD@\s+2 and the inferior debugger.  Such a dialog
 trace is created by invoking \s-2@DDD@\s+2 with the `\fB\-\-trace\fR'
 option.  Include all trace output from the \s-2@DDD@\s+2 invocation up
 to the first bug occurrence.
