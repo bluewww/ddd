@@ -2520,7 +2520,7 @@ void update_options()
 	source_view->clear_file_cache();
     }
 
-    source_view->display_glyphs = app_data.display_glyphs;
+    source_view->set_display_glyphs(app_data.display_glyphs);
 }
 
 
@@ -7188,21 +7188,15 @@ void sourceToggleDisplayGlyphsCB (Widget, XtPointer, XtPointer call_data)
     XmToggleButtonCallbackStruct *info = 
 	(XmToggleButtonCallbackStruct *)call_data;
 
-    // Clear current position
-    source_view->show_execution_position();
-
     app_data.display_glyphs = info->set;
+
+    if (info->set)
+	set_status("Displaying breakpoints and positions as glyphs.");
+    else
+	set_status("Displaying breakpoints and positions in the text.");
 
     update_options();
     options_changed = true;
-
-    // Lookup current position
-    source_view->lookup();
-
-    if (info->set)
-	set_status("Displaying breakpoints and execution position as glyphs.");
-    else
-	set_status("Displaying breakpoints and execution position as text.");
 }
 
 //-----------------------------------------------------------------------------
