@@ -486,6 +486,19 @@ string get_break_expression (const string& cmd)
     return arg;
 }
 
+
+// True if ARG has the form `FILE:LINE'
+bool is_file_pos(const string& arg)
+{
+#if RUNTIME_REGEX
+    static regex rxfilepos(".*:[1-9][0-9]*");
+#endif
+
+    string a = arg;
+    strip_space(a);
+    return a.matches(rxfilepos);
+}
+
 // Return true if CMD begins recording commands 
 bool starts_recording(const string& cmd)
 {

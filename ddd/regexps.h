@@ -81,6 +81,7 @@ extern const regex rxenable;
 extern const regex rxeqeq;
 extern const regex rxfile_cmd;
 extern const regex rxfilepath;
+extern const regex rxfilepos;
 extern const regex rxframe_addr;
 extern const regex rxframe_func;
 extern const regex rxframe_cmd;

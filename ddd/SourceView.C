@@ -141,6 +141,7 @@ extern "C" {
 #include "cmdtty.h"
 #include "dbx-lookup.h"
 #include "ddd.h"
+#include "disp-read.h"
 #include "file.h"
 #include "fortranize.h"
 #include "history.h"
@@ -617,11 +618,13 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 		    line = address;
 		    gdb_command("stop at " + address + cond_suffix, w);
 		}
-		else if (address.contains(":") && !address.contains("::"))
+		else if (is_file_pos(address))
 		{
-		    // File:line given
-		    string file = address.before(':');
-		    line = address.after(':');
+		    // FILE:LINE given
+		    int colon_index = address.index(':', -1);
+		    assert(colon_index >= 0);
+		    string file = address.before(colon_index);
+		    line = address.after(colon_index);
 
 		    gdb_command("file " + file, w);
 		    gdb_command("stop at " + line + cond_suffix, w);
@@ -1602,7 +1605,7 @@ BreakPoint *SourceView::breakpoint_at(string arg)
 	{
 	    string pos = arg;
 
-	    if (!pos.contains(":") || pos.contains("::"))
+	    if (!is_file_pos(pos))
 	    {
 		// Function given
 		if (bp->arg() == pos)
@@ -1612,7 +1615,7 @@ BreakPoint *SourceView::breakpoint_at(string arg)
 		    pos = dbx_lookup(arg);
 	    }
 	    
-	    if (pos.contains(":") && !pos.contains("::"))
+	    if (is_file_pos(pos))
 	    {
 		// File:line given
 		string file = pos.before(':');
@@ -3971,7 +3974,7 @@ void SourceView::lookup(string s, bool silent)
 			   "no_such_breakpoint_error", source_text_w);
 	}
     }
-    else if (s.contains(":") && !s.contains("::"))
+    else if (is_file_pos(s))
     {
 	// File:line given
 	if (gdb->type() == GDB)

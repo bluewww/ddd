@@ -1903,7 +1903,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     else
     {
 	string arg = source_arg->get_string();
-	arg_ok = (arg != "") && (arg.contains("::") || !arg.contains(":"));
+	arg_ok = (arg != "") && !is_file_pos(arg);
     }
 
     // New
@@ -4529,8 +4529,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     else
 	name = source_arg->get_string();
 
-    bool can_set = (name != "") && 
-	(name.contains("::") || !name.contains(":"));
+    bool can_set = (name != "") && !is_file_pos(name);
     if (!can_set)
 	return;
 

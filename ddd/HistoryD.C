@@ -36,9 +36,12 @@ char HistoryDialog_rcsid[] =
 #include "HistoryD.h"
 
 #include "GDBAgent.h"
-#include "ddd.h"
 #include "cook.h"
+#include "ddd.h"
+#include "disp-read.h"
 #include "history.h"
+#include "regexps.h"
+#include "string-fun.h"
 
 //-----------------------------------------------------------------------------
 // Argument filters
@@ -54,18 +57,27 @@ static bool try_arg(const string& cmd, string prefix, string& arg)
     if (cmd.contains(prefix, 0))
     {
 	arg = cmd.after(prefix);
+	strip_space(arg);
+
 	if (arg.contains("'", 0))
-	    arg = unquote(arg);
-	if (arg.contains(':') || arg.contains("::"))
 	{
-	    // Ignore FILE:LINE args
+	    // Quoted arg -- add as unquoted
+	    arg = unquote(arg);
+	    return true;
+	}
+	else if (is_file_pos(arg) || arg.matches(rxint))
+	{
+	    // FILE:LINE or LINE arg -- ignore
+	    return false;
 	}
 	else
 	{
+	    // Other arg -- add unchanged
 	    return true;
 	}
     }
 
+    // Bad prefix -- ignore
     return false;
 }
 

@@ -216,3 +216,4 @@ const regex rxframe_func                (rx_matcher, (void *)"B6");
 const regex rxdefine_cmd                (rx_matcher, (void *)"B7");
 const regex rxlist_cmd                  (rx_matcher, (void *)"B8");
 const regex rxlist_range                (rx_matcher, (void *)"B9");
+const regex rxfilepos                   (rx_matcher, (void *)"C0");

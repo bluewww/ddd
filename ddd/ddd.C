@@ -207,6 +207,7 @@ char ddd_rcsid[] =
 #include "converters.h"
 #include "cook.h"
 #include "dbx-lookup.h"
+#include "disp-read.h"
 #include "editing.h"
 #include "environ.h"
 #include "exectty.h"
@@ -4571,7 +4572,7 @@ void update_arg_buttons()
     set_sensitive(find_forward_w, can_find);
     set_sensitive(find_backward_w, can_find);
 
-    bool can_print = (arg != "") && (arg.contains("::") || !arg.contains(":"));
+    bool can_print = (arg != "") && !is_file_pos(arg);
     set_sensitive(arg_cmd_area[ArgItems::Print].widget, can_print);
     set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);
     set_sensitive(print_w,   can_print);

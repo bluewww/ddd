@@ -26,12 +26,7 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-//-----------------------------------------------------------------------------
-// Verschiedene Routinen, die das Erkennen bzw. Lesen
-// (und Erzeugen) von display-Ausgaben erleichtern.
-//-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
 #ifndef _DDD_disp_read_h
 #define _DDD_disp_read_h
 
@@ -142,10 +137,13 @@ string get_display_expression(const string& cmd);
 // Return the string after a `break' command
 string get_break_expression(const string& cmd);
 
-// Return true if this begins recording commands 
+// True if ARG has the form `FILE:LINE'
+bool is_file_pos(const string& arg);
+
+// True if CMD begins recording commands 
 bool starts_recording(const string& cmd);
 
-// Return true if this ends recording commands
+// True if CMD ends recording commands
 bool ends_recording(const string& cmd);
 
 
