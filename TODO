@@ -352,6 +352,6 @@ Volunteers for these and other projects are welcome!
 329*Have a Display Editor shortcut from the data popup menu.
 
 333 Improve Breakpoint updating: create a new breakpoint and compare
-    values, rather than having a large `update' function.
+    old/new values, rather than having a large `update' function.
 
 334 (Insert new project ideas here)
