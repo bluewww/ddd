@@ -698,23 +698,18 @@ dnl
 dnl 
 dnl Give some warnings
 dnl
-risky=false
 if test "$silent" != yes; then
 
 if $risky_cc; then
 echo
-echo "configure: This $CXX version may not generate safe $DDD code.  Use GCC instead."
-risky=true
+echo "configure: This $CXX version may not generate safe $DDD code."
+echo "Use GCC instead or continue at own risk."
 fi
 
 if $risky_lesstif; then
 echo
 echo "configure: This $DDD release requires LessTif 0.87 or later."
-risky=true
-fi
-
-if $risky; then
-echo "configure: Continue at own risk."
+echo "Upgrade to a recent LessTif version or continue at own risk."
 fi
 
 fi
