@@ -120,15 +120,18 @@ dnl
 dnl
 dnl Locate programs
 dnl
-AC_CHECK_PROGS(F77, g77 f77 f2c, "")
-if test "$F77" != ""; then
-AC_PROG_F77
-else
-# Use default values
-F77=g77
+dnl Fortran.  Required to build test program.
+dnl Zdenek Sekera <zs@sgi.com> says: Don't use AC_PROG_F77, 
+dnl because this aborts construction if f77 does not work.
+dnl Lutz Jaenicke <Lutz.Jaenicke@aet.TU-Cottbus.DE> adds that on HP-UX,
+dnl f77 will fail with the "-L" linker switch on HP-UX. To get the
+dnl BSD compatible f77 options on HP-UX you must call "fort77" instead.
+dnl
+AC_CHECK_PROGS(F77, g77 fort77 f77 f2c, "g77")
 FFLAGS=-g
 AC_SUBST(FFLAGS)
-fi
+dnl
+dnl Various programs.
 AC_PROG_LN_S
 AC_PATH_PROGS(SH, sh)
 AC_CHECK_PROGS(TAR, gtar tar)
