@@ -310,7 +310,7 @@ AUTOHEADER = @AUTOHEADER@
 # The aclocal program.  (aclocal)
 ACLOCAL = @ACLOCAL@
 
-# The tar program.  (gtar)
+# The tar program.  (tar)
 TAR = @TAR@
 
 # The groff program.  (groff)
@@ -450,19 +450,6 @@ REL = 1
 
 # Canonical program and distribution base name.
 ddd_canonical = $(ddd)-$(VERSION)-$(target_canonical)
-
-# Index file fix.
-FIX_INDEX = $(SED) -f $(srcdir)/fixindex.sed
-
-# Newhelp command.
-NEWHELP = sed="$(SED)" $(SHELL) $(srcdir)/newhelp
-
-# Makeman command.
-MAKEMAN = srcdir="$(srcdir)" cpp="$(CPP)" $(SHELL) $(srcdir)/makeman \
--D__MAN_VERSION__="\"$(DDD) $(VERSION)\"" -D__MAN_TITLE__="\"$(DDD) Tools\""
-
-# Get-node command.
-GET_NODE = $(SHELL) $(srcdir)/get-node
 
 ## More compilation settings.
 # C++ binding flags. For binary distribution only.
@@ -976,7 +963,9 @@ DEMOS = userinfo$(EXEEXT) stringify$(EXEEXT) huffencode$(EXEEXT) \
 	bug$(EXEEXT) sample$(EXEEXT) tString$(EXEEXT) \
 	mmtest$(EXEEXT) gcore$(EXEEXT) logplayer$(EXEEXT)
 
-## The index files
+
+## Documentation.
+## The index files.
 IDXS = *.cp *.fn *.ky *.pg *.tp *.vr
 
 ## The dvi files.

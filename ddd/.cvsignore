@@ -9,6 +9,7 @@ Ddd.in
 Ddd.m4
 Makedeps
 Makefile
+Makefile.in
 USERINFO
 acconfig.h
 aclocal.m4
@@ -19,6 +20,7 @@ config.h
 config.h.in
 config.log
 config.status
+config.texi
 configinfo.C
 configure
 conftest.s1
@@ -34,6 +36,17 @@ ddd-2.1beta2-sparc-sun-sunos4.1.4
 ddd-2.1beta3-sparc-sun-sunos4.1.4
 ddd-2.2-sparc-sun-sunos4.1.4
 ddd.1
+ddd.info
+ddd.info-1
+ddd.info-10
+ddd.info-2
+ddd.info-3
+ddd.info-4
+ddd.info-5
+ddd.info-6
+ddd.info-7
+ddd.info-8
+ddd.info-9
 ddd.log
 ddd.man
 ddd.man-nopics

@@ -41,7 +41,7 @@ dnl
 dnl Initialization - setup names and paths
 dnl
 AC_INIT(DispBox.h)
-AC_CONFIG_HEADER(config.h)
+AM_CONFIG_HEADER(config.h)
 AC_PREFIX_PROGRAM(ddd)
 AC_ARG_PROGRAM
 dnl
@@ -660,6 +660,10 @@ LDFLAGS="$ice_save_LDFLAGS"
 fi
 dnl
 dnl
+dnl Set CXXFLAGS
+CXXFLAGS="$CXXFLAGS $CXXOPT $CXXDEBUG $CXXWARNINGS $CXXSTUFF $X_PERMISSIVE"
+dnl
+dnl
 dnl Setup library loading flags
 dnl
 dnl FIXME: Don't use this right now.  Some systems/environments rely
@@ -894,8 +898,8 @@ dnl
 dnl
 dnl That's all, folks!
 dnl
-AC_OUTPUT(Makefile vr.h bld.h Ddd ddd.man cfg.texi .gdbinit ../ddd.spec,
-	  date > stamp-h)
+AC_OUTPUT(Makefile OldMakefile vr.h bld.h Ddd ddd.man cfg.texi 
+          .gdbinit ../ddd.spec, date > stamp-h)
 dnl
 dnl 
 dnl Give some warnings
