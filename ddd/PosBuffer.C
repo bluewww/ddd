@@ -746,7 +746,7 @@ void PosBuffer::filter (string& answer)
 		{
 		    string file = line.after('(');
 		    file = file.before(')');
-		    string line_no = "1";
+		    string line_no = "0";
 		    if (file.contains(':'))
 		    {
 			line_no = file.after(':');

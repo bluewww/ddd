@@ -2156,6 +2156,13 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
 	current_source = file_cache[file_name];
 	current_origin = origin_cache[file_name];
 	file_name      = file_name_cache[file_name];
+
+	if (gdb->type() == JDB)
+	{
+	    // In JDB, a single source may contain multiple classes.
+	    // Store current class name FILE_NAME as source name.
+	    source_name_cache[file_name] = requested_file_name;
+	}
     }
     else
     {
@@ -3465,16 +3472,40 @@ void SourceView::show_position (string position, bool silent)
     if (!is_current_file(file_name))
 	read_file(file_name, line, false, silent);
 
-    // Have window scroll to correct position
-    if (is_current_file(file_name) && line > 0 && line <= line_count)
-    {
-	add_to_history(file_name, line);
-    
-	XmTextPosition pos = pos_of_line(line);
-	int indent = indent_amount(source_text_w, pos);
-	SetInsertionPosition(source_text_w, pos + indent, true);
 
-	last_pos = pos;
+    // Have window scroll to correct position
+    if (is_current_file(file_name))
+    {
+	if (line == 0 && gdb->type() == JDB)
+	{
+	    // Scroll to current class
+	    int pos = java_class_start(current_source, current_source_name());
+
+	    if (pos >= 0)
+	    {
+		int line_nr = 0;
+		bool in_text;
+		int bp_nr;
+		string address;
+
+		if (get_line_of_pos(source_text_w, pos, line_nr, address, 
+				    in_text, bp_nr))
+		{
+		    line = line_nr;
+		}
+	    }
+	}
+	   
+	if (line > 0 && line <= line_count)
+	{
+	    add_to_history(file_name, line);
+    
+	    XmTextPosition pos = pos_of_line(line);
+	    int indent = indent_amount(source_text_w, pos);
+	    SetInsertionPosition(source_text_w, pos + indent, true);
+		
+	    last_pos = pos;
+	}
     }
 }
 
@@ -3947,7 +3978,21 @@ void SourceView::add_to_history(const string& file_name, int line)
 	return;
     }
 
-    string entry = file_name + ":" + itostring(line);
+    string source_name = file_name;
+    switch (gdb->type())
+    {
+    case GDB:
+    case JDB:
+	// Use source names instead.
+	if (source_name_cache.has(file_name))
+	    source_name = source_name_cache[file_name];
+	break;
+
+    default:
+	break;
+    }
+
+    string entry = source_name + ":" + itostring(line);
 
     string last_entry;
     if (history.size() > 0)
