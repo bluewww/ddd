@@ -522,10 +522,7 @@ void set_status_from_gdb(const string& text)
     if (private_gdb_input)
 	return;
 
-    // FIXME: handle JDB
-    if (!show_next_line_in_status 
-	&& (gdb->type() == XDB || !text.contains(") ", -1))
-	&& (gdb->type() != XDB || !text.contains(">", -1)))
+    if (!show_next_line_in_status && !text.contains(gdb->prompt(), -1))
 	return;
 
     // Fetch line before prompt in GDB window
