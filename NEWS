@@ -30,9 +30,12 @@ DDD 3.0 [in beta test]
     - User-defined commands.  Using GDB, you can record and edit new
       commands and assign them to buttons; see `Commands->Define
       Command'.  All commands are saved across DDD sessions.
-    - New, KDE-style key bindings.  See below for details.
-    - ESC is now the default interrupt character.  Ctrl+C still works,
-      but is reserved for Copy in KDE.
+    - New key bindings.
+      * All key bindings are conformant with the KDE style guide:
+        Ctrl+O opens a file, Ctrl+S saves the session, etc.
+      * ESC is the canonical `Interrupt' key.  Ctrl+C still
+        interrupts, too, but can be assigned to Copy for full KDE
+        style compliance.
     - Conditional breakpoints, temporary breakpoints, and breakpoints
       with ignore counts now have their special symbols on their own.
     - On popular demand, the command tool has `until' and `make' buttons.

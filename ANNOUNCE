@@ -37,7 +37,12 @@ What's new in DDD?
       All data display features are available in Java.
     - Watchpoints.  You can have the debugged program stop
       automatically whenever a particular variable is read or written.
-    - KDE-style key bindings.  See below for details.
+    - New key bindings.
+      * All key bindings are conformant with the KDE style guide:
+        Ctrl+O opens a file, Ctrl+S saves the session, etc.
+      * ESC is the canonical `Interrupt' key.  Ctrl+C still
+        interrupts, too, but can be assigned to Copy for full KDE
+        style compliance.
     - Deferred displays.  DDD now can maintain displays whose creation
       is deferred until a particular scope is entered.  Benefits:
       * Displays are now persistent across recompilations.
