@@ -530,7 +530,10 @@ void verify_button(Widget button)
     if (!XtIsSubclass(button, xmPushButtonWidgetClass))
 	return;
 
+#if 0
     XtSetSensitive(button, False);
+#endif
+
     buttons_to_be_verified += button;
 
     // Procedure id
