@@ -125,8 +125,8 @@ dnl Constants
 dnl ---------
 dnl
 dnl LBL_FIND_,,, are the labels used for the Find buttons
-define([LBL_FIND_FORWARD], [@charset Find@small<< @charset()@rm ])dnl
-define([LBL_FIND_BACKWARD], [@charset Find@small>> @charset()@rm ])dnl
+define([LBL_FIND_BACKWARD], [@charset Find@small<< @charset()@rm ])dnl
+define([LBL_FIND_FORWARD],  [@charset Find@small>> @charset()@rm ])dnl
 dnl
 dnl POSTSCRIPT includes a (TM) symbol
 define([POSTSCRIPT], [PostScript@symbol \344 @rm ])dnl
