@@ -491,6 +491,12 @@ BreakPoint::BreakPoint(string& info_output, string arg, int number)
 	}
 	break;
     }
+
+    case PERL:
+    {
+	// FIXME
+	break;
+    }
     }
 }
 
@@ -703,6 +709,7 @@ string BreakPoint::false_value()
     {
     case LANGUAGE_C:
     case LANGUAGE_PYTHON:
+    case LANGUAGE_PERL:
     case LANGUAGE_OTHER:
 	return "0";
 
@@ -727,6 +734,7 @@ string BreakPoint::and_op()
     switch (gdb->program_language())
     {
     case LANGUAGE_C:
+    case LANGUAGE_PERL:
     case LANGUAGE_JAVA:
     case LANGUAGE_OTHER:
 	return " && ";
@@ -917,6 +925,12 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 	    if (ignore > 0 && gdb->has_ignore_command())
 		os << gdb->ignore_command(num, ignore) << "\n";
 	}
+	break;
+    }
+
+    case PERL:
+    {
+	// FIXME
 	break;
     }
     }

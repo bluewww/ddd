@@ -191,7 +191,6 @@ XtResource ddd_resources[] = {
 	XtPointer("")
     },
 
-
     { 
 	XtNpydbInitCommands, 
 	XtCInitCommands, 
@@ -211,6 +210,27 @@ XtResource ddd_resources[] = {
 	XtRString,
 	XtPointer("")
     },
+
+    { 
+	XtNperlInitCommands, 
+	XtCInitCommands, 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, perl_init_commands), 
+	XtRString,
+	XtPointer("")
+    },
+
+    { 
+	XtNperlSettings, 
+	XtCSettings, 
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, perl_settings),
+	XtRString,
+	XtPointer("")
+    },
+
     {
 	XtNrestartCommands,
 	XtCInitCommands,

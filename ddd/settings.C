@@ -752,6 +752,7 @@ static EntryType entry_type(DebuggerType type,
     case XDB:
     case JDB:
     case PYDB:
+    case PERL:
 	break;			// FIXME
     }
 
@@ -1211,6 +1212,7 @@ string show_command(const string& cmd, DebuggerType type)
 
     case JDB:
     case XDB:
+    case PERL:
 	break;
     }
 
@@ -1401,6 +1403,9 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     }
 
     case XDB:
+	return;			// FIXME
+
+    case PERL:
 	return;			// FIXME
     }
 
@@ -1617,6 +1622,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	case XDB:
 	case JDB:
 	case PYDB:
+	case PERL:
 	    return;		// FIXME
 	}
 
@@ -1858,6 +1864,12 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
     {
 	// In JDB, all we have is the `use' command.
 	add_button(form, row, max_width, type, entry_filter, "use");
+	break;
+    }
+
+    case PERL:
+    {
+	commands = cached_gdb_question("O");
 	break;
     }
     }
@@ -2414,6 +2426,7 @@ static void get_setting(ostream& os, DebuggerType type,
     case XDB:
     case JDB:
     case PYDB:
+    case PERL:
 	// Add setting
 	os << base << ' ' << value << '\n';
 	break;

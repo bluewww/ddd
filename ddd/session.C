@@ -900,6 +900,10 @@ static void open_session(const string& session)
     case PYDB:
 	settings = get_resource(db, XtNpydbSettings, XtCSettings);
 	break;
+
+    case PERL:
+	settings = get_resource(db, XtNperlSettings, XtCSettings);
+	break;
     }
     init_session(restart, settings, app_data.source_init_commands);
 

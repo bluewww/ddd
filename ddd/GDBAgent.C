@@ -188,6 +188,8 @@ DebuggerType debugger_type(const string& type)
 	return JDB;
     if (type.contains("pydb"))
 	return PYDB;
+    if (type.contains("perl"))
+	return PERL;
 
     cerr << "Unknown debugger type " << quote(type) << "\n";
     exit(EXIT_FAILURE);
@@ -217,12 +219,12 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_output_command(false),
       _has_where_h_option(false),
       _has_display_command(tp == GDB || tp == DBX || tp == PYDB),
-      _has_clear_command(tp == GDB || tp == DBX || tp == JDB),
+      _has_clear_command(tp == GDB || tp == DBX || tp == JDB || tp == PERL),
       _has_handler_command(false),
-      _has_pwd_command(tp == GDB || tp == DBX || tp == PYDB),
+      _has_pwd_command(tp == GDB || tp == DBX || tp == PYDB || tp == PERL),
       _has_setenv_command(tp == DBX),
       _has_edit_command(tp == DBX),
-      _has_make_command(tp == GDB || tp == DBX),
+      _has_make_command(tp == GDB || tp == DBX || tp == PERL),
       _has_jump_command(tp == GDB || tp == DBX || tp == XDB),
       _has_regs_command(tp == GDB),
       _has_watch_command(0),	// see below
@@ -238,6 +240,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _rerun_clears_args(false),
       _program_language((tp == JDB) ? LANGUAGE_JAVA :
 			(tp == PYDB) ? LANGUAGE_PYTHON : 
+			(tp == PERL) ? LANGUAGE_PERL : 
 			LANGUAGE_C),
       _verbatim(false),
       _recording(false),
@@ -354,6 +357,8 @@ string GDBAgent::title() const
 	return "JDB";
     case PYDB:
 	return "PYDB";
+    case PERL:
+	return "Perl";
     }
 
     return "debugger";
@@ -675,6 +680,29 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	return false;
     }
 
+    case PERL:
+    {
+	// Any line ending in `DB<N> ' is a prompt.
+#if RUNTIME_REGEX
+	static regex rxperlprompt("[ \t]*DB<+[0-9]+>+[ \t]*");
+#endif
+
+	int i = answer.length() - 1;
+	if (i < 1 || answer[i] != ' ' || answer[i - 1] != '>')
+	    return false;
+
+	while (i > 0 && answer[i - 1] != '\n')
+	    i--;
+
+	string possible_prompt = answer.from(i);
+	if (possible_prompt.matches(rxperlprompt))
+	{
+	    last_prompt = possible_prompt;
+	    return true;
+	}
+	return false;
+    }
+
     case JDB:
     {
 	// JDB prompts using "> " or "THREAD[DEPTH] ".  All these
@@ -783,7 +811,8 @@ bool GDBAgent::ends_with_secondary_prompt (const string& ans)
     case XDB:
     case JDB:
     case PYDB:
-	// Is there any secondary prompt in [XJP]DB? (FIXME)
+    case PERL:
+	// Is there any secondary prompt in these debuggers? (FIXME)
 	return false;
     }
 
@@ -884,6 +913,10 @@ void GDBAgent::cut_off_prompt(string& answer) const
 
     case XDB:
 	answer = answer.before('>', -1);
+	break;
+
+    case PERL:
+	answer = answer.before("DB<", -1);
 	break;
 
     case JDB:
@@ -1484,6 +1517,7 @@ string GDBAgent::print_command(string expr, bool internal) const
 
     case XDB:
     case PYDB:
+    case PERL:
 	cmd = "p";
 	break;
 
@@ -1505,14 +1539,17 @@ string GDBAgent::print_command(string expr, bool internal) const
 		cmd += " " + quote(expr + " =") + ",";
 		break;
 
+	    case PERL:
+		cmd += " " + quote(expr + " = ", '\'') + ",";
+		break;
+
 	    case GDB:
 	    case XDB:
 		cmd = echo_command(expr + " = ") + "; " + cmd;
 		break;
 
-	    case JDB:
+	    case JDB:		// JDB has named values
 	    case PYDB:		// May need changing
-		// JDB has named values
 		break;
 	    }
 	}
@@ -1556,6 +1593,10 @@ string GDBAgent::where_command(int count) const
 	else
 	    cmd = "where";
 	break;
+
+    case PERL:
+	cmd = "T";
+	break;
 	
     case XDB:
 	cmd = "t";
@@ -1584,6 +1625,9 @@ string GDBAgent::info_locals_command() const
 
     case JDB:
 	return "locals";
+
+    case PERL:
+	return "V";
     }
 
     return "";			// Never reached
@@ -1629,6 +1673,9 @@ string GDBAgent::pwd_command() const
     case XDB:
 	return "!pwd";
 
+    case PERL:
+	return print_command("$ENV{'PWD'} || `pwd`");
+
     case JDB:
 	return "";
 
@@ -1654,6 +1701,12 @@ string GDBAgent::make_command(string args) const
     case XDB:
 	cmd = "!make";
 	break;
+
+    case PERL:
+	if (args == "")
+	    return "system 'make'";
+	else
+	    return "system 'make " + args + "'";
 
     case JDB:
     case PYDB:
@@ -1689,6 +1742,7 @@ string GDBAgent::jump_command(string pos) const
 
     case JDB:
     case PYDB:
+    case PERL:
 	return "";		// Not available
     }
 
@@ -1718,6 +1772,7 @@ string GDBAgent::regs_command(bool all) const
     case XDB:
     case JDB:
     case PYDB:
+    case PERL:
 	return "";		// Not available
     }
 
@@ -1764,6 +1819,7 @@ string GDBAgent::watch_command(string expr, WatchMode w) const
 
     case JDB:
     case PYDB:
+    case PERL:
 	return "";		// Not available
     }
 
@@ -1786,6 +1842,7 @@ string GDBAgent::kill_command() const
 	return "kill";
 
     case JDB:
+    case PERL:
 	return "";		// Not available
     }
 
@@ -1810,6 +1867,7 @@ string GDBAgent::frame_command() const
 	return where_command(0);
 
     case JDB:
+    case PERL:
 	return "";		// Not available
     }
 
@@ -1832,6 +1890,7 @@ string GDBAgent::frame_command(int num) const
 
     case JDB:
     case PYDB:
+    case PERL:
 	return "";		// Not available
     }
 
@@ -1861,6 +1920,7 @@ string GDBAgent::func_command() const
     case XDB:
     case JDB:
     case PYDB:
+    case PERL:
 	return frame_command();
 
     case DBX:
@@ -1883,6 +1943,9 @@ string GDBAgent::echo_command(string text) const
 
     case XDB:
 	return quote(text);
+
+    case PERL:
+	return print_command(quote(text, '\''));
 
     case JDB:
     case PYDB:
@@ -1912,6 +1975,9 @@ string GDBAgent::whatis_command(string text) const
 
     case JDB:
 	return "dump " + text;	// As close as we can get
+
+    case PERL:
+	return "";		// Who knows?
     }
 
     return "";			// Never reached
@@ -1939,6 +2005,7 @@ string GDBAgent::enable_command(string bp) const
 	return "ab" + bp;
 
     case JDB:
+    case PERL:
 	return "";		// Not available
     }
 
@@ -1967,6 +2034,7 @@ string GDBAgent::disable_command(string bp) const
 	return "sb" + bp;
 
     case JDB:
+    case PERL:
 	return "";		// Not available
     }
 
@@ -1990,6 +2058,7 @@ string GDBAgent::delete_command(string bp) const
 	return "db" + bp;
 
     case JDB:
+    case PERL:
 	return "";		// Not available
     }
 
@@ -2015,6 +2084,7 @@ string GDBAgent::ignore_command(string bp, int count) const
 	return "bc " + bp + " " + itostring(count);
 
     case JDB:
+    case PERL:
 	return "";		// Not available
     }
 
@@ -2033,6 +2103,7 @@ string GDBAgent::condition_command(string bp, string expr) const
     case DBX:
     case XDB:
     case JDB:
+    case PERL:
 	return "";		// FIXME
     }
 
@@ -2052,6 +2123,9 @@ string GDBAgent::shell_command(string cmd) const
 
     case XDB:
 	return "!" + cmd;
+
+    case PERL:
+	return "system " + quote(cmd, '\'');
 
     case JDB:
     case PYDB:
@@ -2080,6 +2154,9 @@ string GDBAgent::debug_command(string program) const
 
     case JDB:
 	return "load " + program;
+
+    case PERL:
+	return "";		// Not available (yet)
     }
     return "";			// Never reached
 }
@@ -2105,6 +2182,7 @@ string GDBAgent::signal_command(int sig) const
 
     case JDB:
     case PYDB:
+    case PERL:
 	return "";		// Not available
     }
 
@@ -2149,6 +2227,9 @@ string GDBAgent::run_command(string args) const
 	    return "R";
 	else
 	    return "r" + args;
+
+    case PERL:
+	return "R";
     }
 
     return "";			// Never reached
@@ -2172,6 +2253,9 @@ string GDBAgent::rerun_command() const
 
     case XDB:
 	return "r";
+
+    case PERL:
+	return "R";
     }
 
     return "";			// Never reached
@@ -2208,6 +2292,7 @@ string GDBAgent::dereferenced_expr(string expr) const
     switch (program_language())
     {
     case LANGUAGE_C:
+    case LANGUAGE_PERL:
 	return prepend_prefix("*", expr);
 
     case LANGUAGE_FORTRAN:
@@ -2270,6 +2355,9 @@ string GDBAgent::address_expr(string expr) const
     case LANGUAGE_PYTHON:
 	return "";		// Not supported in Python
 
+    case LANGUAGE_PERL:
+	return "";		// No such thing in Perl
+
     case LANGUAGE_ADA:
 	return "";		// Not supported in GNAT/Ada
 
@@ -2311,6 +2399,7 @@ int GDBAgent::default_index_base() const
     case LANGUAGE_C:
     case LANGUAGE_JAVA:
     case LANGUAGE_PYTHON:
+    case LANGUAGE_PERL:
     case LANGUAGE_OTHER:
 	return 0;
     }
@@ -2338,7 +2427,11 @@ string GDBAgent::assign_command(string var, string expr) const
 	break;
 
     case PYDB:
-	cmd = "";	// No command needed
+	cmd = "";		// No command needed
+	break;
+
+    case PERL:
+	cmd = " ";		// Avoid interpretation as cmd
 	break;
 
     case JDB:
@@ -2353,6 +2446,7 @@ string GDBAgent::assign_command(string var, string expr) const
     case LANGUAGE_JAVA:
     case LANGUAGE_FORTRAN:
     case LANGUAGE_PYTHON:	// FIXME: vrbl names can conflict with commands
+    case LANGUAGE_PERL:
     case LANGUAGE_OTHER:
 	cmd += "=";
 	break;
@@ -2392,6 +2486,7 @@ void GDBAgent::normalize_address(string& addr) const
 	case LANGUAGE_FORTRAN:
 	case LANGUAGE_ADA:
 	case LANGUAGE_PYTHON:
+	case LANGUAGE_PERL:
 	case LANGUAGE_OTHER:
 	    addr.prepend("0x");
 	    break;
@@ -2441,6 +2536,7 @@ string GDBAgent::history_file() const
     case DBX:
     case JDB:
     case PYDB:
+    case PERL:
 	return "";		// Unknown
 
     case XDB:
@@ -2503,6 +2599,7 @@ ProgramLanguage GDBAgent::program_language(string text)
 	{ "m",       LANGUAGE_PASCAL }, // M2, M3 or likewise
 	{ "ada",     LANGUAGE_ADA },
 	{ "python",  LANGUAGE_PYTHON },
+	{ "perl",    LANGUAGE_PERL },
 	{ "c",       LANGUAGE_C },
 	{ "c++",     LANGUAGE_C },
 	{ "auto",    LANGUAGE_OTHER }  // Keep current language

@@ -186,6 +186,7 @@ void PosBuffer::filter (string& answer)
     case XDB:
     case JDB:
     case PYDB:
+    case PERL:
 	break;			// FIXME
     }
 
@@ -266,6 +267,7 @@ void PosBuffer::filter (string& answer)
 	case XDB:
 	case JDB:
 	case PYDB:
+	case PERL:
 	    break;		// FIXME
 	}
 	break;
@@ -855,6 +857,7 @@ void PosBuffer::filter (string& answer)
 	    }
 	    break;
 	}
+
 	case PYDB:
 	{
 	    string result;
@@ -895,6 +898,11 @@ void PosBuffer::filter (string& answer)
 		answer = "";
 	    }
 	    break;
+	}
+
+	case PERL:
+	{
+	    // FIXME
 	}
 	}
     }

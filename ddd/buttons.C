@@ -300,7 +300,13 @@ static string gdbHelp(string command)
     if (help == NO_GDB_ANSWER && gdb->type() != JDB)
     {
 	// Ask debugger for help
-	help = gdb_question("help " + command, help_timeout, true);
+	string help_command;
+	if (gdb->type() == PERL)
+	    help_command = "h " + command;
+	else
+	    help_command = "help " + command;
+
+	help = gdb_question(help_command, help_timeout, true);
     }
 
     strip_space(help);
@@ -387,6 +393,7 @@ static string gdbSettingsValue(string command)
     case XDB:
     case JDB:
     case PYDB:
+    case PERL:
 	return NO_GDB_ANSWER;		// FIXME
     }
 
@@ -721,6 +728,16 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 	// PYDB states the command in the first line
 	tip = tip.after('\n');
 	strip_leading_space(tip);
+    }
+
+    if (gdb->type() == PERL)
+    {
+	// In Perl, the help has the form `COMMAND\tTEXT'.
+	tip = tip.after('\t');
+	strip_leading_space(tip);
+
+	if (tip.contains('['))
+	    tip = tip.before('[');
     }
 
     // DBX (and others) restate the command name at the beginning.

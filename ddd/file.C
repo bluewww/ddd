@@ -623,6 +623,7 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 	case XDB:
 	case JDB:
 	case PYDB:
+	case PERL:
 	    break;		// FIXME
 	}
     }
@@ -737,6 +738,9 @@ ProgramInfo::ProgramInfo()
     }
 
     case XDB:
+	break;			// FIXME
+
+    case PERL:
 	break;			// FIXME
 
     case JDB:
@@ -1132,6 +1136,7 @@ static void openProcessDone(Widget w, XtPointer client_data,
     case XDB:
     case JDB:
     case PYDB:
+    case PERL:
 	break;		// FIXME
     }
 }

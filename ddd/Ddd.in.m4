@@ -78,12 +78,13 @@ Ddd*appDefaultsVersion: @VERSION@
 ! User-settable resources
 !-----------------------------------------------------------------------------
 
-! The inferior debugger type (dbx, gdb, xdb, jdb, or pydb; defaults to gdb)
+! The inferior debugger type. One of: dbx, gdb, xdb, jdb, pydb, perl.
+! Default: gdb.
 Ddd*debugger:
 
 
 ! The name under which the inferior debugger is to be invoked
-! (default: debugger type)
+! Default: debugger type.
 Ddd*debuggerCommand:
 
 
@@ -554,6 +555,13 @@ Ddd*pydbInitCommands:
 
 ! The PYDB settings.  Usually overridden in `~/.ddd/init'.
 Ddd*pydbSettings:
+
+
+! The Perl Debugger initialization commands.  Nothing special.
+Ddd*perlInitCommands:
+
+! The Perl Debugger settings.  Usually overridden in `~/.ddd/init'.
+Ddd*perlSettings:
 
 
 ! If on, let GDB source all initialization commands from a temporary file.
@@ -3315,6 +3323,7 @@ Ddd*debuggerMenu*dbx.labelString:		DBX
 Ddd*debuggerMenu*xdb.labelString:		XDB
 Ddd*debuggerMenu*jdb.labelString:		JDB
 Ddd*debuggerMenu*pydb.labelString:		PYDB
+Ddd*debuggerMenu*perl.labelString:		Perl
 
 Ddd*preferences*show.labelString:	        Startup Windows
 Ddd*preferences*splashScreen.labelString:	DDD Splash Screen
@@ -6155,19 +6164,17 @@ You may wish to examine the diagnostic messages before exiting DDD.\n\
 \n\
 Here are some hints that may help you out:\n\
 ITEM If DDD looked for the wrong inferior debugger, re-invoke DDD,\n\
-    but use one of the SAMP(--gdb), SAMP(--dbx), SAMP(--xdb), \
-SAMP(--jdb), or SAMP(--pydb) options to specify\n\
-    the inferior debugger.\n\
+    but use SAMP(--gdb), SAMP(--dbx), SAMP(--xdb), \
+SAMP(--jdb), SAMP(--pydb), or SAMP(--perl)\n\
+    to specify the inferior debugger.\n\
 ITEM If @GDB@ is the correct inferior debugger, \
 but could not be found,\n\
     re-invoke DDD, but use the SAMP(--debugger VAR(path)) option to \
 specify\n\
     the full @GDB@ path VAR(path).\n\
-ITEM If you used the SAMP(--debugger VAR(path)) option, be sure to specify \
-one of\n\
-    the SAMP(--gdb), SAMP(--dbx), SAMP(--xdb), SAMP(--jdb), \
-or SAMP(--pydb) options \
-as well.\n\
+ITEM If you gave the SAMP(--debugger VAR(path)) option, be sure to give\n\
+    SAMP(--gdb), SAMP(--dbx), SAMP(--xdb), SAMP(--jdb), SAMP(--pydb), \
+or SAMP(--perl) as well.\n\
 ITEM If you started DDD without arguments, re-invoke DDD,\n\
     but give it an executable as argument.  XDB and some DBX versions\n\
     require being invoked with an executable.\n\

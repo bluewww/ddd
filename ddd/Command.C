@@ -155,6 +155,22 @@ void translate_command(string& command)
 	    command = "return";
 	break;
 
+    case PERL:
+	// PERL only has one-letter commands
+	if (command == "run")
+	    command = "r";
+	else if (command == "cont")
+	    command = "c";
+	else if (command == "step")
+	    command = "s";
+	else if (command == "next")
+	    command = "n";
+	else if (command == "quit")
+	    command = "q";
+	else if (command == "finish")
+	    command = "r";
+	break;
+
     case GDB:
 	break;
     }

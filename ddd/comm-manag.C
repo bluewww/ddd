@@ -139,12 +139,12 @@ private:
 
 public:
     // Constructor
-    CmdData (Widget orig = 0, Filtering fd = TryFilter)
+    CmdData (Widget orig = 0, Filtering filter = TryFilter)
 	: command(""),
 	  undo_command(""),
 	  undo_is_exec(true),
 	  origin(orig),
-	  filter_disp(fd),
+	  filter_disp(filter),
 	  disp_buffer(0),
 	  pos_buffer(0),
 	  new_exec_pos(false),
@@ -442,6 +442,11 @@ void start_gdb()
 	init     = str(app_data.pydb_init_commands);
 	settings = str(app_data.pydb_settings);
 	break;
+
+    case PERL:
+	init     = str(app_data.perl_init_commands);
+	settings = str(app_data.perl_settings);
+	break;
     }
     string restart = str(app_data.restart_commands);
 
@@ -572,6 +577,15 @@ void start_gdb()
 	cmds += "info breakpoints";
 	extra_data->refresh_breakpoints = true;
 	break;
+
+    case PERL:
+	extra_data->refresh_initial_line = true;
+
+	cmds += gdb->pwd_command();
+	extra_data->refresh_pwd = true;
+	cmds += "L";
+	extra_data->refresh_breakpoints = true;
+	break;
     }
 
     while (dummy.size() < cmds.size())
@@ -635,7 +649,7 @@ static void SourceDoneCB(const string& answer, void *qu_data)
     if (a.contains(info->tempfile) && a.contains("error"))
     {
 	// We've had an error while sourcing the file.  This keeps GDB
-	// from reading the entire file, so we try the commands the
+	// from reading the entire file, so we issue commands the
 	// ordinary way.
 	init_session(info->restart, info->settings, false);
     }
@@ -949,6 +963,7 @@ void send_gdb_command(string cmd, Widget origin,
 		case DBX:
 		case XDB:
 		case JDB:
+		case PERL:
 		    // Use `list ARG' as directed, but as a side effect,
 		    // lookup ARG in source window, too.
 		    cmd_data->lookup_arg = arg;
@@ -1036,6 +1051,7 @@ void send_gdb_command(string cmd, Widget origin,
 	case XDB:
 	case JDB:
 	case PYDB:
+	case PERL:
 	    break;		// FIXME
 	}
     }
@@ -1533,6 +1549,13 @@ void send_gdb_command(string cmd, Widget origin,
 	if (extra_data->refresh_disp_info)
 	    cmds += gdb->info_display_command();
 	break;
+
+    case PERL:
+	if (extra_data->refresh_pwd)
+	    cmds += gdb->pwd_command();
+	if (extra_data->refresh_breakpoints)
+	    cmds += "L";
+	break;
     }
 
     while (dummy.size() < cmds.size())
@@ -1758,6 +1781,7 @@ static void command_completed(void *data)
 
 	    case JDB:
 	    case PYDB:
+	    case PERL:
 		// FIXME
 		break;
 	    }
@@ -1824,7 +1848,7 @@ static void command_completed(void *data)
     // Process displays
     if (check && cmd_data->filter_disp != NoFilter)
     {
-	assert(gdb->has_display_command());
+	assert(cmd_data->filter_disp == TryFilter || gdb->has_display_command());
 
 	if (verbose)
 	    gdb_out(cmd_data->disp_buffer->answer_ended());
@@ -2082,21 +2106,55 @@ bool is_known_command(const string& answer)
 	ans = ans.before('\n') + ans.from(last_nl + 1);
     }
 
-    return ans.contains("program is not active")     // DBX
-	|| (!ans.contains("syntax")                  // DEC DBX
-	    && !ans.contains("invalid keyword")      // DEC DBX
-	    && !ans.contains("undefined command")    // GDB
-	    && !ans.contains("ambiguous command")    // GDB
-	    && !ans.contains("not found")            // SUN DBX 3.0
-	    && !ans.contains("is unknown")           // SUN DBX 3.0
-	    && !ans.contains("is a shell keyword")   // SUN DBX 3.0
-	    && !ans.contains("not a known")          // AIX DBX 3.1
-	    && !ans.contains("unrecognized")         // AIX DBX & SUN DBX 1.0
-	    && !ans.contains("no help available")    // AIX DBX
-	    && !ans.contains("expected")             // SGI DBX
-	    && !ans.contains("invoked in line mode") // SCO DBX
-	    && !ans.contains("huh?")                 // JDB
-	    && !ans.contains("unknown", 0));         // XDB
+    if (ans.contains("program is not active")) // DBX
+	return true;
+
+    if (ans.contains("syntax"))	              // DEC DBX, Perl
+	return false;
+
+    if (ans.contains("invalid keyword"))      // DEC DBX
+	return false;
+
+    if (ans.contains("undefined command"))    // GDB
+	return false;
+
+    if (ans.contains("ambiguous command"))    // GDB
+	return false;
+
+    if (ans.contains("not found"))            // SUN DBX 3.0
+	return false;
+
+    if (ans.contains("is unknown"))           // SUN DBX 3.0
+	return false;
+
+    if (ans.contains("is a shell keyword"))   // SUN DBX 3.0
+	return false;
+
+    if (ans.contains("not a known"))          // AIX DBX 3.1
+	return false;
+
+    if (ans.contains("unrecognized"))         // AIX DBX & SUN DBX 1.0
+	return false;
+
+    if (ans.contains("no help available"))    // AIX DBX
+	return false;
+
+    if (ans.contains("expected"))             // SGI DBX
+	return false;
+
+    if (ans.contains("invoked in line mode")) // SCO DBX
+	return false;
+
+    if (ans.contains("huh?"))	              // JDB
+	return false;
+
+    if (ans.contains("can't locate"))         // Perl
+	return false;
+
+    if (ans.contains("unknown", 0))           // XDB
+	return false;
+
+    return true;
 }
 
 static void process_init(const string& answer, void *)
@@ -2320,6 +2378,7 @@ static void extra_completed (const StringArray& answers,
 	case DBX:
 	case JDB:
 	case PYDB:
+	case PERL:
 	{
 	    string dummy;
 	    source_view->process_info_line_main(dummy);

@@ -58,7 +58,7 @@
 // Debugger types
 //-----------------------------------------------------------------------------
 
-enum DebuggerType { GDB, DBX, XDB, JDB, PYDB };
+enum DebuggerType { GDB, DBX, XDB, JDB, PYDB, PERL };
 
 
 //-----------------------------------------------------------------------------
@@ -76,7 +76,8 @@ enum ProgramLanguage {
     LANGUAGE_ADA,		// Ada (GNAT), as supported by GDB
     LANGUAGE_CHILL,		// Chill, as supported by GDB.
     LANGUAGE_FORTRAN,		// FORTRAN, as supported by GDB.
-    LANGUAGE_PYTHON,		// Python, as supported by pydb.
+    LANGUAGE_PYTHON,		// Python, as supported by PYDB.
+    LANGUAGE_PERL,		// Perl, as supported by Perl.
     LANGUAGE_OTHER		// Others
 };
 
@@ -449,7 +450,7 @@ public:
     bool has_volatile_breakpoints() const
     {
 	return type() == GDB || type() == XDB || 
-	    type() == DBX || type() == PYDB;
+	    type() == DBX || type() == PYDB || type() == PERL;
     }
 
     // True if debugger supports I/O redirection
@@ -458,16 +459,17 @@ public:
 	return type() == GDB || type() == XDB || type() == DBX;
     }
 
-    // True if debugger supports assignments redirection
+    // True if debugger supports assignments
     bool has_assign_command() const
     {
-	return type() == GDB || type() == XDB || type() == DBX;
+	return type() == GDB || type() == XDB || type() == DBX || 
+	    type() == PYDB || type() == PERL;
     }
 
     // True if debugger supports calling system functions
     bool has_system_calls() const
     {
-	return type() == GDB || type() == XDB || type() == DBX;
+	return type() == GDB || type() == XDB || type() == DBX || type() == PERL;
     }
 
     // True if debugger supports loading and examining executables
@@ -498,13 +500,13 @@ public:
     bool has_cd_command() const
     {
 	return type() == GDB || type() == XDB || 
-	    type() == DBX || type() == PYDB;
+	    type() == DBX || type() == PYDB || type() == PERL;
     }
 
     // True if debugger supports `shell'
     bool has_shell_command() const
     {
-	return type() == GDB || type() == XDB || type() == DBX;
+	return type() == GDB || type() == XDB || type() == DBX || type() == PERL;
     }
 
     // True if debugger supports temporary breakpoints
@@ -518,7 +520,7 @@ public:
     bool has_breakpoint_conditions() const
     {
 	return type() == GDB || type() == XDB || 
-	    type() == DBX || type() == PYDB;
+	    type() == DBX || type() == PYDB || type() == PERL;
     }
 
     // True if debugger has typed pointers, as in `(TYPE)0x0'

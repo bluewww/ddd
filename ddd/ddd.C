@@ -442,6 +442,9 @@ static XrmOptionDescRec options[] = {
 { "--pydb",                 XtNdebugger,             XrmoptionNoArg,  "pydb" },
 { "-pydb",                  XtNdebugger,             XrmoptionNoArg,  "pydb" },
 
+{ "--perl",                 XtNdebugger,             XrmoptionNoArg,  "perl" },
+{ "-perl",                  XtNdebugger,             XrmoptionNoArg,  "perl" },
+
 { "--trace",                XtNtrace,                XrmoptionNoArg,  ON },
 { "-trace",                 XtNtrace,                XrmoptionNoArg,  ON },
 
@@ -1186,6 +1189,7 @@ static Widget set_debugger_dbx_w;
 static Widget set_debugger_xdb_w;
 static Widget set_debugger_jdb_w;
 static Widget set_debugger_pydb_w;
+static Widget set_debugger_perl_w;
 static MMDesc debugger_menu [] = 
 {
     { "gdb", MMToggle, { dddSetDebuggerCB, XtPointer(GDB) },
@@ -1198,6 +1202,8 @@ static MMDesc debugger_menu [] =
       NULL, &set_debugger_jdb_w, 0, 0 },
     { "pydb", MMToggle, { dddSetDebuggerCB, XtPointer(PYDB) },
       NULL, &set_debugger_pydb_w, 0, 0 },
+    { "perl", MMToggle, { dddSetDebuggerCB, XtPointer(PERL) },
+      NULL, &set_debugger_perl_w, 0, 0 },
     MMEnd
 };
 
@@ -3629,17 +3635,19 @@ void update_options()
     set_toggle(set_attached_windows_w, !separate);
 
     DebuggerType type = debugger_type(app_data.debugger);
-    set_toggle(set_debugger_gdb_w, type == GDB);
-    set_toggle(set_debugger_dbx_w, type == DBX);
-    set_toggle(set_debugger_xdb_w, type == XDB);
-    set_toggle(set_debugger_jdb_w, type == JDB);
+    set_toggle(set_debugger_gdb_w,  type == GDB);
+    set_toggle(set_debugger_dbx_w,  type == DBX);
+    set_toggle(set_debugger_xdb_w,  type == XDB);
+    set_toggle(set_debugger_jdb_w,  type == JDB);
     set_toggle(set_debugger_pydb_w, type == PYDB);
+    set_toggle(set_debugger_perl_w, type == PERL);
 
-    set_sensitive(set_debugger_gdb_w, have_cmd("gdb"));
-    set_sensitive(set_debugger_dbx_w, have_cmd("dbx"));
-    set_sensitive(set_debugger_xdb_w, have_cmd("xdb"));
-    set_sensitive(set_debugger_jdb_w, have_cmd("jdb"));
+    set_sensitive(set_debugger_gdb_w,  have_cmd("gdb"));
+    set_sensitive(set_debugger_dbx_w,  have_cmd("dbx"));
+    set_sensitive(set_debugger_xdb_w,  have_cmd("xdb"));
+    set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
     set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
+    set_sensitive(set_debugger_perl_w, have_cmd("perl"));
 
     set_toggle(splash_screen_w, app_data.splash_screen);
     set_toggle(startup_tips_w,  app_data.startup_tips);
@@ -4155,11 +4163,12 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
 	       !initial_app_data.panned_graph_editor);
 
     DebuggerType type = debugger_type(initial_app_data.debugger);
-    notify_set_toggle(set_debugger_gdb_w, type == GDB);
-    notify_set_toggle(set_debugger_dbx_w, type == DBX);
-    notify_set_toggle(set_debugger_xdb_w, type == XDB);
-    notify_set_toggle(set_debugger_jdb_w, type == JDB);
+    notify_set_toggle(set_debugger_gdb_w,  type == GDB);
+    notify_set_toggle(set_debugger_dbx_w,  type == DBX);
+    notify_set_toggle(set_debugger_xdb_w,  type == XDB);
+    notify_set_toggle(set_debugger_jdb_w,  type == JDB);
     notify_set_toggle(set_debugger_pydb_w, type == PYDB);
+    notify_set_toggle(set_debugger_perl_w, type == PERL);
 
     BindingStyle style = initial_app_data.cut_copy_paste_bindings;
     notify_set_toggle(kde_binding_w, style == KDEBindings);
@@ -4946,6 +4955,7 @@ static ostream& operator<< (ostream& os, ProgramLanguage lang)
     case LANGUAGE_PASCAL:  os << "pascal/modula"; break;
     case LANGUAGE_ADA:     os << "ada";           break;
     case LANGUAGE_PYTHON:  os << "python";        break;
+    case LANGUAGE_PERL:    os << "perl";          break;
     case LANGUAGE_CHILL:   os << "chill";         break;
     case LANGUAGE_FORTRAN: os << "fortran";       break;
     case LANGUAGE_OTHER:   os << "(unknown)";     break;
@@ -6583,6 +6593,7 @@ static void setup_environment()
     {
     case GDB:
     case DBX:
+    case PERL:
 	// The debugger console has few capabilities.
 	// When starting the execution TTY, we set the correct type.
 	put_environment("TERM", "dumb");
@@ -6591,7 +6602,7 @@ static void setup_environment()
     case XDB:
     case JDB:
     case PYDB:
-	// In XDB and JDB, we have no means to set the TTY type
+	// In these debuggers, we have no means to set the TTY type
 	// afterwards.  Set the execution TTY type right now.
 	put_environment("TERM", app_data.term_type);
 	break;
@@ -6734,7 +6745,8 @@ static void setup_options(int& argc, char *argv[],
 	    || arg == "--gdb" || arg == "-gdb"
 	    || arg == "--xdb" || arg == "-xdb"
 	    || arg == "--jdb" || arg == "-jdb"
-	    || arg == "--pydb" || arg == "-pydb")
+	    || arg == "--pydb" || arg == "-pydb"
+	    || arg == "--perl" || arg == "-perl")
 	{
 	    gdb_name = arg.after('-', -1);
 	    gdb_option_pos    = i;
@@ -6909,7 +6921,7 @@ static void setup_auto_command_prefix()
 static void setup_options()
 {
     set_sensitive(disassemble_w, gdb->type() == GDB);
-    set_sensitive(code_indent_w, gdb->type() == GDB || gdb->type() == PYDB);
+    set_sensitive(code_indent_w, gdb->type() == GDB);
     set_sensitive(examine_w,            gdb->has_examine_command());
     set_sensitive(print_examine_w,      gdb->has_examine_command());
     set_sensitive(cache_machine_code_w, gdb->type() == GDB);
@@ -6963,7 +6975,8 @@ static void setup_options()
     set_sensitive(source_file_menu[FileItems::CD].widget,             have_cd);
     set_sensitive(data_file_menu[FileItems::CD].widget,               have_cd);
 
-    bool have_settings = (gdb->type() != XDB && gdb->type() != PYDB);
+    bool have_settings = 
+	(gdb->type() != XDB && gdb->type() != PYDB && gdb->type() != PERL);
     set_sensitive(command_edit_menu[EditItems::Settings].widget,have_settings);
     set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
     set_sensitive(data_edit_menu[EditItems::Settings].widget,   have_settings);

@@ -583,9 +583,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 		gdb_command("tbreak " + address, w);
 	    else
 		gdb_command("break " + address, w);
-
 	    break;
-
 
 	case DBX:
 	{
@@ -666,7 +664,7 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 
 	case JDB:
 	{
-	    if (address.contains(":"))
+	    if (is_file_pos(address))
 		gdb_command("stop at " + address);
 	    else
 		gdb_command("stop in " + address);
@@ -686,6 +684,24 @@ void SourceView::set_bp(const string& a, bool set, bool temp,
 
 	    if (cond != "" && !gdb->has_condition_command())
 		command += " {if " + cond + " {} {Q;c}}";
+
+	    gdb_command(command, w);
+	    break;
+	}
+
+	case PERL:
+	{
+	    if (is_file_pos(address))
+	    {
+		string file = address.before(':');
+		address = address.after(':');
+
+		gdb_command("f " + file, w);
+	    }
+
+	    string command = "b " + address;
+	    if (cond != "" && !gdb->has_condition_command())
+		command += " " + cond;
 
 	    gdb_command(command, w);
 	    break;
@@ -776,6 +792,12 @@ void SourceView::temp_n_cont(const string& a, Widget w)
 	    address = address.after('*');
 	gdb_command("c " + address, w);
 	break;
+
+    case PERL:
+	if (is_file_pos(address))
+	    address = address.after(':');
+	gdb_command("c " + address, w);
+	break;
     }
 }
 
@@ -842,6 +864,7 @@ bool SourceView::move_pc(const string& a, Widget w)
 
 	case JDB:
 	case PYDB:
+	case PERL:
 	    break;		// Never reached
 	}
 
@@ -1176,6 +1199,11 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 	case JDB:
 	case PYDB:
 	    return "clear " + pos;
+
+	case PERL:
+	    if (line_no > 0 && file_matches(file, current_file_name))
+		return "d " + line;
+	    break;
 
 	case DBX:
 	    if (line_no > 0 && file_matches(file, current_file_name))
@@ -1970,6 +1998,7 @@ String SourceView::read_class(const string& class_name,
     }
 }
 
+#define HUGE_LINE_NUMBER "1000000"
 
 // Read file FILE_NAME via the GDB `list' function
 // Really slow, is guaranteed to work for source files.
@@ -1989,12 +2018,16 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
     switch (gdb->type())
     {
     case GDB:
-	command = "list " + file_name + ":1,1000000";
+	command = "list " + file_name + ":1," HUGE_LINE_NUMBER;
 	break;
 
     case DBX:
     case PYDB:
-	command = "list 1,1000000";
+	command = "list 1," HUGE_LINE_NUMBER;
+	break;
+
+    case PERL:
+	command = "l 1-" HUGE_LINE_NUMBER;
 	break;
 
     case JDB:
@@ -2002,7 +2035,7 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
 	break;
 
     case XDB:
-	command = "w 1000000";
+	command = "w " HUGE_LINE_NUMBER;
 	break;
     }
     string listing = gdb_question(command, -1, true);
@@ -3730,6 +3763,7 @@ void SourceView::process_info_bp (string& info_output,
     case XDB:
     case JDB:
     case PYDB:
+    case PERL:
 	break;
     }
 				    
@@ -3804,6 +3838,12 @@ void SourceView::process_info_bp (string& info_output,
 		info_output = info_output.after('\n');
 		continue;
 	    }
+	    break;
+	}
+
+	case PERL:
+	{
+	    // FIXME
 	    break;
 	}
 	}
@@ -3931,25 +3971,26 @@ void SourceView::process_info_line_main(string& info_output)
     case XDB:
     case JDB:
     case PYDB:
-	{
-	    PosBuffer pos_buffer;
-	    pos_buffer.filter(info_output);
-	    pos_buffer.answer_ended();
-	    if (pos_buffer.pos_found())
-		show_position(pos_buffer.get_position());
-	    if (pos_buffer.pc_found())
-		show_pc(pos_buffer.get_pc());
-	    if (!pos_buffer.pos_found() && !pos_buffer.pc_found())
-		add_current_to_history();
-	}
-	break;
+    case PERL:
+    {
+	PosBuffer pos_buffer;
+	pos_buffer.filter(info_output);
+	pos_buffer.answer_ended();
+	if (pos_buffer.pos_found())
+	    show_position(pos_buffer.get_position());
+	if (pos_buffer.pc_found())
+	    show_pc(pos_buffer.get_pc());
+	if (!pos_buffer.pos_found() && !pos_buffer.pc_found())
+	    add_current_to_history();
+    }
+    break;
 
     case DBX:
-	{
-	    show_position(info_output);
-	    info_output = "";
-	}
-	break;
+    {
+	show_position(info_output);
+	info_output = "";
+    }
+    break;
     }
 
     // Strip 'Line <n> of <file> starts at <address>...' info
@@ -4071,6 +4112,7 @@ void SourceView::lookup(string s, bool silent)
 	    case DBX:
 	    case XDB:
 	    case PYDB:
+	    case PERL:
 		show_position(full_path(current_file_name) 
 			      + ":" + itostring(line));
 		break;
@@ -4132,6 +4174,7 @@ void SourceView::lookup(string s, bool silent)
 
 	case DBX:
 	case JDB:
+	case PERL:
 	{
 	    string pos = dbx_lookup(s, silent);
 	    if (pos != "")
@@ -4200,6 +4243,7 @@ void SourceView::add_position_to_history(const string& file_name, int line,
 
     case DBX:
     case XDB:
+    case PERL:
 	break;
     }
 
@@ -4275,7 +4319,7 @@ void SourceView::goto_entry(const string& file_name, int line,
 
 void SourceView::process_pwd(string& pwd_output)
 {
-    strip_trailing_space(pwd_output);
+    strip_space(pwd_output);
 
     while (pwd_output != "")
     {
@@ -4305,6 +4349,7 @@ void SourceView::process_pwd(string& pwd_output)
 	case XDB:
 	case DBX:		// 'PATH'
 	case JDB:
+	case PERL:
 	    if (pwd.contains('/', 0) && !pwd.contains(" "))
 	    {
 		current_pwd = pwd;
@@ -4572,9 +4617,10 @@ string SourceView::current_source_name()
     case DBX:
     case XDB:
     case PYDB:
+    case PERL:
 	if (app_data.use_source_path)
 	{
-	    // DBX and XDB use full file names.
+	    // These debuggers use full file names.
 	    source = full_path(current_file_name);
 	}
 	break;
@@ -5635,6 +5681,12 @@ static string cond_filter(const string& cmd)
     case JDB:
 	// No conditions in JDB
 	break;
+
+    case PERL:
+    {
+	// FIXME
+	break;
+    }
     }
 
     return "";			// No condition
@@ -6413,6 +6465,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
     case DBX:
     case JDB:
     case PYDB:
+    case PERL:
 	if (gdb->has_frame_command())
 	{
 	    // Issue `frame' command
@@ -6612,6 +6665,12 @@ void SourceView::process_frame(string& frame_output)
 	case JDB:
 	    frame_nr = frame_output.after("[");
 	    break;
+
+	case PERL:
+	{
+	    // FIXME
+	    break;
+	}
 	}
 
 	int frame = get_positive_nr(frame_nr);
@@ -6673,6 +6732,7 @@ void SourceView::process_frame(int frame)
 	case DBX:
 	case JDB:
 	case PYDB:
+	case PERL:
 	    pos = count - frame;
 	    break;
 
@@ -6979,6 +7039,7 @@ void SourceView::process_threads(string& threads_output)
     case DBX:
     case XDB:
     case PYDB:
+    case PERL:
     {
 	for (int i = 0; i < count; i++)
 	    selected[i] = false;
@@ -7017,9 +7078,11 @@ void SourceView::refresh_threads(bool all_threadgroups)
 	process_threads(threads);
 	break;
     }
+
     case DBX:
     case XDB:
     case PYDB:
+    case PERL:
 	// No threads.
 	break;
     }
@@ -9247,6 +9310,7 @@ bool SourceView::get_state(ostream& os)
 
     case DBX:
     case JDB:
+    case PERL:
 	break;			// FIXME
 
     case XDB:

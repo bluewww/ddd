@@ -84,134 +84,142 @@ void show_invocation(const string& gdb_command, ostream& os)
     switch (type)
     {
     case GDB:
+    {
+	title = "GDB";
+	base  = "GDB, the GNU debugger.";
+
+	Agent help(gdb_get_help);
+	help.start();
+
+	FILE *fp = help.inputfp();
+	if (fp)
 	{
-	    title = "GDB";
-	    base  = "GDB, the GNU debugger.";
+	    enum { Init, Options, Other, Done } state = Init;
+	    char buf[BUFSIZ];
 
-	    Agent help(gdb_get_help);
-	    help.start();
-
-	    FILE *fp = help.inputfp();
-	    if (fp)
+	    while (fgets(buf, sizeof(buf), fp) && state != Done)
 	    {
-		enum { Init, Options, Other, Done } state = Init;
-		char buf[BUFSIZ];
+		if (buf[0] && buf[strlen(buf) - 1] == '\n')
+		    buf[strlen(buf) - 1] = '\0';
 
-		while (fgets(buf, sizeof(buf), fp) && state != Done)
+		string option;
+		switch (state)
 		{
-		    if (buf[0] && buf[strlen(buf) - 1] == '\n')
-			buf[strlen(buf) - 1] = '\0';
+		case Init:
+		    gdb_version = string(buf) + "\n";
+		    state = Other;
+		    break;
 
-		    string option;
-		    switch (state)
-		    {
-		    case Init:
-			gdb_version = string(buf) + "\n";
-			state = Other;
-			break;
+		case Other:
+		    if (string(buf).contains("Options:"))
+			state = Options;
+		    break;
 
-		    case Other:
-			if (string(buf).contains("Options:"))
-			    state = Options;
-			break;
+		case Options:
+		    option = buf;
+		    if (option == "")
+			state = Done;
+		    else
+			options += option + "\n";
+		    break;
 
-		    case Options:
-			option = buf;
-			if (option == "")
-			    state = Done;
-			else
-			    options += option + "\n";
-			break;
-
-		    case Done:
-			break;
-		    }
+		case Done:
+		    break;
 		}
 	    }
-	    break;
 	}
+	break;
+    }
 
     case DBX:
-	{
-	    title = "DBX";
-	    base  = "DBX, the UNIX debugger.";
-	    options = "  [DBX options]      Pass option to DBX.\n";
-	}
-	break;
+    {
+	title = "DBX";
+	base  = "DBX, the UNIX debugger.";
+	options = "  [DBX options]      Pass option to DBX.\n";
+    }
+    break;
 
     case JDB:
-	{
-	    title = "JDB";
-	    base  = "JDB, the Java debugger.";
-	    options = "  [JDB options]      Pass option to JDB.\n";
-	}
-	break;
+    {
+	title = "JDB";
+	base  = "JDB, the Java debugger.";
+	options = "  [JDB options]      Pass option to JDB.\n";
+    }
+    break;
 
     case PYDB:
-	{
-	    title = "PYDB";
-	    base  = "PYDB, the Python debugger.";
-	    options = "  [PYDB options]      Pass option to PYDB.\n";
-	}
-	break;
+    {
+	title = "PYDB";
+	base  = "PYDB, the Python debugger.";
+	options = "  [PYDB options]     Pass option to PYDB.\n";
+    }
+    break;
+
+    case PERL:
+    {
+	title = "Perl";
+	base  = "the Perl debugger.";
+	options = "  [Perl options]     Pass option to Perl.\n";
+    }
+    break;
 
     case XDB:
+    {
+	title = "XDB";
+	base  = "XDB, the HP-UX debugger.";
+
+	Agent version(gdb_get_version);
+	version.start();
+
+	FILE *fp = version.inputfp();
+	if (fp)
 	{
-	    title = "XDB";
-	    base  = "XDB, the HP-UX debugger.";
-
-	    Agent version(gdb_get_version);
-	    version.start();
-
-	    FILE *fp = version.inputfp();
-	    if (fp)
+	    char buf[BUFSIZ];
+	    while (fgets(buf, sizeof(buf), fp))
 	    {
-		char buf[BUFSIZ];
-		while (fgets(buf, sizeof(buf), fp))
-		{
-		    if (buf[0] && buf[strlen(buf) - 1] == '\n')
-			buf[strlen(buf) - 1] = '\0';
-		    gdb_version = string(buf) + "\n";
-		}
+		if (buf[0] && buf[strlen(buf) - 1] == '\n')
+		    buf[strlen(buf) - 1] = '\0';
+		gdb_version = string(buf) + "\n";
 	    }
+	}
 
-	    Agent help(gdb_get_help);
-	    help.start();
+	Agent help(gdb_get_help);
+	help.start();
 
-	    fp = help.errorfp();
-	    if (fp)
+	fp = help.errorfp();
+	if (fp)
+	{
+	    enum { Other, Options, Done } state = Other;
+	    char buf[BUFSIZ];
+
+	    while (fgets(buf, sizeof(buf), fp) && state != Done)
 	    {
-		enum { Other, Options, Done } state = Other;
-		char buf[BUFSIZ];
+		if (buf[0] && buf[strlen(buf) - 1] == '\n')
+		    buf[strlen(buf) - 1] = '\0';
 
-		while (fgets(buf, sizeof(buf), fp) && state != Done)
+		string option;
+		switch (state)
 		{
-		    if (buf[0] && buf[strlen(buf) - 1] == '\n')
-			buf[strlen(buf) - 1] = '\0';
+		case Other:
+		    if (string(buf).contains("Options:"))
+			state = Options;
+		    break;
 
-		    string option;
-		    switch (state)
-		    {
-		    case Other:
-			if (string(buf).contains("Options:"))
-			    state = Options;
-			break;
+		case Options:
+		    option = buf;
+		    if (option == "")
+			state = Done;
+		    else
+			options += "  " + option.after(rxwhite) + "\n";
+		    break;
 
-		    case Options:
-			option = buf;
-			if (option == "")
-			    state = Done;
-			else
-			    options += "  " + option.after(rxwhite) + "\n";
-			break;
-
-		    case Done:
-			break;
-		    }
+		case Done:
+		    break;
 		}
 	    }
 	}
-	break;
+    }
+    break;
     }
 
     show_version(os);
@@ -228,6 +236,7 @@ void show_invocation(const string& gdb_command, ostream& os)
 	"  --xdb              Invoke XDB as inferior debugger.\n"
 	"  --jdb              Invoke JDB as inferior debugger.\n"
 	"  --pydb             Invoke PYDB as inferior debugger.\n"
+	"  --perl             Invoke Perl as inferior debugger.\n"
 	"  --debugger NAME    Invoke inferior debugger as NAME.\n"
 	"  --host USER@HOST   Run inferior debugger on HOST.\n"
 	"  --rhost USER@HOST  Like --host, but use a rlogin connection.\n"

@@ -4,8 +4,24 @@ DDD News						-*- text -*-
 DDD 3.1 [in development]
 ========================
 
-DDD 3.1 brings data plotting, Python support, Undo/Redo, and advanced
-data exploration.
+DDD 3.1 brings Perl support, Python support, data plotting, Undo/Redo,
+and advanced data exploration.
+
+
+Perl support
+------------
+
+- DDD now supports debugging Perl programs via the Perl debugger.
+
+
+Python support
+--------------
+
+- DDD now supports debugging Python programs.  This feature uses the
+  `pydb' command-line debugger included in this distribution; see the
+  `pydb' sub-directory for notes.
+
+  Python support was contributed by Richard Wolff <rwolff@noao.edu>.
 
 
 Plotting
@@ -19,16 +35,6 @@ Plotting
   i.e. the sequence of previous values.
 
 - Plots can be animated, visualizing algorithm effects.
-
-
-Python support
---------------
-
-- DDD now supports debugging Python programs.  This feature uses the
-  `pydb' command-line debugger included in this distribution; see the
-  `pydb' sub-directory for notes.
-
-  Python support was contributed by Richard Wolff <rwolff@noao.edu>.
 
 
 Undoing commands

@@ -441,6 +441,7 @@ void add_running_arguments(string& cmd)
     case DBX:
     case GDB:
     case PYDB:
+    case PERL:
 	break;
     }
 }

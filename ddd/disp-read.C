@@ -72,6 +72,7 @@ bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
     case XDB:
     case JDB:
     case PYDB:
+    case PERL:
 	return false;
     }
 
@@ -134,6 +135,7 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
     case XDB:
     case JDB:
     case PYDB:
+    case PERL:
 	return cmd.matches (rxrunning_cmd)
 	    || is_display_cmd(cmd);
     }
@@ -382,6 +384,9 @@ bool is_file_cmd (const string& cmd, GDBAgent *gdb)
 
     case JDB:
 	return cmd.contains("load ", 0);
+
+    case PERL:
+	return cmd.contains("exec ", 0);
     }
 
     assert(0);
@@ -550,7 +555,7 @@ string get_break_expression (const string& cmd)
 bool is_file_pos(const string& arg)
 {
 #if RUNTIME_REGEX
-    static regex rxfilepos(".*:[1-9][0-9]*");
+    static regex rxfilepos("[^:]*:[1-9][0-9]*");
 #endif
 
     string a = arg;
@@ -599,6 +604,7 @@ int display_index (const string& gdb_answer, GDBAgent *gdb)
     case DBX:
     case XDB:
     case JDB:
+    case PERL:
 	prx = &rxdbx_begin_of_display;
 	break;
     }
@@ -752,7 +758,8 @@ int display_info_index (const string& gdb_answer, GDBAgent *gdb)
 
     case JDB:
     case XDB:
-	return -1;		// No displays in JDB and XDB
+    case PERL:
+	return -1;		// No displays in these debuggers
     }
 
     const regex& rx = *prx;
@@ -834,6 +841,7 @@ string read_next_disp_info (string& gdb_answer, GDBAgent *gdb)
 
     case XDB:
     case JDB:
+    case PERL:
 	break;			// FIXME
     }
 
@@ -854,6 +862,7 @@ string get_info_disp_str (string& display_info, GDBAgent *gdb)
 
     case XDB:
     case JDB:
+    case PERL:
 	return "";		// FIXME
     }
 
@@ -874,6 +883,7 @@ bool disp_is_disabled (const string& info_disp_str, GDBAgent *gdb)
 
     case XDB:
     case JDB:
+    case PERL:
 	return false;		// FIXME
     }
 
@@ -907,6 +917,7 @@ string  read_disp_nr_str (string& display, GDBAgent *gdb)
 
     case XDB:
     case JDB:
+    case PERL:
 	return "";		// FIXME
     }
 

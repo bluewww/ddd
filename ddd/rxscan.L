@@ -340,8 +340,9 @@ B6#{D}{W}{I}[^ \f\t\n]*{W}[(]		RETURN(&rxframe_func);
 B7{_}(define|document){W}{C}		RETURN(&rxdefine_cmd);
 B8{_}(l|li|lis|list)({W}{C})?	 	RETURN(&rxlist_cmd);
 B9{D}{_}\,{_}{D}	 		RETURN(&rxlist_range);
-C0.*:{P}	 			RETURN(&rxfilepos);
+C0[^:]*:{P}	 			RETURN(&rxfilepos);
 C1{_}{I}[^({\n=]*:[(]			RETURN(&rxdbx_baseclass);
 C2{_}[^=]+=[^=]{C}			RETURN(&rxset3_cmd);
+C3{_}DB<+{P}>+{_}			RETURN(&rxperlprompt);
 (.|\n)				        RETURN(0);  // Anything else
 %%
