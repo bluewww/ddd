@@ -818,11 +818,14 @@ SYMS = $(ddd).syms $(ddd_canonical).syms
 
 # Architecture-independent files required for building DDD.
 # In a distribution, these should be already built.
-PROG_STUFF       = config.h host.h Ddd.ad.h COPYING.gz.C ddd.man.txt.gz.C \
-		   vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
-	 	   acconfig.h acspecial.h stamp-h.in $(srcdir)/Ddd.in \
+#
+# Order is significant here!  First source files, then derived files.
+PROG_STUFF       = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
+	 	   acconfig.h acspecial.h stamp-h.in config.h \
+		   $(srcdir)/Ddd.in Ddd.ad.h host.h \
 		   ddd.vsl.h vr.h version.h configinfo.C \
-		   ddd.man ddd.man.txt xlibdir.C eps-code.h
+		   ddd.man ddd.man.txt ddd.man.txt.gz ddd.man.txt.gz.C \
+                   COPYING.gz.C xlibdir.C eps-code.h
 
 # Extra files to be built for the distribution
 # In a distribution, these should be already built.
