@@ -67,13 +67,10 @@ DEFINE_TYPE_INFO_0(Agent)
 void Agent::childStatusChange(int sig)
 {
     // Notify agents of their new status
-    bool gotit = runningAgents.childStatusChange();
+    runningAgents.childStatusChange();
 
-    if (gotit)
-    {
-	// Reinstall ourselves (for SVR4 and others)
-	signal(sig, SignalProc(Agent::childStatusChange));
-    }
+    // Reinstall ourselves (for SVR4 and others)
+    signal(sig, SignalProc(Agent::childStatusChange));
 }
 
 // Default I/O error handler
