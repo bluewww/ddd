@@ -357,7 +357,7 @@ FIG2DEV = fig2dev
 FIG2PS = $(FIG2DEV) -L ps
 
 # Some XPM/PPM/PostScript converters, from the netpbm and pbmplus packages.
-XPMTOPPM = xpmtoppm
+XPMTOPPM = (xpmtoppm | ppmtogif | giftoppm) < 
 PNMTOPS  = pnmtops
 PPMTOPGM = ppmtopgm
 PGMTOPBM = pgmtopbm
@@ -744,7 +744,7 @@ PSS = $(srcdir)/../doc/ddd.man-nopics.ps $(srcdir)/../doc/ddd.man.ps
 ## PostScript pictures in the DDD manual.
 # All of these are generated from FIG and XPM files.
 PICS = \
-	PICS/dddlogo21.ps          \
+	PICS/dddlogo22.ps          \
 	PICS/ddd-aliases.ps        \
 	PICS/ddd-all.ps            \
 	PICS/ddd-arguments.ps      \
@@ -791,6 +791,9 @@ HTMLS =
 ## The manual page.
 MANS = $(srcdir)/ddd.man
 
+## The (derived) icons
+ICONS = $(srcdir)/../icons/ddd.xbm $(srcdir)/../icons/dddmask.xbm
+
 ## Readme files built from ddd.texinfo
 README_FILES = 
 
@@ -812,7 +815,7 @@ PROG_STUFF       = config.h vsl-lex.C vsl-gramma.h vsl-gramma.C \
 
 # Extra files to be built for the distribution
 # In a distribution, these should be already built.
-DIST_STUFF	 = $(PROG_STUFF) $(MANS) $(PSS)
+DIST_STUFF	 = $(PROG_STUFF) $(MANS) $(PSS) $(ICONS)
 
 # Temporary Files to be cleaned, keeping configuration intact
 CLEAN_STUFF	 = $(ddd)-$(VERSION)-* $(PROGS) $(DEMOS) $(PICS) \
@@ -1275,8 +1278,8 @@ PICS/ddd-attach.ps: PICS/ddd-attach.fig PICS/ddd-attach.xpm
 	cd PICS; $(FIG2PS) ddd-attach.fig > ddd-attach.ps
 
 # The logo comes in XPM source
-PICS/dddlogo21.ps: PICS/dddlogo21.xpm
-	$(XPMTOPPM) PICS/dddlogo21.xpm | $(PNMTOPS) -noturn > $@
+PICS/dddlogo22.ps: PICS/dddlogo22.xpm
+	$(XPMTOPPM) PICS/dddlogo22.xpm | $(PNMTOPS) -noturn > $@
 
 
 ## Icons.
