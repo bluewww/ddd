@@ -964,6 +964,7 @@ cxxtest.o: $(srcdir)/cxxtest.C
 	fi
 
 ctest.o: $(srcdir)/ctest.c
+	$(COMPILE.c) $(INCLUDE) -o $@ $(srcdir)/ctest.c
 
 huffdecode.o: $(srcdir)/huffdecode.C ddd.man.huff.C
 	$(COMPILE.cc) -DMAIN -DHUFFTEXT='"$(srcdir)/ddd.man.huff.C"' \
