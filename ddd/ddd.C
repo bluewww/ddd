@@ -2350,6 +2350,7 @@ int main(int argc, char *argv[])
     {
 	main_loop_entered = false;
 	ddd_show_signal(sig);
+	reset_status_lock();
     }
 
     // Set `main_loop_entered' to true as soon 

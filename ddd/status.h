@@ -40,10 +40,11 @@
 #include <X11/Intrinsic.h>
 
 // Show MESSAGE in status window.
-void set_status(string message);
+// If TEMPORARY is set, override locks and do not add to status history.
+void set_status(string message, bool temporary = false);
 
 // Same, but use an MString.
-void set_status_mstring(MString text);
+void set_status_mstring(MString text, bool temporary = false);
 
 // Return current contents of status line
 extern const MString& current_status();
@@ -67,28 +68,46 @@ extern bool show_next_line_in_status;
 // Number of messages to keep in status history
 extern int status_history_size;
 
+// Status lock
+void lock_status();		// Place a lock on status
+void unlock_status();		// Remove lock from status
+void reset_status_lock();	// Remove all locks from status
+
 // These are convenient for setting the status during a function
-class StatusMsg {
+class _StatusMsg {
 private:
     string cause;
 
 public:
-    StatusMsg(const string& c)
+    _StatusMsg(const string& c)
 	: cause(c)
     {
 	set_status(cause + "...");
     }
 
-    virtual ~StatusMsg()
+    virtual ~_StatusMsg()
     {
 	set_status(cause + "...done.");
     }
 };
 
+class StatusMsg: public _StatusMsg {
+public:
+    StatusMsg(const string& cause)
+	: _StatusMsg(cause)
+    {
+	lock_status();
+    }
+    virtual ~StatusMsg()
+    {
+	unlock_status();
+    }
+};
+
 class StatusDelay: public StatusMsg, public Delay {
 public:
-    StatusDelay(const string& c)
-	: StatusMsg(c)
+    StatusDelay(const string& cause)
+	: StatusMsg(cause)
     {}
 };
 

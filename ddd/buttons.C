@@ -108,7 +108,7 @@ static void showDocumentationInStatusLine(const MString& doc)
 	    if (current_status_message == current_status())
 	    {
 		// Restore previous message
-		set_status_mstring(saved_status_message);
+		set_status_mstring(saved_status_message, true);
 	    }
 	    else
 	    {
@@ -133,7 +133,7 @@ static void showDocumentationInStatusLine(const MString& doc)
 	    doc_shown_in_status = true;
 	}
 
-	set_status_mstring(doc);
+	set_status_mstring(doc, true);
 	current_status_message = doc;
     }
 }

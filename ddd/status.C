@@ -75,6 +75,19 @@ bool gdb_asks_yn;
 // Current contents of status window
 static MString current_status_text;
 
+// Non-zero if status is locked (i.e. unchangeable)
+static int status_locked = 0;
+
+
+//-----------------------------------------------------------------------------
+// Status lock
+//-----------------------------------------------------------------------------
+
+void lock_status()       { status_locked++;   }
+void unlock_status()     { status_locked--;   }
+void reset_status_lock() { status_locked = 0; }
+
+
 //-----------------------------------------------------------------------------
 // Prompt recognition
 //-----------------------------------------------------------------------------
@@ -337,9 +350,9 @@ void set_status_from_gdb(const string& text)
     set_status(message);
 }
 
-// Show MESSAGE in status window.  If FORCE is true, ensure that
-// the entire message is visible.
-void set_status(string message)
+// Show MESSAGE in status window.
+// If TEMPORARY is set, override locks and do not add to status history.
+void set_status(string message, bool temporary)
 {
     if (status_w == 0)
 	return;
@@ -350,17 +363,18 @@ void set_status(string message)
 	&& islower(message[0]))
 	message[0] = toupper(message[0]);
 
-    set_status_mstring(rm(message));
+    set_status_mstring(rm(message), temporary);
 }
 
 // Same, but use an MString.
-void set_status_mstring(MString message)
+void set_status_mstring(MString message, bool temporary)
 {
-    if (status_w == 0)
+    if (status_w == 0 || (status_locked && !temporary))
 	return;
 
     current_status_text = message;
-    add_to_status_history(message);
+    if (!temporary)
+	add_to_status_history(message);
 
     XtVaSetValues(status_w,
 		  XmNlabelString, message.xmstring(),

@@ -273,7 +273,7 @@ static void searchRemote(Widget fs,
 	    status << delay_message << "... ("
 		   << nitems << " processed)";
 	    string s(status);
-	    set_status(s);
+	    set_status(s, true);
 	}
     }
 
@@ -400,7 +400,7 @@ static void searchLocal(Widget fs,
 		status << delay_message << "... ("
 		       << percent << "% processed)";
 		string s(status);
-		set_status(s);
+		set_status(s, true);
 	    }
 	}
 	free((char *)files);
