@@ -580,16 +580,20 @@ static MMDesc command_menu[] =
 };
 
 static Widget stack_w;
-static Widget register_w;
+static Widget registers_w;
+static Widget threads_w;
+static Widget infos_w;
 
 static MMDesc stack_menu[] =
 {
     { "stack",      MMPush,  { SourceView::ViewStackFramesCB }, 
       NULL, &stack_w },
     { "registers",  MMPush,  { SourceView::ViewRegistersCB },
-      NULL, &register_w },
-    { "threads",    MMPush | MMInsensitive },
-    { "infos",      MMPush,  { dddPopupInfosCB }},
+      NULL, &registers_w },
+    { "threads",    MMPush | MMInsensitive, { NULL },
+      NULL, &threads_w },
+    { "infos",      MMPush,  { dddPopupInfosCB },
+      NULL, &infos_w },
     MMSep,
     { "up",         MMPush,  { gdbCommandCB, "up" }},
     { "down",       MMPush,  { gdbCommandCB, "down" }},
@@ -2662,9 +2666,11 @@ void gdb_ready_for_questionHP (void*, void*, void* call_data)
 	ddd_is_exiting = ddd_is_restarting = false;
     }
 
-    set_sensitive(stack_w,    gdb_ready);
-    set_sensitive(register_w, gdb_ready && gdb->type() == GDB);
-    set_sensitive(settings_w, gdb_ready);
+    set_sensitive(stack_w,     gdb_ready);
+    set_sensitive(registers_w, gdb_ready && gdb->type() == GDB);
+    set_sensitive(threads_w,   gdb_ready && gdb->type() == GDB);
+    set_sensitive(infos_w,     gdb_ready && gdb->type() == GDB);
+    set_sensitive(settings_w,  gdb_ready);
 }
 
 void gdb_ready_for_cmdHP (void *, void *, void *)
