@@ -252,7 +252,7 @@ void ArcGraphEdge::drawLine(Widget w,
     {
 	// Draw annotation at hint position
 	if (annotation() != 0)
-	    annotation()->draw(w, to()->pos(), exposed, gc.edgeGC);
+	    annotation()->draw(w, to()->pos(), exposed, gc);
     }
 }
 

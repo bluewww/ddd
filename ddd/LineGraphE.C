@@ -242,12 +242,12 @@ void LineGraphEdge::drawLine(Widget w,
 	else if (to()->isHint())
 	{
 	    // Draw at hint position
-	    annotation()->draw(w, to()->pos(), exposed, gc.edgeGC);
+	    annotation()->draw(w, to()->pos(), exposed, gc);
 	}
 	else
 	{
 	    // Draw at mid-distance
-	    annotation()->draw(w, l1 + (l2 - l1) / 2, exposed, gc.edgeGC);
+	    annotation()->draw(w, l1 + (l2 - l1) / 2, exposed, gc);
 	}
     }
 
@@ -355,7 +355,7 @@ void LineGraphEdge::drawSelf(Widget w,
     if (annotation() != 0)
     {
 	// Draw annotation
-	annotation()->draw(w, anno, exposed, gc.edgeGC);
+	annotation()->draw(w, anno, exposed, gc);
     }
 
     // Find arrow angle
