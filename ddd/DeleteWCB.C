@@ -35,6 +35,8 @@ char DeleteWindowCallBack_rcsid[] =
 
 #include "DeleteWCB.h"
 
+#include <Xm/Xm.h>
+#include <Xm/AtomMgr.h>
 #include <Xm/Protocols.h>
 
 void AddDeleteWindowCallback(Widget shell,
