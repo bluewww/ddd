@@ -2004,6 +2004,7 @@ Each button issues the command given by its name.  See the
 .PP
 The default resource value is empty\(em\&no source buttons are
 created.
+.RE
 .TP
 .B "sourceButtons (\fPclass\fB SourceButtons)"
 A colon-separated list of buttons to be added under the debugger
@@ -2205,6 +2206,7 @@ To set the default font to 12-pixel courier, use
 See the file `\fBddd.vsl\fR' for further definitions to override using
 the `\fBvslDefs\fR' resource.
 .RE
+.sp
 .TP
 .B "vslLibrary (\fPclass\fB VSLLibrary)"
 The \s-2VSL\s+2 library to use.  `\fBbuiltin\fR' (default) means to
@@ -2860,7 +2862,7 @@ correct array subscripts.
 .PP
 With some \s-2DBX\s+2 versions (notably Solaris \s-2DBX\s+2),
 \s-2@DDD@\s+2 strips C-style and C++-style comments from the
-\s-2DBX\s+2 output in order to interpret \s-2DBX\2+2 output properly.
+\s-2DBX\s+2 output in order to interpret \s-2DBX\s+2 output properly.
 This also affects the output of the debugged program when sent to the
 debugger console.  Using the separate execution window avoids these
 problems.
