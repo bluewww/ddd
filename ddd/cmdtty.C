@@ -113,16 +113,9 @@ void tty_full_name(const string& pos)
 // Issue an artificial prompt
 void prompt()
 {
-    String s = XmTextGetString(gdb_w);
-    string message = s;
-    XtFree(s);
-  
-    if (!message.contains(gdb->prompt(), -1))
-    {
-	_gdb_out(gdb->prompt());
-	if (tty_gdb_input)
-	    _tty_out(gdb->prompt());
-    }
+    _gdb_out(gdb->prompt());
+    if (tty_gdb_input)
+	_tty_out(gdb->prompt());
 }
 
 // Initialize command tty
