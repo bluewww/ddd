@@ -28,21 +28,33 @@
 @c or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 @c %**start of header
+@c !!set DDD manual's edition---not the same as DDD version!
+@set EDITION First
+
+@c !!set DDD manual's revision date
+@set DATE 1999-01-11
+
 @setfilename ddd.info
 @include config.texi
 @settitle Debugging with @value{DDD}
 @setchapternewpage odd
 @c Labels
-@defindex lb
+@defcodeindex lb
 @c Commands
-@defindex cm
+@defcodeindex cm
 @c Authors
 @defindex au
 @c Files
-@defindex fl
+@defcodeindex fl
 @c Environment variables
-@defindex en
+@defcodeindex en
 @c %**end of header
+
+@c Combine authors and concepts
+@synindex au cp
+
+@c Combine environment variables and resources
+@syncodeindex en vr
 
 @iftex
 @c @smallbook
@@ -50,12 +62,6 @@
 @end iftex
 
 @finalout
-
-@c !!set DDD manual's edition---not the same as DDD version!
-@set EDITION First
-
-@c !!set DDD manual's revision date
-@set DATE 1999-01-07
 
 @ifinfo
 @c This is a dir.info fragment to support semi-automated addition of
@@ -236,19 +242,16 @@ Change things in your program, so you can experiment with correcting the
 effects of one bug and go on to learn about another.
 @end itemize
 
+@cindex Inferior debugger
+@cindex Command-line debugger
 Technically speaking, @value{DDD} is a front-end to a command-line
 debugger (called @dfn{inferior debugger}, because it lies at the layer
 beneath @value{DDD}).  @value{DDD} supports the following inferior
 debuggers:
-@cindex Inferior debugger
-@cindex Command-line debugger
 
 @itemize @bullet
 @item
 @cindex GDB
-You can use @value{DDD} with @dfn{GDB}, the GNU debugger, to debug
-executable binaries.  GDB supports programs written in C, C++, Java,
-Modula-2, Modula-3, Pascal, Chill, Ada, and FORTRAN.
 @cindex C
 @cindex C++
 @cindex Modula-2
@@ -257,6 +260,9 @@ Modula-2, Modula-3, Pascal, Chill, Ada, and FORTRAN.
 @cindex Chill
 @cindex Ada
 @cindex FORTRAN
+You can use @value{DDD} with @dfn{GDB}, the GNU debugger, to debug
+executable binaries.  GDB supports programs written in C, C++, Java,
+Modula-2, Modula-3, Pascal, Chill, Ada, and FORTRAN.
 (@pxref{Languages, Using GDB with Different Languages, Using GDB with
 Different Languages, gdb, Debugging with GDB}, for information on
 language support in GDB.)
@@ -282,21 +288,21 @@ by your compiler.
 
 @item
 @cindex JDB
+@cindex Java
 You can use @value{DDD} with @dfn{JDB}, the Java debugger, as of JDK 1.1
 and later, to debug Java bytecode programs.
-@cindex Java
 
 @item
 @cindex PYDB
+@cindex Python
 You can use @value{DDD} with @dfn{PYDB}, a Python debugger, to debug
 Python programs.
-@cindex Python
 
 @item
 @cindex Perl
+@cindex Perl
 You can use @value{DDD} with the @dfn{Perl} debugger, as of Perl 5.003
 and later, to debug Perl programs.
-@cindex Perl
 @end itemize
 
 @xref{Choosing an Inferior Debugger}, for choosing the appropriate
@@ -319,34 +325,34 @@ This manual comes in three formats:
 
 @itemize @bullet
 @item
-The @emph{Info} format is used for browsing on character devices.  You
-should have a local copy installed, which you can browse via Emacs, the
-standalone @file{info} program, or from DDD via @samp{Help @result{}
-@value{DDD} Manual}.  Info files can be downloaded via
-@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW page}.
+The @emph{Info} format is used for browsing on character devices; it
+comes without pictures.  You should have a local copy installed, which
+you can browse via Emacs, the standalone @file{info} program, or from
+DDD via @samp{Help @result{} @value{DDD} Manual}.  Info files can be
+downloaded via @uref{http://www.cs.tu-bs.de/softech/ddd/, the
+@value{DDD} WWW page}.
 
 @item
 The @emph{HTML} format is used for browsing on bitmap devices; it
 includes several pictures.  You can view it using a HTML browser,
-typically from a local copy.  Online copies for browsing are available
-via @uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW
-page}; you can also download HTML files for local installation
+typically from a local copy.  Online copies of the most recent
+@value{DDD} manual are available via
+@uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW page}.
+You can also download HTML files there to install them locally
 (recommended).
 
 @item
-The @emph{PostScript} format is used for printing on paper; it also
-comes with pictures.  The PostScript format can be downloaded via
+The @emph{PostScript} format is used for printing on paper; it comes
+with pictures as well.  The PostScript format can be downloaded via
 @uref{http://www.cs.tu-bs.de/softech/ddd/, the @value{DDD} WWW page}.
 @end itemize
-
-...
-
-... Also: move all indexes *before* paragraphs!
 
 
 @node Free Software
 @unnumberedsec Free software
 
+@cindex License
+@cindex GPL
 @value{DDD} is @dfn{free software}, protected by the GNU General Public
 License (GPL).  The GPL gives you the freedom to copy or adapt a
 licensed program---but every person getting a copy also gets with it the
@@ -354,8 +360,6 @@ freedom to modify that copy (which means that they must get access to
 the source code), and the freedom to distribute further copies.  Typical
 software companies use copyrights to limit your freedoms; the Free
 Software Foundation uses the GPL to preserve these freedoms.
-@cindex License
-@cindex GPL
 
 Fundamentally, the General Public License is a license which says that
 you have these freedoms and that you cannot take these freedoms away
@@ -366,12 +370,12 @@ from anyone else.
 @unnumberedsec Contributors to DDD
 @cindex Contributors
 
+@auindex Zeller, Andreas
+@auindex L@"utkehaus, Dorothea
 Dorothea L@"utkehaus and Andreas Zeller were the original authors of
 @value{DDD}.  Many others have contributed to its development.  The
 files @file{ChangeLog} and @file{THANKS} in the @value{DDD} distribution
 approximates a blow-by-blow account.
-@auindex Zeller, Andreas
-@auindex L@"utkehaus, Dorothea
 
 
 
@@ -379,25 +383,25 @@ approximates a blow-by-blow account.
 @unnumberedsec History
 @cindex History
 
+@auindex Zeller, Andreas
+@cindex PSG
 The history of @value{DDD} is a story of code recycling.  The oldest
 parts of @value{DDD} were written in 1990, when @emph{Andreas Zeller}
 designed VSL, a box-based visual structure language for visualizing data
 and program structures.  The VSL interpreter and the Box library became
 part of Andreas' Diploma Thesis, a graphical syntax editor based on the
 Programming System Generator PSG.
-@auindex Zeller, Andreas
-@cindex PSG
 
+@auindex L@"utkehaus, Dorothea
+@cindex NORA
+@cindex Box library
+@cindex VSL
 In 1992, the VSL and Box libraries were recycled for the NORA project.
 For NORA, an experimental inference-based software development tool set,
 Andreas wrote a graph editor (based on VSL and the Box libraries) and
 facilities for inter-process knowledge exchange.  Based on these tools,
 @emph{Dorothea L@"utkehaus} (now @emph{Dorothea Krabiell}) realized
 @value{DDD} as her Diploma Thesis, 1994
-@auindex L@"utkehaus, Dorothea
-@cindex NORA
-@cindex Box library
-@cindex VSL
 
 The original @value{DDD} had no source window; this was added by
 Dorothea during the winter of 1994--1995.  In the first quarter of 1995,
@@ -440,10 +444,10 @@ command tool.
 @node Support
 @unnumberedsec DDD Needs Your Support!
 
-If you have any success story related to @value{DDD}, please write it
-down on a picture postcard and send it to us:
 @cindex Success story
 @cindex Postcard
+If you have any success story related to @value{DDD}, please write it
+down on a picture postcard and send it to us:
 
 @format
 @group
@@ -456,10 +460,10 @@ GERMANY
 @end group
 @end format
 
+@cindex Guestbook
 You may also leave a message in the @emph{@value{DDD} Guestbook}. It is
 accessible via @uref{http://www.cs.tu-bs.de/softech/ddd/, the
 @value{DDD} WWW page}.
-@cindex Guestbook
 
 
 @node Sample Session
@@ -469,10 +473,10 @@ You can use this manual at your leisure to read all about @value{DDD}.
 However, a handful of features are enough to get started using the
 debugger.  This chapter illustrates those features.
 
+@pindex sample
 The sample program @file{sample.c} (@pxref{Sample Program}) exhibits the
 following bug.  Normally, @file{sample} should sort and print its
 arguments numerically, as in the following example:
-@pindex sample
 
 @example
 $ ./sample 8 7 5 4 1 3
@@ -501,7 +505,7 @@ $ gcc -g -o sample sample.c
 @end example
 
 @menu
-* Sample Program::              Source @file{sample.c} of the sample program
+* Sample Program::              Source @file{sample.c}
 @end menu
 
 Now, you can invoke @value{DDD} (@pxref{Invocation}) on the
@@ -820,11 +824,12 @@ session with @samp{Program @result{} Exit} or @kbd{Ctrl+Q}.
 
 @page
 @node Sample Program
-@section Source @file{sample.c} of Sample Program
+@section Sample Program
 
-Here's the source @file{sample.c} of the sample program.
 @flindex sample.c
+Here's the source @file{sample.c} of the sample program.
 
+@noindent
 @smallexample
 @cartouche
 /* sample.c -- Sample C program to be debugged with DDD */
@@ -898,6 +903,7 @@ Use @samp{File @result{} Exit} or @kbd{Ctrl+Q} to exit (@pxref{Quitting}).
 
 @node Invoking
 @section Invoking @value{DDD}
+@cindex Invoking
 
 Normally, you can run @value{DDD} by invoking the program
 @code{@value{ddd}}.
@@ -931,10 +937,10 @@ to debug a running process:
 would attach @value{DDD} to process @code{1234} (unless you also have a file
 named @file{1234}; @value{DDD} does check for a core file first).
 
+@cindex Option
 You can further control @value{DDD} by invoking it with specific
 @dfn{options}.  To get a list of @value{DDD} options, invoke @value{DDD}
 as
-@cindex Option
 
 @example
 @value{ddd} --help
@@ -976,20 +982,20 @@ Perl, then you should use a JDB, PYDB, or Perl inferior debugger.
 
 Use
 
+@cindex JDB, invoking @value{DDD} with
 @example
 @value{ddd} --jdb
 @end example
-@cindex JDB, invoking @value{DDD} with
 
+@cindex PYDB, invoking @value{DDD} with
 @example
 @value{ddd} --pydb
 @end example
-@cindex PYDB, invoking @value{DDD} with
 
+@cindex Perl, invoking @value{DDD} with
 @example
 @value{ddd} --perl
 @end example
-@cindex Perl, invoking @value{DDD} with
 
 @noindent
 to run DDD with JDB, PYDB, or Perl as inferior debugger.
@@ -1001,20 +1007,20 @@ debuggers.
 
 Use
 
+@cindex GDB, invoking @value{DDD} with
 @example
 @value{ddd} --gdb
 @end example
-@cindex GDB, invoking @value{DDD} with
 
+@cindex DBX, invoking @value{DDD} with
 @example
 @value{ddd} --dbx @var{program}
 @end example
-@cindex DBX, invoking @value{DDD} with
 
+@cindex XDB, invoking @value{DDD} with
 @example
 @value{ddd} --xdb @var{program}
 @end example
-@cindex XDB, invoking @value{DDD} with
 
 @noindent
 to run DDD with GDB, DBX, or XDB as inferior debugger.
@@ -1123,16 +1129,16 @@ for details.
 
 
 @item --debugger @var{name}
-Invoke the inferior debugger @var{name}.  This is useful if you have
-several debugger versions around, or if the inferior debugger cannot be
-invoked under its usual name (i.e. @samp{gdb}, @samp{dbx}, @samp{xdb},
-@samp{jdb}, @samp{pydb}, or @samp{perl}).
 @pindex gdb
 @pindex dbx
 @pindex xdb
 @pindex jdb
 @pindex pydb
 @pindex perl
+Invoke the inferior debugger @var{name}.  This is useful if you have
+several debugger versions around, or if the inferior debugger cannot be
+invoked under its usual name (i.e. @samp{gdb}, @samp{dbx}, @samp{xdb},
+@samp{jdb}, @samp{pydb}, or @samp{perl}).
 
 This option can also be used to pass options to the inferior debugger
 that would otherwise conflict with @value{DDD} options.  For instance,
@@ -1287,8 +1293,8 @@ details.
 
 
 @item --license
-Print the @value{DDD} license on standard output and exit.
 @cindex License, showing on standard output
+Print the @value{DDD} license on standard output and exit.
 
 Giving this option is equivalent to setting the @value{DDD}
 @samp{showLicense} resource to @var{on}.  @xref{Diagnostics}, for
@@ -1315,8 +1321,8 @@ details.
 
 
 @item --manual
-Print the @value{DDD} manual on standard output and exit.
 @cindex Manual, showing on standard output
+Print the @value{DDD} manual on standard output and exit.
 
 Giving this option is equivalent to setting the @value{DDD}
 @samp{showManual} resource to @var{on}.  @xref{Diagnostics}, for
@@ -1325,8 +1331,8 @@ details.
 
 
 @item --news
-Print the @value{DDD} news on standard output and exit.
 @cindex News, showing on standard output
+Print the @value{DDD} news on standard output and exit.
 
 Giving this option is equivalent to setting the @value{DDD}
 @samp{showNews} resource to @var{on}.  @xref{Diagnostics}, for details.
@@ -1474,12 +1480,12 @@ details.
 
 
 @item --PLAY @var{log-file}
+@flindex log
 Simulate an inferior debugger.  @var{log-file} is a
 @samp{$HOME/.@value{ddd}/log} file as generated by some previous
 @value{DDD} session.  When a command is entered, scan @var{log-file} for
 this command and re-issue the logged reply; if the command is not found,
 do nothing.  This is used by the @samp{--play} option.
-@flindex log
 
 
 @item --rhost @var{hostname}
@@ -1516,9 +1522,9 @@ details.
 
 
 @item --session @var{session}
+@cindex Session, setting when invoking @value{DDD}
 Load @var{session} upon start-up.  @xref{Resuming Sessions}, for
 details.
-@cindex Session, setting when invoking @value{DDD}
 
 Giving this option is equivalent to setting the @value{DDD}
 @samp{session} resource to @var{session}.  @xref{Resuming Sessions}, for
@@ -1576,13 +1582,13 @@ for details.
 
 
 @item --trace
+@flindex log
+@flindex ~
 Show the interaction between @value{DDD} and the inferior debugger on
 standard error.  This is useful for debugging @value{DDD}.  If
 @samp{--trace} is not specified, this information is written into
 @file{~/.@value{ddd}/log} (@samp{~} stands for your home directory),
 such that you can also do a post-mortem debugging.
-@flindex log
-@flindex ~
 
 Giving this option is equivalent to setting the @value{DDD} @samp{trace}
 resource to @var{on}.  @xref{Diagnostics}, for details.
@@ -1591,11 +1597,11 @@ resource to @var{on}.  @xref{Diagnostics}, for details.
 
 @item --tty
 @itemx -t
+@cindex TTY mode, setting when invoking @value{DDD}
 Enable TTY interface, taking additional debugger commands from
 standard input and forwarding debugger output on standard output.
 Current positions are issued in a format readable for humans.  By
 default, the debugger console is disabled.
-@cindex TTY mode, setting when invoking @value{DDD}
 
 Giving this option is equivalent to setting the @value{DDD}
 @samp{ttyMode} resource to @samp{on}.  @xref{TTY mode}, for details.
@@ -1658,17 +1664,17 @@ options only take a single dash @samp{-}.
 
 @table @code
 @item -display @var{display}
-Use the X server @var{display}.  By default, @var{display} is taken from 
-the @samp{DISPLAY} environment variable.
 @cindex Display, setting when invoking @value{DDD}
 @enindex DISPLAY
+Use the X server @var{display}.  By default, @var{display} is taken from 
+the @samp{DISPLAY} environment variable.
 
 @item -geometry @var{geometry}
 Specify the initial size and location of the debugger console.
 
 @item -iconic
-Start @value{DDD} iconified.
 @cindex Icon, invoking @value{DDD} as
+Start @value{DDD} iconified.
 
 @item -name @var{name}
 Give @value{DDD} the name @var{name}.
@@ -1734,8 +1740,8 @@ Use mapped symbol files if supported on this system.
 
 @item --nx
 @item -n
-Do not read @file{.gdbinit} file.
 @flindex .gdbinit
+Do not read @file{.gdbinit} file.
 
 @item --readnow
 Fully read symbol files on first access.
@@ -1846,9 +1852,9 @@ directories separated by colons.
 
 @item -prof
 @itemx -prof:@var{file}
+@flindex java.prof
 Output profiling data to @file{./java.prof}.  If @var{file} is given,
 write the data to @file{./@var{file}}.
-@flindex java.prof
 
 @item -verify
 Verify all classes when read in.
@@ -1932,8 +1938,11 @@ and restart @value{DDD}.
 
 @node Sessions
 @section Persistent Sessions
+@cindex Session
 
-...
+If you want to interrupt your current @value{DDD} session, you can save
+the entire the entire @value{DDD} state as @dfn{session} on disk and
+resume later.
 
 @menu
 * Saving Sessions::             
@@ -1943,18 +1952,168 @@ and restart @value{DDD}.
 
 @node Saving Sessions
 @subsection Saving Sessions
+@cindex Session, saving
+@lbindex Save Session As
+To save a session, select @samp{File @result{} Save Session As}.  You will 
+be asked for a symbolic session name @var{session}.
 
-Also: X sessions
+@cindex Core file, in sessions
+If your program is running (@pxref{Running}), or if you have opened a
+core file (@pxref{Opening Core Dumps}), @value{DDD} can also include a
+core file in the session such that the debuggee data will be restored
+when re-opening it.  To get a core file, @value{DDD} typically must
+@dfn{kill} the debuggee.  This means that you cannot resume program
+execution after saving a session.  Depending on your architecture, other
+options for getting a core file may also be available.
+
+@lbindex Include Core Dump
+Including a core dump is necessary for restoring memory contents and the
+current execution position.  To include a core dump, enable
+@samp{Include Core Dump}.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-save-session, 16cm}
+@sp 1
+@end ifnotinfo
+
+After clicking on @samp{Save}, the session is saved in
+@samp{~/.@value{ddd}/sessions/@var{session}}.
+
+Here's a list of the items whose state is saved in a session:
+@itemize @bullet
+@item
+The state of the debugged program, as a core file.@footnote{Only if a
+core file is included.}
+
+@item 
+All breakpoints and watchpoints (@pxref{Stopping}).
+
+@item 
+All signal settings (@pxref{Signals}).
+
+@item
+@cindex Deferred display, in sessions
+All displays (@pxref{Displaying Values}).@footnote{If a core file is
+@emph{not} to be included in the session, @value{DDD} data displays are
+saved as @emph{deferred}; that is, they will be restored as soon as
+program execution reaches the scope in which they were created.
+@xref{Creating Single Displays}, for details.}
+
+@item
+All @value{DDD} options (@pxref{Saving Options}).
+
+@item
+All debugger settings (@pxref{Debugger Settings}).
+
+@item
+All user-defined buttons (@pxref{Defining Buttons}).
+
+@item
+All user-defined commands (@pxref{Defining Commands}).
+
+@item
+The positions and sizes of @value{DDD} windows.
+
+@item
+The command history (@pxref{Command History}).
+@end itemize
+
+
+@cindex Session, active
+After saving the current state as a session, the session becomes
+@dfn{active}.  This means that @value{DDD} state will be saved as
+session defaults:
+
+@itemize @bullet
+@item
+User options will be saved in
+@samp{~/.@value{ddd}/sessions/@var{session}/init} instead of
+@samp{~/.@value{ddd}/init}.  @xref{Saving Options}, for details.
+
+@item
+The @value{DDD} command history will be saved in
+@samp{~/.@value{ddd}/sessions/@var{session}/history} instead of
+@samp{~/.@value{ddd}/history}.  @xref{Command History}, for details.
+@end itemize
+
+To make the current session inactive, open the @emph{default session}
+named @samp{[None]}.  @xref{Resuming Sessions}, for details on opening
+sessions.
+
 
 @node Resuming Sessions
 @subsection Resuming Sessions
+@cindex Session, opening
+@cindex Session, resuming
 
-Also: Starting DDD with a Session
+@lbindex Open Session
+To resume a previously saved session, select @samp{File @result{} Open
+Session} and choose a session name from the list.  After clicking on
+@samp{Open}, the entire @value{DDD} state will be restored from the
+given session.
+
+@cindex Default session
+@cindex Session, default
+The session named @samp{[None]} is the @dfn{default session} which is
+active when starting @value{DDD}.  To save options for default sessions,
+open the default session and save options.  @xref{Saving Options}, for
+details.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-open-session, 16cm}
+@sp 1
+@end ifnotinfo
+
+If a the restored session includes a core dump, the program being
+debugged will be in the same state at the time the session was saved; in
+particular, you can examine the program data.  However, you will not be
+able to resume program execution since the process and its environment
+(open files, resources, etc.) no longer exist.  However, you can restart
+the program, re-using the restored breakpoints and data displays.
+
+Opening sessions also restores command definitions, buttons, display
+shortcuts and the source tab width.  This way, you can maintain a
+different set of definitions for each session.
+
+You can also specify a session to open when starting @value{DDD}.  To
+invoke @value{DDD} with a session @var{session}, use
+
+@example
+@value{ddd} --session @var{session}
+@end example
+
+There is also a shortcut that opens the session @var{session} and
+invokes the inferior debugger on an executable named @var{session} (in
+case @var{session} cannot be opened):
+
+@example
+@value{ddd} =@var{session}
+@end example
+
+There is no need to give further command-line options when restarting a
+session, as they will be overridden by the options saved in the session.
+
+@pindex xsm
+@cindex X session
+You can also use an X session manager such as @file{xsm} to save and
+restore @value{DDD} sessions.@footnote{Requires X11R6 or later.} When
+being shut down by a session manager, @value{DDD} saves its state under
+the name specified by the session manager; resuming the X session makes
+@value{DDD} reload its saved state.
+
 
 @node Deleting Sessions
 @subsection Deleting Sessions
+@cindex Session, deleting
 
+@lbindex Delete
+To delete sessions that are no longer needed, select @samp{File
+@result{} Open Session} or @samp{File @result{} Save Session}.  Select
+the sessions you want to delete and click on @samp{Delete}.
 
+The default session @samp{[None]} cannot be deleted.
 
 
 @node Remote Debugging
@@ -1986,9 +2145,9 @@ ddd -display @var{display}
 where @var{display} is the name of the X server to connect to (for
 instance, @samp{@var{hostname}:0.0}, where @var{hostname} is your host).
 
+@enindex DISPLAY
 Instead of specifying @samp{-display @var{display}}, you can also set
 the @samp{DISPLAY} environment variable to @var{display}.
-@enindex DISPLAY
 
 
 @node Remote Debugger
@@ -2083,13 +2242,13 @@ GDB}, for details.  Basically, the following steps are required:
 Transfer the executable to the remote target.
 
 @item
-Start @samp{gdbserver} on the remote target.
 @pindex gdbserver
+Start @samp{gdbserver} on the remote target.
 
 @item
+@cmindex file
 Start @value{DDD} using GDB on the local machine, and load the same
 executable using the GDB @samp{file} command.
-@cmindex file
 
 @item
 Attach to the remote @samp{gdbserver} using the GDB @samp{target remote}
@@ -2097,9 +2256,9 @@ command.
 @cmindex target remote
 @end itemize
 
+@flindex .gdbinit
 The local @file{.gdbinit} file is useful for setting up directory search
 paths, etc.
-@flindex .gdbinit
 
 Of course, you can also combine @value{DDD} remote mode and GDB remote
 mode, running @value{DDD}, GDB, and the debugged program each on a
@@ -2116,15 +2275,15 @@ have:
 @item
 The @dfn{Data Window} shows the current data of the debugged program.
 @xref{Displaying Values}, for details.
-@cindex Data Window
+@cindex Data window
 @item
 The @dfn{Source Window} shows the current source code of the debugged
 program.  @xref{Navigating}, for details.
-@cindex Source Window
+@cindex Source window
 @item
 The @dfn{Debugger Console} accepts debugger commands and shows debugger
 messages.  @xref{Commands}, for details.
-@cindex Debugger Console
+@cindex Debugger console
 @end itemize
 
 @ifnotinfo
@@ -2141,16 +2300,16 @@ Besides these three main windows, there are some other optional windows:
 The @dfn{Command Tool} offers buttons for frequently used commands.
 It is usually placed on the source window.  
 @xref{Command Tool}, for details.
-@cindex Command Tool
+@cindex Command tool
 @item
 The @dfn{Machine Code Window} shows the current machine code.  It is
 usually placed beneath the current source.  @xref{Machine Code}, for
 details.
-@cindex Machine Code Window
+@cindex Machine code window
 @item
 The @dfn{Execution Window} shows the input and output of the debugged
 program.  @xref{Using the Execution Window}, for details.
-@cindex Execution Window
+@cindex Execution window
 @end itemize
 
 
@@ -2344,6 +2503,7 @@ Exit @value{DDD}.
 @node Edit Menu
 @subsection The Edit Menu
 @lbindex Edit
+@cindex Clipboard
 
 The @samp{Edit} menu contains standard editing operations, such as
 cutting, copying, pasting, and killing selected text.  Also allows
@@ -2825,10 +2985,10 @@ sending @value{DDD} a @code{SIGUSR1} signal.
 @item Tic Tac Toe
 @lbindex Tic Tac Toe
 @cindex Tic Tac Toe game
+@lbindex New Game
 Invoke a Tic Tac Toe game.  You must try to get three stop signs in a
 row, while preventing @value{DDD} from doing so with his skulls.  Click
 on @samp{New Game} to restart.
-@lbindex New Game
 
 @item When @value{DDD} Crashes
 @lbindex When @value{DDD} Crashes
@@ -3025,7 +3185,7 @@ watchpoint on @samp{()}.  @xref{Deleting Watchpoints}, for details.
 @item Print
 @lbindex Print
 @cindex Values, printing with @samp{Print}
-@cindex Printing values in the debugger console
+@cindex Printing values with @samp{Print}
 
 Print the value of @samp{()} in the debugger console.  @xref{Printing
 Values}, for details.
@@ -3034,7 +3194,7 @@ Values}, for details.
 @item Display
 @lbindex Display
 @cindex Values, displaying with @samp{Display}
-@cindex Displaying values in the data window
+@cindex Displaying values with @samp{Display}
 @cindex Display, creating
 
 Display the value of @samp{()} in the data window.  @xref{Displaying
@@ -3070,11 +3230,10 @@ Rotate the selected display(s).  @xref{Rotating Arrays}, for details.
 @item Set
 @lbindex Set
 @cindex Display, setting
-@cindex Setting values with @samp{Set}
-@cindex Values, setting with @samp{Set}
+@cindex Setting variables with @samp{Set}
+@cindex Variables, setting with @samp{Set}
 
-Set (change) the value of @samp{()}.  @xref{Assignment}, for
-details.
+Set (change) the value of @samp{()}.  @xref{Assignment}, for details.
 
 
 @item Undisp
@@ -3227,24 +3386,24 @@ help while working with @value{DDD}.
 
 @itemize @bullet
 @item
+@cindex Button tip
+@cindex Tool tip
+@cindex Balloon help
+@cindex Help, on buttons
+@cindex Tip, on buttons
 You can get a short help text on most @value{DDD} buttons by simply
 moving the mouse pointer on it and leave it there.  After a second, a
 small window (called @dfn{button tip}; also known as @dfn{tool tip} or
 @dfn{balloon help}) pops up, giving a hint on the button's meaning.  The
 button tip disappears as soon as you move the mouse pointer to another
 item.
-@cindex Button tip
-@cindex Tool tip
-@cindex Balloon help
-@cindex Help, on buttons
-@cindex Tip, on buttons
 
 @item
+@cindex Help, in the status line
+@cindex Status line
 The @dfn{status line} also displays information about the currently selected
 item.  By clicking on the status line, you can redisplay the most
 recent messages.
-@cindex Help, in the status line
-@cindex Status line
 
 @item
 @cindex Help, on items
@@ -3255,16 +3414,16 @@ point on the item you want help and press the @samp{F1} key.  This
 pops up a detailed help text.
 
 @item
+@lbindex Help
 The @value{DDD} dialogs all contain @samp{Help} buttons that give
 detailed information about the dialog.
-@lbindex Help
 
 @item
+@cindex Help, on commands
+@cmindex help
 You can get help on debugger commands by entering @samp{help} at the
 debugger prompt.  @xref{Entering Commands}, for details on entering
 commands.
-@cindex Help, on commands
-@cmindex help
 
 @item
 @lbindex What Now?
@@ -3277,15 +3436,14 @@ what you can do next.
 
 @item
 Of course, you can always refer to the @emph{on-line documentation}:
+
 @itemize @minus
 @item
+@lbindex DDD Reference
 @samp{Help @result{} @value{DDD} Reference} gives you access to the
 @value{DDD} manual, the ultimate @value{DDD} reference.
-@lbindex DDD Reference
 
 @item
-@samp{Help @result{} Debugger Reference} shows you the
-on-line documentation of the inferior debugger.
 @lbindex Debugger Reference
 @lbindex GDB Reference
 @lbindex DBX Reference
@@ -3293,6 +3451,8 @@ on-line documentation of the inferior debugger.
 @lbindex JDB Reference
 @lbindex PYDB Reference
 @lbindex Perl Reference
+@samp{Help @result{} Debugger Reference} shows you the
+on-line documentation of the inferior debugger.
 
 @item
 @samp{Help @result{} @value{DDD} WWW Page} gives you access to the
@@ -3315,16 +3475,16 @@ command can be undone.  @xref{Undo and Redo}, for details.
 
 @node Undo and Redo
 @section Undoing and Redoing Commands
-
-Almost every @value{DDD} command can be undone, using @samp{Edit
-@result{} Undo} or the @samp{Undo} button on the command tool.
 @lbindex Undo
 @cindex Undoing commands
 
-Likewise, @samp{Edit @result{} Redo} repeats the command most recently
-undone.
+Almost every @value{DDD} command can be undone, using @samp{Edit
+@result{} Undo} or the @samp{Undo} button on the command tool.
+
 @lbindex Redo
 @cindex Redoing commands
+Likewise, @samp{Edit @result{} Redo} repeats the command most recently
+undone.
 
 The @samp{Edit} menu shows which commands are to be undone and redone
 next; this is also indicated by the popup help on the @samp{Undo} and
@@ -3361,12 +3521,12 @@ Many C compilers are unable to handle the @samp{-g} and @samp{-O}
 options together.  Using those compilers, you cannot generate optimized
 executables containing debugging information.
 
+@cindex GCC
 GCC, the GNU C compiler, supports @samp{-g} with or without @samp{-O},
 making it possible to debug optimized code.  We recommend that you
 @emph{always} use @samp{-g} whenever you compile a program.  You may
 think your program is correct, but there is no sense in pushing your
 luck.
-@cindex GCC
 
 @cindex Optimized code, debugging
 @cindex Debugging optimized code
@@ -3380,7 +3540,6 @@ variable---because the compiler optimizes it out of existence.
 
 @node Opening Files
 @section Opening Files
-
 @cindex Files, opening
 
 If you did not invoke @value{DDD} specifying a program to be debugged,
@@ -3397,17 +3556,17 @@ sources.
 @subsection Opening Programs
 @cindex Program, opening
 @cindex Class, opening
+@lbindex Open Program
+@lbindex Open
 
 To open a program to be debugged, select @samp{File @result{} Open
 Program}.@footnote{With XDB and some DBX versions, the debugged program
 must be specified upon invocation and cannot be changed at run time.}
 Click on @samp{Open} to open the program
-@lbindex Open Program
-@lbindex Open
 
+@lbindex Open Class
 In JDB, select @samp{File @result{} Open Class} instead.  This gives you
 a list of available classes to choose from.
-@lbindex Open Class
 
 @ifnotinfo
 @sp 1
@@ -3415,9 +3574,9 @@ a list of available classes to choose from.
 @sp 1
 @end ifnotinfo
 
+@lbindex Open Recent
 To re-open a recently debugged program or class, select @samp{File
 @result{} Open Recent} and choose a program or class from the list.
-@lbindex Open Recent
 
 If no sources are found, @xref{Source Path} for specifying source
 directories.
@@ -3431,9 +3590,9 @@ If a previous run of the program has crashed and you want to find out
 why, you can have @value{DDD} examine its @dfn{core dump}.@footnote{JDB,
 PYDB, and Perl do not support core dumps.}
 
+@lbindex Open
 To open a core dump for the program, select @samp{File @result{} Open
 Core Dump}.  Click on @samp{Open} to open the core dump.
-@lbindex Open
 
 Before @samp{Open Core Dump}, you should first use @samp{File @result{}
 Open Program} to specify the program that generated the core dump and to
@@ -3443,22 +3602,23 @@ load its symbol table.
 @node Opening Source Files
 @subsection Opening Source Files
 @cindex Source file, opening
+@lbindex Open Source
 
 To open a source file of the debugged program, select @samp{File
 @result{} Open Source}.
-@lbindex Open Source
 
 @itemize @bullet{}
 @item
 Using GDB, this gives you a list of the sources used for compiling your
 program.  @xref{Source Path}, if no sources are found.
+
 @item
 Using other inferior debuggers, this gives you a list of accessible
 source files, which may or may not be related to your program.
 @end itemize
 
-Click on @samp{Open} to open the source file.
 @lbindex Open
+Click on @samp{Open} to open the source file.
 
 
 @node Looking up Items
@@ -3481,13 +3641,13 @@ text.
 
 @node Looking up Definitions
 @subsection Looking up Definitions
+@lbindex Lookup
 
 If you wish to lookup a specific function or variable definition whose
 name is visible in the source text, click with @emph{mouse button 1} on
 the function or variable name.  The name is copied to the argument
 field.  Change the name if desired and click on the @samp{Lookup} button
 to find its definition.
-@lbindex Lookup
 
 @ifnotinfo
 @sp 1
@@ -3509,33 +3669,33 @@ directories.
 
 @node Textual Search
 @subsection Textual Search
+@lbindex Find >>
+@lbindex Find <<
 
 If the item you wish to search is visible in the source text, click with
 @emph{mouse button 1} on it.  The identifier is copied to the argument
 field.  Click on the @samp{Find >>} button to find following occurrences
 and on @samp{Find >> @result{} Find << ()} to find previous occurrences.
-@lbindex Find >>
-@lbindex Find <<
 
+@lbindex Find Words Only
 By default, @value{DDD} finds only complete words.  To search for
 arbitrary substrings, change the value of the @samp{Source @result{}
 Find Words Only} option.
-@lbindex Find Words Only
 
 
 @node Looking up Previous Locations
 @subsection Looking up Previous Locations
-
-After looking up a location, use @samp{Edit @result{} Undo} (or the
-@samp{Undo} button on the command tool) to go back to the original
-locations.  @samp{Edit @result{} Redo} brings you back again to the
-location you looked for.
 @lbindex Undo
 @lbindex Redo
 @cindex Undoing lookups
 @cindex Redoing lookups
 @cindex Lookups, undoing
 @cindex Lookups, redoing
+
+After looking up a location, use @samp{Edit @result{} Undo} (or the
+@samp{Undo} button on the command tool) to go back to the original
+locations.  @samp{Edit @result{} Redo} brings you back again to the
+location you looked for.
 
 @ifnotinfo
 @sp 1
@@ -3555,25 +3715,25 @@ debugging session.
 Here's how GDB accesses source files; other inferior debuggers have
 similar methods.
 
+@cindex Source path
 GDB has a list of directories to search for source files; this is called
 the @dfn{source path}.  Each time GDB wants a source file, it tries all
 the directories in the list, in the order they are present in the list,
 until it finds a file with the desired name.  Note that the executable
 search path is @emph{not} used for this purpose.  Neither is the current
 working directory, unless it happens to be in the source path.
-@cindex Source path
 
 If GDB cannot find a source file in the source path, and the object
 program records a directory, GDB tries that directory too.  If the
 source path is empty, and there is no record of the compilation
 directory, GDB looks in the current directory as a last resort.
 
+@lbindex Search path for source files
+@cindex Source path, specifying
 To specify a source path for your inferior debugger, use @samp{Edit
 @result{} Debugger Settings} (@pxref{Debugger Settings} and search for
 appropriate entries (in GDB, this is @samp{Search path for source
 files}).
-@lbindex Search path for source files
-@cindex Source path, specifying
 
 If @samp{Debugger Settings} has no suitable entry, you can also specify
 a source path for the inferior debugger when invoking @value{DDD}.
@@ -3594,15 +3754,15 @@ such as a signal, a breakpoint, or reaching a new line after a
 change variables, set new breakpoints or remove old ones, and then
 continue execution.
 
+@cindex Breakpoint
 A @dfn{breakpoint} makes your program stop whenever a certain point in
 the program is reached.  For each breakpoint, you can add conditions to
 control in finer detail whether your program stops.  Typically,
 breakpoints are set before running the program.
-@cindex Breakpoint
 
+@cindex Watchpoint
 A @dfn{watchpoint} is a special breakpoint that stops your program when
 the value of an expression changes.
-@cindex Watchpoint
 
 @menu
 * Breakpoints::                 
@@ -3638,9 +3798,9 @@ the value of an expression changes.
 
 Breakpoints are set at a specific location in the program.
 
+@lbindex Break
 If the source line is visible, click with @emph{mouse button 1} on the
 left of the source line and then on the @samp{Break} button.
-@lbindex Break
 
 As a faster alternative, you can simply press @emph{mouse button 3} on
 the left of the source line and select the @samp{Set Breakpoint} item
@@ -3655,9 +3815,9 @@ from the line popup menu.
 As an even faster alternative, you can simply double-click on the left
 of the source line to set a breakpoint.
 
+@lbindex Break
 As yet another alternative, you can select @samp{Source @result{} Edit
 Breakpoints}.  Click on the @samp{Break} button and enter the location.
-@lbindex Break
 
 (If you find this number of alternatives confusing, be aware that
 @value{DDD} users fall into three categories, which must all be
@@ -3727,11 +3887,11 @@ been deleted, but remembers the information on the breakpoint so that
 you can @dfn{enable} it again later.@footnote{JDB does not support
 breakpoint disabling.}
 
+@lbindex Disable Breakpoint
+@lbindex Enable Breakpoint
 To disable a breakpoint, press @emph{mouse button 3} on the breakpoint
 symbol and select the @samp{Disable Breakpoint} item from the breakpoint
 popup menu.  To enable it again, select @samp{Enable Breakpoint}.
-@lbindex Disable Breakpoint
-@lbindex Enable Breakpoint
 
 @ifnotinfo
 @sp 1
@@ -3739,19 +3899,19 @@ popup menu.  To enable it again, select @samp{Enable Breakpoint}.
 @sp 1
 @end ifnotinfo
 
+@lbindex Disable
+@lbindex Enable
 As an alternative, you can select the breakpoint and click on
 @samp{Disable} or @samp{Enable} in the Breakpoint editor (invoked
 through @samp{Source @result{} Edit Breakpoints}.
-@lbindex Disable
-@lbindex Enable
 
 Disabled breakpoints are indicated by a grey stop sign, or
 @samp{_@var{n}_}, where @var{n} is the breakpoint number.
 
+@lbindex Clear
 The @samp{Disable Breakpoint} item is also accessible via the
 @samp{Clear} button.  Just press and hold @emph{mouse button 1} on the
 button to get a popup menu.
-@lbindex Clear
 
 
 @node Temporary Breakpoints
@@ -3761,10 +3921,10 @@ button to get a popup menu.
 A @dfn{temporary breakpoint} is immediately deleted as soon as it is
 reached.@footnote{JDB does not support temporary breakpoints.}
 
+@lbindex Set Temporary Breakpoint
 To set a temporary breakpoint, press @emph{mouse button 3} on the left
 of the source line and select the @samp{Set Temporary Breakpoint} item
 from the popup menu.
-@lbindex Set Temporary Breakpoint
 
 As a faster alternative, you can simply double-click on the left of the
 source line while holding @key{Ctrl}.
@@ -3773,10 +3933,10 @@ Temporary breakpoints are convenient to make the program continue up to
 a specific location: just set the temporary breakpoint at this location
 and continue execution.
 
+@lbindex Continue Until Here
 The @samp{Continue Until Here} item from the popup menu sets a temporary
 breakpoint on the left of the source line and immediately continues
 execution.  Execution stops when the temporary breakpoint is reached.
-@lbindex Continue Until Here
 
 The @samp{Set Temporary Breakpoint} and @samp{Continue Until Here} items
 are also accessible via the @samp{Break} button.  Just press and hold
@@ -3788,24 +3948,24 @@ are also accessible via the @samp{Break} button.  Just press and hold
 @subsection Deleting Breakpoints
 @cindex Breakpoint, deleting
 
+@lbindex Clear
 To delete a visible breakpoint, click with @emph{mouse button 1} on the
 breakpoint.  The breakpoint location is copied to the argument field.
 Click on the @samp{Clear} button to delete all breakpoints there.
-@lbindex Clear
 
 If the function name is visible, click with @emph{mouse button 1} on the
 function name.  The function name is copied to the argument field.
 Click on the @samp{Clear} button to clear all breakpoints there.
 
+@lbindex Delete Breakpoint
 As a faster alternative, you can simply press @emph{mouse button 3} on
 the breakpoint and select the @samp{Delete Breakpoint} item from the
 popup menu.
-@lbindex Delete Breakpoint
 
+@lbindex Delete
 As yet another alternative, you can select the breakpoint and click on
 @samp{Delete} in the Breakpoint editor (invoked through
 @samp{Source @result{} Edit Breakpoints}).
-@lbindex Delete
 
 As an even faster alternative, you can simply double-click on the
 breakpoint while holding @key{Ctrl}.
@@ -3863,12 +4023,12 @@ programming language.  A breakpoint with a condition evaluates the
 expression each time your program reaches it, and your program stops
 only if the condition is @emph{true}.
 
+@cindex Assertions and breakpoints
 This is the converse of using assertions for program validation; in that
 situation, you want to stop when the assertion is violated--that is,
 when the condition is false.  In C, if you want to test an assertion
 expressed by the condition @var{assertion}, you should set the condition
 @samp{!@var{assertion}} on the appropriate breakpoint.
-@cindex Assertions and breakpoints
 
 Break conditions can have side effects, and may even call functions in
 your program.  This can be useful, for example, to activate functions
@@ -3878,10 +4038,10 @@ there is another enabled breakpoint at the same address.  (In that case,
 @value{DDD} might see the other breakpoint first and stop your program
 without checking the condition of this one.)
 
+@cindex Breakpoint commands, vs. conditions
 Note that breakpoint commands are usually more convenient and flexible
 for the purpose of performing side effects when a breakpoint is reached.
 @xref{Breakpoint Commands}, for details.
-@cindex Breakpoint commands, vs. conditions
 
 
 @node Breakpoint Ignore Counts
@@ -3900,10 +4060,10 @@ the ignore count by one and continues.  As a result, if the ignore count
 value is @var{n}, the breakpoint does not stop the next @var{n} times
 your program reaches it.
 
+@lbindex Ignore Count
 In the field @samp{Ignore Count} of the @samp{Breakpoint Properties}
 panel, you can specify the breakpoint ignore count.@footnote{JDB, Perl
 and some DBX variants do not support breakpoint ignore counts.}
-@lbindex Ignore Count
 
 If a breakpoint has a positive ignore count and a condition, the
 condition is not checked.  Once the ignore count reaches zero,
@@ -4035,12 +4195,12 @@ gdb, Debugging with GDB}, for details.
 @section Watchpoints
 @cindex Watchpoint
 
+@cindex Assertions and watchpoints
 You can make the program stop as soon as some variable value changes, or
 when some variable is read or written.  This is called @dfn{setting a
 watchpoint on a variable}.@footnote{Watchpoints are available in GDB and
 some DBX variants only.  In XDB, a similar feature is available via XDB
 @dfn{assertions}; see the XDB documentation for details.}
-@cindex Assertions, vs. Watchpoints
 
 Watchpoints have much in common with breakpoints: in particular, you can
 enable and disable them.  You can also set conditions, ignore counts,
@@ -4070,9 +4230,9 @@ variable name.  The variable name is copied to the argument field.
 Otherwise, enter the variable name in the argument field.  Click on the
 @samp{Watch} button to set a watchpoint there.
 
+@lbindex Watch
 Using GDB, you can set different types of watchpoints.  Click and hold
 @emph{mouse button 1} on the @samp{Watch} button to get a menu.
-@lbindex Watch
 
 
 @node Editing Watchpoint Properties
@@ -4080,16 +4240,16 @@ Using GDB, you can set different types of watchpoints.  Click and hold
 @cindex Watchpoint properties
 @cindex Watchpoint, editing
 
+@lbindex Watch
 To change the properties of a watchpoint, enter the name of the watched
 variable in the argument field.  Click and hold @emph{mouse button 1} on
 the @samp{Watch} button and select @samp{Watchpoint Properties}.
-@lbindex Watch
 
+@lbindex Print
 The Watchpoint Properties panel has the same functionality as the
 Breakpoint Properties panel (@pxref{Editing Breakpoint Properties}).  As
 an additional feature, you can click on @samp{Print} to see the current
 value of a watched variable.
-@lbindex Print
 
 
 @node Editing all Watchpoints
@@ -4100,11 +4260,11 @@ To view and edit all watchpoints at once, select @samp{Data @result{}
 Edit Watchpoints}.  This will popup the @dfn{Watchpoint Editor} which
 displays the state of all watchpoints.
 
+@lbindex Print
 The Watchpoint Editor has the same functionality as the Breakpoint
 Editor (@pxref{Editing all Breakpoints}).  As an additional feature, you
 can click on @samp{Print} to see the current value of a watched
 variable.
-@lbindex Print
 
 
 @node Deleting Watchpoints
@@ -4162,13 +4322,13 @@ Consequently, you have another 10 seconds to cancel continuation before
 
 @cindex X server, locked
 @cindex Display, locked
+@lbindex Continue Automatically when Mouse Pointer is Frozen
 There is one situation where this fails: if you lock your X display
 while @var{DDD} is running, then @value{DDD} will consider a resulting
 pointer grab as a result of running the program---and automatically
 continue execution of the debugged program.  Consequently, you can turn
 off this feature via @samp{Edit @result{} Preferences @result{} General
 @result{} Continue Automatically when Mouse Pointer is Frozen}.
-@lbindex Continue Automatically when Mouse Pointer is Frozen
 
 @xref{Customizing Execution}, for further customizations.
 
@@ -4200,12 +4360,12 @@ output, debug an already running process, or kill a child process.
 @cindex Arguments, program
 @cindex Program arguments
 
+@lbindex Run
 To start execution of the debugged program, select @samp{Program
 @result{} Run}.  You will then be prompted for the arguments to pass to
 your program.  You can either select from a list of previously used
 arguments or enter own arguments in the text field.  Afterwards, press
 the @samp{Run} button to start execution with the selected arguments.
-@lbindex Run
 
 @ifnotinfo
 @sp 1
@@ -4213,13 +4373,13 @@ the @samp{Run} button to start execution with the selected arguments.
 @sp 1
 @end ifnotinfo
 
-To run your program again, with the same arguments, select
-@samp{Program @result{} Run Again} or press the @samp{Run} button on the
-command tool.  You may also enter @samp{run}, followed by arguments
-at the debugger prompt instead.
-@lbindex Run Again
-@lbindex Run
 @cmindex run
+@lbindex Run
+@lbindex Run Again
+To run your program again, with the same arguments, select @samp{Program
+@result{} Run Again} or press the @samp{Run} button on the command tool.
+You may also enter @samp{run}, followed by arguments at the debugger
+prompt instead.
 
 When you click on @samp{Run}, your program begins to execute
 immediately.  @xref{Stopping}, for a discussion of how to arrange for
@@ -4247,12 +4407,12 @@ current debugger state, such as breakpoints.
 The arguments to your program are specified by the arguments of the
 @samp{run} command, as composed in @samp{Program @result{} Run}.
 
+@enindex SHELL
 In GDB, the arguments are passed to a shell, which expands wildcard
 characters and performs redirection of I/O, and thence to your program.
 Your @samp{SHELL} environment variable (if it exists) specifies what
 shell GDB uses.  If you do not define @samp{SHELL}, GDB uses
 @samp{/bin/sh}.
-@enindex SHELL
 
 If you use another inferior debugger, the exact semantics on how the
 arguments are interpreted depend on the inferior debugger you are using.
@@ -4268,12 +4428,12 @@ Your program normally inherits its environment from the inferior
 debugger, which again inherits it from @value{DDD}, which again inherits
 it from its parent process (typically the shell or desktop).
 
+@cmindex unset environment
+@cmindex set environment
 In GDB, you can use the commands @samp{set environment} and @samp{unset
 environment} to change parts of the environment that affect your
-program.   @xref{Your program's environment, Your program's environment,
+program.  @xref{Your program's environment, Your program's environment,
 Your Program's Environment, gdb, Debugging with GDB}, for details.
-@cmindex set environment
-@cmindex unset environment
 
 
 @node Working Directory
@@ -4285,10 +4445,10 @@ Your program normally inherits its working directory from the inferior
 debugger, which again inherits it from @value{DDD}, which again inherits
 it from its parent process (typically the shell or desktop).
 
+@lbindex Change Directory
 You can change the working directory of the inferior debugger via
 @samp{File @result{} Change Directory} or via the @samp{cd} command of
 the inferior debugger.
-@lbindex Change Directory
 
 
 @node Input/Output
@@ -4309,18 +4469,18 @@ run > @var{outfile}
 @noindent
 starts your program, diverting its output to the file @var{outfile}.
 
+@cindex Pipe
 @emph{Warning:} While input and output redirection work, you cannot use
 pipes to pass the output of the program you are debugging to another
 program; if you attempt this, @value{DDD} is likely to wind up debugging
 the wrong program.  @xref{Attaching to a Process}, for an alternative.
-@cindex Pipes
 
 If command output is sent to the debugger console, it is impossible for
 @value{DDD} to distinguish between the output of the debugged program
 and the output of the inferior debugger.
 
-Program output that confuses @value{DDD} includes:
 @cindex Program output, confusing
+Program output that confuses @value{DDD} includes:
 
 @itemize @bullet
 @item
@@ -4345,11 +4505,11 @@ easily be avoided by redirecting program I/O, for instance to the
 separate execution window (@pxref{Using the Execution Window}).
 
 @cindex TTY settings
+@pindex stty
 If the inferior debugger changes the default TTY settings, for instance
 through a @samp{stty} command in its initialization file, @value{DDD}
 may also become confused.  The same applies to debugged programs which
 change the default TTY settings.
-@pindex stty
 
 
 @node Using the Execution Window
@@ -4357,13 +4517,13 @@ change the default TTY settings.
 @cindex Execution window
 @cindex Redirecting I/O to the execution window
 
+@lbindex Run in Execution Window
 By default, input and output of your program go to the debugger console.
 As an alternative, @value{DDD} can also invoke an @dfn{execution
 window}, where the program terminal input and output is
 shown.@footnote{The execution window is not available in JDB.}  To
 activate the execution window, select @samp{Program @result{} Run in
 Execution Window}.
-@lbindex Run in Execution Window
 
 The execution window is opened automatically as soon as you start the
 debugged program.  While the execution window is active, @value{DDD}
@@ -4389,11 +4549,11 @@ If the debugged program is already running in some process, you can
 @samp{Run}).@footnote{JDB, PYDB, and Perl do not support attaching the
 debugger to running processes.}
 
+@lbindex Attach
+@lbindex Attach to Process
 To attach @value{DDD} to a process, select @samp{File @result{} Attach
 to Process}.  You can now choose from a list of processes.  Then, press
 the @samp{Attach} button to attach to the specified process.
-@lbindex Attach to Process
-@lbindex Attach
 
 @ifnotinfo
 @sp 1
@@ -4401,6 +4561,7 @@ the @samp{Attach} button to attach to the specified process.
 @sp 1
 @end ifnotinfo
 
+@cindex Continuing process execution
 The first thing @value{DDD} does after arranging to debug the specified
 process is to stop it. You can examine and modify an attached process
 with all the @value{DDD} commands that are ordinarily available when you
@@ -4408,25 +4569,24 @@ start processes with @samp{Run}. You can insert breakpoints; you can
 step and continue; you can modify storage. If you would rather the
 process continue running, you may use @samp{Continue} after attaching
 @value{DDD} to the process.
-@cindex Continuing process execution
 
+@lbindex Open Program
 When using @samp{Attach to Process}, you should first use @samp{Open
 Program} to specify the program running in the process and load its
 symbol table.
-@lbindex Open Program
 
+@lbindex Detach Process
 When you have finished debugging the attached process, you can use the
 @samp{File @result{} Detach Process} to release it from @value{DDD}
 control.  Detaching the process continues its execution.  After
 @samp{Detach Process}, that process and @value{DDD} become
 completely independent once more, and you are ready to attach another
 process or start one with @samp{Run}.
-@lbindex Detach Process
 
+@lbindex List Processes
 You can customize the list of processes shown by defining an alternate
 command to list processes.  See @samp{Edit @result{} Preferences
 @result{} Helpers @result{} List Processes}.
-@lbindex List Processes
 
 
 @node Program Stop
@@ -4455,12 +4615,12 @@ Execution completes.
 @value{DDD} shows the current program status in the debugger console.
 The current execution position is highlighted by an arrow.
 
+@lbindex Uniconify When Ready
 If @samp{Edit @result{} Preferences @result{} General @result{}
 Uniconify When Ready} is set, @value{DDD} automatically deiconifies
 itself when the program stops.  This way, you can iconify @value{DDD}
 during a lengthy computation and have it uniconify as soon as the
 program stops.
-@lbindex Uniconify When Ready
 
 
 @node Resuming Execution
@@ -4470,21 +4630,21 @@ program stops.
 @cindex Continuing execution
 @cindex Execution, continuing
 
+@lbindex Continue
 To resume execution, at the current execution position, click on the
 @samp{Continue} button.  Any breakpoints set at the current execution
 position are bypassed.
-@lbindex Continue
 
 
 @subsection Stepping one Line
 @cindex Execution, one line
 @cindex Continue, one line
 
+@lbindex Step
 To execute just one source line, click on the @samp{Step} button.  The
 program is executed until control reaches a different source line, which
 may be in a different function.  Then, the program is stopped and
 control returns to @value{DDD}.
-@lbindex Step
 
 @emph{Warning}: If you use the @samp{Step} button while control is
 within a function that was compiled without debugging information,
@@ -4493,7 +4653,6 @@ debugging information.  Likewise, it will not step into a function which
 is compiled without debugging information.  To step through functions
 without debugging information, use the @samp{Stepi} button
 (@pxref{Machine Code Execution}).
-@lbindex Stepi
 
 In GDB, the @samp{Step} button only stops at the first instruction of a
 source line.  This prevents the multiple stops that used to occur in
@@ -4503,18 +4662,16 @@ function that has debugging information is called within the line.
 Also, the @samp{Step} in GDB only enters a subroutine if there is line
 number information for the subroutine.  Otherwise it acts like the
 @samp{Next} button.
-@lbindex Next
 
 
 @subsection Continuing to the Next Line
 @cindex Execution, to next line
 @cindex Continue, to next line
 
+@lbindex Next
 To continue to the next line in the current function, click on the
 @samp{Next} button.  This is similar to @samp{Step}, but any function
 calls appearing within the line of code are executed without stopping.
-@lbindex Next
-@lbindex Step
 
 Execution stops when control reaches a different line of code at the
 original stack level that was executing when you clicked on @samp{Next}.
@@ -4529,14 +4686,15 @@ To continue running until a specific location is reached, use the
 @xref{Temporary Breakpoints}, for a discussion.
 
 
+
 @subsection Continuing Until a Greater Line is Reached
 @cindex Execution, until greater line is reached
 @cindex Continue, until greater line is reached
 
+@lbindex Until
 To continue until a greater line in the current function is reached,
 click on the @samp{Until} button.  This is useful to avoid single
 stepping through a loop more than once.
-@lbindex Until
 
 @samp{Until} is like @samp{Next}, except that when @samp{Until}
 encounters a jump, it automatically continues execution until the
@@ -4559,9 +4717,9 @@ slower than continuing until a breakpoint is reached.
 @cindex Execution, until function returns
 @cindex Continue, until function returns
 
+@lbindex Finish
 To continue running until the current function returns, use the
 @samp{Finish} button.  The returned value (if any) is printed.
-@lbindex Finish
 
 
 @node Continuing Somewhere Else
@@ -4578,18 +4736,18 @@ The most common occasion to use this feature is to back up---perhaps
 with more breakpoints set-over a portion of a program that has already
 executed, in order to examine its execution in more detail.
 
+@lbindex Set Execution Position
 To set the execution position to the current location, use @samp{Set
 Execution Position} from the breakpoint popup menu.  This item is also
 accessible by pressing and holding the @samp{Break/Clear}
 button.@footnote{JDB, PYDB, and Perl do not support altering the
 execution position.}
-@lbindex Set Execution Position
 
+@cindex Execution position, dragging
 As a quicker alternative, you can also press @emph{mouse button 1} on
 the arrow and drag it to a different location.@footnote{When glyphs are
 disabled (@pxref{Customizing Source}), dragging the execution position
 is not possible.  Set the execution position explicitly instead.}
-@cindex Execution position, dragging
 
 @ifnotinfo
 @sp 1
@@ -4608,9 +4766,9 @@ patterns of arguments or of local variables.  For this reason, moving
 the execution position requests confirmation if the specified line is
 not in the function currently executing.
 
+@lbindex Continue
 After moving the execution position, click on @samp{Continue} to resume
 execution.
-@lbindex Continue
 
 
 @node Stack
@@ -4619,15 +4777,15 @@ execution.
 When your program has stopped, the first thing you need to know is
 where it stopped and how it got there.
 
+@cindex Frame
+@cindex Stack frame
+@cindex Call stack
 Each time your program performs a function call, information about the
 call is generated.  That information includes the location of the call
 in your program, the arguments of the call, and the local variables of
 the function being called.  The information is saved in a block of data
 called a @dfn{stack frame}.  The stack frames are allocated in a region
 of memory called the @dfn{call stack}.
-@cindex Stack frame
-@cindex Call stack
-@cindex Frame
 
 When your program stops, the @value{DDD} commands for examining the
 stack allow you to see all of this information.
@@ -4722,13 +4880,13 @@ changing the current stack frame.}
 In the backtrace window, you can @emph{select} an arbitrary frame to
 move from one stack frame to another.  Just click on the desired frame.
 
+@lbindex Up
 The @samp{Up} button selects the function that called the current
 one---that is, it moves one frame up.
-@lbindex Up
 
+@lbindex Down
 The @samp{Down} button selects the function that was called by
 the current one---that is, it moves one frame down.
-@lbindex Down
 
 @cmindex up
 @cmindex down
@@ -4769,6 +4927,9 @@ take their earlier values.  Your program state is in fact unchanged,
 but DDD gives you a @emph{view} on the earlier state as recorded by
 DDD.
 
+@cindex Historic mode
+@lbindex Undo
+@lbindex Redo
 In this so-called @dfn{historic mode}, most normal @value{DDD}
 commands that would query further information from the program are
 disabled, since the debugger cannot be queried for the earlier state.
@@ -4776,9 +4937,6 @@ However, you can examine the current execution position, or the
 displayed variables.  Using @samp{Undo} and @samp{Redo}, you can
 move back and forward in time to examine how your program got into the
 present state.
-@cindex Historic mode
-@lbindex Undo
-@lbindex Redo
 
 To let you know that you are operating in historic mode, the execution
 arrow gets a dashed-line appearance (indicating a past position);
@@ -4842,10 +5000,10 @@ thread.@footnote{Currently, threads are supported in GDB and JDB only.}
 @sp 1
 @end ifnotinfo
 
+@lbindex Threads
 To view all currently active threads in your program, select
 @samp{Status @result{} Threads}.  The current thread is highlighted.
 Select any thread to make it the current thread.
-@lbindex Threads
 
 Using JDB, additional functionality is available:
 
@@ -4866,6 +5024,7 @@ Programs with Multiple Threads, gdb, Debugging with GDB}).
 
 @node Signals
 @section Handling Signals
+@cindex Signals
 
 A signal is an asynchronous event that can happen in a program.  The
 operating system defines the possible kinds of signals, and gives each
@@ -4875,8 +5034,8 @@ the signal a program gets from referencing a place in memory far away
 from all the areas in use; @code{SIGALRM} occurs when the alarm clock
 timer goes off (which happens only if your program has requested an
 alarm).
-@cindex Signals
 
+@cindex Signal, fatal
 Some signals, including @code{SIGALRM}, are a normal part of the
 functioning of your program.  Others, such as @code{SIGSEGV}, indicate
 errors; these signals are @emph{fatal} (kill your program immediately)
@@ -4884,19 +5043,18 @@ if the program has not specified in advance some other way to handle the
 signal.  @code{SIGINT} does not indicate an error in your program, but
 it is normally fatal so it can carry out the purpose of the interrupt:
 to kill the program.
-@cindex Signal, fatal
 
 GDB has the ability to detect any occurrence of a signal in your
 program.  You can tell GDB in advance what to do for each kind of
 signal.
 
+@cindex Signal settings, editing
+@lbindex Signals
 Normally, @value{DDD} is set up to ignore non-erroneous signals like
 @code{SIGALRM} (so as not to interfere with their role in the
 functioning of your program) but to stop your program immediately
 whenever an error signal happens.  In @value{DDD}, you can view and edit
 these settings via @samp{Status @result{} Signals}.
-@lbindex Signals
-@cindex Signal settings, editing
 
 @samp{Status @result{} Signals} pops up a panel showing all the kinds of
 signals and how GDB has been told to handle each one.  The settings
@@ -4930,15 +5088,15 @@ If unset, GDB should not allow your program to see this signal.
 @sp 1
 @end ifnotinfo
 
+@lbindex All Signals
 The entry @samp{All Signals} is special.  Changing a setting here
 affects @emph{all signals at once}---except those used by the debugger,
 typically @code{SIGTRAP} and @code{SIGINT}.
-@lbindex All Signals
 
+@lbindex Reset
+@cindex Undoing signal handling
 To undo any changes, use @samp{Edit @result{} Undo}.  The @samp{Reset}
 button restores the saved settings.
-@cindex Undoing signal handling
-@lbindex Reset
 
 When a signal stops your program, the signal is not visible until you
 continue.  Your program sees the signal then, if @samp{Pass} is in
@@ -4947,12 +5105,13 @@ after GDB reports a signal, you can change the @samp{Pass} setting in
 @samp{Status @result{} Signals} to control whether your program sees
 that signal when you continue.
 
+@lbindex Send
 You can also cause your program to see a signal it normally would not
 see, or to give it any signal at any time.  The @samp{Send} button will
 resume execution where your program stopped, but immediately give it the
 signal shown.
-@lbindex Send
 
+@lbindex Continue Without Signal
 On the other hand, you can also prevent your program from seeing a
 signal.  For example, if your program stopped due to some sort of memory
 reference error, you might store correct values into the erroneous
@@ -4960,15 +5119,14 @@ variables and continue, hoping to see more execution; but your program
 would probably terminate immediately as a result of the fatal signal
 once it saw the signal.  To prevent this, you can resume execution using
 @samp{Commands @result{} Continue Without Signal}.
-@lbindex Continue Without Signal
 
+@lbindex Save Options
+@lbindex Save Session As
+@cindex Signal settings, saving
 @samp{Edit @result{} Save Options} does not save changed signal
 settings, since changed signal settings are normally useful within
 specific projects only.  Instead, signal settings are saved with the
 current session, using @samp{File @result{} Save Session As}.
-@lbindex Save Options
-@lbindex Save Session As
-@cindex Signal settings, saving
 
 
 @node Killing the Program
@@ -4998,35 +5156,35 @@ debugger state).
 
 @itemize @bullet
 @item 
+@cindex Value tip
+@cindex Tip, value
 The quickest way to examine variables is to move the pointer on an
 occurrence in the source text.  The value is displayed in the source
 line; after a second, a popup window (called @dfn{value tip}) shows the
 variable value.  This is useful for quick examination of several simple
 values.
-@cindex Value tip
-@cindex Tip, value
 
 @item
+@cindex Printing values
+@cindex Value, printing
 If you want to refer to variable values at a later time, you can
 @dfn{print} the value in the debugger console.  This allows for
 displaying and examining larger data structures.
-@cindex Printing values
-@cindex Value, printing
 
 @item
+@cindex Displaying values
+@cindex Value, displaying
 If you want to examine complex data structures, you can @dfn{display}
 them graphically in the data window.  Displays remain effective until
 you delete them; they are updated each time the program stops.  This is
 useful for large dynamic structures.
-@cindex Displaying values
-@cindex Value, displaying
 
 @item
+@cindex Plotting values
+@cindex Value, plotting
 If you want to examine arrays of numeric values, you can @dfn{plot} them
 graphically in a separate plot window.  The plot is updated each time
 the program stops.  This is useful for large numeric arrays.
-@cindex Plotting values
-@cindex Value, plotting
 
 @item
 Using GDB or DBX, you can also @dfn{examine memory contents} in any of
@@ -5046,14 +5204,14 @@ several formats, independently of your program's data types.
 
 @node Value Tips
 @section Showing Simple Values using Value Tips
+@cindex Value tip
+@cindex Tip, value
 
 To display the value of a simple variable, move the mouse pointer on its
 name.  After a second, a small window (called @dfn{value tip}) pops up
 showing the value of the variable pointed at.  The window disappears as
 soon as you move the mouse pointer away from the variable.  The value is
 also shown in the status line.
-@cindex Value tip
-@cindex Tip, value
 
 @ifnotinfo
 @sp 1
@@ -5061,13 +5219,16 @@ also shown in the status line.
 @sp 1
 @end ifnotinfo
 
+@lbindex Automatic Display of Variable Values
 You can turn off value tips via @samp{Edit @result{} Preferences
 @result{} General @result{} Automatic Display of Variable Values}.
-@lbindex Automatic Display of Variable Values
 
 
 @node Printing Values
 @section Printing Simple Values in the Debugger Console
+@cindex Printing values
+@cindex Value, printing
+@lbindex Print
 
 The variable value can also be printed in the debugger console, making
 it available for future operations.  To print a variable value, select
@@ -5075,9 +5236,6 @@ the desired variable by clicking @emph{mouse button 1} on its name.  The
 variable name is copied to the argument field.  By clicking the
 @samp{Print} button, the value is printed in the debugger console.  The
 printed value is also shown in the status line.
-@cindex Printing values
-@cindex Value, printing
-@lbindex Print
 
 As a shorter alternative, you can simply press @emph{mouse button 3} on
 the variable name and select the @samp{Print} item from the popup menu.
@@ -5088,25 +5246,26 @@ the variable name and select the @samp{Print} item from the popup menu.
 @sp 1
 @end ifnotinfo
 
+@cmindex print
+@cindex Print, output formats
 In GDB, the @samp{Print} button generates a @samp{print} command, which
 has several more options.  @xref{Data, Examining Data, Examining Data,
 gdb, Debugging with GDB}, for GDB-specific expressions, variables, and
 output formats.
-@cmindex print
-@cindex Print, output formats
 
 
 
 @node Displaying Values
 @section Displaying Complex Values in the Data Window
+@cindex Data Window
+@cindex Value, displaying
+@cindex Display
+@cindex Displaying values
 
 To explore complex data structures, you can @dfn{display} them
 permanently in the @emph{data window}.  The data window displays
 selected data of your program, showing complex data structures
 graphically.  It is updated each time the program stops.
-@cindex Data Window
-@cindex Value, displaying
-@cindex Display
 
 @menu
 * Display Basics::              
@@ -5125,8 +5284,8 @@ The essentials are:
 
 @itemize @bullet
 @item
-Click on @samp{Display} to display the variable in @samp{()}.
 @lbindex Display
+Click on @samp{Display} to display the variable in @samp{()}.
 
 @item
 Click on a display to select it.
@@ -5152,14 +5311,14 @@ Click on @samp{Undisplay} to delete the selected display.
 
 @node Creating Single Displays
 @subsubsection Creating Single Displays
+@cindex Display, creating
+@lbindex Display
 
 To create a new display showing a specific variable, select the variable
 by clicking @emph{mouse button 1} on its name.  The variable name is
 copied to the argument field.  By clicking the @samp{Display} button, a
 new display is created in the data window.  The data window opens
 automatically as soon as you create a display.
-@cindex Display, creating
-@lbindex Display
 
 @ifnotinfo
 @sp 1
@@ -5167,9 +5326,9 @@ automatically as soon as you create a display.
 @sp 1
 @end ifnotinfo
 
+@lbindex Display
 As a shorter alternative, you can simply press @emph{mouse button 3} on
 the variable name and select @samp{Display} from the popup menu.
-@lbindex Display
 
 As an even faster alternative, you can also double-click on the variable
 name.
@@ -5179,43 +5338,42 @@ displayed in the argument field and press the @samp{Display} button.
 
 Finally, you may also type in a command at the debugger prompt:
 
+@cmindex graph display
 @example
 graph display @var{expr} [clustered] [at (@var{x}, @var{y})] 
     [dependent on @var{display}] [[now or] when in @var{scope}]
 @end example
-@cmindex graph display
 
 This command creates a new display showing the value of the expression
 @var{expr}.  The optional parts have the following meaning:
 
 @table @code
 @item clustered
+@cindex Clustered display, creating
+@cindex Display, clustered
 If given, the new display is created in a cluster.  @xref{Clustering},
 for a discussion.
-@cindex Display, clustered
-@cindex Cluster command
 
 @item at (@var{x}, @var{y})
-If given, the new display is created at the position (@var{x}, @var{y}).
-Otherwise, a default position is assigned.
 @cindex Display position
 @cindex Position, of display
+If given, the new display is created at the position (@var{x}, @var{y}).
+Otherwise, a default position is assigned.
 
 @item dependent on @var{display}
+@cindex Dependent display
+@cindex Display, dependent
 If given, an edge from the display numbered or named @emph{display} to
 the new display is created.  Otherwise, no edge is created.
 @xref{Dependent Values}, for details.
-@cindex Dependent display
-@cindex Display, dependent
 
 @item when in @var{scope}
 @itemx now or when in @var{scope}
-
+@cindex Deferred display
+@cindex Display, deferred
 If @samp{when in} is given, the display creation is @dfn{deferred} until
 execution reaches the given @var{scope} (a function name, as in the
 backtrace output).
-@cindex Deferred display
-@cindex Display, deferred
 
 If @samp{now or when in} is given, @value{DDD} first attempts to create
 the display immediately.  The display is deferred only if display
@@ -5230,20 +5388,20 @@ given, the display is created immediately.
 @node Selecting Displays
 @subsubsection Selecting Displays
 
-Each display in the data window has a @emph{title bar} containing the
-@emph{display number} and the displayed expression (the @emph{display
-name}).  Below the title, the @emph{display value} is shown.
 @cindex Display title
 @cindex Title, display
 @cindex Display name
 @cindex Name, display
 @cindex Display value
 @cindex Value, display
+Each display in the data window has a @emph{title bar} containing the
+@emph{display number} and the displayed expression (the @emph{display
+name}).  Below the title, the @emph{display value} is shown.
 
-You can select single displays by clicking on them with @emph{mouse
-button 1}.
 @cindex Display, selecting
 @cindex Selecting single displays
+You can select single displays by clicking on them with @emph{mouse
+button 1}.
 
 @cindex Extending display selection
 @cindex Display selection
@@ -5260,12 +5418,12 @@ displays.
 Single displays may also be selected by using the arrow keys @key{Up},
 @key{Down}, @key{Left}, and @key{Right}.
 
+@cindex Selecting multiple displays
 @emph{Multiple displays} are selected by pressing and holding
 @emph{mouse button 1} somewhere on the window background.  By moving the
 pointer while holding the button, a selection rectangle is shown; all
 displays fitting in the rectangle are selected when mouse button 1 is
 released.
-@cindex Selecting multiple displays
 
 @kindex Shift
 If the @key{Shift} key is pressed while selecting, the existing
@@ -5289,22 +5447,22 @@ Aggregate values (i.e. records, structs, classes, and arrays) can be
 shown @emph{expanded}, that is, displaying all details, or
 @emph{hidden}, that is, displayed as @samp{@{@dots{}@}}.
 
-To show details about an aggregate, select the aggregate by clicking
-@emph{mouse button 1} on its name or value and click on the @samp{Show}
-button.  Details are shown for the aggregate itself as well as for all
-contained sub-aggregates.
 @lbindex Show
 @cindex Display, showing details
 @cindex Detail, showing
 @cindex Showing display details
+To show details about an aggregate, select the aggregate by clicking
+@emph{mouse button 1} on its name or value and click on the @samp{Show}
+button.  Details are shown for the aggregate itself as well as for all
+contained sub-aggregates.
 
-To hide details about an aggregate, select the aggregate by clicking
-@emph{mouse button 1} on its name or value and click on the @samp{Hide}
-button.
 @lbindex Hide
 @cindex Display, hiding details
 @cindex Detail, hiding
 @cindex Hiding display details
+To hide details about an aggregate, select the aggregate by clicking
+@emph{mouse button 1} on its name or value and click on the @samp{Hide}
+button.
 
 @ifnotinfo
 @sp 1
@@ -5317,19 +5475,19 @@ button, a menu pops up with even more alternatives:
 
 @table @code
 @item Show More ()
+@lbindex Show More
 Shows details of all aggregates currently hidden, but not of their
 sub-aggregates.  You can invoke this item several times in a row to
 reveal more and more details of the selected aggregate.
-@lbindex Show More
 
 @item Show Just ()
-Shows details of the selected aggregate, but hides all sub-aggregates.
 @lbindex Show Just
+Shows details of the selected aggregate, but hides all sub-aggregates.
 
 @item Show All ()
+@lbindex Show All
 Shows all details of the selected aggregate and of its sub-aggregates.
 This item is equivalent to the @samp{Show} button.
-@lbindex Show All
 
 @item Hide ()
 Hide all details of the selected aggregate.  This item is equivalent
@@ -5346,26 +5504,26 @@ will be shown; if the entire value is shown, double-clicking will
 @emph{hide} the value instead.  This way, you can double-click on a
 value until you get the right amount of details.
 
-If @emph{all} details of a display are hidden, the display is called
-@emph{disabled}; this is indicated by the string @samp{(Disabled)}.
 @cindex Disabled displays
 @cindex Display, disabled
+If @emph{all} details of a display are hidden, the display is called
+@dfn{disabled}; this is indicated by the string @samp{(Disabled)}.
 
 Displays can also be disabled or enabled via a @value{DDD} command,
 which you enter at the debugger prompt:
 
+@cmindex graph disable display
 @example
 graph disable display @var{displays@dots{}}
 @end example
-@cmindex graph disable display
 
 @noindent
 disables the given displays.
 
+@cmindex graph enable display
 @example
 graph enable display @var{displays@dots{}}
 @end example
-@cmindex graph enable display
 
 @noindent
 re-enables the given displays.
@@ -5380,14 +5538,18 @@ a single display name.  If you specify a display by name, all displays
 with this name will be affected.
 @end itemize
 
-Use @samp{Edit @result{} Undo} to undo disabling or enabling displays.
-@lbindex Undo
 @cindex Undo disabling displays
 @cindex Disabling displays, undoing
+@lbindex Undo
+Use @samp{Edit @result{} Undo} to undo disabling or enabling displays.
 
 
 @node Displaying Local Variables
 @subsubsection Displaying Local Variables
+@lbindex Display Local Variables
+@lbindex Display Arguments
+@cindex Local variables, displaying
+@cindex Arguments, displaying
 
 You can display all local variables at once by choosing @samp{Data
 @result{} Display Local Variables}.  When using DBX, XDB, JDB, or Perl,
@@ -5395,10 +5557,6 @@ this displays all local variables, including the arguments of the
 current function.  When using GDB or PYDB, function arguments are
 contained in a separate display, activated by @samp{Data @result{}
 Display Arguments}.
-@lbindex Display Local Variables
-@lbindex Display Arguments
-@cindex Local variables, displaying
-@cindex Arguments, displaying
 
 The display showing the local variables can be manipulated just like any
 other data display.  Individual variables can be selected and
@@ -5417,15 +5575,15 @@ dereferenced.
 You can create a display from the output of an arbitrary debugger
 command.  By entering
 
+@cmindex graph display
 @example
 graph display `@var{command}`
 @end example
-@cmindex graph display
 
 @noindent
+@cindex Status display
 the output of @emph{command} is turned into a @emph{status display}
 updated each time the program stops.
-@cindex Status display
 
 For instance, the command
 
@@ -5437,10 +5595,10 @@ graph display `where`
 creates a status display named @samp{Where} that shows the current
 backtrace.
 
+@lbindex More Status Displays
 If you are using GDB, @value{DDD} provides a panel from which you can
 choose useful status displays.  Select @samp{Data @result{} More Status
 Displays} and pick your choice from the list.
-@lbindex More Status Displays
 
 @ifnotinfo
 @sp 1
@@ -5476,6 +5634,10 @@ a better way.  @xref{Array Slices}, for a discussion.
 
 @node Refreshing the Data Window
 @subsubsection Refreshing the Data Window
+@cindex Display, refreshing
+@cindex Display, updating
+@cindex Refreshing displayed values
+@cindex Updating displayed values
 
 The data window is automatically updated or @dfn{refreshed} each time
 the program stops.  Values that have changed since the last refresh are
@@ -5485,25 +5647,21 @@ However, there may be situations where you should refresh the data
 window explicitly.  This is especially the case whenever you changed
 debugger settings that could affect the data format, and want the data
 window to reflect these settings.
-@cindex Display, refreshing
-@cindex Display, updating
-@cindex Refreshing displayed values
-@cindex Updating displayed values
 
+@lbindex Refresh Displays
 You can refresh the data window by selecting @samp{Data @result{}
 Refresh Displays}.
-@lbindex Refresh Displays
 
+@lbindex Refresh Displays
 As an alternative, you can press @emph{mouse button 3} on the background
 of the data window and select the @samp{Refresh Displays} item.
-@lbindex Refresh Displays
 
 Typing
 
+@cmindex graph refresh
 @example
 graph refresh
 @end example
-@cmindex graph refresh
 
 @noindent
 at the debugger prompt has the same effect.
@@ -5511,30 +5669,30 @@ at the debugger prompt has the same effect.
 
 @node Clustering
 @subsubsection Clustering Displays
+@cindex Cluster
+@cindex Display, clustering
 
 If you examine several variables at once, having a separate display for
 each of them uses a lot of screen space.  This is why @value{DDD}
 supports @dfn{clusters}.  A cluster merges several logical data displays
 into one physical display, saving screen space.
-@cindex Cluster
-@cindex Display, clustering
 
 There are two ways to create clusters:
 @itemize @bullet
 @item
+@lbindex Cluster
 You can create clusters @emph{manually}.  This is done by selecting the
 displays to be clustered and choosing @samp{Undisp @result{} Cluster
 ()}.  This creates a new cluster from all selected displays.  If an
 already existing cluster is selected, too, the selected displays will be
 clustered into the selected cluster.
-@lbindex Cluster
 
 @item
+@lbindex Cluster Data Displays
 You can create a cluster @emph{automatically} for all independent data
 displays, such that all new data displays will automatically be
 clustered, too.  This is achieved by enabling @samp{Edit @result{}
 Preferences @result{} Data @result{} Cluster Data Displays}.
-@lbindex Cluster Data Displays
 @end itemize
 
 
@@ -5554,9 +5712,9 @@ are two ways of doing it:
 
 @itemize @bullet
 @item
+@lbindex Uncluster
 You can uncluster displays @emph{manually}, by selecting the cluster
 and choosing @samp{Undisp @result{} Uncluster ()}.
-@lbindex Uncluster
 
 @item
 You can uncluster all current and future displays by disabling
@@ -5626,13 +5784,13 @@ The address of the displayed expression.  Used for resolving aliases
 
 @node Deleting Displays
 @subsubsection Deleting Displays
+@cindex Display, deleting
+@cindex Deleting displays
+@lbindex Undisp
 
 To delete a single display, select it and click on the @samp{Undisp}
 button.  As an alternative, you can also press @emph{mouse button 3} on
 the display and select the @samp{Undisplay} item.
-@cindex Display, deleting
-@cindex Deleting displays
-@lbindex Undisp
 
 When a display is deleted, its immediate ancestors and descendants are
 automatically selected, so that you can easily delete entire graphs.
@@ -5641,7 +5799,6 @@ To delete several displays at once, use the @samp{Undisp} button in the
 Display Editor (invoked via @samp{Data @result{} Edit Displays}).
 Select any number of display items in the usual way and delete them by
 pressing @samp{Undisp}.
-@lbindex Undisp
 
 As an alternative, you can also use a @value{DDD} command:
 
@@ -5659,24 +5816,18 @@ a single display name.  If you specify a display by name, all displays
 with this name will be affected.
 @end itemize
 
+@lbindex Close data window when deleting last display
 If you are using stacked windows, deleting the last display from the
 data window also automatically closes the data window.  (You can change
 this via @samp{Edit @result{} Preferences @result{} Data @result{} Close
 data window when deleting last display}.)
-@lbindex Close data window when deleting last display
 
-If you deleted a display by mistake, use @samp{Edit @result{} Undo} to
-re-create it.
 @lbindex Undo
 @cindex Undo deleting displays
 @cindex Deleting displays, undoing
+If you deleted a display by mistake, use @samp{Edit @result{} Undo} to
+re-create it.
 
-Finally, you can also cut, copy, and paste displays using the
-@samp{Cut}, @samp{Copy}, and @samp{Paste} items from the @samp{Edit}
-menu.  The clipboard holds the @emph{commands} used to create the
-displays; @samp{Paste} inserts the display commands in the debugger
-console.  This allows you to save displays for later usage or to copy
-displays across multiple @value{DDD} instances.
 @cindex Cutting displays
 @cindex Display, cutting
 @cindex Copying displays
@@ -5687,6 +5838,12 @@ displays across multiple @value{DDD} instances.
 @lbindex Cut
 @lbindex Copy
 @lbindex Paste
+Finally, you can also cut, copy, and paste displays using the
+@samp{Cut}, @samp{Copy}, and @samp{Paste} items from the @samp{Edit}
+menu.  The clipboard holds the @emph{commands} used to create the
+displays; @samp{Paste} inserts the display commands in the debugger
+console.  This allows you to save displays for later usage or to copy
+displays across multiple @value{DDD} instances.
 
 
 @node Displaying Arrays
@@ -5723,7 +5880,6 @@ array and select @samp{Rotate} from the popup menu.
 
 @node Array Slices
 @subsubsection Array Slices
-
 @cindex Array slices
 @cindex Array, artificial
 @cindex Artificial arrays
@@ -5793,14 +5949,14 @@ homogeneous arrays.
 @sp 1
 @end ifnotinfo
 
+@lbindex Threshold for repeated print elements
+@lbindex Refresh Displays
 The default GDB threshold for repeated array values is 10.  You can
 change it via @samp{Edit @result{} GDB Settings @result{} Threshold for
 repeated print elements}.  Setting the threshold to @code{0} will cause
 GDB (and @value{DDD}) to display each array element individually.  Be
 sure to refresh the data window via @samp{Data @result{} Refresh
 Displays} after a change in GDB settings.
-@lbindex Threshold for repeated print elements
-@lbindex Refresh Displays
 
 You can also configure @value{DDD} to display each array element
 individually.  @xref{Customizing Displays}, for the
@@ -5812,6 +5968,7 @@ individually.  @xref{Customizing Displays}, for the
 @cindex Assignment
 @cindex Setting variables
 @cindex Variables, setting
+@lbindex Set
 
 During program execution, you can change the values of arbitrary
 variables.@footnote{JDB does not support changing variable values.}
@@ -5821,7 +5978,6 @@ instance, by selecting an occurrence or a display.  Then, click on the
 @samp{Set} button.  In a dialog, you can edit the variable value at
 will; clicking the @samp{OK} or @samp{Apply} button commits your change
 and assigns the new value to the variable.
-@lbindex Set
 
 @ifnotinfo
 @sp 1
@@ -5829,9 +5985,9 @@ and assigns the new value to the variable.
 @sp 1
 @end ifnotinfo
 
+@lbindex Set Value
 To change a displayed value, you can also select @samp{Set Value} menu
 from the data popup menu,
-@lbindex Set Value
 
 If you made a mistake, you can use @samp{Edit @result{} Undo} to re-set
 the variable to its previous value.
@@ -5914,13 +6070,13 @@ you a lot of time when examining complex data structures.
 @sp 1
 @end ifnotinfo
 
+@lbindex Edit Menu
 You can edit the contents of the @samp{New Display} menu by selecting
 its @samp{Edit Menu} item.  This pops up the @emph{Shortcut Editor}
 containing all shortcut expressions, which you can edit at leisure.
 Each line contains the expression for exactly one menu item.  Clicking
 on @samp{Apply} re-creates the @samp{New Display} menu from the text.
 If the text is empty, the @samp{New Display} menu will be empty, too.
-@lbindex Edit Menu
 
 @ifnotinfo
 @sp 1
@@ -5941,9 +6097,9 @@ a label:
 /o ()	// Convert to Oct
 @end example
 
+@lbindex New Display
 Feel free to add other conversions here.  @value{DDD} supports up to 20
 @samp{New Display} menu items.
-@lbindex New Display
 
 
 @node Dereferencing Pointers
@@ -5955,15 +6111,15 @@ There are special shortcuts for creating dependent displays showing the
 value of a dereferenced pointer.  This allows for rapid examination of
 pointer-based data structures.
 
+@lbindex Disp *
 To dereference a pointer, select the originating pointer value or name
 and click on the @samp{Disp *} button.  A new display showing the
 dereferenced pointer value is created.
-@lbindex Disp *
 
+@lbindex Display *
 As a faster alternative, you can also press @emph{mouse button 3} on the
 originating pointer value or name and select the @samp{Display *} menu
 item.
-@lbindex Display *
 
 As an even faster alternative, you can also double-click @emph{mouse
 button 1} on the originating pointer value or name.  If you press
@@ -5971,9 +6127,9 @@ button 1} on the originating pointer value or name.  If you press
 @emph{in place}--that is, it will be replaced by the dereferenced
 display.
 
+@lbindex Display *()
 The @samp{Display *()} function is also accessible by pressing and
 holding the @samp{Display} button.
-@lbindex Display *()
 
 
 @node Shared Structures
@@ -5985,15 +6141,15 @@ instance, if two pointers @samp{p1} and @samp{p2} point at the same data
 object @samp{d}, the data displays @samp{d}, @samp{*p1}, and @samp{*p2}
 will be separate, although they denote the same object.
 
+@lbindex Detect Aliases
+@cindex Aliases, detecting
+@cindex Shared structures, detecting
 @value{DDD} provides a special mode which makes it detect these
 situations.  @value{DDD} recognizes if two or more data displays are
 stored at the same physical address, and if this is so, merges all these
 @dfn{aliases} into one single data display, the @emph{original data
 display}.  This mode is called @emph{Alias Detection}; it is enabled via
 @samp{Data @result{} Detect Aliases}.
-@lbindex Detect Aliases
-@cindex Aliases, detecting
-@cindex Shared structures, detecting
 
 When alias detection is enabled, @value{DDD} inquires the memory
 location (the @emph{address}) of each data display after each program
@@ -6003,10 +6159,10 @@ More specifically, only the one which has least recently changed remains
 @emph{suppressed}, i.e. completely hidden.  The edges leading to the
 aliases are replaced by edges leading to the original data display.
 
-An edge created by alias detection is somewhat special: rather than
-connecting two displays directly, it goes through an @emph{edge hint},
-describing an arc connecting the two displays and the edge hint.
 @cindex Edge hint
+An edge created by alias detection is somewhat special: rather than
+connecting two displays directly, it goes through an @dfn{edge hint},
+describing an arc connecting the two displays and the edge hint.
 
 Each edge hint is a placeholder for a suppressed alias; selecting an
 edge hint is equivalent to selecting the alias.  This way, you can
@@ -6120,18 +6276,18 @@ You can align all displays on the nearest grid position by selecting
 @samp{Data @result{} Align on Grid}.  This is useful for keeping edges
 strictly horizontal or vertical.
 
+@lbindex Auto-align Displays on Nearest Grid Point
 You can enforce alignment by selecting @samp{Edit @result{} Preferences
 @result{} Data @result{} Auto-align Displays on Nearest Grid Point}.  If
 this feature is enabled, displays can be moved on grid positions only.
-@lbindex Auto-align Displays on Nearest Grid Point
 
 
 @node Automatic Layout
 @subsubsection Automatic Layout
 
+@lbindex Layout Graph
 You can layout the entire graph as a tree by selecting @samp{Data
 @result{} Layout Graph}.
-@lbindex Layout Graph
 
 @ifnotinfo
 @sp 1
@@ -6139,22 +6295,22 @@ You can layout the entire graph as a tree by selecting @samp{Data
 @sp 1
 @end ifnotinfo
 
+@cindex Edge hint
 Layouting the graph may introduce @dfn{edge hints}; that is, edges are
 no more straight lines, but lead to an edge hint and from there to their
 destination.  Edge hints can be moved around like arbitrary displays.
-@cindex Edge hints
 
+@cindex Comact Layout
 To enable a more compact layout, you can set the @samp{Edit @result{}
 Preferences @result{} Data @result{} Compact Layout} option.  This
 realizes an alternate layout algorithm, where successors are placed next
 to their parents.  This algorithm is suitable for homogeneous data
 structures only.
-@cindex Comact Layout
 
+@cindex Automatic Layout
 You can enforce layout by setting @samp{Edit @result{} Preferences
 @result{} Data @result{} Automatic Layout}.  If automatic layout is
 enabled, the graph is layouted after each change.
-@cindex Automatic Layout
 
 
 
@@ -6162,10 +6318,10 @@ enabled, the graph is layouted after each change.
 @subsubsection Rotating the Graph
 @cindex Graph, rotating
 @cindex Rotating the graph
+@lbindex Rotate Graph
 
 You can rotate the entire graph clockwise by 90 degrees by selecting
 @samp{Data @result{} Rotate Graph}.
-@lbindex Rotate Graph
 
 If the graph was previously layouted, you may need to layout it again.
 Subsequent layouts will respect the direction of the last rotation.
@@ -6185,17 +6341,17 @@ or into files.  This is useful for documenting program states.
 @sp 1
 @end ifnotinfo
 
+@lbindex Print Graph
+@lbindex Print Command
 To print the graph on a PostScript printer, select @samp{File @result{}
 Print Graph}.  Enter the printing command in the @samp{Print Command}
 field.  Click on the @samp{OK} or the @samp{Apply} button to start
 printing.
-@lbindex Print Graph
-@lbindex Print Command
 
+@lbindex File Name
 As an alternative, you may also print the graph in a file.  Click on the
 @samp{File} button and enter the file name in the @samp{File Name}
 field.  Click on the @samp{Print} button to create the file.
-@lbindex File Name
 
 When the graph is printed in a file, two formats are available:
 
@@ -6228,17 +6384,17 @@ Please note the following @emph{caveats} related to printing graphs:
 
 @itemize @bullet
 @item
+@lbindex Selected Only
 If any displays were selected when invoking the @samp{Print} dialog, the
 option @samp{Selected Only} is set.  This makes @value{DDD} print only
 the selected displays.
-@lbindex Selected Only
 
 @item
-The @samp{Color}, @samp{Orientation}, and @samp{Paper Size} options are
-meaningful for PostScript only.
 @lbindex Color
 @lbindex Orientation
 @lbindex Paper Size
+The @samp{Color}, @samp{Orientation}, and @samp{Paper Size} options are
+meaningful for PostScript only.
 @end itemize
 
 
@@ -6264,7 +6420,7 @@ draw numerical values in nice 2-D and 3-D plots.
 
 @node Plotting Arrays
 @subsection Plotting Arrays
-@cindex Arrays, plotting
+@cindex Array, plotting
 
 Basically, @value{DDD} can plot two types of numerical values:
 
@@ -6299,10 +6455,10 @@ elements to display.  Then, click on @samp{Plot} to start the plot.
 
 To plot a value, you can also enter a command at the debugger prompt:
 
+@cmindex graph plot
 @example
 graph plot @var{expr}
 @end example
-@cmindex graph plot
 
 @noindent
 works like @samp{graph display @var{expr}} (and takes the same
@@ -6319,33 +6475,33 @@ associated display is deleted.
 @subsection Changing the Plot Appearance
 @cindex Plot appearance
 
+@pindex gnuplot
 The actual drawing is not done by @value{DDD} itself.  Instead,
 @value{DDD} relies on an external @code{gnuplot} program to create the
 drawing.
-@pindex gnuplot
 
 @value{DDD} adds a menu bar to the Gnuplot plot window that lets you
 influence the appearance of the plot:
 
 @itemize @bullet
 @item
-The @samp{View} menu toggles optional parts of the plot, such as
-border lines or a background grid.
 @lbindex View
 @cindex Grid, in plots
+The @samp{View} menu toggles optional parts of the plot, such as
+border lines or a background grid.
 
 @item
-The @samp{Plot} menu changes the @dfn{plotting style}.  The @samp{3-D
-Lines} option is useful for plotting two-dimensional arrays.
 @lbindex Plot
 @lbindex 3-D Lines
 @cindex Plotting style
+The @samp{Plot} menu changes the @dfn{plotting style}.  The @samp{3-D
+Lines} option is useful for plotting two-dimensional arrays.
 
 @item
-The @samp{Scale} menu allows you to enable logarithmic scaling and to 
-enable or disable the scale tics.
 @lbindex Scale
 @cindex Scales, in plots
+The @samp{Scale} menu allows you to enable logarithmic scaling and to 
+enable or disable the scale tics.
 
 @item
 The @samp{Contour} menu adds contour lines to 3-D plots.
@@ -6353,11 +6509,11 @@ The @samp{Contour} menu adds contour lines to 3-D plots.
 @cindex Contour lines, in plots
 @end itemize
 
+@cindex Plot, scrolling
 In a 3-D plot, you can use the scroll bars to change your view position.
 The horizontal scroll bar rotates the plot around the @var{z} axis, that
 is, to the left and right.  The vertical scroll bar rotates the plot
 around the @var{y} axis, that is, up and down.
-@cindex Plot, scrolling
 
 @ifnotinfo
 @sp 1
@@ -6390,11 +6546,11 @@ the current local variables.  Likewise, you can plot all numeric
 members contained in a structure by selecting it, followed by
 @samp{Plot}.
 
+@cindex Cluster, and plotting
 If you want more control about what to include in a plot and what not,
 you can use @emph{display clusters} (@pxref{Clustering}).  A common
 scenario is to plot a one-dimensional array together with the current
 index position.  This is done in three steps:
-@cindex Cluster, and plotting
 
 @enumerate
 @item
@@ -6418,27 +6574,27 @@ by @samp{Rotate}.
 
 @node Plotting Histories
 @subsection Plotting Display Histories
+@cindex Display, plotting the history
+@cindex Value, plotting the history
+@cindex History, plotting
 
 At each program stop, @value{DDD} records the values of all displayed
 variables, such that you can ``undo'' program execution (@pxref{Undoing
 Program Execution}).  These @emph{display histories} can be plotted,
 too.  The menu item @samp{Plot @result{} Plot history of ()} creates a
 plot that shows all previously recorded values of the selected display.
-@cindex Display, plotting the history
-@cindex Value, plotting the history
-@cindex History, plotting
 
 
 @node Printing Plots
 @subsection Printing Plots
 @cindex Plot, printing
 @cindex Printing plots
+@lbindex Print Plot
 
 If you want to print the plot, select @samp{File @result{} Print Plot}.
 This pops up the @value{DDD} printing dialog, set up for printing plots.
 Just as when printing graphs, you have the choice between printing to a
 printer or a file and setting up appropriate options.
-@lbindex Print Plot
 
 The actual printing is also performed by Gnuplot, using the appropriate
 driver.  Please note the following @emph{caveats} related to printing:
@@ -6451,14 +6607,14 @@ case, you will have to recompile Gnuplot, including the line
 @samp{#define FIG} in the Gnuplot @samp{term.h} file.
 
 @item
+@lbindex Portrait
+@lbindex Landscape
+@lbindex Paper Size
 The @samp{Portrait} option generates an @code{EPS} file useful for
 inclusion in other documents.  The @samp{Landscape} option makes
 @value{DDD} print the plot in the size specified in the @samp{Paper
 Size} option; this is useful for printing on a printer.  In
 @samp{Portrait} mode, the @samp{Paper Size} option is ignored.
-@lbindex Portrait
-@lbindex Landscape
-@lbindex Paper Size
 
 @item
 The Gnuplot device drivers for PostScript and X11 each have their own
@@ -6476,12 +6632,12 @@ be what you desire.)
 
 @node Entering Plotting Commands
 @subsection Entering Plotting Commands
+@lbindex Command
 
 Via @samp{File @result{} Command}, you can enter Gnuplot commands
 directly.  Each command entered at the @samp{gnuplot>} prompt is passed
 to Gnuplot, followed by a Gnuplot @samp{replot} command to update the
 view.  This is useful for advanced Gnuplot tasks.
-@lbindex Command
 
 Here's a simple example.  The Gnuplot command 
 
@@ -6497,20 +6653,20 @@ sets the horizontal range that will be displayed to
 gnuplot> set xrange [10:20]
 @end example
 
+@cmindex replot
 After each command entered, DDD adds a @samp{replot} command, such
 that the plot is updated automatically.
-@cmindex replot
 
 Here's a more complex example.  The following sequence of Gnuplot
 commands saves the plot in @TeX{} format:
 
+@cmindex set output
+@cmindex set term
 @example
 gnuplot> set output "plot.tex" # Set the output filename
 gnuplot> set term latex        # Set the output format
 gnuplot> set term x11          # Show original picture again
 @end example
-@cmindex set output
-@cmindex set term
 
 Due to the implicit @samp{replot} command, the output is automatically
 written to @samp{plot.tex} after the @samp{set term latex} command.
@@ -6527,14 +6683,14 @@ this interaction on standard output.
 @node Exporting Plot Data
 @subsection Exporting Plot Data
 @cindex Plot, exporting
+@lbindex Save Data As
+@pindex xmgr
 
 If you want some external program to process the plot data (a
 stand-alone Gnuplot program or the @code{xmgr} program, for instance),
 you can save the plot data in a file, using @samp{File @result{} Save
 Data As}.  This pops up a dialog that lets you choose a data file to
 save the plotted data in.
-@lbindex Save Data As
-@pindex xmgr
 
 The generated file starts with a few comment lines.  The actual data
 follows in X/Y or X/Y/Z format.  It is the same file as processed by
@@ -6722,19 +6878,20 @@ All execution facilities available in the source code window are
 available in the machine code window as well.  Two special facilities
 are convenient for machine-level debugging:
 
-To execute just one machine instruction, click on the @samp{Stepi}
-button or select @samp{Program @result{} Step Instruction}.
 @lbindex Stepi
 @lbindex Step Instruction
 @cindex Instruction, stepping
+To execute just one machine instruction, click on the @samp{Stepi}
+button or select @samp{Program @result{} Step Instruction}.
 
+@lbindex Nexti
+@lbindex Next Instruction
 To continue to the next instruction in the current function, click on
 the @samp{Nexti} button select @samp{Program @result{} Next
 Instruction}..  This is similar to @samp{Stepi}, but any subroutine
 calls are executed without stopping.
-@lbindex Nexti
-@lbindex Next Instruction
 
+@cindex Program counter, displaying
 Using GDB, it is often useful to do 
 
 @example
@@ -6745,18 +6902,17 @@ graph display /i $pc
 when stepping by machine instructions.  This makes @value{DDD}
 automatically display the next instruction to be executed, each time
 your program stops.
-@cindex Program counter, displaying
 
 
 @node Registers
 @section Examining Registers
 @cindex Registers, examining
 
+@lbindex Registers
 @value{DDD} provides a @emph{register window} showing the machine
 register values after each program stop.  To enable the register window,
 select @samp{Status @result{} Registers}.@footnote{The machine code
 window is available with GDB and some DBX variants only.}
-@lbindex Registers
 
 @ifnotinfo
 @sp 1
@@ -6786,43 +6942,45 @@ source code, as well as patching executables and core files.
 @cindex Editing source code
 @cindex Source code, editing
 
+@lbindex Edit
+@lbindex Edit Source
 In @value{DDD} itself, you cannot change the source file currently
 displayed.  Instead, @value{DDD} allows you to invoke a @emph{text
 editor}.  To invoke a text editor for the current source file, select
 the @samp{Edit} button or @samp{Source @result{} Edit Source}.
-@lbindex Edit
-@lbindex Edit Source
 
+@lbindex Edit Sources
 By default, @value{DDD} tries a number of common editors.  You can
 customize @value{DDD} to use your favourite editor via @samp{Edit
 @result{} Preferences @result{} Helpers @result{} Edit Sources}.
 @xref{Customizing Editing}, for details.
-@lbindex Edit Sources
 
 After the editor has exited, the source code shown is automatically
 updated.
 
+@cindex Reloading source code
+@cindex Source code, reloading
+@lbindex Reload Source
 If you have @value{DDD} and an editor running in parallel, you can also
 update the source code manually via @samp{Source @result{} Reload
 Source}.  This reloads the source code shown from the source file.
 Since @value{DDD} automatically reloads the source code if the debugged
 program has been recompiled, this should seldom be necessary.
-@lbindex Reload Source
 
 
 @node Recompiling
 @section Recompiling
 @cindex Recompiling
 @cindex Source code, recompiling
+@pindex make
+@lbindex Make
+@cindex Make, invoking
 
 To recompile the source code using @code{make}, you can select
 @samp{File @result{} Make}.  This pops up a dialog where you can enter a
 @emph{Make Target}---typically the name of the executable.  Clicking on
 the @samp{Make} button invokes the @code{make} program with the given
 target.
-@pindex make
-@lbindex Make
-@cindex Make, invoking
 
 The @samp{Make} button on the command tool re-invokes @code{make} with
 the most recently given arguments.
@@ -6832,21 +6990,20 @@ the most recently given arguments.
 @section Patching
 @cindex Patching
 @cindex Program, patching
-
+@cindex Emergency repairs
+@cindex Debugging flags
 Using GDB, you can open your program's executable code (and the core
 file) for both reading and writing.  This allows alterations to machine
 code, such that you can intentionally patch your program's binary.  For
 example, you might want to turn on internal debugging flags, or even to
 make emergency repairs.
-@cindex Emergency repairs
-@cindex Debugging flags
 
+@lbindex Writing into executable and core files
 To patch the binary, enable @samp{Edit @result{} GDB Settings @result{}
 Writing into executable and core files}.  This makes GDB open executable
 and core files for both reading and writing.  If you have already loaded
 a file, you must load it again (using @samp{Edit @result{} Open File} or
 @samp{Edit @result{} Open Core}), for your new setting to take effect.
-@lbindex Writing into executable and core files
 
 Be sure to turn off @samp{Writing into executable and core files} as
 soon as possible, to prevent accidental alterations to machine code.
@@ -7005,14 +7162,15 @@ specify resources are:
 
 @itemize @bullet
 @item
+@flindex init
+@flindex ~
 The @file{~/.@value{ddd}/init} file (@samp{~} stands for your home
 directory).  This file is read in by @value{DDD} upon start-up; the
 resources specified herein override all other sources (except for
 resources given implicitly by command-line options).
-@flindex init
-@flindex ~
 
 @item
+@flindex Ddd
 The @file{@value{Ddd}} application-defaults file.  This file is
 typically compiled into the @value{DDD} executable.  If it exists, its
 resource values override the values compiled into @value{DDD}.  If the
@@ -7023,7 +7181,6 @@ you use a @file{@value{Ddd}} application-defaults file, you will not be
 able to maintain multiple @value{DDD} versions at the same time.  This
 is why the suiting @file{@value{Ddd}} is normally compiled into the
 @value{DDD} executable.}
-@flindex Ddd
 
 @item
 The command-line options.  These options override all other resource
@@ -7100,11 +7257,11 @@ version (@samp{m}) can be shown.
 @node Window Layout
 @subsection Window Layout
 
+@lbindex Window Layout
 By default, @value{DDD} stacks commands, source, and data in one single
 top-level window.  To have separate top-level windows for source, data,
 and debugger console, set @samp{Edit @result{} Preferences @result{}
 Window Layout @samp{} Separate Windows}.
-@lbindex Window Layout
 
 @ifnotinfo
 @sp 1
@@ -7126,11 +7283,11 @@ different top-level windows.  If @samp{off} (default), the source window
 is attached to the debugger console.
 @end defvr
 
+@lbindex Tool Bar Appearance
 By default, the @value{DDD} tool bars are located on top of the window.
 If you prefer the tool bar being located at the bottom, as in
 @value{DDD} 2.x and earlier, set @samp{Edit @result{} Preferences
 @result{} Startup @result{} Tool Bar Appearance @result{} Bottom}.
-@lbindex Tool Bar Appearance
 
 This is related to the @samp{toolbarsAtBottom} resource:
 
@@ -7423,12 +7580,12 @@ for details.
 @node Button tips
 @subsection Button Tips
 
+@lbindex Automatic Display of Button Hints
+@cindex Button tip, turning off
 Button tips are helpful for novices, but may be distracting for
 experienced users.  You can turn off button tips via @samp{Edit
 @result{} Preferences @result{} General @result{} Automatic display of
 Button Hints @result{} as Popup Tips}.
-@lbindex Automatic Display of Button Hints
-@cindex Button tips, turning off
 
 You can also turn off the hint that is displayed in the status line.
 Just toggle @samp{Edit @result{} Preferences @result{} General @result{}
@@ -7447,11 +7604,11 @@ If @samp{on} (default), show button hints in the status line.
 
 @node Tip of the day
 @subsection Tip of the day
+@cindex Tip of the day, turning off
 
 You can turn off the tip of the day by toggling @samp{Edit @result{}
 Preferences @result{} Startup @result{} Startup Windows @result{} Tip of
 the Day}.
-@cindex Tip of the day, turning off
 
 Here is the related @value{DDD} resource:
 
@@ -7490,17 +7647,17 @@ The default value is @samp{gzip -d -c}; typical values include
 
 
 @defvr Resource wwwCommand (class WWWCommand)
-The command to invoke a WWW browser.  The string @samp{@@URL@@} is
-replaced by the URL to open.  Default is to try a running Netscape first
-(trying @samp{mozilla}, then @samp{netscape}), then @samp{$WWWBROWSER},
-then to invoke a new Netscape process, then to let a running Emacs do
-the job, then to invoke Mosaic, then to invoke Lynx in an xterm.
 @enindex WWWBROWSER
 @pindex netscape
 @pindex mozilla
 @pindex emacs
 @pindex mosaic
 @pindex lynx
+The command to invoke a WWW browser.  The string @samp{@@URL@@} is
+replaced by the URL to open.  Default is to try a running Netscape first
+(trying @samp{mozilla}, then @samp{netscape}), then @samp{$WWWBROWSER},
+then to invoke a new Netscape process, then to let a running Emacs do
+the job, then to invoke Mosaic, then to invoke Lynx in an xterm.
 
 To specify @samp{netscape-4.0} as browser, use the setting:
 
@@ -7525,9 +7682,9 @@ The @value{DDD} WWW page.  Value:
 
 @value{DDD} Undo can be customized in various ways.
 
+@lbindex Undo Buffer Size
 To set a maximum size for the undo buffer, set @samp{Edit @result{}
 Preferences @result{} General @result{} Undo Buffer Size}.
-@lbindex Undo Buffer Size
 
 This is related to the @samp{maxUndoSize} resource:
 
@@ -7688,8 +7845,8 @@ This (default) setting binds @key{Ctrl+C} to the Interrupt operation, as
 used in several UNIX command-line programs.  In this setting, use
 @key{Ctrl+Ins} to copy text to the clipboard.
 
-The @key{Ctrl+A} key can be bound to different actions, too.
 @lbindex Ctrl+A is
+The @key{Ctrl+A} key can be bound to different actions, too.
 
 @table @code
 @item Select All
@@ -7753,11 +7910,11 @@ The Command Tool can be customized in various ways.
 @node Disabling the Command Tool
 @subsection Disabling the Command Tool
 
+@lbindex Tool Buttons Location
 You can disable the command tool and show its buttons in a separate row
 beneath the tool bar.  To disable the command tool, set @samp{Edit
 @result{} Preferences @result{} Source @result{} Tool Buttons Location
 @result{} Source Window}.
-@lbindex Tool Buttons Location
 
 Here's the related resource:
 
@@ -8222,28 +8379,29 @@ Usually, @samp{remsh}, @samp{rsh}, @samp{ssh}, or @samp{on}.
 The command to list all core files on the remote host.  The string
 @samp{@@MASK@@} is replaced by a file filter.  The default setting is:
 
+@pindex file
 @example
 Ddd*listCoreCommand: \
 file @@MASK@@ | grep '.*:.*core.*' | cut -d: -f1
 @end example
 @end defvr
-@pindex file
 
 @defvr Resource listDirCommand (class listDirCommand)
 The command to list all directories on the remote host.  The string
 @samp{@@MASK@@} is replaced by a file filter.  The default setting is:
 
+@pindex file
 @example
 Ddd*listDirCommand: \
 file @@MASK@@ | grep '.*:.*directory.*' | cut -d: -f1
 @end example
 @end defvr
-@pindex file
 
 @defvr Resource listExecCommand (class listExecCommand)
 The command to list all executable files on the remote host.  The string
 @samp{@@MASK@@} is replaced by a file filter.  The default setting is:
 
+@pindex file
 @example
 Ddd*listExecCommand: \
 file @@MASK@@ | grep '.*:.*exec.*' \
@@ -8251,18 +8409,17 @@ file @@MASK@@ | grep '.*:.*exec.*' \
   | cut -d: -f1 | grep -v '.*\.o$'
 @end example
 @end defvr
-@pindex file
 
 @defvr Resource listSourceCommand (class listSourceCommand)
 The command to list all source files on the remote host.  The string
 @samp{@@MASK@@} is replaced by a file filter.  The default setting is:
 
+@pindex file
 @example
 Ddd*listSourceCommand: \
 file @@MASK@@ | grep '.*:.*text.*' | cut -d: -f1
 @end example
 @end defvr
-@pindex file
 
 
 @node Customizing Data
@@ -8307,6 +8464,7 @@ If this is @samp{off} (default), two Motif scrollbars are used.
 
 ...
 
+@cindex Value tip, turning off
 @defvr Resource valueTips (class Tips)
 Whether value tips are enabled (@samp{on}, default) or not
 (@samp{off}).  Value tips affect @value{DDD} performance and may
@@ -8699,13 +8857,13 @@ The paper size used for printing, in format @samp{@var{width} x
 ...
 
 @defvr Resource editCommand (class EditCommand)
+@enindex XEDITOR
+@enindex EDITOR
+@pindex vi
 A command string to invoke an editor on the specific file.
 @samp{@@LINE@@} is replaced by the current line number, @samp{@@FILE@@}
 by the file name.  The default is to invoke @samp{$XEDITOR} first, then
 @samp{$EDITOR}, then @file{vi}:
-@enindex XEDITOR
-@enindex EDITOR
-@pindex vi
 
 @example
 Ddd*editCommand: \
@@ -8714,25 +8872,25 @@ xterm -e $@{EDITOR-vi@} +@@LINE@@ @@FILE@@
 @end example
 @end defvr
 
+@pindex gnuclient
+@pindex gnuserv
+@pindex xemacs
 This @samp{~/.ddd/init} setting invokes an editing session
 for an @emph{XEmacs} editor running @emph{gnuserv}:
 
 @example
 Ddd*editCommand: gnuclient +@@LINE@@ @@FILE@@
 @end example
-@pindex gnuclient
-@pindex gnuserv
-@pindex xemacs
 
+@pindex emacsclient
+@pindex emacsserver
+@pindex emacs
 This @samp{~/.ddd/init} setting invokes an editing session for an
 @emph{Emacs} editor running @emph{emacsserver}:
 
 @example
 Ddd*editCommand: emacsclient +@@LINE@@ @@FILE@@
 @end example
-@pindex emacsclient
-@pindex emacsserver
-@pindex emacs
 
 ...
 
