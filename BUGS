@@ -140,15 +140,6 @@ Volunteers for fixing these and other bugs are welcome!
         assembler window then the line in this window is highlighted, but
         not the one in the source language window.
 
-     5* When one sets a breakpoint or do something that issues a command
-        to the underlying debugger, the source window is scrolled back
-        to the current line. This makes it difficult to see what
-        you've actually done, since for example the breakpoint you
-        just set is usually not visible.  Maybe it would be nice not
-        to scroll and have a button that lets one go to the current
-        line in a single mouse click?
-	[Happens with DBX on Solaris 2.x only -AZ]
-
 071. Klaus-Georg Adams <adams@achibm5.chemie.uni-karlsruhe.de> says:
      I have got a seg-fault in the stock precompiled ddd-1.4b
      (i486-unknown-linux) and report it dutyfully.
