@@ -571,10 +571,11 @@ AC_CHECK_LIB(Xintl, _Xlcmbcurmax, X11_LIBS="${X11_LIBS} -lXintl",,
 	${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
 dnl
 dnl
+dnl This causes builds on Cygwin to fail, so it's removed for now
 dnl Check for -lipc library.  SCO unix is said to want that.
 dnl
-AC_CHECK_LIB(ipc, shmap, X11_LIBS="${X11_LIBS} -lipc",,
-	${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
+dnl AC_CHECK_LIB(ipc, shmap, X11_LIBS="${X11_LIBS} -lipc",,
+dnl 	${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
 dnl
 dnl
 dnl Check for X toolkit libraries
