@@ -37,6 +37,7 @@ char question_rcsid[] =
 #include "question.h"
 
 #include "assert.h"
+#include "cook.h"
 #include "ddd.h"
 #include "AppData.h"
 #include "Command.h"
@@ -46,6 +47,11 @@ char question_rcsid[] =
 #include "disp-read.h"
 
 #include <X11/Intrinsic.h>
+#include <iostream.h>
+
+#ifndef LOG_GDB_QUESTION
+#define LOG_GDB_QUESTION 0
+#endif
 
 //-----------------------------------------------------------------------------
 // Synchronized questions
@@ -68,6 +74,10 @@ struct GDBReply {
 // Timeout proc - called from XtAppAddTimeOut()
 static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
 {
+#if LOG_GDB_QUESTION
+    clog << "gdb_question: TimeOut\n";
+#endif
+
     assert(gdb_question_running);
 
     GDBReply *reply = (GDBReply *)client_data;
@@ -81,8 +91,12 @@ static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
 // GDB sent a reply - Called from GDBAgent::send_question()
 static void gdb_reply(const string& complete_answer, void *qu_data)
 {
+#if LOG_GDB_QUESTION
+    clog << "gdb_question: reply " << quote(complete_answer) << "\n";
+#endif
+
     GDBReply *reply = (GDBReply *)qu_data;
-    assert(!reply->received);
+    assert(!reply->received || reply->killme);
 
     reply->answer   = complete_answer;
     reply->received = true;
@@ -156,6 +170,10 @@ string gdb_question(const string& command, int timeout, bool verbatim)
     if (gdb_question_running || !can_do_gdb_command() || gdb->recording())
 	return NO_GDB_ANSWER;
 
+#if LOG_GDB_QUESTION
+    clog << "gdb_question(" << quote(command) << ")...\n";
+#endif
+
     // Block against reentrant calls
     gdb_question_running = true;
 
@@ -196,6 +214,10 @@ string gdb_question(const string& command, int timeout, bool verbatim)
 	// Answer may still arrive (or be canceled): delete reply at this point
 	reply->killme = true;
     }
+#if LOG_GDB_QUESTION
+    clog << "gdb_question(" << quote(command) << ") = " 
+	 << quote(answer) << "\n";
+#endif
 
     // Return answer
     return answer;
