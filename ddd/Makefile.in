@@ -535,7 +535,6 @@ NORA_OBJECTS = \
 	Range.o \
 	RegionGN.o \
 	ScrolledGE.o \
-	SignalC.o \
 	SlopeBox.o \
 	StringA.o \
 	StringBox.o \
@@ -766,6 +765,12 @@ programs: $(PROGS)
 
 .PHONY: demos
 demos:	$(DEMOS)
+
+## A TECO-ism
+
+.PHONY: love
+love:
+	@$(ECHO) 'not war?'
 
 ## The resource header files.
 
