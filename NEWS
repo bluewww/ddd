@@ -1,8 +1,8 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 1.4d
---------
+DDD 1.4d (WORK IN PROGRESS)
+---------------------------
 
     Bug fix release; fixes problems introduced in DDD 1.4c.
 
@@ -11,6 +11,12 @@ DDD 1.4d
       specified in DDD 1.4c.  We have thus now re-enabled the scheme
       from DDD 1.4b; how to change fonts is explained in the DDD FAQ.
     - Various fixes for C++ compilers other than GCC included.
+    - Improved VSL interface.  VSL interpreter options can now be set
+      upon DDD invocation; type `ddd --vsl-help' for a list of
+      options.
+    - Some of the VSL options had to be renamed for DDD compliance;
+      this affects the `vsl' program only.
+    - Some VSL problems removed.  Thanks to Richard Wolff <rwolff@noao.edu>.
 
 
 DDD 1.4c
