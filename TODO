@@ -373,7 +373,4 @@ Volunteers for these and other projects are welcome!
 
 183* Have a way to re-dereference until a NULL pointer is encountered.
 
-186. When GDB issues `Program exited' or `Program terminated', unset
-     current execution position (unless a new one is given).
-
 187. (Insert your project idea here)
