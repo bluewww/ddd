@@ -76,6 +76,11 @@ bool is_running_cmd(const string& cmd, DebuggerType type);
 bool is_run_cmd(const string& cmd);
 
 // ***************************************************************************
+// true, wenn cmd Programm-Argumente setzt.
+// 
+bool is_set_args_cmd(const string& cmd);
+
+// ***************************************************************************
 // true, wenn cmd Frame-Wechsel zur Folge hat.
 // 
 bool is_frame_cmd(const string& cmd);

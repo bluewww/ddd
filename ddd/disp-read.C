@@ -85,7 +85,7 @@ bool is_nop_cmd(const string& cmd)
 	"\\|help"
 	"\\|show"
 	"\\|info"
-	"\\)\\( .*\\)?",
+	"\\)\\([ \t].*\\)?",
 	true);
 
     return cmd.matches(RXnop_cmd);
@@ -98,12 +98,13 @@ bool is_running_cmd (const string& cmd, DebuggerType type)
     static regex RXrunning_cmd(
 	"[ \t]*"
 	"\\(r\\|run?"
+	"\\|rerun"
 	"\\|c\\|cont\\(inue?\\|in?\\)?"
 	"\\|u\\|unt\\(il?\\)?"
 	"\\|si?\\|stepi?"
 	"\\|ni?\\|nexti?"
 	"\\|fin\\(ish?\\|i\\)?"
-	"\\)\\( .*\\)?",
+	"\\)\\([ \t].*\\)?",
 	true);
 
 
@@ -129,12 +130,20 @@ bool is_running_cmd (const string& cmd, DebuggerType type)
 bool is_run_cmd (const string& cmd)
 {
     static regex RXrun_cmd(
-	"[ \t]*r\\(un?\\)?\\( .*\\)?",
+	"[ \t]*r\\(er\\)?\\(un?\\)?\\([ \t].*\\)?",
 	true);
 
     return cmd.matches (RXrun_cmd);
 }
 
+bool is_set_args_cmd (const string& cmd)
+{
+    static regex RXset_args_cmd(
+	"[ \t]*set[ \t][ \t]*args\\([ \t].*\\)?",
+	true);
+
+    return cmd.matches (RXset_args_cmd);
+}
 
 // ***************************************************************************
 // true, wenn cmd ein display erzeugt
@@ -157,7 +166,7 @@ bool is_frame_cmd (const string& cmd)
 	"\\(up"
 	"\\|do\\(wn?\\)?"
 	"\\|f\\(rame?\\|ra?\\)?"
-	"\\)\\( .*\\)?",
+	"\\)\\([ \t].*\\)?",
 	true);
 
     return cmd.matches (RXframe_cmd);
@@ -166,7 +175,7 @@ bool is_frame_cmd (const string& cmd)
 bool is_up_cmd (const string& cmd)
 {
     static regex RXup_cmd(
-	"[ \t]*up\\( .*\\)?",
+	"[ \t]*up\\([ \t].*\\)?",
 	true);
 
     return cmd.matches (RXup_cmd);
@@ -175,7 +184,7 @@ bool is_up_cmd (const string& cmd)
 bool is_down_cmd (const string& cmd)
 {
     static regex RXdown_cmd(
-	"[ \t]*do\\(wn?\\)?\\( .*\\)?",
+	"[ \t]*do\\(wn?\\)?\\([ \t].*\\)?",
 	true);
 
     return cmd.matches (RXdown_cmd);
@@ -186,8 +195,8 @@ bool is_down_cmd (const string& cmd)
 bool is_set_cmd (const string& cmd)
 {
     static regex RXset_cmd(
-	"[ \t]*set\\( .*\\)?"
-	"[ \t]*assign\\( .*\\)?",
+	"[ \t]*set\\([ \t].*\\)?"
+	"[ \t]*assign\\([ \t].*\\)?",
 	true);
 
     return cmd.matches (RXset_cmd);
@@ -198,11 +207,11 @@ bool is_set_cmd (const string& cmd)
 bool is_file_cmd (const string& cmd, DebuggerType type)
 {
     static regex RXfile_cmd(
-	"[ \t]*file\\( .*\\)?",
+	"[ \t]*file\\([ \t].*\\)?",
 	true);
 
     static regex RXdebug_cmd(
-	"[ \t]*debug\\( .*\\)?",
+	"[ \t]*debug\\([ \t].*\\)?",
 	true);
 
     switch (type)
