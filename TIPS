@@ -112,7 +112,7 @@ documentation for other warnings you might consider useful.
 BY(J.H.M. Dassen, jdassen@wi.leidenuniv.nl)
 
 To get a global idea of what a process or program does or is doing,
-use a system call tracer, like strace, truss, or trace.
+use a system call tracer, like SAMP(strace), SAMP(truss), or SAMP(trace).
 BY(J.H.M. Dassen, jdassen@wi.leidenuniv.nl)
 
 To have GDB start your program automatically upon startup,

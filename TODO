@@ -385,4 +385,6 @@ Volunteers for these and other projects are welcome!
 256*Add a `hint of the day' that might be shown at start-up.  Ask on
     DDD announce for possible hints.
 
-257 (Insert your project idea here)
+257 Show whether a conditional jump (breakpoint?) will be taken or not.
+
+258 (Insert your project idea here)
