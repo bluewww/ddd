@@ -146,6 +146,7 @@ private:
     bool _has_pwd_command;
     bool _has_named_values;
     bool _has_when_semicolon;
+    bool _has_delete_comma;
     bool _has_err_redirection;
 
     ProgramLanguage _program_language;
@@ -273,6 +274,10 @@ public:
     // True if debugger wants `;' at the end of `when' command specs
     bool has_when_semicolon() const    { return _has_when_semicolon; }
     bool has_when_semicolon(bool val)  { return _has_when_semicolon = val; }
+
+    // True if debugger wants events separated by `,'
+    bool has_delete_comma() const      { return _has_delete_comma; }
+    bool has_delete_comma(bool val)    { return _has_delete_comma = val; }
 
     // True if debugger has stderr redirection using `>&'
     bool has_err_redirection() const   { return _has_err_redirection; }

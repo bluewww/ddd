@@ -1140,19 +1140,20 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
     length = 0;
     while (i < int(listing.length()))
     {
+	int count = 0;
+
 	// Skip leading spaces.  Some debuggers also issue `*', `=',
 	// or `>' to indicate the current position.
-	while (i < int(listing.length())
+	while (count < 8
+	       && i < int(listing.length())
 	       && (isspace(listing[i])
 		   || listing[i] == '=' 
 		   || listing[i] == '*'
 		   || listing[i] == '>'))
-	    i++;
+	    i++, count++;
 
 	if (isdigit(listing[i]))
 	{
-	    int count = 0;
-
 	    // Skip line number
 	    while (i < int(listing.length()) && isdigit(listing[i]))
 		i++, count++;
@@ -5422,7 +5423,7 @@ string SourceView::clear_command(string pos, bool clear_next)
 		|| file_matches(bp->file_name(), file)))
 	    {
 		if (bps != "")
-		    bps += " ";
+		    bps += gdb->has_delete_comma() ? ", " : " ";
 		bps += itostring(bp->number());
 		max_bp_nr = max(max_bp_nr, bp->number());
 	    }
@@ -5432,7 +5433,10 @@ string SourceView::clear_command(string pos, bool clear_next)
 	return "";
 
     if (clear_next && max_bp_nr >= 0)
-	bps += " " + itostring(max_bp_nr + 1);
+    {
+	bps += (gdb->has_delete_comma() ? ", " : " ");
+	bps += itostring(max_bp_nr + 1);
+    }
 
     string cmd;
     switch (gdb->type())
