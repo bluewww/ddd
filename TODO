@@ -193,4 +193,12 @@ Volunteers for these and other projects are welcome!
 078. Have mirror sites for the DDD WWW page.  Maybe via the DDD FTP
      mirrors?
 
-079. (Insert your project idea here)
+079. Try the `-fconserve-space' flag in G++:
+     Put uninitialized or runtime-initialized global variables into the
+     common segment, as C does.  This saves space in the executable at
+     the cost of not diagnosing duplicate definitions.  If you compile
+     with this flag and your program mysteriously crashes after
+     `main()' has completed, you may have an object that is being
+     destroyed twice because two definitions were merged.
+
+080. (Insert your project idea here)
