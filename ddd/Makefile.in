@@ -455,27 +455,38 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../include $(X_INCLUDE)
 
 ## Libraries and object files
 # A subset of the NORA library -- utilities
-NORA_OBJECTS = \
+AGENT_OBJECTS = \
 	compare.o \
-	converters.o \
 	cook.o \
-	database.o \
-	events.o \
-	fileSBF.o \
-	findParent.o \
 	hash.o \
-	layout.o \
-	longName.o \
-	printBox.o \
 	regex.o \
 	sigName.o \
 	strclass.o \
 	Agent.o \
 	AgentM.o \
+	AsyncAgent.o \
+	ChunkQueue.o \
+	DataLength.o \
+	HandlerL.o \
+	TTYAgent.o \
+	LiterateA.o \
+	SignalB.o \
+	TypeInfo.o \
+	UniqueId.o
+
+NORA_OBJECTS = \
+	$(AGENT_OBJECTS) \
+	converters.o \
+	database.o \
+	events.o \
+	fileSBF.o \
+	findParent.o \
+	layout.o \
+	longName.o \
+	printBox.o \
 	AlignBox.o \
 	ArcBox.o \
 	ArgNode.o \
-	AsyncAgent.o \
 	BinBox.o \
 	Box.o \
 	BoxD.o \
@@ -486,10 +497,8 @@ NORA_OBJECTS = \
 	BoxSize.o \
 	BuiltinCN.o \
 	CallNode.o \
-	ChunkQueue.o \
 	CompositeB.o \
 	ConstNode.o \
-	DataLength.o \
 	DefCallN.o \
 	Delay.o \
 	DestroyCB.o \
@@ -505,7 +514,6 @@ NORA_OBJECTS = \
 	GraphEdit.o \
 	GraphGC.o \
 	GraphNode.o \
-	HandlerL.o \
 	HatBox.o \
 	HelpCB.o \
 	HintGraphN.o \
@@ -515,7 +523,6 @@ NORA_OBJECTS = \
 	LineGraphE.o \
 	ListBox.o \
 	ListNode.o \
-	LiterateA.o \
 	MString.o \
 	MakeMenu.o \
 	MarkBox.o \
@@ -528,19 +535,15 @@ NORA_OBJECTS = \
 	Range.o \
 	RegionGN.o \
 	ScrolledGE.o \
-	SignalB.o \
 	SignalC.o \
 	SlopeBox.o \
 	StringA.o \
 	StringBox.o \
 	THatBox.o \
-	TTYAgent.o \
 	TagBox.o \
 	TestNode.o \
 	TrueBox.o \
 	TrueNode.o \
-	TypeInfo.o \
-	UniqueId.o \
 	VSEFlags.o \
 	VSLBuiltin.o \
 	VSLDef.o \
@@ -582,7 +585,7 @@ OBJECTS = $(NORA_OBJECTS) $(DDD_OBJECTS)
 PROGS = ddd
 
 ## Extra demonstration files.
-DEMOS = cxxtest ctest test-graph bug ptest m2test
+DEMOS = cxxtest ctest test-graph ttytest bug ptest m2test
 
 
 ## Where to find texinfo files and so
@@ -794,6 +797,9 @@ ddd:	ddd.o $(OBJECTS)
 
 test-graph: test-graph.o $(NORA_OBJECTS) 
 	$(LINK.cc) -o $@ test-graph.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
+
+ttytest: ttytest.o $(AGENT_OBJECTS)
+	$(LINK.cc) -o $@ ttytest.o $(AGENT_OBJECTS) $(ALL_X_LIBS) $(LIBS)
 
 bug:	bug.o
 	$(LINK.cc) -o $@ bug.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
