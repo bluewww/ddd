@@ -388,8 +388,17 @@ Volunteers for these and other projects are welcome!
 257 Show whether a conditional jump (breakpoint?) will be taken or
     not.
 
-258 Have a `Display now' button that `un-defers' deferred displays.
+258*Have a `Display now' button that `un-defers' deferred displays.
     Better yet, try to un-defer displays upon startup.
     `display FOOBAR now or when in FUNCTION'.
 
-259 (Insert your project idea here)
+259*Finish common toolbar:
+    - The data window should not be shown until data is actually
+      displayed.  (An `autoData' feature might be handy here.)
+    - Have a resource for toolbar placement: above or below window.
+      As an alternative, use XmNpositionIndex instead.
+    - If captions are off, strip 2 pixels on the left and right.
+    - The `Display' button should not prompt for data if `()' is set.
+    - The `Display *' and `Set' buttons should work if `()' is set.
+
+260 (Insert your project idea here)
