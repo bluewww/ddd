@@ -35,6 +35,7 @@ char regexps_rcsid[] =
 
 #include "regexps.h"
 #include "assert.h"
+#include "misc.h"		// min()
 #include <string.h>
 
 #define yy_create_buffer     zz_create_buffer
@@ -56,27 +57,26 @@ char regexps_rcsid[] =
 #define yytext               zztext
 #define yywrap               zzwrap
 
-#include "rxscan.C"
+// Anything not in the list is `not matched'
+#define ECHO                 return 0
 
-#define PREFIX_LENGTH 3
+#include "rxscan.C"
 
 static int rx_matcher(void *data, const char *s, int len, int pos)
 {
-    char *prefix = (char *)data;
-    assert(strlen(prefix) == PREFIX_LENGTH);
-
-    the_prefix   = prefix;
-    the_text     = s + pos;
-    the_length   = len - pos;
+    int state  = int(data);
+    the_text   = s + pos;
+    the_length = len - pos;
 
     // Restart the scanner
     zzrestart(zzin);
+    BEGIN(state);
 
     int ret;
     if (zzlex() == 0)
-	ret = -1;		         // not matched
+	ret = -1;		// not matched
     else
-	ret = yyleng - PREFIX_LENGTH;    // # of characters matched
+	ret = yyleng;		// # of characters matched
 
     return ret;
 }
@@ -84,138 +84,138 @@ static int rx_matcher(void *data, const char *s, int len, int pos)
 
 // The 111 regexps used in DDD
 
-const regex rxaddr			(rx_matcher, "001");
-const regex rxaddress			(rx_matcher, "002");
-const regex rxaddress_in		(rx_matcher, "003");
-const regex rxaddress_start		(rx_matcher, "004");
+const regex rxaddr			(rx_matcher, (void *)S001);
+const regex rxaddress			(rx_matcher, (void *)S002);
+const regex rxaddress_in		(rx_matcher, (void *)S003);
+const regex rxaddress_start		(rx_matcher, (void *)S004);
 
 #if !WITH_RUNTIME_REGEX
-const regex rxalpha			(rx_matcher, "005");
-const regex rxalphanum			(rx_matcher, "006");
+const regex rxalpha			(rx_matcher, (void *)S005);
+const regex rxalphanum			(rx_matcher, (void *)S006);
 #endif
 
-const regex rxarglist			(rx_matcher, "007");
-const regex rxat			(rx_matcher, "008");
-const regex rxblank			(rx_matcher, "009");
-const regex rxblanks			(rx_matcher, "010");
-const regex rxblanks_or_tabs		(rx_matcher, "011");
-const regex rxbreak_cmd			(rx_matcher, "012");
-const regex rxcd_cmd			(rx_matcher, "013");
-const regex rxcolons			(rx_matcher, "014");
-const regex rxcore			(rx_matcher, "015");
-const regex rxcore_cmd			(rx_matcher, "016");
-const regex rxcrlf			(rx_matcher, "017");
-const regex rxdata			(rx_matcher, "018");
-const regex rxdbx_begin_of_display	(rx_matcher, "019");
-const regex rxdbx_begin_of_display_info	(rx_matcher, "020");
-const regex rxdbx_scope			(rx_matcher, "021");
-const regex rxdbxframe			(rx_matcher, "022");
-const regex rxdbxfunc			(rx_matcher, "023");
-const regex rxdbxfunc2			(rx_matcher, "024");
-const regex rxdbxpos			(rx_matcher, "025");
-const regex rxdbxwarn1			(rx_matcher, "026");
-const regex rxdbxwarn2			(rx_matcher, "027");
-const regex rxdebug_cmd			(rx_matcher, "028");
-const regex rxdep			(rx_matcher, "029");
-const regex rxdisable			(rx_matcher, "030");
-const regex rxdisplay			(rx_matcher, "031");
-const regex rxdisplay_cmd		(rx_matcher, "032");
-const regex rxdisplay_cmd_and_args	(rx_matcher, "033");
-const regex rxdont			(rx_matcher, "034");
-const regex rxdotdot			(rx_matcher, "035");
+const regex rxarglist			(rx_matcher, (void *)S007);
+const regex rxat			(rx_matcher, (void *)S008);
+const regex rxblank			(rx_matcher, (void *)S009);
+const regex rxblanks			(rx_matcher, (void *)S010);
+const regex rxblanks_or_tabs		(rx_matcher, (void *)S011);
+const regex rxbreak_cmd			(rx_matcher, (void *)S012);
+const regex rxcd_cmd			(rx_matcher, (void *)S013);
+const regex rxcolons			(rx_matcher, (void *)S014);
+const regex rxcore			(rx_matcher, (void *)S015);
+const regex rxcore_cmd			(rx_matcher, (void *)S016);
+const regex rxcrlf			(rx_matcher, (void *)S017);
+const regex rxdata			(rx_matcher, (void *)S018);
+const regex rxdbx_begin_of_display	(rx_matcher, (void *)S019);
+const regex rxdbx_begin_of_display_info	(rx_matcher, (void *)S020);
+const regex rxdbx_scope			(rx_matcher, (void *)S021);
+const regex rxdbxframe			(rx_matcher, (void *)S022);
+const regex rxdbxfunc			(rx_matcher, (void *)S023);
+const regex rxdbxfunc2			(rx_matcher, (void *)S024);
+const regex rxdbxpos			(rx_matcher, (void *)S025);
+const regex rxdbxwarn1			(rx_matcher, (void *)S026);
+const regex rxdbxwarn2			(rx_matcher, (void *)S027);
+const regex rxdebug_cmd			(rx_matcher, (void *)S028);
+const regex rxdep			(rx_matcher, (void *)S029);
+const regex rxdisable			(rx_matcher, (void *)S030);
+const regex rxdisplay			(rx_matcher, (void *)S031);
+const regex rxdisplay_cmd		(rx_matcher, (void *)S032);
+const regex rxdisplay_cmd_and_args	(rx_matcher, (void *)S033);
+const regex rxdont			(rx_matcher, (void *)S034);
+const regex rxdotdot			(rx_matcher, (void *)S035);
 
 #if !WITH_RUNTIME_REGEX
-const regex rxdouble			(rx_matcher, "036");
+const regex rxdouble			(rx_matcher, (void *)S036);
 #endif
 
-const regex rxdown_cmd			(rx_matcher, "037");
-const regex rxenable			(rx_matcher, "038");
-const regex rxeqeq			(rx_matcher, "039");
-const regex rxfile_cmd			(rx_matcher, "040");
-const regex rxfilepath			(rx_matcher, "041");
-const regex rxfont_id			(rx_matcher, "042");
-const regex rxframe			(rx_matcher, "043");
-const regex rxframe_cmd			(rx_matcher, "044");
-const regex rxfunction_call		(rx_matcher, "045");
-const regex rxgdb_begin_of_display	(rx_matcher, "046");
-const regex rxgdb_begin_of_display_info	(rx_matcher, "047");
-const regex rxgdb_disp_nr		(rx_matcher, "048");
-const regex rxgdb_next_display_info	(rx_matcher, "049");
-const regex rxgraph_cmd			(rx_matcher, "050");
-const regex rxidentifier		(rx_matcher, "051");
-const regex rxindex			(rx_matcher, "052");
+const regex rxdown_cmd			(rx_matcher, (void *)S037);
+const regex rxenable			(rx_matcher, (void *)S038);
+const regex rxeqeq			(rx_matcher, (void *)S039);
+const regex rxfile_cmd			(rx_matcher, (void *)S040);
+const regex rxfilepath			(rx_matcher, (void *)S041);
+const regex rxfont_id			(rx_matcher, (void *)S042);
+const regex rxframe			(rx_matcher, (void *)S043);
+const regex rxframe_cmd			(rx_matcher, (void *)S044);
+const regex rxfunction_call		(rx_matcher, (void *)S045);
+const regex rxgdb_begin_of_display	(rx_matcher, (void *)S046);
+const regex rxgdb_begin_of_display_info	(rx_matcher, (void *)S047);
+const regex rxgdb_disp_nr		(rx_matcher, (void *)S048);
+const regex rxgdb_next_display_info	(rx_matcher, (void *)S049);
+const regex rxgraph_cmd			(rx_matcher, (void *)S050);
+const regex rxidentifier		(rx_matcher, (void *)S051);
+const regex rxindex			(rx_matcher, (void *)S052);
 
 #if !WITH_RUNTIME_REGEX
-const regex rxint			(rx_matcher, "053");
+const regex rxint			(rx_matcher, (void *)S053);
 #endif
 
-const regex rxinvalid_value		(rx_matcher, "054");
-const regex rxlookup_cmd		(rx_matcher, "055");
+const regex rxinvalid_value		(rx_matcher, (void *)S054);
+const regex rxlookup_cmd		(rx_matcher, (void *)S055);
 
 #if !WITH_RUNTIME_REGEX
-const regex rxlowercase			(rx_matcher, "056");
+const regex rxlowercase			(rx_matcher, (void *)S056);
 #endif
 
-const regex rxm3comment			(rx_matcher, "057");
-const regex rxmake_cmd			(rx_matcher, "058");
-const regex rxmembers_of_nl		(rx_matcher, "059");
-const regex rxmore_than_one		(rx_matcher, "060");
-const regex rxname_colon_int_nl		(rx_matcher, "061");
-const regex rxnl			(rx_matcher, "062");
-const regex rxnl_int			(rx_matcher, "063");
-const regex rxnladdress			(rx_matcher, "064");
-const regex rxnladdress_in		(rx_matcher, "065");
-const regex rxnlstar			(rx_matcher, "066");
-const regex rxnonzero1			(rx_matcher, "067");
-const regex rxnonzero2			(rx_matcher, "068");
-const regex rxnop_cmd			(rx_matcher, "069");
-const regex rxnum			(rx_matcher, "070");
-const regex rxop_cmd			(rx_matcher, "071");
-const regex rxoptions			(rx_matcher, "072");
-const regex rxout_of_range		(rx_matcher, "073");
-const regex rxpath_cmd			(rx_matcher, "074");
-const regex rxpc			(rx_matcher, "075");
-const regex rxpointer1_value		(rx_matcher, "076");
-const regex rxpointer2_value		(rx_matcher, "077");
-const regex rxprocess1			(rx_matcher, "078");
-const regex rxprocess2			(rx_matcher, "079");
-const regex rxprompt			(rx_matcher, "080");
-const regex rxq				(rx_matcher, "081");
-const regex rxreference			(rx_matcher, "082");
-const regex rxrefresh_cmd		(rx_matcher, "083");
-const regex rxreturn			(rx_matcher, "084");
-const regex rxrun_cmd			(rx_matcher, "085");
-const regex rxrunning_cmd		(rx_matcher, "086");
-const regex rxselect			(rx_matcher, "087");
-const regex rxsemicolon_and_brace	(rx_matcher, "088");
-const regex rxsep			(rx_matcher, "089");
-const regex rxset1_cmd			(rx_matcher, "090");
-const regex rxset2_cmd			(rx_matcher, "091");
-const regex rxset_args_cmd		(rx_matcher, "092");
-const regex rxsetting_cmd		(rx_matcher, "093");
-const regex rxsimple			(rx_matcher, "094");
-const regex rxsingle_display_cmd	(rx_matcher, "095");
-const regex rxspace			(rx_matcher, "096");
-const regex rxstopped			(rx_matcher, "097");
-const regex rxstr_or_cl_begin		(rx_matcher, "098");
-const regex rxstr_or_cl_begin_s		(rx_matcher, "099");
-const regex rxstr_or_cl_end		(rx_matcher, "100");
-const regex rxstruct_keyword_begin	(rx_matcher, "101");
-const regex rxterminated		(rx_matcher, "102");
-const regex rxthread_cmd		(rx_matcher, "103");
-const regex rxundisplay			(rx_matcher, "104");
-const regex rxup_cmd			(rx_matcher, "105");
+const regex rxm3comment			(rx_matcher, (void *)S057);
+const regex rxmake_cmd			(rx_matcher, (void *)S058);
+const regex rxmembers_of_nl		(rx_matcher, (void *)S059);
+const regex rxmore_than_one		(rx_matcher, (void *)S060);
+const regex rxname_colon_int_nl		(rx_matcher, (void *)S061);
+const regex rxnl			(rx_matcher, (void *)S062);
+const regex rxnl_int			(rx_matcher, (void *)S063);
+const regex rxnladdress			(rx_matcher, (void *)S064);
+const regex rxnladdress_in		(rx_matcher, (void *)S065);
+const regex rxnlstar			(rx_matcher, (void *)S066);
+const regex rxnonzero1			(rx_matcher, (void *)S067);
+const regex rxnonzero2			(rx_matcher, (void *)S068);
+const regex rxnop_cmd			(rx_matcher, (void *)S069);
+const regex rxnum			(rx_matcher, (void *)S070);
+const regex rxop_cmd			(rx_matcher, (void *)S071);
+const regex rxoptions			(rx_matcher, (void *)S072);
+const regex rxout_of_range		(rx_matcher, (void *)S073);
+const regex rxpath_cmd			(rx_matcher, (void *)S074);
+const regex rxpc			(rx_matcher, (void *)S075);
+const regex rxpointer1_value		(rx_matcher, (void *)S076);
+const regex rxpointer2_value		(rx_matcher, (void *)S077);
+const regex rxprocess1			(rx_matcher, (void *)S078);
+const regex rxprocess2			(rx_matcher, (void *)S079);
+const regex rxprompt			(rx_matcher, (void *)S080);
+const regex rxq				(rx_matcher, (void *)S081);
+const regex rxreference			(rx_matcher, (void *)S082);
+const regex rxrefresh_cmd		(rx_matcher, (void *)S083);
+const regex rxreturn			(rx_matcher, (void *)S084);
+const regex rxrun_cmd			(rx_matcher, (void *)S085);
+const regex rxrunning_cmd		(rx_matcher, (void *)S086);
+const regex rxselect			(rx_matcher, (void *)S087);
+const regex rxsemicolon_and_brace	(rx_matcher, (void *)S088);
+const regex rxsep			(rx_matcher, (void *)S089);
+const regex rxset1_cmd			(rx_matcher, (void *)S090);
+const regex rxset2_cmd			(rx_matcher, (void *)S091);
+const regex rxset_args_cmd		(rx_matcher, (void *)S092);
+const regex rxsetting_cmd		(rx_matcher, (void *)S093);
+const regex rxsimple			(rx_matcher, (void *)S094);
+const regex rxsingle_display_cmd	(rx_matcher, (void *)S095);
+const regex rxspace			(rx_matcher, (void *)S096);
+const regex rxstopped			(rx_matcher, (void *)S097);
+const regex rxstr_or_cl_begin		(rx_matcher, (void *)S098);
+const regex rxstr_or_cl_begin_s		(rx_matcher, (void *)S099);
+const regex rxstr_or_cl_end		(rx_matcher, (void *)S100);
+const regex rxstruct_keyword_begin	(rx_matcher, (void *)S101);
+const regex rxterminated		(rx_matcher, (void *)S102);
+const regex rxthread_cmd		(rx_matcher, (void *)S103);
+const regex rxundisplay			(rx_matcher, (void *)S104);
+const regex rxup_cmd			(rx_matcher, (void *)S105);
 
 #if !WITH_RUNTIME_REGEX
-const regex rxuppercase			(rx_matcher, "106");
+const regex rxuppercase			(rx_matcher, (void *)S106);
 #endif
 
-const regex rxvtable			(rx_matcher, "107");
-const regex rxvtable_entries		(rx_matcher, "108");
+const regex rxvtable			(rx_matcher, (void *)S107);
+const regex rxvtable_entries		(rx_matcher, (void *)S108);
 
 #if !WITH_RUNTIME_REGEX
-const regex rxwhite			(rx_matcher, "109");
+const regex rxwhite			(rx_matcher, (void *)S109);
 #endif
 
-const regex rxxdb			(rx_matcher, "110");
-const regex rxxdbpos			(rx_matcher, "111");
+const regex rxxdb			(rx_matcher, (void *)S110);
+const regex rxxdbpos			(rx_matcher, (void *)S111);
