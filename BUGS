@@ -32,9 +32,6 @@ Volunteers for fixing these and other bugs are welcome!
 041 Starting a multi-window DDD iconified under vtwm and fvwm causes
     trouble with group iconification.
 
-049 The bounding box is computed for all nodes, even if only selected
-    nodes are to be printed.
-
 126 Flashing data window.  Thomas Liefke
     <liefke@cdc.Informatik.TH-Darmstadt.DE> reports that the data
     window is flashing forever in certain circumstances. The flashing
@@ -161,9 +158,5 @@ Volunteers for fixing these and other bugs are welcome!
     - Destroying plotter decorations is risky; better re-use them
 
 325 Issue a diagnostic if a man page is not found.
-
-326 The bounding box is too small by one pixel.  See also 049.
-
-327 `ddd --version` requires X access.
 
 328 (Insert new bugs here)
