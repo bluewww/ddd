@@ -523,6 +523,9 @@ public:
 
     // True if the selection was lost
     static void SelectionLostCB(Widget = 0, XtPointer = 0, XtPointer = 0);
+
+    // Get number of display NAME
+    static int display_number(const string& name, bool verbose = false);
 };
 
 inline bool DataDisp::get_selection(ostream& os, bool include_position)

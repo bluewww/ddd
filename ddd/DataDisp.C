@@ -190,14 +190,14 @@ struct ShortcutItms { enum Itms {S1, S2, S3, S4, S5,
 				 S11, S12, S13, S14, S15,
 				 S16, S17, S18, S19, S20,
 				 Other, Sep1, Edit,
-				 Sep2, Dereference2, Delete2 }; };
+				 Sep2, New2, Dereference2 }; };
 
 MMDesc DataDisp::shortcut_menu[]   = 
 {
     SHORTCUT_MENU,
     MMSep,
+    {"new2", MMPush, {DataDisp::displayArgCB, XtPointer(false)}},
     {"dereference2", MMPush, {DataDisp::dereferenceArgCB}},
-    {"delete2", MMPush, {DataDisp::deleteArgCB, XtPointer(True) }},
     MMEnd
 };
 
@@ -227,7 +227,7 @@ MMDesc DataDisp::node_popup[] =
     {"rotate",        MMPush,   {DataDisp::rotateCB}},
     {"set",           MMPush,   {DataDisp::setCB}},
     MMSep,
-    {"delete",        MMPush,   {DataDisp::deleteCB, XtPointer(True)}},
+    {"delete",        MMPush,   {DataDisp::deleteCB, XtPointer(true)}},
     MMEnd
 };
 
@@ -235,7 +235,8 @@ struct CmdItms { enum Itms {New, Dereference, Detail, Rotate, Set, Delete }; };
 
 MMDesc DataDisp::graph_cmd_area[] =
 {
-    {"new",           MMPush,                 {DataDisp::displayArgCB},
+    {"new",           MMPush,                 {DataDisp::displayArgCB, 
+					       XtPointer(false)},
                                                DataDisp::shortcut_menu },
     {"dereference",   MMPush | MMInsensitive | MMUnmanaged, {DataDisp::dereferenceArgCB}},
     {"detail",        MMPush | MMInsensitive, {DataDisp::toggleDetailCB,
@@ -244,7 +245,7 @@ MMDesc DataDisp::graph_cmd_area[] =
     {"rotate",        MMPush | MMInsensitive, {DataDisp::rotateCB},
                                                DataDisp::rotate_menu },
     {"set",           MMPush | MMInsensitive, {DataDisp::setCB}},
-    {"delete",        MMPush | MMInsensitive, {DataDisp::deleteCB, XtPointer(True) }},
+    {"delete",        MMPush | MMInsensitive, {DataDisp::deleteArgCB, XtPointer(true) }},
     MMEnd
 };
 
@@ -271,7 +272,7 @@ MMDesc DataDisp::display_area[] =
     {"show_detail",  MMPush,   {DataDisp::showDetailCB, XtPointer(-1) }},
     {"hide_detail",  MMPush,   {DataDisp::hideDetailCB, XtPointer(-1) }},
     {"set",          MMPush,   {DataDisp::setCB}},
-    {"delete",       MMPush | MMHelp, {DataDisp::deleteCB, XtPointer(True) }},
+    {"delete",       MMPush | MMHelp, {DataDisp::deleteCB, XtPointer(true) }},
     MMEnd
 };
 
@@ -437,8 +438,16 @@ void DataDisp::dereferenceArgCB(Widget w, XtPointer client_data,
     new_display(gdb->dereferenced_expr(source_arg->get_string()), 0, "", w);
 }
 
-void DataDisp::toggleDetailCB(Widget dialog, XtPointer client_data, XtPointer)
+void DataDisp::toggleDetailCB(Widget dialog,
+			      XtPointer client_data,
+			      XtPointer call_data)
 {
+    if (gdb->recording())
+    {
+	showDetailCB(dialog, client_data, call_data);
+	return;
+    }
+
     int depth = int(client_data);
 
     set_last_origin(dialog);
@@ -539,6 +548,13 @@ void DataDisp::showMoreDetailCB(Widget dialog, XtPointer client_data,
 void DataDisp::show(Widget dialog, int depth, int more)
 {
     set_last_origin(dialog);
+
+    if (gdb->recording())
+    {
+	gdb_command("graph enable display " + source_arg->get_string());
+	return;
+    }
+
     IntArray disp_nrs;
 
     bool changed = false;
@@ -588,6 +604,13 @@ void DataDisp::show(Widget dialog, int depth, int more)
 void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 {
     set_last_origin(dialog);
+
+    if (gdb->recording())
+    {
+	gdb_command("graph disable display " + source_arg->get_string());
+	return;
+    }
+
     IntArray disp_nrs;
 
     bool changed = false;
@@ -1367,39 +1390,34 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
 void DataDisp::displayArgCB(Widget w, XtPointer client_data, 
 			    XtPointer call_data)
 {
-    DispValue *disp_value_arg = selected_value();
+    bool check_pointer = bool(client_data);
 
-#if 0
-    DataDispCount count(disp_graph);
-    if (count.selected_titles > 0)
+    if (check_pointer)
     {
-	// Delete selected displays
-	deleteCB(w, XtPointer(False), call_data);
-    }
-    else 
-#endif
-    if (disp_value_arg != 0 && disp_value_arg->type() == Pointer)
-    {
-	// Dereference selected pointer
-	dereferenceCB(w, client_data, call_data);
-    }
-    else
-    {
-	// Create new display
-	string arg = source_arg->get_string();
+	DispValue *disp_value_arg = selected_value();
 
-	string depends_on = "";
-	DispNode *disp_node_arg = selected_node();
-	if (disp_node_arg != 0)
+	if (disp_value_arg != 0 && disp_value_arg->type() == Pointer)
 	{
-	    if (gdb->recording())
-		depends_on = disp_node_arg->name();
-	    else
-		depends_on = itostring(disp_node_arg->disp_nr());
+	    // Dereference selected pointer
+	    dereferenceCB(w, client_data, call_data);
+	    return;
 	}
-
-	new_display(arg, 0, depends_on, w);
     }
+
+    // Create new display
+    string arg = source_arg->get_string();
+
+    string depends_on = "";
+    DispNode *disp_node_arg = selected_node();
+    if (disp_node_arg != 0)
+    {
+	if (gdb->recording())
+	    depends_on = disp_node_arg->name();
+	else
+	    depends_on = itostring(disp_node_arg->disp_nr());
+    }
+
+    new_display(arg, 0, depends_on, w);
 }
 
 
@@ -1903,6 +1921,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	set_label(graph_cmd_area[CmdItms::New].widget,
 		  "Display ()", DISPLAY_ICON);
     }
+    set_sensitive(shortcut_menu[ShortcutItms::New2].widget, arg_ok);
     set_sensitive(graph_cmd_area[CmdItms::New].widget, arg_ok);
     set_sensitive(display_area[DisplayItms::New].widget, true);
 
@@ -1926,7 +1945,16 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  rotate_ok);
 
     // Show/Hide Detail
-    if (count.selected_expanded > 0 && count.selected_collapsed == 0)
+    if (gdb->recording())
+    {
+	// Recording
+	set_label(node_popup[NodeItms::Detail].widget, "Show All");
+	set_label(graph_cmd_area[CmdItms::Detail].widget, 
+		  "Show ()", SHOW_ICON);
+	set_sensitive(node_popup[NodeItms::Detail].widget, true);
+	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
+    }
+    else if (count.selected_expanded > 0 && count.selected_collapsed == 0)
     {
 	// Only expanded displays selected
 	set_label(node_popup[NodeItms::Detail].widget, "Hide All");
@@ -1939,8 +1967,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     {
 	// Some collapsed displays selected
 	set_label(node_popup[NodeItms::Detail].widget, "Show All");
-	set_label(graph_cmd_area[CmdItms::Detail].widget, "Show ()",
-		  SHOW_ICON);
+	set_label(graph_cmd_area[CmdItms::Detail].widget, 
+		  "Show ()", SHOW_ICON);
 	set_sensitive(node_popup[NodeItms::Detail].widget, true);
 	set_sensitive(graph_cmd_area[CmdItms::Detail].widget, true);
     }
@@ -1952,24 +1980,22 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     }
 
     set_sensitive(display_area[DisplayItms::ShowDetail].widget, 
-		  count.selected_collapsed > 0);
+		  gdb->recording() || count.selected_collapsed > 0);
     set_sensitive(display_area[DisplayItms::HideDetail].widget, 
-		  count.selected_expanded > 0);
+		  gdb->recording() || count.selected_expanded > 0);
 
     set_sensitive(detail_menu[DetailItms::ShowMore].widget, 
-		  count.selected_collapsed > 0);
+		  gdb->recording() || count.selected_collapsed > 0);
     set_sensitive(detail_menu[DetailItms::ShowJust].widget, 
-		  count.selected > 0);
+		  gdb->recording() || count.selected > 0);
     set_sensitive(detail_menu[DetailItms::ShowDetail].widget, 
-		  count.selected_collapsed > 0);
+		  gdb->recording() || count.selected_collapsed > 0);
     set_sensitive(detail_menu[DetailItms::HideDetail].widget, 
-		  count.selected_expanded > 0);
+		  gdb->recording() || count.selected_expanded > 0);
 
     // Delete
-    set_sensitive(shortcut_menu[ShortcutItms::Delete2].widget,
-		  gdb->recording() || count.selected_titles > 0);
     set_sensitive(graph_cmd_area[CmdItms::Delete].widget,
-		  count.selected_titles > 0);
+		  gdb->recording() || count.selected_titles > 0);
     set_sensitive(display_area[DisplayItms::Delete].widget,
 		  count.selected_titles > 0);
 
@@ -2498,6 +2524,28 @@ void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
     delete info;
 }
 
+int DataDisp::display_number(const string& name, bool verbose)
+{
+    int nr = disp_graph->get_by_name(name);
+
+    if (nr == 0)
+    {
+	if (verbose)
+	    post_gdb_message("No display named " + quote(name) + ".\n");
+	return 0;
+    }
+
+    DispNode *dn = disp_graph->get(nr);
+    if (dn == 0)
+    {
+	if (verbose)
+	    post_gdb_message("No display number " + itostring(nr) + ".\n");
+	return 0;
+    }
+
+    return nr;
+}
+
 void DataDisp::new_displaySQ (string display_expression,
 			      string scope, BoxPoint *p,
 			      string depends_on, DeferMode deferred,
@@ -2506,22 +2554,9 @@ void DataDisp::new_displaySQ (string display_expression,
     // Check arguments
     if (deferred != DeferAlways && depends_on != "")
     {
-	int depend_nr = disp_graph->get_by_name(depends_on);
+	int depend_nr = display_number(depends_on, verbose);
 	if (depend_nr == 0)
-	{
-	    if (verbose)
-		post_gdb_message("No display named " 
-				 + quote(depends_on) + ".\n");
 	    return;
-	}
-	DispNode *dn = disp_graph->get(depend_nr);
-	if (dn == 0)
-	{
-	    if (verbose)
-		post_gdb_message("No display number " + 
-				 itostring(depend_nr) + ".\n");
-	    return;
-	}
     }
 
     NewDisplayInfo *info = new NewDisplayInfo;
