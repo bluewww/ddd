@@ -51,6 +51,10 @@ char DispGraph_rcsid[] =
 #include "HintGraphN.h"
 #include "VoidArray.h"
 #include "regexps.h"
+#include "BoxEdgeA.h"
+#include "StringBox.h"
+#include "annotation.h"
+
 
 // ***************************************************************************
 // Constructor
@@ -164,9 +168,7 @@ void DispGraph::callHandlers ()
 // ***************************************************************************
 // new_disp_nr bei Erfolg
 //
-int DispGraph::insert(int new_disp_nr,
-		      DispNode* new_dn,
-		      int depends_on)
+int DispGraph::insert(int new_disp_nr, DispNode* new_dn, int depends_on)
 {
     if (idMap.contains(new_disp_nr))
 	return 0;
@@ -178,7 +180,13 @@ int DispGraph::insert(int new_disp_nr,
     if (depends_on != 0)
     {
 	DispNode* old_dn = idMap.get (depends_on);
-	*this += new LineGraphEdge (old_dn->nodeptr(), new_dn->nodeptr());
+
+	string a = annotation(old_dn->name(), new_dn->name());
+	BoxEdgeAnnotation *ann = 0;
+	if (a != "")
+	    ann = new BoxEdgeAnnotation(new StringBox(a));
+
+	*this += new LineGraphEdge(old_dn->nodeptr(), new_dn->nodeptr(), ann);
     }
     assert (Graph::OK());
 
@@ -692,6 +700,8 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
     GraphEdge *edge;
     VarArray<GraphNode *> from_nodes;
     VarArray<GraphNode *> to_nodes;
+    VarArray<EdgeAnnotation *> from_annotations;
+    VarArray<EdgeAnnotation *> to_annotations;
     int i;
 
     for (edge = node->firstFrom(); edge != 0; edge = node->nextFrom(edge))
@@ -703,6 +713,12 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
 	    e = e->to()->firstFrom();
 	}
 	to_nodes += e->to();
+
+	EdgeAnnotation *anno = 0;
+	LineGraphEdge *ge = ptr_cast(LineGraphEdge, e);
+	if (ge != 0)
+	    anno = ge->annotation();
+	to_annotations += anno;
     }
     for (edge = node->firstTo(); edge != 0; edge = node->nextTo(edge))
     {
@@ -713,12 +729,20 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
 	    e = e->from()->firstTo();
 	}
 	from_nodes += e->from();
+
+	EdgeAnnotation *anno = 0;
+	LineGraphEdge *ge = ptr_cast(LineGraphEdge, e);
+	if (ge != 0)
+	    anno = ge->annotation();
+	from_annotations += anno;
     }
 
     for (i = 0; i < to_nodes.size(); i++)
-	add_alias_edge(w, alias_disp_nr, d0->nodeptr(), to_nodes[i]);
+	add_alias_edge(w, alias_disp_nr, d0->nodeptr(), 
+		       to_nodes[i], to_annotations[i]);
     for (i = 0; i < from_nodes.size(); i++)
-	add_alias_edge(w, alias_disp_nr, from_nodes[i], d0->nodeptr());
+	add_alias_edge(w, alias_disp_nr, from_nodes[i], d0->nodeptr(), 
+		       from_annotations[i]);
 
     // Propagate `selected' state to hints
     for (node = firstNode(); node != 0; node = nextNode(node))
@@ -840,29 +864,34 @@ bool DispGraph::has_angle(PosGraphNode *node, const BoxPoint& p)
 
 // Add a new edge in existing graph
 void DispGraph::add_alias_edge(Widget w, int alias_disp_nr, 
-			       GraphNode *_from, GraphNode *_to)
+			       GraphNode *_from, GraphNode *_to,
+			       EdgeAnnotation *anno)
 {
     PosGraphNode *from = ptr_cast(PosGraphNode, _from);
     PosGraphNode *to   = ptr_cast(PosGraphNode, _to);
+
+    if (anno != 0)
+	anno = anno->dup();
 
     // Check whether the new edge may be hidden by existing edges
     if (from == to || (from == 0 || to == 0))
     {
 	// Self-referring edge or bad nodes
-	add_direct_alias_edge(w, alias_disp_nr, _from, _to);
+	add_direct_alias_edge(w, alias_disp_nr, _from, _to, anno);
     }
     else
     {
 	// Check for interferences with existing edge
-	add_routed_alias_edge(w, alias_disp_nr, from, to);
+	add_routed_alias_edge(w, alias_disp_nr, from, to, anno);
     }
 }
 
 // Add a direct edge from FROM to TO
 void DispGraph::add_direct_alias_edge(Widget, int alias_disp_nr, 
-				      GraphNode *from, GraphNode *to)
+				      GraphNode *from, GraphNode *to,
+				      EdgeAnnotation *anno)
 {
-    *this += new AliasGraphEdge(alias_disp_nr, from, to);
+    *this += new AliasGraphEdge(alias_disp_nr, from, to, anno);
 }
 
 // Check whether P is obscured by any node
@@ -947,7 +976,8 @@ bool DispGraph::hint_positions_ok(Widget w,
 
 // Add edge from FROM to TO, inserting hints if required
 void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr, 
-				      PosGraphNode *from, PosGraphNode *to)
+				      PosGraphNode *from, PosGraphNode *to,
+				      EdgeAnnotation *anno)
 {
     // Determine hint offsets
     Dimension grid_height = 16;
@@ -1022,7 +1052,7 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
     if (try_direct && pos1 == from->pos() && pos2 == to->pos())
     {
 	// No need for hints - add direct edge
-	add_direct_alias_edge(w, alias_disp_nr, from, to);
+	add_direct_alias_edge(w, alias_disp_nr, from, to, anno);
     }
     else
     {
@@ -1034,7 +1064,7 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
 	*this += hint;
 
 	// Add edges
-	*this += new AliasGraphEdge(alias_disp_nr, from, hint);
+	*this += new AliasGraphEdge(alias_disp_nr, from, hint, anno);
 	*this += new AliasGraphEdge(alias_disp_nr, hint, to);
     }
 }

@@ -93,7 +93,8 @@ public:
     void callHandlers();
 
 
-    // Insert a new display DN named DISP_NR dependent on DEPENDS_ON
+    // Insert a new display DN named DISP_NR dependent on DEPENDS_ON.
+    // Return new display number, or 0 iff failure.
     int insert(int disp_nr, DispNode* dn, int depends_on = 0);
 
     // Make DISP_NR an alias of ALIAS_DISP_NR.  Suppress
@@ -150,7 +151,8 @@ protected:
 
     // Add a new alias edge
     void add_alias_edge(Widget w, int alias_disp_nr,
-			GraphNode *from, GraphNode *to);
+			GraphNode *from, GraphNode *to,
+			EdgeAnnotation *anno);
 
 private:
     static void disp_node_disabledHP(void *, void *, void *);
@@ -164,9 +166,12 @@ private:
     static bool has_angle(PosGraphNode *node, const BoxPoint& p);
 
     void add_direct_alias_edge(Widget w, int alias_disp_nr, 
-			       GraphNode *from, GraphNode *to);
+			       GraphNode *from, GraphNode *to,
+			       EdgeAnnotation *anno);
     void add_routed_alias_edge(Widget w, int alias_disp_nr, 
-			       PosGraphNode *from, PosGraphNode *to);
+			       PosGraphNode *from, PosGraphNode *to,
+			       EdgeAnnotation *anno);
+
     bool is_hidden(Widget w, const BoxPoint& p) const;
     static BoxPoint rotate_offset(const BoxPoint& p, int angle);
 
