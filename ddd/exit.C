@@ -916,6 +916,17 @@ void gdb_exceptionHP(Agent *agent, void *, void *call_data)
 	// Entered exception state
 	assert (post_exception_timer == 0);
 
+	// Try sending a simple nop command
+#if 1
+	gdb->send_user_ctrl_cmd(gdb->nop_command() + "\n");
+#else
+	Command c(gdb->nop_command());
+	c.echo     = false;
+	c.verbose  = false;
+	c.priority = COMMAND_PRIORITY_AGAIN;
+	gdb_command(c);
+#endif
+
 	// Wait 5 seconds before offering a restart
 	post_exception_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 5000,
