@@ -33,16 +33,21 @@ char logplayer_rcsid[] =
 #pragma implementation
 #endif
 
+#include "logplayer.h"
+
 #include "strclass.h"
 #include "cook.h"
 #include "config.h"
 
 #include <iostream.h>
 #include <fstream.h>
+#include <iomanip.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <setjmp.h>
 #include <signal.h>
+#include <string.h>		// strerror()
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
@@ -56,21 +61,32 @@ typedef void (*SignalProc)(SIGHANDLERARGS);
 
 static jmp_buf main_loop_env;
 
-int intr(int sig)
+// Handle interrupts
+static int intr(int sig)
 {
     signal(SIGINT, (SignalProc)intr);
     longjmp(main_loop_env, sig);
 }
 
-int main(int argc, char *argv[])
+static const char *usage = 
+"`/S' search S in commands  `:N' goto Nth command   `.' show expected command"
+"\n"
+"`/'  search again          `:'  list all commands  `!' issue expected command"
+"\n";
+
+// Simulate a debugger via the DDD log LOGNAME.  If a command matches
+// a DDD command in LOGNAME, issue the appropriate answer.
+void logplayer(const string& logname)
 {
-    static string logname = (argc > 1 ? argv[1] : "log");
     static ifstream log(logname);
     if (log.bad())
     {
-	cerr << argv[0] << ": cannot access log\n";
-	return EXIT_FAILURE;
+	(void) fopen(logname, "r");
+	perror(logname);
+	exit(EXIT_FAILURE);
     }
+
+    cout << "[Playing " + quote(logname) + ".  Use `?' for help]\n";
 
     static string out;
     static string ddd_line;
@@ -80,19 +96,21 @@ int main(int argc, char *argv[])
     static bool wrapped = false;
     static streampos scan_start;
     static string expecting;
-    static int times = 0;
+    static int command_no = 0;
+    static int command_no_start = 0;
 
     signal(SIGINT, (SignalProc)intr);
     static int sig = 0;
     if ((sig = setjmp(main_loop_env)) != 0)
     {
-	cout << "Quit\n" << last_prompt;
+	cout << "Quit\n";
 	cout.flush();
 
 	scanning = false;
 	wrapped  = false;
 	log.clear();
 	log.seekg(scan_start);
+	command_no = command_no_start;
 	out = "";
 	ddd_line = "";
     }
@@ -100,7 +118,10 @@ int main(int argc, char *argv[])
     for (;;)
     {
 	if (!scanning)
+	{
 	    scan_start = log.tellg();
+	    command_no_start = command_no;
+	}
 
 	char buffer[1024];
 	log.getline(buffer, sizeof buffer);
@@ -109,19 +130,22 @@ int main(int argc, char *argv[])
 	if (log_line.contains("<- ", 0) ||
 	    out != "" && log_line.contains("   ", 0))
 	{
+	    // Accumulate logged output
 	    out += unquote(log_line.from('"'));
 	    out_seen = true;
 	}
 	else if (out != "")
 	{
-	    if (!scanning)
-	    {
-		cout << out;
-		cout.flush();
-	    }
+	    // Send out accumulated output
 	    if (out.contains('\n'))
 	    {
 		last_prompt = out.after('\n', -1);
+
+		if (!scanning)
+		{
+		    cout << out.through('\n', -1);
+		    cout.flush();
+		}
 	    }
 	    else
 	    {
@@ -135,27 +159,58 @@ int main(int argc, char *argv[])
 	    string in = unquote(log_line.from('"'));
 	    if (in.contains('\n', -1))
 		in = in.before('\n', -1);
+	    command_no++;
+
+	    if (ddd_line.contains('/', 0) || ddd_line.contains(':', 0))
+	    {
+		static string pattern;
+		char c = ddd_line[0];
+		string p = ddd_line.after(0);
+		if (p != "" || c == ':')
+		    pattern = p;
+		if (pattern == "" ||
+		    (c == ':' && command_no == atoi(pattern)) ||
+		    (c == '/' && (pattern == "" || in.contains(pattern))))
+		{
+		    // Report line
+		    cout << setw(4) << command_no << " " << in << "\n";
+
+		    if (c == '/' || pattern != "")
+			scanning = false; // Stop here
+		}
+	    }
 
 	    if (!scanning)
 	    {
+		// Read command from DDD
+		cout << last_prompt;
+		cout.flush();
+
 		cin.getline(buffer, sizeof buffer);
 		ddd_line = buffer;
 
 		if (cin.fail() || cin.eof() || ddd_line.contains('q', 0))
-		    return EXIT_SUCCESS;
+		    exit(EXIT_SUCCESS);
 
 		cin.clear();
+
+		if (ddd_line == ".")
+		    cout << "Expecting " 
+			 << command_no << " " << quote(in) << "\n";
+		else if (ddd_line == "!")
+		    ddd_line = in;
+		else if (ddd_line == "?")
+		    cout << usage;
 	    }
 
-	    if (ddd_line == in || ddd_line == ".")
+	    if (ddd_line == in)
 	    {
 		// Okay, got it
 		scanning = false;
-		times = 0;
 	    }
 	    else if (!scanning)
 	    {
-		// Bad match: try to find this line in the log
+		// Bad match: try to find this command in the log
 		expecting = in;
 		scanning = true;
 		wrapped = false;
@@ -166,25 +221,11 @@ int main(int argc, char *argv[])
 	{
 	    if (scanning && wrapped)
 	    {
-		switch (times++)
-		{
-		case 0:
-		    cerr << "Try " << quote(expecting);
-		    break;
-
-		case 1:
-		    cerr << "Use \".\" to enter the expected command";
-		    break;
-
-		default:
-		    cerr << "Use \"q\" to quit";
-		    break;
-		}
-
-		cerr << "\n" <<last_prompt;
+		// Nothing found.  Don't reply.
 		scanning = false;
 		log.clear();
 		log.seekg(scan_start);
+		command_no = command_no_start;
 	    }
 	    else
 	    {
@@ -193,9 +234,21 @@ int main(int argc, char *argv[])
 		out_seen = false;
 		log.clear();
 		log.seekg(0);
+		command_no = 0;
 	    }
 	}
     }
-
-    return EXIT_SUCCESS;
 }
+
+#if MAIN
+int main(int argc, char *argv[])
+{
+    static string logname;
+    if (argc > 1)
+	logname = argv[1];
+    else
+	logname = string(getenv("HOME")) + "/.ddd/log";
+
+    logplayer(logname);
+}
+#endif
