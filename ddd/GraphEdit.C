@@ -2561,12 +2561,18 @@ static void LayoutHintCB(char *from_name, char *to_name, int x, int y)
 	    // We hide the original edge...
 	    edge->hidden() = True;
 
+	    // ... fetch its annotation ...
+	    LineGraphEdge *ge = ptr_cast(LineGraphEdge, edge);
+	    EdgeAnnotation *anno = ge->annotation();
+	    if (anno != 0)
+		anno = anno->dup();
+
 	    // ... and insert an edge hint at the end
 	    // of the path between FROM and TO.
 	    HintGraphNode *hint = new HintGraphNode(BoxPoint(x, y));
 	 
 	    *layout_graph += hint;
-	    *layout_graph += new LineGraphEdge(edge->from(), hint);
+	    *layout_graph += new LineGraphEdge(edge->from(), hint, anno);
 	    *layout_graph += new LineGraphEdge(hint, edge->to());
 
 	    return;
