@@ -54,6 +54,10 @@ char show_rcsid[] =
 #include <string.h>
 #include <errno.h>
 
+#if defined(HAVE_XPM) && defined(HAVE_X11_XPM_H)
+#include <X11/xpm.h>
+#endif
+
 #include "HelpCB.h"
 
 extern void process_pending_events();
@@ -277,7 +281,10 @@ void show_configuration()
 	"CC"
 #endif
 #ifdef _G_LIB_VERSION
-	" using libg++ " _G_LIB_VERSION
+	", libg++ " _G_LIB_VERSION
+#endif
+#ifdef _LINUX_C_LIB_VERSION
+        ", glibc " _LINUX_C_LIB_VERSION
 #endif
 	"\n"
 	"Using X" stringize(X_PROTOCOL) "R" stringize(XlibSpecificationRelease)
@@ -285,6 +292,10 @@ void show_configuration()
 	 ", Motif " stringize(XmVERSION) "." stringize(XmREVISION)
 #ifdef XmVERSION_STRING
 	 " (" XmVERSION_STRING ")"
+#endif
+#ifdef XpmFormat
+         ", XPM " stringize(XpmFormat) "." stringize(XpmVersion) 
+	"." stringize(XpmRevision)
 #endif
 	"\n";
     cout << config_info;
