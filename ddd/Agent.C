@@ -338,7 +338,7 @@ void Agent::hasNewStatus(int state)
 {
     _lastStatus = state;
 
-    if (WIFEXITED(state) || WIFSIGNALED(state))
+    if (WIFEXITED(((state))) || WIFSIGNALED(((state))))
     {
 	// agent died: inhibit further communication
 	abort();

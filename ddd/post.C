@@ -174,8 +174,8 @@ Widget post_gdb_died(string reason, int state, Widget w)
     strip_trailing_space(reason);
 
     int exit_state = EXIT_FAILURE;
-    if (WIFEXITED(state))
-	exit_state = WEXITSTATUS(state);
+    if (WIFEXITED(((state))))
+	exit_state = WEXITSTATUS(((state)));
 
     bool exited = (exit_state == EXIT_SUCCESS || reason.contains("Exit 0"));
 

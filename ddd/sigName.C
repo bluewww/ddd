@@ -54,17 +54,17 @@ char *sigName(int signo)
 // Convert wait() status into name
 char *statusName(int state)
 {
-    if (WIFEXITED(state))
+    if (WIFEXITED(((state))))
     {
 	static char buffer[256];
 
-	sprintf(buffer, "Exit %d", (int)WEXITSTATUS(state));
+	sprintf(buffer, "Exit %d", (int)WEXITSTATUS(((state))));
 	return buffer;
     }
-    else if (WIFSIGNALED(state))
-        return sigName(WTERMSIG(state));
-    else if (WIFSTOPPED(state))
-        return sigName(WSTOPSIG(state));
+    else if (WIFSIGNALED(((state))))
+        return sigName(WTERMSIG(((state))));
+    else if (WIFSTOPPED(((state))))
+        return sigName(WSTOPSIG(((state))));
 
     return "Unknown state change";
 }
