@@ -179,8 +179,8 @@ Widget createPannedGraphEdit(Widget parent, String name,
     XtSetArg(args[arg], XtNleft,      XawChainRight);  arg++;
     XtSetArg(args[arg], XtNright,     XawChainRight);  arg++;
     Widget panner = 
-	verify(XtCreateManagedWidget(panner_name, 
-				     pannerWidgetClass, form, args, arg));
+	verify(XtCreateWidget(panner_name, 
+			      pannerWidgetClass, form, args, arg));
 
     string porthole_name = string(name) + "_porthole";
     arg = 0;
@@ -268,23 +268,27 @@ static void PortholeCB(Widget w,
 
     Dimension extra_width;
     Dimension extra_height;
+    Graph *graph;
     XtVaGetValues(graph_edit,
 		  XtNextraWidth,  &extra_width,
 		  XtNextraHeight, &extra_height,
+		  XtNgraph,       &graph,
 		  NULL);
 
     bool need_panner = 
-	(report->canvas_width  - extra_width  >= form_width || 
-	 report->canvas_height - extra_height >= form_height);
+	graph != 0
+	&& graph->firstVisibleNode() != 0
+	&& (report->canvas_width  - extra_width  >= form_width ||
+	    report->canvas_height - extra_height >= form_height);
 
     if (need_panner && panner_width > 0 && panner_height > 0)
     {
 	// Map panner in lower right edge of the form
 
 	Dimension panner_window_width = 
-	    panner_width  + panner_border_width  * 2;
+	    panner_width  + panner_border_width * 2;
 	Dimension panner_window_height = 
-	    panner_height + panner_border_width  * 2;
+	    panner_height + panner_border_width * 2;
 
 	if (!XtIsManaged(panner))
 	    XtManageChild(panner);
