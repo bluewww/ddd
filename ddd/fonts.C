@@ -405,6 +405,13 @@ static void setup_x_fonts(const AppData& ad, XrmDatabase& db)
     define_font(ad, CHARSET_TB, FixedWidthDDDFont,
 		override(Weight, "bold"));
 
+    define_font(ad, CHARSET_TS, FixedWidthDDDFont,
+		override(Slant, "*"));
+
+    define_font(ad, CHARSET_TBS, FixedWidthDDDFont,
+		override(Weight, "bold",
+			 override(Slant, "*")));
+
     define_font(ad, CHARSET_KEY, VariableWidthDDDFont,
 		override(Weight, "bold"));
 
@@ -423,7 +430,8 @@ static void setup_x_fonts(const AppData& ad, XrmDatabase& db)
 
 static void replace_vsl_def(string& s, const string& func, const string& val)
 {
-    s += "#pragma replace " + func + "\n" + func + "() = " + val + ";\n";
+    s += "#pragma replace " + func + "\n" + 
+	func + "(box) = font(box, " + val + ");\n";
 }
 
 static void setup_vsl_fonts(AppData& ad)
@@ -432,13 +440,10 @@ static void setup_vsl_fonts(AppData& ad)
 
     title(ad, "VSL defs");
 
-    replace_vsl_def(defs, "stdfontsize", "0");
-    replace_vsl_def(defs, "stdfontpoints",
-		    component(ad, FixedWidthDDDFont, PointSize));
-    replace_vsl_def(defs, "stdfontfamily", 
-		    quote(component(ad, FixedWidthDDDFont, Family)));
-    replace_vsl_def(defs, "stdfontweight", 
-		    quote(component(ad, FixedWidthDDDFont, Weight)));
+    replace_vsl_def(defs, "rm", quote(font_defs[CHARSET_TT]));
+    replace_vsl_def(defs, "bf", quote(font_defs[CHARSET_TB]));
+    replace_vsl_def(defs, "it", quote(font_defs[CHARSET_TS]));
+    replace_vsl_def(defs, "bi", quote(font_defs[CHARSET_TBS]));
 
     if (ad.show_fonts)
 	cout << defs;

@@ -46,6 +46,12 @@
 // The bold variant of TT.
 #define CHARSET_TB "tb"
 
+// The slanted variant of TT.
+#define CHARSET_TS "ts"
+
+// The bold slanted variant of TT.
+#define CHARSET_TBS "tbs"
+
 // Roman text.
 #define CHARSET_RM "rm"
 
