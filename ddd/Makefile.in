@@ -1870,7 +1870,7 @@ pub:	$(PROG_STUFF) configure $(PUB_DEST)/USERINFO
 	    fi; \
 	done
 
-# This is no longer needed, since we have `~/.dddinfo'.
+# This is no longer needed, since we have `~/.ddd_userinfo'.
 # $(PUB_DEST)/USERINFO:
 # 	-echo 'DDD Development Team <ddd@ips.cs.tu-bs.de>' > $@~ && \
 # 	$(MV) $@~ $@
