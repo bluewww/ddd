@@ -265,7 +265,6 @@ static string gdbHelp(string command)
 	{
 	    // Ask DBX for help on DBXENV command
 	    help = get_dbx_help(cmd, base);
-	    strip_final_blanks(help);
 	}
     }
 
@@ -273,8 +272,9 @@ static string gdbHelp(string command)
     {
 	// Ask debugger for help
 	help = gdb_question("help " + command, help_timeout, true);
-	strip_final_blanks(help);
     }
+
+    strip_final_blanks(help);
 
     if (help != NO_GDB_ANSWER)
 	help_cache[command] = help;
@@ -346,7 +346,7 @@ static string gdbSettingsValue(string command)
 
     case DBX:
     case XDB:
-	return "";		// FIXME
+	return NO_GDB_ANSWER;		// FIXME
     }
 
     return NO_GDB_ANSWER;
