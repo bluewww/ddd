@@ -34,6 +34,8 @@ char ColorBox_rcsid[] =
 #endif
 
 #include "ColorBox.h"
+#include "PrimitiveB.h"
+#include "cook.h"
 #include <X11/StringDefs.h>
 
 DEFINE_TYPE_INFO_1(ColorBox, TransparentHatBox);
@@ -88,8 +90,7 @@ void ColorBox::_draw(Widget w,
 		     GC gc,
 		     bool context_selected) const
 {
-    if (use_color && !color_valid())
-	convert_color(w);
+    convert_color(w);
 
     if (use_color && color_valid())
     {
@@ -168,7 +169,11 @@ void ForegroundColorBox::_print(ostream& os, const BoxRegion& region,
 	    os << double(red())   / 65535.0 << " "
 	       << double(green()) / 65535.0 << " "
 	       << double(blue())  / 65535.0 << " "
-	       << "begincolor*\n";
+	       << "begincolor*"
+	       << " % " << color_name() 
+		// << " " << red() << " " << green() << " " << blue()
+		// << " " << color_valid() << " " << color_failed()
+	       << "\n";
 	}
     }
 
@@ -185,4 +190,34 @@ void ForegroundColorBox::_print(ostream& os, const BoxRegion& region,
 	    os << "endcolor*\n";
 	}
     }
+}
+
+// Print using background color
+void BackgroundColorBox::_print(ostream& os, const BoxRegion& region, 
+				const PrintGC& gc) const
+{
+    if (gc.isPostScript())
+    {
+	const PostScriptPrintGC &ps = const_ref_cast(PostScriptPrintGC, gc);
+
+	if (ps.color && (red() < 65535 || green() < 65535 || blue() < 65535))
+	{
+	    // os << "% Background " << color_name() << "\n";
+
+	    // First print a rule box in place (using the background color as
+	    // foreground color of the rule)
+	    ColorBox *block = 
+		new ForegroundColorBox(new RuleBox(size()), color_name());
+	    block->set_rgb(red(), green(), blue());
+
+	    block->_print(os, region, gc);
+
+	    block->unlink();
+
+	    // os << "% End Background\n";
+	}
+    }
+
+    // Now print the box itself
+    ColorBox::_print(os, region, gc);
 }

@@ -90,6 +90,13 @@ User Interface
   debugger console is now optional.  See the `consoleHasFocus' resource. (10)
 
 
+Printing
+--------
+
+- PostScript printing includes background colors (e.g. changed values)
+
+
+
 Installation
 ------------
 

@@ -105,6 +105,13 @@ public:
     unsigned short red()   const     { return _red; }
     unsigned short green() const     { return _green; }
     unsigned short blue()  const     { return _blue; }
+
+    // Set RGB color directly
+    void set_rgb(unsigned short red, unsigned short green, unsigned short blue)
+    {
+	_red = red; _green = green; _blue = blue;
+	_color_valid = true;
+    }
 };
 
 // Draw box using associated color as foreground
@@ -161,6 +168,8 @@ public:
     {}
 
     Box *dup() const { return new BackgroundColorBox(*this); }
+
+    void _print(ostream& os, const BoxRegion& region, const PrintGC& gc) const;
 };
 
 #endif // _DDD_ColorBox_h
