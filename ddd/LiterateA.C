@@ -72,6 +72,26 @@ inline bool blocking_tty(FILE *fp)
 
 // I/O functions
 
+// Input data handling
+int LiterateAgent::readInput(char*& data)
+{
+    data = "";
+    if (inputfp() == 0 || !activeIO)
+	return -1;
+
+    return _readInput(data);
+}
+
+// Error data handling
+int LiterateAgent::readError(char*& data)
+{
+    data = "";
+    if (errorfp() == 0 || !activeIO)
+	return -1;
+
+    return _readError(data);
+}
+
 // write a whole string
 int LiterateAgent::write(const char *data, int length)
 {

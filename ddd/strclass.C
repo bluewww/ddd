@@ -1353,8 +1353,7 @@ int string::OK() const
 
 int subString::OK() const
 {
-    int v = S != 0;              // have a string;
-    v &= S.OK();                 // that is legal
+    int v = S.OK();              // have a legal string
     v &= pos + len >= S.rep->len;// pos and len within bounds
     if (!v) S.error("subString invariant failure");
     return v;

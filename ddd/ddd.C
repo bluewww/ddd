@@ -2010,8 +2010,20 @@ int main(int argc, char *argv[])
     else
 	untraverse_sashes(paned_work_w);
 
-    // Get a command shell
-    popup_shell(command_shell);
+    Boolean iconic;
+    XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
+    if (iconic)
+    {
+	// Startup all shells iconified
+	initial_popup_shell(command_shell);
+	initial_popup_shell(source_view_shell);
+	initial_popup_shell(data_disp_shell);
+    }
+    else
+    {
+	// Popup the command shell only; other shells follow as needed
+	initial_popup_shell(command_shell);
+    }
 
     // If some window is iconified, iconify all others as well
     if (command_shell)
@@ -3000,6 +3012,29 @@ void gdbOpenSourceCB(Widget w, XtPointer client_data, XtPointer call_data)
 //-----------------------------------------------------------------------------
 // Window management
 //-----------------------------------------------------------------------------
+
+void initial_popup_shell(Widget w)
+{
+    if (w == 0)
+	return;
+
+    assert(XtIsTopLevelShell(w));
+
+    Widget toplevel = w;
+    while (XtParent(toplevel))
+	toplevel = XtParent(toplevel);
+
+    assert(XtIsTopLevelShell(toplevel));
+
+    Boolean iconic;
+    XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
+    if (iconic)
+	XtVaSetValues(w, XmNinitialState, IconicState, NULL);
+    else
+	XtVaSetValues(w, XmNinitialState, NormalState, NULL);
+
+    XtPopup(w, XtGrabNone);
+}
 
 void popup_shell(Widget w)
 {

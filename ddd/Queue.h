@@ -34,11 +34,7 @@
 #include "bool.h"
 
 template<class E>
-class QueueRec {
-    friend class Queue<E>;
-    friend class QueueIter<E>;
-
-private:
+struct QueueRec {
     E elem;
     QueueRec *next;
 
@@ -49,9 +45,10 @@ private:
 };
 
 template<class E>
-class Queue {
-    friend class QueueIter<E>;
+class QueueIter;
 
+template<class E>
+class Queue {
 private:
     QueueRec<E> *_first;
     QueueRec<E> *_last;
@@ -126,7 +123,7 @@ public:
 		// kill it
 		delete kill;
 
-		// don't search for further occurences
+		// don't search for further occurrences
 		break;
 	    }
 	    else
@@ -139,6 +136,9 @@ public:
     const E& last()  const { return _last->elem; }
     E& first() { return _first->elem; }
     E& last()  { return _last->elem; }
+
+    // For QueueIter only
+    QueueRec<E> *firstRec() const { return _first; }
 
     // Testing
     bool isEmpty() const { return _first == 0; }
@@ -154,7 +154,7 @@ private:
 
 public:
     QueueIter(const Queue<E>& queue):
-        rec(queue._first)
+        rec(queue.firstRec())
     {}
     QueueIter(const QueueIter<E>& iter):
         rec(iter.rec)

@@ -44,6 +44,8 @@
 #define SIGCHLD SIGCLD
 #endif
 
+typedef void (*SignalProc)(int);
+
 class Agent;
 
 class AgentManager {
@@ -51,8 +53,8 @@ class AgentManager {
 
 private:
     Agent *first;
-    void (*old_pipe_handler)(int sig);
-    void (*old_chld_handler)(int sig);
+    SignalProc old_pipe_handler;
+    SignalProc old_chld_handler;
 
     // Add an agent
     void operator += (Agent *key);
@@ -64,14 +66,14 @@ public:
     DECLARE_TYPE_INFO
 
     // Constructor
-    AgentManager(void (*new_chld_handler)(int sig) = (void (*)(int))SIG_IGN):
+    AgentManager(SignalProc new_chld_handler = SignalProc(SIG_IGN)):
 	first(0)
     {
 	// ignore "Broken Pipe" signals
-	old_pipe_handler = signal(SIGPIPE, (void (*)(int))SIG_IGN);
+	old_pipe_handler = SignalProc(signal(SIGPIPE, SignalProc(SIG_IGN)));
 
 	// catch "Death of child" signals
-	old_chld_handler = signal(SIGCHLD, new_chld_handler);
+	old_chld_handler = SignalProc(signal(SIGCHLD, new_chld_handler));
     }
 
     // Destructor

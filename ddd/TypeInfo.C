@@ -29,31 +29,11 @@ char TypeInfo_rcsid[] =
 
 #ifdef __GNUG__
 #pragma implementation
-#pragma implementation "VarArray.h"
-#pragma implementation "DynArray.h"
 #endif
 
 #include "TypeInfo.h"
-#include "VarArray.h"
 #include "hash.h"
 
-
-// TypeInfoPtrSet is a simple set with O(n^2) behaviour
-typedef const TypeInfo *TypeInfoPtr;
-
-typedef VarArray<TypeInfoPtr> TypeInfoPtrArray;
-
-class TypeInfoPtrSet: public TypeInfoPtrArray {
-public:
-    virtual void add(const TypeInfoPtr& v)
-    {
-        for (int i = 0; i < size(); i++)
-            if (operator[](i) == v)
-                return;
-
-        TypeInfoPtrArray::add(v);
-    }
-};
 
 
 // Set this to a non-zero value to allow debugging
@@ -62,28 +42,52 @@ int TypeInfo::debug = 0;
 // Setup the _all_bases entry
 void TypeInfo::_setup_all_bases() const
 {
-    TypeInfoPtrSet set;
-
-    // Add all base classes to set
-    BaseIterator direct_base(*this, BaseIterator::direct);
     const TypeInfo *direct_info;
+    int count = 0;
 
-    while ((direct_info = direct_base()) != 0)
     {
-	set += direct_info;
+	// Count max number of entries
+	BaseIterator direct_bases(*this, BaseIterator::direct);
+	while ((direct_info = direct_bases()) != 0)
+	{
+	    count++;
 
-	BaseIterator all_base(*direct_info, BaseIterator::all);
-	const TypeInfo *indirect_info;
-	while ((indirect_info = all_base()) != 0)
-	    set += indirect_info;
+	    BaseIterator all_bases(*direct_info, BaseIterator::all);
+	    const TypeInfo *indirect_info;
+	    while ((indirect_info = all_bases()) != 0)
+		count++;
+	}
     }
 
     // Build new storage
-    BaseList new_all_bases = new const TypeInfo *[set.size() + 1];
+    BaseList new_all_bases = new const TypeInfo *[count + 1];
 
-    for (int i = 0; i < set.size(); i++)
-	new_all_bases[i] = set[i];
-    new_all_bases[i] = 0;
+    count = 0;
+
+    {
+	BaseIterator direct_bases(*this, BaseIterator::direct);
+	while ((direct_info = direct_bases()) != 0)
+	{
+	    for (int i = 0; i < count; i++)
+		if (new_all_bases[i] == direct_info)
+		    break;
+	    if (i >= count)
+		new_all_bases[count++] = direct_info;
+
+	    BaseIterator all_bases(*direct_info, BaseIterator::all);
+	    const TypeInfo *indirect_info;
+	    while ((indirect_info = all_bases()) != 0)
+	    {
+		for (int i = 0; i < count; i++)
+		    if (new_all_bases[i] == indirect_info)
+			break;
+		if (i >= count)
+		    new_all_bases[count++] = indirect_info;
+	    }
+	}
+    }
+
+    new_all_bases[count] = 0;
 
     *_all_bases = new_all_bases;
 

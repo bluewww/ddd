@@ -118,26 +118,12 @@ private:
 protected:
 
     // input data handling
-    int readInput(char*& data)
-    {
-	data = "";
-	if (inputfp() == 0 || !activeIO)
-	    return -1;
-
-	return _readInput(data);
-    }
+    int readInput(char*& data);
     virtual int _readInput(char *& data);
     virtual void readAndDispatchInput(bool expectEOF = false);
 
     // error data handling
-    int readError(char*& data)
-    {
-	data = "";
-	if (errorfp() == 0 || !activeIO)
-	    return -1;
-
-	return _readError(data);
-    }
+    int readError(char*& data);
     virtual int _readError(char *& data);
     virtual void readAndDispatchError(bool expectEOF = false);
 

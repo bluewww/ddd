@@ -98,7 +98,7 @@ public:
         _values(new T [n])
     {
         for (int i = 0; i < n; i++)
-            _value(i) = v[i];
+            _values[i] = v[i];
     }
 
     // Copy constructor

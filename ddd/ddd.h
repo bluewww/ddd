@@ -227,8 +227,7 @@ extern string sh_command(string command);
 extern string sh_quote(string s);
 
 // Shell management
-void popup_shell(Widget w);
-void popdown_shell(Widget w);
+void initial_popup_shell(Widget w);
 
 // History management
 void process_history_filename(string answer);

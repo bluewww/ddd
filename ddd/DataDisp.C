@@ -773,7 +773,7 @@ void DataDisp::no_displaysHP (void*, void* , void* call_data)
 
 	    if (initial_popup)
 	    {
-		popup_shell(data_disp_shell);
+		initial_popup_shell(data_disp_shell);
 		initial_popup = false;
 	    }
 	}

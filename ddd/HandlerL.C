@@ -34,6 +34,20 @@ char HandlerList_rcsid[] =
 #include "assert.h"
 #include "HandlerL.h"
 
+// Create Handler List
+HandlerList::HandlerList(unsigned n):
+    _nTypes(n),
+    handlers(new HandlerRec *[n]),
+    active(new int[n])
+{
+    for (unsigned type = 0; type < _nTypes; type++)
+    {
+	handlers[type] = 0;
+	active[type]   = 0;
+    }
+}
+
+
 // Duplicate List
 HandlerList::HandlerList(const HandlerList& l):
     _nTypes(l._nTypes),

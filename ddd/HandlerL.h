@@ -71,17 +71,7 @@ protected:
 
 public:
     // Constructor
-    HandlerList(unsigned n = 10):
-	_nTypes(n),
-	handlers(new HandlerRec *[n]),
-	active(new int[n])
-    {
-	for (unsigned type = 0; type < _nTypes; type++)
-	{
-	    handlers[type] = 0;
-	    active[type]   = 0;
-	}
-    }
+    HandlerList(unsigned n = 10);
 
     // Duplicator
     HandlerList(const HandlerList& l);

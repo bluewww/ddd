@@ -55,12 +55,12 @@ void Agent::childStatusChange(int sig)
     if (gotit)
     {
 	// Reinstall ourselves (for SVR4 and others)
-	signal(sig, Agent::childStatusChange);
+	signal(sig, SignalProc(Agent::childStatusChange));
     }
 }
 
 // Default I/O error handler
-void Agent::defaultHandler(Agent *source, void *client_data, void *call_data)
+void Agent::defaultHandler(Agent *source, void *, void *call_data)
 {
     string msg = (char *)call_data;
     if (msg != "Exit 0")
@@ -74,7 +74,7 @@ void Agent::addDefaultHandler(unsigned type)
 
 
 // All running agents
-AgentManager Agent::runningAgents(Agent::childStatusChange);
+AgentManager Agent::runningAgents((SignalProc)Agent::childStatusChange);
 
 // Running states
 void Agent::setRunning()
@@ -281,14 +281,13 @@ bool Agent::running()
     if (_running && pid() >= 0)
     {
 	// Ignore interrupts for a while
-	typedef void (*SignalHandler)(int sig);
-
-	SignalHandler istat = signal(SIGINT,  (void (*)(int))SIG_IGN);
-	SignalHandler qstat = signal(SIGQUIT, (void (*)(int))SIG_IGN);
-	SignalHandler hstat = signal(SIGHUP,  (void (*)(int))SIG_IGN);
+	SignalProc istat = SignalProc(signal(SIGINT,  SignalProc(SIG_IGN)));
+	SignalProc qstat = SignalProc(signal(SIGQUIT, SignalProc(SIG_IGN)));
+	SignalProc hstat = SignalProc(signal(SIGHUP,  SignalProc(SIG_IGN)));
 
 	// Query current process state
-	int r, status;
+	pid_t r;
+	int status;
 	if ((r = waitpid(pid(), &status, WNOHANG)) > 0)
 	{
 	    // Agent stopped or terminated
@@ -422,7 +421,7 @@ void Agent::wait()
     while (running())
     {
 	int status;
-	int ret = waitpid(pid(), &status, 0);
+	pid_t ret = waitpid(pid(), &status, 0);
 	if (ret > 0)
 	{
 	    // Agent stopped or terminated

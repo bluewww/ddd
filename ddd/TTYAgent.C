@@ -484,7 +484,7 @@ int TTYAgent::setupChildCommunication()
     // Set the process group of the pty and of us to our process id.
 
 #if defined(HAVE_SETSID) || defined(setsid)
-    result = setsid();
+    result = int(setsid());
 
 #else // !HAVE_SETSID
 

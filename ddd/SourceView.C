@@ -873,7 +873,7 @@ void SourceView::read_file (string file_name, int initial_line)
 	static bool initial_popup = true;
 	if (initial_popup)
 	{
-	    popup_shell(source_view_shell);
+	    initial_popup_shell(source_view_shell);
 	    initial_popup = false;
 	}
     }

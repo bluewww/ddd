@@ -59,7 +59,7 @@ private:
     sigset_t old_set;
 
     // Avoid assignments
-    void operator = (const SignalBlocker& b) {}
+    void operator = (const SignalBlocker&) {}
 
 public:
     // Constructor

@@ -137,7 +137,7 @@ public:
     DECLARE_TYPE_INFO
 
 private:
-    int _pid;		    	// process id (0: not running, <0: no process)
+    pid_t _pid;		    	// process id (0: not running, <0: no process)
 
 protected:
     FILE *_inputfp;	    	// read from child
@@ -290,7 +290,7 @@ public:
     // Constructor for Agent writers
     Agent(FILE *in = stdin, FILE *out = stdout, FILE *err = 0,
 	unsigned nTypes = Agent_NTypes):
-	_pid(-(unsigned long)UniqueId()), _inputfp(in), _outputfp(out),
+	_pid(-pid_t((unsigned long)UniqueId())), _inputfp(in), _outputfp(out),
 	_errorfp(err), _running(false), _beingTerminated(false),
 	_lastStatus(-1), _terminateTimeOut(-1), _hangupTimeOut(-1), 
 	_killTimeOut(-1), handlers(nTypes), next(0), _path("this")
@@ -299,8 +299,8 @@ public:
     }
 
     // "Dummy" Constructor without any communication
-    Agent(bool dummy, unsigned nTypes = Agent_NTypes):
-	_pid(-(unsigned long)UniqueId()), _inputfp(0), _outputfp(0),
+    Agent(bool, unsigned nTypes = Agent_NTypes):
+	_pid(-pid_t((unsigned long)UniqueId())), _inputfp(0), _outputfp(0),
 	_errorfp(0), _running(false), _beingTerminated(false),
 	_lastStatus(-1), _terminateTimeOut(-1), _hangupTimeOut(-1),
 	_killTimeOut(-1), handlers(nTypes), next(0), _path("this")

@@ -44,15 +44,15 @@ DEFINE_TYPE_INFO_0(AsyncAgentWorkProcInfo)
 
 // process child status change
 
-void AsyncAgent::_childStatusChange(XtPointer client_data, XtIntervalId *timer)
+void AsyncAgent::_childStatusChange(XtPointer client_data, XtIntervalId *)
 {
     AsyncAgent *a = (AsyncAgent *)client_data;
 
-    int agent_pid    = a->pid();
+    pid_t agent_pid  = a->pid();
     int agent_status = a->new_status;
 
     // if we have a dummy agent running, prefer this one
-    Agent *agent = Agent::runningAgents.search(agent_pid);
+    Agent *agent = Agent::runningAgents.search(int(agent_pid));
     if (agent == 0)
 	agent = a;
 
@@ -63,8 +63,7 @@ void AsyncAgent::_childStatusChange(XtPointer client_data, XtIntervalId *timer)
     (void)(agent->running());
 }
 
-void AsyncAgent::childStatusChange(Agent *agent, void *client_data,
-    void *call_data)
+void AsyncAgent::childStatusChange(Agent *agent, void *, void *call_data)
 {
     AsyncAgent *a = (AsyncAgent *)agent;
     a->new_status  = (int)call_data;
@@ -165,7 +164,7 @@ AsyncAgentHandler AsyncAgent::setHandler(unsigned type, AsyncAgentHandler h)
 
 
 // Dispatcher
-void AsyncAgent::dispatch(int *fid, XtInputId *inputId)
+void AsyncAgent::dispatch(int *, XtInputId *inputId)
 {
     // search handler
     for (unsigned type = 0; 
@@ -225,19 +224,19 @@ void AsyncAgent::closeChannel(FILE *fp)
 
 
 // Terminator
-static void terminateProcess(XtPointer client_data, XtIntervalId *timer)
+static void terminateProcess(XtPointer client_data, XtIntervalId *)
 {
     AsyncAgent *agent = (AsyncAgent *)client_data;
     agent->_terminate();
 }
 
-static void hangupProcess(XtPointer client_data, XtIntervalId *timer)
+static void hangupProcess(XtPointer client_data, XtIntervalId *)
 {
     AsyncAgent *agent = (AsyncAgent *)client_data;
     agent->_hangup();
 }
 
-static void killProcess(XtPointer client_data, XtIntervalId *timer)
+static void killProcess(XtPointer client_data, XtIntervalId *)
 {
     AsyncAgent *agent = (AsyncAgent *)client_data;
     agent->_kill();
@@ -269,7 +268,7 @@ void AsyncAgent::waitToTerminate()
 
 // Delayed Event Handling
 
-void AsyncAgent::callTheHandlersIfIdle(XtPointer client_data, XtIntervalId *id)
+void AsyncAgent::callTheHandlersIfIdle(XtPointer client_data, XtIntervalId *)
 {
     AsyncAgentWorkProcInfo *info = (AsyncAgentWorkProcInfo *)client_data;
 

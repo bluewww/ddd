@@ -55,7 +55,7 @@ DECLARE_COMPARE(short)
 DECLARE_COMPARE(unsigned short)
 
 DECLARE_COMPARE(char)
-DECLARE_COMPARE(signed char)
+// DECLARE_COMPARE(signed char)
 DECLARE_COMPARE(unsigned char)
 
 DECLARE_COMPARE(float)
