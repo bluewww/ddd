@@ -720,7 +720,7 @@ static string get_dbx_doc(string dbxenv, string base)
 }
 
 static void add_settings(int& row, DebuggerType type, EntryType entry_filter,
-			 string command = "");
+			 string gdb_class = "set");
 
 // Add single button
 static void add_button(int& row, DebuggerType type, EntryType entry_filter,
@@ -1112,14 +1112,14 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 
 // Add buttons
 static void add_settings(int& row, DebuggerType type,
-			 EntryType entry_filter, string command)
+			 EntryType entry_filter, string gdb_class)
 {
     string commands;
 
     switch (type)
     {
     case GDB:
-	commands = cached_gdb_question("help " + command);
+	commands = cached_gdb_question("help " + gdb_class);
 	break;
 
     case XDB:
@@ -1193,7 +1193,7 @@ static Widget create_settings(DebuggerType type)
 
     arg = 0;
     settings = verify(XmCreatePromptDialog(find_shell(), "settings", 
-    				       args, arg));
+					   args, arg));
     Delay::register_shell(settings);
 
     // Remove old prompt and cancel button
