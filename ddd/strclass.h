@@ -549,6 +549,12 @@ public:
     friend inline void cat(char*, char*, string&);
     friend inline void cat(char*, char, string&);
 
+    friend inline void cat(char, const string&, string&);
+    friend inline void cat(char, const subString&, string&);
+    friend inline void cat(char, const char*, string&);
+    friend inline void cat(char, char*, string&);
+    friend inline void cat(char, char, string&);
+
 
 // searching & matching
 
@@ -1007,6 +1013,31 @@ inline void cat(char* x, char y, string& r)
     r.rep = string_Scat(r.rep, x, -1, &y, 1);
 }
 
+inline void cat(char x, const string& y, string& r)
+{
+    r.rep = string_Scat(r.rep, &x, 1, y.chars(), y.length());
+}
+
+inline void cat(char x, const subString& y, string& r)
+{
+    r.rep = string_Scat(r.rep, &x, 1, y.chars(), y.length());
+}
+
+inline void cat(char x, const char* y, string& r)
+{
+    r.rep = string_Scat(r.rep, &x, 1, y, -1);
+}
+
+inline void cat(char x, char* y, string& r)
+{
+    r.rep = string_Scat(r.rep, &x, 1, y, -1);
+}
+
+inline void cat(char x, char y, string& r)
+{
+    r.rep = string_Scat(r.rep, &x, 1, &y, 1);
+}
+
 
 // operator versions
 
@@ -1109,6 +1140,16 @@ inline string operator + (char* x, const subString& y) return r;
     cat(x, y, r);
 }
 
+inline string operator + (char x, const string& y) return r;
+{
+    cat(x, y, r);
+}
+
+inline string operator + (char x, const subString& y) return r;
+{
+    cat(x, y, r);
+}
+
 inline string reverse(const string& x) return r;
 {
     r.rep = string_Sreverse(x.rep, r.rep);
@@ -1201,6 +1242,16 @@ inline string operator + (char* x, const subString& y)
     string r; cat(x, y, r); return r;
 }
 
+inline string operator + (char x, const string& y) 
+{
+    string r; cat(x, y, r); return r;
+}
+
+inline string operator + (char x, const subString& y) 
+{
+    string r; cat(x, y, r); return r;
+}
+
 inline string reverse(const string& x) 
 {
     string r; r.rep = string_Sreverse(x.rep, r.rep); return r;
@@ -1258,18 +1309,15 @@ inline void string::reverse()
     rep = string_Sreverse(rep, rep);
 }
 
-
 inline void string::upcase()
 {
     rep = string_Supcase(rep, rep);
 }
 
-
 inline void string::downcase()
 {
     rep = string_Sdowncase(rep, rep);
 }
-
 
 inline void string::capitalize()
 {
@@ -1630,6 +1678,26 @@ inline int compare(char *x, const string& y)
     return compare((const char*)x, y);
 }
 
+inline int compare(const string& x, char y)
+{
+    return x.length() == 1 ? *x.chars() - y : x.length() - 1;
+}
+
+inline int compare(char x, const string& y)
+{
+    return -compare(y, x);
+}
+
+inline int compare(const subString& x, char y)
+{
+    return x.length() == 1 ? *x.chars() - y : x.length() - 1;
+}
+
+inline int compare(char x, const subString& y)
+{
+    return -compare(y, x);
+}
+
 
 // I/O
 
@@ -1643,8 +1711,8 @@ inline ostream& operator<<(ostream& s, const subString& x)
     s.write(x.chars(), x.length()); return s;
 }
 
-// A zillion comparison operators - for every combination of char *,
-// const char *, string, and subString.
+// A zillion comparison operators - for every combination of char,
+// char *, const char *, string, and subString.
 #define string_COMPARE(op, t1, t2) \
 inline int operator op(t1 x, t2 y) \
 { \
@@ -1663,17 +1731,22 @@ string_COMPARE_ALL(const string&, const string&)
 string_COMPARE_ALL(const string&, const subString&)
 string_COMPARE_ALL(const string&, const char *)
 string_COMPARE_ALL(const string&, char *)
+string_COMPARE_ALL(const string&, char)
 
 string_COMPARE_ALL(const subString&, const string&)
 string_COMPARE_ALL(const subString&, const subString&)
 string_COMPARE_ALL(const subString&, const char *)
 string_COMPARE_ALL(const subString&, char *)
+string_COMPARE_ALL(const subString&, char)
 
 string_COMPARE_ALL(const char *, const string&)
 string_COMPARE_ALL(const char *, const subString&)
 
 string_COMPARE_ALL(char *, const string&)
 string_COMPARE_ALL(char *, const subString&)
+
+string_COMPARE_ALL(char, const string&)
+string_COMPARE_ALL(char, const subString&)
 
 #undef string_COMPARE
 #undef string_COMPARE_ALL
