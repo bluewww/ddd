@@ -58,6 +58,9 @@ Welcome to DDD!
 You can get help on all items by pointing at them and pressing F1.
 And don't worry, there is the LBL(Help) menu with much more information...
 
+Whenever you're stuck, try LBL(Help, What Now).  This will analyze the
+current DDD state and give you some hints on what to do next.
+
 Buttons with a small triangle in the upper right corner are special:
 pressing and holding BUTTON(1) on them will pop up a menu 
 with additional options.
