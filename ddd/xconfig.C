@@ -48,6 +48,18 @@ char xconfig_rcsid[] =
 #include <Xm/VirtKeys.h>
 #include <Xm/SelectioB.h>
 
+#if !HAVE_POPEN_DECL
+extern "C" FILE *popen(const char *command, const char *mode);
+#endif
+#if !HAVE_PCLOSE_DECL
+extern "C" int pclose(FILE *stream);
+#endif
+
+
+//-----------------------------------------------------------------------------
+// Determine X project root
+//-----------------------------------------------------------------------------
+
 inline string sh_quote(string s)
 {
     s.gsub('\'', "'\\''");

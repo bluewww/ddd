@@ -60,6 +60,18 @@ extern "C" {
 #define	S_ISDIR(m) (((m) & _IFMT) == _IFDIR)
 #endif
 
+#if !HAVE_POPEN_DECL
+extern "C" FILE *popen(const char *command, const char *mode);
+#endif
+#if !HAVE_PCLOSE_DECL
+extern "C" int pclose(FILE *stream);
+#endif
+
+
+//-----------------------------------------------------------------------------
+// Determine file types
+//-----------------------------------------------------------------------------
+
 // True if FILE_NAME is a regular file
 bool is_regular_file(const string& file_name)
 {

@@ -68,6 +68,12 @@ extern "C" {
 #include <termcap/termcap.h>
 }
 
+#if !HAVE_POPEN_DECL
+extern "C" FILE *popen(const char *command, const char *mode);
+#endif
+#if !HAVE_PCLOSE_DECL
+extern "C" int pclose(FILE *stream);
+#endif
 
 //-----------------------------------------------------------------------------
 // Separate tty
