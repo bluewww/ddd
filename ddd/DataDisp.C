@@ -587,7 +587,10 @@ void DataDisp::toggleDetailCB(Widget dialog,
 	disable_display(disp_nrs, dialog);
 
     if (changed)
+    {
+	refresh_builtin_user_displays();
 	refresh_graph_edit();
+    }
 }
 
 void DataDisp::showDetailCB (Widget dialog, XtPointer client_data, XtPointer)
@@ -654,7 +657,10 @@ void DataDisp::show(Widget dialog, int depth, int more)
     enable_display(disp_nrs, dialog);
 
     if (changed)
+    {
+	refresh_builtin_user_displays();
 	refresh_graph_edit();
+    }
 }
 
 
@@ -701,7 +707,10 @@ void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
     disable_display(disp_nrs, dialog);
 
     if (changed)
+    {
+	refresh_builtin_user_displays();
 	refresh_graph_edit();
+    }
 }
 
 
@@ -732,6 +741,8 @@ void DataDisp::rotateCB(Widget w, XtPointer, XtPointer)
     toggle_rotate(disp_value_arg, false);
 
     disp_node_arg->refresh();
+
+    refresh_builtin_user_displays();
     refresh_graph_edit();
 }
 
@@ -747,6 +758,8 @@ void DataDisp::rotateAllCB(Widget w, XtPointer, XtPointer)
     toggle_rotate(disp_value_arg, true);
 
     disp_node_arg->refresh();
+
+    refresh_builtin_user_displays();
     refresh_graph_edit();
 }
 
@@ -1878,20 +1891,48 @@ void DataDisp::refresh_args(bool update_arg)
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
-	if (dn->clustered() && !dn->selected())
+	if (!dn->clustered())
+	    continue;
+
+	DispNode *cluster = disp_graph->get(dn->clustered());
+	if (cluster == 0)
+	    continue;
+
+	Box *old_highlight = dn->highlight();
+	bool old_selected  = dn->selected();
+
+	dn->selected() = false;
+	if (cluster->selected())
 	{
-	    DispNode *cluster = disp_graph->get(dn->clustered());
-	    if (cluster != 0 && cluster->selected())
+	    // Cluster is selected -- select display, too
+	    if (cluster->selected_value() == 0 ||
+		cluster->selected_value() == cluster->value())
 	    {
-		// Cluster is selected -- select display, too
-		DispValue *dv = cluster->selected_value();
-		if (dv == 0 || (dv->name() == dn->name()))
+		// Entire cluster is selected
+		dn->selected() = true;
+		dn->select(0);
+	    }
+	    else
+	    {
+		// Part of cluster is selected
+		dn->select(cluster->selected_value());
+		if (dn->highlight() != 0)
 		{
+		    // Found selected value in display
 		    dn->selected() = true;
-		    dn->select();
-		    graphEditRedrawNode(graph_edit, dn);
+
+		    if (dn->selected_value() == dn->value())
+		    {
+			// Top value is selected
+			dn->select(0);
+		    }
 		}
 	    }
+	}
+
+	if (dn->selected() != old_selected || dn->highlight() != old_highlight)
+	{
+	    graphEditRedrawNode(graph_edit, dn);
 	}
     }
 }
@@ -2915,6 +2956,7 @@ string DataDisp::builtin_user_command(const string& cmd, DispNode *node)
     return NO_GDB_ANSWER;
 }
 
+// This function is called to update displays in clusters
 DispValue *DataDisp::update_hook(string& value)
 {
     if (!value.contains(HOOK_PREFIX, 0))
@@ -2926,7 +2968,7 @@ DispValue *DataDisp::update_hook(string& value)
 
     DispNode *dn = disp_graph->get(nr);
     if (dn == 0)
-	return 0;
+	return 0;		// Ignore
 
     // Share the clustered DispValue with the original display
     return dn->value()->link();
@@ -2943,6 +2985,7 @@ void DataDisp::refresh_builtin_user_displays()
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
+	bool node_changed = false;
 	if (dn->is_user_command())
 	{
 	    string cmd = dn->user_command();
@@ -2950,15 +2993,20 @@ void DataDisp::refresh_builtin_user_displays()
 	    {
 		string answer = builtin_user_command(cmd, dn);
 		if (answer != NO_GDB_ANSWER && dn->update(answer))
-		    changed = true;
+		{
+		    node_changed = changed = true;
+		    // Clear old local selection
+		    dn->select(0);
+		}
 	    }
 	}
+
+	// FIXME: redraw only if the original node has changed
+	dn->refresh();
+	graphEditRedrawNode(graph_edit, dn);
     }
 
     DispValue::value_hook = 0;
-
-    if (changed)
-	refresh_graph_edit();
 }
 
 
@@ -3827,7 +3875,10 @@ void DataDisp::disable_displaySQ(IntArray& display_nrs, bool verbose,
     if (disabled_data_displays == 0)
     {
 	if (disabled_user_displays > 0)
+	{
+	    refresh_builtin_user_displays();
 	    refresh_graph_edit();
+	}
 	if (do_prompt)
 	    prompt();
     }
@@ -3845,6 +3896,7 @@ void DataDisp::disable_displayOQC (const string& answer, void *data)
     if (info->prompt)
 	prompt();
 
+    refresh_builtin_user_displays();
     refresh_graph_edit();
 }
 
@@ -3907,7 +3959,10 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose,
     if (enabled_data_displays == 0)
     {
 	if (enabled_user_displays > 0)
+	{
+	    refresh_builtin_user_displays();
 	    refresh_graph_edit();
+	}
 	if (do_prompt)
 	    prompt();
     }
@@ -3923,6 +3978,7 @@ void DataDisp::enable_displayOQC (const string& answer, void *data)
     if (info->verbose)
 	post_gdb_message(answer, false);
 
+    refresh_builtin_user_displays();
     refresh_displaySQ(0, info->verbose, info->prompt);
 }
 
@@ -4300,7 +4356,10 @@ void DataDisp::process_info_display(string& info_display_answer,
     }
 
     if (changed)
+    {
+	refresh_builtin_user_displays();
 	refresh_graph_edit();
+    }
 
     refresh_display_list();
 }
@@ -4495,8 +4554,11 @@ string DataDisp::process_displays(string& displays,
 	force_check_aliases = true;
 	refresh_addr();
     }
-    if (changed) 
+    if (changed)
+    {
 	refresh_graph_edit();
+	refresh_builtin_user_displays();
+    }
 
     return not_my_displays;
 }
@@ -4557,8 +4619,11 @@ void DataDisp::process_user (StringArray& answers)
 	}
     }
 
-    if (changed) 
+    if (changed)
+    {
+	refresh_builtin_user_displays();
 	refresh_graph_edit();
+    }
 }
 
 
@@ -5172,6 +5237,8 @@ void DataDisp::delete_user_display(const string& name)
     }
 
     delete_display(killme);
+
+    refresh_builtin_user_displays();
     refresh_graph_edit();
 }
 
@@ -5333,7 +5400,10 @@ void DataDisp::set_detect_aliases(bool value)
 	}
 
 	if (changed)
+	{
+	    refresh_builtin_user_displays();
 	    refresh_graph_edit();
+	}
     }
 }
 
@@ -5568,7 +5638,10 @@ bool DataDisp::check_aliases()
     }
 
     if (changed)
+    {
+	refresh_builtin_user_displays();
 	refresh_graph_edit(suppressed);
+    }
 
     return suppressed;
 }
