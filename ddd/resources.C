@@ -611,7 +611,7 @@ XtResource ddd_resources[] = {
 	sizeof(Boolean),
 	XtOffsetOf(AppData, poll_child_status),
 	XtRImmediate,
-	XtPointer(False)
+	XtPointer(True)
     },
 
     {
