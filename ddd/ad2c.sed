@@ -1,4 +1,4 @@
-# $Id$
+# $Id$  -*- text -*-
 #
 # ad2c : Convert app-defaults file to C strings decls.
 #

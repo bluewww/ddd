@@ -1,4 +1,4 @@
-# $Id$
+# $Id$ -*- text -*-
 #
 # vsl2c: Convert VSL file to C strings declarations.
 
