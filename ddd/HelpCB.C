@@ -345,6 +345,8 @@ void ImmediateHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 	return;
     }
 
+    Delay delay;
+
     // Get help on this widget
     MString text = get_help_string(widget);
     MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
@@ -362,6 +364,8 @@ void HelpOnThisCB(Widget widget, XtPointer client_data, XtPointer call_data)
 	return;
     }
 
+    Delay delay;
+
     Widget w = (Widget)client_data;
 	
     // Get help on this widget
@@ -378,6 +382,8 @@ void HelpOnWindowCB(Widget widget, XtPointer client_data, XtPointer call_data)
 	return;
     }
 
+    Delay delay;
+
     // Get help on the shell window
     Widget shell = findTopLevelShellParent(widget);
 
@@ -393,6 +399,8 @@ void HelpOnVersionCB(Widget widget, XtPointer client_data, XtPointer call_data)
 	HelpOnContextCB(widget, client_data, call_data);
 	return;
     }
+
+    Delay delay;
 
     // Get a shell window
     Widget shell = findTopLevelShellParent(widget);
@@ -1466,6 +1474,8 @@ void HelpOnItemCB(Widget widget, XtPointer client_data, XtPointer call_data)
 	HelpOnContextCB(widget, client_data, call_data);
 	return;
     }
+
+    Delay delay;		// Finding the widget may take time
 
     XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
 
