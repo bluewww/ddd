@@ -132,6 +132,10 @@ public:
     // True if VALUE was really new (i.e. something changed)
     void update (string& value, bool& changed, bool& inited);
     bool new_BaseClass_name (string name);
+
+    // Background proc.  PROCESSED is the number of characters
+    // processed so far. If this returns true, abort operation.
+    static bool (*background)(int processed);
 };
 
 #endif // _DDD_DispValue_h

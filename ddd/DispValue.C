@@ -106,6 +106,7 @@ DispValue::DispValue (DispValue* p,
     : myparent(p), mydepth (d), myexpanded(true), 
       myfull_name(f_n), print_name(p_n), changed(false)
 {
+    v.simple = 0;
     init(value);
 
     // A new display is not changed, but initialized
@@ -118,6 +119,16 @@ void DispValue::init(string& value)
 #if LOG_CREATE_VALUES
     clog << "Building value from " << quote(value) << "\n";
 #endif
+
+    if (background(value.length()))
+    {
+	clear();
+
+	mytype          = Simple;
+	v.simple        = new SimpleDispValue;
+	v.simple->value = "- Aborted -";
+	return;
+    }
 
     if (print_name == "")
 	mytype = Text;
@@ -205,6 +216,11 @@ void DispValue::init(string& value)
 		    new DispValue (this, depth() + 1,
 				   value, 
 				   base + member_name, member_name);
+		if (background(value.length()))
+		{
+		    init(value);
+		    return;
+		}
 	    } while (read_array_next (value) != 0);
 	    read_array_end (value);
 
@@ -274,6 +290,12 @@ void DispValue::init(string& value)
 		i++;
 		if (more_values)
 		    member_name = read_member_name (value);
+
+		if (background(value.length()))
+		{
+		    init(value);
+		    return;
+		}
 	    }
 	    read_str_or_cl_end (value);
 
@@ -308,10 +330,17 @@ void DispValue::init(string& value)
 	    v.str_or_cl->members[1] = 
 		new DispValue(this, depth() + 1, value,
 			      myfull_name, myfull_name);
+
+	    if (background(value.length()))
+	    {
+		init(value);
+		return;
+	    }
 	    break;
 	}
     }
 
+    background(value.length());
     changed = true;
 }
 
@@ -658,7 +687,6 @@ bool DispValue::new_BaseClass_name (string name)
     return false;
 }
 
-
 // Update values from VALUE.  Set WAS_CHANGED iff value changed;
 // Set WAS_INITIALIZED iff type changed.
 void DispValue::update (string& value, 
@@ -669,6 +697,7 @@ void DispValue::update (string& value,
 	was_changed = true;	// Changed from `changed' to `unchanged'
 	changed     = false;
     }
+
     string init_value = value;
 
     int i;
@@ -743,6 +772,8 @@ void DispValue::update (string& value,
 					  was_changed, was_initialized);
 	    if (was_initialized)
 		break;
+	    if (background(value.length()))
+		break;
 	}
 
 	if (!was_initialized)
@@ -751,6 +782,8 @@ void DispValue::update (string& value,
 		v.array->members[i]->update(value, 
 					    was_changed, was_initialized);
 		if (was_initialized)
+		    break;
+		if (background(value.length()))
 		    break;
 		more_values = read_array_next (value);
 	    }
@@ -808,6 +841,8 @@ void DispValue::update (string& value,
 			break;
 		    if (!read_str_or_cl_next (value))
 			break;
+		    if (background(value.length()))
+			break;
 		    read_members_of_xy (value);
 		}
 		else
@@ -818,6 +853,8 @@ void DispValue::update (string& value,
 		    v.str_or_cl->members[i]->update(value, was_changed,
 						    was_initialized);
 		    if (was_initialized)
+			break;
+		    if (background(value.length()))
 			break;
 		    more_values = read_str_or_cl_next (value);
 		}
@@ -865,5 +902,15 @@ void DispValue::update (string& value,
 #if LOG_UPDATE_VALUES
     clog << "Update done\n";
 #endif
+    background(value.length());
     return;
 }
+
+
+//-----------------------------------------------------------------------------
+// Background processing
+//-----------------------------------------------------------------------------
+
+static bool nop(int ignore) { return false; }
+
+bool (*DispValue::background)(int processed) = nop;

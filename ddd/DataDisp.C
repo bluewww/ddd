@@ -291,6 +291,7 @@ static void sort(IntArray& a)
     } while (h != 1);
 }
 
+
 //----------------------------------------------------------------------------
 // Origin
 //-----------------------------------------------------------------------------
@@ -2275,6 +2276,68 @@ void DataDisp::new_display(string display_expression, BoxPoint *p,
     gdb_command(cmd, origin);
 }
 
+
+
+
+struct StatusShower {
+    StatusDelay *delay;		// The delay shown
+    int current;		// Current data to be processed
+    int base;			// Data already processed
+    int total;			// Total of data to be processed
+    int last_shown;		// Last shown amount
+    bool (*old_background)(int); // DispValue bg proc
+
+    // Show delay when updating from at least THRESHOLD characters.
+    const int THRESHOLD = 512;
+
+    bool process(int remaining_length);
+
+    static StatusShower *active; // Currently active object
+    static bool _process(int remaining_length)
+    {
+	return active->process(remaining_length);
+    }
+
+    StatusShower()
+	: delay(0), current(0), base(0), total(0), last_shown(0)
+    {
+	old_background = DispValue::background;
+	DispValue::background = _process;
+	active = (StatusShower *)this;
+	delay = new StatusDelay("Updating displays");
+    }
+
+    ~StatusShower()
+    {
+	DispValue::background = old_background;
+	active = 0;
+	delete delay;
+    }
+};
+
+StatusShower *StatusShower::active = 0;
+
+bool StatusShower::process(int remaining_length)
+{
+    int processed = base + current - remaining_length;
+
+#if 0
+    clog << "Processed " << processed << "/" <<  total << " characters\n";
+#endif
+
+    if (processed - last_shown >= THRESHOLD)
+    {
+	// Another THRESHOLD characters processed.  Wow!
+	int percent = (processed * 100) / total;
+	set_status("Updating displays... ("
+		   + itostring(percent) + "% processed)", true);
+	last_shown = processed;
+    }
+
+    return false;		// Keep on acting
+}
+
+
 DispNode *DataDisp::new_data_node(const string& given_name,
 				  const string& scope,
 				  const string& answer)
@@ -2319,6 +2382,10 @@ DispNode *DataDisp::new_data_node(const string& given_name,
 	value = "";
     }
 
+    StatusShower s;
+    s.total   = value.length();
+    s.current = value.length();
+
     return new DispNode(nr, title, scope, value);
 }
 
@@ -2328,6 +2395,10 @@ DispNode *DataDisp::new_user_node(const string& name,
 {
     // Assign a default number
     int nr = -(next_display_number++);
+
+    StatusShower s;
+    s.total   = answer.length();
+    s.current = answer.length();
 
     // User displays work regardless of scope
     return new DispNode(nr, name, "", answer);
@@ -3151,21 +3222,22 @@ void DataDisp::process_info_display (string& info_display_answer)
 
 
 //-----------------------------------------------------------------------------
-// Display-Ausgabe verarbeiten 
+// Process `display' output
 //-----------------------------------------------------------------------------
 
 // ***************************************************************************
 string DataDisp::process_displays (string& displays,
 				   bool& disabling_occurred)
 {
-    Delay d;
+    StatusShower s;
 
     string not_my_displays;
     static string disabling_error_msgs;
     disabling_occurred = false;
 
-    // Fremde Displays rausschneiden, eigene speichern
-    int    disp_nr = 0;
+    // Store graph displays in DISP_STRING_MAP; return all other
+    // (text) displays as well as error messages
+    int disp_nr = 0;
     StringMap disp_string_map;
     string *strptr;
 
@@ -3213,9 +3285,9 @@ string DataDisp::process_displays (string& displays,
 	clog << " (number " << disp_nr << ")\n";
 #endif
 
-	// Falls Fehlermeldung: merken und alles nochmal von vorne.
 	if (is_disabling (next_display, gdb))
 	{
+	    // Some displays were disabled: store them and try again
 	    disabling_occurred = true;
 	    if (disp_nr >= 0 && disp_graph->contains(disp_nr))
 	    {
@@ -3224,10 +3296,10 @@ string DataDisp::process_displays (string& displays,
 	    }
 	    else
 	    {
-		not_my_displays = next_display; //nur diesen merken
+		not_my_displays = next_display; // memorize this one only
 	    }
 
-	    // disp_string_map leeren
+	    // Clear DISP_STRING_MAP and try again
 	    disp_string_map.delete_all_contents();
 
 	    return not_my_displays;
@@ -3241,7 +3313,8 @@ string DataDisp::process_displays (string& displays,
 	else if (disp_nr >= 0 && disp_graph->contains(disp_nr))
 	{
 	    strptr = new string(get_disp_value_str(next_display, gdb));
-	    disp_string_map.insert (disp_nr, strptr);
+	    disp_string_map.insert(disp_nr, strptr);
+	    s.total += strptr->length();
 	}
 	else 
 	{
@@ -3251,14 +3324,14 @@ string DataDisp::process_displays (string& displays,
 	next_display = read_next_display (displays, gdb);
     }
 
-    // gesammelte Fehlermeldungen ausgeben.
-    if ( !disabling_occurred && disabling_error_msgs != "")
+    // Show collected error messages
+    if (!disabling_occurred && disabling_error_msgs != "")
     {
 	post_gdb_message(disabling_error_msgs, last_origin);
 	disabling_error_msgs = "";
     }
 
-    // eigene Displays verarbeiten
+    // Process own displays
     bool changed = false;
     MapRef ref;
     for (int k = disp_graph->first_nr(ref); 
@@ -3270,7 +3343,7 @@ string DataDisp::process_displays (string& displays,
 	{
 	    if (!disp_string_map.contains (k))
 	    {
-		// Knoten auf disabled setzen, falls nicht schon geschehen
+		// Node is no more shown - disable it
 		if (dn->enabled())
 		{
 		    dn->disable();
@@ -3279,16 +3352,21 @@ string DataDisp::process_displays (string& displays,
 	    }
 	    else
 	    {
-		// Knoten aktualisieren
+		// Update existing node
 		strptr = disp_string_map.get(k);
-		if ( dn->update (*strptr ))
+		s.current = strptr->length();
+
+		if (dn->update(*strptr))
 		    changed = true;
-		if ((*strptr != "") && !(strptr->matches (rxwhite)))
+		if (*strptr != "" && !(strptr->matches (rxwhite)))
 		{
-		    // hinter dem Display stand noch etwas, was nicht
-		    // dazu gehoert z.B. der return Wert bei finish
+		    // After the `display' output, more info followed
+		    // (e.g. the returned value when `finish'ing)
 		    not_my_displays += strptr->after (rxwhite);
 		}
+
+		s.base += s.current;
+
 		delete disp_string_map.get(k);
 		disp_string_map.del (k);
 	    }
@@ -3305,8 +3383,14 @@ string DataDisp::process_displays (string& displays,
 // Handle output of user commands
 void DataDisp::process_user (StringArray& answers)
 {
-    int i = 0;
+    int i;
 
+    StatusShower s;
+
+    for (i = 0; i < answers.size(); i++)
+	s.total += answers[i].length();
+
+    i = 0;
     bool changed = false;
     MapRef ref;
     for (int k = disp_graph->first_nr(ref); 
@@ -3318,8 +3402,13 @@ void DataDisp::process_user (StringArray& answers)
 	if (dn->is_user_command() && dn->enabled())
 	{
 	    string answer = answers[i++];
+
+	    s.current = answer.length();
+
 	    if (dn->update(answer))
 		changed = true;
+
+	    s.base += s.current;
 	}
     }
 
@@ -4111,6 +4200,7 @@ bool DataDisp::have_selection()
     }
     return false;
 }
+
 
 //----------------------------------------------------------------------------
 // Constructor
