@@ -753,10 +753,14 @@ ProgramInfo::ProgramInfo()
 	break;			// FIXME
 
     case PERL:
-	break;			// FIXME
+	// Just use the current file.
+	file = source_view->file_of_cursor();
+	file = file.before(":");
+	core = "";
+	break;
 
     case JDB:
-	// Just use the current class
+	// Just use the current class.
 	file = source_view->line_of_cursor();
 	file = file.before(":");
 	core = "";
@@ -770,7 +774,7 @@ ProgramInfo::ProgramInfo()
     while (argv[argc] != 0)
 	argc++;
 
-    // All debuggers supported by GDB have [EXEC [CORE]] as their last 
+    // All debuggers supported by DDD have [EXEC [CORE]] as their last
     // arguments.
     if ((file == NO_GDB_ANSWER || core == NO_GDB_ANSWER) && argc >= 2)
     {
