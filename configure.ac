@@ -551,20 +551,21 @@ CXXFLAGS="$CXXFLAGS $PERMISSIVE"
 dnl
 AC_PATH_XTRA
 dnl
+dnl This "bug fix" is now unnecessary. (AD - May 2004)
 dnl Autoconf bug fix: Cygwin and others want -lSM -lICE in X_EXTRA_LIBS instead
 dnl of X_PRE_LIBS (that is, linking order should be `-lX11 -lSM -lICE')
-loop=true
-while $loop; do
-  case "$X_PRE_LIBS" in
-    *-lICE*) X_EXTRA_LIBS="-lICE $X_EXTRA_LIBS";
-	    X_PRE_LIBS=`echo $X_PRE_LIBS | $SED 's,-lICE,,g'`
-	;;
-    *-lSM*) X_EXTRA_LIBS="-lSM $X_EXTRA_LIBS";
-	    X_PRE_LIBS=`echo $X_PRE_LIBS | $SED 's,-lSM,,g'`
-	;;
-    *) loop=false;;
-   esac
-done
+dnl loop=true
+dnl while $loop; do
+dnl   case "$X_PRE_LIBS" in
+dnl     *-lICE*) X_EXTRA_LIBS="-lICE $X_EXTRA_LIBS";
+dnl 	    X_PRE_LIBS=`echo $X_PRE_LIBS | $SED 's,-lICE,,g'`
+dnl	;;
+dnl    *-lSM*) X_EXTRA_LIBS="-lSM $X_EXTRA_LIBS";
+dnl	    X_PRE_LIBS=`echo $X_PRE_LIBS | $SED 's,-lSM,,g'`
+dnl	;;
+dnl    *) loop=false;;
+dnl   esac
+dnl done
 dnl
 dnl Autoconf bug fix: GCC 2.95 and later want -isystem for including X files
 X_CFLAGS=`echo $X_CFLAGS | $SED "s,-I,$ISYSTEM,g"`
