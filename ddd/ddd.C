@@ -2887,9 +2887,14 @@ static MString yn(bool b)
     return b ? rm("yes\n") : rm("no\n");
 }
 
+static MString cap(const MString& title, bool b)
+{
+    return title + bf(": ") + yn(b);
+}
+
 static MString has(const string& command, bool b)
 {
-    return tb(quote(command)) + bf(" command: ") + yn(b);
+    return cap(tb(quote(command)) + bf(" command"), b);
 }
 
 static MString cmd(const string& title, const string& cmd)
@@ -2908,15 +2913,10 @@ static MString expr(const string& title, const string& expr)
 
 static MString option(const string& command, const string& opt, bool b)
 {
-    return bf("Use ") + tb(quote(opt)) + bf(" option in ") + has(command, b);
+    return cap(tb(quote(command)) + bf(" wants ") + tb(quote(opt)), b);
 }
 
-static MString cap(const MString& title, bool b)
-{
-    return title + bf(": ") + yn(b);
-}
-
-static void ShowGDBStatusCB(Widget w, XtPointer, XtPointer)
+static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
 {
     static Widget info = 0;
     if (info == 0)
@@ -2925,8 +2925,12 @@ static void ShowGDBStatusCB(Widget w, XtPointer, XtPointer)
 						"gdb_status_dialog",
 						NULL, 0));
 	Delay::register_shell(info);
-	XtUnmanageChild(XmMessageBoxGetChild(info, XmDIALOG_CANCEL_BUTTON));
 	XtAddCallback(info, XmNhelpCallback,   ImmediateHelpCB, NULL);
+
+	Widget cancel = XmMessageBoxGetChild(info, XmDIALOG_CANCEL_BUTTON);
+	XtRemoveAllCallbacks(cancel, XmNactivateCallback);
+	XtAddCallback(cancel, XmNactivateCallback, ShowGDBStatusCB, 
+		      client_data);
     }
 
     MString status;
@@ -2987,7 +2991,7 @@ static void ShowGDBStatusCB(Widget w, XtPointer, XtPointer)
 		  gdb->has_when_semicolon());
     status += cap(bf("Stderr redirection via ") + tb(quote(">&")),
 		  gdb->has_err_redirection());
-    status += cap(tb(quote("delete")) + bf("wants comma-separated args"), 
+    status += cap(tb(quote("delete")) + bf(" wants comma-separated args"), 
 		  gdb->has_delete_comma());
 
     XtVaSetValues(info,
