@@ -2,6 +2,7 @@
 // Show tip of the day
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001 Universitaet des Saarlandes, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -54,7 +55,9 @@ char tips_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
 #include <Xm/PushB.h>
+#include <Xm/ToggleB.h>
 
+Widget set_startup_tips_w;
 
 static MString get_tip_of_the_day(Widget w, int n)
 {
@@ -181,6 +184,19 @@ void TipOfTheDayCB(Widget w, XtPointer, XtPointer)
 	    verify(XmCreateInformationDialog(find_shell(w), 
 					     CONST_CAST(char *,"tip_dialog"), 
 					     args, arg));
+
+#if XmVersion >= 1002
+	arg = 0;
+	XtSetArg(args[arg], XmNset, app_data.startup_tips); arg++;
+	set_startup_tips_w = 
+	    verify(XmCreateToggleButton(tip_dialog, 
+					CONST_CAST(char *,"set_startup_tips"),
+					args, arg));
+	XtAddCallback(set_startup_tips_w, XmNvalueChangedCallback, 
+		      SetStartupTipsCB, 0);
+
+	XtManageChild(set_startup_tips_w);
+#endif
 
 	XtAddCallback(tip_dialog, XmNokCallback, UnmanageThisCB, 
 		      XtPointer(tip_dialog));

@@ -157,6 +157,7 @@ char ddd_rcsid[] =
 #include <Xm/ToggleB.h>
 #include <Xm/PushB.h>
 #include <Xm/ArrowB.h>
+#include <Xm/MwmUtil.h>
 #include <X11/Shell.h>
 
 #if XmVersion >= 1002
@@ -4162,6 +4163,7 @@ void update_options()
 
     set_toggle(splash_screen_w, app_data.splash_screen);
     set_toggle(startup_tips_w,  app_data.startup_tips);
+    set_toggle(set_startup_tips_w, app_data.startup_tips);
 
     if (app_data.cache_source_files != source_view->cache_source_files)
     {
@@ -6880,11 +6882,16 @@ static void popup_splash_screen(Widget parent, string color_key)
 
     Arg args[10];
     int arg = 0;
-    XtSetArg(args[arg], XmNallowShellResize, True); arg++;
-    XtSetArg(args[arg], XmNborderWidth, 0); arg++;
-    splash_shell = verify(XtCreatePopupShell("splash_shell", 
-					     overrideShellWidgetClass, 
-					     parent, args, arg));
+    XtSetArg(args[arg], XmNallowShellResize, True);  arg++;
+    XtSetArg(args[arg], XmNborderWidth, 0);          arg++;
+    XtSetArg(args[arg], XmNdeleteResponse, XmUNMAP); arg++;
+
+    XtSetArg(args[arg], XmNmwmDecorations, MWM_DECOR_BORDER); arg++;
+    XtSetArg(args[arg], XmNmwmFunctions,   MWM_FUNC_CLOSE); arg++;
+    splash_shell = verify(
+        XmCreateDialogShell(parent, 
+			    CONST_CAST(char *, "splash_shell"),
+			    args, arg));
 
     arg = 0;
     XtSetArg(args[arg], XmNborderWidth, 0);  arg++;

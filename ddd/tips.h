@@ -38,5 +38,7 @@
 extern void TipOfTheDayCB(Widget w, XtPointer = 0, XtPointer = 0);
 extern void SetStartupTipsCB(Widget w, XtPointer, XtPointer);
 
+extern Widget set_startup_tips_w;
+
 #endif // _DDD_tips_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

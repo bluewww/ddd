@@ -4,9 +4,16 @@ DDD News						-*- text -*-
 DDD 3.3.2
 =========
 
-DDD 3.3.1 brings some minor bug fixes:
+DDD 3.3.2 brings some minor bug fixes:
 
 - Temporary sessions in Gnome and KDE are now properly deleted.
+- The splash screen no longer bypasses all window controls.
+- The Tip of the Day comes with an option to turn it off.
+- Several memory leaks have been plugged (1).
+- Major code clean-up (1).
+- GCC 3.0 compiles DDD.
+
+(1) Thanks to Arnaud Desitter <arnaud.desitter@nag.co.uk>!
 
 
 DDD 3.3.1

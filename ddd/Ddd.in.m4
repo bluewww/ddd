@@ -3945,6 +3945,7 @@ Use LBL(Edit, Save Options) to save all shortcuts.
 ! Splash screen
 !-----------------------------------------------------------------------------
 
+Ddd*splash_shell.title:                         Welcome to DDD!
 Ddd*splash_shell.splash.background:	        white
 Ddd*splash_shell.splash.foreground:	        black
 
@@ -7412,6 +7413,9 @@ ITEM To view even earlier states of your program, use LBL(Edit, Undo).
 Ddd*tip_dialog.dialogTitle: 		DDD Tip of the Day
 Ddd*tip_dialog*helpString:	\
 @rm This is the DDD tip of the day.
+Ddd*set_startup_tips.labelString:       Show Tip of the Day when starting DDD
+Ddd*set_startup_tips.alignment:         XmALIGNMENT_BEGINNING
+Ddd*tip_dialog.applyLabelString:	Turn Off
 Ddd*tip_dialog.cancelLabelString:	Prev Tip
 Ddd*tip_dialog.helpLabelString:		Next Tip
 Ddd*tip_dialog.symbolPixmap: 		ddd
