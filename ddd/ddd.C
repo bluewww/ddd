@@ -635,7 +635,7 @@ struct ProgramItems {
     enum ProgramItem { Run, RunAgain, Sep1,
 		       SeparateExecWindow, Sep2,
 		       Step, Stepi, Next, Nexti, Sep3,
-		       Cont, Finish, Sep4,
+		       Cont, Finish, Until, Sep4,
 		       Kill, Break, Quit
     };
 };
@@ -655,6 +655,7 @@ struct ProgramItems {
     MMSep, \
     { "cont",        MMPush, { gdbCommandCB, "cont" }}, \
     { "finish",      MMPush, { gdbCommandCB, "finish" }}, \
+    { "until",       MMPush, { gdbCommandCB, "until" }}, \
     MMSep, \
     { "kill",        MMPush, { gdbCommandCB, "kill" }}, \
     { "break",       MMPush, { gdbCommandCB, "\003" }}, \
@@ -1844,7 +1845,7 @@ int main(int argc, char *argv[])
     if (app_data.separate_data_window && app_data.separate_source_window)
 	menubar = command_menubar;
 
-    Widget menubar_w = MMcreateMenuBar (main_window, "menubar", menubar);
+    Widget menubar_w = MMcreateMenuBar(main_window, "menubar", menubar);
     MMaddCallbacks(menubar);
     MMaddHelpCallback(menubar, ImmediateHelpCB);
     verify_buttons(menubar);
@@ -3458,6 +3459,9 @@ void save_option_state()
     XtVaGetValues(command_shell,
 		  XmNkeyboardFocusPolicy, &initial_focus_policy, NULL);
 
+    Widget paned_work_w = XtParent(XtParent(gdb_w));
+    save_preferred_paned_sizes(paned_work_w);
+
     option_state_saved = true;
     update_reset_preferences();
 }
@@ -4392,6 +4396,10 @@ static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
     set_sensitive(command_program_menu[ProgramItems::Finish].widget,    ready);
     set_sensitive(source_program_menu[ProgramItems::Finish].widget,     ready);
     set_sensitive(data_program_menu[ProgramItems::Finish].widget,       ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Until].widget,    ready);
+    set_sensitive(source_program_menu[ProgramItems::Until].widget,     ready);
+    set_sensitive(data_program_menu[ProgramItems::Until].widget,       ready);
 
     set_sensitive(command_program_menu[ProgramItems::Kill].widget,      ready);
     set_sensitive(source_program_menu[ProgramItems::Kill].widget,       ready);
