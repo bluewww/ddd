@@ -1237,7 +1237,8 @@ void send_gdb_command(string cmd, Widget origin,
     }
     else if (is_setting_cmd(cmd))
     {
-	get_settings(gdb->type());
+	(void) get_settings(gdb->type());
+
 	extra_data->refresh_setting     = true;
 	extra_data->set_command         = cmd;
 	extra_data->refresh_data        = false;
