@@ -285,6 +285,9 @@ static void show_configuration(ostream& os, bool version_only)
         "." stringize(__GNUC_MINOR__)
 #  endif
 # endif // !defined(__VERSION__)
+# ifdef _SGI_COMPILER_VERSION
+        "\nSGI Pro64 " stringize(_SGI_COMPILER_VERSION)
+# endif
 
 #elif defined(__SUNPRO_CC)
 	"SunPRO CC " stringize(__SUNPRO_CC)
