@@ -319,7 +319,10 @@ static void show_configuration(ostream& os, bool version_only)
   
 #elif defined(__BORLANDC__)
 	"Borland C++ " stringize(__BORLANDC__)
-  
+
+#elif defined(__ICL)
+        "Intel C++ " stringize(__ICL)
+
 #elif defined(CXX_NAME)
 	CXX_NAME
 #else  // Anything else
