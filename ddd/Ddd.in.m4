@@ -3493,21 +3493,27 @@ Ddd*toolbar*delete.labelString:		Undisplay ()
 
 Ddd*toolbar*dereference.labelPixmap: 		dispref
 Ddd*toolbar*dereference.labelInsensitivePixmap:	dispref-xx
+Ddd*toolbar*dereference.armPixmap:		dispref-arm
 
 Ddd*toolbar*detail.labelPixmap:			show
 Ddd*toolbar*detail.labelInsensitivePixmap:	show-xx
+Ddd*toolbar*detail.armPixmap:			show-arm
 
 Ddd*toolbar*rotate.labelPixmap:			rotate
 Ddd*toolbar*rotate.labelInsensitivePixmap:	rotate-xx
+Ddd*toolbar*rotate.armPixmap:			rotate-arm
 
 Ddd*toolbar*new.labelPixmap:			display
 Ddd*toolbar*new.labelInsensitivePixmap:		display-xx
+Ddd*toolbar*new.armPixmap:			display-arm
 
 Ddd*toolbar*set.labelPixmap:			set
 Ddd*toolbar*set.labelInsensitivePixmap:		set-xx
+Ddd*toolbar*set.armPixmap:			set-arm
 
 Ddd*toolbar*delete.labelPixmap:			undisplay
 Ddd*toolbar*delete.labelInsensitivePixmap:	undisplay-xx
+Ddd*toolbar*delete.armPixmap:			undisplay-arm
 
 define(ANNOUNCE_PULLDOWN,[\
 Pulldown menu functions (press and hold BUTTON(1)):\
@@ -3643,24 +3649,31 @@ Ddd*toolbar*findForward.labelString:	LBL_FIND_FORWARD
 
 Ddd*toolbar*lookup.labelPixmap:			lookup
 Ddd*toolbar*lookup.labelInsensitivePixmap:	lookup-xx
+Ddd*toolbar*lookup.armPixmap:			lookup-arm
 
-Ddd*toolbar*breakAt.labelPixmap:		 	break_at
+Ddd*toolbar*breakAt.labelPixmap:		break_at
 Ddd*toolbar*breakAt.labelInsensitivePixmap: 	break_at-xx
+Ddd*toolbar*breakAt.armPixmap: 			break_at-arm
 
 Ddd*toolbar*watch.labelPixmap:		 	watch
 Ddd*toolbar*watch.labelInsensitivePixmap: 	watch-xx
+Ddd*toolbar*watch.armPixmap: 			watch-arm
 
 Ddd*toolbar*print.labelPixmap:		 	print
 Ddd*toolbar*print.labelInsensitivePixmap: 	print-xx
+Ddd*toolbar*print.armPixmap: 			print-arm
 
-Ddd*toolbar*display.labelPixmap:		 	display
+Ddd*toolbar*display.labelPixmap:		display
 Ddd*toolbar*display.labelInsensitivePixmap: 	display-xx
+Ddd*toolbar*display.armPixmap: 			display-arm
 
-Ddd*toolbar*dispRef.labelPixmap:		 	dispref
+Ddd*toolbar*dispRef.labelPixmap:		dispref
 Ddd*toolbar*dispRef.labelInsensitivePixmap: 	dispref-xx
+Ddd*toolbar*dispRef.armPixmap: 			dispref-arm
 
 Ddd*toolbar*find.labelPixmap:		 	find_forward
 Ddd*toolbar*find.labelInsensitivePixmap: 	find_forward-xx
+Ddd*toolbar*find.armPixmap: 			find_forward-arm
 
 Ddd*toolbar*lookup.helpString:	\
 LBL(Lookup ())\n\

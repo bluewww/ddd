@@ -4522,53 +4522,33 @@ meaning to copy the dragged glyph.  If no \fIaction\fR is given,
 .\" ---------------
 .\"
 \s-2@DDD@\s+2 installs a number of pixmaps that may be used as pixmap
-resources, simply by giving a symbolic name.  The suffix `\fB-xx\fR'
-indicates a disabled (insensitive) variant.
+resources, simply by giving a symbolic name.  For button pixmaps, two
+variants are also installed:
+.IP \(bu 2
+The suffix `\fB-xx\fR' indicates a disabled (insensitive) variant.
+.IP \(bu 2
+The suffix `\fB-arm\fR' indicates an armed variant (Button is pushed).
 .TP
 .B "break_at"
-.PD 0
-.TP
-.B "break_at-xx"
 `\fBBreak at ()\fR' button.
-.PD
 .TP
 .B "clear_at"
-.PD 0
-.TP
-.B "clear_at-xx"
 `\fBClear at ()\fR' button.
-.PD
 .TP
 .B "@ddd@"
 \s-2@DDD@\s+2 icon.
 .TP
 .B "dispref"
-.PD 0
-.TP
-.B "dispref-xx"
 `\fBDisplay * ()\fR' button.
-.PD
 .TP
 .B "display"
-.PD 0
-.TP
-.B "display-xx"
 `\fBDisplay ()\fR' button.
-.PD
 .TP
 .B "find_forward"
-.PD 0
-.TP
-.B "find_forward-xx"
 `\fBFind\s-2>>\s+2 ()\fR' button.
-.PD
 .TP
 .B "find_backward"
-.PD 0
-.TP
-.B "find_backward-xx"
 `\fBFind\s-2<<\s+2 ()\fR' button.
-.PD
 .TP
 .B "grey_arrow"
 The execution pointer (not in lowest frame).
@@ -4580,18 +4560,10 @@ A conditional breakpoint (disabled).
 A breakpoint (disabled).
 .TP
 .B "hide"
-.PD 0
-.TP
-.B "hide-xx"
 `\fBHide ()\fR' button.
-.PD
 .TP
 .B "lookup"
-.PD 0
-.TP
-.B "lookup-xx"
 `\fBLookup ()\fR' button.
-.PD
 .TP
 .B "plain_arrow"
 The execution pointer.
@@ -4603,32 +4575,16 @@ A conditional breakpoint (enabled).
 A breakpoint (enabled).
 .TP
 .B "print"
-.PD 0
-.TP
-.B "print-xx"
 `\fBPrint ()\fR' button.
-.PD
 .TP
 .B "rotate"
-.PD 0
-.TP
-.B "rotate-xx"
 `\fBRotate ()\fR' button.
-.PD
 .TP
 .B "set"
-.PD 0
-.TP
-.B "set-xx"
 `\fBSet ()\fR' button.
-.PD
 .TP
 .B "show"
-.PD 0
-.TP
-.B "show-xx"
 `\fBShow ()\fR' button.
-.PD
 .TP
 .B "signal_arrow"
 The execution pointer (stopped by signal).
@@ -4643,23 +4599,14 @@ A conditional breakpoint (being dragged).
 A breakpoint (being dragged).
 .TP
 .B "undisplay"
-.PD 0
-.TP
-.B "undisplay-xx"
 `\fBUndisplay ()\fR' button.
 .PD
 .TP
 .B "unwatch"
-.PD 0
-.TP
-.B "unwatch-xx"
 `\fBUnwatch ()\fR' button.
 .PD
 .TP
 .B "watch"
-.PD 0
-.TP
-.B "watch-xx"
 `\fBWatch ()\fR' button.
 .PD
 .PP

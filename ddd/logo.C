@@ -430,21 +430,16 @@ static XImage *get_button_subimage(XImage *image, String name)
 static void install_icon(Widget w, String name,
 			 char **xpm_data, unsigned char *xbm_data,
 			 int width, int height,
-			 const string& color_key, bool is_button = false)
+			 const string& color_key,
+			 Pixel background,
+			 const XWindowAttributes& root_attr,
+			 bool is_button = false)
 {
 #ifdef XpmVersion
     int depth = PlanesOfScreen(XtScreen(w));
 
     if (depth > 1 && color_key != "m")
     {
-	XWindowAttributes win_attr;
-	XGetWindowAttributes(XtDisplay(w), 
-			     RootWindowOfScreen(XtScreen(w)),
-			     &win_attr);
-
-	Pixel background;
-	XtVaGetValues(w, XmNbackground, &background, NULL);
-
 	XpmColorSymbol cs;
 	cs.name  = "Background";
 	cs.value = 0;
@@ -453,9 +448,9 @@ static void install_icon(Widget w, String name,
 	XpmAttributes attr;
 	attr.valuemask    = 
 	    XpmVisual | XpmColormap | XpmDepth | XpmColorSymbols;
-	attr.visual       = win_attr.visual;
-	attr.colormap     = win_attr.colormap;
-	attr.depth        = win_attr.depth;
+	attr.visual       = root_attr.visual;
+	attr.colormap     = root_attr.colormap;
+	attr.depth        = root_attr.depth;
 	attr.colorsymbols = &cs;
 	attr.numsymbols   = 1;
 	add_color_key(attr, color_key);
@@ -531,103 +526,146 @@ static void install_button_icon(Widget w, String name,
 				unsigned char *xbm_data,
 				unsigned char *xbm_xx_data,
 				int width, int height, 
-				const string& color_key)
+				const string& color_key,
+				Pixel background,
+				Pixel arm_background,
+				const XWindowAttributes& root_attr)
 {
     install_icon(w, name,
 		 xpm_data,
 		 xbm_data,
-		 width, height, color_key, true);
+		 width, height,
+		 color_key, background, root_attr, true);
 
     string insensitive_name = string(name) + "-xx";
     install_icon(w, insensitive_name,
 		 xpm_xx_data,
 		 xbm_xx_data, 
-		 width, height, color_key, true);
+		 width, height,
+		 color_key, background, root_attr, true);
+
+    string armed_name = string(name) + "-arm";
+    install_icon(w, armed_name,
+		 xpm_data,
+		 xbm_data,
+		 width, height,
+		 color_key, arm_background, root_attr, true);
 }
 
 void install_icons(Widget shell, const string& color_key)
 {
+    // Determine attributes
+    XWindowAttributes root_attr;
+    XGetWindowAttributes(XtDisplay(shell), 
+			 RootWindowOfScreen(XtScreen(shell)),
+			 &root_attr);
+
+    Pixel background;
+    XtVaGetValues(shell, XmNbackground, &background, NULL);
+
+    // Determine default arm background
+    Pixel foreground, top_shadow, bottom_shadow, select;
+    XmGetColors(XtScreen(shell), root_attr.colormap, background,
+		&foreground, &top_shadow, &bottom_shadow, &select);
+    Pixel arm_background = select;
+
     // DDD icon
     install_icon(shell, DDD_ICON, 
 		 ddd_xpm,
 		 ddd_bits,
-		 ddd_width, ddd_height, color_key);
+		 ddd_width, ddd_height,
+		 color_key, background, root_attr);
 
     // Toolbar icons
     install_button_icon(shell, BREAK_AT_ICON, 
       		        breakat_xpm, breakat_xx_xpm,
 		        breakat_bits, breakat_xx_bits, 
-		        breakat_width, breakat_height, color_key);
+		        breakat_width, breakat_height,
+			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, CLEAR_AT_ICON, 
       		        clearat_xpm, clearat_xx_xpm,
 		        clearat_bits, clearat_xx_bits, 
-		        clearat_width, clearat_height, color_key);
+		        clearat_width, clearat_height,
+			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, DISPREF_ICON, 
       		        deref_xpm, deref_xx_xpm,
 		        deref_bits, deref_xx_bits, 
-		        deref_width, deref_height, color_key);
+		        deref_width, deref_height,
+			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, DISPLAY_ICON, 
       		        display_xpm, display_xx_xpm,
 		        display_bits, display_xx_bits, 
-		        display_width, display_height, color_key);
+		        display_width, display_height,
+			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, FIND_BACKWARD_ICON, 
       		        findbwd_xpm, findbwd_xx_xpm,
 		        findbwd_bits, findbwd_xx_bits, 
-		        findbwd_width, findbwd_height, color_key);
+		        findbwd_width, findbwd_height,
+			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, FIND_FORWARD_ICON, 
       		        findfwd_xpm, findfwd_xx_xpm,
 		        findfwd_bits, findfwd_xx_bits, 
-		        findfwd_width, findfwd_height, color_key);
+		        findfwd_width, findfwd_height,
+			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, HIDE_ICON, 
       		        hide_xpm, hide_xx_xpm,
 		        hide_bits, hide_xx_bits, 
-		        hide_width, hide_height, color_key);
+		        hide_width, hide_height,
+			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, LOOKUP_ICON, 
       		        lookup_xpm, lookup_xx_xpm,
 		        lookup_bits, lookup_xx_bits, 
-		        lookup_width, lookup_height, color_key);
+		        lookup_width, lookup_height,
+			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, PRINT_ICON, 
       		        print_xpm, print_xx_xpm,
 		        print_bits, print_xx_bits, 
-		        print_width, print_height, color_key);
+		        print_width, print_height,
+			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, ROTATE_ICON, 
       		        rotate_xpm, rotate_xx_xpm,
 		        rotate_bits, rotate_xx_bits, 
-		        rotate_width, rotate_height, color_key);
+		        rotate_width, rotate_height,
+			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, SET_ICON, 
       		        set_xpm, set_xx_xpm,
 		        set_bits, set_xx_bits, 
-		        set_width, set_height, color_key);
+		        set_width, set_height,
+			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, SHOW_ICON, 
       		        show_xpm, show_xx_xpm,
 		        show_bits, show_xx_bits, 
-		        show_width, show_height, color_key);
+		        show_width, show_height,
+			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, UNDISPLAY_ICON, 
       		        undisplay_xpm, undisplay_xx_xpm,
 		        undisplay_bits, undisplay_xx_bits, 
-		        undisplay_width, undisplay_height, color_key);
+		        undisplay_width, undisplay_height,
+			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, UNWATCH_ICON, 
       		        unwatch_xpm, unwatch_xx_xpm,
 		        unwatch_bits, unwatch_xx_bits, 
-		        unwatch_width, unwatch_height, color_key);
+		        unwatch_width, unwatch_height,
+			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, WATCH_ICON, 
       		        watch_xpm, watch_xx_xpm,
 		        watch_bits, watch_xx_bits, 
-		        watch_width, watch_height, color_key);
+		        watch_width, watch_height,
+			color_key, background, arm_background, root_attr);
 }
 
 
@@ -635,41 +673,6 @@ void install_icons(Widget shell, const string& color_key)
 //-----------------------------------------------------------------------
 // Set pixmap and label
 //-----------------------------------------------------------------------
-
-void set_pixmap(Widget w, string image_name)
-{
-    if (w == 0)
-	return;
-
-    assert(XtIsSubclass(w, xmLabelWidgetClass));
-
-    Pixel foreground = 0;
-    Pixel background = 0;
-
-    XtVaGetValues(w,
-		  XmNforeground, &foreground,
-		  XmNbackground, &background,
-		  NULL);
-    
-    Pixmap p1 = XmGetPixmap(XtScreen(w), image_name, 
-				foreground, background);
-    Pixmap p2 = XmGetPixmap(XtScreen(w), image_name + "-xx", 
-				foreground, background);
-
-    Arg args[10];
-    Cardinal arg = 0;
-
-    if (p1 != XmUNSPECIFIED_PIXMAP)
-    {
-	XtSetArg(args[arg], XmNlabelPixmap, p1); arg++;
-    }
-    if (p2 != XmUNSPECIFIED_PIXMAP)
-    {
-	XtSetArg(args[arg], XmNlabelInsensitivePixmap, p2); arg++;
-    }
-    if (arg > 0)
-	XtSetValues(w, args, arg);
-}
 
 void set_label(Widget w, const MString& new_label, char *image)
 {
@@ -698,9 +701,11 @@ void set_label(Widget w, const MString& new_label, char *image)
 
 	    string s1 = image;
 	    string s2 = s1 + "-xx";
+	    string s3 = s1 + "-arm";
 
 	    Pixmap p1 = XmGetPixmap(XtScreen(w), s1, foreground, background);
 	    Pixmap p2 = XmGetPixmap(XtScreen(w), s2, foreground, background);
+	    Pixmap p3 = XmGetPixmap(XtScreen(w), s3, foreground, background);
 
 	    if (p1 != XmUNSPECIFIED_PIXMAP)
 	    {
@@ -709,6 +714,10 @@ void set_label(Widget w, const MString& new_label, char *image)
 	    if (p2 != XmUNSPECIFIED_PIXMAP)
 	    {
 		XtSetArg(args[arg], XmNlabelInsensitivePixmap, p2); arg++;
+	    }
+	    if (p3 != XmUNSPECIFIED_PIXMAP)
+	    {
+		XtSetArg(args[arg], XmNarmPixmap, p3); arg++;
 	    }
 	}
 	XtSetValues(w, args, arg);
