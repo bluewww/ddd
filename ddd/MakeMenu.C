@@ -641,7 +641,7 @@ Widget MMcreatePulldownMenu(Widget parent, String name, MMDesc items[],
 Widget MMcreateRadioPulldownMenu(Widget parent, String name, MMDesc items[],
 				 ArgList _args, Cardinal _arg)
 {
-    Arg args[_arg + 10];
+    ArgList args = new Arg[_arg + 10];
     Cardinal arg = 0;
 
     XtSetArg(args[arg], XmNisHomogeneous, True); arg++;
@@ -651,7 +651,10 @@ Widget MMcreateRadioPulldownMenu(Widget parent, String name, MMDesc items[],
     for (Cardinal i = 0; i < _arg; i++)
 	args[arg++] = _args[i];
 
-    return MMcreatePulldownMenu(parent, name, items, args, arg);
+    Widget w = MMcreatePulldownMenu(parent, name, items, args, arg);
+
+    delete[] args;
+    return w;
 }
 
 // Create popup menu from items
@@ -739,7 +742,7 @@ void MMadjustPanel(MMDesc items[], Dimension space)
 Widget MMcreateRadioPanel(Widget parent, String name, MMDesc items[],
 			  ArgList _args, Cardinal _arg)
 {
-    Arg args[_arg + 10];
+    ArgList args = new Arg[_arg + 10];
     Cardinal arg = 0;
 
     XtSetArg(args[arg], XmNisHomogeneous, True); arg++;
@@ -753,6 +756,7 @@ Widget MMcreateRadioPanel(Widget parent, String name, MMDesc items[],
     MMaddItems(panel, items);
     XtManageChild(panel);
 
+    delete[] args;
     return panel;
 }
 
@@ -955,7 +959,7 @@ void MMaddHelpCallback(MMDesc items[], XtCallbackProc proc)
 Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[],
 			ArgList _args, Cardinal _arg)
 {
-    Arg args[_arg + 10];
+    ArgList args = new Arg[_arg + 10];
     Cardinal arg = 0;
 
     // By default, PushButton menus are activated using Button 1.
@@ -995,6 +999,7 @@ Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[],
     // This breaks any X session, so we cancel it.
     XtUngrabButton(parent, AnyButton, AnyModifier);
 
+    delete[] args;
     return menu;
 }
 
