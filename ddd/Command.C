@@ -71,6 +71,33 @@ static bool had_user_command = false;
 
 
 //-----------------------------------------------------------------------------
+// Auto command management
+//-----------------------------------------------------------------------------
+
+// Strip auto-command prefix
+void strip_auto_command_prefix(string& cmd)
+{
+    // Neither of these ever changes, so make it static
+    static string echo = gdb->echo_command(app_data.auto_command_prefix);
+
+    int i;
+    while ((i = cmd.index(echo)) >= 0)
+    {
+	cmd.at(i, echo.length()) = "";
+	int nl = cmd.index("\\n", i);
+	if (nl >= 0)
+	    cmd.at(nl, 2) = "";
+    }
+}
+
+// Add it
+void add_auto_command_prefix(string& cmd)
+{
+    cmd = gdb->echo_command(app_data.auto_command_prefix + cmd + "\n");
+}
+
+
+//-----------------------------------------------------------------------------
 // GDB command management
 //-----------------------------------------------------------------------------
 
@@ -120,10 +147,7 @@ void translate_command(string& command)
 
     // When recording graph commands, realize them as auto commands instead
     if (gdb->recording() && is_graph_cmd(command))
-    {
-	command = 
-	    gdb->echo_command(app_data.auto_command_prefix + command + "\n");
-    }
+	add_auto_command_prefix(command);
 }
 
 // Process command C; do it right now.

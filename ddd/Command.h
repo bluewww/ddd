@@ -192,5 +192,9 @@ extern bool userInteractionSeen();
 // Translate frequently used commands
 extern void translate_command(string& command);
 
+// Add and strip auto_command prefix
+extern void add_auto_command_prefix(string& command);
+extern void strip_auto_command_prefix(string& command);
+
 #endif // _DDD_Command_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
