@@ -2430,6 +2430,11 @@ static void get_setting(ostream& os, DebuggerType type,
 	{
 	    // This is the default setting - do nothing (GDB)
 	}
+	else if (base == "set solib-absolute-prefix" && value == "")
+	{
+	    // GDB 4.17 bug: `set solib-absolute-prefix' without arg
+	    // does not work.  Just leave it as default setting.
+	}
 	else if (base.contains("set $cur", 0) ||
 		 base.contains("set $new", 0) ||
 		 base.contains("set $pid", 0))
