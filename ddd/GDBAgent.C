@@ -1931,9 +1931,9 @@ string GDBAgent::echo_command(string text) const
 	return quote(text);
 
     case PERL:
-	if (text.contains('\n', -1))
-	    text = text.before(-1);
-	return "p " + quote(text, '\'');
+	// We use `print DB::OUT' instead of `p' since this also works
+	// in actions.
+	return "print DB::OUT " + quote(text, '\"');
 
     case JDB:
     case PYDB:
