@@ -19,6 +19,7 @@ Table of Contents
     * Irix
     * LessTif
     * Linux
+    * MacOS X
     * OSF/1
     * Solaris 2.x
     * SunOS
@@ -422,6 +423,13 @@ Reported by:  Ryan Ware <ware@shocking.com>
     The only thing I had to change was the optimization level to O1.
     O2 broke the compiler.  It looks and runs great.  Thanks.  I look
     forward to many hours of using it.
+
+
+MacOS X
+=======
+
+    Build may fail on case sensitive file systems as ddd and Ddd conflict.
+    Patches are welcome.
 
 
 OSF/1
