@@ -98,12 +98,8 @@ private:
     static void process_status(const UndoBufferEntry& entry, int direction);
 
     // Count undoing commands
-    static int own_commands;
     static int own_processed;
     static int own_direction;
-
-    static void CommandDone(const string &, void *);
-    static void ExtraDone(void *);
 
     // Rename all breakpoints from OLD_BP_NR to NEW_BP_NR
     static void remap_breakpoint(int old_bp_nr, int new_bp_nr);

@@ -62,9 +62,6 @@ UndoBufferArray UndoBuffer::history;
 // Last position in history + 1
 int UndoBuffer::history_position = 0;
 
-// Number of commands we still must undo
-int UndoBuffer::own_commands = 0;
-
 // Number of commands we have undone
 int UndoBuffer::own_processed = 0;
 
@@ -151,7 +148,7 @@ void UndoBuffer::add_command(const string& command)
     if (c == "")
 	return;
 
-    if (own_commands == 0)
+    if (own_direction == 0)
     {
 	// Regular command: Insert new entry before current
 	//
@@ -287,6 +284,11 @@ void UndoBuffer::add_command(const string& command)
 	last_entry[UB_COMMAND].prepend(c + '\n');
 	own_processed++;
     }
+    else
+    {
+	// This can't happen.
+	assert(0);
+    }
 
     done();
 }
@@ -385,36 +387,6 @@ void UndoBuffer::process(const UndoBufferEntry& entry, int direction)
     locked = false;
 }
 
-void UndoBuffer::CommandDone(const string &answer, void *)
-{
-    if (answer == NO_GDB_ANSWER)
-    {
-	// Command has been canceled
-	own_commands--;
-    }
-}
-
-void UndoBuffer::ExtraDone(void *)
-{
-    if (own_processed == 0)
-    {
-	// Command had no effect on history.  Leave it unchanged.
-	if (own_direction < 0)
-	{
-	    // Undo
-	    add_command(history[history_position - 2][UB_COMMAND]);
-	}
-	else
-	{
-	    // Redo
-	    add_command(history[history_position][UB_COMMAND]);
-	}
-    }
-
-    // Command is done, and all extra commands, too.
-    own_commands--;
-}
-
 void UndoBuffer::remap_breakpoint(string& cmd, int old_bp_nr, int new_bp_nr)
 {
     string old_num = "@" + itostring(old_bp_nr) + "@";
@@ -445,6 +417,7 @@ void UndoBuffer::process_command(const UndoBufferEntry& entry, int direction)
 
     int count = 0;
     own_processed = 0;
+    own_direction = direction;
     while (commands != "")
     {
 	string cmd;
@@ -479,16 +452,14 @@ void UndoBuffer::process_command(const UndoBufferEntry& entry, int direction)
 	}
 
 	Command c(cmd);
-	c.callback       = CommandDone;
-	c.extra_callback = ExtraDone;
-	c.priority       = COMMAND_PRIORITY_SYSTEM;
-	own_commands++;
-	own_direction    = direction;
+	c.priority = COMMAND_PRIORITY_SYSTEM;
 	gdb_command(c);
+
+	// Sync this to avoid problems due to multiple undos
+	syncCommandQueue();
     }
 
-    // This is to avoid confusion due to multiple undo/redos
-    syncCommandQueue();
+    own_direction = 0;
 
     done();
 }
@@ -638,6 +609,9 @@ string UndoBuffer::action(const string& command)
 
     while (c.contains(REMAP_COMMAND, 0))
 	c = c.after('\n');
+
+    if (c.contains("graph ", 0))
+	c = c.after("graph ");
 
     if (c.contains(' '))
 	c = c.before(' ');
