@@ -21,8 +21,8 @@ DDD 2.1 is available					-*- text -*-
     Please try a closer FTP site first; see below for a list.
 
 
-DDD News
-========
+What's new in DDD?
+==================
 
     DDD 2.1 brings alias detection, local variable displays, button
     and value tips as well as several new features and bug fixes.
@@ -54,7 +54,9 @@ DDD News
     - The register window can display floating-point registers.
     - Thread support.  You can inquire existing threads and switch
       among them.  (requires GDB and operating system thread support)
-    - By default, DDD now comes in one single window.
+    - In `one single window' mode (now default), you can disable
+      specific window parts (e.g. data displays, debugger console,
+      etc.) through the `Windows' menu.
     - The `Preferences' panel has been extended and reworked:
       + Button tips and value tips can be enabled and disabled.
       + Tab width and graph grid size can now be changed at run time.
@@ -70,6 +72,11 @@ DDD News
         to avoid confusion with the `Break At' button.
       + The `Quit' menu item is now named `Abort', to avoid confusion
         with the `Exit' menu item (which issues a `quit' command).
+    - Some key bindings have been re-assigned.  Generally, `Ctrl'
+      invokes debugger or editing commands, and `Alt' changes debugger
+      settings.  Hence, Ctrl+M invokes `make' and Ctrl+Q invokes
+      `quit', while Alt+M enables or disables the machine code window.
+      `Run' is now on Ctrl+X (for eXecute).
     - DBX settings can now be viewed and changed at run time, using
       the `Settings' panel.
     - In GDB, there is a `status displays' panel for displaying 
@@ -78,6 +85,11 @@ DDD News
       reducing startup time drastically.
     - In the data window, the middle mouse button now toggles 
       the display selection instead of simply extending it.
+    - The most important data window operations can now also be
+      invoked via the debugger console.  For instance, the command
+      `graph display *next at (50, 50) dependent on 1' creates a new
+      dependent display at (50, 50).  In the long term, this feature
+      will be used to save and restore display state.
     - In the debugger console, the right mouse button invokes a small
       popup menu which you can use to clear the line or the window.
     - Ever suffered from a frozen display while debugging a modal
@@ -87,24 +99,32 @@ DDD News
       prompt `():'.
     - In the source argument field `()', pressing RETURN activates
       the `Lookup ()' button.
+    - `Save Options' saves window sizes for later DDD sessions, as
+      well as the relative position of the command tool.
     - Unnecessary redisplays have been significantly reduced, causing
       much less flickering.
     - If you specify some overloaded or ambiguous identifier, DDD now
       lets you select from all alternatives.
     - Buttons not supported on certain debuggers (for instance,
       `Finish' on DBX) are now made insensitive.  (optional)
-    - You can search for keywords in the online DDD manual.
+    - You can now invoke `make' from DDD, reusing old `make' arguments
+      from the command history if desired.
+    - There is a new integrated manual browser showing manual pages
+      and info files for DDD as well as for the inferior debugger.
+      A simple search facility is also included.
 
     Documentation:
     - The PostScript copy of the manual has been enriched with more
       than 30 color screen shots showing DDD usage.
+    - A `sample.dddinit' file is included in the distribution
+      containing several examples for further customization.
 
     Changes in configuration and building:
     - DDD 2.1 uses improved configuration checks from Autoconf 2.12.
     - DDD no longer installs in the `gcc' location by default, but in
       an existing DDD location; otherwise, in `/usr/local/bin'.
     - Improved means of determining builder's e-mail address.
-    - Beta releases and DDD snapshots expire after a few weeks.
+    - DDD beta releases and DDD snapshots expire after a few weeks.
 
     Bug fixes:
     - Using DBX, comments were stripped from source code under certain
@@ -124,9 +144,13 @@ DDD News
     - Line continuations (i.e. lines ending in `\') are properly handled.
     - Problems in building the `vsl' and `test-graph' programs are fixed.
     - On Linux, drag-and-drop of pixmaps has been disabled explicitly.
-      (Several Linux Motif libraries are broken in this aspect.)
+      (Several Linux Motif configurations are broken in this aspect.)
     - DDD now sets the WM_COMMAND resource such that X session
       managers can save and restore DDD state.
+    - The data window now uses a command queue for operations on data
+      displays.  No more `The debugger is busy' messages.
+    - Improved handling of template-generated class names and
+      optimized-out structs.
     - And again, dozens of minor bug fixes and improvements.
 
     Release policy:
@@ -138,8 +162,8 @@ DDD News
       DDD WWW page `http://www.cs.tu-bs.de/softech/ddd/' for details.
 
 
-Summary of DDD
-==============
+What is DDD, anyway?
+====================
 
     The Data Display Debugger (DDD) is a common graphical user
     interface to GDB, DBX, and XDB, the popular UNIX debuggers.
@@ -186,8 +210,9 @@ Summary of DDD
     Germany.
 
 
-Requirements
-============
+What do I need to build DDD?
+============================
+
 
     To build a complete DDD from sources, you need:
 
@@ -235,9 +260,8 @@ Requirements
     only, but may work for other languages as well.
 
 
-
-More Information
-================
+Where do I get more information?
+================================
 
     The DDD WWW page (including screen shots) is installed at
 
@@ -269,8 +293,8 @@ More Information
     all reported bugs as soon as possible.
 
 
-DDD source FTP sites
-====================
+Where do I get DDD sources?
+===========================
 
     The DDD source package `ddd-2.1.tar.gz' will soon be at these FTP
     sites as well.  Please try them before `ftp.ips.cs.tu-bs.de' since
@@ -315,8 +339,8 @@ Australia
 
 
 
-DDD full FTP sites
-==================
+Where do I get DDD binaries?
+============================
 
     Besides DDD source packages, the sites listed here also carry DDD
     binaries and patches as well as formatted DDD documentation and
