@@ -358,14 +358,15 @@ FIG2DEV = fig2dev
 FIG2PS = $(FIG2DEV) -L ps
 
 # Some XPM/PPM/PostScript converters, from the netpbm and pbmplus packages.
-XPMTOPPM = xpmtoppm
-PNMTOPS  = pnmtops
-PPMTOPGM = ppmtopgm
-PGMTOPBM = pgmtopbm
-PBMTOXBM = pbmtoxbm
-PNMGAMMA = pnmgamma
-PNMDEPTH = pnmdepth
-SXPM     = sxpm
+XPMTOPPM   = xpmtoppm
+PNMTOPS    = pnmtops
+PPMTOPGM   = ppmtopgm
+PGMTOPBM   = pgmtopbm
+PBMTOXBM   = pbmtoxbm
+PNMGAMMA   = pnmgamma
+PGMENHANCE = pgmenhance
+PNMDEPTH   = pnmdepth
+SXPM       = sxpm
 
 ### END OF CUSTOMIZATION SECTION ---
 ### You shouldn't need to change anything below this line.
@@ -1351,8 +1352,8 @@ $(icondir)/dddmask.xbm: $(icondir)/ddd.xpm
 
 $(icondir)/dddlogo.xbm: $(icondir)/dddlogo.xpm
 	$(SXPM) -nod -o - -grey $(icondir)/dddlogo.xpm | $(XPMTOPPM) | \
-	$(PNMDEPTH) 255 | $(PNMGAMMA) 0.33 | $(PPMTOPGM) | $(PGMTOPBM) | \
-	$(PBMTOXBM) | $(SED) 's/noname/dddlogo/g' > tmp.xbm
+	$(PNMDEPTH) 255 | $(PNMGAMMA) 0.45 | $(PPMTOPGM) | $(PGMENHANCE) -7 | \
+	$(PGMTOPBM) | $(PBMTOXBM) | $(SED) 's/noname/dddlogo/g' > tmp.xbm
 	test -s tmp.xbm && $(MV) tmp.xbm $@ || ($(RM) tmp.xbm; false)
 
 
