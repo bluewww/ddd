@@ -213,6 +213,21 @@ void PosBuffer::filter (string& answer)
     // Check for auto command
     if (app_data.auto_commands)
     {
+	if (auto_cmd_buffer != "" && !auto_cmd_buffer.contains('\n', -1))
+	{
+	    // Complete pending auto command
+	    if (answer.contains('\n'))
+	    {
+		auto_cmd_buffer += answer.through('\n');
+		answer = answer.after('\n');
+	    }
+	    else
+	    {
+		auto_cmd_buffer += answer;
+		answer = "";
+	    }
+	}
+
 	while (has_prefix(answer, app_data.auto_command_prefix))
 	{
 	    int index = answer.index(app_data.auto_command_prefix);
