@@ -147,4 +147,6 @@ Volunteers for fixing these and other bugs are welcome!
 281 In auto deiconify mode, the GDB console uniconifies even if other
     windows are already there.
 
-285 (Insert new bugs here)
+285*Opening a session results in several GDB prompts.
+
+286 (Insert new bugs here)

@@ -409,4 +409,7 @@ Volunteers for these and other projects are welcome!
 
 294 Have a way to expand `VALUE <Nx>' manually.
 
-296 (Insert new project ideas here)
+296*Have a `Open Recent...' item in the `Open' menu that lets you open
+    up to 9 most recently used executables.
+
+297 (Insert new project ideas here)
