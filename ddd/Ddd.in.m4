@@ -3845,8 +3845,9 @@ LBL(Watch ()) / LBL(Unwatch())\n\
 Stop whenever the value of LBL(()) changes.\n\
 \n\
 LBL(Watch ()) sets a EMPH(watchpoint) on LBL(()) - a special breakpoint that\n\
-stops your program whenever the value of LBL(()) changes.  A watchpoint is\n\
-managed like any other breakpoint, via LBL(Source) | LBL(Edit Breakpoints).\n\
+stops your program whenever the value of LBL(()) changes.
+\n\
+To see all watchpoints, select LBL(Data) | LBL(Edit Watchpoints).\n\
 \n\
 LBL(Unwatch()) deletes the EMPH(watchpoint) associated with LBL(()).\n\
 \n\
@@ -4878,6 +4879,14 @@ Ddd*breakpoint_properties*lookup.armPixmap:              lookup-arm
 Ddd*breakpoint_properties*lookup.tipString:             \
 @rm Lookup breakpoint
 
+Ddd*breakpoint_properties*print.labelType:		XmPIXMAP
+Ddd*breakpoint_properties*print.labelString:		Print
+Ddd*breakpoint_properties*print.labelPixmap:	        print
+Ddd*breakpoint_properties*print.labelInsensitivePixmap: print-xx
+Ddd*breakpoint_properties*print.armPixmap:              print-arm
+Ddd*breakpoint_properties*print.tipString:             \
+@rm Print watchpoint value
+
 Ddd*breakpoint_properties*enable.labelType:		XmPIXMAP
 Ddd*breakpoint_properties*enable.labelString:		Enable
 Ddd*breakpoint_properties*enable.labelPixmap:	         enable
@@ -4952,6 +4961,7 @@ Ddd*breakpoint_properties*helpString:		\
 @rm WIDGET(Breakpoint Properties)\n\
 \n\
 DESC(Lookup, [lookup the breakpoint.])\n\
+DESC(Print, [print the value of the watched expression.])\n\
 DESC(Enable, [enable the breakpoint.])\n\
 DESC(Disable, [disable the breakpoint.])\n\
 DESC(Temp, [make the breakpoint temporary.])\n\

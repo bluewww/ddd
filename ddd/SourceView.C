@@ -5044,6 +5044,7 @@ struct BreakpointPropertiesInfo {
     Widget dialog;		// The widgets of the properties panel
     Widget title;
     Widget lookup;
+    Widget print;
     Widget enable;
     Widget disable;
     Widget temp;
@@ -5231,6 +5232,7 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
     bool can_enable   = false;
     bool can_disable  = false;
     bool can_maketemp = false;
+    bool can_print    = false;
 
     for (i = 0; i < info->nrs.size(); i++)
     {
@@ -5242,7 +5244,15 @@ void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
 
 	if (bp->dispo() != BPDEL)
 	    can_maketemp = (gdb->type() == GDB);
+
+	if (bp->type() == WATCHPOINT)
+	    can_print = true;
     }
+
+    if (can_print)
+	XtManageChild(info->print);
+    else
+	XtUnmanageChild(info->print);
 
     set_sensitive(info->enable,  can_enable);
     set_sensitive(info->disable, can_disable);
@@ -5331,6 +5341,8 @@ void SourceView::EditBreakpointPropertiesCB(Widget,
     {
 	{ "lookup",    MMPush,
 	  { LookupBreakpointCB,    XtPointer(info) }, 0, &info->lookup },
+	{ "print",     MMPush,
+	  { PrintWatchpointCB,     XtPointer(info) }, 0, &info->print },
 	{ "enable",    MMPush,
 	  { EnableBreakpointsCB,   XtPointer(info) }, 0, &info->enable },
 	{ "disable",   MMPush,
