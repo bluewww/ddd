@@ -318,9 +318,9 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 95{_}disp(lay){W}[^ ]+			RETURN(&rxsingle_display_cmd);
 96{C}(--More--|line{w}{d}).* 		RETURN(&rxspace);
 97Breakpoint{W}{P}\,{W}{A}		RETURN(&rxstopped_addr);
-98{x}?{_}([(]|[{]|record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|interface|union){C}	RETURN(&rxstr_or_cl_begin);
+98{x}?{_}([(]|[{]|record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|interface|union){C}	RETURN(&rxstruct_begin);
 99(>|[[][1-9][0-9]*[]])[ ]          	RETURN(&rxjdbprompt_nothread);
-A0([)]|[}]|end\n|END\n|end;|END;)	RETURN(&rxstr_or_cl_end);
+A0([)]|[}]|end\n|END\n|end;|END;)	RETURN(&rxstruct_end);
 A1{x}?{_}(record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|interface|union){C} RETURN(&rxstruct_keyword_begin);
 A2([Tt]he{W})?[Pp]rogram{W}(exited|terminated|is{W}not{W}being{W}run|no{W}longer{W}exists){C} RETURN(&rxterminated);
 A3{_}(thread|threadgroup|suspend|resume)({W}{C})? RETURN(&rxthread_cmd);
