@@ -683,7 +683,7 @@ CXXOPT = @CXXOPT@
 CXXDEBUG = @CXXDEBUG@
 # Warnings.  (-W -Wall)
 CXXWARNINGS = @CXXWARNINGS@
-# Extras.  (-fexternal-templates -felide-constructors)
+# Extras.  (-felide-constructors)
 CXXSTUFF = @CXXSTUFF@ @X_PERMISSIVE@
 CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS) $(CXXSTUFF)
 
