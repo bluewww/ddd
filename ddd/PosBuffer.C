@@ -977,7 +977,8 @@ void PosBuffer::filter_perl(string& answer)
 
     if (already_read != PosComplete)
     {
-	// Try 'PACKAGE::(FILE:LINE):\n'
+	// Try 'PACKAGE::FUNCTION(FILE:LINE):\n'; FUNCTION is optional
+
 	// INDEX points at the start of a line
 	int index = 0;
 	while (index >= 0 && answer != "")
@@ -988,7 +989,7 @@ void PosBuffer::filter_perl(string& answer)
 	    strip_trailing_space(line);
 		    
 #if RUNTIME_REGEX
-	    static regex rxperlpos("[^(]*::[(][^:]*:[1-9][0-9]*[)]:");
+	    static regex rxperlpos("[^(]*::[^(]*[(][^:]*:[1-9][0-9]*[)]:");
 #endif
 	    if (line.matches(rxperlpos))
 	    {
