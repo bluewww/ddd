@@ -223,7 +223,10 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
 	_current_gdb_command = cmd;
 
 #if LOG_QUEUE
-    clog << "Command " << quote(c.command) << "\n";
+    clog << "Command " << quote(c.command);
+    if (!c.undo_source)
+	clog << "*";
+    clog << "\n";
 #endif
 
     if (gdb->isReadyWithPrompt())
@@ -278,7 +281,7 @@ static void _do_gdb_command(const Command& c, bool is_command = true)
     else
     {
 	send_gdb_command(cmd, c.origin, c.callback, c.extra_callback, c.data, 
-			 c.echo, c.verbose, c.prompt, c.check);
+			 c.echo, c.verbose, c.prompt, c.check, c.undo_source);
     }
     messagePosition = XmTextGetLastPosition(gdb_w);
 }
@@ -320,6 +323,7 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	// Push back remainder into queue
 	given_c.command = given_c.command.after('\n');
 	given_c.priority = COMMAND_PRIORITY_MULTI;
+	given_c.undo_source = false;
 	gdb_command(given_c);
     }
 
@@ -349,6 +353,7 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 
     // Re-enqueue original command
     c.priority = COMMAND_PRIORITY_READY;
+    c.undo_source = false;
     gdb_command(c);
 
     bool continue_after_command = 
@@ -365,6 +370,7 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	cont.command = "cont";
 	cont.callback       = 0;
 	cont.extra_callback = 0;
+	cont.undo_source    = false;
 	cont.priority = COMMAND_PRIORITY_CONT;
 	    
 	gdb_command(cont);
@@ -379,6 +385,14 @@ bool userInteractionSeen()
 {
     return had_user_command;
 }
+
+
+//-----------------------------------------------------------------------------
+// Command groups
+//-----------------------------------------------------------------------------
+
+int CommandGroup::active = 0;
+bool CommandGroup::first_command = true;
 
 
 //-----------------------------------------------------------------------------
@@ -421,12 +435,16 @@ static ostream& operator<<(ostream& os, const CommandQueue& queue)
     bool first = true;
     for (CommandQueueIter i = queue; i.ok(); i = i.next())
     {
+	const Command& c = i();
+
 	if (first)
 	    first = false;
 	else
 	    os << ", ";
 
-	os << quote(i().command) << "<" << i().priority << ">";
+	os << quote(c.command) << "<" << c.priority << ">";
+	if (!c.undo_source)
+	    os << "*";
     }
     return os << "]";
 }
@@ -551,7 +569,7 @@ void gdb_command(const Command& c0)
     processCommandQueue();
 }
 
-void processCommandQueue(XtPointer, XtIntervalId *)
+void processCommandQueue(XtPointer, XtIntervalId *id)
 {
     if (emptyCommandQueue())
 	return;
@@ -570,9 +588,17 @@ void processCommandQueue(XtPointer, XtIntervalId *)
 #endif
     }
 
-    // Try again later...
-    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
-		    200, processCommandQueue, XtPointer(0));
+    static XtIntervalId process_id = 0;
+
+    if (id != 0)
+	process_id = 0;		// Called by timeout
+
+    if (process_id == 0)
+    {
+	// Check again later...
+	process_id = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
+				     200, processCommandQueue, XtPointer(0));
+    }
 }
 
 // Wait for command queue to drain

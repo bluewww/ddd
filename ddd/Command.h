@@ -50,6 +50,24 @@
 #define COMMAND_PRIORITY_READY  9  // Wait until ready
 #define COMMAND_PRIORITY_NOW   10  // Do it now
 
+// Command Groups.  While a command group is active, commands will be
+// undone as a group.
+struct CommandGroup {
+    static int active;
+    static bool first_command;
+
+    CommandGroup()
+    {
+	if (active++ == 0)
+	    first_command = true;
+    }
+
+    ~CommandGroup()
+    {
+	--active;
+    }
+};
+
 // Commands
 struct Command
 {
@@ -62,7 +80,10 @@ struct Command
     bool verbose;		// Flag: issue answer in GDB console?
     bool prompt;		// Flag: issue prompt in GDB console?
     bool check;			// Flag: add extra commands to get GDB state?
+    bool undo_source;		// Flag: individual undo command?
     int priority;		// Priority (highest get executed first)
+
+    static bool undo_source_default; // Default for undo source
 
 private:
     static void clear_origin(Widget w, XtPointer client_data, 
@@ -74,29 +95,38 @@ public:
     Command(const string& cmd, Widget w, OQCProc cb, void *d = 0, 
 	    bool v = false, bool c = false, int p = COMMAND_PRIORITY_SYSTEM)
 	: command(cmd), origin(w), callback(cb), extra_callback(0), data(d), 
-	  echo(v), verbose(v), prompt(v), check(c), priority(p)
+	  echo(v), verbose(v), prompt(v), check(c), 
+	  undo_source(!CommandGroup::active || CommandGroup::first_command), 
+	  priority(p)
     {
 	add_destroy_callback();
+	CommandGroup::first_command = false;
     }
+
     Command(const string& cmd, Widget w = 0)
 	: command(cmd), origin(w), callback(0), extra_callback(0), data(0), 
 	  echo(true), verbose(true), prompt(true), check(true), 
+	  undo_source(!CommandGroup::active || CommandGroup::first_command),
 	  priority(COMMAND_PRIORITY_USER)
     {
 	add_destroy_callback();
+	CommandGroup::first_command = false;
     }
+
     Command(const Command& c)
 	: command(c.command), origin(c.origin), callback(c.callback),
 	  extra_callback(c.extra_callback), data(c.data), 
 	  echo(c.echo), verbose(c.verbose), prompt(c.prompt),
-	  check(c.check), priority(c.priority)
+	  check(c.check), undo_source(c.undo_source), priority(c.priority)
     {
 	add_destroy_callback();
     }
+
     ~Command()
     {
 	remove_destroy_callback();
     }
+
     Command& operator = (const Command& c)
     {
 	if (this != &c)
@@ -112,6 +142,7 @@ public:
 	    verbose        = c.verbose;
 	    prompt         = c.prompt;
 	    check          = c.check;
+	    undo_source    = c.undo_source;
 	    priority       = c.priority;
 
 	    add_destroy_callback();
@@ -130,10 +161,10 @@ public:
 	    && verbose == c.verbose
 	    && prompt == c.prompt
 	    && check == c.check
+	    && undo_source == c.undo_source
 	    && priority == c.priority;
     }
 };
-
 
 // Enqueue COMMAND in command queue
 extern void gdb_command(const Command& command);

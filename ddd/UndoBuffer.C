@@ -352,7 +352,7 @@ void UndoBuffer::add_command(const string& command, bool exec)
     if (!undoing)
     {
 	// Regular command
-	add_status(command_key, c);
+	add_status(command_key, c + "\n" + collector[command_key]);
 	return;
     }
 

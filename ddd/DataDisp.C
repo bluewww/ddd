@@ -3455,6 +3455,8 @@ void DataDisp::new_displaySQ (string display_expression,
 			      bool clustered, bool plotted,
 			      Widget origin, bool verbose, bool do_prompt)
 {
+    CommandGroup cg;
+
     // Check arguments
     if (deferred != DeferAlways && depends_on != "")
     {
@@ -5540,6 +5542,8 @@ bool DataDisp::need_scope()
 
 void DataDisp::process_scope(const string& scope)
 {
+    CommandGroup cg;
+
     // Fetch deferred displays that are in current scope
     IntArray deferred_displays;
     MapRef ref;

@@ -72,6 +72,9 @@ User Interface
   DDD automatically interrupts and resumes debuggee execution.  See the
   `stopAndContinue' resource.
 
+- Undo and Redo now work on logical groups of commands.  If an action
+  caused multiple commands, Undo will undo them with one click.
+
 - Interrupts (Ctrl+C) from the controlling TTY can be issued multiple times.
 
 - In LessTif, combo boxes (drop-down text boxes) no longer shrink.

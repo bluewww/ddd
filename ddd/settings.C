@@ -641,6 +641,8 @@ static void ApplyThemesCB(Widget, XtPointer, XtPointer)
 static void ResetThemesCB(Widget w, XtPointer client_data, 
 			  XtPointer call_data)
 {
+    CommandGroup cg;
+
     data_disp->set_theme_manager(ThemeManager(app_data.themes));
     update_themes();
     ApplyThemesCB(w, client_data, call_data);
@@ -2313,6 +2315,8 @@ void update_settings()
 // Reset settings
 static void ResetSettingsCB(Widget, XtPointer, XtPointer)
 {
+    CommandGroup cg;
+
     for (int i = 0; i < settings_entries.size(); i++)
     {
 	Widget entry = settings_entries[i];
@@ -2339,6 +2343,8 @@ static void ResetSettingsCB(Widget, XtPointer, XtPointer)
 // Reset signals
 static void ResetSignalsCB(Widget, XtPointer, XtPointer)
 {
+    CommandGroup cg;
+
     string command = "";
 
     for (int i = 0; i < signals_entries.size(); i++)
@@ -2357,6 +2363,8 @@ static void ResetSignalsCB(Widget, XtPointer, XtPointer)
 // Apply settings
 static void ApplySettingsCB(Widget, XtPointer, XtPointer)
 {
+    CommandGroup cg;
+
     for (int i = 0; i < settings_entries.size(); i++)
     {
 	if (settings_entry_types[i] != TextFieldEntry)

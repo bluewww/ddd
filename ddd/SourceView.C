@@ -584,6 +584,8 @@ void SourceView::line_popup_set_tempCB (Widget w,
 void SourceView::set_bp(const string& a, bool set, bool temp, 
 			const string& cond, Widget w)
 {
+    CommandGroup cg;
+
     int new_bps = max_breakpoint_number_seen + 1;
     string address = a;
 
@@ -798,6 +800,8 @@ void SourceView::line_popup_temp_n_contCB (Widget w,
 
 void SourceView::temp_n_cont(const string& a, Widget w)
 {
+    CommandGroup cg;
+
     string address = a;
 
     switch (gdb->type())
@@ -945,6 +949,8 @@ bool SourceView::move_pc(const string& a, Widget w)
 
 bool SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
 {
+    CommandGroup cg;
+
     string address = a;
 
     // clog << "Moving breakpoint " << bp_nr << " to " << address << '\n';
@@ -981,12 +987,7 @@ bool SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
     string commands(os);
     commands.gsub("@0@", itostring(new_bp_nr));
 
-    while (commands != "")
-    {
-	string command = commands.before('\n');
-	gdb_command(command, w);
-	commands = commands.after('\n');
-    }
+    gdb_command(commands, w);
 
     if (copy)
     {
@@ -1008,6 +1009,8 @@ bool SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
 void SourceView::_set_bps_cond(IntArray& _nrs, string cond,
 			       int make_false, Widget w)
 {
+    CommandGroup cg;
+
     // _NRS might be changed via MOVE_BREAKPOINT_PROPERTIES, 
     // so we make a copy
     IntArray nrs(_nrs);
@@ -1053,12 +1056,7 @@ void SourceView::_set_bps_cond(IntArray& _nrs, string cond,
 		commands.gsub("@0@", itostring(new_bp_nr));
 	    }
 
-	    while (commands != "")
-	    {
-		string command = commands.before('\n');
-		gdb_command(command, w);
-		commands = commands.after('\n');
-	    }
+	    gdb_command(commands, w);
 
 	    if (gdb->has_numbered_breakpoints())
 	    {
@@ -1153,6 +1151,8 @@ bool SourceView::all_bps(const IntArray& nrs)
 
 void SourceView::enable_bps(IntArray& nrs, Widget w)
 {
+    CommandGroup cg;
+
     if (gdb->has_enable_command())
     {
 	gdb_command(gdb->enable_command(all_numbers(nrs)), w);
@@ -1166,6 +1166,8 @@ void SourceView::enable_bps(IntArray& nrs, Widget w)
 
 void SourceView::disable_bps(IntArray& nrs, Widget w)
 {
+    CommandGroup cg;
+
     if (gdb->has_disable_command())
     {
 	gdb_command(gdb->disable_command(all_numbers(nrs)), w);
@@ -1179,6 +1181,8 @@ void SourceView::disable_bps(IntArray& nrs, Widget w)
 
 void SourceView::delete_bps(IntArray& nrs, Widget w)
 {
+    CommandGroup cg;
+
     if (gdb->recording() && gdb->has_clear_command())
     {
 	// While recording, prefer commands without explicit numbers.
@@ -6189,6 +6193,8 @@ void SourceView::SetBreakpointIgnoreCountCB(Widget w,
 void SourceView::SetBreakpointIgnoreCountNowCB(XtPointer client_data, 
 					       XtIntervalId *id)
 {
+    CommandGroup cg;
+
     BreakpointPropertiesInfo *info = 
 	(BreakpointPropertiesInfo *)client_data;
 
@@ -6321,6 +6327,8 @@ void SourceView::RecordingHP(Agent *, void *client_data, void *call_data)
 void SourceView::set_bp_commands(IntArray& nrs, const StringArray& commands,
 				 Widget origin)
 {
+    CommandGroup cg;
+
     for (int i = 0; i < nrs.size(); i++)
     {
 	// Check for breakpoint
@@ -6461,6 +6469,7 @@ void SourceView::EditBreakpointCommandsCB(Widget w,
 	if (!cmd.contains('\n', -1))
 	    cmd += '\n';
 	StringArray commands;
+
 	while (cmd != "")
 	{
 	    string c = cmd.before('\n');
@@ -9770,6 +9779,8 @@ void SourceView::reset_done(const string&, void *)
 
 void SourceView::reset()
 {
+    CommandGroup cg;
+
     bool reset_later = false;
 
     // Delete all breakpoints

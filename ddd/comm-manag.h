@@ -56,7 +56,8 @@ void start_gdb(bool config = true);
 // extra GDB commands to get GDB state.
 void send_gdb_command(string cmd, Widget origin,
 		      OQCProc callback, OACProc extra_callback, void *data,
-		      bool echo, bool verbose, bool prompt, bool check);
+		      bool echo, bool verbose, bool prompt, bool check,
+		      bool undo_source);
 
 // Return FALSE if ANSWER is an error message indicating an unknown command
 bool is_known_command(const string& answer);
