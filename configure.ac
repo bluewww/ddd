@@ -455,14 +455,7 @@ if test "$ddd_have_rx" != true; then
     AC_CONFIG_SUBDIRS([librx])
 fi
 if test "$ddd_have_libiberty" != true; then
-    # Avoid calling config.guess again.  In libiberty, this destroys dummy.c.
-    old_ac_configure_args="$ac_configure_args"
-    case "$ac_configure_args" in
-    *--host*) ;;
-    *) ac_configure_args="$ac_configure_args --build=$build --target=$target";;
-    esac
     AC_CONFIG_SUBDIRS([libiberty])
-    ac_configure_args="$old_ac_configure_args"
 fi
 if test "$ddd_have_termcap" != true; then
     AC_CONFIG_SUBDIRS([termcap])
