@@ -1889,6 +1889,8 @@ int GDBAgent::default_index_base() const
     case LANGUAGE_OTHER:
 	return 0;
     }
+
+    return 0;			// Never reached
 }
 
 // Return assignment command
