@@ -91,7 +91,7 @@ Volunteers for fixing these and other bugs are welcome!
 056. `Select All' does not select hints.
 
 060. Frank Dohrmann <frank@kaa.desy.de> says that on his Sun-Sparc
-     10/41 with SunOs 4.1.3, using `lpr' instead of `lp -c' to print
+     10/41 with SunOS 4.1.3, using `lpr' instead of `lp -c' to print
      the graph hangs up DDD.
 
 062. Seth J. Bradley <sbradley@scic.intel.com> says that DDD only

@@ -824,6 +824,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XmNblinkRate,
+	XmCBlinkRate,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, blink_rate),
+	XmRImmediate,
+	XtPointer(500)
+    },
+
+    {
 	XtNungrabMousePointer,
 	XtCUngrabMousePointer,
 	XmRBoolean,

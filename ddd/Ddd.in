@@ -541,6 +541,11 @@ Ddd*clearDocDelay:		1000
 Ddd*clearTipDelay:		50
 
 
+! Blink rate (in ms) of the status LED.  A value of 0 prevents 
+! the status LED from blinking.
+Ddd.blinkRate:			500
+
+
 ! The maximum length of a data display title (in characters)
 ! Longer names are replaced by `..'; `foo->bar->blue' becomes `foo->..->blue'.
 Ddd*maxDisplayTitleLength:	20
@@ -2775,18 +2780,38 @@ Ddd*graph_cmd_w.graph_cmd_area*delete.documentationString:	\
 
 
 !-----------------------------------------------------------------------------
-! Source view
+! Status line
 !-----------------------------------------------------------------------------
 
-Ddd*status_w.alignment:			XmALIGNMENT_BEGINNING
-Ddd*status_w.marginWidth:		0
-Ddd*status_w.marginHeight:		0
-Ddd*status_w.labelString:		Ready.
-Ddd*status_w.helpString: \
+Ddd*status_form*helpString: \
 @rm This is the @sl Status Line @rm.\n\
 \n\
 It shows the last message of the inferior debugger\n\
 as well as short @DDD@ messages.
+
+Ddd*status_form*borderWidth:		0
+
+Ddd*status_form.status.alignment:	XmALIGNMENT_BEGINNING
+Ddd*status_form.status.marginWidth:	0
+Ddd*status_form.status.marginHeight:	0
+Ddd*status_form.status.marginTop:	0
+Ddd*status_form.status.marginBottom:	0
+Ddd*status_form.status.labelString:	Ready.
+
+Ddd*status_form.led.marginWidth:	0
+Ddd*status_form.led.marginHeight:	0
+Ddd*status_form.led.marginTop:		0
+Ddd*status_form.led.marginBottom:	0
+Ddd*status_form.led.spacing:		0
+Ddd*status_form.led.labelString:
+Ddd*status_form.led.set:		true
+Ddd*status_form.led.sensitive:		false
+Ddd*status_form.led.selectColor:	dark green
+
+
+!-----------------------------------------------------------------------------
+! Source view
+!-----------------------------------------------------------------------------
 
 Ddd*source_text_w.columns:		88
 Ddd*source_text_w.rows:			24

@@ -268,6 +268,10 @@ static void check_emergencies();
 // Create status line
 static void create_status(Widget parent);
 
+// Status LED
+static void blink(bool set);
+
+
 //-----------------------------------------------------------------------------
 // Xt Stuff
 //-----------------------------------------------------------------------------
@@ -1002,8 +1006,11 @@ static Widget arg_cmd_w;
 // GDB input/output widget
 Widget gdb_w;
 
-// GDB status indicator (only used if separate source window is used)
+// GDB status line
 Widget status_w;
+
+// GDB activity led
+static Widget led_w;
 
 // Last output position
 XmTextPosition promptPosition;
@@ -1790,12 +1797,6 @@ int main(int argc, char *argv[])
     // single-processor machines since DDD is idle when the debugger
     // starts.
     wait_until_mapped(command_shell);
-
-    // Give some `dummy' status message.  Some Motif versions limit
-    // the size of the status window to the length of the very first
-    // message, so we give some huge string at the beginning.
-    set_status(string("Welcome to " DDD_NAME " " DDD_VERSION "!") 
-	       + replicate(' ', 1024));
 
     // Create command tool
     if (app_data.tool_buttons && strlen(app_data.tool_buttons) > 0)
@@ -2594,8 +2595,35 @@ static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer)
 
 static void create_status(Widget parent)
 {
-    status_w = verify(XmCreateLabel(parent, "status_w", NULL, 0));
+    Arg args[10];
+    int arg = 0;
+    XtSetArg(args[arg], XmNresizePolicy, XmRESIZE_ANY); arg++;
+    Widget status_form = 
+	verify(XmCreateForm(parent, "status_form", args, arg));
+    XtManageChild(status_form);
+
+    // Give some `dummy' status message.  Some Motif versions limit
+    // the size of the status window to the length of the very first
+    // message, so we give some huge string at the beginning.
+    MString msg("Welcome to " DDD_NAME " " DDD_VERSION "!", "rm");
+    msg += MString(replicate(' ', 120), "rm");
+
+    arg = 0;
+    XtSetArg(args[arg], XmNlabelString,      msg.xmstring()); arg++;
+    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNresizable,        True); arg++;
+    status_w = verify(XmCreateLabel(status_form, "status", args, arg));
     XtManageChild(status_w);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNtopAttachment,      XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNbottomAttachment,   XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNrightAttachment,    XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNresizable,          True); arg++; 
+    led_w = verify(XmCreateToggleButton(status_form, "led", args, arg));
+    XtManageChild(led_w);
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
@@ -2604,11 +2632,49 @@ static void create_status(Widget parent)
     XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
     int new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
 				    size.height, unit_type);
-    XtVaSetValues(status_w,
+    XtVaSetValues(led_w,
+		  XmNheight, new_height,
+		  NULL);
+    XtVaSetValues(status_form,
 		  XmNpaneMaximum, new_height,
 		  XmNpaneMinimum, new_height,
 		  NULL);
 }
+
+
+//-----------------------------------------------------------------------------
+// Handle Status LED
+//-----------------------------------------------------------------------------
+
+static bool blinker_active      = false; // True iff status LED is active
+static XtIntervalId blink_timer = 0;     // Timer used for blinking
+
+static void BlinkCB(XtPointer client_data, XtIntervalId *)
+{
+    Boolean new_state = Boolean(client_data);
+    XtVaSetValues(led_w, XmNfillOnSelect, new_state, NULL);
+    XFlush(XtDisplay(led_w));
+
+    if ((blinker_active || new_state) && app_data.blink_rate > 0)
+    {
+	blink_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(led_w),
+				      app_data.blink_rate, BlinkCB, 
+				      XtPointer(!new_state));
+    }
+    else
+    {
+	blink_timer = 0;
+    }
+}
+
+static void blink(bool set)
+{
+    blinker_active = set;
+
+    if (blink_timer == 0)
+	BlinkCB(XtPointer(set), (XtIntervalId *)0);
+}
+
 
 //-----------------------------------------------------------------------------
 // Helpers
@@ -2671,6 +2737,8 @@ void gdb_ready_for_questionHP (void*, void*, void* call_data)
     set_sensitive(threads_w,   gdb_ready && gdb->type() == GDB);
     set_sensitive(infos_w,     gdb_ready && gdb->type() == GDB);
     set_sensitive(settings_w,  gdb_ready);
+
+    blink(!gdb_ready);
 }
 
 void gdb_ready_for_cmdHP (void *, void *, void *)

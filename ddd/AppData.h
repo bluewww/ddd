@@ -187,6 +187,8 @@
 #define XtNclearDocDelay         "clearDocDelay"
 #define XtNclearTipDelay         "clearTipDelay"
 #define XtCClearDelay            "ClearDelay"
+// #define XmNblinkRate          "blinkRate"
+// #define XmCBlinkRate          "BlinkRate"
 #define XtNungrabMousePointer    "ungrabMousePointer"
 #define XtCUngrabMousePointer    "UngrabMousePointer"
 #define XtNdddinitVersion        "dddinitVersion"
@@ -273,6 +275,7 @@ struct AppData {
     int     value_doc_delay;
     int     clear_doc_delay;
     int     clear_tip_delay;
+    int     blink_rate;
     Boolean ungrab_mouse_pointer;
     String  dddinit_version;
     String  app_defaults_version;

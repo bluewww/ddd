@@ -134,9 +134,6 @@ Volunteers for these and other projects are welcome!
      (i.e. comments and graphics that are associated with certain
      variable/function names in the code).
 
-073. While the debuggee is running, show some image sequence in the DDD
-     window (similar to Netscape :-)
-
 075. Andre Cormeau <ac@enci.ucalgary.ca> says:
 
      Apparently ddd does not fully support fortran. A problem is in
@@ -299,7 +296,5 @@ Volunteers for these and other projects are welcome!
 
 135. Have node reference points be at the upper left instead of the
      center.
-
-136* Have a LED-like display that blinks while DDD talks with GDB.
  
 137. (Insert your project idea here)

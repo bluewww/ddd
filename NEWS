@@ -22,6 +22,8 @@ DDD 2.1 [in development; scheduled for April, 1997]
       small window to raise showing the current variable value.  (optional)
     - The info shown in the tips is also displayed in the status line.
     - The status line has moved to the bottom.  (can be restored)
+    - The status line contains a small LED-like indicator, blinking
+      whenever the inferior debugger is busy.
     - The register window can display floating-point registers.
     - The `Preferences' panel has been extended and reworked:
       + Button tips and Value tips can be enabled and disabled.
