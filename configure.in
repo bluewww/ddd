@@ -36,7 +36,7 @@ host_tools="byacc flex bison binutils ld gas gcc gdb make patch
 	    prms send-pr gprof gdbtest tgas etc expect dejagnu sim
             m4 autoconf ispell grep diff rcs cvs fileutils shellutils
 	    textutils wdiff find emacs emacs19 uudecode hello tar gzip indent
-	    recode release sed utils termcap ddd"
+	    recode release sed utils termcap"
 
 
 # these libraries are built for the target environment, and are built after
@@ -52,7 +52,7 @@ target_libs="libm xiberty libgloss newlib libio librx libstdc++ libg++"
 # list belongs in this list.  those programs are also very likely
 # candidates for the "native_only" list which follows
 #
-target_tools="examples groff"
+target_tools="examples groff ddd"
 
 ################################################################################
 
