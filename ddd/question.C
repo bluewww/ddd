@@ -164,7 +164,7 @@ static void wait_for_gdb_reply(GDBReply *reply, int timeout)
 // or maximal time in seconds
 string gdb_question(const string& command, int timeout, bool verbatim)
 {
-    if (command == "")
+    if (command.empty())
 	return "";
 
     if (gdb_question_running || !can_do_gdb_command() || gdb->recording())

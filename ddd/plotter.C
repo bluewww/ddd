@@ -410,7 +410,7 @@ static void configure_plot(PlotWindowInfo *plot)
     set_sensitive(export_w, can_export);
 
     // The remainder requires settings
-    if (plot->settings == "")
+    if (plot->settings.empty())
     {
 	// No settings yet
 	if (plot->settings_timer == 0)
@@ -1198,7 +1198,7 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
     string target = get_file(w, client_data, call_data);
-    if (target == "")
+    if (target.empty())
 	return;
 
     const StringArray& titles  = plot->plotter->data_titles();
@@ -1206,7 +1206,7 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     string source = "";
     string title  = "";
-    for (int i = 0; source == "" && i < sources.size(); i++)
+    for (int i = 0; source.empty() && i < sources.size(); i++)
     {
 	if (sources[i] != "")
 	{
@@ -1215,7 +1215,7 @@ static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
 	}
     }
     
-    if (source == "")
+    if (source.empty())
 	return;			// This should not happen
 
     if (access(target.chars(), W_OK) == 0 && is_regular_file(target))

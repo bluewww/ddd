@@ -155,7 +155,7 @@ static void select_from_gdb(string& question, string& reply)
     manage_and_raise(gdb_selection_dialog);
 
     selection_reply = "";
-    while (selection_reply == "" 
+    while (selection_reply.empty() 
 	   && gdb->running() && !gdb->isReadyWithPrompt())
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), XtIMAll);
 
@@ -169,7 +169,7 @@ static void select_file(const string& /* question */, string& reply)
     gdbOpenFileCB(find_shell(), 0, 0);
 
     open_file_reply = "";
-    while (open_file_reply == "" 
+    while (open_file_reply.empty() 
 	   && gdb->running() && !gdb->isReadyWithPrompt())
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), XtIMAll);
 

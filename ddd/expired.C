@@ -51,7 +51,7 @@ inline double difftime(time_t time1, time_t time0) { return time1 - time0; }
 static time_t ddd_expiration_time()
 {
     string expiration_date = DDD_EXPIRES;
-    if (expiration_date == "")
+    if (expiration_date.empty())
     {
 	// No expiration date given
 	return 0;

@@ -513,7 +513,7 @@ bool add_running_arguments(string& cmd, Widget origin)
 
     ProgramInfo info;
 
-    if (args == "" && gdb->has_debug_command())
+    if (args.empty() && gdb->has_debug_command())
     {
 	// JDB 1.1 requires at least a class name after the `run' command.
 	cmd += " " + info.file;

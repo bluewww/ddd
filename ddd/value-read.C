@@ -488,7 +488,7 @@ static void read_token(const char *value, int& pos)
 // Read next token from VALUE.
 string read_token(string& value)
 {
-    if (value == "")
+    if (value.empty())
 	return "";
 
     int pos = 0;
@@ -539,7 +539,7 @@ bool is_delimited(const string& value)
     if (value.contains('\n', 0)
 	|| value.contains(',', 0)
 	|| value.contains(';', 0)
-	|| value == ""
+	|| value.empty()
 	|| value.matches(rxwhite))
 	return true;
 
@@ -914,7 +914,7 @@ string read_member_name (string& value, bool picky)
 	// Should we treat this as anonymous union?  (FIXME)
     }
 
-    if (member_name == "")
+    if (member_name.empty())
 	return "";
 
     if (!is_BaseClass_name(member_name))
@@ -959,7 +959,7 @@ string read_member_name (string& value, bool picky)
 
     read_leading_junk (member_name);
 
-    if (member_name == "")
+    if (member_name.empty())
     {
 	// Anonymous union
 	return " ";

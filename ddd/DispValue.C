@@ -319,7 +319,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 
     mytype = given_type;
     if (mytype == UnknownType && 
-	(parent == 0 || parent->type() == List) && print_name == "")
+	(parent == 0 || parent->type() == List) && print_name.empty())
 	mytype = Text;
     if (mytype == UnknownType && parent == 0 && is_user_command(print_name))
 	mytype = List;
@@ -575,7 +575,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    bool picky = (mytype == Struct);
 	    string member_name = read_member_name(value, picky);
 
-	    if (member_name == "")
+	    if (member_name.empty())
 	    {
 		// Some struct stuff that is not a member
 		DispValue *dv = parse_child(depth, value, myfull_name, "");
@@ -689,7 +689,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		    }
 		}
 		
-		if (full_name == "")
+		if (full_name.empty())
 		{
 		    // Ordinary member
 		    full_name = member_prefix + member_name + member_suffix;
@@ -815,7 +815,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		dv->unlink();
 		break;
 	    }
-	    else if (dv->type() == Simple && dv->value() == "")
+	    else if (dv->type() == Simple && dv->value().empty())
 	    {
 		// Empty value - ignore
 		dv->unlink();

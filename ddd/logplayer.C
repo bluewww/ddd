@@ -201,7 +201,7 @@ void logplayer(const string& logname)
 
 	    if (log_line.contains("<- ", 0))
 	    {
-		assert(out == "");
+		assert(out.empty());
 
 		// Output line
 		out = unquote(log_line.from('"'));
@@ -223,9 +223,9 @@ void logplayer(const string& logname)
 		    string p = ddd_line.after(0);
 		    if (p != "" || c == ':')
 			pattern = p;
-		    if (pattern == "" ||
+		    if (pattern.empty() ||
 			(c == ':' && command_no == atoi(pattern.chars())) ||
-			(c == '/' && (pattern == "" || in.contains(pattern))))
+			(c == '/' && (pattern.empty() || in.contains(pattern))))
 		    {
 			// Report line
 			char buffer[256];
@@ -343,7 +343,7 @@ void logplayer(const string& logname)
 		    log.seekg(scan_start);
 		    command_no = command_no_start;
 		}
-		else if (ddd_line == in || ddd_line == "!" || ddd_line == "")
+		else if (ddd_line == in || ddd_line == "!" || ddd_line.empty())
 		{
 		    // Okay, got it
 		    scanning = false;
@@ -363,7 +363,7 @@ void logplayer(const string& logname)
 	    if (scanning && wrapped)
 	    {
 		// Nothing found.  Don't reply.
-		if (echoing && (ddd_line == "" || isalpha(ddd_line[0])))
+		if (echoing && (ddd_line.empty() || isalpha(ddd_line[0])))
 		    put(ddd_line + "\r\n");
 
 		scanning = false;

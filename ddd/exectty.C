@@ -245,7 +245,7 @@ static void launch_separate_tty(string& ttyname, pid_t& pid, string& term,
     }
 
     // Sanity check
-    if (ttyname == "" || ttyname[0] != '/')
+    if (ttyname.empty() || ttyname[0] != '/')
 	pid = -1;
 
     // Waiting is over
@@ -288,7 +288,7 @@ static void get_args(const string& command, string& base, string& args)
 	args = command.after(rxwhite);
     }
 
-    if (args == "" && gdb->type() == GDB)
+    if (args.empty() && gdb->type() == GDB)
     {
 	args = gdb_question("show args");
 
@@ -349,7 +349,7 @@ static int gdb_set_tty(string tty_name = "",
 		       Widget origin = 0)
 {
     bool silent = false;
-    if (tty_name == "")
+    if (tty_name.empty())
     {
 	tty_name = gdb->slave_tty();
 	silent = true;
@@ -573,7 +573,7 @@ static void redirect_process(string& command,
 	// In GDB, COMMAND is interpreted by the user's shell.
 	static string shell;
 
-	if (shell == "")
+	if (shell.empty())
 	{
 	    // The shell is determined only once, as it cannot change.
 	    if (remote_gdb())
@@ -663,7 +663,7 @@ static void redirect_process(string& command,
     string new_args;
     if (gdb_redirection != "" && !has_redirection(args, gdb_redirection))
     {
-	if (args == "")
+	if (args.empty())
 	    new_args = gdb_redirection;
 	else
 	    new_args = gdb_redirection + " " + args;
@@ -832,12 +832,12 @@ static void handle_rerun(string& command)
     get_args(command, base, args);
     bool rerun = base.contains("re", 0);
 
-    if (rerun && !gdb->rerun_clears_args() && args == "")
+    if (rerun && !gdb->rerun_clears_args() && args.empty())
     {
 	// `rerun' without args - Use last arguments
 	command = base + " " + last_args;
     }
-    else if (!rerun && gdb->rerun_clears_args() && args == "")
+    else if (!rerun && gdb->rerun_clears_args() && args.empty())
     {
 	// `run' without args - Use last arguments
 	command = base + " " + last_args;

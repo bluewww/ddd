@@ -75,7 +75,7 @@ static bool is_archive(const string& loc)
 static string concat_dir(const string& dir, const string& file)
 {
     string mask;
-    if (dir == "")
+    if (dir.empty())
 	mask = file;
     else if (dir.contains('/', -1))
 	mask = dir + file;
@@ -108,7 +108,7 @@ static void get_java_classes(const string& dir, const string& base,
 
     StatusDelay delay("Scanning " + quote(dir) + " for classes");
 
-    assert((base == "" && dir == "") || dir.contains(base, 0));
+    assert((base.empty() && dir.empty()) || dir.contains(base, 0));
 
     string mask = concat_dir(dir, "*" JAVA_CLASS_SUFFIX);
 
@@ -130,7 +130,7 @@ static void get_java_classes(const string& dir, const string& base,
 
 	    // Build a class name from file name
 	    string class_name;
-	    if (base == "")
+	    if (base.empty())
 	    {
 		class_name = file;
 	    }
@@ -380,7 +380,7 @@ static string _java_class_file(const string& class_name, bool search_classes)
 	    }
 
 	    string file_name;
-	    if (loc == "" || loc == ".")
+	    if (loc.empty() || loc == ".")
 	    {
 		file_name = base;
 	    }
@@ -462,7 +462,7 @@ string java_class_file(const string& class_name, bool search_classes)
     StatusDelay delay("Searching for " + quote(class_name) + " source");
 
     string c = _java_class_file(class_name, search_classes);
-    if (c == "")
+    if (c.empty())
 	delay.outcome = "failed";
     else
 	delay.outcome = quote(c);

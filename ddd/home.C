@@ -46,7 +46,7 @@ const char *gethome()
     static string home = "";
 
     // Try using $HOME
-    if (home == "")
+    if (home.empty())
     {
 	const char *h = getenv("HOME");
 	if (h != 0)
@@ -54,7 +54,7 @@ const char *gethome()
     }
 
     // Try using passwd entry
-    if (home == "")
+    if (home.empty())
     {
 	struct passwd *pw = 0;
 
@@ -71,7 +71,7 @@ const char *gethome()
     }
 
     // Revert to current dir
-    if (home == "")
+    if (home.empty())
 	home = ".";
 
     return home.chars();

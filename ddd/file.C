@@ -545,7 +545,7 @@ string get_file(Widget w, XtPointer, XtPointer call_data)
     string filename = s;
     XtFree(s);
 
-    if (filename == "" || filename[0] != '/')
+    if (filename.empty() || filename[0] != '/')
     {
 	String dir;
 	if (!XmStringGetLtoR(cbs->dir, MSTRING_DEFAULT_CHARSET, &dir))
@@ -598,7 +598,7 @@ static void open_file(const string& filename)
 static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
 {
     string filename = get_file(w, client_data, call_data);
-    if (filename == "")
+    if (filename.empty())
 	return;
 
     XtUnmanageChild(w);
@@ -614,7 +614,7 @@ static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
 static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 {
     string corefile = get_file(w, client_data, call_data);
-    if (corefile == "")
+    if (corefile.empty())
 	return;
 
     ProgramInfo info;
@@ -652,7 +652,7 @@ static void openSourceDone(Widget w, XtPointer client_data,
 			   XtPointer call_data)
 {
     string filename = get_file(w, client_data, call_data);
-    if (filename == "")
+    if (filename.empty())
 	return;
 
     XtUnmanageChild(w);
@@ -866,7 +866,7 @@ ProgramInfo::ProgramInfo()
 	if (file.matches(rxint))
 	    file = "";		// Invoked with a constant expression
 
-	if (file == "")
+	if (file.empty())
 	{
 	    // Not invoked with a program?  Use the current file, then.
 	    file = source_view->file_of_cursor();
@@ -881,7 +881,7 @@ ProgramInfo::ProgramInfo()
 	if (file.matches(rxint))
 	    file = "";		// Invoked with a constant expression
 
-	if (file == "")
+	if (file.empty())
 	{
 	    // Not invoked with a program?  Use the current file, then.
 	    file = source_view->file_of_cursor();
@@ -1292,7 +1292,7 @@ static void openProcessDone(Widget w, XtPointer client_data,
 	return;
     }
 
-    if (info.file == NO_GDB_ANSWER || info.file == "")
+    if (info.file == NO_GDB_ANSWER || info.file.empty())
     {
 	post_error("No program.", "no_program", w);
 	return;
@@ -1321,7 +1321,7 @@ static void warn_if_no_program(Widget popdown)
 {
     ProgramInfo info;
 
-    if (info.file == "")
+    if (info.file.empty())
     {
 	Widget warning = post_warning("Please open a program first.", 
 				      "no_program", popdown);
@@ -1408,7 +1408,7 @@ static void SelectClassCB(Widget w, XtPointer client_data,
     ListSetAndSelectPos(w, pos);
 
     string cls = get_item(w, client_data, call_data);
-    if (cls == "")
+    if (cls.empty())
 	set_status("");
     else
 	set_status(source_view->full_path(java_class_file(cls)));
@@ -1442,7 +1442,7 @@ static void openClassDone(Widget w, XtPointer client_data,
 			  XtPointer call_data)
 {
     string cls = get_item(w, client_data, call_data);
-    if (cls == "")
+    if (cls.empty())
     {
 	gdbUpdateClassesCB(w, client_data, call_data);	
 	return;
@@ -1489,7 +1489,7 @@ void get_gdb_sources(StringArray& sources_list)
 	    string line = ans.before('\n');
 	    ans = ans.after('\n');
 
-	    if (line == "" || line.contains(':', -1))
+	    if (line.empty() || line.contains(':', -1))
 		continue;
 
 	    line.gsub(", ", "\n");
@@ -1592,7 +1592,7 @@ static void update_sources(Widget sources, Widget filter)
     XtFree(pattern_s);
 
     strip_space(pattern);
-    if (pattern == "")
+    if (pattern.empty())
 	pattern = "*";
     XmTextFieldSetString(filter, CONST_CAST(char *,pattern.chars()));
 

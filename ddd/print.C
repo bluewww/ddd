@@ -315,7 +315,7 @@ void PrintAgainCB(Widget w, XtPointer client_data, XtPointer)
 	XtFree(file);
 
 	strip_trailing_space(f);
-	if (f == "")
+	if (f.empty())
 	    return;
 
 	if (access(f.chars(), W_OK) || !is_regular_file(f) || override)

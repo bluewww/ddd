@@ -122,7 +122,7 @@ void VSLLib::update(std::istream& s)
     vsllib = this;
 
     vslstream = &s;
-    if (vslfilename == "")
+    if (vslfilename.empty())
 	vslfilename = _lib_name;
 
     // Read it
@@ -150,7 +150,7 @@ void VSLLib::update(const string& lib_name)
 {
     if (VSEFlags::verbose)
     {
-	if (lib_name == "")
+	if (lib_name.empty())
 	    std::cout << "standard input";
 	else
 	    std::cout << lib_name;

@@ -396,7 +396,7 @@ DebuggerInfo::DebuggerInfo(int argc, const char * const argv[])
 		dir = path;
 	    path = path.after(':');
 
-	    if (dir == "")
+	    if (dir.empty())
 		dir = ".";
 	    if (!dir.contains('/', -1))
 		dir += '/';
@@ -458,7 +458,7 @@ DebuggerInfo::DebuggerInfo(int argc, const char * const argv[])
 		    dir = classpath;
 		classpath = classpath.after(':');
 
-		if (dir == "")
+		if (dir.empty())
 		    dir = ".";
 		if (!dir.contains('/', -1))
 		    dir += '/';

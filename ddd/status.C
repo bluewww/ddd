@@ -361,9 +361,9 @@ static bool is_prefix(const MString& m1, const MString& m2)
 	{
 	case XmSTRING_COMPONENT_CHARSET:
 	{
-	    if (cs1 == "")	// In LessTif 0.82, XmStringGetNextComponent()
+	    if (cs1.empty())	// In LessTif 0.82, XmStringGetNextComponent()
 		cs1 = text1;	// swaps CS and TEXT.  Work around this.
-	    if (cs2 == "")
+	    if (cs2.empty())
 		cs2 = text2;
 
 	    if (cs1 != cs2)
@@ -379,9 +379,9 @@ static bool is_prefix(const MString& m1, const MString& m2)
 	case XmSTRING_COMPONENT_WIDECHAR_TEXT:
 #endif
 	{
-	    if (text1 == "")	// In LessTif 0.82, XmStringGetNextComponent()
+	    if (text1.empty())	// In LessTif 0.82, XmStringGetNextComponent()
 		text1 = cs1;	// swaps CS and TEXT.  Work around this.
-	    if (text2 == "")
+	    if (text2.empty())
 		text2 = cs2;
 
 	    if (!text2.contains(text1, 0))
@@ -472,11 +472,11 @@ void set_status_from_gdb(const string& text)
     string message = s + messagePosition;
     XtFree(s);
 
-    if (message == "" && text.contains('\n'))
+    if (message.empty() && text.contains('\n'))
 	message = text;
 
     if (show_next_line_in_status && 
-	(message == "" || message[message.length() - 1] != '\n'))
+	(message.empty() || message[message.length() - 1] != '\n'))
 	return;
 
     // Skip prompt and uncomplete lines
@@ -485,7 +485,7 @@ void set_status_from_gdb(const string& text)
 	message = message.before(idx);
 
     strip_trailing_newlines(message);
-    if (message == "" && text.contains('\n'))
+    if (message.empty() && text.contains('\n'))
 	message = text;
 
     if (show_next_line_in_status)
@@ -505,7 +505,7 @@ void set_status_from_gdb(const string& text)
 
     strip_trailing_newlines(message);
     message.gsub('\t', ' ');
-    if (message == "")
+    if (message.empty())
 	return;
 
     // Don't log this stuff - it's already logged

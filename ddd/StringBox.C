@@ -195,7 +195,7 @@ void StringBox::_print(std::ostream& os,
 		       const PrintGC& gc) const
 {
     // Don't draw empty strings
-    if (str() == "")
+    if (str().empty())
 	return;
 
     BoxPoint origin = region.origin() ;

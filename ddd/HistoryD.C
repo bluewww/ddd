@@ -50,7 +50,7 @@ char HistoryDialog_rcsid[] =
 
 static bool try_arg(const string& cmd, const string& prefix_, string& arg)
 {
-    if (prefix_ == "")
+    if (prefix_.empty())
 	return false;		// No such command
     string prefix( prefix_ );
     if (!prefix.contains(" ", -1))

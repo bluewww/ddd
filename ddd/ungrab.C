@@ -119,7 +119,7 @@ static bool running_x_program()
     // Every X program has an int variable named `_Xdebug'.
     string display_value = gdbValue("_Xdebug");
 
-    if (display_value == "")
+    if (display_value.empty())
 	return false;		// No X program
 
     // We may check for active connections here (is the display

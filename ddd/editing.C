@@ -331,7 +331,7 @@ static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
     if (processed)
     {
 	int history = -1;
-	if (isearch_string == "" || current_line().contains(isearch_string))
+	if (isearch_string.empty() || current_line().contains(isearch_string))
 	{
 	    // Search string found in current line
 	    history = -1;
@@ -579,7 +579,7 @@ void delete_or_controlAct(Widget, XEvent *e,
     clear_isearch();
     string input = current_line();
     strip_trailing_newlines(input);
-    if (input == "")
+    if (input.empty())
 	XtCallActionProc(gdb_w, "gdb-control", e, params, *num_params);
     else
 	XtCallActionProc(gdb_w, "delete-next-character", e, params, *num_params);
@@ -750,7 +750,7 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
 
 	    if (gdb_input_at_prompt)
 	    {
-		if (cmd.matches(rxwhite) || cmd == "")
+		if (cmd.matches(rxwhite) || cmd.empty())
 		{
 		    // Empty line: repeat last command
 		    cmd = last_command_from_history();

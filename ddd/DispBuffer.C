@@ -113,7 +113,7 @@ string DispBuffer::answer_ended ()
     switch (already_read) {
     case DisplayPart:
     {
-	assert (display_buffer == "");
+	assert (display_buffer.empty());
 	string ans = answer_buffer;
 	answer_buffer = "";
 	return ans;
@@ -121,7 +121,7 @@ string DispBuffer::answer_ended ()
 
     case Null:
     {
-	assert (display_buffer == "");
+	assert (display_buffer.empty());
 	return "";
     }
 

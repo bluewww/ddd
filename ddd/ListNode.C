@@ -374,7 +374,7 @@ string ListNode::firstName() const RETURNS(s)
 {
     RETURN_OBJECT(string, s);
     s = head()->firstName();
-    if (s == "")
+    if (s.empty())
 	s = tail()->firstName();
     RETURN(s);
 }

@@ -623,7 +623,7 @@ void BreakPoint::process_perl(string& info_output)
 		if (token != ";")
 		    command += token;
 
-		if (token == ";" || commands == "")
+		if (token == ";" || commands.empty())
 		{
 		    strip_space(command);
 		    if (command != "")
@@ -806,7 +806,7 @@ string BreakPoint::pos() const
 {
     if (line_nr() == 0)
 	return "*" + address();
-    else if (file_name() == "")
+    else if (file_name().empty())
 	return itostring(line_nr());
     else
 	return file_name() + ":" + itostring(line_nr());
@@ -943,7 +943,7 @@ string BreakPoint::make_false(const string& cond)
 {
     if (is_false(cond))
 	return cond;
-    else if (cond == "")
+    else if (cond.empty())
 	return false_value();
     else
 	return false_value() + and_op() + cond;
@@ -961,7 +961,7 @@ string BreakPoint::make_false(const string& cond)
 bool BreakPoint::get_state(std::ostream& os, int nr, bool as_dummy,
 			   string pos, string cond)
 {
-    if (pos == "")
+    if (pos.empty())
     { 
 	if (line_nr() > 0)
 	    pos = file_name() + ":" + itostring(line_nr());

@@ -650,7 +650,7 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data,
     }
 
     string p = selected_pattern();
-    if (p == "")
+    if (p.empty())
 	return;
 
     DispValue *dv = selected_value();
@@ -660,7 +660,7 @@ void DataDisp::applyThemeCB (Widget w, XtPointer client_data,
     string doc = vsldoc(theme, DispBox::vsllib_path);
     if (doc.contains("."))
 	doc = doc.before(".");
-    else if (doc == "")
+    else if (doc.empty())
 	doc = theme;
 
     defineConversionMacro("THEME", theme.chars());
@@ -721,7 +721,7 @@ void DataDisp::unapplyThemeCB (Widget w, XtPointer client_data, XtPointer)
 	return;
     }
 
-    if (selected_pattern() == "")
+    if (selected_pattern().empty())
 	return;
 
     DispValue *dv = selected_value();
@@ -785,7 +785,7 @@ void DataDisp::toggleThemeCB(Widget button, XtPointer, XtPointer call_data)
 void DataDisp::applyThemeOnAllCB(Widget, XtPointer client_data, XtPointer)
 {
     string pattern = selected_pattern();
-    if (pattern == "")
+    if (pattern.empty())
 	return;
 
     string theme = String(client_data);
@@ -1471,7 +1471,7 @@ void DataDisp::set_shortcut_menu(const StringArray& exprs,
 	    string& expr  = shortcut_exprs[i];
 	    string& label = shortcut_labels[i];
 
-	    if (label == "")
+	    if (label.empty())
 		label = "Display " + expr;
 
 	    set_label(popup1_item, label);
@@ -2257,9 +2257,9 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String *args,
     if (arg == "graph" || selected_node() == 0)
 	popup = graph_popup_w;
     else if (arg == "shortcut" 
-	     || (arg == "" && event->xbutton.state & ShiftMask))
+	     || (arg.empty() && event->xbutton.state & ShiftMask))
 	popup = shortcut_popup_w;
-    else if (arg == "node" || arg == "")
+    else if (arg == "node" || arg.empty())
 	popup = node_popup_w;
     else
 	std::cerr << "graph-popup: bad argument " << quote(arg) << "\n";
@@ -2370,7 +2370,7 @@ void DataDisp::set_args(BoxPoint p, SelectionMode mode)
 	string doc = vsldoc(theme, DispBox::vsllib_path);
 	if (doc.contains("."))
 	    doc = doc.before(".");
-	else if (doc == "")
+	else if (doc.empty())
 	    doc = theme;
 	set_label(button, doc);
 
@@ -2863,7 +2863,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
     Time tm = XtLastTimestampProcessed(XtDisplay(graph_selection_w));
 
-    if (cmd == "")
+    if (cmd.empty())
     {
 	// Nothing selected - clear selection explicitly
 	XmTextClearSelection(graph_selection_w, tm);
@@ -2946,7 +2946,7 @@ void DataDisp::write_restore_scope_command(std::ostream& os,
 
     int target_frame = -1;
 
-    if (dn->scope() == "")
+    if (dn->scope().empty())
     {
 	// No scope - maybe a global?
 	target_frame = scopes.size() - 1;	// Return to main frame
@@ -3511,7 +3511,7 @@ void DataDisp::new_displaySQ (const string& display_expression,
     if (origin)
 	set_last_origin(origin);
 
-    if (display_expression == "")
+    if (display_expression.empty())
 	return;
 
     if (deferred == DeferAlways)
@@ -3657,7 +3657,7 @@ void DataDisp::read_number_and_name(string& answer, string& nr, string& name)
 		nr = itostring(n);
 	    }
 
-	    if (nr == "")
+	    if (nr.empty())
 	    {
 		// Could not determine number
 		post_warning("Could not determine number of display " 
@@ -3666,7 +3666,7 @@ void DataDisp::read_number_and_name(string& answer, string& nr, string& name)
 	    }
 	}
 	
-	if (nr == "")
+	if (nr.empty())
 	{
 	    // Assign a default number
 	    nr = itostring(next_ddd_display_number++);
@@ -3891,7 +3891,7 @@ DispNode *DataDisp::new_data_node(const string& given_name,
     gdb->munch_value(value, display_name);
 
     int nr = get_nr(nr_s);
-    if (nr == 0 || display_name == "")
+    if (nr == 0 || display_name.empty())
     {
 	post_gdb_message(answer, true, last_origin);
 	return 0;
@@ -4063,7 +4063,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	return;
     }
 
-    if (answer == "")
+    if (answer.empty())
     {
 	if (gdb->has_display_command())
 	{
@@ -6580,7 +6580,7 @@ bool DataDisp::check_aliases()
 	    IntArray& displays = list[i];
 	    assert(displays.size() > 0);
 
-	    if (addr == "" || displays.size() == 1)
+	    if (addr.empty() || displays.size() == 1)
 	    {
 		// No address or just one display -- unmerge them
 		for (int k = 0; k < displays.size(); k++)

@@ -971,7 +971,7 @@ void send_gdb_command(string cmd, Widget origin,
     {
 	string arg = cmd.after(rxwhite);
 	strip_space(arg);
-	if (arg == "" || 
+	if (arg.empty() || 
 	    arg.contains('-', 0) || 
 	    arg.contains('+', 0) || 
 	    arg.contains(rxlist_range))
@@ -1458,7 +1458,7 @@ void send_gdb_command(string cmd, Widget origin,
 	    // argument.
 
 	    int arg;
-	    if (arg_s == "")
+	    if (arg_s.empty())
 		arg = 1;
 	    else
 		arg = get_positive_nr(arg_s);
@@ -1803,7 +1803,7 @@ static void print_partial_answer(const string& answer, CmdData *cmd_data)
     y_or_n_prompt = cmd_data->user_answer.contains("(y or n) ", -1);
 
     // Output remaining answer
-    if (cmd_data->user_verbose && cmd_data->graph_cmd == "")
+    if (cmd_data->user_verbose && cmd_data->graph_cmd.empty())
     {
 	gdb_out(answer);
     }
@@ -2051,7 +2051,7 @@ static void command_completed(void *data)
 	    c.priority = COMMAND_PRIORITY_BATCH;
 	    c.echo    = false;
 	    c.verbose = true;
-	    c.prompt  = do_prompt && (auto_commands == "");
+	    c.prompt  = do_prompt && (auto_commands.empty());
 	    gdb_command(c);
 	}
 
@@ -2398,7 +2398,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	cmd = reverse(rcmd);
 	string display_expression = get_display_expression(cmd);
 
-	if (display_expression == "")
+	if (display_expression.empty())
 	{
 	    // No argument.
 	    // GDB gives no diagnostics in this case.  So, nor do we.
@@ -2779,14 +2779,14 @@ static void FindSourceCB(const string& answer, void *)
 	init_symbol = init_symbols;
     init_symbols = init_symbols.after("\n");
 
-    if (init_symbol == "")
+    if (init_symbol.empty())
     {
 	// Tried all symbols.
 	return;
     }
 
     string current_file = source_view->file_of_cursor().before(':');
-    if (current_file == "" || gdb->is_windriver_gdb())
+    if (current_file.empty() || gdb->is_windriver_gdb())
 	gdb_command(string("list ") + init_symbol, gdb_w, 
 		    FindSourceCB, 0, false, true);
 }

@@ -47,7 +47,7 @@ char deref_rcsid[] =
 // Return dereferenced EXPR.  Only useful in Perl.
 string deref(const string& expr, const string& sym)
 {
-    const string& symbol = (sym == "" ? expr : sym);
+    const string& symbol = (sym.empty() ? expr : sym);
 
     if (gdb->program_language() != LANGUAGE_PERL)
 	return gdb->dereferenced_expr(symbol);

@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
 	command += argv[i];
     }
 
-    if (command == "")
+    if (command.empty())
     {
 	cerr << XtName(toplevel) 
 	     << ": usage: " << XtName(toplevel) << " COMMAND [ARGS...]\n";

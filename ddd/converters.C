@@ -468,7 +468,7 @@ static int font_id_len(const string& s)
 {
     // Font ids have the syntax "[_A-Za-z][-_A-Za-z0-9]*"
 
-    if (s == "")
+    if (s.empty())
 	return 0;
 
     if (s[0] != '_' && !isalpha(s[0]))
@@ -531,7 +531,7 @@ static Boolean CvtStringToXmString(Display *display,
 		// Found @[font-id] <segment>: process it
 		string c = segments[i].before(len);
 		segment = segments[i].from(int(c.length()));
-		if (segment == "")
+		if (segment.empty())
 		{
 		    // Found @MACRO@
 		    if (conversionMacroTable.has(c))
@@ -718,8 +718,8 @@ static Boolean CvtStringToXmFontList(Display *display,
 	strip_space(fontspec);
 	strip_space(charset);
 
-	if (fontspec == "" || 
-	    (charset == "" && charset != MSTRING_DEFAULT_CHARSET))
+	if (fontspec.empty() || 
+	    (charset.empty() && charset != MSTRING_DEFAULT_CHARSET))
 	{
 	    Cardinal num_params = 1;
 	    String params = CONST_CAST(char*,segment.chars());

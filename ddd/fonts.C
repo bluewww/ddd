@@ -211,7 +211,7 @@ static string component(const AppData& ad, DDDFont font, FontComponent n)
     }
 
     string w = component(userfont(ad, font), n);
-    if (w == "")		// nothing specified
+    if (w.empty())		// nothing specified
 	w = component(fallbackfont(font), n);
     return w;
 }
@@ -245,7 +245,7 @@ string make_font(const AppData& ad, DDDFont base, const string& override)
     for (FontComponent n = Foundry; n <= AllComponents; n++)
     {
 	string w = component(override, n);
-	if (w == "" || w == " ")
+	if (w.empty() || w == " ")
 	    w = component(ad, base, n);
 	font += "-" + w;
     }
@@ -564,7 +564,7 @@ static string simplify_font(const AppData& ad, DDDFont font,
     for (FontComponent n = AllComponents; n >= Foundry; n--)
     {
 	string c = component(source, n);
-	if (s == "" && c == component(ad, font, n))
+	if (s.empty() && c == component(ad, font, n))
 	{
 	    // Default setting -- ignore
 	}
@@ -577,7 +577,7 @@ static string simplify_font(const AppData& ad, DDDFont font,
     if (s.contains("-*-", 0))
 	s = s.after("-*-");
 
-    if (s == "")
+    if (s.empty())
 	s = component(ad, font, Family);
     if (!s.contains('-'))
 	s += "-" + component(ad, font, Weight);

@@ -90,7 +90,7 @@ void YnCB(Widget dialog,
 Widget post_gdb_yn(string question, Widget w)
 {
     strip_trailing_space(question);
-    if (question == "")
+    if (question.empty())
 	return 0;
 
     Arg args[10];
@@ -296,7 +296,7 @@ static void GDBOutCB(XtPointer client_data, XtIntervalId *)
 Widget post_gdb_message(string text, bool prompt, Widget w)
 {
     strip_trailing_space(text);
-    if (text == NO_GDB_ANSWER || text == "")
+    if (text == NO_GDB_ANSWER || text.empty())
 	return 0;
 
     dddlog << "!  " << text << '\n';

@@ -106,7 +106,7 @@ static int passed_to_program(const string& program_state)
 	string signal_description = program_state.after(signal);
 	signal_description = signal_description.after(rxwhite);
 
-	if (signal_description == "")
+	if (signal_description.empty())
 	    signal_description = signal;
 	
 	defineConversionMacro("SIGNAL", signal.chars());
@@ -187,7 +187,7 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
 
     // Typical start-up situations
     ProgramInfo info;
-    if (info.file == "")
+    if (info.file.empty())
     {
 	hint_on("no_program");
 	return;

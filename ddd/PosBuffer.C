@@ -329,7 +329,7 @@ void PosBuffer::filter_gdb(string& answer)
 {
     // Try to find out current PC even for non-existent source
 
-    if (check_pc && pc_buffer == "")
+    if (check_pc && pc_buffer.empty())
     {
 	// `$pc = ADDRESS'
 #if RUNTIME_REGEX
@@ -356,8 +356,8 @@ void PosBuffer::filter_gdb(string& answer)
 	}
     }
 	    
-    if (check_pc && pc_buffer == "" || 
-	check_func && func_buffer == "")
+    if (check_pc && pc_buffer.empty() || 
+	check_func && func_buffer.empty())
     {
 	// `Breakpoint N, ADDRESS in FUNCTION (ARGS...)'
 #if RUNTIME_REGEX
@@ -374,8 +374,8 @@ void PosBuffer::filter_gdb(string& answer)
 	}
     }
 	    
-    if (check_pc && pc_buffer == "" || 
-	check_func && func_buffer == "")
+    if (check_pc && pc_buffer.empty() || 
+	check_func && func_buffer.empty())
     {
 	// `#FRAME ADDRESS in FUNCTION (ARGS...)'
 #if RUNTIME_REGEX
@@ -392,8 +392,8 @@ void PosBuffer::filter_gdb(string& answer)
 	}
     }
 	    
-    if (check_pc && pc_buffer == "" || 
-	check_func && func_buffer == "")
+    if (check_pc && pc_buffer.empty() || 
+	check_func && func_buffer.empty())
     {
 	// `No line number available for 
 	// address ADDRESS <FUNCTION>'
@@ -406,7 +406,7 @@ void PosBuffer::filter_gdb(string& answer)
 	{
 	    pc_index = answer.index(' ');
 	    fetch_address(answer, pc_index, pc_buffer);
-	    if (func_buffer == "")
+	    if (func_buffer.empty())
 	    {
 		string line = answer.from(pc_index);
 		line = line.after('<');
@@ -417,7 +417,7 @@ void PosBuffer::filter_gdb(string& answer)
 	}
     }
 
-    if (check_pc && pc_buffer == "" && answer != "")
+    if (check_pc && pc_buffer.empty() && answer != "")
     {
 	// `ADDRESS in FUNCTION'
 #if RUNTIME_REGEX
@@ -446,7 +446,7 @@ void PosBuffer::filter_gdb(string& answer)
 
     // Try to find out current function name, even for
     // non-existing addresses
-    if (check_func && func_buffer == "")
+    if (check_func && func_buffer.empty())
     {
 	// `Breakpoint N, FUNCTION (ARGS...)'
 	// This regex used for PYDB as well.
@@ -458,7 +458,7 @@ void PosBuffer::filter_gdb(string& answer)
 	    fetch_function(answer, bp_index, func_buffer);
     }
 
-    if (check_func && func_buffer == "")
+    if (check_func && func_buffer.empty())
     {
 	// `#FRAME FUNCTION'
 #if RUNTIME_REGEX
@@ -472,7 +472,7 @@ void PosBuffer::filter_gdb(string& answer)
 	}
     }
 
-    if (check_func && func_buffer == "")
+    if (check_func && func_buffer.empty())
     {
 	// FUNCTION (ARGS...) at FILE:POS
 	int at_index = answer.index(" at ");
@@ -793,7 +793,7 @@ void PosBuffer::filter_dbx(string& answer)
 		func_buffer = func_buffer.after(' ');
 	}
 
-	if (line == "")
+	if (line.empty())
 	{
 	    line = answer.after("at line ", stopped_index);
 	    line = line.through(rxint);
@@ -888,7 +888,7 @@ void PosBuffer::filter_dbx(string& answer)
 	    pos_buffer = line;
     }
 
-    if (already_read == PosComplete && pos_buffer == "")
+    if (already_read == PosComplete && pos_buffer.empty())
 	already_read = Null;
 }
 
@@ -1316,13 +1316,13 @@ string PosBuffer::answer_ended ()
     {
     case Null:
     {
-	assert (pos_buffer == "");
+	assert (pos_buffer.empty());
 	return auto_cmd_part;
     }
 
     case PosPart:
     {
-	assert (pos_buffer == "");
+	assert (pos_buffer.empty());
 	string ans = answer_buffer;
 	answer_buffer = "";
 	return auto_cmd_part + ans;

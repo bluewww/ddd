@@ -96,7 +96,7 @@ void show_invocation(const string& gdb_command, std::ostream& os)
     bool type_ok = get_debugger_type(command, type);
     if (!type_ok)
 	type = GDB;
-    if (command == "")
+    if (command.empty())
 	command = default_debugger(command, type);
 
     string gdb_get_help    = sh_command(command + " -h");

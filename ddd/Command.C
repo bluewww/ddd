@@ -404,7 +404,7 @@ static void do_gdb_command(Command& given_c, bool is_command = true)
 	gdb_enqueue_command(given_c);
     }
 
-    if (c.command == "")
+    if (c.command.empty())
     {
 	// Invalid command
 #if LOG_COMMAND_QUEUE
@@ -669,7 +669,7 @@ void gdb_command(const Command& c0)
 	return;
     }
 
-    if (c.command == "")
+    if (c.command.empty())
     {
 	// Empty command -- ignore
 	return;

@@ -527,7 +527,7 @@ bool is_quit_cmd (const string& cmd)
 
 static bool starts_with(const string& cmd, const string& prefix)
 {
-    if (prefix == "")
+    if (prefix.empty())
 	return false;
 
     return cmd == prefix || 
@@ -730,7 +730,7 @@ string read_next_display (string& displays, GDBAgent *gdb)
 	{
 	    next_display += read_token(displays);
 
-	    if (displays == "")
+	    if (displays.empty())
 		break;		// All done
 
 	    if (next_display.contains(":()", -1))

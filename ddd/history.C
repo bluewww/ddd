@@ -268,7 +268,7 @@ void add_to_history(const string& line)
 // Load history from history file
 void load_history(const string& file)
 {
-    if (file == "")
+    if (file.empty())
 	return;
 
     // Delay d;
@@ -572,7 +572,7 @@ static void update_combo_box(Widget text, HistoryFilter filter)
     {
 	const string& entry = gdb_history[i];
 	string arg = filter(entry);
-	if (arg == "")
+	if (arg.empty())
 	    continue;		// Empty arg
 
 	if (entries.size() > 0 && entries[entries.size() - 1] == arg)
@@ -677,7 +677,7 @@ void get_recent(StringArray& arr)
     for (int i = recent_files.size() - 1; i >= 0; i--)
     {
 	string& recent = recent_files[i];
-	if (recent == "")
+	if (recent.empty())
 	    continue;		// Removed
 
 	arr += recent_files[i];

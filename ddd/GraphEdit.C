@@ -2556,7 +2556,7 @@ static int get_new_rotation(Widget w, const _XtString *params, Cardinal *num_par
     string param = "";
     if (num_params && *num_params >= 1)
 	param = params[0];
-    if (param == "")
+    if (param.empty())
 	param = default_param;
 
     int new_rotation = atoi(param.chars());

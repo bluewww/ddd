@@ -36,6 +36,7 @@ void decltest()
   std::cout << "an empty string:" << x << "\n";
   assert(x.OK());
   assert(x == "");
+  assert(x.empty());
 
   string y = "Hello";
   std::cout << "A string initialized to Hello:" << y << "\n";

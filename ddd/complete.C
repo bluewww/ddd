@@ -322,7 +322,7 @@ static void complete_reply(const string& complete_answer, void *qu_data)
     smart_sort(completions, completions_size);
     uniq(completions, completions_size);
 
-    if (completions_size == 0 || completions[0] == "")
+    if (completions_size == 0 || completions[0].empty())
     {
 	// No completion (sigh)
 	XtCallActionProc(gdb_w, "beep", info.event, 0, 0);
@@ -552,7 +552,7 @@ static char *complete_readline(char *text, int state)
     string completion = reply.before('\n');
     reply = reply.after('\n');
 
-    if (completion == "")
+    if (completion.empty())
 	return 0;
 
     char *ret = (char *)malloc(completion.length() + 1);

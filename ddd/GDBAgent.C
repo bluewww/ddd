@@ -1864,7 +1864,7 @@ string GDBAgent::make_command(const string& args) const
 	break;
 
     case PERL:
-	if (args == "")
+	if (args.empty())
 	    return "system 'make'";
 	else
 	    return "system 'make " + args + "'";
@@ -1878,7 +1878,7 @@ string GDBAgent::make_command(const string& args) const
 	return "";		// Not available
     }
 
-    if (args == "")
+    if (args.empty())
 	return cmd;
     else
 	return cmd + " " + args;
@@ -2527,13 +2527,13 @@ string GDBAgent::run_command(string args) const
     case GDB:
     {
 	string c;
-	if (args == "")
+	if (args.empty())
 	    c = "set args\n";
 	return c + "run" + args;
     }
 
     case DBX:
-	if (args == "" && has_rerun_command() && rerun_clears_args())
+	if (args.empty() && has_rerun_command() && rerun_clears_args())
 	    return "rerun";
 	else
 	    return "run" + args;
@@ -2543,7 +2543,7 @@ string GDBAgent::run_command(string args) const
 	return "run" + args;
 
     case XDB:
-	if (args == "")
+	if (args.empty())
 	    return "R";
 	else
 	    return "r" + args;
@@ -2648,7 +2648,7 @@ string GDBAgent::prepend_prefix(const string& prefix, const string& expr)
     if (expr.matches(rxidentifier)
 	|| expr.contains("(", 0) && expr.contains(")", -1))
 	return prefix + expr;
-    else if (expr == "")
+    else if (expr.empty())
 	return prefix;
     else
 	return prefix + "(" + expr + ")";
@@ -2660,7 +2660,7 @@ string GDBAgent::append_suffix(const string& expr, const string& suffix)
     if (expr.matches(rxidentifier)
 	|| expr.contains("(", 0) && expr.contains(")", -1))
 	return expr + suffix;
-    else if (expr == "")
+    else if (expr.empty())
 	return suffix;
     else
 	return "(" + expr + ")" + suffix;
@@ -3076,9 +3076,9 @@ void GDBAgent::split_perl_var(const string& var,
 			      string& name)
 {
     name = var.from(rxalpha);
-    if (name == "")
+    if (name.empty())
 	name = var.from("_");
-    if (name == "")
+    if (name.empty())
 	return;
     prefix = var.before(name);
 

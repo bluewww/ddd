@@ -159,11 +159,11 @@ string current_selection(Widget w)
 {
     string selection = "";
 
-    if (selection == "")
+    if (selection.empty())
 	selection = current_primary(w);
-    if (selection == "")
+    if (selection.empty())
 	selection = current_cut_buffer(w);
-    if (selection == "")
+    if (selection.empty())
 	selection = current_clipboard(w);
 
     return selection;

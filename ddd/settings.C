@@ -380,7 +380,7 @@ static void HelpOnSignalCB(Widget w, XtPointer client_data,
 	s.gsub("\n ", "\n");
     }
 
-    if (s == "")
+    if (s.empty())
 	s = "No help available on this signal.";
 
     XmString xmdoc = 0;
@@ -609,7 +609,7 @@ static void HelpOnThemeCB(Widget w, XtPointer client_data,
     // Fetch text from file
     string file = XtName((Widget)client_data);
     string text = vsldoc(file, DispBox::vsllib_path);
-    if (text == "")
+    if (text.empty())
 	text = "No help available on this theme.";
 
     MString mtext = bf(basename(file.chars())) + cr() + cr() + rm(text);
@@ -1038,7 +1038,7 @@ static StringStringAssoc gdb_question_cache;
 static string cached_gdb_question(const string& question, int timeout = 0)
 {
     string& answer = gdb_question_cache[question];
-    if (answer == "")
+    if (answer.empty())
 	answer = gdb_question(question, timeout);
     return answer;
 }
@@ -1362,7 +1362,7 @@ static string get_dbx_doc(const string& dbxenv, const string& base)
     dbx_doc.gsub("etc ", "etc. ");
 
 #if 0
-    if (dbx_doc == "")
+    if (dbx_doc.empty())
     {
 	dbx_doc = base;
 	dbx_doc.gsub('_', ' ');
@@ -1514,7 +1514,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		       DebuggerType type, EntryType entry_filter,
 		       string line)
 {
-    if (line == "")
+    if (line.empty())
 	return;
 
     string set_command;		// Command to create the setting
@@ -1532,7 +1532,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	set_command = show_command = line;
 	e_type = entry_filter;
 	doc = vsldoc(line, DispBox::vsllib_path);
-	if (doc == "")		   // No documentation:
+	if (doc.empty())		   // No documentation:
 	    doc = basename(line.chars());  // Use base name of file instead
 	else if (doc.contains("."))
 	    doc = doc.before("."); // Use first sentence only
@@ -1553,7 +1553,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    set_command  = line.before(" -- ");
 	    doc          = line.after(" -- ");
 	    base         = set_command.after(' ');
-	    if (base == "")
+	    if (base.empty())
 		base = set_command;
 	    show_command = "show " + base;
 
@@ -1668,7 +1668,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		return;			// No help line
 
 	    base = line.before(rxwhite);
-	    if (base == "")
+	    if (base.empty())
 		return;
 	    if (base == "run_savetty")
 		return; // Makes no sense under a GUI
@@ -1743,7 +1743,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	if (e_type != entry_filter)
 	    return;
 
-	if (doc == "")
+	if (doc.empty())
 	    return;		// No need to support undocumented stuff
     }
 
@@ -1989,7 +1989,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    options = options.after('<');
 	    options = options.before('>');
 
-	    if (options == "")
+	    if (options.empty())
 	    {
 		if (base == "follow_fork_mode")
 		    options = "parent|child|both|ask";
@@ -2026,7 +2026,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		    option = option.before(rxwhite);
 	    }
 
-	    if (option == "" || option.contains(':', -1))
+	    if (option.empty() || option.contains(':', -1))
 		continue;
 
 	    MString xmlabel(label);
@@ -2944,7 +2944,7 @@ void update_themes()
 	std::ostringstream os;
 	os << p;
 	string value = string(os);
-	if (value == "")
+	if (value.empty())
 	{
 	    value = "*";
 	    set = false;
@@ -3042,13 +3042,13 @@ static void get_setting(std::ostream& os, DebuggerType type,
 	    break;
 	}
 
-	if (base == "set remotelogfile" && value == "")
+	if (base == "set remotelogfile" && value.empty())
 	{
 	    // This is the default setting - do nothing (GDB)
 	    break;
 	}
 
-	if (base == "set remotedevice" && value == "")
+	if (base == "set remotedevice" && value.empty())
 	{
 	    // This is the default setting - do nothing (GDB)
 	    break;
@@ -3066,7 +3066,7 @@ static void get_setting(std::ostream& os, DebuggerType type,
 	    break;
 	}
 
-	if (base == "set solib-absolute-prefix" && value == "")
+	if (base == "set solib-absolute-prefix" && value.empty())
 	{
 	    // GDB 4.17 bug: `set solib-absolute-prefix' without arg
 	    // does not work.  Just leave it as default setting.
@@ -3360,7 +3360,7 @@ string get_defines(DebuggerType type, unsigned long /* flags */)
 	cmd.downcase();		// GDB 5.0 makes all commands lower case
 
 	string def = iter.value();
-	if (def == "")
+	if (def.empty())
 	{
 	    // We don't save empty definitions, such that users have a
 	    // way to get rid of them.

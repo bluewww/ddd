@@ -2381,14 +2381,14 @@ int main(int argc, char *argv[])
     else
 	gdb_host = "";
 
-    if (gdb_host.contains('@') && string(app_data.debugger_host_login) == "")
+    if (gdb_host.contains('@') && string(app_data.debugger_host_login).empty())
     {
 	static string new_login = gdb_host.before('@');
 	app_data.debugger_host_login = new_login.chars();
 	gdb_host = gdb_host.after('@');
     }
 
-    if (gdb_host == "" && string(app_data.debugger_host_login) != "")
+    if (gdb_host.empty() && string(app_data.debugger_host_login) != "")
     {
 	std::cerr << argv[0] << ": --login requires --rhost or --host\n";
 	return EXIT_FAILURE;
@@ -2453,7 +2453,7 @@ int main(int argc, char *argv[])
     // Show splash screen
     Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, XtPointer(0));
-    if (app_data.splash_screen && !iconic && restart_session() == "")
+    if (app_data.splash_screen && !iconic && restart_session().empty())
 	popup_splash_screen(toplevel, app_data.splash_screen_color_key);
 
     // Re-register own converters.  Motif has overridden some of
@@ -3490,7 +3490,7 @@ static void set_shortcut_menu(DataDisp *data_disp, const string& exprs)
 	strip_space(item);
 	strip_space(label);
 
-	if (item == "")
+	if (item.empty())
 	    continue;
 
 	items_s  += item;
@@ -6015,7 +6015,7 @@ static void gdb_ctrl(char ctrl)
 // Append TEXT to GDB output
 void _gdb_out(const string& txt)
 {
-    if (txt == "")
+    if (txt.empty())
 	return;
     if (private_gdb_output)
 	return;
@@ -7388,7 +7388,7 @@ static void add_arg_from_selection(Widget toplevel, int& argc, const char **&arg
 	else if (selection.contains("file:", 0))
 	    selection = selection.after(':');
 
-	if (selection == "")
+	if (selection.empty())
 	    continue;			// No selection
 
 	const int new_argc = 2;

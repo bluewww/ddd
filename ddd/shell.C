@@ -97,7 +97,7 @@ string _sh_command(string command, bool force_local,
 
     if (force_local || !remote_gdb())
     {
-	if (command == "")
+	if (command.empty())
 	    return "";
 	if (force_display_settings)
 	    command = settings + command;

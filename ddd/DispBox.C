@@ -311,7 +311,7 @@ void DispBox::set_value(const DispValue* dv, const DispValue *parent)
 
 void DispBox::shorten_title(string& name)
 {
-    if (name == "")
+    if (name.empty())
 	return;
 
     if (!is_user_command(name))
@@ -416,7 +416,7 @@ bool DispBox::is_numeric(const DispValue *dv, const DispValue *parent)
     if (parent != 0 && parent->type() != Array)
 	return false;
 
-    if (dv->value() == "")
+    if (dv->value().empty())
 	return false;
     if (dv->value().contains(' '))
 	return false;
@@ -486,7 +486,7 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 	    VSLArgList args;
 	    for (int i = 0; i < n + 1; i++)
 	    {
-		if (lines[i] == "")
+		if (lines[i].empty())
 		    lines[i] = " ";
 		args += eval(dv, "text_line", lines[i]);
 	    }

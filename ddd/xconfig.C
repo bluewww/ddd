@@ -161,14 +161,13 @@ static int check_xkeysymdb(Display *display, bool verbose)
 
     string xkeysymdb;
 
-    if (xkeysymdb == "")
     {
 	const _XtString s = getenv("XKEYSYMDB");
 	if (s != 0)
 	    xkeysymdb = s;
     }
 
-    if (xkeysymdb == "")
+    if (xkeysymdb.empty())
     {
 	String s = XtResolvePathname(display, "", "XKeysymDB", "",
 				     (String)0, Substitution(0), 0, 

@@ -75,9 +75,9 @@ ThemeManager::ThemeManager(const string& rep)
 	strip_space(theme);
 	strip_space(s);
 
-	if (theme == "")
+	if (theme.empty())
 	    continue;
-	if (s == "")
+	if (s.empty())
 	    s = "*";
 
 	bool active = true;

@@ -122,7 +122,7 @@ void ArgField::valueChangedCB(Widget,
 
     const string s = arg_field->get_string();
 
-    if (s == "")
+    if (s.empty())
     {
 	if (!arg_field->is_empty)
 	{

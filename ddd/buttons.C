@@ -286,7 +286,7 @@ static string gdbHelp(string original_command)
     {
 	// JDB has a single static `help' command.
 	string& all_help = help_cache["<ALL>"];
-	if (all_help == NO_GDB_ANSWER || all_help == "")
+	if (all_help == NO_GDB_ANSWER || all_help.empty())
 	{
 	    all_help = gdb_question("help", -1, true);
 	    if (all_help == NO_GDB_ANSWER)
@@ -476,7 +476,7 @@ void clear_value_cache()
 
 string gdbValue(const string& expr, string print_command)
 {
-    if (print_command == "")
+    if (print_command.empty())
 	print_command = gdb->print_command(expr);
 
     if (undo_buffer.showing_earlier_state())
@@ -569,7 +569,7 @@ static XmTextPosition textPosOfEvent(Widget widget, XEvent *event)
 	source_view->get_word_at_event(widget, event, startpos, endpos);
 
 #if 0				// We might point at a text breakpoint
-    if (expr == "")
+    if (expr.empty())
 	return XmTextPosition(-1);
 #endif
 
@@ -594,7 +594,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     MString bp_help = 
 	source_view->help_on_pos(widget, startpos, endpos, for_documentation);
 
-    if (bp_help.xmstring() == 0 && expr == "")
+    if (bp_help.xmstring() == 0 && expr.empty())
 	return MString(0, true); // Nothing pointed at
 
 #if RUNTIME_REGEX
@@ -672,7 +672,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 	return clear;		// Empty variable
 
 #if 0
-    if (gdb->program_language() == LANGUAGE_PERL && tip == "")
+    if (gdb->program_language() == LANGUAGE_PERL && tip.empty())
 	tip = "undef";
 #endif
 
@@ -1135,7 +1135,7 @@ void set_buttons(Widget buttons, const _XtString _button_list, bool manage)
 	string name = commands[i];
 	strip_space(name);
 
-	if (name == "")
+	if (name.empty())
 	    continue;
 
 	MString label(0, true);
@@ -1338,7 +1338,7 @@ static string normalize(string s)
     {
 	string& cmd = commands[i];
 	strip_space(cmd);
-	if (cmd == "")
+	if (cmd.empty())
 	    continue;
 
 	if (ret.length() > 0)

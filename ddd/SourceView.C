@@ -771,7 +771,7 @@ void SourceView::clearJumpBP(const string& msg, void *data)
 {
     set_status(msg);
 
-    if (gdb->type() == XDB && msg == "")
+    if (gdb->type() == XDB && msg.empty())
     {
 	// Moving PC was successful.
 	show_execution_position(last_jump_address, true);
@@ -933,7 +933,7 @@ bool SourceView::move_pc(const string& a, Widget w)
 	    address = last_shown_pc;
 	}
 
-	if (address == "")
+	if (address.empty())
 	{
 	    set_status("Cannot determine address of " + a);
 	}
@@ -1340,7 +1340,7 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 	    }
     }
 
-    if (bps == "")
+    if (bps.empty())
 	return "";
 
     if (clear_next && max_bp_nr >= 0)
@@ -1581,7 +1581,7 @@ bool SourceView::bp_matches(BreakPoint *bp, const string& file, int line)
     case ACTIONPOINT:
     case TRACEPOINT:
 	return (line == 0 || bp->line_nr() == line) &&
-	    (bp->file_name() == "" || file_matches(bp->file_name(), file));
+	    (bp->file_name().empty() || file_matches(bp->file_name(), file));
 
     case WATCHPOINT:
 	return false;
@@ -1603,7 +1603,7 @@ void SourceView::set_source_argCB(Widget text_w,
 				  XtPointer call_data)
 {
     const string& text = current_text(text_w);
-    if (text == "")
+    if (text.empty())
 	return;
 
     XmTextVerifyCallbackStruct *cbs = (XmTextVerifyCallbackStruct *)call_data;
@@ -2548,7 +2548,7 @@ void SourceView::clear_file_cache()
 void SourceView::reload()
 {
     // Reload current file
-    if (current_file_name == "")
+    if (current_file_name.empty())
 	return;
 
     string file;
@@ -2630,7 +2630,7 @@ void SourceView::read_file (string file_name,
 			    bool force_reload,
 			    bool silent)
 {
-    if (file_name == "")
+    if (file_name.empty())
 	return;
 
     /*
@@ -3280,7 +3280,7 @@ string SourceView::get_word_at_pos(Widget text_w,
 				   XmTextPosition& endpos)
 {
     const string& text = current_text(text_w);
-    if (text == "")
+    if (text.empty())
       {
 	startpos = 0;
 	endpos = 0;
@@ -3761,7 +3761,7 @@ void SourceView::show_execution_position (const string& position_,
 	signal_received = signaled;
     }
 
-    if (position_ == "")
+    if (position_.empty())
     {
 	if (!display_glyphs)
 	{
@@ -4194,7 +4194,7 @@ void SourceView::process_info_line_main(string& info_output)
     clear_code_cache();
     clear_dbx_lookup_cache();
 
-    if (info_output == "")
+    if (info_output.empty())
 	return;
 
     current_file_name = "";
@@ -4274,7 +4274,7 @@ void SourceView::lookup(string s, bool silent)
 
     undo_buffer.start("lookup");
 
-    if (s == "")
+    if (s.empty())
     {
 	// Empty argument given
 	if (last_execution_pc != "")
@@ -4514,7 +4514,7 @@ void SourceView::goto_entry(const string& file_name, int line,
 	msg = "File " + quote(file_name);
     if (line != 0)
     {
-	if (msg == "")
+	if (msg.empty())
 	    msg = "Line ";
 	else
 	    msg += ", line ";
@@ -4522,7 +4522,7 @@ void SourceView::goto_entry(const string& file_name, int line,
     }
     if (address != "")
     {
-	if (msg == "")
+	if (msg.empty())
 	    msg = "Address ";
 	else
 	    msg += ", address ";
@@ -4828,7 +4828,7 @@ string SourceView::current_source_name()
     case GDB:
 	// GDB internally recognizes only `source names', i.e., the
 	// source file name as compiled into the executable.
-	if (source_name_cache[current_file_name] == "")
+	if (source_name_cache[current_file_name].empty())
 	{
 	    // Try the current source.
 	    string ans = gdb_question("info source");
@@ -4849,7 +4849,7 @@ string SourceView::current_source_name()
 		    // Try all sources.
 		    static const string all_sources = "<ALL SOURCES>";
 
-		    if (source_name_cache[all_sources] == "")
+		    if (source_name_cache[all_sources].empty())
 		    {
 			StringArray sources;
 			get_gdb_sources(sources);
@@ -4883,7 +4883,7 @@ string SourceView::current_source_name()
 			
 			delete[] sources;
 
-			if (source_name_cache[current_file_name] == "")
+			if (source_name_cache[current_file_name].empty())
 			{
 			    // No such source text.  Store the base name
 			    // such that GDB is not asked again.
@@ -4916,7 +4916,7 @@ string SourceView::current_source_name()
 	    // Use the source name as stored by read_class()
 	    source = source_name_cache[current_file_name];
 	}
-	if (source == "")
+	if (source.empty())
 	{
 	    source = basename(current_file_name.chars());
 	    strip_java_suffix(source);
@@ -4925,7 +4925,7 @@ string SourceView::current_source_name()
     }
 
     // In case this does not work, use the current base name.
-    if (source == "")
+    if (source.empty())
 	source = basename(current_file_name.chars());
 
     return source;
@@ -4936,7 +4936,7 @@ string SourceView::line_of_cursor()
     XmTextPosition pos = XmTextGetInsertionPosition(source_text_w);
 
     string s = current_source_name();
-    if (s == "")
+    if (s.empty())
 	return "";		// No source
 
     int line_nr;
@@ -5445,7 +5445,7 @@ void SourceView::NewBreakpointDCB(Widget w, XtPointer client_data, XtPointer)
     String _input = XmTextFieldGetString(text);
     string input(_input);
     XtFree(_input);
-    if (input == "")
+    if (input.empty())
 	return;
 
     create_bp(input, w);
@@ -5513,7 +5513,7 @@ void SourceView::NewWatchpointDCB(Widget w, XtPointer client_data, XtPointer)
     XtFree(_input);
 
     strip_space(input);
-    if (input == "")
+    if (input.empty())
 	return;
 
     gdb_command(gdb->watch_command(input, selected_watch_mode), w);
@@ -6748,7 +6748,7 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
 	return;
 
     strip_space(info_breakpoints_output);
-    if (info_breakpoints_output == "")
+    if (info_breakpoints_output.empty())
     {
 	if (gdb->has_watch_command())
 	    info_breakpoints_output = "No breakpoints or watchpoints.";
@@ -6763,7 +6763,7 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
 
     split(info_breakpoints_output, breakpoint_list, count, '\n');
 
-    while (count > 0 && breakpoint_list[count - 1] == "")
+    while (count > 0 && breakpoint_list[count - 1].empty())
 	count--;
 
     bool select = false;
@@ -7044,7 +7044,7 @@ void SourceView::process_where(string& where_output)
     for (i = 0; i < count; i++)
     {
 	const string& frame = frame_list[i];
-	if (frame == "")
+	if (frame.empty())
 	    continue;		// Skip empty lines
 	if (frame.contains("Reading ", 0))
 	    continue;		// Skip GDB `Reading in symbols' messages
@@ -7346,7 +7346,7 @@ void SourceView::process_registers(string& register_output)
 
     split(register_output, register_list, count, '\n');
 
-    while (count > 0 && register_list[count - 1] == "")
+    while (count > 0 && register_list[count - 1].empty())
 	count--;
 
     for (int i = 0; i < count; i++)
@@ -7418,7 +7418,7 @@ void SourceView::process_threads(string& threads_output)
     bool valid_threads_output = true;
 
     if (threads_output == NO_GDB_ANSWER 
-	|| threads_output == ""
+	|| threads_output.empty()
 	|| threads_output.contains("No ", 0)
 	|| threads_output.matches(rxwhite))
     {
@@ -7435,7 +7435,7 @@ void SourceView::process_threads(string& threads_output)
 
     split(threads_output, thread_list, count, '\n');
 
-    while (count > 0 && thread_list[count - 1] == "")
+    while (count > 0 && thread_list[count - 1].empty())
 	count--;
 
     switch (gdb->type())
@@ -9150,7 +9150,7 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e,
     if (text_w == code_text_w)
     {
 	// Selection from code
-	if (address == "")
+	if (address.empty())
 	    return;		// No address
     }
     else
@@ -9167,7 +9167,7 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e,
     if (text_w == code_text_w)
     {
 	// Selection from code
-	if (address == "")
+	if (address.empty())
 	    return;		// No address
 	address = string('*') + address;
     }

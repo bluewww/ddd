@@ -344,7 +344,7 @@ void UndoBuffer::add_command(const string& command, bool exec)
 {
     string c = command;
     strip_space(c);
-    if (c == "")
+    if (c.empty())
 	return;
 
     string command_key = exec ? UB_EXEC_COMMAND : UB_COMMAND;

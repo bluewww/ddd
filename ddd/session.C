@@ -355,7 +355,7 @@ bool lock_session_dir(Display *display,
 		   >> info.uid
 		   >> info.username;
 
-		if (info.username == "")
+		if (info.username.empty())
 		{
 		    // DDD 3.0.90 and earlier do not save the user name
 		    info.username = itostring(info.uid);

@@ -110,7 +110,7 @@ int get_positive_nr (const string& s)
     string int_string(s);
     read_leading_parentheses(int_string);
     int_string = int_string.through(rxint);
-    if (int_string == "")
+    if (int_string.empty())
 	return -1;
 
     return atoi(int_string.chars());
@@ -132,7 +132,7 @@ string read_nr_str (string& s)
     read_leading_parentheses(s);
 
     string int_string = s.through(rxint);
-    if (int_string == "")
+    if (int_string.empty())
     {
 	s = s0;
 	return "";
