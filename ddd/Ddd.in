@@ -267,12 +267,18 @@ Ddd*indentAmount: 	8
 ! Users of GDB 4.12 and earlier may wish to add a line `display /x $pc',
 ! as these GDB versions do not issue the current PC location when source
 ! code is not available.
+!
+! Technically, the two commands `set print object on' and 
+! `set print asm-demangle on' are not required by DDD, but these
+! features are frequently demanded by DDD users...
 Ddd*gdbInitCommands:	\
 set height 0\n\
 set width 0\n\
 set print pretty\n\
 set print repeats 0\n\
 set verbose off\n\
+set print object on\n\
+set print asm-demangle on\n\
 set prompt (gdb) \n
 
 
@@ -994,7 +1000,7 @@ Ddd*editMenu.paste.acceleratorText: 	Shift+Ins
 
 Ddd*editMenu.clear.labelString:		Clear
 Ddd*editMenu.clear.mnemonic:		e
-Ddd*editMenu.clear.accelerator:		Ctrl<Key>U
+Ddd*editMenu.clear.accelerator:		~Shift Ctrl<Key>U
 Ddd*editMenu.clear.acceleratorText:	Ctrl+U
 
 Ddd*editMenu.delete.labelString:	Delete
@@ -1278,6 +1284,9 @@ Ddd*menubar.commands*contextHelpString:	\
 \n\
 @tt \267 @bf Complete @rm - complete the current command.\n\
 @tt \267 @bf Apply @rm - execute the current command.
+\n\
+@tt \267 @bf Clear Line @rm - clear current command line.
+@tt \267 @bf Clear Window @rm - clear all before last debugger prompt.
 
 Ddd*commandsMenu.history.labelString:	Command History...
 Ddd*commandsMenu.history.mnemonic:	H
@@ -1302,6 +1311,16 @@ Ddd*commandsMenu.apply.labelString:	Apply
 Ddd*commandsMenu.apply.mnemonic:	A
 ! *commandsMenu.apply.accelerator:	None<Key>Return
 Ddd*commandsMenu.apply.acceleratorText: Return
+
+Ddd*commandsMenu.clear_line.labelString: Clear Line
+Ddd*commandsMenu.clear_line.mnemonic:	L
+! *commandsMenu.clear_line.accelerator:  Ctrl<Key>U
+Ddd*commandsMenu.clear_line.acceleratorText: Ctrl+U
+
+Ddd*commandsMenu.clear_window.labelString: Clear Window
+Ddd*commandsMenu.clear_window.mnemonic:	W
+*commandsMenu.clear_window.accelerator:	Shift Ctrl<Key>U
+Ddd*commandsMenu.clear_window.acceleratorText: Ctrl+Shift+U
 
 Ddd*menubar.stack.labelString:		Stack
 Ddd*menubar.stack.mnemonic:		t

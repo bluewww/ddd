@@ -269,12 +269,13 @@ void gdbReloadSourceCB (Widget, XtPointer, XtPointer);
 void gdbGoBackCB       (Widget, XtPointer, XtPointer);
 void gdbGoForwardCB    (Widget, XtPointer, XtPointer);
 
-void gdbHistoryCB  (Widget, XtPointer, XtPointer);
-void gdbNextCB     (Widget, XtPointer, XtPointer);
-void gdbPrevCB     (Widget, XtPointer, XtPointer);
-void gdbClearCB    (Widget, XtPointer, XtPointer);
-void gdbCompleteCB (Widget, XtPointer, XtPointer);
-void gdbApplyCB    (Widget, XtPointer, XtPointer);
+void gdbHistoryCB        (Widget, XtPointer, XtPointer);
+void gdbNextCB           (Widget, XtPointer, XtPointer);
+void gdbPrevCB           (Widget, XtPointer, XtPointer);
+void gdbClearCB          (Widget, XtPointer, XtPointer);
+void gdbCompleteCB       (Widget, XtPointer, XtPointer);
+void gdbApplyCB          (Widget, XtPointer, XtPointer);
+void gdbClearWindowCB    (Widget, XtPointer, XtPointer);
 
 void gdbCutSelectionCB   (Widget, XtPointer, XtPointer);
 void gdbCopySelectionCB  (Widget, XtPointer, XtPointer);
@@ -1203,6 +1204,9 @@ static MMDesc command_menu[] =
     MMSep,
     { "complete", MMPush, { gdbCompleteCB }},
     { "apply",    MMPush, { gdbApplyCB }},
+    MMSep,
+    { "clear_line",   MMPush, { gdbClearCB }},
+    { "clear_window", MMPush, { gdbClearWindowCB }},
     MMEnd
 };
 
@@ -5222,6 +5226,28 @@ void gdbClearCB  (Widget w, XtPointer, XtPointer call_data)
     String args[1] = {""};
     Cardinal num_args = 1;
     set_lineAct(w, cbs->event, args, &num_args);
+}
+
+// Remove any text up to the last GDB prompt
+void gdbClearWindowCB(Widget, XtPointer, XtPointer)
+{
+    String str = XmTextGetString(gdb_w);
+    string s = str;
+    XtFree(str);
+
+    int index = s.index(gdb->prompt(), -1);
+    if (index < 0)
+	return;
+
+    private_gdb_output = true;
+
+    XmTextReplace(gdb_w, 0, index, "");
+
+    promptPosition  -= index;
+    messagePosition -= index;
+    XmTextSetInsertionPosition(gdb_w, XmTextGetLastPosition(gdb_w));
+
+    private_gdb_output = false;
 }
 
 void gdbCompleteCB  (Widget w, XtPointer, XtPointer call_data)
