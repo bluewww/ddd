@@ -112,8 +112,6 @@ static char *_fullhostname()
     struct hostent *h = gethostbyname(name);
     if (h)
     {
-	int i = 0;
-
 	// Use first network address
 	if (h->h_addrtype == AF_INET && h->h_addr_list[0] != 0)
 	{
@@ -127,7 +125,7 @@ static char *_fullhostname()
 	}
 
 	// Try qualified alias
-	while (h->h_aliases[i] != 0)
+	for (int i = 0; h->h_aliases[i] != 0; i++)
 	    if (strchr(h->h_aliases[i], '.'))
 		return h->h_aliases[i];
     }
