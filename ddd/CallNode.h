@@ -98,7 +98,8 @@ public:
     // Destructor (includes arg)
     ~CallNode()
     {
-	if (_arg) delete _arg;
+	if (_arg != 0)
+	    delete _arg;
     }
 
     const Box *_eval(ListBox *arglist) const;

@@ -148,11 +148,15 @@ void LineGraphEdge::findLine(const BoxPoint& c1, const BoxPoint& c2,
     BoxCoordinate dx = abs(c1[X] - c2[X]);
     BoxCoordinate dy = abs(c1[Y] - c2[Y]);
 
-    if (b1.space(Y) * dx > b1.space(X) * dy) side1 &= ~(North | South);
-    else                                     side1 &= ~(East | West);
+    if (b1.space(Y) * dx > b1.space(X) * dy)
+	side1 &= ~(North | South);
+    else
+	side1 &= ~(East | West);
 
-    if (b2.space(Y) * dx > b2.space(X) * dy) side2 &= ~(North | South);
-    else                                     side2 &= ~(East | West);
+    if (b2.space(Y) * dx > b2.space(X) * dy)
+	side2 &= ~(North | South);
+    else
+	side2 &= ~(East | West);
 
     p1 = c1;
     p2 = c2;

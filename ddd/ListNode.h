@@ -75,8 +75,10 @@ public:
     // Destructor (including args)
     ~ListNode()
     {
-	if (_head) delete _head;
-	if (_tail) delete _tail;
+	if (_head != 0)
+	    delete _head;
+	if (_tail != 0)
+	    delete _tail;
     }
 
     // Resources

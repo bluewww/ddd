@@ -477,10 +477,17 @@ string VSLDef::longname() const
 // Delete definition *and all successors*
 VSLDef::~VSLDef()
 {
-    if (_listnext)      delete _listnext;
-    if (_expr)          delete _expr;
-    if (_node_pattern)  delete _node_pattern;
-    if (_box_pattern)   _box_pattern->unlink();
+    if (_listnext != 0)
+	delete _listnext;
+
+    if (_expr != 0)
+	delete _expr;
+
+    if (_node_pattern != 0) 
+	delete _node_pattern;
+
+    if (_box_pattern != 0)
+	_box_pattern->unlink();
 }
 
 // Representation invariant (*without* successors)

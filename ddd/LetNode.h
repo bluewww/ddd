@@ -112,8 +112,10 @@ public:
     // Destructor
     ~LetNode()
     {
-	if (_node_pattern) delete _node_pattern;
-	if (_box_pattern) _box_pattern->unlink();
+	if (_node_pattern != 0)
+	    delete _node_pattern;
+	if (_box_pattern != 0)
+	    _box_pattern->unlink();
     }
 
     // Resources

@@ -278,7 +278,8 @@ void VSLLib::output(Box *&a)
 VSLLib::~VSLLib()
 {
     for (int i = 0; i < hashSize; i++)
-	if (defs[i]) delete defs[i];
+	if (defs[i] != 0)
+	    delete defs[i];
 }
 
 

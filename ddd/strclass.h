@@ -949,7 +949,8 @@ inline void string_DeleteRep(strRep *rep)
 
 inline string::~string()
 {
-    if (rep != &_nilstrRep) string_DeleteRep(rep);
+    if (rep != &_nilstrRep)
+	string_DeleteRep(rep);
 }
 
 inline subString::subString(const subString& x)
@@ -1536,7 +1537,8 @@ inline void string::capitalize()
 inline char&  string::operator [] (unsigned int i) 
 {
 #ifndef NDEBUG
-    if (i >= length()) error("invalid index");
+    if (i >= length())
+	error("invalid index");
 #endif
     return rep->s[i];
 }
@@ -1544,7 +1546,8 @@ inline char&  string::operator [] (unsigned int i)
 inline char string::operator [] (unsigned int i) const
 { 
 #ifndef NDEBUG
-    if (i >= length()) error("invalid index");
+    if (i >= length())
+	error("invalid index");
 #endif
     return rep->s[i];
 }
@@ -1612,7 +1615,8 @@ inline char string::operator [] (unsigned long i) const
 inline char string::elem (int i) const
 { 
 #ifndef NDEBUG
-    if (((unsigned)i) >= length()) error("invalid index");
+    if (((unsigned)i) >= length())
+	error("invalid index");
 #endif
     return rep->s[i];
 }
