@@ -34,6 +34,7 @@ char SignalCatcher_rcsid[] =
 #include <stdlib.h>
 
 #include "SignalC.h"
+#include "AgentM.h"
 #include "sigName.h"
 
 #ifdef __GNUG__
@@ -61,7 +62,7 @@ extern "C" {
 static void cleanupOnSignal(int sig)
 {
     // restore default action (if we're killed another time, this will make it)
-    signal(sig, (void (*)(int))SIG_DFL);
+    signal(sig, SignalProc(SIG_DFL));
 
     fprintf(stderr, "%s\nCleaning up... ", sigName(sig));
 

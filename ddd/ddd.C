@@ -158,6 +158,7 @@ char ddd_rcsid[] =
 #endif
 
 // Lots of DDD stuff
+#include "AgentM.h"
 #include "AppData.h"
 #include "ArgField.h"
 #include "DataDisp.h"
@@ -929,7 +930,7 @@ int main(int argc, char *argv[])
     // Setup signals: Restore default action for SIGCHLD signals.
     // Without asynchronous signal handling, DDD still runs well and
     // is less dependent on OS-specific signal handling.
-    signal(SIGCHLD, (void (*)(int))SIG_DFL);
+    signal(SIGCHLD, SignalProc(SIG_DFL));
 #endif
 
     // Check if we are to run without windows
