@@ -970,8 +970,9 @@ void send_gdb_command(string cmd, Widget origin,
 		case DBX:
 		case XDB:
 		case JDB:
-		    // Use `list ARG' as directed, but as a side effect,
-		    // lookup ARG in source window, too.
+		    // Lookup ARG in source window only.
+		    verbose = false;
+		    prompt  = false;
 		    cmd_data->lookup_arg = arg;
 		    break;
 
