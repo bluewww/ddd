@@ -144,7 +144,7 @@ Volunteers for these and other projects are welcome!
      are posted.  (Hmm.  Might be time for a USENET newsgroup
      `comp.debuggers.ddd.announce' :-)
 
-075. Andre Cormeau <ac@enci.ucalgary.ca> says:
+075* Andre Cormeau <ac@enci.ucalgary.ca> says:
 
      Apparently ddd does not fully support fortran. A problem is in
      variable names, with capital letters and underscores (not strict
@@ -245,4 +245,14 @@ Volunteers for these and other projects are welcome!
      - Insert a `reset' button - reset to initial values.
      - Save settings in `~/.dddinit' (or `~/.gdbinit'?)
 
-097. (Insert your project idea here)
+097* If a single value is selected in the data display `()', copy its
+     value to the source window `()', such that it can be used as
+     argument.
+
+098* Add customizable buttons to the data display.  (See 097, above).
+
+099* Add a history mechanism to the `()' window (cursor up / cursor
+     down).  Realize by making it a multi-line text and selecting only
+     the current line.
+
+100. (Insert your project idea here)

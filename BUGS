@@ -250,4 +250,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 101* `graph display int' results in an empty box.  No warning.
 
-103. (Insert your bug here)
+103* configure: if CXX=gcc and -lstdc++ is found, `configure' defines
+     HAVE_LIBSTDC++ - trouble!
+
+104. (Insert your bug here)
