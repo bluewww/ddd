@@ -1177,11 +1177,13 @@ Ddd*menubar*fileMenu.close.mnemonic:	 C
 
 Ddd*menubar*fileMenu.restart.labelString: Restart
 Ddd*menubar*fileMenu.restart.mnemonic:	 R
+Ddd*menubar*fileMenu.restart.accelerator:      Shift Meta<Key>Q
+Ddd*menubar*fileMenu.restart.acceleratorText:  Alt+Shift+Q
 
 Ddd*menubar*fileMenu.quit.labelString:	 Exit
 Ddd*menubar*fileMenu.quit.mnemonic:	 E
-Ddd*menubar*fileMenu.quit.accelerator:      Ctrl<Key>Q
-Ddd*menubar*fileMenu.quit.acceleratorText:  Ctrl+Q
+Ddd*menubar*fileMenu.quit.accelerator:      ~Shift Meta<Key>Q
+Ddd*menubar*fileMenu.quit.acceleratorText:  Alt+Q
 
 
 Ddd*menubar.edit.labelString:		Edit
@@ -1595,7 +1597,7 @@ Ddd*preferences*buttons*data.labelString:    Data Preferences
 Ddd*preferences*buttons*startup.labelString: Startup Preferences
 
 Ddd*preferences*general*contextHelpString:	\
-@rm This is the @sl General Preferences @rm window.\n\
+@rm These are the @sl General Preferences@rm.\n\
 \n\
 @tt \267 @rm If @bf Iconify all windows at once @rm is set, all @DDD@ windows \
 are iconified as a group.\n\
@@ -1609,7 +1611,9 @@ in the @DDD@ debugger console only.\n\
 X warnings are silently ignored.\n\
 @tt \267 @rm If @bf Save command history on exit @rm is set,\n\
     the command history is automatically saved when @DDD@ exits.\n\
-    Otherwise, the command history is discarded.
+    Otherwise, the command history is discarded.\n\
+\n\
+Use the buttons above to view and change other preferences.
 
 Ddd*preferences*groupIconify.labelString:        \
 Iconify all windows at once
@@ -1622,7 +1626,7 @@ Save command history on exit
 
 
 Ddd*preferences*source*contextHelpString:	\
-@rm This is the @sl Source Preferences @rm window.\n\
+@rm These are the @sl Source Preferences@rm.\n\
 \n\
 @tt \267 @rm If @bf Use glyphs @rm is set, \
 positions and breakpoints are shown as glyphs.\n\
@@ -1632,7 +1636,9 @@ source texts are cached in memory.\n\
     Otherwise, sources are re-read upon each source change.\n\
 @tt \267 @rm If @bf Cache machine code @rm is set, \
 disassembled code is cached in memory.\n\
-    Otherwise, code is re-disassembled upon each function change.
+    Otherwise, code is re-disassembled upon each function change.\n\
+\n\
+Use the buttons above to view and change other preferences.
 
 Ddd*preferences*displayGlyphs.labelString:       \
 Use glyphs for showing execution position and breakpoints
@@ -1643,7 +1649,7 @@ Cache machine code
 
 
 Ddd*preferences*data*contextHelpString:	\
-@rm This is the @sl Data Preferences @rm window.\n\
+@rm These are the @sl Data Preferences@rm.\n\
 \n\
 @tt \267 @rm If @bf Show grid @rm is set, the grid is displayed.\n\
 @tt \267 @rm If @bf Show edge hints @rm is set, edge hints are displayed.\n\
@@ -1654,7 +1660,9 @@ Ddd*preferences*data*contextHelpString:	\
     Otherwise, the standard layout algorithm is used.\n\
 @tt \267 @rm If @bf Automatic layout @rm is set, the graph is layouted\n\
     after each change.\n\
-    Otherwise, layout can be invoked manually.
+    Otherwise, layout can be invoked manually.\n\
+\n\
+Use the buttons above to view and change other preferences.
 
 Ddd*preferences*showGrid.labelString:	       Show grid
 Ddd*preferences*showHints.labelString:	       Show edge hints
@@ -1664,7 +1672,7 @@ Ddd*preferences*autoLayout.labelString:	       Automatic layout
 
 
 Ddd*preferences*startup*contextHelpString:   \
-@rm This is the @sl Startup Preferences @rm window.\n\
+@rm These are the @sl Startup Preferences@rm.\n\
 \n\
 @tt \267 @bf Windows @rm sets the window layout.\n\
     @bf Separate windows @rm means to use one source window,\n\
@@ -1685,7 +1693,9 @@ Ddd*preferences*startup*contextHelpString:   \
 @tt \267 @bf Debugger Type @rm sets the type of inferior debugger to use.\n\
 \n\
 Note: these startup preferences take effect only after saving options\n\
-and restarting @DDD@.
+and restarting @DDD@.\n\
+\n\
+Use the buttons above to view and change other preferences.
 
 Ddd*preferences*startup*adjustMargin:		false
 
