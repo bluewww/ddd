@@ -4,7 +4,13 @@ DDD News						-*- text -*-
 DDD-3.3.9
 =========
 
-- Support for PHP debugger has been added. This is essentially not tested.
+- Support for PHP debugger has been added (1). This is essentially not tested.
+- Builds with IBM xlC and on X11R5 based systems should be OK.
+- Builds with readline support should be OK.
+- Builds without Motif/Lesstif available abort with an adequate message.
+- Several missing files in the distribution are now included.
+
+(1) Thanks to Dmitri Dmitrienko and Rocky Bernstein.
 
 DDD-3.3.8
 =========
