@@ -8,13 +8,15 @@ DDD 2.2 [in beta test]
     attaching to running processes, display shortcuts, and more.
 
     User-visible changes to DDD 2.1:
-    - Persistent sessions.   (Requires GDB.)
+    - Persistent sessions.
       * You can now save the entire debugger and process state and
         resume the session later.
       * Saved state includes process memory and state, inferior
         debugger settings, breakpoints, and data displays.
       * X11R6 sessions are supported, too.  When used with a
         session manager, DDD saves and restores its entire state.
+      * Persistent sessions work best with GDB; DBX and XDB are
+        partially supported, too.
     - Improved user interface.
       * DDD now requires less width and height.
       * Source line numbers have been turned off (can be restored);
@@ -87,6 +89,7 @@ DDD 2.2 [in beta test]
     - For `Continue Until Here', DDD now sets a temporary breakpoint
       and continues (instead of using the GDB `until' command).  If
       the temporary breakpoint is not reached, it is deleted.
+    - A restarted DDD now inherits all settings from the previous instance.
     - Resource files have been renamed.  All files are now located
       under `~/.ddd/'.  The file `~/.dddinit' has been replaced by
       `~/.ddd/init'; `~/.ddd_history' is now `~/.ddd/history'.  The
