@@ -408,6 +408,7 @@ void GDBAgent::InputHP (Agent* agent, void* client_data, void* call_data)
 	// answer to a command sent before the prompt was received.
 	gdb->state = BusyOnCmd;
 	gdb->busy_handlers.call(ReadyForQuestion, 0, (void*)false);
+	break;
 
     case BusyOnInitialCmds:
     case BusyOnCmd:
