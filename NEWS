@@ -109,6 +109,8 @@ Data exploration
 - The `Undisplay ()' button also deletes all aliases of the selected
   display.  See the `deleteAliasDisplays' resource for details.
 
+- Deleting all displays at once requires confirmation from GDB.
+
 - Using GDB, VALUEs that are repeated N times are now displayed as
   `VALUE <Nx>', saving space in the data display; see `Edit->GDB
   Settings->Threshold for repeated print elements'.  Setting the
