@@ -418,6 +418,15 @@ string read_member_name (string& value)
     static regex RXmember_name(".* = [^\001]*", true);
 
     read_leading_blanks (value);
+
+    if (value.length() > 0 && value[0] == '=')
+    {
+	// Anonymous union
+	value = value.after(0);
+	read_leading_blanks(value);
+	return " ";
+    }
+
     if (!value.matches(RXmember_name))
 	return "";
 
@@ -433,9 +442,12 @@ string read_member_name (string& value)
 
     read_leading_blanks (member_name);
 
-    // An anonymous union has no name (special case)
     if (member_name == "")
-	member_name = " ";
+    {
+	// Anonymous union
+	return " ";
+    }
+
     return member_name;
 }
 
