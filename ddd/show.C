@@ -549,7 +549,7 @@ void DDDLicenseCB(Widget w, XtPointer, XtPointer call_data)
 
 int ddd_news(ostream& os)
 {
-#if WITH_BUILTIN_COPYING
+#if WITH_BUILTIN_NEWS
     static const char NEWS[] =
 #include "NEWS.gz.C"
 	;
