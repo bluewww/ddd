@@ -331,12 +331,6 @@ static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
 // Drag and drop
 static void CheckDragCB(Widget, XtPointer client_data, XtPointer call_data);
 
-// Help on context
-static void DDDHelpOnContextCB(Widget, XtPointer client_data, 
-			       XtPointer call_data);
-static void DDDHelpOnItemCB(Widget, XtPointer client_data, 
-			    XtPointer call_data);
-
 // Verify whether buttons are active
 static void verify_buttons(MMDesc *items);
 
@@ -383,6 +377,10 @@ static void setup_core_limit();
 
 // Helpers
 static void set_label(Widget w, const MString& new_label);
+
+// Help hooks
+static void PreHelpOnContext(Widget w, XtPointer, XtPointer);
+static void PostHelpOnItem(Widget item);
 
 
 //-----------------------------------------------------------------------------
@@ -1128,8 +1126,7 @@ static MMDesc help_menu[] =
 {
     {"onHelp",      MMPush, { HelpOnHelpCB }},
     MMSep,
-    {"onItem",      MMPush, { DDDHelpOnItemCB }},
-    {"onContext",   MMPush, { DDDHelpOnContextCB }},
+    {"onItem",      MMPush, { HelpOnItemCB }},
     {"onWindow",    MMPush, { HelpOnWindowCB }},
     MMSep,
     {"whatNext",    MMPush, { WhatNextCB }},
@@ -1868,6 +1865,7 @@ int main(int argc, char *argv[])
 
     Widget menubar_w = MMcreateMenuBar (main_window, "menubar", menubar);
     MMaddCallbacks(menubar);
+    MMaddHelpCallback(menubar, ImmediateHelpCB);
     verify_buttons(menubar);
     register_menu_shell(menubar);
 
@@ -1911,6 +1909,7 @@ int main(int argc, char *argv[])
 	data_menubar_w = 
 	    MMcreateMenuBar (data_main_window_w, "menubar", data_menubar);
 	MMaddCallbacks(data_menubar);
+	MMaddHelpCallback(menubar, ImmediateHelpCB);
 	verify_buttons(data_menubar);
 	register_menu_shell(data_menubar);
 
@@ -1970,6 +1969,7 @@ int main(int argc, char *argv[])
 	source_menubar_w = 
 	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
 	MMaddCallbacks(source_menubar);
+	MMaddHelpCallback(menubar, ImmediateHelpCB);
 	verify_buttons(source_menubar);
 	register_menu_shell(source_menubar);
 
@@ -2008,6 +2008,7 @@ int main(int argc, char *argv[])
 
     MMcreateWorkArea(arg_cmd_w, "arg_cmd_area", arg_cmd_area);
     MMaddCallbacks(arg_cmd_area);
+    MMaddHelpCallback(arg_cmd_area, ImmediateHelpCB);
     XtManageChild(arg_cmd_w);
     register_menu_shell(arg_cmd_area);
 
@@ -2108,6 +2109,10 @@ int main(int argc, char *argv[])
 
     // Setup help pixmap
     helpOnVersionPixmapProc = versionlogo;
+
+    // Setup help hooks
+    PreHelpOnContextHook = PreHelpOnContext;
+    PostHelpOnItemHook   = PostHelpOnItem;
 
     // Setup version info
     setup_version_info();
@@ -3008,38 +3013,26 @@ static void CheckDragCB(Widget, XtPointer, XtPointer call_data)
 // Context help
 //-----------------------------------------------------------------------------
 
-static void DDDHelpOnContextCB(Widget w, XtPointer, XtPointer call_data)
-{
-    MString saved_status_message = current_status();
-    Widget item = 0;
+static MString saved_status_message(0, true);
 
+static void PreHelpOnContext(Widget w, XtPointer, XtPointer)
+{
+    saved_status_message = current_status();
     set_status("Please click on the item you want information for.");
     XFlush(XtDisplay(w));
-    HelpOnContextCB(w, (XtPointer)&item, call_data);
-    set_status_mstring(saved_status_message, true);
+}
 
+static void PostHelpOnItem(Widget item)
+{
     if (item != 0)
     {
 	MString msg = rm("Selected ") + tt(longName(item));
 	set_status_mstring(msg);
     }
-}
-
-static void DDDHelpOnItemCB(Widget w, XtPointer client_data, 
-			    XtPointer call_data)
-{
-    Widget item = 0;
-    HelpOnThisContextCB(w, (XtPointer)&item, call_data);
-
-    if (item == 0)
+    else if (!saved_status_message.isNull())
     {
-	// No item found -- try tracking help
-	DDDHelpOnContextCB(w, client_data, call_data);
-    }
-    else
-    {
-	MString msg = rm("Selected ") + tt(longName(item));
-	set_status_mstring(msg);
+	set_status_mstring(saved_status_message);
+	saved_status_message = MString(0, true);
     }
 }
 
@@ -3714,6 +3707,7 @@ static Widget add_panel(Widget parent, Widget buttons,
     // Add panel
     Widget panel = MMcreatePanel(form, "panel", items);
     MMaddCallbacks(items);
+    MMaddHelpCallback(items, ImmediateHelpCB);
     XtManageChild(panel);
     register_menu_shell(items);
 

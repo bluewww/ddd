@@ -772,6 +772,7 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
 		      XmNmarginHeight, 0,
 		      NULL);
 	MMaddCallbacks(gcore_items);
+	MMaddHelpCallback(gcore_items, ImmediateHelpCB);
 
 	// Initialize: use `kill debuggee' as default item
 	XtCallActionProc(may_kill_w, "ArmAndActivate", 

@@ -26,32 +26,6 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-// The following copyright applies to the GetWhichWidget() amnd
-// GetWidgetChild() functions:
-//
-// (C) COPYRIGHT International Business Machines Corp. 1993 (IBM)
-//                        All rights reserved
-// Permission to use, copy, modify and distribute this material for
-// any purpose and without fee is hereby granted, provided that the
-// above copyright notice and this permission notice appear in all
-// copies, and that the name of IBM not be used in advertising
-// or publicity pertaining to this material without the specific,
-// prior written permission of an authorized representative of
-// IBM.
-//
-// IBM MAKES NO REPRESENTATIONS AND EXTENDS NO WARRANTIES, EX-
-// PRESS OR IMPLIED, WITH RESPECT TO THE SOFTWARE, INCLUDING, BUT
-// NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
-// FITNESS FOR ANY PARTICULAR PURPOSE, AND THE WARRANTY AGAINST IN-
-// FRINGEMENT OF PATENTS OR OTHER INTELLECTUAL PROPERTY RIGHTS.  THE
-// SOFTWARE IS PROVIDED "AS IS", AND IN NO EVENT SHALL IBM OR
-// ANY OF ITS AFFILIATES BE LIABLE FOR ANY DAMAGES, INCLUDING ANY
-// LOST PROFITS OR OTHER INCIDENTAL OR CONSEQUENTIAL DAMAGES RELAT-
-// ING TO THE SOFTWARE.
-//
-// Author: Jay Schmidgall, IBM Rochester, jay@vnet.ibm.com
-
-
 char HelpCB_rcsid[] =
     "$Id$";
 
@@ -88,12 +62,6 @@ char HelpCB_rcsid[] =
 #include <X11/StringDefs.h>
 #include <X11/IntrinsicP.h>	// LessTif hacks
 #include <X11/Shell.h>
-
-// These are needed by GetWhichWidget()
-#include <X11/IntrinsicP.h>
-#include <X11/CoreP.h>
-#include <Xm/MenuShellP.h>
-#include <Xm/RowColumnP.h>
 
 // Misc DDD includes
 #include "LessTifH.h"
@@ -329,6 +297,28 @@ static MString get_documentation_string(Widget widget, XEvent *event)
     return text;
 }
 
+static bool call_tracking_help(XtPointer call_data, bool key_only = false)
+{
+    XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
+
+    if (cbs == 0)
+	return key_only;
+
+    if (cbs->event == 0)
+	return key_only;
+
+    if (cbs->event->type != KeyPress && cbs->event->type != KeyRelease)
+	return key_only;
+
+    if ((cbs->event->xkey.state & ShiftMask) == 0)
+	return false;
+
+    return true;
+}
+
+static void nop1(Widget) {}
+void (*PostHelpOnItemHook)(Widget) = nop1;
+
 void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     if (help_dialog == 0)
@@ -340,16 +330,25 @@ void HelpOnHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
     // Get help on the help dialog
     MString text = get_help_string(help_dialog);
     _MStringHelpCB(widget, XtPointer(text.xmstring()), call_data, true);
+
+    PostHelpOnItemHook(help_dialog);
 }
 
-void ImmediateHelpCB(Widget widget, XtPointer, XtPointer call_data)
+void ImmediateHelpCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
     if (widget == 0)
 	return;
 
+    if (call_tracking_help(call_data))
+    {
+	HelpOnContextCB(widget, client_data, call_data);
+	return;
+    }
+
     // Get help on this widget
     MString text = get_help_string(widget);
     MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
+    PostHelpOnItemHook(widget);
 }
 
 void HelpOnThisCB(Widget widget, XtPointer client_data, XtPointer call_data)
@@ -357,24 +356,44 @@ void HelpOnThisCB(Widget widget, XtPointer client_data, XtPointer call_data)
     if (widget == 0)
 	return;
 
-    Widget w = (Widget)client_data;
+    if (call_tracking_help(call_data))
+    {
+	HelpOnContextCB(widget, client_data, call_data);
+	return;
+    }
 
+    Widget w = (Widget)client_data;
+	
     // Get help on this widget
     MString text = get_help_string(w);
     MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
+    PostHelpOnItemHook(w);
 }
 
-void HelpOnWindowCB(Widget widget, XtPointer, XtPointer call_data)
+void HelpOnWindowCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
-    // Get a shell window
+    if (call_tracking_help(call_data))
+    {
+	HelpOnContextCB(widget, client_data, call_data);
+	return;
+    }
+
+    // Get help on the shell window
     Widget shell = findTopLevelShellParent(widget);
 
     MString text = get_help_string(shell);
     MStringHelpCB(widget, XtPointer(text.xmstring()), call_data);
+    PostHelpOnItemHook(shell);
 }
 
-void HelpOnVersionCB(Widget widget, XtPointer, XtPointer call_data)
+void HelpOnVersionCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
+    if (call_tracking_help(call_data))
+    {
+	HelpOnContextCB(widget, client_data, call_data);
+	return;
+    }
+
     // Get a shell window
     Widget shell = findTopLevelShellParent(widget);
 
@@ -388,6 +407,8 @@ void HelpOnVersionCB(Widget widget, XtPointer, XtPointer call_data)
 
     _MStringHelpCB(widget, XtPointer(text.xmstring()), call_data, 
 		   false, pixmap);
+
+    // PostHelpOnItemHook(shell);
 }
 
 static void HelpDestroyCB(Widget, XtPointer client_data, XtPointer)
@@ -1333,55 +1354,61 @@ TrackingEvent(Widget widget, Cursor cursor,
     }
 }
 
+// Hook before help on context
+static void nop2(Widget, XtPointer, XtPointer) {}
+void (*PreHelpOnContextHook)(Widget w, XtPointer client_data, 
+			     XtPointer call_data) = nop2;
 
 void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
 {
-    Widget *widget_return = (Widget *)client_data;
-
     Widget item = 0;
     Widget toplevel = findTheTopLevelShell(widget);
-    if (toplevel != 0)
-    {
-	static Cursor cursor = 
-	    XCreateFontCursor(XtDisplay(toplevel), XC_question_arrow);
 
-	XEvent ev;
+    if (toplevel == 0)
+    {
+	HelpOnWindowCB(widget, client_data, call_data);
+	return;
+    }
+	   
+    PreHelpOnContextHook(widget, client_data, call_data);
+
+    static Cursor cursor = 
+	XCreateFontCursor(XtDisplay(toplevel), XC_question_arrow);
+
+    XEvent ev;
 #if XmVersion < 1002
-	// No XmTrackingEvent() in Motif 1.1
-	item = TrackingEvent(toplevel, cursor, False, &ev);
+    // No XmTrackingEvent() in Motif 1.1
+    item = TrackingEvent(toplevel, cursor, False, &ev);
 #else
-	if (lesstif_version < 1000)
-	    item = TrackingEvent(toplevel, cursor, False, &ev);
-	else
-	    item = XmTrackingEvent(toplevel, cursor, False, &ev);
+    if (lesstif_version < 1000)
+	item = TrackingEvent(toplevel, cursor, False, &ev);
+    else
+	item = XmTrackingEvent(toplevel, cursor, False, &ev);
 #endif
 
-	if (item != 0)
-	    ImmediateHelpCB(item, client_data, call_data);
-	else
-	    ImmediateHelpCB(toplevel, client_data, call_data);
+    if (item != 0)
+	ImmediateHelpCB(item, client_data, 0);
+    else
+	ImmediateHelpCB(toplevel, client_data, 0);
 
-	// Some Motif versions get confused if this function is invoked
-	// via a menu accelerator; the keyboard remains grabbed. Hence, we
-	// ungrab it explicitly.
-	XtUngrabKeyboard(toplevel,
-			 XtLastTimestampProcessed(XtDisplay(widget)));
-    }
-
-    if (widget_return != 0)
-	*widget_return = item;
+    // Some Motif versions get confused if this function is invoked
+    // via a menu accelerator; the keyboard remains grabbed. Hence, we
+    // ungrab it explicitly.
+    XtUngrabKeyboard(toplevel,
+		     XtLastTimestampProcessed(XtDisplay(widget)));
 }
 
 
-// Return the child widget EX/EY is in, starting with WIDGET.
-// Based on ftp://ftp.ora.com/pub/examples/xresource/issue6/helpdemo.tar.Z
-// See header for copyright and permissions
-static Widget GetWidgetChild(Widget w, int ex, int ey)
+// Return the child widget (or gadget) EX/EY is in, starting with WIDGET.
+static Widget GetWidgetAt(Widget w, int ex, int ey)
 {
-    Widget next_child = 0;
-    do
+    if (w == 0)
+	return 0;
+
+    bool once_again = true;
+    while (once_again)
     {
-	WidgetList children;
+	WidgetList children  = 0;
 	Cardinal numChildren = 0;
 
 	if (XtIsComposite(w))
@@ -1390,211 +1417,63 @@ static Widget GetWidgetChild(Widget w, int ex, int ey)
 			  XmNnumChildren, &numChildren, NULL);
 	}
 
-	next_child = 0;
-	Dimension next_cx, next_cy;
-	for (Cardinal m = 0; m < numChildren; m++)
-	{
-	    Dimension cx, cy, cw, ch;
-	    XtVaGetValues(children[m],
-			  XmNx, &cx, XmNy, &cy,
-			  XmNwidth, &cw, XmNheight, &ch,
-			  NULL);
+	once_again = false;
 
-	    if (XtIsManaged(children[m]) &&
-		(cx <= ex && ex <= (cx+cw)) &&
-		(cy <= ey && ey <= (cy+ch)))
+	// Look for position within children.
+	// In a form, we may have multiple children overlapping each
+	// other.  Hence, search later children first, as they will be
+	// on top of earlier ones.
+	for (int m = int(numChildren) - 1; m >= 0; m--)
+	{
+	    Widget child = children[m];
+	    if (XtIsRectObj(child) && XtIsManaged(child))
 	    {
-		// In a form, we may have multiple children
-		// overlapping each other.  In this case, use the last
-		// child, as it will also be the one on top.
-		next_child = children[m];
-		next_cx    = cx;
-		next_cy    = cy;
-	    }
-	}
-
-	if (next_child != 0)
-	{
-	    w = next_child;
-	    ex -= next_cx;
-	    ey -= next_cy;
-	}
-
-    } while (next_child != 0);
-
-    return w;
-}
-
-// Returns the widget the pointer is over, or 0 if the pointer is over
-// a shell widget, or cannot be determined.  Also returns the menu
-// shell widget if present.
-//
-// Side effect: Pop down a menu if one is visible when requesting
-// help.
-//
-// Based on ftp://ftp.ora.com/pub/examples/xresource/issue6/helpdemo.tar.Z
-// See header for copyright and permissions
-static Widget GetWhichWidget(XKeyEvent *evt, Widget toplevel, 
-			     Widget& menu_shell)
-{
-    Widget post_from = 0;
-
-    Widget on_widget = XtWindowToWidget(evt->display, evt->window);
-
-    if (XmIsMenuShell(on_widget))
-    {
-	WidgetList children;
-
-	// Get the child of the menu shell
-	XtVaGetValues(on_widget,
-		      XmNchildren, &children,
-		      NULL);
-
-	// Find out what posted us
-	if (XmIsRowColumn(children[0]))
-	    if (!(post_from = XmGetPostedFromWidget(children[0])))
-		post_from = RC_CascadeBtn(children[0]);
-
-	// Save menu shell
-	menu_shell = on_widget;
-
-	// Check if pointer is contained in the menu which
-	// contains the post_from widget
-	Window unused;
-	Widget cur = XtParent(post_from);
-	int ex, ey;
-	XTranslateCoordinates(evt->display, evt->window,
-			      XtWindow(cur), evt->x, evt->y,
-			      &ex, &ey, &unused);
-
-	Dimension cx, cy, cw, ch;
-	XtVaGetValues(cur,
-		      XmNx, &cx, XmNy, &cy,
-		      XmNwidth, &cw, XmNheight, &ch,
-		      NULL);
-
-	// We check if the pointer x,y coords are bounded by the menu
-	// pane width and height -- we need not check the menu pane
-	// x,y since we just translated the event x,y into its frame
-	// of reference.
-	//
-	// If false, then the pointer is not within the menu pane.  So
-	// it must be somewhere else and we'll look for it beginning
-	// with the toplevel widget.
-	//
-	// If true, the pointer is within the menu pane so we start
-	// with that.
-	if (!((0 <= ex && ex <= cw) && (0 <= ey && ey <= ch)))
-	    cur = toplevel;
-
-	bool done = false;
-	while (!done)
-	{
-	    WidgetList child;
-	    int numChildren;
-
-	    XtVaGetValues(cur, XmNchildren, &child,
-			  XmNnumChildren, &numChildren, NULL);
-
-	    int m;
-	    for (m = 0; m < numChildren; m++)
-	    {
-		XtVaGetValues(child[m],
+		Dimension cx, cy, cw, ch;
+		XtVaGetValues(child,
 			      XmNx, &cx, XmNy, &cy,
 			      XmNwidth, &cw, XmNheight, &ch,
 			      NULL);
 
-		if (XtIsComposite(child[m]))
+		if (cx <= ex && ex <= (cx + cw) &&
+		    cy <= ey && ey <= (cy + ch))
 		{
-		    XTranslateCoordinates(evt->display, evt->window,
-					  XtWindow(child[m]), evt->x, evt->y,
-					  &ex, &ey, &unused);
-
-		    // See if pointer x,y is contained by this widget */
-		    if ((0 <= ex && ex <= cw) && (0 <= ey && ey <= ch))
-		    {
-			cur = child[m];
-			break;
-		    }
-		}
-		else
-		{
-		    XTranslateCoordinates(evt->display, evt->window,
-					  XtWindow(cur), evt->x, evt->y,
-					  &ex, &ey, &unused);
-		    
-		    if ((cx <= ex && ex <= (cx+cw)) &&
-			(cy <= ey && ey <= (cy+ch)))
-		    {
-			cur = child[m];
-			done = true;
-			break;
-		    }
+		    // Position is within CHILD - restart search
+		    once_again = true;
+		    w = child;
+		    ex -= cx;
+		    ey -= cy;
+		    break;
 		}
 	    }
-
-	    // If we've checked all the children, we're done.
-	    if (m == numChildren)
-		done = True;
-	};
-
-	on_widget = cur;	
+	}
     }
-    else if (XtIsComposite(on_widget))
-    {
-	on_widget = GetWidgetChild(on_widget, evt->x, evt->y);
-    }
-    
-    if (XtIsVendorShell(on_widget))
-	on_widget = 0;
-    
-    return on_widget;
+
+    return w;
 }
 
-void HelpOnThisContextCB(Widget widget, XtPointer client_data, 
-			 XtPointer call_data)
+// Returns the widget the pointer is over, or 0 if it cannot be determined.
+static Widget GetWidgetAt(XKeyEvent *e)
 {
-    Widget *widget_return = (Widget *)client_data;
-    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    return GetWidgetAt(XtWindowToWidget(e->display, e->window), e->x, e->y);
+}
+
+void HelpOnItemCB(Widget widget, XtPointer client_data, XtPointer call_data)
+{
     Widget toplevel = findTheTopLevelShell(widget);
 
-    if (widget_return != 0)
-	*widget_return = 0;
-
-    if (cbs == 0)
+    if (call_tracking_help(call_data, true) || toplevel == 0)
+    {
+	HelpOnContextCB(widget, client_data, call_data);
 	return;
+    }
 
-    if (cbs->event == 0)
-	return;
+    XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
 
-    if (toplevel == 0)
-	return;
-
-    if (cbs->event->type != KeyPress && cbs->event->type != KeyRelease)
-	return;
-
-    // Motif style guide says Shift+F1 should invoke tracking help.
-    if (cbs->event->xkey.state & ShiftMask != 0)
-	return;
-
-    Widget menu_shell = 0;
-    Widget item = GetWhichWidget(&cbs->event->xkey, toplevel, menu_shell);
+    Widget item = GetWidgetAt(&cbs->event->xkey);
     if (item == 0)
 	item = toplevel;
 
-    ImmediateHelpCB(item, client_data, call_data);
-
-    if (menu_shell != 0)
-    {
-	// Popdown menu shell
-	if (((XmMenuShellWidget)menu_shell)->shell.popped_up)
-	    XtCallActionProc(menu_shell,
-			     "MenuShellPopdownDone",
-			     NULL, NULL, 0);
-    }
-
-    if (widget_return != 0)
-	*widget_return = item;
+    ImmediateHelpCB(item, client_data, 0);
 }
 
 
@@ -2182,90 +2061,57 @@ static void HandleTipEvent(Widget w,
     switch (event->type)
     {
     case EnterNotify:
+    {
+	if (clear_tip_timer != 0)
 	{
-#if 0
-	    if (event->xcrossing.mode != NotifyNormal)
+	    XtRemoveTimeOut(clear_tip_timer);
+	    clear_tip_timer  = 0;
+
+	    if (w != last_left_widget)
 	    {
-		// Ignore grab/ungrab event
+		// Entered other widget within HELP_CLEAR_TIP_DELAY.
+		ClearTip(w, event);
+		last_left_widget = 0;
+	    }
+	    else
+	    {
+		// Re-entered same widget -- ignore.
+		last_left_widget = 0;
 		break;
 	    }
-#endif
-
-	    if (clear_tip_timer != 0)
-	    {
-		XtRemoveTimeOut(clear_tip_timer);
-		clear_tip_timer  = 0;
-
-		if (w != last_left_widget)
-		{
-		    // Entered other widget within HELP_CLEAR_TIP_DELAY.
-		    ClearTip(w, event);
-		    last_left_widget = 0;
-		}
-		else
-		{
-		    // Re-entered same widget -- ignore.
-#if 0
-		    clog << "Wow!  Left and entered " << XtName(w) << " within " 
-			 << help_clear_tip_delay << "ms!\n";
-#endif
-
-		    last_left_widget = 0;
-		    break;
-		}
-	    }
-
-#if 0
-	    // Enabling this would inhibit tips on pull-down menus
-	    const int any_button_mask = Button1Mask | Button2Mask 
-	        | Button3Mask | Button4Mask | Button5Mask;
-	    if (event->xcrossing.state & any_button_mask)
-	    {
-		// Some button is pressed - clear tip
-		ClearTip(w, event);
-	    }
-	    else 
-#endif
-	    if (!XmIsText(w))
-	    {
-		// Clear and re-raise tip
-		ClearTip(w, event);
-		RaiseTip(w, event);
-	    }
 	}
-	break;
+
+	if (!XmIsText(w))
+	{
+	    // Clear and re-raise tip
+	    ClearTip(w, event);
+	    RaiseTip(w, event);
+	}
+    }
+    break;
 
     case LeaveNotify:
+    {
+	last_left_widget = w;
+	if (clear_tip_timer != 0)
 	{
-#if 0
-	    if (event->xcrossing.mode != NotifyNormal)
-	    {
-		// Ignore grab/ungrab event
-		break;
-	    }
-#endif
-
-	    last_left_widget = w;
-	    if (clear_tip_timer != 0)
-	    {
-		XtRemoveTimeOut(clear_tip_timer);
-		clear_tip_timer = 0;
-	    }
-
-	    // We don't clear the tip immediately, because the DDD ungrab
-	    // mechanism may cause the pointer to leave a button and
-	    // re-enter it immediately.
-
-	    static TipInfo ti;
-	    ti.event  = *event;
-	    ti.widget = w;
-
-	    clear_tip_timer = 
-		XtAppAddTimeOut(XtWidgetToApplicationContext(w),
-				help_clear_tip_delay, 
-				DoClearTip, &ti);
+	    XtRemoveTimeOut(clear_tip_timer);
+	    clear_tip_timer = 0;
 	}
-	break;
+
+	// We don't clear the tip immediately, because the DDD ungrab
+	// mechanism may cause the pointer to leave a button and
+	// re-enter it immediately.
+	static TipInfo ti;
+	ti.event  = *event;
+	ti.widget = w;
+
+	clear_tip_timer = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
+			    help_clear_tip_delay, 
+			    DoClearTip, &ti);
+    }
+    break;
 
     case KeyPress:
     case KeyRelease:
@@ -2295,6 +2141,7 @@ static void HandleTipEvent(Widget w,
     }
 }
 
+
 // (Un)install toolbar tips for W
 static void InstallButtonTipEvents(Widget w, bool install)
 {
@@ -2310,11 +2157,6 @@ static void InstallButtonTipEvents(Widget w, bool install)
 			      NULL, 0);
     if (tip_values.tipString == 0 && doc_values.documentationString == 0)
 	return;
-
-#if 0
-    clog << (install ? "Installing" : "Uninstalling")
-	 << " button tip handler for " << cook(longName(w)) << "\n";
-#endif
 
     EventMask event_mask = 
 	EnterWindowMask | LeaveWindowMask | ButtonPress | ButtonRelease 
@@ -2440,11 +2282,6 @@ void EnableButtonDocs(bool enable)
 // (Un)install text tips for W.
 void InstallTextTips(Widget w, bool install)
 {
-#if 0
-    clog << (install ? "Installing" : "Uninstalling")
-	 << " button tip handler for " << cook(longName(w)) << "\n";
-#endif
-
     EventMask event_mask = EnterWindowMask | LeaveWindowMask 
 	| ButtonPress | ButtonRelease | PointerMotionMask
 	| KeyPress | KeyRelease;

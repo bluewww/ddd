@@ -2931,7 +2931,8 @@ void SourceView::create_shells()
 	verify(XmCreateScrolledList(form2, "breakpoints", args, arg));
     Widget buttons = 
 	verify(MMcreateWorkArea(form2, "buttons", bp_area));
-    MMaddCallbacks (bp_area);
+    MMaddCallbacks(bp_area);
+    MMaddHelpCallback(bp_area, ImmediateHelpCB);
 
     XtManageChild (buttons);
     XtManageChild (breakpoint_list_w);
@@ -4562,6 +4563,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    bp_popup_parent = w;
 	    bp_popup_w = MMcreatePopupMenu(w, "bp_popup", bp_popup);
 	    MMaddCallbacks (bp_popup, XtPointer(&bp_nr));
+	    MMaddHelpCallback(bp_popup, ImmediateHelpCB);
 	    InstallButtonTips(bp_popup_w);
 	}
 
@@ -4593,7 +4595,8 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	if (line_popup_w == 0)
 	{
 	    line_popup_w = MMcreatePopupMenu (w, "line_popup", line_popup);
-	    MMaddCallbacks (line_popup, XtPointer(&address));
+	    MMaddCallbacks(line_popup, XtPointer(&address));
+	    MMaddHelpCallback(line_popup, ImmediateHelpCB);
 	    InstallButtonTips(line_popup_w);
 
 	    XtSetSensitive(line_popup[LineItms::SetTempBP].widget, 
@@ -4642,7 +4645,8 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
 	Widget text_popup_w = 
 	    MMcreatePopupMenu(text_w, "text_popup", text_popup);
-	MMaddCallbacks (text_popup, XtPointer(&word));
+	MMaddCallbacks(text_popup, XtPointer(&word));
+	MMaddHelpCallback(text_popup, ImmediateHelpCB);
 	InstallButtonTips(text_popup_w);
 
 	// The popup menu is destroyed immediately after having popped down.
@@ -4810,6 +4814,7 @@ void SourceView::NewWatchpointCB(Widget, XtPointer, XtPointer)
 		      XmNmarginHeight, 0,
 		      NULL);
 	MMaddCallbacks(wp_menu);
+	MMaddHelpCallback(wp_menu, ImmediateHelpCB);
 
 	XtSetSensitive(cwatch_w, (gdb->has_watch_command() & WATCH_CHANGE) 
 		       == WATCH_CHANGE);

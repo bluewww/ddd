@@ -59,10 +59,13 @@ dnl
 dnl DESC(ITEM, DESC) issues `* ITEM - DESC.', with ITEM in bold.
 define([DESC], [ifelse([$1], , [[DESC]], [@tt \267 LBL($1) - $2.])])dnl
 dnl
-dnl LBL(foo) is used for describing labels.
+dnl LBL(FOO) is used for describing the label titled FOO
 dnl Not sure whether we should use @charset (the default charset used 
 dnl for buttons) or @bf (for emphasis) here...
 define([LBL], [ifelse([$1], , [[LBL]], [@bf $1@rm ])])dnl
+dnl
+dnl WIDGET(FOO) is used for describing the item with the symbolic name FOO.
+define([WIDGET], [ifelse([$1], , [[WIDGET]], [@bs $1@rm ])])dnl
 dnl
 dnl TEXT(k) is used for describing visible text
 define([TEXT], [ifelse([$1], , [[TEXT]], [`@tt $1@rm'])])dnl
@@ -77,7 +80,7 @@ dnl KEY(k) is used for keyboard keys
 define([KEY], [ifelse([$1], , [[KEY]], [@key $1@rm ])])dnl
 dnl
 dnl BUTTON(n) sets mouse button N.
-define([BUTTON], [ifelse([$1], , [[BUTTON]], [@sl mouse button $1@rm ])])dnl
+define([BUTTON], [ifelse([$1], , [[BUTTON]], [@bs mouse button $1@rm ])])dnl
 dnl
 dnl SAMP(k) shows a literal sequence of characters.
 define([SAMP], [ifelse([$1], , [[SAMP]], [`@tt $1@rm'])])dnl
@@ -130,6 +133,12 @@ define([POSTSCRIPT], [PostScript@symbol \344 @rm ])dnl
 dnl
 dnl KEY_RETURN is the symbol of the return key
 define([KEY_RETURN], [KEY(RETURN @symbol \277)])dnl
+dnl
+dnl HELP_KEY is the name of the help key
+define([HELP_KEY], [F1])dnl
+dnl
+dnl KEY_HELP is the symbol of the help key
+define([KEY_HELP], [KEY(HELP_KEY)])dnl
 dnl
 dnl ONE_HALF is the 1/2 symbol.
 define([ONE_HALF], [\275])dnl

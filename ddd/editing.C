@@ -550,6 +550,7 @@ void popupAct(Widget, XEvent *event, String*, Cardinal*)
     {
 	gdb_popup_w = MMcreatePopupMenu(gdb_w, "gdb_popup", gdb_popup);
 	MMaddCallbacks(gdb_popup);
+	MMaddHelpCallback(gdb_popup, ImmediateHelpCB);
 	InstallButtonTips(gdb_popup_w);
     }
 

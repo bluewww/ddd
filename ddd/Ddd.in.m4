@@ -1038,7 +1038,7 @@ osfCancel:	<Key>Escape\n\
 osfRight: 	<Key>Right\n\
 osfLeft:	<Key>Left\n\
 osfUp:		<Key>Up\n\
-osfHelp:	<Key>F1\n\
+osfHelp:	<Key>HELP_KEY\n\
 osfDown:	<Key>Down\n\
 osfPageUp:	<Key>Prior\n\
 osfPageDown:	<Key>Next\n\
@@ -1480,10 +1480,10 @@ Ddd*news_popup.iconName:     	DDD News
 Ddd*help_popup.help*helpString: \
 @rm Welcome to DDD Help\!\n\
 \n\
-To get help about an item, just point on it and press KEY(F1).\n\
+To get help about an item, just point on it and press KEY_HELP.\n\
 The item's functionality will be explained here.\n\
 \n\
-To find out what you can do next, press KEY(Ctrl+F1).  Depending on\n\
+To find out what you can do next, press KEY(Ctrl+HELP_KEY).  Depending on\n\
 the current DDD state, you will be given some general advice.\n\
 \n\
 Have fun with DDD!
@@ -1502,7 +1502,7 @@ Ddd*helpString:	\
 
 ! Some trival help
 Ddd*XmScrollBar.helpString: \
-@rm This is a EMPH(Scroll Bar).\n\
+WIDGET(Scroll Bar)\n\
 \n\
 Click or hold BUTTON(1) on an arrow button\n\
 to scroll the window in the arrow direction.\n\
@@ -1513,21 +1513,28 @@ visible part of the window.
 ! @rm Scroll window
 
 Ddd*XmSash.helpString: \
-@rm This is a EMPH(Paned Window Sash).\n\
+WIDGET(Paned Window Sash)\n\
 \n\
 Drag the sash with BUTTON(1) to resize window parts.
 Ddd*XmSash.tipString: \
 @rm Resize window
 
 Ddd*Separator.helpString: \
-@rm This is a EMPH(Paned Window Sash).\n\
+WIDGET(Paned Window Sash)\n\
 \n\
 Drag the sash with BUTTON(1) to resize window parts.
 Ddd*Separator.tipString: \
 @rm Resize window
 
+Ddd*separator.helpString: \
+WIDGET(Paned Window Sash)\n\
+\n\
+Drag the sash with BUTTON(1) to resize window parts.
+Ddd*separator.tipString: \
+@rm Resize window
+
 Ddd*arg_label.helpString: \
-@rm This is an EMPH(Argument Prompt).\n\
+WIDGET(Argument Prompt)\n\
 \n\
 Enter the argument LBL(()) on the right.\n\
 Click on LBL(():) to clear the argument LBL(()).
@@ -1598,7 +1605,7 @@ Ddd*manual_help*findForward.documentationString:	\
 @rm Search the next occurrence of LBL(()) in the manual
 
 Ddd*manual_help*helpString: \
-@rm This is the EMPH([DDD] Manual Browser).\n\
+WIDGET([DDD] Manual Browser)\n\
 \n\
 To view a specific section, select its title from the index at the top.\n\
 \n\
@@ -1627,10 +1634,10 @@ Ddd*license*textSW.width:		600
 Ddd*license*textSW.height:		320
 
 Ddd*license*helpString: \
-@rm This is the EMPH([DDD] License), a GNU General Public License.\n\
+WIDGET([DDD] License)\n\
 \n\
-It describes the terms and conditions for copying, distributing\n\
-and modifying DDD.\n\
+The DDD License, a GNU General Public License, describes the terms\n\
+and conditions for copying, distributing and modifying DDD.\n\
 \n\
 Please see section 11, TEXT(NO WARRANTY), for the various kinds of warranty\n\
 you do not have.
@@ -1651,9 +1658,9 @@ Ddd*news*textSW.width:			600
 Ddd*news*textSW.height:			320
 
 Ddd*news*helpString: \
-@rm This is the EMPH([DDD] News).\n\
+WIDGET([DDD] News)\n\
 \n\
-It shows what's new in this DDD release relative to previous releases.
+What's new in this DDD release relative to previous releases.
 
 
 
@@ -1676,7 +1683,7 @@ Ddd*tipShell.borderWidth: 1
 !-----------------------------------------------------------------------------
 
 Ddd*menubar.helpString:		\
-@rm This is the EMPH(Menu Bar).\n\
+WIDGET(Menu Bar)\n\
 \n\
 DESC(File, [select files and exit DDD])\n\
 DESC(Edit, [cut, copy, and paste text, and change DDD options])\n\
@@ -1699,7 +1706,7 @@ Ddd*menubar.file*documentationString:	\
 Ddd*menubar.file.mnemonic:		F
 
 define(FILE_HELP, [\
-@rm This is the EMPH(File Menu).\n\
+WIDGET(File Menu)\n\
 \n\
 DESC(Open Program..., [open the program or class to be debugged])\n\
 DESC(Open Core Dump..., [open a core dump])\n\
@@ -1722,6 +1729,7 @@ DESC(Exit, [exit DDD])
 
 Ddd*menubar.file*helpString: FILE_HELP
 Ddd*fileMenu*helpString:     FILE_HELP
+Ddd*fileMenu*tearOffTitle:   File Menu
 
 Ddd*menubar*fileMenu.open_file.labelString: Open Program...
 Ddd*menubar*fileMenu.open_file.mnemonic:    O
@@ -1834,7 +1842,7 @@ Ddd*menubar.edit*documentationString:	\
 @rm Cut, copy, paste from and to the clipboard
 
 define(EDIT_HELP, [\
-@rm This is the EMPH(Edit Menu).\n\
+WIDGET(Edit Menu)\n\
 \n\
 DESC(Cut, [remove the selected text to the clipboard])\n\
 DESC(Copy, [copy the selected text to the clipboard\n\
@@ -1852,6 +1860,7 @@ DESC(Save Options, [saves options, preferences, and @GDB@ settings\n\
 
 Ddd*menubar.edit*helpString: EDIT_HELP
 Ddd*editMenu*helpString:     EDIT_HELP
+Ddd*editMenu*tearOffTitle:   Edit Menu
 
 Ddd*editMenu.cut.labelString:				Cut
 Ddd*editMenu.cut.mnemonic:				t
@@ -1922,7 +1931,7 @@ Ddd*menubar.view*documentationString:	\
 @rm Open and close DDD windows
 
 define(VIEWS_HELP, [\
-@rm This is the EMPH(View Menu).\n\
+WIDGET(View Menu)\n\
 \n\
 DESC(Command Tool..., [open and recenter the command tool])\n\
 DESC(Execution Window..., [open the execution window])\n\
@@ -1934,6 +1943,7 @@ DESC(@GDB@ Console, [toggle display of debugger console])
 
 Ddd*menubar.views.helpString:	VIEWS_HELP
 Ddd*viewsMenu*helpString:	VIEWS_HELP
+Ddd*viewsMenu*tearOffTitle:     View Menu
 
 Ddd*viewsMenu.tool.labelString:			Command Tool...
 Ddd*viewsMenu.tool.mnemonic:			T
@@ -1979,7 +1989,7 @@ Ddd*menubar.view*documentationString:	\
 
 define(VIEW_HELP, [\
 \
-@rm This is the EMPH(View Menu).\n\
+WIDGET(View Menu)\n\
 \n\
 DESC(Command Tool..., [open and recenter the command tool])\n\
 DESC(Execution Window..., [open the execution window])\n\
@@ -1991,6 +2001,7 @@ DESC(@GDB@ Console..., [open the debugger console window])
 
 Ddd*menubar.view.helpString:	VIEW_HELP
 Ddd*viewMenu*helpString:	VIEW_HELP
+Ddd*viewMenu*tearOffTitle:      View Menu
 
 Ddd*viewMenu.tool.labelString:			Command Tool...
 Ddd*viewMenu.tool.mnemonic:			T
@@ -2036,7 +2047,7 @@ Ddd*menubar.program*documentationString:	\
 
 define(PROGRAM_HELP, [\
 \
-@rm This is the EMPH(Program Menu).\n\
+WIDGET(Program Menu)\n\
 \n\
 DESC(Run..., [start the debugged program])\n\
 DESC(Run Again, [run with current arguments])\n\
@@ -2063,6 +2074,7 @@ DESC(Abort, [abort program (or current @GDB@ command)])
 
 Ddd*menubar.program*helpString:	PROGRAM_HELP
 Ddd*programMenu*helpString:	PROGRAM_HELP
+Ddd*programMenu*tearOffTitle:   Program Menu
 
 Ddd*menubar*programMenu.run.labelString:	   Run...
 Ddd*menubar*programMenu.run.mnemonic:		   R
@@ -2150,7 +2162,7 @@ Ddd*menubar.commands*documentationString: \
 
 define(COMMANDS_HELP, [\
 \
-@rm This is the EMPH(Commands Menu).\n\
+WIDGET(Commands Menu)\n\
 \n\
 DESC(Command History..., [show all previous commands])\n\
 \n\
@@ -2172,6 +2184,7 @@ DESC(Edit Buttons..., [edit command buttons])
 
 Ddd*menubar.commands*helpString:	COMMANDS_HELP
 Ddd*commandsMenu*helpString:		COMMANDS_HELP
+Ddd*commandsMenu*tearOffTitle:          Commands Menu
 
 Ddd*commandsMenu.history.labelString:	        Command History...
 Ddd*commandsMenu.history.mnemonic:	        H
@@ -2255,7 +2268,7 @@ Ddd*menubar.stack*documentationString:  \
 
 define(STACK_HELP, [\
 \
-@rm This is the EMPH(Status Menu).\n\
+WIDGET(Status Menu)\n\
 \n\
 DESC(Backtrace..., [give a summary of how your program got where it is])\n\
 DESC(Registers..., [show current processor registers])\n\
@@ -2267,6 +2280,7 @@ DESC(Down, [show the function that was called by the current one])
 
 Ddd*menubar.stack.helpString:	STACK_HELP
 Ddd*stackMenu*helpString:	STACK_HELP
+Ddd*stackMenu*tearOffTitle:     Status Menu
 
 Ddd*stackMenu.stack.labelString:	Backtrace...
 Ddd*stackMenu.stack.mnemonic:		B
@@ -2307,7 +2321,7 @@ Ddd*menubar.source*documentationString: \
 
 define(SOURCE_HELP, [\
 \
-@rm This is the EMPH(Source Menu).\n\
+WIDGET(Source Menu)\n\
 \n\
 DESC(Edit Breakpoints..., [set, view, and edit breakpoints])\n\
 \n\
@@ -2393,7 +2407,7 @@ Ddd*menubar.data*documentationString:   \
 
 define(DATA_HELP, [\
 \
-@rm This is the EMPH(Data Menu).\n\
+WIDGET(Data Menu)\n\
 \n\
 DESC(Edit Displays..., [select, enable and delete displays])\n\
 DESC(Edit Watchpoints..., [set, view, and edit watchpoints])\n\
@@ -2415,6 +2429,7 @@ DESC(Refresh, [update all displays])
 
 Ddd*menubar.data*helpString:	DATA_HELP
 Ddd*dataMenu*helpString:	DATA_HELP
+Ddd*dataMenu*tearOffTitle:      Data Menu
 
 Ddd*dataMenu.displays.labelString:	Edit Displays...
 Ddd*dataMenu.displays.mnemonic:		D
@@ -2522,11 +2537,11 @@ Ddd*menubar.help*documentationString:   \
 
 define(HELP_HELP, [\
 \
-@rm This is the EMPH(Help Menu).\n\
+WIDGET(Help Menu)\n\
+\n\
 DESC(Overview, [help on how to use the help facility])\n\
 \n\
 DESC(On Item...,   [give help on the current item])\n\
-DESC(On Context...,[click on an item and get help on it])\n\
 DESC(On Window..., [help on the application itself])\n\
 \n\
 DESC(What Now?..., [give help on what to do now])\n\
@@ -2543,6 +2558,7 @@ DESC(About [[DDD]]..., [some general information about DDD])
 
 Ddd*menubar.help*helpString: HELP_HELP
 Ddd*helpMenu*helpString:     HELP_HELP
+Ddd*helpMenu*tearOffTitle:   Help Menu
 
 Ddd*helpMenu.onHelp.labelString:		Overview...
 Ddd*helpMenu.onHelp.mnemonic:			v
@@ -2551,29 +2567,27 @@ Ddd*helpMenu.onHelp.documentationString:	\
 
 Ddd*helpMenu.onItem.labelString:		On Item...
 Ddd*helpMenu.onItem.mnemonic:			O
-Ddd*helpMenu.onItem.accelerator:		~Shift ~Ctrl<Key>F1
+Ddd*helpMenu.onItem.accelerator:		~Shift ~Ctrl<Key>HELP_KEY
 ! *helpMenu.onItem.accelerator:		        <Key>osfHelp
-Ddd*helpMenu.onItem.acceleratorText:	        F1
+Ddd*helpMenu.onItem.acceleratorText:	        HELP_KEY
 Ddd*helpMenu.onItem.documentationString:	\
 @rm Get help on the current item
-
-Ddd*helpMenu.onContext.labelString:		On Context...
-Ddd*helpMenu.onContext.mnemonic:		C
-Ddd*helpMenu.onContext.accelerator:		Shift ~Ctrl<Key>F1
-! *helpMenu.onContext.accelerator:		<Key>osfHelp
-Ddd*helpMenu.onContext.acceleratorText:	        Shift+F1
-Ddd*helpMenu.onContext.documentationString:	\
-@rm Click on an item and get help on it
 
 Ddd*helpMenu.onWindow.labelString:		On Window...
 Ddd*helpMenu.onWindow.mnemonic:			W
 Ddd*helpMenu.onWindow.documentationString:	\
 @rm Information about the current window
 
+! To make Shift+HELP_KEY work even on widgets that have no help callback
+! installed, we use this accelerator to invoke `on window' help.  `on window'
+! help will detect that Shift is pressed and call `on context' help instead.
+Ddd*helpMenu.onWindow.accelerator:		Shift ~Ctrl<Key>HELP_KEY
+
+
 Ddd*helpMenu.whatNext.labelString:		What Now?...
 Ddd*helpMenu.whatNext.mnemonic:			N
-Ddd*helpMenu.whatNext.accelerator:		~Shift Ctrl<Key>F1
-Ddd*helpMenu.whatNext.acceleratorText:		Ctrl+F1
+Ddd*helpMenu.whatNext.accelerator:		~Shift Ctrl<Key>HELP_KEY
+Ddd*helpMenu.whatNext.acceleratorText:		Ctrl+HELP_KEY
 Ddd*helpMenu.whatNext.documentationString:	\
 @rm Explain the current situation and suggest what to do next
 
@@ -3029,7 +3043,7 @@ Ddd*edit_buttons*text.scrollHorizontal:    	false
 Ddd*edit_buttons*verify.labelString: 		Enable supported buttons only
 
 Ddd*edit_buttons*helpString: \
-@rm This is the EMPH(Button Editor).\n\
+WIDGET(Button Editor)\n\
 \n\
 Each line specifies a user-defined button, in the format\n\
 \n\
@@ -3055,7 +3069,7 @@ Click on LBL(OK) to apply the changes and close this window.\n\
 Use LBL(Edit) | LBL(Save Options) to save all button specifications.
 
 Ddd*edit_buttons*shortcuts*helpString: \
-@rm This is the EMPH(Shortcut Editor).\n\
+WIDGET(Shortcut Editor)\n\
 \n\
 Each line specifies a display shortcut, in the format\n\
 \n\
@@ -3107,7 +3121,7 @@ Ddd*infos*scroll*helpString:
 
 ! The panel itself has a help button, too.
 Ddd*infos*helpString: \
-@rm This is the list of EMPH(Status Displays).\n\
+WIDGET(Status Displays)\n\
 \n\
 A EMPH(status display) shows things about the program being debugged\n\
 in the data window.  Please pick your choice from the list.\n\
@@ -3197,8 +3211,9 @@ Ddd*graph_edit.highlightOnEnter:	True
 Ddd*graph_edit.navigationType:		TAB_GROUP
 
 define(GRAPH_EDIT_HELP,[\
-@rm This is the EMPH(Data Window).\n\
-It shows the data displays of the debugged program.\n\
+WIDGET(Data Window)\n\
+\n\
+The data window shows the data displays of the debugged program.\n\
 \n\
 STRONG(Selecting displays)\n\
 ITEM Using BUTTON(1), click on a display \
@@ -3230,7 +3245,7 @@ Ddd*graph_edit.helpString:	GRAPH_EDIT_HELP
 Ddd*data_disp_shell.helpString:	GRAPH_EDIT_HELP
 
 Ddd*graph_edit_panner.helpString:	\
-@rm This is a EMPH(panner).\n\
+WIDGET(Panner)\n\
 \n\
 Drag the slider with BUTTON(1) to scroll the data window.
 Ddd*graph_edit_panner.tipString:	\
@@ -3314,7 +3329,9 @@ Ddd*graph_cmd_w.arg_label.labelString:	():
 Ddd*graph_cmd_w.graph_arg.columns:		22
 Ddd*graph_cmd_w*graph_arg.editable:		false
 Ddd*graph_cmd_w*graph_arg.helpString:	\
-@rm This is the argument LBL(()) for the command buttons on the right.\n\
+WIDGET(Argument)\n\
+\n\
+This is the argument LBL(()) for the command buttons on the right.\n\
 \n\
 Set LBL(()) by selecting data displays.\n\
 Clear LBL(()) by clicking on the prompt LBL(():).
@@ -3356,6 +3373,7 @@ DESC(Edit..., [Edit shortcuts])
 
 Ddd*graph_cmd_w.graph_cmd_area*new.helpString:\
 LBL(New Display)\n\
+\n\
 Create a new display dependent on the selected display part.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
@@ -3369,6 +3387,7 @@ Ddd*graph_cmd_w.graph_cmd_area*new.documentationString:\
 
 Ddd*graph_cmd_w.graph_cmd_area*dereference.helpString:\
 LBL(Display *())\n\
+\n\
 Dereference the selected display.
 Ddd*graph_cmd_w.graph_cmd_area*dereference.tipString:\
 @rm Dereference selected display
@@ -3384,6 +3403,7 @@ DESC(Hide, [Hide Details])
 
 Ddd*graph_cmd_w.graph_cmd_area*detail.helpString:	\
 LBL(Show ()) / LBL(Hide ())\n\
+\n\
 Show/Hide details of the selected displays.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
@@ -3411,6 +3431,7 @@ DESC(Rotate All, [Rotate substructures too])
 
 Ddd*graph_cmd_w.graph_cmd_area*rotate.helpString:	\
 LBL(Rotate ())\n\
+\n\
 Rotate the selected displays.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
@@ -3427,6 +3448,7 @@ Ddd*graph_cmd_w.graph_cmd_area*rotateAll.documentationString: \
 
 Ddd*graph_cmd_w.graph_cmd_area*set.helpString:	\
 LBL(Set ())\n\
+\n\
 Change the selected display value.
 Ddd*graph_cmd_w.graph_cmd_area*set.tipString:	\
 @rm Set display value
@@ -3435,6 +3457,7 @@ Ddd*graph_cmd_w.graph_cmd_area*set.documentationString:	\
 
 Ddd*graph_cmd_w.graph_cmd_area*delete.helpString:	\
 LBL(Delete ())\n\
+\n\
 Delete the selected displays.
 Ddd*graph_cmd_w.graph_cmd_area*delete.tipString:	\
 @rm Delete selected displays
@@ -3447,7 +3470,7 @@ Ddd*graph_cmd_w.graph_cmd_area*delete.documentationString:	\
 !-----------------------------------------------------------------------------
 
 Ddd*status_form*helpString: \
-@rm This is the EMPH(Status Line).\n\
+WIDGET(Status Line)\n\
 \n\
 It shows the last @GDB@ message as well as short DDD messages.\n\
 To view tthe most recent messages, just click on the status line.\n\
@@ -3531,8 +3554,9 @@ Ddd*code_text_w.scrollHorizontal:	false
 Ddd*code_text_w.wordWrap:		true
 
 Ddd*source_text_w.helpString:	\
-@rm This is the EMPH(Source Text Window).\n\
-It shows the source text of the debugged program.\n\
+WIDGET(Source Text Window)\n\
+\n\
+The source text window shows the source text of the debugged program.\n\
 \n\
 STRONG(Left side)\n\
 The EMPH(left side) shows line numbers and breakpoints:\n\
@@ -3555,8 +3579,9 @@ Click BUTTON(3) to show values and lookup places.\n\
 To view a specific source, use the LBL(Lookup ()) button below.
 
 Ddd*code_text_w.helpString:	\
-@rm This is the EMPH(Machine Code Window).\n\
-It shows the machine code of the debugged program.\n\
+WIDGET(Machine Code Window)\n\
+\n\
+The machine code window shows the machine code of the debugged program.\n\
 \n\
 STRONG(Left side)\n\
 The EMPH(left side) shows addresses and breakpoints:\n\
@@ -3580,7 +3605,8 @@ To disassemble a specific function or address,\n\
 use the LBL(Lookup ()) button below.
 
 Ddd*source_view_shell.helpString:	\
-@rm This is the EMPH(Source Window).\n\
+WIDGET(Source Window)\n\
+\n\
 The source window displays the source and machine code of the \
 debugged program.\n\
 \n\
@@ -3673,7 +3699,9 @@ Ddd*arg_cmd_area.marginWidth:  0
 Ddd*arg_cmd_w.arg_label.labelString:		():
 
 Ddd*arg_cmd_w.source_arg.helpString:	\
-@rm This is the argument LBL(()) for the command buttons on the right.\n\
+WIDGET(Argument)\n\
+\n\
+This is the argument LBL(()) for the command buttons on the right.\n\
 \n\
 Edit LBL(()) using the usual editing functions.\n\
 Set LBL(()) by selecting items from the source window or the data window.\n\
@@ -3720,6 +3748,7 @@ Ddd*arg_cmd_w.arg_cmd_area*findForward.labelString:	LBL_FIND_NEXT
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.helpString:	\
 LBL(Lookup ())\n\
+\n\
 Lookup a line, file, function, variable, or breakpoint in the source.\n\
 ITEM If the argument LBL(()) is empty, \
 lookup the current execution position\n\
@@ -3752,6 +3781,7 @@ DESC(Set Execution Position to (), [move execution position])
 
 Ddd*arg_cmd_w.arg_cmd_area*breakAt.helpString:	\
 LBL(Break at ()) / LBL(Clear at ())\n\
+\n\
 Set or delete a breakpoint at the argument LBL(()).\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
@@ -3784,6 +3814,7 @@ DESC(Whatis (), [print type of argument])
 
 Ddd*arg_cmd_w.arg_cmd_area*print.helpString:	\
 LBL(Print ())\n\
+\n\
 Print the argument LBL(()) in the @GDB@ console.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
@@ -3805,6 +3836,7 @@ DESC(Display *(), [display dereferenced argument])
 
 Ddd*arg_cmd_w.arg_cmd_area*display.helpString:	\
 LBL(Display ())\n\
+\n\
 Display the argument LBL(()) in the data window.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
@@ -3830,6 +3862,7 @@ debugged program by about two orders of magnitude.
 
 Ddd*arg_cmd_w.arg_cmd_area*watch.helpString:	\
 LBL(Watch ()) / LBL(Unwatch())\n\
+\n\
 Stop whenever the value of LBL(()) changes.\n\
 \n\
 LBL(Watch ()) sets a EMPH(watchpoint) on LBL(()) - a special breakpoint that\n\
@@ -3860,6 +3893,7 @@ DESC(LBL_FIND_NEXT, [find forwards])
 
 Ddd*arg_cmd_w.arg_cmd_area*find.helpString:	\
 LBL(LBL_FIND_PREV / LBL_FIND_NEXT)\n\
+\n\
 Search an occurrence of LBL(()) in the current source text.\n\
 \n\
 See LBL(Edit) | LBL(Preferences) | LBL(Source) for search settings.\n\
@@ -3989,7 +4023,7 @@ Ddd*grey_cond.documentationString:
 !-----------------------------------------------------------------------------
 
 define(MAIN_WINDOW_HELP, [\
-@rm This is the EMPH([DDD] Main Window).\n\
+WIDGET([DDD] Main Window)\n\
 \n\
 From top to bottom, it shows the following areas:\n\
 \n\
@@ -4042,7 +4076,7 @@ Ddd*gdb_w.autoShowCursorPosition:	true
 Ddd*gdb_w.cursorPositionVisible:	true
 
 define(CONSOLE_HELP,[\
-@rm This is the EMPH(@GDB@ Console).\n\
+WIDGET(@GDB@ Console)\n\
 \n\
 The @GDB@ console shows the @GDB@ input and output\n\
 as well as the input and output of the debugged program.\n\
@@ -4079,43 +4113,43 @@ Ddd*gdb_popup.clear_window.documentationString:	\
 Ddd*tool_shell*saveUnder: true
 
 Ddd*tool_shell.helpString:		\
-@rm This is the EMPH(Command Tool).\n\
+WIDGET(Command Tool)\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
-The context sensitive help for the buttons gives a short command description.
+Press KEY_HELP on a button to get a short command description.
 
 Ddd*tool_buttons.helpString:\
-@rm This is the EMPH(Command Tool).\n\
+WIDGET(Command Tool)\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
-The context sensitive help for the buttons gives a short command description.
+Press KEY_HELP on a button to get a short command description.
 
 !-----------------------------------------------------------------------------
 ! Debugger Buttons
 !-----------------------------------------------------------------------------
 
 Ddd*source_buttons.helpString:\
-@rm This is a EMPH(command area).\n\
+WIDGET(Command Area)\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
-The context sensitive help for the buttons gives a short command description.
+Press KEY_HELP on a button to get a short command description.
 
 Ddd*command_buttons.helpString:\
-@rm This is a EMPH(command area).\n\
+WIDGET(Command Area)\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
-The context sensitive help for the buttons gives a short command description.
+Press KEY_HELP on a button to get a short command description.
 
 Ddd*data_buttons.helpString:\
-@rm This is a EMPH(command area).\n\
+WIDGET(Command Area)\n\
 \n\
 By clicking on one of the buttons, \
 the corresponding command is sent to @GDB@.\n\
-The context sensitive help for the buttons gives a short command description.
+Press KEY_HELP on a button to get a short command description.
 
 ! An empty help string means that the help text for this button
 ! is to be requested from GDB (via the GDB `help' command).
@@ -4157,6 +4191,7 @@ Ddd*data_buttons.marginHeight:      0
 ! so we must provide help on ourselves.
 Ddd*?*break.helpString: \
 LBL(Interrupt)\n\
+\n\
 Interrupt the debugged process (or current @GDB@ command).\n\
 (Equivalent to KEY(Ctrl+C)).
 Ddd*source_buttons*break.tipString: \
@@ -4174,30 +4209,35 @@ Ddd*?*break.documentationString: \
 
 Ddd*?*Yes.helpString:	\
 LBL(Yes)\n\
+\n\
 Confirm the @GDB@ question.
 Ddd*?*Yes.tipString: \
 @rm Just say yes
 
 Ddd*?*No.helpString:	\
 LBL(No)\n\
+\n\
 Do EMPH(not) confirm the @GDB@ question.
 Ddd*?*No.tipString: \
 @rm Just say no
 
 Ddd*?*Complete.helpString:	\
 LBL(Complete)\n\
+\n\
 Complete the current debugging command.  (Equivalent to KEY(TAB)).
 Ddd*?*Complete.tipString: \
 @rm Complete current command
 
 Ddd*?*Clear.helpString:	\
 LBL(Clear)\n\
+\n\
 Clear the current debugging command.  (Equivalent to KEY(Ctrl+U)).
 Ddd*?*Clear.tipString: \
 @rm Clear current command
 
 Ddd*?*Prev.helpString:	\
 LBL(Prev)\n\
+\n\
 Get the previous debugging command \
 (Equivalent to KEY(Ctrl+P) or KEY(Up)).
 Ddd*?*Prev.tipString: \
@@ -4205,6 +4245,7 @@ Ddd*?*Prev.tipString: \
 
 Ddd*?*Next.helpString:	\
 LBL(Next)\n\
+\n\
 Get the next debugging command \
 (Equivalent to KEY(Ctrl+N) or KEY(Down)).
 Ddd*?*Next.tipString: \
@@ -4212,24 +4253,28 @@ Ddd*?*Next.tipString: \
 
 Ddd*?*Apply.helpString:	\
 LBL(Apply)\n\
+\n\
 Execute the current debugging command.  (Equivalent to KEY_RETURN).
 Ddd*?*Apply.tipString: \
 @rm Execute current command
 
 Ddd*?*Back.helpString:	\
 LBL(Back)\n\
+\n\
 Return to the previous source position.
 Ddd*?*Back.tipString: \
 @rm Previous source position
 
 Ddd*?*Forward.helpString:	\
 LBL(Forward)\n\
+\n\
 Move forward to the next source position.
 Ddd*?*Forward.tipString: \
 @rm Next source position
 
 Ddd*?*Edit.helpString:	\
 LBL(Edit)\n\
+\n\
 Invoke an editor for the current source file.
 Ddd*?*Edit.tipString: \
 @rm Edit source file
@@ -4238,6 +4283,7 @@ Ddd*?*Edit.documentationString: \
 
 Ddd*?*Reload.helpString:	\
 LBL(Reload)\n\
+\n\
 Reload the source from file.
 Ddd*?*Reload.tipString: \
 @rm Reload source file
@@ -4513,7 +4559,7 @@ Ddd*edit_breakpoints_dialog*buttons.marginHeight:  0
 Ddd*edit_breakpoints_dialog.okLabelString:	 Close
 
 Ddd*edit_breakpoints_dialog*helpString:	     \
-@rm This is the EMPH(Breakpoint and Watchpoint Editor).\n\
+WIDGET(Breakpoint and Watchpoint Editor)\n\
 \n\
 Select breakpoints and watchpoints on the left; operations on the right.\n\
 \n\
@@ -4751,7 +4797,7 @@ Ddd*edit_displays_dialog*buttons.marginHeight:	0
 Ddd*edit_displays_dialog.okLabelString:	      Close
 
 Ddd*edit_displays_dialog*helpString:	  \
-@rm This is the EMPH(Display Editor).\n\
+WIDGET(Display Editor)\n\
 \n\
 Select displays on the left, operations on the right.\n\
 \n\
@@ -5040,20 +5086,23 @@ Ddd*yn_dialog*okLabelString:	   Yes
 Ddd*yn_dialog*cancelLabelString:   No
 Ddd*yn_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*yn_dialog*helpString:	\
-@rm This is a @GDB@ question.\n\
+WIDGET(@GDB@ Question)\n\
+\n\
 Click on LBL(Yes) or LBL(No), or enter KBD(yes) or KBD(no) \
 in the @GDB@ console.\n\
 For more details, consult the @GDB@ documentation.
 
 Ddd*gdb_message_dialog_popup.title: DDD: Debugger Message
 Ddd*gdb_message_dialog*helpString:	\
-@rm This is a @GDB@ message.\n\
-For more details, consult the @GDB@ documentation.
+WIDGET(@GDB@ Message)\n\
+\n\
+For details on this @GDB@ message, consult the @GDB@ documentation.
 
 Ddd*gdb_selection_dialog_popup.title: DDD: Selection
 Ddd*gdb_selection_dialog*listLabelString:  Selection
 Ddd*gdb_selection_dialog*helpString:	\
-@rm This is a @GDB@ selection menu.\n\
+WIDGET(@GDB@ Selection Menu)\n\
+\n\
 Please select an item from the list and click on LBL(OK).\n\
 For more details, consult the @GDB@ documentation.
 
@@ -5104,8 +5153,9 @@ Ddd*confirm_restart_dialog.messageString: \
 Ddd*confirm_restart_dialog.okLabelString:     Yes
 Ddd*confirm_restart_dialog.cancelLabelString: No
 Ddd*confirm_restart_dialog*helpString: \
-@rm This is a @GDB@ message.\n\
-For more details, consult the @GDB@ documentation.
+WIDGET(@GDB@ Message)\n\
+\n\
+For details on this @GDB@ message, consult the @GDB@ documentation.
 
 Ddd*data_not_saved_dialog_popup.title: DDD: Save Session
 Ddd*data_not_saved_dialog.messageString: \

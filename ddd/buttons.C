@@ -375,7 +375,10 @@ static string gdbSettingsValue(string command)
 static MString gdbDefaultHelpText(Widget widget)
 {
     string name = gdbHelpName(widget);
-    MString msg = bf(name) + cr();
+    if (name != "" && islower(name[0]))
+	name[0] = toupper(name[0]);
+
+    MString msg = bf(name) + cr() + cr();
 
     string help = gdbHelp(name);
     if (help == NO_GDB_ANSWER)
@@ -937,8 +940,7 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 		      (XtPointer)XtNewString(command.chars()));
 
 	// Add a help callback
-	XtAddCallback(button, XmNhelpCallback, HelpOnThisContextCB, 
-		      XtPointer(0));
+	XtAddCallback(button, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
     }
     delete[] commands;
 

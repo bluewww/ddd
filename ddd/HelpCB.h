@@ -62,9 +62,9 @@ extern void HelpOnContextCB(Widget widget, XtPointer client_data,
 			    XtPointer call_data);
 
 // Call help on context on the widget that got the help key.
-// May be used in a menu entry "Help On Context".
-extern void HelpOnThisContextCB(Widget widget, XtPointer client_data, 
-				XtPointer call_data);
+// May be used in a menu entry "Help On Item".
+extern void HelpOnItemCB(Widget widget, XtPointer client_data, 
+			 XtPointer call_data);
 
 // Call help on current shell window.
 // May be used in a menu entry "Help On Window".
@@ -151,6 +151,13 @@ extern void (*DisplayDocumentation)(const MString& doc);
 
 // Pixmap to display at ``help on version''
 extern Pixmap (*helpOnVersionPixmapProc)(Widget w);
+
+// Hook before help on context
+extern void (*PreHelpOnContextHook)(Widget w, XtPointer client_data, 
+				    XtPointer call_data);
+
+// Hook after help on item
+extern void (*PostHelpOnItemHook)(Widget item);
 
 // Additional text to display at ``help on version''
 extern MString helpOnVersionExtraText;

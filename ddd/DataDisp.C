@@ -114,6 +114,7 @@ char DataDisp_rcsid[] =
 #include "wm.h"
 #include "LessTifH.h"
 #include "regexps.h"
+#include "MakeMenu.h"
 
 // System includes
 #include <iostream.h>
@@ -1531,6 +1532,10 @@ void DataDisp::graph_popupAct (Widget, XEvent* event, String *args,
 	MMaddCallbacks(graph_popup,     XtPointer(p));
 	MMaddCallbacks(node_popup,      XtPointer(p));
 	MMaddCallbacks(shortcut_popup1, XtPointer(p));
+
+	MMaddHelpCallback(graph_popup,     ImmediateHelpCB);
+	MMaddHelpCallback(node_popup,      ImmediateHelpCB);
+	MMaddHelpCallback(shortcut_popup1, ImmediateHelpCB);
     }
     *p = point(event);
 
@@ -3878,6 +3883,8 @@ bool DataDisp::need_scope()
 	if (dn->deferred())
 	    return true;
     }
+
+    return false;
 }
 
 void DataDisp::process_scope(const string& scope)
@@ -4945,6 +4952,7 @@ DataDisp::DataDisp(Widget parent,
 
     MMcreateWorkArea(graph_cmd_w, "graph_cmd_area", graph_cmd_area);
     MMaddCallbacks(graph_cmd_area);
+    MMaddHelpCallback(graph_cmd_area, ImmediateHelpCB);
     XtManageChild(graph_cmd_w);
     register_menu_shell(graph_cmd_area);
 
@@ -5021,6 +5029,7 @@ void DataDisp::create_shells()
     Widget buttons = 
 	verify(MMcreateWorkArea(form2, "buttons", display_area));
     MMaddCallbacks (display_area);
+    MMaddHelpCallback(display_area, ImmediateHelpCB);
     register_menu_shell(display_area);
 
     XtManageChild (buttons);
