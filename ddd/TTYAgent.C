@@ -51,7 +51,7 @@ char TTYAgent_rcsid[] =
 DEFINE_TYPE_INFO_1(TTYAgent, LiterateAgent)
 
 #ifdef __osf__
-// OSF has some special treatment in this file; I guess these `#ifdef
+// DEC OSF has some special treatment in this file; I guess these `#ifdef
 // __osf__' flags should be deleted by an OSF expert some day.   - AZ
 #include <termio.h>
 #else
@@ -165,6 +165,9 @@ extern "C" {
 #endif
 }
 
+// Streams won't work on DEC OSF because there isn't any "ttcompat"
+// module and I don't know enough about any of this stuff to try to
+// figure it out now.  -- phil_brooks@MENTORG.COM (Phil Brooks)
 #if !defined(__osf__) && defined(HAVE_PTSNAME) && defined(HAVE_GRANTPT) \
     && defined(HAVE_UNLOCKPT) && defined(HAVE_IOCTL)
 
@@ -458,7 +461,7 @@ int TTYAgent::setupCommunication()
 
 int TTYAgent::setupParentCommunication()
 {
-#if defined(__osf__) || (defined(HAVE_FCNTL) && defined(O_NONBLOCK))
+#if defined(HAVE_FCNTL) && defined(O_NONBLOCK)
     // Set the child file descriptor to nonblocking mode
     int flags = fcntl(master, F_GETFL, 0);
     if (flags == -1)
@@ -484,10 +487,10 @@ int TTYAgent::setupParentCommunication()
     _outputfp = _inputfp;
     _errorfp  = NULL;
 
-#if defined(__osf__) || defined(HAVE_SETBUF)
+#if defined(HAVE_SETBUF)
     // Set unbuffered mode
     setbuf(_outputfp, NULL);
-#elif !defined(__osf__) && defined(HAVE_SETVBUF) && defined(_IONBF)
+#elif defined(HAVE_SETVBUF) && defined(_IONBF)
     // According to lee@champion.tcs.co.jp (Lee Hounshell), this
     // won't work on Linux ELF systems:
     setvbuf(_outputfp, NULL, _IONBF, BUFSIZ);
@@ -587,7 +590,7 @@ int TTYAgent::setupChildCommunication()
 	if (result < 0)
 	    _raiseIOMsg("cannot set slave terminal settings");
     }
-#elif defined(__osf__) || defined(HAVE_IOCTL)
+#elif defined(HAVE_IOCTL)
 #if defined(TIOCGETP) && defined(TIOCSETP)
     struct sgttyb settings;
     result = ioctl(slave, TIOCGETP, &settings);
@@ -596,7 +599,7 @@ int TTYAgent::setupChildCommunication()
     else
     {
 	settings.sg_flags &= ~ECHO;	// No echo
-#if defined(ISIG) && !defined(__osf__)
+#if defined(ISIG)
 	settings.sg_flags |= ISIG;      // Enable signals
 #endif
 #ifdef CRMOD
@@ -614,21 +617,17 @@ int TTYAgent::setupChildCommunication()
     else
     {
 	settings.c_lflag &= ~ECHO;      // No echo
-#ifndef __osf__
 #ifdef ISIG
 	settings.c_lflag |= ISIG;       // Enable signals
 #endif
 #ifdef OPOST
 	settings.c_oflag &= ~OPOST;     // Do not process output data
 #endif
-#endif
 #ifdef ONLCR
 	settings.c_oflag &= ~ONLCR;	// Do not map NL to CR-NL on output
 #endif
-#ifndef __osf__
 #ifdef VINTR
 	settings.c_cc[VINTR] = '\003';  // Set interrupt to ^C
-#endif
 #endif
 	result = ioctl(slave, TCSETA, &settings);
 	if (result < 0)
