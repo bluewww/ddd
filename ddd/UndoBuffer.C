@@ -335,6 +335,12 @@ void UndoBuffer::add_breakpoint_state(ostream& os, BreakPoint *bp)
     bp->get_state(os, bp->number());
 }
 
+static void get_confirm(const string& complete_answer, void *qu_data)
+{
+    bool *flag = (bool *)qu_data;
+    *flag = complete_answer.contains("is on");
+}
+
 void UndoBuffer::process_command(UndoBufferEntry& entry)
 {
     // Process command
@@ -352,6 +358,20 @@ void UndoBuffer::process_command(UndoBufferEntry& entry)
     string original_commands = commands;
     int bp_count = 0;
     undoing = true;
+
+    bool confirm = false;
+
+    if (commands != "" && gdb->type() == GDB)
+    {
+	gdb_command("show confirm", 0, get_confirm, &confirm);
+	syncCommandQueue();
+    }
+
+    if (confirm)
+    {
+	// Turn confirmation off during undo/redo.
+	gdb_question("set confirm off");
+    }
 
     while (commands != "")
     {
@@ -395,6 +415,9 @@ void UndoBuffer::process_command(UndoBufferEntry& entry)
 	// Wait until this command is processed
 	syncCommandQueue();
     }
+
+    if (confirm)
+	gdb_question("set confirm on");
 
     if (!entry.has(UB_COMMAND) && !entry.has(UB_EXEC_COMMAND))
     {
@@ -605,7 +628,7 @@ string UndoBuffer::action(const string& command)
 
 string UndoBuffer::undo_action()
 {
-    if (locked || history_position == 0 || history.size() == 0)
+    if (gdb->recording() || history_position == 0)
 	return NO_GDB_ANSWER;	// Nothing to undo
 
     const UndoBufferEntry& undo_entry = history[history_position - 1];
@@ -621,7 +644,7 @@ string UndoBuffer::undo_action()
 
 string UndoBuffer::redo_action()
 {
-    if (locked || history_position >= history.size())
+    if (gdb->recording() || history_position >= history.size())
 	return NO_GDB_ANSWER;	// Nothing to redo
 
     const UndoBufferEntry& redo_entry = history[history_position];
