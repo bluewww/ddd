@@ -109,7 +109,7 @@ Ddd*saveOptionsOnExit: false
 ! to this string.
 Ddd*termCommand: xterm \
 -bg 'grey90' -fg 'black' \
--fn '-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*' \
+-fn '-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*' \
 -title '@DDD@: Execution Window' -e /bin/sh -c
 
 
@@ -381,24 +381,24 @@ Ddd*suppressWarnings:		false
 ! @rm, @sl, @bf, @bs are some fonts for usual highlighting.
 ! @Logo and @logo are used in the DDD logo.
 Ddd*fontList: \
--*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset,\
--*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=tt,\
--*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\
--*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=rm,\
--*-helvetica-medium-o-*-*-*-90-*-*-*-*-*-*=sl,\
--*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=bf,\
--*-helvetica-bold-o-*-*-*-90-*-*-*-*-*-*=bs,\
--*-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*=Logo,\
--*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=logo,\
--*-symbol-*-*-*-*-*-90-*-*-*-*-*-*=symbol
+-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset,\
+-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=tt,\
+-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=key,\
+-*-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*=rm,\
+-*-helvetica-medium-o-*-*-12-*-*-*-*-*-*-*=sl,\
+-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=bf,\
+-*-helvetica-bold-o-*-*-12-*-*-*-*-*-*-*=bs,\
+-*-helvetica-bold-r-*-*-18-*-*-*-*-*-*-*=Logo,\
+-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=logo,\
+-*-symbol-*-*-*-*-12-*-*-*-*-*-*-*=symbol
 
 ! Fixed-width fonts.  `lucidatypewriter' is the font the DDD developers
 ! prefer; another popular choice is `courier'.  Note that the fonts used in
 ! displays are specified in the VSL file (`ddd.vsl')
 Ddd*XmTextField.FontList: \
--*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
 Ddd*XmText.FontList:      \
--*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
 
 
 !-----------------------------------------------------------------------------
