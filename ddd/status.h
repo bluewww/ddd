@@ -64,22 +64,29 @@ extern bool show_next_line_in_status;
 // Number of messages to keep in status history
 extern int status_history_size;
 
-// This is convenient for setting the status during a function
-class StatusDelay: public Delay {
+// These are convenient for setting the status during a function
+class StatusMsg {
 private:
     string cause;
 
 public:
-    StatusDelay(const string& c)
+    StatusMsg(const string& c)
 	: cause(c)
     {
 	set_status(cause + "...");
     }
 
-    ~StatusDelay()
+    ~StatusMsg()
     {
 	set_status(cause + "...done.");
     }
+};
+
+class StatusDelay: public StatusMsg, public Delay {
+public:
+    StatusDelay(const string& c)
+	: StatusMsg(c)
+    {}
 };
 
 #endif // _DDD_status_h
