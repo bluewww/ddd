@@ -26,6 +26,9 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
+char TTYAgent_rcsid[] = 
+    "$Id$";
+
 // Most of this code is based on `calldbx.c' from `xxgdb', by Pierre
 // Willard which in turn is based on `calldbx.c' from `xdbx', by Po
 // Cheung.  The open_master() and open_slave() routines are based on
@@ -38,12 +41,16 @@
 //
 //                                                 (Andreas Zeller)
 
-char TTYAgent_rcsid[] = 
-    "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation
 #endif
+
+// Options
+
+// If 1, synchronize parent and child by sending an initialization sequence
+#define SYNCHRONIZE_PARENT_AND_CHILD 0
+
 
 #include "TTYAgent.h"
 #include "config.h"
@@ -243,7 +250,7 @@ int TTYAgent::open_tty(const char *tty, int flags)
 	// selected.  Trying the same operation again will block until
 	// some external condition makes it possible to read, write,
 	// or connect (whatever the operation).  So, we just try again.
-	_raiseIOWarning(string(tty) + " is temporary unavailable (retrying)");
+	_raiseIOWarning(string(tty) + " is temporary unavailable");
 	fd = open(tty, flags);
     }
 
@@ -514,9 +521,22 @@ int TTYAgent::setupCommunication()
     return 0;
 }
 
+#if SYNCHRONIZE_PARENT_AND_CHILD
+static char TTY_INIT[] = { 'A', '\n' };
+#endif
+
 
 int TTYAgent::setupParentCommunication()
 {
+#if SYNCHRONIZE_PARENT_AND_CHILD
+    // Read initialization sequence from TTY (synchronizing)
+    char buf[BUFSIZ];
+    int ret = ::read(master, buf, sizeof(TTY_INIT));
+    if (ret <= 0)
+	raiseIOMsg("cannot read initialization sequence from child");
+#endif
+
+
 #if HAVE_FCNTL && defined(O_NONBLOCK)
     // Set the child file descriptor to nonblocking mode
     int flags = fcntl(master, F_GETFL, 0);
@@ -550,6 +570,11 @@ int TTYAgent::setupParentCommunication()
     // According to lee@champion.tcs.co.jp (Lee Hounshell), this
     // won't work on Linux ELF systems:
     setvbuf(_outputfp, NULL, _IONBF, BUFSIZ);
+#endif
+
+#if SYNCHRONIZE_PARENT_AND_CHILD
+    // Echo initialization sequence again
+    ::write(master, TTY_INIT, sizeof(TTY_INIT));
 #endif
 
     return 0;
@@ -773,6 +798,17 @@ int TTYAgent::setupChildCommunication()
     // Unbuffer output data from child
     fcntl(STDOUT_FILENO, F_SETFL, O_APPEND);
     setbuf(stdout, NULL);
+
+#if SYNCHRONIZE_PARENT_AND_CHILD
+    // Send an initialization sequence ...
+    ::write(STDOUT_FILENO, TTY_INIT, sizeof(TTY_INIT));
+
+    // ... and read it back again
+    char buf[BUFSIZ];
+    int ret = ::read(STDIN_FILENO, buf, sizeof(TTY_INIT));
+    if (ret <= 0)
+	raiseIOMsg("cannot read initialization sequence from parent");
+#endif
 
     return 0;
 }
