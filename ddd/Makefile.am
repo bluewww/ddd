@@ -1246,14 +1246,16 @@ docdir = $(srcdir)/../doc
 htmldir = $(docdir)/html
 
 .PHONY: html
-html: $(htmldir)/index.html
+html: $(htmldir)/ddd.html $(htmldir)/ddd-themes.html
 
-$(htmldir)/index.html: $(srcdir)/ddd.texi $(HTML_IMAGES) \
+$(htmldir)/ddd.html $(htmldir)/ddd-themes.html: \
+	$(srcdir)/ddd.texi $(srcdir)/ddd-themes.texi $(HTML_IMAGES) \
 	style.css $(srcdir)/fix-html.sed
 	@-test -d $(htmldir) || mkdir $(htmldir)
 	@-test -d $(htmldir)/PICS || mkdir $(htmldir)/PICS
 	@-test -d PICS || $(LN_S) $(picdir) .
 	$(RM) ddd*.html
+	$(MAKEINFO) --html -I $(srcdir) -I $(texidir) $(srcdir)/ddd-themes.texi
 	$(MAKEINFO) --html -I $(srcdir) -I $(texidir) $(srcdir)/ddd.texi
 	for file in ddd*.html; do \
 		$(SED) -f $(srcdir)/fix-html.sed $$file | \
@@ -1262,11 +1264,11 @@ $(htmldir)/index.html: $(srcdir)/ddd.texi $(HTML_IMAGES) \
 	done
 	cd $(htmldir) && $(RM) ddd*.html style.css PICS/*
 	$(INSTALL_DATA) ddd*.html $(srcdir)/style.css $(htmldir)
+	($(ECHO) 'index.html:'; $(ECHO) '	$(LN_S) ddd.html index.html') \
+	 > $(htmldir)/Makefile
 	@$(ECHO) Installing images...
 	@$(INSTALL_DATA) $(HTML_IMAGES) $(htmldir)/PICS
 	@$(ECHO) Installing images...done.
-	$(RM) $(htmldir)/index.html
-	$(LN_S) ddd.html $@
 
 # Manual page
 man_MANS = ddd.1
@@ -1974,8 +1976,10 @@ PROG_STUFF = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
 
 # Additional files to be included in the distribution.
 DIST_STUFF = ../$(ddd)-$(VERSION)-$(REL).spec \
-             $(man_MANS) $(docdir)/ddd.ps $(docdir)/ddd.pdf \
-	     $(htmldir)/index.html $(ICONS)
+             $(man_MANS) \
+	     $(docdir)/ddd.ps $(docdir)/ddd.pdf \
+	     $(docdir)/ddd-themes.ps $(docdir)/ddd-themes.pdf \
+	     $(htmldir)/ddd.html $(ICONS)
 
 # Let automake know what we need.
 EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF)
