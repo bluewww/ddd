@@ -104,30 +104,33 @@ diff=false
 link=false
 icons=false
 
-errors=false
+usage="install-ftp: usage: $0 [-beta | -final]
+                 or $0 [ -readme | -doc | -icons | -diff | -link]"
+
 if [ $# = 0 ]; then
-  # Default: install all
-  readme=true
-  dist=true
-  doc=true
-  icons=true
-  diff=true
-  link=true
-else
-  while [ $# != 0 ]; do
-    case "$1" in
+  echo "$usage"
+  exit 0
+fi
+
+errors=false
+while [ $# != 0 ]; do
+  case "$1" in
     -readme) readme=true; shift;;
     -dist)   dist=true;   shift;;
     -doc)    doc=true;    shift;;
     -icons)  icons=true;  shift;;
     -diff)   diff=true;   shift;;
     -link)   link=true;   shift;;
+    -beta)   dist=true; diff=true; shift;;
+    -final)  readme=true; dist=true; doc=true; icons=true;
+             diff=true; link=true; shift;;
+    -help)   echo "$usage"; exit 0;;
     *) echo "unknown option $1" >&2; errors=true; shift;;
-    esac
-  done
-fi
+  esac
+done
 
 if $errors; then
+  echo "$usage" >&2
   exit 1
 fi
 
