@@ -290,7 +290,7 @@ void interruptAct(Widget w, XEvent*, String *, Cardinal *)
     else
     {
 	gdb_keyboard_command = true;
-	_gdb_command("\003", w);
+	gdb_command("\003", w);
 	gdb_keyboard_command = true;
     }
 }

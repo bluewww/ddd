@@ -463,15 +463,10 @@ string gdbValue(const string& expr)
 	// Ask debugger for value.  In case of secondary prompts, use
 	// the default choice.
 	gdb->removeHandler(ReplyRequired, gdb_selectHP);
-	string dump = gdb_question(gdb->dump_command(expr), help_timeout);
-	if (dump == NO_GDB_ANSWER)
-	    value = NO_GDB_ANSWER;
-	else
-	    value = gdb->get_dumped_var(dump, expr);
+	value = gdb_question(gdb->print_command(expr, false), help_timeout);
+	if (value != NO_GDB_ANSWER)
+	    gdb->munch_value(value, expr);
 	gdb->addHandler(ReplyRequired, gdb_selectHP);
-
-	if (value.contains(" = "))
-	    value = value.after(" = ");
 
 	strip_space(value);
     }
@@ -484,6 +479,9 @@ string gdbValue(const string& expr)
 
 string assignment_value(const string& expr)
 {
+    if (expr == NO_GDB_ANSWER)
+	return NO_GDB_ANSWER;
+
     string value = expr;
 
     // Replace whitespace
@@ -648,8 +646,11 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     tip = get_disp_value_str(tip, gdb);
     if (tip == "void")
 	return clear;		// Empty variable
+
+#if 0
     if (gdb->program_language() == LANGUAGE_PERL && tip == "")
 	tip = "undef";
+#endif
 
     if (for_documentation)
     {

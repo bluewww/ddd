@@ -1380,7 +1380,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    string enable_signal_cmd = 
 		"signal(" + itostring(SIGABRT) + ", " + 
 		itostring(int(SIG_DFL)) + ")";
-	    gdb_question(gdb->print_command(enable_signal_cmd));
+	    gdb_question(gdb->print_command(enable_signal_cmd, false));
 	    gdb_question(gdb->signal_command(SIGABRT));
 	}
 

@@ -337,7 +337,7 @@ void ddd_show_signal(int sig)
 
     // Interrupt current GDB action
     gdb_keyboard_command = true;
-    _gdb_command("\003", gdb_w);
+    gdb_command("\003", gdb_w);
 
     // Show the message in an error dialog,
     // allowing the user to clean up manually.
@@ -368,7 +368,7 @@ void ddd_show_exception(const char *c, const char *what)
 
     // Interrupt current GDB action
     gdb_keyboard_command = true;
-    _gdb_command("\003", gdb_w);
+    gdb_command("\003", gdb_w);
 
     // Show the message in an error dialog,
     // allowing the user to clean up manually.

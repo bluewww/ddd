@@ -1302,7 +1302,7 @@ void SourceView::text_popup_printCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command(gdb->print_command(fortranize(*word_ptr), false), w);
+    gdb_command(gdb->print_command(fortranize(*word_ptr), false, false), w);
 }
 
 void SourceView::text_popup_print_refCB (Widget w, 
@@ -1311,7 +1311,8 @@ void SourceView::text_popup_print_refCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command(gdb->print_command(deref(fortranize(*word_ptr)), false), w);
+    gdb_command(gdb->print_command(deref(fortranize(*word_ptr)), 
+				   false, false), w);
 }
 
 
@@ -6279,7 +6280,7 @@ void SourceView::PrintWatchpointCB(Widget w, XtPointer client_data, XtPointer)
 	break;
 
     case WATCHPOINT:
-	gdb_command(gdb->print_command(bp->expr(), false), w);
+	gdb_command(gdb->print_command(bp->expr(), false, false), w);
 	break;
     }
 }
@@ -6887,12 +6888,14 @@ bool SourceView::thread_required()   { return thread_dialog_popped_up; }
 
 bool SourceView::can_go_up()
 {
-    return gdb->type() != PERL && (!where_required() || XtIsSensitive(up_w));
+    return gdb->relative_frame_command(1) != "" && 
+	(!where_required() || XtIsSensitive(up_w));
 }
 
 bool SourceView::can_go_down()
 {
-    return gdb->type() != PERL && (!where_required() || XtIsSensitive(down_w));
+    return gdb->relative_frame_command(-1) != "" && 
+	(!where_required() || XtIsSensitive(down_w));
 }
 
 

@@ -504,8 +504,10 @@ static bool starts_with(const string& cmd, const string& prefix)
 // True if CMD is a printing command
 bool is_print_cmd(const string& cmd, GDBAgent *gdb)
 {
-    return (starts_with(cmd, gdb->print_command("", true)) ||
-	    starts_with(cmd, gdb->print_command("", false)));
+    return (starts_with(cmd, gdb->print_command("", true, true)) ||
+	    starts_with(cmd, gdb->print_command("", true, false)) ||
+	    starts_with(cmd, gdb->print_command("", false, true)) ||
+	    starts_with(cmd, gdb->print_command("", false, false)));
 }
 
 // True if CMD is some other builtin command

@@ -48,8 +48,7 @@ string deref(const string& expr, const string& sym)
 {
     const string& symbol = (sym == "" ? expr : sym);
 
-    if (gdb->program_language() != LANGUAGE_PERL ||
-	is_file_pos(expr) || expr == "")
+    if (gdb->program_language() != LANGUAGE_PERL || !expr.contains('$', 0))
 	return gdb->dereferenced_expr(symbol);
 
     string ref = NO_GDB_ANSWER;

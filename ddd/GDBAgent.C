@@ -1479,7 +1479,7 @@ void GDBAgent::handle_died()
 //-----------------------------------------------------------------------------
 
 // DBX 3.0 wants `print -r' instead of `print' for C++
-string GDBAgent::print_command(string expr, bool internal) const
+string GDBAgent::print_command(string expr, bool named, bool internal) const
 {
     string cmd;
 
@@ -1487,7 +1487,7 @@ string GDBAgent::print_command(string expr, bool internal) const
     {
     case GDB:
     case DBX:
-	if (internal && has_output_command())
+	if (internal && !named && has_output_command())
 	    cmd = "output";
 	else
 	    cmd = "print";
@@ -1501,9 +1501,7 @@ string GDBAgent::print_command(string expr, bool internal) const
 	break;
 
     case PERL:
-	if (expr.matches(rxidentifier))
-	    return dump_command(expr);
-	cmd = "p";
+	cmd = "x";
 	break;
 
     case JDB:
@@ -1516,7 +1514,7 @@ string GDBAgent::print_command(string expr, bool internal) const
 
     if (expr != "")
     {
-	if (!internal && !has_named_values())
+	if (named && !has_named_values())
 	{
 	    switch (type())
 	    {
@@ -1524,23 +1522,22 @@ string GDBAgent::print_command(string expr, bool internal) const
 		cmd += " " + quote(expr + " =") + ",";
 		break;
 
-	    case PERL:
-		cmd += " " + quote(expr + " = ", '\'') + ",";
-		break;
-
-	    case GDB:
 	    case XDB:
-		cmd = echo_command(expr + " = ") + "; " + cmd;
+		cmd.prepend(echo_command(expr + " = ") + ";");
 		break;
 
-	    case JDB:		// JDB has named values
-	    case PYDB:		// May need changing
+	    case JDB:
+	    case PERL:
+	    case PYDB:
+	    case GDB:
+		cmd.prepend(echo_command(expr + " = ") + "\n");
 		break;
 	    }
 	}
-
-	cmd += " " + expr;
     }
+
+    if (expr != "")
+	cmd += " " + expr;
 
     return cmd;
 }
@@ -1885,6 +1882,9 @@ string GDBAgent::frame_command(int num) const
 // Add OFFSET to current frame (i.e. OFFSET > 0: up, OFFSET < 0: down)
 string GDBAgent::relative_frame_command(int offset) const
 {
+    if (gdb->type() == PERL)
+	return "";		// No such command in Perl
+
     if (offset == -1)
 	return "down";
     else if (offset < 0)
@@ -1924,7 +1924,7 @@ string GDBAgent::echo_command(string text) const
 	return "echo " + cook(text);
 
     case DBX:
-	return print_command() + " " + quote(text);
+	return print_command(quote(text), false);
 
     case XDB:
 	return quote(text);
@@ -2670,30 +2670,20 @@ void GDBAgent::split_perl_var(const string& var,
     }
 }
 
-// Return command to dump variable VAR
-string GDBAgent::dump_command(const string& var) const
+// Bring VALUE into a form that might be recognized by DDD
+void GDBAgent::munch_perl_scalar(string& value)
 {
-    if (type() != PERL || !var.matches(rxidentifier))
-	return print_command(var, false);
+    strip_leading_space(value);
+    if (value.contains("0  ", 0))
+	value = value.after("0");
 
-    string prefix;
-    string package;
-    string name;
-    split_perl_var(var, prefix, package, name);
-    if (name == "")
-	return print_command(var);
-
-    string cmd;
-    if (package == "")
-	cmd = "X ";	// Use current package
-    else
-	cmd = "V " + package + " ";
-
-    return cmd + name;
+    strip_leading_space(value);
+    if (value.contains(rxperlref, 0))
+	value = value.before('\n');
 }
 
 // Bring VALUE into a form that might be recognized by DDD
-string GDBAgent::munch_perl_array(const string& value)
+void GDBAgent::munch_perl_array(string& value, bool hash)
 {
     int n = value.freq('\n');
     string *lines = new string[n + 1];
@@ -2702,10 +2692,14 @@ string GDBAgent::munch_perl_array(const string& value)
     bool compact = false;
     bool first_elem = true;
     string new_value;
+    bool arrow = true;
 
     for (int i = 0; i < n; i++)
     {
 	string line = lines[i];
+	if (!compact && line.contains(' ', 0))
+	    continue;		// Sub-element; ignore line
+
 	strip_space(line);
 
 	if (!compact && line.contains(rxint, 0))
@@ -2721,94 +2715,46 @@ string GDBAgent::munch_perl_array(const string& value)
 		line = lines[i].after(rxint);
 	    }
 	    strip_space(line);
-	
-	    if (!first_elem)
-		new_value += ", ";
-
-	    first_elem = false;
 	}
+
+	if (!first_elem)
+	{
+	    if (hash && arrow)
+		new_value += " => ";
+	    else
+		new_value += ", ";
+	    arrow = !arrow;
+	}
+
+	first_elem = false;
 
 	new_value += line;
     }
 
-    delete []lines;
+    delete[] lines;
 
     if (!new_value.contains('(', 0))
 	new_value = '(' + new_value + ')';
 
-    return new_value;
+    value = new_value;
 }
 
-string GDBAgent::munch_perl_hash(const string& value)
+// Bring VALUE of VAR into a form understood by DDD
+void GDBAgent::munch_value(string& value, const string& var) const
 {
-    string new_value(value);
-    strip_space(new_value);
+    while (value.contains(var + " = ", 0))
+	value = value.after(" = ");
 
-    new_value.gsub("(\n   ", "(");
-    new_value.gsub("\n)", ")");
-    new_value.gsub("\n", ",");
+    if (gdb->type() != PERL)
+	return;
 
-    if (!new_value.contains('(', 0))
-	new_value = '(' + new_value + ')';
-
-    return new_value;
-}
-
-// Get value of VAR in PERL_DUMP
-string GDBAgent::get_dumped_var(const string& dump, const string& var) const
-{
-    if (type() != PERL || var == "")
-	return dump;
-
-    string prefix;
-    string package;
-    string name;
-    split_perl_var(var, prefix, package, name);
-    if (name == "")
-	return dump;
-
-    string base;
-    if (prefix == "")
-	base = name;
+    // Special treatment
+    if (var != "" && var[0] == '@')
+	munch_perl_array(value, false);
+    else if (var != "" && var[0] == '%')
+	munch_perl_array(value, true);
     else
-	base = prefix[prefix.length() - 1] + name;
-
-    string value = dump;
-
-    // Find the beginning
-    value.prepend('\n');
-    value = value.from("\n" + base + " = ");
-    if (value == "")
-	return dump;		// Not found
-
-    value = value.after(" = ");
-
-    // Find the end - the first newline not followed by a space
-    int nl = value.index('\n');
-    while (nl > 0 && nl < int(value.length()) - 1 && isspace(value[nl + 1]))
-	nl = value.index('\n', nl + 1);
-    value = value.before(nl);
-
-    // Dereference
-    for (int i = 0; i < int(prefix.length()) - 1; i++)
-    {
-	value = value.after("0x");
-	value = value.after("\n");
-	strip_leading_space(value);
-	if (value.contains("-> ", 0))
-	    value = value.after("-> ");
-    }
-
-    // If this is a reference, strip the referred object
-    if (value.contains(rxperlref, 0))
-	value = value.before('\n');
-
-    if (prefix != "" && prefix[0] == '@')
-	value = munch_perl_array(value);
-    else if (prefix != "" && prefix[0] == '%')
-	value = munch_perl_hash(value);
-
-    return var + " = " + value;
+	munch_perl_scalar(value);
 }
 
 

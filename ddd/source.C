@@ -97,7 +97,7 @@ void gdbPrintCB(Widget w, XtPointer, XtPointer)
     string arg = current_arg();
 
     if (arg != "" && !arg.matches(rxwhite))
-	gdb_command(gdb->print_command(arg, false), w);
+	gdb_command(gdb->print_command(arg, false, false), w);
 }
 
 void gdbPrintRefCB(Widget w, XtPointer, XtPointer)
@@ -105,7 +105,7 @@ void gdbPrintRefCB(Widget w, XtPointer, XtPointer)
     string arg = current_arg();
 
     if (arg != "" && !arg.matches(rxwhite))
-	gdb_command(gdb->print_command(deref(arg), false), w);
+	gdb_command(gdb->print_command(deref(arg), false, false), w);
 }
 
 void gdbDisplayCB(Widget w, XtPointer, XtPointer)

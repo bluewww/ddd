@@ -215,8 +215,8 @@ protected:
     void trace(char *prefix, void *call_data) const;
 
     // Perl specials
-    static string munch_perl_array(const string& value);
-    static string munch_perl_hash(const string& value);
+    static void munch_perl_array(string& value, bool hash);
+    static void munch_perl_scalar(string& value);
 
 public:
     // Constructor
@@ -631,11 +631,11 @@ public:
     // Several commands
 				                    // GDB command
 						    // -----------------------
-    string print_command(string expr = "", bool internal = true) const;
-				                    // print EXP
-						    // output EXP (if INTERNAL)
-    string assign_command(string var, string expr) const;
-				                    // set variable VAR = EXPR
+    string print_command(string expr = "",          // print EXP or
+			 bool named = false,        // output EXP (if INTERNAL)
+			 bool internal = true) const;
+    string assign_command(string var,               // set variable VAR = EXPR
+			  string expr) const;
     string display_command(string expr = "") const; // display EXPR
     string where_command(int count = 0) const;	    // where COUNT
     string pwd_command() const;	                    // pwd
@@ -674,9 +674,8 @@ public:
     string signal_command(int sig) const;           // signal SIG
     string nop_command(string comment = "") const;  // # comment
 
-    // Dump a variable and get it from a dump.
-    string dump_command(const string& var) const;   // Perl: X var
-    string get_dumped_var(const string& dump, const string& var) const;
+    // Bring VALUE of VAR into a form understood by DDD
+    void munch_value(string& value, const string& var) const;
 
     // Split a Perl variable into its components
     static void split_perl_var(const string& var,

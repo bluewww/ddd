@@ -40,6 +40,7 @@ char question_rcsid[] =
 #include "GDBAgent.h"
 #include "Delay.h"
 #include "TimeOut.h"
+#include "disp-read.h"
 
 #include <X11/Intrinsic.h>
 
@@ -118,8 +119,7 @@ string gdb_question(const string& command, int timeout, bool verbatim)
 
 	// Set delay (unless this is a trivial question)
 	Delay *delay = 0;
-	if (!command.contains("help", 0)
-	    && !command.contains(gdb->print_command(), 0))
+	if (!command.contains("help", 0) && !is_print_cmd(command, gdb))
 	    delay = new Delay;
 
 	// Process all GDB input and timer events

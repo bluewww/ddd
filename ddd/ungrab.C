@@ -44,6 +44,7 @@ char ungrab_rcsid[] =
 #include "GDBAgent.h"
 #include "TimeOut.h"
 #include "assert.h"
+#include "buttons.h"
 #include "ddd.h"
 #include "disp-read.h"
 #include "file.h"
@@ -108,21 +109,6 @@ static bool mouse_pointer_grabbed()
     return false;
 }
 
-// Return the GDB value of EXPR.
-static string gdb_value(const string& expr)
-{
-    string val = gdb_question(gdb->print_command(expr));
-    if (is_invalid(val))
-	return "";
-
-    val = get_disp_value_str(val, gdb);
-    if (val.contains('(', 0))
-	val = val.after(')');
-
-    strip_space(val);
-    return val;
-}
-
 // Return true iff the debuggee is a running X program
 static bool running_x_program()
 {
@@ -131,7 +117,7 @@ static bool running_x_program()
 	return false;		// Not running
 
     // Every X program has an int variable named `_Xdebug'.
-    string display_value = gdb_value("_Xdebug");
+    string display_value = gdbValue("_Xdebug");
 
     if (display_value == "")
 	return false;		// No X program
