@@ -587,11 +587,14 @@ int TTYAgent::setupChildCommunication()
 	_raiseIOMsg("cannot get slave terminal settings");
     else
     {
+#ifdef ICANON
+	settings.c_lflag |= ICANON;     // Canonical mode
+#endif
 #ifdef ECHO
 	settings.c_lflag &= ~ECHO;      // No echo
 #endif
 #ifdef ISIG
-	settings.c_lflag |= ISIG;       // Enable signals
+	settings.c_lflag |= ISIG;       // Enable signal characters
 #endif
 #ifdef OPOST
 	settings.c_oflag &= ~OPOST;     // Do not process output data
@@ -658,11 +661,14 @@ int TTYAgent::setupChildCommunication()
 	_raiseIOMsg("cannot get slave terminal settings");
     else
     {
+#ifdef ICANON
+	settings.c_lflag |= ICANON;     // Canonical mode
+#endif
 #ifdef ECHO
 	settings.c_lflag &= ~ECHO;      // No echo
 #endif
 #ifdef ISIG
-	settings.c_lflag |= ISIG;       // Enable signals
+	settings.c_lflag |= ISIG;       // Enable signal characters
 #endif
 #ifdef OPOST
 	settings.c_oflag &= ~OPOST;     // Do not process output data
