@@ -114,7 +114,7 @@ Ddd*saveOptionsOnExit: false
 ! to this string.
 Ddd*termCommand: xterm \
 -bg 'grey90' -fg 'black' \
--fn '-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*' \
+-fn '-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*' \
 -title '@DDD@: Execution Window' -e /bin/sh -c
 
 
@@ -342,15 +342,6 @@ Ddd*tool_buttons.kill.bottomPosition:      	8
 Ddd*tool_buttons.kill.leftPosition: 		4
 Ddd*tool_buttons.kill.rightPosition:       	8
 
-! Command tool fonts
-Ddd*tool_buttons.run.fontList: \
-	-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
-Ddd*tool_buttons.interrupt.fontList:  \
-	-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
-Ddd*tool_buttons*fontList:  \
-	-*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*
-
-
 ! Command tool button placement.  Don't change this.
 Ddd*tool_buttons*topAttachment:      		XmATTACH_POSITION
 Ddd*tool_buttons*bottomAttachment:   		XmATTACH_POSITION
@@ -514,30 +505,42 @@ Ddd*highlightThickness:      	1
 
 ! Font definitions.  @<font> is used to switch between fonts.
 ! @charset is the default font.
-! @tt is the fixed-width font used in texts
-! @key is the font used for keys
-! @rm, @sl, @bf, @bs are some fonts for usual highlighting.
+! @tt (teletype) is the fixed-width font used in texts.
+! @key is the font used for keys.
+! @rm (roman), @sl (slanted), @bf (bold face), @bs (bold slanted)
+! are some fonts for usual highlighting.
 ! @Logo and @logo are used in the DDD logo.
 Ddd*fontList: \
--*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset,\
--*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=tt,\
--*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=key,\
--*-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*=rm,\
--*-helvetica-medium-o-*-*-12-*-*-*-*-*-*-*=sl,\
--*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=bf,\
--*-helvetica-bold-o-*-*-12-*-*-*-*-*-*-*=bs,\
--*-helvetica-bold-r-*-*-18-*-*-*-*-*-*-*=Logo,\
--*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=logo,\
--*-symbol-*-*-*-*-12-*-*-*-*-*-*-*=symbol
+-*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=charset,\
+-*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\
+-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=tt,\
+-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\
+-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*=rm,\
+-*-helvetica-medium-o-*-*-*-100-*-*-*-*-*-*=sl,\
+-*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=bf,\
+-*-helvetica-bold-o-*-*-*-100-*-*-*-*-*-*=bs,\
+-*-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*=Logo,\
+-*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=logo,\
+-*-symbol-*-*-*-*-*-100-*-*-*-*-*-*=symbol
 
 ! Fixed-width fonts.  `lucidatypewriter' is the font the DDD developers
 ! prefer; another popular choice is `courier'.
 Ddd*XmTextField.FontList: \
--*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
 Ddd*XmText.FontList:      \
--*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
 
-! For fonts in the data display, see below.
+! Command tool fonts.  Slightly smaller.
+Ddd*tool_buttons.run.fontList: \
+	-*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=charset
+Ddd*tool_buttons.interrupt.fontList:  \
+	-*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=charset
+Ddd*tool_buttons*fontList:  \
+	-*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+	
+
+! For fonts in the execution window, see the `termCommand' resource, above.
+! For fonts in the data display, see the `vslDefs' resource, below.
 
 
 !-----------------------------------------------------------------------------
@@ -606,7 +609,7 @@ Ddd*graph_edit.outlineColor:       grey50
 ! - stdfontfamily() is the font family used: one of
 !   family_times(), family_courier(), family_helvetica(), 
 !   family_new_century(), family_typewriter().
-! - stdfontsize() is the font size used (in pixels).
+! - stdfontsize() is the font size used (in 1/10 points).
 ! - stdfontweight() is the weight used: one of
 !   weight_medium(), weight_bold().
 !
@@ -635,7 +638,7 @@ Ddd*graph_edit.outlineColor:       grey50
 ! #replace stdfontsize		\n\
 ! #replace stdfontweight	\n\
 ! stdfontfamily() = family_typewriter();	\n\
-! stdfontsize()   = 12;				\n\
+! stdfontsize()   = 90;				\n\
 ! stdfontweight() = weight_medium();
 
 ! See the file `ddd.vsl' for further definitions to override here.
@@ -1737,8 +1740,8 @@ Ddd*settings_popup.autoUnmanage: false
 
 Ddd*settings*scroll.scrollingPolicy:		XmAUTOMATIC
 Ddd*settings*scroll.height:			292
-Ddd*settings*scroll.width:			530
-Ddd*settings*form.width:			500
+Ddd*settings*scroll.width:			570
+Ddd*settings*form.width:			540
 Ddd*settings*help.labelString:			?
 Ddd*settings*XmTextField.columns:		10
 
@@ -1890,13 +1893,16 @@ Ddd*node_popup.disable.labelString:	Disable Display
 Ddd*graph_cmd_w*contextHelpString: \
 @rm Commands related to the data window.
 
+Ddd*graph_cmd_w.marginWidth:     0
+Ddd*graph_cmd_w.marginHeight:    0
+Ddd*graph_cmd_area.marginWidth:  0
 
 Ddd*graph_cmd_w.graph_arg_label.labelString:	():
 Ddd*graph_cmd_w.graph_arg_label.marginWidth:	0
-Ddd*graph_cmd_w.graph_arg.columns:              20
+Ddd*graph_cmd_w.graph_arg.columns:              18
 Ddd*graph_cmd_w*graph_arg.editable:		false
 Ddd*graph_cmd_w*graph_arg.contextHelpString:	\
-@rm This is the argument @bf () @rm for the command buttons on the right.\n\
+@rm This is the argument @bf() @rm for the command buttons on the right.\n\
 This is an output-only window which displays the selection\n\
 in the data window above.
 
@@ -2064,6 +2070,10 @@ Ddd*arg_cmd_w*contextHelpString: \
 Enter arguments for @sl name @rm() commands\n\
 in the @bf() @rm field.
 
+Ddd*arg_cmd_w.marginWidth:  0
+Ddd*arg_cmd_w.marginHeight: 0
+Ddd*arg_cmd_area.marginWidth:  0
+
 Ddd*arg_cmd_w.arg_label.labelString:		():
 Ddd*arg_cmd_w.arg_label.marginWidth:		0
 Ddd*arg_cmd_w.source_arg.contextHelpString:	\
@@ -2071,7 +2081,7 @@ Ddd*arg_cmd_w.source_arg.contextHelpString:	\
 You can edit this field, or easily change its value\n\
 by selecting something in the source text above.
 Ddd*arg_cmd_w.source_arg.value:                  main
-Ddd*arg_cmd_w.source_arg.columns:                20
+Ddd*arg_cmd_w.source_arg.columns:                18
 
 Ddd*arg_cmd_w.orientation:				XmHORIZONTAL
 Ddd*arg_cmd_w.arg_cmd_area.orientation:			XmHORIZONTAL
@@ -2086,8 +2096,8 @@ Ddd*arg_cmd_w.arg_cmd_area*break.labelString:		Break at ()
 Ddd*arg_cmd_w.arg_cmd_area*clear.labelString:		Clear at ()
 Ddd*arg_cmd_w.arg_cmd_area*print.labelString:		Print ()
 Ddd*arg_cmd_w.arg_cmd_area*display.labelString:		Display ()
-Ddd*arg_cmd_w.arg_cmd_area*find_backward.labelString:	Find<< ()
-Ddd*arg_cmd_w.arg_cmd_area*find_forward.labelString:	Find>> ()
+Ddd*arg_cmd_w.arg_cmd_area*find_backward.labelString:	Find@small<< @bf()
+Ddd*arg_cmd_w.arg_cmd_area*find_forward.labelString:	Find@small>> @bf()
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.contextHelpString:	\
 @bf Lookup ()@rm\n\
@@ -2122,12 +2132,12 @@ Ddd*arg_cmd_w.arg_cmd_area*display.contextHelpString:	\
 Display the argument @bf () @rm in the data display window.
 
 Ddd*arg_cmd_w.arg_cmd_area*find_backward.contextHelpString:	\
-@bf Find<< ()@rm\n\
+@bf Find@small<< @bf()@rm\n\
 Search the previous occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.
 
 Ddd*arg_cmd_w.arg_cmd_area*find_forward.contextHelpString:	\
-@bf Find>> ()@rm\n\
+@bf Find@small>> @bf()@rm\n\
 Search the next occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.
 
@@ -2310,7 +2320,7 @@ Ddd*?*No.contextHelpString:     \
 
 Ddd*?*Complete.contextHelpString:	\
 @bf Complete@rm\n\
-Complete the current debugging command.  (Equivalent to @key Tab@rm).
+Complete the current debugging command.  (Equivalent to @key TAB@rm).
 
 Ddd*?*Clear.contextHelpString:	\
 @bf Clear@rm\n\
@@ -2899,7 +2909,7 @@ To save them for the next @DDD@ invocation, click on @bf Yes@rm.\n\
 To discard the changes, click on @bf No@rm.
 
 Ddd*set_dialog_popup.title: @DDD@: Set Value
-Ddd*graph_cmd_w*set_dialog*contextHelpString:	\
+Ddd*set_dialog*contextHelpString:	\
 @rm You can now change a value in the selected display.\n\
 If you want to keep it unchanged, press @bf Cancel @rm.
 
