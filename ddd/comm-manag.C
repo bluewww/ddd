@@ -102,7 +102,7 @@ typedef struct CmdData {
 
 
 typedef struct PlusCmdData {
-    bool     refresh_main;             // send 'info line main' / `func main'
+    bool     refresh_initial_line;     // send 'info line' / `func'
     bool     refresh_file;             // send 'file'
     bool     refresh_line;             // send 'list'
     bool     refresh_pwd;	       // send 'pwd'
@@ -133,7 +133,7 @@ typedef struct PlusCmdData {
     bool     config_program_language;  // try 'show language'
 
     PlusCmdData () :
-	refresh_main(false),
+	refresh_initial_line(false),
 	refresh_file(false),
 	refresh_line(false),
 	refresh_pwd(false),
@@ -186,8 +186,9 @@ void start_gdb()
     switch (gdb->type())
     {
     case GDB:
-	cmds += "info line main";
-	plus_cmd_data->refresh_main = true;
+	cmds += "list";		// Required to load symbol table
+	cmds += "info line";
+	plus_cmd_data->refresh_initial_line = true;
 	cmds += "show language";
 	plus_cmd_data->config_program_language = true;
 	cmds += "pwd";
@@ -203,7 +204,7 @@ void start_gdb()
 	break;
 
     case DBX:
-	plus_cmd_data->refresh_main = true;
+	plus_cmd_data->refresh_initial_line = true;
 	cmds += "frame";
 	plus_cmd_data->config_frame = true;
 	cmds += "dbxenv run_io";
@@ -238,8 +239,8 @@ void start_gdb()
 	break;
 
     case XDB:
-	cmds += "v main";
-	plus_cmd_data->refresh_main = true;
+	cmds += "L";
+	plus_cmd_data->refresh_initial_line = true;
 
 	cmds += "sm";
 	cmds += "tm";
@@ -377,9 +378,9 @@ void user_cmdSUC (string cmd, Widget origin)
     if (is_file_cmd (cmd, gdb))
     {
 	// File may change: display main() function and update displays
-	plus_cmd_data->refresh_disp_info = true;
-	plus_cmd_data->refresh_main      = true;
-	plus_cmd_data->refresh_disp      = true;
+	plus_cmd_data->refresh_disp_info    = true;
+	plus_cmd_data->refresh_initial_line = true;
+	plus_cmd_data->refresh_disp         = true;
 	
 	switch (gdb->type())
 	{
@@ -572,8 +573,11 @@ void user_cmdSUC (string cmd, Widget origin)
     switch (gdb->type())
     {
     case GDB:
-	if (plus_cmd_data->refresh_main)
-	    cmds += "info line main";
+	if (plus_cmd_data->refresh_initial_line)
+	{
+	    cmds += "list";	// Required to load symbol table
+	    cmds += "info line";
+	}
 	if (plus_cmd_data->refresh_pwd)
 	    cmds += "pwd";
 	assert(!plus_cmd_data->refresh_file);
@@ -637,8 +641,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	break;
 
     case XDB:
-	if (plus_cmd_data->refresh_main)
-	    cmds += "v main";
+	if (plus_cmd_data->refresh_initial_line)
+	    cmds += "L";
 	if (plus_cmd_data->refresh_pwd)
 	    cmds += "!pwd";
 	assert(!plus_cmd_data->refresh_file);
@@ -960,12 +964,16 @@ void plusOQAC (string answers[],
     int qu_count = 0;
     string file;
 
-    if (plus_cmd_data->refresh_main) {
-	assert (qu_count < count);
+    if (plus_cmd_data->refresh_initial_line) {
 	switch (gdb->type())
 	{
 	case GDB:
+	    assert (qu_count < count);
+	    qu_count++;		// Ignore `list' output
+	    // FALL THROUGH
+
 	case XDB:
+	    assert (qu_count < count);
 	    source_view->process_info_line_main(answers[qu_count++]);
 	    break;
 
@@ -1074,7 +1082,7 @@ void plusOQAC (string answers[],
 	if (file != "")
 	{
 	    int line;
-	    if (plus_cmd_data->refresh_main)
+	    if (plus_cmd_data->refresh_initial_line)
 		line = atoi(listing);
 	    else
 		line = line_of_listing(listing);
