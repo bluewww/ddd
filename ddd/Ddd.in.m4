@@ -170,8 +170,8 @@ Ddd*rshCommand: @RSH@
 
 
 ! If `rsh' is used without commands, using the `--rhost' option,
-! the remote terminal must be set up for DDD.  Especially, echoing
-! must be disabled; mapping of NL to CR/NL is harmful as well.
+! the remote environment may need to be set up for DDD.  Especially, 
+! echoing must be disabled; mapping of NL to CR/NL is harmful as well.
 ! The following commands are always issued first in the remote
 ! interactive shell.
 Ddd*rHostInitCommands: stty -echo -onlcr
