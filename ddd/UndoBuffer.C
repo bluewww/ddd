@@ -252,13 +252,13 @@ void UndoBuffer::add_command(const string& command, bool exec)
 	assert (current_entry >= 0 && current_entry < history.size());
 
 	UndoBufferEntry& entry = history[current_entry];
-	entry.remove(UB_COMMAND);
-	entry.remove(UB_EXEC_COMMAND);
 
 	if (own_direction < 0 && own_processed == 0)
 	{
 	    // Called from undo => a `redo' command: replace current
 
+	    entry.remove(UB_COMMAND);
+	    entry.remove(UB_EXEC_COMMAND);
 	    entry[command_key] = c;
 	    own_processed++;
 	}
@@ -273,6 +273,8 @@ void UndoBuffer::add_command(const string& command, bool exec)
 	{
 	    // Called from redo => an `undo' command: replace current
 
+	    entry.remove(UB_COMMAND);
+	    entry.remove(UB_EXEC_COMMAND);
 	    entry[command_key] = c;
 	    own_processed++;
 	}
