@@ -36,6 +36,7 @@
 #include <X11/Intrinsic.h>
 #include "strclass.h"
 #include "version.h"
+#include "MString.h"
 
 // DDD logos
 
@@ -52,23 +53,48 @@ extern Pixmap dddsplash(Widget shell, const string& color_key = 'c');
 // Install toolbar icons in Motif cache
 extern void install_icons(Widget shell, const string& color_key = 'c');
 
+// Set pixmap of W to IMAGE_NAME
+extern void set_pixmap(Widget w, string image_name);
+
+// Set label of W to NEW_LABEL
+extern void set_label(Widget w, const MString& new_label);
+
+// Set sensitivity of W to STATE
+inline void set_sensitive(Widget w, bool state)
+{
+    if (w != 0)
+	XtSetSensitive(w, state);
+}
+
+// Manage W iff STATE
+inline void manage_child(Widget w, bool state)
+{
+    if (w != 0)
+    {
+	if (state)
+	    XtManageChild(w);
+	else
+	    XtUnmanageChild(w);
+    }
+}
+
 // Icon names
-#define DDD_ICON       ddd_NAME
-#define BREAK_AT_ICON  "break_at"
-#define CLEAR_AT_ICON  "clear_at"
-#define DEREF_ICON     "deref"
-#define DISPLAY_ICON   "display"
-#define FIND_NEXT_ICON "find_next"
-#define FIND_PREV_ICON "find_prev"
-#define HIDE_ICON      "hide"
-#define LOOKUP_ICON    "lookup"
-#define PRINT_ICON     "print"
-#define ROTATE_ICON    "rotate"
-#define SET_ICON       "set"
-#define SHOW_ICON      "show"
-#define UNDISPLAY_ICON "undisplay"
-#define UNWATCH_ICON   "unwatch"
-#define WATCH_ICON     "watch"
+#define DDD_ICON           ddd_NAME
+#define BREAK_AT_ICON      "break_at"
+#define CLEAR_AT_ICON      "clear_at"
+#define DISPREF_ICON       "dispref"
+#define DISPLAY_ICON       "display"
+#define FIND_FORWARD_ICON  "find_forward"
+#define FIND_BACKWARD_ICON "find_backward"
+#define HIDE_ICON          "hide"
+#define LOOKUP_ICON        "lookup"
+#define PRINT_ICON         "print"
+#define ROTATE_ICON        "rotate"
+#define SET_ICON           "set"
+#define SHOW_ICON          "show"
+#define UNDISPLAY_ICON     "undisplay"
+#define UNWATCH_ICON       "unwatch"
+#define WATCH_ICON         "watch"
 
 #endif // _DDD_logo_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
