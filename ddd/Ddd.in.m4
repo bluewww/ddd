@@ -1001,6 +1001,10 @@ Ddd*grey_temp.labelPixmap:	grey_temp
 ! Keyboard translations
 !-----------------------------------------------------------------------------
 
+! `Doesn't all this crap just make you want to hurl?'
+! 
+! -- JAMIE ZAWINSKI <jwz@netscape.com>, in the Netscape app-defaults file
+
 Ddd*defaultVirtualBindings: \
 osfBackSpace:	<Key>BackSpace\n\
 osfCancel:	<Key>Escape\n\
