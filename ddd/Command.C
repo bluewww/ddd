@@ -104,7 +104,7 @@ void strip_auto_command_prefix(string& cmd)
     static string echo_suffix = echo.after(dummy);
 
     int i;
-    while ((i = cmd.index(echo_prefix)) >= 0)
+    if ((i = cmd.index(echo_prefix)) >= 0)
     {
 	cmd.at(i, echo_prefix.length()) = "";
 	if (echo_suffix != "")
@@ -113,6 +113,8 @@ void strip_auto_command_prefix(string& cmd)
 	    if (suffix >= 0)
 		cmd.at(suffix, echo_suffix.length()) = "";
 	}
+
+	cmd = uncook(cmd);
     }
 }
 
