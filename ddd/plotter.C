@@ -515,6 +515,7 @@ static void CancelPlotCB(Widget, XtPointer client_data, XtPointer)
     if (plot->plotter != 0)
     {
 	// Terminate plotter
+	plot->plotter->removeHandler(Died, PlotterNotFoundHP, client_data);
 	plot->plotter->terminate();
 	plot->plotter = 0;
     }
