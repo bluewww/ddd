@@ -789,6 +789,8 @@ static MMDesc stack_menu[] =
     MMEnd
 };
 
+static Widget find_forward_w;
+static Widget find_backward_w;
 static Widget find_words_only_w;
 static Widget find_case_sensitive_w;
 static Widget disassemble_w;
@@ -797,10 +799,15 @@ static MMDesc source_menu[] =
 {
     { "breakpoints", MMPush, { SourceView::EditBreakpointsCB }},
     MMSep,
+    { "findForward",  MMPush, { gdbFindCB, XtPointer(SourceView::forward) },
+      NULL, &find_forward_w },
+    { "findBackward", MMPush, { gdbFindCB, XtPointer(SourceView::backward) },
+      NULL, &find_backward_w },
     { "findWordsOnly",       MMToggle, { sourceToggleFindWordsOnlyCB }, 
       NULL, &find_words_only_w },
     { "findCaseSensitive",   MMToggle, { sourceToggleFindCaseSensitiveCB }, 
       NULL, &find_case_sensitive_w },
+    MMSep,
     { "disassemble",         MMToggle,  { gdbToggleCodeWindowCB },
       NULL, &disassemble_w },
     MMSep,
@@ -4197,6 +4204,8 @@ void update_arg_buttons()
 
     bool can_find = (arg != "") && source_view->have_source();
     set_sensitive(arg_cmd_area[ArgItems::Find].widget, can_find);
+    set_sensitive(find_forward_w, can_find);
+    set_sensitive(find_backward_w, can_find);
 
     bool can_print = (arg != "") && (arg.contains("::") || !arg.contains(":"));
     set_sensitive(arg_cmd_area[ArgItems::Print].widget, can_print);

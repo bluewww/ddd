@@ -2364,12 +2364,15 @@ WIDGET(Source Menu)\n\
 \n\
 DESC(Edit Breakpoints..., [set, view, and edit breakpoints])\n\
 \n\
+DESC(LBL_FIND_FORWARD, [find next occurrence of LBL(())])\n\
+DESC(LBL_FIND_BACKWARD, [find previous occurrence of LBL(())])\n\
 ITEM If LBL(Find Words Only) is set, \
 only complete words are found.\n\
     Otherwise, arbitrary occurrences are found.\n\
 ITEM If LBL(Find Case Sensitive) is set, \
 search is case-sensitive.\n\
     Otherwise, occurrences are found regardless of case.\n\
+\n\
 ITEM If LBL(Display Machine Code) is set, the current function\n\
     is automatically disassembled.\n\
 \n\
@@ -2387,6 +2390,20 @@ Ddd*sourceMenu.breakpoints.labelString:		Edit Breakpoints...
 Ddd*sourceMenu.breakpoints.mnemonic:		d
 Ddd*sourceMenu.breakpoints.documentationString: \
 @rm Set, view, and edit breakpoints
+
+Ddd*sourceMenu.findForward.labelString:	        LBL_FIND_FORWARD
+! Ddd*sourceMenu.findForward.mnemonic:		>
+Ddd*sourceMenu.findForward.accelerator:		Ctrl<Key>period
+Ddd*sourceMenu.findForward.acceleratorText:	Ctrl+.
+Ddd*sourceMenu.findForward.documentationString:\
+@rm Search the next occurrence of LBL(()) in the source
+
+Ddd*sourceMenu.findBackward.labelString:	LBL_FIND_BACKWARD
+! Ddd*sourceMenu.findBackward.mnemonic:		<
+Ddd*sourceMenu.findBackward.accelerator:	Ctrl<Key>comma
+Ddd*sourceMenu.findBackward.acceleratorText:	Ctrl+,
+Ddd*sourceMenu.findBackward.documentationString:\
+@rm Search the previous occurrence of LBL(()) in the source
 
 Ddd*sourceMenu.findWordsOnly.labelString:	Find Words Only
 Ddd*sourceMenu.findWordsOnly.mnemonic:		W
