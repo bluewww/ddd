@@ -5848,6 +5848,35 @@ static void gdbUpdateEditCB(Widget w, XtPointer client_data,
 
     count_mapped_menus(w, client_data, call_data);
 
+    // Reset undo/redo actions
+    string undo_action = undo_buffer.undo_action();
+    string redo_action = undo_buffer.redo_action();
+
+    if (undo_action == NO_GDB_ANSWER)
+    {
+	set_label(menu[EditItems::Undo].widget, "Undo");
+	set_sensitive(menu[EditItems::Undo].widget, False);
+    }
+    else
+    {
+	MString label("Undo " + undo_action);
+	set_label(menu[EditItems::Undo].widget, label);
+	set_sensitive(menu[EditItems::Undo].widget, True);
+    }
+
+    if (redo_action == NO_GDB_ANSWER)
+    {
+	set_label(menu[EditItems::Redo].widget, "Redo");
+	set_sensitive(menu[EditItems::Redo].widget, False);
+    }
+    else
+    {
+	MString label("Redo " + redo_action);
+	set_label(menu[EditItems::Redo].widget, label);
+	set_sensitive(menu[EditItems::Redo].widget, True);
+    }
+
+
     // Check if we have something to cut
     XmTextPosition start, end;
     bool can_cut = false;

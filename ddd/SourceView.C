@@ -4181,6 +4181,7 @@ void SourceView::add_position_to_history(const string& file_name, int line,
 void SourceView::goto_entry(const string& file_name, int line, 
 			    const string& address, bool exec_pos)
 {
+#if 0
     // Show position in status line
     string msg = "";
     if (file_name != "")
@@ -4202,6 +4203,7 @@ void SourceView::goto_entry(const string& file_name, int line,
 	msg += address;
     }
     set_status(msg);
+#endif
 
     if (file_name != "")
     {
@@ -6473,11 +6475,43 @@ void SourceView::process_where(string& where_output)
     delete[] selected;
 }
 
+void SourceView::set_past_exec_pos(bool set)
+{
+#if 0
+    set_sensitive(stack_dialog_w, !set);
+    set_sensitive(thread_dialog_w, !set);
+    set_sensitive(register_dialog_w, !set);
+#endif
+
+    static bool up_state;
+    static bool down_state;
+
+    if (set)
+    {
+	up_state   = XtIsSensitive(up_w);
+	down_state = XtIsSensitive(down_w);
+
+	set_sensitive(up_w, False);
+	set_sensitive(down_w, False);
+    }
+    else
+    {
+	set_sensitive(up_w, up_state);
+	set_sensitive(down_w, down_state);
+    }
+    set_sensitive(all_registers_w, !set);
+    set_sensitive(int_registers_w, !set);
+
+    update_glyphs();
+}
+
 void SourceView::process_frame (string& frame_output)
 {
     if (frame_output != "" 
 	&& (frame_output[0] == '#' || gdb->type() != GDB))
     {
+	undo_buffer.add_frame(frame_output);
+
 	string frame_nr;
 
 	switch (gdb->type())

@@ -42,9 +42,11 @@
 #define UB_POS       "pos"	 // Current source position
 #define UB_ADDRESS   "address"   // Current program counter
 #define UB_WHERE     "where"     // Current backtrace
+#define UB_FRAME     "frame"     // Current frame
 #define UB_REGISTERS "registers" // Current register values
 #define UB_THREADS   "threads"   // Current threads
 #define UB_COMMAND   "command"   // Command for undoing
+#define UB_SOURCE    "source"    // Command causing the undo
 
 // Prefix for current displays; followed by display name
 #define UB_DISPLAY_PREFIX         "display "  // Display value
@@ -57,7 +59,6 @@ class UndoBuffer {
 private:
     static UndoBufferArray history;
     static int history_position;
-    static bool _at_past_exec_pos;
 
     // General scheme:
     //
@@ -82,6 +83,12 @@ private:
     // (otherwise).  A command is to be executed when reached; a state
     // is to be restored when reached.  STATES are distinguished in
     // execution states and non-execution states (lookups).
+
+    // True if we have undone some exec position
+    static bool _at_past_exec_pos;
+
+    // Current command source
+    static string current_source;
 
     // True if position history is to stay unchanged
     static bool locked;
@@ -116,6 +123,9 @@ protected:
     static void set_past_exec_pos(bool set);
     static void check_past_exec_pos();
 
+    // Get a short action description from COMMAND
+    static string action(const string& command);
+
 public:
     // Add status NAME/VALUE to history.  If EXEC_POS is set, mark
     // this as new execution position.
@@ -139,6 +149,11 @@ public:
     static void add_where(const string& where)
     {
 	add(UB_WHERE, where);
+    }
+
+    static void add_frame(const string& frame)
+    {
+	add(UB_FRAME, frame);
     }
 
     static void add_registers(const string& registers)
@@ -165,6 +180,10 @@ public:
     static void undo();
     static void redo();
 
+    // Undo/Redo action descriptions
+    static string undo_action();
+    static string redo_action();
+
     // True iff we're at some past execution position
     static bool at_past_exec_pos() { return _at_past_exec_pos; }
 
@@ -182,6 +201,9 @@ public:
 
     // Add breakpoint state to OS
     static void add_breakpoint_state(ostream& os, BreakPoint *bp);
+
+    // Set source command
+    static void set_source(const string& command) { current_source = command; }
 };
 
 extern UndoBuffer undo_buffer;
