@@ -319,104 +319,116 @@ Ddd*dataButtons:
 
 ! The command tool buttons, as of DDD 2.0 and later.
 Ddd*toolButtons: \
-run\nstep\nstepi\nnext\nnexti\ncont\nfinish\n\
-up\ndown\nBack\nForward\nEdit\nkill\nbreak^C
+run\nbreak^C\nstep\nstepi\nnext\nnexti\nuntil\nfinish\ncont\n\
+up\ndown\nBack\nForward\nEdit\nkill\nreturn
 
 Ddd*break.labelString: Interrupt
 
 ! The number of rows in the command tool.
-Ddd*tool_buttons.fractionBase:			8
+Ddd*tool_buttons.fractionBase:			90
 
 ! The positions are set up according to the following scheme:
 ! 
-!    0 4 8	Each line has its individual number.
-!  0 +-+-+	`topPosition' refers to the line above the button;
-!    | | |	`bottomPosition' is the line below.  Likewise,
-!  1 +-+-+	`leftPosition' is the line at the left, and
-!    | | |	`rightPosition' is the line to the right.  For instance,
-!  2 +-+-+	the line above the `break' button
-!    | | |	is line 1 (topPosition), the line below is line 2
-!  3 +-+-+	(bottomPosition), the line to the left is line 0
-!    | | |	(leftPosition), and the line to the right is line 8
-!  4 +-+-+	(rightPosition).
-!    | | |	
-!  5 +-+-+	To replace a button by another command, change the
-!    | | |	`toolButtons' resource, above, and insert appropriate
-!  6 +-+-+	resource values for the new button, specifying its
-!    | | |	location.
-!  7 +-+-+	
-!    | | |	
-!  8 +-+-+	
+!    0 45 90	Each line has its individual number.
+!  0 +--+--+	`topPosition' refers to the line above the button;
+!    |  |  |	`bottomPosition' is the line below.  Likewise,
+! 10 +--+--+	`leftPosition' is the line at the left, and
+!    |  |  |	`rightPosition' is the line to the right.  For instance,
+! 20 +--+--+	the line above the `break' button
+!    |  |  |	is line 1 (topPosition), the line below is line 2
+! 30 +--+--+	(bottomPosition), the line to the left is line 0
+!    |  |  |	(leftPosition), and the line to the right is line 8
+! 40 +--+--+	(rightPosition).
+!    |  |  |	
+! 50 +--+--+	To replace a button by another command, change the
+!    |  |  |	`toolButtons' resource, above, and insert appropriate
+! 60 +--+--+	resource values for the new button, specifying its
+!    |  |  |	location.
+! 70 +--+--+	
+!    |  |  |	
+! 80 +--+--+	
+!    |  |  |	
+! 90 +--+--+	
 
 Ddd*tool_buttons.run.topPosition:		0
-Ddd*tool_buttons.run.bottomPosition:		1
+Ddd*tool_buttons.run.bottomPosition:		10
 Ddd*tool_buttons.run.leftPosition:		0
-Ddd*tool_buttons.run.rightPosition:		8
+Ddd*tool_buttons.run.rightPosition:		90
 
-Ddd*tool_buttons.break.topPosition:		1
-Ddd*tool_buttons.break.bottomPosition:		2
+Ddd*tool_buttons.break.topPosition:		10
+Ddd*tool_buttons.break.bottomPosition:		20
 Ddd*tool_buttons.break.leftPosition:		0
-Ddd*tool_buttons.break.rightPosition:		8
+Ddd*tool_buttons.break.rightPosition:		90
 
-Ddd*tool_buttons.step.topPosition:		2
-Ddd*tool_buttons.step.bottomPosition:		3
+Ddd*tool_buttons.step.topPosition:		20
+Ddd*tool_buttons.step.bottomPosition:		30
 Ddd*tool_buttons.step.leftPosition:		0
-Ddd*tool_buttons.step.rightPosition:		4
+Ddd*tool_buttons.step.rightPosition:		45
 
-Ddd*tool_buttons.stepi.topPosition:		2
-Ddd*tool_buttons.stepi.bottomPosition:		3
-Ddd*tool_buttons.stepi.leftPosition:		4
-Ddd*tool_buttons.stepi.rightPosition:		8
+Ddd*tool_buttons.stepi.topPosition:		20
+Ddd*tool_buttons.stepi.bottomPosition:		30
+Ddd*tool_buttons.stepi.leftPosition:		45
+Ddd*tool_buttons.stepi.rightPosition:		90
 
-Ddd*tool_buttons.next.topPosition:		3
-Ddd*tool_buttons.next.bottomPosition:		4
+Ddd*tool_buttons.next.topPosition:		30
+Ddd*tool_buttons.next.bottomPosition:		40
 Ddd*tool_buttons.next.leftPosition:		0
-Ddd*tool_buttons.next.rightPosition:		4
+Ddd*tool_buttons.next.rightPosition:		45
 
-Ddd*tool_buttons.nexti.topPosition:		3
-Ddd*tool_buttons.nexti.bottomPosition:		4
-Ddd*tool_buttons.nexti.leftPosition:		4
-Ddd*tool_buttons.nexti.rightPosition:		8
+Ddd*tool_buttons.nexti.topPosition:		30
+Ddd*tool_buttons.nexti.bottomPosition:		40
+Ddd*tool_buttons.nexti.leftPosition:		45
+Ddd*tool_buttons.nexti.rightPosition:		90
 
-Ddd*tool_buttons.cont.topPosition:		4
-Ddd*tool_buttons.cont.bottomPosition:		5
+Ddd*tool_buttons.until.topPosition:		40
+Ddd*tool_buttons.until.bottomPosition:		50
+Ddd*tool_buttons.until.leftPosition:		0
+Ddd*tool_buttons.until.rightPosition:		45
+
+Ddd*tool_buttons.finish.topPosition:		40
+Ddd*tool_buttons.finish.bottomPosition:		50
+Ddd*tool_buttons.finish.leftPosition:		45
+Ddd*tool_buttons.finish.rightPosition:		90
+
+Ddd*tool_buttons.cont.topPosition:		50
+Ddd*tool_buttons.cont.bottomPosition:		60
 Ddd*tool_buttons.cont.leftPosition:		0
-Ddd*tool_buttons.cont.rightPosition:		4
+Ddd*tool_buttons.cont.rightPosition:		45
 
-Ddd*tool_buttons.finish.topPosition:		4
-Ddd*tool_buttons.finish.bottomPosition:		5
-Ddd*tool_buttons.finish.leftPosition:		4
-Ddd*tool_buttons.finish.rightPosition:		8
+Ddd*tool_buttons.return.topPosition:		50
+Ddd*tool_buttons.return.bottomPosition:		60
+Ddd*tool_buttons.return.leftPosition:		45
+Ddd*tool_buttons.return.rightPosition:		90
 
-Ddd*tool_buttons.up.topPosition:		5
-Ddd*tool_buttons.up.bottomPosition:		6
+Ddd*tool_buttons.up.topPosition:		60
+Ddd*tool_buttons.up.bottomPosition:		70
 Ddd*tool_buttons.up.leftPosition:		0
-Ddd*tool_buttons.up.rightPosition:		4
+Ddd*tool_buttons.up.rightPosition:		45
 
-Ddd*tool_buttons.down.topPosition:		5
-Ddd*tool_buttons.down.bottomPosition:		6
-Ddd*tool_buttons.down.leftPosition:		4
-Ddd*tool_buttons.down.rightPosition:		8
+Ddd*tool_buttons.down.topPosition:		60
+Ddd*tool_buttons.down.bottomPosition:		70
+Ddd*tool_buttons.down.leftPosition:		45
+Ddd*tool_buttons.down.rightPosition:		90
 
-Ddd*tool_buttons.Back.topPosition:		6
-Ddd*tool_buttons.Back.bottomPosition:		7
+Ddd*tool_buttons.Back.topPosition:		70
+Ddd*tool_buttons.Back.bottomPosition:		80
 Ddd*tool_buttons.Back.leftPosition:		0
-Ddd*tool_buttons.Back.rightPosition:		4
+Ddd*tool_buttons.Back.rightPosition:		45
 
-Ddd*tool_buttons.Forward.topPosition:		6
-Ddd*tool_buttons.Forward.bottomPosition:	7
-Ddd*tool_buttons.Forward.leftPosition:		4
-Ddd*tool_buttons.Forward.rightPosition:		8
+Ddd*tool_buttons.Forward.topPosition:		70
+Ddd*tool_buttons.Forward.bottomPosition:	80
+Ddd*tool_buttons.Forward.leftPosition:		45
+Ddd*tool_buttons.Forward.rightPosition:		90
 
-Ddd*tool_buttons.Edit.topPosition:		7
-Ddd*tool_buttons.Edit.bottomPosition:		8
+Ddd*tool_buttons.Edit.topPosition:		80
+Ddd*tool_buttons.Edit.bottomPosition:		90
 Ddd*tool_buttons.Edit.leftPosition:		0
-Ddd*tool_buttons.Edit.rightPosition:		4
+Ddd*tool_buttons.Edit.rightPosition:		45
 
-Ddd*tool_buttons.kill.topPosition:		7
-Ddd*tool_buttons.kill.bottomPosition:		8
-Ddd*tool_buttons.kill.leftPosition:		4
-Ddd*tool_buttons.kill.rightPosition:		8
+Ddd*tool_buttons.kill.topPosition:		80
+Ddd*tool_buttons.kill.bottomPosition:		90
+Ddd*tool_buttons.kill.leftPosition:		45
+Ddd*tool_buttons.kill.rightPosition:		90
 
 ! Command tool button placement.  Don't change this.
 Ddd*tool_buttons*topAttachment:			XmATTACH_POSITION
@@ -425,9 +437,10 @@ Ddd*tool_buttons*leftAttachment:		XmATTACH_POSITION
 Ddd*tool_buttons*rightAttachment:		XmATTACH_POSITION
 
 ! Some special labels
-Ddd*tool_buttons*Forward.labelString:   Fwd
-Ddd*tool_buttons*return.labelString:    Ret
-Ddd*command_toolbar*Cont.labelString:   Continue
+Ddd*tool_buttons*Forward.labelString:      Fwd
+Ddd*command_toolbar*Forward.labelString:   Fwd
+Ddd*tool_buttons*return.labelString:       Ret
+Ddd*command_toolbar*return.labelString:    Ret
 
 
 ! Make command tool and buttons a little lighter
@@ -902,14 +915,14 @@ Ddd*tool_buttons*fontList:  \
 
 ! The resolution-independent alternative.
 ! Ddd*tool_buttons.run.fontList: \
--*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
 ! Ddd*tool_buttons.break.fontList: \
--*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
 ! Ddd*tool_buttons*fontList: \
--*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
--*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset
+! -*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
+! -*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset
 
 ! For fonts in the execution window, see the `termCommand' resource, above.
 ! For fonts in the data display, see the `vslDefs' resource, below.
