@@ -15,6 +15,7 @@ s/:[	 ][	 ]*/: /g
 # remove spaces at end of line
 s/[	 ][	 ]*$/ /
 s/[	 ][	 ]*\\n/\\n/g
+s/set prompt \(.*\)\\n/set prompt \1 \\n/
 # escape backslash
 s/\\/\\\\/g
 # except the line continuation ones
@@ -44,6 +45,7 @@ s/:[	 ][	 ]*/: /g
 s/[	 ][	 ]*$/ /
 s/[	 ][	 ]*\\n$/ /
 s/[	 ][	 ]*\\n/\\n/g
+s/set prompt \(.*\)\\n/set prompt \1 \\n/
 s/\\/\\\\/g
 s/\\$//g
 s/"/\\"/g
