@@ -30,6 +30,7 @@ DDD 2.2 [in development]
       + The `Edit' menu has been completely rewritten, allowing for
         better clipboard operations.  For instance, you can now copy
         selected displays to the clipboard and paste them later.
+      + Several buttons now have pulldown menus with useful functions.
       DDD now requires less width and height.  If you already have a
       `~/.dddinit' file, resize DDD manually and save options.
     - Support for debugging processes running outside of DDD.  You can
@@ -52,8 +53,6 @@ DDD 2.2 [in development]
       interactively.  This allows you to back up - perhaps with more
       breakpoints set-over a portion of a program that has already
       executed, in order to examine its execution in more detail.
-    - The current execution position can also be altered via drag and
-      drop, allowing users to skip or re-execute portions of code.
       Breakpoints can be dragged and dropped, too.
     - Improved display of breakpoints and execution positions:
       + The current execution position is now properly cleared if
@@ -64,13 +63,13 @@ DDD 2.2 [in development]
         high speed, glyphs are now unmapped.  Slow scrolling still
         shows glyphs.
     - Resource files have been renamed.  All files are now located
-      under `~/.ddd'.  The file `~/.dddinit' has been replaced by
+      under `~/.ddd/'.  The file `~/.dddinit' has been replaced by
       `~/.ddd/init'; `~/.ddd_history' is now `~/.ddd/history'.  The
        directory `~/.ddd/sessions/' contains saved DDD sessions.
     - Your window manager running DDD should now show multi-color
-      DDD icons.  (requires XPM)
+      DDD icons. (requires XPM)
     - During start-up, DDD shows a multi-color logo in a transient
-      window (can be disabled).
+      window. (can be disabled)
     - Memory savings.  DDD regular expressions are now compiled during
       DDD construction (instead of being compiled during DDD
       execution).  On our box, this results in 35% less memory usage.
