@@ -110,7 +110,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 301 (LessTif 0.85) David Zanetti <dave@lynx.co.nz> says:
     1. Tear off edit menu
-    2. Select prefernces
+    2. Select preferences
     3. Select data
     4. Toggle display two dimensional arrays as tables off.
     => X toolkit error: cannot perform realloc
