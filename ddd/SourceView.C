@@ -2649,7 +2649,8 @@ bool SourceView::get_line_of_pos (Widget   w,
 		left_of_first_nonblank = (pos < first_nonblank);
 	    }
 
-	    if (left_of_first_nonblank 
+	    if (pos == line_pos
+		|| left_of_first_nonblank
 		|| pos < (line_pos + indent_amount(text_w) - 1))
 	    {
 		// Position in breakpoint area
@@ -2706,7 +2707,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 	    line_pos--;
 	line_pos++;
 
-	if (pos - line_pos < indent_amount(text_w))
+	if (pos == line_pos || pos - line_pos < indent_amount(text_w))
 	{
 	    // Breakpoint area
 	    in_text = false;
@@ -2778,7 +2779,7 @@ void SourceView::find_word_bounds (Widget text_w,
 	    line_pos--;
 
     int offset = pos - line_pos;
-    if (offset < indent_amount(text_w))
+    if (offset == 0 || offset < indent_amount(text_w))
     {
 	// Do not select words in breakpoint area
 	return;
