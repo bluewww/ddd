@@ -201,6 +201,8 @@ section, below.
 .SH "THE DDD WINDOWS"
 .\" ---------------
 .\"
+.SS "The DDD Main Windows"
+.\"
 .PSPIC @srcdir@/PICS/ddd-all.ps 15.3cm
 \s-2@DDD@\s+2 is composed of three main windows:
 .br
@@ -216,8 +218,8 @@ The \fIDebugger Console\fR accepts debugger commands and shows
 debugger messages.
 .PP
 By default, \s-2@DDD@\s+2 places these main windows stacked into one
-single window, but \s-2@DDD@\s+2 can also be configured to treat each
-one separately.
+single top-level window, but \s-2@DDD@\s+2 can also be configured to
+treat each one separately.
 .PP
 .PSPIC @srcdir@/PICS/ddd-separate.ps 15.3cm
 .PP
@@ -237,17 +239,69 @@ program.
 .PP
 \s-2@DDD@\s+2 also has several temporary \fIdialogs\fR for showing and
 entering additional information.
+.\"
+.\"
+.SS "Using the Command Tool"
+.\"
+The command tool is a small window containing frequently used
+\s-2@DDD@\s+2 commands.  It can be moved around on top of the
+\s-2@DDD@\s+2 windows, but it can also be placed besides them.
+Whenever you save \s-2@DDD@\s+2 state, \s-2@DDD@\s+2 also saves the
+distance between command tool and source window, such that you can
+select your own individual command tool placement.  To move the
+command tool to its saved position, use `\fBView | Command Tool\fR'.
 .PP
-In this manual page, we discuss all the functionality associated with
-these windows.  We start with the debugger console and its commands,
-continue with the source window, and continue with the data window.
-But before that, we tell you how to get help while working with
-\s-2@DDD@\s+2.
+By default, the command tool \fIsticks\fR to the \s-2@DDD@\s+2 source
+window: Whenever you move the \s-2@DDD@\s+2 source window, the command
+tool follows such that the distance between source window and command
+tool remains the same.  By default, the command tool is also
+\fIauto-raised\fR, such that it stays on top of other \s-2@DDD@\s+2
+windows.
+.PP
+The command tool can be configured to appear as a command tool bar
+above the source window; see `\fBEdit | Preferences | Source | Tool
+Buttons Location\fR' for details.
+.PP
+.PSPIC @srcdir@/PICS/ddd-tool.ps 15.3cm
+.\"
+.\"
+.SS "Using the Tool Bar"
+.\"
+Some \s-2@DDD@\s+2 commands require an \fIargument\fR.  This argument
+is specified in the \fIargument field\fR, labeled `\fB():\fR'.
+Basically, there are four ways to set arguments:
+.IP \(bu 2
+You can enter the argument manually, using the keyboard.
+.IP \(bu 2
+You can click on `\fB():\fR' to clear the current contents and 
+paste the current selection, using \fImouse button 2\fR.
+.IP \(bu 2
+You can select an item from the source and data windows.  This will
+automatically copy the item to the argument field.
+.IP \(bu 2
+You can select a previously used argument from the drop-down menu at
+the right of the argument field.
+.PP
+Using \s-2GDB\s+2, the argument field provides a completion mechanism.
+You can enter the first few characters of an item an press the
+`\s-2TAB\s+2' key to complete it.  Pressing `\s-2TAB\s+2' again
+shows alternative completions.
+.PP
+After having entered an argument, you can select one of the buttons on
+the right.  Most of these buttons also have menus associated with
+them; this is indicated by a small arrow in the upper right corner.
+Pressing and holding \fImouse button 1\fR on such a button will pop up
+a menu with further operations.
+.PP
+.PSPIC @srcdir@/PICS/ddd-toolbar.ps 15.3cm
 .\"
 .\"
 .\" ---------------
 .SH "GETTING HELP"
 .\" ---------------
+.\"
+\s-2@DDD@\s+2 has an extensive on-line help system.  Here's how to get 
+help while working with \s-2@DDD@\s+2.
 .\"
 .SS "Button Tips"
 .\"
@@ -287,250 +341,6 @@ Depending on the current state, \s-2@DDD@\s+2 will give you some hints
 on what you can do.
 .\"
 .\"
-.\" ---------------
-.SH "ENTERING COMMANDS"
-.\" ---------------
-.\"
-In the \fIdebugger console\fR, you can interact with the command
-interface of the inferior debugger.  Enter commands at the \fIdebugger
-prompt\fR\(em\&that is, `\fB(gdb)\fR' for \s-2GDB\s+2, `\fB(dbx)\fR'
-for \s-2DBX\s+2, `\fB>\fR' for \s-2XDB\s+2, and `\fB>\fR' or
-`\fIthread\fB[\fIdepth\fB]\fR' for \s-2JDB\s+2.  You can use arbitrary
-debugger commands; use the \s-2\fBRETURN\fR\s+2 key to enter them.
-.PP
-.PSPIC @srcdir@/PICS/ddd-console.ps 15.3cm
-.PP
-You can \fIrepeat\fR previous and next commands by pressing the
-`\fBUp\fR' and `\fBDown\fR' arrow keys, respectively.  If you enter an
-empty line, the last command is repeated as well.  `\fBCommands |
-Command History\fR' shows the command history.
-.PP
-You can \fIsearch\fR for previous commands by pressing `\fBCtrl+R\fR'.
-This invokes \fIincremental search mode,\fR where you can enter a
-string to be searched in previous commands.  Press `\fBCtrl+R\fR'
-again to repeat the search, or `\fBCtrl+F\fR' to search in the reverse
-direction.  To return to normal mode, press \s-2\fBESC\fR\s+2, or use
-any cursor command.
-.PP
-.PSPIC @srcdir@/PICS/ddd-history.ps 15.3cm
-.PP
-Using \s-2GDB\s+2, you can also \fIcomplete\fR commands and arguments
-by pressing the `\s-2\fBTAB\fR\s+2' key; pressing the `\s-2\fBTAB\fR\s+2'
-key multiple times shows one possible expansion after the other.
-.PP
-Here are some of the most frequently needed debugger commands.
-.\"
-.SS "Common GDB commands"
-.TP
-.B break \fR[\|\fIfile\fB:\fR\|]\fIfunction
-\&
-Set a breakpoint at \c
-.I function\c
-\& (in \c
-.I file\c
-\&).
-.TP
-.B run \fR[\|\fIarglist\fR\|]
-Start your program (with \c
-.I arglist\c
-\&, if specified).
-.TP
-.B where
-Display the program stack.
-.TP
-.BI print " expr"\c
-\&
-Display the value of an expression.
-.TP
-.B cont
-Continue running your program (after stopping, e.g. at a breakpoint).
-.TP
-.B next
-Execute next program line (after stopping); step \c
-.I over\c
-\& any
-function calls in the line.
-.TP
-.B step
-Execute next program line (after stopping); step \c
-.I into\c
-\& any
-function calls in the line.
-.TP
-.B help \fR[\|\fIname\fR\|]
-Show information about the command \c
-.I name\c
-\&, or general usage information.
-.TP
-.B quit
-Exit \s-2GDB\s+2 (and \s-2@DDD@\s+2).
-.PP
-For full details on \s-2GDB\s+2 commands, see \c
-.I 
-Using \s-2GDB\s+2: A Guide to the \s-2GNU\s+2 Source-Level Debugger\c
-\&, by Richard M. Stallman and Roland H. Pesch.  
-The same text is available online as the \c
-.B gdb\c
-\& entry in the \c
-.B info\c
-\& program.
-.PP
-.\"
-.SS "Common DBX commands"
-.TP
-.B stop in \fIfunction
-\&
-Set a breakpoint at \c
-.I function.
-.TP
-.B stop at \fIline
-\&
-Set a breakpoint at \c
-.I line.
-.TP
-.B file \fIfile
-\&
-Change the current file to \c
-.I file.
-.TP
-.B run \fR[\|\fIarglist\fR\|]
-Start your program (with \c
-.I arglist\c
-\&, if specified).
-.TP
-.B where
-Display the program stack.
-.TP
-.BI print " expr"\c
-\&
-Display the value of an expression.
-.TP
-.B cont
-Continue running your program (after stopping, e.g. at a breakpoint).
-.TP
-.B next
-Execute next program line (after stopping); step \c
-.I over\c
-\& any
-function calls in the line.
-.TP
-.B step
-Execute next program line (after stopping); step \c
-.I into\c
-\& any
-function calls in the line.
-.TP
-.B help \fR[\|\fIname\fR\|]
-Show information about the command \c
-.I name\c
-\&, or general usage information.
-.TP
-.B quit
-Exit \s-2DBX\s+2 (and \s-2@DDD@\s+2).
-.PP
-For full details on \s-2DBX\s+2 commands, see the \s-2DBX\s+2
-documentation.
-.\"
-.SS "Common XDB commands"
-.TP
-.B b \fR[\|\fIfile\fB:\fR\|]\fIline
-\&
-Set a breakpoint at line \c
-.I line\c
-\& (in \c
-.I file\c
-\&).
-.TP
-.B b \fIfunction
-\&
-Set a breakpoint at \c
-.I function.
-.TP
-.B r \fR[\|\fIarglist\fR\|]
-Start your program (with \c
-.I arglist\c
-\&, if specified).
-.TP
-.B t
-Display the program stack.
-.TP
-.BI p " expr"\c
-\&
-Display the value of an expression.
-.TP
-.B c
-Continue running your program (after stopping, e.g. at a breakpoint).
-.TP
-.B S
-Execute next program line (after stopping); step \c
-.I over\c
-\& any
-function calls in the line.
-.TP
-.B s
-Execute next program line (after stopping); step \c
-.I into\c
-\& any
-function calls in the line.
-.TP
-.B h \fR[\|\fIname\fR\|]
-Show information about the command \c
-.I name\c
-\&, or general usage information.
-.TP
-.B q
-Exit \s-2XDB\s+2 (and \s-2@DDD@\s+2).
-.PP
-For full details on \s-2XDB\s+2 commands, see the \s-2XDB\s+2
-documentation.
-.\"
-.SS "Common JDB commands"
-.TP
-.B stop in \fIclass\fB.\fImethod\fB
-\&
-Set a breakpoint in a method.
-.TP
-.B stop at \fIclass\fB.\fIline\fB
-\&
-Set a breakpoint at a line.
-.TP
-.B load \fIclass\fB
-\&
-Open a class to be debugged.
-.TP
-.B run \fIclass\fR \fR[\|\fIarglist\fR\|]
-Start execution of a loaded class.
-.TP
-.B where
-Display a thread's stack.
-.TP
-.B print \fIid\fB
-Print an object or field
-.TP
-.B cont
-Continue execution from breakpoint
-.TP
-.B next
-Execute current program line (after stopping); step \c
-.I over\c
-\& any
-method calls in the line.
-.TP
-.B step
-Execute current program line (after stopping); step \c
-.I into\c
-\& any
-method calls in the line.
-.TP
-.B help
-Show general usage information.
-.TP
-.B quit
-Exit \s-2JDB\s+2 (and \s-2@DDD@\s+2).
-.PP
-For full details on \s-2JDB\s+2 commands, see the \s-2JDB\s+2
-documentation.
-.\"
 .\"
 .\" ---------------
 .SH "OPENING FILES"
@@ -547,6 +357,9 @@ To open a program to be debugged, select `\fBFile | Open Program\fR'.
 In \s-2JDB\s+2, select `\fBFile | Open Class\fR' instead.  This gives
 you a list of available classes to choose from.
 .PP
+To re-open a recently debugged program or class, select `\fBFile |
+Open Recent\fR' and choose a program or class from the list.
+.PP
 To open a core dump for the program, select `\fBFile | Open Core
 Dump\fR'.  Before `\fBOpen Core Dump\fR', you should first use
 `\fBFile | Open Program\fR' to specify the program that generated the
@@ -560,14 +373,15 @@ Note: With \s-2XDB\s+2 and some \s-2DBX\s+2 versions, the debugged
 program must be specified upon invocation and cannot be changed at run
 time.
 .\"
+.\"
 .\" ---------------
 .SH "LOOKING UP ITEMS"
 .\" ---------------
 .\"
-If the source of the debugged program is available, the \fIsource
-window\fR displays its current source text.  (If a source text cannot
-be found, use the \s-2GDB\s+2 `\fBdirectory\fR' command to specify
-source text directories).
+As soon as the source of the debugged program is available, the
+\fIsource window\fR displays its current source text.  (If a source
+text cannot be found, use `\fBEdit | GDB Settings\fR' to specify
+source text directories.)
 .PP
 In the source window, you can lookup and examine function and variable
 definitions as well as search for arbitrary occurrences in the source
@@ -589,10 +403,6 @@ menu.
 As another alternative, you can enter the function name in the
 argument field and click on the `\fBLookup ()\fR' button to find its
 definition.
-.PP
-Finally, you can use the \s-2GDB\s+2 `\fBinfo line\fR' command.
-Type `\fBhelp info line\fR' at the `\fB(gdb)\fR' prompt for
-details.
 .\"
 .SS "Textual Search"
 .\"
@@ -638,19 +448,12 @@ line popup menu.
 .PP
 .PSPIC @srcdir@/PICS/ddd-line-popup.ps 15.3cm
 .PP
-As another alternative, you can enter the line number in the argument
-field (indicated by `\fB():\fR') and click on the `\fBBreak at ()\fR'
-button.
+As another alternative, you can enter the file and line number in the
+argument field and click on the `\fBBreak at ()\fR' button.
 .PP
 As yet another alternative, you can select `\fBSource | Edit
-Breakpoints\fR'.  Click on the `\fBNew\fR' button and enter the line
-number.
-.PP
-And finally, you can also use the \s-2GDB\s+2 `\fBbreak\fR' command or
-the \s-2DBX\s+2/\s-2JDB\s+2 `\fBstop\fR' commands.  Type `\fBhelp
-break\fR' at the `\fB(gdb)\fR' prompt (or `\fBhelp stop\fR' at the
-`\fB(dbx)\fR' prompt) for details.  The \s-2XDB\s+2 `\fBb\fR' command
-works as well.
+Breakpoints\fR'.  Click on the `\fBBreak\fR' button and enter the
+location.
 .PP
 (If you find this number of alternatives confusing, be aware that
 \s-2@DDD@\s+2 users fall into three categories, which must all be
@@ -686,19 +489,9 @@ Click on the `\fBBreak at ()\fR' button to set a breakpoint there.
 As a shorter alternative, you can simply press \fImouse button 3\fR on the
 function name and select the `\fBbreak\fR' item from the popup menu.
 .PP
-As another alternative, you can enter the function name in the
-argument field (possibly using name completion by pressing the
-`\fB\s-2TAB\s+2\fR' key) and click on the `\fBBreak at ()\fR' button.
-.PP
 As yet another alternative, you can click on `\fBNew\fR' from the
 Breakpoint editor (invoked through `\fBSource | Edit Breakpoints\fR')
 and enter the function name.
-.PP
-Finally, you can use the \s-2GDB\s+2 `\fBbreak\fR' command or the
-\s-2DBX\s+2 and \s-2JDB\s+2 `\fBstop\fR' command.  Type `\fBhelp
-break\fR' at the `\fB(gdb)\fR' prompt (or `\fBhelp stop\fR' at the
-`\fB(dbx)\fR' prompt) for details.  The \s-2XDB\s+2 `\fBb\fR' command
-works as well.
 .\"
 .\"
 .SS "Disabling Breakpoints"
@@ -720,12 +513,9 @@ through `\fBSource | Edit Breakpoints\fR'.
 Disabled breakpoints are indicated by a grey stop sign, or 
 `\fB_\fIn\fB_\fR', where \fIn\fR is the breakpoint number.
 .PP
-Finally, you can use the \s-2GDB\s+2 `\fBdisable\fR' command.  Type
-`\fBhelp disable\fR' at the `\fB(gdb)\fR' prompt for details.
-.PP
 The `\fBDisable Breakpoint\fR' item is also accessible via the
-`\fBClear at ()\fR' button.  Just press and hold \fImouse button 1\fR on the
-button to get a popup menu.
+`\fBClear at ()\fR' button.  Just press and hold \fImouse button 1\fR
+on the button to get a popup menu.
 .\"
 .\"
 .SS "Temporary Breakpoints"
@@ -769,10 +559,6 @@ popup menu.
 As yet another alternative, you can select the breakpoint and click on
 `\fBDelete\fR' in the Breakpoint editor (invoked through `\fBSource |
 Edit Breakpoints\fR').
-.PP
-Finally, you can use the \s-2GDB\s+2 `\fBclear\fR' and `\fBdelete\fR'
-commands.  Type `\fBhelp clear\fR' or `\fBhelp delete\fR' at
-the `\fB(gdb)\fR' prompt for details.
 .\"
 .\"
 .SS "Editing Breakpoint Properties"
@@ -792,8 +578,9 @@ Click on `\fBEnable\fR' to enable the breakpoint.
 .IP \(bu 2
 Click on `\fBDisable\fR' to disable the breakpoint.
 .IP \(bu 2
-Click on `\fBTemp\fR' to make the breakpoint temporary.
-Note: There is no way to make a temporary breakpoint non-temporary.
+Click on `\fBTemp\fR' to make the breakpoint temporary.  Note:
+\s-2GDB\+2 provides no way to make a temporary breakpoint
+non-temporary.
 .IP \(bu 2
 Click on `\fBDelete\fR' to delete the breakpoint.
 .PP
@@ -863,7 +650,7 @@ Note: Dragging breakpoints is not possible when glyphs are disabled.
 Delete and set breakpoints instead.
 .\"
 .\"
-.SS "Finding Breakpoints"
+.SS "Looking up Breakpoints"
 .\"
 If you wish to lookup a specific breakpoint, select `\fBSource | Edit
 Breakpoints | Lookup\fR'.  After selecting a breakpoint from the list
@@ -970,29 +757,6 @@ argument field and click the `\fBUnwatch ()\fR' button.
 .\" ---------------
 .SH "RUNNING THE PROGRAM"
 .\" ---------------
-.\"
-.SS "Using the Command Tool"
-.\"
-All functionality you need for running and stopping the debugged
-program can be found on the command tool.
-.PP
-The command tool is a small window containing the most frequently used
-commands.  It can be moved around on top of the \s-2@DDD@\s+2 windows,
-but it can also be placed besides them.  Whenever you save
-\s-2@DDD@\s+2 state, \s-2@DDD@\s+2 also saves the distance between
-command tool and source window, such that you can select your own
-individual command tool placement.  In case you want to move the
-command tool to its saved position, use `\fBView | Command Tool\fR'.
-.PP
-By default, the command tool \fIsticks\fR to the \s-2@DDD@\s+2 source
-window: Whenever you move the \s-2@DDD@\s+2 source window, the command
-tool follows such that the distance between source window and command
-tool remains the same.  By default, the command tool is also
-\fIauto-raised\fR, such that it stays on top of other \s-2@DDD@\s+2
-windows.
-.PP
-.PSPIC @srcdir@/PICS/ddd-tool.ps 15.3cm
-.\"
 .\"
 .SS "Starting Program Execution"
 .\"
@@ -1172,7 +936,6 @@ programs with multiple threads\fR' in the \s-2GDB\s+2 documentation.
 .\" ---------------
 .SH "EXAMINING DATA"
 .\" ---------------
-.\"
 .TP
 \s-2@DDD@\s+2 provides three means to examine data.
 .TP 10
@@ -1385,8 +1148,8 @@ and
   \fBgraph enable display \fIdisplays...\fR
 .sp
 .br
-at the debugger prompt.  \fIdisplays...\fR is a space-separated list
-of display numbers to disable or enable or a single display name.
+at the debugger prompt.  \fIdisplays...\fR is wither a space-separated
+list of display numbers to disable or enable or a single display name.
 .\"
 .\"
 .SS "Rotating Arrays"
@@ -1922,7 +1685,6 @@ To continue to the next instruction in the current function, click on
 the `\fBNexti\fR' button.  This is similar to `\fBStepi\fR', but any
 subroutine calls are executed without stopping.
 .PP
-.PSPIC @srcdir@/PICS/disclaimer.ps 15.3cm
 .PSPIC @srcdir@/PICS/ddd-code.ps 15.3cm
 .\"
 .\"
@@ -1976,8 +1738,254 @@ brought up-to-date.
 If you have \s-2@DDD@\s+2 and an editor running in parallel, you can
 also update the source code manually via `\fBSource | Reload
 Source\fR'.  This reloads the source code shown from the source file.
-As \s-2@DDD@\s+2 automatically reloads the source code if the debugged
+Since \s-2@DDD@\s+2 automatically reloads the source code if the debugged
 program has been recompiled, this should seldom be necessary.
+.\"
+.\"
+.\"
+.\" ---------------
+.SH "ENTERING COMMANDS"
+.\" ---------------
+.\"
+In the \fIdebugger console\fR, you can interact with the command
+interface of the inferior debugger.  Enter commands at the \fIdebugger
+prompt\fR\(em\&that is, `\fB(gdb)\fR' for \s-2GDB\s+2, `\fB(dbx)\fR'
+for \s-2DBX\s+2, `\fB>\fR' for \s-2XDB\s+2, and `\fB>\fR' or
+`\fIthread\fB[\fIdepth\fB]\fR' for \s-2JDB\s+2.  You can use arbitrary
+debugger commands; use the \s-2\fBRETURN\fR\s+2 key to enter them.
+.PP
+.PSPIC @srcdir@/PICS/ddd-console.ps 15.3cm
+.PP
+You can \fIrepeat\fR previous and next commands by pressing the
+`\fBUp\fR' and `\fBDown\fR' arrow keys, respectively.  If you enter an
+empty line, the last command is repeated as well.  `\fBCommands |
+Command History\fR' shows the command history.
+.PP
+You can \fIsearch\fR for previous commands by pressing `\fBCtrl+B\fR'.
+This invokes \fIincremental search mode,\fR where you can enter a
+string to be searched in previous commands.  Press `\fBCtrl+B\fR'
+again to repeat the search, or `\fBCtrl+F\fR' to search in the reverse
+direction.  To return to normal mode, press \s-2\fBESC\fR\s+2, or use
+any cursor command.
+.PP
+.PSPIC @srcdir@/PICS/ddd-history.ps 15.3cm
+.PP
+Using \s-2GDB\s+2, you can also \fIcomplete\fR commands and arguments
+by pressing the `\s-2\fBTAB\fR\s+2' key; pressing the `\s-2\fBTAB\fR\s+2'
+key multiple times shows one possible expansion after the other.
+.PP
+Here are some of the most frequently needed debugger commands.
+.\"
+.SS "Common GDB commands"
+.TP
+.B break \fR[\|\fIfile\fB:\fR\|]\fIfunction
+\&
+Set a breakpoint at \c
+.I function\c
+\& (in \c
+.I file\c
+\&).
+.TP
+.B run \fR[\|\fIarglist\fR\|]
+Start your program (with \c
+.I arglist\c
+\&, if specified).
+.TP
+.B where
+Display the program stack.
+.TP
+.BI print " expr"\c
+\&
+Display the value of an expression.
+.TP
+.B cont
+Continue running your program (after stopping, e.g. at a breakpoint).
+.TP
+.B next
+Execute next program line (after stopping); step \c
+.I over\c
+\& any
+function calls in the line.
+.TP
+.B step
+Execute next program line (after stopping); step \c
+.I into\c
+\& any
+function calls in the line.
+.TP
+.B help \fR[\|\fIname\fR\|]
+Show information about the command \c
+.I name\c
+\&, or general usage information.
+.TP
+.B quit
+Exit \s-2GDB\s+2 (and \s-2@DDD@\s+2).
+.PP
+For full details on \s-2GDB\s+2 commands, see \c
+.I 
+Using \s-2GDB\s+2: A Guide to the \s-2GNU\s+2 Source-Level Debugger\c
+\&, by Richard M. Stallman and Roland H. Pesch.  
+The same text is available online as the \c
+.B gdb\c
+\& entry in the \c
+.B info\c
+\& program.
+.PP
+.\"
+.SS "Common DBX commands"
+.TP
+.B stop in \fIfunction
+\&
+Set a breakpoint at \c
+.I function.
+.TP
+.B stop at \fIline
+\&
+Set a breakpoint at \c
+.I line.
+.TP
+.B file \fIfile
+\&
+Change the current file to \c
+.I file.
+.TP
+.B run \fR[\|\fIarglist\fR\|]
+Start your program (with \c
+.I arglist\c
+\&, if specified).
+.TP
+.B where
+Display the program stack.
+.TP
+.BI print " expr"\c
+\&
+Display the value of an expression.
+.TP
+.B cont
+Continue running your program (after stopping, e.g. at a breakpoint).
+.TP
+.B next
+Execute next program line (after stopping); step \c
+.I over\c
+\& any
+function calls in the line.
+.TP
+.B step
+Execute next program line (after stopping); step \c
+.I into\c
+\& any
+function calls in the line.
+.TP
+.B help \fR[\|\fIname\fR\|]
+Show information about the command \c
+.I name\c
+\&, or general usage information.
+.TP
+.B quit
+Exit \s-2DBX\s+2 (and \s-2@DDD@\s+2).
+.PP
+For full details on \s-2DBX\s+2 commands, see the \s-2DBX\s+2
+documentation.
+.\"
+.SS "Common XDB commands"
+.TP
+.B b \fR[\|\fIfile\fB:\fR\|]\fIline
+\&
+Set a breakpoint at line \c
+.I line\c
+\& (in \c
+.I file\c
+\&).
+.TP
+.B b \fIfunction
+\&
+Set a breakpoint at \c
+.I function.
+.TP
+.B r \fR[\|\fIarglist\fR\|]
+Start your program (with \c
+.I arglist\c
+\&, if specified).
+.TP
+.B t
+Display the program stack.
+.TP
+.BI p " expr"\c
+\&
+Display the value of an expression.
+.TP
+.B c
+Continue running your program (after stopping, e.g. at a breakpoint).
+.TP
+.B S
+Execute next program line (after stopping); step \c
+.I over\c
+\& any
+function calls in the line.
+.TP
+.B s
+Execute next program line (after stopping); step \c
+.I into\c
+\& any
+function calls in the line.
+.TP
+.B h \fR[\|\fIname\fR\|]
+Show information about the command \c
+.I name\c
+\&, or general usage information.
+.TP
+.B q
+Exit \s-2XDB\s+2 (and \s-2@DDD@\s+2).
+.PP
+For full details on \s-2XDB\s+2 commands, see the \s-2XDB\s+2
+documentation.
+.\"
+.SS "Common JDB commands"
+.TP
+.B stop in \fIclass\fB.\fImethod\fB
+\&
+Set a breakpoint in a method.
+.TP
+.B stop at \fIclass\fB.\fIline\fB
+\&
+Set a breakpoint at a line.
+.TP
+.B load \fIclass\fB
+\&
+Open a class to be debugged.
+.TP
+.B run \fIclass\fR \fR[\|\fIarglist\fR\|]
+Start execution of a loaded class.
+.TP
+.B where
+Display a thread's stack.
+.TP
+.B print \fIid\fB
+Print an object or field
+.TP
+.B cont
+Continue execution from breakpoint
+.TP
+.B next
+Execute current program line (after stopping); step \c
+.I over\c
+\& any
+method calls in the line.
+.TP
+.B step
+Execute current program line (after stopping); step \c
+.I into\c
+\& any
+method calls in the line.
+.TP
+.B help
+Show general usage information.
+.TP
+.B quit
+Exit \s-2JDB\s+2 (and \s-2@DDD@\s+2).
+.PP
+For full details on \s-2JDB\s+2 commands, see the \s-2JDB\s+2
+documentation.
 .\"
 .\"
 .\" ---------------
@@ -2336,79 +2344,10 @@ Invoke \fBxxgdb\fR as
 .sp
 .br
 .\"
-.\" ---------------
-.SH "USER-DEFINED COMMANDS"
-.\" ---------------
-.\"
-If your debugger allows you to define own command sequences, you can
-also use these \fIuser-defined commands\fR within \s-2@DDD@\s+2; just
-enter them at the debugger prompt.  However, you may encounter some
-problems:
-.IP \(bu 2
-In contrast to the well-documented commands of the inferior debugger, 
-\s-2@DDD@\s+2 does not know what your specific command does.  This may 
-lead to inconsistencies between \s-2@DDD@\s+2 and the inferior
-debugger.  For instance, if your own command `\fBbp\fR' sets a
-breakpoint, \s-2@DDD@\s+2 may not display it immediately, because
-\s-2@DDD@\s+2 does not know that `\fBbp\fR' changes the breakpoint
-state.
-.br
-.IP \(bu 2
-You cannot use \s-2@DDD@\s+2 \fBgraph\fR commands within user-defined
-commands.  This is only natural, because user-defined commands are
-interpreted by the inferior debugger, which does not know about
-\s-2@DDD@\s+2 commands.
-.PP
-As a solution, \s-2@DDD@\s+2 provides a simple facility called
-\fIauto-commands\fR.  If \s-2@DDD@\s+2 receives any output from the
-inferior debugger in the form `\fB@ddd@: \fIcommand\fR', it will
-interpret \fIcommand\fR as if it had been entered at the debugger
-prompt.
-.PP
-Suppose you want to define a \s-2GDB\s+2 command `\fBgd\fR' that
-serves as abbreviation for `\fBgraph display\fR'.  All \fBgd\fR
-has to do is to issue a string
-.br
-.sp
-  \fBddd: graph display \fIargument\fR
-.sp
-.br
-where \fIargument\fR is the argument given to `\fBgd\fR'.  In
-\s-2GDB\s+2, this can be achieved using the \fBecho\fR command.  In
-your \fB$HOME/.gdbinit\fR file, insert the lines
-.br
-.sp
-  \fBdefine gd
-    echo ddd: graph display $arg0\\n
-  end\fR
-.sp
-.br
-To complete the setting, you must also set the
-`\fBautoCommandPrefix\fR' resource to the `\fBddd: \fR' prefix you
-gave in your command.  In `\fB$HOME/.ddd/init\fR', write:
-.br
-.sp
-  \fBDdd*autoCommandPrefix: ddd:\\ 
-.sp
-.br
-Be sure to leave a space after the trailing backslash.
-.PP
-Entering \fBdispfoo\fR will now have the same effect as entering
-\fBgraph display foo\fR at the debugger prompt.
-.PP
-Note: In your commands, you should choose some other prefix than
-`\fBddd: \fR'.  This is because auto-commands raise a security
-problem, since arbitrary commands can be executed.  Just imagine some
-malicious program issuing a string like `\fB\fIprefix\fR shell rm -fr
-$HOME\fR' when being debugged!  As a consequence, be sure to choose
-your own \fIprefix\fR; it must be at least three characters long.
-.PP
-If you do not define a prefix, it is created dynamically by
-\s-2@DDD@\s+2, and used to set up breakpoint commands.
 .\"
 .\"
 .\" ---------------
-.SH "PREFERENCES"
+.SH "CUSTOMIZING @DDD@"
 .\" ---------------
 .\"
 You can set up your personal \s-2@DDD@\s+2 preferences by using the
@@ -2441,6 +2380,7 @@ a little slower, so it is disabled by default.
 Through `\fBEdit | Preferences\fR', you can set up more \s-2@DDD@\s+2
 preferences, which are discussed here.
 .\"
+.\"
 .SS "General Preferences"
 .PP
 By default, when you move the pointer over a button, \s-2@DDD@\s+2
@@ -2449,6 +2389,7 @@ users may find these \fIbutton tips\fR disturbing; this is why you
 can disable them by unsetting the `\fBAutomatic display of button
 hints as popup tips\fR' option.
 .PP
+.PSPIC @srcdir@/PICS/disclaimer.ps 15.3cm
 .PSPIC @srcdir@/PICS/ddd-general-prefs.ps 15.3cm
 .PP
 The button hints are also displayed in the status line.  Disabling
@@ -2683,6 +2624,94 @@ replaced by the URL to be shown.  A simple value is `\fBnetscape
 @URL@\fR'.  See also the `\fBwwwCommand\fR' resource, below.
 .\"
 .\"
+.SS "Saving Options"
+.\"
+You can save the current option settings by selecting `\fBEdit | Save
+Options\fR'.  Options are saved in a file named `\fB.@ddd@/init\fR' in
+your home directory.  If a session \fIsession\fR is active, options 
+will be saved in `\fB$HOME/.@ddd@/sessions/\fIsession\fB/init\fR' instead.
+.\"
+.SS "Other Customizations"
+.\"
+Other personal \s-2@DDD@\s+2 resources can also be set in your
+`\fB.@ddd@/init\fR' file.  See the `\fBRESOURCES\fR' section, below.
+.PP
+The inferior debugger can be customized via `\fBEdit |
+Settings\fR'.  See the `\fBDEBUGGER SETTINGS\fR' section, below.
+.\"
+.\"
+.\" ---------------
+.SH "USER-DEFINED ACTIONS"
+.\" ---------------
+.\"
+.SS "Defining Commands"
+.\"
+If your debugger allows you to define own command sequences, you can
+also use these \fIuser-defined commands\fR within \s-2@DDD@\s+2; just
+enter them at the debugger prompt.  However, you may encounter some
+problems:
+.IP \(bu 2
+In contrast to the well-documented commands of the inferior debugger, 
+\s-2@DDD@\s+2 does not know what your specific command does.  This may 
+lead to inconsistencies between \s-2@DDD@\s+2 and the inferior
+debugger.  For instance, if your own command `\fBbp\fR' sets a
+breakpoint, \s-2@DDD@\s+2 may not display it immediately, because
+\s-2@DDD@\s+2 does not know that `\fBbp\fR' changes the breakpoint
+state.
+.br
+.IP \(bu 2
+You cannot use \s-2@DDD@\s+2 \fBgraph\fR commands within user-defined
+commands.  This is only natural, because user-defined commands are
+interpreted by the inferior debugger, which does not know about
+\s-2@DDD@\s+2 commands.
+.PP
+As a solution, \s-2@DDD@\s+2 provides a simple facility called
+\fIauto-commands\fR.  If \s-2@DDD@\s+2 receives any output from the
+inferior debugger in the form `\fB@ddd@: \fIcommand\fR', it will
+interpret \fIcommand\fR as if it had been entered at the debugger
+prompt.
+.PP
+Suppose you want to define a \s-2GDB\s+2 command `\fBgd\fR' that
+serves as abbreviation for `\fBgraph display\fR'.  All \fBgd\fR
+has to do is to issue a string
+.br
+.sp
+  \fBddd: graph display \fIargument\fR
+.sp
+.br
+where \fIargument\fR is the argument given to `\fBgd\fR'.  In
+\s-2GDB\s+2, this can be achieved using the \fBecho\fR command.  In
+your \fB$HOME/.gdbinit\fR file, insert the lines
+.br
+.sp
+  \fBdefine gd
+    echo ddd: graph display $arg0\\n
+  end\fR
+.sp
+.br
+To complete the setting, you must also set the
+`\fBautoCommandPrefix\fR' resource to the `\fBddd: \fR' prefix you
+gave in your command.  In `\fB$HOME/.ddd/init\fR', write:
+.br
+.sp
+  \fBDdd*autoCommandPrefix: ddd:\\ 
+.sp
+.br
+Be sure to leave a space after the trailing backslash.
+.PP
+Entering \fBdispfoo\fR will now have the same effect as entering
+\fBgraph display foo\fR at the debugger prompt.
+.PP
+Note: In your commands, you should choose some other prefix than
+`\fBddd: \fR'.  This is because auto-commands raise a security
+problem, since arbitrary commands can be executed.  Just imagine some
+malicious program issuing a string like `\fB\fIprefix\fR shell rm -fr
+$HOME\fR' when being debugged!  As a consequence, be sure to choose
+your own \fIprefix\fR; it must be at least three characters long.
+.PP
+If you do not define a prefix, it is created dynamically by
+\s-2@DDD@\s+2, and used to set up breakpoint commands.
+.\"
 .SS "Defining Buttons"
 .\"
 To facilitate interaction, you can add own command buttons to
@@ -2714,20 +2743,7 @@ Buttons\fR' in the `\fBRESOURCES\fR' section, below.
 .PSPIC @srcdir@/PICS/ddd-button-editor.ps 15.3cm
 .\"
 .\"
-.SS "Saving Options"
 .\"
-You can save the current option settings by selecting `\fBEdit | Save
-Options\fR'.  Options are saved in a file named `\fB.@ddd@/init\fR' in
-your home directory.  If a session \fIsession\fR is active, options 
-will be saved in `\fB$HOME/.@ddd@/sessions/\fIsession\fB/init\fR' instead.
-.\"
-.SS "Other Customizations"
-.\"
-Other personal \s-2@DDD@\s+2 resources can also be set in your
-`\fB.@ddd@/init\fR' file.  See the `\fBRESOURCES\fR' section, below.
-.PP
-The inferior debugger can be customized via `\fBEdit |
-Settings\fR'.  See the `\fBDEBUGGER SETTINGS\fR' section, below.
 .\"
 .\" ---------------
 .SH "DEBUGGER SETTINGS"
@@ -2805,6 +2821,8 @@ compiled against, invoke \s-2@DDD@\s+2 with the
 .PP
 In the \s-2@DDD@\s+2 source, LessTif-specific hacks are controlled by
 the string `\fBlesstif_version\fR'.
+.\"
+.\"
 .\"
 .\" ---------------
 .SH "RESOURCES"
@@ -4653,7 +4671,7 @@ Insert the contents of the data display argument field `\fB()\fR'.
 Insert the contents of the source argument field `\fB()\fR'.
 .TP
 .B gdb-isearch-prev ()
-Enter reverse incremental search mode.  Bound to \fBCtrl+R\fR.
+Enter reverse incremental search mode.  Bound to \fBCtrl+B\fR.
 .TP
 .B gdb-isearch-next ()
 Enter incremental search mode.  Bound to \fBCtrl+F\fR.
@@ -4818,6 +4836,8 @@ The execution pointer (stopped by signal).
 .B "watch"
 `\fBWatch ()\fR' button.
 .PP
+.\"
+.\"
 .\" ---------------
 .SH "ENVIRONMENT"
 .\" ---------------
@@ -5109,206 +5129,6 @@ debugged programs which change the default \s-2TTY\s+2 settings.
 .\"
 .\"
 .\"
-.\" ---------------
-.SH "FREQUENTLY ASKED QUESTIONS (FAQ)"
-.\" ---------------
-.\"
-.\" TOPIC: CONFIGURATIONS
-.SS "Which debuggers does @DDD@ support?"
-@DDD@ has been tested with the following debuggers:
-.IP \(bu 2
-\s-2GDB\s+2 (\s-2GNU\s+2 debugger) from the Free Software Foundation
-.IP \(bu 2
-\s-2DBX\s+2 as found on SunOS 4.x (aka Solaris 1.x)
-.IP \(bu 2
-\s-2DBX\s+2 as found on Solaris 2.x (aka SunOS 5.x)
-.IP \(bu 2
-\s-2DBX\s+2 as found on DEC systems (some variants only)
-.IP \(bu 2
-\s-2DBX\s+2 as found on AIX systems (some variants only)
-.IP \(bu 2
-\s-2DBX\s+2 as found on SGI systems (some variants only)
-.IP \(bu 2
-\s-2XDB\s+2 as found on HP-UX systems
-.IP \(bu 2
-\s-2JDB\s+2 as part of JDK 1.1 for Linux.
-.PP
-\s-2@DDD@\s+2 functionality largely depends on the capabilities of the
-underlying debugger; best results are obtained with \s-2GDB\s+2.
-.PP
-To cope with the large variety of \s-2DBX\s+2 flavors, \s-2@DDD@\s+2
-determines the \s-2DBX\s+2 capabilities dynamically at run-rime;
-\s-2@DDD@\s+2 should thus adapt automatically to other \s-2DBX\s+2
-variants.  Please let us know your experiences; use `\fB@ddd@
-\-\-trace\fR' to see the \s-2@DDD@/DBX\s+2 interaction.
-.\"
-.SS "Can I use @DDD@ with Ada?"
-Matthew Majka <\fBmmajka@cs5.dasd.honeywell.com\fR> says:  It works
-very well.  You just need an Ada-aware version of GDB.  You can get
-the patches from `\fBftp://cs.nyu.edu/pub/gnat/gdb/\fR'.
-.\"
-.SS "Is there an Athena Widgets port of @DDD@?"
-No.  If you want \s-2@DDD@\s+2 running with a free widget set, you
-should support the Hungry Programmer's Team\(em\&they develop LessTif, a
-free Motif-compliant widget set.  Check out their \s-2WWW\s+2 page at
-`\fBhttp://www.lesstif.org/\fR'.
-.\"
-.SS "Will @DDD@ work with LessTif?"
-As of LessTif 0.83, the resulting \s-2@DDD@\s+2 executable is quite
-usable; there are several \s-2@DDD@\s+2 users who use a \s-2@DDD@\s+2
-built with LessTif.  See the file `\s-2PROBLEMS\s+2' for a recent list
-of problems and fixes.
-.\"
-.SS "Should I compile @DDD@ myself or should I use an executable?"
-Compiling \s-2@DDD@\s+2 on your machine is the preferred way, because
-the resulting \s-2@DDD@\s+2 executable will be perfectly adapted to
-your system.  However, if your production environment is buggy, or if
-you lack the resources for compiling \s-2@DDD@\s+2, a thoroughly
-tested precompiled \s-2@DDD@\s+2 executable may be a better choice.
-.\"
-.\" TOPIC: EVERYDAY PROBLEMS
-.SS "How can I display a variable-length array?"
-The problem is that \s-2GDB\s+2 does not know the actual length of the
-array; you have to supply it by hand (i.e. using the keyboard).  You
-can use the \s-2@DDD@\s+2 \*(lqdisplay successive array elements\*(rq
-or the \s-2GDB\s+2 \*(lqartificial array\*(rq mechanism.  If you have
-a pointer, say:
-.sp
-.br
-  \fBint *pi;\fR
-.br
-.sp
-pointing to an array of 10 ints, you can see the integers by
-entering
-.sp
-.br
-  \fBgraph display pi[0..9]\fR
-.br
-.sp
-at the debugger prompt (or entering `\fBpi[0..9]\fR` in the `\fBNew
-Display\fR' dialog).
-.PP
-As an alternative, you can use the GDB \*(lqartificial array\*(rq
-mechanism by entering
-.sp
-.br
-  \fBgraph display pi[0]@10\fR
-.br
-.sp  
-This will create an array starting with \fBpi\fR showing the first 10
-elements.
-.\"
-.SS "My window manager crashes when running @DDD@!"
-This is due to a bug in the window manager.  You may try the following
-resources in your `\fB$HOME/.@ddd@/init\fR' file to minimize
-interference with the window manager; the first ones listed are the
-ones that are most likely to cause interferences.
-.sp
-.br
-  \fBDdd*colorWMIcons:    off
-  Ddd*autoRaiseMenu:      off
-  Ddd*groupIconify:       off
-  Ddd*uniconifyWhenReady: off
-  Ddd*splashScreen:       off
-  Ddd*autoRaiseTool:      off
-  Ddd*stickyTool:         off
-  Ddd*decoratedTool:      off\fR
-.br
-.sp
-See `\fBRESOURCES\fR', above, for a discussion of these resources.
-.PP
-.SS "My X display freezes when running @DDD@!"
-This is due to a bug in Motif.  You may try the following resources in
-your `\fB$HOME/.@ddd@/init\fR' file to minimize interference with Motif:
-.sp
-.br
-  \fBDdd*autoRaiseMenu:    off
-  Ddd*checkGrabs:       off\fR
-.br
-.sp
-See `\fBRESOURCES\fR', above, for a discussion of these resources.
-.PP
-.\"
-.SS "How do I pass ^C to the debugged program?"
-Assuming you use GDB as inferior debugger, typing `signal 2' at the
-`\fB(gdb)\fR' prompt will resume program execution with a \fBSIGINT\fR
-signal.
-.PP
-If it's the character rather than the signal you're interested in, run
-your program in the separate execution window (via `\fBView |
-Execution Window\fR') and type \fBCtrl+C\fR there.
-.\"
-.SS "In C++, how do I see the \fIactual\fB type of an object?"
-When using a generic pointer, you may wish to see the \fIactual\fR
-type of an object rather than the \fIdeclared\fR type.  In the
-\s-2GDB\s+2 settings (`\fBEdit | GDB Settings\fR'), enable `\fBSet
-printing of object's derived type based on vtable info\fR' or enter
-`\fBset print object on\fR' at the `\fB(gdb)\fR' prompt.
-.\"
-.\" TOPIC: HACKING @DDD@
-.SS "I want to use @DDD@ interprocess communication in my own application!"
-There is a demonstration program named `\fBttytest\fR' in the
-\s-2@DDD@\s+2 package.  Just type `\fBmake ttytest\fR'.  It should be
-relatively easy to customize this application.
-.PP
-Here are some pointers: If you want to talk with a separate process,
-use the `\fBTTYAgent\fR' class, as defined in `\fBTTYAgent.C\fR'.
-Using the `\fBwrite\fR' method, you can send arbitrary data to the
-process; you can define an `\fBInput\fR' handler that will be called
-each time the process sends data to you.  The header files of
-`\fBTTYAgent\fR' and its superclasses should contain sufficient
-information.  As all communication is handled asynchronously, you can
-realize a usual Xt-based interface using Athena widgets, Motif
-widgets, or another Xt-based toolkit.
-.\"
-.SS "I want to use the @DDD@ graph editor in my own application!"
-There is a demonstration program named `\fBtest-graph\fR' in the DDD
-source distribution.  Just type `make \fBtest-graph\fR'.  It should be
-relatively easy to customize this application.
-.PP
-Here are some pointers: The `\fBGraphEdit\fR' widget, as defined in
-`\fBGraphEdit.h\fR' contains the \s-2@DDD@\s+2 graph editor.  Variants
-with Athena panners and Motif scrollbars are found in
-`\fBPannedGE.h\fR' and `\fBScrolledGE.h\fR', respectively.  The
-`\fBGraphEdit\fR' widget works on a `\fBGraph\fR' structure, which is
-defined in `\fBGraph.h\fR'; a graph is composed of nodes and edges,
-both forming class hierarchies whose top classes are defined in
-`\fBGraphNode.h\fR' and `\fBGraphEdge.h\fR', respectively.  The graph
-nodes in \s-2@DDD@\s+2 are Box graph nodes, defined in
-`\fBBoxGraphN.h\fR'; a box is a (possibly structured) rectangular
-entity holding strings, lines, or figures.  See also the \s-2@DDD@\s+2
-paper `\fBdoc/ddd-paper.ps\fR' for details on boxes and how they are
-composed.
-.\"
-.\" TOPIC: RESOURCE USAGE
-.SS "How can I speed up @DDD@?"
-To get the maximum \s-2@DDD@\s+2 performance,
-.IP \(bu 2
-Use the latest \s-2@DDD@\s+2 version, compiled with optimization enabled.
-.IP \(bu 2
-Enable caching of source code and machine code.
-.IP \(bu 2
-Disable glyphs.
-.IP \(bu 2
-Disable machine code.
-.IP \(bu 2
-Disable alias detection.
-.IP \(bu 2
-Disable all status displays.
-.IP \(bu 2
-Delete all displays you do not need.
-.IP \(bu 2
-Do not use remote debugging.
-.PP
-.\"
-.SS "How can I reduce @DDD@ memory size?"
-To get a minimal \s-2@DDD@\s+2 memory usage,
-.IP \(bu 2
-Use \s-2@DDD@\s+2 2.2 or later (30% memory savings)
-.IP \(bu 2
-Hack \s-2@DDD@\s+2 such that this manual and the resource files are
-stored externally.  (Make it configurable and send us your changes)
-.PP
 .\" ---------------
 .SH "REPORTING BUGS"
 .\" ---------------
