@@ -1192,24 +1192,29 @@ inline subString string::after(char* t, int startpos = 0)
     return after((const char *)t, startpos);
 }
 
-inline subString string::before(char* t, int startpos = 0)
-{
-    return before((const char *)t, startpos);
-}
-
-inline subString string::through(char* t, int startpos = 0)
-{
-    return through((const char *)t, startpos);
-}
-
 inline subString string::at(char* t, int startpos = 0)
 {
     return at((const char *)t, startpos);
 }
 
+inline subString string::before(char* t, int startpos = 0)
+{
+    return before((const char *)t, startpos);
+}
+
 inline void string::del(char* t, int startpos = 0)
 {
     del((const char *)t, startpos);
+}
+
+inline subString string::from(char* t, int startpos = 0)
+{
+    return from((const char *)t, startpos);
+}
+
+inline subString string::through(char* t, int startpos = 0)
+{
+    return through((const char *)t, startpos);
 }
 
 inline int compare(const subString& x, char* b)
