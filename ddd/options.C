@@ -71,6 +71,24 @@ char options_rcsid[] =
 #include <stdio.h>
 #include <fstream.h>
 #include <unistd.h>
+#include <errno.h>
+#include <string.h>		// strerror
+
+#include <signal.h>
+
+#if HAVE_PTRACE
+extern "C" {
+#if HAVE_SYS_PTRACE_H
+#include <sys/ptrace.h>
+#endif
+#if !HAVE_PTRACE_DECL
+extern int ptrace(int request, int pid, int addr, int data);
+#endif
+#if HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
+}
+#endif
 
 #if defined(HAVE_LINK) && !defined(HAVE_LINK_DECL)
 extern "C" int link (const char *oldname, const char *newname);
@@ -79,6 +97,19 @@ extern "C" int link (const char *oldname, const char *newname);
 #if defined(HAVE_SYMLINK) && !defined(HAVE_SYMLINK_DECL)
 extern "C" int symlink (const char *oldname, const char *newname);
 #endif
+
+// Options.
+
+// True if ptrace() should be used to get a core dump.  
+// Right now, this has the side-effect that GDB hangs when attaching
+// to the process again, which is why it is disabled.
+#define TRY_PTRACE 0
+
+// True if `gcore' should be used to get a core dump.
+// Right now, this has the side-effect that the debuggee runs for a
+// short moment between `gcore' has finished and DDD stops it again,
+// which is why it is disabled.
+#define TRY_GCORE  0
 
 //-----------------------------------------------------------------------------
 // Source Options
@@ -907,21 +938,118 @@ static bool _get_core(const string& session, unsigned long flags,
 	return false;
     }
 
-    // Try `gcore' command
-    string gcore = app_data.get_core_command;
-    if (gcore != "" && !dont_save)
+#if HAVE_PTRACE_DUMPCORE && TRY_PTRACE
+    if (gdb->type() == GDB)
     {
+	// Try getting core via ptrace(2) call
+	if (dont_save)
+	    return true;		// Will probably work
+
 	// Get new core file from running process
 	StatusDelay delay("Getting core file");
 
-	string gcore_target = target + "." + itostring(info.pid);
-	gcore.gsub("@FILE@", target);
-	gcore.gsub("@PID@",  itostring(info.pid));
-	sh_command(gcore);
+	// 1. Stop the program being debugged, using a STOP signal.
+	kill(info.pid, SIGSTOP);
 
-	if (is_core_file(gcore_target) && move(gcore_target, target) == 0)
+	// 2. Detach GDB from the debuggee.  The debuggee is still stopped.
+	gdb_question("detach");
+
+	// 3. Attach to the process, using the ptrace() call.
+	string gcore_target = target + "." + itostring(info.pid);
+	int ok = ptrace(PTRACE_ATTACH, info.pid, 0, 0);
+	if (ok < 0)
+	    cerr << ddd_NAME ": PTRACE_ATTACH: "
+		 << strerror(errno) << "\n";
+	else
+	{
+	    // 4. Get a core file from the running process
+	    ok = ptrace(PTRACE_DUMPCORE, info.pid, 
+			int(gcore_target.chars()), 0);
+
+	    if (ok < 0)
+		cerr << ddd_NAME ": PTRACE_DUMPCORE: "
+		     << strerror(errno) << "\n";
+
+	    // 5. Detach from the debuggee, leaving it stopped
+	    kill(info.pid, SIGSTOP);
+	    ok = ptrace(PTRACE_DETACH, info.pid, 0x1, SIGSTOP);
+
+	    if (ok < 0)
+		cerr << ddd_NAME ": PTRACE_DETACH: "
+		     << strerror(errno) << "\n";
+	}
+
+	// 6. Have GDB attach to the debuggee again.
+	sleep(1);
+	gdb_question("attach " + itostring(info.pid));
+
+	// 7. One last command to reset current execution position
+	Command c("# reset");
+	c.priority = COMMAND_PRIORITY_INIT;
+	c.verbose  = false;
+	c.check    = true;
+	gdb_command(c);
+
+	if (is_core_file(gcore_target) && move(gcore_target, target))
 	    return true;
     }
+#endif
+
+#if TRY_GCORE
+    // Try `gcore' command
+    string gcore = app_data.get_core_command;
+    if (gcore != "" && gdb->type() == GDB)
+    {
+	if (dont_save)
+	    return true;	// Will probably work
+
+ 	// Get new core file from running process
+  	StatusDelay delay("Getting core file");
+
+	// 1. Stop the program being debugged, using a STOP signal.
+	kill(info.pid, SIGSTOP);
+
+	// 2. Detach GDB from the debuggee.  The debuggee is still stopped.
+	gdb_question("detach");
+
+	// 3. Invoke `gcore' command.  Since `gcore' restarts the
+	// debuggee, stop it again.
+  	string gcore_target = target + "." + itostring(info.pid);
+ 	gcore.gsub("@FILE@", target);
+ 	gcore.gsub("@PID@",  itostring(info.pid));
+ 	string cmd = sh_command(gcore, true) + " 2>&1";
+	ostrstream errs;
+	FILE *fp = popen(cmd, "r");
+	if (fp != 0)
+	{
+	    kill(info.pid, SIGSTOP);
+	    int c;
+	    while ((c = getc(fp)) != EOF)
+	    {
+		kill(info.pid, SIGSTOP);
+		errs << c;
+	    }
+	}
+	int gcore_status = pclose(fp);
+	kill(info.pid, SIGSTOP);
+	if (gcore_status != 0)
+	    cerr << string(errs);
+
+	// 4. Attach GDB again.
+	sleep(1);
+	gdb_question("attach " + itostring(info.pid));
+
+	// 5. One last command to reset current execution position
+	Command c("# reset");
+	c.priority = COMMAND_PRIORITY_INIT;
+	c.verbose  = false;
+	c.check    = true;
+	gdb_command(c);
+
+  	if (is_core_file(gcore_target) && move(gcore_target, target))
+  	    return true;
+    }
+#endif
 
     // Try direct kill.
     if (may_kill)
