@@ -40,13 +40,13 @@ char PositionHistory_rcsid[] =
 #include "string-fun.h"
 
 #ifndef LOG_POSITION_HISTORY
-#define LOG_POSITION_HISTORY 1
+#define LOG_POSITION_HISTORY 0
 #endif
 
 
 PositionHistory position_history;
 
-StringArray PositionHistory::history;
+PositionHistoryArray PositionHistory::history;
 
 // Last position in history + 1
 int PositionHistory::history_position = 1;
@@ -66,17 +66,15 @@ void PositionHistory::add_position(const string& source_name, int line)
     if (locked)
 	return;
 
-    string entry = source_name + ":" + itostring(line);
+    PositionHistoryEntry entry;
+    entry.file = source_name;
+    entry.line = line;
 
-    string current_entry = "";
+    PositionHistoryEntry current_entry;
     if (history.size() > 0 && history_position > 0)
     {
 	current_entry = history[history_position - 1];
-	if (current_entry.freq(':') == 2)
-	{
-	    int last_colon = current_entry.index(':', -1);
-	    current_entry = current_entry.before(last_colon);
-	}
+	current_entry.address = "";
     }
 
     if (entry != current_entry)
@@ -91,7 +89,7 @@ void PositionHistory::add_position(const string& source_name, int line)
 	    history_position = history.size();
 	}
 
-	StringArray new_history;
+	PositionHistoryArray new_history;
 	for (int i = 0; i < history_position; i++)
 	    new_history += history[i];
 	history = new_history;
@@ -106,35 +104,29 @@ void PositionHistory::add_address(const string& address)
     if (locked)
 	return;
 
-    string new_entry = "";
+    PositionHistoryEntry new_entry;
 
     if (history.size() > 0)
     {
-	string& current_entry = history[history_position - 1];
-	if (current_entry.freq(':') < 2)
+	PositionHistoryEntry& current_entry = history[history_position - 1];
+	if (current_entry.address == "")
 	{
 	    // Append address to current position
-	    current_entry += ":" + address;
+	    current_entry.address = address;
 	}
-	else
+	else if (current_entry.address != address)
 	{
-	    // Address already there
-	    int last_colon = current_entry.index(':', -1);
-	    string current_address = current_entry.after(last_colon);
-	    if (address != current_address)
-	    {
-		// Add new entry
-		new_entry = current_entry.through(last_colon) + address;
-	    }
+	    new_entry = current_entry;
+	    new_entry.address = address;
 	}
     }
     else
     {
 	// No source position yet: add address
-	new_entry = "::" + address;
+	new_entry.address = address;
     }
 
-    if (new_entry != "")
+    if (new_entry.address != "")
     {
 	if (history_position < history.size())
 	{
@@ -146,7 +138,7 @@ void PositionHistory::add_address(const string& address)
 	    history_position = history.size();
 	}
 
-	StringArray new_history;
+	PositionHistoryArray new_history;
 	for (int i = 0; i < history_position; i++)
 	    new_history += history[i];
 	history = new_history;
@@ -161,21 +153,26 @@ void PositionHistory::log()
 #if LOG_POSITION_HISTORY
     clog << "Position history:\n";
     for (int i = 0; i < history.size(); i++)
-	clog << i << (i == history_position - 1 ? "*\t" : " \t") 
-	     << history[i] << "\n";
+    {
+	const PositionHistoryEntry& entry = history[i];
+
+	clog << i << (i == history_position - 1 ? "*\t" : " \t");
+	if (entry.file != "")
+	    clog << entry.file << ":" << entry.line;
+	else
+	    clog << ":";
+	if (entry.address != "")
+	    clog << ":" << entry.address;
+	clog << "\n";
+    }
     clog << "\n";
 #endif
 }
 
-void PositionHistory::goto_entry(const string& entry)
+void PositionHistory::goto_entry(const PositionHistoryEntry& entry)
 {
-    string file_name = entry.before(':');
-    string line_str  = entry.after(':');
-    int line         = atoi(line_str);
-    string address   = line_str.after(':');
-
     locked = true;
-    source_view->goto_entry(file_name, line, address);
+    source_view->goto_entry(entry.file, entry.line, entry.address);
     locked = false;
 
     log();
@@ -185,7 +182,7 @@ bool PositionHistory::go_back()
 {
     if (history_position > 1 && history.size() > 0)
     {
-	const string& entry = history[--history_position - 1];
+	const PositionHistoryEntry& entry = history[--history_position - 1];
 	goto_entry(entry);
 	return true;
     }
@@ -197,7 +194,7 @@ bool PositionHistory::go_forward()
 {
     if (history_position < history.size())
     {
-	const string& entry = history[history_position++];
+	const PositionHistoryEntry& entry = history[history_position++];
         goto_entry(entry);
 	return true;
     }
@@ -208,7 +205,7 @@ bool PositionHistory::go_forward()
 // Clear history
 void PositionHistory::clear()
 {
-    static StringArray empty;
+    static PositionHistoryArray empty;
     history          = empty;
     history_position = 1;
     locked           = false;

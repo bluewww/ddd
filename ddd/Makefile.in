@@ -863,6 +863,7 @@ DDD_OBJECTS = \
 	MinMaxA.o    \
 	PosBuffer.o  \
 	PositionH.o  \
+	PositionHE.o \
 	SmartC.o     \
 	SourceView.o \
 	WhatNextCB.o

@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Position history (`Back' and `Forward' buttons)
+// Position History Entries
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -26,46 +26,51 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_PositionHistory_h
-#define _DDD_PositionHistory_h
+#ifndef _DDD_PositionHistoryEntry_h
+#define _DDD_PositionHistoryEntry_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
+#include "strclass.h"
+#include "VarArray.h"
 #include "bool.h"
-#include "PositionHE.h"
 
-class PositionHistory {
+struct PositionHistoryEntry {
+    string file;
+    int line;
+    string address;
 
-    static PositionHistoryArray history;
+    PositionHistoryEntry()
+	: file(""), line(0), address("")
+    {}
 
-    // Last position in history + 1
-    static int history_position;
+    PositionHistoryEntry(const PositionHistoryEntry& entry)
+	: file(entry.file), line(entry.line), address(entry.address)
+    {}
 
-    // True if position history is to stay unchanged
-    static bool locked;
+    PositionHistoryEntry& operator = (const PositionHistoryEntry& entry)
+    {
+	file    = entry.file;
+	line    = entry.line;
+	address = entry.address;
+	return *this;
+    }
 
-    // Lookup entry in source
-    static void goto_entry(const PositionHistoryEntry& entry);
-
-    // Log current position
-    static void log();
-
-public:
-    // Add position to history
-    void add_position(const string& file_name, int line);
-    void add_address(const string& address);
-
-    // Lookup previous/next position; return true iff successful
-    static bool go_back();
-    static bool go_forward();
-
-    // Clear history
-    static void clear();
+    bool operator == (const PositionHistoryEntry& entry) const
+    {
+	return (file == entry.file && 
+		line == entry.line &&
+		address == entry.address);
+    }
+    bool operator != (const PositionHistoryEntry& entry) const
+    {
+	return !operator == (entry);
+    }
 };
 
-extern PositionHistory position_history;
+typedef VarArray<PositionHistoryEntry> PositionHistoryArray;
 
-#endif // _DDD_PositionHistory_h
+#endif // _DDD_PositionHistoryEntry_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
