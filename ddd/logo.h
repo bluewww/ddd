@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-//
+// DDD logos and logo functions
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -60,13 +60,20 @@ extern void set_label(Widget w, const MString& new_label,
 #define DDD_ICON           ddd_NAME
 #define BREAK_AT_ICON      "break_at"
 #define CLEAR_AT_ICON      "clear_at"
+#define DELETE_ICON        "delete"
+#define DISABLE_ICON       "disable"
 #define DISPREF_ICON       "dispref"
 #define DISPLAY_ICON       "display"
-#define FIND_FORWARD_ICON  "find_forward"
+#define ENABLE_ICON        "enable"
 #define FIND_BACKWARD_ICON "find_backward"
+#define FIND_FORWARD_ICON  "find_forward"
 #define HIDE_ICON          "hide"
 #define LOOKUP_ICON        "lookup"
+#define NEW_BREAK_ICON     "new_break"
+#define NEW_DISPLAY_ICON   "new_display"
+#define NEW_WATCH_ICON     "new_watch"
 #define PRINT_ICON         "print"
+#define PROPERTIES_ICON    "properties"
 #define ROTATE_ICON        "rotate"
 #define SET_ICON           "set"
 #define SHOW_ICON          "show"

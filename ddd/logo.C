@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// DDD logo functions
+// DDD logos and logo functions
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -276,13 +276,20 @@ Pixmap dddsplash(Widget w, const string& color_key)
 // X Bitmaps
 #include "icons/toolbar/breakat.xbm"
 #include "icons/toolbar/clearat.xbm"
+#include "icons/toolbar/delete.xbm"
 #include "icons/toolbar/deref.xbm"
+#include "icons/toolbar/disable.xbm"
 #include "icons/toolbar/display.xbm"
+#include "icons/toolbar/enable.xbm"
 #include "icons/toolbar/findbwd.xbm"
 #include "icons/toolbar/findfwd.xbm"
 #include "icons/toolbar/hide.xbm"
 #include "icons/toolbar/lookup.xbm"
+#include "icons/toolbar/newbreak.xbm"
+#include "icons/toolbar/newdisplay.xbm"
+#include "icons/toolbar/newwatch.xbm"
 #include "icons/toolbar/print.xbm"
+#include "icons/toolbar/properties.xbm"
 #include "icons/toolbar/rotate.xbm"
 #include "icons/toolbar/set.xbm"
 #include "icons/toolbar/show.xbm"
@@ -292,13 +299,20 @@ Pixmap dddsplash(Widget w, const string& color_key)
 
 #include "icons/toolbar/breakat-xx.xbm"
 #include "icons/toolbar/clearat-xx.xbm"
+#include "icons/toolbar/delete-xx.xbm"
 #include "icons/toolbar/deref-xx.xbm"
+#include "icons/toolbar/disable-xx.xbm"
 #include "icons/toolbar/display-xx.xbm"
+#include "icons/toolbar/enable-xx.xbm"
 #include "icons/toolbar/findbwd-xx.xbm"
 #include "icons/toolbar/findfwd-xx.xbm"
 #include "icons/toolbar/hide-xx.xbm"
 #include "icons/toolbar/lookup-xx.xbm"
+#include "icons/toolbar/newbreak-xx.xbm"
+#include "icons/toolbar/newdisplay-xx.xbm"
+#include "icons/toolbar/newwatch-xx.xbm"
 #include "icons/toolbar/print-xx.xbm"
+#include "icons/toolbar/properties-xx.xbm"
 #include "icons/toolbar/rotate-xx.xbm"
 #include "icons/toolbar/set-xx.xbm"
 #include "icons/toolbar/show-xx.xbm"
@@ -310,13 +324,20 @@ Pixmap dddsplash(Widget w, const string& color_key)
 // X Pixmaps
 #include "icons/toolbar/breakat.xpm"
 #include "icons/toolbar/clearat.xpm"
+#include "icons/toolbar/delete.xpm"
 #include "icons/toolbar/deref.xpm"
+#include "icons/toolbar/disable.xpm"
 #include "icons/toolbar/display.xpm"
+#include "icons/toolbar/enable.xpm"
 #include "icons/toolbar/findbwd.xpm"
 #include "icons/toolbar/findfwd.xpm"
 #include "icons/toolbar/hide.xpm"
 #include "icons/toolbar/lookup.xpm"
+#include "icons/toolbar/newbreak.xpm"
+#include "icons/toolbar/newdisplay.xpm"
+#include "icons/toolbar/newwatch.xpm"
 #include "icons/toolbar/print.xpm"
+#include "icons/toolbar/properties.xpm"
 #include "icons/toolbar/rotate.xpm"
 #include "icons/toolbar/set.xpm"
 #include "icons/toolbar/show.xpm"
@@ -326,13 +347,20 @@ Pixmap dddsplash(Widget w, const string& color_key)
 
 #include "icons/toolbar/breakat-xx.xpm"
 #include "icons/toolbar/clearat-xx.xpm"
+#include "icons/toolbar/delete-xx.xpm"
 #include "icons/toolbar/deref-xx.xpm"
+#include "icons/toolbar/disable-xx.xpm"
 #include "icons/toolbar/display-xx.xpm"
+#include "icons/toolbar/enable-xx.xpm"
 #include "icons/toolbar/findbwd-xx.xpm"
 #include "icons/toolbar/findfwd-xx.xpm"
 #include "icons/toolbar/hide-xx.xpm"
 #include "icons/toolbar/lookup-xx.xpm"
+#include "icons/toolbar/newbreak-xx.xpm"
+#include "icons/toolbar/newdisplay-xx.xpm"
+#include "icons/toolbar/newwatch-xx.xpm"
 #include "icons/toolbar/print-xx.xpm"
+#include "icons/toolbar/properties-xx.xpm"
 #include "icons/toolbar/rotate-xx.xpm"
 #include "icons/toolbar/set-xx.xpm"
 #include "icons/toolbar/show-xx.xpm"
@@ -593,16 +621,34 @@ void install_icons(Widget shell, const string& color_key)
 		        clearat_width, clearat_height,
 			color_key, background, arm_background, root_attr);
 
+    install_button_icon(shell, DELETE_ICON, 
+      		        delete_xpm, delete_xx_xpm,
+		        delete_bits, delete_xx_bits, 
+		        delete_width, delete_height,
+			color_key, background, arm_background, root_attr);
+
     install_button_icon(shell, DISPREF_ICON, 
       		        deref_xpm, deref_xx_xpm,
 		        deref_bits, deref_xx_bits, 
 		        deref_width, deref_height,
 			color_key, background, arm_background, root_attr);
 
+    install_button_icon(shell, DISABLE_ICON, 
+      		        disable_xpm, disable_xx_xpm,
+		        disable_bits, disable_xx_bits, 
+		        disable_width, disable_height,
+			color_key, background, arm_background, root_attr);
+
     install_button_icon(shell, DISPLAY_ICON, 
       		        display_xpm, display_xx_xpm,
 		        display_bits, display_xx_bits, 
 		        display_width, display_height,
+			color_key, background, arm_background, root_attr);
+
+    install_button_icon(shell, ENABLE_ICON, 
+      		        enable_xpm, enable_xx_xpm,
+		        enable_bits, enable_xx_bits, 
+		        enable_width, enable_height,
 			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, FIND_BACKWARD_ICON, 
@@ -629,10 +675,34 @@ void install_icons(Widget shell, const string& color_key)
 		        lookup_width, lookup_height,
 			color_key, background, arm_background, root_attr);
 
+    install_button_icon(shell, NEW_BREAK_ICON, 
+      		        newbreak_xpm, newbreak_xx_xpm,
+		        newbreak_bits, newbreak_xx_bits, 
+		        newbreak_width, newbreak_height,
+			color_key, background, arm_background, root_attr);
+
+    install_button_icon(shell, NEW_DISPLAY_ICON, 
+      		        newdisplay_xpm, newdisplay_xx_xpm,
+		        newdisplay_bits, newdisplay_xx_bits, 
+		        newdisplay_width, newdisplay_height,
+			color_key, background, arm_background, root_attr);
+
+    install_button_icon(shell, NEW_WATCH_ICON, 
+      		        newwatch_xpm, newwatch_xx_xpm,
+		        newwatch_bits, newwatch_xx_bits, 
+		        newwatch_width, newwatch_height,
+			color_key, background, arm_background, root_attr);
+
     install_button_icon(shell, PRINT_ICON, 
       		        print_xpm, print_xx_xpm,
 		        print_bits, print_xx_bits, 
 		        print_width, print_height,
+			color_key, background, arm_background, root_attr);
+
+    install_button_icon(shell, PROPERTIES_ICON, 
+      		        properties_xpm, properties_xx_xpm,
+		        properties_bits, properties_xx_bits, 
+		        properties_width, properties_height,
 			color_key, background, arm_background, root_attr);
 
     install_button_icon(shell, ROTATE_ICON, 

@@ -891,13 +891,20 @@ ICONS = \
 	$(icondir)/dddsplash.xbm \
 	$(toolbardir)/breakat-xx.xpm \
 	$(toolbardir)/clearat-xx.xpm \
+	$(toolbardir)/delete-xx.xpm \
 	$(toolbardir)/deref-xx.xpm \
+	$(toolbardir)/disable-xx.xpm \
 	$(toolbardir)/display-xx.xpm \
 	$(toolbardir)/findbwd-xx.xpm \
 	$(toolbardir)/findfwd-xx.xpm \
+	$(toolbardir)/enable-xx.xpm \
 	$(toolbardir)/hide-xx.xpm \
 	$(toolbardir)/lookup-xx.xpm \
+	$(toolbardir)/newbreak-xx.xpm \
+	$(toolbardir)/newdisplay-xx.xpm \
+	$(toolbardir)/newwatch-xx.xpm \
 	$(toolbardir)/print-xx.xpm \
+	$(toolbardir)/properties-xx.xpm \
 	$(toolbardir)/rotate-xx.xpm \
 	$(toolbardir)/set-xx.xpm \
 	$(toolbardir)/show-xx.xpm \
@@ -906,13 +913,20 @@ ICONS = \
 	$(toolbardir)/watch-xx.xpm \
 	$(toolbardir)/breakat.xbm \
 	$(toolbardir)/clearat.xbm \
+	$(toolbardir)/delete.xbm \
 	$(toolbardir)/deref.xbm \
+	$(toolbardir)/disable.xbm \
 	$(toolbardir)/display.xbm \
 	$(toolbardir)/findbwd.xbm \
 	$(toolbardir)/findfwd.xbm \
+	$(toolbardir)/enable.xbm \
 	$(toolbardir)/hide.xbm \
 	$(toolbardir)/lookup.xbm \
+	$(toolbardir)/newbreak.xbm \
+	$(toolbardir)/newdisplay.xbm \
+	$(toolbardir)/newwatch.xbm \
 	$(toolbardir)/print.xbm \
+	$(toolbardir)/properties.xbm \
 	$(toolbardir)/rotate.xbm \
 	$(toolbardir)/set.xbm \
 	$(toolbardir)/show.xbm \
@@ -921,13 +935,20 @@ ICONS = \
 	$(toolbardir)/watch.xbm \
 	$(toolbardir)/breakat-xx.xbm \
 	$(toolbardir)/clearat-xx.xbm \
+	$(toolbardir)/delete-xx.xbm \
 	$(toolbardir)/deref-xx.xbm \
+	$(toolbardir)/disable-xx.xbm \
 	$(toolbardir)/display-xx.xbm \
 	$(toolbardir)/findbwd-xx.xbm \
 	$(toolbardir)/findfwd-xx.xbm \
+	$(toolbardir)/enable-xx.xbm \
 	$(toolbardir)/hide-xx.xbm \
 	$(toolbardir)/lookup-xx.xbm \
+	$(toolbardir)/newbreak-xx.xbm \
+	$(toolbardir)/newdisplay-xx.xbm \
+	$(toolbardir)/newwatch-xx.xbm \
 	$(toolbardir)/print-xx.xbm \
+	$(toolbardir)/properties-xx.xbm \
 	$(toolbardir)/rotate-xx.xbm \
 	$(toolbardir)/set-xx.xbm \
 	$(toolbardir)/show-xx.xbm \
