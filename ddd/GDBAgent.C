@@ -565,37 +565,46 @@ string GDBAgent::requires_reply (const string& answer)
 	return "";
     int last_line_index = answer.index('\n', -1) + 1;
 
-#if RUNTIME_REGEX
-    static regex rxq(".*[(]END[)][^\n]*");
-#endif
-    if (answer.matches(rxq, last_line_index))
-	return "q";		// Stop this
+    string last_line = answer.chars() + last_line_index;
+    last_line.downcase();
 
-#if RUNTIME_REGEX
-    static regex rxspace(".*(--More--|line [0-9])[^\n]*");
-#endif
-    if (answer.matches(rxspace, last_line_index))
-	return " ";		// Keep on scrolling
-
-#if RUNTIME_REGEX
-    static regex rxreturn(".*([(]press RETURN[)]"
-			  "|Hit RETURN to continue"
-			  "|Type <return> to continue"
-			  "|More [(]n if no[)][?])[^\n]*");
-#endif
-    if (answer.matches(rxreturn, last_line_index))
-	return "\n";		// Keep on scrolling
-
-    if (type() == XDB)
+    if (last_line.contains("end") 
+	|| last_line.contains("line")
+	|| last_line.contains("more")
+	|| last_line.contains("return"))
     {
-	// Added regular expression for "Standard input: END" to
-        // GDBAgent::requires_reply 
-	// -- wiegand@kong.gsfc.nasa.gov (Robert Wiegand)
 #if RUNTIME_REGEX
-	static regex rxxdb(".*Standard input: END.*");
+	static regex rxq(".*[(]END[)][^\n]*");
 #endif
-	if (answer.matches(rxxdb, last_line_index))
-	    return "\n";	// Keep on scrolling
+	if (answer.matches(rxq, last_line_index))
+	    return "q";		// Stop this
+
+#if RUNTIME_REGEX
+	static regex rxspace(".*(--More--|line [0-9])[^\n]*");
+#endif
+	if (answer.matches(rxspace, last_line_index))
+	    return " ";		// Keep on scrolling
+
+#if RUNTIME_REGEX
+	static regex rxreturn(".*([(]press RETURN[)]"
+			      "|Hit RETURN to continue"
+			      "|Type <return> to continue"
+			      "|More [(]n if no[)][?])[^\n]*");
+#endif
+	if (answer.matches(rxreturn, last_line_index))
+	    return "\n";		// Keep on scrolling
+
+	if (type() == XDB)
+	{
+	    // Added regular expression for "Standard input: END" to
+	    // GDBAgent::requires_reply 
+	    // -- wiegand@kong.gsfc.nasa.gov (Robert Wiegand)
+#if RUNTIME_REGEX
+	    static regex rxxdb(".*Standard input: END.*");
+#endif
+	    if (answer.matches(rxxdb, last_line_index))
+		return "\n";	// Keep on scrolling
+	}
     }
 
     return "";
