@@ -54,14 +54,16 @@ extern "C" {
 #define NO_UNAME_AGENTS
 #include "hostname.C"
 
-// Return true if C is a letter found in real user names
-inline bool is_letter(char c)
+// Return true if C is a letter found in real user names.  Any 8-bit
+// characters are considered letters.
+inline bool is_letter(unsigned char c)
 {
-    return c != '\0' && (isalpha(c) || isspace(c) || c == '.' || c == '-');
+    return c != '\0' && (isalpha(c) || isspace(c) || 
+			 c == '.' || c == '-' || c >= 128);
 }
 
 // Return true if C is a letter not found in e-mail addresses
-inline bool is_junk(char c)
+inline bool is_junk(unsigned char c)
 {
     return c == '\0' || isspace(c) || c == '\"' || c == '(' 
 	|| c == ')' || c == ',' || c == ';';
