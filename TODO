@@ -242,8 +242,6 @@ Volunteers for these and other projects are welcome!
 
 096* GDB settings:
      - Insert a `dir' prompt - where to search for source files.
-     - Insert a `reset' button - reset to initial values.
-     - Save settings in `~/.dddinit' (or `~/.gdbinit'?)
 
 099. Add a history mechanism to the `()' fields (cursor up / cursor
      down).

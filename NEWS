@@ -24,7 +24,8 @@ DDD 2.0 (in beta test)
       in the source window, making it available for further commands.
     - `New display' subsumes `Dependent display': if a display is
       selected, the new display is made dependent on it.
-    - Option editors.  New panels for DDD preferences and GDB settings.
+    - Option editors.  New panels for DDD preferences and GDB
+      settings.  GDB settings can be saved across DDD sessions.
     - Some items have been renamed for further clarity:
       * The `command window' is now named `debugger console', to avoid
         confusion with the command tool.
