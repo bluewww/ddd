@@ -44,7 +44,7 @@ char SignalBlocker_rcsid[] =
 SignalBlocker::SignalBlocker(int signum)
     : 
 #ifdef SIG_SETMASK
-    old_set(0)
+    old_set()
 #else
     // BSD interface
     old_mask(sigblock(sigmask(signum)));
@@ -64,7 +64,7 @@ SignalBlocker::SignalBlocker(int signum)
 SignalBlocker::SignalBlocker()
     :
 #ifdef SIG_SETMASK
-    old_set(0)
+    old_set()
 #else
     // BSD interface
     old_mask(sigblock(~0));

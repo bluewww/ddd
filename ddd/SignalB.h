@@ -69,12 +69,12 @@ private:
 	return *this;
     }
 
-    SignalBlocker(const SignalBlocker&) 
+    SignalBlocker(const SignalBlocker& sb) 
 	:
 #ifdef SIG_SETMASK
-	old_set(0)
+	old_set(sb.old_set)
 #else
-	old_mask(0)
+	old_mask(sb.old_mask)
 #endif
      {
 	 assert(0);
