@@ -186,11 +186,18 @@ public:
 		      bool& was_changed, bool& was_initialized);
 
     // Return true iff SOURCE and this are structurally equal.
-    // If SOURCE_DESCENDANT (a descendant of SOURCE) is set, 
+    // If SOURCE_DESCENDANT (a descendant of SOURCE) is not 0,
     // return its equivalent descendant of this in DESCENDANT.
-    bool structurally_equal(DispValue *source,
-			    DispValue *source_descendant = 0,
-			    DispValue *&descendant = 0);
+    bool structurally_equal(const DispValue *source,
+			    const DispValue *source_descendant,
+			    const DispValue *&descendant) const;
+
+    // Short version
+    bool structurally_equal(const DispValue *source) const
+    {
+	const DispValue *dummy = 0;
+	return structurally_equal(source, 0, dummy);
+    }
 
     // Background processing.  PROCESSED is the number of characters
     // processed so far.  If this returns true, abort operation.

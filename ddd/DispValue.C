@@ -1239,9 +1239,9 @@ DispValue *DispValue::update(DispValue *source,
 // Return true iff SOURCE and this are structurally equal.
 // If SOURCE_DESCENDANT (a descendant of SOURCE) is set, 
 // return its equivalent descendant of this in DESCENDANT.
-bool DispValue::structurally_equal(DispValue *source,
-				   DispValue *source_descendant,
-				   DispValue *&descendant)
+bool DispValue::structurally_equal(const DispValue *source,
+				   const DispValue *source_descendant,
+				   const DispValue *&descendant) const
 {
     if (source == source_descendant)
 	descendant = this;
