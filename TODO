@@ -363,4 +363,9 @@ Volunteers for these and other projects are welcome!
 
 198. Have a general mechanism that ensures that timers are called.
 
-199. (Insert your project idea here)
+199. Use X11R6 XtSignalNotify for Xt-safe signal handling.
+
+200. Make DDD session-aware by using the Xt11R6 SessionShell 
+     instead of Xt11R5 ApplicationShell.
+
+201. (Insert your project idea here)
