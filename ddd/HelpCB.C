@@ -75,40 +75,26 @@ char HelpCB_rcsid[] =
 // documentationString - displayed in the status line
 // helpShowTitle       - if set, include widget name in context-sensitive help
 
-struct resource_values {
+struct help_resource_values {
     XmString helpString;
-    XmString tipString;
-    XmString documentationString;
     Boolean showTitle;
 };
 
-static XtResource subresources[] = {
+struct tip_resource_values {
+    XmString tipString;
+};
+
+struct doc_resource_values {
+    XmString documentationString;
+};
+
+static XtResource help_subresources[] = {
     {
 	XtNhelpString,
 	XtCHelpString,
 	XmRXmString,
 	sizeof(XmString),
-	XtOffsetOf(resource_values, helpString),
-	XtRImmediate,
-	XtPointer(0)
-    },
-
-    {
-	XtNtipString,
-	XtCTipString,
-	XmRXmString,
-	sizeof(XmString),
-	XtOffsetOf(resource_values, tipString), 
-	XtRImmediate,
-	XtPointer(0)
-    },
-    
-    {
-	XtNdocumentationString,
-	XtCDocumentationString,
-	XmRXmString,
-	sizeof(XmString),
-	XtOffsetOf(resource_values, documentationString), 
+	XtOffsetOf(help_resource_values, helpString),
 	XtRImmediate,
 	XtPointer(0)
     },
@@ -118,9 +104,33 @@ static XtResource subresources[] = {
 	XtCHelpShowTitle,
 	XmRBoolean,
 	sizeof(Boolean),
-	XtOffsetOf(resource_values, showTitle),
+	XtOffsetOf(help_resource_values, showTitle),
 	XtRImmediate,
 	XtPointer(False)
+    }
+};
+
+static XtResource tip_subresources[] = {
+    {
+	XtNtipString,
+	XtCTipString,
+	XmRXmString,
+	sizeof(XmString),
+	XtOffsetOf(tip_resource_values, tipString), 
+	XtRImmediate,
+	XtPointer(0)
+    }
+};
+    
+static XtResource doc_subresources[] = {
+    {
+	XtNdocumentationString,
+	XtCDocumentationString,
+	XmRXmString,
+	sizeof(XmString),
+	XtOffsetOf(doc_resource_values, documentationString), 
+	XtRImmediate,
+	XtPointer(0)
     }
 };
 
@@ -139,30 +149,34 @@ static void _MStringHelpCB(Widget widget,
 
 MString helpOnVersionExtraText;
 
+// A single dot means `no string'.  (An empty string causes the
+// helpers to be called.)
+static MString NO_STRING(".");	 // Placeholder for `empty string'
+static MString NULL_STRING("@"); // Placeholder for `nonexistent value'
+
 static MString get_help_string(Widget widget)
 {
     // Get text
-    resource_values values;
+    help_resource_values values;
     XtGetApplicationResources(widget, &values, 
-			      subresources, XtNumber(subresources), 
+			      help_subresources, XtNumber(help_subresources), 
 			      NULL, 0);
 
+    if (values.helpString == 0)
+	values.helpString = NULL_STRING;
+
     MString text(values.helpString, true);
-    if ((text.xmstring() == 0 || text.isEmpty()) && DefaultHelpText != 0)
+    if ((text == NULL_STRING || text.isNull()) && DefaultHelpText != 0)
 	text = DefaultHelpText(widget);
-    if (text.xmstring() == 0 || text.isEmpty())
+    if (text == NULL_STRING || text.isNull())
 	text = NoHelpText(widget);
 
     if (values.showTitle)
-	text = MString("Help for ") + cook(longName(widget)) 
-	    + ":\n\n" + text;
+	text.prepend(rm("Help for ") + bf(cook(longName(widget)))
+		     + rm(":") + cr() + cr());
 
     return text;
 }
-
-// A single dot means `no string'.  (An empty string causes the
-// helpers to be called.)
-static MString NO_TIP_STRING(".");
 
 static MString get_tip_string(Widget widget, XEvent *event)
 {
@@ -174,16 +188,19 @@ static MString get_tip_string(Widget widget, XEvent *event)
     }
 
     // Get text
-    resource_values values;
+    tip_resource_values values;
     XtGetApplicationResources(widget, &values, 
-			      subresources, XtNumber(subresources), 
+			      tip_subresources, XtNumber(tip_subresources), 
 			      NULL, 0);
 
+    if (values.tipString == 0)
+	values.tipString = NULL_STRING;
+
     MString text(values.tipString, true);
-    if (text.xmstring() == 0 || text == NO_TIP_STRING)
+    if (text == NULL_STRING || text == NO_STRING)
 	return NoTipText(widget, event);
 
-    if (text.isEmpty())
+    if (text.isNull())
     {
 	if (DefaultTipText != 0)
 	    return DefaultTipText(widget, event);
@@ -203,19 +220,22 @@ static MString get_documentation_string(Widget widget, XEvent *event)
     }
 
     // Get text
-    resource_values values;
+    doc_resource_values values;
     XtGetApplicationResources(widget, &values, 
-			      subresources, XtNumber(subresources), 
+			      doc_subresources, XtNumber(doc_subresources), 
 			      NULL, 0);
 
+    if (values.documentationString == 0)
+	values.documentationString = NULL_STRING;
+
     MString text(values.documentationString, true);
-    if (text.xmstring() == 0)
+    if (text == NULL_STRING)
 	return get_tip_string(widget, event);
 
-    if (text == NO_TIP_STRING)
+    if (text == NO_STRING)
 	return NoDocumentationText(widget, event);
 
-    if (text.isEmpty())
+    if (text.isNull())
     {
 	if (DefaultDocumentationText != 0)
 	    return DefaultDocumentationText(widget, event);
@@ -311,12 +331,12 @@ static MString NoHelpText(Widget widget)
 
 static MString NoTipText(Widget, XEvent *)
 {
-    return MString(0, true);	// Empty string
+    return NULL_STRING;
 }
 
 static MString NoDocumentationText(Widget, XEvent *)
 {
-    return MString(0, true);	// Empty string
+    return NULL_STRING;
 }
 
 static XmTextPosition NoTextPosOfEvent(Widget, XEvent *)
@@ -1024,7 +1044,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 		     CancelTimeOut, XtPointer(*timer));
 
     MString tip = get_tip_string(w, &ti->event);
-    if (tip.xmstring() == 0 || tip.isEmpty())
+    if (tip == NULL_STRING || tip == NO_STRING || tip.isNull())
 	return;
 
     if (tip_shell == 0)
@@ -1051,9 +1071,7 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XtPopdown(tip_shell);
     }
 
-    XtVaSetValues(tip_label,
-		  XmNlabelString, tip.xmstring(),
-		  NULL);
+    XtVaSetValues(tip_label, XmNlabelString, tip.xmstring(), NULL);
 
 
     // Find a possible place for the tip.  Consider the alignment of
@@ -1339,8 +1357,7 @@ static void ClearDocumentation(XtPointer client_data, XtIntervalId *timer)
 	&& (XmIsText(ti->widget) ? text_docs_enabled : button_docs_enabled))
     {
 	// Clear documentation
-	static MString empty(0, true);
-	DisplayDocumentation(empty);
+	DisplayDocumentation(NULL_STRING);
     }
 }
 
@@ -1548,11 +1565,15 @@ static void InstallButtonTipEvents(Widget w, bool install)
 {
     // If neither `tipString' nor `documentationString' resource is
     // specified, don't install handler
-    resource_values values;
-    XtGetApplicationResources(w, &values, 
-			      subresources, XtNumber(subresources), 
+    tip_resource_values tip_values;
+    XtGetApplicationResources(w, &tip_values, 
+			      tip_subresources, XtNumber(tip_subresources), 
 			      NULL, 0);
-    if (values.tipString == 0 && values.documentationString == 0)
+    doc_resource_values doc_values;
+    XtGetApplicationResources(w, &doc_values, 
+			      doc_subresources, XtNumber(doc_subresources), 
+			      NULL, 0);
+    if (tip_values.tipString == 0 && doc_values.documentationString == 0)
 	return;
 
 #if 0
