@@ -193,7 +193,7 @@ static void gdb_set_command(const string& set_command, string value)
 	    gdb_command("set confirm on");
     }
 
-    if (set_command.contains("O ", 0))
+    if (set_command.contains("o ", 0))
     {
 	if (value.contains('\'', 0) && value.contains('\'', -1))
 	    value = unquote(value);
@@ -781,7 +781,7 @@ void process_show(const string& command, string value, bool init)
     value.gsub(gdb_out_ignore, empty);
 
     string set_command = command;
-    if (set_command.contains("O ", 0))
+    if (set_command.contains("o ", 0))
     {
 	// Perl
 	if (set_command.contains('?'))
@@ -1742,8 +1742,8 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    if (value == "N/A")
 		value = "";
 
-	    set_command  = "O " + base;
-	    show_command = "O " + base + "?";
+	    set_command  = "o " + base;
+	    show_command = "o " + base + "?";
 	    doc = base;
 	    break;
 	}
@@ -2296,7 +2296,7 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
     }
 
     case PERL:
-	commands = cached_gdb_question("O");
+	commands = cached_gdb_question("o");
 	break;
     }
 

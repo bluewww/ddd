@@ -174,7 +174,8 @@ void translate_command(string& command)
     case PERL:
 	// PERL only has one-letter commands
         // BASHDB doesn't but it accepts perl's one-letter commands
-	if (command == "run" || command == "R")
+//      if (command == "run" || command == "R")
+	if (command == "run")
 	    command = gdb->run_command(command.after(' '));
 	else if (command == "cont")
 	    command = "c";

@@ -16,6 +16,11 @@ DDD-3.3.9
   against libiberty.  It can be useful to workaround configuration problems.
 - The configure machinery has been updated to conform more closely to the
   autoconf 2.5x requirements.  That should help the Cygwin port.
+- The perl version supported by DDD is now 5.8.x.  The perl debugger
+  changed between perl 5.6.x and perl 5.8.0, which made this update necessary.
+  This change is not backwards-compatible.  If it is not possible to upgrade
+  your perl version to 5.8.x or newer, then you can simply install the file
+  "perl5db.pl" from a recent perl distribution into your old perl tree.
 
 (1) Written by Dmitri Dmitrienko and integrated by Rocky Bernstein.
 
