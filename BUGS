@@ -76,9 +76,6 @@ Volunteers for fixing these and other bugs are welcome!
      to be displayed is an uninitialized pointer.
      [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
 
-046. Line continuations (i.e. GDB commands ended by `\' and continued
-     on the next line) are not handled.
-
 049. The bounding box is computed for all boxes, even if only selected
      boxes are to be printed.
 

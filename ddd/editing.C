@@ -354,6 +354,7 @@ void controlAct(Widget w, XEvent*, String *params, Cardinal *num_params)
 
     gdb_keyboard_command = true;
     _gdb_command(ctrl(params[0]), w);
+    gdb_keyboard_command = true;
 }
 
 void insert_source_argAct   (Widget w, XEvent*, String*, Cardinal*)
@@ -565,15 +566,18 @@ void gdbChangeCB(Widget w, XtPointer, XtPointer)
 
     string input = current_line();
 
+    if (gdb_input_at_prompt)
+	input.gsub("\\\n", "");
+
     int newlines = input.freq('\n');
     string *lines = new string[newlines + 1];
     split(input, lines, newlines, '\n');
 
     private_gdb_input = true;
 
-    if (newlines == 0)
+    if (newlines == 0 || (gdb_input_at_prompt && input.contains('\\', -1)))
     {
-	// Non newline found - line is still incomplete
+	// No newline found - line is still incomplete
 	set_history_from_line(input, true);
     }
     else
