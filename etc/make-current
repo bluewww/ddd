@@ -48,6 +48,7 @@ fi
 
 # Setup environment
 tmpdir=$HOME/tmp/ddd$$
+server="-d:pserver:anonymous@cvs.ddd.sourceforge.net:/cvsroot/ddd"
 
 target=`pwd`
 echo make-current[$$]: start at `date`
@@ -60,7 +61,7 @@ date=$year-$month-$day
 
 if $final; then
   # This is a final release; use the expiration date from the file.
-  eval `cvs checkout "$@" -p ddd/ddd/acinclude.m4 2> /dev/null | \
+  eval `cvs "$server" checkout "$@" -p ddd/ddd/acinclude.m4 2> /dev/null | \
    egrep '^(EXPIRES|VERSION|NICKNAME)='`
   expires=$EXPIRES
   date=$VERSION
@@ -109,7 +110,7 @@ chgrp ddd ddd
 chmod g+s ddd
 
 # Get the DDD development tree out of CVS, expanding RCS keywords.
-cvs checkout -kkv -P "$@" ddd
+cvs "$server" checkout -kkv -P "$@" ddd
 cd ddd
 
 if $final; then
