@@ -208,6 +208,8 @@ void DDDExitCB               (Widget, XtPointer, XtPointer);
 void DDDCloseCB              (Widget, XtPointer, XtPointer);
 void DDDSaveOptionsCB        (Widget, XtPointer, XtPointer);
 
+void HelpOnDebuggingCB       (Widget, XtPointer, XtPointer);
+
 void graphQuickPrintCB       (Widget, XtPointer, XtPointer);
 void graphPrintCB            (Widget, XtPointer, XtPointer);
 
@@ -1146,11 +1148,12 @@ static MMDesc data_menu[] =
 
 static MMDesc help_menu[] = 
 {
-    {"onContext", MMPush, { HelpOnContextCB }},
-    {"onWindow",  MMPush, { HelpOnWindowCB }},
-    {"onHelp",    MMPush, { HelpOnHelpCB }},
-    {"onVersion", MMPush, { HelpOnVersionCB }},
-    {"index",     MMPush, { ManualStringHelpCB, XtPointer(ddd_man_page) }},
+    {"onContext",   MMPush, { HelpOnContextCB }},
+    {"onWindow",    MMPush, { HelpOnWindowCB }},
+    {"onHelp",      MMPush, { HelpOnHelpCB }},
+    {"onVersion",   MMPush, { HelpOnVersionCB }},
+    {"onDebugging", MMPush, { HelpOnDebuggingCB }},
+    {"index",       MMPush, { ManualStringHelpCB, XtPointer(ddd_man_page) }},
     MMEnd
 };
 
@@ -1423,6 +1426,36 @@ string sh_command(string command)
 
 int main(int argc, char *argv[])
 {
+    // FIXING SOME BUGS ON A SUNDAY EVENING
+    // ====================================
+    //
+    // by David A. Lyons (dlyons@apple.com), January 1994
+    // (with apologies to Robert Frost)
+    //
+    // Whose bugs these are I think I know,
+    // But now he works at 3DO;
+    // He will not see me working here
+    // To fix his code and make it go.
+    //
+    // The saner folk must think it queer
+    // To trace without the source code near
+    // After a launch and frozen mouse
+    // The weirdest stack crawl of the year.
+    //
+    // I give my nodding head a shake
+    // To see if I can stay awake
+    // The only other thing to do
+    // Is find some more coffeine to take.
+    //
+    // This bug is pretty hard to nip,
+    // But I have other ones to fix,
+    // And tons to go before we ship,
+    // And tons to go before we ship.
+    //
+    // (Note: Hey, it's fiction.  Close to reality in spirit,
+    // but does not refer to a specific project, bug, Sunday, 
+    // or brand of soft drink.)
+
     // This one is required for error messages
     ddd_invoke_name = argc ? argv[0] : ddd_NAME;
 
@@ -2659,7 +2692,7 @@ Widget file_dialog(Widget w, const string& name,
     }
 
     Widget dialog = 
-	XmCreateFileSelectionDialog(find_shell(w), name, args, arg);
+	XmCreateFileSelectionDialog(w, name, args, arg);
     Delay::register_shell(dialog);
     XtAddCallback(dialog, XmNokCallback,     ok_callback, 0);
     XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
@@ -6927,17 +6960,17 @@ inline String bool_value(bool value)
 
 inline string bool_app_value(const string& name, bool value)
 {
-    return "*" + name + ": " + bool_value(value);
+    return string(DDD_CLASS_NAME) + "*" + name + ": " + bool_value(value);
 }
 
 inline string string_app_value(const string& name, const string& value)
 {
-    return "*" + name + ": " + value;
+    return string(DDD_CLASS_NAME) + "*" + name + ": " + value;
 }
 
 inline string int_app_value(const string& name, int value)
 {
-    return "*" + name + ": " + itostring(value);
+    return string(DDD_CLASS_NAME) + "*" + name + ": " + itostring(value);
 }
 
 string widget_value(Widget w, String name)
@@ -7169,6 +7202,22 @@ void handle_obscure_commands(string& cmd, Widget origin)
 	    }
 	}
     }
+}
+
+void HelpOnDebuggingCB(Widget w, XtPointer, XtPointer)
+{
+    static Widget debugging_poem = 0;
+    if (debugging_poem)
+	XtDestroyWidget(debugging_poem);
+
+    Widget shell = find_shell(w);
+    debugging_poem = 
+	XmCreateMessageDialog(shell, "debugging_poem", NULL, 0);
+    Delay::register_shell(debugging_poem);
+    XtUnmanageChild(XmMessageBoxGetChild 
+		    (debugging_poem, XmDIALOG_CANCEL_BUTTON));
+    XtAddCallback(debugging_poem, XmNhelpCallback, ImmediateHelpCB, NULL);
+    XtManageChild(debugging_poem);
 }
 
     
