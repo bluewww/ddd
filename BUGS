@@ -149,7 +149,7 @@ Volunteers for fixing these and other bugs are welcome!
       as the _current_ values (and non the recorded ones).
 
 322*Finish Plots:
-    - Give a diagnostic when trying to plot non-array data
+    - Give a diagnostic when plot did not succeed
     - Add menu for printing
     - Add menu for line styles
     - Add diagnostics when Gnuplot could not be invoked
@@ -157,7 +157,7 @@ Volunteers for fixing these and other bugs are welcome!
     - Make swallowing (decorating) optional
     - Destroying plotter decorations is risky; better re-use them
 
-328*Finish `Edit' menus in Reference - `()' should be default target.
-    Just pass a text field widget pointer to editing functions.
+329 Something is wrong with selecting clusters as a whole: the title
+    is not copied to `()'.
 
-329 (Insert new bugs here)
+330 (Insert new bugs here)
