@@ -517,10 +517,10 @@ static XtActionsRec actions [] = {
 //-----------------------------------------------------------------------------
 
 struct FileItems {
-    enum FileItem { OpenFile, OpenCore, OpenSource, Dummy1,
-		    Attach, Detach, Dummy2,
-		    Print, PrintAgain, Dummy3,
-		    Make, MakeAgain, Dummy4,
+    enum FileItem { OpenFile, OpenCore, OpenSource, Sep1,
+		    Attach, Detach, Sep2,
+		    Print, PrintAgain, Sep3,
+		    Make, MakeAgain, Sep4,
 		    Close, Restart, Exit
     };
 };
@@ -552,9 +552,10 @@ static MMDesc data_file_menu[]    = FILE_MENU;
 
 
 struct ProgramItems {
-    enum ProgramItem { Run, RunAgain, Dummy1,
-		       Step, Stepi, Next, Nexti, Dummy2,
-		       Cont, Finish, Dummy3,
+    enum ProgramItem { Run, RunAgain, Sep1,
+		       SeparateExecWindow, Sep2,
+		       Step, Stepi, Next, Nexti, Sep3,
+		       Cont, Finish, Sep4,
 		       Kill, Break, Quit
     };
 };
@@ -619,9 +620,9 @@ static MMDesc views_menu[] =
 
 struct EditItems {
     enum EditItem { 
-	Cut, Copy, Paste, Delete, ClearAll, Dummy1, 
-	SelectAll, UnselectAll, Dummy2,
-	Preferences, Settings, Dummy3,
+	Cut, Copy, Paste, Delete, ClearAll, Sep1, 
+	SelectAll, UnselectAll, Sep2,
+	Preferences, Settings, Sep3,
 	SaveOptions 
     };
 };
@@ -650,6 +651,12 @@ static MMDesc command_edit_menu[] = EDIT_MENU(GDBWindow);
 static MMDesc source_edit_menu[]  = EDIT_MENU(SourceWindow);
 static MMDesc data_edit_menu[]    = EDIT_MENU(DataWindow);
 
+static Widget isearch_prev_w;
+static Widget isearch_next_w;
+static Widget isearch_exit_w;
+static Widget complete_w;
+static Widget apply_w;
+
 static MMDesc command_menu[] =
 {
     { "history",  MMPush, { gdbHistoryCB }},
@@ -657,12 +664,12 @@ static MMDesc command_menu[] =
     { "prev",     MMPush, { gdbPrevCB }},
     { "next",     MMPush, { gdbNextCB }},
     MMSep,
-    { "isearch_prev", MMPush, { gdbISearchPrevCB }},
-    { "isearch_next", MMPush, { gdbISearchNextCB }},
-    { "isearch_exit", MMPush, { gdbISearchExitCB }},
+    { "isearch_prev", MMPush, { gdbISearchPrevCB }, NULL, &isearch_prev_w },
+    { "isearch_next", MMPush, { gdbISearchNextCB }, NULL, &isearch_next_w },
+    { "isearch_exit", MMPush, { gdbISearchExitCB }, NULL, &isearch_exit_w },
     MMSep,
-    { "complete", MMPush, { gdbCompleteCB }},
-    { "apply",    MMPush, { gdbApplyCB }},
+    { "complete", MMPush, { gdbCompleteCB }, NULL, &complete_w },
+    { "apply",    MMPush, { gdbApplyCB },    NULL, &apply_w },
     MMSep,
     { "clear_line",   MMPush, { gdbClearCB }},
     { "clear_window", MMPush, { gdbClearWindowCB }},
@@ -672,6 +679,8 @@ static MMDesc command_menu[] =
 static Widget stack_w;
 static Widget registers_w;
 static Widget threads_w;
+static Widget up_w;
+static Widget down_w;
 
 static MMDesc stack_menu[] =
 {
@@ -682,8 +691,10 @@ static MMDesc stack_menu[] =
     { "threads",    MMPush,  { SourceView::ViewThreadsCB },
       NULL, &threads_w },
     MMSep,
-    { "up",         MMPush,  { gdbCommandCB, "up" }},
-    { "down",       MMPush,  { gdbCommandCB, "down" }},
+    { "up",         MMPush,  { gdbCommandCB, "up" },
+      NULL, &up_w },
+    { "down",       MMPush,  { gdbCommandCB, "down" },
+      NULL, &down_w },
     MMEnd
 };
 
@@ -3494,6 +3505,94 @@ static void source_argHP(void *, void *, void *)
 // Handlers
 //-----------------------------------------------------------------------------
 
+// Make DDD menu entries sensitive or insensitive
+static void ReadyCB(XtPointer = 0, XtIntervalId * = 0)
+{
+    bool ready = gdb->isReadyWithPrompt() && emptyCommandQueue();
+
+    set_sensitive(stack_w,        ready);
+    set_sensitive(registers_w,    ready && gdb->type() == GDB);
+    set_sensitive(threads_w,      ready && gdb->type() == GDB);
+    set_sensitive(infos_w,        ready && gdb->type() == GDB);
+    set_sensitive(up_w,           ready);
+    set_sensitive(down_w,         ready);
+    set_sensitive(isearch_prev_w, ready);
+    set_sensitive(isearch_next_w, ready);
+    set_sensitive(isearch_exit_w, ready);
+    set_sensitive(complete_w,     ready && gdb->type() == GDB);
+    set_sensitive(apply_w,        ready);
+
+    set_sensitive(command_edit_menu[EditItems::Settings].widget,
+		  ready && (gdb->type() == GDB || gdb->type() == DBX));
+    set_sensitive(source_edit_menu[EditItems::Settings].widget,
+		  ready && (gdb->type() == GDB || gdb->type() == DBX));
+    set_sensitive(data_edit_menu[EditItems::Settings].widget,
+		  ready && (gdb->type() == GDB || gdb->type() == DBX));
+
+    set_sensitive(command_file_menu[FileItems::OpenFile].widget,  ready);
+    set_sensitive(source_file_menu[FileItems::OpenFile].widget,   ready);
+    set_sensitive(data_file_menu[FileItems::OpenFile].widget,     ready);
+
+    set_sensitive(command_file_menu[FileItems::OpenCore].widget,  ready);
+    set_sensitive(source_file_menu[FileItems::OpenCore].widget,   ready);
+    set_sensitive(data_file_menu[FileItems::OpenCore].widget,     ready);
+
+    set_sensitive(command_file_menu[FileItems::Attach].widget,    ready);
+    set_sensitive(source_file_menu[FileItems::Attach].widget,     ready);
+    set_sensitive(data_file_menu[FileItems::Attach].widget,       ready);
+
+    set_sensitive(command_file_menu[FileItems::Detach].widget,    ready);
+    set_sensitive(source_file_menu[FileItems::Detach].widget,     ready);
+    set_sensitive(data_file_menu[FileItems::Detach].widget,       ready);
+
+    set_sensitive(command_file_menu[FileItems::Make].widget,      ready);
+    set_sensitive(source_file_menu[FileItems::Make].widget,       ready);
+    set_sensitive(data_file_menu[FileItems::Make].widget,         ready);
+
+    set_sensitive(command_file_menu[FileItems::MakeAgain].widget, ready);
+    set_sensitive(source_file_menu[FileItems::MakeAgain].widget,  ready);
+    set_sensitive(data_file_menu[FileItems::MakeAgain].widget,    ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Run].widget, ready);
+    set_sensitive(source_program_menu[ProgramItems::Run].widget,  ready);
+    set_sensitive(data_program_menu[ProgramItems::Run].widget,    ready);
+
+    set_sensitive(command_program_menu[ProgramItems::RunAgain].widget, ready);
+    set_sensitive(source_program_menu[ProgramItems::RunAgain].widget,  ready);
+    set_sensitive(data_program_menu[ProgramItems::RunAgain].widget,    ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Step].widget, ready);
+    set_sensitive(source_program_menu[ProgramItems::Step].widget,  ready);
+    set_sensitive(data_program_menu[ProgramItems::Step].widget,    ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Stepi].widget, ready);
+    set_sensitive(source_program_menu[ProgramItems::Stepi].widget,  ready);
+    set_sensitive(data_program_menu[ProgramItems::Stepi].widget,    ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Next].widget, ready);
+    set_sensitive(source_program_menu[ProgramItems::Next].widget,  ready);
+    set_sensitive(data_program_menu[ProgramItems::Next].widget,    ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Nexti].widget, ready);
+    set_sensitive(source_program_menu[ProgramItems::Nexti].widget,  ready);
+    set_sensitive(data_program_menu[ProgramItems::Nexti].widget,    ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Cont].widget, ready);
+    set_sensitive(source_program_menu[ProgramItems::Cont].widget,  ready);
+    set_sensitive(data_program_menu[ProgramItems::Cont].widget,    ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Finish].widget, ready);
+    set_sensitive(source_program_menu[ProgramItems::Finish].widget,  ready);
+    set_sensitive(data_program_menu[ProgramItems::Finish].widget,    ready);
+
+    set_sensitive(command_program_menu[ProgramItems::Kill].widget, ready);
+    set_sensitive(source_program_menu[ProgramItems::Kill].widget,  ready);
+    set_sensitive(data_program_menu[ProgramItems::Kill].widget,    ready);
+
+    blink(!ready);
+    fix_status_size();
+}
+
 static void gdb_readyHP(Agent *, void *, void *call_data)
 {
     bool gdb_ready = bool(call_data);
@@ -3529,87 +3628,31 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 	ddd_is_exiting = ddd_is_restarting = false;
     }
 
-    set_sensitive(stack_w,     gdb_ready);
-    set_sensitive(registers_w, gdb_ready && gdb->type() == GDB);
-    set_sensitive(threads_w,   gdb_ready && gdb->type() == GDB);
-    set_sensitive(infos_w,     gdb_ready && gdb->type() == GDB);
 
-    set_sensitive(command_edit_menu[EditItems::Settings].widget,
-		  gdb_ready && (gdb->type() == GDB || gdb->type() == DBX));
-    set_sensitive(source_edit_menu[EditItems::Settings].widget,
-		  gdb_ready && (gdb->type() == GDB || gdb->type() == DBX));
-    set_sensitive(data_edit_menu[EditItems::Settings].widget,
-		  gdb_ready && (gdb->type() == GDB || gdb->type() == DBX));
+    // To avoid excessive sensitivity changes, we wait 50ms before
+    // enabling sensitivity.
+    static XtIntervalId ready_timer = 0;
 
-    set_sensitive(command_file_menu[FileItems::OpenFile].widget,  gdb_ready);
-    set_sensitive(source_file_menu[FileItems::OpenFile].widget,   gdb_ready);
-    set_sensitive(data_file_menu[FileItems::OpenFile].widget,     gdb_ready);
+    if (ready_timer != 0)
+    {
+	XtRemoveTimeOut(ready_timer);
+	ready_timer = 0;
+    }
 
-    set_sensitive(command_file_menu[FileItems::OpenCore].widget,  gdb_ready);
-    set_sensitive(source_file_menu[FileItems::OpenCore].widget,   gdb_ready);
-    set_sensitive(data_file_menu[FileItems::OpenCore].widget,     gdb_ready);
-
-    set_sensitive(command_file_menu[FileItems::Attach].widget,    gdb_ready);
-    set_sensitive(source_file_menu[FileItems::Attach].widget,     gdb_ready);
-    set_sensitive(data_file_menu[FileItems::Attach].widget,       gdb_ready);
-
-    set_sensitive(command_file_menu[FileItems::Detach].widget,    gdb_ready);
-    set_sensitive(source_file_menu[FileItems::Detach].widget,     gdb_ready);
-    set_sensitive(data_file_menu[FileItems::Detach].widget,       gdb_ready);
-
-    set_sensitive(command_file_menu[FileItems::Make].widget,      gdb_ready);
-    set_sensitive(source_file_menu[FileItems::Make].widget,       gdb_ready);
-    set_sensitive(data_file_menu[FileItems::Make].widget,         gdb_ready);
-
-    set_sensitive(command_file_menu[FileItems::MakeAgain].widget, gdb_ready);
-    set_sensitive(source_file_menu[FileItems::MakeAgain].widget,  gdb_ready);
-    set_sensitive(data_file_menu[FileItems::MakeAgain].widget,    gdb_ready);
-
-    set_sensitive(command_program_menu[ProgramItems::Run].widget, gdb_ready);
-    set_sensitive(source_program_menu[ProgramItems::Run].widget,  gdb_ready);
-    set_sensitive(data_program_menu[ProgramItems::Run].widget,    gdb_ready);
-
-    set_sensitive(command_program_menu[ProgramItems::RunAgain].widget, 
-		  gdb_ready);
-    set_sensitive(source_program_menu[ProgramItems::RunAgain].widget,
-		  gdb_ready);
-    set_sensitive(data_program_menu[ProgramItems::RunAgain].widget,
-		  gdb_ready);
-
-    set_sensitive(command_program_menu[ProgramItems::Step].widget, gdb_ready);
-    set_sensitive(source_program_menu[ProgramItems::Step].widget,  gdb_ready);
-    set_sensitive(data_program_menu[ProgramItems::Step].widget,    gdb_ready);
-
-    set_sensitive(command_program_menu[ProgramItems::Stepi].widget, gdb_ready);
-    set_sensitive(source_program_menu[ProgramItems::Stepi].widget,  gdb_ready);
-    set_sensitive(data_program_menu[ProgramItems::Stepi].widget,    gdb_ready);
-
-    set_sensitive(command_program_menu[ProgramItems::Next].widget, gdb_ready);
-    set_sensitive(source_program_menu[ProgramItems::Next].widget,  gdb_ready);
-    set_sensitive(data_program_menu[ProgramItems::Next].widget,    gdb_ready);
-
-    set_sensitive(command_program_menu[ProgramItems::Nexti].widget, gdb_ready);
-    set_sensitive(source_program_menu[ProgramItems::Nexti].widget,  gdb_ready);
-    set_sensitive(data_program_menu[ProgramItems::Nexti].widget,    gdb_ready);
-
-    set_sensitive(command_program_menu[ProgramItems::Cont].widget, gdb_ready);
-    set_sensitive(source_program_menu[ProgramItems::Cont].widget,  gdb_ready);
-    set_sensitive(data_program_menu[ProgramItems::Cont].widget,    gdb_ready);
-
-    set_sensitive(command_program_menu[ProgramItems::Finish].widget, 
-		  gdb_ready);
-    set_sensitive(source_program_menu[ProgramItems::Finish].widget,
-		  gdb_ready);
-    set_sensitive(data_program_menu[ProgramItems::Finish].widget,
-		  gdb_ready);
-
-    set_sensitive(command_program_menu[ProgramItems::Kill].widget, gdb_ready);
-    set_sensitive(source_program_menu[ProgramItems::Kill].widget,  gdb_ready);
-    set_sensitive(data_program_menu[ProgramItems::Kill].widget,    gdb_ready);
-
-    blink(!gdb_ready);
-    fix_status_size();
+    bool ready = gdb_ready && emptyCommandQueue();
+    if (!ready)
+    {
+	// Get unready right now
+	ReadyCB();
+    }
+    else
+    {
+	// Get ready in 50ms
+	ready_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w),
+				      50, ReadyCB, 0);
+    }
 }
+
 
 
 //-----------------------------------------------------------------------------
@@ -3900,6 +3943,7 @@ static void gdbPasteClipboardCB(Widget, XtPointer client_data, XtPointer)
 
     case GDBWindow:
     case CommonWindow:
+    case DataWindow:
 	XmTextPaste(gdb_w);
 	break;
 
@@ -3908,7 +3952,6 @@ static void gdbPasteClipboardCB(Widget, XtPointer client_data, XtPointer)
 	break;
 
     default:
-	// Cannot paste into data window
 	// Cannot paste into exec window
 	break;
     }
