@@ -152,6 +152,7 @@ private:
     bool _has_pwd_command;
     bool _has_setenv_command;
     bool _has_edit_command;
+    bool _has_make_command;
     bool _has_named_values;
     bool _has_when_command;
     bool _has_when_semicolon;
@@ -284,6 +285,10 @@ public:
     bool has_edit_command() const      { return _has_edit_command; }
     bool has_edit_command(bool val)    { return _has_edit_command = val; }
 
+    // True if debugger has `make' command
+    bool has_make_command() const      { return _has_make_command; }
+    bool has_make_command(bool val)    { return _has_make_command = val; }
+
     // True if debugger issues `NAME = VALUE' upon `print' commands
     bool has_named_values() const      { return _has_named_values; }
     bool has_named_values(bool val)    { return _has_named_values = val; }
@@ -328,6 +333,8 @@ public:
     // GDB: "print EXPR".  If INTERNAL is set, avoid side effects
     // (such as setting the value history in GDB).
     string print_command(string expr = "", bool internal = true) const; 
+    // GDB: "set variable VAR = EXPR"
+    string assign_command(string var, string expr) const;
 
     string display_command(string expr = "") const; // GDB: "display EXPR"
     string where_command() const;	            // GDB: "where "
@@ -340,9 +347,7 @@ public:
     string info_locals_command() const;	            // GDB: "info locals"
     string info_args_command() const;	            // GDB: "info args"
     string disassemble_command(string pc) const;    // GDB: "disassemble PC"
-
-    // Usually "set variable VAR = EXPR"
-    string assign_command(string var, string expr) const;
+    string make_command(string target) const;       // GDB: "make TARGET"
 
 private:
     bool questions_waiting;

@@ -53,77 +53,101 @@ char args_rcsid[] =
 #include <ctype.h>
 
 //-----------------------------------------------------------------------------
-// Run and Argument Dialog
+// Run and Make Dialogs
 //-----------------------------------------------------------------------------
 
 // Argument storage
-static StringArray gdb_arguments;
-static Widget gdb_arguments_w;
-
-static bool arguments_updated = false;
-static string last_arguments;
-
-// GDB run dialog
 static Widget run_dialog;
+static Widget run_arguments_w;
+static StringArray run_arguments;
+static string last_run_argument;
+static bool run_arguments_updated = false;
+
+static Widget make_dialog;
+static StringArray make_arguments;
+static Widget make_arguments_w;
+static bool make_arguments_updated = false;
+static string last_make_argument;
 
 // Update list of arguments
-void update_arguments()
+static void update_arguments(Widget dialog, Widget arguments_w,
+			     StringArray& arguments, string& last,
+			     bool& updated)
 {
-    if (arguments_updated || run_dialog == 0)
+    if (updated || dialog == 0)
 	return;
 
-    bool *selected = new bool[gdb_arguments.size()];
+    bool *selected = new bool[arguments.size()];
     int pos = -1;
-    for (int i = 0; i < gdb_arguments.size(); i++)
+    for (int i = 0; i < arguments.size(); i++)
     {
-	if (gdb_arguments[i] == last_arguments)
+	if (arguments[i] == last)
 	    pos = i;
 	selected[i] = false;
     }
     if (pos >= 0)
 	selected[pos] = true;
 
-    setLabelList(gdb_arguments_w, gdb_arguments.values(),
-		 selected, gdb_arguments.size(), false, false);
+    setLabelList(arguments_w, arguments.values(),
+		 selected, arguments.size(), false, false);
 
     if (pos >= 0)
-	XmListSelectPos(gdb_arguments_w, pos + 1, False);
+	XmListSelectPos(arguments_w, pos + 1, False);
 
     delete[] selected;
 
-    Widget text_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text_w, (String)last_arguments);
+    Widget text_w = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
+    XmTextSetString(text_w, (String)last);
 
-    arguments_updated = true;
+    updated = true;
+}
+
+void update_run_arguments()
+{
+    update_arguments(run_dialog, run_arguments_w, run_arguments,
+		     last_run_argument, run_arguments_updated);
+}
+
+void update_make_arguments()
+{
+    update_arguments(make_dialog, make_arguments_w, make_arguments,
+		     last_make_argument, make_arguments_updated);
+}
+
+void update_arguments()
+{
+    update_run_arguments();
+    update_make_arguments();
 }
 
 // Add ARG to the list of arguments
-static void add_argument(string arg)
+static void add_argument(string arg, StringArray& arguments, 
+			 string& last, bool& updated)
 {
     strip_final_blanks(arg);
     while (arg.length() > 0 && isspace(arg[0]))
 	arg = arg.after(0);
 
-    last_arguments = arg;
+    last = arg;
 
     // Insertion sort
     int i;
-    for (i = 0; i < gdb_arguments.size(); i++)
+    for (i = 0; i < arguments.size(); i++)
     {
-	int cmp = compare(gdb_arguments[i], arg);
+	int cmp = compare(arguments[i], arg);
 	if (cmp == 0)
 	    return;		// Already present
 	if (cmp > 0)
 	    break;
     }
 
-    gdb_arguments += "<dummy>";
+    arguments += "<dummy>";
 
-    for (int j = gdb_arguments.size() - 1; j > i; j--)
-	gdb_arguments[j] = gdb_arguments[j - 1];
-    gdb_arguments[i] = arg;
+    for (int j = arguments.size() - 1; j > i; j--)
+	arguments[j] = arguments[j - 1];
+    arguments[i] = arg;
 
-    arguments_updated = false;
+    updated = false;
 }
 
 // If LINE is an argument-setting command, add it to the list of arguments
@@ -133,12 +157,21 @@ void add_to_arguments(string line)
     {
 	string args = line.after("args");
 	args = args.after(rxwhite);
-	add_argument(args);
+	add_argument(args, run_arguments, last_run_argument, 
+		     run_arguments_updated);
     }
     else if (is_run_cmd(line))
     {
 	string args = line.after(rxwhite);
-	add_argument(args);
+	add_argument(args, run_arguments, last_run_argument, 
+		     run_arguments_updated);
+    }
+    else if (is_make_cmd(line))
+    {
+	string args = line.after("make");
+	args = args.after(rxwhite);
+	add_argument(args, make_arguments, last_make_argument, 
+		     make_arguments_updated);
     }
 }
 
@@ -175,11 +208,11 @@ static void gdbRunDCB(Widget, XtPointer, XtPointer)
 }
 
 // Set program arguments from list
-static void SelectArgsCB(Widget, XtPointer, XtPointer call_data)
+static void SelectRunArgsCB(Widget, XtPointer, XtPointer call_data)
 {
     XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
     int pos = cbs->item_position - 1;
-    const string& args = gdb_arguments[pos];
+    const string& args = run_arguments[pos];
     
     Widget text_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
     XmTextSetString(text_w, (String)args);
@@ -197,29 +230,81 @@ void gdbRunCB(Widget w, XtPointer, XtPointer)
 	    verify(XmCreateSelectionDialog(w, "run_dialog", args, arg));
 
 	Delay::register_shell(run_dialog);
-	XtAddCallback(run_dialog, XmNokCallback, gdbRunDCB, 0);
-	XtAddCallback(run_dialog, XmNapplyCallback, gdbRunDCB, 0);
-	XtAddCallback(run_dialog, XmNhelpCallback,  ImmediateHelpCB, 0);
+	XtAddCallback(run_dialog, XmNokCallback,     gdbRunDCB, 0);
+	XtAddCallback(run_dialog, XmNapplyCallback,  gdbRunDCB, 0);
+	XtAddCallback(run_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
 
-#if 0
-	Widget apply_w = XmSelectionBoxGetChild(run_dialog, 
-						XmDIALOG_APPLY_BUTTON);
-	XtVaSetValues(run_dialog,
-		      XmNdefaultButton, apply_w,
-		      NULL);
-#endif
-
-	gdb_arguments_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_LIST);
-	XtAddCallback(gdb_arguments_w, XmNsingleSelectionCallback,
-		      SelectArgsCB, 0);
-	XtAddCallback(gdb_arguments_w, XmNmultipleSelectionCallback,
-		      SelectArgsCB, 0);
-	XtAddCallback(gdb_arguments_w, XmNextendedSelectionCallback,
-		      SelectArgsCB, 0);
-	XtAddCallback(gdb_arguments_w, XmNbrowseSelectionCallback,
-		      SelectArgsCB, 0);
+	run_arguments_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_LIST);
+	XtAddCallback(run_arguments_w, XmNsingleSelectionCallback,
+		      SelectRunArgsCB, 0);
+	XtAddCallback(run_arguments_w, XmNmultipleSelectionCallback,
+		      SelectRunArgsCB, 0);
+	XtAddCallback(run_arguments_w, XmNextendedSelectionCallback,
+		      SelectRunArgsCB, 0);
+	XtAddCallback(run_arguments_w, XmNbrowseSelectionCallback,
+		      SelectRunArgsCB, 0);
     }
 
-    update_arguments();
+    update_run_arguments();
     XtManageChild(run_dialog);
+}
+
+
+// Set program arguments from list
+static void SelectMakeArgsCB(Widget, XtPointer, XtPointer call_data)
+{
+    XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
+    int pos = cbs->item_position - 1;
+    const string& args = make_arguments[pos];
+    
+    Widget text_w = XmSelectionBoxGetChild(make_dialog, XmDIALOG_TEXT);
+    XmTextSetString(text_w, (String)args);
+}
+
+// Make program with given arguments
+static void gdbMakeDCB(Widget, XtPointer, XtPointer)
+{
+    Widget text = XmSelectionBoxGetChild(make_dialog, XmDIALOG_TEXT);
+    String _args = XmTextGetString(text);
+    string args(_args);
+    XtFree(_args);
+
+    gdb_command(gdb->make_command(args));
+}
+
+void gdbMakeAgainCB(Widget, XtPointer, XtPointer)
+{
+    gdb_command(gdb->make_command(last_make_argument));
+}
+    
+
+// Create `Make' dialog
+void gdbMakeCB(Widget w, XtPointer, XtPointer)
+{
+    if (make_dialog == 0)
+    {
+	Arg args[10];
+	int arg = 0;
+
+	make_dialog = 
+	    verify(XmCreateSelectionDialog(w, "make_dialog", args, arg));
+
+	Delay::register_shell(make_dialog);
+	XtAddCallback(make_dialog, XmNokCallback,     gdbMakeDCB, 0);
+	XtAddCallback(make_dialog, XmNapplyCallback,  gdbMakeDCB, 0);
+	XtAddCallback(make_dialog, XmNhelpCallback,   ImmediateHelpCB, 0);
+
+	make_arguments_w = XmSelectionBoxGetChild(make_dialog, XmDIALOG_LIST);
+	XtAddCallback(make_arguments_w, XmNsingleSelectionCallback,
+		      SelectMakeArgsCB, 0);
+	XtAddCallback(make_arguments_w, XmNmultipleSelectionCallback,
+		      SelectMakeArgsCB, 0);
+	XtAddCallback(make_arguments_w, XmNextendedSelectionCallback,
+		      SelectMakeArgsCB, 0);
+	XtAddCallback(make_arguments_w, XmNbrowseSelectionCallback,
+		      SelectMakeArgsCB, 0);
+    }
+
+    update_make_arguments();
+    XtManageChild(make_dialog);
 }

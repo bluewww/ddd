@@ -285,6 +285,15 @@ bool is_cd_cmd (const string& cmd)
 
 // ***************************************************************************
 // 
+bool is_make_cmd (const string& cmd)
+{
+    static regex RXmake_cmd("[ \t]*(sh[ \t]+|!)?make([ \t]+.*)?");
+
+    return cmd.matches(RXmake_cmd);
+}
+
+// ***************************************************************************
+// 
 string get_display_expression (const string& display_cmd)
 {
     static regex RXdisplay_cmd("[ \t]*(disp|displ|displa|display)[ \t]+");

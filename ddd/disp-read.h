@@ -94,6 +94,9 @@ bool is_lookup_cmd(const string& cmd);
 // True if CMD changes the current directory
 bool is_cd_cmd(const string& cmd);
 
+// True if CMD is a make command
+bool is_make_cmd(const string& cmd);
+
 // True if CMD is an internal graph command.
 bool is_graph_cmd(const string& cmd);
 

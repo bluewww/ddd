@@ -140,6 +140,7 @@ typedef struct PlusCmdData {
     bool     config_pwd;	       // try 'pwd'
     bool     config_setenv;	       // try 'help setenv'
     bool     config_edit;	       // try 'help edit'
+    bool     config_make;	       // try 'help make'
     bool     config_named_values;      // try 'print "ddd"'
     bool     config_when_semicolon;    // try 'help when'
     bool     config_delete_comma;      // try 'delete 4711 4712'
@@ -182,6 +183,7 @@ typedef struct PlusCmdData {
 	config_pwd(false),
 	config_setenv(false),
 	config_edit(false),
+	config_make(false),
 	config_named_values(false),
 	config_when_semicolon(false),
 	config_delete_comma(false),
@@ -285,6 +287,8 @@ void start_gdb()
 	plus_cmd_data->config_setenv = true;
 	cmds += "help edit";
 	plus_cmd_data->config_edit = true;
+	cmds += "help make";
+	plus_cmd_data->config_make = true;
 	cmds += "print \"" DDD_NAME "\"";
 	plus_cmd_data->config_named_values = true;
 	cmds += "help when";
@@ -670,6 +674,7 @@ void user_cmdSUC (string cmd, Widget origin)
     assert(!plus_cmd_data->config_pwd);
     assert(!plus_cmd_data->config_setenv);
     assert(!plus_cmd_data->config_edit);
+    assert(!plus_cmd_data->config_make);
     assert(!plus_cmd_data->config_named_values);
     assert(!plus_cmd_data->config_when_semicolon);
     assert(!plus_cmd_data->config_delete_comma);
@@ -1097,6 +1102,11 @@ static void process_config_edit(string& answer)
     gdb->has_edit_command(is_known_command(answer));
 }
 
+static void process_config_make(string& answer)
+{
+    gdb->has_make_command(is_known_command(answer));
+}
+
 static void process_config_named_values(string& answer)
 {
     gdb->has_named_values(answer.contains(" = "));
@@ -1241,6 +1251,11 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->config_edit) {
 	assert (qu_count < count);
 	process_config_edit(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_make) {
+	assert (qu_count < count);
+	process_config_make(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_named_values) {
