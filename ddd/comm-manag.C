@@ -941,7 +941,7 @@ void send_gdb_command(string cmd, Widget origin,
     if (gdb->type() != GDB && gdb->type() != JDB)
 	plus_cmd_data->refresh_threads = false;
 
-    if (gdb->type == GDB && cmd_data->pos_buffer != 0)
+    if (gdb->type() == GDB && cmd_data->pos_buffer != 0)
     {
 	// Filtering GDB output for current function and PC is rather
 	// expensive.  Hence, we scan GDB output only if actually
