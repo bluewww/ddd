@@ -1005,7 +1005,7 @@ XtResource ddd_resources[] = {
 	sizeof(int),
 	XtOffsetOf(AppData, startup_tip_count),
 	XtRImmediate,
-	XtPointer(0)
+	XtPointer(1)
     },
 
     {

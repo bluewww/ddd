@@ -77,6 +77,11 @@ inline string session_log_file()
     return session_file(DEFAULT_SESSION, "log");
 }
 
+inline string session_tips_file()
+{
+    return session_file(DEFAULT_SESSION, "tips");
+}
+
 // Create session directory for SESSION; leave messages in MSG
 void create_session_dir(const string& session, ostream& msg);
 

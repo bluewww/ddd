@@ -52,76 +52,74 @@ Welcome to DDD!
 You can get help on all items by pointing at them and pressing F1.
 And don't worry, there is the LBL(Help) menu with much more information...
 
-Buttons with a small riangle in the upper right corner are special:
-pressing and holding BUTTON(3) on them will show up a menu with
-additional options.
+Buttons with a small triangle in the upper right corner are special:
+pressing and holding BUTTON(1) on them will pop up a menu 
+with additional options.
 
 There are three ways to show the value of a variable:
 ITEM You can view its value, simply by pointing at it;
 ITEM You can print its value in the debugger console, using LBL(Print ());
-ITEM You can display it graphically, using LBL(Display()).
+ITEM You can display it graphically, using LBL(Display ()).
 
-You can press BUTTON(3) on variables, breakpoints, and displays
-to manipulate them directly.
+A quick way to manipulate variables, breakpoints, and displays
+is to press BUTTON(3) on them.
+
+The difference between LBL(OK) and LBL(Apply) is that 
+LBL(OK) pops down the dialog, while LBL(Apply) does not.
 
 To quickly dereference pointers in the data display,
 double-click on them.
-
-The difference between LBL(OK) and LBL(Apply) is that LBL(OK) pops
-down the dialog, while LBL(Apply) does not.
 
 
 ! Intermediate tips.
 
 When using GDB, all text fields have command and argument completion
-with KEY(Tab), just like the shell.  In a file selection box, type
-part of a filename, hit KEY(Tab), and voila!  It's completed.
+with KEY(Tab), just like the shell.  In a file selection box, type part of a filename,
+hit KEY(Tab), and voila!  It's completed.
 
-Here's how to display a variable-length array.  To display the first
-VAR(n) elements of a C or C++ array VAR(ptr), enter KBD(graph display
-VAR(ptr)[0]@VAR(n)) at the GDB prompt.
+To display a variable-length array in GDB, enter 
+KBD(graph display VAR(ptr)\1330\135@ VAR(n)) at the GDB prompt.
+This displays VAR(n) elements of a C or C++ array VAR(ptr).
 
-To scroll the data display, most users find a panner much more
-convenient than two scrollbars.  If it works for you, check out
-LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Data is scrolled).
+To scroll the data display, most users find a EMPH(panner)
+much more convenient than two scrollbars.
+Check out LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Data Scrolling).
 
-To limit the number of array elements in a data display, select
-LBL(Edit) | LBL(GDB Settings) and set LBL(Limit on string chars or
-array elements to print).
+To limit the number of array elements in a data display, set
+LBL(Edit) | LBL(GDB Settings) | LBL(Limit on array elements to print).
 
 If DDD cannot find a source, don't use LBL(File) | LBL(Open Source).
 Instead, set the @GDB@ source path via LBL(Edit) | LBL(@GDB@ Settings).
 
-To see the EMPH(actual) type of a C++ object in GDB, enable
-LBL(Set printing of object's derived type based on vtable info)
-in the GDB settings (LBL(Edit) | LBL(GDB Settings)).
+To see the EMPH(actual) type of a C++ object in GDB, set
+LBL(Edit) | LBL(GDB Settings) | LBL(Set printing of object's derived type).
 
 To display VAR(data) in hexadecimal format, display it and choose
-LBL(Convert to Hex) from the LBL(New Display) menu, or enter 
-KBD(graph display /x VAR(data)) at the GDB prompt.
+LBL(Convert to Hex) from the LBL(Display ()) menu, 
+or enter KBD(graph display /x VAR(data)) at the GDB prompt.
 
 To send a signal to the debuggee, use the GDB SAMP(signal) command.
 For instance, to continue execution with an interrupt signal, use
 KBD(signal SIGINT) or KBD(signal 2) at the GDB prompt.
 
-You can repeat the last command by hitting KEY_RETURN in the @GDB@ console.
-With KEY(Ctrl+R) and KEY(Ctrl+S), you can search the command history.
+You can repeat the last command by hitting KEY_RETURN.
+Use KEY(Ctrl+R) and KEY(Ctrl+S) to search the command history.
+
+You can save space by disabling toolbar captions.
+See LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Toolbar Appearance).
 
 In GCC, SAMP(-Wall) does not enable all warnings.  See the GCC
 documentation for other warnings you might consider useful.
-BY(J.H.M. Dassen, jdassen@wi.leidenuniv.nl)
+BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
 
 To get a global idea of what a process or program does or is doing,
 use a system call tracer, like SAMP(strace), SAMP(truss), or SAMP(trace).
-BY(J.H.M. Dassen, jdassen@wi.leidenuniv.nl)
+BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
 
 To have GDB start your program automatically upon startup,
 put the following lines in your FILE(.gdbinit) file:
-CODE(        break main)  - or some other initial function
-CODE(        run       )  - possibly giving arguments here
-
-You can save space by disabling toolbar captions.
-See LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Captions).
+CODE(break main)      - or some other initial function
+CODE(run       )      - possibly giving arguments here
 
 
 ! Advanced tips.
@@ -137,20 +135,20 @@ To stop this debugging session and resume later, use
 LBL(File) | LBL(Save Session).
 
 To debug a child process, put a call to SAMP(sleep) in the child right
-after the SAMP(fork) call.  Run the program and use LBL(File) |
-LBL(Attach to Process) to attach to the child process.
+after the SAMP(fork) call.  Run the program and attach to the child process
+using LBL(File) | LBL(Attach to Process).
 
 If you suspect memory corruption caused by problematic pointers, try
-linking with Electric Fence (SAMP(efence)) or the SAMP(dbmalloc) library
+linking with Electric Fence SAMP(efence) or the SAMP(dbmalloc) library
 (URL(http://www.cs.colorado.edu/homes/zorn/public_html/MallocDebug.html)).
-BY(J.H.M. Dassen, jdassen@wi.leidenuniv.nl)
+BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
 
-Prevention is better than cure.  Document your assumptions using
-CODE(<assert.h>) or GNU NANA 
-(URL(http://wattle.cs.ntu.edu.au/homepages/pjm/nana-home/)).
-BY(J.H.M. Dassen, jdassen@wi.leidenuniv.nl)
+Prevention is better than cure.  Document your assumptions using CODE(<assert.h>) 
+or GNU NANA (URL(http://wattle.cs.ntu.edu.au/homepages/pjm/nana-home/)).
+BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
 
-You can define your own DDD buttons via LBL(Commands) | LBL(Edit Buttons).
+To execute frequently used commands with one mouse click,
+define your own DDD buttons via LBL(Commands) | LBL(Edit Buttons).
 
 The debugger isn't a substitute for good thinking.  But, in some
 cases, thinking isn't a substitute for a good debugger either.  The
@@ -162,9 +160,19 @@ interrupting it while the mouse pointer is grabbed (frozen).  To
 prevent this, set LBL(Edit) | LBL(Preferences) | LBL(General) |
 LBL(Ungrab mouse pointer when interrupting modal X application).
 
-A simple way to resume a saved DDD VAR(session) is KBD(ddd =VAR(session)).
+You can easily resume a saved DDD VAR(session)
+by invoking DDD as KBD([ddd] =VAR(session)).
 
 When you're totally stuck, try to find a helpful ear.  In my experience,
 nothing helps you more in debugging than to try to explain your problem
 (what your code should do, and what it actually does) to someone else.
-BY(J.H.M. Dassen, jdassen@wi.leidenuniv.nl)
+BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
+
+Do you have any more DDD tips of the day?
+Send suggestions to EMAIL(ddd@ ips.cs.tu-bs.de).
+
+! If you have other questions, comments or suggestions, contact The King
+! via electronic mail to EMAIL(elvis@ graceland.gnu.ai.mit.edu).  The King will
+! try to help you out, although he may not have time to fix your problems.
+! QUOTE(Free Software Foundation, GNU Hello Manual)
+

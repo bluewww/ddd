@@ -2909,13 +2909,6 @@ causes all other \s-2@DDD@\s+2 windows to (un)iconify as well.
 Default is `\fBfalse\fR', meaning that each \s-2@DDD@\s+2 window can
 be iconified on its own.
 .TP
-.B "uniconifyWhenReady (\fPclass\fB UniconifyWhenReady)"
-If this is `\fBtrue\fR' (default), the \s-2@DDD@\s+2 windows are
-uniconified automatically whenever \s-2GDB\s+2 becomes ready.  This
-way, you can iconify \s-2@DDD@\s+2 during some longer operation and
-have it uniconify itself as soon as the program stops.  Setting this
-to `\fBfalse\fR' leaves the \s-2@DDD@\s+2 windows iconified.
-.TP
 .B "saveHistoryOnExit (\fPclass\fB SaveHistoryOnExit)"
 If `\fBtrue\fR' (default), the command history is automatically saved
 when \s-2@DDD@\s+2 exits.
@@ -2933,11 +2926,22 @@ Note: if \s-2@DDD@\s+2 runs on a monochrome display, or if
 \s-2@DDD@\s+2 was compiled without the \s-2XPM\s+2 library, only the
 monochrome version (`\fBm\fR') can be shown.
 .TP
+.B "startupTips (\fPclass\fB StartupTips)"
+Whether a tip of the day is to be shown at startup (`\fBtrue\fR',
+default) or not (`\fBfalse\fR').
+.TP
+.B "startupTipCount (\fPclass\fB StartupTipCount)"
+The number \fIn\fR of the tip of the day to be shown at startup.  See
+also the `\fBtip\fIn\fR' resources.
+.TP
 .B "suppressWarnings (\fPclass\fB SuppressWarnings)"
 If `\fBtrue\fR', X warnings are suppressed.  This is
 sometimes useful for executables that were built on a machine with a
 different X or Motif configuration.  By default, this is
 `\fBfalse\fR'.
+.TP
+.B "tip\fIn\fR (\fPclass\fB Tip)"
+The tip of the day numbered \fIn\fR (a string).
 .TP
 .B "ungrabMousePointer (\fPclass\fB UngrabMousePointer)"
 When debugging a modal X application, \s-2@DDD@\s+2 may interrupt it
@@ -2947,6 +2951,13 @@ each interaction whether the pointer is grabbed.  If this is so,
 \s-2@DDD@\s+2 will instruct the debugged program to ungrab the mouse
 pointer.  The default setting is `\fBfalse\fR', since this feature is
 known to interfere with some Motif versions (popup menus won't work).
+.TP
+.B "uniconifyWhenReady (\fPclass\fB UniconifyWhenReady)"
+If this is `\fBtrue\fR' (default), the \s-2@DDD@\s+2 windows are
+uniconified automatically whenever \s-2GDB\s+2 becomes ready.  This
+way, you can iconify \s-2@DDD@\s+2 during some longer operation and
+have it uniconify itself as soon as the program stops.  Setting this
+to `\fBfalse\fR' leaves the \s-2@DDD@\s+2 windows iconified.
 .TP
 .B "valueTips (\fPclass\fB Tips)"
 Whether value tips are enabled (`\fBtrue\fR', default) or not
@@ -4735,6 +4746,9 @@ inferior debugger.
 .B $HOME/.@ddd@/sessions/.@ddd@/
 The \s-2@DDD@\s+2 `restart' session.
 .TP
+.B $HOME/.@ddd@/tips
+\s-2@DDD@\s+2 tips resource file.  Contains the current tips counter.
+.TP
 .B $HOME/.gdbinit
 \s-2GDB\s+2 initialization file.
 .TP
@@ -5320,8 +5334,8 @@ May, 1997
 November, 1997
 \s-2@DDD@\s+2 2.2: Persistent sessions, display shortcuts.
 .TP
-May, 1998
-\s-2@DDD@\s+2 3.0: Java and \s-2JDB\s+2 support, watchpoints.
+June, 1998
+\s-2@DDD@\s+2 3.0: Button images, Java support, \s-2JDB\s+2 support.
 .PD
 .\"
 .\"

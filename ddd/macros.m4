@@ -43,6 +43,7 @@ undefine([builtin])dnl
 undefine([eval])dnl
 undefine([file])dnl
 undefine([format])dnl
+undefine([gnu])dnl
 undefine([include])dnl
 undefine([index])dnl
 undefine([line])dnl
@@ -116,10 +117,10 @@ dnl SUBITEM issues a dash.
 define([SUBITEM], [@tt - @rm])dnl
 dnl
 dnl QUOTE(AUTHOR, WORK) quotes a tip
-define([QUOTE], [        -- EMPH($1), $2])dnl
+define([QUOTE], [\n        - EMPH($1), $2])dnl
 dnl
 dnl BY(AUTHOR, E-MAIL) is an alternative
-define([BY],    [        -- EMPH($1) EMAIL($2)])dnl
+define([BY],    [\n        - EMPH($1) EMAIL($2)])dnl
 dnl
 dnl Constants
 dnl ---------

@@ -239,6 +239,7 @@ char ddd_rcsid[] =
 #include "status.h"
 #include "strclass.h"
 #include "string-fun.h"
+#include "tips.h"
 #include "toolbar.h"
 #include "ungrab.h"
 #include "verify.h"
@@ -1142,6 +1143,7 @@ static MMDesc help_menu[] =
     {"onWindow",    MMPush, { HelpOnWindowCB }},
     MMSep,
     {"whatNext",    MMPush, { WhatNextCB }},
+    {"tipOfTheDay", MMPush, { TipOfTheDayCB }},
     MMSep,
     {"dddManual",   MMPush, { DDDManualCB }},
     {"news",        MMPush, { DDDNewsCB }},
@@ -1476,6 +1478,12 @@ int main(int argc, char *argv[])
 	GetFileDatabase(session_state_file(DEFAULT_SESSION));
     if (dddinit == 0)
 	dddinit = XrmGetStringDatabase("");
+
+    // Read ~/.ddd/tips resources
+    XrmDatabase dddtips =
+	GetFileDatabase(session_tips_file());
+    if (dddtips != 0)
+	XrmMergeDatabases(dddtips, &dddinit);
 
     // Let command-line arguments override ~/.ddd/init
     XrmParseCommand(&dddinit, options, XtNumber(options), 
@@ -2571,6 +2579,9 @@ static void ddd_check_version()
 
 	post_warning(string(msg), "expired_warning");
     }
+
+    if (app_data.startup_tips)
+	TipOfTheDayCB(gdb_w);
 }
 
 // Read in database from FILENAME.  Upon version mismatch, ignore some

@@ -2609,6 +2609,7 @@ DESC(On Item...,   [give help on the current item])\n\
 DESC(On Window..., [help on the application itself])\n\
 \n\
 DESC(What Now?..., [give help on what to do now])\n\
+DESC(Tip of the Day..., [give a useful tip on DDD usage])\n\
 \n\
 DESC([[DDD]] Reference..., [the DDD on-line manual])\n\
 DESC([[DDD]] News..., [what's new in DDD])\n\
@@ -2661,6 +2662,11 @@ Ddd*helpMenu.whatNext.accelerator:		~Shift Ctrl<Key>HELP_KEY
 Ddd*helpMenu.whatNext.acceleratorText:		Ctrl+HELP_KEY
 Ddd*helpMenu.whatNext.documentationString:	\
 @rm Explain the current situation and suggest what to do next
+
+Ddd*helpMenu.tipOfTheDay.labelString:		Tip of the Day...
+Ddd*helpMenu.tipOfTheDay.mnemonic:		T
+Ddd*helpMenu.tipOfTheDay.documentationString:	\
+@rm Give a useful tip on DDD usage
 
 Ddd*helpMenu.dddManual.labelString:		DDD Reference...
 Ddd*helpMenu.dddManual.mnemonic:		R
@@ -5714,5 +5720,12 @@ ITEM Use the functions of the LBL(Program) menu to resume execution\n\
 ! Startup tips
 !-----------------------------------------------------------------------------
 
+Ddd*tip_dialog_popup.title: 		DDD Tip of the Day
+Ddd*tip_dialog*helpString:	\
+@rm This is the DDD tip of the day.
+Ddd*tip_dialog.okLabelString:		Prev Tip
+Ddd*tip_dialog.cancelLabelString:	Next Tip
+Ddd*tip_dialog.helpLabelString: 	Close
+Ddd*tip_dialog.symbolPixmap: 		ddd
 
 dnl Tips will be appended here

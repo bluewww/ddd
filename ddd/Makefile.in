@@ -754,6 +754,7 @@ DDD_OBJECTS = \
 	source.o     \
 	status.o     \
 	string-fun.o \
+	tips.o       \
 	toolbar.o    \
 	ungrab.o     \
 	value-read.o \

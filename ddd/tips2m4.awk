@@ -52,7 +52,7 @@ seen && !intip && $0 ~ "^$" { print; next }
 
 # Start a tip
 !intip && !($0 ~ "^$") {
-    printf "Ddd*tips%d: \\\n%s", tips, $0;
+    printf "Ddd*tip%d: \\\n@rm %s", tips, $0;
     tips++;
     intip = 1; seen = 1;
     next }
