@@ -5733,13 +5733,16 @@ void SourceView::process_threads(string& threads_output)
 	for (int i = 0; i < count; i++)
 	{
 	    selected[i] = false;
-	    string item = thread_list[i];
+	    string& item = thread_list[i];
 
 	    if (item.contains("Group ", 0))
 	    {
+		// Format is: `Group THREADGROUP:'
+
 		if (current_threadgroup != "")
 		{
-		    current_threadgroup = "system"; // Multiple threadgroups
+		    // Multiple threadgroups are shown
+		    current_threadgroup = "system";
 		}
 		else
 		{
@@ -5750,12 +5753,40 @@ void SourceView::process_threads(string& threads_output)
 	    }
 	    else
 	    {
-		string thread = item.after("0x");
-		thread = thread.after(" ");
-		read_leading_blanks(thread);
+		// Format is: ` NUMBER. (CLASS)ADDRESS NAME STATE'
 
-		if (thread.contains(current_thread + " ", 0))
-		    selected[i] = true;
+		int addr_index = item.index("(");
+		if (addr_index < 0)
+		    addr_index = item.index("0x");
+
+		if (addr_index >= 0)
+		{
+		    // If is the current thread, select it
+		    string thread = item.after("(");
+		    thread = thread.after(" ");
+		    read_leading_blanks(thread);
+
+		    if (thread.contains(current_thread + " ", 0))
+			selected[i] = true;
+
+		    // Leave only ` NUMBER. NAME STATE'
+		    int info_index = addr_index;
+		    while (info_index < int(item.length()) &&
+			   item[info_index] != ' ')
+			info_index++;
+		    while (info_index < int(item.length()) &&
+			   item[info_index] == ' ')
+			info_index++;
+		    item = item.before(addr_index) + item.from(info_index);
+
+		    // Give more verbose output on system threads
+		    if (item.contains("runni", -1))
+			item += "ng";
+		    else if (item.contains("suspe", -1))
+			item += "nded";
+		    else if (item.contains("cond.", -1))
+			item += " waiting";
+		}
 	    }
 	}
 	break;
