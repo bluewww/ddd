@@ -883,7 +883,10 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 #endif
 	name.gsub(rxsep, '_');
 
-	Widget button = verify(XmCreatePushButton(buttons, name, 0, 0));
+	Arg args[10];
+	Cardinal arg = 0;
+	XtSetArg(args[arg], XmNmultiClick, XmMULTICLICK_DISCARD); arg++;
+	Widget button = verify(XmCreatePushButton(buttons, name, args, arg));
 	XtManageChild(button);
 	number_of_buttons++;
 

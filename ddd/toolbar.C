@@ -46,6 +46,7 @@ extern void register_menu_shell(MMDesc *items);
 #include <Xm/Xm.h>
 #include <Xm/Form.h>
 #include <Xm/Label.h>
+#include <Xm/PushB.h>
 #include <Xm/PanedW.h>
 
 // Return the preferred height of W
@@ -66,6 +67,16 @@ static void set_label_type(MMDesc items[], unsigned char label_type)
 	Widget w = item->widget;
 	if (w != 0 && XmIsLabel(w))
 	    XtVaSetValues(w, XmNlabelType, label_type, NULL);
+    }
+}
+
+static void disable_multi_click(MMDesc items[])
+{
+    for (MMDesc *item = items; item != 0 && item->name != 0; item++)
+    {
+	Widget w = item->widget;
+	if (w != 0 && XmIsPushButton(w))
+	    XtVaSetValues(w, XmNmultiClick, XmMULTICLICK_DISCARD, NULL);
     }
 }
 
@@ -105,6 +116,7 @@ Widget create_toolbar(Widget parent, string name,
 
     if (label_type != (unsigned char)-1)
 	set_label_type(items1, label_type);
+    disable_multi_click(items1);
 
     if (items2 != 0)
     {
@@ -113,6 +125,7 @@ Widget create_toolbar(Widget parent, string name,
 	MMaddHelpCallback(items2, ImmediateHelpCB);
 	if (label_type != (unsigned char)-1)
 	    set_label_type(items2, label_type);
+	disable_multi_click(items2);
     }
 
     XtVaSetValues(buttons,
