@@ -61,7 +61,7 @@ static bool try_arg(const string& cmd, string prefix, string& arg)
 	strip_space(arg);
 
 	// Strip format stuff
-	if (arg.contains('/', 0))
+	while (arg.contains('/', 0))
 	    arg = arg.after(' ');
 
 	if (arg.contains("'", 0))
@@ -177,7 +177,7 @@ string display_history_filter(const string& cmd)
 	strip_space(arg);
 
 	// Strip format stuff
-	if (arg.contains('/', 0))
+	while (arg.contains('/', 0))
 	    arg = arg.after(' ');
 
 	strip_space(arg);
