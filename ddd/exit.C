@@ -227,7 +227,7 @@ static void ddd_fatal(int sig)
 
     if (fatal_entered++ || !main_loop_entered || ddd_is_exiting)
     {
-	static const char msg[] =
+	static const char *msg =
 	    "\nInternal error (%s).\n"
 	    "\n"
 	    "Oops!  You have found a bug in " DDD_NAME ".\n"
@@ -258,9 +258,7 @@ static void ddd_fatal(int sig)
 	    "We thank you for your support.\n\n";
 
 	if (sig != SIGINT)
-	{
 	    fprintf(stderr, msg, sigName(sig), sigName(sig));
-	}
 
 	// Re-raise signal.  This should kill us as we return.
 	ddd_signal(sig);
