@@ -181,10 +181,12 @@ void sourceToggleDisplayLineNumbersCB (Widget, XtPointer, XtPointer call_data)
 
     update_options();
 
+#if 0
     if (info->set)
 	set_status("Displaying line numbers.");
     else
 	set_status("Not displaying line numbers.");
+#endif
 }
 
 void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
@@ -212,12 +214,11 @@ void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
 
     update_options();
 
-    string displaying_breakpoints_and_positions =
-	"Displaying breakpoints and positions ";
+    string displaying =	"Displaying breakpoints and positions ";
     if (state)
-	set_status(displaying_breakpoints_and_positions + " as glyphs.");
+	set_status(displaying + "as glyphs.");
     else
-	set_status(displaying_breakpoints_and_positions + " in the text.");
+	set_status(displaying + "as text characters.");
 }
 
 void sourceToggleDisassembleCB (Widget, XtPointer, XtPointer call_data)
@@ -619,9 +620,9 @@ void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
     app_data.status_at_bottom = state;
 
     if (state)
-	set_status(next_ddd_will_start_with + "status at bottom.");
+	set_status(next_ddd_will_start_with + "status line at bottom.");
     else
-	set_status(next_ddd_will_start_with + "status at top.");
+	set_status(next_ddd_will_start_with + "status line at top.");
 
     update_options();
     post_startup_warning(w);
