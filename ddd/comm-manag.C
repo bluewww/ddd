@@ -108,7 +108,6 @@ public:
     string      set_frame_func;   // Argument: new function
     string      graph_cmd;	  // Graph command
     string      lookup_arg;	  // Argument when looking up sources
-    string      assign_arg;	  // Argument when assigning variables
 
     string      user_answer;	  // Buffer for the complete answer
     OQCProc     user_callback;	  // User callback
@@ -154,7 +153,6 @@ public:
 	  set_frame_func(""),
 	  graph_cmd(""),
 	  lookup_arg(""),
-	  assign_arg(""),
 
 	  user_answer(""),
 	  user_callback(0),
@@ -192,7 +190,6 @@ private:
 	  set_frame_func(""),
 	  graph_cmd(""),
 	  lookup_arg(""),
-	  assign_arg(""),
 
 	  user_answer(""),
 	  user_callback(0),
@@ -1088,7 +1085,6 @@ void send_gdb_command(string cmd, Widget origin,
 	    string value = assignment_value(gdbValue(var));
 	    if (value != NO_GDB_ANSWER)
 	    {
-		cmd_data->assign_arg   = var;
 		cmd_data->undo_command = gdb->assign_command(var, value);
 		cmd_data->undo_is_exec = true;
 	    }
@@ -1560,13 +1556,6 @@ static void command_completed(void *data)
     {
 	answer = pos_buffer->answer_ended();
 	cmd_data->user_answer += answer;
-    }
-
-    if (cmd_data->assign_arg != "")
-    {
-	// Since we're overwriting CMD_DATA->ASSIGN_ARG, remove all
-	// further references to it in the undo buffer.
-	undo_buffer.remove_display(cmd_data->assign_arg);
     }
 
     if (cmd_data->undo_command != "")
