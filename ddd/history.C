@@ -582,7 +582,7 @@ void get_recent(StringArray& arr)
 // Menus to be updated
 static VoidArray menus;
 
-static const char *basename(const char *name)
+static const char *file_basename(const char *name)
 {
     const char *base = name;
 
@@ -631,7 +631,7 @@ static void update_recent_menu(MMDesc *items)
     // Start with base names
     StringArray labels;
     for (i = 0; i < recent_files.size() && items[i].widget != 0; i++)
-	labels += basename(recent_files[i]);
+	labels += file_basename(recent_files[i]);
 
     // While there are any duplicate labels, add the directory names
     char sep = '/';
