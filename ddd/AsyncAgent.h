@@ -158,6 +158,8 @@ private:
     XtIntervalId signal_id;		// Just for padding
 #endif
 
+    bool killing_asynchronously;
+
     void initHandlers();
     void addDeathOfChildHandler();
 
@@ -239,7 +241,8 @@ public:
     AsyncAgent(XtAppContext app_context, const string& pth, 
 	       unsigned nTypes = AsyncAgent_NTypes):
 	Agent(pth, nTypes), _appContext(app_context), workProcs(0), 
-	new_status(0), status_change_pending(false)
+	new_status(0), status_change_pending(false), 
+	signal_id(0), killing_asynchronously(false)
     {
 	initHandlers();
 	addDeathOfChildHandler();
@@ -248,7 +251,8 @@ public:
     AsyncAgent(XtAppContext app_context, FILE *in = stdin, FILE *out = stdout,
 	FILE *err = 0, unsigned nTypes = AsyncAgent_NTypes):
 	Agent(in, out, err, nTypes), _appContext(app_context), workProcs(0),
-	new_status(0), status_change_pending(false)
+	new_status(0), status_change_pending(false),
+	signal_id(0), killing_asynchronously(false)
     {
 	initHandlers();
     }
@@ -256,7 +260,8 @@ public:
     AsyncAgent(XtAppContext app_context, bool dummy,
 	unsigned nTypes = AsyncAgent_NTypes):
 	Agent(dummy, nTypes), _appContext(app_context), workProcs(0),
-	new_status(0), status_change_pending(false)
+	new_status(0), status_change_pending(false),
+	signal_id(0), killing_asynchronously(false)
     {
 	initHandlers();
     }
@@ -264,7 +269,8 @@ public:
     // Duplicator
     AsyncAgent(const AsyncAgent& c):
 	Agent(c), _appContext(c.appContext()), workProcs(0), 
-	new_status(0), status_change_pending(false)
+	new_status(0), status_change_pending(false),
+	signal_id(0), killing_asynchronously(false)
     {
 	initHandlers();
     }

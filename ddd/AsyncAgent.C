@@ -290,12 +290,16 @@ void AsyncAgent::terminate(bool onExit)
     Agent::terminate(onExit);
 
     if (onExit)
+    {
 	Agent::waitToTerminate();
-    else if (pid() > 0)
+    }
+    else if (pid() > 0 && !killing_asynchronously)
     {
 	// Kill asynchronously.  We don't want to wait until the
 	// process dies, so we just send out some signals and pretend
 	// the process has terminated gracefully.
+	killing_asynchronously = true;
+
 	if (terminateTimeOut() >= 0)
 	    XtAppAddTimeOut(appContext(), terminateTimeOut() * 1000,
 			    terminateProcess, XtPointer(pid()));
