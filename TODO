@@ -400,4 +400,16 @@ Volunteers for these and other projects are welcome!
 220. Create an echo filter.  If the last command sent to GDB gets
      echoed, ignore it straight away.
 
-221. (Insert your project idea here)
+221. Have a DDD USENET news group, such as `comp.debuggers.ddd',
+     instead of a mailing list.  [This should be done when there are
+     more than 1000 subscribers, or when the number of messages/day is
+     greater than 50.]
+
+222* Have a `Restart session' command that replaces the old `Restart'
+     command.
+
+223* Have a `Helpers' preferences panel to customize helper apps
+     (termCommand, psCommand, printCommand, editCommand, 
+      getCoreCommand, uncompressCommand)
+
+224. (Insert your project idea here)
