@@ -159,24 +159,24 @@ if $dist; then
 fi
 
 if $doc; then
-  (
-  cd sun/ddd
-  if [ ! -f Makefile ]; then
-    echo configuring ddd...
-    ./configure -v
-  fi
+  # (
+  # cd sun/ddd
+  # if [ ! -f Makefile ]; then
+  #  echo configuring ddd...
+  #  ./configure -v
+  # fi
 
-  echo making $DOC...
-  for doc in $DOC; do
-    gmake ../doc/$doc
-  done
-  for sample in $SAMPLES; do
-    gmake $sample
-  done
+  # echo making $DOC...
+  # for doc in $DOC; do
+  #   gmake ../doc/$doc
+  # done
+  # for sample in $SAMPLES; do
+  #   gmake $sample
+  # done
 
   echo installing $DOC...
   $rsh "cd $dir/doc; /bin/rm -f $DOC"
-  (cd ../../doc; $rcp -p $DOC $ftpdir/doc)
+  (cd doc; $rcp -p $DOC $ftpdir/doc)
   $rsh "cd $dir/doc; gzip -f -v -9 $DOC"
 
   echo installing $SAMPLES...
@@ -184,8 +184,8 @@ if $doc; then
   $rcp -p $SAMPLES $ftpdir/doc
   $rsh "cd $dir/doc; gzip -f -v -9 $SAMPLES"
 
-  (cd ../doc; rm -f $DOC)
-  )
+  # (cd doc; rm -f $DOC)
+  # )
 fi
 
 if $icons; then
