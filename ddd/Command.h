@@ -169,22 +169,25 @@ inline void gdb_batch(const string& command, Widget origin = 0)
 }
 
 // Pass the COMMAND given in CLIENT_DATA to gdb_command()
-void gdbCommandCB(Widget w, XtPointer call_data, XtPointer client_data);
+extern void gdbCommandCB(Widget w, XtPointer call_data, XtPointer client_data);
 
 // Check if command queue is empty
-bool emptyCommandQueue();
+extern bool emptyCommandQueue();
 
 // Clear command queue
-void clearCommandQueue();
+extern void clearCommandQueue();
 
 // Synchronize with command queue
-void syncCommandQueue();
+extern void syncCommandQueue();
 
 // Return a shell widget according to last command origin
-Widget find_shell(Widget w = 0);
+extern Widget find_shell(Widget w = 0);
 
 // Process next element from command queue
-void processCommandQueue(XtPointer = 0, XtIntervalId *id = 0);
+extern void processCommandQueue(XtPointer = 0, XtIntervalId *id = 0);
+
+// True if GDB processed any user command (= we had user interaction)
+extern bool userInteractionSeen();
 
 #endif // _DDD_Command_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

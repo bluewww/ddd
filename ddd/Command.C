@@ -59,6 +59,10 @@ char Command_rcsid[] =
 // Origin of last command
 static Widget gdb_last_origin;
 
+// True if a user command was processed
+static bool had_user_command = false;
+
+
 //-----------------------------------------------------------------------------
 // GDB command management
 //-----------------------------------------------------------------------------
@@ -75,7 +79,10 @@ void _gdb_command(const Command& c)
     if (gdb->isReadyWithPrompt())
     {
 	if (c.verbose)
+	{
 	    set_status("");
+	    had_user_command = true;
+	}
 
 	if (cmd.length() == 1 && iscntrl(cmd[0]))
 	{
@@ -114,6 +121,11 @@ void _gdb_command(const Command& c)
 
     send_gdb_command(cmd, c.origin, c.callback, c.data, c.verbose, c.check);
     messagePosition = XmTextGetLastPosition(gdb_w);
+}
+
+bool userInteractionSeen()
+{
+    return had_user_command;
 }
 
 
