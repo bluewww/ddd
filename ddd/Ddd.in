@@ -848,6 +848,36 @@ None<Key>Tab:		gdb-complete-tab(print)	    \n\
 None<Key>Home:		beginning-of-line()	    \n\
 None<Key>End:		end-of-line()		    \n
 
+! Have some of these in other texts as well
+Ddd*XmText*translations: #override \
+Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
+Ctrl<Key>B:		backward-character()	    \n\
+Ctrl<Key>D:		delete-next-character()	    \n\
+Ctrl ~Shift<Key>E:	end-of-line()		    \n\
+Ctrl<Key>F:		forward-character()	    \n\
+Ctrl<Key>H:		delete-previous-character() \n\
+Ctrl<Key>K:		delete-to-end-of-line()	    \n\
+Ctrl<Key>U:		beginning-of-line()	    \
+			delete-to-end-of-line()	    \n\
+Ctrl<Key>V:		next-page()		    \n\
+Meta<Key>V:		previous-page()		    \n\
+Ctrl<Key>W:		delete-previous-word()	    \n\
+Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
+None<Key>R7:		beginning-of-line()	    \n\
+None<Key>R13:		end-of-line()		    \n\
+None<Key>Home:		beginning-of-line()	    \n\
+None<Key>End:		end-of-line()		    \n\
+None<Key>Home:		gdb-beginning-of-line()	    \n\
+None<Key>End:		gdb-end-of-line()	    \n\
+None<Key>osfPageUp:	previous-page()		    \n\
+None<Key>osfPageDown:	next-page()	            \n\
+None<Key>Prior:		previous-page()		    \n\
+None<Key>Next:		next-page()	            \n\
+Shift<Key>osfPageUp:	previous-page(extend)	    \n\
+Shift<Key>osfPageDown:	next-page(extend)           \n\
+Shift<Key>Prior:	previous-page(extend)	    \n\
+Shift<Key>Next:		next-page(extend)	    \n
+
 
 ! Have some of these in breakpoint and display dialogs
 ! (with different completion)
@@ -1424,8 +1454,17 @@ the item's functions are explained here.\n\
 Click on @bf Close @rm to close the help window.
 
 ! DDD manual.
-Ddd*manual_help.area.orientation:	XmHORIZONTAL
 Ddd*manual_help*index.selectionPolicy:	XmSINGLE_SELECT
+Ddd*manual_help*index.visibleItemCount:	20
+Ddd*manual_help*key.columns:		22
+Ddd*manual_help*find.labelString:	Find@small>>
+Ddd*manual_help*find.tipString:		Find next occurrence in manual
+Ddd*manual_help*key.borderWidth:	0
+Ddd*manual_help*key.topOffset:		8
+Ddd*manual_help*find.topOffset:		8
+Ddd*manual_help*find.rightOffset:	4
+Ddd*manual_help*find.leftOffset:	2
+
 
 Ddd*manual_help*text.columns:		72
 Ddd*manual_help*text.rows:		25
@@ -1436,8 +1475,10 @@ Ddd*manual_help*scrollBarDisplayPolicy: XmAS_NEEDED
 Ddd*manual_help*helpString: \
 @rm This is the @sl @DDD@ Manual.@rm\n\
 \n\
-Select titles from the index on the left\n\
-to get help on a specific item.
+To view a specific section, select its title from the index on the left.\n\
+\n\
+To find a string in the manual, enter it in the text field on the left\n\
+and press @key RETURN @rm or click on @bf Find@small>> @rm.
 
 ! DDD license.
 Ddd*text_help*text.columns:	      80
@@ -4026,6 +4067,10 @@ a directory where source files can be found.
 Ddd*source_find_error_popup.title: @DDD@: Not Found
 Ddd*source_find_error*helpString:	\
 @rm The given argument @bf () @rm can not be found in the source text.
+
+Ddd*manual_find_error_popup.title: @DDD@: Not Found
+Ddd*manual_find_error*helpString:	\
+@rm The given key can not be found in the @DDD@ manual.
 
 Ddd*no_source_error_popup.title: @DDD@: No Source
 Ddd*no_source_error*helpString:	\
