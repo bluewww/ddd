@@ -2161,13 +2161,13 @@ Ddd*menubar.data*helpString:	\
 @rm This is the @sl Data menu.@rm\n\
 \n\
 @tt \267 @bf Edit Displays... @rm - select, enable and delete displays.\n\
-@tt \267 @bf Status Displays... @rm - create status displays that show things \
-about the program being debugged.\n\
+\n\
+@tt \267 @bf Detect Aliases @rm - toggle alias detection.\n\
 \n\
 @tt \267 @bf Display Local Variables @rm - show current local variables.\n\
 @tt \267 @bf Display Arguments @rm - show current argument variables.\n\
-\n\
-@tt \267 @bf Detect Aliases @rm - toggle alias detection.\n\
+@tt \267 @bf More Status Displays... @rm - show other things \
+about the program being debugged.\n\
 \n\
 @tt \267 @bf Align on Grid @rm - align all displays on the next grid point.\n\
 @tt \267 @bf Rotate Graph @rm - rotate the graph clockwise by 90 degrees.\n\
@@ -2181,10 +2181,12 @@ Ddd*dataMenu.displays.mnemonic:		E
 Ddd*dataMenu.displays.documentationString: \
 @rm Select, enable and delete displays
 
-Ddd*dataMenu.infos.labelString:		Status Displays...
-Ddd*dataMenu.infos.mnemonic:		t
-Ddd*dataMenu.infos.documentationString: \
-@rm Show various things about the program being debugged
+Ddd*dataMenu.detectAliases.labelString:	Detect Aliases
+Ddd*dataMenu.detectAliases.mnemonic:	A
+Ddd*dataMenu.detectAliases.accelerator:	Meta<Key>A
+Ddd*dataMenu.detectAliases.acceleratorText: Alt+A
+Ddd*dataMenu.detectAliases.documentationString:	\
+@rm Detect aliases (shared data structures)
 
 ! This item is visible in GDB only.
 Ddd*dataMenu.info locals.labelString:	Display Local Variables
@@ -2218,12 +2220,10 @@ Ddd*dataMenu.l.acceleratorText:		Alt+V
 Ddd*dataMenu.l.documentationString: \
 @rm Display all local variables of the current stack frame.
 
-Ddd*dataMenu.detectAliases.labelString:	Detect Aliases
-Ddd*dataMenu.detectAliases.mnemonic:	A
-Ddd*dataMenu.detectAliases.accelerator:	Meta<Key>A
-Ddd*dataMenu.detectAliases.acceleratorText: Alt+A
-Ddd*dataMenu.detectAliases.documentationString:	\
-@rm Detect aliases (shared data structures)
+Ddd*dataMenu.infos.labelString:		More Status Displays...
+Ddd*dataMenu.infos.mnemonic:		t
+Ddd*dataMenu.infos.documentationString: \
+@rm Show various things about the program being debugged
 
 Ddd*dataMenu.align.labelString:		Align on Grid
 Ddd*dataMenu.align.mnemonic:		G

@@ -887,7 +887,9 @@ static MMDesc data_menu[] =
 {
     { "displays",   MMPush,    { DataDisp::EditDisplaysCB }},
     MMSep,
-    { "infos",      MMPush,    { dddPopupInfosCB }, NULL, &infos_w },
+    { "detectAliases", MMToggle, { graphToggleDetectAliasesCB },
+      NULL, &detect_aliases_w },
+    MMSep,
     { "l",           MMToggle | MMUnmanaged, { graphToggleLocalsCB },
       NULL, &l_w },
     { "dump",        MMToggle | MMUnmanaged, { graphToggleLocalsCB },
@@ -896,9 +898,7 @@ static MMDesc data_menu[] =
       NULL, &info_locals_w },
     { "info args",   MMToggle | MMUnmanaged, { graphToggleArgsCB },
       NULL, &info_args_w },
-    MMSep,
-    { "detectAliases", MMToggle, { graphToggleDetectAliasesCB },
-      NULL, &detect_aliases_w },
+    { "infos",      MMPush,    { dddPopupInfosCB }, NULL, &infos_w },
     MMSep,
     { "align",      MMPush,    { graphAlignCB  }},
     { "rotate",     MMPush,    { graphRotateCB }},
@@ -1727,10 +1727,6 @@ int main(int argc, char *argv[])
     // Customize `settings' and `status displays' titles.
     MString settings_title(gdb->title() + " Settings...");
     XtVaSetValues(settings_w, XmNlabelString, settings_title.xmstring(), NULL);
-#if 0
-    MString infos_title(gdb->title() + " Status Displays...");
-    XtVaSetValues(infos_w, XmNlabelString, infos_title.xmstring(), NULL);
-#endif
 
     // Realize all top-level widgets
     XtRealizeWidget(command_shell);
