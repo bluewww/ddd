@@ -1,15 +1,15 @@
 DDD News						-*- text -*-
 ********
 
-DDD 2.2.4 [in development]
---------------------------
+DDD 2.3 [in development]
+------------------------
 
-    User-visible changes to DDD 2.2.1:
-    - Improved Java support.  When debugging Java programs with GDB,
-      DDD can now properly parse Java expressions.  (Today's GDB 4.16
-      does not yet support Java, but future GDB versions will; DDD was 
-      tested against a 1998-01-22 GDB development snapshot.)
-    - The `DBX settings' panel for SGI DBX has been improved.
+    DDD 2.3 brings Java and JDB support.
+
+    User-visible changes to DDD 2.2.3:
+    - JDB support.  DDD now also supports JDB as inferior debugger.
+    - Java support.  Requires JDB or a Java-aware GDB.
+    - The `DBX settings' panel has been adapted to SGI DBX.
 
 
 DDD 2.2.3
