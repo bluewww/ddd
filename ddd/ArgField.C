@@ -80,6 +80,7 @@ void ArgField::set_string (char* text_ch)
     {
 	XmTextPosition last_pos = XmTextFieldGetLastPosition(arg_text_field);
 	XmTextFieldSetInsertionPosition(arg_text_field, last_pos);
+	XmTextFieldShowPosition(arg_text_field, 0);
 	XmTextFieldShowPosition(arg_text_field, last_pos);
     }
 }
