@@ -715,8 +715,15 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
 			   next_occurrence,
 			   next_occurrence + key.length(),
 			   tm);
-	if (!forward)
+	if (forward)
+	{
+	    XmTextSetInsertionPosition(fi->text, 
+				       next_occurrence + key.length());
+	}
+	else
+	{
 	    XmTextSetInsertionPosition(fi->text, next_occurrence);
+	}
 
 	lock_update_arg = false;
     }
