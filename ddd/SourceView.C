@@ -56,6 +56,7 @@ char SourceView_rcsid[] =
 #include <Xm/PushB.h>
 #include <Xm/SelectioB.h>
 #include <Xm/List.h>
+#include <Xm/BulletinB.h>
 
 // sonstige includes
 #include <sys/types.h>
@@ -1011,6 +1012,8 @@ void SourceView::update_title()
 // ***************************************************************************
 // Bringt Breakpoint-Anzeige auf den aktuellen Stand (gemaess bp_map).
 //
+
+// Update breakpoint locations
 void SourceView::refresh_bp_disp ()
 {
     if (current_text == "")
@@ -1037,12 +1040,12 @@ void SourceView::refresh_bp_disp ()
 	}
 
 	delete bps_in_line;
+	bps_in_line = 0;
     }
 
-    // neue Breakpoint-Darstellungen erzeugen - - - - - - - - - - - - - - - -
     bps_in_line = new Assoc<int, VarArray<int> >;
 
-    // alle das File betreffende Breakpoints raussuchen.
+    // Find all breakpoints referring to this file
     MapRef ref;
     for (BreakPoint* bp = bp_map.first(ref);
 	 bp != 0;
@@ -1056,47 +1059,52 @@ void SourceView::refresh_bp_disp ()
 	}
     }
 
-    // fuer alle Zeilen mit Breakpoints ...
-    for (AssocIter<int, VarArray<int> > b_i_l_iter = *(bps_in_line);
-	 b_i_l_iter.ok();
-	 b_i_l_iter++)
+    if (!display_glyphs)
     {
-	int line_nr = b_i_l_iter.key();
-	if (line_nr < 0 || line_nr > line_count)
-	    continue;
-
-	XmTextPosition pos = pos_of_line[line_nr];
-
-	string insert_string = "";
-
-	// Darstellung fuer alle Breakpoints der Zeile
-	int i;
-	for (i = 0; i < (*bps_in_line)[line_nr].size(); i++) {
-	    BreakPoint* bp =
-		bp_map.get((*bps_in_line)[line_nr][i]);
-	    assert (bp);
-	    insert_string += bp->enabled() ? '#' : '_';
-	    insert_string += bp->number_str();
-	    insert_string += bp->enabled() ? '#' : '_';
-	}
-	if (int(insert_string.length()) >= bp_indent_amount - 1) {
-	    insert_string =
-		insert_string.before(bp_indent_amount - 1);
-	}
-	else
+	// Show breakpoints in text
+	for (AssocIter<int, VarArray<int> > b_i_l_iter = *(bps_in_line);
+	     b_i_l_iter.ok();
+	     b_i_l_iter++)
 	{
-	    for (i = insert_string.length(); 
-		 i < int(bp_indent_amount) - 1; i++)
-	    {
-		insert_string += current_text[pos + i];
-	    }
-	}
-	assert(insert_string.length() == unsigned(bp_indent_amount - 1));
+	    int line_nr = b_i_l_iter.key();
+	    if (line_nr < 0 || line_nr > line_count)
+		continue;
 
-	XmTextReplace (source_text_w,
-		       pos, pos + bp_indent_amount - 1,
-		       (String)insert_string);
+	    XmTextPosition pos = pos_of_line[line_nr];
+
+	    string insert_string = "";
+
+	    // Darstellung fuer alle Breakpoints der Zeile
+	    int i;
+	    for (i = 0; i < (*bps_in_line)[line_nr].size(); i++) {
+		BreakPoint* bp =
+		    bp_map.get((*bps_in_line)[line_nr][i]);
+		assert (bp);
+		insert_string += bp->enabled() ? '#' : '_';
+		insert_string += bp->number_str();
+		insert_string += bp->enabled() ? '#' : '_';
+	    }
+	    if (int(insert_string.length()) >= bp_indent_amount - 1) {
+		insert_string =
+		    insert_string.before(bp_indent_amount - 1);
+	    }
+	    else
+	    {
+		for (i = insert_string.length(); 
+		     i < int(bp_indent_amount) - 1; i++)
+		{
+		    insert_string += current_text[pos + i];
+		}
+	    }
+	    assert(insert_string.length() == unsigned(bp_indent_amount - 1));
+
+	    XmTextReplace (source_text_w,
+			   pos, pos + bp_indent_amount - 1,
+			   (String)insert_string);
+	}
     }
+
+    update_glyphs();
 }
 
 
@@ -1125,18 +1133,23 @@ bool SourceView::get_line_of_pos (XmTextPosition pos,
 	    pos_of_line[*line_nr_ptr + 1] :
 	    XmTextGetLastPosition (source_text_w) + 1;
 
-	if (pos < (line_pos + bp_indent_amount - 1)) {
-	    // pos liegt in dieser Zeile im Breakpoint-Anzeige-Bereich.
-	    // ---------------------------------------------------------------
+	if (pos < (line_pos + bp_indent_amount - 1))
+	{
+	    // Position in breakpoint area
 	    found = true;
 	    if (in_text)
 		*in_text = false;
-	    if (bp_nr_ptr) {
-		// Pruefen ob auf breakpoint geklickt wurde
-		if ((*bps_in_line)[*line_nr_ptr].size() >= 1) {
-
-		    // Breakpoint(s) in der Zeile
-		    // ermitteln, auf welchen gedrueckt wurde.
+	    if (bp_nr_ptr)
+	    {
+		// Check for breakpoints...
+		if ((*bps_in_line)[*line_nr_ptr].size() == 1)
+		{
+		    // Return single breakpoint in this line
+		    *bp_nr_ptr = (*bps_in_line)[*line_nr_ptr][0];
+		}
+		else if ((*bps_in_line)[*line_nr_ptr].size() > 1)
+		{
+		    // Find which breakpoint was selected
 		    *bp_nr_ptr = 0;
 		    int i;
 		    XmTextPosition bp_disp_pos = line_pos;
@@ -1146,7 +1159,7 @@ bool SourceView::get_line_of_pos (XmTextPosition pos,
 			BreakPoint* bp = bp_map.get(
 				(*bps_in_line)[*line_nr_ptr][i]);
 			assert (bp);
-			bp_disp_pos += 2; //fuer '#' bzw. '_';
+			bp_disp_pos += 2; // respect '#' and '_';
 			bp_disp_pos += bp->number_str().length();
 			if (pos < bp_disp_pos) {
 			    *bp_nr_ptr =
@@ -1154,24 +1167,25 @@ bool SourceView::get_line_of_pos (XmTextPosition pos,
 			    break; // for-Schleife fertig
 			}
 		    }
-		}
-		else {
+		} else 
+		{
+		    // No breakpoint in this line
 		    *bp_nr_ptr = 0;
 		}
 	    }
 	}
-	else if (pos < next_line_pos) {
-	    // pos liegt in dieser Zeile im Text-Bereich.
-	    // ---------------------------------------------------------------
+	else if (pos < next_line_pos)
+	{
+	    // Position is in text
 	    found = true;
 	    if (in_text)
 		*in_text = true;
 	    if (bp_nr_ptr)
 		*bp_nr_ptr = 0;
 	}
-	else {
-	    // pos liegt in einer der folgenden Zeilen.
-	    // ---------------------------------------------------------------
+	else
+	{
+	    // Position in the following line
 	    line_pos = next_line_pos;
 	    (*line_nr_ptr)++;
 	}
@@ -1235,14 +1249,13 @@ SourceView::SourceView (XtAppContext app_context,
 
     Arg args[10];
     Cardinal arg = 0;
-    source_form_w = verify(XmCreateForm(parent, "source_form_w", args, arg));
+    XtSetArg (args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg (args[arg], XmNmarginWidth, 0);  arg++;
+    source_form_w = 
+	verify(XmCreateBulletinBoard(parent, "source_form_w", args, arg));
 
     arg = 0;
     XtSetArg (args[arg], XmNselectionArrayCount, 1); arg++;
-    XtSetArg (args[arg], XmNtopAttachment,    XmATTACH_FORM); arg++;
-    XtSetArg (args[arg], XmNbottomAttachment, XmATTACH_FORM); arg++;
-    XtSetArg (args[arg], XmNleftAttachment,   XmATTACH_FORM); arg++;
-    XtSetArg (args[arg], XmNrightAttachment,  XmATTACH_FORM); arg++;
     source_text_w = verify(XmCreateScrolledText (source_form_w,
 						 "source_text_w",
 						 args, arg));
@@ -3008,15 +3021,6 @@ string SourceView::get_line(string position)
 // Glyph stuff
 //----------------------------------------------------------------------------
 
-// Invoked whenever the text widget may have scrolled
-void SourceView::CheckScrollCB(Widget, XtPointer, XtPointer)
-{
-    XmTextPosition old_top = last_top;
-    last_top = XmTextGetTopCharacter(source_text_w);
-    if (old_top != last_top)
-	update_glyphs ();
-}
-
 // Move text cursor at glyph position
 void SourceView::MoveCursorToGlyphPosCB(Widget w, 
 					XtPointer, 
@@ -3068,8 +3072,10 @@ Widget SourceView::create_glyph(String name,
 {
     Arg args[10];
     Cardinal arg = 0;
+    XtSetArg(args[arg], XmNmappedWhenManaged, False); arg++;
     Widget w = XmCreatePushButton(source_form_w, name, args, arg);
     XtRealizeWidget(w);
+    XtManageChild(w);
 
     Pixmap pix = pixmap(w, bits, width, height);
     arg = 0;
@@ -3081,57 +3087,189 @@ Widget SourceView::create_glyph(String name,
     return w;
 }
 
-void SourceView::move_glyph(Widget w, XmTextPosition pos)
+// Return height of a single line
+int SourceView::line_height()
 {
-    Position x, y;
-    Boolean pos_displayed = XmTextPosToXY(source_text_w, pos, &x, &y);
-    if (display_glyphs && pos_displayed)
-    {
-	static int line_height = 0;
-	if (line_height == 0)
-	{
-	    XmTextPosition pos2 = pos_of_line[last_execution_line + 1];
-	    Position x2, y2;
-	    Boolean pos2_displayed = 
-		XmTextPosToXY(source_text_w, pos2, &x2, &y2);
-	    if (pos2_displayed)
-		line_height = abs(y2 - y);
-	}
-	Dimension height              = 0;
-	Dimension border_width        = 0;
-	Dimension margin_height       = 0;
-	Dimension shadow_thickness    = 0;
-	Dimension highlight_thickness = 0;
-	XtVaGetValues(w,
-		      XmNheight,             &height,
-		      XmNborderWidth,        &border_width,
-		      XmNmarginHeight,       &margin_height,
-		      XmNshadowThickness,    &shadow_thickness,
-		      XmNhighlightThickness, &highlight_thickness,
-		      NULL);
-	Dimension glyph_height = 
-	    height + border_width + margin_height
-	    + shadow_thickness + highlight_thickness;
-	XtVaSetValues(w,
-		      XmNleftOffset, x,
-		      XmNtopOffset, y - glyph_height + line_height / 2 - 2,
-		      NULL);
-	XtManageChild(w);
-    }
-    else
-    {
-	XtUnmanageChild(w);
-    }
+    static int height = 0;
+    if (height)
+	return height;
+
+    bool ok;
+
+    XmTextPosition top = XmTextGetTopCharacter(source_text_w);
+    Position top_x, top_y;
+    ok = XmTextPosToXY(source_text_w, top, &top_x, &top_y);
+    if (!ok)
+	return 0;
+
+    XmTextPosition second = current_text.index('\n', top) + 1;
+    Position second_x, second_y;
+    ok = XmTextPosToXY(source_text_w, second, &second_x, &second_y);
+    if (!ok)
+	return 0;
+
+    return height = abs(second_y - top_y);
+}
+
+void SourceView::map_glyph(Widget w, Position x, Position y)
+{
+    // clog << "Mapping glyph at (" << x << ", " << y << ")\n";
+
+    Dimension height              = 0;
+    Dimension border_width        = 0;
+    Dimension margin_height       = 0;
+    Dimension shadow_thickness    = 0;
+    Dimension highlight_thickness = 0;
+    XtVaGetValues(w,
+		  XmNheight,             &height,
+		  XmNborderWidth,        &border_width,
+		  XmNmarginHeight,       &margin_height,
+		  XmNshadowThickness,    &shadow_thickness,
+		  XmNhighlightThickness, &highlight_thickness,
+		  NULL);
+    Dimension glyph_height = 
+	height + border_width + margin_height
+	+ shadow_thickness + highlight_thickness;
+    XtVaSetValues(w,
+		  XmNx, x,
+		  XmNy, y - glyph_height + line_height() / 2 - 2,
+		  NULL);
+    XtMapWidget(w);
 }    
 
 void SourceView::update_glyphs()
 {
+    static XtWorkProcId proc_id = 0;
+
+    if (proc_id == 0)
+    {
+	proc_id = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 0,
+			    UpdateGlyphsWorkProc, XtPointer(&proc_id));
+    }
+}
+
+// Invoked whenever the text widget may be about to scroll
+void SourceView::CheckScrollCB(Widget, XtPointer, XtPointer)
+{
+    XtAppAddTimeOut(XtWidgetToApplicationContext(source_text_w), 0,
+		    CheckScrollWorkProc, XtPointer(0));
+}
+    
+void SourceView::CheckScrollWorkProc(XtPointer client_data, XtIntervalId *id)
+{
+    XmTextPosition old_top = last_top;
+    last_top = XmTextGetTopCharacter(source_text_w);
+    if (old_top != last_top)
+	UpdateGlyphsWorkProc(client_data, id);
+}
+
+// Maximum number of simultaneous glyphs on the screen
+const int max_glyphs = 20;
+
+// Horizontal arrow offset (pixels)
+const int arrow_x_offset = -5;
+
+// Horizontal breakpoint symbol offset (pixels)
+const int break_x_offset = +8;
+
+void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
+{
+    // clog << "Updating glyphs...\n";
+
     static Widget arrow_w = 0;
+    static Widget breaks_w[max_glyphs + 1];
+    static Widget nobreaks_w[max_glyphs + 1];
 
     if (arrow_w == 0)
+    {
 	arrow_w = create_glyph("arrow", 
 			       arrow_bits, arrow_width, arrow_height);
 
+	for (int i = 0; i < max_glyphs; i++)
+	{
+	    breaks_w[i] = 
+		create_glyph("break", break_bits, 
+			     break_width, break_height);
+	    nobreaks_w[i] = 
+		create_glyph("nobreak", nobreak_bits, 
+			     nobreak_width, nobreak_height);
+	}
+    }
+
+    // clog << "Arrow:\n";
+    Position x, y;
     XmTextPosition pos = pos_of_line[last_execution_line];
-    move_glyph(arrow_w, pos);
+    Boolean pos_displayed = XmTextPosToXY(source_text_w, pos, &x, &y);
+    if (display_glyphs && pos_displayed && last_execution_line)
+	map_glyph(arrow_w, x + arrow_x_offset, y);
+    else
+	XtUnmapWidget(arrow_w);
+
+    int b  = 0;
+    int nb = 0;
+
+    if (display_glyphs)
+    {
+	// Map breakpoint glyphs
+	// clog << "Breakpoints:\n";
+	MapRef ref;
+	for (BreakPoint* bp = bp_map.first(ref);
+	     bp != 0;
+	     bp = bp_map.next(ref))
+	{
+	    if (bp->type() == BREAKPOINT && 
+		(bp->file_name() == "" || 
+		 basename(bp->file_name()) == basename(current_file_name)))
+	    {
+		pos = pos_of_line[bp->line_nr()];
+		pos_displayed = XmTextPosToXY(source_text_w, pos, &x, &y);
+		if (pos_displayed)
+		{
+		    Widget glyph;
+		    if (bp->enabled())
+			glyph = breaks_w[b] ? breaks_w[b++]    : 0;
+		    else
+			glyph = nobreaks_w[nb] ? nobreaks_w[nb++] : 0;
+		    if (glyph)
+			map_glyph(glyph, x + break_x_offset, y);
+		}
+	    }
+	}
+    }
+
+    // Unmap remaining glyphs
+    Widget w;
+    while ((w = breaks_w[b++]))
+	XtUnmapWidget(w);
+    while ((w = nobreaks_w[nb++]))
+	XtUnmapWidget(w);
+
+    // Allow new invocations
+    XtWorkProcId *proc_id = ((XtWorkProcId *) client_data);
+    if (proc_id)
+	*proc_id = 0;
+}
+
+void SourceView::set_display_glyphs(bool set)
+{
+    if (XtIsRealized(source_view_w))
+    {
+	display_glyphs = false;	
+	show_execution_position();
+	UpdateGlyphsWorkProc(0, 0);
+
+	display_glyphs = true;
+	refresh_bp_disp();
+    }
+
+    display_glyphs = set;
+
+    if (XtIsRealized(source_view_w))
+    {
+	refresh_bp_disp();
+
+	if (last_execution_file != "")
+	    lookup();
+    }
 }

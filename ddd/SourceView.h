@@ -106,6 +106,7 @@ class SourceView {
     static void UpdateBreakpointButtonsCB (Widget, XtPointer, XtPointer);
 
     static void CheckScrollCB(Widget, XtPointer, XtPointer);
+    static void CheckScrollWorkProc(XtPointer, XtIntervalId *);
 
     static void StackDialogPoppedDownCB (Widget, XtPointer, XtPointer);
     static void SelectFrameCB (Widget, XtPointer, XtPointer);
@@ -113,11 +114,13 @@ class SourceView {
     static void fill_labels(const string& info_output);
 
     static Widget create_glyph(String name, 
-				    char *bits, int width, int height);
-    static void move_glyph(Widget w, XmTextPosition pos);
+			       char *bits, int width, int height);
+    static void map_glyph(Widget w, Position x, Position y);
     static void update_title ();
     static void update_glyphs ();
+    static void UpdateGlyphsWorkProc(XtPointer, XtIntervalId *);
     static void MoveCursorToGlyphPosCB(Widget, XtPointer, XtPointer);
+    static int line_height ();
 
     static void refresh_bp_disp ();
 
@@ -199,6 +202,8 @@ private:
     static Widget up_w;                      // The `Up' button
     static Widget down_w;                    // The `Down' button
     static bool stack_dialog_popped_up;	     // True if the stack is visible
+
+    static bool display_glyphs;	// True if glyphs are to be displayed
 
     // The indenting amount
     static int  bp_indent_amount;
@@ -307,8 +312,8 @@ public:
     // Check whether source files are to be cached
     static bool cache_source_files;
 
-    // Check whether glyphs are to be displayed
-    static bool display_glyphs;
+    // Set whether glyphs are to be displayed
+    static void set_display_glyphs(bool value);
 
     // Clear file cache
     static void clear_file_cache();
