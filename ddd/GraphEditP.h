@@ -90,8 +90,8 @@ typedef struct _GraphEditPart {
 
     // Grid stuff
     Boolean showGrid;          // Display grid?
-    Dimension gridWidth;       // grid width (0 if none)
-    Dimension gridHeight;      // grid height (0 if none)
+    Dimension gridWidth;       // grid width (> 0)
+    Dimension gridHeight;      // grid height (> 0)
     Boolean snapToGrid;        // Make sure nodes are on grid?
 
     // Layout stuff

@@ -57,6 +57,7 @@ char GraphEdit_rcsid[] =
 #include "LineGraphE.h"
 #include "VarArray.h"
 #include "layout.h"
+#include "misc.h"
 
 
 static BoxRegion EVERYWHERE(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX));
@@ -92,10 +93,11 @@ static XtResource resources[] = {
     { XtNhintSize, XtCHintSize, XtRDimension, sizeof(Dimension),
 	offset(hintSize), XtRImmediate, XtPointer(6) },
 
-    { XtNgridWidth, XtCGridWidth, XtRDimension, sizeof(Dimension),
+    { XtNgridWidth, XtCGridSize, XtRDimension, sizeof(Dimension),
 	offset(gridWidth), XtRImmediate, XtPointer(16) },
-    { XtNgridHeight, XtCGridHeight, XtRDimension, sizeof(Dimension),
+    { XtNgridHeight, XtCGridSize, XtRDimension, sizeof(Dimension),
 	offset(gridHeight), XtRImmediate, XtPointer(16) },
+
     { XtNshowGrid, XtCShowGrid, XtRBoolean, sizeof(Boolean),
 	offset(showGrid), XtRImmediate, XtPointer(false) },
     { XtNsnapToGrid, XtCSnapToGrid, XtRBoolean, sizeof(Boolean),
@@ -114,9 +116,9 @@ static XtResource resources[] = {
     { XtNarrowLength, XtCArrowLength, XtRDimension, sizeof(Dimension),
 	offset(arrowLength), XtRImmediate, XtPointer(10) },
 
-    { XtNextraWidth, XtCExtraWidth, XtRDimension, sizeof(Dimension),
+    { XtNextraWidth, XtCExtraSize, XtRDimension, sizeof(Dimension),
 	offset(extraWidth), XtRImmediate, XtPointer(0) },
-    { XtNextraHeight, XtCExtraHeight, XtRDimension, sizeof(Dimension),
+    { XtNextraHeight, XtCExtraSize, XtRDimension, sizeof(Dimension),
 	offset(extraHeight), XtRImmediate, XtPointer(0) },
 
     { XtNselectTile, XtCBitmap, XtRBitmap, sizeof(Pixmap),
@@ -452,10 +454,13 @@ static void setGrid(Widget w, Boolean reset = false)
     const Pixel     gridColor  = _w->graphEdit.gridColor;
     const Pixel     background = _w->core.background_pixel;
     const Boolean   showGrid   = _w->graphEdit.showGrid;
-    const Dimension gridHeight = _w->graphEdit.gridHeight;
-    const Dimension gridWidth  = _w->graphEdit.gridWidth;
+    Dimension& gridHeight      = _w->graphEdit.gridHeight;
+    Dimension& gridWidth       = _w->graphEdit.gridWidth;
     Pixmap& gridPixmap         = _w->graphEdit.gridPixmap;
-    
+
+    gridWidth  = max(gridWidth,  2);
+    gridHeight = max(gridHeight, 2);
+
     if (reset && gridPixmap != None)
     {
 	// delete old pixmap
