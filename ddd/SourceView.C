@@ -8306,9 +8306,9 @@ void SourceView::normalize_address(string& addr)
 
 string SourceView::make_address(long pc)
 {
-    ostrstream os;
-    os << "0x" << setbase(16) << (unsigned long)pc;
-    return string(os);
+    char buffer[BUFSIZ];
+    sprintf(buffer, "0x%lx", (unsigned long) pc);
+    return string(buffer);
 }
 
 // Return FUNCTION and OFFSET at ADDRESS

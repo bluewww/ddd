@@ -102,7 +102,7 @@ inline bool checkSize(ListBox *args)
 
 // Logische Operatoren
 
-static Box *not(ListBox *args)
+static Box *op_not(ListBox *args)
 // Logisches nicht
 {
     CHECK_ATOMS(args);
@@ -170,7 +170,7 @@ static Box *normalize(AlignBox *box)
     return box;
 }
 
-static Box *halign(ListBox *args)
+static Box *op_halign(ListBox *args)
 // Horizontale Anordnung
 {
     CHECK_ATOMS(args);
@@ -201,7 +201,7 @@ static Box *halign(ListBox *args)
     return normalize(ret);
 }
 
-static Box *talign(ListBox *args)
+static Box *op_talign(ListBox *args)
 // Textuelle Anordnung
 {
     CHECK_ATOMS(args);
@@ -232,7 +232,7 @@ static Box *talign(ListBox *args)
     return normalize(ret);
 }
 
-static Box *valign(ListBox *args)
+static Box *op_valign(ListBox *args)
 // Vertikale Anordnung
 {
     CHECK_ATOMS(args);
@@ -263,7 +263,7 @@ static Box *valign(ListBox *args)
     return normalize(ret);
 }
 
-static Box *ualign(ListBox *args)
+static Box *op_ualign(ListBox *args)
 // Gestapelte Anordnung
 {
     CHECK_ATOMS(args);
@@ -298,7 +298,7 @@ static Box *ualign(ListBox *args)
 
 // Arithmetische Operatoren
 
-static Box *plus(ListBox *args)
+static Box *op_plus(ListBox *args)
 // Addition
 {
     CHECK_ATOMS(args);
@@ -314,7 +314,7 @@ static Box *plus(ListBox *args)
     return new SpaceBox(sum);
 }
 
-static Box *mult(ListBox *args)
+static Box *op_mult(ListBox *args)
 // Multiplikation
 {
     CHECK_ATOMS(args);
@@ -330,7 +330,7 @@ static Box *mult(ListBox *args)
     return new SpaceBox(product);
 }
 
-static Box *minus(ListBox *args)
+static Box *op_minus(ListBox *args)
 // Subtraktion
 {
     CHECK_ATOMS(args);
@@ -340,7 +340,7 @@ static Box *minus(ListBox *args)
 	(*args)[0]->size() - (*args)[1]->size());
 }
 
-static Box *div(ListBox *args)
+static Box *op_div(ListBox *args)
 // (ganzzahlige) Division
 {
     CHECK_ATOMS(args);
@@ -356,7 +356,7 @@ static Box *div(ListBox *args)
 	(*args)[0]->size() / (*args)[1]->size());
 }
 
-static Box *mod(ListBox *args)
+static Box *op_mod(ListBox *args)
 // Rest Division
 {
     CHECK_ATOMS(args);
@@ -376,7 +376,7 @@ static Box *mod(ListBox *args)
 
 // Vergleichsoperatoren
 
-static Box *eq(ListBox *args)
+static Box *op_eq(ListBox *args)
 // Test auf Gleichheit
 {
     if (*(*args)[0] == *(*args)[1])
@@ -385,7 +385,7 @@ static Box *eq(ListBox *args)
 	return new FalseBox;
 }
 
-static Box *ne(ListBox *args)
+static Box *op_ne(ListBox *args)
 // Test auf Ungleichheit
 {
     if (*(*args)[0] != *(*args)[1])
@@ -394,7 +394,7 @@ static Box *ne(ListBox *args)
 	return new FalseBox;
 }
 
-static Box *gt(ListBox *args)
+static Box *op_gt(ListBox *args)
 // Test >
 {
     CHECK_ATOMS(args);
@@ -406,7 +406,7 @@ static Box *gt(ListBox *args)
 	return new FalseBox;
 }
 
-static Box *ge(ListBox *args)
+static Box *op_ge(ListBox *args)
 // Test >=
 {
     CHECK_ATOMS(args);
@@ -418,7 +418,7 @@ static Box *ge(ListBox *args)
 	return new FalseBox;
 }
 
-static Box *lt(ListBox *args)
+static Box *op_lt(ListBox *args)
 // Test <
 {
     CHECK_ATOMS(args);
@@ -430,7 +430,7 @@ static Box *lt(ListBox *args)
 	return new FalseBox;
 }
 
-static Box *le(ListBox *args)
+static Box *op_le(ListBox *args)
 // Test <=
 {
     CHECK_ATOMS(args);
@@ -445,7 +445,7 @@ static Box *le(ListBox *args)
 
 // Listen-Operatoren
 
-static Box *cons(ListBox *args)
+static Box *op_cons(ListBox *args)
 // Listen verketten
 {
     ListBox *ret = 0;
@@ -530,7 +530,7 @@ static Box *vfix(ListBox *args)
     return new VFixBox((Box *)(*args)[0]);
 }
 
-static Box *bin(ListBox *args)
+static Box *op_bin(ListBox *args)
 // bin(box)
 {
     CHECK_ATOMS(args);
@@ -689,28 +689,28 @@ struct BuiltinRec {
 static BuiltinRec builtins[] = {
 
 // n-stellige Operatoren
-{ "(&)",    "__op_halign",  true,   false,  false,  halign },
-{ "(|)",    "__op_valign",  true,   false,  false,  valign },
-{ "(^)",    "__op_ualign",  true,   false,  false,  ualign },
-{ "(~)",    "__op_talign",  true,   false,  false,  talign },
-{ "(+)",    "__op_plus",    true,   false,  false,  plus },
-{ "(*)",    "__op_mult",    true,   false,  false,  mult },
-{ "(::)",   "__op_cons",    true,   false,  false,  cons },
+{ "(&)",    "__op_halign",  true,   false,  false,  op_halign },
+{ "(|)",    "__op_valign",  true,   false,  false,  op_valign },
+{ "(^)",    "__op_ualign",  true,   false,  false,  op_ualign },
+{ "(~)",    "__op_talign",  true,   false,  false,  op_talign },
+{ "(+)",    "__op_plus",    true,   false,  false,  op_plus },
+{ "(*)",    "__op_mult",    true,   false,  false,  op_mult },
+{ "(::)",   "__op_cons",    true,   false,  false,  op_cons },
 
 // 2-stellige Operatoren
-{ "(-)",    "__op_minus",   false,  false,  false,  minus },
-{ "(/)",    "__op_div",     false,  false,  false,  div },
-{ "(%)",    "__op_mod",     false,  false,  false,  mod },
-{ "(=)",    "__op_eq",      false,  false,  false,  eq },
-{ "(<>)",   "__op_ne",      false,  false,  false,  ne },
-{ "(>)",    "__op_gt",      false,  false,  false,  gt },
-{ "(>=)",   "__op_ge",      false,  false,  false,  ge },
-{ "(<)",    "__op_lt",      false,  false,  false,  lt },
-{ "(<=)",   "__op_le",      false,  false,  false,  le },
-{ 0,        "__op_bin",     false,  false,  false,  bin },
+{ "(-)",    "__op_minus",   false,  false,  false,  op_minus },
+{ "(/)",    "__op_div",     false,  false,  false,  op_div },
+{ "(%)",    "__op_mod",     false,  false,  false,  op_mod },
+{ "(=)",    "__op_eq",      false,  false,  false,  op_eq },
+{ "(<>)",   "__op_ne",      false,  false,  false,  op_ne },
+{ "(>)",    "__op_gt",      false,  false,  false,  op_gt },
+{ "(>=)",   "__op_ge",      false,  false,  false,  op_ge },
+{ "(<)",    "__op_lt",      false,  false,  false,  op_lt },
+{ "(<=)",   "__op_le",      false,  false,  false,  op_le },
+{ 0,        "__op_bin",     false,  false,  false,  op_bin },
 
 // 1-stellige Operatoren
-{ "not",    "__op_not",     false,  false,  false,  not },
+{ "not",    "__op_not",     false,  false,  false,  op_not },
 
 // Funktionen
 { 0,    "__hspace",     false,  false,  false,  hspace },

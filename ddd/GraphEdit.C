@@ -37,6 +37,7 @@ char GraphEdit_rcsid[] =
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <iostream.h>
 #include <strstream.h>
 #include <iomanip.h>
@@ -2587,9 +2588,9 @@ static int LayoutCompareCB(char *name1, char *name2)
 
 string node_name(GraphNode *node)
 {
-    ostrstream os;
-    os << "0x" << setbase(16) << (unsigned long)node;
-    return string(os);
+    char buffer[BUFSIZ];
+    sprintf(buffer, "0x%lx", (unsigned long) node);
+    return string(buffer);
 }
 
 static void remove_all_hints(Graph *graph)

@@ -295,7 +295,7 @@ void gdbFindCB(Widget w,
 	       XtPointer call_data)
 {
     SourceView::SearchDirection direction = 
-	(SourceView::SearchDirection) client_data;
+	(SourceView::SearchDirection) (long) client_data;
 
     assert(direction == SourceView::forward || 
 	   direction == SourceView::backward);

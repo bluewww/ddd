@@ -29,12 +29,17 @@
 char VSLRead_rcsid[] = 
     "$Id$";
 
-#include "assert.h"
 #include <stdlib.h>
 #include <limits.h>
 #include <iostream.h>
 #include <fstream.h>
 #include <strstream.h>
+
+#if HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
+
+#include "assert.h"
 #include "strclass.h"
 #include "cook.h"
 

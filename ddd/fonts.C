@@ -555,7 +555,7 @@ void set_font_size(DDDFont font, int size)
 
 void SetFontNameCB(Widget w, XtPointer client_data, XtPointer)
 {
-    DDDFont font = (DDDFont)client_data;
+    DDDFont font = (DDDFont) (long) client_data;
     String s = XmTextFieldGetString(w);
     set_font(font, s);
     XtFree(s);
@@ -565,7 +565,7 @@ void SetFontNameCB(Widget w, XtPointer client_data, XtPointer)
 
 void SetFontSizeCB(Widget w, XtPointer client_data, XtPointer)
 {
-    DDDFont font = (DDDFont)client_data;
+    DDDFont font = (DDDFont) (long) client_data;
     String s = XmTextFieldGetString(w);
     set_font_size(font, atoi(s));
     XtFree(s);
@@ -707,7 +707,7 @@ void BrowseFontCB(Widget w, XtPointer client_data, XtPointer call_data)
     if (cbs && cbs->event)
 	tm = time(cbs->event);
 
-    DDDFont font = (DDDFont)client_data;
+    DDDFont font = (DDDFont) (long) client_data;
 
     StatusDelay delay("Invoking " + font_type(font) + " selector");
 
