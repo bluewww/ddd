@@ -76,7 +76,7 @@ Source exploration
   ignore counts now have their special symbols on their own.
 
 - Value tips and selections work for struct members, too: you can
-  point at `A.B' or `A->B' and get the current value.
+  point at `A.B', `A->B', or `A::B' and get the current value.
 
 - Entering `list X' at the debugger prompt shows X in the source
   window.

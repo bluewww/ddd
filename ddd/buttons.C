@@ -493,7 +493,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 	return MString(0, true); // Nothing pointed at
 
 #if RUNTIME_REGEX
-    static regex rxchain("[-a-zA-Z0-9_>.]+");
+    static regex rxchain("[-a-zA-Z0-9_>.::]+");
 #endif
 
     // Don't invoke the debugger if EXPR is not an identifier.

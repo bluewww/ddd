@@ -461,7 +461,7 @@ void DispValue::init(string& value, DispValueType given_type)
 			// Use the C `->' operator instead
 			member_prefix.del("*");
 #if RUNTIME_REGEX
-			static regex rxchain("[-a-zA-Z0-9_>.]+");
+			static regex rxchain("[-a-zA-Z0-9::_>.]+");
 #endif
 			if (member_prefix.matches(rxchain))
 			{
