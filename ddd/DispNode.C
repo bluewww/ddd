@@ -160,7 +160,7 @@ bool DispNode::update(string& value)
     {
 	// Update existing value
 	disp_value = disp_value->update(value, changed, inited);
-	if (addr() != disp_value->addr())
+	if (disp_value->addr() != "" && addr() != disp_value->addr())
 	{
 	    set_addr(disp_value->addr());
 	    changed = true;
@@ -244,12 +244,12 @@ void DispNode::copy_selection_state(const DispNode& src)
 {
     if (value() != 0 && src.value() != 0 && src.selected_value() != 0)
     {
-	DispValue *descendant = 0;
+	const DispValue *descendant = 0;
 	bool eq = value()->structurally_equal(src.value(), 
 					      src.selected_value(),
 					      descendant);
 	if (eq)
-	    select(descendant);
+	    select((DispValue *)descendant);
 	return;
     }
 
