@@ -97,6 +97,8 @@ Data exploration
 - To select multiple displays, it suffices that the selection rectangle
   touches a display (rather than enclosing it entirely).
 
+- The Display Editor has buttons for clustering and unclustering displays.
+
 
 Running the Program
 -------------------
