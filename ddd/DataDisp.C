@@ -755,6 +755,16 @@ void DataDisp::deleteCB (Widget dialog, XtPointer, XtPointer)
 
 void DataDisp::refreshCB(Widget w, XtPointer, XtPointer)
 {
+    // Unmerge all displays
+    MapRef ref;
+    for (int k = disp_graph->first_nr(ref); 
+	 k != 0;
+	 k = disp_graph->next_nr(ref))
+    {
+	unmerge_display(k);
+    }
+
+    // Refresh them
     refresh_display(w);
 }
 
@@ -2988,17 +2998,6 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose)
 	refresh_graph_edit();
 	if (verbose)
 	    prompt();
-    }
-    else
-    {
-	// Unmerge all displays
-	MapRef ref;
-	for (int k = disp_graph->first_nr(ref); 
-	     k != 0;
-	     k = disp_graph->next_nr(ref))
-	{
-	    unmerge_display(k);
-	}
     }
 }
 
