@@ -385,4 +385,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 204. Switching from glyphs to text loses the current PC.
 
-206. (Insert your bug here)
+206. In AfterStep, The decoration check for the DDD command tool fails
+     if DDD is not mapped after 5s.
+
+207. (Insert your bug here)
