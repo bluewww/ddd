@@ -107,7 +107,7 @@ static void define_font(const string& name,
     defineConversionMacro(name, font);
 
     if (show)
-	cout << "Font @" << name << "@ =\t" << font << "\n";
+	cout << "@" << name << "@ =\t" << font << "\n";
 }
 
 static void setup_x_fonts(bool show)
