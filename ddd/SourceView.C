@@ -142,8 +142,10 @@ extern "C" {
 #include "arrow.xbm"
 #include "greyarrow.xbm"
 #include "signalarrow.xbm"
+#include "temparrow.xbm"
 #include "stop.xbm"
 #include "greystop.xbm"
+#include "tempstop.xbm"
 
 // Additional macros
 inline int isid(char c)
@@ -167,6 +169,7 @@ XtActionsRec SourceView::actions [] = {
     {"source-end-select-word",   SourceView::endSelectWordAct   },
     {"source-update-glyphs",     SourceView::updateGlyphsAct    },
     {"source-drag-glyph",        SourceView::dragGlyphAct       },
+    {"source-follow-glyph",      SourceView::followGlyphAct     },
     {"source-drop-glyph",        SourceView::dropGlyphAct       },
 };
 
@@ -569,6 +572,11 @@ void SourceView::clearBP(XtPointer client_data, XtIntervalId *)
     {
 	// Delete last breakpoint
 	bp_popup_deleteCB(source_text_w, XtPointer(&bp_nr), 0);
+
+	// Jump was not done - issue `frame' command.
+	Command c(gdb->frame_command(), source_text_w);
+	c.verbose = false;
+	gdb_command(c);
     }
 }
 
@@ -1201,10 +1209,8 @@ int SourceView::bp_at(string arg)
 
 // ***************************************************************************
 
-// Set insertion position for TEXT_W to POS, scrolling nicely
-void SourceView::SetInsertionPosition(Widget text_w,
-				      XmTextPosition pos, 
-				      bool fromTop)
+// Show position POS in TEXT_W, scrolling nicely
+void SourceView::ShowPosition(Widget text_w, XmTextPosition pos, bool fromTop)
 {
     string& text = current_text(text_w);
 
@@ -1243,9 +1249,16 @@ void SourceView::SetInsertionPosition(Widget text_w,
 	XmTextSetTopCharacter(text_w, new_top);
     }
 
-    XmTextSetInsertionPosition(text_w, pos);
     XmTextShowPosition(text_w, pos);	// just to make sure
 }
+
+void SourceView::SetInsertionPosition(Widget text_w, 
+				      XmTextPosition pos, bool fromTop)
+{
+    ShowPosition(text_w, pos, fromTop);
+    XmTextSetInsertionPosition(text_w, pos);
+}
+
 
 // ***************************************************************************
 
@@ -3715,7 +3728,7 @@ void SourceView::startSelectWordAct (Widget text_w, XEvent* e,
     selection_event = *e;
 
     XtCallActionProc(text_w, "grab-focus", e, params, *num_params);
-    
+
     if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
 
@@ -4933,16 +4946,14 @@ string SourceView::get_line(string position)
 // Glyph stuff
 //----------------------------------------------------------------------------
 
-// Move text cursor at glyph position
+// Move text cursor to glyph position
 void SourceView::MoveCursorToGlyphPosCB(Widget w, 
 					XtPointer, 
 					XtPointer call_data)
 {
     XmPushButtonCallbackStruct *info = (XmPushButtonCallbackStruct *)call_data;
     XEvent *e = info->event;
-    if (e->type != ButtonPress && e->type != ButtonRelease)
-	return;
-
+    
     Widget text_w;
     if (is_source_widget(w))
 	text_w = source_text_w;
@@ -4951,21 +4962,9 @@ void SourceView::MoveCursorToGlyphPosCB(Widget w,
     else
 	return;
 
-    // Set up event such that it applies to the source window
-    XButtonEvent *event = (XButtonEvent *) e;
-
-    Position x, y;
-    XtVaGetValues(w, 
-		  XmNx, &x,
-		  XmNy, &y,
-		  NULL);
-    event->x += x;
-    event->y += y;
-    event->window = XtWindow(text_w);
-
-    // Invoke action for source window
-    String *params = { 0 };
-    XtCallActionProc(text_w, "source-start-select-word", e, params, 0);
+    XmTextPosition pos = glyph_position(w, e);
+    if (pos != XmTextPosition(-1))
+	SetInsertionPosition(text_w, pos);
 }
 
 
@@ -5193,23 +5192,6 @@ void SourceView::update_glyphs(Widget w)
 			    UpdateGlyphsWorkProc, XtPointer(&update_glyph_id));
 	update_glyph_called = time((time_t *)0);
     }
-#if 0
-    else
-    {
-	// update_glyph() occasionally hangs - that is,
-	// UPDATE_GLYPH_ID != 0 holds, but UpdateGlyphsWorkProc() is
-	// never called.  Hence, we check for the time elapsed since
-	// we added the UpdateGlyphsWorkProc() timeout.
-	time_t seconds_since_timer_call = 
-	    (time((time_t *)0) - update_glyph_called);
-	if (seconds_since_timer_call >= 1)
-	{
-	    XtRemoveTimeOut(update_glyph_id);
-	    UpdateGlyphsWorkProc(XtPointer(&update_glyph_id), 
-				 &update_glyph_id);
-	}
-    }
-#endif
 }
 
 
@@ -5232,22 +5214,6 @@ void SourceView::CheckScrollCB(Widget, XtPointer, XtPointer)
 			    CheckScrollWorkProc, XtPointer(&check_scroll_id));
 	check_scroll_called = time((time_t *)0);
     }
-#if 0
-    else
-    {
-	// CheckScrollCB() occasionally hangs - that is,
-	// CHECK_SCROLL_ID != 0 holds, but CheckScrollWorkProc() is
-	// never called.  Hence, we check for the time elapsed since
-	// we added the CheckScrollWorkProc() timeout.
-	time_t seconds_since_timer_call = 
-	    (time((time_t *)0) - check_scroll_called);
-	if (seconds_since_timer_call >= 1)
-	{
-	    XtRemoveTimeOut(check_scroll_id);
-	    CheckScrollWorkProc(XtPointer(&check_scroll_id), &check_scroll_id);
-	}
-    }
-#endif
 }
     
 void SourceView::CheckScrollWorkProc(XtPointer client_data, XtIntervalId *id)
@@ -5266,6 +5232,7 @@ void SourceView::CheckScrollWorkProc(XtPointer client_data, XtIntervalId *id)
 
     XmTextPosition old_top_pc = last_top_pc;
     last_top_pc = XmTextGetTopCharacter(code_text_w);
+
     if (old_top != last_top && old_top_pc != last_top_pc)
 	update_glyphs();
     else if (old_top != last_top)
@@ -5291,6 +5258,8 @@ int SourceView::multiple_stop_x_offset = stop_width + (2 * motif_offset - 2);
 Widget SourceView::plain_arrows[2]  = {0, 0};
 Widget SourceView::grey_arrows[2]   = {0, 0};
 Widget SourceView::signal_arrows[2] = {0, 0};
+Widget SourceView::temp_arrows[2]   = {0, 0};
+Widget SourceView::temp_stops[2]    = {0, 0};
 Widget SourceView::plain_stops[2][MAX_GLYPHS + 1];
 Widget SourceView::grey_stops[2][MAX_GLYPHS + 1];
 
@@ -5343,6 +5312,16 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 			     signal_arrow_height);
 	    return False;
 	}
+
+	if (temp_arrows[k] == 0)
+	{
+	    temp_arrows[k] = 
+		create_glyph(form_w, "temp_arrow",
+			     temp_arrow_bits, 
+			     temp_arrow_width,
+			     temp_arrow_height);
+	    return False;
+	}
     }
    
     for (k = 0; k < 2; k++)
@@ -5374,6 +5353,16 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 				 stop_height);
 		return False;
 	    }
+	}
+
+	if (temp_stops[k] == 0)
+	{
+	    temp_stops[k] = 
+		create_glyph(form_w, "temp_stop",
+			     temp_stop_bits, 
+			     temp_stop_width,
+			     temp_stop_height);
+	    return False;
 	}
     }
 
@@ -5470,6 +5459,59 @@ Widget SourceView::map_arrow_at(Widget w, XmTextPosition pos)
     return 0;
 }
 
+// Map temporary stop sign at position POS.
+Widget SourceView::map_temp_stop_at(Widget w, XmTextPosition pos)
+{
+    assert (is_source_widget(w) || is_code_widget(w));
+    Position x, y;
+    Boolean pos_displayed = (pos != XmTextPosition(-1) 
+			     && XmTextPosToXY(w, pos, &x, &y));
+
+    int k = int(is_code_widget(w));
+
+    Widget& temp_stop = temp_stops[k];
+
+    while (temp_stop == 0)
+    {
+	if (CreateGlyphsWorkProc(0))
+	    break;
+    }
+
+    if (pos_displayed)
+	map_glyph(temp_stop, x + stop_x_offset, y);
+    else
+	unmap_glyph(temp_stop);
+
+    return temp_stop;
+}
+
+// Map temporary arrow at position POS.
+Widget SourceView::map_temp_arrow_at(Widget w, XmTextPosition pos)
+{
+    assert (is_source_widget(w) || is_code_widget(w));
+    Position x, y;
+    Boolean pos_displayed = (pos != XmTextPosition(-1) 
+			     && XmTextPosToXY(w, pos, &x, &y));
+
+    int k = int(is_code_widget(w));
+
+    Widget& temp_arrow = temp_arrows[k];
+
+    while (temp_arrow == 0)
+    {
+	if (CreateGlyphsWorkProc(0))
+	    break;
+    }
+
+    if (pos_displayed)
+	map_glyph(temp_arrow, x + arrow_x_offset, y);
+    else
+	unmap_glyph(temp_arrow);
+
+    return temp_arrow;
+}
+
+
 
 // Update glyphs after interval
 void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *id)
@@ -5529,7 +5571,9 @@ void SourceView::update_glyphs_now()
 	    && line_count > 0
 	    && last_execution_line > 0
 	    && last_execution_line <= line_count)
+	{
 	    pos = pos_of_line(last_execution_line);
+	}
 
 	map_arrow_at(source_text_w, pos);
     }
@@ -5544,7 +5588,7 @@ void SourceView::update_glyphs_now()
 
 	map_arrow_at(code_text_w, pos);
     }
-    
+
     // Map breakpoint glyphs
     for (int k = 0; k < 2; k++)
     {
@@ -5600,7 +5644,7 @@ void SourceView::update_glyphs_now()
 	    }
 	}
 
-	// Unmap remaining breakpoiny glyphs
+	// Unmap remaining breakpoint glyphs
 	Widget w;
 	while ((w = plain_stops[k][plain_count++]))
 	    unmap_glyph(w);
@@ -5746,23 +5790,112 @@ MString SourceView::help_on_bp(int bp_nr, bool detailed)
 
 // Glyph drag & drop
 
+XmTextPosition SourceView::glyph_position(Widget w, XEvent *e, bool normalize)
+{
+    BoxPoint p = point(e);
+    if (w != source_text_w && w != code_text_w)
+    {
+	// Called from a glyph: add glyph position to event position
+	Position xw, yw;
+	XtVaGetValues(w, 
+		      XmNx, &xw,
+		      XmNy, &yw,
+		      NULL);
+	p[X] += xw;
+	p[Y] += yw;
+    }
+
+    // Get the position
+    Widget text_w;
+    if (is_source_widget(w))
+	text_w = source_text_w;
+    else if (is_code_widget(w))
+	text_w = code_text_w;
+    else
+	return XmTextPosition(-1);
+
+    XmTextPosition pos = XmTextXYToPos(text_w, p[X], p[Y]);
+
+    if (normalize)
+    {
+	const string& text = current_text(w);
+	pos = min(pos, text.length());
+	while (pos > 0 && text[pos - 1] != '\n')
+	    pos--;
+    }
+
+    return pos;
+}
+
 void SourceView::dragGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
 {
     if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
 
+    Widget text_w;
+    if (is_source_widget(w))
+	text_w = source_text_w;
+    else if (is_code_widget(w))
+	text_w = code_text_w;
+    else
+	return;			// Bad widget
+
+    int k;
+    for (k = 0; k < 2; k++)
+	if (w == grey_arrows[k] || w == temp_stops[k] || w == temp_arrows[k])
+	    return;
+
+    static Cursor move_cursor = XCreateFontCursor(XtDisplay(w), XC_fleur);
+
+    clog << "Dragging " << XtName(w) << "\n";
+
+    XDefineCursor(XtDisplay(w), XtWindow(w), move_cursor);
+
+    map_temp_stop_at(text_w, XmTextPosition(-1));
+    map_temp_arrow_at(text_w, XmTextPosition(-1));
+}
+
+void SourceView::followGlyphAct  (Widget w, XEvent *e, String *, Cardinal *)
+{
     if (!is_source_widget(w) && !is_code_widget(w))
 	return;
 
     int k;
     for (k = 0; k < 2; k++)
-	if (w == grey_arrows[k])
+	if (w == grey_arrows[k] || w == temp_stops[k] || w == temp_arrows[k])
 	    return;
 
-    static Cursor move_cursor = XCreateFontCursor(XtDisplay(w), XC_fleur);
+    Widget text_w;
+    if (is_source_widget(w))
+	text_w = source_text_w;
+    else if (is_code_widget(w))
+	text_w = code_text_w;
+    else
+	return;			// Bad widget
 
-    clog << "Drag glyph\n";
-    XDefineCursor(XtDisplay(w), XtWindow(w), move_cursor);
+    XmTextPosition pos = glyph_position(w, e);
+
+    // Make sure we see the position
+    ShowPosition(text_w, pos);
+
+#if 0
+    // This doesn't work yet - we may unmap W and lose the grab.
+
+    // Update glyphs in case we had to scroll
+    CheckScrollCB(w, XtPointer(0), XtPointer(0));
+#endif
+
+    // Check for exec pos
+    for (k = 0; k < 2; k++)
+    {
+	if (w == plain_arrows[k] || w == signal_arrows[k])
+	{
+	    map_temp_arrow_at(text_w, pos);
+	    return;
+	}
+    }
+
+    map_temp_stop_at(text_w, pos);
 }
 
 void SourceView::dropGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
@@ -5773,47 +5906,54 @@ void SourceView::dropGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
     if (!is_source_widget(w) && !is_code_widget(w))
 	return;
 
-    int k;
-    for (k = 0; k < 2; k++)
-	if (w == grey_arrows[k])
-	    return;
-
-    clog << "Drop glyph\n";
-    XUndefineCursor(XtDisplay(w), XtWindow(w));
-
-    XButtonEvent *event = (XButtonEvent *) e;
-
-    Position x = event->x;
-    Position y = event->y;
-
-    if (w != source_text_w && w != code_text_w)
-    {
-	// Called from a glyph: add glyph position to event position
-	Position xw, yw;
-	XtVaGetValues(w, 
-		      XmNx, &xw,
-		      XmNy, &yw,
-		      NULL);
-	x += xw;
-	y += yw;
-    }
-
-    // Get the position
     Widget text_w;
     if (is_source_widget(w))
 	text_w = source_text_w;
     else if (is_code_widget(w))
 	text_w = code_text_w;
     else
-	return;
+	return;			// Bad widget
 
-    XmTextPosition pos = XmTextXYToPos(text_w, x, y);
+    XUndefineCursor(XtDisplay(w), XtWindow(w));
+
+    // Unmap temp glyph
+    map_temp_stop_at(text_w, XmTextPosition(-1));
+    map_temp_arrow_at(text_w, XmTextPosition(-1));
+
+    // Show all other glyphs
+    update_glyphs();
+
+    int k;
+    for (k = 0; k < 2; k++)
+	if (w == grey_arrows[k] || w == temp_stops[k] || w == temp_arrows[k])
+	    return;
+
+    XmTextPosition pos = glyph_position(w, e);
+    if (pos == XmTextPosition(-1))
+	return;			// No position
 
     int line_nr = 0;
     bool in_text;
     int bp_nr;
     string address;
-    get_line_of_pos(text_w, pos, line_nr, address, in_text, bp_nr);
+    if (!get_line_of_pos(text_w, pos, line_nr, address, in_text, bp_nr))
+	return;			// No location
+
+    if (text_w == code_text_w)
+    {
+	// Selection from code
+	if (address == "")
+	    return;		// No address
+    }
+    else
+    {
+	// Selection from source
+	if (line_nr == 0)
+	    return;		// No line
+	address = current_source_name() + ':' + itostring(line_nr);
+    }
+
+    clog << "Dropping " << XtName(w) << " at " << address << "\n";
 
     if (text_w == code_text_w)
     {

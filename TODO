@@ -383,6 +383,4 @@ Volunteers for these and other projects are welcome!
      compiling them at runtime.  A LEX-generated scanner matches up to 
      *10 times* faster than compiled regexps.
 
-211* Allow drag & drop of breakpoints and execution positions.
-
 212. (Insert your project idea here)

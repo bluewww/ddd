@@ -184,6 +184,7 @@ class SourceView {
     static void endSelectWordAct  (Widget, XEvent*, String*, Cardinal*);
     static void updateGlyphsAct   (Widget, XEvent*, String*, Cardinal*);
     static void dragGlyphAct      (Widget, XEvent*, String*, Cardinal*);
+    static void followGlyphAct    (Widget, XEvent*, String*, Cardinal*);
     static void dropGlyphAct      (Widget, XEvent*, String*, Cardinal*);
 
     //-----------------------------------------------------------------------
@@ -335,9 +336,13 @@ class SourceView {
 			    bool force_reload = false,
 			    bool silent = false);
 
-    static void SetInsertionPosition(Widget w,
-				     XmTextPosition pos, 
+    // Set insertion position to POS.
+    static void SetInsertionPosition(Widget w, XmTextPosition pos, 
 				     bool fromTop = false);
+
+    // Make position POS visible.
+    static void ShowPosition(Widget w, XmTextPosition pos, 
+			     bool fromTop = false);
 
     static bool is_source_widget(Widget w);
     static bool is_code_widget(Widget w);
@@ -373,6 +378,10 @@ class SourceView {
     // Unmap glyph W
     static void unmap_glyph(Widget w);
 
+    // Return position during glyph drag and drop
+    static XmTextPosition glyph_position(Widget w, XEvent *e, 
+					 bool normalize = true);
+
 public:
     // Horizontal arrow offset (pixels)
     static int arrow_x_offset;
@@ -388,8 +397,10 @@ private:
     static Widget plain_arrows[2];
     static Widget grey_arrows[2];
     static Widget signal_arrows[2];
+    static Widget temp_arrows[2];
     static Widget plain_stops[2][MAX_GLYPHS + 1];
     static Widget grey_stops[2][MAX_GLYPHS + 1];
+    static Widget temp_stops[2];
 
     // Map stop sign in W at position POS.  Get widget from
     // STOPS[COUNT]; store location in STOPS.  Return widget.
@@ -397,8 +408,10 @@ private:
 			      Widget stops[], int& count,
 			      TextPositionArray& stops);
 
-    // Map arrow in W at POS.
-    static Widget map_arrow_at(Widget w, XmTextPosition pos);
+    // Map arrow/temp arrow/temp stop in W at POS.
+    static Widget map_arrow_at     (Widget w, XmTextPosition pos);
+    static Widget map_temp_arrow_at(Widget w, XmTextPosition pos);
+    static Widget map_temp_stop_at (Widget w, XmTextPosition pos);
 
     // True if code/source glyphs need to be updated
     static bool update_code_glyphs;

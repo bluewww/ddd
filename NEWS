@@ -52,6 +52,8 @@ DDD 2.2 [in development]
       interactively.  This allows you to back up - perhaps with more
       breakpoints set-over a portion of a program that has already
       executed, in order to examine its execution in more detail.
+    - The current execution position can also be altered via drag and
+      drop.  Breakpoints can be dragged and dropped, too.
     - Improved display of breakpoints and execution positions:
       + The current execution position is now properly cleared if
         undetermined (no source, program terminated, etc.)
