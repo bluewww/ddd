@@ -298,6 +298,13 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 			break;
 		    }
 
+		    if (child->repeats() > 1)
+		    {
+			// Child is a repeated array
+			have_2d_array = false;
+			break;
+		    }
+
 		    if (k == 0)
 		    {
 			nchildren = child->nchildren();
