@@ -254,6 +254,8 @@ extern "C" {
 
 // Callbacks
 static void gdb_readyHP       (Agent *, void *, void *);
+static void gdb_strangeHP     (Agent *, void *, void *);
+static void gdb_panicHP       (Agent *, void *, void *);
 static void language_changedHP(Agent *, void *, void *);
 static void source_argHP      (void *, void *, void *call_data);
 
@@ -1293,6 +1295,27 @@ public:
 static MString version_warnings;
 
 
+
+//-----------------------------------------------------------------------------
+// Transient position
+//-----------------------------------------------------------------------------
+
+// Return a transient position on SCREEN (for command tool etc.) in POS_X/POS_Y
+static void get_transient_pos(Screen *screen, Position& pos_x, Position& pos_y)
+{
+    (void) screen;		// Use it
+#if 0
+    // Use lower right corner.
+    pos_x = WidthOfScreen(screen) - 1;
+    pos_y = HeightOfScreen(screen) - 1;
+#else
+    // This loses on some window managers; upper left corner is safer.
+    pos_x = 0;
+    pos_y = 0;
+#endif
+}
+
+
 //-----------------------------------------------------------------------------
 // DDD main program
 //-----------------------------------------------------------------------------
@@ -1751,6 +1774,8 @@ int main(int argc, char *argv[])
     gdb->addHandler(LanguageChanged,  DataDisp::language_changedHP);
     gdb->addHandler(LanguageChanged,  language_changedHP);
     gdb->addHandler(ReplyRequired,    gdb_selectHP);
+    gdb->addHandler(Panic,            gdb_panicHP);
+    gdb->addHandler(Strange,          gdb_strangeHP);
 
     // Set default history file (never read, only overwritten)
     set_gdb_history_file(gdb->history_file());
@@ -2291,8 +2316,8 @@ int main(int argc, char *argv[])
 	Widget tool_shell_parent = 
 	    source_view_shell ? source_view_shell : command_shell;
 
-	Position pos_x = WidthOfScreen(XtScreen(tool_shell_parent)) - 1;
-	Position pos_y = HeightOfScreen(XtScreen(tool_shell_parent)) - 1;
+	Position pos_x, pos_y;
+	get_transient_pos(XtScreen(tool_shell_parent), pos_x, pos_y);
 
 	ostrstream os;
 	os << "+" << pos_x << "+" << pos_y;
@@ -4361,6 +4386,31 @@ static void gdb_readyHP(Agent *, void *, void *call_data)
 }
 
 
+//-----------------------------------------------------------------------------
+// I/O warnings
+//-----------------------------------------------------------------------------
+
+static void gdb_panicHP(Agent *source, void *, void *call_data)
+{
+    string msg = (char *)call_data;
+    string path = source->path();
+    GDBAgent *gdb = ptr_cast(GDBAgent, source);
+    if (gdb != 0)
+	path = downcase(gdb->title());
+    post_error(path + ": " + msg, "gdb_io_error");
+}
+
+static void gdb_strangeHP(Agent *source, void *, void *call_data)
+{
+    string msg = (char *)call_data;
+    string path = source->path();
+    GDBAgent *gdb = ptr_cast(GDBAgent, source);
+    if (gdb != 0)
+	path = downcase(gdb->title());
+    post_warning(path + ": " + msg, "gdb_io_warning");
+}
+
+
 
 //-----------------------------------------------------------------------------
 // Output
@@ -4953,8 +5003,8 @@ static Widget init_label, init_shell;
 // Check if window manager decorates transients
 static void start_have_decorated_transients(Widget parent)
 {
-    Position pos_x = WidthOfScreen(XtScreen(parent)) - 1;
-    Position pos_y = HeightOfScreen(XtScreen(parent)) - 1;
+    Position pos_x, pos_y;
+    get_transient_pos(XtScreen(parent), pos_x, pos_y);
 
     ostrstream os;
     os << "+" << pos_x << "+" << pos_y;
