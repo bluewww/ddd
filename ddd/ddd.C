@@ -358,6 +358,16 @@ static XrmDatabase GetFileDatabase(char *filename);
 // Lock `~/.ddd'
 static void lock_ddd(Widget parent);
 
+// Various setups
+static void setup_version_info();
+static void setup_environment();
+static void setup_command_tool(bool iconic);
+static void setup_options(int argc, char *argv[],
+			  StringArray& saved_options, string& gdb_name,
+			  bool& no_windows);
+static void setup_tty();
+static void setup_version_warnings();
+
 
 //-----------------------------------------------------------------------------
 // Xt Stuff
@@ -1266,6 +1276,12 @@ static Delay *init_delay = 0;
 // Logo stuff
 static string last_shown_startup_logo;
 
+// Events to note for window visibility
+const int STRUCTURE_MASK = StructureNotifyMask | VisibilityChangeMask;
+
+// The atom for the delete-window protocol
+static Atom WM_DELETE_WINDOW;
+
 //-----------------------------------------------------------------------------
 // Set sensitivity
 //-----------------------------------------------------------------------------
@@ -1367,95 +1383,9 @@ int main(int argc, char *argv[])
     // and options that would otherwise be eaten by Xt
     StringArray saved_options;
     string gdb_name = "gdb";
-    int gdb_option_pos = -1;
-    int gdb_option_offset = 2;
-    int i;
-    for (i = 1; i < argc; i++)
-    {
-	string arg = string(argv[i]);
+    setup_options(argc, argv, saved_options, gdb_name, no_windows);
 
-	if (arg == "--")
-	    break;		// End of options
-
-	if ((arg == "--debugger" || arg == "-debugger") && i < argc - 1)
-	{
-	    gdb_name = argv[i + 1];
-	    gdb_option_pos    = i;
-	    gdb_option_offset = 2;
-	}
-
-	if (arg == "--dbx" || arg == "-dbx" 
-	    || arg == "--gdb" || arg == "-gdb"
-	    || arg == "--xdb" || arg == "-xdb")
-	{
-	    gdb_name = arg.after('-', -1);
-	    gdb_option_pos    = i;
-	    gdb_option_offset = 1;
-	}
-
-	if (arg == "--nw" || arg == "-nw" || arg == "-L")
-	{
-	    if (gdb_option_pos >= 0)
-	    {
-		// Strip `--debugger NAME'/`--dbx'/`--gdb', etc.
-		for (int j = gdb_option_pos; j <= argc - gdb_option_offset; 
-					     j++)
-		    argv[j] = argv[j + gdb_option_offset];
-		argc -= gdb_option_offset;
-		i    -= gdb_option_offset;
-	    }
-
-	    // Strip `--nw'/`-L'
-	    for (int j = i; j <= argc - 1; j++)
-		argv[j] = argv[j + 1];
-	    argc -= 1;
-	    i    -= 1;
-
-	    no_windows = true;
-	}
-
-	if (!no_windows)
-	{
-	    // Save some one-letter options that would be eaten by Xt:
-	    // -b BPS  - Set the line speed to BPS (GDB)
-	    // -c FILE - use FILE as a core dump to examine (GDB)
-	    // -d DIR  - Add DIR to the path of search files (GDB, XDB)
-	    // -e FILE - use FILE as executable file to execute (GDB)
-	    // -e FILE - Redirect stderr to FILE (XDB)
-	    // -i FILE - Redirect stdin to FILE (XDB)
-	    // -I DIR  - Add DIR to the path of search files (DBX)
-	    // -o FILE - Redirect stdout to FILE (XDB)
-	    // -p FILE - Specify a playback FILE (XDB)
-	    // -P PID  - Specify a process id PID (DBX, XDB)
-	    // -r FILE - Specify a record FILE (XDB)
-	    // -R FILE - Specify a restore state FILE (XDB)
-	    // -s FILE - read symbol table (GDB)
-	    // -s FILE - execute commands from FILE (DBX)
-	    // -x FILE - execute commands from FILE (GDB)
-
-	    // Note: the following options are used by DDD:
-	    // -h       - Help
-	    // -l LOGIN - Login as LOGIN
-	    // -v       - Show version
-	    // -?       - Help
-	    // -t       - Use TTY mode
-	    // -f       - Use fullname mode
-#if RUNTIME_REGEX
-	    static regex rxoptions("-[bcdeiIopPrRsx]");
-#endif
-	    if (i < argc - 1 && arg.matches(rxoptions))
-	    {
-		saved_options += arg;
-		saved_options += string(argv[i + 1]);
-
-		for (int j = i; j <= argc - 2; j++)
-		    argv[j] = argv[j + 2];
-		argc -= 2;
-		i    -= 2;
-	    }
-	}
-    }
-
+    // If we don't want windows, just start GDB.
     if (no_windows)
     {
 	argv[0] = gdb_name;
@@ -1521,7 +1451,7 @@ int main(int argc, char *argv[])
 	{
 	    // Try `=FILE' hack: if the last or second-to-last arg is
 	    // `=FILE', replace it by FILE and use FILE as session id.
-	    for (i = argc - 1; i >= 1 && i >= argc - 2; i--)
+	    for (int i = argc - 1; i >= 1 && i >= argc - 2; i--)
 	    {
 		if (argv[i][0] == '=')
 		{
@@ -1714,42 +1644,7 @@ int main(int argc, char *argv[])
     // From this point on, we'll be running under X.
 
     // Warn for incompatible `Ddd' and `~/.ddd/init' files
-    if (app_data.app_defaults_version == 0)
-    {
-	cerr << "Warning: no version information in `" 
-	     << DDD_CLASS_NAME "' app-defaults-file\n";
-
-	version_warnings += rm("No version information in `")
-	    + tt(DDD_CLASS_NAME) + rm("' app-defaults-file") + cr();
-    }
-    else if (string(app_data.app_defaults_version) != DDD_VERSION)
-    {
-	cerr << "Warning: using `" DDD_CLASS_NAME "' app-defaults file"
-	     << " for " DDD_NAME " " << app_data.app_defaults_version 
-	     << " (this is " DDD_NAME " " DDD_VERSION ")\n";
-
-	version_warnings += rm("Using `") + tt(DDD_CLASS_NAME)
-	    + rm("' app-defaults file for " DDD_NAME " ")
-	    + rm(app_data.app_defaults_version)
-	    + rm(" (this is " DDD_NAME " " DDD_VERSION ")") + cr();
-    }
-
-    if (app_data.dddinit_version && 
-	string(app_data.dddinit_version) != DDD_VERSION)
-    {
-	cerr << "Warning: using "
-	     << quote(session_state_file(app_data.session))
-	     << " file for " DDD_NAME " " << app_data.dddinit_version
-	     << "\n(this is " DDD_NAME " " DDD_VERSION ")."
-	     << "  Please save options.\n";
-
-	version_warnings += rm("Using `")
-	    + tt(cook(session_state_file(app_data.session)))
-	    + rm("' file for " DDD_NAME " ")
-	    + rm(app_data.dddinit_version) + cr()
-	    + rm("(this is " DDD_NAME " " DDD_VERSION ").  "
-		 "Please save options.");
-    }
+    setup_version_warnings();
 
     // Global variables: Set LessTif version
     lesstif_version = app_data.lesstif_version;
@@ -1847,7 +1742,7 @@ int main(int argc, char *argv[])
 				      applicationShellWidgetClass,
 				      toplevel, args, arg));
     }
-    Atom WM_DELETE_WINDOW =
+    WM_DELETE_WINDOW =
 	XmInternAtom(XtDisplay(toplevel), "WM_DELETE_WINDOW", False);
     XmAddWMProtocolCallback(command_shell, WM_DELETE_WINDOW, DDDCloseCB, 0);
 
@@ -2098,6 +1993,7 @@ int main(int argc, char *argv[])
     load_history(session_history_file(app_data.session));
 
     // Put saved options back again
+    int i;
     for (i = argc + saved_options.size() - 1; i > saved_options.size(); i--)
 	argv[i] = argv[i - saved_options.size()];
     for (i = saved_options.size() - 1; i >= 0; i--)
@@ -2106,32 +2002,7 @@ int main(int argc, char *argv[])
     argv[argc] = 0;
 
     // Setup environment.
-    // Set the type of the execution tty.
-    switch (type)
-    {
-    case GDB:
-    case DBX:
-	// The debugger console has few capabilities.
-	// When starting the execution TTY, we set the correct type.
-	put_environment("TERM", "dumb");
-	break;
-
-    case XDB:
-	// In XDB, we have no means to set the TTY type afterwards;
-	// Set the execution TTY type right now.
-	put_environment("TERM", app_data.term_type);
-	break;
-    }
-
-    // Don't let TERMCAP settings override our TERM settings.
-    put_environment("TERMCAP", "");
-
-    // This avoids zillions of problems with debuggers that pipe
-    // their output through `more', `less', and likewise.
-    put_environment("PAGER", "cat");
-
-    // Let the debugger know that we're here
-    put_environment(DDD_NAME, ddd_NAME "-" DDD_VERSION "-" DDD_HOST);
+    setup_environment();
 
     // Setup handlers
     source_arg->addHandler (Changed, source_argHP);
@@ -2145,70 +2016,7 @@ int main(int argc, char *argv[])
     helpOnVersionPixmapProc = versionlogo;
 
     // Setup version info
-    string cinfo = string(config_info).before("\n");
-    while (cinfo.contains(' ', -1))
-	cinfo = cinfo.before(int(cinfo.length()) - 1);
-
-    int cinfo_lt = cinfo.index('<');
-    int cinfo_gt = cinfo.index('>');
-    if (cinfo_lt >= 0 && cinfo_gt >= 0)
-    {
-	helpOnVersionExtraText = rm(cinfo.through(cinfo_lt));
-	helpOnVersionExtraText += tt(cinfo(cinfo_lt + 1, 
-					   cinfo_gt - cinfo_lt - 1));
-	helpOnVersionExtraText += rm(cinfo.from(cinfo_gt));
-    }
-    else
-    {
-	helpOnVersionExtraText = rm(cinfo);
-    }
-    helpOnVersionExtraText += cr();
-
-    string expires = ddd_expiration_date();
-    if (expires != "")
-    {
-	string expired_msg = DDD_NAME " " DDD_VERSION " ";
-	if (ddd_expired())
-	    expired_msg += "has expired since " + expires;
-	else
-	    expired_msg += "expires " + expires;
-
-	helpOnVersionExtraText += rm(expired_msg + ".") + cr();
-    }
-
-    helpOnVersionExtraText += cr() 
-	+ rm(DDD_NAME " is ") + sl("free software")
-	+ rm(" and you are welcome to distribute copies of it") + cr()
-	+ rm("under certain conditions; select ")
-	+ bf("Help") + rm(" | ") + bf(DDD_NAME " License")
-	+ rm(" to see the") + cr()
-	+ rm("conditions.  There is ") + sl("absolutely no warranty") 
-	+ rm(" for " DDD_NAME "; see the ") + cr()
-	+ rm(DDD_NAME " License for details.") + cr()
-	+ cr()
-	+ sl(DDD_NAME " needs your support!")
-	+ rm(" If you have any " DDD_NAME " success stories, ") + cr()
-        + rm("please write them down on a picture postcard "
-	     "and send them to us:") + cr()
-	+ cr()
-	+ rm("    Technische Universit\344t Braunschweig") + cr()
-	+ rm("    Abteilung Softwaretechnologie") + cr()
-	+ rm("    B\374ltenweg 88") + cr()
-	+ rm("    D-38092 Braunschweig") + cr()
-	+ rm("    GERMANY") + cr()
-	+ cr()
-	+ rm("Send bug reports to <")
-	+ tt(ddd_NAME "-bugs@ips.cs.tu-bs.de") + rm(">;") + cr()
-	+ rm("see the " DDD_NAME " manual "
-	     "for details on reporting bugs.") + cr()
-	+ rm("Send comments and suggestions to <")
-	+ tt(ddd_NAME "@ips.cs.tu-bs.de") + rm(">.") + cr()
-	+ cr()
-	+ rm(DDD_NAME " WWW page: ") + tt(app_data.www_page) + cr()
-	+ rm(DDD_NAME " discussions: <")
-	+ tt(ddd_NAME "-users-request@ips.cs.tu-bs.de") + rm(">") + cr()
-	+ rm(DDD_NAME " announcements: <")
-	+ tt(ddd_NAME "-announce-request@ips.cs.tu-bs.de") + rm(">");
+    setup_version_info();
 
     // Customize `settings' title.
     set_settings_title(command_edit_menu[EditItems::Settings].widget);
@@ -2333,15 +2141,14 @@ int main(int argc, char *argv[])
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
 
     // Trace positions and visibility of all DDD windows
-    const int structure_mask = StructureNotifyMask | VisibilityChangeMask;
     if (command_shell)
-	XtAddEventHandler(command_shell, structure_mask, False,
+	XtAddEventHandler(command_shell, STRUCTURE_MASK, False,
 			  StructureNotifyEH, XtPointer(0));
     if (source_view_shell)
-	XtAddEventHandler(source_view_shell, structure_mask, False,
+	XtAddEventHandler(source_view_shell, STRUCTURE_MASK, False,
 			  StructureNotifyEH, XtPointer(0));
     if (data_disp_shell)
-	XtAddEventHandler(data_disp_shell, structure_mask, False,
+	XtAddEventHandler(data_disp_shell, STRUCTURE_MASK, False,
 			  StructureNotifyEH, XtPointer(0));
 
 #if 0
@@ -2355,89 +2162,7 @@ int main(int argc, char *argv[])
     // Create command tool
     if (app_data.tool_buttons && strlen(app_data.tool_buttons) > 0)
     {
-	Widget tool_shell_parent = 
-	    source_view_shell ? source_view_shell : command_shell;
-
-	Position pos_x, pos_y;
-	get_transient_pos(XtScreen(tool_shell_parent), pos_x, pos_y);
-
-	ostrstream os;
-	os << "+" << pos_x << "+" << pos_y;
-	string geometry(os);
-
-	arg = 0;
-	XtSetArg(args[arg], XmNgeometry, geometry.chars());   arg++;
-	XtSetArg(args[arg], XmNx, pos_x);                     arg++;
-	XtSetArg(args[arg], XmNy, pos_y);                     arg++;
-	XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
-	XtSetArg(args[arg], XmNallowShellResize, False);      arg++;
-	XtSetArg(args[arg], XmNmwmDecorations,
-		 MWM_DECOR_BORDER | MWM_DECOR_TITLE | MWM_DECOR_MENU); arg++;
-
-	// It is preferable to realize the command tool as a
-	// DialogShell, since this will cause it to stay on top of
-	// other DDD windows.  Unfortunately, some window managers do
-	// not decorate transient windows such as DialogShells.  In
-	// this case, use a TopLevel shell instead and rely on the DDD
-	// auto-raise mechanisms defined in `windows.C'.
-	bool use_transient_tool_shell = true;
-	switch (app_data.decorate_tool)
-	{
-	case On:
-	    use_transient_tool_shell = false;
-	    break;
-	case Off:
-	    use_transient_tool_shell = true;
-	    break;
-	case Auto:
-	    use_transient_tool_shell = have_decorated_transients();
-	    break;
-	}
-
-	if (use_transient_tool_shell)
-	{
-	    tool_shell = 
-		verify(XmCreateDialogShell(tool_shell_parent, 
-					   "tool_shell", args, arg));
-	}
-	else
-	{
-	    tool_shell = 
-		verify(XtCreateWidget("tool_shell", vendorShellWidgetClass,
-				      tool_shell_parent, args, arg));
-	}
-
-	XmAddWMProtocolCallback(tool_shell, WM_DELETE_WINDOW, 
-				gdbCloseToolWindowCB, 0);
-
-
-	arg = 0;
-	tool_buttons_w = 
-	    verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
-	set_buttons(tool_buttons_w, app_data.tool_buttons, false);
-
-	Delay::register_shell(tool_shell);
-	XtAddEventHandler(tool_shell, structure_mask, False,
-			  StructureNotifyEH, XtPointer(0));
-
-	if (app_data.tool_bar)
-	{
-	    // The command tool is not needed, as we have a tool bar.
-	}
-	else if (!app_data.source_window)
-	{
-	    // We have no source window, and thus no command tool.
-	}
-	else if (source_view_shell || iconic)
-	{
-	    // We don't need the command tool right now - 
-	    // wait for source window to map
-	}
-	else
-	{
-	    // OK, raise the command tool
-	    initial_popup_shell(tool_shell);
-	}
+	setup_command_tool(iconic);
     }
 
     // Make sure we see all messages accumulated so far
@@ -2452,19 +2177,7 @@ int main(int argc, char *argv[])
     }
 
     // Setup TTY interface
-    if (app_data.tty_mode)
-    {
-	init_command_tty();
-
-	// Issue init msg (using 7-bit characters)
-	string init_msg = XmTextGetString(gdb_w);
-	init_msg.gsub("\344", "ae");
-	init_msg.gsub("\366", "oe");
-	init_msg.gsub("\374", "ue");
-	init_msg.gsub("\337", "ss");
-	init_msg.gsub("\251", "(C)");
-	tty_out(init_msg);
-    }
+    setup_tty();
 
     // Start debugger
     start_gdb();
@@ -5440,4 +5153,346 @@ bool process_emergencies()
     }
 
     return false;
+}
+
+//-----------------------------------------------------------------------------
+// Various setups
+//-----------------------------------------------------------------------------
+
+static void setup_version_info()
+{
+    string cinfo = string(config_info).before("\n");
+    while (cinfo.contains(' ', -1))
+	cinfo = cinfo.before(int(cinfo.length()) - 1);
+
+    int cinfo_lt = cinfo.index('<');
+    int cinfo_gt = cinfo.index('>');
+    if (cinfo_lt >= 0 && cinfo_gt >= 0)
+    {
+	helpOnVersionExtraText = rm(cinfo.through(cinfo_lt));
+	helpOnVersionExtraText += tt(cinfo(cinfo_lt + 1, 
+					   cinfo_gt - cinfo_lt - 1));
+	helpOnVersionExtraText += rm(cinfo.from(cinfo_gt));
+    }
+    else
+    {
+	helpOnVersionExtraText = rm(cinfo);
+    }
+    helpOnVersionExtraText += cr();
+
+    string expires = ddd_expiration_date();
+    if (expires != "")
+    {
+	string expired_msg = DDD_NAME " " DDD_VERSION " ";
+	if (ddd_expired())
+	    expired_msg += "has expired since " + expires;
+	else
+	    expired_msg += "expires " + expires;
+
+	helpOnVersionExtraText += rm(expired_msg + ".") + cr();
+    }
+
+    helpOnVersionExtraText += cr() 
+	+ rm(DDD_NAME " is ") + sl("free software")
+	+ rm(" and you are welcome to distribute copies of it") + cr()
+	+ rm("under certain conditions; select ")
+	+ bf("Help") + rm(" | ") + bf(DDD_NAME " License")
+	+ rm(" to see the") + cr()
+	+ rm("conditions.  There is ") + sl("absolutely no warranty") 
+	+ rm(" for " DDD_NAME "; see the ") + cr()
+	+ rm(DDD_NAME " License for details.") + cr()
+	+ cr()
+	+ sl(DDD_NAME " needs your support!")
+	+ rm(" If you have any " DDD_NAME " success stories, ") + cr()
+        + rm("please write them down on a picture postcard "
+	     "and send them to us:") + cr()
+	+ cr()
+	+ rm("    Technische Universit\344t Braunschweig") + cr()
+	+ rm("    Abteilung Softwaretechnologie") + cr()
+	+ rm("    B\374ltenweg 88") + cr()
+	+ rm("    D-38092 Braunschweig") + cr()
+	+ rm("    GERMANY") + cr()
+	+ cr()
+	+ rm("Send bug reports to <")
+	+ tt(ddd_NAME "-bugs@ips.cs.tu-bs.de") + rm(">;") + cr()
+	+ rm("see the " DDD_NAME " manual "
+	     "for details on reporting bugs.") + cr()
+	+ rm("Send comments and suggestions to <")
+	+ tt(ddd_NAME "@ips.cs.tu-bs.de") + rm(">.") + cr()
+	+ cr()
+	+ rm(DDD_NAME " WWW page: ") + tt(app_data.www_page) + cr()
+	+ rm(DDD_NAME " discussions: <")
+	+ tt(ddd_NAME "-users-request@ips.cs.tu-bs.de") + rm(">") + cr()
+	+ rm(DDD_NAME " announcements: <")
+	+ tt(ddd_NAME "-announce-request@ips.cs.tu-bs.de") + rm(">");
+}
+
+static void setup_environment()
+{
+    // Set the type of the execution tty.
+    switch (gdb->type())
+    {
+    case GDB:
+    case DBX:
+	// The debugger console has few capabilities.
+	// When starting the execution TTY, we set the correct type.
+	put_environment("TERM", "dumb");
+	break;
+
+    case XDB:
+	// In XDB, we have no means to set the TTY type afterwards;
+	// Set the execution TTY type right now.
+	put_environment("TERM", app_data.term_type);
+	break;
+    }
+
+    // Don't let TERMCAP settings override our TERM settings.
+    put_environment("TERMCAP", "");
+
+    // This avoids zillions of problems with debuggers that pipe
+    // their output through `more', `less', and likewise.
+    put_environment("PAGER", "cat");
+
+    // Let the debugger know that we're here
+    put_environment(DDD_NAME, ddd_NAME "-" DDD_VERSION "-" DDD_HOST);
+}
+
+static void setup_command_tool(bool iconic)
+{
+    Widget tool_shell_parent = 
+	source_view_shell ? source_view_shell : command_shell;
+
+    Position pos_x, pos_y;
+    get_transient_pos(XtScreen(tool_shell_parent), pos_x, pos_y);
+
+    ostrstream os;
+    os << "+" << pos_x << "+" << pos_y;
+    string geometry(os);
+
+    Arg args[10];
+    int arg = 0;
+
+    XtSetArg(args[arg], XmNgeometry, geometry.chars());   arg++;
+    XtSetArg(args[arg], XmNx, pos_x);                     arg++;
+    XtSetArg(args[arg], XmNy, pos_y);                     arg++;
+    XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
+    XtSetArg(args[arg], XmNallowShellResize, False);      arg++;
+    XtSetArg(args[arg], XmNmwmDecorations,
+	     MWM_DECOR_BORDER | MWM_DECOR_TITLE | MWM_DECOR_MENU); arg++;
+
+    // It is preferable to realize the command tool as a DialogShell,
+    // since this will cause it to stay on top of other DDD windows.
+    // Unfortunately, some window managers do not decorate transient
+    // windows such as DialogShells.  In this case, use a TopLevel
+    // shell instead and rely on the DDD auto-raise mechanisms defined
+    // in `windows.C'.
+    bool use_transient_tool_shell = true;
+    switch (app_data.decorate_tool)
+    {
+    case On:
+	use_transient_tool_shell = false;
+	break;
+    case Off:
+	use_transient_tool_shell = true;
+	break;
+    case Auto:
+	use_transient_tool_shell = have_decorated_transients();
+	break;
+    }
+
+    if (use_transient_tool_shell)
+    {
+	tool_shell = 
+	    verify(XmCreateDialogShell(tool_shell_parent, 
+				       "tool_shell", args, arg));
+    }
+    else
+    {
+	tool_shell = 
+	    verify(XtCreateWidget("tool_shell", vendorShellWidgetClass,
+				  tool_shell_parent, args, arg));
+    }
+    
+    XmAddWMProtocolCallback(tool_shell, WM_DELETE_WINDOW, 
+			    gdbCloseToolWindowCB, 0);
+
+
+    arg = 0;
+    tool_buttons_w = 
+	verify(XmCreateForm(tool_shell, "tool_buttons", args, arg));
+    set_buttons(tool_buttons_w, app_data.tool_buttons, false);
+
+    Delay::register_shell(tool_shell);
+    XtAddEventHandler(tool_shell, STRUCTURE_MASK, False,
+		      StructureNotifyEH, XtPointer(0));
+
+    if (app_data.tool_bar)
+    {
+	// The command tool is not needed, as we have a tool bar.
+    }
+    else if (!app_data.source_window)
+    {
+	// We have no source window, and thus no command tool.
+    }
+    else if (source_view_shell || iconic)
+    {
+	// We don't need the command tool right now - wait for source
+	// window to map
+    }
+    else
+    {
+	// OK, raise the command tool
+	initial_popup_shell(tool_shell);
+    }
+}
+
+static void setup_options(int argc, char *argv[],
+			  StringArray& saved_options, string& gdb_name,
+			  bool& no_windows)
+{
+    int gdb_option_pos = -1;
+    int gdb_option_offset = 2;
+    int i;
+    for (i = 1; i < argc; i++)
+    {
+	string arg = string(argv[i]);
+
+	if (arg == "--")
+	    break;		// End of options
+
+	if ((arg == "--debugger" || arg == "-debugger") && i < argc - 1)
+	{
+	    gdb_name = argv[i + 1];
+	    gdb_option_pos    = i;
+	    gdb_option_offset = 2;
+	}
+
+	if (arg == "--dbx" || arg == "-dbx" 
+	    || arg == "--gdb" || arg == "-gdb"
+	    || arg == "--xdb" || arg == "-xdb")
+	{
+	    gdb_name = arg.after('-', -1);
+	    gdb_option_pos    = i;
+	    gdb_option_offset = 1;
+	}
+
+	if (arg == "--nw" || arg == "-nw" || arg == "-L")
+	{
+	    if (gdb_option_pos >= 0)
+	    {
+		// Strip `--debugger NAME'/`--dbx'/`--gdb', etc.
+		for (int j = gdb_option_pos; j <= argc - gdb_option_offset; 
+					     j++)
+		    argv[j] = argv[j + gdb_option_offset];
+		argc -= gdb_option_offset;
+		i    -= gdb_option_offset;
+	    }
+
+	    // Strip `--nw'/`-L'
+	    for (int j = i; j <= argc - 1; j++)
+		argv[j] = argv[j + 1];
+	    argc -= 1;
+	    i    -= 1;
+
+	    no_windows = true;
+	}
+
+	if (!no_windows)
+	{
+	    // Save some one-letter options that would be eaten by Xt:
+	    // -b BPS  - Set the line speed to BPS (GDB)
+	    // -c FILE - use FILE as a core dump to examine (GDB)
+	    // -d DIR  - Add DIR to the path of search files (GDB, XDB)
+	    // -e FILE - use FILE as executable file to execute (GDB)
+	    // -e FILE - Redirect stderr to FILE (XDB)
+	    // -i FILE - Redirect stdin to FILE (XDB)
+	    // -I DIR  - Add DIR to the path of search files (DBX)
+	    // -o FILE - Redirect stdout to FILE (XDB)
+	    // -p FILE - Specify a playback FILE (XDB)
+	    // -P PID  - Specify a process id PID (DBX, XDB)
+	    // -r FILE - Specify a record FILE (XDB)
+	    // -R FILE - Specify a restore state FILE (XDB)
+	    // -s FILE - read symbol table (GDB)
+	    // -s FILE - execute commands from FILE (DBX)
+	    // -x FILE - execute commands from FILE (GDB)
+
+	    // Note: the following options are used by DDD:
+	    // -h       - Help
+	    // -l LOGIN - Login as LOGIN
+	    // -v       - Show version
+	    // -?       - Help
+	    // -t       - Use TTY mode
+	    // -f       - Use fullname mode
+#if RUNTIME_REGEX
+	    static regex rxoptions("-[bcdeiIopPrRsx]");
+#endif
+	    if (i < argc - 1 && arg.matches(rxoptions))
+	    {
+		saved_options += arg;
+		saved_options += string(argv[i + 1]);
+
+		for (int j = i; j <= argc - 2; j++)
+		    argv[j] = argv[j + 2];
+		argc -= 2;
+		i    -= 2;
+	    }
+	}
+    }
+}
+
+static void setup_tty()
+{
+    if (app_data.tty_mode)
+    {
+	init_command_tty();
+
+	// Issue init msg (using 7-bit characters)
+	string init_msg = XmTextGetString(gdb_w);
+	init_msg.gsub("\344", "ae");
+	init_msg.gsub("\366", "oe");
+	init_msg.gsub("\374", "ue");
+	init_msg.gsub("\337", "ss");
+	init_msg.gsub("\251", "(C)");
+	tty_out(init_msg);
+    }
+}
+
+static void setup_version_warnings()
+{
+    if (app_data.app_defaults_version == 0)
+    {
+	cerr << "Warning: no version information in `" 
+	     << DDD_CLASS_NAME "' app-defaults-file\n";
+
+	version_warnings += rm("No version information in `")
+	    + tt(DDD_CLASS_NAME) + rm("' app-defaults-file") + cr();
+    }
+    else if (string(app_data.app_defaults_version) != DDD_VERSION)
+    {
+	cerr << "Warning: using `" DDD_CLASS_NAME "' app-defaults file"
+	     << " for " DDD_NAME " " << app_data.app_defaults_version 
+	     << " (this is " DDD_NAME " " DDD_VERSION ")\n";
+
+	version_warnings += rm("Using `") + tt(DDD_CLASS_NAME)
+	    + rm("' app-defaults file for " DDD_NAME " ")
+	    + rm(app_data.app_defaults_version)
+	    + rm(" (this is " DDD_NAME " " DDD_VERSION ")") + cr();
+    }
+
+    if (app_data.dddinit_version && 
+	string(app_data.dddinit_version) != DDD_VERSION)
+    {
+	cerr << "Warning: using "
+	     << quote(session_state_file(app_data.session))
+	     << " file for " DDD_NAME " " << app_data.dddinit_version
+	     << "\n(this is " DDD_NAME " " DDD_VERSION ")."
+	     << "  Please save options.\n";
+
+	version_warnings += rm("Using `")
+	    + tt(cook(session_state_file(app_data.session)))
+	    + rm("' file for " DDD_NAME " ")
+	    + rm(app_data.dddinit_version) + cr()
+	    + rm("(this is " DDD_NAME " " DDD_VERSION ").  "
+		 "Please save options.");
+    }
 }
