@@ -32,6 +32,7 @@ char DestroyCB_rcsid[] =
 #include "DestroyCB.h"
 #include "TimeOut.h"
 #include <Xm/DialogS.h>
+#include <Xm/Xm.h>
 
 static void CancelTimer(Widget, XtPointer client_data, XtPointer)
 {
@@ -45,7 +46,7 @@ static void DestroyCB(XtPointer client_data, XtIntervalId *id)
 
     if (w != 0)
     {
-	XtRemoveCallback(w, XtNdestroyCallback, CancelTimer, XtPointer(*id));
+	XtRemoveCallback(w, XmNdestroyCallback, CancelTimer, XtPointer(*id));
 	XtDestroyWidget(w);
     }
 }
@@ -58,7 +59,7 @@ void DestroyWhenIdle(Widget widget)
 			XtPointer(widget));
 
     // Should WIDGET be destroyed beforehand, cancel the timer
-    XtAddCallback(widget, XtNdestroyCallback, CancelTimer, XtPointer(id));
+    XtAddCallback(widget, XmNdestroyCallback, CancelTimer, XtPointer(id));
 }
 
 
