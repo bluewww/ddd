@@ -2,6 +2,7 @@ dnl $Id$
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+dnl Copyright (C) 2001-2003 Free Software Fundation, USA.
 dnl Written by Andreas Zeller <zeller@gnu.org>.
 dnl 
 dnl This file is part of DDD.
@@ -653,6 +654,15 @@ dnl
 dnl Check for Motif widget libraries
 dnl
 dnl
+if test "$motif_includes" = "no"
+then
+dnl Without Xm/Xm.h, we won't get far.  Let the user fix this.
+AC_MSG_ERROR([The Motif include file 'Xm/Xm.h' could not be found.
+                  Please use the configure options '--with-motif-includes=DIR'
+                  and '--with-motif-libraries=DIR' to specify the Xm location.
+                  See the files 'config.log' and 'ddd/config.log'
+                  for further diagnostics.])
+fi
 XM_LIBS=""
 XP_LIBS=""
 if test "$motif_includes" != "no" && test "$motif_libraries" != "no"

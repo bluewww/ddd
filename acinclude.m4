@@ -3,6 +3,7 @@ dnl ICE and DDD autoconf macros
 dnl 
 dnl Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 dnl Copyright (C) 1999-2001 Universitaet Passau, Germany.
+dnl Copyright (C) 2001-2003 Free Software Fundation, USA.
 dnl Written by Andreas Zeller <zeller@gnu.org>.
 dnl 
 dnl This file is part of DDD.
@@ -2154,6 +2155,7 @@ ice_cv_motif_includes=
 # /usr/dt is used on Solaris (Motif).
 # /usr/openwin is used on Solaris (X and Athena).
 # Other directories are just guesses.
+ice_cv_motif_includes=no
 for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
            /usr/include/Motif2.0 /usr/include/Motif1.2 /usr/include/Motif1.1 \
            /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
@@ -2341,6 +2343,7 @@ ice_cv_athena_includes=
 # /usr/dt is used on Solaris (Motif).
 # /usr/openwin is used on Solaris (X and Athena).
 # Other directories are just guesses.
+ice_cv_athena_includes=no
 for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
            /usr/include/Motif2.0 /usr/include/Motif1.2 /usr/include/Motif1.1 \
            /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
@@ -2523,6 +2526,7 @@ ice_cv_xpm_includes=
 # /usr/dt is used on Solaris (Motif).
 # /usr/openwin is used on Solaris (X and Xaw).
 # Other directories are just guesses.
+ice_cv_xpm_includes=no
 for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
            /usr/include/Motif2.0 /usr/include/Motif1.2 /usr/include/Motif1.1 \
            /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
