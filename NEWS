@@ -27,7 +27,7 @@ DDD 1.5 (in development)
     Changes in configuration and building:
     - Regular expressions now use the POSIX.2 standard regcomp/regexec
       interface.  The slower interface is compensated by smarter calls.
-    - DDD configuration now generally attempts to link with system
+    - DDD configuration now generally attempts to link with native system
       libraries wherever possible.  GNU termcap and librx are used
       only if the system does not provide them.  This results in
       smaller and (hopefully) safer DDD executables.
@@ -38,9 +38,10 @@ DDD 1.5 (in development)
     - The execution window can be opened, closed and re-opened
       without DDD crashing or hanging.
     - Invoking a source editor via `Edit' should work fine now.
+    - The rubber band outline no more clutters the data display.
     - On HP-UX, the `@' character is no more discarded from GDB input.
     - On Solaris 2.x, annoying DBX warnings like `dbx: -r option only
-      recognized for C++' are now silently ignored.
+      recognized for C++' are silently ignored.
     - The `vslPath' resource now works.
 
 

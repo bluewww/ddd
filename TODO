@@ -34,7 +34,7 @@ Volunteers for these and other projects are welcome!
      comparing display addresses.  See also the mails of
      markusd@cs.tu-berlin.de (Markus Dahm) and finster@ave.ac.agit.de
      (Harald Finster).  Possible renderings include:
-     a) Merge two objects into one
+     a) Merge two objects into one (maybe temporary?)
      b) Move one object on top of the other
      c) Draw a special `identity edge' between the two objects.
 
@@ -66,7 +66,7 @@ Volunteers for these and other projects are welcome!
      dereference them all.
 
 044. Disable pointer grabs from the debugged application as soon as
-     the Debugger prompt reappears.  But how?
+     the debugger prompt reappears.  But how?
 
 049. albrecht@igpm.rwth-aachen.de (Harald Albrecht):
      The dialog windows (especially the backtrace dialog) should not
@@ -194,10 +194,6 @@ Volunteers for these and other projects are welcome!
 
 083. Include graphplace (or other graph layout) support.
 
-084* Support DBXes that don't know the `display' command, such as
-     IBM and DEC dbx.  Use `print' instead whenever the prompt comes;
-     see `DataDisp::refresh_display_command' for details.
-
 085. Include xDuel support.  See `http://www.math.tau.ac.il/~frangy/'
      for details.
 
@@ -208,7 +204,7 @@ Volunteers for these and other projects are welcome!
 
      o When setting a breakpoint, it should be possible to select from
        a list matching a regexp.  This feature would be particularly
-       useful when working with c++ code with overloading,templates
+       useful when working with c++ code with overloading, templates
        and member functions.
 
      o In data display, it would be extremely useful to select which
@@ -248,4 +244,8 @@ Volunteers for these and other projects are welcome!
 089. Have an `info source' popup menu that pops up when pointing at
      blank space.  (Info/Reload/Edit)
 
-091. (Insert your project idea here)
+091* Support XDB as found on HP-UX.
+
+092* Changing the current directory should also affect the file selectors.
+
+093. (Insert your project idea here)

@@ -137,6 +137,9 @@ Volunteers for fixing these and other bugs are welcome!
         The graph window comes right after a display, though the scrollbar
         is not appearing.
 
+        [I could not reproduce this bug.  Does this also happen on 
+         other configurations?  -AZ]
+
      3. ddd seg. faults when receiving a signal during startup (such as
         when someone hits C-C). It also truncates the .dddinit file to
         zero bytes :-(.
@@ -213,7 +216,7 @@ Volunteers for fixing these and other bugs are welcome!
      to select several objects the rubber band outline gets all messed
      up. The outline draws in the wrong place, not just within the
      selected rectangle, but also in the upper left corner of the
-     window regardles of where the selection rectangle starts.
+     window regardless of where the selection rectangle starts.
      [Fixed in DDD 1.5?  -AZ]
 
 079. Window resize problems.  louie@dbmx.com (Lewis Alderton) says: I
@@ -308,4 +311,12 @@ Volunteers for fixing these and other bugs are welcome!
          the default in the display graph?  If I "set output-radix 16" 
          in the gdb window ddd seems to lock up very often.
 
-090. (Insert your bug here)
+090* When running `one single window' in TTY mode, the window does not
+     appear.
+
+091* The command tool should appear with the source window, placed in
+     the upper right corner.
+
+092* Entering ^D in TTY mode causes an abort (due to TTYAgent::dup())
+
+093. (Insert your bug here)
