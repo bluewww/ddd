@@ -1388,7 +1388,10 @@ string GDBAgent::regs_command(bool all) const
 	    return "info registers";
    
     case DBX:
-	return "regs";		// Sun DBX 4.0
+	if (all)
+	    return "regs -F";	// Sun DBX 4.0
+	else
+	    return "regs";	
 
     case XDB:
 	return "";		// FIXME
