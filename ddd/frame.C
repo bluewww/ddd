@@ -35,13 +35,20 @@ char frame_rcsid[] =
 
 #include "frame.h"
 
-// Find the WM frame surrounding WINDOW
+// Find the WM frame surrounding WINDOW.
 Window frame(Display *display, Window window)
 {
+    // The idea is that the WM frame surrounding WINDOW is a child of
+    // root.  So we simply return the child of root that has WINDOW as
+    // a child.
+
+    Window root = 0;
+    XWindowAttributes root_attr;
+    bool have_root_attr = false;
+
     Window w = window;
     for (;;)
     {
-	Window root;
 	Window parent;
 	Window *children = 0;
 	unsigned int nchildren;
@@ -50,10 +57,36 @@ Window frame(Display *display, Window window)
 	XFree(children);
 
 	if (!ok)
-	    break;
+	    return window;	// Not found
 
 	if (parent == root)
 	    return w;		// Got it
+
+	// TVTWM (and other window managers?) cover the root window
+	// entirely with a single (virtual) window.  Check for this.
+	if (!have_root_attr)
+	{
+	    XGetWindowAttributes(display, root, &root_attr);
+	    have_root_attr = true;
+	}
+	XWindowAttributes parent_attr;
+	XGetWindowAttributes(display, parent, &parent_attr);
+
+	if (parent_attr.width >= root_attr.width && 
+	    parent_attr.height >= root_attr.height)
+	{
+	    // PARENT covers ROOT entirely -- is PARENT the child of ROOT?
+	    Window grandparent;
+	    Window *uncles = 0;
+	    unsigned int nuncles;
+	    Status ok = 
+		XQueryTree(display, parent, 
+			   &root, &grandparent, &uncles, &nuncles);
+	    XFree(uncles);
+
+	    if (ok && grandparent == root)
+		return w;	// Got it
+	}
 
 	w = parent;
     }
