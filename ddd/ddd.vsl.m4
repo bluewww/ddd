@@ -155,9 +155,9 @@ struct_member_name (name) ->
   struct_color(rm(name));
 
 // Struct member
-struct_member (name, value, name_width) -> 
+struct_member (name, sep, value, name_width) -> 
   vcenter(rm(name) | hspace(name_width)) 
-  & vcenter(rm(" = ")) & rm(value);
+  & vcenter(rm(sep)) & rm(value);
 
 // List value
 list_value (...) -> 
@@ -176,9 +176,9 @@ list_member_name (name) ->
   list_color(rm(name));
 
 // List member
-list_member (name, value, name_width) -> 
+list_member (name, sep, value, name_width) -> 
   vcenter(rm(name) | hspace(name_width)) 
-  & vcenter(rm(" = ")) & rm(value) & hfill();
+  & vcenter(rm(sep)) & rm(value) & hfill();
 
 // Sequence
 sequence_value (...) -> 

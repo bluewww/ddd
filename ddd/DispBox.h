@@ -130,9 +130,11 @@ public:
     static Box *eval(const string& func_name, 
 		     VSLArg arg1 = (Box *)0,
 		     VSLArg arg2 = (Box *)0,
-		     VSLArg arg3 = (Box *)0)
+		     VSLArg arg3 = (Box *)0,
+		     VSLArg arg4 = (Box *)0)
     {
-	return check(func_name, vsllib()->eval(func_name, arg1, arg2, arg3));
+	return check(func_name, 
+		     vsllib()->eval(func_name, arg1, arg2, arg3, arg4));
     }
 };
 

@@ -43,6 +43,7 @@ char DispBox_rcsid[] =
 #include "StringBox.h"
 #include "ColorBox.h"
 #include "DispNode.h"
+#include "GDBAgent.h"
 #include "VSEFlags.h"
 #include "strclass.h"
 #include "bool.h"
@@ -561,14 +562,18 @@ Box *DispBox::create_value_box (const DispValue *dv,
 	dv->name() != "" &&
 	!dv->name().matches(rxwhite))
     {
+	string sep = gdb->member_separator();
+
 	switch (parent->type())
 	{
 	case List:
-	    vbox = eval("list_member", dv->name(), vbox, member_name_width);
+	    vbox = eval("list_member", 
+			dv->name(), sep, vbox, member_name_width);
 	    break;
 
 	case Struct:
-	    vbox = eval("struct_member", dv->name(), vbox, member_name_width);
+	    vbox = eval("struct_member", 
+			dv->name(), sep, vbox, member_name_width);
 	    break;
 
 	case Sequence:
