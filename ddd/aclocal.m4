@@ -1454,6 +1454,9 @@ ice_cv_motif_includes="$dir"
 break
 fi
 done
+if test "$ice_cv_motif_includes" = ""; then
+ice_cv_motif_includes=no
+fi
 ])
 #
 LIBS="$ice_motif_save_LIBS"
@@ -1513,6 +1516,9 @@ ice_cv_motif_libraries="$dir"
 break
 fi
 done
+if test "$ice_cv_motif_libraries" = ""; then
+ice_cv_motif_libraries=no
+fi
 ])
 #
 LIBS="$ice_motif_save_LIBS"
