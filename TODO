@@ -71,23 +71,12 @@ Volunteers for these and other projects are welcome!
      to add its location to the -R flag.
 
 069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
-
-     3. Add a way to cast a display. What I mean is that when I debug some
-        code with a `generic' C function which takes a void* and a tag that
-        indicates the kind of stuff the void* is really, I'd like to be able
-        to cast the displayed void* (maybe by editing the text
-        field---dangerous---or simply by having a 'Cast' item in the popup
-        menu). The fastest way to do that actually is to select `Dependent
-        display', type the cast there, and then delete the original display
-        (because what we want is in the casted display).
-
-     4. Let one colorize the displays. By using regexps on types or
-        names of the fields, it would already be extremely useful (or
-        with a match on the typed expression, having a list of regexps
-        to match, the first match giving color, so that given blue for
-        ` pr_.*' and red for `^int .*' one would see `int pr_var' in
-        blue but all other int variables in red). Does VSL support
-        colors ?
+     Let one colorize the displays. By using regexps on types or names
+     of the fields, it would already be extremely useful (or with a
+     match on the typed expression, having a list of regexps to match,
+     the first match giving color, so that given blue for ` pr_.*' and
+     red for `^int .*' one would see `int pr_var' in blue but all
+     other int variables in red).
 
 070. Matthias Kurz <mk@baerlap.north.de> suggests an option to set
      debuggee arguments when invoking DDD.  A simple way of
@@ -330,18 +319,13 @@ Volunteers for these and other projects are welcome!
 
 177. Create menu children in the background, using a work procedure.
 
-178* Offer more dereferencing options, which may be user-customizable.
-     Instead of just providing `Display *()', offer also `Display /o
-     ()', etc.  These conversions may also be obtained from creating
-     dependent displays and should be placed under `New Display'.
-
 179. Add `libgdb' as an alternate communication method.
 
 181. If the DDD WWW page server is down, try a mirror site.
 
 183. Have a way to re-dereference until a NULL pointer is encountered.
 
-187. Have a `commands' menu listing up all debugger commands.  Should
+187. Have a `commands' menu listing up all debugger commands.  Could
      be organized according to `help' classes.
 
 193. Have a way to unfold trees and graphs.  For instance, `Display
@@ -361,9 +345,6 @@ Volunteers for these and other projects are welcome!
      `http://www.igpm.rwth-aachen.de/~albrecht/mnem.html')
 
 206. `manage_and_raise' should deiconify dialogs.
-
-213. Support the Solaris DBX `handler' command to enable and disable
-     breakpoints.
 
 215. Raoul Beauduin <beauduin@ori.u-tokyo.ac.jp> suggests to change
      the green arrow in the source window into a green bar. Makes it
