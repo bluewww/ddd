@@ -8,6 +8,7 @@ DDD 1.4b (WORK IN PROGRESS - NOT YET RELEASED)
 
    Changes to DDD 1.4a:
    - Much faster start-up, due to delayed loading of the VSL library.
+   - Busy looping under X11R6 should not happen anymore.
    - Manual update of data display (`graph refresh') improved.
    - `set' and `assign' commands automatically update data display.
    - Building DDD creates executable with canonical name.

@@ -140,4 +140,9 @@ Volunteers for fixing these and other bugs are welcome!
      the signal and the final drawing of the last `fatal error' 
      dialog box.
 
-067. (Insert your bug here)
+067. On Solaris 2.x, when attaching with DBX to a running process, 
+     ddd gets a seg fault.  The command line is, for example:
+     ddd --dbx $PAR_HOME/bin/tesla-wish 20919
+     Reported by Joe Hildebrand <hildjj@fuentez.com>
+
+068. (Insert your bug here)
