@@ -1161,7 +1161,6 @@ void send_gdb_command(string cmd, Widget origin,
 	break;
 
     case JDB:
-	assert (!plus_cmd_data->refresh_initial_line);
 	assert (!plus_cmd_data->refresh_pwd);
 	if (plus_cmd_data->refresh_class_path)
 	    cmds += "use";
