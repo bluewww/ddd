@@ -115,6 +115,8 @@
 #define XtCCheckConfiguration    "CheckConfiguration"
 #define XtNprintCommand          "printCommand"
 #define XtCPrintCommand          "PrintCommand"
+#define XtNpaperSize             "paperSize"
+#define XtCPaperSize             "PaperSize"
 #define XtNeditCommand           "editCommand"
 #define XtCEditCommand           "EditCommand"
 #define XtNpannedGraphEditor     "pannedGraphEditor"
@@ -184,6 +186,7 @@ typedef struct {
     Boolean show_manual;
     Boolean check_configuration;
     String  print_command;
+    String  paper_size;
     String  edit_command;
     Boolean panned_graph_editor;
     Boolean find_words_only;

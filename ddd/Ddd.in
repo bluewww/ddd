@@ -149,6 +149,10 @@ Ddd*rshCommand: @RSH@
 Ddd*printCommand: @PRINT_COMMAND@
 
 
+! Paper size, in format WIDTH x HEIGHT.  (Default: A4).
+Ddd*paperSize: 210mm x 297mm
+
+
 ! The `edit' command to invoke an editor on the specific file.
 ! `@LINE@' is replaced by the current line number,
 ! `@FILE@' by the file name.  Default is to invoke $XEDITOR first,
@@ -285,7 +289,6 @@ Ddd*dbxInitCommands:
 Ddd*vslLibrary: 		builtin
 Ddd*vslPath:	 		.
 
-
 ! Graph Editor Defaults
 ! What shall we use if the graph gets too large to be displayed?
 ! If true, an Athena panner is used (a kind of two-directional scrollbar).
@@ -331,11 +334,18 @@ Ddd*graph_edit.gridHeight: 	16
 ! Do we wish to find complete words only?
 Ddd*findWordsOnly: 		true
 
+! Do we wish to show machine code? (Makes DDD run somewhat slower)
+Ddd*disassemble: false
+
+! Do we wish to display glyphs? (Makes DDD run somewhat slower)
+Ddd*displayGlyphs: true
+
 ! Do we wish to cache source files in memory?
 Ddd*cacheSourceFiles:		true
 
 ! Do we wish to cache machine code in memory?
 Ddd*cacheMachineCode:		true
+
 
 ! Focus policy
 ! POINTER means point-and-type, EXPLICIT means click-and-type.
@@ -2017,11 +2027,13 @@ Ddd*print*paper_size.alignment:               XmALIGNMENT_END
 Ddd*print*paper_size.width:                   100
 Ddd*print*paper_size.recomputeSize:           false
 Ddd*print*paper_size_field.orientation:       XmVERTICAL
-Ddd*print*paper_size_field.numColumns:        2
+Ddd*print*paper_size_field.numColumns:        3
 Ddd*print*a4.labelString:                     A4 (210mm \327 297mm)
+Ddd*print*a3.labelString:                     A3 (297mm \327 420mm)
 Ddd*print*letter.labelString:		      Letter (8\275" \327 11")
 Ddd*print*legal.labelString:		      Legal (8\275" \327 14")
 Ddd*print*executive.labelString:	      Executive (7\275" \327 10")
+Ddd*print*custom.labelString:	      	      Custom...
 
 Ddd*print.autoUnmanage:  false
 Ddd*print*okLabelString: Print
@@ -2042,6 +2054,23 @@ For PostScript@symbol \344 @rm format only, you can also specify \
 orientation and paper size.\n\
 \n\
 To print, click on @bf Print@rm.
+
+Ddd*paper_size_dialog_popup.title:  @DDD@: Paper Size
+Ddd*paper_size_dialog.autoUnmanage:  false
+Ddd*paper_size_dialog.selectionLabelString: \
+@rm Enter paper size (@sl WIDTH @tt x @sl HEIGHT@rm):
+Ddd*paper_size_dialog*contextHelpString: \
+@rm Please enter the paper size in the format \n\
+\n\
+       @sl WIDTH @tt x @sl HEIGHT    @rm.\n\
+\n\
+Examples:\n\
+@tt 42cm x 59.4cm @rm (A2 paper)\n\
+@tt  7in x 10in   @rm (Executive paper)\n\
+\n\
+The following units are recognized:\n\
+@tt pt @rm (points), @tt in @rm (inches), \
+@tt mm @rm (millimeters), @tt cm @rm (centimeters).
 
 
 
@@ -2610,6 +2639,21 @@ Ddd*print_warning.title: @DDD@: Print Command Output
 Ddd*print_warning*contextHelpString:	\
 @rm This is the output of your printing command.\n\
 For more details, consult your system documentation.
+
+Ddd*paper_size_value_error.title: @DDD@: Unrecognized Paper Size
+Ddd*paper_size_value_error*contextHelpString:	\
+@rm @DDD@ could not parse your paper size specification.\n\
+Please verify the paper size and try again.
+
+Ddd*paper_size_unit_error.title: @DDD@: Unrecognized Paper Size Unit
+Ddd*paper_size_unit_error*contextHelpString:	\
+@rm @DDD@ did not recognize your paper size unit.\n\
+Please verify the paper size unit and try again.
+
+Ddd*paper_size_x_error.title: @DDD@: Unrecognized Paper Size
+Ddd*paper_size_x_error*contextHelpString:	\
+@rm @DDD@ could not find an `x' in your paper size specification.\n\
+Please verify the paper size and try again.
 
 Ddd*dungeon_collapse_error_popup.title: @DDD@: Dungeon Kaputt
 Ddd*dungeon_collapse_error*contextHelpString:	\

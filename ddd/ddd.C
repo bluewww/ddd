@@ -787,6 +787,15 @@ static XtResource resources[] = {
 	XtPointer("lp")
     },
     {
+        XtNpaperSize,
+	XtCPaperSize,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, paper_size),
+	XtRString,
+	XtPointer("210mm x 297mm")
+    },
+    {
         XtNeditCommand,
 	XtCEditCommand,
 	XtRString,
@@ -2419,14 +2428,14 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
 	    // Synchronous mode: wait for GDB to answer question
 	    XtAppProcessEvent(app_context, XtIMAlternateInput);
 	}
-	else if (XtAppPending(app_context) & XtIMAlternateInput)
+	else if (XtAppPending(app_context) & (XtIMXEvent | XtIMTimer))
 	{
-	    // Process pending GDB output
-	    XtAppProcessEvent(app_context, XtIMAlternateInput);
+	    // Process next X event
+	    XtAppProcessEvent(app_context, XtIMXEvent | XtIMTimer);
 	}
 	else
 	{
-	    // Process next X event
+	    // Process pending GDB output
 	    XtAppProcessEvent(app_context, XtIMAll);
 	}
     }
@@ -7186,6 +7195,13 @@ static PrintType       print_type = PRINT_POSTSCRIPT;
 static Widget          print_dialog = 0;
 static Widget          print_command_field   = 0;
 static Widget          print_file_name_field = 0;
+static Widget          paper_size_dialog = 0;
+static Widget          a4_paper_size;
+static Widget          a3_paper_size;
+static Widget          letter_paper_size;
+static Widget          legal_paper_size;
+static Widget          executive_paper_size;
+static Widget          custom_paper_size;
 
 
 // Go and print according to local state
@@ -7193,13 +7209,17 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 {
     if (print_to_printer)
     {
-	string command = app_data.print_command;
+	static string command;
+	command = app_data.print_command;
+
 	if (print_command_field)
 	{
 	    String c = XmTextFieldGetString(print_command_field);
 	    command = c;
 	    XtFree(c);
 	}
+
+	app_data.print_command = command;
 	if (print(command, print_postscript_gc, print_selected_only) == 0)
 	{
 	    if (print_dialog)
@@ -7295,6 +7315,28 @@ static void SetPrintTargetCB(Widget w, XtPointer, XtPointer)
     print_to_printer = XmToggleButtonGetState(w);
 }
 
+static void set_paper_size_string(string s)
+{
+    Widget text = XmSelectionBoxGetChild(paper_size_dialog, XmDIALOG_TEXT);
+    XmTextSetString(text, s);
+
+    static string current_paper_size;
+    current_paper_size = s;
+    app_data.paper_size = current_paper_size;
+}
+
+static void SetGCA3(Widget w, XtPointer, XtPointer)
+{
+    if (XmToggleButtonGetState(w))
+    {
+	BoxPostScriptGC a4;
+
+	print_postscript_gc.hsize = a4.vsize;
+	print_postscript_gc.vsize = a4.hsize * 2;
+	set_paper_size_string("297mm x 420mm");
+    }
+}
+
 static void SetGCA4(Widget w, XtPointer, XtPointer)
 {
     if (XmToggleButtonGetState(w))
@@ -7303,6 +7345,7 @@ static void SetGCA4(Widget w, XtPointer, XtPointer)
 
 	print_postscript_gc.hsize = a4.hsize;
 	print_postscript_gc.vsize = a4.vsize;
+	set_paper_size_string("210mm x 297mm");
     }
 }
 
@@ -7314,6 +7357,7 @@ static void SetGCLetter(Widget w, XtPointer, XtPointer)
     {
 	print_postscript_gc.hsize = 72 * 8 + 72 / 2 - gc.hoffset * 2;
 	print_postscript_gc.vsize = 72 * 11         - gc.voffset * 2;
+	set_paper_size_string("8.5in x 11in");
     }
 }
 
@@ -7325,6 +7369,7 @@ static void SetGCLegal(Widget w, XtPointer, XtPointer)
     {
 	print_postscript_gc.hsize = 72 * 8 + 72 / 2 - gc.hoffset * 2;
 	print_postscript_gc.vsize = 72 * 14         - gc.voffset * 2;
+	set_paper_size_string("8.5in x 14in");
     }
 }
 
@@ -7336,7 +7381,175 @@ static void SetGCExecutive(Widget w, XtPointer, XtPointer)
     {
 	print_postscript_gc.hsize = 72 * 7 + 72 / 2 - gc.hoffset * 2;
 	print_postscript_gc.vsize = 72 * 10         - gc.voffset * 2;
+	set_paper_size_string("7.5in x 10in");
     }
+}
+
+// Convert single unit to points
+static int points(string s)
+{
+    int points = 0;
+
+    while (s != "")
+    {
+	char *start = s;
+	char *tailptr;
+	double value = strtod(start, &tailptr);
+	if (start == tailptr)
+	{
+	    post_error("Unrecognized size", "paper_size_value_error");
+	    return -1;
+	}
+	s = s.from(tailptr - start);
+
+	// Read unit
+	string unit = s;
+	if (unit.contains(rxdouble))
+	    unit = unit.before(rxdouble);
+
+	// Strip leading and trailing spaces
+	while (unit.length() > 0 && isspace(unit[0]))
+	    unit = unit.after(0);
+	while (unit.length() > 0 && isspace(unit[unit.length() - 1]))
+	    unit = unit.before(int(unit.length() - 1));
+
+	unit.downcase();
+
+	if (unit.contains("es"))
+	    unit = unit.before("es");
+	if (unit.contains("s"))
+	    unit = unit.before("s");
+
+	double factor = 0.0;
+	if (unit == "point" || unit == "pt")
+	    factor = 1.0;
+	else if (unit == "inch" || unit == "in" || unit == "\"")
+	    factor = 72.0;
+	else if (unit == "foot" || unit == "feet" 
+		 || unit == "ft" || unit == "\'")
+	    factor = 72.0 * 12;
+	else if (unit == "yard" || unit == "yd")
+	    factor = 72.0 * 12 * 3;
+	else if (unit == "mile" || unit == "mi")
+	    factor = 72.0 * 12 * 5280;
+	else if (unit == "mm" || unit == "millimeter")
+	    factor = 72.0 * 1/2.54 * 1/10;
+	else if (unit == "cm" || unit == "centimeter")
+	    factor = 72.0 * 1/2.54;
+	else if (unit == "m" || unit == "meter")
+	    factor = 72.0 * 1/2.54 * 100;
+	else if (unit == "km" || unit == "kilometer")
+	    factor = 72.0 * 1/2.54 * 100000;
+	else if (unit == "parsec")
+	    factor = 72.0 * 1/2.54 * 100000 * 3.085678e+13;
+	else
+	{
+	    post_error("Unrecognized unit \"" + unit + "\"",
+		       "paper_size_unit_error");
+	    return -1;
+	}
+
+	if (s.contains(rxdouble))
+	    s = s.from(rxdouble);
+	else
+	    s = "";
+
+	points += int(factor * value);
+    }
+
+    return points;
+}
+
+inline bool near(int i, int j)
+{
+    return abs(i - j) <= 2;
+}
+
+static int set_paper_size(string s)
+{
+    if (!s.contains('x'))
+    {
+	post_error("Unrecognized paper size (missing \"x\")",
+		   "paper_size_x_error");
+	return -1;
+    }
+    
+    string s_hsize = s.before('x');
+    string s_vsize = s.after('x');
+
+    int hsize = points(s_hsize);
+    int vsize = points(s_vsize);
+
+    if (hsize < 0)
+	return hsize;
+    if (vsize < 0)
+	return vsize;
+
+    BoxPostScriptGC gc;
+
+    print_postscript_gc.hsize = hsize - gc.hoffset * 2;
+    print_postscript_gc.vsize = vsize - gc.voffset * 2;
+
+    if (near(hsize, 594) && near(vsize, 840))
+	XmToggleButtonSetState(a4_paper_size, True, True);
+    else if (near(hsize, 840) && near(vsize, 1188))
+	XmToggleButtonSetState(a3_paper_size, True, True);
+    else if (hsize == 72 * 8 + 72 / 2 && vsize == 72 * 11)
+	XmToggleButtonSetState(letter_paper_size, True, True);
+    else if (hsize == 72 * 8 + 72 / 2 && vsize == 72 * 14)
+	XmToggleButtonSetState(legal_paper_size, True, True);
+    else if (hsize == 72 * 7 + 72 / 2 && vsize == 72 * 10)
+	XmToggleButtonSetState(executive_paper_size, True, True);
+    else
+    {
+	XmToggleButtonSetState(a4_paper_size, False, False);
+	XmToggleButtonSetState(a3_paper_size, False, False);
+	XmToggleButtonSetState(letter_paper_size, False, False);
+	XmToggleButtonSetState(legal_paper_size, False, False);
+	XmToggleButtonSetState(executive_paper_size, False, False);
+	XmToggleButtonSetState(custom_paper_size, True, False);
+    }
+
+    set_paper_size_string(s);
+
+    return 0;
+}
+
+static void SetPaperSizeCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmFileSelectionBoxCallbackStruct *cbs =
+	(XmFileSelectionBoxCallbackStruct *)call_data;
+
+    string s = "";
+    char *value = 0;
+
+    if (XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &value)
+	&& value != 0)
+    {
+	s = value;
+	XtFree(value);
+    }
+
+    int ret = 0;
+    if (s != "")
+	ret = set_paper_size(s);
+
+    if (ret == 0)
+	XtUnmanageChild(w);
+}
+
+static void ResetPaperSizeCB(Widget w, XtPointer, XtPointer)
+{
+    set_paper_size(app_data.paper_size);
+    XtUnmanageChild(w);
+}
+
+static void SetGCCustom(Widget w, XtPointer, XtPointer)
+{
+    if (!XmToggleButtonGetState(w))
+	return;
+
+    XtManageChild(paper_size_dialog);
 }
 
 static void SetGCOrientation(Widget w, XtPointer, XtPointer)
@@ -7474,8 +7687,6 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 
     XmToggleButtonSetState(print_to_printer, True, True);
 
-
-
     Widget print_what_option = 
 	verify(XmCreateRowColumn(options, "print_what_option", 0, 0));
     Widget print_what = 
@@ -7528,29 +7739,56 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 	verify(XmCreateLabel(paper_size_option, "paper_size", 0, 0));
     Widget paper_size_field = 
 	verify(XmCreateRadioBox(paper_size_option, "paper_size_field", 0, 0));
-    Widget a4 = 
+    a4_paper_size = 
 	verify(XmCreateToggleButton(paper_size_field, "a4", 0, 0));
-    Widget letter = 
+    a3_paper_size = 
+	verify(XmCreateToggleButton(paper_size_field, "a3", 0, 0));
+    letter_paper_size = 
 	verify(XmCreateToggleButton(paper_size_field, "letter", 0, 0));
-    Widget legal = 
+    legal_paper_size = 
 	verify(XmCreateToggleButton(paper_size_field, "legal", 0, 0));
-    Widget executive = 
+    executive_paper_size = 
 	verify(XmCreateToggleButton(paper_size_field, "executive", 0, 0));
+    custom_paper_size = 
+	verify(XmCreateToggleButton(paper_size_field, "custom", 0, 0));
     XtManageChild(paper_size_option);
     XtManageChild(paper_size);
     XtManageChild(paper_size_field);
-    XtManageChild(a4);
-    XtManageChild(letter);
-    XtManageChild(legal);
-    XtManageChild(executive);
+    XtManageChild(a4_paper_size);
+    XtManageChild(a3_paper_size);
+    XtManageChild(letter_paper_size);
+    XtManageChild(legal_paper_size);
+    XtManageChild(executive_paper_size);
+    XtManageChild(custom_paper_size);
 
-    XtAddCallback(a4,        XmNvalueChangedCallback, SetGCA4,        0);
-    XtAddCallback(letter,    XmNvalueChangedCallback, SetGCLetter,    0);
-    XtAddCallback(legal,     XmNvalueChangedCallback, SetGCLegal,     0);
-    XtAddCallback(executive, XmNvalueChangedCallback, SetGCExecutive, 0);
+    XtAddCallback(a4_paper_size,        
+		  XmNvalueChangedCallback, SetGCA4,        0);
+    XtAddCallback(a3_paper_size,        
+		  XmNvalueChangedCallback, SetGCA3,        0);
+    XtAddCallback(letter_paper_size,    
+		  XmNvalueChangedCallback, SetGCLetter,    0);
+    XtAddCallback(legal_paper_size,     
+		  XmNvalueChangedCallback, SetGCLegal,     0);
+    XtAddCallback(executive_paper_size, 
+		  XmNvalueChangedCallback, SetGCExecutive, 0);
+    XtAddCallback(custom_paper_size,    
+		  XmNvalueChangedCallback, SetGCCustom,    0);
 
+    paper_size_dialog = 
+	verify(XmCreatePromptDialog(find_shell(w), "paper_size_dialog", 
+				    ArgList(0), 0));
+    Delay::register_shell(paper_size_dialog);
 
-    XmToggleButtonSetState(a4, True, True);
+    XtAddCallback(paper_size_dialog, XmNokCallback,     
+		  SetPaperSizeCB, XtPointer(0));
+    XtAddCallback(paper_size_dialog, XmNcancelCallback, 
+		  ResetPaperSizeCB, XtPointer(0));
+    XtAddCallback(paper_size_dialog, XmNhelpCallback,   
+		  ImmediateHelpCB, XtPointer(0));
+
+    int ret = set_paper_size(app_data.paper_size);
+    if (ret < 0)
+	XmToggleButtonSetState(a4_paper_size, True, True);
 
     XtManageChild(print_dialog);
 }
@@ -8110,6 +8348,10 @@ static void save_options(Widget origin)
 			 app_data.save_history_on_exit) << "\n";
     os << string_app_value(XtNdebugger,
 			   app_data.debugger) << "\n";
+    os << string_app_value(XtNprintCommand,
+			   app_data.print_command) << "\n";
+    os << string_app_value(XtNpaperSize,
+			   app_data.paper_size) << "\n";
 
     unsigned char policy = '\0';
     XtVaGetValues(command_shell, XmNkeyboardFocusPolicy, &policy, NULL);
