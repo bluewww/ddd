@@ -600,7 +600,7 @@ void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
 
     clear_isearch();
 
-    if (change->startPos < promptPosition && change->text->length == 0)
+    if (change->startPos < promptPosition)
     {
 	// Attempt to change text before prompt
 #if 0
@@ -608,12 +608,13 @@ void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
 	change->doit = false;
 #else
 	// Make it a no-op
+	XmTextPosition lastPos = XmTextGetLastPosition(gdb_w);
 	change->startPos = change->endPos = change->newInsert
-	    = change->currInsert = promptPosition;
-	if (change->event != 0)
+	    = change->currInsert = lastPos;
+	if (change->text->length == 0 && change->event != 0)
 	    XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
 	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
-			move_to_pos, XtPointer(promptPosition));
+			move_to_end_of_line, XtPointer(0));
 #endif
 	return;
     }
