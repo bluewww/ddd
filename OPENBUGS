@@ -153,8 +153,4 @@ detail.
 737 Joonas Lehtinen <phoenix@jole.fi> reports that DDD 3.1 coredumps
     after a few replots.
 
-738 Using DDD 3.1 with lesstif 0.87 with separate windows, the console 
-    window does not work initially; Tobias Polzin <polzin@gmx.net>
-    reports that it only works after opening an arbitrary dialog.
-
 739 (Insert new bugs here)
