@@ -164,22 +164,8 @@ dnl
 dnl
 dnl Locate Libraries
 dnl
-dnl
-dnl Check socket libraries
-dnl Configure code adapted from tk's configure.in
-dnl We need to check whether we need the libraries because IRIX5 ships
-dnl with bogus versions.
-AC_CHECK_FUNC(connect, , ddd_check_socket=1)
-if test "$ddd_check_socket" = 1; then
-  AC_CHECK_LIB(socket, connect, LIBS="$LIBS -lsocket", ddd_check_both=1)
-fi
-if test "$ddd_check_both" = 1; then
-  ddd_old_libs=$LIBS
-  LIBS="$LIBS -lsocket -lnsl"
-  AC_CHECK_FUNC(accept, checknsl=0, LIBS=$ddd_old_libs)
-fi
-AC_CHECK_LIB(nsl, gethostbyname, LIBS="$LIBS -lnsl")
-AC_CHECK_FUNC(gethostbyname)
+AC_CHECK_LIB(nsl, gethostbyname, LIBNSL="-lnsl")
+AC_SUBST(LIBNSL)
 dnl
 AC_CHECK_LIB(y, yyerror, LIBY="-ly")
 AC_SUBST(LIBY)

@@ -189,11 +189,13 @@ LIBY       = @LIBY@
 LIBM       = @LIBM@
 # C library (-lc)
 LIBC       = @LIBC@
+# NSL library (-lnsl)
+LIBNSL     = @LIBNSL@
 # Additional libraries required for non-X programs (-lsocket -lnsl)
 NON_X_LIBS = @LIBS@
 
 # All libraries shown above
-LIBS = $(CXXLIBS) $(LIBRX) $(LIBTERMCAP) $(LIBY) $(LIBIBERTY) $(LIBM)
+LIBS = $(CXXLIBS) $(LIBNSL) $(LIBRX) $(LIBTERMCAP) $(LIBY) $(LIBIBERTY) $(LIBM)
 
 
 ## X Libraries
