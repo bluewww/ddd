@@ -239,6 +239,7 @@ DispValue::DispValue (const DispValue& dv)
     case StructOrClass:
     case BaseClass:
     case Reference:
+    case Sequence:
     case List:
     {
 	v.str_or_cl = new StructOrClassDispValue;
@@ -282,152 +283,233 @@ void DispValue::init(string& value, DispValueType given_type)
 
     bool ignore_repeats = (myparent != 0 && myparent->type() == Array);
 
-    switch (mytype) {
+    switch (mytype) 
+    {
+
     case Simple:
+    case Sequence:
+    {
+	if (myparent == 0 || myparent->type() != Sequence)
+	{
+	    // Attempt to build a sequence from consecutive values
+	    string initial_value = value;
+
+	    mytype = Sequence;
+
+	    v.str_or_cl = new StructOrClassDispValue;
+	    v.str_or_cl->member_count = 0;
+
+	    // Consume entire value
+	    bool consume = true;
+	    while (consume)
+	    {
+		strip_leading_space(value);
+		string old_value = value;
+		DispValue *dv = new DispValue(this, depth() + 1, value, 
+					      myfull_name, myfull_name);
+
+		if (value == old_value)
+		{
+		    // Nothing consumed - stop here
+		    consume = false;
+		}
+		else if (dv->type() == Simple && dv->value() == "")
+		{
+		    // Empty value - stop here
+		    consume = false;
+		}
+
+		if (!consume)
+		{
+		    // Discard the value just read
+		    delete dv;
+		}
+		else
+		{
+		    v.str_or_cl->members[v.str_or_cl->member_count++] = dv;
+		}
+	    }
+
+	    if (v.str_or_cl->member_count == 1)
+	    {
+		// We only found one value.  Change type to Simple.
+		for (int i = 0; i < v.str_or_cl->member_count; i++)
+		    delete v.str_or_cl->members[i];
+
+		mytype = Simple;
+		value = initial_value;
+	    }
+	}
+	else
+	{
+	    // Our parent is a Sequence.  If we keep on reading
+	    // Sequences, we'll end in an endless recursion.  Make
+	    // this a Simple.
+	    mytype = Simple;
+	}
+
+	if (mytype == Simple)
 	{
 	    v.simple = new SimpleDispValue;
 	    v.simple->value = 
 		read_simple_value(value, depth(), ignore_repeats);
-#if LOG_CREATE_VALUES
-	    clog << mytype << ": " << quote(v.simple->value) << "\n";
-#endif
-	    break;
 	}
+
+#if LOG_CREATE_VALUES
+	if (mytype == Simple)
+	{
+	    clog << mytype << ": " << quote(v.simple->value) << "\n";
+	}
+	else if (mytype == Sequence)
+	{
+	    clog << mytype << " "
+		 << quote(myfull_name)
+		 << " has " << v.str_or_cl->member_count << " members\n";
+	}
+	else
+	{
+	    assert(0);
+	    abort();
+	}
+#endif
+
+	break;
+    }
 
     case Text:
-	{
-	    v.simple = new SimpleDispValue;
-	    v.simple->value = value;
+    {
+	v.simple = new SimpleDispValue;
+	v.simple->value = value;
 #if LOG_CREATE_VALUES
-	    clog << mytype << ": " << quote(v.simple->value) << "\n";
+	clog << mytype << ": " << quote(v.simple->value) << "\n";
 #endif
-	    break;
-	}
+	break;
+    }
 
     case Pointer:
-	{
-	    v.pointer = new PointerDispValue;
-	    v.pointer->value = read_pointer_value (value, ignore_repeats);
-	    v.pointer->dereferenced = false;
+    {
+	v.pointer = new PointerDispValue;
+	v.pointer->value = read_pointer_value (value, ignore_repeats);
+	v.pointer->dereferenced = false;
 
 #if LOG_CREATE_VALUES
-	    clog << mytype << ": " << quote(v.pointer->value) << "\n";
+	clog << mytype << ": " << quote(v.pointer->value) << "\n";
 #endif
-	    // Hide vtable pointers.
-	    if (v.pointer->value.contains("virtual table")
-		|| v.pointer->value.contains("vtable"))
-		myexpanded = false;
-	    break;
-	}
+	// Hide vtable pointers.
+	if (v.pointer->value.contains("virtual table")
+	    || v.pointer->value.contains("vtable"))
+	    myexpanded = false;
+	break;
+    }
 
     case Array:
-	{
+    {
 #if RUNTIME_REGEX
-	    static regex rxsimple("([][a-zA-Z0-9_$().]|->)*");
+	static regex rxsimple("([][a-zA-Z0-9_$().]|->)*");
 #endif
 
-	    string base = myfull_name;
-	    if (!base.matches(rxsimple))
-		base = "(" + base + ")";
+	string base = myfull_name;
+	if (!base.matches(rxsimple))
+	    base = "(" + base + ")";
 
-	    v.array = new ArrayDispValue;
-	    v.array->align = Vertical;
-	    v.array->member_count = 0;
+	v.array = new ArrayDispValue;
+	v.array->align = Vertical;
+	v.array->member_count = 0;
 
 #if LOG_CREATE_VALUES
-	    clog << mytype << ": " << "\n";
+	clog << mytype << ": " << "\n";
 #endif
 
-	    read_array_begin (value, myaddr);
+	read_array_begin (value, myaddr);
 
-	    // Check for `vtable entries' prefix.
-	    string vtable_entries = read_vtable_entries(value);
-	    if (vtable_entries != "")
+	// Check for `vtable entries' prefix.
+	string vtable_entries = read_vtable_entries(value);
+	if (vtable_entries != "")
+	{
+	    v.array->members[v.array->member_count++] = 
+		new DispValue (this, depth() + 1,
+			       vtable_entries, 
+			       myfull_name, myfull_name);
+	}
+
+	// Read the array elements.  Assume that the type is the
+	// same across all elements.
+	DispValueType member_type = UnknownType;
+	if (!v.array->have_index_base)
+	{
+	    v.array->index_base = index_base(base, depth());
+	    v.array->have_index_base = true;
+	}
+	int array_index = v.array->index_base;
+
+	// The array has at least one element.  Otherwise, GDB
+	// would treat it as a pointer.
+	do {
+	    string repeated_value = value;
+	    string member_name = 
+		gdb->index_expr("", itostring(array_index++));
+	    DispValue *dv = 
+		new DispValue(this, depth() + 1, value,
+			      add_member_name(base, member_name), 
+			      member_name, member_type);
+	    member_type = dv->type();
+	    v.array->members[v.array->member_count++] = dv;
+
+	    int repeats = read_repeats(value);
+
+	    if (expand_repeated_values)
 	    {
-		v.array->members[v.array->member_count++] = 
-		    new DispValue (this, depth() + 1,
-				   vtable_entries, 
-				   myfull_name, myfull_name);
-	    }
-
-	    // Read the array elements.  Assume that the type is the
-	    // same across all elements.
-	    DispValueType member_type = UnknownType;
-	    if (!v.array->have_index_base)
-	    {
-		v.array->index_base = index_base(base, depth());
-		v.array->have_index_base = true;
-	    }
-	    int array_index = v.array->index_base;
-
-	    // The array has at least one element.  Otherwise, GDB
-	    // would treat it as a pointer.
-	    do {
-		string repeated_value = value;
-		string member_name = 
-		    gdb->index_expr("", itostring(array_index++));
-		DispValue *dv = 
-		    new DispValue(this, depth() + 1, value,
-				  add_member_name(base, member_name), 
-				  member_name, member_type);
-		member_type = dv->type();
-		v.array->members[v.array->member_count++] = dv;
-
-		int repeats = read_repeats(value);
-
-		if (expand_repeated_values)
+		// Create one value per repeat
+		while (--repeats > 0)
 		{
-		    // Create one value per repeat
-		    while (--repeats > 0)
-		    {
-			member_name = 
-			    gdb->index_expr("", itostring(array_index++));
-			string val = repeated_value;
-			DispValue *repeated_dv = 
-			    new DispValue(this, depth() + 1, val,
-					  add_member_name(base, member_name),
-					  member_name, member_type);
-			v.array->members[v.array->member_count++] = 
-			    repeated_dv;
-		    }
+		    member_name = 
+			gdb->index_expr("", itostring(array_index++));
+		    string val = repeated_value;
+		    DispValue *repeated_dv = 
+			new DispValue(this, depth() + 1, val,
+				      add_member_name(base, member_name),
+				      member_name, member_type);
+		    v.array->members[v.array->member_count++] = 
+			repeated_dv;
 		}
-		else
+	    }
+	    else
+	    {
+		// Show repetition in member
+		if (repeats > 1)
 		{
-		    // Show repetition in member
-		    if (repeats > 1)
-		    {
-			array_index--;
+		    array_index--;
 
 #if 0
-			// We use the GDB `artificial array' notation here,
-			// since repeat recognition is supported in GDB only.
-			member_name += "@" + itostring(repeats);
+		    // We use the GDB `artificial array' notation here,
+		    // since repeat recognition is supported in GDB only.
+		    member_name += "@" + itostring(repeats);
 
-			dv->full_name() = add_member_name(base, member_name);
-			dv->name()      = member_name;
+		    dv->full_name() = add_member_name(base, member_name);
+		    dv->name()      = member_name;
 #endif
-			dv->repeats()   = repeats;
+		    dv->repeats()   = repeats;
 
-			array_index += repeats;
-		    }
+		    array_index += repeats;
 		}
+	    }
 
-		if (background(value.length()))
-		{
-		    init(value);
-		    return;
-		}
-	    } while (read_array_next (value) != 0);
-	    read_array_end (value);
+	    if (background(value.length()))
+	    {
+		init(value);
+		return;
+	    }
+	} while (read_array_next (value) != 0);
+	read_array_end (value);
 
-	    // Expand only if at top-level.
-	    myexpanded = (depth() == 0 || v.array->member_count <= 1);
+	// Expand only if at top-level.
+	myexpanded = (depth() == 0 || v.array->member_count <= 1);
 
 #if LOG_CREATE_VALUES
-	    clog << mytype << " has " << v.array->member_count << " members\n";
+	clog << mytype << " has " << v.array->member_count << " members\n";
 #endif
-	    break;
-	}
+	break;
+    }
 
     case List:
 	// Some DBXes issue the local variables via a frame line, just
@@ -438,151 +520,151 @@ void DispValue::init(string& value, DispValueType given_type)
 	// FALL THROUGH
     case StructOrClass:
     case BaseClass:
-	{
-	    v.str_or_cl = new StructOrClassDispValue;
-	    v.str_or_cl->member_count = 0;
+    {
+	v.str_or_cl = new StructOrClassDispValue;
+	v.str_or_cl->member_count = 0;
 	
 #if LOG_CREATE_VALUES
-	    clog << mytype << " " << quote(myfull_name) << "\n";
+	clog << mytype << " " << quote(myfull_name) << "\n";
 #endif
-	    string member_prefix = myfull_name;
-	    if (mytype == List)
+	string member_prefix = myfull_name;
+	if (mytype == List)
+	{
+	    member_prefix = "";
+	}
+	else
+	{
+	    // In C and Java, `*' binds tighter than `.'
+	    if (member_prefix.contains('*', 0))
 	    {
-		member_prefix = "";
-	    }
-	    else
-	    {
-		// In C and Java, `*' binds tighter than `.'
-		if (member_prefix.contains('*', 0))
+		if (gdb->program_language() == LANGUAGE_C)
 		{
-		    if (gdb->program_language() == LANGUAGE_C)
-		    {
-			// Use the C `->' operator instead
-			member_prefix.del("*");
+		    // Use the C `->' operator instead
+		    member_prefix.del("*");
 #if RUNTIME_REGEX
-			static regex rxchain("[-a-zA-Z0-9::_>.]+");
+		    static regex rxchain("[-a-zA-Z0-9::_>.]+");
 #endif
-			if (member_prefix.matches(rxchain))
-			{
-			    // Simple chain of identifiers - prepend `->'
-			    member_prefix += "->";
-			}
-			else
-			{
-			    member_prefix.prepend("(");
-			    member_prefix += ")->";
-			}
+		    if (member_prefix.matches(rxchain))
+		    {
+			// Simple chain of identifiers - prepend `->'
+			member_prefix += "->";
 		    }
 		    else
 		    {
 			member_prefix.prepend("(");
-			member_prefix += ").";
+			member_prefix += ")->";
 		    }
 		}
 		else
 		{
-		    member_prefix += ".";
+		    member_prefix.prepend("(");
+		    member_prefix += ").";
 		}
-
-		read_str_or_cl_begin (value, myaddr);
-	    }
-
-	    bool more_values = true;
-	    string member_name = read_member_name (value);
-	    int i = 0;
-	    while (more_values && member_name != "")
-	    {
-		v.str_or_cl->member_count++;
-		if (is_BaseClass_name (member_name) || member_name == " ")
-		{
-		    // Anonymous union
-		    v.str_or_cl->members[i] = 
-			new DispValue (this, depth() + 1, value, myfull_name,
-				       member_name);
-		    more_values = read_str_or_cl_next (value);
-		    read_members_of_xy (value);
-		}
-		else
-		{
-		    string full_name;
-
-		    // If a member name contains `.', quote it.  This
-		    // happens with vtable pointers on Linux (`_vptr.').
-		    if (member_name.contains('.') && gdb->has_quotes())
-			full_name = member_prefix + quote(member_name, '\'');
-		    else
-			full_name = member_prefix + member_name;
-
-		    v.str_or_cl->members[i] = 
-			new DispValue (this, depth() + 1, value, 
-				       full_name, member_name);
-		    more_values = read_str_or_cl_next (value);
-		}
-		i++;
-		if (more_values)
-		    member_name = read_member_name (value);
-
-		if (background(value.length()))
-		{
-		    init(value);
-		    return;
-		}
-	    }
-
-	    if (mytype == List && value != "")
-	    {
-		// Add remaining value as text
-		v.str_or_cl->members[v.str_or_cl->member_count++] = 
-		    new DispValue(this, depth() + 1, value, "", "");
 	    }
 	    else
 	    {
-		// Skip the remainder
-		read_str_or_cl_end(value);
+		member_prefix += ".";
 	    }
 
-	    // Expand only if at top-level.
-	    myexpanded = (depth() == 0 || v.array->member_count <= 1);
-
-#if LOG_CREATE_VALUES
-	    clog << mytype << " "
-		 << quote(myfull_name)
-		 << " has " << v.str_or_cl->member_count << " members\n";
-#endif
-
-	    break;
+	    read_str_or_cl_begin (value, myaddr);
 	}
 
-    case Reference:
+	bool more_values = true;
+	string member_name = read_member_name (value);
+	int i = 0;
+	while (more_values && member_name != "")
 	{
-	    v.str_or_cl = new StructOrClassDispValue;
-	    myexpanded = true;
-	    v.str_or_cl->member_count = 2;
+	    v.str_or_cl->member_count++;
+	    if (is_BaseClass_name (member_name) || member_name == " ")
+	    {
+		// Anonymous union
+		v.str_or_cl->members[i] = 
+		    new DispValue (this, depth() + 1, value, myfull_name,
+				   member_name);
+		more_values = read_str_or_cl_next (value);
+		read_members_of_xy (value);
+	    }
+	    else
+	    {
+		string full_name;
 
-	    int sep = value.index('@');
-	    sep = value.index(':', sep);
+		// If a member name contains `.', quote it.  This
+		// happens with vtable pointers on Linux (`_vptr.').
+		if (member_name.contains('.') && gdb->has_quotes())
+		    full_name = member_prefix + quote(member_name, '\'');
+		else
+		    full_name = member_prefix + member_name;
 
-	    string ref = value.before(sep);
-	    value = value.after(sep);
-
-	    v.str_or_cl->members[0] = 
-		new DispValue(this, depth() + 1, ref, 
-			      gdb->address_expr(myfull_name), 
-			      myfull_name, Pointer);
-
-	    v.str_or_cl->members[1] = 
-		new DispValue(this, depth() + 1, value,
-			      myfull_name, myfull_name);
+		v.str_or_cl->members[i] = 
+		    new DispValue (this, depth() + 1, value, 
+				   full_name, member_name);
+		more_values = read_str_or_cl_next (value);
+	    }
+	    i++;
+	    if (more_values)
+		member_name = read_member_name (value);
 
 	    if (background(value.length()))
 	    {
 		init(value);
 		return;
 	    }
-	    break;
 	}
 
-    default:
+	if (mytype == List && value != "")
+	{
+	    // Add remaining value as text
+	    v.str_or_cl->members[v.str_or_cl->member_count++] = 
+		new DispValue(this, depth() + 1, value, "", "");
+	}
+	else
+	{
+	    // Skip the remainder
+	    read_str_or_cl_end(value);
+	}
+
+	// Expand only if at top-level.
+	myexpanded = (depth() == 0 || v.array->member_count <= 1);
+
+#if LOG_CREATE_VALUES
+	clog << mytype << " "
+	     << quote(myfull_name)
+	     << " has " << v.str_or_cl->member_count << " members\n";
+#endif
+
+	break;
+    }
+
+    case Reference:
+    {
+	v.str_or_cl = new StructOrClassDispValue;
+	myexpanded = true;
+	v.str_or_cl->member_count = 2;
+
+	int sep = value.index('@');
+	sep = value.index(':', sep);
+
+	string ref = value.before(sep);
+	value = value.after(sep);
+
+	v.str_or_cl->members[0] = 
+	    new DispValue(this, depth() + 1, ref, 
+			  gdb->address_expr(myfull_name), 
+			  myfull_name, Pointer);
+
+	v.str_or_cl->members[1] = 
+	    new DispValue(this, depth() + 1, value,
+			  myfull_name, myfull_name);
+
+	if (background(value.length()))
+	{
+	    init(value);
+	    return;
+	}
+	break;
+    }
+
+    case UnknownType:
 	assert(0);
 	abort();
     }
@@ -617,6 +699,7 @@ void DispValue::clear()
 	delete v.array;
 	break;
 
+    case Sequence:
     case List:
     case StructOrClass:
     case BaseClass:
@@ -647,13 +730,14 @@ bool DispValue::dereferenced() const
     case Simple:
     case Text:
     case Array:
+    case Sequence:
     case List:
     case StructOrClass:
     case BaseClass:
     case Reference:
 	return false;
 
-    default:
+    case UnknownType:
 	assert(0);
 	abort();
     }
@@ -679,13 +763,14 @@ string DispValue::dereferenced_name() const
     case Simple:
     case Text:
     case Array:
+    case Sequence:
     case List:
     case StructOrClass:
     case BaseClass:
     case Reference:
 	return "";
 
-    default:
+    case UnknownType:
 	assert(0);
 	abort();
     }
@@ -707,13 +792,14 @@ string DispValue::value() const
 	return v.pointer->value;
 
     case Array:
+    case Sequence:
     case List:
     case StructOrClass:
     case BaseClass:
     case Reference:
 	return "";
 
-    default:
+    case UnknownType:
 	assert(0);
 	abort();
     }
@@ -731,6 +817,7 @@ int DispValue::nchildren() const
     case Array:
 	return v.array->member_count;
 
+    case Sequence:
     case List:
     case StructOrClass:
     case BaseClass:
@@ -742,7 +829,7 @@ int DispValue::nchildren() const
     case Pointer:
 	return 0;
 
-    default:
+    case UnknownType:
 	assert(0);
 	abort();
     }
@@ -761,6 +848,7 @@ DispValue* DispValue::get_child (int i) const
 	assert (i < v.array->member_count);
 	return v.array->members[i];
 
+    case Sequence:
     case List:
     case StructOrClass:
     case BaseClass:
@@ -774,7 +862,7 @@ DispValue* DispValue::get_child (int i) const
     case Text:
 	return 0;
 
-    default:
+    case UnknownType:
 	assert(0);
 	abort();
     }
@@ -791,6 +879,7 @@ bool DispValue::vertical_aligned()   const
     case Array:
 	return v.array->align == Vertical;
 
+    case Sequence:
     case List:
     case StructOrClass:
     case BaseClass:
@@ -800,7 +889,7 @@ bool DispValue::vertical_aligned()   const
     case Text:
 	return false;
 
-    default:
+    case UnknownType:
 	assert(0);
 	abort();
     }
@@ -815,6 +904,7 @@ bool DispValue::horizontal_aligned() const
     case Array:
 	return v.array->align == Horizontal;
 
+    case Sequence:
     case List:
     case StructOrClass:
     case BaseClass:
@@ -824,7 +914,7 @@ bool DispValue::horizontal_aligned() const
     case Text:
 	return false;
 
-    default:
+    case UnknownType:
 	assert(0);
 	abort();
     }
@@ -1141,6 +1231,7 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	break;
     }
 
+    case Sequence:
     case List:
     case StructOrClass:
     case BaseClass:
@@ -1245,7 +1336,7 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	break;
     }
 
-    default:
+    case UnknownType:
 	assert(0);
 	abort();
     }

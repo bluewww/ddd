@@ -409,6 +409,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	break;
 
     case List:
+    case Sequence:
     case StructOrClass:
     case BaseClass:
 	{
@@ -507,6 +508,7 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 			member_name_width);
 	    break;
 
+	case Sequence:
 	case Array:
 	case Reference:
 	case Simple:

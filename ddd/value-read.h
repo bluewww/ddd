@@ -50,7 +50,8 @@ enum DispValueType {
     StructOrClass,		// Struct, Class, Record, Object
     BaseClass,			// C++ base class member
     Reference,			// C++ Reference.  2 children.
-    List,			// List of values.  Last member may be text,
+    Sequence,			// Sequence of values.
+    List,			// List of values.  Last member may be text.
     Text			// Multi-line text.  Last member of a list.
 };
 
