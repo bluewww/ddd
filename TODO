@@ -352,9 +352,12 @@ Volunteers for these and other projects are welcome!
 169. When a program has crashed, show the program counters as little
      bombs ;-)
 
-170. In the `File' menu, keep a history of files most recently opened
+170. In the `File' menu, keep a history of most recently opened files
      (executables? sources?)
 
 171. Use double-buffering to display the graph.  Even less flickering.
 
-172. (Insert your project idea here)
+172. Use external `gzip' to compress and uncompress the built-in
+     manual.  Saves lots of space in the executable.
+
+173. (Insert your project idea here)

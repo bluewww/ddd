@@ -1,6 +1,13 @@
 Changes in DDD						-*- text -*-
 **************
 
+DDD 2.2 [in development]
+------------------------
+
+    User-visible changes to DDD 2.1:
+    - Source line numbers are no more displayed (can be turned on again)
+
+
 DDD 2.1.1
 ---------
 
