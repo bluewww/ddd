@@ -38,15 +38,6 @@ Reported by: Rick Flower <Rick.Flower@trw.com>
 AIX
 ===
 
-    [Mike Bond <mike.bond@template.com> says that as of DDD-1997-12-16
-     (that is, DDD 2.1.1 and later): `compiling with C Set++ on AIX 4.2
-     all works fine.  I had no problems with the data display as
-     mentioned, and all else seemed to work.  I use xlC/xlc to compile
-     my apps to be debugged as well, and use dbx, and all works without
-     problems right out of the tar file, straight compile.'  So the
-     messages below might no more apply.]
-
-
 Reported by:  Andreas Zeller <zeller@ips.cs.tu-bs.de>
 
     Use GNU make and GCC for building DDD.
@@ -54,6 +45,24 @@ Reported by:  Andreas Zeller <zeller@ips.cs.tu-bs.de>
       be re-built (which is a pain if you don't have all appropriate
       GNU tools).
     * Using xlC instead of GCC causes a number of minor bugs in DDD.
+
+
+Reported by: Jason A. Smith <smithj4@rpi.edu>
+
+    I had problems building ddd-2.99.9 on AIX-4.1.5.0.  The errors
+    were "TOC overflow" which can be fixed by adding -Wl,-bbigtoc to
+    the compile and link flags.  Adding this to the final compile/link
+    step did not work because of symbol mismatch errors, so I
+    configured ddd with the following command:
+
+    CFLAGS=-Wl,-bbigtoc CXXFLAGS=-Wl,-bbigtoc LDFLAGS=-Wl,-bbigtoc
+    ./configure
+
+    This might not be the correct solution but it worked for me with no
+    errors, just warnings like:
+
+    c++: -bbigtoc: linker input file unused since linking not done
+
 
 Reported by:  Kai Engert <Kai.Engert@dresdner-bank.com>
 
@@ -69,30 +78,6 @@ Reported by:  Kai Engert <Kai.Engert@dresdner-bank.com>
 	-bbigtoc
     I get warnings, that extra code is generated, but I get a working
     executable.
-
-
-Reported by:  bas@phys.uva.nl (Bas V. de Bakker),
-              smueller@dbis1.informatik.uni-hamburg.de (Stefan Mueller)
-
-    `ddd.C' won't compile on rs6000-ibm-aix3 and powerpc-ibm-aix3, due
-    to an error message from the assembler.  According to Stefan
-    Mueller and Bas V. de Bakker, the problem disappears when DDD is
-    compiled without `-O'.  Stefan Mueller also states that GCC chokes
-    on `BreakPoint.C'; it can only be compiled without
-    `-felide-constructors' flag.
-
-    [David C. Snyder <dsnyder@mindspring.com> states that he did not
-    encounter any such problems using GNU binutils-2.6, gcc-2.7.2,
-    libg++-2.7.1, and gdb-4.15.1 on his AIX 3.2.5 system.]
-
-    We recommend the following simple way to build DDD on AIX:
-    
-    1. Enter `make -k'.  This builds all except erroneous files.
-
-    2. In the `ddd' subdirectory, enter 
-       `make CXXOPT= CXXSTUFF=-fexternal-templates'.  This builds
-       the remainder of DDD without `-O' and `-felide-constructors'
-       flags.
 
 
 Reported by:	Jacek M. Holeczek <holeczek@us.edu.pl>

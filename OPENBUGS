@@ -141,4 +141,30 @@ detail.
 716 Michael Marxmeier <mike@msede.com> reports that 4 digit line
     numbers are truncated. Only the last three digits are visible.
 
-717 (Insert new bugs here)
+717 Lassi A. Tuura <lat@iki.fi> states:
+
+On HP-UX and on DEC Unix everything is fine except that:
+  - The default font I get is a bit big and clunky, the old one was
+    much better (in case it matters, I have 100dpi fonts before 75dpi
+    fonts in my font path).  BTW, again this is only a problem on my
+    HP-UX display (see the item below), not on the NT.
+
+  - On data display window, the grayed out icons on the tool bar
+    sometimes "disappear", i.e. don't show anything but the little arrow
+    in the corner.  In more detail, the rotate icon disappears 
+    completely, undisplay is just a funny little light gray blob, and
+    show/hide is somewhat larger but still unreadable blob.  When
+    enabled, all show just fine.  I would venture to guess that the
+    problem is related to choosing right colors for them.  This is on 
+    on a 8-bit PseudoColor screen on workstation running HP-UX 10.20.
+    On my Windows NT 4.0 running Exceed on 24-bit screen everything
+    shows fine.
+
+  - For cxxtest, if I take the list_test, show the entire list (and
+    display all `self' and `next' links), and then start disabling
+    nodes, they keep coming back, apparently because either the self or
+    next alias link brings it back alive.  I would probably expect (at
+    least in this scenario) that if I remove a display, all aliases to
+    it are deleted as well so that the display really goes away.
+
+718 (Insert new bugs here)
