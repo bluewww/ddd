@@ -61,8 +61,9 @@ extern void report_core(ostream& os);
 
 // Helpers
 class Agent;
-extern void gdb_eofHP  (Agent *, void *, void *);
-extern void gdb_diedHP (Agent *, void *, void *);
+extern void gdb_eofHP      (Agent *, void *, void *);
+extern void gdb_diedHP     (Agent *, void *, void *);
+extern void gdb_exceptionHP(Agent *, void *, void *);
 
 // True if GDB is about to exit
 extern bool gdb_is_exiting;

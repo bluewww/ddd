@@ -334,6 +334,10 @@ Volunteers for these and other projects are welcome!
 
 383 Support JDB 1.2:
     * Realize run by restarting JDB
-    * Offer restart when JDB gets an internal error
+    * Handle restart after crash properly
+      + trying to load "reset" class
+      + trying to access traceback method
+      + issue `clear' to reset breakpoints
+    * Detect crash in JDB 1.1
 
 384 (Insert new project ideas here)

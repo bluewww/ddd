@@ -174,7 +174,7 @@ Widget post_gdb_died(string reason, int state, Widget w)
     strip_trailing_space(reason);
 
     int exit_state = EXIT_FAILURE;
-    if (WIFEXITED(((state))))
+    if (state >= 0 && WIFEXITED(((state))))
 	exit_state = WEXITSTATUS(((state)));
 
     bool exited = (exit_state == EXIT_SUCCESS || reason.contains("Exit 0"));
@@ -216,6 +216,14 @@ Widget post_gdb_died(string reason, int state, Widget w)
 
 	    msg = rm("The program terminated (" + reason + ")");
 	    name = "done_dialog";
+	}
+	else if (state < 0)
+	{
+	    // In JDB, the debugger may hang after raising an exception
+	    _gdb_out("\n" + reason + "\n");
+
+	    msg = rm("Internal " + gdb->title() + " error");
+	    name = "exception_dialog";
 	}
 	else
 	{

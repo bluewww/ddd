@@ -1050,6 +1050,7 @@ Ddd*run_again.foreground:	   RUN_COLOR
 Ddd*maintenance.foreground:	   STOP_COLOR
 Ddd*fatal_dialog*foreground:	   STOP_COLOR
 Ddd*terminated_dialog*foreground:  STOP_COLOR
+Ddd*exception_dialog*foreground:   STOP_COLOR
 Ddd*exited_dialog*foreground:      STOP_COLOR
 Ddd*no_debugger_dialog*foreground: STOP_COLOR
 
@@ -6411,6 +6412,17 @@ Ddd*terminated_dialog*okLabelString:	   Restart
 Ddd*terminated_dialog*cancelLabelString:   Exit
 Ddd*terminated_dialog*helpString:	\
 @rm @GDB@ terminated abnormally.  Without @GDB@, DDD cannot run.\n\
+\n\
+Click on LBL(Restart) to restart @GDB@.\n\
+Click on LBL(Exit) to exit DDD.
+
+Ddd*exception_dialog.dialogTitle: DDD: Internal Debugger Error
+! Ddd*exception_dialog.messageString:   \
+! @rm Internal @GDB@ error.
+Ddd*exception_dialog*okLabelString:	      Restart
+Ddd*exception_dialog*cancelLabelString:   Exit
+Ddd*exception_dialog*helpString:	\
+@rm @GDB@ caught an internal error.  @GDB@ may be in an undefined state.\n\
 \n\
 Click on LBL(Restart) to restart @GDB@.\n\
 Click on LBL(Exit) to exit DDD.

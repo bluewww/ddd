@@ -2232,6 +2232,7 @@ int main(int argc, char *argv[])
     gdb->addHandler(Died,             gdb_diedHP);
     gdb->addHandler(Died,             DisableBlinkHP);
     gdb->addHandler(Died,             ReportDeathHP);
+    gdb->addHandler(ExceptionState,   gdb_exceptionHP);
     gdb->addHandler(LanguageChanged,  DataDisp::language_changedHP);
     gdb->addHandler(LanguageChanged,  language_changedHP);
     gdb->addHandler(LanguageChanged,  report_languageHP);

@@ -132,7 +132,8 @@ const unsigned LanguageChanged  = ReadyForCmd + 1;
 const unsigned ReplyRequired    = LanguageChanged + 1;
 const unsigned EchoDetected     = ReplyRequired + 1;
 const unsigned AsyncAnswer      = EchoDetected + 1;
-const unsigned Recording        = AsyncAnswer + 1;
+const unsigned ExceptionState   = AsyncAnswer + 1;
+const unsigned Recording        = ExceptionState + 1;
 const unsigned GDBAgent_NTypes  = Recording + 1;
 
 // Handler info
@@ -206,6 +207,8 @@ private:
     string last_prompt;		// Last prompt received
     string last_written;	// Last command sent
     int echoed_characters;      // # of echoed characters so far (-1: no echo)
+
+    bool exception_state;	// True if exception encountered
 
     GDBAgent& operator = (const GDBAgent&) { assert(0); return *this; }
 
@@ -746,6 +749,9 @@ public:
     bool ends_with_prompt(const string& answer);
     bool ends_with_secondary_prompt(const string& answer);
 
+    // True if exception error message
+    bool is_exception_answer(const string& answer);
+    void set_exception_state(bool state);
 
     // Helpers
     string cmd() const;		// Actual command being executed

@@ -227,6 +227,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       last_prompt(""),
       last_written(""),
       echoed_characters(-1),
+      exception_state(false),
       questions_waiting(false),
       _qu_data(0),
       qu_index(0),
@@ -309,6 +310,7 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       last_prompt(""),
       last_written(""),
       echoed_characters(-1),
+      exception_state(false),
       questions_waiting(false),
       _qu_data(0),
       qu_index(0),
@@ -772,11 +774,28 @@ bool GDBAgent::ends_with_prompt (const string& ans)
     return false;		// Never reached
 }
 
-
 static bool ends_in(const string& answer, const string& prompt)
 {
     return answer.contains(prompt, answer.length() - prompt.length());
 }
+
+// JDB should be applied on itself.
+bool GDBAgent::is_exception_answer(const string& answer)
+{
+    // Any JDB backtrace contains these lines.
+    return type() == JDB && answer.contains("com.sun.tools.example.debug");
+
+}
+
+void GDBAgent::set_exception_state(bool state)
+{
+    if (state != exception_state)
+    {
+	exception_state = state;
+	callHandlers(ExceptionState, (void *)exception_state);
+    }
+}
+	
 
 // Return true iff ANSWER ends with secondary prompt.
 bool GDBAgent::ends_with_secondary_prompt (const string& ans)
@@ -1321,6 +1340,12 @@ void GDBAgent::handle_input(string& answer)
     handle_more(answer);
     handle_reply(answer);
 
+    if (is_exception_answer(complete_answer))
+	set_exception_state(true);
+
+    if (exception_state && state != ReadyWithPrompt)
+	callHandlers(AsyncAnswer, (void *)&answer);
+
     // Handle all other GDB output, depending on current state.
     switch (state)
     {
@@ -1339,7 +1364,10 @@ void GDBAgent::handle_input(string& answer)
 	if (_on_answer != 0)
 	{
 	    if (ends_with_prompt(complete_answer))
+	    {
+		set_exception_state(false);
 		normalize_answer(answer);
+	    }
 	    else
 	    {
 		strip_control(answer);
@@ -1350,6 +1378,8 @@ void GDBAgent::handle_input(string& answer)
 
 	if (ends_with_prompt(complete_answer))
 	{
+	    exception_state = false;
+
             // Received complete answer (GDB issued prompt)
 
             // Set new state and call answer procedure
@@ -1398,6 +1428,8 @@ void GDBAgent::handle_input(string& answer)
 
 	if (ends_with_prompt(complete_answer))
 	{
+	    set_exception_state(false);
+
             // Received complete answer (GDB issued prompt)
 	    normalize_answer(complete_answer);
 
@@ -1422,6 +1454,8 @@ void GDBAgent::handle_input(string& answer)
 
 	if (ends_with_prompt(complete_answers[qu_index]))
 	{
+	    set_exception_state(false);
+
             // Answer is complete (GDB issued prompt)
 	    normalize_answer(complete_answers[qu_index]);
 
