@@ -462,7 +462,7 @@ glob_filename (char *pathname)
 
       if (directories == NULL)
 	goto memory_error;
-      else if ((int) directories == -1)
+      else if (directories == (char **)-1)
 	return (char **) -1;
       else if (*directories == NULL)
 	{
