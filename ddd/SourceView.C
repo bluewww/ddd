@@ -5082,6 +5082,30 @@ void SourceView::doubleClickAct(Widget w, XEvent *e, String *params,
     if (in_text && !is_file_pos(arg))
     {
 	// In text: do some action on the selection
+	if (text_w == source_text_w)
+	{
+	    XmTextPosition startPos, endPos;
+	    Boolean have_selection = 
+		XmTextGetSelectionPosition(text_w, &startPos, &endPos);
+	    if (have_selection)
+	    {
+		int p = endPos;
+		while (p < (int)current_source.length() && 
+		       isspace(current_source[p]))
+			p++;
+
+		if (current_source.contains('(', p))
+		{
+		    // Function call
+		    if (*num_params >= 3)
+			gdb_button_command(params[2]);
+		    else
+			gdb_button_command("list ()");
+		    return;
+		}
+	    }
+	}
+
 	if (*num_params >= 1)
 	    gdb_button_command(params[0]);
 	else

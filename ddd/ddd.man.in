@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-07\-09" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-07\-23" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -404,6 +404,10 @@ button to find its definition.
 As a faster alternative, you can simply press \fImouse button 3\fR on the
 function name and select the `\fBLookup\fR' item from the source popup
 menu.
+.PP
+As an even faster alternative, you can also double-click on a function 
+call (an identifier followed by a `\fB(\fR' character) to lookup the
+function definition.
 .\"
 .SS "Textual Search"
 .\"
@@ -4931,7 +4935,7 @@ These actions are used in the source and code windows.
 .B source-delete-glyph ()
 Delete the breakpoint related to the glyph at cursor position.
 .TP
-.B source-double-click ([\fItext-action\fR [,\fIline-action\fR]])
+.B source-double-click ([\fItext-action\fR [,\fIline-action\fR [,\fIfunction-action\fR]]]\fB)\fR
 The double-click action in the source window.
 .RS
 .br
@@ -4942,6 +4946,11 @@ properties.
 If this action is taken in the breakpoint area, invoke
 `\fBgdb-command(\fIline-action\fB)\fR'.  If \fIline-action\fR is not
 given, it defaults to `\fBbreak ()\fR'.
+.IP \(bu 2
+If this action is taken in the source text, and the next character
+following the current selection is a `\fB(\fR', invoke
+`\fBgdb-command(\fIfunction-action\fB)\fR'.  If \fIfunction-action\fR
+is not given, it defaults to `\fBlist ()\fR'.
 .IP \(bu 2
 Otherwise, invoke `\fBgdb-command(\fItext-action\fB)\fR'.  If
 \fItext-action\fR is not given, it defaults to `\fBgraph display
