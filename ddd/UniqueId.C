@@ -46,13 +46,13 @@ UniqueId::UniqueId(): _id(tics++)
 {
     ids++;
     if (debug)
-	clog << "+ " << _id << "\n";
+	std::clog << "+ " << _id << "\n";
 }
 
 UniqueId::~UniqueId()
 {
     if (debug)
-	clog << "- " << _id << "\n";
+	std::clog << "- " << _id << "\n";
     ids--;
 }
 #endif
