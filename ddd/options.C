@@ -1213,7 +1213,7 @@ static bool get_core(const string& session, unsigned long flags,
 
     bool ok = _get_core(session, flags, target);
     if (!ok && interact)
-	post_warning("Could not save core file.", "incomplete_save_warning");
+	post_warning("Could not save core file.", "core_missing_warning");
 
     return ok;
 }
@@ -1699,7 +1699,7 @@ bool save_options(unsigned long flags)
 	{
 	    if (interact)
 		post_warning("Could not save program name.",
-			     "incomplete_save_warning");
+			     "program_name_missing_warning");
 	    ok = false;
 	}
 
@@ -1712,7 +1712,7 @@ bool save_options(unsigned long flags)
 	{
 	    if (interact)
 		post_warning("Could not save all breakpoints", 
-			     "incomplete_save_warning");
+			     "breakpoint_missing_warning");
 	    ok = false;
 	}
 
@@ -1744,7 +1744,7 @@ bool save_options(unsigned long flags)
 	    {
 		if (interact)
 		    post_warning("Could not save all data displays.",
-				 "incomplete_save_warning");
+				 "displays_missing_warning");
 		ok = false;
 	    }
 	}

@@ -544,6 +544,9 @@ Ddd*align2dArrays:		true
 ! After a change in a display, shall we move adjacent displays?
 Ddd*bumpDisplays:		true
 
+! Shall we hide displays that are out of scope?
+Ddd*hideDisplays:		true
+
 ! The VSL library for displaying graph nodes.  `builtin' means the VSL
 ! library compiled into DDD, named `ddd.vsl'.  If you wish to use
 ! another VSL library, put its name here and set `vslPath' to a
@@ -5047,9 +5050,35 @@ Ddd*expired_warning*helpString: \
 DDD @VERSION@ should no longer be used.\n\
 To get the most recent DDD version, see the LBL(Help) | LBL([DDD] WWW Page).
 
-Ddd*incomplete_save_warning_popup.title: DDD: Incomplete Save
-Ddd*incomplete_save_warning*helpString: \
-@rm Some part of the DDD state could not be saved.
+Ddd*core_missing_warning_popup.title: DDD: Core Missing
+Ddd*core_missing_warning*helpString: \
+@rm DDD could not get a core dump of the debugged program.\n\
+This means that the currently displayed data will be lost when\n\
+restoring the session.\n\
+\n\
+Please verify the LBL(Edit) | LBL(Preferences) | LBL(Helpers) | \
+LBL(Get Core File) settings;\n\
+try again without helper if appropriate.\n\
+\n\
+Also be sure that you have not disabled core dumps\n\
+(hint: look for SAMP(limit) and SAMP(ulimit) commands \
+in your shell startup file)
+
+Ddd*program_name_missing_warning_popup.title: DDD: Program Name Missing
+Ddd*program_name_missing_warning: \
+@rm DDD could not determine the name of the current debuggee.\n\
+Please try again when @GDB@ is ready.
+
+Ddd*breakpoint_missing_warning_popup.title: DDD: Breakpoints Missing
+Ddd*breakpoint_missing_warning: \
+@rm DDD could not save the current breakpoint state.\n\
+Please try again when @GDB@ is ready.
+
+Ddd*displays_missing_warning_popup.title: DDD: Data Displays Missing
+Ddd*displays_missing_warning: \
+@rm DDD could not save the entire data display state.\n\
+DDD can only save displays that are defined within the current backtrace.\n\
+All other displays must be restored manually when restoring the session.
 
 Ddd*no_sessions_error_popup.title: DDD: No Sessions
 Ddd*no_sessions_error*helpString: \
