@@ -14,17 +14,6 @@ Volunteers for these and other projects are welcome!
 001. Have DDD ported to a free widget set -- Athena or lwlib, for
      example.  DDD could then be included in the GNU distribution.
 
-002. Have breakpoint menus like
-
-       (gdb) b Foo::bar
-       [0] cancel
-       [1] all
-       [2] Foo:bar(int)
-       [2] Foo:bar(char)
-       >
-
-     realized in a selection dialog.
-
 003. Support full annotation mode (`gdb --annotate=2').  This would
      make prompt recognition easier and allow full trace of the current
      GDB status.  Disadvantage: won't work with earlier GDBs and requires
@@ -89,16 +78,6 @@ Volunteers for these and other projects are welcome!
 
 056. Have current arguments (`info args') and local variables (`info
      locals') be displayed.
-
-057. DBX 3.x:
-     In order for ddd to properly find source files, a 'dbxenv' resource must
-     be set so that dbx prints the full filename (including path) for source
-     files. This command is:
-           dbxenv output_short_file_name off
-     Also, this version of dbx includes a Korn-shell command line parser. This
-     does not seem to be a problem, except that the default prompt includes
-     the command history number, e.g. "(dbx 7) ".  Changing it to "(dbx) "
-     is probably appropriate for ddd.
 
 058. (Insert your project idea here)
 

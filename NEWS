@@ -4,15 +4,15 @@ Changes in DDD						-*- text -*-
 DDD 1.4 (WORK IN PROGRESS - NOT YET RELEASED)
 ---------------------------------------------
 
-    This release brings the long awaited machine code support, new
-    breakpoint and execution symbols, improved DBX support, enhanced
-    integration facilities and some more new features and
-    improvements.
+    This release realizes the top ten suggestions of DDD users.  It
+    brings the long awaited machine code support, new breakpoint and
+    execution symbols, improved DBX support, enhanced integration
+    facilities and many small features and improvements.
 
-    Changes to DDD 1.2:
+    Changes to DDD 1.3:
     - Full machine code support: Assembler and register windows,
       Breakpoints in machine code, no-source debugging, stepping over
-      instructions.  (Won't work with DBX yet)
+      instructions.  (GDB only)
     - Breakpoints and the current execution position are displayed as
       stop signs and arrow symbols (``glyphs'') instead of text.  Our
       students find that cute; the old mode is still available.
@@ -22,14 +22,16 @@ DDD 1.4 (WORK IN PROGRESS - NOT YET RELEASED)
       other GDB/DBX front-ends.  For instance, you can have DDD run as
       an inferior debugger from your Emacs GDB-mode, having all Emacs
       and DDD facilities at your disposition.
-    - Improved DBX 3.x support.  Thanks to Grant McDorman <grant@isgtec.com>.
+    - Improved C++ support with DBX 3.x.  Thanks to Grant McDorman
+      <grant@isgtec.com>.
     - Displays with format expressions (`/x') are properly
       dereferenced.
-    - Position history (`Back'/`Forward') improved.
+    - Improved position history mechanism.
     - Automatic reloading of source files when the debugged program
       has changed; explicit reload is no longer required.
     - File selection dialogs are synchronized: changing the directory
       in one dialog also changes the directory in all others.
+    - Interactive dialogs for disambiguating C++ names.
     - Several major and minor bugs have been fixed.  Special thanks to
       Grant McDorman <grant@isgtec.com>.
     - No more `Help on Debugging' item.  Sigh.
