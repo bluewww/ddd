@@ -90,6 +90,8 @@ char session_rcsid[] =
 #include <Xm/SelectioB.h>
 #include <Xm/PushB.h>
 #include <Xm/ToggleB.h>
+#include <Xm/Text.h>
+#include <Xm/TextF.h>
 
 extern "C" {
 #include <sys/types.h>
@@ -614,16 +616,18 @@ static void DeleteSessionsCB(Widget dialog, XtPointer client_data, XtPointer)
 // Session save
 // ---------------------------------------------------------------------------
 
-static string get_chosen_session(XtPointer call_data)
+static string get_chosen_session(Widget dialog)
 {
-    XmSelectionBoxCallbackStruct *cbs =
-	(XmSelectionBoxCallbackStruct *)call_data;
+    Widget text     = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
+    Widget sessions = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
 
-    String value_s;
-    XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &value_s);
-    string value = value_s;
-    XtFree(value_s);
+    String v = 0;
+    if (XmIsText(text))
+	v = XmTextGetString(text);
+    else if (XmIsTextField(text))
+	v = XmTextFieldGetString(text);
 
+    string value = v;
     if (value == NO_SESSION)
 	value = DEFAULT_SESSION;
     return value;
@@ -650,7 +654,7 @@ void set_session(const string& v)
 // Set the current session
 static void SetSessionCB(Widget dialog, XtPointer, XtPointer call_data)
 {
-    set_session(get_chosen_session(call_data));
+    set_session(get_chosen_session(dialog));
     update_sessions(dialog);
 
     if (app_data.session == DEFAULT_SESSION)
