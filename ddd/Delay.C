@@ -126,13 +126,13 @@ Cursor _Delay::hourglass_cursor()
 }
 
 _Delay::_Delay(Widget w):
-    widget(w)
+    widget(w), old_cursor(0)
 {
     if (widget == 0)
 	return;
 
 #if LOG_DELAY
-    clog << "Creating delay for " << XtName(widget) << "\n";
+    clog << "Setting " << XtName(widget) << " delay cursor\n";
 #endif
 
     Display *display = XtDisplay(widget);
@@ -153,11 +153,11 @@ _Delay::_Delay(Widget w):
 
 _Delay::~_Delay()
 {
-    if (widget == 0)
+    if (widget == 0 || old_cursor == 0)
 	return;
 
 #if LOG_DELAY
-    clog << "Removing delay for " << XtName(widget) << "\n";
+    clog << "Removing " << XtName(widget) << " delay cursor\n";
 #endif
 
     if (XtIsRealized(widget))
@@ -173,7 +173,8 @@ _Delay::~_Delay()
 void _Delay::DestroyCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     _Delay *delay = (_Delay *)client_data;
-    delay->widget = 0;
+    delay->widget     = 0;
+    delay->old_cursor = 0;
 }
 
 
@@ -184,23 +185,32 @@ DelayArray Delay::delays;
 Delay::Delay(Widget w):
     _Delay(w)
 {
+    assert(delays.size() == _shells.size());
+
     if (delay_count++ == 0)
     {
 	for (int i = 0; i < delays.size(); i++)
 	{
 	    assert(delays[i] == 0);
 	    if (_shells[i])
+	    {
+#if LOG_DELAY
+		clog << "Slot " << i << ": ";
+#endif
 		delays[i] = new _Delay(_shells[i]);
+	    }
 	}
     }
 }
 
 // Make sure the shell is unregistered when destroyed
-void Delay::DestroyCB(Widget w, XtPointer, XtPointer)
+void Delay::DestroyCB(Widget widget, XtPointer, XtPointer)
 {
+    assert(delays.size() == _shells.size());
+
     // Unregister shell
     for (int i = 0; i < _shells.size(); i++)
-	if (_shells[i] == w)
+	if (_shells[i] == widget)
 	{
 	    _shells[i] = 0;
 	    if (delays[i])
@@ -208,49 +218,64 @@ void Delay::DestroyCB(Widget w, XtPointer, XtPointer)
 		delete delays[i];
 		delays[i] = 0;
 	    }
+#if LOG_DELAY
+	    clog << "Unregistering " << XtName(widget) 
+		 << " in slot " << i << "\n";
+#endif
 	}
 }
 
-void Delay::register_shell(Widget w)
+void Delay::register_shell(Widget widget)
 {
+    assert(delays.size() == _shells.size());
+
     // Check if the shell is already registered
     for (int i = 0; i < _shells.size(); i++)
-	if (_shells[i] == w)
+	if (_shells[i] == widget)
 	    return;
 
     // Look for an empty slot
     for (i = 0; i < _shells.size() && _shells[i] != 0; i++)
 	;
 
-    XtAddCallback(w, XtNdestroyCallback, DestroyCB, 0);
+    XtAddCallback(widget, XtNdestroyCallback, DestroyCB, 0);
 
     _Delay *new_delay = 0;
     if (delay_count)
-	new_delay = new _Delay(w);
+	new_delay = new _Delay(widget);
 
-    if (i >= _shells.size())
+    if (i == _shells.size())
     {
-	_shells += w;
-	delays  += new_delay;
+	_shells += Widget(0);
+	delays  += (_Delay *)0;
     }
-    else
-    {
-	assert(_shells[i] == 0);
-	assert(delays[i] == 0);
 
-	_shells[i] = w;
-	delays[i]  = new_delay;
-    }
+    assert(_shells[i] == 0);
+    assert(delays[i] == 0);
+    
+    _shells[i] = widget;
+    delays[i]  = new_delay;
+
+#if LOG_DELAY
+    clog << "Registering " << XtName(widget) << " in slot " << i << "\n";
+#endif
+
+    assert(delays.size() == _shells.size());
 }
 
 Delay::~Delay()
 {
+    assert(delays.size() == _shells.size());
+
     if (--delay_count == 0)
     {
 	for (int i = 0; i < delays.size(); i++)
 	{
 	    if (delays[i])
 	    {
+#if LOG_DELAY
+		clog << "Slot " << i << ": ";
+#endif
 		delete delays[i];
 		delays[i] = 0;
 	    }
