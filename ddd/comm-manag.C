@@ -1400,20 +1400,26 @@ void user_cmdOA (const string& answer, void* data)
 {
     string ans = answer;
     CmdData *cmd_data = (CmdData *) data;
+
+    // Filter displays and position
     if (cmd_data->pos_buffer)
 	cmd_data->pos_buffer->filter(ans);
 
     if (cmd_data->filter_disp != NoFilter)
-    {
-	// Filter displays
 	cmd_data->disp_buffer->filter(ans);
-    }
 
     cmd_data->user_answer += ans;
 
     // Output remaining answer
     if (cmd_data->user_verbose && cmd_data->graph_cmd == "")
+    {
 	gdb_out(ans);
+    }
+    else if (cmd_data->user_answer.contains("(y or n) ", -1))
+    {
+	// GDB wants confirmation for a batch command
+	gdb->send_user_ctrl_cmd("y\n");
+    }
 }
 
 
