@@ -6080,8 +6080,19 @@ void SourceView::dragGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
 
     int k;
     for (k = 0; k < 2; k++)
-	if (w == grey_arrows[k] || w == temp_stops[k] || w == temp_arrows[k])
+    {
+	if (w == grey_arrows[k])
+	{
+	    set_status("Cannot drag last execution position");
 	    return;
+	}
+
+	if (w == temp_stops[k] || w == temp_arrows[k])
+	{
+	    set_status("Cannot drag temp glyph");
+	    return;
+	}
+    }
 
     static Cursor move_cursor = XCreateFontCursor(XtDisplay(w), XC_fleur);
 
