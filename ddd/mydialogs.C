@@ -103,7 +103,7 @@ void setLabelList (Widget  selectionList,
 
     for (int i = 0; i < list_length; i++) 
 	if (selected[i] == true) 
-	    XmListSelectItem (selectionList, xmlabel_list[i], Boolean(notify));
+	    XmListSelectPos(selectionList, i + 1, Boolean(notify));
 
     XtVaSetValues (selectionList,
 		   XmNselectionPolicy, XmEXTENDED_SELECT,
