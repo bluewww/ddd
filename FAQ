@@ -151,11 +151,15 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
 13. How can I change DDD resources (especially colors)?
 
-    Copy the appropriate resource lines from the `Ddd' file contained
-    in the DDD distribution (type `./configure -v; cd ddd; make Ddd'
-    to create it from scratch) in your `~/.dddinit' file.  For
-    instance, to make the background less bright as in DDD 1.2 and
-    before, insert the following lines in `~/.dddinit':
+    For DDD 2.0 and later, see the section `RESOURCES/Colors' in the
+    DDD manual.
+
+    The general idea is to copy the appropriate resource lines from
+    the `Ddd' file contained in the DDD distribution (type
+    `./configure -v; cd ddd; make Ddd' to create it from scratch) in
+    your `~/.dddinit' file.  For instance, to make the background less
+    bright as in DDD 1.2 and before, insert the following lines in
+    `~/.dddinit':
 
         Ddd*XmText.background:          light grey
         Ddd*XmTextField.background:     light grey
@@ -212,11 +216,12 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
 16. How do I set fonts in DDD?  How do I change the font size?
 
-    The font settings in DDD 1.4c do not work well on a variety of X
-    displays.  The general scheme is to see the `Fonts' resources in
-    the `Ddd' file and copy/modify the appropriate lines to your
-    `~/.dddinit' file.  (Note: This won't work for the data display.
-    See question #18, below.)
+    For DDD 2.0 and later, see the section `RESOURCES' in the manual.
+
+    The general scheme is to see the `fontList' resources in the `Ddd'
+    file and copy/modify the appropriate lines to your `~/.dddinit'
+    file.  (Note: This won't work for the data display.  See question
+    #18, below.)
 
     These are the settings from DDD 1.4b:
 
@@ -302,10 +307,11 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
 18. How do I set up font sizes in the data display?
 
-    In DDD 2.0, add and edit the definition
+    For DDD 2.0 and later, see the section `RESOURCES/Data Display' in
+    the manual.  The general idea is to add and edit the definition
 
 	Ddd*vslDefs: \n\
-	#replace stdfontsize \n\
+	#pragma replace stdfontsize \n\
 	stdfontsize() = 12;
 
     to your `~/.dddinit' file.
@@ -328,9 +334,8 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
     In DDD 2.0 and later, you can specify an individual button list
     to be inserted under the command window (`commandButtons') or
-    under the source window (`sourceButtons').  A button list is a
-    colon-separated lists of GDB commands; each GDB command creates
-    one button.
+    under the source window (`sourceButtons').  See the DDD manual
+    for details.
 
     All buttons in the button list send the named command to GDB.
     Commands ending with '...' insert their name, followed by a space.
@@ -357,112 +362,6 @@ DDD Frequently Asked Questions                                  -*- text -*-
     You may wish to replace some of these buttons by buttons of your
     own.  The `Ddd' app-defaults file contains some examples.
 
-    In DDD 2.0 and later, you can also customize the command tool
-    buttons.  This is somewhat trickier, since you have to specify
-    button locations as well.  The following section in the `Ddd'
-    app-defaults file gives some hints.
-
-    ---- cut here ----
-    ! The command tool buttons, as of DDD 2.0 and later.
-    Ddd*toolButtons: \
-    run:interrupt^C:step:stepi:next:nexti:cont:finish:\
-    up:down:Back:Forward:Edit:kill
-    
-    ! The number of rows in the command tool.
-    Ddd*tool_buttons.fractionBase:			8
-    
-    ! The positions are set up according to the following scheme:
-    ! 
-    !    0 4 8	Each line has its individual number.
-    !  0 +-+-+	`topPosition' refers to the line above the button;
-    !    | | |  	`bottomPosition' is the line below.  Likewise,
-    !  1 +-+-+	`leftPosition' is the line at the left, and
-    !    | | |	`rightPosition' is the line to the right.  For instance,
-    !  2 +-+-+	the line above the `interrupt' button (aka `Break')
-    !    | | |	is line 1 (topPosition), the line below is line 2
-    !  3 +-+-+	(bottomPosition), the line to the left is line 0
-    !    | | |	(leftPosition), and the line to the right is line 8
-    !  4 +-+-+	(rightPosition).
-    !    | | |	
-    !  5 +-+-+	To replace a button by another command, change the
-    !    | | |	`toolButtons' resource, above, and insert appropriate
-    !  6 +-+-+	resource values for the new button, specifying its
-    !    | | |	location.
-    !  7 +-+-+	
-    !    | | |	
-    !  8 +-+-+	
-    
-    Ddd*tool_buttons.run.topPosition:               0
-    Ddd*tool_buttons.run.bottomPosition:            1
-    Ddd*tool_buttons.run.leftPosition:              0
-    Ddd*tool_buttons.run.rightPosition:             8
-    
-    Ddd*tool_buttons.interrupt.topPosition:         1
-    Ddd*tool_buttons.interrupt.bottomPosition:      2
-    Ddd*tool_buttons.interrupt.leftPosition:        0
-    Ddd*tool_buttons.interrupt.rightPosition:       8
-    
-    Ddd*tool_buttons.step.topPosition:              2
-    Ddd*tool_buttons.step.bottomPosition:           3
-    Ddd*tool_buttons.step.leftPosition:             0
-    Ddd*tool_buttons.step.rightPosition:            4
-    
-    Ddd*tool_buttons.stepi.topPosition:             2
-    Ddd*tool_buttons.stepi.bottomPosition:          3
-    Ddd*tool_buttons.stepi.leftPosition:            4
-    Ddd*tool_buttons.stepi.rightPosition:           8
-    
-    Ddd*tool_buttons.next.topPosition:              3
-    Ddd*tool_buttons.next.bottomPosition:           4
-    Ddd*tool_buttons.next.leftPosition:             0
-    Ddd*tool_buttons.next.rightPosition:            4
-    
-    Ddd*tool_buttons.nexti.topPosition:             3
-    Ddd*tool_buttons.nexti.bottomPosition:          4
-    Ddd*tool_buttons.nexti.leftPosition:            4
-    Ddd*tool_buttons.nexti.rightPosition:           8
-    
-    Ddd*tool_buttons.cont.topPosition:              4
-    Ddd*tool_buttons.cont.bottomPosition:           5
-    Ddd*tool_buttons.cont.leftPosition:             0
-    Ddd*tool_buttons.cont.rightPosition:            4
-    
-    Ddd*tool_buttons.finish.topPosition:            4
-    Ddd*tool_buttons.finish.bottomPosition:         5
-    Ddd*tool_buttons.finish.leftPosition:           4
-    Ddd*tool_buttons.finish.rightPosition:          8
-    
-    Ddd*tool_buttons.up.topPosition:                5
-    Ddd*tool_buttons.up.bottomPosition:             6
-    Ddd*tool_buttons.up.leftPosition:               0
-    Ddd*tool_buttons.up.rightPosition:              4
-    
-    Ddd*tool_buttons.down.topPosition:              5
-    Ddd*tool_buttons.down.bottomPosition:           6
-    Ddd*tool_buttons.down.leftPosition:             4
-    Ddd*tool_buttons.down.rightPosition:            8
-    
-    Ddd*tool_buttons.Back.topPosition:              6
-    Ddd*tool_buttons.Back.bottomPosition:           7
-    Ddd*tool_buttons.Back.leftPosition:             0
-    Ddd*tool_buttons.Back.rightPosition:            4
-    
-    Ddd*tool_buttons.Forward.topPosition:           6
-    Ddd*tool_buttons.Forward.bottomPosition:        7
-    Ddd*tool_buttons.Forward.leftPosition:          4
-    Ddd*tool_buttons.Forward.rightPosition:         8
-    
-    Ddd*tool_buttons.Edit.topPosition:              7
-    Ddd*tool_buttons.Edit.bottomPosition:           8
-    Ddd*tool_buttons.Edit.leftPosition:             0
-    Ddd*tool_buttons.Edit.rightPosition:            4
-    
-    Ddd*tool_buttons.kill.topPosition:              7
-    Ddd*tool_buttons.kill.bottomPosition:           8
-    Ddd*tool_buttons.kill.leftPosition:             4
-    Ddd*tool_buttons.kill.rightPosition:            8
-    ---- cut here ----
-
 
 20. How do I pass ^C to the debugged program ?
 
@@ -476,3 +375,4 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
 
 $Id$
+
