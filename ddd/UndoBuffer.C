@@ -964,9 +964,7 @@ bool UndoBuffer::OK()
     // Every entry must have some effect.
     for (int i = 0; i < history.size(); i++)
     {
-	const UndoBufferEntry& entry = history[i];
-
-	assert(has_effect(entry));
+	assert(has_effect(history[i]));
     }
 
     return true;
