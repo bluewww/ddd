@@ -212,9 +212,8 @@ The simplest way to compile DDD is:
      See the "Documentation" section, below.
 
      Please check the `make' output for compiler warnings.  Normally,
-     DDD should build without any warnings (that is, with GCC).  If
-     you encounter warnings, these are signs of either a bad GCC
-     configuration or actual problems in DDD code.
+     DDD should build without any warnings.  If you encounter
+     warnings, these may indicate actual problems in DDD code.
 
      Warnings that can be ignored safely include warnings about code
      not being reached and warnings about unused, uninitialized, or
@@ -273,23 +272,24 @@ The simplest way to compile DDD is:
      (in `/usr/local/man/man1/').  See `Installation Names', below,
      on how to configure DDD to use other locations and names.
 
- 13. Like every good X citizen, DDD comes with an application defaults
+ 13. If you have a `Ddd' app-defaults file installed from a previous
+     DDD version, this file will *override* the built-in DDD settings
+     and cause major problems.  Remove it.
+
+ 14. Like every good X citizen, DDD comes with an application defaults
      file, named `ddd/Ddd'.  By default, this file is already compiled
      into DDD, so you need not install it.
 
      In fact, we **STRONGLY RECOMMEND** not to install it; there is a
      whole slew of version-skew problems associated with app-defaults
-     files, which are best avoided by simply not using them.  See the
-     comment at the beginning of `Ddd' for details.  If you absolutely
-     want to install it, copy `Ddd' to a place where app-defaults
-     files are commonly found.
+     files, which are best avoided by simply not using them.  See step
+     13, above, and the comment at the beginning of `Ddd' for details.
 
-     If you have a `Ddd' file installed from a previous DDD version,
-     this file will *override* the built-in DDD settings and will
-     cause major problems.  Replace it with the new `ddd/Ddd'
-     app-defaults file, or, better yet, remove it.
+     If you absolutely want to install it (or if you configured DDD
+     such that `Ddd' is not compiled into DDD), copy `Ddd' to a place
+     where app-defaults files are commonly found.
 
- 14. You can remove the program binaries, libraries and object files
+ 15. You can remove the program binaries, libraries and object files
      from the source directory by typing
      
 	$ make clean
@@ -309,7 +309,7 @@ The simplest way to compile DDD is:
      instead.  (There is also `make ultraclean' that removes *every*
      derived file; don't use it unless you know what you do.)
 
- 15. You can remove DDD from your system by typing
+ 16. You can remove DDD from your system by typing
  
 	$ make uninstall
 
@@ -439,10 +439,11 @@ optional DDD features.  There are two optional features.
 
 * You can configure DDD such that the `Ddd' application defaults file
   will not be compiled into the DDD executable.  This reduces the size
-  of the DDD executable by about 360k.  
+  of the DDD executable by about 330 kBytes.  
 
-  Note that this requires you to install the application defaults file
-  in a place where DDD will find it.  This will also cause trouble if
+  Note that this option requires you to install the application
+  defaults file in a place where DDD will find it.  This option will
+  also cause trouble if
   - you want to maintain multiple DDD versions or 
   - you upgrade to a new DDD version without removing or changing the
     application defaults file.
@@ -453,13 +454,12 @@ optional DDD features.  There are two optional features.
 
 * You can configure DDD such that the DDD manual will not be compiled
   into the DDD executable.  This reduces the size of the DDD executable
-  by about 80k.
+  by about 80 kBytes.
 
   `Help->DDD Reference' will then invoke `man ddd' to get the DDD
-  manual.  Note that this only works well if man uses GNU `groff' to
-  format manual pages (such as `man' found on Linux).  Be sure to
-  remove or update the manual page when upgrading to a new DDD
-  version.
+  manual.  Note that this option only works well if man uses GNU
+  `groff' to format manual pages (such as `man' on Linux).  Be sure to
+  remove or update the manual page when upgrading to a new DDD version.
 
   To disable the builtin DDD manual, use the `configure' option
   `--disable-builtin-manual'.
