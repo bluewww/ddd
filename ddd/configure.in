@@ -455,11 +455,14 @@ dnl
 dnl Check for Xpm library and headers
 dnl
 XPM_LIBS=""
+if test "$xpm_includes" != "no" && test "$xpm_libraries" != "no"
+then
 AC_CHECK_LIB(Xpm, XpmCreatePixmapFromXpmImage,
 	XPM_LIBS="-lXpm"
 	AC_DEFINE(HAVE_XPM),,${X_PRE_LIBS} ${X11_LIBS})
 if test "$XPM_LIBS" != ""; then
 AC_CHECK_HEADERS(X11/xpm.h xpm.h)
+fi
 fi
 AC_SUBST(XPM_LIBS)
 dnl
