@@ -4,12 +4,14 @@ DDD News						-*- text -*-
 DDD 2.3 [in development]
 ------------------------
 
-    DDD 2.3 brings Java and JDB support.
+    DDD 2.3 brings Java support, JDB support, and watchpoints.
 
     User-visible changes to DDD 2.2.3:
     - JDB support.  DDD now also supports JDB as inferior debugger.
-    - Java support.  Requires JDB or GDB 4.17 and later.
-    - The `DBX settings' panel has been adapted to SGI DBX.
+    - Java support.  Requires GDB 4.17 or later (or JDB, of course).
+    - Watchpoint support.  You can now have the debugged program stop
+      automatically whenever a particular variable is read or written.
+    - DBX settings now also work with SGI DBX.
 
 
 DDD 2.2.3
