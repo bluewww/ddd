@@ -52,6 +52,7 @@ DDD News
       `--exec-window'.  Options must now always be saved explicitly.
     - Ctrl+C has now the highest priority of all processed events.
     - The DDD License can now be viewed from within DDD.
+    - Fonts are now resolution-independent.
 
     Supported debuggers and languages:
     - XDB support.  On popular request, DDD now supports HP's XDB as

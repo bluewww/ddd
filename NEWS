@@ -8,7 +8,6 @@ DDD 2.0 (in development)
     interface and many bug fixes.
 
     User-visible changes to DDD 1.4:
-    - Fonts are now resolution-independent.
     - Colored displays.  You can specify individual colors for
       pointers, arrays, structs, and so on.
     - New command tool.  All command buttons that do not take
@@ -37,6 +36,7 @@ DDD 2.0 (in development)
       `--exec-window'.  Options must now always be saved explicitly.
     - Ctrl+C has now the highest priority of all processed events.
     - The DDD License can now be viewed from within DDD.
+    - Fonts are now resolution-independent.
 
     Supported debuggers and languages:
     - XDB support.  On popular request, DDD now supports HP's XDB as
