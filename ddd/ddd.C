@@ -1678,7 +1678,8 @@ int main(int argc, char *argv[])
     dddlog.open(session_log_file());
     show_configuration(dddlog);
     dddlog << "$ ";
-    for (int i = 0; saved_argv()[i] != 0; i++)
+    int i;
+    for (i = 0; saved_argv()[i] != 0; i++)
 	dddlog << " " << cook(saved_argv()[i]);
     dddlog << '\n';
 
@@ -2038,7 +2039,6 @@ int main(int argc, char *argv[])
     load_history(session_history_file(app_data.session));
 
     // Put saved options back again
-    int i;
     for (i = argc + saved_options.size() - 1; i > saved_options.size(); i--)
 	argv[i] = argv[i - saved_options.size()];
     for (i = saved_options.size() - 1; i >= 0; i--)
