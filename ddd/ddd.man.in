@@ -2473,20 +2473,29 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Startup Preferences"
 .PP
+If you change one of the resources in this panel, the change will not
+take effect immediately.  Instead, you can
+.IP \(bu 2
+save options (using `\fBEdit\fR' | `\fBSave Options\fR') to make the
+change effective for future \s-2@DDD@\s+2 sessions,
+.IP
+or restart \s-2@DDD@\s+2 (using `\fBFile\fR' | `\fBRestart DDD\fR') to
+make it effective for the restarted \s-2@DDD@\s+2 session.
+.PP
 By default, \s-2@DDD@\s+2 uses one single window for commands, source,
 and data.  To have separate windows for source, data, and debugger
 console, set the `\fBWindows\fR' option to `\fBSeparate Windows\fR'.
-This change takes only effect after you have saved options and
-restarted \s-2@DDD@\s+2.  See also the `\fB\-\-attach-windows\fR' and
+See also the `\fB\-\-attach-windows\fR' and
 `\fB\-\-separate-windows\fR' options, below.
 .PP
-\s-2@DDD@\s+2 can display the status line at the bottom (`\fBat
-bottom\fR') or at the top (`\fBat top\fR') of the source.  This change
-takes only effect after you have saved options and restarted
-\s-2@DDD@\s+2.  Pick your choice.
+The \s-2@DDD@\s+2 toolbar buttons can be displayed using \fBImages\fR,
+showing a small symbol for each action, and/or \fBCaptions\fR, showing
+the action name below the image.  If neither of these two is set,
+toolbar buttons are labeled like other buttons (with the exception of
+the common toolbar, which never shows ordinary labels).
 .PP
 \s-2@DDD@\s+2 can locate the tool buttons in the command tool (`\fBin
-command tool\fR') or in a \fIcommand tool bar\fR below the program
+command tool\fR') or in a \fIcommand tool bar\fR above the program
 source (`\fBin source window\fR').  Pick your choice.
 .PP
 By default, \s-2@DDD@\s+2 directs keyboard input to the item your
@@ -3111,9 +3120,9 @@ If `\fBfalse\fR', no source window is created upon start-up.
 .B "statusAtBottom (\fPclass\fB StatusAtBottom)"
 If `\fBtrue\fR' (default), the status line is placed at the bottom of
 the \s-2@DDD@\s+2 source window.  If `\fBfalse\fR', the status line is
-placed at the top of the \s-2@DDD@\s+2 source window.  See also the
-`\fB\-\-status-at-bottom\fR' and `\fB\-\-status-at-top\fR'
-options, below.
+placed at the top of the \s-2@DDD@\s+2 source window (as in DDD 1.x).
+See also the `\fB\-\-status-at-bottom\fR' and
+`\fB\-\-status-at-top\fR' options, below.
 .TP
 .B "stickyTool (\fPclass\fB StickyTool)"
 If `\fBtrue\fR' (default), the command tool automatically follows
@@ -3300,14 +3309,40 @@ also initially sent to \s-2XDB\s+2.  By default, it is empty.
 .\"
 .SS "User-defined Buttons"
 .\"
-The following resources can be used to create and control user-defined
-buttons.
+The following resources can be used to create and control toolbars and
+user-defined buttons.
+.TP
+.B "buttonCaptions (\fPclass\fB ButtonCaptions)"
+Whether the toolbar buttons should be shown using captions
+(\fBtrue\fR, default) or not (\fBfalse\fR).  If neither captions nor
+images are enabled, toolbar buttons are shown using ordinary labels.
+See also `\fBbuttonImages\fR', below.
+.TP
+.B "buttonCaptionGeometry (\fPclass\fB ButtonCaptionGeometry)"
+The geometry of the caption subimage within the button icons.  Default
+is `\fB29x7+0-0\fR'.
+.TP
+.B "buttonImages (\fPclass\fB ButtonImages)"
+Whether the toolbar buttons should be shown using images (\fBtrue\fR,
+default) or not (\fBfalse\fR).  If neither captions nor images are
+enabled, toolbar buttons are shown using ordinary labels.  See also
+`\fBbuttonCaptions\fR', above.
+.TP
+.B "buttonImageGeometry (\fPclass\fB ButtonImageGeometry)"
+The geometry of the image within the button icon.  Default is
+`\fB25x21+2+0\fR'.
 .TP
 .B "commandToolBar (\fPclass\fB ToolBar)"
 Whether the tool buttons (see the `\fBtoolButtons\fR' resource, below)
-should be shown in a tool bar below the source window (\fBtrue\fR) or
+should be shown in a tool bar above the source window (\fBtrue\fR) or
 within the command tool (\fBfalse\fR, default).  Enabling the command
 tool bar disables the command tool and vice versa.
+.TP
+.B "commonToolBar (\fPclass\fB ToolBar)"
+Whether the toolbar buttons should be shown in one common toolbar at the
+top of the common \s-2@DDD@\s+2 window (\fBtrue\fR, default), or whether they
+should be placed in two separate tool bars, one for data, and one for
+source operations, as in \s-2@DDD@\s+2 2.x (\fBfalse\fR).
 .TP
 .B "consoleButtons (\fPclass\fB Buttons)"
 A newline-separated list of buttons to be added under the debugger
@@ -3453,6 +3488,11 @@ See also the `\fBconsoleButtons\fR' and `\fBdataButtons\fR' resources,
 above, and the `\fBtoolButtons\fR' resource, below.
 .RE
 .TP
+.B "toolbarsAtBottom (\fPclass\fB ToolbarsAtBottom)"
+Whether source and data toolbars should be placed above source and
+data, respectively (\fBfalse\fR, default), or below, as in
+\s-2@DDD@\s+2 2.x (\fBtrue\fR).
+,TP
 .B "toolButtons (\fPclass\fB Buttons)"
 A newline-separated list of buttons to be included in the command tool
 or the command tool bar (see the `\fBcommandToolBar\fR' resource,

@@ -120,6 +120,9 @@ put the following lines in your FILE(.gdbinit) file:
 CODE(        break main)  - or some other initial function
 CODE(        run       )  - possibly giving arguments here
 
+You can save space by disabling toolbar captions.
+See LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Captions).
+
 
 ! Advanced tips.
 

@@ -266,7 +266,8 @@ Ddd*commonToolBar: on
 Ddd*toolbarsAtBottom: off
 
 ! Whether to display images and/or captions.  Turing both off causes
-! toolbars to display strings (as in DDD 2.x and earlier.)
+! toolbars to display strings (as in DDD 2.x and earlier).  The common
+! toolbar, however, never displays strings - there is not enough place.
 Ddd*buttonImages:   on
 Ddd*buttonCaptions: on
 
