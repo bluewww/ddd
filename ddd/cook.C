@@ -204,6 +204,10 @@ string uncook(const string& cooked) RETURNS(ret)
 	{
 	    switch (*++i)
 	    {
+	    case '\n':
+		i++;
+		break;
+
 	    case 'a':
 		ret += '\a';
 		i++;
