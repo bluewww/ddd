@@ -87,7 +87,6 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _user_data(0),
       busy_handlers (BusyNTypes),
       _has_frame_command(tp == GDB || tp == XDB),
-      _has_line_command(false),
       _has_run_io_command(false),
       _has_print_r_command(false),
       _has_where_h_command(false),
@@ -95,7 +94,6 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_clear_command(tp == GDB || tp == DBX),
       _has_pwd_command(tp == GDB || tp == DBX),
       _has_named_values(tp == GDB || tp == DBX),
-      _has_func_pos(false),
       _has_when_semicolon(tp == DBX),
       _has_err_redirection(true),
       trace_dialog(false),
@@ -131,7 +129,6 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _user_data(0),
       busy_handlers(gdb.busy_handlers),
       _has_frame_command(gdb.has_frame_command()),
-      _has_line_command(gdb.has_line_command()),
       _has_run_io_command(gdb.has_run_io_command()),
       _has_print_r_command(gdb.has_print_r_command()),
       _has_where_h_command(gdb.has_where_h_command()),
@@ -139,7 +136,6 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_clear_command(gdb.has_clear_command()),
       _has_pwd_command(gdb.has_pwd_command()),
       _has_named_values(gdb.has_named_values()),
-      _has_func_pos(gdb.has_func_pos()),
       _has_when_semicolon(gdb.has_when_semicolon()),
       trace_dialog(false),
       questions_waiting(false),
@@ -431,18 +427,44 @@ bool GDBAgent::ends_with_secondary_prompt (const string& answer)
     {
     case GDB:
     case DBX:
-	return answer.length() > 3
+	return (answer.length() > 3
 	    && answer[answer.length() - 3] == '\n'
 	    && answer[answer.length() - 2] == '>'
-	    && answer[answer.length() - 1] == ' ';
+	    && answer[answer.length() - 1] == ' ');
 
     case XDB:
-	return answer.matches("[Hit RETURN to continue]", -1) 
-		|| answer.matches("--More--", -1);
+	return false;
     }
 
     return false;		// Never reached
 }
+
+
+// ***************************************************************************
+string GDBAgent::requires_reply (const string& answer)
+{
+    // GDB says: `---Type <return> to continue, or q <return> to quit---'
+    // DBX 3.0 says: `(END)' and `(press RETURN)'
+    // XDB says: `--More--' and `Hit RETURN to continue'.
+    // Escape sequences may also be embedded, but the prompt never
+    // ends in a newline.
+    static regex RXspace(".*--More--[^\n]*");
+    static regex 
+	RXreturn(".*([(]press RETURN[)]|Hit RETURN to continue)[^\n]*");
+    static regex RXq(".*[(]END[)][^\n]*");
+
+    if (answer.contains('\n', -1))
+	return "";
+    if (answer.matches(RXspace))
+	return " ";
+    if (answer.matches(RXreturn))
+	return "\n";
+    if (answer.matches(RXq))
+	return "q";
+
+    return "";
+}
+
 
 // ***************************************************************************
 void GDBAgent::cut_off_prompt (string& answer)
@@ -520,7 +542,7 @@ void GDBAgent::strip_comments(string& s)
 			if (end == -1)
 			    s.from(int(i)) = "";
 			else
-			    s.at(int(i), int(end - i + 1)) = "";
+			    s.at(int(i), int(end - i)) = "";
 		    }
 		}
 	    }
@@ -555,6 +577,18 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
     DataLength* dl    = (DataLength *) call_data;
     string      answer(dl->data, dl->length);
 
+    string reply = gdb->requires_reply(answer);
+    if (reply != "")
+    {
+	// Oops - this should not happen.
+	// Just hit the reply key; this should work.
+	gdb->write(reply, reply.length());
+	gdb->flush();
+
+	// Ignore the `more' prompt
+	answer = answer.before('\n', -1);
+    }
+
     if (gdb->ends_with_secondary_prompt(answer))
     {
 	// GDB requires more information here: probably the
@@ -562,9 +596,8 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	// We simply try the first alternative here:
 	// - in GDB, this means `all';
 	// - in DBX and XDB, this is a non-deterministic selection,
-
-	string answer = "1\n";
-	gdb->write(answer, answer.length());
+	string reply = "1\n";
+	gdb->write(reply, reply.length());
 	gdb->flush();
     }
 
@@ -855,6 +888,8 @@ string GDBAgent::echo_command(string text) const
 
     return "";			// Never reached
 }
+
+
 
 
 
