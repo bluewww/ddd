@@ -412,11 +412,6 @@ private:
     // Tons of helpers
     static void new_data_displayOQC      (const string& answer, void* data);
     static void new_data_display_extraOQC(const string& answer, void* data);
-    static void new_data_displaysSQA     (string display_expression, 
-					  void *data);
-    static void new_data_displaysOQAC    (const StringArray& answers, 
-					  const VoidArray& qu_datas,
-					  void* data);
 
     static void new_user_displayOQC  (const string& answer, void* data);
 
@@ -436,6 +431,9 @@ private:
 
     static void select_with_all_descendants(GraphNode *node);
     static void select_with_all_ancestors(GraphNode *node);
+
+    static int unfold_expressions(const string& display_expression,
+				  StringArray& expressions);
 
     // Get display number and name from ANSWER; store them in NR and NAME
     static void read_number_and_name(string& answer, string& nr, string& name);

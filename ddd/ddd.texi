@@ -1,5 +1,5 @@
 \def\postscript{}\input texinfo @c -*- texinfo -*-
-% \input pdftexinfo
+@c \input pdftexinfo
 @c $Id$
 @c DDD Manual
 
@@ -208,10 +208,10 @@ This is the @value{EDITION} Edition of @cite{Debugging with
 * Commands::                    Entering and editing @value{DDD} commands.
 * Customizing::                 Customizing @value{DDD}.
 
-* License::                     The @value{DDD} license.
-* Reporting Bugs::              How and when to report @value{DDD} bugs.
 * Extending::                   
+* Reporting Bugs::              How and when to report @value{DDD} bugs.
 * Configurations::              
+* License::                     The @value{DDD} license.
 * Label Index::                 Index.
 * Key Index::                   
 * Command Index::               
@@ -3260,7 +3260,7 @@ Details}, for a discussion.
 @cindex Display, rotating
 @cindex Rotating displays with @samp{Rotate}
 
-Rotate the selected display(s).  @xref{Rotating Arrays}, for details.
+Rotate the selected display(s).  @xref{Rotating Displays}, for details.
 
 
 @item Set
@@ -5372,11 +5372,12 @@ Click on @samp{Undisplay} to delete the selected display.
 * Creating Single Displays::    
 * Selecting Displays::          
 * Showing and Hiding Details::  
+* Rotating Displays::           
 * Displaying Local Variables::  
 * Displaying Program Status::   
-* Creating Multiple Displays::  
 * Refreshing the Data Window::  
 * Clustering::                  
+* Creating Multiple Displays::  
 * Editing all Displays::        
 * Deleting Displays::           
 @end menu
@@ -5616,6 +5617,29 @@ with this name will be affected.
 Use @samp{Edit @result{} Undo} to undo disabling or enabling displays.
 
 
+
+@node Rotating Displays
+@subsubsection Rotating Displays
+@cindex Display, rotating
+
+Arrays, structures and lists can be aligned horizontally or vertically.
+To change the alignment of a display, select it and then click on the
+@samp{Rotate} button.
+
+As a faster alternative, you can also press @emph{mouse button 3} on the
+array and select @samp{Rotate} from the popup menu.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-rotate-display, 16cm}
+@sp 1
+@end ifnotinfo
+
+If a structure or list is aligned horizontally, @value{DDD} suppresses
+the member names.  This can be handy for saving space.
+
+
+
 @node Displaying Local Variables
 @subsubsection Displaying Local Variables
 @lbindex Display Local Variables
@@ -5681,27 +5705,6 @@ Displays} and pick your choice from the list.
 Refreshing status displays at each stop takes time; you should delete
 status displays as soon as you don't need them any more.
 
-
-@node Creating Multiple Displays
-@subsubsection Creating Multiple Displays
-
-To display several successive objects of the same type (a section of an
-array, or an array of dynamically determined size), you can use the
-notation @samp{@var{from}..@var{to}} in display expressions.
-
-@var{from} and @var{to} denote the first and last expression to display.
-Thus,
-
-@example
-graph display argv[0..9]
-@end example
-
-@noindent
-creates 10 new displays for @samp{argv[0]}, @samp{argv[1]}, @dots{},
-@samp{argv[9]}.
-
-If you want to display only a part of an array, @emph{array slices} are
-a better way.  @xref{Array Slices}, for a discussion.
 
 
 @node Refreshing the Data Window
@@ -5794,6 +5797,42 @@ You can uncluster all current and future displays by disabling
 Displays}.
 @lbindex Cluster Data Displays
 @end itemize
+
+
+@node Creating Multiple Displays
+@subsubsection Creating Multiple Displays
+
+To display several successive objects of the same type (a section of an
+array, or an array of dynamically determined size), you can use the
+notation @samp{@var{from}..@var{to}} in display expressions.
+
+@var{from} and @var{to} are numbers that denote the first and last
+expression to display.  Thus,
+
+@example
+graph display argv[0..9]
+@end example
+
+@noindent
+creates 10 new displays for @samp{argv[0]}, @samp{argv[1]}, @dots{},
+@samp{argv[9]}.  The displays are clustered automatically
+(@pxref{Clustering}), such that you can easily handle the set just like
+an array.
+
+The @samp{@var{from}..@var{to}} notation can also be used multiple
+times.  For instance,
+
+@example
+graph display 1..5 * 1..5
+@end example
+
+@noindent
+creates a handy small multiplication table.
+
+The @samp{@var{from}..@var{to}} notation creates several displays, which
+takes time to create and update.  If you want to display only a part of
+an array, @emph{array slices} are a more efficient way.  @xref{Array
+Slices}, for a discussion.
 
 
 @node Editing all Displays
@@ -5925,30 +5964,9 @@ displays across multiple @value{DDD} instances.
 arrays.
 
 @menu
-* Rotating Arrays::             
 * Array Slices::                
 * Repeated Values::             
 @end menu
-
-@node Rotating Arrays
-@subsubsection Rotating Arrays
-@cindex Display, rotating
-@cindex Array, rotating
-@cindex Rotating arrays
-
-Arrays can be aligned horizontally or vertically.  To change the
-alignment of an array, select it and then click on the @samp{Rotate}
-button.
-
-As a faster alternative, you can also press @emph{mouse button 3} on the
-array and select @samp{Rotate} from the popup menu.
-
-@ifnotinfo
-@sp 1
-@center @image{PICS/ddd-rotate-display, 16cm}
-@sp 1
-@end ifnotinfo
-
 
 @node Array Slices
 @subsubsection Array Slices
@@ -5961,15 +5979,23 @@ type in memory; a @dfn{slice} (section) of an array, or an array of
 dynamically determined size for which only a pointer exists in the
 program.
 
-Using GDB, you can do this by referring to a contiguous span of memory
-as an @dfn{artificial array}, using the binary operator @samp{@@}.  The
-left operand of @samp{@@} should be the first element of the desired
-array and be an individual object.  The right operand should be the
-desired length of the array.  The result is an array value whose
-elements are all of the type of the left argument.  The first element is
-actually the left argument; the second element comes from bytes of
-memory immediately following those that hold the first element, and so
-on.  Here is an example.  If a program says
+Using @value{DDD}, you can display slices using the
+@samp{@var{from}..@var{to}} notation (@pxref{Creating Multiple
+Displays}).  But this requires that you already know @var{from} and
+@var{to}; it is also inefficient to create several single displays.  If
+you use GDB, you have yet another alternative.
+
+Using GDB, you can display successive objects by referring to a
+contiguous span of memory as an @dfn{artificial array}, using the binary
+operator @samp{@@}.  The left operand of @samp{@@} should be the first
+element of the desired array and be an individual object.  The right
+operand should be the desired length of the array.  The result is an
+array value whose elements are all of the type of the left argument.
+The first element is actually the left argument; the second element
+comes from bytes of memory immediately following those that hold the
+first element, and so on.  
+
+Here is an example.  If a program says
 
 @example
 int *array = (int *) malloc (len * sizeof (int));
@@ -6003,6 +6029,7 @@ elements to display.
 The left operand of @samp{@@} must reside in memory.  Array values made
 with @samp{@@} in this way behave just like other arrays in terms of
 subscripting, and are coerced to pointers when used in expressions.
+
 
 
 @node Repeated Values

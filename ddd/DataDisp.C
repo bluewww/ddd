@@ -1357,6 +1357,9 @@ public:
     DeferMode deferred;
     bool clustered;
     bool plotted;
+    bool create_cluster;
+    string cluster_name;
+    static int cluster_nr;
 
     NewDisplayInfo()
 	: display_expression(),
@@ -1373,37 +1376,42 @@ public:
 	  constant(false),
 	  deferred(DeferNever),
 	  clustered(false),
-	  plotted(false)
+	  plotted(false),
+	  create_cluster(false),
+	  cluster_name()
     {}
 
     ~NewDisplayInfo()
     {}
 
+    NewDisplayInfo(const NewDisplayInfo& info)
+	: display_expression(info.display_expression),
+	  scope(info.scope),
+	  display_expressions(info.display_expressions),
+	  point(info.point),
+	  point_ptr(info.point_ptr),
+	  depends_on(info.depends_on),
+	  origin(info.origin),
+	  shortcut(info.shortcut),
+	  text(info.text),
+	  verbose(info.verbose),
+	  prompt(info.prompt),
+	  constant(info.constant),
+	  deferred(info.deferred),
+	  clustered(info.clustered),
+	  plotted(info.plotted),
+	  create_cluster(info.create_cluster),
+	  cluster_name(info.cluster_name)
+    {}
+
 private:
-    NewDisplayInfo(const NewDisplayInfo&)
-	: display_expression(),
-	  scope(),
-	  display_expressions(),
-	  point(),
-	  point_ptr(0),
-	  depends_on(),
-	  origin(0),
-	  shortcut(0),
-	  text(0),
-	  verbose(false),
-	  prompt(false),
-	  constant(false),
-	  deferred(DeferNever),
-	  clustered(false),
-	  plotted(false)
-    {
-	assert(0);
-    }
     NewDisplayInfo& operator = (const NewDisplayInfo&)
     {
 	assert(0); return *this;
     }
 };
+
+int NewDisplayInfo::cluster_nr = 0;
 
 void DataDisp::new_displayDCB (Widget dialog, XtPointer client_data, XtPointer)
 {
@@ -2961,7 +2969,7 @@ void DataDisp::CompareNodesCB(Widget, XtPointer, XtPointer call_data)
 //-----------------------------------------------------------------------------
 
 #if RUNTIME_REGEX
-static regex rxmore_than_one ("\\[-?[0-9]+\\.\\.-?[0-9]+\\]");
+static regex rxmore_than_one ("-?[0-9]+\\.\\.-?[0-9]+");
 #endif
 
 void DataDisp::again_new_displaySQ (XtPointer client_data, XtIntervalId *)
@@ -3021,27 +3029,27 @@ void DataDisp::new_displaySQ (string display_expression,
 	    return;
     }
 
-    NewDisplayInfo *info = new NewDisplayInfo;
-    info->display_expression = display_expression;
-    info->scope              = scope;
-    info->verbose            = verbose;
-    info->prompt             = do_prompt;
-    info->deferred           = deferred;
-    info->clustered          = clustered;
-    info->plotted            = plotted;
+    NewDisplayInfo info;
+    info.display_expression = display_expression;
+    info.scope              = scope;
+    info.verbose            = verbose;
+    info.prompt             = do_prompt;
+    info.deferred           = deferred;
+    info.clustered          = clustered;
+    info.plotted            = plotted;
 
     if (p != 0)
     {
-	info->point = *p;
-	info->point_ptr = &info->point;
+	info.point = *p;
+	info.point_ptr = &info.point;
     }
     else
     {
-	info->point = BoxPoint();
-	info->point_ptr = 0;
+	info.point = BoxPoint();
+	info.point_ptr = 0;
     }
-    info->depends_on = depends_on;
-    info->origin     = origin;
+    info.depends_on = depends_on;
+    info.origin     = origin;
 
     static Delay *reading_delay = 0;
     if (!DispBox::vsllib_initialized)
@@ -3058,7 +3066,8 @@ void DataDisp::new_displaySQ (string display_expression,
 	// As soon as the VSL library will be completely read, we
 	// shall enter the main DDD event loop and get called again.
 	XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
-			100, again_new_displaySQ, info);
+			100, again_new_displaySQ, 
+			new NewDisplayInfo(info));
 	return;
     }
     delete reading_delay;
@@ -3074,16 +3083,14 @@ void DataDisp::new_displaySQ (string display_expression,
     {
 	// Create deferred display now
 	DispNode *dn = new_deferred_node(display_expression, scope, 
-					 info->point, depends_on, 
-					 info->clustered, info->plotted);
+					 info.point, depends_on, 
+					 info.clustered, info.plotted);
 
 	// Insert deferred node into graph
 	disp_graph->insert(dn->disp_nr(), dn);
 
 	if (do_prompt)
 	    prompt();
-
-	delete info;
 
 	refresh_display_list();
     }
@@ -3093,37 +3100,92 @@ void DataDisp::new_displaySQ (string display_expression,
 	string cmd = user_command(display_expression);
 	if (is_builtin_user_command(cmd))
 	{
-	    info->constant = true;
+	    info.constant = true;
 	    string answer = builtin_user_command(cmd);
-	    new_user_displayOQC(answer, info);
+	    new_user_displayOQC(answer, new NewDisplayInfo(info));
 	}
 	else
 	{
-	    gdb_command(cmd, last_origin, new_user_displayOQC, info);
+	    gdb_command(cmd, last_origin, new_user_displayOQC, 
+			new NewDisplayInfo(info));
 	}
     }
     else
     {
 	// Data display
-	if (display_expression.contains (rxmore_than_one))
-	{
-	    new_data_displaysSQA (display_expression, info);
+	StringArray expressions;
+	int ret = unfold_expressions(display_expression, expressions);
+	if (ret || expressions.size() == 0)
 	    return;
+
+	info.cluster_nr = 0;
+
+	if (expressions.size() > 1)
+	{
+	    // Cluster multiple values
+	    info.create_cluster = true;
+	    info.cluster_name   = display_expression;
+	    info.prompt         = false;
 	}
 
-	if (gdb->display_prints_values())
+	for (int i = 0; i < expressions.size(); i++)
 	{
-	    gdb_command(gdb->display_command(display_expression),
-			last_origin, new_data_displayOQC, info);
-	}
-	else
-	{
-	    gdb_command(gdb->display_command(display_expression),
-			last_origin, OQCProc(0), (void *)0);
-	    gdb_command(gdb->print_command(display_expression, true),
- 			last_origin, new_data_displayOQC, info);
+	    if (do_prompt && i == expressions.size() - 1)
+		info.prompt = true;
+
+	    NewDisplayInfo *infop = new NewDisplayInfo(info);
+
+	    if (gdb->display_prints_values())
+	    {
+		gdb_command(gdb->display_command(expressions[i]),
+			    last_origin, new_data_displayOQC, infop);
+	    }
+	    else
+	    {
+		gdb_command(gdb->display_command(expressions[i]),
+			    last_origin, OQCProc(0), (void *)0);
+		gdb_command(gdb->print_command(expressions[i], true),
+			    last_origin, new_data_displayOQC, infop);
+	    }
+
+	    info.create_cluster = false;
 	}
     }
+}
+
+// Find all expressions in DISPLAY_EXPRESSIONS, using FROM..TO syntax
+int DataDisp::unfold_expressions(const string& display_expression,
+				 StringArray& expressions)
+{
+    if (!display_expression.contains(rxmore_than_one))
+    {
+	expressions += display_expression;
+	return 0;
+    }
+
+    string prefix  = display_expression.before(rxmore_than_one);
+    string postfix = display_expression.after(rxmore_than_one);
+    string range   = display_expression.from(rxmore_than_one);
+
+    int start = ::get_nr(range);
+    range = range.after("..");
+    int stop = ::get_nr(range);
+
+    if (start > stop)
+    {
+	post_error("Invalid range in " + quote(display_expression), 
+		   "invalid_range_error");
+	return -1;
+    }
+
+    for (int i = start; i <= stop; i++)
+    {
+	string subexpression = prefix + itostring(i) + postfix;
+	if (unfold_expressions(subexpression, expressions))
+	    return -1;
+    }
+
+    return 0;
 }
 
 // Get display number and name from ANSWER; store them in NR and NAME
@@ -3567,7 +3629,9 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	{
 	    // No display output (GDB bug).  Refresh displays explicitly.
 	    gdb_command(gdb->display_command(), last_origin,
-			new_data_display_extraOQC, data);
+			new_data_display_extraOQC, data,
+			false, false,
+			COMMAND_PRIORITY_AGAIN);
 	}
 	else
 	{
@@ -3624,15 +3688,31 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	return;
     }
 
+    bool clustered = info->clustered;
+    bool plotted   = info->plotted;
+
+    if (info->cluster_name != "")
+    {
+	clustered = false;
+	plotted   = false;
+    }
+
+    if (info->create_cluster)
+    {
+	// Cluster multiple values
+	info->cluster_nr = new_cluster(info->cluster_name, info->plotted);
+    }
+
     // Insert node into graph
     int depend_nr = disp_graph->get_by_name(info->depends_on);
-    insert_data_node(dn, depend_nr, info->clustered, info->plotted);
+    insert_data_node(dn, depend_nr, clustered, plotted);
 
     // Determine position
     BoxPoint box_point = info->point;
     if (box_point == BoxPoint())
 	box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
     dn->moveTo(box_point);
+    dn->cluster(info->cluster_nr);
     select_node(dn, depend_nr);
 
     refresh_addr(dn);
@@ -3713,141 +3793,6 @@ void DataDisp::new_data_display_extraOQC (const string& answer, void* data)
 
     if (display != "")
 	new_data_displayOQC(display, data);
-}
-
-
-//-----------------------------------------------------------------------------
-// Create multiple displays, using the [FROM..TO] syntax
-//-----------------------------------------------------------------------------
-
-void DataDisp::new_data_displaysSQA (string display_expression,
-				     void *data)
-{
-    NewDisplayInfo *info = (NewDisplayInfo *)data;
-    assert (display_expression.contains (rxmore_than_one));
-
-    // Create individual display expressions and process entire array
-    string prefix  = display_expression.before(rxmore_than_one);
-    string postfix = display_expression.after(rxmore_than_one);
-    string range   = display_expression.from(rxmore_than_one);
-    range.del("[");
-    int start = ::get_nr(range);
-    range = range.after("..");
-    int stop = ::get_nr(range);
-
-    if (start > stop)
-    {
-	post_error("Invalid range in " + quote(display_expression), 
-		   "invalid_range_error");
-	delete info;
-	return;
-    }
-
-    assert (stop >= start);
-
-    StringArray display_cmds;
-    StringArray print_cmds;
-
-    for (int i = start; i < stop + 1; i++)
-    {
-	string expr = prefix + "[" + itostring (i) + "]" + postfix;
-	info->display_expressions += expr;
-	display_cmds              += gdb->display_command(expr);
-	print_cmds                += gdb->print_command(expr);
-    }
-
-    VoidArray dummy;
-    while (dummy.size() < display_cmds.size())
-	dummy += (void *)0;
-
-    bool ok = true;
-    if (gdb->display_prints_values())
-    {
-	ok = gdb->send_qu_array (display_cmds, dummy, display_cmds.size(),
-				 new_data_displaysOQAC, info);
-    }
-    else
-    {
-	for (int i = 0; i < display_cmds.size(); i++)
-	    gdb_question(display_cmds[i]);
-
-	ok = gdb->send_qu_array (print_cmds, dummy, print_cmds.size(),
-				 new_data_displaysOQAC, info);
-    }
-    if (!ok)
-	post_gdb_busy(last_origin);
-}
-
-void DataDisp::new_data_displaysOQAC (const StringArray& answers,
-				      const VoidArray& /* qu_datas */,
-				      void*  data)
-{
-    int count = answers.size();
-
-    // Unselect all nodes
-    for (GraphNode *gn = disp_graph->firstNode();
-	 gn != 0; gn = disp_graph->nextNode(gn))
-    {
-	gn->selected() = false;
-    }
-
-    NewDisplayInfo *info = (NewDisplayInfo *)data;
-
-    int cluster_nr = 0;
-
-    // Create and select new nodes
-    int depend_nr = disp_graph->get_by_name(info->depends_on);
-    for (int i = 0; i < count; i++)
-    {
-	string answer = answers[i];
-	string var = info->display_expressions[i];
-
-	if (!gdb->has_named_values())
-	{
-	    // The debugger `print NAME' does not prepend 'NAME = ' before
-	    // the value.  Fix this.
-	    answer.prepend(var + " = ");
-	}
-
-	if (!contains_display(answer, gdb))
-	{
-	    // Looks like an error message
-	    if (info->verbose)
-		post_gdb_message(answer, info->prompt, last_origin);
-
-	    continue;
-	}
-
-	// Create new display and remember disabling message
-	DispNode *dn = 
-	    new_data_node(var, info->scope, answer, false);
-	if (dn == 0)
-	    continue;
-
-	if (cluster_nr == 0)
-	    cluster_nr = new_cluster(info->display_expression, info->plotted);
-
-	// Insert into graph
-	insert_data_node(dn, depend_nr, false, false);
-
-	// Set position
-	BoxPoint box_point = info->point;
-	if (box_point == BoxPoint())
-	    box_point = disp_graph->default_pos(dn, graph_edit, depend_nr);
-
-	dn->moveTo(box_point);
-	dn->selected() = true;
-
-	dn->cluster(cluster_nr);
-    }
-
-    refresh_addr();
-    refresh_graph_edit();
-
-    if (info->prompt)
-	prompt();
-
-    delete info;
 }
 
 // Insert DN into graph, possibly clustering it

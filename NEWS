@@ -58,6 +58,9 @@ Data exploration
     ordinary array.
   * Array slices can be plotted, too.
 
+- You can use the FROM..TO notation in arbitrary values, and also multiple
+  times; `graph display 1..5 * 1..5' creates a multiplication table.
+
 
 Running the Program
 -------------------
