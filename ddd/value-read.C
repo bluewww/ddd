@@ -753,7 +753,7 @@ string read_member_name (string& value)
 	member_name = v.before("=> ");
 	value = value.after("=> ");
     }
-    else if (v.contains(" at "))
+    else if (v.contains(" table at "))
     {
 	// `Virtual table at 0x1234' or likewise.  WDB gives us such things.
 	member_name = v.before(" at ");
