@@ -27,20 +27,6 @@ Volunteers for these and other projects are welcome!
 
 031 Have a three-dimensional data display (using red/green glasses) :-)
 
-033 Call for bug report if `make' fails.  But how?
-
-    J.H.M. Dassen <jdassen@wi.leidenuniv.nl> suggests using two
-    makefiles: Makefile.real (which does all the hard work, and
-    touches a file "buildcompleted" [1]; if 1. is implemented,
-    "buildcompleted" means that the build is indeed completed) and
-    Makefile (a wrapper that executes Makefile.real, and that
-    displays the error message if "buildcompleted" doesn't exist
-    after executing Makefile.real).  Alternatively, you can merge
-    these into one makefile.
-
-    [1] Of course, as long as DDD produces only one executable, you could
-    ddd/ddd instead.
-
 037 Group dereference.  If multiple pointers are selected,
     dereference them all.
 
@@ -162,8 +148,6 @@ Volunteers for these and other projects are welcome!
 
 177 Create menu children in the background, using a work procedure.
 
-179 Add `libgdb' as an alternate communication method.
-
 183 Have a way to re-dereference until no more changes occur.
 
 193 Have a way to unfold trees and graphs.  For instance, `Display
@@ -175,20 +159,12 @@ Volunteers for these and other projects are welcome!
 
 199 Use X11R6 XtSignalNotify for Xt-safe signal handling.
 
-201 Install hotkeys on the command tool, using Harald Albrecht's
-    package (in `http://www.igpm.rwth-aachen.de/~albrecht/mnem.html')
-
 206 `manage_and_raise' should deiconify dialogs.
 
 215 Raoul Beauduin <beauduin@ori.u-tokyo.ac.jp> suggests to change
     the green arrow in the source window into a green bar. Makes it
     easier to follow the line.
     [You can turn off glyphs and get a black bar.  -AZ]
-
-217 Winson Quock <quock@pepper.com> (see the quote in `ddd/exit.C')
-    says: Very often, I found myself spending quite a lot of time
-    arranging each "display box".  It will be cool if we can also
-    have a normal text list display for variable values.
 
 221 Have a DDD USENET news group, such as `comp.debuggers[.ddd]',
     instead of a mailing list.  [This should be done when there are
