@@ -1107,7 +1107,7 @@ void GDBAgent::handle_input(string& answer)
 	// answer to a command sent before the prompt was received -
 	// or a reply to a control character (`Quit').
 	strip_control(answer);
-	_gdb_out(answer);
+	callHandlers(AsyncAnswer, (void *)&answer);
 	break;
 
     case BusyOnInitialCmds:

@@ -302,6 +302,9 @@ static void process_init(const string& answer, void *data = 0);
 // Handle output of batch commands
 static void process_batch(const string& answer, void *data = 0);
 
+// Process asynchronous GDB answers
+static void AsyncAnswerHP(Agent *, void *, void *);
+
 static string print_cookie = "4711";
 
 //-----------------------------------------------------------------------------
@@ -328,6 +331,10 @@ void fix_bp_numbers(string& cmd)
 
 void start_gdb()
 {
+    // Register asynchronous answer handler
+    gdb->addHandler(AsyncAnswer, AsyncAnswerHP);
+
+    // Setup command data
     CmdData* cmd_data     = new CmdData;
     cmd_data->filter_disp = NoFilter;      // No `display' output
     cmd_data->pos_buffer  = new PosBuffer; // Find initial pos
@@ -765,6 +772,11 @@ void send_gdb_command(string cmd, Widget origin,
 	    // We need to get the current file as well...
 	    plus_cmd_data->refresh_file  = true;
 	}
+	if (gdb->type() == JDB)
+	{
+	    // Get the current frame via `where'
+	    plus_cmd_data->refresh_where = true;
+	}
     }
     else if (is_thread_cmd(cmd) || is_core_cmd(cmd))
     {
@@ -882,7 +894,7 @@ void send_gdb_command(string cmd, Widget origin,
 		    direction = -direction;
 		if (gdb->type() == XDB)
 		    direction = -direction;
-		
+
 		cmd_data->set_frame_arg = direction * arg;
 	    }
 	}
@@ -1914,4 +1926,36 @@ void plusOQAC (const StringArray& answers,
 	abort();
 
     delete plus_cmd_data;
+}
+
+
+//-----------------------------------------------------------------------------
+// Process asynchronous GDB answers
+//-----------------------------------------------------------------------------
+
+static string current_async_answer;
+
+static void AsyncAnswerHP(Agent *source, void *, void *call_data)
+{
+    string& answer = *((string *)call_data);
+    GDBAgent *gdb = ptr_cast(GDBAgent, source);
+
+    if (gdb->type() == JDB)
+    {
+	// In JDB, any thread may hit a breakpoint asynchronously.
+	// Fetch its position.
+	current_async_answer += answer;
+	if (gdb->ends_with_prompt(current_async_answer))
+	{
+	    PosBuffer pb;
+	    pb.filter(current_async_answer);
+	    if (pb.pos_found())
+	    {
+		source_view->show_execution_position(pb.get_position());
+	    }
+
+	    current_async_answer = "";
+	}
+    }
+    _gdb_out(answer);
 }

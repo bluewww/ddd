@@ -116,7 +116,8 @@ const unsigned ReadyForCmd      = ReadyForQuestion + 1;
 const unsigned LanguageChanged  = ReadyForCmd + 1;
 const unsigned ReplyRequired    = LanguageChanged + 1;
 const unsigned EchoDetected     = ReplyRequired + 1;
-const unsigned GDBAgent_NTypes  = EchoDetected + 1;
+const unsigned AsyncAnswer      = EchoDetected + 1;
+const unsigned GDBAgent_NTypes  = AsyncAnswer + 1;
 
 // Handler info
 struct ReplyRequiredInfo {
