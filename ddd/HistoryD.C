@@ -77,7 +77,8 @@ string arg_history_filter(const string& cmd)
     if (try_arg(cmd, gdb->print_command("", false), arg) ||
 	try_arg(cmd, gdb->display_command(""), arg) ||
 	try_arg(cmd, gdb->whatis_command(""), arg) ||
-	try_arg(cmd, "info line", arg))
+	try_arg(cmd, "info line", arg) ||
+	try_arg(cmd, "list", arg))
     {
 	return arg;
     }
