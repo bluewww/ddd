@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 # make all lex/yacc declarations static
 
 # Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.

@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 # $Id$
 # rebuild package in batch mode -- useful for the night
 

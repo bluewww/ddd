@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 # $Id$
 # Get Configuration Info from `Makefile' and `config.h'
 

@@ -1,5 +1,5 @@
-#!/bin/sh
-# Check various sites
+#! /bin/sh
+# Check various FTP sites
 
 SHELL=/bin/sh
 
