@@ -1700,26 +1700,27 @@ int main(int argc, char *argv[])
 	helpOnVersionExtraText += rm(expired_msg + ".\n");
     }
 
-    helpOnVersionExtraText += rm("\n" DDD_NAME " is ")
-	+ sl("free software")
-	+ rm(" and you are welcome to distribute copies of it\n"
-"under certain conditions; select `" DDD_NAME " License' in the `Help' menu\n"
-"to see the conditions. "
-"There is ") + sl("absolutely no warranty")
-+ rm(" for " DDD_NAME ";\n"
-"see the " DDD_NAME " License for details.\n"
-"\n"
-"If you appreciate this software, please send a picture postcard to:\n"
-"\n"
-"    Technische Universit\344t Braunschweig\n"
-"    Abteilung Softwaretechnologie\n"
-"    B\374ltenweg 88\n"
-"    D-38092 Braunschweig\n"
-"    GERMANY\n"
-"\n"
-"Send bug reports to <" ddd_NAME "-bugs@ips.cs.tu-bs.de>;\n"
-"see the " DDD_NAME " manual for details on reporting bugs.\n"
-"Send comments and suggestions to <" ddd_NAME "@ips.cs.tu-bs.de>.");
+    helpOnVersionExtraText += cr() 
+	+ rm(DDD_NAME " is ") + sl("free software")
+	+ rm(" and you are welcome to distribute copies of it") + cr()
+	+ rm("under certain conditions; select `" DDD_NAME 
+	     " License' in the `Help' menu") + cr()
+	+ rm("to see the conditions.  There is ") + sl("absolutely no warranty")
+	+ rm(" for " DDD_NAME ";") + cr()
+	+ rm("see the " DDD_NAME " License for details.") + cr()
+	+ cr()
+	+ rm("If you appreciate this software, "
+	     "please send a picture postcard to:") + cr()
+	+ cr()
+	+ rm("    Technische Universit\344t Braunschweig") + cr()
+	+ rm("    Abteilung Softwaretechnologie") + cr()
+	+ rm("    B\374ltenweg 88") + cr()
+	+ rm("    D-38092 Braunschweig") + cr()
+	+ rm("    GERMANY") + cr()
+	+ cr()
+	+ rm("Send bug reports to <" ddd_NAME "-bugs@ips.cs.tu-bs.de>;") + cr()
+	+ rm("see the " DDD_NAME " manual for details on reporting bugs.") + cr()
+	+ rm("Send comments and suggestions to <" ddd_NAME "@ips.cs.tu-bs.de>.");
 
     // Customize `settings' and `status displays' titles.
     MString settings_title(gdb->title() + " Settings...");
@@ -2657,7 +2658,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNtopAttachment,      XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNbottomAttachment,   XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNrightAttachment,    XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNresizable,          True); arg++; 
+    XtSetArg(args[arg], XmNresizable,          False); arg++;
     XtSetArg(args[arg], XmNfillOnSelect,       True); arg++;
     XtSetArg(args[arg], XmNset,                True); arg++;
     led_w = verify(XmCreateToggleButton(status_form, "led", args, arg));
@@ -2670,7 +2671,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM); arg++;
     XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM); arg++;
-    XtSetArg(args[arg], XmNresizable,        True); arg++; 
+    XtSetArg(args[arg], XmNresizable,        False); arg++; 
     XtSetArg(args[arg], XmNarrowDirection, 
 	     (app_data.status_at_bottom ? XmARROW_UP : XmARROW_DOWN)); arg++;
     Widget arrow_w = 
@@ -2691,7 +2692,8 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNleftWidget,       arrow_w); arg++;
     XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_WIDGET); arg++;
     XtSetArg(args[arg], XmNrightWidget,      led_w); arg++;
-    XtSetArg(args[arg], XmNresizable,        True); arg++;
+    XtSetArg(args[arg], XmNresizable,        False); arg++;
+    XtSetArg(args[arg], XmNrecomputeSize,    False); arg++;
     status_w = verify(XmCreatePushButton(status_form, "status", args, arg));
     XtManageChild(status_w);
 
@@ -2720,12 +2722,11 @@ static void create_status(Widget parent)
     int new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
 				    size.height, unit_type);
     XtVaSetValues(led_w,
-		  XmNheight, new_height,
-		  XmNwidth,  new_height,
+		  XmNindicatorSize, new_height - 1,
 		  NULL);
     XtVaSetValues(arrow_w,
-		  XmNheight, new_height,
-		  XmNwidth,  new_height,
+		  XmNheight, new_height - 2,
+		  XmNwidth,  new_height - 2,
 		  NULL);
     XtVaSetValues(status_form,
 		  XmNpaneMaximum, new_height,
@@ -2885,7 +2886,7 @@ static void PopdownStatusHistoryCB(Widget w, XtPointer, XtPointer)
 
 static MString yn(bool b)
 {
-    return b ? rm("yes\n") : rm("no\n");
+    return (b ? rm("yes") : rm("no")) + cr();
 }
 
 static MString cap(const MString& title, bool b)
@@ -2902,14 +2903,14 @@ static MString cmd(const string& title, const string& cmd)
 {
     MString s = bf(title + " command: ");
     if (cmd == "")
-	return s + rm("-/-\n");
+	return s + rm("-/-") + cr();
     else
-	return s + tt(cmd) + rm("\n");
+	return s + tt(cmd) + cr();
 }
 
 static MString expr(const string& title, const string& expr)
 {
-    return bf(title + " expression: ") + tt(expr) + rm("\n");
+    return bf(title + " expression: ") + tt(expr) + cr();
 }
 
 static MString option(const string& command, const string& opt, bool b)
@@ -2936,19 +2937,19 @@ static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
 
     MString status;
 
-    status += sl("\nGENERAL DEBUGGER INFORMATION\n");
-    status += bf("Debugger: ") + tt(gdb->path()) + rm("\n");
-    status += bf("Process ID: ") + tt(itostring(gdb->pid())) + rm("\n");
-    status += bf("Master TTY: ") + tt(gdb->master_tty()) + rm("\n");
-    status += bf("Slave TTY: ") + tt(gdb->slave_tty()) + rm("\n");
+    status += cr() + sl("GENERAL DEBUGGER INFORMATION") + cr();
+    status += bf("Debugger: ") + tt(gdb->path()) + cr();
+    status += bf("Process ID: ") + tt(itostring(gdb->pid())) + cr();
+    status += bf("Master TTY: ") + tt(gdb->master_tty()) + cr();
+    status += bf("Slave TTY: ") + tt(gdb->slave_tty()) + cr();
     status += bf("Current state: ");
     if (gdb->isReadyWithPrompt())
 	status += rm("ready\n");
     else
 	status += rm("busy\n");
 
-    status += sl("\nDEBUGGER CAPABILITIES\n");
-    status += bf("Debugger type: ") + rm(gdb->title()) + rm("\n");
+    status += cr() + sl("DEBUGGER CAPABILITIES") + cr();
+    status += bf("Debugger type: ") + rm(gdb->title()) + cr();
     status += has("clear",   gdb->has_clear_command());
     status += has("display", gdb->has_display_command());
     status += has("edit",    gdb->has_setenv_command());
@@ -2958,7 +2959,7 @@ static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
     status += has("run_io",  gdb->has_run_io_command());
     status += has("setenv",  gdb->has_setenv_command());
 
-    status += sl("\nDEBUGGER COMMANDS\n");
+    status += cr() + sl("DEBUGGER COMMANDS") + cr();
     status += cmd("Args",        gdb->info_args_command());
     status += cmd("Assign",      gdb->assign_command("VAR", "EXPR"));
     status += cmd("Disassemble", gdb->disassemble_command("deadbeef"));
@@ -2970,7 +2971,7 @@ static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
     status += cmd("Whatis",      gdb->whatis_command("EXPR"));
     status += cmd("Where",       gdb->where_command());
 
-    status += sl("\nEXPRESSIONS\n");
+    status += cr() + sl("EXPRESSIONS") + cr();
     status += bf("Current language class: ");
     switch (gdb->program_language())
     {
@@ -2980,15 +2981,15 @@ static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
     case LANGUAGE_FORTRAN: status += rm("FORTRAN"); break;
     case LANGUAGE_OTHER:   status += rm("-/-"); break;
     }
-    status += rm("\n");
+    status += cr();
     status += expr("Address",     gdb->address_expr("EXPR"));
     status += expr("Dereference", gdb->dereferenced_expr("EXPR"));
 
-    status += sl("\nOPTIONS\n");
+    status += cr() + sl("OPTIONS") + cr();
     status += option("print", "-r", gdb->has_print_r_option());
     status += option("where", "-h", gdb->has_where_h_option());
 
-    status += sl("\nSYNTAX\n");
+    status += cr() + sl("SYNTAX") + cr();
     status += cap(bf("Named values"), gdb->has_named_values());
     status += cap(bf("Semicolon after ") + tb(quote("when")),
 		  gdb->has_when_semicolon());
