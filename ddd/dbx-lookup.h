@@ -36,14 +36,14 @@
 #include "strclass.h"
 
 // Find location of FUNC using DBX
-string dbx_lookup(const string& func_name);
+string dbx_lookup(const string& func_name, bool silent = true);
 void clear_dbx_lookup_cache();
 
 // Find path of source file SOURCE
 string dbx_path(const string& source);
 
 // Find line# in listing
-int line_of_listing(string& listing);
+int line_of_listing(string& listing, bool silent = true);
 
 #endif // _DDD_dbx_lookup_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

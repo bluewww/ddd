@@ -53,10 +53,14 @@ char dbx_lookup_rcsid[] =
 
 static StringStringAssoc pos_cache;
 
-string dbx_lookup(const string& func_name)
+string dbx_lookup(const string& func_name, bool silent)
 {
     if (pos_cache.has(func_name))
-	return pos_cache[func_name];
+    {
+	string pos = pos_cache[func_name];
+	if (silent || pos != "")
+	    return pos;
+    }
 
     string reply;
     switch (gdb->type())
@@ -94,7 +98,7 @@ string dbx_lookup(const string& func_name)
     }
 
     case DBX:
-	line = line_of_listing(reply);
+	line = line_of_listing(reply, silent);
 	if (line > 0)
 	{
 	    file = gdb_question("file");
@@ -163,7 +167,7 @@ void clear_dbx_lookup_cache()
     pos_cache = empty;
 }
 
-int line_of_listing(string& listing)
+int line_of_listing(string& listing, bool silent)
 {
     string message;
     while (listing != ""
@@ -175,7 +179,7 @@ int line_of_listing(string& listing)
 	listing = listing.after('\n');
     }
 
-    if (message != "")
+    if (message != "" && !silent)
 	post_gdb_message(message);
 
     int idx = -1;

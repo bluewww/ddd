@@ -3363,7 +3363,7 @@ void SourceView::lookup(string s, bool silent)
 
 	case DBX:
 	{
-	    string pos = dbx_lookup(s);
+	    string pos = dbx_lookup(s, silent);
 	    if (pos != "")
 		show_position(pos);
 	    break;
