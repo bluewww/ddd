@@ -321,6 +321,7 @@ void graphRefreshCB          (Widget, XtPointer, XtPointer);
 
 void sourceToggleFindWordsOnlyCB    (Widget, XtPointer, XtPointer);
 void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer);
+void sourceToggleDisplayGlyphsCB    (Widget, XtPointer, XtPointer);
 
 void dddToggleGroupIconifyCB       (Widget, XtPointer, XtPointer);
 void dddToggleGlobalTabCompletionCB(Widget, XtPointer, XtPointer);
@@ -873,6 +874,15 @@ static XtResource resources[] = {
 	XtPointer(False)
     },
     {
+	XtNdisplayGlyphs,
+	XtCDisplayGlyphs,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, display_glyphs),
+	XtRImmediate,
+	XtPointer(True)
+    },
+    {
 	XtNdddinitVersion,
 	XtCVersion,
 	XtRString,
@@ -1185,6 +1195,7 @@ static Widget graph_compact_layout_w[4];
 static Widget graph_auto_layout_w[4];
 static Widget find_words_only_w[4];
 static Widget cache_source_files_w[4];
+static Widget display_glyphs_w[4];
 static Widget suppress_warnings_w[4];
 static Widget set_focus_pointer_w[4];
 static Widget set_focus_explicit_w[4];
@@ -1214,10 +1225,12 @@ static MMDesc ddd_options_menu[] =
 
 static MMDesc source_options_menu[] = 
 {
-    { "findWordsOnly", MMToggle, { sourceToggleFindWordsOnlyCB }, 
+    { "findWordsOnly",    MMToggle, { sourceToggleFindWordsOnlyCB }, 
       NULL, find_words_only_w },
     { "cacheSourceFiles", MMToggle, { sourceToggleCacheSourceFilesCB }, 
       NULL, cache_source_files_w },
+    { "displayGlyphs",    MMToggle, { sourceToggleDisplayGlyphsCB }, 
+      NULL, display_glyphs_w },
     MMEnd
 };
 
@@ -1832,6 +1845,7 @@ int main(int argc, char *argv[])
     graph_auto_layout_w[CommandOptions]        = graph_auto_layout_w[0];
     find_words_only_w[CommandOptions]          = find_words_only_w[0];
     cache_source_files_w[CommandOptions]       = cache_source_files_w[0];
+    display_glyphs_w[CommandOptions]           = display_glyphs_w[0];
     suppress_warnings_w[CommandOptions]        = suppress_warnings_w[0];
     set_focus_pointer_w[CommandOptions]        = set_focus_pointer_w[0];
     set_focus_explicit_w[CommandOptions]       = set_focus_explicit_w[0];
@@ -1907,6 +1921,7 @@ int main(int argc, char *argv[])
 	graph_auto_layout_w[DataOptions]        = graph_auto_layout_w[0];
 	find_words_only_w[DataOptions]          = find_words_only_w[0];
         cache_source_files_w[DataOptions]       = cache_source_files_w[0];
+        display_glyphs_w[DataOptions]           = display_glyphs_w[0];
 	suppress_warnings_w[DataOptions]        = suppress_warnings_w[0];
 	set_focus_pointer_w[DataOptions]        = set_focus_pointer_w[0];
 	set_focus_explicit_w[DataOptions]       = set_focus_explicit_w[0];
@@ -1984,6 +1999,7 @@ int main(int argc, char *argv[])
 	graph_auto_layout_w[SourceOptions]        = graph_auto_layout_w[0];
 	find_words_only_w[SourceOptions]          = find_words_only_w[0];
 	cache_source_files_w[SourceOptions]       = cache_source_files_w[0];
+	display_glyphs_w[SourceOptions]           = display_glyphs_w[0];
 	suppress_warnings_w[SourceOptions]        = suppress_warnings_w[0];
 	set_focus_pointer_w[SourceOptions]        = set_focus_pointer_w[0];
 	set_focus_explicit_w[SourceOptions]       = set_focus_explicit_w[0];
@@ -2293,6 +2309,10 @@ int main(int argc, char *argv[])
 	// Check if GDB is still running
 	gdb->running();
 
+	// Check if the command TTY is still open
+	if (command_tty)
+	    command_tty->running();
+
 	if (app_data.synchronous_gdb && gdb->isBusyOnQuestion())
 	{
 	    // Synchronous mode: wait for GDB to answer question
@@ -2419,6 +2439,8 @@ void update_options()
 		      XmNset, app_data.find_words_only, NULL);
 	XtVaSetValues(cache_source_files_w[i],
 		      XmNset, app_data.cache_source_files, NULL);
+	XtVaSetValues(display_glyphs_w[i],
+		      XmNset, app_data.display_glyphs, NULL);
 
 	XtVaSetValues(suppress_warnings_w[i],
 		      XmNset, app_data.suppress_warnings, NULL);
@@ -2497,6 +2519,8 @@ void update_options()
 	source_view->cache_source_files = false;
 	source_view->clear_file_cache();
     }
+
+    source_view->display_glyphs = app_data.display_glyphs;
 }
 
 
@@ -2713,17 +2737,15 @@ void show_invocation(DebuggerType type)
 	" executable-file [core-file or process-id]]\n"
 	"Options:\n"
 	<< options <<
-	"  --dbx              Invoke DBX as underlying debugger.\n"
-	"  --gdb              Invoke GDB as underlying debugger.\n"
-	"  --debugger NAME    Invoke debugger as NAME.\n"
-	"  --host HOST        Run debugger on HOST.\n"
+	"  --dbx              Invoke DBX as inferior debugger.\n"
+	"  --gdb              Invoke GDB as inferior debugger.\n"
+	"  --debugger NAME    Invoke inferior debugger as NAME.\n"
+	"  --host HOST        Run inferior debugger on HOST.\n"
 	"  --login LOGIN      Use LOGIN for connecting to host.\n"
 	"  --vsl-library LIB  Load VSL library LIB.\n"
 	"  --vsl-path PATH    Look for VSL libraries in PATH.\n"
-	"  --trace-dialog     Show debugger input/output"
-	" on standard error.\n"
-	"  --trace-shell      Show shell commands"
-	" on standard error.\n"
+	"  --trace-dialog     Show inferior debugger I/O on standard error.\n"
+	"  --trace-shell      Show shell commands on standard error.\n"
 	"  --exec-window      Create a window for"
 	" running debugged programs.\n"
 	"  --no-exec-window   Do not create a window for"
@@ -2732,9 +2754,11 @@ void show_invocation(DebuggerType type)
 	" command window.\n"
 	"  --separate-windows Do not attach data and source windows to"
 	" command window.\n"
-	"  --scrolled-graph   Use scrollbars for moving the data display.\n"
-	"  --panned-graph     Use a panner for moving the data display.\n"
-        "  --tty              Use TTY for entering debugger commands.\n"
+	"  --scrolled-graph   Use Motif scrollbars"
+	" for moving the data display.\n"
+	"  --panned-graph     Use an Athena panner"
+	" for moving the data display.\n"
+        "  --tty              Use the tty as additional debugger interface.\n"
 	"  --version          Show the DDD version and exit.\n"
 	"  --configuration    Show the DDD configuration flags and exit.\n"
 	"  --manual           Show the DDD manual and exit.\n"
@@ -2749,7 +2773,8 @@ void show_invocation(DebuggerType type)
 	"For more information, consult the " DDD_NAME " `Help' menu,"
 	" type `help' from\n"
 	"within " DDD_NAME ", "
-	"or consult the manual pages of " DDD_NAME " and your debugger.\n";
+	"or consult the manual pages of " DDD_NAME " and the"
+	" inferior debugger.\n";
 }
 
 
@@ -7158,6 +7183,28 @@ void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer call_data)
     options_changed = true;
 }
 
+void sourceToggleDisplayGlyphsCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    // Clear current position
+    source_view->show_execution_position();
+
+    app_data.display_glyphs = info->set;
+
+    update_options();
+    options_changed = true;
+
+    // Lookup current position
+    source_view->lookup();
+
+    if (info->set)
+	set_status("Displaying breakpoints and execution position as glyphs.");
+    else
+	set_status("Displaying breakpoints and execution position as text.");
+}
+
 //-----------------------------------------------------------------------------
 // General Options
 //-----------------------------------------------------------------------------
@@ -7476,6 +7523,8 @@ static void save_options(Widget origin)
 			 app_data.find_words_only) << "\n";
     os << bool_app_value(XtNcacheSourceFiles,
 			 app_data.cache_source_files) << "\n";
+    os << bool_app_value(XtNdisplayGlyphs,
+			 app_data.display_glyphs) << "\n";
     os << bool_app_value(XtNgroupIconify,
 			 app_data.group_iconify)   << "\n";
     os << bool_app_value(XtNseparateExecWindow,

@@ -75,6 +75,11 @@ char SourceView_rcsid[] =
 #include "mydialogs.h"
 #include "verify.h"
 
+// Glyphs
+#include "arrow.xbm"
+#include "break.xbm"
+#include "nobreak.xbm"
+
 inline int isid(char c)
 {
     return isalnum(c) || c == '_';
@@ -192,6 +197,7 @@ MMDesc SourceView::text_popup[] =
 
 Widget SourceView::toplevel_w                = 0;
 Widget SourceView::source_view_w             = 0;
+Widget SourceView::source_form_w             = 0;
 Widget SourceView::source_text_w             = 0;
 Widget SourceView::edit_breakpoints_dialog_w = 0;
 Widget SourceView::breakpoint_list_w         = 0;
@@ -202,6 +208,7 @@ Widget SourceView::down_w                    = 0;
 
 bool SourceView::stack_dialog_popped_up = false;
 bool SourceView::cache_source_files     = true;
+bool SourceView::display_glyphs         = true;
 
 int  SourceView::bp_indent_amount = 0;
 
@@ -216,6 +223,7 @@ Assoc<string, string> SourceView::file_cache;
 string SourceView::current_text;
 
 XmTextPosition SourceView::last_pos = 0;
+XmTextPosition SourceView::last_top = 0;
 XmTextPosition SourceView::last_start_highlight = 0;
 XmTextPosition SourceView::last_end_highlight = 0;
 
@@ -967,7 +975,7 @@ void SourceView::read_file (string file_name,
     XmTextSetHighlight(source_text_w,
 		       0, XmTextGetLastPosition(source_text_w),
 		       XmHIGHLIGHT_NORMAL);
-    last_pos = last_start_highlight = last_end_highlight = 0;
+    last_top = last_pos = last_start_highlight = last_end_highlight = 0;
     last_start_secondary_highlight = last_end_secondary_highlight = 0;
 
     if (source_view_shell)
@@ -1208,6 +1216,7 @@ void SourceView::refresh_bpsOQC (string answer, void *)
     process_info_bp (answer);
 }
 
+
 //----------------------------------------------------------------------------
 // Constructor
 //----------------------------------------------------------------------------
@@ -1226,22 +1235,49 @@ SourceView::SourceView (XtAppContext app_context,
 
     Arg args[10];
     Cardinal arg = 0;
+    source_form_w = verify(XmCreateForm(parent, "source_form_w", args, arg));
+
+    arg = 0;
     XtSetArg (args[arg], XmNselectionArrayCount, 1); arg++;
-    source_text_w = verify(XmCreateScrolledText (parent,
+    XtSetArg (args[arg], XmNtopAttachment,    XmATTACH_FORM); arg++;
+    XtSetArg (args[arg], XmNbottomAttachment, XmATTACH_FORM); arg++;
+    XtSetArg (args[arg], XmNleftAttachment,   XmATTACH_FORM); arg++;
+    XtSetArg (args[arg], XmNrightAttachment,  XmATTACH_FORM); arg++;
+    source_text_w = verify(XmCreateScrolledText (source_form_w,
 						 "source_text_w",
 						 args, arg));
-    source_view_w = source_text_w;
+    source_view_w = source_form_w;
     XtManageChild(source_text_w);
+    XtManageChild(source_form_w);
+
 #ifndef LESSTIF_VERSION		// won't work with LessTif 1.0
     XtAddCallback(source_text_w, XmNgainPrimaryCallback,
 		  set_source_argCB, XtPointer(false));
 #endif
     XtAddCallback(source_text_w, XmNmotionVerifyCallback,
 		  set_source_argCB, XtPointer(true));
+    XtAddCallback(source_text_w, XmNmotionVerifyCallback,
+		  CheckScrollCB, 0);
     XtAppAddActions (app_context, actions, XtNumber (actions));
 
     // XtManageChild (source_view_w);
 
+    // Fetch scrollbar ID
+    Widget scrollbar = 0;
+    XtVaGetValues(XtParent(source_text_w),
+		  XmNverticalScrollBar, &scrollbar,
+		  NULL);
+    if (scrollbar)
+    {
+	XtAddCallback(scrollbar, XmNincrementCallback,     CheckScrollCB, 0);
+	XtAddCallback(scrollbar, XmNdecrementCallback,     CheckScrollCB, 0);
+	XtAddCallback(scrollbar, XmNpageIncrementCallback, CheckScrollCB, 0);
+	XtAddCallback(scrollbar, XmNpageDecrementCallback, CheckScrollCB, 0);
+	XtAddCallback(scrollbar, XmNtoTopCallback,         CheckScrollCB, 0);
+	XtAddCallback(scrollbar, XmNtoBottomCallback,      CheckScrollCB, 0);
+	XtAddCallback(scrollbar, XmNdragCallback,          CheckScrollCB, 0);
+	XtAddCallback(scrollbar, XmNvalueChangedCallback,  CheckScrollCB, 0);
+    }
 
 #ifdef LESSTIF_VERSION
     // Not available in LessTif 0.1
@@ -1372,18 +1408,21 @@ void SourceView::show_execution_position (string position)
 {
     if (position == "")
     {
-	// Alte Markierung entfernen
-	String sep = " ";
-	XmTextReplace (source_text_w,
-		       last_pos + bp_indent_amount - 1,
-		       last_pos + bp_indent_amount,
-		       sep);
+	if (!display_glyphs)
+	{
+	    // Remove old marker
+	    String sep = " ";
+	    XmTextReplace (source_text_w,
+			   last_pos + bp_indent_amount - 1,
+			   last_pos + bp_indent_amount,
+			   sep);
 
-	if (last_start_highlight)
-	    XmTextSetHighlight (source_text_w,
-				last_start_highlight, last_end_highlight,
-				XmHIGHLIGHT_NORMAL);
+	    if (last_start_highlight)
+		XmTextSetHighlight (source_text_w,
+				    last_start_highlight, last_end_highlight,
+				    XmHIGHLIGHT_NORMAL);
 
+	}
 	last_pos = last_start_highlight = last_end_highlight = 0;
 	return;
     }
@@ -1405,9 +1444,9 @@ void SourceView::show_execution_position (string position)
 
     if (file_name == current_file_name)
     {
-	if (bp_indent_amount > 0)
+	if (!display_glyphs && bp_indent_amount > 0)
 	{
-	    // Alte Markierung entfernen
+	    // Remove old marker
 	    String sep = " ";
 	    XmTextReplace (source_text_w,
 			   last_pos + bp_indent_amount - 1,
@@ -1437,9 +1476,10 @@ void SourceView::_show_execution_position(string file, int line)
     XmTextPosition pos = pos_of_line[line];
     SetInsertionPosition(pos + bp_indent_amount, false);
 
-    // akt. Zeile markieren
-    if (bp_indent_amount > 0) {
-	// neue Markierung setzen
+    // Mark current line
+    if (!display_glyphs && bp_indent_amount > 0)
+    {
+	// Set new marker
 	String marker = ">";
 	XmTextReplace (source_text_w,
 		       pos + bp_indent_amount - 1,
@@ -1451,7 +1491,8 @@ void SourceView::_show_execution_position(string file, int line)
     if (current_text != "")
 	pos_line_end = current_text.index('\n', pos) + 1;
 
-    if (pos != last_start_highlight || pos_line_end != last_end_highlight)
+    if (!display_glyphs && 
+	(pos != last_start_highlight || pos_line_end != last_end_highlight))
     {
 	if (last_start_highlight)
 	{
@@ -1468,6 +1509,8 @@ void SourceView::_show_execution_position(string file, int line)
     last_pos             = pos;
     last_start_highlight = pos;
     last_end_highlight   = pos_line_end;
+
+    update_glyphs ();
 }
 
 
@@ -2075,9 +2118,22 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     
     XButtonEvent* event = (XButtonEvent *) e;
 
-    XmTextPosition pos = XmTextXYToPos (source_text_w,
-					event->x,
-					event->y);
+    Position x = event->x;
+    Position y = event->y;
+
+    if (w != source_text_w)
+    {
+	// Called from a glyph: add glyph position to event position
+	Position xw, yw;
+	XtVaGetValues(w, 
+		      XmNx, &xw,
+		      XmNy, &yw,
+		      NULL);
+	x += xw;
+	y += yw;
+    }
+
+    XmTextPosition pos = XmTextXYToPos (source_text_w, x, y);
 
     static int line_nr;
     bool in_text;
@@ -2946,4 +3002,136 @@ string SourceView::get_line(string position)
     ostrstream buf;
     buf << line << '\t' << text;
     return string(buf);
+}
+
+//----------------------------------------------------------------------------
+// Glyph stuff
+//----------------------------------------------------------------------------
+
+// Invoked whenever the text widget may have scrolled
+void SourceView::CheckScrollCB(Widget, XtPointer, XtPointer)
+{
+    XmTextPosition old_top = last_top;
+    last_top = XmTextGetTopCharacter(source_text_w);
+    if (old_top != last_top)
+	update_glyphs ();
+}
+
+// Move text cursor at glyph position
+void SourceView::MoveCursorToGlyphPosCB(Widget w, 
+					XtPointer, 
+					XtPointer call_data)
+{
+    XmPushButtonCallbackStruct *info = (XmPushButtonCallbackStruct *)call_data;
+    XEvent *e = info->event;
+    if (e->type != ButtonPress)
+	return;
+
+    // Set up event such that it applies to the source window
+    XButtonEvent *event = (XButtonEvent *) e;
+
+    Position x, y;
+    XtVaGetValues(w, 
+		  XmNx, &x,
+		  XmNy, &y,
+		  NULL);
+    event->x += x;
+    event->y += y;
+    event->window = XtWindow(source_text_w);
+
+    // Invoke action for source window
+    String *params = { 0 };
+    XtCallActionProc(source_text_w, "source-start-select-word", e, params, 0);
+}
+    
+
+// Return pixmaps suitable for the widget W
+static Pixmap pixmap(Widget w, char *bits, int width, int height)
+{
+    Pixel foreground, background;
+
+    XtVaGetValues(w,
+		  XmNforeground, &foreground,
+		  XmNbackground, &background,
+		  NULL);
+
+    int depth = PlanesOfScreen(XtScreen(w));
+    Pixmap pix = XCreatePixmapFromBitmapData(XtDisplay(w),
+	XtWindow(w), bits, width, height, foreground, background, depth);
+
+    return pix;
+}
+
+// Create glyph for text
+Widget SourceView::create_glyph(String name,
+				char *bits, int width, int height)
+{
+    Arg args[10];
+    Cardinal arg = 0;
+    Widget w = XmCreatePushButton(source_form_w, name, args, arg);
+    XtRealizeWidget(w);
+
+    Pixmap pix = pixmap(w, bits, width, height);
+    arg = 0;
+    XtSetArg(args[arg], XmNlabelType, XmPIXMAP); arg++;
+    XtSetArg(args[arg], XmNlabelPixmap, pix);    arg++;
+    XtSetValues(w, args, arg);
+    
+    XtAddCallback(w, XmNactivateCallback, MoveCursorToGlyphPosCB, 0);
+    return w;
+}
+
+void SourceView::move_glyph(Widget w, XmTextPosition pos)
+{
+    Position x, y;
+    Boolean pos_displayed = XmTextPosToXY(source_text_w, pos, &x, &y);
+    if (display_glyphs && pos_displayed)
+    {
+	static int line_height = 0;
+	if (line_height == 0)
+	{
+	    XmTextPosition pos2 = pos_of_line[last_execution_line + 1];
+	    Position x2, y2;
+	    Boolean pos2_displayed = 
+		XmTextPosToXY(source_text_w, pos2, &x2, &y2);
+	    if (pos2_displayed)
+		line_height = abs(y2 - y);
+	}
+	Dimension height              = 0;
+	Dimension border_width        = 0;
+	Dimension margin_height       = 0;
+	Dimension shadow_thickness    = 0;
+	Dimension highlight_thickness = 0;
+	XtVaGetValues(w,
+		      XmNheight,             &height,
+		      XmNborderWidth,        &border_width,
+		      XmNmarginHeight,       &margin_height,
+		      XmNshadowThickness,    &shadow_thickness,
+		      XmNhighlightThickness, &highlight_thickness,
+		      NULL);
+	Dimension glyph_height = 
+	    height + border_width + margin_height
+	    + shadow_thickness + highlight_thickness;
+	XtVaSetValues(w,
+		      XmNleftOffset, x,
+		      XmNtopOffset, y - glyph_height + line_height / 2 - 2,
+		      NULL);
+	XtManageChild(w);
+    }
+    else
+    {
+	XtUnmanageChild(w);
+    }
+}    
+
+void SourceView::update_glyphs()
+{
+    static Widget arrow_w = 0;
+
+    if (arrow_w == 0)
+	arrow_w = create_glyph("arrow", 
+			       arrow_bits, arrow_width, arrow_height);
+
+    XmTextPosition pos = pos_of_line[last_execution_line];
+    move_glyph(arrow_w, pos);
 }

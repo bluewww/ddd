@@ -136,6 +136,8 @@
 #define XtNttyMode               "ttyMode"
 #define XtNfullNameMode          "fullNameMode"
 #define XtCTTYMode               "TTYMode"
+#define XtNdisplayGlyphs         "displayGlyphs"
+#define XtCDisplayGlyphs         "DisplayGlyphs"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
 #define XtCVersion               "Version"
@@ -189,6 +191,7 @@ typedef struct {
     Boolean suppress_warnings;
     Boolean tty_mode;
     Boolean full_name_mode;
+    Boolean display_glyphs;
     String  dddinit_version;
     String  app_defaults_version;
 } AppData;

@@ -391,7 +391,13 @@ Ddd*internal_error*foreground: 	   red4
 Ddd*terminated_dialog*foreground:  red4
 Ddd*debugging_poem*foreground: 	   dark green
 
-! Here are the resources to set data display colors.
+! Glyph colors
+Ddd*source_form_w.XmPushButton.background: grey90
+Ddd*source_form_w.arrow.foreground:        dark green
+Ddd*source_form_w.break.foreground:        red4
+Ddd*source_form_w.nobreak.foreground:      red4
+
+! Data display colors
 Ddd*graph_edit.nodeColor:          black
 Ddd*graph_edit.edgeColor:          grey50
 Ddd*graph_edit.selectColor:        black
@@ -655,6 +661,10 @@ None<Key>R7:		beginning-of-line()         \n\
 None<Key>R13:		end-of-line()               \n\
 None<Key>Tab:		PrimitiveNextTabGroup()     \n
 
+! Make sure glyphs popup as well
+Ddd*source_form_w.XmPushButton.translations: #override \
+None<Btn1Down>:	Activate() \n\
+None<Btn3Down>:	source-popup-menu()
 
 ! This defines the popup menus in the graph window.
 Ddd*graph_edit.translations: #override \
@@ -902,6 +912,9 @@ X warnings are silently ignored.\n\
 @tt \267 @rm If @bf Cache Sources @rm is set, \
 source texts are cached in memory.\n\
   Otherwise, sources are re-read upon each source change.\n\
+@tt \267 @rm If @bf Display Glyphs @rm is set, \
+positions and breakpoints are shown as glyphs.\n\
+  Otherwise, positions and breakpoints are shown as text.\n\
 \n\
 @sl Data Options:@rm\n\
 @tt \267 @rm If @bf Show Grid @rm is set, the grid is displayed.\n\
@@ -942,31 +955,34 @@ Ddd*generalOptionsMenu.groupIconify.labelString:       Group Iconify
 Ddd*generalOptionsMenu.groupIconify.mnemonic:	       G
 
 Ddd*generalOptionsMenu.globalTabCompletion.labelString: Global Tab Completion
-Ddd*generalOptionsMenu.globalTabCompletion.mnemonic:           T
+Ddd*generalOptionsMenu.globalTabCompletion.mnemonic:    T
 
 Ddd*generalOptionsMenu.separateExecWindow.labelString: Run in Execution Window
-Ddd*generalOptionsMenu.separateExecWindow.mnemonic:           E
+Ddd*generalOptionsMenu.separateExecWindow.mnemonic:    E
 
 Ddd*generalOptionsMenu.suppressWarnings.labelString:   Suppress X Warnings
-Ddd*generalOptionsMenu.suppressWarnings.mnemonic:	          W
+Ddd*generalOptionsMenu.suppressWarnings.mnemonic:      W
 
 Ddd*generalOptionsMenu.saveOptionsOnExit.labelString:  Save Options on Exit
-Ddd*generalOptionsMenu.saveOptionsOnExit.mnemonic:          O
+Ddd*generalOptionsMenu.saveOptionsOnExit.mnemonic:     O
 
 Ddd*generalOptionsMenu.saveHistoryOnExit.labelString:  Save History on Exit
-Ddd*generalOptionsMenu.saveHistoryOnExit.mnemonic:          H
+Ddd*generalOptionsMenu.saveHistoryOnExit.mnemonic:     H
 
 Ddd*sourceOptionsMenu.findWordsOnly.labelString:       Find Words Only
-Ddd*sourceOptionsMenu.findWordsOnly.mnemonic:	             W
+Ddd*sourceOptionsMenu.findWordsOnly.mnemonic:	       W
 
 Ddd*sourceOptionsMenu.cacheSourceFiles.labelString:    Cache Sources
 Ddd*sourceOptionsMenu.cacheSourceFiles.mnemonic:       C
 
+Ddd*sourceOptionsMenu.displayGlyphs.labelString:       Display Glyphs
+Ddd*sourceOptionsMenu.displayGlyphs.mnemonic:          G
+
 Ddd*dataOptionsMenu*showGrid.labelString:	       Show Grid
-Ddd*dataOptionsMenu*showGrid.mnemonic:		            G
+Ddd*dataOptionsMenu*showGrid.mnemonic:		       G
 
 Ddd*dataOptionsMenu*showHints.labelString:	       Show Edge Hints
-Ddd*dataOptionsMenu*showHints.mnemonic:		            E
+Ddd*dataOptionsMenu*showHints.mnemonic:		       E
 
 Ddd*dataOptionsMenu*snapToGrid.labelString:	       Snap to Grid
 Ddd*dataOptionsMenu*snapToGrid.mnemonic:	       S
@@ -986,7 +1002,7 @@ Ddd*startupOptionsMenu*keyboardFocus.labelString:      Keyboard Focus
 Ddd*startupOptionsMenu*keyboardFocus.mnemonic:         K
 
 Ddd*startupOptionsMenu*dataScrolling.labelString:      Data Scrolling
-Ddd*startupOptionsMenu*dataScrolling.mnemonic:              S
+Ddd*startupOptionsMenu*dataScrolling.mnemonic:         S
 
 Ddd*startupOptionsMenu*debugger.labelString:           Debugger Type
 Ddd*startupOptionsMenu*debugger.mnemonic:              D
@@ -1487,7 +1503,7 @@ Click the @bf right mouse button @rm to get a popup menu:\n\
 
 
 !-----------------------------------------------------------------------------
-! Source Text Popup-Menus
+! Source Text Popup Menus
 !-----------------------------------------------------------------------------
 
 Ddd*line_popup.set.labelString:		Set Breakpoint
@@ -1574,6 +1590,28 @@ Ddd*arg_cmd_w.arg_cmd_area*find_forward.contextHelpString:	\
 Search the next occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.
 
+
+
+!-----------------------------------------------------------------------------
+! Source Text Glyphs
+!-----------------------------------------------------------------------------
+
+Ddd*source_form_w.XmPushButton.shadowThickness:    0
+Ddd*source_form_w.XmPushButton.highlightThickness: 0
+Ddd*source_form_w.XmPushButton.marginHeight:       0
+Ddd*source_form_w.XmPushButton.marginWidth:        0
+Ddd*source_form_w.XmPushButton.borderWidth:        0
+
+Ddd*source_form_w.arrow*contextHelpString: \
+@rm This symbol shows the current execution position.
+
+Ddd*source_form_w.break*contextHelpString: \
+@rm This symbol shows an enabled breakpoint at this location. \n\
+Press the @bf right mouse button @rm to change its properties.
+
+Ddd*source_form_w.arrow*contextHelpString: \
+@rm This symbol shows a disabled breakpoint at this location. \n\
+Press the @bf right mouse button @rm to change its properties.
 
 !-----------------------------------------------------------------------------
 ! Command Window

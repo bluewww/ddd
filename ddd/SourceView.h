@@ -105,12 +105,19 @@ class SourceView {
 
     static void UpdateBreakpointButtonsCB (Widget, XtPointer, XtPointer);
 
+    static void CheckScrollCB(Widget, XtPointer, XtPointer);
+
     static void StackDialogPoppedDownCB (Widget, XtPointer, XtPointer);
     static void SelectFrameCB (Widget, XtPointer, XtPointer);
 
     static void fill_labels(const string& info_output);
 
+    static Widget create_glyph(String name, 
+				    char *bits, int width, int height);
+    static void move_glyph(Widget w, XmTextPosition pos);
     static void update_title ();
+    static void update_glyphs ();
+    static void MoveCursorToGlyphPosCB(Widget, XtPointer, XtPointer);
 
     static void refresh_bp_disp ();
 
@@ -178,24 +185,20 @@ private:
     static XmTextPosition last_start_secondary_highlight;
     static XmTextPosition last_end_secondary_highlight;
 
-    static Widget toplevel_w;	 // top-level widget
+    static Widget toplevel_w;	 // Top-level widget
 
-    static Widget source_view_w; // alles zusammen
-#ifdef EXTRA_TEXT_INFO
-    static Widget source_info_w; // zeigt Infos zum Text an
-    static Widget source_name_w; // zeigt den Filenamen an
-    static Widget source_line_w; // zeigt die akt. Zeilennummer an
-#endif
-    static Widget source_text_w; // das eigentliche Textfenster
+    static Widget source_view_w; // All windows
+    static Widget source_form_w; // Form around text and icons
+    static Widget source_text_w; // Source text
 
-    static Widget edit_breakpoints_dialog_w; // dialog for editing breakpoints
-    static Widget breakpoint_list_w;         // the breakpoint list
+    static Widget edit_breakpoints_dialog_w; // Dialog for editing breakpoints
+    static Widget breakpoint_list_w;         // The breakpoint list
 
-    static Widget stack_dialog_w;            // dialog for viewing the stack
-    static Widget frame_list_w;              // the frame list
-    static Widget up_w;                      // the `Up' button
-    static Widget down_w;                    // the `Down' button
-    static bool stack_dialog_popped_up;	     // true if the stack is visible
+    static Widget stack_dialog_w;            // Dialog for viewing the stack
+    static Widget frame_list_w;              // The frame list
+    static Widget up_w;                      // The `Up' button
+    static Widget down_w;                    // The `Down' button
+    static bool stack_dialog_popped_up;	     // True if the stack is visible
 
     // The indenting amount
     static int  bp_indent_amount;
@@ -213,6 +216,7 @@ private:
     static string current_text;
 
     static XmTextPosition last_pos;
+    static XmTextPosition last_top;
     static XmTextPosition last_start_highlight;
     static XmTextPosition last_end_highlight;
 
@@ -302,6 +306,9 @@ public:
 
     // Check whether source files are to be cached
     static bool cache_source_files;
+
+    // Check whether glyphs are to be displayed
+    static bool display_glyphs;
 
     // Clear file cache
     static void clear_file_cache();
