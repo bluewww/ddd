@@ -56,6 +56,7 @@ char session_rcsid[] =
 #include "ExitCB.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
+#include "MakeMenu.h"
 #include "SourceView.h"
 #include "charsets.h"
 #include "Command.h"
@@ -664,7 +665,56 @@ static void SetSessionCB(Widget dialog, XtPointer, XtPointer call_data)
     }
 }
 
-static Widget dump_core = 0;
+static Widget dump_core_w  = 0;
+static Widget may_kill_w   = 0;
+static Widget may_gcore_w  = 0;
+static Widget may_ptrace_w = 0;
+static Widget gcore_methods_w = 0;
+
+static void SetGCoreSensitivityCB(Widget = 0, XtPointer = 0, XtPointer = 0)
+{
+    bool set = 
+	XmToggleButtonGetState(dump_core_w) && XtIsSensitive(dump_core_w);
+
+    XtSetSensitive(gcore_methods_w, set);
+
+    XtSetSensitive(may_kill_w, set);
+    XtSetSensitive(may_gcore_w, set && gdb->type() == GDB &&
+		   string(app_data.get_core_command) != "");
+#if HAVE_PTRACE_DUMPCORE
+    XtSetSensitive(may_ptrace_w, set && gdb->type() == GDB);
+#else
+    XtSetSensitive(may_ptrace_w, False);
+#endif
+}
+
+static unsigned long gcore_method = 0;
+
+static void SetGCoreMethodCB(Widget, XtPointer client_data, XtPointer)
+{
+    gcore_method = (unsigned long)client_data;
+}
+
+static MMDesc gcore_methods[] =
+{
+    { "kill",   MMPush, { SetGCoreMethodCB, XtPointer(0) }, NULL, 
+      &may_kill_w },
+    { "gcore",  MMPush, { SetGCoreMethodCB, XtPointer(MAY_GCORE) }, NULL, 
+      &may_gcore_w },
+    { "ptrace", MMPush, { SetGCoreMethodCB, XtPointer(MAY_PTRACE) }, NULL, 
+      &may_ptrace_w},
+    MMEnd
+};
+
+static MMDesc gcore_items[] =
+{
+    { "dump",     MMToggle, { SetGCoreSensitivityCB }, NULL, 
+      &dump_core_w },
+    { "method",   MMOptionMenu, { SetGCoreSensitivityCB }, gcore_methods, 
+      &gcore_methods_w },
+    MMEnd
+};
+
 
 // OK pressed in `save session'
 static void SaveSessionCB(Widget w, XtPointer client_data, XtPointer call_data)
@@ -675,8 +725,8 @@ static void SaveSessionCB(Widget w, XtPointer client_data, XtPointer call_data)
     {
 	unsigned long flags = SAVE_SESSION | MAY_INTERACT;
 
-	if (XmToggleButtonGetState(dump_core))
-	    flags |= SAVE_CORE;
+	if (XmToggleButtonGetState(dump_core_w))
+	    flags |= SAVE_CORE | gcore_method;
 
 	DDDSaveOptionsCB(w, XtPointer(flags), call_data);
     }
@@ -689,22 +739,31 @@ void SaveSessionAsCB(Widget w, XtPointer, XtPointer)
 	create_session_panel(w, "sessions_to_save",
 			     SaveSessionCB, DeleteSessionsCB);
 
-    if (dump_core == 0)
+    if (dump_core_w == 0)
     {
-	dump_core = XmCreateToggleButton(dialog, "dump_core", 0, 0);
-	XtManageChild(dump_core);
+	Widget panel = MMcreateButtonPanel(dialog, "panel", gcore_items);
+	XtVaSetValues(panel, 
+		      XmNorientation, XmHORIZONTAL,
+		      XmNborderWidth,  0,
+		      XmNentryBorder,  0,
+		      XmNspacing,      0,
+		      XmNmarginWidth,  0,
+		      XmNmarginHeight, 0,
+		      NULL);
+	MMaddCallbacks(gcore_items);
     }
 
     ProgramInfo info;
-    bool dump = 
+    bool have_data = 
 	info.running || (info.core != NO_GDB_ANSWER && info.core != "");
-    XmToggleButtonSetState(dump_core, dump, False);
+    XmToggleButtonSetState(dump_core_w, have_data, True);
+    XtSetSensitive(dump_core_w, info.running);
+    SetGCoreSensitivityCB();
 
     string name = "";
     if (app_data.session == DEFAULT_SESSION)
     {
 	// No current session - suggest a default name based on executable
-	ProgramInfo info;
 	if (info.file != NO_GDB_ANSWER)
 	    name = info.file;
 

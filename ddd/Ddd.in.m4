@@ -4161,8 +4161,12 @@ Ddd*sessions_to_save.selectionLabelString: 	Save Session
 Ddd*sessions_to_save*selectionPolicy:		XmSINGLE_SELECT
 Ddd*sessions_to_save*okLabelString:	 	Save
 Ddd*sessions_to_save*applyLabelString:	 	Delete
-Ddd*sessions_to_save*dump_core.labelString:	Include Core Dump
-Ddd*sessions_to_save*dump_core.alignment:	XmALIGNMENT_BEGINNING
+Ddd*sessions_to_save*dump.labelString:		Include Core Dump
+Ddd*sessions_to_save*dump.alignment:		XmALIGNMENT_BEGINNING
+Ddd*sessions_to_save*method.labelString:	via
+Ddd*sessions_to_save*kill.labelString:		Killing the Debuggee
+Ddd*sessions_to_save*ptrace.labelString:	The ptrace() call
+Ddd*sessions_to_save*gcore.labelString:		The `gcore' Command
 
 Ddd*sessions_to_save*helpString:	\
 @rm Enter the name of a DDD session in the argument field.\n\
@@ -5147,6 +5151,6 @@ dnl
 dnl For XEmacs use only.
 dnl
 dnl Local Variables:
-dnl font-lock-keywords: (t ("\\(dnl.*\\|^\\!.*\\)" (0 font-lock-comment-face t)) ("@[a-zA-Z0-9_@]*" (0 font-lock-variable-name-face)) ("\\([A-Z]+\\)(" (1 font-lock-keyword-face)) ("\\(define\\|include\\|ifdef\\)" (0 font-lock-preprocessor-face)))
+dnl font-lock-keywords: (t ("\\(dnl.*\\|^\\!.*\\)" (0 font-lock-comment-face t)) ("@[a-zA-Z0-9_@]*" (0 font-lock-variable-name-face)) ("\\([A-Z]+\\)(" (1 font-lock-keyword-face)) ("\\b\\(define\\|include\\|ifdef\\)\\b" (0 font-lock-preprocessor-face)))
 dnl comment-start: "! "
 dnl End:

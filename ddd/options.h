@@ -39,25 +39,28 @@
 
 // Options
 
-// Save options in FILE.  If CREATE is true, allow creation; if
-// SAVE_YOURSELF is true, include additional state information.
-// Return true iff successful.
-
+// Flags for saving options
 #define CREATE_OPTIONS   (1 << 0) // Create simple options file if non-existent
 #define SAVE_SESSION     (1 << 1) // Save additional session information
 #define SAVE_GEOMETRY    (1 << 2) // Save window geometry
 #define SAVE_CORE        (1 << 3) // Always include core file
-#define MAY_KILL         (1 << 4) // True if program can be killed
-#define DONT_SAVE        (1 << 5) // Only simulate; don't actually save
-#define DONT_RELOAD_CORE (1 << 6) // Do not load generated core file
-#define DONT_COPY_CORE   (1 << 7) // Do not copy existing core file
-#define MAY_INTERACT     (1 << 8) // Allow user interaction
+#define MAY_KILL         (1 << 4) // May we kill to get a core dump?
+#define MAY_PTRACE       (1 << 5) // May we use ptrace() to get a core dump?
+#define MAY_GCORE        (1 << 6) // May we use gcore to get a core dump?
+#define DONT_SAVE        (1 << 7) // Only simulate; don't actually save
+#define DONT_RELOAD_CORE (1 << 8) // Do not load generated core file
+#define DONT_COPY_CORE   (1 << 9) // Do not copy existing core file
+#define MAY_INTERACT     (1 << 10) // Allow user interaction
 
 #define SAVE_DEFAULT MAY_INTERACT
 
+// True if saving options means to kill the program
 bool saving_options_kills_program(unsigned long flags);
+
+// True if data cannot be saved
 bool saving_options_excludes_data(unsigned long flags);
 
+// Save options in current session state file, using FLAGS
 bool save_options(unsigned long flags);
 
 
