@@ -334,6 +334,10 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	    args->unlink();
 	}
 	break;
+
+    case UnknownType:
+	assert(0);
+	abort();
     }
 
     // Highlight if value changed
@@ -365,6 +369,10 @@ Box* DispBox::create_value_box (const DispValue* dv, int member_name_width)
 	case Text:
 	case Pointer:
 	    break;
+
+	case UnknownType:
+	    assert(0);
+	    abort();
 	}
     }
 

@@ -43,7 +43,8 @@
 
 // ***************************************************************************
 enum DispValueType {
-    Simple,			// Ordinary or other value
+    UnknownType = 0,		// Unknown type
+    Simple = 1,			// Ordinary or other value
     Pointer,			// Pointer value
     Array,			// Array
     StructOrClass,		// Struct, Class, Record, Object

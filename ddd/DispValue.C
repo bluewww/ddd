@@ -102,19 +102,20 @@ DispValue::DispValue (DispValue* p,
 		      int d,
 		      string& value,
 		      const string& f_n, 
-		      const string& p_n)
-    : myparent(p), mydepth (d), myexpanded(true), 
+		      const string& p_n,
+		      DispValueType given_type)
+    : mytype(UnknownType), myparent(p), mydepth (d), myexpanded(true), 
       myfull_name(f_n), print_name(p_n), changed(false)
 {
     v.simple = 0;
-    init(value);
+    init(value, given_type);
 
     // A new display is not changed, but initialized
     changed = false;
 }
 
 // Initialization
-void DispValue::init(string& value)
+void DispValue::init(string& value, DispValueType given_type)
 {
 #if LOG_CREATE_VALUES
     clog << "Building value from " << quote(value) << "\n";
@@ -126,17 +127,18 @@ void DispValue::init(string& value)
 
 	mytype          = Simple;
 	v.simple        = new SimpleDispValue;
-	v.simple->value = "- Aborted -";
+	v.simple->value = "(Aborted)";
 	return;
     }
 
-    if (print_name == "")
+    mytype = given_type;
+    if (mytype == UnknownType && print_name == "")
 	mytype = Text;
-    else if (is_user_command (print_name))
+    if (mytype == UnknownType && is_user_command (print_name))
 	mytype = List;
-    else if (is_BaseClass_name (print_name))
+    if (mytype == UnknownType && is_BaseClass_name (print_name))
 	mytype = BaseClass;
-    else
+    if (mytype == UnknownType)
 	mytype = determine_type(value);
 
     switch (mytype) {
@@ -209,13 +211,16 @@ void DispValue::init(string& value)
 	    }
 
 	    string member_name;
+	    DispValueType member_type = UnknownType;
 	    int i = 0;
 	    do {
 		member_name = "[" + itostring (i++) + "]";
-		v.array->members[v.array->member_count++] = 
-		    new DispValue (this, depth() + 1,
-				   value, 
-				   base + member_name, member_name);
+		DispValue *dv = 
+		    new DispValue(this, depth() + 1, value, 
+				  base + member_name, member_name, 
+				  member_type);
+		member_type = dv->type();
+		v.array->members[v.array->member_count++] = dv;
 		if (background(value.length()))
 		{
 		    init(value);
@@ -338,6 +343,10 @@ void DispValue::init(string& value)
 	    }
 	    break;
 	}
+
+    default:
+	assert(0);
+	abort();
     }
 
     background(value.length());
@@ -379,6 +388,9 @@ void DispValue::clear()
 	}
 	delete v.str_or_cl;
 	break;
+
+    case UnknownType:
+	break;
     }
 }
 
@@ -402,6 +414,10 @@ bool DispValue::dereferenced() const
     case BaseClass:
     case Reference:
 	return false;
+
+    default:
+	assert(0);
+	abort();
     }
 
     return false;
@@ -430,6 +446,10 @@ string DispValue::dereferenced_name() const
     case BaseClass:
     case Reference:
 	return "";
+
+    default:
+	assert(0);
+	abort();
     }
 
     return "";
@@ -454,6 +474,10 @@ string DispValue::value() const
     case BaseClass:
     case Reference:
 	return "";
+
+    default:
+	assert(0);
+	abort();
     }
 
     return "";
@@ -479,6 +503,10 @@ int DispValue::number_of_childs() const
     case Text:
     case Pointer:
 	return 0;
+
+    default:
+	assert(0);
+	abort();
     }
 
     return 0;
@@ -507,6 +535,10 @@ DispValue* DispValue::get_child (int i) const
     case Simple:
     case Text:
 	return 0;
+
+    default:
+	assert(0);
+	abort();
     }
 
     return 0;
@@ -529,6 +561,10 @@ bool DispValue::vertical_aligned()   const
     case Simple:
     case Text:
 	return false;
+
+    default:
+	assert(0);
+	abort();
     }
 
     return false;
@@ -549,6 +585,10 @@ bool DispValue::horizontal_aligned() const
     case Simple:
     case Text:
 	return false;
+
+    default:
+	assert(0);
+	abort();
     }
 
     return false;
@@ -687,10 +727,11 @@ bool DispValue::new_BaseClass_name (string name)
     return false;
 }
 
-// Update values from VALUE.  Set WAS_CHANGED iff value changed;
-// Set WAS_INITIALIZED iff type changed.
-void DispValue::update (string& value, 
-			bool& was_changed, bool& was_initialized)
+// Update values from VALUE.  Set WAS_CHANGED iff value changed; Set
+// WAS_INITIALIZED iff type changed.  If GIVEN_TYPE is given, use
+// GIVEN_TYPE as type instead of inferring it.
+void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
+		       DispValueType given_type)
 {
     if (changed)
     {
@@ -710,15 +751,14 @@ void DispValue::update (string& value,
 	 << " " << full_name() << " with " << quote(value) << "\n";
 #endif
 
-    DispValueType new_type;
-
-    if (print_name == "")
+    DispValueType new_type = given_type;
+    if (new_type == UnknownType && print_name == "")
 	new_type = Text;
-    else if (is_user_command (print_name))
+    if (new_type == UnknownType && is_user_command (print_name))
 	new_type = List;
-    else if (is_BaseClass_name (print_name))
+    if (new_type == UnknownType && is_BaseClass_name (print_name))
 	new_type = BaseClass;
-    else
+    if (new_type == UnknownType)
 	new_type = determine_type(value);
 
     if (mytype != new_type)
@@ -778,13 +818,18 @@ void DispValue::update (string& value,
 
 	if (!was_initialized)
 	{
-	    for (; more_values && i < v.array->member_count; i++) {
+	    DispValueType member_type = UnknownType;
+	    for (; more_values && i < v.array->member_count; i++)
+	    {
 		v.array->members[i]->update(value, 
-					    was_changed, was_initialized);
+					    was_changed, was_initialized,
+					    member_type);
 		if (was_initialized)
 		    break;
 		if (background(value.length()))
 		    break;
+
+		member_type = v.array->members[i]->type();
 		more_values = read_array_next (value);
 	    }
 	}
@@ -810,76 +855,77 @@ void DispValue::update (string& value,
     case List:
     case StructOrClass:
     case BaseClass:
+    {
+	if (mytype == List 
+	    && v.str_or_cl->member_count == 1
+	    && v.str_or_cl->members[0]->type() == Text
+	    && v.str_or_cl->members[0]->value() != value)
 	{
-	    if (mytype == List 
-		&& v.str_or_cl->member_count == 1
-		&& v.str_or_cl->members[0]->type() == Text
-		&& v.str_or_cl->members[0]->value() != value)
-	    {
-		// Re-initialize single text.
-		init(value);
-		was_initialized = was_changed = true;
-		return;
-	    }
-
-	    if (mytype == List)
-		munch_dump_line (value);
-
-	    read_str_or_cl_begin (value);
-	    for (i = 0; more_values && i < v.str_or_cl->member_count; i++)
-	    {
-		member_name = read_member_name (value);
-		
-		if (is_BaseClass_name (member_name))
-		{
-		    if (v.str_or_cl->members[i]->
-			new_BaseClass_name(member_name))
-			was_changed = true;
-		    v.str_or_cl->members[i]->update(value, was_changed,
-						    was_initialized);
-		    if (was_initialized)
-			break;
-		    if (!read_str_or_cl_next (value))
-			break;
-		    if (background(value.length()))
-			break;
-		    read_members_of_xy (value);
-		}
-		else
-		{
-		    if (member_name != v.str_or_cl->members[i]->name())
-			break;
-
-		    v.str_or_cl->members[i]->update(value, was_changed,
-						    was_initialized);
-		    if (was_initialized)
-			break;
-		    if (background(value.length()))
-			break;
-		    more_values = read_str_or_cl_next (value);
-		}
-	    }
-
-	    if (was_initialized 
-		|| i != v.str_or_cl->member_count 
-		|| more_values)
-	    {
-#if LOG_UPDATE_VALUES
-		clog << mytype << " changed\n";
-#endif
-		// Member count or member name changed -- re-initialize.
-		// Really weird stuff.  Can this ever happen?
-		value = init_value;
-		clear();
-		init(value);
-		was_initialized = was_changed = true;
-		return;
-	    }
-	    read_str_or_cl_end (value);
+	    // Re-initialize single text.
+	    init(value);
+	    was_initialized = was_changed = true;
+	    return;
 	}
-	break;
 
-    case Reference: {
+	if (mytype == List)
+	    munch_dump_line (value);
+
+	read_str_or_cl_begin (value);
+	for (i = 0; more_values && i < v.str_or_cl->member_count; i++)
+	{
+	    member_name = read_member_name (value);
+		
+	    if (is_BaseClass_name (member_name))
+	    {
+		if (v.str_or_cl->members[i]->
+		    new_BaseClass_name(member_name))
+		    was_changed = true;
+		v.str_or_cl->members[i]->update(value, was_changed,
+						was_initialized);
+		if (was_initialized)
+		    break;
+		if (!read_str_or_cl_next (value))
+		    break;
+		if (background(value.length()))
+		    break;
+		read_members_of_xy (value);
+	    }
+	    else
+	    {
+		if (member_name != v.str_or_cl->members[i]->name())
+		    break;
+
+		v.str_or_cl->members[i]->update(value, was_changed,
+						was_initialized);
+		if (was_initialized)
+		    break;
+		if (background(value.length()))
+		    break;
+		more_values = read_str_or_cl_next (value);
+	    }
+	}
+
+	if (was_initialized 
+	    || i != v.str_or_cl->member_count 
+	    || more_values)
+	{
+#if LOG_UPDATE_VALUES
+	    clog << mytype << " changed\n";
+#endif
+	    // Member count or member name changed -- re-initialize.
+	    // Really weird stuff.  Can this ever happen?
+	    value = init_value;
+	    clear();
+	    init(value);
+	    was_initialized = was_changed = true;
+	    return;
+	}
+	read_str_or_cl_end (value);
+    }
+    break;
+
+    case Reference:
+    {
 	string ref = value.before(':');
 	value = value.after(':');
 
@@ -897,6 +943,10 @@ void DispValue::update (string& value,
 	}
 	break;
     }
+
+    default:
+	assert(0);
+	abort();
     }
 
 #if LOG_UPDATE_VALUES

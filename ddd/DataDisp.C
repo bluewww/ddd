@@ -109,6 +109,7 @@ char DataDisp_rcsid[] =
 #include <ctype.h>
 
 extern void register_menu_shell(MMDesc *items);
+extern bool process_emergencies();
 
 //-----------------------------------------------------------------------
 // Xt-Zeugs
@@ -1551,6 +1552,10 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	case StructOrClass:
 	case BaseClass:
 	    break;
+
+	case UnknownType:
+	    assert(0);
+	    abort();
 	}
     }
 
@@ -2279,6 +2284,8 @@ void DataDisp::new_display(string display_expression, BoxPoint *p,
 
 
 
+#define UPDATING_DISPLAYS "Updating displays"
+
 struct StatusShower {
     StatusDelay *delay;		// The delay shown
     int current;		// Current data to be processed
@@ -2286,6 +2293,7 @@ struct StatusShower {
     int total;			// Total of data to be processed
     int last_shown;		// Last shown amount
     bool (*old_background)(int); // DispValue bg proc
+    bool aborted;		// True iff bg proc aborted
 
     // Show delay when updating from at least THRESHOLD characters.
     const int THRESHOLD = 512;
@@ -2299,18 +2307,21 @@ struct StatusShower {
     }
 
     StatusShower()
-	: delay(0), current(0), base(0), total(0), last_shown(0)
+	: delay(0), current(0), base(0), total(0), last_shown(0),
+	  aborted(false)
     {
 	old_background = DispValue::background;
 	DispValue::background = _process;
 	active = (StatusShower *)this;
-	delay = new StatusDelay("Updating displays");
+	delay = new StatusDelay(UPDATING_DISPLAYS);
     }
 
     ~StatusShower()
     {
 	DispValue::background = old_background;
 	active = 0;
+	if (aborted)
+	    delay->outcome = "aborted";
 	delete delay;
     }
 };
@@ -2329,12 +2340,15 @@ bool StatusShower::process(int remaining_length)
     {
 	// Another THRESHOLD characters processed.  Wow!
 	int percent = (processed * 100) / total;
-	set_status("Updating displays... ("
+	set_status(UPDATING_DISPLAYS "... ("
 		   + itostring(percent) + "% processed)", true);
 	last_shown = processed;
     }
 
-    return false;		// Keep on acting
+    // Interrupt if emergency
+    if (!aborted && process_emergencies())
+	aborted = true;
+    return aborted;
 }
 
 

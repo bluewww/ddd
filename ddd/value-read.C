@@ -761,6 +761,7 @@ ostream& operator<<(ostream& os, DispValueType type)
 {
     switch (type)
     {
+    case UnknownType:   os << "Unknown";       break;
     case Simple:        os << "Simple";        break;
     case Pointer:       os << "Pointer";       break;
     case Array:         os << "Array";         break;

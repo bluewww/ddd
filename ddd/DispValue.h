@@ -61,7 +61,9 @@ class DispValue {
 				                 // or mytype == Reference
     } v;
 
-    void init(string& value);
+    // Initialize from VALUE.  If TYPE is given, use TYPE as type
+    // instead of inferring it.
+    void init(string& value, DispValueType type = UnknownType);
     void clear();
 
 protected:
@@ -76,7 +78,8 @@ public:
 	       int        depth,
 	       string&    value,
 	       const string& full_name, 
-	       const string& print_name);
+	       const string& print_name,
+	       DispValueType type = UnknownType);
 
     ~DispValue();
 
@@ -90,11 +93,11 @@ public:
     bool          collapsed()  const { return !expanded(); }
 
     // Makes sense only for type() == Simple or Pointer
-    string  value()      const;
+    string value() const;
     
     // Makes sense only for type() == Pointer
-    bool dereferenced()      const;
-    string  dereferenced_name() const;
+    bool dereferenced() const;
+    string dereferenced_name() const;
 
     int number_of_childs() const;
     DispValue* get_child (int i) const;
@@ -129,12 +132,15 @@ public:
     void align_vertical();
     void align_horizontal();
 
-    // True if VALUE was really new (i.e. something changed)
-    void update (string& value, bool& changed, bool& inited);
+    // Update values from VALUE.  Set WAS_CHANGED iff value changed;
+    // Set WAS_INITIALIZED iff type changed.  If TYPE is given, use
+    // TYPE as type instead of inferring it.
+    void update (string& value, bool& changed, bool& inited,
+		 DispValueType type = UnknownType);
     bool new_BaseClass_name (string name);
 
-    // Background proc.  PROCESSED is the number of characters
-    // processed so far. If this returns true, abort operation.
+    // Background processing.  PROCESSED is the number of characters
+    // processed so far.  If this returns true, abort operation.
     static bool (*background)(int processed);
 };
 
