@@ -1078,11 +1078,13 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
     length = 0;
     while (i < int(listing.length()))
     {
-	// Skip leading spaces.  Some debuggers also issue `*' and `='
-	// to indicate the current position.
+	// Skip leading spaces.  Some debuggers also issue `*', `=',
+	// or `>' to indicate the current position.
 	while (i < int(listing.length())
 	       && (isspace(listing[i])
-		   || listing[i] == '=' || listing[i] == '*'))
+		   || listing[i] == '=' 
+		   || listing[i] == '*'
+		   || listing[i] == '>'))
 	    i++;
 
 	if (isdigit(listing[i]))
