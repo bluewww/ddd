@@ -314,9 +314,13 @@ Pixmap iconmask(Widget shell);
 Pixmap versionlogo(Widget shell);
 
 // Window manager
+void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask);
 void wm_set_icon(Display *display, Window shell, Pixmap icon, Pixmap mask);
-void wm_set_name(Display *display, Window shell, 
+
+void wm_set_name(Widget shell, string title = "", string icon = "");
+void wm_set_name(Display *display, Window shell,
 		 string title = "", string icon = "");
+
 void wm_set_group_leader(Display *display, Window shell, Window leader_shell);
 static void wait_until_mapped(Widget w);
 
@@ -1279,7 +1283,7 @@ Widget data_disp_shell;
 Widget source_view_shell;
 
 // Flags: shell state
-enum WindowState { PoppedUp, PoppedDown, Iconic };
+enum WindowState { PoppedUp, PoppedDown, Iconic, Transient };
 WindowState command_shell_state     = PoppedDown;
 WindowState data_disp_shell_state   = PoppedDown;
 WindowState source_view_shell_state = PoppedDown;
@@ -1972,14 +1976,12 @@ int main(int argc, char *argv[])
 
     // Go for it
     XtRealizeWidget(command_shell);
-    wm_set_icon(XtDisplay(command_shell), XtWindow(command_shell),
-		iconlogo(gdb_w), iconmask(gdb_w));
+    wm_set_icon(command_shell, iconlogo(gdb_w), iconmask(gdb_w));
 
     if (data_disp_shell)
     {
 	XtRealizeWidget(data_disp_shell);
-	wm_set_icon(XtDisplay(data_disp_shell),
-		    XtWindow(data_disp_shell),
+	wm_set_icon(data_disp_shell,
 		    iconlogo(data_main_window_w),
 		    iconmask(data_main_window_w));
 	wm_set_group_leader(XtDisplay(data_disp_shell),
@@ -1990,8 +1992,7 @@ int main(int argc, char *argv[])
     if (source_view_shell)
     {
 	XtRealizeWidget(source_view_shell);
-	wm_set_icon(XtDisplay(source_view_shell),
-		    XtWindow(source_view_shell),
+	wm_set_icon(source_view_shell,
 		    iconlogo(source_main_window_w),
 		    iconmask(source_main_window_w));
 	wm_set_group_leader(XtDisplay(source_view_shell),
@@ -2307,8 +2308,7 @@ Pixmap versionlogo(Widget w)
 // Window Manager Functions
 //-----------------------------------------------------------------------------
     
-void wm_set_icon(Display *display, Window shell_window, 
-		 Pixmap icon, Pixmap mask)
+void wm_set_icon(Display *display, Window shell, Pixmap icon, Pixmap mask)
 {
     XWMHints *wm_hints = XAllocWMHints();
 
@@ -2316,9 +2316,18 @@ void wm_set_icon(Display *display, Window shell_window,
     wm_hints->icon_pixmap = icon;
     wm_hints->icon_mask   = mask;
 
-    XSetWMHints(display, shell_window, wm_hints);
+    XSetWMHints(display, shell, wm_hints);
 
     XFree(wm_hints);
+}
+
+void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
+{
+    XtVaSetValues(shell,
+		  XmNiconPixmap, icon,
+		  XmNiconMask, mask,
+		  NULL);
+    wm_set_icon(XtDisplay(shell), XtWindow(shell), icon, mask);
 }
 
 void wm_set_group_leader(Display *display,
@@ -2349,7 +2358,20 @@ void wm_set_name(Display *display, Window shell_window,
     if (icon != "")
 	XSetIconName(display, shell_window, String(icon));
 }
-					   
+
+void wm_set_name(Widget shell, string title, string icon)
+{
+    strip_final_blanks(title);
+    strip_final_blanks(icon);
+
+    XtVaSetValues(shell,
+		  XmNiconName, (char *)icon,
+		  XmNtitle,    (char *)title,
+		  NULL);
+    
+    wm_set_name(XtDisplay(shell), XtWindow(shell), title, icon);
+}
+
 
 //-----------------------------------------------------------------------------
 // Show version
@@ -2358,7 +2380,7 @@ void wm_set_name(Display *display, Window shell_window,
 void show_version()
 {
     cout << DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
-	"Copyright 1995 TU Braunschweig, Germany.\n";
+	"Copyright (C) 1995 TU Braunschweig, Germany.\n";
 }
 
 //-----------------------------------------------------------------------------
@@ -3028,10 +3050,15 @@ void initial_popup_shell(Widget w)
 
     Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
-    if (iconic)
-	XtVaSetValues(w, XmNinitialState, IconicState, NULL);
-    else
-	XtVaSetValues(w, XmNinitialState, NormalState, NULL);
+    XtVaSetValues(w, XmNiconic, iconic, NULL);
+    WindowState state = iconic ? Iconic : PoppedUp;
+
+    if (w == command_shell)
+	command_shell_state        = state;
+    else if (w == data_disp_shell)
+	data_disp_shell_state      = state;
+    else if (w == source_view_shell)
+	source_view_shell_state    = state;
 
     XtPopup(w, XtGrabNone);
 }
@@ -3132,28 +3159,51 @@ void iconify_tty(Widget shell)
 void StructureNotifyEH(Widget w, XtPointer call_data, 
 		       XEvent *event, Boolean *continue_to_dispatch)
 {
+    bool synthetic = false;
+
+    if (w == command_shell)
+	synthetic = (command_shell_state == Transient);
+    else if (w == data_disp_shell)
+	synthetic = (data_disp_shell_state == Transient);
+    else if (w == source_view_shell)
+	synthetic = (source_view_shell_state == Transient);
+
+    // if (synthetic)
+    //    clog << "synthetic event: ";
+
     switch (event->type)
     {
     case MapNotify:
 	// clog << XtName(w) << " is mapped\n";
 
 	// Reflect state
-	if (w == command_shell)
-	    command_shell_state     = PoppedUp;
-	else if (w == data_disp_shell)
-	    data_disp_shell_state   = PoppedUp;
-	else if (w == source_view_shell)
+	if (w == command_shell && command_shell_state != PoppedUp)
+	    command_shell_state = PoppedUp;
+	else if (w == data_disp_shell && data_disp_shell_state != PoppedUp)
+	    data_disp_shell_state = PoppedUp;
+	else if (w == source_view_shell && source_view_shell_state != PoppedUp)
 	    source_view_shell_state = PoppedUp;
+	else
+	    return;
 
-	if (app_data.group_iconify)
+	if (!synthetic && app_data.group_iconify)
 	{
 	    // Map all other windows as well
 	    if (command_shell_state == Iconic)
+	    {
 		popup_shell(command_shell);
+		command_shell_state = Transient;
+	    }
 	    if (data_disp_shell_state == Iconic)
+	    {
 		popup_shell(data_disp_shell);
+		data_disp_shell_state = Transient;
+	    }
 	    if (source_view_shell_state == Iconic)
+	    {
 		popup_shell(source_view_shell);
+		source_view_shell_state = Transient;
+	    }
 	    popup_tty(command_shell);
 	}
 	break;
@@ -3162,25 +3212,33 @@ void StructureNotifyEH(Widget w, XtPointer call_data,
 	// clog << XtName(w) << " is unmapped\n";
 
 	// Reflect state
-	if (w == command_shell && command_shell_state == PoppedUp)
+	if (w == command_shell && command_shell_state != Iconic)
 	    command_shell_state = Iconic;
-	else if (w == data_disp_shell && data_disp_shell_state == PoppedUp)
+	else if (w == data_disp_shell && data_disp_shell_state != Iconic)
 	    data_disp_shell_state = Iconic;
-	else if (w == source_view_shell && source_view_shell_state == PoppedUp)
+	else if (w == source_view_shell && source_view_shell_state != Iconic)
 	    source_view_shell_state = Iconic;
+	else
+	    return;
 
-	if (app_data.group_iconify &&
-	    (command_shell_state == Iconic
-	     || data_disp_shell_state == Iconic
-	     || source_view_shell_state == Iconic))
+	if (!synthetic && app_data.group_iconify)
 	{
-	    // Iconify all windows
+	    // Iconify all other windows as well
 	    if (command_shell_state == PoppedUp)
+	    {
 		iconify_shell(command_shell);
+		command_shell_state = Transient;
+	    }
 	    if (data_disp_shell_state == PoppedUp)
+	    {
 		iconify_shell(data_disp_shell);
+		data_disp_shell_state = Transient;
+	    }
 	    if (source_view_shell_state == PoppedUp)
+	    {
 		iconify_shell(source_view_shell);
+		source_view_shell_state = Transient;
+	    }
 	    iconify_tty(command_shell);
 	}
 	break;
