@@ -1586,7 +1586,7 @@ Ddd*menubar*fileMenu.close.mnemonic:	 C
 ! Ddd*menubar*fileMenu.close.accelerator:      Meta<Key>W
 ! Ddd*menubar*fileMenu.close.acceleratorText:  Alt+W
 Ddd*menubar*fileMenu.close.documentationString:   \
-@rm Close the current window
+@rm Close this window
 
 Ddd*menubar*fileMenu.restart.labelString: Restart
 Ddd*menubar*fileMenu.restart.mnemonic:	 R
@@ -1616,9 +1616,8 @@ Ddd*menubar.edit*helpString:	\
 @tt \267 @bf Copy @rm - copy the selected text to the clipboard\n\
     without removing the original.\n\
 @tt \267 @bf Paste @rm - paste the clipboard contents into the text.\n\
-\n\
-@tt \267 @bf Clear @rm - delete the current input.\n\
 @tt \267 @bf Delete @rm - delete the selected text.\n\
+@tt \267 @bf Clear @rm - clear argument fields and @GDB@ command line.\n\
 \n\
 @tt \267 @bf Preferences... @rm invokes a panel for \
 setting @DDD@ options.\n\
@@ -1651,17 +1650,21 @@ Ddd*editMenu.paste.acceleratorText:			Shift+Ins
 Ddd*editMenu.paste.documentationString: \
 @rm Paste clipboard contents
 
-Ddd*editMenu.clear.labelString:				Clear
-Ddd*editMenu.clear.mnemonic:				e
-! Ddd*editMenu.clear.accelerator:			Ctrl<Key>U
-Ddd*editMenu.clear.acceleratorText:			Ctrl+U
-Ddd*editMenu.clear.documentationString: \
-@rm Clear current selection
-
 Ddd*editMenu.delete.labelString:			Delete
 Ddd*editMenu.delete.mnemonic:				D
 Ddd*editMenu.delete.documentationString: \
 @rm Delete current selection
+
+Ddd*editMenu.clearAll.labelString:			Clear
+Ddd*editMenu.clearAll.mnemonic:				l
+Ddd*editMenu.clearAll.documentationString: \
+@rm Clear the selection, all arguments, and the @GDB@ command line
+Ddd*editMenu.clearAll.acceleratorText:			Ctrl+U
+
+Ddd*editMenu.selectAll.labelString:			Select All
+Ddd*editMenu.selectAll.mnemonic:			A
+Ddd*editMenu.selectAll.documentationString: \
+@rm Select all items
 
 Ddd*editMenu.preferences.labelString:			Preferences...
 Ddd*editMenu.preferences.mnemonic:			r
@@ -1853,7 +1856,7 @@ Ddd*menubar.commands*helpString:	\
 @tt \267 @bf Complete @rm - complete the current command.\n\
 @tt \267 @bf Apply @rm - execute the current command.\n\
 \n\
-@tt \267 @bf Clear Line @rm - clear current command line.\n\
+@tt \267 @bf Clear Line @rm - clear @GDB@ command line.\n\
 @tt \267 @bf Clear Window @rm - clear all before last @GDB@ prompt.
 
 Ddd*commandsMenu.history.labelString:	        Command History...
@@ -1915,7 +1918,7 @@ Ddd*commandsMenu.clear_line.mnemonic:	        L
 ! *commandsMenu.clear_line.accelerator:	        Ctrl ~Shift ~Meta<Key>U
 Ddd*commandsMenu.clear_line.acceleratorText:    Ctrl+U
 Ddd*commandsMenu.clear_line.documentationString: \
-@rm Clear current command line
+@rm Clear @GDB@ command line
 
 Ddd*commandsMenu.clear_window.labelString:      Clear Window
 Ddd*commandsMenu.clear_window.mnemonic:	        W
@@ -3326,7 +3329,7 @@ To see the most important editing commands, see the @bf Commands @rm menu.
 
 Ddd*gdb_popup.clear_line.labelString:		Clear Line
 Ddd*gdb_popup.clear_line.documentationString:	\
-@rm Clear current command line
+@rm Clear @GDB@ command line
 
 Ddd*gdb_popup.clear_window.labelString:		Clear Window
 Ddd*gdb_popup.clear_window.documentationString:	\

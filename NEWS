@@ -21,6 +21,8 @@ DDD 2.2 [in development]
         Motif style guide.
       + Options are now grouped according to their functionality.  The
         `Options' menu has gone.  Use `Edit' instead.
+      + The `Edit' menu has been completely rewritten, allowing for
+        better clipboard operations.
       DDD now requires less width and height.  If you already have a
       `~/.dddinit' file, resize DDD manually and save options.
     - Support for debugging processes running outside of DDD.  You can

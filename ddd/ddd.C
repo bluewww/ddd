@@ -267,8 +267,10 @@ void process_pending_events();
 static void gdbCutSelectionCB    (Widget, XtPointer, XtPointer);
 static void gdbCopySelectionCB   (Widget, XtPointer, XtPointer);
 static void gdbPasteClipboardCB  (Widget, XtPointer, XtPointer);
-static void gdbClearSelectionCB  (Widget, XtPointer, XtPointer);
 static void gdbDeleteSelectionCB (Widget, XtPointer, XtPointer);
+static void gdbClearAllCB        (Widget, XtPointer, XtPointer);
+static void gdbSelectAllCB       (Widget, XtPointer, XtPointer);
+static void gdbUnselectAllCB     (Widget, XtPointer, XtPointer);
 
 // Update menus
 static void gdbUpdateEditCB      (Widget, XtPointer, XtPointer);
@@ -591,7 +593,7 @@ static MMDesc data_program_menu[]
     = PROGRAM_MENU(data_separate_exec_window_w);
 
 enum DDDWindow { ToolWindow, ExecWindow, DummySep,
-		 DataWindow, SourceWindow, GDBWindow };
+		 DataWindow, SourceWindow, GDBWindow, CommonWindow };
 
 #define VIEW_MENU \
 {                                                         \
@@ -610,65 +612,36 @@ static MMDesc data_view_menu[]    = VIEW_MENU;
 
 struct EditItems {
     enum EditItem { 
-	Cut, Copy, Paste, Dummy1, 
-	Clear, Delete, Dummy2,
-	Preferences, Settings, Dummy3, 
+	Cut, Copy, Paste, Delete, ClearAll, Dummy1, 
+	SelectAll, UnselectAll, Dummy2,
+	Preferences, Settings, Dummy3,
 	SaveOptions 
     };
 };
 
-static MMDesc command_edit_menu[] = 
-{
-    { "cut",    MMPush, { gdbCutSelectionCB,    XtPointer(GDBWindow) }},
-    { "copy",   MMPush, { gdbCopySelectionCB,   XtPointer(GDBWindow) }},
-    { "paste",  MMPush, { gdbPasteClipboardCB,  XtPointer(GDBWindow) }},
-    MMSep,
-    { "clear",  MMPush, { gdbClearSelectionCB,  XtPointer(GDBWindow) }},
-    { "delete", MMPush, { gdbDeleteSelectionCB, XtPointer(GDBWindow) }},
-    MMSep,
-    { "preferences", MMPush,  { dddPopupPreferencesCB }},
-    { "settings",    MMPush,  { dddPopupSettingsCB }},
-    MMSep,
-    { "saveOptions", MMPush,   { DDDSaveOptionsCB }},
-    MMEnd
+#define EDIT_MENU(win) \
+{ \
+    { "cut",         MMPush,  { gdbCutSelectionCB,    XtPointer(win) }}, \
+    { "copy",        MMPush,  { gdbCopySelectionCB,   XtPointer(win) }}, \
+    { "paste",       MMPush,  { gdbPasteClipboardCB,  XtPointer(win) }}, \
+    { "delete",      MMPush,  { gdbDeleteSelectionCB, XtPointer(win) }}, \
+    { "clearAll",    MMPush,  { gdbClearAllCB,        XtPointer(win) }}, \
+    { "separator",   MMSeparator | MMUnmanaged }, \
+    { "selectAll",   MMPush | MMUnmanaged, \
+	                      { gdbSelectAllCB,       XtPointer(win) }}, \
+    { "unselectAll", MMPush | MMUnmanaged, \
+	                      { gdbUnselectAllCB,       XtPointer(win) }}, \
+    MMSep, \
+    { "preferences", MMPush,  { dddPopupPreferencesCB }}, \
+    { "settings",    MMPush,  { dddPopupSettingsCB }}, \
+    MMSep, \
+    { "saveOptions", MMPush,  { DDDSaveOptionsCB }}, \
+    MMEnd \
 };
 
-static MMDesc source_edit_menu[] = 
-{
-    { "cut",    MMPush, { gdbCutSelectionCB,    XtPointer(SourceWindow) }},
-    { "copy",   MMPush, { gdbCopySelectionCB,   XtPointer(SourceWindow) }},
-    { "paste",  MMPush, { gdbPasteClipboardCB,  XtPointer(SourceWindow) }},
-    MMSep,
-    { "clear",  MMPush, { gdbClearSelectionCB,  XtPointer(SourceWindow) }},
-    { "delete", MMPush, { gdbDeleteSelectionCB, XtPointer(SourceWindow) }},
-    MMSep,
-    { "preferences", MMPush,  { dddPopupPreferencesCB }},
-    { "settings",    MMPush,  { dddPopupSettingsCB }},
-    MMSep,
-    { "saveOptions", MMPush,   { DDDSaveOptionsCB }},
-    MMEnd
-};
-
-static MMDesc data_edit_menu[] = 
-{
-    { "cut",    MMPush | MMInsensitive, 
-          { gdbCutSelectionCB,    XtPointer(DataWindow) }},
-    { "copy",   MMPush, 
-          { gdbCopySelectionCB,   XtPointer(DataWindow) }},
-    { "paste",  MMPush | MMInsensitive,
-          { gdbPasteClipboardCB,  XtPointer(DataWindow) }},
-    MMSep,
-    { "clear",  MMPush | MMInsensitive, 
-	  { gdbClearSelectionCB,  XtPointer(DataWindow) }},
-    { "delete", MMPush | MMInsensitive, 
-	  { gdbDeleteSelectionCB, XtPointer(DataWindow) }},
-    MMSep,
-    { "preferences", MMPush,  { dddPopupPreferencesCB }},
-    { "settings",    MMPush,  { dddPopupSettingsCB }},
-    MMSep,
-    { "saveOptions", MMPush,   { DDDSaveOptionsCB }},
-    MMEnd
-};
+static MMDesc command_edit_menu[] = EDIT_MENU(GDBWindow);
+static MMDesc source_edit_menu[]  = EDIT_MENU(SourceWindow);
+static MMDesc data_edit_menu[]    = EDIT_MENU(DataWindow);
 
 static MMDesc command_menu[] =
 {
@@ -992,7 +965,8 @@ static MMDesc command_menubar[] =
 {
     { "file",     MMMenu,          { gdbUpdateFileCB, command_file_menu }, 
                                    command_file_menu },
-    { "edit",     MMMenu,          { gdbUpdateEditCB }, command_edit_menu },
+    { "edit",     MMMenu,          { gdbUpdateEditCB, XtPointer(GDBWindow) }, 
+                                   command_edit_menu },
     { "view",     MMMenu,          { gdbUpdateViewCB, command_view_menu }, 
                                    command_view_menu },
     { "program",  MMMenu,          MMNoCB, command_program_menu },
@@ -1004,15 +978,16 @@ static MMDesc command_menubar[] =
 // Menu Bar for DDD source view
 static MMDesc source_menubar[] = 
 {
-    { "file",    MMMenu,           { gdbUpdateFileCB, source_file_menu }, 
-                                   source_file_menu },
-    { "edit",    MMMenu,           { gdbUpdateEditCB }, source_edit_menu },
-    { "view",    MMMenu,           { gdbUpdateViewCB, source_view_menu }, 
-                                   source_view_menu },
-    { "program", MMMenu,           MMNoCB, source_program_menu },
-    { "stack",   MMMenu,           MMNoCB, stack_menu },
-    { "source",  MMMenu,           MMNoCB, source_menu },
-    { "help",    MMMenu | MMHelp,  MMNoCB, help_menu },
+    { "file",    MMMenu,          { gdbUpdateFileCB, source_file_menu }, 
+                                  source_file_menu },
+    { "edit",    MMMenu,          { gdbUpdateEditCB, XtPointer(SourceWindow) },
+                                  source_edit_menu },
+    { "view",    MMMenu,          { gdbUpdateViewCB, source_view_menu }, 
+                                  source_view_menu },
+    { "program", MMMenu,          MMNoCB, source_program_menu },
+    { "stack",   MMMenu,          MMNoCB, stack_menu },
+    { "source",  MMMenu,          MMNoCB, source_menu },
+    { "help",    MMMenu | MMHelp, MMNoCB, help_menu },
     MMEnd
 };
 
@@ -1021,8 +996,9 @@ static MMDesc data_menubar[] =
 {
     { "file",    MMMenu,          { gdbUpdateFileCB, data_file_menu }, 
                                   data_file_menu },
-    { "edit",    MMMenu,          { gdbUpdateEditCB }, data_edit_menu },
-    { "view",     MMMenu,         { gdbUpdateViewCB, data_view_menu }, 
+    { "edit",    MMMenu,          { gdbUpdateEditCB, XtPointer(DataWindow) },
+                                  data_edit_menu },
+    { "view",    MMMenu,          { gdbUpdateViewCB, data_view_menu }, 
                                   data_view_menu },
     { "program", MMMenu,          MMNoCB, data_program_menu },
     { "data",    MMMenu,          MMNoCB, data_menu },
@@ -1030,12 +1006,13 @@ static MMDesc data_menubar[] =
     MMEnd
 };
 
-// Menu Bar for combined DDD data/command window
-static MMDesc combined_menubar[] = 
+// Menu Bar for common DDD data/command window
+static MMDesc common_menubar[] = 
 {
     { "file",       MMMenu,       { gdbUpdateFileCB, command_file_menu }, 
                                   command_file_menu },
-    { "edit",       MMMenu,       { gdbUpdateEditCB }, command_edit_menu },
+    { "edit",       MMMenu,       { gdbUpdateEditCB, XtPointer(CommonWindow) },
+                                  command_edit_menu },
     { "view",       MMMenu,       { gdbUpdateViewCB, command_view_menu }, 
                                   command_view_menu },
     { "program",    MMMenu,       MMNoCB, command_program_menu },
@@ -1546,7 +1523,7 @@ int main(int argc, char *argv[])
     registerOwnConverters();
 
     // Create menu bar
-    MMDesc *menubar = combined_menubar;
+    MMDesc *menubar = common_menubar;
     if (app_data.separate_data_window && app_data.separate_source_window)
 	menubar = command_menubar;
 
@@ -3838,29 +3815,44 @@ void gdb_out(const string& text)
 // Cut/Copy/Paste
 //-----------------------------------------------------------------------------
 
-static void gdbCutSelectionCB(Widget, XtPointer client_data, 
+static DDDWindow ddd_window(XtPointer client_data)
+{
+    if (source_view_shell == 0 && data_disp_shell == 0)
+	return CommonWindow;
+    else
+	return DDDWindow(client_data);
+}
+
+static void gdbCutSelectionCB(Widget w, XtPointer client_data, 
 			      XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     Time tm = time(cbs->event);
 
-    DDDWindow win = DDDWindow(client_data);
-    switch (win)
+    DDDWindow win = ddd_window(client_data);
+    Boolean success = False;
+
+    // Try debugger console
+    if (!success && (win == GDBWindow || win == CommonWindow))
+	success = XmTextCut(gdb_w, tm);
+
+    // Try source arg
+    if (!success && (win == SourceWindow || win == CommonWindow))
+	success = XmTextFieldCut(source_arg->widget(), tm);
+
+    // Try data arg
+    if (!success && (win == DataWindow || win == CommonWindow))
     {
-    case GDBWindow:
-	XmTextCut(gdb_w, tm);
-	break;
-
-    case SourceWindow:
-	XmTextFieldCut(source_arg->widget(), tm);
-	break;
-
-    default:
-	// Cannot cut from command tool
-	// Cannot cut from data window
-	// Cannot cut from exec window
-	break;
+	if (data_disp->have_selection())
+	{
+	    success = XmTextFieldCopy(DataDisp::graph_arg->widget(), tm);
+	    if (success)
+		DataDisp::deleteCB(w, client_data, call_data);
+	}
     }
+
+    if (success)
+	gdbUnselectAllCB(w, client_data, call_data);
 }
 
 static void gdbCopySelectionCB(Widget, XtPointer client_data, 
@@ -3869,31 +3861,34 @@ static void gdbCopySelectionCB(Widget, XtPointer client_data,
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
     Time tm = time(cbs->event);
     
-    DDDWindow win = DDDWindow(client_data);
-    switch (win)
-    {
-    case GDBWindow:
-	XmTextCopy(gdb_w, tm);
-	break;
+    DDDWindow win = ddd_window(client_data);
+    Boolean success = False;
 
-    case SourceWindow:
-	XmTextFieldCopy(source_arg->widget(), tm);
-	break;
+    // Try debugger console
+    if (!success && (win == GDBWindow || win == CommonWindow))
+	success = XmTextCopy(gdb_w, tm);
 
-    case DataWindow:
-	XmTextFieldCopy(DataDisp::graph_arg->widget(), tm);
-	break;
+    // Try source arg
+    if (!success && (win == SourceWindow || win == CommonWindow))
+	success = XmTextFieldCopy(source_arg->widget(), tm);
 
-    default:
-	// Cannot copy from command tool
-	// Cannot copy from exec window
-	break;
-    }
+    // Try source
+    if (!success && (win == SourceWindow || win == CommonWindow))
+	success = XmTextCopy(source_view->source(), tm);
+
+    // Try code
+    if (!success && (win == SourceWindow || win == CommonWindow))
+	success = XmTextCopy(source_view->code(), tm);
+
+    // Try data arg
+    if (!success && (win == DataWindow || win == CommonWindow))
+	success = XmTextFieldCopy(DataDisp::graph_arg->widget(), tm);
 }
 
 static void gdbPasteClipboardCB(Widget, XtPointer client_data, XtPointer)
 {
-    DDDWindow win = DDDWindow(client_data);
+    DDDWindow win = ddd_window(client_data);
+
     switch (win)
     {
     case ToolWindow:
@@ -3901,6 +3896,7 @@ static void gdbPasteClipboardCB(Widget, XtPointer client_data, XtPointer)
 	break;
 
     case GDBWindow:
+    case CommonWindow:
 	XmTextPaste(gdb_w);
 	break;
 
@@ -3915,103 +3911,167 @@ static void gdbPasteClipboardCB(Widget, XtPointer client_data, XtPointer)
     }
 }
 
-static void gdbClearSelectionCB(Widget, XtPointer client_data, XtPointer)
+static void gdbUnselectAllCB(Widget w, XtPointer client_data,
+			     XtPointer call_data)
 {
-    DDDWindow win = DDDWindow(client_data);
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    Time tm = time(cbs->event);
+
+    XmTextClearSelection(gdb_w, tm);
+    XmTextFieldClearSelection(source_arg->widget(), tm);
+    XmTextClearSelection(source_view->source(), tm);
+    XmTextClearSelection(source_view->code(), tm);
+    XmTextFieldClearSelection(DataDisp::graph_arg->widget(), tm);
+    DataDisp::unselectAllCB(w, client_data, call_data);
+}
+
+static void gdbClearAllCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    gdbUnselectAllCB(w, client_data, call_data);
+    source_arg->set_string("");
+    gdbClearCB(w, client_data, call_data);
+}
+
+static void gdbSelectAllCB(Widget w, XtPointer client_data, 
+			   XtPointer call_data)
+{
+    DDDWindow win = ddd_window(client_data);
+
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    Time tm = time(cbs->event);
+
     switch (win)
     {
-    case GDBWindow:
-	XmTextReplace(gdb_w, promptPosition, 
-		      XmTextGetLastPosition(gdb_w), "");
-	break;
-
     case SourceWindow:
-	source_arg->set_string("");
+    case CommonWindow:
+    {
+	Widget w = source_arg->widget();
+	XmTextFieldSetSelection(w, 0, XmTextFieldGetLastPosition(w), tm);
 	break;
+    }
 
     case DataWindow:
-	DataDisp::graph_arg->set_string("");
+	DataDisp::selectAllCB(w, client_data, call_data);
+	break;
+
+    case GDBWindow:
+	XmTextSetSelection(gdb_w, promptPosition, 
+			   XmTextGetLastPosition(gdb_w), tm);
 	break;
 
     default:
-	// Cannot clear command tool
-	// Cannot clear exec window
 	break;
     }
 }
+
 
 static void gdbDeleteSelectionCB(Widget w, XtPointer client_data, 
 				 XtPointer call_data)
 {
-    DDDWindow win = DDDWindow(client_data);
-    switch (win)
+    DDDWindow win = ddd_window(client_data);
+    Boolean success = False;
+    
+    // Try debugger console
+    if (!success && (win == GDBWindow || win == CommonWindow))
+	success = XmTextRemove(gdb_w);
+
+    // Try source arg
+    if (!success && (win == SourceWindow || win == CommonWindow))
+	success = XmTextFieldRemove(source_arg->widget());
+
+    // Try data display
+    if (!success && (win == DataWindow || win == CommonWindow))
     {
-    case GDBWindow:
-	XmTextRemove(gdb_w);
-	break;
-
-    case SourceWindow:
-	XmTextFieldRemove(source_arg->widget());
-	break;
-
-    case DataWindow:
-	DataDisp::deleteCB(w, client_data, call_data);
-	break;
-
-    default:
-	// Cannot delete from command tool
-	// Cannot delete from exec window
-	break;
+	if (data_disp->have_selection())
+	{
+	    DataDisp::deleteCB(w, client_data, call_data);
+	    success = true;
+	}
     }
+
+    if (success)
+	gdbUnselectAllCB(w, client_data, call_data);
 }
 
 
-//-----------------------------------------------------------------------------
-// Update menus
-//-----------------------------------------------------------------------------
-
-static void gdbUpdateEditCB(Widget, XtPointer, XtPointer)
+static void gdbUpdateEditCB(Widget, XtPointer client_data, XtPointer)
 {
-    // Check whether we can copy something to the clipboard
+    DDDWindow win = ddd_window(client_data);
     XmTextPosition start, end;
 
-    Boolean b = XmTextGetSelectionPosition(gdb_w, &start, &end);
-    set_sensitive(command_edit_menu[EditItems::Cut].widget,    b);
-    set_sensitive(command_edit_menu[EditItems::Copy].widget,   b);
-    set_sensitive(command_edit_menu[EditItems::Delete].widget, b);
+    // Check if we have something to cut
+    bool can_cut  = false;
 
-    b = XmTextFieldGetSelectionPosition(source_arg->widget(), &start, &end);
-    set_sensitive(source_edit_menu[EditItems::Cut].widget,    b);
-    set_sensitive(source_edit_menu[EditItems::Copy].widget,   b);
-    set_sensitive(source_edit_menu[EditItems::Delete].widget, b);
+    // Try debugger console
+    if (!can_cut && (win == GDBWindow || win == CommonWindow))
+	can_cut = XmTextGetSelectionPosition(gdb_w, &start, &end);
 
-    b = XmTextFieldGetSelectionPosition(DataDisp::graph_arg->widget(), 
-					&start, &end);
-    set_sensitive(data_edit_menu[EditItems::Cut].widget,    false);
-    set_sensitive(data_edit_menu[EditItems::Copy].widget,   b);
-    set_sensitive(data_edit_menu[EditItems::Delete].widget, b);
+    // Try source arg
+    if (!can_cut && (win == SourceWindow || win == CommonWindow))
+	can_cut = XmTextFieldGetSelectionPosition(source_arg->widget(), 
+						  &start, &end);
+
+    // Try data display
+    if (!can_cut && (win == DataWindow || win == CommonWindow))
+	can_cut = data_disp->have_selection();
 
 
-#if 0				// This doesn't work -- AZ
-    // Check whether we can get something from the clipboard
-    Display *display = XtDisplay(command_shell);
-    int count;
-#if XmVersion >= 1002
-    unsigned long max_length;
-#else
-    int max_length;
-#endif
-    int c = XmClipboardInquireCount(display, 
-				    DefaultRootWindow(display),
-				    &count, &max_length);
-    b = (c == ClipboardSuccess);
-#else
-    b = true;
-#endif
+    // Check if we have something to copy
+    bool can_copy = can_cut;
 
-    set_sensitive(command_edit_menu[EditItems::Paste].widget, b);
-    set_sensitive(source_edit_menu[EditItems::Paste].widget,  b);
-    set_sensitive(data_edit_menu[EditItems::Paste].widget,    false);
+    // Try source
+    if (!can_copy && (win == SourceWindow || win == CommonWindow))
+	can_copy = XmTextGetSelectionPosition(source_view->source(),
+					      &start, &end);
+
+    // Try code
+    if (!can_copy && (win == SourceWindow || win == CommonWindow))
+	can_copy = XmTextGetSelectionPosition(source_view->code(),
+					      &start, &end);
+
+    // Check if we have something to paste
+    bool can_paste = false;
+    switch (win)
+    {
+    case GDBWindow:
+    case CommonWindow:
+    case SourceWindow:
+	can_paste = true;
+	break;
+
+    default:
+	break;
+    }
+
+    // Fetch menu
+    MMDesc *menu = 0;
+    switch (win)
+    {
+    case GDBWindow:
+    case CommonWindow:
+	menu = command_edit_menu;
+	break;
+
+    case SourceWindow:
+	menu = source_edit_menu;
+	break;
+
+    case DataWindow:
+	menu = data_edit_menu;
+	break;
+
+    default:
+	break;
+    }
+
+    if (menu != 0)
+    {
+	set_sensitive(menu[EditItems::Cut].widget,    can_cut);
+	set_sensitive(menu[EditItems::Copy].widget,   can_copy);
+	set_sensitive(menu[EditItems::Paste].widget,  can_paste);
+	set_sensitive(menu[EditItems::Delete].widget, can_cut);
+	set_sensitive(menu[EditItems::UnselectAll].widget, can_copy);
+    }
 }
 
 static void gdbUpdateFileCB(Widget, XtPointer client_data, XtPointer)
