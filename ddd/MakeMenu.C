@@ -29,6 +29,17 @@
 char MakeMenu_rcsid[] = 
     "$Id$";
 
+// #define USE_XM_SPINBOX 0
+
+// Whether to use XmSpinBox
+#ifndef USE_XM_SPINBOX
+#if XmVersion >= 2000
+#define USE_XM_SPINBOX 1
+#else
+#define USE_XM_SPINBOX 0
+#endif
+#endif
+
 #include "MakeMenu.h"
 
 #include "assert.h"
@@ -36,6 +47,7 @@ char MakeMenu_rcsid[] =
 #include "MString.h"
 #include "TimeOut.h"
 #include "misc.h"
+#include "string-fun.h"
 
 #include <stdlib.h>
 #include <Xm/Xm.h>
@@ -51,17 +63,14 @@ char MakeMenu_rcsid[] =
 #include <Xm/Label.h>
 #include <Xm/MenuShell.h>
 #include <X11/Xutil.h>
-
-#if XmVersion >= 2000
+#if USE_XM_SPINBOX
 #include <Xm/SpinB.h>
 #endif
-
 #include "LessTifH.h"
 #include "bool.h"
 #include "verify.h"
 #include "findParent.h"
 #include "frame.h"
-
 
 
 // Pushmenu callbacks
@@ -289,6 +298,107 @@ static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data,
     flatten_button(w);
 }
 
+
+#if !USE_XM_SPINBOX
+//-----------------------------------------------------------------------
+// SpinBox compatibility routines
+//-----------------------------------------------------------------------
+
+static void add_to_value(Widget text, int offset)
+{
+    String value = 0;
+    XtVaGetValues(text, XmNvalue, &value, NULL);
+    int v = atoi(value) + offset;
+
+    if (v >= 0)
+    {
+	string s = itostring(v);
+	XtVaSetValues(text, XmNvalue, (String)s, NULL);
+    }
+    XtFree(value);
+}
+
+static Widget spin_text;
+static XtIntervalId spin_timer;
+static int spin_offset;
+
+static void RepeatSpinCB(XtPointer, XtIntervalId *id)
+{
+    assert(*id == spin_timer);
+    (void) id;
+
+    add_to_value(spin_text, spin_offset);
+
+    spin_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(spin_text),
+				 200, RepeatSpinCB, 0);
+}
+
+static void StartSpinCB(Widget w, XtPointer client_data, XtPointer)
+{
+    spin_text = Widget(client_data);
+
+    unsigned char direction = (unsigned char)-1;
+    XtVaGetValues(w, XmNarrowDirection, &direction, NULL);
+
+    switch (direction)
+    {
+    case XmARROW_LEFT:
+    case XmARROW_UP:
+	spin_offset = -1;
+	break;
+
+    case XmARROW_RIGHT:
+    case XmARROW_DOWN:
+	spin_offset = +1;
+	break;
+
+    default:
+	spin_offset = 0;
+	break;
+    }
+
+    add_to_value(spin_text, spin_offset);
+
+    if (spin_timer != 0)
+    {
+	XtRemoveTimeOut(spin_timer);
+	spin_timer = 0;
+    }
+
+    spin_timer = XtAppAddTimeOut(XtWidgetToApplicationContext(spin_text),
+				 250, RepeatSpinCB, 0);
+}
+
+static void StopSpinCB(Widget, XtPointer, XtPointer)
+{
+    if (spin_timer != 0)
+    {
+	XtRemoveTimeOut(spin_timer);
+	spin_timer = 0;
+    }
+}
+
+static Widget create_spin_arrow(Widget parent, unsigned char direction,
+				Widget text)
+{
+    Pixel foreground;
+    XtVaGetValues(parent, XmNbackground, &foreground, 0);
+
+    Arg args[10];
+    Cardinal arg = 0;
+    XtSetArg(args[arg], XmNarrowDirection,  direction);  arg++;
+    XtSetArg(args[arg], XmNshadowThickness, 0);          arg++;
+    XtSetArg(args[arg], XmNforeground,      foreground); arg++;
+    Widget arrow = XmCreateArrowButton(parent, "arrow", args, arg);
+    XtManageChild(arrow);
+
+    XtAddCallback(arrow, XmNarmCallback, StartSpinCB, XtPointer(text));
+    XtAddCallback(arrow, XmNdisarmCallback, StopSpinCB, XtPointer(text));
+
+    return arrow;
+}
+
+#endif
 
 //-----------------------------------------------------------------------
 // Add items
@@ -567,18 +677,27 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 		XtManageChild(label);
 
 	    Widget spin = panel;
+#if USE_XM_SPINBOX
 	    if ((type & MMTypeMask) == MMSpinField)
 	    {
-#if XmVersion >= 2000
 		arg = 0;
 		spin = XmCreateSpinBox(panel, spinName, args, arg);
 		XtManageChild(spin);
-#endif
 	    }
+#endif
 
 	    arg = 0;
 	    widget = verify(XmCreateTextField(spin, textName, args, arg));
 	    XtManageChild(widget);
+
+#if !USE_XM_SPINBOX
+	    if ((type & MMTypeMask) == MMSpinField)
+	    {
+		create_spin_arrow(panel, XmARROW_LEFT,  widget);
+		create_spin_arrow(panel, XmARROW_RIGHT, widget);
+	    }
+#endif
+
 	    break;
 	}
 
