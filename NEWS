@@ -28,6 +28,7 @@ DDD-3.3.9
 - libiberty (which provides missing standard functions) is not linked by
   default anymore. configure has a new option '--with-libiberty' that
   enables the libiberty support if required.
+  If nobody complains, libiberty will be unbundled in a next version.
 - The libiberty distributed with ddd has been upgraded to the one included
   in GCC 3.4 20040116. It fixes some configuration problems.
 - Builds with GCC 3.4, with IBM xlC, with Compaq/HP cxx on Tru64 and on

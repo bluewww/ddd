@@ -1146,6 +1146,11 @@ AC_MSG_WARN([This $DDD release requires LessTif 0.87 or later.
 Upgrade to a recent LessTif version or continue at own risk.])
 fi
 dnl
+if test $libiberty_support != no; then
+AC_MSG_WARN([You requested libiberty support, which will be phased-out.
+If you really need it, could you send a message to $PACKAGE_BUGREPORT?])
+fi
+dnl
 dnl Give an indication of what to do next.
 dnl
 AC_MSG_NOTICE([
