@@ -244,8 +244,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	handle_graph_cmd (cmd, origin);
 	cmd += '\n';
 	gdb_out(cmd);
-	_gdb_out(gdb->default_prompt());
-	_tty_out(gdb->default_prompt());
+	prompt();
 	return;
     }
 
@@ -498,13 +497,15 @@ void user_cmdOAC (void* data)
 {
     CmdData* cmd_data = (CmdData *) data;
 
-    gdb_out(cmd_data->pos_buffer->answer_ended());
+    string answer = cmd_data->pos_buffer->answer_ended();
 
     // Set execution/frame position
     if (cmd_data->pos_buffer->pos_found())
     {
 	string pos  = cmd_data->pos_buffer->get_position();
 	string func = cmd_data->pos_buffer->get_function();
+
+	tty_full_name(pos);
 
 	if (!pos.contains(':') && func != "")
 	{
@@ -547,10 +548,12 @@ void user_cmdOAC (void* data)
 	    source_view->show_execution_position(); // alte Anzeige loeschen
     }
 
+    gdb_out(answer);
+
     // Process displays
     if (cmd_data->filter_disp == NoFilter)
     {
-	gdb_out(gdb->default_prompt());
+	prompt();
     }
     else 
     {
@@ -576,7 +579,7 @@ void user_cmdOAC (void* data)
  	    }
 	}
 
-	gdb_out(gdb->default_prompt());
+	prompt();
     }
 
     cmd_data->pos_buffer->clear();
