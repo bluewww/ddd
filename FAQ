@@ -3,10 +3,16 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
 1.  How can I speed up DDD?
 
-    The fastest DDD configuration is obtained as follows.  Enable
-    source code and machine code caching.  Disable glyphs and machine
-    code.  Do not use remote debugging.  Use DDD 1.4b or later,
-    compiled with the `-O2' option.
+    The fastest DDD configuration is obtained as follows:
+
+    * Enable source code and machine code caching.
+    * Disable glyphs.
+    * Disable machine code.
+    * Disable alias detection.
+    * Disable all status displays.
+    * Delete all displays you do not need.
+    * Do not use remote debugging.
+    * Use DDD 1.4b or later, compiled with the `-O3' option.
 
 
 2.  How can I display a multi-length array?
@@ -125,11 +131,10 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
 11. Will DDD work with LessTif?
 
-    Right now, DDD *compiles* with LessTif 0.33 and later; no special
-    fixes are required.  As of LessTif 0.50, DDD also *runs* somewhat.
-    However, the resulting DDD executable is far from being usable,
-    due to lacking LessTif features.  This will probably get much
-    better while LessTif evolves; see question #10, above.
+    As of LessTif 0.75a, the resulting DDD executable is already quite
+    usable; there are several DDD users who use a DDD built with
+    LessTif.  See the file `PROBLEMS' for a recent list of problems
+    and fixes.
 
 
 12. DDD reports `imake', `Imakefile', and/or `xmkmf' problems when

@@ -329,4 +329,13 @@ Volunteers for fixing these and other bugs are welcome!
 
 152. Curved edges cannot (yet) be printed.
 
-153. (Insert your bug here)
+153. Jonathan Edwards <edwards@intranet.com> says that in AIX DBX,
+     the local variable display does not display function arguments.
+
+154. Jonathan Edwards <edwards@intranet.com> says: The backtrace
+     window, in trying to eliminate the argument information, doesn't
+     seem to understand nested parentheses. So ent_open(control =
+     (nil), proc_name = (nil)), line 164 in "proc.c" is displayed as
+     ent_open(, proc_name = ()), line 164 in "proc.c"
+
+155. (Insert your bug here)
