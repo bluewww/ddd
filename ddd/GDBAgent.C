@@ -1467,32 +1467,6 @@ int GDBAgent::write_cmd(const string& cmd)
 	    _path = p;
     }
 
-    static bool dbx90 = gdb->path().contains("dbx90");
-
-    if (gdb->type() == GDB && dbx90)
-    {
-	// A simple DBX90 hack:
-	//
-	// DBX90 is basically a GDB with a few extras.  As a simple
-	// means of making it work with DDD, we 
-	// - add a `raw' prefix before every single command:
-	//   `print x' becomes `raw print x'.
-	// - require a `dbx' prefix before non-raw commands:
-	//   `dbx print x' becomes `print x'.
-	// To use this hack, invoke DDD as `ddd --debugger dbx90 --gdb'.
-
-	const string dbx90_prefix = "dbx ";
-	const string raw_prefix   = "raw ";
-	string c = cmd;
-
-	if (c.contains(dbx90_prefix, 0))
-	    c = cmd.after(dbx90_prefix);
-	else if (!c.contains(raw_prefix, 0))
-	    c = raw_prefix + cmd;
-
-	return write(c);
-    }
-
     return write(cmd);
 }
 
