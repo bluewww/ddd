@@ -53,6 +53,7 @@ char comm_manager_rcsid[] =
 #include "PosBuffer.h"
 #include "UndoBuffer.h"
 #include "SourceView.h"
+#include "TimeOut.h"
 #include "VoidArray.h"
 #include "bool.h"
 #include "buttons.h"
@@ -126,6 +127,9 @@ public:
 
     bool        disabling_occurred; // Flag: GDB disabled displays
 
+    XtIntervalId position_timer;  // Still waiting for partial position
+    XtIntervalId display_timer;   // Still waiting for partial display
+
 private:
     static void clear_origin(Widget w, XtPointer client_data, 
 			     XtPointer call_data);
@@ -170,7 +174,10 @@ public:
 	  user_check(true),
 	  recorded(false),
 
-	  disabling_occurred(false)
+	  disabling_occurred(false),
+
+	  position_timer(0),
+	  display_timer(0)
     {
 	add_destroy_callback();
     }
@@ -181,6 +188,11 @@ public:
 	remove_destroy_callback();
 	delete disp_buffer;
 	delete pos_buffer;
+
+	if (position_timer != 0)
+	    XtRemoveTimeOut(position_timer);
+	if (display_timer != 0)
+	    XtRemoveTimeOut(display_timer);
     }
 
 private:
@@ -206,7 +218,12 @@ private:
 	  user_verbose(true),
 	  user_prompt(true),
 	  user_check(true),
-	  recorded(false)
+	  recorded(false),
+
+	  disabling_occurred(false),
+
+	  position_timer(0),
+	  display_timer(0)
     {
 	assert(0);
     }
@@ -1631,32 +1648,109 @@ void send_gdb_command(string cmd, Widget origin,
 // Part of the answer has been received
 //-----------------------------------------------------------------------------
 
-static void partial_answer_received(const string& answer, void* data) 
+static void print_partial_answer(const string& answer, CmdData *cmd_data)
 {
-    string ans = answer;
-    CmdData *cmd_data = (CmdData *) data;
-
-    bool verbose = cmd_data->user_verbose;
-
-    // Filter displays and position
-    if (cmd_data->pos_buffer)
-	cmd_data->pos_buffer->filter(ans);
-
-    if (cmd_data->filter_disp != NoFilter)
-	cmd_data->disp_buffer->filter(ans);
-    
-    cmd_data->user_answer += ans;
+    cmd_data->user_answer += answer;
 
     // Output remaining answer
-    if (verbose && cmd_data->graph_cmd == "")
+    if (cmd_data->user_verbose && cmd_data->graph_cmd == "")
     {
-	gdb_out(ans);
+	gdb_out(answer);
     }
     else if (cmd_data->user_answer.contains("(y or n) ", -1))
     {
 	// GDB wants confirmation for a batch command
 	gdb->send_user_ctrl_cmd("y\n");
     }
+}
+
+static void CancelPartialPositionCB(XtPointer client_data, XtIntervalId *id)
+{
+    (void) id;			// Use it
+
+    CmdData *cmd_data = (CmdData *)client_data;
+    assert(cmd_data->position_timer == *id);
+    cmd_data->position_timer = 0;
+
+    string ans = cmd_data->pos_buffer->answer_ended();
+    print_partial_answer(ans, cmd_data);
+}
+
+static void CancelPartialDisplayCB(XtPointer client_data, XtIntervalId *id)
+{
+    (void) id;			// Use it
+
+    CmdData *cmd_data = (CmdData *)client_data;
+    assert(cmd_data->display_timer == *id);
+    cmd_data->display_timer = 0;
+
+    string ans = cmd_data->disp_buffer->answer_ended();
+    print_partial_answer(ans, cmd_data);
+}
+
+static void partial_answer_received(const string& answer, void *data)
+{
+    string ans = answer;
+    CmdData *cmd_data = (CmdData *) data;
+    XtAppContext app_con = XtWidgetToApplicationContext(gdb_w);
+
+    if (cmd_data->pos_buffer)
+    {
+	// Filter position
+	cmd_data->pos_buffer->filter(ans);
+
+	if (cmd_data->pos_buffer->pos_found() || 
+	    cmd_data->pos_buffer->partial_pos_found())
+	{
+	    if (cmd_data->position_timer != 0)
+		XtRemoveTimeOut(cmd_data->position_timer);
+	    cmd_data->position_timer = 0;
+	}
+
+	if (cmd_data->pos_buffer->partial_pos_found())
+	{
+	    // Get the remaining position within posTimeOut ms.
+	    if (app_data.position_timeout >= 0)
+	    {
+		assert(cmd_data->position_timer == 0);
+
+		cmd_data->position_timer = 
+		    XtAppAddTimeOut(app_con, app_data.position_timeout,
+				    CancelPartialPositionCB, 
+				    XtPointer(cmd_data));
+	    }
+	}
+    }
+
+    if (cmd_data->filter_disp != NoFilter)
+    {
+	// Filter displays
+	cmd_data->disp_buffer->filter(ans);
+
+	if (cmd_data->disp_buffer->displays_found() || 
+	    cmd_data->disp_buffer->partial_displays_found())
+	{
+	    if (cmd_data->display_timer != 0)
+		XtRemoveTimeOut(cmd_data->display_timer);
+	    cmd_data->display_timer = 0;
+	}
+
+	if (cmd_data->disp_buffer->partial_displays_found())
+	{
+	    // Get the remaining displays within displayTimeOut ms.
+	    if (app_data.display_timeout >= 0)
+	    {
+		assert(cmd_data->display_timer == 0);
+
+		cmd_data->display_timer = 
+		    XtAppAddTimeOut(app_con, app_data.display_timeout,
+				    CancelPartialDisplayCB,
+				    XtPointer(cmd_data));
+	    }
+	}
+    }
+
+    print_partial_answer(ans, cmd_data);
 }
 
 
@@ -1686,6 +1780,14 @@ static void command_completed(void *data)
     bool check     = cmd_data->user_check;
     bool verbose   = cmd_data->user_verbose;
     bool do_prompt = cmd_data->user_prompt;
+
+    if (cmd_data->position_timer != 0)
+	XtRemoveTimeOut(cmd_data->position_timer);
+    cmd_data->position_timer = 0;
+
+    if (cmd_data->display_timer != 0)
+	XtRemoveTimeOut(cmd_data->display_timer);
+    cmd_data->display_timer = 0;
 
     if (verbose && !cmd_data->recorded)
     {

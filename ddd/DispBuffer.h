@@ -66,6 +66,10 @@ public:
 
     // Were there any displays in the last output?
     bool displays_found () const { return display_buffer != ""; }
+    bool partial_displays_found () const
+    {
+	return !displays_found() && already_read == DisplayPart;
+    }
 
     // Return any displays found
     string get_displays () const { return display_buffer; }
