@@ -369,5 +369,7 @@ Volunteers for these and other projects are welcome!
 
 202* More session stuff:
      History is not yet saved per-session.
+     Exiting a session with changes should require confirmation.
+     DDD should overwrite its own history file and the GDB one.
 
 205. (Insert your project idea here)
