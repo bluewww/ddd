@@ -677,6 +677,20 @@ static void type_test()
     signed char sc = 'a';
 
     guni.ii = int(pi * sqrt2 * sc);
+
+    const int MAX = 80;
+
+    static struct lkls {
+	char n1[MAX];
+	char n2[MAX];
+	struct lkls *down;
+    } mine;
+
+    mine.n1[0] = 'a';		// Test for "`\000' repeated 79 times"
+    mine.n2[0] = 'b';
+    mine.down = &mine;
+
+    (void) mine;		// Display this
 }
 
 //--------------------------------------------------------------------------
