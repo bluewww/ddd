@@ -3,8 +3,5 @@
 // This should be combined with a pattern like `*->X' to suppress
 // all members named `X'.
 
-#pragma override old_value_box
-old_value_box(...) -> value_box(...);
-#pragma override value_box
-
-value_box(_...) -> 0;
+#pragma replace value_box
+value_box(_) -> 0;
