@@ -235,13 +235,13 @@ struct TextItms {
 	Print, 
 	Disp, 
 	Watch,
-	Dummy1, 
+	Sep1, 
 	PrintRef, 
 	DispRef,
 	WatchRef,
-	Dummy2,
+	Sep2,
 	Whatis,
-	Dummy3,
+	Sep3,
 	Lookup, 
 	Break,
 	Clear
@@ -4674,8 +4674,8 @@ void SourceView::set_text_popup_resource(int item, const string& arg)
 	// Set up resources for yet-to-be-created popup menu
 	string db = string(DDD_CLASS_NAME "*text_popup.") 
 	    + text_popup[item].name + "." + XmNlabelString + ": "
-	    + "@rm " + text_cmd_labels[item] 
-	    + " @tt " + arg;
+	    + "@" CHARSET_RM " " + text_cmd_labels[item] 
+	    + " @" CHARSET_TT " " + arg;
 
 	XrmDatabase res = XrmGetStringDatabase(db.chars());
 	XrmDatabase target = XtDatabase(XtDisplay(source_text_w));
@@ -4868,6 +4868,21 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	set_text_popup_label(TextItms::Lookup,   current_arg, has_arg);
 	set_text_popup_label(TextItms::Break,    current_arg, has_arg);
 	set_text_popup_label(TextItms::Clear,    current_arg, has_arg);
+
+	if (current_arg != current_ref_arg)
+	{
+	    XtManageChild(text_popup[TextItms::Sep1].widget);
+	    XtManageChild(text_popup[TextItms::PrintRef].widget);
+	    XtManageChild(text_popup[TextItms::DispRef].widget);
+	    XtManageChild(text_popup[TextItms::WatchRef].widget);
+	}
+	else
+	{
+	    XtUnmanageChild(text_popup[TextItms::Sep1].widget);
+	    XtUnmanageChild(text_popup[TextItms::PrintRef].widget);
+	    XtUnmanageChild(text_popup[TextItms::DispRef].widget);
+	    XtUnmanageChild(text_popup[TextItms::WatchRef].widget);
+	}
 
 	XmMenuPosition (text_popup_w, event);
 	XtManageChild (text_popup_w);
