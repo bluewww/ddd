@@ -1412,6 +1412,10 @@ $(srcdir)/ddd.vsl: $(srcdir)/ddd.vsl.m4 $(srcdir)/colors.m4
 
 ## The TIPS files.
 
+.PHONY: tips
+
+tips: $(srcdir)/tips.m4 $(srcdir)/tips.html
+
 $(srcdir)/tips.m4: $(srcdir)/../TIPS $(srcdir)/tips2m4.awk
 	$(AWK) -f $(srcdir)/tips2m4.awk $(srcdir)/../TIPS > $@~ && $(MV) $@~ $@
 
