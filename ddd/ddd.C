@@ -1821,6 +1821,12 @@ int main(int argc, char *argv[])
 	gdb_host = gdb_host.after('@');
     }
 
+    if (gdb_host == "" && string(app_data.debugger_host_login) != "")
+    {
+	cerr << argv[0] << ": --login requires --rhost or --host\n";
+	return EXIT_FAILURE;
+    }
+
     // Check for `--play-log'
     if (app_data.play_log != NULL)
     {
