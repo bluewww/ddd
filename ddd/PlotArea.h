@@ -81,7 +81,7 @@ class PlotArea {
     void plot_reset   (const char *command);
 
     // Don't use these
-    PlotArea(PlotArea&);
+    PlotArea(const PlotArea&);
 
     PlotArea& operator=(const PlotArea&);
 

@@ -5915,7 +5915,7 @@ struct SetInfo {
     {}
 
 private:
-    SetInfo(SetInfo&);
+    SetInfo(const SetInfo&);
     SetInfo& operator=(const SetInfo&);
 };
 
