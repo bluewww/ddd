@@ -64,6 +64,14 @@ char MakeMenu_rcsid[] =
 #include "ComboBox.h"
 #include "SpinBox.h"
 
+#ifndef LOG_FLATTENING
+#define LOG_FLATTENING 0
+#endif
+
+#ifndef LOG_PUSH_MENUS
+#define LOG_PUSH_MENUS 0
+#endif
+
 
 // Pushmenu callbacks
 static void ArmPushMenuCB(Widget, XtPointer, XtPointer);
@@ -88,9 +96,10 @@ struct PushMenuInfo {
     Widget widget;		// The PushButton
     Widget subMenu;		// Submenu of this PushButton
     bool flat;			// Whether the PushButton is flattened
+    XtIntervalId timer;		// Timer while waiting
 
     PushMenuInfo(Widget w, Widget s, bool f)
-	: widget(w), subMenu(s), flat(f)
+	: widget(w), subMenu(s), flat(f), timer(0)
     {}
 };
 
@@ -175,7 +184,9 @@ static void flatten_button(Widget w, bool switch_colors = true)
 
     if (bottom_shadow_pixmap == XmUNSPECIFIED_PIXMAP)
     {
-	// clog << "Flattening " << XtName(w) << "\n";
+#if LOG_FLATTENING
+	clog << "Flattening " << XtName(w) << "\n";
+#endif
 
 	Arg args[10];
 	Cardinal arg = 0;
@@ -210,7 +221,9 @@ static void unflatten_button(Widget w, bool switch_colors = true)
 
     if (bottom_shadow_pixmap != XmUNSPECIFIED_PIXMAP)
     {
-	// clog << "Unflattening " << XtName(w) << "\n";
+#if LOG_FLATTENING
+	clog << "Unflattening " << XtName(w) << "\n";
+#endif
 
 	Arg args[10];
 	Cardinal arg = 0;
@@ -244,7 +257,9 @@ static void FlattenEH(Widget w,
     {
     case EnterNotify:
     {
-	// clog << "Entering " << XtName(w) << "\n";
+#if LOG_FLATTENING
+	clog << "Entering " << XtName(w) << "\n";
+#endif
 
 	unflatten_button(w);
 	active_button = w;
@@ -253,7 +268,9 @@ static void FlattenEH(Widget w,
 
     case LeaveNotify:
     {
-	// clog << "Leaving " << XtName(w) << "\n";
+#if LOG_FLATTENING
+	clog << "Leaving " << XtName(w) << "\n";
+#endif
 
 	flatten_button(w);
 	active_button = 0;
@@ -1080,20 +1097,53 @@ Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[],
 static XEvent last_push_menu_event; // Just save it
 
 // Remove time out again
-static void RemoveTimeOutCB(Widget w, XtPointer client_data, XtPointer)
+static void CancelPopupPushMenuCB(Widget w, XtPointer client_data, 
+				  XtPointer call_data)
 {
-    XtIntervalId id = (XtIntervalId)client_data;
-    XtRemoveTimeOut(id);
-    XtRemoveCallback(w, XmNdisarmCallback, RemoveTimeOutCB, XtPointer(id));
+    XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    (void) cbs;			// Use it
+
+    PushMenuInfo *info = (PushMenuInfo *)client_data;
+
+    if (info->timer != 0)
+    {
+#if LOG_PUSH_MENUS
+	clog << "canceling (reason " << cbs->reason << ")\n";
+#endif
+
+	XtRemoveTimeOut(info->timer);
+	info->timer = 0;
+    }
+
+    XtRemoveCallback(w, XmNdisarmCallback,
+		     CancelPopupPushMenuCB, XtPointer(info));
+    XtRemoveCallback(w, XmNactivateCallback,
+		     CancelPopupPushMenuCB, XtPointer(info));
+
+    XtUnmanageChild(info->subMenu);
+    Widget shell = XtParent(info->subMenu);
+    XtPopdown(shell);
 }
 
 // Popup menu right now
 static void PopupPushMenuCB(XtPointer client_data, XtIntervalId *id)
 {
+    (void) id;			// Use it
+
     PushMenuInfo *info = (PushMenuInfo *)client_data;
     Widget w = info->widget;
 
-    XtRemoveCallback(w, XmNdisarmCallback, RemoveTimeOutCB, XtPointer(*id));
+    assert(info->timer == *id);
+    info->timer = 0;
+
+#if LOG_PUSH_MENUS
+    clog << "popping up\n";
+#endif
+
+    XtRemoveCallback(w, XmNdisarmCallback,
+		     CancelPopupPushMenuCB, XtPointer(info));
+    XtRemoveCallback(w, XmNactivateCallback,
+		     CancelPopupPushMenuCB, XtPointer(info));
 
     // Popup the menu
     XtCallActionProc(w, "popup-push-menu", &last_push_menu_event, 0, 0);
@@ -1240,6 +1290,8 @@ static XtResource subresources[] = {
 
 static void ArmPushMenuCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
+    PushMenuInfo *info = (PushMenuInfo *)client_data;
+
     subresource_values values;
     XtGetApplicationResources(w, &values, 
 			      subresources, XtNumber(subresources), 
@@ -1249,10 +1301,23 @@ static void ArmPushMenuCB(Widget w, XtPointer client_data, XtPointer call_data)
     if (cbs && cbs->event)
 	last_push_menu_event = *cbs->event;
 
-    XtIntervalId id = XtAppAddTimeOut(XtWidgetToApplicationContext(w), 
-				      values.push_menu_popup_time, 
-				      PopupPushMenuCB, client_data);
-    XtAddCallback(w, XmNdisarmCallback, RemoveTimeOutCB, XtPointer(id));
+    if (info->timer != 0)
+	XtRemoveTimeOut(info->timer);
+
+    info->timer = XtAppAddTimeOut(XtWidgetToApplicationContext(w), 
+				  values.push_menu_popup_time, 
+				  PopupPushMenuCB, XtPointer(info));
+
+#if LOG_PUSH_MENUS
+    clog << "Waiting for " << XtName(w) << " menu " 
+	 << "(timer " << info->timer << ")...";
+#endif
+
+    // If we're disarmed or activated within the delay, don't popup.
+    XtAddCallback(w, XmNdisarmCallback,   
+		  CancelPopupPushMenuCB, XtPointer(info));
+    XtAddCallback(w, XmNactivateCallback, 
+		  CancelPopupPushMenuCB, XtPointer(info));
 }
 
 static void RedrawPushMenuCB(Widget w, XtPointer, XtPointer)
