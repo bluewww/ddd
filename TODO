@@ -311,9 +311,6 @@ Volunteers for these and other projects are welcome!
 168. Rename `Lookup' to `List' and recognize the `list' command.  See
      also #108.
 
-169. When a program has crashed, show the program counters as little
-     bombs ;-)
-
 170. In the `File' menu, keep a history of most recently opened files
      (executables? sources?)
 
