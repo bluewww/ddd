@@ -4,10 +4,13 @@ DDD News						-*- text -*-
 DDD 2.2.2
 ---------
 
-    DDD 2.2.2 brings substantial improvements in the data display and
-    fixes some minor bugs introduced in DDD 2.2.
+    DDD 2.2.2 brings improved FORTRAN support, improvements in the
+    data display and fixes some minor bugs introduced in DDD 2.2.
 
     User-visible changes to DDD 2.2.1:
+    - Improved FORTRAN support.  Array indexing and pointer
+      recognition now work with FORTRAN.  [function_ recognition is
+      yet to do.]
     - Faster data exploration with double-clicking...
       * ...on a pointer value: dereference it.
       * ...on a partially hidden value: show more detail.
