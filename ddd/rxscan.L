@@ -286,7 +286,7 @@ z       [^a-zA-Z0-9_$]
 52[[]-?{D}]{C}				RETURN(&rxindex);
 53-?{D}		 			RETURN(&rxint);
 54([a-zA-Z]+{W}[a-zA-Z]+{C}|{C}[a-zA-Z]+{W}[a-zA-Z]+(\.|>)?)\n?  RETURN(&rxinvalid_value);
-55{_}(func|v){W}{C}	 		RETURN(&rxlookup_cmd);
+55{_}(file|func|v){W}{C}	 	RETURN(&rxlookup_cmd);
 56[a-z]+		 		RETURN(&rxlowercase);
 57\(\*{C}\*\){C}			RETURN(&rxm3comment);
 58{_}(sh{W}|!)?make({W}{C})?		RETURN(&rxmake_cmd);

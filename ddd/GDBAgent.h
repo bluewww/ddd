@@ -163,6 +163,7 @@ private:
 
     bool _has_frame_command;	// Debugger properties
     bool _has_func_command;	
+    bool _has_file_command;
     bool _has_run_io_command;
     bool _has_print_r_option;
     bool _has_output_command;
@@ -294,6 +295,10 @@ public:
     // True if debugger has `frame' command
     bool has_frame_command() const    { return _has_frame_command; }	
     bool has_frame_command(bool val)  { return _has_frame_command = val; }
+
+    // True if debugger has `file' command
+    bool has_file_command() const    { return _has_file_command; }
+    bool has_file_command(bool val)  { return _has_file_command = val; }
 
     // True if debugger has `func' command
     bool has_func_command() const    { return _has_func_command; }	

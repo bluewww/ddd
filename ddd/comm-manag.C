@@ -260,6 +260,7 @@ public:
 
     bool     config_frame;	       // try 'frame'
     bool     config_func;	       // try 'func'
+    bool     config_file;              // try 'file'
     bool     config_run_io;	       // try 'dbxenv run_io'
     bool     config_print_r;	       // try 'print -r'
     bool     config_where_h;	       // try 'where -h'
@@ -320,6 +321,7 @@ public:
 
 	  config_frame(false),
 	  config_func(false),
+	  config_file(false),
 	  config_run_io(false),
 	  config_print_r(false),
 	  config_where_h(false),
@@ -557,6 +559,8 @@ void start_gdb(bool config)
 	    extra_data->config_frame = true;
 	    cmds += "func";
 	    extra_data->config_func = true;
+	    cmds += "file";
+	    extra_data->config_file = true;
 	    cmds += "dbxenv run_io";
 	    extra_data->config_run_io = true;
 	    cmds += "print -r " + print_cookie;
@@ -1555,6 +1559,7 @@ void send_gdb_command(string cmd, Widget origin,
     assert(extra_data->n_init == 0);
     assert(!extra_data->config_frame);
     assert(!extra_data->config_func);
+    assert(!extra_data->config_file);
     assert(!extra_data->config_run_io);
     assert(!extra_data->config_print_r);
     assert(!extra_data->config_where_h);
@@ -2644,6 +2649,11 @@ static void process_config_func(string& answer)
     gdb->has_func_command(is_known_command(answer));
 }
 
+static void process_config_file(string& answer)
+{
+    gdb->has_file_command(is_known_command(answer));
+}
+
 static void process_config_run_io(string& answer)
 {
     gdb->has_run_io_command(is_known_command(answer));
@@ -2934,6 +2944,9 @@ static void extra_completed (const StringArray& answers,
 
     if (extra_data->config_func)
 	process_config_func(answers[qu_count++]);
+
+    if (extra_data->config_file)
+	process_config_file(answers[qu_count++]);
 
     if (extra_data->config_run_io)
 	process_config_run_io(answers[qu_count++]);

@@ -6,6 +6,8 @@ DDD-3.3.9
 
 - Support for PHP debugger has been added (1).  This is essentially not
   tested.
+- Source files in subdirectories should be located automatically
+  when using dbx (tested on Solaris' dbx) (2).
 - Builds with IBM xlC and on X11R5 based systems should be OK.
 - Builds on HP-UX should now work out-of-the-box. Motif is linked statically
   and the Athena libraries are now found by default.
@@ -27,6 +29,7 @@ DDD-3.3.9
   "perl5db.pl" from a recent perl distribution into your old perl tree.
 
 (1) Written by Dmitri Dmitrienko and integrated by Rocky Bernstein.
+(2) Thanks to Saurabh Tendulkar for his patch.
 
 DDD-3.3.8
 =========
