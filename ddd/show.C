@@ -328,15 +328,11 @@ static void show_configuration(ostream& os, bool version_only)
         "." stringize(__GNUC_MINOR__)
 #endif
 #endif // !defined(__VERSION__)
-#if defined(CXX_NAME)
-	" (" CXX_NAME ")"
-#endif // defined(CXX_NAME)
+	// " (" CXX_NAME ")"
 
 #elif defined(__SUNPRO_CC)
 	"SunPRO CC " stringize(__SUNPRO_CC)
-#if defined(CXX_NAME)
-	" (" CXX_NAME ")"
-#endif // defined(CXX_NAME)
+	// " (" CXX_NAME ")"
 
 #elif defined(CXX_NAME)
 	CXX_NAME
