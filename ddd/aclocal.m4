@@ -1373,6 +1373,8 @@ CFLAGS="$X_CFLAGS $CFLAGS"
 CPPFLAGS="$X_CFLAGS $CPPFLAGS"
 LDFLAGS="$X_LIBS $LDFLAGS"
 #
+# We use XtToolkitInitialize() here since it takes no arguments
+# and thus also works with a C++ compiler.
 AC_TRY_LINK([#include <Xm/Xm.h>],[XtToolkitInitialize();],
 [
 # libXm.a is in the standard search path.
@@ -1544,6 +1546,8 @@ CFLAGS="$X_CFLAGS $CFLAGS"
 CPPFLAGS="$X_CFLAGS $CPPFLAGS"
 LDFLAGS="$X_LIBS $LDFLAGS"
 #
+# We use XtToolkitInitialize() here since it takes no arguments
+# and thus also works with a C++ compiler.
 AC_TRY_LINK([
 #include <X11/Intrinsic.h>
 #include <X11/Xaw/Text.h>
@@ -1716,9 +1720,10 @@ CFLAGS="$X_CFLAGS $CFLAGS"
 CPPFLAGS="$X_CFLAGS $CPPFLAGS"
 LDFLAGS="$X_LIBS $LDFLAGS"
 #
-AC_TRY_LINK([
-#include <X11/xpm.h>
-],[XpmCreatePixmapFromXpmImage();],
+#
+# We use XtToolkitInitialize() here since it takes no arguments
+# and thus also works with a C++ compiler.
+AC_TRY_LINK([#include <X11/xpm.h>],[XtToolkitInitialize();],
 [
 # libxpm.a is in the standard search path.
 ice_cv_xpm_libraries=
