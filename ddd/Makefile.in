@@ -1179,7 +1179,7 @@ $(PUB_DEST)/USERINFO:
 
 NICE=20
 TARGET=all
-MACHINES=ultrix solaris sunos aix hpux
+MACHINES=ultrix solaris sunos hpux
 
 .PHONY: batch binaries
 batch binaries: pub
@@ -1224,15 +1224,6 @@ hpux:
 	rsh -l i1092301 rzab1.rz.tu-bs.de      $(SHELL) -c \
 		\''PATH=/usr/local/gnu/hp400/bin:$$PATH; export PATH; \
 		cd $$HOME/ddd/ddd; \
-		MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
-		$(SHELL) ./config.status; \
-		nice -$(NICE) make CXXFLAGS="$(CXXFLAGS)" $(TARGET)'\'
-
-.PHONY: aix
-aix:
-	@echo '### pp969098@rzcipa01.rz.tu-bs.de (rs6000-ibm-aix4.1.4.0)'
-	rsh -l pp969098 rzcipa01.rz.tu-bs.de   $(SHELL) -c \
-		\''cd $$HOME/ddd/ddd; \
 		MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
 		$(SHELL) ./config.status; \
 		nice -$(NICE) make CXXFLAGS="$(CXXFLAGS)" $(TARGET)'\'
