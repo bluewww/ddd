@@ -4481,6 +4481,8 @@ static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
     set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
     set_sensitive(data_edit_menu[EditItems::Settings].widget,   have_settings);
 
+#if 0
+    // This is not needed, since gdbCommand does not require GDB to be ready.
     set_sensitive(command_program_menu[ProgramItems::Run].widget,       ready);
     set_sensitive(source_program_menu[ProgramItems::Run].widget,        ready);
     set_sensitive(data_program_menu[ProgramItems::Run].widget,          ready);
@@ -4524,6 +4526,7 @@ static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
     set_sensitive(command_program_menu[ProgramItems::Kill].widget,      ready);
     set_sensitive(source_program_menu[ProgramItems::Kill].widget,       ready);
     set_sensitive(data_program_menu[ProgramItems::Kill].widget,         ready);
+#endif
 
     unpost_gdb_busy();
 }
