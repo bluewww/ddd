@@ -53,6 +53,7 @@ char settings_rcsid[] =
 #include "AppData.h"
 #include "Delay.h"
 #include "DestroyCB.h"
+#include "EntryType.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
 #include "commandQ.h"
@@ -64,14 +65,16 @@ char settings_rcsid[] =
 #include "wm.h"
 #include "VarArray.h"
 #include "StringSA.h"
+#include "WidgetSA.h"
 #include "SourceView.h"
 #include "string-fun.h"
 
 static Widget settings_form  = 0;
 static Widget reset_settings = 0;
-static VarArray<Widget> entries;
-static Assoc<Widget, string> values;
-static Assoc<Widget, string> initial_values;
+static WidgetArray entries;
+static EntryTypeArray entry_types;
+static WidgetStringAssoc values;
+static WidgetStringAssoc initial_values;
 
 // Find widget for command COMMAND
 static Widget command_to_widget(Widget ref, string command)
@@ -112,7 +115,12 @@ static void gdb_set_command(string set_command, string value)
     }
 
     if (value != "")
-	gdb_command(set_command + " " + value);
+    {
+	if (set_command.contains("set $", 0) && !set_command.contains(" = "))
+	    gdb_command(set_command + " = " + value);
+	else
+	    gdb_command(set_command + " " + value);
+    }
     else
 	gdb_command(set_command);
 }
@@ -179,6 +187,18 @@ static void SetNumCB(Widget, XtPointer client_data, XtPointer call_data)
 	gdb_set_command((String)client_data, "1");
     else
 	gdb_set_command((String)client_data, "0");
+}
+
+// ToggleButton reply
+static void SetNoNumCB(Widget, XtPointer client_data, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (cbs->set)
+	gdb_set_command((String)client_data, "0");
+    else
+	gdb_set_command((String)client_data, "1");
 }
 	
 // Update state of `reset' button
@@ -323,6 +343,16 @@ void process_show(string command, string value, bool init)
 	bool set = value != "off" && value != "0" && value != "unlimited" 
 	    && value != "false" && value != "insensitive";
 
+	for (int i = 0; i < entries.size(); i++)
+	{
+	    if (entries[i] == button
+		&& entry_types[i] == NoNumToggleButtonEntry)
+	    {
+		set = !set;
+		break;
+	    }
+	}
+
 	XtVaSetValues(button, XmNset, set, NULL);
 	return;
     }
@@ -343,17 +373,6 @@ void process_show(string command, string value, bool init)
 
 
 // Create settings form
-
-enum EntryType
-{
-    OnOffToggleButtonEntry,	// Create on/off toggle button
-    TrueFalseToggleButtonEntry,	// Create true/false toggle button
-    NumToggleButtonEntry,	// Create 1/0 toggle button
-    SensitiveToggleButtonEntry,	// Create sensitive/insensitive toggle button
-    CheckOptionMenuEntry,       // Create `check' option menu
-    OtherOptionMenuEntry,       // Create other option menu
-    TextFieldEntry		// Create text field
-};
 
 // Return TRUE if doc begins with a boolean verb
 static bool is_verb(const string& doc)
@@ -377,6 +396,9 @@ static EntryType entry_type(DebuggerType type,
 			    const string& doc,
 			    const string& value)
 {
+    static regex rxnonzero1("non-?(0|zero|null)");
+    static regex rxnonzero2("!= *(0|zero|null)");
+
     switch (type)
     {
     case GDB:
@@ -392,8 +414,8 @@ static EntryType entry_type(DebuggerType type,
 	break;
 
     case DBX:
-	if (value.contains(rxint, 0))
-	    return TextFieldEntry;
+	if (doc.contains(rxnonzero1) || doc.contains(rxnonzero2))
+	    return NumToggleButtonEntry;
 	else if (value.contains("on", 0) || value.contains("off", 0))
 	    return OnOffToggleButtonEntry;
 	else if (value.contains("true", 0) || value.contains("false", 0))
@@ -401,7 +423,9 @@ static EntryType entry_type(DebuggerType type,
 	else if (value.contains("sensitive", 0) 
 		 || value.contains("insensitive", 0))
 	    return SensitiveToggleButtonEntry;
-	else if (base.contains("version") 
+	else if (value.contains(rxint, 0))
+	    return TextFieldEntry;
+	else if (base.contains("version")
 	    || base.contains("run_io")
 	    || base.contains("follow_fork_mode"))
 	    return OtherOptionMenuEntry;
@@ -447,6 +471,8 @@ static void strip_from(string& doc, const string& key)
 
 static void munch_doc(string& doc)
 {
+    read_leading_blanks(doc);
+
     // Sun DBX 3.0
     strip_leading(doc, "# ");
     strip_leading(doc, "If on, ");
@@ -465,6 +491,7 @@ static void munch_doc(string& doc)
     strip_leading(doc, "Name of ");
     
     // DEC DBX
+    strip_leading(doc, "$");
     strip_leading(doc, "non-0 => ");
     strip_leading(doc, "non-0 implies ");
     strip_leading(doc, "if non-0 ");
@@ -477,6 +504,12 @@ static void munch_doc(string& doc)
     strip_leading(doc, "specify ");
     strip_leading(doc, "which ");
 
+    // SGI DBX
+    strip_leading(doc, "if != 0, ");
+    strip_leading(doc, "if != 0 ");
+    strip_leading(doc, "if 1 ");
+    strip_leading(doc, "then ");
+
     // GDB
     strip_leading(doc, "whether to ");
     strip_leading(doc, "the ");
@@ -486,8 +519,23 @@ static void munch_doc(string& doc)
     strip_from(doc, "we're debugging");
     strip_from(doc, "if this is non-0");
     strip_from(doc, "Default:");
+    strip_from(doc, ", default");
     strip_from(doc, " to $DBX");
     strip_from(doc, " entirely");
+    strip_from(doc, " rather than");
+    strip_from(doc, ", else");
+    strip_from(doc, " next to");
+    strip_from(doc, " used to");
+    strip_from(doc, " that was");
+    strip_from(doc, " accessing");
+
+    // More SGI DBX
+    strip_from(doc, " if none");
+    strip_from(doc, " (init");
+    strip_from(doc, " (default");
+
+    if (doc.contains("0 =>"))
+	doc = "Don't" + doc.after("0 =>");
 
     if (doc.length() > 0)
 	doc[0] = toupper(doc[0]);
@@ -497,7 +545,13 @@ static void munch_doc(string& doc)
 // Get DBX documentation
 static string _get_dbx_help(string dbxenv, string base)
 {
-    string dbx_help = cached_gdb_question("help " + dbxenv);
+    string dbx_help;
+    if (dbxenv == "dbxenv")
+	dbx_help = cached_gdb_question("help " + dbxenv);
+    if (dbx_help.freq('\n') <= 2)
+	dbx_help = cached_gdb_question("help variable");
+    if (dbx_help.freq('\n') <= 2)
+	dbx_help = cached_gdb_question("help $variables");
 
     // Find documentation in DBX_HELP
     int column = 0;
@@ -638,6 +692,10 @@ static string get_dbx_doc(string dbxenv, string base)
 	return "Suppress startup message below release";
     if (base == "disassembler_version")
 	return "Disassembler version";
+    if (base == "$byteaccess")
+	return "Access memory items less than 4 bytes";
+    if (base == "$dispix")
+	return "Display pixie instructions";
     
     // Generic help
     string dbx_doc = get_dbx_help(dbxenv, base, -1);
@@ -649,6 +707,13 @@ static string get_dbx_doc(string dbxenv, string base)
     if (dbx_doc.contains("; "))
 	dbx_doc = dbx_doc.before("; ");
     dbx_doc.gsub("etc ", "etc. ");
+
+    if (dbx_doc == "")
+    {
+	dbx_doc = base;
+	dbx_doc.gsub('_', ' ');
+    }
+
     munch_doc(dbx_doc);
 
     return dbx_doc;
@@ -742,22 +807,25 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 
 	    string dbxenv;
 	    if (base[0] == '$')
-	    {
 		dbxenv = "set";
-		set_command = "set " + base + " =";
-	    }
 	    else
-	    {
 		dbxenv = "dbxenv";
-		set_command  = "dbxenv " + base;
-	    }
 
+	    set_command = dbxenv + " " + base;
 	    if (base == "run_savetty")
 		return; // Makes no sense under a GUI
 
 	    show_command = set_command + " " + value;
 	    doc = get_dbx_doc(dbxenv, base);
-	    e_type = entry_type(type, base, doc, value);
+	    e_type = entry_type(type, base, get_dbx_help(dbxenv, base), value);
+
+	    static regex rxdont("Do ?n['o]t");
+	    if (doc.contains(rxdont, 0) && e_type == NumToggleButtonEntry)
+	    {
+		doc = doc.after(rxdont);
+		munch_doc(doc);
+		e_type = NoNumToggleButtonEntry;
+	    }
 	}
         break;
 
@@ -774,6 +842,7 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
     // Add label
     Widget label = 0;
     Widget entry = 0;
+
     String set_command_s = new char[set_command.length() + 1];
     strcpy(set_command_s, set_command);
 
@@ -803,6 +872,10 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 
     case NumToggleButtonEntry:
 	callback = SetNumCB;
+	break;
+
+    case NoNumToggleButtonEntry:
+	callback = SetNoNumCB;
 	break;
 
     default:
@@ -849,6 +922,7 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
     case TrueFalseToggleButtonEntry:
     case SensitiveToggleButtonEntry:
     case NumToggleButtonEntry:
+    case NoNumToggleButtonEntry:
 	// All is done
 	break;
 
@@ -1014,7 +1088,7 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 	verify(XmCreateSeparator(settings_form, "leader", args, arg));
     XtManageChild(leader);
 
-    // Make entry insensitive, if part of initialization commands.
+    // Make entry insensitive if part of initialization commands.
     string init = app_data.gdb_initial_cmds;
     int idx = init.index(set_command);
     if (idx == 0 || idx > 0 && init[idx - 1] == '\n')
@@ -1029,34 +1103,17 @@ static void add_button(int& row, DebuggerType type, EntryType entry_filter,
 
     XtAddCallback(help, XmNactivateCallback, 
 		  HelpOnThisCB, XtPointer(entry));
-    entries += entry;
+    entries     += entry;
+    entry_types += e_type;
 
     row++;
 }
 
 
-static string default_set_command(DebuggerType type)
-{
-    switch (type)
-    {
-    case GDB:
-	return "set";
-    case DBX:
-	return "dbxenv";
-    case XDB:
-	return "I";
-    }
-
-    return "";
-}
-
 // Add buttons
 static void add_settings(int& row, DebuggerType type,
 			 EntryType entry_filter, string command)
 {
-    if (command == "")
-	command = default_set_command(type);
-
     string commands;
 
     switch (type)
@@ -1066,8 +1123,13 @@ static void add_settings(int& row, DebuggerType type,
 	break;
 
     case XDB:
+	commands = cached_gdb_question("I");
+	break;
+
     case DBX:
-	commands = cached_gdb_question(command);
+	commands = cached_gdb_question("dbxenv");
+	if (commands.freq('\n') <= 2)
+	    commands = cached_gdb_question("set");
 	break;
     }
 
@@ -1180,6 +1242,7 @@ static Widget create_settings(DebuggerType type)
     add_settings(row, type, TrueFalseToggleButtonEntry);
     add_settings(row, type, SensitiveToggleButtonEntry);
     add_settings(row, type, NumToggleButtonEntry);
+    add_settings(row, type, NoNumToggleButtonEntry);
 
     if (row != last_row)
 	add_separator(row);
@@ -1260,10 +1323,15 @@ string get_settings(DebuggerType type)
 	    {
 		// This is the default setting - do nothing
 	    }
+	    else if (base.contains("set $", 0))
+	    {
+		// Add setting.
+		command += base + " = " + value + '\n';
+	    }
 	    else if (base.contains("set ", 0))
 	    {
 		// Add setting.
-		command += base + ' ' + value + '\n';
+		command += base + " " + value + '\n';
 	    }
 	    else
 	    {
