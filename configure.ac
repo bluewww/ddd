@@ -43,8 +43,8 @@ dnl
 dnl
 dnl Initialization.
 dnl
-AC_INIT(NEWS)
-AM_CONFIG_HEADER(ddd/config.h)
+AC_INIT([NEWS])
+AM_CONFIG_HEADER([ddd/config.h])
 dnl
 dnl Some simple checks.
 dnl 
@@ -155,7 +155,6 @@ dnl
 AC_CHECK_PROGS(XTERM, xterm kterm dtterm hpterm, xterm)dnl
 AC_CHECK_PROGS(XFONTSEL, xfontsel, xfontsel)dnl
 AC_PROG_INSTALL
-AC_PROG_RANLIB
 dnl
 dnl Yacc.
 dnl
@@ -246,7 +245,6 @@ dnl
 dnl
 dnl Check for `.exe' and `.obj' extensions (for Windows/Cygwin)
 dnl
-AC_CYGWIN
 AC_EXEEXT
 AC_OBJEXT
 ICE_DELETE_CR
@@ -254,7 +252,7 @@ dnl
 dnl
 dnl The C++ compiler is set up.  Use it for further checks.
 dnl 
-AC_LANG_CPLUSPLUS
+AC_LANG(C++)
 dnl
 dnl
 dnl Check for libtool.
@@ -741,8 +739,7 @@ dnl
 dnl Find types
 dnl 
 dnl The getgroups() check fails with SGI CC.  Use the C compiler instead.
-AC_LANG_SAVE
-AC_LANG_C
+AC_LANG_PUSH(C)
 AC_TYPE_MODE_T
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
@@ -750,7 +747,7 @@ AC_TYPE_SIZE_T
 AC_TYPE_UID_T
 AC_TYPE_GETGROUPS
 AC_TYPE_SIGNAL
-AC_LANG_RESTORE
+AC_LANG_POP(C)
 dnl
 ICE_TYPE_SIG_HANDLER_ARGS
 dnl
@@ -761,11 +758,10 @@ AC_CHECK_FUNC(getpgrp)
 AC_CHECK_FUNC(setpgrp)
 dnl
 dnl The getprgp() check fails with SGI CC.  Use the C compiler instead.
-AC_LANG_SAVE
-AC_LANG_C
+AC_LANG_PUSH(C)
 AC_FUNC_GETPGRP
 AC_FUNC_SETPGRP
-AC_LANG_RESTORE
+AC_LANG_POP(C)
 dnl
 dnl
 dnl
@@ -781,7 +777,7 @@ AC_CHECK_HEADERS(exception stdexcept)
 AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
 AC_HEADER_DIRENT
-AC_STAT_MACROS_BROKEN
+AC_HEADER_STAT
 dnl
 dnl These checks may require `-lstdc++' to link and run properly
 ice_save_LIBS="$LIBS"
@@ -796,10 +792,9 @@ dnl ICE_OSTRSTREAM_PCOUNT_BROKEN
 ICE_TYPE_REGEX_T
 dnl
 dnl The regexec() check fails with SGI CC.  Use the C compiler instead.
-AC_LANG_SAVE
-AC_LANG_C
+AC_LANG_PUSH(C)
 ICE_REGCOMP_BROKEN
-AC_LANG_RESTORE
+AC_LANG_POP(C)
 dnl
 LIBS="$ice_save_LIBS"
 AC_CHECK_LIB(m, hypot)
@@ -1029,7 +1024,7 @@ AC_TRY_CPP([#include <Xm/Xm.h>
 #if LESSTIF_VERSION == 0 && LESSTIF_REVISION <= 86
 #error LessTif 0.86 or earlier
 #endif
-#endif], risky_lesstif=false, risky_lesstif=true)
+#endif],[risky_lesstif=false],[risky_lesstif=true])
 CPPFLAGS="$ice_save_CPPFLAGS"
 dnl
 dnl
