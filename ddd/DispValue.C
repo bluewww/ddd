@@ -398,8 +398,8 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		init(parent, depth, value);
 		return;
 	    }
-	} while (read_array_next (value) != 0);
-	read_array_end (value);
+	} while (read_array_next(value));
+	read_array_end(value);
 
 	// Expand only if at top-level.
 	myexpanded = (depth == 0 || nchildren() <= 1);

@@ -58,7 +58,7 @@ string read_pointer_value (string& value, bool ignore_repeats);
 // Read array; return false iff error
 bool read_array_begin (string& value, string& addr);
 bool read_array_next (string& value);
-bool read_array_end (string& value);
+void read_array_end(string& value);
 
 // Read `<repeats N times>'; return N (1 if no repeat)
 int read_repeats(string& value);
@@ -66,7 +66,7 @@ int read_repeats(string& value);
 // Read struct or class; return false iff error
 bool read_struct_begin (string& value, string& addr);
 bool read_struct_next (string& value);
-bool read_struct_end (string& value);
+void read_struct_end(string& value);
 
 // Read GDB `members of CLASS:' prefix
 bool read_members_prefix (string& value);

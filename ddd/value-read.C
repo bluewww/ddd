@@ -34,7 +34,9 @@ char value_read_rcsid[] =
 #pragma implementation
 #endif
 
+#ifndef LOG_DETERMINE_TYPE
 #define LOG_DETERMINE_TYPE 0
+#endif
 
 //-----------------------------------------------------------------------------
 // Read variable values in string representation
@@ -431,7 +433,7 @@ bool is_ending(const string& value)
     while (i < int(value.length()) && isspace(value[i]))
 	i++;
     if (i >= int(value.length()))
-	return false;
+	return false;		// At end of value
 
     return value.contains('}', i)
 	|| value.contains(')', i)
@@ -494,7 +496,7 @@ string read_pointer_value (string& value, bool ignore_repeats)
 }
 
 // Read the beginning of an array from VALUE.  Return false iff failure.
-bool read_array_begin (string& value, string& addr)
+bool read_array_begin(string& value, string& addr)
 {
     addr = "";
     strip_leading_space(value);
@@ -555,24 +557,16 @@ bool read_array_begin (string& value, string& addr)
 }
 
 // Read next array element from VALUE.  Return false iff done.
-bool read_array_next (string& value)
+bool read_array_next(string& value)
 {
-    bool following = false;
-
-    if (value.contains('\n', 0))
-    {
-	int i = 0;
-	while (i < int(value.length()) && isspace(value[i]))
-	    i++;
-	if (i < int(value.length()))
-	    following = true;	// Non-space character follows
-    }
-
-    read_leading_junk (value);
+    read_leading_junk(value);
 
     // DBX on DEC prepends `[N]' before array member N
     if (value.matches(rxindex))
+    {
 	value = value.after(']');
+	read_leading_junk(value);
+    }
 
     // XDB and M3GDB append `;' after each struct element; others use `,'
     if (value.contains(',', 0) || value.contains(';', 0))
@@ -597,35 +591,30 @@ bool read_array_next (string& value)
 	return true;
     }
 
-    if (is_ending(value))
-    {
-	return false;		// Array is done.
-    }
-
-    return following;		// Anything else except `\n': array is done.
+    return value != "" && !is_ending(value);
 }
 
 // Read end of array from VALUE.  Return false iff done.
-bool read_array_end (string& value)
+void read_array_end(string& value)
 {
-    read_leading_junk (value);
+    read_leading_junk(value);
 
     if (value.contains("end\n", 0))
     {
 	value = value.after("end");
-	return false;		// Array is done.
+	return;
     }
 
     if (value.contains("END\n", 0))
     {
 	value = value.after("END");
-	return false;		// Array is done.
+	return;
     }
 
     if (value.contains("END;", 0))
     {
 	value = value.after("END");
-	return true;		// M3GDB: More stuff may follow.
+	return;
     }
 
     if (value.contains('}', 0)
@@ -638,10 +627,8 @@ bool read_array_end (string& value)
 	if (value.contains(';', 0))
 	    value = value.after(0);
 
-	return false;		// Array is done.
+	return;
     }
-
-    return value != "";		// More stuff may follow.
 }
 
 // Read `<repeats N times>'; return N (1 if no repeat)
@@ -673,9 +660,9 @@ bool read_struct_next (string& value)
 }
 
 // Read end of struct from VALUE.  Return false iff done.
-bool read_struct_end (string& value)
+void read_struct_end(string& value)
 {
-    return read_array_end(value);
+    read_array_end(value);
 }
 
 // Some DBXes issue the local variables via a frame line, just like
