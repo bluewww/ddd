@@ -712,9 +712,12 @@ fi
 dnl Tweak: HPUX-10.20 requires that Motif be statically linked.
 dnl Linking dynamically will appear to succeed, but DDD will core on startup.
 dnl (I haven't tried other HPUX versions, so I'd be glad for any feedback.)
-if test "$host_vendor" = "hp" && test "$host_os" = "hpux10.20"; then
+case "$host_os" in
+hpux10.20|hpux11.00)
+   AC_MSG_WARN([Force static link of Motif as HP-UX linker bug workaround.])
    XM_LIBS="/usr/lib/Motif1.2_R6/libXm.a"
-fi
+   ;;
+esac
 AC_SUBST(XP_LIBS)
 AC_SUBST(XM_LIBS)
 dnl
