@@ -39,8 +39,6 @@ struct HuffCode { char c; const HuffCode *left; const HuffCode *right; };
 
 #ifdef HUFFTEXT
 #include HUFFTEXT
-#else
-#include "hufftext.C"
 #endif
 
 static void huffdecode(ostream& os)
