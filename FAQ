@@ -1,0 +1,67 @@
+DDD Frequently Asked Questions					-*- text -*-
+******************************
+
+1. Is there a way to edit the source in the source window ?
+
+No.  First, although the Motif Text widget supports editing sources,
+this would be difficult to realize because of the line numbers,
+breakpoint symbols etc.  which would have to be updated after each
+change.  Second, it would be difficult to maintain consistency between
+the debugger line information and the edited source; for instance,
+lookup() and break() commands would still refer to the last compiled
+source.  Third, there are virtually no limits on what a source editor
+should be able to; we don't think it is useful to implement yet
+another Emacs.
+
+
+2. Can I dereference a multi-length array graphically via the mouse ?
+
+The problem is that GDB does not know the actual length of the array;
+you have to supply it by hand (i.e. using the keyboard).
+You can use the DDD ``display successive array elements`` or the GDB
+``artificial array'' mechanism.  If you have a pointer, say:
+
+int *pi;
+
+pointing to an array of 10 ints, you can see the integers by entering
+
+graph display pi[0..9]
+
+at the `(gdb)' prompt (or entering `pi[0..9]` in the `Dependent
+Display' dialog).
+
+As an alternative, you can use the GDB ``artificial array'' mechanism
+by entering
+
+graph display *pi@10
+
+This will create an array starting with pi showing the first 10 elements.
+
+
+3. Does ddd sit on top of gdb, or is it integrated with gdb source ?
+
+It sits on top of a separate GDB process.  Use `ddd --trace' to see
+the interaction.
+
+
+4. If it sits on top, how can gdb upgrades be incorporated ?
+
+By getting and installing the new GDB.  No changes to DDD are
+necessary, unless the GNU people introduce incompatible changes.
+
+
+5. Can I change the 'break point' symbol ?
+
+Yes - by altering the code :-).  I may make it user-defineable some
+day, but the choice is limited to text characters unless you supply
+your own text font.
+
+
+6. When I hit a break point, can the break line
+   be brought to the center of the source window ?
+
+Again, by altering the code - I guess I'll realize that in the next
+DDD release.
+
+
+$Id$

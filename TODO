@@ -116,8 +116,17 @@ Volunteers for these and other projects are welcome!
 
 039. [done]
 
-040. Suppress X warnings by default.
+040. [done]
 
-041. If `gcc' is chosen as C++ compiler, add -lg++ to the library list.
+041. [done]
 
-042. (Insert your project idea here)
+042. Suggestions from jcrupi@mystech.com (John Crupi):
+     1. Is there a way to edit the source in the source window ?
+     2. Can I dereference a multi-length array graphically via the mouse ?
+     3. Does ddd sit on top of gdb, or is it integrated with gdb source ?
+     4. If it sits on top, how can gdb upgrades be incorporated ?
+     5. Can I change the 'break point' symbol ?
+     6. When I hit a break point, can the break line
+        be brought to the center of the source window ?
+
+043. (Insert your project idea here)

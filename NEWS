@@ -14,6 +14,9 @@ DDD 1.2
     - DDD now runs on SGI/IRIX machines.
     - Interrupting running processes via the Interrupt button now
       works correctly on Solaris, HP-UX, and other systems.
+    - Improved support for GDB artificial arrays.
+    - The GDB command window has additional control character support.
+    - X warnings can be suppressed.
 
     Thanks to all who sent in bug reports and suggestions.
 
