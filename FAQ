@@ -93,7 +93,13 @@ DDD Frequently Asked Questions                                  -*- text -*-
     support the LessTif team, who are developing a free
     Motif-compliant widget set.  Check out their WWW page at
     
-    http://www.hungry.com/
+        http://www.hungry.com:8000/products/
+
+    [Note: We have well considered to build DDD on a free widget set.
+    But Athena is definitively not powerful enough, and alternative
+    approaches like Tcl/Tk did not provide the necessary asynchronous
+    interprocess communication facilities required to build an
+    efficient interface.]
 
 
 9.  DDD reports `imake' and/or `xmkmf' problems when being started.

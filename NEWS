@@ -1,6 +1,22 @@
 Changes in DDD						-*- text -*-
 **************
 
+DDD 1.3d
+--------
+
+    Bug fix release.
+
+    - Anonymous unions and bitfields are now processed correctly.
+    - `Continue Until Here' (was `Set Temporary and Continue')
+      now also stops if current stack frame is left (GDB only)
+    - More patches for Linux ELF incorporated.  Thanks to 
+      lee@champion.tcs.co.jp (Lee Hounshell) and
+      jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
+    - Non-textual source files (binary characters, no newline at end)
+      are now processed correctly.
+    - Basic support for DEC's dbx included.
+
+
 DDD 1.3c
 --------
 
