@@ -332,6 +332,8 @@ Volunteers for these and other projects are welcome!
 
 384 Finish themes support:
     * Cache computed VSL libraries (clear when changed)
+    * Finish pop-up themes menu
+    * Allow for interaction between VSL and DDD.
     * Populate user's DDD directory with themes
 
 385 (Insert new project ideas here)
