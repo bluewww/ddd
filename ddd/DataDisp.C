@@ -3499,7 +3499,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	return;
     }
 
-    if (!contains_display(answer, gdb) || !is_valid(answer))
+    if (!contains_display(answer, gdb) || !is_valid(answer, gdb))
     {
 	if (info->deferred == DeferIfNeeded)
 	{
@@ -4754,7 +4754,7 @@ string DataDisp::process_displays(string& displays,
 	    return not_my_displays;
 	}
 
-	if (!is_valid(next_display))
+	if (!is_valid(next_display, gdb))
 	{
 	    // Display is not active
 	}
@@ -5434,7 +5434,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     {
 	value = "";		// GDB is busy - don't show old value
     }
-    else if (!is_valid(value))
+    else if (!is_valid(value, gdb))
     {
 	post_gdb_message(value);
 	value = "";		// Variable cannot be accessed
@@ -5517,7 +5517,7 @@ void DataDisp::SetDone(const string& complete_answer, void *qu_data)
 
     if (complete_answer == NO_GDB_ANSWER)
 	return;			// Command was canceled - keep dialog open
-    if (!is_valid(complete_answer))
+    if (!is_valid(complete_answer, gdb))
 	return;			// Bad value - keep dialog open
 
     // All done - pop down dialog

@@ -59,7 +59,7 @@ static string _fortranize_globals(const string& id)
 	    for (int suffix_length = 1; suffix_length < 3; suffix_length++)
 	    {
 		new_id += '_';
-		if (is_valid(gdbValue(new_id)))
+		if (is_valid(gdbValue(new_id), gdb))
 		    return new_id;
 	    }
 	}
@@ -83,15 +83,15 @@ string _fortranize(const string& id, bool globals_first)
     }
 
     // Try identifier as given.
-    if (is_valid(gdbValue(id)))
+    if (is_valid(gdbValue(id), gdb))
 	return id;
 
     // Try in lower-case.  g77 does this for local objects.
-    if (is_valid(gdbValue(downcase(id))))
+    if (is_valid(gdbValue(downcase(id)), gdb))
 	return downcase(id);
 
     // Try in upper-case.  f77 does this for local objects.
-    if (is_valid(gdbValue(upcase(id))))
+    if (is_valid(gdbValue(upcase(id)), gdb))
 	return upcase(id);
 
     // Try global objects.
@@ -113,7 +113,7 @@ string fortranize(const string& id, bool globals_first)
 
     // Dereference pointers automatically.
     // GDB issues `(PTR TO -> ( integer )) 0x2290'
-    if (is_valid(value) && 
+    if (is_valid(value, gdb) && 
 	downcase(value).contains("ptr to") && 
 	!value.contains("0x0", -1))
 	return deref(name);

@@ -612,7 +612,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     if (tip == NO_GDB_ANSWER)
 	return MString(0, true);
 
-    if (!is_valid(tip) && widget == source_view->code())
+    if (!is_valid(tip, gdb) && widget == source_view->code())
     {
 	// Get register value - look up `$pc' when pointing at `pc'
 	name = expr;
@@ -632,7 +632,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
 	}
     }
 
-    if (!is_valid(tip))
+    if (!is_valid(tip, gdb))
 	return clear;
 
     tip = get_disp_value_str(tip, gdb);
