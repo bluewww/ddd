@@ -70,9 +70,6 @@ Volunteers for fixing these and other bugs are welcome!
     When I repeatedly change the size, the flashing comes again but
     not each time the window size is big enough to hold all boxes.
 
-152 Curved edges cannot (yet) be printed.
-    [Any PostScript and FIG gurus out there?  -AZ]
-
 155 (DBX) `dump` output is not understood if local arrays are shown.
     (DBX prints these as `ARRAY')
 
