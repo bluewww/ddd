@@ -35,6 +35,7 @@ char logplayer_rcsid[] =
 
 #include "logplayer.h"
 
+#include "assert.h"
 #include "bool.h"
 #include "strclass.h"
 #include "cook.h"
@@ -45,6 +46,7 @@ char logplayer_rcsid[] =
 #include <iomanip.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>		// sleep()
 
 #include <setjmp.h>
 #include <signal.h>
@@ -93,6 +95,7 @@ void logplayer(const string& logname)
     cout << "[Playing " + quote(logname) + ".  Use `?' for help]\n";
 
     static string out;
+    static string last_out;
     static string ddd_line;
     static string last_prompt;
     static bool initializing = true;
@@ -131,41 +134,41 @@ void logplayer(const string& logname)
 	    command_no_start = command_no;
 	}
 
+	// Read line from log
 	char buffer[1024];
 	log.getline(buffer, sizeof buffer);
 	string log_line(buffer);
 
-	if (log_line.contains("<- ", 0) ||
-	    out != "" && log_line.contains("   ", 0))
+	if (out_seen && log_line.contains("   ", 0))
 	{
-	    // Accumulate logged output
+	    // Continuation line
 	    out += unquote(log_line.from('"'));
-	    out_seen = true;
 	}
 	else if (out != "")
 	{
 	    // Send out accumulated output
-	    if (out.contains('\n'))
+	    if (!scanning)
 	    {
-		string prompt = out.after('\n', -1);
-		if (prompt != "")
-		    last_prompt = prompt;
-
-		if (!scanning)
-		{
-		    cout << out.through('\n', -1);
-		    cout.flush();
-		}
+		cout << out;
+		cout.flush();
+		// sleep(1);
 	    }
-	    else
-	    {
-		last_prompt = out;
-	    }
+	    last_out += out;
 	    out = "";
+	}
+
+	if (log_line.contains("<- ", 0))
+	{
+	    assert(out == "");
+
+	    // Output line
+	    out = unquote(log_line.from('"'));
+	    out_seen = true;
 	}
 
 	if (out_seen && log_line.contains("-> ", 0))
 	{
+	    // Handle input
 	    string in = unquote(log_line.from('"'));
 	    if (in.contains('\n', -1))
 		in = in.before('\n', -1);
@@ -191,6 +194,7 @@ void logplayer(const string& logname)
 			scanning = false;
 			scan_start = current;
 			command_no_start = command_no - 1;
+			last_out = "";
 		    }
 		}
 	    }
@@ -201,8 +205,19 @@ void logplayer(const string& logname)
 		initializing = false;
 
 		// Read command from DDD
-		cout << last_prompt;
-		cout.flush();
+		if (last_out.contains('\n'))
+		{
+		    string prompt = last_out.after('\n', -1);
+		    if (prompt != "")
+			last_prompt = prompt;
+		}
+		if (!last_out.contains(last_prompt, -1))
+		{
+		    cout << last_prompt;
+		    cout.flush();
+		}
+		last_out = "";
+
 		char *s = fgets(buffer, sizeof buffer, stdin);
 		if (ignore_next_input)
 		{
