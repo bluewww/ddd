@@ -2609,9 +2609,16 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 
     if (answer == "")
     {
-	// No display output (GDB bug).  Get it via `print'
-	gdb_command(gdb->print_command(info->display_expression), 
-		    last_origin, new_data_display_extraOQC, data);
+	if (gdb->has_display_command())
+	{
+	    // No display output (GDB bug).  Refresh displays explicitly.
+	    gdb_command(gdb->display_command(), last_origin,
+			new_data_display_extraOQC, data);
+	}
+	else
+	{
+	    delete info;
+	}
 	return;
     }
 
@@ -2704,7 +2711,7 @@ void DataDisp::new_user_displayOQC (const string& answer, void* data)
     delete info;
 }
 
-// Create new display value from `print' output
+// Create new display value from `display' output
 void DataDisp::new_data_display_extraOQC (const string& answer, void* data)
 {
     NewDisplayInfo *info = (NewDisplayInfo *)data;
@@ -2715,10 +2722,12 @@ void DataDisp::new_data_display_extraOQC (const string& answer, void* data)
 	return;
     }
 
-    // Simulate the `display' output that should have come from GDB
-    string display = itostring(next_gdb_display_number++) + ": " 
-	+ info->display_expression + " = " + answer + '\n';
-    new_data_displayOQC(display, data);
+    // The new display is the first one
+    string ans = answer;
+    string display = read_next_display(ans, gdb);
+
+    if (display != "")
+	new_data_displayOQC(display, data);
 }
 
 
