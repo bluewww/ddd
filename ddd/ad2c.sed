@@ -8,8 +8,13 @@
 : read
 # remove comments
 /^!/d
-# remove blanks
+# remove blank lines
 /^$/d
+# compress blanks after `:'
+s/:[	 ][	 ]*/: /g
+# remove spaces at end of line
+s/[	 ][	 ]*$/ /
+s/[	 ][	 ]*\\n/\\n/g
 # escape backslash
 s/\\/\\\\/g
 # except the line continuation ones
@@ -17,6 +22,8 @@ s/\\$//g
 # escape quotes
 s/"/\\"/g
 s/'/\\'/g
+# escape tabs
+s/	/\\t/g
 # add leading quote
 s/^/"/
 #
@@ -33,8 +40,13 @@ n
 # just like "read" only does not add leading quote
 /^!/d
 /^$/d
+s/:[	 ][	 ]*/: /g
+s/[	 ][	 ]*$/ /
+s/[	 ][	 ]*\\n$/ /
+s/[	 ][	 ]*\\n/\\n/g
 s/\\/\\\\/g
 s/\\$//g
 s/"/\\"/g
 s/'/\\'/g
+s/	/\\t/g
 b test
