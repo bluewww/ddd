@@ -3128,8 +3128,8 @@ Ddd*preferences*data*helpString:	\
 ITEM If LBL(Detect aliases) is set, DDD detects displays with the same\n\
     physical address and suppresses all aliases except the one that was\n\
     least recently changed.  Useful for examining shared data structures.\n\
-ITEM If LBL(Cluster displays) is set, all independent displays will be\n\
-    merged into one single cluster, saving screen space.\n\
+ITEM If LBL(Cluster data displays) is set, all independent data displays\n\
+    will be merged into one single cluster, saving screen space.\n\
 ITEM If LBL(Display two-dimensional arrays as tables) is set, the elements\n\
     of two-dimensional arrays are aligned in a table.\n\
     Otherwise, two-dimensional arrays are displayed as nested linear arrays.\n\
@@ -3159,7 +3159,7 @@ Click on LBL(Reset) to restore the saved preferences.
 Ddd*preferences*detectAliases.labelString:	\
 Detect Aliases (shared data structures)
 Ddd*preferences*clusterDisplays.labelString:    \
-Cluster Independent Displays
+Cluster Data Displays
 Ddd*preferences*align2dArrays.labelString:	\
 Display Two-Dimensional Arrays as Tables
 Ddd*preferences*snapToGrid.labelString:	        \
