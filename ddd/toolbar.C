@@ -71,6 +71,57 @@ static void set_label_type(MMDesc items[], unsigned char label_type)
 	if (w != 0 && XmIsLabel(w))
 	{
 	    XtVaSetValues(w, XmNlabelType, label_type, NULL);
+
+	    if (label_type != XmSTRING)
+		continue;
+	    
+	    // In OSF/Motif, setting both labelString and labelPixmap
+	    // causes the button to use the Pixmap extent and to
+	    // ignore the labelString extent, even if its labelType is
+	    // XmSTRING.  Hence, we set the size explicitly instead.
+	    //
+	    // (This only happens in OSF/Motif; LessTif works fine.)
+	    unsigned char label_type;
+	    XmString label_string;
+	    XmFontList font_list;
+	    Dimension border_width, shadow_thickness;
+	    Dimension margin_bottom, margin_top, margin_left, margin_right;
+	    Dimension margin_height, margin_width;
+	    XtVaGetValues(w,
+			  XmNlabelType,       &label_type,
+			  XmNlabelString,     &label_string,
+			  XmNfontList,        &font_list,
+			  XmNborderWidth,     &border_width,
+			  XmNshadowThickness, &shadow_thickness,
+			  XmNmarginBottom,    &margin_bottom,
+			  XmNmarginTop,       &margin_top,
+			  XmNmarginLeft,      &margin_left,
+			  XmNmarginRight,     &margin_right,
+			  XmNmarginHeight,    &margin_height,
+			  XmNmarginWidth,     &margin_width,
+			  NULL);
+
+	    Dimension label_width, label_height;
+	    XmStringExtent(font_list, label_string, 
+			   &label_width, &label_height);
+
+	    Dimension width =
+		border_width * 2 + shadow_thickness * 2 + 
+		margin_width * 2 + 
+		margin_left + label_width + margin_right;
+
+	    Dimension height =
+		border_width * 2 + shadow_thickness * 2 + 
+		margin_height * 2 + 
+		margin_top + label_height + margin_bottom;
+
+	    XtVaSetValues(w,
+			  XmNrecomputeSize, False,
+			  XmNwidth,  width + 4,
+			  XmNheight, height + 4,
+			  NULL);
+
+	    XmStringFree(label_string);
 	}
     }
 }
@@ -108,6 +159,7 @@ static Widget align_buttons(MMDesc *items1, MMDesc *items2)
 	    Arg args[10];
 	    Cardinal arg = 0;
 
+	    XtSetArg(args[arg], XmNresizable,        False); arg++;
 	    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_FORM); arg++;
 	    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM); arg++;
 
@@ -132,6 +184,44 @@ static Widget align_buttons(MMDesc *items1, MMDesc *items2)
     return last_button;
 }
 
+
+
+static void ResetLabelEH(Widget w, XtPointer, XEvent *, Boolean *)
+{
+    XmString label_string;
+    XtVaGetValues(w, XmNlabelString, &label_string, NULL);
+
+    MString empty("");
+
+    XtVaSetValues(w, XmNlabelString, empty.xmstring(), NULL);
+    XtVaSetValues(w, XmNlabelString, label_string, NULL);
+    XmStringFree(label_string);
+
+    XtRemoveEventHandler(w, ExposureMask, False, 
+			 ResetLabelEH, XtPointer(0));
+}
+
+static void center_buttons(MMDesc items[], Dimension offset)
+{
+    for (MMDesc *item = items; item != 0 && item->name != 0; item++)
+    {
+	Widget w = item->widget;
+	if (w == 0)
+	    continue;
+
+	XtVaSetValues(w,
+		      XmNtopOffset, offset / 2,
+		      XmNbottomOffset, (offset + 1) / 2,
+		      NULL);
+
+	// In OSF/Motif, setting both labelString and labelPixmap
+	// causes the button to ignore the labelString extent, giving
+	// a bad alignment of the labelString.  This goes away as soon
+	// as the label string is reset.  Hence, reset it upon creation.
+	XtAddEventHandler(w, ExposureMask, False, 
+			  ResetLabelEH, XtPointer(0));
+    }
+}
 
 
 //-----------------------------------------------------------------------
@@ -225,6 +315,18 @@ Widget create_toolbar(Widget parent, string /* name */,
 		      XmNpaneMaximum, toolbar_height,
 		      XmNpaneMinimum, toolbar_height,
 		      NULL);
+
+	if (label_type == XmSTRING && arg_height > button_height)
+	{
+	    Dimension offset = arg_height - button_height;
+
+	    if (offset > 0)
+	    {
+		// Recenter all labels
+		center_buttons(items1, offset);
+		center_buttons(items2, offset);
+	    }
+	}
     }
 
     return toolbar;
