@@ -310,8 +310,9 @@ void TTYAgent::open_master()
     line = _getpty(&master, O_RDWR, 0600, 0);
     if (line != 0 && master >= 0)
     {
-	// Verify slave side is usable
-	if (tty_ok(line))
+	// Verify slave side is usable (Don't use TTY_OK() here - it
+	// seems this breaks SGI TTY setup).
+	if (access(line, R_OK | W_OK) == 0)
 	{
 	    char *t = ttyname(master);
 	    if (t)
