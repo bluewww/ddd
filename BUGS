@@ -278,10 +278,6 @@ Volunteers for fixing these and other bugs are welcome!
 255 In Java programs, the `info set' status display is treated as
     variable list.
 
-256*Eric Blood <e.blood@citr.com> reports that on
-    sparc-sun-solaris2.5.1, the ddd-1998-04-13 snapshot fails to start
-    the debugger subprocess.
-
 257 Marco Hess <marcoh@senet.com.au> says that sometimes, the source
     window locks in scroll mode until it reaches the top or bottom of
     the file.

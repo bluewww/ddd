@@ -1,7 +1,7 @@
 // $Id$
 // Agent interface on a callback basis
 
-// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -413,9 +413,16 @@ void LiterateAgent::readAndDispatchInput(bool expectEOF)
 
     int length = readInput(data);
     if (length > 0)
+    {
 	dispatch(Input, data, length);
-    else if (!expectEOF && length == 0 && inputfp() != 0 && feof(inputfp()))
-	inputEOF();
+    }
+    else if (length == 0 && inputfp() != 0 && feof(inputfp()))
+    {
+	if (expectEOF)
+	    clearerr(inputfp());
+	else
+	    inputEOF();
+    }
 }
 
 // Error Data is available: read all and call Error handlers of current job
@@ -425,9 +432,16 @@ void LiterateAgent::readAndDispatchError(bool expectEOF)
 
     int length = readError(data);
     if (length > 0)
+    {
 	dispatch(Error, data, length);
-    else if (!expectEOF && length == 0 && errorfp() != 0 && feof(errorfp()))
-	errorEOF();
+    }
+    else if (length == 0 && errorfp() != 0 && feof(errorfp()))
+    {
+	if (expectEOF)
+	    clearerr(errorfp());
+	else
+	    errorEOF();
+    }
 }
 
 
@@ -462,23 +476,23 @@ void LiterateAgent::start()
 {
     AsyncAgent::start();
     
-    // Dispatch input data that may already be there
+    // Dispatch input data that may already be there  (if there is some)
     if (inputfp() != 0 && !blocking_tty(inputfp()))
-	readAndDispatchInput();
+	readAndDispatchInput(true);
 
     if (errorfp() != 0 && !blocking_tty(errorfp()))
-	readAndDispatchError();
+	readAndDispatchError(true);
 }
 
 // Terminator
 void LiterateAgent::abort()
 {
-    // dispatch remaining input data (if there is some remaining)
+    // Dispatch remaining input data (if there is some remaining)
     activateIO();
     readAndDispatchInput(true);
     readAndDispatchError(true);
 
-    // now, clean up
+    // Clean up now
     deactivateIO();
     AsyncAgent::abort();
 }
