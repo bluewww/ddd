@@ -27,19 +27,19 @@
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
 //-----------------------------------------------------------------------------
-// Diese Klasse erzeugt das Source-View-Fenster und stellt die noetigen
-// Callback-Funktionen zur Verfuegung.
+// This class creates the source view window and provides necessary
+// callbacks.
 //
-// Namenskonventionen:
-// ...CB  : Callback-Funktion.
-// ...DCB : Dialog-Callback-Funktion.
-// ...CD  : 'create dialog' ; erzeugt einen Dialog.
-// ...Act : Aktions-Funktion.
-// ...SQ  : ruft gdb->send_question() auf.
-// ...OQC : fuer on_question_completion, Typ: OQCProc, siehe GDBAgent.
-// ...SQA : ruft gdb->send_qu_array() auf.
-// ...OQAC: fuer on_question_array_completion, Typ: OQACProc, siehe GDBAgent.
-// ...HP  : Handler-Prozedur. Typ: HandlerProc, siehe HandlerL.h
+// Name conventions:
+// ...CB  : Callback function.
+// ...DCB : Dialog callback function.
+// ...CD  : Create a dialog.
+// ...Act : Action function.
+// ...SQ  : Calls gdb->send_question().
+// ...OQC : For on_question_completion (type: OQCProc), see GDBAgent.h
+// ...SQA : Calls gdb->send_qu_array().
+// ...OQAC: For on_question_array_completion (type: OQACProc), see GDBAgent.h
+// ...HP  : Handler procedure (type: HandlerProc), see HandlerL.h
 // 
 //-----------------------------------------------------------------------------
 
@@ -116,23 +116,25 @@ class SourceView {
 
     static void fill_labels(const string& info_output);
 
-    static Widget create_glyph(String name, 
+    static Widget create_glyph(Widget form_w, String name, 
 			       char *bits, int width, int height);
     static void map_glyph(Widget w, Position x, Position y);
     static void update_title ();
     static void update_glyphs ();
     static void UpdateGlyphsWorkProc(XtPointer, XtIntervalId *);
     static void MoveCursorToGlyphPosCB(Widget, XtPointer, XtPointer);
-    static int line_height ();
+    static int line_height (Widget text_w);
 
     static void refresh_bp_disp ();
+    static void refresh_bp_disp (Widget text_w);
 
     // Findet zu pos die passende Zeilennummer.
     // ist in_text!=0, so ist *in_text==true wenn pos im Quelltext-Bereich ist.
     // ist bp_nr!=0, so ist *bp_nr die Nr des Brekpoints, der an Position pos
     // dargestellt wird, 0 sonst.
     //
-    static bool get_line_of_pos (XmTextPosition pos,
+    static bool get_line_of_pos (Widget w,
+				 XmTextPosition pos,
 				 int*     line_nr_ptr,
 				 bool* in_text_ptr = 0,
 				 int*     bp_nr_ptr = 0);
@@ -141,7 +143,8 @@ class SourceView {
     // (text[startpos] ist dann der erste und text[endpos] der letzte Buchstabe
     // des gefundenen Wortes)
     //
-    static void find_word_bounds (const XmTextPosition pos,
+    static void find_word_bounds (Widget w,
+				  const XmTextPosition pos,
 				  XmTextPosition& startpos,
 				  XmTextPosition& endpos);
 
@@ -161,6 +164,7 @@ private:
     static void srcpopupAct (Widget, XEvent*, String*, Cardinal*);
     static void startSelectWordAct (Widget, XEvent*, String*, Cardinal*);
     static void endSelectWordAct (Widget, XEvent*, String*, Cardinal*);
+    static void updateGlyphsAct (Widget, XEvent*, String*, Cardinal*);
 
     //-----------------------------------------------------------------------
     // Timer-Prozeduren
@@ -194,8 +198,10 @@ private:
     static Widget toplevel_w;	 // Top-level widget
 
     static Widget source_view_w; // All windows
-    static Widget source_form_w; // Form around text and icons
+    static Widget source_form_w; // Form around text and glyphs
     static Widget source_text_w; // Source text
+    static Widget code_form_w;   // Form around Machine code and glyphs
+    static Widget code_text_w;   // Machine code text
 
     static Widget edit_breakpoints_dialog_w; // Dialog for editing breakpoints
     static Widget breakpoint_list_w;         // The breakpoint list
@@ -205,10 +211,6 @@ private:
     static Widget up_w;                      // The `Up' button
     static Widget down_w;                    // The `Down' button
     static bool stack_dialog_popped_up;	     // True if the stack is visible
-
-    static Widget code_dialog_w;              // Dialog for machine code
-    static Widget code_text_w;                // Text inside
-    static bool code_dialog_popped_up;	      // True if code is visible
 
     static Widget register_dialog_w;          // Dialog for registers
     static Widget register_list_w;            // Register list inside
@@ -229,7 +231,8 @@ private:
     static XmTextPosition*             pos_of_line;
 
     static Assoc<string, string> file_cache;
-    static string current_text;
+    static string current_source;
+    static string current_code;
 
     static XmTextPosition last_pos;
     static XmTextPosition last_top;
@@ -247,8 +250,15 @@ private:
     static String read_indented(string& file_name, long& length);
     static int read_current(string& file_name, bool force_reload = false);
 
-    static void SetInsertionPosition(XmTextPosition pos, 
+    static void SetInsertionPosition(Widget w,
+				     XmTextPosition pos, 
 				     bool fromTop = false);
+
+    static bool is_source_widget(Widget w);
+    static bool is_code_widget(Widget w);
+    static string& current_text(Widget w);
+
+    static XmTextPosition find_pc(const string& pc);
 
 public:
     // Constructor
@@ -264,6 +274,9 @@ public:
 
     // Set cursor position, based on the GDB position info POSITION
     static void show_position           (string position);
+
+    // Set PC position to location POSITION
+    static void show_pc                 (const string& pc);
 
     // Handle breakpoint information
     static void process_info_bp         (string& info_output);
@@ -310,7 +323,7 @@ public:
     static void go_back();
     static void go_forward();
 
-    // Return cursor position in <file>:<line> format.
+    // Return source cursor position in <file>:<line> format.
     // If BASENAME, return only the basename of the file;
     // the full file name, otherwise.
     static string line_of_cursor(bool basename = true);
@@ -321,18 +334,15 @@ public:
     // Callbacks for menu bar
     static void EditBreakpointsCB(Widget, XtPointer, XtPointer);
     static void ViewStackFramesCB(Widget, XtPointer, XtPointer);
-    static void ViewCodeCB(Widget, XtPointer, XtPointer);
     static void ViewRegistersCB(Widget, XtPointer, XtPointer);
 
     // Refreshing dialogs
     static void refresh_stack_frames();
-    static void refresh_code();
     static void refresh_registers();
 
     // Check whether specific commands are required at next prompt
     static bool where_required();
     static bool register_required();
-    static bool code_required();
 
     // Check whether source files are to be cached
     static bool cache_source_files;
