@@ -309,7 +309,8 @@ dnl Not having X is fatal.  Let the user fix this.
 AC_MSG_ERROR([The X11 library '-lX11' could not be found.
                   Please use the configure options '--x-includes=DIR'
                   and '--x-libraries=DIR' to specify the X location.
-                  See the file 'config.log' for further diagnostics.])
+                  See the files 'config.log' and 'ddd/config.log'
+                  for further diagnostics.])
 fi
 AC_SUBST(X_LIBS)
 AC_SUBST(X11_LIBS)
@@ -341,7 +342,8 @@ dnl Not having Xt is fatal.  Let the user fix this.
 AC_MSG_ERROR([The X toolkit library '-lXt' could not be found.
                   Please use the configure options '--x-includes=DIR'
                   and '--x-libraries=DIR' to specify the X location.
-                  See the file 'config.log' for further diagnostics.])
+                  See the files 'config.log' and 'ddd/config.log'
+                  for further diagnostics.])
 fi
 AC_SUBST(XT_LIBS)
 dnl
@@ -377,7 +379,8 @@ AC_MSG_WARN([The Athena widgets library '-lXaw' could not be found.
                     '--with-athena-libraries=DIR' to specify the Xaw location.
                     If you do not have the athena library, use the configure
                     option '--without-athena' to suppress this message.
-                    See the file 'config.log' for further diagnostics.])
+                    See the files 'config.log' and 'ddd/config.log'
+                    for further diagnostics.])
 fi
 fi
 if test "$XAW_LIBS" != ""; then
@@ -426,7 +429,8 @@ dnl Without Motif, we won't get far.  Let the user fix this.
 AC_MSG_ERROR([The Motif library '-lXm' could not be found.
                   Please use the configure options '--with-motif-includes=DIR'
                   and '--with-motif-libraries=DIR' to specify the Xm location.
-                  See the file 'config.log' for further diagnostics.])
+                  See the files 'config.log' and 'ddd/config.log'
+                  for further diagnostics.])
 fi
 AC_SUBST(XP_LIBS)
 AC_SUBST(XM_LIBS)
