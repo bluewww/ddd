@@ -120,7 +120,7 @@ bool ddd_expired()
 	return true;
     }
 
-    time_t current_time = time(NULL);
+    time_t current_time = time((time_t)0);
     if (current_time < 0)
     {
 	// No current time -- consider as expired.
