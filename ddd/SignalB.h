@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // Block signals for the lifetime of this object (protect critical sections)
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 // 
 // This file is part of the DDD Library.
@@ -26,8 +26,8 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _Nora_SignalBlocker_h
-#define _Nora_SignalBlocker_h
+#ifndef _DDD_SignalBlocker_h
+#define _DDD_SignalBlocker_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -52,70 +52,28 @@
 //
 // A SignalBlocker without arguments blocks all signals.
 
-
+class SignalBlocker {
+private:
 #ifdef SIG_SETMASK
-
-// POSIX interface
-class SignalBlocker {
-private:
-    sigset_t old_set;
-
-    // Avoid assignments
-    void operator = (const SignalBlocker&) {}
-
-public:
-    // Constructor
-    SignalBlocker(int signum)
-    {
-	sigset_t new_set;
-
-	sigemptyset(&new_set);
-	sigaddset(&new_set, signum);
-	sigprocmask(SIG_BLOCK, &new_set, &old_set);
-    }
-    SignalBlocker()
-    {
-	sigset_t new_set;
-
-	sigfillset(&new_set);
-	sigprocmask(SIG_BLOCK, &new_set, &old_set);
-    }
-
-    // Destructor
-    ~SignalBlocker()
-    {
-	sigprocmask(SIG_SETMASK, &old_set, (sigset_t *)0);
-    }
-};
-
+    sigset_t old_set;		// POSIX interface
 #else
+    int old_mask;               // BSD interface
+#endif
 
-// BSD interface
-class SignalBlocker {
-private:
-    int _mask;
-
-    // Avoid assignments
-    void operator = (const SignalBlocker& b) {}
+    // No assignments and copies
+    void operator = (const SignalBlocker&) {}
+    SignalBlocker(const SignalBlocker&) {}
 
 public:
-    // Constructor
-    SignalBlocker(int signum)
-    {
-	_mask = sigblock(sigmask(signum));
-    }
-    SignalBlocker()
-    {
-	_mask = sigblock(~0);
-    }
+    // Constructor - block signal SIGNUM
+    SignalBlocker(int signum);
 
-    // Destructor
-    ~SignalBlocker()
-    {
-	sigsetmask(_mask);
-    }
+    // Constructor - block all signals
+    SignalBlocker();
+
+    // Destructor - restore state
+    ~SignalBlocker();
 };
-#endif // SIG_SETMASK
   
-#endif // _Nora_SignalBlocker_h
+#endif // _DDD_SignalBlocker_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

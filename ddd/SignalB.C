@@ -1,28 +1,30 @@
 // $Id$ -*- C++ -*-
 // Block signals for the lifetime of this object (protect critical sections)
 
-// Copyright (C) 1993 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 // 
-// This file is part of NORA.
+// This file is part of the DDD Library.
 // 
-// NORA is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public
+// The DDD Library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Library General Public
 // License as published by the Free Software Foundation; either
 // version 2 of the License, or (at your option) any later version.
 // 
-// NORA is distributed in the hope that it will be useful,
+// The DDD Library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-// See the GNU General Public License for more details.
+// See the GNU Library General Public License for more details.
 // 
-// You should have received a copy of the GNU General Public
-// License along with NORA -- see the file COPYING.
+// You should have received a copy of the GNU Library General Public
+// License along with the DDD Library -- see the file COPYING.LIB.
 // If not, write to the Free Software Foundation, Inc.,
 // 675 Mass Ave, Cambridge, MA 02139, USA.
 // 
-// NORA is an experimental inference-based software development
-// environment. Contact nora@ips.cs.tu-bs.de for details.
+// DDD is the data display debugger.
+// For details, see the DDD World-Wide-Web page, 
+// `http://www.cs.tu-bs.de/softech/ddd/',
+// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
 char SignalBlocker_rcsid[] = 
     "$Id$";
@@ -33,3 +35,46 @@ char SignalBlocker_rcsid[] =
 
 #include "SignalB.h"
 
+// Constructor - block signal SIGNUM
+SignalBlocker::SignalBlocker(int signum)
+{
+#ifdef SIG_SETMASK
+    // POSIX interface
+    sigset_t new_set;
+
+    sigemptyset(&new_set);
+    sigaddset(&new_set, signum);
+    sigprocmask(SIG_BLOCK, &new_set, &old_set);
+#else
+    // BSD interface
+    old_mask = sigblock(sigmask(signum));
+#endif
+}
+
+// Constructor - block all signals
+SignalBlocker::SignalBlocker()
+{
+#ifdef SIG_SETMASK
+    // POSIX interface
+    sigset_t new_set;
+
+    // The following line causes a warning on LINUX systems; this is harmless.
+    sigfillset(&new_set);
+    sigprocmask(SIG_BLOCK, &new_set, &old_set);
+#else
+    // BSD interface
+    old_mask = sigblock(~0);
+#endif
+}
+
+// Destructor - restore state
+SignalBlocker::~SignalBlocker()
+{
+#ifdef SIG_SETMASK
+    // POSIX interface
+    sigprocmask(SIG_SETMASK, &old_set, (sigset_t *)0);
+#else
+    // BSD interface
+    sigsetmask(old_mask);
+#endif
+}
