@@ -359,7 +359,7 @@ private:
 
 static void partial_answer_received(const string&, void *);
 static void command_completed(void *);
-static void extra_completed(const StringArray&, const VoidArray&, void *);
+static void extra_completed(StringArray&, const VoidArray&, void *);
 
 // Handle graph command in CMD, with WHERE_ANSWER being the GDB reply
 // to a `where 1' command; return true iff recognized
@@ -2849,7 +2849,7 @@ static void find_some_source()
 // Handle GDB answers to DDD questions sent after GDB command
 //-----------------------------------------------------------------------------
 
-static void extra_completed (const StringArray& answers,
+static void extra_completed (StringArray& answers,
 			     const VoidArray& /* qu_datas */,
 			     void*  data)
 {
@@ -3105,7 +3105,7 @@ static void extra_completed (const StringArray& answers,
 
     if (extra_data->refresh_where)
     {
-	string& where_output = answers[qu_count++];
+	const string& where_output = answers[qu_count++];
 
 	if (gdb->type() == JDB)
 	{

@@ -83,7 +83,7 @@ protected:
 public:
     // Resources
     virtual int size() const   { return _allocated_size; }
-    T& operator[](int i) const { return _value(i); }
+    const T& operator[](int i) const { return _value(i); }
     T& operator[](int i)       { return value(i); }
     T* values() const          { return _values; }
 #if 0

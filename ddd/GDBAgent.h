@@ -105,7 +105,7 @@ typedef void (* OAProc) (const string& answer,
 typedef void (* OACProc) (void* user_data);
 
 // Called from send_qu_array with the complete answers
-typedef void (* OQACProc) (const StringArray& complete_answers,
+typedef void (* OQACProc) (StringArray& complete_answers,
 			   const VoidArray& user_datas,
 			   void *user_data);
 

@@ -467,7 +467,7 @@ private:
     static void new_user_displayOQC  (const string& answer, void* data);
 
     static void refresh_displayOQC   (const string& answer, void*  data);
-    static void refresh_displayOQAC  (const StringArray& answers,
+    static void refresh_displayOQAC  (StringArray& answers,
 				      const VoidArray& qu_datas,
 				      void*  data);
 

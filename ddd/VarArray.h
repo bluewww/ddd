@@ -120,7 +120,7 @@ public:
     void operator += (const T& value) { add(value); }
     void operator -= (const T& value) { remove(value); }
 
-    T& operator[](int i) const 
+    const T& operator[](int i) const 
     { 
 	assert(i >= 0 && i < size());
 	return DynArray<T>::operator[](i); 

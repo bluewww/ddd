@@ -4425,7 +4425,7 @@ void DataDisp::refresh_displaySQ(Widget origin, bool verbose, bool do_prompt)
     }
 }
 
-void DataDisp::refresh_displayOQAC (const StringArray& answers,
+void DataDisp::refresh_displayOQAC (StringArray& answers,
 				    const VoidArray& qu_datas,
 				    void*  data)
 {
