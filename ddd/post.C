@@ -45,6 +45,7 @@ char post_rcsid[] =
 #include "Command.h"
 #include "ddd.h"
 #include "exit.h"
+#include "findParent.h"
 #include "string-fun.h"
 #include "verify.h"
 #include "wm.h"
@@ -92,7 +93,7 @@ Widget post_gdb_yn(string question, Widget w)
 	return 0;
 
     if (yn_dialog)
-	DestroyWhenIdle(yn_dialog);
+	DestroyWhenIdle(findShellParent(yn_dialog));
 
     Arg args[10];
     int arg;
@@ -137,8 +138,8 @@ Widget post_gdb_busy(Widget w)
     if (ddd_is_exiting)
 	return 0;
 
-    if (busy_dialog)
-	DestroyWhenIdle(busy_dialog);
+    if (busy_dialog != 0)
+	DestroyWhenIdle(findShellParent(busy_dialog));
 
     busy_dialog = verify(XmCreateWorkingDialog(find_shell(w), "busy_dialog", 
 					       NULL, 0));
@@ -187,7 +188,7 @@ Widget post_gdb_died(string reason, int gdb_status, Widget w)
 
     static Widget died_dialog = 0;
     if (died_dialog)
-	DestroyWhenIdle(died_dialog);
+	DestroyWhenIdle(findShellParent(died_dialog));
 
     if (gdb_initialized)
     {
@@ -263,7 +264,7 @@ Widget post_gdb_message(string text, Widget w)
 
     static Widget gdb_message_dialog = 0;
     if (gdb_message_dialog)
-	DestroyWhenIdle(gdb_message_dialog);
+	DestroyWhenIdle(findShellParent(gdb_message_dialog));
 
 
     Arg args[10];
@@ -311,7 +312,7 @@ Widget post_error(string text, String name, Widget w)
 
     static Widget ddd_error = 0;
     if (ddd_error)
-	DestroyWhenIdle(ddd_error);
+	DestroyWhenIdle(findShellParent(ddd_error));
 
     Arg args[10];
     int arg = 0;
@@ -355,7 +356,7 @@ Widget post_warning(string text, String name, Widget w)
 
     static Widget ddd_warning = 0;
     if (ddd_warning)
-	DestroyWhenIdle(ddd_warning);
+	DestroyWhenIdle(findShellParent(ddd_warning));
 
     Arg args[10];
     int arg = 0;

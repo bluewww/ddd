@@ -36,7 +36,8 @@ char DestroyCB_rcsid[] =
 static void DestroyCB(XtPointer client_data, XtIntervalId *)
 {
     Widget w = Widget(client_data);
-    XtDestroyWidget(w);
+    if (w != 0)
+	XtDestroyWidget(w);
 }
 
 // Destroy WIDGET as soon as we are idle
