@@ -837,12 +837,12 @@ struct ArgItems {
 static MMDesc arg_cmd_area[] = 
 {
     {"lookup",        MMPush,  { gdbLookupCB        }},
-    {"break",         MMPush,  { gdbBreakArgCmdCB   }},
-    {"clear",         MMPush,  { gdbClearArgCmdCB   }},
+    {"breakAt",       MMPush,  { gdbBreakArgCmdCB   }},
+    {"clearAt",       MMPush,  { gdbClearArgCmdCB   }},
     {"print",         MMPush,  { gdbPrintArgCmdCB   }},
     {"display",       MMPush,  { gdbDisplayArgCmdCB }},
-    {"find_backward", MMPush,  { gdbFindBackwardCB  }},
-    {"find_forward",  MMPush,  { gdbFindForwardCB   }},
+    {"findBackward",  MMPush,  { gdbFindBackwardCB  }},
+    {"findForward",   MMPush,  { gdbFindForwardCB   }},
     MMEnd
 };
 

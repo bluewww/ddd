@@ -592,8 +592,6 @@ Ddd*break.foreground:		   red4
 Ddd*quit.foreground:		   red4
 Ddd*run.foreground:		   dark green
 Ddd*run_again.foreground:	   dark green
-Ddd*arg_cmd_area*break.foreground: black
-Ddd*text_popup*break.foreground:   black
 ! Ddd*dereference.foreground:	   blue4
 
 ! Highlight special dialogs
@@ -1406,7 +1404,8 @@ Ddd*menubar.file*contextHelpString:	\
 @tt \267 @bf Print Again @rm - print using the previous settings.\n\
 \n\
 @tt \267 @bf Close @rm - close this window.\n\
-@tt \267 @bf Exit @rm - exit DDD.
+@tt \267 @bf Restart @rm - restart @DDD@.\n\
+@tt \267 @bf Exit @rm - exit @DDD@.
 
 Ddd*menubar*fileMenu.open_file.labelString: Open Program...
 Ddd*menubar*fileMenu.open_file.mnemonic:    O
@@ -1577,7 +1576,7 @@ but proceed through subroutine calls.\n\
 @tt \267 @bf Finish @rm - execute until function returns.\n\
 \n\
 @tt \267 @bf Kill @rm - Kill execution of program being debugged.\n\
-@tt \267 @bf Break @rm - interrupt program (or current debugger command).
+@tt \267 @bf Break @rm - interrupt program (or current debugger command).\n\
 @tt \267 @bf Quit @rm - abort program (or current debugger command).
 
 Ddd*menubar*programMenu.run.labelString:	   Run...
@@ -2370,12 +2369,12 @@ Ddd*arg_cmd_w.arg_cmd_area.entryAlignment:		XmALIGNMENT_CENTER
 Ddd*arg_cmd_w.arg_cmd_area*alignment:			XmALIGNMENT_CENTER
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.labelString:		Lookup ()
-Ddd*arg_cmd_w.arg_cmd_area*break.labelString:		Break at ()
-Ddd*arg_cmd_w.arg_cmd_area*clear.labelString:		Clear at ()
+Ddd*arg_cmd_w.arg_cmd_area*breakAt.labelString:		Break at ()
+Ddd*arg_cmd_w.arg_cmd_area*clearAt.labelString:		Clear at ()
 Ddd*arg_cmd_w.arg_cmd_area*print.labelString:		Print ()
 Ddd*arg_cmd_w.arg_cmd_area*display.labelString:		Display ()
-Ddd*arg_cmd_w.arg_cmd_area*find_backward.labelString:	Find@small<< @bf()
-Ddd*arg_cmd_w.arg_cmd_area*find_forward.labelString:	Find@small>> @bf()
+Ddd*arg_cmd_w.arg_cmd_area*findBackward.labelString:	Find@small<< @bf()
+Ddd*arg_cmd_w.arg_cmd_area*findForward.labelString:	Find@small>> @bf()
 
 Ddd*arg_cmd_w.arg_cmd_area*lookup.contextHelpString:	\
 @bf Lookup ()@rm\n\
@@ -2393,11 +2392,11 @@ lookup that address.\n\
 @tt \267 @rm If @bf () @rm contains a function or variable name, lookup\n\
     the definition of that function or variable.
 
-Ddd*arg_cmd_w.arg_cmd_area*break.contextHelpString:	\
+Ddd*arg_cmd_w.arg_cmd_area*breakAt.contextHelpString:	\
 @bf Break at ()@rm\n\
 Set a breakpoint at the argument @bf ()@rm.
 
-Ddd*arg_cmd_w.arg_cmd_area*clear.contextHelpString:	\
+Ddd*arg_cmd_w.arg_cmd_area*clearAt.contextHelpString:	\
 @bf Clear at ()@rm\n\
 Clear the breakpoint at the argument @bf ()@rm.
 
@@ -2409,12 +2408,12 @@ Ddd*arg_cmd_w.arg_cmd_area*display.contextHelpString:	\
 @bf Display ()@rm\n\
 Display the argument @bf () @rm in the data display window.
 
-Ddd*arg_cmd_w.arg_cmd_area*find_backward.contextHelpString:	\
+Ddd*arg_cmd_w.arg_cmd_area*findBackward.contextHelpString:	\
 @bf Find@small<< @bf()@rm\n\
 Search the previous occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.
 
-Ddd*arg_cmd_w.arg_cmd_area*find_forward.contextHelpString:	\
+Ddd*arg_cmd_w.arg_cmd_area*findForward.contextHelpString:	\
 @bf Find@small>> @bf()@rm\n\
 Search the next occurrence of @bf () @rm in the current source text.\n\
 If the option @bf Find Words Only @rm is set, only complete words are found.

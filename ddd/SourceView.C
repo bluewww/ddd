@@ -254,8 +254,8 @@ MMDesc SourceView::text_popup[] =
     {"whatis",     MMPush, {SourceView::text_popup_whatisCB}},
     MMSep,
     {"lookup",     MMPush, {SourceView::text_popup_lookupCB}},
-    {"break",      MMPush, {SourceView::text_popup_breakCB}},
-    {"clear",      MMPush, {SourceView::text_popup_clearCB}},
+    {"breakAt",    MMPush, {SourceView::text_popup_breakCB}},
+    {"clearAt",    MMPush, {SourceView::text_popup_clearCB}},
     MMEnd
 };
 
