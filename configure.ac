@@ -157,7 +157,7 @@ AC_SUBST(DEBUGGER_OPTION)dnl
 dnl
 dnl Check perl version
 dnl
-AC_PROG_PERL_VERSION(5.8.0, [], [AC_MSG_WARN(
+ICE_PROG_PERL_VERSION(5.8.0, [], [AC_MSG_WARN(
 Perl versions before 5.8.0 require a newer perl5db.pl!
 )])
 dnl

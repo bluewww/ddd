@@ -36,7 +36,7 @@ dnl Extended compiler checks.  Check not only for a compiler,
 dnl but also determine whether it compiles a simple "hello, world" 
 dnl program.
 dnl
-AC_DEFUN(ICE_PROG_CC,
+AC_DEFUN([ICE_PROG_CC],
 [
 AC_REQUIRE([AC_ISC_POSIX])
 AC_REQUIRE([AC_PROG_CC])
@@ -57,7 +57,7 @@ AC_MSG_ERROR(You must set the environment variable CC to a working
 fi
 ])dnl
 dnl
-AC_DEFUN(ICE_PROG_CXX,
+AC_DEFUN([ICE_PROG_CXX],
 [
 AC_REQUIRE([AC_ISC_POSIX])
 AC_REQUIRE([AC_PROG_CXX])
@@ -134,7 +134,7 @@ dnl If the C++ compiler accepts the `-fexternal-templates' flag,
 dnl set output variable `EXTERNAL_TEMPLATES' to `-fexternal-templates',
 dnl empty otherwise.
 dnl
-AC_DEFUN(ICE_EXTERNAL_TEMPLATES,
+AC_DEFUN([ICE_EXTERNAL_TEMPLATES],
 [
 AC_REQUIRE([AC_PROG_CXX])
 if test "$GXX" = yes; then
@@ -167,7 +167,7 @@ dnl If the C++ compiler accepts the `-fpermissive' flag,
 dnl set output variable `PERMISSIVE' to `-fpermissive',
 dnl empty otherwise.
 dnl
-AC_DEFUN(ICE_PERMISSIVE,
+AC_DEFUN([ICE_PERMISSIVE],
 [
 AC_REQUIRE([AC_PROG_CXX])
 if test "$GXX" = yes; then
@@ -197,7 +197,7 @@ dnl If the C++ compiler wants `-fpermissive' to compile X headers,
 dnl set output variable `X_PERMISSIVE' to `-fpermissive',
 dnl empty otherwise.
 dnl
-AC_DEFUN(ICE_X_PERMISSIVE,
+AC_DEFUN([ICE_X_PERMISSIVE],
 [
 AC_REQUIRE([ICE_PERMISSIVE])
 if test "$GXX" = yes; then
@@ -237,7 +237,7 @@ dnl If the C++ compiler accepts the `-fno-implicit-templates' flag,
 dnl set output variable `NO_IMPLICIT_TEMPLATES' to `-fno-implicit-templates',
 dnl empty otherwise.
 dnl
-AC_DEFUN(ICE_NO_IMPLICIT_TEMPLATES,
+AC_DEFUN([ICE_NO_IMPLICIT_TEMPLATES],
 [
 AC_REQUIRE([AC_PROG_CXX])
 if test "$GXX" = yes; then
@@ -267,7 +267,7 @@ dnl If the C++ compiler accepts the `-felide-constructors' flag,
 dnl set output variable `ELIDE_CONSTRUCTORS' to `-felide-constructors',
 dnl empty otherwise.
 dnl
-AC_DEFUN(ICE_ELIDE_CONSTRUCTORS,
+AC_DEFUN([ICE_ELIDE_CONSTRUCTORS],
 [
 AC_REQUIRE([AC_PROG_CXX])
 if test "$GXX" = yes; then
@@ -296,7 +296,7 @@ dnl If the C++ compiler accepts the `-fconserve-space' flag,
 dnl set output variable `CONSERVE_SPACE' to `-fconserve-space',
 dnl empty otherwise.
 dnl
-AC_DEFUN(ICE_CONSERVE_SPACE,
+AC_DEFUN([ICE_CONSERVE_SPACE],
 [
 AC_REQUIRE([AC_PROG_CXX])
 if test "$GXX" = yes; then
@@ -328,7 +328,7 @@ dnl set output variable `WARN_EFFECTIVE_CXX' to `-Weffc++' and
 dnl `WARN_NO_EFFECTIVE_CXX' to `-Wno-effc++'.  Otherwise,
 dnl leave both empty.
 dnl
-AC_DEFUN(ICE_WARN_EFFECTIVE_CXX,
+AC_DEFUN([ICE_WARN_EFFECTIVE_CXX],
 [
 AC_REQUIRE([AC_PROG_CXX])
 if test "$GXX" = yes; then
@@ -362,7 +362,7 @@ dnl
 dnl Note: I'm not fond of trigraphs, but enabling `-trigraphs' allows us
 dnl to detect incompatibilities with other C++ compilers
 dnl
-AC_DEFUN(ICE_TRIGRAPHS,
+AC_DEFUN([ICE_TRIGRAPHS],
 [
 AC_REQUIRE([AC_PROG_CXX])
 if test "$GXX" = yes; then
@@ -391,7 +391,7 @@ dnl If the C++ compiler supports `-Wl,-bbigtoc' (as required for large
 dnl programs on RS/6000 and PowerPC) set BIG_TOC to `-Wl,-bbigtoc'.
 dnl An alternative to this is using `-mminimal-toc' when compiling.
 dnl
-AC_DEFUN(ICE_BIG_TOC,
+AC_DEFUN([ICE_BIG_TOC],
 [
 AC_REQUIRE([AC_PROG_CXX])
 if test "$GXX" = yes; then
@@ -421,7 +421,7 @@ dnl If the C++ compiler `-mminimal-toc' (as required for large
 dnl programs on RS/6000 and PowerPC) set MINIMAL_TOC to `-mminimal-toc'.
 dnl An alternative to this is using `-Wl,-bbigtoc' when linking.
 dnl
-AC_DEFUN(ICE_MINIMAL_TOC,
+AC_DEFUN([ICE_MINIMAL_TOC],
 [
 AC_REQUIRE([AC_PROG_CXX])
 if test "$GXX" = yes; then
@@ -449,7 +449,7 @@ dnl ---------
 dnl
 dnl If the C++ compiler supports `-Wl,-rpath,PATH', set ice_rpath to `yes'.
 dnl
-AC_DEFUN(ICE_RPATH,
+AC_DEFUN([ICE_RPATH],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -Wl,-rpath,PATH],
@@ -475,7 +475,7 @@ dnl set output variable `WARN_UNINITIALIZED' to `-Wuninitialized'
 dnl and `WARN_NO_UNINITIALIZED' to `-Wno-uninitialized'.  Otherwise,
 dnl leave both empty.
 dnl
-AC_DEFUN(ICE_WARN_UNINITIALIZED,
+AC_DEFUN([ICE_WARN_UNINITIALIZED],
 [
 AC_REQUIRE([AC_PROG_CXX])
 if test "$GXX" = yes; then
@@ -508,7 +508,7 @@ dnl If the C++ compiler accepts the `-xs' flag (as Sun CC)
 dnl set output variable `XS_DEBUG_INFO' to `-xs'.  Otherwise, 
 dnl leave it empty.
 dnl
-AC_DEFUN(ICE_XS_DEBUG_INFO,
+AC_DEFUN([ICE_XS_DEBUG_INFO],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -xs],
@@ -536,7 +536,7 @@ dnl
 dnl If the C++ compiler accepts the `-isystem PATH' flag,
 dnl set output variable `ISYSTEM' to `-isystem ', `-I' otherwise.
 dnl
-AC_DEFUN(ICE_CXX_ISYSTEM,
+AC_DEFUN([ICE_CXX_ISYSTEM],
 [
 AC_REQUIRE([AC_PROG_CXX])
 if test "$GXX" = yes; then
@@ -569,7 +569,7 @@ dnl ----------------
 dnl
 dnl If the C++ compiler accepts the c++ style casts, define `HAVE_NEW_CASTS'.
 dnl
-AC_DEFUN(ICE_CXX_NEW_CASTS,
+AC_DEFUN([ICE_CXX_NEW_CASTS],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports new style casts],
@@ -594,7 +594,7 @@ dnl --------------------------
 dnl
 dnl If the C++ compiler accepts __attribute__ ((noreturn)).
 dnl
-AC_DEFUN(ICE_CXX_ATTRIBUTE_NORETURN,
+AC_DEFUN([ICE_CXX_ATTRIBUTE_NORETURN],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler ($CXX) supports __attribute__ ((noreturn))],
@@ -621,7 +621,7 @@ dnl ---------------------------
 dnl
 dnl If this is GNU C++ earlier than 2.5, issue a warning.
 dnl
-AC_DEFUN(ICE_CXX_PROBLEMATIC_VERSION,
+AC_DEFUN([ICE_CXX_PROBLEMATIC_VERSION],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([if this is a problematic ${CXX} version],
@@ -655,7 +655,7 @@ dnl ------------
 dnl
 dnl If the C++ compiler accepts the `bool' keyword, define `HAVE_BOOL'.
 dnl
-AC_DEFUN(ICE_CXX_BOOL,
+AC_DEFUN([ICE_CXX_BOOL],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports bool types],
@@ -680,7 +680,7 @@ dnl ----------------
 dnl
 dnl If the C++ compiler accepts the `explicit' keyword, define `HAVE_EXPLICIT'.
 dnl
-AC_DEFUN(ICE_CXX_EXPLICIT,
+AC_DEFUN([ICE_CXX_EXPLICIT],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports explicit constructors],
@@ -706,7 +706,7 @@ dnl ----------------
 dnl
 dnl If the C++ compiler accepts the `mutable' keyword, define `HAVE_MUTABLE'.
 dnl
-AC_DEFUN(ICE_CXX_MUTABLE,
+AC_DEFUN([ICE_CXX_MUTABLE],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports mutable members],
@@ -732,7 +732,7 @@ dnl -----------------
 dnl
 dnl If the C++ compiler supports namespaces, define `HAVE_NAMESPACE'.
 dnl
-AC_DEFUN(ICE_CXX_NAMESPACE,
+AC_DEFUN([ICE_CXX_NAMESPACE],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports namespaces],
@@ -765,7 +765,7 @@ dnl
 dnl If the C++ compiler supports explicit template instantiation, 
 dnl define `HAVE_EXPLICIT_TEMPLATE_INSTANTIATION'.
 dnl
-AC_DEFUN(ICE_CXX_EXPLICIT_TEMPLATE_INSTANTIATION,
+AC_DEFUN([ICE_CXX_EXPLICIT_TEMPLATE_INSTANTIATION],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports explicit template instantiation],
@@ -793,7 +793,7 @@ dnl
 dnl If the C++ compiler supports the __PRETTY_FUNCTION__ macro,
 dnl define `HAVE_PRETTY_FUNCTION'.
 dnl
-AC_DEFUN(ICE_CXX_PRETTY_FUNCTION,
+AC_DEFUN([ICE_CXX_PRETTY_FUNCTION],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports __PRETTY_FUNCTION__],
@@ -821,7 +821,7 @@ dnl
 dnl If the C++ compiler supports overloading operator new[],
 dnl define `HAVE_ARRAY_OPERATOR_NEW'.
 dnl
-AC_DEFUN(ICE_CXX_ARRAY_OPERATOR_NEW,
+AC_DEFUN([ICE_CXX_ARRAY_OPERATOR_NEW],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports overloaded new],
@@ -849,7 +849,7 @@ dnl If <iostream.h> or <fstream.h> define a `streampos' type
 dnl (as type of os.tellp(), etc.), define `HAVE_STREAMPOS'.
 dnl In DDD, see `streampos.h' for details.
 dnl
-AC_DEFUN(ICE_STREAMPOS,
+AC_DEFUN([ICE_STREAMPOS],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([for streampos],
@@ -876,7 +876,7 @@ dnl (Background: In GCC 3.0, `streampos' does not work, but
 dnl `std::streampos' does...)
 dnl In DDD, see `streampos.h' for details.
 dnl
-AC_DEFUN(ICE_STD_STREAMPOS,
+AC_DEFUN([ICE_STD_STREAMPOS],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([for std::streampos],
@@ -902,7 +902,7 @@ dnl
 dnl If <iostream.h> defines an `ios::iostate' type (as type of os.rdstate(), 
 dnl os.clear(), etc.), define `HAVE_IOSTATE'.
 dnl
-AC_DEFUN(ICE_IOSTATE,
+AC_DEFUN([ICE_IOSTATE],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([for ios::iostate],
@@ -930,7 +930,7 @@ dnl
 dnl If the C++ compiler supports placement new,
 dnl define `HAVE_PLACEMENT_NEW'.
 dnl
-AC_DEFUN(ICE_CXX_PLACEMENT_NEW,
+AC_DEFUN([ICE_CXX_PLACEMENT_NEW],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports placement new],
@@ -956,7 +956,7 @@ dnl
 dnl If the C++ compiler realizes ANSI C++ working paper conformant
 dnl lifetime of temporaries, define `HAVE_ANSI_LIFETIME_OF_TEMPORARIES'.
 dnl
-AC_DEFUN(ICE_CXX_LIFETIME_OF_TEMPORARIES,
+AC_DEFUN([ICE_CXX_LIFETIME_OF_TEMPORARIES],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports ANSI lifetime of temporaries],
@@ -1020,7 +1020,7 @@ fi
 ##!dnl ostrstream::str() (as in the SGI C++ I/O library), 
 ##!dnl define `OSTRSTREAM_PCOUNT_BROKEN'.
 ##!dnl
-##!AC_DEFUN(ICE_OSTRSTREAM_PCOUNT_BROKEN,
+##!AC_DEFUN([ICE_OSTRSTREAM_PCOUNT_BROKEN],
 ##![
 ##!AC_REQUIRE([AC_PROG_CXX])
 ##!AC_CACHE_CHECK([whether ostrstream::pcount() is broken],
@@ -1061,7 +1061,7 @@ dnl -----------------
 dnl
 dnl If the C++ compiler supports `long long' types,  define `HAVE_LONG_LONG'.
 dnl
-AC_DEFUN(ICE_CXX_LONG_LONG,
+AC_DEFUN([ICE_CXX_LONG_LONG],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports long long types],
@@ -1085,7 +1085,7 @@ dnl ------------------
 dnl
 dnl If the C++ compiler handles exceptions, define `HAVE_EXCEPTIONS'.
 dnl
-AC_DEFUN(ICE_CXX_EXCEPTIONS,
+AC_DEFUN([ICE_CXX_EXCEPTIONS],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports exception handling],
@@ -1110,7 +1110,7 @@ dnl
 dnl If the C++ compiler handles ISO C++ std exceptions, 
 dnl define `HAVE_STD_EXCEPTIONS'.
 dnl
-AC_DEFUN(ICE_CXX_STD_EXCEPTIONS,
+AC_DEFUN([ICE_CXX_STD_EXCEPTIONS],
 [
 AC_REQUIRE([ICE_CXX_EXCEPTIONS])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports standard exceptions],
@@ -1141,7 +1141,7 @@ dnl ----------------
 dnl
 dnl If the C++ compiler supports run-time type info, define `HAVE_TYPEINFO'.
 dnl
-AC_DEFUN(ICE_CXX_TYPEINFO,
+AC_DEFUN([ICE_CXX_TYPEINFO],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports run-time type info],
@@ -1174,7 +1174,7 @@ dnl "traditional" C preprocessor (that is, pre-ANSI-C).
 dnl Try each one of `$CPP', `$CC -E', `/lib/cpp' either without flags
 dnl or with `-traditional-cpp' or with `-traditional'.
 dnl
-AC_DEFUN(ICE_PROG_CPP_TRADITIONAL,
+AC_DEFUN([ICE_PROG_CPP_TRADITIONAL],
 [
 AC_REQUIRE([AC_PROG_CPP])
 AC_CACHE_CHECK([for a traditional C preprocessor],
@@ -1215,7 +1215,7 @@ dnl ------------------
 dnl
 dnl Define `HAVE_PATH_MAX' if PATH_MAX is defined in <limits.h>
 dnl
-AC_DEFUN(ICE_CHECK_PATH_MAX,
+AC_DEFUN([ICE_CHECK_PATH_MAX],
 [
 AC_CACHE_CHECK([for PATH_MAX definition in limits.h],
 [ice_cv_have_path_max],
@@ -1237,7 +1237,7 @@ dnl ------------------------
 dnl
 dnl Define `HAVE_POSIX_PATH_MAX' if _POSIX_PATH_MAX is defined in <limits.h>
 dnl
-AC_DEFUN(ICE_CHECK_POSIX_PATH_MAX,
+AC_DEFUN([ICE_CHECK_POSIX_PATH_MAX],
 [
 AC_CACHE_CHECK([for _POSIX_PATH_MAX definition in limits.h],
 [ice_cv_have_posix_path_max],
@@ -1259,7 +1259,7 @@ dnl --------------------
 dnl
 dnl Define `HAVE_MAXPATHLEN' if MAXPATHLEN is defined in <limits.h>
 dnl
-AC_DEFUN(ICE_CHECK_MAXPATHLEN,
+AC_DEFUN([ICE_CHECK_MAXPATHLEN],
 [
 AC_CACHE_CHECK([for MAXPATHLEN definition in sys/param.h],
 [ice_cv_have_maxpathlen],
@@ -1283,7 +1283,7 @@ dnl If FUNCTION is available, define `HAVE_FUNCTION'.  If it is declared
 dnl in one of the headers named in the whitespace-separated list 
 dnl HEADER_FILE, define `HAVE_FUNCTION_DECL` (in all capitals).
 dnl
-AC_DEFUN(ICE_CHECK_DECL,
+AC_DEFUN([ICE_CHECK_DECL],
 [
 changequote(,)dnl
 ice_tr=`echo $1 | tr '[a-z]' '[A-Z]'`
@@ -1332,7 +1332,7 @@ dnl -----------------
 dnl
 dnl Define `HAVE_LESSTIF' if the Motif library is actually a LessTif library
 dnl
-AC_DEFUN(ICE_CHECK_LESSTIF,
+AC_DEFUN([ICE_CHECK_LESSTIF],
 [
 AC_CACHE_CHECK([whether the Motif library is actually a LessTif library],
 [ice_cv_have_lesstif],
@@ -1355,7 +1355,7 @@ dnl -------------------------
 dnl
 dnl Set `HAVE_PTRACE_DUMPCORE' if PTRACE_DUMPCORE is defined in <sys/ptrace.h>.
 dnl
-AC_DEFUN(ICE_CHECK_PTRACE_DUMPCORE,
+AC_DEFUN([ICE_CHECK_PTRACE_DUMPCORE],
 [
 AC_CACHE_CHECK([for PTRACE_DUMPCORE definition in <sys/ptrace.h>],
 [ice_cv_have_ptrace_dumpcore],
@@ -1378,7 +1378,7 @@ dnl --------------------
 dnl
 dnl Set `HAVE_CORE_MAGIC' if CORE_MAGIC is defined in <sys/core.h>.
 dnl
-AC_DEFUN(ICE_CHECK_CORE_MAGIC,
+AC_DEFUN([ICE_CHECK_CORE_MAGIC],
 [
 AC_CACHE_CHECK([for CORE_MAGIC definition in <sys/core.h>],
 [ice_cv_have_core_magic],
@@ -1402,7 +1402,7 @@ dnl
 dnl Set output variable CXX_INCLUDE_DIR to the name of a directory
 dnl where the C++ compiler looks for C++ include files.
 dnl
-AC_DEFUN(ICE_CXX_INCLUDE_DIR,
+AC_DEFUN([ICE_CXX_INCLUDE_DIR],
 [
 AC_CACHE_CHECK(([for directory to install c++ include files],
 [ice_cv_cxx_include_dir],
@@ -1445,7 +1445,7 @@ dnl
 dnl Set output variable CXX_LIB_DIR to the name of a directory
 dnl where the C++ compiler looks for C++ libraries.
 dnl
-AC_DEFUN(ICE_CXX_LIB_DIR,
+AC_DEFUN([ICE_CXX_LIB_DIR],
 [
 AC_CACHE_CHECK([for directory to install c++ libraries],
 [ice_cv_cxx_lib_dir],
@@ -1473,7 +1473,7 @@ dnl ---------------
 dnl
 dnl Setup C++ compile options.  Specific to DDD and ICE.
 dnl
-AC_DEFUN(ICE_CXX_OPTIONS,
+AC_DEFUN([ICE_CXX_OPTIONS],
 [
 if test "$GXX" = yes; then
   # GCC options.
@@ -1583,7 +1583,7 @@ dnl
 dnl Look for emacs; put its name in output variable `EMACS'.
 dnl
 dnl
-AC_DEFUN(ICE_PROG_EMACS, 
+AC_DEFUN([ICE_PROG_EMACS],
 [
 AC_CHECK_PROGS(EMACS, emacs temacs xemacs lemacs)
 ])dnl
@@ -1594,7 +1594,7 @@ dnl --------------
 dnl
 dnl Look for info path; put it in output variable `infodir'.
 dnl
-AC_DEFUN(ICE_PATH_INFO,
+AC_DEFUN([ICE_PATH_INFO],
 [
 AC_CACHE_CHECK([for info directory],
 [ice_cv_infodir],
@@ -1644,7 +1644,7 @@ dnl ---------------
 dnl
 dnl ICE_TYPE_SIGNAL: like AC_TYPE_SIGNAL, but use C++ for checks.
 dnl
-AC_DEFUN(ICE_TYPE_SIGNAL,
+AC_DEFUN([ICE_TYPE_SIGNAL],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_LANG_PUSH(C++)
@@ -1675,7 +1675,7 @@ dnl
 dnl typedef void (*SignalProc)(SIGHANDLERARGS);
 dnl
 dnl
-AC_DEFUN(ICE_TYPE_SIG_HANDLER_ARGS,
+AC_DEFUN([ICE_TYPE_SIG_HANDLER_ARGS],
 [
 AC_REQUIRE([AC_TYPE_SIGNAL])
 AC_CACHE_CHECK([parameter type of signal handlers],
@@ -1741,7 +1741,7 @@ Typically values are `int', `...', and `int,...'.])
 ##!dnl If the C++ library has a ostrstream::frozen() function,
 ##!dnl define HAVE_FROZEN_OSTRSTREAM.
 ##!dnl
-##!AC_DEFUN(ICE_CHECK_FROZEN_OSTRSTREAM,
+##!AC_DEFUN([ICE_CHECK_FROZEN_OSTRSTREAM],
 ##![
 ##!AC_REQUIRE([AC_PROG_CXX])
 ##!AC_CACHE_CHECK([for ostrstream::frozen()],
@@ -1766,7 +1766,7 @@ Typically values are `int', `...', and `int,...'.])
 ##!dnl If the C++ library has a ostrstream::freeze() function,
 ##!dnl define HAVE_FREEZE_OSTRSTREAM.
 ##!dnl
-##!AC_DEFUN(ICE_CHECK_FREEZE_OSTRSTREAM,
+##!AC_DEFUN([ICE_CHECK_FREEZE_OSTRSTREAM],
 ##![
 ##!AC_REQUIRE([AC_PROG_CXX])
 ##!AC_CACHE_CHECK([for ostrstream::freeze()],
@@ -1791,7 +1791,7 @@ Typically values are `int', `...', and `int,...'.])
 ##!dnl If the C++ library has a ostrstreambuf::frozen() function,
 ##!dnl define HAVE_FROZEN_OSTRSTREAMBUF.
 ##!dnl
-##!AC_DEFUN(ICE_CHECK_FROZEN_OSTRSTREAMBUF,
+##!AC_DEFUN([ICE_CHECK_FROZEN_OSTRSTREAMBUF],
 ##![
 ##!AC_REQUIRE([AC_PROG_CXX])
 ##!AC_CACHE_CHECK([for ostrstreambuf::frozen()],
@@ -1816,7 +1816,7 @@ Typically values are `int', `...', and `int,...'.])
 ##!dnl If the C++ library has a ostrstreambuf::freeze() function,
 ##!dnl define HAVE_FREEZE_OSTRSTREAMBUF.
 ##!dnl
-##!AC_DEFUN(ICE_CHECK_FREEZE_OSTRSTREAMBUF,
+##!AC_DEFUN([ICE_CHECK_FREEZE_OSTRSTREAMBUF],
 ##![
 ##!AC_REQUIRE([AC_PROG_CXX])
 ##!AC_CACHE_CHECK([for ostrstreambuf::freeze()],
@@ -1843,7 +1843,7 @@ dnl ICE_TYPE_REGEX_T: find members of POSIX.2 `regex_t' type
 dnl - HAVE_REGEX_T_RE_NSUB:   `regex_t' has a `re_nsub' member
 dnl - HAVE_REGEX_T_N_SUBEXPS: `regex_t' has a `n_subexps' member
 dnl
-AC_DEFUN(ICE_TYPE_REGEX_T,
+AC_DEFUN([ICE_TYPE_REGEX_T],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CHECK_HEADERS(regex.h rx.h rxposix.h)
@@ -1956,7 +1956,7 @@ dnl
 dnl #define REGCOMP_BROKEN if regcomp() always returns -1.
 dnl This happens on Solaris 2.4.
 dnl
-AC_DEFUN(ICE_REGCOMP_BROKEN,
+AC_DEFUN([ICE_REGCOMP_BROKEN],
 [
 AC_REQUIRE([ICE_TYPE_REGEX_T])
 if  test "$ice_have_regcomp" = yes && test "$ice_have_regexec" = yes; then
@@ -2039,7 +2039,7 @@ dnl `tr -d '\r' | gzip | gunzip' (relying on gunzip to set its
 dnl output to binary mode) and to `cat' otherwise.
 dnl 
 dnl
-AC_DEFUN(ICE_DELETE_CR,
+AC_DEFUN([ICE_DELETE_CR],
 [
 AC_REQUIRE([AC_CANONICAL_HOST])
 case $host_os in
@@ -2065,7 +2065,7 @@ dnl put Motif library directory in motif_libraries,
 dnl and add appropriate flags to X_CFLAGS and X_LIBS.
 dnl
 dnl
-AC_DEFUN(ICE_FIND_MOTIF,
+AC_DEFUN([ICE_FIND_MOTIF],
 [
 AC_REQUIRE([AC_PATH_XTRA])
 AC_REQUIRE([ICE_CXX_ISYSTEM])
@@ -2252,7 +2252,7 @@ dnl put Athena library directory in athena_libraries,
 dnl and add appropriate flags to X_CFLAGS and X_LIBS.
 dnl
 dnl
-AC_DEFUN(ICE_FIND_ATHENA,
+AC_DEFUN([ICE_FIND_ATHENA],
 [
 AC_REQUIRE([AC_PATH_XTRA])
 AC_REQUIRE([ICE_CXX_ISYSTEM])
@@ -2440,7 +2440,7 @@ dnl put Xpm library directory in xpm_libraries,
 dnl and add appropriate flags to X_CFLAGS and X_LIBS.
 dnl
 dnl
-AC_DEFUN(ICE_FIND_XPM,
+AC_DEFUN([ICE_FIND_XPM],
 [
 AC_REQUIRE([AC_PATH_XTRA])
 AC_REQUIRE([ICE_CXX_ISYSTEM])
@@ -2622,7 +2622,7 @@ dnl
 dnl If Xt supports base translations, set @TRANSLATIONS@ to `baseTranslations',
 dnl otherwise, to `translations'.
 dnl
-AC_DEFUN(ICE_TRANSLATION_RESOURCE,
+AC_DEFUN([ICE_TRANSLATION_RESOURCE],
 [
 AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([for the name of the translation resource],
@@ -2648,7 +2648,7 @@ dnl For each `-L PATH' option in LDFLAGS, add a `-Wl,-rpath,PATH' option
 dnl if the linker supports it.  This is important on Linux, because
 dnl the path set by `-L PATH' is ignored at run-time.
 dnl
-AC_DEFUN(ICE_SETUP_RPATH,
+AC_DEFUN([ICE_SETUP_RPATH],
 [
 AC_REQUIRE([ICE_RPATH])
 if test "$ice_rpath" = yes; then
@@ -2663,7 +2663,7 @@ dnl
 dnl ICE_MOTIF_DIALOGS_OWN_SELECTION_LIST
 dnl ----------------------------------
 dnl
-AC_DEFUN(ICE_MOTIF_DIALOGS_OWN_SELECTION_LIST,
+AC_DEFUN([ICE_MOTIF_DIALOGS_OWN_SELECTION_LIST],
 [
 AC_CACHE_CHECK([whether Motif dialogs own the string table],
 [ice_cv_motif_dialogs_own_selection_list],
@@ -2746,7 +2746,7 @@ fi
 dnl
 dnl Check for perl version
 dnl
-AC_DEFUN([AC_PROG_PERL_VERSION],[dnl
+AC_DEFUN([ICE_PROG_PERL_VERSION],[dnl
 # Make sure we have perl
 if test -z "$PERL"; then
 AC_CHECK_PROG(PERL,perl,perl)
@@ -2777,7 +2777,7 @@ dnl -----------
 dnl
 dnl Define DDD names and expiration date
 dnl The version is set in AC_INIT.
-AC_DEFUN(DDD_NAMES,
+AC_DEFUN([DDD_NAMES],
 [AC_MSG_CHECKING([for product name])
 dnl
 dnl The product name, in various capitalizations.
