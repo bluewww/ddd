@@ -36,6 +36,7 @@ char gdbinit_rcsid[] =
 #include <X11/Intrinsic.h>
 #include <iostream.h>
 #include <fstream.h>
+#include <ctype.h>
 
 #include "gdbinit.h"
 #include "shell.h"
@@ -130,18 +131,22 @@ static void InvokeGDBFromShellHP(Agent *source, void *client_data,
     DataLength *d = (DataLength *)call_data;
 
     bool at_shell_prompt = false;
-    if (d->length >= 1)
+    if (d->length >= 1 && d->data[d->length - 1] == '>')
     {
-	char last_character = d->data[d->length - 1];
-	switch (last_character)
-	{
-	case ' ':
-	case '>':
-	    // We got input ending in ' ' or `>' - probably a prompt.
-	    // (Any other prompt choices out there?  -AZ)
-	    at_shell_prompt = true;
-	    break;
-	}
+	// We got input ending in `>' - probably a prompt.
+	at_shell_prompt = true;
+    }
+    else if (d->length >= 2
+	     && d->data[d->length - 1] == ' '
+	     && ispunct(d->data[d->length - 2]))
+    {
+	// We got input ending in a punctuation character, followed by
+	// a single space - probably a prompt.
+	at_shell_prompt = true;
+    }
+    else
+    {
+	// (Any other prompt choices out there?  -AZ)
     }
 
     if (at_shell_prompt)
