@@ -1505,7 +1505,7 @@ void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
     // No XmTrackingEvent() in Motif 1.1
     item = TrackingEvent(toplevel, cursor, False, &ev);
 #else
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 84)
 	item = TrackingEvent(toplevel, cursor, False, &ev);
     else
 	item = XmTrackingEvent(toplevel, cursor, False, &ev);
@@ -1744,9 +1744,10 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XtPopdown(tip_shell);
     }
 
-    if (lesstif_version < 1000)
+    if (lesstif_version <= 84)
     {
-	// LessTif fails to resize the shell properly.  Use this hack instead.
+	// LessTif 0.84 and earlier fails to resize the shell
+	// properly.  Use this hack instead.
 	XmFontList font_list;
 	XtVaGetValues(tip_label, XmNfontList, &font_list, NULL);
     

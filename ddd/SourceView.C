@@ -4883,10 +4883,11 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	static Widget bp_popup_w      = 0;
 	static Widget bp_popup_parent = 0;
 
-	if (lesstif_version < 1000 && w != bp_popup_parent)
+	if (lesstif_version <= 84 && w != bp_popup_parent)
 	{
-	    // LessTif wants this menu re-created every time the
-	    // parent has changed.  Otherwise, it gets insensitive.
+	    // LessTif 0.84 and earlier wants this menu re-created
+	    // every time the parent has changed.  Otherwise, it gets
+	    // insensitive.
 	    if (bp_popup_w != 0)
 		XtDestroyWidget(bp_popup_w);
 	    bp_popup_w = 0;
@@ -7270,9 +7271,9 @@ void SourceView::unmap_glyph(Widget glyph)
 		      XmNuserData, XtPointer(0),
 		      NULL);
 
-	if (lesstif_version < 1000)
+	if (lesstif_version <= 85)
 	{
-	    // LessTif wants it the hard way.
+	    // LessTif 0.84 and earlier wants it the hard way.
 	    XtMoveWidget(glyph, invisible_x, invisible_y);
 	}
 	// log_glyph(glyph);
@@ -7328,9 +7329,9 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
     {
 	if (change_glyphs)
 	{
-	    if (lesstif_version < 1000)
+	    if (lesstif_version <= 84)
 	    {
-		// LessTif wants it the hard way.
+		// LessTif 0.84 and earlier want it the hard way.
 		XtMoveWidget(glyph, x, y);
 	    }
 
