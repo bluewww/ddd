@@ -10,6 +10,7 @@ Makedeps
 Makefile
 USERINFO
 acconfig.h
+aclocal.m4
 acspecial.h
 confdefs.h
 config.cache
