@@ -114,7 +114,7 @@ Volunteers for these and other projects are welcome!
      `whatis') inserted into the source popup menu, such that users
      can inquire variable types.
 
-069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
+069* Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
 
      3. Add a way to cast a display. What I mean is that when I debug some
         code with a `generic' C function which takes a void* and a tag that
@@ -125,7 +125,7 @@ Volunteers for these and other projects are welcome!
         display', type the cast there, and then delete the original display
         (because what we want is in the casted display).
 
-     4. Let one colorize the displays. By using regexps on types or
+     4* Let one colorize the displays. By using regexps on types or
         names of the fields, it would already be extremely useful (or
         with a match on the typed expression, having a list of regexps
         to match, the first match giving color, so that given blue for

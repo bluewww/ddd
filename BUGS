@@ -116,7 +116,7 @@ Volunteers for fixing these and other bugs are welcome!
      ddd --dbx $PAR_HOME/bin/tesla-wish 20919
      Reported by Joe Hildebrand <hildjj@fuentez.com>
 
-069* Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
+069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
      [Linux 1.3.38 system, X11R6 (XFree 3.1.1), Motif 2.x]
 
      2. The graph window behaves strangely when all logical windows are in
