@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "1 Jun 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "12 Jun 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -513,17 +513,17 @@ text.
 If you wish to lookup a specific function or variable definition whose
 name is visible in the source text, click with the \fIleft mouse
 button\fR on the function or variable name.  The name is copied to the
-argument field.  Click on the `\fBGo to ()\fR' button to find its
+argument field.  Click on the `\fBLookup ()\fR' button to find its
 definition.
 .PP
 .PSPIC PICS/ddd-source-popup.ps 15.3cm
 .PP
 As a shorter alternative, you can simply press the \fIright mouse
-button\fR on the function name and select the `\fBGo to\fR' item from
+button\fR on the function name and select the `\fBLookup\fR' item from
 the source popup menu.
 .PP
 As another alternative, you can enter the function name in the
-argument field and click on the `\fBGo to ()\fR' button to find its
+argument field and click on the `\fBLookup ()\fR' button to find its
 definition.
 .PP
 Finally, you can use the \s-2GDB\s+2 `\fBinfo line\fR' command.
@@ -534,8 +534,8 @@ details.
 .\"
 If the item you wish to search is visible in the source text, click
 with the \fIleft mouse button\fR on it.  The identifier is copied to
-the argument field.  Click on the `\fBFind\s-2>>\s+2()\fR' button to find
-following occurrences and on the  `\fBFind\s-2<<\s+2()\fR' button to find
+the argument field.  Click on the `\fBFind\s-2>>\s+2 ()\fR' button to find
+following occurrences and on the  `\fBFind\s-2<<\s+2 ()\fR' button to find
 previous occurrences.
 .PP
 As an alternative, you can enter the item in the argument field and
@@ -549,7 +549,7 @@ option in the `\fBSource Options\fR' menu.
 .\"
 .SS "Looking up Previous Locations"
 .\"
-Use the `\fBBack\fR' and `\fBForward\fR' buttons to go to previous or
+Use the `\fBBack\fR' and `\fBForward\fR' buttons to lookup previous or
 next locations.  The location found is underlined.
 .\"
 .\"
@@ -690,13 +690,13 @@ the `\fB(gdb)\fR' prompt for details.
 .\"
 .SS "Finding Breakpoints"
 .\"
-If you wish to go to a specific breakpoint, select the
-`\fBGo to\fR' item from the `\fBBreakpoints\fR' menu.  After
+If you wish to lookup a specific breakpoint, select the
+`\fBLookup\fR' item from the `\fBBreakpoints\fR' menu.  After
 selecting a breakpoint from the list and clicking the
-`\fBGo to\fR' button, the breakpoint location is displayed.
+`\fBLookup\fR' button, the breakpoint location is displayed.
 .PP
 As an alternative, you can enter `\fB#\fIn\fR' in the argument field,
-where \fIn\fR is the breakpoint number and click on the `\fBGo to()\fR'
+where \fIn\fR is the breakpoint number and click on the `\fBLookup ()\fR'
 button to find its definition.
 .\"
 .\"
@@ -892,7 +892,7 @@ The variable value can also be printed in the debugger console, making
 it available for further operations.  To print a variable value,
 select the desired variable by clicking the \fIleft mouse button\fR on
 its name.  The variable name is copied to the argument field.  By
-clicking the `\fBPrint()\fR' button, a new display is created in the
+clicking the `\fBPrint ()\fR' button, a new display is created in the
 data window.
 .PP
 As a shorter alternative, you can simply press the \fIright mouse
@@ -910,7 +910,7 @@ is updated each time the program stops.
 .PP
 To create a new display, select the desired variable by clicking the
 \fIleft mouse button\fR on its name.  The variable name is copied to
-the argument field.  By clicking the `\fBDisplay()\fR' button, a new
+the argument field.  By clicking the `\fBDisplay ()\fR' button, a new
 display is created in the data window.
 .PP
 As a shorter alternative, you can simply press the \fIright mouse
@@ -918,7 +918,7 @@ button\fR on the variable name and select the `\fBDisplay\fR' item from
 the popup menu.
 .PP
 As another alternative, you may also enter the expression to be
-displayed in the argument field and press the `\fBDisplay()\fR'
+displayed in the argument field and press the `\fBDisplay ()\fR'
 button.
 .PP
 If the data window is visible, you may click on the `\fBNew
@@ -997,24 +997,40 @@ displaying all details, or \fIhidden\fR, that is, displayed as
 .PP
 To show details about an aggregate, select the aggregate by clicking
 the \fIleft mouse button\fR on its name or value and click on the
-`\fBShow()\fR' button.  Details are shown for the aggregate itself as
+`\fBShow ()\fR' button.  Details are shown for the aggregate itself as
 well as for all contained sub-aggregates.
 .PP
 To hide details about an aggregate, select the aggregate by clicking
 the \fIleft mouse button\fR on its name or value and click on the
-`\fBHide()\fR' button.
+`\fBHide ()\fR' button.
 .PP
 As a faster alternative, you can also press the \fIright mouse
 button\fR on the aggregate and select the appropriate menu item.
 .PP
 .PSPIC PICS/ddd-hide-display.ps 15.3cm
 .PP
+If \fIall\fR details of a display are hidden, this display is
+considered \fIdisabled\fR.   Displays can be disabled or enabled via
+the \s-2@DDD@\s+2 commands
+.sp
+.br
+  \fBgraph disable display \fIdisplays...\fR
+.sp
+.br
+and
+.sp
+.br
+  \fBgraph enable display \fIdisplays...\fR
+.sp
+.br
+at the debugger prompt.  \fIdisplays...\fR is a space-separated list
+of display numbers to disable or enable.
 .\"
 .SS "Rotating Arrays"
 .\"
 Arrays can be aligned horizontally or vertically.  To change the
-alignment of an array, select it and then click on the `\fBRotate()\fR'
-button.
+alignment of an array, select it and then click on the `\fBRotate
+()\fR' button.
 .PP
 As a faster alternative, you can also press the \fIright mouse
 button\fR on the array and select the `\fBRotate\fR' menu item.
@@ -1161,7 +1177,7 @@ separately.
 .\"
 .SS "Deleting Displays"
 .\"
-To delete a single display, select it and click on the `\fBDelete()\fR'
+To delete a single display, select it and click on the `\fBDelete ()\fR'
 button.  As an alternative, you can also press the \fIright mouse
 button\fR on the display and select the `\fBDelete Display\fR' item.
 .PP
@@ -1181,35 +1197,6 @@ As an alternative, you can also type
 .br
 at the debugger prompt, where \fIdisplays...\fR is a space-separated
 list of display numbers to delete.
-.\"
-.\"
-.SS "Disabling or Enabling Displays"
-.\"
-Note: \s-2DBX\s+2 and \s-2XDB\2+2 do not support display disabling.
-.PP
-Unlike a \fIdeleted\fR display item, a \fIdisabled\fR display item
-remains in the display, but its value is not shown until it is enabled
-again.
-.PP
-Displays are enabled and disabled the same way they are deleted, using
-the `\fBDisable()\fR'/`\fBEnable()\fR' button, the
-`\fBDisable\fR'/`\fBEnable Display\fR' popup menu item, or the
-`\fBDisable\fR'/`\fBEnable\fR' buttons in the Display Editor.
-.PP
-As an alternative, you can also type
-.sp
-.br
-  \fBgraph disable display \fIdisplays...\fR
-.sp
-.br
-and
-.sp
-.br
-  \fBgraph enable display \fIdisplays...\fR
-.sp
-.br
-at the debugger prompt.  \fIdisplays...\fR is a space-separated list
-of display numbers to disable or enable.
 
 .\"
 .SS "Examining Shared Data Structures"
@@ -1471,9 +1458,9 @@ usual popup menus are also available.  Breakpoints and the current
 execution position are displayed simultaneously in both source and
 machine code.
 .PP
-The `\fBGo to()\fR' button can be used to look up the machine code
+The `\fBLookup ()\fR' button can be used to look up the machine code
 for a specific function\(em\&or the function for a specific address.
-Just click on the location in one window and press `\fBGo to()\fR'
+Just click on the location in one window and press `\fBLookup ()\fR'
 to see the corresponding code in the other window.
 .PP
 If source code is not available, only the machine code window is
@@ -1502,7 +1489,7 @@ register values after each program stop.  To enable the register
 window, select `\fBRegisters...\fR' from the `\fBStatus\fR' menu.
 .PP
 By selecting one of the registers, its name is copied to the argument
-field.  You can use it as value for `\fBDisplay()\fR', for instance,
+field.  You can use it as value for `\fBDisplay ()\fR', for instance,
 to have its value displayed in the data window.
 .PP
 .PSPIC PICS/ddd-registers.ps 15.3cm
@@ -2532,10 +2519,10 @@ Show next command
 Send the given command to the debugger.
 .TP 10
 .B "Back"
-Go to previously selected source position.
+Lookup previously selected source position.
 .TP 10
 .B "Forward"
-Go to next selected source position.
+Lookup next selected source position.
 .TP 10
 .B "Edit"
 Edit current source file.
