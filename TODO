@@ -397,4 +397,7 @@ Volunteers for these and other projects are welcome!
      represent. This would come in handy if one (as I do at the
      moment) displays heavily cross-pointered data structures.
 
-220. (Insert your project idea here)
+220. Create an echo filter.  If the last command sent to GDB gets
+     echoed, ignore it straight away.
+
+221. (Insert your project idea here)
