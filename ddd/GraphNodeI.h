@@ -51,6 +51,7 @@ private:
     UniqueId _id;		// Id
     bool _selected;		// Flag: selected by user?
     bool _hidden;		// Flag: not shown?
+    bool _redraw;		// Flag: needs redrawing
 
     // maintained by GraphEdge
     GraphEdge *_firstFrom;	// first Edge e with e->from() == this
@@ -66,6 +67,7 @@ protected:
     GraphNode(const GraphNode& node):
 	_selected(node._selected),
 	_hidden(node._hidden),
+	_redraw(node._redraw),
 	_firstFrom(0),
 	_firstTo(0),
 	next(0),
@@ -78,7 +80,7 @@ public:
 
     // Constructor
     GraphNode():
-	_selected(false), _hidden(false),
+	_selected(false), _hidden(false), _redraw(false),
 	_firstFrom(0), _firstTo(0), next(0), prev(0), graph(0), count(0)
     {}
 
@@ -94,6 +96,8 @@ public:
     bool selected() const { return _selected; }
     bool& hidden()        { return _hidden; }
     bool hidden() const   { return _hidden; }
+    bool& redraw()        { return _redraw; }
+    bool redraw() const   { return _redraw; }
 
     // Iteration on all edges starting here
     GraphEdge *firstFrom() const { return _firstFrom; }

@@ -516,50 +516,118 @@ static void setGrid(Widget w, Boolean reset = false)
 
 
 
-// Redraw all
+// Redraw
+
+static void RedrawCB(XtPointer client_data, XtIntervalId *id)
+{
+    const Widget w                      = Widget(client_data);
+    const GraphEditWidget _w            = GraphEditWidget(w);
+    const Graph* graph                  = _w->graphEdit.graph;
+    const GraphGC& graphGC              = _w->graphEdit.graphGC;
+    const Boolean sizeChanged           = _w->graphEdit.sizeChanged;
+    const Boolean highlight_drawn       = _w->primitive.highlight_drawn;
+    const Dimension highlight_thickness = _w->primitive.highlight_thickness;
+    XtIntervalId& redrawTimer           = _w->graphEdit.redrawTimer;
+
+    assert(redrawTimer == *id);
+    redrawTimer = 0;
+
+    if (graph == 0)
+	return;
+
+    setGrid(w);
+
+    if (sizeChanged)
+	graphEditSizeChanged(w);
+
+    // Redraw XmPrimitive border
+    if (highlight_drawn)
+	graphEditClassRec.primitive_class.border_highlight(w);
+
+    // Check for pending redrawings
+    bool redraw_all = true;
+    GraphNode *node;
+    for (node = graph->firstVisibleNode(); 
+	 node != 0;
+	 node = graph->nextVisibleNode(node))
+    {
+	if (!node->redraw())
+	{
+	    redraw_all = false;
+	    break;
+	}
+    }
+
+    setGrid(w);
+
+    if (redraw_all)
+    {
+	XClearArea(XtDisplay(w), XtWindow(w),
+		   highlight_thickness, highlight_thickness, 
+		   _w->core.width  - highlight_thickness * 2, 
+		   _w->core.height - highlight_thickness * 2,
+		   false);
+
+	graph->draw(w, EVERYWHERE, graphGC);
+    }
+
+    for (node = graph->firstVisibleNode(); 
+	 node != 0;
+	 node = graph->nextVisibleNode(node))
+    {
+	if (!redraw_all && node->redraw())
+	{
+	    BoxRegion r = node->region(graphGC);
+	    XClearArea(XtDisplay(w), XtWindow(w), r.origin(X), r.origin(Y),
+		       r.space(X), r.space(Y), false);
+
+	    graph->draw(w, r, graphGC);
+	}
+
+	node->redraw() = false;
+    }
+}
+
+static void StartRedraw(Widget w)
+{
+    const GraphEditWidget _w  = GraphEditWidget(w);
+    XtIntervalId& redrawTimer = _w->graphEdit.redrawTimer;
+
+    if (redrawTimer != 0)
+	return;			// Redraw pending
+
+    // Redraw after we are back in the event loop
+    redrawTimer = XtAppAddTimeOut(XtWidgetToApplicationContext(w),
+				  0, RedrawCB, XtPointer(w));
+}
+
+// Redraw entire graph
 void graphEditRedraw(Widget w)
 {
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->graphEdit.graph;
-    const GraphGC& graphGC     = _w->graphEdit.graphGC;
-    const Dimension highlight_thickness = _w->primitive.highlight_thickness;
 
-    setGrid(w);
-
-    XClearArea(XtDisplay(w), XtWindow(w),
-	       highlight_thickness, highlight_thickness, 
-	       _w->core.width  - highlight_thickness * 2, 
-	       _w->core.height - highlight_thickness * 2,
-	       false);
-
-    if (graph)
-	graph->draw(w, EVERYWHERE, graphGC);
+    for (GraphNode *node = graph->firstVisibleNode(); 
+	 node != 0;
+	 node = graph->nextVisibleNode(node))
+    {
+	graphEditRedrawNode(w, node);
+    }
 }
-
 
 // Redraw a specific region
 void graphEditRedrawNode(Widget w, GraphNode *node)
 {
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
-    const GraphEditWidget _w   = GraphEditWidget(w);
-    const Graph* graph         = _w->graphEdit.graph;
-    const GraphGC& graphGC     = _w->graphEdit.graphGC;
+    node->redraw() = true;
 
-    setGrid(w);
-
-    if (node == 0 || node->hidden())
-	return;
-
-    BoxRegion r = node->region(graphGC);
-    XClearArea(XtDisplay(w), XtWindow(w), r.origin(X), r.origin(Y),
-	       r.space(X), r.space(Y), false);
-
-    if (graph)
-	graph->draw(w, r, graphGC);
+    StartRedraw(w);
 }
+
+
 
 
 
@@ -1109,6 +1177,7 @@ static void Initialize(Widget, Widget w, ArgList, Cardinal *)
     Pixmap& gridPixmap              = _w->graphEdit.gridPixmap;
     Boolean& sizeChanged            = _w->graphEdit.sizeChanged;
     Time& lastSelectTime            = _w->graphEdit.lastSelectTime;
+    XtIntervalId& redrawTimer       = _w->graphEdit.redrawTimer;
 
     // init state
     state = NopState;
@@ -1118,6 +1187,9 @@ static void Initialize(Widget, Widget w, ArgList, Cardinal *)
 
     // init lastSelectTime
     lastSelectTime = 0;
+
+    // init redrawTimer
+    redrawTimer = 0;
 
     // set GCs
     setGCs(w);
@@ -1250,13 +1322,16 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
     // Always recompute size
     after->graphEdit.sizeChanged = true;
 
-    return redisplay;
+    if (redisplay)
+	graphEditRedraw(new_w);
+	
+    return False;
 }
 
 // Destroy widget
 static void Destroy(Widget)
 {
-    // delete graph?
+    // Delete graph?
 }
 
 
@@ -1591,7 +1666,6 @@ static bool _SelectAll(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->graphEdit.graph;
-    const GraphGC& graphGC   = _w->graphEdit.graphGC;
 
     bool changed = false;
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
@@ -1601,7 +1675,7 @@ static bool _SelectAll(Widget w, XEvent *, String *, Cardinal *)
 	{
 	    changed = true;
 	    node->selected() = true;
-	    node->draw(w, EVERYWHERE, graphGC);
+	    graphEditRedrawNode(w, node);
 	}
     }
 
@@ -1621,7 +1695,6 @@ static bool _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->graphEdit.graph;
-    const GraphGC& graphGC   = _w->graphEdit.graphGC;
 
     bool changed = false;
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
@@ -1631,7 +1704,7 @@ static bool _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
 	{
 	    changed = true;
 	    node->selected() = false;
-	    node->draw(w, EVERYWHERE, graphGC);
+	    graphEditRedrawNode(w, node);
 	}
     }
 
@@ -1666,9 +1739,6 @@ static void find_connected_nodes(GraphNode *root, VarArray<GraphNode *>& nodes)
 // Select an entire subgraph
 static bool select_graph(Widget w, GraphNode *root, bool set = true)
 {
-    const GraphEditWidget _w = GraphEditWidget(w);
-    const GraphGC& graphGC   = _w->graphEdit.graphGC;
-
     // Find all connected nodes
     VarArray<GraphNode *> nodes;
     find_connected_nodes(root, nodes);
@@ -1681,7 +1751,7 @@ static bool select_graph(Widget w, GraphNode *root, bool set = true)
 	if (node->selected() != set)
 	{
 	    node->selected() = set;
-	    node->draw(w, EVERYWHERE, graphGC);
+	    graphEditRedrawNode(w, node);
 	    changed = true;
 	}
     }
@@ -1721,7 +1791,6 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params, SelectionMode mode, bool follow)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
-    const GraphGC& graphGC   = _w->graphEdit.graphGC;
     Cursor moveCursor        = _w->graphEdit.moveCursor;
 
     GraphEditState& state    = _w->graphEdit.state;
@@ -1796,7 +1865,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 		if (!node->selected())
 		{		
 		    node->selected() = true;
-		    node->draw(w, EVERYWHERE, graphGC);
+		    graphEditRedrawNode(w, node);
 		    raise_node(w, node);
 		    changed = true;
 		}
@@ -1816,7 +1885,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 	    {
 		// Toggle single node
 		node->selected() = !node->selected();
-		node->draw(w, EVERYWHERE, graphGC);
+		graphEditRedrawNode(w, node);
 		raise_node(w, node);
 		changed = true;
 	    }
@@ -1999,7 +2068,7 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 		    {
 			have_unselected_nodes = true;
 			node->selected() = true;
-			node->draw(w, EVERYWHERE, graphGC);
+			graphEditRedrawNode(w, node);
 			changed = true;
 		    }
 		}
@@ -2020,7 +2089,7 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 			if (nw <= selected && se <= selected)
 			{
 			    node->selected() = false;
-			    node->draw(w, EVERYWHERE, graphGC);
+			    graphEditRedrawNode(w, node);
 			    changed = true;
 			}
 		    }

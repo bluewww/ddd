@@ -418,7 +418,12 @@ void Graph::draw(Widget w, const BoxRegion& exposed, const GraphGC& _gc) const
     // draw all nodes
     for (GraphNode *node = firstVisibleNode(); node != 0; 
 	 node = nextVisibleNode(node))
-	node->draw(w, exposed, gc);
+    {
+	if (node->redraw() || !gc.redraw)
+	    node->draw(w, exposed, gc);
+	if (gc.redraw)
+	    node->redraw() = false;
+    }
 }
 
 

@@ -60,6 +60,8 @@ struct GraphGC {
     DECLARE_TYPE_INFO;
 
     // Drawing stuff
+    bool           redraw;	     // Redraw only marked nodes?
+
     GC             nodeGC;           // X Graphics context for nodes
     GC             hintGC;           // X Graphics context for hints
     GC             edgeGC;           // X Graphics context for edges
@@ -86,6 +88,7 @@ struct GraphGC {
 
     // Default Constructor
     GraphGC(GC n = 0, GC e = 0, GC i = 0, GC c = 0):
+	redraw(false),
         nodeGC(n),
         hintGC(n),
         edgeGC(e),
@@ -107,6 +110,7 @@ struct GraphGC {
 
     // Copy Constructor
     GraphGC(const GraphGC& g):
+	redraw(g.redraw),
         nodeGC(g.nodeGC),
         hintGC(g.hintGC),
         edgeGC(g.edgeGC),

@@ -155,6 +155,7 @@ typedef struct _GraphEditPart {
     BoxPoint lastOffset;	// Last offset for moving
 
     Time lastSelectTime;	// Last selection time (for multi-clicks)
+    XtIntervalId redrawTimer;	// Timer used for redrawing
 
     GC nodeGC;			// Graphic context for nodes
     GC edgeGC;			// Graphic context for edges
