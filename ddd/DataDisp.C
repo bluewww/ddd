@@ -29,6 +29,7 @@ char DataDisp_rcsid[] =
 
 #ifdef __GNUG__
 #pragma implementation
+#pragma implementation "Map.h"
 #endif
 
 #define LOG_DISPLAYS 0

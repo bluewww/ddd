@@ -50,7 +50,6 @@ char ddd_rcsid[] =
 
 #ifdef __GNUG__
 #pragma implementation
-#pragma implementation "Map.h"
 #pragma implementation "Queue.h"
 #endif
 
