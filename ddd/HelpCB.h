@@ -39,6 +39,10 @@
 #define XtNhelpString "helpString"
 #define XtCHelpString "HelpString"
 
+// Text to be displayed in `Help On Version'
+#define XtNhelpOnVersionString "helpOnVersionString"
+#define XtCHelpOnVersionString "HelpOnVersionString"
+
 // Text to be displayed in button tips (via InstallTips)
 #define XtNtipString  "tipString"
 #define XtCTipString  "TipString"

@@ -70,14 +70,20 @@ char HelpCB_rcsid[] =
 #include "mydialogs.h"
 #include "ArgField.h"
 
-// The help system supports four resources:
+// The help system supports five resources:
 // helpString          - displayed in context-sensitive help.
+// helpOnVersionString - displayed in `Help On Version'.
 // tipString           - displayed in small windows when entering buttons
 // documentationString - displayed in the status line
 // helpShowTitle       - if set, include widget name in context-sensitive help
 
 struct help_resource_values {
     XmString helpString;
+    Boolean showTitle;
+};
+
+struct help_on_version_resource_values {
+    XmString helpOnVersionString;
     Boolean showTitle;
 };
 
@@ -106,6 +112,28 @@ static XtResource help_subresources[] = {
 	XmRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(help_resource_values, showTitle),
+	XtRImmediate,
+	XtPointer(False)
+    }
+};
+
+static XtResource help_on_version_subresources[] = {
+    {
+	XtNhelpOnVersionString,
+	XtCHelpOnVersionString,
+	XmRXmString,
+	sizeof(XmString),
+	XtOffsetOf(help_on_version_resource_values, helpOnVersionString),
+	XtRImmediate,
+	XtPointer(0)
+    },
+
+    {
+	XtNhelpShowTitle,
+	XtCHelpShowTitle,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(help_on_version_resource_values, showTitle),
 	XtRImmediate,
 	XtPointer(False)
     }
@@ -173,6 +201,26 @@ static MString get_help_string(Widget widget)
 
     if (values.showTitle)
 	text.prepend(rm("Help for ") + bf(cook(longName(widget)))
+		     + rm(":") + cr() + cr());
+
+    return text;
+}
+
+static MString get_help_on_version_string(Widget widget)
+{
+    // Get text
+    help_on_version_resource_values values;
+    XtGetApplicationResources(widget, &values, 
+			      help_on_version_subresources, 
+			      XtNumber(help_subresources), 
+			      NULL, 0);
+
+    MString text(values.helpOnVersionString, true);
+    if (text.isNull() || text.isEmpty())
+	text = NoHelpText(widget);
+
+    if (values.showTitle)
+	text.prepend(rm("Help on version for ") + bf(cook(longName(widget)))
 		     + rm(":") + cr() + cr());
 
     return text;
@@ -285,12 +333,10 @@ void HelpOnWindowCB(Widget widget, XtPointer, XtPointer call_data)
 
 void HelpOnVersionCB(Widget widget, XtPointer, XtPointer call_data)
 {
-    // Get the top-level shell window
-    Widget shell = widget;
-    while (XtParent(shell))
-	shell = XtParent(shell);
+    // Get a shell window
+    Widget shell = findTopLevelShellParent(widget);
 
-    MString text = get_help_string(shell);
+    MString text = get_help_on_version_string(shell);
     text += helpOnVersionExtraText;
 
     // Get the pixmap
