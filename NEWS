@@ -8,15 +8,17 @@ DDD 2.3 [in development]
 
     User-visible changes to DDD 2.2.3:
     - JDB support.  DDD now also supports JDB as inferior debugger.
+      All important JDB features are available via the GUI.
     - Java support.  Requires GDB 4.17 or later (or JDB, of course).
-    - Watchpoint support.  You can now have the debugged program stop
+      All data display features are available in Java.
+    - Watchpoints.  You can have the debugged program stop
       automatically whenever a particular variable is read or written.
     - DBX settings now also work with SGI DBX.
     - The maximum number of glyphs is now configurable at startup time.
       See the `maxGlyphs' resource for details.
     - Tear-off menus are supported (and enabled by default).
-    - Conditional breakpoints and breakpoints with ignore counts can now
-      be visually distinguished from ordinary breakpoints.
+    - Conditional breakpoints and breakpoints with ignore counts are now
+      indicated by special breakpoint symbols.
 
     Bug fixes:
     - Using Sun DBX 3.x, data displays are no longer cluttered by DBX

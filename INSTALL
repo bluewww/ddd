@@ -21,13 +21,13 @@ Requirements
          or later.
 
        * A Motif Widget library, version 1.1 or later.  Best results
-         are achieved using OSF/Motif 2.0 or later.
+         are obtained using OSF/Motif 2.0 or later.
 
          DDD also compiles and runs with LessTif, a free Motif clone,
          release 0.83 or later, without loss of functionality.  Be
          sure to check the DDD WWW site and the `patches/' directory
-         for patches required to make DDD run.  LessTif is available
-         via `http://www.lesstif.org/'.
+         for useful patches.  LessTif is available via
+         `http://www.lesstif.org/'.
 
        * Optionally, in addition to the Motif widget library, the
          Athena Widget library (release 5 or later).  Having the
@@ -42,9 +42,8 @@ Requirements
     To run DDD, you need an inferior command-line debugger.  Best
     results are achieved with GDB, the GNU debugger.  (GDB 4.x is
     required; best results are achieved with GDB 4.13 or later.)
-    Using GDB, you can debug programs written in C and C++; GNU Ada
-    (`gnat'), GNU Fortran (`g77') and GNU Modula-2 have been reported
-    to work as well.
+    Using GDB, you can debug programs written in C, C++, GNU Java
+    (`guavac'), GNU Ada (`gnat'), GNU Fortran (`g77') and GNU Modula-2.
 
     As an alternative to GDB, DDD also supports the DBX debugger as
     found on SUN, DEC, AIX, and IRIX systems.  Using DBX, you can
@@ -54,6 +53,9 @@ Requirements
     As another alternative, DDD also supports the XDB debugger as
     found on HP-UX systems.  XDB usage has been tested for C programs
     only, but may work for other languages as well.
+
+    Finally, DDD also supports JDB, the Java Debugger, as of JDK 1.1
+    and later.  Using JDB, you can find and fix bugs in Java programs.
 
 
 Basic Installation
