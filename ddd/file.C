@@ -391,9 +391,9 @@ static void searchLocal(Widget fs,
 						     MSTRING_DEFAULT_CHARSET);
 	    free(files[i]);
 
-	    int percent     = i * 100 / count;
-	    int old_percent = (i - 1) * 100 / count;
-	    if (nitems == 1 || (percent % 10 == 0 && old_percent % 10 != 0))
+	    int percent     = (i * 100) / count;
+	    int old_percent = ((i - 1) * 100) / count;
+	    if (percent % 10 == 0 && old_percent % 10 != 0)
 	    {
 		ostrstream status;
 		status << delay_message << "... ("
