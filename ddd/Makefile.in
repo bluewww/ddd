@@ -964,8 +964,8 @@ ttytest: ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS)
 	$(LINK.cc) -o $@ ttytest.o $(BASE_OBJECTS) $(AGENT_OBJECTS) \
 	$(ALL_X_LIBS) $(LIBS)
 
-bug:	bug.o  $(LIB_OBJECTS)
-	$(LINK.cc) -o $@ bug.o $(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
+bug:	bug.o
+	$(LINK.cc) -o $@ bug.o $(LIBS)
 
 tString: tString.o  $(HUFFMAN_OBJECTS)
 	$(LINK.cc) -o $@ tString.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
