@@ -1257,6 +1257,7 @@ define(GDB_TRANSLATIONS,[\
 ~Ctrl ~Meta<Key>BackSpace:	     gdb-process()\n\
 ~Meta<Key>Tab:			     gdb-process()\n\
 ~Ctrl ~Meta<Key>Return:		     gdb-process()\n\
+~Ctrl ~Meta<Key>Linefeed:	     gdb-process()\n\
 ~Ctrl ~Meta<Key>Escape:		     gdb-process()\n\
 ~Meta<Key>Delete:		     gdb-process()\n\
 ~Ctrl ~Meta<Key>space:		     gdb-process()\n\
@@ -1970,36 +1971,36 @@ Ddd*viewsMenu*tearOffTitle:     View
 
 Ddd*viewsMenu.tool.labelString:			Command Tool...
 Ddd*viewsMenu.tool.mnemonic:			T
-! Ddd*viewsMenu.tool.acceleratorText:		Alt+Shift+T
-! Ddd*viewsMenu.tool.accelerator:		Shift Meta<Key>T
+Ddd*viewsMenu.tool.acceleratorText:		Alt+Shift+T
+Ddd*viewsMenu.tool.accelerator:			Shift Meta<Key>T
 Ddd*viewsMenu.tool.documentationString: \
 @rm Open the command tool and move it to its original position
 
 Ddd*viewsMenu.exec.labelString:			Execution Window...
 Ddd*viewsMenu.exec.mnemonic:			x
-! Ddd*viewsMenu.exec.acceleratorText:		Alt+Shift+X
-! Ddd*viewsMenu.exec.accelerator:		Shift Meta<Key>X
+Ddd*viewsMenu.exec.acceleratorText:		Alt+Shift+X
+Ddd*viewsMenu.exec.accelerator:			Shift Meta<Key>X
 Ddd*viewsMenu.exec.documentationString: \
 @rm Open the program execution window
 
 Ddd*viewsMenu.data.labelString:			Data Window
 Ddd*viewsMenu.data.mnemonic:			D
-! Ddd*viewsMenu.data.acceleratorText:		Alt+Shift+D
-! Ddd*viewsMenu.data.accelerator:		Shift Meta<Key>D
+Ddd*viewsMenu.data.acceleratorText:		Alt+Shift+D
+Ddd*viewsMenu.data.accelerator:			Shift Meta<Key>D
 Ddd*viewsMenu.data.documentationString: \
 @rm Toggle showing the data window
 
 Ddd*viewsMenu.source.labelString:		Source Window
 Ddd*viewsMenu.source.mnemonic:			S
-! Ddd*viewsMenu.source.acceleratorText:		Alt+Shift+S
-! Ddd*viewsMenu.source.accelerator:		Shift Meta<Key>S
+Ddd*viewsMenu.source.acceleratorText:		Alt+Shift+S
+Ddd*viewsMenu.source.accelerator:		Shift Meta<Key>S
 Ddd*viewsMenu.source.documentationString: \
 @rm Toggle showing the source window
 
 Ddd*viewsMenu.console.labelString:		@GDB@ Console
 Ddd*viewsMenu.console.mnemonic:			C
-! Ddd*viewsMenu.console.acceleratorText:	Alt+Shift+C
-! Ddd*viewsMenu.console.accelerator:		Shift Meta<Key>C
+Ddd*viewsMenu.console.acceleratorText:		Alt+Shift+C
+Ddd*viewsMenu.console.accelerator:		Shift Meta<Key>C
 Ddd*viewsMenu.console.documentationString: \
 @rm Toggle showing the @GDB@ console
 
@@ -2028,36 +2029,36 @@ Ddd*viewMenu*tearOffTitle:      View
 
 Ddd*viewMenu.tool.labelString:			Command Tool...
 Ddd*viewMenu.tool.mnemonic:			T
-! Ddd*viewMenu.tool.acceleratorText:		Alt+Shift+T
-! Ddd*viewMenu.tool.accelerator:		Shift Meta<Key>T
+Ddd*viewMenu.tool.acceleratorText:		Alt+Shift+T
+Ddd*viewMenu.tool.accelerator:			Shift Meta<Key>T
 Ddd*viewMenu.tool.documentationString: \
 @rm Open the command tool and move it to its original position
 
 Ddd*viewMenu.exec.labelString:			Execution Window...
 Ddd*viewMenu.exec.mnemonic:			x
-! Ddd*viewMenu.exec.acceleratorText:		Alt+Shift+X
-! Ddd*viewMenu.exec.accelerator:		Shift Meta<Key>X
+Ddd*viewMenu.exec.acceleratorText:		Alt+Shift+X
+Ddd*viewMenu.exec.accelerator:			Shift Meta<Key>X
 Ddd*viewMenu.exec.documentationString: \
 @rm Open the program execution window
 
 Ddd*viewMenu.data.labelString:			Data Window...
 Ddd*viewMenu.data.mnemonic:			D
-! Ddd*viewMenu.data.acceleratorText:		Alt+Shift+D
-! Ddd*viewMenu.data.accelerator:		Shift Meta<Key>D
+Ddd*viewMenu.data.acceleratorText:		Alt+Shift+D
+Ddd*viewMenu.data.accelerator:			Shift Meta<Key>D
 Ddd*viewMenu.data.documentationString: \
 @rm Open the data window
 
 Ddd*viewMenu.source.labelString:		Source Window...
 Ddd*viewMenu.source.mnemonic:			S
-! Ddd*viewMenu.source.acceleratorText:		Alt+Shift+S
-! Ddd*viewMenu.source.accelerator:		Shift Meta<Key>S
+Ddd*viewMenu.source.acceleratorText:		Alt+Shift+S
+Ddd*viewMenu.source.accelerator:		Shift Meta<Key>S
 Ddd*viewMenu.source.documentationString: \
 @rm Open the source window
 
 Ddd*viewMenu.console.labelString:		@GDB@ Console...
 Ddd*viewMenu.console.mnemonic:			C
-! Ddd*viewMenu.console.acceleratorText:		Alt+Shift+C
-! Ddd*viewMenu.console.accelerator:		Shift Meta<Key>C
+Ddd*viewMenu.console.acceleratorText:		Alt+Shift+C
+Ddd*viewMenu.console.accelerator:		Shift Meta<Key>C
 Ddd*viewMenu.console.documentationString: \
 @rm Open the @GDB@ console
 
@@ -2089,6 +2090,7 @@ but proceed through subroutine calls])\n\
 \n\
 DESC(Continue, [continue program after signal or breakpoint])\n\
 DESC(Finish, [execute until function returns])\n\
+DESC(Until, [execute until program reaches a line after the current])\n\
 \n\
 DESC(Kill, [kill execution of program being debugged])\n\
 DESC(Interrupt, [interrupt program (or current @GDB@ command)])\n\
@@ -2155,6 +2157,12 @@ Ddd*menubar*programMenu.finish.mnemonic:	   F
 Ddd*menubar*programMenu.finish.accelerator:	   Ctrl<Key>Return
 Ddd*menubar*programMenu.finish.acceleratorText:	   Ctrl+Return
 Ddd*menubar*programMenu.finish.documentationString:
+
+Ddd*menubar*programMenu.until.labelString:	   Until
+Ddd*menubar*programMenu.until.mnemonic:	   	   U
+Ddd*menubar*programMenu.until.accelerator:	   Ctrl<Key>equal
+Ddd*menubar*programMenu.until.acceleratorText:	   Ctrl+=
+Ddd*menubar*programMenu.until.documentationString:
 
 Ddd*menubar*programMenu.kill.labelString:	   Kill
 Ddd*menubar*programMenu.kill.mnemonic:		   K
@@ -2868,7 +2876,7 @@ ITEM LBL(File) | LBL(Restart [DDD]), affecting the restarted \
 DDD session only.\n\
 \n\
 ITEM LBL(Window Layout) sets the window layout.\n\
-    SUBITEM LBL(One Single Window) means to use one top-level window\n\
+    SUBITEM LBL(Stacked Windows) means to use one top-level window\n\
         where source, data, and the @GDB@ console are stacked.\n\
     SUBITEM LBL(Separate Windows) means to use a separate top-level window\n\
         for each of source, data, and the @GDB@ console.\n\
@@ -2905,7 +2913,7 @@ Ddd*preferences*startup*adjustMargin:		false
 Ddd*preferences*windows.labelString:		Window Layout
 Ddd*preferences*windows.width:			200
 Ddd*preferences*windows.recomputeSize:		false
-Ddd*windowsMenu*attached.labelString:		One Single Window
+Ddd*windowsMenu*attached.labelString:		Stacked Windows
 Ddd*windowsMenu*separate.labelString:		Separate Windows
 
 Ddd*preferences*buttons.labelString:		Toolbar Appearance
@@ -2930,7 +2938,7 @@ Ddd*preferences*dataScrolling.labelString:	Data Scrolling
 Ddd*preferences*dataScrolling.width:		200
 Ddd*preferences*dataScrolling.recomputeSize:	false
 Ddd*dataScrollingMenu*panner.labelString:	Panner
-Ddd*dataScrollingMenu*scrollbars.labelString:	Two Scrollbars
+Ddd*dataScrollingMenu*scrollbars.labelString:	Scrollbars
 
 Ddd*preferences*debugger.labelString:		Debugger Type
 Ddd*preferences*debugger.width:			200
@@ -2947,7 +2955,6 @@ Ddd*preferences*showStartupLogo.recomputeSize:	false
 Ddd*showStartupLogoMenu*color.labelString:	Color
 Ddd*showStartupLogoMenu*grey.labelString:	Grey
 Ddd*showStartupLogoMenu*grey4.labelString:	Grey4
-Ddd*showStartupLogoMenu*mono.labelString:	Monochrome
 Ddd*showStartupLogoMenu*none.labelString:	None
 
 Ddd*preferences*helpers*helpString: \
@@ -4119,11 +4126,15 @@ Ddd*gdb_wSW.spacing:			0
 Ddd*gdb_wSW.borderWidth:		0
 Ddd*gdb_wSW.shadowThickness:		0
 
-Ddd*gdb_w.editable:		true
-Ddd*gdb_w.allowResize:		true
-Ddd*gdb_w.editMode:		XmMULTI_LINE_EDIT
-Ddd*gdb_w.scrollHorizontal:	false
-Ddd*gdb_w.wordWrap:		true
+! Don't resize the debugger console when resizing the main window
+Ddd*gdb_w_swindow.skipAdjust:	true
+Ddd*gdb_wSW.skipAdjust:		true
+
+Ddd*gdb_w.editable:			true
+Ddd*gdb_w.allowResize:			true
+Ddd*gdb_w.editMode:			XmMULTI_LINE_EDIT
+Ddd*gdb_w.scrollHorizontal:		false
+Ddd*gdb_w.wordWrap:			true
 Ddd*gdb_w.autoShowCursorPosition:	true
 Ddd*gdb_w.cursorPositionVisible:	true
 
