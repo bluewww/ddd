@@ -1168,12 +1168,16 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
 
 
 // In LessTif, XmTrackingEvent() is somewhat broken - it returns on
-// KeyRelease events, and it does not return the event.  So we provide
-// an own implementation.
-static Widget TrackingLocate(Widget widget, Cursor cursor, Boolean confine_to)
+// KeyRelease events, and it does not return the event.  Here's a
+// patched implementation.
+static Widget
+TrackingEvent(Widget widget, Cursor cursor,
+	      Boolean confine_to, XEvent *event_return)
 {
     Window confine_to_this;
     XEvent ev;
+    Boolean key_pressed = False;
+    Time time;
 
     if (confine_to)
     {
@@ -1184,22 +1188,34 @@ static Widget TrackingLocate(Widget widget, Cursor cursor, Boolean confine_to)
 	confine_to_this = None;
     }
 
-    XtGrabPointer(widget,
-		  True,
-		  ButtonReleaseMask | ButtonPressMask,
-		  GrabModeAsync,
-		  GrabModeAsync,
-		  confine_to_this,
-		  cursor,
-		  CurrentTime);
+    time = XtLastTimestampProcessed(XtDisplay(widget));
+    if (XtGrabPointer(widget, True,
+		      ButtonReleaseMask | ButtonPressMask,
+		      GrabModeAsync, GrabModeAsync,
+		      confine_to_this, cursor, time) != GrabSuccess)
+    {
+	cerr << "XmTrackingEvent: Could not grab pointer\n";
+	return NULL;
+    }
 
     while (True)
     {
 	XtAppNextEvent(XtWidgetToApplicationContext(widget), &ev);
+	time = XtLastTimestampProcessed(XtDisplay(widget));
 
-	if (ev.xbutton.type == ButtonRelease && ev.xbutton.button == 1)
+	if (ev.xbutton.type == KeyPress)
 	{
-	    XtUngrabPointer(widget, CurrentTime);
+	    /* Avoid exiting upon releasing the key that caused
+               XmTrackingEvent() to be invoked */
+	    key_pressed = True;
+	}
+	else if ((ev.xbutton.type == KeyRelease && key_pressed) ||
+		 (ev.xbutton.type == ButtonRelease && ev.xbutton.button == 1))
+	{
+	    if (event_return != NULL)
+		*event_return = ev;
+
+	    XtUngrabPointer(widget, time);
 
 	    /* If the button was clicked outside of this programs windows,
 	     * the widget that grabbed the pointer will get the event.  So,
@@ -1243,10 +1259,16 @@ void HelpOnContextCB(Widget widget, XtPointer client_data, XtPointer call_data)
 	static Cursor cursor = 
 	    XCreateFontCursor(XtDisplay(toplevel), XC_question_arrow);
 
+	XEvent ev;
+#if XmVersion < 1002
+	// No XmTrackingEvent() in Motif 1.1
+	item = TrackingEvent(toplevel, cursor, False, &ev);
+#else
 	if (lesstif_version < 1000)
-	    item = TrackingLocate(toplevel, cursor, False);
+	    item = TrackingEvent(toplevel, cursor, False, &ev);
 	else
-	    item = XmTrackingLocate(toplevel, cursor, False);
+	    item = XmTrackingEvent(toplevel, cursor, False, &ev);
+#endif
 
 	if (item)
 	    ImmediateHelpCB(item, client_data, call_data);
