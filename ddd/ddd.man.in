@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-06\-11" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-06\-12" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -2509,6 +2509,12 @@ saying `\fBprint i\fR' in the button editor.  Then click on
 `\fBOK\fR'.  A button named `\fBPrint i\fR' will now appear below the
 debugger console\(em\&try it!  To remove the button, reopen the button
 editor, clear the `\fBprint i\fR' line and press `\fBOK\fR' again.
+.PP
+If a button command contains `\fB()\fR', the string `\fB()\fR' will
+automatically be replaced by the contents of the argument field.  For
+instance, a button named `\fBreturn ()\fR' will execute the
+\s-1GDB\s+1 `\fBreturn\fR' command with the current content of the
+argument field as argument.
 .PP
 By default, \s-1@DDD@\s+1 disables buttons whose commands are not
 supported by the inferior debugger.  To enable such buttons, unset the
@@ -5652,6 +5658,8 @@ is accessible via our \s-1@DDD@\s+1 \s-1WWW\s+1 page,
 .br
   \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR .
 .br
+.sp
+.PP
 .\"
 .\"
 .\" --------------------
