@@ -3010,40 +3010,65 @@ typedef void (*FileSearchProc)(Widget fs,
 			       XmFileSelectionBoxCallbackStruct *cbs);
 
 static VarArray<Widget> file_filters;
-static VarArray<Widget> file_filter_buttons;
 static VarArray<Widget> file_dialogs;
 
 static string current_file_filter = "";
 
 // Make sure that every change in one filter is reflected in all others
-static void SyncFiltersCB(Widget w, XtPointer, XtPointer)
+static void SyncFiltersCB(Widget dialog, XtPointer, XtPointer)
 {
-    if (w)
-    {
-	String _current_file_filter = XmTextGetString(w);
-	current_file_filter = _current_file_filter;
-	XtFree(_current_file_filter);
-    }
+    static bool entered = false;
+
+    if (entered)
+	return;
+
+    entered = true;
+
+    // clog << "widget = " << longName(text) << "\n";
+
+    while (dialog != 0 && !XmIsFileSelectionBox(dialog))
+	dialog = XtParent(dialog);
+	
+    // clog << "dialog = " << longName(dialog) << "\n";
+
+    Widget text = XmFileSelectionBoxGetChild(dialog, XmDIALOG_FILTER_TEXT);
+    String _current_file_filter = XmTextGetString(text);
+    current_file_filter = _current_file_filter;
+    XtFree(_current_file_filter);
 
     for (int i = 0; i < file_filters.size(); i++)
     {
-	String _filter = XmTextGetString(file_filters[i]);
-	string filter = _filter;
-	XtFree(_filter);
-
-	if (filter != current_file_filter)
+	if (file_dialogs[i] != dialog)
+	{
+	    // clog << "other dialog = " << longName(file_dialogs[i]) << "\n";
 	    XmTextSetString(file_filters[i], current_file_filter);
+	}
     }
+
+    entered = false;
 }
 
 // Make sure that every new filter call is performed in all other
 // dialogs as well
-static void FilterAllCB(Widget w, XtPointer, XtPointer)
+static void FilterAllCB(Widget dialog, XtPointer client_data, 
+			XtPointer call_data)
 {
-    for (int i = 0; i < file_filter_buttons.size(); i++)
+    SyncFiltersCB(dialog, client_data, call_data);
+
+    // clog << "widget = " << longName(dialog) << "\n";
+
+    while (dialog != 0 && !XmIsFileSelectionBox(dialog))
+	dialog = XtParent(dialog);
+	
+    // clog << "dialog = " << longName(dialog) << "\n";
+
+    for (int i = 0; i < file_dialogs.size(); i++)
     {
-	if (w != file_filter_buttons[i])
+	if (file_dialogs[i] != dialog)
+	{
+	    // clog << "other dialog = " << longName(file_dialogs[i]) << "\n";
 	    XmFileSelectionDoSearch(file_dialogs[i], NULL);
+	}
     }
 }
 
@@ -3119,7 +3144,6 @@ Widget file_dialog(Widget w, const string& name,
 
     Widget filter_button = 
 	XmFileSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON);
-    file_filter_buttons += filter_button;
     XtAddCallback(filter_button, XmNactivateCallback, FilterAllCB, 0);
 
     file_dialogs += dialog;
