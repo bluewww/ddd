@@ -9,68 +9,6 @@ Feel free to investigate into one of these problems or send in more
 detail.
 
 -- list starts here --
-
-700 mayer@paradigml.com (Ron Mayer) says:
-
-    In a number of structures I would attempt to "Modify [the]
-    dependent display expression" to display in hex using expressions
-    like "/x g->head", instead of the default "(g)->head".
-
-    Occasionally this would make ddd hang, and lock up the X-server
-    completely so that I would have to rlogin from another terminal
-    to kill the program.  The bus-error was not reproducable, and
-    unfortunatelly I had core files disabled when it happened.
-
-    These structures did happen to be in a mmap()'d region of shared
-    memory, but since I didn't see the problems when I didn't use the
-    "/x" modifier I suspect this isn't the problem.
-
-    PS: What is the prefered way (if any) of making the hex output 
-        the default in the display graph?  If I "set output-radix 16" 
-        in the gdb window ddd seems to lock up very often.
-    [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
-
-701 Bob Vickers <bobv@dcs.rhbnc.ac.uk> says that DDD 2.0
-    (alpha-dec-osf3.2) sometimes fails to start.  Often it works
-    fine. But sometimes, especially if you haven't run it for a while
-    (e.g. first thing in the morning) the command window comes up but
-    there is no sign of the source window. There are sometimes error
-    messages, and these vary slightly.
-
-    The parent Unix window sometimes contains tty error messages, e.g.
-
-    platon$ make check
-    ==> Making check in ./ddd...
-    make[1]: Entering directory `/nobackup/work/bobv/ddd-2.0/ddd'
-    XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd cxxtest
-    X Toolkit Warning: Cannot convert string 
-    "-*-Menu-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1" to type FontStruct
-    (gdb) cannot set terminal foreground process group: I/O error
-    (gdb) cannot get slave terminal settings: I/O error
-
-    [We cannot fix this, as we neither have an OSF box nor
-     appropriate OSF documentation at our disposition.  The DDD
-     distribution comes with a demo program `ttytest' which is useful
-     for debugging the TTY interface in `TTYAgent.C'  -AZ]
-
-702 Jonathan Edwards <edwards@intranet.com> says that in AIX DBX,
-    the local variable display does not display function arguments.
-    [This is probably due to using AIX xlC instead of GCC.  -AZ]
-
-703 Jonathan Edwards <edwards@intranet.com> says:
-    A status display only shows once.  After stepping the program it
-    collapses into just the title.  Doing a refresh command restores
-    the display.
-    [This is due to using AIX xlC instead of GCC.  -AZ]
-
-704 Jonathan Edwards <edwards@intranet.com> says: If I interrupt my
-    program while it is running, my data displays are not updated,
-    and instead I get the info in the debugger console.
-
-705 Matthias Kurz <mk@baerlap.north.de> says:
-    - Often the first graph display is not completely inside the
-      window; after selecting 'layout graph' things are right
-
 706 Harry Mangalam <mangalam@uci.edu> reports: As soon as I click on
     a variable to try to highlight a structure name, DDD 2.1 goes
     into an unresponsive state for several seconds (seems like up to
@@ -79,11 +17,6 @@ detail.
     highlight a variable name.  It seems that if I click on a simple
     variable name, it responds appopriately, but if I try to
     drag-hilite the name, ddd goes berserk with the cpu.
-
-707 Roy Dragseth <royd@math.uit.no> reports that if you type in
-    commands really fast in ddd, it gets problems to cope.  When
-    using DDD from XEmacs, and defining XEmacs command sequences to
-    be sent to DDD, the last command(s) in the sequence get lost.
 
 708 Nagi M. Aboulenein <naboulen@ichips.intel.com> says: I'm seeing a
     persistent problem with various version of DDD on FreeBSD/x86
@@ -194,11 +127,11 @@ detail.
     sources) is started, it interacts strangely with my X11 window manager
     (vtwm Release 5.4.4c (http://www.visi.com/~hawkeyd/vtwm.html), running
     in NetBSD 1.3.2, XFree86 3.3.2).
-    
+
     Definition of strange: the splash screen starts up nicely in my
     current virtual screen but the DDD main window makes my vtwm to jump
     to screen #0 (upper left corner).
-    
+
     I have never before seen problems like this with vtwm.
 
 732 Jacques Leroy <jle@star.be> reports that Electric Fence detects

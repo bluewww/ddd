@@ -85,9 +85,6 @@ Volunteers for fixing these and other bugs are welcome!
        the $(HOME) does not get propagated to all Makefiles.
        [This is a problem of the libiberty and librx maintainers.  -AZ]
 
-255 In Java programs, the `info set' status display is treated as
-    variable list.
-
 272 (LessTif) The `select' font selection method works only once.
 
 281 In auto deiconify mode, the Debugger Console uniconifies even if
@@ -130,7 +127,7 @@ Volunteers for fixing these and other bugs are welcome!
 353 (Automake) The `configure' script checks for `__CYGWIN32__', but
     as of Beta 20, this should be `__CYGWIN__'.
 
-360 Plot tear-offs remain active when the main window has been closed.
+360 Plot tear-offs remain active after the main window has been closed.
 
 363 (LessTif 0.87) Selecting something outside the source window does
     not clear the selection in the data window.
