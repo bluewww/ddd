@@ -664,7 +664,7 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
     }
     }
 
-    if (as_dummy)
+    if (as_dummy && gdb->has_delete_command())
     {
 	// Delete the breakpoint just created
 	os << gdb->delete_command(num) << "\n";
