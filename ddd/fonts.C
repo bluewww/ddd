@@ -55,6 +55,7 @@ char fonts_rcsid[] =
 #include <Xm/TextF.h>
 #include <Xm/Text.h>
 #include <Xm/PushB.h>
+#include <X11/Xatom.h>		// XA_...
 
 
 //-----------------------------------------------------------------------------
