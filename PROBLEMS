@@ -264,11 +264,8 @@ LessTif
     `http://www.lesstif.org'; if needed, apply the patches found in
     the `patches/' subdirectory.
 
-    When linking with LessTif 0.83, the following problems remain:
+    With LessTif 0.83, no problems are known at this time.
  
-    001. The `F1' menu accelerator (Help | On Context) has no effect;
-         invoke the function via the menu instead.  [behavioral]
-
 
 Linux
 =====
