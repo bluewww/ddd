@@ -245,7 +245,7 @@ Volunteers for fixing these and other bugs are welcome!
 240*If a member name contains `.', quote it. (vtables on GDB/Linux)
 
 241 Lev Makhlis <mlev@writeme.com> states that DDD 2.2.3
-    (i586-pc-linux-gnulibc1) consistently crashes if I run it when no
-    ~/.ddd exists.
+    (i586-pc-linux-gnulibc1) consistently crashes if he runs it when
+    no `~/.ddd/' exists.
 
 243 (Insert your bug here)
