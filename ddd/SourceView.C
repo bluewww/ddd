@@ -6272,16 +6272,6 @@ void SourceView::map_glyph(Widget& glyph, Position x, Position y)
     if (change_glyphs)
     {
 	XtMapWidget(glyph);
-
-#if XmVersion >= 2001
-	// Place the glyph above the text.  Dirty hack for Motif 2.1.
-	XWindowChanges xwc;
-	xwc.sibling = XtWindow(XtParent(text_w));
-	xwc.stack_mode = Above;
-	XConfigureWindow(XtDisplay(glyph), XtWindow(glyph), 
-			 CWSibling | CWStackMode, &xwc);
-#endif
-
 	XtVaSetValues(glyph, XmNuserData, XtPointer(1), NULL);
 	// log_glyph(glyph);
 	changed_glyphs += glyph;
