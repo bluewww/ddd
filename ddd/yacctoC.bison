@@ -61,7 +61,7 @@ struct YYMEMHANDLER {\
   YYMEMHANDLER yymem; // Added by $RCSfile$.
 
 # stack reallocation -> own code
-\!.*yyvs = (YYSTYPE \*!,\!__yy_bcopy!c\
+\!.*yyvs = (YYSTYPE \*!,\!__yy_memcpy!c\
 \
       // Added by $RCSfile$. \
       YYSTYPE *new_yyvs = new YYSTYPE [yystacksize];\
