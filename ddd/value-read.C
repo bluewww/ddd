@@ -72,9 +72,9 @@ DispValueType determine_type (string value)
     }
 
     static regex 
-	RXstr_or_cl_begin("({\n|record\n|RECORD\n).*");
+	RXstr_or_cl_begin("({\n|record\n|RECORD\n|struct|class).*");
 
-    if (value.matches(RXstr_or_cl_begin))
+    if (value.contains(" = ") && value.matches(RXstr_or_cl_begin))
 	return StructOrClass;
 
     static regex 
@@ -93,7 +93,7 @@ DispValueType determine_type (string value)
 	break;
 
     case DBX:
-	if (value.contains('(', 0))
+	if (value.contains('{', 0) || value.contains('(', 0))
 	    return Array;
 	break;
     }
@@ -295,6 +295,10 @@ bool read_array_begin (string& value)
 {
     read_leading_blanks (value);
 
+    // DBX on DEC prepends `struct' or `class' before each struct
+    if (value.contains("struct", 0) || value.contains("class", 0))
+	value = value.after(' ');
+
     if (value.contains('{', 0))
 	value = value.after(0);
     else if (value.contains('(', 0))
@@ -320,6 +324,14 @@ bool read_array_next (string& value)
 	following = true;
     
     read_leading_blanks (value);
+
+    static regex RXindex("[[]-?[0-9][0-9]*]");
+    if (value.contains(RXindex, 0))
+    {
+	// DBX on DEC prepends `[N]' before array member N
+	value = value.after(RXindex);
+	return value != "";
+    }
 
     if (value.contains(',', 0))
     {
