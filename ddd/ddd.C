@@ -598,7 +598,7 @@ static XtActionsRec actions [] = {
 //-----------------------------------------------------------------------------
 
 struct FileItems {
-    enum FileItem { OpenFile, OpenCore, OpenSource, Sep1,
+    enum FileItem { OpenFile, OpenClass, OpenCore, OpenSource, Sep1,
 		    OpenSession, SaveSession, Sep2,
 		    Attach, Detach, Sep3,
 		    Print, PrintAgain, Sep4,
@@ -611,6 +611,7 @@ struct FileItems {
 #define FILE_MENU \
 { \
     { "open_file",     MMPush, { gdbOpenFileCB }}, \
+    { "open_class",    MMPush | MMUnmanaged, { gdbOpenClassCB }}, \
     { "open_core",     MMPush, { gdbOpenCoreCB }}, \
     { "open_source",   MMPush, { gdbOpenSourceCB }}, \
     MMSep, \
@@ -4347,88 +4348,102 @@ static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
     set_sensitive(complete_w,     ready && gdb->type() == GDB);
     set_sensitive(apply_w,        ready);
 
-    set_sensitive(command_file_menu[FileItems::OpenFile].widget,       ready);
-    set_sensitive(source_file_menu[FileItems::OpenFile].widget,        ready);
-    set_sensitive(data_file_menu[FileItems::OpenFile].widget,          ready);
+    set_sensitive(command_file_menu[FileItems::OpenFile].widget,        ready);
+    set_sensitive(source_file_menu[FileItems::OpenFile].widget,         ready);
+    set_sensitive(data_file_menu[FileItems::OpenFile].widget,           ready);
+
+    set_sensitive(command_file_menu[FileItems::OpenClass].widget,       ready);
+    set_sensitive(source_file_menu[FileItems::OpenClass].widget,        ready);
+    set_sensitive(data_file_menu[FileItems::OpenClass].widget,          ready);
 
     bool have_core = ready && gdb->has_core_files();
-    set_sensitive(command_file_menu[FileItems::OpenCore].widget,   have_core);
-    set_sensitive(source_file_menu[FileItems::OpenCore].widget,    have_core);
-    set_sensitive(data_file_menu[FileItems::OpenCore].widget,      have_core);
+    set_sensitive(command_file_menu[FileItems::OpenCore].widget,    have_core);
+    set_sensitive(source_file_menu[FileItems::OpenCore].widget,     have_core);
+    set_sensitive(data_file_menu[FileItems::OpenCore].widget,       have_core);
 
-    set_sensitive(command_edit_menu[FileItems::OpenSession].widget,    ready);
-    set_sensitive(source_edit_menu[FileItems::OpenSession].widget,     ready);
-    set_sensitive(data_edit_menu[FileItems::OpenSession].widget,       ready);
+    bool have_exec = gdb->has_exec_files();
+    manage_child(command_file_menu[FileItems::OpenFile].widget,     have_exec);
+    manage_child(source_file_menu[FileItems::OpenFile].widget,      have_exec);
+    manage_child(data_file_menu[FileItems::OpenFile].widget,        have_exec);
 
-    set_sensitive(command_edit_menu[FileItems::SaveSession].widget,    ready);
-    set_sensitive(source_edit_menu[FileItems::SaveSession].widget,     ready);
-    set_sensitive(data_edit_menu[FileItems::SaveSession].widget,       ready);
+    bool have_classes = gdb->has_classes();
+    manage_child(command_file_menu[FileItems::OpenClass].widget, have_classes);
+    manage_child(source_file_menu[FileItems::OpenClass].widget,  have_classes);
+    manage_child(data_file_menu[FileItems::OpenClass].widget,    have_classes);
+
+    set_sensitive(command_edit_menu[FileItems::OpenSession].widget,     ready);
+    set_sensitive(source_edit_menu[FileItems::OpenSession].widget,      ready);
+    set_sensitive(data_edit_menu[FileItems::OpenSession].widget,        ready);
+
+    set_sensitive(command_edit_menu[FileItems::SaveSession].widget,     ready);
+    set_sensitive(source_edit_menu[FileItems::SaveSession].widget,      ready);
+    set_sensitive(data_edit_menu[FileItems::SaveSession].widget,        ready);
 
     bool have_attach = ready && gdb->has_processes();
-    set_sensitive(command_file_menu[FileItems::Attach].widget,   have_attach);
-    set_sensitive(source_file_menu[FileItems::Attach].widget,    have_attach);
-    set_sensitive(data_file_menu[FileItems::Attach].widget,      have_attach);
+    set_sensitive(command_file_menu[FileItems::Attach].widget,    have_attach);
+    set_sensitive(source_file_menu[FileItems::Attach].widget,     have_attach);
+    set_sensitive(data_file_menu[FileItems::Attach].widget,       have_attach);
 
     bool have_detach = ready && gdb->has_processes();
-    set_sensitive(command_file_menu[FileItems::Detach].widget,   have_detach);
-    set_sensitive(source_file_menu[FileItems::Detach].widget,    have_detach);
-    set_sensitive(data_file_menu[FileItems::Detach].widget,      have_detach);
+    set_sensitive(command_file_menu[FileItems::Detach].widget,    have_detach);
+    set_sensitive(source_file_menu[FileItems::Detach].widget,     have_detach);
+    set_sensitive(data_file_menu[FileItems::Detach].widget,       have_detach);
 
     bool have_make = ready && 
 	(gdb->has_make_command() || gdb->has_shell_command());
-    set_sensitive(command_file_menu[FileItems::Make].widget,       have_make);
-    set_sensitive(source_file_menu[FileItems::Make].widget,        have_make);
-    set_sensitive(data_file_menu[FileItems::Make].widget,          have_make);
+    set_sensitive(command_file_menu[FileItems::Make].widget,        have_make);
+    set_sensitive(source_file_menu[FileItems::Make].widget,         have_make);
+    set_sensitive(data_file_menu[FileItems::Make].widget,           have_make);
 
-    set_sensitive(command_file_menu[FileItems::MakeAgain].widget,  have_make);
-    set_sensitive(source_file_menu[FileItems::MakeAgain].widget,   have_make);
-    set_sensitive(data_file_menu[FileItems::MakeAgain].widget,     have_make);
+    set_sensitive(command_file_menu[FileItems::MakeAgain].widget,   have_make);
+    set_sensitive(source_file_menu[FileItems::MakeAgain].widget,    have_make);
+    set_sensitive(data_file_menu[FileItems::MakeAgain].widget,      have_make);
 
     bool have_cd = ready && gdb->has_cd_command();
-    set_sensitive(command_file_menu[FileItems::CD].widget,           have_cd);
-    set_sensitive(source_file_menu[FileItems::CD].widget,            have_cd);
-    set_sensitive(data_file_menu[FileItems::CD].widget,              have_cd);
+    set_sensitive(command_file_menu[FileItems::CD].widget,            have_cd);
+    set_sensitive(source_file_menu[FileItems::CD].widget,             have_cd);
+    set_sensitive(data_file_menu[FileItems::CD].widget,               have_cd);
 
     bool have_settings = ready && (gdb->type() == GDB || gdb->type() == DBX);
     set_sensitive(command_edit_menu[EditItems::Settings].widget,have_settings);
     set_sensitive(source_edit_menu[EditItems::Settings].widget, have_settings);
     set_sensitive(data_edit_menu[EditItems::Settings].widget,   have_settings);
 
-    set_sensitive(command_program_menu[ProgramItems::Run].widget,      ready);
-    set_sensitive(source_program_menu[ProgramItems::Run].widget,       ready);
-    set_sensitive(data_program_menu[ProgramItems::Run].widget,         ready);
+    set_sensitive(command_program_menu[ProgramItems::Run].widget,       ready);
+    set_sensitive(source_program_menu[ProgramItems::Run].widget,        ready);
+    set_sensitive(data_program_menu[ProgramItems::Run].widget,          ready);
 
-    set_sensitive(command_program_menu[ProgramItems::RunAgain].widget, ready);
-    set_sensitive(source_program_menu[ProgramItems::RunAgain].widget,  ready);
-    set_sensitive(data_program_menu[ProgramItems::RunAgain].widget,    ready);
+    set_sensitive(command_program_menu[ProgramItems::RunAgain].widget,  ready);
+    set_sensitive(source_program_menu[ProgramItems::RunAgain].widget,   ready);
+    set_sensitive(data_program_menu[ProgramItems::RunAgain].widget,     ready);
 
-    set_sensitive(command_program_menu[ProgramItems::Step].widget,     ready);
-    set_sensitive(source_program_menu[ProgramItems::Step].widget,      ready);
-    set_sensitive(data_program_menu[ProgramItems::Step].widget,        ready);
+    set_sensitive(command_program_menu[ProgramItems::Step].widget,      ready);
+    set_sensitive(source_program_menu[ProgramItems::Step].widget,       ready);
+    set_sensitive(data_program_menu[ProgramItems::Step].widget,         ready);
 
-    set_sensitive(command_program_menu[ProgramItems::Stepi].widget,    ready);
-    set_sensitive(source_program_menu[ProgramItems::Stepi].widget,     ready);
-    set_sensitive(data_program_menu[ProgramItems::Stepi].widget,       ready);
+    set_sensitive(command_program_menu[ProgramItems::Stepi].widget,     ready);
+    set_sensitive(source_program_menu[ProgramItems::Stepi].widget,      ready);
+    set_sensitive(data_program_menu[ProgramItems::Stepi].widget,        ready);
 
-    set_sensitive(command_program_menu[ProgramItems::Next].widget,     ready);
-    set_sensitive(source_program_menu[ProgramItems::Next].widget,      ready);
-    set_sensitive(data_program_menu[ProgramItems::Next].widget,        ready);
+    set_sensitive(command_program_menu[ProgramItems::Next].widget,      ready);
+    set_sensitive(source_program_menu[ProgramItems::Next].widget,       ready);
+    set_sensitive(data_program_menu[ProgramItems::Next].widget,         ready);
 
-    set_sensitive(command_program_menu[ProgramItems::Nexti].widget,    ready);
-    set_sensitive(source_program_menu[ProgramItems::Nexti].widget,     ready);
-    set_sensitive(data_program_menu[ProgramItems::Nexti].widget,       ready);
+    set_sensitive(command_program_menu[ProgramItems::Nexti].widget,     ready);
+    set_sensitive(source_program_menu[ProgramItems::Nexti].widget,      ready);
+    set_sensitive(data_program_menu[ProgramItems::Nexti].widget,        ready);
 
-    set_sensitive(command_program_menu[ProgramItems::Cont].widget,     ready);
-    set_sensitive(source_program_menu[ProgramItems::Cont].widget,      ready);
-    set_sensitive(data_program_menu[ProgramItems::Cont].widget,        ready);
+    set_sensitive(command_program_menu[ProgramItems::Cont].widget,      ready);
+    set_sensitive(source_program_menu[ProgramItems::Cont].widget,       ready);
+    set_sensitive(data_program_menu[ProgramItems::Cont].widget,         ready);
 
-    set_sensitive(command_program_menu[ProgramItems::Finish].widget,   ready);
-    set_sensitive(source_program_menu[ProgramItems::Finish].widget,    ready);
-    set_sensitive(data_program_menu[ProgramItems::Finish].widget,      ready);
+    set_sensitive(command_program_menu[ProgramItems::Finish].widget,    ready);
+    set_sensitive(source_program_menu[ProgramItems::Finish].widget,     ready);
+    set_sensitive(data_program_menu[ProgramItems::Finish].widget,       ready);
 
-    set_sensitive(command_program_menu[ProgramItems::Kill].widget,     ready);
-    set_sensitive(source_program_menu[ProgramItems::Kill].widget,      ready);
-    set_sensitive(data_program_menu[ProgramItems::Kill].widget,        ready);
+    set_sensitive(command_program_menu[ProgramItems::Kill].widget,      ready);
+    set_sensitive(source_program_menu[ProgramItems::Kill].widget,       ready);
+    set_sensitive(data_program_menu[ProgramItems::Kill].widget,         ready);
 
     unpost_gdb_busy();
 }

@@ -236,6 +236,25 @@ static Widget file_dialog(Widget w, const string& name,
     return dialog;
 }
 
+// Create various file dialogs
+static Widget create_file_dialog(Widget w, String name,
+				 FileSearchProc searchRemoteFiles       = 0,
+				 FileSearchProc searchRemoteDirectories = 0,
+				 FileSearchProc searchLocalFiles        = 0,
+				 FileSearchProc searchLocalDirectories  = 0,
+				 XtCallbackProc openDone = 0)
+{			     
+    if (remote_gdb())
+	return file_dialog(find_shell(w), name,
+			   searchRemoteFiles, searchRemoteDirectories, 
+			   openDone);
+    else
+	return file_dialog(find_shell(w), name,
+			   searchLocalFiles, searchLocalDirectories, 
+			   openDone);
+}
+
+
 static char delay_message[] = "Filtering files";
 
 // Search for remote files and directories, using the command CMD
@@ -369,7 +388,7 @@ static void searchRemoteDirectories(Widget fs,
     searchRemote(fs, cbs, app_data.list_dir_command, true);
 }
 
-static void sort(char *a[], int size)
+static void sortFiles(char *a[], int size)
 {
     // Shell sort -- simple and fast
     int h = 1;
@@ -415,7 +434,7 @@ static void searchLocal(Widget fs,
 	int count;
 	for (count = 0; files[count] != 0; count++)
 	    ;
-	sort(files, count);
+	sortFiles(files, count);
 
 	XmStringTable items = 
 	    XmStringTable(XtMalloc(count * sizeof(XmString)));
@@ -514,6 +533,89 @@ static string get_file(Widget w, XtPointer, XtPointer call_data)
 
     return filename;
 }
+
+
+
+//-----------------------------------------------------------------------------
+// OK pressed
+//-----------------------------------------------------------------------------
+
+// OK pressed in `Open File'
+static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    string filename = get_file(w, client_data, call_data);
+    if (filename == "")
+	return;
+
+    XtUnmanageChild(w);
+
+    if (filename == NO_GDB_ANSWER)
+	return;
+
+    if (gdb->type() == GDB)
+    {
+	// GDB does not always detach processes upon opening new
+	// files, so we do it explicitly
+	ProgramInfo info;
+    	if (info.attached)
+	    gdb_command("detach");
+    }
+
+    gdb_command(gdb->debug_command(filename));
+}
+
+
+// OK pressed in `Open Core'
+static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    string corefile = get_file(w, client_data, call_data);
+    if (corefile == "")
+	return;
+
+    ProgramInfo info;
+
+    XtUnmanageChild(w);
+
+    if (corefile != NO_GDB_ANSWER)
+    {
+	switch(gdb->type())
+	{
+	case GDB:
+	    gdb_command("core-file " + corefile);
+	    break;
+
+	case DBX:
+	    if (info.file != NO_GDB_ANSWER && info.file != "")
+		gdb_command(gdb->debug_command(info.file) + " " + info.core);
+	    else
+		post_error("No program.", "no_program", w);
+	    break;
+
+	case XDB:
+	case JDB:
+	    break;		// FIXME
+	}
+    }
+}
+
+// OK pressed in `Open Source'
+static void openSourceDone(Widget w, XtPointer client_data, 
+			   XtPointer call_data)
+{
+    string filename = get_file(w, client_data, call_data);
+    if (filename == "")
+	return;
+
+    XtUnmanageChild(w);
+
+    if (filename != NO_GDB_ANSWER)
+	source_view->read_file(filename);
+}
+
+
+//-----------------------------------------------------------------------------
+// Program Info
+//-----------------------------------------------------------------------------
 
 // Get information on current debuggee
 ProgramInfo::ProgramInfo()
@@ -639,31 +741,9 @@ ProgramInfo::ProgramInfo()
 }
 
 
-
-
-// OK pressed in `Open File'
-static void openFileDone(Widget w, XtPointer client_data, XtPointer call_data)
-{
-    string filename = get_file(w, client_data, call_data);
-    if (filename == "")
-	return;
-
-    XtUnmanageChild(w);
-
-    if (filename == NO_GDB_ANSWER)
-	return;
-
-    if (gdb->type() == GDB)
-    {
-	// GDB does not always detach processes upon opening new
-	// files, so we do it explicitly
-	ProgramInfo info;
-    	if (info.attached)
-	    gdb_command("detach");
-    }
-
-    gdb_command(gdb->debug_command(filename));
-}
+//-----------------------------------------------------------------------------
+// Processes
+//-----------------------------------------------------------------------------
 
 // Process selection
 static int ps_pid_index = 0;
@@ -721,75 +801,9 @@ static int get_pid(Widget, XtPointer client_data, XtPointer)
 	return 0;
 }
 
-// OK pressed in `Open Core'
-static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
-{
-    string corefile = get_file(w, client_data, call_data);
-    if (corefile == "")
-	return;
-
-    ProgramInfo info;
-
-    XtUnmanageChild(w);
-
-    if (corefile != NO_GDB_ANSWER)
-    {
-	switch(gdb->type())
-	{
-	case GDB:
-	    gdb_command("core-file " + corefile);
-	    break;
-
-	case DBX:
-	    if (info.file != NO_GDB_ANSWER && info.file != "")
-		gdb_command(gdb->debug_command(info.file) + " " + info.core);
-	    else
-		post_error("No program.", "no_program", w);
-	    break;
-
-	case XDB:
-	case JDB:
-	    break;		// FIXME
-	}
-    }
-}
-
-// OK pressed in `Open Source'
-static void openSourceDone(Widget w, XtPointer client_data, 
-			   XtPointer call_data)
-{
-    string filename = get_file(w, client_data, call_data);
-    if (filename == "")
-	return;
-
-    XtUnmanageChild(w);
-
-    if (filename != NO_GDB_ANSWER)
-	source_view->read_file(filename);
-}
-
-
-// Create various file dialogs
-static Widget create_file_dialog(Widget w, String name,
-				 FileSearchProc searchRemoteFiles       = 0,
-				 FileSearchProc searchRemoteDirectories = 0,
-				 FileSearchProc searchLocalFiles        = 0,
-				 FileSearchProc searchLocalDirectories  = 0,
-				 XtCallbackProc openDone = 0)
-{			     
-    if (remote_gdb())
-	return file_dialog(find_shell(w), name,
-			   searchRemoteFiles, searchRemoteDirectories, 
-			   openDone);
-    else
-	return file_dialog(find_shell(w), name,
-			   searchLocalFiles, searchLocalDirectories, 
-			   openDone);
-}
-
 // Process selection
 
-static void sort(StringArray& a)
+static void sortProcesses(StringArray& a)
 {
     // Shell sort -- simple and fast
     int h = 1;
@@ -896,7 +910,7 @@ static void update_processes(Widget processes, bool keep_selection)
     }
 
     pclose(fp);
-    sort(all_process_list);
+    sortProcesses(all_process_list);
     DynIntArray pids(all_process_list.size());
 
     // If GDB cannot send a signal to the process, we cannot debug it.
@@ -1012,7 +1026,7 @@ static void gdbUpdateProcessesCB(Widget, XtPointer client_data, XtPointer)
     update_processes(processes, true);
 }
 
-// Set program arguments from list
+// Select a process
 static void SelectProcessCB(Widget w, XtPointer client_data, 
 			    XtPointer call_data)
 {
@@ -1119,7 +1133,169 @@ static void warn_if_no_program(Widget popdown)
 }
 
 
-// Entry points
+//-----------------------------------------------------------------------------
+// Classes (JDB only)
+//-----------------------------------------------------------------------------
+
+// FIXME: This is broken; it only shows the classes that are already
+// loaded.  A better alternative would be to scan the `use' path for
+// .java files and to select from these classes.
+
+static string class_id(const string& s)
+{
+    string item = s.after('(');
+    item = item.before(')');
+    return item;
+}
+
+static void sortClasses(StringArray& a)
+{
+    // Shell sort -- simple and fast
+    int h = 1;
+    do {
+	h = h * 3 + 1;
+    } while (h <= a.size());
+    do {
+	h /= 3;
+	for (int i = h; i < a.size(); i++)
+	{
+	    string v = a[i];
+	    int j;
+	    for (j = i; j >= h && class_id(a[j - h]) > class_id(v); j -= h)
+		a[j] = a[j - h];
+	    if (i != j)
+		a[j] = v;
+	}
+    } while (h != 1);
+}
+
+// Get the selected class ids
+static void get_classes(Widget selectionList, StringArray& classids)
+{
+    static StringArray empty;
+    classids = empty;
+
+    XmStringTable selected_items;
+    int selected_items_count = 0;
+
+    assert(XmIsList(selectionList));
+
+    XtVaGetValues(selectionList,
+		  XmNselectedItemCount, &selected_items_count,
+		  XmNselectedItems, &selected_items,
+		  NULL);
+
+    for (int i = 0; i < selected_items_count; i++)
+    {
+	String _item;
+	XmStringGetLtoR(selected_items[i], LIST_CHARSET, &_item);
+	string item(_item);
+	XtFree(_item);
+
+	string c = class_id(item);
+	if (c != "")
+	    classids += c;
+    }
+}
+
+// Get the class from the selection list in CLIENT_DATA
+static string get_class(Widget, XtPointer client_data, XtPointer)
+{
+    StringArray classids;
+    Widget classes = Widget(client_data);
+    if (classes != 0)
+	get_classes(classes, classids);
+
+    if (classids.size() == 1)
+	return classids[0];
+    else
+	return "";
+}
+
+// Select a class
+static void SelectClassCB(Widget w, XtPointer client_data, 
+			  XtPointer call_data)
+{
+    XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
+    int pos = cbs->item_position;
+    if (pos == 1)
+	XmListDeselectAllItems(w); // Title selected
+    else
+	ListSetAndSelectPos(w, pos);
+
+    string cls = get_class(w, client_data, call_data);
+    if (cls == "")
+	set_status("");
+    else
+	set_status("Class " + cls);
+}
+
+static void update_classes(Widget classes)
+{
+    StatusDelay delay("Getting list of classes");
+    string ans = gdb_question("classes");
+    StringArray classes_list;
+    int index = 0;
+    int start_of_line = 0;
+
+    while (index <= int(ans.length()))
+    {
+	char c = ((char *)ans)[index];
+	switch (c)
+	{
+	case '\n':
+	case '\0':
+	{
+	    int end_of_line = index;
+	    string line = ans.at(start_of_line, end_of_line - start_of_line);
+	    classes_list += line;
+	    start_of_line = index + 1;
+	    break;
+	}
+	default:
+	    break;
+	}
+	index++;
+    }
+
+    sortClasses(classes_list);
+
+    // Now set the selection.
+    bool *selected = new bool[classes_list.size()];
+    for (int i = 0; i < classes_list.size(); i++)
+	selected[i] = false;
+
+    setLabelList(classes, classes_list.values(),
+		 selected, classes_list.size(), true, false);
+
+    delete[] selected;
+}
+
+static void gdbUpdateClassesCB(Widget, XtPointer client_data, XtPointer)
+{
+    Widget classes = Widget(client_data);
+    update_classes(classes);
+}
+
+// OK pressed in `Open Class'
+static void openClassDone(Widget w, XtPointer client_data, 
+			  XtPointer call_data)
+{
+    string cls = get_class(w, client_data, call_data);
+    if (cls == "")
+    {
+	gdbUpdateClassesCB(w, client_data, call_data);	
+	return;
+    }
+
+    gdb_command(gdb->debug_command(cls));
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Entry Points
+//-----------------------------------------------------------------------------
 
 void gdbOpenFileCB(Widget w, XtPointer, XtPointer)
 {
@@ -1200,6 +1376,50 @@ void gdbOpenProcessCB(Widget w, XtPointer, XtPointer)
     warn_if_no_program(dialog);
 }
 
+void gdbOpenClassCB(Widget w, XtPointer, XtPointer)
+{
+    static Widget dialog = 0;
+    static Widget classes = 0;
+
+    if (dialog == 0)
+    {
+	Arg args[10];
+	int arg = 0;
+    
+	XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
+	dialog = verify(XmCreateSelectionDialog(find_shell(w), 
+						"classes", args, arg));
+
+	Delay::register_shell(dialog);
+
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
+					       XmDIALOG_SELECTION_LABEL));
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, 
+					       XmDIALOG_TEXT));
+
+	classes = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
+
+	XtAddCallback(classes, XmNsingleSelectionCallback,
+		      SelectClassCB, XtPointer(classes));
+	XtAddCallback(classes, XmNmultipleSelectionCallback,
+		      SelectClassCB, XtPointer(classes));
+	XtAddCallback(classes, XmNextendedSelectionCallback,
+		      SelectClassCB, XtPointer(classes));
+	XtAddCallback(classes, XmNbrowseSelectionCallback,
+		      SelectClassCB, XtPointer(classes));
+
+	XtAddCallback(dialog, XmNokCallback, 
+		      openClassDone, XtPointer(classes));
+	XtAddCallback(dialog, XmNapplyCallback, 
+		      gdbUpdateClassesCB, XtPointer(classes));
+	XtAddCallback(dialog, XmNcancelCallback, 
+		      UnmanageThisCB, XtPointer(dialog));
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+    }
+
+    update_classes(classes);
+    manage_and_raise(dialog);
+}
 
 // Synchronize file dialogs with current directory
 void process_cd(string pwd)

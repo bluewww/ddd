@@ -1688,7 +1688,7 @@ Ddd*menubar.file.mnemonic:		F
 define(FILE_HELP, [\
 @rm This is the EMPH(File Menu).\n\
 \n\
-DESC(Open Program..., [open the program to be debugged])\n\
+DESC(Open Program..., [open the program or class to be debugged])\n\
 DESC(Open Core Dump..., [open a core dump])\n\
 DESC(Open Source..., [open a source file])\n\
 \n\
@@ -1716,6 +1716,13 @@ Ddd*menubar*fileMenu.open_file.accelerator:      ~Shift Meta<Key>O
 Ddd*menubar*fileMenu.open_file.acceleratorText:  Alt+O
 Ddd*menubar*fileMenu.open_file.documentationString:   \
 @rm Open a program to be debugged
+
+Ddd*menubar*fileMenu.open_class.labelString: Open Class...
+Ddd*menubar*fileMenu.open_class.mnemonic:    O
+Ddd*menubar*fileMenu.open_class.accelerator:      ~Shift Meta<Key>O
+Ddd*menubar*fileMenu.open_class.acceleratorText:  Alt+O
+Ddd*menubar*fileMenu.open_class.documentationString:   \
+@rm Open a class to be debugged
 
 Ddd*menubar*fileMenu.open_core.labelString: Open Core Dump...
 Ddd*menubar*fileMenu.open_core.mnemonic:    D
@@ -4393,6 +4400,17 @@ to specify the program running in the process, and to load its symbol table.\n\
 \n\
 Click on LBL(Attach) to attach to the selected process.\n\
 Click on LBL(Update) to update the list of processes.
+
+
+Ddd*classes_popup.title: 		DDD: Open Class
+Ddd*classes.listLabelString:		Classes
+Ddd*classes.selectionLabelString: 	Open Class
+Ddd*classes*selectionPolicy:		XmSINGLE_SELECT
+Ddd*classes*okLabelString:	 	Open
+Ddd*classes*helpString:	\
+@rm Enter the name of the class to be debugged in the argument field.\n\
+\n\
+Click on LBL(Open) to open the selected class.
 
 
 Ddd*sessions_to_open_popup.title: 		DDD: Open Session

@@ -448,6 +448,18 @@ public:
 	return type() == GDB || type() == XDB || type() == DBX;
     }
 
+    // True if debugger supports loading and examining executables
+    bool has_exec_files() const
+    {
+	return type() == GDB || type() == XDB || type() == DBX;
+    }
+
+    // True if debugger supports loading and examining classes
+    bool has_classes() const
+    {
+	return type() == JDB;
+    }
+
     // True if debugger supports loading and examining core files
     bool has_core_files() const
     {
