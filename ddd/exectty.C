@@ -444,7 +444,11 @@ static void redirect_process(string& command,
 		if (gdb->has_print_r_command())
 		{
 		    // SUN DBX 3.x uses ksh style redirection.
-		    gdb_redirection +=  " > " + tty_name + " 2>&1";
+
+ 		    // DBX interprets `COMMAND 2>&1' such that COMMAND
+ 		    // runs in the background.  Use this kludge instead.
+ 		    gdb_redirection = "2> " + tty_name + " " + gdb_redirection 
+ 			+ " > " + tty_name;
 		}
 		else if (gdb->has_err_redirection())
 		{
