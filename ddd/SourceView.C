@@ -1541,9 +1541,7 @@ void SourceView::read_file (string file_name,
     Delay delay;
 
     // Set string and initial line
-    XtVaSetValues(source_text_w,
-		  XmNvalue, (String)current_source,
-		  NULL);
+    XmTextSetString(source_text_w, (String)current_source);
 
     XmTextPosition initial_pos = 0;
     if (initial_line > 0 && initial_line <= line_count)
