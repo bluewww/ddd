@@ -94,6 +94,7 @@ class CmdData {
 public:
     string      command;	  // The command issued
     string      undo_command;	  // Undoing command, if any
+    bool        undo_is_exec;	  // True if undoing command is exec command
     Widget      origin;		  // Origin of this command
     Filtering   filter_disp;      // NoFilter:  do not filter displays.
 				  // TryFilter: do filter if present.
@@ -141,6 +142,7 @@ public:
     CmdData (Widget orig = 0, Filtering fd = TryFilter)
 	: command(""),
 	  undo_command(""),
+	  undo_is_exec(true),
 	  origin(orig),
 	  filter_disp(fd),
 	  disp_buffer(0),
@@ -178,6 +180,7 @@ private:
     CmdData(const CmdData&)
 	: command(""),
 	  undo_command(""),
+	  undo_is_exec(true),
 	  origin(0),
 	  filter_disp(TryFilter),
 	  disp_buffer(0),
@@ -1021,6 +1024,15 @@ void send_gdb_command(string cmd, Widget origin,
 	}
 	if (!gdb->has_display_command())
 	    extra_data->refresh_data = true;
+
+#if 0
+	// Allow undoing `kill' and `run'
+	if (is_run_cmd(cmd))
+	    cmd_data->undo_command = gdb->kill_command();
+	else if (is_kill_cmd(cmd))
+	    cmd_data->undo_command = gdb->rerun_command();
+	cmd_data->undo_is_exec = true;
+#endif
     }
     else if (is_thread_cmd(cmd) || is_core_cmd(cmd))
     {
@@ -1076,6 +1088,7 @@ void send_gdb_command(string cmd, Widget origin,
 	    string value = assignment_value(gdbValue(var));
 	    cmd_data->assign_arg   = var;
 	    cmd_data->undo_command = gdb->assign_command(var, value);
+	    cmd_data->undo_is_exec = true;
 	}
     }
     else if (is_lookup_cmd(cmd))
@@ -1546,12 +1559,17 @@ static void command_completed(void *data)
 	cmd_data->user_answer += answer;
     }
 
-    if (cmd_data->undo_command != "" && !is_invalid(cmd_data->user_answer))
+    if (cmd_data->assign_arg != "")
     {
 	// Since we're overwriting CMD_DATA->ASSIGN_ARG, remove all
 	// further references to it in the undo buffer.
 	undo_buffer.remove_display(cmd_data->assign_arg);
-	undo_buffer.add_command(cmd_data->undo_command, true);
+    }
+
+    if (cmd_data->undo_command != "")
+    {
+	undo_buffer.add_command(cmd_data->undo_command, 
+				cmd_data->undo_is_exec);
     }
 
     if (pos_buffer && pos_buffer->started_found())

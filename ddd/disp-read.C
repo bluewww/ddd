@@ -151,6 +151,12 @@ bool is_run_cmd (const string& cmd)
     return cmd.matches (rxrun_cmd);
 }
 
+// True if CMD kills program
+bool is_kill_cmd(const string& cmd)
+{
+    return cmd == "kill" || cmd == "k";
+}
+
 // True if CMD sets program args
 bool is_set_args_cmd (const string& cmd)
 {

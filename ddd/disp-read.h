@@ -75,6 +75,9 @@ bool is_pc_cmd(const string& cmd);
 // True if CMD starts debuggee
 bool is_run_cmd(const string& cmd);
 
+// True if CMD kills debuggee
+bool is_kill_cmd(const string& cmd);
+
 // True if CMD sets debuggee arguments.
 bool is_set_args_cmd(const string& cmd);
 
