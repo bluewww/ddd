@@ -82,7 +82,7 @@ public:
     Box *dup() const { return new RuleBox(*this); }
     void _print(ostream& os, 
 		const BoxRegion& r, 
-		const BoxPrintGC& gc) const;
+		const PrintGC& gc) const;
 };
 
 
@@ -109,7 +109,7 @@ protected:
 public:
     void _print(ostream&, 
 		const BoxRegion&, 
-		const BoxPrintGC&) const
+		const PrintGC&) const
     {
 	// do nothing
     }

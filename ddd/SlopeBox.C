@@ -63,7 +63,7 @@ void FallBox::__draw(Widget w,
 // FallBox drucken
 void FallBox::_print(ostream& os, 
 		     const BoxRegion& region, 
-		     const BoxPrintGC& gc) const
+		     const PrintGC& gc) const
 {
     BoxPoint origin = region.origin() ;
     BoxPoint space = region.space();
@@ -111,7 +111,7 @@ void RiseBox::__draw(Widget w,
 // RiseBox drucken
 void RiseBox::_print(ostream& os, 
 		     const BoxRegion& region, 
-		     const BoxPrintGC& gc) const
+		     const PrintGC& gc) const
 {
     BoxPoint origin = region.origin();
     BoxPoint space  = region.space();

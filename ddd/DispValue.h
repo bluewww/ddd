@@ -378,7 +378,7 @@ public:
 
     // Print plots to FILENAME
     void print_plots(const string& filename, 
-		     const BoxPrintGC& gc = BoxPostScriptGC()) const;
+		     const PrintGC& gc = PostScriptPrintGC()) const;
 };
 
 #endif // _DDD_DispValue_h

@@ -147,7 +147,7 @@ const float rad = 0.70710678118654752440;
 
 void ArcBox::_printFig(ostream& os, 
 		       const BoxRegion& region, 
-		       const BoxPrintGC &) const
+		       const PrintGC &) const
 {
     BoxPoint origin = region.origin() ;
     BoxPoint space = region.space();
@@ -391,7 +391,7 @@ void ArcBox::_printFig(ostream& os,
 
 void ArcBox::_printPS(ostream& os, 
 		      const BoxRegion& region, 
-		      const BoxPrintGC &) const
+		      const PrintGC &) const
 {
     BoxPoint origin = region.origin() ;
     BoxPoint space = region.space();
@@ -467,7 +467,7 @@ void ArcBox::_printPS(ostream& os,
 
 void ArcBox::_print(ostream& os, 
 		    const BoxRegion& region, 
-		    const BoxPrintGC& gc) const
+		    const PrintGC& gc) const
 {
     if (gc.isFig()) {
 	_printFig(os, region, gc);

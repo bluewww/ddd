@@ -188,7 +188,7 @@ static FONTMAP *matchFont(char *xfont)
 
 void StringBox::_print(ostream& os, 
 		       const BoxRegion& region, 
-		       const BoxPrintGC& gc) const
+		       const PrintGC& gc) const
 {
     // Don't draw empty strings
     if (str() == "")

@@ -1,5 +1,5 @@
 // $Id$
-// Klasse Box (Deklaration)
+// Box class
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -50,6 +50,7 @@
 #include "BoxWeight.h"
 #include "BoxRegion.h"
 #include "BoxExtend.h"
+#include "PrintGC.h"
 #include "Widget.h"
 #include "bool.h"
 #include "UniqueId.h"
@@ -57,46 +58,6 @@
 #include "TypeInfo.h"
 
 class TagBox;
-
-// Printing environment
-struct BoxPrintGC {
-    DECLARE_TYPE_INFO
-
-    virtual bool isFig() const        { return false; }
-    virtual bool isPostScript() const { return false; }
-};
-
-struct BoxFigGC: public BoxPrintGC {
-    DECLARE_TYPE_INFO
-
-    virtual bool isFig() const        { return true; }
-
-    BoxFigGC() {}
-};
-
-struct BoxPostScriptGC: public BoxPrintGC {
-    DECLARE_TYPE_INFO
-    enum Orientation { PORTRAIT, LANDSCAPE };
-
-    virtual bool isPostScript() const { return true; }
-
-    int hsize;   // Maximum size of graph in 1/72" (Portrait)
-    int vsize;
-
-    int hoffset; // Lower left corner of graph on page in 1/72" (Portrait)
-    int voffset;
-
-    Orientation orientation;	// Whether graph should be rotated
-
-    // Default: let params fit to an A4-sized page
-    BoxPostScriptGC():
-        hsize(510), vsize(794), 
-	hoffset(42), voffset(35), 
-	orientation(PORTRAIT)
-    {}
-};
-
-
 
 // Box class
 class Box {
@@ -113,7 +74,7 @@ private:
 
     static void epsHeader (ostream& os, 
 			   const BoxRegion& region, 
-			   const BoxPostScriptGC& gc);
+			   const PostScriptPrintGC& gc);
 
     Box& operator = (const Box&) { assert(0); return *this; }
 
@@ -221,21 +182,21 @@ public:
     // Print box; Header/trailer must be pre-/postfixed
     virtual void _print(ostream& os, 
 			const BoxRegion& region, 
-			const BoxPrintGC& gc) const = 0;
+			const PrintGC& gc) const = 0;
 
     // Print Header/trailer
     static void _printHeader(ostream& os, 
 			     const BoxRegion& region, 
-			     const BoxPrintGC& gc);
+			     const PrintGC& gc);
     static void _printTrailer(ostream& os, 
 			      const BoxRegion& region, 
-			      const BoxPrintGC& gc);
+			      const PrintGC& gc);
 
     // Custom function: print box with header and trailer
     void print(ostream& os = cout,
 	       BoxRegion region = 
 	           BoxRegion(BoxPoint(0,0), BoxSize(0,0)),
-	       const BoxPrintGC& gc = BoxPostScriptGC()) const
+	       const PrintGC& gc = PostScriptPrintGC()) const
     {
 	region.space(X) = max(region.space(X), size(X));
 	region.space(Y) = max(region.space(Y), size(Y));

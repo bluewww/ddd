@@ -88,7 +88,7 @@ public:
 
     void _print(ostream& os, 
 		const BoxRegion& region, 
-		const BoxPrintGC& gc) const;
+		const PrintGC& gc) const;
 };
 
 
@@ -122,7 +122,7 @@ public:
 
     void _print(ostream& os, 
 		const BoxRegion& region, 
-		const BoxPrintGC& gc) const;
+		const PrintGC& gc) const;
 };
 
 #endif

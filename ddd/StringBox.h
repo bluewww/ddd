@@ -112,7 +112,7 @@ public:
 
     void _print(ostream& os, 
 		const BoxRegion& region, 
-		const BoxPrintGC& gc) const;
+		const PrintGC& gc) const;
 
     // Resources
     const XFontStruct *font() const { return _font; }

@@ -60,7 +60,7 @@ static const char BOUND[] =   "%%BoundingBox: ";
 
 void Box::epsHeader (ostream& os, 
 		     const BoxRegion& region, 
-		     const BoxPostScriptGC& gc)
+		     const PostScriptPrintGC& gc)
 {
     // check size of graph
 
@@ -70,11 +70,11 @@ void Box::epsHeader (ostream& os,
     BoxPoint size;
     switch (gc.orientation)
     {
-    case BoxPostScriptGC::PORTRAIT:
+    case PostScriptPrintGC::PORTRAIT:
 	size = BoxPoint(gc.hsize, gc.vsize);
 	break;
 
-    case BoxPostScriptGC::LANDSCAPE:
+    case PostScriptPrintGC::LANDSCAPE:
 	size = BoxPoint(gc.vsize, gc.hsize);
 	break;
     }
@@ -98,14 +98,14 @@ void Box::epsHeader (ostream& os,
     BoxPoint llcorner, urcorner;
     switch (gc.orientation)
     {
-    case BoxPostScriptGC::PORTRAIT:
+    case PostScriptPrintGC::PORTRAIT:
 	llcorner = BoxPoint(gc.hoffset,
 			    gc.voffset);
 	urcorner = BoxPoint(gc.hoffset + space[X], 
 			    gc.voffset + space[Y]);
 	break;
 
-    case BoxPostScriptGC::LANDSCAPE:
+    case PostScriptPrintGC::LANDSCAPE:
         llcorner = BoxPoint(gc.hsize - space[Y] + gc.hoffset - gc.voffset, 
 			    gc.hoffset);
 	urcorner = BoxPoint(gc.hsize + gc.hoffset - gc.voffset,
@@ -122,7 +122,7 @@ void Box::epsHeader (ostream& os,
        << "\ngsave\n";
 
     // Write rotation
-    if (gc.orientation == BoxPostScriptGC::LANDSCAPE)
+    if (gc.orientation == PostScriptPrintGC::LANDSCAPE)
 	os << gc.hsize + gc.hoffset << " 0 translate 90 rotate\n";
 
     // Write scaling
@@ -138,11 +138,11 @@ void Box::epsHeader (ostream& os,
 
 void Box::_printHeader(ostream& os, 
 		       const BoxRegion& region, 
-		       const BoxPrintGC& gc)
+		       const PrintGC& gc)
 {
     if (gc.isPostScript())
     {
-	epsHeader(os, region, (BoxPostScriptGC &)gc);
+	epsHeader(os, region, (PostScriptPrintGC &)gc);
 	os << prolog;
     }
     else if (gc.isFig())
@@ -151,7 +151,7 @@ void Box::_printHeader(ostream& os,
     }
 }
 
-void Box::_printTrailer(ostream& os, const BoxRegion&, const BoxPrintGC& gc)
+void Box::_printTrailer(ostream& os, const BoxRegion&, const PrintGC& gc)
 {
     if (gc.isPostScript())
     {

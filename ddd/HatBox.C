@@ -61,7 +61,7 @@ void HatBox::_draw(Widget w,
 // print HatBox
 void HatBox::_print(ostream& os, 
 		    const BoxRegion& region, 
-		    const BoxPrintGC& gc) const
+		    const PrintGC& gc) const
 {
     BoxRegion sonRegion = region;
 

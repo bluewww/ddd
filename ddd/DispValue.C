@@ -1359,7 +1359,7 @@ void DispValue::PlotterDiedHP(Agent *, void *client_data, void *)
 
 // Print plots to FILENAME
 void DispValue::print_plots(const string& filename, 
-			    const BoxPrintGC& gc) const
+			    const PrintGC& gc) const
 {
     // Print yourself
     if (plotter() != 0)

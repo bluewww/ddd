@@ -62,7 +62,7 @@ public:
 
     virtual void _print(ostream&, 
 			const BoxRegion&, 
-			const BoxPrintGC&) const
+			const PrintGC&) const
     {
 	// do nothing
     }

@@ -125,7 +125,7 @@ void HAlignBox::addSize(Box *b)
 
 void HAlignBox::_print(ostream& os, 
 		       const BoxRegion& region, 
-		       const BoxPrintGC& gc) const
+		       const PrintGC& gc) const
 {
     int i;
 
@@ -183,7 +183,7 @@ void VAlignBox::addSize(Box *b)
 
 void VAlignBox::_print(ostream& os, 
 		       const BoxRegion& region, 
-		       const BoxPrintGC& gc) const
+		       const PrintGC& gc) const
 {
     int i;
 #if DEBUG
@@ -262,7 +262,7 @@ void UAlignBox::_draw(Widget w,
 // Gestapeltes Alignment drucken
 void UAlignBox::_print(ostream& os, 
 		       const BoxRegion& region, 
-		       const BoxPrintGC& gc) const
+		       const PrintGC& gc) const
 {
     for (int i = 0; i < nchildren(); i++) {
 	(*this)[i]->_print(os, region, gc);
@@ -350,7 +350,7 @@ void TAlignBox::_draw(Widget w,
 
 void TAlignBox::_print(ostream& os, 
 		       const BoxRegion& region, 
-		       const BoxPrintGC& gc) const
+		       const PrintGC& gc) const
 {
     BoxSize space   = region.space();
     BoxPoint origin = region.origin();

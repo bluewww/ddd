@@ -60,10 +60,10 @@ private:
 
     void _printPS(ostream& os, 
 		  const BoxRegion& region, 
-		  const BoxPrintGC& gc) const;
+		  const PrintGC& gc) const;
     void _printFig(ostream& os, 
 		   const BoxRegion& region, 
-		   const BoxPrintGC& gc) const;
+		   const PrintGC& gc) const;
 	
 protected:
     ArcBox(const ArcBox& box):
@@ -89,7 +89,7 @@ public:
 
     virtual void _print(ostream& os, 
 			const BoxRegion& region, 
-			const BoxPrintGC& gc) const;
+			const PrintGC& gc) const;
 
     // Ressourcen
     BoxDegrees start() const { return _start; }

@@ -37,5 +37,5 @@ char GraphGC_rcsid[] =
 
 DEFINE_TYPE_INFO_0(GraphGC)
 
-BoxPostScriptGC GraphGC::defaultPrintGC;
+PostScriptPrintGC GraphGC::defaultPrintGC;
 

@@ -46,9 +46,6 @@ char Box_rcsid[] =
 #include "VSEFlags.h"
 
 DEFINE_TYPE_INFO_0(Box)
-DEFINE_TYPE_INFO_0(BoxPrintGC)
-DEFINE_TYPE_INFO_1(BoxPostScriptGC, BoxPrintGC)
-DEFINE_TYPE_INFO_1(BoxFigGC, BoxPrintGC)
 
 
 // Anzeigen

@@ -89,7 +89,7 @@ void RuleBox::dump(ostream& s) const
 
 void RuleBox::_print(ostream& os, 
 		     const BoxRegion& region, 
-		     const BoxPrintGC& gc) const
+		     const PrintGC& gc) const
 {
     BoxSize space = region.space();
     BoxPoint origin = region.origin();

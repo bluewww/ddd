@@ -96,7 +96,7 @@ public:
 
     void _print(ostream& os, 
 		const BoxRegion& region, 
-		const BoxPrintGC& gc) const;
+		const PrintGC& gc) const;
 
     BoxSize corner() const       { return _box->corner(); }
     string str() const           { return _box->str(); }

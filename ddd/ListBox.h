@@ -172,9 +172,9 @@ public:
 
     bool isListBox() const { return true; }
 
-    void _print(ostream&, const BoxRegion&, const BoxPrintGC&) const
+    void _print(ostream&, const BoxRegion&, const PrintGC&) const
     {
-	assert(0);  // ListBox kann nicht gedruckt werden
+	assert(0);  // Cannot print lists
 	::abort();
     }
 

@@ -144,7 +144,7 @@ public:
 
     virtual void _print(ostream& os, 
 			const BoxRegion& region, 
-			const BoxPrintGC& gc) const;
+			const PrintGC& gc) const;
 
     HAlignBox& operator &= (Box *b)
     {
@@ -189,7 +189,7 @@ public:
 
     virtual void _print(ostream& os, 
 			const BoxRegion& region, 
-			const BoxPrintGC& gc) const;
+			const PrintGC& gc) const;
 
     VAlignBox& operator |= (Box *b)
     {
@@ -231,7 +231,7 @@ public:
 
     virtual void _print(ostream& os, 
 			const BoxRegion& region, 
-			const BoxPrintGC& gc) const;
+			const PrintGC& gc) const;
 
     UAlignBox& operator ^= (Box *b)
     {
@@ -273,7 +273,7 @@ public:
 
     virtual void _print(ostream& os, 
 			const BoxRegion& region, 
-			const BoxPrintGC& gc) const;
+			const PrintGC& gc) const;
 
     TAlignBox& operator &= (Box *b)
     {

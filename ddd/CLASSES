@@ -12,7 +12,7 @@ Base Classes:
 	BaseIterator
 	Box
 	BoxPoint
-	BoxPrintGC
+	PrintGC
 	BoxRegion
 	BreakPoint
 	ChunkQueue
@@ -194,12 +194,12 @@ Dependency tree for BoxPoint:
 	 |
 	 +--BoxSize (BoxSize.h)
 
-Dependency tree for BoxPrintGC:
-	BoxPrintGC (Box.h)
+Dependency tree for PrintGC:
+	PrintGC (Box.h)
 	 |
-	 |--BoxFigGC (Box.h)
+	 |--FigPrintGC (Box.h)
 	 |
-	 +--BoxPostScriptGC (Box.h)
+	 +--PostScriptPrintGC (Box.h)
 
 Dependency tree for BoxRegion:
 	BoxRegion (BoxPoint.h)

@@ -83,10 +83,10 @@ struct GraphGC {
     SelfEdgeDirection selfEdgeDirection; // Its direction
 
     // Printing stuff
-    BoxPrintGC     *printGC;               // Graphics context for printing
+    PrintGC     *printGC;               // Graphics context for printing
     bool        printSelectedNodesOnly; // Flag: print selected nodes only?
 
-    static BoxPostScriptGC defaultPrintGC;
+    static PostScriptPrintGC defaultPrintGC;
 
     // Default Constructor
     explicit GraphGC(GC n = 0, GC e = 0, GC i = 0, GC c = 0):
