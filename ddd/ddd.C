@@ -2230,9 +2230,6 @@ int main(int argc, char *argv[])
     promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
     XmTextSetInsertionPosition(gdb_w, messagePosition);
 
-    // Setup option states
-    update_options();
-
     // Setup help pixmap
     helpOnVersionPixmapProc = versionlogo;
 
@@ -2240,7 +2237,7 @@ int main(int argc, char *argv[])
     helpOnVersionExtraText = 
 	MString(string(config_info).before("\n\n"), "rm");
 
-    // Go for it
+    // Realize all top-level widgets
     XtRealizeWidget(command_shell);
     wm_set_icon(command_shell, iconlogo(gdb_w), iconmask(gdb_w));
 
@@ -2266,7 +2263,6 @@ int main(int argc, char *argv[])
 			    XtWindow(command_shell));
     }
 
-
     // Remove unnecessary sashes
     untraverse_sashes(source_view_parent);
     if (source_view_shell)
@@ -2279,6 +2275,9 @@ int main(int argc, char *argv[])
     untraverse_sashes(paned_work_w);
     if (source_view_shell && data_disp_shell)
 	unmanage_sashes(paned_work_w);
+
+    // Setup option states
+    update_options();
 
     Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
@@ -2588,28 +2587,22 @@ void update_options()
 		      XmNset, type == DBX, NULL);
     }
 
-    if (app_data.cache_source_files)
+    if (app_data.cache_source_files != source_view->cache_source_files)
     {
-	source_view->cache_source_files = true;
-    }
-    else
-    {
-	source_view->cache_source_files = false;
-	source_view->clear_file_cache();
+	source_view->cache_source_files = app_data.cache_source_files;
+	if (!app_data.cache_source_files)
+	    source_view->clear_file_cache();
     }
 
-    if (app_data.cache_machine_code)
+    if (app_data.cache_machine_code != source_view->cache_machine_code)
     {
-	source_view->cache_machine_code = true;
-    }
-    else
-    {
-	source_view->cache_machine_code = false;
-	source_view->clear_code_cache();
+	source_view->cache_machine_code = app_data.cache_machine_code;
+	if (!app_data.cache_machine_code)
+	    source_view->clear_code_cache();
     }
 
     source_view->set_display_glyphs(app_data.display_glyphs);
-    source_view->set_disassemble(app_data.disassemble);
+    source_view->set_disassemble(gdb->type() == GDB && app_data.disassemble);
 }
 
 
