@@ -242,6 +242,17 @@ int TTYAgent::open_master()
 	{
 	    _master_tty  = ttyname(master);
 	    _slave_tty   = line;
+
+#if 1
+	    // Re-open master to avoid _getpty() trouble.  Experimental.
+	    int fd = open((char *)master_tty(), O_RDWR);
+	    if (fd >= 0)
+	    {
+		close(master);
+		master = fd;
+	    }
+#endif
+
 	    return master;
 	}
 	close(master);
