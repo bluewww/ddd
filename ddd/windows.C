@@ -117,6 +117,7 @@ void initial_popup_shell(Widget w)
 	else
 	{
 	    XtManageChild(tool_buttons_w);
+	    XtManageChild(w);
 	    XtPopup(w, XtGrabNone);
 	    recenter_tool_shell(source_view->source());
 	}
