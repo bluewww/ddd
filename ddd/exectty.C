@@ -263,7 +263,7 @@ void gdb_set_tty(const string& tty_name,
 	    post_gdb_message(reply, origin);
 	}
     }
-    else if (gdb->type() == DBX && gdb->version() != DBX1)
+    else if (gdb->has_run_io_command())
     {
 	if (tty_name != gdb_tty)
 	{
@@ -319,8 +319,7 @@ void redirect_process(string& command,
 		      Widget origin)
 {
     if (app_data.use_tty_command
-	&& (gdb->type() == GDB 
-	    || (gdb->type() == DBX && gdb->version() != DBX1)))
+	&& (gdb->type() == GDB || gdb->has_run_io_command()))
     {
 	// Issue `tty' command to perform redirection
 	gdb_set_tty(tty_name, app_data.term_type, origin);
@@ -377,9 +376,9 @@ void redirect_process(string& command,
 
 	case DBX:
 	    // DBX has its own parsing; it does not allow to redirect the
-	    // error channel. *Sigh*.
+	    // error channel.  *SIGH*.
 	    gdb_redirection +=  " > " + tty_name;
-	    if (gdb->version() != DBX1)
+	    if (gdb->has_err_redirection())
 	    {
 		// DBX 3.x uses ksh style redirection
 		gdb_redirection += " 2>&1";

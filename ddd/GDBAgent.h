@@ -64,7 +64,6 @@
 //-----------------------------------------------------------------------------
 
 enum DebuggerType    { GDB, DBX };
-enum DebuggerVersion { GDB4, DBX1, DBX3 };
 
 
 //-----------------------------------------------------------------------------
@@ -120,9 +119,16 @@ protected:
 
 private:
     DebuggerType    _type;
-    DebuggerVersion _version;
     void*           _user_data;
     HandlerList     busy_handlers;
+
+    bool _has_frame_command;	
+    bool _has_line_command;
+    bool _has_run_io_command;
+    bool _has_print_r_command;
+    bool _has_where_h_command;
+    bool _has_display_command;
+    bool _has_pwd_command;
 
 protected:
     // Copy constructor - too complicated yet
@@ -190,7 +196,6 @@ public:
 
     // Zustandsabfragen
     DebuggerType type()       const { return _type; }
-    DebuggerVersion version() const { return _version; }
     bool isReadyWithPrompt()  const { return state == ReadyWithPrompt; }
     bool isBusyOnCmd()        const { return state == BusyOnCmd
 					  || state == BusyOnInitialCmds; }
@@ -211,12 +216,43 @@ public:
 
     // Konfigurationen
     void set_trace_dialog (bool trace);
-    void set_version (DebuggerVersion v) { _version = v; } 
 
-    // Properties
-    string print_command();
-    string display_command();
-    string where_command();
+    // Debugger properties
+    // True if debugger has `frame' command
+    bool has_frame_command() const    { return _has_frame_command; }	
+    bool has_frame_command(bool val)  { return _has_frame_command = val; }
+
+    // True if debugger has `line' command
+    bool has_line_command() const      { return _has_line_command; }  
+    bool has_line_command(bool val)    { return _has_line_command = val; }
+
+    // True if debugger has `run_io' command
+    bool has_run_io_command() const    { return _has_run_io_command; }
+    bool has_run_io_command(bool val)  { return _has_run_io_command = val; }
+
+    // True if debugger has `print -r' command
+    bool has_print_r_command() const   { return _has_print_r_command; }
+    bool has_print_r_command(bool val) { return _has_print_r_command = val; }
+
+    // True if debugger has `where -h' command
+    bool has_where_h_command() const   { return _has_where_h_command; }
+    bool has_where_h_command(bool val) { return _has_where_h_command = val; }
+
+    // True if debugger has `display' command
+    bool has_display_command() const   { return _has_display_command; }
+    bool has_display_command(bool val) { return _has_display_command = val; }
+
+    // True if debugger has `pwd' command
+    bool has_pwd_command() const       { return _has_pwd_command; }
+    bool has_pwd_command(bool val)     { return _has_pwd_command = val; }
+
+    // True if debugger has stderr redirection
+    bool has_err_redirection() const   { return has_print_r_command(); }
+
+    string print_command() const;	// Usually "print "
+    string display_command() const;	// Usually "display "
+    string where_command() const;	// Usually "where "
+    string pwd_command() const;	        // Usually "pwd "
 
 private:
     bool trace_dialog;

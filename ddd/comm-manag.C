@@ -111,7 +111,14 @@ typedef struct PlusCmdData {
     bool     refresh_history_filename; // send 'show history filename'
     bool     refresh_history_size;     // send 'show history size'
     bool     refresh_history_save;     // send 'show history save'
-    bool     refresh_print_r;          // send 'print -r'
+
+    bool     config_frame;	       // try 'frame'
+    bool     config_line;	       // try 'line'
+    bool     config_run_io;	       // try 'dbxenv'
+    bool     config_print_r;	       // try 'print -r'
+    bool     config_where_h;	       // try 'where -h'
+    bool     config_display;	       // try 'display'
+    bool     config_pwd;	       // try 'pwd'
 
     PlusCmdData () :
 	refresh_main(false),
@@ -127,7 +134,14 @@ typedef struct PlusCmdData {
 	refresh_history_filename(false),
 	refresh_history_size(false),
 	refresh_history_save(false),
-	refresh_print_r(false)
+
+	config_frame(false),
+	config_line(false),
+	config_run_io(false),
+	config_print_r(false),
+	config_where_h(false),
+	config_display(false),
+	config_pwd(false)
     {}
 };
 
@@ -146,8 +160,8 @@ void start_gdb()
     cmd_data->pos_buffer = new PosBuffer(); // ggf. Position lesen
 
     PlusCmdData* plus_cmd_data = new PlusCmdData ();
-    string cmds[10];
-    void* dummy[10];
+    string cmds[32];
+    void* dummy[32];
     int qu_count = 0;
 
     switch (gdb->type())
@@ -169,9 +183,21 @@ void start_gdb()
 
     case DBX:
 	plus_cmd_data->refresh_main = true;
+	cmds[qu_count++] = "frame";
+	plus_cmd_data->config_frame = true;
+	cmds[qu_count++] = "line";
+	plus_cmd_data->config_line = true;
+	cmds[qu_count++] = "dbxenv run_io";
+	plus_cmd_data->config_run_io = true;
 	cmds[qu_count++] = "print -r " + print_r_cookie;
-	plus_cmd_data->refresh_print_r = true;
+	plus_cmd_data->config_print_r = true;
+	cmds[qu_count++] = "where -h";
+	plus_cmd_data->config_where_h = true;
+	cmds[qu_count++] = "display";
+	plus_cmd_data->config_display = true;
 	cmds[qu_count++] = "pwd";
+	plus_cmd_data->config_pwd = true;
+	cmds[qu_count++] = "sh pwd";
 	plus_cmd_data->refresh_pwd = true;
 	cmds[qu_count++] = "file";
 	plus_cmd_data->refresh_file = true;
@@ -330,11 +356,10 @@ void user_cmdSUC (string cmd, Widget origin)
 	cmd_data->new_exec_pos = true;
 	if (gdb->type() == DBX) {
 	    plus_cmd_data->refresh_file  = true;
-	    if (gdb->version() != DBX1)
-	    {
+	    if (gdb->has_line_command())
 		plus_cmd_data->refresh_line  = true;
+	    if (gdb->has_frame_command())
 		plus_cmd_data->refresh_frame = true;
-	    }
 	}
     }
     else if (is_frame_cmd(cmd))
@@ -357,7 +382,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	case DBX:
 	    // We need to get the current file as well...
 	    plus_cmd_data->refresh_file  = true;
-	    if (gdb->version() != DBX1)
+	    if (gdb->has_line_command())
 		plus_cmd_data->refresh_line  = true;
 	    break;
 	}
@@ -371,7 +396,7 @@ void user_cmdSUC (string cmd, Widget origin)
     {
 	if (gdb->type() == DBX)
 	{
-	    if (gdb->version() == DBX1)
+	    if (!gdb->has_frame_command())
 	    {
 		// Check if this 'func' command should select a stack frame
 		string func = cmd.after(RXblanks_or_tabs);
@@ -410,9 +435,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_register = false;
     }
 	
-    if (gdb->type() == DBX 
-	&& gdb->version() == DBX1 
-	&& plus_cmd_data->refresh_frame)
+    if (plus_cmd_data->refresh_frame && !gdb->has_frame_command())
     {
 	// We have a backtrace window open, but DBX has no ``frame''
 	// command to set the selected frame.  Use this hack instead.
@@ -454,9 +477,17 @@ void user_cmdSUC (string cmd, Widget origin)
     gdb_out(cmd);
     gdb_out("\n");
 
-    string cmds[20];
-    void*  dummy[20];
+    string cmds[32];
+    void*  dummy[32];
     int qu_count = 0;
+
+    assert(!plus_cmd_data->config_frame);
+    assert(!plus_cmd_data->config_line);
+    assert(!plus_cmd_data->config_run_io);
+    assert(!plus_cmd_data->config_print_r);
+    assert(!plus_cmd_data->config_where_h);
+    assert(!plus_cmd_data->config_display);
+    assert(!plus_cmd_data->config_pwd);
     
     // Setup additional trailing commands
     switch (gdb->type())
@@ -466,10 +497,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	    cmds[qu_count++] = "info line main";
 	if (plus_cmd_data->refresh_pwd)
 	    cmds[qu_count++] = "pwd";
-	if (plus_cmd_data->refresh_file)
-	    assert(0);
-	if (plus_cmd_data->refresh_line)
-	    assert(0);
+	assert(!plus_cmd_data->refresh_file);
+	assert(!plus_cmd_data->refresh_line);
 	if (plus_cmd_data->refresh_bpoints)
 	    cmds[qu_count++] = "info breakpoints";
 	if (plus_cmd_data->refresh_where)
@@ -488,23 +517,19 @@ void user_cmdSUC (string cmd, Widget origin)
 	    cmds[qu_count++] = "show history size";
 	if (plus_cmd_data->refresh_history_save)
 	    cmds[qu_count++] = "show history save";
-	if (plus_cmd_data->refresh_print_r)
-	    assert(0);
 	break;
 
     case DBX:
-	if (plus_cmd_data->refresh_print_r)
-	    cmds[qu_count++] = "print -r " + print_r_cookie;
 	if (plus_cmd_data->refresh_pwd)
 	    cmds[qu_count++] = "pwd";
 	if (plus_cmd_data->refresh_file)
 	    cmds[qu_count++] = "file";
 	if (plus_cmd_data->refresh_line)
 	{
-	    if (gdb->version() == DBX1)
-		cmds[qu_count++] = "list";
-	    else
+	    if (gdb->has_line_command())
 		cmds[qu_count++] = "line";
+	    else
+		cmds[qu_count++] = "list";
 	}
 	if (plus_cmd_data->refresh_bpoints)
 	    cmds[qu_count++] = "status";
@@ -512,21 +537,17 @@ void user_cmdSUC (string cmd, Widget origin)
 	    cmds[qu_count++] = "where";
 	if (plus_cmd_data->refresh_frame)
 	{
-	    assert(gdb->version() != DBX1);
+	    assert(gdb->has_frame_command());
 	    cmds[qu_count++] = "frame";
 	}
-	if (plus_cmd_data->refresh_register)
-	    assert(0);
+	assert (!plus_cmd_data->refresh_register);
 	if (plus_cmd_data->refresh_disp)
 	    cmds[qu_count++] = data_disp->refresh_display_command();
 	if (plus_cmd_data->refresh_disp_info)
 	    cmds[qu_count++] = gdb->display_command();
-	if (plus_cmd_data->refresh_history_filename)
-	    assert(0);
-	if (plus_cmd_data->refresh_history_size)
-	    assert(0);
-	if (plus_cmd_data->refresh_history_save)
-	    assert(0);
+	assert (!plus_cmd_data->refresh_history_filename);
+	assert (!plus_cmd_data->refresh_history_size);
+	assert (!plus_cmd_data->refresh_history_save);
 	break;
     }
 
@@ -610,11 +631,8 @@ void user_cmdOAC (void* data)
 	    switch (gdb->type())
 	    {
 	    case DBX:
-		if (gdb->version() == DBX1)
-		{
-		    file = dbx_lookup(func);
-		    file = file.before(':');
-		}
+		file = dbx_lookup(func);
+		file = file.before(':');
 		break;
 
 	    case GDB:
@@ -717,16 +735,52 @@ void handle_graph_cmd (string cmd, Widget origin)
 
 
 // ***************************************************************************
-// Process output of `print -r' command
-void process_print_r(string& answer)
-{
-    assert(gdb->type() == DBX);
+// Process output of configuration commands
 
-    if (!answer.contains("error") && answer.contains(print_r_cookie))
-	gdb->set_version(DBX3);
-    else
-	gdb->set_version(DBX1);
+static bool is_known_command(string& answer)
+{
+    return answer.contains("program is not active") // DBX
+	|| (!answer.contains("syntax")              // DEC DBX
+	    && !answer.contains("help")             // GDB & DBX 1.0
+	    && !answer.contains("not found"));      // DBX 3.0
 }
+
+static void process_config_frame(string& answer)
+{
+    gdb->has_frame_command(is_known_command(answer));
+}
+
+static void process_config_line(string& answer)
+{
+    gdb->has_line_command(is_known_command(answer));
+}
+
+static void process_config_run_io(string& answer)
+{
+    gdb->has_run_io_command(is_known_command(answer));
+}
+
+static void process_config_print_r(string& answer)
+{
+    gdb->has_print_r_command(is_known_command(answer) 
+			     && answer.contains(print_r_cookie));
+}
+
+static void process_config_where_h(string& answer)
+{
+    gdb->has_where_h_command(is_known_command(answer));
+}
+
+static void process_config_display(string& answer)
+{
+    gdb->has_display_command(is_known_command(answer));
+}
+
+static void process_config_pwd(string& answer)
+{
+    gdb->has_pwd_command(is_known_command(answer));
+}
+
 
 // ***************************************************************************
 // Behandelt die Antworten auf die hinterhergeschickten Anfragen
@@ -753,9 +807,39 @@ void plusOQAC (string answers[],
 	}
     }
 
-    if (plus_cmd_data->refresh_print_r) {
+    if (plus_cmd_data->config_frame) {
 	assert (qu_count < count);
-	process_print_r(answers[qu_count++]);
+	process_config_frame(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_line) {
+	assert (qu_count < count);
+	process_config_line(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_run_io) {
+	assert (qu_count < count);
+	process_config_run_io(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_print_r) {
+	assert (qu_count < count);
+	process_config_print_r(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_where_h) {
+	assert (qu_count < count);
+	process_config_where_h(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_display) {
+	assert (qu_count < count);
+	process_config_display(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_pwd) {
+	assert (qu_count < count);
+	process_config_pwd(answers[qu_count++]);
     }
 
     if (plus_cmd_data->refresh_pwd) {
@@ -803,10 +887,10 @@ void plusOQAC (string answers[],
 	}
 	else if (!plus_cmd_data->refresh_main)
 	{
-	    // Older DBX1 lists 10 lines; the current line is the 5th one.
-	    // Conversely, with DBX3 we use the "line" command; and even if
-	    // "list" was used (as on startup) we don't add 5.
-	    if (gdb->version() != DBX3)
+	    // Older DBX 1.0 lists 10 lines; the current line is the
+	    // 5th one.  With DBX 3.0, we use the "line" command; and
+	    // even if "list" was used (as on startup) we don't add 5.
+	    if (!gdb->has_line_command())
 	    {
 		line += 5;
 	    }

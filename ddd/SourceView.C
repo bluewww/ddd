@@ -2410,6 +2410,9 @@ void SourceView::process_pwd(string& pwd_output)
 	pwd = pwd.after(' ', -1);
 	break;
     case DBX:			// 'PATH'
+	if (pwd.contains(" "))
+	    return;		// This is an error message, not a path
+
 	break;
     }
 
@@ -2736,7 +2739,7 @@ string SourceView::current_source_name()
 	if (source_name_cache[current_file_name] == "")
 	{
 	    string ans = gdb_question("info source");
-	    if (ans != string(-1))
+	    if (ans != NO_GDB_ANSWER)
 	    {
 		ans = ans.before('\n');
 		ans = ans.after(' ', -1);
@@ -3504,9 +3507,9 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
     
     case DBX:
 	string pos;
-	if (gdb->version() == DBX1)
+	if (!gdb->has_frame_command())
 	{
-	    // DBX 1.x lacks a `frame' command.  Use this kludge instead.
+	    // Some DBXes lack a `frame' command.  Use this kludge instead.
 
 	    string reply = gdb_question("func main");
 	    if (reply == NO_GDB_ANSWER)
@@ -3586,7 +3589,7 @@ void SourceView::refresh_stack_frames()
 	where_s = "No stack.";
     process_where(where_s);
 
-    if (gdb->type() == GDB || (gdb->type() == DBX && gdb->version() != DBX1))
+    if (gdb->has_frame_command())
     {
 	string frame = gdb_question("frame");
 	process_frame(frame);
@@ -3632,7 +3635,7 @@ void SourceView::process_where (string& where_output)
 	//   ... n.b. with templates, line can still be rather long
 	if (gdb->type() != GDB)
 	{
-	    static regex arglist("(.*)");
+	    static regex arglist("[(][^)]*[)]");
 	    static regex filepath("/.*/");
 	    frame_list[i].gsub(arglist, "()");
 	    frame_list[i].gsub(filepath, "");

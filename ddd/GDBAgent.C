@@ -81,9 +81,15 @@ GDBAgent::GDBAgent (XtAppContext app_context,
 		    DebuggerType tp)
     : state(BusyOnInitialCmds),
       _type(tp),
-      _version(tp == GDB ? GDB4 : DBX1),
       _user_data(0),
       busy_handlers (BusyNTypes),
+      _has_frame_command(tp == GDB),
+      _has_line_command(false),
+      _has_run_io_command(false),
+      _has_print_r_command(false),
+      _has_where_h_command(false),
+      _has_display_command(tp == GDB),
+      _has_pwd_command(true),
       trace_dialog(false),
       questions_waiting(false),
       _qu_data(0),
@@ -383,7 +389,7 @@ void GDBAgent::cut_off_prompt (string& answer)
 //
 void GDBAgent::strip_comments(string& s)
 {
-    if (type() != DBX && version() != DBX3)
+    if (!has_print_r_command())
 	return;
 
     if (s.contains('/'))
@@ -642,32 +648,42 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 }
 
 // ***************************************************************************
+// Configuration
 
-// DBX3 wants `print -r' instead of `print' for C++
-string GDBAgent::print_command()
+// DBX 3.0 wants `print -r' instead of `print' for C++
+string GDBAgent::print_command() const
 {
-    if (type() == DBX && version() != DBX1)
+    if (has_print_r_command())
 	return "print -r";
     else
 	return "print";
 }
 
-// DBX3 wants `display -r' instead of `display' for C++
-string GDBAgent::display_command()
+// DBX 3.0 wants `display -r' instead of `display' for C++
+string GDBAgent::display_command() const
 {
-    if (type() == DBX && version() != DBX1)
+    if (has_print_r_command())
 	return "display -r";
     else
 	return "display";
 }
 
-// DBX3 wants `where -h' instead of `where'
-string GDBAgent::where_command()
+// DBX 3.0 wants `where -h' instead of `where'
+string GDBAgent::where_command() const
 {
-    if (type() == DBX && version() != DBX1)
+    if (has_where_h_command())
 	return "where -h";
     else
 	return "where";
+}
+
+// Some DBXes want `sh pwd' instead of `pwd'
+string GDBAgent::pwd_command() const
+{
+    if (has_pwd_command())
+	return "pwd";
+    else
+	return "sh pwd";
 }
 
 // ***************************************************************************

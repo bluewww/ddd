@@ -61,25 +61,37 @@ string dbx_lookup(const string& func_name)
 	post_gdb_busy();
 	return "";
     }
-    if (reply != "")
-    {
-	post_gdb_message(reply);
-	return "";
-    }
 
-    string file    = gdb_question("file");
-    strip_final_blanks(file);
     string listing;
-    if (gdb->version() == DBX3)
+    static regex RXcolon_and_line_number(": *[0-9][0-9]*");
+    if (reply.contains(RXcolon_and_line_number))
     {
-	listing = gdb_question("line");
+	// DEC DBX issues line number immediately after `func'
+	listing = reply.after(":");
     }
     else
     {
-	listing = gdb_question("list");
-	// DBX lists 10 lines; the current line is the 5th one.
-	listing = itostring(atoi(listing) + 5);
+	if (reply != "")
+	{
+	    post_gdb_message(reply);
+	    return "";
+	}
+
+	if (gdb->has_line_command())
+	{
+	    listing = gdb_question("line");
+	}
+	else
+	{
+	    listing = gdb_question("list");
+
+	    // DBX 1.0 lists 10 lines; the current line is the 5th one.
+	    listing = itostring(atoi(listing) + 5);
+	}
     }
+
+    string file = gdb_question("file");
+    strip_final_blanks(file);
 
     string pos = file + ":" + listing;
 
