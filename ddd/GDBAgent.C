@@ -42,6 +42,7 @@ char GDBAgent_rcsid[] =
 #include "ddd.h"
 #include "string-fun.h"
 #include "regexps.h"
+#include "index.h"
 
 #include <stdlib.h>		// exit
 #include <iostream.h>
