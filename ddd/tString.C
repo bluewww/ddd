@@ -6,6 +6,7 @@
 
 #include "strclass.h"
 #include "assert.h"
+#include "config.h"
 
 #include <stream.h>  // see note below on `dec(20)' about why this will go away
 #include <std.h>
@@ -16,12 +17,19 @@
                      { cerr << "failed assertion at " << __LINE__ << "\n"; \
                        abort(); } }
 
-  string X = "Hello";
-  string Y = "world";
+  string X0 = "I say: Hello";
+  string X = X0.from('H');
+
+  string Y0 = "the world";
+  string Y = Y0.after("the ");
+
   string N = "123";
   string c;
   char*  s = ",";
+
+#if RUNTIME_REGEX
   regex  r = "e[a-z]*o";
+#endif
 
 void decltest()
 {
@@ -78,7 +86,10 @@ void decltest()
   assert(y.OK());
   assert(z.OK());
   assert(n.OK());
+
+#if RUNTIME_REGEX
   assert(r.OK());
+#endif
 }
 
 void cattest()
@@ -141,19 +152,27 @@ void comparetest()
   assert(!(x >= z.at(0, 6)));
   assert(x.contains("He"));
   assert (z.contains(x));
-  assert(x.contains(r));
 
+#if RUNTIME_REGEX
+  assert(x.contains(r));
   assert(!(x.matches(r)));
+#endif
+
+#if RUNTIME_REGEX
   assert(x.matches(rxalpha));
   assert(!(n.matches(rxalpha)));
   assert(n.matches(rxint));
   assert(n.matches(rxdouble));
+#endif
 
   assert(x.index("lo") == 3);
   assert(x.index("l", 2) == 2);
   assert(x.index("l", -1) == 3);
+
+#if RUNTIME_REGEX
   assert(x.index(r)  == 1);
   assert(x.index(r, -2) == 1);
+#endif
 
   assert(x.contains("el", 1));
   assert(x.contains("el"));
@@ -202,17 +221,33 @@ void substrtest()
   assert(x.OK());
   assert(x == "Helio");
   
+#if RUNTIME_REGEX
   x = X;
   z = x.at(r);
   cout << "z = x.at(r) = " << z << "\n";
   assert(z.OK());
   assert(z == "ello");
+#endif
 
+  x = X;
   z = x.before("o");
   cout << "z = x.before(o) = " << z << "\n";
   assert(z.OK());
   assert(z == "Hell");
 
+  x = X;
+  x = x.before("o");
+  cout << "x = x.before(o) = " << x << "\n";
+  assert(x.OK());
+  assert(x == "Hell");
+
+  x = X;
+  x = x.from("e");
+  cout << "x = x.from(e) = " << x << "\n";
+  assert(x.OK());
+  assert(x == "ello");
+
+  x = X;
   x.before("ll") = "Bri";
   cout << "x.before(ll) = Bri; x = " << x << "\n";
   assert(x.OK());
@@ -224,11 +259,13 @@ void substrtest()
   assert(z.OK());
   assert(z == "He");
 
+  x = X;
   z = x.after("Hel");
   cout << "z = x.after(Hel) = " << z << "\n";
   assert(z.OK());
   assert(z == "lo");
 
+  x = X;
   x.after("Hel") = "p";  
   cout << "x.after(Hel) = p; x = " << x << "\n";
   assert(x.OK());
@@ -240,11 +277,13 @@ void substrtest()
   assert(z.OK());
   assert(z == "o");
 
+#if RUNTIME_REGEX
   z = "  a bc";
   z  = z.after(rxwhite);
   cout << "z =   a bc; z = z.after(rxwhite); z =" << z << "\n";
   assert(z.OK());
   assert(z == "a bc");
+#endif
 }
 
 
@@ -257,6 +296,7 @@ void utiltest()
   assert(matches == 2);
   assert(x == "Hellllo");
 
+#if RUNTIME_REGEX
   x = X;
   assert(x.OK());
   matches = x.gsub(r, "ello should have been replaced by this string");
@@ -265,11 +305,14 @@ void utiltest()
   assert(x.OK());
   assert(matches == 1);
   assert(x == "Hello should have been replaced by this string");
+#endif
 
+#if RUNTIME_REGEX
   matches = x.gsub(rxwhite, "#");
   cout << "x.gsub(rxwhite, #); x = " << x << "\n";
   assert(matches == 7);
   assert(x.OK());
+#endif
 
   string z = X + Y;
   z.del("loworl");
@@ -317,6 +360,7 @@ void utiltest()
 
 void splittest()
 {
+#if RUNTIME_REGEX
   string z = "This string\thas\nfive words";
   cout << "z = " << z << "\n";
   string w[10];
@@ -339,6 +383,7 @@ void splittest()
   cout << "z = join(w, nw, /); z =" << z << "\n";
   assert(z.OK());
   assert(z == "This/string/has/five/words");
+#endif
 }
 
 
