@@ -415,6 +415,9 @@ You can also configure DDD to *ignore* some external packages:
 * There is also a `--without-motif' option.  Don't use it; DDD will
   not compile without Motif.
 
+* If you wish to disable command-line editing on standard input,
+  use `--without-readline'.
+
 
 Optional Features
 -----------------
@@ -448,6 +451,7 @@ optional DDD features.  There are two optional features.
 
   To disable the builtin DDD manual, use the `configure' option
   `--disable-builtin-manual'.
+
 
 
 
