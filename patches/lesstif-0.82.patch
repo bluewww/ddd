@@ -1,0 +1,597 @@
+# $Id$
+
+This file contains a variety of patches for lesstif-0.82.  We suggest
+that these patches be applied (using `patch -l < lesstif-0.82.patch')
+before building LessTif and running DDD with LessTif.
+
+
+From zeller Fri Nov 21 19:33:36 1997
+Subject: Modifier mapping trouble in LessTif 0.82, and a patch
+To: lesstif@hungry.com (LessTif Mailing List)
+Date: Fri, 21 Nov 1997 19:33:36 +0100 (MET)
+Cc: ddd-bugs@ips.cs.tu-bs.de (DDD Maintainers)
+X-Organization: TU Braunschweig, Abt. Softwaretechnologie
+X-Postal-Address: Bueltenweg 88, D-38092 Braunschweig, Germany
+X-Telephone: +49 531 391-7580
+X-Fax: +49 531 391-8140
+X-URL: http://www.cs.tu-bs.de/~zeller/
+X-FTP: ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/
+X-Mailer: ELM [version 2.4 PL25]
+Content-Type: text
+Content-Length: 6058      
+Status: RO
+
+Hi!
+
+Here's a bug report for LessTif 0.82.
+
+
+PROBLEM
+-------
+
+I run an application (DDD) with accelerators bound to `Meta<Key>X'.
+With OSF/Motif, Alt+X invokes the `Meta<Key>X' accelerator, and `X'
+without modifiers acts like `X'.  With LessTif, this is reversed: I
+was astonished to find that pressing `X' alone already invokes the
+accelerator and pressing Alt+X acts like `X' alone.
+
+
+CAUSE
+-----
+
+LessTif implements a modifier mapping different from OSF/Motif.
+The LessTif model is superior to the OSF/Motif model because it allows 
+applications to distinguish between `Alt' and `Meta' modifiers, and it
+allows people to bind `Alt' and `Meta' to individual Keysyms.  In
+OSF/Motif, at least `Alt' is hard-wired to the Mod1 modifier; I don't
+know about `Meta' treatment, but it might be hard-wired too.
+
+The problem in my case was that the `Meta' modifier is not bound to
+*any* particular keysym (no `Meta' on my keyboard, only `Alt'), and
+LessTif fails to recognize this.
+
+
+DIAGNOSTICS
+-----------
+
+In `MapEvent.c', the function `_XmMapKeyEvent' determines accelerator
+events.  Here, we find a line that binds modifier keysyms to modifier masks.
+It says:
+
+    if (evs->event.lateModifiers)
+    {
+	switch (evs->event.lateModifiers->keysym)
+	{
+        case XK_Meta_L:
+        case XK_Meta_R:
+            evs->event.modifiers |= GET_MODIFIER(METAModifier);
+            break;
+    ...
+
+The problem is that GET_MODIFIER(METAmodifier) returns `0' for a
+non-existing modifier binding, and this special situation is not
+handled by LessTif.  This results in an accelerator being installed
+for a key with _no_ modifiers, instead of no accelerator being
+installed at all.
+
+
+CONSEQUENCES
+------------
+
+The LessTif code should be changed such that:
+
+1. If a modifier is not bound to a particular keysym, the appropriate
+   accelerator should not be installed.  A diagnostic might be issued.
+2. If `Alt' or `Meta' are not bound to a particular keysym, LessTif
+   should use `Mod1' as default, to simulate the OSF/Motif behaviour.
+
+
+PATCH
+-----
+
+Here's a patch that realizes the consequences.
+
+--- lesstif-0.82/lib/Xm/MapEvent.c.orig	Fri Nov 21 18:35:52 1997
++++ lesstif-0.82/lib/Xm/MapEvent.c	Fri Nov 21 19:07:40 1997
+@@ -1819,7 +1819,72 @@
+     CompileNameValueTable( mappingNotify );
+ }
+ 
+-#define GET_MODIFIER(m_idx) mods[m_idx]
++
++/*
++ * SetLateModifier -- set up the modifier masks for ALT, META, SUPER,
++ * and HYPER modifier keys.  If the modifier is not bound to a
++ * particular KeySym, return False; upon success, return True.
++ *
++ * For compatibility with the closed software foundation, we treat META
++ * and ALT as synonyms of Mod1 if not bound to a particular keysym.
++ */
++static Boolean 
++SetLateModifier(Display *display, EventSeqPtr evs)
++{
++    if (evs->event.lateModifiers)
++    {
++	unsigned long mask = 0;
++	XmModifierMaskSetReference mods;
++
++	mods = _XmGetModifierMappingsForDisplay(display);
++
++	switch (evs->event.lateModifiers->keysym)
++	{
++        case XK_Meta_L:
++        case XK_Meta_R:
++            mask = mods[METAModifier];
++	    if (mask == 0)
++		mask = Mod1Mask;
++            break;
++ 
++        case XK_Alt_L:
++        case XK_Alt_R:
++	    mask = mods[ALTModifier];
++	    if (mask == 0)
++		mask = Mod1Mask;
++            break;
++ 
++        case XK_Super_L:
++        case XK_Super_R:
++	    mask = mods[SUPERModifier];
++            break;
++
++        case XK_Hyper_L:
++        case XK_Hyper_R:
++	    mask = mods[HYPERModifier];
++	    break;
++
++	default:
++	    _XmWarning(NULL, "Unknown modifier.\n");
++	    return False;
++	}
++
++	if (mask == 0)
++	{
++	    /* There is no keysym associated with this modifier. */
++	    /* Should we issue a warning here? -- FIXME */
++	    return False;
++	}
++	else
++	{
++	    evs->event.modifiers |= mask;
++	}
++    }
++
++    return True;
++}
++	       
++	       
+ 
+ Boolean
+ _XmMapBtnEvent(String str, int *eventType,
+@@ -1827,8 +1892,6 @@
+ {
+     EventSeqPtr evs = NULL;
+     Boolean err = False;
+-    XmModifierMaskSetReference mods =
+-	_XmGetModifierMappingsForDisplay(_XmGetDefaultDisplay());
+ 
+     _XmTransParseInit();
+ 
+@@ -1848,29 +1911,12 @@
+ 	_XmWarning(NULL, "Multiple event sequence ignored.\n");
+     }
+ 
+-    if (evs->event.lateModifiers)
++    err = SetLateModifier(_XmGetDefaultDisplay(), evs);
++    if (err)
+     {
+-	switch (evs->event.lateModifiers->keysym)
+-	{
+-        case XK_Meta_L:
+-        case XK_Meta_R:
+-            evs->event.modifiers |= GET_MODIFIER(METAModifier);
+-            break;
+- 
+-        case XK_Alt_L:
+-        case XK_Alt_R:
+-	    evs->event.modifiers |= GET_MODIFIER(ALTModifier);
+-            break;
+- 
+-        case XK_Super_L:
+-        case XK_Super_R:
+-	    evs->event.modifiers |= GET_MODIFIER(SUPERModifier);
+-            break;
++	FreeEventSeq(evs);
+ 
+-        case XK_Hyper_L:
+-        case XK_Hyper_R:
+-	    evs->event.modifiers |= GET_MODIFIER(HYPERModifier);
+-	}
++	return False;
+     }
+ 
+     PrintEventSeq(evs);
+@@ -1899,8 +1945,6 @@
+ {
+     EventSeqPtr evs = NULL;
+     Boolean err = False;
+-    XmModifierMaskSetReference mods =
+-	_XmGetModifierMappingsForDisplay(_XmGetDefaultDisplay());
+ 
+     _XmTransParseInit();
+ 
+@@ -1920,29 +1964,12 @@
+ 	_XmWarning(NULL, "Multiple event sequence ignored.\n");
+     }
+ 
+-    if (evs->event.lateModifiers)
++    err = SetLateModifier(_XmGetDefaultDisplay(), evs);
++    if (err)
+     {
+-	switch (evs->event.lateModifiers->keysym)
+-	{
+-        case XK_Meta_L:
+-        case XK_Meta_R:
+-            evs->event.modifiers |= GET_MODIFIER(METAModifier);
+-            break;
+- 
+-        case XK_Alt_L:
+-        case XK_Alt_R:
+-	    evs->event.modifiers |= GET_MODIFIER(ALTModifier);
+-            break;
+- 
+-        case XK_Super_L:
+-        case XK_Super_R:
+-	    evs->event.modifiers |= GET_MODIFIER(SUPERModifier);
+-            break;
++	FreeEventSeq(evs);
+ 
+-        case XK_Hyper_L:
+-        case XK_Hyper_R:
+-	    evs->event.modifiers |= GET_MODIFIER(HYPERModifier);
+-	}
++	return False;
+     }
+ 
+     PrintEventSeq(evs);
+
+-- 
+Andreas Zeller     Technische Universitaet Braunschweig, Germany
+                   mailto:zeller@acm.org http://www.cs.tu-bs.de/~zeller/
+
+From zeller Fri Nov 21 19:42:35 1997
+Date: Fri, 21 Nov 97 19:42:35 XXX
+From: Andreas Zeller <zeller@ips.cs.tu-bs.de>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="D0Fi1SCUe6"
+Content-Transfer-Encoding: 7bit
+To: DDD Maintainers <ddd-bugs@ips.cs.tu-bs.de>
+Subject: RE: Modifier mapping trouble in LessTif 0.82, and a patch
+X-Mailer: VM 6.34 under 20.3 "Chisinau" XEmacs  Lucid
+Status: RO
+
+
+--D0Fi1SCUe6
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+Miers, Mitch <mlm@dsc.com> says:
+
+
+--D0Fi1SCUe6
+Content-Type: message/rfc822
+Content-Transfer-Encoding: 7bit
+
+Received: from gypsum.dsc.com (gypsum.dsc.com [192.146.147.185]) by infbssys.ips.cs.tu-bs.de with SMTP id UAA03525
+  (8.8.7/IDA-1.6 for <zeller@ips.cs.tu-bs.de>); Fri, 21 Nov 1997 20:39:12 +0100
+Received: by gypsum.dsc.com with SMTP (Microsoft Exchange Server Internet Mail Connector Version 4.0.995.52)
+	id <01BCF672.1EDA7830@gypsum.dsc.com>; Fri, 21 Nov 1997 11:39:26 -0800
+Message-ID: <c=US%a=_%p=DSC%l=GYPSUM-971121193924Z-41804@gypsum.dsc.com>
+X-Mailer:  Microsoft Exchange Server Internet Mail Connector Version 4.0.995.52
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+From: "Miers, Mitch" <mlm@dsc.com>
+To: "'lesstif@Hungry.COM'" <lesstif@Hungry.COM>,
+        "'Andreas Zeller'"
+	 <zeller@ips.cs.tu-bs.de>
+Subject: RE: Modifier mapping trouble in LessTif 0.82, and a patch
+Date: Fri, 21 Nov 1997 11:39:24 -0800
+
+
+Nice patch.  It never occurred to me that this would be a problem:(
+
+>PROBLEM
+>-------
+>
+>I run an application (DDD) with accelerators bound to `Meta<Key>X'.
+>With OSF/Motif, Alt+X invokes the `Meta<Key>X' accelerator, and `X'
+>without modifiers acts like `X'.  With LessTif, this is reversed: I
+>was astonished to find that pressing `X' alone already invokes the
+>accelerator and pressing Alt+X acts like `X' alone.
+[deletia]
+>Andreas Zeller     Technische Universitaet Braunschweig, Germany
+>                   mailto:zeller@acm.org http://www.cs.tu-bs.de/~zeller/
+>
+
+Thanks, the patch has been installed.  This might also address
+jdassen@wi.leidenuniv.nl's problem (or maybe not):
+
+Unlike DDD [*] 2.1.1, DDD 2.2 (recently released) isn't useable with
+LessTif
+0.81 and 0.82 under Linux currently: it builds, but its debugger console
+doesn't respond to keyboard input or menu clicks.
+
+Mitch
+
+
+--D0Fi1SCUe6
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+
+Andreas Zeller
+
+--D0Fi1SCUe6--
+
+From zeller Fri Nov 21 22:53:02 1997
+Subject: TextOut.c:DrawAll draws too much
+To: lesstif@hungry.com (LessTif Mailing List)
+Date: Fri, 21 Nov 1997 22:53:02 +0100 (MET)
+X-Organization: TU Braunschweig, Abt. Softwaretechnologie
+X-Postal-Address: Bueltenweg 88, D-38092 Braunschweig, Germany
+X-Telephone: +49 531 391-7580
+X-Fax: +49 531 391-8140
+X-URL: http://www.cs.tu-bs.de/~zeller/
+X-FTP: ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/
+X-Mailer: ELM [version 2.4 PL25]
+Content-Type: text
+Content-Length: 791       
+Status: RO
+
+Hi!
+
+The function `TextOut.c::DrawAll' in LessTif 0.82 draws too many
+lines.  The main loop goes from 0 to Out_Rows(o), which is the number
+of lines shown; the actual text may have less lines.  When accessing
+the non-existent bogus lines, various effects can be observed.
+
+Here is a patch:
+
+--- lesstif-0.82/lib/Xm/TextOut.c.orig	Fri Nov 21 22:42:33 1997
++++ lesstif-0.82/lib/Xm/TextOut.c	Fri Nov 21 22:43:19 1997
+@@ -532,7 +532,8 @@
+ 	}
+     }
+ 
+-    for (i = 0; i < Out_Rows(o) /*Text_LineCount(w)*/; i++)
++    for (i = 0; i < (Text_LineCount(w) < Out_Rows(o) ?
++		     Text_LineCount(w) : Out_Rows(o)); i++)
+     {
+ 	Line line = &Text_Line(w)[i];
+ 	Line next = &Text_Line(w)[i + 1];
+
+
+-- 
+Andreas Zeller     Technische Universitaet Braunschweig, Germany
+                   mailto:zeller@acm.org http://www.cs.tu-bs.de/~zeller/
+
+From zeller Sat Nov 22 01:18:57 1997
+Subject: XmTextXYToPos() is broken in LessTif 0.82, and a patch
+To: lesstif@hungry.com (LessTif Mailing List)
+Date: Sat, 22 Nov 1997 01:18:57 +0100 (MET)
+X-Organization: TU Braunschweig, Abt. Softwaretechnologie
+X-Postal-Address: Bueltenweg 88, D-38092 Braunschweig, Germany
+X-Telephone: +49 531 391-7580
+X-Fax: +49 531 391-8140
+X-URL: http://www.cs.tu-bs.de/~zeller/
+X-FTP: ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/
+X-Mailer: ELM [version 2.4 PL25]
+Content-Type: text
+Content-Length: 1093      
+Status: RO
+
+Hi!
+
+
+PROBLEM:
+
+In LessTif 0.82, the function XmTextXYToPos() frequently returns bogus
+positions - the positions returned is the position of the first
+character in the line.
+
+
+CAUSE:
+
+The problem is due to an incomplete implementation in
+TextOut.c:XToPos().  The function references a `Line' member
+`past_end'; if `past_end' is non-zero, the function always returns the
+first position of the line.  However, `past_end' member are never
+initialized in the current LessTif version.
+
+
+PATCH:
+
+The following patch fixes the problem.
+
+--- lesstif-0.82/lib/Xm/TextOut.c.orig	Fri Nov 21 22:42:33 1997
++++ lesstif-0.82/lib/Xm/TextOut.c	Sat Nov 22 01:06:47 1997
+@@ -718,10 +718,6 @@
+     {
+ 	end = Text_LastPos(w);	/* Avoid PASTENDPOS */
+     }
+-    else if (next->past_end)		/* There's nothing there ... */
+-    {
+-	end = start;			/* FIXME - this is probably wrong */
+-    }
+     else
+     {
+ 	end = next->start - 1;
+
+
+ALTERNATIVE SOLUTION:
+
+Initialize `past_end' values to something meaningful.
+
+
+-- 
+Andreas Zeller     Technische Universitaet Braunschweig, Germany
+                   mailto:zeller@acm.org http://www.cs.tu-bs.de/~zeller/
+
+From zeller Wed Dec  3 10:05:25 1997
+Date: Wed, 3 Dec 97 10:05:25 XXX
+From: Andreas Zeller <zeller@ips.cs.tu-bs.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+To: LessTif Mailing List <lesstif@hungry.com>
+Subject: XmStringGetNextComponent returns bad values, and a fix
+X-Mailer: VM 6.34 under 20.3 "Vatican City" XEmacs  Lucid
+Status: RO
+
+Hi!
+
+In LessTif 0.82, XmStringGetNextComponent() returns TAG values in the
+TEXT parameter, and vice versa.  Here's a patch:
+
+--- lesstif-0.82/lib/Xm/XmString.c.orig     Wed Dec  3 10:50:46 1997
++++ lesstif-0.82/lib/Xm/XmString.c  Wed Dec  3 10:54:34 1997
+@@ -3567,7 +3567,7 @@
+        case XmSTRING_COMPONENT_CHARSET:
+            if (r->data)
+            {
+-               *text = XtNewString(r->data);
++               *tag = XtNewString(r->data);
+            }
+            break;
+ 
+@@ -3575,7 +3575,7 @@
+        case XmSTRING_COMPONENT_LOCALE_TEXT:
+            if (r->data)
+            {
+-               *tag = XtNewString(r->data);
++               *text = XtNewString(r->data);
+            }
+            break;
+
+
+Greetings,
+ 
+
+Andreas Zeller
+
+From zeller Wed Dec  3 11:36:36 1997
+Date: Wed, 3 Dec 97 11:36:36 XXX
+From: Andreas Zeller <zeller@ips.cs.tu-bs.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+To: LessTif Mailing List <lesstif@hungry.com>
+Subject: XmStringPeekNextComponent returns bad value, and a fix
+X-Mailer: VM 6.34 under 20.3 "Vatican City" XEmacs  Lucid
+Status: RO
+
+Hi!
+
+In LessTif 0.82, XmStringPeekNextComponent() returns
+XmSTRING_COMPONENT_UNKNOWN when reading beyond the end of an XmString;
+however, in this case, XmStringGetNextComponent() returns
+XmSTRING_COMPONENT_END, and so should XmStringPeekNextComponent().
+Here's a fix:
+
+--- lesstif-0.82/lib/Xm/XmString.c.orig     Wed Dec  3 10:50:46 1997
++++ lesstif-0.82/lib/Xm/XmString.c  Wed Dec  3 12:32:18 1997
+@@ -3619,7 +3619,7 @@
+     }
+     else
+     {
+-       return XmSTRING_COMPONENT_UNKNOWN;
++       return XmSTRING_COMPONENT_END;
+     }
+ }
+
+Andreas Zeller
+
+From zeller Wed Dec  3 13:56:53 1997
+Subject: XmTextInsert does not invoke ValueChanged callback, and a fix
+To: lesstif@hungry.com (LessTif Mailing List)
+Date: Wed, 3 Dec 1997 13:56:53 +0100 (MET)
+X-Organization: TU Braunschweig, Abt. Softwaretechnologie
+X-Postal-Address: Bueltenweg 88, D-38092 Braunschweig, Germany
+X-Telephone: +49 531 391-7580
+X-Fax: +49 531 391-8140
+X-URL: http://www.cs.tu-bs.de/~zeller/
+X-FTP: ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/
+X-Mailer: ELM [version 2.4 PL25]
+Content-Type: text
+Content-Length: 626       
+Status: RO
+
+Hi!
+
+In LessTif 0.82, XmTextInsert() does not invoke
+XmNvalueChangedCallback, although Motif doc says it does so.
+
+Here's a patch:
+
+--- lesstif-0.82/lib/Xm/Text.c.orig Wed Dec  3 13:53:31 1997
++++ lesstif-0.82/lib/Xm/Text.c      Wed Dec  3 13:53:36 1997
+@@ -1459,7 +1459,7 @@
+     endret = position;
+ 
+     st = (*Text_Source(w)->Replace) (tw, evp, &startret, &endret,
+-                                    &block, False);
++                                    &block, True);
+     /* FIX ME ?? */
+ 
+     RefigureLines(tw);
+
+
+-- 
+Andreas Zeller     Technische Universitaet Braunschweig, Germany
+                   mailto:zeller@acm.org http://www.cs.tu-bs.de/~zeller/
+
+From zeller Wed Dec  3 16:02:23 1997
+Subject: _XmTextNextX() does not handle 8-bit characters, and a patch
+To: lesstif@hungry.com (LessTif Mailing List)
+Date: Wed, 3 Dec 1997 16:02:23 +0100 (MET)
+Cc: ddd-bugs@ips.cs.tu-bs.de (DDD Maintainers)
+X-Organization: TU Braunschweig, Abt. Softwaretechnologie
+X-Postal-Address: Bueltenweg 88, D-38092 Braunschweig, Germany
+X-Telephone: +49 531 391-7580
+X-Fax: +49 531 391-8140
+X-URL: http://www.cs.tu-bs.de/~zeller/
+X-FTP: ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/
+X-Mailer: ELM [version 2.4 PL25]
+Content-Type: text
+Content-Length: 683       
+Status: RO
+
+Hi!
+
+In LessTif 0.82, the function _XmTextNextX() in TextOut.c returns bad
+values for characters outside the range 0..127.  In the Text widget,
+this results in forced line wraps at non-ASCII characters.
+
+Here's a patch:
+
+--- lesstif-0.82/lib/Xm/TextOut.c.orig      Fri Nov 21 22:42:33 1997
++++ lesstif-0.82/lib/Xm/TextOut.c   Wed Dec  3 15:56:55 1997
+@@ -629,9 +629,9 @@
+ 
+     while (len > 0)
+     {
+-       char c;
++       unsigned int c;
+ 
+-       c = *ptr;
++       c = (unsigned char)*ptr;
+        if (c == '\t')
+        {
+            x = Out_NextTabStop(o, x);
+
+
+Greetings,
+
+-- 
+Andreas Zeller     Technische Universitaet Braunschweig, Germany
+                   mailto:zeller@acm.org http://www.cs.tu-bs.de/~zeller/
+
