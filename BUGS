@@ -34,8 +34,6 @@ Volunteers for fixing these and other bugs are welcome!
 049. The bounding box is computed for all boxes, even if only selected
      boxes are to be printed.
 
-056. `Select All' does not select hints.
-
 086. mayer@paradigml.com (Ron Mayer) says:
 
      In a number of structures I would attempt to "Modify [the]
@@ -224,13 +222,6 @@ Volunteers for fixing these and other bugs are welcome!
      dbx cannot handle `when at { }' without a command inside the
      parentheses (this should be `{ delete xx,yy }' anyway).
 
-196. DDD started with the XDB debugger gets a segmentation fault during
-     startup.  This happens when XDB issues the following line:
-
-     <- "\r\e[K\e[7mStandard input: END\e[m"
-
-     [Should be fixed in DDD 2.2  -AZ]
-
 198. In `--tty' mode, EOF terminates DDD, even if only a subprogram
      (e.g. a shell) is running.
 
@@ -278,7 +269,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 216. Jonathan Edwards <edwards@intranet.com> suggests that the
      flashing cursor in the gdb console window ought to stop flashing
-     during user input.  [Tell the Motif people  -AZ]
+     during user input.  [Tell the Motif people! -AZ]
 
 218. Conor O'Neill <coneill@integral.ie> reports that, under
      Openwindows on Sparc Solaris2.51, in the Open_File dialog, the

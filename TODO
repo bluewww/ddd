@@ -11,14 +11,6 @@ it (or include it in this list :-)
 Projects marked with an `*' are scheduled for the next DDD release.
 Volunteers for these and other projects are welcome!
 
-003. Support full annotation mode (`gdb --annotate=2').  This would
-     make prompt recognition easier and allow full trace of the current
-     GDB status.  Disadvantage: won't work with earlier GDBs and requires
-     a major redesign.
-     [Discarded; won't work with DBX and XDB.  -AZ]
-
-004. Have interactive help -- a wrapper to the GDB `help' command.
-
 008. Have buttons arranged such that they do not disappear when the
      window is narrowed.
 
@@ -341,20 +333,10 @@ Volunteers for these and other projects are welcome!
      view the content of an array graphically.  Useful when you know
      what kind of array you are expecting (symmetric, diagonal ...)
 
-217. Winson Quock <quock@pepper.com> (see the quote in ddd/exit.C) says:
-     * I fix a problem related to redirect I/O to external window.
-       DBX is buggy in handling I/O redirection, according to Sun's
-       support guy. "2> <tty>" will not be parsed correctly, but ">
-       <tty>" will handle stderr as well. The fix is in `exectty.C'.
-       [Should be fixed in DDD 2.2  -AZ]
-     * Very often, I found myself spending quite a lot of time
-       arranging each "display box". It will cool if we can also have
-       a normal text list display for variable values.
-
-218. Roy Dragseth <royd@math.uit.no> reports on DDD 2.1.90:
-     The command buttons come up off screen under fvwm 
-     (haven't checked other WM's).
-     [Should be fixed in DDD 2.2  -AZ]
+217. Winson Quock <quock@pepper.com> (see the quote in ddd/exit.C)
+     says: Very often, I found myself spending quite a lot of time
+     arranging each "display box".  It will cool if we can also have a
+     normal text list display for variable values.
 
 219. Annotated arrows. Christoph Koegl <koegl@informatik.uni-kl.de>
      suggests that the data display window should be able to annotate
