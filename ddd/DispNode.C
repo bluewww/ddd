@@ -240,14 +240,13 @@ void DispNode::select(DispValue *dv)
 }
 
 // Copy selection state from SRC
-void DispNode::copy_selection_state(DispNode *src)
+void DispNode::copy_selection_state(const DispNode& src)
 {
-    if (value() != 0 && src != 0 && 
-	src->value() != 0 && src->selected_value() != 0)
+    if (value() != 0 && src.value() != 0 && src.selected_value() != 0)
     {
 	DispValue *descendant = 0;
-	bool eq = value()->structurally_equal(src->value(), 
-					      src->selected_value(),
+	bool eq = value()->structurally_equal(src.value(), 
+					      src.selected_value(),
 					      descendant);
 	if (eq)
 	    select(descendant);
@@ -386,4 +385,27 @@ bool DispNode::set_title(bool set)
     }
 
     return changed;
+}
+
+// Duplication
+DispNode::DispNode(const DispNode& node)
+    : BoxGraphNode(node),
+      mydisp_nr(node.disp_nr()),
+      myname(node.name()),
+      myaddr(node.addr()),
+      myscope(node.scope()),
+      mydepends_on(node.mydepends_on),
+      myactive(node.active()),
+      saved_node_hidden(node.saved_node_hidden),
+      mydeferred(node.deferred()),
+      myclustered(node.clustered()),
+      myconstant(node.constant()),
+      disp_value(node.value() ? node.value()->dup() : 0),
+      myselected_value(0),
+      disp_box(node.disp_box ? node.disp_box->dup() : 0),
+      mylast_change(node.last_change()),
+      alias_of(node.alias_of)
+{
+    setBox(disp_box->box());
+    copy_selection_state(node);
 }

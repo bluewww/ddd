@@ -47,10 +47,16 @@
 
 class DispBox {
 private:
-    Box* mybox;
-    Box* title_box;
+    Box *mybox;
+    Box *title_box;
 
-    DispBox(const DispBox&): mybox(0), title_box(0) { assert(0); }
+protected:
+    DispBox(const DispBox &node)
+	: mybox(node.mybox ? node.mybox->dup() : 0),
+	  title_box(node.title_box ? node.title_box->dup() : 0)
+    {}
+
+private:
     DispBox& operator = (const DispBox&) { assert(0); return *this; }
 
     static bool is_numeric(const DispValue *dv, const DispValue *parent);
@@ -76,7 +82,9 @@ public:
 
     ~DispBox ();
 
-    Box* box () const { return mybox; }
+    Box *box () const { return mybox; }
+
+    DispBox *dup() const { return new DispBox(*this); }
 
     // Set new value to DV.  If DV == 0, make it disabled.
     void set_value (const DispValue *dv, const DispValue *parent = 0);
