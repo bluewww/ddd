@@ -472,8 +472,16 @@ private:
     static Widget map_arrow_at     (Widget w, XmTextPosition pos);
     static Widget map_temp_arrow_at(Widget w, XmTextPosition pos,
 				    Widget origin = 0);
+    static inline void unmap_temp_arrow(Widget w)
+    {
+	map_temp_arrow_at(w, XmTextPosition(-1));
+    }
     static Widget map_temp_stop_at (Widget w, XmTextPosition pos,
 				    Widget origin = 0);
+    static inline void unmap_temp_stop(Widget w)
+    {
+	map_temp_stop_at(w, XmTextPosition(-1));
+    }
     static void copy_colors(Widget w, Widget origin);
 
     // True if code/source glyphs need to be updated

@@ -6498,14 +6498,16 @@ Widget SourceView::map_temp_stop_at(Widget glyph, XmTextPosition pos,
 
 	map_glyph(temp_stop, x, y);
 	unmap_glyph(cond ? temp_stops[k] : temp_conds[k]);
+
+	return temp_stop;
     }
     else
     {
-	unmap_glyph(temp_stop[k]);
-	unmap_glyph(temp_stop[k]);
-    }
+	unmap_glyph(temp_stops[k]);
+	unmap_glyph(temp_conds[k]);
 
-    return temp_stop;
+	return 0;
+    }
 }
 
 // Map temporary arrow at position POS.  If ORIGIN is given, use
@@ -6940,8 +6942,8 @@ void SourceView::dragGlyphAct(Widget glyph, XEvent *e, String *, Cardinal *)
 
     XDefineCursor(XtDisplay(glyph), XtWindow(glyph), move_cursor);
 
-    map_temp_stop_at(text_w, XmTextPosition(-1));
-    map_temp_arrow_at(text_w, XmTextPosition(-1));
+    unmap_temp_stop(text_w);
+    unmap_temp_arrow(text_w);
 
     current_drag_origin     = glyph;
     current_drag_breakpoint = 0;
@@ -7006,9 +7008,9 @@ void SourceView::dropGlyphAct (Widget glyph, XEvent *e, String *, Cardinal *)
 
     XUndefineCursor(XtDisplay(glyph), XtWindow(glyph));
 
-    // Unmap temp glyph
-    map_temp_stop_at(text_w, XmTextPosition(-1));
-    map_temp_arrow_at(text_w, XmTextPosition(-1));
+    // Unmap temp glyphs
+    unmap_temp_stop(text_w);
+    unmap_temp_arrow(text_w);
 
     // Show all other glyphs
     update_glyphs();
