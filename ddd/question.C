@@ -53,6 +53,7 @@ struct GDBReply {
     bool received;    // true iff we found an answer
 };
 
+// Timeout proc - called from XtAppAddTimeOut()
 static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
 {
     GDBReply *reply = (GDBReply *)client_data;
@@ -60,6 +61,7 @@ static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
     reply->received = true;
 }
 
+// GDB sent a reply - Called from GDBAgent::send_question()
 static void gdb_reply(const string& complete_answer, void *qu_data)
 {
     GDBReply *reply = (GDBReply *)qu_data;
@@ -67,6 +69,9 @@ static void gdb_reply(const string& complete_answer, void *qu_data)
     reply->received = true;
 }
 
+// Send COMMAND to GDB; return answer (NO_GDB_ANSWER if none)
+// TIMEOUT is either 0 (= use default timeout), -1 (= no timeout)
+// or maximal time in seconds
 string gdb_question(const string& command, int timeout, bool verbatim)
 {
     if (command == "")
@@ -81,37 +86,47 @@ string gdb_question(const string& command, int timeout, bool verbatim)
 
     static GDBReply reply;
     reply.received = false;
+    reply.answer   = NO_GDB_ANSWER;
 
+    // Set verbatim mode if needed
     bool old_verbatim = gdb->verbatim();
     gdb->verbatim(verbatim);
+
+    // Send question to GDB
     bool ok = gdb->send_question(command, gdb_reply, (void *)&reply);
+
+    if (ok)
+    {
+	// GDB received question - set timeout
+	if (timeout == 0)
+	    timeout = app_data.question_timeout;
+
+	XtIntervalId timer = 0;
+	if (timeout > 0)
+	{
+	    timer = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
+				    timeout * 1000,
+				    gdb_reply_timeout, (void *)&reply);
+	}
+
+	// Process all GDB input and timer events
+	while (!reply.received && gdb->running())
+	    XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), 
+			      XtIMTimer | XtIMAlternateInput);
+
+	// Remove timeout in case it's still running
+	if (reply.answer != NO_GDB_ANSWER)
+	{
+	    if (timer && timeout > 0)
+		XtRemoveTimeOut(timer);
+	}
+
+	gdb_question_running = false;
+    }
+
+    // Restore old verbatim mode
     gdb->verbatim(old_verbatim);
 
-    if (!ok)
-	return NO_GDB_ANSWER;	// GDB not ready
-
-    if (timeout == 0)
-	timeout = app_data.question_timeout;
-
-    XtIntervalId timer = 0;
-    if (timeout > 0)
-    {
-	timer = XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 
-				timeout * 1000,
-				gdb_reply_timeout, (void *)&reply);
-    }
-
-    while (!reply.received && gdb->running())
-	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), 
-			  XtIMTimer | XtIMAlternateInput);
-
-    if (reply.answer != NO_GDB_ANSWER)
-    {
-	if (timer && timeout > 0)
-	    XtRemoveTimeOut(timer);
-    }
-
-    gdb_question_running = false;
-
+    // Return answer
     return reply.answer;
 }
