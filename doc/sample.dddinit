@@ -115,16 +115,27 @@
 ! KEYBOARD
 ! ----------------------------------------------------------------------------
 
-! Create KDE-style Cut/Copy/Paste bindings.  Please note that this
-! assigns Ctrl+C to `Copy'; use Ctrl+G for interrupts.
+! Assign Ctrl+A to beginning-of-line.  This scheme can be used
+! for arbitrary new key bindings.
 ! 
-! Ddd*editMenu.cut.accelerator:       ~Shift Ctrl<Key>X
-! Ddd*editMenu.cut.acceleratorText:   Ctrl+X
-! Ddd*editMenu.copy.accelerator:      ~Shift Ctrl<Key>C
-! Ddd*editMenu.copy.acceleratorText:  Ctrl+C
-! Ddd*editMenu.paste.accelerator:     ~Shift Ctrl<Key>V
-! Ddd*editMenu.paste.acceleratorText: Ctrl+V
-
+! Here's the general scheme for multi-line text and text fields:
+! 
+! 	Ddd*XmText.translations: \
+!       #override\n\
+! 	Ctrl<Key>A: beginning-of-line()
+! 
+! 	Ddd*XmTextField.translations: \
+!       #override\n\
+! 	Ctrl<Key>A: beginning-of-line()
+! 
+! The debugger console needs a special action, since the prompt must be
+! accounted for:
+! 
+! 	Ddd*gdb_w.translations: \
+!       #override\n\
+! 	Ctrl<Key>A: gdb-beginning-of-line()
+!
+! The DDD manual contains a list of all available actions.
 
 ! Enrico Scholz <enrico.scholz@wirtschaft.tu-chemnitz.de> suggests the
 ! following accelerators (taken from the Borland Delphi debugger):

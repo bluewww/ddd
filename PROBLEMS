@@ -283,8 +283,48 @@ LessTif
     With LessTif 0.85 and the patches applied, the following problems
     are currently known:
 
-    * Menu traversal by keyboard does not work (yet); use the mouse instead.
+    * Menu traversal by keyboard does not work (yet); use the mouse
+      instead.
 
+    uz@wuschel.musoftware.de (Ullrich von Bassewitz) reports:
+
+    * The preferences dialog looses the "Ok", "Cancel" and "Help"
+      buttons after trying to resize it. If I try to make the dialog
+      larger, it snaps back to it's original size - but the mentioned
+      buttons have vanished. The buttons do not even reappear if I
+      close the dialog and open it again, I have to terminate the
+      debugger and restart it.
+  
+    * There are more problems when trying to resize the dialogs: When
+      I open the Preferences dialog in a "fresh" ddd session (that is,
+      after doing a "rm -r ~/.ddd"), and try to make it smaller, it
+      resizes itself to a completely weird double size and the output
+      is garbled.
+ 
+    * The font selector is somewhat confusing. I know that this is the stock X
+      font selector, but I had some problems making the fonts larger. Why not
+      make the "Size" field in Edit->Preferences->Fonts editable? All I wanted
+      to do was making the fonts somewhat larger. (I have to admit here, that
+      I'm somewhat spoiled by the way, KDE handles things. Selecting fonts and
+      settings is very easy when using KDE).
+ 
+    * I'm not able to edit "Edit->Preferences->Helpers->Edit
+      Sources". I click into the text field and get a blinking
+      cursor. When trying to insert text, it does not work. Sometimes,
+      the text appears in one of the other input lines (one of those
+      without a blinking cursor), sometimes it does not appear
+      anywhere at all. Currently, I have the situation, that *two*
+      fields have a blinking cursor, but when trying to insert text,
+      the text appears in a third field. Also, I'm not able to move
+      from one input field to the next using tab. Is this supposed to
+      work, anyway? (I'm spoiled by KDE as I mentioned above:-)
+ 
+    * Regarding the vanishing buttons: After doing some more testing, I think
+      I found what causes the problem: When making the dialog larger, the
+      position of the buttons is changed so that they are at the bottom of the
+      dialog. After that, the dialog is resized to its original size without
+      changing the position of the buttons. So the buttons become invisible
+      because they are outside the window border.
  
 
 Linux

@@ -117,8 +117,8 @@ Volunteers for fixing these and other bugs are welcome!
     nb - does _not_ generate the fault if the edit menu is not torn
     off.
 
-306*`graph undisplay -1 1', with 1 being the only display, does not
-    delete display -1.
+306*`graph undisplay -1 1', with 1 being the only data display, does
+    not delete user display -1.
 
 307 Marco Hess <marcoh@senet.com.au> says that sometimes, the source
     window locks in scroll mode until it reaches the top or bottom of
@@ -126,4 +126,8 @@ Volunteers for fixing these and other bugs are welcome!
     [Johan Vermeire <jvme@se.bel.alcatel.be> reports that
      lowering the `glyphUpdateDelay' resource fixes this.]
 
-308 (Insert new bugs here)
+308*(Solaris 2.6 DBX) Watchpoints in Solaris 2.6 DBX wants `stop
+    change VARIABLE' instead of `stop VARIABLE'.  Event specifications
+    without keywords will not be accepted in future DBX releases.
+
+309 (Insert new bugs here)
