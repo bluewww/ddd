@@ -434,8 +434,8 @@ Ddd*autoRaiseTool: true
 
 ! Do we want auto-raised menus?  This is handy with certain window managers:
 ! An auto-raised DDD might obscure popped up pulldown menus.  However, there's
-! a risk that this might interfere with Motif.
-Ddd*autoRaiseMenu: true
+! a risk that this might interfere with Motif, which is why this is `false'
+Ddd*autoRaiseMenu: false
 
 
 ! Shortcuts
