@@ -95,28 +95,41 @@ struct MMDesc {
 
 
 // Procs
-
 typedef void (*MMItemProc)(MMDesc items[], XtPointer closure);
 
 
-// Functions
-Widget MMcreatePulldownMenu      (Widget parent, String name, MMDesc items[]);
-Widget MMcreateRadioPulldownMenu (Widget parent, String name, MMDesc items[]);
-Widget MMcreatePopupMenu         (Widget parent, String name, MMDesc items[]);
-Widget MMcreateMenuBar           (Widget parent, String name, MMDesc items[]);
-Widget MMcreateWorkArea          (Widget parent, String name, MMDesc items[]);
-Widget MMcreatePanel             (Widget parent, String name, MMDesc items[]);
-Widget MMcreateRadioPanel        (Widget parent, String name, MMDesc items[]);
-Widget MMcreateButtonPanel       (Widget parent, String name, MMDesc items[]);
+// Creators
+Widget MMcreatePulldownMenu      (Widget parent, String name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreateRadioPulldownMenu (Widget parent, String name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreatePopupMenu         (Widget parent, String name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreateMenuBar           (Widget parent, String name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreateWorkArea          (Widget parent, String name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreatePanel             (Widget parent, String name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreateRadioPanel        (Widget parent, String name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreateButtonPanel       (Widget parent, String name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
+Widget MMcreatePushMenu          (Widget parent, String name, MMDesc items[],
+				  ArgList args = 0, Cardinal arg = 0);
 
-void   MMadjustPanel(MMDesc items[], Dimension space = 15);
 
-void   MMaddCallbacks   (MMDesc items[], XtPointer default_closure = 0);
-void   MMaddHelpCallback(MMDesc items[], XtCallbackProc proc);
-void   MMonItems        (MMDesc items[], MMItemProc proc, 
-			 XtPointer closure = 0);
+// Align panel items along their labels
+void MMadjustPanel(MMDesc items[], Dimension space = 15);
 
-// Add items to shell.  If IGNORE_SEPS is set, all separators are ignored.
+// Add callbacks
+void MMaddCallbacks(MMDesc items[], XtPointer default_closure = 0);
+void MMaddHelpCallback(MMDesc items[], XtCallbackProc proc);
+
+// Apply PROC on all ITEMS
+void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure = 0);
+
+// Add ITEMS to SHELL.  If IGNORE_SEPS is set, all separators are ignored.
 void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps = false);
 
 // Conveniences

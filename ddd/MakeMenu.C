@@ -70,8 +70,6 @@ static void RedrawPushMenuCB(Widget, XtPointer, XtPointer);
 static void PopupPushMenuAct(Widget w, XEvent* e, String *, Cardinal *);
 static void DecoratePushMenuAct(Widget w, XEvent* e, String *, Cardinal *);
 
-static Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[]);
-
 static XtActionsRec actions [] = {
     {"popup-push-menu",            PopupPushMenuAct },
     {"decorate-push-menu",         DecoratePushMenuAct },
@@ -331,18 +329,19 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	static string spinName  = "spin";
 	Widget subMenu = 0;
 	Widget panel   = 0;
-	Widget spin    = 0;
 	bool flat = false;
-	PushMenuInfo *info = 0;
 	label = 0;
 
 	switch(type & MMTypeMask) 
 	{
 	case MMFlatPush:
+	{
 	    flat = true;
 	    // FALL THROUGH
+	}
 
 	case MMPush:
+	{
 	    // Create a PushButton
 	    arg = 0;
 	    if (flat)
@@ -352,6 +351,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 			 SHADOW_THICKNESS); arg++;
 	    }
 
+	    PushMenuInfo *info = 0;
 	    if (lesstif_version < 1000)
 	    {
 		// LessTif wants the PushButton as parent of the menu
@@ -380,32 +380,40 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 		    info->widget = widget;
 	    }
 	    break;
+	}
 
 	case MMToggle:
+	{
 	    // Create a ToggleButton
 	    assert(subitems == 0);
 
 	    arg = 0;
 	    widget = verify(XmCreateToggleButton(shell, name, args, arg));
 	    break;
+	}
 
 	case MMLabel:
+	{
 	    // Create a Label
 	    assert(subitems == 0);
 
 	    arg = 0;
 	    widget = verify(XmCreateLabel(shell, name, args, arg));
 	    break;
+	}
 
 	case MMArrow:
+	{
 	    // Create an arrow
 	    assert(subitems == 0);
 
 	    arg = 0;
 	    widget = verify(XmCreateArrowButton(shell, name, args, arg));
 	    break;
+	}
 
 	case MMMenu:
+	{
 	    // Create a CascadeButton and a new PulldownMenu
 	    assert(subitems != 0);
 
@@ -448,8 +456,10 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 		}
 	    }
 	    break;
+	}
 
 	case MMRadioMenu:
+	{
 	    // Create a CascadeButton and a new PulldownMenu
 	    assert(subitems != 0);
 
@@ -459,8 +469,10 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
 	    widget = verify(XmCreateCascadeButton(shell, name, args, arg));
 	    break;
+	}
 
 	case MMOptionMenu:
+	{
 	    // Create an option menu
 	    assert(subitems != 0);
 
@@ -470,10 +482,12 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
 	    widget = verify(XmCreateOptionMenu(shell, name, args, arg));
 	    break;
+	}
 
 	case MMPanel:
 	case MMRadioPanel:
 	case MMButtonPanel:
+	{
 	    // Create a label with an associated panel
 	    assert(subitems != 0);
 
@@ -491,42 +505,50 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    if (name[0] != '\0' && (type & MMUnmanagedLabel) == 0)
 		XtManageChild(label);
 
+	    Widget (*create_panel)(Widget, String, MMDesc[], 
+				   ArgList, Cardinal) = 0;
+
 	    switch (type & MMTypeMask)
 	    {
 	    case MMPanel:
-		subMenu = MMcreatePanel(widget, subMenuName, subitems);
+		create_panel = MMcreatePanel;
 		break;
 
 	    case MMRadioPanel:
-		subMenu = MMcreateRadioPanel(widget, subMenuName, subitems);
+		create_panel = MMcreateRadioPanel;
 		break;
 
 	    case MMButtonPanel:
-		subMenu = MMcreateButtonPanel(widget, subMenuName, subitems);
+		create_panel = MMcreateButtonPanel;
 		break;
 
 	    default:
 		assert(0);
 		abort();
 	    }
-		
-	    XtVaSetValues(subMenu,
-			  XmNorientation, XmHORIZONTAL,
-			  NULL);
+
+	    arg = 0;
+	    XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
+	    subMenu = create_panel(widget, subMenuName, subitems, args, arg);
+
 	    XtManageChild(subMenu);
 	    break;
+	}
 
 	case MMScale:
+	{
 	    // Create a scale
 	    assert(subitems == 0);
 
 	    arg = 0;
 	    widget = verify(XmCreateScale(shell, name, args, arg));
 	    break;
+	}
 
 	case MMTextField:
 	case MMEnterField:
 	case MMSpinField:
+	{
 	    // Create a label with an associated text field
 	    assert(subitems == 0);
 
@@ -544,7 +566,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    if (name[0] != '\0' && (type & MMUnmanagedLabel) == 0)
 		XtManageChild(label);
 
-	    spin = panel;
+	    Widget spin = panel;
 	    if ((type & MMTypeMask) == MMSpinField)
 	    {
 #if XmVersion >= 2000
@@ -558,8 +580,10 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    widget = verify(XmCreateTextField(spin, textName, args, arg));
 	    XtManageChild(widget);
 	    break;
+	}
 
 	case MMSeparator:
+	{
 	    // Create a separator
 	    assert(subitems == 0);
 
@@ -568,9 +592,10 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    arg = 0;
 	    widget = verify(XmCreateSeparator(shell, name, args, arg));
 	    break;
+	}
 
 	default:
-	    // invalid type
+	    // Invalid type
 	    assert(0);
 	    abort();
 	}
@@ -602,12 +627,9 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 //-----------------------------------------------------------------------
 
 // Create pulldown menu from items
-Widget MMcreatePulldownMenu(Widget parent, String name, MMDesc items[])
+Widget MMcreatePulldownMenu(Widget parent, String name, MMDesc items[],
+			    ArgList args, Cardinal arg)
 {
-    Arg args[10];
-    int arg;
-
-    arg = 0;
     Widget menu = verify(XmCreatePulldownMenu(parent, name, args, arg));
     MMaddItems(menu, items);
     auto_raise(XtParent(menu));
@@ -616,30 +638,26 @@ Widget MMcreatePulldownMenu(Widget parent, String name, MMDesc items[])
 }
 
 // Create radio pulldown menu from items
-Widget MMcreateRadioPulldownMenu(Widget parent, String name, MMDesc items[])
+Widget MMcreateRadioPulldownMenu(Widget parent, String name, MMDesc items[],
+				 ArgList _args, Cardinal _arg)
 {
-    Arg args[10];
-    int arg;
+    Arg args[_arg + 10];
+    Cardinal arg = 0;
 
-    arg = 0;
     XtSetArg(args[arg], XmNisHomogeneous, True); arg++;
     XtSetArg(args[arg], XmNentryClass, xmToggleButtonWidgetClass); arg++;
     XtSetArg(args[arg], XmNradioBehavior, True); arg++;
 
-    Widget menu = verify(XmCreatePulldownMenu(parent, name, args, arg));
-    MMaddItems(menu, items);
-    auto_raise(XtParent(menu));
+    for (Cardinal i = 0; i < _arg; i++)
+	args[arg++] = _args[i];
 
-    return menu;
+    return MMcreatePulldownMenu(parent, name, items, args, arg);
 }
 
 // Create popup menu from items
-Widget MMcreatePopupMenu(Widget parent, String name, MMDesc items[])
+Widget MMcreatePopupMenu(Widget parent, String name, MMDesc items[],
+			 ArgList args, Cardinal arg)
 {
-    Arg args[10];
-    int arg;
-
-    arg = 0;
     Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
     MMaddItems(menu, items);
 
@@ -654,12 +672,9 @@ Widget MMcreatePopupMenu(Widget parent, String name, MMDesc items[])
 
 
 // Create menu bar from items
-Widget MMcreateMenuBar(Widget parent, String name, MMDesc items[])
+Widget MMcreateMenuBar(Widget parent, String name, MMDesc items[],
+		       ArgList args, Cardinal arg)
 {
-    Arg args[10];
-    int arg;
-
-    arg = 0;
     Widget bar = verify(XmCreateMenuBar(parent, name, args, arg));
     MMaddItems(bar, items);
     XtManageChild(bar);
@@ -668,12 +683,9 @@ Widget MMcreateMenuBar(Widget parent, String name, MMDesc items[])
 }
 
 // Create work area from items
-Widget MMcreateWorkArea(Widget parent, String name, MMDesc items[])
+Widget MMcreateWorkArea(Widget parent, String name, MMDesc items[],
+			ArgList args, Cardinal arg)
 {
-    Arg args[10];
-    int arg;
-
-    arg = 0;
     Widget bar = verify(XmCreateWorkArea(parent, name, args, arg));
     MMaddItems(bar, items, true);
     XtManageChild(bar);
@@ -682,12 +694,9 @@ Widget MMcreateWorkArea(Widget parent, String name, MMDesc items[])
 }
 
 // Create panel from items
-Widget MMcreatePanel(Widget parent, String name, MMDesc items[])
+Widget MMcreatePanel(Widget parent, String name, MMDesc items[],
+		     ArgList args, Cardinal arg)
 {
-    Arg args[10];
-    int arg;
-
-    arg = 0;
     Widget panel = verify(XmCreateWorkArea(parent, name, args, arg));
     MMaddItems(panel, items);
     XtManageChild(panel);
@@ -727,15 +736,19 @@ void MMadjustPanel(MMDesc items[], Dimension space)
 }
 
 // Create radio panel from items
-Widget MMcreateRadioPanel(Widget parent, String name, MMDesc items[])
+Widget MMcreateRadioPanel(Widget parent, String name, MMDesc items[],
+			  ArgList _args, Cardinal _arg)
 {
-    Arg args[10];
-    int arg;
+    Arg args[_arg + 10];
+    Cardinal arg = 0;
 
-    arg = 0;
     XtSetArg(args[arg], XmNisHomogeneous, True); arg++;
     XtSetArg(args[arg], XmNentryClass, xmToggleButtonWidgetClass); arg++;
     XtSetArg(args[arg], XmNradioBehavior, True); arg++;
+
+    for (Cardinal i = 0; i < _arg; i++)
+	args[arg++] = _args[i];
+
     Widget panel = verify(XmCreateRowColumn(parent, name, args, arg));
     MMaddItems(panel, items);
     XtManageChild(panel);
@@ -744,12 +757,9 @@ Widget MMcreateRadioPanel(Widget parent, String name, MMDesc items[])
 }
 
 // Create button panel from items
-Widget MMcreateButtonPanel(Widget parent, String name, MMDesc items[])
+Widget MMcreateButtonPanel(Widget parent, String name, MMDesc items[],
+			   ArgList args, Cardinal arg)
 {
-    Arg args[10];
-    int arg;
-
-    arg = 0;
     Widget panel = verify(XmCreateRowColumn(parent, name, args, arg));
     MMaddItems(panel, items);
     XtManageChild(panel);
@@ -780,15 +790,9 @@ void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure)
 // Add callbacks to items
 static void addCallback(MMDesc *item, XtPointer default_closure)
 {
-    Arg args[10];
-    int arg;
-
     MMType type             = item->type;
     Widget widget           = item->widget;
     XtCallbackRec callback  = item->callback;
-    Widget subMenu          = 0;
-    void *userData          = 0;
-    PushMenuInfo *info      = 0;
     
     if (callback.closure == 0)
 	callback.closure = default_closure;
@@ -798,17 +802,19 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
     switch(type & MMTypeMask) 
     {
     case MMFlatPush:
+    {
 	flat = true;
 	// FALL THROUGH
+    }
 
     case MMPush:
-	arg = 0;
-	XtSetArg(args[arg], XmNuserData, &userData); arg++;
-	XtGetValues(widget, args, arg);
+    {
+	void *userData = 0;
+	XtVaGetValues(widget, XmNuserData, &userData, XtPointer(0));
 
 	if (userData != 0)
 	{
-	    info = (PushMenuInfo *)userData;
+	    PushMenuInfo *info = (PushMenuInfo *)userData;
 
 	    // A 'push menu' is a menu associated with a push button.
 	    // It pops up after pressing the button a certain time.
@@ -836,8 +842,10 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 	}
 
 	// FALL THROUGH
+    }
 
     case MMArrow:
+    {
 	if (callback.callback != 0)
 	    XtAddCallback(widget, 
 			  XmNactivateCallback,
@@ -846,9 +854,11 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 	else
 	    XtSetSensitive(widget, False);
 	break;
+    }
 
     case MMToggle:
     case MMScale:
+    {
 	if (callback.callback != 0)
 	    XtAddCallback(widget,
 			  XmNvalueChangedCallback,
@@ -857,9 +867,11 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 	else
 	    XtSetSensitive(widget, False);
 	break;
+    }
 
     case MMTextField:
     case MMSpinField:
+    {
 	if (callback.callback != 0)
 	    XtAddCallback(widget,
 			  XmNvalueChangedCallback,
@@ -868,23 +880,27 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 
 	if ((type & MMTypeMask) == MMTextField)
 	    break;
+	// FALL THROUGH
+    }
 
     case MMEnterField:
+    {
 	if (callback.callback != 0)
 	    XtAddCallback(widget,
 			  XmNactivateCallback,
 			  callback.callback, 
 			  callback.closure);
 	break;
+    }
 
     case MMMenu:
     case MMRadioMenu:
     case MMOptionMenu:
-	arg = 0;
-	XtSetArg(args[arg], XmNsubMenuId, &subMenu); arg++;
-	XtGetValues(widget, args, arg);
+    {
+	Widget subMenu = 0;
+	XtVaGetValues(widget, XmNsubMenuId, &subMenu, NULL);
 
-	if (callback.callback != 0)
+	if (subMenu != 0 && callback.callback != 0)
 	{
 	    XtAddCallback(subMenu, 
 			  XmNmapCallback,
@@ -892,6 +908,7 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 			  callback.closure);
 	}
 	break;
+    }
 
     case MMLabel:
     case MMSeparator:
@@ -935,14 +952,13 @@ void MMaddHelpCallback(MMDesc items[], XtCallbackProc proc)
 //-----------------------------------------------------------------------
 
 // Create pushmenu from items
-static Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[])
+Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[],
+			ArgList _args, Cardinal _arg)
 {
-    Arg args[10];
-    int arg;
+    Arg args[_arg + 10];
+    Cardinal arg = 0;
 
     // By default, PushButton menus are activated using Button 1.
-    arg = 0;
-
     if (XmVersion < 1002 || lesstif_version < 1000)
     {
 	// Setting the menuPost resource is required by Motif 1.1 and
@@ -958,6 +974,9 @@ static Widget MMcreatePushMenu(Widget parent, String name, MMDesc items[])
     // once torn off.  So, we explicitly disable them.
     XtSetArg(args[arg], XmNtearOffModel, XmTEAR_OFF_DISABLED); arg++;
 #endif
+
+    for (Cardinal i = 0; i < _arg; i++)
+	args[arg++] = _args[i];
     
     Widget menu = verify(XmCreatePopupMenu(parent, name, args, arg));
     MMaddItems(menu, items);
