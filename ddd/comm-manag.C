@@ -1102,7 +1102,7 @@ void plusOQAC (string answers[],
 
 	if (file != "" && !plus_cmd_data->refresh_line)
 	{
-	    string current_file = source_view->line_of_cursor().before(':');
+	    string current_file = source_view->file_of_cursor().before(':');
 	    if (current_file != file)
 	    {
 		// File has changed and we already have the current line

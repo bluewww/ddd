@@ -60,11 +60,13 @@ DispValueType determine_type (string value)
     if (value.matches(RXindex))
 	value = value.after(']');
 
+    // References:
     static regex 
 	RXreference("([(][^)]*[)] )? *@ *(0(0|x)[0-9a-f]+|[(]nil[)]) *:.*");
     if (value.matches(RXreference))
 	return Reference;
 
+    // Scalars:
     switch(gdb->type())
     {
     case DBX:
@@ -77,23 +79,31 @@ DispValueType determine_type (string value)
 	break;
     }
 
+    // Structs:
     // XDB issues the struct address before each struct.
     static regex 
 	RXstr_or_cl_begin("(0(0|x)[0-9a-f]+|[(]nil[)])? *"
 			  "([(]|{|record\n|RECORD\n|RECORD |OBJECT "
 			  "|struct|class|union).*");
+
     if (value.matches(RXstr_or_cl_begin))
     {
-	static regex 
-	    RXstr_or_cl_begin_s("([(]|{|record\n|RECORD\n|RECORD |OBJECT )");
-	static regex 
-	    RXstr_or_cl_end_s("([)]|}|end\n|END\n|END;)");
+	// Check for keywords
+	static regex
+	    RXstruct_keyword_begin("(0(0|x)[0-9a-f]+|[(]nil[)])? *"
+				   "(record\n|RECORD\n|RECORD |OBJECT "
+				   "|struct|class|union).*");
+	if (value.matches(RXstruct_keyword_begin))
+	    return StructOrClass;
 
 	// DEC DBX uses `{' for arrays as well as for structs;
 	// likewise, AIX DBX uses `(' for arrays and structs.  To
 	// disambiguate between arrays and structs, we check for some
 	// struct member -- that is, a ` = ' before any other
 	// sub-struct or struct end.
+	static regex RXstr_or_cl_begin_s("([(]|{)");
+	static regex RXstr_or_cl_end_s("([)]|})");
+
 	string v = value.after(RXstr_or_cl_begin_s);
 	int end_pos = v.index(RXstr_or_cl_end_s);
 	int eq_pos  = v.index(" = ");
@@ -105,6 +115,7 @@ DispValueType determine_type (string value)
 	    return StructOrClass;
     }
 
+    // Pointers:
     // XDB uses the pattern `00000000' for nil pointers.
     // GDB prepends the exact pointer type in parentheses.
     static regex 
@@ -113,25 +124,19 @@ DispValueType determine_type (string value)
     if (value.matches(RXpointer_value))
 	return Pointer;
 
-    switch(gdb->type())
-    {
-    case GDB:
-	// GDB has a special format for pointers to functions:
-	// (e.g. `{int ()} 0x2908 <main>'), so check for closing brace
-	// as well.
-	if (value.contains('{', 0) && value.contains('}', -1))
-	    return Array;
-	if (value.contains('[', 0) && value.contains(']', -1))
-	    return Array;
-	break;
+    // Arrays:
+    // GDB has a special format for pointers to functions:
+    // (e.g. `{int ()} 0x2908 <main>'), so check for closing brace
+    // as well.
+    if (value.contains('{', 0) && value.contains('}', -1))
+	return Array;
+    if (value.contains('[', 0) && value.contains(']', -1))
+	return Array;
+    if (value.contains('(', 0) && value.contains(')', -1))
+	return Array;
 
-    case XDB:
-    case DBX:
-	if (value.contains('{', 0) || value.contains('(', 0))
-	    return Array;
-	break;
-    }
-
+    // Simple values:
+    // Everything else failed - assume simple value.
     return Simple;
 }
 
@@ -374,10 +379,6 @@ bool read_array_next (string& value)
 {
     bool following = false;
 
-    // XDB appends `;' after each struct element
-    if (value.contains(';', 0))
-	value = value.after(0);
-
     if (value.contains('\n', 0))
 	following = true;
     
@@ -387,11 +388,16 @@ bool read_array_next (string& value)
     if (value.matches(RXindex))
 	value = value.after(']');
 
+    // XDB and M3GDB append `;' after each struct element; others use `,'
     if (value.contains(',', 0) || value.contains(';', 0))
     {
 	value = value.after(0);
 	read_leading_junk (value);
-	return value != "" && !value.contains("END", 0); // More stuff follows
+	return value != "" 
+	    && !value.contains("END", 0)
+	    && !value.contains('}', 0)
+	    && !value.contains(')', 0)
+	    && !value.contains(']', 0); // More stuff follows
     }
 
     if (value.contains('{', 0)
@@ -434,10 +440,10 @@ bool read_array_end (string& value)
 	return false;		// Array is done.
     }
 
-    if (value.contains("END;\n", 0))
+    if (value.contains("END;", 0))
     {
 	value = value.after("END;");
-	return false;		// Array is done.
+	return true;		// M3GDB: More stuff may follow.
     }
 
     if (value.contains('}', 0)
@@ -493,7 +499,7 @@ bool read_members_of_xy (string& value)
 // Read member name; return "" upon error
 string read_member_name (string& value)
 {
-    read_leading_blanks (value);
+    read_leading_junk (value);
 
     if (value.length() > 0 && value[0] == '=')
     {

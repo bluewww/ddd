@@ -401,7 +401,7 @@ string get_disp_value_str (/*const*/ string& display, GDBAgent *)
     // For some types, XDB issues `NAME = VALUE', for others, `VALUE'.
     // DDD compensates for this by having XDB prepend `NAME = '.
     // In case we have `NAME = NAME = VALUE', strip first `NAME = '.
-    static regex RXeqeq("[^{};,\n=]+ = [^{}();,\n=]+ = .*");
+    static regex RXeqeq("[^{};,\n= ]+ = [^{}();,\n= ]+ = .*");
     if (d.matches(RXeqeq))
 	d = d.after(" = ");
 
