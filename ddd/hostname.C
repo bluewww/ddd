@@ -45,24 +45,34 @@ extern "C" {
 #include <sys/types.h>
 #endif
 
+// Get hostname
+#if defined(HAVE_GETHOSTNAME)
+#if !defined(HAVE_GETHOSTNAME_DECL)
+    int gethostname(char *name, size_t size);
+#endif
+#elif defined(HAVE_UNAME)
+#ifdef HAVE_SYS_UTSNAME_H
+#include <sys/utsname.h>
+#endif
+#if !defined(HAVE_UNAME_DECL)
+    int uname(struct utsname *name);
+#endif
+#endif // defined(HAVE_UNAME)
+
+// Get host aliases
+#if defined(HAVE_GETHOSTBYNAME) && defined(HAVE_NETDB_H)
+#include <netdb.h>
+
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
 
-#ifdef HAVE_SYS_UTSNAME_H
-#include <sys/utsname.h>
+#ifndef AF_INET
+#define AF_INET 2		// internetwork: UDP, TCP, etc.
 #endif
 
-#ifdef HAVE_NETDB_H
-#include <netdb.h>
-#endif
+#endif // defined(HAVE_GETHOSTBYNAME) && defined(HAVE_NETDB_H)
 
-#if defined(HAVE_GETHOSTNAME) && !defined(HAVE_GETHOSTNAME_DECL)
-    int gethostname(char *name, int namelen);
-#endif
-#if defined(HAVE_UNAME) && !defined(HAVE_UNAME_DECL)
-    int uname(struct utsname *name);
-#endif
 }
 
 // Return the host name
@@ -76,19 +86,20 @@ char *hostname()
 
     bool okay = false;
 
-#ifdef HAVE_UNAME
+#if defined(HAVE_GETHOSTNAME)
+    if (!okay && gethostname(buffer, BUFSIZ) == 0)
+    {
+	okay = true;
+    }
+#elif defined(HAVE_UNAME)
     struct utsname un;
     if (!okay && uname(&un) >= 0)
     {
 	strcpy(buffer, un.nodename);
 	okay = true;
     }
-#elif defined(HAVE_GETHOSTNAME)
-    if (!okay && gethostname(buffer, BUFSIZ) == 0)
-    {
-	okay = true;
-    }
 #endif
+
 #ifndef NO_UNAME_AGENTS
     if (!okay)
     {
