@@ -437,6 +437,40 @@ fi
 dnl
 dnl
 dnl
+dnl ICE_CXX_NAMESPACE
+dnl -----------------
+dnl
+dnl If the C++ compiler supports namespaces, define `HAVE_NAMESPACE'.
+dnl
+AC_DEFUN(ICE_CXX_NAMESPACE,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports namespaces)
+AC_CACHE_VAL(ice_cv_have_namespace,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([
+namespace one { 
+    extern int f(); 
+};
+
+int one::f() {};
+
+using namespace one;
+],[f()],
+ice_cv_have_namespace=yes,
+ice_cv_have_namespace=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_namespace)
+if test "$ice_cv_have_namespace" = yes; then
+AC_DEFINE(HAVE_NAMESPACE)
+fi
+])dnl
+dnl
+dnl
+dnl
 dnl ICE_CXX_NAMED_RETURN_VALUES
 dnl ---------------------------
 dnl
