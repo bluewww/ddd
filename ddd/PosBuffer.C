@@ -1048,7 +1048,7 @@ void PosBuffer::filter_jdb(string& answer)
 		    // Strip method
 		    class_name = class_name.before('.', -1);
 
-		    if (class_name.contains("." + file), -1)
+		    if (class_name.contains("." + file))
 		    {
 			// CLASS_NAME is more qualified - use it
 			file = class_name;
