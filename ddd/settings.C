@@ -527,11 +527,11 @@ static EntryType entry_type(DebuggerType type,
 // The GDB question cache
 static StringStringAssoc gdb_question_cache;
 
-static string cached_gdb_question(const string& question)
+static string cached_gdb_question(const string& question, int timeout = 0)
 {
     string& answer = gdb_question_cache[question];
     if (answer == "")
-	answer = gdb_question(question);
+	answer = gdb_question(question, timeout);
     return answer;
 }
 
@@ -662,11 +662,11 @@ static string _get_dbx_help(string dbxenv, string base)
 {
     string dbx_help;
     if (dbxenv == "dbxenv")
-	dbx_help = cached_gdb_question("help " + dbxenv);
+	dbx_help = cached_gdb_question("help dbxenv", -1);
     if (dbx_help.freq('\n') <= 2)
-	dbx_help = cached_gdb_question("help variable");
+	dbx_help = cached_gdb_question("help variable", -1);
     if (dbx_help.freq('\n') <= 2)
-	dbx_help = cached_gdb_question("help $variables");
+	dbx_help = cached_gdb_question("help $variables", -1);
 
     // Find documentation in DBX_HELP
     int column = 0;
@@ -1382,8 +1382,8 @@ static void add_settings(Widget form, int& row, DebuggerType type,
 
 	// Exception: on Sun DBX, `set' causes a dump of all
 	// environment variables.  Don't use this.
-	string dbxenv = cached_gdb_question("dbxenv");
-	string set    = cached_gdb_question("set");
+	string dbxenv = cached_gdb_question("dbxenv", -1);
+	string set    = cached_gdb_question("set", -1);
 	if (dbxenv.length() > set.length() ||
 	    set.contains(DDD_NAME "=" ddd_NAME))
 	{
