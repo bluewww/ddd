@@ -2513,12 +2513,6 @@ void SourceView::process_info_bp (string& info_output)
     for (i = bp_map.first_key(ref); i != 0; i = bp_map.next_key(ref))
 	bps_not_read += i;
 
-#if 0
-    // Skip header
-    if (gdb->type() == GDB)
-	info_output = info_output.after ('\n');
-#endif
-
     bool changed = false;
     bool added   = false;
 
