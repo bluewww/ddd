@@ -148,9 +148,9 @@ reference_value (ref, value) ->
 collapsed_reference_value () -> 
   reference_color(vcenter(rm("...") & hfill()));
 
-// The offset of merged displays: the height of the title
+// The offset of merged displays: the height of the title, somewhat indented
 merge_offset () ->
-  vspace(shadow(frame(title("X"))));
+  shadow(frame(title(16)));
 
 // The entire box
 display_box (title, value) -> 
