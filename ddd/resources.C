@@ -88,11 +88,11 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNopenClipboard, 
-	XtCOpenClipboard, 
+	XtNopenSelection, 
+	XtCOpenSelection, 
 	XmRBoolean,
 	sizeof(Boolean),
-	XtOffsetOf(AppData, open_clipboard),
+	XtOffsetOf(AppData, open_selection),
 	XmRImmediate,
 	XtPointer(True)
     },

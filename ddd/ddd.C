@@ -244,6 +244,7 @@ char ddd_rcsid[] =
 #include "resources.h"
 #include "sashes.h"
 #include "select.h"
+#include "selection.h"
 #include "session.h"
 #include "settings.h"
 #include "shell.h"
@@ -403,6 +404,9 @@ static void PostHelpOnItem(Widget item);
 
 // Log player stuff
 static void check_log(const string& logname, DebuggerType& type);
+
+// Add current selection as argument
+static void add_arg_from_selection(Widget toplevel, int& argc, char **&argv);
 
 #if XmVersion < 2000
 static void toggleOverstrikeAct (Widget, XEvent*, String*, Cardinal*) {}
@@ -1880,6 +1884,13 @@ int main(int argc, char *argv[])
 	return EXIT_FAILURE;
     }
 
+    // All remaining args are passed to the inferior debugger.
+    if (argc == 1 && app_data.open_selection)
+    {
+	// No args given - try to get one from current selection
+	add_arg_from_selection(toplevel, argc, argv);
+    }
+
     // Check the X configuration
     if (app_data.check_configuration)
     {
@@ -1917,7 +1928,8 @@ int main(int argc, char *argv[])
 	}
 
 	// Invalid debugger type - guess from args
-	debugger_type = guess_debugger_type(argc, argv);
+	bool sure;
+	debugger_type = guess_debugger_type(argc, argv, sure);
     }
     if (app_data.debugger_command[0] == '\0')
 	app_data.debugger_command = default_debugger(debugger_type);
@@ -6616,6 +6628,63 @@ static void setup_version_info()
 	+ tt(ddd_NAME "-users-request@ips.cs.tu-bs.de") + rm(">") + cr()
 	+ rm(DDD_NAME " announcements: <")
 	+ tt(ddd_NAME "-announce-request@ips.cs.tu-bs.de") + rm(">");
+}
+
+
+// Add current selection as argument
+static void add_arg_from_selection(Widget toplevel, int& argc, char **&argv)
+{
+    assert(argc == 1);
+
+    static string selection;
+
+    for (int i = 0; i < 3; i++)
+    {
+	switch (i)
+	{
+	case 0:
+	    selection = current_primary(toplevel);
+	    break;
+
+	case 1:
+	    selection = current_cut_buffer(toplevel);
+	    break;
+
+	case 2:
+	    selection = current_clipboard(toplevel);
+	    break;
+	}
+
+	strip_space(selection);
+
+	// Simple hack to handle URLs
+	if (selection.contains("file://", 0))
+	{
+	    selection = selection.after("//");
+	    selection = selection.from("/");
+	}
+	else if (selection.contains("file:", 0))
+	    selection = selection.after(':');
+
+	if (selection == "")
+	    continue;			// No selection
+
+	const int new_argc = 2;
+	static char *new_argv[new_argc + 1];
+	new_argv[0] = argv[0];
+	new_argv[1] = selection;
+	new_argv[2] = 0;
+
+	bool sure;
+	(void) guess_debugger_type(new_argc, new_argv, sure);
+	if (sure)
+	{
+	    // Selection is valid for some debugger.  Go for it.
+	    argc = new_argc;
+	    argv = new_argv;
+	    return;
+	}
+    }
 }
 
 static void setup_environment()

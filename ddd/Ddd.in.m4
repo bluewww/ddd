@@ -153,6 +153,11 @@ Ddd*lineBufferedConsole: on
 Ddd*saveOptionsOnExit: off
 
 
+! On if DDD should attempt to open the current selection 
+! when invoked without args.
+Ddd*openSelection: on
+
+
 ! The command to invoke the execution window for showing I/O of the debugged
 ! program.  To this string, DDD appends bourne shell commands which must be
 ! run in the execution window.
