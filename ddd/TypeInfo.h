@@ -45,18 +45,14 @@
 // Programming Language, 2nd Ed., Section 13.5
 
 // Use ISO C++ run-time type information
-#define static_type_info(T) typeid(T)
-#define ptr_type_info(p)    typeid(p)
-#define ref_type_info(r)    typeid(&(r))
-#define ptr_cast(T, p)      dynamic_cast<T *>(p)
+#define static_type_info(T)  typeid(T)
+#define ptr_type_info(p)     typeid(p)
+#define ref_type_info(r)     typeid(&(r))
+#define ptr_cast(T, p)       dynamic_cast<T *>(p)
+#define ref_cast(T, r)       dynamic_cast<T &>(r)
+#define const_ptr_cast(T, p) dynamic_cast<const T *>(p)
+#define const_ref_cast(T, r) dynamic_cast<const T &>(r)
 
-#if 0
-// This doesn't work in GCC 2.8.1.
-#define ref_cast(T, r)      dynamic_cast<T &>(r)
-#else
-// Use this kludge instead.
-#define ref_cast(T, r)      *(ptr_cast(T, &(r)))
-#endif
 
 // Old-style definition macros are no more required
 #define DECLARE_TYPE_INFO
@@ -157,9 +153,13 @@
 #define ptr_type_info(p)    ((p)->get_type_info())
 #define ref_type_info(r)    ((r).get_type_info())
 #define ptr_cast(T, p) \
-((p) == 0 ? 0 : (ptr_type_info(p).can_cast(static_type_info(T)) ? (T*)(p) : 0))
+((p) == 0 ? 0 : (ptr_type_info(p).can_cast(static_type_info(T)) ? \
+ (T *)(p) : 0))
 #define ref_cast(T, r) \
-(ref_type_info(r).can_cast(static_type_info(T)) ? 0 : ::abort(), (T&)(r))
+(ref_type_info(r).can_cast(static_type_info(T)) ? \
+ (T &)(r) : (::abort(), (T &)(r)))
+#define const_ptr_cast(T, p) (const T *)ptr_cast(T, p)
+#define const_ref_cast(T, r) (const T &)ref_cast(T, r)
 
 
 // Now for the innards.
