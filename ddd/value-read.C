@@ -726,6 +726,8 @@ string read_member_name (string& value)
     if (v.contains('\n'))
 	v = v.before('\n');
 
+    bool strip_qualifiers = true;
+
     // GDB, DBX, and XDB separate member names and values by ` = '; 
     // GDB using the Java language uses `: ' instead.
     // JDB printing classes uses `:\n' for the interface list.
@@ -751,9 +753,17 @@ string read_member_name (string& value)
 	member_name = v.before("=> ");
 	value = value.after("=> ");
     }
+    else if (v.contains(" at "))
+    {
+	// `Virtual table at 0x1234' or likewise.  WDB gives us such things.
+	member_name = v.before(" at ");
+	value = value.after(" at ");
+	strip_qualifiers = false;
+    }
     else
     {
-	// No value
+	// Member value in unknown format
+	// Should we treat this as anonymous union?  (FIXME)
 	return "";
     }
 
@@ -775,12 +785,15 @@ string read_member_name (string& value)
 	return " ";
     }
 
-    // Strip leading qualifiers.  <Gyula.Kun-Szabo@eth.ericsson.se>
-    // reports that his GDB reports static members as `static j = 45'.
-    // JDB also qualifies member names (`private String name = Ada`)
-    strip_trailing_space(member_name);
-    while (member_name.contains(' '))
-	member_name = member_name.after(' ');
+    if (strip_qualifiers)
+    {
+	// Strip leading qualifiers.  <Gyula.Kun-Szabo@eth.ericsson.se>
+	// reports that his GDB reports static members as `static j = 45'.
+	// JDB also qualifies member names (`private String name = Ada`)
+	strip_trailing_space(member_name);
+	while (member_name.contains(' '))
+	    member_name = member_name.after(' ');
+    }
 
     return member_name;
 }
