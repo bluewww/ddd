@@ -1519,6 +1519,7 @@ static Widget create_panel(DebuggerType type, bool create_settings)
     int arg;
 
     arg = 0;
+    XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     Widget panel = verify(XmCreatePromptDialog(find_shell(), 
 					       create_settings ? 
 					       "settings" : "infos", 

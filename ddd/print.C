@@ -639,6 +639,7 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 
     Arg args[10];
     Cardinal arg = 0;
+    XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     print_dialog = 
 	verify(XmCreatePromptDialog(find_shell(w), "print", args, arg));
     Delay::register_shell(print_dialog);
@@ -653,7 +654,7 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 		  graphQuickPrintCB, XtPointer(0));
     XtAddCallback(print_dialog, XmNcancelCallback, 
 		  UnmanageThisCB, XtPointer(print_dialog));
-    XtAddCallback(print_dialog, XmNhelpCallback,   
+    XtAddCallback(print_dialog, XmNhelpCallback,
 		  ImmediateHelpCB, XtPointer(0));
 
     // Remove old prompt
@@ -760,9 +761,11 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 
 
     // Create size dialog
+    arg = 0;
+    XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     paper_size_dialog = 
 	verify(XmCreatePromptDialog(find_shell(w), "paper_size_dialog", 
-				    ArgList(0), 0));
+				    args, arg));
     Delay::register_shell(paper_size_dialog);
 
     if (lesstif_version <= 79)

@@ -1172,11 +1172,14 @@ static void create_buttons_dialog(Widget parent)
     Arg args[10];
     Cardinal arg = 0;
     XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
+    XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     buttons_dialog = 
 	verify(XmCreatePromptDialog(find_shell(parent), 
 				    "edit_buttons", args, arg));
 
     XtAddCallback(buttons_dialog, XmNokCallback,     SetTextCB, 0);
+    XtAddCallback(buttons_dialog, XmNokCallback,     
+		  UnmanageThisCB, buttons_dialog);
     XtAddCallback(buttons_dialog, XmNapplyCallback,  SetTextCB, 0);
     XtAddCallback(buttons_dialog, XmNcancelCallback, ResetTextCB, 0);
 

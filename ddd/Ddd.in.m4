@@ -1482,10 +1482,10 @@ Ddd*helpLabelString: \ \ \ Help\ \ \
 Ddd*helpShowTitle: off
 
 ! Help is never acknowledged, always closed.
-Ddd*help_popup*okLabelString: 		Close
-Ddd*license_popup*okLabelString: 	Close
-Ddd*news_popup*okLabelString: 		Close
-Ddd*manual_help_popup*okLabelString: 	Close
+Ddd*help.okLabelString: 		Close
+Ddd*license.okLabelString: 	Close
+Ddd*news.okLabelString: 		Close
+Ddd*manual_help.okLabelString: 	Close
 Ddd*tip_dialog.okLabelString: 		Close
 
 ! Titles
@@ -2902,8 +2902,8 @@ Ddd*command_toolbar*shadowThickness:		1
 ! Preferences
 !-----------------------------------------------------------------------------
 
-! Ddd*preferences_popup*okLabelString: 		Close
-Ddd*preferences_popup*cancelLabelString:	Reset
+! Ddd*preferences.okLabelString: 		Close
+Ddd*preferences.cancelLabelString:		Reset
 Ddd*preferences_popup.title:			DDD Preferences
 
 Ddd*preferences*buttons.orientation: 		XmHORIZONTAL
@@ -3250,10 +3250,9 @@ Ddd*preferences*text.columns:			50
 ! Settings
 !-----------------------------------------------------------------------------
 
-! Ddd*settings_popup*okLabelString: Close
-Ddd*settings_popup*cancelLabelString: Reset
 Ddd*settings_popup.title: DDD: Debugger Settings
-Ddd*settings_popup.autoUnmanage: off
+! Ddd*settings.okLabelString: Close
+Ddd*settings.cancelLabelString: Reset
 
 Ddd*settings*scroll.scrollingPolicy:		XmAUTOMATIC
 Ddd*settings*help.labelString:			?
@@ -3302,7 +3301,8 @@ Click on LBL(OK) to close this window.
 !-----------------------------------------------------------------------------
 
 Ddd*edit_buttons_popup.title: DDD: Button Editor
-! Ddd*edit_buttons_popup.okLabelString: Close
+! Ddd*edit_buttons.okLabelString: Close
+Ddd*edit_buttons.cancelLabelString: Reset
 
 Ddd*edit_buttons*buttons.entryAlignment:	XmALIGNMENT_CENTER
 Ddd*edit_buttons*buttons*indicatorOn:		off
@@ -3374,10 +3374,9 @@ Use LBL(Edit, Save Options) to save all shortcuts.
 ! Status displays
 !-----------------------------------------------------------------------------
 
-! Ddd*infos_popup*okLabelString: Close
-Ddd*infos_popup*cancelLabelString: Reset
+! Ddd*infos.okLabelString: Close
+Ddd*infos.cancelLabelString: Reset
 Ddd*infos_popup.title: DDD: Status Displays
-Ddd*infos_popup.autoUnmanage: off
 
 Ddd*infos*scroll.scrollingPolicy:		XmAUTOMATIC
 Ddd*infos*help.labelString:			?
@@ -4571,7 +4570,7 @@ Ddd*?*Reload.documentationString: \
 !-----------------------------------------------------------------------------
 
 Ddd*print_popup.title: DDD: Print Graph
-Ddd*print_popup*okLabelString: Print
+Ddd*print.okLabelString: Print
 
 Ddd*print*to.labelString:		      Print To
 Ddd*print*toMenu.printer.labelString: 	      \
@@ -4611,8 +4610,6 @@ Ddd*print*legal.labelString:		      Legal (8ONE_HALF" TIMES 14")
 Ddd*print*executive.labelString:	      Executive (7ONE_HALF" TIMES 10")
 Ddd*print*custom.labelString:		      Other...
 
-Ddd*print.autoUnmanage:	 off
-
 Ddd*print*helpString: \
 @rm You can print the graph on a POSTSCRIPT printer \
 or print the graph in a file.\n\
@@ -4631,7 +4628,6 @@ orientation and paper size.\n\
 To print, click on LBL(Print).
 
 Ddd*paper_size_dialog_popup.title:  		DDD: Paper Size
-Ddd*paper_size_dialog.autoUnmanage:  		off
 Ddd*paper_size_dialog.selectionLabelString: 	Paper size
 Ddd*paper_size_dialog*helpString: \
 @rm Please enter the paper size in the format \
@@ -4652,9 +4648,9 @@ KBD(mm) (millimeters), KBD(cm) (centimeters).
 !-----------------------------------------------------------------------------
 
 Ddd*exec_files_popup.title:		   DDD: Open Program
-Ddd*exec_files_popup*okLabelString:	   Open
-Ddd*exec_files_popup*selectionLabelString: Program
-Ddd*exec_files_popup*helpString:	   \
+Ddd*exec_files.okLabelString:	   Open
+Ddd*exec_files.selectionLabelString: Program
+Ddd*exec_files*helpString:	   \
 @rm Enter the name of the program to be debugged in the argument field.\n\
 \n\
 The program is read for its symbols, for getting the contents\
@@ -4669,9 +4665,9 @@ Click on LBL(Open) to open the selected file.\n\
 Click on LBL(Filter) to apply the given filter.
 
 Ddd*core_files_popup.title:		   DDD: Open Core Dump
-Ddd*core_files_popup*okLabelString:	   Open
-Ddd*core_files_popup*selectionLabelString: Core Dump
-Ddd*core_files_popup*helpString:	   \
+Ddd*core_files.okLabelString:	   Open
+Ddd*core_files.selectionLabelString: Core Dump
+Ddd*core_files*helpString:	   \
 @rm Enter the name of a core dump in the argument field.\n\
 \n\
 The core dump is used for examining memory and registers.\n\
@@ -4684,9 +4680,9 @@ Click on LBL(Open) to open the selected core dump.\n\
 Click on LBL(Filter) to apply the given filter.
 
 Ddd*source_files_popup.title:		   DDD: Open Source
-Ddd*source_files_popup*okLabelString:	   Open
-Ddd*source_files_popup*selectionLabelString: Source File
-Ddd*source_files_popup*helpString:    \
+Ddd*source_files.okLabelString:	   Open
+Ddd*source_files.selectionLabelString: Source File
+Ddd*source_files*helpString:    \
 @rm Enter the name of a source file in the argument field.\n\
 \n\
 The source file is shown in the source window and may be used\n\
@@ -4700,10 +4696,10 @@ Click on LBL(Filter) to apply the given filter.
 
 Ddd*processes_popup.title: DDD: Attach to Process
 Ddd*processes.listLabelString:	Processes
-Ddd*processes*selectionPolicy:	XmSINGLE_SELECT
+Ddd*processes.selectionPolicy:	XmSINGLE_SELECT
 
-Ddd*processes*okLabelString:	Attach
-Ddd*processes*applyLabelString:	Update
+Ddd*processes.okLabelString:	Attach
+Ddd*processes.applyLabelString:	Update
 
 Ddd*processes*helpString:	\
 @rm Select a running process of the program to be debugged.\n\
