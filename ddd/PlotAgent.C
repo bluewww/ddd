@@ -359,6 +359,16 @@ void PlotAgent::dispatch(int type, char *data, int length)
     }
 }
 
+// Show whether plot is active
+void PlotAgent::set_state(const string& state)
+{
+    string title;
+    if (state != "")
+	title = " " + quote('(' + state + ')');
+
+    string c = "set title" + title + "\nreplot\n";
+    write(c.chars(), c.length());
+}
 
 // Print plot to FILENAME
 void PlotAgent::print(const string& filename, const PrintGC& gc)

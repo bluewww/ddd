@@ -209,6 +209,7 @@ void DispNode::refresh()
     disp_box->set_value(disp_value);
     setBox(disp_box->box());
     select(selected_value());
+    refresh_plot_state();
 
     mylast_refresh = ++tics;
 }
@@ -268,6 +269,20 @@ void DispNode::copy_selection_state(const DispNode& src)
     select(0);
 }
 
+// Set up plot state
+void DispNode::refresh_plot_state() const
+{
+    if (value() == 0)
+	return;
+
+    if (disabled())
+	value()->set_plot_state("Disabled");
+    else if (!active())
+	value()->set_plot_state("Not active");
+    else
+	value()->set_plot_state();
+}
+
 // Disable display
 void DispNode::disable()
 {
@@ -303,6 +318,8 @@ void DispNode::make_inactive()
 	myactive = false;
 
 	mylast_refresh = ++tics;
+
+	refresh_plot_state();
     }
 
     // Unselect it
@@ -319,6 +336,8 @@ void DispNode::make_active()
 	    hidden() = saved_node_hidden;
 
 	mylast_refresh = ++tics;
+
+	refresh_plot_state();
     }
 }
 

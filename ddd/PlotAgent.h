@@ -137,6 +137,9 @@ public:
     // Print plot to FILENAME
     void print(const string& filename, 
 	       const PrintGC& gc = PostScriptPrintGC());
+
+    // Show plot state
+    void set_state(const string& state);
 };
 
 #endif // _DDD_PlotAgent_h

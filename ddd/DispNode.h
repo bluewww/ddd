@@ -105,6 +105,8 @@ protected:
 
     DispNode(const DispNode& node);
 
+    virtual void refresh_plot_state() const;
+
 private:
     // Prohibit assignment
     DispNode& operator = (const DispNode&) { assert(0); return *this; }

@@ -1488,13 +1488,26 @@ void DispValue::PlotterDiedHP(Agent *, void *client_data, void *)
 void DispValue::print_plots(const string& filename, 
 			    const PrintGC& gc) const
 {
-    // Print yourself
+    // Print self
     if (plotter() != 0)
 	plotter()->print(filename, gc);
 
     // Print children
     for (int i = 0; i < nchildren(); i++)
 	child(i)->print_plots(filename, gc);
+}
+
+
+// Show whether plot is active
+void DispValue::set_plot_state(const string& state) const
+{
+    // Handle self
+    if (plotter() != 0)
+	plotter()->set_state(state);
+
+    // Handle children
+    for (int i = 0; i < nchildren(); i++)
+	child(i)->set_plot_state(state);
 }
 
 

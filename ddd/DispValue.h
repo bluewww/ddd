@@ -349,6 +349,9 @@ public:
     // Current plot agent
     PlotAgent *plotter() const { return _plotter; }
 
+    // Show plot state
+    void set_plot_state(const string& state = "") const;
+
     // Background processing.  PROCESSED is the number of characters
     // processed so far.  If this returns true, abort operation.
     static bool (*background)(int processed);
