@@ -105,7 +105,7 @@ static XtResource resources[] = {
     { XtNhintSize, XtCHintSize, XtRDimension, sizeof(Dimension),
 	offset(hintSize), XtRImmediate, XtPointer(6) },
 
-    { XtNshowAnnnotations, XtCShowAnnotations, XtRBoolean, sizeof(Boolean),
+    { XtNshowAnnotations, XtCShowAnnotations, XtRBoolean, sizeof(Boolean),
 	offset(showAnnotations), XtRImmediate, XtPointer(True) },
 
     { XtNgridWidth, XtCGridSize, XtRDimension, sizeof(Dimension),
