@@ -23,6 +23,10 @@ all:	FORCE
 %.o: %.c
 	$(MAKE_IT)
 
+# Sun CC has phony targets like `.INIT' or `.DONE'...
+.%: FORCE
+	@:
+
 # Catch-all rule
 %: FORCE
 	$(MAKE_IT)
