@@ -154,28 +154,38 @@ EXPIRES='$expires'
 mv ddd/configure.in~ ddd/configure.in
 fi
 
-# Configure the package.
+# Add ChangeLog files.
 ln -s $CVSROOT/CVSROOT/ddd-log ChangeLog
 ln -s $CVSROOT/CVSROOT/ddd-log-99 ChangeLog-1999
 ln -s $CVSROOT/CVSROOT/ddd-log-98 ChangeLog-1998
 ln -s $CVSROOT/CVSROOT/ddd-log-97 ChangeLog-1997
 ln -s $CVSROOT/CVSROOT/ddd-log-96 ChangeLog-1996
 ln -s $CVSROOT/CVSROOT/ddd-log-95 ChangeLog-1995
+
+# Set up configure scripts.
 (cd ddd && aclocal)
 autoconf -l ddd
-automake --gnu --add-missing
-(cd ddd && autoconf && automake --foreign)
+automake --gnu --include-deps --add-missing --verbose
+(cd ddd && autoconf && automake --foreign --verbose)
 (cd readline && autoconf)
 (cd termcap && autoconf)
+
+# Configure the package.
 sh ./configure -v
 
-# Create distribution stuff.
+# Build libraries.
 (cd libiberty && test -f Makefile && make)
 (cd termcap   && test -f Makefile && make)
 (cd readline  && test -f Makefile && make)
-(cd ddd; make Makefile)
-(cd ddd; make Makefile)
-(cd ddd; make diststuff)
+
+# Build DDD.  (We have to build all in order to get correct dependencies.)
+(cd ddd; 
+ make Makefile
+ make Makefile
+ make diststuff
+ make all
+ automake --foreign --include-deps --srcdir-name=`pwd` --build-dir=. --verbose
+)
 
 # Add a RELEASE tag
 if $final; then
@@ -184,7 +194,7 @@ if $final; then
 fi
 
 # Create distribution.
-make ddddist
+make cvsdist
 
 if [ -f ddd-$date.tar.gz ]; then
   if $final; then

@@ -35,9 +35,9 @@ SUBDIRS = @subdirs@
 
 # Distribution stuff
 
-# Build a DDD distribution.
-.PHONY: ddddist
-ddddist: diststuff disttouch distclean snapshot htmldist picsdist
+# Build a DDD distribution from CVS archive.
+.PHONY: cvsdist
+cvsdist: diststuff disttouch distclean snapshot htmldist picsdist
 
 # Create architecture-independent files in DDD subdirectory.
 .PHONY: diststuff
