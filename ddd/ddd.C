@@ -785,7 +785,7 @@ struct EditItems {
     MMSep, \
     { "saveOptions", MMPush,  { DDDSaveOptionsCB, XtPointer(SAVE_DEFAULT) }}, \
     MMEnd \
-};
+}
 
 static MMDesc command_edit_menu[] = EDIT_MENU(GDBWindow);
 static MMDesc source_edit_menu[]  = EDIT_MENU(SourceWindow);
@@ -1494,7 +1494,7 @@ int main(int argc, char *argv[])
     register_environ();
 
     // This one is required for error messages
-    char *program_name = argc > 0 ? argv[0] : ddd_NAME;
+    const char *program_name = argc > 0 ? argv[0] : ddd_NAME;
 
     // Install signal handlers
 
@@ -4527,7 +4527,7 @@ static void BlinkCB(XtPointer client_data, XtIntervalId *id)
 	have_led_colors = true;
     }
 
-    bool set = int(client_data);
+    bool set = bool(long(client_data));
     if (set)
 	XtVaSetValues(led_w, XmNselectColor, led_select_color, NULL);
     else
@@ -4770,7 +4770,7 @@ void update_user_buttons()
 
 static void gdb_readyHP(Agent *, void *, void *call_data)
 {
-    bool gdb_ready = bool(call_data);
+    bool gdb_ready = bool(long(call_data));
     if (gdb_ready)
     {
 	if (!gdb_initialized)
@@ -4944,7 +4944,7 @@ static void gdb_echo_detectedHP(Agent *, void *, void *)
 static void gdb_recordingHP(Agent *, void *, void *call_data)
 {
     static StatusMsg *recording_msg = 0;
-    bool recording = bool(call_data);
+    bool recording = bool(long(call_data));
 
     delete recording_msg;
     recording_msg = 0;

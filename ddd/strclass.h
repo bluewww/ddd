@@ -1944,7 +1944,7 @@ inline ostream& operator<<(ostream& s, const subString& x)
 inline int operator op(t1 x, t2 y) \
 { \
     return compare(x, y) op 0; \
-};
+}
 
 #define string_COMPARE_ALL(t1, t2) \
 string_COMPARE(==, t1, t2) \
@@ -1981,16 +1981,16 @@ string_COMPARE_ALL(char, const subString&)
 // A helper needed by at, before, etc.
 inline subString string::_substr(int first, int l)
 {
-    if (first < 0 || (unsigned)(first + l) > length() )
-	return subString(_nilstring, 0, 0) ;
+    if (first < 0 || (unsigned)(first + l) > length())
+	return subString(_nilstring, 0, 0);
     else 
 	return subString(*this, first, l);
 }
 
 inline const subString string::_substr(int first, int l) const
 {
-    if (first < 0 || (unsigned)(first + l) > length() )
-	return subString(_nilstring, 0, 0) ;
+    if (first < 0 || (unsigned)(first + l) > length())
+	return subString(_nilstring, 0, 0);
     else 
 	return subString(*this, first, l);
 }
