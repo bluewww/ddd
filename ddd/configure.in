@@ -113,7 +113,6 @@ AC_MSG_CHECKING(for ${YACC} flags)
 YFLAGS=""
 AC_MSG_RESULT(${YFLAGS})
 AC_SUBST(YFLAGS)dnl
-AC_CHECK_LIB(y, yyerror, LIBS="$LIBS -ly")
 AC_PROG_LEX
 AC_MSG_CHECKING(for ${LEX} flags)
 LFLAGS=""
@@ -170,6 +169,10 @@ if test "$ddd_check_both" = 1; then
 fi
 AC_CHECK_LIB(nsl, gethostbyname, LIBS="$LIBS -lnsl")
 AC_CHECK_FUNC(gethostbyname)
+dnl
+AC_CHECK_LIB(y, yyerror, LIBY="-ly")
+AC_SUBST(LIBY)
+dnl
 AC_CHECK_LIB(m, sin, LIBM="-lm")
 AC_SUBST(LIBM)
 dnl

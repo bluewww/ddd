@@ -177,21 +177,23 @@ LDFLAGS = @LDFLAGS@
 
 ## Local libraries
 
-# POSIX regex routines (from system or ../rx/librx.a)
+# POSIX regex routines (from system or ../librx/librx.a)
 LIBRX      = @LIBRX@
 # termcap routines (from system or ../termcap/libtermcap.a)
 LIBTERMCAP = @LIBTERMCAP@
 # -liberty library (../libiberty/libiberty.a)
 LIBIBERTY  = @LIBIBERTY@
+# Yacc library (-ly)
+LIBY       = @LIBY@
 # Math library (-lm)
 LIBM       = @LIBM@
 # C library (-lc)
 LIBC       = @LIBC@
-# Libraries required for non-X programs (-ly -lnsl -lstdc++)
+# Additional libraries required for non-X programs (-lsocket -lnsl)
 NON_X_LIBS = @LIBS@
 
 # All libraries shown above
-LIBS = $(CXXLIBS) $(LIBRX) $(LIBTERMCAP) $(LIBIBERTY) $(LIBM)
+LIBS = $(CXXLIBS) $(LIBRX) $(LIBTERMCAP) $(LIBY) $(LIBIBERTY) $(LIBM)
 
 
 ## X Libraries
@@ -221,7 +223,7 @@ LIBGEN = @LIBGEN@
 # X toolkit library.  (-lXt)
 LIBXT = @XT_LIBS@
 
-# X library.  (-lX11 -lnsl)
+# X library.  (-lX11 -lnsl -lsocket)
 LIBX11 = @X11_LIBS@ @X_EXTRA_LIBS@
 
 # All libraries shown above
