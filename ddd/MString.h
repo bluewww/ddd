@@ -171,14 +171,12 @@ public:
     {
 	return XmStringHasSubstring(_mstring, m._mstring);
     }
-
-    friend static MString operator + (const MString& m1, const MString& m2);
 };
 
 // Addition
 inline MString operator + (const MString& m1, const MString& m2)
 {
-    return MString(XmStringConcat(m1._mstring, m2._mstring));
+    return MString(XmStringConcat(XmString(m1), XmString(m2)));
 }
 
 inline MString operator + (const MString& m, String s)
