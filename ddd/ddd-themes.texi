@@ -2,7 +2,7 @@
 @c $Id$
 @c Writing DDD Themes
 
-@c Copyright (C) 2000 Universitaet Passau, Germany.
+@c Copyright (C) 2001 Universitaet Passau, Germany.
 @c Written by Andreas Zeller <zeller@gnu.org>.
 @c 
 @c This file is part of DDD.
@@ -53,7 +53,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2000-12-18
+@set DATE 2001-01-09
 
 @c Files
 @defcodeindex fl
@@ -216,6 +216,7 @@ lists all the lower level nodes in the document.
 @end ifinfo
 
 @menu
+* Welcome::                     
 * Creating Displays::           
 * Writing Themes::              
 * DDD VSL Functions::           
@@ -267,18 +268,23 @@ Send bug reports to @email{bug-ddd@@gnu.org}. @*
 
 @c The actual content starts here.
 
+@node Welcome
+@unnumbered Welcome
 
+Welcome to @emph{Writing @DDD{} Themes}!  In this manual, we will sketch
+how data visualization in @DDD{} works.  (@DDD{}, the Data Display
+Debugger, is a debugger front-end with data visualization.  For details,
+@pxref{Summary,, Summary of DDD, ddd, Debugging with DDD}.)
 
 @node Creating Displays
 @chapter Creating Displays
 
-This section discusses how @DDD{} actually creates displays from
-data.
+We begin with a short discussion of how @DDD{} actually creates displays
+from data.
 
 @menu
 * Handling Boxes::              
 * Building Boxes from Data::    
-* Customizing Display Appearance::  
 @end menu
 
 @node Handling Boxes
@@ -430,115 +436,244 @@ that language-specific delimiters are used, that collapsed structs are
 rendered properly, and so on.
 
 
-@node Customizing Display Appearance
-@section Customizing Display Appearance
-
-The general pattern to replace a function definition @var{function}
-with a new definition @var{new_def} is:
-
-@example
-#pragma replace @var{function}
-function(@var{args}@dots{}) = @var{new_def};
-@end example
-
-The following @VSL{} functions are frequently used:
-@table @code
-@item color(@var{box}, @var{foreground} [, @var{background}])
-Set the @var{foreground} and @var{background} colors of @var{box}.
-
-@item display_color(@var{box})
-The color used in data displays.
-Default: @samp{color(@var{box}, "black", "white")}
-
-@item title_color(@var{box})
-The color used in the title bar.
-Default: @samp{color(@var{box}, "black")}
-
-@item disabled_color(@var{box})
-The color used for disabled boxes.
-Default: @samp{color(@var{box}, "white", "grey50")}
-
-@item simple_color(@var{box})
-The color used for simple values.
-Default: @samp{color(@var{box}, "black")}
-
-@item pointer_color(@var{box})
-The color used for pointers.
-Default: @samp{color(@var{box}, "blue4")}
-
-@item struct_color(@var{box})
-The color used for structures.
-Default: @samp{color(@var{box}, "black")}
-
-@item array_color(@var{box})
-The color used for arrays.
-Default: @samp{color(@var{box}, "blue4")}
-
-@item reference_color(@var{box})
-The color used for references.
-Default: @samp{color(@var{box}, "blue4")}
-
-@item changed_color(@var{box})
-The color used for changed values.
-Default: @samp{color(@var{box}, "black", "#ffffcc")}
-
-@item stdfontfamily()
-The font family used.  One of @samp{family_times()}, 
-@samp{family_courier()}, @samp{family_helvetica()}, 
-@samp{family_new_century()}, or @samp{family_typewriter()} (default).
-
-@item stdfontsize()
-The font size used (in pixels).  @code{0} (default) means to use
-@samp{stdfontpoints()} instead.
-
-@item stdfontpoints()
-The font size used (in 1/10 points).  @code{0} means to use
-@samp{stdfontsize()} instead.  Default value: @code{90}.
-
-@item stdfontweight()
-The font weight used.  This is either @samp{weight_medium()} (default) or
-@samp{weight_bold()}.
-@end table
-
-To set the pointer color to "red4", use
-
-@example
-Ddd*vslDefs: \
-#pragma replace pointer_color\n\
-pointer_color(box) = color(box, "red4");\n
-@end example
-
-To set the default font size to resolution-independent 10.0 points, use
-
-@example
-Ddd*vslDefs: \
-#pragma replace stdfontsize\n\
-#pragma replace stdfontpoints\n\
-stdfontsize() = 0;\n
-stdfontpoints() = 100;\n
-@end example
-
-To set the default font to 12-pixel courier, use
-
-@example
-Ddd*vslDefs: \
-#pragma replace stdfontsize\n\
-#pragma replace stdfontfamily\n\
-stdfontsize() = 12;\n\
-stdfontfamily() = family_courier();\n
-@end example
-
-See the file @samp{ddd.vsl} for further definitions to override using
-the @samp{vslDefs} resource.
-
-...
-
 
 
 @node Writing Themes
 @chapter Writing Themes
 
-...
+The basic idea of a @emph{theme} is to customize one or more aspects of
+the visual appearance of data.  This is done by @emph{modifying}
+specific @VSL{} definitions.
+
+
+@menu
+* Display Title Color::         
+* General Scheme::              
+* Overriding vs. Replacing::    
+@end menu
+
+
+@node Display Title Color
+@section Example: Changing the Display Title Color 
+
+As a simple example, consider the following task: You want to display
+display titles in blue instead of black.  The @VSL{} function which
+handles the colors of display titles is called @samp{title_color}
+(@pxref{Displaying Colors}).  It is defined as
+
+@example
+title_color(box) = color(box, "black");
+@end example
+
+All you'd have to do to change the color is to provide a new definition:
+
+@example
+title_color(box) = color(box, "blue");
+@end example
+
+How do you do this?  You create a @emph{data theme} which modifies the
+definition.  
+
+Using your favourite text editor, you create a file named, say,
+@file{blue-title.vsl} in the directory @file{~/.@value{ddd}/themes/}.
+
+The file @file{blue-title.vsl} has the following content:
+
+@example
+#pragma replace title_color
+title_color(box) = color(box, "blue");
+@end example
+
+In @DDD{}, select @samp{Data @result{} Themes}.  You will find
+@samp{blue-title.vsl} in a line on its own.  Set the checkbox next to
+@samp{blue-title.vsl} in order to activate it.  Whoa!  All display
+titles will now appear in blue.
+
+
+@node General Scheme
+@section The General Scheme
+
+The general scheme for writing a theme is:
+
+@itemize @bullet
+@item
+@emph{Find the appropriate VSL function.}  
+
+Find out which @VSL{} function @var{function} is responsible for a
+specific task.  @xref{DDD VSL Functions}, for details on the @VSL{}
+functions used by @DDD{}.
+
+@item
+@emph{Replace it by your own definition.}
+
+Write a theme (a text file) with the following content:
+
+@example
+#pragma replace @var{function}
+@var{function}(@var{args}) = @var{definition};
+@end example
+
+This will replace the existing definition of @var{function} by your new
+definition @var{definition}.  It is composed of two parts:
+
+@itemize @minus
+@item
+The @samp{#pragma replace} declaration removes the original definition
+of @var{function}.   @xref{Redefining Functions}, for details.
+
+@item
+The following line provides a new @var{definition} for @var{function}.
+@end itemize
+
+Please note: If the function @var{function} is marked as @samp{Global
+VSL Function}, it must be (re-)defined using @samp{->} instead of
+@samp{=}; @xref{VSL Function Definitions}, for details.  You may also
+want to consider @samp{#pragma override} instead; @xref{Overriding
+vs. Replacing}, for details.
+
+
+@item
+@emph{Install the theme in a place where @DDD{} can find it.}
+
+For your personal use, this is normally the directory
+@file{~/.@value{ddd}/themes/}.  
+
+Besides your personal directory, @DDD{} also searches for themes in its
+theme directory, typically
+@file{/usr/local/share/@value{ddd}-@value{VERSION}/themes/}.
+
+The @DDD{} @samp{vslPath} resource controls the actual path where @DDD{}
+looks for themes.  @xref{VSL Resources,, VSL Resources, ddd, Debugging
+with DDD}, for details.
+
+@item
+@emph{In @DDD{}, invoke @samp{Data @result{} Themes} to apply the theme.}
+
+You're done!
+@end itemize
+
+
+
+@node Overriding vs. Replacing
+@section Overriding vs. Replacing
+
+In certain cases, you may not want to replace the original definition by
+your own, but rather @emph{extend} the original definition.
+
+As an example, consider the @samp{value_box} function (@xref{Displaying
+Data Displays}).  It is applied to every single value displayed.  By
+default, it does nothing.  So we could write a theme that leaves a
+little white space around values:
+
+@example
+#pragma replace value_box
+value_box(box) -> whiteframe(box);
+@end example
+
+or another theme that changes the color to black on yellow:
+
+@example
+#pragma replace value_box
+value_box(box) -> color(box, "black", "yellow");
+@end example
+
+However, we cannot apply both themes at once (say, to create a
+green-on-yellow scheme).  This is because each of the two themes
+replaces the previous definition---the theme that comes last wins.
+
+The solution to this problem is to set up the theme in such a way that
+it @emph{extends} the original definition rather than to replace it.  To
+do so, @VSL{} provides an alternative to @samp{#pragma replace}, namely
+@samp{#pragma override} (@pxref{VSL Overriding Functions}).
+
+Like @samp{#pragma replace}, the @samp{#pragma override} declaration
+allows for a new definition of a function.  In contrast to @samp{#pragma
+replace}, though, uses of the function prior to @samp{#pragma override}
+are not affected---they still refer to the old definition.
+
+Here's a better theme that changes the color to black on yellow.  First,
+it makes the old definition of @samp{value_box} accessible as
+@samp{old_value_box}.  Then, it provides a new definition for
+@samp{value_box} which refers to the old definition, saved in
+@samp{old_value_box}.
+
+@example
+#pragma override old_value_box
+old_value_box(...) = value_box(...);
+
+#pragma override value_box
+value_box(value) -> color(old_value_box(value), 
+                          "black", "yellow");
+@end example
+
+Why do we need a @samp{#pragma override} for @samp{old_value_box}, too?
+Simple: to avoid name clashes between multiple themes.  @VSL{} has no
+scopes or name spaces for definitions, so we must resort to this crude,
+but effective scheme.
+
+
+@node A Complex Example
+@section A Complex Example
+
+As a more complex example, we define a theme that highlights all null
+pointers.  First, we need a predicate @samp{is_null} that tells us
+whether a pointer value is null:
+
+@example
+// True if S1 ends in S2
+ends_in(s1, s2) = 
+    let s1c = chars(s1), 
+        s2c = chars(s2) in suffix(s2c, s1c);
+
+// True if null value
+is_null(value) = 
+    (ends_in(value, "0x0") or ends_in(value, "nil"));
+@end example
+
+The @samp{null_pointer} function tells us how we actually want to render
+null values:
+
+@example
+// Rendering of null values
+null_pointer(value) -> color(value, "red");
+@end example
+
+Now we go and redefine the @samp{pointer_value} function such that
+@samp{null_pointer} is applied only to null values:
+
+@example
+#pragma override old_pointer_value
+old_pointer_value(...) -> pointer_value(...);
+
+#pragma override pointer_value
+
+// Ordinary pointers
+pointer_value (value) -> 
+    old_pointer_value(v)
+    where v = (if (is_null(value)) then 
+                   null_pointer(value)
+               else 
+                   value
+               fi);
+@end example
+
+All we need now is the same definition for dereferenced pointers (that
+is, overriding the @samp{dereferenced_pointer_value} function), and here
+we go!
+
+
+@node Future Work
+@section Future Work
+
+With the information in this manual, you should be able to set up your
+own themes.  If you miss anything, please let us know: simply write to
+@email{ddd@@gnu.org}.
+
+If there is sufficient interest, @DDD{}'s data themes will be further
+extended.  Among the most wanted features is the ability to access and
+parse debuggee data from within @VSL{} functions; this would allow
+user-defined processing of debuggee data.  Let us know if you're
+interested---and keep in touch!
 
 
 @node DDD VSL Functions
@@ -553,6 +688,10 @@ data displays.
 @flindex ddd.vsl
 The functions in this section are predefined in the library
 @file{ddd.vsl}.  They can be used and replaced by @DDD{} themes.
+
+Please note: Functions marked as @samp{Global VSL Function} must be
+(re-)defined using @samp{->} instead of @samp{=}.  @xref{VSL Function
+Definitions}, for details.
 
 @menu
 * Displaying Fonts::            
@@ -724,31 +863,31 @@ Return @var{box} with a shadow around it.
 
 @DDD{} uses these functions to create data displays.
 
-@deffn {VSL Function} title (display_number, name)
-@deffnx {VSL Function} title (name)
+@deffn {Global VSL Function} title (display_number, name)
+@deffnx {Global VSL Function} title (name)
 Returns a box for the display title.  If @var{display_number} (a string)
 is given, this is prepended to the title.
 @end deffn
 
-@deffn {VSL Function} annotation (name)
+@deffn {Global VSL Function} annotation (name)
 Returns a box for an edge annotation.  This typically uses a tiny font.
 @end deffn
 
-@deffn {VSL Function} disabled ()
+@deffn {Global VSL Function} disabled ()
 Returns a box to be used as value for disabled displays.
 @end deffn
 
-@deffn {VSL Function} none ()
+@deffn {Global VSL Function} none ()
 Returns a box for ``no value'' (i.e. undefined values).  Default: an
 empty string.
 @end deffn
 
-@deffn {VSL Function} value_box (value)
+@deffn {Global VSL Function} value_box (value)
 Returns @var{value} in a display box.  Default: leave unchanged.
 @end deffn
 
-@deffn {VSL Function} display_box (title, value)
-@deffnx {VSL Function} display_box (value)
+@deffn {Global VSL Function} display_box (title, value)
+@deffnx {Global VSL Function} display_box (value)
 Returns the entire display box.  @var{title} comes from @code{title()},
 @var{value} from @code{value_box()}.
 @end deffn
@@ -760,16 +899,17 @@ Returns the entire display box.  @var{title} comes from @code{title()},
 
 @DDD{} uses these functions to display simple values.
 
-@deffn {VSL Function} simple_value (value)
+@deffn {Global VSL Function} simple_value (value)
 Returns a box for a simple non-numeric value (characters, strings, constants,
 @dots{}).  This is typically aligned to the left.
 @end deffn
 
-@deffn {VSL Function} numeric_value (value)
-Returns a box for a simple numeric value.    This is typically aligned to the right.
+@deffn {Global VSL Function} numeric_value (value)
+Returns a box for a simple numeric value.  This is typically aligned to
+the right.
 @end deffn
 
-@deffn {VSL Function} collapsed_simple_value ()
+@deffn {Global VSL Function} collapsed_simple_value ()
 Returns a box for a collapsed simple value.
 @end deffn
 
@@ -779,15 +919,15 @@ Returns a box for a collapsed simple value.
 
 @DDD{} uses these functions to display pointers.
 
-@deffn {VSL Function} pointer_value (value)
+@deffn {Global VSL Function} pointer_value (value)
 Returns a box for a pointer value.
 @end deffn
 
-@deffn {VSL Function} dereferenced_pointer_value (value)
+@deffn {Global VSL Function} dereferenced_pointer_value (value)
 Returns a box for a dereferenced pointer value.
 @end deffn
 
-@deffn {VSL Function} collapsed_pointer_value ()
+@deffn {Global VSL Function} collapsed_pointer_value ()
 Returns a box for a collapsed pointer.
 @end deffn
 
@@ -797,11 +937,11 @@ Returns a box for a collapsed pointer.
 
 @DDD{} uses these functions to display references.
 
-@deffn {VSL Function} reference_value (value)
+@deffn {Global VSL Function} reference_value (value)
 Returns a box for a reference value.
 @end deffn
 
-@deffn {VSL Function} collapsed_reference_value ()
+@deffn {Global VSL Function} collapsed_reference_value ()
 Returns a box for a collapsed reference.
 @end deffn
 
@@ -811,28 +951,28 @@ Returns a box for a collapsed reference.
 
 @DDD{} uses these functions to display arrays.
 
-@deffn {VSL Function} horizontal_array (values@dots{})
+@deffn {Global VSL Function} horizontal_array (values@dots{})
 Returns a box for a horizontal array containing @var{values}.
 @end deffn
 
-@deffn {VSL Function} vertical_array (values@dots{})
+@deffn {Global VSL Function} vertical_array (values@dots{})
 Returns a box for a vertical array containing @var{values}.
 @end deffn
 
-@deffn {VSL Function} empty_array ()
+@deffn {Global VSL Function} empty_array ()
 Returns a box for an empty array.
 @end deffn
 
-@deffn {VSL Function} collapsed_array ()
+@deffn {Global VSL Function} collapsed_array ()
 Returns a box for a collapsed array.
 @end deffn
 
-@deffn {VSL Function} twodim_array (rows@dots{})
+@deffn {Global VSL Function} twodim_array (rows@dots{})
 Returns a box for a two-dimensional array.  Argument is a list of rows,
 suitable for use with @code{tab()} or @code{dtab()}.
 @end deffn
 
-@deffn {VSL Function} twodim_array_elem (value)
+@deffn {Global VSL Function} twodim_array_elem (value)
 Returns a box for an element in a two-dimensional array.
 @end deffn
 
@@ -844,37 +984,38 @@ A struct is a set of (@var{name}, @var{value}) pairs, and is also called
 ``record'' or ``object''.  @DDD{} uses these functions to display
 structs.
 
-@deffn {VSL Function} struct_value (members@dots{})
+@deffn {Global VSL Function} struct_value (members@dots{})
 Returns a box for a struct containing @var{members}.
 @end deffn
 
-@deffn {VSL Function} collapsed_struct_value ()
+@deffn {Global VSL Function} collapsed_struct_value ()
 Returns a box for a collapsed struct.
 @end deffn
 
-@deffn {VSL Function} empty_struct_value ()
+@deffn {Global VSL Function} empty_struct_value ()
 Returns a box for an empty struct.
 @end deffn
 
-@deffn {VSL Function} struct_member_name (name)
+@deffn {Global VSL Function} struct_member_name (name)
 Returns a box for a member name.
 @end deffn
 
-@deffn {VSL Function} struct_member (name, sep, value, name_width)
+@deffn {Global VSL Function} struct_member (name, sep, value, name_width)
 Returns a box for a struct member.  @var{name} is the member name, typeset with
 @code{struct_member_name()}, @var{sep} is the separator (as determined
 by the current programming language), @var{value} is the typeset member
 value, and @var{name_width} is the maximum width of all member names.
 @end deffn
 
-@deffn {VSL Function} horizontal_unnamed_struct ()
-@deffnx {VSL Function} vertical_unnamed_struct ()
-Returns a box for a horizontal / vertical unnamed struct, where member names are
-suppressed.
+@deffn {Global VSL Function} horizontal_unnamed_struct ()
+@deffnx {Global VSL Function} vertical_unnamed_struct ()
+Returns a box for a horizontal / vertical unnamed struct, where member
+names are suppressed.
 @end deffn
 
-@deffn {VSL Function} struct_member (value)
-Returns a box for a struct member in a struct where member names are suppressed.
+@deffn {Global VSL Function} struct_member (value)
+Returns a box for a struct member in a struct where member names are
+suppressed.
 @end deffn
 
 
@@ -885,36 +1026,36 @@ A list is a set of (@var{name}, @var{value}) pairs not defined by the
 specific programming language.  @DDD{} uses this format to display
 variable lists.
 
-@deffn {VSL Function} list_value (members@dots{})
+@deffn {Global VSL Function} list_value (members@dots{})
 Returns a box for a list containing @var{members}.
 @end deffn
 
-@deffn {VSL Function} collapsed_list_value ()
+@deffn {Global VSL Function} collapsed_list_value ()
 Returns a box for a collapsed list.
 @end deffn
 
-@deffn {VSL Function} empty_list_value ()
+@deffn {Global VSL Function} empty_list_value ()
 Returns a box for an empty list.
 @end deffn
 
-@deffn {VSL Function} list_member_name (name)
+@deffn {Global VSL Function} list_member_name (name)
 Returns a box for a member name.
 @end deffn
 
-@deffn {VSL Function} list_member (name, sep, value, name_width)
+@deffn {Global VSL Function} list_member (name, sep, value, name_width)
 Returns a box for a list member.  @var{name} is the member name, typeset with
 @code{list_member_name()}, @var{sep} is the separator (as determined
 by the current programming language), @var{value} is the typeset member
 value, and @var{name_width} is the maximum width of all member names.
 @end deffn
 
-@deffn {VSL Function} horizontal_unnamed_list ()
-@deffnx {VSL Function} vertical_unnamed_list ()
+@deffn {Global VSL Function} horizontal_unnamed_list ()
+@deffnx {Global VSL Function} vertical_unnamed_list ()
 Returns a box for a horizontal / vertical unnamed list, where member names are
 suppressed.
 @end deffn
 
-@deffn {VSL Function} list_member (value)
+@deffn {Global VSL Function} list_member (value)
 Returns a box for a list member in a list where member names are suppressed.
 @end deffn
 
@@ -924,11 +1065,11 @@ Returns a box for a list member in a list where member names are suppressed.
 
 Sequences are lists of arbitrary, unstructured values.
 
-@deffn {VSL Function} sequence_value (values@dots{})
+@deffn {Global VSL Function} sequence_value (values@dots{})
 Returns a box for a list of values.
 @end deffn
 
-@deffn {VSL Function} collapsed_sequence_value ()
+@deffn {Global VSL Function} collapsed_sequence_value ()
 Returns a box for a collapsed sequence.
 @end deffn
 
@@ -939,11 +1080,11 @@ Returns a box for a collapsed sequence.
 @DDD{} uses these functions to display multi-line texts, such as status
 displays.
 
-@deffn {VSL Function} text_value (lines@dots{})
+@deffn {Global VSL Function} text_value (lines@dots{})
 Returns a box for a list of lines (typically in a vertical alignment).
 @end deffn
 
-@deffn {VSL Function} collapsed_text_value ()
+@deffn {Global VSL Function} collapsed_text_value ()
 Returns a box for a collapsed text.
 @end deffn
 
@@ -953,12 +1094,12 @@ Returns a box for a collapsed text.
 
 @DDD{} uses these functions to display additional properties.
 
-@deffn {VSL Function} repeated_value (value, n)
+@deffn {Global VSL Function} repeated_value (value, n)
 Returns a box for a @var{value} that is repeated @var{n} times.  Note:
 @var{n} is a number, not a string.
 @end deffn
 
-@deffn {VSL Function} changed_value (value)
+@deffn {Global VSL Function} changed_value (value)
 Returns a box for a @var{value} that has changed since the last display.
 Typically, this invokes @code{changed_color(@var{value})}.
 @end deffn
@@ -2317,7 +2458,7 @@ In VSL, all functions either map a @emph{list} to a @emph{box} or a
 @var{name} @var{list} = @var{expression};
 @end example
 
-where @var{list} is a list literal (@pxref{VSL List Literals}).  
+where @var{list} is a list literal (@pxref{VSL List Literals}).
 
 The list literal is typically written in round parentheses, making the
 above form look like this:
@@ -2325,6 +2466,14 @@ above form look like this:
 @example
 @var{name}(@var{param1}, @var{param2}, @dots{}) = @var{expression};
 @end example
+
+The @samp{=} is replaced by @samp{->} if @var{name} is a @emph{global}
+definition---that is, @var{name} can be called from a library client
+such as @DDD{}.  A @emph{local} definition (with @samp{=}) can be called
+only from other @VSL{} functions.@footnote{The distinction into global
+and local definitions is useful when optimizing the library: local
+definitions that are unused within the library can be removed, while
+global definitions cannot.}
 
 
 @menu
