@@ -4596,117 +4596,184 @@ Press KEY_HELP on a button to get a short command description.
 ! DDD Plot
 !-----------------------------------------------------------------------------
 
-Ddd*plot*helpString:\
+define(PLOT_WINDOW_HELP, [\
 WIDGET(Plot Window)\n\
 \n\
 Use LBL(File, Close) to close this window.
+])dnl
+
+Ddd*plot.helpString:            PLOT_WINDOW_HELP
+Ddd*plot*swallower.helpString:  PLOT_WINDOW_HELP
+Ddd*plot*area.helpString:       PLOT_WINDOW_HELP
 
 Ddd*plot*print.labelString: Print Plot...
-Ddd*plot*plotFileMenu.print.documentationString:   \
+Ddd*plot*print.documentationString:   \
 @rm Print the current plot
 
 Ddd*plot*area.width:        640
 Ddd*plot*area.height:       450
 Ddd*plot*area.background:   TEXT_BACKGROUND_COLOR
 
+Ddd*plot*menubar.helpString:		\
+WIDGET(Menu Bar)\n\
+\n\
+DESC(File, [print plot and close this window])\n\
+DESC(Edit, [cut, copy, and paste text])\n\
+DESC(View, [set plot options])\n\
+DESC(Plot, [set plot style])\n\
+DESC(Help, [on-line help and version information])
+
 Ddd*menubar.plotView.labelString:  	View
 Ddd*menubar.plotView.mnemonic:     	V
+Ddd*menubar.plotView.documentationString:     	\
+@rm Set plot options
 
-Ddd*plotViewMenu*helpString:  \
+define(PLOT_VIEW_HELP, [\
 WIDGET(View Menu)\n\
 \n\
 DESC(Border, [display border])\n\
 DESC(Grid, [display grid])\n\
 DESC(Time, [display time of plot])\n\
 \n\
-DESC(X Axis, [display x zero axis])\n\
-DESC(Y Axis, [display y zero axis])\n\
+DESC(X Axis, [display X zero axis])\n\
+DESC(Y Axis, [display Y zero axis])\n\
 \n\
-DESC(X Tics, [display x tics])\n\
-DESC(Y Tics, [display y tics])\n\
-DESC(Z Tics, [display z tics])\n\
+DESC(X Tics, [display tics on X axis])\n\
+DESC(Y Tics, [display tics on Y axis])\n\
+DESC(Z Tics, [display tics on Z axis])\n\
 \n\
 DESC(Base Contour, [draw contour on base])\n\
 DESC(Surface Contour, [draw contour on surface])\n\
 \n\
 DESC(Log Scale, [toggle logarithmic scaling])
+])dnl
+
+Ddd*menubar.plotView.helpString: PLOT_VIEW_HELP
+Ddd*plotViewMenu*helpString:     PLOT_VIEW_HELP
+Ddd*plotViewMenu*tearOffTitle:   View
 
 Ddd*plotViewMenu.border.labelString:	Border
 Ddd*plotViewMenu.border.mnemonic:	B
+Ddd*plotViewMenu.border.documentationString:	\
+@rm Toggle border
 
 Ddd*plotViewMenu.grid.labelString:	Grid
 Ddd*plotViewMenu.grid.mnemonic:		G
+Ddd*plotViewMenu.grid.documentationString:	\
+@rm Toggle grid
 
 Ddd*plotViewMenu.time.labelString:	Time
 Ddd*plotViewMenu.time.mnemonic:      	T
+Ddd*plotViewMenu.time.documentationString:	\
+@rm Toggle plot time
 
 Ddd*plotViewMenu.xzeroaxis.labelString:	X Axis
 Ddd*plotViewMenu.xzeroaxis.mnemonic:	A
+Ddd*plotViewMenu.xzeroaxis.documentationString:	\
+@rm Toggle X zero axis
 
 Ddd*plotViewMenu.yzeroaxis.labelString:	Y Axis
 Ddd*plotViewMenu.yzeroaxis.mnemonic:	i
+Ddd*plotViewMenu.yzeroaxis.documentationString:	\
+@rm Toggle Y zero axis
 
 Ddd*plotViewMenu.xtics.labelString:	X Tics
 Ddd*plotViewMenu.xtics.mnemonic:	X
+Ddd*plotViewMenu.xtics.documentationString:	\
+@rm Toggle tics on X axis
 
 Ddd*plotViewMenu.ytics.labelString:	Y Tics
 Ddd*plotViewMenu.ytics.mnemonic:	Y
+Ddd*plotViewMenu.ytics.documentationString:	\
+@rm Toggle tics on Y axis
 
 Ddd*plotViewMenu.ztics.labelString:	Z Tics
 Ddd*plotViewMenu.ztics.mnemonic:	Z
+Ddd*plotViewMenu.ztics.documentationString:	\
+@rm Toggle tics on Z axis
 
 Ddd*plotViewMenu.base.labelString:	Base Contour
 Ddd*plotViewMenu.base.mnemonic:		C
+Ddd*plotViewMenu.base.documentationString:	\
+@rm Draw contour on base
 
 Ddd*plotViewMenu.surface.labelString:   Surface Contour
 Ddd*plotViewMenu.surface.mnemonic:	S
+Ddd*plotViewMenu.surface.documentationString:	\
+@rm Draw contour on surface
 
 Ddd*plotViewMenu.logscale.labelString:	Log Scale
 Ddd*plotViewMenu.logscale.mnemonic:	L
-
+Ddd*plotViewMenu.logscale.documentationString:	\
+@rm Toggle logarithmic scaling
 
 Ddd*menubar.plot.labelString:  		Plot
 Ddd*menubar.plot.mnemonic:     		P
+Ddd*menubar.plot.documentationString:   \
+@rm Set plotting style
 
-Ddd*plotMenu*helpString:  \
+define(PLOT_HELP, [\
+\
 WIDGET(Plot Menu)\n\
 \n\
 DESC(Points, [display a small symbol at each point])\n\
 DESC(Lines, [connect adjacent points with lines])\n\
-DESC(3D-Lines, [like Lines, but remove hidden lines])\n\
+DESC(3-D Lines, [remove hidden lines, creating a 3-D effect])\n\
 DESC(Points and Lines, [do both Points and Lines])\n\
-DESC(Points and 3D-Lines, [do both Points and 3D-Lines])\n\
 DESC(Impulses, [draw a vertical line from the base to each point])\n\
 DESC(Dots, [plot a tiny dot at each point])\n\
 DESC(Steps, [connect adjacent points with two line segments])\n\
 DESC(Boxes, [draw a vertical box from the x axis to each point])
+])dnl
+
+Ddd*menubar.plot.helpString:	PLOT_HELP
+Ddd*plotMenu*helpString:	PLOT_HELP
+Ddd*plotMenu*tearOffTitle:	Plot
 
 Ddd*plotMenu.points.labelString:	Points
 Ddd*plotMenu.points.mnemonic:		P
+Ddd*plotMenu.points.documentationString:	\
+@rm Display a small symbol at each point
 
 Ddd*plotMenu.lines.labelString:	  	Lines
 Ddd*plotMenu.lines.mnemonic:		L
+Ddd*plotMenu.lines.documentationString:	\
+@rm Connect adjacent points with lines
 
-Ddd*plotMenu.lines3d.labelString:	3D-Lines
+Ddd*plotMenu.lines3d.labelString:	3-D Lines
 Ddd*plotMenu.lines3d.mnemonic:		3
+Ddd*plotMenu.lines3d.documentationString:	\
+@rm Remove hidden lines, creating a 3-D effect
 
 Ddd*plotMenu.linespoints.labelString:	Points and Lines
-Ddd*plotMenu.linespoints.mnemonic:	o
+Ddd*plotMenu.linespoints.mnemonic:	a
+Ddd*plotMenu.linespoints.documentationString:	\
+@rm Do both Points and Lines
 
-Ddd*plotMenu.linespoints3d.labelString:	Points and 3D-Lines
+Ddd*plotMenu.linespoints3d.labelString:	Points and 3-D Lines
 Ddd*plotMenu.linespoints3d.mnemonic:	t
+Ddd*plotMenu.linespoints3d.documentationString:	\
+@rm Do both Points and 3-D Lines
 
 Ddd*plotMenu.impulses.labelString:	Impulses
 Ddd*plotMenu.impulses.mnemonic:		I
+Ddd*plotMenu.impulses.documentationString:	\
+@rm Draw a vertical line from the base to each point
 
 Ddd*plotMenu.dots.labelString:		Dots
 Ddd*plotMenu.dots.mnemonic:		D
+Ddd*plotMenu.dots.documentationString:	\
+@rm Plot a tiny dot at each point
 
 Ddd*plotMenu.steps2d.labelString:	Steps
 Ddd*plotMenu.steps2d.mnemonic:		S
+Ddd*plotMenu.steps2d.documentationString:	\
+@rm Connect adjacent points with two line segments
 
 Ddd*plotMenu.boxes2d.labelString:	Boxes
 Ddd*plotMenu.boxes2d.mnemonic:		B
+Ddd*plotMenu.boxes2d.documentationString:	\
+@rm Draw a vertical box from the x axis to each point
 
 
 

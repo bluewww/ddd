@@ -74,6 +74,7 @@ char plotter_rcsid[] =
 static void TraceInputHP (Agent *source, void *, void *call_data);
 static void TraceOutputHP(Agent *source, void *, void *call_data);
 static void TraceErrorHP (Agent *source, void *, void *call_data);
+static void SetStatusHP  (Agent *source, void *, void *call_data);
 
 static void CancelPlotCB(Widget, XtPointer, XtPointer);
 static void ExposePlotAreaCB(Widget, XtPointer, XtPointer);
@@ -134,7 +135,8 @@ static MMDesc plot_menu[] =
     { "lines",          MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
     { "lines3d",        MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
     { "linespoints",    MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
-    { "linespoints3d",  MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
+    { "linespoints3d",  MMToggle | MMUnmanaged, 
+                                  { SetStyleCB, 0 }, 0, 0, 0, 0 },
     { "impulses",       MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
     { "dots",           MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
     { "steps2d",        MMToggle, { SetStyleCB, 0 }, 0, 0, 0, 0 },
@@ -489,6 +491,7 @@ static PlotWindowInfo *new_decoration(const string& name)
 	}
 
 	Delay::register_shell(plot->shell);
+	InstallButtonTips(plot->shell);
 
 	infos += plot;
     }
@@ -582,6 +585,7 @@ PlotAgent *new_plotter(string name)
     plotter->addHandler(Input,  TraceInputHP);     // Gnuplot => DDD
     plotter->addHandler(Output, TraceOutputHP);    // DDD => Gnuplot
     plotter->addHandler(Error,  TraceErrorHP);     // Gnuplot Errors => DDD
+    plotter->addHandler(Error,  SetStatusHP);      // Gnuplot Errors => status
     plotter->addHandler(Died,   DeletePlotterHP, (void *)plot);  // Free memory
 
     if (plot->area != 0)
@@ -713,12 +717,36 @@ static void SetContourCB(Widget w, XtPointer client_data, XtPointer)
 
 
 //-------------------------------------------------------------------------
+// Status line
+//-------------------------------------------------------------------------
+
+// Forward Gnuplot error messages to DDD status line
+static void SetStatusHP(Agent *, void *, void *call_data)
+{
+    DataLength* dl = (DataLength *) call_data;
+    string s(dl->data, dl->length);
+
+    while (s != "")
+    {
+	string line;
+	if (s.contains('\n'))
+	    line = s.before('\n');
+	else
+	    line = s;
+	s = s.after('\n');
+
+	if (line != "")
+	    set_status(line);
+    }
+}
+
+//-------------------------------------------------------------------------
 // Trace communication
 //-------------------------------------------------------------------------
 
 static void trace(char *prefix, void *call_data)
 {
-    DataLength* dl    = (DataLength *) call_data;
+    DataLength* dl = (DataLength *) call_data;
     string s(dl->data, dl->length);
 
     bool s_ends_with_nl = false;

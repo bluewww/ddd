@@ -858,6 +858,7 @@ static Widget create_text_dialog(Widget parent, String name,
     menubar[1].items = simple_edit_menu;
 
     Delay::register_shell(shell);
+    InstallButtonTips(shell);
 
     return w;
 }
@@ -1374,6 +1375,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 
     // Enable Text Window
     Delay::register_shell(XtParent(text_dialog));
+    InstallButtonTips(XtParent(text_dialog));
     manage_and_raise(text_dialog);
 }
 
@@ -1497,6 +1499,7 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     // Enable Text Window
     XtRealizeWidget(XtParent(text_dialog));
     Delay::register_shell(XtParent(text_dialog));
+    InstallButtonTips(XtParent(text_dialog));
     XtPopup(XtParent(text_dialog), XtGrabNone);
     manage_and_raise(text_dialog);
 }
