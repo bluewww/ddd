@@ -390,8 +390,8 @@ static void ddd_xt_warning(String message);
 Widget make_buttons(Widget parent, const string& name, const string& list);
 
 // Sash killer
-void unmanage_sashes(Widget paned);
 void untraverse_sashes(Widget paned);
+void unmanage_sashes(Widget paned, int ignore = -1);
 
 // Helper for empty source arg field
 void source_argHP (void*, void*, void* call_data);
@@ -2221,14 +2221,17 @@ int main(int argc, char *argv[])
 
 
     // Remove unnecessary sashes
+    untraverse_sashes(source_view_parent);
     if (source_view_shell)
-	unmanage_sashes(source_view_parent);
+	unmanage_sashes(source_view_parent, 3);
+
+    untraverse_sashes(data_disp_parent);
     if (data_disp_shell)
 	unmanage_sashes(data_disp_parent);
+
+    untraverse_sashes(paned_work_w);
     if (source_view_shell && data_disp_shell)
 	unmanage_sashes(paned_work_w);
-    else
-	untraverse_sashes(paned_work_w);
 
     Boolean iconic;
     XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
@@ -3742,11 +3745,9 @@ Widget make_buttons(Widget parent, const string& name,
 //-----------------------------------------------------------------------------
 
 
-// Destroy all sashes of PANED
-void unmanage_sashes(Widget paned)
+// Destroy all sashes of PANED, except the one numbered IGNORE
+void unmanage_sashes(Widget paned, int ignore)
 {
-    untraverse_sashes(paned);
-
     if (!XmIsPanedWindow(paned))
 	return;
 
@@ -3758,8 +3759,9 @@ void unmanage_sashes(Widget paned)
 		  XtNnumChildren, &num_children,
 		  NULL);
 
+    int n = 0;
     for (int i = 0; i < num_children; i++)
-	if (XmIsSash(children[i]))
+	if (XmIsSash(children[i]) && n++ != ignore)
 	{
 	    XtUnmanageChild(children[i]);
 	    XtUnmapWidget(children[i]);
@@ -5189,7 +5191,7 @@ static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
     reply->received = true;
 }
 
-static void gdb_reply(string complete_answer, void *qu_data)
+static void gdb_reply(const string& complete_answer, void *qu_data)
 {
     GDBReply *reply = (GDBReply *)qu_data;
     reply->answer   = complete_answer;
@@ -5405,7 +5407,7 @@ struct CompletionInfo {
     string input;		// Current input
 };
 
-void complete_reply(string complete_answer, void *qu_data);
+void complete_reply(const string& complete_answer, void *qu_data);
 
 // Set completion
 void set_completion(const CompletionInfo& info, string completion)
@@ -5570,7 +5572,7 @@ void complete(Widget w, XEvent *e, string input, string cmd)
 
 
 // Handle possible completions
-void complete_reply(string complete_answer, void *qu_data)
+void complete_reply(const string& complete_answer, void *qu_data)
 {
     const CompletionInfo& info = *((CompletionInfo *)qu_data);
 
