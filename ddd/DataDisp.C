@@ -4341,7 +4341,10 @@ void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose,
 	info.display_nrs = display_nrs;
 
 	Command c(cmd, last_origin, delete_displayOQC, (void *)&info);
-	c.verbose = verbose;
+	if (gdb->has_redisplaying_undisplay())
+	    c.verbose = false;
+	else
+	    c.verbose = verbose;
 	gdb_command(c);
     }
     else
@@ -4359,7 +4362,7 @@ void DataDisp::delete_displayOQC (const string& answer, void *data)
 
     if (gdb->type() == GDB && answer.contains("(y or n)"))
     {
-	// The `undisplay' command required confirmation.  Since GDB
+	// The `undisplay' command required confirmation.  Since GDBAgent
 	// does not tell us the outcome, we must check the user reply.
 
 	string reply = lastUserReply();
@@ -4373,13 +4376,18 @@ void DataDisp::delete_displayOQC (const string& answer, void *data)
 
     if (gdb->has_redisplaying_undisplay())
     {
-	// Upon `undisplay', DBX redisplays remaining displays with values
+	string ans = answer;
+
+	// Upon `undisplay', Sun DBX redisplays remaining displays
+	// with values.  Process them.
 	if (answer != "" && !answer.contains("no such expression"))
 	{
 	    bool disabling_occurred;
-	    string ans = answer;
 	    process_displays(ans, disabling_occurred);
 	}
+
+	// Show remaining output
+	post_gdb_message(ans);
     }
 
     deletion_done(info->display_nrs, info->prompt);
