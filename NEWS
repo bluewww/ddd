@@ -135,6 +135,9 @@ Source exploration
 
 - The GDB `Open Source' dialog has a filter.
 
+- You can easily toggle line numbers via the `Source' menu or the
+  `Source' preferences.
+
 - Dragging breakpoints works much better with scrolling.
 
 
@@ -164,8 +167,8 @@ User Interface
   The bindings from DDD 3.0 and earlier (Ctrl+E for Run, Ctrl+I for
   Step, etc.) are still available.
 
-- You can configure the Ctrl+C (Interrupt vs. Copy) and Ctrl+A (Select
-  All vs. Beginning of Line) keys at run-time.
+- You can configure the Ctrl+C (`Interrupt' vs. `Copy') and Ctrl+A
+  (`Select All' vs. `Beginning of Line') key bindings via Preferences.
 
 - You can configure the tool bar to appear at the bottom of the
   window, as in DDD 2.x and earlier.
