@@ -112,7 +112,7 @@ User Interface
 - Toolbar buttons appear in color when entered.  See the
   `activeButtonColorKey' resource for details.
 
-- The `Insert' key toggles text insertion mode.
+- The `Insert' key toggles text insertion mode (requires Motif 2.0)
 
 - The function keys F2-F9 are bound to frequently used commands:
 
