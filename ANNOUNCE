@@ -1,24 +1,45 @@
-DDD 3.3 is available					-*- text -*-
-********************
+DDD 3.3.1 is available					-*- text -*-
+**********************
 
-Release 3.3 of DDD, the Data Display Debugger, is now available.
+Release 3.3.1 of DDD, the Data Display Debugger, is now available.
 
 
 What is DDD?
 ============
 
 DDD is a graphical front-end for command-line debuggers such as GDB,
-DBX, WDB, Ladebug, JDB, XDB, the Perl debugger, or the Python
-debugger.  Besides ``usual'' front-end features such as viewing source
-texts, DDD has become famous through its interactive graphical data
-display, where data structures are displayed as graphs.
+the Perl debugger, or the Python debugger.  Besides ``usual''
+front-end features such as viewing source texts, DDD has become famous
+through its interactive graphical data display, where data structures
+are displayed as graphs.
 
-There is more information available at the GNU DDD homepage at
-`http://www.gnu.org/software/ddd/'.
+More information is available at the GNU DDD homepage at
+
+      http://www.gnu.org/software/ddd/
+
 
 
 What's new in DDD?
 ==================
+
+DDD 3.3.1
+=========
+
+DDD 3.3.1 brings a couple of minor bug fixes:
+
+- The option to create new displays `left-to-right' is restored upon startup.
+- Fortran struct members are accessed as `A%B' instead of `A.B'.
+- Structure changes in plotted displays no longer crash DDD.
+- You can specify the top-level geometry via `-geometry'.
+- The `pydb' debugger has been fixed to work with recent Python releases.
+- Ornamented Perl debugger prompts are handled correctly.
+- DDD honors the TMPDIR environment variable for creating temporary files.
+- `config.guess' and `config.sub' scripts have been updated.
+- Minor compilation problems with GCC 2.7.2 have been fixed.
+- Minor compilation problems with GCC 3.0 (prerelease) have been fixed.
+- Minor compilation problems with Sun CC have been fixed.
+- Minor potential problems with 64 bit pointers have been fixed.
+
 
 DDD 3.3
 =======
@@ -183,19 +204,6 @@ License
 - The DDD Manual is released under the new GNU Free Documentation License.
 
 
-Tracking Code Changes
----------------------
-
-- This release no longer includes `ChangeLog' files.  Instead, you can
-  directly access old and recent DDD versions (including a list of all
-  changes) via the public CVS interface at
-
-      http://sourceforge.net/projects/ddd/
-
-- You can also download most recent DDD versions from the public CVS
-  interface.  See the file `README-CVS' in the CVS archive for details.
-
-
 Acknowledgments
 ---------------
 
@@ -216,10 +224,10 @@ Thanks to:
 Where can you get it?  How can you compile it?
 ==============================================
 
-The ddd-3.3.tar.gz distribution file has been placed on `ftp.gnu.org'
+The ddd-3.3.1.tar.gz distribution file has been placed on `ftp.gnu.org'
 in `gnu/ddd'.
 
-DDD 3.3 requires 
+DDD 3.3.1 requires 
 - LessTif 0.90 or later, available from `http://www.lesstif.org/' 
   (or any other M*tif library)
 - GCC 2.95 or later (or any other C++ compiler)

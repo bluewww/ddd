@@ -4,7 +4,7 @@ DDD News						-*- text -*-
 DDD 3.3.1
 =========
 
-Just a couple of minor bug fixes:
+DDD 3.3.1 brings a couple of minor bug fixes:
 
 - The option to create new displays `left-to-right' is restored upon startup.
 - Fortran struct members are accessed as `A%B' instead of `A.B'.
