@@ -41,6 +41,10 @@ Miscellaneous
 
 - Signal settings are saved with the current session.
 
+- Improved redirection handling.  You can now redirect stderr away
+  from the execution window, using `run 2> FILE'.  `run 2> /dev/tty'
+  will redirect stderr to the debugger console.
+
 - Minor performance improvements.
 
 

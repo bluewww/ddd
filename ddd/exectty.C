@@ -439,6 +439,60 @@ static int gdb_set_tty(string tty_name = "",
     return 0;
 }
 
+static bool has_redirection(const string& args, const string& redirection)
+{
+    return args.contains(redirection, 0) || args.contains(" " + redirection);
+}
+
+// Add redirection commands for SH-like shell
+static void add_sh_redirection(string& gdb_redirection,
+			       const string& tty_name,
+			       const string& args)
+{
+    // sh, bsh, ksh, bash, zsh, sh5, ...
+    bool stdout_redirected = has_redirection(args, ">");
+    bool stderr_redirected = has_redirection(args, "2>");
+
+    if (!stdout_redirected && !stderr_redirected)
+    {
+	gdb_redirection += " > " + tty_name;
+	gdb_redirection += " 2>&1";
+    }
+    else if (stderr_redirected)
+    {
+	gdb_redirection += " > " + tty_name;
+    }
+    else if (stdout_redirected)
+    {
+	gdb_redirection += " 2> " + tty_name;
+    }
+}
+
+// Add redirection commands for RC shell
+static void add_rc_redirection(string& gdb_redirection,
+			       const string& tty_name,
+			       const string& args)
+{
+    // rc (from tim@pipex.net)
+    bool stdout_redirected = has_redirection(args, ">");
+    bool stderr_redirected = 
+	has_redirection(args, "2>") || has_redirection(args, ">[2");
+
+    if (!stdout_redirected && !stderr_redirected)
+    {
+	gdb_redirection += " > " + tty_name;
+	gdb_redirection += " >[2=1]";
+    }
+    else if (stderr_redirected)
+    {
+	gdb_redirection += " > " + tty_name;
+    }
+    else if (stdout_redirected)
+    {
+	gdb_redirection += " 2> " + tty_name;
+    }
+}
+
 // Redirect COMMAND to TTY_NAME
 static void redirect_process(string& command,
 			     const string& tty_name,
@@ -462,99 +516,101 @@ static void redirect_process(string& command,
     }
 
     gdb_redirection = "";
-    if (!args.contains("<"))
+    if (!has_redirection(args, "<"))
 	gdb_redirection = "< " + tty_name;
 
-    if (!args.contains(">"))
+    switch (gdb->type())
     {
-	switch (gdb->type())
-	{
-	case GDB:
-	{
-	    // In GDB, COMMAND is interpreted by the user's shell.
-	    static string shell;
+    case GDB:
+    {
+	// In GDB, COMMAND is interpreted by the user's shell.
+	static string shell;
 
-	    if (shell == "")
+	if (shell == "")
+	{
+	    // The shell is determined only once, as it cannot change.
+	    if (remote_gdb())
 	    {
-		// The shell is determined only once, as it cannot change.
-		if (remote_gdb())
-		{
-		    string sh = 
-			gdb_question(gdb->shell_command("echo $SHELL"));
-		    if (sh != NO_GDB_ANSWER)
-			shell = sh.before('\n');
-		}
-		else
-		{
-		    char *shell_s = getenv("SHELL");
-		    if (shell_s == 0)
-			shell_s = "/bin/sh";
-		    shell = shell_s;
-		}
+		string sh = gdb_question(gdb->shell_command("echo $SHELL"));
+		if (sh != NO_GDB_ANSWER)
+		    shell = sh.before('\n');
 	    }
-
-	    if (shell.contains("csh"))
+	    else
 	    {
-		// csh, tcsh
+		char *shell_s = getenv("SHELL");
+		if (shell_s == 0)
+		    shell_s = "/bin/sh";
+		shell = shell_s;
+	    }
+	}
+
+	if (shell.contains("csh"))
+	{
+	    // csh, tcsh
+	    if (!has_redirection(args, ">"))
 		gdb_redirection += " >&! " + tty_name;
-	    }
-	    else if (shell.contains("rc"))
-	    {
-		// rc (from tim@pipex.net)
-		gdb_redirection += " > " + tty_name + " >[2=1]";
-	    }
-	    else if (shell.contains("sh"))
-	    {
-		// sh, bsh, ksh, bash, zsh, sh5, ...
-		gdb_redirection += " > " + tty_name + " 2>&1";
-	    }
-	    else
-	    {
-		// Unknown shell - play it safe
+	}
+	else if (shell.contains("rc"))
+	{
+	    // rc (from tim@pipex.net)
+	    add_rc_redirection(gdb_redirection, tty_name, args);
+	}
+	else if (shell.contains("sh"))
+	{
+	    // sh, bsh, ksh, bash, zsh, sh5, ...
+	    add_sh_redirection(gdb_redirection, tty_name, args);
+	}
+	else
+	{
+	    // Unknown shell - play it safe and don't redirect stderr
+	    if (!has_redirection(args, ">"))
 		gdb_redirection += " > " + tty_name;
-	    }
-
-	    break;
 	}
 
-	case DBX:
-	    // DBX has its own parsing, in several variants.
-	    if (gdb->has_regs_command())
-	    {
-		// SUN DBX 4.0 has true ksh-style redirection.
-		gdb_redirection += " > " + tty_name + " 2>&1";
-	    }
-	    else if (gdb->has_print_r_option())
-	    {
-		// SUN DBX 3.x interprets `COMMAND 2>&1' such that COMMAND
-		// runs in the background.  Use this kludge instead.
-		gdb_redirection = "2> " + tty_name + " " 
-		    + gdb_redirection + " > " + tty_name;
-	    }
-	    else if (gdb->has_err_redirection())
-	    {
-		// DEC DBX and AIX DBX use csh-style redirection.
+	break;
+    }
+
+    case DBX:
+	// DBX has its own parsing, in several variants.
+	if (gdb->has_regs_command())
+	{
+	    // SUN DBX 4.0 has true ksh-style redirection.
+	    add_sh_redirection(gdb_redirection, tty_name, args);
+	}
+	else if (gdb->has_print_r_option())
+	{
+	    // SUN DBX 3.x interprets `COMMAND 2>&1' such that COMMAND
+	    // runs in the background.  Use this kludge instead.
+	    if (!has_redirection(args, "2>"))
+		gdb_redirection += "2> " + tty_name;
+	    if (!has_redirection(args, ">"))
+		gdb_redirection += " > " + tty_name;
+	}
+	else if (gdb->has_err_redirection())
+	{
+	    // DEC DBX and AIX DBX use csh-style redirection.
+	    if (!has_redirection(args, ">"))
 		gdb_redirection +=  " >& " + tty_name;
-	    }
-	    else
-	    {
-		// SUN DBX 1.x does not allow to redirect stderr.
-		gdb_redirection += " > " + tty_name;
-	    }
-	    break;
-
-	case XDB:
-	    // XDB uses ksh style redirection.
-	    gdb_redirection += " > " + tty_name + " 2>&1";
-	    break;
-
-	case JDB:
-	    break;		// No redirection in JDB
 	}
+	else
+	{
+	    // SUN DBX 1.x does not allow to redirect stderr.  Play it safe.
+	    if (!has_redirection(args, ">"))
+		gdb_redirection += " > " + tty_name;
+	}
+	break;
+
+    case XDB:
+	// XDB uses ksh-style redirection.
+	add_sh_redirection(gdb_redirection, tty_name, args);
+	break;
+
+    case JDB:
+	break;		// No redirection in JDB
     }
 
     string new_args;
-    if (gdb_redirection != "" && !args.contains(gdb_redirection))
+    if (gdb_redirection != "" && !has_redirection(args, gdb_redirection))
     {
 	if (args == "")
 	    new_args = gdb_redirection;
@@ -583,7 +639,7 @@ static void unredirect_process(string& command,
 	string base;
 	string args;
 	get_args(command, base, args);
-	if (args.contains(gdb_redirection) && gdb->type() == GDB)
+	if (!has_redirection(args, gdb_redirection) && gdb->type() == GDB)
 	{
 	    static string empty;
 	    args.gsub(gdb_redirection, empty);

@@ -165,6 +165,9 @@ CODE(run       )      - possibly giving arguments here
 To get rid of these tips of the day, unset
 LBL(Edit, Preferences, Startup, Show Tip of the Day).
 
+To redirect stderr from the execution window to the debugger console,
+add SAMP(2>/dev/tty) to the arguments of your program.
+
 To display the first VAR(n) elements of a variable-length array VAR(ptr),
 enter KBD(graph display VAR(ptr)\1330\135@ VAR(n)) at the GDB prompt.
 
