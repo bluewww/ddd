@@ -39,25 +39,33 @@
 class ThemePattern {
 private:
     StringArray patterns;
+    bool _active;
 
 public:
     // Create as empty
     ThemePattern()
-	: patterns()
-    {}
+	: patterns(), _active(true)
+    {
+	patterns += "*";
+    }
 
     // Create from external representation REP
-    ThemePattern(const string& rep);
+    ThemePattern(const string& rep, bool active = true);
 
     // Copy constructor
     ThemePattern(const ThemePattern& t)
-	: patterns(t.patterns)
+	: patterns(t.patterns), _active(t.active())
     {}
+
+    // True if active
+    bool  active() const { return _active; }
+    bool& active()       { return _active; }
 
     // Assignment
     ThemePattern& operator = (const ThemePattern& t)
     {
 	patterns = t.patterns;
+	active() = t.active();
 	return *this;
     }
 

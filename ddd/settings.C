@@ -303,10 +303,10 @@ static void HelpOnThemeCB(Widget w, XtPointer client_data,
     // Fetch text from file
     string file = XtName((Widget)client_data);
     string text = vsldoc(file);
-    if (text == NO_GDB_ANSWER)
+    if (text == "")
 	text = "No help available on this theme.";
 
-    MString mtext = bf(file) + cr() + cr() + rm(text);
+    MString mtext = bf(basename(file)) + cr() + cr() + rm(text);
     MStringHelpCB(w, XtPointer(mtext.xmstring()), call_data);
 }
 
@@ -319,15 +319,14 @@ static void ApplyThemesCB(Widget, XtPointer, XtPointer)
     for (int i = 0; i < themes_entries.size(); i++)
     {
 	Widget button = themes_labels[i];
-	if (!XmToggleButtonGetState(button))
-	    continue;
+	bool active = XmToggleButtonGetState(button);
 
 	Widget entry  = themes_entries[i];
 	String value_s = XmTextFieldGetString(entry);
 	string value = value_s;
 	XtFree(value_s);
 
-	t.add(XtName(entry), ThemePattern(value));
+	t.add(basename(XtName(entry)), ThemePattern(value, active));
     }
 
     data_disp->set_theme_manager(t);
@@ -1476,8 +1475,8 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	set_command = show_command = line;
 	e_type = entry_filter;
 	doc = vsldoc(line);
-	if (doc == "")
-	    doc = basename(line);  // Use file base name instead
+	if (doc == "")		   // No documentation:
+	    doc = basename(line);  // Use base name of file instead
 	else if (doc.contains("."))
 	    doc = doc.before("."); // Use first sentence only
     }
@@ -2389,7 +2388,7 @@ static void fix_clip_window_translations(Widget scroll)
 
 
 // Themes
-static void get_themes(StringArray& arr)
+static void get_themes(StringArray& themes)
 {
     string path = DispBox::vsllib_path;
     int n = path.freq(':');
@@ -2419,9 +2418,8 @@ static void get_themes(StringArray& arr)
 
 	    for (int i = 0; i < count; i++)
 	    {
-		string file = files[i];
+		themes += files[i];
 		free(files[i]);
-		arr += file;
 	    }
 	    free((char *)files);
 	}
@@ -2434,6 +2432,7 @@ static void add_themes(Widget form, int& row, Dimension& max_width)
 {
     StringArray themes;
     get_themes(themes);
+
     for (int i = 0; i < themes.size(); i++)
 	add_button(form, row, max_width, gdb->type(), ThemeEntry, themes[i]);
 }
@@ -2791,30 +2790,27 @@ static Widget create_signals(DebuggerType type)
 // Update themes
 void update_themes()
 {
-    int i;
+    assert(themes_entries.size() == themes_labels.size());
 
-    for (i = 0; i < themes_entries.size(); i++)
+    for (int i = 0; i < themes_entries.size(); i++)
     {
-	Widget entry = themes_entries[i];
-	string theme = XtName(entry);
+	Widget entry  = themes_entries[i];
+	Widget button = themes_labels[i];
+	string theme = basename(XtName(entry));
 	ThemePattern p;
+	bool set = false;
 
 	if (DispBox::theme_manager.has_pattern(theme))
+	{
 	    p = DispBox::theme_manager.pattern(theme);
+	    set = DispBox::theme_manager.pattern(theme).active();
+	}
 
 	ostrstream os;
 	os << p;
 	string value = string(os);
+
 	XmTextFieldSetString(entry, (String)value);
-    }
-
-    StringArray themes = DispBox::theme_manager.themes();
-
-    for (i = 0; i < themes_labels.size(); i++)
-    {
-	Widget button = themes_labels[i];
-	string theme = XtName(button);
-	bool set = DispBox::theme_manager.has_pattern(theme);
 	XtVaSetValues(button, XmNset, set, NULL);
     }
 }

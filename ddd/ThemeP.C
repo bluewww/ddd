@@ -44,8 +44,8 @@ char ThemePattern_rcsid[] =
 #define LOG_THEME_PATTERNS 0
 #endif
 
-ThemePattern::ThemePattern(const string& rep)
-    : patterns()
+ThemePattern::ThemePattern(const string& rep, bool active)
+    : patterns(), _active(active)
 {
     int count    = rep.freq(';') + 1;
     string *subs = new string[count];

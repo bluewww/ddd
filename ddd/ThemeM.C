@@ -75,7 +75,16 @@ ThemeManager::ThemeManager(const string& rep)
 	
 	strip_space(theme);
 	strip_space(s);
-	map[theme] = ThemePattern(s);
+
+	bool active = true;
+	if (theme.contains("!", 0))
+	{
+	    active = false;
+	    theme = theme.after("!");
+	    strip_space(theme);
+	}
+
+	map[theme] = ThemePattern(s, active);
     }
 
     delete[] subs;
@@ -84,7 +93,11 @@ ThemeManager::ThemeManager(const string& rep)
 ostream& operator<<(ostream& os, const ThemeManager& t)
 {
     for (StringThemePatternAssocIter i(t.map); i.ok(); i = i.next())
+    {
+	if (!i.value().active())
+	    os << "! ";
 	os << i.key() << "\t" << i.value() << "\n";
+    }
 
     return os;
 }
@@ -95,8 +108,10 @@ StringArray ThemeManager::themes(const string& expr)
     StringArray ret;
 
     for (StringThemePatternAssocIter i(map); i.ok(); i = i.next())
-	if (i.value().matches(expr))
+    {
+	if (i.value().active() && i.value().matches(expr))
 	    ret += i.key();
+    }
 
 #if LOG_THEMES
     clog << "Themes of " << expr << ":";
@@ -118,5 +133,3 @@ StringArray ThemeManager::themes()
 
     return ret;
 }
-
-
