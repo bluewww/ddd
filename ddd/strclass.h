@@ -490,7 +490,7 @@ protected:
 
 private:
     // Don't get constructed or assigned from int
-    string(int) : rep(0)   { error("init from int"); }
+    string(int) : rep(0)      { error("init from int"); }
     string& operator = (int)  { error("int assign"); return *this; }
 
 public:
@@ -1358,14 +1358,18 @@ inline void string::capitalize()
 // Element extraction
 
 inline char&  string::operator [] (unsigned int i) 
-{ 
+{
+#ifndef NDEBUG
     if (i >= length()) error("invalid index");
+#endif
     return rep->s[i];
 }
 
 inline char string::operator [] (unsigned int i) const
 { 
+#ifndef NDEBUG
     if (i >= length()) error("invalid index");
+#endif
     return rep->s[i];
 }
 
@@ -1431,7 +1435,9 @@ inline char string::operator [] (unsigned long i) const
 
 inline char string::elem (int i) const
 { 
+#ifndef NDEBUG
     if (((unsigned)i) >= length()) error("invalid index");
+#endif
     return rep->s[i];
 }
 
