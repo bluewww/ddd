@@ -94,6 +94,8 @@ DDD 2.2 [in beta test]
     - When DDD becomes ready after a user command, it automatically
       uniconifies itself.  Hence, you can iconify DDD while it runs a
       program; DDD pops up again as soon as a breakpoint is hit.
+    - Characters typed into the data and source windows now show up in 
+      the debugger console.
     - Resource files have been renamed.  All files are now located
       under `~/.ddd/'.  The file `~/.dddinit' has been replaced by
       `~/.ddd/init'; `~/.ddd_history' is now `~/.ddd/history'.  The
