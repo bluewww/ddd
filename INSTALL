@@ -1,6 +1,9 @@
 Installing DDD					-*- text -*-
 **************
 
+PLEASE NOTE: The installation process has changed in this release.  Be
+sure to read this file.
+
 For compiling and installing DDD on a system, please follow these
 instructions.
 
@@ -143,10 +146,12 @@ The following recommended helper applications should be in the user path:
 Basic Installation
 ==================
 
-Basically, to build DDD from sources, you enter two commands:
+Basically, to build and install DDD from sources, you enter three
+commands:
 
 	$ ./configure
 	$ make
+	$ make install
 
 The `configure' shell script attempts to guess correct values for
 various system-dependent variables used during compilation.  It uses
@@ -238,12 +243,16 @@ The simplest way to compile DDD is:
      If you see any compiler errors or warnings, please see the
      sections `Warnings during build' and `Errors during build', below.
 
-  9. For a simple check, type
+  9. For a simple check before installation, type
   
 	$ make check
 	
      This creates a sample C++ program `cxxtest' and then runs DDD
      on it by invoking `./ddd cxxtest'.  Enjoy!
+
+     You can also invoke DDD directly, but DDD may not be able to
+     locate its resources.  See Step 11, below, for appropriate
+     settings.
 
  10. If DDD crashes immediately after startup or after a few
      interactions, first check your configuration (the output of

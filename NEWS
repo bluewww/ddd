@@ -104,8 +104,8 @@ Printing
 Installation
 ------------
 
-- Several installation details have changed.  Be sure to read the
-  `INSTALL' file for new installation instructions.
+- PLEASE NOTE: Several installation details have changed.  Be sure to
+  read the `INSTALL' file for new installation instructions.
 
 - Several DDD resources (such as the application defaults) now reside
   in separate files, reducing DDD executable size and memory footprint 
