@@ -64,11 +64,11 @@
 #include "Delay.h"
 #include "IntArray.h"
 #include "MString.h"
+#include "DispNode.h"
 
 // DDD includes
 #include "ArgField.h"
 #include "GDBAgent.h"
-#include "DispGraph.h"
 #include "GraphEdit.h"
 #include "DispBox.h"
 #include "DispBox.h"
@@ -271,7 +271,7 @@ private:
     //-----------------------------------------------------------------------
     // Data
     //-----------------------------------------------------------------------
-    static DispGraph *disp_graph;
+    static class DispGraph *disp_graph;
     static Delay *delay;
     static Widget last_origin;
     static Time last_select_time;
@@ -317,7 +317,7 @@ public:
 	      String       vsl_defs,         // from app_data
 	      bool         panned);          // from app_data
 
-    inline int count_all() { return disp_graph->count_all(); }
+    int count_data_displays() const;
     static void refresh_graph_edit (bool silent = false);
 
     // Refresh address of NODE (0: all nodes)

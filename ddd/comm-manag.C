@@ -443,7 +443,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_threads = true;
     }
 
-    if (data_disp->count_all() == 0)
+    if (data_disp->count_data_displays() == 0)
     {
 	// No displays
 	cmd_data->filter_disp = NoFilter;

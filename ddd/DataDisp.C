@@ -68,6 +68,7 @@ char DataDisp_rcsid[] =
 #include "IntIntAA.h"
 #include "shorten.h"
 #include "charsets.h"
+#include "DispGraph.h"
 
 // Motif includes
 #include <Xm/MessageB.h>
@@ -243,6 +244,27 @@ static void set_label(Widget w, string label)
     XmStringFree(old_label);
 }
 
+
+//----------------------------------------------------------------------------
+// Counters
+//-----------------------------------------------------------------------------
+
+// Count the number of data displays
+int DataDisp::count_data_displays() const
+{
+    int count = 0;
+
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (!dn->is_user_command())
+	    count++;
+    }
+
+    return count;
+}
 
 //-----------------------------------------------------------------------------
 // Button Callbacks
@@ -3428,7 +3450,7 @@ bool DataDisp::merge_displays(IntArray displays,
 	}
 	else
 	{
-	    bool c = disp_graph->alias(displays[0], disp_nr);
+	    bool c = disp_graph->alias(graph_edit, displays[0], disp_nr);
 	    if (c)
 	    {
 		if (!hidden)
