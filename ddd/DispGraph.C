@@ -689,6 +689,12 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
 	return false;
     }
 
+    if (dn->clustered())
+    {
+	// Already hidden because it is clustered
+	return false;
+    }
+
     GraphNode *node = dn->nodeptr();
 
     if (node->hidden() && dn->alias_of == disp_nr)
@@ -703,6 +709,9 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
     // Hide alias
     node->hidden() = true;
     dn->alias_of   = disp_nr;
+
+    // Clear any special selections in this alias
+    dn->select();
 
     // Hide ordinary hints and insert new alias edges
     GraphEdge *edge;
@@ -773,7 +782,7 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
 bool DispGraph::unalias(int alias_disp_nr)
 {
     DispNode *dn = get(alias_disp_nr);
-    if (dn == 0 || !dn->active())
+    if (dn == 0 || !dn->active() || dn->clustered())
 	return false;
 
     GraphNode *node = dn->nodeptr();
