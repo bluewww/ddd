@@ -850,9 +850,9 @@ AC_TRY_COMPILE(
 [
 #include <sys/types.h>
 #include <signal.h>
-RETSIGTYPE handler(int sg);],
+RETSIGTYPE handler(...);],
 [signal(1, handler);], 
-ice_cv_type_sig_handler_args=int, ice_cv_type_sig_handler_args=...)])dnl
+ice_cv_type_sig_handler_args=..., ice_cv_type_sig_handler_args=int)])dnl
 AC_LANG_RESTORE
 AC_MSG_RESULT($ice_cv_type_sig_handler_args)
 AC_DEFINE_UNQUOTED(SIGHANDLERARGS, $ice_cv_type_sig_handler_args)
