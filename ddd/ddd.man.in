@@ -208,7 +208,7 @@ treat each one separately.
 .PP
 .PSPIC @srcdir@/PICS/ddd-separate.ps 15.3cm
 .PP
-Besides these main windows, there are some other optional windows
+Besides these main windows, there are some other optional windows:
 .br
 .IP \(bu 2
 The \fICommand Tool\fR offers buttons for frequently used commands.
