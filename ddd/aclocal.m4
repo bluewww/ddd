@@ -1651,7 +1651,8 @@ xpm_libraries="$withval")
 AC_MSG_CHECKING(for Xpm)
 #
 #
-# Search the include files.
+# Search the include files.  Note that XPM can come in <X11/xpm.h> (as
+# in X11R6) or in <xpm.h> if installed locally.
 #
 if test "$xpm_includes" = ""; then
 AC_CACHE_VAL(ice_cv_xpm_includes,
@@ -1689,7 +1690,7 @@ for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
            /usr/dt/*/include /opt/*/include /usr/include/Motif* \
 	   "${prefix}"/*/include /usr/*/include /usr/local/*/include \
 	   "${prefix}"/include/* /usr/include/* /usr/local/include/*; do
-if test -f "$dir/X11/xpm.h"; then
+if test -f "$dir/X11/xpm.h" || test -f "$dir/xpm.h"; then
 ice_cv_xpm_includes="$dir"
 break
 fi

@@ -365,6 +365,9 @@ XPM_LIBS=""
 AC_CHECK_LIB(Xpm, XpmCreatePixmapFromXpmImage,
 	XPM_LIBS="-lXpm"
 	AC_DEFINE(HAVE_XPM),,${X_PRE_LIBS} ${X11_LIBS})
+if test "$XPM_LIBS" != ""; then
+AC_CHECK_HEADERS(X11/xpm.h xpm.h)
+fi
 AC_SUBST(XPM_LIBS)
 dnl
 dnl

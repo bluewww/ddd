@@ -34,12 +34,8 @@ char logo_rcsid[] =
 #endif
 
 #include "logo.h"
-
 #include "config.h"
-
-#if HAVE_XPM
-#include <X11/xpm.h>
-#endif
+#include "xpm.h"
 
 // X bitmaps
 #include "ddd.xbm"
@@ -66,25 +62,6 @@ char logo_rcsid[] =
 //-----------------------------------------------------------------------------
 
 #ifdef XpmVersion
-
-#ifndef XpmSuccess
-#define XpmSuccess       0
-#endif
-#ifndef XpmColorError
-#define XpmColorError    1
-#endif
-#ifndef XpmOpenFailed
-#define XpmOpenFailed   -1
-#endif
-#ifndef XpmFileInvalid
-#define XpmFileInvalid  -2
-#endif
-#ifndef XpmNoMemory
-#define XpmNoMemory     -3
-#endif
-#ifndef XpmColorFailed
-#define XpmColorFailed  -4
-#endif
 
 static int xpm(String name, int ret)
 {
