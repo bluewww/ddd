@@ -244,8 +244,4 @@ Volunteers for these and other projects are welcome!
 089. Have an `info source' popup menu that pops up when pointing at
      blank space.  (Info/Reload/Edit)
 
-091* Support XDB as found on HP-UX.
-
-092* Changing the current directory should also affect the file selectors.
-
 093. (Insert your project idea here)
