@@ -67,33 +67,37 @@ extern "C" int fcntl(int fd, int command, ...);
 // we have no special treatment for TTYs.
 
 // According to Ray Dassen <jdassen@wi.LeidenUniv.nl>, Linux with GNU
-// libc 5.4.38 and later wants BLOCK_TTY_INPUT to be unset.
+// libc 6 wants BLOCK_TTY_INPUT to be unset.
 #if !defined(BLOCK_TTY_INPUT) \
     && _LINUX_C_LIB_VERSION_MAJOR > 5
-#define BLOCK_TTY_INPUT 0
+#define BLOCK_TTY_INPUT 0	// libc 6 and later
 #endif
+
+// According to Terence Spielman <terence@globeset.com>, this is also
+// true for Linux with GNU libc 5.4.35.  Anders Wegge Jakobsen
+// <wegge@wegge.dk> reports the same for GNU libc 5.4.38.  On the
+// other hand, Linux with GNU libc 5.4.33 and earlier, however, needs
+// BLOCK_TTY_INPUT being set.  Hence, we set BLOCK_TTY_INPUT only for
+// GNU libc 5.4.33 and earlier.
 #if !defined(BLOCK_TTY_INPUT) \
     && _LINUX_C_LIB_VERSION_MAJOR == 5 \
     && _LINUX_C_LIB_VERSION_MINOR > 4
-#define BLOCK_TTY_INPUT 0
+#define BLOCK_TTY_INPUT 0	// libc 5.5 and later
 #endif
 #if !defined(BLOCK_TTY_INPUT) \
     && _LINUX_C_LIB_VERSION_MAJOR == 5 \
     && _LINUX_C_LIB_VERSION_MINOR == 4 \
-    && _LINUX_C_LIB_VERSION_SUBMINOR > 37
-#define BLOCK_TTY_INPUT 0
+    && _LINUX_C_LIB_VERSION_SUBMINOR > 33
+#define BLOCK_TTY_INPUT 0	// libc 5.4.34 and later
 #endif
-
-// Linux with GNU libc 5.4.33 and earlier, however, needs
-// BLOCK_TTY_INPUT being set.
 #if !defined(BLOCK_TTY_INPUT) \
     && _LINUX_C_LIB_VERSION_MAJOR <= 5
-#define BLOCK_TTY_INPUT 1
+#define BLOCK_TTY_INPUT 1	// libc 5.4.33 and earlier
 #endif
 
-// The default for all other systems is BLOCK_TTY_INPUT set.  (I don't
-// know whether this is the `best' setting, but I have no reason to
-// change a default that has been around successfully for so long...)
+// For all other systems, the default is BLOCK_TTY_INPUT set.  (I
+// don't know whether this is the `best' setting, but I have no reason
+// to change a default that has been around successfully for so long...)
 #if !defined(BLOCK_TTY_INPUT)
 #define BLOCK_TTY_INPUT 1
 #endif
