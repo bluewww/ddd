@@ -68,7 +68,7 @@ void tty_command(Agent *, void *, void *call_data)
 }
 
 // TTY EOF received
-void tty_eof(Agent *agent, void *, void *)
+void tty_eof(Agent *, void *, void *)
 {
     // Forward EOF to GDB (or whatever GDB is just running)
     gdb->write("\004", 1);
