@@ -158,7 +158,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 346*Finish Perl support:
     - `Run' should set arguments (i.e. restart).
-    - Lookup functions.
     - Settings.
 
 347*Verify buttons clears *all buttons* in SGI DBX, even basic ones

@@ -970,10 +970,13 @@ void send_gdb_command(string cmd, Widget origin,
 		case DBX:
 		case XDB:
 		case JDB:
-		case PERL:
 		    // Use `list ARG' as directed, but as a side effect,
 		    // lookup ARG in source window, too.
 		    cmd_data->lookup_arg = arg;
+		    break;
+
+		case PERL:
+		    // Perl issues a position.  Nothing special.
 		    break;
 		}
 	    }

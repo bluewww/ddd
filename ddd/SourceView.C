@@ -4122,7 +4122,9 @@ void SourceView::lookup(string s, bool silent)
 	    gdb_command(c);
 	}
 	else
+	{
 	    show_position(s);
+	}
     }
     else if (s[0] != '0' && isdigit(s[0]))
     {
@@ -4201,10 +4203,24 @@ void SourceView::lookup(string s, bool silent)
 	case PYDB:
 	{
 	    if (s[0] == '0')	// Address given
-		s = "*" + s;
-	    if (s.length() > 0 && s[0] != '\'' && s[0] != '*')
-		s = string('\'') + s + '\'';
+		s.prepend("*");
+	    if (gdb->has_quotes())
+	    {
+		if (s.length() > 0 && s[0] != '\'' && s[0] != '*')
+		    s = string('\'') + s + '\'';
+	    }
+
 	    Command c("list " + s);
+	    c.verbose = !silent;
+	    c.echo    = !silent;
+	    c.prompt  = !silent;
+	    gdb_command(c);
+	    break;
+	}
+
+	case PERL:
+	{
+	    Command c("l " + s);
 	    c.verbose = !silent;
 	    c.echo    = !silent;
 	    c.prompt  = !silent;
@@ -4214,7 +4230,6 @@ void SourceView::lookup(string s, bool silent)
 
 	case DBX:
 	case JDB:
-	case PERL:
 	{
 	    string pos = dbx_lookup(s, silent);
 	    if (pos != "")
