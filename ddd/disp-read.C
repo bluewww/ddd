@@ -215,6 +215,7 @@ bool is_frame_cmd (const string& cmd)
 	"(up"
 	"|do|down"
 	"|f|fra|fram|frame"
+	"|suspend"
 	"|top|V"
 	")([ \t]+.*)?");
 #endif
