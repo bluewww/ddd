@@ -821,6 +821,13 @@ void DataDisp::RefreshGraphEditCB(XtPointer, XtIntervalId *id)
     XtVaSetValues(graph_edit,
 		  XtNgraph, (Graph *)disp_graph,
 		  NULL);
+
+    if (disp_graph->firstVisibleNode() != 0)
+    {
+	// Graph is non-empty: make sure its shell is visible
+	XtManageChild(graph_edit);
+	initial_popup_shell(data_disp_shell);
+    }
 }
 
 // ***************************************************************************
@@ -846,20 +853,6 @@ inline int DataDisp::getDispNrAtPoint (BoxPoint point)
 void DataDisp::no_displaysHP (void*, void* , void* call_data)
 {
     bool empty = bool(call_data);
-    if (!empty)
-    {
-	XtManageChild(graph_edit);
-	if (data_disp_shell)
-	{
-	    static bool initial_popup = true;
-
-	    if (initial_popup)
-	    {
-		initial_popup_shell(data_disp_shell);
-		initial_popup = false;
-	    }
-	}
-    }
 
     set_sensitive (graph_popup[GraphItms::Refresh].widget,
 		   (!empty && gdb->isReadyWithPrompt()));

@@ -1555,20 +1555,15 @@ void SourceView::read_file (string file_name,
     last_start_secondary_highlight = last_end_secondary_highlight = 0;
     update_glyphs();
 
-    if (source_view_shell || app_data.tty_mode)
+    if (source_view_shell != 0 || app_data.tty_mode)
     {
-	static bool initial_popup = true;
-	if (initial_popup)
-	{
-	    Widget shell = source_view_shell ? 
-				source_view_shell : command_shell;
-	    initial_popup_shell(shell);
+	// Make sure source is visible
+	Widget shell = (source_view_shell != 0) ? 
+	    source_view_shell : command_shell;
+	initial_popup_shell(shell);
 
-	    if (!app_data.tool_bar)
-		initial_popup_shell(tool_shell);
-
-	    initial_popup = false;
-	}
+	if (!app_data.tool_bar)
+	    initial_popup_shell(tool_shell);
     }
 }
 
