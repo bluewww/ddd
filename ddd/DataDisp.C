@@ -3495,8 +3495,7 @@ string DataDisp::process_displays(string& displays,
 	    if (!disp_string_map.contains(k))
 	    {
 		// Node is out of scope or disabled
-		if (hide_displays && dn->shown() && !dn->nodeptr()->hidden() &&
-		    dn->enabled())
+		if (hide_displays && dn->shown() && dn->enabled())
 		{
 		    dn->hide();
 		    changed = true;
