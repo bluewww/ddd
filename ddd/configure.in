@@ -668,16 +668,64 @@ if test "$builtin_app_defaults" != no; then
 AC_DEFINE(WITH_BUILTIN_APP_DEFAULTS)
 fi
 dnl
+dnl Check for risky LessTif versions.
+risky_lesstif=false
+AC_TRY_CPP([#include <Xm/Xm.h>
+#ifdef LESSTIF_VERSION
+#if LESSTIF_VERSION < 1 && LESSTIF_REVISION < 87
+#error
+#endif
+#endif], risky_lesstif=false, risky_lesstif=true)
+dnl
+dnl Check for risky CC versions.
+dnl
+risky_cc=false
+# Warn about old SGI CC versions.
+if test "$CXX" = "CC" && test "$host_vendor" = "sgi" && test "$ice_cv_have_bool" != yes; then
+risky_cc=true
+fi
+# Warn about old xlC versions.
+if test "$CXX" = "xlC" && test "$ice_cv_have_bool" != yes; then
+risky_cc=true
+fi
+dnl
+dnl
 dnl
 dnl That's all, folks!
 dnl
 AC_OUTPUT(Makefile vr.h Ddd ddd.man .gdbinit, date > stamp-h)
 dnl
+dnl 
+dnl Give some warnings
+dnl
+risky=false
+if test "$silent" != yes; then
+
+if $risky_cc; then
+echo
+echo "configure: This $CXX version may not generate safe $DDD code.  Use GCC instead."
+risky=true
+fi
+
+if $risky_lesstif; then
+echo
+echo "configure: This $DDD release requires LessTif 0.87 or later."
+risky=true
+fi
+
+if $risky; then
+echo "configure: Continue at own risk."
+fi
+
+fi
+dnl
 dnl Give an indication of what to do next.
 dnl
 if test "$silent" != yes; then
+echo
 echo "configure: configuration is done.  Type \`make' to make $DDD."
 echo "In case of trouble, please check the settings in the files generated"
 echo "by \`configure' - that is, \`ddd/config.h' and \`ddd/Makefile'."
+echo
 fi
 exit 0
