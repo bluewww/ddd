@@ -1578,7 +1578,7 @@ vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y
 	$(YACCTOCXX) -prefix vsl
 	$(MV) y.tab.H vsl-gramma.h
 	$(MV) y.tab.C vsl-gramma.C
-	$(RM) y.tab.c y.tah.h
+	$(RM) y.tab.c y.tab.h
 
 # DDD regexp parsers.
 rxscan.C: $(srcdir)/rxscan.L
