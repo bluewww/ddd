@@ -110,3 +110,9 @@ public class jtest {
 	     tree_test();
     }
 }
+
+class myown {
+    public static void main(String[] args) {
+	System.out.println("You cannot find me!");
+    }
+}
