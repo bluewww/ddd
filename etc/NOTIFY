@@ -1,14 +1,14 @@
 Memo: Whom to notify about new DDD releases
 ===========================================
 
+E-Mail
+------
+
 Text is found in `ANNOUNCE'.
 Title: `DDD X.Y [for Z] is available - graphical debugger front-end'
 Headers: `Followup-to: poster', 
          `Reply-to: ddd@ips.cs.tu-bs.de'
          `X-Face: [ddd/icons/ddd.xface]'
-
-E-Mail
-------
 
 * ddd-announce@ips.cs.tu-bs.de    (DDD announcements)
   Cc: 	elf@ee.ryerson.ca         (X11 apps FAQ, `comp.windows.x.apps')
@@ -46,6 +46,9 @@ Where to install
 * ftp://metalab.unc.edu/incoming/Linux/
   [source + binaries + LSM entry from ftp/bin/linux/generic/ddd-x.y.* ]
   Typically, use `binary / hash / prompt / mput ddd-x.y.*'.
+
+  It seems that only ordinarily compressed binaries (gzip without -9)
+  are accepted here.
 
 
 Helpers
