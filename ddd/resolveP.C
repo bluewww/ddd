@@ -37,14 +37,12 @@ char resolvePath_rcsid[] =
 #include "root.h"
 #include "filetype.h"
 #include "session.h"
+#include "cook.h"
+#include "status.h"
 #include "version.h"
 #include "StringA.h"
 
 #include <stdlib.h>
-
-#ifndef LOG_RESOLVE_PATH
-#define LOG_RESOLVE_PATH 1
-#endif
 
 // Return full path of FILE, searching in a number of predefined places.
 // If not found, return "".
@@ -68,37 +66,34 @@ string resolvePath(const string& file)
 	prefixes += DDD_ALT_ROOT;
 
 	// Look in standard prefix.
-	prefixes += "/usr/local/share/" DDD_NAME "-" DDD_VERSION;
-	prefixes += "/usr/local/share/" DDD_NAME;
+	prefixes += "/usr/local/share/" ddd_NAME "-" DDD_VERSION;
+	prefixes += "/usr/local/share/" ddd_NAME;
 
 	// Look in standard prefix.
-	prefixes += "/usr/share/" DDD_NAME "-" DDD_VERSION;
-	prefixes += "/usr/share/" DDD_NAME;
+	prefixes += "/usr/share/" ddd_NAME "-" DDD_VERSION;
+	prefixes += "/usr/share/" ddd_NAME;
 
 	// Look in standard prefix.
-	prefixes += "/usr/local/lib/" DDD_NAME "-" DDD_VERSION;
-	prefixes += "/usr/local/lib/" DDD_NAME;
+	prefixes += "/usr/local/lib/" ddd_NAME "-" DDD_VERSION;
+	prefixes += "/usr/local/lib/" ddd_NAME;
 
 	// Look in standard prefix.
-	prefixes += "/usr/lib/" DDD_NAME "-" DDD_VERSION;
-	prefixes += "/usr/lib/" DDD_NAME;
+	prefixes += "/usr/lib/" ddd_NAME "-" DDD_VERSION;
+	prefixes += "/usr/lib/" ddd_NAME;
     }
+
+    StatusDelay delay("Searching " + quote(file));
 
     for (int i = 0; i < prefixes.size(); i++)
     {
 	string path = prefixes[i] + "/" + file;
 	if (is_regular_file(path))
 	{
-#if LOG_RESOLVE_PATH
-	    clog << "Searching " << file << "..." << path << "\n";
-#endif
+	    delay.outcome = quote(path);
 	    return path;
 	}
     }
 
-#if LOG_RESOLVE_PATH
-    clog << "Searching " << file << "...not found\n";
-#endif
-
+    delay.outcome = "not found";
     return "";
 }
