@@ -1,6 +1,14 @@
 DDD News						-*- text -*-
 ********
 
+DDD 3.3.2
+=========
+
+DDD 3.3.1 brings some minor bug fixes:
+
+- Temporary sessions in Gnome and KDE are now properly deleted.
+
+
 DDD 3.3.1
 =========
 

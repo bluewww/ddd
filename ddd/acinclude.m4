@@ -2822,10 +2822,10 @@ dnl
 dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
 dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
 dnl snapshot of the current development tree.
-VERSION=3.3.1
+VERSION=3.3.2
 dnl
 dnl The version nickname.
-NICKNAME="Blue Gnu"
+NICKNAME="Blue Tomato"
 dnl 
 dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
 dnl After this date, users are requested to update DDD.
