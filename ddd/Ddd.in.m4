@@ -3084,6 +3084,25 @@ Ddd*showStartupLogoMenu*none.labelString:	None
 
 Ddd*preferences*showStartupTips.labelString:	Show Tip of the Day
 
+
+Ddd*preferences*fonts*helpString: \
+@rm These are the EMPH([DDD] fonts).\n\
+\n\
+ITEM LBL(Default Font) is the font used for DDD labels and buttons.\n\
+ITEM LBL(Variable Width) is the font used for messages (such as this one).\n\
+ITEM LBL(Fixed Width) is the font used for program code and text fields.\n\
+\n\
+To change a font, enter its name and size (in 1/10 points).\n\
+A pair VAR(family)-VAR(weight) as font name is sufficient.\n\
+\n\
+Using LBL(Browse), you can select fonts using CODE(xfontsel).\n\
+Click on LBL(select) to select the chosen font.\n\
+Wildcard entries (LBL(*)) will be ignored.\n\
+\n\
+Use the buttons above to view and change other preferences.\n\
+Click on LBL(Reset) to restore the saved preferences.
+
+
 Ddd*preferences*fonts*default.labelString:	 Default Font
 Ddd*preferences*fonts*variableWidth.labelString: Variable Width
 Ddd*preferences*fonts*fixedWidth.labelString:	 Fixed Width
