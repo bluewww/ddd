@@ -1249,7 +1249,7 @@ void manage_paned_child(Widget w)
     static const MinMax no_constraints;
 
     // Ensure that each child keeps at least the minimum size;
-    // don't make it larger than its preferred maximum size
+    // don't make it larger than its preferred maximum size.
     for (i = 0; i < numChildren; i++)
     {
 	Widget child = children[i];
@@ -1262,36 +1262,41 @@ void manage_paned_child(Widget w)
 	Cardinal arg = 0;
 
 	MinMax& size = sizes[child];
-	if (MIN_PANED_SIZE > size.min && MIN_PANED_SIZE <= size.max)
-	{
-	    XtSetArg(args[arg], XmNpaneMinimum, MIN_PANED_SIZE); arg++;
-	    size.changed = true;
-	}
+	Dimension current_max = size.max;
 
 	if (child != w
 	    && wsize.min <= no_constraints.min 
 	    && wsize.max >= no_constraints.max
 	    && preferred_sizes.has(child))
 	{
-	    // Child to be managed is resizable: give all other
-	    // windows their preferred (= initial) height
+	    // W is resizable: give all other children at most their
+	    // preferred (= initial) height
 	    MinMax& preferred_size = preferred_sizes[child];
 
 	    if (preferred_size.max < size.max)
 	    {
 		XtSetArg(args[arg], XmNpaneMaximum, preferred_size.max); arg++;
-		size.changed = true;
+		current_max = preferred_size.max;
 	    }
 
 	    // clog << XtName(child) 
 	    //      << " preferred = " << preferred_size.max << '\n';
 	}
 
+	// Make each child (including W) at least MIN_PANED_SIZE high
+	if (MIN_PANED_SIZE > size.min && MIN_PANED_SIZE <= current_max)
+	{
+	    XtSetArg(args[arg], XmNpaneMinimum, MIN_PANED_SIZE); arg++;
+	}
+
 	if (arg > 0)
+	{
 	    XtSetValues(child, args, arg);
+	    size.changed = true;
+	}
     }
 
-    // Manage the child
+    // Manage W
     XtManageChild(w);
 
     // Restore old constraints
@@ -1317,29 +1322,20 @@ void manage_paned_child(Widget w)
 
     paned_changed(w);
 }
-    
-void unmanage_paned_child(Widget w)
-{
-    // Whenever we're unmanaging a child, be sure the command window
-    // doesn't grow.
-    Widget paned = XtParent(w);
-    if (paned == 0 || !XmIsPanedWindow(paned) || !XtIsManaged(w))
-    {
-	XtUnmanageChild(w);
-	return;
-    }
 
+// Return the number of resizable children of PANED
+static int resizable_children(Widget paned)
+{
     // Fetch children
     WidgetList children;
     Cardinal numChildren = 0;
     XtVaGetValues(paned, XmNchildren, &children, 
 		  XmNnumChildren, &numChildren, NULL);
 
-
     // Fetch current constraints
     MinMaxAssoc sizes;
     Cardinal i;
-    int resizable_children = 0;
+    int n = 0;
     for (i = 0; i < numChildren; i++)
     {
 	Widget child = children[i];
@@ -1353,27 +1349,51 @@ void unmanage_paned_child(Widget w)
 		      NULL);
 
 	if (size.min < size.max)
-	    resizable_children++;
+	    n++;
     }
 
-    if (resizable_children <= 2)
+    return n;
+}
+
+    
+// Unamanage W, but be sure the command window doesn't grow.
+void unmanage_paned_child(Widget w)
+{
+    Widget paned = XtParent(w);
+    if (paned == 0 || !XmIsPanedWindow(paned) || !XtIsManaged(w))
+    {
+	XtUnmanageChild(w);
+	return;
+    }
+
+    Widget command = XtParent(gdb_w);
+
+    if (resizable_children(paned) <= 2)
     {
 	// Only two resizable children left - the remaining one must
-	// be resized to a maximum.
+	// be resized to a maximum.  Disable skipAdjust for a moment.
+	Boolean skip_adjust = True;
+	XtVaGetValues(command, XmNskipAdjust, &skip_adjust, NULL);
+	XtVaSetValues(command, XmNskipAdjust, False, NULL);
+
 	XtUnmanageChild(w);
+
+	XtVaSetValues(command, XmNskipAdjust, skip_adjust, NULL);
     }
     else
     {
 	// Resize the other child, but keep the command window intact
-	Widget command = XtParent(gdb_w);
 	Dimension height = 0;
-	XtVaGetValues(command, XmNheight, &height, NULL);
+	Dimension max = 1000;
+	XtVaGetValues(command, 
+		      XmNheight, &height,
+		      XmNpaneMaximum, &max,
+		      NULL);
 	XtVaSetValues(command, XmNpaneMaximum, height, NULL);
 
 	XtUnmanageChild(w);
 
-	static const MinMax no_constraints;
-	XtVaSetValues(command, XmNpaneMaximum, no_constraints.max, NULL);
+	XtVaSetValues(command, XmNpaneMaximum, max, NULL);
     }
 
     paned_changed(w);
