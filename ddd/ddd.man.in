@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "23 Oct 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "26 Oct 1997" "@DDD@ @VERSION@"
 .\" ---------------
 .SH "NAME"
 .\" ---------------
@@ -1863,6 +1863,12 @@ If your remote  \fIusername\fR differs from the local username, use
 .br
   \fB@ddd@\ \-\-host \fIhostname\fB\ \-\-login \fIusername\fB\c
  \fIremote-program\fR
+.br
+.sp
+or
+.sp
+.br
+  \fB@ddd@\ \-\-host \fIusername\fB@\fIhostname\fB\ \fIremote-program\fR
 .br
 .sp
 instead.
@@ -4003,8 +4009,10 @@ See also the `\fB\-\-no-glyphs\fR' option, below.
 Give a list of frequently used options.  Show options of the
 inferior debugger as well.
 .TP
-.B \-\-host \fIhostname\fR
-Invoke the inferior debugger directly on the remote host \fIhostname\fR.  See
+.B \-\-host \fR[\|\fIusername\fB@\fR\|]\|\fIhostname\fR
+Invoke the inferior debugger directly on the remote host
+\fIhostname\fR.  If \fIusername\fR is given and the `\fB\-\-login\fR'
+option is not used, use \fIusername\fR as remote user name.  See
 `\fBREMOTE DEBUGGING\fR', above.
 .TP
 .B \-\-lesstif-hacks\fR
@@ -4021,7 +4029,8 @@ LESSTIF\fR', above, for a discussion.
 Show the \s-2@DDD@\s+2 license and exit.
 .TP
 .B \-\-login \fIusername\fR
-Use \fIusername\fR as remote user name.  See `\fBREMOTE DEBUGGING\fR', above.
+Use \fIusername\fR as remote user name.  See `\fBREMOTE DEBUGGING\fR',
+above.
 .TP
 .B \-\-manual
 Show this manual page and exit.
@@ -4070,9 +4079,11 @@ However, the panner is off by default, since some Motif
 implementations do not work well with Athena widgets.  See also
 \fB\-\-scrolled-graph-editor\fR, below.
 .TP
-.B \-\-rhost \fIhostname\fR
-Run the inferior debugger interactively on the remote host \fIhostname\fR.
-See `\fBREMOTE DEBUGGING\fR', above.
+.B \-\-rhost \fR[\|\fIusername\fB@\fR\|]\|\fIhostname\fR
+Run the inferior debugger interactively on the remote host
+\fIhostname\fR.  If \fIusername\fR is given and the `\fB\-\-login\fR'
+option is not used, use \fIusername\fR as remote user name.  See
+`\fBREMOTE DEBUGGING\fR', above.
 .TP
 .B \-\-separate-windows
 Separate the console, source and data windows.  See also the

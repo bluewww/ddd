@@ -1659,6 +1659,13 @@ int main(int argc, char *argv[])
     else
 	gdb_host = "";
 
+    if (gdb_host.contains('@') && string(app_data.debugger_host_login) == "")
+    {
+	static string new_login = gdb_host.before('@');
+	app_data.debugger_host_login = new_login;
+	gdb_host = gdb_host.after('@');
+    }
+
     // Check for --version, --help, etc.
     if (app_data.show_version)
 	show_version();
