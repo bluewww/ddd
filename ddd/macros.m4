@@ -138,10 +138,3 @@ dnl an alternate name for DDD.
 define([DDD], [[@DDD@]])dnl
 define([Ddd], [[@Ddd@]])dnl
 define([ddd], [[@ddd@]])dnl
-dnl
-dnl
-dnl Header
-dnl ------
-dnl
-dnl Insert a header line
-! [Generated automatically from Ddd.in.m4 by @M4@.]

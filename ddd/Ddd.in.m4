@@ -1,6 +1,7 @@
 ! $Id$ -*- xrdb -*-
 ! DDD Resource File.  DO NOT INSTALL THIS FILE!  See below for details.
 ! @configure_input@
+! Generated automatically from Ddd.in.m4 by @M4@.
 include(ifdef(`srcdir',srcdir()/macros.m4,macros.m4))dnl
 Ddd*appDefaultsVersion: @VERSION@
 
