@@ -264,7 +264,7 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 77[ ][]][0-9]*[1-9][[][a-zA-Z0-9][a-zA-Z0-9 ]*[a-zA-Z] RETURN(&rxjdbprompt_reverse);
 78Process{W}{D}:{_}			RETURN(&rxprocess1);
 79Process{W}{D}:			RETURN(&rxprocess2);
-80[(][^ )]*db[^ )]*[)]{w}		RETURN(&rxprompt);
+80[(][^ )]*db[^)]*[)]{w}		RETURN(&rxprompt);
 81{C}[(]END[)].*			RETURN(&rxq);
 82@{_}{x}{_}:{C} 			RETURN(&rxreference);
 83{_}refresh({W}{C})?			RETURN(&rxrefresh_cmd);

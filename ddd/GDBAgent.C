@@ -633,7 +633,11 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 
 	string possible_prompt = answer.from(i);
 #if RUNTIME_REGEX
-	static regex rxprompt("[(][^ )]*db[^ )]*[)] ");
+	// Marc Lepage <mlepage@kingston.hummingbird.com> says that
+	// DBX on Solaris 2.5 has a prompt like `(dbx N) '.  We're
+	// liberal here and allow anything in the form `(NAME) ',
+	// where the first word in NAME must contain a `db'.
+	static regex rxprompt("[(][^ )]*db[^)]*[)] ");
 #endif
 	if (possible_prompt.matches(rxprompt))
 	{
