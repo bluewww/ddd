@@ -302,6 +302,9 @@ bool GDBAgent::send_user_ctrl_cmd(string cmd, void *user_data)
     if (user_data)
 	_user_data = user_data;
 
+    if (cmd == '\004')
+	state = BusyOnCmd;
+
     write((const char *)cmd, cmd.length());
     flush();
     return true;
@@ -471,7 +474,7 @@ bool GDBAgent::ends_with_prompt (const string& answer)
     case GDB:
 	{
 	    // Any line ending in `(gdb) ' or `(dbx) ' is a prompt.
-	    static regex rxprompt(".*[(][^)]*db[^)]*[)] ");
+	    static regex rxprompt(".*[(][^ )]*db[^ )]*[)] ");
 	    return answer.matches(rxprompt);
 	}
 
