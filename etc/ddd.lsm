@@ -3,31 +3,29 @@ DDD descriptions for the Linux software map
 
 Begin3
 Title:          ddd
-Version:        2.1.1
-Entered-date:   01JUN97
+Version:        2.2
+Entered-date:   15NOV97
 Description:    The Data Display Debugger (DDD) is a common graphical
                 user interface to GDB, DBX, and XDB, the popular UNIX
                 debuggers.  DDD provides a *graphical data display*
                 where complex data structures can be explored
                 incrementally and interactively.  DDD has been
                 designed to compete with well-known commercial
-                debuggers; as of release 2.1.1, DDD also compiles and
-                runs with LessTif without loss of functionality.
-		For more details, see the DDD WWW page at
+                debuggers; for more details, see the DDD WWW page at
 		`http://www.cs.tu-bs.de/softech/ddd/'.
 Keywords:       DDD, GUI, Debugger, GDB, Visualization
 Author:         luetke@ips.cs.tu-bs.de (Dorothea Luetkehaus)
                 zeller@ips.cs.tu-bs.de (Andreas Zeller)
 Maintained-by:  ddd@ips.cs.tu-bs.de (DDD Maintainers)
 Primary-site:   sunsite.unc.edu /pub/Linux/devel/debuggers/ddd/
-                2109k ddd-2.1.1.tar.gz  (Source)
-                487k  ddd-2.1.bin.ELF.dynamic.gz    ddd binary w/ dynamic Motif
-                962k  ddd-2.1.bin.ELF.semistatic.gz ddd binary w/ static Motif
-                1412k ddd-2.1.bin.ELF.static.gz     ddd binary w/ static all
+                2413k ddd-2.2.tar.gz  (Source)
+                669k  ddd-2.2.bin.ELF.dynamic.gz    ddd binary w/ dynamic Motif
+                1146k ddd-2.2.bin.ELF.semistatic.gz ddd binary w/ static Motif
+                1608k ddd-2.2.bin.ELF.static.gz     ddd binary w/ static all
 Alternate-site: ftp.funet.fi /pub/OS/Linux/devel/debuggers/ddd/
-Original-site:  ftp.ips.cs.tu-bs.de /pub/local/softech/ddd/
-Platforms:      Requires Motif (OSF/Motif >= 1.1 or LessTif >= 0.79) 
-                and a C++ compiler (GCC >= 2.6.3)
+Original-site:  ftp.ips.cs.tu-bs.de /pub/local/softech/ddd/bin/linux
+Platforms:      Requires Motif (OSF/Motif >= 1.1 or LessTif >= 0.79)
+                and a C++ compiler (GCC >= 2.7.2)
 Copying-policy: GPL
 End
 
