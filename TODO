@@ -349,11 +349,6 @@ Volunteers for these and other projects are welcome!
     debugging C++; I found no easy way.
     [graph display `print *this` would help.  -AZ]
 
-328*Finish display clustering:
-    - Alias hints of clustered displays remain in place.
-    - Clusters should be persistent.
-    - Document it all.
-
 329*Have a Display Editor shortcut from the data popup menu.
 
 331 (Insert new project ideas here)
