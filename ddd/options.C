@@ -147,7 +147,7 @@ void sourceToggleDisplayLineNumbersCB (Widget, XtPointer, XtPointer call_data)
 
 void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data) != False;
+    Boolean state = int(client_data);
 
     app_data.use_source_path = state;
     string referring_to_sources_using =
@@ -164,7 +164,7 @@ void sourceSetUseSourcePathCB (Widget, XtPointer client_data, XtPointer)
 
 void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data) != False;
+    Boolean state = int(client_data);
 
     app_data.display_glyphs = state;
 
@@ -363,7 +363,7 @@ void dddToggleGroupIconifyCB (Widget, XtPointer, XtPointer call_data)
 
 void dddSetGlobalTabCompletionCB(Widget, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data) != False;
+    Boolean state = int(client_data);
 
     app_data.global_tab_completion = state;
 
@@ -522,7 +522,7 @@ static string next_ddd_will_start_with =
 
 void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data) != False;
+    Boolean state = int(client_data);
 
     app_data.separate_data_window   = state;
     app_data.separate_source_window = state;
@@ -538,7 +538,7 @@ void dddSetSeparateWindowsCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data) != False;
+    Boolean state = int(client_data);
 
     app_data.status_at_bottom = state;
 
@@ -553,7 +553,7 @@ void dddSetStatusAtBottomCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetToolBarCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data) != False;
+    Boolean state = int(client_data);
 
     app_data.tool_bar = state;
     string tool_buttons_are_located_in = "Tool buttons are located in ";
@@ -636,7 +636,7 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data) != False;
+    Boolean state = int(client_data);
     app_data.panned_graph_editor = state;
 
     if (state)
