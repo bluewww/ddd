@@ -292,6 +292,8 @@ LessTif
 
     * The `Preferences' dialog may need manual resize.
 
+    * Option menus in `GDB Settings' are only displayed partially.
+
     * Resizing the plot window does not work properly.
 
     * Accelerators like Ctrl+L do not work in the plot window.
