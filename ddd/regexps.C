@@ -175,6 +175,7 @@ const regex rxoptions			(rx_matcher, (void *)S072);
 const regex rxout_of_range		(rx_matcher, (void *)S073);
 const regex rxpath_cmd			(rx_matcher, (void *)S074);
 const regex rxpc			(rx_matcher, (void *)S075);
+const regex rxjdbprompt			(rx_matcher, (void *)S076);
 const regex rxprocess1			(rx_matcher, (void *)S078);
 const regex rxprocess2			(rx_matcher, (void *)S079);
 const regex rxprompt			(rx_matcher, (void *)S080);

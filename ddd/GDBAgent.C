@@ -647,8 +647,12 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 
     case JDB:
     {
+#if RUNTIME_REGEX
+	static regex rxjdbprompt(" (>|[]][0-9]*[1-9][[][a-zA-Z0-9]+)");
+#endif
 	// JDB prompts using "> " or "THREAD[DEPTH] "
-	if (answer.contains("> ", -1) || answer.contains("] ", -1))
+	if (answer.contains(' ', -1)
+	    && reverse(answer).contains(rxjdbprompt, 0))
 	{
 	    if (answer.contains('\n'))
 		last_prompt = answer.after('\n', -1);

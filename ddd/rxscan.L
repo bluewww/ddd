@@ -181,7 +181,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 %s S073
 %s S074
 %s S075
-/* %s S076 */
+%s S076
 /* %s S077 */
 %s S078
 %s S079
@@ -295,6 +295,7 @@ V	v(irtual{W})?t(a)?bl(e)?
 <S073>Line{W}number{W}{D}{W}is{W}out{W}of{W}range{W}for{W} return &rxout_of_range;
 <S074>{_}(dir|directory|path)({W}{C})?	return &rxpath_cmd;
 <S075>\$pc{_}={_}{A}			return &rxpc;
+<S076>[ ](>|[]][0-9]*[1-9][[][a-zA-Z0-9]+) return &rxjdbprompt;
 <S078>Process{W}{D}:{_}			return &rxprocess1;
 <S079>Process{W}{D}:			return &rxprocess2;
 <S080>[(][^ )]*db[^ )]*[)]{w}		return &rxprompt;
