@@ -293,9 +293,6 @@ static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
 // Drag and drop
 static void CheckDragCB(Widget, XtPointer client_data, XtPointer call_data);
 
-// Verify view menu
-static void verify_view_menu(MMDesc *view_menu);
-
 // Verify whether buttons are active
 static void verify_buttons(MMDesc *items);
 
@@ -528,25 +525,17 @@ static MMDesc program_menu[] =
 };
 
 enum DDDWindow { ToolWindow, ExecWindow, DummySep,
-		 ToggleDataWindow, DataWindow,
-		 ToggleSourceWindow, SourceWindow,
-		 ToggleGDBWindow, GDBWindow };
+		 DataWindow, SourceWindow, GDBWindow };
 
 #define VIEW_MENU \
-{ \
-    { "tool",       MMPush,   { gdbOpenToolWindowCB }}, \
-    { "exec",       MMPush,   { gdbOpenExecWindowCB }}, \
-    MMSep, \
-    { "toggle_data",    MMToggle | MMUnmanaged, \
-	{ gdbToggleDataWindowCB }}, \
-    { "data",           MMPush,   { gdbOpenDataWindowCB }}, \
-    { "toggle_source",  MMToggle | MMUnmanaged, \
-	{ gdbToggleSourceWindowCB }}, \
-    { "source",         MMPush,   { gdbOpenSourceWindowCB }}, \
-    { "toggle_console", MMToggle | MMUnmanaged, \
-	{ gdbToggleCommandWindowCB }}, \
-    { "console",        MMPush,   { gdbOpenCommandWindowCB }}, \
-    MMEnd \
+{                                                         \
+    { "tool",    MMPush,   { gdbOpenToolWindowCB }},      \
+    { "exec",    MMPush,   { gdbOpenExecWindowCB }},      \
+    MMSep,                                                \
+    { "data",    MMToggle, { gdbToggleDataWindowCB }},    \
+    { "source",  MMToggle, { gdbToggleSourceWindowCB }},  \
+    { "console", MMToggle, { gdbToggleCommandWindowCB }}, \
+    MMEnd                                                 \
 }
 
 static MMDesc command_view_menu[] = VIEW_MENU;
@@ -1485,7 +1474,6 @@ int main(int argc, char *argv[])
     Widget menubar_w = MMcreateMenuBar (main_window, "menubar", menubar);
     MMaddCallbacks(menubar);
     verify_buttons(menubar);
-    verify_view_menu(command_view_menu);
 
     set_option_widgets(CommandOptions);
 
@@ -1531,7 +1519,6 @@ int main(int argc, char *argv[])
 	    MMcreateMenuBar (data_main_window_w, "menubar", data_menubar);
 	MMaddCallbacks(data_menubar);
 	verify_buttons(data_menubar);
-	verify_view_menu(data_view_menu);
 
 	set_option_widgets(DataOptions);
 
@@ -1594,7 +1581,6 @@ int main(int argc, char *argv[])
 	    MMcreateMenuBar (source_main_window_w, "menubar", source_menubar);
 	MMaddCallbacks(source_menubar);
 	verify_buttons(source_menubar);
-	verify_view_menu(source_view_menu);
 
 	set_option_widgets(SourceOptions);
 
@@ -1913,14 +1899,15 @@ int main(int argc, char *argv[])
     }
 
     // If some window is iconified, iconify all others as well
+    const int structure_mask = StructureNotifyMask | VisibilityChangeMask;
     if (command_shell)
-	XtAddEventHandler(command_shell, StructureNotifyMask, False,
+	XtAddEventHandler(command_shell, structure_mask, False,
 			  StructureNotifyEH, XtPointer(0));
     if (source_view_shell)
-	XtAddEventHandler(source_view_shell, StructureNotifyMask, False,
+	XtAddEventHandler(source_view_shell, structure_mask, False,
 			  StructureNotifyEH, XtPointer(0));
     if (data_disp_shell)
-	XtAddEventHandler(data_disp_shell, StructureNotifyMask, False,
+	XtAddEventHandler(data_disp_shell, structure_mask, False,
 			  StructureNotifyEH, XtPointer(0));
 
 #if 0
@@ -1960,7 +1947,10 @@ int main(int argc, char *argv[])
 			    XtWindow(tool_shell_parent));
 
 #if 0
-	XtAddEventHandler(tool_shell, StructureNotifyMask, False,
+	XtAddEventHandler(tool_shell, structure_mask, False,
+			  StructureNotifyEH, XtPointer(0));
+#else
+	XtAddEventHandler(tool_shell, VisibilityChangeMask, False,
 			  StructureNotifyEH, XtPointer(0));
 #endif
 	
@@ -3635,34 +3625,12 @@ void gdbUpdateViewCB(Widget, XtPointer client_data, XtPointer)
 {
     MMDesc *view_menu = (MMDesc *)client_data;
 
-    set_toggle(view_menu[ToggleDataWindow].widget,   
-	       have_visible_data_window());
-    set_toggle(view_menu[ToggleSourceWindow].widget,
-	       have_visible_source_window());
-    set_toggle(view_menu[ToggleGDBWindow].widget,
-	       have_visible_command_window());
+    set_toggle(view_menu[DataWindow].widget,   have_visible_data_window());
+    set_toggle(view_menu[SourceWindow].widget, 
+	       have_visible_source_window() || have_visible_tool_window());
+    set_toggle(view_menu[GDBWindow].widget,    have_visible_command_window());
 
     set_sensitive(view_menu[ExecWindow].widget, app_data.separate_exec_window);
-}
-
-static void verify_view_menu(MMDesc *view_menu)
-{
-    manage_child(view_menu[DataWindow].widget,
-		 app_data.separate_data_window);
-    manage_child(view_menu[ToggleDataWindow].widget, 
-		 !app_data.separate_data_window);
-
-    manage_child(view_menu[SourceWindow].widget,
-		 app_data.separate_source_window);
-    manage_child(view_menu[ToggleSourceWindow].widget, 
-		 !app_data.separate_source_window);
-
-    manage_child(view_menu[GDBWindow].widget,
-		 app_data.separate_data_window 
-		 && app_data.separate_source_window);
-    manage_child(view_menu[ToggleGDBWindow].widget, 
-		 !(app_data.separate_data_window
-		   && app_data.separate_source_window));
 }
 
 

@@ -70,6 +70,12 @@ static WindowState data_disp_shell_state   = PoppedDown;
 static WindowState source_view_shell_state = PoppedDown;
 static WindowState tool_shell_state        = PoppedDown;
 
+// Flags: shell visibility
+static int command_shell_visibility     = VisibilityFullyObscured;
+static int data_disp_shell_visibility   = VisibilityFullyObscured;
+static int source_view_shell_visibility = VisibilityFullyObscured;
+static int tool_shell_visibility        = VisibilityFullyObscured;
+
 // Disable popups
 bool popups_disabled = false;
 
@@ -348,6 +354,19 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	}
 	break;
 
+    case VisibilityNotify:
+    {
+	
+	if (w == command_shell)
+	    command_shell_visibility = event->xvisibility.state;
+	else if (w == data_disp_shell)
+	    data_disp_shell_visibility = event->xvisibility.state;
+	else if (w == source_view_shell)
+	    source_view_shell_visibility = event->xvisibility.state;
+	else if (w == tool_shell)
+	    tool_shell_visibility = event->xvisibility.state;
+    }
+
     default:
 	// Any other event...
 	break;
@@ -425,7 +444,9 @@ bool have_command_window()
 
 bool have_visible_command_window()
 {
-    return have_command_window() && command_shell_state == PoppedUp;
+    return have_command_window() 
+	&& command_shell_state == PoppedUp
+	&& command_shell_visibility == VisibilityUnobscured;
 }
 
 
@@ -462,7 +483,9 @@ bool have_source_window()
 bool have_visible_source_window()
 {
     return have_source_window()
-	&& (source_view_shell == 0 || source_view_shell_state == PoppedUp);
+	&& (source_view_shell == 0 
+	    || (source_view_shell_state == PoppedUp
+		&& source_view_shell_visibility == VisibilityUnobscured));
 }
 
 
@@ -497,7 +520,9 @@ bool have_data_window()
 bool have_visible_data_window()
 {
     return have_data_window()
-	&& (data_disp_shell == 0 || data_disp_shell_state == PoppedUp);
+	&& (data_disp_shell == 0 
+	    || (data_disp_shell_state == PoppedUp
+		&& data_disp_shell_visibility == VisibilityUnobscured));
 }
 
 
@@ -547,7 +572,9 @@ bool have_tool_window()
 
 bool have_visible_tool_window()
 {
-    return have_tool_window() && tool_shell_state == PoppedUp;
+    return have_tool_window() 
+	&& tool_shell_state == PoppedUp 
+	&& tool_shell_visibility == VisibilityUnobscured;
 }
 
 
@@ -574,9 +601,15 @@ void gdbToggleSourceWindowCB(Widget w, XtPointer client_data,
 	(XmToggleButtonCallbackStruct *)call_data;
 
     if (info->set)
+    {
 	gdbOpenSourceWindowCB(w, client_data, call_data);
+	gdbOpenToolWindowCB(w, client_data, call_data);
+    }
     else
+    {
 	gdbCloseSourceWindowCB(w, client_data, call_data);
+	gdbCloseToolWindowCB(w, client_data, call_data);
+    }
 }
 
 void gdbToggleDataWindowCB(Widget w, XtPointer client_data,
