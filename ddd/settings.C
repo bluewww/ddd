@@ -2795,6 +2795,10 @@ static void update_defineHP(Agent *, void *client_data, void *call_data)
 	    delete[] c;
 	}
     }
+    else
+    {
+	UpdateDefinePanelCB();
+    }
 }
 
 // This one is called by send_gdb_command() when seeing `define'
