@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "13 December 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "17 December 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -478,8 +478,8 @@ details.
 .\"
 If the item you wish to search is visible in the source text, click
 with the \fIleft mouse button\fR on it.  The identifier is copied to
-the argument field.  Click on the `\fBFind>> ()\fR' button to find
-following occurrences and on the  `\fBFind<< ()\fR' button to find
+the argument field.  Click on the `\fBFind>>()\fR' button to find
+following occurrences and on the  `\fBFind<<()\fR' button to find
 previous occurrences.
 .PP
 As an alternative, you can enter the item in the argument field and
@@ -513,10 +513,17 @@ next looked-up locations.  The location found is underlined.
 .\"
 .SS "Starting Program Execution"
 .\"
-Click on the `\fBrun\fR' button or select `\fBRun\fR' from the
-`\fBFile\fR' menu to start execution of the debugged program.  If
-you wish to specify program arguments, enter `\fBrun\fR' followed
-by arguments at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt instead.
+Select `\fBRun\fR' from the `\fBProgram\fR' menu to start execution of
+the debugged program.  You will then be prompted for the arguments to
+give to your program.  You can either select from a list of previously
+used arguments or enter own arguments in the text field.  Afterwards,
+press the `\fBOK\fR' button to start execution with the selected
+arguments.
+.PP
+To run your program again, with the same arguments, select `\fBRun
+Again\fR' from the `\fBProgram\fR' menu or press the `\fBRun\fR'
+button below.  You may also enter `\fBrun\fR', followed by arguments
+at the `\fB(gdb)\fR' or `\fB(dbx)\fR' prompt instead.
 .PP
 When the program is first started, \s-2@DDD@\s+2 invokes an \fIexecution
 window\fR, where the program terminal input and output is shown.  (You
@@ -549,16 +556,12 @@ function calls appearing within the line of code are executed without
 stopping.
 .PP
 To continue running until the current function returns, use the
-`\fBContinue\fR' button.  The returned value (if any) is printed.
+`\fBFinish\fR' button.  The returned value (if any) is printed.
 .PP
 To continue running until a line after the current source line is
-reached, use the `\fBUntil\fR' button.  `\fBUntil\fR' is used to avoid
-single stepping through a loop more than once.  It is like the
-`\fBNext\fR' button, except that when `\fBUntil\fR' encounters a jump,
-it automatically continues execution until the program counter is
-greater than the address of the jump. This means that when you reach
-the end of a loop after single stepping though it, `\fBUntil\fR' makes
-your program continue execution until it exits the loop.
+reached, use the `\fBContinue Until Here\fR' facility from the line
+popup menu.  See `\fBTemporary Breakpoints\fR', above, for a
+discussion.
 .\"
 .\"
 .SS "Examining the Stack"
@@ -919,6 +922,74 @@ To re-print the display graph using the previous settings, select the
 As an alternative, you may also print the graph in a file.  Click on
 the `\fBFile\fR' button and enter the file name in the `\fBFile
 Name\fR' field.  Click on the `\fBPrint\fR' button to create the file.
+.PP
+When the graph is printed in a file, two formats are available:
+.br
+.IP \(bu 2
+PostScript - suitable for enclosing it in another document;
+.br
+.IP \(bu 2
+\s-2XFIG\s+2 - suitable for editing, using the \s-2XFIG\s+2 graphic
+editor, or for conversion into other formats using the
+\s-2TRANSFIG\s+2 package.
+
+
+.\" ---------------
+.SH "MACHINE-LEVEL DEBUGGING"
+.\" ---------------
+.\"
+Note: Machine-level support is not available with \s-2DBX\s+2.
+.PP
+Sometimes, it is desirable to examine a program not only at the
+source level, but also at the machine level.  \s-2@DDD@\s+2 provides
+special machine code and register windows for this task.
+.\"
+.\"
+.SS "Examining Machine Code"
+To enable machine-level support, select `\fBDisplay Machine Code\fR'
+from the `\fBSource Options\fR' menu.  With `\fBDisplay Machine
+Code\fR' enabled, an additional \fImachine code window\fR shows up,
+displaying the machine code of the current function.  By moving the
+sash at the right of the separating line between source and machine
+code, you can resize the source and machine code windows.
+.PP
+The machine code window works very much like the source window.  You
+can set, clear, and change breakpoints by selecting the address and
+pressing a `\fBBreak()\fR' or `\fBClear()\fR' button; the usual
+popup menus are also available.  Breakpoints and the current
+execution position are displayed simultaneously in both source and
+machine code.
+.PP
+The `\fBLookup()\fR' button can be used to look up the machine code
+for a specific function\(em\&or the function for a specific address.
+Just click on the location in one window and press `\fBLookup()\fR'
+to see the corresponding code in the other window.
+.PP
+If source code is not available, only the machine code window is
+updated.
+.\"
+.\"
+.SS "Execution"
+All execution facilities available in the source code window are
+available in the machine code window as well.  Two special facilities
+are convenient for machine-level debugging:
+.PP
+To execute just one machine instruction, click on the `\fBStepi\fR' button.
+.PP
+To continue to the next instruction in the current function, click on
+the `\fBNexti\fR' button.  This is similar to `\fBStepi\fR', but any
+subroutine calls are executed without stopping.
+.\"
+.\"
+.SS "Registers"
+\s-2@DDD@\s+2 provides a \fIregister window\fR showing the machine
+register values after each program stop.  To enable the register
+window, select `\fBShow Registers\fR' from the `\fBStack\fR' menu.
+.PP
+By selecting one of the registers, its name is copied to the argument
+field.  You can use it as value for `\fBDisplay()\fR', for instance,
+to have its value displayed in the data window.
+
 
 .\" ---------------------
 .SH "EDITING SOURCE CODE"
@@ -956,12 +1027,15 @@ After the editor has exited, the source code shown is automatically
 brought up-to-date.
 .PP
 If you have \s-2@DDD@\s+2 and an editor running in parallel, you can
-also update the source code manually by selecting the `\fBReload\fR'
-button or the `\fBReload Source...\fR' item from the `\fBSource\fR'
-menu.  This reloads the source code shown from the source file.
+also update the source code manually by selecting the `\fBReload
+Source...\fR' item from the `\fBSource\fR' menu.  This reloads the
+source code shown from the source file.  As \s-2@DDD@\s+2
+automatically reloads the source code if the debugged program has been
+recompiled, this should seldom be necessary.
+
 
 .\" ---------------
-.SH QUITTING @DDD@
+.SH "QUITTING @DDD@"
 .\" ---------------
 .\"
 To exit \s-2@DDD@\s+2, select `\fBExit\fR' from the `\fBFile\fR' menu.
@@ -1139,10 +1213,25 @@ convenient for clicking on an identifier in the source text and search
 for exactly this identifier.  If you want to find all occurrences,
 including word parts, unset the `\fBFind Words Only\fR' option.
 .PP
+If you wish to display machine code of selected funtions, set the
+`\fBDisplay Machine Code\fR' option.  This makes \s-2@DDD@\s+2 run a
+little slower, so it is disabled by default.
+.PP
+As of this \s-2@DDD@\s+2 release, the current execution position and
+breakpoints are indicated by symbols (``glyphs'') in the source text.
+Previous releases used special texts for this purpose.  If you wish to
+disable glyphs, unset the `\fBDisplay Glyphs\fR' option.  This also
+makes \s-2@DDD@\s+2 run slightly faster, especially when scrolling.
+.PP
 By default, \s-2@DDD@\s+2 caches source files in memory.  This is
 convenient for remote debugging, since remote file access may be slow.
 If you want to reduce memory usage, unset the `\fBCache Sources\fR'
 option.
+.PP
+By default, \s-2@DDD@\s+2 caches machine code in memory.  This is bad
+for memory usage, but convenient for speed, since disassembling a
+function each time it is reached may take time.  If you want to reduce
+memory usage, unset the `\fBCache Machine Code\fR' option.
 
 .SS "Data Options"
 By default, \s-2@DDD@\s+2 displays a grid in the data window to

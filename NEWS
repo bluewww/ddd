@@ -34,6 +34,7 @@ DDD 1.4 (WORK IN PROGRESS - NOT YET RELEASED)
     - Interactive dialogs for disambiguating C++ names.
     - Several major and minor bugs have been fixed.  Special thanks to
       Grant McDorman <grant@isgtec.com>.
+    - DDD incorporates the name of its builder in `Help/Show Version'.
     - No more `Help on Debugging' item.  Sigh.
 
 
