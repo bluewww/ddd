@@ -104,11 +104,11 @@ I       [A-Za-z_$][A-Za-z0-9_$]*
 J       [A-Za-z_$][A-Za-z0-9_$.]*
 
 
-/* This lexer is quite huge.  Sun LEX wants some extra sizes. */
+/* This lexer is quite huge.  SunOS lex and AIX lex wants some extra sizes. */
 %e 5000
 %k 10000
-%p 12000
-%a 20000
+%p 15000
+%a 25000
 %n 5000
 %o 30000
 
