@@ -1,0 +1,151 @@
+# $Id$ -*- autoconf -*-
+# DDD tips of the day.
+
+# Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
+# Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
+# 
+# This file is part of DDD.
+# 
+# DDD is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+# 
+# DDD is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with DDD -- see the file COPYING.
+# If not, write to the Free Software Foundation, Inc.,
+# 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+# 
+# DDD is the data display debugger.
+# For details, see the DDD World-Wide-Web page, 
+# `http://www.cs.tu-bs.de/softech/ddd/',
+# or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
+
+# This is a list of tips for DDD.  Every time DDD is started, one tip
+# will be selected from this file and will be displayed in the `Tip of
+# the day' dialog.
+#
+# - Lines starting with `#' are comments.
+# - Blank lines or comments separate two tips (they are not ignored).
+#   Multiple blank lines are treated as one.  If you want to have a
+#   blank line in a tip, put a space or tab in it.
+# - Text will appear in the dialog as it is in this file.  This is
+#   done on purpose in order to have more freedom in the layout of the
+#   tips than with automatic word-wrapping, but this also means that
+#   you have to avoid excessively long lines in this file.
+# - This file is processed by M4 and may contain typesetting macros.
+#   See `ddd/macros.m4' for details.
+# - Tips should be concise: 3 lines or less.
+
+# This file is processed by m4.
+include(ifdef(`srcdir',srcdir()/ddd/macros.m4,ddd/macros.m4))#
+
+
+# First tips.
+
+Welcome to DDD!
+You can get help on all items by pointing at them and pressing F1.
+And don't worry, there is the LBL(Help) menu with much more information...
+
+Buttons with a small riangle in the upper right corner are special:
+pressing and holding BUTTON(3) on them will show up a menu with
+additional options.
+
+There are three ways to show the value of a variable:
+ITEM You can view its value, simply by pointing at it;
+ITEM You can print its value in the debugger console, using LBL(Print ());
+ITEM You can display it graphically, using LBL(Display()).
+
+You can press BUTTON(3) on variables, breakpoints, and displays
+to manipulate them directly.
+
+To quickly dereference pointers in the data display,
+double-click on them.
+
+
+# Intermediate tips.
+
+When using GDB, all text fields have command and argument completion
+with KEY(Tab), just like the shell.  In a file selection box, type
+part of a filename, hit KEY(Tab), and voila!  It's completed.
+
+Here's how to display a variable-length array.  To display the first
+VAR(n) elements of a C or C++ array VAR(ptr), enter KBD(graph display
+VAR(ptr)[0]@VAR(n)) at the GDB prompt.
+
+To scroll the data display, most users find a panner much more
+convenient than two scrollbars.  If it works for you, check out
+LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Data is scrolled).
+
+To limit the number of array elements in a data display, select
+LBL(Edit) | LBL(GDB Settings) and set LBL(Limit on string chars or
+array elements to print).
+
+To see the EMPH(actual) type of a C++ object in GDB, enable
+LBL(Set printing of object's derived type based on vtable info)
+in the GDB settings (LBL(Edit) | LBL(GDB Settings)).
+
+To display VAR(data) in hexadecimal format, display it and choose
+LBL(Convert to Hex) from the LBL(New Display) menu, or enter 
+KBD(graph display /x VAR(data)) at the GDB prompt.
+
+To send a signal to the debuggee, use the GDB SAMP(signal) command.
+For instance, to continue execution with an interrupt signal, use
+KBD(signal SIGINT) or KBD(signal 2) at the GDB prompt.
+
+You can repeat the last command by hitting KEY_RETURN in the @GDB@ console.
+With KEY(Ctrl+R) and KEY(Ctrl+S), you can search the command history.
+
+In GCC, SAMP(-Wall) does not enable all warnings.  See the GCC
+documentation for other warnings you might consider useful.
+BY(J.H.M. Dassen, jdassen@wi.leidenuniv.nl)
+
+To get a global idea of what a process or program does or is doing,
+use a system call tracer, like strace, truss, or trace.
+BY(J.H.M. Dassen, jdassen@wi.leidenuniv.nl)
+
+
+# Advanced tips.
+
+You can have each of DDD, @GDB@ and the debugged program run on
+different machines.  See the DDD KBD(--rhost) option for details.
+
+To save and restore data displays, cut, copy and paste them via the
+LBL(Edit) menu.  Together with CODE(xclipboard), you can manage
+arbitrary collections of data displays.
+
+To stop this debugging session and resume later, use 
+LBL(File) | LBL(Save Session).
+
+To debug a child process, put a call to SAMP(sleep) in the child right
+after the SAMP(fork) call.  Run the program and use LBL(File) |
+LBL(Attach to Process) to attach to the child process.
+
+If you suspect memory corruption caused by problematic pointers, try
+linking with Electric Fence (SAMP(efence)) or the SAMP(dbmalloc) library
+(URL(http://www.cs.colorado.edu/homes/zorn/public_html/MallocDebug.html)).
+BY(J.H.M. Dassen, jdassen@wi.leidenuniv.nl)
+
+Prevention is better than cure.  Document your assumptions using
+CODE(<assert.h>) or GNU NANA 
+(URL(http://wattle.cs.ntu.edu.au/homepages/pjm/nana-home/)).
+BY(J.H.M. Dassen, jdassen@wi.leidenuniv.nl)
+
+You can define your own DDD buttons via LBL(Commands) | LBL(Edit Buttons).
+
+When debugging an X application, there is always a risk of
+interrupting it while the mouse pointer is grabbed (frozen).  To
+prevent this, set LBL(Edit) | LBL(Preferences) | LBL(General) |
+LBL(Ungrab mouse pointer when interrupting modal X application).
+
+A simple way to resume a saved DDD VAR(session) is KBD(ddd =VAR(session)).
+
+When you're totally stuck, try to find a helpful ear.  In my experience,
+nothing helps you more in debugging than to try to explain your problem
+(what your code should do, and what it actually does) to someone else.
+BY(J.H.M. Dassen, jdassen@wi.leidenuniv.nl)
