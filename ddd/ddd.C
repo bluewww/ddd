@@ -150,6 +150,7 @@ char ddd_rcsid[] =
 #include <Xm/SelectioB.h>
 #include <Xm/DialogS.h>
 #include <Xm/Form.h>
+#include <Xm/ToggleB.h>
 #include <X11/Shell.h>
 
 #ifdef HAVE_X11_XMU_EDITRES_H
@@ -246,7 +247,7 @@ void gdbUpdateEditCB      (Widget, XtPointer, XtPointer);
 void gdbUpdateViewCB      (Widget, XtPointer, XtPointer);
 
 // Preferences
-static Widget make_panel (Widget parent, String name, MMDesc items[]);
+static void make_preferences (Widget parent);
 static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer);
 
 // User emergencies (Ctrl-C)
@@ -568,9 +569,9 @@ static MMDesc source_menu[] =
 
 // Preferences
 
+static Widget preferences_dialog;
 
 // General preferences
-static Widget general_preferences;
 static Widget group_iconify_w;
 static Widget global_tab_completion_w;
 static Widget suppress_warnings_w;
@@ -591,7 +592,6 @@ static MMDesc general_preferences_menu[] =
 
 
 // Source preferences
-static Widget source_preferences;
 static Widget display_glyphs_w;
 static Widget cache_source_files_w;
 static Widget cache_machine_code_w;
@@ -609,7 +609,6 @@ static MMDesc source_preferences_menu[] =
 
 
 // Data preferences
-static Widget data_preferences;
 static Widget graph_show_grid_w;
 static Widget graph_show_hints_w;
 static Widget graph_snap_to_grid_w;
@@ -633,7 +632,6 @@ static MMDesc data_preferences_menu[] =
 
 
 // Startup preferences
-static Widget startup_preferences;
 static Widget set_separate_windows_w;
 static Widget set_attached_windows_w;
 
@@ -711,14 +709,8 @@ static void set_option_widgets(DDDOption opt);
 
 static MMDesc options_menu [] =
 {
-    { "generalPreferences", MMPush, 
-      { dddPopupPreferencesCB, &general_preferences }},
-    { "sourcePreferences",  MMPush,
-      { dddPopupPreferencesCB, &source_preferences }},
-    { "dataPreferences",    MMPush,
-      { dddPopupPreferencesCB, &data_preferences }},
-    { "startupPreferences", MMPush,
-      { dddPopupPreferencesCB, &startup_preferences }},
+    { "preferences", MMPush,  { dddPopupPreferencesCB }},
+    { "settings",  MMPush | MMInsensitive },
     MMSep,
     { "separateExecWindow",  MMToggle, { dddToggleSeparateExecWindowCB }, 
       NULL, separate_exec_window_w },
@@ -1364,14 +1356,7 @@ int main(int argc, char *argv[])
 		   NULL);
 
     // Create preference panels
-    general_preferences = make_panel(paned_work_w, "general_preferences", 
-				     general_preferences_menu);
-    source_preferences = make_panel(SourceView::source(), "source_preferences",
-				    source_preferences_menu);
-    data_preferences = make_panel(DataDisp::graph_edit, "data_preferences",
-				  data_preferences_menu);
-    startup_preferences = make_panel(paned_work_w, "startup_preferences",
-				     startup_preferences_menu);
+    make_preferences(paned_work_w);
 
     // All widgets are created at this point.
     set_status("Welcome to " DDD_NAME " " DDD_VERSION "!");
@@ -1801,57 +1786,142 @@ void update_options()
 // Preferences
 //-----------------------------------------------------------------------------
 
-// Create panel dialog from items
-static Widget make_panel(Widget parent, String name, MMDesc items[])
+static void ChangePanelCB(Widget, XtPointer client_data, XtPointer call_data)
+{
+    Widget panel = (Widget)client_data;
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (cbs->set)
+    {
+	XtManageChild(panel);
+	XtAddCallback(preferences_dialog, XmNhelpCallback, HelpOnThisCB, 
+		      XtPointer(panel));
+    }
+    else
+    {
+	XtUnmanageChild(panel);
+	XtRemoveCallback(preferences_dialog, XmNhelpCallback, HelpOnThisCB, 
+			 XtPointer(panel));
+    }
+}
+
+static void add_panel(Widget parent, Widget buttons, 
+		      String name, MMDesc items[],
+		      Dimension& max_width, Dimension& max_height,
+		      bool set = false)
 {
     Arg args[10];
     int arg;
-
-    arg = 0;
-    Widget panel_dialog = 
-	verify(XmCreatePromptDialog(parent, name, args, arg));
-
-    // Remove old prompt and cancel button
-    Widget text = XmSelectionBoxGetChild(panel_dialog, XmDIALOG_TEXT);
-    XtUnmanageChild(text);
-    Widget old_label = 
-	XmSelectionBoxGetChild(panel_dialog, XmDIALOG_SELECTION_LABEL);
-    XtUnmanageChild(old_label);
-    Widget cancel = 
-	XmSelectionBoxGetChild(panel_dialog, XmDIALOG_CANCEL_BUTTON);
-    XtUnmanageChild(cancel);
-    XtAddCallback(panel_dialog, XmNhelpCallback, ImmediateHelpCB, 0);
 
     // Add two rows
     arg = 0;
     XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
     XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
     XtSetArg(args[arg], XmNborderWidth,  0); arg++;
-    Widget form = verify(XmCreateRowColumn(panel_dialog, "form", args, arg));
+    Widget form = verify(XmCreateRowColumn(parent, name, args, arg));
     XtManageChild(form);
 
-    arg = 0;
-    Widget label = verify(XmCreateLabel(form, "label", args, arg));
-    XtManageChild(label);
-
-    arg = 0;
-    Widget frame = verify(XmCreateFrame(form, "frame", args, arg));
-    XtManageChild(frame);
-
     // Add panel
-    Widget panel = MMcreatePanel(frame, name, items);
+    Widget panel = MMcreatePanel(form, "panel", items);
     MMaddCallbacks(items);
     XtManageChild(panel);
 
-    return panel_dialog;
+    XtWidgetGeometry size;
+    size.request_mode = CWHeight | CWWidth;
+    XtQueryGeometry(form, NULL, &size);
+    max_width  = max(max_width,  size.width);
+    max_height = max(max_height, size.height);
+
+    // Add button
+    arg = 0;
+    Widget button = verify(XmCreateToggleButton(buttons, name, args, arg));
+    XtManageChild(button);
+
+    XtAddCallback(button, XmNvalueChangedCallback, ChangePanelCB, 
+		  XtPointer(form));
+
+    XmToggleButtonSetState(button, (Boolean)set,  False);
+    if (set)
+    {
+	XtManageChild(form);
+	XtAddCallback(preferences_dialog, XmNhelpCallback, HelpOnThisCB, 
+		      XtPointer(form));
+    }
+    else
+	XtUnmanageChild(form);
+}
+
+// Create preferences dialog
+static void make_preferences(Widget parent)
+{
+    Arg args[10];
+    int arg;
+
+    arg = 0;
+    preferences_dialog = 
+	verify(XmCreatePromptDialog(parent, "preferences", args, arg));
+
+    // Remove old prompt and cancel button
+    Widget text = XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_TEXT);
+    XtUnmanageChild(text);
+    Widget old_label = 
+	XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_SELECTION_LABEL);
+    XtUnmanageChild(old_label);
+    Widget cancel = 
+	XmSelectionBoxGetChild(preferences_dialog, XmDIALOG_CANCEL_BUTTON);
+    XtUnmanageChild(cancel);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+    Widget box =
+	verify(XmCreateRowColumn(preferences_dialog, "box", args, arg));
+    XtManageChild(box);
+
+    arg = 0;
+    Widget buttons =
+	verify(XmCreateRadioBox(box, "buttons", args, arg));
+    XtManageChild(buttons);
+
+    arg = 0;
+    Widget frame = verify(XmCreateFrame(box, "frame", args, arg));
+    XtManageChild(frame);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,  0); arg++;
+    Widget change =
+	verify(XmCreateRowColumn(frame, "change", args, arg));
+    XtManageChild(change);
+
+    Dimension max_width  = 0;
+    Dimension max_height = 0;
+
+    add_panel(change, buttons, "general", general_preferences_menu, 
+	      max_width, max_height, true);
+    add_panel(change, buttons, "source",  source_preferences_menu,  
+	      max_width, max_height, false);
+    add_panel(change, buttons, "data",    data_preferences_menu,    
+	      max_width, max_height, false);
+    add_panel(change, buttons, "startup", startup_preferences_menu, 
+	      max_width, max_height, false);
+
+    XtVaSetValues(change,
+		  XmNwidth, max_width,
+		  XmNheight, max_height,
+		  XmNresizeWidth, False,
+		  XmNresizeHeight, False,
+		  NULL);
 }
 
 // Popup Preference Panel
-static void dddPopupPreferencesCB (Widget, XtPointer client_data, XtPointer)
+static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer)
 {
-    Widget w = *((Widget *)client_data);
-    XtManageChild(w);
-    raise_shell(w);
+    XtManageChild(preferences_dialog);
+    raise_shell(preferences_dialog);
 }
 
 

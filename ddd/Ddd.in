@@ -1261,20 +1261,14 @@ Ddd*optionsMenu.disassemble.mnemonic:			M
 Ddd*optionsMenu*disassemble.accelerator:		Ctrl<Key>M
 Ddd*optionsMenu*disassemble.acceleratorText:		Ctrl+M
 
-Ddd*optionsMenu.generalPreferences.labelString:  General Preferences...
-Ddd*optionsMenu.generalPreferences.mnemonic:     G
+Ddd*optionsMenu.preferences.labelString:  	Preferences...
+Ddd*optionsMenu.preferences.mnemonic:     	P
 
-Ddd*optionsMenu.sourcePreferences.labelString:   Source Preferences...
-Ddd*optionsMenu.sourcePreferences.mnemonic:      S
+Ddd*optionsMenu.settings.labelString:  		Settings...
+Ddd*optionsMenu.settings.mnemonic:     		S
 
-Ddd*optionsMenu.dataPreferences.labelString:     Data Preferences...
-Ddd*optionsMenu.dataPreferences.mnemonic:        D
-
-Ddd*optionsMenu.startupPreferences.labelString:  Startup Preferences...
-Ddd*optionsMenu.startupPreferences.mnemonic:     u
-
-Ddd*optionsMenu.saveOptions.labelString:     Save Options
-Ddd*optionsMenu.saveOptions.mnemonic:        O
+Ddd*optionsMenu.saveOptions.labelString:     	Save Options
+Ddd*optionsMenu.saveOptions.mnemonic:        	O
 
 
 Ddd*menubar.view.labelString:		Windows
@@ -1584,122 +1578,145 @@ Ddd*helpMenu.www.mnemonic:		P
 ! Preferences
 !-----------------------------------------------------------------------------
 
-Ddd*general_preferences_popup*contextHelpString:	\
+Ddd*preferences_popup*okLabelString: Close
+Ddd*preferences_popup.title: @DDD@: Preferences
+
+Ddd*preferences*buttons.orientation: XmHORIZONTAL
+Ddd*preferences*buttons.borderWidth:  0
+Ddd*preferences*buttons.marginWidth:  0
+Ddd*preferences*buttons.marginHeight: 0
+Ddd*preferences*buttons.entryAlignment: XmALIGNMENT_CENTER
+Ddd*preferences*buttons*indicatorOn:  False
+Ddd*preferences*buttons*shadowThickness: 2
+Ddd*preferences*buttons*alignment: XmALIGNMENT_CENTER
+Ddd*preferences*buttons*general.labelString: General Preferences
+Ddd*preferences*buttons*source.labelString:  Source Preferences
+Ddd*preferences*buttons*data.labelString:    Data Preferences
+Ddd*preferences*buttons*startup.labelString: Startup Preferences
+
+Ddd*preferences*general*contextHelpString:	\
 @rm This is the @sl General Preferences @rm window.\n\
 \n\
-@tt \267 @rm If @bf Group Iconify @rm is set, all @DDD@ windows \
+@tt \267 @rm If @bf Iconify all windows at once @rm is set, all @DDD@ windows \
 are iconified as a group.\n\
-  Otherwise, windows are iconified separately.\n\
-@tt \267 @rm If @bf Global Tab Completion @rm is set, \
+    Otherwise, windows are iconified separately.\n\
+@tt \267 @rm If @bf Tab key completes in all windows @rm is set, \
 the @key TAB @rm key completes\n\
     arguments in all @DDD@ windows.\n\
-  Otherwise, the  @key TAB @rm key completes\n\
-    in the @DDD@ console window only.\n\
+    Otherwise, the  @key TAB @rm key completes \
+in the @DDD@ debugger console only.\n\
 @tt \267 @rm If @bf Suppress X Warnings @rm is set, \
 X warnings are silently ignored.\n\
-@tt \267 @rm If @bf Save History on Exit @rm is set, the command history is\n\
-    automatically saved when @DDD@ exits.\n\
-  Otherwise, history is discarded.
-Ddd*general_preferences_popup*okLabelString: Close
+@tt \267 @rm If @bf Save command history on exit @rm is set,\n\
+    the command history is automatically saved when @DDD@ exits.\n\
+    Otherwise, the command history is discarded.
 
-Ddd*general_preferences*label.labelString: General Preferences
-Ddd*general_preferences_popup.title: @DDD@: General Preferences
+Ddd*preferences*groupIconify.labelString:        \
+Iconify all windows at once
+Ddd*preferences*globalTabCompletion.labelString: \
+Tab key completes in all windows
+Ddd*preferences*suppressWarnings.labelString:    \
+Suppress X warnings
+Ddd*preferences*saveHistoryOnExit.labelString:   \
+Save command history on exit
 
-Ddd*general_preferences*groupIconify.labelString:        Group Iconify
-Ddd*general_preferences*globalTabCompletion.labelString: Global Tab Completion
-Ddd*general_preferences*suppressWarnings.labelString:    Suppress X Warnings
-Ddd*general_preferences*saveHistoryOnExit.labelString:   Save History on Exit
 
-
-Ddd*source_preferences_popup*contextHelpString:	\
+Ddd*preferences*source*contextHelpString:	\
 @rm This is the @sl Source Preferences @rm window.\n\
 \n\
-@tt \267 @rm If @bf Display Glyphs @rm is set, \
+@tt \267 @rm If @bf Use glyphs @rm is set, \
 positions and breakpoints are shown as glyphs.\n\
     Otherwise, positions and breakpoints are shown as text.\n\
-@tt \267 @rm If @bf Cache Sources @rm is set, \
+@tt \267 @rm If @bf Cache source files @rm is set, \
 source texts are cached in memory.\n\
     Otherwise, sources are re-read upon each source change.\n\
-@tt \267 @rm If @bf Cache Machine Code @rm is set, \
+@tt \267 @rm If @bf Cache machine code @rm is set, \
 disassembled code is cached in memory.\n\
     Otherwise, code is re-disassembled upon each function change.
-Ddd*source_preferences_popup*okLabelString: Close
 
-Ddd*source_preferences*label.labelString: Source Preferences
-Ddd*source_preferences_popup.title: @DDD@: Source Preferences
+Ddd*preferences*displayGlyphs.labelString:       \
+Use glyphs for showing execution position and breakpoints
+Ddd*preferences*cacheSourceFiles.labelString:    \
+Cache source files
+Ddd*preferences*cacheMachineCode.labelString:    \
+Cache machine code
 
-Ddd*source_preferences*displayGlyphs.labelString:       Display Glyphs
-Ddd*source_preferences*cacheSourceFiles.labelString:    Cache Source Files
-Ddd*source_preferences*cacheMachineCode.labelString:    Cache Machine Code
 
-
-Ddd*data_preferences_popup*contextHelpString:	\
+Ddd*preferences*data*contextHelpString:	\
 @rm This is the @sl Data Preferences @rm window.\n\
 \n\
-@tt \267 @rm If @bf Show Grid @rm is set, the grid is displayed.\n\
-@tt \267 @rm If @bf Show Edge Hints @rm is set, edge hints are displayed.\n\
-@tt \267 @rm If @bf Snap to Grid @rm is set, display alignment is enforced.\n\
-@tt \267 @rm If @bf Compact Layout @rm is set, the graph is layouted\n\
+@tt \267 @rm If @bf Show grid @rm is set, the grid is displayed.\n\
+@tt \267 @rm If @bf Show edge hints @rm is set, edge hints are displayed.\n\
+@tt \267 @rm If @bf Snap displays to grid @rm is set, \n\
+    displays are always aligned on the grid.\n\
+@tt \267 @rm If @bf Compact layout @rm is set, the graph is layouted\n\
     in a more compact fashion; suitable for homogenous structures only.\n\
     Otherwise, the standard layout algorithm is used.\n\
-@tt \267 @rm If @bf Automatic Layout @rm is set, the graph is layouted\n\
-    after each change.  Otherwise, layout can be invoked manually.
-Ddd*data_preferences_popup*okLabelString: Close
+@tt \267 @rm If @bf Automatic layout @rm is set, the graph is layouted\n\
+    after each change.\n\
+    Otherwise, layout can be invoked manually.
 
-Ddd*data_preferences*label.labelString: Data Preferences
-Ddd*data_preferences_popup.title: @DDD@: Data Preferences
-
-Ddd*data_preferences*showGrid.labelString:	       Show Grid
-Ddd*data_preferences*showHints.labelString:	       Show Edge Hints
-Ddd*data_preferences*snapToGrid.labelString:	       Snap to Grid
-Ddd*data_preferences*compactLayout.labelString:        Compact Layout
-Ddd*data_preferences*autoLayout.labelString:	       Automatic Layout
+Ddd*preferences*showGrid.labelString:	       Show grid
+Ddd*preferences*showHints.labelString:	       Show edge hints
+Ddd*preferences*snapToGrid.labelString:	       Snap displays to grid
+Ddd*preferences*compactLayout.labelString:     Compact layout
+Ddd*preferences*autoLayout.labelString:	       Automatic layout
 
 
-Ddd*startup_preferences_popup*contextHelpString:   \
+Ddd*preferences*startup*contextHelpString:   \
 @rm This is the @sl Startup Preferences @rm window.\n\
 \n\
 @tt \267 @bf Windows @rm sets the window layout.\n\
+    @bf Separate windows @rm means to use one source window,\n\
+    one data window, and one debugger console window.\n\
+    @bf One single window @rm means to use one single window\n\
+    for source, data, and the debugger console.\n\
+\n\
 @tt \267 @bf Keyboard focus @rm sets the keyboard focus policy.\n\
+    @bf Click to type @rm means that you must click on a window\n\
+    to direct the keyboard focus to it.\n\
+    @bf Point to type @rm means that pointing to the window suffices.\n\
+\n\
 @tt \267 @bf Data Scrolling @rm sets the data window scrolling mode.\n\
+    @bf Panner @rm means to use a two-dimensional scrollbar\n\
+    (not available in all configurations).\n\
+    @bf Scrollbars @rm means to use two scrollbars.\n\
+\n\
 @tt \267 @bf Debugger Type @rm sets the type of inferior debugger to use.\n\
 \n\
-Note: these preferences take effect only after saving options\n\
+Note: these startup preferences take effect only after saving options\n\
 and restarting @DDD@.
-Ddd*startup_preferences_popup*okLabelString: Close
 
-Ddd*startup_preferences*label.labelString: Startup Preferences
-Ddd*startup_preferences_popup.title: @DDD@: Startup Preferences
-Ddd*startup_preferences*adjustMargin:                   false
+Ddd*preferences*startup*adjustMargin:		false
 
-Ddd*startup_preferences*windows.labelString:            Windows:
-Ddd*startup_preferences*windows.alignment:              XmALIGNMENT_END
-Ddd*startup_preferences*windows.width:                  120
-Ddd*startup_preferences*windows.recomputeSize:          false
-Ddd*windowsMenu*separate.labelString:			Separate Windows
-Ddd*windowsMenu*attached.labelString:			One Single Window
+Ddd*preferences*windows.labelString:            Windows:
+Ddd*preferences*windows.alignment:              XmALIGNMENT_END
+Ddd*preferences*windows.width:                  120
+Ddd*preferences*windows.recomputeSize:          false
+Ddd*windowsMenu*separate.labelString:		Separate windows
+Ddd*windowsMenu*attached.labelString:		One single window
 
-Ddd*startup_preferences*keyboardFocus.labelString:	Keyboard Focus:
-Ddd*startup_preferences*keyboardFocus.alignment:      	XmALIGNMENT_END
-Ddd*startup_preferences*keyboardFocus.width:      	120
-Ddd*startup_preferences*keyboardFocus.recomputeSize:    false
-Ddd*keyboardFocusMenu*explicit.labelString:		Click To Type
-Ddd*keyboardFocusMenu*pointer.labelString:		Pointer Driven
+Ddd*preferences*keyboardFocus.labelString:	Keyboard focus:
+Ddd*preferences*keyboardFocus.alignment:      	XmALIGNMENT_END
+Ddd*preferences*keyboardFocus.width:      	120
+Ddd*preferences*keyboardFocus.recomputeSize:    false
+Ddd*keyboardFocusMenu*explicit.labelString:	Click to type
+Ddd*keyboardFocusMenu*pointer.labelString:	Point to type
 
-Ddd*startup_preferences*dataScrolling.labelString:      Data Scrolling:
-Ddd*startup_preferences*dataScrolling.alignment:      	XmALIGNMENT_END
-Ddd*startup_preferences*dataScrolling.width:      	120
-Ddd*startup_preferences*dataScrolling.recomputeSize:    false
-Ddd*dataScrollingMenu*panner.labelString:		Panner
-Ddd*dataScrollingMenu*scrollbars.labelString:		Scrollbars
+Ddd*preferences*dataScrolling.labelString:      Data scrolling:
+Ddd*preferences*dataScrolling.alignment:      	XmALIGNMENT_END
+Ddd*preferences*dataScrolling.width:      	120
+Ddd*preferences*dataScrolling.recomputeSize:    false
+Ddd*dataScrollingMenu*panner.labelString:	Panner
+Ddd*dataScrollingMenu*scrollbars.labelString:	Scrollbars
 
-Ddd*startup_preferences*debugger.labelString:           Debugger Type:
-Ddd*startup_preferences*debugger.alignment:           	XmALIGNMENT_END
-Ddd*startup_preferences*debugger.width:           	120
-Ddd*startup_preferences*debugger.recomputeSize:		false
-Ddd*debuggerMenu*gdb.labelString:			GDB
-Ddd*debuggerMenu*dbx.labelString:			DBX
-Ddd*debuggerMenu*xdb.labelString:			XDB
+Ddd*preferences*debugger.labelString:           Debugger type:
+Ddd*preferences*debugger.alignment:           	XmALIGNMENT_END
+Ddd*preferences*debugger.width:           	120
+Ddd*preferences*debugger.recomputeSize:		false
+Ddd*debuggerMenu*gdb.labelString:		GDB
+Ddd*debuggerMenu*dbx.labelString:		DBX
+Ddd*debuggerMenu*xdb.labelString:		XDB
 
 
 !-----------------------------------------------------------------------------
@@ -2816,7 +2833,7 @@ Click on @bf Yes @rm to overwrite the existing file.
 
 Ddd*save_options_dialog_popup.title: @DDD@: Save Options
 Ddd*save_options_dialog.messageString:   \
-@rm Startup @DDD@ preferences were modified.\n\
+@rm @DDD@ startup preferences were modified.\n\
 Save them for the next @DDD@ invocation?
 Ddd*save_options_dialog*okLabelString:       Yes
 Ddd*save_options_dialog*cancelLabelString:   No
