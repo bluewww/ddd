@@ -1,10 +1,37 @@
 DDD News						-*- text -*-
 ********
 
-DDD 3.2 [in development]
-========================
+DDD 3.1.90 [beta release]
+=========================
+
+DDD 3.1.90 is a pre-release of the upcoming DDD 3.2 (see below).
+
+
+DDD 3.2 [in beta testing]
+=========================
 
 DDD 3.2 brings a new documentation and several minor improvements.
+
+
+DDD is now a GNU program
+------------------------
+
+- Starting with this release, DDD is an official GNU program,
+  distributed by the Free Software Foundation.  This brings a number of
+  administrative changes:
+
+  * DDD is distributed as source only using GNU FTP sites and mirrors.
+  
+  * The DDD WWW page is now `http://www.gnu.org/software/ddd/'.
+  
+  * The DDD mailing addresses are now `bug-ddd@gnu.org' (for bug reports) 
+    and `ddd@gnu.org' (for announcements, discussions, or anything else).
+  
+    You can subscribe to these lists by sending an e-mail to
+    `request-bug-ddd@gnu.org' and `request-ddd@gnu.org', respectively.
+
+  There will be a smooth transition from previous DDD resources to the
+  new ones; subscribers of old mailing lists will be notified.
 
 
 Documentation
@@ -45,8 +72,9 @@ Plotting
 --------
 
 - If you have several indexed variables in a cluster (such as X[1],
-  X[3], and X[5]), DDD plots the cluster as 2-D plot, where the X-axis
-  shows the index, and the Y-axis shows the values.
+  X[3], and X[5]), DDD plots the cluster as 2-D plot, where the X axis
+  shows the index, and the Y axis shows the values.  This is useful for
+  plotting array slices (see below).
 
 
 Source Navigation
@@ -69,7 +97,7 @@ Data exploration
 - Array slices `ARRAY[FROM..TO]' are much better supported:
   * By default, the displayed values are clustered and displayed like an 
     ordinary array.
-  * Array slices can be plotted, too.
+  * Array slices can be plotted, too (see `Plotting', above).
 
 - You can use the FROM..TO notation in arbitrary values, and also multiple
   times; `graph display 1..5 * 1..5' creates a multiplication table.
@@ -90,7 +118,7 @@ Settings
 
 - DDD saves the JDB class path only with the current session.
 
-DDD 3.2 also incorporates all changes and bug fixes listed below.
+DDD 3.2 also incorporates all improvements and bug fixes listed below.
 
 
 DDD 3.1.7

@@ -249,16 +249,24 @@ The simplest way to compile DDD is:
  
 	$ make install
 	
-     This installs the DDD executable `ddd' in some public place
-     (usually in `/usr/local/bin/') and the DDD manual page `ddd.1'
-     (in `/usr/local/man/man1/').  See `Installation Names', below,
-     on how to configure DDD to use other locations and names.
+     This installs 
+     - the DDD executable `ddd' in some public place 
+       (usually in `/usr/local/bin/')
+     - the DDD manual page `ddd.1' in `/usr/local/man/man1/'
+     - the DDD info file `ddd.info' in `/usr/local/info/'.
 
- 14. If you have a `Ddd' app-defaults file installed from a previous
+     See `Installation Names', below, on how to configure DDD to use
+     other locations and names.
+
+ 14. This distribution also comes with documentation in PostScript,
+     PDF, and HTML format.  You will find these files in the `doc/'
+     subdirectory.  Feel free to install them in some public place.
+
+ 15. If you have a `Ddd' app-defaults file installed from a previous
      DDD version, this file will *override* the built-in DDD settings
      and cause major problems.  Remove it.
 
- 15. Like every good X citizen, DDD comes with an application defaults
+ 16. Like every good X citizen, DDD comes with an application defaults
      file, named `ddd/Ddd'.  By default, this file is already compiled
      into DDD, so you need not install it.
 
@@ -271,7 +279,7 @@ The simplest way to compile DDD is:
      such that `Ddd' is not compiled into DDD), copy `Ddd' to a place
      where app-defaults files are commonly found.
 
- 16. You can remove the program binaries, libraries and object files
+ 17. You can remove the program binaries, libraries and object files
      from the source directory by typing
      
 	$ make clean
@@ -291,7 +299,7 @@ The simplest way to compile DDD is:
      instead.  (There is also `make ultraclean' that removes *every*
      derived file; don't use it unless you know what you do.)
 
- 17. You can remove DDD from your system by typing
+ 18. You can remove DDD from your system by typing
  
 	$ make uninstall
 
@@ -420,7 +428,7 @@ Optional Features
 -----------------
 
 By default, `configure' will configure DDD to use all supported
-optional DDD features.  There are two optional features.
+optional DDD features.  There is one single optional feature.
 
 * You can configure DDD such that the `Ddd' application defaults file
   will not be compiled into the DDD executable.  This reduces the size
@@ -435,19 +443,6 @@ optional DDD features.  There are two optional features.
 
   To disable the builtin application defaults file, use the `configure'
   option `--disable-builtin-app-defaults'.
-
-
-* You can configure DDD such that the DDD manual will not be compiled
-  into the DDD executable.  This reduces the size of the DDD executable
-  by about 80 kBytes.
-
-  `Help->DDD Reference' will then invoke `man ddd' to get the DDD
-  manual.  Note that this option only works well if man uses GNU
-  `groff' to format manual pages (such as `man' on Linux).  Be sure to
-  remove or update the manual page when upgrading to a new DDD version.
-
-  To disable the builtin DDD manual, use the `configure' option
-  `--disable-builtin-manual'.
 
 
 
@@ -558,12 +553,12 @@ diff (`diff -c5') between the original and the changed file(s).
 Documentation
 =============
 
-The DDD Manual, contained in the file `ddd/ddd.man', is the official
-DDD reference.  Note that DDD also has various on-line facilities.
+The DDD Manual, contained in the file `ddd/ddd.texi', is the official
+DDD reference.  
 
-A DDD manual in PostScript format (including several screen shots), as
-well as other documents related to DDD are contained in the `./doc'
-directory.  See the `./doc/README' file for details.
+Preformatted versions of the DDD Manual (in info, PostScript, PDF, and
+HTML formats) can be found in the `doc/' subdirectory.  Note that DDD
+also has various on-line facilities.
 
 
 $Id$
