@@ -164,6 +164,7 @@ extern const regex rxwhen;
 extern const regex rxwhite;
 extern const regex rxxdb;
 extern const regex rxxdbpos;
+extern const regex rxdoubleindex;
 
 #endif // !RUNTIME_REGEX
 

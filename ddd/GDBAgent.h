@@ -637,6 +637,9 @@ public:
 	return has_condition_command() || type() != JDB;
     }
 
+    // True if arrays are contained in braces
+    bool has_array_braces() const { return !is_ladebug(); }
+
     // True if debugger can disable breakpoints
     bool can_disable() const
     {

@@ -72,9 +72,14 @@ static DispValueType _determine_type (string& value)
 {
     strip_leading_space(value);
 
-    // DBX on DEC prepends `[N]' before array member N
+    // DBX on DEC prepends `[N]' before array member N.
     if (value.matches(rxindex))
+    {
+	if (!gdb->has_array_braces())
+	    return Array;	// In Ladebug, arrays don't have braces
+
 	value = value.after(']');
+    }
 
     // References.
     if (value.contains('(', 0))
@@ -601,6 +606,12 @@ bool read_array_begin(string& value, string& addr)
 	|| value.contains("union", 0))
 	value = value.from('{');
 
+    if (!gdb->has_array_braces() && value.matches(rxindex))
+    {
+	value = value.after('=');
+	return true;
+    }
+
     if (value.contains('{', 0))
 	value = value.after(0);
     else if (value.contains('(', 0))
@@ -633,7 +644,10 @@ bool read_array_next(string& value)
     // DBX on DEC prepends `[N]' before array member N
     if (value.matches(rxindex))
     {
-	value = value.after(']');
+	if (!gdb->has_array_braces())
+	    value = value.after('=');
+	else
+	    value = value.after(']');
 	read_leading_junk(value);
     }
 
@@ -641,6 +655,18 @@ bool read_array_next(string& value)
     if (value.contains(',', 0) || value.contains(';', 0))
     {
 	value = value.after(0);
+
+	if (!gdb->has_array_braces())
+	{
+	    // Ladebug doesn't end array with "}". For a multi-dimensional
+	    // array, we have to detect the next dimmension: '[N] = [N] ='
+            if (value.matches(rxdoubleindex))
+		return false;
+
+	    if (value.matches(rxindex))
+		value = value.after('=');
+	}
+
 	read_leading_junk (value);
 	return value != "" && !is_ending(value); // More stuff follows
     }

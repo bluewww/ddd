@@ -29,6 +29,8 @@ Examining Data
 - New displays can be created left-to-right.  
   See `Edit => Preferences => Data => Placement'.  (6)
 
+- Ladebug array output is better supported.  (7)
+
 - Several memory leaks have been plugged. (1)
 
 
@@ -65,12 +67,14 @@ License
 Acknowledgments
 ---------------
 
-Thanks to: (1) Arnaud Desitter <arnaud@nag.co.uk>
-           (2) Hiro Sugawara <hiro@lynx.com>
-	   (3) Yann Dirson <Yann.Dirson@france.sun.com>
-	   (4) H. Nanosecond <aldomel@ix.netcom.com>
-	   (5) Gary Cliff <gary.cliff@cdott.com>
-	   (6) Danny Van Elsen <Danny_Van_Elsen@village.uunet.be>
+Thanks to: 
+    (1) Arnaud Desitter <arnaud@nag.co.uk>
+    (2) Hiro Sugawara <hiro@lynx.com>
+    (3) Yann Dirson <Yann.Dirson@france.sun.com>
+    (4) H. Nanosecond <aldomel@ix.netcom.com>
+    (5) Gary Cliff <gary.cliff@cdott.com>
+    (6) Danny Van Elsen <Danny_Van_Elsen@village.uunet.be>
+    (7) Philippe Midol-Monnet <Philippe.MIDOL-MONNET@airbus.aeromatra.com>
 
 DDD 3.2.1
 =========

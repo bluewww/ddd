@@ -246,3 +246,4 @@ const regex rxperlprompt                (rx_matcher, (void *)"C3");
 const regex rxperlpos                   (rx_matcher, (void *)"C4");
 const regex rxperlref                   (rx_matcher, (void *)"C5");
 const regex rxenter_file_name           (rx_matcher, (void *)"C6");
+const regex rxdoubleindex               (rx_matcher, (void *)"C7");
