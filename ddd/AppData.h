@@ -40,7 +40,9 @@
 // The DDD application class name
 #define DDD_CLASS_NAME           Ddd_NAME
 
-// For a documentation of these resources, see `Ddd.in'.
+// For a documentation of these resources, see the `Ddd' app-resource
+// file or its original source, `Ddd.in.m4'.
+
 #define XtNsession               "session"
 #define XtNinitialSession        "initialSession"
 #ifndef XtCSessionID
@@ -235,6 +237,8 @@
 #define XtCCacheMachineCode      "CacheMachineCode"
 #define XtNsuppressWarnings      "suppressWarnings"
 #define XtCSuppressWarnings      "SuppressWarnings"
+#define XtNwarnIfLocked          "warnIfLocked"
+#define XtCWarnIfLocked          "WarnIfLocked"
 #define XtNttyMode               "ttyMode"
 #define XtNfullNameMode          "fullNameMode"
 #define XtCTTYMode               "TTYMode"
@@ -477,6 +481,7 @@ struct AppData {
     Boolean   cache_source_files;
     Boolean   cache_machine_code;
     Boolean   suppress_warnings;
+    Boolean   warn_if_locked;
     Boolean   tty_mode;
     OnOff     block_tty_input;
     Boolean   full_name_mode;

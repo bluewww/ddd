@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-10\-26" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-11\-10" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -2495,6 +2495,10 @@ stopped at a breakpoint).
 .PP
 If you are bothered by X warnings, you can suppress them by setting
 the `\fBSuppress X warnings\fR' option.
+.PP
+If you want to be warned about multiple \s-1@DDD@\s+1 invocations
+sharing the same preferences and history files, enable
+`\fBWarn if Multiple DDD Instances are Running\fR'.
 .PP
 When debugging a modal X application, \s-1@DDD@\s+1 may interrupt it
 while it has grabbed the pointer, making further interaction

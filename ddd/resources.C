@@ -1149,6 +1149,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNwarnIfLocked,
+	XtCWarnIfLocked,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, warn_if_locked),
+	XtRImmediate,
+	XtPointer(False)
+    },
+
+    {
 	XtNttyMode,
 	XtCTTYMode,
 	XtRBoolean,

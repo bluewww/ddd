@@ -824,9 +824,12 @@ Ddd*undoDepth: 100
 ! POINTER means point-and-type, EXPLICIT means click-and-type.
 Ddd*keyboardFocusPolicy: POINTER
 
-! X Warnings
+! Warnings
 ! Do we wish to suppress X warnings?
 Ddd*suppressWarnings: off
+
+! Do we wish to warn if multiple DDD instances are running?
+Ddd*warnIfLocked: off
 
 
 ! Grab checking.
@@ -3102,6 +3105,8 @@ automatically uniconified\n\
 ITEM If LBL(Suppress X warnings) is set, X warnings are silently ignored.\n\
 ITEM If LBL(Continue automatically...) is set, DDD will continue execution\n\
     of programs that were interrupted while grabbing the mouse pointer.\n\
+ITEM LBL(Warn if multiple...) enables warnings about multiple DDD instances\n\
+    that share (and may overwrite) preferences and other state files.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
@@ -3120,14 +3125,16 @@ Tab Key Completes
 Ddd*preferences*inAllWindows.labelString: in All Windows
 Ddd*preferences*inConsole.labelString:    in Console Only
 
-Ddd*preferences*groupIconify.labelString:	 \
+Ddd*preferences*groupIconify.labelString:	\
 Iconify all Windows at Once
-Ddd*preferences*uniconifyWhenReady.labelString:	 \
+Ddd*preferences*uniconifyWhenReady.labelString:	\
 Uniconify When Ready
-Ddd*preferences*suppressWarnings.labelString:	 \
+Ddd*preferences*suppressWarnings.labelString:	\
 Suppress X Warnings
-Ddd*preferences*checkGrabs.labelString:	 \
+Ddd*preferences*checkGrabs.labelString:	 	\
 Continue Automatically when Mouse Pointer is Frozen
+Ddd*preferences*warnIfLocked.labelString:	\
+Warn if Multiple DDD Instances are Running
 
 
 Ddd*preferences*source*helpString:	\
@@ -6339,7 +6346,10 @@ Ddd*lock_dialog*helpString:	\
 \n\
 To resume execution of this DDD, click on LBL(Continue).\n\
 To kill the other DDD instance, click on LBL(Kill).\n\
-Otherwise, click on LBL(Exit).
+Otherwise, click on LBL(Exit).\n\
+\n\
+You can disable this warning by disabling\n\
+LBL(Edit, Preferences, General, Warn if multiple DDD instances are running).
 Ddd*lock_dialog.okLabelString:		Continue
 Ddd*lock_dialog*kill.labelString:	Kill
 Ddd*lock_dialog.cancelLabelString: 	Exit

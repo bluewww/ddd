@@ -4672,6 +4672,7 @@ string DataDisp::process_displays(string& displays,
     string not_my_displays;
     disabling_occurred = false;
 
+    strip_space(displays);
     if (displays.length() == 0)
     {
 	bool have_displays = false;

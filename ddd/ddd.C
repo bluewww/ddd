@@ -382,7 +382,7 @@ static void popdown_splash_screen(XtPointer data = 0, XtIntervalId *id = 0);
 static XrmDatabase GetFileDatabase(char *filename);
 
 // Lock `~/.ddd'
-static void lock_ddd(Widget parent);
+static bool lock_ddd(Widget parent, LockInfo& info);
 
 // Various setups
 static void setup_version_info();
@@ -986,6 +986,7 @@ static MMDesc completion_menu [] =
 static Widget group_iconify_w;
 static Widget uniconify_when_ready_w;
 static Widget suppress_warnings_w;
+static Widget warn_if_locked_w;
 static Widget check_grabs_w;
 
 static MMDesc general_preferences_menu[] = 
@@ -999,6 +1000,8 @@ static MMDesc general_preferences_menu[] =
       NULL, &uniconify_when_ready_w, 0, 0 },
     { "suppressWarnings",    MMToggle, { dddToggleSuppressWarningsCB, 0 },
       NULL, &suppress_warnings_w, 0, 0 },
+    { "warnIfLocked",        MMToggle, { dddToggleWarnIfLockedCB, 0 }, 
+      NULL, &warn_if_locked_w, 0, 0 },
     { "checkGrabs",          MMToggle, { dddToggleCheckGrabsCB, 0 },
       NULL, &check_grabs_w, 0, 0 },
     MMEnd
@@ -2068,7 +2071,23 @@ int main(int argc, char *argv[])
 #endif
 
     // Lock `~/.ddd/'.
-    lock_ddd(toplevel);
+    LockInfo lock_info;
+    bool lock_ok = lock_ddd(toplevel, lock_info);
+    if (!lock_ok)
+    {
+	ostrstream os;
+	os << "Warning: another " DDD_NAME " is running (pid "
+	   << lock_info.pid;
+	if (lock_info.hostname != fullhostname())
+	    os << ", host " << cook(lock_info.hostname);
+	if (lock_info.display != XDisplayString(XtDisplay(toplevel)))
+	    os << ", display " << cook(lock_info.display);
+	os << ")\n";
+
+	string msg(os);
+	messages << msg;
+	cerr << msg;
+    }
 
     // Put saved options back again
     for (i = argc + saved_options.size() - 1; i > saved_options.size(); i--)
@@ -2669,17 +2688,6 @@ int main(int argc, char *argv[])
     if (app_data.tool_buttons && strlen(app_data.tool_buttons) > 0)
 	setup_command_tool();
 
-    // Make sure we see all messages accumulated so far
-    {
-	string msg(messages);
-	while (msg != "")
-	{
-	    string line = msg.before('\n');
-	    set_status(line);
-	    msg = msg.after('\n');
-	}
-    }
-
     // Setup TTY interface
     setup_tty();
 
@@ -2695,6 +2703,17 @@ int main(int argc, char *argv[])
 	// GDB startup leaves us with pending graph commands.  We
 	// should better initialize the VSL library right now.
 	DispBox::init_vsllib();
+    }
+
+    // Make sure we see all messages accumulated so far
+    {
+	string msg(messages);
+	while (msg != "")
+	{
+	    string line = msg.before('\n');
+	    set_status(line);
+	    msg = msg.after('\n');
+	}
     }
 
     // Enter main event loop
@@ -3255,12 +3274,14 @@ static void KillLockerCB(Widget w, XtPointer client_data, XtPointer)
 }
 #endif
 
-static void lock_ddd(Widget parent)
+static bool lock_ddd(Widget parent, LockInfo& info)
 {
-    LockInfo info;
     bool lock_ok = lock_session_dir(XtDisplay(parent), DEFAULT_SESSION, info);
     if (lock_ok)
-	return;
+	return true;
+
+    if (!app_data.warn_if_locked)
+	return false;
 
     bool on_local_host = (info.hostname == fullhostname());
 
@@ -3366,7 +3387,7 @@ static void lock_ddd(Widget parent)
     XtDestroyWidget(lock_dialog);
 
     // Try locking once more
-    lock_ok = lock_session_dir(XtDisplay(parent), DEFAULT_SESSION, info);
+    return lock_session_dir(XtDisplay(parent), DEFAULT_SESSION, info);
 }
 
 
@@ -3585,6 +3606,7 @@ void update_options()
     set_toggle(uniconify_when_ready_w,   app_data.uniconify_when_ready);
     set_toggle(check_grabs_w,   	 app_data.check_grabs);
     set_toggle(suppress_warnings_w,      app_data.suppress_warnings);
+    set_toggle(warn_if_locked_w,         app_data.warn_if_locked);
     set_toggle(builtin_plot_window_w,    app_data.builtin_plot_window);
     set_toggle(extern_plot_window_w,     !app_data.builtin_plot_window);
 
@@ -3949,6 +3971,7 @@ static void ResetGeneralPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(uniconify_when_ready_w, 
 		      initial_app_data.uniconify_when_ready);
     notify_set_toggle(suppress_warnings_w, initial_app_data.suppress_warnings);
+    notify_set_toggle(warn_if_locked_w, initial_app_data.warn_if_locked);
     notify_set_toggle(check_grabs_w, 
 		      initial_app_data.check_grabs);
 }
@@ -3978,6 +4001,9 @@ static bool general_preferences_changed()
 	return true;
 
     if (app_data.suppress_warnings != initial_app_data.suppress_warnings)
+	return true;
+
+    if (app_data.warn_if_locked != initial_app_data.warn_if_locked)
 	return true;
 
     if (app_data.check_grabs != initial_app_data.check_grabs)

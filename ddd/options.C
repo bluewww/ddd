@@ -596,6 +596,23 @@ void dddToggleSuppressWarningsCB (Widget, XtPointer, XtPointer call_data)
     update_options();
 }
 
+void dddToggleWarnIfLockedCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.warn_if_locked = info->set;
+
+    if (info->set)
+	set_status(DDD_NAME " will warn you "
+		   "when multiple " DDD_NAME " instances are running.");
+    else
+	set_status(DDD_NAME " will not warn you "
+		   "when multiple " DDD_NAME " instances are running.");
+
+    update_options();
+}
+
 void dddSetBuiltinPlotWindowCB (Widget, XtPointer client_data, XtPointer)
 {
     app_data.builtin_plot_window = bool((int)(long)client_data);
@@ -2022,6 +2039,8 @@ bool save_options(unsigned long flags)
 			 app_data.status_at_bottom) << '\n';
     os << bool_app_value(XtNsuppressWarnings,
 			 app_data.suppress_warnings) << '\n';
+    os << bool_app_value(XtNwarnIfLocked,
+			 app_data.warn_if_locked) << '\n';
     os << bool_app_value(XtNcheckGrabs,
 			 app_data.check_grabs) << '\n';
     os << bool_app_value(XtNsaveHistoryOnExit,
