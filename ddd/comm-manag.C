@@ -2661,7 +2661,7 @@ static void extra_completed (const StringArray& answers,
 
 	    string value = answers[qu_count++];
 	    gdb->munch_value(value, var);
-	    ans += value;
+	    ans += value + "\n";
 	}
 
 	if (extra_data->n_refresh_data > 0)
