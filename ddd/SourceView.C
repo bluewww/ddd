@@ -4176,7 +4176,8 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	// Map breakpoint glyphs
 	// clog << "Source breakpoints:\n";
 	MapRef ref;
-	for (BreakPoint* bp = bp_map.first(ref);
+	BreakPoint *bp;
+	for (bp = bp_map.first(ref);
 	     bp != 0;
 	     bp = bp_map.next(ref))
 	{
@@ -4234,7 +4235,7 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	// Map breakpoint glyphs
 	// clog << "Code breakpoints:\n";
 	MapRef ref2;
-	for (BreakPoint* bp = bp_map.first(ref2);
+	for (bp = bp_map.first(ref2);
 	     bp != 0;
 	     bp = bp_map.next(ref2))
 	{
