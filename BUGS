@@ -132,19 +132,10 @@ Volunteers for fixing these and other bugs are welcome!
 363 (LessTif 0.87) Selecting something outside the source window does
     not clear the selection in the data window.
 
-367 (LessTif 0.87) Using DDD with lesstif 0.87 and separate windows,
-    the console window does not work initially; it only works after
-    opening an arbitrary dialog.
-
 368 When DDD is running on a locked terminal (via `xlock' or
     likewise), DDD considers the pointer to be frozen, such that it
     continues execution.
 
-369 In `sample.c', place a breakpoint before a is assigned, run, next, 
-    display a.  Rerun disables a, but this is not shown immediately.
-
 371 Is the command shell raised each time a new display is created?
-
-372 guess_debugger_type() must look in PATH for executables.
 
 373 (Insert new bugs here)

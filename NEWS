@@ -24,9 +24,13 @@ DDD 3.1.3
 DDD 3.1.3 fixes more minor bugs in DDD 3.1.
 
 - Invoking DDD with a non-existing file name works.
-- [HP-UX] Perl no longer exits upon start-up.
-- [LessTif] DDD remains responsive when the command tool is opened.
+- Displays disabled by GDB are created and refreshed properly.
+- [HP-UX, SGI] Perl no longer exits upon start-up.
+- [LessTif] Worked around a LessTif bug that made DDD insensitive to input.
 - [Build] New configuration files from Autoconf 2.13.
+
+There are no new features in DDD 3.1.3.  You don't need to upgrade to
+unless you suffer from one of these bugs.
 
 
 DDD 3.1.2

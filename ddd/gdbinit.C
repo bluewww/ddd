@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // GDB initialization
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1999 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -236,7 +236,8 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
     static bool have_perl   = (fallback == PERL || have_cmd("perl"));
     static bool have_python = (fallback == PYDB || have_cmd("python"));
 
-    // Check for Perl and Python scripts
+    // 1. Check for Perl and Python scripts as given.
+
     int i;
     for (i = 1; i < argc; i++)
     {
@@ -252,7 +253,9 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 	    return PYDB;
     }
 
-    // Check for executables.
+
+    // 2. Check for executable binary as given.
+
     static bool have_gdb = (fallback == GDB || have_cmd("gdb"));
     static bool have_dbx = (fallback == DBX || have_cmd("dbx"));
     static bool have_xdb = (fallback == XDB || have_cmd("xdb"));
@@ -280,8 +283,81 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 	}
     }
 
-    // Search class path for Java classes.
+
+    // 3. Check for Java class in current directory.
+
     static bool have_jdb = (fallback == JDB || have_cmd("jdb"));
+
+    if (have_jdb)
+    {
+	for (i = 1; i < argc; i++)
+	{
+	    string arg = argv[i];
+
+	    if (arg.contains('-', 0))
+		continue;		// Option
+	    if (arg.contains('/', 0))
+		continue;		// File
+
+	    arg.gsub('.', '/');
+
+	    if (is_regular_file(arg + ".java"))
+		return JDB;
+
+	    if (is_regular_file(arg + ".class"))
+		return JDB;
+	}
+    }
+
+
+    // 4. Check for executable binary in PATH.
+
+    for (i = 1; i < argc; i++)
+    {
+	string arg = argv[i];
+
+	if (arg.contains('-', 0))
+	    continue;		// Option
+
+	char *path_s = getenv("PATH");
+	if (path_s == 0)
+	    path_s = ".";
+
+	string path = path_s;
+	while (path != "")
+	{
+	    string dir;
+	    if (path.contains(':'))
+		dir = path.before(':');
+	    else
+		dir = path;
+	    path = path.after(':');
+
+	    if (dir == "")
+		dir = ".";
+	    if (!dir.contains('/', -1))
+		dir += '/';
+
+	    if (is_exec_file(dir + arg))
+	    {
+		if (fallback == GDB || fallback == DBX || fallback == XDB)
+		    return fallback;
+
+		if (have_gdb)
+		    return GDB;
+
+		if (have_dbx)
+		    return DBX;
+
+		if (have_xdb)
+		    return XDB;
+	    }
+	}
+    }
+
+
+    // 5. Check for Java class in CLASSPATH.
+
     if (have_jdb)
     {
 	for (i = 1; i < argc; i++)
@@ -312,6 +388,8 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 		if (!dir.contains('/', -1))
 		    dir += '/';
 
+		arg.gsub('.', '/');
+
 		if (is_regular_file(dir + arg + ".java"))
 		    return JDB;
 
@@ -321,13 +399,16 @@ DebuggerType guess_debugger_type(int argc, char *argv[], bool& sure)
 	}
     }
 
+
+    // 6. Use fallback.
+
     sure = false;
 
-    // Use fallback
     if (fallback != DebuggerType(-1))
 	return fallback;
 
-    // All fails - use GDB
+
+    // 7. All fails.  Use GDB.
     return GDB;
 }
 

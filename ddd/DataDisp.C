@@ -1,7 +1,7 @@
 // $Id$
 // Data Display
 
-// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
@@ -3406,7 +3406,7 @@ DispNode *DataDisp::new_data_node(const string& given_name,
     {
 	string error_msg = get_disp_value_str(value, gdb);
 	post_gdb_message(error_msg, true, last_origin);
-	value = "";
+	value = " ";
 	disabling_occurred = true;
     }
 
@@ -3542,33 +3542,8 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	return;
     }
 
-    if (!contains_display(answer, gdb) || !is_valid(answer, gdb))
-    {
-	if (info->deferred == DeferIfNeeded)
-	{
-	    // Create deferred display now
-	    DispNode *dn = new_deferred_node(info->display_expression,
-					     info->scope,
-					     info->point, info->depends_on,
-					     info->clustered, info->plotted);
-	    
-	    // Insert deferred node into graph
-	    disp_graph->insert(dn->disp_nr(), dn);
-	    
-	    if (info->prompt)
-		prompt();
-
-	    refresh_display_list();
-	}
-	else
-	{
-	    if (info->verbose)
-		post_gdb_message(answer, info->prompt, last_origin);
-	}
-
-	delete info;
-	return;
-    }
+    bool have_display_answer = contains_display(answer, gdb);
+    bool have_valid_answer   = is_valid(answer, gdb);
 
     // Unselect all nodes
     for (GraphNode *gn = disp_graph->firstNode();
@@ -3579,8 +3554,14 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 
     // Create new DispNode
     string ans = answer;
-    DispNode *dn = new_data_node(info->display_expression,
-				 info->scope, ans, info->plotted);
+    DispNode *dn = 0;
+
+    if (have_display_answer)
+    {
+	dn = new_data_node(info->display_expression, 
+			   info->scope, ans, info->plotted);
+    }
+
     if (dn == 0)
     {
 	// Display could not be created
@@ -3590,14 +3571,19 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	    dn = new_deferred_node(info->display_expression, info->scope,
 				   info->point, info->depends_on,
 				   info->clustered, info->plotted);
-	    
+
 	    // Insert deferred node into graph
 	    disp_graph->insert(dn->disp_nr(), dn);
-	    
+
 	    if (info->prompt)
 		prompt();
 
 	    refresh_display_list();
+	}
+	else if (!have_valid_answer)
+	{
+	    if (info->verbose)
+		post_gdb_message(answer, info->prompt, last_origin);
 	}
 
 	delete info;
@@ -4809,6 +4795,7 @@ string DataDisp::process_displays(string& displays,
 		post_gdb_message(error_msg);
 		dn->make_active();
 		dn->disable();
+		refresh_graph_edit();
 	    }
 	    else
 	    {
