@@ -540,7 +540,7 @@ private:
 					    int& current_frame,
 					    const StringArray& scopes,
 					    DispNode *dn,
-					    bool& ok);
+					    const bool& ok);
 
     static bool get_state(std::ostream& os,
 			  bool restore_state,

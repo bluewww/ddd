@@ -135,7 +135,7 @@ void GraphEdge::dequeue()
     
     
 
-std::ostream& operator << (std::ostream& s, GraphEdge& e)
+std::ostream& operator << (std::ostream& s, const GraphEdge& e)
 {
     return s << "( " << *(e.from()) << " -> " << *(e.to()) << " )";
 }

@@ -474,7 +474,7 @@ static void setup_x_fonts(const AppData& ad, XrmDatabase& db)
 //-----------------------------------------------------------------------------
 
 static void replace_vsl_font(string& defs, const string& func, 
-			     AppData& ad, const string& override = "",
+			     const AppData& ad, const string& override = "",
 			     DDDFont font = DataDDDFont)
 {
     string fontname = quote(make_font(ad, font, override));

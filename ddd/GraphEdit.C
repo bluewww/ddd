@@ -1680,7 +1680,7 @@ inline void drawSelectFrame(Widget w)
 
 
 // Redraw selection frame
-static void redrawSelectFrame(Widget w, BoxPoint& p)
+static void redrawSelectFrame(Widget w, const BoxPoint& p)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     BoxPoint& endAction      = _w->graphEditP.endAction;
@@ -2889,7 +2889,7 @@ static void _Layout(Widget w, XEvent *event, String *params,
     std::ostringstream os;
     os << new_rotation;
 
-    string rotation_s = os;
+    const string rotation_s( os );
     Cardinal rotate_num_params = 1;
     const _XtString rotate_params[1];
     rotate_params[0] = rotation_s.chars();

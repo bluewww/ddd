@@ -209,7 +209,7 @@ void add_to_arguments(const string& line)
 
 // Update list of arguments
 static void update_arguments(Widget dialog, Widget arguments_w,
-			     StringArray& arguments, string& last,
+			     StringArray& arguments, const string& last,
 			     bool& updated)
 {
     if (updated || dialog == 0)

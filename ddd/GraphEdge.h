@@ -143,7 +143,7 @@ public:
     virtual bool OK() const;
 };
 
-extern std::ostream& operator << (std::ostream& s, GraphEdge& e);
+extern std::ostream& operator << (std::ostream& s, const GraphEdge& e);
 
 #endif // _DDD_GraphEdge_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

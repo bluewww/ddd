@@ -2931,7 +2931,7 @@ void DataDisp::write_restore_scope_command(std::ostream& os,
 					   int& current_frame,
 					   const StringArray& scopes,
 					   DispNode *dn,
-					   bool& ok)
+					   const bool& ok)
 {
     if (dn->deferred())
     {
