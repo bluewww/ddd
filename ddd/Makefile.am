@@ -755,12 +755,16 @@ VSLSOURCES = \
 	$(vsldir)/builtin.vsl \
 	$(vsldir)/tab.vsl \
 	$(vsldir)/fonts.vsl \
-	$(vsldir)/colors.vsl
+	$(vsldir)/colors.vsl \
+	$(vsldir)/list.vsl
 
 $(srcdir)/ddd.vsl.h: $(vsldir)/ddd.vsl $(srcdir)/vsl2c.sed $(VSLSOURCES)
 	$(CAT) $(vsldir)/ddd.vsl > tmp.c
 	$(VSL_CPP) tmp.c | $(SED) -f $(srcdir)/vsl2c.sed > $@
 	$(RM) tmp.c
+
+.PHONY: vsllib
+vsllib: $(vsldir)/ddd.vsl $(VSLSOURCES)
 
 
 # -----------------------------------------------------------------------------
@@ -778,19 +782,24 @@ LEXTOCXX = $(srcdir)/lextoC
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 
 # VSL parsers.
-vsl-lex.C: $(srcdir)/vsl-lex.L
+$(srcdir)/vsl-lex.C: $(srcdir)/vsl-lex.L
 	$(LEX) $(LFLAGS) $(srcdir)/vsl-lex.L
 	$(SHELL) $(LEXTOCXX) -prefix vsl
 	$(MV) $(LEX_OUTPUT_ROOT).C $@
 	$(RM) $(LEX_OUTPUT_ROOT).c
 
-vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
+$(srcdir)/vsl-gramma.h $(srcdir)/vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
 	$(YACCTOCXX) $(YACCTOCXX).bison $(YACCTOCXX).h $(YACCTOCXX).sun
 	$(YACC) $(YFLAGS) -d $(srcdir)/vsl-gramma.Y
 	$(SHELL) $(YACCTOCXX) -prefix vsl
-	$(MV) y.tab.H vsl-gramma.h
-	$(MV) y.tab.C vsl-gramma.C
+	$(MV) y.tab.H $(srcdir)/vsl-gramma.h
+	$(MV) y.tab.C $(srcdir)/vsl-gramma.C
 	$(RM) y.tab.c y.tab.h
+
+VSLRead.$(OBJEXT): \
+	$(srcdir)/vsl-lex.C \
+	$(srcdir)/vsl-gramma.h \
+	$(srcdir)/vsl-gramma.C
 
 # DDD regexp parsers.
 rxscan.C: $(srcdir)/rxscan.L
@@ -798,6 +807,8 @@ rxscan.C: $(srcdir)/rxscan.L
 	$(SHELL) $(LEXTOCXX) -prefix "ddd"
 	$(MV) $(LEX_OUTPUT_ROOT).C $@
 	$(RM) $(LEX_OUTPUT_ROOT).c
+
+regexps.$(OBJEXT): rxscan.C
 
 
 
