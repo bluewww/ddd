@@ -42,6 +42,7 @@ char args_rcsid[] =
 #include "SourceView.h"
 #include "ddd.h"
 #include "disp-read.h"
+#include "file.h"
 #include "mydialogs.h"
 #include "regexps.h"
 #include "string-fun.h"
@@ -435,8 +436,7 @@ void add_running_arguments(string& cmd)
     if (args == "")
     {
 	// JDB requires at least a class name after the `run' command.
-	string class_name = source_view->line_of_cursor();
-	class_name = class_name.before(":");
-	cmd += " " + class_name;
+	ProgramInfo info;
+	cmd += " " + info.file;
     }
 }

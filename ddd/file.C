@@ -600,8 +600,13 @@ ProgramInfo::ProgramInfo()
     }
 
     case XDB:
-    case JDB:
 	break;			// FIXME
+
+    case JDB:
+	// Just use the current class
+	file = source_view->line_of_cursor();
+	file = file.before(":");
+	break;
     }
 
     // As a fallback, get core file and executable from argument list.
