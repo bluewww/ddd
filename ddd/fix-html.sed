@@ -8,8 +8,7 @@
 
 
 # Set up a suitable background
-# KDE browsers have trouble with PNG backgrounds, so use JPG instead
-s!<BODY>!<BODY BACKGROUND="PICS/dddback.jpg" BGCOLOR="#ffffff">!
+s!<BODY>!<BODY BACKGROUND="PICS/dddback@IMGEXT@" BGCOLOR="#ffffff">!
 
 # Set up a header
 \!^Go to the!i\
@@ -26,7 +25,7 @@ s!^\(Go to the .*\)\.$!\1, <A HREF="http://www.fmi.uni-passau.de/st/ddd/">DDD ho
 # Add a logo before first header
 \!<H1>!i\
 <HR>\
-<IMG ALT="DDD - The Data Display Debugger" WIDTH=410 HEIGHT=140 SRC="PICS/dddlogo.png">\
+<IMG ALT="DDD - The Data Display Debugger" WIDTH=410 HEIGHT=140 SRC="PICS/dddlogo@IMGEXT@">\
 <HR>
 
 \!^This document was generated.*!i\

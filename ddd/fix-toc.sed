@@ -10,11 +10,11 @@
 \!<BODY!a\
 <ADDRESS>\
 <SMALL CLASS=header>\
-<A HREF="http://www.cs.tu-bs.de/softech/ddd/">DDD Home Page</A>\
+<A HREF="http://www.fmi.uni-passau.de/st/ddd/">DDD Home Page</A>\
 </SMALL>\
 </ADDRESS>
 
 # Set up the title
 s!<H2>\([^ ]* Edition[^<]*\)</H2>!<SPAN CLASS=caption>\1</SPAN><BR>!
 s!<H2>\(Last updated[^<]*\)</H2>!<SPAN CLASS=caption>\1</SPAN><BR>!
-s!<ADDRESS>Andreas Zeller</ADDRESS>!<P><ADDRESS CLASS=subtitle><A HREF="http://www.cs.tu-bs.de/~zeller/">Andreas Zeller</A></ADDRESS>!
+s!<ADDRESS>Andreas Zeller</ADDRESS>!<P><ADDRESS CLASS=subtitle><A HREF="http://www.fmi.uni-passau.de/st/staff/zeller/">Andreas Zeller</A></ADDRESS>!

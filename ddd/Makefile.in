@@ -413,8 +413,8 @@ XPMTOPPM   = xpmtoppm
 # The ImageMagick `convert' program (convert)
 CONVERT    = convert
 
-# The image extension (.png, .gif, or .jpg)
-IMGEXT     = .png
+# The image extension (.jpg, .png, or .gif)
+IMGEXT     = .jpg
 
 # The face-generating program from the `compface' package.  (xbm2xface.pl)
 XBM2XFACE  = xbm2xface.pl
@@ -651,17 +651,13 @@ IMAGE_WIDTH = 600
 
 # We use giftoppm/ppmtogif to get optimal GIF compression.
 .eps.gif:
-	$(CONVERT) -geometry $(IMAGE_WIDTH) -interlace Line $< $@
-	$(GIFTOPNM) $@ | $(PPMTOGIF) -interlace > $@~ && $(MV) $@~ $@
-
-.eps.jpeg:
-	$(CONVERT) -geometry $(IMAGE_WIDTH) -interlace Line $< $@
+	$(CONVERT) -geometry $(IMAGE_WIDTH) $< $@
 
 .eps.jpg:
-	$(CONVERT) -geometry $(IMAGE_WIDTH) -interlace Line $< $@
+	$(CONVERT) -geometry $(IMAGE_WIDTH) -quality 100 $< $@
 
 .eps.png:
-	$(CONVERT) -geometry $(IMAGE_WIDTH) -interlace Line $< $@
+	$(CONVERT) -geometry $(IMAGE_WIDTH) -quality 100 $< $@
 
 .fig.eps:
 	(cd `dirname $<` && $(FIG2PS) `basename $<` ) > $@
@@ -1037,7 +1033,6 @@ PICS = \
 IMAGES = \
 	$(picdir)/disclaimer$(IMGEXT)           \
 	$(picdir)/dddback$(IMGEXT)		\
-	$(picdir)/dddback.jpg		        \
 	$(picdir)/dddlogo$(IMGEXT)              \
 	$(picdir)/dddsplash$(IMGEXT)            \
 	$(picdir)/ddd-aliases$(IMGEXT)          \
@@ -1340,13 +1335,13 @@ uninstall-man:
 
 .PHONY: picsclean
 picsclean:
-	$(RM) $(picdir)/*.eps \
-	$(picdir)/*.gif $(picdir)/*.jpg $(picdir)/*.png ./#*#
+	$(RM) $(picdir)/*.gif $(picdir)/*.jpg $(picdir)/*.png
+	$(RM) $(picdir)/*.eps
 	-cd $(picdir) && $(RM) $(CLEAN_STUFF) ./#*#
 
 .PHONY: iconclean
 iconclean:
-	$(RM) $(ICONS) ./#*#
+	$(RM) $(ICONS)
 	-cd $(icondir) && $(RM) $(CLEAN_STUFF) ./#*#
 	-cd $(toolbardir) && $(RM) $(CLEAN_STUFF) ./#*#
 
@@ -1967,39 +1962,36 @@ $(picdir)/dddsplash.eps: $(icondir)/dddsplash.xpm
 
 $(picdir)/dddsplash.gif: $(icondir)/dddsplash.xpm
 	$(CONVERT) $(icondir)/dddsplash.xpm $@
-	$(GIFTOPNM) $@ | $(PPMTOGIF) > $@~ && $(MV) $@~ $@
 
 $(picdir)/dddsplash.jpg: $(icondir)/dddsplash.xpm
-	$(CONVERT) $(icondir)/dddsplash.xpm $@
+	$(CONVERT) -quality 100 $(icondir)/dddsplash.xpm $@
 
 $(picdir)/dddsplash.png: $(icondir)/dddsplash.xpm
-	$(CONVERT) $(icondir)/dddsplash.xpm $@
+	$(CONVERT) -quality 100 $(icondir)/dddsplash.xpm $@
 
 $(picdir)/dddlogo.eps: $(icondir)/dddlogo.xpm
 	$(CONVERT) $(icondir)/dddlogo.xpm $@
 
 $(picdir)/dddlogo.gif: $(icondir)/dddlogo.xpm
 	$(CONVERT) $(icondir)/dddlogo.xpm $@
-	$(GIFTOPNM) $@ | $(PPMTOGIF) > $@~ && $(MV) $@~ $@
 
 $(picdir)/dddlogo.jpg: $(icondir)/dddlogo.xpm
-	$(CONVERT) $(icondir)/dddlogo.xpm $@
+	$(CONVERT) -quality 100 $(icondir)/dddlogo.xpm $@
 
 $(picdir)/dddlogo.png: $(icondir)/dddlogo.xpm
-	$(CONVERT) $(icondir)/dddlogo.xpm $@
+	$(CONVERT) -quality 100 $(icondir)/dddlogo.xpm $@
 
 $(picdir)/dddback.eps: $(icondir)/dddback.xpm
 	$(CONVERT) $(icondir)/dddback.xpm $@
 
 $(picdir)/dddback.gif: $(icondir)/dddback.xpm
 	$(CONVERT) $(icondir)/dddback.xpm $@
-	$(GIFTOPNM) $@ | $(PPMTOGIF) > $@~ && $(MV) $@~ $@
 
 $(picdir)/dddback.jpg: $(icondir)/dddback.xpm
-	$(CONVERT) $(icondir)/dddback.xpm $@
+	$(CONVERT) -quality 100 $(icondir)/dddback.xpm $@
 
 $(picdir)/dddback.png: $(icondir)/dddback.xpm
-	$(CONVERT) $(icondir)/dddback.xpm $@
+	$(CONVERT) -quality 100 $(icondir)/dddback.xpm $@
 
 
 ## The DDD manual in PostScript format, including all pictures.
@@ -2050,7 +2042,8 @@ $(htmldir)/index.html: ddd.texi $(INCLUDES) $(IMAGES) \
 	$(RM) ddd*.html
 	$(TEXI2HTML) $(srcdir)/ddd.texi
 	for file in ddd*.html; do \
-		$(SED) -f $(srcdir)/fix-html.sed $$file > $$file~ && \
+		$(SED) -f $(srcdir)/fix-html.sed $$file | \
+		$(SED) 's/@IMGEXT@/\$(IMGEXT)/g' > $$file~ && \
 		$(MV) $$file~ $$file; \
 	done
 	$(SED) -f $(srcdir)/fix-toc.sed ddd_toc.html > ddd_toc.html~ && \
@@ -2107,6 +2100,10 @@ $(icondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
 	$(PGMTOPBM) | $(PBMTOXBM) | $(SED) 's/noname/dddsplash/g' | \
 	$(SED) "s/static char/static unsigned char/g" > $@~
 	@test -s $@~ && $(MV) $@~ $@ || ($(RM) $@~; test -s $@)
+
+$(icondir)/dddlogo.xpm: $(icondir)/dddsplash.xpm
+	$(RM) $@
+	cd $(icondir); $(LN_S) dddsplash.xpm dddlogo.xpm
 
 
 ## Configuration stuff.
