@@ -633,7 +633,8 @@ void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
     if (change->startPos < promptPosition)
     {
 	// Attempt to change text before prompt
-#if 0
+#ifdef LESSTIF_VERSION
+	// This only works in LessTif.  
 	// With Motif, this causes a core dump on Solaris.  - AZ
 	change->doit = false;
 #else
