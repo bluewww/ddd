@@ -193,12 +193,9 @@ into another language, under the above conditions for modified versions.
 @menu
 * Summary::                     
 * Invocation::                  
-* Windows::                     
-* Getting Help::                
-* Opening Files::               
-* Looking up Items::            
-* Breakpoints::                 
-* Watchpoints::                 
+* Basics::                      
+* Navigating::                  
+* Breakpoints and Watchpoints::  
 * Running the Program::         
 * Examining Data::              
 * Plotting Data::               
@@ -426,14 +423,19 @@ inferior debugger.
 
 
 
-@node Windows
-@chapter The @value{DDD} Windows
+@node Basics
+@chapter DDD Basics
 
-@ifnotinfo
-@sp 1
-@center @image{PICS/ddd-all, 15cm}
-@sp 1
-@end ifnotinfo
+@menu
+* Windows::                     
+* Command Tool::                
+* Tool Bar::                    
+* Tool Bar Buttons::            
+* Getting Help::                
+@end menu
+
+@node Windows
+@section The @value{DDD} Windows
 
 @value{DDD} is composed of three main windows:
 
@@ -447,6 +449,12 @@ program.
 The @emph{Debugger Console} accepts debugger commands and shows debugger
 messages.
 @end itemize
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-all, 15cm}
+@sp 1
+@end ifnotinfo
 
 By default, @value{DDD} places these main windows stacked into one
 single top-level window, but @value{DDD} can also be configured to
@@ -481,7 +489,7 @@ entering additional information.
 @end menu
 
 @node Command Tool
-@section Using the Command Tool
+@section The Command Tool
 
 The command tool is a small window containing frequently used
 @value{DDD} commands.  It can be moved around on top of the @value{DDD}
@@ -521,7 +529,7 @@ These are the buttons of the command tool.  Note that not all buttons
 may be available, depending on the capabilities of the inferior
 debugger.
 
-@table @samp
+@table @code
 @item Run
 @lbindex Run
 Start program execution.  When you click this button, your program will
@@ -604,7 +612,7 @@ Run the @code{make} program with the most recently given arguments.
 
 
 @node Tool Bar
-@section Using the Tool Bar
+@section The Tool Bar
 
 Some @value{DDD} commands require an @emph{argument}.  This argument
 is specified in the @emph{argument field}, labeled @samp{():}.
@@ -642,8 +650,14 @@ with further operations.
 @sp 1
 @end ifnotinfo
 
+
+@node Tool Bar Buttons
+@section The Tool Bar Buttons
+
+...
+
 @node Getting Help
-@chapter Getting Help
+@section Getting Help
 
 @value{DDD} has an extensive on-line help system.  Here's how to get
 help while working with @value{DDD}.
@@ -658,7 +672,7 @@ help while working with @value{DDD}.
 @end menu
 
 @node Button Tips
-@section Button Tips
+@subsection Button Tips
 
 @cindex Button tip
 @cindex Help on buttons
@@ -671,7 +685,7 @@ mouse pointer to another item.
 
 
 @node The Status Line
-@section The Status Line
+@subsection The Status Line
 
 The status line also displays information about the currently selected
 item.  By clicking on the status line, you can redisplay the most
@@ -681,7 +695,7 @@ recent messages.
 @cindex Status line
 
 @node Context-Sensitive Help
-@section Context-Sensitive Help
+@subsection Context-Sensitive Help
 
 @cindex Help on items
 @cindex Context-sensitive help
@@ -697,7 +711,7 @@ detailed information about the dialog.
 
 
 @node Help on Debugger Commands
-@section Help on Debugger Commands
+@subsection Help on Debugger Commands
 
 @cindex Help on commands
 @cmindex help
@@ -709,7 +723,7 @@ debugger prompt.
 
 
 @node Are You Stuck?
-@section Are You Stuck?
+@subsection Are You Stuck?
 
 @lbindex What Now?
 @kindex Ctrl+F1
@@ -721,12 +735,14 @@ do next.
 
 
 @node Undoing Commands
-@section Undoing Commands
+@subsection Undoing Commands
 
 @lbindex Undo
 @lbindex Redo
 @kindex Ctrl+Z
 @kindex Ctrl+Y
+@cindex Undo
+@cindex Redo
 
 And if, after all, you made a mistake, don't worry.  Almost every
 @value{DDD} command can be undone, using @samp{Edit @result{} Undo} or
@@ -737,8 +753,19 @@ undone.
 
 
 
+@node Navigating
+@chapter Navigating through the Code
+
+This chapter discusses how to access resources from within @value{DDD}.
+
+
+@menu
+* Opening Files::               
+* Looking up Items::            
+@end menu
+
 @node Opening Files
-@chapter Opening Files
+@section Opening Files
 
 @cindex Files, opening
 
@@ -760,13 +787,15 @@ sources.
 @end menu
 
 @node Opening Programs
-@section Opening Programs
+@subsection Opening Programs
 
 @cindex Program, opening
 @cindex Class, opening
 
 To open a program to be debugged, select @samp{File @result{} Open
-Program}.
+Program}.@footnote{With @sc{xdb} and some @sc{dbx} versions, the
+debugged program must be specified upon invocation and cannot be changed
+at run time.}
 
 In @sc{jdb}, select @samp{File @result{} Open Class} instead.  This gives
 you a list of available classes to choose from.
@@ -774,25 +803,25 @@ you a list of available classes to choose from.
 To re-open a recently debugged program or class, select @samp{File
 @result{} Open Recent} and choose a program or class from the list.
 
-Note: With @sc{xdb} and some @sc{dbx} versions, the debugged program
-must be specified upon invocation and cannot be changed at run time.
-
 
 @node Opening Core Dumps
-@section Opening Core Dumps
+@subsection Opening Core Dumps
 
 @cindex Core dump, opening
+
+If a previous run of the program has crashed and you want to find out
+why, you can have @value{DDD} examine its @dfn{core
+dump}.@footnote{@sc{jdb}, @sc{pydb}, and @sc{perl} do not support core
+dumps.}
 
 To open a core dump for the program, select @samp{File @result{} Open
 Core Dump}.  Before @samp{Open Core Dump}, you should first use
 @samp{File @result{} Open Program} to specify the program that generated
 the core dump and to load its symbol table.
 
-Note: @sc{jdb}, @sc{pydb}, and @sc{perl} do not support core dumps.
-
 
 @node Opening Source Files
-@section Opening Source Files
+@subsection Opening Source Files
 
 @cindex Source file, opening
 
@@ -811,7 +840,17 @@ source files, which may or may not be related to your program.
 
 
 @node Looking up Items
-@chapter Looking up Items
+@section Looking up Items
+
+As soon as the source of the debugged program is available, the
+@emph{source window} displays its current source text.  (If a source
+text cannot be found, use @samp{Edit @result{} GDB Settings} to specify
+source text directories.)
+
+In the source window, you can lookup and examine function and variable
+definitions as well as search for arbitrary occurrences in the source
+text.
+
 
 @menu
 * Looking up Definitions::      
@@ -820,17 +859,90 @@ source files, which may or may not be related to your program.
 @end menu
 
 @node Looking up Definitions
-@section Looking up Definitions
+@subsection Looking up Definitions
+
+If you wish to lookup a specific function or variable definition whose
+name is visible in the source text, click with @emph{mouse button 1} on
+the function or variable name.  The name is copied to the argument
+field.  Alter the name if desired and click on the @samp{Lookup} button
+to find its definition.
+@lbindex Lookup
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-source-popup, 15cm}
+@sp 1
+@end ifnotinfo
+
+As a faster alternative, you can simply press @emph{mouse button 3} on the
+function name and select the @samp{Lookup} item from the source popup
+menu.
+
+As an even faster alternative, you can also double-click on a function 
+call (an identifier followed by a @samp{(} character) to lookup the
+function definition.
+
 
 @node Textual Search
-@section Textual Search
+@subsection Textual Search
+
+If the item you wish to search is visible in the source text, click with
+@emph{mouse button 1} on it.  The identifier is copied to the argument
+field.  Click on the @samp{Find} button to find following occurrences
+and on @samp{Find @result{} Find << ()} to find previous occurrences.
+@lbindex Find
+
+By default, @value{DDD} finds only complete words.  To search for
+arbitrary substrings, change the value of the @samp{Source @result{}
+Find Words Only} option.
+@lbindex Find Words Only
+
 
 @node Looking up Previous Locations
-@section Looking up Previous Locations
+@subsection Looking up Previous Locations
 
+After looking up a location, use @samp{Edit @result{} Undo} (or the
+@samp{Undo} button on the command tool) to go back to the original
+locations.  @samp{Edit @result{} Redo} brings you back again to the
+location you looked for.
+@lbindex Undo
+@lbindex Redo
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-source, 15cm}
+@sp 1
+@end ifnotinfo
+
+
+@node Breakpoints and Watchpoints
+@chapter Breakpoints and Watchpoints
+
+The principal purposes of using a debugger are so that you can stop your
+program before it terminates; or so that, if your program runs into
+trouble, you can investigate and find out why.
+
+Inside @value{DDD}, your program may stop for any of several reasons,
+such as a signal, a breakpoint, or reaching a new line after a
+@value{DDD} command such as @samp{Step}.  You may then examine and
+change variables, set new breakpoints or remove old ones, and then
+continue execution.
+
+A @dfn{breakpoint} makes your program stop whenever a certain point in
+the program is reached.  For each breakpoint, you can add conditions to
+control in finer detail whether your program stops.
+@cindex Breakpoint
+
+A @dfn{watchpoint} is a special breakpoint that stops your program when
+the value of an expression changes.
+
+@menu
+* Breakpoints::                 
+* Watchpoints::                 
+@end menu
 
 @node Breakpoints
-@chapter Breakpoints
+@section Breakpoints
 
 @menu
 * Setting Breakpoints by Location::  
@@ -842,7 +954,7 @@ source files, which may or may not be related to your program.
 * Editing Breakpoint Properties::  
 * Breakpoint Conditions::       
 * Breakpoint Ignore Counts::    
-* Editing Breakpoint Commands::  
+* Breakpoint Commands::         
 * Moving and Copying Breakpoints::  
 * Looking up Breakpoints::      
 * Editing all Breakpoints::     
@@ -850,50 +962,393 @@ source files, which may or may not be related to your program.
 @end menu
 
 @node Setting Breakpoints by Location
-@section Setting Breakpoints by Location
+@subsection Setting Breakpoints by Location
+
+Breakpoints are set at a specific location in the program.
+
+If the source line is visible, click with @emph{mouse button 1} on the
+left of the source line and then on the @samp{Break} button.
+@lbindex Break
+
+As a faster alternative, you can simply press @emph{mouse button 3} on
+the left of the source line and select the @samp{Set Breakpoint} item
+from the line popup menu.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-line-popup, 15cm}
+@sp 1
+@end ifnotinfo
+
+As an even faster alternative, you can simply double-click on the left
+of the source line to set a breakpoint.
+
+As yet another alternative, you can select @samp{Source @result{} Edit
+Breakpoints}.  Click on the @samp{Break} button and enter the location.
+@lbindex Break
+
+(If you find this number of alternatives confusing, be aware that
+@value{DDD} users fall into three categories, which must all be
+supported.  @emph{Novice users} explore @value{DDD} and may prefer to
+use one single mouse button.  @emph{Advanced users} know how to use
+shortcuts and prefer popup menus.  @emph{Experienced users} prefer the
+command line interface.)
+
+Breakpoints are indicated by a plain stop sign, or as @samp{#@var{n}},
+where @emph{n} is the breakpoint number.  A greyed out stop sign (or
+@samp{_@var{n}_}) indicates a disabled breakpoint.  A stop sign with a
+question mark (or @samp{?@var{n}?}) indicates a conditional breakpoint
+or a breakpoint with an ignore count set.
+
+If you set a breakpoint by mistake, use @samp{Edit @result{} Undo} to delete
+it again.
+
 
 @node Setting Breakpoints by Name
-@section Setting Breakpoints by Name
+@subsection Setting Breakpoints by Name
+
+If the function name is visible, click with @emph{mouse button 1} on the
+function name.  The function name is then copied to the argument field.
+Click on the @samp{Break} button to set a breakpoint there.
+
+As a shorter alternative, you can simply press @emph{mouse button 3} on
+the function name and select the @samp{Break at} item from the popup
+menu.
+
+As yet another alternative, you can click on @samp{Break@dots{}} from
+the Breakpoint editor (invoked through @samp{Source @result{} Edit
+Breakpoints}) and enter the function name.
+
 
 @node Setting Regexp Breakpoints
-@section Setting Regexp Breakpoints
+@subsection Setting Regexp Breakpoints
+
+Using @sc{gdb}, you can also set a breakpoint on all functions that
+match a given string.  @samp{Break @result{} Set Breakpoints at Regexp
+()} sets a breakpoint on all functions whose name matches the
+@emph{regular expression} given in @samp{()}.  Here are some examples:
+
+@itemize @bullet
+@item
+To set a breakpoint on every function that starts with @samp{Xm}, set
+@samp{()} to @samp{^Xm}.
+@item
+To set a breakpoint on every member of class @samp{Date}, set
+@samp{()} to @samp{^Date::}.
+@item
+To set a breakpoint on every function whose name contains
+@samp{_fun}, set @samp{()} to @samp{_fun}.
+@item
+To set a breakpoint on every function that ends in @samp{_test}, 
+set @samp{()} to @samp{_test$}.
+@end itemize
+
 
 @node Disabling Breakpoints
-@section Disabling Breakpoints
+@subsection Disabling Breakpoints
+
+Rather than deleting a breakpoint or watchpoint, you might prefer to
+@dfn{disable} it.  This makes the breakpoint inoperative as if it had
+been deleted, but remembers the information on the breakpoint so that
+you can @dfn{enable} it again later.@footnote{@sc{jdb} does not support
+breakpoint disabling.}
+
+To disable a breakpoint, press @emph{mouse button 3} on the breakpoint
+symbol and select the @samp{Disable Breakpoint} item from the breakpoint
+popup menu.  To enable it again, select @samp{Enable Breakpoint}.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-bp-popup, 15cm}
+@sp 1
+@end ifnotinfo
+
+As an alternative, you can select the breakpoint and click on
+@samp{Disable} or @samp{Enable} in the Breakpoint editor (invoked
+through @samp{Source @result{} Edit Breakpoints}.
+@lbindex Disable
+@lbindex Enable
+
+Disabled breakpoints are indicated by a grey stop sign, or
+@samp{_@var{n}_}, where @var{n} is the breakpoint number.
+
+The @samp{Disable Breakpoint} item is also accessible via the
+@samp{Clear} button.  Just press and hold @emph{mouse button 1} on the
+button to get a popup menu.
+@lbindex Clear
+
 
 @node Temporary Breakpoints
-@section Temporary Breakpoints
+@subsection Temporary Breakpoints
+
+A @emph{temporary breakpoint} is immediately deleted as soon as it is
+reached.@footnote{@sc{jdb} does not support temporary breakpoints.}
+
+To set a temporary breakpoint, press @emph{mouse button 3} on the left
+of the source line and select the @samp{Set Temporary Breakpoint} item
+from the popup menu.
+@lbindex Set Temporary Breakpoint
+
+As a faster alternative, you can simply double-click on the left of the
+source line while holding @key{Ctrl}.
+
+Temporary breakpoints are convenient to make the program continue up to
+a specific location: just set the temporary breakpoint at this location
+and continue execution.
+
+The @samp{Continue Until Here} item from the popup menu sets a temporary
+breakpoint on the left of the source line and immediately continues
+execution.  Execution stops when the temporary breakpoint is reached.
+@lbindex Continue Until Here
+
+The @samp{Set Temporary Breakpoint} and @samp{Continue Until Here} items
+are also accessible via the @samp{Break} button.  Just press and hold
+@emph{mouse button 1} on the button to get a popup menu.
+
+
 
 @node Deleting Breakpoints
-@section Deleting Breakpoints
+@subsection Deleting Breakpoints
+
+To delete a visible breakpoint, click with @emph{mouse button 1} on the
+breakpoint.  The breakpoint location is copied to the argument field.
+Click on the @samp{Clear} button to delete all breakpoints there.
+@lbindex Clear
+
+If the function name is visible, click with @emph{mouse button 1} on the
+function name.  The function name is copied to the argument field.
+Click on the @samp{Clear} button to clear all breakpoints there.
+
+As a faster alternative, you can simply press @emph{mouse button 3} on
+the breakpoint and select the @samp{Delete Breakpoint} item from the
+popup menu.
+@lbindex Delete Breakpoint
+
+As yet another alternative, you can select the breakpoint and click on
+@samp{Delete} in the Breakpoint editor (invoked through
+@samp{Source @result{} Edit Breakpoints}).
+@lbindex Delete
+
+As an even faster alternative, you can simply double-click on the
+breakpoint while holding @key{Ctrl}.
+
 
 @node Editing Breakpoint Properties
-@section Editing Breakpoint Properties
+@subsection Editing Breakpoint Properties
+
+
+You can change all properties of a breakpoint by pressing @emph{mouse
+button 3} on the breakpoint symbol and select @samp{Properties}
+from the breakpoint popup menu.  This will pop up a dialog showing the 
+current properties of the selected breakpoint.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-bp-properties, 15cm}
+@sp 1
+@end ifnotinfo
+
+As an even faster alternative, you can simply double-click on the
+breakpoint.
+
+@itemize @bullet
+@item
+Click on @samp{Lookup} to move the cursor to the breakpoint's
+location.
+@item
+Click on @samp{Enable} to enable the breakpoint.
+@item
+Click on @samp{Disable} to disable the breakpoint.
+@item
+Click on @samp{Temp} to make the breakpoint temporary.@footnote{@sc{gdb}
+has no way to make a temporary breakpoint non-temporary again.}
+@item
+Click on @samp{Delete} to delete the breakpoint.
+@end itemize
+
 
 @node Breakpoint Conditions
-@section Breakpoint Conditions
+@subsection Breakpoint Conditions
+
+The simplest sort of breakpoint breaks every time your program reaches a
+specified place.  You can also specify a @dfn{condition} for a
+breakpoint.  A condition is just a Boolean expression in your
+programming language.  A breakpoint with a condition evaluates the
+expression each time your program reaches it, and your program stops
+only if the condition is @emph{true}.
+
+This is the converse of using assertions for program validation; in that
+situation, you want to stop when the assertion is violated--that is,
+when the condition is false.  In C, if you want to test an assertion
+expressed by the condition @var{assertion}, you should set the condition
+@samp{!@var{assertion}} on the appropriate breakpoint.
+
+Break conditions can have side effects, and may even call functions in
+your program.  This can be useful, for example, to activate functions
+that log program progress, or to use your own print functions to format
+special data structures. The effects are completely predictable unless
+there is another enabled breakpoint at the same address.  (In that case,
+@value{DDD} might see the other breakpoint first and stop your program
+without checking the condition of this one.)
+
+Note that breakpoint commands are usually more convenient and flexible
+for the purpose of performing side effects when a breakpoint is reached.
+@xref{Breakpoint Commands}, for details.
+
 
 @node Breakpoint Ignore Counts
-@section Breakpoint Ignore Counts
+@subsection Breakpoint Ignore Counts
 
-@node Editing Breakpoint Commands
-@section Editing Breakpoint Commands
+A special case of a breakpoint condition is to stop only when the
+breakpoint has been reached a certain number of times.  This is so
+useful that there is a special way to do it, using the @dfn{ignore
+count} of the breakpoint.  Every breakpoint has an ignore count, which
+is an integer.  Most of the time, the ignore count is zero, and
+therefore has no effect.  But if your program reaches a breakpoint whose
+ignore count is positive, then instead of stopping, it just decrements
+the ignore count by one and continues.  As a result, if the ignore count
+value is @var{n}, the breakpoint does not stop the next @var{n} times
+your program reaches it.
+
+In the field @samp{Ignore Count} of the @samp{Breakpoint Properties}
+panel, you can specify the breakpoint ignore count.@footnote{@sc{jdb},
+Perl and some @sc{dbx} variants do not support breakpoint ignore
+counts.}
+
+If a breakpoint has a positive ignore count and a condition, the
+condition is not checked.  Once the ignore count reaches zero,
+@value{DDD} resumes checking the condition.
+
+
+@node Breakpoint Commands
+@subsection Breakpoint Commands
+
+You can give any breakpoint (or watchpoint) a series of @value{DDD}
+commands to execute when your program stops due to that breakpoint.  For
+example, you might want to print the values of certain expressions, or
+enable other breakpoints.@footnote{@sc{jdb}, PYDB, and some @sc{dbx}
+variants do not support breakpoint commands.}
+
+Using the @samp{Commands} buttons of the @samp{Breakpoint Properties}
+panel, you can edit commands to be executed when the breakpoint is hit.
+
+To edit breakpoint commands, click on @samp{Edit >>} and enter the
+commands in the commands editor.  When done with editing, click on
+@samp{Edit <<} to close the commands editor.
+
+Using @sc{gdb}, you can also @emph{record} a command sequence to be
+executed.  To record a command sequence, follow these steps:
+@itemize @bullet
+@item
+Click on @samp{Record} to begin the recording of the breakpoint commands.
+@item
+Now interact with @value{DDD}.  While recording, @value{DDD} does not
+execute commands, but simply records them to be executed when the
+breakpoint is hit.  The recorded debugger commands are shown in the
+debugger console.
+@item
+To stop the recording, click on @samp{End} or enter @samp{end} at
+the @sc{gdb} prompt.  To @emph{cancel} the recording, click on
+@samp{Interrupt} or press @key{ESC}.
+@item
+You can edit the breakpoint commands just recorded using @samp{Edit >>}.
+@end itemize
+
 
 @node Moving and Copying Breakpoints
-@section Moving and Copying Breakpoints
+@subsection Moving and Copying Breakpoints
+
+To move a breakpoint to a different location, press @emph{mouse button
+1} on the stop sign and drag it to the desired location.  This is
+equivalent to deleting the breakpoint at the old location and setting a
+breakpoint at the new location.  The new breakpoint inherits all
+properties of the old breakpoint, except the breakpoint number.
+
+To copy a breakpoint to a new location, press @key{Shift} while
+dragging.
+
+Please note: Dragging breakpoints is not possible when glyphs are
+disabled.  Delete and set breakpoints instead.
+
 
 @node Looking up Breakpoints
-@section Looking up Breakpoints
+@subsection Looking up Breakpoints
+
+If you wish to lookup a specific breakpoint, select @samp{Source
+@result{} Edit Breakpoints @result{} Lookup}.  After selecting a
+breakpoint from the list and clicking the @samp{Lookup} button, the
+breakpoint location is displayed.
+
+As an alternative, you can enter @samp{#@var{n}} in the argument field,
+where @var{n} is the breakpoint number, and click on the @samp{Lookup}
+button to find its definition.
+
 
 @node Editing all Breakpoints
-@section Editing all Breakpoints
+@subsection Editing all Breakpoints
+
+To view and edit all breakpoints at once, select @samp{Source @result{}
+Edit Breakpoints}.  This will popup the @emph{Breakpoint Editor} which
+displays the state of all breakpoints.
+
+@ifnotinfo
+@sp 1
+@center @image{PICS/ddd-edit-breakpoints, 15cm}
+@sp 1
+@end ifnotinfo
+
+In the breakpoint editor, you can select individual breakpoints by
+clicking on them.  Pressing @key{Ctrl} while clicking toggles the
+selection.  To edit the properties of all selected breakpoints, click on
+@samp{Props}.
+
 
 @node More Breakpoint Features
-@section More Breakpoint Features
+@subsection More Breakpoint Features
+
+Using @sc{gdb}, a few more commands related to breakpoints can be
+invoked through the debugger console:
+
+@table @samp
+@item hbreak @emph{position}
+@cmindex hbreak
+Sets a hardware-assisted breakpoint at @emph{position}.  This command
+requires hardware support and some target hardware may not have this
+support.  The main purpose of this is EPROM/ROM code debugging, so you
+can set a breakpoint at an instruction without changing the
+instruction.
+
+@item thbreak @emph{pos}
+@cmindex thbreak
+Set a temporary hardware-assisted breakpoint at @emph{pos}.
+@end table
+
+@xref{Setting breakpoints, Setting breakpoints, Setting Breakpoints,
+gdb, Debugging with GDB}, for details.
+
 
 
 @node Watchpoints
-@chapter Watchpoints
+@section Watchpoints
+
+You can make the program stop as soon as some variable value changes, or
+when some variable is read or written.  This is called `setting a
+@emph{watchpoint} on a variable'.  @footnote{Watchpoints are available
+in @sc{gdb} and some @sc{dbx} variants only.  In @sc{xdb}, a similar
+feature is available via @sc{xdb} @emph{assertions}; see the @sc{xdb}
+documentation for details.}
+
+Watchpoints have much in common with breakpoints: in particular, you can
+enable and disable them.  You can also set conditions, ignore counts,
+and commands to be executed when a watched variable changes its value.
+
+Please note: on architectures without special watchpoint support,
+watchpoints currently make the program execute two orders of magnitude
+more slowly.  This is so because the inferior debugger must interrupt
+the program after each machine instruction in order to examine whether
+the watched value has changed.  However, this delay can be well worth it
+to catch errors when you have no clue what part of your program is the
+culprit.
 
 @menu
 * Setting Watchpoints::         
@@ -903,20 +1358,54 @@ source files, which may or may not be related to your program.
 @end menu
 
 @node Setting Watchpoints
-@section Setting Watchpoints
+@subsection Setting Watchpoints
+
+If the variable name is visible, click with @emph{mouse button 1} on the
+variable name.  The variable name is copied to the argument field.
+Otherwise, enter the variable name in the argument field.  Click on the
+@samp{Watch ()} button to set a watchpoint there.
+
+Using @sc{gdb}, you can set different types of watchpoints.  Click and
+hold @emph{mouse button 1} on the @samp{Watch ()} button to get a menu.
+
 
 @node Editing Watchpoint Properties
-@section Editing Watchpoint Properties
+@subsection Editing Watchpoint Properties
+
+To change the properties of a watchpoint, enter the name of the watched
+variable in the argument field.  Click and hold @emph{mouse button 1} on
+the @samp{Watch ()} button and select @samp{Watchpoint Properties}.
+
+The @strong{Watchpoint Properties} panel has the same functionality as
+the @strong{Breakpoint Properties} panel; see @samp{Editing Breakpoint
+Properties}, above, for details.  As an additional feature, you can
+click on @samp{Print ()} to see the current value of a watched variable.
+
 
 @node Editing all Watchpoints
-@section Editing all Watchpoints
+@subsection Editing all Watchpoints
+
+To view and edit all watchpoints at once, select @samp{Data @result{}
+Edit Watchpoints}.  This will popup the @emph{Watchpoint Editor} which
+displays the state of all watchpoints.
+
+The @emph{Watchpoint Editor} has the same functionality as the
+@emph{Breakpoint Editor}; see @samp{Editing All Breakpoints}, above, for
+details.  As an additional feature, you can click on @samp{Print} to see
+the current value of a watched variable.
+
 
 @node Deleting Watchpoints
-@section Deleting Watchpoints
+@subsection Deleting Watchpoints
+
+To delete a watchpoint, enter the name of the watched variable in the
+argument field and click the @samp{Unwatch ()} button.
 
 
 @node Running the Program
 @chapter Running the Program
+
+...
 
 @menu
 * Starting Program Execution::  
