@@ -2489,7 +2489,7 @@ bool need_load_defines()
 
 static StringStringAssoc defs;
 
-static bool update_define(const string& command)
+static bool update_define(const string& command, bool undo = false)
 {
     // We have a new command - update user buttons.
     clear_help_cache(command);
@@ -2498,6 +2498,13 @@ static bool update_define(const string& command)
     string text = gdb_question("show user " + command);
     if (text == NO_GDB_ANSWER)
 	return false;
+
+    if (undo)
+    {
+	// Add `undoing' command
+	undo_buffer.add_command("define " + command + "\n" + 
+				defs[command] + "end");
+    }
 
     // `Undefined' means command is undefined; `Not a user command'
     // means this is a built-in command.
@@ -2775,7 +2782,7 @@ static void update_defineHP(Agent *, void *client_data, void *call_data)
     if (gdb_ready && !gdb->recording())
     {
 	char *c = (char *)client_data;
-	bool ok = update_define(c);
+	bool ok = update_define(c, true);
 
 	if (ok)
 	{
