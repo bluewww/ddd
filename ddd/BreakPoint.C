@@ -324,7 +324,7 @@ bool BreakPoint::update (string& info_output)
 	    if (info_output.length() > 0 && !isdigit(info_output[0]))
 	    {
 		// es folgen noch Informationen
-		int next_nl = info_output.index('\n');
+		int next_nl = info_output.index(RXnl_int);
 		if (next_nl == -1) {
 		    // dies war die letzte Breakpoint-Ausgabe
 		    new_info += info_output;
