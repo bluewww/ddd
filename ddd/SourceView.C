@@ -572,11 +572,6 @@ void SourceView::clearBP(XtPointer client_data, XtIntervalId *)
     {
 	// Delete last breakpoint
 	bp_popup_deleteCB(source_text_w, XtPointer(&bp_nr), 0);
-
-	// Jump was not done - issue `frame' command.
-	Command c(gdb->frame_command(), source_text_w);
-	c.verbose = false;
-	gdb_command(c);
     }
 }
 
@@ -6031,6 +6026,9 @@ void SourceView::dropGlyphAct (Widget w, XEvent *e, String *, Cardinal *)
 	// Move exec pos
 	line_popup_set_pcCB(text_w, XtPointer(&address), XtPointer(0));
     }
+
+    // Make sure this position is kept visible
+    SetInsertionPosition(text_w, pos);
 
     current_drag_origin     = 0;
     current_drag_breakpoint = 0;
