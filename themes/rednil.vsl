@@ -30,7 +30,7 @@ pointer_value (value) ->
 
 // Dereferenced pointers
 dereferenced_pointer_value (value) -> 
-old_dereferenced_pointer_value(v)
+    old_dereferenced_pointer_value(v)
     where v = (if (is_null(value)) then 
 	           null_pointer(value) 
 	       else 
