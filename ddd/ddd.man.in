@@ -3462,13 +3462,13 @@ Using \s-2GDB\s+2: A Guide to the \s-2GNU\s+2 Source-Level Debugger\c
 .PP
 .I
 \s-2DDD\s+2\(em\&A Free Graphical Front-End for \s-2UNIX\s+2 Debuggers\c
-\&, by Andreas Zeller and Dorothea L\o'"u'tkehaus, Computer Science Report
-95-07, Technische Universit\o'"a't Braunschweig, 1995.
+\&, by Andreas Zeller and Dorothea Lütkehaus, Computer Science Report
+95-07, Technische Universität Braunschweig, 1995.
 .PP
 .I
 \s-2DDD\s+2 \(en ein Debugger mit graphischer Datendarstellung\c
-\&, by Dorothea L\o'"u'tkehaus, Diploma Thesis, Technische
-Universit\o'"a't Braunschweig, 1994.
+\&, by Dorothea Lütkehaus, Diploma Thesis, Technische
+Universität Braunschweig, 1994.
 .PP
 The \s-2@DDD@\s+2 \fI\s-2FTP\s+2 site,\fR
 .sp
@@ -3602,9 +3602,9 @@ As a last resort, send bug reports on paper to:
 .sp
 .br
 .DS
-  Technische Universit\o'"a't Braunschweig 
+  Technische Universität Braunschweig 
 .br
-  Institut f\o'"u'r Programmiersprachen
+  Institut für Programmiersprachen
 .br
   und Informationssysteme 
 .br
@@ -3612,7 +3612,7 @@ As a last resort, send bug reports on paper to:
 .br
   \s-2@DDD@\s+2-Bugs 
 .br
-  B\o'"u'ltenweg 88
+  Bültenweg 88
 .br
   D-38092 Braunschweig 
 .br
@@ -3739,7 +3739,7 @@ In 1992, the \s-2VSL\s+2 and Box libraries were recycled for the
 inference-based software development tool set, Andreas wrote a graph
 editor (based on \s-2VSL\s+2 and the \s-2BOX\s+2 libraries) and
 facilities for inter-process knowledge exchange.  Based on these
-tools, \fIDorothea L\o'"u'tkehaus\fR realized \s-2@DDD@\s+2 as her Diploma
+tools, \fIDorothea Lütkehaus\fR realized \s-2@DDD@\s+2 as her Diploma
 Thesis, 1994.
 .PP
 The original \s-2@DDD@\s+2 had no source window; this was added by
@@ -3789,15 +3789,15 @@ If you appreciate this software, or have any suggestions,
 please send us a picture postcard.  Our address is:
 .PP
 .DS
-  Technische Universit\o'"a't Braunschweig 
+  Technische Universität Braunschweig 
 .br
-  Institut f\o'"u'r Programmiersprachen
+  Institut für Programmiersprachen
 .br
   und Informationssysteme 
 .br
   Abteilung Softwaretechnologie 
 .br
-  B\o'"u'ltenweg 88
+  Bültenweg 88
 .br
   D-38092 Braunschweig 
 .br
@@ -3844,7 +3844,7 @@ manual page on \s-2UNIX\s+2 systems (as
 .\" ---------------
 .\"
 \s-2@DDD@\s+2 is Copyright \(co 1995, 1996, 1997
-Technische Universit\o'"a't Braunschweig, Germany.
+Technische Universität Braunschweig, Germany.
 .PP
 \s-2@DDD@\s+2 is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -3863,7 +3863,7 @@ output.  To read the License from within \s-2@DDD@\s+2, use the
 `\fB@DDD@ License...\fR' item in the `\fBHelp\fR' menu.
 .PP
 This \s-2@DDD@\s+2 manual page is Copyright \(co 1995, 1996, 1997
-Technische Universit\o'"a't Braunschweig, Germany.
+Technische Universität Braunschweig, Germany.
 .PP
 Permission is granted to make and distribute verbatim copies of this
 manual page provided the copyright notice and this permission notice

@@ -801,14 +801,6 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	    text[target++] = text[source++];
 	}
 	text.from(target) = "";
-
-	// Handle umlauts
-	text.gsub("\"\ba", "\344");
-	text.gsub("\"\bo", "\366");
-	text.gsub("\"\bu", "\374");
-	text.gsub("_\b\"\b_\ba", "_\b\344");
-	text.gsub("_\b\"\b_\bo", "_\b\366");
-	text.gsub("_\b\"\b_\bu", "_\b\374");
     }
     else
     {
