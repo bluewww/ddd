@@ -146,7 +146,7 @@ void meltdown(Display *dpy)
 	    xloc = 0;
 
 	int yloc = DisplayHeight(dpy, screen);
-	for (int i = xloc; i < (xloc + width); i++)	{
+	for (i = xloc; i < (xloc + width); i++)	{
 	    yloc = min(yloc, heights[i]);
 	}
 	if (yloc == DisplayHeight(dpy, screen))
