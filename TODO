@@ -355,7 +355,8 @@ Volunteers for these and other projects are welcome!
 187. Have a `commands' menu listing up all debugger commands.  Should
      be organized according to `help' classes.
 
-192. Use the generating expression as display base, not the expression 
-     sent by GDB.  (i.e., use `f', not `f(int)').
+192. Use the `display' command argument as display name, not the
+     expression sent by GDB.  (i.e., upon `graph display f', use `f',
+     not `f(int)').
 
 193. (Insert your project idea here)
