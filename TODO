@@ -287,8 +287,9 @@ Volunteers for these and other projects are welcome!
      apply `Delete' to display parts only.  See also 143, 128, and
      088.
 
-152. When dereferencing, make new displays inherit the `Show/Hide'
-     settings of their ancestors.
+152. When dereferencing, make new displays inherit the show/hide,
+     enable/disable state of their ancestors.  How about selection
+     state?
 
 153. Include assembler support for Sun DBX (they have a `dis'
      command).
