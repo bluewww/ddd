@@ -1933,10 +1933,13 @@ void DataDisp::delete_displaySQ (int display_nrs[], int count)
 	break;
     }
 	
-    bool ok = gdb->send_question (cmd, delete_displayOQC, 0);
+    bool ok = 
+	!gdb->has_display_command() 
+	|| gdb->send_question (cmd, delete_displayOQC, 0);
     if (!ok)
 	post_gdb_busy(last_origin);
-    else {
+    else
+    {
 	for (j = 0; j < count; j++) {
 	    disp_graph->del (display_nrs[j]);
 	}
@@ -2546,7 +2549,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 	return;
 
     const string& name = disp_value->full_name();
-    string value = gdb_question("print " + name);
+    string value = gdb_question(gdb->print_command(name));
     if (value == NO_GDB_ANSWER)
     {
 	post_gdb_busy();
