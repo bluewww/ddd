@@ -2029,6 +2029,9 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	}
     }
 
+    // Earlier state
+    bool undoing = undo_buffer.showing_earlier_state();
+
     // Argument
     bool arg_ok  = false;
     bool plot_ok = false;
@@ -2041,7 +2044,7 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     {
 	string arg = source_arg->get_string();
 	arg_ok = (arg != "") && !is_file_pos(arg);
-	plot_ok = arg_ok;
+	plot_ok = arg_ok && !undoing;
     }
 
     // New
@@ -2066,7 +2069,6 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 
     bool recording = gdb->recording() && emptyCommandQueue();
     bool record_ok = recording && arg_ok;
-    bool undoing = undo_buffer.showing_earlier_state();
 
     set_sensitive(shortcut_menu[ShortcutItms::New2].widget, 
 		  arg_ok && !undoing);
