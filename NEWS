@@ -6,6 +6,8 @@ DDD 2.2 [in development]
 
     User-visible changes to DDD 2.1:
     - Source line numbers can be turned on and off (default: off).
+    - The `Disable ()' button for disabling displays has gone;
+      displays can now be enabled or disabled via `Show ()/Hide ()'.
 
 
 DDD 2.1.1

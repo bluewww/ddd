@@ -332,19 +332,11 @@ Volunteers for these and other projects are welcome!
 164. It would be very nice if the data displayed in the Display window was
      color highlighted whenever it changes.
 
-165. Have an optional mode where line numbers are shown in the status line.
-     The source layout may be changed such that line numbers are shown
-     no more.
-
 166. When the inferior debugger crashes, offer to restart it.  This
      may be done by replaying all previously issued commands (except
      the last one, of course).  Commands with external side-effects
      (such as running or making the program as well as shell commands)
      should be ignored.
-
-167. The `Show/Hide' operation could revert to `Enable/Disable' if the
-     entire display is selected.  The `Enable' button would no more be
-     needed.
 
 168. Rename `Lookup' to `List' and recognize the `list' command.  See
      also #108.
@@ -360,4 +352,6 @@ Volunteers for these and other projects are welcome!
 172. Use external `gzip' to compress and uncompress the built-in
      manual.  Saves lots of space in the executable.
 
-173. (Insert your project idea here)
+173. Have one single `Break at()' / `Clear at()' button.
+
+174. (Insert your project idea here)
