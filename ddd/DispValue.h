@@ -70,6 +70,7 @@ class DispValue {
     // instead of inferring it.
     void init(string& value, DispValueType type = UnknownType);
     void clear();
+    void assign(DispValue& dv);
 
     DispValue& operator = (const DispValue&)
     {
@@ -205,6 +206,9 @@ public:
 
     // Clear cache of all types read so far
     static void clear_type_cache();
+
+    // Hook for inserting previously computed DispValues
+    static DispValue *(*value_hook)(string& value);
 };
 
 #endif // _DDD_DispValue_h

@@ -485,6 +485,7 @@ private:
     static void insert_data_node(DispNode *dn, int depend_nr);
     static int new_cluster();
     static void clusterSelectedCB(Widget, XtPointer, XtPointer);
+    static DispValue *update_hook(string& value);
 
 public:
     static Widget graph_edit;
@@ -500,6 +501,7 @@ public:
 
     static int count_data_displays();
     static void get_all_display_numbers(IntArray& numbers);
+    static void get_all_clusters(IntArray& numbers);
     static void refresh_graph_edit (bool silent = false);
     static Widget graph_form() { return graph_form_w; }
 

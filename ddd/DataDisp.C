@@ -424,6 +424,20 @@ void DataDisp::get_all_display_numbers(IntArray& numbers)
     }
 }
 
+// Get all clusters
+void DataDisp::get_all_clusters(IntArray& numbers)
+{
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0;
+	 dn = disp_graph->next(ref))
+    {
+	if (dn->is_user_command() && dn->user_command() == "displays")
+	    numbers += dn->disp_nr();
+    }
+}
+
+
 
 //-----------------------------------------------------------------------------
 // Button Callbacks
@@ -2747,6 +2761,10 @@ string DataDisp::new_display_cmd(string display_expression, BoxPoint *p,
 // Built-in user commands
 //-----------------------------------------------------------------------------
 
+#define HOOK_PREFIX  "<?"
+#define HOOK_POSTFIX ">"
+
+
 bool DataDisp::is_builtin_user_command(const string& cmd)
 {
     if (cmd == "displays")
@@ -2769,7 +2787,8 @@ string DataDisp::builtin_user_command(const string& cmd)
 	    if (!dn->is_user_command() && !dn->deferred() && 
 		dn->active() && dn->clustered())
 	    {
-		os << dn->name() << " = " << dn->str() << "\n";
+		os << dn->name() << " = " HOOK_PREFIX 
+		   << dn->disp_nr() << HOOK_POSTFIX "\n";
 		displays_seen = true;
 	    }
 	}
@@ -2783,9 +2802,27 @@ string DataDisp::builtin_user_command(const string& cmd)
     return NO_GDB_ANSWER;
 }
 
+DispValue *DataDisp::update_hook(string& value)
+{
+    if (!value.contains(HOOK_PREFIX, 0))
+	return 0;
+
+    value = value.after(HOOK_PREFIX);
+    int nr = atoi(value.chars());
+    value = value.after(HOOK_POSTFIX);
+
+    DispNode *dn = disp_graph->get(nr);
+    if (dn == 0)
+	return 0;
+
+    return dn->value()->dup();
+}
+
 void DataDisp::refresh_builtin_user_displays()
 {
     bool changed = false;
+
+    DispValue::value_hook = update_hook;
 
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
@@ -2803,6 +2840,8 @@ void DataDisp::refresh_builtin_user_displays()
 	    }
 	}
     }
+
+    DispValue::value_hook = 0;
 
     if (changed)
 	refresh_graph_edit();
@@ -3003,7 +3042,11 @@ DispNode *DataDisp::new_user_node(const string& name,
     s.current = answer.length();
 
     // User displays work regardless of scope
+    if (name == "`displays`")
+	DispValue::value_hook = update_hook;
+
     DispNode *dn = new DispNode(nr, name, "", answer);
+    DispValue::value_hook = 0;
 
     open_data_window();
 
@@ -5024,19 +5067,38 @@ void DataDisp::set_cluster_displays(bool value)
 // Cluster selected nodes into a new cluster
 void DataDisp::clusterSelectedCB(Widget, XtPointer, XtPointer)
 {
-    // Crate a new cluster and make it the current one
-    current_cluster = new_cluster();
+    int target_cluster = 0;
+    IntArray all_clusters;
+    get_all_clusters(all_clusters);
 
-    // Cluster all selected displays into this one
+    // If we have a selected cluster, choose this one
+    for (int i = 0; i < all_clusters.size(); i++)
+    {
+	DispNode *cluster = disp_graph->get(all_clusters[i]);
+	if (cluster != 0 && cluster->selected())
+	{
+	    target_cluster = all_clusters[i];
+	    break;
+	}
+    }
+
+    if (target_cluster == 0)
+    {
+	// No target cluster selected - make a new current one
+	target_cluster = current_cluster = new_cluster();
+    }
+
+    // Cluster all selected displays into the current one
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
 	 dn != 0;
 	 dn = disp_graph->next(ref))
     {
 	if (!dn->is_user_command() && dn->selected())
-	    dn->cluster(current_cluster);
+	    dn->cluster(target_cluster);
     }
 
+    refresh_builtin_user_displays();
     refresh_graph_edit();
 }
 

@@ -34,7 +34,9 @@ char DispValue_rcsid[] =
 #pragma implementation
 #endif
 
+#ifndef LOG_CREATE_VALUES
 #define LOG_CREATE_VALUES 0
+#endif
 
 //-----------------------------------------------------------------------------
 // A `DispValue' maintains type and value of a displayed expression
@@ -170,10 +172,11 @@ void DispValue::clear_type_cache()
 }
 
 //-----------------------------------------------------------------------------
-// Flags
+// Data
 //-----------------------------------------------------------------------------
 
 bool DispValue::expand_repeated_values = false;
+DispValue *(*DispValue::value_hook)(string& value) = 0;
 
 //-----------------------------------------------------------------------------
 // Function defs
@@ -259,6 +262,62 @@ DispValue::DispValue (const DispValue& dv)
     }
 }
 
+// Assignment
+void DispValue::assign(DispValue& dv)
+{
+    assert(mytype == UnknownType);
+
+    mytype      = dv.mytype;
+    // mydepth     = dv.mydepth;
+    myexpanded  = dv.myexpanded;
+    // myfull_name = dv.myfull_name;
+    // print_name  = dv.print_name;
+    myaddr      = dv.myaddr;
+    changed     = dv.changed;
+    // myrepeats   = dv.myrepeats;
+
+    switch (mytype)
+    {
+    case UnknownType:
+    {
+	simple = 0;
+	break;
+    }
+
+    case Simple:
+    case Text:
+    {
+	simple = dv.simple;
+	break;
+    }
+
+    case Pointer:
+    {
+	pointer = dv.pointer;
+	break;
+    }
+
+    case Array:
+    {
+	array = dv.array;
+	break;
+    }
+
+    case Struct:
+    case Reference:
+    case Sequence:
+    case List:
+    {
+	str = dv.str;
+    }
+    }
+
+    dv.mytype = Simple;
+    dv.simple = 0;
+    dv.clear();
+}
+
+
 DispValue *DispValue::dup() { return new DispValue(*this); }
 
 // True if more sequence members are coming
@@ -317,6 +376,23 @@ void DispValue::init(string& value, DispValueType given_type)
 	simple->value = "(Aborted)";
 	return;
     }
+
+
+    if (value_hook != 0)
+    {
+	DispValue *dv = (*value_hook)(value);
+	if (dv != 0)
+	{
+	    // Just take values from given element
+#if LOG_CREATE_VALUES
+	    clog << "External value " << quote(dv->full_name()) << "\n";
+#endif
+	    assign(*dv);
+	    delete dv;
+	    return;
+	}
+    }
+
 
     mytype = given_type;
     if (mytype == UnknownType && 

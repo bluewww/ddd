@@ -160,7 +160,7 @@ bool DispNode::update(string& value)
     else
     {
 	// Update existing value
-	if (value.contains(mystr, 0))
+	if (DispValue::value_hook == 0 && value.contains(mystr, 0))
 	{
 	    // Same value as last time
 	    value = value.after(mystr);
