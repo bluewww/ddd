@@ -930,7 +930,7 @@ IDXS = *.cp *.fn *.ky *.pg *.tp *.vr
 
 ## The dvi files.
 docdir = $(srcdir)/../doc
-DVIS = 	$(docdir)/ddd.dvi
+DVIS = 	ddd.dvi
 
 ## The postscript files.
 PSS = \
@@ -1063,7 +1063,7 @@ IMAGES = \
 	$(picdir)/ddd-value-tip$(IMGEXT)        \
 	$(picdir)/disclaimer$(IMGEXT)           \
 	$(picdir)/dddlogo$(IMGEXT)              \
-	$(picdir)/dddback.gif
+	$(picdir)/dddback$(IMGEXT)
 
 
 ## The manual page.
@@ -1337,8 +1337,8 @@ ultraclean:
 info:	$(INFOS)
 	@:
 
-.PHONY: dvi
-dvi:	$(DVIS)
+.PHONY: tex dvi
+tex dvi: $(DVIS)
 	@:
 
 .PHONY: ps
@@ -1909,11 +1909,17 @@ $(picdir)/dddlogo.eps: $(icondir)/dddlogo.xpm
 $(picdir)/dddlogo$(IMGEXT): $(icondir)/dddlogo.xpm
 	$(CONVERT) $(icondir)/dddlogo.xpm $@
 
+$(picdir)/dddback.eps: $(icondir)/dddback.xpm
+	$(CONVERT) $(icondir)/dddback.xpm $@
+
+$(picdir)/dddback$(IMGEXT): $(icondir)/dddback.xpm
+	$(CONVERT) $(icondir)/dddback.xpm $@
+
 
 ## The DDD manual in PostScript format, including all pictures.
 
-$(docdir)/ddd.ps: $(docdir)/ddd.dvi
-	$(DVIPS) $(docdir)/ddd.dvi -o $@
+$(docdir)/ddd.ps: ddd.dvi
+	$(DVIPS) ddd.dvi -o $@
 
 
 ## The DDD manual in DVI format.
@@ -1926,9 +1932,9 @@ INCLUDES = \
 	epsf.tex \
 	xepsf.tex
 
-$(docdir)/ddd.dvi: ddd.texi $(INCLUDES) $(PICS)
+ddd.dvi: ddd.texi $(INCLUDES) $(PICS)
 	-test -d PICS || $(LN_S) $(picdir) .
-	$(TEXI2DVI) $(srcdir)/ddd.texi && $(INSTALL_DATA) ddd.dvi $@
+	$(TEXI2DVI) $(srcdir)/ddd.texi
 
 texidir = $(srcdir)/../texinfo
 
