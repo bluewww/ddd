@@ -2636,7 +2636,7 @@ define(SOURCE_HELP, [\
 \
 WIDGET(Source Menu)\n\
 \n\
-DESC(Edit Breakpoints..., [set, view, and edit breakpoints])\n\
+DESC(Breakpoints..., [set, view, and edit breakpoints])\n\
 \n\
 DESC(Lookup (), [lookup LBL(()) in the source])\n\
 DESC(LBL_FIND_FORWARD, [find next occurrence of LBL(())])\n\
@@ -2656,8 +2656,8 @@ DESC(Reload Source , [reload current source file])])dnl
 Ddd*menubar.source.helpString:	SOURCE_HELP
 Ddd*sourceMenu.helpString:	SOURCE_HELP
 
-Ddd*sourceMenu.breakpoints.labelString:		Edit Breakpoints...
-Ddd*sourceMenu.breakpoints.mnemonic:		d
+Ddd*sourceMenu.breakpoints.labelString:		Breakpoints...
+Ddd*sourceMenu.breakpoints.mnemonic:		B
 Ddd*sourceMenu.breakpoints.documentationString: \
 @rm Set, view, and edit breakpoints
 
@@ -2735,8 +2735,8 @@ define(DATA_HELP, [\
 \
 WIDGET(Data Menu)\n\
 \n\
-DESC(Edit Displays..., [select, enable and delete displays])\n\
-DESC(Edit Watchpoints..., [set, view, and edit watchpoints])\n\
+DESC(Displays..., [select, enable and delete displays])\n\
+DESC(Watchpoints..., [set, view, and edit watchpoints])\n\
 DESC(Examine Memory..., [examine memory in any of several formats])\n\
 \n\
 DESC(Print (),   [print LBL(()) in @GDB@ console])\n\
@@ -2746,8 +2746,7 @@ DESC(Detect Aliases, [toggle alias detection])\n\
 \n\
 DESC(Display Local Variables, [show current local variables])\n\
 DESC(Display Arguments, [show current argument variables])\n\
-DESC(More Status Displays..., [show other things about the \
-debugged program])\n\
+DESC(Status Displays..., [show other things about the debugged program])\n\
 \n\
 DESC(Align on Grid, [align all displays on the next grid point])\n\
 DESC(Rotate Graph, [rotate the graph clockwise by 90 degrees])\n\
@@ -2761,18 +2760,18 @@ Ddd*menubar.data*helpString:	DATA_HELP
 Ddd*dataMenu*helpString:	DATA_HELP
 Ddd*dataMenu*tearOffTitle:      Data
 
-Ddd*dataMenu.displays.labelString:	Edit Displays...
-Ddd*dataMenu.displays.mnemonic:		E
+Ddd*dataMenu.displays.labelString:	Displays...
+Ddd*dataMenu.displays.mnemonic:		D
 Ddd*dataMenu.displays.documentationString: \
 @rm Select, enable and delete displays
 
-Ddd*dataMenu.watchpoints.labelString:	Edit Watchpoints...
+Ddd*dataMenu.watchpoints.labelString:	Watchpoints...
 Ddd*dataMenu.watchpoints.mnemonic:	W
 Ddd*dataMenu.watchpoints.documentationString: \
 @rm Set, view, and edit watchpoints
 
-Ddd*dataMenu.examine.labelString:	Examine Memory...
-Ddd*dataMenu.examine.mnemonic:		x
+Ddd*dataMenu.examine.labelString:	Memory...
+Ddd*dataMenu.examine.mnemonic:		M
 Ddd*dataMenu.examine.documentationString: \
 @rm Examine memory in any of several formats
 
@@ -2784,7 +2783,7 @@ Ddd*dataMenu.print.documentationString: \
 @rm Print the argument LBL(()) in the @GDB@ console
 
 Ddd*dataMenu.display.labelString:	Display ()
-Ddd*dataMenu.display.mnemonic:		D
+Ddd*dataMenu.display.mnemonic:		i
 Ddd*dataMenu.display.accelerator:	Ctrl<Key>minus
 Ddd*dataMenu.display.acceleratorText:	Ctrl+-
 Ddd*dataMenu.display.documentationString: \
@@ -2837,8 +2836,8 @@ Ddd*dataMenu.locals.acceleratorText:	Alt+L
 Ddd*dataMenu.locals.documentationString: \
 @rm Display all local variables of the current stack frame
 
-Ddd*dataMenu.infos.labelString:		More Status Displays...
-Ddd*dataMenu.infos.mnemonic:		M
+Ddd*dataMenu.infos.labelString:		Status Displays...
+Ddd*dataMenu.infos.mnemonic:		S
 Ddd*dataMenu.infos.documentationString: \
 @rm Show various things about the program being debugged
 
@@ -2862,13 +2861,6 @@ Ddd*dataMenu.layout.accelerator:	Meta<Key>Y
 Ddd*dataMenu.layout.acceleratorText:	Alt+Y
 Ddd*dataMenu.layout.documentationString:	\
 @rm Layout the graph
-
-Ddd*dataMenu.selectAll.labelString:	Select All
-Ddd*dataMenu.selectAll.mnemonic:	S
-! Ddd*dataMenu.selectAll.accelerator:	Ctrl<Key>A
-Ddd*dataMenu.selectAll.acceleratorText:	Ctrl+A
-Ddd*dataMenu.selectAll.documentationString:	\
-@rm Select all displays
 
 Ddd*dataMenu.refresh.labelString:	Refresh
 Ddd*dataMenu.refresh.mnemonic:		f
@@ -5591,7 +5583,7 @@ Click on LBL(Filter) to apply the given filter.
 ! Breakpoint Editor
 !-----------------------------------------------------------------------------
 
-Ddd*edit_breakpoints_dialog.dialogTitle: DDD: Breakpoint and Watchpoint Editor
+Ddd*edit_breakpoints_dialog.dialogTitle: DDD: Breakpoints and Watchpoints
 Ddd*edit_breakpoints_dialog.listLabelString: Breakpoints and Watchpoints
 Ddd*edit_breakpoints_dialog*buttons.orientation: XmHORIZONTAL
 Ddd*edit_breakpoints_dialog.okLabelString:	 Close
@@ -6068,7 +6060,7 @@ Click on LBL(Apply) to execute the current command.
 ! Display Editor
 !-----------------------------------------------------------------------------
 
-Ddd*edit_displays_dialog.dialogTitle: DDD: Display Editor
+Ddd*edit_displays_dialog.dialogTitle: DDD: Displays
 Ddd*edit_displays_dialog*listLabelString: Displays
 Ddd*edit_displays_dialog*buttons.orientation: XmHORIZONTAL
 Ddd*edit_displays_dialog.okLabelString:	      Close

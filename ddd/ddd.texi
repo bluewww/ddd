@@ -3926,8 +3926,8 @@ The @samp{Source} menu performs source-related operations such as
 looking up items or editing breakpoints.
 
 @table @code
-@item Edit Breakpoints
-@lbindex Edit Breakpoints
+@item Breakpoints
+@lbindex Breakpoints
 Edit all Breakpoints.  @xref{Editing all Breakpoints}, for details.
 
 @item Lookup ()
@@ -3989,16 +3989,16 @@ The @samp{Data} menu performs data-related operations such as editing
 displays or layouting the display graph.
 
 @table @code
-@item Edit Displays
-@lbindex Edit Displays
+@item Displays
+@lbindex Displays
 Invoke the Display Editor.  @xref{Editing all Displays}, for details.
 
-@item Edit Watchpoints
-@lbindex Edit Watchpoints
+@item Watchpoints
+@lbindex Watchpoints
 Edit all Watchpoints.  @xref{Editing all Watchpoints}, for details.
 
-@item Examine Memory
-@lbindex Examine Memory
+@item Memory
+@lbindex Memory
 View a memory dump.  @xref{Examining Memory}, for details.
 
 @item Print ()
@@ -4026,8 +4026,8 @@ Variables}, for details.
 Show all arguments of the current function in a display.
 @xref{Displaying Local Variables}, for details.
 
-@item More Status Displays
-@lbindex More Status Displays
+@item Status Displays
+@lbindex Status Displays
 Show current debugging information in a display.  @xref{Displaying
 Program Status}, for details.
 
@@ -6239,7 +6239,7 @@ As an even faster alternative, you can simply double-click on the left
 of the source line to set a breakpoint.
 
 @lbindex Break
-As yet another alternative, you can select @samp{Source @result{} Edit
+As yet another alternative, you can select @samp{Source @result{}
 Breakpoints}.  Click on the @samp{Break} button and enter the location.
 
 (If you find this number of alternatives confusing, be aware that
@@ -6271,7 +6271,7 @@ the function name and select the @samp{Break at} item from the popup
 menu.
 
 As yet another alternative, you can click on @samp{Break@dots{}} from
-the Breakpoint editor (invoked through @samp{Source @result{} Edit
+the Breakpoint editor (invoked through @samp{Source @result{}
 Breakpoints}) and enter the function name.
 
 
@@ -6320,8 +6320,8 @@ popup menu.
 
 @lbindex Delete
 As yet another alternative, you can select the breakpoint and click on
-@samp{Delete} in the Breakpoint editor (invoked through
-@samp{Source @result{} Edit Breakpoints}).
+@samp{Delete} in the Breakpoint editor (invoked through @samp{Source
+@result{} Breakpoints}).
 
 As an even faster alternative, you can simply double-click on the
 breakpoint while holding @key{Ctrl}.
@@ -6354,7 +6354,7 @@ popup menu.  To enable it again, select @samp{Enable Breakpoint}.
 @lbindex Enable
 As an alternative, you can select the breakpoint and click on
 @samp{Disable} or @samp{Enable} in the Breakpoint editor (invoked
-through @samp{Source @result{} Edit Breakpoints}.
+through @samp{Source @result{} Breakpoints}.
 
 Disabled breakpoints are indicated by a grey stop sign, or
 @samp{_@var{n}_}, where @var{n} is the breakpoint number.
@@ -6561,9 +6561,9 @@ dragging.
 @cindex Looking up breakpoints
 
 If you wish to lookup a specific breakpoint, select @samp{Source
-@result{} Edit Breakpoints @result{} Lookup}.  After selecting a
-breakpoint from the list and clicking the @samp{Lookup} button, the
-breakpoint location is displayed.
+@result{} Breakpoints @result{} Lookup}.  After selecting a breakpoint
+from the list and clicking the @samp{Lookup} button, the breakpoint
+location is displayed.
 
 As an alternative, you can enter @samp{#@var{n}} in the argument field,
 where @var{n} is the breakpoint number, and click on the @samp{Lookup}
@@ -6575,7 +6575,7 @@ button to find its definition.
 @cindex Breakpoints, editing
 
 To view and edit all breakpoints at once, select @samp{Source @result{}
-Edit Breakpoints}.  This will popup the @dfn{Breakpoint Editor} which
+Breakpoints}.  This will popup the @dfn{Breakpoint Editor} which
 displays the state of all breakpoints.
 
 @ifnotinfo
@@ -6684,7 +6684,7 @@ value of a watched variable.
 @cindex Watchpoints, editing
 
 To view and edit all watchpoints at once, select @samp{Data @result{}
-Edit Watchpoints}.  This will popup the @dfn{Watchpoint Editor} which
+Watchpoints}.  This will popup the @dfn{Watchpoint Editor} which
 displays the state of all watchpoints.
 
 @lbindex Print
@@ -8255,9 +8255,9 @@ graph display `where`
 creates a status display named @samp{Where} that shows the current
 backtrace.
 
-@lbindex More Status Displays
+@lbindex Status Displays
 If you are using @GDB{}, @DDD{} provides a panel from which you can
-choose useful status displays.  Select @samp{Data @result{} More Status
+choose useful status displays.  Select @samp{Data @result{} Status
 Displays} and pick your choice from the list.
 
 @ifnotinfo
@@ -8403,8 +8403,8 @@ Slices}, for a discussion.
 @subsubsection Editing all Displays
 @cindex Display Editor
 
-You can view the state of all displays by selecting @samp{Data @result{} 
-Edit Displays}.  This invokes the @dfn{Display Editor}.
+You can view the state of all displays by selecting @samp{Data @result{}
+Displays}.  This invokes the @dfn{Display Editor}.
 
 @ifnotinfo
 @sp 1
@@ -8471,9 +8471,9 @@ When a display is deleted, its immediate ancestors and descendants are
 automatically selected, so that you can easily delete entire graphs.
 
 To delete several displays at once, use the @samp{Undisp} button in the
-Display Editor (invoked via @samp{Data @result{} Edit Displays}).
-Select any number of display items in the usual way and delete them by
-pressing @samp{Undisp}.
+Display Editor (invoked via @samp{Data @result{} Displays}).  Select any
+number of display items in the usual way and delete them by pressing
+@samp{Undisp}.
 
 As an alternative, you can also use a @DDD{} command:
 
@@ -9987,11 +9987,11 @@ border}.  Feel free to customize these settings as desired.
 @cindex Examining memory contents
 @cindex Memory, examining
 
-Using @GDB{} or @DBX{}, you can examine memory in any of several formats,
-independently of your program's data types.  The item @samp{Data
-@result{} Examine Memory} pops up a panel where you can choose the
+@lbindex Memory
+Using @GDB{} or @DBX{}, you can examine memory in any of several
+formats, independently of your program's data types.  The item
+@samp{Data @result{} Memory} pops up a panel where you can choose the
 format to be shown.
-@lbindex Examine Memory
 
 @ifnotinfo
 @sp 1
