@@ -313,8 +313,8 @@ static int uncompress(ostream& os, const char *text, int size)
 
     string cmd = string(app_data.uncompress_command) + " < " + tempfile;
 
-    FILE *uncompress = popen(sh_command(cmd, true) + " 2>&1", "r");
-    if (uncompress == 0)
+    fp = popen(sh_command(cmd, true) + " 2>&1", "r");
+    if (fp == 0)
     {
 	os << app_data.uncompress_command << ": " << strerror(errno);
 	return -1;
