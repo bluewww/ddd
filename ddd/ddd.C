@@ -271,6 +271,9 @@ static void create_status(Widget parent);
 // Status LED
 static void blink(bool set);
 
+// Callbacks
+static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
+
 
 //-----------------------------------------------------------------------------
 // Xt Stuff
@@ -1518,10 +1521,13 @@ int main(int argc, char *argv[])
 			    NULL);
 
     source_arg = new ArgField (arg_cmd_w, "source_arg");
-
     MMcreateWorkArea(arg_cmd_w, "arg_cmd_area", arg_cmd_area);
     MMaddCallbacks (arg_cmd_area);
     XtManageChild (arg_cmd_w);
+
+    XtAddCallback(source_arg->widget(), XmNactivateCallback, 
+		  ActivateCB, 
+		  XtPointer(arg_cmd_area[ArgItems::Lookup].widget));
 
     XtWidgetGeometry size;
     size.request_mode = CWHeight;
@@ -2024,6 +2030,18 @@ inline void set_sensitive(Widget w, bool state)
 	XtSetSensitive(w, state);
 }
 
+
+//-----------------------------------------------------------------------------
+// Activate argument field
+//-----------------------------------------------------------------------------
+
+static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data)
+{
+    XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
+    
+    Widget button = Widget(client_data);
+    XtCallActionProc(button, "ArmAndActivate", cbs->event, (String *)0, 0);
+}
 
 //-----------------------------------------------------------------------------
 // Option handling
@@ -3177,7 +3195,7 @@ static void ddd_xt_warning(String message)
 	{
 	    cerr << "(You can suppress these warnings "
 		 << "by setting the 'Suppress X Warnings' option\n"
-		 << "in the DDD `Options` menu.)\n";
+		 << "in the DDD `General Preferences` panel.)\n";
 	    informed = true;
 	}
     }
