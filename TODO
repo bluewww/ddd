@@ -280,9 +280,6 @@ Volunteers for these and other projects are welcome!
 
 144. When moving the source window, move the command tool, too.
 
-145. Have some macros in `Ddd' that expand at run-time.  For instance,
-     @DEBUGGER@ may be replaced by the current inferior debugger.
-
 148* Include a sample `.dddinit' file.
 
 151. When `Disable/Enable' is applied to a display part, make it act like
@@ -293,6 +290,14 @@ Volunteers for these and other projects are welcome!
 152. When dereferencing, make new displays inherit the `Show/Hide'
      settings of their ancestors.
 
-153. Include assembler support for Sun DBX (they have a `dis' command).
+153. Include assembler support for Sun DBX (they have a `dis'
+     command).
 
-154. (Insert your project idea here)
+154. Allow users to specify geometries for dialog windows.
+
+155. Allow users to specify start-up commands that open specific
+     windows (for instance, open-backtrace(X, Y) would open the
+     backtrace window at X, Y; open-backtrace() would open it in some
+     default position).  See also #154, above.
+
+156. (Insert your project idea here)

@@ -352,4 +352,7 @@ Volunteers for fixing these and other bugs are welcome!
 
 165. The data display `list_test @ 10' is not correctly parsed.
 
-166. (Insert your bug here)
+166. When disassembling, have a way to place a delay that is
+     automatically cleared with the next GDB prompt (AutoDelay or so).
+
+167. (Insert your bug here)
