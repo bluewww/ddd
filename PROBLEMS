@@ -7,36 +7,18 @@ in various environments.
 Table of Contents
 =================
 
-    * Ada
     * AIX
     * Cygwin
-    * DEC
     * FreeBSD
     * GCC
-      + GCC 3.0 prereleases
-      + GCC and libg++
     * HP-UX
     * Irix
     * LessTif
     * Linux
     * MacOS X
     * Solaris 2.x
-    * SunOS
-      + SunOS 4.1 and X11R6
-      + SunOS 4.1 and Sun C++
     * Tru64
-    * Unixware
     * X11R4
-
-ADA
-===
-
-Reported by: Rick Flower <Rick.Flower@trw.com>
-
-    To debug Ada programs created with Gnat, you need a set of GDB
-    patches.  The current best set of patches for GDB 4.16 can be
-    found at `ftp://cs.nyu.edu/pub/gnat/gdb'.
-
 
 AIX
 ===
@@ -60,18 +42,6 @@ To compile DDD 3.3 for AIX 4.3.3:
      in libcurses.a explicitly, but that did not work. I am not
      sure exactly what the effect of not having tcdrain() is,
      although ddd seems to run just fine without it.
-
-
-Reported by: Andreas Zeller <zeller@gnu.org>
-
-    Some EGCS versions on AIX have trouble compiling DDD.  If you get
-    internal compiler errors, try compiling the affected modules
-    without optimization.  Here are the commands:
-
-	$ cd TOPLEVEL        # Top of DDD distribution
-	$ make -k            # Build all with optimization
-	$ cd ddd
-	$ make -k CXXOPT=    # Build remainder of DDD without optimization
 
 
 Reported by: Brian Cameron <bcameron@tuc.com>
@@ -182,7 +152,7 @@ Reported by:	Jacek M. Holeczek <holeczek@us.edu.pl>
 
     then run "make" again.  You should get no other warnings/errors except:
       - when compiling ./ddd/mainloop.C:
-	68  1500-010: (W) WARNING in ddd_main_loop(): Infinite loop.  
+	68  1500-010: (W) WARNING in ddd_main_loop(): Infinite loop.
             Program may not stop.
         ( this is intentional, you can safely ignore it ).
     Finally run "make strip" and "make install".  Have fun ...
@@ -192,49 +162,6 @@ Cygwin
 ======
 
     Cygwin is supported from ddd 3.3.9 on.
-
-
-DEC
-===
-
-(See Tru64 section)
-
-Reported by: Tim Mooney <mooney@dogbert.cc.ndsu.NoDak.edu>
-
-    When using DEC's C++ compiler 6.0, more than 99% of the warnings I
-    get *normally* when building ddd are complaints about the X11R6
-    header files not explicitly using `int' as a return type.  To make
-    it easier to see the other warnings, I've added
-
-	`-msg_disable nonstd_implicit_int'
-
-    to the `CXXFLAGS' before building this time.
-
-
-Reported by: Pascal Quesseveur <abak@hol.fr>
-
-    I have encountered some problems when compiling ddd on DEC Alpha 
-    station running Digital UNIX 4.0 with gcc version 2.7.2.2:
-
-    ddd/config.h created by configure is wrong: symbol 
-    HAVE_GETHOSTNAME_DECL must be defined in config.h since include file 
-    /usr/include/unistd.h contains a prototype for gethostname. This 
-    prototype is
-        int gethostname(char *, size_t)
-    when symbol _XOPEN_SOURCE_EXTENDED is defined and
-        int gethostname (char *, int)
-    in the other cases. There is a conflict with the prototype defined in
-    ddd/hostname.C.
-
-    The `ddd/Makefile' created by configure is wrong: variables
-    LIBNSL, NON_XLIBS and LIBGEN have incorrect values - the values
-    must be null to link ddd correctly.
-
-Jim Tarrant <jtarrant@inri.co.uk> reports:
-
-    To compile DDD-3.0 on our Digital Unix 4.0D workstations with GCC
-    2.8.1, I had to turn optimization off while building (use `make
-    CXXOPT=-DNDEBUG' to build DDD).
 
 
 FreeBSD
@@ -318,12 +245,10 @@ LessTif
 =======
 
     To use DDD with LessTif, get a recent LessTif release from
-    `http://www.lesstif.org'.  Be sure to apply the patches found in
-    the `patches/' subdirectory.
+    `http://www.lesstif.org'.
 
     Lesstif 0.93.94 is known to work.
 
-    See the DDD WWW page for further issues and patches.
 
 Linux
 =====
@@ -343,57 +268,6 @@ Reported by: Andrew Gaylard <apg@users.sf.net>
     This has been observed on Redhat-8.1, but probably affects other
     Unixes as well.
 
-Intel
------
-
-Reported by: Jim Van Zandt <jrv@vanzandt.mv.com>
-
-     Under slackware 3.1, the file permissions in `/dev/ptyp?' do not
-     allow for DDD <-> GDB interaction.  I did "cd /dev; rm pty*;
-     MAKEDEV ptyp ptyq ptys ptyt", the former permissions and device
-     numbers were restored, and DDD worked.
-     [Can anyone tell me how to circumvent this within DDD?  - AZ]
-
-
-Reported by:  Bernie Borenstein <c372321@hc1056.mdc.com>
-
-     Make sure you use libc version 4.6.27 or later.  Otherwise some
-     Motif versions will cause DDD to crash as soon as `Open
-     Program...' is selected (or any other file selection dialog is
-     opened).  Linux Motif's are very sensitive about this.
-
-     As an intermediate workaround, use the GDB `file' and `core'
-     commands; to open a specific source, use the GDB `info file
-     FUNCTION' command, where FUNCTION is a function defined in that
-     source file.
-
-
-Alpha
------
-
-Reported by:  J.H.M. Dassen <jdassen@wi.leidenuniv.nl>
-
-    The kernel headers before Linux 2.1.61 and 2.0.32 don't work
-    correctly with glibc.  Compiling C programs is possible in most
-    cases but C++ programs have (due to the change of the name lookups
-    for `struct's) problems.  One prominent example is `struct
-    fd_set'.
-     
-    There might be some problems left but 2.1.61/2.0.32 fix most of
-    the known ones.  See the BUGS file for other known problems.
-
-
-Pmac
-----
-
-Reported by:  Ryan Ware <ware@shocking.com>
-
-    I just wanted to let you know that (unlike previous versions of
-    DDD) 2.99 compiles almost straight out of the box for linux-pmac.
-    The only thing I had to change was the optimization level to O1.
-    O2 broke the compiler.  It looks and runs great.  Thanks.  I look
-    forward to many hours of using it.
-
 
 MacOS X
 =======
@@ -410,55 +284,11 @@ MacOS X
 Solaris 2.x
 ===========
 
-Reported by: Joe VanAndel <vanandel@ucar.edu>
+Reported by: Tim Mooney <mooney@dogbert.cc.ndsu.NoDak.edu>
 
-    When compiling for Solaris (SPARC) with X11R6.1 on Solaris 2.5.1, 
-    LDFLAGS='-lICE -lSM -lsocket' ./configure  <configure_flags>
-    
-    so that all the necessary X libraries are linked in.
+    ddd 3.3.9 is known to build on Solaris 2.8 using the Sun compilers
+    (Forte 6u2). It builds as well using g++.
 
-Reported by:  Matthias Klose <doko@cs.tu-berlin.de>
-
-    If you configure DDD in Solaris with gcc and you have installed
-    the libg++/libstdc++ libraries as shared libraries, you may try to
-    run configure with LDFLAGS set to -R<prefix of libstdc++>/lib. If
-    libstdc++/libg++ are installed in /usr/xyz, call configure with
-
-	LDFLAGS=-R/usr/xyz/lib configure  <configure flags ...>
-
-Reported by:  Blair Zajac <blair@olympia.gps.caltech.edu>
-
-    When using Sun cc to compile `libiberty' as shipped with DDD, change
-    `extern char *__builtin_alloca();' to `extern void
-    *__builtin_alloca();' in `alloca-norm.h' to get the code to compile.
-    This does not happen with GCC.
-
-SunOS
-=====
-
-SunOS 4.1 and X11R6
--------------------
-
-Reported by:  dmitzel@everest.hitc.com (Danny J. Mitzel) and
-    doko@cs.tu-berlin.de (Matthias Klose)
-
-    Using certain Motif and Athena libraries may cause
-    `_vendorShellWidgetClass' to be defined twice.  A possible
-    workaround is to configure DDD to run without Athena widgets
-    (i.e. in `config.h', undefine `HAVE_ATHENA_WIDGETS' and remove the
-    -lXaw flag from the `Makefile' linking command).
-
-
-SunOS 4.1 and Sun C++
----------------------
-
-Reported by:	Franklin Chen <chen@adi.com>
-
-    On SunOS 4.1.x, with Sun C++ 4.0.1, `config.h' needs to end up with
-        #define SIGHANDLERARGS int, ...
-    rather than
-        #define SIGHANDLERARGS int
-    to avoid compile errors in a number of source files.
 
 Tru64
 =====
@@ -470,16 +300,6 @@ Reported by: Tim Mooney <mooney@dogbert.cc.ndsu.NoDak.edu>
     ./configure" to build ddd 3.3.9 and later.
     (CXXFLAGS='-std strict_ansi -nopure_cname' should do as well).
 
-
-UNIXWARE
-========
-
-Reported by: Vinnie Shelton  <shelton@icd.teradyne.com>
-
-    For Unixware, I have to set up `ddd/Makefile' as follows
-    after configuration:
-
-    LINK.cc = env LD_RUN_PATH=/usr/X11R6/lib $(CXX) $(CXXBINDING) $(LDFLAGS)
 
 X11R4
 =====
