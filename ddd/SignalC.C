@@ -48,6 +48,14 @@ extern "C" {
 }
 #endif
 
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
+
 
 // Kill all agents when an interrupt signal is received
 static void cleanupOnSignal(int sig)
@@ -76,10 +84,10 @@ static void cleanupOnSignal(int sig)
     _cleanup();
 #endif
     // Now exit gracefully, without calling destructors
-    _exit(127);
+    _exit(EXIT_FAILURE);
 #else
     // Exit gracefully: this calls all destructors (but leaves no core)
-    exit(127);
+    exit(EXIT_FAILURE);
 #endif
 }
 

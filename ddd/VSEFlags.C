@@ -45,6 +45,14 @@ char VSEFlags_rcsid[] =
 #define NORA_LIB_PATH "/usr/local/Nora/lib/vsl-include"
 #endif
 
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
+
 
 // Defaults
 
@@ -283,7 +291,7 @@ void VSEFlags::parse(int& argc, char**& argv, char *args)
 	cout << argv[0] << ": usage: " << argv[0] << " [options] "
 	    << args << "\n\n" << explain();
 
-	exit(1);
+	exit(EXIT_FAILURE);
     }
 }
 

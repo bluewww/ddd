@@ -32,12 +32,21 @@ const char huffencode_rcsid[] =
 #include <limits.h>
 #include <iostream.h>
 #include <iomanip.h>
+#include <stdlib.h>
 
 #include "assert.h"
 #include "strclass.h"
 #include "cook.h"
 #include "DynArray.h"
 #include "bool.h"
+
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
 
 struct HuffNode {
     bool isleaf;
@@ -264,4 +273,6 @@ int main()
     cout << "const int hufflength = " << text.length() << ";\n";
 
     write_encoding(encoding);
+
+    return EXIT_SUCCESS;
 }

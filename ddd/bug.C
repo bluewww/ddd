@@ -93,7 +93,7 @@ void read_file (const string file_name)
     int line_count = 0;
     char* index1 = text;
     char* index2 = 0;
-    while (index2 = strchr (index1+1, '\n')) {
+    while ((index2 = strchr (index1+1, '\n'))) {
 	assert (index1 < index2);
 	index1 = index2;
 	line_count++;
@@ -146,7 +146,7 @@ void read_file (const string file_name)
 
 
 
-int main (int argc, char* argv[])
+int main (int /* argc */, char* argv[])
 {
     read_file (argv[2]);
     

@@ -29,9 +29,18 @@
 char test_file_rcsid[] = 
     "$Id$";
 
+#include <stdlib.h>
 #include <iostream.h>
 #include <Xm/Xm.h>
 #include <Xm/FileSB.h>
+
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
 
 #ifdef XmFONTLIST_DEFAULT_TAG
 #define DEFAULT_CHARSET XmFONTLIST_DEFAULT_TAG
@@ -56,7 +65,7 @@ static void echoCB(Widget, XtPointer, XtPointer call_data)
 
 static void doneCB(Widget, XtPointer, XtPointer)
 {
-    exit(0);
+    exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char *argv[])
@@ -78,6 +87,5 @@ int main(int argc, char *argv[])
     XtRealizeWidget(toplevel);
     XtAppMainLoop(app_context);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
-

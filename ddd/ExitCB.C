@@ -37,12 +37,16 @@ char ExitCB_rcsid[] =
 #include "ExitCB.h"
 #include "verify.h"
 
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
 // callbacks
 
 // leave program
 void ExitCB(Widget, XtPointer, XtPointer)
 {
-    exit(0);
+    exit(EXIT_SUCCESS);
 }
 
 // same, but with interaction

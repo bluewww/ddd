@@ -42,10 +42,19 @@ char GDBAgent_rcsid[] =
 #include "ddd.h"
 #include "post.h"
 
+#include <stdlib.h> // exit
 #include <string.h> // strdup
 #include <stdio.h>  // tmpnam
 #include <iostream.h>
 #include <fstream.h>
+
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
 
 DEFINE_TYPE_INFO_1(GDBAgent, TTYAgent);
 
@@ -59,7 +68,7 @@ DebuggerType debugger_type(const string& type)
 	return DBX;
 
     cerr << "Unknown debugger type " << quote(type) << "\n";
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 

@@ -41,6 +41,16 @@ char Agent_rcsid[] =
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <stdlib.h>
+
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
+
 
 #include "sigName.h"
 #include "Agent.h"
@@ -154,7 +164,7 @@ void Agent::startChildProcess()
 	if (setupChildCommunication())
 	{
 	    raiseMsg("child communication setup failed");
-	    exit(0);
+	    exit(EXIT_FAILURE);
 	}
 	
 	executeChild();
@@ -273,7 +283,7 @@ void Agent::executeChild()
 
     // could not find child: send message to parent via stderr
     perror("/bin/sh");
-    _exit(1);
+    _exit(EXIT_FAILURE);
 }
 
 

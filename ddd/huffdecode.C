@@ -80,8 +80,19 @@ static void huffdecode(ostream& os)
 }
 
 #ifdef MAIN
+#include <stdlib.h>
+
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
+
 int main()
 {
     huffdecode(cout);
+    return EXIT_SUCCESS;
 }
 #endif

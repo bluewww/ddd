@@ -29,8 +29,17 @@
 char ttytest_rcsid[] = 
     "$Id$";
 
+#include <stdlib.h>
 #include "TTYAgent.h"
 #include "cook.h"
+
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
 
 // Trace communication
 static void trace(const string& prefix, void *call_data)
@@ -84,7 +93,7 @@ void exitHP(Agent *, void *client_data, void *)
 
     TTYAgent& tty = *((TTYAgent *)client_data);
     tty.shutdown();
-    exit(0);
+    exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char *argv[])
@@ -123,4 +132,6 @@ int main(int argc, char *argv[])
     me.start();
 
     XtAppMainLoop(app_context);
+
+    return EXIT_SUCCESS;
 }

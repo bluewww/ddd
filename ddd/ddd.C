@@ -212,10 +212,18 @@ char ddd_rcsid[] =
 #include "xconfig.h"
 
 // Standard stuff
+#include <stdlib.h>
 #include <iostream.h>
 #include <fstream.h>
 #include <setjmp.h>
 
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
 
 //-----------------------------------------------------------------------------
 // Forward function decls
@@ -1472,7 +1480,7 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
     }
 
     // Never reached...
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 

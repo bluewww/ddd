@@ -50,6 +50,14 @@ char vsl_rcsid[] =
 #include "StringBox.h"
 #include "ListBox.h"
 
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
+
 
 
 // Grafik-Funktionen
@@ -140,7 +148,7 @@ void QuitCB(Widget, XtPointer, XtPointer)
     if (UniqueId::inUse() > 0)
 	cerr << "Warning: " << UniqueId::inUse() << " IDs still in use\n";
 
-    exit(0);
+    exit(EXIT_SUCCESS);
 }
 
 // Argumentliste erzeugen
@@ -197,7 +205,7 @@ int main(int argc, char *argv[])
 	    cout << argv[0] << ": usage: " << argv[0] << " [options] "
 		<< "vsllib\n\n" << VSEFlags::explain();
 
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	}
     }
 	
@@ -223,7 +231,7 @@ int main(int argc, char *argv[])
 	    lib.dumpTree(cout);
 
 	if (VSEFlags::supress_eval)
-	    exit(0);
+	    return EXIT_SUCCESS;
 
 	// Letzte Funktionsdefinition (gewoehnlich "main") finden
 	VSLDef* def = lib.lastdef();
@@ -231,7 +239,7 @@ int main(int argc, char *argv[])
 	if (def == 0)
 	{
 	    cerr << argv[0] << ": cannot find last definition (sorry)\n";
-	    exit(1);
+	    return EXIT_FAILURE;
 	}
 
 	// Funktion auswerten
@@ -273,7 +281,7 @@ int main(int argc, char *argv[])
     if (thebox == 0)
     {
 	cerr << argv[0] << ": evaluation failed (sorry)\n";
-	exit(1);
+	return EXIT_FAILURE;
     }
 
     // Widget realisieren
@@ -283,5 +291,5 @@ int main(int argc, char *argv[])
     XtAppMainLoop(app_con);
 
     // Never reached...
-    return 0;
+    return EXIT_SUCCESS;
 }

@@ -32,6 +32,7 @@ char test_graph_rcsid[] =
 #include "assert.h"
 #include <iostream.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include <Xm/Xm.h>
 #include <Xm/ScrolledW.h>
@@ -52,6 +53,14 @@ char test_graph_rcsid[] =
 #include "BoxGraphN.h"
 #include "HintGraphN.h"
 #include "LineGraphE.h"
+
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
 
 // Build a simple graph
 Graph *myGraph()
@@ -274,5 +283,5 @@ int main(int argc, char *argv[])
     XtRealizeWidget(toplevel);
     XtAppMainLoop(app_context);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
