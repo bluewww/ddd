@@ -7218,6 +7218,19 @@ VSL expressions.  Your data displays may not be rendered successfully.\n\
 STRONG(Please note:) This dialog only lists the EMPH(first) problem encountered.\n\
 For further diagnostics, see the status line (and the FILE(~/.[ddd]/log) file).
 
+Ddd*no_themes_warning.dialogTitle: DDD: No Themes
+Ddd*no_themes_warning*helpString:	\
+@rm The specified directory could not be found.\n\
+\n\
+This error typically happens when DDD installation is (yet) incomplete.\n\
+Did you already type LBL(make install)?\n\
+\n\
+Please verify whether the directories in the SAMP(vslPath) resource\n\
+(including your home directory) exist.\n\
+\n\
+If you work on Windows, be sure not to have SAMP(:) in your HOME environment\n\
+variable.
+
 
 
 
