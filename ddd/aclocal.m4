@@ -861,19 +861,48 @@ AC_DEFUN(ICE_TYPE_SIG_HANDLER_ARGS,
 [
 AC_REQUIRE([AC_TYPE_SIGNAL])
 AC_MSG_CHECKING([parameter type of signal handlers])
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
 AC_CACHE_VAL(ice_cv_type_sig_handler_args,
 [
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_cv_type_sig_handler_args=""
+# Try "..."
+if test "$ice_cv_type_sig_handler_args" = ""; then
 AC_TRY_COMPILE(
 [
 #include <sys/types.h>
 #include <signal.h>
 RETSIGTYPE handler(...);],
 [signal(1, handler);], 
-ice_cv_type_sig_handler_args=..., ice_cv_type_sig_handler_args=int)])dnl
+ice_cv_type_sig_handler_args="...")
+fi
+# Try "int"
+if test "$ice_cv_type_sig_handler_args" = ""; then
+AC_TRY_COMPILE(
+[
+#include <sys/types.h>
+#include <signal.h>
+RETSIGTYPE handler(int);],
+[signal(1, handler);], 
+ice_cv_type_sig_handler_args="int")
+fi
+# Try "int, ..."
+if test "$ice_cv_type_sig_handler_args" = ""; then
+AC_TRY_COMPILE(
+[
+#include <sys/types.h>
+#include <signal.h>
+RETSIGTYPE handler(int, ...);],
+[signal(1, handler);], 
+ice_cv_type_sig_handler_args="int, ...")
+fi
 AC_LANG_RESTORE
+]
+)dnl
 AC_MSG_RESULT($ice_cv_type_sig_handler_args)
+if test "$ice_cv_type_sig_handler_args" = ""; then
+AC_MSG_WARN([Please #define SIGHANDLERARGS in config.h])
+fi
 AC_DEFINE_UNQUOTED(SIGHANDLERARGS, $ice_cv_type_sig_handler_args)
 ])dnl
 dnl

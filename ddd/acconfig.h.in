@@ -86,7 +86,9 @@
 /* Define if the `regex_t' type has a `re_nsub' member, according to POSIX.2 */
 #undef HAVE_REGEX_T_RE_NSUB
 
-/* Define to the signal handler type accepted by signal() (`int' or `...') */
+/* Define to the signal handler type accepted by signal(). 
+   See the `signal' man page and the decl in <signal.h> for the exact type.
+   Typically values are `int', `...', and `int, ...'. */
 #undef SIGHANDLERARGS
 
 /* Define if `regcomp()' from <regex.h> does not work. */
