@@ -611,7 +611,7 @@ public:
     // True if debugger has `info displays' command
     bool has_info_display_command() const
     {
-	return display_command() != "";
+	return !display_command().empty();
     }
 
     // True if `undisplay' redisplays remaining values

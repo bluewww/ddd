@@ -895,10 +895,10 @@ public:
     static bool have_source() { return current_source.length() != 0; }
 
     // True iff we have some execution position
-    static bool have_exec_pos() { return last_execution_file != ""; }
+    static bool have_exec_pos() { return !last_execution_file.empty(); }
 
     // True iff we have some program counter
-    static bool have_pc() { return last_execution_pc != ""; }
+    static bool have_pc() { return !last_execution_pc.empty(); }
 
     // True iff we have some selection
     static bool have_selection();

@@ -92,7 +92,7 @@ public:
     // True if EXPR matches
     bool matches(const string& expr) const
     {
-	return matching_pattern(expr) != "";
+	return !matching_pattern(expr).empty();
     }
 };
 

@@ -65,7 +65,7 @@ public:
     string answer_ended ();
 
     // Were there any displays in the last output?
-    bool displays_found () const { return display_buffer != ""; }
+    bool displays_found () const { return !display_buffer.empty(); }
     bool partial_displays_found () const
     {
 	return !displays_found() && already_read == DisplayPart;
