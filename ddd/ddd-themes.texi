@@ -53,7 +53,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 2001-01-09
+@set DATE 2001-02-01
 
 @c Files
 @defcodeindex fl
