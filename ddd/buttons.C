@@ -443,24 +443,26 @@ static MString gdbDefaultDocumentationText(Widget widget, XEvent *event)
 // Buttons to be verified
 static WidgetArray buttons_to_be_verified;
 
-// Procedure id
-static XtWorkProcId verify_id = 0;
-
-static Boolean VerifyButtonWorkProc(XtPointer)
+static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 {
+    (void) id;			// Use it
+
+    XtIntervalId& verify_id = *((XtIntervalId *)client_data);
+    assert(*id == verify_id);
+    verify_id = 0;
+
     int i;
     for (i = 0; i < buttons_to_be_verified.size(); i++)
 	if (buttons_to_be_verified[i] != 0)
 	    break;
 
     if (i >= buttons_to_be_verified.size())
-    {
-	verify_id = 0;
-	return True;		// Done
-    }
+	return;			// All done
 
     Widget& button = buttons_to_be_verified[i];
     assert(button != 0);
+    
+    XtAppContext app_context = XtWidgetToApplicationContext(button);
 
     XtCallbackList callbacks = 0;
     XmString xmlabelString = 0;
@@ -471,6 +473,7 @@ static Boolean VerifyButtonWorkProc(XtPointer)
     MString labelString(xmlabelString, true);
     XmStringFree(xmlabelString);
 
+    bool enable = true;
     for (i = 0; callbacks != 0 && callbacks[i].callback != 0; i++)
     {
 	string cmd = String(callbacks[i].closure);
@@ -484,12 +487,16 @@ static Boolean VerifyButtonWorkProc(XtPointer)
 
 	    string answer = gdbHelp(cmd);
 	    if (answer == NO_GDB_ANSWER)
-		return False;		// Try again later
+	    {
+		// Try again in 20ms
+		verify_id = XtAppAddTimeOut(app_context, 20, 
+					    VerifyButtonWorkProc, client_data);
+		return;
+	    }
 
 	    if (!is_known_command(answer))
 	    {
-		// Command is not known - make button insensitive
-		XtSetSensitive(button, False);
+		enable = false;
 
 		if (first_time)
 		{
@@ -503,8 +510,14 @@ static Boolean VerifyButtonWorkProc(XtPointer)
 	}
     }
 
+    XtSetSensitive(button, enable);
+
     button = 0;			// Don't process this one again
-    return False;		// Try again with next button
+
+    // Process next button in 5ms
+    verify_id = XtAppAddTimeOut(app_context, 5,
+				VerifyButtonWorkProc, client_data);
+    return;
 }
 
 // Make BUTTON insensitive if it is not supported
@@ -517,11 +530,16 @@ void verify_button(Widget button)
     if (!XtIsSubclass(button, xmPushButtonWidgetClass))
 	return;
 
+    XtSetSensitive(button, False);
     buttons_to_be_verified += button;
+
+    // Procedure id
+    static XtIntervalId verify_id = 0;
     if (verify_id == 0)
     {
-	verify_id = XtAppAddWorkProc(XtWidgetToApplicationContext(button),
-				     VerifyButtonWorkProc, 0);
+	verify_id = XtAppAddTimeOut(XtWidgetToApplicationContext(button),
+				    0, VerifyButtonWorkProc, 
+				    XtPointer(&verify_id));
     }
 }
 
