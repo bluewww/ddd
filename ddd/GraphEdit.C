@@ -344,7 +344,7 @@ GraphEditClassRec graphEditClassRec = {
     /* widget_size              */  sizeof(GraphEditRec),
     /* class_initialize         */  ClassInitialize,
     /* class_part_initialize    */  NULL,
-    /* class_inited             */  false,
+    /* class_inited             */  False,
     /* initialize               */  Initialize,
     /* initialize_hook          */  NULL,
     /* realize                  */  Realize,
@@ -353,10 +353,10 @@ GraphEditClassRec graphEditClassRec = {
     /* resources                */  resources,
     /* num_resources            */  XtNumber(resources),
     /* xrm_class                */  NULLQUARK,
-    /* compress_motion          */  true,
-    /* compress_exposure        */  true,
-    /* compress_enterleave      */  true,
-    /* visible_interest         */  false,
+    /* compress_motion          */  True,
+    /* compress_exposure        */  True,
+    /* compress_enterleave      */  True,
+    /* visible_interest         */  False,
     /* destroy                  */  Destroy,
     /* resize                   */  XtInheritResize,
     /* expose                   */  Redisplay,
@@ -411,7 +411,7 @@ void graphEditSizeChanged(Widget w)
     if (graph == 0)
 	return;
 
-    sizeChanged = false;
+    sizeChanged = False;
 
     BoxRegion r = graph->region(graphGC);
 
@@ -469,7 +469,7 @@ Graph *graphEditGetGraph(Widget w)
 
 
 // Set grid pixmap
-static void setGrid(Widget w, Boolean reset = false)
+static void setGrid(Widget w, Boolean reset = False)
 {
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Pixel     gridColor  = _w->graphEdit.gridColor;
@@ -486,7 +486,7 @@ static void setGrid(Widget w, Boolean reset = false)
     {
 	// delete old pixmap
 	XSetWindowBackgroundPixmap(XtDisplay(w), XtWindow(w), ParentRelative);
-	XClearArea(XtDisplay(w), XtWindow(w), 0, 0, 0, 0, true);
+	XClearArea(XtDisplay(w), XtWindow(w), 0, 0, 0, 0, True);
 
 	XFreePixmap(XtDisplay(w), gridPixmap);
 	gridPixmap = None;
@@ -512,7 +512,7 @@ static void setGrid(Widget w, Boolean reset = false)
 					depth);
 
  	XSetWindowBackgroundPixmap(XtDisplay(w), XtWindow(w), gridPixmap);
-	XClearArea(XtDisplay(w), XtWindow(w), 0, 0, 0, 0, true);
+	XClearArea(XtDisplay(w), XtWindow(w), 0, 0, 0, 0, True);
 
 	delete[] gridData;
     }
@@ -521,7 +521,6 @@ static void setGrid(Widget w, Boolean reset = false)
 
 
 // Redraw
-
 static void RedrawCB(XtPointer client_data, XtIntervalId *id)
 {
     const Widget w                      = Widget(client_data);
@@ -529,6 +528,7 @@ static void RedrawCB(XtPointer client_data, XtIntervalId *id)
     const Graph* graph                  = _w->graphEdit.graph;
     const GraphGC& graphGC              = _w->graphEdit.graphGC;
     const Boolean sizeChanged           = _w->graphEdit.sizeChanged;
+    const Boolean redisplayEnabled      = _w->graphEdit.redisplayEnabled;
     const Boolean highlight_drawn       = _w->primitive.highlight_drawn;
     const Dimension highlight_thickness = _w->primitive.highlight_thickness;
     XtIntervalId& redrawTimer           = _w->graphEdit.redrawTimer;
@@ -537,7 +537,10 @@ static void RedrawCB(XtPointer client_data, XtIntervalId *id)
     redrawTimer = 0;
 
     if (graph == 0)
-	return;
+	return;			// No graph to draw
+
+    if (!redisplayEnabled)
+	return;			// Display disabled
 
     setGrid(w);
 
@@ -549,7 +552,7 @@ static void RedrawCB(XtPointer client_data, XtIntervalId *id)
 	graphEditClassRec.primitive_class.border_highlight(w);
 
     // Check for pending redrawings
-    bool redraw_all = true;
+    Boolean redraw_all = True;
     GraphNode *node;
     for (node = graph->firstVisibleNode(); 
 	 node != 0;
@@ -557,7 +560,7 @@ static void RedrawCB(XtPointer client_data, XtIntervalId *id)
     {
 	if (!node->redraw())
 	{
-	    redraw_all = false;
+	    redraw_all = False;
 	    break;
 	}
     }
@@ -570,7 +573,7 @@ static void RedrawCB(XtPointer client_data, XtIntervalId *id)
 		   highlight_thickness, highlight_thickness, 
 		   _w->core.width  - highlight_thickness * 2, 
 		   _w->core.height - highlight_thickness * 2,
-		   false);
+		   False);
 
 	graph->draw(w, EVERYWHERE, graphGC);
     }
@@ -583,15 +586,16 @@ static void RedrawCB(XtPointer client_data, XtIntervalId *id)
 	{
 	    BoxRegion r = node->region(graphGC);
 	    XClearArea(XtDisplay(w), XtWindow(w), r.origin(X), r.origin(Y),
-		       r.space(X), r.space(Y), false);
+		       r.space(X), r.space(Y), False);
 
 	    graph->draw(w, r, graphGC);
 	}
 
-	node->redraw() = false;
+	node->redraw() = False;
     }
 }
 
+// Launch redrawing procedure
 static void StartRedraw(Widget w)
 {
     const GraphEditWidget _w  = GraphEditWidget(w);
@@ -626,11 +630,27 @@ void graphEditRedrawNode(Widget w, GraphNode *node)
 {
     XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
-    node->redraw() = true;
+    node->redraw() = True;
 
     StartRedraw(w);
 }
 
+// Disable redrawing for a while; return old state
+Boolean graphEditEnableRedisplay(Widget w, Boolean state)
+{
+    XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
+
+    const GraphEditWidget _w   = GraphEditWidget(w);
+    Boolean& redisplayEnabled  = _w->graphEdit.redisplayEnabled;
+
+    Boolean old_state = redisplayEnabled;
+    redisplayEnabled = state;
+
+    if (redisplayEnabled)
+	StartRedraw(w);
+
+    return old_state;
+}
 
 
 
@@ -642,7 +662,7 @@ void graphEditRedrawNode(Widget w, GraphNode *node)
 	if (toVal->addr != NULL) {			\
 	    if (toVal->size < sizeof(type)) {		\
 		toVal->size = sizeof(type);		\
-		return false;				\
+		return False;				\
 	    }						\
 	    *(type *)(toVal->addr) = (value);		\
 	}						\
@@ -653,7 +673,7 @@ void graphEditRedrawNode(Widget w, GraphNode *node)
 	}						\
 							\
 	toVal->size = sizeof(type);			\
-	return true;					\
+	return True;					\
     }
 
 
@@ -1180,6 +1200,7 @@ static void Initialize(Widget, Widget w, ArgList, Cardinal *)
     Cursor& selectTopRightCursor    = _w->graphEdit.selectTopRightCursor;
     Pixmap& gridPixmap              = _w->graphEdit.gridPixmap;
     Boolean& sizeChanged            = _w->graphEdit.sizeChanged;
+    Boolean& redisplayEnabled       = _w->graphEdit.redisplayEnabled;
     Time& lastSelectTime            = _w->graphEdit.lastSelectTime;
     XtIntervalId& redrawTimer       = _w->graphEdit.redrawTimer;
 
@@ -1187,7 +1208,10 @@ static void Initialize(Widget, Widget w, ArgList, Cardinal *)
     state = NopState;
 
     // init sizeChanged
-    sizeChanged = false;
+    sizeChanged = False;
+
+    // init redisplayEnabled
+    redisplayEnabled = True;
 
     // init lastSelectTime
     lastSelectTime = 0;
@@ -1247,11 +1271,18 @@ static void Realize(Widget w,
 // Redisplay widget
 static void Redisplay(Widget w, XEvent *event, Region)
 {
-    const GraphEditWidget _w      = GraphEditWidget(w);
-    const Graph* graph            = _w->graphEdit.graph;
-    const GraphGC& graphGC        = _w->graphEdit.graphGC;
-    const Boolean sizeChanged     = _w->graphEdit.sizeChanged;
-    const Boolean highlight_drawn = _w->primitive.highlight_drawn;
+    const GraphEditWidget _w       = GraphEditWidget(w);
+    const Graph* graph             = _w->graphEdit.graph;
+    const GraphGC& graphGC         = _w->graphEdit.graphGC;
+    const Boolean sizeChanged      = _w->graphEdit.sizeChanged;
+    const Boolean redisplayEnabled = _w->graphEdit.redisplayEnabled;
+    const Boolean highlight_drawn  = _w->primitive.highlight_drawn;
+
+    if (!redisplayEnabled)
+    {
+	graphEditRedraw(w);
+	return;
+    }
 
     if (sizeChanged)
 	graphEditSizeChanged(w);
@@ -1273,12 +1304,12 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
     GraphEditWidget before = GraphEditWidget(old);
     GraphEditWidget after  = GraphEditWidget(new_w);
 
-    bool redisplay = false;
+    Boolean redisplay = False;
 
     // redisplay graph if changed
     if (before->graphEdit.graph != after->graphEdit.graph)
     {
-	redisplay = true;
+	redisplay = True;
 
 	// Re-layout if auto-layout is enabled
 	if (after->graphEdit.autoLayout)
@@ -1300,7 +1331,7 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
 	before->graphEdit.selectTile  != after->graphEdit.selectTile)
     {    
 	setGCs(new_w);
-	redisplay = true;
+	redisplay = True;
     }
 
     // reset GraphGC if changed
@@ -1311,7 +1342,7 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
 	before->graphEdit.edgeAttachMode != after->graphEdit.edgeAttachMode)
     {
 	setGraphGC(new_w);
-	redisplay = true;
+	redisplay = True;
     }
 
     // reset grid pixmap if changed
@@ -1319,12 +1350,12 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
 	before->graphEdit.gridHeight != after->graphEdit.gridHeight ||
 	before->graphEdit.showGrid   != after->graphEdit.showGrid)
     {
-	setGrid(new_w, true);
-	redisplay = true;
+	setGrid(new_w, True);
+	redisplay = True;
     }
 
     // Always recompute size
-    after->graphEdit.sizeChanged = true;
+    after->graphEdit.sizeChanged = True;
 
     return redisplay;
 }
@@ -1528,9 +1559,9 @@ static void getMinimalOffset(Widget w)
 
     const Dimension min_origin = highlight_thickness + 2;
 
-    bool found[NDimensions];
-    found[X] = false;
-    found[Y] = false;
+    Boolean found[NDimensions];
+    found[X] = False;
+    found[Y] = False;
 
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
 	node = graph->nextVisibleNode(node))
@@ -1544,7 +1575,7 @@ static void getMinimalOffset(Widget w)
 		if (!found[d] || minimalOffset[d] < min_origin - r.origin(d))
 		{
 		    minimalOffset[d] = min_origin - r.origin(d);
-		    found[d] = true;
+		    found[d] = True;
 		}
 	    }
 	}
@@ -1663,19 +1694,19 @@ static void selectionChanged(Widget w)
 // Action functions
 
 // Select all nodes
-static bool _SelectAll(Widget w, XEvent *, String *, Cardinal *)
+static Boolean _SelectAll(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->graphEdit.graph;
 
-    bool changed = false;
+    Boolean changed = False;
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
 	node = graph->nextVisibleNode(node))
     {
 	if (!node->selected())
 	{
-	    changed = true;
-	    node->selected() = true;
+	    changed = True;
+	    node->selected() = True;
 	    graphEditRedrawNode(w, node);
 	}
     }
@@ -1692,19 +1723,19 @@ static void SelectAll(Widget w, XEvent *event, String *params,
 
 
 // Unselect all nodes
-static bool _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
+static Boolean _UnselectAll(Widget w, XEvent *, String *, Cardinal *)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->graphEdit.graph;
 
-    bool changed = false;
+    Boolean changed = False;
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
 	node = graph->nextVisibleNode(node))
     {
 	if (node->selected())
 	{
-	    changed = true;
-	    node->selected() = false;
+	    changed = True;
+	    node->selected() = False;
 	    graphEditRedrawNode(w, node);
 	}
     }
@@ -1738,14 +1769,14 @@ static void find_connected_nodes(GraphNode *root, VarArray<GraphNode *>& nodes)
 }
 
 // Select an entire subgraph
-static bool select_graph(Widget w, GraphNode *root, bool set = true)
+static Boolean select_graph(Widget w, GraphNode *root, Boolean set = True)
 {
     // Find all connected nodes
     VarArray<GraphNode *> nodes;
     find_connected_nodes(root, nodes);
 
     // Select them
-    bool changed = false;
+    Boolean changed = False;
     for (int i = 0; i < nodes.size(); i++)
     {
 	GraphNode *node = nodes[i];
@@ -1753,16 +1784,16 @@ static bool select_graph(Widget w, GraphNode *root, bool set = true)
 	{
 	    node->selected() = set;
 	    graphEditRedrawNode(w, node);
-	    changed = true;
+	    changed = True;
 	}
     }
 
     return changed;
 }
 
-inline bool unselect_graph(Widget w, GraphNode *root)
+inline Boolean unselect_graph(Widget w, GraphNode *root)
 {
-    return select_graph(w, root, false);
+    return select_graph(w, root, False);
 }
 
 // Raise node NODE such that it is placed on top of all others
@@ -1781,7 +1812,7 @@ void graphEditRaiseNode(Widget w, GraphNode *node)
 static void raise_node(Widget w, GraphNode *node)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
-    bool autoRaise           = _w->graphEdit.autoRaise;
+    Boolean autoRaise        = _w->graphEdit.autoRaise;
 
     if (autoRaise)
 	graphEditRaiseNode(w, node);
@@ -1789,7 +1820,7 @@ static void raise_node(Widget w, GraphNode *node)
 
 // Begin selecting or moving
 static void _SelectOrMove(Widget w, XEvent *event, String *params,
-    Cardinal *num_params, SelectionMode mode, bool follow)
+    Cardinal *num_params, SelectionMode mode, Boolean follow)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     Cursor moveCursor        = _w->graphEdit.moveCursor;
@@ -1807,7 +1838,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
     endAction   = p;
 
     Time t = time(event);
-    bool double_click = 
+    Boolean double_click = 
 	(Time(t - lastSelectTime) <= Time(XtGetMultiClickTime(XtDisplay(w))));
     lastSelectTime = t;
 
@@ -1843,7 +1874,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
     else
     {
 	// On a node
-	bool changed = false;
+	Boolean changed = False;
 	switch (mode)
 	{
 	case SetSelection:
@@ -1865,10 +1896,10 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 		// Select single node
 		if (!node->selected())
 		{		
-		    node->selected() = true;
+		    node->selected() = True;
 		    graphEditRedrawNode(w, node);
 		    raise_node(w, node);
-		    changed = true;
+		    changed = True;
 		}
 	    }
 	    break;
@@ -1888,7 +1919,7 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 		node->selected() = !node->selected();
 		graphEditRedrawNode(w, node);
 		raise_node(w, node);
-		changed = true;
+		changed = True;
 	    }
 	    break;
 	}
@@ -1910,37 +1941,37 @@ static void _SelectOrMove(Widget w, XEvent *event, String *params,
 static void SelectOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
-    _SelectOrMove(w, event, params, num_params, SetSelection, true);
+    _SelectOrMove(w, event, params, num_params, SetSelection, True);
 }
 
 static void ExtendOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
-    _SelectOrMove(w, event, params, num_params, ExtendSelection, true);
+    _SelectOrMove(w, event, params, num_params, ExtendSelection, True);
 }
 
 static void ToggleOrMove(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
-    _SelectOrMove(w, event, params, num_params, ToggleSelection, true);
+    _SelectOrMove(w, event, params, num_params, ToggleSelection, True);
 }
 
 static void Select(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
-    _SelectOrMove(w, event, params, num_params, SetSelection, false);
+    _SelectOrMove(w, event, params, num_params, SetSelection, False);
 }
 
 static void Extend(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
-    _SelectOrMove(w, event, params, num_params, ExtendSelection, false);
+    _SelectOrMove(w, event, params, num_params, ExtendSelection, False);
 }
 
 static void Toggle(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
-    _SelectOrMove(w, event, params, num_params, ToggleSelection, false);
+    _SelectOrMove(w, event, params, num_params, ToggleSelection, False);
 }
 
 // Keep on acting...
@@ -2009,7 +2040,7 @@ static void move_selected_nodes(Widget w, const BoxPoint& offset)
     // Clear graph area
     BoxRegion r = graph->region(graphGC);
     XClearArea(XtDisplay(w), XtWindow(w), r.origin(X), r.origin(Y),
-	       r.space(X), r.space(Y), false);
+	       r.space(X), r.space(Y), False);
 
     // Move selected nodes
     GraphNode *lastNode = 0;
@@ -2020,12 +2051,12 @@ static void move_selected_nodes(Widget w, const BoxPoint& offset)
 	if (node->selected())
 	{
 	    if (lastNode)
-		moveTo(w, lastNode, lastNode->pos() + offset, false);
+		moveTo(w, lastNode, lastNode->pos() + offset, False);
 	    lastNode = node;
 	}
     }
     if (lastNode)
-	moveTo(w, lastNode, lastNode->pos() + offset, true);
+	moveTo(w, lastNode, lastNode->pos() + offset, True);
 
     // resize widget to graph size and redraw graph
     graphEditSizeChanged(w);
@@ -2043,7 +2074,7 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
     BoxPoint& endAction        = _w->graphEdit.endAction;
     GraphEditState& state      = _w->graphEdit.state;
 
-    bool changed = false;
+    Boolean changed = False;
 
     switch(state)
     {
@@ -2053,7 +2084,7 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 	    endAction = point(event);
 
 	    BoxRegion selected = frameRegion(w);
-	    bool have_unselected_nodes = false;
+	    Boolean have_unselected_nodes = False;
 
 	    // Find all nodes in frame and select them
 	    for (GraphNode *node = graph->firstVisibleNode(); node != 0;
@@ -2067,10 +2098,10 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 
 		    if (nw <= selected && se <= selected)
 		    {
-			have_unselected_nodes = true;
-			node->selected() = true;
+			have_unselected_nodes = True;
+			node->selected() = True;
 			graphEditRedrawNode(w, node);
-			changed = true;
+			changed = True;
 		    }
 		}
 	    }
@@ -2089,9 +2120,9 @@ static void End(Widget w, XEvent *event, String *, Cardinal *)
 
 			if (nw <= selected && se <= selected)
 			{
-			    node->selected() = false;
+			    node->selected() = False;
 			    graphEditRedrawNode(w, node);
-			    changed = true;
+			    changed = True;
 			}
 		    }
 		}
@@ -2200,7 +2231,7 @@ static void select_single_node(Widget w, GraphNode *selectNode)
     const GraphEditWidget _w   = GraphEditWidget(w);
     const Graph* graph         = _w->graphEdit.graph;
 
-    bool changed = false;
+    Boolean changed = False;
 
     for (GraphNode *node = graph->firstVisibleNode(); 
 	 node != 0;
@@ -2208,15 +2239,15 @@ static void select_single_node(Widget w, GraphNode *selectNode)
     {
 	if (node != selectNode && node->selected())
 	{
-	    node->selected() = false;
-	    changed = true;
+	    node->selected() = False;
+	    changed = True;
 	}
     }
 
     if (!selectNode->selected())
     {
-	selectNode->selected() = true;
-	changed = true;
+	selectNode->selected() = True;
+	changed = True;
 	raise_node(w, selectNode);
     }
 
@@ -2330,7 +2361,7 @@ static void _SnapToGrid(Widget w, XEvent *, String *params,
     if (*num_params >= 2)
 	grid[Y] = atoi(params[1]);
 
-    bool redraw = false;
+    Boolean redraw = False;
 
     for (GraphNode *node = graph->firstVisibleNode(); node != 0;
 	node = graph->nextVisibleNode(node))
@@ -2340,7 +2371,7 @@ static void _SnapToGrid(Widget w, XEvent *, String *params,
 	{
             // set new node position
 	    moveTo(w, node, pos, graph->nextNode(node) == 0);
-	    redraw = true;
+	    redraw = True;
 	}
     }
 }
@@ -2481,7 +2512,7 @@ static void LayoutHintCB(char *from_name, char *to_name, int x, int y)
 	if (n == to)
 	{
 	    // We hide the original edge...
-	    edge->hidden() = true;
+	    edge->hidden() = True;
 
 	    // ... and insert an edge hint at the end
 	    // of the path between FROM and TO.
@@ -2543,7 +2574,7 @@ static void remove_all_hints(Graph *graph)
 	 edge != 0;
 	 edge = graph->nextEdge(edge))
     {
-	edge->hidden() = false;
+	edge->hidden() = False;
     }
 }
 
@@ -2715,7 +2746,7 @@ static void _Normalize(Widget w, XEvent *, String *, Cardinal *)
 
     BoxRegion r = graph->region(graphGC);
 
-    bool redraw = false;
+    Boolean redraw = False;
 
     for (GraphNode *node = graph->firstVisibleNode(); 
 	 node != 0;
@@ -2728,7 +2759,7 @@ static void _Normalize(Widget w, XEvent *, String *, Cardinal *)
 	{
             // set new node position
 	    moveTo(w, node, pos, graph->nextNode(node) == 0);
-	    redraw = true;
+	    redraw = True;
 	}
     }
 }
@@ -2744,14 +2775,14 @@ static void Normalize(Widget w, XEvent *event, String *params,
 // Show and hide edges
 
 static void considerEdges(Widget w, XEvent *, String *params,
-			  Cardinal *num_params, bool shallBeHidden)
+			  Cardinal *num_params, Boolean shallBeHidden)
 {
     const GraphEditWidget _w = GraphEditWidget(w);
     const Graph* graph       = _w->graphEdit.graph;
 
     // get the mode
     enum { Nope = 0, Both = 1, From = 2, To = 3, Any = 4 } themode = Nope;
-    bool changedSomething = false;
+    Boolean changedSomething = False;
 
     string p = "any";
     if (*num_params >= 1)
@@ -2772,7 +2803,7 @@ static void considerEdges(Widget w, XEvent *, String *params,
     for (GraphEdge *edge = graph->firstEdge(); edge != 0;
 	edge = graph->nextEdge(edge))
     {
-	bool set = false;
+	Boolean set = False;
 
 	switch (themode)
 	{
@@ -2795,7 +2826,7 @@ static void considerEdges(Widget w, XEvent *, String *params,
 		break;
 
 	    case Nope:
-		set = false;
+		set = False;
 		break;
 	}
 
@@ -2803,7 +2834,7 @@ static void considerEdges(Widget w, XEvent *, String *params,
 	{
 	    if (edge->hidden() != shallBeHidden)
 	    {
-		changedSomething = true;
+		changedSomething = True;
 		edge->hidden() = shallBeHidden;
 	    }
 	}
@@ -2816,11 +2847,11 @@ static void considerEdges(Widget w, XEvent *, String *params,
 static void ShowEdges(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
-    considerEdges(w, event, params, num_params, false);
+    considerEdges(w, event, params, num_params, False);
 }
 
 static void HideEdges(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
-    considerEdges(w, event, params, num_params, true);
+    considerEdges(w, event, params, num_params, True);
 }

@@ -171,6 +171,7 @@ typedef struct _GraphEditPart {
     Pixmap gridPixmap;		// Grid pixmap
 
     Boolean sizeChanged;	// Flag: size changed in SetValues
+    Boolean redisplayEnabled;	// Flag: redisplay is enabled
 
 } GraphEditPart;
 

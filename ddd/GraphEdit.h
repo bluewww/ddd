@@ -236,5 +236,8 @@ extern void graphEditRaiseNode(Widget w, GraphNode *node);
 // Return final position (if snapToGrid is enabled, for example)
 extern BoxPoint graphEditFinalPosition(Widget w, const BoxPoint& p);
 
+// Disable or enable display
+extern Boolean graphEditEnableRedisplay(Widget w, Boolean state);
+
 #endif // _DDD_GraphEdit_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
