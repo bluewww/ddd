@@ -30,7 +30,7 @@ char vsl_rcsid[] =
     "$Id$";
 
 #include "config.h"
-#include "MemCheckD.h"
+// #include "MemCheckD.h"
 
 #include "assert.h"
 #include <iostream.h>
