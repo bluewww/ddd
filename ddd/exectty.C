@@ -384,7 +384,7 @@ static void redirect_process(string& command,
     if (gdb_redirection != "")
     {
 	static string empty;
-	args.gsub(" " + gdb_redirection, empty);
+	args.gsub(gdb_redirection, empty);
 	strip_final_blanks(args);
 	read_leading_blanks(args);
     }
@@ -506,7 +506,7 @@ static void unredirect_process(string& command,
 	if (args.contains(gdb_redirection) && gdb->type() == GDB)
 	{
 	    static string empty;
-	    args.gsub(" " + gdb_redirection, empty);
+	    args.gsub(gdb_redirection, empty);
 	    strip_final_blanks(args);
 	    read_leading_blanks(args);
 	    string reply = gdb_question("set args " + args);
