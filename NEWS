@@ -1,11 +1,18 @@
 DDD News						-*- text -*-
 ********
 
-DDD 3.2.2
+DDD 3.2.2 [not yet released]
 =========
 
-- Minor memory leaks have been closed.  
-  Thanks to Arnaud Desitter <arnaud@nag.co.uk>
+DDD 3.2.2 supports recent tools and components and fixes minor bugs.
+
+- GDB 5.0 is supported.
+- JDB 1.2 is supported.
+- LessTif 0.90 is supported.
+- Several minor memory leaks have been plugged.
+    (Reported by Arnaud Desitter <arnaud@nag.co.uk>.)
+- Attaching to processes works with more DBX and Ladebug variants.
+    (Reported by Arnaud Desitter <arnaud@nag.co.uk>.)
 
 
 DDD 3.2.1
