@@ -64,6 +64,7 @@ private:
     string plot_commands;	// Plotting commands received so far
     string init_commands;	// Initialization commands
     bool need_reset;		// Reset with next plot
+    int last_ndim;		// Last number of dimensions
 
 protected:
     void add_v(double v);
@@ -89,7 +90,8 @@ public:
 	  v_min(0.0), v_max(0.0),
 	  plot_commands(""),
 	  init_commands(""),
-	  need_reset(false)
+	  need_reset(false),
+	  last_ndim(0)
     {
 	reset();
     }
@@ -127,6 +129,10 @@ public:
     double max_y() const { return y_max; }
     double min_v() const { return v_min; }
     double max_v() const { return v_max; }
+
+    // Get data titles and files
+    const StringArray& data_titles() const { return titles; }
+    const StringArray& data_files()  const { return files;  }
 
     // Print plot to FILENAME
     void print(const string& filename, 

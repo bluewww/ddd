@@ -146,8 +146,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 322*Finish Plots:
     - Allow rotating scalar values.
-    - Have an `export' option that writes the data to a file.  This
-      should just copy the original data file (in `File')
     - Document it all.
 
 330 Oliver Eichler <oliver.eichler@regensburg.netsurf.de> suggests
@@ -162,8 +160,5 @@ Volunteers for fixing these and other bugs are welcome!
 342 Using the builtin plot window, the plot points of different data
     files all have the same color.  This does not happen with the
     Gnuplot window.
-
-344*Replotting a value changes the `set border' setting.  These
-    `settings' commands should be issued only with the first plot.
 
 345 (Insert new bugs here)

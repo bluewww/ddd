@@ -35,6 +35,7 @@ char PlotAgent_rcsid[] =
 
 #include "PlotAgent.h"
 #include "cook.h"
+#include "version.h"
 
 #include <float.h>
 
@@ -87,6 +88,15 @@ void PlotAgent::start_plot(const string& title, int n)
 
     // Open plot stream
     plot_os.open(files[titles.size() - 1]);
+
+    // Issue initial line
+    plot_os << "# " DDD_NAME ": " << title << "\n"
+	    << "# Use `set parametric' and `"
+	    << (ndim <= 2 ? "plot" : "splot")
+	    << "' to plot this data.\n"
+	    << "# " 
+	    << (ndim <= 2 ? "X\tVALUE" : "X\tY\tVALUE")
+	    << "\n";
 }
 
 // End a new plot
@@ -134,14 +144,20 @@ int PlotAgent::flush()
 
 	case 1:
 	case 2:
-	    if (plot_2d_settings != "")
+	    if (ndim != last_ndim && plot_2d_settings != "")
+	    {
 		cmd << plot_2d_settings << "\n";
+		last_ndim = ndim;
+	    }
 	    cmd << "plot ";
 	    break;
 
 	case 3:
-	    if (plot_3d_settings != "")
+	    if (ndim != last_ndim && plot_3d_settings != "")
+	    {
 		cmd << plot_3d_settings << "\n";
+		last_ndim = ndim;
+	    }
 	    cmd << "splot ";
 	    break;
 	}

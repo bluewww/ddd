@@ -5315,11 +5315,22 @@ Click on LBL(Save) to save the current DDD session.\n\
 Click on LBL(Delete) to delete the selected session.
 
 
+Ddd*export_data_popup.title:       DDD: Save Plot Data
+Ddd*export_data.okLabelString:	   Save
+Ddd*export_data.selectionLabelString: Data File
+Ddd*export_data*helpString:	   \
+@rm You can save the plot data in a file.\n\
+Enter the file name in the argument field.\n\
+\n\
+Click on LBL(Save) to save the plot data.\n\
+Click on LBL(Filter) to apply the given filter.
+
+
 !-----------------------------------------------------------------------------
 ! Breakpoint Editor
 !-----------------------------------------------------------------------------
 
-Ddd*edit_breakpoints_dialog_popup.title: DDD: Breakpoint and Watchpoint Editor
+Ddd*edit_breakpoins_dialog_popup.title: DDD: Breakpoint and Watchpoint Editor
 Ddd*edit_breakpoints_dialog.listLabelString: Breakpoints and Watchpoints
 Ddd*edit_breakpoints_dialog*buttons.orientation: XmHORIZONTAL
 Ddd*edit_breakpoints_dialog.okLabelString:	 Close
@@ -6427,6 +6438,11 @@ Ddd*print_failed_error_popup.title: DDD: Printing Failed
 Ddd*print_failed_error*helpString:	\
 @rm The file holding the graph picture could not be written.\n\
 The printing has been cancelled.
+
+Ddd*export_failed_error_popup.title: DDD: Export Failed
+Ddd*export_failed_error*helpString:	\
+@rm The file holding the plot data could not be written.\n\
+The export has been cancelled.
 
 Ddd*tty_exec_error_popup.title: DDD: No Execution Window
 Ddd*tty_exec_error*helpString:	\

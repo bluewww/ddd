@@ -526,7 +526,7 @@ static void searchLocalSourceFiles(Widget fs,
 }
 
 // Get the file name from the file selection box W
-static string get_file(Widget w, XtPointer, XtPointer call_data)
+string get_file(Widget w, XtPointer, XtPointer call_data)
 {
     XmFileSelectionBoxCallbackStruct *cbs = 
 	(XmFileSelectionBoxCallbackStruct *)call_data;

@@ -42,6 +42,7 @@ char plotter_rcsid[] =
 #include "exit.h"
 #include "findParent.h"
 #include "findWindow.h"
+#include "file.h"
 #include "filetype.h"
 #include "fonts.h"
 #include "post.h"
@@ -63,6 +64,7 @@ char plotter_rcsid[] =
 #include "Swallower.h"
 #include "DispValue.h"
 #include "DataDisp.h"
+#include "DestroyCB.h"
 
 #include <stdio.h>
 #include <fstream.h>
@@ -71,6 +73,7 @@ char plotter_rcsid[] =
 #include <Xm/MainW.h>
 #include <Xm/MessageB.h>
 #include <Xm/AtomMgr.h>
+#include <Xm/FileSB.h>
 #include <Xm/Protocols.h>
 #include <Xm/DrawingA.h>
 #include <Xm/ScrolledW.h>
@@ -117,12 +120,14 @@ struct PlotWindowInfo {
     Widget hsb;			// Horizontal scroll bar
     Widget command;		// Command widget
     Widget command_dialog;      // Command dialog
+    Widget export_dialog;       // Export dialog
     bool active;		// True if popped up
 
     // Constructor - just initialize
     PlotWindowInfo()
 	: plotter(0), area(0), shell(0), working_dialog(0), swallower(0),
-	  vsb(0), hsb(0), command(0), command_dialog(0), active(false)
+	  vsb(0), hsb(0), command(0), command_dialog(0), 
+	  export_dialog(0), active(false)
     {}
 };
 
@@ -137,7 +142,7 @@ static MMDesc file_menu[] =
     MMSep,
     { "replot",  MMPush, { ReplotCB, 0 }, 0, 0, 0, 0 },
     { "print",   MMPush, { SelectAndPrintPlotCB, 0 }, 0, 0, 0, 0 },
-    { "export",  MMPush | MMInsensitive, { ExportPlotCB, 0 }, 0, 0, 0, 0 },
+    { "export",  MMPush, { ExportPlotCB, 0 }, 0, 0, 0, 0 },
     MMSep,
     { "close",   MMPush, { CancelPlotCB, 0 }, 0, 0, 0, 0 },
     { "exit",    MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }, 0, 0, 0, 0},
@@ -387,8 +392,25 @@ static void configure_plot(PlotWindowInfo *plot)
 
     XtVaSetValues(plot->vsb, XmNvalue, rot_x, NULL);
     XtVaSetValues(plot->hsb, XmNvalue, rot_z, NULL);
-}
 
+    // Check if we can export something
+    bool have_source = false;
+    bool can_export  = false;
+    const StringArray& sources = plot->plotter->data_files();
+    for (i = 0; i < sources.size(); i++)
+    {
+	if (sources[i] != "")
+	{
+	    if (have_source)
+		can_export  = false; // Multiple source files
+	    else
+		can_export = have_source = true;
+	}
+    }
+
+    Widget export = XtNameToWidget(plot->shell, "*export");
+    set_sensitive(export, have_source);
+}
 
 
 
@@ -410,6 +432,8 @@ static void popup_plot_shell(PlotWindowInfo *plot)
 
 	if (plot->command_dialog != 0)
 	    XtUnmanageChild(plot->command_dialog);
+	if (plot->export_dialog != 0)
+	    XtUnmanageChild(plot->export_dialog);
 
 	// Setup menu
 	plot->plotter->removeHandler(Died, PlotterNotFoundHP, 
@@ -466,6 +490,8 @@ static void popdown_plot_shell(PlotWindowInfo *plot)
 
     if (plot->command_dialog != 0)
 	XtUnmanageChild(plot->command_dialog);
+    if (plot->export_dialog != 0)
+	XtUnmanageChild(plot->export_dialog);
 
     if (plot->shell != 0)
     {
@@ -920,9 +946,125 @@ static void PlotCommandCB(Widget, XtPointer client_data, XtPointer)
 // Export
 //-------------------------------------------------------------------------
 
-static void ExportPlotCB(Widget, XtPointer, XtPointer)
+static void SetCB(Widget, XtPointer client_data, XtPointer)
 {
-    // Nothing yet
+    bool *value = (bool *)client_data;
+    *value = true;
+}
+
+static void DoExportCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    SelectPlotCB(w, client_data, call_data);
+
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+    string target = get_file(w, client_data, call_data);
+
+    const StringArray& titles  = plot->plotter->data_titles();
+    const StringArray& sources = plot->plotter->data_files();
+
+    string source = "";
+    string title  = "";
+    for (int i = 0; source == "" && i < sources.size(); i++)
+    {
+	if (sources[i] != "")
+	{
+	    source = sources[i];
+	    title  = titles[i];
+	}
+    }
+    
+    if (source == "")
+	return;			// This should not happen
+
+    if (access(target, W_OK) == 0 && is_regular_file(target))
+    {
+	// File exists - request confirmation
+	static Widget confirm_overwrite_dialog = 0;
+	if (confirm_overwrite_dialog != 0)
+	    DestroyWhenIdle(confirm_overwrite_dialog);
+
+	Arg args[10];
+	Cardinal arg = 0;
+	XtSetArg(args[arg], XmNdialogStyle, 
+		 XmDIALOG_FULL_APPLICATION_MODAL); arg++;
+	confirm_overwrite_dialog = 
+	    verify(XmCreateQuestionDialog(plot->shell,
+					  "confirm_overwrite_dialog", 
+					  args, arg));
+	Delay::register_shell(confirm_overwrite_dialog);
+
+	bool yes = false;
+	bool no  = false;
+	   
+	XtAddCallback(confirm_overwrite_dialog,
+		      XmNokCallback, SetCB, XtPointer(&yes));
+	XtAddCallback(confirm_overwrite_dialog,
+		      XmNcancelCallback, SetCB, XtPointer(&no));
+	XtAddCallback(confirm_overwrite_dialog, 
+		      XmNhelpCallback, ImmediateHelpCB, 0);
+
+	MString question = rm("Overwrite existing file " 
+			      + quote(target) + "?");
+	XtVaSetValues (confirm_overwrite_dialog, XmNmessageString, 
+		       question.xmstring(), NULL);
+	manage_and_raise(confirm_overwrite_dialog);
+
+	XtAppContext app_context = XtWidgetToApplicationContext(plot->shell);
+	while (!yes && !no)
+	    XtAppProcessEvent(app_context, XtIMAll);
+
+	if (no)
+	    return;
+    }
+
+    StatusDelay delay("Saving " + title + " data to " + quote(target));
+
+    // Copy SOURCE to TARGET
+    ifstream is(source);
+    ofstream os(target);
+
+    if (os.bad())
+    {
+	FILE *fp = fopen(target, "w");
+	post_error(string("Cannot open ") 
+		   + quote(target) + ": " + strerror(errno), 
+		   "export_failed_error", plot->shell);
+	if (fp)
+	    fclose(fp);
+	delay.outcome = strerror(errno);
+	return;
+    }
+
+    int c;
+    while ((c = is.get()) != EOF)
+	os.put(c);
+
+    XtUnmanageChild(plot->export_dialog);
+}
+
+static void ExportPlotCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    SelectPlotCB(w, client_data, call_data);
+
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+
+    if (plot->export_dialog == 0)
+    {
+	Arg args[10];
+	Cardinal arg = 0;
+	Widget dialog = 
+	    verify(XmCreateFileSelectionDialog(plot->shell, 
+					       "export_data", args, arg));
+	plot->export_dialog = dialog;
+
+	Delay::register_shell(dialog);
+	XtAddCallback(dialog, XmNokCallback, DoExportCB, client_data);
+	XtAddCallback(dialog, XmNcancelCallback, UnmanageThisCB, 
+		      XtPointer(dialog));
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, XtPointer(0));
+    }
+
+    manage_and_raise(plot->export_dialog);
 }
 
 

@@ -55,6 +55,8 @@ void update_sources();
 // When entering `cd', change path in file selection boxes
 extern void process_cd(string pwd);
 
+// Get the file name from the file selection box W
+string get_file(Widget w, XtPointer, XtPointer call_data);
 
 // Capture information on current program
 struct ProgramInfo {
