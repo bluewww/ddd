@@ -1125,8 +1125,8 @@ Ddd*edit_buttons*XmText.translations: 	 	 TEXT_TRANSLATIONS
 ! The source window is especially tuned for word selection.
 define(SOURCE_TRANSLATIONS,[#override \
 <Btn3Down>:		source-popup-menu() \n\
-<Btn1Down>:		source-start-select-word()  \n\
-<Btn1Up>:		source-end-select-word()    \n\
+~Ctrl ~Shift<Btn1Down>:	source-start-select-word()  \n\
+~Ctrl ~Shift<Btn1Up>:	source-end-select-word()    \n\
 Ctrl ~Shift<Key>A:	beginning-of-line()	    \n\
 Ctrl<Key>B:		backward-character()	    \n\
 Ctrl ~Shift<Key>E:	end-of-line()		    \n\
@@ -1178,9 +1178,10 @@ Ddd*code_form_w.XmPushButton.translations:   GLYPH_TRANSLATIONS
 
 ! This defines the popup menus in the graph window.
 Ddd*graph_edit.translations: #override \
-<Btn1Down>:		graph-select-or-move()\n\
-<Btn2Down>:		graph-toggle-or-move()\n\
-<Btn3Down>:		graph-select() graph-popup-menu()\n
+~Shift<Btn1Down>: graph-select-or-move()\n\
+Shift<Btn1Down>:  graph-toggle-or-move()\n\
+<Btn2Down>:	  graph-toggle-or-move()\n\
+<Btn3Down>:	  graph-select() graph-popup-menu()\n
 
 !-----------------------------------------------------------------------------
 ! Titles
