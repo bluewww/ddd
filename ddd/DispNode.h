@@ -43,6 +43,7 @@
 #include "GraphNode.h"
 #include "HandlerL.h"
 #include "BoxGraphN.h"
+#include "VoidArray.h"
 
 // DDD includes
 #include "DispValue.h"
@@ -73,8 +74,6 @@ private:
     string        mydisp_nr;	      // Display number
     string        myname;	      // Display expression
     string        myaddr;	      // Location of expression
-    bool          mymerged;	      // Flag: merged with another display?
-    BoxPoint      myunmerged_pos;     // Position when not merged
     bool          myenabled;	      // Flag: is display enabled?
     BoxGraphNode* mynodeptr;	      // Associated graph node 
     DispValue*    disp_value;	      // Associated value
@@ -83,6 +82,11 @@ private:
     int           mylast_change;      // Last value or address change
 
     static int change_tics;           // Shared change counter
+
+public:
+    int           alias_of;	      // Alias of another display
+    Graph*        graph;	      // Graph while hidden
+    VoidArray     edges;	      // Edges while hidden
 
 protected:
     static HandlerList handlers;
@@ -103,10 +107,7 @@ public:
 
     bool enabled()  const { return myenabled; }
     bool disabled() const { return !myenabled; }
-    bool merged()   const { return mymerged; }
     int last_change() const { return mylast_change; }
-
-    const BoxPoint& unmerged_pos() const { return myunmerged_pos; }
 
     bool is_user_command() const { return ::is_user_command(name()); }
     string user_command() const  { return ::user_command(name()); }
@@ -135,15 +136,6 @@ public:
 
     // Update address with NEW_ADDR
     void set_addr(const string& new_addr);
-
-    // Update merged state with NEW_MERGED
-    void set_merged(bool new_merged)      { mymerged = new_merged; }
-
-    // Update unmerged position with NEW_UNMERGED_POS
-    void set_unmerged_pos(const BoxPoint& new_unmerged_pos)
-    {
-	myunmerged_pos = new_unmerged_pos;
-    }
 
     // Re-create the box from old DISP_VALUE
     void refresh ();

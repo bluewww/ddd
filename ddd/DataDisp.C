@@ -66,6 +66,7 @@ char DataDisp_rcsid[] =
 #include "status.h"
 #include "PosBuffer.h"
 #include "IntIntAA.h"
+#include "shorten.h"
 
 // Motif includes
 #include <Xm/MessageB.h>
@@ -1790,12 +1791,12 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
     case GDB:
 	{
 	    void** dummy = new void *[count];
-	    int k = gdb->send_qu_array (display_cmds,
-					dummy,
-					count,
-					new_displaysOQAC,
-					p);
-	    if (k == 0)
+	    bool ok = gdb->send_qu_array (display_cmds,
+					  dummy,
+					  count,
+					  new_displaysOQAC,
+					  p);
+	    if (!ok)
 		post_gdb_busy(last_origin);
 
 	    delete[] dummy;
@@ -1809,12 +1810,12 @@ void DataDisp::new_displaysSQA (string display_expression, BoxPoint* p)
 		gdb_question(display_cmds[i]);
 
 	    void** dummy = new void *[count];
-	    int k = gdb->send_qu_array (print_cmds,
-					dummy,
-					count,
-					new_displaysOQAC,
-					p);
-	    if (k == 0)
+	    bool ok = gdb->send_qu_array (print_cmds,
+					  dummy,
+					  count,
+					  new_displaysOQAC,
+					  p);
+	    if (!ok)
 		post_gdb_busy(last_origin);
 	
 	    delete[] dummy;
@@ -1961,8 +1962,8 @@ void DataDisp::refresh_displaySQ (Widget origin)
     while (dummy.size() < cmds.size())
 	dummy += (void *)PROCESS_ADDR;
 	    
-    bool ok = 
-	gdb->send_qu_array(cmds, dummy, cmds.size(), refresh_displayOQAC, 0);
+    bool ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
+				 refresh_displayOQAC, 0);
 
     if (!ok)
     {
@@ -2405,12 +2406,12 @@ void DataDisp::dependent_displaysSQA (string display_expression,
     case GDB:
 	{
 	    void** dummy = new void *[count];
-	    int k = gdb->send_qu_array (display_cmds,
-					dummy,
-					count,
-					dependent_displaysOQAC,
-					(void *)disp_nr);
-	    if (k == 0)
+	    bool ok = gdb->send_qu_array (display_cmds,
+					  dummy,
+					  count,
+					  dependent_displaysOQAC,
+					  (void *)disp_nr);
+	    if (!ok)
 		post_gdb_busy(last_origin);
 
 	    delete[] dummy;
@@ -2424,12 +2425,12 @@ void DataDisp::dependent_displaysSQA (string display_expression,
 		gdb_question(display_cmds[i]);
 
 	    void** dummy = new void *[count];
-	    int k = gdb->send_qu_array (print_cmds,
-					dummy,
-					count,
-					dependent_displaysOQAC,
-					(void *)disp_nr);
-	    if (k == 0)
+	    bool ok = gdb->send_qu_array (print_cmds,
+					  dummy,
+					  count,
+					  dependent_displaysOQAC,
+					  (void *)disp_nr);
+	    if (!ok)
 		post_gdb_busy(last_origin);
 	
 	    delete[] dummy;
@@ -3032,6 +3033,9 @@ void DataDisp::language_changedHP(Agent *source, void *, void *)
 // Alias Detection
 //----------------------------------------------------------------------------
 
+// True iff aliases are to be checked regardless of address changes
+bool DataDisp::force_check_aliases = false;
+
 // Set whether aliases are to be detected
 void DataDisp::set_detect_aliases(bool value)
 {
@@ -3042,18 +3046,24 @@ void DataDisp::set_detect_aliases(bool value)
     if (detect_aliases)
     {
 	// Re-check for aliases
-	refresh_displaySQ();
+	force_check_aliases = true;
+	refresh_addr();
     }
     else
     {
-	// Unmerge all displays
+	bool changed = false;
+
 	MapRef ref;
 	for (int k = disp_graph->first_nr(ref); 
 	     k != 0; 
 	     k = disp_graph->next_nr(ref))
 	{
-	    unmerge_display(k);
+	    // Unmerge all displays
+	    changed = unmerge_display(k) || changed;
 	}
+
+	if (changed)
+	    refresh_graph_edit();
     }
 }
 
@@ -3094,9 +3104,8 @@ void DataDisp::refresh_addr(DispNode *dn)
     while (dummy.size() < cmds.size())
 	dummy += (void *)PROCESS_ADDR;
 
-    bool ok = 
-	gdb->send_qu_array(cmds, dummy, cmds.size(), refresh_displayOQAC, 0);
-
+    bool ok = gdb->send_qu_array(cmds, dummy, cmds.size(), 
+				 refresh_displayOQAC, 0);
     if (!ok)
 	post_gdb_busy();
 }
@@ -3127,8 +3136,11 @@ void DataDisp::process_addr (StringArray& answers)
 	}
     }
 
-    if (changed)
+    if (changed || force_check_aliases)
+    {
 	check_aliases();
+	force_check_aliases = false;
+    }
 }
 
 // Check for aliases after change
@@ -3170,30 +3182,12 @@ void DataDisp::check_aliases()
 	else
 	{
 	    // Multiple displays at one location
-	    changed = merge_displays(displays) || changed;
-
-	    // Generate appropriate message
-	    if (msg == "")
-		msg = "Aliases detected: ";
-	    else
-		msg += "; ";
-
-	    for (int i = 0; i < displays.size(); i++)
-	    {
-		DispNode *dn = disp_graph->get(displays[i]);
-		if (i > 0)
-		    msg += " = ";
-		msg += gdb->address_expr(dn->name());
-	    }
-	    msg += " = " + addr;
+	    changed = merge_displays(displays, msg) || changed;
 	}
     }
 
     if (msg != "")
-    {
-	msg += ".";
-	post_gdb_message(msg);
-    }
+	post_warning(msg, "suppressed_alias_warning", graph_edit);
 
     if (changed)
 	refresh_graph_edit();
@@ -3208,7 +3202,7 @@ int DataDisp::last_change_of_disp_nr(int disp_nr)
     return dn->last_change();
 }
 
-// Sort A according to the last change
+// Sort DISP_NRS according to the last change
 void DataDisp::sort_last_change(IntArray& disp_nrs)
 {
     // Shell sort -- simple and fast
@@ -3231,70 +3225,121 @@ void DataDisp::sort_last_change(IntArray& disp_nrs)
     } while (h != 1);
 }
 
-bool DataDisp::merge_displays(const IntArray& _disp_nrs)
+string DataDisp::pretty(int disp_nr)
 {
-    IntArray disp_nrs(_disp_nrs);
-    assert(disp_nrs.size() > 0);
+    DispNode *node = disp_graph->get(disp_nr);
+    if (node == 0)
+	return "";
 
-    int i;
+    string title = node->name();
+    shorten(title, DispBox::max_display_title_length);
 
-    for (i = 0; i < disp_nrs.size(); i++)
+    return node->disp_nr() + ": " + title;
+}
+
+// Merge displays in DISPLAYS; return true iff change.
+// Store an appropriate diagnostic in MSG.
+bool DataDisp::merge_displays(IntArray displays, string& msg)
+{
+    assert(displays.size() > 0);
+
+    // Hide all aliases except the node which has changed least recently.
+    sort_last_change(displays);
+    DispNode *orig = disp_graph->get(displays[0]);
+
+#if 0
+    for (int i = 0; i < displays.size(); i++)
     {
-	DispNode *dn = disp_graph->get(disp_nrs[i]);
- 	assert(dn != 0);
+	clog << "Last change of display " << displays[i]
+	     << ": " << last_change_of_disp_nr(displays[i]) << "\n";
+    }
+#endif
 
-	if (!dn->merged())
+    bool changed    = false;
+    IntArray suppressed_displays;
+    for (int i = 1; i < displays.size(); i++)
+    {
+	DispNode *dn = disp_graph->get(displays[i]);
+	GraphNode *node = dn->nodeptr();
+	if (node->hidden() && dn->alias_of == displays[0])
 	{
-	    // Save current position in unmerged
-	    dn->set_unmerged_pos(dn->nodeptr()->pos());
-	    dn->set_merged(true);
-	}
-    }
-
-    // Determine new position where nodes are to be placed at.  We use
-    // the node which has changed least recently.  This way,
-    // dereferenced pointers will be merged with static data, instead
-    // of vice versa.
-    sort_last_change(disp_nrs);
-    BoxPoint pos = disp_graph->get(disp_nrs[0])->nodeptr()->pos();
-
-    // Determine offset for next nodes;
-    BoxPoint offset(0, 0);
-    Dimension grid_height = 16;
-    Dimension grid_width  = 16;
-    Boolean snap_to_grid  = True;
-    XtVaGetValues(graph_edit,
-		  XtNgridHeight, &grid_height,
-		  XtNgridWidth,  &grid_width,
-		  XtNsnapToGrid, &snap_to_grid,
-		  NULL);
-
-    if (snap_to_grid && grid_height > 0)
-    {
-	// Snap to grid is enabled: use grid as offset
-	offset = BoxPoint(grid_width, grid_height);
-    }
-    else
-    {
-	// Snap to grid is disabled: use title height as offset
-	offset = DispBox::merge_offset();
-    }
-
-    // Place nodes below ROOT_POS.
-    bool changed = false;
-    for (i = 0; i < disp_nrs.size(); i++)
-    {
-	DispNode *dn = disp_graph->get(disp_nrs[i]);
- 	assert(dn != 0 && dn->merged());
-
-	if (dn->nodeptr()->pos() != pos)
-	{
-	    dn->moveTo(pos);
-	    graphEditRaiseNode(graph_edit, dn->nodeptr());
-	    changed = true;
+	    // Already hidden as alias of same display
+	    continue;
 	}
 
-	pos += offset;
+	if (node->hidden())
+	    unmerge_display(displays[i]);
+	else
+	    suppressed_displays += displays[i];
+
+	// Hide alias
+	node->hidden() = true;
+	dn->alias_of   = displays[0];
+
+	// Insert new edges
+	GraphEdge *edge;
+	for (edge = node->firstFrom(); edge != 0; 
+	     edge = node->nextFrom(edge))
+	{
+	    GraphEdge *line = new LineGraphEdge(orig->nodeptr(), 
+						edge->to());
+	    *disp_graph += line;
+	    dn->edges   += (void *)line;
+	}
+	for (edge = node->firstTo(); edge != 0;
+	     edge = node->nextTo(edge))
+	{
+	    GraphEdge *line = new LineGraphEdge(edge->from(), 
+						orig->nodeptr());
+	    *disp_graph += line;
+	    dn->edges   += (void *)line;
+	}
+	dn->graph = disp_graph;
+
+	changed = true;
+    }
+
+    if (suppressed_displays.size() > 0)
+    {
+	// Some displays have been suppressed.  Generate appropriate message.
+	if (msg != "")
+	    msg += "\n";
+	msg += "Suppressing ";
+
+	if (suppressed_displays.size() == 1)
+	{
+	    msg += "display " + pretty(suppressed_displays[0]);
+	}
+	else if (suppressed_displays.size() == 2)
+	{
+	    msg += "displays " + pretty(suppressed_displays[0]) 
+		+ " and " + pretty(suppressed_displays[1]);
+	}
+	else
+	{
+	    msg += "displays ";
+	    for (int i = 1; i < suppressed_displays.size(); i++)
+	    {
+		if (i == suppressed_displays.size() - 1)
+		    msg += ", and ";
+		else if (i > 1)
+		    msg += ", ";
+		msg += pretty(suppressed_displays[i]);
+	    }
+	}
+
+	msg += "\nbecause ";
+	if (suppressed_displays.size() == 1)
+	    msg += "it is an alias";
+	else
+	    msg += "they are aliases";
+	msg += " of display " + pretty(displays[0]) + "; ";
+
+	if (suppressed_displays.size() == 1)
+	    msg += "both";
+	else
+	    msg += "all";
+	msg += " are stored at " + orig->addr() + ".";
     }
 
     return changed;
@@ -3303,21 +3348,30 @@ bool DataDisp::merge_displays(const IntArray& _disp_nrs)
 bool DataDisp::unmerge_display(int disp_nr)
 {
     DispNode *dn = disp_graph->get(disp_nr);
-    if (dn == 0 || !dn->merged())
+    if (dn == 0)
 	return false;
 
-    bool changed = false;
+    GraphNode *node = dn->nodeptr();
+    if (!node->hidden())
+	return false;
 
-    dn->set_merged(false);
+    // Unhide display
+    node->hidden() = false;
 
-    // Restore old position
-    if (dn->nodeptr()->pos() != dn->unmerged_pos())
+    // Delete edges
+    for (int i = 0; i < dn->edges.size(); i++)
     {
-	dn->moveTo(dn->unmerged_pos());
-	changed = true;
+	GraphEdge *edge = (GraphEdge *)dn->edges[i];
+	*disp_graph -= edge;
+	delete edge;
     }
 
-    return changed;
+    static VoidArray empty;
+    dn->edges    = empty;
+    dn->graph    = 0;
+    dn->alias_of = 0;
+
+    return true;
 }
 
 //----------------------------------------------------------------------------

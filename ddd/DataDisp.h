@@ -294,9 +294,14 @@ private:
     static void check_aliases();
     static void sort_last_change(IntArray& disp_nrs);
     static int last_change_of_disp_nr(int disp_nr);
+    static string pretty(int disp_nr);
 
-    // Merge displays in DISP_NRS; return true iff change
-    static bool merge_displays(const IntArray& disp_nrs);
+    // True iff aliases are to be checked regardless of address changes
+    static bool force_check_aliases;
+
+    // Merge displays in DISP_NRS; return true iff change.
+    // Store an appropriate diagnostic in MSG.
+    static bool merge_displays(IntArray disp_nrs, string& msg);
 
     // Unmerge display DISP_NR; return true iff change
     static bool unmerge_display(int disp_nr);

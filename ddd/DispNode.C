@@ -41,6 +41,7 @@ char DispNode_rcsid[] =
 #include "cook.h"
 #include "DispNode.h"
 #include "CompositeB.h"
+#include "Graph.h"
 
 // Data
 HandlerList DispNode::handlers(DispNode_NTypes);
@@ -51,13 +52,13 @@ DispNode::DispNode (string& disp_nr, string& name)
     : mydisp_nr (disp_nr),
       myname (name),
       myaddr (""),
-      mymerged (false),
-      myunmerged_pos (),
       myenabled (false),
       mynodeptr (0),
       disp_value (0),
       myselected_value (0),
-      disp_box (0)
+      disp_box (0),
+      alias_of (0),
+      graph (0)
 {
     mylast_change = ++change_tics;
 
@@ -72,13 +73,13 @@ DispNode::DispNode (string& disp_nr, string& name, string& value)
     : mydisp_nr (disp_nr),
       myname (name),
       myaddr (""),
-      mymerged (false),
-      myunmerged_pos (),
       myenabled (true), 
       mynodeptr (0),
       disp_value (0),
       myselected_value (0),
-      disp_box (0)
+      disp_box (0),
+      alias_of (0),
+      graph (0)
 {
     mylast_change = ++change_tics;
 
@@ -94,12 +95,17 @@ DispNode::DispNode (string& disp_nr, string& name, string& value)
 // Destructor
 DispNode::~DispNode()
 {
-    if (disp_value)
-	delete disp_value;
-    if (mynodeptr)
-	delete mynodeptr;
-    if (disp_box)
-	delete disp_box;
+    delete disp_value;
+    delete mynodeptr;
+    delete disp_box;
+
+    for (int i = 0; i < edges.size(); i++)
+    {
+	GraphEdge *edge = (GraphEdge *)edges[i];
+	if (graph != 0)
+	    *graph -= edge;
+	delete edge;
+    }
 }
 
 // User-defined displays (status displays)
@@ -163,8 +169,6 @@ bool DispNode::update(string& value)
 
     if (inited)
     {
-	// cerr << "Warning: display type " + disp_nr() + " changed\n";
-
 	// We were reinitialized: disable old selection
 	myselected_value = disp_value;
     }
@@ -178,7 +182,13 @@ bool DispNode::update(string& value)
     }
 
     if (changed || inited)
+    {
 	mylast_change = ++change_tics;
+#if 0
+	clog << "Display " << disp_nr() << " changed"
+	     << " (" << mylast_change << ")\n";
+#endif
+    }
 
     return changed;
 }
@@ -260,6 +270,10 @@ void DispNode::set_addr(const string& new_addr)
     {
 	myaddr = new_addr;
 	mylast_change = ++change_tics;
+#if 0
+	clog << "Display " << disp_nr() << " changed"
+	     << " (" << mylast_change << ")\n";
+#endif
     }
 }
 	
