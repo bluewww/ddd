@@ -66,17 +66,18 @@ DispValueType determine_type (string value)
 	value = value.after(']');
 
     // References.
-#if RUNTIME_REGEX
-    static regex rxreference(
-	"@ *(0(0|x)[0-9a-f]+|[(]nil[)]) *:.*");
-#endif
-    int ref_index = 0;
     if (value.contains('(', 0))
-	ref_index = value.index(')') + 1;
-    while (value.contains(' ', ref_index))
-	ref_index++;
-    if (value.matches(rxreference, ref_index))
-	return Reference;
+    {
+	int ref_index = value.index(')') + 1;
+	while (value.contains(' ', ref_index))
+	    ref_index++;
+#if RUNTIME_REGEX
+	static regex rxreference(
+	    "@ *(0(0|x)[0-9a-f]+|[(]nil[)]) *:.*");
+#endif
+	if (value.matches(rxreference, ref_index))
+	    return Reference;
+    }
 
     // Vtables.
     if (value.matches(rxvtable))
@@ -661,21 +662,22 @@ string read_member_name (string& value)
     return member_name;
 }
 
-// Read vtable entries.  Return "" upon error.
+// Read `vtable entries' prefix.  Return "" if not found.
 string read_vtable_entries (string& value)
 {
 #if RUNTIME_REGEX
-    static regex rxvtable_entries("[{][0-9][0-9]* vtable entries,.*");
+    static regex rxvtable_entries("[0-9][0-9]* vtable entries,");
 #endif
 
     read_leading_blanks (value);
-    if (!value.matches(rxvtable_entries))
-	return "";
+    if (value.contains(rxvtable_entries, 0))
+    {
+	string vtable_entries = value.before(',');
+	value = value.after(',');
+	return vtable_entries;
+    }
 
-    string vtable_entries = value.through("entries");
-    value = value.after(',');
-
-    return vtable_entries;
+    return "";
 }
 
 

@@ -198,9 +198,8 @@ void DispValue::init(string& value, DispValueType given_type)
 #endif
 
 	    read_array_begin (value);
-	    // The array has at least one element.  Otherwise, GDB would
-	    // treat it as a pointer.
 
+	    // Check for `vtable entries' prefix.
 	    string vtable_entries = read_vtable_entries(value);
 	    if (vtable_entries != "")
 	    {
@@ -210,9 +209,14 @@ void DispValue::init(string& value, DispValueType given_type)
 				   myfull_name, myfull_name);
 	    }
 
+	    // Read the array elements.  Assume that the type is the
+	    // same across all elements.
 	    string member_name;
 	    DispValueType member_type = UnknownType;
 	    int i = 0;
+
+	    // The array has at least one element.  Otherwise, GDB
+	    // would treat it as a pointer.
 	    do {
 		member_name = "[" + itostring (i++) + "]";
 		DispValue *dv = 
@@ -326,12 +330,17 @@ void DispValue::init(string& value, DispValueType given_type)
 	    myexpanded = true;
 	    v.str_or_cl->member_count = 2;
 
-	    string ref = value.before(':');
-	    value = value.after(':');
+	    int sep = value.index('@');
+	    sep = value.index(':', sep);
+
+	    string ref = value.before(sep);
+	    value = value.after(sep);
 
 	    v.str_or_cl->members[0] = 
 		new DispValue(this, depth() + 1, ref, 
-			      "&" + myfull_name, myfull_name);
+			      gdb->address_expr(myfull_name), 
+			      myfull_name, Pointer);
+
 	    v.str_or_cl->members[1] = 
 		new DispValue(this, depth() + 1, value,
 			      myfull_name, myfull_name);

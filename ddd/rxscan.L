@@ -94,6 +94,8 @@ c	(.|\n)
 /* A sequence of arbitrary characters */
 C	(.|\n)*
 
+/* `virtual table', in all variants */
+V	v(irtual{W})?t(a)?bl(e)?
 
 /* This lexer is quite huge.  Sun LEX wants some extra sizes. */
 %e 5000
@@ -298,7 +300,7 @@ C	(.|\n)*
 <S079>Process{W}{D}:			return &rxprocess2;
 <S080>[(][^ )]*db[^ )]*[)]{w}		return &rxprompt;
 <S081>{C}[(]END[)].*			return &rxq;
-<S082>@{W}{x}{W}:{C} 			return &rxreference;
+<S082>@{_}{x}{_}:{C} 			return &rxreference;
 <S083>{_}refresh({W}{C})?		return &rxrefresh_cmd;
 <S084>{C}([(]press{W}RETURN[)]|Hit{W}RETURN{W}to{W}continue|Type{W}<return>{W}to{W}continue|More{W}[(]n{W}if{W}no[)][?]).* return &rxreturn;
 <S085>{_}(r|rer|rerun|ru|run|R)({W}{C})? return &rxrun_cmd;
@@ -323,8 +325,8 @@ C	(.|\n)*
 <S104>{_}(delete{W}|un)display({W}{C})?	return &rxundisplay;
 <S105>{_}up({W}{C})?			return &rxup_cmd;
 <S106>[A-Z]+				return &rxuppercase;
-<S107>{A}{W}<[^ \n>]*{W}v(irtual{W})?t(a)?bl(e)?>[^{},]*[{]{C}	return &rxvtable;
-<S108>[{]{D}{W}vtable{W}entries\,{C}	return &rxvtable_entries;
+<S107>{A}{W}<[^ \n>]*{W}{V}>[^{},]*[{]{C} return &rxvtable;
+<S108>{D}{W}{V}{W}entries\,	        return &rxvtable_entries;
 <S109>[ \n\t\r\v\f]+		 	return &rxwhite;
 <S110>{C}Standard{W}input:{W}END{C} 	return &rxxdb;
 <S111>[^: \t]*:[^:]*:{w}{P}[: ]{C} 	return &rxxdbpos;
