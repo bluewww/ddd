@@ -1,5 +1,5 @@
 DDD 3.3 is available					-*- text -*-
-**********************
+********************
 
 Release 3.3 of DDD, the Data Display Debugger, is now available.
 
@@ -27,10 +27,10 @@ Debuggers and Languages
 
 - JDB as of JDK 1.2 is supported.
 
+- GDB 5.0 is supported.
+
 - WindRiver's version of GDB (within the Tornado/vxworks environment) 
   is supported.  See the DDD Reference for details.
-
-- GDB 5.0 is supported.
 
 - SGI DBX, Sun DBX, other DBXes as well as Compaq Ladebug can now
   attach to processes via DDD. (1)
@@ -64,7 +64,7 @@ User Interface
 Building
 --------
 
-- The release includes the libiberty package as of GDB 5.0.
+- The release includes the `libiberty' and `readline' packages as of GDB 5.0.
 
 - CXXFLAGS settings are respected.
 
