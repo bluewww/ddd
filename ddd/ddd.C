@@ -377,6 +377,9 @@ static void fix_status_size();
 // Setup new shell
 static void setup_new_shell(Widget w);
 
+// Setup theme manager
+static void setup_theme_manager();
+
 // Set `Settings' title
 static void set_settings_title(Widget w);
 
@@ -2235,9 +2238,6 @@ int main(int argc, char *argv[])
     DispBox::max_display_title_length = app_data.max_display_title_length;
     SourceView::max_popup_expr_length = app_data.max_popup_expr_length;
 
-    // Global variables: Setup theme manager
-    DispBox::theme_manager = ThemeManager(app_data.themes);
-
     // Global variables: Setup VSL message handler
     VSLLib::echo = vsl_echo;
 
@@ -2668,6 +2668,9 @@ int main(int argc, char *argv[])
 		   NULL);
 
     // All main widgets (except shells) are created at this point.
+
+    // Setup theme manager
+    setup_theme_manager();
     
     // Load history for current session
     load_history(session_history_file(app_data.session));
@@ -7539,6 +7542,27 @@ static void setup_options()
     bool can_dump = (gdb->type() == JDB);
     // (gdb->print_command("", true) != gdb->print_command("", false));
     manage_child(print_dump_w, can_dump);
+}
+
+static void setup_theme_manager()
+{
+    DispBox::theme_manager = ThemeManager(app_data.themes);
+    StringArray available_themes;
+    get_themes(available_themes);
+
+    for (int i = 0; i < available_themes.size(); i++)
+    {
+	const string& theme = basename(available_themes[i]);
+
+	if (!DispBox::theme_manager.has_pattern(theme))
+	{
+	    // Add missing theme as inactive
+
+	    ThemePattern p;
+	    p.active() = false;
+	    DispBox::theme_manager.pattern(theme) = p;
+	}
+    }
 }
 
 static void setup_core_limit()
