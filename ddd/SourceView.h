@@ -623,7 +623,7 @@ public:
     static bool have_selection();
 
     // Return debugger command(s) to restore current state (breakpoints, etc.)
-    static string get_state(DebuggerType type);
+    static bool get_state(ostream& os, DebuggerType type);
 };
 
 #endif // _DDD_SourceView_h

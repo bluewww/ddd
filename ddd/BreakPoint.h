@@ -135,7 +135,8 @@ public:
     // Return commands to restore this breakpoint.  Assume that the
     // new breakpoint will be given the number NUM.  If DUMMY is set,
     // delete the breakpoint immediately.
-    string get_state(DebuggerType type, int num, bool dummy = false);
+    bool get_state(ostream& os, DebuggerType type, int num, 
+		   bool dummy = false);
 };
 
 #endif // _DDD_BreakPoint_h

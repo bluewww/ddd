@@ -1005,7 +1005,7 @@ void SourceView::set_source_argCB(Widget text_w,
 	    int bp_nr;
 	    string address;
 
-	    if (get_line_of_pos(source_text_w, startIndex, line_nr, address, 
+	    if (get_line_of_pos(source_text_w, startPos, line_nr, address, 
 				in_text, bp_nr) 
 		&& !in_text)
 	    {
@@ -4413,20 +4413,19 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
     {
     case GDB:
 	// GDB frame output is caught by our routines.
-	gdb_command(gdb->frame_command(itostring(count - cbs->item_position)));
+	gdb_command(gdb->frame_command(count - cbs->item_position));
 	break;
     
     case XDB:
 	// XDB frame output is caught by our routines.
-	gdb_command(gdb->frame_command(itostring(cbs->item_position - 1)));
+	gdb_command(gdb->frame_command(cbs->item_position - 1));
 	break;
 
     case DBX:
 	if (gdb->has_frame_command())
 	{
 	    // Issue `frame' command
-	    gdb_command(gdb->frame_command(
-			itostring(count - cbs->item_position + 1)));
+	    gdb_command(gdb->frame_command(count - cbs->item_position + 1));
 	}
 	else
 	{
@@ -6096,11 +6095,10 @@ bool SourceView::have_selection()
 int SourceView::max_breakpoint_number = 99;
 
 // Return DDD commands to restore current state (breakpoints, etc.)
-string SourceView::get_state(DebuggerType type)
+bool SourceView::get_state(ostream& os, DebuggerType type)
 {
-    string cmds;
-
     IntArray breakpoint_nrs;
+    bool ok = true;
 
     // Restore breakpoints
     MapRef ref;
@@ -6127,10 +6125,10 @@ string SourceView::get_state(DebuggerType type)
 	    if (restore_old_numbers)
 	    {
 		while (num < breakpoint_nrs[i])
-		    cmds += bp->get_state(type, num++, true);
+		    ok &= bp->get_state(os, type, num++, true);
 		assert(num == breakpoint_nrs[i]);
 	    }
-	    cmds += bp->get_state(type, num++);
+	    ok &= bp->get_state(os, type, num++);
 	}
     }
 
@@ -6138,16 +6136,16 @@ string SourceView::get_state(DebuggerType type)
     switch (type)
     {
     case GDB:
-	cmds += "info line " + line_of_cursor() + "\n";
+	os << "info line " + line_of_cursor() + "\n";
 	break;
 
     case DBX:
 	break;			// FIXME
 
     case XDB:
-	cmds += "v " + line_of_cursor() + "\n";
+	os << "v " + line_of_cursor() + "\n";
 	break;
     }
 
-    return cmds;
+    return ok;
 }

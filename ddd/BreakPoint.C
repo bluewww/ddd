@@ -562,10 +562,8 @@ string BreakPoint::condition() const
 
 // Return commands to restore this breakpoint.  Assume that the new
 // breakpoint will be given the number NUM.
-string BreakPoint::get_state(DebuggerType type, int num, bool dummy)
+bool BreakPoint::get_state(ostream& os, DebuggerType type, int num, bool dummy)
 {
-    string cmd;
-    string nr = itostring(num);
     string pos = file_name() + ":" + itostring(line_nr());
 
     switch (type)
@@ -580,11 +578,11 @@ string BreakPoint::get_state(DebuggerType type, int num, bool dummy)
 	    {
 	    case BPKEEP:
 	    case BPDIS:
-		cmd += "break " + pos + "\n";
+		os << "break " << pos << "\n";
 		break;
 
 	    case BPDEL:
-		cmd += "tbreak " + pos + "\n";
+		os << "tbreak " << pos << "\n";
 		break;
 	    }
 	    break;
@@ -592,7 +590,7 @@ string BreakPoint::get_state(DebuggerType type, int num, bool dummy)
 
 	case WATCHPOINT:
 	{
-	    cmd += "watch " + infos() + "\n";
+	    os << "watch " << infos() << "\n";
 	    break;
 	}
 	}
@@ -601,36 +599,36 @@ string BreakPoint::get_state(DebuggerType type, int num, bool dummy)
 	{
 	    // Extra infos
 	    if (!enabled())
-		cmd += "disable " + nr + "\n";
+		os << "disable " << num << "\n";
 	    string ignore = ignore_count();
 	    if (ignore != "")
-		cmd += "ignore "  + nr + " " + ignore + "\n";
+		os << "ignore " << num << " " << ignore << "\n";
 	    string cond = condition();
 	    if (cond != "")
-		cmd += "condition " + nr + " " + cond + "\n";
+		os << "condition " << num << " " << cond << "\n";
 	}
 	break;
     }
 
     case DBX:
     {
-	cmd += "file " + file_name() + "\n";
-	cmd += "stop at " + itostring(line_nr()) + "\n";
+	os << "file " << file_name() << "\n";
+	os << "stop at " << line_nr() << "\n";
 	break;
     }
 
     case XDB:
     {
-	cmd += "b " + file_name() + ":" + itostring(line_nr()) + "\n";
+	os << "b " << pos << "\n";
 
 	if (!dummy)
 	{
 	    // Extra infos
 	    if (!enabled())
-		cmd += "sb " + nr + "\n";
+		os << "sb " << num << "\n";
 	    string ignore = ignore_count();
 	    if (ignore != "")
-		cmd += "bc " + nr + " " + ignore + "\n";
+		os << "bc " << num << " " << "\n";
 	}
 	break;
     }
@@ -642,13 +640,13 @@ string BreakPoint::get_state(DebuggerType type, int num, bool dummy)
 	{
 	case GDB:
 	case DBX:
-	    cmd += "delete " + nr + "\n";
+	    os << "delete " << num << "\n";
 	    break;
 
 	case XDB:
-	    cmd += "db " + nr + "\n";
+	    os << "db " << "\n";
 	}
     }
 
-    return cmd;
+    return true;
 }
