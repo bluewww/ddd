@@ -549,10 +549,17 @@ static void FindCB(Widget w, XtPointer client_data, XtPointer call_data,
 	post_warning(quote(key) + " not found.", "manual_find_error", w);
     else
     {
+	// LessTif 0.79 sometimes returns NULL in cbs->event.  Handle this.
+	Time tm;
+	if (cbs->event != 0)
+	    tm = time(cbs->event);
+	else
+	    tm = XtLastTimestampProcessed(XtDisplay(fi->text));
+
 	XmTextSetSelection(fi->text,
 			   next_occurrence,
 			   next_occurrence + key.length(),
-			   time(cbs->event));
+			   tm);
 	if (!forward)
 	    XmTextSetInsertionPosition(fi->text, next_occurrence);
     }

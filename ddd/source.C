@@ -170,24 +170,32 @@ void gdbLookupCB(Widget, XtPointer, XtPointer)
     source_view->lookup(arg);
 }
 
-void gdbFindForwardCB(Widget, XtPointer, XtPointer call_data)
+static void gdbFindCB(Widget w, 
+		      XtPointer call_data, 
+		      SourceView::SearchDirection direction)
 {
     XmPushButtonCallbackStruct *cbs = 
 	(XmPushButtonCallbackStruct *)call_data;
 
+    // LessTif 0.79 sometimes returns NULL in cbs->event.  Handle this.
+    Time tm;
+    if (cbs->event != 0)
+	tm = time(cbs->event);
+    else
+	tm = XtLastTimestampProcessed(XtDisplay(w));
+
     string s = source_arg->get_string();
-    source_view->find(s, SourceView::forward, 
-		      app_data.find_words_only, time(cbs->event));
+    source_view->find(s, direction, app_data.find_words_only, tm);
 }
 
-void gdbFindBackwardCB(Widget, XtPointer, XtPointer call_data)
+void gdbFindForwardCB(Widget w, XtPointer, XtPointer call_data)
 {
-    XmPushButtonCallbackStruct *cbs = 
-	(XmPushButtonCallbackStruct *)call_data;
+    gdbFindCB(w, call_data, SourceView::forward);
+}
 
-    string s = source_arg->get_string();
-    source_view->find(s, SourceView::backward, 
-		      app_data.find_words_only, time(cbs->event));
+void gdbFindBackwardCB(Widget w, XtPointer, XtPointer call_data)
+{
+    gdbFindCB(w, call_data, SourceView::backward);
 }
 
 static void gdbDeleteEditAgent(XtPointer client_data, XtIntervalId *)

@@ -31,10 +31,22 @@ char events_rcsid[] =
 
 #include "events.h"
 
+static void invalid_event(char *func)
+{
+    cerr << func << ": invalid event\n";
+}
 
 // Event location
 BoxPoint point(XEvent *ev)
 {
+    if (ev == 0)
+    {
+	// LessTif 0.79 and Motif 1.1 sometimes pass NULL as event;
+	// provide some reasonable default
+	invalid_event("point");
+	return BoxPoint();
+    }
+
     switch (ev->type)
     {
 	case KeyPress:
@@ -85,9 +97,8 @@ BoxPoint point(XEvent *ev)
 			    ev->xconfigurerequest.y);
 
 	default:
-	    cerr << "Warning: cannot extract point from event type "
-		 << ev->type << "\n";
-	    return BoxPoint(-1, -1);
+	    invalid_event("point");
+	    return BoxPoint();
     }
 }
 
@@ -95,6 +106,14 @@ BoxPoint point(XEvent *ev)
 // Event time
 Time time(XEvent *ev)
 {
+    if (ev == 0)
+    {
+	// LessTif 0.79 and Motif 1.1 sometimes pass NULL as event;
+	// provide some reasonable default
+	invalid_event("time");
+	return CurrentTime;
+    }
+
     switch (ev->type)
     {
 	case KeyPress:
@@ -125,9 +144,8 @@ Time time(XEvent *ev)
 	    return ev->xselection.time;
 
 	default:
-	    cerr << "Warning: cannot extract time from event type "
-		 << ev->type << "\n";
-	    return 0;
+	    invalid_event("time");
+	    return CurrentTime;
     }
 }
 
@@ -135,6 +153,14 @@ Time time(XEvent *ev)
 // Event size
 BoxSize size(XEvent *ev)
 {
+    if (ev == 0)
+    {
+	// LessTif 0.79 and Motif 1.1 sometimes pass NULL as event;
+	// provide some reasonable default
+	invalid_event("size");
+	return BoxSize(0, 0);
+    }
+
     switch (ev->type)
     {
 	case Expose:
@@ -162,8 +188,7 @@ BoxSize size(XEvent *ev)
 			   ev->xconfigurerequest.height);
 
 	default:
-	    cerr << "Warning: cannot extract size from event type "
-		 << ev->type << "\n";
+	    invalid_event("size");
 	    return BoxSize(0, 0);
     }
 }
