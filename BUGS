@@ -303,15 +303,6 @@ Volunteers for fixing these and other bugs are welcome!
 139. With Solaris 2.5.1, DDD recurses endlessly in glob_filename().
      Reported by Deepak Mulchandani <dmm@jurassic.eng.sun.com>
 
-141* The GDB output `$1 = {<Parent> = {}, a = 2028, b = 100860}' is
-     not parsed correctly.  Reported by Gerhard Wirrer
-     <Gerhard.Wirrer@cern.ch>.
-
-142* Ignore any warnings occurring in displayed values, as in
-     -> "display\n"
-     <- "2: command [256] = warning: array or string index out of range\n"
-     <- "1 \'\\001\'\n"
-
 144. Warren Nagourney <warren@dirac.phys.washington.edu> says: When I
      push on the upper or lower scrolling arrow in the source window,
      occasionally the scrolling will go out of control and scroll all
