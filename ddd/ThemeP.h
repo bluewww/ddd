@@ -38,13 +38,13 @@
 
 class ThemePattern {
 private:
-    StringArray patterns;
+    StringArray _patterns;
     bool _active;
 
 public:
     // Create as empty
     ThemePattern()
-	: patterns(), _active(true)
+	: _patterns(), _active(true)
     {}
 
     // Create from external representation REP
@@ -52,12 +52,15 @@ public:
 
     // Copy constructor
     ThemePattern(const ThemePattern& t)
-	: patterns(t.patterns), _active(t.active())
+	: _patterns(t.patterns()), _active(t.active())
     {}
 
     // True if active
     bool  active() const { return _active; }
     bool& active()       { return _active; }
+
+    // Patterns
+    const StringArray& patterns() const { return _patterns; }
 
     // Add pattern
     void add(const string& pattern);
@@ -68,16 +71,22 @@ public:
     // Assignment
     ThemePattern& operator = (const ThemePattern& t)
     {
-	patterns = t.patterns;
-	active() = t.active();
+	_patterns = t.patterns();
+	_active   = t.active();
 	return *this;
     }
 
     // Convert into external representation
     friend ostream& operator<<(ostream& os, const ThemePattern& t);
 
+    // Matching pattern
+    string matching_pattern(const string& expr) const;
+
     // True if EXPR matches
-    bool matches(const string& expr) const;
+    bool matches(const string& expr) const
+    {
+	return matching_pattern(expr) != "";
+    }
 };
 
 ostream& operator<<(ostream& os, const ThemePattern& t);

@@ -45,7 +45,7 @@ char ThemePattern_rcsid[] =
 #endif
 
 ThemePattern::ThemePattern(const string& rep, bool active)
-    : patterns(), _active(active)
+    : _patterns(), _active(active)
 {
     int count    = rep.freq(';') + 1;
     string *subs = new string[count];
@@ -55,7 +55,7 @@ ThemePattern::ThemePattern(const string& rep, bool active)
     for (int i = 0; i < count; i++)
     {
 	strip_space(subs[i]);
-	patterns += subs[i];
+	_patterns += subs[i];
     }
 
     delete[] subs;
@@ -63,47 +63,47 @@ ThemePattern::ThemePattern(const string& rep, bool active)
 
 ostream& operator<<(ostream& os, const ThemePattern& p)
 {
-    for (int i = 0; i < p.patterns.size(); i++)
+    for (int i = 0; i < p.patterns().size(); i++)
     {
 	if (i > 0)
 	    os << ';';
-	os << p.patterns[i];
+	os << p.patterns()[i];
     }
 
     return os;
 }
 
-bool ThemePattern::matches(const string& expr) const
+string ThemePattern::matching_pattern(const string& expr) const
 {
-    for (int i = 0; i < patterns.size(); i++)
+    for (int i = 0; i < patterns().size(); i++)
     {
-	if (glob_match(patterns[i], expr, 0))
+	if (glob_match(patterns()[i], expr, 0))
 	{
 #if LOG_THEME_PATTERNS
-	    clog << quote(patterns[i]) << " matches " << quote(expr) << "\n";
+	    clog << quote(patterns()[i]) << " matches " << quote(expr) << "\n";
 #endif
-	    return true;
+	    return patterns()[i];
 	}
     }
 
-    return false;
+    return "";
 }
 
 void ThemePattern::add(const string& pattern)
 {
-    for (int i = 0; i < patterns.size(); i++)
-	if (patterns[i] == pattern)
+    for (int i = 0; i < patterns().size(); i++)
+	if (patterns()[i] == pattern)
 	    return;		// PATTERN is already there
 
-    patterns += pattern;
+    _patterns += pattern;
 }
 
 void ThemePattern::remove(const string& pattern)
 {
     StringArray new_patterns;
-    for (int i = 0; i < patterns.size(); i++)
-	if (patterns[i] != pattern)
-	    new_patterns += patterns[i];
+    for (int i = 0; i < patterns().size(); i++)
+	if (patterns()[i] != pattern)
+	    new_patterns += patterns()[i];
 
-    patterns = new_patterns;
+    _patterns = new_patterns;
 }
