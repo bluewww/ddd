@@ -7735,7 +7735,7 @@ void SourceView::set_max_glyphs (int nmax)
 	}
 	for (i = 0; i < grey_conds[k].size(); i++)
 	{
-	    if (grey_stops[k][i] != 0)
+	    if (grey_conds[k][i] != 0)
 		XtDestroyWidget(grey_conds[k][i]);
 	}
 
@@ -7746,7 +7746,7 @@ void SourceView::set_max_glyphs (int nmax)
 	}
 	for (i = 0; i < grey_temps[k].size(); i++)
 	{
-	    if (grey_stops[k][i] != 0)
+	    if (grey_temps[k][i] != 0)
 		XtDestroyWidget(grey_temps[k][i]);
 	}
 
