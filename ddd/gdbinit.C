@@ -53,21 +53,23 @@ GDBAgent *new_gdb(DebuggerType type,
 		  XtAppContext app_context,
 		  int argc, char *argv[])
 {
-    string initial_cmds;
+    char *initial_cmds;
     switch (type)
     {
     case GDB:
 	initial_cmds = app_data.gdb_initial_cmds;
 	break;
+
     case DBX:
 	initial_cmds = app_data.dbx_initial_cmds;
 	break;
+
     case XDB:
 	initial_cmds = app_data.xdb_initial_cmds;
 	break;
     }
 
-    if (initial_cmds == "")
+    if (initial_cmds == 0 || initial_cmds[0] == '\0')
 	gdb_init_file = "";
     else
     {
