@@ -174,7 +174,7 @@ if $diff; then
     echo unpacking $dist...
     rm -fr $dist_release
     gtar zxf $dist
-    for file in `$rsh "cd $dir/src; ls -t $DDD | head -2"`; do
+    for file in `$rsh "cd $dir/src; ls -t $DDD | grep -v pics | head -2"`; do
       if [ "$file" = "$dist" ]; then
 	continue
       fi
