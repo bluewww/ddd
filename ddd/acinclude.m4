@@ -2743,7 +2743,7 @@ dnl snapshot of the current development tree.
 VERSION=3.2.92
 dnl
 dnl The version nickname.
-NICKNAME="Wer Wie Was"
+NICKNAME="Once in a Lifetime"
 dnl 
 dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
 dnl After this date, users are requested to update the product.
