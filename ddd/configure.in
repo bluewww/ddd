@@ -33,7 +33,7 @@ dnl
 dnl
 dnl Revision Control
 dnl
-AC_PREREQ(2.12)dnl
+AC_PREREQ(2.13)dnl
 AC_REVISION($Revision$)
 dnl
 dnl
@@ -120,6 +120,15 @@ dnl
 dnl
 dnl Locate programs
 dnl
+AC_CHECK_PROGS(F77, g77 f77 f2c, "")
+if test "$F77" != ""; then
+AC_PROG_F77
+else
+# Use default values
+F77=g77
+FFLAGS=-g
+AC_SUBST(FFLAGS)
+fi
 AC_PROG_LN_S
 AC_PATH_PROGS(SH, sh)
 AC_CHECK_PROGS(TAR, gtar tar)
@@ -196,8 +205,8 @@ dnl
 ICE_PROG_CC
 ICE_PROG_CXX
 dnl
-dnl 
-dnl Find and check C/C++ preprocessors
+dnl
+dnl Find and check C/C++/F77 preprocessors
 dnl
 AC_PROG_CPP
 AC_PROG_CXXCPP
@@ -225,9 +234,16 @@ ICE_CXX_LIFETIME_OF_TEMPORARIES
 ICE_PROG_CPP_TRADITIONAL
 dnl
 dnl
-dnl Check for .exe extension (used in the Windows/Cygwin32 environment)
+dnl Check for .exe and .obj extensions (for the Windows/Cygwin32 environment)
 dnl
-AM_EXEEXT
+AC_CYGWIN
+AC_EXEEXT
+AC_OBJEXT
+dnl Be sure OBJEXT starts with a dot (autoconf 2.13 bug)
+case "$OBJEXT" in
+.*) ;;
+*) OBJEXT=".$OBJEXT";;
+esac
 dnl
 dnl
 dnl The C++ compiler is set up.  Use it for further checks.
