@@ -37,31 +37,36 @@
 #include "VarArray.h"
 #include "bool.h"
 
+// Special value keys
+#define UB_POS           "pos"	        // Current source position
+#define UB_ADDRESS       "address"      // Current program counter
+#define UB_EXEC_POS      "exec_pos"	// Current execution position
+#define UB_EXEC_ADDRESS  "exec_address" // Current execution program counter
+#define UB_WHERE         "where"        // Current backtrace
+#define UB_FRAME         "frame"        // Current frame
+#define UB_REGISTERS     "registers"    // Current register values
+#define UB_THREADS       "threads"      // Current threads
+#define UB_COMMAND       "command"      // Command restoring state (undoing)
+#define UB_EXEC_COMMAND  "exec_command" // Same, but requires current state
+#define UB_SOURCE        "source"       // Command causing the undo
+
+// Prefix for current displays; followed by display name
+#define UB_DISPLAY_PREFIX         "display "  // Display value
+#define UB_DISPLAY_ADDRESS_PREFIX "&display " // Display address
+
 class UndoBufferEntry: public StringStringAssoc {
 public:
-    bool exec_pos;      // True if execution position
-    bool command;       // True if command
-    bool current_only;  // True if command is valid in current state only
-
     UndoBufferEntry()
-	: StringStringAssoc(), 
-	  exec_pos(false), command(false), current_only(false)
+	: StringStringAssoc()
     {}
 
     UndoBufferEntry(const UndoBufferEntry& entry)
-	: StringStringAssoc(entry), 
-	  exec_pos(entry.exec_pos),
-	  command(entry.command),
-	  current_only(entry.current_only)
+	: StringStringAssoc(entry)
     {}
 
     UndoBufferEntry& operator = (const UndoBufferEntry& entry)
     {
 	StringStringAssoc::operator = (entry);
-	exec_pos     = entry.exec_pos;
-	command      = entry.command;
-	current_only = entry.current_only;
-
 	return *this;
     }
 
@@ -70,6 +75,21 @@ public:
     bool operator != (const UndoBufferEntry& entry) const
     {
 	return !operator == (entry);
+    }
+
+    bool has_exec_pos() const
+    {
+	return has(UB_EXEC_POS) || has(UB_EXEC_ADDRESS);
+    }
+
+    bool has_pos() const
+    {
+	return has(UB_POS) || has(UB_ADDRESS);
+    }
+
+    bool has_command() const
+    {
+	return has(UB_COMMAND) || has(UB_EXEC_COMMAND);
     }
 };
 

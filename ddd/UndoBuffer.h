@@ -38,20 +38,6 @@
 #include "string-fun.h"		// itostring()
 #include "IntArray.h"
 
-// Special value keys
-#define UB_POS       "pos"	 // Current source position
-#define UB_ADDRESS   "address"   // Current program counter
-#define UB_WHERE     "where"     // Current backtrace
-#define UB_FRAME     "frame"     // Current frame
-#define UB_REGISTERS "registers" // Current register values
-#define UB_THREADS   "threads"   // Current threads
-#define UB_COMMAND   "command"   // Command for undoing
-#define UB_SOURCE    "source"    // Command causing the undo
-
-// Prefix for current displays; followed by display name
-#define UB_DISPLAY_PREFIX         "display "  // Display value
-#define UB_DISPLAY_ADDRESS_PREFIX "&display " // Display address
-
 class BreakPoint;
 
 class UndoBuffer {
@@ -125,24 +111,21 @@ protected:
     static string action(const string& command);
 
 public:
-    // Add status NAME/VALUE to history.  If EXEC_POS is set, mark
-    // this as new execution position.
-    static void add(const string& name, const string& value,
-		    bool exec_pos = false);
+    // Add status NAME/VALUE to history.
+    static void add(const string& name, const string& value);
 
-    // Add command COMMAND to history.  If CURRENT_ONLY is set,
-    // re-issue this command only if we're in the current program state.
-    static void add_command(const string &command, bool current_only = false);
+    // Add command COMMAND to history.
+    static void add_command(const string &command, bool exec = false);
 
     // Custom calls
-    static void add_position(const string& file_name, int line, bool exec_pos)
+    static void add_position(const string& file_name, int line, bool exec)
     {
-	add(UB_POS, file_name + ":" + itostring(line), exec_pos);
+	add(exec ? UB_EXEC_POS : UB_POS, file_name + ":" + itostring(line));
     }
 
-    static void add_address(const string& address, bool exec_pos)
+    static void add_address(const string& address, bool exec)
     {
-	add(UB_ADDRESS, address, exec_pos);
+	add(exec ? UB_EXEC_ADDRESS : UB_ADDRESS, address);
     }
 
     static void add_where(const string& where)
@@ -173,6 +156,16 @@ public:
     static void add_display_address(const string& name, const string& addr)
     {
 	add(UB_DISPLAY_ADDRESS_PREFIX + name, addr);
+    }
+
+    // Remove status NAME from current history.
+    static void remove(const string& name);
+
+    // Custom calls
+    static void remove_display(const string& name)
+    {
+	remove(UB_DISPLAY_PREFIX + name);
+	remove(UB_DISPLAY_ADDRESS_PREFIX + name);
     }
 
     // Undo/Redo action
