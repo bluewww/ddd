@@ -299,8 +299,10 @@ void process_show(string command, string value, bool init)
 
 	if (start_value < 0)
 	{
+#if 0
 	    cerr << "Warning: cannot set " << quote(base)
 		 << " to " << quote(value) << "\n";
+#endif
 	    return;
 	}
 
@@ -400,8 +402,10 @@ void process_show(string command, string value, bool init)
 	return;
     }
 
+#if 0
     cerr << "Warning: cannot set " << quote(set_command)
 	 << " to " << quote(value) << "\n";
+#endif
 }
 
 
