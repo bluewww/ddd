@@ -94,6 +94,7 @@ struct CompletionInfo {
     Widget widget;		// Widget
     XEvent *event;		// Event 
     string input;		// Current input
+    string prefix;		// Current prefix
 };
 
 static void complete_reply(const string& complete_answer, void *qu_data);
@@ -249,6 +250,13 @@ static void complete(Widget w, XEvent *e, string input, string cmd)
     }
 
     // Go and ask GDB for completions.
+
+    if (is_graph_cmd(cmd))
+    {
+	// Allow completion of `graph' commands
+	info.prefix = cmd.through(rxwhite);
+	cmd = cmd.from(int(info.prefix.length()));
+    }
     string complete_cmd = "complete " + cmd;
 
     if (XmIsTextField(w))
@@ -282,13 +290,6 @@ static void complete_reply(const string& complete_answer, void *qu_data)
     sort(completions, completions_size);
     uniq(completions, completions_size);
 
-    if (!from_gdb_w)
-    {
-	// Strip initial `break' command
-	for (int i = 0; i < completions_size; i++)
-	    completions[i] = completions[i].after(' ');
-    }
-
     if (completions_size == 0 || completions[0] == "")
     {
 	// No completion (sigh)
@@ -306,6 +307,20 @@ static void complete_reply(const string& complete_answer, void *qu_data)
     }
     else
     {
+	if (!from_gdb_w)
+	{
+	    // Strip initial `break' command
+	    for (int i = 0; i < completions_size; i++)
+		completions[i] = completions[i].after(' ');
+	}
+
+	if (info.prefix != "")
+	{
+	    // Add `graph' prefix again
+	    for (int i = 0; i < completions_size; i++)
+		completions[i].prepend(info.prefix);
+	}
+
 	// Find common prefix
 	string common_pfx = completions[0];
 	int i;
