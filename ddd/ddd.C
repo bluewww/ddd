@@ -383,6 +383,7 @@ static void save_options(Widget origin);
 static void ddd_cleanup();
 static void ddd_signal(int sig);
 static void ddd_fatal(int sig);
+static void ddd_show_signal(int sig);
 static void ddd_install_fatal();
 static void ddd_install_signal();
 
@@ -438,6 +439,7 @@ void wm_set_name(Display *display, Window shell,
 
 void wm_set_group_leader(Display *display, Window shell, Window leader_shell);
 static void wait_until_mapped(Widget w);
+static Widget find_shell(Widget w = 0);
 
 // Options
 string options_file();
@@ -1653,8 +1655,19 @@ static string _sh_command(string command, bool force_local)
 	rsh += " -l " + login;
 
     string display = getenv("DISPLAY");
+
+    // Make sure display contains host name
     if (display.contains("unix:", 0) || display.contains(":", 0))
-	display = string(fullhostname()) + display.from(":");
+    {
+	display = string(hostname()) + display.from(":");
+    }
+
+    // Make sure display contains fully qualified host name
+    if (display.contains(":") && !display.contains("::"))
+    {
+	string host = display.before(':');
+	display = string(fullhostname(host)) + display.from(":");
+    }
 
     string settings = "DISPLAY='" + display + "'; export DISPLAY; ";
     command = settings + command;
@@ -2379,27 +2392,18 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
     start_gdb();
     gdb_tty = gdb->slave_tty();
 
-    // Invoke `ddd_setup_done' as soon as all initializations are done.
-    XtAppAddWorkProc(app_context, ddd_setup_done, 0);
-
     // Main Loop
+    main_loop_entered = false;
     int sig;
     if ((sig = setjmp(main_loop_env)))
     {
-        // Caught a signal
-        if (sig == SIGINT)
-	{
-	    // Propagate interrupt to GDB
-	    gdb_keyboard_command = true;
-	    _gdb_command("\003", gdb_w);
-	}
-	else
-	{
-	    // Show diagnostic
-	    cerr << sigName(sig) << "\n";
-	}
-	gdb_question_running = false;
+	main_loop_entered = false;
+	ddd_show_signal(sig);
     }
+
+    // Set `main_loop_entered' to true as soon 
+    // as DDD becomes idle again.
+    XtAppAddWorkProc(app_context, ddd_setup_done, 0);
 
     for (;;)
     {
@@ -2504,6 +2508,48 @@ void ddd_install_fatal()
 #ifdef SIGSYS
     signal(SIGSYS, ddd_fatal);
 #endif
+}
+
+// Show the user that a signal has been raised
+void ddd_show_signal(int sig)
+{
+    // Show diagnostic
+    cerr << sigName(sig) << "\n";
+    gdb_question_running = false;
+
+    // Interrupt current GDB action
+    gdb_keyboard_command = true;
+    _gdb_command("\003", gdb_w);
+
+    // Show the message in an error dialog,
+    // allowing the user to clean up manually.
+    if (sig != SIGINT)
+    {
+	static Widget fatal_dialog = 0;
+	if (fatal_dialog)
+	    XtDestroyWidget(fatal_dialog);
+	fatal_dialog = 
+	    verify(XmCreateErrorDialog (find_shell(),
+					"fatal_dialog", NULL, 0));
+	Delay::register_shell(fatal_dialog);
+
+	XtUnmanageChild (XmMessageBoxGetChild 
+			 (fatal_dialog, XmDIALOG_CANCEL_BUTTON));
+	XtAddCallback (fatal_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
+	XtAddCallback (fatal_dialog, XmNokCallback,   DDDExitCB,       NULL);
+
+	string msg = string("Internal error (") + sigName(sig) + ")";
+	MString mtext(msg, "rm");
+	XtVaSetValues (fatal_dialog,
+		       XmNmessageString, mtext.xmstring(),
+		       NULL);
+
+	XtManageChild(fatal_dialog);
+
+	// Wait until dialog is mapped, such that DDD will exit
+	// if we get another signal during that time.
+	wait_until_mapped(fatal_dialog);
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -2984,7 +3030,7 @@ int running_shells()
 // Opening files
 //-----------------------------------------------------------------------------
 
-static Widget find_shell(Widget w = 0)
+static Widget find_shell(Widget w)
 {
     if (w == 0)
 	w = gdb_last_origin;
@@ -6913,36 +6959,6 @@ static void ddd_fatal(int sig)
 	return;
     }
 
-    // Show the message in an error dialog,
-    // allowing the user to clean up manually.
-    string msg = string("Internal error (") + sigName(sig) + ")";
-    if (sig != SIGINT)
-    {
-	static Widget fatal_dialog = 0;
-	if (fatal_dialog)
-	    XtDestroyWidget(fatal_dialog);
-	fatal_dialog = 
-	    verify(XmCreateErrorDialog (find_shell(),
-					"fatal_dialog", NULL, 0));
-	Delay::register_shell(fatal_dialog);
-
-	XtUnmanageChild (XmMessageBoxGetChild 
-			 (fatal_dialog, XmDIALOG_CANCEL_BUTTON));
-	XtAddCallback (fatal_dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
-	XtAddCallback (fatal_dialog, XmNokCallback,   DDDExitCB,       NULL);
-
-	MString mtext(msg, "rm");
-	XtVaSetValues (fatal_dialog,
-		       XmNmessageString, mtext.xmstring(),
-		       NULL);
-
-	XtManageChild(fatal_dialog);
-
-	// Wait until dialog is mapped, such that DDD will exit
-	// if we get another signal during that time.
-	wait_until_mapped(fatal_dialog);
-    }
-
     // Reinstall fatal error handlers
     ddd_install_fatal();
 
@@ -6962,9 +6978,9 @@ static void ddd_xt_warning(String message)
 
 	if (!informed)
 	{
-	    cerr << "(You can suppress these warnings\n"
-		 << "by setting the 'Suppress X Warnings' option"
-		 << " in the DDD `Options` menu.)\n";
+	    cerr << "(You can suppress these warnings "
+		 << "by setting the 'Suppress X Warnings' option\n"
+		 << "in the DDD `Options` menu.)\n";
 	    informed = true;
 	}
     }
