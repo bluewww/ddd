@@ -5,7 +5,7 @@ Release 3.1 of DDD, the Data Display Debugger, is now available at
 
     ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
 
-DDD sources are in `src/'; contributed DDD binaries are in `bin/'.
+DDD sources are in `src/'.  Contributed DDD binaries are in `bin/'.
 Please try a closer FTP site first; see below for a list.
 
 
@@ -54,7 +54,7 @@ DDD is available from a number of FTP sites:
       ftp://ftp.archive.de.uu.net/pub/programming/debuggers/ddd/
       ftp://gd.tuwien.ac.at/softeng/ddd/
 
-* ftp://sunsite.unc.edu/pub/Linux/devel/debuggers/ddd/
+* ftp://metalab.unc.edu/pub/Linux/devel/debuggers/ddd/
 
   FTP server for Linux and contributions.  Carries DDD sources and
   Linux binaries.  Mirrored in several places; the file `MIRRORS'

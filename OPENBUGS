@@ -141,4 +141,13 @@ detail.
 733 Jochen Schütze <jos@gbf.de> complains that ^Z closes the execution 
     window immediately on DEC alpha OSF1 4.0 878.
 
-734 (Insert new bugs here)
+734 Christoph Koegl <koegl@informatik.uni-kl.de> reports for the
+    precompiled DDD 3.1 Sun Sparc Solaris 2.5.1 binary linked against
+    OSF/Motif 2.0: If I open a plot window (via entering 'graph plot
+    42') and activate any of the pull down menus after resizing the
+    window the menu appears in the wrong place. This place changes
+    sometimes after further resizings, sometimes it stays where it
+    is. I could not yet (after 20 seconds of experimenting) see a
+    pattern.
+
+735 (Insert new bugs here)
