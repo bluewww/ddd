@@ -49,6 +49,7 @@
 #define SAVE_CORE      8 // Always include core file
 #define MAY_KILL      16 // True if program can be killed
 #define DONT_SAVE     32 // Only simulate; don't actually save
+#define DONT_RELOAD   64 // Do not load generated core file
 #define MAY_INTERACT 128 // Allow interaction
 
 #define SAVE_DEFAULT MAY_INTERACT

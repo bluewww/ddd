@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // Save and edit DDD options
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
@@ -912,7 +912,7 @@ static bool _get_core(const string& session, unsigned long flags)
 		return false;
 	    }
 
-	    if (gdb->type() == GDB)
+	    if (gdb->type() == GDB && !(flags & DONT_RELOAD))
 	    {
 		// Load the core file just saved, such that we can
 		// keep on examining data in this session.
@@ -1159,6 +1159,13 @@ bool save_options(unsigned long flags)
 	os.close();
 	rename(workfile, file);
 	return true;
+    }
+
+    if (app_data.initial_session != 0)
+    {
+	os << "\n! Session\n";
+	os << string_app_value(XtNinitialSession, app_data.initial_session) 
+	   << "\n";
     }
 
     os << "\n! Debugger settings\n";
@@ -1409,6 +1416,9 @@ bool save_options(unsigned long flags)
 	// Get exec and core file
 	ProgramInfo info;
 	string core = session_core_file(session);
+	if (!is_regular_file(core))
+	    core = "";
+
 	if (info.file == NO_GDB_ANSWER)
 	{
 	    if (interact)
@@ -1424,12 +1434,18 @@ bool save_options(unsigned long flags)
 		rs << "set confirm off\n";
 		if (info.file != "")
 		    rs << "file " << info.file << "\n";
-		rs << "core " << core << "\n";
+		if (core != "")
+		    rs << "core " << core << "\n";
 		break;
 
 	    case DBX:
 		if (info.file != "")
-		    rs << "debug " << info.file << " " << core << "\n";
+		{
+		    rs << "debug " << info.file;
+		    if (core != "")
+			rs << " " << core;
+		    rs << "\n";
+		}
 		break;
 
 	    case XDB:

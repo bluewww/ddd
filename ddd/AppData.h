@@ -41,6 +41,7 @@
 
 // For a documentation of these resources, see `Ddd.in'.
 #define XtNsession               "session"
+#define XtNinitialSession        "initialSession"
 #ifndef XtCSessionID
 #define XtCSessionID             "SessionID"
 #endif
@@ -254,6 +255,7 @@
 
 struct AppData {
     String  session;
+    String  initial_session;
     String  debugger;
     String  debugger_command;
     Boolean trace_dialog;
