@@ -136,14 +136,14 @@ class DataDisp {
     // Helpers
     //-----------------------------------------------------------------------
 
-    static void source_argHP (void*, void*, void*);
-    static void graph_argHP (void*, void*, void*);
     static void graph_unselectHP (void*, void*, void*);
-    static void gdb_ready_for_questionHP (Agent *, void*, void*);
 
     static void set_args(BoxPoint p = BoxPoint(-1, -1),
 			 SelectionMode mode = SetSelection);
+
+    static XtIntervalId refresh_args_timer;
     static void refresh_args();
+    static void RefreshArgsCB(XtPointer, XtIntervalId *);
     static void refresh_display_list(bool silent = false);
 
     static DispValue *selected_value();

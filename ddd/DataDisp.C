@@ -192,6 +192,8 @@ bool DataDisp::detect_aliases = false;
 
 int DataDisp::next_display_number = 1;
 
+XtIntervalId DataDisp::refresh_args_timer = 0;
+
 
 //----------------------------------------------------------------------------
 // Origin
@@ -777,10 +779,7 @@ void DataDisp::unset_delay ()
 
 void DataDisp::set_handlers()
 {
-    source_arg->addHandler(Empty, source_argHP);
-    graph_arg->addHandler(Empty, graph_argHP);
     graph_arg->addHandler(LosePrimary, graph_unselectHP);
-    gdb->addHandler(ReadyForQuestion, gdb_ready_for_questionHP);
 }
 
 
@@ -789,15 +788,15 @@ void DataDisp::set_handlers()
 //-----------------------------------------------------------------------------
 void DataDisp::refresh_graph_edit (bool silent)
 {
-    static Graph* dummy = 0;
-    if (!dummy)
-	dummy = new Graph();
+    static Graph *dummy = new Graph;
+
     XtVaSetValues(graph_edit,
 		  XtNgraph, dummy,
 		  NULL);
     XtVaSetValues(graph_edit,
 		  XtNgraph, (Graph *)disp_graph,
 		  NULL);
+
     refresh_args();
     refresh_display_list(silent);
 }
@@ -844,16 +843,6 @@ void DataDisp::no_displaysHP (void*, void* , void* call_data)
 		   (!empty && gdb->isReadyWithPrompt()));
 }
 
-void DataDisp::source_argHP (void*, void* , void*)
-{
-    refresh_args();
-}
-
-void DataDisp::graph_argHP (void*, void* , void*)
-{
-    refresh_args();
-}
-
 void DataDisp::graph_unselectHP (void*, void*, void*)
 {
     // Selection lost - clear all highlights
@@ -870,11 +859,6 @@ void DataDisp::graph_unselectHP (void*, void*, void*)
 
     refresh_args();
     refresh_display_list();
-}
-
-void DataDisp::gdb_ready_for_questionHP (Agent *, void *, void *)
-{
-    refresh_args();
 }
 
 //-----------------------------------------------------------------------------
@@ -1098,6 +1082,19 @@ DispValue *DataDisp::selected_value()
 
 void DataDisp::refresh_args()
 {
+    if (refresh_args_timer == 0)
+    {
+	refresh_args_timer = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(graph_edit),
+			    0, RefreshArgsCB, XtPointer(0));
+    }
+}
+
+void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
+{
+    assert(*timer_id == refresh_args_timer);
+    refresh_args_timer = 0;
+    
     int count_selected           = 0;
     int count_all                = 0;
     int count_selected_disabled  = 0;
@@ -1319,15 +1316,23 @@ void DataDisp::refresh_args()
 
 	// Cause argument field to obtain the selection
 	Widget w = graph_arg->widget();
-	XmTextFieldSetSelection(w,
-				0, XmTextFieldGetLastPosition(w),
-				XtLastTimestampProcessed(XtDisplay(w)));
 
-	// The value is already highlighted in the node -- 
-	// hence, no need to cause confusion
-	XmTextFieldSetHighlight(w,
-				0, XmTextFieldGetLastPosition(w),
-				XmHIGHLIGHT_NORMAL);
+	XmTextPosition left, right;
+	if (!XmTextFieldGetSelectionPosition(w, &left, &right)
+	    || left != 0
+	    || right != XmTextFieldGetLastPosition(w))
+	{
+	    // Make it obtain the selection
+	    XmTextFieldSetSelection(w,
+				    0, XmTextFieldGetLastPosition(w),
+				    XtLastTimestampProcessed(XtDisplay(w)));
+
+	    // The value is already highlighted in the node -- 
+	    // hence, no reason to cause confusion
+	    XmTextFieldSetHighlight(w,
+				    0, XmTextFieldGetLastPosition(w),
+				    XmHIGHLIGHT_NORMAL);
+	}
     }
     else
     {
