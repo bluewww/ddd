@@ -62,12 +62,10 @@ void Box::epsHeader (ostream& os,
 		     const BoxRegion& region, 
 		     const BoxPostScriptGC& gc)
 {
-    float scale = 1.0;
-    
     // check size of graph
 
-    BoxPoint space(region.space());
-    BoxPoint origin(region.origin());
+    BoxPoint space  = region.space();
+    BoxPoint origin = region.origin();
 
     BoxPoint size;
     switch (gc.orientation)
@@ -81,18 +79,19 @@ void Box::epsHeader (ostream& os,
 	break;
     }
 
+    double scale = 1.0;
     if (space > size)
     {
 	// Scale down ...
-	double hscale = float(size[X]) / region.space(X);
-	double vscale = float(size[Y]) / region.space(Y);
+	double hscale = double(size[X]) / region.space(X);
+	double vscale = double(size[Y]) / region.space(Y);
 	scale = (hscale < vscale ? hscale : vscale);
 	
-	space[X] = int(double(space[X]) * scale);
-	space[Y] = int(double(space[Y]) * scale);
+	space[X] = int(double(space[X]) * scale + 0.5);
+	space[Y] = int(double(space[Y]) * scale + 0.5);
 
-	origin[X] = int(double(origin[X]) * scale);
-	origin[Y] = int(double(origin[Y]) * scale);
+	origin[X] = int(double(origin[X]) * scale + 0.5);
+	origin[Y] = int(double(origin[Y]) * scale + 0.5);
     }
 
     // Determine bounding box
