@@ -96,9 +96,6 @@ static int data_disp_shell_visibility   = VisibilityFullyObscured;
 static int source_view_shell_visibility = VisibilityFullyObscured;
 static int tool_shell_visibility        = VisibilityFullyObscured;
 
-// Disable popups
-bool popups_disabled = false;
-
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref = 0);
 
@@ -221,7 +218,7 @@ static void RecenterToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 // Popup initial shell
 void initial_popup_shell(Widget w)
 {
-    if (w == 0 || popups_disabled)
+    if (w == 0)
 	return;
 
     // assert(XtIsTopLevelShell(w));
@@ -271,7 +268,7 @@ void initial_popup_shell(Widget w)
 
 void popup_shell(Widget w)
 {
-    if (w == 0 || popups_disabled)
+    if (w == 0)
 	return;
 
     if (w == tool_shell)
@@ -305,7 +302,7 @@ void popup_shell(Widget w)
 
 void popdown_shell(Widget w)
 {
-    if (w == 0 || popups_disabled)
+    if (w == 0)
 	return;
 
     if (w == command_shell)
@@ -325,7 +322,7 @@ void popdown_shell(Widget w)
 
 void iconify_shell(Widget w)
 {
-    if (w == 0 || popups_disabled || !XtIsRealized(w))
+    if (w == 0 || !XtIsRealized(w))
 	return;
 
     if (w == command_shell)
@@ -343,7 +340,7 @@ void iconify_shell(Widget w)
 
 void uniconify_shell(Widget w)
 {
-    if (w == 0 || popups_disabled)
+    if (w == 0)
 	return;
 
     if (w == command_shell && command_shell_state == Iconic
@@ -357,7 +354,7 @@ void uniconify_shell(Widget w)
 
 void popup_tty(Widget shell)
 {
-    if (exec_tty_window() && !popups_disabled)
+    if (exec_tty_window())
     {
 	// Uniconify window
 	XMapWindow(XtDisplay(shell), exec_tty_window());
@@ -369,7 +366,7 @@ void popup_tty(Widget shell)
 
 void iconify_tty(Widget shell)
 {
-    if (exec_tty_window() && !popups_disabled)
+    if (exec_tty_window())
     {
 	XIconifyWindow(XtDisplay(shell), exec_tty_window(),
 		       XScreenNumberOfScreen(XtScreen(shell)));
@@ -953,11 +950,8 @@ void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 
     popup_shell(tool_shell);
 
-    if (!popups_disabled)
-    {
-	wait_until_mapped(tool_shell);
-	RecenterToolShellCB();
-    }
+    wait_until_mapped(tool_shell);
+    RecenterToolShellCB();
 
     update_options();
 }
@@ -1258,7 +1252,7 @@ void save_preferred_paned_sizes(Widget paned)
     }
 }
 
-const Dimension MIN_PANED_SIZE = 64;
+const Dimension MIN_PANED_SIZE = 90;
 
 static void paned_changed(Widget /* paned */)
 {

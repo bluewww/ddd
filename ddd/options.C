@@ -1688,30 +1688,6 @@ bool save_options(unsigned long flags)
     os << bool_app_value(XtNvalueDocs,
 			 app_data.value_docs) << "\n";
 
-    // Windows
-    os << "\n! Windows\n";
-    os << bool_app_value(XtNseparateExecWindow,
-			 app_data.separate_exec_window) << "\n";
-    if (!app_data.separate_source_window && !app_data.separate_data_window)
-    {
-	os << bool_app_value(XtCSeparate, false) << "\n";
-    }
-    else if (app_data.separate_source_window && app_data.separate_data_window)
-    {
-	os << bool_app_value(XtCSeparate, true) << "\n";
-    }
-    else
-    {
-	os << bool_app_value(XtNseparateSourceWindow, 
-			     app_data.separate_source_window) << "\n";
-	os << bool_app_value(XtNseparateDataWindow, 
-			     app_data.separate_data_window) << "\n";
-    }
-    os << bool_app_value(XtNgroupIconify,
-			 app_data.group_iconify) << "\n";
-    os << bool_app_value(XtNuniconifyWhenReady,
-			 app_data.uniconify_when_ready) << "\n";
-
     // Helpers
     os << "\n! Helpers\n";
     os << string_app_value(XtNeditCommand,       app_data.edit_command)
@@ -1823,21 +1799,36 @@ bool save_options(unsigned long flags)
 			    app_data.fixed_width_font_size) << "\n";
     }
 
-    // Widget sizes.
+    // Windows.
+    os << "\n! Windows\n";
+    os << bool_app_value(XtNdataWindow,     app_data.data_window)      << "\n";
+    os << bool_app_value(XtNsourceWindow,   app_data.source_window)    << "\n";
+    os << bool_app_value(XtNdebuggerConsole,app_data.debugger_console) << "\n";
+
+    if (!app_data.separate_source_window && !app_data.separate_data_window)
+    {
+	os << bool_app_value(XtCSeparate, false) << "\n";
+    }
+    else if (app_data.separate_source_window && app_data.separate_data_window)
+    {
+	os << bool_app_value(XtCSeparate, true) << "\n";
+    }
+    else
+    {
+	os << bool_app_value(XtNseparateSourceWindow, 
+			     app_data.separate_source_window) << "\n";
+	os << bool_app_value(XtNseparateDataWindow, 
+			     app_data.separate_data_window) << "\n";
+    }
+    os << bool_app_value(XtNseparateExecWindow,
+			 app_data.separate_exec_window) << "\n";
+    os << bool_app_value(XtNgroupIconify,
+			 app_data.group_iconify) << "\n";
+    os << bool_app_value(XtNuniconifyWhenReady,
+			 app_data.uniconify_when_ready) << "\n";
+
+    // Window sizes.
     os << "\n! Window sizes\n";
-
-    // We must manage all PanedWindow children in order to get the
-    // correct sizes.  Ugly hack.
-    popups_disabled  = true;
-    bool had_data    = have_data_window();
-    bool had_source  = have_source_window();
-    bool had_code    = have_code_window();
-    bool had_command = have_command_window();
-
-    gdbOpenDataWindowCB(gdb_w, 0, 0);
-    gdbOpenSourceWindowCB(gdb_w, 0, 0);
-    gdbOpenCodeWindowCB(gdb_w, 0, 0);
-    gdbOpenCommandWindowCB(gdb_w, 0, 0);
 
     os << widget_size(data_disp->graph_edit)           << "\n";
     Widget porthole_w = XtParent(data_disp->graph_edit);
@@ -1850,16 +1841,6 @@ bool save_options(unsigned long flags)
     os << widget_size(source_view->code_form())        << "\n";
     os << widget_size(gdb_w)                           << "\n";
     os << widget_size(XtParent(gdb_w))                 << "\n";
-
-    if (!had_data)
-	gdbCloseDataWindowCB(gdb_w, 0, 0);
-    if (!had_source)
-	gdbCloseSourceWindowCB(gdb_w, 0, 0);
-    if (!had_code)
-	gdbCloseCodeWindowCB(gdb_w, 0, 0);
-    if (!had_command)
-	gdbCloseCommandWindowCB(gdb_w, 0, 0);
-    popups_disabled = false;
 
     if (save_geometry)
     {
@@ -1906,16 +1887,19 @@ bool save_options(unsigned long flags)
 	string core;
 	bool have_data = 
 	    info.running || (info.core != "" && info.core != NO_GDB_ANSWER);
-	if (have_data)
+
+	bool have_displays = (data_disp->count_data_displays() > 0);
+
+	if (have_data || have_displays)
 	{
 	    // Get displays
 	    StringArray scopes;
 	    bool displays_ok = true;
 
-	    if (displays_ok)
+	    if (have_data && displays_ok)
 		displays_ok = data_disp->get_scopes(scopes);
 
-	    if (save_core)
+	    if (have_data && save_core)
 		core_ok = get_core(session, flags, core);
 
 	    if (displays_ok)

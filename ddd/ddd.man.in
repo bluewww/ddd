@@ -4104,6 +4104,9 @@ Show the \s-2@DDD@\s+2 configuration settings and exit.
 Check the \s-2@DDD@\s+2 environment (in particular, the X configuration),
 report any possible problem causes and exit.
 .TP
+.B \-\-data-window
+Create the data window upon start-up.
+.TP
 .B \-\-dbx
 Run the \s-2DBX\s+2 debugger as inferior debugger.
 .TP
@@ -4124,6 +4127,9 @@ If you use the `\fB\-\-debugger\fR' option, be sure that the type of
 inferior debugger is specified as well.  That is, use one of the
 options `\fB\-\-gdb\fR', `\fB\-\-dbx\fR', `\fB\-\-xdb\fR', or
 `\fB\-\-jdb\fR'\(em\&unless the default setting works fine.
+.TP
+.B \-\-debugger-console
+Create the debugger console upon start-up.
 .TP
 .B \-\-disassemble
 Disassemble the source code.  See also the `\fB\-\-no-disassemble\fR'
@@ -4244,6 +4250,9 @@ Separate the console, source and data windows.  See also the
 Use Motif scroll bars to scroll the data window.  This is the default
 in most \s-2@DDD@\s+2 configurations.  See also
 \fB\-\-panned-graph-editor\fR, above.
+.TP
+.B \-\-source-window
+Create the source window upon start-up.
 .TP
 .B \-\-status-at-bottom
 Place the status line at the bottom of the source window.

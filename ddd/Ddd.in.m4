@@ -88,6 +88,12 @@ Ddd*Separate: off
 ! Ddd*separateSourceWindow: on
 
 
+! The windows may be initially on or off.
+Ddd*debuggerConsole: on
+Ddd*sourceWindow:    on
+Ddd*dataWindow:     off
+
+
 ! On if programs are to be run in a separate top-level window.
 ! If this is off, input/output is sent to the debugger console.
 !
@@ -494,7 +500,7 @@ Ddd*autoRaiseTool: on
 
 ! Do we want auto-raised menus?  This is handy with certain window managers:
 ! An auto-raised DDD might obscure popped up pulldown menus.  However, there's
-! a risk that this might interfere with Motif, which is why this is `off'
+! a risk that this might interfere with Motif, which is why this is off.
 Ddd*autoRaiseMenu: off
 
 
@@ -511,7 +517,7 @@ Ddd*displayShortcuts: \
 Ddd*tabWidth:	        8
 
 ! Number of characters to indent the source and machine code
-Ddd*indentSource:	4
+Ddd*indentSource:	0
 Ddd*indentCode:	        4
 
 ! Width of line numbers (if enabled; see the `displayLineNumbers' resource)
@@ -3920,7 +3926,7 @@ Ddd*code_text_w.columns:		80
 Ddd*code_text_w.rows:			2
 
 Ddd*source_form_w.width:		590
-Ddd*source_form_w.height:		220
+Ddd*source_form_w.height:		424
 
 Ddd*code_form_w.width:			590
 Ddd*code_form_w.height:			29

@@ -45,9 +45,6 @@ extern Widget source_view_shell;
 extern Widget tool_shell;
 extern Widget tool_buttons_w;
 
-// Disable popups
-extern bool popups_disabled;
-
 // Shell management
 extern void initial_popup_shell(Widget w);
 extern void popup_shell(Widget w);

@@ -451,11 +451,20 @@ static XrmOptionDescRec options[] = {
 { "--no-exec-window",       XtNseparateExecWindow,   XrmoptionNoArg, S_false },
 { "-no-exec-window",        XtNseparateExecWindow,   XrmoptionNoArg, S_false },
 
+{ "--source-window",        XtNsourceWindow,         XrmoptionNoArg, S_true },
+{ "-source-window",         XtNsourceWindow,         XrmoptionNoArg, S_true },
+
 { "--no-source-window",     XtNsourceWindow,         XrmoptionNoArg, S_false },
 { "-no-source-window",      XtNsourceWindow,         XrmoptionNoArg, S_false },
 
+{ "--data-window",          XtNdataWindow,           XrmoptionNoArg, S_true },
+{ "-data-window",           XtNdataWindow,           XrmoptionNoArg, S_true },
+
 { "--no-data-window",       XtNdataWindow,           XrmoptionNoArg, S_false },
 { "-no-data-window",        XtNdataWindow,           XrmoptionNoArg, S_false },
+
+{ "--debugger-console",     XtNdebuggerConsole,      XrmoptionNoArg, S_true },
+{ "-debugger-console",      XtNdebuggerConsole,      XrmoptionNoArg, S_true },
 
 { "--no-debugger-console",  XtNdebuggerConsole,      XrmoptionNoArg, S_false },
 { "-no-debugger-console",   XtNdebuggerConsole,      XrmoptionNoArg, S_false },
@@ -2239,6 +2248,27 @@ int main(int argc, char *argv[])
     set_settings_title(source_edit_menu[EditItems::Settings].widget);
     set_settings_title(data_edit_menu[EditItems::Settings].widget);
 
+    // Close windows explicitly requested
+    if (!app_data.data_window && 
+	(!app_data.full_name_mode || !app_data.tty_mode))
+    {
+	// We don't want the data window (unless in full name mode,
+	// where we always open a data window - because otherwise, no
+	// window would remain and we'd be gone)
+	gdbCloseDataWindowCB(gdb_w, 0, 0);
+    }
+    if (!app_data.source_window || app_data.full_name_mode)
+    {
+	// We don't need the source window, since we're invoked by Emacs
+	gdbCloseSourceWindowCB(gdb_w, 0, 0);
+	gdbCloseToolWindowCB(gdb_w, 0, 0);
+    }
+    if (!app_data.debugger_console || app_data.tty_mode)
+    {
+	// We don't need the debugger console, since we have a TTY
+	gdbCloseCommandWindowCB(gdb_w, 0, 0);
+    }
+
     // Popdown the splash screen before it eats up all colors
     popdown_splash_screen();
 
@@ -2269,27 +2299,6 @@ int main(int argc, char *argv[])
     {
 	init_delay = new StatusDelay("Opening session " 
 				     + quote(app_data.session));
-    }
-
-    if (!app_data.separate_source_window && !app_data.separate_data_window)
-    {
-	// In one-window mode, close source window until we have some
-	// source and close data window until we have some data.
-	save_preferred_paned_sizes(paned_work_w);
-
-	Widget widgets[10];
-	int w = 0;
-#if 0
-	widgets[w++] = source_view->code_form();
-	widgets[w++] = source_view->source_form();
-#endif
-	widgets[w++] = data_disp->graph_form();
-
-	if (data_disp->graph_cmd_w != arg_cmd_w)
-	    widgets[w++] = data_disp->graph_cmd_w;
-
-	while (w > 0)
-	    unmanage_paned_child(widgets[--w]);
     }
 
     if (app_data.decorate_tool == Auto)
@@ -2369,29 +2378,6 @@ int main(int argc, char *argv[])
     {
 	// TTY mode: all shells follow as needed.
     }
-
-    if (app_data.tty_mode)
-    {
-	// TTY mode: no need for a debugger console
-	gdbCloseCommandWindowCB(gdb_w, 0, 0);
-    }
-    if (app_data.full_name_mode)
-    {
-	// Full name mode: no need for source window
-	gdbCloseSourceWindowCB(gdb_w, 0, 0);
-	gdbCloseToolWindowCB(gdb_w, 0, 0);
-    }
-
-    // Close windows explicitly requested
-    if (!app_data.data_window)
-	gdbCloseDataWindowCB(gdb_w, 0, 0);
-    if (!app_data.source_window)
-    {
-	gdbCloseSourceWindowCB(gdb_w, 0, 0);
-	gdbCloseToolWindowCB(gdb_w, 0, 0);
-    }
-    if (!app_data.debugger_console)
-	gdbCloseCommandWindowCB(gdb_w, 0, 0);
 
     // Trace positions and visibility of all DDD windows
     if (command_shell)
@@ -3233,6 +3219,9 @@ inline void notify_set_toggle(Widget w, Boolean new_state)
 
 inline void set_string(Widget w, String value)
 {
+    if (w == 0)
+	return;
+
     XtVaSetValues(w, 
 		  XmNvalue, value,
 		  XmNcursorPosition, 0,
@@ -3274,12 +3263,15 @@ void update_options()
     set_toggle(set_refer_path_w,         app_data.use_source_path);
     set_toggle(set_refer_base_w,         !app_data.use_source_path);
 
-    XtVaSetValues(tab_width_w,     XmNvalue, app_data.tab_width, NULL);
-    int source_indent = app_data.indent_source;
-    if (app_data.display_line_numbers)
-	source_indent += app_data.line_number_width;
-    XtVaSetValues(source_indent_w, XmNvalue, source_indent, NULL);
-    XtVaSetValues(code_indent_w,   XmNvalue, app_data.indent_code, NULL);
+    if (tab_width_w != 0)
+    {
+	XtVaSetValues(tab_width_w,     XmNvalue, app_data.tab_width, NULL);
+	int source_indent = app_data.indent_source;
+	if (app_data.display_line_numbers)
+	    source_indent += app_data.line_number_width;
+	XtVaSetValues(source_indent_w, XmNvalue, source_indent, NULL);
+	XtVaSetValues(code_indent_w,   XmNvalue, app_data.indent_code, NULL);
+    }
 
     set_toggle(led_w, app_data.blink_while_busy);
 
@@ -3301,20 +3293,23 @@ void update_options()
     set_toggle(graph_detect_aliases_w, app_data.detect_aliases);
     set_toggle(graph_align_2d_arrays_w, app_data.align_2d_arrays);
 
-    if (!show_grid && XtIsSensitive(graph_snap_to_grid_w))
+    if (graph_snap_to_grid_w != 0)
     {
-	// Grid has been disabled - disable `snap to grid' as well
-	XtVaSetValues(data_disp->graph_edit, XtNsnapToGrid, False, NULL);
-    }
-    else if (show_grid && !XtIsSensitive(graph_snap_to_grid_w))
-    {
-	// Grid has been re-enabled - restore `snap to grid' setting
-	XtVaSetValues(data_disp->graph_edit, XtNsnapToGrid, 
-		      XmToggleButtonGetState(graph_snap_to_grid_w), NULL);
-    }
-    else
-    {
-	set_toggle(graph_snap_to_grid_w, snap_to_grid);
+	if (!show_grid && XtIsSensitive(graph_snap_to_grid_w))
+	{
+	    // Grid has been disabled - disable `snap to grid' as well
+	    XtVaSetValues(data_disp->graph_edit, XtNsnapToGrid, False, NULL);
+	}
+	else if (show_grid && !XtIsSensitive(graph_snap_to_grid_w))
+	{
+	    // Grid has been re-enabled - restore `snap to grid' setting
+	    XtVaSetValues(data_disp->graph_edit, XtNsnapToGrid, 
+			  XmToggleButtonGetState(graph_snap_to_grid_w), NULL);
+	}
+	else
+	{
+	    set_toggle(graph_snap_to_grid_w, snap_to_grid);
+	}
     }
 
     set_sensitive(graph_snap_to_grid_w, show_grid);
@@ -3324,8 +3319,9 @@ void update_options()
     set_toggle(graph_auto_layout_w, auto_layout);
     set_toggle(graph_compact_layout_w, layout_mode == CompactLayoutMode);
 
-    XtVaSetValues(graph_grid_size_w, XmNvalue, show_grid ? grid_width : 0, 
-		  NULL);
+    if (graph_grid_size_w != 0)
+	XtVaSetValues(graph_grid_size_w, XmNvalue, show_grid ? grid_width : 0, 
+		      NULL);
 
 
     unsigned char policy = '\0';
@@ -3465,19 +3461,22 @@ void update_options()
     set_label(arg_cmd_area[ArgItems::Find].widget, new_label, icon);
 
     // Font stuff
-    XmTextFieldSetString(font_names[DefaultDDDFont], 
-			 app_data.default_font);
-    XmTextFieldSetString(font_names[VariableWidthDDDFont],
-			 app_data.variable_width_font);
-    XmTextFieldSetString(font_names[FixedWidthDDDFont],
-			 app_data.fixed_width_font);
-    string value;
-    value = itostring(app_data.default_font_size);
-    XmTextFieldSetString(font_sizes[DefaultDDDFont],       (String)value);
-    value = itostring(app_data.variable_width_font_size);
-    XmTextFieldSetString(font_sizes[VariableWidthDDDFont], (String)value);
-    value = itostring(app_data.fixed_width_font_size);
-    XmTextFieldSetString(font_sizes[FixedWidthDDDFont],    (String)value);
+    if (font_names[DefaultDDDFont] != 0)
+    {
+	XmTextFieldSetString(font_names[DefaultDDDFont], 
+			     app_data.default_font);
+	XmTextFieldSetString(font_names[VariableWidthDDDFont],
+			     app_data.variable_width_font);
+	XmTextFieldSetString(font_names[FixedWidthDDDFont],
+			     app_data.fixed_width_font);
+	string value;
+	value = itostring(app_data.default_font_size);
+	XmTextFieldSetString(font_sizes[DefaultDDDFont],       (String)value);
+	value = itostring(app_data.variable_width_font_size);
+	XmTextFieldSetString(font_sizes[VariableWidthDDDFont], (String)value);
+	value = itostring(app_data.fixed_width_font_size);
+	XmTextFieldSetString(font_sizes[FixedWidthDDDFont],    (String)value);
+    }
 
     // Check for source toolbar
     Widget arg_cmd_w = XtParent(source_arg->widget());
