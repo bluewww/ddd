@@ -278,7 +278,7 @@ Volunteers for these and other projects are welcome!
 
 287 Have the DDD windows be resized in font increments.
 
-288 Have a @ifjdb...@else...@endif constructs in help texts.
+288 Have @ifjdb...@else...@endif constructs in help texts.
 
 289 Enable drop actions.  Dropping an action on the text causes the
     action to perform on the object (or vice versa?)
