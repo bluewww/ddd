@@ -34,7 +34,6 @@ char AgentM_rcsid[] =
 
 #include "AgentM.h"
 #include "Agent.h"
-#include "SignalC.h"
 #include "SignalB.h"
 #include "config.h"
 
@@ -45,6 +44,8 @@ char AgentM_rcsid[] =
 DEFINE_TYPE_INFO_0(AgentManager)
 
 #if 0
+#include "SignalC.h"
+
 // Make sure to call all destructors, even when a signal comes
 static SignalCleanup hasta_la_vista_you_filthy_agents;
 #endif
