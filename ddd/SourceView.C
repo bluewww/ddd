@@ -3485,9 +3485,9 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 		return;
 	    }
 	    pos = gdb_question("file");
+	    strip_final_blanks(pos);		// remove trailing newline
 	    pos = pos + ":" + gdb_question("line");
 	}
-	break;
 
 	if (pos != "")
 	    show_execution_position(pos);
@@ -3542,6 +3542,17 @@ void SourceView::process_where (string& where_output)
     for (i = 0; i < count; i++)
     {
 	selected[i] = false;
+
+	// Remove argument list and file paths
+	// (otherwise line can be too long for dbx)
+	//   ... n.b. with templates, line can still be rather long
+	if (gdb->type() != GDB)
+	{
+	    static regex arglist("(.*)");
+	    static regex filepath("/.*/");
+	    frame_list[i].gsub(arglist, "()");
+	    frame_list[i].gsub(filepath, "");
+	}
 	if (int(frame_list[i].length()) < min_width)
 	{
 	    frame_list[i] += 
@@ -3819,6 +3830,12 @@ string SourceView::get_line(string position)
 	position  = position.after(':');
     }
     int line = get_positive_nr(position);
+
+    // Sanity check: make sure the line # isn't too big
+    if (line > line_count)
+    {
+        line = line_count;
+    }
 
     if (file_name != current_file_name)
 	read_file(file_name, line);

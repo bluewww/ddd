@@ -40,6 +40,7 @@ const char dbx_lookup_rcsid[] =
 #include "post.h"
 #include "question.h"
 #include "string-fun.h"
+#include "GDBAgent.h"
 
 #include <stdlib.h>
 
@@ -68,10 +69,19 @@ string dbx_lookup(const string& func_name)
 
     string file    = gdb_question("file");
     strip_final_blanks(file);
-    string listing = gdb_question("list");
+    string listing;
+    if (gdb->version() == DBX3)
+    {
+	listing = gdb_question("line");
+    }
+    else
+    {
+	listing = gdb_question("list");
+	// DBX lists 10 lines; the current line is the 5th one.
+	listing = itostring(atoi(listing) + 5);
+    }
 
-    // DBX lists 10 lines; the current line is the 5th one.
-    string pos = file + ":" + itostring(atoi(listing) + 5);
+    string pos = file + ":" + listing;
 
     pos_cache[func_name] = pos;
     return pos;

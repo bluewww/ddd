@@ -165,14 +165,14 @@ void start_gdb()
 
     case DBX:
 	plus_cmd_data->refresh_main = true;
+	cmds[qu_count++] = "print -r " + print_r_cookie;
+	plus_cmd_data->refresh_print_r = true;
 	cmds[qu_count++] = "file";
 	plus_cmd_data->refresh_file = true;
 	cmds[qu_count++] = "list";
 	plus_cmd_data->refresh_line = true;
 	cmds[qu_count++] = "status";
 	plus_cmd_data->refresh_bpoints = true;
-	cmds[qu_count++] = "print -r " + print_r_cookie;
-	plus_cmd_data->refresh_print_r = true;
 	break;
     }
 
@@ -486,6 +486,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	break;
 
     case DBX:
+	if (plus_cmd_data->refresh_print_r)
+	    cmds[qu_count++] = "print -r " + print_r_cookie;
 	if (plus_cmd_data->refresh_file)
 	    cmds[qu_count++] = "file";
 	if (plus_cmd_data->refresh_line)
@@ -516,8 +518,6 @@ void user_cmdSUC (string cmd, Widget origin)
 	    assert(0);
 	if (plus_cmd_data->refresh_history_save)
 	    assert(0);
-	if (plus_cmd_data->refresh_print_r)
-	    cmds[qu_count++] = "print -r " + print_r_cookie;
 	break;
     }
 
@@ -744,6 +744,11 @@ void plusOQAC (string answers[],
 	}
     }
 
+    if (plus_cmd_data->refresh_print_r) {
+	assert (qu_count < count);
+	process_print_r(answers[qu_count++]);
+    }
+
     if (plus_cmd_data->refresh_file) {
 	assert (gdb->type() == DBX);
 	assert (qu_count < count);
@@ -784,8 +789,13 @@ void plusOQAC (string answers[],
 	}
 	else if (!plus_cmd_data->refresh_main)
 	{
-	    // DBX lists 10 lines; the current line is the 5th one.
-	    line += 5;
+	    // Older DBX1 lists 10 lines; the current line is the 5th one.
+	    // Conversely, with DBX3 we use the "line" command; and even if
+	    // "list" was used (as on startup) we don't add 5.
+	    if (gdb->version() != DBX3)
+	    {
+		line += 5;
+	    }
 	}
 
 	if (file != "")
@@ -849,14 +859,6 @@ void plusOQAC (string answers[],
 	assert (qu_count < count);
 	if (!disabling_occurred)
 	    process_history_save(answers[qu_count++]);
-	else
-	    qu_count++;
-    }
-
-    if (plus_cmd_data->refresh_print_r) {
-	assert (qu_count < count);
-	if (!disabling_occurred)
-	    process_print_r(answers[qu_count++]);
 	else
 	    qu_count++;
     }
