@@ -280,6 +280,4 @@ Volunteers for fixing these and other bugs are welcome!
       the $(HOME) does not get propagated to all Makefiles.
       [This is a problem of the libiberty and librx maintainers.  -AZ]
 
-251 Refreshing `dates' in `jtest' won't work.
-
 252 (Insert your bug here)

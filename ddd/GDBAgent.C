@@ -683,7 +683,7 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	    return true;
 	}
 
-	// Check for non-threaded prompt in the last line
+	// Check for non-threaded prompt as the last line
 	int beginning_of_line = answer.index('\n', -1) + 1;
 	string possible_prompt = ((string &) answer).from(beginning_of_line);
 	if (possible_prompt.matches(rxjdbprompt_nothread))
@@ -692,7 +692,7 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	    return true;
 	}
 
-	// Check for prompt at the beginning of each line
+	// Check for threaded prompt at the beginning of each line
 	int last_nl = answer.length() - 1;
 	while (last_nl >= 0)
 	{
@@ -703,8 +703,18 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 					  beginning_of_line);
 	    if (match_len > 0)
 	    {
-		last_prompt = answer.at(beginning_of_line, match_len);
-		return true;
+		int i = beginning_of_line + match_len;
+		while (i < int(answer.length()) && isspace(answer[i]))
+		    i++;
+		if (i < int(answer.length()) && answer[i] == '=')
+		{
+		    // This is no prompt, but something like `dates[1] = 33'.
+		}
+		else
+		{
+		    last_prompt = answer.at(beginning_of_line, match_len);
+		    return true;
+		}
 	    }
 
 	    last_nl--;
