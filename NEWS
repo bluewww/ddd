@@ -4,7 +4,7 @@ DDD News						-*- text -*-
 DDD 3.1 [in development]
 ========================
 
-DDD 3.1 brings a bunch of minor improvements.
+DDD 3.1 brings edge annotations and a bunch of minor improvements.
 
 
 Appearance
@@ -33,6 +33,9 @@ Debuggers and Languages
 
 Data exploration
 ----------------
+
+- Edge annotations.  Edges are now annotated with the relation between
+  the connected displays - i.e. the member name, array index or likewise.
 
 - Several improvements in processing data output of the inferior debugger:
   * Many more data formats are recognized.
