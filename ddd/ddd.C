@@ -5202,7 +5202,9 @@ static void ReportStartHP(Agent *agent, void *, void *)
 	delete running_msg;
 
     running_msg = new StatusMsg("Running " + gdb->title() + 
-				" (pid " + itostring(gdb->pid()) + ")");
+				" (pid " + itostring(gdb->pid()) + 
+				", slave tty " + gdb->slave_tty() +
+				", master tty " + gdb->master_tty() + ")");
     unlock_status();
 }
 
@@ -5213,7 +5215,7 @@ static void ReportDeathHP(Agent *agent, void *, void *call_data)
 	return;
 
     char *reason = (char *)call_data;
-    if (gdb != 0)
+    if (gdb != 0 && running_msg != 0)
     {
 	running_msg->outcome = reason;
 	delete running_msg;
