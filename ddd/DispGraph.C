@@ -485,11 +485,25 @@ bool DispGraph::del (int disp_nr)
 }
 
 // ***************************************************************************
-int DispGraph::get_nr (BoxGraphNode* nodeptr) const
+int DispGraph::get_nr (BoxGraphNode *nodeptr) const
 {
     MapRef ref;
     for (int k = idMap.first_key(ref); k != 0; k = idMap.next_key(ref))
 	if (idMap.get(k)->nodeptr() == nodeptr)
+	    return k;
+    return 0;
+}
+
+
+// ***************************************************************************
+int DispGraph::get_by_name(const string& name) const
+{
+    if (name.matches(rxint))
+	return atoi(name);
+
+    MapRef ref;
+    for (int k = idMap.first_key(ref); k != 0; k = idMap.next_key(ref))
+	if (idMap.get(k)->name() == name)
 	    return k;
     return 0;
 }

@@ -68,7 +68,7 @@ public:
     // Constructor
     DispGraph();
 
-    // loescht alle
+    // Clear all nodes
     void clear();
     
     // Destructor
@@ -109,9 +109,16 @@ public:
     // Delete DISP_NR; return false if non-existent
     bool del (int disp_nr);
 
-    DispNode* get       (int disp_nr) const { return idMap.get (disp_nr); }
-    int       get_nr    (BoxGraphNode* nodeptr) const;
+    // Return node of display DISP_NR
+    DispNode* get (int disp_nr) const { return idMap.get (disp_nr); }
 
+    // Return number of display NAME
+    int get_by_name(const string& name) const;
+
+    // Return number of node NODEPTR
+    int get_nr(BoxGraphNode *nodeptr) const;
+
+    // Return true iff display has a display numbered DISP_NR
     bool contains (int disp_nr) const { return idMap.contains (disp_nr); }
     
     // Return first/next node; return 0 if non-existent
@@ -122,8 +129,11 @@ public:
     int first_nr (MapRef& ref, Displaying e = Both) const;
     int next_nr  (MapRef& ref, Displaying e = Both) const;
 
+    // Print graph to OS
     void print(ostream& os, const GraphGC& gc = GraphGC()) const
-	{ Graph::print(os, gc); }
+    {
+	Graph::print(os, gc);
+    }
 
 protected:
     BoxPoint adjust_position (DispNode *new_node,
