@@ -12,9 +12,9 @@ echo "$this: setting up DDD from CVS..."
 (cd ddd && aclocal)
 autoconf -l ddd
 automake --include-deps --gnu --add-missing --verbose
-(cd ddd && autoconf && automake --foreign --add-missing --verbose)
-(cd vsllib && autoconf -l ../ddd && automake --foreign --verbose)
-(cd themes && autoconf -l ../ddd && automake --foreign --verbose)
+(cd ddd && autoconf && automake --include-deps --foreign --add-missing --verbose)
+(cd vsllib && autoconf -l ../ddd && automake --include-deps --foreign --verbose)
+(cd themes && autoconf -l ../ddd && automake --include-deps --foreign --verbose)
 (cd readline && autoconf)
 (cd termcap && autoconf)
 
