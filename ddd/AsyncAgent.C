@@ -35,6 +35,7 @@ char AsyncAgent_rcsid[] =
 
 
 #include "AsyncAgent.h"
+#include "TimeOut.h"
 #include "misc.h"
 
 #include <sys/types.h>
