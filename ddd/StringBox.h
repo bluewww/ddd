@@ -89,7 +89,7 @@ public:
 	newFont();
     }
 
-    StringBox(const char *s = "", const char *fontname = "fixed",
+    StringBox(const char *s, const char *fontname = "fixed",
 	const char *t = "StringBox"):
 	PrimitiveBox(BoxSize(0,0), BoxExtend(0, 0), t),
 	_string(s), _fontname(fontname), _font(0), _ascent(0)
