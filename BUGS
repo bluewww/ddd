@@ -241,14 +241,6 @@ Volunteers for fixing these and other bugs are welcome!
        by hand (is the problem that libiberty/Makefile.in does not
        have an entry for CC= @CC@?)
 
-     - There is some sort of problem when starting up ddd.  It gives
-       the following message on the xterm:
-           (gdb) ioctl ttcompat /dev/pts/0: Invalid argument
-       I don't know enough of streams and PTYs on HP-UX 10.10 to
-       tell what's wrong.  The problem is obviously in TTYAgent.C,
-       line 447.
-       [We don't know as well, but this booboo seems to be harmless -AZ]
-
      - There is a bug somewhere in graph layout code that manifests
        only on highest KCC optimization levels (+K2 and +K3).  The
        result is that if I dereference any pointer, the following
