@@ -394,8 +394,6 @@ Volunteers for these and other projects are welcome!
     `display FOOBAR now or when in FUNCTION'.
 
 259*Finish common toolbar:
-    - Have a resource for toolbar placement: above or below window.
-      As an alternative, use XmNpositionIndex instead (changeable at
-      run-time?).
+    - Have preferences support for toolbar appearance.
 
 261 (Insert your project idea here)
