@@ -1838,6 +1838,21 @@ string GDBAgent::frame_command(int num) const
     return "";			// Never reached
 }
 
+// Add OFFSET to current frame (i.e. OFFSET > 0: up, OFFSET < 0: down)
+string GDBAgent::relative_frame_command(int offset) const
+{
+    if (offset == -1)
+	return "down";
+    else if (offset < 0)
+	return "down " + itostring(-offset);
+    else if (offset == 1)
+	return "up";
+    else if (offset > 0)
+	return "up " + itostring(offset);
+
+    return "";			// Offset == 0
+}
+
 string GDBAgent::func_command() const
 {
     switch (type())

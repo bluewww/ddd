@@ -615,55 +615,58 @@ public:
     bool detect_echos() const        { return _detect_echos; }
     bool detect_echos(bool val)      { return _detect_echos = val; }
 
-    // GDB: "print EXPR".  If INTERNAL is set, avoid side effects
-    // (such as setting the value history in GDB).
-    string print_command(string expr = "", bool internal = true) const; 
-    // GDB: "set variable VAR = EXPR"
+    // Several commands
+				                    // GDB command
+						    // -----------------------
+    string print_command(string expr = "", bool internal = true) const;
+				                    // print EXP
+						    // output EXP (if INTERNAL)
     string assign_command(string var, string expr) const;
-
-    string display_command(string expr = "") const; // GDB: "display EXPR"
-    string where_command(int count = 0) const;	    // GDB: "where COUNT"
-    string pwd_command() const;	                    // GDB: "pwd "
-    string frame_command(int number) const;         // GDB: "frame NUMBER"
-    string frame_command() const;                   // GDB: "frame"
-    string func_command() const;                    // DBX: "func"
-    string echo_command(string text) const;         // GDB: "echo TEXT"
-    string whatis_command(string expr) const;       // GDB: "whatis EXPR"
-    string dereferenced_expr(string expr) const;    // GDB: "*EXPR"
-    string address_expr(string expr) const;         // GDB: "&EXPR"
-    string index_expr(string expr, string index) const; // GDB: "EXPR[INDEX]"
-    int default_index_base() const;                 // GDB: 0 in C, else 1
-    string info_locals_command() const;	            // GDB: "info locals"
-    string info_args_command() const;	            // GDB: "info args"
-    string info_display_command() const;	    // GDB: "info display"
+				                    // set variable VAR = EXPR
+    string display_command(string expr = "") const; // display EXPR
+    string where_command(int count = 0) const;	    // where COUNT
+    string pwd_command() const;	                    // pwd
+    string frame_command(int number) const;         // frame NUMBER
+    string relative_frame_command(int offset) const;// up|down OFFSET
+    string frame_command() const;                   // frame
+    string func_command() const;                    // func
+    string echo_command(string text) const;         // echo TEXT
+    string whatis_command(string expr) const;       // whatis EXPR
+    string dereferenced_expr(string expr) const;    // *EXPR
+    string address_expr(string expr) const;         // &EXPR
+    string index_expr(string expr, string index) const; // EXPR[INDEX]
+    int default_index_base() const;                 // 0 in C, else 1
+    string info_locals_command() const;	            // info locals
+    string info_args_command() const;	            // info args
+    string info_display_command() const;	    // info display
     string disassemble_command(string start, string end = "") const;
-                                                // GDB: "disassemble START END"
-    string make_command(string target) const;       // GDB: "make TARGET"
-    string jump_command(string pc) const;           // GDB: "jump PC"
-    string regs_command(bool all = true) const;	    // GDB: "info registers"
+                                                    // disassemble START END
+    string make_command(string target) const;       // make TARGET
+    string jump_command(string pc) const;           // jump PC
+    string regs_command(bool all = true) const;	    // info registers
     string watch_command(string expr, WatchMode w = WATCH_CHANGE) const;
-				                    // GDB: "watch EXPR"
-    string kill_command() const;                    // GDB: "kill"
-    string enable_command(string bp = "") const;    // GDB: "enable BP"
-    string disable_command(string bp = "") const;   // GDB: "disable BP"
-    string delete_command(string bp = "") const;    // GDB: "delete BP"
+				                    // watch EXPR
+    string kill_command() const;                    // kill
+    string enable_command(string bp = "") const;    // enable BP
+    string disable_command(string bp = "") const;   // disable BP
+    string delete_command(string bp = "") const;    // delete BP
     string ignore_command(string bp, int count) const; 
-                                                    // GDB: "ignore BP COUNT"
+                                                    // ignore BP COUNT
     string condition_command(string bp, string expr) const; 
-				                    // GDB: "cond BP EXPR"
-    string shell_command(string cmd) const;	    // GDB: "shell CMD"
-    string debug_command(string file = "") const;   // GDB: "file FILE"
-    string signal_command(int sig) const;           // GDB: "signal SIG"
-    string nop_command(string comment = "") const;  // GDB: "# comment"
+				                    // cond BP EXPR
+    string shell_command(string cmd) const;	    // shell CMD
+    string debug_command(string file = "") const;   // file FILE
+    string signal_command(int sig) const;           // signal SIG
+    string nop_command(string comment = "") const;  // # comment
 
     // Run program with given arguments
-    string run_command(string args) const;	    // GDB: "run ARGS"
+    string run_command(string args) const;	    // set args ARGS\nrun
 
     // Run program, re-using current arguments
-    string rerun_command() const;                   // GDB: "run"
+    string rerun_command() const;                   // run
 
     // Default history file
-    string history_file() const;                    // GDB: "~/.gdb_history"
+    string history_file() const;                    // GDB: ~/.gdb_history
 
     // Send DATA to process
     virtual int write(const char *data, int length)
