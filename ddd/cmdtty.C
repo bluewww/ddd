@@ -83,6 +83,7 @@ void tty_out(const string& text)
     _tty_out(text);
 }
 
+// Output TEXT on controlling TTY (unconditionally)
 void _tty_out(const string& text)
 {
     if (command_tty == 0)
@@ -91,6 +92,7 @@ void _tty_out(const string& text)
     command_tty->write((char *)text, text.length());
 }
 
+// Output TEXT on controlling TTY if we're in full_name_mode
 void tty_full_name(const string& pos)
 {
     if (command_tty == 0)
@@ -108,12 +110,13 @@ void tty_full_name(const string& pos)
     }
 }
 
+// Issue an artificial prompt
 void prompt()
 {
     String s = XmTextGetString(gdb_w);
     string message = s;
     XtFree(s);
-
+  
     if (!message.contains(gdb->prompt(), -1))
     {
 	_gdb_out(gdb->prompt());
@@ -122,6 +125,7 @@ void prompt()
     }
 }
 
+// Initialize command tty
 void init_command_tty()
 {
     command_tty = new LiterateAgent(XtWidgetToApplicationContext(gdb_w));
