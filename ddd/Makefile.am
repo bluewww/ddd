@@ -1115,7 +1115,7 @@ $(buildicondir)/dddsplash.xbm: $(icondir)/dddsplash.xpm
 
 $(buildicondir)/dddlogo.xpm: $(icondir)/dddsplash.xpm
 	$(CONVERT) -fill white \
-	-draw 'rectangle 0,0 409,139' -draw 'rectangle 1,1 408,138' $< $@
+	-draw 'rectangle 0,138 409,139' -draw 'rectangle 408,0 409,139' $< $@
 
 
 XBM_GLYPH_ICONS = \
