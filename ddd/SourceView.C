@@ -2520,9 +2520,6 @@ void SourceView::process_info_bp (string& info_output)
     if (gdb->type() == GDB)
 	info_output = info_output.after ('\n');
 
-    if (info_output == "")
-	info_output = "No breakpoints.";
-
     bool changed = false;
 
     while (info_output != "") 
@@ -3962,9 +3959,12 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
     if (breakpoint_list_w == 0)
 	return;
 
-    int count = info_breakpoints_output.freq('\n') + 1;
+    read_leading_blanks(info_breakpoints_output);
+    strip_final_blanks(info_breakpoints_output);
     if (info_breakpoints_output == "")
-	count = 0;
+	info_breakpoints_output = "No breakpoints.";
+
+    int count = info_breakpoints_output.freq('\n') + 1;
 
     string *breakpoint_list = new string[count];
     bool *selected          = new bool[count];
@@ -4158,8 +4158,8 @@ void SourceView::setup_where_line(string& line)
     // Remove argument list and file paths
     // (otherwise line can be too long for dbx)
     //   ... n.b. with templates, line can still be rather long
-    static regex arglist("[(][^)]*[)]");
-    static regex filepath("/.*/");
+    static regex arglist("[(][^0-9][^)]*[)]");
+    static regex filepath("/[^ ]*/");
     line.gsub(arglist, "()");
     line.gsub(filepath, "");
 
