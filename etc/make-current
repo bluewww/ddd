@@ -1,6 +1,7 @@
 #! /bin/sh
 # $Id$
-# Create DDD release-of-the-day
+# Create DDD release-of-the-day.  
+# If `-final' is given, make an official release.
 
 # Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -29,25 +30,39 @@
 
 # This script checks out the current DDD development tree, as
 # stored in CVS, and creates a DDD release-of-the-day (`ROTD').
+# If `-final' is given, create an official release.
+
+# Check args
+final=false;
+if [ "$1" = "-final" ]; then
+  final=true;
+fi
 
 # Setup environment
 tmpdir=$HOME/tmp
 CVSROOT=/usr/local/share/CVS; export CVSROOT
 PATH=/usr/local/bin:/usr/local/gnubin:$PATH; export PATH
-target=/ftp/pub/local/softech/ddd/current
+
+if $final; then
+  target=`pwd`
+else
+  target=/ftp/pub/local/softech/ddd/current
+fi
 
 # Check whether the ChangeLog file has changed (i.e. we need a new ROTD)
-install=false
+install=$final
 /usr/local/gnubin/test $CVSROOT/CVSROOT/ddd-log -nt $target/ChangeLog.tail \
     && install=true
 /usr/local/gnubin/test ! -f $target/ChangeLog.tail \
     && install=true
 
-if [ $install = false ]; then
-    exit 0;			# No installation required
-fi
+$install || exit 0; # No installation required
 
-exec > $target/.current.log 2>&1 < /dev/null
+if $final; then
+  :
+else
+  exec > $target/.current.log 2>&1 < /dev/null
+fi
 
 echo make-current[$$]: start at `date`
 
@@ -57,30 +72,42 @@ month=`date +"%m"`
 day=`date +"%d"`
 date=$year-$month-$day
 
-# Let this release expire in 30-60 days.  It is unlikely we won't make
-# any changes until then.
-next_year=`expr $year + 1`
-case $month in
-01) expires=$year-03-01;;
-02) expires=$year-04-01;;
-03) expires=$year-05-01;;
-04) expires=$year-06-01;;
-05) expires=$year-07-01;;
-06) expires=$year-08-01;;
-07) expires=$year-09-01;;
-08) expires=$year-10-01;;
-09) expires=$year-11-01;;
-10) expires=$year-12-01;;
-11) expires=$next_year-01-01;;
-12) expires=$next_year-02-01;;
-esac
+if $final; then
+  # This is a final release; we use the expiration date from the file.
+  expires=`co -p $CVSROOT/ddd/ddd/configure.in | grep '^EXPIRES=' |cut -d= -f2`
+  date=`co -p $CVSROOT/ddd/ddd/configure.in | grep '^VERSION=' | cut -d= -f2`
+else
+  # Let this release expire in 30-60 days.  It is unlikely we won't make
+  # any changes until then.
+  next_year=`expr $year + 1`
+  case $month in
+    01) expires=$year-03-01;;
+    02) expires=$year-04-01;;
+    03) expires=$year-05-01;;
+    04) expires=$year-06-01;;
+    05) expires=$year-07-01;;
+    06) expires=$year-08-01;;
+    07) expires=$year-09-01;;
+    08) expires=$year-10-01;;
+    09) expires=$year-11-01;;
+    10) expires=$year-12-01;;
+    11) expires=$next_year-01-01;;
+    12) expires=$next_year-02-01;;
+  esac
+fi
 
-# We are working in /tmp/ddd.  In case of trouble, clean up.
+# We are working in `/tmp/ddd'.  In case of trouble, clean up.
 trap "exit 1" 1 2 15
 trap "set +x; echo -n 'Cleaning up...'; cd $tmpdir; rm -fr ddd; echo done." 0
 
 # Go ahead...
-echo "Creating ddd-$date.tar.gz (expires $expires)..."
+if [ "$expires" = "" ]; then
+  expires_msg=""
+else
+  expires_msg=" (expires $expires)"
+fi
+echo "Creating ddd-$date.tar.gz$expires_msg..."
+echo "Target is $target"
 set -x
 cd $tmpdir
 
@@ -88,7 +115,10 @@ cd $tmpdir
 cvs checkout ddd
 cd ddd
 
-# Set the ROTD version.
+if $final; then
+  :
+else
+# Override the ROTD version.
 sed 's/VERSION=.*/# &/
 s/EXPIRES=.*/# &/
 /^# VERSION=/a\
@@ -99,6 +129,7 @@ EXPIRES='$expires'
 
 ' < ddd/configure.in > ddd/configure.in~
 mv ddd/configure.in~ ddd/configure.in
+fi
 
 # Configure the package.
 ln -s $CVSROOT/CVSROOT/ddd-log ChangeLog
@@ -108,7 +139,7 @@ autoconf
 (cd termcap && autoconf)
 sh ./configure --x-libraries=/usr/X11R5/lib --x-includes=/usr/X11R5/include -v
 
-# Create an empty `ddd/Makedeps' such that `make' won't fail.
+# Create an empty `ddd/Makedeps' such that old MAKEs won't fail.
 touch ddd/Makedeps
 
 # The .xbm files must be newer than the original .xpm files, because
@@ -125,20 +156,26 @@ touch icons/*.xbm
 make dist
 
 if [ -f ddd-$date.tar.gz ]; then
-  # Move dist file into FTP area
+  # Move dist file into target area
   rm -f $target/ddd-*.tar.gz
   mv ddd-$date.tar.gz ddd-$date-pics.tar.gz $target
-  commits=200
-  log=$CVSROOT/CVSROOT/ddd-log
-  line=`grep -n '^\*\*\*' $log | tail -$commits | head -1 | cut -d: -f1`
-  tail +$line $log > $target/ChangeLog.tail
-  cp -p NEWS BUGS TODO $target
-  echo "Creating ddd-$date.tar.gz (expires $expires)...done."
+
+  if $final; then
+    :
+  else
+    # Copy the ChangeLog and NEWS/BUGS/TODO files
+    commits=200
+    log=$CVSROOT/CVSROOT/ddd-log
+    line=`grep -n '^\*\*\*' $log | tail -$commits | head -1 | cut -d: -f1`
+    tail +$line $log > $target/ChangeLog.tail
+    cp -p NEWS BUGS TODO $target
+  fi
+  echo "Creating ddd-$date.tar.gz$expires_msg...done."
   echo "make-current[$$]: done at `date`"
 else
   echo "make-current[$$]: failed at `date`"
   Mail -s "make-current failed at `date`" ddd@ips.cs.tu-bs.de \
-     < $target/.current.log
+   < $target/.current.log
 fi
 
 # That's all, folks!
