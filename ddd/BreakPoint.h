@@ -45,12 +45,27 @@
 #include "GDBAgent.h"
 #include "StringA.h"
 
-// Breakpoint type
+// Breakpoint type, respectively:
+//  Breakpoint
+//  Watchpoint
+//  Tracepoint (as in GDB)
+//  Actionpoint (`when' in DBX, action in Perl)
+#define BREAKPOINT_TABLE     \
+X(BREAKPOINT,"Breakpoint"),  \
+X(WATCHPOINT,"Watchpoint"),  \
+X(TRACEPOINT,"Tracepoint"),  \
+X(ACTIONPOINT,"Actionpoint")
+
+#define BREAKPOINT_TABLE_NOC \
+X(BREAKPOINT,"Breakpoint")   \
+X(WATCHPOINT,"Watchpoint")   \
+X(TRACEPOINT,"Tracepoint")   \
+X(ACTIONPOINT,"Actionpoint")
+
 enum BPType {
-    BREAKPOINT,			// Breakpoint
-    WATCHPOINT,			// Watchpoint
-    TRACEPOINT,			// Tracepoint (as in GDB)
-    ACTIONPOINT 		// Actionpoint (`when' in DBX, action in Perl)
+#define X(a,b) a
+    BREAKPOINT_TABLE
+#undef X
 };
 
 // What to do when breakpoint is reached
@@ -92,8 +107,8 @@ private:
 
 protected:
     // Helpers
-    static string false_value();
-    static string and_op();
+    static const string& false_value();
+    static const string& and_op();
     static bool is_false(const string& cond);
 
     void process_gdb(string& info_output);
@@ -124,7 +139,7 @@ public:
 
     // Breakpoint type.
     BPType type() const { return mytype; }
-    string title() const;
+    const string& title() const;
 
     // What to do when breakpoint is reached.
     BPDispo dispo() const { return mydispo; }

@@ -827,18 +827,18 @@ string BreakPoint::symbol() const
 
 string BreakPoint::condition() const
 {
-    if (is_false(real_condition()))
-	return real_condition().after(and_op());
-    else
-	return real_condition();
+  return
+    (is_false(real_condition())) ?
+    real_condition().after(and_op()) :
+    real_condition();
 }
 
 bool BreakPoint::enabled() const
 {
-    if (is_false(real_condition()))
-	return false;
-    else
-	return myenabled;
+  return
+    (is_false(real_condition())) ?
+    false :
+    myenabled;
 }
 
 
@@ -848,40 +848,81 @@ bool BreakPoint::enabled() const
 //-----------------------------------------------------------------------------
 
 // Return "0" (or appropriate)
-string BreakPoint::false_value()
+const string& BreakPoint::false_value()
 {
+#define FALSE_TABLE        \
+X(C_FALSE,"0"),            \
+X(PERL_FALSE,"\"0\""),     \
+X(FORTRAN_FALSE,".FALSE."),\
+X(JAVA_FALSE,"false"),     \
+X(ADA_FALSE,"FALSE")
+
+    static
+    string const Falses[] =
+      {
+#define X(a,b) b
+        FALSE_TABLE
+#undef X
+      };
+
+    enum {
+#define X(a,b) a
+        FALSE_TABLE
+#undef X
+    };
+
     switch (gdb->program_language())
     {
     case LANGUAGE_C:
     case LANGUAGE_PYTHON:
     case LANGUAGE_OTHER:
     case LANGUAGE_BASH:
-	return "0";
+	return Falses[C_FALSE];
 
     case LANGUAGE_PERL:
 	// In Perl, giving a breakpoint a condition of `0' is not
 	// accepted by the debugger.  So, we use the string "0"
 	// instead, which Perl also evaluates to False.
-	return "\"0\"";
+	return Falses[PERL_FALSE];
 
     case LANGUAGE_FORTRAN:
-	return ".FALSE.";
+	return Falses[FORTRAN_FALSE];
 
     case LANGUAGE_JAVA:
-	return "false";
+	return Falses[JAVA_FALSE];
 
     case LANGUAGE_CHILL:	// ?
     case LANGUAGE_PASCAL:
     case LANGUAGE_ADA:
-	return "FALSE";
+	return Falses[ADA_FALSE];
     }
 
-    return "0";
+    return Falses[C_FALSE];
 }
 
 // Return " && " (or appropriate)
-string BreakPoint::and_op()
+const string& BreakPoint::and_op()
 {
+#define AND_TABLE          \
+X(C_AND," && "),           \
+X(FORTRAN_AND," .AND. "),  \
+X(ADA_AND," AND "),        \
+X(PYTHON_AND," and ")
+
+    static
+    string const Ands[] =
+      {
+#define X(a,b) b
+        AND_TABLE
+#undef X
+      };
+
+    enum {
+#define X(a,b) a
+        AND_TABLE
+#undef X
+    };
+
     switch (gdb->program_language())
     {
     case LANGUAGE_C:
@@ -889,41 +930,43 @@ string BreakPoint::and_op()
     case LANGUAGE_BASH:
     case LANGUAGE_JAVA:
     case LANGUAGE_OTHER:
-	return " && ";
+	return Ands[C_AND];
 
     case LANGUAGE_FORTRAN:
-	return " .AND. ";
+	return Ands[FORTRAN_AND];
 
     case LANGUAGE_CHILL:	// ??
     case LANGUAGE_PASCAL:
     case LANGUAGE_ADA:
-	return " AND ";
+	return Ands[ADA_AND];
 
     case LANGUAGE_PYTHON:
-	return " and ";
+	return Ands[PYTHON_AND];
     }
 
-    return " && ";
+    return Ands[C_AND];
 }
 
-string BreakPoint::title() const
+const string& BreakPoint::title() const
 {
+    static
+    string const BreakPoints[] =
+      {
+#define X(a,b) b
+        BREAKPOINT_TABLE
+#undef X
+      };
+
     switch (type())
     {
-    case BREAKPOINT:
-	return "Breakpoint";
-
-    case TRACEPOINT:
-	return "Tracepoint";
-
-    case ACTIONPOINT:
-	return "Actionpoint";
-
-    case WATCHPOINT:
-	return "Watchpoint";
+#define X(a,b) \
+    case a:    \
+        return BreakPoints[a];
+    BREAKPOINT_TABLE_NOC
+#undef X
     }
-
-    return "";			// Never reached
+    // Never reached
+    ::abort();
 }
 
 // True if COND is `false' or starts with `false and'
