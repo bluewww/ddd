@@ -2,11 +2,13 @@
 
 #ifdef __STDC__
 #include <stddef.h>
+#define clock_t unsigned long
 #define DEF(NAME, RETURN_TYPE, ARGLIST, ARGS) extern RETURN_TYPE NAME (ARGS);
 #define DEFFUNC(NAME, RETURN_TYPE, ARGLIST, ARGS) extern RETURN_TYPE NAME (ARGS);
 #else
 #define void int
 #define size_t unsigned long
+#define clock_t unsigned long
 #define DEF(NAME, RETURN_TYPE, ARGLIST, ARGS) extern RETURN_TYPE NAME ();
 #define DEFFUNC(NAME, RETURN_TYPE, ARGLIST, ARGS) extern RETURN_TYPE NAME ();
 #endif
@@ -15,6 +17,7 @@
 
 #define NOTHING /*nothing*/
 
+#include "alloca-conf.h"
 #include "functions.def"
 
 /* Always use our: getopt.o getopt1.o obstack.o spaces.o */

@@ -1,12 +1,11 @@
 @echo off
-if "%1" == "go32" goto h8300
 if "%1" == "h8/300" goto h8300
-echo Specify one of [ go32 h8/300 ] on command line
-goto exit
 
-:go32
 echo Configuring libiberty for go32
 copy Makefile.dos Makefile
+echo #define NEED_sys_siglist 1 >> config.h
+echo #define NEED_psignal 1 >> config.h
+update alloca-normal.h alloca-conf.h
 goto exit
 
 :h8300

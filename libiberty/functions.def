@@ -6,12 +6,13 @@
  *
  * In the default libiberty configuration, these object files
  * (e.g bzero.o) are included if and only if cc fails to find
- * the corresponding function in libc.  See config/mh-default.
+ * the corresponding function in libc.
  */
 
 DEF(bcmp, int, (s1, s2, length), char *s1 AND char *s2 AND int length )
 DEF(bcopy, void, (s1, s2, length), char *s1 AND char *s2 AND int length )
 DEF(bzero, void, (s, length), char *s AND int length)
+DEF(clock, clock_t, (), NOTHING)
 DEF(getopt, int, (argc, argv, optstring),
 	int argc AND char **argv AND CONST char *optstring)	
 DEF(getpagesize, int , (), NOTHING)
@@ -61,3 +62,4 @@ DEFVAR(sys_siglist, char *sys_siglist[], sys_siglist[0] = 0)
 
 DEFFUNC(strerror, char*, (), NOTHING)
 DEFFUNC(psignal, void, (signo, message), unsigned signo AND char *message)
+DEFFUNC(basename, char *, (name), CONST char *name)

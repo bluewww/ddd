@@ -1,97 +1,108 @@
 /*
- * strtol : convert a string to long.
+ * Copyright (c) 1990 Regents of the University of California.
+ * All rights reserved.
  *
- * Andy Wilson, 2-Oct-89.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *	This product includes software developed by the University of
+ *	California, Berkeley and its contributors.
+ * 4. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
  */
 
-#include <errno.h>
+#include <limits.h>
 #include <ctype.h>
-#include <stdio.h>
+#include <errno.h>
+#include <stdlib.h>
 #include "ansidecl.h"
 
 #ifndef ULONG_MAX
 #define	ULONG_MAX	((unsigned long)(~0L))		/* 0xFFFFFFFF */
 #endif
 
-extern int errno;
-
+/*
+ * Convert a string to an unsigned long integer.
+ *
+ * Ignores `locale' stuff.  Assumes that the upper and lower case
+ * alphabets and digits are each contiguous.
+ */
 unsigned long
-strtoul(s, ptr, base)
-     CONST char *s; char **ptr; int base;
+strtoul(nptr, endptr, base)
+	CONST char *nptr;
+	char **endptr;
+	register int base;
 {
-  unsigned long total = 0;
-  unsigned digit;
-  CONST char *start=s;
-  int did_conversion=0;
-  int overflow = 0;
-  int negate = 0;
-  unsigned long maxdiv, maxrem;
+	register CONST char *s = nptr;
+	register unsigned long acc;
+	register int c;
+	register unsigned long cutoff;
+	register int neg = 0, any, cutlim;
 
-  if (s==NULL)
-    {
-      errno = ERANGE;
-      if (!ptr)
-	*ptr = (char *)start;
-      return 0L;
-    }
-
-  while (isspace(*s))
-    s++;
-  if (*s == '+')
-    s++;
-  else if (*s == '-')
-    s++, negate = 1;
-  if (base==0 || base==16) /*  the 'base==16' is for handling 0x */
-    {
-      int tmp;
-
-      /*
-       * try to infer base from the string
-       */
-      if (*s != '0')
-        tmp = 10;	/* doesn't start with 0 - assume decimal */
-      else if (s[1] == 'X' || s[1] == 'x')
-	tmp = 16, s += 2; /* starts with 0x or 0X - hence hex */
-      else
-	tmp = 8;	/* starts with 0 - hence octal */
-      if (base==0)
-	base = (int)tmp;
-    }
-
-  maxdiv = ULONG_MAX / base;
-  maxrem = ULONG_MAX % base;
-
-  while ((digit = *s) != '\0')
-    {
-      if (digit >= '0' && digit < ('0'+base))
-	digit -= '0';
-      else
-	if (base > 10)
-	  {
-	    if (digit >= 'a' && digit < ('a'+(base-10)))
-	      digit = digit - 'a' + 10;
-	    else if (digit >= 'A' && digit < ('A'+(base-10)))
-	      digit = digit - 'A' + 10;
-	    else
-	      break;
-	  }
-	else
-	  break;
-      did_conversion = 1;
-      if (total > maxdiv
-	  || (total == maxdiv && digit > maxrem))
-	overflow = 1;
-      total = (total * base) + digit;
-      s++;
-    }
-  if (overflow)
-    {
-      errno = ERANGE;
-      if (ptr != NULL)
-	*ptr = (char *)s;
-      return (ULONG_MAX);
-    }
-  if (ptr != NULL)
-    *ptr = (char *) ((did_conversion) ? (char *)s : (char *)start);
-  return negate ? -total : total;
+	/*
+	 * See strtol for comments as to the logic used.
+	 */
+	do {
+		c = *s++;
+	} while (isspace(c));
+	if (c == '-') {
+		neg = 1;
+		c = *s++;
+	} else if (c == '+')
+		c = *s++;
+	if ((base == 0 || base == 16) &&
+	    c == '0' && (*s == 'x' || *s == 'X')) {
+		c = s[1];
+		s += 2;
+		base = 16;
+	}
+	if (base == 0)
+		base = c == '0' ? 8 : 10;
+	cutoff = (unsigned long)ULONG_MAX / (unsigned long)base;
+	cutlim = (unsigned long)ULONG_MAX % (unsigned long)base;
+	for (acc = 0, any = 0;; c = *s++) {
+		if (isdigit(c))
+			c -= '0';
+		else if (isalpha(c))
+			c -= isupper(c) ? 'A' - 10 : 'a' - 10;
+		else
+			break;
+		if (c >= base)
+			break;
+		if (any < 0 || acc > cutoff || acc == cutoff && c > cutlim)
+			any = -1;
+		else {
+			any = 1;
+			acc *= base;
+			acc += c;
+		}
+	}
+	if (any < 0) {
+		acc = ULONG_MAX;
+		errno = ERANGE;
+	} else if (neg)
+		acc = -acc;
+	if (endptr != 0)
+		*endptr = (char *) (any ? s - 1 : nptr);
+	return (acc);
 }

@@ -1,0 +1,6 @@
+# Configuration fragment for libiberty.
+
+forward-include "{srcdir}"alloca-norm.h alloca-conf.h
+
+echo "/* add strerror stuff? */" >config.h
+

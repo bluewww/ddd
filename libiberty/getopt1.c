@@ -14,10 +14,17 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this program; if not, write to the Free Software
-   Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
+   Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #ifdef HAVE_CONFIG_H
+#if defined (emacs) || defined (CONFIG_BROKETS)
+/* We use <config.h> instead of "config.h" so that a compilation
+   using -I. -I$srcdir will use ./config.h rather than $srcdir/config.h
+   (which it would do because it found this file in $srcdir).  */
+#include <config.h>
+#else
 #include "config.h"
+#endif
 #endif
 
 #include "getopt.h"
@@ -39,8 +46,11 @@
    (especially if it is a shared library).  Rather than having every GNU
    program understand `configure --with-gnu-libc' and omit the object files,
    it is simpler to just do this in the source for each such file.  */
+/* Many versions of the Linux C library include older, broken versions
+   of these routines, which will break the linker's command-line
+   parsing.  */
 
-#if defined (_LIBC) || !defined (__GNU_LIBRARY__)
+#if defined (_LIBC) || !defined (__GNU_LIBRARY__) || defined (__linux__)
 
 
 /* This needs to come after some library #include

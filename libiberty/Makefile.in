@@ -1,6 +1,6 @@
 #
 # Makefile
-#   Copyright (C) 1990, 1991, 1992 Free Software Foundation
+#   Copyright (C) 1990, 1991, 1992, 1995 Free Software Foundation
 #
 # This file is part of the libiberty library.
 # Libiberty is free software; you can redistribute it and/or
@@ -15,8 +15,8 @@
 #
 # You should have received a copy of the GNU Library General Public
 # License along with libiberty; see the file COPYING.LIB.  If
-# not, write to the Free Software Foundation, Inc., 675 Mass Ave,
-# Cambridge, MA 02139, USA.
+# not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
 #
 
 # This file was written, and is maintained by K. Richard Pixley
@@ -53,6 +53,13 @@ docdir = $(datadir)/doc
 
 SHELL = /bin/sh
 
+# Multilib support variables.
+MULTITOP = .
+MULTIDIRS =
+MULTISUBDIR =
+MULTIDO = true
+MULTICLEAN = true
+
 INSTALL = install -c
 INSTALL_PROGRAM = $(INSTALL)
 INSTALL_DATA = $(INSTALL)
@@ -60,14 +67,15 @@ INSTALL_DATA = $(INSTALL)
 AR = ar
 AR_FLAGS = rc
 
+ERRORS_CC = $(CC)
 CFLAGS = -g
-BISON = bison
+LIBCFLAGS = $(CFLAGS)
 MAKEINFO = makeinfo
 RANLIB = ranlib
 
-MAKEOVERRIDES =
+PICFLAG =
 
-XTRAFLAGS =
+MAKEOVERRIDES =
 
 TARGETLIB = libiberty.a
 
@@ -89,7 +97,27 @@ DO_ALSO = needed-list
 # even if they are in libc. (Perhaps the libc version is buggy.)
 EXTRA_OFILES = 
 
-all:	$(TARGETLIB)
+# Flags to pass to a recursive make.  This is also used by xiberty.
+FLAGS_TO_PASS = \
+	"AR=$(AR)" \
+	"AR_FLAGS=$(AR_FLAGS)" \
+	"CC=$(CC)" \
+	"CFLAGS=$(CFLAGS)" \
+	"LIBCFLAGS=$(LIBCFLAGS)" \
+	"EXTRA_OFILES=$(EXTRA_OFILES)" \
+	"HDEFINES=$(HDEFINES)" \
+	"INCDIR=$(INCDIR)" \
+	"LDFLAGS=$(LDFLAGS)" \
+	"LOADLIBES=$(LOADLIBES)" \
+	"RANLIB=$(RANLIB)" \
+	"SHELL=$(SHELL)"
+
+all: stamp-picdir $(TARGETLIB)
+	@if [ "$(RULE1)" != "not-used" ]; then \
+	  $(MULTIDO) $(FLAGS_TO_PASS) multi-do DO=all; \
+	else true; \
+	fi
+
 .PHONY: check installcheck
 check installcheck:
 
@@ -97,8 +125,14 @@ check installcheck:
 #### Host, target, and site specific Makefile fragments come in here.
 ###
 
+INCDIR=$(srcdir)/../include
+
+COMPILE.c = $(CC) -c $(LIBCFLAGS) -I. -I$(INCDIR) $(HDEFINES)
 .c.o:
-	$(CC) -c $(CFLAGS) -I. -I$(srcdir)/../include $(HDEFINES) $(XTRAFLAGS) $<
+	if [ -n "$(PICFLAG)" ]; then \
+	  $(COMPILE.c) $(PICFLAG) $< -o pic/$@; \
+	else true; fi
+	$(COMPILE.c) $<
 
 # The default target just invokes make recursively.
 # However, the automatic configuration (in config/mh_default).
@@ -107,19 +141,22 @@ info install-info clean-info dvi:
 
 # NOTE: If you add new files to the library, add them to this list
 # (alphabetical), and add them to REQUIRED_OFILES or 'functions.def'.
-CFILES = alloca.c argv.c basename.c bcmp.c bcopy.c bzero.c concat.c \
-	 cplus-dem.c fdmatch.c getcwd.c getopt.c getopt1.c getpagesize.c \
-         ieee-float.c index.c insque.c \
+CFILES = alloca.c argv.c basename.c bcmp.c bcopy.c bzero.c \
+	 clock.c concat.c cplus-dem.c fdmatch.c \
+	 getcwd.c getopt.c getopt1.c getpagesize.c getruntime.c \
+         floatformat.c hex.c index.c insque.c \
 	 memchr.c memcmp.c memcpy.c memmove.c memset.c \
          obstack.c random.c rename.c rindex.c sigsetmask.c spaces.c \
 	 strcasecmp.c strncasecmp.c \
          strchr.c strdup.c strerror.c strrchr.c strsignal.c \
          strstr.c strtod.c strtol.c strtoul.c tmpnam.c \
-	 vfork.c vfprintf.c vprintf.c vsprintf.c waitpid.c xmalloc.c
+	 vasprintf.c vfork.c vfprintf.c vprintf.c vsprintf.c waitpid.c \
+	 xatexit.c xexit.c xmalloc.c
 # These are always included in the library.
 REQUIRED_OFILES = argv.o basename.o concat.o cplus-dem.o fdmatch.o \
-  getopt.o getopt1.o ieee-float.o obstack.o spaces.o strerror.o strsignal.o \
-  xmalloc.o 
+  getopt.o getopt1.o getruntime.o hex.o \
+  floatformat.o obstack.o spaces.o strerror.o strsignal.o \
+  vasprintf.o xatexit.o xexit.o xmalloc.o 
 
 # Do we want/need any config overrides?
 #	 
@@ -137,14 +174,15 @@ install_to_libdir: all
 install_to_tooldir: all
 	$(INSTALL_DATA) $(TARGETLIB) $(tooldir)/lib/$(TARGETLIB).n
 	( cd $(tooldir) ; $(RANLIB) $(tooldir)/lib/$(TARGETLIB).n )
-	mv -f $(tooldir)/lib/$(TARGETLIB).n $(tooldir)/lib/$(TARGETLIB)
+	mv -f $(tooldir)/lib/$(TARGETLIB).n $(tooldir)/lib$(MULTISUBDIR)/$(TARGETLIB)
+	@$(MULTIDO) $(FLAGS_TO_PASS) multi-do DO=install
 
 # The default configuration adds to libiberty all those functions that are
 # missing in libc.  More precisely, it includes whatever $(CC) fails to find.
 # Then a sed+awk combination translates the ld error messages into
 # a list of .o files.
 
-needed-list: $(NEEDED_LIST)
+needed-list: stamp-picdir $(NEEDED_LIST)
 	cp $(NEEDED_LIST) needed-list
 
 lneeded-list: $(EXTRA_OFILES) needed.awk errors
@@ -188,20 +226,17 @@ needed2.awk: $(srcdir)/functions.def Makefile
 	 >>needed2.awk
 
 dummy.o: $(srcdir)/dummy.c $(srcdir)/functions.def
-	$(CC) -c $(CFLAGS) -I. -I$(srcdir)/../include $(HDEFINES) $(XTRAFLAGS) $(srcdir)/dummy.c 2>/dev/null
+	$(CC) -c $(CFLAGS) -I. -I$(INCDIR) $(HDEFINES) $(srcdir)/dummy.c 2>/dev/null
 
 errors: dummy.o $(EXTRA_OFILES)
-	-($(CC) -o dummy $(CFLAGS) $(LDFLAGS) dummy.o $(EXTRA_OFILES) $(LOADLIBES)) >errors 2>&1 || true
+	-($(ERRORS_CC) -o dummy $(CFLAGS) $(LDFLAGS) $(ERRORS_LDFLAGS) dummy.o $(EXTRA_OFILES) $(LOADLIBES)) >errors 2>&1 || true
 
 $(HOST_OFILES) $(REQUIRED_OFILES) : config.h
 
 RULE1 = $(TARGETLIB)
 $(RULE1): $(REQUIRED_OFILES) $(DO_ALSO) .always.
-	@$(MAKE) RULE1=not-used RULE2=$(TARGETLIB) \
-	     HOST_OFILES="$(HOST_OFILES)" \
-	    "CC=$(CC)" "CFLAGS=$(CFLAGS)" \
-	    "AR=$(AR)" "AR_FLAGS=$(AR_FLAGS)" "RANLIB=$(RANLIB)" \
-	    "XTRAFLAGS=$(XTRAFLAGS)" "SHELL=$(SHELL)"
+	@$(MAKE) RULE1=not-used RULE2=$(TARGETLIB) $(FLAGS_TO_PASS) \
+		"HOST_OFILES=$(HOST_OFILES)"
 
 # Rule invoked by recursive make in $(RULE1).
 RULE2 = not-used
@@ -211,10 +246,16 @@ $(RULE2): $(REQUIRED_OFILES) $(HOST_OFILES)
 	  $(REQUIRED_OFILES) $(HOST_OFILES)
 	$(RANLIB) $(TARGETLIB)
 
+stamp-picdir:
+	if [ -n "$(PICFLAG)" ] && [ ! -d pic ]; then \
+	  mkdir pic; \
+	else true; fi
+	touch stamp-picdir
+
 .always.:
 # Do nothing.
 
-.PHONEY: all etags tags ls clean stage1 stage2 .always.
+.PHONY: all etags tags ls clean stage1 stage2 .always.
 
 etags tags: TAGS
 
@@ -233,16 +274,37 @@ ls:
 # Need to deal with profiled libraries, too.
 
 mostlyclean:
-	rm -f *.o core errs \#* *.E a.out
+	rm -rf *.o pic core errs \#* *.E a.out
 	rm -f needed.awk needed2.awk errors dummy needed-list config.h
-	rm -f $(CONFIG_H) $(NEEDED_LIST)
+	rm -f $(CONFIG_H) $(NEEDED_LIST) stamp-picdir
+	@$(MULTICLEAN) multi-clean DO=mostlyclean
 clean: mostlyclean
 	rm -f *.a
+	@$(MULTICLEAN) multi-clean DO=clean
 distclean: clean
-	rm -f *~ Makefile config.status alloca-conf.h TAGS
+	rm -f *~ Makefile config.status alloca-conf.h xhost-mkfrag TAGS
+	@$(MULTICLEAN) multi-clean DO=distclean
 realclean: distclean
 
 force:
 
 Makefile: $(srcdir)/Makefile.in $(host_makefile_frag) $(target_makefile_frag)
 	$(SHELL) ./config.status
+
+argv.o: $(INCDIR)/libiberty.h
+basename.o: $(INCDIR)/libiberty.h
+concat.o: $(INCDIR)/libiberty.h
+cplus-dem.o: $(INCDIR)/demangle.h
+fdmatch.o: $(INCDIR)/libiberty.h
+getopt.o: $(INCDIR)/getopt.h
+getopt1.o: $(INCDIR)/getopt.h
+getruntime.o: $(INCDIR)/libiberty.h
+hex.o: $(INCDIR)/libiberty.h
+floatformat.o: $(INCDIR)/floatformat.h
+obstack.o: $(INCDIR)/obstack.h
+spaces.o: $(INCDIR)/libiberty.h
+strerror.o: $(INCDIR)/libiberty.h
+strsignal.o: $(INCDIR)/libiberty.h
+xatexit.o: $(INCDIR)/libiberty.h
+xexit.o: $(INCDIR)/libiberty.h
+xmalloc.o: $(INCDIR)/libiberty.h

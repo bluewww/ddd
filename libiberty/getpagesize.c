@@ -1,21 +1,4 @@
-/* Emulation of getpagesize() for systems that need it.
-   Copyright (C) 1991 Free Software Foundation, Inc.
-
-This file is part of the libiberty library.
-Libiberty is free software; you can redistribute it and/or
-modify it under the terms of the GNU Library General Public
-License as published by the Free Software Foundation; either
-version 2 of the License, or (at your option) any later version.
-
-Libiberty is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Library General Public License for more details.
-
-You should have received a copy of the GNU Library General Public
-License along with libiberty; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 675 Mass Ave,
-Cambridge, MA 02139, USA.  */
+/* Emulation of getpagesize() for systems that need it. */
 
 /*
 
@@ -43,9 +26,12 @@ BUGS
 
 */
 
+#ifndef VMS
 
 #include <sys/types.h>
+#ifndef NO_SYS_PARAM_H
 #include <sys/param.h>
+#endif
 
 #ifdef HAVE_SYSCONF
 #include <unistd.h>
@@ -79,3 +65,25 @@ getpagesize ()
   return (GNU_OUR_PAGESIZE);
 }
 
+#else /* VMS */
+
+#if 0	/* older distributions of gcc-vms are missing <syidef.h> */
+#include <syidef.h>
+#endif
+#ifndef SYI$_PAGE_SIZE	/* VMS V5.4 and earlier didn't have this yet */
+#define SYI$_PAGE_SIZE 4452
+#endif
+extern unsigned long lib$getsyi(const unsigned short *,...);
+
+int getpagesize ()
+{
+  long pagsiz = 0L;
+  unsigned short itmcod = SYI$_PAGE_SIZE;
+
+  (void) lib$getsyi (&itmcod, (void *) &pagsiz);
+  if (pagsiz == 0L)
+    pagsiz = 512L;	/* VAX default */
+  return (int) pagsiz;
+}
+
+#endif /* VMS */

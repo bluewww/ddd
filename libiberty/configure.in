@@ -12,8 +12,6 @@ files="alloca-norm.h"
 links="alloca-conf.h"
 
 . ${srcdir}/config.table
-if test -n "${frag}" ; then
-  host_makefile_frag=config/${frag}
-fi
+host_makefile_frag=${frag}
 
 # per-target:

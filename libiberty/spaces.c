@@ -14,8 +14,8 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with libiberty; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 675 Mass Ave,
-Cambridge, MA 02139, USA.  */
+not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+Boston, MA 02111-1307, USA.  */
 
 /*
 
@@ -37,8 +37,10 @@ BUGS
 
 */
 
+#include "ansidecl.h"
+#include "libiberty.h"
 
-char *
+const char *
 spaces (count)
   int count;
 {
@@ -55,6 +57,8 @@ spaces (count)
 	  free (buf);
 	}
       buf = malloc (count + 1);
+      if (buf == (char *) 0)
+	return 0;
       for (t = buf + count ; t != buf ; )
 	{
 	  *--t = ' ';
@@ -62,6 +66,6 @@ spaces (count)
       maxsize = count;
       buf[count] = '\0';
     }
-  return (buf + maxsize - count);
+  return (const char *) (buf + maxsize - count);
 }
 

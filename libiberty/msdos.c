@@ -9,13 +9,7 @@ sigsetmask()
   /* no signals support in go32 (yet) */
 }
 
-getuid()
+waitpid()
 {
-  
-  return 42;
+  return -1;
 }
-getgid()
-{
-  return 42;
-}
-
