@@ -1,5 +1,5 @@
 // $Id$
-// A customized GNU String class (from libg++-2.3)
+// A string class (based on `String' from GNU libg++-2.3)
 
 // This may look like C code, but it is really -*- C++ -*-
 /* 
@@ -27,6 +27,356 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // - output to stream issues *all* characters, including '\0'
 // - extra functions for `char *' provided (besides `const char *')
 // - `cat' with 4 arguments is not supported
+
+
+// Here's the libg++ documentation of Doug Lea, adapted for this class:
+
+// The string class
+// ****************
+// 
+//    The `string' class is designed to extend GNU C++ to support string
+// processing capabilities similar to those in languages like Awk.  The
+// class provides facilities that ought to be convenient and efficient
+// enough to be useful replacements for `char*' based processing via the C
+// string library (i.e., `strcpy, strcmp,' etc.) in many applications.
+// Many details about string representations are described in the
+// Representation section.
+// 
+//    A separate `subString' class supports substring extraction and
+// modification operations. This is implemented in a way that user
+// programs never directly construct or represent subStrings, which are
+// only used indirectly via string operations.
+// 
+//    Another separate class, `regex' is also used indirectly via string
+// operations in support of regular expression searching, matching, and the
+// like.  The regex class is based entirely on the GNU Emacs regex
+// functions.  *See Syntax of Regular Expressions: (emacs.info)regexps,
+// for a full explanation of regular expression syntax.  (For
+// implementation details, see the internal documentation in files
+// `rxclass.h' and `rxclass.C'.)
+// 
+// Constructors
+// ============
+// 
+//    Strings are initialized and assigned as in the following examples:
+// 
+// `string x;  string y = 0; string z = "";'
+//      Set x, y, and z to the nil string. Note that either 0 or "" may
+//      always be used to refer to the nil string.
+// 
+// `string x = "Hello"; string y("Hello");'
+//      Set x and y to a copy of the string "Hello".
+// 
+// `string x = 'A'; string y('A');'
+//      Set x and y to the string value "A"
+// 
+// `string u = x; string v(x);'
+//      Set u and v to the same string as string x
+// 
+// `string u = x.at(1,4); string v(x.at(1,4));'
+//      Set u and v to the length 4 substring of x starting at position 1
+//      (counting indexes from 0).
+// 
+// `string x("abc", 2);'
+//      Sets x to "ab", i.e., the first 2 characters of "abc".
+// 
+// `string x = dec(20);'
+//      Sets x to "20". As here, strings may be initialized or assigned
+//      the results of any `char*' function.
+// 
+//    There are no directly accessible forms for declaring subString
+// variables.
+// 
+//    The declaration `regex r("[a-zA-Z_][a-zA-Z0-9_]*");' creates a
+// compiled regular expression suitable for use in string operations
+// described below. (In this case, one that matches any C++ identifier).
+// The first argument may also be a string.  Be careful in distinguishing
+// the role of backslashes in quoted GNU C++ char* constants versus those
+// in regexes. For example, a regex that matches either one or more tabs
+// or all strings beginning with "ba" and ending with any number of
+// occurrences of "na" could be declared as `regex r =
+// "\\(\t+\\)\\|\\(ba\\(na\\)*\\)"' Note that only one backslash is needed
+// to signify the tab, but two are needed for the parenthesization and
+// virgule, since the GNU C++ lexical analyzer decodes and strips
+// backslashes before they are seen by regex.
+//
+//    As a convenience, several regexes are predefined and usable in any
+// program. Here are their declarations from `rxclass.h'.
+// 
+//      extern regex rxwhite;      // = "[ \n\t]+"
+//      extern regex rxint;        // = "-?[0-9]+"
+//      extern regex rxdouble;     // = "-?\\(\\([0-9]+\\.[0-9]*\\)\\|
+//                                 //    \\([0-9]+\\)\\|
+//                                 //    \\(\\.[0-9]+\\)\\)
+//                                 //    \\([eE][---+]?[0-9]+\\)?"
+//      extern regex rxalpha;      // = "[A-Za-z]+"
+//      extern regex rxlowercase;  // = "[a-z]+"
+//      extern regex rxuppercase;  // = "[A-Z]+"
+//      extern regex rxalphanum;   // = "[0-9A-Za-z]+"
+//      extern regex rxidentifier; // = "[A-Za-z_][A-Za-z0-9_]*"
+// 
+// Examples
+// ========
+// 
+//    Most `string' class capabilities are best shown via example.  The
+// examples below use the following declarations.
+// 
+//          string x = "Hello";
+//          string y = "world";
+//          string n = "123";
+//          string z;
+//          char*  s = ",";
+//          string lft, mid, rgt;
+//          regex  r = "e[a-z]*o";
+//          regex  r2("/[a-z]*/");
+//          char   c;
+//          int    i, pos, len;
+//          double f;
+//          string words[10];
+//          words[0] = "a";
+//          words[1] = "b";
+//          words[2] = "c";
+// 
+// Comparing, Searching and Matching
+// =================================
+// 
+//    The usual lexicographic relational operators (`==, !=, <, <=, >, >=')
+// are defined. A functional form `compare(string, string)' is also
+// provided, as is `fcompare(string, string)', which compares strings
+// without regard for upper vs. lower case.
+// 
+//    All other matching and searching operations are based on some form
+// of the (non-public) `match' and `search' functions.  `match' and
+// `search' differ in that `match' attempts to match only at the given
+// starting position, while `search' starts at the position, and then
+// proceeds left or right looking for a match.  As seen in the following
+// examples, the second optional `startpos' argument to functions using
+// `match' and `search' specifies the starting position of the search: If
+// non-negative, it results in a left-to-right search starting at position
+// `startpos', and if negative, a right-to-left search starting at
+// position `x.length() + startpos'. In all cases, the index returned is
+// that of the beginning of the match, or -1 if there is no match.
+// 
+//    Three string functions serve as front ends to `search' and `match'.
+// `index' performs a search, returning the index, `matches' performs a
+// match, returning nonzero (actually, the length of the match) on success,
+// and `contains' is a boolean function performing either a search or
+// match, depending on whether an index argument is provided:
+// 
+// `x.index("lo")'
+//      returns the zero-based index of the leftmost occurrence of
+//      substring "lo" (3, in this case).  The argument may be a string,
+//      subString, char, char*, or regex.
+// 
+// `x.index("l", 2)'
+//      returns the index of the first of the leftmost occurrence of "l"
+//      found starting the search at position x[2], or 2 in this case.
+// 
+// `x.index("l", -1)'
+//      returns the index of the rightmost occurrence of "l", or 3 here.
+// 
+// `x.index("l", -3)'
+//      returns the index of the rightmost occurrence of "l" found by
+//      starting the search at the 3rd to the last position of x,
+//      returning 2 in this case.
+// 
+// `pos = r.search("leo", 3, len, 0)'
+//      returns the index of r in the `char*' string of length 3, starting
+//      at position 0, also placing the  length of the match in reference
+//      parameter len.
+// 
+// `x.contains("He")'
+//      returns nonzero if the string x contains the substring "He". The
+//      argument may be a string, subString, char, char*, or regex.
+// 
+// `x.contains("el", 1)'
+//      returns nonzero if x contains the substring "el" at position 1.
+//      As in this example, the second argument to `contains', if present,
+//      means to match the substring only at that position, and not to
+//      search elsewhere in the string.
+// 
+// `x.contains(rxwhite);'
+//      returns nonzero if x contains any whitespace (space, tab, or
+//      newline). Recall that `rxwhite' is a global whitespace regex.
+// 
+// `x.matches("lo", 3)'
+//      returns nonzero if x starting at position 3 exactly matches "lo",
+//      with no trailing characters (as it does in this example).
+// 
+// `x.matches(r)'
+//      returns nonzero if string x as a whole matches regex r.
+// 
+// `int f = x.freq("l")'
+//      returns the number of distinct, nonoverlapping matches to the
+//      argument (2 in this case).
+// 
+// Substring extraction
+// ====================
+// 
+//    Substrings may be extracted via the `at', `before', `through',
+// `from', and `after' functions.  These behave as either lvalues or
+// rvalues.
+// 
+// `z = x.at(2, 3)'
+//      sets string z to be equal to the length 3 substring of string x
+//      starting at zero-based position 2, setting z to "llo" in this
+//      case. A nil string is returned if the arguments don't make sense.
+// 
+// `x.at(2, 2) = "r"'
+//      Sets what was in positions 2 to 3 of x to "r", setting x to "Hero"
+//      in this case. As indicated here, substring assignments may be of
+//      different lengths.
+// 
+// `x.at("He") = "je";'
+//      x("He") is the substring of x that matches the first occurrence of
+//      it's argument. The substitution sets x to "jello". If "He" did not
+//      occur, the substring would be nil, and the assignment would have
+//      no effect.
+// 
+// `x.at("l", -1) = "i";'
+//      replaces the rightmost occurrence of "l" with "i", setting x to
+//      "Helio".
+// 
+// `z = x.at(r)'
+//      sets string z to the first match in x of regex r, or "ello" in this
+//      case. A nil string is returned if there is no match.
+// 
+// `z = x.before("o")'
+//      sets z to the part of x to the left of the first occurrence of
+//      "o", or "Hell" in this case. The argument may also be a string,
+//      subString, or regex.  (If there is no match, z is set to "".)
+// 
+// `x.before("ll") = "Bri";'
+//      sets the part of x to the left of "ll" to "Bri", setting x to
+//      "Brillo".
+// 
+// `z = x.before(2)'
+//      sets z to the part of x to the left of x[2], or "He" in this case.
+// 
+// `z = x.after("Hel")'
+//      sets z to the part of x to the right of "Hel", or "lo" in this
+//      case.
+// 
+// `z = x.through("el")'
+//      sets z to the part of x up and including "el", or "Hel" in this
+//      case.
+// 
+// `z = x.from("el")'
+//      sets z to the part of x from "el" to the end, or "ello" in this
+//      case.
+// 
+// `x.after("Hel") = "p";'
+//      sets x to "Help";
+// 
+// `z = x.after(3)'
+//      sets z to the part of x to the right of x[3] or "o" in this case.
+// 
+// `z = "  ab c"; z = z.after(rxwhite)'
+//      sets z to the part of its old string to the right of the first
+//      group of whitespace, setting z to "ab c"; Use gsub(below) to strip
+//      out multiple occurrences of whitespace or any pattern.
+// 
+// `x[0] = 'J';'
+//      sets the first element of x to 'J'. x[i] returns a reference to
+//      the ith element of x, or triggers an error if i is out of range.
+// 
+// `common_prefix(x, "Help")'
+//      returns the string containing the common prefix of the two strings
+//      or "Hel" in this case.
+// 
+// `common_suffix(x, "to")'
+//      returns the string containing the common suffix of the two strings
+//      or "o" in this case.
+// 
+// Concatenation
+// =============
+// 
+// `z = x + s + ' ' + y.at("w") + y.after("w") + ".";'
+//      sets z to "Hello, world."
+// 
+// `x += y;'
+//      sets x to "Helloworld"
+// 
+// `cat(x, y, z)'
+//      A faster way to say z = x + y.
+// 
+// `y.prepend(x);'
+//      A faster way to say y = x + y.
+// 
+// `z = replicate(x, 3);'
+//      sets z to "HelloHelloHello".
+// 
+// `z = join(words, 3, "/")'
+//      sets z to the concatenation of the first 3 strings in string array
+//      words, each separated by "/", setting z to "a/b/c" in this case.
+//      The last argument may be "" or 0, indicating no separation.
+// 
+// Other manipulations
+// ===================
+// 
+// `z = "this string has five words"; i = split(z, words, 10, rxwhite);'
+//      sets up to 10 elements of string array words to the parts of z
+//      separated by whitespace, and returns the number of parts actually
+//      encountered (5 in this case). Here, words[0] = "this", words[1] =
+//      "string", etc.  The last argument may be any of the usual.  If
+//      there is no match, all of z ends up in words[0]. The words array
+//      is *not* dynamically created by split.
+// 
+// `int nmatches x.gsub("l","ll")'
+//      substitutes all original occurrences of "l" with "ll", setting x
+//      to "Hellllo". The first argument may be any of the usual,
+//      including regex.  If the second argument is "" or 0, all
+//      occurrences are deleted. gsub returns the number of matches that
+//      were replaced.
+// 
+// `z = x + y;  z.del("loworl");'
+//      deletes the leftmost occurrence of "loworl" in z, setting z to
+//      "Held".
+// 
+// `z = reverse(x)'
+//      sets z to the reverse of x, or "olleH".
+// 
+// `z = upcase(x)'
+//      sets z to x, with all letters set to uppercase, setting z to
+//      "HELLO"
+// 
+// `z = downcase(x)'
+//      sets z to x, with all letters set to lowercase, setting z to
+//      "hello"
+// 
+// `z = capitalize(x)'
+//      sets z to x, with the first letter of each word set to uppercase,
+//      and all others to lowercase, setting z to "Hello"
+// 
+// `x.reverse(), x.upcase(), x.downcase(), x.capitalize()'
+//      in-place, self-modifying versions of the above.
+// 
+// Reading, Writing and Conversion
+// ===============================
+// 
+// `cout << x'
+//      writes out x.
+// 
+// `cout << x.at(2, 3)'
+//      writes out the substring "llo".
+// 
+// `cin >> x'
+//      reads a whitespace-bounded string into x.
+// 
+// `x.length()'
+//      returns the length of string x (5, in this case).
+// 
+// `s = (const char*)x'
+// `s = x.chars()'
+//      can be used to extract the `char*' char array. This coercion is
+//      useful for sending a string as an argument to any function
+//      expecting a `const char*' argument (like `atoi', and
+//      `File::open'). This operator must be used with care, since the
+//      conversion returns a pointer to `string' internals without copying
+//      the characters: The resulting `(char *)' is only valid until the
+//      next string operation,  and you must not modify it.  (The
+//      conversion is defined to return a const value so that GNU C++ will
+//      produce warning and/or error messages if changes are attempted.)
 
 
 #ifndef _ICE_strclass_h
@@ -106,7 +456,7 @@ public:
 
     int matches(const regex& r) const;
 
-// IO 
+// I/O 
 
     friend inline ostream& operator<<(ostream& s, const subString& x);
 
