@@ -1598,7 +1598,7 @@ The fonts in text fields are specified as follows:
   \fB@Ddd@*XmTextField.FontList: \\
   -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
   @Ddd@*XmText.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset\fR
 .br
 .sp
 And here is another resolution-independent alternative:
@@ -1607,7 +1607,7 @@ And here is another resolution-independent alternative:
   \fB@Ddd@*XmTextField.FontList: \\
   -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
   @Ddd@*XmText.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset\fR
 .br
 .sp
 These are the fonts in the command tool:
