@@ -927,6 +927,9 @@ huffencode: huffencode.o $(HUFFMAN_OBJECTS)
 huffdecode: huffdecode.o $(HUFFMAN_OBJECTS)
 	$(LINK.cc) -o $@ huffdecode.o $(HUFFMAN_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
+mmtest: mmtest.o $(LIB_OBJECTS) 
+	$(LINK.cc) -o $@ mmtest.o $(LIB_OBJECTS) $(ALL_X_LIBS) $(LIBS)
+
 test-file: test-file.o
 	$(LINK.cc) -o $@ test-file.o $(ALL_X_LIBS)
 
