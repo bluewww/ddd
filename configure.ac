@@ -571,11 +571,10 @@ AC_CHECK_LIB(Xintl, _Xlcmbcurmax, X11_LIBS="${X11_LIBS} -lXintl",,
 	${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
 dnl
 dnl
-dnl This causes builds on Cygwin to fail, so it's removed for now
 dnl Check for -lipc library.  SCO unix is said to want that.
 dnl
-dnl AC_CHECK_LIB(ipc, shmap, X11_LIBS="${X11_LIBS} -lipc",,
-dnl 	${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
+AC_CHECK_LIB(ipc, shmap, X11_LIBS="${X11_LIBS} -lipc",,
+	${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
 dnl
 dnl
 dnl Check for X toolkit libraries
@@ -688,6 +687,12 @@ AC_MSG_ERROR([The Motif library '-lXm' could not be found.
                   and '--with-motif-libraries=DIR' to specify the Xm location.
                   See the files 'config.log' and 'ddd/config.log'
                   for further diagnostics.])
+fi
+dnl Tweak: HPUX-10.20 requires that Motif be statically linked.
+dnl Linking dynamically will appear to succeed, but DDD will core on startup.
+dnl (I haven't tried other HPUX versions, so I'd be glad for any feedback.)
+if test "$host_vendor" = "hp" && test "$host_os" = "hpux10.20"; then
+   XM_LIBS="/usr/lib/Motif1.2_R6/libXm.a"
 fi
 AC_SUBST(XP_LIBS)
 AC_SUBST(XM_LIBS)
