@@ -576,7 +576,7 @@ struct ProgramItems {
 
 static MMDesc command_program_menu[] = PROGRAM_MENU;
 static MMDesc source_program_menu[]  = PROGRAM_MENU;
-static MMDesc data_program_menu[]     = PROGRAM_MENU;
+static MMDesc data_program_menu[]    = PROGRAM_MENU;
 
 enum DDDWindow { ToolWindow, ExecWindow, DummySep,
 		 DataWindow, SourceWindow, GDBWindow };
@@ -2050,9 +2050,9 @@ int main(int argc, char *argv[])
 	// It is preferable to realize the command tool as a
 	// DialogShell, since this will cause it to stay on top of
 	// other DDD windows.  Unfortunately, some window managers do
-	// not decorate transient windows such as DialogShells.
-	// In this case, use a TopLevel shell instead and rely
-	// on the DDD auto-raise mechanisms defined in `windows.C'.
+	// not decorate transient windows such as DialogShells.  In
+	// this case, use a TopLevel shell instead and rely on the DDD
+	// auto-raise mechanisms defined in `windows.C'.
 	if (have_decorated_transients())
 	{
 	    tool_shell = 
@@ -4177,6 +4177,7 @@ static bool have_decorated_transients()
 			 frame(XtDisplay(init_shell), XtWindow(init_shell)), 
 			 &frame_attributes);
 
+    XtUnmapWidget(init_shell);
     DestroyWhenIdle(init_shell);
 
     // If the window manager frame is larger than the shell window,
