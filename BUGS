@@ -149,7 +149,6 @@ Volunteers for fixing these and other bugs are welcome!
     - Give a diagnostic when plot did not succeed
     - Add menu for printing
     - Add menu for line styles
-    - Add a delay dialog (similar to launching xterm)
     - Add Gnuplot console
     - Make swallowing (decorating) optional
     - Destroying plotter decorations is risky; better re-use them

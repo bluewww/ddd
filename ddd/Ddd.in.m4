@@ -6014,6 +6014,8 @@ Ddd*launch_tty_dialog_popup.title: DDD: Starting Execution Window
 Ddd*launch_tty_dialog.messageString:		\
 @rm Starting Execution Window...
 
+Ddd*launch_plot_dialog_popup.title: DDD: Starting Plot
+
 
 !-----------------------------------------------------------------------------
 ! Messages

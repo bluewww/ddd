@@ -35,6 +35,7 @@ char plotter_rcsid[] =
 
 #include "plotter.h"
 
+#include "charsets.h"
 #include "cook.h"
 #include "ddd.h"
 #include "exit.h"
@@ -55,6 +56,7 @@ char plotter_rcsid[] =
 #include "Swallower.h"
 
 #include <Xm/MainW.h>
+#include <Xm/MessageB.h>
 
 #define PLOT_CLASS_NAME "Gnuplot"
 
@@ -79,22 +81,32 @@ static MMDesc menubar[] =
     MMEnd
 };
 
+struct PlotWindowInfo {
+    Widget shell;
+    Widget dialog;
+};
+
 // Swallow new GNUPLOT window
 static void SwallowCB(Widget swallower, XtPointer client_data, 
 		      XtPointer call_data)
 {
-    Widget shell = Widget(client_data);
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
     SwallowerInfo *info = (SwallowerInfo *)call_data;
     Window window = 
 	findWindow(XtDisplay(swallower), info->window, PLOT_CLASS_NAME);
 
     if (window != None)
     {
+	// We have the window
+	XtUnmanageChild(plot->dialog);
+
 	XtVaSetValues(swallower, XtNwindow, window, NULL);
-	XtManageChild(shell);
-	XtRealizeWidget(shell);
+	XtManageChild(plot->shell);
+	XtRealizeWidget(plot->shell);
 	XtRemoveCallback(swallower, XtNwindowCreatedCallback, 
 			 SwallowCB, client_data);
+
+	delete plot;
     }
 }
 
@@ -110,7 +122,7 @@ static void KillAgentCB(Widget /* swallower */,
 			XtPointer client_data, XtPointer)
 {
     PlotAgent *plotter = (PlotAgent *)client_data;
-    plotter->terminate();
+    delete plotter;
 }
 
 // Close action from menu
@@ -125,6 +137,31 @@ PlotAgent *new_plotter(string name)
 {
     Arg args[10];
     Cardinal arg;
+
+    string cmd = app_data.plot_command;
+    cmd.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
+
+    // Pop up a working dialog
+    static Widget dialog = 0;
+    if (dialog == 0)
+    {
+	arg = 0;
+	dialog = verify(XmCreateWorkingDialog(find_shell(),
+					      "launch_plot_dialog", 
+					      args, arg));
+	XtUnmanageChild(XmMessageBoxGetChild(dialog,
+					     XmDIALOG_OK_BUTTON));
+	XtUnmanageChild(XmMessageBoxGetChild(dialog,
+					     XmDIALOG_HELP_BUTTON));
+    }
+
+    string base = cmd;
+    if (base.contains(' '))
+	base = cmd.before(' ');
+    MString msg = rm("Starting ") + tt(base) + rm("...");
+    XtVaSetValues(dialog, XmNmessageString, msg.xmstring(), NULL);
+    manage_and_raise(dialog);
+
 
     // Create control window
     string title = DDD_NAME ": " + name;
@@ -150,16 +187,20 @@ PlotAgent *new_plotter(string name)
 	XtCreateManagedWidget("plot", swallowerWidgetClass, 
 			      main_window, args, arg);
 
+    PlotWindowInfo *plot = new PlotWindowInfo;
+    plot->shell  = shell;
+    plot->dialog = dialog;
+
     XtAddCallback(swallower, XtNwindowCreatedCallback, 
-		  SwallowCB, XtPointer(shell));
+		  SwallowCB, XtPointer(plot));
     XtAddCallback(swallower, XtNwindowGoneCallback, 
 		  GoneCB, XtPointer(shell));
     Delay::register_shell(shell);
 
-    // Invoke plot process
-    string cmd = app_data.plot_command;
-    cmd.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
+    XtRemoveAllCallbacks(dialog, XmNcancelCallback);
+    XtAddCallback(dialog, XmNcancelCallback, DestroyThisCB, XtPointer(shell));
 
+    // Invoke plot process
     PlotAgent *plotter = 
 	new PlotAgent(XtWidgetToApplicationContext(shell), cmd);
 
