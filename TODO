@@ -366,4 +366,9 @@ Volunteers for these and other projects are welcome!
 
 242 Make programs dump core by forking and killing them.
 
-245 (Insert your project idea here)
+245 Finish JDB support:
+    1. Displays don't work.
+    2. Support stack movement.
+    3. Braekpoint editor doesn't work.
+
+246 (Insert your project idea here)
