@@ -72,6 +72,7 @@ char settings_rcsid[] =
 
 static Widget            settings_form  = 0;
 static Widget            reset_settings = 0;
+static Widget            reset_infos    = 0;
 static WidgetArray       settings_entries;
 static EntryTypeArray    settings_entry_types;
 static WidgetStringAssoc settings_values;
@@ -235,12 +236,18 @@ static void update_reset_settings()
 // Update states of `info' buttons
 void update_infos()
 {
+    bool have_info = false;
+
     for (int i = 0; i < infos_entries.size(); i++)
     {
 	Widget button = infos_entries[i];
 	bool set = data_disp->have_user_display(XtName(button));
+	have_info = have_info || set;
 	XtVaSetValues(button, XmNset, set, NULL);
     }
+
+    if (reset_infos != 0)
+	XtSetSensitive(reset_infos, have_info);
 }
 
 // Register additional info button
@@ -1408,6 +1415,7 @@ static Widget create_panel(DebuggerType type, bool create_settings)
     }
     else
     {
+	reset_infos = cancel;
 	update_infos();
     }
 
