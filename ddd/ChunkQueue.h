@@ -91,7 +91,7 @@ public:
     }
 
     // Append data <dta> with length <len> at the end
-    void append(char *dta, int len)
+    void append(const char *dta, int len)
     {
 	if (_length + len + 1 > _size)
 	    grow(_length + len + 1);

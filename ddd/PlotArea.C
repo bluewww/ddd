@@ -490,7 +490,7 @@ void PlotArea::plot(const char *commands, int length, bool clear)
 
 	    do_plot(command.chars(), clear);
 
-	    last_commands.append((char *)tail, commands - tail);
+	    last_commands.append(tail, commands - tail);
 	}
     }
 
@@ -500,12 +500,12 @@ void PlotArea::plot(const char *commands, int length, bool clear)
     {
 	// `G' command found - forget about old commands
 	last_commands.discard();
-	last_commands.append((char *)commands + discard, length - discard);
+	last_commands.append(commands + discard, length - discard);
     }
     else
     {
 	// No `G' command found - append to previous commands
-	last_commands.append((char *)commands, length);
+	last_commands.append(commands, length);
     }
 
     assert(last_commands.length() == 0 || last_commands.data()[0] == 'G');
