@@ -670,6 +670,8 @@ public:
     bool flush_next_output() const       { return _flush_next_output; }
     bool flush_next_output(bool val)     { return _flush_next_output = val; }
 
+    // Place quotes around filename FILE if needed
+    string quote_file(const string& file) const;
 
     // Several commands
 				                    // GDB command

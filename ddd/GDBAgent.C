@@ -2336,6 +2336,21 @@ string GDBAgent::program() const
     return program;
 }
 
+// Place quotes around filename FILE if needed
+string GDBAgent::quote_file(const string& file) const
+{
+    if (type() == GDB && file.contains(rxwhite))
+    {
+	// GDB has no special processing for characters within quotes
+	// (i.e. backslashes, etc.)
+	return '\'' + file + '\'';
+    }
+    else
+    {
+	return file;
+    }
+}
+
 // Return command to debug PROGRAM
 string GDBAgent::debug_command(string program, string args) const
 {
@@ -2346,9 +2361,9 @@ string GDBAgent::debug_command(string program, string args) const
     {
     case GDB:
 	if (is_windriver_gdb())
-	    return "load " + program;
+	    return "load " + quote_file(program);
 	else
-	    return "file " + program;
+	    return "file " + quote_file(program);
 
     case PYDB:
 	return "file " + program;

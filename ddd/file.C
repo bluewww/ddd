@@ -2,7 +2,7 @@
 // DDD file functions
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
-// Copyright (C) 2000 Universitaet Passau, Germany.
+// Copyright (C) 2000-2001 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -622,12 +622,13 @@ static void openCoreDone(Widget w, XtPointer client_data, XtPointer call_data)
 	switch(gdb->type())
 	{
 	case GDB:
-	    gdb_command("core-file " + corefile);
+	    gdb_command("core-file " + gdb->quote_file(corefile));
 	    break;
 
 	case DBX:
 	    if (info.file != NO_GDB_ANSWER && info.file != "")
-		gdb_command(gdb->debug_command(info.file) + " " + info.core);
+		gdb_command(gdb->debug_command(info.file) + " " + 
+			    gdb->quote_file(info.core));
 	    else
 		post_error("No program.", "no_program", w);
 	    break;

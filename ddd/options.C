@@ -2,6 +2,7 @@
 // Save and edit DDD options
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2001 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -1642,7 +1643,7 @@ static bool _get_core(const string& session, unsigned long flags,
 	    {
 		// Load the core file just saved, such that we can
 		// keep on examining data in this session.
-		Command c("core " + target);
+		Command c("core " + gdb->quote_file(target));
 		c.verbose  = false;
 		c.prompt   = false;
 		c.check    = true;
@@ -2277,9 +2278,9 @@ bool get_restart_commands(string& restart, unsigned long flags)
 	case GDB:
 	    es << "set confirm off\n";
 	    if (info.file != "" && info.file != NO_GDB_ANSWER)
-		es << "file " << info.file << '\n';
+		es << "file " << gdb->quote_file(info.file) << '\n';
 	    if (core_ok)
-		es << "core " << core << '\n';
+		es << "core " << gdb->quote_file(core) << '\n';
 	    break;
 
 	case DBX:

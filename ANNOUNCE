@@ -119,6 +119,8 @@ User Interface
 
 - Drag and Drop of breakpoints in the machine code is supported.
 
+- Names of debuggee files and directories may contain spaces.
+
 - Spin boxes (used to step values) have been slightly improved.
 
 - Forwarding of keyboard events from the source window into the
