@@ -201,7 +201,7 @@ What do I need to build DDD?
     As an alternative to GDB, DDD also supports the DBX debugger as
     found on SUN, DEC, AIX, and IRIX systems.  Using DBX, you can
     debug programs written in C, C++, Pascal, Fortran, and Modula-2.
-    DDD adapts automatically to a wide range of other DBX variants.
+    DDD adapts automatically to a wide range of DBX variants.
 
     As another alternative, DDD also supports the XDB debugger as
     found on HP-UX systems.  XDB usage has been tested for C programs
@@ -223,7 +223,7 @@ Where do I get more information?
     of DDD and highlights some internal aspects.
 
     The DDD manual is the official, up-to-date DDD reference.  It now
-    includes more than 30 screen shots.  Available at
+    includes more than 40 screen shots.  Available at
 
         ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/doc/
 
@@ -241,9 +241,9 @@ Where do I get more information?
 
         ddd-bugs@ips.cs.tu-bs.de
 
-    As the DDD developers are often busy with other projects, don't
-    expect an immediate personal answer.  We try to resolve and fix
-    all reported bugs as soon as possible.
+    As the DDD developers are usually busy with other projects, don't
+    expect an immediate personal answer.  However, all bug reports are 
+    read and considered for the next DDD release.
 
 
 Getting DDD
