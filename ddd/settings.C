@@ -2,6 +2,7 @@
 // Modify debugger settings
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 2000 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -999,6 +1000,8 @@ static string _get_dbx_help(string dbxenv, string base)
     if (dbxenv == "dbxenv")
 	dbx_help = cached_gdb_question("help dbxenv", -1);
     if (dbx_help.freq('\n') <= 2)
+	dbx_help = cached_gdb_question("help $variable", -1);
+    if (dbx_help.freq('\n') <= 2)
 	dbx_help = cached_gdb_question("help variable", -1);
     if (dbx_help.freq('\n') <= 2)
 	dbx_help = cached_gdb_question("help $variables", -1);
@@ -1481,6 +1484,13 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 	    return; // Makes no sense under a GUI
 
 	value = line.after(rxwhite);
+	if (value.contains('=', 0))
+	{
+	    // Ladebug `set' output is `$VAR = VALUE'
+	    value = value.after('=');
+	    value = value.after(rxwhite);
+	}
+
 
 	string dbxenv;
 	if (base[0] == '$')
@@ -2019,6 +2029,10 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
 	}
 	else
 	{
+	    // Ladebug may echo `set'
+	    if (set.contains("set ", 0))
+		set = set.after("set ");
+	    strip_leading_space(set);
 	    commands = set;
 	}
 	break;
@@ -2044,11 +2058,29 @@ static void add_settings(Widget form, int& row, Dimension& max_width,
 	// add_separator(form, row);
     }
 
-    while (commands != "")
+    if (commands.contains('\n'))
     {
-	string line = commands.before('\n');
-	commands    = commands.after('\n');
-	add_button(form, row, max_width, type, entry_filter, line);
+	while (commands != "")
+	{
+	    string line = commands.before('\n');
+	    commands    = commands.after('\n');
+	    add_button(form, row, max_width, type, entry_filter, line);
+	}
+    }
+    else
+    {
+	// Ladebug gives us all settings in one line.
+	commands = commands + '$';
+	while (commands != "")
+	{
+	    commands = commands.from('$');
+	    int idx = commands.index('$');
+	    idx = commands.index('$', idx + 1);
+	    string line = commands.before(idx);
+	    commands    = commands.after(line);
+
+	    add_button(form, row, max_width, type, entry_filter, line);
+	}
     }
 }
 
