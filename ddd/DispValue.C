@@ -348,7 +348,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 
     case Pointer:
     {
-	_value = read_pointer_value (value, ignore_repeats);
+	_value = read_pointer_value(value, ignore_repeats);
 	_dereferenced = false;
 
 #if LOG_CREATE_VALUES
@@ -358,6 +358,17 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	if (_value.contains("virtual table") || _value.contains("vtable"))
 	    myexpanded = false;
 	perl_type = '$';
+
+	// In Perl, pointers may be followed by indented `pointed to'
+	// info.  Skip this.
+	if (gdb->type() == PERL)
+	{
+	    while (value.contains("\n  ", 0))
+	    {
+		value = value.after("\n  ");
+		value = value.from("\n");
+	    }
+	}		
 	break;
     }
 
