@@ -2248,6 +2248,7 @@ bool get_restart_commands(string& restart, unsigned long flags)
 	    break;
 
 	case PERL:
+	case JDB:
 	    if (info.file != "" && info.file != NO_GDB_ANSWER)
 	    {
 		string cmd = gdb->debug_command(info.file);
@@ -2257,7 +2258,6 @@ bool get_restart_commands(string& restart, unsigned long flags)
 	    break;
 
 	case XDB:
-	case JDB:
 	case PYDB:
 	    // FIXME
 	    break;
