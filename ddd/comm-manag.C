@@ -2639,74 +2639,74 @@ static void process_batch(const string& answer, void *)
     // std::cerr << answer;
 }
 
-static void process_config_frame(string& answer)
+static void process_config_frame(const string& answer)
 {
     gdb->has_frame_command(is_known_command(answer));
 }
 
-static void process_config_func(string& answer)
+static void process_config_func(const string& answer)
 {
     gdb->has_func_command(is_known_command(answer));
 }
 
-static void process_config_file(string& answer)
+static void process_config_file(const string& answer)
 {
     gdb->has_file_command(is_known_command(answer));
 }
 
-static void process_config_run_io(string& answer)
+static void process_config_run_io(const string& answer)
 {
     gdb->has_run_io_command(is_known_command(answer));
 }
 
-static void process_config_print_r(string& answer)
+static void process_config_print_r(const string& answer)
 {
     gdb->has_print_r_option(is_known_command(answer) 
 			    && answer.contains(print_cookie));
 }
 
-static void process_config_output(string& answer)
+static void process_config_output(const string& answer)
 {
     gdb->has_output_command(is_known_command(answer) 
 			    && answer.contains(print_cookie));
 }
 
-static void process_config_where_h(string& answer)
+static void process_config_where_h(const string& answer)
 {
     gdb->has_where_h_option(is_known_command(answer));
 }
 
-static void process_config_display(string& answer)
+static void process_config_display(const string& answer)
 {
     gdb->has_display_command(is_known_command(answer));
 }
 
-static void process_config_clear(string& answer)
+static void process_config_clear(const string& answer)
 {
     gdb->has_clear_command(is_known_command(answer));
 }
 
-static void process_config_handler(string& answer)
+static void process_config_handler(const string& answer)
 {
     gdb->has_handler_command(is_known_command(answer));
 }
 
-static void process_config_attach(string& answer)
+static void process_config_attach(const string& answer)
 {
     gdb->has_attach_command(is_known_command(answer));
 }
 
-static void process_config_addproc(string& answer)
+static void process_config_addproc(const string& answer)
 {
     gdb->has_addproc_command(is_known_command(answer));
 }
 
-static void process_config_pwd(string& answer)
+static void process_config_pwd(const string& answer)
 {
     gdb->has_pwd_command(is_known_command(answer));
 }
 
-static void process_config_setenv(string& answer)
+static void process_config_setenv(const string& answer)
 {
     if (gdb->is_ladebug())
     {
@@ -2720,22 +2720,22 @@ static void process_config_setenv(string& answer)
     }
 }
 
-static void process_config_edit(string& answer)
+static void process_config_edit(const string& answer)
 {
     gdb->has_edit_command(is_known_command(answer));
 }
 
-static void process_config_make(string& answer)
+static void process_config_make(const string& answer)
 {
     gdb->has_make_command(is_known_command(answer));
 }
 
-static void process_config_regs(string& answer)
+static void process_config_regs(const string& answer)
 {
     gdb->has_regs_command(is_known_command(answer));
 }
 
-static void process_config_named_values(string& answer)
+static void process_config_named_values(const string& answer)
 {
     // SUN DBX 4.0 issues "DDD" on `print -r "DDD"', but has named
     // values anyway.  Work around this.
@@ -2743,7 +2743,7 @@ static void process_config_named_values(string& answer)
 			  || answer.contains(" = "));
 }
 
-static void process_config_when_semicolon(string& answer)
+static void process_config_when_semicolon(const string& answer)
 {
     gdb->has_when_command(is_known_command(answer));
 #if RUNTIME_REGEX
@@ -2752,12 +2752,12 @@ static void process_config_when_semicolon(string& answer)
     gdb->has_when_semicolon(answer.contains(rxsemicolon_and_brace));
 }
 
-static void process_config_delete_comma(string& answer)
+static void process_config_delete_comma(const string& answer)
 {
     gdb->wants_delete_comma(!is_known_command(answer));
 }
 
-static void process_config_err_redirection(string& answer)
+static void process_config_err_redirection(const string& answer)
 {
     gdb->has_err_redirection(answer.contains(">&"));
 
@@ -2767,27 +2767,27 @@ static void process_config_err_redirection(string& answer)
     gdb->rerun_clears_args(answer.contains("with the current arg"));
 }
 
-static void process_config_givenfile(string& answer)
+static void process_config_givenfile(const string& answer)
 {
     gdb->has_givenfile_command(is_known_command(answer));
 }
 
-static void process_config_cont_sig(string& answer)
+static void process_config_cont_sig(const string& answer)
 {
     gdb->has_cont_sig_command(answer.contains("[sig "));
 }
 
-static void process_config_examine(string& answer)
+static void process_config_examine(const string& answer)
 {
     gdb->has_examine_command(is_known_command(answer));
 }
 
-static void process_config_rerun(string& answer)
+static void process_config_rerun(const string& answer)
 {
     gdb->has_rerun_command(is_known_command(answer));
 }
 
-static void process_config_tm(string& answer)
+static void process_config_tm(const string& answer)
 {
     // If the `tm' command we just sent SUSPENDED macros instead of
     // ACTIVATING them, we sent another `tm' in order to re-activate
@@ -2796,12 +2796,12 @@ static void process_config_tm(string& answer)
 	gdb_question("tm", 0);
 }
 
-static void process_config_program_language(string& lang)
+static void process_config_program_language(const string& lang)
 {
     gdb->program_language(lang);
 }
 
-static void process_config_gdb_version(string& answer)
+static void process_config_gdb_version(const string& answer)
 {
     gdb->is_windriver_gdb(answer.contains("vxworks"));
 }
