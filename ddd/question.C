@@ -67,7 +67,7 @@ static void gdb_reply(const string& complete_answer, void *qu_data)
     reply->received = true;
 }
 
-string gdb_question(const string& command, int timeout)
+string gdb_question(const string& command, int timeout, bool verbatim)
 {
     if (command == "")
 	return "";
@@ -82,7 +82,11 @@ string gdb_question(const string& command, int timeout)
     static GDBReply reply;
     reply.received = false;
 
+    bool old_verbatim = gdb->verbatim();
+    gdb->verbatim(verbatim);
     bool ok = gdb->send_question(command, gdb_reply, (void *)&reply);
+    gdb->verbatim(old_verbatim);
+
     if (!ok)
 	return NO_GDB_ANSWER;	// GDB not ready
 

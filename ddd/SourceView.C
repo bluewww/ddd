@@ -1066,7 +1066,7 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
     case XDB:
 	break;			// FIXME
     }
-    string listing = gdb_question(command, -1);
+    string listing = gdb_question(command, -1, true);
 
     // GDB listings have the format <NUMBER>\t<LINE>.
     // Copy LINE only; line numbers will be re-added later.
@@ -3921,7 +3921,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 void SourceView::refresh_stack_frames()
 {
     // Allow unlimited time to find out where we are
-    string where_s = gdb_question(gdb->where_command(), -1);
+    string where_s = gdb_question(gdb->where_command(), -1, true);
     if (where_s == NO_GDB_ANSWER)
 	where_s = "No stack.";
     process_where(where_s);

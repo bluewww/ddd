@@ -1403,7 +1403,7 @@ int main(int argc, char *argv[])
 
     // Create GDB interface
     gdb = new_gdb(type, app_data, app_context, argc, argv);
-    gdb->set_trace_dialog(app_data.trace_dialog);
+    gdb->trace_dialog(app_data.trace_dialog);
 
     // Setup handlers
     gdb->addBusyHandler(ReadyForQuestion, gdb_ready_for_questionHP);

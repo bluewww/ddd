@@ -150,6 +150,9 @@ private:
 
     ProgramLanguage _program_language;
 
+    bool _trace_dialog;
+    bool _verbatim;
+
 public:
     // Constructor
     GDBAgent (XtAppContext app_context,
@@ -230,9 +233,6 @@ public:
     string default_prompt() const;
 
 
-    // Konfigurationen
-    void set_trace_dialog (bool trace);
-
     // Debugger properties
     // True if debugger has `frame' command
     bool has_frame_command() const    { return _has_frame_command; }	
@@ -282,6 +282,14 @@ public:
     }
     ProgramLanguage program_language(string text);
 
+    // True if debugger dialog is traced on clog
+    bool trace_dialog() const    { return _trace_dialog; }
+    bool trace_dialog(bool val);
+
+    // True if DBX output is to be processed verbatim
+    bool verbatim() const        { return _verbatim; }
+    bool verbatim(bool val)      { return _verbatim = val; }
+
     string print_command(string expr = "") const;   // Usually "print EXPR"
     string display_command(string expr = "") const; // Usually "display EXPR"
     string where_command() const;	            // Usually "where "
@@ -292,8 +300,6 @@ public:
     string dereferenced_expr(string expr) const;    // Usually "*EXPR"
 
 private:
-    bool trace_dialog;
-
     bool questions_waiting;
 
     void* _qu_data;

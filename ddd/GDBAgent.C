@@ -98,7 +98,8 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _has_when_semicolon(tp == DBX),
       _has_err_redirection(true),
       _program_language(LANGUAGE_C),
-      trace_dialog(false),
+      _trace_dialog(false),
+      _verbatim(false),
       questions_waiting(false),
       _qu_data(0),
       qu_index(0),
@@ -139,7 +140,10 @@ GDBAgent::GDBAgent(const GDBAgent& gdb)
       _has_pwd_command(gdb.has_pwd_command()),
       _has_named_values(gdb.has_named_values()),
       _has_when_semicolon(gdb.has_when_semicolon()),
-      trace_dialog(false),
+      _has_err_redirection(gdb.has_err_redirection()),
+      _program_language(gdb.program_language()),
+      _trace_dialog(gdb.trace_dialog()),
+      _verbatim(gdb.verbatim()),
       questions_waiting(false),
       _qu_data(0),
       qu_index(0),
@@ -361,19 +365,22 @@ void GDBAgent::callBusyHandlers ()
 
 
 // ***************************************************************************
-void GDBAgent::set_trace_dialog (bool trace)
+bool GDBAgent::trace_dialog (bool val)
 {
-    if (trace && !trace_dialog) {
- 	addHandler (Input,  traceInputHP);  // GDB => DDD
- 	addHandler (Output, traceOutputHP); // DDD => GDB
- 	addHandler (Error,  traceErrorHP);  // GDB Errors => DDD
+    if (val && !trace_dialog())
+    {
+ 	addHandler(Input,  traceInputHP);     // GDB => DDD
+ 	addHandler(Output, traceOutputHP);    // DDD => GDB
+ 	addHandler(Error,  traceErrorHP);     // GDB Errors => DDD
     }
-    else if (!trace && trace_dialog) {
- 	removeHandler (Input,  traceInputHP);  // GDB => DDD
- 	removeHandler (Output, traceOutputHP); // DDD => GDB
- 	removeHandler (Error,  traceErrorHP);  // GDB Errors => DDD
+    else if (!val && trace_dialog())
+    {
+ 	removeHandler(Input,  traceInputHP);  // GDB => DDD
+ 	removeHandler(Output, traceOutputHP); // DDD => GDB
+ 	removeHandler(Error,  traceErrorHP);  // GDB Errors => DDD
     }
-    trace_dialog = trace;
+
+    return _trace_dialog = val;
 }
 
 // ***************************************************************************
@@ -492,10 +499,11 @@ void GDBAgent::cut_off_prompt (string& answer)
 
 
 
-// Strip annoying comments
+// Strip annoying DBX comments
 void GDBAgent::strip_comments(string& s)
 {
-    if (!has_print_r_command())
+    // These problems occur in Sun DBX 3.x only.
+    if (!has_print_r_command() || verbatim())
 	return;
 
     if (s.contains('/'))
