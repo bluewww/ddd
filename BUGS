@@ -309,9 +309,9 @@ Volunteers for fixing these and other bugs are welcome!
      the way to the top or bottom of the window before it scrolls to
      the desired place.
 
-145* `set print vtbl on' breaks `dates' display in `cxxtest'.
-
 146* After `graph display `show warranty`', the display cannot be
      disabled.
 
-148. (Insert your bug here)
+148* Enable/Disable doesn't work properly for status displays.
+
+149. (Insert your bug here)

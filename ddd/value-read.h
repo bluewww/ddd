@@ -39,6 +39,7 @@
 
 #include "strclass.h"
 #include "bool.h"
+#include <iostream.h>
 
 // ***************************************************************************
 enum DispValueType {
@@ -51,6 +52,8 @@ enum DispValueType {
     List,			// List of values.  Last member may be text,
     Text			// Multi-line text.  Last member of a list.
 };
+
+ostream& operator<<(ostream& os, DispValueType type);
 
 DispValueType determine_type (string value);
 

@@ -48,7 +48,7 @@ char value_read_rcsid[] =
 #include "GDBAgent.h"
 
 static regex RXindex("[[]-?[0-9][0-9]*].*");
-static regex RXvtable("[^\n]*<[^\n>]* v(irtual )?t(a)?bl(e)?>[{].*");
+static regex RXvtable("[^\n]*<[^\n>]* v(irtual )?t(a)?bl(e)?>[^{},]*[{].*");
 
 // Determine the type of VALUE.
 DispValueType determine_type (string value)
@@ -560,7 +560,7 @@ string read_member_name (string& value)
 // Read vtable entries.  Return "" upon error.
 string read_vtable_entries (string& value)
 {
-    static regex RXvtable_entries(".*[0-9][0-9]* vtable entries,.*");
+    static regex RXvtable_entries("[{][0-9][0-9]* vtable entries,.*");
 
     read_leading_blanks (value);
     if (!value.matches(RXvtable_entries))
@@ -643,4 +643,25 @@ static void read_leading_comment (string& value)
     }
 
     value = value.from(i);
+}
+
+//-----------------------------------------------------------------------------
+// Debugging stuff
+//-----------------------------------------------------------------------------
+
+ostream& operator<<(ostream& os, DispValueType type)
+{
+    switch (type)
+    {
+    case Simple:        os << "Simple";        break;
+    case Pointer:       os << "Pointer";       break;
+    case Array:         os << "Array";         break;
+    case StructOrClass:	os << "StructOrClass"; break;
+    case BaseClass:     os << "BaseClass";     break;
+    case Reference:     os << "Reference";     break;
+    case List:   	os << "List";	       break;
+    case Text:          os << "Text";	       break;
+    }
+    
+    return os;
 }

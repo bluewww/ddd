@@ -34,8 +34,8 @@ char DispValue_rcsid[] =
 #pragma implementation "DynArray.h"
 #endif
 
-#define LOG_CREATE_VALUES 0
-#define LOG_UPDATE_VALUES 0
+#define LOG_CREATE_VALUES 1
+#define LOG_UPDATE_VALUES 1
 
 //-----------------------------------------------------------------------------
 // A `DispValue' maintains type and value of a displayed expression
@@ -128,7 +128,7 @@ void DispValue::init(string& value)
 	    v.simple = new SimpleDispValue;
 	    v.simple->value = read_simple_value (value);
 #if LOG_CREATE_VALUES
-	    clog << "Simple value: " << v.simple->value << "\n";
+	    clog << mytype << ": " << v.simple->value << "\n";
 #endif
 	    break;
 	}
@@ -138,7 +138,7 @@ void DispValue::init(string& value)
 	    v.simple = new SimpleDispValue;
 	    v.simple->value = value;
 #if LOG_CREATE_VALUES
-	    clog << "Text value: " << quote(v.simple->value) << "\n";
+	    clog << mytype << ": " << quote(v.simple->value) << "\n";
 #endif
 	    break;
 	}
@@ -150,7 +150,7 @@ void DispValue::init(string& value)
 	    v.pointer->dereferenced = false;
 
 #if LOG_CREATE_VALUES
-	    clog << "Pointer value: " << v.pointer->value << "\n";
+	    clog << mytype << ": " << v.pointer->value << "\n";
 #endif
 	    // Hide vtable pointers.
 	    if (v.pointer->value.contains("virtual table")
@@ -173,7 +173,7 @@ void DispValue::init(string& value)
 	    v.array->member_count = 0;
 
 #if LOG_CREATE_VALUES
-	    clog << "Array: " << "\n";
+	    clog << mytype << ": " << "\n";
 #endif
 
 	    read_array_begin (value);
@@ -201,7 +201,7 @@ void DispValue::init(string& value)
 	    read_array_end (value);
 
 #if LOG_CREATE_VALUES
-	    clog << "Array has " << v.array->member_count << " members\n";
+	    clog << mytype << " has " << v.array->member_count << " members\n";
 #endif
 	    break;
 	}
@@ -215,8 +215,7 @@ void DispValue::init(string& value)
 	    v.str_or_cl->member_count = 0;
 	
 #if LOG_CREATE_VALUES
-	    clog << "Struct or class " 
-		 << quote(myfull_name) << "\n";
+	    clog << mytype << " " << quote(myfull_name) << "\n";
 #endif
 	    string member_prefix = myfull_name;
 	    if (mytype == List)
@@ -272,7 +271,7 @@ void DispValue::init(string& value)
 	    }
 
 #if LOG_CREATE_VALUES
-	    clog << "struct or class " 
+	    clog << mytype << " "
 		 << quote(myfull_name)
 		 << " has " << v.str_or_cl->member_count << " members\n";
 #endif
@@ -618,7 +617,8 @@ void DispValue::update (string& value,
     bool more_values = true;
 
 #if LOG_UPDATE_VALUES
-    clog << "Updating " << full_name() << " with " << quote(value) << "\n";
+    clog << "Updating " << mytype 
+	 << " " << full_name() << " with " << quote(value) << "\n";
 #endif
 
     DispValueType new_type;
@@ -638,7 +638,7 @@ void DispValue::update (string& value,
 	// this effect is an incomplete display output - due to
 	// illegal references, for example.
 #if LOG_UPDATE_VALUES
-	clog << "Type changed\n";
+	clog << "Type changed from " << mytype << " to " << new_type << "\n";
 #endif
 	value = init_value;
 	clear();
@@ -699,7 +699,7 @@ void DispValue::update (string& value,
 	if (was_initialized || i != v.array->member_count)
 	{
 #if LOG_UPDATE_VALUES
-	    clog << "Array changed\n";
+	    clog << mytype << " changed\n";
 #endif
 	    // Array size changed -- re-initialize.  This may happen
 	    // if the user sets a length on the number of array
@@ -765,7 +765,7 @@ void DispValue::update (string& value,
 		|| more_values)
 	    {
 #if LOG_UPDATE_VALUES
-		clog << "Struct/Class changed\n";
+		clog << mytype << " changed\n";
 #endif
 		// Member count or member name changed -- re-initialize.
 		// Really weird stuff.  Can this ever happen?
