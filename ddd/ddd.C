@@ -320,8 +320,8 @@ static XrmOptionDescRec options[] = {
 { "--scrolled-graph-editor", XtNpannedGraphEditor,   XrmoptionNoArg, S_false },
 { "-scrolled-graph-editor", XtNpannedGraphEditor,    XrmoptionNoArg, S_false },
 
-{ "--synchronous-debugger", XtNsynchronousDebugger,  XrmoptionNoArg, S_true },
-{ "-synchronous-debugger",  XtNsynchronousDebugger,  XrmoptionNoArg, S_true },
+{ "--sync-debugger",        XtNsynchronousDebugger,  XrmoptionNoArg, S_true },
+{ "-sync-debugger",         XtNsynchronousDebugger,  XrmoptionNoArg, S_true },
 
 { "--disassemble",          XtNdisassemble,          XrmoptionNoArg, S_true },
 { "-disassemble",           XtNdisassemble,          XrmoptionNoArg, S_true },
@@ -329,11 +329,11 @@ static XrmOptionDescRec options[] = {
 { "--no-disassemble",       XtNdisassemble,          XrmoptionNoArg, S_false },
 { "-no-disassemble",        XtNdisassemble,          XrmoptionNoArg, S_false },
 
-{ "--no-glyphs",            XtNdisplayGlyphs,        XrmoptionNoArg, S_false },
-{ "-no-glyphs",             XtNdisplayGlyphs,        XrmoptionNoArg, S_false },
-
 { "--glyphs",               XtNdisplayGlyphs,        XrmoptionNoArg, S_true },
 { "-glyphs",                XtNdisplayGlyphs,        XrmoptionNoArg, S_true },
+
+{ "--no-glyphs",            XtNdisplayGlyphs,        XrmoptionNoArg, S_false },
+{ "-no-glyphs",             XtNdisplayGlyphs,        XrmoptionNoArg, S_false },
 
 { "--host",                 XtNdebuggerHost,         XrmoptionSepArg, NULL },
 { "-host",                  XtNdebuggerHost,         XrmoptionSepArg, NULL },
