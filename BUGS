@@ -102,48 +102,6 @@ Volunteers for fixing these and other bugs are welcome!
      Xxgdb, mxgdb and xde all display the full 64 bits of this data
      type.
 
-069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
-     [Linux 1.3.38 system, X11R6 (XFree 3.1.1), Motif 2.x]
-
-     2. The graph window behaves strangely when all logical windows are in
-        a logical one: the scroller disappear sometimes and if the window
-        is extended gray appears, not the graph window dotted background.
-        The graph window comes right after a display, though the scrollbar
-        is not appearing.
-
-        [I could not reproduce this bug.  Does this also happen on 
-         other configurations?  -AZ]
-
-     3. ddd seg. faults when receiving a signal during startup (such as
-        when someone hits C-C). It also truncates the .dddinit file to
-        zero bytes :-(.
-
-        [I could not reproduce this bug.  Does this also happen on 
-         other configurations?  -AZ]
-
-071. Klaus-Georg Adams <adams@achibm5.chemie.uni-karlsruhe.de> says:
-     I have got a seg-fault in the stock precompiled ddd-1.4b
-     (i486-unknown-linux) and report it dutyfully.
-     It can be reproduced by doing the following:
-     Run your program to a breakpoint.  Select data to display() in
-     the data window.  Dereference() a pointer.  Step out of the
-     function or kill the program, so that displayed data is disabled.
-     Do a `select all' in the data menu.  Hit delete(). That's it.
-     (sometimes it takes another klick on run to get the seg-fault).
-     [I could not reproduce this bug.  Does this also happen on 
-      other configurations?  -AZ]
-
-076. Jauder Ho <jauderho@umich.edu> says:
-     DDD 1.4b (i586-unknown-linux) gets fatal signal
-     When I run my program after setting a breakpoint and allowing ddd
-     to stop at the breakpoint. If at that point I choose to run the
-     program again, the program either runs by starting the program at
-     the beginning OR it complains of "Internal error (IOT
-     trap/Abort)" and ddd exits...  this does not result in an error
-     under just gdb so I am assuming that it is an error in ddd.
-     [I could not reproduce this bug.  Does this also happen on 
-      other configurations?  -AZ]
-
 077. oyvind@stavanger.Geco-Prakla.slb.com (Oyvind Yrke) says that DDD
      crashes after receiving too much data from GDB (e.g. `info
      functions').
@@ -196,10 +154,6 @@ Volunteers for fixing these and other bugs are welcome!
      PS: What is the prefered way (if any) of making the hex output 
          the default in the display graph?  If I "set output-radix 16" 
          in the gdb window ddd seems to lock up very often.
-
-100. Self-modifying code is not detected automatically; users must
-     explicitly re-disassemble (with caching disabled).  
-     [Does anyone care about self-modifying code?  -AZ]
 
 107. Jonathan Edwards <edwards@blight.IntraNet.com> says that DDD/DBX
      hangs up on his powerpc-ibm-aix4.2.0.0 box after a few `step's.
@@ -354,13 +308,15 @@ Volunteers for fixing these and other bugs are welcome!
 139. With Solaris 2.5.1, DDD recurses endlessly in glob_filename().
      Reported by Deepak Mulchandani <dmm@jurassic.eng.sun.com>
 
-141. The GDB output `$1 = {<Parent> = {}, a = 2028, b = 100860}' is
+141* The GDB output `$1 = {<Parent> = {}, a = 2028, b = 100860}' is
      not parsed correctly.  Reported by Gerhard Wirrer
      <Gerhard.Wirrer@cern.ch>.
 
-142. Ignore any warnings occurring in displayed values, as in
+142* Ignore any warnings occurring in displayed values, as in
      -> "display\n"
      <- "2: command [256] = warning: array or string index out of range\n"
      <- "1 \'\\001\'\n"
 
-143. (Insert your bug here)
+143* Text hints show up only the second time a variable is pointed at.
+
+144. (Insert your bug here)
