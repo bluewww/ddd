@@ -157,6 +157,37 @@
 ! reference_color(box) = color(box,"indianred");\n
 
 
+! Matt Maika <mmajka@cs5.dasd.honeywell.com> wonders if
+! anyone has a list of resources to give DDD the "SGI look".
+! Here's what he's got so far:
+! 
+! Ddd*sgiMode:                    True
+! Ddd*useSchemes:                 All
+! Ddd*baseScheme:                 Base
+! Ddd*schemeFileList:             Base
+! Ddd*paletteFileList:            BaseColorPalette
+! Ddd*useEnhancedFSB:             True
+! Ddd*background:                 SGI_DYNAMIC BasicBackground
+! Ddd*XmText.background:          SGI_DYNAMIC TextFieldBackground
+! Ddd*XmTextField.background:     SGI_DYNAMIC TextFieldBackground
+! Ddd*GraphEdit.background:       grey90
+! Ddd*XmList.background:          SGI_DYNAMIC ScrolledListBackground
+! Ddd*graph_edit.nodeColor:       black
+! Ddd*graph_edit.edgeColor:       SGI_DYNAMIC BlueColor
+! Ddd*graph_edit.selectColor:     black
+! Ddd*graph_edit.gridColor:       black
+! Ddd*graph_edit.frameColor:      grey50
+! Ddd*graph_edit.outlineColor:    grey50
+! 
+! Some other useful SGI settings (your mileage may vary)
+! Ddd*editCommand:              nedit_color -line @LINE@ @FILE@
+! Ddd*printCommand:             lp -dPS_LPS_X17
+! Ddd*termCommand:                \
+! winterm -title 'DDD: Execution Window' -e /bin/sh -c
+! Ddd*termType:                   iris-ansi
+
+
+
 ! ----------------------------------------------------------------------------
 ! FONTS
 ! ----------------------------------------------------------------------------
