@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // Run-time type information
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the ICE Library.
@@ -32,6 +32,41 @@
 #ifdef __GNUG__
 #pragma interface
 #endif
+
+#include "config.h"
+
+#if HAVE_TYPEINFO
+
+#define string stdstring
+#include <typeinfo>
+#undef string
+
+// Public interface.  Defined according to: Stroustrup, the C++
+// Programming Language, 2nd Ed., Section 13.5
+
+// Use ISO C++ run-time type information
+#define static_type_info(T) typeid(T)
+#define ptr_type_info(p)    typeid(p)
+#define ref_type_info(r)    typeid(&(r))
+#define ptr_cast(T, p)      dynamic_cast<T *>(p)
+#define ref_cast(T, r)      dynamic_cast<T &>(r)
+
+// Old-style definition macros are no more required
+#define DECLARE_TYPE_INFO
+#define DEFINE_TYPE_INFO_0(T)
+#define DEFINE_TYPE_INFO_1(T, B1)
+#define DEFINE_TYPE_INFO_2(T, B1, B2)
+#define DEFINE_TYPE_INFO_3(T, B1, B2, B3)
+#define DEFINE_TYPE_INFO_4(T, B1, B2, B3, B4)
+#define DEFINE_TYPE_INFO_5(T, B1, B2, B3, B4, B5)
+#define DEFINE_TYPE_INFO_6(T, B1, B2, B3, B4, B5, B6)
+#define DEFINE_TYPE_INFO_7(T, B1, B2, B3, B4, B5, B6, B7)
+#define DEFINE_TYPE_INFO_8(T, B1, B2, B3, B4, B5, B6, B7, B8)
+#define DEFINE_TYPE_INFO_9(T, B1, B2, B3, B4, B5, B6, B7, B8, B9)
+
+#else // !HAVE_TYPEINFO
+
+// No C++ run-time type information available - realize it manually
 
 #include <iostream.h>
 #include <stdlib.h>
@@ -130,10 +165,10 @@ class TypeInfo {
 
 private:
     // Data
-    char *_name;              // Name of this class
-    BaseList _direct_bases;   // List of direct base classes
-    BaseList *_all_bases;     // Ptr to list of all base classes
-    unsigned int _hash;	      // Hash code (0 if not yet built)
+    char *_name;		// Name of this class
+    BaseList _direct_bases;	// List of direct base classes
+    BaseList *_all_bases;	// Ptr to list of all base classes
+    unsigned int _hash;		// 1Hash code (0 if not yet built)
 
     void _setup_all_bases() const;
     void setup_all_bases() const
@@ -168,7 +203,7 @@ private:
     // No X(const X&)
     TypeInfo(const TypeInfo&): 
 	_name(0), _direct_bases(0), _all_bases(0), _hash(0) { assert(0); }
-    const TypeInfo& operator = (const TypeInfo&) { assert(0); }
+    TypeInfo& operator = (const TypeInfo&) { assert(0); return *this; }
 
 public:
 #if !IMMEDIATE_TYPE_INFO
@@ -180,7 +215,7 @@ public:
 #endif
      
     // Debugging
-    // We cannot use a bool here, since it may be initialized to late
+    // We cannot use a bool here, since it may be initialized too late
     static int debug;
 
     // Resources
@@ -224,7 +259,7 @@ private:
 
     BaseIterator(const BaseIterator&) : index(0), bases(0) 
 	{ assert(0); }
-    const BaseIterator& operator = (const BaseIterator&) 
+    BaseIterator& operator = (const BaseIterator&) 
 	{ assert(0); return *this; }
 
 public:
@@ -247,6 +282,8 @@ public:
         index(0), bases(m == all ? info.all_bases() : info.direct_bases())
     {}
 };
+
+#endif // !HAVE_TYPEINFO
 
 #endif // _ICE_TypeInfo_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -36,7 +36,7 @@ char TypeInfo_rcsid[] =
 #include "TypeInfo.h"
 #include "hash.h"
 
-
+#if !HAVE_TYPEINFO
 
 // Set this to a non-zero value to allow debugging
 int TypeInfo::debug = 0;
@@ -157,3 +157,5 @@ ostream& operator << (ostream& os, const TypeInfo& info)
 
     return os;
 }
+
+#endif // !HAVE_TYPEINFO
