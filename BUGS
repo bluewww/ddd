@@ -382,7 +382,4 @@ Volunteers for fixing these and other bugs are welcome!
      dbx cannot handle `when at { }' without a command inside the
      parentheses (this should be `{ delete xx,yy }' anyway).
 
-183* Hitting `stepi' too fast causes a delay cursor to appear that
-     won't go.
-
 186. (Insert your bug here)
