@@ -2,7 +2,7 @@
 // GDB communication manager
 
 // Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
-// Copyright (C) 2000 Universitaet Passau, Germany.
+// Copyright (C) 2000-2001 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -1112,8 +1112,15 @@ void send_gdb_command(string cmd, Widget origin,
     {
 	cmd_data->filter_disp = NoFilter;
 
-	if (check && (gdb->recording() || !is_info_line_cmd(cmd)))
+	if (gdb->recording() || !is_info_line_cmd(cmd))
 	{
+	    delete cmd_data->pos_buffer;
+	    cmd_data->pos_buffer = 0;
+	}
+
+	if (!check)
+	{
+	    // clog << "Not checking " << cmd << "\n";
 	    delete cmd_data->pos_buffer;
 	    cmd_data->pos_buffer = 0;
 	}
