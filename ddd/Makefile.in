@@ -212,20 +212,23 @@ X_LDFLAGS = @X_LIBS@
 # Motif library.  (-lXm)
 LIBXM = @XM_LIBS@
 
-# Use this for building `semistatic' executables where Motif libraries
-# are statically linked in.
+# Use this alternative for building `semistatic' executables
+# where Motif libraries are statically linked in.
 # LIBXM = -Wl,-Bstatic @XM_LIBS@ -Wl,-Bdynamic
 
 # Athena libraries.  (-lXaw -lXmu)
 LIBXAW = @XAW_LIBS@
 
-# X extension library; needed for Athena and Motif 2.0.  (-lXext)
+# X extension library; needed for Athena and Motif >= 2.0.  (-lXext)
 LIBXEXT = @XEXT_LIBS@
 
-# Xpm library; sometimes needed for Motif 2.0.  (-lXpm)
+# Xpm library; needed for DDD and sometimes for Motif >= 2.0.  (-lXpm)
 LIBXPM = @XPM_LIBS@
 
-# gen library; sometimes needed for Motif 2.0.  (-lgen)
+# Xp library; sometimes needed for Motif >= 2.1.  (-lXp)
+LIBXP = @XP_LIBS@
+
+# gen library; sometimes needed for Motif >= 2.0.  (-lgen)
 LIBGEN = @LIBGEN@
 
 # X toolkit library.  (-lXt)
@@ -235,7 +238,7 @@ LIBXT = @XT_LIBS@
 LIBX11 = @X_PRE_LIBS@ @X11_LIBS@ @X_EXTRA_LIBS@
 
 # All libraries shown above
-ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXPM) $(LIBXAW) $(LIBXEXT) \
+ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXP) $(LIBXPM) $(LIBXAW) $(LIBXEXT) \
 $(LIBXT) $(LIBX) $(LIBX11) $(LIBGEN)
 
 

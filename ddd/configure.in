@@ -1,4 +1,4 @@
-dnl Process this file with autoconf to produce a configure script. -*- m4 -*-
+dnl Process this file with autoconf to produce a configure script.
 dnl $Id$
 dnl 
 dnl Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
@@ -379,12 +379,18 @@ dnl Check for Motif widget libraries
 dnl
 dnl
 XM_LIBS=""
+XP_LIBS=""
 if test "$motif_includes" != "no" && test "$motif_libraries" != "no"
 then
+# Rudolf Leitgeb <leitgeb@leland.Stanford.EDU> says that 
+# Motif 2.1 (linux 2.0.29) wants `-lXp' after `-lXm'.
+AC_CHECK_LIB(Xp, main,
+	XP_LIBS="-lXp",,
+	${X_PRE_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${LIBGEN})
 AC_CHECK_LIB(Xm, XmCreateOptionMenu, 
 	XM_LIBS="-lXm"
 	AC_DEFINE(HAVE_MOTIF),,
-	${X_PRE_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${LIBGEN})
+	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${LIBGEN})
 fi
 if test "$XM_LIBS" = ""; then
 dnl Without Motif, we won't get far.  Let the user fix this.
@@ -393,6 +399,7 @@ AC_MSG_ERROR([The Motif library '-lXm' could not be found.
                   and '--with-motif-libraries=DIR' to specify the Xm location.
                   See the file 'config.log' for further diagnostics.])
 fi
+AC_SUBST(XP_LIBS)
 AC_SUBST(XM_LIBS)
 dnl
 dnl
@@ -464,6 +471,7 @@ ICE_CHECK_DECL(getwd, unistd.h)
 ICE_CHECK_DECL(getpty, unistd.h)
 ICE_CHECK_DECL(_getpty, unistd.h)
 ICE_CHECK_DECL(grantpt, stdlib.h)
+ICE_CHECK_DECL(hypot, math.h)
 ICE_CHECK_DECL(ioctl, unistd.h)
 ICE_CHECK_DECL(link, unistd.h)
 ICE_CHECK_DECL(lstat, sys/stat.h)
