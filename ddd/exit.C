@@ -126,6 +126,7 @@ extern int raise(int sig);
 static void ddd_signal(int sig...);
 static void ddd_fatal(int sig...);
 static bool ddd_dump_core(int sig...);
+static void debug_ddd(bool core_dumped = true);
 
 // True if GDB is about to exit
 bool gdb_is_exiting = false;
@@ -268,11 +269,9 @@ void ddd_install_fatal(char * /* program_name */)
 }
 
 // Post a dialog containing TITLE and CAUSE
-static void post_fatal(string title, string cause, string cls, 
-		       bool core_dumped = false)
+static void post_fatal(string title, string cause, string cls)
 {
     static Widget fatal_dialog = 0;
-    static Widget debug        = 0;
     if (fatal_dialog == 0)
     {
 	fatal_dialog = verify(XmCreateErrorDialog (find_shell(),
@@ -288,22 +287,12 @@ static void post_fatal(string title, string cause, string cls,
 		      StopSOSCB, XtPointer(0));
 
 #if XmVersion >= 1002
-	debug = verify(XmCreatePushButton(fatal_dialog, "debug", 0, 0));
-	XtManageChild(debug);
-
 	Widget exit = verify(XmCreatePushButton(fatal_dialog, "exit", 0, 0));
 	XtManageChild(exit);
 	XtAddCallback(exit, XmNactivateCallback,
 		      DDDExitCB, XtPointer(EXIT_FAILURE));
 	XtAddCallback(exit, XmNactivateCallback, StopSOSCB, XtPointer(0));
 #endif
-    }
-
-    if (debug != 0)
-    {
-	XtRemoveAllCallbacks(debug, XmNactivateCallback);
-	XtAddCallback(debug, XmNactivateCallback, DDDDebugCB, 
-		      XtPointer((long)(int)core_dumped));
     }
 
     defineConversionMacro("CLASS", cls);
@@ -360,7 +349,7 @@ void ddd_show_signal(int sig)
 	if (core_dumped)
 	    title += " (core dumped)";
 
-	post_fatal(title, cause, "Internal error", core_dumped);
+	post_fatal(title, cause, "Internal error");
     }
 }
 
@@ -542,6 +531,9 @@ static bool ddd_dump_core(int sig...)
 	if (ret < 0)
 	    perror(ddd_NAME);
     }
+
+    // Invoke debugger
+    debug_ddd();
 
     if (sig == SIGUSR1)
     {
@@ -1018,12 +1010,8 @@ void DDDRestartCB(Widget w, XtPointer, XtPointer call_data)
 	_DDDRestartCB(w, XtPointer(flags), call_data);
 }
 
-
-// Debug DDD
-void DDDDebugCB(Widget, XtPointer client_data, XtPointer)
+static void debug_ddd(bool core_dumped)
 {
-    bool core_dumped = (int)(long)client_data;
-
     string term_command = app_data.term_command;
     term_command.gsub("Execution", "Debug");
     term_command.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
@@ -1034,11 +1022,20 @@ void DDDDebugCB(Widget, XtPointer client_data, XtPointer)
     else
 	gdb_command += itostring(getpid());
 
+#if 0
     gdb_command.prepend("echo \"Debugging " DDD_NAME ".  "
 			"Enter \\`quit' to quit.\"; ");
+#endif
 
     term_command += " " + sh_quote(gdb_command) + " &";
     system(sh_command(term_command, true));
+}
+
+// Debug DDD
+void DDDDebugCB(Widget, XtPointer client_data, XtPointer)
+{
+    bool core_dumped = (int)(long)client_data;
+    debug_ddd(core_dumped);
 }
 
 
