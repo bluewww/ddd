@@ -1089,15 +1089,18 @@ static MMDesc helpers_preferences_menu [] =
 
 
 // Data
-static Widget locals_w         = 0;
-static Widget args_w           = 0;
-static Widget detect_aliases_w = 0;
-static Widget infos_w          = 0;
-static Widget align_w          = 0;
+static Widget locals_w           = 0;
+static Widget args_w             = 0;
+static Widget detect_aliases_w   = 0;
+static Widget infos_w            = 0;
+static Widget align_w            = 0;
+static Widget edit_watchpoints_w = 0;
 
 static MMDesc data_menu[] = 
 {
     { "displays",   MMPush,    { DataDisp::EditDisplaysCB }},
+    { "watchpoints", MMPush,   { SourceView::EditBreakpointsCB }, 
+                                 NULL, &edit_watchpoints_w },
     MMSep,
     { "detectAliases", MMToggle, { graphToggleDetectAliasesCB },
       NULL, &detect_aliases_w },
@@ -1219,15 +1222,14 @@ static MMDesc display_menu[] =
 };
 
 struct WatchItems {
-    enum ArgCmd { RWatch, AWatch, Watch };
+    enum ArgCmd { CWatch, RWatch, AWatch };
 };
 
 static MMDesc watch_menu[] =
 {
     { "cwatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_CHANGE) } },
-    { "rwatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_READ) } },
-    { "awatch",       MMPush, { gdbWatchCB, 
-				XtPointer(WATCH_READ | WATCH_WRITE) } },
+    { "rwatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_READ)   } },
+    { "awatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_ACCESS) } },
     MMEnd
 };
 
@@ -3232,6 +3234,9 @@ void update_options()
 
     set_label(arg_cmd_area[ArgItems::Find].widget, new_label);
 
+    // Check for watchpoints
+    set_sensitive(edit_watchpoints_w, gdb->has_watch_command());
+
     update_reset_preferences();
     fix_status_size();
 }
@@ -4201,6 +4206,16 @@ void update_arg_buttons()
 
     bool can_watch = can_print && gdb->has_watch_command();
     set_sensitive(arg_cmd_area[ArgItems::Watch].widget, can_watch);
+
+    set_sensitive(watch_menu[WatchItems::CWatch].widget, 
+		  can_watch && 
+		  (gdb->has_watch_command() & WATCH_CHANGE) == WATCH_CHANGE);
+    set_sensitive(watch_menu[WatchItems::RWatch].widget,
+		  can_watch &&
+		  (gdb->has_watch_command() & WATCH_READ) == WATCH_READ);
+    set_sensitive(watch_menu[WatchItems::AWatch].widget,
+		  can_watch &&
+		  (gdb->has_watch_command() & WATCH_ACCESS) == WATCH_ACCESS);
 
     bool have_break = have_breakpoint_at_arg();
     if (have_break)
