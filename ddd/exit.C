@@ -110,6 +110,7 @@ char exit_rcsid[] =
 #include <errno.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
@@ -1049,6 +1050,7 @@ static void debug_ddd(bool core_dumped)
     term_command.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
 
     string gdb_command = string("gdb ") + saved_argv()[0] + " ";
+
     if (core_dumped)
 	gdb_command += "core";
     else
@@ -1061,6 +1063,48 @@ static void debug_ddd(bool core_dumped)
 
     term_command += " " + sh_quote(gdb_command) + " &";
     system(sh_command(term_command, true));
+}
+
+// Insert `where' info into LOG
+void report_core(ostream& log)
+{
+    if (!is_core_file("core"))
+	return;
+
+    string tempfile = tmpnam(0);
+    ofstream os(tempfile);
+    os << 
+	"set verbose off\n"
+	"set height 0\n"
+	"where\n"
+	"quit\n";
+    os.close();
+
+    string gdb_command = 
+	sh_command("gdb -x " + tempfile + " " + saved_argv()[0] + " core", 
+		   true);
+
+    FILE *fp = popen(gdb_command, "r");
+    int c;
+    bool at_newline = true;
+    while ((c = getc(fp)) != EOF)
+    {
+	if (at_newline)
+	{
+	    log << "!  ";
+	    at_newline = false;
+	}
+	log << (char)c;
+	at_newline = (c == '\n');
+    }
+
+    if (!at_newline)
+	log << '\n';
+    log.flush();
+
+    pclose(fp);
+
+    unlink(tempfile);
 }
 
 // Debug DDD

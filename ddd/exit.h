@@ -34,6 +34,8 @@
 #endif
 
 #include <X11/Intrinsic.h>
+#include <iostream.h>
+
 #include "bool.h"
 #include "ExitCB.h"
 
@@ -48,16 +50,19 @@ extern void ddd_install_x_error();
 extern void ddd_install_xt_error(XtAppContext app_context);
 
 // Callbacks
-void _DDDExitCB   (Widget, XtPointer, XtPointer); // GDB exited normally
-void DDDExitCB    (Widget, XtPointer, XtPointer); // Exit DDD
-void DDDRestartCB (Widget, XtPointer, XtPointer); // Restart DDD
-void DDDDebugCB   (Widget, XtPointer, XtPointer); // Debug DDD
-void DDDDumpCoreCB(Widget, XtPointer, XtPointer); // Dump Core
+extern void _DDDExitCB   (Widget, XtPointer, XtPointer); // GDB exited normally
+extern void DDDExitCB    (Widget, XtPointer, XtPointer); // Exit DDD
+extern void DDDRestartCB (Widget, XtPointer, XtPointer); // Restart DDD
+extern void DDDDebugCB   (Widget, XtPointer, XtPointer); // Debug DDD
+extern void DDDDumpCoreCB(Widget, XtPointer, XtPointer); // Dump Core
+
+// Core dumps
+extern void report_core(ostream& os);
 
 // Helpers
 class Agent;
-void gdb_eofHP  (Agent *, void *, void *);
-void gdb_diedHP (Agent *, void *, void *);
+extern void gdb_eofHP  (Agent *, void *, void *);
+extern void gdb_diedHP (Agent *, void *, void *);
 
 // True if GDB is about to exit
 extern bool gdb_is_exiting;

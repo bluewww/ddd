@@ -59,9 +59,13 @@ void ddd_main_loop()
 	ddd_show_signal(sig);
 	reset_status_lock();
 
-	// Imvoke debugger
-	if (sig < 0 && app_data.debug_core_dumps)
-	    DDDDebugCB(gdb_w, XtPointer(True), 0);
+	if (sig < 0)
+	{
+	    // We had a core dump
+	    if (app_data.debug_core_dumps)
+		DDDDebugCB(gdb_w, XtPointer(True), 0);
+	    report_core(dddlog);
+	}
 
 	// Bring X in a consistent state
 	XUngrabPointer(XtDisplay(gdb_w), CurrentTime);
