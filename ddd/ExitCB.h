@@ -45,8 +45,11 @@ extern void ExitCB(Widget, XtPointer, XtPointer);
 // Restart program
 extern void RestartCB(Widget, XtPointer, XtPointer);
 
+// Save argv
+extern void register_argv(char *argv[]);
+
 // Save environment
-extern void register_restart(char *argv[]);
+extern void register_environ();
 
 // Return saved environment
 extern char **saved_argv();

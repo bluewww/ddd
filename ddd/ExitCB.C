@@ -67,28 +67,31 @@ void RestartCB(Widget, XtPointer, XtPointer)
     exit(EXIT_FAILURE);
 }
 
-// Save environment
-void register_restart(char *argv[])
+// Save argv
+void register_argv(char *argv[])
 {
-    int i;
     int argc = 0;
     while (argv[argc] != 0)
 	argc++;
 
     _saved_argv = new char *[argc + 1];
-    for (i = 0; i < argc; i++)
+    for (int i = 0; i < argc; i++)
     {
 	_saved_argv[i] = new char[strlen(argv[i]) + 1];
 	strcpy(_saved_argv[i], argv[i]);
     }
     _saved_argv[argc] = 0;
+}
 
+// Save environment
+void register_environ()
+{
     int envc = 0;
     while (environ[envc] != 0)
 	envc++;
 
     _saved_environ = new char *[envc + 1];
-    for (i = 0; i < envc; i++)
+    for (int i = 0; i < envc; i++)
     {
 	_saved_environ[i] = new char[strlen(environ[i]) + 1];
 	strcpy(_saved_environ[i], environ[i]);
