@@ -748,9 +748,18 @@ void SourceView::clearBP(XtPointer client_data, XtIntervalId *)
 	bp_popup_deleteCB(source_text_w, XtPointer(&bp_nr), 0);
 }
 
+// Save last `jump' target for XDB
+static string last_jump_address;
+
 void SourceView::clearJumpBP(const string& msg, void *data)
 {
     set_status(msg);
+
+    if (gdb->type() == XDB && msg == "")
+    {
+	// Moving PC was successful.
+	show_execution_position(last_jump_address, true);
+    }
 
     int old_max_breakpoint_number_seen = int(data);
 
@@ -845,18 +854,31 @@ void SourceView::move_pc(const string& a, Widget w)
 	// immediately since `jump' requires confirmation when jumping
 	// out of the current function.
 
-	// GDB and DBX immediately resume execution, which we don't
-	// want.  Create a temporary breakpoint at ADDRESS.
-	create_temp_bp(address, w);
-
-	if (gdb->type() == DBX)
+	if (gdb->type() != XDB)
 	{
+	    // GDB and DBX immediately resume execution, which we don't
+	    // want.  Create a temporary breakpoint at ADDRESS.
+	    create_temp_bp(address, w);
+	}
+
+	switch (gdb->type())
+	{
+	case DBX:
 	    // DBX `cont at ' requires a line number.
 	    gdb_command("file " + address.before(':'));
+	    // FALL THROUGH
+
+	case XDB:
+	    // XDB 'g' wants only a line number
 	    address = address.after(':');
+	    break;
+
+	case GDB:
+	    break;
 	}
 
 	// Jump to the new address and clear the breakpoint again
+	last_jump_address = a;
 	Command c(gdb->jump_command(address), w);
 	c.callback = clearJumpBP;
 	c.data     = XtPointer(old_max_breakpoint_number_seen);
