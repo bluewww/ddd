@@ -955,14 +955,17 @@ None<Btn3Down>:		graph-select() graph-popup-menu()\n
 
 Ddd*title: @DDD@ Window
 
-Ddd*console_shell.title: 		@DDD@: Debugger Console
-Ddd*console_shell.iconName: 		@DDD@: Debugger Console
+Ddd*command_shell.title: 		@DDD@: Debugger Console
+Ddd*command_shell.iconName: 		@DDD@: Debugger Console
 
 Ddd*source_view_shell.title: 		@DDD@: Program Source
 Ddd*source_view_shell.iconName: 	@DDD@: Program Source
 
 Ddd*data_disp_shell.title: 		@DDD@: Program Data
 Ddd*data_disp_shell.iconName: 		@DDD@: Program Data
+
+Ddd*tool_shell.title: 			@DDD@: Command Tool
+Ddd*tool_shell.iconName: 		@DDD@: Command Tool
 
 
 
@@ -2071,6 +2074,14 @@ Enter ``@tt help@rm'' at the debugger prompt\n\
 to get help on debugging commands.
 
 
+
+!-----------------------------------------------------------------------------
+! Command Tool
+!-----------------------------------------------------------------------------
+
+! The command tool is frequently moved around on top of other windows.
+! Hence, avoid extra redisplays.
+Ddd*tool_shell*saveUnder: true
 
 !-----------------------------------------------------------------------------
 ! Debugger Buttons

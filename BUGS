@@ -321,9 +321,10 @@ Volunteers for fixing these and other bugs are welcome!
 
 093* `Up' and `Down' in XDB mode won't work.
 
-095* DDD 1.5 with AIX DBX and ctest:
+095* DDD 1.5 with AIX DBX and `ctest':
      - the `func' line is += 5
-     - up/down won't work
-     - displaying `dates' causes seg fault.
+     - displaying `dates' causes a seg fault.
 
-096. (Insert your bug here)
+099* With DEC DBX, a display once disabled is never enabled again.
+
+100. (Insert your bug here)
