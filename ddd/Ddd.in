@@ -2476,8 +2476,8 @@ Ddd*history_dialog*contextHelpString:       \
 @rm This window shows the @sl command history@rm.\n\
 \n\
 @DDD@ keeps track of the commands you type during your debugging\n\
-sessions, so that you can be certain of precisely what happened.  Use\n\
-this window to manage the @DDD@ command history facility.\n\
+sessions, so that you can be certain of precisely what happened.\n\
+Use this window to manage the @DDD@ command history facility.\n\
 \n\
 Select a specific command to have it copied at the command prompt.\n\
 Click on @bf Apply @rm to execute the current command.
