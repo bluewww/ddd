@@ -311,6 +311,8 @@ BoxPoint DispGraph::default_dependent_box_point (DispNode *new_node,
 	GraphNode *child = edge->to();
 	while (child->isHint())
 	    child = child->firstFrom()->to();
+	if (child->hidden())
+	    continue;
 
 	BoxGraphNode *bgn = ptr_cast(BoxGraphNode, child);
 	if (bgn == 0)
