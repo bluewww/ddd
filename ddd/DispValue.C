@@ -1512,6 +1512,8 @@ void DispValue::plot3d(PlotAgent *plotter, int ndim) const
 
 void DispValue::PlotterDiedHP(Agent *source, void *client_data, void *)
 {
+    (void) source;		// Use it
+
     DispValue *dv = (DispValue *)client_data;
 
     assert(source == dv->plotter());
