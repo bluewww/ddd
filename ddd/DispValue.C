@@ -183,17 +183,18 @@ DispValue *(*DispValue::value_hook)(string& value) = 0;
 //-----------------------------------------------------------------------------
 
 // Constructor
-DispValue::DispValue (DispValue* p, 
-		      int d,
+DispValue::DispValue (DispValue* parent, 
+		      int depth,
 		      string& value,
 		      const string& f_n, 
 		      const string& p_n,
 		      DispValueType given_type)
-    : mytype(UnknownType), myparent(p), mydepth (d), myexpanded(true), 
-      myfull_name(f_n), print_name(p_n), changed(false), myrepeats(1)
+    : mytype(UnknownType), myexpanded(true), 
+      myfull_name(f_n), print_name(p_n), changed(false), myrepeats(1),
+      _links(1)
 {
     simple = 0;
-    init(value, given_type);
+    init(parent, depth, value, given_type);
 
     // A new display is not changed, but initialized
     changed = false;
@@ -201,10 +202,10 @@ DispValue::DispValue (DispValue* p,
 
 // Duplicator
 DispValue::DispValue (const DispValue& dv)
-    : mytype(dv.mytype), myparent(0), mydepth(dv.mydepth),
+    : mytype(dv.mytype), 
       myexpanded(dv.myexpanded), myfull_name(dv.myfull_name),
       print_name(dv.print_name), myaddr(dv.myaddr),
-      changed(false), myrepeats(dv.myrepeats)
+      changed(false), myrepeats(dv.myrepeats), _links(1)
 {
     switch (mytype)
     {
@@ -237,7 +238,6 @@ DispValue::DispValue (const DispValue& dv)
 	for (int i = 0; i < array->member_count; i++)
 	{
 	    array->members[i] = dv.array->members[i]->dup();
-	    array->members[i]->myparent = this;
 	}
 	array->index_base = dv.array->index_base;
 	array->have_index_base = dv.array->have_index_base;
@@ -255,77 +255,19 @@ DispValue::DispValue (const DispValue& dv)
 	for (int i = 0; i < str->member_count; i++)
 	{
 	    str->members[i] = dv.str->members[i]->dup();
-	    str->members[i]->myparent = this;
 	}
 	break;
     }
     }
 }
 
-// Assignment
-void DispValue::assign(DispValue& dv)
-{
-    assert(mytype == UnknownType);
-
-    mytype      = dv.mytype;
-    // mydepth     = dv.mydepth;
-    myexpanded  = dv.myexpanded;
-    // myfull_name = dv.myfull_name;
-    // print_name  = dv.print_name;
-    myaddr      = dv.myaddr;
-    changed     = dv.changed;
-    // myrepeats   = dv.myrepeats;
-
-    switch (mytype)
-    {
-    case UnknownType:
-    {
-	simple = 0;
-	break;
-    }
-
-    case Simple:
-    case Text:
-    {
-	simple = dv.simple;
-	break;
-    }
-
-    case Pointer:
-    {
-	pointer = dv.pointer;
-	break;
-    }
-
-    case Array:
-    {
-	array = dv.array;
-	break;
-    }
-
-    case Struct:
-    case Reference:
-    case Sequence:
-    case List:
-    {
-	str = dv.str;
-    }
-    }
-
-    dv.mytype = Simple;
-    dv.simple = 0;
-    dv.clear();
-}
-
-
-DispValue *DispValue::dup() { return new DispValue(*this); }
-
 // True if more sequence members are coming
-bool DispValue::sequence_pending(const string& value) const
+bool DispValue::sequence_pending(const string& value, 
+				 const DispValue *parent) const
 {
-    if (parent() != 0)
+    if (parent != 0)
     {
-	switch (parent()->type())
+	switch (parent->type())
 	{
 	case Sequence:
 	case List:
@@ -347,7 +289,7 @@ bool DispValue::sequence_pending(const string& value) const
     string v = value;
     strip_leading_space(v);
 
-    if (v != "" && depth() == 0)
+    if (v != "" && parent == 0)
 	return true;		// Still more to read
 
     if (!is_delimited(value))
@@ -357,9 +299,33 @@ bool DispValue::sequence_pending(const string& value) const
     return false;
 }
 
+// Parsing
+DispValue *DispValue::parse(DispValue *parent, 
+			    int        depth,
+			    string&    value,
+			    const string& full_name, 
+			    const string& print_name,
+			    DispValueType type)
+{
+    if (value_hook != 0)
+    {
+	DispValue *dv = (*value_hook)(value);
+	if (dv != 0)
+	{
+	    // Just take values from given element
+#if LOG_CREATE_VALUES
+	    clog << "External value " << quote(dv->full_name()) << "\n";
+#endif
+	    return dv;
+	}
+    }
+
+    return new DispValue(parent, depth, value, full_name, print_name, type);
+}
 
 // Initialization
-void DispValue::init(string& value, DispValueType given_type)
+void DispValue::init(DispValue *parent, int depth, string& value,
+		     DispValueType given_type)
 {
 #if LOG_CREATE_VALUES
     clog << "Building value from " << quote(value) << "\n";
@@ -377,33 +343,16 @@ void DispValue::init(string& value, DispValueType given_type)
 	return;
     }
 
-
-    if (value_hook != 0)
-    {
-	DispValue *dv = (*value_hook)(value);
-	if (dv != 0)
-	{
-	    // Just take values from given element
-#if LOG_CREATE_VALUES
-	    clog << "External value " << quote(dv->full_name()) << "\n";
-#endif
-	    assign(*dv);
-	    delete dv;
-	    return;
-	}
-    }
-
-
     mytype = given_type;
     if (mytype == UnknownType && 
-	(parent() == 0 || parent()->type() == List) && print_name == "")
+	(parent == 0 || parent->type() == List) && print_name == "")
 	mytype = Text;
-    if (mytype == UnknownType && parent() == 0 && is_user_command(print_name))
+    if (mytype == UnknownType && parent == 0 && is_user_command(print_name))
 	mytype = List;
     if (mytype == UnknownType)
 	mytype = determine_type(value);
 
-    bool ignore_repeats = (myparent != 0 && myparent->type() == Array);
+    bool ignore_repeats = (parent != 0 && parent->type() == Array);
 
     switch (mytype) 
     {
@@ -411,7 +360,7 @@ void DispValue::init(string& value, DispValueType given_type)
     case Simple:
     {
 	simple = new SimpleDispValue;
-	simple->value = read_simple_value(value, depth(), ignore_repeats);
+	simple->value = read_simple_value(value, depth, ignore_repeats);
 #if LOG_CREATE_VALUES
 	clog << mytype << ": " << quote(simple->value) << "\n";
 #endif
@@ -471,9 +420,7 @@ void DispValue::init(string& value, DispValueType given_type)
 	if (vtable_entries != "")
 	{
 	    array->members[array->member_count++] = 
-		new DispValue (this, depth() + 1,
-			       vtable_entries, 
-			       myfull_name, myfull_name);
+		parse_child(depth, vtable_entries, myfull_name);
 	}
 
 	// Read the array elements.  Assume that the type is the
@@ -481,7 +428,7 @@ void DispValue::init(string& value, DispValueType given_type)
 	DispValueType member_type = UnknownType;
 	if (!array->have_index_base)
 	{
-	    array->index_base = index_base(base, depth());
+	    array->index_base = index_base(base, depth);
 	    array->have_index_base = true;
 	}
 	int array_index = array->index_base;
@@ -492,10 +439,9 @@ void DispValue::init(string& value, DispValueType given_type)
 	    string repeated_value = value;
 	    string member_name = 
 		gdb->index_expr("", itostring(array_index++));
-	    DispValue *dv = 
-		new DispValue(this, depth() + 1, value,
-			      add_member_name(base, member_name), 
-			      member_name, member_type);
+	    DispValue *dv = parse_child(depth, value,
+					add_member_name(base, member_name), 
+					member_name, member_type);
 	    member_type = dv->type();
 	    array->members[array->member_count++] = dv;
 
@@ -510,9 +456,9 @@ void DispValue::init(string& value, DispValueType given_type)
 			gdb->index_expr("", itostring(array_index++));
 		    string val = repeated_value;
 		    DispValue *repeated_dv = 
-			new DispValue(this, depth() + 1, val,
-				      add_member_name(base, member_name),
-				      member_name, member_type);
+			parse_child(depth, val, 
+				    add_member_name(base, member_name),
+				    member_name, member_type);
 		    array->members[array->member_count++] = 
 			repeated_dv;
 		}
@@ -540,14 +486,14 @@ void DispValue::init(string& value, DispValueType given_type)
 
 	    if (background(value.length()))
 	    {
-		init(value);
+		init(parent, depth, value);
 		return;
 	    }
 	} while (read_array_next (value) != 0);
 	read_array_end (value);
 
 	// Expand only if at top-level.
-	myexpanded = (depth() == 0 || array->member_count <= 1);
+	myexpanded = (depth == 0 || array->member_count <= 1);
 
 #if LOG_CREATE_VALUES
 	clog << mytype << " has " << array->member_count << " members\n";
@@ -627,8 +573,7 @@ void DispValue::init(string& value, DispValueType given_type)
 		// Some struct stuff that is not a member
 		string old_value = value;
 
-		DispValue *dv = 
-		    new DispValue(this, depth() + 1, value, myfull_name, "");
+		DispValue *dv = parse_child(depth, value, myfull_name, "");
 
 		bool consume = true;
 		if (value == old_value)
@@ -649,8 +594,7 @@ void DispValue::init(string& value, DispValueType given_type)
 		    // after having read all the AIX DBX base classes.)
 		    for (int i = 0; i < dv->nchildren(); i++)
 		    {
-			DispValue *dv2 = dv->get_child(i)->dup();
-			dv2->myparent = this;
+			DispValue *dv2 = dv->get_child(i)->link();
 			str->members[str->member_count++] = dv2;
 		    }
 		    consume = false;
@@ -659,7 +603,7 @@ void DispValue::init(string& value, DispValueType given_type)
 		if (!consume)
 		{
 		    // Discard the value just read
-		    delete dv;
+		    dv->unlink();
 		}
 		else
 		{
@@ -671,8 +615,8 @@ void DispValue::init(string& value, DispValueType given_type)
 	    else if (is_BaseClass_name(member_name))
 	    {
 		// Base class member
-		DispValue *dv = new DispValue(this, depth() + 1, value, 
-					      myfull_name, member_name);
+		DispValue *dv = 
+		    parse_child(depth, value, myfull_name, member_name);
 		str->members[str->member_count++] = dv;
 
 		more_values = read_multiple_values && read_struct_next(value);
@@ -711,14 +655,13 @@ void DispValue::init(string& value, DispValueType given_type)
 		}
 
 		str->members[str->member_count++] = 
-		    new DispValue (this, depth() + 1, value, 
-				   full_name, member_name);
+		    parse_child(depth, value, full_name, member_name);
 		more_values = read_multiple_values && read_struct_next(value);
 	    }
 
 	    if (background(value.length()))
 	    {
-		init(value);
+		init(parent, depth, value);
 		return;
 	    }
 	}
@@ -726,8 +669,7 @@ void DispValue::init(string& value, DispValueType given_type)
 	if (mytype == List && value != "")
 	{
 	    // Add remaining value as text
-	    str->members[str->member_count++] = 
-		new DispValue(this, depth() + 1, value, "", "");
+	    str->members[str->member_count++] = parse_child(depth, value, "");
 	}
 
 	if (found_struct_begin)
@@ -737,7 +679,7 @@ void DispValue::init(string& value, DispValueType given_type)
 	}
 
 	// Expand only if at top-level.
-	myexpanded = (depth() == 0 || str->member_count <= 1);
+	myexpanded = (depth == 0 || str->member_count <= 1);
 
 #if LOG_CREATE_VALUES
 	clog << mytype << " "
@@ -760,18 +702,14 @@ void DispValue::init(string& value, DispValueType given_type)
 	string ref = value.before(sep);
 	value = value.after(sep);
 
-	str->members[0] = 
-	    new DispValue(this, depth() + 1, ref, 
-			  gdb->address_expr(myfull_name), 
-			  myfull_name, Pointer);
+	string addr = gdb->address_expr(myfull_name);
 
-	str->members[1] = 
-	    new DispValue(this, depth() + 1, value,
-			  myfull_name, myfull_name);
+	str->members[0] = parse_child(depth, ref, addr, myfull_name, Pointer);
+	str->members[1] = parse_child(depth, value, myfull_name);
 
 	if (background(value.length()))
 	{
-	    init(value);
+	    init(parent, depth, value);
 	    return;
 	}
 	break;
@@ -784,10 +722,10 @@ void DispValue::init(string& value, DispValueType given_type)
     }
 
     // Handle trailing stuff (`sequences')
-    if (parent() == 0 || parent()->type() != Sequence)
+    if (parent == 0 || parent->type() != Sequence)
     {
 	bool need_clear = true;
-	while (sequence_pending(value))
+	while (sequence_pending(value, parent))
 	{
 	    if (need_clear)
 	    {
@@ -811,19 +749,18 @@ void DispValue::init(string& value, DispValueType given_type)
 	    
 	    string old_value = value;
 
-	    DispValue *dv = new DispValue(this, depth() + 1, value, 
-					  myfull_name, myfull_name);
+	    DispValue *dv = parse_child(depth, value, myfull_name);
 
 	    if (value == old_value)
 	    {
 		// Nothing consumed - stop here
-		delete dv;
+		dv->unlink();
 		break;
 	    }
 	    else if (dv->type() == Simple && dv->value() == "")
 	    {
 		// Empty value - ignore
-		delete dv;
+		dv->unlink();
 	    }
 	    else
 	    {
@@ -845,13 +782,6 @@ void DispValue::init(string& value, DispValueType given_type)
     changed = true;
 }
 
-
-// Destructor
-DispValue::~DispValue ()
-{
-    clear();
-}
-
 // Destructor helper
 void DispValue::clear()
 {
@@ -866,7 +796,7 @@ void DispValue::clear()
 	break;
     case Array:
 	for (i = 0; i < array->member_count; i++) {
-	    delete array->members[i];
+	    array->members[i]->unlink();
 	}
 	delete array;
 	break;
@@ -876,7 +806,7 @@ void DispValue::clear()
     case Struct:
     case Reference:
 	for (i = 0; i < str->member_count; i++) {
-	    delete str->members[i];
+	    str->members[i]->unlink();
 	}
 	delete str;
 	break;
@@ -1212,8 +1142,8 @@ DispValue *DispValue::update(string& value,
 			     bool& was_changed, bool& was_initialized,
 			     DispValueType given_type)
 {
-    DispValue *source = new DispValue(0, depth(), value, 
-				      full_name(), name(), given_type);
+    DispValue *source = parse(0, 0, value, 
+			      full_name(), name(), given_type);
     return update(source, was_changed, was_initialized);
 }
 
@@ -1300,8 +1230,7 @@ DispValue *DispValue::update(DispValue *source,
     }
 
     // Type or structure have changed -- use SOURCE instead of original
-    source->myparent = myparent;
-    delete this;
+    unlink();
 
     source->changed = was_changed = was_initialized = true;
     return source;

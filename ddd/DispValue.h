@@ -50,11 +50,9 @@ class StructDispValue;
 
 class DispValue {
     DispValueType mytype;
-    DispValue*    myparent;
-    int           mydepth;      // Nesting depth
     bool          myexpanded;
-    string        myfull_name;
-    string        print_name;   // Name relative to MYPARENT
+    string        myfull_name;	// Full name
+    string        print_name;   // Name relative to parent
     string        myaddr;	// Address as found
     bool          changed;
     int           myrepeats;	// Number of repetitions
@@ -68,8 +66,13 @@ class DispValue {
 
     // Initialize from VALUE.  If TYPE is given, use TYPE as type
     // instead of inferring it.
-    void init(string& value, DispValueType type = UnknownType);
+    void init(DispValue *parent, int depth, 
+	      string& value, DispValueType type = UnknownType);
+
+    // Delete helper
     void clear();
+
+    // Assignment
     void assign(DispValue& dv);
 
     DispValue& operator = (const DispValue&)
@@ -84,45 +87,99 @@ class DispValue {
 				  const string& member_name);
 
 protected:
+    int _links;			// #references (>= 1)
+
     // Makes sense only for type() == Array, Struct
     // Expand/collapse single value
     void _expand()    { myexpanded = true;  }
     void _collapse()  { myexpanded = false; }
 
     // True if more sequence members are coming
-    bool sequence_pending(const string& value) const;
-
-public:
-    // Global settings
-    static bool expand_repeated_values;
+    bool sequence_pending(const string& value, 
+			  const DispValue *parent) const;
 
     // The DispValue type and address are determined from VALUE
-    DispValue (DispValue* parent, 
+    DispValue (DispValue *parent, 
 	       int        depth,
 	       string&    value,
 	       const string& full_name, 
 	       const string& print_name,
 	       DispValueType type = UnknownType);
 
+    // Parsing function
+    static DispValue *parse(DispValue *parent, 
+			    int        depth,
+			    string&    value,
+			    const string& full_name, 
+			    const string& print_name,
+			    DispValueType type = UnknownType);
+
+    DispValue *parse_child(int depth,
+			   string& value,
+			   const string& full_name, 
+			   const string& print_name,
+			   DispValueType type = UnknownType)
+    {
+	return parse(this, depth + 1, value, full_name, print_name, type);
+    }
+
+    DispValue *parse_child(int depth,
+			   string& value,
+			   const string& name, 
+			   DispValueType type = UnknownType)
+    {
+	return parse_child(depth, value, name, name, type);
+    }
+
+
     // Copy constructor
     DispValue (const DispValue& dv);
 
-    // Destructor
-    ~DispValue();
+public:
+    // Global settings
+    static bool expand_repeated_values;
+
+    // Parse VALUE into a DispValue tree
+    static DispValue *parse(string& value, const string& name)
+    {
+	return parse(0, 0, value, name, name);
+    }
 
     // Duplicator
-    DispValue *dup();
+    DispValue *dup() const
+    {
+	return new DispValue(*this);
+    }
+
+    // Destructor
+    virtual ~DispValue()
+    {
+	assert (_links == 0);
+	clear();
+    }
+
+    // Create new reference
+    DispValue *link()
+    {
+	assert(_links > 0);
+	_links++;
+	return this;
+    }
+
+    // Kill reference
+    void unlink()
+    {
+	assert(_links > 0);
+	if (--_links == 0)
+	    delete this;
+    }
 
     DispValueType type()       const { return mytype; }
-    DispValue*    parent()     const { return myparent; }
-    int           depth()      const { return mydepth; }
     int           repeats()    const { return myrepeats; }
     const string& full_name()  const { return myfull_name; }
     const string& name()       const { return print_name; }
     const string& addr()       const { return myaddr; }
 
-    DispValue*&   parent()     { return myparent; }
-    int&          depth()      { return mydepth; }
     int&          repeats()    { return myrepeats; }
     string&       full_name()  { return myfull_name; }
     string&       name()       { return print_name; }
