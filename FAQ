@@ -54,9 +54,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
 5.  I don't like the 'break point' symbol.  Can I change it?
 
-    Yes - by altering the code :-).  We may make it user-defineable
-    some day, but the choice is limited to text characters unless you
-    supply your own text font.
+    Yes.  See the various `*.xbm' files in the DDD source code.
 
 
 6.  I compiled DDD on my machine and it fails.  I got the executable

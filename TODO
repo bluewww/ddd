@@ -25,8 +25,8 @@ Volunteers for these and other projects are welcome!
      a special code is issued which causes DDD to show the display.
      Thus, one could use `graph display' in own definitions.
 
-008. Have buttons arranged such that they do not disappear when the window
-     gets smaller.
+008. Have buttons arranged such that they do not disappear when the
+     window is narrowed.
 
 009. Recognize shared data structures (that is, two displays
      referencing the same object).  This could be achieved by

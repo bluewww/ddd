@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "17 December 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "18 December 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
