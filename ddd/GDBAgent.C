@@ -694,18 +694,11 @@ void GDBAgent::PanicHP (Agent *source, void *, void *call_data)
 {
     string msg = (char *)call_data;
 
-    if (msg.contains("I/O exception ", 0))
-    {
-	// Such messages occur all the time.  Suppress them.
-    }
+    GDBAgent *gdb = ptr_cast(GDBAgent, source);
+    if (gdb != 0)
+	cerr << gdb->default_prompt() << msg << "\n";
     else
-    {
-	GDBAgent *gdb = ptr_cast(GDBAgent, source);
-	if (gdb != 0)
-	    cerr << gdb->default_prompt() << msg << "\n";
-	else
-	    cerr << source->path() << ": " << msg << "\n";
-    }
+	cerr << source->path() << ": " << msg << "\n";
 }
 
 
