@@ -1128,7 +1128,7 @@ void send_gdb_command(string cmd, Widget origin,
     }
     else if (is_thread_cmd(cmd) || is_core_cmd(cmd))
     {
-	// Update displays
+	// No new displays
 	cmd_data->filter_disp   = NoFilter;
 	cmd_data->new_frame_pos = true;
 	cmd_data->new_exec_pos  = true;
@@ -1141,7 +1141,7 @@ void send_gdb_command(string cmd, Widget origin,
     }
     else if (is_frame_cmd(cmd))
     {
-	// Update displays
+	// No new displays
 	cmd_data->filter_disp   = NoFilter;
 	cmd_data->new_frame_pos = true;
 
@@ -1272,6 +1272,9 @@ void send_gdb_command(string cmd, Widget origin,
     {
 	// A printing command - be sure to abort current undo
 	abort_undo = true;
+
+	// Don't filter the print output
+	cmd_data->filter_disp = NoFilter;
     }
     else if (is_other_builtin_cmd(cmd, gdb))
     {
