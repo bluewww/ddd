@@ -78,6 +78,9 @@ private:
     static DelayArray delays;
     static void DestroyCB(Widget, XtPointer, XtPointer);
 
+    Delay(const Delay&);
+    Delay& operator = (const Delay&);
+
 public:
     Delay(Widget w = 0);
     virtual ~Delay();
