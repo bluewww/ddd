@@ -6,7 +6,8 @@ DDD-3.3.10
 
 * New features and minor improvements
 - More fixes for perl 5.8.x -- it's now a lot more usable.
-- Fixes for Sun's SunONE Studio dbx (1).
+- Fixes for Sun's SunONE Studio dbx (1). Build with -DHAVE_SUNDBX is
+  necessary. DBX detection improvement is welcome.
 
 * Build fixes
 - automake 1.8 is now the minimum requirement. This affects only builds
