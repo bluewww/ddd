@@ -47,6 +47,7 @@ char GDBAgent_rcsid[] =
 #include <stdio.h>  // tmpnam
 #include <iostream.h>
 #include <fstream.h>
+#include <ctype.h>
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
@@ -785,7 +786,13 @@ string GDBAgent::print_command(string expr) const
 
     if (expr != "")
     {
+	bool need_prefix = true;
 	if (!has_named_values())
+	    need_prefix = false;
+	else if (type() == XDB && (isalpha(expr[0]) || (expr[0] == '$')))
+	    need_prefix = false;
+
+	if (need_prefix)
 	    cmd = echo_command(expr + " = ") + "; " + cmd;
 	cmd += " " + expr;
     }
