@@ -9,6 +9,7 @@ DDD 3.2 brings almost nothing yet.
 - In Breakpoint Properties, Define Command, and GDB Settings, have an
   `Apply' button that applies changes to text fields.
 - The GDB source directory path is saved with the current session.
+- The JDB class path is only saved with the current session.
 
 DDD 3.2 also incorporates all changes from DDD 3.1.1 and later; see
 below.

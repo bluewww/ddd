@@ -3623,11 +3623,12 @@ Ddd*settings*scroll*helpString:
 Ddd*settings*helpString: \
 WIDGET(@GDB@ Settings)\n\
 \n\
-All settings (except source and object paths) can be saved\n\
-using LBL(Edit, Save Options).\n\
-\n\
+These settings control @GDB@ operations.\n\
 Click on LBL(?) near an item to get further information.\n\
-In a text field, press the KEY_RETURN key to commit the changes.\n\
+\n\
+LBL(Edit, Save Options) saves all @GDB@ settings\n\
+except session-dependent settings such as source or object paths.\n\
+LBL(File, Save Session) also saves session-dependent @GDB@ settings.\n\
 \n\
 Click on LBL(Apply) to apply changed text settings.\n\
 Click on LBL(Reset) to restore the saved settings.\n\

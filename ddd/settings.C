@@ -2523,38 +2523,52 @@ static void get_setting(ostream& os, DebuggerType type,
 	    base == "dbxenv output_log_file_name")
 	{
 	    // Do nothing (DBX) - dependent on the current machine etc.
+	    break;
 	}
-	else if (base == "set remotelogfile" && value == "")
+
+	if (base == "set remotelogfile" && value == "")
 	{
 	    // This is the default setting - do nothing (GDB)
+	    break;
 	}
-	else if (base == "set remotedevice" && value == "")
+
+	if (base == "set remotedevice" && value == "")
 	{
 	    // This is the default setting - do nothing (GDB)
+	    break;
 	}
-	else if (base == "set solib-absolute-prefix" && value == "")
+
+	if (base == "set solib-absolute-prefix" && value == "")
 	{
 	    // GDB 4.17 bug: `set solib-absolute-prefix' without arg
 	    // does not work.  Just leave it as default setting.
+	    break;
 	}
-	else if (base.contains("set $cur", 0) ||
-		 base.contains("set $new", 0) ||
-		 base.contains("set $pid", 0))
+
+	if (base.contains("set $cur", 0) ||
+	    base.contains("set $new", 0) ||
+	    base.contains("set $pid", 0))
 	{
 	    // Do nothing - dependent on the current file (DEC DBX)
+	    break;
 	}
-	else if (base == "set $defaultin" ||
-		 base == "set $defaultout" ||
-		 base == "set $historyevent")
+
+	if (base == "set $defaultin" ||
+	    base == "set $defaultout" ||
+	    base == "set $historyevent")
 	{
 	    // Do nothing - dependent on the current state (SGI DBX)
+	    break;
 	}
-	else if (base.contains("set $", 0))
+
+	if (base.contains("set $", 0))
 	{
 	    // Add setting (DBX).
 	    os << base << " = " << value << '\n';
+	    break;
 	}
-	else if (base.contains("set ", 0))
+
+	if (base.contains("set ", 0))
 	{
 	    // Add setting (GDB).
 
@@ -2568,32 +2582,43 @@ static void get_setting(ostream& os, DebuggerType type,
 		value.prepend("0d");
 
 	    os << base << " " << value << '\n';
+	    break;
 	}
-	else if (base.contains("dbxenv ", 0))
+
+	if (base.contains("dbxenv ", 0))
 	{
 	    // Add setting (DBX).
 	    os << base << " " << value << '\n';
+	    break;
 	}
-	else if (base == "dir" && (flags & SAVE_SESSION))
-	{
-	    // `dir' values are only saved within a session.
 
-	    os << base << "\n"	// Clear old value
-	       << base << " " << value << '\n';
+	if (base == "dir")
+	{
+	    if (flags & SAVE_SESSION)
+	    {
+		// `dir' values are only saved within a session.
+
+		os << base << "\n"	// Clear old value
+		   << base << " " << value << '\n';
+	    }
+	    break;
 	}
-#if 0 // FIXME: How do we reset the path within GDB?
-	else if (base == "path" && (flags & SAVE_SESSION))
-	{
-	    // `path' values are only saved within a session.
 
-	    os << base << "\n"	// Clear old value
-	       << base << " " << value << '\n';
+#if 0				// FIXME: How do we reset the path within GDB?
+	if (base == "path")
+	{
+	    if (flags & SAVE_SESSION)
+	    {
+		// `path' values are only saved within a session.
+
+		os << base << "\n"	// Clear old value
+		   << base << " " << value << '\n';
+	    }
+	    break;
 	}
 #endif
-	else
-	{
-	    // Other value -- ignore
-	}
+
+	// Unknown setting -- ignore
 	break;
 
     case PERL:
@@ -2601,8 +2626,22 @@ static void get_setting(ostream& os, DebuggerType type,
 	os << base << '=' << value << '\n';
 	break;
 
-    case XDB:
     case JDB:
+	if (base == "use")
+	{
+	    if (flags & SAVE_SESSION)
+	    {
+		// `use' values are only saved within a session.
+		os << base << ' ' << value << '\n';
+	    }
+	    break;
+	}
+
+	// Any other setting (which ones?)
+	os << base << ' ' << value << '\n';
+	break;
+
+    case XDB:
     case PYDB:
 	// Add setting
 	os << base << ' ' << value << '\n';
