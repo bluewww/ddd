@@ -36,10 +36,12 @@ AC_PREREQ(2.6)
 AC_REVISION([$Id$])
 dnl
 dnl
-dnl Initialization
+dnl Initialization - setup names and paths
 dnl
 AC_INIT(DispBox.h)
 AC_CONFIG_HEADER(config.h)
+AC_PREFIX_PROGRAM(ddd)
+AC_ARG_PROGRAM
 dnl
 dnl
 dnl Autoconf 2.8 bug fix
@@ -71,14 +73,6 @@ dnl Find out what host this is
 dnl
 AC_CANONICAL_HOST
 AC_SUBST(host)
-dnl
-dnl
-dnl Find installation prefix and name.
-dnl
-AC_PREFIX_PROGRAM(gcc)
-AC_ARG_PROGRAM
-dnl ICE_PATH_INFO
-dnl
 dnl
 dnl
 dnl Check for POSIX stuff (required by AC_FIND_X)
