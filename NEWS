@@ -158,6 +158,8 @@ Bug fixes
 - Sun DBX warnings like `warning: -r option only recognized for C++'
   are properly suppressed.
 
+- DDD handles unbuffered echo TTY modes as set by some DBX flavours.
+
 - The `Disp *' button dereferences pointers as it should.
 
 - In a separate window setting, data buttons are properly placed.
