@@ -3196,8 +3196,7 @@ void SourceView::create_shells()
 					   XmDIALOG_CANCEL_BUTTON));
 
     arg = 0;
-    Widget box = 
-	XmCreateRadioBox(register_dialog_w, "box", args, arg);
+    Widget box = XmCreateRadioBox(register_dialog_w, "box", args, arg);
     XtManageChild(box);
 
     arg = 0;
@@ -4947,6 +4946,9 @@ void SourceView::NewBreakpointCB(Widget w, XtPointer, XtPointer)
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT));
 
 	arg = 0;
+	XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+	XtSetArg(args[arg], XmNborderWidth,  0); arg++;
 	Widget box = XmCreateRowColumn(dialog, "box", args, arg);
 	XtManageChild(box);
 
@@ -5032,6 +5034,9 @@ void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT));
 
 	arg = 0;
+	XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+	XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+	XtSetArg(args[arg], XmNborderWidth,  0); arg++;
 	Widget box = XmCreateRowColumn(dialog, "box", args, arg);
 	XtManageChild(box);
 
