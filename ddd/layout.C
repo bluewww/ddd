@@ -2515,8 +2515,8 @@ int Layout::sortCmpCenters (NODE **_n1, NODE **_n2)
     assert (n2 != 0);
     assert (n2->type == Regular);
 
-    char *label1 = n1->attr.node.label;
-    char *label2 = n2->attr.node.label;
+    const char *label1 = n1->attr.node.label;
+    const char *label2 = n2->attr.node.label;
 
     return compare_callback(label1, label2);
 }

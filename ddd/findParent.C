@@ -42,7 +42,7 @@ char findParent_rcsid[] =
 #endif
 
 // Set this to true to allow debugging
-static bool findParent_debug = false;
+static const bool findParent_debug = false;
 
 // Find a realized Shell
 Widget findShellParent(Widget w)
