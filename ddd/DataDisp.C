@@ -119,6 +119,7 @@ char DataDisp_rcsid[] =
 #include "value-read.h"
 #include "verify.h"
 #include "version.h"
+#include "vsldoc.h"
 #include "windows.h"
 #include "wm.h"
 
@@ -130,6 +131,7 @@ char DataDisp_rcsid[] =
 #include <Xm/SelectioB.h>	// XmCreatePromptDialog()
 #include <Xm/TextF.h>		// XmTextFieldGetString()
 #include <Xm/Label.h>
+#include <Xm/PushB.h>
 #include <X11/StringDefs.h>
 
 // System includes
@@ -260,45 +262,45 @@ const int DataDisp::theme_items = 20;
 MMDesc DataDisp::theme_menu[] =
 {
     {"t1",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(1)  }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(1)  }, 0, 0, 0, 0 },  
     {"t2",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(2)  }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(2)  }, 0, 0, 0, 0 },  
     {"t3",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(3)  }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(3)  }, 0, 0, 0, 0 },  
     {"t4",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(4)  }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(4)  }, 0, 0, 0, 0 },  
     {"t5",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(5)  }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(5)  }, 0, 0, 0, 0 },  
     {"t6",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(6)  }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(6)  }, 0, 0, 0, 0 },  
     {"t7",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(7)  }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(7)  }, 0, 0, 0, 0 },  
     {"t8",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(8)  }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(8)  }, 0, 0, 0, 0 },  
     {"t9",  MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(9)  }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(9)  }, 0, 0, 0, 0 },  
     {"t10", MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(10) }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(10) }, 0, 0, 0, 0 },  
     {"t11", MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(11) }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(11) }, 0, 0, 0, 0 },  
     {"t12", MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(12) }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(12) }, 0, 0, 0, 0 },  
     {"t13", MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(13) }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(13) }, 0, 0, 0, 0 },  
     {"t14", MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(14) }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(14) }, 0, 0, 0, 0 },  
     {"t15", MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(15) }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(15) }, 0, 0, 0, 0 },  
     {"t16", MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(16) }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(16) }, 0, 0, 0, 0 },  
     {"t17", MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(17) }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(17) }, 0, 0, 0, 0 },  
     {"t18", MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(18) }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(18) }, 0, 0, 0, 0 },  
     {"t19", MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(19) }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(19) }, 0, 0, 0, 0 },  
     {"t20", MMToggle | MMUnmanaged,  
-        { DataDisp::applyCB, XtPointer(20) }, 0, 0, 0, 0 },  
+        { DataDisp::applyThemeCB, XtPointer(20) }, 0, 0, 0, 0 },  
     MMSep, 
     {"edit",  MMPush, { dddPopupThemesCB, 0 }, 0, 0, 0, 0},
     MMEnd
@@ -594,14 +596,11 @@ void DataDisp::get_all_clusters(IntArray& numbers)
 // Apply themes to expressions
 //-----------------------------------------------------------------------------
 
-// Apply the theme in CLIENT_DATA to the selected item.
-void DataDisp::applyCB (Widget dialog, XtPointer client_data, XtPointer)
+string DataDisp::selected_pattern()
 {
-    set_last_origin(dialog);
-
     DispValue *dv = selected_value();
     if (dv == 0)
-	return;
+	return "";
 
     string pattern = dv->full_name();
     pattern.gsub("\\", "\\\\");
@@ -614,7 +613,81 @@ void DataDisp::applyCB (Widget dialog, XtPointer client_data, XtPointer)
     if (pattern.contains("."))
 	pattern = "*" + pattern.from(".", -1);
 
-    apply_theme(String(client_data), pattern);
+    return pattern;
+}
+
+// Apply the theme in CLIENT_DATA to the selected item.
+void DataDisp::applyThemeCB (Widget w, XtPointer client_data, XtPointer)
+{
+    set_last_origin(w);
+
+    string pattern = selected_pattern();
+    if (pattern == "")
+	return;
+    DispValue *dv = selected_value();
+    if (dv == 0)
+	return;
+
+    string theme = String(client_data);
+
+    string doc = vsldoc(theme, DispBox::vsllib_path);
+    if (doc.contains("."))
+	doc = doc.before(".");
+    else if (doc == "")
+	doc = theme;
+
+    defineConversionMacro("THEME", theme);
+    defineConversionMacro("THEME_DOC", doc);
+    defineConversionMacro("PATTERN", pattern);
+    defineConversionMacro("EXPR", dv->full_name());
+
+    Arg args[10];
+    Cardinal arg = 0;
+
+    XtSetArg(args[arg], XmNdeleteResponse, XmDESTROY); arg++;
+    XtSetArg(args[arg], XmNautoUnmanage,   False);     arg++;
+    Widget dialog = 
+	verify(XmCreateQuestionDialog(find_shell(w), "confirm_apply_dialog", 
+				      args, arg));
+
+    arg = 0;
+    Widget apply = XmCreatePushButton(dialog, "apply", args, arg);
+    XtManageChild(apply);
+
+    Delay::register_shell(dialog);
+    XtAddCallback(dialog, XmNokCallback,       
+		  applyThemeOnAllCB,  client_data);
+    XtAddCallback(apply,  XmNactivateCallback, 
+		  applyThemeOnThisCB, client_data);
+
+    XtAddCallback(dialog, XmNokCallback, DestroyShellCB, 0);
+    XtAddCallback(apply,  XmNactivateCallback, DestroyShellCB, 0);
+    XtAddCallback(dialog, XmNcancelCallback,   DestroyShellCB, 0);
+    XtAddCallback(dialog, XmNhelpCallback,     ImmediateHelpCB, 0);
+
+    manage_and_raise(dialog);
+}
+
+// Apply the theme in CLIENT_DATA to the selected item.
+void DataDisp::applyThemeOnAllCB(Widget, XtPointer client_data, XtPointer)
+{
+    string pattern = selected_pattern();
+    if (pattern == "")
+	return;
+
+    string theme = String(client_data);
+    apply_theme(theme, pattern);
+}
+
+// Apply the theme in CLIENT_DATA to the selected item.
+void DataDisp::applyThemeOnThisCB(Widget, XtPointer client_data, XtPointer)
+{
+    DispValue *dv = selected_value();
+    if (dv == 0)
+	return;
+
+    string theme = String(client_data);
+    apply_theme(theme, dv->full_name());
 }
 
 string DataDisp::apply_theme_cmd(const string& theme, const string& pattern)
@@ -1066,7 +1139,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer /* client_data */,
     if (dv != 0 && dv != dn->value())
     {
 	// Display part to be undisplayed
-	applyCB(dialog, XtPointer("suppress.vsl"), call_data);
+	applyThemeCB(dialog, XtPointer("suppress.vsl"), call_data);
 	return;
     }
 
@@ -1788,7 +1861,7 @@ void DataDisp::deleteArgCB(Widget dialog, XtPointer client_data,
     else if (count.selected > 0)
     {
 	// Suppress selected display
-	applyCB(dialog, XtPointer("suppress.vsl"), call_data);
+	applyThemeCB(dialog, XtPointer("suppress.vsl"), call_data);
     }
     else
     {

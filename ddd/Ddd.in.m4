@@ -1398,6 +1398,10 @@ Ddd*XmDialogShell*XmTextField.@TRANSLATIONS@:     \
 Ddd*edit_buttons*XmText.@TRANSLATIONS@: 	 	 \
 #override\n TEXT_TRANSLATIONS CLIPBOARD_TRANSLATIONS
 
+! In the theme editor, we have no completion.
+Ddd*themes*XmTextField.@TRANSLATIONS@: 	 	 \
+#override\n EMACS_TRANSLATIONS CLIPBOARD_TRANSLATIONS
+
 ! In command definitions, we have command completion.
 Ddd*breakpoint_properties*XmTextField.@TRANSLATIONS@: \
 #override\n COMPLETE_TRANSLATIONS(print) CLIPBOARD_TRANSLATIONS
@@ -3772,6 +3776,9 @@ Ddd*themes.dialogTitle: DDD: Themes
 Ddd*themes.okLabelString:     Apply
 Ddd*themes.applyLabelString:  Reset
 Ddd*themes.cancelLabelString: Close
+
+Ddd*themes*XmTextField.columns:	    40
+Ddd*themes*XmTextField.marginHeight: 3
 
 Ddd*themes*help.labelString:	   ?
 Ddd*themes*help.tipString: \
@@ -6760,6 +6767,29 @@ Ddd*lock_dialog.okLabelString:		Continue
 Ddd*lock_dialog*kill.labelString:	Kill
 Ddd*lock_dialog.cancelLabelString: 	Exit
 
+Ddd*confirm_apply_dialog.dialogTitle: DDD: Apply Theme
+Ddd*confirm_apply_dialog.okLabelString:     Apply on all
+Ddd*confirm_apply_dialog*apply.labelString: Apply on this
+Ddd*confirm_apply_dialog*messageString:	\
+@rm Apply EMPH(@THEME_DOC@) on all\n\
+expressions matching CODE("@PATTERN@")?
+Ddd*confirm_apply_dialog*helpString:	\
+WIDGET(Apply Theme)\n\
+\n\
+You are about to apply a theme to an expression or a pattern.\n\
+\n\
+Applying a theme is EMPH(permanent); that is, it will be applied to all\n\
+present and future occurrences of the expression. (You can always\n\
+unapply the theme via LBL(Data, Themes).)\n\
+\n\
+You can choose where EMPH(@THEME_DOC@) should be applied:\n\
+\n\
+ITEM To apply EMPH(@THEME_DOC@) on all expressions \
+matching CODE("@PATTERN@"),\n\
+    click on LBL(Apply on all).\n\
+ITEM To apply EMPH(@THEME_DOC@) on CODE(@EXPR@) only,\n\
+    click on LBL(Apply on this).\n\
+ITEM To cancel applying the theme, click on LBL(Cancel).
 
 Ddd*launch_tty_dialog.dialogTitle: DDD: Starting Execution Window
 Ddd*launch_tty_dialog.messageString:		\

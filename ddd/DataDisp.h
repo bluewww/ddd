@@ -188,6 +188,7 @@ class DataDisp {
 
     static DispValue *selected_value();
     static DispNode  *selected_node();
+    static string selected_pattern();
 
     static void open_data_window();
     static void close_data_window();
@@ -578,7 +579,9 @@ public:
     static void selectAllCB(Widget, XtPointer, XtPointer);
     static void unselectAllCB(Widget, XtPointer, XtPointer);
     static void deleteCB(Widget, XtPointer, XtPointer);
-    static void applyCB(Widget, XtPointer, XtPointer);
+    static void applyThemeCB(Widget, XtPointer, XtPointer);
+    static void applyThemeOnThisCB(Widget, XtPointer, XtPointer);
+    static void applyThemeOnAllCB(Widget, XtPointer, XtPointer);
 
     // Helpers for user displays
     static bool have_user_display(const string& name);
