@@ -836,7 +836,7 @@ To view all currently active threads in your program, select
 `\fBThreads\fR' from the `\fBstatus\fR' menu.  The current thread is
 highlighted.  Select any thread to make it the current thread.
 .PP
-.\".PSPIC (FIXME)
+.PSPIC PICS/ddd-threads.ps 15.3cm
 .PP
 For more information on threads, see the section `\fBDebugging
 programs with multiple threads\fR' in the \s-2GDB\s+2 documentation.
@@ -1225,14 +1225,14 @@ hint\fR.  You can make edge hints visible by selecting `\fBShow Edge
 Hints\fR' in the `\fBData Options\fR' menu.  Edge hints can be moved
 around like arbitrary displays.
 .PP
-.\".PSPIC (FIXME)
+.PSPIC PICS/ddd-aliases.ps 15.3cm
 .PP
 The suppressed displays can not be accessed via the data window, since
 they are not visible.  However, they are listed in the Display Editor
 as \fIaliases\fR of the original data display.  Via the Display
 Editor, you can select and delete suppressed displays.
 .PP
-.\".PSPIC (FIXME)
+.PSPIC PICS/ddd-edit-displays.ps 15.3cm
 .PP
 Suppressed displays become visible again as soon as
 .br
@@ -1245,7 +1245,6 @@ their address changes such that they are no more aliases, or
 .IP \(bu 2
 the original data display is deleted, such that the least recently
 changed alias becomes the new original data display.
-.PP
 .PP
 Please note the following \fIcaveats\fR with alias detection:
 .br
@@ -1827,31 +1826,32 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 .PP
 .PSPIC PICS/ddd-data-prefs.ps 15.3cm
 .PP
-By default, \s-2@DDD@\s+2 displays a grid in the data window to
-facilitate display alignment.  If you prefer not to have a grid, unset
-the `\fBShow Grid\fR' option.
+If you want \s-2@DDD@\s+2 to detect aliases, set the `\fBDetect
+Aliases\fR' option.  Note that alias detection makes \s-2@DDD@\s+2 run
+slower.  See `\fBExamining Shared Data Structures\fR', above, for
+details on alias detection.
 .PP
-Layouting the display graph may introduce \fIedge hints\fR; that is,
-edges are no more straight lines, but lead to an edge hint and from
-there to their destination.  These edge hints can be selected and
+Graph layout and alias detection may introduce \fIedge hints\fR; that
+is, edges are no more straight lines, but lead to an edge hint and
+from there to their destination.  These edge hints can be selected and
 moved around like displays.  You can make edge hints visible by
 setting the `\fBShow Edge Hints\fR' option.
 .PP
-To enforce alignment, you can set the `\fBSnap to Grid\fR' option.
-If `\fBSnap to Grid\fR' is enabled, displays can be moved on grid
-positions only.
+To facilitate alignment of data displays, you can set the
+`\fBAuto-align displays\fR' option.  If auto-alignment is enabled,
+displays can be moved on grid positions only.
 .PP
 To enable a more compact layout, you can set the `\fBCompact
 Layout\fR' option.  This realizes an alternate layout algorithm, where
 successors are placed next to their parents.  This algorithm is
 suitable for homogeneous data structures only.
 .PP
-To enforce layout, you can set the `\fBAutomatic Layout\fR' option.
-If `\fBAutomatic Layout\fR' is enabled, the graph is layouted after
-each change.
+To enforce layout, you can set the `\fBRe-layout graph
+automatically\fR' option.  If automatic layout is enabled, the graph
+is layouted after each change.
 .PP
-In the `\fBGrid Size\fR' scale, you can choose a grid size for the
-data window.  Default is 16.
+In the `\fBGrid Size\fR' scale, you can change the spacing of grid points.
+A spacing of 0 disables the grid.  Default is 16.
 .PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
