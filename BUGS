@@ -295,12 +295,6 @@ Volunteers for fixing these and other bugs are welcome!
      Reported by Deepak Mulchandani <dmm@jurassic.eng.sun.com>
      [Can anyone reproduce this?  -AZ]
 
-144. Warren Nagourney <warren@dirac.phys.washington.edu> says: When I
-     push on the upper or lower scrolling arrow in the source window,
-     occasionally the scrolling will go out of control and scroll all
-     the way to the top or bottom of the window before it scrolls to
-     the desired place.
-
 150. In Modula-2-mode, DDD displays are named `^tree' instead of
      `tree^'.  [This is a GDB bug.  Here's a patch for GDB 4.16:
 
