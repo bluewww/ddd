@@ -80,9 +80,9 @@
 .I program
 .RB "[\|" \c
 .I core \c
-\||\|
+\&\||\|
 .I process-id\c
-\|]\|]
+\&\|]\|]
 .ad b
 .TP
 but usually just
