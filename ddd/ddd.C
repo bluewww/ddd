@@ -1960,7 +1960,7 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    // Enable maintenance menu
+    // Enable maintenance menu if debugging DDD
     if (being_debugged())
 	app_data.maintenance = true;
 
@@ -7471,8 +7471,10 @@ static void setup_options()
     set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
     set_sensitive(set_debugger_perl_w, have_cmd("perl"));
 
+#if 0
     set_sensitive(debug_ddd_w, !being_debugged());
     set_sensitive(dump_core_w, !being_debugged());
+#endif
 }
 
 static void setup_core_limit()
