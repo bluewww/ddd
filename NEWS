@@ -4,15 +4,17 @@ DDD News						-*- text -*-
 DDD 3.2 [in development]
 ========================
 
-DDD 3.2 brings almost nothing yet.
+DDD 3.2 brings not much yet.
 
-- In Breakpoint Properties, Define Command, and GDB Settings, have an
-  `Apply' button that applies changes to text fields.
-- The GDB source directory path is saved with the current session.
-- The JDB class path is only saved with the current session.
+- Breakpoint commands are also supported for DBX, Perl, and XDB.
+- `Breakpoint Properties', `Define Command', and `Debugger Settings'
+  have an `Apply' button that applies changes to text fields.
+- [Perl] DDD supports temporary breakpoints in Perl.
+- [GDB] DDD saves the GDB source directory path with the current session.
+- [JDB] DDD saves the JDB class path only with the current session.
 
-DDD 3.2 also incorporates all changes from DDD 3.1.1 and later; see
-below.
+DDD 3.2 also incorporates all changes from DDD 3.1.2 and later; see
+below for details.
 
 
 DDD 3.1.2
