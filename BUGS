@@ -136,4 +136,8 @@ Volunteers for fixing these and other bugs are welcome!
     the console window does not work initially; it only works after
     opening an arbitrary dialog.
 
-368 (Insert new bugs here)
+368 When DDD is running on a locked terminal (via `xlock' or
+    likewise), DDD considers the pointer to be frozen, such that it
+    continues execution.
+
+369 (Insert new bugs here)
