@@ -277,4 +277,26 @@ Volunteers for fixing these and other bugs are welcome!
      bar. Thus we cannot properly see the list of files available.
      (This problem is not unique to DDD.)
 
-219. (Insert your bug here)
+219. Markus Kossmann <mk@emil.inka.de> reports:
+
+     ddd-1997-11-10 compiled on linux-2.0.31, libc-5.4.38,
+     libg++-2.7.2.8, gcc-2.7.2.1 works.  Upgrading this system to libc
+     5.4.39 or 5.4.40 breaks ddd. It fails now on startup with :
+
+     gdb: cannot open /dev/ttyp6: I/O error
+     gdb: child communication setup failed
+
+     The libc Changelog says :
+     [...]
+     Thu Sep 11 08:04:03 1997  H.J. Lu (hjl@gnu.ai.mit.edu)
+     
+            * libio/fileops.c (_IO_file_underflow): treat EAGAIN and
+            EWOULDBLOCK as EOF.
+     [...]
+     It seems that this change is the culprit. Backing it out removes
+     the error.
+
+     I´m not sure, if the new behaviour of libc can be considered as
+     bug or if ddd should be adapted to support that.
+
+220. (Insert your bug here)
