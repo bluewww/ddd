@@ -8,9 +8,9 @@ DDD 1.2
     the `ChangeLog' file for details.
 
     Changes to DDD 1.1:
-    - DDD source code should now be ANSI/ISO C++ conformant - all GCC-
-      or libg++-specific code should be gone.  DDD now also compiles
-      using other C++ compilers than GCC (Sun's 2.3 Solaris CC works
+    - DDD source code should now be ANSI/ISO C++ conformant - all code
+      specific to GCC or libg++ has been adapted.  DDD now also
+      compiles using other C++ compilers than GCC (Sun's CC 4.0 works
       fine; AT&T Cfront 3.0 has trouble with some inline functions).
     - DDD should now run correctly on SGI/IRIX machines.
     - Interrupting processes via the Interrupt button now works
