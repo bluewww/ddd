@@ -2316,61 +2316,72 @@ string GDBAgent::history_file() const
     return "";			// Unknown
 }
 
+// Return true iff A contains the word S
+static bool contains_word(const string& a, const string& s)
+{
+    int index = -1;
+    for (;;)
+    {
+	index = a.index(s, index + 1);
+	if (index < 0)
+	    break;
+
+	if (index > 0 && isalpha(a[index - 1]))
+	    continue;		// Letter before S
+
+	int next = index + s.length();
+	if (next < int(a.length()) && isalpha(a[next]))
+	    continue;		// Letter after S
+
+	return true;		// Okay
+    }
+
+    return false;		// Not found
+}
+
 // Determine language from TEXT
 ProgramLanguage GDBAgent::program_language(string text)
 {
     text.downcase();
 
     if (type() == GDB && text.contains("language"))
-    {
 	text = text.after("language");
+
+    if (text.contains("\n"));
 	text = text.before("\n");
+
+    static struct {
+	char *name;
+	ProgramLanguage language;
+    } language_table[] = {
+	{ "fortran", LANGUAGE_FORTRAN },
+	{ "f",       LANGUAGE_FORTRAN }, // F77, F90, F
+	{ "java",    LANGUAGE_JAVA },
+	{ "chill",   LANGUAGE_CHILL },
+	{ "pascal",  LANGUAGE_PASCAL },
+	{ "modula",  LANGUAGE_PASCAL },
+	{ "m",       LANGUAGE_PASCAL }, // M2, M3 or likewise
+	{ "ada",     LANGUAGE_ADA },
+	{ "c",       LANGUAGE_C },
+	{ "c++",     LANGUAGE_C },
+	{ "auto",    LANGUAGE_OTHER }  // Keep current language
+    };
+
+    for (int i = 0; 
+	 i < int(sizeof(language_table) / sizeof(language_table[0])); i++)
+    {
+	if (contains_word(text, language_table[i].name))
+	{
+	    ProgramLanguage new_language = language_table[i].language;
+	    if (new_language != LANGUAGE_OTHER)
+		program_language(new_language);
+
+	    return program_language();
+	}
     }
 
-    if (text.contains("fortran"))
-    {
-	program_language(LANGUAGE_FORTRAN);
-    }
-    else if (text.contains("java"))
-    {
-	program_language(LANGUAGE_JAVA);
-    }
-    else if (text.contains("chill"))
-    {
-	program_language(LANGUAGE_CHILL);
-    }
-    else if (text.contains("pascal"))
-    {
-	program_language(LANGUAGE_PASCAL);
-    }
-    else if (text.contains("ada"))
-    {
-	program_language(LANGUAGE_ADA);
-    }
-    else if (text.contains("c++"))
-    {
-	program_language(LANGUAGE_C);
-    }
-    else if (text.contains("mod") || 
-	     text.contains("m2") || 
-	     text.contains("m3"))
-    {
-	program_language(LANGUAGE_PASCAL);
-    }
-    else if (text.contains("c"))
-    {
-	program_language(LANGUAGE_C);
-    }
-    else if (text.contains("auto"))
-    {
-	// Do nothing -- keep old setting
-    }
-    else
-    {
-	// Default setting
-	program_language(LANGUAGE_C);
-    }
-
+    // Unknown language - switch to default setting
+    program_language(LANGUAGE_C);
     return program_language();
 }
 
