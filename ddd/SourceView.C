@@ -3185,11 +3185,10 @@ string SourceView::get_word_at_pos(Widget text_w,
 //----------------------------------------------------------------------------
 
 // Install the given X bitmap as NAME
-static void InstallImage(unsigned char *bits, int width, int height, 
-			 const string& name)
+static void InstallBitmapAsImage(unsigned char *bits, int width, int height, 
+				 const string& name)
 {
-    XImage *image = CreateImageFromBitmapData(bits, width, height);
-    Boolean ok = XmInstallImage(image, name);
+    Boolean ok = InstallBitmap(bits, width, height, name);
     if (!ok)
 	cerr << "Could not install " << quote(name) << " bitmap\n";
 }
@@ -3205,37 +3204,37 @@ SourceView::SourceView(Widget parent)
 	toplevel_w = XtParent(toplevel_w);
 
     // Install glyph images
-    InstallImage(arrow_bits, arrow_width, arrow_height, 
-		 "plain_arrow");
-    InstallImage(grey_arrow_bits, grey_arrow_width, grey_arrow_height, 
-		 "grey_arrow");
-    InstallImage(past_arrow_bits, past_arrow_width, past_arrow_height, 
-		 "past_arrow");
-    InstallImage(signal_arrow_bits, signal_arrow_width, signal_arrow_height, 
-		 "signal_arrow");
-    InstallImage(drag_arrow_bits, drag_arrow_width, drag_arrow_height, 
-		 "drag_arrow");
+    InstallBitmapAsImage(arrow_bits, arrow_width, arrow_height, 
+			 "plain_arrow");
+    InstallBitmapAsImage(grey_arrow_bits, grey_arrow_width, grey_arrow_height, 
+			 "grey_arrow");
+    InstallBitmapAsImage(past_arrow_bits, past_arrow_width, past_arrow_height, 
+			 "past_arrow");
+    InstallBitmapAsImage(signal_arrow_bits, signal_arrow_width, 
+			 signal_arrow_height, "signal_arrow");
+    InstallBitmapAsImage(drag_arrow_bits, drag_arrow_width, drag_arrow_height, 
+			 "drag_arrow");
 
-    InstallImage(stop_bits, stop_width, stop_height, 
-		 "plain_stop");
-    InstallImage(cond_bits, cond_width, cond_height, 
-		 "plain_cond");
-    InstallImage(temp_bits, temp_width, temp_height, 
-		 "plain_temp");
+    InstallBitmapAsImage(stop_bits, stop_width, stop_height, 
+			 "plain_stop");
+    InstallBitmapAsImage(cond_bits, cond_width, cond_height, 
+			 "plain_cond");
+    InstallBitmapAsImage(temp_bits, temp_width, temp_height, 
+			 "plain_temp");
 
-    InstallImage(grey_stop_bits, grey_stop_width, grey_stop_height, 
-		 "grey_stop");
-    InstallImage(grey_cond_bits, grey_cond_width, grey_cond_height, 
-		 "grey_cond");
-    InstallImage(grey_temp_bits, grey_temp_width, grey_temp_height, 
-		 "grey_temp");
+    InstallBitmapAsImage(grey_stop_bits, grey_stop_width, grey_stop_height, 
+			 "grey_stop");
+    InstallBitmapAsImage(grey_cond_bits, grey_cond_width, grey_cond_height, 
+			 "grey_cond");
+    InstallBitmapAsImage(grey_temp_bits, grey_temp_width, grey_temp_height, 
+			 "grey_temp");
 
-    InstallImage(drag_stop_bits, drag_stop_width, drag_stop_height, 
-		 "drag_stop");
-    InstallImage(drag_cond_bits, drag_cond_width, drag_cond_height, 
-		 "drag_cond");
-    InstallImage(drag_temp_bits, drag_temp_width, drag_temp_height, 
-		 "drag_temp");
+    InstallBitmapAsImage(drag_stop_bits, drag_stop_width, drag_stop_height, 
+			 "drag_stop");
+    InstallBitmapAsImage(drag_cond_bits, drag_cond_width, drag_cond_height, 
+			 "drag_cond");
+    InstallBitmapAsImage(drag_temp_bits, drag_temp_width, drag_temp_height, 
+			 "drag_temp");
 
     // Setup actions
     XtAppAddActions (app_context, actions, XtNumber (actions));

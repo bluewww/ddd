@@ -608,7 +608,7 @@ static void install_icon(Widget w, String name,
 		    image = subimage;
 		}
 	    }
-	    Boolean ok = XmInstallImage(image, name);
+	    Boolean ok = InstallImage(image, name);
 	    if (ok)
 		return;
 	}
@@ -640,7 +640,7 @@ static void install_icon(Widget w, String name,
 	}
     }
 
-    Boolean ok = XmInstallImage(image, name);
+    Boolean ok = InstallImage(image, name);
     if (ok)
 	return;
 

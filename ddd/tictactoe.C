@@ -452,11 +452,10 @@ static void make_move(int move)
 }
 
 // Install the given X bitmap as NAME
-static void InstallImage(unsigned char *bits, int width, int height, 
-			 const string& name)
+static void InstallBitmapAsImage(unsigned char *bits, int width, int height, 
+				 const string& name)
 {
-    XImage *image = CreateImageFromBitmapData(bits, width, height);
-    Boolean ok = XmInstallImage(image, name);
+    Boolean ok = InstallBitmap(bits, width, height, name);
     if (!ok)
 	cerr << "Could not install " << quote(name) << " bitmap\n";
 }
@@ -467,9 +466,9 @@ static void install_images()
     if (installed)
 	return;
 
-    InstallImage(cross_bits,  cross_width,  cross_height,  "cross");
-    InstallImage(circle_bits, circle_width, circle_height, "circle");
-    InstallImage(empty_bits,  empty_width,  empty_height,  "empty");
+    InstallBitmapAsImage(cross_bits,  cross_width,  cross_height,  "cross");
+    InstallBitmapAsImage(circle_bits, circle_width, circle_height, "circle");
+    InstallBitmapAsImage(empty_bits,  empty_width,  empty_height,  "empty");
 
     installed = true;
 }

@@ -46,6 +46,8 @@ char InitImage_rcsid[] =
 #include <X11/Xlibint.h>	// Xcalloc()
 #include <X11/Xutil.h>		// XGetPixel(), etc.
 
+#include <Xm/Xm.h>		// XmInstallImage()
+
 #if XlibSpecificationRelease < 6
 
 // We're stuck with X11R5 or earlier, so we Provide a simple
@@ -204,4 +206,31 @@ XImage *CreateImageFromBitmapData(unsigned char *bits, int width, int height)
     InitImage(image);
 
     return image;
+}
+
+Boolean InstallImage(XImage *image, char *image_name)
+{
+    // Dave Larson <davlarso@plains.nodak.edu> writes:
+    // DDD doesn't work with the Motif 2.1 libraries shipped w/ Solaris 7:
+    // the pixmap cache is not being seached for the pixmaps.
+    //
+    // I did discover a very simple fix and I have to clue why it
+    // works. I was digging through the headers for Motif 2.1 and
+    // discovered many of the functions such as XmInstallImage have
+    // Xm21InstallImage equivalents that take the exact same
+    // arguements.  If I simply change the three calls to
+    // XmInstallImage to Xm21InstallImage, the problem is solved.
+
+#if XmVersion >= 2001
+    return Xm21InstallImage(image, image_name);
+#else
+    return XmInstallImage(image, image_name);
+#endif
+}
+
+// Install the given X bitmap as NAME
+Boolean InstallBitmap(unsigned char *bits, int width, int height, char *name)
+{
+    XImage *image = CreateImageFromBitmapData(bits, width, height);
+    return InstallImage(image, name);
 }
