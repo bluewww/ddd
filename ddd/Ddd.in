@@ -326,6 +326,8 @@ Ddd*findWordsOnly: 		true
 ! Do we wish to cache source files in memory?
 Ddd*cacheSourceFiles:		true
 
+! Do we wish to cache machine code in memory?
+Ddd*cacheMachineCode:		true
 
 ! Focus policy
 ! POINTER means point-and-type, EXPLICIT means click-and-type.
@@ -960,6 +962,9 @@ only complete words are found.\n\
 @tt \267 @rm If @bf Cache Sources @rm is set, \
 source texts are cached in memory.\n\
     Otherwise, sources are re-read upon each source change.\n\
+@tt \267 @rm If @bf Cache Machine Code @rm is set, \
+disassembled code is cached in memory.\n\
+    Otherwise, code is re-disassembled upon each function change.\n\
 @tt \267 @rm If @bf Display Glyphs @rm is set, \
 positions and breakpoints are shown as glyphs.\n\
     Otherwise, positions and breakpoints are shown as text.\n\
@@ -1020,8 +1025,11 @@ Ddd*generalOptionsMenu.saveHistoryOnExit.mnemonic:     H
 Ddd*sourceOptionsMenu.findWordsOnly.labelString:       Find Words Only
 Ddd*sourceOptionsMenu.findWordsOnly.mnemonic:	       W
 
-Ddd*sourceOptionsMenu.cacheSourceFiles.labelString:    Cache Sources
-Ddd*sourceOptionsMenu.cacheSourceFiles.mnemonic:       C
+Ddd*sourceOptionsMenu.cacheSourceFiles.labelString:    Cache Source Files
+Ddd*sourceOptionsMenu.cacheSourceFiles.mnemonic:       S
+
+Ddd*sourceOptionsMenu.cacheMachineCode.labelString:    Cache Machine Code
+Ddd*sourceOptionsMenu.cacheMachineCode.mnemonic:       M
 
 Ddd*sourceOptionsMenu.displayGlyphs.labelString:       Display Glyphs
 Ddd*sourceOptionsMenu.displayGlyphs.mnemonic:          G

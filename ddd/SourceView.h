@@ -63,6 +63,7 @@
 #include "ArgField.h"
 #include "GDBAgent.h"
 #include "BreakPoint.h"
+#include "CodeCache.h"
 #include "Map.h"
 
 //-----------------------------------------------------------------------------
@@ -230,8 +231,11 @@ private:
     static XmTextPosition*             pos_of_line;
 
     static Assoc<string, string> file_cache;
+    static CodeCache code_cache;
     static string current_source;
     static string current_code;
+    static string current_code_start;
+    static string current_code_end;
 
     static XmTextPosition last_pos;
     static XmTextPosition last_top;
@@ -343,14 +347,16 @@ public:
     static bool where_required();
     static bool register_required();
 
-    // Check whether source files are to be cached
+    // Check whether source files and code are to be cached
     static bool cache_source_files;
+    static bool cache_machine_code;
 
     // Set whether glyphs are to be displayed
     static void set_display_glyphs(bool value);
 
-    // Clear file cache
+    // Clear caches
     static void clear_file_cache();
+    static void clear_code_cache();
 
     // Get the line at POSITION
     static string get_line(string position);

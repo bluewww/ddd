@@ -216,6 +216,7 @@ bool SourceView::stack_dialog_popped_up    = false;
 bool SourceView::register_dialog_popped_up = false;
 
 bool SourceView::cache_source_files     = true;
+bool SourceView::cache_machine_code     = true;
 bool SourceView::display_glyphs         = true;
 
 int  SourceView::bp_indent_amount = 0;
@@ -227,9 +228,12 @@ int    SourceView::line_count = 0;
 Assoc<int, VarArray<int> >* SourceView::bps_in_line = 0;
 XmTextPosition*             SourceView::pos_of_line = 0;
 Assoc<string, string> SourceView::file_cache;
+CodeCache SourceView::code_cache;
 
 string SourceView::current_source;
 string SourceView::current_code;
+string SourceView::current_code_start;
+string SourceView::current_code_end;
 
 XmTextPosition SourceView::last_pos = 0;
 XmTextPosition SourceView::last_top = 0;
@@ -1843,6 +1847,7 @@ void SourceView::process_info_bp (string& info_output)
 void SourceView::process_info_line_main(string& info_output)
 {
     clear_file_cache();
+    clear_code_cache();
     clear_dbx_lookup_cache();
     current_file_name = "";
 
@@ -3537,7 +3542,7 @@ void SourceView::CheckScrollWorkProc(XtPointer client_data, XtIntervalId *id)
 }
 
 // Maximum number of simultaneous glyphs on the screen
-const int max_glyphs = 10;
+const int max_glyphs = 20;
 
 // Horizontal arrow offset (pixels)
 const int arrow_x_offset = -5;
@@ -3694,7 +3699,35 @@ void SourceView::set_display_glyphs(bool set)
 // Machine code stuff
 //----------------------------------------------------------------------------
 
+// Clear the code cache
+void SourceView::clear_code_cache()
+{
+    static CodeCache empty;
+    code_cache = empty;
+    process_disassemble("No code.");
+}
+
 const int code_indent_amount = 4;
+
+static string first_address(string s)
+{
+    int index = s.index("0x");
+    if (index < 0)
+	return "";
+
+    s = s.from(index);
+    return s.through(rxalphanum);
+}
+
+static string last_address(string s)
+{
+    int index = s.index("\n0x", -1);
+    if (index < 0)
+	return "";
+
+    s = s.from(index + 1);
+    return s.through(rxalphanum);
+}
 
 // Process output of `disassemble' command
 void SourceView::process_disassemble(const string& disassemble_output)
@@ -3715,40 +3748,27 @@ void SourceView::process_disassemble(const string& disassemble_output)
     }
 
     XmTextSetString(code_text_w, (String)indented_code);
-    current_code = indented_code;
-}
+    current_code       = indented_code;
+    current_code_start = first_address(disassemble_output);
+    current_code_end   = last_address(disassemble_output);
 
-// Return true if C is a leading zero character
-inline bool is_leading_zero(char c)
-{
-    return c == '0' || c == 'x' || c == 'X' || isspace(c);
-}
-
-// Compare the addresses X and Y; return true if equal
-static bool address_equal(const string& x, const string& y)
-{
-    unsigned int px = 0;
-    unsigned int py = 0;
-
-    while (px < x.length() && is_leading_zero(x[px]))
-	px++;
-    while (py < y.length() && is_leading_zero(y[py]))
-	py++;
-
-    if (x.length() - px != y.length() - py)
-	return false;		// Differing length
-
-    for (unsigned i = 0; i < x.length() - px; i++)
-	if (x[px + i] != y[py + i])
-	    return false;	// Differing character at position i
-
-    return true;
+    if (cache_machine_code
+	&& current_code_start != ""
+	&& current_code_end   != "")
+	code_cache += CodeCacheEntry(current_code_start, 
+				     current_code_end, 
+				     current_code);
 }
 
 // Search PC in the current code; return beginning of line if found
 XmTextPosition SourceView::find_pc(const string& pc)
 {
+    if (compare_address(pc, current_code_start) < 0
+	|| compare_address(pc, current_code_end) > 0)
+	return XmTextPosition(-1);
+
     XmTextPosition pos = XmTextPosition(-1);
+
     int i = 0;
     while (i < int(current_code.length()))
     {
@@ -3767,7 +3787,7 @@ XmTextPosition SourceView::find_pc(const string& pc)
 	    string line = current_code.at(j, eol - j);
 	    string address = line.from("0x");
 	    address = line.through(rxalphanum);
-	    if (address_equal(pc, address))
+	    if (compare_address(pc, address) == 0)
 	    {
 		pos = i;
 		break;
@@ -3817,9 +3837,27 @@ void SourceView::show_pc (const string& pc)
     // clog << "Showing PC " << pc << "\n";
 
     XmTextPosition pos = find_pc(pc);
+
+    // While PC not found, look for code in cache
+    for (int i = 0; 
+	 pos == XmTextPosition(-1) && i < code_cache.size(); 
+	 i++)
+    {
+	const CodeCacheEntry& cce = code_cache[i];
+	if (compare_address(pc, cce.start) >= 0 
+	    && compare_address(pc, cce.end) <= 0)
+	{
+	    XmTextSetString(code_text_w, (String)cce.code);
+	    current_code       = cce.code;
+	    current_code_start = cce.start;
+	    current_code_end   = cce.end;
+	    pos = find_pc(pc);
+	}
+    }
+
     if (pos == XmTextPosition(-1))
     {
-	// PC not found: disassemble location
+	// PC not found in current code: disassemble location
 	static string last_pc;
 	last_pc = pc;
 	if (!refresh_code_pending)

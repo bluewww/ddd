@@ -608,6 +608,7 @@ DDD_OBJECTS = \
 	xconfig.o    \
 	ArgField.o   \
 	BreakPoint.o \
+	CodeCache.o  \
 	DataDisp.o   \
 	DispBox.o    \
 	DispBuffer.o \

@@ -321,6 +321,7 @@ void graphRefreshCB          (Widget, XtPointer, XtPointer);
 
 void sourceToggleFindWordsOnlyCB    (Widget, XtPointer, XtPointer);
 void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer);
+void sourceToggleCacheMachineCodeCB (Widget, XtPointer, XtPointer);
 void sourceToggleDisplayGlyphsCB    (Widget, XtPointer, XtPointer);
 
 void dddToggleGroupIconifyCB       (Widget, XtPointer, XtPointer);
@@ -847,6 +848,15 @@ static XtResource resources[] = {
 	XtPointer(True)
     },
     {
+	XtNcacheMachineCode,
+	XtCCacheMachineCode,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, cache_machine_code),
+	XtRImmediate,
+	XtPointer(True)
+    },
+    {
 	XtNsuppressWarnings,
 	XtCSuppressWarnings,
 	XtRBoolean,
@@ -1201,6 +1211,7 @@ static Widget graph_compact_layout_w[4];
 static Widget graph_auto_layout_w[4];
 static Widget find_words_only_w[4];
 static Widget cache_source_files_w[4];
+static Widget cache_machine_code_w[4];
 static Widget display_glyphs_w[4];
 static Widget suppress_warnings_w[4];
 static Widget set_focus_pointer_w[4];
@@ -1235,6 +1246,8 @@ static MMDesc source_options_menu[] =
       NULL, find_words_only_w },
     { "cacheSourceFiles", MMToggle, { sourceToggleCacheSourceFilesCB }, 
       NULL, cache_source_files_w },
+    { "cacheMachineCode", MMToggle, { sourceToggleCacheMachineCodeCB }, 
+      NULL, cache_machine_code_w },
     { "displayGlyphs",    MMToggle, { sourceToggleDisplayGlyphsCB }, 
       NULL, display_glyphs_w },
     MMEnd
@@ -1851,6 +1864,7 @@ int main(int argc, char *argv[])
     graph_auto_layout_w[CommandOptions]        = graph_auto_layout_w[0];
     find_words_only_w[CommandOptions]          = find_words_only_w[0];
     cache_source_files_w[CommandOptions]       = cache_source_files_w[0];
+    cache_machine_code_w[CommandOptions]       = cache_machine_code_w[0];
     display_glyphs_w[CommandOptions]           = display_glyphs_w[0];
     suppress_warnings_w[CommandOptions]        = suppress_warnings_w[0];
     set_focus_pointer_w[CommandOptions]        = set_focus_pointer_w[0];
@@ -1927,6 +1941,7 @@ int main(int argc, char *argv[])
 	graph_auto_layout_w[DataOptions]        = graph_auto_layout_w[0];
 	find_words_only_w[DataOptions]          = find_words_only_w[0];
         cache_source_files_w[DataOptions]       = cache_source_files_w[0];
+        cache_machine_code_w[DataOptions]       = cache_machine_code_w[0];
         display_glyphs_w[DataOptions]           = display_glyphs_w[0];
 	suppress_warnings_w[DataOptions]        = suppress_warnings_w[0];
 	set_focus_pointer_w[DataOptions]        = set_focus_pointer_w[0];
@@ -2005,6 +2020,7 @@ int main(int argc, char *argv[])
 	graph_auto_layout_w[SourceOptions]        = graph_auto_layout_w[0];
 	find_words_only_w[SourceOptions]          = find_words_only_w[0];
 	cache_source_files_w[SourceOptions]       = cache_source_files_w[0];
+	cache_machine_code_w[SourceOptions]       = cache_machine_code_w[0];
 	display_glyphs_w[SourceOptions]           = display_glyphs_w[0];
 	suppress_warnings_w[SourceOptions]        = suppress_warnings_w[0];
 	set_focus_pointer_w[SourceOptions]        = set_focus_pointer_w[0];
@@ -2448,6 +2464,8 @@ void update_options()
 		      XmNset, app_data.find_words_only, NULL);
 	XtVaSetValues(cache_source_files_w[i],
 		      XmNset, app_data.cache_source_files, NULL);
+	XtVaSetValues(cache_machine_code_w[i],
+		      XmNset, app_data.cache_machine_code, NULL);
 	XtVaSetValues(display_glyphs_w[i],
 		      XmNset, app_data.display_glyphs, NULL);
 
@@ -2527,6 +2545,16 @@ void update_options()
     {
 	source_view->cache_source_files = false;
 	source_view->clear_file_cache();
+    }
+
+    if (app_data.cache_machine_code)
+    {
+	source_view->cache_machine_code = true;
+    }
+    else
+    {
+	source_view->cache_machine_code = false;
+	source_view->clear_code_cache();
     }
 
     source_view->set_display_glyphs(app_data.display_glyphs);
@@ -7250,6 +7278,22 @@ void sourceToggleCacheSourceFilesCB (Widget, XtPointer, XtPointer call_data)
     options_changed = true;
 }
 
+void sourceToggleCacheMachineCodeCB (Widget, XtPointer, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    app_data.cache_machine_code = info->set;
+
+    if (info->set)
+	set_status("Caching machine code.");
+    else
+	set_status("Not caching machine code.");
+
+    update_options();
+    options_changed = true;
+}
+
 void sourceToggleDisplayGlyphsCB (Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 
@@ -7584,6 +7628,8 @@ static void save_options(Widget origin)
 			 app_data.find_words_only) << "\n";
     os << bool_app_value(XtNcacheSourceFiles,
 			 app_data.cache_source_files) << "\n";
+    os << bool_app_value(XtNcacheMachineCode,
+			 app_data.cache_machine_code) << "\n";
     os << bool_app_value(XtNdisplayGlyphs,
 			 app_data.display_glyphs) << "\n";
     os << bool_app_value(XtNgroupIconify,

@@ -131,6 +131,8 @@
 #define XtCSaveHistoryOnExit     "SaveHistoryOnExit"
 #define XtNcacheSourceFiles      "cacheSourceFiles"
 #define XtCCacheSourceFiles      "CacheSourceFiles"
+#define XtNcacheMachineCode      "cacheMachineCode"
+#define XtCCacheMachineCode      "CacheMachineCode"
 #define XtNsuppressWarnings      "suppressWarnings"
 #define XtCSuppressWarnings      "SuppressWarnings"
 #define XtNttyMode               "ttyMode"
@@ -188,6 +190,7 @@ typedef struct {
     Boolean save_options_on_exit;
     Boolean save_history_on_exit;
     Boolean cache_source_files;
+    Boolean cache_machine_code;
     Boolean suppress_warnings;
     Boolean tty_mode;
     Boolean full_name_mode;
