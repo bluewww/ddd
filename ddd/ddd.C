@@ -4197,7 +4197,7 @@ static void dddPopupPreferencesCB (Widget, XtPointer, XtPointer)
 
 static void create_status(Widget parent)
 {
-    Arg args[10];
+    Arg args[15];
     int arg = 0;
     XtSetArg(args[arg], XmNresizePolicy, XmRESIZE_ANY); arg++;
     Widget status_form = 
@@ -4257,6 +4257,7 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNrightWidget,      led_w); arg++;
     XtSetArg(args[arg], XmNresizable,        False); arg++;
     XtSetArg(args[arg], XmNrecomputeSize,    False); arg++;
+    XtSetArg(args[arg], XmNshadowThickness,  0); arg++;
     status_w = verify(XmCreatePushButton(status_form, "status", args, arg));
     XtManageChild(status_w);
 

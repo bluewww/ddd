@@ -4013,7 +4013,6 @@ Ddd*status_form.status.alignment:	XmALIGNMENT_BEGINNING
 Ddd*status_form.status.leftOffset:	5
 Ddd*status_form.status.rightOffset:	5
 Ddd*status_form.status.labelString:	Ready.
-Ddd*status_form.status.shadowThickness: 0
 Ddd*status_form.status.fillOnArm:	off
 
 Ddd*status_form.led.highlightThickness: 0
