@@ -373,6 +373,10 @@ void BreakPoint::process_dbx(string& info_output)
 		myline_nr   = get_positive_nr(line.after("\":"));
 		myfunc      = line.before("\"");
 		strip_space(myfunc);
+
+		// Be sure to remove TYPE
+		while (myfunc.contains(" "))
+		    myfunc = myfunc.after(" ");
 	    }
 	    else
 	    {

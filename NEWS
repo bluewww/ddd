@@ -11,6 +11,7 @@ DDD 3.2.1 brings some minor bug fixes and major LessTif bug workarounds.
 - [LessTif] Restarting DDD (while saving settings) works fine.
 - [LessTif] Small fixes for building with LessTif on SGI.
 - [Perl] In the data display, Perl hash keys are properly quoted.
+- [Ladebug] More Ladebug variants are supported.
 - DDD makes more attempts in locating the initial main function.
 - Minor bugs with clustered displays have been fixed.
 - A bad pointer error in string manipulation has been fixed.

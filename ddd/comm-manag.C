@@ -2814,10 +2814,10 @@ static void extra_completed (const StringArray& answers,
 	file = answers[qu_count++];
 
 	// Simple sanity checks
-	strip_trailing_space(file);
+	strip_space(file);
 	if (file.contains("file\n", 0))	// Ladebug echoes `file'
 	    file = file.after(rxwhite);
-	if (file.contains('\n'))
+	if (file.index('\n') > 0)
 	    file = file.before('\n');
 	if (file.contains(' '))
 	    file = "";

@@ -33,9 +33,13 @@ DDD 3.2.1 brings some minor bug fixes and major LessTif bug workarounds.
 
 - [Perl] In the data display, Perl hash keys are properly quoted.
 
+- [Ladebug] More Ladebug variants are supported.
+
 - DDD makes more attempts in locating the initial main function.
 
 - Minor bugs with clustered displays have been fixed.
+
+- A bad pointer error in string manipulation has been fixed.
 
 - DDD PostScript documentation can be printed on multiple pages per sheet.
 
@@ -121,7 +125,7 @@ try them before `ftp.gnu.org' as it is very busy!
 
         - `ftp://ftp.eunet.ch'
 
-        - `ftp://nic.switch.ch/mirror/gnu'
+        - `ftp://sunsite.cnlab-switch.ch/mirror/gnu'
 
         - `ftp://ftp.informatik.rwth-aachen.de/pub/gnu'
 
