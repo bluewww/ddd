@@ -2089,7 +2089,8 @@ spec: ../$(ddd)-$(VERSION)-$(REL).spec
 # In a distribution, these should be already built.
 #
 # Order is significant here!  First source files, then derived files.
-PROG_STUFF = vsl-lex.L $(LEXTOCXX) vsl-lex.C \
+PROG_STUFF = $(LEXTOCXX).flex $(LEXTOCXX).sun \
+	     vsl-lex.L $(LEXTOCXX) vsl-lex.C \
 	     $(YACCTOCXX).bison $(YACCTOCXX).sun \
 	     vsl-gramma.Y $(YACCTOCXX) yacctoC.h vsl-gramma.h vsl-gramma.C \
 	     rxscan.L rxscan.C acconfig.h.in acconfig.h \
