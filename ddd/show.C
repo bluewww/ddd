@@ -288,9 +288,12 @@ void show_configuration(ostream& os)
 	cinfo = cinfo.before(int(cinfo.length()) - 1);
 
     show_version(os);
-    os << 
-	// Compilation stuff
-	"@(#)Compiled with "
+    string sccs = "@(" + string("#)");
+
+    string s;
+
+    // Compilation stuff
+    s = "@(#)Compiled with "
 #ifdef __GNUC__
 	"GCC " stringize(__GNUC__)
 #ifdef __GNUC_MINOR__
@@ -307,19 +310,37 @@ void show_configuration(ostream& os)
 #elif defined(_LINUX_C_LIB_VERSION)
         ", Linux libc " _LINUX_C_LIB_VERSION
 #endif
-	"\n" + 4
-	// X stuff
-	 << 
-	"@(#)Using X" stringize(X_PROTOCOL) 
+	"\n";
+    s.gsub(sccs, string(""));
+    os << s;
+
+    // X stuff
+    s = "@(#)Requires X" stringize(X_PROTOCOL) 
 	"R" stringize(XlibSpecificationRelease)
 	", Xt" stringize(X_PROTOCOL) "R" stringize(XtSpecificationRelease)
 	", Motif " stringize(XmVERSION) "." stringize(XmREVISION)
-#ifdef XmVERSION_STRING
-	" (" XmVERSION_STRING ")"
+#if XmUPDATE_LEVEL
+	"." stringize(XmUPDATE_LEVEL)
 #endif
-	"\n" + 4
-	// Optional stuff
-	 << "@(#)Includes " DDD_NAME " manual"
+#ifdef XmVERSION_STRING
+        " (" XmVERSION_STRING ")"
+#endif
+        "\n";
+    s.gsub(sccs, string(""));
+    s.gsub("( ", "(");
+    s.gsub(" )", ")");
+    os << s;
+
+#if HAVE_XMUSEVERSION
+    if (xmUseVersion != XmVersion)
+    {
+	os << "(Actually using Motif " << xmUseVersion / 1000 
+	   << "." << xmUseVersion % 1000 << ")\n";
+    }
+#endif
+
+    // Optional stuff
+    s = "@(#)Includes " DDD_NAME " manual"
 #ifdef XpmFormat
 	", XPM " stringize(XpmFormat) "." stringize(XpmVersion) 
 	"." stringize(XpmRevision)
@@ -330,8 +351,9 @@ void show_configuration(ostream& os)
 #if !RUNTIME_REGEX
 	", compile-time regexps"
 #endif
-	"\n" + 4
-       << cinfo << "\n";
+	"\n";
+    s.gsub(sccs, string(""));
+    os << s << cinfo << "\n";
 }
 
 

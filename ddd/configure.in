@@ -402,6 +402,10 @@ AC_CHECK_LIB(Xm, XmCreateOptionMenu,
 	XM_LIBS="-lXm"
 	AC_DEFINE(HAVE_MOTIF),,
 	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${LIBGEN})
+dnl
+AC_CHECK_LIB(Xm, xmUseVersion, 
+	AC_DEFINE(HAVE_XMUSEVERSION),,
+	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${LIBGEN})
 fi
 if test "$XM_LIBS" = ""; then
 dnl Without Motif, we won't get far.  Let the user fix this.

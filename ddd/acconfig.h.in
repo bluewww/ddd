@@ -86,6 +86,9 @@
 /* Define if your Motif widgets are actually LessTif widgets. */
 #undef HAVE_LESSTIF
 
+/* Define if the Motif library defines `xmUseVersion' */
+#undef HAVE_XMUSEVERSION
+
 /* Define if your C++ compiler supports named return values. */
 #undef HAVE_NAMED_RETURN_VALUES
 
