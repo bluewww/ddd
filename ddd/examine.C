@@ -153,6 +153,7 @@ static string format(const string& format, const string& size)
 
     case XDB:
     case JDB:
+    case PYDB:
 	// No way
 	break;
     }
