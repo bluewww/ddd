@@ -329,17 +329,20 @@ Widget create_toolbar(Widget parent, string /* name */,
 		      XmNpaneMinimum, toolbar_height,
 		      NULL);
 
-	if (label_type == XmSTRING && arg_height > button_height)
+	if (label_type == XmSTRING)
 	{
-	    Dimension offset = arg_height - button_height;
+	    Dimension offset = max(arg_height - button_height, 0);
 
-	    // Center all labels
+	    // Center all labels.  This must also be done if offset is
+	    // zero, since OSF/Motif 2.0 has trouble centering the
+	    // labels.
 	    center_buttons(items1, offset);
 	    center_buttons(items2, offset);
 	}
-	else if (button_height > arg_height)
+
+	if (button_height > arg_height)
 	{
-	    Dimension offset = button_height - arg_height;
+	    Dimension offset = max(button_height - arg_height, 0);
 
 	    // Center arg field
 	    XtVaSetValues(argfield->top(),
