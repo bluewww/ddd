@@ -182,6 +182,12 @@ bool is_core_file(const string& file_name)
 // True if FILE_NAME is a source file
 bool is_source_file(const string& file_name)
 {
+    if (file_name.contains(".o", -1))
+	return false;		// looks like an object file
+
+    if (file_name.contains(".a", -1))
+	return false;		// looks like an archive file
+
     struct stat sb;
     if (stat(file_name, &sb))
 	return false;		// cannot stat
@@ -197,6 +203,7 @@ bool is_source_file(const string& file_name)
     // VMS partition that in translation all files are marked
     // executable (like mounting DOS under Linux)
     // Hence, this check would filter out all source files.
+    // Also note that Python and Perl have executable source files.
 
     if (sb.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH))
 	return false;		// executable
@@ -253,9 +260,12 @@ bool is_fig_file(const string& file_name)
 	&& buf[3] == 'G';
 }
 
-// True if the first line of FILE_NAME contains `#! ... PATTERN ...'.
+// True if FILE_NAME is executable and its first line contains `#! PATTERN'.
 static bool has_hashbang(const string& file_name, const string& pattern)
 {
+    if (!is_cmd_file(file_name))
+	return false;
+
     char buf[BUFSIZ];
 
     int fd = open(file_name, O_RDONLY);
@@ -268,14 +278,14 @@ static bool has_hashbang(const string& file_name, const string& pattern)
 
     if (buf[0] != '#' || buf[1] != '!')
 	return false;
-	
+
     string line(buf, n);
     line = line.before('\n');
 
     return line.contains(pattern);
 }
 
-// A python file is a standard source file which ends in '.py'
+// A Python file is a standard source file which ends in '.py'
 bool is_python_file(const string& file_name)
 {
     if (!is_source_file(file_name))
