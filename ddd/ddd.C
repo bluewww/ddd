@@ -2593,7 +2593,7 @@ static void ddd_check_version()
 	// We have no ~/.ddd/init file: create a simple one
 	if (app_data.dddinit_version == 0)
 	{
-	    string session = app_data.session;
+	    static string session = app_data.session;
 	    app_data.session = DEFAULT_SESSION;
 	    save_options(CREATE_OPTIONS);
 	    app_data.session = session;
