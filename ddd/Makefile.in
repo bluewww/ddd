@@ -792,7 +792,7 @@ PROG_STUFF       = config.h vsl-lex.C vsl-gramma.h vsl-gramma.C \
 
 # Extra files to be built for the distribution
 # In a distribution, these should be already built.
-DIST_STUFF	 = $(PROG_STUFF) $(MANS) $(PSS) depend
+DIST_STUFF	 = $(PROG_STUFF) $(MANS) $(PSS)
 
 # Temporary Files to be cleaned, keeping configuration intact
 CLEAN_STUFF	 = ddd-$(VERSION)-* $(PROGS) $(DEMOS) $(PICS) \
@@ -950,7 +950,7 @@ readme:	$(README_FILES)
 
 .PHONY: diststuff
 diststuff: $(DIST_STUFF)
-	for file in $(DIST_STUFF); do test -f $$file && touch $$file; done
+	-for file in $(DIST_STUFF); do test -f $$file && $(TOUCH) $$file; done
 
 .PHONY: dist
 dist:	
@@ -1077,10 +1077,10 @@ check: Ddd ddd cxxtest
 	XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd cxxtest
 
 debug: Ddd ddd cxxtest ddd.gdb ddd.syms
-	gdb -x $(srcdir)/ddd.gdb ./ddd
+	$(GDB) -x $(srcdir)/ddd.gdb ./ddd
 
 ddd.syms: ddd
-	gdb -batch -nx -mapped -readnow ddd || touch ddd.syms
+	$(GDB) -batch -nx -mapped -readnow ddd || $(TOUCH) ddd.syms
 
 
 
