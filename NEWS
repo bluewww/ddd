@@ -1,7 +1,23 @@
 DDD News						-*- text -*-
 ********
-DDD 3.3.3-3.3.5
+
+DDD-3.3.7
+========
+
+- libiberty was missing from the 3.3.6 release
+- libtermcap was built but not linked on systems which needed it
+  (suse-axp-linux 8.1; probably others too)
+
+DDD-3.3.6
 =========
+
+- Andreas Zeller handed the role of maintainter to
+  Andrew Gaylard <apg@users.sf.net> 
+- The source tree was merged back from the bashdb project's CVS into the
+  original ddd CVS
+
+DDD 3.3.3-3.3.5
+===============
 
 - Major changes to get this to compile with modern auto-tools, Bison,
   Flex, and C++ STL.

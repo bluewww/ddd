@@ -223,8 +223,17 @@ $(srcdir)/ChangeLog: $(srcdir)/Makefile.am
 # Autoconf.
 # -----------------------------------------------------------------------------
 
-EXTRA_DIST = ddd.spec.in $(TERMCAP_DISTFILES) $(TEXINFO_DISTFILES) \
-	readline $(CVS2CL) $(USERMAP)
+EXTRA_DIST = \
+	ddd.spec.in \
+	$(TERMCAP_DISTFILES) \
+	$(TEXINFO_DISTFILES) \
+	libiberty \
+	readline \
+        include \
+	$(CVS2CL) \
+	$(USERMAP)
 
 dist-hook:
-	rm -rf `find $(distdir)/readline -name CVS`
+	rm -rf `find $(distdir)/include -name CVS -o -name .cvsignore`
+	rm -rf `find $(distdir)/readline -name CVS -o -name .cvsignore`
+	rm -rf `find $(distdir)/libiberty -name CVS -o -name .cvsignore`

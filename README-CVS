@@ -10,7 +10,7 @@ To checkout and build DDD from the public CVS archive, follow these steps:
 
 1. Check the DDD repository for latest news.  Go to:
 
-   http://sourceforge.net/projects/bashdb/
+   http://sourceforge.net/projects/ddd/
 
 
 2. Check your prerequisites. 
@@ -26,11 +26,11 @@ To checkout and build DDD from the public CVS archive, follow these steps:
 
 3. Checkout DDD.  Use these commands:
 
-       $ cvs -d:pserver:anonymous@cvs.bashdb.sourceforge.net:/cvsroot/ddd login
+       $ cvs -d:pserver:anonymous@cvs.ddd.sourceforge.net:/cvsroot/ddd login
 
    If you are prompted for a password, just hit Enter.
 
-    $ cvs -z3 -d:pserver:anonymous@cvs.bashdb.sourceforge.net:/cvsroot/bashdb \
+    $ cvs -z3 -d:pserver:anonymous@cvs.ddd.sourceforge.net:/cvsroot/ddd \
       checkout -kkv ddd
 
    This creates a `ddd/' subdirectory containing all DDD code.

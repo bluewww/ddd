@@ -1,8 +1,8 @@
 Installing DDD					-*- text -*-
 **************
 
-PLEASE NOTE: The installation process has changed in DDD 3.3.  Be sure
-to read the instructions below carefully.
+PLEASE NOTE: The compiler required to build DDD has changed as of 3.3.6.
+Be sure to read the instructions below carefully.
 
 For compiling and installing DDD on a system, please follow these
 instructions.
@@ -13,11 +13,12 @@ Build Requirements
 
 To build a complete DDD from sources, you need:
 
-   * The GNU C++ compiler (2.95 or later), including a matching
+   * The GNU C++ compiler (3.0 or later), including a matching
      C++ I/O runtime library (libstdc++ or libg++).
 
      Some other C++ compilers, including older GCC versions have been
-     reported to compile DDD as well; we recommend GCC 2.95 or later.
+     reported to compile DDD as well; current development is taking place
+     with g++ 3.2.3 and 3.3, so that is what we recommend.
 
    * A M*tif Widget library.  Either
 
@@ -36,6 +37,8 @@ To build a complete DDD from sources, you need:
      two LessTif versions.  If you use DDD with an older LessTif
      version, be sure to use the M*tif-1.2 compatible LessTif version.
      See `External Packages', below, for details.
+
+     LessTif-0.93.40 is known to work well.
 
    * The X window library (Xlib) and X toolkit library (Xt), X11R4 or
      later.  Best results are obtained with X11R6.3 and later.

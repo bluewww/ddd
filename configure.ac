@@ -379,7 +379,6 @@ if test "x${ddd_have_termcap}" = "xfalse"; then
        ddd_have_termcap=true; break])
   done
 fi
-AC_SUBST(LIBTERMCAP)
 dnl
 dnl Check for -lreadline (optional)
 readline_includes=
@@ -466,7 +465,9 @@ if test "$ddd_have_libiberty" != true; then
 fi
 if test "$ddd_have_termcap" != true; then
     AC_CONFIG_SUBDIRS([termcap])
+    LIBTERMCAP="../termcap/libtermcap.a"
 fi
+AC_SUBST(LIBTERMCAP)
 dnl
 dnl
 dnl `streampos' and `iostate' types

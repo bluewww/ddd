@@ -407,6 +407,21 @@ LessTif
 Linux
 =====
 
+Reported by: Andrew Gaylard <apg@users.sf.net>
+
+    If the command window appears as follows on startup:
+
+        GNU DDD 3.3.7 (i686-pc-linux-gnu), by Dorothea L(gdb)�
+
+    then you probably have $LANG set to something like "en_US.UTF-8".
+    Setting it to either "C" or "en_US.iso885915", or unsetting it completely
+    will fix this problem.
+
+    Alternatively, link with Lesstif.
+
+    This has been observed on Redhat-8.1, but probably affects other
+    Unixes as well.
+
 Intel
 -----
 
