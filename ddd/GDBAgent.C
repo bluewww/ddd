@@ -2,6 +2,7 @@
 // Communicate with separate GDB process
 
 // Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1999-2000 Universitaet Passau, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -453,7 +454,7 @@ bool GDBAgent::send_user_cmd(string cmd, void *user_data)  // without '\n'
 	complete_answer = "";
 	callHandlers(ReadyForQuestion, (void *)false);
 	cmd += '\n';
-	write(cmd);
+	write_cmd(cmd);
 	flush();
 
 	return true;
@@ -512,7 +513,7 @@ bool GDBAgent::send_user_cmd_plus (const StringArray& cmds,
     complete_answer = "";
     callHandlers(ReadyForQuestion, (void *)false);
     user_cmd += '\n';
-    write(user_cmd);
+    write_cmd(user_cmd);
     flush();
 
     return true;
@@ -535,7 +536,7 @@ bool GDBAgent::send_question (string  cmd,
     complete_answer = "";
 
     cmd += '\n';
-    write(cmd);
+    write_cmd(cmd);
     flush();
 
     return true;
@@ -560,7 +561,7 @@ bool GDBAgent::send_qu_array (const StringArray& cmds,
     init_qu_array(cmds, qu_datas, qu_count, on_qu_array_completion, qa_data);
     
     // Send first question
-    write(cmd_array[0]);
+    write_cmd(cmd_array[0]);
     flush();
 
     return true;
@@ -1342,7 +1343,7 @@ void GDBAgent::handle_input(string& answer)
 		    state = BusyOnQuArray;
 
 		    // Send first question
-		    write(cmd_array[0]);
+		    write_cmd(cmd_array[0]);
 		    flush();
 		}
 	    }
@@ -1360,7 +1361,7 @@ void GDBAgent::handle_input(string& answer)
 		callHandlers(ReadyForCmd, (void *)false);
 
 		// Send first question
-		write(cmd_array[0]);
+		write_cmd(cmd_array[0]);
 		flush();
 	    }
 	}
@@ -1431,7 +1432,7 @@ void GDBAgent::handle_input(string& answer)
 	    else
 	    {
 		// Send next question
-		write(cmd_array[++qu_index]);
+		write_cmd(cmd_array[++qu_index]);
 		flush();
 	    }
 	}
@@ -1443,15 +1444,22 @@ void GDBAgent::handle_input(string& answer)
     }
 }
 
-// Write
+// Write arbitrary data
 int GDBAgent::write(const char *data, int length)
 {
     last_written = string(data, length);
 
-    if (gdb->type() == PERL && last_written.contains("exec ", 0))
+    echoed_characters = 0;
+    return TTYAgent::write(data, length);
+}
+
+// Write command
+int GDBAgent::write_cmd(const string& cmd)
+{
+    if (gdb->type() == PERL && cmd.contains("exec ", 0))
     {
 	// Rename debugger
-	string p = last_written.before('\n');
+	string p = cmd.before('\n');
 	p = p.after("exec ");
 	if (p.contains('\'', 0) || p.contains('\"', 0))
 	    p = unquote(p);
@@ -1459,9 +1467,35 @@ int GDBAgent::write(const char *data, int length)
 	    _path = p;
     }
 
-    echoed_characters = 0;
-    return TTYAgent::write(data, length);
+    static bool dbx90 = gdb->path().contains("dbx90");
+
+    if (gdb->type() == GDB && dbx90)
+    {
+	// A simple DBX90 hack:
+	//
+	// DBX90 is basically a GDB with a few extras.  As a simple
+	// means of making it work with DDD, we 
+	// - add a `raw' prefix before every single command:
+	//   `print x' becomes `raw print x'.
+	// - require a `dbx' prefix before non-raw commands:
+	//   `dbx print x' becomes `print x'.
+	// To use this hack, invoke DDD as `ddd --debugger dbx90 --gdb'.
+
+	const string dbx90_prefix = "dbx ";
+	const string raw_prefix   = "raw ";
+	string c = cmd;
+
+	if (c.contains(dbx90_prefix, 0))
+	    c = cmd.after(dbx90_prefix);
+	else if (!c.contains(raw_prefix, 0))
+	    c = raw_prefix + cmd;
+
+	return write(c);
+    }
+
+    return write(cmd);
 }
+
 
 // GDB died
 void GDBAgent::DiedHP(Agent *agent, void *, void *)

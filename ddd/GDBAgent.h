@@ -2,7 +2,9 @@
 // Communicate with separate GDB process
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
+// Copyright (C) 2000 Universitaet Passau, Germany.
+// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
+// and Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
 // 
@@ -715,6 +717,10 @@ public:
 	return write(data.chars(), data.length());
     }
 
+    // Write a command (not debuggee interaction or control characters)
+    int write_cmd(const string& cmd);
+
+    // True if ANSWER ends in a prompt
     bool ends_with_prompt(const string& answer);
     bool ends_with_secondary_prompt(const string& answer);
 
