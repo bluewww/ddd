@@ -839,7 +839,21 @@ bool BreakPoint::get_state(ostream& os, int nr, bool as_dummy,
 	    }
 	    else
 	    {
-		os << "file "    << pos.before(':') << "\n";
+		string file = pos.before(':');
+
+		// Hobi <hobelsbe@forwiss.uni-passau.de> reports:
+		// Solaris DBX uses auxiliary files `FILE.edit.SUFFIX'
+		// and `FILE.gen.SUFFIX'.  DBX requires that
+		// `FILE.SUFFIX' be loaded before these auxiliaries.
+		if (file.contains(".edit.") || file.contains(".gen."))
+		{
+		    string original_file = file;
+		    original_file.gsub(".edit.", ".");
+		    original_file.gsub(".gen.", ".");
+		    os << "file " << original_file << "\n";
+		}
+
+		os << "file "    << file << "\n";
 		os << "stop at " << pos.after(':')  << cond_suffix << "\n";
 	    }
 	    break;
