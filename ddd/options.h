@@ -63,6 +63,9 @@ bool saving_options_excludes_data(unsigned long flags);
 // Save options in current session state file, using FLAGS
 bool save_options(unsigned long flags);
 
+// Get restarting commands in RESTART, using FLAGS
+bool get_restart_commands(string& restart, unsigned long flags);
+
 
 // Lots and lots of callbacks
 extern void sourceToggleFindWordsOnlyCB     (Widget, XtPointer, XtPointer);

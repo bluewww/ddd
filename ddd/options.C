@@ -1710,12 +1710,125 @@ bool saving_options_excludes_data(unsigned long flags)
 	&& data_disp->need_core_to_restore();
 }
 
+bool get_restart_commands(string& restart, unsigned long flags)
+{
+    bool ok = true;
+    const bool interact     = (flags & MAY_INTERACT);
+    const bool save_core    = (flags & SAVE_CORE);
+    const bool save_session = (flags & SAVE_SESSION);
+
+    string session = 
+	(save_session ? app_data.session : (char *)DEFAULT_SESSION);
+
+    ProgramInfo info;
+    if (info.file == NO_GDB_ANSWER)
+    {
+	if (interact)
+	    post_warning("Could not save program name.",
+			 "program_name_missing_warning");
+	ok = false;
+    }
+
+    // Stream to hold data and breakpoints
+    ostrstream rs;
+
+    // Get breakpoints and cursor position
+    bool breakpoints_ok = source_view->get_state(rs);
+    if (!breakpoints_ok)
+    {
+	if (interact)
+	    post_warning("Could not save all breakpoints", 
+			 "breakpoint_missing_warning");
+	ok = false;
+    }
+
+    bool core_ok = false;
+    string core;
+    bool have_data = 
+	info.running || (info.core != "" && info.core != NO_GDB_ANSWER);
+
+    bool have_data_displays = (data_disp->count_data_displays() > 0);
+
+    IntArray display_numbers;
+    data_disp->get_all_display_numbers(display_numbers);
+    bool have_displays = display_numbers.size() > 0;
+
+    if (have_data || have_displays)
+    {
+	// Get displays
+	StringArray scopes;
+	bool displays_ok = true;
+
+	if (have_data && have_data_displays && displays_ok)
+	    displays_ok = data_disp->get_scopes(scopes);
+
+	if (have_data && save_core)
+	    core_ok = get_core(session, flags, core);
+
+	if (displays_ok)
+	{
+	    int target_frame = source_view->get_frame();
+	    if (target_frame < 0)
+		target_frame = 0;
+	    displays_ok = data_disp->get_state(rs, scopes, target_frame);
+	}
+
+	if (!displays_ok)
+	{
+	    if (interact)
+		post_warning("Could not save all data displays.",
+			     "displays_missing_warning");
+	    ok = false;
+	}
+    }
+
+    // Stream to hold exec and core file specs
+    ostrstream es;
+
+    // Get exec and core file
+    switch (gdb->type())
+    {
+    case GDB:
+	es << "set confirm off\n";
+	if (info.file != "" && info.file != NO_GDB_ANSWER)
+	    es << "file " << info.file << '\n';
+	if (core_ok)
+	    es << "core " << core << '\n';
+	break;
+
+    case DBX:
+	if (info.file != "" && info.file != NO_GDB_ANSWER)
+	{
+	    string cmd = gdb->debug_command(info.file);
+	    if (cmd != "")
+	    {
+		es << cmd;
+		if (core_ok)
+		    es << " " << core;
+		es << '\n';
+	    }
+	}
+	break;
+
+    case XDB:
+    case JDB:
+    case PYDB:
+    case PERL:
+	// FIXME
+	break;
+    }
+
+    restart = string(es) + string(rs) + get_signals(gdb->type());
+    restart.gsub(app_data.auto_command_prefix, "@AUTO@");
+
+    return ok;
+}
+
 bool save_options(unsigned long flags)
 {
     const bool create        = (flags & CREATE_OPTIONS);
     const bool save_session  = (flags & SAVE_SESSION);
     const bool save_geometry = (flags & SAVE_GEOMETRY);
-    const bool save_core     = (flags & SAVE_CORE);
     const bool interact      = (flags & MAY_INTERACT);
 
     string session = 
@@ -2142,106 +2255,10 @@ bool save_options(unsigned long flags)
 	// Restart commands
 	os << "\n! Last " DDD_NAME " session.\n";
 
-	ProgramInfo info;
-	if (info.file == NO_GDB_ANSWER)
-	{
-	    if (interact)
-		post_warning("Could not save program name.",
-			     "program_name_missing_warning");
+	string restart;
+	bool restart_ok = get_restart_commands(restart, flags);
+	if (!restart_ok)
 	    ok = false;
-	}
-
-	// Stream to hold data and breakpoints
-	ostrstream rs;
-
-	// Get breakpoints and cursor position
-	bool breakpoints_ok = source_view->get_state(rs);
-	if (!breakpoints_ok)
-	{
-	    if (interact)
-		post_warning("Could not save all breakpoints", 
-			     "breakpoint_missing_warning");
-	    ok = false;
-	}
-
-	bool core_ok = false;
-	string core;
-	bool have_data = 
-	    info.running || (info.core != "" && info.core != NO_GDB_ANSWER);
-
-	bool have_data_displays = (data_disp->count_data_displays() > 0);
-
-	IntArray display_numbers;
-	data_disp->get_all_display_numbers(display_numbers);
-	bool have_displays = display_numbers.size() > 0;
-
-	if (have_data || have_displays)
-	{
-	    // Get displays
-	    StringArray scopes;
-	    bool displays_ok = true;
-
-	    if (have_data && have_data_displays && displays_ok)
-		displays_ok = data_disp->get_scopes(scopes);
-
-	    if (have_data && save_core)
-		core_ok = get_core(session, flags, core);
-
-	    if (displays_ok)
-	    {
-		int target_frame = source_view->get_frame();
-		if (target_frame < 0)
-		    target_frame = 0;
-		displays_ok = data_disp->get_state(rs, scopes, target_frame);
-	    }
-
-	    if (!displays_ok)
-	    {
-		if (interact)
-		    post_warning("Could not save all data displays.",
-				 "displays_missing_warning");
-		ok = false;
-	    }
-	}
-
-	// Stream to hold exec and core file specs
-	ostrstream es;
-
-	// Get exec and core file
-	switch (gdb->type())
-	{
-	case GDB:
-	    es << "set confirm off\n";
-	    if (info.file != "" && info.file != NO_GDB_ANSWER)
-		es << "file " << info.file << '\n';
-	    if (core_ok)
-		es << "core " << core << '\n';
-	    break;
-
-	case DBX:
-	    if (info.file != "" && info.file != NO_GDB_ANSWER)
-	    {
-		string cmd = gdb->debug_command(info.file);
-		if (cmd != "")
-		{
-		    es << cmd;
-		    if (core_ok)
-			es << " " << core;
-		    es << '\n';
-		}
-	    }
-	    break;
-
-	case XDB:
-	case JDB:
-	case PYDB:
-	case PERL:
-	    // FIXME
-	    break;
-	}
-
-	string restart = string(es) + string(rs) + get_signals(gdb->type());
-	restart.gsub(app_data.auto_command_prefix, "@AUTO@");
 
 	os << string_app_value(XtNrestartCommands, restart) << '\n';
     }
