@@ -82,7 +82,7 @@ static int rx_matcher(void *data, const char *s, int len, int pos)
 }
 
 
-// The 111 regexps used in DDD
+// All the regexps used in DDD
 
 const regex rxaddr			(rx_matcher, (void *)S001);
 const regex rxaddress			(rx_matcher, (void *)S002);
@@ -222,3 +222,4 @@ const regex rxxdbpos			(rx_matcher, (void *)S111);
 
 const regex rxrepeats                   (rx_matcher, (void *)S112);
 const regex rxchain                     (rx_matcher, (void *)S113);
+const regex rxwhen                      (rx_matcher, (void *)S114);

@@ -148,6 +148,7 @@ extern const regex rxuppercase;
 extern const regex rxuse_cmd;
 extern const regex rxvtable;
 extern const regex rxvtable_entries;
+extern const regex rxwhen;
 extern const regex rxwhite;
 extern const regex rxxdb;
 extern const regex rxxdbpos;

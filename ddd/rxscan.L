@@ -226,6 +226,7 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 %s S111
 %s S112
 %s S113
+%s S114
 
 %%
 <S001>address{W}{A}			return &rxaddr;
@@ -341,5 +342,6 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 <S111>[^ \t]*:.*:{w}{P}[: ]{C} 	        return &rxxdbpos;
 <S112>[<]repeats{W}{P}{W}times[>]       return &rxrepeats;
 <S113>{I}(([.]|->){I})*			return &rxchain;
+<S114>{W}ni{W}nehw{W}		        return &rxwhen;
 <*>.|\n				        return 0;  // Anything else
 %%

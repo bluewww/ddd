@@ -2023,10 +2023,11 @@ bool DataDisp::get_state(ostream& os,
 
 	os << "graph display " << dn->name();
 
+	// Write position
 	if (include_position)
 	    os << " at " << dn->nodeptr()->pos();
 
-	// Find dependencies
+	// Write dependencies
 	GraphEdge *edge;
 	for (edge = dn->nodeptr()->firstTo();
 	     edge != 0; edge = dn->nodeptr()->nextTo(edge))
@@ -2040,6 +2041,11 @@ bool DataDisp::get_state(ostream& os,
 		os << " dependent on " << depnode->name();
 	    }
 	}
+
+	// Write scope
+	if (dn->scope() != "")
+	    os << " when in " << dn->scope();
+
 	os << '\n';
     }
 

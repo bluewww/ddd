@@ -1422,50 +1422,61 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	string rcmd = reverse(cmd);
 
 	string depends_on = "";
+	string when_in    = "";
 	BoxPoint *pos = 0;
 
 	for (;;)
 	{
 	    read_leading_blanks(rcmd);
 
+#if RUNTIME_REGEX
+	    static regex rxdep("[ \t]+no[ \t]+tnedneped[ \t]+");
+	    static regex rxwhen("[ \t]+ni[ \t]+nehw[ \t]+");
+	    static regex rxat(
+		"[)]?[0-9]*[1-9]-?[ \t]*,[ \t]*[0-9]*[1-9]-?[(]?"
+		"[ \t]+ta[ \t]+.*");
+#endif
+
+	    int dep_index  = rcmd.index(rxdep);
+	    int when_index = rcmd.index(rxwhen);
+
+	    if (dep_index >= 0 && (when_index < 0 || dep_index < when_index))
 	    {
 		// Check for `dependent on DISPLAY'
-#if RUNTIME_REGEX
-		static regex rxdep("[ \t]+no[ \t]+tnedneped[ \t]+");
-#endif
-		int index = rcmd.index(rxdep);
-		if (index >= 0)
-		{
-		    depends_on = reverse(rcmd.before(index));
-		    read_leading_blanks(depends_on);
-		    strip_final_blanks(depends_on);
+		depends_on = reverse(rcmd.before(dep_index));
+		read_leading_blanks(depends_on);
+		strip_final_blanks(depends_on);
 
-		    rcmd = rcmd.after(index);
-		    rcmd = rcmd.after("tnedneped");
-		    continue;
-		}
+		rcmd = rcmd.after(dep_index);
+		rcmd = rcmd.after("tnedneped");
+		continue;
 	    }
 
+	    if (when_index >= 0 && (dep_index < 0 || when_index < dep_index))
+	    {
+		// Check for `when in FUNC'
+		when_in = reverse(rcmd.before(when_index));
+		read_leading_blanks(when_in);
+		strip_final_blanks(when_in);
+
+		rcmd = rcmd.after(when_index);
+		rcmd = rcmd.after("nehw");
+		continue;
+	    }
+
+	    if (rcmd.matches(rxat))
 	    {
 		// Check for `at X, Y' or `at (X, Y)'
-#if RUNTIME_REGEX
-		static regex rxat(
-		    "[)]?[0-9]*[1-9]-?[ \t]*,[ \t]*[0-9]*[1-9]-?[(]?"
-		    "[ \t]+ta[ \t]+.*");
-#endif
-		if (rcmd.matches(rxat))
-		{
-		    if (pos == 0)
-			pos = new BoxPoint;
+		if (pos == 0)
+		    pos = new BoxPoint;
 
-		    string y = reverse(rcmd.before(','));
-		    (*pos)[Y] = get_nr(y);
-		    string x = rcmd.after(',');
-		    x = reverse(x.before(rxwhite));
-		    (*pos)[X] = get_nr(x);
-		    rcmd = rcmd.after("ta");
-		    continue;
-		}
+		string y = reverse(rcmd.before(','));
+		(*pos)[Y] = get_nr(y);
+		string x = rcmd.after(',');
+		x = reverse(x.before(rxwhite));
+		(*pos)[X] = get_nr(x);
+		rcmd = rcmd.after("ta");
+		continue;
 	    }
 
 	    break;
