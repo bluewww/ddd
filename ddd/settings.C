@@ -2588,7 +2588,7 @@ void UpdateDefinePanelCB(Widget, XtPointer, XtPointer)
     set_sensitive(record_w, !gdb->recording() && name != "");
     set_sensitive(apply_w,  !gdb->recording() && name != "" && defs.has(name));
     set_sensitive(end_w,    gdb->recording());
-    set_sensitive(edit_w,   !gdb->recording() && name != "" && defs.has(name));
+    set_sensitive(edit_w,   !gdb->recording() && name != "");
 
     set_sensitive(name_w, !gdb->recording());
     set_sensitive(XtParent(name_w), !gdb->recording());
@@ -2669,66 +2669,81 @@ static void EndCommandDefinitionCB(Widget w, XtPointer, XtPointer)
     gdb_command("end", w);
 }
 
-static void EditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
+static void DoneEditCommandDefinitionCB(Widget w, XtPointer, XtPointer)
 {
+    if (!XtIsManaged(XtParent(editor_w)))
+	return;
+
     string name = current_name();
 
-    if (XtIsManaged(XtParent(editor_w)))
+    XtUnmanageChild(XtParent(editor_w));
+    set_sensitive(name_w, True);
+    set_sensitive(XtParent(name_w), True);
+
+    MString label = "Edit " + MString(">>", "small");
+    set_label(edit_w, label);
+
+    String _commands = XmTextGetString(editor_w);
+    string cmd = _commands;
+    XtFree(_commands);
+
+    if (!cmd.contains('\n', -1))
+	cmd += '\n';
+
+    if ((cmd != "" && !defs.has(name)) || cmd != defs[name])
     {
-	XtUnmanageChild(XtParent(editor_w));
-	set_sensitive(name_w, True);
-	set_sensitive(XtParent(name_w), True);
-
-	MString label = "Edit " + MString(">>", "small");
-	set_label(edit_w, label);
-
-	String _commands = XmTextGetString(editor_w);
-	string cmd = _commands;
-	XtFree(_commands);
-
-	if (!cmd.contains('\n', -1))
-	    cmd += '\n';
-
-	if (cmd != defs[name])
+	StringArray commands;
+	while (cmd != "")
 	{
-	    StringArray commands;
-	    while (cmd != "")
-	    {
-		string c = cmd.before('\n');
-		if (c != "")
-		    commands += c;
-		cmd = cmd.after('\n');
-	    }
-
-	    // This might require confirmation.  Don't change anything.
-	    set_sensitive(edit_w,   false);
-	    set_sensitive(record_w, false);
-	    set_sensitive(end_w,    false);
-
-	    gdb_command("define " + name, w);
-	    for (int j = 0; j < commands.size(); j++)
-		gdb_command(commands[j], w);
-	    gdb_command("end", w);
-
-	    update_define_later(name);
+	    string c = cmd.before('\n');
+	    if (c != "")
+		commands += c;
+	    cmd = cmd.after('\n');
 	}
+
+	// This might require confirmation.  Don't change anything.
+	set_sensitive(edit_w,   false);
+	set_sensitive(record_w, false);
+	set_sensitive(end_w,    false);
+
+	gdb_command("define " + name, w);
+	for (int j = 0; j < commands.size(); j++)
+	    gdb_command(commands[j], w);
+	gdb_command("end", w);
+
+	update_define_later(name);
     }
+}
+
+static void EditCommandDefinitionCB(Widget, XtPointer, XtPointer)
+{
+    if (XtIsManaged(XtParent(editor_w)))
+	return;
+
+    string name = current_name();
+
+    // update_define(name);
+    set_sensitive(name_w, False);
+    set_sensitive(XtParent(name_w), False);
+
+    string def = "";
+    if (defs.has(name))
+	def = defs[name];
+
+    XmTextSetString(editor_w, (String)def);
+
+    XtManageChild(XtParent(editor_w));
+    MString label = "Edit " + MString("<<", "small");
+    set_label(edit_w, label);
+}
+
+static void ToggleEditCommandDefinitionCB(Widget w, XtPointer client_data, 
+					  XtPointer call_data)
+{
+    if (XtIsManaged(XtParent(editor_w)))
+	DoneEditCommandDefinitionCB(w, client_data, call_data);
     else
-    {
-	// update_define(name);
-	set_sensitive(name_w, False);
-	set_sensitive(XtParent(name_w), False);
-
-	string def = "";
-	if (defs.has(name))
-	    def = defs[name];
-
-	XmTextSetString(editor_w, (String)def);
-
-	XtManageChild(XtParent(editor_w));
-	MString label = "Edit " + MString("<<", "small");
-	set_label(edit_w, label);
-    }
+	EditCommandDefinitionCB(w, client_data, call_data);
 }
 
 // Apply the given command
@@ -2746,7 +2761,7 @@ MMDesc commands_menu[] =
     { "end",    MMPush | MMInsensitive, \
       { EndCommandDefinitionCB }, 0, &end_w },
     { "edit",   MMPush, \
-      { EditCommandDefinitionCB }, 0, &edit_w },
+      { ToggleEditCommandDefinitionCB }, 0, &edit_w },
     MMEnd
 };
 
@@ -2813,6 +2828,8 @@ void dddDefineCommandCB(Widget w, XtPointer, XtPointer)
 
 	XtAddCallback(dialog, XmNokCallback, UnmanageThisCB, 
 		      XtPointer(dialog));
+	XtAddCallback(dialog, XmNokCallback, DoneEditCommandDefinitionCB, 
+		      XtPointer(0));
 	XtAddCallback(dialog, XmNapplyCallback, ApplyCB, NULL);
 	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, NULL);
 	XtAddCallback(name_w, XmNactivateCallback, ActivateCB, 
