@@ -39,31 +39,31 @@
 
 #include "strclass.h"
 #include "bool.h"
+#include "DispValueA.h"
 #include "DispValueT.h"
 #include "StringSA.h"
 
-class SimpleDispValue;
-class PointerDispValue;
-class ArrayDispValue;
-class StructDispValue;
+enum DispValueAlignment {Vertical, Horizontal};
 
 class DispValue {
+    // General members
     DispValueType mytype;
-    bool          myexpanded;
-    string        myfull_name;	// Full name
-    string        print_name;   // Name relative to parent
-    string        myaddr;	// Address as found
-    bool          changed;
-    int           myrepeats;	// Number of repetitions
+    bool myexpanded;
+    string myfull_name;		// Full name
+    string print_name;		// Name relative to parent
+    string myaddr;		// Address as found
+    bool changed;
+    int myrepeats;		// Number of repetitions
 
-    union {
-	SimpleDispValue*  simple;    // type Simple
-	PointerDispValue* pointer;   // type Pointer
-	ArrayDispValue*   array;     // type Array
-	StructDispValue*  str;       // type StructOrClass or Reference
-    };
+    // Type-dependent members
+    string _value;		// Value of basic types
+    bool _dereferenced;		// True iff pointer is dereferenced
+    DispValueArray _children;	// Array or Struct members 
+    int _index_base;		// First index
+    bool _have_index_base;	// True if INDEX_BASE is valid
+    DispValueAlignment _alignment; // Array alignment
 
-    // Initialize from VALUE.  If TYPE is given, use TYPE as type
+    // initialize from VALUE.  If TYPE is given, use TYPE as type
     // instead of inferring it.
     void init(DispValue *parent, int depth, 
 	      string& value, DispValueType type = UnknownType);
@@ -88,7 +88,7 @@ class DispValue {
 protected:
     int _links;			// #references (>= 1)
 
-    // Makes sense only for type() == Array, Struct
+    // Array, Struct
     // Expand/collapse single value
     void _expand()    { myexpanded = true;  }
     void _collapse()  { myexpanded = false; }
@@ -107,8 +107,8 @@ protected:
 
     // Parsing function
     static DispValue *parse(DispValue *parent, 
-			    int        depth,
-			    string&    value,
+			    int depth,
+			    string& value,
 			    const string& full_name, 
 			    const string& print_name,
 			    DispValueType type = UnknownType);
@@ -173,6 +173,7 @@ public:
 	    delete this;
     }
 
+    // General resources
     DispValueType type()       const { return mytype; }
     int           repeats()    const { return myrepeats; }
     const string& full_name()  const { return myfull_name; }
@@ -187,22 +188,27 @@ public:
     bool          expanded()   const { return myexpanded; }
     bool          collapsed()  const { return !expanded(); }
 
-    // Makes sense only for type() == Simple or Pointer
-    string value() const;
+    // Return height of entire tree
+    int height() const;
+
+    // Return height of expanded tree
+    int heightExpanded() const;
+
+
+    // Type-specific resources
+
+    // Simple or Pointer
+    const string& value() const { return _value; }
     
-    // Makes sense only for type() == Pointer
-    bool dereferenced() const;
+    // Pointer
+    bool dereferenced() const { return _dereferenced; }
     string dereferenced_name() const;
 
-    int nchildren() const;
-    DispValue* get_child (int i) const;
-    
-    // Makes sense only for type() == Array
-    bool vertical_aligned()   const;
-    bool horizontal_aligned() const;
+    // Array, Struct, List, Sequence ...
+    int nchildren() const { return _children.size(); }
+    DispValue *child(int i) const { return _children[i]; }
 
-    // Makes sense only for type() == Pointer
-    void dereference();
+    // General modifiers
 
     // Expand/collapse entire tree.  If DEPTH is non-negative, expand
     // DEPTH levels only.  If DEPTH is negative, expand all.
@@ -217,15 +223,19 @@ public:
     int expandedAll()  const;
     int collapsedAll() const;
 
-    // Return height of entire tree
-    int height() const;
+    // Type-specific modifiers
 
-    // Return height of expanded tree
-    int heightExpanded() const;
+    // Array
+    bool vertical_aligned()   const { return _alignment == Vertical; }
+    bool horizontal_aligned() const { return _alignment == Horizontal; }
+    void align_vertical()   { _alignment = Vertical; }
+    void align_horizontal() { _alignment = Horizontal; }
 
-    // Makes sense only for type() == Array
-    void align_vertical();
-    void align_horizontal();
+    // Pointer
+    void dereference(bool set = true) { _dereferenced = set; }
+
+
+    // Updating
 
     // Update values from VALUE.  Set WAS_CHANGED iff value changed;
     // Set WAS_INITIALIZED iff type changed.  If TYPE is given, use

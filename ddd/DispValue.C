@@ -58,60 +58,6 @@ char DispValue_rcsid[] =
 
 #include <ctype.h>
 
-//-----------------------------------------------------------------------------
-// Type decls
-//-----------------------------------------------------------------------------
-
-enum Alignment {Vertical, Horizontal};
-
-// Simple value
-class SimpleDispValue {
-public:
-    string value;
-
-    SimpleDispValue()
-	: value()
-    {}
-};
-
-// Pointer
-class PointerDispValue {
-public:
-    string  value;
-    bool dereferenced;		// True iff dereferenced
-
-    PointerDispValue()
-	: value(), dereferenced(false)
-    {}
-};
-
-// Array
-class ArrayDispValue {
-public:
-    DispValueArray members;
-    int            member_count;
-    int            index_base;
-    bool           have_index_base;
-    Alignment      align;
-
-    ArrayDispValue()
-	: members(), member_count(0),
-	  index_base(-1), have_index_base(false),
-	  align(Horizontal)
-    {}
-};
-
-// Struct or class
-class StructDispValue {
-public:
-    DispValueArray members;
-    int            member_count;
-
-    StructDispValue()
-	: members(), member_count(0)
-    {}
-};
-
 
 //-----------------------------------------------------------------------------
 // Helpers
@@ -171,6 +117,7 @@ void DispValue::clear_type_cache()
     type_cache = empty;
 }
 
+
 //-----------------------------------------------------------------------------
 // Data
 //-----------------------------------------------------------------------------
@@ -191,9 +138,10 @@ DispValue::DispValue (DispValue* parent,
 		      DispValueType given_type)
     : mytype(UnknownType), myexpanded(true), 
       myfull_name(f_n), print_name(p_n), changed(false), myrepeats(1),
+      _value(""), _dereferenced(false), _children(0),
+      _index_base(0), _have_index_base(false), _alignment(Horizontal),
       _links(1)
 {
-    simple = 0;
     init(parent, depth, value, given_type);
 
     // A new display is not changed, but initialized
@@ -205,59 +153,15 @@ DispValue::DispValue (const DispValue& dv)
     : mytype(dv.mytype), 
       myexpanded(dv.myexpanded), myfull_name(dv.myfull_name),
       print_name(dv.print_name), myaddr(dv.myaddr),
-      changed(false), myrepeats(dv.myrepeats), _links(1)
+      changed(false), myrepeats(dv.myrepeats),
+      _value(dv.value()), _dereferenced(false), _children(dv.nchildren()), 
+       _index_base(dv._index_base), 
+      _have_index_base(dv._have_index_base), _alignment(dv._alignment),
+      _links(1)
 {
-    switch (mytype)
+    for (int i = 0; i < dv.nchildren(); i++)
     {
-    case UnknownType:
-    {
-	simple = 0;
-	break;
-    }
-
-    case Simple:
-    case Text:
-    {
-	simple = new SimpleDispValue;
-	simple->value = dv.simple->value;
-	break;
-    }
-
-    case Pointer:
-    {
-	pointer = new PointerDispValue;
-	pointer->value = dv.pointer->value;
-	pointer->dereferenced = false;
-	break;
-    }
-
-    case Array:
-    {
-	array = new ArrayDispValue;
-	array->member_count = dv.array->member_count;
-	for (int i = 0; i < array->member_count; i++)
-	{
-	    array->members[i] = dv.array->members[i]->dup();
-	}
-	array->index_base = dv.array->index_base;
-	array->have_index_base = dv.array->have_index_base;
-	array->align = dv.array->align;
-	break;
-    }
-
-    case Struct:
-    case Reference:
-    case Sequence:
-    case List:
-    {
-	str = new StructDispValue;
-	str->member_count = dv.str->member_count;
-	for (int i = 0; i < str->member_count; i++)
-	{
-	    str->members[i] = dv.str->members[i]->dup();
-	}
-	break;
-    }
+	_children += dv.child(i)->dup();
     }
 }
 
@@ -333,13 +237,15 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 
     string initial_value = value;
 
+    static DispValueArray empty(0);
+    _children = empty;
+
     if (background(value.length()))
     {
 	clear();
 
-	mytype        = Simple;
-	simple        = new SimpleDispValue;
-	simple->value = "(Aborted)";
+	mytype = Simple;
+	_value = "(Aborted)";
 	return;
     }
 
@@ -359,10 +265,9 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 
     case Simple:
     {
-	simple = new SimpleDispValue;
-	simple->value = read_simple_value(value, depth, ignore_repeats);
+	_value = read_simple_value(value, depth, ignore_repeats);
 #if LOG_CREATE_VALUES
-	clog << mytype << ": " << quote(simple->value) << "\n";
+	clog << mytype << ": " << quote(_value) << "\n";
 #endif
 	break;
     }
@@ -370,27 +275,25 @@ void DispValue::init(DispValue *parent, int depth, string& value,
     case Text:
     {
 	// Read in entire text
-	simple = new SimpleDispValue;
-	simple->value = value;
+	_value = value;
 	value = "";
 #if LOG_CREATE_VALUES
-	clog << mytype << ": " << quote(simple->value) << "\n";
+	clog << mytype << ": " << quote(_value) << "\n";
 #endif
 	break;
     }
 
     case Pointer:
     {
-	pointer = new PointerDispValue;
-	pointer->value = read_pointer_value (value, ignore_repeats);
-	pointer->dereferenced = false;
+	_value = read_pointer_value (value, ignore_repeats);
+	_dereferenced = false;
 
 #if LOG_CREATE_VALUES
-	clog << mytype << ": " << quote(pointer->value) << "\n";
+	clog << mytype << ": " << quote(_value) << "\n";
 #endif
 	// Hide vtable pointers.
-	if (pointer->value.contains("virtual table")
-	    || pointer->value.contains("vtable"))
+	if (_value.contains("virtual table")
+	    || _value.contains("vtable"))
 	    myexpanded = false;
 	break;
     }
@@ -405,9 +308,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	if (!base.matches(rxsimple))
 	    base = "(" + base + ")";
 
-	array = new ArrayDispValue;
-	array->align = Vertical;
-	array->member_count = 0;
+	_alignment = Vertical;
 
 #if LOG_CREATE_VALUES
 	clog << mytype << ": " << "\n";
@@ -419,19 +320,18 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	string vtable_entries = read_vtable_entries(value);
 	if (vtable_entries != "")
 	{
-	    array->members[array->member_count++] = 
-		parse_child(depth, vtable_entries, myfull_name);
+	    _children += parse_child(depth, vtable_entries, myfull_name);
 	}
 
 	// Read the array elements.  Assume that the type is the
 	// same across all elements.
 	DispValueType member_type = UnknownType;
-	if (!array->have_index_base)
+	if (!_have_index_base)
 	{
-	    array->index_base = index_base(base, depth);
-	    array->have_index_base = true;
+	    _index_base = index_base(base, depth);
+	    _have_index_base = true;
 	}
-	int array_index = array->index_base;
+	int array_index = _index_base;
 
 	// The array has at least one element.  Otherwise, GDB
 	// would treat it as a pointer.
@@ -443,7 +343,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 					add_member_name(base, member_name), 
 					member_name, member_type);
 	    member_type = dv->type();
-	    array->members[array->member_count++] = dv;
+	    _children += dv;
 
 	    int repeats = read_repeats(value);
 
@@ -459,8 +359,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 			parse_child(depth, val, 
 				    add_member_name(base, member_name),
 				    member_name, member_type);
-		    array->members[array->member_count++] = 
-			repeated_dv;
+		    _children += repeated_dv;
 		}
 	    }
 	    else
@@ -493,10 +392,10 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	read_array_end (value);
 
 	// Expand only if at top-level.
-	myexpanded = (depth == 0 || array->member_count <= 1);
+	myexpanded = (depth == 0 || nchildren() <= 1);
 
 #if LOG_CREATE_VALUES
-	clog << mytype << " has " << array->member_count << " members\n";
+	clog << mytype << " has " << nchildren() << " members\n";
 #endif
 	break;
     }
@@ -510,8 +409,6 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	// FALL THROUGH
     case Struct:
     {
-	str = new StructDispValue;
-	str->member_count = 0;
 	bool found_struct_begin   = false;
 	bool read_multiple_values = false;
 	
@@ -594,8 +491,8 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		    // after having read all the AIX DBX base classes.)
 		    for (int i = 0; i < dv->nchildren(); i++)
 		    {
-			DispValue *dv2 = dv->get_child(i)->link();
-			str->members[str->member_count++] = dv2;
+			DispValue *dv2 = dv->child(i)->link();
+			_children += dv2;
 		    }
 		    consume = false;
 		}
@@ -607,7 +504,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		}
 		else
 		{
-		    str->members[str->member_count++] = dv;
+		    _children += dv;
 		}
 
 		more_values = read_multiple_values && read_struct_next(value);
@@ -617,7 +514,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		// Base class member
 		DispValue *dv = 
 		    parse_child(depth, value, myfull_name, member_name);
-		str->members[str->member_count++] = dv;
+		_children += dv;
 
 		more_values = read_multiple_values && read_struct_next(value);
 
@@ -654,8 +551,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		    full_name = member_prefix + member_name;
 		}
 
-		str->members[str->member_count++] = 
-		    parse_child(depth, value, full_name, member_name);
+		_children += parse_child(depth, value, full_name, member_name);
 		more_values = read_multiple_values && read_struct_next(value);
 	    }
 
@@ -669,7 +565,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	if (mytype == List && value != "")
 	{
 	    // Add remaining value as text
-	    str->members[str->member_count++] = parse_child(depth, value, "");
+	    _children += parse_child(depth, value, "");
 	}
 
 	if (found_struct_begin)
@@ -679,12 +575,12 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	}
 
 	// Expand only if at top-level.
-	myexpanded = (depth == 0 || str->member_count <= 1);
+	myexpanded = (depth == 0 || nchildren() <= 1);
 
 #if LOG_CREATE_VALUES
 	clog << mytype << " "
 	     << quote(myfull_name)
-	     << " has " << str->member_count << " members\n";
+	     << " has " << nchildren() << " members\n";
 #endif
 
 	break;
@@ -692,9 +588,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 
     case Reference:
     {
-	str = new StructDispValue;
 	myexpanded = true;
-	str->member_count = 2;
 
 	int sep = value.index('@');
 	sep = value.index(':', sep);
@@ -704,8 +598,8 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 
 	string addr = gdb->address_expr(myfull_name);
 
-	str->members[0] = parse_child(depth, ref, addr, myfull_name, Pointer);
-	str->members[1] = parse_child(depth, value, myfull_name);
+	_children += parse_child(depth, ref, addr, myfull_name, Pointer);
+	_children += parse_child(depth, value, myfull_name);
 
 	if (background(value.length()))
 	{
@@ -742,8 +636,6 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 		clog << mytype << " " << quote(myfull_name) << "\n";
 #endif
 
-		str = new StructDispValue;
-		str->member_count = 0;
 		need_clear = false;
 	    }
 	    
@@ -764,7 +656,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	    }
 	    else
 	    {
-		str->members[str->member_count++] = dv;
+		_children += dv;
 	    }
 	}
 
@@ -773,7 +665,7 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 	{
 	    clog << mytype << " "
 		 << quote(myfull_name)
-		 << " has " << str->member_count << " members\n";
+		 << " has " << nchildren() << " members\n";
 	}
 #endif
     }
@@ -785,66 +677,16 @@ void DispValue::init(DispValue *parent, int depth, string& value,
 // Destructor helper
 void DispValue::clear()
 {
-    int i;
-    switch (mytype) {
-    case Simple:
-    case Text:
-	delete simple;
-	break;
-    case Pointer:
-	delete pointer;
-	break;
-    case Array:
-	for (i = 0; i < array->member_count; i++) {
-	    array->members[i]->unlink();
-	}
-	delete array;
-	break;
+    for (int i = 0; i < nchildren(); i++)
+	child(i)->unlink();
 
-    case Sequence:
-    case List:
-    case Struct:
-    case Reference:
-	for (i = 0; i < str->member_count; i++) {
-	    str->members[i]->unlink();
-	}
-	delete str;
-	break;
-
-    case UnknownType:
-	break;
-    }
+    static DispValueArray empty(0);
+    _children = empty;
 }
 
 //-----------------------------------------------------------------------------
 // Resources
 //-----------------------------------------------------------------------------
-
-// Return True iff dereferenced.  Only if type() == Pointer.
-bool DispValue::dereferenced() const
-{
-    switch (mytype)
-    {
-    case Pointer:
-	return pointer->dereferenced;
-
-    case Simple:
-    case Text:
-    case Array:
-    case Sequence:
-    case List:
-    case Struct:
-    case Reference:
-	return false;
-
-    case UnknownType:
-	assert(0);
-	abort();
-    }
-
-    return false;
-}
-
 
 // Return dereferenced name.  Only if type() == Pointer.
 string DispValue::dereferenced_name() const
@@ -878,171 +720,9 @@ string DispValue::dereferenced_name() const
 }
 
 
-
-// Return value.  Only if type() == Simple, Text, or Pointer.
-string DispValue::value() const
-{
-    switch (mytype) {
-    case Simple:
-    case Text:
-	return simple->value;
-
-    case Pointer:
-	return pointer->value;
-
-    case Array:
-    case Sequence:
-    case List:
-    case Struct:
-    case Reference:
-	return "";
-
-    case UnknownType:
-	assert(0);
-	abort();
-    }
-
-    return "";
-}
-
-
-
-
-// Return #children.  Only if type() == Array or Struct
-int DispValue::nchildren() const
-{
-    switch (mytype) {
-    case Array:
-	return array->member_count;
-
-    case Sequence:
-    case List:
-    case Struct:
-    case Reference:
-	return str->member_count;
-
-    case Simple:
-    case Text:
-    case Pointer:
-	return 0;
-
-    case UnknownType:
-	assert(0);
-	abort();
-    }
-
-    return 0;
-}
-
-
-// Get child #i (0: first child).
-// Only if type() == Array or Struct
-DispValue* DispValue::get_child (int i) const
-{
-    switch (mytype) {
-    case Array:
-	assert (i >= 0);
-	assert (i < array->member_count);
-	return array->members[i];
-
-    case Sequence:
-    case List:
-    case Struct:
-    case Reference:
-	assert (i >= 0);
-	assert (i < str->member_count);
-	return str->members[i];
-
-    case Pointer:
-    case Simple:
-    case Text:
-	return 0;
-
-    case UnknownType:
-	assert(0);
-	abort();
-    }
-
-    return 0;
-}
-
-
-
-// Check if vertically aligned.  Only if type() == Array.
-bool DispValue::vertical_aligned()   const
-{
-    switch (mytype) {
-    case Array:
-	return array->align == Vertical;
-
-    case Sequence:
-    case List:
-    case Struct:
-    case Reference:
-    case Pointer:
-    case Simple:
-    case Text:
-	return false;
-
-    case UnknownType:
-	assert(0);
-	abort();
-    }
-
-    return false;
-}
-
-// Check if horizontally aligned.  Only if type() == Array.
-bool DispValue::horizontal_aligned() const
-{
-    switch (mytype) {
-    case Array:
-	return array->align == Horizontal;
-
-    case Sequence:
-    case List:
-    case Struct:
-    case Reference:
-    case Pointer:
-    case Simple:
-    case Text:
-	return false;
-
-    case UnknownType:
-	assert(0);
-	abort();
-    }
-
-    return false;
-}
-
-
-
 //-----------------------------------------------------------------------------
 // Modifiers
 //-----------------------------------------------------------------------------
-
-// Mark as dereferenced.  Only if type() == Pointer.
-void DispValue::dereference()
-{
-    if (mytype == Pointer)
-	pointer->dereferenced = true;
-}
-
-// Align vertically.  Only if type() == Array.
-void DispValue::align_vertical ()
-{
-    if (mytype == Array)
-	array->align = Vertical;
-}
-
-// Align horizontally.  Only if type() == Array.
-void DispValue::align_horizontal ()
-{
-    if (mytype == Array)
-	array->align = Horizontal;
-}
-
 
 // Expand.  Like expand(), but expand entire subtree
 void DispValue::expandAll(int depth)
@@ -1054,8 +734,7 @@ void DispValue::expandAll(int depth)
 
     for (int i = 0; i < nchildren(); i++)
     {
-	DispValue *child = get_child(i);
-	child->expandAll(depth - 1);
+	child(i)->expandAll(depth - 1);
     }
 }
 
@@ -1069,8 +748,7 @@ void DispValue::collapseAll(int depth)
 
     for (int i = 0; i < nchildren(); i++)
     {
-	DispValue *child = get_child(i);
-	child->collapseAll(depth - 1);
+	child(i)->collapseAll(depth - 1);
     }
 }
 
@@ -1081,7 +759,7 @@ int DispValue::expandedAll() const
     if (expanded())
 	count++;
     for (int i = 0; i < nchildren(); i++)
-	count += get_child(i)->expandedAll();
+	count += child(i)->expandedAll();
 
     return count;
 }
@@ -1093,7 +771,7 @@ int DispValue::collapsedAll() const
     if (collapsed())
 	count++;
     for (int i = 0; i < nchildren(); i++)
-	count += get_child(i)->collapsedAll();
+	count += child(i)->collapsedAll();
 
     return count;
 }
@@ -1105,7 +783,7 @@ int DispValue::height() const
     int d = 0;
 
     for (int i = 0; i < nchildren(); i++)
-	d = max(d, get_child(i)->height());
+	d = max(d, child(i)->height());
 
     return d + 1;
 }
@@ -1120,10 +798,10 @@ int DispValue::heightExpanded() const
 
     for (int i = 0; i < nchildren(); i++)
     {
-	if (get_child(i)->collapsed())
+	if (child(i)->collapsed())
 	    return 1;
 
-	d = max(d, get_child(i)->heightExpanded());
+	d = max(d, child(i)->heightExpanded());
     }
 
     return d + 1;
@@ -1162,62 +840,43 @@ DispValue *DispValue::update(DispValue *source,
 	was_changed = true;
     }
 
+    static DispValueArray empty(0);
+
     if (source->type() == type())
     {
 	switch (type())
 	{
 	case Simple:
 	case Text:
-	    if (simple->value != source->simple->value)
-	    {
-		simple->value = source->simple->value;
-		changed = was_changed = true;
-	    }
-	    source->unlink();
-	    return this;
-
 	case Pointer:
-	    if (pointer->value != source->pointer->value)
+	    if (_value != source->value())
 	    {
-		pointer->value = source->pointer->value;
+		_value = source->value();
 		changed = was_changed = true;
 	    }
 	    source->unlink();
 	    return this;
-		
-	case Array:
-	    if (array->member_count == source->array->member_count &&
-		array->have_index_base == source->array->have_index_base &&
-		(!array->have_index_base || 
-		 array->index_base == source->array->index_base))
-	    {
-		for (int i = 0; i < array->member_count; i++)
-		{
-		    array->members[i] = 
-			array->members[i]->update(source->array->members[i],
-						  was_changed,
-						  was_initialized);
-		}
-		source->array->member_count = 0;
-		source->unlink();
-		return this;
-	    }
-	    break;
 
+	case Array:
+	    if (_have_index_base != source->_have_index_base &&
+		(_have_index_base && _index_base != source->_index_base))
+		break;
+
+	    // FALL THROUGH
 	case List:
 	case Struct:
 	case Sequence:
 	case Reference:
-	    if (str->member_count == source->str->member_count)
+	    if (nchildren() == source->nchildren())
 	    {
-		for (int i = 0; i < str->member_count; i++)
+		for (int i = 0; i < nchildren(); i++)
 		{
-		    str->members[i] = 
-			str->members[i]->update(source->str->members[i],
-						was_changed,
-						was_initialized);
+		    _children[i] = 
+			_children[i]->update(source->child(i),
+					     was_changed,
+					     was_initialized);
 		}
-		source->str->member_count = 0;
+		source->_children = empty;
 		source->unlink();
 		return this;
 	    }
@@ -1263,20 +922,19 @@ bool DispValue::structurally_equal(const DispValue *source,
 		
 	case Array:
 	{
-	    if (array->member_count != source->array->member_count)
+	    if (nchildren() != source->nchildren())
 		return false;	// Differing size
 
-	    if (array->have_index_base != source->array->have_index_base)
+	    if (_have_index_base != source->_have_index_base)
 		return false;	// Differing base
 
-	    if (array->have_index_base && 
-		array->index_base != source->array->index_base)
+	    if (_have_index_base && _index_base != source->_index_base)
 		return false;	// Differing base
 
-	    for (int i = 0; i < array->member_count; i++)
+	    for (int i = 0; i < nchildren(); i++)
 	    {
-		DispValue *child = array->members[i];
-		DispValue *source_child = source->array->members[i];
+		DispValue *child = _children[i];
+		DispValue *source_child = source->child(i);
 		bool eq = child->structurally_equal(source_child, 
 						    source_descendant,
 						    descendant);
@@ -1292,13 +950,13 @@ bool DispValue::structurally_equal(const DispValue *source,
 	case Sequence:
 	case Reference:
 	{
-	    if (str->member_count != source->str->member_count)
+	    if (nchildren() != source->nchildren())
 		return false;
 
-	    for (int i = 0; i < array->member_count; i++)
+	    for (int i = 0; i < nchildren(); i++)
 	    {
-		DispValue *child = str->members[i];
-		DispValue *source_child = source->str->members[i];
+		DispValue *child = _children[i];
+		DispValue *source_child = source->child(i);
 		bool eq = child->structurally_equal(source_child, 
 						    source_descendant,
 						    descendant);

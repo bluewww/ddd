@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-//
+// An array of DispValues
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -32,6 +32,7 @@ char DispValueArray_rcsid[] =
 #ifdef __GNUG__
 #pragma implementation
 #pragma implementation "DynArray.h"
+#pragma implementation "VarArray.h"
 #endif
 
 #include "DispValueA.h"

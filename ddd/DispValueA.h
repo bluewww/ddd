@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-//
+// An array of DispValues
 
 // Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -33,11 +33,12 @@
 #pragma interface
 #endif
 
-#include "DynArray.h"
-#include "DispValue.h"
+#include "VarArray.h"
+
+class DispValue;
 
 // An array of disp values
-typedef DynArray<DispValue*> DispValueArray;
+typedef VarArray<DispValue *> DispValueArray;
 
 #endif // _DDD_DispValueArray_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
