@@ -744,6 +744,7 @@ VSL_OBJECTS = \
 	TestNode.o   \
 	TrueNode.o   \
 	VSEFlags.o   \
+	VSLArgList.o \
 	VSLBuiltin.o \
 	VSLDef.o     \
 	VSLDefList.o \
@@ -760,11 +761,13 @@ GRAPH_OBJECTS = \
 	BoxEdgeA.o   \
 	BoxGraphN.o  \
 	EdgeA.o      \
+	EdgeAPA.o    \
 	Graph.o      \
 	GraphEdge.o  \
 	GraphEdit.o  \
 	GraphGC.o    \
 	GraphNode.o  \
+	GraphNPA.o   \
 	HintGraphN.o \
 	LineGraphE.o \
 	LineGESI.o   \
