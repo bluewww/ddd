@@ -912,21 +912,7 @@ void SourceView::bp_popup_deleteCB (Widget w,
 				    XtPointer)
 {
     int bp_nr = *((int *)client_data);
-
-    string cmd;
-    switch (gdb->type())
-    {
-    case GDB:
-    case DBX:
-	cmd = "delete ";
-	break;
-
-    case XDB:
-	cmd = "db ";
-	break;
-    }
-
-    gdb_command(cmd + itostring(bp_nr), w);
+    gdb_command(gdb->delete_command(itostring(bp_nr)), w);
 }
 
 
@@ -949,40 +935,12 @@ void SourceView::bp_popup_disableCB (Widget w,
 
 void SourceView::enable_bp(int nr, Widget w)
 {
-    string cmd;
-    switch (gdb->type())
-    {
-    case GDB:
-    case DBX:
-	cmd = "enable ";
-	break;
-
-    case XDB:
-	cmd = "ab ";
-	break;
-    }
-
-    cmd += itostring(nr);
-    gdb_command(cmd, w);
+    gdb_command(gdb->enable_command(itostring(nr)), w);
 }
 
 void SourceView::disable_bp(int nr, Widget w)
 {
-    string cmd;
-    switch (gdb->type())
-    {
-    case GDB:
-    case DBX:
-	cmd = "disable ";
-	break;
-
-    case XDB:
-	cmd = "sb ";
-	break;
-    }
-
-    cmd += itostring(nr);
-    gdb_command(cmd, w);
+    gdb_command(gdb->disable_command(itostring(nr)), w);
 }
 
 
@@ -4092,33 +4050,18 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    InstallButtonTips(bp_popup_w);
 	}
 
-	switch (gdb->type())
-	{
-	case DBX:
-	    // We don't support these items in DBX
-	    XtUnmanageChild(bp_popup[BPItms::Disable].widget);
-	    XtUnmanageChild(bp_popup[BPItms::IgnoreCount].widget);
-	    
-	    // FALL THROUGH
-	case XDB:
-	    // We don't support these items in XDB
-	    XtUnmanageChild(bp_popup[BPItms::Sep1].widget);
-	    XtUnmanageChild(bp_popup[BPItms::Sep2].widget);
-	    XtUnmanageChild(bp_popup[BPItms::Condition].widget);
-	    // XtUnmanageChild(bp_popup[BPItms::Sep3].widget);
-	    // XtUnmanageChild(bp_popup[BPItms::SetPC].widget);
-
-	    // FALL THROUGH
-	case GDB:
-	    {
-		MString label(bp_map.get(bp_nr)->enabled() ? 
-			      "Disable Breakpoint" : "Enable Breakpoint");
-		XtVaSetValues(bp_popup[BPItms::Disable].widget,
-			      XmNlabelString, label.xmstring(),
-			      NULL);
-	    }
-	    break;
-	}
+	// Grey out unsupported functions
+	XtSetSensitive(bp_popup[BPItms::Disable].widget, 
+		       gdb->has_disable_command());
+	XtSetSensitive(bp_popup[BPItms::IgnoreCount].widget,
+		       gdb->has_ignore_command());
+	XtSetSensitive(bp_popup[BPItms::Condition].widget,
+		       gdb->has_condition_command());
+	MString label(bp_map.get(bp_nr)->enabled() ? 
+		      "Disable Breakpoint" : "Enable Breakpoint");
+	XtVaSetValues(bp_popup[BPItms::Disable].widget,
+		      XmNlabelString, label.xmstring(),
+		      NULL);
 
 	XmMenuPosition (bp_popup_w, event);
 	XtManageChild (bp_popup_w);
@@ -4135,16 +4078,10 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	    MMaddCallbacks (line_popup, XtPointer(&address));
 	    InstallButtonTips(line_popup_w);
 
-	    if (gdb->type() == DBX && !gdb->has_when_command())
-	    {
-		XtUnmanageChild(line_popup[LineItms::SetTempBP].widget);
-		XtUnmanageChild(line_popup[LineItms::TempNContBP].widget);
-	    }
-	    if (gdb->type() != GDB)
-	    {
-		// XtUnmanageChild(line_popup[LineItms::Sep2].widget);
-		// XtUnmanageChild(line_popup[LineItms::SetPC].widget);
-	    }
+	    XtSetSensitive(line_popup[LineItms::SetTempBP].widget, 
+			   gdb->type() != DBX || gdb->has_when_command());
+	    XtSetSensitive(line_popup[LineItms::TempNContBP].widget,
+			   gdb->type() != DBX || gdb->has_when_command());
 	}
 
 	if (is_source_widget(w))
@@ -4282,14 +4219,14 @@ void SourceView::EditBreakpointConditionDCB(Widget,
 	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
 	for (int i = 0; i < breakpoint_nrs.size(); i++)
 	{
-	    gdb_command("cond " + itostring(breakpoint_nrs[i])
-			+ " " + input);
+	    gdb_command(gdb->condition_command(itostring(breakpoint_nrs[i]),
+					       input));
 	}
     }
     else
     {
 	int bp_nr = *((int *)client_data);
-	gdb_command("cond " + itostring(bp_nr) + " " + input);
+	gdb_command(gdb->condition_command(itostring(bp_nr), input));
     }
 
     XtFree(input);
@@ -4385,37 +4322,22 @@ void SourceView::EditBreakpointIgnoreCountDCB(Widget,
 	(XmSelectionBoxCallbackStruct *)call_data;
     String input;
     XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &input);
-
-    if (input[0] == '\0')
-	input = "0";
-
-    string ignore;
-    switch (gdb->type())
-    {
-    case GDB:
-	ignore = "ignore ";
-	break;
-    case DBX:
-	return;			// FIXME
-    case XDB:
-	ignore = "bc ";
-	break;
-    }
+    int count = atoi(input);
+    XtFree(input);
 
     if (client_data == 0)
     {
 	IntArray breakpoint_nrs;
 	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
 	for (int i = 0; i < breakpoint_nrs.size(); i++)
-	    gdb_command(ignore + itostring(breakpoint_nrs[i]) + " " + input);
+	    gdb_command(gdb->ignore_command(itostring(breakpoint_nrs[i]), 
+					    count));
     }
     else
     {
 	int bp_nr = *((int *)client_data);
-	gdb_command(ignore + itostring(bp_nr) + " " + input);
+	gdb_command(gdb->ignore_command(itostring(bp_nr), count));
     }
-
-    XtFree(input);
 }
 
 void SourceView::EditBreakpointIgnoreCountCB(Widget,
@@ -4504,15 +4426,12 @@ void SourceView::BreakpointCmdCB(Widget,
 
     string cmd = (String)client_data;
 
-    if (gdb->type() == XDB)
-    {
-	if (cmd == "delete")
-	    cmd = "db";
-	else if (cmd == "enable")
-	    cmd = "ab";
-	else if (cmd == "disable")
-	    cmd = "sb";
-    }
+    if (cmd == "enable")
+	cmd = gdb->enable_command();
+    else if (cmd == "disable")
+	cmd = gdb->disable_command();
+    else if (cmd == "delete")
+	cmd = gdb->delete_command();
 
     IntArray breakpoint_nrs;
     getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
@@ -4635,13 +4554,13 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
     XtSetSensitive(bp_area[BPButtons::Lookup].widget,
 		   breakpoint_nrs.size() == 1);
     XtSetSensitive(bp_area[BPButtons::Enable].widget,      
-		   gdb->type() != DBX && breakpoint_nrs.size() > 0);
+		   gdb->has_enable_command() && breakpoint_nrs.size() > 0);
     XtSetSensitive(bp_area[BPButtons::Disable].widget,     
-		   gdb->type() != DBX && breakpoint_nrs.size() > 0);
+		   gdb->has_disable_command() && breakpoint_nrs.size() > 0);
     XtSetSensitive(bp_area[BPButtons::Condition].widget,   
-		   gdb->type() == GDB && breakpoint_nrs.size() > 0);
+		   gdb->has_condition_command() && breakpoint_nrs.size() > 0);
     XtSetSensitive(bp_area[BPButtons::IgnoreCount].widget, 
-		   gdb->type() != DBX && breakpoint_nrs.size() > 0);
+		   gdb->has_ignore_command() && breakpoint_nrs.size() > 0);
     XtSetSensitive(bp_area[BPButtons::Delete].widget,
 		   breakpoint_nrs.size() > 0);
 }
@@ -6624,20 +6543,7 @@ string SourceView::clear_command(string pos, bool clear_next, int first_bp)
 	bps += itostring(max_bp_nr + 1);
     }
 
-    string cmd;
-    switch (gdb->type())
-    {
-    case GDB:
-    case DBX:
-	cmd = "delete ";
-	break;
-
-    case XDB:
-	cmd = "db ";
-	break;
-    }
-
-    return cmd + bps;
+    return gdb->delete_command(bps);
 }
 
 // Some DBXes require `{ COMMAND; }', others `{ COMMAND }'.
@@ -6747,9 +6653,7 @@ void SourceView::reset_done(const string& answer, void *)
 
 void SourceView::reset()
 {
-    string del = "delete";
-    if (gdb->type() == XDB)
-	del = "db";
+    string del = gdb->delete_command();
 
     // Delete all breakpoints
     MapRef ref;
