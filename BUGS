@@ -21,12 +21,12 @@ Volunteers for fixing these and other bugs are welcome!
 013 Raising windows using the `View' menu does not assign them `mwm'
     input focus.  [Anyone willing to give me a hint here?  -AZ]
 
-021 Using Sun DBX, attempting to dereference a `(nil)' pointer
+021 (DBX) Using Sun DBX, attempting to dereference a `(nil)' pointer
     results in an error message and no new display.  However, the
     expression is entered as an ordinary display.
 
-026 Using Sun DBX with PASCAL or Modula-2, selected array elements are
-    not counted from the starting index of the array.
+026 (DBX) Using Sun DBX with PASCAL or Modula-2, selected array
+    elements are not counted from the starting index of the array.
 
 041 Starting a multi-window DDD iconified under vtwm and fvwm causes
     trouble with group iconification.
@@ -69,7 +69,7 @@ Volunteers for fixing these and other bugs are welcome!
     When I repeatedly change the size, the flashing comes again but
     not each time the window size is big enough to hold all boxes.
 
-150 In GDB Modula-2-mode, DDD displays are named `^tree' instead of
+150 (GDB) In Modula-2-mode, DDD displays are named `^tree' instead of
     `tree^'.  [This is a GDB bug.  Here's a patch for GDB 4.16:
 
     ===========================================================
@@ -94,7 +94,7 @@ Volunteers for fixing these and other bugs are welcome!
 152 Curved edges cannot (yet) be printed.
     [Any PostScript and FIG gurus out there?  -AZ]
 
-155 DBX `dump` output is not understood if local arrays are shown.
+155 (DBX) `dump` output is not understood if local arrays are shown.
     (DBX prints these as `ARRAY')
 
 168 Jens Albrecht <Jens.Albrecht@informatik.uni-erlangen.de> complains 
@@ -104,22 +104,6 @@ Volunteers for fixing these and other bugs are welcome!
     ULTRIX and HP-UX `man' formats (probably problems with others, too)
 
 249 Zdenek Sekera <zs@cray.com> reports:
-
-    The 'configure', process is not correct in that the Makefiles
-    generated are not "clean". What I mean is this:
- 	
-    a. When I have done my first complete compilation, I have all the
-       *.o everywhere I need (I have also the ddd/ddd* absolute). From
-       now on whenever I 'touch' a particular ddd/xxx.c file, I would
-       expect with the general Makefile philosophy to recompile only
-       xxx.c and nothing else.  This is NOT what happens. A lot more
-       gets recompiled.  Even better: after the first compilation, try
-       'rm ddd/ddd*' and type 'make'.  Even now something gets
-       recompiled, even if I would have expected only the load phase
-       should take place.  This is actually quite nasty because I never
-       know what other *.o files will be destroyed by recompiling when
-       I work on some xxx.c file.
-       [This is a problem with some MAKE flavors.  Use GNU make instead.  -AZ]
  
     c. Some Makefiles in the subdirectories do not use CFLAGS thus
        making it neccessary to always edit them to put in the correct
@@ -140,7 +124,17 @@ Volunteers for fixing these and other bugs are welcome!
 281 In auto deiconify mode, the GDB console uniconifies even if other
     windows are already there.
 
-286 (Motif) Changing Cut/Copy/Paste accelerators during operation does 
-    not work.
+286 (Motif) Changing Cut/Copy/Paste accelerators at runtime does not work.
 
-287 (Insert new bugs here)
+287 (GDB) `enable delete' as issued by the `Temp' button does not work
+    without args.
+
+288 Breakpoint command definition trouble:
+    * When defining a breakpoint command for the second time, the
+      `Edit>>' button does not reflect the new definition.  Neither
+      does the Breakpoint editor.
+    * Defining a command for two breakpoints at once does not work correctly.
+
+289 When processing the `ignore' command, the spin box should not be updated.
+
+290 (Insert new bugs here)
