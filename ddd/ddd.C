@@ -1668,6 +1668,7 @@ string sh_command(string command, bool force_local)
     string ret = _sh_command(command, force_local);
     if (app_data.trace_shell_commands)
 	clog << "+ " << ret << "\n";
+    clog.flush();
     return ret;
 }
 
