@@ -129,7 +129,7 @@ public:
     bool        user_prompt;	  // Flag as given to send_gdb_command()
     bool        user_check;	  // Flag as given to send_gdb_command()
     bool        recorded;	  // True if command was recorded
-    bool        undo_source;	  // True if command starts new undo source
+    bool        start_undo;	  // True if command starts new undo sequence
 
     bool        disabling_occurred; // Flag: GDB disabled displays
 
@@ -181,7 +181,7 @@ public:
 	  user_prompt(true),
 	  user_check(true),
 	  recorded(false),
-	  undo_source(true),
+	  start_undo(true),
 
 	  disabling_occurred(false),
 
@@ -230,7 +230,7 @@ private:
 	  user_prompt(true),
 	  user_check(true),
 	  recorded(false),
-	  undo_source(true),
+	  start_undo(true),
 
 	  disabling_occurred(false),
 
@@ -940,7 +940,7 @@ static bool command_was_cancelled = false;
 void send_gdb_command(string cmd, Widget origin,
 		      OQCProc callback, OACProc extra_callback, void *data,
 		      bool echo, bool verbose, bool prompt, bool check,
-		      bool undo_source)
+		      bool start_undo)
 {
     string echoed_cmd = cmd;
 
@@ -951,7 +951,7 @@ void send_gdb_command(string cmd, Widget origin,
     cmd_data->pos_buffer    = new PosBuffer;
     cmd_data->user_callback = callback;
     cmd_data->recorded      = gdb->recording();
-    cmd_data->undo_source   = undo_source;
+    cmd_data->start_undo    = start_undo;
 
     cmd_data->user_data    = data;
     cmd_data->user_verbose = verbose;
@@ -1070,7 +1070,7 @@ void send_gdb_command(string cmd, Widget origin,
 	if (arg == "" || 
 	    arg.contains('-', 0) || 
 	    arg.contains('+', 0) || 
-	    arg.matches(rxlist_range))
+	    arg.contains(rxlist_range))
 	{
 	    // Ordinary `list', `list +', `list -', or `list N, M'.
 	    // Leave as is.
@@ -2005,7 +2005,7 @@ static void command_completed(void *data)
     bool check       = cmd_data->user_check;
     bool verbose     = cmd_data->user_verbose;
     bool do_prompt   = cmd_data->user_prompt;
-    bool undo_source = cmd_data->undo_source;
+    bool start_undo  = cmd_data->start_undo;
 
     if (cmd_data->position_timer != 0)
 	XtRemoveTimeOut(cmd_data->position_timer);
@@ -2015,27 +2015,16 @@ static void command_completed(void *data)
 	XtRemoveTimeOut(cmd_data->display_timer);
     cmd_data->display_timer = 0;
 
-    if (verbose && !cmd_data->recorded && undo_source)
+    if (verbose && !cmd_data->recorded && start_undo)
     {
-	// Begin a new undo command
+	// Start a new undo command
 
 	const string& cmd = cmd_data->command;
 	string source = cmd;
 	if (cmd.length() == 1 && iscntrl(cmd[0]))
-	{
-	    char c = cmd[0];
+	    source = "command";
 
-	    if (c == '\003')
-		source = "interrupt";
-	    else if (c == '\034')
-		source = "abort";
-	    else if (c < ' ')
-		source = string("^") + char('@' + c);
-	    else
-		source = "^?";	// DEL
-	}
-
- 	undo_buffer.set_source(source);
+	undo_buffer.start(source);
     }
 
     string answer = "";
