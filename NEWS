@@ -1,19 +1,20 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 1.4 (NOT YET RELEASED)
---------------------------
+DDD 1.4 (WORK IN PROGRESS - NOT YET RELEASED)
+---------------------------------------------
 
     Feature release.
 
+    - Full machine code support.  Assembler and register windows.
+    - Breakpoints and the current execution position can be displayed as 
+      symbols (``glyphs'') instead of text.  Our students find that cute.
     - Using the new `--tty' option, DDD can be easily integrated with
       other GDB/DBX front-ends.  For instance, you can have DDD run as
       an inferior debugger from your Emacs GDB-mode, having all Emacs
       and DDD facilities at your disposition.
-    - Breakpoints and the current execution position can be
-      displayed as symbols (``glyphs'') instead of text.
     - Displays with format expressions (`/x') are properly dereferenced.
-    - Again, several minor bugs were fixed.
+    - Several major and minor bugs have been fixed.
 
 
 DDD 1.3e
