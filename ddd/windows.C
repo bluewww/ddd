@@ -1039,7 +1039,7 @@ static bool get_tool_offset(int& top_offset, int& right_offset)
 
     if (ref == 0 || tool_shell == 0 || 
 	!XtIsRealized(ref) || !XtIsRealized(tool_shell))
-	return;
+	return false;
 
     Window ref_window  = XtWindow(ref);
     Window tool_window = XtWindow(tool_shell);
