@@ -146,15 +146,16 @@ Volunteers for fixing these and other bugs are welcome!
 
 320*Finish Undo/Redo:
     - Redoing displays queries the _current_ frame from GDB, as well
-      as the _current_ values (and non the recorded ones).
+      as the _current_ values (and not the recorded ones).
+    - Up/Down does not change program state, hence undoing `up N'
+      should result in `down N'
 
 322*Finish Plots:
     - Plot clusters
-    - Draw atomic values as (rotatable) lines
+    - Draw scalars as (rotatable) lines
     - Give a diagnostic when plot did not succeed
     - Add menu for printing
     - Add menu for line styles
-    - Add diagnostics when Gnuplot could not be invoked
     - Add a delay dialog (similar to launching xterm)
     - Add Gnuplot console
     - Make swallowing (decorating) optional
@@ -163,4 +164,8 @@ Volunteers for fixing these and other bugs are welcome!
 329*Something is wrong with selecting clusters as a whole: the title
     is not copied to `()'.
 
-330 (Insert new bugs here)
+330 Oliver Eichler <oliver.eichler@regensburg.netsurf.de> suggests
+    that the `Displays' cluster should have two or more columns in
+    order to fit the visible part of the display.
+
+331 (Insert new bugs here)
