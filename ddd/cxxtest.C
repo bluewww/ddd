@@ -40,6 +40,7 @@ char cxxtest_rcsid[] =
 #include <iostream.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 //--------------------------------------------------------------------------
 extern "C" {
@@ -293,6 +294,15 @@ void plot_test()
 	ir[i] = rnd(100);
 
     shell_sort(ir, numbers(ir));
+
+    static double dr[10][100];
+    double pi = 3.14159265358979323846;
+
+    for (int i = 0; i < numbers(dr); i++)
+	for (int j = 0; j < numbers(dr[0]); j++)
+	    dr[i][j] = i * i * sin(j * 2 * pi / numbers(dr[0]) * 3);
+
+    (void) dr;
 }
 
 //--------------------------------------------------------------------------
