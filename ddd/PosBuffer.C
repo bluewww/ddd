@@ -198,7 +198,14 @@ void PosBuffer::filter (string& answer)
 	    signaled = true;
     }
     break;
-    
+
+    case PERL:
+    {
+	if (has_prefix(answer, "Loading DB routines from perl5db.pl"))
+	  recompiled = true;
+    }
+    break;
+
     case XDB:
     case JDB:
     case PYDB:
