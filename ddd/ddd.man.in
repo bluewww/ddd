@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "2 May 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "3 May 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -1318,7 +1318,7 @@ array\fR' while there are array structures in the data display.
 When used for debugging \s-2MODULA-2\s+2 or \s-2PASCAL\s+2 programs,
 \s-2DDD\s+2 always numerates array elements starting with zero,
 instead of using correct array subscripts.  This shall be fixed in a
-future release.
+future \s-2@DDD@\s+2 release.
 
 .\" ---------------
 .SH "REPORTING BUGS"
@@ -1432,8 +1432,12 @@ include at least the \s-2@DDD@\s+2 version, the type of machine you
 are using, and its operating system name and version number.
 .br
 .IP \(bu 2
-The debugger you are using (e.g., \s-2GDB\s+2 or \s-2DBX\s+2) and its
-version.
+The debugger you are using and its version (e.g., `\fBgdb-4.14\fR' or
+`\fBdbx as shipped with Solaris 2.4\fR').
+.br
+.IP \(bu 2
+The compiler you used to compile \s-2@DDD@\s+2 and its version (e.g.,
+`\fBgcc-2.6.3\fR').
 .br
 .IP \(bu 2
 A description of what behavior you observe that you believe is
@@ -1442,9 +1446,16 @@ incorrect.  For example, \*(lq\s-2DDD\s+2 gets a fatal signal\*(rq or
 window\*(lq.
 .br
 .IP \(bu 2
+If possible, include a \fIdialog trace\fR showing the interaction
+between \s-2@DDD@\s+2 and the underlying debugger.  Such a dialog
+trace is created by invoking \s-2@DDD@\s+2 with the `\fB\-\-trace\fR'
+option.  Include all trace output from the \s-2@DDD@\s+2 invocation up
+to the first bug occurrence.
+.br
+.IP \(bu 2
 If you wish to suggest changes to the \s-2@DDD@\s+2 source, send us context
 diffs.  If you even discuss something in the \s-2@DDD@\s+2 source, refer to
-it by context, not by line number.
+it by context, \fInever\fR by line number.
 
 .PP
 Be sure to include this information in \fIevery\fR single bug report.
@@ -1478,7 +1489,7 @@ Dorothea during the winter of 1994/1995.  In the first quarter of
 execution windows, extensions for \s-2DBX\s+2 and remote debugging as
 well as configuration support for several architectures.  Since then,
 many people have contributed to the success of \s-2@DDD@\s+2; see the
-file `\fBCONTRIBUTORS\fR' in the \s-2@DDD@\s+2 release for details.
+file `\fBCONTRIBUTORS\fR' in the \s-2@DDD@\s+2 distribution for details.
 
 .PP
 \s-2@DDD@\s+2 1.0 was released in May, 1995.
