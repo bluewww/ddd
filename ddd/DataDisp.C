@@ -134,7 +134,7 @@ MMDesc DataDisp::graph_popup[] =
 };
 
 struct ValueItms { enum Itms {Dereference, Detail, Rotate, Dependent,
-			      Dummy1, Set, Dummy2, Disable, Delete }; };
+			      Dummy1, Set, Dummy2, Delete }; };
 
 MMDesc DataDisp::node_popup[] =
 {
@@ -145,7 +145,6 @@ MMDesc DataDisp::node_popup[] =
     MMSep,
     {"set",           MMPush,   {DataDisp::setCB}},
     MMSep,
-    {"disable",       MMPush,   {DataDisp::toggleDisableCB}},
     {"delete",        MMPush,   {DataDisp::deleteCB}},
     MMEnd
 };
@@ -159,14 +158,12 @@ MMDesc DataDisp::graph_cmd_area[] =
     MMSep,
     {"set",           MMPush | MMInsensitive, {DataDisp::setCB}},
     MMSep,
-    {"disable",       MMPush | MMInsensitive, {DataDisp::toggleDisableCB}},
     {"delete",        MMPush | MMInsensitive, {DataDisp::deleteCB}},
     MMEnd
 };
 
 struct DisplayItms { enum Itms {Dependent, Dereference, 
-				ShowDetail, HideDetail, Set,
-				Enable, Disable, Delete}; };
+				ShowDetail, HideDetail, Set, Delete}; };
 
 MMDesc DataDisp::display_area[] =
 {
@@ -175,8 +172,6 @@ MMDesc DataDisp::display_area[] =
     {"show_detail",  MMPush,   {DataDisp::showDetailCB}},
     {"hide_detail",  MMPush,   {DataDisp::hideDetailCB}},
     {"set",          MMPush,   {DataDisp::setCB}},
-    {"enable",       MMPush,   {DataDisp::enableCB }},
-    {"disable",      MMPush,   {DataDisp::disableCB }},
     {"delete",       MMPush,   {DataDisp::deleteCB }},
     MMEnd
 };
@@ -328,6 +323,11 @@ void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
 {
     set_last_origin(dialog);
 
+    IntArray disp_nrs;
+
+    bool do_enable  = true;
+    bool do_disable = true;
+
     bool changed = false;
     MapRef ref;
     for (DispNode* dn = disp_graph->first(ref); 
@@ -343,13 +343,46 @@ void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
 		continue;
 
 	    if (dv->collapsedAll() > 0)
+	    {
 		dv->expandAll();
+
+		if (dv == dn->value() && dn->disabled())
+		{
+		    // Enable display
+		    string nr = dn->disp_nr();
+		    disp_nrs += get_nr(nr);
+		    do_disable = false;
+		}
+		else
+		{
+		    dn->refresh();
+		    changed = true;
+		}
+	    }
 	    else
+	    {
 		dv->collapse();
-	    dn->refresh();
-	    changed = true;
+
+		if (dv == dn->value() && dn->enabled())
+		{
+		    // Disable display
+		    string nr = dn->disp_nr();
+		    disp_nrs += get_nr(nr);
+		    do_enable = false;
+		}
+		else
+		{
+		    dn->refresh();
+		    changed = true;
+		}
+	    }
 	}
     }
+
+    if (do_enable)
+	enable_display(disp_nrs);
+    else if (do_disable)
+	disable_display(disp_nrs);
 
     if (changed)
 	refresh_graph_edit();
@@ -358,6 +391,7 @@ void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
 void DataDisp::showDetailCB (Widget dialog, XtPointer, XtPointer)
 {
     set_last_origin(dialog);
+    IntArray disp_nrs;
 
     bool changed = false;
     MapRef ref;
@@ -367,6 +401,12 @@ void DataDisp::showDetailCB (Widget dialog, XtPointer, XtPointer)
     {
 	if (dn->selected())
 	{
+	    if (dn->disabled())
+	    {
+		string nr = dn->disp_nr();
+		disp_nrs += get_nr(nr);
+	    }
+		
 	    DispValue *dv = dn->selected_value();
 	    if (dv == 0)
 		dv = dn->value();
@@ -382,6 +422,8 @@ void DataDisp::showDetailCB (Widget dialog, XtPointer, XtPointer)
 	}
     }
 
+    enable_display(disp_nrs);
+
     if (changed)
 	refresh_graph_edit();
 }
@@ -389,6 +431,7 @@ void DataDisp::showDetailCB (Widget dialog, XtPointer, XtPointer)
 void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 {
     set_last_origin(dialog);
+    IntArray disp_nrs;
 
     bool changed = false;
     MapRef ref;
@@ -404,6 +447,12 @@ void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 	    if (dv == 0)
 		continue;
 
+	    if (dv == dn->value() && dn->enabled())
+	    {
+		string nr = dn->disp_nr();
+		disp_nrs += get_nr(nr);
+	    }
+
 	    if (dv->expanded())
 	    {
 		dv->collapse();
@@ -412,6 +461,8 @@ void DataDisp::hideDetailCB (Widget dialog, XtPointer, XtPointer)
 	    }
 	}
     }
+
+    disable_display(disp_nrs);
 
     if (changed)
 	refresh_graph_edit();
@@ -1152,8 +1203,6 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     
     int count_selected           = 0;
     int count_all                = 0;
-    int count_selected_disabled  = 0;
-    int count_selected_enabled   = 0;
     int count_selected_expanded  = 0;
     int count_selected_collapsed = 0;
     int count_selected_data      = 0;
@@ -1168,36 +1217,23 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	if (dn->selected())
 	{
 	    count_selected++;
-	    if (dn->disabled())
-		count_selected_disabled++;
-	    if (dn->enabled())
-		count_selected_enabled++;
 	    if (!dn->is_user_command())
 		count_selected_data++;
 
-	    DispValue *dv = dn->selected_value();
-	    if (dv == 0)
-		dv = dn->value();
-	    if (dv)
+
+	    if (dn->disabled())
+		count_selected_collapsed++;
+	    else
 	    {
-		count_selected_expanded  += int(dv->expanded());
-		count_selected_collapsed += dv->collapsedAll();
+		DispValue *dv = dn->selected_value();
+		if (dv == 0)
+		    dv = dn->value();
+		if (dv)
+		{
+		    count_selected_expanded  += int(dv->expanded());
+		    count_selected_collapsed += dv->collapsedAll();
+		}
 	    }
-	}
-    }
-
-    if (count_selected > 0)
-    {
-	switch (gdb->type())
-	{
-	case DBX:
-	case XDB:
-	    // DBX and XDB cannot disable or enable displays
-	    count_selected_enabled = count_selected_disabled = 0;
-	    break;
-
-	case GDB:
-	    break;
 	}
     }
 
@@ -1275,38 +1311,6 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  rotate_ok);
     set_sensitive(graph_cmd_area[ValueItms::Rotate].widget,
 		  rotate_ok);
-
-    // Enable/Disable
-    if (count_selected_enabled > 0 && count_selected_disabled == 0)
-    {
-	// Only disabled displays selected
-	set_label(node_popup[ValueItms::Disable].widget, "Disable Display");
-	set_label(graph_cmd_area[ValueItms::Disable].widget, "Disable ()");
-	set_sensitive(node_popup[ValueItms::Disable].widget, true);
-	set_sensitive(graph_cmd_area[ValueItms::Disable].widget, true);
-    }
-    else if (count_selected_disabled > 0 && count_selected_enabled == 0)
-    {
-	// Only enabled displays selected
-	set_label(node_popup[ValueItms::Disable].widget, "Enable Display");
-	set_label(graph_cmd_area[ValueItms::Disable].widget, "Enable ()");
-	set_sensitive(node_popup[ValueItms::Disable].widget, true);
-	set_sensitive(graph_cmd_area[ValueItms::Disable].widget, true);
-    }
-    else 
-    {
-	// Disabled as well as enabled displays selected
-	set_sensitive(node_popup[ValueItms::Disable].widget, false);
-	set_sensitive(graph_cmd_area[ValueItms::Disable].widget, false);
-    }
-
-    // Enable
-    set_sensitive(display_area[DisplayItms::Enable].widget, 
-		  count_selected_disabled);
-
-    // Disable
-    set_sensitive(display_area[DisplayItms::Disable].widget, 
-		  count_selected_enabled);
 
     // Show/Hide Detail
     if (count_selected_expanded > 0 && count_selected_collapsed == 0)
@@ -2361,6 +2365,7 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs)
 	if (dn != 0 && dn->is_user_command() && dn->disabled())
 	{
 	    dn->enable();
+	    dn->value()->expandAll();
 	    enabled_user_displays++;
 	}
     }
