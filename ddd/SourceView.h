@@ -191,7 +191,7 @@ class SourceView {
     // * If MAKE_FALSE is == 0, enable breakpoint by restoring
     //   the original condition.
     // * Otherwise, preserve the condition state.
-    static void _set_bps_cond(IntArray& nrs, string cond, 
+    static void _set_bps_cond(IntArray& nrs, const string& cond, 
 			      int make_false, Widget origin);
 
     // Set condition of breakpoints NRS to COND.
@@ -603,7 +603,7 @@ public:
     // POSITION; no arg means clear current position.
     // STOPPED indicates that the program just stopped.
     // SIGNALED indicates that the program received a signal.
-    static void show_execution_position (string position = "",
+    static void show_execution_position (const string& position = "",
 					 bool stopped    = false,
 					 bool signaled   = false,
 					 bool silent     = false);

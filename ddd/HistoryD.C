@@ -48,10 +48,11 @@ char HistoryDialog_rcsid[] =
 // Argument filters
 //-----------------------------------------------------------------------------
 
-static bool try_arg(const string& cmd, string prefix, string& arg)
+static bool try_arg(const string& cmd, const string& prefix_, string& arg)
 {
-    if (prefix == "")
+    if (prefix_ == "")
 	return false;		// No such command
+    string prefix( prefix_ );
     if (!prefix.contains(" ", -1))
 	prefix += " ";
 

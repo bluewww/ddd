@@ -74,7 +74,7 @@ public:
 
     // Constructor
     VSLDef(VSLDefList* l, VSLNode *pattern, VSLNode *e = 0,
-	   string filename = "builtin", int lineno = 0);
+	   const string& filename = "builtin", int lineno = 0);
 
 private:
     // Copy constructor
@@ -108,7 +108,7 @@ public:
     string f_name() const;        // external name (including args)
     string longname() const;      // external name (including args and loc)
 
-    string filename() const     { return _filename; }
+    const string& filename() const     { return _filename; }
     int lineno() const          { return _lineno; }
 
     // Evaluate

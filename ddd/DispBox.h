@@ -109,7 +109,7 @@ public:
     void set_value (const DispValue *dv, const DispValue *parent = 0);
 
     // Set title to NAME; if NAME == "", disable it
-    void set_title(const DispValue *dv, int disp_nr, string name);
+    void set_title(const DispValue *dv, int disp_nr, const string& name);
 
     bool have_title() const { return title_box != 0; }
 

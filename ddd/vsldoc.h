@@ -36,7 +36,7 @@
 #include "strclass.h"
 
 // Return initial comments from VSL file FILE; search it in PATH
-string vsldoc(string file, const string& path = ".");
+string vsldoc(const string& file, const string& path = ".");
 
 // Clear cache
 void clear_vsldoc_cache();

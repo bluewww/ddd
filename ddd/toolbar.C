@@ -233,7 +233,7 @@ static void center_buttons(MMDesc items[], Dimension offset)
 
 // Create a toolbar as child of parent, named `toolbar', having
 // the buttons ITEMS.  Return LABEL and ARGFIELD.
-Widget create_toolbar(Widget parent, string /* name */,
+Widget create_toolbar(Widget parent, const string& /* name */,
 		      MMDesc *items1, MMDesc *items2,
 		      Widget& label, ArgField*& argfield,
 		      unsigned char label_type)

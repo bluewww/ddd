@@ -119,7 +119,7 @@ static string perl_prefix(string& expr)
     return prefix;
 }
 
-static bool sub1(string& a, string s1, string s2)
+static bool sub1(string& a, string s1, const string& s2)
 {
     const string prefix = c_prefix(s1);
 

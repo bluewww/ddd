@@ -286,7 +286,7 @@ public:
     DebuggerType type()       const { return _type; }
     string title()            const;
     bool isReadyWithPrompt()  const { return state == ReadyWithPrompt; }
-    string prompt()           const { return last_prompt; }
+    const string& prompt()    const { return last_prompt; }
 
 
     // Debugger properties
@@ -678,7 +678,7 @@ public:
     // Several commands
 				                    // GDB command
 						    // -----------------------
-    string print_command(string expr = "",          // print|output EXP
+    string print_command(const string& expr = "",   // print|output EXP
 			 bool internal = true) const;
     string assign_command(const string& var,        // set variable VAR = EXPR
 			  const string& expr) const;
@@ -703,7 +703,7 @@ public:
     string disassemble_command(string start, string end = "") const;
                                                     // disassemble START END
     string make_command(const string& target) const;       // make TARGET
-    string jump_command(string pc) const;           // jump PC
+    string jump_command(const string& pc) const;    // jump PC
     string regs_command(bool all = true) const;	    // info registers
     string watch_command(const string& expr, WatchMode w = WATCH_CHANGE) const;
 				                    // watch EXPR

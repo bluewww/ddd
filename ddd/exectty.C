@@ -345,7 +345,7 @@ static bool has_redirection(const string& args, const string& redirection)
 // Set debugger TTY to TTY_NAME and terminal type to TERM_TYPE.
 // Use without arguments to silently restore original TTY.
 static int gdb_set_tty(string tty_name = "",
-		       string term_type = "dumb",
+		       const string& term_type = "dumb",
 		       Widget origin = 0)
 {
     bool silent = false;

@@ -292,8 +292,8 @@ void ddd_install_fatal(const char * /* program_name */)
 }
 
 // Post a dialog containing TITLE and CAUSE
-static void post_fatal(string title, string cause, string cls, 
-		       bool core_dumped = false)
+static void post_fatal(const string& title, const string& cause,
+		       const string& cls, bool core_dumped = false)
 {
     (void) core_dumped;		// Use it
 

@@ -67,7 +67,7 @@ public:
 
     // Constructor
     VSLDefList(VSLLib* l, unsigned hash, 
-	string func_nm, bool g = false)
+	const string& func_nm, bool g = false)
 	: _func_name(func_nm), _first(0), _last(0), _ndefs(0),
 	_next(0), _global(g), lib(l), hashcode(hash), 
 	references(0), self_references(-1)
@@ -92,7 +92,7 @@ public:
     // Add new function
     VSLDef *add(bool& newFlag,
 		VSLNode *pattern, VSLNode *expr = 0,
-		string filename = "builtin", int lineno = 0);
+		const string& filename = "builtin", int lineno = 0);
 
     // Get a function def
     VSLDef *def(Box *arglist) const;

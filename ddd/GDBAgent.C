@@ -1673,7 +1673,7 @@ void GDBAgent::handle_died()
 //-----------------------------------------------------------------------------
 
 // DBX 3.0 wants `print -r' instead of `print' for C++
-string GDBAgent::print_command(string expr, bool internal) const
+string GDBAgent::print_command(const string& expr, bool internal) const
 {
     string cmd;
 
@@ -1884,7 +1884,7 @@ string GDBAgent::make_command(const string& args) const
 }
 
 // Move PC to POS
-string GDBAgent::jump_command(string pos) const
+string GDBAgent::jump_command(const string& pos) const
 {
     if (!has_jump_command())
 	return "";
@@ -1896,9 +1896,10 @@ string GDBAgent::jump_command(string pos) const
    
     case XDB:
     {
-	if (pos.contains('*', 0))
-	    pos = pos.after('*');
-	return "g " + pos;
+        string pos_ = pos;
+	if (pos_.contains('*', 0))
+	    pos_ = pos_.after('*');
+	return "g " + pos_;
     }
 
     case DBX:

@@ -51,7 +51,7 @@ void clear_vsldoc_cache()
 }
 
 // Return initial comments from VSL file FILE.
-string vsldoc(string file, const string& path)
+string vsldoc(const string& file, const string& path)
 {
     if (docs.has(file))
 	return docs[file];

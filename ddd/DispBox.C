@@ -383,7 +383,7 @@ DataLink DispBox::data_link = {
     DispBox::link_info		// debugging info of data
 };
 
-void DispBox::set_title(const DispValue *dv, int disp_nr, string name)
+void DispBox::set_title(const DispValue *dv, int disp_nr, const string& name)
 {
     if (title_box != 0)
     {
@@ -408,8 +408,9 @@ void DispBox::set_title(const DispValue *dv, int disp_nr, string name)
 	{
 	    // Normal title: use NUMBER: NAME
 	    args[arg++] = itostring(disp_nr);
-	    shorten_title(name);
-	    args[arg++] = tag(name);
+	    string name_( name );
+	    shorten_title(name_);
+	    args[arg++] = tag(name_);
 	}
 
 	title_box = eval(dv, "title", args);

@@ -39,7 +39,7 @@
 
 // Create a toolbar as child of parent, named `NAME_toolbar', having
 // the buttons ITEMS.  Return LABEL and ARGFIELD.
-extern Widget create_toolbar(Widget parent, string name, 
+extern Widget create_toolbar(Widget parent, const string& name, 
 			     MMDesc *items1, MMDesc *items2,
 			     Widget& label, ArgField*& argfield,
 			     unsigned char label_type);

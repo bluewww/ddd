@@ -220,14 +220,14 @@ protected:
     // Msg invokes error handler, Warning invokes warning handler
     // IO means include system error, _ means don't check if running.
 
-    void _raiseMsg(string msg)        { _raise(msg, Panic,   false, false); }
-    void _raiseWarning(string msg)    { _raise(msg, Strange, false, false); }
-    void _raiseIOMsg(string msg)      { _raise(msg, Panic,   true,  false); }
-    void _raiseIOWarning(string msg)  { _raise(msg, Strange, true,  false); }
-    void raiseMsg(string msg)         { _raise(msg, Panic,   false, true); }
-    void raiseWarning(string msg)     { _raise(msg, Strange, false, true); }
-    void raiseIOMsg(string msg)       { _raise(msg, Panic,   true,  true); }
-    void raiseIOWarning(string msg)   { _raise(msg, Strange, true,  true); }
+    void _raiseMsg(const string& msg)        { _raise(msg, Panic,   false, false); }
+    void _raiseWarning(const string& msg)    { _raise(msg, Strange, false, false); }
+    void _raiseIOMsg(const string& msg)      { _raise(msg, Panic,   true,  false); }
+    void _raiseIOWarning(const string& msg)  { _raise(msg, Strange, true,  false); }
+    void raiseMsg(const string& msg)         { _raise(msg, Panic,   false, true); }
+    void raiseWarning(const string& msg)     { _raise(msg, Strange, false, true); }
+    void raiseIOMsg(const string& msg)       { _raise(msg, Panic,   true,  true); }
+    void raiseIOWarning(const string& msg)   { _raise(msg, Strange, true,  true); }
 
     // Terminator
     virtual void waitToTerminate();	// wait until agent dead
@@ -402,7 +402,7 @@ public:
     void hasNewStatus(int status);
 
     // Resources
-    string path() const		 { return _path;    }
+    const string& path() const		 { return _path;    }
     pid_t pid()	const		 { return _pid;     }
     int& terminateTimeOut()	 { return _terminateTimeOut; }
     int& hangupTimeOut()	 { return _hangupTimeOut; }

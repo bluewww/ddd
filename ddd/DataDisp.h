@@ -293,7 +293,7 @@ public:
     // If CLUSTERED is set, cluster display.
     // If PLOTTED is set, plot display.
     // If ORIGIN is set, the last origin is set to ORIGIN.
-    static void new_displaySQ(string display_expression,
+    static void new_displaySQ(const string& display_expression,
 			      const string& scope,
 			      BoxPoint *pos = 0,
 			      const string& depends_on = "",
@@ -362,7 +362,7 @@ public:
 				   const string& pattern);
 
     // Same, but use the GDB_COMMAND interface for enqueing commands
-    static void new_display(string display_expression,
+    static void new_display(const string& display_expression,
 			    BoxPoint *pos = 0,
 			    string depends_on = "",
 			    bool clustered = false,

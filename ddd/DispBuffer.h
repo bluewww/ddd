@@ -72,7 +72,7 @@ public:
     }
 
     // Return any displays found
-    string get_displays () const { return display_buffer; }
+    const string& get_displays () const { return display_buffer; }
 
     // Call before filtering next answer
     void clear () {

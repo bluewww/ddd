@@ -124,7 +124,7 @@ Widget createTopLevelSelectionDialog(Widget parent, const _XtString name,
 // NOTIFY:          Whether callbacks should be invoked
 //
 void setLabelList (Widget  selectionList,
-		   string  label_list[],
+		   const string  label_list[],
 		   bool    selected[],
 		   int     list_length,
 		   bool    highlight_title,
@@ -242,7 +242,7 @@ void getItemNumbers(Widget selectionList, IntArray& numbers)
 
 // Create an array of XmStrings from the list LABEL_LIST of length
 // LIST_LENGTH.  If HIGHLIGHT_TITLE is set, let the first line be bold.
-XmStringTable makeXmStringTable (string label_list[],
+XmStringTable makeXmStringTable (const string label_list[],
 				 int list_length, bool highlight_title)
 {
     XmStringTable xmlist = 

@@ -62,7 +62,7 @@ DEFINE_TYPE_INFO_0(VSLDef)
 
 // Constructor
 VSLDef::VSLDef(VSLDefList* l, VSLNode *pattern, VSLNode *e, 
-	       string filename, int lineno)
+	       const string& filename, int lineno)
     : _expr(e),
       _node_pattern(pattern),
       _box_pattern(0),

@@ -375,7 +375,7 @@ static void ActivateCB(Widget, XtPointer client_data, XtPointer call_data);
 static void verify_buttons(MMDesc *items);
 
 // Setup shortcut menu
-static void set_shortcut_menu(DataDisp *data_disp, string expressions);
+static void set_shortcut_menu(DataDisp *data_disp, const string& expressions);
 static void set_shortcut_menu(DataDisp *data_disp);
 
 // Fix the size of the status line
@@ -398,7 +398,7 @@ static void set_select_all_bindings(MMDesc *menu, BindingStyle style);
 
 // Popup DDD splash screen upon start-up.
 static void SetSplashScreenCB(Widget, XtPointer, XtPointer);
-static void popup_splash_screen(Widget parent, string color_key);
+static void popup_splash_screen(Widget parent, const string& color_key);
 static void popdown_splash_screen(XtPointer data = 0, XtIntervalId *id = 0);
 
 // Read in database from FILENAME.  Upon version mismatch, ignore some
@@ -3468,7 +3468,7 @@ static void verify_buttons(MMDesc *items)
 // Create DataDisp shortcut menu
 //-----------------------------------------------------------------------------
 
-static void set_shortcut_menu(DataDisp *data_disp, string exprs)
+static void set_shortcut_menu(DataDisp *data_disp, const string& exprs)
 {
     int newlines = exprs.freq('\n') + 1;
     string *items = new string[newlines];
@@ -6908,7 +6908,7 @@ static void popdown_splash_screen(XtPointer data, XtIntervalId *id)
     }
 }
 
-static void popup_splash_screen(Widget parent, string color_key)
+static void popup_splash_screen(Widget parent, const string& color_key)
 {
     popdown_splash_screen();
 

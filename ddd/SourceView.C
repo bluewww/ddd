@@ -1006,7 +1006,7 @@ bool SourceView::move_bp(int bp_nr, const string& a, Widget w, bool copy)
     return true;
 }
 
-void SourceView::_set_bps_cond(IntArray& _nrs, string cond,
+void SourceView::_set_bps_cond(IntArray& _nrs, const string& cond,
 			       int make_false, Widget w)
 {
     CommandGroup cg;
@@ -3751,8 +3751,9 @@ void SourceView::create_text(Widget parent, const string& base, bool editable,
 // POSITION; no arg means clear current position.
 // STOPPED indicates that the program just stopped.
 // SIGNALED indicates that the program received a signal.
-void SourceView::show_execution_position (string position, bool stopped,
-					  bool signaled, bool silent)
+void SourceView::show_execution_position (const string& position_,
+					  bool stopped,	bool signaled,
+					  bool silent)
 {
     if (stopped)
     {
@@ -3760,7 +3761,7 @@ void SourceView::show_execution_position (string position, bool stopped,
 	signal_received = signaled;
     }
 
-    if (position == "")
+    if (position_ == "")
     {
 	if (!display_glyphs)
 	{
@@ -3792,6 +3793,7 @@ void SourceView::show_execution_position (string position, bool stopped,
     }
 
     string file_name = current_file_name;
+    string position = position_;
 
     if (position.contains(':'))
     {

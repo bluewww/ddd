@@ -73,7 +73,7 @@ const Box *VSLDefList::eval(Box *arg) const
 
 // Append def to list; if a new def was appended, set newFlag
 VSLDef* VSLDefList::add(bool &newFlag, VSLNode *pattern, VSLNode *expr,
-			string filename, int lineno)
+			const string& filename, int lineno)
 {
     VSLDef *newdef = new VSLDef(this, pattern, expr, filename, lineno);
 

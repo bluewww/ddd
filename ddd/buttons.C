@@ -354,7 +354,7 @@ void clear_help_cache(const string& command)
 
 
 // Return DBX 3.2 one-liner help.
-static string gdbTip(string command)
+static string gdbTip(const string& command)
 {
     static bool entered = false;
     if (entered)
@@ -403,7 +403,7 @@ static string gdbTip(string command)
 }
 
 
-static string gdbSettingsValue(string command)
+static string gdbSettingsValue(const string& command)
 {
     switch (gdb->type())
     {

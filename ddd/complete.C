@@ -108,7 +108,7 @@ private:
 static void complete_reply(const string& complete_answer, void *qu_data);
 
 // Set completion
-static void set_completion(const CompletionInfo& info, string completion)
+static void set_completion(const CompletionInfo& info, const string& completion)
 {
     // Set input to common prefix
     if (info.widget == gdb_w)
@@ -204,7 +204,7 @@ static string *completions  = 0;
 static int completions_size = 0;
 
 // Send completion question
-static void complete(Widget w, XEvent *e, string input, string cmd)
+static void complete(Widget w, XEvent *e, const string& input, string cmd)
 {
     // Issue diagnostic if completion doesn't work right now
     if (!can_do_gdb_command())

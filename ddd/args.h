@@ -44,7 +44,7 @@ void gdbMakeAgainCB(Widget w, XtPointer, XtPointer);
 
 void gdbChangeDirectoryCB(Widget w, XtPointer, XtPointer);
 
-void add_to_arguments(string line);
+void add_to_arguments(const string& line);
 void update_arguments();
 
 bool add_running_arguments(string& cmd, Widget origin = 0);

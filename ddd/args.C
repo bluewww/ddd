@@ -116,7 +116,7 @@ static void add_argument(string arg, StringArray& arguments,
 }
 
 // If LINE is an argument-setting command, add it to the list of arguments
-void add_to_arguments(string line)
+void add_to_arguments(const string& line)
 {
     if (is_set_args_cmd(line))
     {

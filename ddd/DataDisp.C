@@ -3450,7 +3450,7 @@ void DataDisp::get_display_numbers(const string& name, IntArray& numbers)
     }
 }
 
-void DataDisp::new_displaySQ (string display_expression,
+void DataDisp::new_displaySQ (const string& display_expression,
 			      const string& scope, BoxPoint *p,
 			      const string& depends_on,
 			      DeferMode deferred, 
