@@ -32,8 +32,14 @@ JAVAC = javac
 # The flags we use to compile Java files.
 JFLAGS = -g
 
+# Native-code compiler
+GCJ = gcj
+
+# Its flags
+GCJFLAGS = -g
+
 # Default rule
-all:	jtest
+all:	jtest-java
 	@:
 .PHONY: all
 
@@ -43,7 +49,15 @@ all:	jtest
 .java.class:
 	$(JAVAC) $(JFLAGS) $<
 
+.java.o:
+	$(GCJ) -c $(GCJFLAGS) $<
+
 # Our app
-.PHONY: jtest
-jtest: 	jtest.class Date.class Holiday.class List.class Tree.class
+.PHONY: jtest-java
+jtest-java: jtest.class Date.class Holiday.class List.class Tree.class
 	@:
+
+# The binary
+JTEST_OBJECTS = jtest.o	Date.o Holiday.o List.o Tree.o
+jtest:	$(JTEST_OBJECTS)
+	$(GCJ) -o $@ --main=jtest $(JTEST_OBJECTS)
