@@ -603,6 +603,8 @@ void subString::assign(strRep* ysrc, const char* ys, int ylen)
 {
     if (&S == &_nilstring) return;
 
+    assert(!S.consuming());
+
     if (ylen < 0) ylen = slen(ys);
     strRep* targ = S.rep;
     unsigned sl = targ->len - len + ylen;
@@ -641,6 +643,8 @@ void subString::assign(strRep* ysrc, const char* ys, int ylen)
 
 int string::_gsub(const char* pat, int pl, const char* r, int rl)
 {
+    assert(!consuming());
+
     int nmatches = 0;
     if (pl < 0) pl = slen(pat);
     if (rl < 0) rl = slen(r);
@@ -712,6 +716,8 @@ int string::_gsub(const char* pat, int pl, const char* r, int rl)
 
 int string::_gsub(const regex& pat, const char* r, int rl)
 {
+    assert(!consuming());
+
     int nmatches = 0;
     int sl = length();
     if (sl <= 0)
@@ -790,6 +796,8 @@ int string::_gsub(const regex& pat, const char* r, int rl)
 
 void string::del(int pos, int len)
 {
+    assert(!consuming());
+
     if (pos < 0 || len <= 0 || (unsigned)(pos + len) > length()) return;
     int nlen = length() - len;
     int first = pos + len;
@@ -1336,6 +1344,8 @@ istream& operator>>(istream& s, string& x)
 
 int readline(istream& s, string& x, char terminator, int discard)
 {
+    assert(!x.consuming());
+
 #ifdef _OLD_STREAMS
     if (!s.good())
 #else

@@ -377,6 +377,29 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //      next string operation,  and you must not modify it.  (The
 //      conversion is defined to return a const value so that GNU C++ will
 //      produce warning and/or error messages if changes are attempted.)
+//
+//
+// Special stuff
+// =============
+// 
+// A string S can be put into `consuming' mode by invoking
+// 
+//     s.consuming(true)
+// 
+// While in `consuming' mode, the (physical) location of S does not change;
+// the only assignment operations allowed are assignments of substrings
+// at the end of S, as in
+// 
+//     s = s.from(...); s = s.after(...)
+//
+// Furthermore, pointers to S stay constant; it is safe to refer to an
+// earlier value of S via a pointer:
+//
+//     char *s0 = s;
+//     s = s.after(...);;
+//     // S0 still points to original S here
+// 
+// This feature is used in DDD to speed up several loops.
 
 
 #ifndef _ICE_strclass_h
@@ -391,12 +414,17 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "rxclass.h"
 #include "config.h"
 #include "bool.h"
+#include "assert.h"
+
+#ifndef STRING_CHECK_CONSUME
+#define STRING_CHECK_CONSUME 0
+#endif
 
 // Internal string representations
 struct strRep
 {
-    unsigned int len;		// String length 
-    unsigned int allocated;		// Allocated space
+    unsigned int len;		// String length
+    unsigned int allocated;     // Allocated space
     char *s;			// Start of string; points into
 				// MEM[0]..MEM[ALLOCATED - 1]
     char mem[1];                // Start of memory
@@ -479,7 +507,10 @@ class string
     friend class subString;
 
 protected:
-    strRep* rep;   // Strings are pointers to their representations
+    strRep* rep;	 // Strings are pointers to their representations
+#if STRING_CHECK_CONSUME
+    bool consume;	 // If true, check that we're only consuming
+#endif
 
     // Some helper functions
     int search(int, int, const char*, int = -1) const;
@@ -492,8 +523,14 @@ protected:
 
 private:
     // Don't get constructed or assigned from int
-    string(int) : rep(0)      { error("init from int"); }
-    string& operator = (int)  { error("int assign"); return *this; }
+    string(int) : rep(0)
+#if STRING_CHECK_CONSUME
+	, consume(false)
+#endif
+    { 
+	error("init from int");
+    }
+    string& operator = (int)             { error("int assign"); return *this; }
 
 public:
     // Constructors and assignment
@@ -506,6 +543,9 @@ public:
     string(ostrstream& os); // should be const
 
     ~string();
+
+    void consuming(bool set);
+    bool consuming() const;
 
     string& operator = (const string& y);
     string& operator = (const char* y);
@@ -830,19 +870,68 @@ inline unsigned int subString::length() const { return len; }
 inline int          subString::empty() const { return len == 0; }
 inline const char*  subString::chars() const { return S.rep->s + pos; }
 
+// Resources
+inline void string::consuming(bool set)
+{
+#if STRING_CHECK_CONSUME
+    consume = set;
+#else
+    (void) set;
+#endif
+}
+
+inline bool string::consuming() const
+{
+#if STRING_CHECK_CONSUME
+    return consume;
+#else
+    return false;
+#endif
+}
+
 // Constructors
 inline string::string() 
-  : rep(&_nilstrRep) {}
-inline string::string(const string& x) 
-  : rep(string_Scopy(0, x.rep)) {}
+  : rep(&_nilstrRep)
+#if STRING_CHECK_CONSUME
+    , consume(false) 
+#endif
+  {}
+
+inline string::string(const string& x)
+  : rep(string_Scopy(0, x.rep))
+#if STRING_CHECK_CONSUME
+    , consume(false) 
+#endif
+  {}
+
 inline string::string(const char* t) 
-  : rep(string_Salloc(0, t, -1, -1)) {}
+  : rep(string_Salloc(0, t, -1, -1))
+#if STRING_CHECK_CONSUME
+    , consume(false) 
+#endif
+  {}
+
 inline string::string(const char* t, int tlen)
-  : rep(string_Salloc(0, t, tlen, tlen)) {}
+  : rep(string_Salloc(0, t, tlen, tlen))
+#if STRING_CHECK_CONSUME
+    , consume(false) 
+#endif
+  {}
+
 inline string::string(const subString& y)
-  : rep(string_Salloc(0, y.chars(), y.length(), y.length())) {}
+  : rep(string_Salloc(0, y.chars(), y.length(), y.length()))
+#if STRING_CHECK_CONSUME
+    , consume(false) 
+#endif
+  {}
+
 inline string::string(char c) 
-  : rep(string_Salloc(0, &c, 1, 1)) {}
+  : rep(string_Salloc(0, &c, 1, 1))
+#if STRING_CHECK_CONSUME
+    , consume(false) 
+#endif
+  {}
+
 
 // For HAVE_PLACEMENT_NEW, if using placement new, use operator
 // delete instead of vector delete.
@@ -876,6 +965,7 @@ inline subString::~subString() {}
 
 inline string& string::operator = (const string& y)
 {
+    assert(!consuming());
     rep = string_Scopy(rep, y.rep); return *this;
 }
 
@@ -890,6 +980,7 @@ inline string& string::operator = (const char* t)
     }
     else
     {
+	assert(!consuming());
 	rep = string_Salloc(rep, t, -1, -1);
     }
     return *this;
@@ -912,6 +1003,7 @@ inline string& string::operator = (const subString&  y)
     }
     else
     {
+	assert(!consuming());
 	rep = string_Salloc(rep, y.chars(), y.length(), y.length());
     }
     return *this;
@@ -919,11 +1011,14 @@ inline string& string::operator = (const subString&  y)
 
 inline string& string::operator = (char c)
 {
+    assert(!consuming());
     rep = string_Salloc(rep, &c, 1, 1); return *this;
 }
 
 inline string& string::operator = (ostrstream& os)
 {
+    assert(!consuming());
+
 #if HAVE_FROZEN_OSTRSTREAM
     // No need to freeze the stream, since the string is copied right away
     int frozen = os.frozen();
@@ -976,126 +1071,151 @@ inline subString& subString::operator = (const subString& y)
 
 inline void cat(const string& x, const string& y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x.chars(), x.length(), y.chars(), y.length());
 }
 
 inline void cat(const string& x, const subString& y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x.chars(), x.length(), y.chars(), y.length());
 }
 
 inline void cat(const string& x, const char* y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x.chars(), x.length(), y, -1);
 }
 
 inline void cat(const string& x, char* y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x.chars(), x.length(), y, -1);
 }
 
 inline void cat(const string& x, char y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x.chars(), x.length(), &y, 1);
 }
 
 inline void cat(const subString& x, const string& y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x.chars(), x.length(), y.chars(), y.length());
 }
 
 inline void cat(const subString& x, const subString& y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x.chars(), x.length(), y.chars(), y.length());
 }
 
 inline void cat(const subString& x, const char* y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x.chars(), x.length(), y, -1);
 }
 
 inline void cat(const subString& x, char* y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x.chars(), x.length(), y, -1);
 }
 
 inline void cat(const subString& x, char y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x.chars(), x.length(), &y, 1);
 }
 
 inline void cat(const char* x, const string& y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x, -1, y.chars(), y.length());
 }
 
 inline void cat(const char* x, const subString& y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x, -1, y.chars(), y.length());
 }
 
 inline void cat(const char* x, const char* y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x, -1, y, -1);
 }
 
 inline void cat(const char* x, char* y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x, -1, y, -1);
 }
 
 inline void cat(const char* x, char y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x, -1, &y, 1);
 }
 
 inline void cat(char* x, const string& y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x, -1, y.chars(), y.length());
 }
 
 inline void cat(char* x, const subString& y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x, -1, y.chars(), y.length());
 }
 
 inline void cat(char* x, const char* y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x, -1, y, -1);
 }
 
 inline void cat(char* x, char* y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x, -1, y, -1);
 }
 
 inline void cat(char* x, char y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, x, -1, &y, 1);
 }
 
 inline void cat(char x, const string& y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, &x, 1, y.chars(), y.length());
 }
 
 inline void cat(char x, const subString& y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, &x, 1, y.chars(), y.length());
 }
 
 inline void cat(char x, const char* y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, &x, 1, y, -1);
 }
 
 inline void cat(char x, char* y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, &x, 1, y, -1);
 }
 
 inline void cat(char x, char y, string& r)
 {
+    assert(!r.consuming());
     r.rep = string_Scat(r.rep, &x, 1, &y, 1);
 }
 
@@ -1337,26 +1457,31 @@ inline string capitalize(const string& x)
 
 inline string& string::prepend(const string& y)
 {
+    assert(!consuming());
     rep = string_Sprepend(rep, y.chars(), y.length()); return *this;
 }
 
 inline string& string::prepend(const char* y)
 {
+    assert(!consuming());
     rep = string_Sprepend(rep, y, -1); return *this;
 }
 
 inline string& string::prepend(char* y)
 {
+    assert(!consuming());
     rep = string_Sprepend(rep, y, -1); return *this;
 }
 
 inline string& string::prepend(char y)
 {
+    assert(!consuming());
     rep = string_Sprepend(rep, &y, 1); return *this;
 }
 
 inline string& string::prepend(const subString& y)
 {
+    assert(!consuming());
     rep = string_Sprepend(rep, y.chars(), y.length());return *this;
 }
 
@@ -1365,21 +1490,25 @@ inline string& string::prepend(const subString& y)
 
 inline void string::reverse()
 {
+    assert(!consuming());
     rep = string_Sreverse(rep, rep);
 }
 
 inline void string::upcase()
 {
+    assert(!consuming());
     rep = string_Supcase(rep, rep);
 }
 
 inline void string::downcase()
 {
+    assert(!consuming());
     rep = string_Sdowncase(rep, rep);
 }
 
 inline void string::capitalize()
 {
+    assert(!consuming());
     rep = string_Scapitalize(rep, rep);
 }
 
