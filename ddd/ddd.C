@@ -7387,7 +7387,7 @@ static void setup_version_info()
 		    "Copyright \251 2001 "
 		    "Universit\344t des Saarlandes, Germany.\n"
 		    "Copyright \251 2001-2003 "
-		    "Free Software Fundation, Inc.\n"));
+		    "Free Software Foundation, Inc.\n"));
 #endif
 }
 
