@@ -272,10 +272,10 @@ static const _XtString resolve_dirname(Display *display, const _XtString type, c
     {
 	static string dir;
 	dir = dirname(ret);
-	ret = dir.chars();
+	XtFree(ret);
+	return dir.chars();
     }
-
-    return ret;
+    return 0;
 }
 #endif
 
@@ -329,7 +329,7 @@ static int check_xnlspath(Display *display, bool verbose)
 	// Fix it now
 	static string env;
 	env = string("XNLSPATH=") + xnlspath;
-	putenv(env);
+	putenv(CONST_CAST(char*,env.chars()));
 	return 0;		// Okay
     }
 
@@ -354,7 +354,7 @@ static int check_xnlspath(Display *display, bool verbose)
 	    // Fix it now
 	    static string env;
 	    env = "XNLSPATH=" + path;
-	    putenv(env);
+	    putenv(CONST_CAST(char*,env.chars()));
 	    return 0;
 	}
     }
