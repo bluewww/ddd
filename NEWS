@@ -14,6 +14,13 @@ DDD-3.3.9
   This change is not backwards-compatible.  If it is not possible to upgrade
   your perl version to 5.8.x or newer, then you can simply install the file
   "perl5db.pl" from a recent perl distribution into your old perl tree.
+- Through the maintenance menu ("ddd --maintenance"), it now possible to get
+  a leak check of ddd if ddd is run under valgrind. This is only useful for
+  ddd developers (or anybody that wants to help making ddd better).
+- Several minor bugs fixed, some memory leaks plugged, more code clean-up
+  done.
+- A bug affecting platforms where the size of function pointers is 16 has
+  been fixed.
 
 * Build fixes
 - The configure machinery has been updated to conform more closely to the
