@@ -113,7 +113,7 @@ XtResource ddd_resources[] = {
 	XtCVSLPath, 
 	XtRString, 
 	sizeof(String),
-	XtOffsetOf(AppData, vslPath), 
+	XtOffsetOf(AppData, vsl_path),
 	XtRString, 
 	XtPointer(".")
     },
@@ -122,9 +122,18 @@ XtResource ddd_resources[] = {
 	XtCVSLLibrary, 
 	XtRString, 
 	sizeof(String),
-	XtOffsetOf(AppData, vslLibrary), 
+	XtOffsetOf(AppData, vsl_library), 
 	XtRString, 
 	XtPointer("builtin")
+    },
+    { 
+	XtNvslDefs, 
+	XtCVSLDefs, 
+	XtRString, 
+	sizeof(String),
+	XtOffsetOf(AppData, vsl_defs),
+	XtRString, 
+	XtPointer("")
     },
     {
 	XtNmaxNameLength,

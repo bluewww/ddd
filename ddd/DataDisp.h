@@ -287,10 +287,11 @@ public:
     // Constructor
     DataDisp (XtAppContext app_context,
 	      Widget       parent,
-	      String       vslpath,          // aus app_data
-	      String       vslLibrary,       // aus app_data
-	      int          max_name_length,  // aus app_data
-	      bool         panned);          // aus app_data
+	      String       vsl_path,         // from app_data
+	      String       vsl_library,      // from app_data
+	      String       vsl_defs,         // from app_data
+	      int          max_name_length,  // from app_data
+	      bool         panned);          // from app_data
 
     inline int count_all() { return disp_graph->count_all(); }
     static void refresh_graph_edit ();

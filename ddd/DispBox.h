@@ -52,6 +52,7 @@ public:
     // Must be initialized from outside!
     static string  vsllib_name;
     static string  vsllib_path;
+    static string  vsllib_defs;
     static int     max_name_length;
 
     // bei dv == 0 disabled-box erzeugen

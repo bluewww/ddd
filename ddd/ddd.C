@@ -1222,8 +1222,9 @@ int main(int argc, char *argv[])
 				  
     data_disp = new DataDisp (app_context,
 			      data_disp_parent,
-			      app_data.vslPath,
-			      app_data.vslLibrary,
+			      app_data.vsl_path,
+			      app_data.vsl_library,
+			      app_data.vsl_defs,
 			      app_data.max_name_length,
 			      app_data.panned_graph_editor);
 

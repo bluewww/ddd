@@ -59,6 +59,7 @@ VSLLib* DispBox::vsllib_ptr      = 0;
 int     DispBox::max_name_length = 20;
 string  DispBox::vsllib_name     = "builtin";
 string  DispBox::vsllib_path     = ".";
+string  DispBox::vsllib_defs     = "";
 
 // ***************************************************************************
 //
@@ -108,7 +109,8 @@ void DispBox::init_vsllib()
     if (vsllib_ptr == 0)
     {
 	StatusDelay delay("Reading builtin VSL library");
-	istrstream is(builtin_def);
+	string defs = builtin_def + vsllib_defs;
+	istrstream is(defs);
 	vsllib_ptr = new VSLLib(is);
     }
 

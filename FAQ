@@ -57,7 +57,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
 6.  Which other debuggers are supported by DDD?
 
-    DDD 1.5 has been tested with the following debuggers:
+    DDD 2.0 has been tested with the following debuggers:
 
     * GDB from the Free Software Foundation
     * DBX as found on SunOS 4.x (aka Solaris 1.x)
@@ -146,7 +146,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
     determine the X project root.  The code for this hack can be found
     in `xconfig.C'.
 
-    As of DDD 1.5, `xmkmf' is called only if it resides in your path.
+    As of DDD 2.0, `xmkmf' is called only if it resides in your path.
 
 
 13. How can I change DDD resources (especially colors)?
@@ -215,7 +215,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
     The font settings in DDD 1.4c do not work well on a variety of X
     displays.  The general scheme is to see the `Fonts' resources in
     the `Ddd' file and copy/modify the appropriate lines to your
-    `.dddinit' file.  (Note: This won't work for the data display.
+    `~/.dddinit' file.  (Note: This won't work for the data display.
     See question #18, below.)
 
     These are the settings from DDD 1.4b:
@@ -261,7 +261,6 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
 17. How do I set up my own VSL library?
 
-
     1. Set up a `vsl' directory that holds the VSL libraries
        (e.g. `/home/tom/lib/vsl/').
 
@@ -287,7 +286,7 @@ DDD Frequently Asked Questions                                  -*- text -*-
            (sh)  $ VSL_INCLUDE=/home/tom/lib/vsl; export VSL_INCLUDE
            (csh) % setenv VSL_INCLUDE /home/tom/lib/vsl
 
-       (In DDD 1.5 and later, the `vslPath' resource overrides the
+       (In DDD 2.0 and later, the `vslPath' resource overrides the
         VSL_INCLUDE environment variable).
 
     5. In DDD 1.4d and later, you can use the `--vsl-verbose' option
@@ -303,6 +302,15 @@ DDD Frequently Asked Questions                                  -*- text -*-
 
 18. How do I set up font sizes in the data display?
 
+    In DDD 2.0, add and edit the definition
+
+	Ddd*vslDefs: \n\
+	#replace stdfontsize \n\
+	stdfontsize() = 12;
+
+    to your `~/.dddinit' file.
+
+    In DDD 1.4d and earlier, you can proceed as follows:
     a) WITH recompiling:
        In the file `fonts.vsl', change the line
 
@@ -312,13 +320,13 @@ DDD Frequently Asked Questions                                  -*- text -*-
        `ddd.vsl.h' and re-make DDD.
 
     b) WITHOUT recompiling:
-       Set up your own VSL library (see question #17, above).
-       Then, change the file `fonts.vsl' as described in a).
+       Set up your own VSL library (see question #17, above).  Then,
+       change the file `fonts.vsl' as described in a).
 
 
 19. Can I add my own command buttons in DDD ?
 
-    In DDD 1.5 and later, you can specify an individual button list
+    In DDD 2.0 and later, you can specify an individual button list
     to be inserted under the command window (`commandButtons') or
     under the source window (`sourceButtons').  A button list is a
     colon-separated lists of GDB commands; each GDB command creates
@@ -327,12 +335,12 @@ DDD Frequently Asked Questions                                  -*- text -*-
     All buttons in the button list send the named command to GDB.
     Commands ending with '...' insert their name, followed by a space.
     Commands ending with a control character insert the given control
-    character.  As of DDD 1.5, commands ending with `()' insert the
+    character.  As of DDD 2.0, commands ending with `()' insert the
     current contents of the argument field `()'.
 
     Here is an example to insert into ~/.dddinit:
 
-    Ddd*sourceButtons: print *():display *()
+	Ddd*sourceButtons: print *():display *()
 
     This creates two buttons labeled `print *()' and `display *()'.
     Entering `foo' in the `()' argument field and pressing `print *()'
@@ -349,13 +357,13 @@ DDD Frequently Asked Questions                                  -*- text -*-
     You may wish to replace some of these buttons by buttons of your
     own.  The `Ddd' app-defaults file contains some examples.
 
-    In DDD 1.5 and later, you can also customize the command tool
+    In DDD 2.0 and later, you can also customize the command tool
     buttons.  This is somewhat trickier, since you have to specify
     button locations as well.  The following section in the `Ddd'
     app-defaults file gives some hints.
 
     ---- cut here ----
-    ! The command tool buttons, as of DDD 1.5 and later.
+    ! The command tool buttons, as of DDD 2.0 and later.
     Ddd*toolButtons: \
     run:interrupt^C:step:stepi:next:nexti:cont:finish:\
     up:down:Back:Forward:Edit:kill

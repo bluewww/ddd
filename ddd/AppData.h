@@ -56,6 +56,8 @@
 #define XtCVSLPath               "VSLPath"
 #define XtNvslLibrary            "vslLibrary"
 #define XtCVSLLibrary            "VSLLibrary"
+#define XtNvslDefs               "vslDefs"
+#define XtCVSLDefs               "VSLDefs"
 #define XtNmaxNameLength         "maxNameLength"
 #define XtCMaxNameLength         "MaxNameLength"
 #define XtNindentAmount          "indentAmount"
@@ -157,8 +159,9 @@ struct AppData {
     String  gdb_initial_cmds;
     String  dbx_initial_cmds;
     String  xdb_initial_cmds;
-    String  vslPath;
-    String  vslLibrary;
+    String  vsl_path;
+    String  vsl_library;
+    String  vsl_defs;
     int     max_name_length;
     int     indent_amount;
     String  console_buttons;

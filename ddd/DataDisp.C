@@ -2637,16 +2637,18 @@ void DataDisp::setDCB(Widget set_dialog, XtPointer client_data, XtPointer)
 //----------------------------------------------------------------------------
 DataDisp::DataDisp (XtAppContext app_context,
 		    Widget parent,
-		    String vslPath,
-		    String vslLibrary,
+		    String vsl_path,
+		    String vsl_library,
+		    String vsl_defs,
 		    int    max_name_length,
 		    bool   panned)
 {
     registerOwnConverters();
 
     StringBox::fontTable     = new FontTable (XtDisplay(parent));
-    DispBox::vsllib_name     = vslLibrary;
-    DispBox::vsllib_path     = vslPath;
+    DispBox::vsllib_name     = vsl_library;
+    DispBox::vsllib_path     = vsl_path;
+    DispBox::vsllib_defs     = vsl_defs;
     DispBox::max_name_length = max_name_length;
 
     disp_graph = new DispGraph();
