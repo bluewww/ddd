@@ -44,9 +44,10 @@ AC_CACHE_CHECK([whether the C compiler (${CC}) compiles and links a simple C pro
 [ice_cv_prog_cc],
 [
 AC_LANG_PUSH(C)
-AC_TRY_LINK([#include <stdio.h>], [printf("hello, world!");],
-ice_cv_prog_cc=yes,
-ice_cv_prog_cc=no)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>]],
+[[printf("hello, world!");]])],
+[ice_cv_prog_cc=yes],
+[ice_cv_prog_cc=no])
 AC_LANG_POP(C)
 ])
 if test "$ice_cv_prog_cc" = no; then
@@ -85,9 +86,10 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) compiles a simple program],
 [ice_cv_prog_cxx],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_LINK([#include <iostream>], [std::cout << "hello, world!";],
-ice_cv_prog_cxx=yes,
-ice_cv_prog_cxx=no)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <iostream>]],
+[[std::cout << "hello, world!";]])],
+[ice_cv_prog_cxx=yes],
+[ice_cv_prog_cxx=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_prog_cxx" = no; then
@@ -143,8 +145,8 @@ AC_LANG_PUSH(C++)
 ice_save_cxxflags="$CXXFLAGS"
 dnl Don't use if deprecated
 CXXFLAGS="-Werror -fexternal-templates"
-AC_TRY_COMPILE(,[int a;],
-ice_cv_external_templates=yes, ice_cv_external_templates=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
+[ice_cv_external_templates=yes], [ice_cv_external_templates=no])
 CXXFLAGS="$ice_save_cxxflags"
 AC_LANG_POP(C++)
 ])
@@ -175,8 +177,8 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -fpermissive],
 AC_LANG_PUSH(C++)
 ice_save_cxxflags="$CXXFLAGS"
 CXXFLAGS="-fpermissive"
-AC_TRY_COMPILE(,[int a;],
-ice_cv_permissive=yes, ice_cv_permissive=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
+[ice_cv_permissive=yes], [ice_cv_permissive=no])
 CXXFLAGS="$ice_save_cxxflags"
 AC_LANG_POP(C++)
 ])
@@ -204,17 +206,17 @@ AC_CACHE_CHECK([whether compiling X headers requires $PERMISSIVE],
 [ice_cv_x_permissive],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <Xm/Xm.h>
-],[int a;],
-ice_cv_x_permissive=no, ice_cv_x_permissive=maybe)
+]],[[int a;]])],
+[ice_cv_x_permissive=no], [ice_cv_x_permissive=maybe])
 if test "$ice_cv_x_permissive" = maybe; then
 ice_save_cxxflags="$CXXFLAGS"
 CXXFLAGS="$CXXFLAGS $PERMISSIVE"
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <Xm/Xm.h>
-],[int a;],
-ice_cv_x_permissive=yes, ice_cv_x_permissive=no)
+]],[[int a;]])],
+[ice_cv_x_permissive=yes], [ice_cv_x_permissive=no])
 CXXFLAGS="$ice_save_cxxflags"
 fi
 AC_LANG_POP(C++)
@@ -245,8 +247,8 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -fno-implicit-template
 AC_LANG_PUSH(C++)
 ice_save_cxxflags="$CXXFLAGS"
 CXXFLAGS="-fno-implicit-templates"
-AC_TRY_COMPILE(,[int a;],
-ice_cv_no_implicit_templates=yes, ice_cv_no_implicit_templates=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
+[ice_cv_no_implicit_templates=yes], [ice_cv_no_implicit_templates=no])
 CXXFLAGS="$ice_save_cxxflags"
 AC_LANG_POP(C++)
 ])
@@ -275,8 +277,8 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -felide-constructors],
 AC_LANG_PUSH(C++)
 ice_save_cxxflags="$CXXFLAGS"
 CXXFLAGS="-felide-constructors"
-AC_TRY_COMPILE(,[int a;],
-ice_cv_elide_constructors=yes, ice_cv_elide_constructors=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
+[ice_cv_elide_constructors=yes], [ice_cv_elide_constructors=no])
 CXXFLAGS="$ice_save_cxxflags"
 AC_LANG_POP(C++)
 ])
@@ -304,8 +306,8 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -fconserve-space],
 AC_LANG_PUSH(C++)
 ice_save_cxxflags="$CXXFLAGS"
 CXXFLAGS="-fconserve-space"
-AC_TRY_COMPILE(,[int a;],
-ice_cv_conserve_space=yes, ice_cv_conserve_space=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
+[ice_cv_conserve_space=yes], [ice_cv_conserve_space=no])
 CXXFLAGS="$ice_save_cxxflags"
 AC_LANG_POP(C++)
 ])
@@ -336,8 +338,8 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -Weffc++],
 AC_LANG_PUSH(C++)
 ice_save_cxxflags="$CXXFLAGS"
 CXXFLAGS="-Weffc++"
-AC_TRY_COMPILE(,[int a;],
-ice_cv_warn_effective_cxx=yes, ice_cv_warn_effective_cxx=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
+[ice_cv_warn_effective_cxx=yes], [ice_cv_warn_effective_cxx=no])
 CXXFLAGS="$ice_save_cxxflags"
 AC_LANG_POP(C++)
 ])
@@ -370,8 +372,8 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -trigraphs],
 AC_LANG_PUSH(C++)
 ice_save_cxxflags="$CXXFLAGS"
 CXXFLAGS="-trigraphs"
-AC_TRY_COMPILE(,[int a;],
-ice_cv_trigraphs=yes, ice_cv_trigraphs=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
+[ice_cv_trigraphs=yes], [ice_cv_trigraphs=no])
 CXXFLAGS="$ice_save_cxxflags"
 AC_LANG_POP(C++)
 ])
@@ -399,8 +401,8 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -Wl,-bbigtoc],
 AC_LANG_PUSH(C++)
 ice_save_ldflags="$LDFLAGS"
 LDFLAGS="-Wl,-bbigtoc"
-AC_TRY_LINK(,[int a;],
-ice_cv_big_toc=yes, ice_cv_big_toc=no)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
+[ice_cv_big_toc=yes], [ice_cv_big_toc=no])
 LDFLAGS="$ice_save_ldflags"
 AC_LANG_POP(C++)
 ])
@@ -429,8 +431,8 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -mminimal-toc],
 AC_LANG_PUSH(C++)
 ice_save_cxxflags="$CXXFLAGS"
 CXXFLAGS="-mminimal-toc"
-AC_TRY_LINK(,[int a;],
-ice_cv_minimal_toc=yes, ice_cv_minimal_toc=no)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
+[ice_cv_minimal_toc=yes], [ice_cv_minimal_toc=no])
 CXXFLAGS="$ice_save_cxxflags"
 AC_LANG_POP(C++)
 ])
@@ -456,8 +458,8 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -Wl,-rpath,PATH],
 AC_LANG_PUSH(C++)
 ice_save_ldflags="$LDFLAGS"
 LDFLAGS="-Wl,-rpath,/usr/lib"
-AC_TRY_LINK(,[int a;],
-ice_cv_rpath=yes, ice_cv_rpath=no)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
+[ice_cv_rpath=yes], [ice_cv_rpath=no])
 LDFLAGS="$ice_save_ldflags"
 AC_LANG_POP(C++)
 ])
@@ -483,8 +485,8 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -Wuninitialized],
 AC_LANG_PUSH(C++)
 ice_save_cxxflags="$CXXFLAGS"
 CXXFLAGS="-Wuninitialized"
-AC_TRY_COMPILE(,[int a;],
-ice_cv_warn_uninitialized=yes, ice_cv_warn_uninitialized=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
+[ice_cv_warn_uninitialized=yes], [ice_cv_warn_uninitialized=no])
 CXXFLAGS="$ice_save_cxxflags"
 AC_LANG_POP(C++)
 ])
@@ -515,8 +517,8 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -xs],
 AC_LANG_PUSH(C++)
 ice_save_cxxflags="$CXXFLAGS"
 CXXFLAGS="-xs"
-AC_TRY_COMPILE(,[int a;],
-ice_cv_xs_debug_info=yes, ice_cv_xs_debug_info=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
+[ice_cv_xs_debug_info=yes], [ice_cv_xs_debug_info=no])
 CXXFLAGS="$ice_save_cxxflags"
 AC_LANG_POP(C++)
 ])
@@ -544,8 +546,8 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) accepts -isystem],
 AC_LANG_PUSH(C++)
 ice_save_cxxflags="$CXXFLAGS"
 CXXFLAGS="-isystem ."
-AC_TRY_COMPILE(,[int a;],
-ice_cv_cxx_isystem=yes, ice_cv_cxx_isystem=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int a;]])],
+[ice_cv_cxx_isystem=yes], [ice_cv_cxx_isystem=no])
 CXXFLAGS="$ice_save_cxxflags"
 AC_LANG_POP(C++)
 ])
@@ -574,9 +576,10 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports new style casts],
 [ice_cv_have_new_casts],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE(,[double *x = 0; char *s = reinterpret_cast<char*>(x);],
-ice_cv_have_new_casts=yes,
-ice_cv_have_new_casts=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],
+[[double *x = 0; char *s = reinterpret_cast<char*>(x);]])],
+[ice_cv_have_new_casts=yes],
+[ice_cv_have_new_casts=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_new_casts" = yes; then
@@ -598,9 +601,10 @@ AC_CACHE_CHECK([whether the C++ compiler ($CXX) supports __attribute__ ((noretur
 [ice_cv_have_attribute_noreturn],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE(,[class A {void foo (int x) __attribute__ ((noreturn));}],
-ice_cv_have_attribute_noreturn=yes,
-ice_cv_have_attribute_noreturn=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],
+[[class A {void foo (int x) __attribute__ ((noreturn));}]])],
+[ice_cv_have_attribute_noreturn=yes],
+[ice_cv_have_attribute_noreturn=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_attribute_noreturn" = yes; then
@@ -624,7 +628,7 @@ AC_CACHE_CHECK([if this is a problematic ${CXX} version],
 [ice_cv_cxx_problematic_version],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_CPP([
+AC_PREPROC_IFELSE([AC_LANG_PROGRAM([[
 #ifdef __GNUC__
 #if __GNUC__ < 2
 #error ICE works best with GCC version 2.5 or higher
@@ -635,8 +639,8 @@ AC_TRY_CPP([
 #endif /* __GNUC_MINOR__ < 5 */
 #endif /* defined(__GNUC_MINOR__) */
 #endif /* defined(__GNUC__) */
-],
-ice_cv_cxx_problematic_version=no, ice_cv_cxx_problematic_version=yes)
+]])],
+[ice_cv_cxx_problematic_version=no], [ice_cv_cxx_problematic_version=yes])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_cxx_problematic_version" = yes; then
@@ -658,9 +662,9 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports bool types],
 [ice_cv_have_bool],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE(,[bool b = true;],
-ice_cv_have_bool=yes,
-ice_cv_have_bool=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[bool b = true;]])],
+[ice_cv_have_bool=yes],
+[ice_cv_have_bool=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_bool" = yes; then
@@ -683,9 +687,10 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports explicit constructors
 [ice_cv_have_explicit],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE(,[class A { public: explicit A(int) {} };],
-ice_cv_have_explicit=yes,
-ice_cv_have_explicit=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],
+[[class A { public: explicit A(int) {} };]])],
+[ice_cv_have_explicit=yes],
+[ice_cv_have_explicit=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_explicit" = yes; then
@@ -708,9 +713,10 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports mutable members],
 [ice_cv_have_mutable],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE(,[struct A { mutable int x; };],
-ice_cv_have_mutable=yes,
-ice_cv_have_mutable=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],
+[[struct A { mutable int x; };]])],
+[ice_cv_have_mutable=yes],
+[ice_cv_have_mutable=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_mutable" = yes; then
@@ -733,7 +739,7 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports namespaces],
 [ice_cv_have_namespace],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 namespace one { 
     extern int f(); 
 };
@@ -741,9 +747,9 @@ namespace one {
 int one::f() { return 1; };
 
 using namespace one;
-],[f()],
-ice_cv_have_namespace=yes,
-ice_cv_have_namespace=no)
+]],[[f()]])],
+[ice_cv_have_namespace=yes],
+[ice_cv_have_namespace=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_namespace" = yes; then
@@ -766,12 +772,12 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports explicit template ins
 [ice_cv_have_explicit_template_instantiation],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 template <class T> class Pointer { public: T *value; };
 template class Pointer<char>;
-], [/* empty */],
-ice_cv_have_explicit_template_instantiation=yes,
-ice_cv_have_explicit_template_instantiation=no)
+]], [[/* empty */]])],
+[ice_cv_have_explicit_template_instantiation=yes],
+[ice_cv_have_explicit_template_instantiation=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_explicit_template_instantiation" = yes; then
@@ -796,10 +802,10 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports __PRETTY_FUNCTION__],
 AC_LANG_PUSH(C++)
 # Testing compilation alone does not suffice --
 # some GCC versions have trouble in linking.
-AC_TRY_LINK([#include <stdio.h>],
-[puts(__PRETTY_FUNCTION__);],
-ice_cv_have_pretty_function=yes,
-ice_cv_have_pretty_function=no)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>]],
+[[puts(__PRETTY_FUNCTION__);]])],
+[ice_cv_have_pretty_function=yes],
+[ice_cv_have_pretty_function=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_pretty_function" = yes; then
@@ -822,11 +828,12 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports overloaded new],
 [ice_cv_have_array_operator_new],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE([#include <sys/types.h>
-void *operator new[](size_t nbytes);],
-/* empty */,
-ice_cv_have_array_operator_new=yes,
-ice_cv_have_array_operator_new=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/types.h>
+void *operator new[](size_t nbytes);]],
+[[/* empty */]])],
+[ice_cv_have_array_operator_new=yes],
+[ice_cv_have_array_operator_new=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_array_operator_new" = yes; then
@@ -849,11 +856,11 @@ AC_CACHE_CHECK([for streampos],
 [ice_cv_have_streampos],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE([#include <iostream>
-#include <fstream>],
-[streampos p;],
-ice_cv_have_streampos=yes,
-ice_cv_have_streampos=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <iostream>
+#include <fstream>]],
+[[streampos p;]])],
+[ice_cv_have_streampos=yes],
+[ice_cv_have_streampos=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_streampos" = yes; then
@@ -876,11 +883,11 @@ AC_CACHE_CHECK([for std::streampos],
 [ice_cv_have_std_streampos],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE([#include <iostream>
-#include <fstream>],
-[std::streampos p;],
-ice_cv_have_std_streampos=yes,
-ice_cv_have_std_streampos=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <iostream>
+#include <fstream>]],
+[[std::streampos p;]])],
+[ice_cv_have_std_streampos=yes],
+[ice_cv_have_std_streampos=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_std_streampos" = yes; then
@@ -902,10 +909,10 @@ AC_CACHE_CHECK([for ios::iostate],
 [ice_cv_have_iostate],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE([#include <iostream>],
-[ios::iostate new_state;],
-ice_cv_have_iostate=yes,
-ice_cv_have_iostate=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <iostream>]],
+[[ios::iostate new_state;]])],
+[ice_cv_have_iostate=yes],
+[ice_cv_have_iostate=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_iostate" = yes; then
@@ -930,10 +937,10 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports placement new],
 [ice_cv_have_placement_new],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE([#include <new>],
-[int *pi = new (operator new (sizeof(int))) int;],
-ice_cv_have_placement_new=yes,
-ice_cv_have_placement_new=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <new>]],
+[[int *pi = new (operator new (sizeof(int))) int;]])],
+[ice_cv_have_placement_new=yes],
+[ice_cv_have_placement_new=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_placement_new" = yes; then
@@ -956,8 +963,8 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports ANSI lifetime of temp
 [ice_cv_have_ansi_lifetime_of_temporaries],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_RUN(
-[
+AC_RUN_IFELSE([AC_LANG_SOURCE(
+[[
 // This program returns 0 if compiled with ANSI C++ compliant 
 // lifetime of temporaries; 1, otherwise.
 static int destructor_called = 0;
@@ -971,13 +978,13 @@ int f(const X&)    { return destructor_called; }
 X g(const X& x)    { return x; }
 X h()              { return 1; }
 int main()         { return f(g(h())); }
-], 
-ice_cv_have_ansi_lifetime_of_temporaries=yes, 
-ice_cv_have_ansi_lifetime_of_temporaries=no,
+]])],
+[ice_cv_have_ansi_lifetime_of_temporaries=yes],
+[ice_cv_have_ansi_lifetime_of_temporaries=no],
 [
 if test "$GXX" = yes; then
 # Cross-compiling with GNU C++: Guess on the version number
-AC_TRY_CPP([
+AC_PREPROC_IFELSE([AC_LANG_PROGRAM([[
 /* Check for GCC versions lower than 2.6 */
 #ifdef __GNUC__
 #if __GNUC__ < 2
@@ -990,9 +997,9 @@ AC_TRY_CPP([
 #error
 #endif
 #endif
-],
-ice_cv_have_ansi_lifetime_of_temporaries=yes,
-ice_cv_have_ansi_lifetime_of_temporaries=no)
+]])],
+[ice_cv_have_ansi_lifetime_of_temporaries=yes],
+[ice_cv_have_ansi_lifetime_of_temporaries=no])
 else
 # Cross-compiling and not GNU C++: Play it safe.
 ice_cv_have_ansi_lifetime_of_temporaries=no
@@ -1021,23 +1028,23 @@ fi
 ##![
 ##!AC_LANG_PUSH
 ##!AC_LANG(C++)
-##!AC_TRY_RUN(
-##![
+##!AC_RUN_IFELSE([AC_LANG_SOURCE(
+##![[
 ##!// Returns 0 if ostrstream::pcount() is broken; 1, otherwise.
 ##!#include <iostream>
 ##!#include <strstream>
 ##!
-##!int main() 
+##!int main()
 ##!{
 ##!    std::ostrstream os;
 ##!    os << 'a';           // os.pcount() == 1.
 ##!    char *s = os.str();  // In the SGI C++ I/O library, os.pcount() is now 2!
 ##!    return (os.pcount() == 2) ? 0 : 1;
 ##!}
-##!], 
-##!ice_cv_ostrstream_pcount_broken=yes,
-##!ice_cv_ostrstream_pcount_broken=no,
-##!ice_cv_ostrstream_pcount_broken=no
+##!]])],
+##![ice_cv_ostrstream_pcount_broken=yes],
+##![ice_cv_ostrstream_pcount_broken=no],
+##![ice_cv_ostrstream_pcount_broken=no]
 ##!)
 ##!AC_LANG_POP(C++)
 ##!])
@@ -1061,9 +1068,9 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports long long types],
 [ice_cv_have_long_long],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE(,[long long a;], 
-ice_cv_have_long_long=yes, 
-ice_cv_have_long_long=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[long long a;]])],
+[ice_cv_have_long_long=yes],
+[ice_cv_have_long_long=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_long_long" = yes; then
@@ -1085,9 +1092,9 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports exception handling],
 [ice_cv_have_exceptions],
 [
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE(,[try { throw 1; } catch(int) { }],
-ice_cv_have_exceptions=yes,
-ice_cv_have_exceptions=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[try { throw 1; } catch(int) { }]])],
+[ice_cv_have_exceptions=yes],
+[ice_cv_have_exceptions=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_exceptions" = yes; then
@@ -1112,14 +1119,14 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports standard exceptions],
 AC_LANG_PUSH(C++)
 dnl On SGI, EGCS <exception> included by <stdexcept> conflicts with <math.h>.
 dnl Check for this.
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <stdexcept>
 #include <math.h>
-],
-[try { throw std::runtime_error("too many fingers on keyboard"); }
- catch(const std::exception& e) { const char *s = e.what(); }],
-ice_cv_have_std_exceptions=yes,
-ice_cv_have_std_exceptions=no)
+]],
+[[try { throw std::runtime_error("too many fingers on keyboard"); }
+ catch(const std::exception& e) { const char *s = e.what(); }]])],
+[ice_cv_have_std_exceptions=yes],
+[ice_cv_have_std_exceptions=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_std_exceptions" = yes; then
@@ -1143,13 +1150,13 @@ AC_CACHE_CHECK([whether the C++ compiler (${CXX}) supports run-time type info],
 AC_LANG_PUSH(C++)
 dnl On SGI, EGCS <exception> included by <typeinfo> conflicts with <math.h>.
 dnl Check for this.
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <typeinfo>
 #include <math.h>
-],
-[int x; const char *s = typeid(x).name();],
-ice_cv_have_typeinfo=yes,
-ice_cv_have_typeinfo=no)
+]],
+[[int x; const char *s = typeid(x).name();]])],
+[ice_cv_have_typeinfo=yes],
+[ice_cv_have_typeinfo=no])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_have_typeinfo" = yes; then
@@ -1185,11 +1192,11 @@ for ice_cpp in "$CPP" "$CC -E" "/lib/cpp"; do
 for ice_cppflags in '' ' -traditional-cpp' ' -traditional'; do
 CPP="$ice_cpp"
 CPPFLAGS="$ice_cppflags"
-AC_TRY_CPP([
+AC_PREPROC_IFELSE([AC_LANG_PROGRAM([[
 #if 1
 "this is an unterminated string
 #endif
-], ice_cv_traditional_cpp="${CPP}${CPPFLAGS}")
+]])], [ice_cv_traditional_cpp="${CPP}${CPPFLAGS}"])
 if test "$ice_cv_traditional_cpp" != ""; then
 break 2
 fi
@@ -1213,9 +1220,10 @@ AC_DEFUN(ICE_CHECK_PATH_MAX,
 AC_CACHE_CHECK([for PATH_MAX definition in limits.h],
 [ice_cv_have_path_max],
 [
-AC_TRY_COMPILE([#include <limits.h>], [int n = PATH_MAX;],
-ice_cv_have_path_max=yes,
-ice_cv_have_path_max=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <limits.h>]],
+[[int n = PATH_MAX;]])],
+[ice_cv_have_path_max=yes],
+[ice_cv_have_path_max=no])
 ])
 if test "$ice_cv_have_path_max" = yes; then
 AC_DEFINE(HAVE_PATH_MAX,1,
@@ -1234,9 +1242,10 @@ AC_DEFUN(ICE_CHECK_POSIX_PATH_MAX,
 AC_CACHE_CHECK([for _POSIX_PATH_MAX definition in limits.h],
 [ice_cv_have_posix_path_max],
 [
-AC_TRY_COMPILE([#include <limits.h>], [int n = _POSIX_PATH_MAX],
-ice_cv_have_posix_path_max=yes,
-ice_cv_have_posix_path_max=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <limits.h>]],
+[[int n = _POSIX_PATH_MAX]])],
+[ice_cv_have_posix_path_max=yes],
+[ice_cv_have_posix_path_max=no])
 ])
 if test "$ice_cv_have_posix_path_max" = yes; then
 AC_DEFINE(HAVE_POSIX_PATH_MAX,1,
@@ -1255,9 +1264,10 @@ AC_DEFUN(ICE_CHECK_MAXPATHLEN,
 AC_CACHE_CHECK([for MAXPATHLEN definition in sys/param.h],
 [ice_cv_have_maxpathlen],
 [
-AC_TRY_COMPILE([#include <sys/param.h>], [int n = MAXPATHLEN;],
-ice_cv_have_maxpathlen=yes,
-ice_cv_have_maxpathlen=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/param.h>]],
+[[int n = MAXPATHLEN;]])],
+[ice_cv_have_maxpathlen=yes],
+[ice_cv_have_maxpathlen=no])
 ])
 if test "$ice_cv_have_maxpathlen" = yes; then
 AC_DEFINE(HAVE_MAXPATHLEN,1,
@@ -1350,9 +1360,10 @@ AC_DEFUN(ICE_CHECK_PTRACE_DUMPCORE,
 AC_CACHE_CHECK([for PTRACE_DUMPCORE definition in <sys/ptrace.h>],
 [ice_cv_have_ptrace_dumpcore],
 [
-AC_TRY_COMPILE([#include <sys/ptrace.h>], [int request = PTRACE_DUMPCORE;],
-ice_cv_have_ptrace_dumpcore=yes,
-ice_cv_have_ptrace_dumpcore=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/ptrace.h>]],
+[[int request = PTRACE_DUMPCORE;]])],
+[ice_cv_have_ptrace_dumpcore=yes],
+[ice_cv_have_ptrace_dumpcore=no])
 ])
 if test "$ice_cv_have_ptrace_dumpcore" = yes; then
 AC_DEFINE(HAVE_PTRACE_DUMPCORE,1,
@@ -1534,17 +1545,17 @@ else
   done
 fi
 AC_MSG_CHECKING([for C++ compiler (${CXX}) warning options])
-AC_MSG_RESULT(${CXXWARNINGS})
+AC_MSG_RESULT([${CXXWARNINGS}])
 AC_MSG_CHECKING([for C++ compiler (${CXX}) optimizing options])
-AC_MSG_RESULT(${CXXOPT})
+AC_MSG_RESULT([${CXXOPT}])
 AC_MSG_CHECKING([for C++ compiler (${CXX}) debugging options])
-AC_MSG_RESULT(${CXXDEBUG})
+AC_MSG_RESULT([${CXXDEBUG}])
 AC_MSG_CHECKING([for C++ compiler (${CXX}) extra libraries])
-AC_MSG_RESULT(${CXXLIBS})
+AC_MSG_RESULT([${CXXLIBS}])
 AC_MSG_CHECKING([for C++ compiler (${CXX}) static binding options])
-AC_MSG_RESULT(${CXXSTATIC_BINDING})
+AC_MSG_RESULT([${CXXSTATIC_BINDING}])
 AC_MSG_CHECKING([for C++ compiler (${CXX}) dynamic binding options])
-AC_MSG_RESULT(${CXXDYNAMIC_BINDING})
+AC_MSG_RESULT([${CXXDYNAMIC_BINDING}])
 AC_SUBST(CXXWARNINGS)dnl
 AC_SUBST(CXXDEBUG)dnl
 AC_SUBST(CXXOPT)dnl
@@ -1624,7 +1635,6 @@ done
 fi
 ])
 infodir=$ice_cv_infodir
-AC_MSG_RESULT($infodir)
 AC_SUBST(infodir)
 ])dnl
 dnl
@@ -1641,12 +1651,13 @@ AC_LANG_PUSH(C++)
 AC_CACHE_CHECK([return type of signal handlers],
 [ice_cv_type_signal],
 [
-AC_TRY_COMPILE(
-[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[
 #include <sys/types.h>
 #include <signal.h>
-extern "C" void handler(int sg);],
-[signal(1, handler);], ice_cv_type_signal=void, ice_cv_type_signal=int)])dnl
+extern "C" void handler(int sg);]],
+[[signal(1, handler);]])],
+[ice_cv_type_signal=void], [ice_cv_type_signal=int])])dnl
 AC_LANG_POP(C++)
 AC_DEFINE_UNQUOTED(RETSIGTYPE, $ice_cv_type_signal,
 [Define type of signal.])
@@ -1674,41 +1685,41 @@ AC_LANG_PUSH(C++)
 ice_cv_type_sig_handler_args=""
 # Try "..."
 if test "$ice_cv_type_sig_handler_args" = ""; then
-AC_TRY_COMPILE(
-[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[
 #include <sys/types.h>
 #include <signal.h>
 #ifdef signal
 # undef signal
 #endif
-extern "C" RETSIGTYPE (*signal (int, RETSIGTYPE (*)(...)))(...);],
-[int i;],
+extern "C" RETSIGTYPE (*signal (int, RETSIGTYPE (*)(...)))(...);]],
+[[int i;]])],
 [ice_cv_type_sig_handler_args="..."])
 fi
 # Try "int"
 if test "$ice_cv_type_sig_handler_args" = ""; then
-AC_TRY_COMPILE(
-[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[
 #include <sys/types.h>
 #include <signal.h>
 #ifdef signal
 # undef signal
 #endif
-extern "C" RETSIGTYPE (*signal (int, RETSIGTYPE (*)(int)))(int);],
-[int i;],
+extern "C" RETSIGTYPE (*signal (int, RETSIGTYPE (*)(int)))(int);]],
+[[int i;]])],
 [ice_cv_type_sig_handler_args="int"])
 fi
 # Try "int, ..."
 if test "$ice_cv_type_sig_handler_args" = ""; then
-AC_TRY_COMPILE(
-[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[
 #include <sys/types.h>
 #include <signal.h>
 #ifdef signal
 # undef signal
 #endif
-extern "C" RETSIGTYPE (*signal (int, RETSIGTYPE (*)(int,...)))(int,...);],
-[int i;],
+extern "C" RETSIGTYPE (*signal (int, RETSIGTYPE (*)(int,...)))(int,...);]],
+[[int i;]])],
 [ice_cv_type_sig_handler_args="int,..."])
 fi
 AC_LANG_POP(C++)
@@ -1738,9 +1749,9 @@ Typically values are `int', `...', and `int,...'.])
 ##![
 ##!AC_LANG_PUSH
 ##!AC_LANG(C++)
-##!AC_TRY_COMPILE([#include <strstream>],
-##![std::ostrstream os; int frozen = os.frozen();],
-##!ice_cv_frozen_ostrstream=yes, ice_cv_frozen_ostrstream=no)
+##!AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <strstream>]],
+##![[std::ostrstream os; int frozen = os.frozen();]])],
+##![ice_cv_frozen_ostrstream=yes], [ice_cv_frozen_ostrstream=no])
 ##!AC_LANG_POP(C++)
 ##!])
 ##!if test "$ice_cv_frozen_ostrstream" = yes; then
@@ -1763,9 +1774,9 @@ Typically values are `int', `...', and `int,...'.])
 ##![
 ##!AC_LANG_PUSH
 ##!AC_LANG(C++)
-##!AC_TRY_COMPILE([#include <strstream>],
-##![std::ostrstream os; os.freeze(0);],
-##!ice_cv_freeze_ostrstream=yes, ice_cv_freeze_ostrstream=no)
+##!AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <strstream>]],
+##![[std::ostrstream os; os.freeze(0);]])],
+##![ice_cv_freeze_ostrstream=yes], [ice_cv_freeze_ostrstream=no])
 ##!AC_LANG_POP(C++)
 ##!])
 ##!if test "$ice_cv_freeze_ostrstream" = yes; then
@@ -1788,12 +1799,11 @@ Typically values are `int', `...', and `int,...'.])
 ##![
 ##!AC_LANG_PUSH
 ##!AC_LANG(C++)
-##!AC_TRY_COMPILE([#include <strstream>],
-##![std::ostrstream os; int frozen = os.rdbuf()->frozen();],
-##!ice_cv_frozen_ostrstreambuf=yes, ice_cv_frozen_ostrstreambuf=no)
+##!AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <strstream>]],
+##![[std::ostrstream os; int frozen = os.rdbuf()->frozen();]])],
+##![ice_cv_frozen_ostrstreambuf=yes], [ice_cv_frozen_ostrstreambuf=no])
 ##!AC_LANG_POP(C++)
 ##!])
-##!AC_MSG_RESULT($ice_cv_frozen_ostrstreambuf)
 ##!if test "$ice_cv_frozen_ostrstreambuf" = yes; then
 ##!AC_DEFINE(HAVE_FROZEN_OSTRSTREAMBUF,1,
 ##![Define if your C++ library has an ostringstreambuf::frozen() function.])
@@ -1814,9 +1824,9 @@ Typically values are `int', `...', and `int,...'.])
 ##![
 ##!AC_LANG_PUSH
 ##!AC_LANG(C++)
-##!AC_TRY_COMPILE([#include <strstream>],
-##![std::ostrstream os; os.rdbuf()->freeze(0);],
-##!ice_cv_freeze_ostrstreambuf=yes, ice_cv_freeze_ostrstreambuf=no)
+##!AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <strstream>]],
+##![[std::ostrstream os; os.rdbuf()->freeze(0);]])],
+##![ice_cv_freeze_ostrstreambuf=yes], [ice_cv_freeze_ostrstreambuf=no])
 ##!AC_LANG_POP(C++)
 ##!])
 ##!if test "$ice_cv_freeze_ostrstreambuf" = yes; then
@@ -1845,8 +1855,8 @@ AC_LANG_PUSH(C++)
 AC_CACHE_CHECK([re_nsub member of POSIX.2 regex_t type],
 [ice_cv_have_regex_t_re_nsub],
 [
-AC_TRY_COMPILE(
-[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[
 extern "C" {
 #include <sys/types.h>
 
@@ -1879,9 +1889,9 @@ extern "C" {
 #include <rxposix.h>		// Header from GNU rx 1.0 and later
 #endif
 }
-],
-[regex_t rx; int a = rx.re_nsub;], 
-ice_cv_have_regex_t_re_nsub=yes, ice_cv_have_regex_t_re_nsub=no)])dnl
+]],
+[[regex_t rx; int a = rx.re_nsub;]])],
+[ice_cv_have_regex_t_re_nsub=yes], [ice_cv_have_regex_t_re_nsub=no])])dnl
 if test "$ice_cv_have_regex_t_re_nsub" = yes; then
 AC_DEFINE(HAVE_REGEX_T_RE_NSUB,1,
 [Define if the `regex_t' type has a `re_nsub' member, according to POSIX.2 ])
@@ -1891,8 +1901,8 @@ dnl
 AC_CACHE_CHECK([n_subexps member of GNU RX 1.0 regex_t type],
 [ice_cv_have_regex_t_n_subexps],
 [
-AC_TRY_COMPILE(
-[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[
 extern "C" {
 #include <sys/types.h>
 
@@ -1925,9 +1935,9 @@ extern "C" {
 #include <rxposix.h>		// Header from GNU rx 1.0 and later
 #endif
 }
-],
-[regex_t rx; int a = rx.n_subexps;],
-ice_cv_have_regex_t_n_subexps=yes, ice_cv_have_regex_t_n_subexps=no)])dnl
+]],
+[[regex_t rx; int a = rx.n_subexps;]])],
+[ice_cv_have_regex_t_n_subexps=yes], [ice_cv_have_regex_t_n_subexps=no])])dnl
 if test "$ice_cv_have_regex_t_n_subexps" = yes; then
 AC_DEFINE(HAVE_REGEX_T_N_SUBEXPS,1,
 [Define if the `regex_t' type has a `n_subexps' member, as in GNU RX 1.0])
@@ -1957,8 +1967,8 @@ AC_LANG_PUSH(C++)
 AC_CACHE_CHECK([whether regcomp() is broken],
 [ice_cv_regcomp_broken],
 [
-AC_TRY_RUN(
-[
+AC_RUN_IFELSE([AC_LANG_SOURCE(
+[[
 extern "C" {
 #include <sys/types.h>
 
@@ -2005,8 +2015,10 @@ int main()
     char somedouble[] = "3.141529e+0";
     return regexec(&compiled, somedouble, 0, 0, 0);
 }
-], ice_cv_regcomp_broken=no, ice_cv_regcomp_broken=yes,
-ice_cv_regcomp_broken=yes)])dnl
+]])],
+[ice_cv_regcomp_broken=no],
+[ice_cv_regcomp_broken=yes],
+[ice_cv_regcomp_broken=yes])])dnl
 if test "$ice_cv_regcomp_broken" = yes; then
 AC_DEFINE(REGCOMP_BROKEN,1,
 [Define if `regcomp()' from <regex.h> does not work.])
@@ -2094,7 +2106,7 @@ CFLAGS="$X_CFLAGS $CFLAGS"
 CPPFLAGS="$X_CFLAGS $CPPFLAGS"
 LDFLAGS="$X_LIBS $LDFLAGS"
 #
-AC_TRY_COMPILE([#include <Xm/Xm.h>],[int a;],
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <Xm/Xm.h>]],[[int a;]])],
 [
 # Xm/Xm.h is in the standard search path.
 ice_cv_motif_includes=
@@ -2153,10 +2165,10 @@ LDFLAGS="$X_LIBS $LDFLAGS"
 #
 # We use XtToolkitInitialize() here since it takes no arguments
 # and thus also works with a C++ compiler.
-AC_TRY_LINK([
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <X11/Intrinsic.h>
 #include <Xm/Xm.h>
-],[XtToolkitInitialize();],
+]],[[XtToolkitInitialize();]])],
 [
 # libXm.a is in the standard search path.
 ice_cv_motif_libraries=
@@ -2279,10 +2291,10 @@ CFLAGS="$X_CFLAGS $CFLAGS"
 CPPFLAGS="$X_CFLAGS $CPPFLAGS"
 LDFLAGS="$X_LIBS $LDFLAGS"
 #
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <X11/Intrinsic.h>
 #include <X11/Xaw/Text.h>
-],[int a;],
+]],[[int a;]])],
 [
 # X11/Xaw/Text.h is in the standard search path.
 ice_cv_athena_includes=
@@ -2341,10 +2353,10 @@ LDFLAGS="$X_LIBS $LDFLAGS"
 #
 # We use XtToolkitInitialize() here since it takes no arguments
 # and thus also works with a C++ compiler.
-AC_TRY_LINK([
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <X11/Intrinsic.h>
 #include <X11/Xaw/Text.h>
-],[XtToolkitInitialize();],
+]],[[XtToolkitInitialize();]])],
 [
 # libXaw.a is in the standard search path.
 ice_cv_athena_libraries=
@@ -2462,9 +2474,9 @@ CFLAGS="$X_CFLAGS $CFLAGS"
 CPPFLAGS="$X_CFLAGS $CPPFLAGS"
 LDFLAGS="$X_LIBS $LDFLAGS"
 #
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <X11/xpm.h>
-],[int a;],
+]],[[int a;]])],
 [
 # X11/xpm.h is in the standard search path.
 ice_cv_xpm_includes=
@@ -2524,10 +2536,10 @@ LDFLAGS="$X_LIBS $LDFLAGS"
 #
 # We use XtToolkitInitialize() here since it takes no arguments
 # and thus also works with a C++ compiler.
-AC_TRY_LINK([
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <X11/Intrinsic.h>
 #include <X11/xpm.h>
-],[XtToolkitInitialize();],
+]],[[XtToolkitInitialize();]])],
 [
 # libxpm.a is in the standard search path.
 ice_cv_xpm_libraries=
@@ -2610,13 +2622,13 @@ AC_REQUIRE([AC_PROG_CXX])
 AC_CACHE_CHECK([for the name of the translation resource],
 [ice_cv_translations],
 [
-AC_TRY_COMPILE([#include <X11/Intrinsic.h>],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <X11/Intrinsic.h>]],[[
 #if XtSpecificationRelease < 5
 #error baseTranslation resource only in X11R5 and later
 #endif
-],
-ice_cv_translations=baseTranslations, 
-ice_cv_translations=translations)
+]])],
+[ice_cv_translations=baseTranslations],
+[ice_cv_translations=translations])
 ])
 TRANSLATIONS=$ice_cv_translations
 AC_SUBST(TRANSLATIONS)
@@ -2652,8 +2664,8 @@ AC_CACHE_CHECK([whether Motif dialogs own the string table],
 [
 AC_REQUIRE([ICE_FIND_MOTIF])
 AC_LANG_PUSH(C++)
-AC_TRY_RUN(
-[
+AC_RUN_IFELSE([AC_LANG_SOURCE(
+[[
 #include <Xm/Xm.h>
 #include <Xm/SelectioB.h>
 #include <stdlib.h>
@@ -2713,10 +2725,10 @@ int main(int argc, char *argv[])
 
     exit(0);
 }
-], 
-ice_cv_motif_dialogs_own_selection_list=no, 
-ice_cv_motif_dialogs_own_selection_list=yes,
-ice_cv_motif_dialogs_own_selection_list=yes)
+]])],
+[ice_cv_motif_dialogs_own_selection_list=no],
+[ice_cv_motif_dialogs_own_selection_list=yes],
+[ice_cv_motif_dialogs_own_selection_list=yes])
 AC_LANG_POP(C++)
 ])
 if test "$ice_cv_motif_dialogs_own_selection_list" = yes; then
@@ -2760,15 +2772,15 @@ AC_SUBST(Ddd)dnl
 AC_SUBST(DDD)dnl
 AC_SUBST(VERSION)dnl
 AC_SUBST(NICKNAME)dnl
-AC_MSG_RESULT(${DDD} ${VERSION} \"${NICKNAME}\")
+AC_MSG_RESULT([${DDD} ${VERSION} "${NICKNAME}"])
 dnl
 dnl
 AC_MSG_CHECKING([for expiration date])
 dnl
 AC_SUBST(EXPIRES)dnl
 if test "$EXPIRES" = ""; then
-AC_MSG_RESULT(no)
+AC_MSG_RESULT([no])
 else
-AC_MSG_RESULT(${EXPIRES})
+AC_MSG_RESULT([${EXPIRES}])
 fi
 ])

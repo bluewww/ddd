@@ -2,7 +2,7 @@ dnl $Id$
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
-dnl Copyright (C) 2001-2003 Free Software Foundation, USA.
+dnl Copyright (C) 2001-2004 Free Software Foundation, USA.
 dnl Written by Andreas Zeller <zeller@gnu.org>.
 dnl 
 dnl This file is part of DDD.
@@ -154,9 +154,9 @@ dnl
 dnl Yacc.
 dnl
 AC_PROG_YACC
-AC_MSG_CHECKING(for ${YACC} flags)
+AC_MSG_CHECKING([for ${YACC} flags])
 YFLAGS=""
-AC_MSG_RESULT(${YFLAGS})
+AC_MSG_RESULT([${YFLAGS}])
 AC_SUBST(YFLAGS)dnl
 dnl
 if test "$YACC" = "bison -y"; then
@@ -164,12 +164,12 @@ dnl
 dnl Check Bison version.  DDD wants bison 1.28 or later.
 dnl Note: Bison is only needed if a .Y file was modified.
 dnl 
-AC_MSG_CHECKING(${YACC} version)
+AC_MSG_CHECKING([${YACC} version])
 YACC_VERSION=`${YACC} --version | ${SED} '1q' | ${SED} 's/.*version *//' | ${SED} 's/.*) //'`
 if test `expr "$YACC_VERSION" '>=' 1.28` = 1; then
-AC_MSG_RESULT(${YACC_VERSION} [(ok)])
+AC_MSG_RESULT([${YACC_VERSION} (ok)])
 else
-AC_MSG_RESULT(${YACC_VERSION} [(too old)])
+AC_MSG_RESULT([${YACC_VERSION} (too old)])
 YACC="$missing_dir/missing $(YACC)"
 AC_MSG_WARN([If you modify a .Y file or build from CVS,])
 AC_MSG_WARN([you will need Bison 1.28 or later.])
@@ -184,7 +184,7 @@ LFLAGS=""
 if test "$LEX" = "flex"; then
 LFLAGS="-8"
 fi
-AC_MSG_RESULT(${LFLAGS})
+AC_MSG_RESULT([${LFLAGS}])
 AC_SUBST(LFLAGS)dnl
 AC_PROG_AWK
 dnl
@@ -1041,12 +1041,12 @@ dnl
 risky_lesstif=false
 ice_save_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS $X_CFLAGS"
-AC_TRY_CPP([#include <Xm/Xm.h>
+AC_PREPROC_IFELSE([AC_LANG_PROGRAM([[#include <Xm/Xm.h>
 #ifdef LESSTIF_VERSION
 #if LESSTIF_VERSION == 0 && LESSTIF_REVISION <= 86
 #error LessTif 0.86 or earlier
 #endif
-#endif],[risky_lesstif=false],[risky_lesstif=true])
+#endif]])],[risky_lesstif=false],[risky_lesstif=true])
 CPPFLAGS="$ice_save_CPPFLAGS"
 dnl
 dnl
@@ -1100,6 +1100,6 @@ dnl
 dnl Give an indication of what to do next.
 dnl
 AC_MSG_NOTICE([
-configuration is done.  Type \`make' to make $DDD.
+configuration is done.  Type `make' to make $DDD.
 In case of trouble, please check the settings in the files generated
-by \`configure' - that is, \`ddd/config.h' and \`ddd/Makefile'.])
+by `configure' - that is, `ddd/config.h' and `ddd/Makefile'.])
