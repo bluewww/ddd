@@ -124,11 +124,19 @@ public:
     static int max_history_size;
 
     // Set source command.
-    static void set_source(const string& command);
+    static void set_source(const string& source);
+
+    // Start a new entry.
+    static void start();
+    static void start(const string& source)
+    {
+	set_source(source);
+	start();
+    }
 
     // Adding entries
 
-    // If SET_SOURCE was called before any of these add_SOMETHING
+    // If START was called before any of these add_SOMETHING
     // calls, the call creates a new entry in the history.  Otherwise,
     // the values are added to the last entry, possibly overriding
     // existing values.

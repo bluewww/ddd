@@ -384,7 +384,11 @@ void UndoBuffer::set_source(const string& command)
 #endif
 
     current_source = action(command);
+}
 
+// Start a new entry
+void UndoBuffer::start()
+{
     if (locked)
 	return;
 

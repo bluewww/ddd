@@ -4216,7 +4216,7 @@ void SourceView::lookup(string s, bool silent)
     if (s != "" && isspace(s[0]))
 	s = s.after(rxwhite);
 
-    undo_buffer.set_source("lookup");
+    undo_buffer.start("lookup");
 
     if (s == "")
     {
