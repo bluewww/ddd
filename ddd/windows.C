@@ -88,18 +88,72 @@ Widget source_view_shell;
 Widget tool_shell;
 Widget tool_buttons_w;
 
-// Flags: shell state
-enum WindowState { PoppedUp, PoppedDown, Iconic, Transient };
-static WindowState command_shell_state     = PoppedDown;
-static WindowState data_disp_shell_state   = PoppedDown;
-static WindowState source_view_shell_state = PoppedDown;
-static WindowState tool_shell_state        = PoppedDown;
+// Shell state stuff
+enum WindowState { PoppingUp, PoppedUp, PoppedDown, 
+		   Iconic, Transient, UnknownShell };
 
-// Flags: shell visibility
-static int command_shell_visibility     = VisibilityFullyObscured;
-static int data_disp_shell_visibility   = VisibilityFullyObscured;
-static int source_view_shell_visibility = VisibilityFullyObscured;
-static int tool_shell_visibility        = VisibilityFullyObscured;
+static ostream& operator << (ostream& os, WindowState s)
+{
+    switch (s)
+    {
+    case PoppingUp:
+	return os << "PoppingUp";
+    case PoppedUp:
+	return os << "PoppedUp";
+    case PoppedDown:
+	return os << "PoppedDown";
+    case Iconic:
+	return os << "Iconic";
+    case Transient:
+	return os << "Transient";
+    case UnknownShell:
+	return os << "UnknownShell";
+    }
+
+    return os;
+}
+
+static WindowState& state(Widget w)
+{
+    static WindowState command_shell_state     = PoppedDown;
+    static WindowState data_disp_shell_state   = PoppedDown;
+    static WindowState source_view_shell_state = PoppedDown;
+    static WindowState tool_shell_state        = PoppedDown;
+
+    if (w == 0)
+	/* do nothing */;
+    else if (w == command_shell)
+	return command_shell_state;
+    else if (w == data_disp_shell)
+	return data_disp_shell_state;
+    else if (w == source_view_shell)
+	return source_view_shell_state;
+    else if (w == tool_shell)
+	return tool_shell_state;
+
+    static WindowState dummy;
+    dummy = UnknownShell;
+    return dummy;
+}
+
+static void set_state(WindowState& var, WindowState state)
+{
+    if (state == PoppingUp && var == PoppedUp)
+	return;
+    var = state;
+}
+
+static void set_state(Widget w, WindowState s)
+{
+    WindowState& var = state(w);
+    if (var != UnknownShell)
+    {
+	set_state(var, s);
+#if LOG_EVENTS
+	clog << XtName(w) << " is " << state(w) << "\n";
+#endif
+    }
+}
 
 // Place command tool in upper right edge of REF
 static void recenter_tool_shell(Widget ref = 0);
@@ -139,7 +193,8 @@ static BoxPoint tool_shell_pos()
     int root_x = 0;
     int root_y = 0;
 
-    if (tool_shell != 0 && XtIsRealized(tool_shell))
+    if (tool_shell != 0 && XtIsRealized(tool_shell) && 
+	state(tool_shell) == PoppedUp)
     {
 	XWindowAttributes attr;
 	XGetWindowAttributes(XtDisplay(tool_shell), XtWindow(tool_shell), 
@@ -199,7 +254,7 @@ static void RecenterToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 
     bool have_visible_tool_shell = false;
 
-    if (XtIsRealized(tool_buttons_w))
+    if (XtIsRealized(tool_buttons_w) && state(tool_shell) == PoppedUp)
     {
 	XWindowAttributes attr;
 	XGetWindowAttributes(XtDisplay(tool_buttons_w), 
@@ -219,6 +274,56 @@ static void RecenterToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
 			    200, RecenterToolShellCB, XtPointer(0));
     }
 }
+
+static void follow_tool_shell(Widget ref)
+{
+    initialize_offsets();
+
+    recenter_tool_shell(ref, last_top_offset, last_right_offset);
+    get_tool_offset(ref, last_top_offset, last_right_offset);
+}
+
+static void FollowToolShellCB(XtPointer = 0, XtIntervalId *id = 0)
+{
+    if (tool_shell == 0)
+	return;
+
+    static XtIntervalId follow_tool_shell_timer = 0;
+
+    if (id != 0)
+    {
+	assert(*id = follow_tool_shell_timer);
+	follow_tool_shell_timer = 0;
+    }
+    else if (follow_tool_shell_timer != 0)
+    {
+	XtRemoveTimeOut(follow_tool_shell_timer);
+	follow_tool_shell_timer = 0;
+    }
+
+    bool have_visible_tool_shell = false;
+
+    if (XtIsRealized(tool_buttons_w) && state(tool_shell) == PoppedUp)
+    {
+	XWindowAttributes attr;
+	XGetWindowAttributes(XtDisplay(tool_buttons_w), 
+			     XtWindow(tool_buttons_w), &attr);
+	have_visible_tool_shell = (attr.map_state == IsViewable);
+    }
+
+    if (have_visible_tool_shell)
+    {
+	follow_tool_shell();
+    }
+    else
+    {
+	// Try again in 200 ms
+	follow_tool_shell_timer = 
+	    XtAppAddTimeOut(XtWidgetToApplicationContext(tool_shell), 
+			    200, FollowToolShellCB, XtPointer(0));
+    }
+}
+
 
 // Popup initial shell
 void initial_popup_shell(Widget w)
@@ -241,16 +346,9 @@ void initial_popup_shell(Widget w)
 		  XmNiconic, iconic, 
 		  XmNinitialState, iconic ? IconicState : NormalState,
 		  NULL);
-    WindowState state = iconic ? Iconic : PoppedUp;
+    WindowState state = iconic ? Iconic : PoppingUp;
 
-    if (w == command_shell)
-	command_shell_state     = state;
-    else if (w == data_disp_shell)
-	data_disp_shell_state   = state;
-    else if (w == source_view_shell)
-	source_view_shell_state = state;
-    else if (w == tool_shell)
-	tool_shell_state        = state;
+    set_state(w, state);
 
     if (iconic || w == tool_shell)
 	XtVaSetValues(w, 
@@ -290,14 +388,7 @@ void popup_shell(Widget w)
     if (XtIsRealized(w))
 	XtPopup(w, XtGrabNone);
 
-    if (w == command_shell)
-	command_shell_state        = PoppedUp;
-    else if (w == data_disp_shell)
-	data_disp_shell_state      = PoppedUp;
-    else if (w == source_view_shell)
-	source_view_shell_state    = PoppedUp;
-    else if (w == tool_shell)
-	tool_shell_state           = PoppedUp;
+    set_state(w, PoppingUp);
 
     // Uniconify window
     if (XtIsRealized(w))
@@ -310,14 +401,7 @@ void popdown_shell(Widget w)
     if (w == 0)
 	return;
 
-    if (w == command_shell)
-	command_shell_state     = PoppedDown;
-    else if (w == data_disp_shell)
-	data_disp_shell_state   = PoppedDown;
-    else if (w == source_view_shell)
-	source_view_shell_state = PoppedDown;
-    else if (w == tool_shell)
-	tool_shell_state        = PoppedDown;
+    set_state(w, PoppedDown);
 
     if (w == tool_shell)
 	XtUnmanageChild(tool_buttons_w);
@@ -330,14 +414,7 @@ void iconify_shell(Widget w)
     if (w == 0 || !XtIsRealized(w))
 	return;
 
-    if (w == command_shell)
-	command_shell_state     = Iconic;
-    else if (w == data_disp_shell)
-	data_disp_shell_state   = Iconic;
-    else if (w == source_view_shell)
-	source_view_shell_state = Iconic;
-    else if (w == tool_shell)
-	tool_shell_state        = Iconic;
+    set_state(w, Iconic);
 
     XIconifyWindow(XtDisplay(w), XtWindow(w),
 		   XScreenNumberOfScreen(XtScreen(w)));
@@ -348,10 +425,7 @@ void uniconify_shell(Widget w)
     if (w == 0)
 	return;
 
-    if (w == command_shell && command_shell_state == Iconic
-	|| w == data_disp_shell && data_disp_shell_state == Iconic
-	|| w == source_view_shell && source_view_shell_state == Iconic
-	|| w == tool_shell && tool_shell_state == Iconic)
+    if (state(w) == Iconic)
     {
 	popup_shell(w);
     }
@@ -378,9 +452,17 @@ void iconify_tty(Widget shell)
     }
 }
 
-static int visibility(Widget w)
+// Shell visibility stuff
+static int& visibility(Widget w)
 {
-    if (w == command_shell)
+    static int command_shell_visibility     = VisibilityFullyObscured;
+    static int data_disp_shell_visibility   = VisibilityFullyObscured;
+    static int source_view_shell_visibility = VisibilityFullyObscured;
+    static int tool_shell_visibility        = VisibilityFullyObscured;
+
+    if (w == 0)
+	/* do nothing */;
+    else if (w == command_shell)
 	return command_shell_visibility;
     else if (w == data_disp_shell)
 	return data_disp_shell_visibility;
@@ -388,8 +470,10 @@ static int visibility(Widget w)
 	return source_view_shell_visibility;
     else if (w == tool_shell)
 	return tool_shell_visibility;
-    else
-	return VisibilityFullyObscured;
+
+    static int dummy;
+    dummy = VisibilityFullyObscured;
+    return dummy;
 }
 
 static BoxRegion region(Display *display, Window win)
@@ -452,7 +536,8 @@ static void raise_above(Display *display, Window win, Window sibling)
 
 inline void raise_tool_above(Window sibling)
 {
-    if (tool_shell && XtIsRealized(tool_shell))
+    if (tool_shell && XtIsRealized(tool_shell) && 
+	state(tool_shell) == PoppedUp)
 	raise_above(XtDisplay(tool_shell), XtWindow(tool_shell), sibling);
 }
 
@@ -462,50 +547,23 @@ inline void raise_tool_above(Widget w)
 	raise_tool_above(XtWindow(w));
 }
 
-static void follow_tool_shell(Widget ref)
-{
-    initialize_offsets();
-
-    recenter_tool_shell(ref, last_top_offset, last_right_offset);
-    get_tool_offset(ref, last_top_offset, last_right_offset);
-}
-
 void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 {
-    bool synthetic = false;
-
-    if (w == command_shell)
-	synthetic = (command_shell_state == Transient);
-    else if (w == data_disp_shell)
-	synthetic = (data_disp_shell_state == Transient);
-    else if (w == source_view_shell)
-	synthetic = (source_view_shell_state == Transient);
-    else if (w == tool_shell)
-	synthetic = (tool_shell_state == Transient);
+    bool synthetic = (state(w) == Transient);
 
 #if LOG_EVENTS
     if (synthetic)
-	clog << "synthetic event: ";
+	clog << "Synthetic event: ";
 #endif
 
     switch (event->type)
     {
     case MapNotify:
-#if LOG_EVENTS
-	clog << XtName(w) << " is mapped\n";
-#endif
+	if (state(w) == UnknownShell)
+	    return;
 
 	// Reflect state
-	if (w == command_shell)
-	    command_shell_state = PoppedUp;
-	else if (w == data_disp_shell)
-	    data_disp_shell_state = PoppedUp;
-	else if (w == source_view_shell)
-	    source_view_shell_state = PoppedUp;
-	else if (w == tool_shell)
-	    tool_shell_state = PoppedUp;
-	else
-	    return;
+	set_state(w, PoppedUp);
 
 #if 0
 	if (!synthetic
@@ -515,7 +573,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	{
 	    // Popup command tool again
 	    popup_shell(tool_shell);
-	    tool_shell_state = Transient;
+	    set_state(tool_shell, Transient);
 	}
 #endif
 
@@ -531,57 +589,32 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	if (!synthetic && app_data.group_iconify)
 	{
 	    // Some shell was mapped - map all other shells as well
-	    if (command_shell_state == Iconic)
+	    if (state(command_shell) == Iconic)
 	    {
 		popup_shell(command_shell);
-		command_shell_state = Transient;
+		set_state(command_shell, Transient);
 	    }
-	    if (data_disp_shell_state == Iconic)
+	    if (state(data_disp_shell) == Iconic)
 	    {
 		popup_shell(data_disp_shell);
-		data_disp_shell_state = Transient;
+		set_state(data_disp_shell, Transient);
 	    }
-	    if (source_view_shell_state == Iconic)
+	    if (state(source_view_shell) == Iconic)
 	    {
 		popup_shell(source_view_shell);
-		source_view_shell_state = Transient;
+		set_state(source_view_shell, Transient);
 	    }
 	    popup_tty(command_shell);
 	}
 	break;
 
     case UnmapNotify:
-#if LOG_EVENTS
-	clog << XtName(w) << " is unmapped\n";
-#endif
-
 	// Reflect state
-	if (w == command_shell
-	    && command_shell_state != Iconic
-	    && command_shell_state != PoppedDown)
-	{
-	    command_shell_state = Iconic;
-	}
-	else if (w == data_disp_shell
-		 && data_disp_shell_state != Iconic
-		 && data_disp_shell_state != PoppedDown)
-	{
-	    data_disp_shell_state = Iconic;
-	}
-	else if (w == source_view_shell
-		 && source_view_shell_state != Iconic
-		 && source_view_shell_state != PoppedDown)
-	{
-	    source_view_shell_state = Iconic;
-	}
-	else if (w == tool_shell
-		 && tool_shell_state != Iconic
-		 && tool_shell_state != PoppedDown)
-	{
-	    tool_shell_state = Iconic;
-	}
-	else
+	if (state(w) == UnknownShell)
 	    return;
+
+	if (state(w) != Iconic && state(w) != PoppedDown)
+	    set_state(w, Iconic);
 
 	if (!synthetic
 	    && (w == source_view_shell
@@ -589,26 +622,26 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	{
 	    // Iconify command tool, too
 	    iconify_shell(tool_shell);
-	    tool_shell_state = Transient;
+	    set_state(tool_shell, Transient);
 	}
 
-	if (!synthetic && app_data.group_iconify)
+	if (!synthetic && state(w) != PoppedDown && app_data.group_iconify)
 	{
 	    // Iconify all other windows as well
-	    if (command_shell_state == PoppedUp)
+	    if (state(command_shell) == PoppedUp)
 	    {
 		iconify_shell(command_shell);
-		command_shell_state = Transient;
+		set_state(command_shell, Transient);
 	    }
-	    if (data_disp_shell_state == PoppedUp)
+	    if (state(data_disp_shell) == PoppedUp)
 	    {
 		iconify_shell(data_disp_shell);
-		data_disp_shell_state = Transient;
+ 		set_state(data_disp_shell, Transient);
 	    }
-	    if (source_view_shell_state == PoppedUp)
+	    if (state(source_view_shell) == PoppedUp)
 	    {
 		iconify_shell(source_view_shell);
-		source_view_shell_state = Transient;
+		set_state(source_view_shell, Transient);
 	    }
 	    iconify_tty(command_shell);
 	}
@@ -616,14 +649,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 
     case VisibilityNotify:
     {
-	if (w == command_shell)
-	    command_shell_visibility = event->xvisibility.state;
-	else if (w == data_disp_shell)
-	    data_disp_shell_visibility = event->xvisibility.state;
-	else if (w == source_view_shell)
-	    source_view_shell_visibility = event->xvisibility.state;
-	else if (w == tool_shell)
-	    tool_shell_visibility = event->xvisibility.state;
+	visibility(w) = event->xvisibility.state;
 
 	// Check whether command tool is obscured by some DDD shell
 	if (app_data.auto_raise_tool
@@ -661,8 +687,8 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
     {
 	if (app_data.sticky_tool
 	    && have_tool_window()
-	    && (tool_shell_state == PoppedUp 
-		|| tool_shell_state == Transient))
+	    && (state(tool_shell) == PoppedUp 
+		|| state(tool_shell) == Transient))
 	{
 	    // Let `sticky' command tool follow the source window
 	    initialize_offsets();
@@ -686,7 +712,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 		clog << "Shell has been moved to " << point(event) << "\n";
 #endif
 
-		follow_tool_shell();
+		FollowToolShellCB();
 	    }
 	}
 	break;
@@ -708,11 +734,11 @@ int running_shells()
 {
     int shells = 0;
 
-    if (command_shell_state != PoppedDown)
+    if (state(command_shell) != PoppedDown)
 	shells++;
-    if (source_view_shell_state != PoppedDown)
+    if (state(source_view_shell) != PoppedDown)
 	shells++;
-    if (data_disp_shell_state != PoppedDown)
+    if (state(data_disp_shell) != PoppedDown)
 	shells++;
 
     return shells;
@@ -788,10 +814,10 @@ bool have_command_window()
 bool have_visible_command_window()
 {
     return have_command_window() 
-	&& command_shell_state == PoppedUp
+	&& state(command_shell) == PoppedUp
 	&& (!app_data.separate_data_window
 	    || !app_data.separate_source_window
-	    || command_shell_visibility == VisibilityUnobscured);
+	    || visibility(command_shell) == VisibilityUnobscured);
 }
 
 
@@ -892,8 +918,8 @@ bool have_visible_source_window()
 {
     return have_source_window()
 	&& (source_view_shell == 0 
-	    || (source_view_shell_state == PoppedUp
-		&& source_view_shell_visibility == VisibilityUnobscured));
+	    || (state(source_view_shell) == PoppedUp
+		&& visibility(source_view_shell) == VisibilityUnobscured));
 }
 
 
@@ -946,8 +972,8 @@ bool have_visible_data_window()
 {
     return have_data_window()
 	&& (data_disp_shell == 0 
-	    || (data_disp_shell_state == PoppedUp
-		&& data_disp_shell_visibility == VisibilityUnobscured));
+	    || (state(data_disp_shell) == PoppedUp
+		&& visibility(data_disp_shell) == VisibilityUnobscured));
 }
 
 
@@ -1015,8 +1041,8 @@ bool have_tool_window()
 bool have_visible_tool_window()
 {
     return have_tool_window() 
-	&& tool_shell_state == PoppedUp 
-	&& tool_shell_visibility == VisibilityUnobscured;
+	&& state(tool_shell) == PoppedUp 
+	&& visibility(tool_shell) == VisibilityUnobscured;
 }
 
 
@@ -1121,7 +1147,7 @@ static void recenter_tool_shell(Widget ref, int top_offset, int right_offset)
 
     if (ref == 0 || tool_shell == 0 || 
 	!XtIsRealized(ref) || !XtIsRealized(tool_shell) ||
-	tool_shell_state != PoppedUp)
+	state(tool_shell) != PoppedUp)
 	return;
 
     Window ref_window  = XtWindow(ref);
@@ -1165,6 +1191,10 @@ static void recenter_tool_shell(Widget ref, int top_offset, int right_offset)
 			  &ref_child);
 
     move_tool_shell(BoxPoint(root_x, root_y));
+
+    last_top_offset     = top_offset;
+    last_right_offset   = right_offset;
+    offsets_initialized = true;
 }
 
 
@@ -1180,7 +1210,7 @@ static bool get_tool_offset(Widget ref, int& top_offset, int& right_offset)
     if (ref == 0 || tool_shell == 0 || 
 	!XtIsRealized(ref) || !XtIsRealized(tool_shell) || 
 	!XtIsManaged(tool_buttons_w) ||
-	tool_shell_state != PoppedUp)
+	state(tool_shell) != PoppedUp)
 	return false;
 
     Window ref_window  = XtWindow(ref);
@@ -1314,7 +1344,7 @@ static void paned_changed(Widget /* paned */)
     if (gdb_w != 0)
     {
 	// Recenter the tool shell
-	recenter_tool_shell(source_view->source());
+	RecenterToolShellCB();
 
 	// Make sure the current command line is visible
 	end_of_lineAct(gdb_w, 0, 0, 0);
