@@ -543,7 +543,9 @@ INCLUDE = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
 ## Icon rules
 .xpm.xbm:
 	-base=`$(ECHO) $@ | $(SED) 's,.*/,,' | $(SED) 's/[.]x[bp]m.*//'`; \
-	$(SXPM) -nod -o - -mono $< | $(SED) 's/[nN]one/white/g' | \
+	$(SXPM) -nod -o - -mono $< | \
+	$(SED) 's/[nN]one/white/g' | \
+	$(SED) 's/[gG]r[ae]y[a-z0-9]*/black/g' | \
 	$(XPMTOPPM) | $(PNMDEPTH) 255 | $(PPMTOPGM) | $(PGMTOPBM) | \
 	$(PBMTOXBM) | $(SED) "s/noname/$${base}/g" | \
 	$(SED) "s/static char/static unsigned char/g" > $@~
