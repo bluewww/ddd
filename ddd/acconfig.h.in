@@ -47,6 +47,9 @@
 /* Define if your C++ compiler supports `bool' types. */
 #undef HAVE_BOOL
 
+/* Define if <sys/core.h> defines CORE_MAGIC to identify core files. */
+#undef HAVE_CORE_MAGIC
+
 /* Define if your C++ library has an ostrstream::frozen() function. */
 #undef HAVE_FROZEN_OSTRSTREAM
 

@@ -46,10 +46,10 @@ extern "C" {
 
 #include <fcntl.h>
 
+#ifdef HAVE_CORE_MAGIC
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
-
 // AIX and DEC alpha OSF/1 v3.0 require <sys/user.h> being included
 // before <sys/core.h>.  Reported by bas@phys.uva.nl (Bas V. de
 // Bakker) and dmitzel@everest.hitc.com.
@@ -60,10 +60,11 @@ extern "C" {
 #include <sys/user.h>
 #endif
 #endif
-
 #ifdef HAVE_SYS_CORE_H
 #include <sys/core.h>		// CORE_MAGIC
 #endif
+
+#endif // HAVE_CORE_MAGIC
 }
 
 // Test for regular file - see stat(3)

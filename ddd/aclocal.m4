@@ -621,6 +621,24 @@ fi
 ])dnl
 dnl
 dnl
+dnl Check if CORE_MAGIC is defined in <sys/core.h>.
+dnl
+AC_DEFUN(ICE_CHECK_CORE_MAGIC,
+[
+AC_MSG_CHECKING(for CORE_MAGIC definition in <sys/core.h>)
+AC_CACHE_VAL(ice_cv_have_core_magic,
+AC_EGREP_CPP(yes,
+[#include <sys/core.h>
+#ifdef CORE_MAGIC
+yes
+#endif
+], ice_cv_have_core_magic=yes, ice_cv_have_core_magic=no))
+if test "$ice_cv_have_core_magic" = yes; then
+AC_DEFINE(HAVE_CORE_MAGIC)
+fi
+])dnl
+dnl
+dnl
 dnl
 dnl
 dnl Set output variable CXX_INCLUDE_DIR to the name of a directory
