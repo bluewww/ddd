@@ -42,6 +42,8 @@ DDD 3.0 [in development]
       to disappear.  See the `cacheGlyphImages' resource for details.
     - The `endless scrolling' problem may now be prevented by delaying
       glyph updates.  See the `glyphUpdateDelay' resource for details.
+    - DDD no longer terminates the inferior debugger when receiving an 
+      EOF on input.   See the `terminateOnEOF' resource for details.
     - One-letter options like `-b BPS' or `-x FILE' work again.
 
     Changes in configuration and building:

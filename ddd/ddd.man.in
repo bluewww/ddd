@@ -3304,6 +3304,13 @@ busy.  This may result in slightly better performance on
 single-processor systems.  See also the `\fB\-\-sync-debugger\fR'
 option, below.
 .TP
+.B "terminateOnEOF (\fPclass\fB TerminateOnEOF)"
+If `\fBon\fR', \s-2@DDD@\s+2 terminates the inferior debugger when
+\s-2@DDD@\s+2 detects an EOF condition (that is, as soon as the
+inferior debugger closes its output channel).  This was the default
+behavior in \s-2@DDD@\s+2 2.x and earlier.  If `\fBoff\fR' (default),
+\s-2@DDD@\s+2 takes no special action.
+.TP
 .B "ttyMode (\fPclass\fB TTYMode)"
 If `\fBon\fR', enable \s-2TTY\s+2 interface, taking additional
 debugger commands from standard input and forwarding debugger output

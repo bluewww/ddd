@@ -178,8 +178,8 @@ void ddd_cleanup()
 	last_words += "  (We apologize for the inconvenience.)";
     set_status_mstring(rm(last_words));
 
-    // Close log file
-    dddlog.close();
+    // Flush log file
+    dddlog.flush();
 
     // Unlock `~/.ddd/'.
     unlock_session_dir(DEFAULT_SESSION);
@@ -826,10 +826,19 @@ void ddd_install_x_error()
 //-----------------------------------------------------------------------------
 
 // EOF on input/output detected
-void gdb_eofHP(Agent *, void *, void *)
+void gdb_eofHP(Agent *agent, void *, void *)
 {
-    // Kill and exit
-    gdb->terminate();
+    GDBAgent *gdb = ptr_cast(GDBAgent, agent);
+    if (gdb != 0)
+    {
+	set_status(gdb->title() + ": EOF detected");
+    }
+
+    if (app_data.terminate_on_eof)
+    {
+	// Kill GDB
+	agent->terminate();
+    }
 }
 
 

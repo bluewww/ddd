@@ -83,21 +83,11 @@ XtResource ddd_resources[] = {
     },
 
     { 
-	XtNtraceDialog, 
+	XtNtrace, 
 	XtCTrace, 
 	XmRBoolean,
 	sizeof(Boolean),
-	XtOffsetOf(AppData, trace_dialog),
-	XmRImmediate, 
-	XtPointer(False)
-    },
-
-    { 
-	XtNtraceShellCommands,
-	XtCTrace,
-	XmRBoolean,
-	sizeof(Boolean),
-	XtOffsetOf(AppData, trace_shell_commands),
+	XtOffsetOf(AppData, trace),
 	XmRImmediate, 
 	XtPointer(False)
     },
@@ -489,6 +479,16 @@ XtResource ddd_resources[] = {
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, synchronous_gdb),
+	XtRImmediate,
+	XtPointer(False)
+    },
+
+    {
+	XtNterminateOnEOF,
+	XtCTerminateOnEOF,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, terminate_on_eof),
 	XtRImmediate,
 	XtPointer(False)
     },

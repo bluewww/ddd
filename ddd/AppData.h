@@ -117,6 +117,8 @@
 #define XtCQuestionTimeout       "QuestionTimeout"
 #define XtNsynchronousDebugger   "synchronousDebugger"
 #define XtCSynchronousDebugger   "SynchronousDebugger"
+#define XtNterminateOnEOF        "terminateOnEOF"
+#define XtCTerminateOnEOF        "TerminateOnEOF"
 #define XtNdebuggerHost          "debuggerHost"
 #define XtCDebuggerHost          "DebuggerHost"
 #define XtNdebuggerRHost         "debuggerRHost"
@@ -332,6 +334,7 @@ struct AppData {
     String    term_start_process;
     int       question_timeout;
     Boolean   synchronous_gdb;
+    Boolean   terminate_on_eof;
     String    debugger_host;
     String    debugger_rhost;
     String    debugger_host_login;
