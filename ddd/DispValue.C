@@ -1236,7 +1236,7 @@ void DispValue::plot() const
 		title = toupper(title[0]) + title.after(0);
 	}
 
-	((DispValue *)this)->_plotter = new_plotter(title);
+	((DispValue *)this)->_plotter = new_plotter(title, (DispValue *)this);
 	plotter()->addHandler(Died, PlotterDiedHP, (void *)this);
     }
 

@@ -145,9 +145,6 @@ Volunteers for fixing these and other bugs are welcome!
     (Create a DispGraph::cluster() routine, like DispGraph::make_active()).
 
 322*Finish Plots:
-    - Finish printing: 
-      * Printing a plot must select the DispValue first.
-      * Set `Selected Only' if some displays are selected.
     - Add a command dialog to enter commands.  (File->Enter Command)
     - Allow rotating scalar values.
     - Have an `export' option that writes the data to a file.  This

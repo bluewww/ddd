@@ -60,6 +60,8 @@ char plotter_rcsid[] =
 #include "MakeMenu.h"
 #include "PlotArea.h"
 #include "Swallower.h"
+#include "DispValue.h"
+#include "DataDisp.h"
 
 #include <stdio.h>
 #include <fstream.h>
@@ -85,6 +87,9 @@ static void CancelPlotCB(Widget, XtPointer, XtPointer);
 static void ExposePlotAreaCB(Widget, XtPointer, XtPointer);
 static void ResizePlotAreaCB(Widget, XtPointer, XtPointer);
 
+static void SelectPlotCB(Widget, XtPointer, XtPointer);
+static void SelectAndPrintPlotCB(Widget, XtPointer, XtPointer);
+
 static void ToggleOptionCB(Widget, XtPointer, XtPointer);
 static void ToggleLogscaleCB(Widget, XtPointer, XtPointer);
 static void SetStyleCB(Widget, XtPointer, XtPointer);
@@ -93,6 +98,7 @@ static void SetViewCB(Widget, XtPointer, XtPointer);
 
 
 struct PlotWindowInfo {
+    DispValue *source;		// The source we depend upon
     PlotAgent *plotter;		// The current Gnuplot instance
     PlotArea *area;		// The area we're drawing in
     Widget shell;		// The shell we're in
@@ -116,7 +122,7 @@ struct PlotWindowInfo {
 
 static MMDesc file_menu[] = 
 {
-    { "print", MMPush, { PrintPlotCB, 0 }, 0, 0, 0, 0 },
+    { "print", MMPush, { SelectAndPrintPlotCB, 0 }, 0, 0, 0, 0 },
     MMSep,
     { "close", MMPush, { CancelPlotCB, 0 }, 0, 0, 0, 0 },
     { "exit",  MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }, 0, 0, 0, 0},
@@ -181,6 +187,17 @@ static MMDesc menubar[] =
 
 
 //-------------------------------------------------------------------------
+// Plotter commands
+//-------------------------------------------------------------------------
+
+static void send(PlotWindowInfo *plot, const string& cmd)
+{
+    data_disp->select(plot->source);
+    plot->plotter->write(cmd.chars(), cmd.length());
+}
+
+
+//-------------------------------------------------------------------------
 // Set up menu
 //-------------------------------------------------------------------------
 
@@ -203,7 +220,7 @@ static string plot_settings(PlotWindowInfo *plot)
 {
     string settings_file = tmpnam(0);
     string cmd = "save " + quote(settings_file) + "\n";
-    plot->plotter->write(cmd.chars(), cmd.length());
+    send(plot, cmd);
 
     // Wait for settings file to be created
     Delay delay;
@@ -642,13 +659,14 @@ static PlotWindowInfo *new_decoration(const string& name)
 }
 
 // Create a new plot window
-PlotAgent *new_plotter(string name)
+PlotAgent *new_plotter(string name, DispValue *source)
 {
     string cmd = app_data.plot_command;
     cmd.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
 
     // Create shell
     PlotWindowInfo *plot = new_decoration(name);
+    plot->source = source;
     XtVaSetValues(plot->shell, XmNuserData, XtPointer(True), NULL);
 
     // Pop up a working dialog
@@ -741,6 +759,24 @@ static void ResizePlotAreaCB(Widget, XtPointer client_data, XtPointer)
 
 
 //-------------------------------------------------------------------------
+// Selection stuff
+//-------------------------------------------------------------------------
+
+static void SelectPlotCB(Widget, XtPointer client_data, XtPointer)
+{
+    PlotWindowInfo *plot = (PlotWindowInfo *)client_data;
+
+    data_disp->select(plot->source);
+}
+
+static void SelectAndPrintPlotCB(Widget w, XtPointer client_data, 
+				 XtPointer call_data)
+{
+    SelectPlotCB(w, client_data, call_data);
+    PrintPlotCB(w, client_data, call_data);
+}
+
+//-------------------------------------------------------------------------
 // Settings
 //-------------------------------------------------------------------------
 
@@ -758,7 +794,7 @@ static void ToggleOptionCB(Widget w, XtPointer client_data,
 	cmd = string("set no") + XtName(w) + "\n";
     cmd += "replot\n";
 
-    plot->plotter->write(cmd.chars(), cmd.length());
+    send(plot, cmd);
 }
 
 static void ToggleLogscaleCB(Widget, XtPointer client_data, 
@@ -782,7 +818,7 @@ static void ToggleLogscaleCB(Widget, XtPointer client_data,
     plot->plotter->write(cmd.chars(), cmd.length());
 
     cmd = "replot\n";
-    plot->plotter->write(cmd.chars(), cmd.length());
+    send(plot, cmd);
 }
 
 static void SetStyleCB(Widget w, XtPointer client_data, XtPointer call_data)
@@ -810,7 +846,7 @@ static void SetStyleCB(Widget w, XtPointer client_data, XtPointer call_data)
 	cmd += "set data style " + style + "\n";
 	cmd += "replot\n";
 
-	plot->plotter->write(cmd.chars(), cmd.length());
+	send(plot, cmd);
     }
 }
 
@@ -837,7 +873,7 @@ static void SetContourCB(Widget w, XtPointer client_data, XtPointer)
 	cmd = "set nocontour\n";
     cmd += "replot\n";
 
-    plot->plotter->write(cmd.chars(), cmd.length());
+    send(plot, cmd);
 }
 
 static void SetViewCB(Widget, XtPointer client_data, XtPointer)
@@ -854,7 +890,7 @@ static void SetViewCB(Widget, XtPointer client_data, XtPointer)
 	"set view " + itostring(rot_x) + ", " + itostring(rot_z) + "\n";
     cmd += "replot\n";
 
-    plot->plotter->write(cmd.chars(), cmd.length());
+    send(plot, cmd);
 }
 
 //-------------------------------------------------------------------------

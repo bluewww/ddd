@@ -1968,6 +1968,50 @@ DispValue *DataDisp::selected_value()
     return dn->value();
 }
 
+// Select DV (and nothing else)
+void DataDisp::select(DispValue *dv)
+{
+    bool changed = false;
+
+    MapRef ref;
+    for (DispNode *dn = disp_graph->first(ref); 
+	 dn != 0; dn = disp_graph->next(ref))
+    {
+	if (dn->clustered())
+	    continue;
+
+	// Check whether DV occurs in DN
+	dn->select(dv);
+
+	if (dn->highlight() != 0)
+	{
+	    if (!dn->selected())
+	    {
+		// Found it
+		dn->selected() = true;
+		changed = true;
+	    }
+	}
+	else
+	{
+	    if (dn->selected())
+	    {
+		// Did not find it
+		dn->selected() = false;
+		changed = true;
+	    }
+
+	    dn->select(0);
+	}
+    }
+
+    if (changed)
+    {
+	refresh_args();
+	refresh_graph_edit();
+    }
+}
+
 void DataDisp::refresh_args(bool update_arg)
 {
     if (update_arg)

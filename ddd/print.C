@@ -701,12 +701,15 @@ static void PrintCB(Widget parent, bool displays)
 
     static Widget print_displays_w;
     static Widget print_plots_w;
+    static Widget print_selected_w;
 
     if (print_dialog != 0)
     {
 	// Dialog already created -- pop it up again
 	XmToggleButtonSetState(print_plots_w, !displays, True);
 	XmToggleButtonSetState(print_displays_w, displays, True);
+	XmToggleButtonSetState(print_selected_w, 
+			       data_disp->have_selection(), True);
 	manage_and_raise(print_dialog);
 	return;
     }
@@ -777,7 +780,6 @@ static void PrintCB(Widget parent, bool displays)
 	MMEnd
     };
 
-    static Widget print_selected_w;
     static MMDesc what_menu[] = 
     {
 	{"what2",    MMRadioPanel | MMUnmanagedLabel, 
@@ -901,6 +903,8 @@ static void PrintCB(Widget parent, bool displays)
     XmToggleButtonSetState(print_portrait_w, True, True);
     XmToggleButtonSetState(print_plots_w, !displays, True);
     XmToggleButtonSetState(print_displays_w, displays, True);
+    XmToggleButtonSetState(print_selected_w, 
+			   data_disp->have_selection(), True);
 
     bool ok = set_paper_size(app_data.paper_size);
     if (!ok)

@@ -36,8 +36,10 @@
 #include "PlotAgent.h"
 #include "strclass.h"
 
+class DispValue;
+
 // Create a new plot window
-PlotAgent *new_plotter(string name);
+PlotAgent *new_plotter(string name, DispValue *src);
 
 #endif // _DDD_plotter_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -583,6 +583,9 @@ public:
     // Returns 0 if W is no shortcut menu item.
     static MString shortcut_help(Widget w);
 
+    // Select a specific value.  Plotter uses this.
+    static void select(DispValue *dv);
+
     // Reset all
     static void reset();
 
