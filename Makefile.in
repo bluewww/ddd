@@ -195,7 +195,7 @@ picsdist:
 	    VER=`sed -n < ddd/configure.in 's/^VERSION *= *//p'`; \
 	    VER=`echo $$VER | sed 's/[^0-9]*\([0-9][^ ]*\) .*/\1/'`; \
 	    echo "==> Making $$ddd-$$VER-pics.tar.gz"; \
-	    rm -f $$ddd-$$VER.tar.gz; \
+	    rm -f $$ddd-$$VER-pics.tar.gz; \
 	    ln -s .. proto-toplev/$$ddd-$$VER; \
 	    find ddd/PICS -name RCS -prune -o -name CVS -prune \
 		-o -name proto-toplev -prune \
