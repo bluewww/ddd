@@ -1365,7 +1365,7 @@ D-38092 Braunschweig
 .br
 \s-2GERMANY\s+2 
 .br
-Fax: +49 531 391-8111 
+Fax: +49 531 391-8140
 .br
 .DE
 
@@ -1374,6 +1374,7 @@ Before sending in a bug report, try to find out whether the problem
 cause really lies within \s-2@DDD@\s+2.  A common cause of problems
 are incomplete or missing X or Motif installations, for instance, or
 bugs in the X server or Motif itself.  Running \s-2@DDD@\s+2 as
+.PP
 .br
 .sp
   \fB@ddd@ \-\-check\-configuration\fR
@@ -1433,7 +1434,7 @@ following information:
 Your \s-2@DDD@\s+2 configuration.  Invoke \s-2@DDD@\s+2 as
 .br
 .sp
-  \fB@ddd@ --configuration\fR
+  \fB@ddd@ \-\-configuration\fR
 .sp
 .br
 to get the configuration information.  If this does npt work, please
