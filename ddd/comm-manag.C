@@ -920,6 +920,10 @@ void send_gdb_command(string cmd, Widget origin,
 	    string show_command = "show ";
 	    if (cmd.contains("set ", 0))
 		show_command += cmd.after("set ");
+	    else if (cmd.contains("directory ", 0))
+		show_command += "directories";
+	    else if (cmd.contains("path ", 0))
+		show_command += "paths";
 	    else
 		show_command += cmd;
 
