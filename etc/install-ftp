@@ -26,7 +26,10 @@
 # Contact ddd@ips.cs.tu-bs.de for details.
 
 # $Log$
-# Revision 1.4  1995/05/21 11:55:46  zeller
+# Revision 1.5  1995/05/24 12:24:02  zeller
+# Fix: install README files also if dist file does not exist
+#
+# Revision 1.4  1995/05/21  11:55:46  zeller
 # Fix: install src link correctly
 #
 # Revision 1.3  1995/05/02  11:58:49  zeller
@@ -70,15 +73,6 @@ README="ANNOUNCE    \
 	TODO        \
 "
 
-# Distribution files
-DDD=ddd-*.tar.gz
-DIST=`ls $DDD`
-
-if [ "$DIST" = "" ]; then
-   echo "cannot find dist file" >&2
-   exit 1
-fi
-
 # Manual files
 DVI="ddd.man.ps"
 
@@ -103,10 +97,10 @@ link=false
 
 # Comment out any of the following to disable installation
 readme=true
-dist=true
-doc=true
-diff=true
-link=true
+#dist=true
+#doc=true
+#diff=true
+#link=true
 
 if $readme; then
   echo installing $README in $ftpdir...
@@ -114,7 +108,16 @@ if $readme; then
   $rcp $README $ftpdir
 fi
 
+# Distribution files
+DDD=ddd-*.tar.gz
+DIST=`ls $DDD 2> /dev/null`
+
 if $dist; then
+  if [ "$DIST" = "" ]; then
+     echo "cannot find dist file" >&2
+     exit 1
+  fi
+
   echo installing $DIST in $ftpdir/src...
   $rsh "cd $dir/src; /bin/rm -f $DIST"
   $rcp $DIST $ftpdir/src
@@ -143,6 +146,10 @@ if $doc; then
 fi
 
 if $diff; then
+  if [ "$DIST" = "" ]; then
+     echo "cannot find dist file" >&2
+     exit 1
+  fi
   echo installing diffs...
   for dist in $DIST; do
     dist_version=`echo $dist | sed 's%.*-\(.*\)\.tar.*%\1%'`
@@ -227,6 +234,10 @@ if $diff; then
 fi
 
 if $link; then
+  if [ "$DIST" = "" ]; then
+     echo "cannot find dist file" >&2
+     exit 1
+  fi
   dist_base=`echo $dist | sed 's%.*-\(.*\)[a-z]*\.tar.*%\1%'`
   link=ddd-$dist_base.tar.gz
   echo installing link from $link to src/$DIST...
