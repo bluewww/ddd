@@ -359,6 +359,15 @@ static void gdbEditDoneHP(Agent *edit_agent, void *client_data, void *)
     gdbReloadSourceCB(gdb_w, 0, 0);
 }
 
+static string edit_output_buffer;
+
+static void gdbEditOutputHP(Agent *, void *, void *call_data)
+{
+    DataLength *input = (DataLength *)call_data;
+    edit_output_buffer += string(input->data, input->length);
+    post_warning(edit_output_buffer, "edit_warning");
+}
+
 void gdbEditSourceCB  (Widget w, XtPointer, XtPointer)
 {
     string pos = source_view->file_of_cursor();
@@ -378,11 +387,15 @@ void gdbEditSourceCB  (Widget w, XtPointer, XtPointer)
     cmd.gsub("@LINE@", line);
     cmd = sh_command(cmd);
 
+    edit_output_buffer = "";
+
     // Invoke an editor in the background
     LiterateAgent *edit_agent = 
 	new LiterateAgent(XtWidgetToApplicationContext(w), cmd);
     edit_agent->removeAllHandlers(Died);
     edit_agent->addHandler(InputEOF, gdbEditDoneHP, (void *)new string(file));
+    edit_agent->addHandler(Input, gdbEditOutputHP);
+    edit_agent->addHandler(Error, gdbEditOutputHP);
     edit_agent->start();
 }
 
