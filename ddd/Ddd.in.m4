@@ -2331,8 +2331,8 @@ only complete words are found.\n\
 ITEM If LBL(Find Case Sensitive) is set, \
 search is case-sensitive.\n\
     Otherwise, occurrences are found regardless of case.\n\
-ITEM If LBL(Display Machine Code) is set, \
-the current function is automatically disassembled.\n\
+ITEM If LBL(Display Machine Code) is set, the current function\n\
+    is automatically disassembled.\n\
 \n\
 DESC(Edit Source..., [invoke text editor for current source])\n\
 DESC(Reload Source , [reload current source file])\n\
@@ -2569,7 +2569,14 @@ Ddd*helpMenu.onItem.labelString:		On Item...
 Ddd*helpMenu.onItem.mnemonic:			O
 Ddd*helpMenu.onItem.accelerator:		~Shift ~Ctrl<Key>HELP_KEY
 ! *helpMenu.onItem.accelerator:		        <Key>osfHelp
-Ddd*helpMenu.onItem.acceleratorText:	        HELP_KEY
+
+! In fact, both HELP_KEY and Shift+HELP_KEY invoke help on item.
+! However, if we press HELP_KEY, we get immediate help, while
+! Shift+HELP_KEY will get `on context' help, where an item must be
+! selected first.  Since `on context' help is also what we get
+! when `on item' is selected via the menu, display the `alternate'
+! accelerator instead.
+Ddd*helpMenu.onItem.acceleratorText:	        Shift+HELP_KEY
 Ddd*helpMenu.onItem.documentationString:	\
 @rm Get help on the current item
 
@@ -3472,7 +3479,7 @@ Ddd*graph_cmd_w.graph_cmd_area*delete.documentationString:	\
 Ddd*status_form*helpString: \
 WIDGET(Status Line)\n\
 \n\
-It shows the last @GDB@ message as well as short DDD messages.\n\
+The status line shows the last @GDB@ message as well as short DDD messages.\n\
 To view tthe most recent messages, just click on the status line.\n\
 \n\
 The @GDB@ status indicator on the right side blinks while @GDB@ is busy.\n\
@@ -4025,7 +4032,7 @@ Ddd*grey_cond.documentationString:
 define(MAIN_WINDOW_HELP, [\
 WIDGET([DDD] Main Window)\n\
 \n\
-From top to bottom, it shows the following areas:\n\
+The main window consists of the following areas:\n\
 \n\
 ITEM At the top, the EMPH(Data Window) shows the data displays\n\
     of the debugged program.\n\
