@@ -876,7 +876,7 @@ install-man: ddd.man
 	-parent=`$(ECHO) $(man1dir) | $(SED) -e 's@/[^/]*$$@@'`; \
 	test -d $$parent || $(MKDIR) $$parent
 	-test -d $(man1dir) || $(MKDIR) $(man1dir)
-	$(INSTALL_DATA) $? \
+	$(INSTALL_DATA) ddd.man \
 		$(man1dir)/`$(ECHO) ddd$(man1ext) | $(SED) '$(transform)'`
 
 .PHONY: uninstall-man
@@ -970,7 +970,7 @@ love:
 ## The resource header files.
 
 Ddd.ad.h: Ddd $(srcdir)/ad2c.sed
-	$(AD2C) $? > Ddd.ad.h
+	$(AD2C) Ddd > Ddd.ad.h
 
 # `make depend' fails to find this dependency :-(
 ddd.o: Ddd.ad.h
