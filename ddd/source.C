@@ -72,7 +72,7 @@ static string current_arg(bool globals_first = false)
 
 void gdbLookupCB(Widget, XtPointer, XtPointer)
 {
-    source_view->lookup(current_arg(), true);
+    source_view->lookup(current_arg(true));
 }
 
 void gdbGoBackCB(Widget, XtPointer, XtPointer)
