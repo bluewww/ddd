@@ -199,6 +199,33 @@ static void FlattenEH(Widget w,
     }
 }
 
+static void FlattenCB(Widget w, XtPointer client_data, XtPointer)
+{
+    Boolean set = Boolean(client_data);
+    if (set)
+    {
+	flatten_button(w);
+	active_button = 0;
+    }
+    else
+    {
+	unflatten_button(w);
+	active_button = w;
+    }
+}
+
+static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data, 
+			      XtPointer = 0)
+{
+    Widget w = (Widget)client_data;
+    EventMask event_mask = EnterWindowMask | LeaveWindowMask;
+    XtAddEventHandler(w, event_mask, False, FlattenEH, 
+		      XtPointer(0));
+    XtAddCallback(w, XmNarmCallback,    FlattenCB, XtPointer(False));
+    XtAddCallback(w, XmNdisarmCallback, FlattenCB, XtPointer(True));
+    flatten_button(w);
+}
+
 
 //-----------------------------------------------------------------------
 // Add items
@@ -683,9 +710,7 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 
 	if (flat)
 	{
-	    EventMask event_mask = EnterWindowMask | LeaveWindowMask;
-	    XtAddEventHandler(widget, event_mask, False, FlattenEH,
-			      XtPointer(0));
+	    ReflattenButtonCB(widget, XtPointer(widget));
 	}
 
 	if (callback.callback != 0)
@@ -862,16 +887,6 @@ static void PopupPushMenuCB(XtPointer client_data, XtIntervalId *id)
 #endif
 }
 
-static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data, 
-			      XtPointer = 0)
-{
-    Widget w = (Widget)client_data;
-    EventMask event_mask = EnterWindowMask | LeaveWindowMask;
-    XtAddEventHandler(w, event_mask, False, FlattenEH, 
-		      XtPointer(0));
-    flatten_button(w);
-}
-
 static void ReflattenButtonEH(Widget shell, XtPointer client_data, 
 			      XEvent *event, Boolean *)
 {
@@ -925,6 +940,9 @@ static void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
 	EventMask event_mask = EnterWindowMask | LeaveWindowMask;
 	XtRemoveEventHandler(w, event_mask, False, FlattenEH, 
 			     XtPointer(0));
+	XtRemoveCallback(w, XmNarmCallback,    FlattenCB, XtPointer(False));
+	XtRemoveCallback(w, XmNdisarmCallback, FlattenCB, XtPointer(True));
+
 	XtAddCallback(shell, XtNpopdownCallback, ReflattenButtonCB, 
 		      XtPointer(w));
 
