@@ -238,13 +238,6 @@ Volunteers for fixing these and other bugs are welcome!
     obliterating most of the other windows.  This happens with
     OSF/Motif Version 1.2.4 on alpha-dec-osf4.0.
 
-224 Robert A Kerr <Robert_Kerr@byu.edu> says: On HP-UX 10.10,
-    the debugger LED on the bottom right never stops flashing.  If I
-    try to do anything it gives me the "The debugger is busy error"
-    and keeps flashing away.  I've let it sit for up to an hour
-    before and it never stops.  The same has been reported by Andi
-    Kleen <ak@muc.de> for Linux.
-
 228 Chip Atkinson <chip@XiG.com> and Bernie Borenstein
     <bernieb@deltanet.com> state that after enabling `ungrab mouse
     pointer when interruping modal X application', pressing the right
@@ -260,10 +253,12 @@ Volunteers for fixing these and other bugs are welcome!
 231 According to Ronald Wahl <Ronald.Wahl@Informatik.TU-Chemnitz.DE>, 
     DDD gets into a busy loop when used with libc-5.4.41 under Linux.
 
-235 Nagi M. Aboulenein" <naboulen@ichips.intel.com> says: I'm seeing a
+235 Nagi M. Aboulenein <naboulen@ichips.intel.com> says: I'm seeing a
     persistent problem with various version of DDD on FreeBSD/x86
     platforms. The problem occurs when an attempt is made to save
     options. At that point DDD dies and the options file is not
     updated.
+
+237 Inactive displays should not be bumped.
     
-237 (Insert your bug here)
+238 (Insert your bug here)
