@@ -1865,7 +1865,7 @@ static bool is_fallback_value(string resource, const string& val)
 }
 
 static string app_value(string resource, const string& value, 
-			bool ignore_default)
+			bool check_default)
 {
     static String app_name  = 0;
     static String app_class = 0;
@@ -1875,7 +1875,7 @@ static string app_value(string resource, const string& value,
 				     &app_name, &app_class);
 
     string prefix = "";
-    if (ignore_default && is_fallback_value(resource, value))
+    if (check_default && is_fallback_value(resource, value))
 	prefix = "! ";
 
     string s = prefix + app_class;
@@ -1912,26 +1912,26 @@ inline String binding_value(BindingStyle value)
 }
 
 static string bool_app_value(const string& name, bool value, 
-			     bool ignore_default = false)
+			     bool check_default = false)
 {
-    return app_value(name, bool_value(value), ignore_default);
+    return app_value(name, bool_value(value), check_default);
 }
 
 static string int_app_value(const string& name, int value,
-			    bool ignore_default = false)
+			    bool check_default = false)
 {
-    return app_value(name, itostring(value), ignore_default);
+    return app_value(name, itostring(value), check_default);
 }
 
 static string binding_app_value(const string& name, BindingStyle value,
-				bool ignore_default = false)
+				bool check_default = false)
 {
-    return app_value(name, binding_value(value), ignore_default);
+    return app_value(name, binding_value(value), check_default);
 }
 
 
 static string string_app_value(const string& name, String v,
-			       bool ignore_default = false)
+			       bool check_default = false)
 {
     if (v == 0)
 	return "";
@@ -1951,10 +1951,10 @@ static string string_app_value(const string& name, String v,
 	value = "\\\n" + value;
     }
 
-    return app_value(name, value, ignore_default);
+    return app_value(name, value, check_default);
 }
 
-static string widget_value(Widget w, String name, bool ignore_default = false)
+static string widget_value(Widget w, String name, bool check_default = false)
 {
     String value = 0;
     XtVaGetValues(w, 
@@ -1962,13 +1962,13 @@ static string widget_value(Widget w, String name, bool ignore_default = false)
 		  NULL);
 
     return string_app_value(string(XtName(w)) + "." + name, value, 
-			    ignore_default);
+			    check_default);
 }
 
 static string paned_widget_size(Widget w, bool height_only = false)
 {
     string s;
-    const bool ignore_default = true;
+    const bool check_default = false;
 
     if (XmIsText(w) || XmIsTextField(w))
     {
@@ -1980,7 +1980,7 @@ static string paned_widget_size(Widget w, bool height_only = false)
 	    if (s != "")
 		s += '\n';
 	    s += int_app_value(string(XtName(w)) + "." + XmNcolumns, columns,
-			       ignore_default);
+			       check_default);
 	}
 
 	if (XmIsText(w))
@@ -1992,7 +1992,7 @@ static string paned_widget_size(Widget w, bool height_only = false)
 		if (s != "")
 		    s += '\n';
 		s += int_app_value(string(XtName(w)) + "." + XmNrows, rows,
-				   ignore_default);
+				   check_default);
 	    }
 	}
     }
@@ -2013,12 +2013,12 @@ static string paned_widget_size(Widget w, bool height_only = false)
 
 	if (!height_only)
 	    s += int_app_value(string(XtName(w)) + "." + XmNwidth, width,
-			       ignore_default);
+			       check_default);
 
 	if (s != "")
 	    s += '\n';
 	s += int_app_value(string(XtName(w)) + "." + XmNheight, height,
-			   ignore_default);
+			   check_default);
     }
 
     return s;
@@ -2031,7 +2031,7 @@ inline string paned_widget_height(Widget w)
 
 static string widget_geometry(Widget w, bool include_size = false)
 {
-    const bool ignore_default = true;
+    const bool check_default = false;
 
     Dimension width, height;
     XtVaGetValues(w, XmNwidth, &width, XmNheight, &height, NULL);
@@ -2046,7 +2046,7 @@ static string widget_geometry(Widget w, bool include_size = false)
     string geo(geometry);
 
     return string_app_value(string(XtName(w)) + ".geometry", geo, 
-			    ignore_default);
+			    check_default);
 }
 
 bool saving_options_kills_program(unsigned long flags)
@@ -2573,17 +2573,17 @@ bool save_options(unsigned long flags)
     if (app_data.default_font_size == app_data.variable_width_font_size &&
 	app_data.default_font_size == app_data.fixed_width_font_size)
     {
-	os << int_app_value(XtCFontSize, app_data.default_font_size, true) 
+	os << int_app_value(XtCFontSize, app_data.default_font_size)
 	   << '\n';
     }
     else
     {
 	os << int_app_value(XtNdefaultFontSize,
-			    app_data.default_font_size, true) << '\n';
+			    app_data.default_font_size) << '\n';
 	os << int_app_value(XtNvariableWidthFontSize, 
-			    app_data.variable_width_font_size, true) << '\n';
+			    app_data.variable_width_font_size) << '\n';
 	os << int_app_value(XtNfixedWidthFontSize, 
-			    app_data.fixed_width_font_size, true) << '\n';
+			    app_data.fixed_width_font_size) << '\n';
     }
 
     // Windows.
