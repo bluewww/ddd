@@ -211,9 +211,6 @@ Volunteers for fixing these and other bugs are welcome!
     drag-hilite the name, ddd goes berserk with the cpu.
     [I could not reproduce this. -AZ]
 
-215 With separate windows, a newly created assembler window has zero
-    height.
-
 222 Bob Vickers <bobv@dcs.rhbnc.ac.uk> reports that the command tool
     sometimes is really big and occupies most of the screen, thus
     obliterating most of the other windows.  This happens with

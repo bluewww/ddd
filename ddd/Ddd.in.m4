@@ -441,7 +441,7 @@ Ddd*autoRaiseMenu: false
 
 ! Shortcuts
 ! A newline-separated list of expressions to be included in the
-! `New Display' menu.  This is usually edited at run-time.
+! `Display ()' menu.  This is usually edited at run-time.
 Ddd*displayShortcuts: \
 /d ()	// Convert to Dec\n\
 /x ()	// Convert to Hex\n\
@@ -3322,12 +3322,17 @@ Ddd*shortcut_popup*documentationString:
 
 
 !-----------------------------------------------------------------------------
-! Common Toolbar
+! Toolbar argument
 !-----------------------------------------------------------------------------
 
-Ddd*common.arg_label.labelString:		():
+Ddd*arg_label.labelString:	():
 
-Ddd*common.arg.helpString:	\
+Ddd*arg.value:			main
+Ddd*common.arg.columns:		10
+Ddd*source.arg.columns:		22
+Ddd*graph.arg.columns:		22
+
+Ddd*arg.helpString:	\
 WIDGET(Argument)\n\
 \n\
 This is the argument LBL(()) for the command buttons on the right.\n\
@@ -3336,8 +3341,11 @@ Edit LBL(()) using the usual editing functions.\n\
 Set LBL(()) by selecting items from the source window or the data window.\n\
 Clear LBL(()) by clicking on the prompt LBL(():).
 
-Ddd*common.arg.value:				main
-Ddd*common.arg.columns:				10
+
+
+!-----------------------------------------------------------------------------
+! Common Toolbar
+!-----------------------------------------------------------------------------
 
 ! For the common toolbar, only pixmap buttons make sense.
 Ddd*common.toolbar.XmPushButton.labelType: 	XmPIXMAP
@@ -3361,18 +3369,6 @@ The item's functionality will be explained here.
 ! Ddd*graph_toolbar*helpString: \
 ! @rm Commands related to the data window.
 
-Ddd*graph.arg_label.labelString:	():
-
-Ddd*graph.arg.columns:			22
-Ddd*graph.arg.editable:			false
-Ddd*graph.arg.helpString:	\
-WIDGET(Argument)\n\
-\n\
-This is the argument LBL(()) for the command buttons on the right.\n\
-\n\
-Set LBL(()) by selecting data displays.\n\
-Clear LBL(()) by clicking on the prompt LBL(():).
-
 Ddd*toolbar*dereference.labelString: 	Display *()
 Ddd*toolbar*detail.labelString:		Show ()
 Ddd*toolbar*show_more.labelString:   	Show More ()
@@ -3381,7 +3377,7 @@ Ddd*toolbar*show_detail.labelString: 	Show All ()
 Ddd*toolbar*hide_detail.labelString: 	Hide ()
 Ddd*toolbar*rotate.labelString:		Rotate ()
 Ddd*toolbar*rotateAll.labelString:	Rotate All ()
-Ddd*toolbar*new.labelString:		New Display
+Ddd*toolbar*new.labelString:		Display ()
 Ddd*toolbar*set.labelString:		Set ()
 Ddd*toolbar*delete.labelString:		Delete ()
 
@@ -3417,7 +3413,7 @@ DESC(Edit..., [Edit shortcuts])
 ])dnl
 
 Ddd*toolbar*new.helpString:\
-LBL(New Display)\n\
+LBL(Display ())\n\
 \n\
 Create a new display dependent on the selected display part.\n\
 \n\
@@ -3426,18 +3422,18 @@ NEW_DISPLAY_HELP
 Ddd*newMenu*helpString: NEW_DISPLAY_HELP
 
 Ddd*toolbar*new.tipString:\
-@rm Create new display
+@rm Display LBL(())
 Ddd*toolbar*new.documentationString:\
-@rm Create a new (dependent) display MORE_PULLDOWN()
+@rm Display the argument LBL(()) in the data window MORE_PULLDOWN()
 
 Ddd*toolbar*dereference.helpString:\
 LBL(Display *())\n\
 \n\
 Dereference the selected display.
 Ddd*toolbar*dereference.tipString:\
-@rm Dereference selected display
+@rm Dereference LBL(())
 Ddd*toolbar*dereference.documentationString:\
-@rm Dereference the selected display
+@rm Display the dereferenced argument LBL(()) in the data window
 
 define(DETAIL_HELP, [\
 DESC(Show More, [Show more details])\n\
@@ -3513,20 +3509,6 @@ Ddd*toolbar*delete.documentationString:	\
 !-----------------------------------------------------------------------------
 ! Source Toolbar
 !-----------------------------------------------------------------------------
-
-Ddd*source.arg_label.labelString:		():
-
-Ddd*source.arg.helpString:	\
-WIDGET(Argument)\n\
-\n\
-This is the argument LBL(()) for the command buttons on the right.\n\
-\n\
-Edit LBL(()) using the usual editing functions.\n\
-Set LBL(()) by selecting items from the source window or the data window.\n\
-Clear LBL(()) by clicking on the prompt LBL(():).
-
-Ddd*source.arg.value:				main
-Ddd*source.arg.columns:				22
 
 Ddd*toolbar*lookup.labelString:		Lookup ()
 Ddd*toolbar*breakAt.labelString:		Break at ()
@@ -4869,21 +4851,21 @@ The value of the expression is displayed each time the program stops.\n\
 Variables accessible are those of the lexical environment of the current\n\
 stack frame, plus all those whose scope is global or an entire file.\n\
 \n\
-If LBL(Include in `New Display' Menu) is set, the new display expression\n\
-becomes an item in the LBL(New Display) menu.])dnl
+If LBL(Include in `Display ()' Menu) is set, the new display expression\n\
+becomes an item in the LBL(Display ()) menu.])dnl
 
 Ddd*new_display_dialog_popup.title:          	   DDD: New Display
 Ddd*new_display_dialog.okLabelString:              Display
 Ddd*new_display_dialog*label.labelString:    	   Display Expression
 Ddd*new_display_dialog*shortcut.labelString:   	   \
-Include in `New Display' Menu
+Include in `Display ()' Menu
 Ddd*new_display_dialog*helpString:	           NEW_DISPLAY_HELP
 
 Ddd*dependent_display_dialog_popup.title:          DDD: New Dependent Display
 Ddd*dependent_display_dialog.okLabelString:        Display
 Ddd*dependent_display_dialog*label.labelString:    Display Expression
 Ddd*dependent_display_dialog*shortcut.labelString: \
-Include in `New Display' Menu
+Include in `Display ()' Menu
 Ddd*dependent_display_dialog*helpString: 	   NEW_DISPLAY_HELP\n\
 \n\
 The new display will be made dependent on the currently selected display.

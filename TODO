@@ -399,8 +399,5 @@ Volunteers for these and other projects are welcome!
     - Have a resource for toolbar placement: above or below window.
       As an alternative, use XmNpositionIndex instead (changeable at
       run-time?).
-    - Split arg fields and share their values
-
-260 When managing a PanedWindow child, give it a minimum height.
 
 261 (Insert your project idea here)
