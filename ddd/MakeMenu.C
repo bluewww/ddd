@@ -529,9 +529,11 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    // Create a label with an associated panel
 	    assert(subitems != 0);
 
+	    bool have_label = 
+		(name[0] != '\0' && (flags & MMUnmanagedLabel) == 0);
+
 	    arg = 0;
-	    XtSetArg(args[arg], XmNorientation, 
-		     (flags & MMVertical) ? XmVERTICAL : XmHORIZONTAL); arg++;
+	    XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
 	    XtSetArg(args[arg], XmNborderWidth,     0); arg++;
 	    XtSetArg(args[arg], XmNentryBorder,     0); arg++;
 	    XtSetArg(args[arg], XmNspacing,         0); arg++;
@@ -543,7 +545,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 
 	    arg = 0;
 	    label = verify(XmCreateLabel(widget, name, args, arg));
-	    if (name[0] != '\0' && (flags & MMUnmanagedLabel) == 0)
+	    if (have_label)
 		XtManageChild(label);
 
 	    Widget (*create_panel)(Widget, String, MMDesc[], 
@@ -569,7 +571,19 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    }
 
 	    arg = 0;
-	    XtSetArg(args[arg], XmNorientation, XmHORIZONTAL); arg++;
+	    XtSetArg(args[arg], XmNorientation, 
+		     (flags & MMVertical) ? XmVERTICAL : XmHORIZONTAL); arg++;
+
+	    if (!have_label)
+	    {
+		XtSetArg(args[arg], XmNborderWidth,     0); arg++;
+		XtSetArg(args[arg], XmNentryBorder,     0); arg++;
+		XtSetArg(args[arg], XmNspacing,         0); arg++;
+		XtSetArg(args[arg], XmNmarginWidth,     0); arg++;
+		XtSetArg(args[arg], XmNmarginHeight,    0); arg++;
+		XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
+	    }
+
 	    subMenu = create_panel(widget, subMenuName, subitems, args, arg);
 
 	    XtManageChild(subMenu);
