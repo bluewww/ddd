@@ -91,7 +91,6 @@ dnl
 AC_PROG_LN_S
 AC_PATH_PROGS(SH, sh)
 AC_CHECK_PROGS(TAR, gtar tar)
-AC_CHECK_PROGS(GZIP, gzip compress)
 AC_CHECK_PROGS(M4, gm4 m4)
 AC_CHECK_PROGS(SED, gsed sed)
 AC_CHECK_PROGS(DIFF, gdiff diff)

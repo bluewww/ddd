@@ -258,9 +258,6 @@ AUTOHEADER = autoheader
 # The tar program.  (gtar)
 TAR = @TAR@
 
-# The gzip program.  (gzip)
-GZIP = @GZIP@
-
 # The groff program.
 GROFF = groff
 
