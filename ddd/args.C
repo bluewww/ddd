@@ -42,6 +42,7 @@ char args_rcsid[] =
 #include "ddd.h"
 #include "disp-read.h"
 #include "mydialogs.h"
+#include "regexps.h"
 #include "string-fun.h"
 #include "verify.h"
 #include "wm.h"

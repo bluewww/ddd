@@ -41,6 +41,7 @@ char complete_rcsid[] =
 #include "disp-read.h"
 #include "editing.h"
 #include "post.h"
+#include "regexps.h"
 
 #include <ctype.h>
 

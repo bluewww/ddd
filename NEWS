@@ -70,6 +70,9 @@ DDD 2.2 [in development]
       DDD icons.  (requires XPM)
     - During start-up, DDD shows a multi-color logo in a transient
       window (can be disabled).
+    - Memory savings.  DDD regular expressions are now compiled during
+      DDD construction (instead of being compiled during DDD
+      execution).  This results in less memory usage and faster execution.
 
     Bug fixes:
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert

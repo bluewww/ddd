@@ -52,9 +52,13 @@ char BreakPoint_rcsid[] =
 #include "dbx-lookup.h"
 #include "question.h"
 #include "GDBAgent.h"
+#include "regexps.h"
+#include "index.h"
 
-regex RXnl_int ("\n[1-9]");
-regex RXname_colon_int_nl ("[^ ]+:[0-9]+\n");
+#if !WITH_FAST_RX
+static regex rxnl_int ("\n[1-9]");
+static regex rxname_colon_int_nl ("[^ ]+:[0-9]+\n");
+#endif
 
 // Create new breakpoint from INFO_OUTPUT
 BreakPoint::BreakPoint (string& info_output, string arg)
@@ -89,7 +93,7 @@ BreakPoint::BreakPoint (string& info_output, string arg)
 	    else if (info_output.contains ("breakpoint", 0))
 		mytype = BREAKPOINT;
 
-	    info_output = info_output.after(RXblanks_or_tabs);
+	    info_output = info_output.after(rxblanks_or_tabs);
 
 	    // Read "Disp" 
 	    if (info_output.contains("dis", 0))
@@ -98,7 +102,7 @@ BreakPoint::BreakPoint (string& info_output, string arg)
 		mydispo = BPDEL;
 	    else if (info_output.contains("keep", 0))
 		mydispo = BPKEEP;
-	    info_output = info_output.after(RXblanks_or_tabs);
+	    info_output = info_output.after(rxblanks_or_tabs);
 
 	    // Read "Enb" 
 	    if (info_output.contains("n", 0))
@@ -106,14 +110,14 @@ BreakPoint::BreakPoint (string& info_output, string arg)
 	    else {
 		myenabled = true;
 	    }
-	    info_output = info_output.after(RXblanks_or_tabs);
+	    info_output = info_output.after(rxblanks_or_tabs);
 
 	    if (mytype == BREAKPOINT)
 	    {
 		// Read "Address"
 		myaddress   = info_output.through(rxalphanum);
 
-		info_output = info_output.from (RXname_colon_int_nl);
+		info_output = info_output.from (rxname_colon_int_nl);
 		myfile_name = info_output.before(":");
 		info_output = info_output.after (":");
 		if (info_output != "" && isdigit(info_output[0]))
@@ -122,7 +126,7 @@ BreakPoint::BreakPoint (string& info_output, string arg)
 	    else if (mytype == WATCHPOINT)
 	    {
 		// Read "Address" 
-		info_output = info_output.after(RXblanks_or_tabs);
+		info_output = info_output.after(rxblanks_or_tabs);
 
 		myinfos += info_output.through ("\n");
 	    }
@@ -130,7 +134,7 @@ BreakPoint::BreakPoint (string& info_output, string arg)
 	    if (info_output != "" && !isdigit(info_output[0]))
 	    {
 		// Extra info may follow
-		int next_nl = info_output.index(RXnl_int);
+		int next_nl = index(info_output, rxnl_int, "\n");
 		if (next_nl == -1)
 		{
 		    // That's all, folks!
@@ -151,11 +155,11 @@ BreakPoint::BreakPoint (string& info_output, string arg)
 	    if (info_output.contains ("stop ", 0)
 		|| info_output.contains ("stopped ", 0))
 	    {
-		info_output = info_output.after(RXblanks_or_tabs);
+		info_output = info_output.after(rxblanks_or_tabs);
 		read_leading_blanks (info_output);
 		if (info_output.contains ("at ", 0))
 		{
-		    info_output = info_output.after(RXblanks_or_tabs);
+		    info_output = info_output.after(rxblanks_or_tabs);
 		    if (info_output.contains('"', 0))
 		    {
 			// ``stop at "FILE":LINE''
@@ -181,7 +185,7 @@ BreakPoint::BreakPoint (string& info_output, string arg)
 		else if (info_output.contains ("in ", 0))
 		{
 		    // ``stop in FUNC''
-		    string func = info_output.after(RXblanks_or_tabs);
+		    string func = info_output.after(rxblanks_or_tabs);
 		    func = func.before('\n');
 		    string pos = dbx_lookup(func);
 		    if (pos != "")
@@ -210,8 +214,8 @@ BreakPoint::BreakPoint (string& info_output, string arg)
 	    {
 		info_output = info_output.after("count:");
 		read_leading_blanks(info_output);
-		myignore_count = info_output.before(RXblanks_or_tabs);
-		info_output = info_output.after(RXblanks_or_tabs);
+		myignore_count = info_output.before(rxblanks_or_tabs);
+		info_output = info_output.after(rxblanks_or_tabs);
 	    }
 	    
 	    // Check for `Active'
@@ -231,7 +235,7 @@ BreakPoint::BreakPoint (string& info_output, string arg)
 	    }
 
 	    // Get function name and position
-	    info_output = info_output.after(RXblanks_or_tabs);
+	    info_output = info_output.after(rxblanks_or_tabs);
 	    string func = info_output.before(": ");
 	    string pos  = dbx_lookup(func);
 	    if (pos != "")
@@ -271,7 +275,7 @@ bool BreakPoint::update (string& info_output)
 	    if (!info_output.contains("breakpoint", 0) &&
 		!info_output.contains("watchpoint", 0))
 		return false;
-	    info_output = info_output.after(RXblanks_or_tabs);
+	    info_output = info_output.after(rxblanks_or_tabs);
 
 	    // Read "Disp"
 	    if (info_output.contains("dis", 0))
@@ -289,7 +293,7 @@ bool BreakPoint::update (string& info_output)
 		changed = (mydispo != BPKEEP);
 		mydispo = BPKEEP;
 	    }
-	    info_output = info_output.after(RXblanks_or_tabs);
+	    info_output = info_output.after(rxblanks_or_tabs);
 
 	    // Read "Enb"
 	    if (info_output.index ("y") == 0) {
@@ -305,7 +309,7 @@ bool BreakPoint::update (string& info_output)
 		    myenabled = false;
 		}
 	    }
-	    info_output = info_output.after(RXblanks_or_tabs);
+	    info_output = info_output.after(rxblanks_or_tabs);
 
 	    string new_info = "";
 	    if (mytype == BREAKPOINT) {
@@ -317,7 +321,7 @@ bool BreakPoint::update (string& info_output)
 		    myaddress = new_address;
 		}
 
-		info_output = info_output.from (RXname_colon_int_nl);
+		info_output = info_output.from (rxname_colon_int_nl);
 		if (myfile_name != info_output.before(":")) {
 		    changed = myposition_changed = myfile_changed = true;
 		    myfile_name = info_output.before(":");
@@ -338,7 +342,7 @@ bool BreakPoint::update (string& info_output)
 	    else if (mytype == WATCHPOINT)
 	    {
 		// Read "Address" 
-		info_output = info_output.after(RXblanks_or_tabs);
+		info_output = info_output.after(rxblanks_or_tabs);
 
 		new_info = info_output.through ("\n");
 	    }
@@ -346,7 +350,7 @@ bool BreakPoint::update (string& info_output)
 	    if (info_output != "" && !isdigit(info_output[0]))
 	    {
 		// Extra info may follow
-		int next_nl = info_output.index(RXnl_int);
+		int next_nl = index(info_output, rxnl_int, "\n");
 		if (next_nl == -1)
 		{
 		    // That's all, folks!
@@ -373,11 +377,11 @@ bool BreakPoint::update (string& info_output)
 	    if (info_output.contains ("stop ", 0)
 		|| info_output.contains ("stopped ", 0))
 	    {
-		info_output = info_output.after(RXblanks_or_tabs);
+		info_output = info_output.after(rxblanks_or_tabs);
 		read_leading_blanks (info_output);
 		if (info_output.contains ("at ", 0))
 		{
-		    info_output = info_output.after(RXblanks_or_tabs);
+		    info_output = info_output.after(rxblanks_or_tabs);
 		    string file_name;
 		    if (info_output.contains('"', 0))
 		    {
@@ -417,7 +421,7 @@ bool BreakPoint::update (string& info_output)
 		else if (info_output.contains ("in ", 0))
 		{
 		    // ``stop in FUNC''
-		    string func = info_output.after(RXblanks_or_tabs);
+		    string func = info_output.after(rxblanks_or_tabs);
 		    func = func.before('\n');
 		    string pos = dbx_lookup(func);
 		    if (pos != "")
@@ -459,8 +463,8 @@ bool BreakPoint::update (string& info_output)
 	    {
 		info_output = info_output.after("count:");
 		read_leading_blanks(info_output);
-		string ignore_count = info_output.before(RXblanks_or_tabs);
-		info_output = info_output.after(RXblanks_or_tabs);
+		string ignore_count = info_output.before(rxblanks_or_tabs);
+		info_output = info_output.after(rxblanks_or_tabs);
 		if (myignore_count != ignore_count)
 		{
 		    changed = true;
@@ -484,7 +488,7 @@ bool BreakPoint::update (string& info_output)
 	    }
 
 	    // Get function name and position
-	    info_output = info_output.after(RXblanks_or_tabs);
+	    info_output = info_output.after(rxblanks_or_tabs);
 	    string func = info_output.before(": ");
 	    string pos  = dbx_lookup(func);
 	    if (pos != "")

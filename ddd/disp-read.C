@@ -44,6 +44,7 @@ char disp_read_rcsid[] =
 #include "value-read.h"
 #include "string-fun.h"
 #include "cook.h"
+#include "regexps.h"
 
 #include <stdlib.h>		// atoi()
 #include <stdio.h>		// sprintf()
@@ -59,14 +60,16 @@ char disp_read_rcsid[] =
 // 
 bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
 {
-    static regex RXsingle_display_cmd(
+#if !WITH_FAST_RX
+    static regex rxsingle_display_cmd(
         "[ \t]*"
 	"(disp|displ|displa|display)[ \t]+[^ ]+");
+#endif
 
     switch (gdb->type())
     {
     case GDB:
-	return cmd.matches (RXsingle_display_cmd);
+	return cmd.matches (rxsingle_display_cmd);
 
     case DBX:
 	// DBX has no `display' equivalent
@@ -81,20 +84,23 @@ bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
 
 bool is_nop_cmd(const string& cmd)
 {
+#if !WITH_FAST_RX
     // All these command have no effect on DDD state...
-    static regex RXnop_cmd("[ \t]*(echo|help|show|info|where)([ \t]+.*)?");
+    static regex rxnop_cmd("[ \t]*(echo|help|show|info|where|shell|sh)([ \t]+.*)?");
 
     // ... except for this one.
-    static regex RXop_cmd("[ \t]*(info[ \t]+line)([ \t]+.*)?");
+    static regex rxop_cmd("[ \t]*(info[ \t]+line)([ \t]+.*)?");
+#endif
 
-    return cmd.matches(RXnop_cmd) && !cmd.matches(RXop_cmd);
+    return cmd.matches(rxnop_cmd) && !cmd.matches(rxop_cmd);
 }
 
 // ***************************************************************************
 // 
 bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 {
-    static regex RXrunning_cmd(
+#if !WITH_FAST_RX
+    static regex rxrunning_cmd(
 	"[ \t]*"
 	"(r|ru|run"
 	"|rer|rerun"
@@ -108,19 +114,19 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
         "|R|S"
 	")([ \t]+.*)?");
 
-    static regex RXdisplay(
-	"[ \t]*(disp|displ|displa|display)([ \t]+.*)?");
+    static regex rxdisplay("[ \t]*(disp|displ|displa|display)([ \t]+.*)?");
+#endif
 
     switch (gdb->type())
     {
     case GDB:
-	return cmd.matches(RXrunning_cmd)
-	    || cmd.matches(RXdisplay)
+	return cmd.matches(rxrunning_cmd)
+	    || cmd.matches(rxdisplay)
 	    || is_display_cmd(cmd);
 
     case DBX:
     case XDB:
-	return cmd.matches (RXrunning_cmd)
+	return cmd.matches (rxrunning_cmd)
 	    || is_display_cmd(cmd);
     }
 
@@ -129,17 +135,20 @@ bool is_running_cmd (const string& cmd, GDBAgent *gdb)
 
 bool is_run_cmd (const string& cmd)
 {
-    static regex RXrun_cmd(
-	"[ \t]*(r|rer|rerun|ru|run|R)([ \t]+.*)?");
+#if !WITH_FAST_RX
+    static regex rxrun_cmd("[ \t]*(r|rer|rerun|ru|run|R)([ \t]+.*)?");
+#endif
 
-    return cmd.matches (RXrun_cmd);
+    return cmd.matches (rxrun_cmd);
 }
 
 bool is_set_args_cmd (const string& cmd)
 {
-    static regex RXset_args_cmd("[ \t]*set[ \t]+args([ \t]+.*)?");
+#if !WITH_FAST_RX
+    static regex rxset_args_cmd("[ \t]*set[ \t]+args([ \t]+.*)?");
+#endif
 
-    return cmd.matches (RXset_args_cmd);
+    return cmd.matches (rxset_args_cmd);
 }
 
 bool is_pc_cmd(const string& cmd)
@@ -152,108 +161,132 @@ bool is_pc_cmd(const string& cmd)
 // 
 bool is_display_cmd (const string& cmd)
 {
-    static regex RXdisplay_cmd_and_args(
+#if !WITH_FAST_RX
+    static regex rxdisplay_cmd_and_args(
 	"[ \t]*(disp|displ|displa|display)[ \t]+.*");
+#endif
 
-    return cmd.matches (RXdisplay_cmd_and_args);
+    return cmd.matches (rxdisplay_cmd_and_args);
 }
 
 bool is_data_cmd (const string& cmd)
 {
     // enable display, disable display, delete display, undisplay
-    static regex RXdata("[ \t]*[a-z ]*display([ \t]+-?[0-9][0-9]*.*)?");
+#if !WITH_FAST_RX
+    static regex rxdata("[ \t]*[a-z ]*display([ \t]+-?[0-9][0-9]*.*)?");
+#endif
 
-    return cmd.matches(RXdata);
+    return cmd.matches(rxdata);
 }
 
 bool is_delete_display_cmd (const string& cmd)
 {
-    static regex RXundisplay("[ \t]*(delete[ \t]+|un)display([ \t]+.*)?");
+#if !WITH_FAST_RX
+    static regex rxundisplay("[ \t]*(delete[ \t]+|un)display([ \t]+.*)?");
+#endif
 
-    return cmd.matches(RXundisplay);
+    return cmd.matches(rxundisplay);
 }
 
 bool is_enable_display_cmd (const string& cmd)
 {
-    static regex RXenable("[ \t]*enable[ \t]+display([ \t]+.*)?");
+#if !WITH_FAST_RX
+    static regex rxenable("[ \t]*enable[ \t]+display([ \t]+.*)?");
+#endif
 
-    return cmd.matches(RXenable);
+    return cmd.matches(rxenable);
 }
 
 bool is_disable_display_cmd (const string& cmd)
 {
-    static regex RXdisable("[ \t]*disable[ \t]+display([ \t]+.*)?");
+#if !WITH_FAST_RX
+    static regex rxdisable("[ \t]*disable[ \t]+display([ \t]+.*)?");
+#endif
 
-    return cmd.matches(RXdisable);
+    return cmd.matches(rxdisable);
 }
 
 // ***************************************************************************
 // 
 bool is_frame_cmd (const string& cmd)
 {
-    static regex RXframe_cmd(
+#if !WITH_FAST_RX
+    static regex rxframe_cmd(
 	"[ \t]*"
 	"(up"
 	"|do|down"
 	"|f|fra|fram|frame"
 	"|top|V"
 	")([ \t]+.*)?");
+#endif
 
-    return cmd.matches (RXframe_cmd);
+    return cmd.matches (rxframe_cmd);
 }
 
 bool is_up_cmd (const string& cmd)
 {
-    static regex RXup_cmd("[ \t]*up([ \t]+.*)?");
+#if !WITH_FAST_RX
+    static regex rxup_cmd("[ \t]*up([ \t]+.*)?");
+#endif
 
-    return cmd.matches (RXup_cmd);
+    return cmd.matches (rxup_cmd);
 }
 
 bool is_down_cmd (const string& cmd)
 {
-    static regex RXdown_cmd("[ \t]*(do|down)([ \t]+.*)?");
+#if !WITH_FAST_RX
+    static regex rxdown_cmd("[ \t]*(do|down)([ \t]+.*)?");
+#endif
 
-    return cmd.matches (RXdown_cmd);
+    return cmd.matches (rxdown_cmd);
 }
 
 bool is_core_cmd (const string& cmd)
 {
-    static regex RXcore_cmd("[ \t]*(core|core-file)([ \t]+.*)?");
+#if !WITH_FAST_RX
+    static regex rxcore_cmd("[ \t]*(core|core-file)([ \t]+.*)?");
+#endif
 
-    return cmd.matches (RXcore_cmd);
+    return cmd.matches (rxcore_cmd);
 }
 
 // ***************************************************************************
 // 
 bool is_thread_cmd (const string& cmd)
 {
-    static regex RXthread_cmd("[ \t]*thread([ \t]+.*)?");
+#if !WITH_FAST_RX
+    static regex rxthread_cmd("[ \t]*thread([ \t]+.*)?");
+#endif
 
-    return cmd.matches (RXthread_cmd);
+    return cmd.matches (rxthread_cmd);
 }
 
 // ***************************************************************************
 // 
 bool is_set_cmd (const string& cmd, GDBAgent *gdb)
 {
-    static regex RXset1_cmd("[ \t]*(set[ \t]+var[a-z]*|assign|pq)([ \t]+.*)?");
-    static regex RXset2_cmd("[ \t]*(set|p|print|output)[ \t]+[^=]+=[^=].*");
+#if !WITH_FAST_RX
+    static regex rxset1_cmd("[ \t]*(set[ \t]+var[a-z]*|assign|pq)([ \t]+.*)?");
+    static regex rxset2_cmd("[ \t]*(set|p|print|output)[ \t]+[^=]+=[^=].*");
+#endif
 
-    return cmd.matches(RXset1_cmd) || 
-	(gdb->type() == GDB && cmd.matches(RXset2_cmd));
+    return cmd.matches(rxset1_cmd) || 
+	(gdb->type() == GDB && cmd.matches(rxset2_cmd));
 }
 
 // ***************************************************************************
 // 
 bool is_setting_cmd (const string& cmd)
 {
-    static regex RXsetting_cmd("[ \t]*(set|dbxenv)[ \t]+.*");
-    static regex RXpath_cmd("[ \t]*(dir|directory|path)([ \t]+.*)?");
+#if !WITH_FAST_RX
+    static regex rxsetting_cmd("[ \t]*(set|dbxenv)[ \t]+.*");
+    static regex rxpath_cmd("[ \t]*(dir|directory|path)([ \t]+.*)?");
+#endif
 
     if (is_set_args_cmd(cmd))
 	return false;		// `set args' command
 
-    return cmd.matches (RXsetting_cmd) || cmd.matches(RXpath_cmd);
+    return cmd.matches (rxsetting_cmd) || cmd.matches(rxpath_cmd);
 }
 
 // ***************************************************************************
@@ -267,13 +300,17 @@ bool is_file_cmd (const string& cmd, GDBAgent *gdb)
     {
     case GDB:
 	{
-	    static regex RXfile_cmd("[ \t]*file([ \t]+.*)?");
-	    return cmd.matches (RXfile_cmd);
+#if !WITH_FAST_RX
+	    static regex rxfile_cmd("[ \t]*file([ \t]+.*)?");
+#endif
+	    return cmd.matches (rxfile_cmd);
 	}
     case DBX:
 	{
-	    static regex RXdebug_cmd("[ \t]*debug([ \t]+.*)?");
-	    return cmd.matches (RXdebug_cmd);
+#if !WITH_FAST_RX
+	    static regex rxdebug_cmd("[ \t]*debug([ \t]+.*)?");
+#endif
+	    return cmd.matches (rxdebug_cmd);
 	}
     case XDB:
 	return false;		// FIXME
@@ -287,25 +324,30 @@ bool is_file_cmd (const string& cmd, GDBAgent *gdb)
 // 
 bool is_graph_cmd (const string& cmd)
 {
-    static regex RXgraph_cmd("[ \t]*graph[ \t]+.*"); 
+#if !WITH_FAST_RX
+    static regex rxgraph_cmd("[ \t]*graph[ \t]+.*"); 
+#endif
 
-    return cmd.matches(RXgraph_cmd);
+    return cmd.matches(rxgraph_cmd);
 }
 
 // ***************************************************************************
 // 
 bool is_refresh_cmd (const string& cmd)
 {
-    static regex RXrefresh_cmd("[ \t]*refresh([ \t]+.*)?");
+#if !WITH_FAST_RX
+    static regex rxrefresh_cmd("[ \t]*refresh([ \t]+.*)?");
+#endif
 
-    return cmd.matches(RXrefresh_cmd);
+    return cmd.matches(rxrefresh_cmd);
 }
 
 // ***************************************************************************
 // 
 bool is_break_cmd (const string& cmd)
 {
-    static regex RXbreak_cmd(
+#if !WITH_FAST_RX
+    static regex rxbreak_cmd(
 	"[ \t]*"
 	"("
 	"[th]*(b|br|bre|brea|break|b[a-z])"
@@ -313,45 +355,54 @@ bool is_break_cmd (const string& cmd)
 	"|info[ \t]+(li|lin|line)"
 	"|stop"
 	")([ \t]+.*)?");
+#endif
 
-    return cmd.matches(RXbreak_cmd);
+    return cmd.matches(rxbreak_cmd);
 }
 
 // ***************************************************************************
 // 
 bool is_lookup_cmd (const string& cmd)
 {
-    static regex RXlookup_cmd("[ \t]*(func|v)[ \t]+.*");
+#if !WITH_FAST_RX
+    static regex rxlookup_cmd("[ \t]*(func|v)[ \t]+.*");
+#endif
 
-    return cmd.matches(RXlookup_cmd);
+    return cmd.matches(rxlookup_cmd);
 }
 
 // ***************************************************************************
 // 
 bool is_cd_cmd (const string& cmd)
 {
-    static regex RXcd_cmd("[ \t]*cd([ \t]+.*)?");
+#if !WITH_FAST_RX
+    static regex rxcd_cmd("[ \t]*cd([ \t]+.*)?");
+#endif
 
-    return cmd.matches(RXcd_cmd);
+    return cmd.matches(rxcd_cmd);
 }
 
 // ***************************************************************************
 // 
 bool is_make_cmd (const string& cmd)
 {
-    static regex RXmake_cmd("[ \t]*(sh[ \t]+|!)?make([ \t]+.*)?");
+#if !WITH_FAST_RX
+    static regex rxmake_cmd("[ \t]*(sh[ \t]+|!)?make([ \t]+.*)?");
+#endif
 
-    return cmd.matches(RXmake_cmd);
+    return cmd.matches(rxmake_cmd);
 }
 
 // ***************************************************************************
 // 
 string get_display_expression (const string& display_cmd)
 {
-    static regex RXdisplay_cmd("[ \t]*(disp|displ|displa|display)[ \t]+");
+#if !WITH_FAST_RX
+    static regex rxdisplay_cmd("[ \t]*(disp|displ|displa|display)[ \t]+");
+#endif
 
     string d(display_cmd);
-    return d.after(RXdisplay_cmd);
+    return d.after(rxdisplay_cmd);
 }
 
 
@@ -387,21 +438,23 @@ string get_break_expression (const string& cmd)
 // 
 int display_index (const string& gdb_answer, GDBAgent *gdb)
 {
-    static regex RXgdb_begin_of_display("[1-9][0-9]*:  *[^ ]");
-    static regex RXdbx_begin_of_display("[^ \t\n)}][^=\n]* = ");
+#if !WITH_FAST_RX
+    static regex rxgdb_begin_of_display("[1-9][0-9]*:  *[^ ]");
+    static regex rxdbx_begin_of_display("[^ \t\n)}][^=\n]* = ");
+#endif
 
-    regex *prx = 0;
+    const regex *prx = 0;
 
     switch (gdb->type())
     {
     case GDB: 
-	prx = &RXgdb_begin_of_display;
+	prx = &rxgdb_begin_of_display;
 	break;
     case DBX:
-	prx = &RXdbx_begin_of_display;
+	prx = &rxdbx_begin_of_display;
 	break;
     case XDB:
-	prx = &RXdbx_begin_of_display;
+	prx = &rxdbx_begin_of_display;
 	break;
 
     default:
@@ -409,7 +462,7 @@ int display_index (const string& gdb_answer, GDBAgent *gdb)
 	abort();
     }
 
-    regex& rx = *prx;
+    const regex& rx = *prx;
 
     for (unsigned i = 0; i < gdb_answer.length(); i++)
 	if (i == 0 || gdb_answer[i - 1] == '\n')
@@ -499,8 +552,10 @@ string get_disp_value_str (/*const*/ string& display, GDBAgent *)
     // For some types, XDB issues `NAME = VALUE', for others, `VALUE'.
     // DDD compensates for this by having XDB prepend `NAME = '.
     // In case we have `NAME = NAME = VALUE', strip first `NAME = '.
-    static regex RXeqeq("[^{};,\n= ]+ = [^{}();,\n= ]+ = .*");
-    if (d.matches(RXeqeq))
+#if !WITH_FAST_RX
+    static regex rxeqeq("[^{};,\n= ]+ = [^{}();,\n= ]+ = .*");
+#endif
+    if (d.matches(rxeqeq))
 	d = d.after(" = ");
 
     int nl_index = d.index('\n');
@@ -521,18 +576,20 @@ string get_disp_value_str (/*const*/ string& display, GDBAgent *)
 // 
 int display_info_index (const string& gdb_answer, GDBAgent *gdb)
 {
-    static regex RXgdb_begin_of_display_info("[1-9][0-9]*:   ");
-    static regex RXdbx_begin_of_display_info("[(][1-9][0-9]*[)] ");
+#if !WITH_FAST_RX
+    static regex rxgdb_begin_of_display_info("[1-9][0-9]*:   ");
+    static regex rxdbx_begin_of_display_info("[(][1-9][0-9]*[)] ");
+#endif
 
-    regex *prx = 0;
+    const regex *prx = 0;
 
     switch (gdb->type())
     {
     case GDB: 
-	prx = &RXgdb_begin_of_display_info;
+	prx = &rxgdb_begin_of_display_info;
 	break;
     case DBX:
-	prx = &RXdbx_begin_of_display_info;
+	prx = &rxdbx_begin_of_display_info;
 	break;
 
     default:
@@ -540,7 +597,7 @@ int display_info_index (const string& gdb_answer, GDBAgent *gdb)
 	abort();
     }
 
-    regex& rx = *prx;
+    const regex& rx = *prx;
 
     for (unsigned i = 0; i < gdb_answer.length(); i++)
 	if (i == 0 || gdb_answer[i - 1] == '\n')
@@ -578,11 +635,13 @@ string read_next_disp_info (string& gdb_answer, GDBAgent *gdb)
     {
     case GDB:
     {
-	static regex RXgdb_next_display_info("\n[1-9][0-9]*:   ");
+#if !WITH_FAST_RX
+	static regex rxgdb_next_display_info("\n[1-9][0-9]*:   ");
+#endif
 
 	string next_disp_info;
 	int startpos = gdb_answer.index (": ");
-	int i = gdb_answer.index (RXgdb_next_display_info, startpos + 2);
+	int i = gdb_answer.index (rxgdb_next_display_info, startpos + 2);
 	if (i > 0) {
 	    next_disp_info = gdb_answer.before (i);
 	    gdb_answer = gdb_answer.from (i);
@@ -671,9 +730,11 @@ string  read_disp_nr_str (string& display, GDBAgent *gdb)
     {
     case GDB:
     {
-	static regex RXgdb_disp_nr("[1-9][0-9]*");
+#if !WITH_FAST_RX
+	static regex rxgdb_disp_nr("[1-9][0-9]*");
+#endif
 
-	string disp_nr = display.through (RXgdb_disp_nr);
+	string disp_nr = display.through (rxgdb_disp_nr);
 	display = display.after (": ");
 	return disp_nr;
     }
@@ -707,12 +768,14 @@ bool is_invalid(const string& value)
 {
     // If VALUE ends in two words, it is an error message like
     // `not active' or `no symbol in current context.'.
-    static regex RXinvalid_value("("
+#if !WITH_FAST_RX
+    static regex rxinvalid_value("("
 				 "[a-zA-Z]+ [a-zA-Z]+.*"
 				 "|.*[a-zA-Z]+ [a-zA-Z]+(\\.|>)?"
 				 ")\n?");
+#endif
 
-    return value.matches(RXinvalid_value);
+    return value.matches(rxinvalid_value);
 }
 
 

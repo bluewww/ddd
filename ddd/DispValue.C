@@ -52,6 +52,7 @@ char DispValue_rcsid[] =
 #include "GDBAgent.h"
 #include "ddd.h"
 #include "DispNode.h"
+#include "regexps.h"
 
 //-----------------------------------------------------------------------------
 // Type decls
@@ -162,10 +163,12 @@ void DispValue::init(string& value)
 
     case Array:
 	{
-	    static regex RXsimple("([][a-zA-Z0-9_().]|->)*");
+#if !WITH_FAST_RX
+	    static regex rxsimple("([][a-zA-Z0-9_().]|->)*");
+#endif
 
 	    string base = myfull_name;
-	    if (!base.matches(RXsimple))
+	    if (!base.matches(rxsimple))
 		base = "(" + base + ")";
 
 	    v.array = new ArrayDispValue;

@@ -101,15 +101,21 @@
 /* Define if `regcomp()' from <regex.h> does not work. */
 #undef REGCOMP_BROKEN
 
-/* Define if you want ICE to use X Athena widgets. */
+/* Define if you want this program to use X Athena widgets. */
 #undef WITH_ATHENA_WIDGETS
 
 /* Define if you want to replace the ICE built-in 'test' command by
    the external `test' program. */
 #undef WITH_EXTERNAL_TEST
 
-/* Define if you want ICE to use Motif widgets. */
+/* Define if you want this program to use Motif widgets. */
 #undef WITH_MOTIF_WIDGETS
+
+/* Define if you want full regex capabilities (not needed in DDD) */
+#undef WITH_FULL_RX
+
+/* Define if you want fast DDD regexps.  Must be defined if !WITH_FULL_RX. */
+#undef WITH_FAST_RX
 
 
 // @BOTTOM@

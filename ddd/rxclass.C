@@ -45,6 +45,7 @@ char regex_rcsid[] =
 #include <ctype.h>
 #include <string.h>		// strncmp()
 
+#if WITH_FULL_RX
 // Get a prefix character from T; let T point at the next prefix character.
 char regex::get_prefix(const char *& t, int flags)
 {
@@ -108,7 +109,7 @@ void regex::fatal(int errcode, const char *src)
     if (buffer[0] != '\0')
 	cerr << " - " << buffer;
     cerr << "\n";
-#if !defined(REGCOMP_BROKEN) && !defined(GNU_LIBRX_USED)
+#if !defined(REGCOMP_BROKEN) && !defined(GNU_LIBrx_USED)
     cerr << "As a workaround, link with GNU librx - "
 	"in `config.h', #define REGCOMP_BROKEN.\n";
 #endif
@@ -118,6 +119,7 @@ void regex::fatal(int errcode, const char *src)
 }
 
 regex::regex(const char* t, int flags)
+    : matcher(0), data(0), exprs(0)
 {
     string rx = "^" + string(t);
     int errcode = regcomp(&compiled, rx, flags);
@@ -133,11 +135,26 @@ regex::regex(const char* t, int flags)
 	;
     prefix[i] = '\0';
 }
+#endif // WITH_FULL_RX
+
+regex::regex(rxmatchproc p, void *d)
+    : matcher(p), data(d)
+#if WITH_FULL_RX
+    , exprs(0)
+#endif
+{
+#if WITH_FULL_RX
+    prefix[0] = '\0';
+#endif
+}
 
 regex::~regex()
 {
-    regfree(&compiled);
+#if WITH_FULL_RX
+    if (matcher == 0)
+	regfree(&compiled);
     delete[] exprs;
+#endif // WITH_FULL_RX
 }
 
 // Search T in S; return position of first occurrence.
@@ -166,24 +183,39 @@ int regex::search(const char* s, int len, int& matchlen, int startpos) const
     }
     assert(s[len] == '\0');
 
+#if WITH_FULL_RX
     int errcode = 0;
     int prefix_len = strlen(prefix);
+#endif
 
     for (; startpos >= 0 && startpos < len; startpos += direction)
     {
-	char *t = (char *)s + startpos;
-	if (strncmp(t, prefix, min(prefix_len, len - startpos)) == 0)
+	if (matcher != 0)
 	{
-	    errcode = regexec((regex_t *)&compiled, t, nexprs(), exprs, 0);
-	    if (errcode == 0)
+	    matchlen = matcher(data, s, len, startpos);
+	    if (matchlen >= 0)
 		break;
 	}
+#if WITH_FULL_RX
+	else
+	{ 
+	    char *t = (char *)s + startpos;
+	    if (strncmp(t, prefix, min(prefix_len, len - startpos)) == 0)
+	    {
+		errcode = regexec((regex_t *)&compiled, t, nexprs(), exprs, 0);
+		if (errcode == 0)
+		    break;
+	    }
+	}
+#endif // WITH_FULL_RX
     }
 
     if (startpos < 0 || startpos >= len)
 	return -1;
 
-    int matchpos;
+    int matchpos = startpos;
+
+#if WITH_FULL_RX
     if (exprs[0].rm_so >= 0)
     {
 	matchpos = exprs[0].rm_so + startpos;
@@ -194,6 +226,7 @@ int regex::search(const char* s, int len, int& matchlen, int startpos) const
 	matchpos = -1;
 	matchlen = 0;
     }
+#endif // WITH_FULL_RX
 
     return matchpos;
 }
@@ -202,6 +235,10 @@ int regex::search(const char* s, int len, int& matchlen, int startpos) const
 // -1 otherwise.  LEN is the length of S.
 int regex::match(const char *s, int len, int pos) const
 {
+    if (matcher != 0)
+	return matcher(data, s, len, pos);
+
+#if WITH_FULL_RX
     string substr;
     if (pos < 0)
 	pos += len;
@@ -220,10 +257,12 @@ int regex::match(const char *s, int len, int pos) const
 
     if (errcode == 0 && exprs[0].rm_so >= 0)
 	return exprs[0].rm_eo - exprs[0].rm_so;
+#endif
 
     return -1;
 }
 
+#if WITH_FULL_RX
 bool regex::match_info(int& start, int& length, int nth) const
 {
     if ((unsigned)(nth) >= nexprs())
@@ -235,14 +274,18 @@ bool regex::match_info(int& start, int& length, int nth) const
 	return start >= 0 && length >= 0;
     }
 }
+#endif
 
 bool regex::OK() const
 {
+#if WITH_FULL_RX
     assert(exprs != 0);
+#endif
     return true;
 }
 
 
+#if WITH_FULL_RX
 // Built-in regular expressions
 
 const regex rxwhite("[ \n\t\r\v\f]+");
@@ -254,3 +297,4 @@ const regex rxlowercase("[a-z]+");
 const regex rxuppercase("[A-Z]+");
 const regex rxalphanum("[0-9A-Za-z]+");
 const regex rxidentifier("[A-Za-z_][A-Za-z0-9_]*");
+#endif // WITH_FULL_RX

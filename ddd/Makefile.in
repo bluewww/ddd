@@ -183,7 +183,8 @@ LDFLAGS = @LDFLAGS@
 ## Local libraries
 
 # POSIX regex routines (from system or ../librx/librx.a)
-LIBRX      = @LIBRX@
+# LIBRX      = @LIBRX@
+LIBRX      =
 # termcap routines (from system or ../termcap/libtermcap.a)
 LIBTERMCAP = @LIBTERMCAP@
 # -liberty library (../libiberty/libiberty.a)
@@ -673,12 +674,14 @@ DDD_OBJECTS = \
 	graph.o      \
 	history.o    \
 	hostname.o   \
+	index.o      \
 	logo.o       \
 	mydialogs.o  \
 	options.o    \
 	post.o       \
 	print.o      \
 	question.o   \
+	regexps.o    \
 	resources.o  \
 	sashes.o     \
 	select.o     \
@@ -808,7 +811,7 @@ SYMS = $(ddd).syms $(ddd_canonical).syms
 
 # Files required for building DDD.
 # In a distribution, these should be already built.
-PROG_STUFF       = config.h vsl-lex.C vsl-gramma.h vsl-gramma.C \
+PROG_STUFF       = config.h vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
 	 	   acconfig.h acspecial.h stamp-h.in \
 		   ddd.vsl.h version.h host.h configinfo.C \
 		   Ddd.ad.h ddd.man ddd.man.txt \
@@ -1157,8 +1160,12 @@ vsl-lex.C: vsl-lex.L
 vsl-gramma.h: vsl-lex.L
 vsl-gramma.C: vsl-gramma.Y
 
-# `make depend' fails to find this dependency :-(
+# Regexp parsers
+rxscan.C: rxscan.L
+
+# `make depend' fails to find these dependencies :-(
 VSLRead.o: vsl-lex.C vsl-gramma.h vsl-gramma.C
+regexps.o: rxscan.C
 
 
 ## The manual page in PostScript format, including all pictures.

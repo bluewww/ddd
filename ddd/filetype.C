@@ -68,6 +68,8 @@ extern "C" {
 #endif // HAVE_CORE_MAGIC
 }
 
+#include "regexps.h"
+
 // Test for regular file - see stat(3)
 #ifndef S_ISREG
 #define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
@@ -183,7 +185,9 @@ bool is_core_file(const string& file_name)
 	pclose(fp);
 
 	string out(line);
+#if !WITH_FAST_RX
 	static regex rxcore(".*:.*core.*");
+#endif
 	return out.matches(rxcore);
     }
 

@@ -48,6 +48,7 @@ char history_rcsid[] =
 #include "editing.h"
 #include "mydialogs.h"
 #include "post.h"
+#include "regexps.h"
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"

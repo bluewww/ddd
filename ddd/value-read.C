@@ -45,11 +45,14 @@ char value_read_rcsid[] =
 #include "comm-manag.h"
 #include "cook.h"
 #include "ddd.h"
+#include "regexps.h"
 #include "GDBAgent.h"
 #include "PosBuffer.h"
 
-static regex RXindex("[[]-?[0-9][0-9]*].*");
-static regex RXvtable("[^\n]*<[^\n>]* v(irtual )?t(a)?bl(e)?>[^{},]*[{].*");
+#if !WITH_FAST_RX
+static regex rxindex("[[]-?[0-9][0-9]*].*");
+static regex rxvtable("[^\n]*<[^\n>]* v(irtual )?t(a)?bl(e)?>[^{},]*[{].*");
+#endif
 
 // Determine the type of VALUE.
 DispValueType determine_type (string value)
@@ -58,17 +61,19 @@ DispValueType determine_type (string value)
     strip_final_blanks (value);
 
     // DBX on DEC prepends `[N]' before array member N
-    if (value.matches(RXindex))
+    if (value.matches(rxindex))
 	value = value.after(']');
 
     // References.
-    static regex 
-	RXreference("([(][^)]+[)] )? *@ *(0(0|x)[0-9a-f]+|[(]nil[)]) *:.*");
-    if (value.matches(RXreference))
+#if !WITH_FAST_RX
+    static regex rxreference(
+	"([(][^)]+[)] )? *@ *(0(0|x)[0-9a-f]+|[(]nil[)]) *:.*");
+#endif
+    if (value.matches(rxreference))
 	return Reference;
 
     // Vtables.
-    if (value.matches(RXvtable))
+    if (value.matches(rxvtable))
 	return Array;
 
     // Scalars.
@@ -86,26 +91,30 @@ DispValueType determine_type (string value)
 
     // Structs.
     // XDB issues the struct address before each struct.
-    static regex 
-	RXstr_or_cl_begin("(0(0|x)[0-9a-f]+|[(]nil[)])? *"
-			  "([(]|[{]|record\n|RECORD\n|RECORD |OBJECT "
-			  "|struct|class|union).*");
-    static regex RXstr_or_cl_end("([)]|[}]|end\n|END\n|end;|END;)");
+#if !WITH_FAST_RX
+    static regex rxstr_or_cl_begin(
+	"(0(0|x)[0-9a-f]+|[(]nil[)])? *"
+	"([(]|[{]|record\n|RECORD\n|RECORD |OBJECT "
+	"|struct|class|union).*");
+    static regex rxstr_or_cl_end("([)]|[}]|end\n|END\n|end;|END;)");
+#endif
 
-    if (value.matches(RXstr_or_cl_begin))
+    if (value.matches(rxstr_or_cl_begin))
     {
 	// Check for empty struct.
 	string v = value;
 	read_str_or_cl_begin(v);
-	if (v.contains(RXstr_or_cl_end, 0))
+	if (v.contains(rxstr_or_cl_end, 0))
 	    return Simple;
 
 	// Check for leading keywords.
-	static regex
-	    RXstruct_keyword_begin("(0(0|x)[0-9a-f]+|[(]nil[)])? *"
-				   "(record\n|RECORD\n|RECORD |OBJECT "
-				   "|struct|class|union).*");
-	if (value.matches(RXstruct_keyword_begin))
+#if !WITH_FAST_RX
+	static regex rxstruct_keyword_begin(
+	    "(0(0|x)[0-9a-f]+|[(]nil[)])? *"
+	    "(record\n|RECORD\n|RECORD |OBJECT "
+	    "|struct|class|union).*");
+#endif
+	if (value.matches(rxstruct_keyword_begin))
 	    return StructOrClass;
 
 	// Check for leading braces.  DEC DBX uses `{' for arrays as
@@ -113,17 +122,29 @@ DispValueType determine_type (string value)
 	// and structs.  To disambiguate between arrays and structs,
 	// we check for some struct member -- that is, a ` = ' before
 	// any other sub-struct or struct end.
-	static regex RXstr_or_cl_begin_s("([(]|[{])");
 
-	v = value.after(RXstr_or_cl_begin_s);
-	int end_pos = v.index(RXstr_or_cl_end);
-	int eq_pos  = v.index(" = ");
-	int str_pos = v.index(RXstr_or_cl_begin);
+	// Go behind leading `{' or '('
+	int i = 0;
+	while (i < int(value.length()) && value[i] != '(' && value[i] != '{')
+	    i++;
+	i++;
 
-	if (eq_pos > 0 
-	    && (end_pos < 0 || end_pos > eq_pos)
-	    && (str_pos < 0 || str_pos > eq_pos))
-	    return StructOrClass;
+	// Check for further `{' or '('
+	while (i < int(value.length()))
+	{
+	    switch(value[i++])
+	    {
+	    case '=':
+		return StructOrClass;
+
+	    case '(':
+	    case '{':
+	    case ')':
+	    case '}':
+		goto next;		// Something else, possibly an array
+	    }
+	}
+    next: ;
     }
 
     // Pointers.
@@ -132,11 +153,15 @@ DispValueType determine_type (string value)
     // the pointer type contains `(...)' itself (such as in pointers
     // to functions), GDB uses '{...}' instead (as in `{int ()} 0x2908
     // <main>').
-    static regex RXpointer1_value("([(][^)]+[)] )?" RXADDRESS ".*");
-    if (value.matches(RXpointer1_value))
+#if !WITH_FAST_RX
+    static regex rxpointer1_value("([(][^)]+[)] )?" RXADDRESS ".*");
+#endif
+    if (value.matches(rxpointer1_value))
 	return Pointer;
-    static regex RXpointer2_value("[{][^{}]+[}] " RXADDRESS_START ".*");
-    if (value.matches(RXpointer2_value))
+#if !WITH_FAST_RX
+    static regex rxpointer2_value("[{][^{}]+[}] " RXADDRESS_START ".*");
+#endif
+    if (value.matches(rxpointer2_value))
 	return Pointer;
 
     // Arrays.
@@ -363,12 +388,12 @@ bool read_array_begin (string& value)
     read_leading_blanks (value);
 
     // GDB has a special format for vtables
-    if (value.matches(RXvtable))
+    if (value.matches(rxvtable))
 	value = value.from("{");
 
     // XDB prepends the address before each struct
     if (value.contains("0x", 0) || value.contains("00", 0))
-	value = value.after(RXblanks_or_tabs);
+	value = value.after(rxblanks_or_tabs);
 
     // DBX on DEC prepends `struct' or `class' before each struct;
     // XDB also appends the struct type name.
@@ -395,7 +420,7 @@ bool read_array_begin (string& value)
     read_leading_blanks (value);
 
     // DBX on DEC prepends `[N]' before array member N
-    if (value.matches(RXindex))
+    if (value.matches(rxindex))
 	value = value.after(']');
 
     return true;
@@ -412,7 +437,7 @@ bool read_array_next (string& value)
     read_leading_junk (value);
 
     // DBX on DEC prepends `[N]' before array member N
-    if (value.matches(RXindex))
+    if (value.matches(rxindex))
 	value = value.after(']');
 
     // XDB and M3GDB append `;' after each struct element; others use `,'
@@ -519,9 +544,11 @@ void munch_dump_line (string& value)
 	string initial_line = value.before('\n');
 	strip_final_blanks(initial_line);
 
-	static regex rxframe("[a-zA-Z_$][a-zA-Z_$0-9]*[(].*[)].*"
-			     "([[].*[]]|, line .*)");
-	if (initial_line.matches(rxframe))
+#if !WITH_FAST_RX
+	static regex rxdbxframe("[a-zA-Z_$][a-zA-Z_$0-9]*[(].*[)].*"
+				"([[].*[]]|, line .*)");
+#endif
+	if (initial_line.matches(rxdbxframe))
 	{
 	    // Strip enclosing parentheses
 	    initial_line = initial_line.after('(');
@@ -539,10 +566,12 @@ void munch_dump_line (string& value)
 // Skip `members of SUBCLASS:' in VALUE.  Return false iff failure.
 bool read_members_of_xy (string& value)
 {
-    static regex RXmembers_of_nl("members of [^\n]+: ?\n");
+#if !WITH_FAST_RX
+    static regex rxmembers_of_nl("members of [^\n]+: ?\n");
+#endif
 
     read_leading_junk (value);
-    if (value.index (RXmembers_of_nl) == 0)
+    if (value.index (rxmembers_of_nl) == 0)
     {
 	value = value.after('\n');
 	return true;
@@ -606,10 +635,12 @@ string read_member_name (string& value)
 // Read vtable entries.  Return "" upon error.
 string read_vtable_entries (string& value)
 {
-    static regex RXvtable_entries("[{][0-9][0-9]* vtable entries,.*");
+#if !WITH_FAST_RX
+    static regex rxvtable_entries("[{][0-9][0-9]* vtable entries,.*");
+#endif
 
     read_leading_blanks (value);
-    if (!value.matches(RXvtable_entries))
+    if (!value.matches(rxvtable_entries))
 	return "";
 
     string vtable_entries = value.through("entries");
@@ -643,11 +674,13 @@ void cut_BaseClass_name (string& full_name)
 // Skip blanks, M3 comments, and GDB warnings
 static void read_leading_junk (string& value)
 {
-    static regex M3Comment("\\(\\*.*\\*\\).*");
+#if !WITH_FAST_RX
+    static regex rxm3comment("\\(\\*.*\\*\\).*");
+#endif
   
     read_leading_blanks(value);
   
-    while (value.matches(M3Comment))
+    while (value.matches(rxm3comment))
     {
 	read_leading_comment(value);
 	read_leading_blanks(value);

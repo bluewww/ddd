@@ -42,6 +42,7 @@ char WhatNextCB_rcsid[] =
 #include "exit.h"
 #include "file.h"
 #include "question.h"
+#include "regexps.h"
 #include "status.h"
 #include "verify.h"
 #include "version.h"

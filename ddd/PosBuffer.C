@@ -45,10 +45,14 @@ char PosBuffer_rcsid[] =
 #include "ddd.h"
 #include "GDBAgent.h"
 #include "SourceView.h"
+#include "regexps.h"
+#include "index.h"
 
+#if !WITH_FAST_RX
 // A regex for C addresses ("0xdead") and Modula-2 addresses ("0BEEFH");
 regex rxaddress(RXADDRESS);
 regex rxaddress_start(RXADDRESS_START);
+#endif
 
 
 // Filter all lines from ANSWER beginning with LINE.  This is required
@@ -150,11 +154,21 @@ void PosBuffer::filter (string& answer)
     }
 
     // Check for terminated program
-    static regex rxterminated("(.*\n)?([Tt]he )?[Pp]rogram "
-			      "(exited|terminated"
-			      "|is not being run|no longer exists).*");
-    if (answer.matches(rxterminated))
-	terminated = true;
+    int i = -1;
+    while ((i = answer.index("rogram", i + 1)) > 0)
+    {
+	int j = i;
+	while (j > 0 && answer[j - 1] != '\n')
+	    j--;
+	
+#if !WITH_FAST_RX
+	static regex rxterminated("([Tt]he )?[Pp]rogram "
+				  "(exited|terminated"
+				  "|is not being run|no longer exists).*");
+#endif
+	if (answer.matches(rxterminated, j))
+	    terminated = true;
+    }
 
     if (answer.contains("no active process") ||
 	answer.contains("execution completed"))
@@ -222,8 +236,10 @@ void PosBuffer::filter (string& answer)
 		if (pc_buffer == "")
 		{
 		    // `$pc = ADDRESS'
+#if !WITH_FAST_RX
 		    static regex rxpc("\\$pc  *=  *" RXADDRESS);
-		    int pc_index = answer.index(rxpc);
+#endif
+		    int pc_index = index(answer, rxpc, "$pc ");
 		    if (pc_index >= 0)
 		    {
 			int addr_index = answer.index('=');
@@ -247,9 +263,11 @@ void PosBuffer::filter (string& answer)
 		if (pc_buffer == "")
 		{
 		    // `Breakpoint N, ADDRESS in FUNCTION'
+#if !WITH_FAST_RX
 		    static regex rxstopped("Breakpoint  *[1-9][0-9]*,  *"
 					   RXADDRESS);
-		    int pc_index = answer.index(rxstopped);
+#endif
+		    int pc_index = index(answer, rxstopped, "Breakpoint");
 		    if (pc_index >= 0)
 		    {
 			pc_index = answer.index(',');
@@ -260,9 +278,11 @@ void PosBuffer::filter (string& answer)
 		if (pc_buffer == "")
 		{
 		    // `#FRAME ADDRESS in FUNCTION'
+#if !WITH_FAST_RX
 		    static regex rxframe("#[0-9][0-9]*  *" RXADDRESS);
+#endif
 
-		    int pc_index = answer.index(rxframe);
+		    int pc_index = index(answer, rxframe, "#");
 		    if (pc_index == 0
 			|| pc_index > 0 && answer[pc_index - 1] == '\n')
 		    {
@@ -275,9 +295,11 @@ void PosBuffer::filter (string& answer)
 		{
 		    // `No line number available for 
 		    // address ADDRESS <FUNCTION>'
+#if !WITH_FAST_RX
 		    static regex rxaddr("address  *" RXADDRESS);
+#endif
 
-		    int pc_index = answer.index(rxaddr);
+		    int pc_index = index(answer, rxaddr, "address ");
 		    if (pc_index >= 0)
 		    {
 			pc_index = answer.index(' ');
@@ -288,7 +310,9 @@ void PosBuffer::filter (string& answer)
 		if (pc_buffer == "" && answer != "")
 		{
 		    // `ADDRESS in FUNCTION'
+#if !WITH_FAST_RX
 		    static regex rxaddress_in(RXADDRESS " in ");
+#endif
 		    int pc_index = -1;
 		    if (is_address_start(answer[0]) 
 			&& answer.contains(rxaddress_in, 0))
@@ -297,8 +321,10 @@ void PosBuffer::filter (string& answer)
 		    }
 		    else
 		    {
+#if !WITH_FAST_RX
 			static regex rxnladdress_in("\n" RXADDRESS " in ");
-			pc_index = answer.index(rxnladdress_in);
+#endif
+			pc_index = index(answer, rxnladdress_in, "\n");
 		    }
 
 		    if (pc_index >= 0)
@@ -326,9 +352,11 @@ void PosBuffer::filter (string& answer)
 		    // Handle erroneous `info line' output like
 		    // `Line number 10 is out of range for "t1.f".'
 		    // At least get the file name.
+#if !WITH_FAST_RX
 		    static regex rxout_of_range(
 	                "Line number [0-9]+ is out of range for ");
-		    index_p = answer.index(rxout_of_range);
+#endif
+		    index_p = index(answer, rxout_of_range, "Line number");
 		    if (index_p >= 0)
 		    {
 			string file = answer.after('\"', index_p);
@@ -386,8 +414,10 @@ void PosBuffer::filter (string& answer)
 		    }
 		}
 
-		static regex RXdbxfunc("[a-zA-Z_][^:]*: *[1-9][0-9]*  *.*");
-		if (answer.matches(RXdbxfunc))
+#if !WITH_FAST_RX
+		static regex rxdbxfunc("[a-zA-Z_][^:]*: *[1-9][0-9]*  *.*");
+#endif
+		if (answer.matches(rxdbxfunc))
 		{
 		    // DEC DBX issues `up', `down' and `func' output
 		    // in the format `FUNCTION: LINE  TEXT'
@@ -399,9 +429,11 @@ void PosBuffer::filter (string& answer)
 		    answer = answer.after("\n");
 		}
 
-		static regex RXdbxfunc2(".*line  *[1-9][0-9]*  *"
-					"in  *\"[^\"]*\"\n.*");
-		if (answer.matches(RXdbxfunc2))
+#if !WITH_FAST_RX
+		static regex rxdbxfunc2(
+		    ".*line  *[1-9][0-9]*  *in  *\"[^\"]*\"\n.*");
+#endif
+		if (answer.matches(rxdbxfunc2))
 		{
 		    // AIX DBX issues `up', `down' and `func' output
 		    // in the format `FUNCTION(ARGS), line LINE in "FILE"'
@@ -418,13 +450,15 @@ void PosBuffer::filter (string& answer)
 		    // answer = answer.after("\n");
 		}
 
-		static regex RXdbxpos("[[][^]]*:[1-9][0-9]*[^]]*].*");
-		if (answer.contains(RXdbxpos))
+#if !WITH_FAST_RX
+		static regex rxdbxpos("[[][^]]*:[1-9][0-9]*[^]]*].*");
+#endif
+		if (answer.contains(rxdbxpos))
 		{
 		    // DEC dbx issues breakpoint lines in the format
 		    // "[new_tree:113 ,0x400858] \ttree->right = NULL;"
 
-		    line = answer.from(RXdbxpos);
+		    line = answer.from(rxdbxpos);
 		    line = line.after(":");
 		    line = line.through(rxint);
 		    already_read = PosComplete;
@@ -517,9 +551,11 @@ void PosBuffer::filter (string& answer)
 			    line = line.before('\n');
 			strip_final_blanks(line);
 
-			static regex 
-			    RXxdbpos("[^: \t]*:[^:]*: [1-9][0-9]*[: ].*");
-			if (line.matches(RXxdbpos))
+#if !WITH_FAST_RX
+			static regex rxxdbpos(
+			    "[^: \t]*:[^:]*: [1-9][0-9]*[: ].*");
+#endif
+			if (line.matches(rxxdbpos))
 			{
 			    string file = line.before(':');
 			    line = line.after(':');

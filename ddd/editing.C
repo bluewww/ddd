@@ -46,6 +46,7 @@ char editing_rcsid[] =
 #include "cmdtty.h"
 #include "post.h"
 #include "history.h"
+#include "regexps.h"
 #include "string-fun.h"
 #include "cook.h"
 #include "misc.h"

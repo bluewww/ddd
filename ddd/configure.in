@@ -517,6 +517,13 @@ fi
 AC_SUBST(LIBRX)
 dnl
 dnl
+dnl Anyway: As of DDD 2.2, we don't need all this RX stuff, but use
+dnl a LEX-generated scanner for regexps.
+dnl
+AC_DEFINE(WITH_FULL_RX, 0)
+AC_DEFINE(WITH_FAST_RX)
+dnl
+dnl
 dnl That's all, folks!
 dnl
 AC_OUTPUT(Makefile vr.h Ddd ddd.man, date > stamp-h)

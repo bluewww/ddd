@@ -43,6 +43,7 @@ char exectty_rcsid[] =
 #include "logo.h"
 #include "post.h"
 #include "question.h"
+#include "regexps.h"
 #include "shell.h"
 #include "status.h"
 #include "string-fun.h"

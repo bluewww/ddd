@@ -221,6 +221,7 @@ extern "C" {
 #include "post.h"
 #include "print.h"
 #include "question.h"
+#include "regexps.h"
 #include "resources.h"
 #include "sashes.h"
 #include "select.h"
@@ -1367,8 +1368,10 @@ int main(int argc, char *argv[])
 	    // -?       - Help
 	    // -t       - Use TTY mode
 	    // -f       - Use fullname mode
-	    static regex RXoptions("-[bcdeiIopPrRsx]");
-	    if (i < argc - 1 && arg.matches(RXoptions))
+#if !WITH_FAST_RX
+	    static regex rxoptions("-[bcdeiIopPrRsx]");
+#endif
+	    if (i < argc - 1 && arg.matches(rxoptions))
 	    {
 		saved_options += arg;
 		saved_options += string(argv[i + 1]);
@@ -4189,8 +4192,10 @@ void _gdb_out(string text)
     private_gdb_output = true;
 
     // Don't care for CR if followed by NL
-    static regex RXcrlf("\r\r*\n");
-    text.gsub(RXcrlf, "\n");
+#if !WITH_FAST_RX
+    static regex rxcrlf("\r\r*\n");
+#endif
+    text.gsub(rxcrlf, "\n");
 
     // Don't care for strings to be ignored
     static string empty;

@@ -43,6 +43,7 @@ char converters_rcsid[] =
 #include "OnOff.h"
 #include "strclass.h"
 #include "charsets.h"
+#include "regexps.h"
 #include "StringSA.h"
 
 #include <Xm/Xm.h>
@@ -389,10 +390,12 @@ Boolean CvtStringToXmString(Display *display,
 {
     const string font_esc = "@";
 
-    static regex font_id("[_A-Za-z][-_A-Za-z0-9]*");
-    static regex blank("[ \t]?");
+#if !WITH_FAST_RX
+    static regex rxfont_id("[_A-Za-z][-_A-Za-z0-9]*");
+    static regex rxblank("[ \t]?");
+#endif
 
-    // get string
+    // Get string
     string source = (String)fromVal->addr;
     string charset = (String)MSTRING_DEFAULT_CHARSET;
 
@@ -413,10 +416,10 @@ Boolean CvtStringToXmString(Display *display,
 	}
 	else
 	{
-	    if (segments[i].contains(font_id, 0))
+	    if (segments[i].contains(rxfont_id, 0))
 	    {
 		// Found @[font-id] <segment>: process it
-		string c = segments[i].through(font_id);
+		string c = segments[i].through(rxfont_id);
 		segment = segments[i].from(int(c.length()));
 		if (segment == "")
 		{
@@ -443,7 +446,7 @@ Boolean CvtStringToXmString(Display *display,
 		{
 		    // Found @CHARSET: set new charset
 		    charset = c;
-		    segment = segment.after(blank);
+		    segment = segment.after(rxblank);
 		}
 	    }
 	    else if (segments[i].contains(' ', 0))

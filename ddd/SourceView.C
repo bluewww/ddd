@@ -137,6 +137,8 @@ extern "C" {
 #include "AppData.h"
 #include "options.h"
 #include "charsets.h"
+#include "regexps.h"
+#include "index.h"
 
 // Glyphs
 #include "arrow.xbm"
@@ -940,7 +942,9 @@ string SourceView::full_path(string file)
      * in a dot: too bad, you can't win them all.
      */
 
-    static regex RXdotdot("/[^/]*[^/.]/\\.\\./");
+#if !WITH_FAST_RX
+    static regex rxdotdot("/[^/]*[^/.]/\\.\\./");
+#endif
     unsigned int file_length, prev_file_length;
 
     if (file == "")
@@ -958,7 +962,7 @@ string SourceView::full_path(string file)
     file_length = file.length();
     do {
         prev_file_length = file_length;
-        file.gsub(RXdotdot, "/");
+        file.gsub(rxdotdot, "/");
         file_length=file.length();
     } while (file_length != prev_file_length);
 
@@ -2827,8 +2831,10 @@ void SourceView::process_info_bp (string& info_output,
     info_output.gsub("\n\n", "\n");
 
     // SGI dbx issues `Process PID' before numbers
-    static regex rxprocess("Process[ \t]+[0-9]+:[ \t]*");
-    info_output.gsub(rxprocess, "");
+#if !WITH_FAST_RX
+    static regex rxprocess1("Process[ \t]+[0-9]+:[ \t]*");
+#endif
+    info_output.gsub(rxprocess1, "");
 
     last_info_output = info_output;
 
@@ -2872,8 +2878,10 @@ void SourceView::process_info_bp (string& info_output,
 	    {
 		// SGI IRIX DBX issues `Process PID: ' 
 		// before status lines.
-		static regex rxprocess("Process[ \t]+[0-9]+:");
-		if (info_output.contains(rxprocess, 0))
+#if !WITH_FAST_RX
+		static regex rxprocess2("Process[ \t]+[0-9]+:");
+#endif
+		if (info_output.contains(rxprocess2, 0))
 		    info_output = info_output.after(':');
 		read_leading_blanks(info_output);
 		    
@@ -4581,12 +4589,16 @@ void SourceView::setup_where_line(string& line)
 
     // Remove file paths (otherwise line can be too long for DBX)
     //   ... n.b. with templates, line can still be rather long
-    static regex filepath("[^ /]*/");
-    line.gsub(filepath, "");
+#if !WITH_FAST_RX
+    static regex rxfilepath("[^ /]*/");
+#endif
+    line.gsub(rxfilepath, "");
 
     // Shorten argument lists `(a = 1, b = 2, ...)' to `()'
-    static regex arglist("[(][^0-9][^)]*[)]");
-    int start = line.index(arglist);
+#if !WITH_FAST_RX
+    static regex rxarglist("[(][^0-9][^)]*[)]");
+#endif
+    int start = index(line, rxarglist, "(");
     if (start > 0)
     {
 	int end = line.index(')', -1);
@@ -6048,35 +6060,37 @@ void SourceView::clear_code_cache()
     process_disassemble("No code.");
 }
 
+#if !WITH_FAST_RX
 static regex rxnladdress("\n *" RXADDRESS);
+#endif
 
 static string first_address(const string& s)
 {
-    int index = s.index(rxnladdress);
-    if (index < 0)
+    int idx = index(s, rxnladdress, "\n");
+    if (idx < 0)
 	return "";
-    index++;
+    idx++;
 
-    int eol = s.index('\n', index);
+    int eol = s.index('\n', idx);
     if (eol < 0)
 	eol = s.length();
 
-    string addr = ((string&)s).at(index, eol - index);
+    string addr = ((string&)s).at(idx, eol - idx);
     return addr.through(rxaddress);
 }
 
 static string last_address(const string& s)
 {
-    int index = s.index(rxnladdress, -1);
-    if (index < 0)
+    int idx = index(s, rxnladdress, "\n", -1);
+    if (idx < 0)
 	return "";
-    index++;
+    idx++;
 
-    int eol = s.index('\n', index);
+    int eol = s.index('\n', idx);
     if (eol < 0)
 	eol = s.length();
 
-    string addr = ((string&)s).at(index, eol - index);
+    string addr = ((string&)s).at(idx, eol - idx);
     return addr.through(rxaddress);
 }
 

@@ -36,6 +36,11 @@
 #include "config.h"
 #include "bool.h"
 
+#ifndef WITH_FULL_RX
+#define WITH_FULL_RX 1
+#endif
+
+#if WITH_FULL_RX
 extern "C" {
 #include <sys/types.h>
 
@@ -75,7 +80,7 @@ extern "C" {
 // Use GNU rx as shipped with DDD.
 #if !defined(REG_EXTENDED)
 #include <librx/rx.h>		// Header from GNU rx 0.07, as shipped with DDD
-#define GNU_LIBRX_USED
+#define GNU_LIBrx_USED
 #endif
 
 #undef regex
@@ -84,9 +89,13 @@ extern "C" {
 #undef RE_DUP_MAX		// Avoid trouble with later redefinitions
 #endif
 }
+#endif // WITH_FULL_RX
 
+// Iff S is matched at POS, return length of matched string; 
+// -1, otherwise.  LEN is the length of S.
+typedef int (*rxmatchproc)(void *data, const char *s, int len, int pos);
 
-// The interface is similar to Doug Lea's libg++ `Regex' class, 
+// This `regex' class is similar to Doug Lea's libg++ `Regex' class,
 // except that we use extended regexps and rely on POSIX.2 functions.
 
 class regex
@@ -96,6 +105,7 @@ private:
     void operator = (const regex&) {} // no assignment
 
 protected:
+#if WITH_FULL_RX
     regex_t compiled;		// "^" + regexp
     char prefix[32];		// constant prefix (for faster search)
 
@@ -107,10 +117,22 @@ protected:
 
     // Create a prefix from T and FLAGS
     static char get_prefix(const char *& t, int flags);
+#endif
+
+    // For regexes supplying their own function
+    rxmatchproc matcher;
+    void *data;
 
 public:
+#if WITH_FULL_RX
     // Create and compile an (extended) regular expression in T.
     regex(const char* t, int flags = REG_EXTENDED);
+#endif
+
+    // Alternate version supplying its own match function
+    regex(rxmatchproc p, void *data);
+
+    // Destructor
     ~regex();
 
     // Iff T matches S at POS, return length of matched string;
@@ -127,14 +149,17 @@ public:
     int search(const char* s, int len, 
 	       int& matchlen, int startpos = 0) const;
 
+#if WITH_FULL_RX
     // Return matching info for NTH expression in START and LENGTH
     // Expression 0 is the entire regexp T; expression 1 and later are
     // the subexpressions of T.  Returns true iff successful.
     bool match_info(int& start, int& length, int nth = 0) const;
+#endif
 
     bool OK() const;  // representation invariant
 };
 
+#if WITH_FULL_RX
 // Return number of expressions
 inline size_t regex::nexprs() const
 {
@@ -146,7 +171,9 @@ inline size_t regex::nexprs() const
     return 32;  // Should be sufficient
 #endif
 }
+#endif
 
+#if WITH_FULL_RX
 // Some built-in regular expressions
 
 extern const regex rxwhite;          // = "[ \n\t\r\v\f]+"
@@ -159,6 +186,7 @@ extern const regex rxlowercase;      // = "[a-z]+"
 extern const regex rxuppercase;      // = "[A-Z]+"
 extern const regex rxalphanum;       // = "[0-9A-Za-z]+"
 extern const regex rxidentifier;     // = "[A-Za-z_][A-Za-z0-9_]*"
+#endif
 
 #endif // _ICE_rxclass_h
 // DON'T ADD ANYTHING behind this #endif

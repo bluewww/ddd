@@ -49,6 +49,7 @@ char buttons_rcsid[] =
 #include "disp-read.h"
 #include "editing.h"
 #include "question.h"
+#include "regexps.h"
 #include "select.h"
 #include "settings.h"
 #include "shorten.h"
@@ -660,7 +661,9 @@ void add_buttons(Widget buttons, const string& button_list)
 	if (label_s != "")
 	    label_s[0] = toupper(label_s[0]);
 	MString label(label_s);
+#if !WITH_FAST_RX
 	static regex rxsep("[^-_a-zA-Z0-9]");
+#endif
 	name.gsub(rxsep, '_');
 
 	Widget button = verify(XmCreatePushButton(buttons, name, 0, 0));

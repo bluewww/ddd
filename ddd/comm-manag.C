@@ -63,6 +63,8 @@ char comm_manager_rcsid[] =
 #include "VoidArray.h"
 #include "buttons.h"
 #include "question.h"
+#include "regexps.h"
+#include "index.h"
 #include "settings.h"
 #include "AppData.h"
 
@@ -279,9 +281,11 @@ inline String str(String s)
 // Replace all occurrences of `@N@' by N + the current breakpoint base.
 void fix_bp_numbers(string& cmd)
 {
+#if !WITH_FAST_RX
     static regex rxnum("@[0-9]+@");
+#endif
     int i;
-    while ((i = cmd.index(rxnum)) >= 0)
+    while ((i = index(cmd, rxnum, "@")) >= 0)
     {
 	int j = cmd.index('@', i + 1);
 	int base = SourceView::next_breakpoint_number() - 1;
@@ -778,7 +782,7 @@ void user_cmdSUC (string cmd, Widget origin,
     {
 	// We have a backtrace window open, but DBX has no ``frame''
 	// command to set the selected frame.  Use this hack instead.
-	string arg_s = cmd.after(RXblanks_or_tabs);
+	string arg_s = cmd.after(rxblanks_or_tabs);
 
 	if (is_up_cmd(cmd) || is_down_cmd(cmd))
 	{
@@ -1264,7 +1268,9 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 
 	    {
 		// Check for `dependent on DISPLAY'
+#if !WITH_FAST_RX
 		static regex rxdep("[ \t]+no[ \t]+tnedneped[ \t]+");
+#endif
 		int index = rcmd.index(rxdep);
 		if (index >= 0)
 		{
@@ -1280,9 +1286,11 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 
 	    {
 		// Check for `at X, Y' or `at (X, Y)'
-		static regex 
-		    rxat("[)]?[0-9]*[1-9]-?[ \t]*,[ \t]*[0-9]*[1-9]-?[(]?"
-			 "[ \t]+ta[ \t]+.*");
+#if !WITH_FAST_RX
+		static regex rxat(
+		    "[)]?[0-9]*[1-9]-?[ \t]*,[ \t]*[0-9]*[1-9]-?[(]?"
+		    "[ \t]+ta[ \t]+.*");
+#endif
 		if (rcmd.matches(rxat))
 		{
 		    if (pos == 0)
@@ -1461,7 +1469,9 @@ static void process_config_named_values(string& answer)
 static void process_config_when_semicolon(string& answer)
 {
     gdb->has_when_command(is_known_command(answer));
+#if !WITH_FAST_RX
     static regex rxsemicolon_and_brace("; *[}]");
+#endif
     gdb->has_when_semicolon(answer.contains(rxsemicolon_and_brace));
 }
 

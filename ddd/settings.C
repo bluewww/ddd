@@ -67,6 +67,7 @@ char settings_rcsid[] =
 #include "StringSA.h"
 #include "WidgetSA.h"
 #include "SourceView.h"
+#include "regexps.h"
 #include "string-fun.h"
 #include "DataDisp.h"
 #include "LessTifH.h"
@@ -463,8 +464,10 @@ static EntryType entry_type(DebuggerType type,
 			    const string& doc,
 			    const string& value)
 {
+#if !WITH_FAST_RX
     static regex rxnonzero1("non-?(0|zero|null)");
     static regex rxnonzero2("!= *(0|zero|null)");
+#endif
 
     switch (type)
     {
@@ -921,7 +924,9 @@ static void add_button(Widget form, int& row, DebuggerType type,
 	    doc = get_dbx_doc(dbxenv, base);
 	    e_type = entry_type(type, base, get_dbx_help(dbxenv, base), value);
 
+#if !WITH_FAST_RX
 	    static regex rxdont("Do ?n['o]t");
+#endif
 	    if (doc.contains(rxdont, 0) && e_type == NumToggleButtonEntry)
 	    {
 		doc = doc.after(rxdont);

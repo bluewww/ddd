@@ -47,6 +47,7 @@ char source_rcsid[] =
 #include "events.h"
 #include "ddd.h"
 #include "post.h"
+#include "regexps.h"
 #include "shell.h"
 #include "status.h"
 

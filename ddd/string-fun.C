@@ -39,12 +39,16 @@ char string_functions_rcsid[] =
 
 #include "assert.h"
 #include "string-fun.h"
+#include "regexps.h"
+
 #include <stdio.h>		// sprintf
 #include <stdlib.h>		// atoi
 #include <ctype.h>		// isspace
 
-regex RXblanks          (" +");
-regex RXblanks_or_tabs  ("[ \t]+");
+#if !WITH_FAST_RX
+const regex rxblanks          (" +");
+const regex rxblanks_or_tabs  ("[ \t]+");
+#endif
 
 // ***************************************************************************
 string itostring (int nr)

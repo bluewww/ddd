@@ -42,6 +42,7 @@ char show_rcsid[] =
 #include "ddd.h"
 #include "host.h"
 #include "post.h"
+#include "regexps.h"
 #include "shell.h"
 #include "status.h"
 #include "version.h"

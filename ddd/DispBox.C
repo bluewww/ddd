@@ -49,6 +49,7 @@ char DispBox_rcsid[] =
 #include "string-fun.h"
 #include "tabs.h"
 #include "version.h"
+#include "regexps.h"
 
 #include <ctype.h>
 
@@ -72,12 +73,14 @@ DispBox::DispBox (int disp_nr, const string& t, const DispValue *dv)
     string title = t;
 
     // Strip DBX scope information from title
-    static regex RXdbx_scope("[a-zA-Z_0-9]*`");
+#if !WITH_FAST_RX
+    static regex rxdbx_scope("[a-zA-Z_0-9]*`");
+#endif
     while (int(title.length()) > max_display_title_length 
-	   && title.contains(RXdbx_scope))
+	   && title.contains(rxdbx_scope))
     {
-	string postfix = title.after(RXdbx_scope);
-	title = title.before(RXdbx_scope);
+	string postfix = title.after(rxdbx_scope);
+	title = title.before(rxdbx_scope);
 	title += postfix;
     }
 

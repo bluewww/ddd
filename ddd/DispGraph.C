@@ -47,6 +47,7 @@ char DispGraph_rcsid[] =
 #include "AliasGE.h"
 #include "HintGraphN.h"
 #include "VoidArray.h"
+#include "regexps.h"
 
 // ***************************************************************************
 // Constructor

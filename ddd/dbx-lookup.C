@@ -40,6 +40,8 @@ char dbx_lookup_rcsid[] =
 #include "post.h"
 #include "misc.h"
 #include "question.h"
+#include "regexps.h"
+#include "index.h"
 #include "string-fun.h"
 #include "GDBAgent.h"
 
@@ -96,8 +98,10 @@ string dbx_lookup(const string& func_name)
 
     case XDB:
 	{
-	    static regex RXcolons("[^:]*:[^:]*: *[0-9][0-9]*.*");
-	    if (reply.matches(RXcolons))
+#if !WITH_FAST_RX
+	    static regex rxcolons("[^:]*:[^:]*: *[0-9][0-9]*.*");
+#endif
+	    if (reply.matches(rxcolons))
 	    {
 		file = reply.before(':');
 		reply = reply.after(':'); // Skip file
@@ -174,8 +178,10 @@ int line_of_listing(string& listing)
     {
 	// SGI DBX issues `*' in column 2 before the `list'ed line.
 	// Quite useful.
-	static regex nlstar("\n.[*]");
-	int idx = listing.index(nlstar);
+#if !WITH_FAST_RX
+	static regex rxnlstar("\n.[*]");
+#endif
+	int idx = index(listing, rxnlstar, "\n");
 	if (idx < 0 && listing.contains('*', 1))
 	    idx = 1;
     }

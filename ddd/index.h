@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Shorten an expression
+// Fast index function
 
 // Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -24,39 +24,21 @@
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-char shorten_rcsid[] = 
-    "$Id$";
+#ifndef _DDD_index_h
+#define _DDD_index_h
 
 #ifdef __GNUG__
-#pragma implementation
+#pragma interface
 #endif
 
-#include "shorten.h"
-#include "cook.h"
-#include "regexps.h"
-#include "IntArray.h"
+#include "strclass.h"
 
-static string shorten_replacement = "...";
+// Return index of R in S, starting with POS; PREFIX is the constant
+// prefix of R.
+extern int index(const string& s, const regex& r, 
+		 const string& prefix, int pos = 0);
 
-// Shorten EXPR such that it is at most MAX_LENGTH characters long.
-void shorten(string& expr, unsigned max_length)
-{
-    // Strip excessive whitespace
-    if (expr.contains(rxwhite))
-	expr.gsub(rxwhite, ' ');
-    while (expr.contains(' ', 0))
-	expr = expr.after(0);
-    while (expr.contains(' ', expr.length() - 1))
-	expr = expr.before(int(expr.length()) - 1);
-
-    // Remove text from the middle
-    if (expr.length() > max_length)
-    {
-	int keep = (max_length - shorten_replacement.length()) / 2;
-	expr = expr.through(keep) 
-	    + shorten_replacement
-	    + expr.from(int(expr.length()) - keep);
-    }
-}
+#endif // _DDD_index_h
+// DON'T ADD ANYTHING BEHIND THIS #endif

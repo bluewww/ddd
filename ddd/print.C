@@ -45,6 +45,7 @@ char print_rcsid[] =
 #include "cook.h"
 #include "filetype.h"
 #include "post.h"
+#include "regexps.h"
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"

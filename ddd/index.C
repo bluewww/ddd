@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Shorten an expression
+// Fast index function
 
 // Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -24,39 +24,43 @@
 // DDD is the data display debugger.
 // For details, see the DDD World-Wide-Web page, 
 // `http://www.cs.tu-bs.de/softech/ddd/',
-// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+// or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-char shorten_rcsid[] = 
+char index_rcsid[] = 
     "$Id$";
 
 #ifdef __GNUG__
 #pragma implementation
 #endif
 
-#include "shorten.h"
-#include "cook.h"
-#include "regexps.h"
-#include "IntArray.h"
+#include "index.h"
+#include "misc.h"
+#include <string.h>
 
-static string shorten_replacement = "...";
 
-// Shorten EXPR such that it is at most MAX_LENGTH characters long.
-void shorten(string& expr, unsigned max_length)
+// Return index of R in S, starting with POS; PREFIX is the constant
+// prefix of R.
+int index(const string& s, const regex& r, const string& prefix, int startpos)
 {
-    // Strip excessive whitespace
-    if (expr.contains(rxwhite))
-	expr.gsub(rxwhite, ' ');
-    while (expr.contains(' ', 0))
-	expr = expr.after(0);
-    while (expr.contains(' ', expr.length() - 1))
-	expr = expr.before(int(expr.length()) - 1);
+    int direction = +1;
 
-    // Remove text from the middle
-    if (expr.length() > max_length)
+    if (startpos < 0)
     {
-	int keep = (max_length - shorten_replacement.length()) / 2;
-	expr = expr.through(keep) 
-	    + shorten_replacement
-	    + expr.from(int(expr.length()) - keep);
+	startpos += s.length();
+	direction = -1;
     }
+    if (startpos < 0 || startpos > int(s.length()))
+	return -1;
+
+    for (; startpos >= 0 && startpos < int(s.length()); startpos += direction)
+    {
+	char *t = (char *)s + startpos;
+	if (strncmp(t, prefix, min(prefix.length(), 
+				   s.length() - startpos)) == 0 
+	    && r.match(s, s.length(), startpos) >= 0)
+	    return startpos;
+    }
+
+    return -1;			// not found
 }
+

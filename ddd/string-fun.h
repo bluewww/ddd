@@ -42,8 +42,10 @@
 
 //-----------------------------------------------------------------------------
 
-extern regex RXblanks;
-extern regex RXblanks_or_tabs;
+#if !WITH_FAST_RX
+extern const regex rxblanks;
+extern const regex rxblanks_or_tabs;
+#endif
 
 // Convert NR to a string
 string itostring (int nr);

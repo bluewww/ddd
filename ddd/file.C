@@ -54,6 +54,7 @@ char file_rcsid[] =
 #include "mydialogs.h"
 #include "post.h"
 #include "question.h"
+#include "regexps.h"
 #include "shell.h"
 #include "strclass.h"
 #include "status.h"
@@ -798,8 +799,11 @@ static bool valid_ps_line(const string& line, const string& ps_command)
 	ps = ps.before(rxwhite);// ps_command is.
     ps = basename(ps);
 
-    static regex rxps(".*[/ ]" + ps + "($| ).*");
-    if (line.matches(rxps))
+    int index = line.index(ps);
+    if (index > 0
+	&& (line[index - 1] == '/' || line[index - 1] == ' ')
+	&& (line.length() == index + ps.length() 
+	    || line[index + ps.length()] == ' '))
 	return false;
 
     return true;

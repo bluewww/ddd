@@ -98,6 +98,7 @@ char DataDisp_rcsid[] =
 #include "windows.h"
 #include "wm.h"
 #include "LessTifH.h"
+#include "regexps.h"
 
 // System includes
 #include <iostream.h>
@@ -1817,7 +1818,9 @@ void DataDisp::CompareNodesCB(Widget, XtPointer, XtPointer call_data)
 // Erzeugung von neuen (unabhaengigen) Displays
 //-----------------------------------------------------------------------------
 
-regex RXmore_than_one ("\\[-?[0-9]+\\.\\.-?[0-9]+\\]");
+#if !WITH_FAST_RX
+static regex rxmore_than_one ("\\[-?[0-9]+\\.\\.-?[0-9]+\\]");
+#endif
 
 // ***************************************************************************
 // sendet den Display-Befehl an den gdb
@@ -1931,7 +1934,7 @@ void DataDisp::new_displaySQ (string display_expression,
     else
     {
 	// Data display
-	if (display_expression.contains (RXmore_than_one))
+	if (display_expression.contains (rxmore_than_one))
 	{
 	    new_data_displaysSQA (display_expression, info);
 	    return;
@@ -2049,7 +2052,9 @@ DispNode *DataDisp::new_data_node(const string& given_name,
     // Upon some occasions, GDB gives names like 
     // `{<text variable, no debug info>} 0x2270 <main>'.  In such cases,
     // also use the user-given name instead.
+#if !WITH_FAST_RX
     static regex rxfunction_call("[a-zA-Z0-9_$][(]");
+#endif
     string title = display_name;
     if (title.contains(rxfunction_call) 
 	|| title.contains('{')
@@ -2222,19 +2227,19 @@ void DataDisp::new_data_display_extraOQC (const string& answer, void* data)
 
 // ***************************************************************************
 // wird von new_displaySQ aufgerufen, wenn die display_expression die
-// array-notation RXmore_than_one enthaelt.
+// array-notation rxmore_than_one enthaelt.
 //
 void DataDisp::new_data_displaysSQA (string display_expression,
 				     void *data)
 {
     NewDisplayInfo *info = (NewDisplayInfo *)data;
-    assert (display_expression.contains (RXmore_than_one));
+    assert (display_expression.contains (rxmore_than_one));
 
     // einzelne display-Ausdruecke erzeugen und display-Befehle im array 
     // abschicken...
-    string prefix  = display_expression.before(RXmore_than_one);
-    string postfix = display_expression.after(RXmore_than_one);
-    string range   = display_expression.from(RXmore_than_one);
+    string prefix  = display_expression.before(rxmore_than_one);
+    string postfix = display_expression.after(rxmore_than_one);
+    string range   = display_expression.from(rxmore_than_one);
     range.del("[");
     int start = ::get_nr(range);
     range = range.after("..");
@@ -3202,7 +3207,7 @@ void DataDisp::refresh_display_list(bool silent)
     }
     else
     {
-	line = "No displays.";
+	line = "No displays.                           ";
     }
     label_list[count] = line;
     selected[count] = false;
@@ -3333,8 +3338,10 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     }
 
     value = get_disp_value_str(value, gdb);
-    static regex RXnl(" *\n *");
-    value.gsub(RXnl, " ");
+#if !WITH_FAST_RX
+    static regex rxnl(" *\n *");
+#endif
+    value.gsub(rxnl, " ");
     strip_final_blanks(value);
 
     MString prompt = rm("Enter new value for ");
