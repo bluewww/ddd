@@ -41,7 +41,7 @@ char converters_rcsid[] =
 
 #include "bool.h"
 #include "strclass.h"
-#include "MString.h"
+#include "charsets.h"
 
 #include <Xm/Xm.h>
 
@@ -397,29 +397,45 @@ Boolean CvtStringToXmString(Display *display,
     
     split(source, segments, n_segments, font_esc);
 
-    MString buf(segments[0], charset);
-    for (int i = 1; i < n_segments && buf.xmstring() != 0; i++)
+    MString buf;
+    for (int i = 0; i < n_segments && buf.xmstring() != 0; i++)
     {
 	string segment;
-	if (segments[i].index(font_id) == 0)
+
+	if (i == 0)
 	{
-	    // found @[font-id] <segment>: process it
-	    charset = segments[i].through(font_id);
-	    segment = segments[i].after(font_id);
-	    segment = segment.after(blank);
-	}
-	else if (segments[i] != "" && segments[i][0] == ' ')
-	{
-	    // found @[space]: remove space
-	    segment = font_esc + segments[i].from(1);
+	    // At beginning of text
+	    segment = segments[i];
 	}
 	else
 	{
-	    // found @[anything-else]: ignore @, take remainder literally
-	    segment = segments[i];
+	    if (segments[i].index(font_id) == 0)
+	    {
+		// found @[font-id] <segment>: process it
+		charset = segments[i].through(font_id);
+		segment = segments[i].after(font_id);
+		segment = segment.after(blank);
+	    }
+	    else if (segments[i] != "" && segments[i][0] == ' ')
+	    {
+		// found @[space]: remove space
+		segment = font_esc + segments[i].from(1);
+	    }
+	    else
+	    {
+		// found @[anything-else]: ignore @, take remainder literally
+		segment = segments[i];
+	    }
 	}
 
-	buf += MString(segment, charset);
+	while (segment.contains('\n'))
+	{
+	    buf += MString(segment.before('\n'), charset) + cr();
+	    segment = segment.after('\n');
+	}
+
+	if (segment.length() > 0)
+	    buf += MString(segment, charset);
     }
 
     XmString target = XmStringCopy(buf.xmstring());
