@@ -216,7 +216,7 @@ void gdbEditSourceCB  (Widget w, XtPointer, XtPointer)
     string file = pos.before(':');
     string line = pos.after(':');
 
-    if (file == "")
+    if (file == "" || line == "0")
     {
 	post_error("No source.", "no_source_edit_error", w);
 	return;
