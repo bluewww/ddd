@@ -1,7 +1,6 @@
 ! $Id$ -*- xrdb -*-
 ! DDD Resource File.  DO NOT INSTALL THIS FILE!  See below for details.
 ! @configure_input@
-! Generated automatically from Ddd.in.m4 and TIPS by @M4@.
 include(ifdef(`srcdir',srcdir()/macros.m4,macros.m4))dnl
 Ddd*appDefaultsVersion: @VERSION@
 
@@ -63,6 +62,16 @@ Ddd*appDefaultsVersion: @VERSION@
 ! 
 ! In short, app-defaults files are bad.  Don't use them.  Use this file
 ! for informational purposes as suggested above.
+!
+!
+! Special note for Debian users
+! -----------------------------
+!
+! Debian policy currently requires application defaults to be included with
+! packages, but considers them as part of the program code. Thus, you should
+! not change this file, as it will get overwritten by an update. If you want
+! to customise, the proper place is `/etc/X11/Xresources'.
+
 
 !-----------------------------------------------------------------------------
 ! User-settable resources
@@ -278,20 +287,23 @@ Ddd*uncompressCommand: @UNCOMPRESS@
 ! The DDD WWW page.
 Ddd*wwwPage: http://www.cs.tu-bs.de/softech/ddd/
 
-! Command to invoke the WWW page.  @URL@ stands for the URL to open.
-! Default is to try a running Netscape first, then to invoke $WWWBROWSER,
-! then to invoke a new Netscape process, then to let a running (X)Emacs
-! do the job, then to invoke Mosaic, then to invoke Lynx in an xterm.
-! Note that if you don't have WWW access, letting all these commands fail
-! may take a lot of time...
+
+! Command to invoke a WWW browser.  @URL@ stands for the URL to open.
+! A large variety of choices, actually.  If you don't have WWW access,
+! letting all these commands fail may take some time...
+
 Ddd*wwwCommand: \
-   netscape -remote 'openURL(@URL@)' \
+   mozilla -remote 'openURL(@URL@)' \
+|| netscape -remote 'openURL(@URL@)' \
 || ${WWWBROWSER-false} '@URL@' \
+|| mozilla '@URL@' \
+|| gnome-help-browser '@URL@' \
 || netscape '@URL@' \
 || gnudoit '(w3-fetch \042@URL@\042)' \
 || mosaic '@URL@' \
 || Mosaic '@URL@' \
 || xterm -e lynx '@URL@'
+
 
 ! The time (in seconds) to wait for synchronous GDB questions to complete
 Ddd*questionTimeout: 10
