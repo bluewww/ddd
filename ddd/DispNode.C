@@ -177,7 +177,7 @@ bool DispNode::update(string& value)
 // Re-create box from current disp_value
 void DispNode::refresh ()
 {
-    disp_box->set_value(disp_value);
+    disp_box->set_value(enabled() ? disp_value : 0);
     mynodeptr->setBox(disp_box->box());
     select(selected_value());
 }
