@@ -902,30 +902,42 @@ int main(int argc, char *argv[])
     if (geteuid() != getuid())
 	no_windows = true;
 
-    // Check if the `--nw' option was given
+    // Check if the `--nw' or `-L' option was given
     string gdb_name = "gdb";
     int gdb_option_pos = -1;
+    int gdb_option_offset = 2;
     for (int i = 1; i < argc; i++)
     {
 	string arg = string(argv[i]);
 	if ((arg == "--debugger" || arg == "-debugger") && i < argc - 1)
 	{
 	    gdb_name = argv[i + 1];
-	    gdb_option_pos = i;
+	    gdb_option_pos    = i;
+	    gdb_option_offset = 2;
 	}
 
-	if (arg == "--nw" || arg == "-nw")
+	if (arg == "--dbx" || arg == "-dbx" 
+	    || arg == "--gdb" || arg == "-gdb"
+	    || arg == "--xdb" || arg == "-xdb")
+	{
+	    gdb_name = arg.after('-', -1);
+	    gdb_option_pos    = i;
+	    gdb_option_offset = 1;
+	}
+
+	if (arg == "--nw" || arg == "-nw" || arg == "-L")
 	{
 	    if (gdb_option_pos >= 0)
 	    {
-		// Strip `--debugger NAME'
-		for (int j = gdb_option_pos; j <= argc - 2; j++)
-		    argv[j] = argv[j + 2];
-		argc -= 2;
-		i    -= 2;
+		// Strip `--debugger NAME'/`--dbx'/`--gdb', etc.
+		for (int j = gdb_option_pos; j <= argc - gdb_option_offset; 
+					     j++)
+		    argv[j] = argv[j + gdb_option_offset];
+		argc -= gdb_option_offset;
+		i    -= gdb_option_offset;
 	    }
 
-	    // Strip `--nw'
+	    // Strip `--nw'/`-L'
 	    for (int j = i; j <= argc - 1; j++)
 		argv[j] = argv[j + 1];
 	    argc -= 1;
@@ -940,7 +952,7 @@ int main(int argc, char *argv[])
 	argv[0] = gdb_name;
 	execvp(gdb_name, argv);
 	perror(gdb_name);
-	return 1;
+	return EXIT_FAILURE;
     }
 
     // Initialize X toolkit
@@ -993,7 +1005,12 @@ int main(int argc, char *argv[])
 
     // Check the X configuration
     if (app_data.check_configuration)
-	return check_x_configuration(toplevel, true);
+    {
+	if (check_x_configuration(toplevel, true))
+	    return EXIT_FAILURE;
+	else
+	    return EXIT_SUCCESS;
+    }
 
     // If needed, fix the X configuration silently
     check_x_configuration(toplevel, false);
@@ -1012,6 +1029,9 @@ int main(int argc, char *argv[])
     DebuggerType type = debugger_type(app_data.debugger);
     if (app_data.debugger_command[0] == '\0')
 	app_data.debugger_command = app_data.debugger;
+
+    // Set host specification
+    gdb_host = (app_data.debugger_host ? app_data.debugger_host : "");
 
     // Check for --version, --help, etc.
     if (app_data.show_version)
@@ -1038,7 +1058,7 @@ int main(int argc, char *argv[])
 	|| app_data.show_resources
 	|| app_data.show_manual
 	|| app_data.show_license)
-	return 0;
+	return EXIT_SUCCESS;
 
     // Warn for incompatible `Ddd' and `~/.dddinit' files
     if (app_data.app_defaults_version == 0)
@@ -1312,9 +1332,6 @@ int main(int argc, char *argv[])
     // Setup history
     init_history_file();
 
-    // Set host specification
-    gdb_host = (app_data.debugger_host ? app_data.debugger_host : "");
-
     // Create GDB interface
     gdb = new_gdb(type, app_data, app_context, argc, argv);
     gdb->set_trace_dialog(app_data.trace_dialog);
@@ -1366,11 +1383,14 @@ int main(int argc, char *argv[])
     // Setup extra version info
     helpOnVersionExtraText = 
 	MString(string(config_info).before("\n\n"), "rm") +
-	MString("\n\n"
-DDD_NAME " is free software and you are welcome to distribute copies of it\n"
-"under certain conditions; type `show copying' to see the conditions.\n"
-"There is absolutely no warranty for " DDD_NAME "; "
-"type `show warranty' for details.\n"
+	MString("\n\n" DDD_NAME " is ", "rm") + 
+	MString("free software", "sl") +
+	MString(" and you are welcome to distribute copies of it\n"
+"under certain conditions; select `" DDD_NAME " License' in the `Help' menu\n"
+"to see the conditions. "
+"There is ", "rm") + MString("absolutely no warranty", "sl")
++ MString(" for " DDD_NAME ";\n"
+"see the " DDD_NAME " License for details.\n"
 "\n"
 "If you appreciate this software, please send a picture postcard to:\n"
 "\n"
@@ -1380,8 +1400,9 @@ DDD_NAME " is free software and you are welcome to distribute copies of it\n"
 "    D-38092 Braunschweig\n"
 "    GERMANY\n"
 "\n"
-"Send bug reports to <" ddd_NAME "-bugs@ips.cs.tu-bs.de>\n"
-"Send comments and suggestions to <" ddd_NAME "@ips.cs.tu-bs.de>\n", "rm");
+"Send bug reports to <" ddd_NAME "-bugs@ips.cs.tu-bs.de>; see the \n"
+DDD_NAME " manual for details on reporting bugs.\n"
+"Send comments and suggestions to <" ddd_NAME "@ips.cs.tu-bs.de>.", "rm");
 
     // Realize all top-level widgets
     XtRealizeWidget(command_shell);
