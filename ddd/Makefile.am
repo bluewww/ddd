@@ -47,6 +47,9 @@ SUFFIXES = .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xbmxx .xpm .xpmxx \
 	   .xface .C~ .c~ .f .f~ .sh .sh~ .fig .eps .jpg .png .gif .pdf \
 	   $(IMGEXT)
 
+# Shared data installation
+dddrootdir   = $(pkgdatadir)-@VERSION@
+
 
 # -----------------------------------------------------------------------------
 # DDD Sources.
@@ -729,38 +732,36 @@ $(srcdir)/tips.html: $(srcdir)/../TIPS
 
 
 # -----------------------------------------------------------------------------
-# DDD VSL header.
+# VSL.
 # -----------------------------------------------------------------------------
 
 # The VSL header files.
 
-VSLDIR  = $(srcdir)/../vsllib
+vsldir  = $(srcdir)/../vsllib
 
-VSL_CPP = $(CPP) -I$(VSLDIR) -I$(prefix)/lib/vsl-include
+VSL_CPP = $(CPP) -I$(vsldir) -I$(prefix)/lib/vsl-include
 
-VSLSOURCES = \
-	$(VSLDIR)/std.vsl \
-	$(VSLDIR)/builtin.vsl \
-	$(VSLDIR)/tab.vsl \
-	$(VSLDIR)/fonts.vsl \
-	$(VSLDIR)/colors.vsl
-
-$(srcdir)/ddd.vsl.h: $(srcdir)/ddd.vsl $(srcdir)/vsl2c.sed $(VSLSOURCES)
-	$(CAT) $(srcdir)/ddd.vsl > tmp.c
-	$(VSL_CPP) tmp.c | $(SED) -f $(srcdir)/vsl2c.sed > $@
-	$(RM) tmp.c
-
-$(srcdir)/ddd.vsl: $(srcdir)/ddd.vsl.m4 $(srcdir)/colors.m4
+$(vsldir)/ddd.vsl: $(srcdir)/ddd.vsl.m4 $(srcdir)/colors.m4
 	( \
 		echo "define(srcdir, \`$(srcdir)')dnl"; \
 		echo "include(srcdir()/ddd.vsl.m4)dnl" \
 	) | $(M4) > $@~ && $(MV) $@~ $@
 
+VSLSOURCES = \
+	$(vsldir)/std.vsl \
+	$(vsldir)/builtin.vsl \
+	$(vsldir)/tab.vsl \
+	$(vsldir)/fonts.vsl \
+	$(vsldir)/colors.vsl
 
+$(srcdir)/ddd.vsl.h: $(vsldir)/ddd.vsl $(srcdir)/vsl2c.sed $(VSLSOURCES)
+	$(CAT) $(vsldir)/ddd.vsl > tmp.c
+	$(VSL_CPP) tmp.c | $(SED) -f $(srcdir)/vsl2c.sed > $@
+	$(RM) tmp.c
 
 
 # -----------------------------------------------------------------------------
-# Lex & Yacc
+# Lex & Yacc.
 # -----------------------------------------------------------------------------
 
 # YACC commands.
@@ -1836,6 +1837,19 @@ host.h: $(srcdir)/host.h.in config.status
 	$(MV) $@~ $@
 
 
+# -----------------------------------------------------------------------------
+# Installation.
+# -----------------------------------------------------------------------------
+
+# These files are to be installed with DDD.
+COPYING: $(srcdir)/../COPYING
+	$(LN_S) $< $@
+
+NEWS: $(srcdir)/../NEWS
+	$(LN_S) $< $@
+
+dddroot_DATA = COPYING NEWS Ddd
+
 
 # -----------------------------------------------------------------------------
 # Distribution.
@@ -1860,7 +1874,7 @@ PROG_STUFF = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
              acconfig.h acspecial.h stamp-h.in config.h \
              $(srcdir)/tips.m4 $(srcdir)/tips.html \
              $(srcdir)/Ddd.in Ddd.ad.h host.h \
-             $(srcdir)/ddd.vsl $(srcdir)/ddd.vsl.h \
+             $(vsldir)/ddd.vsl $(srcdir)/ddd.vsl.h \
              vr.h version.h bld.h build.h configinfo.C \
              COPYING.gz.C NEWS.gz.C ddd.info.txt.gz.C \
              xlibdir.C eps-code.h .gdbinit

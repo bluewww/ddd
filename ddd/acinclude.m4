@@ -2722,3 +2722,50 @@ if test "$ice_cv_motif_dialogs_own_selection_list" = yes; then
 AC_DEFINE(MOTIF_DIALOGS_OWN_SELECTION_LIST)
 fi
 ])dnl
+dnl
+dnl DDD_VERSION
+dnl -----------
+dnl
+dnl Define DDD version.
+dnl *This* is the place where name and version numbers are defined.
+AC_DEFUN(DDD_VERSION,
+[AC_MSG_CHECKING(for product name)
+dnl
+dnl The product name, in various capitalizations.
+ddd=ddd
+Ddd=Ddd
+DDD=DDD
+PACKAGE=${ddd}
+dnl
+dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
+dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
+dnl snapshot of the current development tree.
+VERSION=3.2.90
+dnl
+dnl The version nickname.
+NICKNAME="Da da da"
+dnl 
+dnl The product expiration date, in ISO 8601 YYYY-MM-DD format.
+dnl After this date, users are requested to update the product.
+dnl An empty expiration date means no expiration.
+EXPIRES=
+dnl
+dnl
+AC_SUBST(PACKAGE)dnl
+AC_SUBST(ddd)dnl
+AC_SUBST(Ddd)dnl
+AC_SUBST(DDD)dnl
+AC_SUBST(VERSION)dnl
+AC_SUBST(NICKNAME)dnl
+AC_MSG_RESULT(${PACKAGE} ${VERSION} \"${NICKNAME}\")
+dnl
+dnl
+AC_MSG_CHECKING(for expiration date)
+dnl
+AC_SUBST(EXPIRES)dnl
+if test "$EXPIRES" = ""; then
+AC_MSG_RESULT(no)
+else
+AC_MSG_RESULT(${EXPIRES})
+fi
+])
