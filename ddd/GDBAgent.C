@@ -336,7 +336,10 @@ string GDBAgent::title() const
     switch (type())
     {
     case GDB:
-	return "GDB";
+	if (path().contains("wdb"))
+	    return "WDB";
+	else
+	    return "GDB";
 
     case DBX:
 	if (is_ladebug())

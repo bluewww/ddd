@@ -483,6 +483,7 @@ static struct table {
 } debuggers[] =
 {
     { GDB,  "gdb"  },
+    { GDB,  "wdb"  },
     { DBX,  "dbx"  },
     { DBX,  "ladebug" },
     { XDB,  "xdb"  },
@@ -501,7 +502,6 @@ bool get_debugger_type(const string& debugger_name, DebuggerType& type)
 	    type = debuggers[i].type;
 	    return true;
 	}
-	    
 
     // Failed
     return false;
@@ -513,6 +513,12 @@ const char *default_debugger(const string& debugger_name, DebuggerType type)
     {
 	// This happens when using the `--ladebug' option.
 	return "ladebug";
+    }
+
+    if (type == GDB && debugger_name == "wdb")
+    {
+	// This happens when using the `--wdb' option.
+	return "wdb";
     }
 
     int i;

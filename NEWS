@@ -30,6 +30,11 @@ Debuggers and Languages
 
 - GDB 5.0 is supported.
 
+- You can use `ddd --wdb' to have DDD startup with WDB.  
+
+- When choosing a debugger automatically, DDD will try `wdb' if `gdb'
+  is not available.
+
 - WindRiver's version of GDB (within the Tornado/vxworks environment)
   is supported.  See the DDD Reference, Section `WindRiver GDB' for
   details. (5)

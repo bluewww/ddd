@@ -1571,14 +1571,19 @@ to run @DDD{} with @JDB{}, @PYDB{}, or Perl as inferior debugger.
 
 @item
 If the program is an executable binary, you should use @GDB{}, @DBX{},
-Ladebug, or @XDB{}.  In general, @GDB{} provides the most functionality of
-these three debuggers.
+Ladebug, or @XDB{}.  In general, @GDB{} (or its HP variant, @WDB{})
+provides the most functionality of these debuggers.
 
 Use
 
 @cindex @acronym{GDB}, invoking @DDD{} with
 @example
 @value{ddd} --gdb @var{program}
+@end example
+
+@cindex @acronym{WDB}, invoking @DDD{} with
+@example
+@value{ddd} --wdb @var{program}
 @end example
 
 @cindex @acronym{DBX}, invoking @DDD{} with
@@ -1597,7 +1602,8 @@ Use
 @end example
 
 @noindent
-to run @DDD{} with @GDB{}, @DBX{}, Ladebug, or @XDB{} as inferior debugger.
+to run @DDD{} with @GDB{}, @WDB{}, @DBX{}, Ladebug, or @XDB{} as
+inferior debugger.
 @end itemize
 
 
@@ -1704,6 +1710,7 @@ Giving this option is equivalent to setting the @DDD{}
 
 @item --debugger @var{name}
 @pindex gdb
+@pindex wdb
 @pindex dbx
 @pindex ladebug
 @pindex xdb
@@ -1712,8 +1719,9 @@ Giving this option is equivalent to setting the @DDD{}
 @pindex perl
 Invoke the inferior debugger @var{name}.  This is useful if you have
 several debugger versions around, or if the inferior debugger cannot be
-invoked under its usual name (i.e. @command{gdb}, @command{dbx}, @command{xdb},
-@command{jdb}, @command{pydb}, or @command{perl}).
+invoked under its usual name (i.e. @command{gdb}, @command{wdb},
+@command{dbx}, @command{xdb}, @command{jdb}, @command{pydb}, or
+@command{perl}).
 
 This option can also be used to pass options to the inferior debugger
 that would otherwise conflict with @DDD{} options.  For instance,
@@ -1726,8 +1734,9 @@ to pass the option @option{-d @var{directory}} to @XDB{}, use:
 @noindent
 If you use the @option{--debugger} option, be sure that the type of
 inferior debugger is specified as well.  That is, use one of the options
-@option{--gdb}, @option{--dbx}, @option{--xdb}, @option{--jdb}, @option{--pydb},
-or @option{--perl} (unless the default setting works fine).
+@option{--gdb}, @option{--dbx}, @option{--xdb}, @option{--jdb},
+@option{--pydb}, or @option{--perl} (unless the default setting works
+fine).
 
 Giving this option is equivalent to setting the @DDD{}
 @samp{debuggerCommand} resource to @var{name}.  @xref{Customizing
@@ -2229,6 +2238,14 @@ resource to @var{path}.  @xref{VSL Resources}, for details.
 Show a list of further options controlling the @VSL{} interpreter.  These
 options are intended for debugging purposes and are subject to change
 without further notice.
+
+
+@item --wdb
+Run @WDB{} as inferior debugger.
+
+Giving this option is equivalent to setting the @DDD{}
+@samp{debugger} resource to @samp{wdb}.  @xref{Customizing Debugger
+Interaction}, for details.
 
 
 @item --xdb
@@ -12238,9 +12255,9 @@ Further information is available on the following @GDB{} variants:
 HP's WildeBeest (@WDB{}) is essentially a variant of @GDB{}.  To start
 @DDD{} with @WDB{} as inferior debugger, use
 
-@cindex @acronym{JDB}, invoking @DDD{} with
+@cindex @acronym{WDB}, invoking @DDD{} with
 @example
-@value{ddd} --gdb --debugger wdb @var{program}
+@value{ddd} --wdb @var{program}
 @end example
 
 @xref{GDB}, for further configuration notes.

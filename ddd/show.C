@@ -108,6 +108,7 @@ void show_invocation(const string& gdb_command, ostream& os)
 	"  --jdb              Invoke JDB as inferior debugger.",
 	"  --pydb             Invoke PYDB as inferior debugger.",
 	"  --perl             Invoke Perl as inferior debugger.",
+	"  --wdb              Invoke WDB as inferior debugger.",
 	"  --debugger CMD     Invoke inferior debugger as CMD.",
 	"  --host USER@HOST   Run inferior debugger on HOST.",
 	"  --rhost USER@HOST  Like --host, but use a rlogin connection.",

@@ -133,16 +133,20 @@ else
 GCORE_COMMAND=
 fi
 AC_SUBST(GCORE_COMMAND)dnl
-AC_CHECK_PROGS(DEBUGGER, gdb dbx xdb jdb)dnl
+AC_CHECK_PROGS(DEBUGGER, gdb wdb dbx ladebug xdb jdb)dnl
 case "$DEBUGGER" in
 *gdb*) DEBUGGER_OPTION="";;
+*wdb*) DEBUGGER_OPTION="--wdb";;
 *dbx*) DEBUGGER_OPTION="--dbx";;
+*ladebug*) DEBUGGER_OPTION="--ladebug";;
 *xdb*) DEBUGGER_OPTION="--xdb";;
 *jdb*) DEBUGGER_OPTION="--jdb";;
 esac
 case "$DEBUGGER" in
 gdb) ;;
+wdb) ;;
 dbx) ;;
+ladebug) ;;
 xdb) ;;
 jdb) ;;
 *)   DEBUGGER_OPTION="$DEBUGGER_OPTION --debugger $DEBUGGER";

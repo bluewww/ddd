@@ -476,7 +476,10 @@ static XrmOptionDescRec options[] = {
 { (char *)"-dbx",                   (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"dbx" },
 
 { (char *)"--ladebug",              (char *)XtNdebugger,            XrmoptionNoArg, (char *)"ladebug"},
-{ (char *)"-ladebug", 		   (char *)XtNdebugger,            XrmoptionNoArg, (char *)"ladebug"},
+{ (char *)"-ladebug", 		    (char *)XtNdebugger,            XrmoptionNoArg, (char *)"ladebug"},
+
+{ (char *)"--wdb",                  (char *)XtNdebugger,            XrmoptionNoArg, (char *)"wdb"},
+{ (char *)"-wdb", 		    (char *)XtNdebugger,            XrmoptionNoArg, (char *)"wdb"},
 
 { (char *)"--xdb",                  (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"xdb" },
 { (char *)"-xdb",                   (char *)XtNdebugger,             XrmoptionNoArg,  (char *)"xdb" },
