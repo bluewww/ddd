@@ -337,9 +337,7 @@ Volunteers for these and other projects are welcome!
 
 310 Include `NEWS.gz.C' and `COPYING.gz.C' in the distribution.
 
-311*`Examine Memory' needs a manual entry.
-
-312*Have a `break at regexp ()' entry.
+311*`Examine Memory' and `rbreak' need documentation.
 
 313 Rubber_Buccaneer@Galactic.Headquarters.org thinks that the window
     containing the short cut buttons,i.e. step, next, etc.  should

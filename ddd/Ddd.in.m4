@@ -3808,6 +3808,7 @@ Ddd*toolbar*breakAt.labelString:	Break at ()
 Ddd*toolbar*breakAt2.labelString:	Set Breakpoint at ()
 Ddd*toolbar*clearAt2.labelString:	Clear Breakpoint at ()
 Ddd*toolbar*tempBreakAt.labelString:	Set Temporary Breakpoint at ()
+Ddd*toolbar*regexBreakAt.labelString:	Set Breakpoints at Regexp ()
 Ddd*toolbar*contUntil.labelString:	Continue Until ()
 Ddd*toolbar*enableBreak.labelString:	Enable Breakpoint at ()
 Ddd*toolbar*enableWatch.labelString:	Enable Watchpoint at ()
@@ -3906,6 +3907,8 @@ Ddd*toolbar*breakAt.documentationString:	\
 
 Ddd*toolbar*tempBreakAt.documentationString: \
 @rm Set a temporary breakpoint at the argument LBL(())
+Ddd*toolbar*regexBreakAt.documentationString: \
+@rm Set breakpoints on all functions matching the regular expression in LBL(())
 Ddd*toolbar*contUntil.documentationString: \
 @rm Set a temporary breakpoint at LBL(()) and resume execution
 Ddd*toolbar*enableBreak.documentationString: \

@@ -80,6 +80,10 @@ Source exploration
 - Disabling and enabling breakpoints is now supported on all inferior
   debuggers except JDB.
 
+- Using GDB, you can set breakpoints at all functions matching a
+  regular expression - for instance, `Date::.*' will set a breakpoint
+  on every `Date' member.  See `Break At ()->Set Breakpoints at Regexp ()'
+
 - Value tips and selections work for struct members, too: you can
   point at `A.B', `A->B', or `A::B' and get the current value.
 

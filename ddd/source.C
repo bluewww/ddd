@@ -158,6 +158,11 @@ void gdbTempBreakAtCB(Widget w, XtPointer, XtPointer)
     source_view->create_temp_bp(current_arg(true), w);
 }
 
+void gdbRegexBreakAtCB(Widget w, XtPointer, XtPointer)
+{
+    gdb_command("rbreak " + source_arg->get_string(), w);
+}
+
 void gdbClearAtCB(Widget w, XtPointer, XtPointer)
 {
     source_view->clear_bp(current_arg(true), w);

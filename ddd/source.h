@@ -43,6 +43,7 @@ extern void gdbToggleBreakCB  (Widget, XtPointer, XtPointer);
 extern void gdbLookupCB       (Widget, XtPointer, XtPointer);
 
 extern void gdbTempBreakAtCB  (Widget, XtPointer, XtPointer);
+extern void gdbRegexBreakAtCB (Widget, XtPointer, XtPointer);
 extern void gdbContUntilCB    (Widget, XtPointer, XtPointer);
 extern void gdbSetPCCB        (Widget, XtPointer, XtPointer);
 

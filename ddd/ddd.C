@@ -1366,13 +1366,14 @@ static MMDesc watch_menu[] =
 };
 
 struct BreakItems {
-    enum ArgCmd { TempBreak, Properties, Enable, Sep1,
+    enum ArgCmd { TempBreak, RegexBreak, Properties, Enable, Sep1,
 		  ContUntil, SetPC, Sep2, ClearAt2 };
 };
 
 static MMDesc break_menu[] = 
 {
     { "tempBreakAt",     MMPush, { gdbTempBreakAtCB }},
+    { "regexBreakAt",    MMPush, { gdbRegexBreakAtCB }},
     { "breakProperties", MMPush, { gdbEditBreakpointPropertiesCB }},
     { "enableBreak",     MMPush, { gdbToggleEnableBreakpointCB }},
     MMSep,
@@ -4703,6 +4704,7 @@ void update_arg_buttons()
     bool have_break = have_breakpoint_at_arg();
 
     manage_child(break_menu[BreakItems::TempBreak].widget,   !have_break);
+    manage_child(break_menu[BreakItems::RegexBreak].widget,  !have_break);
     manage_child(break_menu[BreakItems::ContUntil].widget,   !have_break);
     manage_child(break_menu[BreakItems::Sep2].widget,        !have_break);
     manage_child(break_menu[BreakItems::ClearAt2].widget,    !have_break);
@@ -4735,6 +4737,8 @@ void update_arg_buttons()
 		  gdb->can_enable());
     set_sensitive(break_menu[BreakItems::SetPC].widget,
 		  gdb->has_jump_command() || gdb->has_assign_command());
+    set_sensitive(break_menu[BreakItems::RegexBreak].widget,
+		  gdb->type() == GDB);
 
     MString print_ref_label("Print " + gdb->dereferenced_expr("()"));
     XtVaSetValues(print_menu[PrintItems::PrintRef].widget,
