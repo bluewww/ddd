@@ -730,6 +730,10 @@ void send_gdb_command(string cmd, Widget origin,
 	{
 	    gdb->recording(true);
 	}
+	else if (gdb->type() == GDB && ends_recording(cmd))
+	{
+	    plus_cmd_data->refresh_breakpoints = true;
+	}
     }
     else if (is_file_cmd(cmd, gdb))
     {
