@@ -170,10 +170,10 @@ protected:
     DispValue *parse_child(int depth,
 			   string& value,
 			   const string& full_name, 
-			   const string& print_name,
+			   const string& _print_name,
 			   DispValueType type = UnknownType)
     {
-	return parse(this, depth + 1, value, full_name, print_name, type);
+	return parse(this, depth + 1, value, full_name, _print_name, type);
     }
 
     DispValue *parse_child(int depth,

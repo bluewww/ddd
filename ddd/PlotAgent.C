@@ -45,7 +45,7 @@ string PlotAgent::plot_2d_settings = "";
 string PlotAgent::plot_3d_settings = "";
 
 // Start and initialize
-void PlotAgent::start(const string& init)
+void PlotAgent::start_with(const string& init)
 {
     LiterateAgent::start();
     write(init.chars(), init.length());

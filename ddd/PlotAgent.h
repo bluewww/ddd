@@ -97,7 +97,7 @@ public:
     }
 
     // Start and initialize
-    void start(const string& init);
+    void start_with(const string& init);
 
     // Kill
     void abort();

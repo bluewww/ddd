@@ -815,7 +815,7 @@ PlotAgent *new_plotter(string name, DispValue *source)
     if (plot->area != 0)
 	plotter->addHandler(Plot, GetPlotHP, (void *)plot);
 
-    plotter->start(init);
+    plotter->start_with(init);
     plot->plotter = plotter;
 
     return plotter;
