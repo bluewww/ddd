@@ -277,13 +277,26 @@ static Boolean CvtStringToPixmap(Display *display,
     }
 
     // Get pixmap
-    string value = str(fromVal, false);
-    Pixmap p = XmGetPixmap(screen, value, foreground, background);
+    Pixmap p = XmUNSPECIFIED_PIXMAP;
 
-    if (p == XmUNSPECIFIED_PIXMAP)
+    string value = str(fromVal, false);
+
+    // Some Motif versions use `unspecified_pixmap' and `unspecified pixmap'
+    // as values for XmUNSPECIFIED_PIXMAP.  Check for this.
+    string v = downcase(value);
+    v.gsub(" ", "_");
+    if (v.contains("xm", 0))
+	v = v.after("xm");
+    if (v != "unspecified_pixmap")
     {
-	XtDisplayStringConversionWarning(display, fromVal->addr, XmRPixmap);
-	return False;
+	p = XmGetPixmap(screen, value, foreground, background);
+
+	if (p == XmUNSPECIFIED_PIXMAP)
+	{
+	    XtDisplayStringConversionWarning(display, fromVal->addr, 
+					     XmRPixmap);
+	    return False;
+	}
     }
 
     done(Pixmap, p);
