@@ -139,8 +139,7 @@ static void Resize(Widget w)
 // Siddharth Ram <srram@qualcomm.com> says this is also the case
 // for Motif 1.2 => use this definition all the time.
 
-WidgetClass scrolledGraphEditWidgetClass = 
-    (WidgetClass)&xmScrolledWindowClassRec;
+WidgetClass scrolledGraphEditWidgetClass = xmScrolledWindowWidgetClass;
 
 #endif
 
