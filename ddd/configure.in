@@ -565,6 +565,7 @@ dnl
 ICE_CHECK_DECL(_getpty, unistd.h)
 ICE_CHECK_DECL(alloca, alloca.h stdlib.h)
 ICE_CHECK_DECL(asctime, time.h)
+ICE_CHECK_DECL(clock, time.h)
 ICE_CHECK_DECL(difftime, time.h)
 ICE_CHECK_DECL(dup2, unistd.h)
 ICE_CHECK_DECL(endpwent, pwd.h)

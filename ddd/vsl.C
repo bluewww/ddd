@@ -33,6 +33,8 @@ char vsl_rcsid[] =
 #include <iostream.h>
 #include "strclass.h"
 #include <stdlib.h>
+#include <sys/types.h>
+#include <time.h>
 
 #include <X11/Intrinsic.h>      // X Toolkit
 #include <X11/Xlib.h>           // X Library
@@ -76,7 +78,13 @@ String fallback_resources[] =
 static Box *thebox = 0;
 
 // clock()-Funktion
-extern "C" long clock();
+#if !HAVE_CLOCK_DECL
+extern "C" clock_t clock();
+#endif
+
+#ifndef CLOCKS_PER_SEC
+#define CLOCKS_PER_SEC 1000000
+#endif
 
 // Neuanzeige...
 void redraw(Widget w, BoxRegion r, BoxRegion exposed)
@@ -88,12 +96,13 @@ void redraw(Widget w, BoxRegion r, BoxRegion exposed)
     }
 
     // ...und anzeigen
-    long starttime = clock();
+    clock_t starttime = clock();
     thebox->draw(w, r, exposed);
-    long endtime = clock();
+    clock_t endtime = clock();
 
     if (VSEFlags::show_eval_time)
-	cout << " (" << (endtime - starttime) / 1000 << " ms)\n";
+	cout << " (" << (endtime - starttime) * 1000 / CLOCKS_PER_SEC
+	     << " ms)\n";
 
     Flush(w);
 }
