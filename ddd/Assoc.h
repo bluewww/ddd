@@ -152,19 +152,30 @@ public:
 	if (n == 0)
 	    return;
 
-	AssocRec<K,V> *e0 = 0;
-	for (AssocRec<K,V> *e = entries; e != 0; e0 = e, e = e->next)
+	AssocRec<K,V> *prev = 0;
+	AssocRec<K,V> *e = entries;
+	while (e != 0)
+	{
+	    AssocRec<K,V> *next = e->next;
+
 	    if (key == e->key)
 	    {
-		if (e0 == 0)
-		    entries = e->next;
+		if (prev == 0)
+		    entries = next;
 		else
-		    e0->next = e->next;
-		e->next = 0; delete e;
+		    prev->next = next;
+		delete e;
 
 		if (--n == 0)
 		    return;
 	    }
+	    else
+	    {
+		prev = e;
+	    }
+
+	    e = next;
+	}
     }
 
     // Copy constructor
