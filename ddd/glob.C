@@ -28,24 +28,17 @@
 // Check for alloca()
 // AIX requires this to be the first thing in the file.
 #ifdef __GNUC__
-# define alloca __builtin_alloca
-#else /* not GNU C */
-# if HAVE_ALLOCA_H
-#  include <alloca.h>
-# else /* no <alloca.h> */
-#  ifdef _AIX
+#define alloca(size) __builtin_alloca(size)
+#elif HAVE_ALLOCA_H
+#include <alloca.h>		// This should give us a declaration
+#elif defined(_AIX)
  #pragma alloca
-#  else /* not AIX */
-#   include <stdlib.h>		// alloca may be declared in <stdlib.h> ...
-#   if HAVE_MALLOC_H
-#    include <malloc.h>		// ... or in <malloc.h>.
-#   endif
-#   if !defined(alloca) && !HAVE_ALLOCA_DECL
+#else /* not AIX */
+#include <stdlib.h>		// In GNU libc, alloca is declared here
+#if !defined(alloca) && !HAVE_ALLOCA_DECL
 extern "C" char *alloca(int size);
-#   endif /* no alloca decl */
-#  endif /* not AIX */
-# endif /* no <alloca.h> */
-#endif /* not GNU C */
+#endif /* no alloca decl */
+#endif /* not AIX */
 
 #include <sys/types.h>
 
