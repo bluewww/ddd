@@ -74,7 +74,6 @@ Volunteers for fixing these and other bugs are welcome!
     BSD-like formats, as in Linux, SunOS, and Solaris.
 
 249 Zdenek Sekera <zs@cray.com> reports:
- 
     c. Some Makefiles in the subdirectories do not use CFLAGS thus
        making it neccessary to always edit them to put in the correct
        options.  This is very time consuming in particular on
