@@ -248,23 +248,14 @@ static int check_xnlspath(Display *display, bool verbose)
 
     String me, my_class;
     XtGetApplicationNameAndClass(display, &me, &my_class);
-    String nls_file = "nls.dir";
 
     String xnlspath = 0;
 
     if (xnlspath == 0)
 	xnlspath = getenv("XNLSPATH");
     if (xnlspath == 0)
-    {
-	xnlspath = XtResolvePathname(display, "nls", nls_file, "",
+	xnlspath = XtResolvePathname(display, "nls", "", "",
 				     NULL, NULL, 0, NULL);
-	if (xnlspath)
-	{
-	    static string name;
-	    name = dirname(xnlspath);
-	    xnlspath = name;
-	}
-    }
 
     if (xnlspath)
     {
@@ -283,10 +274,8 @@ static int check_xnlspath(Display *display, bool verbose)
 
     if (xlibdir(display, verbose) != 0)
     {
-	string path;
-	path = xlibdir(display, verbose);
-	path += "/nls";
-	if (is_file(path + "/" + nls_file))
+	string path = string(xlibdir(display, verbose)) + "/nls";
+	if (is_directory(path))
 	{
 	    if (verbose)
 	    {
