@@ -36,6 +36,7 @@ char question_rcsid[] =
 
 #include "question.h"
 
+#include "assert.h"
 #include "ddd.h"
 #include "AppData.h"
 #include "Command.h"
@@ -67,6 +68,8 @@ struct GDBReply {
 // Timeout proc - called from XtAppAddTimeOut()
 static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
 {
+    assert(gdb_question_running);
+
     GDBReply *reply = (GDBReply *)client_data;
     reply->answer   = NO_GDB_ANSWER;
     reply->received = true;
@@ -76,6 +79,8 @@ static void gdb_reply_timeout(XtPointer client_data, XtIntervalId *)
 // GDB sent a reply - Called from GDBAgent::send_question()
 static void gdb_reply(const string& complete_answer, void *qu_data)
 {
+    assert(gdb_question_running);
+
     GDBReply *reply = (GDBReply *)qu_data;
     reply->answer   = complete_answer;
     reply->received = true;
@@ -129,9 +134,10 @@ static void wait_for_gdb_reply(GDBReply *reply, int timeout)
 	XtAppProcessEvent(XtWidgetToApplicationContext(gdb_w), 
 			  XtIMTimer | XtIMAlternateInput);
 
-    // Remove timeout in case it's still running
-    if (reply->answered)
+    if (reply->answered || !reply->received)
     {
+	// Reply has been answered or will not be answered any more:
+	// Remove timeout
 	if (timer && timeout > 0)
 	    XtRemoveTimeOut(timer);
     }
