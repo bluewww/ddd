@@ -27,9 +27,7 @@
 char Box_rcsid[] = 
     "$Id$";
 
-extern "C" {
 #include <string.h>
-}
 
 #include "assert.h"
 #include <X11/X.h>
