@@ -3,7 +3,7 @@
 % Load plain if necessary, i.e., if running under initex.
 \expandafter\ifx\csname fmtname\endcsname\relax\input plain\fi
 %
-\def\texinfoversion{1999-09-25.10}
+\def\texinfoversion{1999-09-25.10 with PostScript fonts}
 %
 % Copyright (C) 1985, 86, 88, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99
 % Free Software Foundation, Inc.
@@ -1063,6 +1063,30 @@ where each line of input produces a line of output.}
 \def\sfbshape{ss}
 \def\scshape{csc}
 \def\scbshape{csc}
+
+% Use PostScript fonts
+\ifx\postscript\undefined\relax
+\else
+\def\fontprefix{}
+\def\setfont#1#2#3#4{\font#1=\fontprefix#2 scaled #4}
+\def\pssize{8r}
+\def\rmshape{ptmr\pssize}
+\def\rmbshape{ptmb\pssize}            %where the normal face is bold
+\def\bfshape{ptmb\pssize}
+\def\bxshape{ptmb\pssize}
+\def\ttshape{pcrr\pssize}
+\def\ttbshape{pcrb\pssize}
+\def\ttslshape{pcrbo\pssize}
+\def\itshape{ptmri\pssize}
+\def\itbshape{ptmbi\pssize}
+\def\slshape{ptmro\pssize}
+\def\slbshape{ptmbo\pssize}
+\def\sfshape{phvr\pssize}
+\def\sfbshape{phvb\pssize}
+\def\scshape{cmcsc10}
+\def\scbshape{cmcsc10}
+\fi
+% End of PostScript hacks
 
 \ifx\bigger\relax
 \let\mainmagstep=\magstep1
