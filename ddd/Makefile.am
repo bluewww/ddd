@@ -1911,6 +1911,6 @@ ddd.$(OBJEXT): $(PROG_STUFF)
 
 CLEANFILES = build.h ddd.?? ddd.??s ddd.ps ddd.pdf *.tmp ddd.html \
 	$(PS_IMAGES) $(PDF_IMAGES) $(HTML_IMAGES)
-DISTCLEANFILES = build.h host.h root.h ../config.cache
+DISTCLEANFILES = build.h host.h root.h ../config.cache USERINFO
 
 diststuff: $(EXTRA_DIST)
