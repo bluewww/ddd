@@ -61,7 +61,7 @@ DispValueType determine_type (string value)
 	value = value.after(']');
 
     static regex 
-	RXreference("([(][^)]*[)] )? *@ *(0x[0-9a-f]+|[(]nil[)]) *:.*");
+	RXreference("([(][^)]*[)] )? *@ *(0x?[0-9a-f]+|[(]nil[)]) *:.*");
     if (value.matches(RXreference))
 	return Reference;
 
@@ -77,15 +77,16 @@ DispValueType determine_type (string value)
     }
 
     static regex 
-	RXstr_or_cl_begin("({\n|record\n|RECORD\n|struct|class|union).*");
+	RXstr_or_cl_begin("(0x?[0-9a-f]+|[(]nil[)])? *"
+			  "({\n|record\n|RECORD\n|struct|class|union).*");
     if (value.matches(RXstr_or_cl_begin))
     {
 	static regex 
 	    RXstr_or_cl_begin_s("({\n|record\n|RECORD\n)");
 
-	// DEC DBX uses `{' for arrays and structs.  So, we check for
-	// some member of this struct -- that is, a ` = ' before
-	// any other sub-structure.
+	// DEC DBX uses `{' for arrays as well as for structs.  So, we
+	// check for some member of this struct -- that is, a ` = '
+	// before any other sub-structure.
 	string v = value.after(RXstr_or_cl_begin_s);
 	int eq_pos  = v.index(" = ");
 	int str_pos = v.index(RXstr_or_cl_begin_s);
@@ -95,7 +96,7 @@ DispValueType determine_type (string value)
     }
 
     static regex 
-	RXpointer_value("([(][^)]*[)] )?(0x[0-9a-f]+|[(]nil[)]).*");
+	RXpointer_value("([(][^)]*[)] )?(0x?[0-9a-f]+|[(]nil[)]).*");
     if (value.matches(RXpointer_value))
 	return Pointer;
 
@@ -316,7 +317,12 @@ bool read_array_begin (string& value)
 {
     read_leading_blanks (value);
 
-    // DBX on DEC prepends `struct' or `class' before each struct
+    // XDB prepends the address before each struct
+    if (value.contains("0x", 0) || value.contains("00", 0))
+	value = value.after(RXblanks_or_tabs);
+
+    // DBX on DEC prepends `struct' or `class' before each struct;
+    // XDB also appends the struct type name.
     if (value.contains("struct", 0) 
 	|| value.contains("class", 0) 
 	|| value.contains("union", 0))
@@ -348,6 +354,10 @@ bool read_array_begin (string& value)
 bool read_array_next (string& value)
 {
     bool following = false;
+
+    // XDB appends `;' after each struct element
+    if (value.contains(';', 0))
+	value = value.after(0);
 
     if (value.contains('\n', 0))
 	following = true;
@@ -407,6 +417,11 @@ bool read_array_end (string& value)
 	|| value.contains(']', 0))
     {
 	value = value.after(0);
+
+	// XDB appends `;' after each struct
+	if (value.contains(';', 0))
+	    value = value.after(0);
+
 	return false;		// Array is done.
     }
 

@@ -387,7 +387,11 @@ string read_next_display (string& displays, GDBAgent *)
 // 
 string get_disp_value_str (/*const*/ string& display, GDBAgent *)
 {
-    return display.after (" = ");
+    string d(display);
+    static regex RXeqeq("[^{};,\n=]+ = [^{};,\n=]+ = .*");
+    if (d.matches(RXeqeq))
+	d = d.after(" = ");
+    return d.after (" = ");
 }
 
 //----------------------------------------------------------------------------
@@ -569,11 +573,11 @@ string  read_disp_nr_str (string& display, GDBAgent *gdb)
 }
 
 // ***************************************************************************
-//
-string read_disp_name (string& display, GDBAgent *)
+// Return display name from DISPLAY; leave display value in DISPLAY
+string read_disp_name (string& display, GDBAgent *gdb)
 {
     string name = display.before (" = ");
-    display = display.after (" = ");
+    display = get_disp_value_str(display, gdb);
     return name;
 }
 
