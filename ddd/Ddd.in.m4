@@ -300,7 +300,7 @@ Ddd*wwwCommand: \
 ! The Gnuplot command.
 ! The string `@FONT@' is replaced by the current DDD default font.
 Ddd*plotCommand: \
-gnuplot -font '@FONT@' -geometry +5000+5000 -bw 0 -bg 'TEXT_BACKGROUND_COLOR'
+gnuplot -bg 'TEXT_BACKGROUND_COLOR' -font '@FONT@' -geometry +5000+5000
 
 ! The Gnuplot window class.
 Ddd*plotWindow: Gnuplot
@@ -477,7 +477,7 @@ Ddd*indentCode:	        4
 
 ! Width of line numbers (if enabled; see the `displayLineNumbers' resource)
 ! Line numbers wider than this value extend into the breakpoint space.
-Ddd*lineNumberWidth:	4
+Ddd*lineNumberWidth:	5
 
 ! The minimum number of lines to show before the current location.
 Ddd*linesAboveCursor:	2
@@ -3056,10 +3056,9 @@ Ddd*preferences*buttons*shadowThickness:	2
 Ddd*preferences*buttons*alignment:		XmALIGNMENT_CENTER
 Ddd*preferences*panel*XmRowColumn.marginHeight: 0
 
-Ddd*preferences*buttons*general.labelString:	\ General\ 
+Ddd*preferences*buttons*general.labelString:	\ \ \ General\ \ \ 
 Ddd*preferences*buttons*source.labelString:	Source
 Ddd*preferences*buttons*data.labelString:	Data
-Ddd*preferences*buttons*layout.labelString:	Layout
 Ddd*preferences*buttons*startup.labelString:	Startup
 Ddd*preferences*buttons*fonts.labelString:	Fonts
 Ddd*preferences*buttons*helpers.labelString:	Helpers
@@ -3110,7 +3109,7 @@ Ddd*preferences*tips.labelString: as Popup Tips
 Ddd*preferences*docs.labelString: in the Status Line
 
 Ddd*preferences*tabCompletion.labelString: \
-Tab key Completes
+Tab Key Completes
 Ddd*preferences*inAllWindows.labelString: in All Windows
 Ddd*preferences*inConsole.labelString:    in Console Only
 
@@ -3145,11 +3144,11 @@ ITEM If LBL(Cache source files) is set, source texts are cached in memory.\n\
 ITEM If LBL(Cache machine code) is set, disassembled code is cached \
 in memory.\n\
     Otherwise, code is re-disassembled upon each function change.\n\
+ITEM LBL(Display line numbers) enables numbered source lines.\n\
 ITEM In LBL(Tab Width), you can set the spacing of tab stops.\n\
     Setting the tab width to 8 sets a tab stop every 8 characters.\n\
 ITEM In LBL(Indentation), you can indent the source and machine code,\n\
     giving additional room for the breakpoint area.\n\
-    Setting the source indentation to 8 or more also enables line numbers.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
@@ -3173,10 +3172,10 @@ Ddd*preferences*cacheSource.labelString:	Source Files
 Ddd*preferences*cacheCode.labelString:		Machine Code
 
 Ddd*preferences*find.labelString:	        Find
-Ddd*preferences*wordsOnly.labelString:		\
-Words Only\ 
-Ddd*preferences*caseSensitive.labelString:	\
-Case Sensitive
+Ddd*preferences*wordsOnly.labelString:		Words Only\ 
+Ddd*preferences*caseSensitive.labelString:	Case Sensitive
+
+Ddd*preferences*lineNumbers.labelString:	Display Source Line Numbers
 
 Ddd*preferences*tabWidth.orientation:		XmHORIZONTAL
 Ddd*preferences*tabWidth.minimum:		1
@@ -3216,13 +3215,6 @@ ITEM LBL(Show edge annotations) enables named edges.\n\
 ITEM LBL(Show titles) enables titles of dependent displays.\n\
 ITEM If LBL(Close data window when deleting last display) is set,\n\
     deleting the last display automatically closes the data window.\n\
-\n\
-Use the buttons above to view and change other preferences.\n\
-Click on LBL(Reset) to restore the saved preferences.
-
-Ddd*preferences*layout*helpString:	\
-@rm These are the EMPH(Layout Preferences).\n\
-\n\
 ITEM LBL(Compact layout) enables a compact layout,\n\
     suitable for homogeneous structures only.\n\
 ITEM LBL(Automatic layout) makes DDD layout the graph after each change.\n\
@@ -3242,25 +3234,29 @@ Ddd*preferences*align2dArrays.labelString:	\
 Display Two-Dimensional Arrays as Tables
 Ddd*preferences*snapToGrid.labelString:	        \
 Auto-Align Displays on Nearest Grid Point
+Ddd*preferences*show.labelString:	        \
+Show
 Ddd*preferences*hints.labelString:	        \
-Show Edge Hints
+Edge Hints
 Ddd*preferences*annotations.labelString:	\
-Show Edge Annotations
+Edge Annotations
 Ddd*preferences*dependentTitles.labelString:    \
-Show Titles of Dependent Displays
+Titles of Dependent Displays
 Ddd*preferences*autoClose.labelString:	        \
 Close Data Window when Deleting last Display
 
+Ddd*preferences*layout.labelString:	        \
+Layout
 Ddd*preferences*auto.labelString:	        \
-Automatic Layout
+Automatic
 Ddd*preferences*compact.labelString:	        \
-Compact Layout
+Compact
 
 Ddd*preferences*gridSize.orientation:		XmHORIZONTAL
 Ddd*preferences*gridSize.minimum:		0
 Ddd*preferences*gridSize.maximum:		64
 Ddd*preferences*gridSize.showValue:		on
-Ddd*preferences*gridSize.titleString:		Grid size
+Ddd*preferences*gridSize.titleString:		Grid Size
 
 Ddd*preferences*startup*helpString:   \
 @rm These are the EMPH(Startup Preferences), effective only after a restart.\n\
@@ -3318,7 +3314,7 @@ Ddd*dataScrollingMenu*panner.labelString:	Panner
 Ddd*dataScrollingMenu*scrollbars.labelString:	Scrollbars
 
 Ddd*preferences*debugger.labelString:		Debugger Type
-Ddd*preferences*debuggerMenu*auto.labelString:	Automatic
+Ddd*preferences*debuggerMenu*auto.labelString:	Auto
 Ddd*debuggerMenu*gdb.labelString:		GDB
 Ddd*debuggerMenu*dbx.labelString:		DBX
 Ddd*debuggerMenu*xdb.labelString:		XDB
@@ -3326,9 +3322,9 @@ Ddd*debuggerMenu*jdb.labelString:		JDB
 Ddd*debuggerMenu*pydb.labelString:		PYDB
 Ddd*debuggerMenu*perl.labelString:		Perl
 Ddd*debuggerMenu.orientation:	      	        XmVERTICAL
-Ddd*debuggerMenu.numColumns:	      	        3
+Ddd*debuggerMenu.numColumns:	      	        2
 
-Ddd*preferences*show.labelString:	        Startup Windows
+Ddd*preferences*startupWindows.labelString:     Startup Windows
 Ddd*preferences*splashScreen.labelString:	DDD Splash Screen
 Ddd*preferences*startupTips.labelString:	Tip of the Day
 
@@ -3369,6 +3365,8 @@ ITEM LBL(Edit Sources) invokes an X editor for the current source file.\n\
     SAMP(@ FILE@ ) is replaced by the current file name.\n\
     SAMP(@ LINE@ ) is replaced by the current line.\n\
     Example: SAMP(nedit @ FILE@ )\n\
+ITEM LBL(Plot) invokes a Gnuplot program for array data.\n\
+    Example: SAMP(gnuplot)\n\
 ITEM LBL(Get Core File) is a command to get a core file \
 from a running process.\n\
     SAMP(@ FILE@ ) is replaced by the base name of the target core file.\n\
@@ -3394,6 +3392,7 @@ Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
 
 Ddd*preferences*edit*labelString:		Edit Sources
+Ddd*preferences*plot*labelString:		Plot
 Ddd*preferences*get_core*labelString:		Get Core File
 Ddd*preferences*ps*labelString:			List Processes
 Ddd*preferences*term*labelString:		Execution Window

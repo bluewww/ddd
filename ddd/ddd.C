@@ -1071,6 +1071,7 @@ static MMDesc scales_menu[] =
 };
 
 
+static Widget display_line_numbers_w;
 static Widget refer_sources_w;
 static MMDesc source_preferences_menu[] = 
 {
@@ -1079,6 +1080,9 @@ static MMDesc source_preferences_menu[] =
     { "referSources", MMRadioPanel, MMNoCB, refer_menu, &refer_sources_w, 0,0},
     { "find",         MMButtonPanel, MMNoCB, find_preferences_menu, 0, 0, 0 },
     { "cache",        MMButtonPanel, MMNoCB, cache_menu, 0, 0, 0 },
+    { "lineNumbers",  MMToggle,
+      { sourceToggleDisplayLineNumbersCB, 0 }, 0, 
+      &display_line_numbers_w, 0, 0 },
     { "scales",       MMPanel | MMUnmanagedLabel, 
       			MMNoCB, scales_menu, 0, 0, 0 },
     MMEnd
@@ -1094,38 +1098,43 @@ static Widget graph_show_hints_w;
 static Widget graph_show_annotations_w;
 static Widget graph_show_dependent_titles_w;
 static Widget graph_auto_close_w;
+static Widget graph_compact_layout_w;
+static Widget graph_auto_layout_w;
+static Widget graph_snap_to_grid_w;
+static Widget graph_grid_size_w;
 
-static MMDesc data_preferences_menu[] = 
+static MMDesc show_menu[] = 
 {
-    { "detectAliases", MMToggle, { graphToggleDetectAliasesCB, 0 },
-      NULL, &graph_detect_aliases_w, 0, 0 },
-    { "clusterDisplays", MMToggle, { graphToggleClusterDisplaysCB, 0 },
-      NULL, &graph_cluster_displays_w, 0, 0 }, 
-    { "align2dArrays", MMToggle,  { graphToggleAlign2dArraysCB, 0 },
-      NULL, &graph_align_2d_arrays_w, 0, 0 },
     { "hints", MMToggle, { graphToggleShowHintsCB, 0 },
       NULL, &graph_show_hints_w, 0, 0 },
     { "annotations", MMToggle, { graphToggleShowAnnotationsCB, 0 },
       NULL, &graph_show_annotations_w, 0, 0 },
     { "dependentTitles", MMToggle, { graphToggleShowDependentTitlesCB, 0 },
       NULL, &graph_show_dependent_titles_w, 0, 0 },
-    { "autoClose", MMToggle,  { graphToggleAutoCloseCB, 0 },
-      NULL, &graph_auto_close_w, 0, 0 },
     MMEnd
 };
 
-static Widget graph_compact_layout_w;
-static Widget graph_auto_layout_w;
-static Widget graph_snap_to_grid_w;
-static Widget graph_grid_size_w;
-
-// Layout preferences
-static MMDesc layout_preferences_menu[] =
+static MMDesc layout_menu[] =
 {
     { "compact", MMToggle,  { graphToggleCompactLayoutCB, 0 },
       NULL, &graph_compact_layout_w, 0, 0 },
     { "auto",    MMToggle,  { graphToggleAutoLayoutCB, 0 },
       NULL, &graph_auto_layout_w, 0, 0 },
+    MMEnd
+};
+
+static MMDesc data_preferences_menu[] = 
+{
+    { "show",          MMPanel, MMNoCB, show_menu, 0, 0, 0 },
+    { "layout",        MMPanel, MMNoCB, layout_menu, 0, 0, 0 },
+    { "detectAliases", MMToggle, { graphToggleDetectAliasesCB, 0 },
+      NULL, &graph_detect_aliases_w, 0, 0 },
+    { "clusterDisplays", MMToggle, { graphToggleClusterDisplaysCB, 0 },
+      NULL, &graph_cluster_displays_w, 0, 0 }, 
+    { "align2dArrays", MMToggle,  { graphToggleAlign2dArraysCB, 0 },
+      NULL, &graph_align_2d_arrays_w, 0, 0 },
+    { "autoClose",     MMToggle,  { graphToggleAutoCloseCB, 0 },
+      NULL, &graph_auto_close_w, 0, 0 },
     { "snapToGrid",    MMToggle,  { graphToggleSnapToGridCB, 0 },
       NULL, &graph_snap_to_grid_w, 0, 0 },
     { "gridSize",      MMScale,   { graphSetGridSizeCB, 0 },
@@ -1196,6 +1205,8 @@ static Widget set_debugger_pydb_w;
 static Widget set_debugger_perl_w;
 static MMDesc debugger_menu [] = 
 {
+    { "auto", MMToggle, { dddSetDebuggerCB, XtPointer(-1) },
+      NULL, &set_debugger_auto_w, 0, 0 },
     { "gdb", MMToggle, { dddSetDebuggerCB, XtPointer(GDB) },
       NULL, &set_debugger_gdb_w, 0, 0 },
     { "dbx", MMToggle, { dddSetDebuggerCB, XtPointer(DBX) },
@@ -1208,15 +1219,13 @@ static MMDesc debugger_menu [] =
       NULL, &set_debugger_pydb_w, 0, 0 },
     { "perl", MMToggle, { dddSetDebuggerCB, XtPointer(PERL) },
       NULL, &set_debugger_perl_w, 0, 0 },
-    { "auto", MMToggle, { dddSetDebuggerCB, XtPointer(-1) },
-      NULL, &set_debugger_auto_w, 0, 0 },
     MMEnd
 };
 
 static Widget startup_tips_w;
 static Widget splash_screen_w;
 
-static MMDesc show_startup_menu [] =
+static MMDesc startup_menu [] =
 {
     { "splashScreen", MMToggle, { SetSplashScreenCB, 0 }, 
       NULL, &splash_screen_w, 0, 0 },
@@ -1246,7 +1255,7 @@ static MMDesc startup_preferences_menu [] =
     { "keyboardFocus",   MMRadioPanel,  MMNoCB, keyboard_focus_menu, 0, 0, 0 },
     { "dataScrolling",   MMRadioPanel,  MMNoCB, data_scrolling_menu, 0, 0, 0 },
     { "debugger",        MMRadioPanel,  MMNoCB, debugger_menu, 0, 0, 0 },
-    { "show",            MMButtonPanel, MMNoCB, show_startup_menu, 0, 0, 0 },
+    { "startupWindows",  MMButtonPanel, MMNoCB, startup_menu, 0, 0, 0 },
     MMEnd
 };
 
@@ -1280,6 +1289,7 @@ static MMDesc font_preferences_menu [] =
 
 
 static Widget edit_command_w;
+static Widget plot_command_w;
 static Widget get_core_command_w;
 static Widget ps_command_w;
 static Widget term_command_w;
@@ -1290,6 +1300,8 @@ static MMDesc helpers_preferences_menu [] =
 {
     { "edit",       MMTextField, { dddSetEditCommandCB, 0 }, 
       NULL, &edit_command_w, 0, 0},
+    { "plot",       MMTextField, { dddSetPlotCommandCB, 0 }, 
+      NULL, &plot_command_w, 0, 0},
     { "get_core",   MMTextField, { dddSetGetCoreCommandCB, 0 }, 
       NULL, &get_core_command_w, 0, 0},
     { "ps",         MMTextField, { dddSetPSCommandCB, 0 },
@@ -3554,15 +3566,13 @@ void update_options()
     set_toggle(set_display_text_w,       !app_data.display_glyphs);
     set_toggle(set_refer_path_w,         app_data.use_source_path);
     set_toggle(set_refer_base_w,         !app_data.use_source_path);
+    set_toggle(display_line_numbers_w,   app_data.display_line_numbers);
 
     if (tab_width_w != 0)
     {
-	XtVaSetValues(tab_width_w,     XmNvalue, app_data.tab_width, NULL);
-	int source_indent = app_data.indent_source;
-	if (app_data.display_line_numbers)
-	    source_indent += app_data.line_number_width;
-	XtVaSetValues(source_indent_w, XmNvalue, source_indent, NULL);
-	XtVaSetValues(code_indent_w,   XmNvalue, app_data.indent_code, NULL);
+	XtVaSetValues(tab_width_w,     XmNvalue, app_data.tab_width,     NULL);
+	XtVaSetValues(source_indent_w, XmNvalue, app_data.indent_source, NULL);
+	XtVaSetValues(code_indent_w,   XmNvalue, app_data.indent_code,   NULL);
     }
 
     set_toggle(led_w, app_data.blink_while_busy);
@@ -3734,6 +3744,7 @@ void update_options()
     EnableTextDocs(app_data.value_docs);
 
     set_string(edit_command_w,       app_data.edit_command);
+    set_string(plot_command_w,       app_data.plot_command);
     set_string(get_core_command_w,   app_data.get_core_command);
     set_string(ps_command_w,         app_data.ps_command);
     set_string(term_command_w,       app_data.term_command);
@@ -3849,6 +3860,10 @@ void save_option_state()
     edit_command = initial_app_data.edit_command;
     initial_app_data.edit_command = edit_command;
 
+    static string plot_command;
+    plot_command = initial_app_data.plot_command;
+    initial_app_data.plot_command = plot_command;
+
     static string get_core_command;
     get_core_command = initial_app_data.get_core_command;
     initial_app_data.get_core_command = get_core_command;
@@ -3963,6 +3978,9 @@ static void ResetSourcePreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(cache_machine_code_w, 
 		      initial_app_data.cache_machine_code);
 
+    notify_set_toggle(display_line_numbers_w, 
+		      initial_app_data.display_line_numbers);
+
     if (app_data.tab_width != initial_app_data.tab_width)
     {
 	app_data.tab_width = initial_app_data.tab_width;
@@ -4049,6 +4067,32 @@ static void ResetDataPreferencesCB(Widget, XtPointer, XtPointer)
 		      
 	update_options();
     }
+
+    notify_set_toggle(graph_compact_layout_w, 
+	       initial_layout_mode == CompactLayoutMode);
+    notify_set_toggle(graph_auto_layout_w, initial_auto_layout);
+    notify_set_toggle(graph_snap_to_grid_w, initial_snap_to_grid);
+
+    Dimension grid_width, grid_height;
+    Boolean show_grid;
+    XtVaGetValues(data_disp->graph_edit, 
+		  XtNgridWidth,  &grid_width,
+		  XtNgridHeight, &grid_height,
+		  XtNshowGrid,   &show_grid,
+		  NULL);
+
+    if (grid_width  != initial_grid_width || 
+	grid_height != initial_grid_height ||
+	show_grid   != initial_show_grid)
+    {
+	XtVaSetValues(data_disp->graph_edit,
+		      XtNgridWidth,  initial_grid_width,
+		      XtNgridHeight, initial_grid_height,
+		      XtNshowGrid,   initial_show_grid,
+		      NULL);
+		      
+	update_options();
+    }
 }
 
 static bool data_preferences_changed()
@@ -4081,41 +4125,6 @@ static bool data_preferences_changed()
     if (app_data.show_dependent_display_titles != 
 	initial_app_data.show_dependent_display_titles)
 	return true;
-
-    return false;
-}
-
-static void ResetLayoutPreferencesCB(Widget, XtPointer, XtPointer)
-{
-    notify_set_toggle(graph_compact_layout_w, 
-	       initial_layout_mode == CompactLayoutMode);
-    notify_set_toggle(graph_auto_layout_w, initial_auto_layout);
-    notify_set_toggle(graph_snap_to_grid_w, initial_snap_to_grid);
-
-    Dimension grid_width, grid_height;
-    Boolean show_grid;
-    XtVaGetValues(data_disp->graph_edit, 
-		  XtNgridWidth,  &grid_width,
-		  XtNgridHeight, &grid_height,
-		  XtNshowGrid,   &show_grid,
-		  NULL);
-
-    if (grid_width  != initial_grid_width || 
-	grid_height != initial_grid_height ||
-	show_grid   != initial_show_grid)
-    {
-	XtVaSetValues(data_disp->graph_edit,
-		      XtNgridWidth,  initial_grid_width,
-		      XtNgridHeight, initial_grid_height,
-		      XtNshowGrid,   initial_show_grid,
-		      NULL);
-		      
-	update_options();
-    }
-}
-
-static bool layout_preferences_changed()
-{
     Boolean show_grid, snap_to_grid, auto_layout;
     LayoutMode layout_mode;
     Dimension grid_width, grid_height;
@@ -4308,6 +4317,7 @@ static bool font_preferences_changed()
 static void ResetHelpersPreferencesCB(Widget, XtPointer, XtPointer)
 {
     set_string(edit_command_w,       initial_app_data.edit_command);
+    set_string(plot_command_w,       initial_app_data.plot_command);
     set_string(get_core_command_w,   initial_app_data.get_core_command);
     set_string(ps_command_w,         initial_app_data.ps_command);
     set_string(term_command_w,       initial_app_data.term_command);
@@ -4318,6 +4328,9 @@ static void ResetHelpersPreferencesCB(Widget, XtPointer, XtPointer)
 static bool helpers_preferences_changed()
 {
     if (string(app_data.edit_command) != string(initial_app_data.edit_command))
+	return true;
+
+    if (string(app_data.plot_command) != string(initial_app_data.plot_command))
 	return true;
 
     if (string(app_data.get_core_command) != 
@@ -4353,8 +4366,6 @@ static void ResetPreferencesCB(Widget w, XtPointer client_data,
 	ResetSourcePreferencesCB(w, client_data, call_data);
     else if (panel_name == "data")
 	ResetDataPreferencesCB(w, client_data, call_data);
-    else if (panel_name == "layout")
-	ResetLayoutPreferencesCB(w, client_data, call_data);
     else if (panel_name == "startup")
 	ResetStartupPreferencesCB(w, client_data, call_data);
     else if (panel_name == "fonts")
@@ -4377,8 +4388,6 @@ void update_reset_preferences()
 	    sensitive = source_preferences_changed();
 	else if (panel_name == "data")
 	    sensitive = data_preferences_changed();
-	else if (panel_name == "layout")
-	    sensitive = layout_preferences_changed();
 	else if (panel_name == "startup")
 	    sensitive = startup_preferences_changed();
 	else if (panel_name == "fonts")
@@ -4562,11 +4571,9 @@ static void make_preferences(Widget parent)
     Widget general_button =
 	add_panel(change, buttons, "general", general_preferences_menu, 
 	      max_width, max_height, false);
-    add_panel(change, buttons, "source",  source_preferences_menu,  
+    add_panel(change, buttons, "source",  source_preferences_menu, 
 	      max_width, max_height, false);
-    add_panel(change, buttons, "data",    data_preferences_menu,    
-	      max_width, max_height, false);
-    add_panel(change, buttons, "layout",  layout_preferences_menu,    
+    add_panel(change, buttons, "data",    data_preferences_menu, 
 	      max_width, max_height, false);
     add_panel(change, buttons, "startup", startup_preferences_menu, 
 	      max_width, max_height, false);

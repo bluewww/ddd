@@ -117,6 +117,7 @@ extern void dddSetDebuggerCB                (Widget, XtPointer, XtPointer);
 extern void dddSetBindingStyleCB            (Widget, XtPointer, XtPointer);
 
 extern void dddSetEditCommandCB             (Widget, XtPointer, XtPointer);
+extern void dddSetPlotCommandCB             (Widget, XtPointer, XtPointer);
 extern void dddSetGetCoreCommandCB          (Widget, XtPointer, XtPointer);
 extern void dddSetPSCommandCB               (Widget, XtPointer, XtPointer);
 extern void dddSetTermCommandCB             (Widget, XtPointer, XtPointer);

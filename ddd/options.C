@@ -259,27 +259,11 @@ void sourceSetSourceIndentCB (Widget, XtPointer, XtPointer call_data)
 {
     XmScaleCallbackStruct *info = (XmScaleCallbackStruct *)call_data;
 
-    if (info->value > int(app_data.line_number_width))
-    {
-	app_data.indent_source = info->value - app_data.line_number_width;
-	app_data.display_line_numbers = true;
-    }
-    else
-    {
-	app_data.indent_source = info->value;
-	app_data.display_line_numbers = false;
-    }
+    app_data.indent_source = info->value;
     update_options();
 
-    string msg = "Source indentation set to " + 
-	itostring(app_data.indent_source) + "; line numbers ";
-    if (app_data.display_line_numbers)
-	msg += "enabled";
-    else
-	msg += "disabled";
-    msg += ".";
-
-    set_status(msg);
+    set_status("Source indentation set to " + 
+	       itostring(app_data.indent_source) + ".");
 }
 
 void sourceSetCodeIndentCB (Widget, XtPointer, XtPointer call_data)
@@ -1017,6 +1001,18 @@ void dddSetEditCommandCB(Widget w, XtPointer, XtPointer)
     XtFree(s);
 
     app_data.edit_command = command;
+    // set_status("Edit Sources command is " + quote(command));
+    update_reset_preferences();
+}
+
+void dddSetPlotCommandCB(Widget w, XtPointer, XtPointer)
+{
+    String s = XmTextFieldGetString(w);
+    static string command;
+    command = s;
+    XtFree(s);
+
+    app_data.plot_command = command;
     // set_status("Edit Sources command is " + quote(command));
     update_reset_preferences();
 }
@@ -1976,6 +1972,8 @@ bool save_options(unsigned long flags)
     // Helpers
     os << "\n! Helpers.\n";
     os << string_app_value(XtNeditCommand,    app_data.edit_command, true)
+       << '\n';
+    os << string_app_value(XtNplotCommand,    app_data.plot_command, true)
        << '\n';
     os << string_app_value(XtNgetCoreCommand, app_data.get_core_command, true)
        << '\n';
