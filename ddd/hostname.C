@@ -67,11 +67,15 @@ extern "C" {
 
 // Get host aliases.
 #if HAVE_GETHOSTBYNAME && HAVE_NETDB_H
-#include <netdb.h>
 
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
 #if HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
+
+#include <netdb.h>
 
 #ifndef AF_INET
 #define AF_INET 2		// internetwork: UDP, TCP, etc.
