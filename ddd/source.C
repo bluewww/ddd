@@ -191,14 +191,14 @@ void gdbToggleEnableCB(Widget w, XtPointer, XtPointer)
     }
 }
 
-void gdbEditConditionCB(Widget w, XtPointer, XtPointer)
+void gdbEditConditionCB(Widget, XtPointer, XtPointer)
 {
     BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
     if (bp != 0)
 	source_view->edit_breakpoint_condition(bp->number());
 }
 
-void gdbEditIgnoreCountCB(Widget w, XtPointer, XtPointer)
+void gdbEditIgnoreCountCB(Widget, XtPointer, XtPointer)
 {
     BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
     if (bp != 0)
