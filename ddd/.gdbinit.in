@@ -107,4 +107,4 @@ document string
 end
 
 # Just let the user know we're here.
-echo Enter `ddd' to debug DDD.\n
+# echo Enter `ddd' to debug DDD.\n
