@@ -410,7 +410,7 @@ void StructureNotifyEH(Widget w, XtPointer, XEvent *event, Boolean *)
 	else if (w == tool_shell)
 	    tool_shell_visibility = event->xvisibility.state;
 
-	// Auto-raise of command tool
+	// Auto-raise command tool
 	if (obscures(command_shell, tool_shell)
 	    || obscures(data_disp_shell, tool_shell)
 	    || obscures(source_view_shell, tool_shell))
