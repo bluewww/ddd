@@ -1495,7 +1495,8 @@ static const _XtString perl_taboos[] =
     "TTY",
     "noTTY",
     "ReadLine",
-    "NonStop"
+    "NonStop",
+    "ornaments"
 };
 
 // Add single button

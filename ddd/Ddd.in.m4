@@ -637,11 +637,13 @@ Ddd*pydbInitCommands:
 Ddd*pydbSettings:
 
 
-! The Perl Debugger initialization commands.  Enable emacs mode.
+! The Perl Debugger initialization commands.  
+! Disable ornaments; enable emacs mode; set output format.
 Ddd*perlInitCommands: \
+O ornaments=""\n\
 $DB::emacs = 1\n\
 O compactDump=\n\
-O veryCompact=\n
+O veryCompact=\n\
 
 ! The Perl Debugger settings.  Usually overridden in `~/.ddd/init'.
 Ddd*perlSettings:
