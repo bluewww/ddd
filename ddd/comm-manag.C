@@ -1485,14 +1485,14 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += "info line";
 	}
 	if (extra_data->refresh_pwd)
-	    cmds += "pwd";
+	    cmds += gdb->pwd_command();
 	assert(!extra_data->refresh_class_path);
 	assert(!extra_data->refresh_file);
 	assert(!extra_data->refresh_line);
 	if (extra_data->refresh_breakpoints)
 	    cmds += "info breakpoints";
 	if (extra_data->refresh_where)
-	    cmds += "where";
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_frame)
 	    cmds += gdb->frame_command();
 	if (extra_data->refresh_registers)
@@ -1525,7 +1525,7 @@ void send_gdb_command(string cmd, Widget origin,
 
     case DBX:
 	if (extra_data->refresh_pwd)
-	    cmds += "pwd";
+	    cmds += gdb->pwd_command();
 	assert(!extra_data->refresh_class_path);
 	if (extra_data->refresh_file)
 	    cmds += "file";
@@ -1534,10 +1534,11 @@ void send_gdb_command(string cmd, Widget origin,
 	if (extra_data->refresh_breakpoints)
 	    cmds += "status";
 	if (extra_data->refresh_where)
-	    cmds += "where";
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_frame)
 	    cmds += gdb->frame_command();
-	assert (!extra_data->refresh_registers);
+	if (extra_data->refresh_registers)
+	    cmds += source_view->refresh_registers_command();
 	assert (!extra_data->refresh_threads);
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
@@ -1565,7 +1566,7 @@ void send_gdb_command(string cmd, Widget origin,
 	if (extra_data->refresh_breakpoints)
 	    cmds += "lb";
 	if (extra_data->refresh_where)
-	    cmds += "t";
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_frame)
 	    cmds += gdb->frame_command();
 	assert (!extra_data->refresh_registers);
@@ -1593,7 +1594,7 @@ void send_gdb_command(string cmd, Widget origin,
 	if (extra_data->refresh_breakpoints)
 	    cmds += "clear";
 	if (extra_data->refresh_where)
-	    cmds += "where";
+	    cmds += gdb->where_command();
 	assert (!extra_data->refresh_registers);
 	if (extra_data->refresh_threads)
 	    cmds += "threads";
@@ -1611,11 +1612,11 @@ void send_gdb_command(string cmd, Widget origin,
 
     case PYDB:
 	if (extra_data->refresh_pwd)
-	    cmds += "pwd";
+	    cmds += gdb->pwd_command();
 	if (extra_data->refresh_breakpoints)
 	    cmds += "info breakpoints";
 	if (extra_data->refresh_where)
-	    cmds += "where";
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
@@ -1631,6 +1632,8 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += gdb->pwd_command();
 	if (extra_data->refresh_breakpoints)
 	    cmds += "L";
+	if (extra_data->refresh_where)
+	    cmds += gdb->where_command();
 	if (extra_data->refresh_data)
 	    extra_data->n_refresh_data = 
 		data_disp->add_refresh_data_commands(cmds);
