@@ -2822,6 +2822,18 @@ SourceView::SourceView(XtAppContext app_context, Widget parent)
     Arg args[10];
     Cardinal arg = 0;
 
+    // Install glyph images
+    XmInstallImage(&arrow_image,        "plain_arrow");
+    XmInstallImage(&grey_arrow_image,   "grey_arrow");
+    XmInstallImage(&signal_arrow_image, "signal_arrow");
+    XmInstallImage(&temp_arrow_image,   "temp_arrow");
+    XmInstallImage(&stop_image,         "plain_stop");
+    XmInstallImage(&grey_stop_image,    "grey_stop");
+    XmInstallImage(&temp_stop_image,    "temp_stop");
+
+    // Setup actions
+    XtAppAddActions (app_context, actions, XtNumber (actions));
+
     // Create source code window
     create_text(parent, "source", source_form_w, source_text_w);
     XtManageChild(source_form_w);
@@ -3058,20 +3070,7 @@ SourceView::SourceView(XtAppContext app_context, Widget parent)
     XtAddCallback(thread_dialog_w,
 		  XmNhelpCallback, ImmediateHelpCB, 0);
 
-
-    // Setup actions
-    XtAppAddActions (app_context, actions, XtNumber (actions));
-
-    // Install images
-    XmInstallImage(&arrow_image,        "plain_arrow");
-    XmInstallImage(&grey_arrow_image,   "grey_arrow");
-    XmInstallImage(&signal_arrow_image, "signal_arrow");
-    XmInstallImage(&temp_arrow_image,   "temp_arrow");
-    XmInstallImage(&stop_image,         "plain_stop");
-    XmInstallImage(&grey_stop_image,    "grey_stop");
-    XmInstallImage(&temp_stop_image,    "temp_stop");
-
-    // Create glyphs in the background
+    // Create remaining glyphs in the background
     XtAppAddWorkProc (app_context, CreateGlyphsWorkProc, XtPointer(0));
 }
 
@@ -3097,6 +3096,17 @@ void SourceView::create_text(Widget parent,
     XtSetArg(args[arg], XmNmarginWidth,  0);    arg++;
     string form_name = base + "_form_w";
     form = verify(XmCreateForm(parent, form_name, args, arg));
+
+#if XmVersion >= 2001
+    // Antonello Biancalana <promind@tecnonet.it> says that Motif 2.1
+    // does not display glyphs.  So we try an alternative: create them
+    // all as children of FORM before adding the text child.
+    for (;;)
+    {
+	if (CreateGlyphsWorkProc(0))
+	    break;
+    }
+#endif
 
     arg = 0;
     XtSetArg(args[arg], XmNselectionArrayCount, 1);               arg++;
@@ -5791,7 +5801,10 @@ Widget SourceView::create_glyph(Widget form_w,
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING);  arg++;
     XtSetArg(args[arg], XmNuserData,           XtPointer(0));  arg++;
     Widget w = verify(XmCreatePushButton(form_w, name, args, arg));
-    XtRealizeWidget(w);
+
+    if (XtIsRealized(form_w))
+	XtRealizeWidget(w);
+
     XtManageChild(w);
 
     unsigned char unit_type;
@@ -6045,11 +6058,6 @@ Widget SourceView::grey_stops[2][MAX_GLYPHS + 1];
 // Create glyphs in the background
 Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 {
-    static bool all_done = false;
-
-    if (all_done)
-	return True;
-
     int k;
     for (k = 0; k < 2; k++)
     {
@@ -6059,6 +6067,9 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	// below sign glyphs.
 
 	Widget form_w = k ? code_form_w : source_form_w;
+
+	if (form_w == 0)
+	    continue;
 
 	if (plain_arrows[k] == 0)
 	{
@@ -6105,6 +6116,9 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
     {
 	Widget form_w = k ? code_form_w : source_form_w;
 
+	if (form_w == 0)
+	    continue;
+
 	int i;
 	for (i = 0; i < MAX_GLYPHS; i++)
 	{
@@ -6143,8 +6157,7 @@ Boolean SourceView::CreateGlyphsWorkProc(XtPointer)
 	}
     }
 
-    all_done = true;
-    return True;
+    return True;		// all done
 }
 
 // Map stop sign in W at position POS.  Get widget from STOPS[COUNT];
