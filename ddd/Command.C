@@ -719,7 +719,7 @@ void syncCommandQueue()
     // Interrupt current command.
     // Note: there will be no automatic `continue' afterwards (FIXME).
     if (app_data.stop_and_continue && 
-	!gdb->isReadyWithPrompt() && 
+	gdb->running() && !gdb->isReadyWithPrompt() && 
 	is_cont_cmd(current_gdb_command()))
     {
 	gdb_command('\003');
