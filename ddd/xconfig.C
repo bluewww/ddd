@@ -35,7 +35,6 @@ char xconfig_rcsid[] =
 #include "strclass.h"
 #include "bool.h"
 #include "cook.h"
-#include "Agent.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -91,9 +90,7 @@ static String xlibdir(Display *display, bool verbose = false)
     if (verbose)
 	cout << "Checking for X11 library directory... ";
 
-    Agent xmkmf("/bin/sh -c " + sh_quote(shell_command));
-    xmkmf.start();
-    FILE *fp = xmkmf.inputfp();
+    FILE *fp = popen("/bin/sh -c " + sh_quote(shell_command), "r");
     if (fp == 0)
     {
 	if (verbose)
@@ -104,7 +101,7 @@ static String xlibdir(Display *display, bool verbose = false)
     char buffer[BUFSIZ];
     buffer[0] = '\0';
     fgets(buffer, sizeof(buffer), fp);
-    xmkmf.wait();
+    pclose(fp);
 
     int len = strlen(buffer);
     if (len > 0 && buffer[len - 1] == '\n')
