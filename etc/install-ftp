@@ -80,7 +80,6 @@ SAMPLES="ddd.man ddd.man.txt Ddd"
 DIFF_IGNORE="
 configure
 ddd/configure
-librx/configure
 termcap/configure
 doc/ddd*.ps
 ddd/vsl-lex.C
