@@ -116,6 +116,52 @@ void setLabelList (Widget  selectionList,
     freeXmStringTable(xmlabel_list, list_length);
 }
 
+// Replace all elements in SELECTIONLIST with the corresponding
+// entries in LABEL_LIST (i.e. with the same leading number).
+void updateLabelList (Widget  selectionList,
+		      string  label_list[],
+		      int     list_length)
+{
+    XmStringTable items;
+    int items_count = 0;
+
+    assert(XmIsList(selectionList));
+
+    XtVaGetValues(selectionList,
+		  XmNitemCount, &items_count,
+		  XmNitems,     &items,
+		  NULL);
+
+    for (int i = 0; i < items_count; i++)
+    {
+	String _item;
+	XmStringGetLtoR(items[i], LIST_CHARSET, &_item);
+	string item(_item);
+	XtFree(_item);
+
+	if (!has_nr(item))
+	    continue;
+
+	int nr_i = get_nr(item);
+	
+	for (int j = 0; j < list_length; j++)
+	{
+	    if (!has_nr(label_list[j]))
+		continue;
+	    int nr_j = get_nr(label_list[j]);
+
+	    if (nr_i != nr_j)
+		continue;
+
+	    MString mlabel(label_list[j], LIST_CHARSET);
+	    XmString xmlabel = mlabel.xmstring();
+	    int pos = (i == items_count - 1 ? 0 : i + 1);
+	    XmListReplaceItemsPos(selectionList, &xmlabel, 1, pos);
+	    break;
+	}
+    }
+}
+
 
 // Fill the display numbers in DISP_NRS
 void getDisplayNumbers(Widget selectionList, IntArray& disp_nrs)

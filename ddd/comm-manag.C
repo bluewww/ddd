@@ -877,7 +877,9 @@ void send_gdb_command(string cmd, Widget origin,
 	DispValue::clear_type_cache();
     }
 
-    if (plus_cmd_data->refresh_frame && !gdb->has_frame_command())
+    if (plus_cmd_data->refresh_frame && 
+	!gdb->has_frame_command() && 
+	gdb->type() != JDB)
     {
 	// We have a backtrace window open, but DBX has no ``frame''
 	// command to set the selected frame.  Use this hack instead.
@@ -1093,7 +1095,6 @@ void send_gdb_command(string cmd, Widget origin,
 	    cmds += "clear";
 	if (plus_cmd_data->refresh_where)
 	    cmds += "where";
-	assert (!plus_cmd_data->refresh_frame);
 	assert (!plus_cmd_data->refresh_registers);
 	assert (!plus_cmd_data->refresh_threads);
 	if (plus_cmd_data->refresh_data)
@@ -1866,18 +1867,29 @@ void plusOQAC (const StringArray& answers,
 
     if (plus_cmd_data->refresh_frame)
     {
-	string& answer = answers[qu_count++];
-
-	if (plus_cmd_data->refresh_pc)
+	if (gdb->type() == JDB)
 	{
-	    PosBuffer pb;
-	    pb.filter(answer);
-	    if (pb.pos_found())
-		source_view->show_execution_position(pb.get_position(), true);
-	    if (pb.pc_found())
-		source_view->show_pc(pb.get_pc(), XmHIGHLIGHT_SELECTED, true);
+	    // In JDB, the current frame is part of the prompt.
+	    string prompt = gdb->prompt();
+	    source_view->process_frame(prompt);
 	}
-	source_view->process_frame(answer);
+	else
+	{
+	    string& answer = answers[qu_count++];
+
+	    if (plus_cmd_data->refresh_pc)
+	    {
+		PosBuffer pb;
+		pb.filter(answer);
+		if (pb.pos_found())
+		    source_view->show_execution_position(pb.get_position(), 
+							 true);
+		if (pb.pc_found())
+		    source_view->show_pc(pb.get_pc(), 
+					 XmHIGHLIGHT_SELECTED, true);
+	    }
+	    source_view->process_frame(answer);
+	}
     }
 
     if (plus_cmd_data->refresh_registers)

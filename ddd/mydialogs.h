@@ -68,6 +68,12 @@ void setLabelList (Widget  selectionList,
 		   bool    highlight_title,
 		   bool    notify);
 
+// Replace all elements in SELECTIONLIST with the corresponding
+// entries in LABEL_LIST (i.e. with the same leading number).
+void updateLabelList (Widget  selectionList,
+		      string  label_list[],
+		      int     list_length);
+
 // The default list charset
 #define LIST_CHARSET CHARSET_TT
 

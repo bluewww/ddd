@@ -5156,11 +5156,6 @@ void SourceView::process_where(string& where_output)
 
 	if (pb.pos_found())
 	    show_execution_position(pb.get_position());
-
-	// As JDB does not report other frames, update frame list only
-	// if at lowest frame.
-	if (jdb_frame() != 1)
-	    return;
     }
 
     if (gdb->type() != XDB)
@@ -5181,7 +5176,12 @@ void SourceView::process_where(string& where_output)
 	setup_where_line(frame_list[i]);
     }
 
-    setLabelList(frame_list_w, frame_list, selected, count, false, false);
+    // JDB does not report frames above the current one.  Hence, we
+    // only update the reported frames and others unchanged.
+    if (gdb->type() == JDB && jdb_frame() != 1)
+	updateLabelList(frame_list_w, frame_list, count);
+    else
+	setLabelList(frame_list_w, frame_list, selected, count, false, false);
     set_frame_pos(0, 0);
 
     delete[] frame_list;
@@ -5214,14 +5214,15 @@ void SourceView::process_frame (string& frame_output)
 	    break;
 
 	case JDB:
-	    frame_nr = "0";	// Always highest frame (FIXME)
+	    frame_nr = frame_output.after("[");
 	    break;
 	}
 
 	int frame = get_positive_nr(frame_nr);
 
-	if (gdb->type() == DBX)
-	    frame--;		    // GDB uses origin-0, DBX uses origin-1
+	// In GDB, the lowest frame is #0, in DBX and JDB, it is #1
+	if (gdb->type() == DBX || gdb->type() == JDB)
+	    frame--;
 
 	at_lowest_frame = (frame == 0);
 
