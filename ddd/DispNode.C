@@ -33,60 +33,65 @@ char DispNode_rcsid[] =
 #pragma implementation
 #endif
 
-//-----------------------------------------------------------------------------
-// DispNode speichert Informationen zu einem Display-Ausdruck
-//-----------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------
+// A DispNode keeps all information about a single data display
 //-----------------------------------------------------------------------------
 
 #include "cook.h"
 #include "DispNode.h"
 #include "CompositeB.h"
 
-//-----------------------------------------------------------------------------
-
+// Data
 HandlerList DispNode::handlers(DispNode_NTypes);
+int DispNode::change_tics = 0;
 
-// ***************************************************************************
 // Constructor
-//
 DispNode::DispNode (string& disp_nr, string& name)
     : mydisp_nr (disp_nr),
       myname (name),
-      myenabled (false), 
+      myaddr (""),
+      mymerged (false),
+      myunmerged_pos (),
+      myenabled (false),
       mynodeptr (0),
       disp_value (0),
       myselected_value (0),
       disp_box (0)
 {
-    // Knoten neu erzeugen
+    mylast_change = ++change_tics;
+
+    // Create new box from DISP_VALUE
     disp_box = new DispBox (mydisp_nr, myname, disp_value);
     
-    // Knoten darstellen
+    // Create graph node from box
     mynodeptr = new BoxGraphNode (disp_box->box());
 }
 
 DispNode::DispNode (string& disp_nr, string& name, string& value)
     : mydisp_nr (disp_nr),
       myname (name),
+      myaddr (""),
+      mymerged (false),
+      myunmerged_pos (),
       myenabled (true), 
       mynodeptr (0),
       disp_value (0),
       myselected_value (0),
       disp_box (0)
 {
+    mylast_change = ++change_tics;
+
     disp_value = new DispValue (0, 0, value, myname, myname);
 
-    // Knoten neu erzeugen
+    // Create new box from DISP_VALUE
     disp_box = new DispBox (disp_nr, name, disp_value);
     
-    // Knoten darstellen
+    // Create graph node from box
     mynodeptr = new BoxGraphNode (disp_box->box());
 }
 
-// ***************************************************************************
 // Destructor
-//
 DispNode::~DispNode()
 {
     if (disp_value)
@@ -97,13 +102,15 @@ DispNode::~DispNode()
 	delete disp_box;
 }
 
-// ***************************************************************************
-// User-defined commands
+// User-defined displays (status displays)
+
+// Return true iff S is a user-defined display
 bool is_user_command(const string& s)
 {
     return s.length() > 0 && s[0] == '`' && s[s.length() - 1] == '`';
 }
 
+// Return user command from S
 string user_command(const string& s)
 {
     if (is_user_command(s))
@@ -112,7 +119,7 @@ string user_command(const string& s)
 	return "";
 }
 
-// ***************************************************************************
+// Add event handler
 void DispNode::addHandler (unsigned    type,
 			   HandlerProc proc,
 			   void*       client_data)
@@ -120,7 +127,7 @@ void DispNode::addHandler (unsigned    type,
     DispNode::handlers.add(type, proc, client_data);
 }
 
-// ***************************************************************************
+// Remove event handler
 void DispNode::removeHandler (unsigned    type,
 			      HandlerProc proc,
 			      void        *client_data)
@@ -129,26 +136,28 @@ void DispNode::removeHandler (unsigned    type,
 }
 
 
-
-// ***************************************************************************
-// false, wenn Wert unveraendert.
-//
+// Update with VALUE;  return false if value is unchanged
 bool DispNode::update(string& value)
 {
     bool changed = false;
     bool inited  = false;
 
-    if (!myenabled) { // Display wurde (automatisch) eingeschaltet
+    if (!myenabled) 
+    { 
+	// Display has been enabled (automatically)
 	myenabled = true;
 	handlers.call(DispNode_Disabled, this, (void*)false);
 	changed = true;
     }
 
-    if (disp_value == 0) { // noch keinen Wert gelesen
+    if (disp_value == 0)
+    { 
+	// We have not read a value yet
 	disp_value = new DispValue (0, 0, value, myname, myname);
 	changed = true;
     }
-    else { 
+    else
+    { 
 	disp_value->update(value, changed, inited);
     }
 
@@ -164,16 +173,18 @@ bool DispNode::update(string& value)
     {
 	disp_box->set_value(disp_value);
 
-	// neue Box setzen
+	// Set new box
 	mynodeptr->setBox(disp_box->box());
     }
+
+    if (changed || inited)
+	mylast_change = ++change_tics;
+
     return changed;
 }
 
 
-// ***************************************************************************
 // Re-create box from current disp_value
-//
 void DispNode::refresh ()
 {
     disp_box->set_value(disp_value);
@@ -181,12 +192,8 @@ void DispNode::refresh ()
     select(selected_value());
 }
 
-// ***************************************************************************
-// Highlights the box related to the display value DV
-//
-
 // In BOX, find outermost TagBox for given DispValue DV
-static TagBox *findTagBox(const Box *box, DispValue *dv)
+TagBox *DispNode::findTagBox(const Box *box, DispValue *dv)
 {
     TagBox *tb = ptr_cast(TagBox, box);
     if (tb && tb->__data() == (void *)dv)
@@ -211,6 +218,7 @@ static TagBox *findTagBox(const Box *box, DispValue *dv)
     return 0;
 }
 
+// Highlights the box related to the display value DV
 void DispNode::select(DispValue *dv)
 {
     TagBox *tb = 0;
@@ -222,7 +230,7 @@ void DispNode::select(DispValue *dv)
 }
 
 
-// ***************************************************************************
+// Disable display
 void DispNode::disable()
 {
     if (myenabled) {
@@ -233,7 +241,7 @@ void DispNode::disable()
     }
 }
 
-// ***************************************************************************
+// Enable display
 void DispNode::enable()
 {
     if (!myenabled)
@@ -244,3 +252,14 @@ void DispNode::enable()
     }
 }
 
+
+// Update address with NEW_ADDR
+void DispNode::set_addr(const string& new_addr)
+{
+    if (myaddr != new_addr)
+    {
+	myaddr = new_addr;
+	mylast_change = ++change_tics;
+    }
+}
+	

@@ -53,8 +53,16 @@ const unsigned DispNode_Disabled   = 0;
 
 const unsigned DispNode_NTypes  = DispNode_Disabled + 1;
 
+//-----------------------------------------------------------------------------
+// Non-class functions
+//-----------------------------------------------------------------------------
+
+// Return true iff S is a user command display (`status display')
 bool is_user_command(const string& s);
+
+// Return user command from S
 string user_command(const string& s);
+
 
 //-----------------------------------------------------------------------------
 // The DispNode class
@@ -62,14 +70,24 @@ string user_command(const string& s);
 
 class DispNode {
 private:
-    string        mydisp_nr;
-    string        myname;
-    bool          myenabled;
-    BoxGraphNode* mynodeptr;
-    DispValue*    disp_value;
-    DispValue*    myselected_value;
+    string        mydisp_nr;	      // Display number
+    string        myname;	      // Display expression
+    string        myaddr;	      // Location of expression
+    bool          mymerged;	      // Flag: merged with another display?
+    BoxPoint      myunmerged_pos;     // Position when not merged
+    bool          myenabled;	      // Flag: is display enabled?
+    BoxGraphNode* mynodeptr;	      // Associated graph node 
+    DispValue*    disp_value;	      // Associated value
+    DispValue*    myselected_value;   // Selected value within DISP_VALUE
+    DispBox*      disp_box;	      // Associated box within DISP_VALUE
+    int           mylast_change;      // Last value or address change
 
+    static int change_tics;           // Shared change counter
+
+protected:
     static HandlerList handlers;
+    static class TagBox *findTagBox(const Box *box, DispValue *dv);
+
 public:
     // Constructor
     DispNode(string& disp_nr, string& name);
@@ -78,10 +96,17 @@ public:
     // Destructor
     ~DispNode();
 
+    // Resources
     const string& disp_nr()  const { return mydisp_nr; }
     const string& name()     const { return myname; }
+    const string& addr()     const { return myaddr; }
+
     bool enabled()  const { return myenabled; }
     bool disabled() const { return !myenabled; }
+    bool merged()   const { return mymerged; }
+    int last_change() const { return mylast_change; }
+
+    const BoxPoint& unmerged_pos() const { return myunmerged_pos; }
 
     bool is_user_command() const { return ::is_user_command(name()); }
     string user_command() const  { return ::user_command(name()); }
@@ -94,6 +119,7 @@ public:
     bool& selected()                    { return mynodeptr->selected(); }
     void moveTo(const BoxPoint& newPos) { mynodeptr->moveTo(newPos); }
 
+    // Handlers
     static void addHandler (unsigned    type,
 			    HandlerProc proc,
 			    void*       client_data = 0);
@@ -107,6 +133,18 @@ public:
     // Update with NEW_VALUE;  return false if value is unchanged
     bool update (string& new_value);
 
+    // Update address with NEW_ADDR
+    void set_addr(const string& new_addr);
+
+    // Update merged state with NEW_MERGED
+    void set_merged(bool new_merged)      { mymerged = new_merged; }
+
+    // Update unmerged position with NEW_UNMERGED_POS
+    void set_unmerged_pos(const BoxPoint& new_unmerged_pos)
+    {
+	myunmerged_pos = new_unmerged_pos;
+    }
+
     // Re-create the box from old DISP_VALUE
     void refresh ();
 
@@ -116,9 +154,6 @@ public:
     // Disable and enable manually
     void disable();
     void enable();
-
-private:
-    DispBox* disp_box;
 };
 
 #endif // _DDD_DispNode_h

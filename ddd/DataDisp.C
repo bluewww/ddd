@@ -65,6 +65,7 @@ char DataDisp_rcsid[] =
 #include "settings.h"
 #include "status.h"
 #include "PosBuffer.h"
+#include "IntIntAA.h"
 
 // Motif includes
 #include <Xm/MessageB.h>
@@ -728,11 +729,9 @@ void DataDisp::new_displayCD (BoxPoint box_point)
 
 
 //-----------------------------------------------------------------------------
-// sonstige Procs
+// Delay stuff
 //-----------------------------------------------------------------------------
 
-// ***************************************************************************
-//
 void DataDisp::set_delay () 
 {
     if (!delay)
@@ -745,6 +744,12 @@ void DataDisp::unset_delay ()
     delay = 0;
 }
 
+
+
+//-----------------------------------------------------------------------------
+// Set up event handlers
+//-----------------------------------------------------------------------------
+
 void DataDisp::set_handlers()
 {
     source_arg->addHandler(Empty, source_argHP);
@@ -754,11 +759,9 @@ void DataDisp::set_handlers()
 }
 
 
-
-
-// ***************************************************************************
-// Graph neu zeichnen, und Sensitivitaeten neu setzen
-//
+//-----------------------------------------------------------------------------
+// Redraw graph and update display list
+//-----------------------------------------------------------------------------
 void DataDisp::refresh_graph_edit ()
 {
     static Graph* dummy = 0;
@@ -791,7 +794,7 @@ inline int DataDisp::getDispNrAtPoint (BoxPoint point)
 
 
 //-----------------------------------------------------------------------------
-// Sensitivitaeten setzen
+// Make buttons sensitive or insensitive
 //-----------------------------------------------------------------------------
 
 void DataDisp::no_displaysHP (void*, void* , void* call_data)
@@ -2208,6 +2211,7 @@ void DataDisp::delete_displaySQ (const IntArray& display_nrs)
 	    disp_graph->del(display_nrs[i]);
     }
 
+    refresh_addr();
     update_infos();
 }
 
@@ -3060,28 +3064,6 @@ int DataDisp::add_refresh_addr_commands(StringArray& cmds, DispNode *dn)
     return cmds.size() - initial_size;
 }
 
-// Handle output of addr commands
-void DataDisp::process_addr (StringArray& answers)
-{
-    int i = 0;
-
-    MapRef ref;
-    for (DispNode* dn = disp_graph->first(ref); 
-	 dn != 0 && i < answers.size();
-	 dn = disp_graph->next(ref))
-    {
-	if (!dn->is_user_command())
-	{
-	    string addr = answers[i++];
-	    addr = addr.from(rxaddress);
-	    addr = addr.through(rxaddress);
-
-	    clog << "Address of " << dn->name() 
-		 << " is " << quote(addr) << '\n';
-	}
-    }
-}
-
 // Refresh all addresses
 void DataDisp::refresh_addr(DispNode *dn)
 {
@@ -3097,6 +3079,163 @@ void DataDisp::refresh_addr(DispNode *dn)
 
     if (!ok)
 	post_gdb_busy();
+}
+
+// Handle output of addr commands
+void DataDisp::process_addr (StringArray& answers)
+{
+    int i = 0;
+
+    bool changed = false;
+
+    MapRef ref;
+    for (DispNode* dn = disp_graph->first(ref); 
+	 dn != 0 && i < answers.size();
+	 dn = disp_graph->next(ref))
+    {
+	if (!dn->is_user_command())
+	{
+	    string addr = answers[i++];
+	    addr = addr.from(rxaddress);
+	    addr = addr.through(rxaddress);
+
+	    if (dn->addr() != addr)
+	    {
+		dn->set_addr(addr);
+		changed = true;
+	    }
+	}
+    }
+
+    if (changed)
+	check_aliases();
+}
+
+// Check for aliases after change
+void DataDisp::check_aliases()
+{
+    if (!detect_aliases)
+	return;
+
+    StringIntArrayAssoc equivalences;
+
+    MapRef ref;
+    for (int k = disp_graph->first_nr(ref); 
+	     k != 0; 
+	     k = disp_graph->next_nr(ref))
+    {
+	DispNode *dn = disp_graph->get(k);
+	if (dn != 0 && !dn->is_user_command())
+	{
+	    equivalences[dn->addr()] += k;
+	}
+    }
+
+    bool changed = false;
+
+    for (StringIntArrayAssocIter iter(equivalences); iter.ok(); iter++)
+    {
+	string addr = iter.key();
+	IntArray& displays = iter.value();
+
+	assert(displays.size() > 0);
+
+	if (addr == "" || displays.size() == 1)
+	{
+	    // No address or just one display -- unmerge them
+	    for (int i = 0; i < displays.size(); i++)
+		changed = unmerge_display(displays[i]) || changed;
+	}
+	else
+	{
+	    // Multiple displays at one location
+	    changed = merge_displays(displays) || changed;
+	}
+    }
+
+    if (changed)
+	refresh_graph_edit();
+}
+
+bool DataDisp::merge_displays(const IntArray& disp_nrs)
+{
+    assert(disp_nrs.size() > 0);
+
+    int i;
+
+    for (i = 0; i < disp_nrs.size(); i++)
+    {
+	DispNode *dn = disp_graph->get(disp_nrs[i]);
+ 	assert(dn != 0);
+
+	if (!dn->merged())
+	{
+	    // Save current position in unmerged
+	    dn->set_unmerged_pos(dn->nodeptr()->pos());
+	    dn->set_merged(true);
+	}
+    }
+
+    // Determine new position where nodes are to be placed at.
+    // We use the node which hasn't changed most recently.  This way,
+    // dereferenced pointers will be merged with static data, instead
+    // of vice versa.
+    int least_recent_change = INT_MAX;
+    DispNode *least_recently_changed_node = 0;
+    for (i = 0; i < disp_nrs.size(); i++)
+    {
+	DispNode *dn = disp_graph->get(disp_nrs[i]);
+ 	assert(dn != 0 && dn->merged());
+
+	if (dn->last_change() < least_recent_change)
+	    least_recently_changed_node = dn;
+    }
+    assert(least_recently_changed_node != 0);
+
+    bool changed = false;
+
+    // Place nodes at the position of OLDEST.
+    BoxPoint offset(0, 0);
+    for (i = 0; i < disp_nrs.size(); i++)
+    {
+	DispNode *dn = disp_graph->get(disp_nrs[i]);
+ 	assert(dn != 0 && dn->merged());
+
+	if (dn == least_recently_changed_node)
+	    continue;
+
+	offset += BoxPoint(0, 20);
+	BoxPoint new_pos = 
+	    least_recently_changed_node->nodeptr()->pos() + offset;
+
+	if (dn->nodeptr()->pos() != new_pos)
+	{
+	    dn->moveTo(new_pos);
+	    changed = true;
+	}
+    }
+
+    return changed;
+}
+
+bool DataDisp::unmerge_display(int disp_nr)
+{
+    DispNode *dn = disp_graph->get(disp_nr);
+    if (dn == 0 || !dn->merged())
+	return false;
+
+    bool changed = false;
+
+    dn->set_merged(false);
+
+    // Restore old position
+    if (dn->nodeptr()->pos() != dn->unmerged_pos())
+    {
+	dn->moveTo(dn->unmerged_pos());
+	changed = true;
+    }
+
+    return changed;
 }
 
 //----------------------------------------------------------------------------

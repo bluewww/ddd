@@ -286,8 +286,18 @@ private:
     static Widget edit_displays_dialog_w;
     static Widget display_list_w;
 
+    // Origin handling
     static void ClearOriginCB(Widget, XtPointer, XtPointer);
     static void set_last_origin(Widget origin);
+
+    // Alias checking
+    static void check_aliases();
+
+    // Merge displays in DISP_NRS; return true iff change
+    static bool merge_displays(const IntArray& disp_nrs);
+
+    // Unmerge display DISP_NR; return true iff change
+    static bool unmerge_display(int disp_nr);
 
 public:
     static Widget graph_edit;
