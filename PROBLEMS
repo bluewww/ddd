@@ -23,9 +23,9 @@ Table of Contents
     * SunOS
       + SunOS 4.1 and X11R6
       + SunOS 4.1 and Sun C++
+    * Tru64
     * Unixware
     * X11R4
-    * libiberty
     * Cygwin
 
 ADA
@@ -560,12 +560,22 @@ Reported by:	Franklin Chen <chen@adi.com>
         #define SIGHANDLERARGS int
     to avoid compile errors in a number of source files.
 
+Tru64
+=====
+
+Reported by: Tim Mooney <mooney@dogbert.cc.ndsu.NoDak.edu>
+
+    Using the Compaq C++ compiler Version 6.5, it is necessary
+    to use "CXX='cxx' CXXFLAGS='-D__USE_STD_IOSTREAM' ./configure" to
+    build ddd 3.3.8 and later properly.
+
+
 UNIXWARE
 ========
 
 Reported by: Vinnie Shelton  <shelton@icd.teradyne.com>
 
-    For Unixware, I have to set up `ddd/Makefile' as follows 
+    For Unixware, I have to set up `ddd/Makefile' as follows
     after configuration:
 
     LINK.cc = env LD_RUN_PATH=/usr/X11R6/lib $(CXX) $(CXXBINDING) $(LDFLAGS)
