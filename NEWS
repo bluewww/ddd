@@ -70,6 +70,14 @@ Source exploration
 - Dragging breakpoints works nicely with scrolling.
 
 
+Printing
+--------
+
+- `Self' edges can now be printed.
+
+- The default setting for printing is to print all displays.
+
+
 Platforms
 ---------
 

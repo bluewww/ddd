@@ -685,8 +685,8 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     Widget print_all;
     static MMDesc what_menu[] = 
     {
-	{"all",      MMToggle, { NopCB }},
-	{"selected", MMToggle, { SetPrintSelectedNodesCB }, NULL, &print_all },
+	{"all",      MMToggle, { NopCB }, NULL, &print_all },
+	{"selected", MMToggle, { SetPrintSelectedNodesCB }},
 	MMEnd
     };
 
