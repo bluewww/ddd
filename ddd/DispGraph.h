@@ -168,6 +168,8 @@ private:
     // True iff NODE is attached to an edge with the same angle as P
     static bool has_angle(PosGraphNode *node, const BoxPoint& p);
 
+    void add_edge(DispNode *from, DispNode *to);
+    
     void add_direct_alias_edge(Widget w, int alias_disp_nr, 
 			       GraphNode *from, GraphNode *to,
 			       EdgeAnnotation *anno);

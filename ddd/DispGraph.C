@@ -166,6 +166,16 @@ void DispGraph::callHandlers ()
 
 
 
+void DispGraph::add_edge(DispNode *from, DispNode *to)
+{
+    string a = annotation(from->name(), to->name());
+    BoxEdgeAnnotation *ann = 0;
+    if (a != "")
+	ann = new BoxEdgeAnnotation(DispBox::eval("annotation", a));
+
+    *this += new LineGraphEdge(from, to, ann);
+}
+
 // ***************************************************************************
 // new_disp_nr bei Erfolg
 //
@@ -180,14 +190,15 @@ int DispGraph::insert(int new_disp_nr, DispNode *new_dn, int depends_on)
 
     if (depends_on != 0)
     {
-	DispNode* old_dn = idMap.get (depends_on);
+	DispNode *old_dn = idMap.get(depends_on);
+	add_edge(old_dn, new_dn);
 
-	string a = annotation(old_dn->name(), new_dn->name());
-	BoxEdgeAnnotation *ann = 0;
-	if (a != "")
-	    ann = new BoxEdgeAnnotation(DispBox::eval("annotation", a));
-
-	*this += new LineGraphEdge(old_dn, new_dn, ann);
+	if (old_dn->clustered())
+	{
+	    DispNode *cluster = idMap.get(old_dn->clustered());
+	    if (cluster != 0)
+		add_edge(cluster, new_dn);
+	}
     }
     assert (Graph::OK());
 
@@ -1174,18 +1185,21 @@ bool DispGraph::refresh_titles() const
     for (DispNode *dn = first(ref); dn != 0; dn = next(ref))
     {
 	bool is_dependent = false;
-	for (GraphEdge *e = dn->firstTo();
-	     !is_dependent && e != 0;
-	     e = dn->nextTo(e))
+	for (GraphEdge *e = dn->firstTo(); e != 0; e = dn->nextTo(e))
 	{
 	    if (e->from() == dn)
-		continue;		// Self edge
+		continue;	// Self edge
 	    if (ptr_cast(AliasGraphEdge, e) != 0)
-		continue;		// Alias edge
+		continue;	// Alias edge
+	    if (e->from()->hidden())
+		continue;	// Invisible edge
 
 	    LineGraphEdge *le = ptr_cast(LineGraphEdge, e);
 	    if (le != 0 && le->annotation() != 0)
+	    {
 		is_dependent = true;
+		break;
+	    }
 	}
 
 	bool need_title = false;
