@@ -384,12 +384,22 @@ void LineGraphEdge::printSelf(ostream& os, const GraphGC &gc) const
     {
 	BoxCoordinate line_width = 1;
 
-	os << ARCARROWHEAD1 << line_width << ARCARROWHEAD2 << " ";
-	os << float(info.arc_center[X]) << " " 
+	os << ARCARROWHEAD1 << line_width << ARCARROWHEAD2;
+	switch (gc.selfEdgeDirection)
+	{
+	case Clockwise:
+	    os << ARCCLOCKWISE;
+	    break;
+	case Counterclockwise:
+	    os << ARCCOUNTERCLOCKWISE;
+	    break;
+	}
+	os << ARCARROWHEAD3
+	   << float(info.arc_center[X]) << " " 
 	   << float(info.arc_center[Y]) << " ";
 	for (int i = 0; i < 3; i++)
 	    os << info.fig_pos[i][X] << " " << info.fig_pos[i][Y] << " ";
-	os << ARCARROWHEAD3;
+	os << ARCARROWHEAD4;
     }
 
     if (annotation() != 0)

@@ -171,15 +171,15 @@
 	char	file[]			name of eps file to import
 */ 
 
-// A black line (for edges, depth = 0)
+// A black line (for boxes, depth = 0)
 #define EDGEHEAD1 "2 1 0 " // +thickness
 #define EDGEHEAD2 " -1 2 0 0 0.000 0 0 0\n\t"
 
-#define ARROW "-1 -1 1 4 10\n\t"
+#define ARROW "-1 -1 1 4 10"
 
 // Same, but with arrows (for edges, depth = 2)
 #define ARROWHEAD1 "2 1 0 " // +thickness
-#define ARROWHEAD2 " -1 2 0 0 0.000 0 1 0\n\t" ARROW
+#define ARROWHEAD2 " -1 2 0 0 0.000 0 1 0\n\t" ARROW "\n\t"
 
 // A black line (for boxes, depth = 0)
 #define LINEHEAD1 "2 1 0 " // +thickness
@@ -235,13 +235,18 @@
 */
 
 // An arc line (for boxes, depth = 0)
-#define ARCHEAD1 "5 1 0 " // +thickness
-#define ARCHEAD2 " -1 0 0 0 0.000 1 0 0\n\t" // +center, P1, P2, P3
+#define ARCCLOCKWISE        "0 "
+#define ARCCOUNTERCLOCKWISE "1 "
 
-// Same, but with arrows
+#define ARCHEAD1 "5 1 0 " // +thickness
+#define ARCHEAD2 " -1 0 0 0 0.000 " // + ARC[COUNTER]CLOCKWISE
+#define ARCHEAD3 "0 0 " // +center, P1, P2, P3
+
+// Same, but with arrows (for edges, depth = 2)
 #define ARCARROWHEAD1 "5 1 0 " // +thickness
-#define ARCARROWHEAD2 " -1 0 0 0 0.000 1 1 0 " // +center, P1, P2, P3
-#define ARCARROWHEAD3 "\n\t" ARROW
+#define ARCARROWHEAD2 " -1 2 0 0 0.000 " // + ARC[COUNTER]CLOCKWISE
+#define ARCARROWHEAD3 "1 0 " // +center, P1, P2, P3
+#define ARCARROWHEAD4 "\n\t" ARROW "\n"
 
 
 /*

@@ -36,6 +36,7 @@ char ArcGraphEdge_rcsid[] =
 #include "ArcGraphE.h"
 #include "HintGraphN.h"
 #include "misc.h"
+#include "printBox.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -199,8 +200,8 @@ void ArcGraphEdge::makeLine(Widget w,
     // Draw circle segment POS_FROM -> POS_HINT or POS_HINT -> POS_TO
 
     // Determine the arc center
-    double x, y;
-    bool ok = center(pos_from, pos_hint, pos_to, x, y);
+    double cx, cy;
+    bool ok = center(pos_from, pos_hint, pos_to, cx, cy);
     if (!ok)
     {
 	// Nodes form a line
@@ -211,18 +212,13 @@ void ArcGraphEdge::makeLine(Widget w,
 	return;
     }
 
-    BoxPoint c((BoxCoordinate)x, (BoxCoordinate)y);
-
     // Determine radius (easy when you have the center)
-    double radius = hypot(c - pos_to);
+    double radius = hypot(cx - pos_to[X], cy - pos_to[Y]);
 
     // Determine start and path of arc
-    double alpha_from = -atan2(double(pos_from[Y] - c[Y]), 
-			       double(pos_from[X] - c[X]));
-    double alpha_hint = -atan2(double(pos_hint[Y] - c[Y]),
-			       double(pos_hint[X] - c[X]));
-    double alpha_to   = -atan2(double(pos_to[Y] - c[Y]),
-			       double(pos_to[X] - c[X]));
+    double alpha_from = -atan2(pos_from[Y] - cy, pos_from[X] - cx);
+    double alpha_hint = -atan2(pos_hint[Y] - cy, pos_hint[X] - cx);
+    double alpha_to   = -atan2(pos_to[Y]   - cy, pos_to[X]   - cx);
 
     const int base = 360 * 64;
 
@@ -263,7 +259,7 @@ void ArcGraphEdge::makeLine(Widget w,
     if (w != 0)
     {
 	XDrawArc(XtDisplay(w), XtWindow(w), gc.edgeGC,
-		 c[X] - int(radius), c[Y] - int(radius),
+		 int(cx - radius), int(cy - radius),
 		 unsigned(radius) * 2, unsigned(radius) * 2, angle, path);
     }
     else if (gc.printGC->isPostScript())
@@ -287,24 +283,33 @@ void ArcGraphEdge::makeLine(Widget w,
 
 	os << start << " " << end << " " 
 	   << int(radius) << " " << int(radius) << " "
-	   << c[X] << " " << c[Y] << " " << line_width << " arc*\n";
+	   << int(cx) << " " << int(cy) << " " << line_width << " arc*\n";
     }
-    else
+    else if (gc.printGC->isFig())
     {
-	// Cannot print arcs in FIG mode
-	static int warning = 0;
-	if (warning++ == 0)
-	    cerr << "Warning: arc printing is not supported\n";
+	// We draw the entire arc in one stroke.
+	if (from()->isHint())
+	{
+	    BoxCoordinate line_width = 1;
 
-	LineGraphEdge::_print(os, gc);
-	return;
+	    os << ARCARROWHEAD1 << line_width << ARCARROWHEAD2;
+	    if (path > 0)
+		os << ARCCOUNTERCLOCKWISE;
+	    else
+		os << ARCCLOCKWISE;
+	    os << ARCARROWHEAD3
+	       << cx << " " << cy << " "
+	       << pos_from[X] << " " << pos_from[Y] << " "
+	       << pos_hint[X] << " " << pos_hint[Y] << " "
+	       << pos_to[X]   << " " << pos_to[Y]   << " "
+	       << ARCARROWHEAD4;
+	}
     }
 
     if (from()->isHint())
     {
 	// Draw arrow head at POS_TO
-	double alpha = atan2(double(pos_to[Y] - c[Y]),
-			     double(pos_to[X] - c[X]));
+	double alpha = atan2(pos_to[Y] - cy, pos_to[X] - cx);
 
 	if (w != 0)
 	{
@@ -315,7 +320,7 @@ void ArcGraphEdge::makeLine(Widget w,
 
 	    drawArrowHead(w, exposed, gc, pos_to, alpha);
 	}
-	else
+	else if (gc.printGC->isPostScript())
 	{
 	    if (path > 0)
 		alpha -= PI / 2.0;
