@@ -71,6 +71,12 @@
 /* Define if your C++ compiler supports the __PRETTY_FUNCTION__ macro. */
 #undef HAVE_PRETTY_FUNCTION
 
+/* Define if the `regex_t' type has a `n_subexps' member, as in GNU RX 1.0 */
+#undef HAVE_REGEX_T_N_SUBEXPS
+
+/* Define if the `regex_t' type has a `re_nsub' member, according to POSIX.2 */
+#undef HAVE_REGEX_T_RE_NSUB
+
 /* Define if you want ICE to use X Athena widgets. */
 #undef WITH_ATHENA_WIDGETS
 

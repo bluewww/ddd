@@ -738,6 +738,67 @@ fi
 ])dnl
 dnl
 dnl
+dnl ICE_TYPE_REGEX_T: find members of POSIX.2 `regex_t' type
+dnl - HAVE_REGEX_T_RE_NSUB:   `regex_t' has a `re_nsub' member
+dnl - HAVE_REGEX_T_N_SUBEXPS: `regex_t' has a `n_subexps' member
+dnl
+AC_DEFUN(ICE_TYPE_REGEX_T,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_CHECK_HEADERS(regex.h rx.h)
+ICE_CHECK_DECL(regcomp, regex.h rx.h)
+ICE_CHECK_DECL(regexec, regex.h rx.h)
+ice_save_cppflags="$CPPFLAGS"
+CPPFLAGS="-I $srcdir/.. $CPPFLAGS"
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_MSG_CHECKING([re_nsub member of POSIX.2 regex_t type])
+AC_CACHE_VAL(ice_cv_have_regex_t_re_nsub,
+[
+AC_TRY_COMPILE(
+[
+#if defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_REGEX_H)
+#include <regex.h>		// POSIX.2 interface
+#elif defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_RX_H)
+#include <rx.h>	 	        // Header from GNU g++-include
+#else
+#include <rx/rxposix.h>	        // Header from GNU rx 1.0 and later
+#endif
+],
+[regex_t rx; int a = rx.re_nsub;], 
+ice_cv_have_regex_t_re_nsub=yes, ice_cv_have_regex_t_re_nsub=no)])dnl
+AC_MSG_RESULT($ice_cv_have_regex_t_re_nsub)
+if test "$ice_cv_have_regex_t_re_nsub" = yes; then
+AC_DEFINE(HAVE_REGEX_T_RE_NSUB)
+fi
+dnl
+dnl
+AC_MSG_CHECKING([n_subexps member of GNU RX regex_t type])
+AC_CACHE_VAL(ice_cv_have_regex_t_n_subexps,
+[
+AC_TRY_COMPILE(
+[
+#if defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_REGEX_H)
+#include <regex.h>		// POSIX.2 interface
+#elif defined(HAVE_REGCOMP) && defined(HAVE_REGEXEC) && defined(HAVE_RX_H)
+#include <rx.h>	 	        // Header from GNU g++-include
+#else
+#include <rx/rxposix.h>	        // Header from GNU rx 1.0 and later
+#endif
+],
+[regex_t rx; int a = rx.n_subexps;],
+ice_cv_have_regex_t_n_subexps=yes, ice_cv_have_regex_t_n_subexps=no)])dnl
+AC_MSG_RESULT($ice_cv_have_regex_t_n_subexps)
+if test "$ice_cv_have_regex_t_n_subexps" = yes; then
+AC_DEFINE(HAVE_REGEX_T_N_SUBEXPS)
+fi
+dnl
+dnl
+AC_LANG_RESTORE
+CPPFLAGS="$ice_save_cppflags"
+])dnl
+dnl
+dnl
 dnl ICE_FIND_MOTIF: find OSF/Motif libraries and headers
 dnl put Motif include directory in motif_includes
 dnl put Motif library directory in motif_libraries
