@@ -45,6 +45,10 @@ DDD 3.0 [in beta test]
       can point at `A.B' or `A->B' and get the current value.
     - All selection dialogs, including the breakpoint and display
       editors, can be resized.
+    - History mania.  Several text fields, including the `()' argument 
+      field, now have drop down history selections.
+    - The new `Open Recent' menu item allows you to re-open the nine
+      most recently debugged programs.
     - You can have the most important dialogs be realized as
       non-transient windows, allowing the DDD main window to obscure
       them.  See the `transientDialogs' resource for details.

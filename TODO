@@ -404,13 +404,11 @@ Volunteers for these and other projects are welcome!
 
 294 Have a way to expand `VALUE <Nx>' manually.
 
-296*Have a `Open Recent...' item in the `Open' menu that lets you open
-    up to 9 most recently used executables.
-
 298*If an item (a word) is selected in the reference browser, have it
     copied to `():'.
 
-302*Up and Down in ComboBox fields should select the previous/next
-    item in the history.
+303*Have a better algorithm to identify the home directory.  If a dir
+    has the same device and inode number as the home dir, replace it
+    by `~'.
 
-303 (Insert new project ideas here)
+304 (Insert new project ideas here)
