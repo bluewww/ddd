@@ -433,7 +433,7 @@ static MMDesc file_menu[] =
     MMSep,
     { "close",       MMPush, { DDDCloseCB }},
     { "restart",     MMPush, { DDDRestartCB }},
-    { "quit",        MMPush, { DDDExitCB }},
+    { "exit",        MMPush, { DDDExitCB }},
     MMEnd
 };
 
@@ -452,6 +452,7 @@ static MMDesc program_menu[] =
     MMSep,
     { "kill",        MMPush, { gdbCommandCB, "kill" }},
     { "break",       MMPush, { gdbCommandCB, "\003" }},
+    { "quit",        MMPush, { gdbCommandCB, "\034" }},
     MMEnd
 };
 
@@ -2485,9 +2486,9 @@ static Bool is_emergency(Display *, XEvent *event, char *)
 
 	    int len = XLookupString((XKeyEvent *)event, buffer, sizeof buffer,
 				    &keysym, NULL);
-	    if (len == 1 && buffer[0] == '\003')
+	    if (len == 1 && (buffer[0] == '\003' || buffer[0] == '\034'))
 	    {
-		// Interrupt: Ctrl-C found in queue
+		// Interrupt: ^C or ^\ found in queue
 		return True;
 	    }
 	}

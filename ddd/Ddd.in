@@ -589,6 +589,7 @@ Ddd*graph_edit_panner.shadowColor: black
 
 ! Red, green and blue buttons.
 Ddd*break.foreground:		   red4
+Ddd*quit.foreground:		   red4
 Ddd*run.foreground:		   dark green
 Ddd*run_again.foreground:	   dark green
 Ddd*arg_cmd_area*break.foreground: black
@@ -1408,7 +1409,7 @@ Ddd*menubar.file*contextHelpString:	\
 @rm This is the @sl File menu@rm.\n\
 \n\
 @tt \267 @bf Open Program... @rm - open the program to be debugged.\n\
-@tt \267 @bf Open Core... @rm - open a core dump.\n\
+@tt \267 @bf Open Core Dump... @rm - open a core dump.\n\
 @tt \267 @bf Open Source... @rm - open a source file.\n\
 \n\
 @tt \267 @bf Print Graph... @rm - print the data display graph.\n\
@@ -1419,31 +1420,39 @@ Ddd*menubar.file*contextHelpString:	\
 
 Ddd*menubar*fileMenu.open_file.labelString: Open Program...
 Ddd*menubar*fileMenu.open_file.mnemonic:    O
+! Ddd*menubar*fileMenu.open_file.accelerator:      Meta<Key>O
+! Ddd*menubar*fileMenu.open_file.acceleratorText:  Alt+O
 
-Ddd*menubar*fileMenu.open_core.labelString: Open Core...
-Ddd*menubar*fileMenu.open_core.mnemonic:    o
+Ddd*menubar*fileMenu.open_core.labelString: Open Core Dump...
+Ddd*menubar*fileMenu.open_core.mnemonic:    D
 
 Ddd*menubar*fileMenu.open_source.labelString: Open Source...
 Ddd*menubar*fileMenu.open_source.mnemonic:    S
 
 Ddd*menubar*fileMenu.print.labelString:	 Print Graph...
 Ddd*menubar*fileMenu.print.mnemonic:	 P
+! Ddd*menubar*fileMenu.print.accelerator:      ~Shift Meta<Key>P
+! Ddd*menubar*fileMenu.print.acceleratorText:  Alt+P
 
 Ddd*menubar*fileMenu.quickPrint.labelString: Print Again
 Ddd*menubar*fileMenu.quickPrint.mnemonic: A
+! Ddd*menubar*fileMenu.quickPrint.accelerator:      Shift Meta<Key>P
+! Ddd*menubar*fileMenu.quickPrint.acceleratorText:  Alt+Shift+P
 
 Ddd*menubar*fileMenu.close.labelString:	 Close
 Ddd*menubar*fileMenu.close.mnemonic:	 C
+! Ddd*menubar*fileMenu.close.accelerator:      Meta<Key>W
+! Ddd*menubar*fileMenu.close.acceleratorText:  Alt+W
 
 Ddd*menubar*fileMenu.restart.labelString: Restart
 Ddd*menubar*fileMenu.restart.mnemonic:	 R
 Ddd*menubar*fileMenu.restart.accelerator:      Shift Meta<Key>Q
 Ddd*menubar*fileMenu.restart.acceleratorText:  Alt+Shift+Q
 
-Ddd*menubar*fileMenu.quit.labelString:	 Exit
-Ddd*menubar*fileMenu.quit.mnemonic:	 x
-Ddd*menubar*fileMenu.quit.accelerator:	    ~Shift Meta<Key>Q
-Ddd*menubar*fileMenu.quit.acceleratorText:  Alt+Q
+Ddd*menubar*fileMenu.exit.labelString:	 Exit
+Ddd*menubar*fileMenu.exit.mnemonic:	 x
+Ddd*menubar*fileMenu.exit.accelerator:	    ~Shift Meta<Key>Q
+Ddd*menubar*fileMenu.exit.acceleratorText:  Alt+Q
 
 
 Ddd*menubar.edit.labelString:		Edit
@@ -1579,6 +1588,7 @@ but proceed through subroutine calls.\n\
 \n\
 @tt \267 @bf Kill @rm - Kill execution of program being debugged.\n\
 @tt \267 @bf Break @rm - interrupt program (or current debugger command).
+@tt \267 @bf Quit @rm - abort program (or current debugger command).
 
 Ddd*menubar*programMenu.run.labelString:	   Run...
 Ddd*menubar*programMenu.run.mnemonic:		   R
@@ -1627,8 +1637,13 @@ Ddd*menubar*programMenu.kill.acceleratorText:	   Ctrl+Shift+K
 
 Ddd*menubar*programMenu.break.labelString:	   Break
 Ddd*menubar*programMenu.break.mnemonic:		   B
-Ddd*menubar*programMenu.break.accelerator:	   Ctrl<Key>C	 I
+Ddd*menubar*programMenu.break.accelerator:	   Ctrl<Key>C
 Ddd*menubar*programMenu.break.acceleratorText:	   Ctrl+C
+
+Ddd*menubar*programMenu.quit.labelString:	   Quit
+Ddd*menubar*programMenu.quit.mnemonic:		   Q
+Ddd*menubar*programMenu.quit.accelerator:	   Ctrl<Key>\\ 
+Ddd*menubar*programMenu.quit.acceleratorText:	   Ctrl+\\ 
 
 
 Ddd*menubar.commands.labelString:	Commands
@@ -2740,8 +2755,7 @@ No argument means to have no executable file and no symbols.\n\
 \n\
 Click on @bf Open @rm to open the selected file.
 
-
-Ddd*core_files_popup.title:		   @DDD@: Open Core
+Ddd*core_files_popup.title:		   @DDD@: Open Core Dump
 Ddd*core_files_popup*okLabelString:	   Open
 Ddd*core_files_popup*selectionLabelString: Core Dump
 Ddd*core_files_popup*contextHelpString:	   \
@@ -2750,7 +2764,6 @@ The core dump is used for examining memory and registers.\n\
 No argument means to have no core file.\n\
 \n\
 Click on @bf Open @rm to open the selected core dump.
-
 
 Ddd*source_files_popup.title:		   @DDD@: Open Source
 Ddd*source_files_popup*okLabelString:	   Open
