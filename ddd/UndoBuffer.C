@@ -502,14 +502,16 @@ void UndoBuffer::process_state(UndoBufferEntry& entry, bool restore_state)
 
     if (restore_state)
     {
+	string unknown = "(Unknown state)";
+
 	// Process threads
-	string threads = "Unknown state";
+	string threads = unknown;
 	if (entry.has(UB_THREADS))
 	    threads = entry[UB_THREADS];
 	source_view->process_threads(threads);
 
 	// Process backtrace
-	string where = "Unknown state";
+	string where = unknown;
 	if (entry.has(UB_WHERE))
 	    where = entry[UB_WHERE];
 	source_view->process_where(where);
@@ -520,9 +522,14 @@ void UndoBuffer::process_state(UndoBufferEntry& entry, bool restore_state)
 	    string frame = entry[UB_FRAME];
 	    source_view->process_frame(atoi(frame));
 	}
+	else
+	{
+	    // No frame
+	    source_view->process_frame(-1);
+	}
 
 	// Process registers
-	string registers = "Unknown state";
+	string registers = unknown;
 	if (entry.has(UB_REGISTERS))
 	    registers = entry[UB_REGISTERS];
 	source_view->process_registers(registers);
