@@ -1919,11 +1919,10 @@ int main(int argc, char *argv[])
     install_icons(command_shell, app_data.button_color_key);
 
     // Create main window
-    Widget main_window = 
-	verify(XtVaCreateManagedWidget ("main_window", 
-					xmMainWindowWidgetClass,
-					command_shell,
-					NULL));
+    arg = 0;
+    Widget main_window = XmCreateMainWindow(command_shell, "main_window",
+					    args, arg);
+    XtManageChild(main_window);
 
     // Re-register own converters to override Motif converters.
     registerOwnConverters();
@@ -1940,11 +1939,13 @@ int main(int argc, char *argv[])
     register_menu_shell(menubar);
 
     // Create Paned Window
-    Widget paned_work_w = 
-	verify(XtVaCreateWidget("paned_work_w",
-				xmPanedWindowWidgetClass,
-				main_window,
-				NULL));
+    arg = 0;
+    XtSetArg(args[arg], XmNborderWidth,     0); arg++;
+    XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
+    Widget paned_work_w = verify(XmCreatePanedWindow(main_window,
+						     "paned_work_w",
+						     args, arg));
+    XtManageChild(paned_work_w);
 
     // Status line
     if (!app_data.separate_source_window && !app_data.status_at_bottom)
@@ -1991,11 +1992,11 @@ int main(int argc, char *argv[])
 	XmAddWMProtocolCallback(data_disp_shell, WM_DELETE_WINDOW, 
 				DDDCloseCB, 0);
 
-	data_main_window_w = 
-	    verify(XtVaCreateManagedWidget("data_main_window",
-					   xmMainWindowWidgetClass,
-					   data_disp_shell,
-					   NULL));
+	arg = 0;
+	data_main_window_w = XmCreateMainWindow(data_disp_shell, 
+						"data_main_window",
+						args, arg);
+	XtManageChild(data_main_window_w);
 
 	// Add menu bar
 	data_menubar_w = 
@@ -2009,11 +2010,13 @@ int main(int argc, char *argv[])
 	    data_buttons_w = make_buttons(data_disp_parent, "data_buttons", 
 					  app_data.data_buttons);
 
-	data_disp_parent = 
-	    verify(XtVaCreateManagedWidget ("data_paned_work_w",
-					    xmPanedWindowWidgetClass,
-					    data_main_window_w,
-					    NULL));
+	arg = 0;
+	XtSetArg(args[arg], XmNborderWidth,     0); arg++;
+	XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
+	data_disp_parent = verify(XmCreatePanedWindow(data_main_window_w,
+						      "data_paned_work_w",
+						      args, arg));
+	XtManageChild(data_disp_parent);
     }
 
     if (data_buttons_w == 0 && !app_data.toolbars_at_bottom)
@@ -2051,11 +2054,11 @@ int main(int argc, char *argv[])
 	XmAddWMProtocolCallback(source_view_shell, WM_DELETE_WINDOW, 
 				DDDCloseCB, 0);
 
-	source_main_window_w = 
-	    verify(XtVaCreateManagedWidget("source_main_window",
-					   xmMainWindowWidgetClass,
-					   source_view_shell,
-					   NULL));
+	arg = 0;
+	source_main_window_w = XmCreateMainWindow(source_view_shell,
+						  "source_main_window",
+						  args, arg);
+	XtManageChild(source_main_window_w);
 
 	// Add menu bar
 	source_menubar_w = 
@@ -2066,11 +2069,13 @@ int main(int argc, char *argv[])
 	register_menu_shell(source_menubar);
 
 	// Add source window
+	arg = 0;
+	XtSetArg(args[arg], XmNborderWidth,     0); arg++;
+	XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
 	source_view_parent = 
-	    verify(XtVaCreateManagedWidget ("source_paned_work_w",
-					    xmPanedWindowWidgetClass,
-					    source_main_window_w,
-					    NULL));
+	    verify(XmCreatePanedWindow(source_main_window_w, 
+				       "source_paned_work_w", args, arg));
+	XtManageChild(source_view_parent);
 
 	// Status line
 	if (!app_data.status_at_bottom)
@@ -2257,19 +2262,36 @@ int main(int argc, char *argv[])
     {
 	// We don't want the data window (unless in full name mode,
 	// where we always open a data window - because otherwise, no
-	// window would remain and we'd be gone)
+	// window would remain and we'd be gone).
 	gdbCloseDataWindowCB(gdb_w, 0, 0);
     }
     if (!app_data.source_window || app_data.full_name_mode)
     {
-	// We don't need the source window, since we're invoked by Emacs
+	// We don't need the source window, since we're invoked by Emacs.
 	gdbCloseSourceWindowCB(gdb_w, 0, 0);
-	gdbCloseToolWindowCB(gdb_w, 0, 0);
+
+	if (!app_data.disassemble)
+	    gdbCloseToolWindowCB(gdb_w, 0, 0);
+    }
+    if (!app_data.disassemble)
+    {
+	// We don't disassemble.
+	gdbCloseCodeWindowCB(gdb_w, 0, 0);
     }
     if (!app_data.debugger_console || app_data.tty_mode)
     {
-	// We don't need the debugger console, since we have a TTY
+	// We don't need the debugger console, since we have a TTY.
 	gdbCloseCommandWindowCB(gdb_w, 0, 0);
+    }
+
+    if (data_disp_shell != 0)
+    {
+	// Set width of the separate data window
+	Dimension max_width = 0;
+	get_paned_window_width(paned_work_w, max_width);
+	get_paned_window_width(source_view_parent, max_width);
+	set_paned_window_size(data_disp_parent, max_width);
+	set_main_window_size(data_main_window_w);
     }
 
     // Popdown the splash screen before it eats up all colors
