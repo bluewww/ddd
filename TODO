@@ -356,4 +356,6 @@ Volunteers for these and other projects are welcome!
     All we need is to generate an `undoing' command for each command
     we send to GDB.
 
-321 (Insert new project ideas here)
+321 Allow `()' expansion in auto-commands.
+
+322 (Insert new project ideas here)
