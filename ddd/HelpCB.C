@@ -1142,7 +1142,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     arg = 0;
     Widget help_index = verify(XmCreateScrolledList(area, "index", args, arg));
     XtManageChild(help_index);
-    set_scrolled_window_size(help_index);
+    if (lesstif_version < 90)
+	set_scrolled_window_size(help_index);
 
     Widget view_index;
     MMDesc manual_menu[] = 
@@ -1180,7 +1181,8 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     XtSetArg(args[arg], XmNvalue,    "");                arg++;
     Widget help_man = verify(XmCreateScrolledText(area, "text", args, arg));
     XtManageChild(help_man);
-    set_scrolled_window_size(help_man);
+    if (lesstif_version < 90)
+	set_scrolled_window_size(help_man);
     fi->text = help_man;
 
     XtWidgetGeometry size;
@@ -1482,7 +1484,8 @@ void TextHelpCB(Widget widget, XtPointer client_data, XtPointer)
     XtSetArg(args[arg], XmNvalue,            text); arg++;
     Widget help_text = verify(XmCreateScrolledText(area, "text", args, arg));
     XtManageChild(help_text);
-    set_scrolled_window_size(help_text);
+    if (lesstif_version < 90)
+	set_scrolled_window_size(help_text);
     fi->text = help_text;
 
     XtWidgetGeometry size;
