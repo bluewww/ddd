@@ -88,6 +88,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _type(tp),
       _user_data(0),
       _has_frame_command(tp == GDB || tp == XDB),
+      _has_func_command(tp == DBX),
       _has_run_io_command(false),
       _has_print_r_option(false),
       _has_output_command(false),
@@ -1219,7 +1220,7 @@ string GDBAgent::kill_command() const
     return "";			// Never reached
 }
 
-string GDBAgent::frame_command(string depth) const
+string GDBAgent::frame_command() const
 {
     if (!has_frame_command())
 	return "";
@@ -1228,16 +1229,43 @@ string GDBAgent::frame_command(string depth) const
     {
     case GDB:
     case DBX:
-	if (depth == "")
-	    return "frame";
-	else
-	    return "frame " + depth;
+	return "frame";
 
     case XDB:
-	if (depth == "")
-	    return print_command("$depth");
-	else
-	    return "V " + depth;
+	return print_command("$depth");
+    }
+
+    return "";			// Never reached
+}
+
+string GDBAgent::frame_command(int num) const
+{
+    if (!has_frame_command())
+	return "";
+
+    switch (type())
+    {
+    case GDB:
+    case DBX:
+	return frame_command() + " " + itostring(num);
+
+    case XDB:
+	return "V " + itostring(num);
+    }
+
+    return "";			// Never reached
+}
+
+string GDBAgent::func_command() const
+{
+    switch (type())
+    {
+    case GDB:
+    case XDB:
+	return frame_command();
+
+    case DBX:
+	return has_func_command() ? "func" : "";
     }
 
     return "";			// Never reached

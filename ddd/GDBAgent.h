@@ -143,6 +143,7 @@ private:
     void*           _user_data;
 
     bool _has_frame_command;	
+    bool _has_func_command;	
     bool _has_run_io_command;
     bool _has_print_r_option;
     bool _has_output_command;
@@ -250,6 +251,10 @@ public:
     bool has_frame_command() const    { return _has_frame_command; }	
     bool has_frame_command(bool val)  { return _has_frame_command = val; }
 
+    // True if debugger has `func' command
+    bool has_func_command() const    { return _has_func_command; }	
+    bool has_func_command(bool val)  { return _has_func_command = val; }
+
     // True if debugger has `run_io' command
     bool has_run_io_command() const    { return _has_run_io_command; }
     bool has_run_io_command(bool val)  { return _has_run_io_command = val; }
@@ -340,7 +345,9 @@ public:
     string display_command(string expr = "") const; // GDB: "display EXPR"
     string where_command(int count = 0) const;	    // GDB: "where COUNT"
     string pwd_command() const;	                    // GDB: "pwd "
-    string frame_command(string depth = "") const;  // GDB: "frame DEPTH"
+    string frame_command(int number) const;         // GDB: "frame NUMBER"
+    string frame_command() const;                   // GDB: "frame"
+    string func_command() const;                    // DBX: "func"
     string echo_command(string text) const;         // GDB: "echo TEXT"
     string whatis_command(string expr) const;       // GDB: "whatis EXPR"
     string dereferenced_expr(string expr) const;    // GDB: "*EXPR"
