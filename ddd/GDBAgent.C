@@ -930,13 +930,16 @@ string GDBAgent::whatis_command(string text) const
     return "";			// Never reached
 }
 
-// Prefer `ptype' on `whatis' in GDB
+// Dereference an expression.
 string GDBAgent::dereferenced_expr(string text) const
 {
     switch (program_language())
     {
     case LANGUAGE_C:
 	return "*(" + text + ")";
+
+    case LANGUAGE_FORTRAN:
+	return "*(" + text + ")"; // FIXME
 
     case LANGUAGE_PASCAL:
 	return text + "^";
@@ -961,8 +964,14 @@ ProgramLanguage GDBAgent::program_language(string text)
 	    || text.contains("ada")
 	    || text.contains("m2")
 	    || text.contains("m3"))
+	{
 	    program_language(LANGUAGE_PASCAL);
-	else
+	}
+	else if (text.contains("fortran"))
+	{
+	    program_language(LANGUAGE_FORTRAN);
+	}
+	else   
 	    program_language(LANGUAGE_C);
     }
 
