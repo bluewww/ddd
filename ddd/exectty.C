@@ -492,6 +492,11 @@ static void redirect_process(string& command,
     command = base + " " + new_args;
 }
 
+static void unredirect_reply(const string& answer, void *)
+{
+    post_gdb_message(answer);
+}
+
 // Restore original redirection
 static void unredirect_process(string& command,
 			       Widget origin = 0)
@@ -508,9 +513,7 @@ static void unredirect_process(string& command,
 	    args.gsub(gdb_redirection, empty);
 	    strip_final_blanks(args);
 	    read_leading_blanks(args);
-	    string reply = gdb_question("set args " + args);
-	    if (reply != "")
-		post_gdb_message(reply, origin);
+	    gdb_command("set args " + args, origin, unredirect_reply);
 	}
     }
 
