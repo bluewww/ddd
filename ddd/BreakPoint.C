@@ -212,13 +212,20 @@ void BreakPoint::process_gdb(string& info_output)
 	}
 
 	// Location
- 	// We have to deal with breakpoint in code w/o source
-	// -- Hiro Sugawara <hiro@lynx.com>
  	string remainder = info_output.through('\n');
+	info_output = info_output.after('\n');
+
+	// GDB 5.0 may issue an (indented) file name in the following line
+	if (!remainder.contains(rxname_colon_int_nl))
+	{
+	    remainder += info_output.through('\n');
+	    if (remainder.contains(rxname_colon_int_nl))
+		info_output = info_output.after('\n');
+	}
+
  	remainder = remainder.from(rxname_colon_int_nl);
- 	info_output = info_output.from('\n');
  	myfile_name = remainder.before(":");
- 
+
  	remainder = remainder.after(":");
  	if (remainder != "" && isdigit(remainder[0]))
  	    myline_nr = get_positive_nr(remainder);
@@ -227,10 +234,8 @@ void BreakPoint::process_gdb(string& info_output)
     {
 	// Read watched expression
 	myexpr = info_output.before('\n');
+	info_output = info_output.after('\n');
     }
-
-    // That's all in this line
-    info_output = info_output.after('\n');
 
     int ignore_count = 0;
     string cond      = "";
