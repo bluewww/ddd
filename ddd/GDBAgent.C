@@ -683,8 +683,9 @@ bool GDBAgent::ends_with_prompt (const string& ans)
     case PERL:
     {
 	// Any line ending in `DB<N> ' is a prompt.
+	// Since N does not make sense in DDD, we use `DB<> ' instead.
 #if RUNTIME_REGEX
-	static regex rxperlprompt("[ \t]*DB<+[0-9]+>+[ \t]*");
+	static regex rxperlprompt("[ \t]*DB<+[0-9]*>+[ \t]*");
 #endif
 
 	int i = answer.length() - 1;
@@ -697,7 +698,7 @@ bool GDBAgent::ends_with_prompt (const string& ans)
 	string possible_prompt = answer.from(i);
 	if (possible_prompt.matches(rxperlprompt))
 	{
-	    last_prompt = possible_prompt;
+	    last_prompt = "DB<> ";
 	    return true;
 	}
 	return false;
@@ -916,8 +917,13 @@ void GDBAgent::cut_off_prompt(string& answer) const
 	break;
 
     case PERL:
-	answer = answer.before("DB<", -1);
+    {
+	int i = answer.index("DB<", -1);
+	while (i > 0 && answer[i - 1] == ' ')
+	    i--;
+	answer.from(i) = "";
 	break;
+    }
 
     case JDB:
     {
@@ -1674,7 +1680,7 @@ string GDBAgent::pwd_command() const
 	return "!pwd";
 
     case PERL:
-	return print_command("$ENV{'PWD'} || `pwd`");
+	return "p $ENV{'PWD'} || `pwd`";
 
     case JDB:
 	return "";
@@ -1945,7 +1951,9 @@ string GDBAgent::echo_command(string text) const
 	return quote(text);
 
     case PERL:
-	return print_command(quote(text, '\''));
+	if (text.contains('\n', -1))
+	    text = text.before(-1);
+	return "p " + quote(text, '\'');
 
     case JDB:
     case PYDB:
