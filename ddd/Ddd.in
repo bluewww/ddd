@@ -366,9 +366,22 @@ Ddd*tool_buttons*rightAttachment:		XmATTACH_POSITION
 Ddd*tool_buttons*Forward.labelString:   Fwd
 Ddd*tool_bar*Cont.labelString:   Continue
 
-
 ! Tab width in source texts
 Ddd*tabWidth:	        8
+
+! Number of characters to indent the source and machine code
+Ddd*indentSource:	4
+Ddd*indentCode:	        4
+
+! Width of line numbers (if enabled; see the `displayLineNumbers' resource)
+! Line numbers wider than this value extend into the breakpoint space.
+Ddd*lineNumberWidth:	4
+
+The minimum number of lines to show before the current location.
+Ddd*linesAboveCursor:	2
+
+The minimum number of lines to show after the current location.
+Ddd*linesBelowCursor:	3
 
 
 ! The GDB initialization commands.  DDD depends on these settings,

@@ -2186,10 +2186,9 @@ the `\fBvslDefs\fR' resource, below.
 .\"
 .\"
 .\"
-.SS "Options and Preferences"
+.SS "General Preferences"
 .\"
-The following resources determine \s-2@DDD@\s+2 options and
-preferences.
+The following resources determine \s-2@DDD@\s+2 general behavior.
 .TP
 .B "buttonTips (\fPclass\fB Tips)"
 Whether button tips are enabled (`\fBtrue\fR', default) or
@@ -2199,38 +2198,6 @@ may be distracting for experienced users.
 .B "buttonDocs (\fPclass\fB Docs)"
 Whether the display of button hints in the status line is enabled
 (`\fBtrue\fR', default) or not (`\fBfalse\fR').
-.TP
-.B "cacheMachineCode (\fPclass\fB CacheMachineCode)"
-Whether to cache disassembled machine code (`\fBtrue\fR', default) or
-not (`\fBfalse\fR').  Caching machine code requires more memory, but
-makes \s-2@DDD@\s+2 run faster.
-.TP
-.B "cacheSourceFiles (\fPclass\fB CacheSourceFiles)"
-Whether to cache source files (`\fBtrue\fR', default) or not
-(`\fBfalse\fR').  Caching source files requires more memory, but makes
-\s-2@DDD@\s+2 run faster.
-.TP
-.B "dataWindow (\fPclass\fB Window)"
-If `\fBfalse\fR', no data window is created upon start-up.
-.TP
-.B "debuggerConsole (\fPclass\fB Window)"
-If `\fBfalse\fR', no debugger console is created upon start-up.
-.TP
-.B "disassemble (\fPclass\fB Disassemble)"
-If this is `\fBtrue\fR', the source code is automatically
-disassembled.  The default is `\fBfalse\fR'.  See also the
-`\fB\-\-disassemble\fR' and `\fB\-\-no\-disassemble\fR' options,
-below.
-.TP
-.B "displayGlyphs (\fPclass\fB DisplayGlyphs)"
-If this is `\fBtrue\fR', the current execution position and breakpoints
-are displayed as glyphs; otherwise, they are shown through characters
-in the text.  The default is `\fBtrue\fR'.  See also the
-`\fB\-\-glyphs\fR' and `\fB\-\-no\-glyphs\fR' options, below.
-.TP
-.B "findWordsOnly (\fPclass\fB FindWordsOnly)"
-If this is `\fBtrue\fR' (default), the `\fBFind\fR' commands find
-complete words only.  Otherwise, arbitrary occurrences are found.
 .TP
 .B "globalTabCompletion (\fPclass\fB GlobalTabCompletion)"
 If this is `\fBtrue\fR' (default), the \s-2\fBTAB\fR\s+2 key completes
@@ -2244,27 +2211,109 @@ causes all other \s-2@DDD@\s+2 windows to (de)iconify as well.
 Default is `\fBfalse\fR', meaning that each \s-2@DDD@\s+2 window can
 be iconified on its own.
 .TP
-.B "indentAmount (\fPclass\fB IndentAmount)"
-The number of columns used for the code line number display (default:
-\fB8\fR)
-.TP
-.B "pannedGraphEditor (\fPclass\fB PannedGraphEditor)"
-What shall \s-2@DDD@\s+2 use if the graph gets too large to be
-displayed?  If this is `\fBtrue\fR', an Athena panner is used (a kind
-of two-directional scrollbar).  If this is `\fBfalse\fR' (default),
-two Motif scrollbars are used.  See also the
-`\fB\-\-scrolled\-graph\-editor\fR' and `\fB\-\-panned\-graph\-editor\fR'
-options, below.
-.TP
-.B "paperSize (\fPclass\fB PaperSize)"
-The paper size used for printing, in format \fIWIDTH\fR x
-\fIHEIGHT\fR.  The default is A4 format, or `\fB210mm x 297mm\fR'.
-.TP
 .B "saveHistoryOnExit (\fPclass\fB SaveHistoryOnExit)"
 If `\fBtrue\fR' (default), the command history is automatically saved
 when \s-2@DDD@\s+2 exits.  If the inferior debugger saves its
 command history, its history file is used, otherwise,
 `\fB$HOME/.ddd_history\fR' is used.
+.TP
+.B "suppressWarnings (\fPclass\fB SuppressWarnings)"
+If `\fBtrue\fR', X warnings are suppressed.  This is
+sometimes useful for executables that were built on a machine with a
+different X or Motif configuration.  By default, this is
+`\fBfalse\fR'.
+.TP
+.B "ungrabMousePointer (\fPclass\fB UngrabMousePointer)"
+When debugging a modal X application, \s-2@DDD@\s+2 may interrupt it
+while it has grabbed the pointer, making further interaction
+impossible.  If this is `\fBtrue\fR' (default), \s-2@DDD@\s+2 will
+check after each interaction whether the pointer is grabbed.  If this
+is so, \s-2@DDD@\s+2 will instruct the debugged program to ungrab the
+mouse pointer.
+.TP
+.B "valueTips (\fPclass\fB Tips)"
+Whether value tips are enabled (`\fBtrue\fR', default) or not
+(`\fBfalse\fR').  Value tips affect \s-2@DDD@\s+2 performance and may
+be distracting for some experienced users.
+.TP
+.B "valueDocs (\fPclass\fB Docs)"
+Whether the display of variable values in the status line is enabled
+(`\fBtrue\fR', default) or not (`\fBfalse\fR').
+.\"
+.\"
+.SS "Source Window"
+.\"
+The following resources determine the \s-2@DDD@\s+2 source window.
+.TP
+.B "cacheMachineCode (\fPclass\fB CacheMachineCode)"
+Whether to cache disassembled machine code (`\fBtrue\fR', default) or
+not (`\fBfalse\fR').  Caching machine code requires more memory, but
+makes \s-2@DDD@\s+2 run faster.
+.TP
+.B "cacheSourceFiles (\fPclass\fB CacheSourceFiles)"
+Whether to cache source files (`\fBtrue\fR', default) or not
+(`\fBfalse\fR').  Caching source files requires more memory, but makes
+\s-2@DDD@\s+2 run faster.
+.TP
+.B "disassemble (\fPclass\fB Disassemble)"
+If this is `\fBtrue\fR', the source code is automatically
+disassembled.  The default is `\fBfalse\fR'.  See also the
+`\fB\-\-disassemble\fR' and `\fB\-\-no\-disassemble\fR' options,
+below.
+.TP
+.B "displayGlyphs (\fPclass\fB DisplayGlyphs)"
+If this is `\fBtrue\fR', the current execution position and breakpoints
+are displayed as glyphs; otherwise, they are shown through characters
+in the text.  The default is `\fBtrue\fR'.  See also the
+`\fB\-\-glyphs\fR' and `\fB\-\-no\-glyphs\fR' options, below.
+.TP
+.B "displayLineNumbers (\fPclass\fB DisplayLineNumbers)"
+If this is `\fBtrue\fR', lines in the source text are prefixed with
+their respective line number.  The default is `\fBfalse\fR'.
+.TP
+.B "findWordsOnly (\fPclass\fB FindWordsOnly)"
+If this is `\fBtrue\fR' (default), the `\fBFind\fR' commands find
+complete words only.  Otherwise, arbitrary occurrences are found.
+.TP
+.B "indentCode (\fPclass\fB Indent)"
+The number of columns to indent the machine code, such that there is
+enough place to display breakpoint locations.  Default: \fB4\fR.
+.TP
+.B "indentSource (\fPclass\fB Indent)"
+The number of columns to indent the source code, such that there is
+enough place to display breakpoint locations.  Default: \fB4\fR.
+.TP
+.B "lineNumberWidth (\fPclass\fB LineNumberWidth)"
+The number of columns to use for line numbers (if displaying line
+numbers is enabled).  Line numbers wider than this value extend into
+the breakpoint space.  Default: \fB4\fR.
+.TP
+.B "linesAboveCursor (\fPclass\fB LinesAboveCursor)"
+The minimum number of lines to show before the current location.
+Default is \fB2\fR.
+.TP
+.B "linesBelowCursor (\fPclass\fB LinesBelowCursor)"
+The minimum number of lines to show after the current location.
+Default is \fB3\fR.
+.TP
+.B "tabWidth (\fPclass\fB TabWidth)"
+The tab width used in the source window (default: \fB8\fR)
+.TP
+.B "useSourcePath (\fPclass\fB UseSourcePath)"
+If this is `\fBfalse\fR' (default), the inferior debugger refers to
+source code locations only by their base names.  If this is
+`\fBtrue\fR' (default), \s-2@DDD@\s+2 uses the full source code paths.
+.\"
+.\"
+.SS "Window Creation and Layout"
+.\"
+The following resources determine \s-2@DDD@\s+2 window creation and layout.
+.TP
+.B "dataWindow (\fPclass\fB Window)"
+If `\fBfalse\fR', no data window is created upon start-up.
+.TP
+.B "debuggerConsole (\fPclass\fB Window)"
+If `\fBfalse\fR', no debugger console is created upon start-up.
 .TP
 .B "separateDataWindow (\fPclass\fB Separate)"
 If `\fBtrue\fR', the data window and the debugger console are realized
@@ -2295,37 +2344,6 @@ the \s-2@DDD@\s+2 source window.  If `\fBfalse\fR', the status line is
 placed at the top of the \s-2@DDD@\s+2 source window.  See also the
 `\fB\-\-status\-at\-bottom\fR' and `\fB\-\-status\-at\-top\fR'
 options, below.
-.TP
-.B "suppressWarnings (\fPclass\fB SuppressWarnings)"
-If `\fBtrue\fR', X warnings are suppressed.  This is
-sometimes useful for executables that were built on a machine with a
-different X or Motif configuration.  By default, this is
-`\fBfalse\fR'.
-.TP
-.B "tabWidth (\fPclass\fB TabWidth)"
-The tab width used in the source window (default: \fB8\fR)
-.TP
-.B "ungrabMousePointer (\fPclass\fB UngrabMousePointer)"
-When debugging a modal X application, \s-2@DDD@\s+2 may interrupt it
-while it has grabbed the pointer, making further interaction
-impossible.  If this is `\fBtrue\fR' (default), \s-2@DDD@\s+2 will
-check after each interaction whether the pointer is grabbed.  If this
-is so, \s-2@DDD@\s+2 will instruct the debugged program to ungrab the
-mouse pointer.
-.TP
-.B "useSourcePath (\fPclass\fB UseSourcePath)"
-If this is `\fBfalse\fR' (default), the inferior debugger refers to
-source code locations only by their base names.  If this is
-`\fBtrue\fR' (default), \s-2@DDD@\s+2 uses the full source code paths.
-.TP
-.B "valueTips (\fPclass\fB Tips)"
-Whether value tips are enabled (`\fBtrue\fR', default) or not
-(`\fBfalse\fR').  Value tips affect \s-2@DDD@\s+2 performance and may
-be distracting for some experienced users.
-.TP
-.B "valueDocs (\fPclass\fB Docs)"
-Whether the display of variable values in the status line is enabled
-(`\fBtrue\fR', default) or not (`\fBfalse\fR').
 .\"
 .\"
 .\"
@@ -2697,9 +2715,21 @@ checking is done: all commands are accepted `as is'.
 .\"
 .\"
 .\"
-.SS "Data Display Resources"
+.SS "Data Display"
 .\"
 The following resources control the data display.
+.TP
+.B "pannedGraphEditor (\fPclass\fB PannedGraphEditor)"
+What shall \s-2@DDD@\s+2 use if the graph gets too large to be
+displayed?  If this is `\fBtrue\fR', an Athena panner is used (a kind
+of two-directional scrollbar).  If this is `\fBfalse\fR' (default),
+two Motif scrollbars are used.  See also the
+`\fB\-\-scrolled\-graph\-editor\fR' and `\fB\-\-panned\-graph\-editor\fR'
+options, below.
+.TP
+.B "paperSize (\fPclass\fB PaperSize)"
+The paper size used for printing, in format \fIWIDTH\fR x
+\fIHEIGHT\fR.  The default is A4 format, or `\fB210mm x 297mm\fR'.
 .TP
 .B "vslDefs (\fPclass\fB VSLDefs)"
 A string with additional \s-2VSL\s+2 definitions that are appended to
