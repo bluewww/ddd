@@ -1,0 +1,31 @@
+$Id$
+DDD description for the Linux software map
+
+Begin3
+Title:          ddd
+Version:        1.0
+Entered-date:   May 7, 1995
+Description:    The Data Display Debugger (DDD) is a novel graphical user
+                interface to GDB, the popular UNIX debugger.  Besides
+                ``usual'' features such as viewing source texts and
+                breakpoints, DDD provides a *graphical data display*,
+                where data structures are displayed as graphs.  Complex
+                data structures can be explored incrementally and
+                interactively. Other features include: hypertext source
+                navigation and lookup; GDB command-line interface with
+                full editing, history, and completion capabilities;
+                breakpoint, backtrace, and history editors; optional
+                program execution in terminal emulator window; debugging
+                on remote host; on-line manual; interactive help on the
+                OSF/Motif user interface.
+Keywords:       ddd, GUI, debugger, visualization
+Author:         luetke@ips.cs.tu-bs.de (Dorothea Luetkehaus)
+                zeller@ips.cs.tu-bs.de (Andreas Zeller)
+Maintained-by:  ddd@ips.cs.tu-bs.de (DDD Maintainers)
+Primary-site:   
+Alternate-site: 
+Original-site:  ftp.ips.cs.tu-bs.de /pub/local/softech/ddd
+Platform:       gcc 2.6.3, libg++ 2.6.2, Motif 1.1 or later
+Copying-policy: GPL
+End
+
