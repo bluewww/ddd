@@ -308,7 +308,7 @@ Command History\fR' shows the command history.
 You can \fIsearch\fR for previous commands by pressing `\fBCtrl+R\fR'.
 This invokes \fIincremental search mode,\fR where you can enter a
 string to be searched in previous commands.  Press `\fBCtrl+R\fR'
-again to repeat the search, or `\fBCtrl+S\fR' to search in the reverse
+again to repeat the search, or `\fBCtrl+F\fR' to search in the reverse
 direction.  To return to normal mode, press \s-2\fBESC\fR\s+2, or use
 any cursor command.
 .PP
@@ -840,7 +840,7 @@ debugger console.
 .IP \(bu 2
 To stop the recording, click on `\fBEnd\fR' or enter `\fBend\fR' at
 the \s-2GDB\s+2 prompt.  To \fIcancel\fR the recording, click on
-`\fBInterrupt\fR' or press \fBCtrl+C\fR.
+`\fBInterrupt\fR' or press \fBCtrl+G\fR.
 .IP \(bu 2
 Click on `\fBEdit \s-2>>\s+2\fR' to edit the recorded commands.
 When done with editing, click on `\fBEdit \s-2<<\s+2\fR' to close the
@@ -1057,7 +1057,7 @@ The program stops as soon as a breakpoint is reached.  The current
 execution position is highlighted by an arrow.
 .PP
 You can interrupt a running program any time by clicking the
-`\fBInterrupt\fR' button or typing \fBCtrl+C\fR in a \s-2@DDD@\s+2 window.
+`\fBInterrupt\fR' button or typing \fBCtrl+G\fR in a \s-2@DDD@\s+2 window.
 .\"
 .\"
 .SS "Resuming Execution"
@@ -2094,7 +2094,7 @@ the `\fBquit\fR' command at the debugger prompt.  \s-2GDB\s+2 and
 \s-2XDB\s+2 also accept the `\fBq\fR' command or an end-of-file
 character (usually \fBCtrl+D\fR).
 .PP
-An interrupt (\fBCtrl+C\fR or \fBInterrupt\fR) does not exit from
+An interrupt (\fBCtrl+G\fR or \fBInterrupt\fR) does not exit from
 \s-2@DDD@\s+2, but rather terminates the action of any debugger
 command that is in progress and returns to the debugger command level.
 It is safe to type the interrupt character at any time because the
@@ -2106,15 +2106,15 @@ abort (\fBCtrl+\\\fR or \fBAbort\fR), which sends a \s-2QUIT\s+2 signal
 to the inferior debugger.  Use this in emergencies only; the inferior
 debugger may be left inconsistent after a \s-2QUIT\s+2 signal.
 .PP
-As a last resort\(em\&if \s-2@DDD@\s+2 hangs, for example\(em\&, you may
-also interrupt \s-2@DDD@\s+2 itself using an interrupt signal
-(\s-2SIGINT\s+2).  This can be done by pressing \fBCtrl+C\fR in the
-shell \s-2@DDD@\s+2 was started from, or by using the \s-2UNIX\s+2
-`\fBkill\fR' command.  An interrupt signal interrupts any
-\s-2@DDD@\s+2 action; the inferior debugger is interrupted as well.
-Since this interrupt signal can result in internal inconsistencies,
-use this as a last resort in emergencies only; save your work as soon
-as possible and restart \s-2@DDD@\s+2.
+As a last resort\(em\&if \s-2@DDD@\s+2 hangs, for example\(em\&, you
+may also interrupt \s-2@DDD@\s+2 itself using an interrupt signal
+(\s-2SIGINT\s+2).  This can be done by typing the interrupt character
+(usually \fBCtrl+C\fR) in the shell \s-2@DDD@\s+2 was started from, or
+by using the \s-2UNIX\s+2 `\fBkill\fR' command.  An interrupt signal
+interrupts any \s-2@DDD@\s+2 action; the inferior debugger is
+interrupted as well.  Since this interrupt signal can result in
+internal inconsistencies, use this as a last resort in emergencies
+only; save your work as soon as possible and restart \s-2@DDD@\s+2.
 .\"
 .\"
 .\" ---------------
@@ -4581,17 +4581,17 @@ Clear the selection.
 These actions are used in the debugger console and other text fields.
 .TP
 .B gdb-backward-character ()
-Move one character to the left.  Bound to \fBCtrl+B\fR and \fBLeft\fR.
+Move one character to the left.  Bound to \fBLeft\fR.
 .TP
 .B gdb-beginning-of-line ()
 Move cursor to the beginning of the current line, after the prompt.
-Bound to \fBCtrl+A\fR and \fBHome\fR.
+Bound to \fBHome\fR.
 .TP
 .B gdb-control (\fIcontrol-character\fB)
 Send the given \fIcontrol-character\fR to the inferior debugger.
 The \fIcontrol-character\fR must be specified in the form `\fB^\fIX\fR',
 where \fIX\fR is an upper-case letter or `\fB?\fR'.
-Bound to \fBCtrl+C\fR and \fBCtrl+\\\fR.
+Bound to \fBCtrl+G\fR and \fBCtrl+\\\fR.
 .TP
 .B gdb-command (\fIcommand\fB)
 Execute \fIcommand\fR in the debugger console.
@@ -4615,17 +4615,16 @@ of a line.  Otherwise, \fIcontrol-character\fR is ignored and the
 character following the cursor is deleted.  Bound to \fBCtrl+D\fR.
 .TP
 .B gdb-end-of-line ()
-Move cursor to the end of the current line.  Bound to \fBCtrl+E\fR and
-\fBEnd\fR.
+Move cursor to the end of the current line.  Bound to \fBEnd\fR.
 .TP
 .B gdb-next-history ()
-Recall next command from history.  Bound to \fBCtrl+N\fR and \fBDown\fR.
+Recall next command from history.  Bound to \fBDown\fR.
 .TP
 .B gdb-prev-history ()
-Recall previous command from history.  Bound to \fBCtrl+P\fR and \fBUp\fR.
+Recall previous command from history.  Bound to \fBUp\fR.
 .TP
 .B gdb-previous-history ()
-Recall previous command from history.  Bound to \fBCtrl+P\fR and \fBUp\fR.
+Recall previous command from history.  Bound to \fBUp\fR.
 .TP
 .B gdb-process ([\|\fIaction\fB\|[\|, \fIargs...\fB\|]\|])
 Process the given event in the debugger console.  Bound to key events
@@ -4635,7 +4634,7 @@ window, and the source window is editable, perform
 \fIaction\fR is not given, perform `\fBself-insert()\fR'.
 .TP
 .B gdb-forward-character ()
-Move one character to the right.  Bound to \fBCtrl+F\fR and \fBRight\fR.
+Move one character to the right.  Bound to \fBRight\fR.
 .TP
 .B gdb-insert-graph-arg ()
 Insert the contents of the data display argument field `\fB()\fR'.
@@ -4647,7 +4646,7 @@ Insert the contents of the source argument field `\fB()\fR'.
 Enter reverse incremental search mode.  Bound to \fBCtrl+R\fR.
 .TP
 .B gdb-isearch-next ()
-Enter incremental search mode.  Bound to \fBCtrl+S\fR.
+Enter incremental search mode.  Bound to \fBCtrl+F\fR.
 .TP
 .B gdb-isearch-exit ()
 Exit incremental search mode.  Bound to \s-2\fBESC\fR\s+2.

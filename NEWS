@@ -9,6 +9,9 @@ DDD 3.0 [in beta test]
     User-visible changes to DDD 2.2.3:
     - New, `clean' look.  The DDD 2.x button rows are replaced by an
       icon tool bar at the top, saving vertical and horizontal space.
+    - New KDE-compatible key bindings.  Cut/Copy/Paste is now on
+      Ctrl+X/Ctrl+C/Ctrl+V.  To interrupt, use Ctrl+G (as in Emacs).
+      See below for a list of changed key bindings.
     - Configurable fonts.  You can easily customize DDD font settings
       via `Edit | Preferences | Fonts'.
     - JDB support.  DDD now also supports JDB as inferior debugger.
@@ -91,21 +94,49 @@ DDD 3.0 [in beta test]
     - GDB 4.17 is supported.
 
     Compatibility notes:
+    - Some key bindings have been re-assigned for KDE compatibility.
+      See `http://www.kde.org/standard-keys.html' for rationales.
+
+        Action        Old key       New key       Rationale
+        ------------  ------------  ------------  ----------
+        Interrupt     Ctrl+C        Ctrl+G        Ctrl+C now used for Copy
+        Cut           Shift+Del     Ctrl+X        KDE standard
+        Copy          Ctrl+Ins      Ctrl+C        KDE standard
+        Paste         Shift+Ins     Ctrl+V        KDE standard
+        Search        Ctrl+S        Ctrl+F        KDE standard
+        Run           Ctrl+X        Ctrl+E        Ctrl+X now used for Cut
+        Run Again     Shift+Ctrl+X  Ctrl+A        Ctrl+X now used for Cut
+        Open File     Alt+O         Ctrl+O        KDE standard
+        Open Session  Shift+Alt+O   Ctrl+N        KDE standard
+        Save Session  -/-           Ctrl+S        KDE standard
+        Attach        Ctrl+Z        -/-           Reserved for Undo
+        Detach        Shift+Ctrl+Z  -/-           Reserved for Undo
+        Print         -/-           Ctrl+P        KDE standard
+        Close         Alt+W         Ctrl+W        KDE standard
+        Edit          Shift+Ctrl+E  Shift+Ctrl+V  Ctrl+E now used for Run
+        Del Word      Ctrl+W        Ctrl+Bsp      Ctrl+W now used for Close
+        Backward      Ctrl+B        Left          Reserved
+        Unkill        Ctrl+Y        Shift+Ctrl+Y  Reserved for Redo
+
+      See the `Ddd' app-defaults file to change these key bindings.
+
     - Some resources had to be renamed for clarity and/or Motif conflicts:
  
-        Old resource name   New resource name
-        ------------------  --------------------
-        toolBar             commandToolBar
-        colorIcons          colorWMIcons
-	dataWindow          openDataWindow
-        sourceWindow        openSourceWindow
-        debuggerConsole     openDebuggerConsole
-        traceDialog         trace
+        Old resource name   New resource name     Rationale
+        ------------------  --------------------  ----------------
+        toolBar             commandToolBar        Ambiguity
+        colorIcons          colorWMIcons          Ambiguity
+	dataWindow          openDataWindow        sourceWindow used in Motif
+        sourceWindow        openSourceWindow      sourceWindow used in Motif
+        debuggerConsole     openDebuggerConsole   sourceWindow used in Motif
+        traceDialog         trace                 One resource suffices
         traceShellCommands  trace
-        ungrabMousePointer  checkGrabs
-        showStartupLogo     splashScreen + splashScreenColorKey
+        ungrabMousePointer  checkGrabs            New functionality
+        showStartupLogo     splashScreen +        Use separate resources
+                            splashScreenColorKey
 
       Please rename all references to the old DDD resources.
+
     - To enable a DDD 2.x style window layout, use
 
 	Ddd*commonToolBar:    off

@@ -5541,23 +5541,23 @@ static Bool is_emergency(Display *, XEvent *event, char *)
     switch (event->type)
     {
     case KeyPress:
+    {
+	char buffer[1024];
+	KeySym keysym;
+
+	int len = XLookupString(&event->xkey, buffer, sizeof buffer, 
+				&keysym, NULL);
+	if (len == 1 && (buffer[0] == '\003' || 
+			 buffer[0] == '\007' || 
+			 buffer[0] == '\034'))
 	{
-	    char buffer[1024];
-	    KeySym keysym;
-
-	    int len = XLookupString(&event->xkey, buffer, sizeof buffer,
-				    &keysym, NULL);
-	    if (len == 1 && (buffer[0] == '\003' || buffer[0] == '\034'))
-	    {
-		// Interrupt: ^C or ^\ found in queue
-		return True;
-	    }
+	    // Interrupt: ^C, ^G, or ^\ found in queue
+	    return True;
 	}
-	return False;
-
-    default:
-	return False;
     }
+    }
+
+    return False;
 }
 
 bool process_emergencies()

@@ -46,7 +46,7 @@
 # Include Macro definitions
 include(ifdef(`srcdir',srcdir()/macros.m4,macros.m4))dnl
 
-! Initial tip - shown after wrap-around.
+! Initial tip (number 0) - shown after wrap-around.
 
 If you have any more DDD tips of the day,
 please send them to the DDD developers EMAIL([ddd]@ ips.cs.tu-bs.de).
@@ -61,6 +61,9 @@ And don't worry, there is the LBL(Help) menu with much more information...
 Buttons with a small triangle in the upper right corner are special:
 pressing and holding BUTTON(1) on them will pop up a menu 
 with additional options.
+
+You can interrupt @GDB@ and the current program by clicking on
+LBL(Program) | LBL(Interrupt) or pressing KEY(Ctrl+G).
 
 There are three ways to show the value of a variable:
 ITEM You can view its value, simply by pointing at it;
@@ -112,7 +115,7 @@ For instance, to continue execution with an interrupt signal, use
 KBD(signal SIGINT) or KBD(signal 2) at the GDB prompt.
 
 You can repeat the last command by hitting KEY_RETURN.
-Use KEY(Ctrl+R) and KEY(Ctrl+S) to search the command history.
+Use KEY(Ctrl+R) and KEY(Ctrl+F) to search the command history.
 
 You can move breakpoints by dragging them.  
 Just press and hold BUTTON(1) on a breakpoint,
@@ -120,14 +123,6 @@ move it to the new position and release BUTTON(1) again.  That's all!
 
 ! You can save space by disabling toolbar captions.
 ! See LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Toolbar Appearance).
-
-In GCC, SAMP(-Wall) does not enable all warnings.  See the GCC
-documentation for other warnings you might consider useful.
-BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
-
-To get a global idea of what a process or program does or is doing,
-use a system call tracer, like SAMP(strace), SAMP(truss), or SAMP(trace).
-BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
 
 To have GDB start your program automatically upon startup,
 put the following lines in your FILE(.gdbinit) file:
@@ -161,8 +156,11 @@ To debug a child process, put a call to SAMP(sleep) in the child right
 after the SAMP(fork) call.  Run the program and attach to the child process
 using LBL(File) | LBL(Attach to Process).
 
-To execute frequently used commands with one mouse click,
-define your own DDD buttons via LBL(Commands) | LBL(Edit Buttons).
+Using GDB, you can define your own canned sequences of commands.
+Try `LBL(Commands) | LBL(Define Command)'.
+
+You can assign user-defined buttons to frequently used commands.
+Try `LBL(Commands) | LBL(Edit Buttons)'.
 
 In the Breakpoint and Display Editors,
 you can toggle the selection with KEY(Ctrl)+BUTTON(1).
@@ -170,11 +168,10 @@ This allows you to select non-contiguous ranges of items.
 
 To change the properties of multiple breakpoints at once,
 select them in the breakpoint editor (LBL(Source) | LBL(Edit Breakpoints))
-and click on LBL(Properties).  Just go ahead!
+and click on LBL(Properties).
 
-Even while in the source window, you can enter and edit GDB commands.
-Try KEY(Ctrl+P), KEY(Ctrl+N), KEY(Ctrl+B), KEY(Ctrl+F) for cursor movement
-and finish entering commands with KEY_RETURN.
+Even while in the source window, you can enter and edit GDB commands:
+Just type the command and press KEY_RETURN.
 
 You can record commands to be executed when a breakpoint is hit.
 In the LBL(Breakpoint Properties) panel, try LBL(Record) and LBL(End).
@@ -184,6 +181,14 @@ by invoking DDD as KBD([ddd] =VAR(session)).
 
 
 ! Professional tips.
+
+In GCC, SAMP(-Wall) does not enable all warnings.  See the GCC
+documentation for other warnings you might consider useful.
+BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
+
+To get a global idea of what a process or program does or is doing,
+use a system call tracer, like SAMP(strace), SAMP(truss), or SAMP(trace).
+BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
 
 If you suspect memory corruption caused by problematic pointers, try
 linking with Electric Fence SAMP(efence) or the SAMP(dbmalloc) library.
@@ -208,4 +213,3 @@ BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
 ! via electronic mail to EMAIL(elvis@ graceland.gnu.ai.mit.edu).  The King will
 ! try to help you out, although he may not have time to fix your problems.
 ! QUOTE(Free Software Foundation, GNU Hello Manual)
-
