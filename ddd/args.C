@@ -98,7 +98,7 @@ static void update_arguments(Widget dialog, Widget arguments_w,
     delete[] selected;
 
     Widget text_w = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
-    XmTextSetString(text_w, (String)last);
+    XmTextSetString(text_w, (char *)last.chars());
 
     updated = true;
 }
@@ -216,7 +216,7 @@ static void SelectRunArgsCB(Widget, XtPointer, XtPointer call_data)
     const string& args = run_arguments[pos];
     
     Widget text_w = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text_w, (String)args);
+    XmTextSetString(text_w, (char *)args.chars());
 }
 
 // Create `Run' dialog
@@ -260,7 +260,7 @@ static void SelectMakeArgsCB(Widget, XtPointer, XtPointer call_data)
     const string& args = make_arguments[pos];
     
     Widget text_w = XmSelectionBoxGetChild(make_dialog, XmDIALOG_TEXT);
-    XmTextSetString(text_w, (String)args);
+    XmTextSetString(text_w, (char *)args.chars());
 }
 
 // Make program with given arguments
