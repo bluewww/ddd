@@ -1,0 +1,89 @@
+// $Id$
+// VSL functions for DDD graph display
+
+// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+// 
+// This file is part of DDD.
+// 
+// DDD is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License as published by the Free Software Foundation; either
+// version 2 of the License, or (at your option) any later version.
+// 
+// DDD is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with DDD -- see the file COPYING.
+// If not, write to the Free Software Foundation, Inc.,
+// 675 Mass Ave, Cambridge, MA 02139, USA.
+// 
+// DDD is the GDB-based data display debugger.
+// Contact ddd@ips.cs.tu-bs.de for details.
+
+// Includes
+#include <std.vsl>
+#include <fonts.vsl>
+
+// Font settings
+#replace stdfontfamily
+stdfontfamily() = family_typewriter();
+
+// Shadow effects
+shadow(box, thickness) =
+  box & (square(thickness) | vrule(thickness))
+| square(thickness) & hrule(thickness);
+shadow(box) = shadow(box, 1);
+
+// The title
+title (disp_nr, name) -> rm(disp_nr & ": ") & bf(name);
+
+// The "disabled" string
+disabled () -> vcenter(it("(Disabled)") & hfill());
+
+// Ordinary values
+simple_value (value) -> vcenter(rm(value) & hfill());
+
+// Collapsed ordinary values
+collapsed_simple_value () -> vcenter(rm("...") & hfill());
+
+// Ordinary pointers
+pointer_value (value) -> vcenter(rm(value) & hfill());
+
+// Collapsed pointers
+collapsed_pointer_value () -> vcenter(rm("...") & hfill());
+
+// Dereferenced pointers
+dereferenced_pointer_value (value) -> bf(value) & hfill();
+
+// Collapsed array
+collapsed_array () -> vcenter(rm("[...]") & hfill());
+
+// Vertical array
+vertical_array (...) -> 
+  frame(indent(vlist(hwhite() | hrule() | hwhite(), ...)));
+
+// Horizontal array
+horizontal_array (...) -> 
+  frame(indent(hlist((vwhite(3) & vrule() & vwhite(3)), ...)));
+
+// Struct value
+struct_value (...) -> frame(indent(valign(...)) & hfill());
+
+// Collapsed struct
+collapsed_struct_value () -> vcenter(rm("{...}") & hfill());
+
+// Struct member name
+struct_member_name (name) -> rm(name);
+
+// Struct member
+struct_member (name, value, name_width) -> 
+  vcenter(rm(name) | hspace(name_width)) 
+  & vcenter(rm(" = ")) & rm(value) & hfill();
+
+// The entire box
+display_box (title, value) -> 
+  shadow(frame(title | hrule() | hwhite () | value));
