@@ -541,6 +541,8 @@ VSL_OBJECTS = \
 	ArgNode.o    \
 	BuiltinCN.o  \
 	CallNode.o   \
+	ConstNode.o  \
+	DefCallN.o   \
 	DummyNode.o  \
 	LetNode.o    \
 	NameNode.o   \
@@ -562,8 +564,6 @@ VSL_OBJECTS = \
 GRAPH_OBJECTS = \
 	layout.o     \
 	BoxGraphN.o  \
-	ConstNode.o  \
-	DefCallN.o   \
 	Graph.o      \
 	GraphEdge.o  \
 	GraphEdit.o  \
