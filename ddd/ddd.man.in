@@ -27,10 +27,10 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "25 Aug 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "26 Aug 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
-.PSPIC PICS/dddlogo22.ps 10cm
+.PSPIC PICS/dddlogo.ps 10cm
 .SH SYNOPSIS
 .na
 .TP

@@ -357,11 +357,13 @@ FIG2DEV = fig2dev
 FIG2PS = $(FIG2DEV) -L ps
 
 # Some XPM/PPM/PostScript converters, from the netpbm and pbmplus packages.
-XPMTOPPM = (xpmtoppm | ppmtogif | giftoppm) < 
+XPMTOPPM = (xpmtoppm | $(PNMDEPTH) 255)
 PNMTOPS  = pnmtops
 PPMTOPGM = ppmtopgm
 PGMTOPBM = pgmtopbm
 PBMTOXBM = pbmtoxbm
+PNMGAMMA = pnmgamma
+PNMDEPTH = pnmdepth
 SXPM     = sxpm
 
 ### END OF CUSTOMIZATION SECTION ---
@@ -744,7 +746,7 @@ PSS = $(srcdir)/../doc/ddd.man-nopics.ps $(srcdir)/../doc/ddd.man.ps
 ## PostScript pictures in the DDD manual.
 # All of these are generated from FIG and XPM files.
 PICS = \
-	PICS/dddlogo22.ps          \
+	PICS/dddlogo.ps            \
 	PICS/ddd-aliases.ps        \
 	PICS/ddd-all.ps            \
 	PICS/ddd-arguments.ps      \
@@ -792,7 +794,8 @@ HTMLS =
 MANS = $(srcdir)/ddd.man
 
 ## The (derived) icons
-ICONS = $(srcdir)/../icons/ddd.xbm $(srcdir)/../icons/dddmask.xbm
+icondir = $(srcdir)/../icons
+ICONS = $(icondir)/ddd.xbm $(icondir)/dddmask.xbm $(icondir)/dddlogo.xbm
 
 ## Readme files built from ddd.texinfo
 README_FILES = 
@@ -1278,26 +1281,32 @@ PICS/ddd-attach.ps: PICS/ddd-attach.fig PICS/ddd-attach.xpm
 	cd PICS; $(FIG2PS) ddd-attach.fig > ddd-attach.ps
 
 # The logo comes in XPM source
-PICS/dddlogo22.ps: PICS/dddlogo22.xpm
-	$(XPMTOPPM) PICS/dddlogo22.xpm | $(PNMTOPS) -noturn > $@
+PICS/dddlogo.ps: $(icondir)/dddlogo.xpm
+	$(XPMTOPPM) < $(icondir)/dddlogo.xpm | $(PNMTOPS) -noturn > $@
 
 
-## Icons.
+## Icons and logos.
 
-# Both the bitmap icon and its mask are derived from the XPM source.
+# All X bitmaps are derived from the XPM sources.
 
-$(srcdir)/../icons/ddd.xbm: $(srcdir)/../icons/ddd.xpm
+$(icondir)/ddd.xbm: $(icondir)/ddd.xpm
 	-$(SXPM) -nod -o - -mono $(srcdir)/../icons/ddd.xpm | \
 	$(SED) 's/[nN]one/white/g' | $(SED) 's/gr[ae]y/white/g' | \
 	$(XPMTOPPM) | $(PPMTOPGM) | $(PGMTOPBM) | $(PBMTOXBM) | \
 	$(SED) 's/noname/ddd/g' > tmp.xbm
 	test -s tmp.xbm && $(MV) tmp.xbm $@ || ($(RM) tmp.xbm; false)
 
-$(srcdir)/../icons/dddmask.xbm: $(srcdir)/../icons/ddd.xpm
+$(icondir)/dddmask.xbm: $(icondir)/ddd.xpm
 	-$(SXPM) -nod -o - -mono $(srcdir)/../icons/ddd.xpm | \
 	$(SED) 's/[nN]one/white/g' | $(SED) 's/gr[ae]y/black/g' | \
 	$(XPMTOPPM) | $(PPMTOPGM) | $(PGMTOPBM) | $(PBMTOXBM) | \
 	$(SED) 's/noname/dddmask/g' > tmp.xbm
+	test -s tmp.xbm && $(MV) tmp.xbm $@ || ($(RM) tmp.xbm; false)
+
+$(icondir)/dddlogo.xbm: $(icondir)/dddlogo.xpm
+	$(SXPM) -nod -o - -grey $(icondir)/dddlogo.xpm | $(XPMTOPPM) | \
+	$(PNMDEPTH) 255 | $(PNMGAMMA) 0.50 | $(PPMTOPGM) | $(PGMTOPBM) | \
+	$(PBMTOXBM) | $(SED) 's/noname/dddlogo/g' > tmp.xbm
 	test -s tmp.xbm && $(MV) tmp.xbm $@ || ($(RM) tmp.xbm; false)
 
 
