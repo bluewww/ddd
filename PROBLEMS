@@ -284,124 +284,20 @@ Reported by: Andrew Gaylard <apg@users.sf.net>
     (If configure fails to link statically Motif, it can be achieved with
     "make LIBXM=/usr/lib/Motif1.2_R6/libXm.a")
 
-    Starting ddd-3.3.9, "./configure CFLAGS=-O2 CXXFLAGS=-O2; make" should
-    be enough.
+    Starting ddd-3.3.9, "./configure CFLAGS=-O3 CXXFLAGS=-O3; make" should
+    be enough.  It seems that as features are added to ddd, the optimisation
+    level needs to increase...
 
-Reported by: jensen@Adobe.COM (Freddy Jensen)
+    DDD-3.3.9 builds on HP-UX 11.11 (aka 11i), with some fiddling.  The
+    following process may be overkill, but is known to work:
+    - Install HP's December 2003 patchset.
+    - Install the linker patch PHSS_28871 (or PHSS_28869 for 11.00).
+    - Build and install binutils 2.14 (I used /usr/local).  I also installed
+      m4, bison, flex, make and zlib.
+    - Build and install gcc-3.3.2, using
+         ../configure --with-gnu-as --with-as=/usr/local/bin/as
+    - At this point, DDD's "./configure; make; make install" will work.
 
-     To compile DDD 3.3 for HP-UX 10.20:
-
-     After running configure I had to edit ddd/Makefile and do this:
-
-     1. Change LIBTERMCAP
-
-        From: LIBTERMCAP = -lcurses
-        To:   LIBTERMCAP = /usr/lib/libHcurses.a
-
-     2. Change LIBXM
-
-        From: LIBXM = -lXm
-        To:   LIBXM = /usr/lib/Motif1.2_R6/libXm.a
-
-Reported by:  (various)
-
-    Lutz Jaenicke <Lutz.Jaenicke@aet.TU-Cottbus.DE> reports that he
-    has successfully built DDD-3.2 with HPs native compilers "cc" and
-    "aCC" under HP-UX 10.20 without GNU cc.  His configure line was:
-
-    CC=cc CXX=aCC F77=fort77 YACC=yacc LEX=lex CFLAGS="+O2 -Ae +DAportable" \
-     CXXFLAGS="+O2 +DAportable" FFLAGS="+O2 +DAportable" \
-     CPPFLAGS="-I/usr/local/include" CXXCPPFLAGS="-I/usr/local/include" \
-     LDFLAGS="-L/usr/local/lib" \
-     ./configure \
-      --x-includes /usr/include/X11R6 --x-libraries /usr/lib/X11R6 \
-      --without-athena --with-readline-libraries
-
-    Hints:
-    * The "+DAportable" flag compiles code that will also run on older
-      machines, it has no other influence.
-    * I do have libXpm and readline as shared libraries under /usr/local,
-      appropriate packages (binary distributions may install at different
-      locations) can be found at http://hpux.connect.org.uk/.
-    * All libraries, especially Motif, are used as shared libs, statically
-      linking is not necessary in this setup.
-      (Athena Widgets are only available as ".a" static libraries, so I decided
-      against include them.)
-    * To get the Athena Widgets, use:
-      ./configure \
-       --with-athena-includes=/usr/contrib/X11R6/include \
-       --with-athena-libraries=/usr/contrib/X11R6/lib
-    * IMPORTANT: I just installed the latest aCC patch, released 
-      around yesterday (2000/02/02)!!! Its number is PHSS_20959.
-      Without it, linking failed with
-        /usr/ccs/bin/ld: Unsatisfied symbols:
-       static_r (data)
-
-    Lutz Jaenicke <Lutz.Jaenicke@aet.TU-Cottbus.DE> adds that when
-    using GCC, you _must_ link in Motif(?) statically with
-    /usr/lib/libXm.a instead of the dynamic version obtained by
-    specifying -lXm.
-
-    Joseph H. Buehler <jhpb@sarto.gaithersburg.md.us> reports that gcc
-    2.95 on HP-UX 11.00 crashes with an internal error, turning off
-    -O2 eliminates the problem.  However, even when gcc 2.95 builds
-    DDD, it core dumps immediately at start.
-
-    On HP-UX 10.01, if you cannot link DDD or get an illegal
-    instruction at start-up, this is due to some bugs in the X11 and
-    Motif libraries as shipped by HP.  Mark Harig <markh@landmark.com>
-    says that some patches to X11 and Motif libraries are required to
-    build DDD on HP-UX 10.01.  You can find these patches at:
-    `ftp://us-support.external.hp.com/hp-ux_patches/'; he found the
-    patches he needed in the directory `s700_800/10.X'.
-
-    In that directory are the files:
-
-       PHSS_10789  (the patch for S700/S800, HP-UX 10.20)
-       PHSS_10789.txt (description of the patch and instructions)  
-
-    You might also need patch PHSS_10688, PHSS_9810, PHSS_9811,
-    PHSS_9813, and PHSS_9815.  Because the patch file names change as
-    new patches are created, you should look in this directory for the
-    file 'catalog', which lists the patch file names along with brief
-    descriptions.
-
-    According to some DDD users, linking problems on HP-UX can be
-    solved by using patched versions of the GNU binutils (such as ld
-    and ar) instead of the HP-UX binutils.  For more information on
-    HP-PA versions of the GNU tools, see
-    `ftp://jaguar.cs.utah.edu/dist/pagnutools.html'.
-
-    Frank Hofmann <hofmann@wpax01.physik.uni-wuerzburg.de> fixed an
-    `Invalid loader fixup for symbol _XtInheritTranslations,
-    xmPrimitiveClassRec' by replacing `XtInheritTranslations' by
-    `NULL' in `GraphEdit.C' and `ScrolledGE.C' and replacing
-    `xmPrimitiveClassRec' with `XmPrimitiveWidgetClass' in
-    `GraphEdit.C'.
-
-    Roy Dragseth <royd@math.uit.no> says that you must link against
-    the X11R6 version of Xmu, the X11R4 version gave an error on
-    _XEditResCheckMessages being undefined at the link stage.
-
-    Ivar Ruyter <ivarr@troll.hz.kfa-juelich.de> states: Build
-    everything statically and add `-l:libdld.sl' to the LIBS line in
-    the Makefile, voila you have a nice new Christmas Present.
-    This also worked for Hal Manuel <hemanuel@esy.com>.
-
-    Roy Dragseth <royd@math.uit.no> adds:
-    Statically link as stated above. Actually it is only
-    neccessary to statically link libXm, so if you exchange 
-            -L/usr/lib/Motif1.2 -lXm
-    with
-            /usr/lib/Motif1.2/libXm.a
-    in the link step DDD works fine. This might be useful for people
-    who don't have the gnu linker. It also makes the executable ~1Mb
-    smaller than when you add -l:libdld.sl to the link step.
-
-    Lassi A. Tuura <Lassi.Tuura@cern.ch> suggests to use the option
-    `-mmillicode-long-calls' when compiling.  It should permit fixes
-    into shared library calls (these errors only occur with shared
-    libraries).
 
 Irix
 ====
