@@ -1687,17 +1687,17 @@ Ddd*menubar.stack.contextHelpString:	\
 \
 @rm This is the @sl Stack menu@rm.\n\
 \n\
-@tt \267 @bf Show Backtrace... @rm - give a summary of how your program got \
+@tt \267 @bf Backtrace... @rm - give a summary of how your program got \
 where it is.\n\
-@tt \267 @bf Show Registers... @rm - show current processor registers.\n\
+@tt \267 @bf Registers... @rm - show current processor registers.\n\
 \n\
 @tt \267 @bf Up @rm - show the function that called the current one.\n\
 @tt \267 @bf Down @rm - show the function that was called by the current one.
 
-Ddd*stackMenu.stack.labelString:	Show Backtrace...
-Ddd*stackMenu.stack.mnemonic:		S
+Ddd*stackMenu.stack.labelString:	Backtrace...
+Ddd*stackMenu.stack.mnemonic:		B
 
-Ddd*stackMenu.registers.labelString:	Show Registers...
+Ddd*stackMenu.registers.labelString:	Registers...
 Ddd*stackMenu.registers.mnemonic:	R
 
 Ddd*stackMenu.up.labelString:		Up

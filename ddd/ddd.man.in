@@ -668,6 +668,10 @@ discussion.
 When your program has stopped, the first thing you need to know is
 where it stopped and how it got there.
 .PP
+\s-2@DDD@\s+2 provides a \fIbacktrace window\fR showing a summary of 
+how your program got where it is.  To enable the backtrace window,
+select `\fBBacktrace...\fR' from the `\fBStack\fR' menu.
+.PP
 The `\fBUp\fR' button selects the function that called the current
 one.
 .PP
@@ -675,7 +679,9 @@ The `\fBDown\fR' button selects the function that was called by
 the current one.
 .PP
 You can also directly type the `\fBup\fR' and `\fBdown\fR' commands at
-the debugger prompt.
+the debugger prompt.  Typing \fBCtrl+Up\fR and \fBCtrl+Down\fR,
+respectively, will also move you through the stack.
+.\"
 .\"
 .\" ---------------
 .SH "EXAMINING DATA"
@@ -1096,7 +1102,7 @@ subroutine calls are executed without stopping.
 .SS "Registers"
 \s-2@DDD@\s+2 provides a \fIregister window\fR showing the machine
 register values after each program stop.  To enable the register
-window, select `\fBShow Registers\fR' from the `\fBStack\fR' menu.
+window, select `\fBRegisters...\fR' from the `\fBStack\fR' menu.
 .PP
 By selecting one of the registers, its name is copied to the argument
 field.  You can use it as value for `\fBDisplay()\fR', for instance,
