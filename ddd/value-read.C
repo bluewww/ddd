@@ -60,17 +60,17 @@ DispValueType determine_type (string value)
     if (value.matches(RXindex))
 	value = value.after(']');
 
-    // References:
+    // References.
     static regex 
 	RXreference("([(][^)]*[)] )? *@ *(0(0|x)[0-9a-f]+|[(]nil[)]) *:.*");
     if (value.matches(RXreference))
 	return Reference;
 
-    // Vtables
+    // Vtables.
     if (value.matches(RXvtable))
 	return Array;
 
-    // Scalars:
+    // Scalars.
     switch(gdb->type())
     {
     case DBX:
@@ -83,16 +83,23 @@ DispValueType determine_type (string value)
 	break;
     }
 
-    // Structs:
+    // Structs.
     // XDB issues the struct address before each struct.
     static regex 
 	RXstr_or_cl_begin("(0(0|x)[0-9a-f]+|[(]nil[)])? *"
 			  "([(]|[{]|record\n|RECORD\n|RECORD |OBJECT "
 			  "|struct|class|union).*");
+    static regex RXstr_or_cl_end("([)]|[}]|end\n|END\n|end;|END;)");
 
     if (value.matches(RXstr_or_cl_begin))
     {
-	// Check for keywords
+	// Check for empty struct.
+	string v = value;
+	read_str_or_cl_begin(v);
+	if (v.contains(RXstr_or_cl_end, 0))
+	    return Simple;
+
+	// Check for leading keywords.
 	static regex
 	    RXstruct_keyword_begin("(0(0|x)[0-9a-f]+|[(]nil[)])? *"
 				   "(record\n|RECORD\n|RECORD |OBJECT "
@@ -100,15 +107,14 @@ DispValueType determine_type (string value)
 	if (value.matches(RXstruct_keyword_begin))
 	    return StructOrClass;
 
-	// DEC DBX uses `{' for arrays as well as for structs;
-	// likewise, AIX DBX uses `(' for arrays and structs.  To
-	// disambiguate between arrays and structs, we check for some
-	// struct member -- that is, a ` = ' before any other
-	// sub-struct or struct end.
+	// Check for leading braces.  DEC DBX uses `{' for arrays as
+	// well as for structs; likewise, AIX DBX uses `(' for arrays
+	// and structs.  To disambiguate between arrays and structs,
+	// we check for some struct member -- that is, a ` = ' before
+	// any other sub-struct or struct end.
 	static regex RXstr_or_cl_begin_s("([(]|[{])");
-	static regex RXstr_or_cl_end("([)]|[}]|end\n|END\n|end;|END;)");
 
-	string v = value.after(RXstr_or_cl_begin_s);
+	v = value.after(RXstr_or_cl_begin_s);
 	int end_pos = v.index(RXstr_or_cl_end);
 	int eq_pos  = v.index(" = ");
 	int str_pos = v.index(RXstr_or_cl_begin);
@@ -119,7 +125,7 @@ DispValueType determine_type (string value)
 	    return StructOrClass;
     }
 
-    // Pointers:
+    // Pointers.
     // XDB uses the pattern `00000000' for nil pointers.
     // GDB prepends the exact pointer type in parentheses.
     static regex 
@@ -128,7 +134,7 @@ DispValueType determine_type (string value)
     if (value.matches(RXpointer_value))
 	return Pointer;
 
-    // Arrays:
+    // Arrays.
     // GDB has a special format for pointers to functions:
     // (e.g. `{int ()} 0x2908 <main>'), so check for closing brace
     // as well.
@@ -139,7 +145,7 @@ DispValueType determine_type (string value)
     if (value.contains('(', 0) && value.contains(')', -1))
 	return Array;
 
-    // Simple values:
+    // Simple values.
     // Everything else failed - assume simple value.
     return Simple;
 }
@@ -511,11 +517,19 @@ string read_member_name (string& value)
 {
     read_leading_junk (value);
 
-    if (value.length() > 0 && value[0] == '=')
+    if (value.contains('=', 0)
+	|| value.contains(')', 0)
+	|| value.contains('}', 0)
+	|| value.contains(']', 0)
+	|| value.contains(',', 0))
     {
-	// Anonymous union
-	value = value.after(0);
-	read_leading_junk(value);
+	// Anonymous union or likewise
+	if (value.contains('=', 0))
+	{
+	    value = value.after(0);
+	    read_leading_junk(value);
+	}
+
 	return " ";
     }
 
@@ -580,7 +594,7 @@ void cut_BaseClass_name (string& full_name)
     }
 }
 
-// Read blanks and M3 comments
+// Skip blanks, M3 comments, and GDB warnings
 static void read_leading_junk (string& value)
 {
     static regex M3Comment("\\(\\*.*\\*\\).*");
@@ -590,6 +604,12 @@ static void read_leading_junk (string& value)
     while (value.matches(M3Comment))
     {
 	read_leading_comment(value);
+	read_leading_blanks(value);
+    }
+
+    while (value.contains("warning: ", 0))
+    {
+	value = value.after('\n');
 	read_leading_blanks(value);
     }
 }
