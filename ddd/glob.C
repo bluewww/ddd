@@ -23,47 +23,13 @@
 // Arranged for C++ and autoconf by Andreas Zeller
 // C++ comments indicate changes to Stallman's original C code.
 
-#include "config.h"
-
-// Check for alloca()
-// AIX requires this to be the first thing in the file.
-#ifdef __GNUC__
-#define alloca(size) __builtin_alloca(size)
-#elif HAVE_ALLOCA_H
-#include <alloca.h>		// This should give us a declaration
-#elif defined(_AIX)
- #pragma alloca
-#else /* not AIX */
-#include <stdlib.h>		// In GNU libc, alloca is declared here
-#if !defined(alloca) && !HAVE_ALLOCA_DECL
-extern "C" char *alloca(int size);
-#endif /* no alloca decl */
-#endif /* not AIX */
-
-#include <sys/types.h>
+#include "Alloca.h"
 
 // Yep, `#pragma alloca' must come even before this simple stuff.  Sigh.
 char glob_rcsid[] = 
     "$Id$";
 
-extern "C" {
-// Check for dirent
-#if HAVE_DIRENT_H
-# include <dirent.h>
-# define NAMLEN(dirent) strlen((dirent)->d_name)
-#else
-# define dirent direct
-# define NAMLEN(dirent) (dirent)->d_namlen
-# if HAVE_SYS_NDIR_H
-#  include <sys/ndir.h>
-# endif
-# if HAVE_SYS_DIR_H
-#  include <sys/dir.h>
-# endif
-# if HAVE_NDIR_H
-#  include <ndir.h>
-# endif
-#endif
+#include "Dirent.h"
 
 #include "glob.h"
 
@@ -74,7 +40,6 @@ extern "C" {
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-}
 
 #include <string.h>
 #include <stdlib.h>

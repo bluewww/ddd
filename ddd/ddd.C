@@ -5145,7 +5145,7 @@ static DDDWindow ddd_window(XtPointer client_data)
     if (source_view_shell == 0 && data_disp_shell == 0)
 	return CommonWindow;
     else
-	return DDDWindow(int(client_data));
+	return DDDWindow(long(client_data));
 }
 
 static void gdbCutSelectionCB(Widget w, XtPointer client_data, 

@@ -44,7 +44,7 @@ s!^typedef union\(.*\)$!typedef struct _YYSTYPE \1!
 \!^#ifndef alloca!i\
 // This deletes the "kill" array upon destruction.\
 // Will be used as automatic variable in yyparse().\
-// Added by $RCSfile$.\
+// Added by $RCSfile$\
 struct YYMEMHANDLER {\
     YYSTYPE *kill;\
 \
@@ -59,8 +59,13 @@ struct YYMEMHANDLER {\
     }\
 };\
 
+# Use "Alloca.h" instead of the huge `#if alloca' etc.
+\!^#ifndef alloca!,\!^#endif /\* alloca not defined.  \*/!c\
+#include "Alloca.h"   /* Added by $RCSfile$ */\
+
+
 \!.int yystacksize!a\
-  YYMEMHANDLER yymem; // Added by $RCSfile$.
+  YYMEMHANDLER yymem; // Added by $RCSfile$
 
 # stack reallocation -> own code
 \!.*yyvs = (YYSTYPE \*!,\!__yy_memcpy!c\

@@ -43,7 +43,11 @@
 #include "value-read.h"
 #include "StringSA.h"
 
-//-----------------------------------------------------------------------------
+class SimpleDispValue;
+class PointerDispValue;
+class ArrayDispValue;
+class StructOrClassDispValue;
+
 class DispValue {
     DispValueType mytype;
     DispValue*    myparent;
@@ -56,12 +60,12 @@ class DispValue {
     int           myrepeats;	// Number of repetitions
 
     union {
-	class SimpleDispValue*        simple;    // mytype == Simple
-	class PointerDispValue*       pointer;   // mytype == Pointer
-	class ArrayDispValue*         array;     // mytype == Array
-	class StructOrClassDispValue* str_or_cl; // mytype == StructOrClass
-				                 // or mytype == BaseClass
-				                 // or mytype == Reference
+	SimpleDispValue*        simple;    // mytype == Simple
+	PointerDispValue*       pointer;   // mytype == Pointer
+	ArrayDispValue*         array;     // mytype == Array
+	StructOrClassDispValue* str_or_cl; // mytype == StructOrClass
+				           // or mytype == BaseClass
+                                           // or mytype == Reference
     } v;
 
     // Initialize from VALUE.  If TYPE is given, use TYPE as type

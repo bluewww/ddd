@@ -106,7 +106,8 @@ extern void process_pending_events();
 extern Boolean ddd_setup_done(XtPointer client_data);
 
 // Register shells of menu ITEMS.
-extern void register_menu_shell(struct MMDesc items[]);
+struct MMDesc;
+extern void register_menu_shell(MMDesc items[]);
 
 // Process ^C key
 extern bool process_emergencies();

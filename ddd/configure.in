@@ -231,6 +231,14 @@ AC_CHECK_LIB(gen, regcmp, LIBGEN="-lgen")
 AC_SUBST(LIBGEN)
 dnl
 dnl
+dnl Marc Lepage <mlepage@kingston.hummingbird.com> reports that
+dnl the Digital UNIX native compiler wants -lcxxinst to get
+dnl template instantiations.  Do this only if not GCC.
+dnl
+if test "$GXX" != yes; then
+AC_CHECK_LIB(cxxinst, main, CXXLIBS="-lcxxinst $CXXLIBS")
+fi
+dnl
 dnl Look for the tgetent() function - either in libtermcap, libcurses,
 dnl or use the GNU termcap library as shipped with DDD.
 dnl

@@ -75,6 +75,7 @@
 extern GDBAgent* gdb;
 extern ArgField* source_arg;
 
+struct BreakpointPropertiesInfo;
 
 //-----------------------------------------------------------------------------
 class SourceView {
@@ -429,7 +430,7 @@ class SourceView {
     static bool function_is_larger_than(string pc, int max_size);
 
     // Breakpoint properties.
-    static void update_properties_panel(struct BreakpointPropertiesInfo *info);
+    static void update_properties_panel(BreakpointPropertiesInfo *info);
     static void update_properties_panels();
 
     //-----------------------------------------------------------------------

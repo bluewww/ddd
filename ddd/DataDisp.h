@@ -85,6 +85,9 @@ enum DeferMode {
     DeferNever			// Create display now
 };
 
+class NewDisplayInfo;
+class DispGraph;
+
 //-----------------------------------------------------------------------------
 class DataDisp {
 
@@ -195,7 +198,7 @@ class DataDisp {
     static void show(Widget dialog, int depth, int more);
 
     static Widget create_display_dialog(Widget parent, String name,
-				      class NewDisplayInfo& info);
+					NewDisplayInfo& info);
 
     static void toggle_rotate(DispValue *dv, bool all = false);
 
@@ -402,7 +405,7 @@ private:
     //-----------------------------------------------------------------------
     // Data
     //-----------------------------------------------------------------------
-    static class DispGraph *disp_graph;
+    static DispGraph *disp_graph;
     static Delay *delay;
     static Widget last_origin;
     static Time last_select_time;
