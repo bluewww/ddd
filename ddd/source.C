@@ -217,6 +217,7 @@ bool have_enabled_watchpoint_at_arg()
 
 void gdbWatchCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
+    (void) call_data;		// Use it
     string arg = current_arg();
 
 #if 0
