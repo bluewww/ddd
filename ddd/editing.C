@@ -73,17 +73,11 @@ bool gdb_input_at_prompt = true;
 // Helpers
 //-----------------------------------------------------------------------------
 
-static void move_to_pos(XtPointer client_data, XtIntervalId *)
+static void move_to_end_of_line(XtPointer, XtIntervalId *)
 {
-    XmTextPosition pos = XmTextPosition((long)client_data);
-
+    XmTextPosition pos = XmTextGetLastPosition(gdb_w);
     XmTextSetInsertionPosition(gdb_w, pos);
     XmTextShowPosition(gdb_w, pos);
-}
-
-static void move_to_end_of_line(XtPointer, XtIntervalId *id)
-{
-    move_to_pos(XtPointer(XmTextGetLastPosition(gdb_w)), id);
 }
 
 static XmTextPosition start_of_line()
@@ -677,7 +671,7 @@ void gdbMotionCB(Widget, XtPointer, XtPointer call_data)
 	    // Make it a no-op.
 	    XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
-			    move_to_pos, XtPointer(promptPosition));
+			    move_to_end_of_line, 0);
 #endif
 	}
     }
