@@ -167,7 +167,7 @@ void array_test()
     char *twodim [2][3] = {{ "Pioneering", "women", "in"},
 			   { "computer", "science", "!"}};
 
-    int array[20][20];
+    int array[12][12];
 
     (void) twodim;		// Use it
     (void) days_of_week;	// Use it
