@@ -822,7 +822,11 @@ DispValue *DispValue::update(string& value,
 {
     DispValue *source = parse(0, 0, value, 
 			      full_name(), name(), given_type);
-    return update(source, was_changed, was_initialized);
+    DispValue *dv = update(source, was_changed, was_initialized);
+
+    source->unlink();
+
+    return dv;
 }
 
 
@@ -833,6 +837,9 @@ DispValue *DispValue::update(string& value,
 DispValue *DispValue::update(DispValue *source, 
 			     bool& was_changed, bool& was_initialized)
 {
+    // Note: if SOURCE == THIS holds, we still traverse the tree
+    // in order to clear the change flags.
+
     if (changed)
     {
 	// Clear `changed' flag
@@ -849,8 +856,6 @@ DispValue *DispValue::update(DispValue *source,
 	// are merely a change in the view, not a change in the data.
     }
 
-    static DispValueArray empty(0);
-
     if (source->type() == type())
     {
 	switch (type())
@@ -863,7 +868,6 @@ DispValue *DispValue::update(DispValue *source,
 		_value = source->value();
 		changed = was_changed = true;
 	    }
-	    source->unlink();
 	    return this;
 
 	case Array:
@@ -885,8 +889,6 @@ DispValue *DispValue::update(DispValue *source,
 					     was_changed,
 					     was_initialized);
 		}
-		source->_children = empty;
-		source->unlink();
 		return this;
 	    }
 	    break;
@@ -898,10 +900,11 @@ DispValue *DispValue::update(DispValue *source,
     }
 
     // Type or structure have changed -- use SOURCE instead of original
-    unlink();
+    DispValue *ret = source->link();
+    ret->changed = was_changed = was_initialized = true;
 
-    source->changed = was_changed = was_initialized = true;
-    return source;
+    unlink();
+    return ret;
 }
 
 

@@ -353,7 +353,6 @@ Volunteers for these and other projects are welcome!
     - Improve and verify change display in cluster (or, more general,
       Lists).
     - Alias hints of clustered displays remain in place.
-    - Disabling a `List' member does not work.
     - Document it all.
 
 329*Have a Display Editor shortcut from the data popup menu.
