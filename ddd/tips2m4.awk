@@ -26,8 +26,8 @@
 # `http://www.cs.tu-bs.de/softech/ddd/',
 # or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-# This file requires GNU awk (gawk).  Feel free to rewrite it for
-# a general AWK and tell us about it.
+# This file requires GNU awk (gawk) or any other AWK according to the
+# Posix 1003.2(draft 11.3) definition of the AWK language.
 
 # Initialize variables.
 
