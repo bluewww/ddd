@@ -356,10 +356,13 @@ GDB = gdb
 FIG2DEV = fig2dev
 FIG2PS = $(FIG2DEV) -L ps
 
-# Some XPM/PPM/PostScript converters
+# Some XPM/PPM/PostScript converters, from the netpbm and pbmplus packages.
 XPMTOPPM = xpmtoppm
 PNMTOPS  = pnmtops
 PPMTOPGM = ppmtopgm
+PGMTOPBM = pgmtopbm
+PBMTOXBM = pbmtoxbm
+SXPM     = sxpm
 
 ### END OF CUSTOMIZATION SECTION ---
 ### You shouldn't need to change anything below this line.
@@ -1256,6 +1259,25 @@ PICS/ddd-attach.ps: PICS/ddd-attach.fig PICS/ddd-attach.xpm
 # The logo comes in XPM source
 PICS/dddlogo21.ps: PICS/dddlogo21.xpm
 	$(XPMTOPPM) PICS/dddlogo21.xpm | $(PNMTOPS) -noturn > $@
+
+
+## Icons.
+
+# Both the bitmap icon and its mask are derived from the XPM source.
+
+$(srcdir)/../icons/ddd.xbm: $(srcdir)/../icons/ddd.xpm
+	-$(SXPM) -nod -o - -mono $(srcdir)/../icons/ddd.xpm | \
+	$(SED) 's/[nN]one/white/g' | $(SED) 's/gr[ae]y/white/g' | \
+	$(XPMTOPPM) | $(PPMTOPGM) | $(PGMTOPBM) | $(PBMTOXBM) | \
+	$(SED) 's/noname/ddd/g' > tmp.xbm
+	test -s tmp.xbm && $(MV) tmp.xbm $@ || ($(RM) tmp.xbm; false)
+
+$(srcdir)/../icons/dddmask.xbm: $(srcdir)/../icons/ddd.xpm
+	-$(SXPM) -nod -o - -mono $(srcdir)/../icons/ddd.xpm | \
+	$(SED) 's/[nN]one/white/g' | $(SED) 's/gr[ae]y/black/g' | \
+	$(XPMTOPPM) | $(PPMTOPGM) | $(PGMTOPBM) | $(PBMTOXBM) | \
+	$(SED) 's/noname/dddmask/g' > tmp.xbm
+	test -s tmp.xbm && $(MV) tmp.xbm $@ || ($(RM) tmp.xbm; false)
 
 
 ## Configuration stuff.
