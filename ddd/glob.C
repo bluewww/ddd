@@ -526,7 +526,8 @@ glob_filename (char *pathname)
 		++l;
 
 	      result =
-		(char **)realloc (result, (result_size + l) * sizeof (char *));
+		(char **)realloc ((char *)result, 
+				  (result_size + l) * sizeof (char *));
 
 	      if (result == NULL)
 		goto memory_error;

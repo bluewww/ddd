@@ -389,7 +389,7 @@ static void searchLocal(Widget fs,
 		set_status(s);
 	    }
 	}
-	free(files);
+	free((char *)files);
 
 	if (nitems > 0)
 	{

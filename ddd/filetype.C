@@ -146,7 +146,7 @@ bool is_core_file(const string& file_name)
     int fd = open(file_name, O_RDONLY);
     if (fd < 0)
 	return false;
-    read(fd, &magic, sizeof(magic));
+    read(fd, (char *)&magic, sizeof(magic));
     close(fd);
 
     if (magic != CORE_MAGIC)
