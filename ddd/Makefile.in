@@ -689,7 +689,8 @@ DISTCLEAN_STUFF	 = $(CLEAN_STUFF) ddd.man.ps \
 		   Ddd Ddd.ad.h ddd.man vr.h
 
 # Any files that can be reconstructed, except configure script
-REALCLEAN_STUFF	 = $(DISTCLEAN_STUFF) $(DIST_STUFF)
+REALCLEAN_STUFF	 = $(DISTCLEAN_STUFF) $(DIST_STUFF) \
+		   header.str trailer.str eps-code.h
 
 # All files that can be reconstructed (but may require special programs)
 ULTRACLEAN_STUFF = $(REALCLEAN_STUFF) \
@@ -1017,6 +1018,7 @@ eps-code.h:     header.str trailer.str eps-code.x
 		sed -e '/prolog/r header.str' \
 		    -e '/trailer/r trailer.str' \
 		    eps-code.x > eps-code.h
+
 
 ## Configuration info stuff
 configinfo.C:   USERINFO $(srcdir)/config-info Makefile config.h
