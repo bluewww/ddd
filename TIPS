@@ -86,6 +86,11 @@ let it run in the separate execution window
 If you want to customize the DDD fonts, see
 LBL(Edit, Preferences, Fonts).
 
+To change the text background color, write into FILE(~/.[ddd]/init):
+CODE([Ddd]*XmText.background:      ) VAR(color)
+CODE([Ddd]*XmTextField.background: ) VAR(color)
+CODE([Ddd]*XmList.background:      ) VAR(color)
+
 When using GDB, all text fields have command and argument completion
 with KEY(Tab), just like the shell.  In a file selection box, type part of
 a filename, hit KEY(Tab), and voila!  It's completed.
@@ -104,7 +109,7 @@ LBL(Edit, GDB Settings, Limit on array elements to print).
 If DDD cannot find a source, set the @GDB@ source path
 via LBL(Edit, @GDB@ Settings).
 
-You can quickly set and edit breakpoints 
+You can quickly set breakpoints
 by double-clicking in the breakpoint area.
 
 To see the EMPH(actual) type of a C++ object in GDB, set
@@ -117,8 +122,8 @@ or enter KBD(graph display /x VAR(data)) at the GDB prompt.
 To send a signal to your program,
 use LBL(Status, Signals, Send).
 
-You can quickly display variable values
-by double-clicking on the variable name.
+To quickly display variable values,
+double-click on the variable name.
 
 After looking up an item or stepping through the program, you can use
 LBL(Source, Back) and LBL(Source, Forward) to return to earlier locations.
@@ -136,8 +141,8 @@ unset the LBL(Pass) button for the appropriate signal.
 You can save space by disabling toolbar captions.
 See LBL(Edit, Preferences, Startup, Toolbar Appearance).
 
-You can quickly edit breakpoint properties
-by double-clicking on a breakpoint symbol.
+To quickly edit breakpoint properties, 
+double-click on a breakpoint symbol.
 
 To have GDB start your program automatically upon startup,
 put the following lines in your FILE(.gdbinit) file:
@@ -172,13 +177,17 @@ after the SAMP(fork) call.  Run the program and attach to the child process
 using LBL(File, Attach to Process).
 
 Using GDB, you can define your own canned sequences of commands.
-Try `LBL(Commands, Define Command)'.
+Try LBL(Commands, Define Command).
 
 To use GDB with Sun CC, compile with SAMP(-xs).
 GDB wants debugging info in the executable.
 
+Disabled breakpoints can be used as bookmarks.
+Use LBL(Source, Edit Breakpoints) to list all breakpoints;
+then, click on LBL(Lookup) to jump to a breakpoint location.
+
 You can assign user-defined buttons to frequently used commands.
-Try `LBL(Commands, Edit Buttons)'.
+Try LBL(Commands, Edit Buttons).
 
 In the Breakpoint and Display Editors,
 you can toggle the selection with KEY(Ctrl)+BUTTON(1).
@@ -232,7 +241,7 @@ nothing helps you more in debugging than to try to explain your problem
 (what your code should do, and what it actually does) to someone else.
 BY(J.H.M. Dassen, jdassen@ wi.leidenuniv.nl)
 
-! If you have other questions, comments or suggestions, contact The King
-! via electronic mail to EMAIL(elvis@ graceland.gnu.ai.mit.edu).  The King will
+! If you have other questions, comments or suggestions, contact The King via
+! electronic mail to EMAIL(elvis@ graceland.gnu.ai.mit.edu).  The King will
 ! try to help you out, although he may not have time to fix your problems.
 ! QUOTE(Free Software Foundation, GNU Hello Manual)
