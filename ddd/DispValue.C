@@ -132,7 +132,7 @@ void DispValue::init(string& value)
     case Simple:
 	{
 	    v.simple = new SimpleDispValue;
-	    v.simple->value = read_simple_value (value);
+	    v.simple->value = read_simple_value(value, depth());
 #if LOG_CREATE_VALUES
 	    clog << mytype << ": " << quote(v.simple->value) << "\n";
 #endif
@@ -176,7 +176,7 @@ void DispValue::init(string& value)
 		base = "(" + base + ")";
 
 	    v.array = new ArrayDispValue;
-	    myexpanded = (mydepth > 0) ? false : true;
+	    myexpanded = (depth() > 0) ? false : true;
 	    v.array->align = Vertical;
 	    v.array->member_count = 0;
 
@@ -192,7 +192,7 @@ void DispValue::init(string& value)
 	    if (vtable_entries != "")
 	    {
 		v.array->members[v.array->member_count++] = 
-		    new DispValue (this, mydepth + 1,
+		    new DispValue (this, depth() + 1,
 				   vtable_entries, 
 				   myfull_name, myfull_name);
 	    }
@@ -202,7 +202,7 @@ void DispValue::init(string& value)
 	    do {
 		member_name = "[" + itostring (i++) + "]";
 		v.array->members[v.array->member_count++] = 
-		    new DispValue (this, mydepth + 1,
+		    new DispValue (this, depth() + 1,
 				   value, 
 				   base + member_name, member_name);
 	    } while (read_array_next (value) != 0);
@@ -225,7 +225,7 @@ void DispValue::init(string& value)
     case BaseClass:
 	{
 	    v.str_or_cl = new StructOrClassDispValue;
-	    myexpanded = (mydepth > 0) ? false : true;
+	    myexpanded = (depth() > 0) ? false : true;
 	    v.str_or_cl->member_count = 0;
 	
 #if LOG_CREATE_VALUES
@@ -258,7 +258,7 @@ void DispValue::init(string& value)
 		{
 		    // Anonymous union
 		    v.str_or_cl->members[i] = 
-			new DispValue (this, mydepth + 1, value, myfull_name,
+			new DispValue (this, depth() + 1, value, myfull_name,
 				       member_name);
 		    more_values = read_str_or_cl_next (value);
 		    read_members_of_xy (value);
@@ -266,7 +266,7 @@ void DispValue::init(string& value)
 		else
 		{
 		    v.str_or_cl->members[i] = 
-			new DispValue (this, mydepth + 1, value, 
+			new DispValue (this, depth() + 1, value, 
 				       member_prefix + member_name, 
 				       member_name);
 		    more_values = read_str_or_cl_next (value);
@@ -281,7 +281,7 @@ void DispValue::init(string& value)
 	    {
 		// Add remaining value as text
 		v.str_or_cl->members[v.str_or_cl->member_count++] = 
-		    new DispValue(this, mydepth + 1, value, "", "");
+		    new DispValue(this, depth() + 1, value, "", "");
 	    }
 
 #if LOG_CREATE_VALUES
@@ -303,10 +303,10 @@ void DispValue::init(string& value)
 	    value = value.after(':');
 
 	    v.str_or_cl->members[0] = 
-		new DispValue(this, mydepth + 1, ref, 
+		new DispValue(this, depth() + 1, ref, 
 			      "&" + myfull_name, myfull_name);
 	    v.str_or_cl->members[1] = 
-		new DispValue(this, mydepth + 1, value,
+		new DispValue(this, depth() + 1, value,
 			      myfull_name, myfull_name);
 	    break;
 	}
@@ -709,7 +709,7 @@ void DispValue::update (string& value,
 
     switch (mytype) {
     case Simple:
-	new_value = read_simple_value (value);
+	new_value = read_simple_value(value, depth());
 	if (v.simple->value != new_value) {
 	    v.simple->value = new_value;
 	    changed = was_changed = true;

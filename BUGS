@@ -375,4 +375,4 @@ Volunteers for fixing these and other bugs are welcome!
 198. In `--tty' mode, EOF terminates DDD, even if only a subprogram
      (e.g. a shell) is running.
 
-199. (Insert your bug here)
+200. (Insert your bug here)

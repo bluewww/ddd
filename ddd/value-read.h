@@ -58,8 +58,7 @@ ostream& operator<<(ostream& os, DispValueType type);
 DispValueType determine_type (string value);
 
 string read_token (string& value);
-string read_simple_value (string& value);
-
+string read_simple_value (string& value, int depth);
 string read_pointer_value (string& value);
 
 // Bei Misserfolg false

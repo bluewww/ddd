@@ -353,7 +353,7 @@ string read_token(string& value)
 }
 
 // Read a simple value from VALUE.
-string read_simple_value(string& value)
+string read_simple_value(string& value, int depth)
 {
     // Read values up to [)}],\n]
 
@@ -362,12 +362,12 @@ string read_simple_value(string& value)
 
     string ret;
     while (value != "" 
-	   && value[0] != '\n' 
-	   && value[0] != ')'
-	   && value[0] != ']'
-	   && value[0] != '}'
-	   && value[0] != ','
-	   && value[0] != ';')
+	   && value[0] != '\n'
+	   && (depth == 0 || (value[0] != ')'
+			      && value[0] != ']'
+			      && value[0] != '}'
+			      && value[0] != ','
+			      && value[0] != ';')))
     {
 	ret += read_token(value);
     }
@@ -379,7 +379,7 @@ string read_simple_value(string& value)
 // Read a pointer value.
 string read_pointer_value (string& value)
 {
-    return read_simple_value (value);
+    return read_simple_value(value, 1);
 }
 
 // Read the beginning of an array from VALUE.  Return false iff failure.
