@@ -54,7 +54,6 @@ extern Widget status_history(Widget parent);
 // Buttons and state
 void set_buttons_from_gdb(Widget w, string& text);
 void set_status_from_gdb(const string& text);
-void set_selection_from_gdb(string& text);
 
  // True if last cmd came from GDB window
 extern bool gdb_keyboard_command;
