@@ -70,6 +70,10 @@ enum DebuggerType { GDB, DBX, XDB };
 // Program language
 //-----------------------------------------------------------------------------
 
+#ifdef LANGUAGE_C
+#undef LANGUAGE_C		// DEC defines this
+#endif
+
 enum ProgramLanguage { 
     LANGUAGE_C,			// C-like: C, C++
     LANGUAGE_PASCAL,		// PASCAL-like: Pascal, Modula, Ada
