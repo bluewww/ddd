@@ -2,28 +2,30 @@
 # $Id$
 # rebuild package in batch mode -- useful for the night
 
-# Copyright (C) 1993 Technische Universitaet Braunschweig, Germany.
+# Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 # Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
 # 
-# This file is part of NORA.
+# This file is part of ICE.
 # 
-# NORA is free software; you can redistribute it and/or
+# ICE is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
 # 
-# NORA is distributed in the hope that it will be useful,
+# ICE is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public
-# License along with NORA -- see the file COPYING.
+# License along with ICE -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # 
-# NORA is an experimental inference-based software development
-# environment. Contact nora@ips.cs.tu-bs.de for details.
+# ICE is the incremental configuration environment.
+# For details, see the ICE World-Wide-Web page, 
+# `http://www.cs.tu-bs.de/softech/ice/',
+# or send a mail to the ICE developers at `ice@ips.cs.tu-bs.de'.
 
 invoke="$0 $@"
 log=./MakeOut
