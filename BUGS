@@ -104,9 +104,6 @@ Volunteers for fixing these and other bugs are welcome!
     the `graph' prefix confuses DDD - displays are considered
     `inactive'.
 
-300 Double-clicking on an empty line with zero source indentation does
-    not set a breakpoint.
-
 301 (LessTif 0.85) David Zanetti <dave@lynx.co.nz> says:
     1. Tear off edit menu
     2. Select prefernces

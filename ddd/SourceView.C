@@ -1534,12 +1534,7 @@ void SourceView::set_source_argCB(Widget text_w,
 	endIndex = text.index('\n', endPos - text.length()) + 1;
 
     bool in_bp_area = false;
-    if (selection_click
-	&& startIndex == endIndex
-	&& startPos < XmTextPosition(text.length())
-	&& endPos < XmTextPosition(text.length())
-	&& text[startPos] != '\n'
-	&& text[endPos] != '\n')
+    if (selection_click && startIndex == endIndex)
     {
 	string pos = "";
 
