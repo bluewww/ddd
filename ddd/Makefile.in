@@ -753,8 +753,10 @@ VSL_OBJECTS = \
 # Top-level classes are `Graph', declared in `Graph.h'
 # and the `GraphEdit' widget, deckared in `GraphEdit.h'.
 GRAPH_OBJECTS = \
-	layout.o     \
+	ArcGraphE.o  \
+	BoxEdgeA.o   \
 	BoxGraphN.o  \
+	EdgeA.o      \
 	Graph.o      \
 	GraphEdge.o  \
 	GraphEdit.o  \
@@ -762,11 +764,11 @@ GRAPH_OBJECTS = \
 	GraphNode.o  \
 	HintGraphN.o \
 	LineGraphE.o \
-	ArcGraphE.o  \
 	PannedGE.o   \
 	PosGraphN.o  \
 	RegionGN.o   \
-	ScrolledGE.o
+	ScrolledGE.o \
+	layout.o
 
 # All these objects were originally part of the NORA library; they are
 # now maintained as part of DDD.
@@ -783,6 +785,7 @@ LIB_OBJECTS = \
 # is the source window, `DataDisp.C' is the data window.
 # `configinfo' comes after `show' such that `what DDD' issues the configuration
 DDD_OBJECTS = \
+	annotation.o \
 	args.o       \
 	buttons.o    \
 	cmdtty.o     \

@@ -72,6 +72,7 @@ struct GraphGC {
     EdgeAttachMode edgeAttachMode;   // Where to attach edges
     bool           drawArrowHeads;   // Flag: draw arrow heads?
     bool           drawHints;        // Flag: draw hints?
+    bool	   drawAnnotations;  // Flag: draw annotations?
     BoxCoordinate  hintSize;         // Hint size (in pixels)
     unsigned       arrowAngle;       // Arrow angle (in degrees)
     unsigned       arrowLength;      // Arrow length (in pixels)
@@ -98,6 +99,7 @@ struct GraphGC {
 	edgeAttachMode(Straight),
         drawArrowHeads(true),
         drawHints(false),
+        drawAnnotations(true),
         hintSize(8),
         arrowAngle(30),
         arrowLength(10),
@@ -120,6 +122,7 @@ struct GraphGC {
 	edgeAttachMode(g.edgeAttachMode),
         drawArrowHeads(g.drawArrowHeads),
         drawHints(g.drawHints),
+        drawAnnotations(g.drawAnnotations),
         hintSize(g.hintSize),
         arrowAngle(g.arrowAngle),
         arrowLength(g.arrowLength),
@@ -145,6 +148,7 @@ struct GraphGC {
 	    edgeAttachMode         = g.edgeAttachMode;
 	    drawArrowHeads         = g.drawArrowHeads;
 	    drawHints              = g.drawHints;
+	    drawAnnotations        = g.drawAnnotations;
 	    hintSize               = g.hintSize;
 	    arrowAngle             = g.arrowAngle;
 	    arrowLength            = g.arrowLength;

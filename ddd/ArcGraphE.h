@@ -57,8 +57,8 @@ protected:
 
 public:
     // Constructor
-    ArcGraphEdge(GraphNode *from, GraphNode *to)
-	: LineGraphEdge(from, to)
+    ArcGraphEdge(GraphNode *from, GraphNode *to, EdgeAnnotation *ann = 0)
+	: LineGraphEdge(from, to, ann)
     {}
 
     // Destructor

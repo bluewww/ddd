@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-// AliasGraphEdge class: temporary edge from or to alias node
+// Edge annotation using boxes
 
-// Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -26,49 +26,50 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_AliasGraphEdge_h
-#define _DDD_AliasGraphEdge_h
+#ifndef _DDD_BoxEdgeAnnotation_h
+#define _DDD_BoxEdgeAnnotation_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
-#include "ArcGraphE.h"
+#include "EdgeA.h"
+#include "Box.h"
 
-class AliasGraphEdge: public ArcGraphEdge {
+class BoxEdgeAnnotation: public EdgeAnnotation {
 public:
     DECLARE_TYPE_INFO
 
 private:
-    int _disp_nr;		// Display associated with this edge
+    Box *_box;			// The box to use
 
 protected:
-    // Copy Constructor
-    AliasGraphEdge(const AliasGraphEdge& edge)
-	: ArcGraphEdge(edge),
-	  _disp_nr(edge._disp_nr)
-    {}
+    virtual void _draw(Widget w, const BoxPoint& p,
+		       const BoxRegion& exposed, GC gc) const;
+
+    BoxEdgeAnnotation(const BoxEdgeAnnotation &src)
+	: _box(0)
+    {
+	if (src._box != 0)
+	    _box = src._box->dup();
+    }
 
 public:
-    // Constructor
-    AliasGraphEdge(int disp_nr, GraphNode *from, GraphNode *to, 
-		   EdgeAnnotation *ann = 0)
-	: ArcGraphEdge(from, to, ann),
-	  _disp_nr(disp_nr)
+    BoxEdgeAnnotation(Box *box)
+	: _box(box)
     {}
 
-    // Destructor
-    virtual ~AliasGraphEdge() {}
-
-    // Resources
-    int disp_nr() const { return _disp_nr; }
-
-    // Duplicator
-    GraphEdge *dup() const
+    virtual ~BoxEdgeAnnotation()
     {
-	return new AliasGraphEdge(*this);
+	_box->unlink();
+    }
+
+    // Duplication
+    virtual EdgeAnnotation *dup() const 
+    {
+	return new BoxEdgeAnnotation(*this);
     }
 };
 
-#endif // _DDD_AliasGraphEdge_h
+#endif // _DDD_BoxEdgeAnnotation_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

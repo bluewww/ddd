@@ -36,12 +36,16 @@
 
 #include "GraphEdge.h"
 #include "Box.h"
+#include "EdgeA.h"
 
 enum Side { North = 1, South = 2, East = 4, West = 8 };
 
 class LineGraphEdge: public GraphEdge {
 public:
     DECLARE_TYPE_INFO
+
+private:
+    EdgeAnnotation *_annotation; // The annotation to use
 
 protected:
     // Find line from region B1 centered around C1 to region B2 centered
@@ -73,11 +77,6 @@ protected:
 			       const BoxPoint& pos,
 			       double alpha) const;
 
-    // Copy Constructor
-    LineGraphEdge(const LineGraphEdge &edge):
-	GraphEdge(edge)
-    {}
-
 private:
     // Clip point P to side SIDE of region B.
     static void moveToSide  (const BoxRegion& b, int side,
@@ -94,13 +93,38 @@ private:
 
 public:
     // Constructor
-    LineGraphEdge(GraphNode *f, GraphNode *t):
-	GraphEdge(f, t)
+    LineGraphEdge(GraphNode *f, GraphNode *t, EdgeAnnotation *ann = 0):
+	GraphEdge(f, t), _annotation(ann)
     {}
 
     // Destructor
-    virtual ~LineGraphEdge() {}
+    virtual ~LineGraphEdge()
+    {
+	delete _annotation;
+    }
 
+    // Resources
+    void set_annotation(EdgeAnnotation *a)
+    {
+	if (a != _annotation)
+	{
+	    delete _annotation;
+	    _annotation = a;
+	}
+    }
+
+    EdgeAnnotation *annotation() const { return _annotation; }
+
+protected:
+    // Copy Constructor
+    LineGraphEdge(const LineGraphEdge &edge):
+	GraphEdge(edge), _annotation(0)
+    {
+	if (edge.annotation() != 0)
+	    set_annotation(edge.annotation()->dup());
+    }
+
+public:
     // Printing
     void _print(ostream& os, const GraphGC &gc) const;
 

@@ -247,6 +247,15 @@ void ArcGraphEdge::drawLine(Widget w,
 	    alpha -= PI / 2.0;
 	drawArrowHead(w, exposed, gc, pos_to, alpha);
     }
+
+    if (to()->isHint())
+    {
+	// Draw annotation at hint position
+	if (gc.drawAnnotations && annotation() != 0)
+	{
+	    annotation()->draw(w, to()->pos(), exposed, gc.edgeGC);
+	}
+    }
 }
 
 void ArcGraphEdge::_print(ostream& os, const GraphGC &gc) const

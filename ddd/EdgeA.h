@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
-// AliasGraphEdge class: temporary edge from or to alias node
+// Edge annotation
 
-// Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -26,49 +26,35 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
-#ifndef _DDD_AliasGraphEdge_h
-#define _DDD_AliasGraphEdge_h
+#ifndef _DDD_EdgeAnnotation_h
+#define _DDD_EdgeAnnotation_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
-#include "ArcGraphE.h"
+#include "Box.h"
+#include "GraphGC.h"
 
-class AliasGraphEdge: public ArcGraphEdge {
+class EdgeAnnotation {
+protected:
+    virtual void _draw(Widget w, const BoxPoint& p,
+		       const BoxRegion& exposed, GC gc) const = 0;
+
 public:
     DECLARE_TYPE_INFO
 
-private:
-    int _disp_nr;		// Display associated with this edge
+    virtual ~EdgeAnnotation() {};
 
-protected:
-    // Copy Constructor
-    AliasGraphEdge(const AliasGraphEdge& edge)
-	: ArcGraphEdge(edge),
-	  _disp_nr(edge._disp_nr)
-    {}
+    // Draw annotation centered around P
+    virtual void draw(Widget w, const BoxPoint& p,
+		      const BoxRegion& exposed = 
+		      BoxRegion(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX)),
+		      GC gc = 0) const;
 
-public:
-    // Constructor
-    AliasGraphEdge(int disp_nr, GraphNode *from, GraphNode *to, 
-		   EdgeAnnotation *ann = 0)
-	: ArcGraphEdge(from, to, ann),
-	  _disp_nr(disp_nr)
-    {}
-
-    // Destructor
-    virtual ~AliasGraphEdge() {}
-
-    // Resources
-    int disp_nr() const { return _disp_nr; }
-
-    // Duplicator
-    GraphEdge *dup() const
-    {
-	return new AliasGraphEdge(*this);
-    }
+    // Duplication
+    virtual EdgeAnnotation *dup() const = 0;
 };
 
-#endif // _DDD_AliasGraphEdge_h
+#endif // _DDD_EdgeAnnotation_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

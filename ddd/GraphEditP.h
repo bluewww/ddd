@@ -91,6 +91,9 @@ typedef struct _GraphEditPart {
     // Hint stuff
     Boolean showHints;		// Display hints?
 
+    // Annotation stuff
+    Boolean showAnnotations;	// Display annotations?
+
     // Grid stuff
     Boolean showGrid;		// Display grid?
     Dimension gridWidth;	// Grid width (> 0)

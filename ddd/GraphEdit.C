@@ -63,6 +63,8 @@ char GraphEdit_rcsid[] =
 #include "strtoul.h"
 #include "TimeOut.h"
 
+// Make sure we generate some templates
+typedef VarArray<EdgeAnnotation *> EdgeAnnotationArray;
 
 
 static BoxRegion EVERYWHERE(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX));
@@ -100,6 +102,9 @@ static XtResource resources[] = {
 	offset(showHints), XtRImmediate, XtPointer(False) },
     { XtNhintSize, XtCHintSize, XtRDimension, sizeof(Dimension),
 	offset(hintSize), XtRImmediate, XtPointer(6) },
+
+    { XtNshowAnnnotations, XtCShowAnnotations, XtRBoolean, sizeof(Boolean),
+	offset(showAnnotations), XtRImmediate, XtPointer(True) },
 
     { XtNgridWidth, XtCGridSize, XtRDimension, sizeof(Dimension),
 	offset(gridWidth), XtRImmediate, XtPointer(16) },
@@ -1188,6 +1193,7 @@ static void setGraphGC(Widget w)
     const Dimension arrowLength     = _w->graphEdit.arrowLength;
     const Dimension hintSize        = _w->graphEdit.hintSize;
     const Boolean showHints         = _w->graphEdit.showHints;
+    const Boolean showAnnotations   = _w->graphEdit.showAnnotations;
     const GC nodeGC                 = _w->graphEdit.nodeGC;
     const GC edgeGC                 = _w->graphEdit.edgeGC;
     const GC invertGC               = _w->graphEdit.invertGC;
@@ -1211,6 +1217,7 @@ static void setGraphGC(Widget w)
     graphGC.arrowLength       = arrowLength;
     graphGC.edgeAttachMode    = EdgeAttachMode(edgeAttachMode);
     graphGC.drawHints         = showHints;
+    graphGC.drawAnnotations   = showAnnotations;
     graphGC.hintSize          = hintSize;
     graphGC.selfEdgeDiameter  = selfEdgeDiameter;
     graphGC.selfEdgePosition  = selfEdgePosition;
@@ -1377,11 +1384,12 @@ static Boolean SetValues(Widget old, Widget, Widget new_w,
     }
 
     // reset GraphGC if changed
-    if (before->graphEdit.arrowAngle  != after->graphEdit.arrowAngle  ||
-	before->graphEdit.arrowLength != after->graphEdit.arrowLength ||
-	before->graphEdit.showHints   != after->graphEdit.showHints   ||
-	before->graphEdit.hintSize    != after->graphEdit.hintSize    ||
-	before->graphEdit.edgeAttachMode != after->graphEdit.edgeAttachMode)
+    if (before->graphEdit.arrowAngle      != after->graphEdit.arrowAngle     ||
+	before->graphEdit.arrowLength     != after->graphEdit.arrowLength    ||
+	before->graphEdit.showHints       != after->graphEdit.showHints      ||
+	before->graphEdit.hintSize        != after->graphEdit.hintSize       ||
+	before->graphEdit.edgeAttachMode  != after->graphEdit.edgeAttachMode ||
+	before->graphEdit.showAnnotations != after->graphEdit.showAnnotations)
     {
 	setGraphGC(new_w);
 	redisplay = True;

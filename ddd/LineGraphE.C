@@ -230,7 +230,26 @@ void LineGraphEdge::drawLine(Widget w,
 	return;
 
     XDrawLine(XtDisplay(w), XtWindow(w), gc.edgeGC,
-	l1[X], l1[Y], l2[X], l2[Y]);
+	      l1[X], l1[Y], l2[X], l2[Y]);
+
+    // Draw annotation at mid-distance
+    if (gc.drawAnnotations && annotation() != 0)
+    {
+	if (from()->isHint() && to()->isHint())
+	{
+	    // Between two hints -- don't draw anything
+	}
+	else if (to()->isHint())
+	{
+	    // Draw at hint position
+	    annotation()->draw(w, to()->pos(), exposed, gc.edgeGC);
+	}
+	else
+	{
+	    // Draw at mid-distance
+	    annotation()->draw(w, l1 + (l2 - l1) / 2, exposed, gc.edgeGC);
+	}
+    }
 
     // Get arrow angle
     double alpha = atan2(double(l1[Y] - l2[Y]), double(l1[X] - l2[X]));
@@ -297,37 +316,47 @@ void LineGraphEdge::drawSelf(Widget w,
     Dimension radius = (diameter + 1) / 2;
     diameter = radius * 2;
 
-    BoxPoint position(region.origin());	// Upper left corner of the arc
+    BoxPoint arcpos(region.origin());	// Upper left corner of the arc
+    BoxPoint anno(region.origin());     // Position of annotation
     int start = 0;		        // Start of the arc (in degrees)
     const int extend = 270;	        // Extend of the arc (in degrees)
 
     switch (gc.selfEdgePosition)
     {
     case NorthEast:
-	position += BoxPoint(region.space(X) - radius, -radius);
+	arcpos += BoxPoint(region.space(X) - radius, -radius);
+	anno   += BoxPoint(region.space(X) + radius, -radius);
 	start = 270;
 	break;
 
     case SouthEast:
-	position += 
-	    BoxPoint(region.space(X) - radius, region.space(Y) - radius);
+	arcpos += BoxPoint(region.space(X) - radius, region.space(Y) - radius);
+	anno   += BoxPoint(region.space(X) + radius, region.space(Y) + radius);
 	start = 180;
 	break;
 
     case SouthWest:
-	position += BoxPoint(-radius, region.space(Y) - radius);
+	arcpos += BoxPoint(-radius, region.space(Y) - radius);
+	anno   += BoxPoint(-radius, region.space(Y) + radius);
 	start = 90;
 	break;
 
     case NorthWest:
-	position += BoxPoint(-radius, -radius);
+	arcpos += BoxPoint(-radius, -radius);
+	anno   += BoxPoint(-radius, -radius);
 	start = 0;
 	break;
     }
 
-    XDrawArc(XtDisplay(w), XtWindow(w), gc.edgeGC, position[X],
-	     position[Y], diameter, diameter,
+    XDrawArc(XtDisplay(w), XtWindow(w), gc.edgeGC, arcpos[X],
+	     arcpos[Y], diameter, diameter,
 	     start * 64, extend * 64);
+
+    if (gc.drawAnnotations && annotation() != 0)
+    {
+	// Draw annotation
+	annotation()->draw(w, anno, exposed, gc.edgeGC);
+    }
 
     // Find arrow angle
     int arrow_angle = 0;
@@ -348,7 +377,7 @@ void LineGraphEdge::drawSelf(Widget w,
     double inclination = (PI / 2.0) - acos(cosine);
 
     // Draw arrow
-    position = BoxPoint(region.origin());
+    BoxPoint arrowpos(BoxPoint(region.origin()));
     switch (gc.selfEdgeDirection)
     {
     case Clockwise:
@@ -356,19 +385,19 @@ void LineGraphEdge::drawSelf(Widget w,
 	switch (gc.selfEdgePosition)
 	{
 	case NorthEast:
-	    position += BoxPoint(region.space(X), radius);
+	    arrowpos += BoxPoint(region.space(X), radius);
 	    break;
 
 	case SouthEast:
-	    position += BoxPoint(region.space(X) - radius, region.space(Y));
+	    arrowpos += BoxPoint(region.space(X) - radius, region.space(Y));
 	    break;
 
 	case SouthWest:
-	    position += BoxPoint(0, region.space(Y) - radius);
+	    arrowpos += BoxPoint(0, region.space(Y) - radius);
 	    break;
 
 	case NorthWest:
-	    position += BoxPoint(radius, 0);
+	    arrowpos += BoxPoint(radius, 0);
 	    break;
 	}
 	break;
@@ -378,25 +407,25 @@ void LineGraphEdge::drawSelf(Widget w,
 	switch (gc.selfEdgePosition)
 	{
 	case NorthEast:
-	    position += BoxPoint(region.space(X) - radius, 0);
+	    arrowpos += BoxPoint(region.space(X) - radius, 0);
 	    break;
 
 	case SouthEast:
-	    position += BoxPoint(region.space(X), region.space(Y) - radius);
+	    arrowpos += BoxPoint(region.space(X), region.space(Y) - radius);
 	    break;
 
 	case SouthWest:
-	    position += BoxPoint(radius, region.space(Y));
+	    arrowpos += BoxPoint(radius, region.space(Y));
 	    break;
 
 	case NorthWest:
-	    position += BoxPoint(0, radius);
+	    arrowpos += BoxPoint(0, radius);
 	    break;
 	}
 	break;
     }
 
-    drawArrowHead(w, exposed, gc, position, alpha);
+    drawArrowHead(w, exposed, gc, arrowpos, alpha);
 }
 
 void LineGraphEdge::_print(ostream& os, const GraphGC &gc) const
