@@ -4895,6 +4895,8 @@ void DataDisp::update_displays(const StringArray& displays,
     {
 	if (is_cluster(dn))
 	    continue;
+	if (dn->deferred())
+	    continue;
 
 	bool found = false;
 	for (int i = 0; !found && i < displays.size(); i++)
@@ -4935,6 +4937,8 @@ void DataDisp::update_displays(const StringArray& displays,
 	     dn != 0; dn = disp_graph->next(ref))
 	{
 	    if (dn->name() != name)
+		continue;
+	    if (dn->deferred())
 		continue;
 
 	    s.current = value.length();
