@@ -26,6 +26,28 @@
 // `http://www.gnu.org/software/ddd/',
 // or send a mail to the DDD developers <ddd@gnu.org>.
 
+// ------------------------------------------------------
+// Yesterday
+// (sung to Yesterday by the Beatles)
+// 
+// Yesterday, all my code still worked this way
+// Now it looks as though bugs are here to stay
+// Oh, I believe in yesterday.
+// 
+// Suddenly, it's not half as good as it used to be,
+// There's a release hanging over me.
+// Oh, failure came suddenly.
+// 
+// Why it had to break I don't know it wouldn't say.
+// I typed something wrong, now I long for yesterday.
+// 
+// Yesterday, coding was a kind of game to play.
+// Now I need a place to hide away.
+// Oh, I believe in yesterday.
+//
+// -- Ralf Hildebrandt <Ralf.Hildebrandt@gmx.de>
+// ------------------------------------------------------
+
 char history_rcsid[] = 
     "$Id$";
 
