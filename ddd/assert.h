@@ -42,6 +42,14 @@
 #include "config.h"		// HAVE_PRETTY_FUNCTION
 #endif
 
+#include "casts.h"
+
+#if defined __cplusplus
+# define _ASSERT_VOID_CAST(x) STATIC_CAST(void,x)
+#else
+# define _ASSERT_VOID_CAST(x) (void)(x)
+#endif
+
 #include "attribute.h"
 void ddd_assert_fail (const char *assertion, const char *file,
 		      unsigned int line, const char *function)
@@ -57,6 +65,9 @@ void ddd_assert_fail (const char *assertion, const char *file,
 #endif // !HAVE_PRETTY_FUNCTION
 
 #define assert(ex) \
-((ex) ? 1 : (ddd_assert_fail (#ex, __FILE__, __LINE__, _assert_fn), 0))
+_ASSERT_VOID_CAST((ex) ? \
+  0 : \
+  (ddd_assert_fail (#ex, __FILE__, __LINE__, _assert_fn), 0) \
+  )
 
 #endif // !NDEBUG
