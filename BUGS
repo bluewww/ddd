@@ -279,4 +279,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 271 Source text and machine code are no drop targets.
 
-272 (Insert new bugs here)
+272 The `select' font selection method does not work with LessTif.
+
+273 (Insert new bugs here)
