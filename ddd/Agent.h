@@ -312,6 +312,7 @@ public:
 
     // Duplicator
     Agent(const Agent& c);
+    virtual Agent *dup() const { return new Agent(*this); }
 
     // Destructor
     virtual ~Agent();

@@ -150,6 +150,7 @@ public:
     LiterateAgent(const LiterateAgent& lit)
 	: AsyncAgent(lit), activeIO(lit.activeIO)
     {}
+    virtual Agent *dup() const { return new LiterateAgent(*this); }
 
     // output data handling
     virtual int write(const char *data, int length);

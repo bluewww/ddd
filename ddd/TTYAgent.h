@@ -66,6 +66,7 @@ protected:
 	// Never used
 	::abort();
     };
+    virtual Agent *dup() const { return new TTYAgent(*this); }
     
 public:
     // Constructors

@@ -247,25 +247,36 @@ void LiterateAgent::outputReady(AsyncAgent *c)
 
 void LiterateAgent::inputReady(AsyncAgent *c)
 {
-    // lee@champion.tcs.co.jp (Lee Hounshell) modified this procedure
-    // from this:
-    // ptr_cast(LiterateAgent, c)->readAndDispatchInput(0);
-
     bool expectEOF = false;
     char data[1024];
     char *datap = data;
     LiterateAgent *leeLA = ptr_cast(LiterateAgent, c);
-    int length = leeLA->readInput(datap);
-    if (length > 0)
-	leeLA->dispatch(Input, datap, length);
-    else if (!expectEOF && length == 0 
-	     && leeLA->inputfp() != 0 && feof(leeLA->inputfp()))
-	leeLA->inputEOF();
+    if (leeLA)
+    {
+	int length = leeLA->readInput(datap);
+	if (length > 0)
+	    leeLA->dispatch(Input, datap, length);
+	else if (!expectEOF && length == 0 
+		 && leeLA->inputfp() != 0 && feof(leeLA->inputfp()))
+	    leeLA->inputEOF();
+    }
 }
 
 void LiterateAgent::errorReady(AsyncAgent *c)
 {
-    ptr_cast(LiterateAgent, c)->readAndDispatchError();
+    bool expectEOF = false;
+    char data[1024];
+    char *datap = data;
+    LiterateAgent *leeLA = ptr_cast(LiterateAgent, c);
+    if (leeLA)
+    {
+	int length = leeLA->readError(datap);
+	if (length > 0)
+	    leeLA->dispatch(Error, datap, length);
+	else if (!expectEOF && length == 0 
+		 && leeLA->errorfp() != 0 && feof(leeLA->errorfp()))
+	    leeLA->errorEOF();
+    }
 }
 
 // Input Data is available: read all and call Input handlers of current job

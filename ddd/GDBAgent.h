@@ -140,6 +140,7 @@ protected:
 	// Never used
 	::abort();
     };
+    virtual Agent *dup() const { return new GDBAgent(*this); }
 
 public:
     GDBAgent (XtAppContext app_context,

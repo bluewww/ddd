@@ -214,6 +214,7 @@ public:
     {
 	initHandlers();
     }
+    virtual Agent *dup() const { return new AsyncAgent(*this); }
 
     // These need special management:
     virtual void abort();

@@ -178,6 +178,7 @@ void AsyncAgent::dispatch(int *, XtInputId *inputId)
     {
 	(*(handler(type)))(this);
     }
+#if 0
     else
     {
 	ostrstream os;
@@ -185,6 +186,7 @@ void AsyncAgent::dispatch(int *, XtInputId *inputId)
 	string s(os);
 	raiseMsg(s);
     }
+#endif
 }
 
 // Abort
@@ -248,8 +250,8 @@ void AsyncAgent::waitToTerminate()
 {
     // Copy agent to a "dummy" agent. This agent is used only
     // for handling the terminating sequence. It cannot be used for I/O.
-
-    AsyncAgent *dummy = new AsyncAgent(*this);
+    AsyncAgent *dummy = ptr_cast(AsyncAgent, dup());
+    dummy->removeAllHandlers();
 
     if (terminateTimeOut() >= 0)
 	XtAppAddTimeOut(appContext(), terminateTimeOut() * 1000,
