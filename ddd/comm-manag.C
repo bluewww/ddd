@@ -1438,11 +1438,11 @@ void user_cmdOAC(void *data)
 	    c.priority = COMMAND_PRIORITY_BATCH;
 	    c.echo    = false;
 	    c.verbose = true;
-	    c.prompt  = (auto_commands == "");
+	    c.prompt  = do_prompt && (auto_commands == "");
 	    gdb_command(c);
 	}
 
-	// Don't issue prompt now; let the auto command do this
+	// Don't issue prompt now; let the last auto command do this
 	do_prompt = false;
     }
 
