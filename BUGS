@@ -127,8 +127,6 @@ Volunteers for fixing these and other bugs are welcome!
     different data files all have the same color.  This does not
     happen with the external Gnuplot window.
 
-352 Avoid multiple debug windows (for debugging DDD).
-
 353 (Automake) The `configure' script checks for `__CYGWIN32__', but
     as of Beta 20, this should be `__CYGWIN__'.
 
@@ -136,7 +134,5 @@ Volunteers for fixing these and other bugs are welcome!
 
 363 (LessTif 0.87) Selecting something outside the source window does
     not clear the selection in the data window.
-
-365 Fix the `Run' dialog screen shot.
 
 367 (Insert new bugs here)

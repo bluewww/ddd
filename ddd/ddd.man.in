@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-11\-26" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-11\-27" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -832,7 +832,7 @@ To start execution of the debugged program, select
 `\fBProgram\(->Run\fR'.  You will then be prompted for the arguments
 to pass to your program.  You can either select from a list of
 previously used arguments or enter own arguments in the text field.
-Afterwards, press the `\fBOK\fR' button to start execution with the
+Afterwards, press the `\fBRun\fR' button to start execution with the
 selected arguments.
 .PP
 To run your program again, with the same arguments, select
