@@ -13,11 +13,10 @@ DDD 2.3 [in development]
       All data display features are available in Java.
     - Watchpoints.  You can have the debugged program stop
       automatically whenever a particular variable is read or written.
-    - Deferred displays.  When restoring sessions, displays whose data
-      is not active are re-created automatically as soon as their old
-      scope is re-entered.  This allows saving data displays even
-      without core dumps and preserves data displays across
-      recompilations of the debuggee.
+    - Deferred displays.  DDD now can maintain displays whose creation
+      is deferred until a particular scope is entered.  Benefits:
+      * Displays are now persistent across recompilations.
+      * In sessions, displays can also be restored without core dump.
     - Tear-off menus are supported (and enabled by default).
     - Conditional breakpoints and breakpoints with ignore counts are now
       indicated by special breakpoint symbols.
@@ -34,7 +33,8 @@ DDD 2.3 [in development]
       to disappear.  See the `cacheGlyphImages' resource for details.
 
     Changes in configuration and building:
-    - LessTif 0.83 is supported.  See `patches/' for some useful patches.
+    - LessTif 0.83 is supported (and now the default test environment
+      of the DDD developers).  See `patches/' for some useful patches.
 
     And once more, several more minor improvements and bug fixes; see
     the `ChangeLog' file for details.

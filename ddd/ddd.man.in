@@ -39,7 +39,6 @@
 .na
 .TP
 .B @ddd@
-.RB "[\|" \-\-help "\|]"
 .RB "[\|" \-\-gdb "\|]"
 .RB "[\|" \-\-dbx "\|]"
 .RB "[\|" \-\-xdb "\|]"
@@ -50,22 +49,25 @@
 .RB "[\|" \-\-session
 .I name\c
 \&\|]
-.RB "[\|" \-\-host
-.I hostname
-.RB "[\|" \-\-login
+.RB "[\|" \-\-host " ["\c
 .I username\c
+.B @\c
+\&]\c
+.I hostname\c
 \&\|]\|]
-.RB "[\|" \-\-rhost
-.I hostname
-.RB "[\|" \-\-login
+.RB "[\|" \-\-rhost " ["\c
 .I username\c
+.B @\c
+\&]\c
+.I hostname\c
 \&\|]\|]
-.RB "[\|" \-\-attach-windows "\|]"
-.RB "[\|" \-\-separate-windows "\|]"
+.\" .RB "[\|" \-\-attach-windows "\|]"
+.\" .RB "[\|" \-\-separate-windows "\|]"
 .RB "[\|" \-\-trace "\|]"
 .RB "[\|" \-\-nw "\|]"
 .RB "[\|" \-\-tty "\|]"
 .RB "[\|" \-\-fullname "\|]"
+.RB "[\|" \-\-help "\|]"
 .RB "[\|" \-\-version "\|]"
 .RB "[\|" \-\-configuration "\|]"
 .RB "[\|" \-\-check-configuration "\|]"
@@ -4446,6 +4448,7 @@ Run \s-2XDB\s+2 as inferior debugger.
 .\" ---------------
 .\"
 \s-2@DDD@\s+2 is controlled by the following environment variables:
+.PP
 .PD 0
 .TP 20
 .B @DDD@_NO_SIGNAL_HANDLERS
@@ -4562,11 +4565,13 @@ Using \s-2GDB\s+2: A Guide to the \s-2GNU\s+2 Source-Level Debugger\c
 .PP
 .I
 jdb\(em\&The Java Debugger\c
-\&, at \fBhttp://java.sun.com/products/jdk/1.1/docs/tooldocs/solaris/jdb.html\fR
+\&, at \fBhttp://java.sun.com/\fR and its mirrors in
+\fBproducts/jdk/1.1/docs/tooldocs/solaris/jdb.html\fR
 .PP
 .I
 Java Language Debugging\c
-\&, at \fBhttp://java.sun.com/products/jdk/1.1/debugging/\fR
+\&, at \fBhttp://java.sun.com/\fR and its mirrors in 
+\fBproducts/jdk/1.1/debugging/\fR
 .PP
 .I
 \s-2DDD\s+2\(em\&A Free Graphical Front-End for \s-2UNIX\s+2 Debuggers\c
