@@ -56,6 +56,7 @@ char GDBAgent_rcsid[] =
 #define EXIT_FAILURE 1
 #endif
 
+
 DEFINE_TYPE_INFO_1(GDBAgent, TTYAgent);
 
 //-----------------------------------------------------------------------------
@@ -568,6 +569,16 @@ string GDBAgent::requires_reply (const string& answer)
     if (answer.matches(RXreturn))
 	return "\n";		// Keep on scrolling
 
+    if (type() == XDB)
+    {
+	// Added regular expression for "Standard input: END" to
+        // GDBAgent::requires_reply 
+	// -- wiegand@kong.gsfc.nasa.gov (Robert Wiegand)
+	static regex RXxdb(".*Standard input: END.*");
+	if (answer.matches(RXxdb))
+	    return "\n";	// Keep on scrolling
+    }
+
     return "";
 }
 
@@ -577,7 +588,7 @@ string GDBAgent::requires_reply (const string& answer)
 void GDBAgent::normalize(string& answer)
 {
     strip_control(answer);
-    strip_comments(answer);
+    strip_dbx_comments(answer);
     cut_off_prompt(answer);
 
 #if 0
@@ -606,7 +617,7 @@ void GDBAgent::cut_off_prompt(string& answer)
 }
 
 // Strip annoying DBX comments
-void GDBAgent::strip_comments(string& s)
+void GDBAgent::strip_dbx_comments(string& s)
 {
     // These problems occur in Sun DBX 3.x only.
     if (!has_print_r_option() || verbatim())
@@ -688,6 +699,9 @@ void GDBAgent::strip_comments(string& s)
 // Strip control characters
 void GDBAgent::strip_control(string& answer)
 {
+    if (type() == XDB)
+	strip_xdb_control(answer);
+
     int source_index = 0;
     int target_index = 0;
 
@@ -724,6 +738,87 @@ void GDBAgent::strip_control(string& answer)
 
     answer = answer.before(target_index);
 }
+
+
+// XDB specials.  Contributed by wiegand@kong.gsfc.nasa.gov (Robert Wiegand)
+
+// Hideous hack to get around XDB more facility use during help xxx
+// 
+// Function added to GDBAgent.C to strip things like
+//                \e[m
+//                \e[22;1H
+//                \e[7m
+//                \e[K
+// Seems like xdb in line mode with suspend more should not
+// output these, but they are in there.
+
+// nixed characters:
+// \e\[\d\d[;1H]
+// \e\[[\d]m
+// \e\[[JK]
+void GDBAgent::strip_xdb_control(string &answer)
+{
+    if (type() != XDB)
+	return;
+
+    int length = answer.length();
+    string out;
+
+    int i = 0;
+    while (i < length)
+    {
+	char c = answer[i++];
+	if (c == '\r')
+	    ;
+	else if (c == '\033')
+	{
+	    // eat chars through end of control;
+	    if ((c = answer[i++]) == '[')
+	    {
+		if ((c = answer[i++]) == 'J' || c == 'K')
+		    ;
+		else if (c == 'm')
+			;
+		else if (isdigit(c))
+		{
+		    if (isdigit(c = answer[i++]))
+		    {
+		        // check for ;1H
+			if ((c = answer[i++]) == ';' &&
+				(c = answer[i++]) == '1' &&
+				(c = answer[i++]) == 'H')
+			    ;
+			else
+			    bad_xdb_control(answer, i, c, ";1H");
+		    }
+		    else if (c == 'm')
+			;
+		    else
+			bad_xdb_control(answer, i, c, "digit or m");
+		}
+	    }
+	    else
+		bad_xdb_control(answer, i, c, "[");
+	}
+	else
+	    out += c;
+    }
+
+    answer = out;
+}
+
+void GDBAgent::bad_xdb_control(const string &s, int p, char c, 
+			       const char *expecting)
+{
+    if (p >= (int) s.length())
+	cerr << "tried to get character " << p << " from " << s << "\n";
+    else
+	cerr << "bad character [" << (char) c << ", " << (int) c <<
+		"] at position " << p << " in " << s <<
+		" [expecting " << expecting << "]\n";
+}
+
+
 
 //-----------------------------------------------------------------------------
 // Event handlers
@@ -1364,3 +1459,4 @@ int GDBAgent::setupChildCommunication()
     // Nothing special...
     return TTYAgent::setupChildCommunication();
 }
+
