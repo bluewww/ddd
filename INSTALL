@@ -9,7 +9,7 @@ Requirements
 
     To build a complete DDD from sources, you need:
 
-       * The GNU C++ compiler (GCC/G++), preferably version 2.6.3 or
+       * The GNU C++ compiler (GCC/G++), preferably version 2.7.2 or
 	 later, and a matching C++ I/O library (libstdc++ or libg++).
 
          Some other C++ compilers have been reported to compile DDD as
@@ -24,10 +24,10 @@ Requirements
          are achieved using OSF/Motif 2.0 or later.
 
          DDD also compiles and runs with LessTif, a free Motif clone,
-         release 0.79 or later, without loss of functionality.
+         release 0.81 or later, without loss of functionality.
          LessTif is available via `http://www.lesstif.org/'.  Note
-         that DDD+LessTif usability varies with the LessTif version;
-         until LessTif 1.x is ready.x, OSF/Motif is preferred.
+         that DDD/LessTif usability varies with the LessTif version;
+         until LessTif 1.x is ready, OSF/Motif is preferred.
 
        * Optionally, in addition to the Motif widget library, the
          Athena Widget library (release 5 or later).  Having the

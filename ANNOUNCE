@@ -1,10 +1,10 @@
-DDD 2.2 is available					-*- text -*-
-====================
+DDD 2.2.1 is available					-*- text -*-
+======================
 
-    Release 2.2 of the Data Display Debugger (DDD), a common graphical
+    Release 2.2.1 of the Data Display Debugger (DDD), a common graphical
     front-end for GDB, DBX, and XDB debuggers, is now available at
 
-        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-2.2.tar.gz
+        ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-2.2.1.tar.gz
 
     Diffs from earlier versions are in
 
@@ -23,6 +23,28 @@ DDD 2.2 is available					-*- text -*-
 
 What's new in DDD?
 ==================
+
+    DDD 2.2.1 fixes some minor bugs introduced in DDD 2.2.
+
+    User-visible changes to DDD 2.2:
+    - Auto-raised menus have been disabled by default; use
+      `Ddd*autoRaiseMenu: true' in `~/.ddd/init' to re-enable them.
+    - By default, DDD stops disassembling after 1024 bytes.  This is
+      useful when working with the machine code of huge functions.
+      See the `maxDisassemble' resource for more info.
+    - Status messages show the outcome of a command.
+
+    Bug fixes:
+    - DDD works with Linux libc 5.4.38 and later.
+    - The `gcore' method for getting core files works.
+    - Interacting with the debuggee (or interrupting it) properly
+      discards pending debugger commands.
+    - Trying to open non-existent source files no longer confuses GDB.
+    - When running in the background, DDD is no longer interrupted by
+      `tty output' signals upon initializing the execution window.
+    - PushButton menus work with LessTif >= 0.82 and with OSF/Motif 1.1.
+    - The command tool is decorated under all circumstances.
+
 
     DDD 2.2 brings persistent sessions, an improved user interface,
     attaching to running processes, display shortcuts, and more.
