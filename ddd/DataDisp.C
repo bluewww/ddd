@@ -2272,8 +2272,11 @@ bool DataDisp::get_state(ostream& os,
 		{
 		    int depnr = disp_graph->get_nr(ancestor);
 		    DispNode *depnode = disp_graph->get(depnr);
-		    depends_on = depnode->name();
-		    break;
+		    if (depnode != dn)
+		    {
+			depends_on = depnode->name();
+			break;
+		    }
 		}
 	    }
 	}
