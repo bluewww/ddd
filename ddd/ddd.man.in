@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "16 Oct 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "23 Oct 1997" "@DDD@ @VERSION@"
 .\" ---------------
 .SH "NAME"
 .\" ---------------
@@ -1399,8 +1399,8 @@ edge hint is equivalent to selecting the alias.  This way, you can
 easily delete display aliases by simply selecting the edge hint and
 clicking on `\fBDelete ()\fR'.
 .PP
-Edge hints can be made invisible by disabling `\fBEdit | Preferences | Data
-Preferences | Show Edge Hints\fR'.
+Edge hints can be made invisible by disabling `\fBEdit | Preferences |
+Data | Show Edge Hints\fR'.
 .PP
 .PSPIC @srcdir@/PICS/ddd-aliases.ps 15.3cm
 .PP
@@ -1524,7 +1524,7 @@ You can align all displays on the nearest grid position by selecting
 horizontal or vertical.
 .PP
 You can enforce alignment by selecting `\fBEdit | Preferences |
-Data Preferences | Auto-align displays on nearest grid point\fR'.  If
+Data | Auto-align displays on nearest grid point\fR'.  If
 this feature is enabled, displays can be moved on grid positions only.
 .\"
 .\"
@@ -1536,17 +1536,17 @@ Layout Graph\fR'.
 Layouting the graph may introduce \fIedge hints\fR; that is, edges are
 no more straight lines, but lead to an edge hint and from there to
 their destination.  You can make edge hints invisible by disabling
-`\fBEdit | Preferences | Data Preferences | Show Edge Hints\fR'.
+`\fBEdit | Preferences | Data | Show Edge Hints\fR'.
 Edge hints can be moved around like arbitrary displays.
 .PP
 To enable a more compact layout, you can set the `\fBEdit |
-Preferences | Data Preferences | Use compact layout\fR' option.  This
+Preferences | Data | Use compact layout\fR' option.  This
 realizes an alternate layout algorithm, where successors are placed
 next to their parents.  This algorithm is suitable for homogeneous
 data structures only.
 .PP
 You can enforce layout by setting `\fBEdit | Preferences | Data
-Preferences | Re-layout graph automatically\fR'.  If automatic layout
+ | Re-layout graph automatically\fR'.  If automatic layout
 is enabled, the graph is layouted after each change.
 .PP
 .PSPIC @srcdir@/PICS/ddd-layout.ps 15.3cm
@@ -2308,6 +2308,51 @@ some grey color cells, which are also used by \s-2@DDD@\s+2.  The
 .PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
+.SS "Helpers"
+.\"
+\s-2@DDD@\s+2 relies on some external applications (called
+\fIhelpers\fR) for specific tasks.  Through the `\fBHelpers\fR' panel,
+you can choose and customize these applications.
+.PP
+.PSPIC @srcdir@/PICS/ddd-helpers.ps 15.3cm
+.PP
+In `\fBEdit Sources\fR', you can select an X editor to be invoked via
+the \s-2@DDD@\s+2 `\fBEdit\fR' button.  `\fB@FILE@\fR' is replaced by
+the current file name; `\fB@LINE@\fR' is replaced by the current line.
+Typical values include `\fBxedit @FILE@\fR' or `\fBgnuclient +@LINE@
+@FILE@\fR'.  See also the `\fBeditCommand\fR' resource, below.
+.PP
+In `\fBGet Core File\fR', you can enter a command to get a core file
+from a running process.  `\fB@FILE@\fR' is replaced by the name of the
+target core file; `\fB@PID@\fR' is replaced by the process ID.  A
+typical value is `\fBgcore -o @FILE@ @PID@\fR'.  If you don't have an
+appropriate command, leave this value empty: \s-2DDD\s+2 will then
+kill the debuggee in order to get a core file.  See also the
+`\fBgetCoreCommand\fR' resource, below.
+.PP
+`\fBList Processes\fR' is a command to get a list of processes, like
+`\fBps\fR'.  The output of this command is shown in the `\fBFile |
+Attach to Process\fR' dialog.  See also the `\fBpsCommand\fR'
+resource, below.
+.PP
+In `\fBExecution Window\fR', you can enter a command to start a 
+terminal emulator.  To this command, \s-2@DDD@\s+2 appends bourne
+shell commands to be executed within the execution window.  A simple
+value is `\fBxterm -e /bin/sh -c\fR'.  See also the `\fBtermCommand\fR'
+resource, below.
+.PP
+`\fBUncompress\fR' is the uncompression command used by \s-2@DDD@\s+2
+to uncompress the \s-2@DDD@\s+2 license and manual pages.  The
+uncompression command should be invoked such that it reads from
+standard input and writes to standard output.  A typical value is
+`\fBgunzip -c\fR'.  See also the `\fBuncompressCommand\fR' resource,
+below.
+.PP
+Finally, `\fBWeb Browser\fR' is the command to invoke a \s-2WWW\s+2
+browser for the \s-2@DDD@\s+2 \s-2WWW\s+2 page.  `\fB@URL@\fR' is
+replaced by the URL to be shown.  A simple value is `\fBnetscape
+@URL@\fR'.  See also the `\fBwwwCommand\fR' resource, below.
+.\"
 .\"
 .SS "Defining Buttons"
 .\"
@@ -2321,6 +2366,8 @@ To define individual buttons, use the \fIButton Editor\fR, invoked via
 where each line contains the command for exactly one button.  Clicking
 on `\fBApply\fR' creates the appropriate buttons from the text.  If
 the text is empty (the default), no button is created.
+.PP
+.PSPIC @srcdir@/PICS/ddd-button-editor.ps 15.3cm
 .PP
 As a simple example, assume you want to create a `\fBprint i\fR'
 button.  Invoke `\fBCommands | Edit Buttons\fR' and enter a line
@@ -2336,8 +2383,6 @@ supported by the inferior debugger.  To enable such buttons, unset the
 \s-2@DDD@\s+2 also allows you to specify control sequences and special
 labels for user-defined buttons.  See the examples in `\fBUser-defined
 Buttons\fR' in the `\fBRESOURCES\fR' section, below.
-.PP
-.PSPIC @srcdir@/PICS/ddd-button-editor.ps 15.3cm
 .\"
 .\"
 .SS "Saving Options"
@@ -3388,7 +3433,7 @@ of the last line.
 .PP
 .\"
 .\"
-.SS "Customizing Helper Programs"
+.SS "Customizing Helpers"
 .\"
 The following resources determine external programs invoked by \s-2@DDD@\s+2.
 .TP
@@ -3419,6 +3464,14 @@ This `\fB.ddd/init\fR' setting invokes an editing session for an
   \fB@Ddd@*editCommand: emacsclient +@LINE@ @FILE@\fR
 .br
 .sp
+.TP
+.B "getCoreCommand (\fPclass\fB GetCoreCommand)"
+A command to get a core dump of a running process (typically,
+`\fBgcore\fR') `\fB@FILE@\fR' is replaced by the base name of the file
+to create; `\fB@PID@\fR' is replaced by the process id.  The output
+must be written to `\fB@FILE@.@PID@\fR'.
+.br
+Leave this entry empty if you have no `\fBgcore\fR' or similar command.
 .TP
 .B "lessTifVersion (\fPclass\fB LessTifVersion)"
 Indicates the LessTif version \s-2@DDD@\s+2 is running against.  For
@@ -4443,9 +4496,8 @@ Dorothea during the winter of 1994/1995.  In the first quarter of
 1995, finally, Andreas completed \s-2@DDD@\s+2 by adding command and
 execution windows, extensions for \s-2DBX\s+2 and remote debugging as
 well as configuration support for several architectures.  Since then,
-many people have contributed to the success of \s-2@DDD@\s+2; see the
-file `\fBCONTRIBUTORS\fR' in the \s-2@DDD@\s+2 distribution for
-details.
+many people have contributed to the success of \s-2@DDD@\s+2; see
+comments in the \s-2@DDD@\s+2 source for details.
 .PP
 Major \s-2@DDD@\s+2 events:
 .PD 0
@@ -4466,7 +4518,7 @@ October, 1996
 May, 1997
 \s-2@DDD@\s+2 2.1: Alias detection, button tips, status displays
 .TP
-December, 1997
+November, 1997
 \s-2@DDD@\s+2 2.2: Persistent sessions, display shortcuts.
 .PD
 .\"

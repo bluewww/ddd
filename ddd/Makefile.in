@@ -766,6 +766,7 @@ PICS = \
 	$(picdir)/ddd-drag.ps           \
 	$(picdir)/ddd-edit-displays.ps  \
 	$(picdir)/ddd-general-prefs.ps  \
+	$(picdir)/ddd-helpers.ps  	\
 	$(picdir)/ddd-hide-display.ps   \
 	$(picdir)/ddd-history.ps        \
 	$(picdir)/ddd-layout.ps         \
@@ -1289,6 +1290,10 @@ $(picdir)/ddd-registers.ps: \
 $(picdir)/ddd-general-prefs.ps: \
 	$(picdir)/ddd-general-prefs.fig $(picdir)/ddd-general-prefs.xpm 
 	cd $(picdir); $(FIG2PS) ddd-general-prefs.fig > ddd-general-prefs.ps
+
+$(picdir)/ddd-helpers.ps: \
+	$(picdir)/ddd-helpers.fig $(picdir)/ddd-helpers.xpm 
+	cd $(picdir); $(FIG2PS) ddd-helpers.fig > ddd-helpers.ps
 
 $(picdir)/ddd-source-prefs.ps: \
 	$(picdir)/ddd-source-prefs.fig $(picdir)/ddd-source-prefs.xpm
