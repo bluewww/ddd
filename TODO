@@ -359,8 +359,13 @@ Volunteers for these and other projects are welcome!
 
        [graph display `print *this` would help.]
 
-328*Optionally, have one single `Displays' box that combines all
-    independent displays as a List.
+328*Finish display clustering:
+    - Make `nice' annotations from cluster to variable
+    - Add unclustering and target clustering
+    - Improve change display in cluster (variable-specific? copy?)
+    - Propagate commands (delete, etc.) from cluster to item
+    - Allow deletion if `()' contains a display number or name
+    - Improve efficiency
 
 329*Have a Display Editor shortcut from the data popup menu.
 
