@@ -741,6 +741,7 @@ String SourceView::read_indented(string& file_name, long& length)
 {
     length = 0;
     Delay delay;
+    long t;
 
     String text;
     if (!remote_gdb())
@@ -768,7 +769,7 @@ String SourceView::read_indented(string& file_name, long& length)
 
     // Determine text length and number of lines
     int lines = 0;
-    for (long t = 0; t < length; t++)
+    for (t = 0; t < length; t++)
 	if (text[t] == '\n')
 	    lines++;
 
