@@ -573,12 +573,12 @@ void install_icons(Widget shell, const string& color_key)
     else
 	arm_background = select;
 
-    // DDD icon
+    // DDD icon (always in color)
     install_icon(shell, DDD_ICON, 
 		 ddd_xpm,
 		 ddd_bits,
 		 ddd_width, ddd_height,
-		 color_key, background, root_attr);
+		 "best", background, root_attr);
 
     // Toolbar icons
     install_button_icon(shell, BREAK_AT_ICON, 
