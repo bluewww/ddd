@@ -69,6 +69,7 @@ extern void gdbISearchExitCB     (Widget, XtPointer, XtPointer);
 extern void gdbClearCB           (Widget, XtPointer, XtPointer);
 extern void gdbCompleteCB        (Widget, XtPointer, XtPointer);
 extern void gdbApplyCB           (Widget, XtPointer, XtPointer);
+extern void gdbApplySelectionCB  (Widget, XtPointer, XtPointer);
 extern void gdbClearWindowCB     (Widget, XtPointer, XtPointer);
 
 // Return current GDB command line.

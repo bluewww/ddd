@@ -312,7 +312,8 @@ static bool do_isearch(Widget, XmTextVerifyCallbackStruct *change)
 	    if (history < 0)
 	    {
 		// Search string not found in history
-		XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
+		if (change->event != 0)
+		    XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
 		isearch_string = saved_isearch_string;
 	    }
 	}
@@ -519,7 +520,8 @@ void gdbModifyCB(Widget gdb_w, XtPointer, XtPointer call_data)
 	// Make it a no-op
 	change->startPos = change->endPos = change->newInsert
 	    = change->currInsert = promptPosition;
-	XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
+	if (change->event != 0)
+	    XtCallActionProc(gdb_w, "beep", change->event, 0, 0);
 	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 0, 
 			move_to_pos, XtPointer(promptPosition));
 #endif
@@ -559,7 +561,7 @@ void gdbMotionCB(Widget, XtPointer, XtPointer call_data)
 	isearch_motion_ok = false;
     }
 
-    if (change->event != NULL
+    if (change->event != 0
 	&& (change->event->type == KeyPress 
 	    || change->event->type == KeyRelease))
     {
@@ -663,6 +665,8 @@ void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     clear_isearch();
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    if (cbs->event == 0)
+	return;
 
     string command = (String)client_data;
     if (command.contains("..."))
@@ -683,6 +687,9 @@ void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data)
 void gdbPrevCB  (Widget w, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    if (cbs->event == 0)
+	return;
+
     Cardinal zero = 0;
     prev_historyAct(w, cbs->event, 0, &zero);
 }
@@ -690,6 +697,9 @@ void gdbPrevCB  (Widget w, XtPointer, XtPointer call_data)
 void gdbNextCB  (Widget w, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    if (cbs->event == 0)
+	return;
+
     Cardinal zero = 0;
     next_historyAct(w, cbs->event, 0, &zero);
 }
@@ -697,6 +707,9 @@ void gdbNextCB  (Widget w, XtPointer, XtPointer call_data)
 void gdbISearchPrevCB  (Widget w, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    if (cbs->event == 0)
+	return;
+
     Cardinal zero = 0;
     isearch_prevAct(w, cbs->event, 0, &zero);
 }
@@ -704,6 +717,9 @@ void gdbISearchPrevCB  (Widget w, XtPointer, XtPointer call_data)
 void gdbISearchNextCB  (Widget w, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    if (cbs->event == 0)
+	return;
+
     Cardinal zero = 0;
     isearch_nextAct(w, cbs->event, 0, &zero);
 }
@@ -711,6 +727,9 @@ void gdbISearchNextCB  (Widget w, XtPointer, XtPointer call_data)
 void gdbISearchExitCB  (Widget w, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    if (cbs->event == 0)
+	return;
+
     Cardinal zero = 0;
     isearch_exitAct(w, cbs->event, 0, &zero);
 }
@@ -718,6 +737,8 @@ void gdbISearchExitCB  (Widget w, XtPointer, XtPointer call_data)
 void gdbClearCB  (Widget w, XtPointer, XtPointer call_data)
 {
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    if (cbs->event == 0)
+	return;
 
     String args[1] = {""};
     Cardinal num_args = 1;
@@ -752,12 +773,15 @@ void gdbCompleteCB  (Widget w, XtPointer, XtPointer call_data)
 
     clear_isearch();
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    if (cbs->event == 0)
+	return;
 
     Cardinal zero = 0;
     end_of_lineAct(gdb_w, cbs->event, 0, &zero);
     complete_commandAct(gdb_w, cbs->event, 0, &zero);
 }
 
+// Use this for push buttons
 void gdbApplyCB(Widget w, XtPointer, XtPointer call_data)
 {
     if (!gdb->isReadyWithPrompt())
@@ -768,6 +792,28 @@ void gdbApplyCB(Widget w, XtPointer, XtPointer call_data)
 
     clear_isearch();
     XmPushButtonCallbackStruct *cbs = (XmPushButtonCallbackStruct *)call_data;
+    if (cbs->event == 0)
+	return;
+
+    Cardinal zero = 0;
+    end_of_lineAct(gdb_w, cbs->event, 0, &zero);
+    XtCallActionProc(gdb_w, "process-return", cbs->event, 0, zero);
+}
+
+// Use this for selection boxes
+void gdbApplySelectionCB(Widget w, XtPointer, XtPointer call_data)
+{
+    if (!gdb->isReadyWithPrompt())
+    {
+	post_gdb_busy(w);
+	return;
+    }
+
+    clear_isearch();
+    XmSelectionBoxCallbackStruct *cbs = 
+	(XmSelectionBoxCallbackStruct *)call_data;
+    if (cbs->event == 0)
+	return;
 
     Cardinal zero = 0;
     end_of_lineAct(gdb_w, cbs->event, 0, &zero);

@@ -350,7 +350,7 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
 		  XmNbrowseSelectionCallback, SelectHistoryCB, 0);
 
     XtAddCallback(gdb_history_w, XmNokCallback, DestroyThisCB, gdb_history_w);
-    XtAddCallback(gdb_history_w, XmNapplyCallback, gdbApplyCB, 0);
+    XtAddCallback(gdb_history_w, XmNapplyCallback, gdbApplySelectionCB, 0);
     XtAddCallback(gdb_history_w, XmNhelpCallback,  ImmediateHelpCB, 0);
     XtAddCallback(gdb_history_w, XtNdestroyCallback, 
 		  HistoryDestroyedCB, XtPointer(gdb_history_w));
@@ -361,7 +361,7 @@ void gdbHistoryCB(Widget w, XtPointer, XtPointer)
     selected[gdb_current_history] = true;
 
     setLabelList(gdb_commands_w, gdb_history.values(), 
-		 selected, gdb_history.size());
+		 selected, gdb_history.size(), false, false);
 
     delete[] selected;
 
