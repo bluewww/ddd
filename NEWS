@@ -11,6 +11,7 @@ Minor bug fixes:
 * DDD honors the TMPDIR environment variable for creating temporary files.
 * Minor compilation problems with GCC 2.7.2, GCC 3.0 (prerelease), 
   and Sun CC have been fixed.
+* Minor compatibility problems with pydb have been fixed.
 * The DDD code has been cleaned up to avoid potential problems
   with 64 bit pointers.
 * `config.guess' and `config.sub' scripts have been updated.
