@@ -138,8 +138,8 @@ typedef struct PlusCmdData {
     bool     config_display;	       // try 'display'
     bool     config_clear;	       // try 'clear'
     bool     config_pwd;	       // try 'pwd'
-    bool     config_setenv;	       // try 'setenv'
-    bool     config_edit;	       // try 'edit'
+    bool     config_setenv;	       // try 'help setenv'
+    bool     config_edit;	       // try 'help edit'
     bool     config_named_values;      // try 'print "ddd"'
     bool     config_when_semicolon;    // try 'help when'
     bool     config_delete_comma;      // try 'delete 4711 4712'
@@ -281,11 +281,9 @@ void start_gdb()
 	plus_cmd_data->config_clear = true;
 	cmds += "pwd";
 	plus_cmd_data->config_pwd = true;
-	cmds += "setenv EDITOR echo";
+	cmds += "help setenv";
 	plus_cmd_data->config_setenv = true;
-	cmds += "edit";
-	cmds += string("setenv EDITOR ") + 
-	    (getenv("EDITOR") ? getenv("EDITOR") : "vi");
+	cmds += "help edit";
 	plus_cmd_data->config_edit = true;
 	cmds += "print \"" DDD_NAME "\"";
 	plus_cmd_data->config_named_values = true;
@@ -1019,10 +1017,19 @@ static bool is_known_command(const string& answer)
 {
     string ans = downcase(answer);
 
+    read_leading_blanks(ans);
+    strip_final_blanks(ans);
+
+    // Care for first line only
+    if (ans.contains('\n'))
+	ans = ans.before('\n');
+
     return ans.contains("program is not active") // DBX
 	|| (!ans.contains("syntax")              // DEC DBX
+	    && !ans.contains("invalid keyword")  // DEC DBX
 	    && !ans.contains("help")             // GDB & SUN DBX 1.0
 	    && !ans.contains("not found")        // SUN DBX 3.0
+	    && !ans.contains("is unknown")       // SUN DBX 3.0
 	    && !ans.contains("unrecognized")     // AIX DBX
 	    && !ans.contains("expected")         // SGI DBX
 	    && !ans.contains("unknown", 0));     // XDB
@@ -1228,7 +1235,6 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->config_edit) {
 	assert (qu_count < count);
 	process_config_edit(answers[qu_count++]);
-	process_config_setenv(answers[qu_count++]);
     }
 
     if (plus_cmd_data->config_named_values) {
