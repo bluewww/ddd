@@ -65,11 +65,6 @@ Volunteers for fixing these and other bugs are welcome!
 118. SGI CC compiles DDD, but the resulting executable soon dies with a
      segmentation fault.  [Use GCC instead.  -AZ]
 
-122. Torsten Metzner <tom@plato.uni-paderborn.de> says: On
-     my sparc-sun-solaris2.5.1, have DDD run with `--exec-window' in
-     the background.  Starting the execution TTY causes DDD to stop
-     with `Suspended (tty output)'.
-
 126. Flashing data window.  Thomas Liefke
      <liefke@cdc.Informatik.TH-Darmstadt.DE> says: 
 
@@ -282,15 +277,7 @@ Volunteers for fixing these and other bugs are welcome!
      obliterating most of the other windows.  This happens with
      OSF/Motif Version 1.2.4 on alpha-dec-osf4.0.
 
-223. Christopher Vickery <vickery@babbage.cs.qc.edu> says: On SunOS 5.5,
-     If I run ddd in the background (using the tcsh shell), ddd cannot
-     complete initialization of the execution window because it tries
-     to write to stdout, which causes it to block until the job is
-     returned to the foreground.  Nothing actually appears in the
-     terminal window when the ddd job is put in the foreground, but
-     the execution window finishes initializing OK.
-
-224. Robert A Kerr <Robert_Kerr@byu.edu> says: On HP-UX 10.10,
+224* Robert A Kerr <Robert_Kerr@byu.edu> says: On HP-UX 10.10,
      the debugger LED on the bottom right never stops flashing.  If I
      try to do anything it gives me the "The debugger is busy error"
      and keeps flashing away.  I've let it sit for up to an hour

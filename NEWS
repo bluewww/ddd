@@ -13,6 +13,8 @@ DDD 2.2.1 [in development]
     Bug fixes:
     - DDD now works with Linux libc 5.4.38 and later.
     - The `gcore' method for getting core files now works.
+    - When running in the background, DDD is no longer interrupted by
+      `tty output' signals upon initializing the execution window.
     - Improved way of creating decorated command tool.
 
     And again, a couple of minor improvements and bug fixes.  See the

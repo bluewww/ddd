@@ -15,16 +15,19 @@ Requirements
          Some other C++ compilers have been reported to compile DDD as
          well.  Good results have been reported with Sun CC 4.0.  SGI
          CC and AIX xlC compile DDD, but introduce some subtle errors.
-         Cfront 3.0 does not compile DDD.
+         Cfront 3.0 does not compile DDD.  In doubt, GCC is preferred.
 
        * The X window library (Xlib) and X toolkit library (Xt),
          X11R4 or later.
 
        * A Motif Widget library, version 1.1 or later.  Best results
-         are achieved using OSF/Motif 2.0 or later.  DDD also compiles
-         and runs with LessTif, a free Motif clone, release 0.79 or
-         later, without loss of functionality.  LessTif is available
-         via `http://www.lesstif.org/'.
+         are achieved using OSF/Motif 2.0 or later.
+
+         DDD also compiles and runs with LessTif, a free Motif clone,
+         release 0.79 or later, without loss of functionality.
+         LessTif is available via `http://www.lesstif.org/'.  Note
+         that DDD+LessTif usability varies with the LessTif version;
+         until LessTif 1.x is ready.x, OSF/Motif is preferred.
 
        * Optionally, in addition to the Motif widget library, the
          Athena Widget library (release 5 or later).  Having the
