@@ -92,6 +92,11 @@ public:
         DynArray<T>(m), _size(m.size())
     {}
 
+    // Destructor.
+    // Omitting this one triggers an internal compiler error in GCC 2.7.2 -O2
+    virtual ~VarArray()
+    {}
+
     // Assignment
     VarArray<T>& operator = (const VarArray<T>& m)
     { 
