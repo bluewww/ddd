@@ -90,6 +90,11 @@ static DispValueType _determine_type (string& value)
 	    return Reference;
     }
 
+    // Texts.  (like `Local variables:\n' in JDB 'locals` output)
+    int nl_index = value.index('\n');
+    if (nl_index > 0 && value[nl_index - 1] == ':')
+	return Text;
+
     // Vtables.
     if (value.matches(rxvtable))
 	return Array;
@@ -248,7 +253,7 @@ static DispValueType _determine_type (string& value)
     {
 	string id   = value.before(at_index);
 	string addr = value.from(at_index);
-	if (id.matches(rxidentifier) && addr.contains(rxaddress, 0))
+	if (id.matches(rxchain) && addr.contains(rxaddress, 0))
 	{
 	    // We have a Java pointer
 	    return Pointer;
