@@ -3773,7 +3773,7 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	    }
 	    else
 	    {
-		// DBX 3.x works better
+		// Issue `frame' command
 		string reply = 
 		    gdb_question(gdb->frame_command(
 			itostring(count - cbs->item_position + 1)));
@@ -3782,7 +3782,8 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 		    post_gdb_busy(w);
 		    return;
 		}
-		
+
+		// Get current file
 		string file = gdb_question("file");
 
 		// Simple sanity check
@@ -3795,11 +3796,31 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 
 		if (file != "")
 		{
-		    string listing = gdb_question("list");
-		    int line = atoi(listing);
+		    // Get current line
+		    int line = 0;
+
+		    // Check if line was contained in `frame' reply
+		    PosBuffer buffer;
+		    buffer.filter(reply);
+		    if (buffer.pos_found())
+		    {
+			string line_s = buffer.get_position();
+			if (line_s.contains(':'))
+			    line_s = line_s.after(':');
+			line = atoi(line_s);
+		    }
+
+		    if (line == 0)
+		    {
+			// No? Get the current line via `list'
+			string listing = gdb_question("list");
+			line = atoi(listing);
+		    }
+
 		    if (line >= 1)
-			pos = pos + ":" + itostring(line);
+			pos = file + ":" + itostring(line);
 		}
+		
 	    }
 
 	    if (pos != "")
@@ -3823,7 +3844,7 @@ void SourceView::refresh_stack_frames()
 	process_frame(frame);
     }
 }
-    
+
 void SourceView::ViewStackFramesCB(Widget, XtPointer, XtPointer)
 {
     refresh_stack_frames();
