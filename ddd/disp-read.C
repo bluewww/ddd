@@ -80,9 +80,13 @@ bool is_single_display_cmd (const string& cmd, GDBAgent *gdb)
 
 bool is_nop_cmd(const string& cmd)
 {
+    // All these command have no effect on DDD state...
     static regex RXnop_cmd("[ \t]*(echo|help|show|info)([ \t]+.*)?");
 
-    return cmd.matches(RXnop_cmd);
+    // ... except for this one.
+    static regex RXop_cmd("[ \t]*(info[ \t]+line)([ \t]+.*)?");
+
+    return cmd.matches(RXnop_cmd) && !cmd.matches(RXop_cmd);
 }
 
 // ***************************************************************************
