@@ -1012,6 +1012,8 @@ void DDDRestartCB(Widget w, XtPointer, XtPointer call_data)
 
 static void debug_ddd(bool core_dumped)
 {
+    StatusDelay delay("Invoking Debug Window");
+
     string term_command = app_data.term_command;
     term_command.gsub("Execution", "Debug");
     term_command.gsub("@FONT@", make_font(app_data, FixedWidthDDDFont));
