@@ -300,7 +300,7 @@ Volunteers for fixing these and other bugs are welcome!
 139. With Solaris 2.5.1, DDD recurses endlessly in glob_filename().
      Reported by Deepak Mulchandani <dmm@jurassic.eng.sun.com>
 
-144. Warren Nagourney <warren@dirac.phys.washington.edu> says: When I
+144* Warren Nagourney <warren@dirac.phys.washington.edu> says: When I
      push on the upper or lower scrolling arrow in the source window,
      occasionally the scrolling will go out of control and scroll all
      the way to the top or bottom of the window before it scrolls to
