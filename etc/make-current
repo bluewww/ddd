@@ -76,9 +76,11 @@ day=`date +"%d"`
 date=$year-$month-$day
 
 if $final; then
-  # This is a final release; we use the expiration date from the file.
-  expires=`co -p $CVSROOT/ddd/ddd/configure.in | grep '^EXPIRES=' |cut -d= -f2`
-  date=`co -p $CVSROOT/ddd/ddd/configure.in | grep '^VERSION=' | cut -d= -f2`
+  # This is a final release; use the expiration date from the file.
+  eval `co -p $CVSROOT/ddd/ddd/configure.in 2> /dev/null | \
+        egrep '^(EXPIRES|VERSION)='`
+  expires=$EXPIRES
+  date=$VERSION
 else
   # Let this release expire in 30-60 days.  It is unlikely we won't make
   # any changes until then.
