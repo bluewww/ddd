@@ -4445,7 +4445,7 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
 	    {
 		if (dn->clustered() == nr)
 		{
-		    dn->cluster();
+		    disp_graph->uncluster(dn);
 		    dn->selected() = true;
 		    unclustered = true;
 		}
@@ -5674,7 +5674,7 @@ void DataDisp::set_cluster_displays(bool value)
 
 	    if (target_cluster == 0)
 		target_cluster = current_cluster();
-	    dn->cluster(target_cluster);
+	    disp_graph->cluster(dn, target_cluster);
 	}
 
 	if (target_cluster != 0)
@@ -5738,7 +5738,7 @@ void DataDisp::unclusterSelectedCB(Widget, XtPointer, XtPointer)
 		cluster->set_last_refresh();
 
 	    // Uncluster display
-	    dn->cluster();
+	    disp_graph->uncluster(dn);
 	}
     }
 
@@ -5793,7 +5793,7 @@ void DataDisp::clusterSelectedCB(Widget, XtPointer, XtPointer)
 	 dn = disp_graph->next(ref))
     {
 	if (!dn->is_user_command() && selected(dn))
-	    dn->cluster(target_cluster);
+	    disp_graph->cluster(dn, target_cluster);
     }
 
     refresh_graph_edit();

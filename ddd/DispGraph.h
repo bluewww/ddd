@@ -113,6 +113,13 @@ public:
     bool make_active (int disp_nr);
     bool make_inactive (int disp_nr);
 
+    // (Un)cluster display DN
+    void cluster(DispNode *dn, int cluster);
+    inline void uncluster(DispNode *dn)
+    {
+	cluster(dn, 0);
+    }
+
     // Determine default positions for NEW_NODE
     BoxPoint default_pos(DispNode *new_node, Widget w, 
 			 int depends_on = 0) const;
