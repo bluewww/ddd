@@ -72,7 +72,7 @@ protected:
 
 public:
     LineBox(BoxCoordinate linethickness = 1, const char *t = "LineBox"):
-	PrimitiveBox(BoxSize(0,0), BoxExtend(true, true), t),
+	PrimitiveBox(BoxSize(0,0), BoxExtend(1, 1), t),
 	_linethickness(linethickness)
     {}
     

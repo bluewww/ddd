@@ -41,14 +41,14 @@
 class TrueBox: public SquareBox {
 public:
     DECLARE_TYPE_INFO
-    TrueBox(): SquareBox(true) {}
+    TrueBox(): SquareBox(1) {}
 };
 
 // False
 class FalseBox: public SquareBox {
 public:
     DECLARE_TYPE_INFO
-    FalseBox(): SquareBox(false) {}
+    FalseBox(): SquareBox(0) {}
 };
 
 // Zero
