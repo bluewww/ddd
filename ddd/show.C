@@ -70,9 +70,9 @@ extern "C" int pclose(FILE *stream);
 // Show version
 //-----------------------------------------------------------------------------
 
-void show_version()
+void show_version(ostream& os)
 {
-    cout << "@(#)" DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
+    os << "@(#)" DDD_NAME " " DDD_VERSION " (" DDD_HOST "), "
 	"Copyright (C) 1997 TU Braunschweig.\n" + 4;
 }
 
@@ -80,7 +80,7 @@ void show_version()
 // Show invocation
 //-----------------------------------------------------------------------------
 
-void show_invocation(DebuggerType type)
+void show_invocation(DebuggerType type, ostream& os)
 {
     string gdb_version = "";
     string options     = "";
@@ -209,8 +209,8 @@ void show_invocation(DebuggerType type)
 	break;
     }
 
-    show_version();
-    cout << gdb_version <<
+    show_version(os);
+    os << gdb_version <<
 	"This is DDD, the data display debugger, based on "
 	<< base << "\n" << 
 	"Usage:\n"
@@ -272,10 +272,10 @@ void show_invocation(DebuggerType type)
 #define _stringize(x) #x
 #define stringize(x) _stringize(x)
 
-void show_configuration()
+void show_configuration(ostream& os)
 {    
-    show_version();
-    cout << 
+    show_version(os);
+    os << 
 	// Compilation stuff
 	"@(#)Compiled with "
 #ifdef __GNUC__
@@ -317,8 +317,8 @@ void show_configuration()
 #if !RUNTIME_REGEX
 	", compile-time regexps"
 #endif
-	"\n" + 4;
-    cout << config_info;
+	"\n" + 4
+       << config_info;
 }
 
 

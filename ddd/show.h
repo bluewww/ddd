@@ -40,9 +40,9 @@
 #include <iostream.h>
 
 // Help texts
-void show_invocation(DebuggerType type);
-void show_version();
-void show_configuration();
+void show_invocation(DebuggerType type, ostream& os);
+void show_version(ostream& os);
+void show_configuration(ostream& os);
 void show(int (*formatter)(ostream& os));
 
 // WWW page
