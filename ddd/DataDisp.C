@@ -3240,9 +3240,6 @@ void DataDisp::refresh_builtin_user_displays()
 	if (!dn->is_user_command())
 	    continue;
 
-	if (is_cluster(dn) && !needs_refresh(dn))
-	    continue;
-
 	const string& cmd = dn->user_command();
 	string answer = NO_GDB_ANSWER;
 
@@ -3255,6 +3252,9 @@ void DataDisp::refresh_builtin_user_displays()
 	} 
 	else if (is_builtin_user_command(cmd))
 	{
+	    if (is_cluster(dn) && !needs_refresh(dn))
+		continue;
+
 	    if (s == 0)
 		s = new ProgressMeter("Updating clusters");
 
