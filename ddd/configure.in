@@ -160,7 +160,8 @@ if test "$ddd_check_both" = 1; then
   LIBS="$LIBS -lsocket -lnsl"
   AC_CHECK_FUNC(accept, checknsl=0, LIBS=$ddd_old_libs)
 fi
-AC_CHECK_FUNC(gethostbyname, , AC_CHECK_LIB(nsl, main, [LIBS="$LIBS -lnsl"]))
+AC_CHECK_LIB(nsl, gethostbyname, LIBS="$LIBS -lnsl")
+AC_CHECK_FUNC(gethostbyname)
 dnl
 dnl If we use gcc or g++, link with -lg++ if it exists
 if test "$GXX" = yes; then
