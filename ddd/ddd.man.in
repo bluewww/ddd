@@ -281,7 +281,7 @@ See `\fBEntering Commands\fR', below, for details on entering commands.
 .SS "Are You Stuck?"
 .\"
 In case you're stuck, try `\fBHelp | What Now?\fR' (the `\fBWhat
-Now\fR' item in the `\fBHelp\fR' menu) or press \fBShift+F1\fR.
+Now\fR' item in the `\fBHelp\fR' menu) or press \fBCtrl+F1\fR.
 Depending on the current state, \s-2@DDD@\s+2 will give you some hints
 on what you can do.
 .\"
