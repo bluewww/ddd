@@ -280,11 +280,14 @@ void DispValue::init(string& value, DispValueType given_type)
     if (mytype == UnknownType)
 	mytype = determine_type(value);
 
+    bool ignore_repeats = (myparent != 0 && myparent->type() == Array);
+
     switch (mytype) {
     case Simple:
 	{
 	    v.simple = new SimpleDispValue;
-	    v.simple->value = read_simple_value(value, depth());
+	    v.simple->value = 
+		read_simple_value(value, depth(), ignore_repeats);
 #if LOG_CREATE_VALUES
 	    clog << mytype << ": " << quote(v.simple->value) << "\n";
 #endif
@@ -924,6 +927,8 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
     if (new_type == UnknownType)
 	new_type = determine_type(value);
 
+    bool ignore_repeats = (myparent != 0 && myparent->type() == Array);
+
     if (mytype != new_type)
     {
 	// Type changed -- re-initialize.  The most common cause for
@@ -942,7 +947,8 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
     switch (mytype) {
     case Simple:
     {
-	string new_value = read_simple_value(value, depth());
+	string new_value = 
+	    read_simple_value(value, depth(), ignore_repeats);
 	if (v.simple->value != new_value) {
 	    v.simple->value = new_value;
 	    changed = was_changed = true;

@@ -63,7 +63,7 @@ DispValueType determine_type (string value);
 string read_token (string& value);
 
 // Read simple element from VALUE
-string read_simple_value (string& value, int depth);
+string read_simple_value (string& value, int depth, bool ignore_repeats);
 
 // Read pointer from VALUE
 string read_pointer_value (string& value);

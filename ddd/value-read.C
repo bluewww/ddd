@@ -1,8 +1,9 @@
 // $Id$
 // Read variable values in string representation
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
+// and Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the DDD Library.
 // 
@@ -384,7 +385,7 @@ string read_token(string& value)
 }
 
 // Read a simple value from VALUE.
-string read_simple_value(string& value, int depth)
+string read_simple_value(string& value, int depth, bool ignore_repeats)
 {
     // Read values up to [)}],\n]
 
@@ -402,9 +403,12 @@ string read_simple_value(string& value, int depth)
     {
 	ret += read_token(value);
 
-	// Don't read in `<repeats N times>'
-	if (value.contains('<', 0) && value.contains(rxrepeats, 0))
-	    break;
+	if (ignore_repeats)
+	{
+	    // Don't read in `<repeats N times>'
+	    if (value.contains('<', 0) && value.contains(rxrepeats, 0))
+		break;
+	}
     }
 
     strip_final_blanks(ret);
@@ -416,7 +420,7 @@ string read_simple_value(string& value, int depth)
 // Read a pointer value.
 string read_pointer_value (string& value)
 {
-    return read_simple_value(value, 1);
+    return read_simple_value(value, 1, false);
 }
 
 // Read the beginning of an array from VALUE.  Return false iff failure.
