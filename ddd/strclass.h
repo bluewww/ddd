@@ -570,15 +570,8 @@ protected:
 
 private:
     // Don't get constructed or assigned from int
-    string(int) : rep(0)
-#if STRING_CHECK_CONSUME
-	, consume(false)
-#endif
-    { 
-	error("init from int");
-    }
-    string& operator = (int)             { error("int assign"); return *this; }
-
+    string(int);
+    string& operator = (int);
 public:
     // Constructors and assignment
     string();
