@@ -250,19 +250,11 @@ Volunteers for these and other projects are welcome!
 
 102. Have a WWW tutorial for DDD.  Any volunteers?
 
-104* Use DDD to do debugging where gdb and the program under test
-     would be remote, but the source would be local.  As an
-     alternative, try the local file if the remote source cannot be
-     found.  (A `Source info' window would be helpful here, stating
-     which source was loaded and how)
-
 105* Thread support. Siddharth Ram <srram@qualcomm.com> and James
      Njeru <njeru@oec.com> state: It should be easy to add some sort
      of menu choice (based on the dbx, xdb, gdb in use) to switch
      threads.  Another useful feature is allowing one to choose to
      follow child forked processes or not.
-
-107. Have toolbar tips, as in NetScape 3.0 or WinWord.
 
 108. David M. Karr <dkarr@nmo.gtegsc.com> suggests:
      In the SparcWorks debugger, if I use the "list" command at the
