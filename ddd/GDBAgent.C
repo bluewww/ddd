@@ -612,7 +612,7 @@ string GDBAgent::requires_reply (const string& answer)
 
 // ***************************************************************************
 // Normalize answer - handle control characters, remove comments and prompt
-void GDBAgent::normalize(string& answer)
+void GDBAgent::normalize_answer(string& answer) const
 {
     strip_control(answer);
     strip_dbx_comments(answer);
@@ -628,7 +628,7 @@ void GDBAgent::normalize(string& answer)
 }
 
 // Remove GDB prompt
-void GDBAgent::cut_off_prompt(string& answer)
+void GDBAgent::cut_off_prompt(string& answer) const
 {
     switch (type())
     {
@@ -644,7 +644,7 @@ void GDBAgent::cut_off_prompt(string& answer)
 }
 
 // Strip annoying DBX comments
-void GDBAgent::strip_dbx_comments(string& s)
+void GDBAgent::strip_dbx_comments(string& s) const
 {
     if (type() == DBX)
     {
@@ -746,7 +746,7 @@ void GDBAgent::strip_dbx_comments(string& s)
 }
 
 // Strip control characters
-void GDBAgent::strip_control(string& answer)
+void GDBAgent::strip_control(string& answer) const
 {
     if (type() == XDB)
 	strip_xdb_control(answer);
@@ -805,7 +805,7 @@ void GDBAgent::strip_control(string& answer)
 // \e\[\d\d[;1H]
 // \e\[[\d]m
 // \e\[[JK]
-void GDBAgent::strip_xdb_control(string &answer)
+void GDBAgent::strip_xdb_control(string &answer) const
 {
     if (type() != XDB)
 	return;
@@ -858,7 +858,7 @@ void GDBAgent::strip_xdb_control(string &answer)
 }
 
 void GDBAgent::bad_xdb_control(const string &s, int p, char c, 
-			       const char *expecting)
+			       const char *expecting) const
 {
     (void) s;			// Use them
     (void) p;
@@ -1005,7 +1005,7 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	else
 	{
             // Received complete answer (GDB issued prompt)
-	    gdb->normalize(answer);
+	    gdb->normalize_answer(answer);
 
 	    if (answer != "" && gdb->_on_answer != 0)
 		gdb->_on_answer (answer, gdb->_user_data);
@@ -1061,7 +1061,7 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	{
             // Received complete answer (GDB issued prompt)
 	    gdb->complete_answer += answer;
-	    gdb->normalize(gdb->complete_answer);
+	    gdb->normalize_answer(gdb->complete_answer);
 
             // Set new state
 	    gdb->state = ReadyWithPrompt;
@@ -1084,7 +1084,7 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	{
             // Received complete answer (GDB issued prompt)
 	    gdb->complete_answers[gdb->qu_index] += answer;
-	    gdb->normalize(gdb->complete_answers[gdb->qu_index]);
+	    gdb->normalize_answer(gdb->complete_answers[gdb->qu_index]);
 
             // Set new state
 	    gdb->qu_index++;
@@ -1736,41 +1736,58 @@ string GDBAgent::assign_command(string var, string expr) const
     return cmd + " " + expr;
 }
 
+
+void GDBAgent::normalize_address(string& addr) const
+{
+    // In C, hexadecimal integers are specified by a leading "0x".
+    // In Modula-2, hexadecimal integers are specified by a trailing "H".
+    // In Chill, hexadecimal integers are specified by a leading "H'".
+    addr.downcase();
+    if (addr.contains("0", 0))
+	addr = addr.after("0");
+    if (addr.contains("x", 0))
+	addr = addr.after("x");
+    if (addr.contains("h'", 0))
+	addr = addr.after("h'");
+    if (addr.contains("h", -1))
+	addr = addr.before(int(addr.length()) - 1);
+
+    if (addr != "")
+    {
+	switch (program_language())
+	{
+	case LANGUAGE_C:
+	case LANGUAGE_FORTRAN:
+	case LANGUAGE_OTHER:
+	    addr.prepend("0x");
+	    break;
+
+	case LANGUAGE_CHILL:
+	    addr = "H'0" + upcase(addr);
+	    break;
+
+	case LANGUAGE_PASCAL:
+	    addr = "0" + upcase(addr) + "H";
+	    break;
+	}
+    }
+}
+
 // Return disassemble command
-string GDBAgent::disassemble_command(string pc) const
+string GDBAgent::disassemble_command(string start, string end) const
 {
     if (gdb->type() != GDB)
 	return "";
 
-    // In C, hexadecimal integers are specified by a leading "0x".
-    // In Modula-2, hexadecimal integers are specified by a trailing "H".
-    // In Chill, hexadecimal integers are specified by a leading "H'".
+    normalize_address(start);
+    string cmd = "disassemble " + start;
 
-    pc.downcase();
-    if (pc.contains("0", 0))
-	pc = pc.after("0");
-    if (pc.contains("x", 0))
-	pc = pc.after("x");
-    if (pc.contains("h'", 0))
-	pc = pc.after("h'");
-    if (pc.contains("h", -1))
-	pc = pc.before(int(pc.length()) - 1);
-
-    switch (program_language())
+    if (end != "")
     {
-    case LANGUAGE_C:
-    case LANGUAGE_FORTRAN:
-    case LANGUAGE_OTHER:
-	return "disassemble 0x" + pc;
-
-    case LANGUAGE_CHILL:
-	return "disassemble H'0" + upcase(pc);
-
-    case LANGUAGE_PASCAL:
-	return "disassemble 0" + upcase(pc) + "H";
+	normalize_address(end);
+	cmd += " " + end;
     }
-
-    return "";			// All other languages
+    return cmd;
 }
 
 

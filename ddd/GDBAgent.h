@@ -394,7 +394,8 @@ public:
     string address_expr(string expr) const;         // GDB: "&EXPR"
     string info_locals_command() const;	            // GDB: "info locals"
     string info_args_command() const;	            // GDB: "info args"
-    string disassemble_command(string pc) const;    // GDB: "disassemble PC"
+    string disassemble_command(string start, string end = "") const;
+                                                // GDB: "disassemble START END"
     string make_command(string target) const;       // GDB: "make TARGET"
     string jump_command(string pc) const;           // GDB: "jump PC"
     string regs_command(bool all = true) const;	    // GDB: "info registers"
@@ -451,14 +452,15 @@ private:
     bool ends_with_secondary_prompt(const string& answer);
     string requires_reply(const string& answer);
 
-    void cut_off_prompt(string& answer);
-    void strip_dbx_comments(string& answer);
-    void strip_control(string& answer);
-    void strip_xdb_control(string& answer);
-    static void bad_xdb_control(const string &s, int p, char c, 
-				const char *expecting);
+    void cut_off_prompt(string& answer) const;
+    void strip_dbx_comments(string& answer) const;
+    void strip_control(string& answer) const;
+    void strip_xdb_control(string& answer) const;
+    void bad_xdb_control(const string &s, int p, char c, 
+			 const char *expecting) const;
 
-    void normalize(string& answer);
+    void normalize_answer(string& answer) const;
+    void normalize_address(string& addr) const;
 
 protected:
     string complete_answer;
