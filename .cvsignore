@@ -16,8 +16,10 @@ aclocal.m4
 autom4te.cache
 confdefs.h
 config.cache
+config.guess
 config.log
 config.status
+config.sub
 configure
 ddd*.spec
 ddd-*.tar.gz
@@ -31,6 +33,7 @@ linux-lesstif-current
 linux-motif
 ltconfig
 ltmain.sh
+missing
 sparc-sun-sunos4.1.4
 sun
 sun-lesstif
