@@ -134,7 +134,7 @@ static void showDocumentationInStatusLine(const MString& doc)
 // Default help texts (especially buttons)
 //-----------------------------------------------------------------------------
 
-const int help_timeout = 1;	// Timeout for short queries (in s)
+const int help_timeout = 2;	// Timeout for short queries (in s)
 
 static string gdbHelpName(Widget widget)
 {
@@ -337,16 +337,25 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
     else
     {
 	// Button tip
-	tip = gdbHelp(gdbHelpName(widget));
+	string help_name = gdbHelpName(widget);
+	tip = gdbHelp(help_name);
 	if (tip == NO_GDB_ANSWER)
 	    return MString(0, true);
+	if (tip.contains(help_name, 0))
+	    tip = tip.after(help_name);
+	if (tip.contains(" # "))
+	    tip = tip.after(" # ");
+	if (tip.contains(" - "))
+	    tip = tip.after(" - ");
+
+	tip = tip.from(rxalpha);
+	if (tip.length() > 0)
+	    tip = toupper(tip[0]) + tip.after(0);
+
 	if (tip.contains('\n'))
 	    tip = tip.before('\n');
 	if (tip.contains('.'))
 	    tip = tip.before('.');
-
-	static regex RXuppercase("[A-Z]");
-	tip = tip.from(RXuppercase);
     }
 
     return MString(tip, "rm");
