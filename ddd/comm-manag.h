@@ -58,9 +58,6 @@ void send_gdb_command(string cmd, Widget origin,
 		      OQCProc callback, OACProc extra_callback, void *data,
 		      bool echo, bool verbose, bool prompt, bool check);
 
-// Send user input CMD to GDB (unchanged).
-void send_gdb_ctrl(string cmd, Widget origin = 0);
-
 // Return FALSE if ANSWER is an error message indicating an unknown command
 bool is_known_command(const string& answer);
 

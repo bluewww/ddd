@@ -800,29 +800,6 @@ void init_session(const string& restart, const string& settings,
 
 
 //-----------------------------------------------------------------------------
-// Send the CMD to GDB, without any special processing.
-//-----------------------------------------------------------------------------
-
-void send_gdb_ctrl(string cmd, Widget origin)
-{
-    CmdData* cmd_data      = new CmdData(origin, TryFilter);
-    cmd_data->command      = cmd;
-    cmd_data->disp_buffer  = new DispBuffer;
-    cmd_data->pos_buffer   = new PosBuffer;
-    cmd_data->new_exec_pos = true;
-    cmd_data->origin       = origin;
-
-    if (cmd == '\004' && gdb_input_at_prompt)
-	gdb_is_exiting = true;
-
-    bool send_ok = gdb->send_user_ctrl_cmd(cmd, cmd_data);
-    if (!send_ok)
-	post_gdb_busy(origin);
-}
-
-
-
-//-----------------------------------------------------------------------------
 // Handle DDD commands
 //-----------------------------------------------------------------------------
 
@@ -888,6 +865,19 @@ void send_gdb_command(string cmd, Widget origin,
 {
     string echoed_cmd = cmd;
 
+    // Setup extra command information
+    CmdData *cmd_data       = new CmdData(origin);
+    cmd_data->command       = cmd;
+    cmd_data->disp_buffer   = new DispBuffer;
+    cmd_data->pos_buffer    = new PosBuffer;
+    cmd_data->user_callback = callback;
+    cmd_data->recorded      = gdb->recording();
+
+    cmd_data->user_data    = data;
+    cmd_data->user_verbose = verbose;
+    cmd_data->user_prompt  = prompt;
+    cmd_data->user_check   = check;
+
     // Pass control commands unprocessed to GDB.
     if (cmd.length() == 1 && iscntrl(cmd[0]))
     {
@@ -905,7 +895,16 @@ void send_gdb_command(string cmd, Widget origin,
 	if (cmd == "\004")
 	    command_was_cancelled = true;
 
-	send_gdb_ctrl(cmd, origin);
+	cmd_data->new_exec_pos = true;
+	cmd_data->origin       = origin;
+
+	if (cmd == '\004' && gdb_input_at_prompt)
+	    gdb_is_exiting = true;
+
+	bool send_ok = gdb->send_user_ctrl_cmd(cmd, cmd_data);
+	if (!send_ok)
+	    post_gdb_busy(origin);
+
 	return;
     }
 
@@ -934,26 +933,19 @@ void send_gdb_command(string cmd, Widget origin,
 
 	if (!send_ok)
 	    post_gdb_busy(origin);
+
+	delete cmd_data;
 	return;
     }
 
     command_was_cancelled = false;
     bool next_input_goes_to_debuggee = false;
 
-    // Setup extra command information
-    CmdData *cmd_data       = new CmdData(origin);
-    cmd_data->command       = cmd;
-    cmd_data->disp_buffer   = new DispBuffer;
-    cmd_data->pos_buffer    = new PosBuffer;
-    cmd_data->user_callback = callback;
-    cmd_data->recorded      = gdb->recording();
-
     // LEAK: Check whether EXTRA_DATA is always deleted
     ExtraData *extra_data = new ExtraData;
     extra_data->command       = cmd;
     extra_data->user_callback = extra_callback;
     extra_data->user_data     = data;
-
 
     // Breakpoints may change any time
     if (gdb->has_volatile_breakpoints())
@@ -1188,7 +1180,7 @@ void send_gdb_command(string cmd, Widget origin,
 	extra_data->refresh_threads     = false;
 	extra_data->refresh_addr        = false;
     }
-    else if (is_running_cmd(cmd, gdb) || is_pc_cmd(cmd))
+    else if (is_running_cmd(cmd) || is_pc_cmd(cmd) || is_display_cmd(cmd))
     {
 	// New displays and new exec position
 	if (gdb->has_display_command())
