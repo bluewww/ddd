@@ -271,8 +271,10 @@ dnl
 dnl
 dnl Check for -lXintl library.  Lutz Kittler <kittler@sse-erfurt.de> says
 dnl that DLD-Linux with CDE wants `-lXintl' to refine `Xlcmbcurmax'.
+dnl Guenther Roehrich <guenther@studbox.uni-stuttgart.de> says that
+dnl we must check for `_Xlcmbcurmax' instead of `Xlcmbcurmax'.
 dnl
-AC_CHECK_LIB(Xintl, Xlcmbcurmax, X11_LIBS="${X11_LIBS} -lXintl",,${X11_LIBS})
+AC_CHECK_LIB(Xintl, _Xlcmbcurmax, X11_LIBS="${X11_LIBS} -lXintl",,${X11_LIBS})
 dnl
 dnl
 dnl Check for -lipc library.  SCO unix is said to want that.
