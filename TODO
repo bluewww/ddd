@@ -387,8 +387,21 @@ Volunteers for these and other projects are welcome!
 270 The source indent amount should be set to 0.  Check the failing
     assertion!
 
-271 Have a crosshair cursor for the data window.
-
 272 Have a resource that controls whether EOF terminates DDD.
 
-273 (Insert new project ideas here)
+273 JORGE HERNANDO <hernando@cnea.edu.ar> wants
+    1)  when an array is marked for display, how about a popup where one
+    writes the indexes ranges?, e.g. 5-8,* in order to show 
+    array(i,j), 5<=i<=8, the whole range of j. Also, with multidiemnsional
+    arrays is easy to be confused about which value we are looking at. Would
+    it be possible to show (together with the array value) the indexes 
+    values (in another font, size, color, etc)?
+    
+    2)  It will also be very handy the ability to plot one (or several)
+    variable against another. Nothing fancy, the barest skeleton of a plot.
+    This will allow to have a visual overview of the program behavior 
+    and will be a great help to pinpoint troublesome code.
+
+274 Write log to channel3; `--trace' would simply redirect it.
+
+275 (Insert new project ideas here)

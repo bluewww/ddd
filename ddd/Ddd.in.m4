@@ -3321,6 +3321,9 @@ Shift<Key>Tab:	   ddd-prev-tab-group()\n\
 Ddd*graph_edit.highlightOnEnter:	On
 Ddd*graph_edit.navigationType:		TAB_GROUP
 
+! Set this to have a crosshair cursor
+! Ddd*graph_edit.defaultCursor: 		crosshair
+
 define(GRAPH_EDIT_HELP,[\
 WIDGET(Data Window)\n\
 \n\
