@@ -628,13 +628,16 @@ void GDBManualCB(Widget w, XtPointer, XtPointer)
 {
     StatusMsg msg("Invoking " + gdb->title() + " manual browser");
 
-    string cmd = "man " + downcase(gdb->title()) + " 2>&1";
+    string key = downcase(gdb->title());
+    if (gdb->type() == PERL)
+	key = "perldebug";
+
+    string cmd = "man " + key + " 2>&1";
 
     if (gdb->type() == GDB)
     {
 	// Try `info' first
-	cmd.prepend("info --subnodes -o - -f " 
-		    + downcase(gdb->title()) + " 2> /dev/null || ");
+	cmd.prepend("info --subnodes -o - -f " + key + " 2> /dev/null || ");
     }
 
     FILE *fp = popen(sh_command(cmd), "r");
