@@ -232,6 +232,53 @@ static string gdbHelp(string command)
     return help;
 }
 
+
+// Return DBX 3.2 one-liner help.
+static string gdbTip(string command)
+{
+    static bool entered = false;
+    if (entered)
+	return NO_GDB_ANSWER;
+    entered = true;
+
+    string tip = NO_GDB_ANSWER;
+
+    if (gdb->type() == DBX)
+    {
+	static string commands = NO_GDB_ANSWER;
+	if (commands == NO_GDB_ANSWER)
+	{
+	    commands = gdb_question("commands", -1, true);
+	    if (!is_known_command(commands))
+		commands = "";
+	}
+
+	int start = 0;
+	for (;;)
+	{
+	    int i = commands.index(command, start);
+	    if (i < 0)
+		break;
+	    while (i > 0 
+		   && commands[i - 1] != '\n' 
+		   && isspace(commands[i - 1]))
+		i--;
+	    if (i == 0 || commands[i - 1] == '\n')
+	    {
+		tip = commands.from(i);
+		tip = tip.before('\n');
+		break;
+	    }
+
+	    start = i + 1;
+	}
+    }
+
+    entered = false;
+    return tip;
+}
+
+
 static string gdbSettingsValue(string command)
 {
     switch (gdb->type())
@@ -452,7 +499,11 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
 
     string help_name = gdbHelpName(widget);
 
-    string tip = gdbHelp(help_name);
+    string tip = NO_GDB_ANSWER;
+    if (tip == NO_GDB_ANSWER)
+	tip = gdbTip(help_name);
+    if (tip == NO_GDB_ANSWER)
+	tip = gdbHelp(help_name);
     if (tip == NO_GDB_ANSWER)
 	return MString(0, true);
 
@@ -460,9 +511,13 @@ static MString gdbDefaultButtonText(Widget widget, XEvent *,
     if (tip.length() > 80)
 	tip = tip.before(80);
 
+    read_leading_blanks(tip);
     if (tip.contains(help_name, 0))
+    {
 	tip = tip.after(help_name);
-
+	read_leading_blanks(tip);
+    }
+    
     strip_through(tip, " # ");
     strip_through(tip, " - ");
 
@@ -557,8 +612,8 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 		else
 		{
 		    XtSetSensitive(button, is_known_command(answer));
-		    button = 0;          // Don't process this one again
-		    next_invocation = 5; // Process next button in 5ms
+		    button = 0;	           // Don't process this one again
+		    next_invocation = 100; // Process next button in 100ms
 		}
 
 		verify_id = XtAppAddTimeOut(app_context, next_invocation,
