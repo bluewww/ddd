@@ -117,9 +117,6 @@ Volunteers for fixing these and other bugs are welcome!
     nb - does _not_ generate the fault if the edit menu is not torn
     off.
 
-306*`graph undisplay -3 -4', with 1 being the only data display,
-    prompts for `delete all displays?', but does not delete any.
-
 307 Marco Hess <marcoh@senet.com.au> says that sometimes, the source
     window locks in scroll mode until it reaches the top or bottom of
     the file.

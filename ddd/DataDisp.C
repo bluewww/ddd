@@ -3736,18 +3736,13 @@ void DataDisp::delete_displayOQC (const string& answer, void *data)
 
     if (gdb->type() == GDB && answer.contains("(y or n)"))
     {
-	// The `undisplay' command required confirmation.
-	// Unfortunately, GDB gives us no notice whether the
-	// `undisplay' was successful, so we refresh the info
-	// explicitly, deleting all displays not listed.
+	// The `undisplay' command required confirmation.  Since GDB
+	// does not tell us the outcome, we must check the user reply.
 
-	string info_display = gdb_question(gdb->info_display_command());
-
-	if (info_display != NO_GDB_ANSWER)
+	string reply = lastUserReply();
+	if (!reply.contains('y', 0))
 	{
-	    process_info_display(info_display, false);
-
-	    // No further deletions, please
+	    // Deletion was canceled
 	    static IntArray empty;
 	    info->display_nrs = empty;
 	}
@@ -3776,12 +3771,6 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
 	    disp_graph->del(display_nrs[i]);
     }
 
-    if (disp_graph->firstVisibleNode() == 0)
-    {
-	// Deleted last display
-	close_data_window();
-    }
-
     if (display_nrs.size() > 0)
     {
 	// Refresh editor
@@ -3790,6 +3779,12 @@ void DataDisp::deletion_done (IntArray& display_nrs, bool do_prompt)
 	// Refresh addresses now
 	force_check_aliases = true;
 	refresh_addr();
+    }
+
+    if (disp_graph->firstVisibleNode() == 0)
+    {
+	// Deleted last visible display
+	close_data_window();
     }
 
     if (do_prompt)

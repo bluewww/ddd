@@ -291,12 +291,21 @@ bool emptyCommandQueue()
     return commandQueue.isEmpty();
 }
 
+static string last_user_reply = "";
+
+// Last user reply to a `y or n' question
+string lastUserReply()
+{
+    return last_user_reply;
+}
+
 void gdb_command(const Command& c)
 {
     if (c.command.length() == 1 && iscntrl(c.command[0]) 
 	|| c.command == "no" || c.command == "yes")
     {
-	// User interaction -- execute immediately
+ 	// User interaction -- execute immediately
+	last_user_reply = c.command;
 	_gdb_command(c);
 
 	if (c.command != "yes")
