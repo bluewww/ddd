@@ -1178,7 +1178,7 @@ String SourceView::read_local(const string& file_name, long& length,
     if (statb.st_size == 0)
     {
 	if (!silent)
-	    post_warning("File " + quote(file_name) + " is empty.", 
+	    post_warning(file_name + ": empty file",
 			 "source_empty_warning", source_text_w);
     }
 
@@ -1523,7 +1523,7 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
 
 	int null_count = current_source.freq('\0');
 	if (null_count > 0 && !silent)
-	    post_warning("File " + quote(file_name) + " is a binary file.", 
+	    post_warning(file_name + ": binary file",
 			 "source_binary_warning", source_text_w);
     }
 
@@ -1538,11 +1538,11 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
     _pos_of_line.operator += (XmTextPosition(0));
     _pos_of_line.operator += (XmTextPosition(0));
 
-    for (int i = 0; i < int(current_source.length()) - 1; i++)
+    for (int i = 0; i < int(current_source.length()); i++)
 	if (current_source[i] == '\n')
 	    _pos_of_line.operator += (XmTextPosition(i + 1));
 
-    assert(_pos_of_line.size() == line_count + 1);
+    assert(_pos_of_line.size() == line_count + 2);
 
     if (current_source.length() == 0)
 	return -1;
@@ -1984,6 +1984,7 @@ bool SourceView::get_line_of_pos (Widget   w,
 		// Check if we're left of first non-blank source character
 		int first_nonblank = line_pos + indent_amount(text_w);
 		while (first_nonblank < next_line_pos
+		       && first_nonblank < current_text(text_w).length()
 		       && isspace(current_text(text_w)[first_nonblank]))
 		    first_nonblank++;
 		left_of_first_nonblank = (pos < first_nonblank);

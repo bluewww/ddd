@@ -4282,17 +4282,17 @@ Instead, the source was obtained from @GDB@ via the ``list'' command.
 
 Ddd*source_trunc_error_popup.title: @DDD@: Source Truncated
 Ddd*source_trunc_error*helpString:	\
-@rm The current source file could not be loaded entirely.
+@rm The given source file could not be loaded entirely.
 
 Ddd*source_empty_warning.title: @DDD@: Empty Source
 Ddd*source_empty_warning*helpString:	\
-@rm The current source file is empty. \n\
-This is very unusual for source files. \n\
+@rm The given source file contains no data.\n\
+This is very unusual for source files.\n\
 Please verify your file name and try again.
 
 Ddd*source_binary_warning.title: @DDD@: Binary Source
 Ddd*source_binary_warning*helpString:	\
-@rm The current source file contains NULL characters. \n\
+@rm The given source file contains NULL characters. \n\
 This is very unusual for source files. \n\
 You probably gave the name of a binary file. \n\
 Please verify the file name and try again.
