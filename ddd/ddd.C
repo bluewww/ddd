@@ -3343,7 +3343,7 @@ static void ddd_check_version()
 	std::ostringstream msg;
 	msg << "This " DDD_NAME " version (" DDD_VERSION ") has expired since "
 	    << ddd_expiration_date() << ".\n"
-	    << "Please upgrade to the recent " DDD_NAME " version.";
+	    << "Please upgrade to a more recent " DDD_NAME " version.";
 
 	post_warning(string(msg), "expired_warning");
     }

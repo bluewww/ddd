@@ -300,19 +300,23 @@ Reported by: Andrew Gaylard <apg@users.sf.net>
     "make LIBXM=/usr/lib/Motif1.2_R6/libXm.a")
 
     Starting ddd-3.3.9, "./configure CFLAGS=-O3 CXXFLAGS=-O3; make" should
-    be enough.  It seems that as features are added to ddd, the optimisation
-    level needs to increase...
+    be enough.  It seems that as features are added to DDD, the optimisation
+    level needs to increase, or linking fails...
 
     DDD-3.3.9 builds on HP-UX 11.11 (aka 11i), with some fiddling.  The
     following process may be overkill, but is known to work:
     - Install HP's December 2003 patchset.
     - Install the linker patch PHSS_28871 (or PHSS_28869 for 11.00).
+    - Install the HP-UX "developer's toolkit"; you can get it from
+        http://www.software.hp.com/portal/swdepot/displayProductInfo.do?productNumber=B3394BA
+      (many thanks to Chris Seip of HP for this link!)
     - Build and install binutils 2.14 (I used /usr/local).  I also installed
       m4, bison, flex, make and zlib.
-    - Build and install gcc-3.3.2, using
+    - Build and install gcc-3.3.2 or gcc-3.4.0, using
          ../configure --with-gnu-as --with-as=/usr/local/bin/as
     - At this point, DDD's "./configure; make; make install" will work.
 
+    If anyone's tried building DDD with HP's aCC, I'd like to hear from you.
 
 Irix
 ====
