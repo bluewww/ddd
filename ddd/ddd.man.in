@@ -855,11 +855,8 @@ a discussion.
 .\"
 .\"
 .\"
-.SS "Changing the Execution Position"
+.SS "Altering the Execution Position"
 .\"
-Note: Changing the execution position is available with \s-2GDB\s+2
-and \s-2XDB\s+2 only.
-.PP
 To resume execution at a different location, press the \fIleft mouse
 button\fR on the arrow and drag it to a different location.  The most
 common occasion to use this feature is to back up\(em\&perhaps with
@@ -870,14 +867,14 @@ executed, in order to examine its execution in more detail.
 .PP
 Moving the execution position does not change the current stack frame,
 or the stack pointer, or the contents of any memory location or any
-register other than the program counter.  If the new execution
-position is in a different function from the one currently executing,
-the results may be bizarre if the two functions expect different
-patterns of arguments or of local variables.  For this reason, moving
-the execution position requests confirmation if the specified line is
-not in the function currently executing.  However, even bizarre
-results are predictable if you are well acquainted with the
-machine-language code of your program.
+register other than the program counter.
+.PP
+Some inferior debuggers (notably \s-2GDB\s+2) allow you to set the new
+execution position into a different function from the one currently
+executing.  This may lead to bizarre results if the two functions
+expect different patterns of arguments or of local variables.  For
+this reason, moving the execution position requests confirmation if
+the specified line is not in the function currently executing.
 .PP
 After moving the execution position, click on the `\fBContinue\fR'
 button to resume execution.
