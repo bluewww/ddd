@@ -1,5 +1,5 @@
 // $Id$
-// DDD main program
+// DDD main program (and much more)
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus (luetke@ips.cs.tu-bs.de)
@@ -25,6 +25,7 @@
 // DDD is the GDB-based data display debugger.
 // Contact ddd@ips.cs.tu-bs.de for details.
 
+
 // This file does most of the application work in DDD.  That is:
 // - DDD main function
 // - Creation of Source and Data Windows
@@ -35,6 +36,87 @@
 // and more...
 //
 // (Some day, this file shall be split into several modules. - AZ)
+
+
+// :bug: n.  An unwanted and unintended property of a program or
+// piece of hardware, esp. one that causes it to malfunction.
+// Antonym of {feature}.  Examples: "There's a bug in the editor: 
+// it writes things out backwards."  "The system crashed because of  
+// a hardware bug."  "Fred is a winner, but he has a few bugs"
+// (i.e., Fred is a good guy, but he has a few personality problems).
+//    
+// Historical note: Admiral Grace Hopper (an early computing pioneer  
+// better known for inventing {COBOL}) liked to tell a story in  
+// which a technician solved a {glitch} in the Harvard Mark II
+// machine by pulling an actual insect out from between the contacts
+// of one of its relays, and she subsequently promulgated {bug} in
+// its hackish sense as a joke about the incident (though, as she was
+// careful to admit, she was not there when it happened).  For many
+// years the logbook associated with the incident and the actual bug 
+// in question (a moth) sat in a display case at the Naval Surface
+// Warfare Center (NSWC).  The entire story, with a picture of the 
+// logbook and the moth taped into it, is recorded in the "Annals
+// of the History of Computing", Vol. 3, No. 3 (July 1981),
+// pp. 285--286.
+//
+// The text of the log entry (from September 9, 1947), reads "1545
+// Relay #70 Panel F (moth) in relay.  First actual case of bug being
+//  found".  This wording establishes that the term was already
+// in use at the time in its current specific sense -- and Hopper
+// herself reports that the term `bug' was regularly applied to
+// problems in radar electronics during WWII.
+//
+// Indeed, the use of `bug' to mean an industrial defect was already  
+// established in Thomas Edison's time, and a more specific and rather
+// modern use can be found in an electrical handbook from 1896 
+// ("Hawkin's New Catechism of Electricity", Theo. Audel & Co.)
+// which says: "The term `bug' is used to a limited extent to
+// designate any fault or trouble in the connections or working of 
+// electric apparatus."  It further notes that the term is "said to  
+// have originated in quadruplex telegraphy and have been transferred
+// to all electric apparatus."
+//
+// The latter observation may explain a common folk etymology of the 
+// term; that it came from telephone company usage, in which "bugs in
+// a telephone cable" were blamed for noisy lines.  Though this
+// derivation seems to be mistaken, it may well be a distorted memory
+// of a joke first current among *telegraph* operators more than
+// a century ago!
+//
+// Actually, use of `bug' in the general sense of a disruptive event
+// goes back to Shakespeare!  In the first edition of Samuel Johnson's
+// dictionary one meaning of `bug' is "A frightful object; a 
+// walking spectre"; this is traced to `bugbear', a Welsh term for
+// a variety of mythological monster which (to complete the circle)
+// has recently been reintroduced into the popular lexicon through 
+// fantasy role-playing games.
+//
+// In any case, in jargon the word almost never refers to insects.
+// Here is a plausible conversation that never actually happened:
+//
+// "There is a bug in this ant farm!"
+//
+// "What do you mean?  I don't see any ants in it."
+//
+// "That's the bug."
+//
+// A careful discussion of the etymological issues can be found in a
+// paper by Fred R. Shapiro, 1987, "Entomology of the Computer Bug: 
+// History and Folklore", American Speech 62(4):376-378.
+//
+// [There has been a widespread myth that the original bug was moved
+// to the Smithsonian, and an earlier version of this entry so 
+// asserted.  A correspondent who thought to check discovered that the
+// bug was not there.  While investigating this in late 1990, your 
+// editor discovered that the NSWC still had the bug, but had 
+// unsuccessfully tried to get the Smithsonian to accept it -- and
+// that the present curator of their History of American Technology
+// Museum didn't know this and agreed that it would make a worthwhile
+// exhibit.  It was moved to the Smithsonian in mid-1991, but due to 
+// space and money constraints has not yet been exhibited.  Thus, the
+// process of investigating the original-computer-bug bug fixed it in
+// an entirely unexpected way, by making the myth true!  -- ESR]
+
 
 char ddd_rcsid[] =
     "$Id$";
@@ -1426,35 +1508,10 @@ string sh_command(string command)
 
 int main(int argc, char *argv[])
 {
-    // FIXING SOME BUGS ON A SUNDAY EVENING
-    // ====================================
-    //
-    // by David A. Lyons (dlyons@apple.com), January 1994
-    // (with apologies to Robert Frost)
-    //
-    // Whose bugs these are I think I know,
-    // But now he works at 3DO;
-    // He will not see me working here
-    // To fix his code and make it go.
-    //
-    // The saner folk must think it queer
-    // To trace without the source code near
-    // After a launch and frozen mouse
-    // The weirdest stack crawl of the year.
-    //
-    // I give my nodding head a shake
-    // To see if I can stay awake
-    // The only other thing to do
-    // Is find some more coffeine to take.
-    //
-    // This bug is pretty hard to nip,
-    // But I have other ones to fix,
-    // And tons to go before we ship,
-    // And tons to go before we ship.
-    //
-    // (Note: Hey, it's fiction.  Close to reality in spirit,
-    // but does not refer to a specific project, bug, Sunday, 
-    // or brand of soft drink.)
+
+    // As this is a C++ program, execution does not begin here.  At
+    // this point, all global data objects already have been properly
+    // initialized.
 
     // This one is required for error messages
     ddd_invoke_name = argc ? argv[0] : ddd_NAME;
@@ -5016,7 +5073,7 @@ void backward_characterAct(Widget, XEvent*, String*, Cardinal*)
 void set_lineAct(Widget, XEvent*, String* params, Cardinal* num_params)
 {
     string input = "";
-    if (num_params > 0)
+    if (num_params && *num_params > 0)
 	input = params[0];
     XmTextReplace(gdb_w, promptPosition, 
 		  XmTextGetLastPosition(gdb_w), String(input));
@@ -5349,7 +5406,7 @@ void complete_commandAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 	    string last_word = input.after(last_space);
 	    if (last_word.length() > 0 && last_word[0] != '\'')
 	    {
-		for (int i = 0; i < last_word.length(); i++)
+		for (int i = 0; i < int(last_word.length()); i++)
 		{
 		    char c = last_word[i];
 		    if (!isalnum(c) && c != '_')
@@ -5404,7 +5461,7 @@ static void _complete_argAct(Widget w,
     {
 	if (input.length() > 0 && input[0] != '\'')
 	{
-	    for (int i = 0; i < input.length(); i++)
+	    for (int i = 0; i < int(input.length()); i++)
 	    {
 		char c = input[i];
 		if (!isalnum(c) && c != '_')
@@ -5644,9 +5701,9 @@ void set_buttons_from_gdb(Widget buttons, string& text)
 		  XmNnumChildren, &num_children,
 		  NULL);
 
-    for (int i = 0; i < num_children; i++)
+    for (int i = 0; i < int(num_children); i++)
 	XtManageChild(children[i]);
-    for (i = 0; i < num_children; i++)
+    for (i = 0; i < int(num_children); i++)
     {
 	
 	Widget w = children[i];
@@ -6889,7 +6946,7 @@ void dddSetKeyboardFocusPolicyCB (Widget w, XtPointer client_data, XtPointer)
 	}
     }
 
-    string keyboardFocusPolicy = string("*") + XmNkeyboardFocusPolicy;
+    string keyboardFocusPolicy = string("*") + string(XmNkeyboardFocusPolicy);
     XrmDatabase target = XtDatabase(XtDisplay(w));
     switch (policy)
     {
@@ -7078,10 +7135,12 @@ static void save_options(Widget origin)
     switch (policy)
     {
     case XmPOINTER:
-	os << string_app_value(XmNkeyboardFocusPolicy, "POINTER") << "\n";
+	os << string_app_value(string(XmNkeyboardFocusPolicy), "POINTER") 
+	   << "\n";
 	break;
     case XmEXPLICIT:
-	os << string_app_value(XmNkeyboardFocusPolicy, "EXPLICIT") << "\n";
+	os << string_app_value(string(XmNkeyboardFocusPolicy), "EXPLICIT")
+	   << "\n";
 	break;
     }
 
