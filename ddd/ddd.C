@@ -2603,8 +2603,10 @@ void process_next_event()
     }
     else
     {
+#if !ASYNC_CHILD_STATUS_CHANGE
 	// Process pending child status changes
 	Agent::runningAgents.commit();
+#endif
     }
 
     // Check if the separate TTY is still running
