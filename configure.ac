@@ -458,10 +458,10 @@ dnl
 dnl
 dnl The `-liberty' library per definition contains only functions
 dnl missing in system libraries.
-libiberty_support=yes
+libiberty_support=no
 AC_ARG_WITH(libiberty,
 AS_HELP_STRING([--with-libiberty],
-               [do use the libiberty library default=yes]),[
+               [do use the libiberty library default=no]),[
   if test "$withval" = "no"; then
     libiberty_support=no
   else
@@ -670,7 +670,9 @@ AC_MSG_WARN([The Athena widgets library '-lXaw' could not be found.
 fi
 fi
 if test "$XAW_LIBS" != ""; then
-AC_CHECK_HEADERS(X11/Xaw/Form.h X11/Xaw/Panner.h X11/Xaw/Porthole.h)
+AC_CHECK_HEADERS(X11/Xaw/Form.h X11/Xaw/Panner.h X11/Xaw/Porthole.h,[],[],
+[[#include <X11/Intrinsic.h>
+]])
 AC_CHECK_HEADERS(X11/Xmu/Editres.h,[],[],
 [[#include <X11/Intrinsic.h>
 ]])
