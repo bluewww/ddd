@@ -956,11 +956,11 @@ DispValue *DispValue::update(DispValue *source,
 
 		if (c == 0)
 		{
-		    // Child not found
-		    c = source->child(j);
+		    // Child not found -- use source child
+		    c = source->child(j)->link();
 		}
 
-		new_children += c->link();
+		new_children += c;
 	    }
 	    _children = new_children;
 	    was_changed = was_initialized = true;
