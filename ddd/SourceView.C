@@ -1689,7 +1689,7 @@ String SourceView::read_class(const string& class_name,
 			      string& file_name, SourceOrigin& origin,
 			      long& length, bool silent)
 {
-    StatusDelay delay("Searching class " + quote(class_name));
+    StatusDelay delay("Loading class " + quote(class_name));
     length = 0;
 
     string base = class_name;
@@ -2052,6 +2052,8 @@ String SourceView::read_indented(string& file_name, long& length,
 // Read file FILE_NAME into current_source; get it from the cache if possible
 int SourceView::read_current(string& file_name, bool force_reload, bool silent)
 {
+    string requested_file_name = file_name;
+
     if (cache_source_files && !force_reload && file_cache.has(file_name))
     {
 	current_source = file_cache[file_name];
@@ -2071,8 +2073,14 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
 
 	if (current_source.length() > 0)
 	{
-	    file_cache[file_name]   = current_source;
-	    origin_cache[file_name] = current_origin;
+	    file_cache[file_name]             = current_source;
+	    origin_cache[file_name]           = current_origin;
+
+	    if (file_name != requested_file_name)
+	    {
+		file_cache[requested_file_name]   = current_source;
+		origin_cache[requested_file_name] = current_origin;
+	    }
 	}
 
 	int null_count = current_source.freq('\0');
@@ -5117,6 +5125,15 @@ void SourceView::setup_where_line(string& line)
 	line += replicate(' ', min_width - line.length());
 }
 
+// Return current JDB frame; 0 if none
+static int jdb_frame()
+{
+    if (gdb->type() != JDB)
+	return 0;
+
+    return get_positive_nr(gdb->prompt().from("["));
+}
+
 void SourceView::process_where(string& where_output)
 {
     int count          = where_output.freq('\n') + 1;
@@ -5130,8 +5147,8 @@ void SourceView::process_where(string& where_output)
 
     if (gdb->type() == JDB)
     {
-        // In JDB, the first line issued by `where' is also
-        // the current line executed
+        // In JDB, the first line issued by `where' is also the
+        // current line in the current frame
         PosBuffer pb;
 	string w(where_output);
         pb.filter(w);
@@ -5139,6 +5156,11 @@ void SourceView::process_where(string& where_output)
 
 	if (pb.pos_found())
 	    show_execution_position(pb.get_position());
+
+	// As JDB does not report other frames, update frame list only
+	// if at lowest frame.
+	if (jdb_frame() != 1)
+	    return;
     }
 
     if (gdb->type() != XDB)
