@@ -235,8 +235,7 @@ void PosBuffer::filter (string& answer)
 		if (pc_buffer == "")
 		{
 		    // `#FRAME ADDRESS in FUNCTION'
-		    static regex 
-			rxframe("#[0-9][0-9]*  *" RXADDRESS);
+		    static regex rxframe("#[0-9][0-9]*  *" RXADDRESS);
 
 		    int pc_index = answer.index(rxframe);
 		    if (pc_index == 0
@@ -266,9 +265,18 @@ void PosBuffer::filter (string& answer)
 		if (pc_buffer == "")
 		{
 		    // `ADDRESS in FUNCTION'
-		    int pc_index = answer.index(rxaddress);
-		    if (pc_index == 0 
-		        || pc_index > 0 && answer[pc_index - 1] == '\n')
+		    int pc_index = -1;
+		    if (answer.contains(rxaddress, 0))
+		    {
+			pc_index = 0;
+		    }
+		    else
+		    {
+			static regex rxnladdress("\n" RXADDRESS);
+			pc_index = answer.index(rxnladdress);
+		    }
+
+		    if (pc_index >= 0)
 		    {
 			pc_buffer = answer.from(pc_index);
 			pc_buffer = pc_buffer.from(rxaddress);
@@ -310,27 +318,29 @@ void PosBuffer::filter (string& answer)
 		    // Nothing found
 		    return;
 		}
+
 		// ANSWER contains position info
 		int index2 = answer.index ("\n", index1);
 
-		if (index2 == -1) {
+		if (index2 == -1)
+		{
 		    // Position info is incomplete
 		    already_read = PosPart;
 		    answer_buffer = answer.from (index1);
 		    answer = answer.before (index1);
-
 		    return;
 		}
+
 		assert (index1 < index2);
 
 		// Position info is complete
-		pos_buffer = answer.at (index1 + 2, index2 - (index1 + 2));
+		pos_buffer = answer.at(index1 + 2, index2 - (index1 + 2));
 		int last_colon = pos_buffer.index(':', -1);
 		pc_buffer = pos_buffer.after(last_colon);
 		if (!pc_buffer.contains(rxaddress, 0))
 		    pc_buffer = "0x" + pc_buffer;
 		pc_buffer = pc_buffer.through(rxaddress);
-		answer.at (index1, index2 - index1 + 1) = "";
+		answer.at(index1, index2 - index1 + 1) = "";
 		already_read = PosComplete;
 	    }
 	    break;
