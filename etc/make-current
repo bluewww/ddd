@@ -151,7 +151,8 @@ automake --gnu --add-missing --copy --verbose
 (cd termcap && autoconf)
 
 # Configure the package.
-sh ./configure -v
+sh ./configure -v \
+--with-motif-includes=/public/include --with-motif-libraries=/public/lib
 
 # Build libraries.
 (cd libiberty && test -f Makefile && make)
