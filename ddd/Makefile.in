@@ -42,13 +42,13 @@ srcdir = @srcdir@
 VPATH = @srcdir@
 
 # Where to put the binary.
-bindir = $(exec_prefix)/bin
+bindir = @bindir@
 
 # Where to put the info file.
-infodir = $(prefix)/info
+infodir = @infodir@
 
 # Where to put the manual page.
-mandir  = $(prefix)/man
+mandir  = @mandir@
 man1dir = $(mandir)/man1
 man1ext = .1
 
