@@ -258,7 +258,8 @@ extern "C" {
 #include <time.h>
 
 #if HAVE_EXCEPTIONS && HAVE_STDEXCEPT
-#define string stdstring
+#define string stdstring	  // Avoid `string' name clash
+#define __SGI_STL_INTERNAL_RELOPS // Avoid <stl_relops.h> warning
 #include <stdexcept>
 #undef string
 #endif // HAVE_EXCEPTIONS && HAVE_STDEXCEPT
