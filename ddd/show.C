@@ -345,17 +345,17 @@ void show_configuration(ostream& os)
     // Optional stuff
     s = "@(#)Includes " DDD_NAME " core"
 #if WITH_BUILTIN_MANUAL
-	", " DDD_NAME " manual"
+	", manual"
 #endif
 #if WITH_BUILTIN_APP_DEFAULTS
-	", " DDD_NAME " app-defaults"
+	", app-defaults"
 #endif
 #ifdef XpmFormat
 	", XPM " stringize(XpmFormat) "." stringize(XpmVersion) 
 	"." stringize(XpmRevision)
 #endif
 #if HAVE_ATHENA
-	", Athena widgets"
+	", Athena Panner"
 #endif
 	"\n";
     s.gsub(sccs, string(""));
