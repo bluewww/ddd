@@ -88,12 +88,12 @@ public:
     {}  
 
     // Copy constructor
-    VarArray(const VarArray& m):
+    VarArray(const VarArray<T>& m):
         _size(m.size()), DynArray<T>(m)
     {}
 
     // Assignment
-    VarArray& operator = (const VarArray& m)
+    VarArray<T>& operator = (const VarArray<T>& m)
     { 
 	DynArray<T>::operator = (m);
 	_size = m.size();

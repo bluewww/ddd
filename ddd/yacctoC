@@ -79,6 +79,11 @@ for file in y.tab.c y.tab.h; do
       yaccpar=sun
     fi
 
+    grep '@(#).*com/cmd/lang/yacc/yaccpar' $file > /dev/null     
+    if [ $? = 0 ]; then
+      yaccpar=bison
+    fi
+
     grep 'Bison parser' $file > /dev/null
     if [ $? = 0 ]; then
       yaccpar=bison

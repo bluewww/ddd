@@ -189,7 +189,7 @@ void add_to_history(const string& line)
 	{
 	    MString xm_line(line, LIST_CHARSET);
 	    int pos = gdb_history.size();
-	    XmListAddItem(gdb_commands_w, xm_line, pos - 1);
+	    XmListAddItem(gdb_commands_w, xm_line.xmstring(), pos - 1);
 	    XmListSelectPos(gdb_commands_w, 0, False);
 	    XmListSetBottomPos(gdb_commands_w, 0);
 	}

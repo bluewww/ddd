@@ -159,7 +159,7 @@ Widget make_buttons(Widget parent, const string& name,
 	    callback = gdbReloadSourceCB;
 
 	XtAddCallback(button, XmNactivateCallback, callback,
-		      (XtPointer)XtNewString(command));
+		      (XtPointer)XtNewString((String)command));
     }
     delete[] commands;
     DefaultHelpText = gdbDefaultHelp;

@@ -62,6 +62,11 @@ if [ $? = 0 ]; then
   exit 1
 fi
 
+grep '@(#).*com/lib/l/ncform' lex.yy.c > /dev/null 
+if [ $? = 0 ]; then
+  lexpar=flex
+fi
+
 grep '@(#)ncform.*SMI' lex.yy.c > /dev/null
 if [ $? = 0 ]; then
   lexpar=sun

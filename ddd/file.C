@@ -458,7 +458,7 @@ static string get_file(Widget w, XtPointer, XtPointer call_data)
     if (is_directory(filename))
     {
 	MString filter(filename);
-	XmFileSelectionDoSearch(w, filter);
+	XmFileSelectionDoSearch(w, filter.xmstring());
 	return "";
     }
 

@@ -11,6 +11,8 @@ DDD 1.5 (in development)
       libraries wherever possible.  GNU termcap and librx are
       used only if the system does not provide them.  This results in
       smaller and (hopefully) safer DDD executables.
+    - Patches for AIX xlC C++ compiler (and probably others) included.
+      Thanks to Jacek Holeczek <holeczek@clri6f.gsi.de>.
 
     Several bug fixes, including:
     - On HP-UX, the `@' character is no more discarded from GDB input.

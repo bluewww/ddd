@@ -426,7 +426,7 @@ Boolean CvtStringToXmString(Display *display,
 	buf += MString(segment, charset);
     }
 
-    XmString target = XmStringCopy(buf);
+    XmString target = XmStringCopy(buf.xmstring());
     delete[] segments;
 
     if (target == 0)

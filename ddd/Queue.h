@@ -36,7 +36,7 @@
 template<class E>
 struct QueueRec {
     E elem;
-    QueueRec *next;
+    QueueRec<E> *next;
 
     // Constructor
     QueueRec(const E& e):
@@ -67,7 +67,7 @@ public:
     }
 
     // Copy Constructor
-    Queue(const Queue& e): 
+    Queue(const Queue<E>& e): 
         _first(0), _last(0)
     {
 	for (QueueIter<E> i = e; i.ok(); i = i.next())
@@ -75,7 +75,7 @@ public:
     }
 
     // Assignment
-    void operator = (const Queue& e)
+    void operator = (const Queue<E>& e)
     {
 #if 0
 	while (_first)
@@ -159,12 +159,12 @@ public:
     QueueIter(const QueueIter<E>& iter):
         rec(iter.rec)
     {}
-    QueueIter& operator = (const QueueIter& iter)
+    QueueIter<E>& operator = (const QueueIter<E>& iter)
     {
 	rec = iter.rec;
 	return *this;
     }
-    QueueIter& operator = (const Queue<E>& queue)
+    QueueIter<E>& operator = (const Queue<E>& queue)
     {
 	rec = queue.firstRec();
 	return *this;
@@ -174,7 +174,7 @@ public:
     E& operator()()             { return rec->elem; }
 
     bool ok() const { return rec != 0; }
-    QueueIter next() const { return QueueIter(rec->next); }
+    QueueIter<E> next() const { return QueueIter(rec->next); }
 };
 
 #endif // _ICE_Queue_h

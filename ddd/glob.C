@@ -26,9 +26,6 @@
 #include "config.h"
 #include <sys/types.h>
 
-char glob_rcsid[] = 
-    "$Id$";
-
 // From the `autoconf' documentation...
 
 // Check for alloca
@@ -48,6 +45,10 @@ extern "C" char *alloca ();
 #  endif
 # endif
 #endif
+
+// Yep, `#pragma alloca' must come even before this simple stuff.  Sigh.
+char glob_rcsid[] = 
+    "$Id$";
 
 extern "C" {
 // Check for dirent

@@ -102,7 +102,7 @@ public:
     }
 
     // Copy constructor
-    DynArray(const DynArray& m):
+    DynArray(const DynArray<T>& m):
         _allocated_size(m.size()),
         _values(new T [m.size()])
     {
@@ -117,7 +117,7 @@ public:
     }
 
     // Assignment
-    DynArray& operator = (const DynArray& m)
+    DynArray<T>& operator = (const DynArray<T>& m)
     {
         // make sure a = a works
 	if (this != &m)

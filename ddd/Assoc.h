@@ -43,7 +43,7 @@ class AssocRec {
     friend class AssocIter<K,V>;
 
 private:
-    AssocRec *next;		// For Assoc usage only
+    AssocRec<K,V> *next;		// For Assoc usage only
 
 public:
     K key;
@@ -152,7 +152,7 @@ public:
     }
 
     // Copy constructor
-    _Assoc(const _Assoc& m):
+    _Assoc(const _Assoc<K,V>& m):
 	entries(0)
     {
 	for (AssocRec<K,V> *e = m.entries; e != 0; e = e->next)
@@ -160,7 +160,7 @@ public:
     }
 
     // Assignment
-    void operator = (const _Assoc& m)
+    void operator = (const _Assoc<K,V>& m)
     {
 	if (entries)
 	    delete entries;
@@ -187,15 +187,15 @@ public:
     AssocMark(const Assoc<K,V>& assoc):
 	rec(assoc.entries)
     {}
-    AssocMark(const AssocMark& mark):
+    AssocMark(const AssocMark<K,V>& mark):
 	rec(mark.rec)
     {}
-    const AssocMark& operator = (const Assoc<K,V>& assoc)
+    const AssocMark<K,V>& operator = (const Assoc<K,V>& assoc)
     {
 	rec = assoc.entries;
 	return *this;
     }
-    const AssocMark& operator = (const AssocMark& mark)
+    const AssocMark<K,V>& operator = (const AssocMark<K,V>& mark)
     {
 	rec = mark.rec;
 	return *this;
@@ -214,15 +214,15 @@ public:
     AssocIter(const Assoc<K,V>& assoc):
 	AssocMark<K,V>(assoc)
     {}
-    AssocIter(const AssocIter& iter):
+    AssocIter(const AssocIter<K,V>& iter):
 	AssocMark<K,V>(iter)
     {}
-    const AssocIter& operator = (const Assoc<K,V>& assoc)
+    const AssocIter<K,V>& operator = (const Assoc<K,V>& assoc)
     {
 	AssocMark<K,V>::operator = (assoc);
 	return *this;
     }
-    const AssocIter& operator = (const AssocIter& iter)
+    const AssocIter<K,V>& operator = (const AssocIter<K,V>& iter)
     {
 	AssocMark<K,V>::operator = (iter);
 	return *this;
@@ -233,7 +233,7 @@ public:
     V& value()             { return rec->value; }
 
     bool ok() { return rec != 0; }
-    AssocIter next() { return AssocIter(rec->next); }
+    AssocIter<K,V> next() { return AssocIter<K,V>(rec->next); }
     void operator ++ ()
     {
 	rec = rec->next;
