@@ -330,8 +330,8 @@ static bool have_decorated_transients();
 static void set_settings_title(Widget w);
 
 // Popup DDD logo upon start-up.
-static void popup_startup_logo(Widget parent);
-static void popdown_startup_logo();
+static void popup_startup_logo(Widget parent, string color_key);
+static void popdown_startup_logo(XtPointer data = 0, XtIntervalId *id = 0);
 
 
 //-----------------------------------------------------------------------------
@@ -941,14 +941,24 @@ static MMDesc debugger_menu [] =
     MMEnd
 };
 
-static Widget set_startup_logo_w;
-static Widget set_no_startup_logo_w;
+static Widget startup_logo_color_w;
+static Widget startup_logo_grey_w;
+static Widget startup_logo_grey4_w;
+static Widget startup_logo_mono_w;
+static Widget startup_logo_none_w;
+
 static MMDesc startup_logo_menu [] = 
 {
-    { "logo",   MMToggle, { dddSetStartupLogoCB, XtPointer(True) },
-      NULL, &set_startup_logo_w },
-    { "no_logo", MMToggle, { dddSetStartupLogoCB, XtPointer(False) },
-      NULL, &set_no_startup_logo_w },
+    { "color", MMToggle, { dddSetStartupLogoCB, XtPointer("c") },
+      NULL, &startup_logo_color_w },
+    { "grey", MMToggle, { dddSetStartupLogoCB, XtPointer("g") },
+      NULL, &startup_logo_grey_w },
+    { "grey4", MMToggle, { dddSetStartupLogoCB, XtPointer("g4") },
+      NULL, &startup_logo_grey4_w },
+    { "mono", MMToggle | MMUnmanaged, { dddSetStartupLogoCB, XtPointer("m") },
+      NULL, &startup_logo_mono_w },
+    { "none", MMToggle,  { dddSetStartupLogoCB, XtPointer("") },
+      NULL, &startup_logo_none_w },
     MMEnd
 };
 
@@ -1179,6 +1189,9 @@ jmp_buf main_loop_env;
 
 // Initial delays
 static Delay *init_delay = 0;
+
+// Logo stuff
+static string last_shown_startup_logo;
 
 //-----------------------------------------------------------------------------
 // Set sensitivity
@@ -1590,8 +1603,8 @@ int main(int argc, char *argv[])
     XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
 
     // Show startup logo
-    if (!iconic && app_data.show_startup_logo)
-	popup_startup_logo(toplevel);
+    if (!iconic)
+	popup_startup_logo(toplevel, app_data.show_startup_logo);
 
     // Warn for incompatible `Ddd' and `~/.ddd/init' files
     if (app_data.app_defaults_version == 0)
@@ -2876,8 +2889,12 @@ void update_options()
     set_toggle(set_debugger_dbx_w, type == DBX);
     set_toggle(set_debugger_xdb_w, type == XDB);
 
-    set_toggle(set_startup_logo_w,    app_data.show_startup_logo);
-    set_toggle(set_no_startup_logo_w, !app_data.show_startup_logo);
+    string color_key = app_data.show_startup_logo;
+    set_toggle(startup_logo_color_w, color_key == "c");
+    set_toggle(startup_logo_grey_w,  color_key == "g");
+    set_toggle(startup_logo_grey4_w, color_key == "g4");
+    set_toggle(startup_logo_mono_w,  color_key == "m");
+    set_toggle(startup_logo_none_w,  color_key == "");
 
     if (app_data.cache_source_files != source_view->cache_source_files)
     {
@@ -2927,6 +2944,13 @@ void update_options()
     EnableButtonDocs(app_data.button_docs);
     EnableTextTips(app_data.value_tips);
     EnableTextDocs(app_data.value_docs);
+
+    if (last_shown_startup_logo != app_data.show_startup_logo)
+    {
+	popup_startup_logo(gdb_w, app_data.show_startup_logo);
+	XtAppAddTimeOut(XtWidgetToApplicationContext(gdb_w), 1000, 
+			popdown_startup_logo, 0);
+    }
 
     update_reset_preferences();
     fix_status_size();
@@ -3140,10 +3164,12 @@ static void ResetStartupPreferencesCB(Widget, XtPointer, XtPointer)
     notify_set_toggle(set_debugger_dbx_w, type == DBX);
     notify_set_toggle(set_debugger_xdb_w, type == XDB);
 
-    notify_set_toggle(set_startup_logo_w,
-		      initial_app_data.show_startup_logo);
-    notify_set_toggle(set_no_startup_logo_w, 
-		      !initial_app_data.show_startup_logo);
+    string color_key = initial_app_data.show_startup_logo;
+    notify_set_toggle(startup_logo_color_w, color_key == "c");
+    notify_set_toggle(startup_logo_grey_w,  color_key == "g");
+    notify_set_toggle(startup_logo_grey4_w, color_key == "g4");
+    notify_set_toggle(startup_logo_mono_w,  color_key == "m");
+    notify_set_toggle(startup_logo_none_w,  color_key == "");
 }
 
 
@@ -3167,7 +3193,8 @@ bool startup_preferences_changed()
 	|| app_data.panned_graph_editor != initial_app_data.panned_graph_editor
 	|| debugger_type(app_data.debugger) 
   	      != debugger_type(initial_app_data.debugger)
-	|| app_data.show_startup_logo != initial_app_data.show_startup_logo;
+	|| string(app_data.show_startup_logo)
+	      != string(initial_app_data.show_startup_logo);
 }
 
 static void ResetPreferencesCB(Widget w, XtPointer client_data, 
@@ -4652,7 +4679,7 @@ static bool have_decorated_transients()
 
 static Widget logo_shell = 0;
 
-static void popdown_startup_logo()
+static void popdown_startup_logo(XtPointer, XtIntervalId *)
 {
     if (logo_shell != 0)
     {
@@ -4662,9 +4689,14 @@ static void popdown_startup_logo()
     }
 }
 
-static void popup_startup_logo(Widget parent)
+static void popup_startup_logo(Widget parent, string color_key)
 {
     popdown_startup_logo();
+
+    last_shown_startup_logo = color_key;
+
+    if (color_key == "")
+	return;
 
     Arg args[10];
     int arg = 0;
@@ -4680,9 +4712,8 @@ static void popup_startup_logo(Widget parent)
     XtManageChild(logo);
     XtRealizeWidget(logo_shell);
 
-    Pixmap pixmap = dddlogo(logo);
+    Pixmap pixmap = dddlogo(logo, color_key);
     XtVaSetValues(logo, XmNlabelPixmap, pixmap, NULL);
-
 
     Dimension width, height;
     XtVaGetValues(logo_shell, XmNwidth, &width, XmNheight, &height, NULL);

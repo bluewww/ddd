@@ -2036,6 +2036,12 @@ another debugger.  This change takes only effect after you have saved
 options and restarted \s-2@DDD@\s+2.  See also the `\fB\-\-gdb\fR',
 `\fB\-\-dbx\fR', and `\fB\-\-xdb\fR' options, below.
 .PP
+If you want the \s-2@DDD@\s+2 logo shown upon startup, you can select
+between different versions.  The \fBcolor\fR version is the nicest,
+but requires several color cells.  The \fBgrey4\fR version needs no
+additional color cells.  Selecting \fBnone\fR disables the logo
+completely.
+.PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Saving Options"
@@ -2316,6 +2322,17 @@ If `\fBtrue\fR' (default), the command history is automatically saved
 when \s-2@DDD@\s+2 exits.  If the inferior debugger saves its
 command history, its history file is used, otherwise,
 `\fB$HOME/.ddd_history\fR' is used.
+.TP
+.B "showStartupLogo (\fPclass\fB ShowStartupLogo)"
+If non-empty, show a \s-2@DDD@\s+2 logo upon start-up.  Possible
+values include: `\fBc\fR' for a color visual, `\fBg\fR' for a
+multi-level greyscale visual, `\fBg4\fR' for a 4-level greyscale
+visual, `\fBm\fR' for a dithered monochrome visual, and `\fB\fR' (the
+empty string) for no logo at all.  Default is `\fBg4\fR'.
+.PP
+Note: if \s-2@DDD@\s+2 runs on a monochrome display, or if
+\s-2@DDD@\s+2 was compiled without the \s-2XPM\s+2 library, only the
+monochrome version (`\fBm\fR') can be shown.
 .TP
 .B "suppressWarnings (\fPclass\fB SuppressWarnings)"
 If `\fBtrue\fR', X warnings are suppressed.  This is

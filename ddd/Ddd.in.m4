@@ -676,6 +676,21 @@ Ddd*highlightThickness:		1
 
 
 
+! Startup logo
+
+! DDD can display its startup logo in five different ways:
+!
+!   Color (`c')  - using 42 shades of blue.     (Nice, but costly.)
+!   Grey  (`g')  - using 42 shades of grey.     (Nice on greyscale displays.)
+!   Grey4 (`g4') - using 4 shades of grey.      (A balanced compromise.)
+!   Mono  (`m')  - using only black and white.  (Ugly; on monochrome displays.)
+!   None  (`')   - don't show the DDD logo.     (Makes DDD start up faster.)
+!
+! Use the key given in parentheses as resource value.
+! Default is `g4' for 4 shades of grey.
+Ddd*showStartupLogo: g4
+
+
 ! Session Defaults
 
 ! DDD attempts to preserve breakpoint and display numbers across
@@ -2425,12 +2440,16 @@ Ddd*debuggerMenu*gdb.labelString:		GDB
 Ddd*debuggerMenu*dbx.labelString:		DBX
 Ddd*debuggerMenu*xdb.labelString:		XDB
 
-Ddd*preferences*showStartupLogo.labelString:	Show DDD logo upon startup
+Ddd*preferences*showStartupLogo.labelString:	Show DDD startup logo
 Ddd*preferences*showStartupLogo.alignment:	XmALIGNMENT_END
 Ddd*preferences*showStartupLogo.width:		200
 Ddd*preferences*showStartupLogo.recomputeSize:	false
-Ddd*showStartupLogoMenu*logo.labelString:	yes, show
-Ddd*showStartupLogoMenu*no_logo.labelString:	no, don't show
+
+Ddd*showStartupLogoMenu*color.labelString:	in color
+Ddd*showStartupLogoMenu*grey.labelString:	in grey
+Ddd*showStartupLogoMenu*grey4.labelString:	in grey4
+Ddd*showStartupLogoMenu*mono.labelString:	in monochrome
+Ddd*showStartupLogoMenu*none.labelString:	not at all
 
 
 

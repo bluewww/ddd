@@ -1123,11 +1123,11 @@ XtResource ddd_resources[] = {
     {
 	XtNshowStartupLogo,
 	XtCShowStartupLogo,
-	XmRBoolean,
-	sizeof(Boolean),
+	XmRString,
+	sizeof(String),
 	XtOffsetOf(AppData, show_startup_logo),
 	XmRImmediate,
-	XtPointer(True)
+	XtPointer("g4")
     },
 
     {

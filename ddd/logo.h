@@ -34,12 +34,15 @@
 #endif
 
 #include <X11/Intrinsic.h>
+#include "strclass.h"
 
 // DDD logos
 extern Pixmap iconlogo(Widget shell);
 extern Pixmap iconmask(Widget shell);
 extern Pixmap versionlogo(Widget shell);
-extern Pixmap dddlogo(Widget shell);
+extern Pixmap dddlogo(Widget shell, const string& color_class);
+
+extern void get_dddlogo_size(Dimension& x, Dimension& y);
 
 #endif // _DDD_logo_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

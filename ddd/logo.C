@@ -53,8 +53,12 @@ char logo_rcsid[] =
 #endif
 
 #include <iostream.h>
+#include <string.h>
 #include <X11/Xlib.h>
+#include <X11/StringDefs.h>
 #include <Xm/Xm.h>
+
+#include "cook.h"
 
 //-----------------------------------------------------------------------------
 // DDD logo
@@ -135,7 +139,7 @@ Pixmap iconlogo(Widget w)
     attr.visual   = root_attr.visual;
     attr.colormap = root_attr.colormap;
     attr.depth    = root_attr.depth;
-        
+
     int ret = xpm("ddd.xpm", 
 		  XpmCreatePixmapFromData(XtDisplay(w), root,
 					  ddd_xpm, &icon, (Pixmap *)0, &attr));
@@ -222,20 +226,27 @@ Pixmap versionlogo(Widget w)
     return logo;
 }
 
-// Return a DDD logo suitable for the widget W
-Pixmap dddlogo(Widget w)
+// Convert NAME into a color, using PIX as default
+static Pixel color(Widget w, String name, Pixel pixel)
 {
-    Pixel foreground, background;
+    XrmValue from, to;
+    from.size = strlen(name);
+    from.addr = name;
+    to.size   = sizeof(pixel);
+    to.addr   = (String)&pixel;
 
-    XtVaGetValues(w,
-		  XmNforeground, &foreground,
-		  XmNbackground, &background,
-		  NULL);
+    XtConvertAndStore(w, XtRString, &from, XtRPixel, &to);
+    return pixel;
+}
+
+// Return a DDD logo suitable for the widget W
+Pixmap dddlogo(Widget w, const string& color_key)
+{
     Pixmap logo = 0;
 
     int depth = PlanesOfScreen(XtScreen(w));
 
-    if (depth > 1)
+    if (depth > 1 && color_key != "m")
     {
 #ifdef XpmVersion
 	XWindowAttributes win_attr;
@@ -246,6 +257,24 @@ Pixmap dddlogo(Widget w)
 	attr.visual       = win_attr.visual;
 	attr.colormap     = win_attr.colormap;
 	attr.depth        = win_attr.depth;
+
+#ifdef XpmColorKey
+	attr.valuemask    |= XpmColorKey;
+	if (color_key == "c")
+	    attr.color_key = XPM_COLOR;
+	else if (color_key == "g4")
+	    attr.color_key = XPM_GRAY4;
+	else if (color_key == "g")
+	    attr.color_key = XPM_GRAY;
+	else if (color_key == "m")
+	    attr.color_key = XPM_MONO;
+	else
+	{
+	    cerr << "invalid color key specification " 
+		 << quote(color_key) << "\n";
+	    attr.valuemask &= ~XpmColorKey;
+	}
+#endif
         
 	int ret = xpm("dddlogo.xpm",
 		      XpmCreatePixmapFromData(XtDisplay(w), XtWindow(w),
@@ -265,7 +294,16 @@ Pixmap dddlogo(Widget w)
     logo = XCreatePixmapFromBitmapData(XtDisplay(w), XtWindow(w),
 				       dddlogo_bits,
 				       dddlogo_width, dddlogo_height,
-				       foreground, background,
+				       color(w, "black", 
+					     BlackPixelOfScreen(XtScreen(w))),
+				       color(w, "white", 
+					     WhitePixelOfScreen(XtScreen(w))),
 				       depth);
     return logo;
+}
+
+void get_dddlogo_size(Dimension& width, Dimension& height)
+{
+    width  = dddlogo_width;
+    height = dddlogo_height;
 }

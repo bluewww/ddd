@@ -676,13 +676,7 @@ void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetStartupLogoCB (Widget w, XtPointer client_data, XtPointer)
 {
-    Boolean state = Boolean(client_data) != False;
-    app_data.show_startup_logo = state;
-
-    if (state)
-	set_status(DDD_NAME " logo will be shown upon start-up.");
-    else
-	set_status(DDD_NAME " logo will not be shown upon start-up.");
+    app_data.show_startup_logo = String(client_data);
 
     update_options();
     post_startup_warning(w);
@@ -1155,8 +1149,8 @@ bool save_options(unsigned long flags)
 			 app_data.panned_graph_editor) << "\n";
     os << bool_app_value(XtNsuppressWarnings,
 			 app_data.suppress_warnings) << "\n";
-    os << bool_app_value(XtNshowStartupLogo,
-			 app_data.show_startup_logo) << "\n";
+    os << string_app_value(XtNshowStartupLogo,
+			   app_data.show_startup_logo) << "\n";
     os << bool_app_value(XtNungrabMousePointer,
 			 app_data.ungrab_mouse_pointer) << "\n";
     os << bool_app_value(XtNsaveHistoryOnExit,

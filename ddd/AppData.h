@@ -353,7 +353,7 @@ struct AppData {
     String  auto_command_prefix;
     int     max_breakpoint_number;
     int     max_display_number;
-    Boolean show_startup_logo;
+    String  show_startup_logo;
     Boolean lesstif_hacks;
     String  dddinit_version;
     String  app_defaults_version;
