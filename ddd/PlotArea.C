@@ -53,6 +53,8 @@ char PlotArea_rcsid[] =
 #include "cook.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+
 #include <X11/StringDefs.h>
 #include <X11/Xlib.h>
 #include <Xm/DrawingA.h>
