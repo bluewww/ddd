@@ -37,6 +37,7 @@ char resources_rcsid[] =
 #include "version.h"
 #include "AppData.h"
 #include "stty.h"
+#include "config.h"
 
 #include <Xm/Xm.h>
 

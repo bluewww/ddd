@@ -37,6 +37,7 @@ char show_rcsid[] =
 
 #include "AppData.h"
 #include "LiterateA.h"
+#include "config.h"
 #include "configinfo.h"
 #include "cook.h"
 #include "ddd.h"
