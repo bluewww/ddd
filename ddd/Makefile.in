@@ -877,6 +877,7 @@ PICS = \
 	$(picdir)/ddd-drag.ps           \
 	$(picdir)/ddd-edit-breakpoints.ps \
 	$(picdir)/ddd-edit-displays.ps  \
+	$(picdir)/ddd-examine.ps        \
 	$(picdir)/ddd-font-prefs.ps     \
 	$(picdir)/ddd-general-prefs.ps  \
 	$(picdir)/ddd-helpers.ps  	\
@@ -1693,6 +1694,10 @@ $(picdir)/ddd-define-command.ps: \
 $(picdir)/ddd-signals.ps: \
 	$(picdir)/ddd-signals.fig $(picdir)/ddd-signals.xpm
 	cd $(picdir); $(FIG2PS) ddd-signals.fig > ddd-signals.ps
+
+$(picdir)/ddd-examine.ps: \
+	$(picdir)/ddd-examine.fig $(picdir)/ddd-examine.xpm
+	cd $(picdir); $(FIG2PS) ddd-examine.fig > ddd-examine.ps
 
 
 # The logo comes in XPM source

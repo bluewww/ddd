@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-06\-14" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-06\-17" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -61,8 +61,6 @@
 \&]\c
 .I hostname\c
 \&\|]\|]
-.\" .RB "[\|" \-\-attach-windows "\|]"
-.\" .RB "[\|" \-\-separate-windows "\|]"
 .RB "[\|" \-\-trace "\|]"
 .RB "[\|" \-\-nw "\|]"
 .RB "[\|" \-\-tty "\|]"
@@ -471,8 +469,8 @@ out stop sign (or `\fB_\fIn\fB_\fR') indicates a disabled breakpoint.
 A stop sign with a question mark (or `\fB?\fIn\fB?\fR') indicates a
 conditional breakpoint or a breakpoint with an ignore count set.
 .PP
-Note: some Motif/X server combinations may fail to display stop signs
-correctly.  If this happens, try writing in your
+Note: We have received reports that some Motif versions fail to
+display stop signs correctly.  If this happens, try writing in your
 `\fB$HOME/.@ddd@/init\fR' file:
 .br
 .sp
@@ -495,6 +493,32 @@ function name and select the `\fBbreak\fR' item from the popup menu.
 As yet another alternative, you can click on `\fBNew\fR' from the
 Breakpoint editor (invoked through `\fBSource\(->Edit Breakpoints\fR')
 and enter the function name.
+.\"
+.\"
+.SS "Setting Regexp Breakpoints"
+.\"
+Using \s-1GDB\s+1, you can also set a breakpoint on all functions that
+match a given string.  `\fBBreak at ()\(->Set Breakpoints at Regexp
+()\fR' sets a breakpoint on all functions whose name matches the
+\fIregular expression\fR given in `\fB()\fR'.  Here are some examples:
+.IP \(bu 2
+To set a breakpoint on every function that starts with `\fBXm\fR', set
+`\fB()\fR' to `\fB^Xm\fR'.
+.IP \(bu 2
+To set a breakpoint on every member of class `\fBDate\fR', set
+`\fB()\fR' to `\fB^Date::\fR'.
+.IP \(bu 2
+To set a breakpoint on every function whose name contains
+`\fB_fun\fR', set `\fB()\fR' to `\fB_fun\fR'.
+.IP \(bu 2
+To set a breakpoint on every function that ends in `\fB_test\fR', 
+set `\fB()\fR' to `\fB_test$\fR'.
+.PP
+Once these multiple breakpoints are set, they are treated just like
+the breakpoints set with the `\fBBreak at ()\fR' button.  You can
+delete them, disable them, or make them conditional the same way as
+any other breakpoint.  Use `\fBSource\(->Edit Breakpoints\fR' to view
+and edit the list of breakpoints.
 .\"
 .\"
 .SS "Disabling Breakpoints"
@@ -683,9 +707,20 @@ on `\fBProps\fR'.
 .\"
 .SS "More Breakpoint Features"
 .\"
-Using \s-1GDB\s+1, several more commands related to breakpoints can be
-invoked through the debugger console.  Enter `\fBhelp breakpoints\fR'
-at the `\fB(gdb)\fR' prompt.
+Using \s-1GDB\s+1, a few more commands related to breakpoints can be
+invoked through the debugger console:
+.TP 10
+.B "hbreak \fIposition\fR"
+Sets a hardware-assisted breakpoint at \fIposition\fR.  This command
+requires hardware support and some target hardware may not have this
+support.  The main purpose of this is EPROM/ROM code debugging, so you
+can set a breakpoint at an instruction without changing the
+instruction.
+.TP 10
+.B "thbreak \fIpos\fR"
+Set a temporary hardware-assisted breakpoint at \fIpos\fR.
+.PP
+See the \s-1GDB\s+1 documentation for details on these commands.
 .\"
 .\"
 .\" ---------------
@@ -1031,7 +1066,7 @@ resume execution using `\fBCommands\(->Continue Without Signal\fR'.
 .SH "EXAMINING DATA"
 .\" ---------------
 .TP
-\s-1@DDD@\s+1 provides three means to examine data.
+\s-1@DDD@\s+1 provides four means to examine data.
 .TP 10
 .B "Value Hints"
 The quickest way to examine variables is to move the pointer on an
@@ -1049,6 +1084,12 @@ If you want to examine complex data structures, you can display them
 graphically in the data display.  Displays remain effective until you
 delete them; they are updated each time the program stops.  This is
 useful for large dynamic structures.
+.TP 10
+.B "Memory Dumps"
+This feature, available using \s-1GDB\s+1 only, allows you to dump
+memory contents in any of several formats, independently of your
+program's data types.  This is described under `\fBMACHINE-LEVEL
+DEBUGGING\fR', below.
 .PP
 .\"
 .\"
@@ -1599,16 +1640,6 @@ need\(em\&for instance, while examining some complex data
 structure\(em\&and disable it while examining control flow (i.e.,
 stepping through your program).  \s-1@DDD@\s+1 will automatically
 restore edges and data displays when switching modes.
-.PP
-.\"
-.\"
-.\"
-.\" ---------------
-.SH "GRAPH EDITING"
-.\" ---------------
-.\"
-The \s-1@DDD@\s+1 data window offers some basic functionality to
-manipulate the display graph.
 .\"
 .\"
 .SS "Moving Displays Around"
@@ -1790,14 +1821,99 @@ to have its value displayed in the data window.
 .PSPIC @srcdir@/PICS/ddd-registers.ps 15.3cm
 .\"
 .\"
+.SS "Examining Memory"
+.\"
+Using \s-1@DDD@\s+1, you can examine memory in any of several formats,
+independently of your program's data types.  The item
+`\fBData\(->Examine Memory\fR' pops up a panel where you can choose
+the format to be shown.
+.PP
+.PSPIC @srcdir@/PICS/ddd-examine.ps 15.3cm
+.PP
+You can enter
+.IP \(bu 2
+a \fIrepeat count\fR, a decimal integer that specifies how much memory
+(counting by units) to display
+.IP \(bu 2
+a \fIdisplay format\fR\(em\&one of
+.RS
+.TP 10
+.B octal
+Print as integer in octal
+.TP 10
+.B hex
+Regard the bits of the value as an integer, and print the integer 
+in hexadecimal.
+.TP 10
+.B decimal
+Print as integer in signed decimal.
+.TP 10
+.B unsigned
+Print as integer in unsigned decimal.
+.TP 10
+.B binary
+Print as integer in binary.
+.TP 10
+.B float
+Regard the bits of the value as a floating point number and print
+using typical floating point syntax.
+.TP 10
+.B address
+Print as an address, both absolute in hexadecimal and as an offset
+from the nearest preceding symbol.
+.TP 10
+.B instruction
+Print as machine instructions.  The \fIunit size\fR is ignored for
+this display format.
+.TP 10
+.B char
+Regard as an integer and print it as a character constant.
+.TP 10
+.B string
+Print as null-terminated string.  The \fIunit size\fR is ignored for
+this display format.
+.RE
+.IP \(bu 2
+a \fIunit size\fR\(em\&one of
+.RS
+.TP 10
+.B bytes
+Bytes.
+.TP 10
+.B halfwords
+Halfwords (two bytes).
+.TP 10
+.B words
+Words (four bytes).
+.TP 10
+.B giants
+Giant words (eight bytes).
+.RE
+.IP \(bu 2
+an \fIaddress\fR\(em\&the starting display address.  The expression
+need not have a pointer value (though it may); it is always
+interpreted as an integer address of a byte of memory.
+.PP
+There are two ways to examine the values:
+.IP \(bu 2
+You can dump the memory in the debugger console (using `\fBPrint\fR').
+If you repeat the resulting `\fBx\fR' command by pressing
+\fBReturn\fR, the following area of memory is shown.
+.IP \(bu 2
+You can also display the memory dump in the data window (using
+`\fBDisplay\fR').  If you choose to display the values, the values
+will be updated automatically each time the program stop.
+.PP
+.\"
+.\"
 .\" ---------------------
 .SH "EDITING SOURCE CODE"
 .\" ---------------------
 .\"
 In \s-1@DDD@\s+1 itself, you cannot change the source file currently
-displayed.  \s-1@DDD@\s+1 allows you to invoke a \fItext editor\fR
-instead.  To invoke a text editor for the current source file, select
-the `\fBEdit\fR' button or `\fBSource\(->Edit Source\fR'.
+displayed.  Instead, \s-1@DDD@\s+1 allows you to invoke a \fItext
+editor\fR.  To invoke a text editor for the current source file,
+select the `\fBEdit\fR' button or `\fBSource\(->Edit Source\fR'.
 .PP
 The editor command is specified in the `\fBeditCommand\fR' resource.
 By default, \s-1@DDD@\s+1 tries to invoke the first available editor
@@ -1855,219 +1971,6 @@ any cursor command.
 Using \s-1GDB\s+1, you can also \fIcomplete\fR commands and arguments
 by pressing the `\s-1\fBTAB\fR\s+1' key; pressing the `\s-1\fBTAB\fR\s+1'
 key multiple times shows one possible expansion after the other.
-.PP
-Here are some of the most frequently needed debugger commands.
-.\"
-.SS "Common GDB commands"
-.TP
-.B break \fR[\|\fIfile\fB:\fR\|]\fIfunction
-\&
-Set a breakpoint at \c
-.I function\c
-\& (in \c
-.I file\c
-\&).
-.TP
-.B run \fR[\|\fIarglist\fR\|]
-Start your program (with \c
-.I arglist\c
-\&, if specified).
-.TP
-.B where
-Display the program stack.
-.TP
-.BI print " expr"\c
-\&
-Display the value of an expression.
-.TP
-.B cont
-Continue running your program (after stopping, e.g. at a breakpoint).
-.TP
-.B next
-Execute next program line (after stopping); step \c
-.I over\c
-\& any
-function calls in the line.
-.TP
-.B step
-Execute next program line (after stopping); step \c
-.I into\c
-\& any
-function calls in the line.
-.TP
-.B help \fR[\|\fIname\fR\|]
-Show information about the command \c
-.I name\c
-\&, or general usage information.
-.TP
-.B quit
-Exit \s-1GDB\s+1 (and \s-1@DDD@\s+1).
-.PP
-For full details on \s-1GDB\s+1 commands, see \c
-.I 
-Using \s-1GDB\s+1: A Guide to the \s-1GNU\s+1 Source-Level Debugger\c
-\&, by Richard M. Stallman and Roland H. Pesch.  
-The same text is available online as the \c
-.B gdb\c
-\& entry in the \c
-.B info\c
-\& program.
-.PP
-.\"
-.SS "Common DBX commands"
-.TP
-.B stop in \fIfunction
-\&
-Set a breakpoint at \c
-.I function.
-.TP
-.B stop at \fIline
-\&
-Set a breakpoint at \c
-.I line.
-.TP
-.B file \fIfile
-\&
-Change the current file to \c
-.I file.
-.TP
-.B run \fR[\|\fIarglist\fR\|]
-Start your program (with \c
-.I arglist\c
-\&, if specified).
-.TP
-.B where
-Display the program stack.
-.TP
-.BI print " expr"\c
-\&
-Display the value of an expression.
-.TP
-.B cont
-Continue running your program (after stopping, e.g. at a breakpoint).
-.TP
-.B next
-Execute next program line (after stopping); step \c
-.I over\c
-\& any
-function calls in the line.
-.TP
-.B step
-Execute next program line (after stopping); step \c
-.I into\c
-\& any
-function calls in the line.
-.TP
-.B help \fR[\|\fIname\fR\|]
-Show information about the command \c
-.I name\c
-\&, or general usage information.
-.TP
-.B quit
-Exit \s-1DBX\s+1 (and \s-1@DDD@\s+1).
-.PP
-For full details on \s-1DBX\s+1 commands, see the \s-1DBX\s+1
-documentation.
-.\"
-.SS "Common XDB commands"
-.TP
-.B b \fR[\|\fIfile\fB:\fR\|]\fIline
-\&
-Set a breakpoint at line \c
-.I line\c
-\& (in \c
-.I file\c
-\&).
-.TP
-.B b \fIfunction
-\&
-Set a breakpoint at \c
-.I function.
-.TP
-.B r \fR[\|\fIarglist\fR\|]
-Start your program (with \c
-.I arglist\c
-\&, if specified).
-.TP
-.B t
-Display the program stack.
-.TP
-.BI p " expr"\c
-\&
-Display the value of an expression.
-.TP
-.B c
-Continue running your program (after stopping, e.g. at a breakpoint).
-.TP
-.B S
-Execute next program line (after stopping); step \c
-.I over\c
-\& any
-function calls in the line.
-.TP
-.B s
-Execute next program line (after stopping); step \c
-.I into\c
-\& any
-function calls in the line.
-.TP
-.B h \fR[\|\fIname\fR\|]
-Show information about the command \c
-.I name\c
-\&, or general usage information.
-.TP
-.B q
-Exit \s-1XDB\s+1 (and \s-1@DDD@\s+1).
-.PP
-For full details on \s-1XDB\s+1 commands, see the \s-1XDB\s+1
-documentation.
-.\"
-.SS "Common JDB commands"
-.TP
-.B stop in \fIclass\fB.\fImethod\fB
-\&
-Set a breakpoint in a method.
-.TP
-.B stop at \fIclass\fB.\fIline\fB
-\&
-Set a breakpoint at a line.
-.TP
-.B load \fIclass\fB
-\&
-Open a class to be debugged.
-.TP
-.B run \fIclass\fR \fR[\|\fIarglist\fR\|]
-Start execution of a loaded class.
-.TP
-.B where
-Display a thread's stack.
-.TP
-.B print \fIid\fB
-Print an object or field
-.TP
-.B cont
-Continue execution from breakpoint
-.TP
-.B next
-Execute current program line (after stopping); step \c
-.I over\c
-\& any
-method calls in the line.
-.TP
-.B step
-Execute current program line (after stopping); step \c
-.I into\c
-\& any
-method calls in the line.
-.TP
-.B help
-Show general usage information.
-.TP
-.B quit
-Exit \s-1JDB\s+1 (and \s-1@DDD@\s+1).
-.PP
-For full details on \s-1JDB\s+1 commands, see the \s-1JDB\s+1
-documentation.
 .\"
 .\"
 .\" ---------------
@@ -2268,6 +2171,8 @@ automatically offer you to restart itself, such that you can see the
 changes taking effect.  Note that even after restarting, you still
 must save options to make the changes permanent.
 .PP
+.PSPIC @srcdir@/PICS/ddd-startup-prefs.ps 15.3cm
+.PP
 By default, \s-1@DDD@\s+1 stacks commands, source, and data in one
 single top-level window.  To have separate top-level windows for
 source, data, and debugger console, set the `\fBWindow Layout\fR'
@@ -2326,8 +2231,6 @@ toolkit.  To set up \s-1@DDD@\s+1 such that it uses panners by
 default, set the `\fBData Scrolling\fR' option to `\fBPanner\fR'.
 See also the `\fB\-\-panned-graph-editor\fR' and
 `\fB\-\-scrolled-graph-editor\fR' options, below.
-.PP
-.PSPIC @srcdir@/PICS/ddd-startup-prefs.ps 15.3cm
 .PP
 By default, \s-1@DDD@\s+1 runs with \s-1GDB\s+1 as inferior debugger.
 To change this default, set the `\fBDebugger Type\fR' option to
@@ -2400,6 +2303,8 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 \fIhelpers\fR) for specific tasks.  Through the `\fBHelpers\fR' panel,
 you can choose and customize these applications.
 .PP
+.PSPIC @srcdir@/PICS/ddd-helpers.ps 15.3cm
+.PP
 In `\fBEdit Sources\fR', you can select an X editor to be invoked via
 the \s-1@DDD@\s+1 `\fBEdit\fR' button.  `\fB@FILE@\fR' is replaced by
 the current file name; `\fB@LINE@\fR' is replaced by the current line.
@@ -2424,8 +2329,6 @@ terminal emulator.  To this command, \s-1@DDD@\s+1 appends Bourne
 shell commands to be executed within the execution window.  A simple
 value is `\fBxterm \-e /bin/sh \-c\fR'.  See also the `\fBtermCommand\fR'
 resource, below.
-.PP
-.PSPIC @srcdir@/PICS/ddd-helpers.ps 15.3cm
 .PP
 `\fBUncompress\fR' is the uncompression command used by \s-1@DDD@\s+1
 to uncompress the \s-1@DDD@\s+1 license and manual pages.  The
@@ -2574,6 +2477,8 @@ If used interactively, commands that would ask for confirmation
 proceed without asking when used inside a user-defined command.  Many
 \s-1GDB\s+1 commands that normally print messages to say what they are
 doing omit the messages when used in a user-defined command.
+.PP
+To save all command definitions, use `\fBEdit\(->Save Options\fR'.
 .\" .PP
 .\" \s-1@DDD@\s+1 commands that are part of \s-1GDB\s+1 command
 .\" definitions are realized transparently as \fIauto-commands\fR; see the
@@ -3172,16 +3077,16 @@ These are the most important color resources used in \s-1@DDD@\s+1:
 .B grey
 .TP 30
 .B @Ddd@*XmText.background:
-.B grey90
+.B grey96
 .TP 30 
 .B @Ddd@*XmTextField.background:
-.B grey90
+.B grey96
 .TP 30 
 .B @Ddd@*GraphEdit.background:
-.B grey90
+.B grey96
 .TP 30 
 .B @Ddd@*XmList.background:
-.B grey90
+.B grey96
 .TP 30 
 .B @Ddd@*graph_edit.nodeColor:
 .B black
@@ -3662,9 +3567,8 @@ This resource is used to save and restore the debugger settings.
 .TP
 .B "jdbInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
-initially sent to \s-1JDB\s+1.  By default, it is empty.
-.br
-This resource may be used to customize \s-1JDB\s+1.
+initially sent to \s-1JDB\s+1.  This resource may be used to customize
+\s-1JDB\s+1.  By default, it is empty.
 .TP
 .B "jdbSettings (\fPclass\fB Settings)"
 This string contains a list of newline-separated commands that are
@@ -3690,7 +3594,7 @@ You may add other commands here\(em\&for instance, to set the
 executable path or to invoke a suitable shell.
 .TP
 .B "sourceInitCommands (\fPclass\fB SourceInitCommands)"
-If `\fBon\fR' (default), \s-1@DDD@\s-1 writes all \s-1GDB\s+1
+If `\fBon\fR' (default), \s-1@DDD@\s+1 writes all \s-1GDB\s+1
 initialization commands into a temporary file and makes \s-1GDB\s+1
 read this file, rather than sending each initialization command
 separately.  This results in faster startup (especially if you have
