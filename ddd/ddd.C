@@ -6340,10 +6340,13 @@ static void setup_version_warnings()
 	     << " for " DDD_NAME " " << app_data.app_defaults_version 
 	     << " (this is " DDD_NAME " " DDD_VERSION ")\n";
 
+	if (!version_warnings.isEmpty())
+	    version_warnings += cr();
+
 	version_warnings += rm("Using `") + tt(DDD_CLASS_NAME)
 	    + rm("' app-defaults file for " DDD_NAME " ")
 	    + rm(app_data.app_defaults_version)
-	    + rm(" (this is " DDD_NAME " " DDD_VERSION ")") + cr();
+	    + rm(" (this is " DDD_NAME " " DDD_VERSION ")");
     }
 
     // Check for ~/.ddd/init
@@ -6355,6 +6358,9 @@ static void setup_version_warnings()
 	     << " file for " DDD_NAME " " << app_data.dddinit_version
 	     << "\n(this is " DDD_NAME " " DDD_VERSION ")."
 	     << "  Please save options.\n";
+
+	if (!version_warnings.isEmpty())
+	    version_warnings += cr();
 
 	version_warnings += rm("Using `")
 	    + tt(cook(session_state_file(app_data.session)))
