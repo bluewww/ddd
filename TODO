@@ -342,9 +342,27 @@ Volunteers for these and other projects are welcome!
     menu that I discovered this, as the tear-off help window and the
     short cuts box are clearly related.'
 
-314 David Karr <dkarr@nmo.gtegsc.com> suggests a JDB `Open Class'
+314*David Karr <dkarr@nmo.gtegsc.com> suggests a JDB `Open Class'
     dialog that actually lists class names, not just files.
 
-315 Save signal settings in the current session (also in `~/.ddd/init'?).
+315*Save signal settings in the current session (also in `~/.ddd/init'?).
 
-316 (Insert new project ideas here)
+316 Bill Bumgarner <bbum@codefab.com> suggests Objective-C
+    improvements for use with Foundation from Apple:
+
+    (1) for data of type objc_object * (a pointer to an object), could
+        ddd figure out what type of object the datum is pointing to
+        and display its class?
+
+    (2) Under Foundation, every object responds to the method
+        -description and produces a description of itself-- this can
+        range from the value of an NSNumber to the contents of an
+        NSArray (and can be long).  It would be tremendously useful
+        for ddd to take advantage of this.
+
+    (3) gdb with objective-c has a print-object or po command.  It
+        would be great if that appeared on the right-click menu when
+        clicking on a variable.
+
+
+317 (Insert new project ideas here)
