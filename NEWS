@@ -9,13 +9,18 @@ DDD 1.5 (in development)
       arguments are now located in the command tool, a small separate
       window.  The command tool can be moved wherever appropriate,
       leaving more space for window contents.
-    - User-defined buttons are now available.  They can also
+    - User-defined buttons are now available.  These can also
       be used to re-install the DDD 1.4 command buttons.
     - A couple of buttons have been renamed for further clarity.
     - `New display' subsumes `Dependent display': if a display is
       selected, the new display is made dependent on it.
-    - Variable values can now be changed interactively through a
+    - Variable values can now be changed interactively using the
       `Set ()' button.
+    - Improved DBX support.  DDD determines DBX features dynamically
+      at run-time and can adapt to a wide range of DBX variants.  For
+      instance, DDD now properly works with DEC DBX.
+    - Improved directory support.  Sources and executables can reside
+      in several different directories; the `cd' command works as well.
 
     Changes in configuration and building:
     - Regular expressions now use the POSIX.2 standard regcomp/regexec
@@ -28,16 +33,13 @@ DDD 1.5 (in development)
       Thanks to Jacek Holeczek <holeczek@clri6f.gsi.de>.
 
     Several bug fixes, including:
-    - Improved directory support.  Sources and executables can reside
-      in several different directories; the `cd' command works as well.
     - The execution window can be opened, closed and re-opened
       without DDD crashing or hanging.
-    - In DBX, the display is refreshed much more frequently, reflecting
-      current variable values.
+    - Invoking a source editor via `Edit' should work fine now.
     - On HP-UX, the `@' character is no more discarded from GDB input.
-    - On Solaris 2.x, annoying DBX warnings like `-r option only
+    - On Solaris 2.x, annoying DBX warnings like `dbx: -r option only
       recognized for C++' are now silently ignored.
-    - The `vslPath' resource is no more ignored.
+    - The `vslPath' resource now works.
 
 
 DDD 1.4d
@@ -136,8 +138,7 @@ DDD 1.4
       and DDD facilities at your disposition.
     - Improved C++ support with DBX 3.x.  Thanks to Grant McDorman
       <grant@isgtec.com>.
-    - Displays with format expressions (`/x') are properly
-      dereferenced.
+    - Displays with format expressions (`/x') are properly dereferenced.
     - Improved position history mechanism.
     - Automatic reloading of source files when the debugged program
       has changed; explicit reload is no longer required.

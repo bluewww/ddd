@@ -234,22 +234,6 @@ Volunteers for fixing these and other bugs are welcome!
      sync that with `list directories'; how to sync with DBX?).  See
      also the mail of Tom Weis <tom_weis@mathworks.com>.
 
-083. Editing problems.  js@spacenet.LANL.GOV (John Sutton) says: I run
-     ddd on a simple c program, select Source -> Edit Source and get
-     an xterm running vi.  When I exit vi the following messages pops
-     up:
-
-     Internal error (Segmentation fault)
-
-     and ddd print to stdout the following message over and over until
-     I kill ddd.
-
-     Warning: Select failed: error code 9
-
-     I'm running on a Sun SPARC 10 with SunOS 4.1.4, X11R5, ICS Motif
-     1.2.4, the mit x server (not openwin) and the fvwm2 window
-     manager.
-
 084. Configure problems.  Lutz Vieweg <vieweg@iap.uni-frankfurt.de>
      says that the `configure' tests ignore the `CC' and `CXX'
      environment variables (is this true for the top-level
@@ -323,22 +307,5 @@ Volunteers for fixing these and other bugs are welcome!
      PS: What is the prefered way (if any) of making the hex output 
          the default in the display graph?  If I "set output-radix 16" 
          in the gdb window ddd seems to lock up very often.
-
-089. Editing problems.  sstclair@flanders.sanders.lockheed.com (Scott
-     H St. Clair) states: 
-
-     DDD crashed after vi exited.  I am able to get ddd to crash using the 
-     following procedure 100% of the time.
-
-     1.) start debugging something.
-     2.) Set a break point.
-     3.) After the program breaks, select source-edit from the
-         source window.
-     4.) A VI window appears.
-     5.) Using the spawned copy of vi, modify the source.  This is
-         the same source that is in the ddd source window.
-     6.) exit vi.
-
-     [See also 083]
 
 090. (Insert your bug here)
