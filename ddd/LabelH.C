@@ -47,6 +47,8 @@ extern "C" {
 static void initialize(XmLabelHackWidget _request, 
 		       XmLabelHackWidget _new, 
 		       String *_args, Cardinal *_numArg);
+static Boolean set_values(Widget old, Widget, Widget new_w,
+			  ArgList, Cardinal *);
 static void _replaceLabelExpose(void);
 static void _replaceLabelGadgetExpose(void);
 static GC _topShadowGC(XmLabelWidget _label);
@@ -93,7 +95,7 @@ XmLabelHackClassRec xmLabelHackClassRec =
 	(XtWidgetProc)NULL,			/* destroy */
 	(XtWidgetProc)XtInheritResize,
 	(XtExposeProc)NULL,
-	(XtSetValuesFunc)NULL,			/* set_values */
+	(XtSetValuesFunc)set_values,            /* set_values */
 	(XtArgsFunc)NULL,			/* set_values_hook */
 	XtInheritSetValuesAlmost,		/* set_values_almost */
 	(XtArgsProc)NULL,			/* get_values_hook */
@@ -138,6 +140,35 @@ XmLabelHackClassRec xmLabelHackClassRec =
 
 WidgetClass xmLabelHackWidgetClass = (WidgetClass)&xmLabelHackClassRec;
 
+static XtExposeProc oldLabelGadgetExposeProc = 0;
+static XtExposeProc oldLabelWidgetExposeProc = 0;
+
+static void enable3d(XmLabelHackWidget _new)
+{
+    if (HACK(_new).insensitive3D && CORE(_new).depth > 4)
+    {
+	if (oldLabelWidgetExposeProc == 0)
+	    _replaceLabelExpose();
+
+	if (oldLabelGadgetExposeProc == 0)
+	    _replaceLabelGadgetExpose();
+
+	// Keep around so there is one in the cache
+	HACK(_new).topGC    = _topShadowGC((XmLabelWidget)_new);
+	HACK(_new).bottomGC = _bottomShadowGC((XmLabelWidget)_new);
+    }
+}
+
+static void disable3d()
+{
+    // Restore old functions
+    xmLabelWidgetClass->core_class.expose = oldLabelWidgetExposeProc;
+    xmLabelGadgetClass->core_class.expose = oldLabelGadgetExposeProc;
+
+    oldLabelWidgetExposeProc = 0;
+    oldLabelGadgetExposeProc = 0;
+}
+
 static void initialize(XmLabelHackWidget, XmLabelHackWidget _new, 
 		       String *, Cardinal *)
 {
@@ -149,18 +180,8 @@ static void initialize(XmLabelHackWidget, XmLabelHackWidget _new,
 
     if (HACK_CLASS(lhwc).on == -1)
     {
-	if (HACK(_new).insensitive3D && CORE(_new).depth > 4)
-	{
-	    _replaceLabelExpose();
-	    _replaceLabelGadgetExpose();
-
-	    /* keep around so there is one in the cache */
-	    HACK(_new).topGC = _topShadowGC((XmLabelWidget)_new);
-	    HACK(_new).bottomGC = _bottomShadowGC((XmLabelWidget)_new);
-	}
-
+	enable3d(_new);
 	HACK_CLASS(lhwc).on = HACK(_new).insensitive3D;
-			
     }
 
     if ((CORE(_new).width == 0) || (CORE(_new).height == 0))
@@ -170,11 +191,27 @@ static void initialize(XmLabelHackWidget, XmLabelHackWidget _new,
     }
 }
 
+
+static Boolean set_values(Widget old, Widget, Widget _new,
+			  ArgList, Cardinal *)
+{
+    XmLabelHackWidget before = XmLabelHackWidget(old);
+    XmLabelHackWidget after  = XmLabelHackWidget(_new);
+
+    if (HACK(before).insensitive3D != HACK(after).insensitive3D)
+    {
+	if (HACK(after).insensitive3D)
+	    enable3d(after);
+	else
+	    disable3d();
+    }
+
+    return False;		// No need to redisplay
+}
+
 #if defined(LesstifVersion)
 static void noResize(Widget) {}
 #endif
-
-static XtExposeProc oldLabelExposeProc;
 
 static GC _topShadowGC(XmLabelWidget _label)
 {
@@ -242,7 +279,7 @@ static void _grabbedLabelExpose(Widget _w, XEvent *_event, Region _region)
     XtVaGetValues(_w, XmNlabelType, &label_type, NULL);
 
     if (XtIsSensitive(_w) || label_type != XmSTRING)
-	(*oldLabelExposeProc)(_w, _event, _region);
+	(*oldLabelWidgetExposeProc)(_w, _event, _region);
     else
     {
 #if defined(LesstifVersion)
@@ -263,7 +300,7 @@ static void _grabbedLabelExpose(Widget _w, XEvent *_event, Region _region)
 	    LABEL(label).acc_TextRect.y += 1;
 	}
 	LABEL(label).insensitive_GC = _topShadowGC(label);
-	(*oldLabelExposeProc)(_w, _event, _region);
+	(*oldLabelWidgetExposeProc)(_w, _event, _region);
 	XtReleaseGC(_w, LABEL(label).insensitive_GC);
 
 	LABEL(label).TextRect.x -= 1;
@@ -274,7 +311,7 @@ static void _grabbedLabelExpose(Widget _w, XEvent *_event, Region _region)
 	    LABEL(label).acc_TextRect.y -= 1;
 	}
 	LABEL(label).insensitive_GC = _bottomShadowGC(label);
-	(*oldLabelExposeProc)(_w, _event, _region);
+	(*oldLabelWidgetExposeProc)(_w, _event, _region);
 	XtReleaseGC(_w, LABEL(label).insensitive_GC);
 
 	LABEL(label).insensitive_GC = insensitiveGC;
@@ -287,12 +324,9 @@ static void _grabbedLabelExpose(Widget _w, XEvent *_event, Region _region)
 
 static void _replaceLabelExpose(void)
 {
-    oldLabelExposeProc = xmLabelWidgetClass->core_class.expose;
+    oldLabelWidgetExposeProc = xmLabelWidgetClass->core_class.expose;
     xmLabelWidgetClass->core_class.expose = _grabbedLabelExpose;
 }
-
-
-static XtExposeProc oldLabelGadgetExposeProc;
 
 static GC _gadgetParentTopShadowGC(XmLabelGadget _label)
 {
