@@ -114,15 +114,15 @@ MMDesc DataDisp::graph_popup[] =
     MMEnd
 };
 
-struct ValueItms { enum Itms {Dependent, Dereference, Detail, Rotate, 
+struct ValueItms { enum Itms {Dereference, Detail, Rotate, Dependent,
 			      Dummy, Disable, Delete }; };
 
 MMDesc DataDisp::node_popup[] =
 {
-    {"dependent",     MMPush,   {DataDisp::dependentCB}},
     {"dereference",   MMPush,   {DataDisp::dereferenceCB}},
     {"detail",        MMPush,   {DataDisp::toggleDetailCB}},
     {"rotate",        MMPush,   {DataDisp::toggleRotateCB}},
+    {"dependent",     MMPush,   {DataDisp::dependentCB}},
     MMSep,
     {"disable",       MMPush,   {DataDisp::toggleDisableCB}},
     {"delete",        MMPush,   {DataDisp::deleteCB}},
@@ -131,10 +131,10 @@ MMDesc DataDisp::node_popup[] =
 
 MMDesc DataDisp::graph_cmd_area[] =
 {
-    {"dependent",     MMPush, {DataDisp::dependentCB}},
     {"dereference",   MMPush, {DataDisp::dereferenceCB}},
     {"detail",        MMPush, {DataDisp::toggleDetailCB}},
     {"rotate",        MMPush, {DataDisp::toggleRotateCB}},
+    {"dependent",     MMPush, {DataDisp::dependentCB}},
     MMSep,
     {"disable",       MMPush, {DataDisp::toggleDisableCB}},
     {"delete",        MMPush, {DataDisp::deleteCB}},
