@@ -43,6 +43,7 @@ char complete_rcsid[] =
 #include "editing.h"
 #include "isid.h"
 #include "post.h"
+#include "question.h"
 #include "regexps.h"
 #include "string-fun.h"
 
@@ -51,6 +52,12 @@ char complete_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
+
+#if WITH_READLINE
+extern "C" {
+#include "readline/readline.h"
+}
+#endif
 
 
 // Completion delay flag
@@ -171,6 +178,25 @@ void clear_completion_delay()
     completion_delay = 0;
 }
 
+static string completion_command(const string& cmd)
+{
+    switch (gdb->type())
+    {
+    case GDB:
+	return "complete " + cmd;
+
+    case PERL:
+    {
+	string arg = cmd.after(rxwhite);
+	return "S ^" + arg + ".*";
+    }
+
+    default:
+	assert(0);
+	return "";
+    }
+}
+
 static string *completions  = 0;
 static int completions_size = 0;
 
@@ -261,23 +287,14 @@ static void complete(Widget w, XEvent *e, string input, string cmd)
 	cmd = cmd.from(int(info.prefix.length()));
     }
 
-    string complete_cmd;
-    if (gdb->type() == GDB)
+    string complete_cmd = completion_command(cmd);
+    if (gdb->type() == PERL)
     {
-	complete_cmd = "complete " + cmd;
-    }
-    else if (gdb->type() == PERL)
-    {
-	string arg = cmd.after(rxwhite);
-	complete_cmd = "S ^" + arg + ".*";
-
 	if (cmd == input)
 	    info.prefix += cmd.through(rxwhite);
 	else
 	    info.cmd = info.input;
     }
-    else
-	assert(0);
 
     if (XmIsTextField(w))
 	XmTextFieldSetEditable(w, false);
@@ -500,3 +517,61 @@ void complete_tabAct(Widget w, XEvent *e, String* args, Cardinal* num_args)
 {
     _complete_argAct(w, e, args, num_args, true);
 }
+
+
+//-----------------------------------------------------------------------------
+// Readline interface
+//-----------------------------------------------------------------------------
+
+#if WITH_READLINE
+static char *complete_readline(char *text, int state)
+{
+    static string reply;
+
+    if (state == 0)
+    {
+	// Get completion
+	string complete_cmd = completion_command(rl_line_buffer);
+	reply = gdb_question(complete_cmd, -1, true);
+	if (reply == NO_GDB_ANSWER)
+	    reply = "";
+
+	int lines = reply.freq('\n') + 1;
+	string *completions = new string[lines];
+	int completions_size = split(reply, completions, lines, '\n');
+	smart_sort(completions, completions_size);
+	uniq(completions, completions_size);
+
+	reply = "";
+	int len = strlen(rl_line_buffer);
+	for (int i = 0; i < completions_size; i++)
+	{
+	    string completion = text + completions[i].from(len);
+	    reply += completion + '\n';
+	}
+
+	delete[] completions;
+    }
+
+    // Return next completion
+    string completion = reply.before('\n');
+    reply = reply.after('\n');
+
+    if (completion == "")
+	return 0;
+
+    char *ret = (char *)malloc(completion.length() + 1);
+    strcpy(ret, completion);
+    return ret;
+}
+
+// Initialize completion
+struct CompletionInitializer {
+    CompletionInitializer()
+    {
+	rl_completion_entry_function = (Function *)complete_readline;
+    }
+};
+
+static CompletionInitializer completion_initializer;
+#endif // WITH_READLINE
