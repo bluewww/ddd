@@ -37,6 +37,7 @@ char LiterateAgent_rcsid[] =
 #include <iostream.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <errno.h>
 
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>

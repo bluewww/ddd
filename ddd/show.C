@@ -51,6 +51,8 @@ char show_rcsid[] =
 #include <iostream.h>
 #include <iomanip.h>
 #include <fstream.h>
+#include <string.h>
+#include <errno.h>
 
 #include "HelpCB.h"
 

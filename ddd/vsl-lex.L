@@ -35,6 +35,7 @@ char VSL_lex_rcsid[] =
 #define BAD_ISTREAM 1
 
 #include <stdio.h>
+#include <errno.h>
 #include "strclass.h"
 
 static const int max_include_nesting = 40;    // max. Verschachtelungstiefe
@@ -378,9 +379,6 @@ static char *searchpath(char *filename, bool thisDir)
 // In Datei 'filename' wechseln
 static int switchup(char *filename, bool thisdir) 
 {
-    extern int errno;
-    extern char *sys_errlist[];
-
     if (string(filename) != "")
     {
 	// Dateinamen um Pfad erweitern
@@ -437,7 +435,7 @@ static int switchup(char *filename, bool thisdir)
     {
 #endif
 	switchdown();
-	VSLLib::parse_error(string(filename) + ": " + sys_errlist[errno]);
+	VSLLib::parse_error(string(filename) + ": " + strerror(errno));
 	return -1;
     }
 

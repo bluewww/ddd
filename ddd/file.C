@@ -66,6 +66,8 @@ char file_rcsid[] =
 extern "C" {
 #include <libiberty.h>		// basename()
 }
+#include <string.h>		// strerror()
+#include <errno.h>
 
 #include <Xm/Xm.h>
 #include <Xm/FileSB.h>

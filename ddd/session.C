@@ -43,6 +43,8 @@ char session_rcsid[] =
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>		// strerror()
+#include <errno.h>
 
 #include "AppData.h"
 #include "DataDisp.h"

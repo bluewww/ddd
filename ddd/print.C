@@ -58,6 +58,8 @@ char print_rcsid[] =
 #include <stdio.h>
 #include <iostream.h>
 #include <fstream.h>
+#include <string.h>		// strerror()
+#include <errno.h>
 
 #include <Xm/Xm.h>
 #include <Xm/ToggleB.h>

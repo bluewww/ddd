@@ -53,7 +53,6 @@ char post_rcsid[] =
 #include <Xm/MessageB.h>
 #include <Xm/Protocols.h>
 
-#include <errno.h>
 #include <signal.h>
 #include <unistd.h>
 #include <stdlib.h>
