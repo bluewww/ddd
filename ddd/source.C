@@ -45,6 +45,7 @@ const char source_rcsid[] =
 #include "dbx-lookup.h"
 #include "events.h"
 #include "ddd.h"
+#include "post.h"
 #include "shell.h"
 #include "status.h"
 
@@ -214,6 +215,12 @@ void gdbEditSourceCB  (Widget w, XtPointer, XtPointer)
     string pos = source_view->line_of_cursor();
     string file = pos.before(':');
     string line = pos.after(':');
+
+    if (file == "")
+    {
+	post_error("No source.", "no_source_edit_error", w);
+	return;
+    }
 
     StatusDelay delay("Invoking editor for " + quote(file));
 

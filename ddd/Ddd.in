@@ -2957,6 +2957,10 @@ Ddd*no_source_error_popup.title: @DDD@: No Source
 Ddd*no_source_error*contextHelpString:	\
 @rm There is no current source text in which to search.
 
+Ddd*no_source_edit_error_popup.title: @DDD@: No Source
+Ddd*no_source_edit_error*contextHelpString:	\
+@rm There is no current source text to edit.
+
 Ddd*no_such_line_error_popup.title: @DDD@: No Such Line
 Ddd*no_such_line_error*contextHelpString:	\
 @rm There is no such line in the current source text.
