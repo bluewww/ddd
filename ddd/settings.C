@@ -2301,7 +2301,14 @@ static Widget create_settings(DebuggerType type)
 
     if (settings_panel == 0 && gdb->isReadyWithPrompt() && gdb->type() == type)
     {
+	// We place a delay here such that we show only one delay for
+	// both getting the settings and the command definitions.
+	StatusDelay delay("Retrieving " + gdb->title() + " Settings");
+
 	settings_panel = create_panel(type, SETTINGS);
+
+	// Get the command definitions, too.  These must be included
+	// in saving GDB state.
 	get_defines(type);
     }
     else if (settings_panel != 0 && need_reload_settings)
