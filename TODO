@@ -375,4 +375,10 @@ Volunteers for these and other projects are welcome!
 249 `Rotate' should be enabled as soon as there is exactly one child
     that can be rotated.
 
-250 (Insert your project idea here)
+250*Combine Breakpoint `Ignore Count' and `Condition' in a `Breakpoint
+    Properties' panel.
+
+251 If a selection references a member (prefixed by `.' or `->'), try
+    adding the prefix, too.
+
+252 (Insert your project idea here)
