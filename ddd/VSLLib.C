@@ -303,6 +303,7 @@ VSLLib::VSLLib(const VSLLib& lib)
       _first(0),
       _last(0)
 {
+    initHash();
     init_from(lib);
 }
 
@@ -312,14 +313,27 @@ void VSLLib::init_from(const VSLLib& lib)
     _first = 0;
     _last  = 0;
 
-    for (const VSLDef *d = lib._first; d != 0; d = d->libnext())
+    const VSLDef *d;
+    for (d = lib._first; d != 0; d = d->libnext())
     {
+	// clog << "Adding: " << d->func_name() << "\n";
+
 	add(d->deflist->func_name(),
 	    d->node_pattern() ? d->node_pattern()->dup() : 0,
 	    d->expr()         ? d->expr()->dup()         : 0,
 	    d->deflist->global(),
 	    d->filename(),
 	    d->lineno());
+    }
+
+    assert(OK());
+
+    // Make sure all pointers point to the new defs within this library
+    for (d = _first; d != 0; d = d->libnext())
+    {
+	d->node_pattern()->rebind(this);
+	if (d->expr())
+	    d->expr()->rebind(this);
     }
 
     assert(OK());
@@ -861,4 +875,3 @@ bool VSLLib::OK() const
 
     return true;
 }
-

@@ -161,6 +161,11 @@ int CallNode::_reBase(VSLDef *cdef, unsigned newBase)
     return arg()->reBase(cdef, newBase);
 }
 
+void CallNode::rebind(const class VSLLib *lib)
+{
+    arg()->rebind(lib);
+}
+
 string CallNode::firstName() const
 {
     return arg()->firstName();

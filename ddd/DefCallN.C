@@ -384,6 +384,29 @@ int DefCallNode::countSelfReferences(VSLDef *cdef, VSLDefList *deflist)
 }
 
 
+void DefCallNode::rebind(const class VSLLib *lib)
+{
+    CallNode::rebind(lib);
+
+    if (lib != _deflist->lib)
+    {
+	// Library has changed
+	// clog << "Rebinding: call to " << _deflist->func_name() << "\n";
+
+	// Remove reference to old library
+	assert(_deflist->references >= 0);
+	_deflist->references--;
+	_def = 0;
+
+	// Reference deflist in new library
+	string func_name = _deflist->func_name();
+	_deflist = lib->deflist(func_name);
+	assert(_deflist != 0);
+	_deflist->references++;
+    }
+}
+
+
 
 // Debugging
 

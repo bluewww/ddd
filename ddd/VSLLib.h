@@ -167,6 +167,7 @@ const unsigned stdOpt           = allOpts | 2;
 // The VSL library
 class VSLLib {
     friend class VSLDefList;	    // VSLDefList::replace() needs this
+    friend class DefCallNode;	    // DefCallNode::rebind() needs this
 
 public:
     DECLARE_TYPE_INFO

@@ -370,6 +370,13 @@ int ListNode::_reBase(VSLDef *cdef, unsigned newBase)
     return changes;
 }
 
+void ListNode::rebind(const class VSLLib *lib)
+{
+    // Apply to entire list
+    head()->rebind(lib);
+    tail()->rebind(lib);
+}
+
 string ListNode::firstName() const RETURNS(s)
 {
     RETURN_OBJECT(string, s);

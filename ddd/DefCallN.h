@@ -96,6 +96,7 @@ public:
     int resolveDefs(VSLDef *cdef, bool complain_recursive);
     int resolveSynonyms(VSLDef *cdef, VSLNode **node);
     int inlineFuncs(VSLDef *cdef, VSLNode **node);
+    void rebind(const class VSLLib *lib);
 
     bool isDefCallNode() const { return true; }
 

@@ -122,6 +122,7 @@ public:
     void uncompilePatterns(VSLDef *cdef) const;
     int resolveName(VSLDef *cdef, VSLNode **node, string& name, unsigned id);
     int _resolveNames(VSLDef *cdef, unsigned base);
+    void rebind(const class VSLLib *);
     string firstName() const;
 
     bool isConst() const { return _arg->isConst(); }

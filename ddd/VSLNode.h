@@ -136,6 +136,8 @@ public:
 	_base = base;
 	return _resolveNames(cdef, base);
     }
+    virtual void rebind(const class VSLLib *) { return; }
+    
 
     virtual string firstName() const          { return ""; }
 
