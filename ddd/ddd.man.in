@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "27 December 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "12 January 1996" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -909,7 +909,7 @@ Subsequent layouts will respect the direction of the last rotation.
 .SS "Printing the Display Graph"
 .\"
 \s-2@DDD@\s+2 allows for printing the graph picture on PostScript
-printers, which is useful for documenting program states.
+printers or into files.  This is useful for documenting program states.
 .PP
 To print the graph on a PostScript printer, select the `\fBPrint
 Graph...\fR' item from the `\fBFile\fR' menu.  Enter the printing
@@ -1561,14 +1561,6 @@ For more information on this list, send a mail to
 .\" ---------------
 .SH LIMITATIONS
 .\" ---------------
-.SS "General Limitations"
-If command output is sent to the command window, it is impossible for
-\s-2@DDD@\s+2 to distinguish between the output of the debugged
-program and the output of the inferior debugger.  For instance, if
-your program output includes debugger prompts, \s-2@DDD@\s+2 will
-become confused.  Using the separate execution window avoids these
-problems.
-
 .SS "Limitations using GDB"
 Some \s-2GDB\s+2 settings are essential for \s-2@DDD@\s+2 to work correctly.
 These settings with their correct values are:
@@ -1615,6 +1607,16 @@ order to operate properly.  This also affects the output of the
 debugged program when sent to the command window.  Using the separate
 execution window avoids these problems.
 
+.SS "General Limitations"
+If command output is sent to the command window, it is impossible for
+\s-2@DDD@\s+2 to distinguish between the output of the debugged
+program and the output of the inferior debugger.  For instance, if
+your program output includes debugger prompts, \s-2@DDD@\s+2 will
+become confused.  Using the separate execution window avoids these
+problems.
+.PP
+Paper sizes larger than 2,147,483,648pt (757km, 470 miles) can not be
+handled.
 
 .\" ---------------
 .SH "REPORTING BUGS"
