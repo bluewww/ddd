@@ -624,6 +624,8 @@ bool read_array_begin(string& value, string& addr)
 	value = value.after("RECORD");
     else if (value.contains("OBJECT", 0))
 	value = value.after("OBJECT");
+    else if (value.contains("interface", 0))
+	value = value.after("interface");
     else
 	return false;
 
