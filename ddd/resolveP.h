@@ -34,10 +34,11 @@
 #endif
 
 #include "strclass.h"
+#include "bool.h"
 
 // Return full path of FILE, searching in a number of predefined places.
 // If not found, return "".
-extern string resolvePath(const string& file);
+extern string resolvePath(const string& file, bool include_user = true);
 
 #endif // _DDD_resolvePath_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -6863,7 +6863,7 @@ DataDisp::DataDisp(Widget parent, Widget& data_buttons_w)
     DispBox::vsllib_base_defs = app_data.vsl_base_defs;
     DispBox::vsllib_defs      = app_data.vsl_defs;
 
-    string ddd_themes_dir = resolvePath("themes/");
+    string ddd_themes_dir = resolvePath("themes/", false);
     string path = ":" + string(app_data.vsl_path) + ":";
     path.gsub(":user_themes:", ":" + session_themes_dir() + ":");
     path.gsub(":" ddd_NAME "_themes:", ":" + ddd_themes_dir + ":");

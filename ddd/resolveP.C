@@ -76,14 +76,16 @@ static string myPrefix()
 
 // Return full path of FILE, searching in a number of predefined places.
 // If not found, return "".
-string resolvePath(const string& file)
+string resolvePath(const string& file, bool include_user)
 {
     static StringArray prefixes;
+    static int sys_index = 0;
 
     if (prefixes.size() == 0)
     {
 	// Look in ~/.ddd.
 	prefixes += session_state_dir();
+	sys_index = prefixes.size();
 
 	// Look in $DDD_HOME.
 	if (getenv(DDD_NAME "_HOME") != 0)
@@ -118,7 +120,7 @@ string resolvePath(const string& file)
 
     StatusDelay delay("Searching " + quote(file));
 
-    for (int i = 0; i < prefixes.size(); i++)
+    for (int i = include_user ? 0 : sys_index; i < prefixes.size(); i++)
     {
 	string path = prefixes[i] + "/" + file;
 	set_status("Trying " + quote(path));
