@@ -653,10 +653,14 @@ dnl User-defined options
 enable_builtin_manual=yes
 enable_builtin_app_defaults=yes
 dnl
-AC_ARG_ENABLE(builtin-manual, 
-[  --disable-builtin-manual         do not compile manual into DDD])
-AC_ARG_ENABLE(builtin-app-defaults, 
-[  --disable-builtin-app-defaults   do not compile app-defaults file into DDD])
+AC_ARG_ENABLE(builtin-manual,
+[  --disable-builtin-manual         do not compile manual into DDD],
+enable_builtin_manual=no,
+enable_builtin_manual=yes)
+AC_ARG_ENABLE(builtin-app-defaults,
+[  --disable-builtin-app-defaults   do not compile app-defaults file into DDD],
+enable_builtin_app_defaults=no,
+enable_builtin_app_defaults=yes)
 dnl
 if test "$enable_builtin_manual" != no; then
 AC_DEFINE(WITH_BUILTIN_MANUAL)
