@@ -665,7 +665,7 @@ XtResource ddd_resources[] = {
 
     {
 	XtNbuttonTips,
-	XtCButtonTips,
+	XtCTips,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, button_tips),
@@ -675,10 +675,30 @@ XtResource ddd_resources[] = {
 
     {
 	XtNvalueTips,
-	XtCValueTips,
+	XtCTips,
 	XtRBoolean,
 	sizeof(Boolean),
 	XtOffsetOf(AppData, value_tips),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
+	XtNbuttonDocs,
+	XtCDocs,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, button_docs),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
+	XtNvalueDocs,
+	XtCDocs,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, value_docs),
 	XtRImmediate,
 	XtPointer(True)
     },
@@ -724,13 +744,63 @@ XtResource ddd_resources[] = {
     },
 
     {
-	XtNmaxValueStatusLength,
+	XtNmaxValueDocLength,
 	XtCMaxLength,
 	XmRInt,
 	sizeof(int),
-	XtOffsetOf(AppData, max_value_status_length),
+	XtOffsetOf(AppData, max_value_doc_length),
 	XmRImmediate,
-	XtPointer(80)
+	XtPointer(128)
+    },
+
+    {
+	XtNbuttonTipDelay,
+	XtCTipDelay,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, button_tip_delay),
+	XmRImmediate,
+	XtPointer(750)
+    },
+
+    {
+	XtNvalueTipDelay,
+	XtCTipDelay,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, value_tip_delay),
+	XmRImmediate,
+	XtPointer(750)
+    },
+
+    {
+	XtNbuttonDocDelay,
+	XtCDocDelay,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, button_doc_delay),
+	XmRImmediate,
+	XtPointer(0)
+    },
+
+    {
+	XtNvalueDocDelay,
+	XtCDocDelay,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, value_doc_delay),
+	XmRImmediate,
+	XtPointer(0)
+    },
+
+    {
+	XtNclearDocDelay,
+	XtCClearDocDelay,
+	XmRInt,
+	sizeof(int),
+	XtOffsetOf(AppData, clear_doc_delay),
+	XmRImmediate,
+	XtPointer(1000)
     },
 
     {

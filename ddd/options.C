@@ -712,6 +712,10 @@ void save_options(Widget origin)
 			 app_data.button_tips) << "\n";
     os << bool_app_value(XtNvalueTips,
 			 app_data.value_tips) << "\n";
+    os << bool_app_value(XtNbuttonDocs,
+			 app_data.button_docs) << "\n";
+    os << bool_app_value(XtNvalueDocs,
+			 app_data.value_docs) << "\n";
     os << bool_app_value(XtNstatusAtBottom,
 			 app_data.status_at_bottom) << "\n";
     os << bool_app_value(XtNseparateExecWindow,

@@ -2002,7 +2002,10 @@ string SourceView::get_word_at_pos(Widget text_w,
     string word = "";
     if (startpos < XmTextPosition(text.length())
 	&& startpos < endpos)
-	word = text(int(startpos), int(endpos - startpos));
+	word = text.at(int(startpos), int(endpos - startpos));
+
+    read_leading_blanks(word);
+    strip_final_blanks(word);
 
     return word;
 }

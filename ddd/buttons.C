@@ -64,8 +64,8 @@ char buttons_rcsid[] =
 //-----------------------------------------------------------------------------
 
 // Maximum length of value in value tip and in status line
-int max_value_tip_length    = 20;
-int max_value_status_length = 80;
+int max_value_tip_length = 20;
+int max_value_doc_length = 128;
 
 
 //-----------------------------------------------------------------------------
@@ -225,6 +225,8 @@ static XmTextPosition textPosOfEvent(Widget widget, XEvent *event)
 static MString gdbDefaultText(Widget widget, XEvent *event, 
 			      bool for_documentation)
 {
+    static MString empty(" ", "rm");
+
     string tip;
     if (XmIsText(widget))
     {
@@ -232,8 +234,14 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 	XmTextPosition startpos, endpos;
 	string expr = 
 	    source_view->get_word_at_event(widget, event, startpos, endpos);
-	if (expr == "" || expr.contains('\n') || expr.contains('('))
-	    return MString(0, true);
+	if (expr == "")
+	    return MString(0, true); // Nothing pointed at
+
+	// Don't invoke the debugger if EXPR is not an identifier.
+	// Otherwise, we might point at `i++' or `f()' and have weird
+	// side effects.
+	if (!expr.matches(rxidentifier))
+	    return empty;
 
 	Position x, y;
 	if (XmTextPosToXY(widget, endpos, &x, &y))
@@ -255,10 +263,26 @@ static MString gdbDefaultText(Widget widget, XEvent *event,
 	tip = gdbValue(expr);
 	if (tip == NO_GDB_ANSWER)
 	    return MString(0, true);
+
 	if (is_invalid(tip))
+	{
+	    if (for_documentation)
+	    {
+#if 0
+		// Give a diagnostic in the status line
+		if (tip.contains('\n'))
+		    tip = tip.before('\n');
+		return MString(tip, "rm");
+#else
+		return empty;
+#endif
+	    }
+
 	    return MString(0, true);
+	}
+
 	int max_length = 
-	    for_documentation ? max_value_status_length : max_value_tip_length;
+	    for_documentation ? max_value_doc_length : max_value_tip_length;
 	shorten(tip, max_length);
     }
     else

@@ -1229,6 +1229,21 @@ int main(int argc, char *argv[])
     // Register own converters
     registerOwnConverters();
 
+    // Set global variables:
+    // - maximum lengths for `shorten' calls
+    max_value_tip_length              = app_data.max_value_tip_length;
+    max_value_doc_length              = app_data.max_value_doc_length;
+    DispBox::max_display_title_length = app_data.max_display_title_length;
+    SourceView::max_popup_expr_length = app_data.max_popup_expr_length;
+
+    // - delays for button and value tips
+    help_button_tip_delay = app_data.button_tip_delay;
+    help_value_tip_delay  = app_data.value_tip_delay;
+    help_button_doc_delay = app_data.button_doc_delay;
+    help_value_doc_delay  = app_data.value_doc_delay;
+    help_clear_doc_delay  = app_data.clear_doc_delay;
+
+
     // Create command shell
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
@@ -1323,12 +1338,6 @@ int main(int argc, char *argv[])
 			      app_data.vsl_library,
 			      app_data.vsl_defs,
 			      app_data.panned_graph_editor);
-
-    // Set maximum lengths for `shorten' calls
-    max_value_tip_length              = app_data.max_value_tip_length;
-    max_value_status_length           = app_data.max_value_status_length;
-    DispBox::max_display_title_length = app_data.max_display_title_length;
-    SourceView::max_popup_expr_length = app_data.max_popup_expr_length;
 
     if (app_data.separate_data_window)
     {

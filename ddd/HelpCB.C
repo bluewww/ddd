@@ -744,17 +744,12 @@ static XtIntervalId pending_doc_timer = 0;
 // The timer used for the delay until the documentation is cleared.
 static XtIntervalId pending_clr_timer = 0;
 
-// Delay before showing button documentation (in ms)
-const int button_documentation_delay = 0;
-
-// Delay before showing text documentation (in ms)
-const int text_documentation_delay = 250;
-
-// Delay before clearing the documentation (in ms)
-const int clear_delay = 1000;
-
-// Delay before showing the tip (in ms)
-const int popup_delay = 750;
+// Delay times (in ms)
+int help_button_tip_delay = 750;  // Delay before raising button tip
+int help_value_tip_delay  = 750;  // Delay before raising value tip
+int help_button_doc_delay = 0;    // Delay before showing button doc
+int help_value_doc_delay  = 0;    // Delay before showing value doc
+int help_clear_doc_delay  = 1000; // Delay before clearing doc
 
 
 // Helper: cancel the timer given in CLIENT_DATA
@@ -1110,7 +1105,7 @@ static void ClearTip(Widget w)
 	XtRemoveTimeOut(pending_tip_timer);
 	pending_tip_timer = 0;
     }
-	
+
     if (tip_popped_up)
     {
 	XtPopdown(tip_shell);
@@ -1137,7 +1132,7 @@ static void ClearTip(Widget w)
 
 	pending_clr_timer =
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
-			    clear_delay, 
+			    help_clear_doc_delay, 
 			    ClearDocumentation, XtPointer(w));
     }
 }
@@ -1158,12 +1153,12 @@ static void RaiseTip(Widget w, XEvent *event)
 	ti.event  = *event;
 	ti.widget = w;
 
-	int documentation_delay = XmIsText(w) ? 
-	    text_documentation_delay : button_documentation_delay;
+	int doc_delay = 
+	    XmIsText(w) ? help_value_doc_delay : help_button_doc_delay;
 
 	pending_doc_timer =
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
-			    documentation_delay,
+			    doc_delay,
 			    ShowDocumentation, XtPointer(&ti));
 
 	// Should W be destroyed beforehand, cancel timeout
@@ -1177,9 +1172,12 @@ static void RaiseTip(Widget w, XEvent *event)
 	ti.event  = *event;
 	ti.widget = w;
 
+	int tip_delay = 
+	    XmIsText(w) ? help_value_tip_delay : help_button_tip_delay;
+
 	pending_tip_timer = 
 	    XtAppAddTimeOut(XtWidgetToApplicationContext(w),
-			    popup_delay, 
+			    tip_delay,
 			    PopupTip, XtPointer(&ti));
 
 	// Should W be destroyed beforehand, cancel timeout
@@ -1194,21 +1192,21 @@ static void HandleTipEvent(Widget w,
 			   XEvent *event, 
 			   Boolean * /* continue_to_dispatch */)
 {
-    // If user Lisa presses a mouse button on the widget, activating it,
-    // we assume she knows what she is doing, and popdown the help.
     switch (event->type)
     {
     case EnterNotify:
+	if (!XmIsText(w))
+	{
+	    ClearTip(w);
+	    RaiseTip(w, event);
+	}
+	break;
+
     case LeaveNotify:
     case ButtonPress:
     case ButtonRelease:
-	{
-	    ClearTip(w);
-
-	    if (event->type == EnterNotify)
-		RaiseTip(w, event);
-	    break;
-	}
+	ClearTip(w);
+	break;
 
     case MotionNotify:
 	{
@@ -1222,9 +1220,11 @@ static void HandleTipEvent(Widget w,
 		last_motion_position = pos;
 
 		ClearTip(w);
-		RaiseTip(w, event);
+		if (pos != XmTextPosition(-1))
+		    RaiseTip(w, event);
 	    }
 	}
+        break;
     }
 }
 

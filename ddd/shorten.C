@@ -132,6 +132,8 @@ void shorten(string& expr, unsigned max_length)
 	    }
 	    if (&rx == &rxidentifier && number_of_rxs <= 2)
 		break;
+	    if (number_of_rxs == 0)
+		break;
 
 	    int kill = number_of_rxs / 2 + 1;
 	    

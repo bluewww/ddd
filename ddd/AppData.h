@@ -164,16 +164,26 @@
 #define XtNallRegisters          "allRegisters"
 #define XtCAllRegisters          "AllRegisters"
 #define XtNbuttonTips            "buttonTips"
-#define XtCButtonTips            "ButtonTips"
 #define XtNvalueTips             "valueTips"
-#define XtCValueTips             "ValueTips"
+#define XtCTips                  "Tips"
+#define XtNbuttonDocs            "buttonDocs"
+#define XtNvalueDocs             "valueDocs"
+#define XtCDocs                  "Docs"
 #define XtNstatusAtBottom        "statusAtBottom"
 #define XtCStatusAtBottom        "StatusAtBottom"
 #define XtNmaxDisplayTitleLength "maxDisplayTitleLength"
 #define XtNmaxPopupExprLength    "maxPopupExprLength"
 #define XtNmaxValueTipLength     "maxValueTipLength"
-#define XtNmaxValueStatusLength  "maxValueStatusLength"
+#define XtNmaxValueDocLength     "maxValueDocLength"
 #define XtCMaxLength             "MaxLength"
+#define XtNbuttonTipDelay        "buttonTipDelay"
+#define XtNvalueTipDelay         "valueTipDelay"
+#define XtCTipDelay              "TipDelay"
+#define XtNbuttonDocDelay        "buttonDocDelay"
+#define XtNvalueDocDelay         "valueDocDelay"
+#define XtCDocDelay              "DocDelay"
+#define XtNclearDocDelay         "clearDocDelay"
+#define XtCClearDocDelay         "ClearDocDelay"
 #define XtNdddinitVersion        "dddinitVersion"
 #define XtNappDefaultsVersion    "appDefaultsVersion"
 #define XtCVersion               "Version"
@@ -244,11 +254,18 @@ struct AppData {
     Boolean all_registers;
     Boolean button_tips;
     Boolean value_tips;
+    Boolean button_docs;
+    Boolean value_docs;
     Boolean status_at_bottom;
     int     max_display_title_length;
     int     max_popup_expr_length;
     int     max_value_tip_length;
-    int     max_value_status_length;
+    int     max_value_doc_length;
+    int     button_tip_delay;
+    int     value_tip_delay;
+    int     button_doc_delay;
+    int     value_doc_delay;
+    int     clear_doc_delay;
     String  dddinit_version;
     String  app_defaults_version;
 };

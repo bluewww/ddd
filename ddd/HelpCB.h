@@ -139,5 +139,12 @@ extern Pixmap (*helpOnVersionPixmapProc)(Widget w);
 // Additional text to display at ``help on version''
 extern MString helpOnVersionExtraText;
 
+// Delay times (in ms)
+extern int help_button_tip_delay; // delay before raising button tip
+extern int help_value_tip_delay;  // delay before raising value tip
+extern int help_button_doc_delay; // delay before showing button doc
+extern int help_value_doc_delay;  // delay before showing value doc
+extern int help_clear_doc_delay;  // delay before clearing doc
+
 #endif // _DDD_HelpCB_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

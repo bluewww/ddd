@@ -493,7 +493,29 @@ Ddd*buttonTips:			true
 Ddd*valueTips:			true
 
 
-! The maximum length of a data display title.
+! The same info as in tips may also be shown in the status line (`docs').
+! This is less annoying, but may slow down DDD a bit.
+! Do we want docs on buttons, telling us their meaning?
+Ddd*buttonDocs:			true
+
+! Do we want docs on variables in the source code, telling us their value?
+Ddd*valueDocs:			true
+
+
+! Delays for showing tips and docs
+! Time (in ms) to spend before raising a button or value tip
+Ddd*buttonTipDelay:		750
+Ddd*valueTipDelay:		750
+
+! Time (in ms) to spend before showing a button or value doc:
+Ddd*buttonDocDelay:		100
+Ddd*valueDocDelay:		100
+
+! Time (in ms) to spend before clearing the value doc:
+Ddd*clearDocDelay:		1000
+
+
+! The maximum length of a data display title (in characters)
 ! Longer names are replaced by `..'; `foo->bar->blue' becomes `foo->..->blue'.
 Ddd*maxDisplayTitleLength:	20
 
@@ -503,8 +525,9 @@ Ddd*maxPopupExprLength:		20
 ! The maximum length of a value tip.
 Ddd*maxValueTipLength:		40
 
-! The maximum number length of a value shown in the status line.
-Ddd*maxValueStatusLength:	120
+! The maximum length of a value doc.
+Ddd*maxValueDocLength:		120
+
 
 
 ! Focus policy
