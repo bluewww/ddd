@@ -645,6 +645,7 @@ LIB_OBJECTS = \
 # is the source window, `DataDisp.C' is the data window.
 DDD_OBJECTS = \
 	args.o       \
+	attach.o     \
 	buttons.o    \
 	charsets.o   \
 	cmdtty.o     \

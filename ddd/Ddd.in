@@ -1722,6 +1722,9 @@ Ddd*menubar.program*helpString:	\
 @tt \267 @bf Run... @rm - start the debugged program.\n\
 @tt \267 @bf Run Again @rm - run with current arguments.\n\
 \n\
+@tt \267 @bf Attach... @rm - attach to a process outside of @DDD@.\n\
+@tt \267 @bf Detach @rm - Detach a process previously attached.\n\
+\n\
 @tt \267 @bf Step @rm - step program until it reaches \
 a different source line.\n\
 @tt \267 @bf Step Instruction @rm - step exactly one machine instruction.\n\
@@ -1745,11 +1748,21 @@ Ddd*menubar*programMenu.run.documentationString: \
 @rm Start debugged program.  You may specify arguments to give it.
 
 Ddd*menubar*programMenu.run_again.labelString:	   Run Again
-Ddd*menubar*programMenu.run_again.mnemonic:	   A
+Ddd*menubar*programMenu.run_again.mnemonic:	   g
 Ddd*menubar*programMenu.run_again.accelerator:	   Ctrl Shift<Key>X
 Ddd*menubar*programMenu.run_again.acceleratorText: Ctrl+Shift+X
 Ddd*menubar*programMenu.run_again.documentationString: \
 @rm Restart debugged program, using the previous arguments.
+
+Ddd*menubar*programMenu.attach.labelString:	   Attach...
+Ddd*menubar*programMenu.attach.mnemonic:	   A
+Ddd*menubar*programMenu.attach.documentationString: \
+@rm Attach to a process running outside of @DDD@.
+
+Ddd*menubar*programMenu.detach.labelString:	   Detach
+Ddd*menubar*programMenu.detach.mnemonic:	   D
+Ddd*menubar*programMenu.detach.documentationString: \
+@rm Detach a process or file previously attached.
 
 Ddd*menubar*programMenu.step.labelString:	   Step
 Ddd*menubar*programMenu.step.mnemonic:		   S
@@ -1801,7 +1814,7 @@ Ddd*menubar*programMenu.break.documentationString: \
 @rm Interrupt program (or current @GDB@ command)
 
 Ddd*menubar*programMenu.quit.labelString:	   Abort
-Ddd*menubar*programMenu.quit.mnemonic:		   A
+Ddd*menubar*programMenu.quit.mnemonic:		   b
 Ddd*menubar*programMenu.quit.accelerator:	   Ctrl<Key>\\ 
 Ddd*menubar*programMenu.quit.acceleratorText:	   Ctrl+\\ 
 Ddd*menubar*programMenu.quit.documentationString: \
@@ -2118,22 +2131,23 @@ Ddd*menubar.help*helpString: \
 \
 @rm This is the @sl Help Menu.@rm\n\
 \n\
-@tt \267 @bf About @DDD@... @rm - some general information about @DDD@.\n\
+@tt \267 @bf What Next...@rm - give help on what to do next.\n\
 \n\
 @tt \267 @bf On Context... @rm - click on an item and get help on it.\n\
 @tt \267 @bf On Window... @rm - help on the application itself.\n\
 @tt \267 @bf On Help... @rm - help on how to use the help facility.\n\
 \n\
+@tt \267 @bf About @DDD@... @rm - some general information about @DDD@.\n\
 @tt \267 @bf @DDD@ Manual... @rm - the @DDD@ on-line manual.\n\
 @tt \267 @bf @GDB@ Manual... @rm - the @GDB@ on-line manual.\n\
 \n\
 @tt \267 @bf @DDD@ License... @rm - the @DDD@ license.\n\
 @tt \267 @bf @DDD@ WWW Page... @rm - the @DDD@ WWW page.
 
-Ddd*helpMenu.onVersion.labelString:	About @DDD@...
-Ddd*helpMenu.onVersion.mnemonic:	A
-Ddd*helpMenu.onVersion.documentationString:	\
-@rm Information about the version of @DDD@ you are running
+Ddd*helpMenu.onWindow.labelString:	What Next...
+Ddd*helpMenu.onWindow.mnemonic:		N
+Ddd*helpMenu.onWindow.documentationString:	\
+@rm Suggestions on what to do next
 
 Ddd*helpMenu.onContext.labelString:	On Context...
 Ddd*helpMenu.onContext.mnemonic:	C
@@ -2152,6 +2166,11 @@ Ddd*helpMenu.onHelp.labelString:	On Help...
 Ddd*helpMenu.onHelp.mnemonic:		H
 Ddd*helpMenu.onHelp.documentationString:	\
 @rm How to use the context-sensitive help
+
+Ddd*helpMenu.onVersion.labelString:	About @DDD@...
+Ddd*helpMenu.onVersion.mnemonic:	A
+Ddd*helpMenu.onVersion.documentationString:	\
+@rm Information about the version of @DDD@ you are running
 
 Ddd*helpMenu.dddManual.labelString:		@DDD@ Manual...
 Ddd*helpMenu.dddManual.mnemonic:		D
@@ -3917,6 +3936,26 @@ such that you can re-use them at a later time.\n\
 Select specific arguments to have them copied to the argument prompt.\n\
 Click on @bf OK @rm or @bf Apply @rm to start the make program \
 with the selected arguments.
+
+Ddd*attach_dialog_popup.title: @DDD@: Attach Process
+Ddd*attach_dialog.listLabelString:	Processes
+Ddd*attach_dialog*selectionPolicy:	XmSINGLE_SELECT
+
+Ddd*attach_dialog*okLabelString:	Attach
+Ddd*attach_dialog*applyLabelString:	Update
+
+Ddd*attach_dialog*helpString:	\
+@rm This window shows a @sl List of Processes @rm you can attach to.\n\
+\n\
+Select a specific process and click on @bf Attach @rm to debug it.\n\
+Click on @bf Update @rm to update the list of processes.\n\
+\n\
+Before attaching to a running process, you should first use the\n\
+@bf Open Program...@rm command to specify the program running in the process\n\
+and to load its symbol table.\n\
+\n\
+After debugging, use the @bf Detach @rm command to resume process execution.
+
 
 
 !-----------------------------------------------------------------------------

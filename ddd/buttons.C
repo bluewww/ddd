@@ -41,6 +41,7 @@ char buttons_rcsid[] =
 #include "HelpCB.h"
 #include "SourceView.h"
 #include "StringSA.h"
+#include "attach.h"
 #include "bool.h"
 #include "charsets.h"
 #include "comm-manag.h"
@@ -482,34 +483,41 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 
 	for (int j = 0; callbacks != 0 && callbacks[j].callback != 0; j++)
 	{
+	    string cmd = "";
+
 	    if (callbacks[j].callback == gdbCommandCB)
 	    {
-		string cmd = String(callbacks[j].closure);
+		cmd = String(callbacks[j].closure);
 		cmd = cmd.through(rxidentifier);
-		if (cmd != "")
+	    }
+	    else if (callbacks[j].callback == gdbAttachCB)
+	    {
+		cmd = XtName(button);
+	    }
+
+	    if (cmd != "")
+	    {
+		int next_invocation = 0;
+		XtAppContext app_context = 
+		    XtWidgetToApplicationContext(button);
+
+		string answer = gdbHelp(cmd);
+		if (answer == NO_GDB_ANSWER)
 		{
-		    int next_invocation = 0;
-		    XtAppContext app_context = 
-			XtWidgetToApplicationContext(button);
-
-		    string answer = gdbHelp(cmd);
-		    if (answer == NO_GDB_ANSWER)
-		    {
-			// No answer - try again in 20ms
-			next_invocation = 20;
-		    }
-		    else
-		    {
-			XtSetSensitive(button, is_known_command(answer));
-			button = 0;          // Don't process this one again
-			next_invocation = 5; // Process next button in 5ms
-		    }
-
-		    verify_id = XtAppAddTimeOut(app_context, next_invocation,
-						VerifyButtonWorkProc, 
-						client_data);
-		    return;
+		    // No answer - try again in 20ms
+		    next_invocation = 20;
 		}
+		else
+		{
+		    XtSetSensitive(button, is_known_command(answer));
+		    button = 0;          // Don't process this one again
+		    next_invocation = 5; // Process next button in 5ms
+		}
+
+		verify_id = XtAppAddTimeOut(app_context, next_invocation,
+					    VerifyButtonWorkProc, 
+					    client_data);
+		return;
 	    }
 	}
     }

@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "12 Jun 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "29 Jul 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -2939,6 +2939,9 @@ The commmand to list all source files on the remote host.  The string
 .B "printCommand (\fPclass\fB PrintCommand)"
 The command to print a postscript file.  Usually `\fBlp\fR' or
 `\fBlpr\fR'.
+.TP
+.B "psCommand (\fPclass\fB PsCommand)"
+The command to get a list of processes.  Usually `\fBps\fR'.
 .TP
 .B "rshCommand (\fPclass\fB RshCommand)"
 The remote shell command to invoke tty-based commands on remote

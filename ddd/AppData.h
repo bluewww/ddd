@@ -129,6 +129,8 @@
 #define XtCListDirCommand        "ListDirCommand"
 #define XtNuncompressCommand     "uncompressCommand"
 #define XtCUncompressCommand     "UncompressCommand"
+#define XtNpsCommand             "psCommand"
+#define XtCPsCommand             "PsCommand"
 #define XtNwwwPage               "wwwPage"
 #define XtCWWWPage               "WWWPage"
 #define XtNwwwCommand            "wwwCommand"
@@ -271,6 +273,7 @@ struct AppData {
     String  list_core_command;
     String  list_dir_command;
     String  uncompress_command;
+    String  ps_command;
     String  www_page;
     String  www_command;
     Boolean show_invocation;

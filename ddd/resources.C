@@ -496,6 +496,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+        XtNpsCommand,
+	XtCPsCommand,
+	XtRString,
+	sizeof(String),
+	XtOffsetOf(AppData, ps_command),
+	XtRString,
+	XtPointer("ps")
+    },
+
+    {
         XtNwwwPage,
 	XtCWWWPage,
 	XtRString,

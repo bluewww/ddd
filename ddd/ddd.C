@@ -189,9 +189,10 @@ extern "C" {
 #include "MakeMenu.h"
 #include "SourceView.h"
 #include "VSEFlags.h"
-#include "editing.h"
+#include "WhatNextCB.h"
 #include "args.h"
 #include "assert.h"
+#include "attach.h"
 #include "bool.h"
 #include "buttons.h"
 #include "charsets.h"
@@ -546,6 +547,9 @@ static MMDesc program_menu[] =
 {
     { "run",         MMPush, { gdbRunCB }},
     { "run_again",   MMPush, { gdbCommandCB, "run" }},
+    MMSep,
+    { "attach",      MMPush, { gdbAttachCB }},
+    { "detach",      MMPush, { gdbCommandCB, "detach" }},
     MMSep,
     { "step",        MMPush, { gdbCommandCB, "step" }},
     { "stepi",       MMPush, { gdbCommandCB, "stepi" }},
@@ -959,12 +963,15 @@ static Widget help_on_window_w = 0;
 
 static MMDesc help_menu[] = 
 {
-    {"onVersion",   MMPush, { HelpOnVersionCB }},
+#if 0
+    {"whatNext",    MMPush, { WhatNextCB }},
     MMSep,
+#endif
     {"onContext",   MMPush, { HelpOnContextCB }},
     {"onWindow",    MMPush, { HelpOnWindowCB }, NULL, &help_on_window_w },
     {"onHelp",      MMPush, { HelpOnHelpCB }},
     MMSep,
+    {"onVersion",   MMPush, { HelpOnVersionCB }},
     {"dddManual",   MMPush, { DDDManualCB }},
     {"gdbManual",   MMPush, { GDBManualCB }},
     MMSep,
@@ -995,7 +1002,7 @@ static MMDesc source_menubar[] =
                                    source_file_menu },
     { "edit",    MMMenu,           { gdbUpdateEditCB }, source_edit_menu },
     { "options", MMMenu,           MMNoCB, options_menu },
-    { "view",     MMMenu,          { gdbUpdateViewCB, source_view_menu }, 
+    { "view",    MMMenu,           { gdbUpdateViewCB, source_view_menu }, 
                                    source_view_menu },
     { "program", MMMenu,           MMNoCB, program_menu },
     { "stack",   MMMenu,           MMNoCB, stack_menu },
