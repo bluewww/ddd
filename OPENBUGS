@@ -126,4 +126,8 @@ detail.
     with "run".  This works fine with gdb so i assume ddd is
     responsible.
 
-284 (Insert new bugs here)
+284 Graham Hudspith <geordie@lucent.com> says that using separate
+    windows, closing the DDD 2.99.2 source window gives a `BadWindow'
+    error.
+
+285 (Insert new bugs here)
