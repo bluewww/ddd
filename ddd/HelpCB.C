@@ -1293,72 +1293,80 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 
 	    int fraction_base = 100;
 	    XtVaGetValues(parent, XmNfractionBase, &fraction_base, NULL);
-
-	    unsigned char left_attachment   = XmATTACH_NONE;
-	    unsigned char right_attachment  = XmATTACH_NONE;
-	    unsigned char top_attachment    = XmATTACH_NONE;
-	    unsigned char bottom_attachment = XmATTACH_NONE;
-
-	    XtVaGetValues(w, 
-			  XmNleftAttachment,   &left_attachment,
-			  XmNrightAttachment,  &right_attachment,
-			  XmNtopAttachment,    &top_attachment,
-			  XmNbottomAttachment, &bottom_attachment,
-			  NULL);
-
-	    int left_position   = 0;
-	    int right_position  = 0;
-	    int top_position    = 0;
-	    int bottom_position = 0;
-
-	    XtVaGetValues(w, 
-			  XmNleftPosition,   &left_position,
-			  XmNrightPosition,  &right_position,
-			  XmNtopPosition,    &top_position,
-			  XmNbottomPosition, &bottom_position,
-			  NULL);
-
-	    switch (placement)
+	    if (fraction_base == 100)
 	    {
-	    case BottomLeft:
-	    case BottomRight:
-		if (bottom_attachment == XmATTACH_POSITION
-		    && bottom_position >= fraction_base)
-		    ok = true;
-		if (bottom_attachment == XmATTACH_FORM
-		    || top_attachment == XmATTACH_OPPOSITE_FORM)
-		    ok = true;
-		break;
+		// Simple form
+		ok = true;
+	    }
+	    else
+	    {
+		// Command tool or likewise
+		unsigned char left_attachment   = XmATTACH_NONE;
+		unsigned char right_attachment  = XmATTACH_NONE;
+		unsigned char top_attachment    = XmATTACH_NONE;
+		unsigned char bottom_attachment = XmATTACH_NONE;
 
-	    case RightBottom:
-	    case RightTop:
-		if (right_attachment == XmATTACH_POSITION
-		    && right_position >= fraction_base)
-		    ok = true;
-		if (right_attachment == XmATTACH_FORM
-		    || left_attachment == XmATTACH_OPPOSITE_FORM)
-		    ok = true;
-		break;
+		XtVaGetValues(w, 
+			      XmNleftAttachment,   &left_attachment,
+			      XmNrightAttachment,  &right_attachment,
+			      XmNtopAttachment,    &top_attachment,
+			      XmNbottomAttachment, &bottom_attachment,
+			      NULL);
 
-	    case TopLeft:
-	    case TopRight:
-		if (top_attachment == XmATTACH_POSITION
-		    && top_position == 0)
-		    ok = true;
-		if (top_attachment == XmATTACH_FORM
-		    || bottom_attachment == XmATTACH_OPPOSITE_FORM)
-		    ok = true;
-		break;
+		int left_position   = 0;
+		int right_position  = 0;
+		int top_position    = 0;
+		int bottom_position = 0;
 
-	    case LeftBottom:
-	    case LeftTop:
-		if (left_attachment == XmATTACH_POSITION
-		    && left_position == 0)
-		    ok = true;
-		if (left_attachment == XmATTACH_FORM
-		    || right_attachment == XmATTACH_OPPOSITE_FORM)
-		    ok = true;
-		break;
+		XtVaGetValues(w, 
+			      XmNleftPosition,   &left_position,
+			      XmNrightPosition,  &right_position,
+			      XmNtopPosition,    &top_position,
+			      XmNbottomPosition, &bottom_position,
+			      NULL);
+
+		switch (placement)
+		{
+		case BottomLeft:
+		case BottomRight:
+		    if (bottom_attachment == XmATTACH_POSITION
+			&& bottom_position >= fraction_base)
+			ok = true;
+		    if (bottom_attachment == XmATTACH_FORM
+			|| top_attachment == XmATTACH_OPPOSITE_FORM)
+			ok = true;
+		    break;
+
+		case RightBottom:
+		case RightTop:
+		    if (right_attachment == XmATTACH_POSITION
+			&& right_position >= fraction_base)
+			ok = true;
+		    if (right_attachment == XmATTACH_FORM
+			|| left_attachment == XmATTACH_OPPOSITE_FORM)
+			ok = true;
+		    break;
+
+		case TopLeft:
+		case TopRight:
+		    if (top_attachment == XmATTACH_POSITION
+			&& top_position == 0)
+			ok = true;
+		    if (top_attachment == XmATTACH_FORM
+			|| bottom_attachment == XmATTACH_OPPOSITE_FORM)
+			ok = true;
+		    break;
+
+		case LeftBottom:
+		case LeftTop:
+		    if (left_attachment == XmATTACH_POSITION
+			&& left_position == 0)
+			ok = true;
+		    if (left_attachment == XmATTACH_FORM
+			|| right_attachment == XmATTACH_OPPOSITE_FORM)
+			ok = true;
+		    break;
+		}
 	    }
 	}
 	else
