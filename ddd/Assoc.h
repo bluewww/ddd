@@ -262,20 +262,20 @@ public:
 	return *this;
     }
 
-    const K& key() const   { return rec->key;   }
-    const V& value() const { return rec->value; }
-    V& value()             { return rec->value; }
+    const K& key() const   { return this->rec->key;   }
+    const V& value() const { return this->rec->value; }
+    V& value()             { return this->rec->value; }
 
-    bool ok() { return rec != 0; }
-    AssocIter<K,V> next() { return AssocIter<K,V>(rec->next); }
+    bool ok() { return this->rec != 0; }
+    AssocIter<K,V> next() { return AssocIter<K,V>(this->rec->next); }
     const AssocIter<K,V>& operator ++ ()
     {
-	rec = rec->next; return *this;
+	this->rec = this->rec->next; return *this;
     }
     const AssocIter<K,V> operator ++ (int)
     {
 	AssocIter<K,V> old(*this);
-	rec = rec->next;
+	this->rec = this->rec->next;
 	return old;
     }
 };
@@ -299,7 +299,7 @@ public:
     // Truncate array up to assoc iterator
     void release (const AssocMark<K, V>& mark)
     {
-	AssocRec<K, V> *e = entries;
+	AssocRec<K, V> *e = this->entries;
 
 	while (e != 0 && e != mark.rec)
 	{
@@ -309,7 +309,7 @@ public:
 	    delete tmp;
 	}
 
-	entries = e;
+	this->entries = e;
     }
 
     // Constructor
