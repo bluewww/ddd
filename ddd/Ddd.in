@@ -1268,7 +1268,7 @@ Ddd*menubar.commands*contextHelpString:	\
 @tt \267 @bf Complete @rm - complete the current command.
 
 Ddd*commandsMenu.history.labelString:	Command History...
-Ddd*commandsMenu.prev.mnemonic:		H
+Ddd*commandsMenu.history.mnemonic:	H
 
 Ddd*commandsMenu.prev.labelString:	Previous
 Ddd*commandsMenu.prev.mnemonic:		P
