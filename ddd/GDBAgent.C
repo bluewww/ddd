@@ -302,7 +302,9 @@ bool GDBAgent::send_user_ctrl_cmd(string cmd, void *user_data)
     if (user_data)
 	_user_data = user_data;
 
-    if (cmd == '\004')
+    // Upon ^D, GDB is no more in state to receive commands.
+    // Expect a new prompt to appear.
+    if (cmd == '\004' && state == ReadyWithPrompt)
 	state = BusyOnCmd;
 
     write((const char *)cmd, cmd.length());
