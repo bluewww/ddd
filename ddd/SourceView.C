@@ -439,8 +439,9 @@ void SourceView::line_popup_set_tempCB (Widget w,
 
 	// Make sure we get the number of the temporary breakpoint
 	syncCommandQueue();
-	gdb_command("when at " + itostring(line_nr) 
-		    + command_list(clear_command(itostring(line_nr))), w);
+	string line = itostring(line_nr);
+	gdb_command("when at " + line + " " 
+		    + command_list(clear_command(line)), w);
 	break;
     }
 }
@@ -461,7 +462,7 @@ void SourceView::address_popup_set_tempCB (Widget w,
 
 	// Make sure we get the number of the temporary breakpoint
 	syncCommandQueue();
-	gdb_command("when $pc == " + address 
+	gdb_command("when $pc == " + address + " "
 		    + command_list(clear_command(address)), w);
 	break;
     }
