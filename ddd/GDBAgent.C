@@ -422,6 +422,7 @@ bool GDBAgent::send_user_cmd(string cmd, void *user_data)  // without `\n'
 
 	// Process CMD
 	state = BusyOnCmd;
+	complete_answer = "";
 	callHandlers(ReadyForQuestion, (void *)false);
 	cmd += '\n';
 	write(cmd);
@@ -447,7 +448,10 @@ bool GDBAgent::send_user_ctrl_cmd(string cmd, void *user_data)
     // Upon ^D, GDB is no more in state to receive commands.
     // Expect a new prompt to appear.
     if (cmd == '\004' && state == ReadyWithPrompt)
+    {
 	state = BusyOnCmd;
+	complete_answer = "";
+    }
 
     write(cmd);
     flush();
@@ -477,6 +481,7 @@ bool GDBAgent::send_user_cmd_plus (const StringArray& cmds,
 
     // Process command
     state = BusyOnCmd;
+    complete_answer = "";
     callHandlers(ReadyForQuestion, (void *)false);
     user_cmd += '\n';
     write(user_cmd);
@@ -584,8 +589,11 @@ void GDBAgent::init_qu_array (const StringArray& cmds,
 //-----------------------------------------------------------------------------
 
 // Return true iff ANSWER ends with primary prompt.
-bool GDBAgent::ends_with_prompt (const string& answer)
+bool GDBAgent::ends_with_prompt (const string& ans)
 {
+    string answer = ans;
+    strip_control(answer);
+
     switch (type())
     {
     case DBX:
@@ -638,8 +646,11 @@ static bool ends_in(const string& answer, const string& prompt)
 }
 
 // Return true iff ANSWER ends with secondary prompt.
-bool GDBAgent::ends_with_secondary_prompt (const string& answer)
+bool GDBAgent::ends_with_secondary_prompt (const string& ans)
 {
+    string answer = ans;
+    strip_control(answer);
+
     switch (type())
     {
     case DBX:
@@ -686,6 +697,7 @@ string GDBAgent::requires_reply (const string& answer)
 
     string last_line = answer.chars() + last_line_index;
     last_line.downcase();
+    strip_control(last_line);
 
     if (last_line.contains("end") 
 	|| last_line.contains("line")
@@ -936,21 +948,26 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
     DataLength* dl = (DataLength *) call_data;
     string answer(dl->data, dl->length);
 
+    gdb->handle_input(answer);
+}
+
+void GDBAgent::handle_echo(string& answer)
+{
     // Check for echoed characters.  Every now and then, the TTY setup
     // fails such that we get characters echoed back.  This may also
     // happen with remote connections.
-    if (gdb->echoed_characters >= 0)
+    if (echoed_characters >= 0)
     {
 	int i = 0;
-	int e = gdb->echoed_characters;
-	while (i < int(answer.length()) && e < int(gdb->last_written.length()))
+	int e = echoed_characters;
+	while (i < int(answer.length()) && e < int(last_written.length()))
 	{
 	    if (answer[i] == '\r')
 	    {
 		// Ignore `\r' in comparisons
 		i++;
 	    }
-	    else if (answer[i] == gdb->last_written[e])
+	    else if (answer[i] == last_written[e])
 	    {
 		i++, e++;
 	    }
@@ -961,49 +978,51 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	    }
 	}
 
-	if (e >= ECHO_THRESHOLD && e >= int(gdb->last_written.length()))
+	if (e >= ECHO_THRESHOLD && e >= int(last_written.length()))
 	{
 	    // All characters last written have been echoed.
 	    // => Remove echoed characters and keep on processing
-	    gdb->callHandlers(EchoDetected);
+	    callHandlers(EchoDetected);
 	    answer = answer.from(i);
-	    gdb->echoed_characters = -1;
+	    echoed_characters = -1;
 	}
 	else if (i >= ECHO_THRESHOLD && i >= int(answer.length()))
 	{
 	    // All characters received so far have been echoed.
 	    // => Wait for next input
 	    answer = "";
-	    gdb->echoed_characters = e;
+	    echoed_characters = e;
 	}
 	else
 	{
 	    // No echo.
 	    // => Restore any echoed characters and keep on processing
-	    answer.prepend(gdb->last_written.before(gdb->echoed_characters));
-	    gdb->echoed_characters = -1;
+	    answer.prepend(last_written.before(echoed_characters));
+	    echoed_characters = -1;
 	}
     }
+}
 
-    // Strip all control characters
-    gdb->strip_control(answer);
-    gdb->strip_dbx_comments(answer);
-
+void GDBAgent::handle_more(string& answer)
+{
     // Check for `More' prompt
-    string reply = gdb->requires_reply(answer);
+    string reply = requires_reply(answer);
     if (reply != "")
     {
 	// Oops - this should not happen.  Just hit the reply key.
-	gdb->write(reply);
-	gdb->flush();
+	write(reply);
+	flush();
 
 	// Ignore the last line (containing the `More' prompt)
 	int last_beginning_of_line = answer.index('\n', -1) + 1;
 	answer.from(last_beginning_of_line) = "";
     }
+}
 
+void GDBAgent::handle_reply(string& answer)
+{
     // Check for secondary prompt
-    if (gdb->ends_with_secondary_prompt(answer))
+    if (ends_with_secondary_prompt(answer))
     {
 	// GDB requires more information here: probably the
 	// selection of an ambiguous C++ name.
@@ -1016,152 +1035,155 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 	info.reply    = "1\n";
 
 	// Allow handlers to override the default reply
-	gdb->callHandlers(ReplyRequired, (void *)&info);
+	callHandlers(ReplyRequired, (void *)&info);
 
 	// Send reply immediately
-	gdb->write(info.reply);
-	gdb->flush();
+	write(info.reply);
+	flush();
 
 	// Ignore the selection
 	answer = info.question;
     }
+}
+
+void GDBAgent::handle_input(string& answer)
+{
+    handle_echo(answer);
+    handle_more(answer);
+    handle_reply(answer);
 
     // Handle all other GDB output, depending on current state.
-    switch (gdb->state)
+    switch (state)
     {
     case ReadyWithPrompt:
 	// We have a prompt, and still get input?  Maybe this is an
-	// answer to a command sent before the prompt was received - 
+	// answer to a command sent before the prompt was received -
 	// or a reply to a control character (`Quit').
+	strip_control(answer);
 	_gdb_out(answer);
 	break;
 
     case BusyOnInitialCmds:
     case BusyOnCmd:
-	if (!gdb->ends_with_prompt(answer))
+	complete_answer += answer;
+
+	if (_on_answer != 0)
 	{
-            // Received only part of the answer
-	    if (gdb->_on_answer != 0)
-		gdb->_on_answer (answer, gdb->_user_data);
+	    if (ends_with_prompt(complete_answer))
+		normalize_answer(answer);
+	    else
+		strip_control(answer);
+	    _on_answer(answer, _user_data);
 	}
-	else
+
+	if (ends_with_prompt(complete_answer))
 	{
             // Received complete answer (GDB issued prompt)
-	    gdb->normalize_answer(answer);
-
-	    if (answer != "" && gdb->_on_answer != 0)
-		gdb->_on_answer (answer, gdb->_user_data);
 
             // Set new state and call answer procedure
-	    if (gdb->state == BusyOnInitialCmds)
+	    if (state == BusyOnInitialCmds)
 	    {
-		if (!gdb->questions_waiting) 
+		if (!questions_waiting) 
 		{
-		    if (gdb->_on_answer_completion != 0)
-			gdb->_on_answer_completion (gdb->_user_data);
+		    state = ReadyWithPrompt;
+		    callHandlers(ReadyForCmd, (void *)true);
+		    callHandlers(ReadyForQuestion, (void *)true);
 
-		    gdb->state = ReadyWithPrompt;
-		    gdb->callHandlers(ReadyForCmd, (void *)true);
-		    gdb->callHandlers(ReadyForQuestion, (void *)true);
+		    if (_on_answer_completion != 0)
+			_on_answer_completion (_user_data);
 		}
 		else
 		{
-		    gdb->state = BusyOnQuArray;
+		    state = BusyOnQuArray;
 
 		    // Send first question
-		    gdb->write(gdb->cmd_array[0]);
-		    gdb->flush();
+		    write(cmd_array[0]);
+		    flush();
 		}
 	    }
-	    else if (!gdb->questions_waiting)
+	    else if (!questions_waiting)
 	    {
-		if (gdb->_on_answer_completion != 0)
-		    gdb->_on_answer_completion (gdb->_user_data);
+		state = ReadyWithPrompt;
+		callHandlers(ReadyForQuestion, (void *)true);
 
-		gdb->state = ReadyWithPrompt;
-		gdb->callHandlers(ReadyForQuestion, (void *)true);
+		if (_on_answer_completion != 0)
+		    _on_answer_completion (_user_data);
 	    }
 	    else
 	    {
-		gdb->state = BusyOnQuArray;
-		gdb->callHandlers(ReadyForCmd, (void *)false);
+		state = BusyOnQuArray;
+		callHandlers(ReadyForCmd, (void *)false);
 
 		// Send first question
-		gdb->write(gdb->cmd_array[0]);
-		gdb->flush();
+		write(cmd_array[0]);
+		flush();
 	    }
 	}
 	break;
 
     case BusyOnQuestion:
-	if (!gdb->ends_with_prompt(answer))
-	{
-            // Received only part of the answer
-	    gdb->complete_answer += answer;
-	}
-	else
+	complete_answer += answer;
+
+	if (ends_with_prompt(complete_answer))
 	{
             // Received complete answer (GDB issued prompt)
-	    gdb->complete_answer += answer;
-	    gdb->normalize_answer(gdb->complete_answer);
-
-	    if (gdb->_on_question_completion != 0)
-		gdb->_on_question_completion (gdb->complete_answer, 
-					      gdb->_qu_data);
+	    normalize_answer(complete_answer);
 
             // Set new state
-	    gdb->state = ReadyWithPrompt;
-	    gdb->callHandlers(ReadyForQuestion, (void *)true);
-	    gdb->callHandlers(ReadyForCmd, (void *)true);
+	    state = ReadyWithPrompt;
+	    callHandlers(ReadyForQuestion, (void *)true);
+	    callHandlers(ReadyForCmd, (void *)true);
+
+	    if (_on_question_completion != 0)
+	    {
+		// We use a local copy of COMPLETE_ANSWER here, since
+		// the callback may submit a new query, overriding
+		// the original value.
+		string c(complete_answer);
+		_on_question_completion(c, _qu_data);
+	    }
 	}
 	break;
 
     case BusyOnQuArray:
-	if (!gdb->ends_with_prompt(answer))
-	{
-            // Received only part of the answer
-	    gdb->complete_answers[gdb->qu_index] += answer;
-	}
-	else
-	{
-            // Received complete answer (GDB issued prompt)
-	    gdb->complete_answers[gdb->qu_index] += answer;
-	    gdb->normalize_answer(gdb->complete_answers[gdb->qu_index]);
+	complete_answers[qu_index] += answer;
 
-            // Set new state
-	    gdb->qu_index++;
+	if (ends_with_prompt(complete_answers[qu_index]))
+	{
+            // Answer is complete (GDB issued prompt)
+	    normalize_answer(complete_answers[qu_index]);
 
-	    if (gdb->qu_index == gdb->_qu_count)
+	    if (qu_index == _qu_count - 1)
 	    {
-		// Received all answers
+		// Received all answers -- we're ready again
+		state = ReadyWithPrompt;
+		callHandlers(ReadyForQuestion, (void *)true);
+		callHandlers(ReadyForCmd, (void *)true);
 
-		if (gdb->questions_waiting)
+		if (questions_waiting)
 		{
 		    // We did not call the OACProc yet.
+		    if (_on_answer_completion != 0)
+			_on_answer_completion (_user_data);
 
-		    if (gdb->_on_answer_completion != 0)
-			gdb->_on_answer_completion (gdb->_user_data);
-
-		    gdb->questions_waiting = false;
+		    questions_waiting = false;
 		}
 
-		if (gdb->_on_qu_array_completion != 0)
+		if (_on_qu_array_completion != 0)
 		{
-		    gdb->_on_qu_array_completion (gdb->complete_answers,
-						  gdb->_qu_datas,
-						  gdb->_qa_data);
+		    // We use a local copy of the answers and user
+		    // data here, since the callback may submit a new
+		    // query, overriding the original value.
+		    StringArray answers(complete_answers);
+		    VoidArray datas(_qu_datas);
+		    _on_qu_array_completion (answers, datas, _qa_data);
 		}
-
-		// Set new state
-		gdb->state = ReadyWithPrompt;
-		gdb->callHandlers(ReadyForQuestion, (void *)true);
-		gdb->callHandlers(ReadyForCmd, (void *)true);
 	    }
 	    else
 	    {
 		// Send next question
-		gdb->write(gdb->cmd_array[gdb->qu_index]);
-		gdb->flush();
+		write(cmd_array[++qu_index]);
+		flush();
 	    }
 	}
 	break;
@@ -1176,42 +1198,42 @@ void GDBAgent::InputHP(Agent *agent, void *, void *call_data)
 void GDBAgent::DiedHP(Agent *agent, void *, void *)
 {
     GDBAgent *gdb = ptr_cast(GDBAgent, agent);
+    gdb->handle_died();
+}
 
+void GDBAgent::handle_died()
+{
     // We have no prompt
-    gdb->last_prompt = "";
+    last_prompt = "";
 
     // Call answer completion handlers
-    switch (gdb->state)
+    switch (state)
     {
     case ReadyWithPrompt:
 	break;
 
     case BusyOnInitialCmds:
     case BusyOnCmd:
-	if (gdb->_on_answer_completion != 0)
-	    gdb->_on_answer_completion (gdb->_user_data);
+	if (_on_answer_completion != 0)
+	    _on_answer_completion (_user_data);
 	break;
 
     case BusyOnQuestion:
-	if (gdb->_on_question_completion != 0)
-	    gdb->_on_question_completion (gdb->complete_answer, 
-					  gdb->_qu_data);
+	if (_on_question_completion != 0)
+	    _on_question_completion (complete_answer, _qu_data);
 	break;
 
     case BusyOnQuArray:
-	if (gdb->_on_qu_array_completion != 0)
-	{
-	    gdb->_on_qu_array_completion(gdb->complete_answers, 
-					 gdb->_qu_datas,
-					 gdb->_qa_data);
-	}
+	if (_on_qu_array_completion != 0)
+	    _on_qu_array_completion(complete_answers, _qu_datas, _qa_data);
 	break;
     }
 
     // We're not ready anymore
-    gdb->state = BusyOnCmd;
-    gdb->callHandlers(ReadyForQuestion, (void *)false);
-    gdb->callHandlers(ReadyForCmd,      (void *)false);
+    state = BusyOnCmd;
+    complete_answer = "";
+    callHandlers(ReadyForQuestion, (void *)false);
+    callHandlers(ReadyForCmd,      (void *)false);
 }
 
 
@@ -1895,7 +1917,7 @@ void GDBAgent::normalize_address(string& addr) const
 // Return disassemble command
 string GDBAgent::disassemble_command(string start, string end) const
 {
-    if (gdb->type() != GDB)
+    if (type() != GDB)
 	return "";
 
     normalize_address(start);
@@ -1917,7 +1939,7 @@ string GDBAgent::history_file() const
 	_home = ".";
     string home(_home);
 
-    switch (gdb->type())
+    switch (type())
     {
     case GDB:
     {

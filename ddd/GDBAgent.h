@@ -487,6 +487,12 @@ private:
     void normalize_answer(string& answer) const;
     void normalize_address(string& addr) const;
 
+    void handle_echo(string& answer);
+    void handle_more(string& answer);
+    void handle_reply(string& answer);
+    void handle_input(string& answer);
+    void handle_died();
+
 protected:
     string complete_answer;
 
