@@ -389,17 +389,20 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <iostream.h>
 #include <strstream.h>
 #include "rxclass.h"
+#include "config.h"
+#include "bool.h"
 
-struct strRep			// internal string representations
+// Internal string representations
+struct strRep
 {
-    unsigned len;		// string length 
-    unsigned sz;		// allocated space
-    char s[1];			// the string starts here 
+    unsigned len;		// String length 
+    unsigned sz;		// Allocated space
+    char s[1];			// The string starts here 
 				// (at least 1 char for trailing null)
-				// allocated & expanded via non-public fcts
+				// Allocated & expanded via non-public fcts
 };
 
-// primitive ops on strReps -- nearly all string fns go through these.
+// Primitive ops on strReps -- nearly all string fns go through these.
 
 strRep* string_Salloc(strRep*, const char*, int, int);
 strRep* string_Scopy(strRep*, strRep*);
@@ -412,6 +415,7 @@ strRep* string_Supcase(strRep*, strRep*);
 strRep* string_Sdowncase(strRep*, strRep*);
 strRep* string_Scapitalize(strRep*, strRep*);
 
+
 // These classes need to be defined in the order given
 
 class string;
@@ -420,53 +424,51 @@ class subString;
 class subString
 {
     friend class string;
+
 protected:
 
-    string&  S;			// The string I'm a subString of
-    unsigned pos;		// starting position in S's rep
-    unsigned len;		// length of subString
+    string& S;			// The string I'm a subString of
+    unsigned int pos;		// Starting position in S's rep
+    unsigned int len;		// Length of subString
 
     void assign(strRep*, const char*, int = -1);
     subString(string& x, int p, int l);
+    subString(const string& x, int p, int l);
 
 public:
-// Note there are no public constructors. subStrings are always
-// created via string operations
+    // Note there are no public constructors. subStrings are always
+    // created via string operations
     
     // This one should be protected, but KCC keeps complaining about this
     subString(const subString& x);
     ~subString();
 
-    void operator =  (const string& y);
-    void operator =  (const subString& y);
-    void operator =  (const char* t);
-    void operator =  (char* t);
-    void operator =  (char c);
+    void operator = (const string& y);
+    void operator = (const subString& y);
+    void operator = (const char* t);
+    void operator = (char* t);
+    void operator = (char c);
 
-// return 1 if target appears anywhere in subString; else 0
+    // Return true iff target appears anywhere in subString
+    bool contains(char c) const;
+    bool contains(const string& y) const;
+    bool contains(const subString& y) const;
+    bool contains(const char* t) const;
+    bool contains(char* t) const;
+    bool contains(const regex& r) const;
 
-    int contains(char c) const;
-    int contains(const string& y) const;
-    int contains(const subString& y) const;
-    int contains(const char* t) const;
-    int contains(char* t) const;
-    int contains(const regex& r) const;
+    // Return true iff target matches entire subString
+    bool matches(const regex& r) const;
 
-// return 1 if target matches entire subString
-
-    int matches(const regex& r) const;
-
-// I/O 
-
+    // I/O 
     friend inline ostream& operator<<(ostream& s, const subString& x);
 
-// status
-
+    // Status
     unsigned int length() const;
     int empty() const;
     const char* chars() const;
 
-    int OK() const; 
+    bool OK() const; 
 };
 
 
@@ -477,19 +479,22 @@ class string
 protected:
     strRep* rep;   // Strings are pointers to their representations
 
-// some helper functions
-
+    // Some helper functions
     int search(int, int, const char*, int = -1) const;
     int search(int, int, char) const;
     int match(int, int, int, const char*, int = -1) const;
     int _gsub(const char*, int, const char* ,int);
     int _gsub(const regex&, const char*, int);
     subString _substr(int, int);
+    const subString _substr(int, int) const;
+
+private:
+    // Don't get constructed or assigned from int
+    string(int)            { error("init from int"); }
+    void operator = (int)  { error("int assign"); }
 
 public:
-
-// constructors & assignment
-
+    // Constructors and assignment
     string();
     string(const string& x);
     string(const subString&  x);
@@ -500,15 +505,14 @@ public:
 
     ~string();
 
-    void operator =  (const string& y);
-    void operator =  (const char* y);
-    void operator =  (char* y);
-    void operator =  (char c);
-    void operator =  (const subString& y);
-    void operator =  (ostrstream& os);
+    void operator = (const string& y);
+    void operator = (const char* y);
+    void operator = (char* y);
+    void operator = (char c);
+    void operator = (const subString& y);
+    void operator = (ostrstream& os);
 
-// concatenation
-
+    // Concatenation
     void operator += (const string& y); 
     void operator += (const subString& y);
     void operator += (const char* t);
@@ -522,9 +526,8 @@ public:
     void prepend(char c);
 
 
-// procedural versions:
-// concatenate first 2 args, store result in last arg
-
+    // Procedural versions:
+    // Concatenate first 2 args, store result in last arg
     friend inline void cat(const string&, const string&, string&);
     friend inline void cat(const string&, const subString&, string&);
     friend inline void cat(const string&, const char*, string&);
@@ -556,10 +559,9 @@ public:
     friend inline void cat(char, char, string&);
 
 
-// searching & matching
+    // Searching & matching
 
-// return position of target in string or -1 for failure
-
+    // Return position of target in string or -1 for failure
     int index(char c, int startpos = 0) const;      
     int index(const string& y, int startpos = 0) const;      
     int index(const subString&  y, int startpos = 0) const;      
@@ -567,50 +569,45 @@ public:
     int index(char* t, int startpos = 0) const;  
     int index(const regex& r, int startpos = 0) const;       
 
-// return 1 if target appears anyhere in string; else 0
+    // Return 1 if target appears anyhere in string; else 0
+    bool contains(char c) const;
+    bool contains(const string& y) const;
+    bool contains(const subString& y) const;
+    bool contains(const char* t) const;
+    bool contains(char* t) const;
+    bool contains(const regex& r) const;
 
-    int contains(char c) const;
-    int contains(const string& y) const;
-    int contains(const subString& y) const;
-    int contains(const char* t) const;
-    int contains(char* t) const;
-    int contains(const regex& r) const;
+    // Return 1 if target appears anywhere after position pos 
+    // (or before, if pos is negative) in string; else 0
+    bool contains(char c, int pos) const;
+    bool contains(const string& y, int pos) const;
+    bool contains(const subString& y, int pos) const;
+    bool contains(const char* t, int pos) const;
+    bool contains(char* t, int pos) const;
+    bool contains(const regex& r, int pos) const;
 
-// return 1 if target appears anywhere after position pos 
-// (or before, if pos is negative) in string; else 0
+    // Return 1 if target appears at position pos in string; else 0
+    bool matches(char c, int pos = 0) const;
+    bool matches(const string& y, int pos = 0) const;
+    bool matches(const subString& y, int pos = 0) const;
+    bool matches(const char* t, int pos = 0) const;
+    bool matches(char* t, int pos = 0) const;
+    bool matches(const regex& r, int pos = 0) const;
 
-    int contains(char c, int pos) const;
-    int contains(const string& y, int pos) const;
-    int contains(const subString& y, int pos) const;
-    int contains(const char* t, int pos) const;
-    int contains(char* t, int pos) const;
-    int contains(const regex& r, int pos) const;
-
-// return 1 if target appears at position pos in string; else 0
-
-    int matches(char c, int pos = 0) const;
-    int matches(const string& y, int pos = 0) const;
-    int matches(const subString& y, int pos = 0) const;
-    int matches(const char* t, int pos = 0) const;
-    int matches(char* t, int pos = 0) const;
-    int matches(const regex& r, int pos = 0) const;
-
-//  return number of occurences of target in string
-
+    // Return number of occurences of target in string
     int freq(char c) const; 
     int freq(const string& y) const;
     int freq(const subString& y) const;
     int freq(const char* t) const;
     int freq(char* t) const;
 
-// subString extraction
+    // subString extraction
 
-// Note that you can't take a subString of a const string, since
-// this leaves open the possiblility of indirectly modifying the
-// string through the subString
-
+    // Note that you can't take a subString of a const string, since
+    // this leaves open the possiblility of indirectly modifying the
+    // string through the subString
     subString at(int pos, int len);
-    subString operator () (int pos, int len); // synonym for at
+    subString operator() (int pos, int len); // synonym for at
 
     subString at(const string& x, int startpos = 0); 
     subString at(const subString&  x, int startpos = 0); 
@@ -651,14 +648,56 @@ public:
     subString after(char c, int startpos = 0);
     subString after(const regex& r, int startpos = 0);
 
+    // Const versions
+    const subString at(int pos, int len) const;
+    const subString operator() (int pos, int len) const; // synonym for at
 
-// deletion
+    const subString at(const string& x, int startpos = 0) const;
+    const subString at(const subString&  x, int startpos = 0) const;
+    const subString at(const char* t, int startpos = 0) const;
+    const subString at(char* t, int startpos = 0) const;
+    const subString at(char c, int startpos = 0) const;
+    const subString at(const regex& r, int startpos = 0) const;
 
-// delete len chars starting at pos
+    const subString before(int pos) const;
+    const subString before(const string& x, int startpos = 0) const;
+    const subString before(const subString&   x, int startpos = 0) const;
+    const subString before(const char* t, int startpos = 0) const;
+    const subString before(char* t, int startpos = 0) const;
+    const subString before(char c, int startpos = 0) const;
+    const subString before(const regex& r, int startpos = 0) const;
+
+    const subString through(int pos) const;
+    const subString through(const string& x, int startpos = 0) const;
+    const subString through(const subString& x, int startpos = 0) const;
+    const subString through(const char* t, int startpos = 0) const;
+    const subString through(char* t, int startpos = 0) const;
+    const subString through(char c, int startpos = 0) const;
+    const subString through(const regex& r, int startpos = 0) const;
+
+    const subString from(int pos) const;
+    const subString from(const string& x, int startpos = 0) const;
+    const subString from(const subString& x, int startpos = 0) const;
+    const subString from(const char* t, int startpos = 0) const;
+    const subString from(char* t, int startpos = 0) const;
+    const subString from(char c, int startpos = 0) const;
+    const subString from(const regex& r, int startpos = 0) const;
+
+    const subString after(int pos) const;
+    const subString after(const string& x, int startpos = 0) const;
+    const subString after(const subString& x, int startpos = 0) const;
+    const subString after(const char* t, int startpos = 0) const;
+    const subString after(char* t, int startpos = 0) const;
+    const subString after(char c, int startpos = 0) const;
+    const subString after(const regex& r, int startpos = 0) const;
+
+
+    // Deletion
+
+    // Delete len chars starting at pos
     void del(int pos, int len);
 
-// delete the first occurrence of target after startpos
-
+    // Delete the first occurrence of target after startpos
     void del(const string& y, int startpos = 0);
     void del(const subString& y, int startpos = 0);
     void del(const char* t, int startpos = 0);
@@ -666,8 +705,7 @@ public:
     void del(char c, int startpos = 0);
     void del(const regex& r, int startpos = 0);
 
-// global substitution: substitute all occurrences of pat with repl
-
+    // Global substitution: substitute all occurrences of PAT with REPL
     int gsub(const string& pat, const string& repl);
     int gsub(const subString& pat, const string& repl);
     int gsub(const char* pat, const string& repl);
@@ -678,10 +716,8 @@ public:
     int gsub(char* pat, char* repl);
     int gsub(const regex& pat, const string& repl);
 
-// friends & utilities
-
-// split string into array res at separators; return number of elements
-
+    // Friends & utilities
+    // Split string into array RES at SEPARATORS; return number of elements
     friend int split(const string& x, string res[], int maxn, 
 		     const string& sep);
     friend int split(const string& x, string res[], int maxn, 
@@ -695,15 +731,13 @@ public:
     friend string replicate(const string& y, int n);
     friend string join(string src[], int n, const string& sep);
 
-// simple builtin transformations
-
+    // Simple builtin transformations
     friend inline string reverse(const string& x);
     friend inline string upcase(const string& x);
     friend inline string downcase(const string& x);
     friend inline string capitalize(const string& x);
 
-// in-place versions of above
-
+    // In-place versions of above
     void reverse();
     void upcase();
     void downcase();
@@ -733,15 +767,13 @@ public:
     char firstchar() const;
     char lastchar() const;
 
-// conversion
-
+    // Conversion
     operator const char*() const;
     operator char*() const;
     const char* chars() const;
 
 
-// I/O
-
+    // I/O
     friend inline ostream& operator<<(ostream& s, const string& x);
     friend inline ostream& operator<<(ostream& s, const subString& x);
     friend istream& operator>>(istream& s, string& x);
@@ -750,27 +782,26 @@ public:
 			char terminator = '\n',
 			int discard_terminator = 1);
 
-// status
-
+    // Status
     unsigned int length() const;
     int empty() const;
 
-// preallocate some space for string
+    // Preallocate some space for string
     void alloc(int newsize);
 
-// report current allocation (not length!)
-
+    // Report current allocation (not length!)
     int allocation() const;
-
 
     void error(const char* msg) const;
 
-    int OK() const;
+    bool OK() const;
 };
 
+#if 0
 typedef string strTmp; // for backward compatibility
+#endif
 
-// other externs
+// Other externs
 
 int compare(const string& x,    const string& y);
 int compare(const string& x,    const subString& y);
@@ -786,7 +817,7 @@ int fcompare(const string& x, const string& y); // ignore case
 extern strRep  _nilstrRep;
 extern string _nilstring;
 
-// status reports, needed before defining other things
+// Status reports, needed before defining other things
 
 inline unsigned int string::length() const {  return rep->len; }
 inline int          string::empty() const { return rep->len == 0; }
@@ -797,8 +828,7 @@ inline unsigned int subString::length() const { return len; }
 inline int          subString::empty() const { return len == 0; }
 inline const char*  subString::chars() const { return &(S.rep->s[pos]); }
 
-// constructors
-
+// Constructors
 inline string::string() 
   : rep(&_nilstrRep) {}
 inline string::string(const string& x) 
@@ -815,8 +845,8 @@ inline string::string(char c)
 // For HAVE_PLACEMENT_NEW, if using placement new, use operator
 // delete instead of vector delete.
 // 
-// According to wiegand@kong.gsfc.nasa.gov (Robert Wiegand - 520),
-// Purify was flagging this and it does result in undefined behavior.
+// According to Robert Wiegand <wiegand@kong.gsfc.nasa.gov>, Purify
+// was flagging this and it does result in undefined behavior.
 inline void string_DeleteRep(strRep *rep)
 {
 #ifdef HAVE_PLACEMENT_NEW
@@ -835,11 +865,12 @@ inline subString::subString(const subString& x)
   :S(x.S), pos(x.pos), len(x.len) {}
 inline subString::subString(string& x, int first, int l)
   :S(x), pos(first), len(l) {}
+inline subString::subString(const string& x, int first, int l)
+  :S((string &)x), pos(first), len(l) {}
 
 inline subString::~subString() {}
 
-// assignment
-
+// Assignment
 inline void string::operator =  (const string& y)
 { 
     rep = string_Scopy(rep, y.rep);
@@ -1039,8 +1070,7 @@ inline void cat(char x, char y, string& r)
 }
 
 
-// operator versions
-
+// Operator versions
 inline void string::operator +=(const string& y)
 {
     cat(*this, y, *this);
@@ -1066,8 +1096,7 @@ inline void string:: operator +=(char y)
     cat(*this, y, *this);
 }
 
-// constructive concatenation
-
+// Constructive concatenation
 #ifdef HAVE_NAMED_RETURN_VALUES
 
 inline string operator + (const string& x, const string& y) return r;
@@ -1301,8 +1330,8 @@ inline void string::prepend(const subString& y)
     rep = string_Sprepend(rep, y.chars(), y.length());
 }
 
-// misc transformations
 
+// Misc transformations
 
 inline void string::reverse()
 {
@@ -1324,7 +1353,8 @@ inline void string::capitalize()
     rep = string_Scapitalize(rep, rep);
 }
 
-// element extraction
+
+// Element extraction
 
 inline char&  string::operator [] (unsigned int i) 
 { 
@@ -1414,7 +1444,7 @@ inline char string::lastchar() const
     return elem(length() - 1);
 }
 
-// searching
+// Searching
 
 inline int string::index(char c, int startpos) const
 {
@@ -1446,130 +1476,130 @@ inline int string::index(const regex& r, int startpos) const
     int unused;  return r.search(chars(), length(), unused, startpos);
 }
 
-inline int string::contains(char c) const
+inline bool string::contains(char c) const
 {
     return search(0, length(), c) >= 0;
 }
 
-inline int string::contains(const char* t) const
+inline bool string::contains(const char* t) const
 {   
     return search(0, length(), t) >= 0;
 }
 
-inline int string::contains(char* t) const
+inline bool string::contains(char* t) const
 {   
     return search(0, length(), t) >= 0;
 }
 
-inline int string::contains(const string& y) const
+inline bool string::contains(const string& y) const
 {   
     return search(0, length(), y.chars(), y.length()) >= 0;
 }
 
-inline int string::contains(const subString& y) const
+inline bool string::contains(const subString& y) const
 {   
     return search(0, length(), y.chars(), y.length()) >= 0;
 }
 
-inline int string::contains(char c, int p) const
+inline bool string::contains(char c, int p) const
 {
     return match(p, length(), 0, &c, 1) >= 0;
 }
 
-inline int string::contains(const char* t, int p) const
+inline bool string::contains(const char* t, int p) const
 {
     return match(p, length(), 0, t) >= 0;
 }
 
-inline int string::contains(char* t, int p) const
+inline bool string::contains(char* t, int p) const
 {
     return match(p, length(), 0, t) >= 0;
 }
 
-inline int string::contains(const string& y, int p) const
+inline bool string::contains(const string& y, int p) const
 {
     return match(p, length(), 0, y.chars(), y.length()) >= 0;
 }
 
-inline int string::contains(const subString& y, int p) const
+inline bool string::contains(const subString& y, int p) const
 {
     return match(p, length(), 0, y.chars(), y.length()) >= 0;
 }
 
-inline int string::contains(const regex& r) const
+inline bool string::contains(const regex& r) const
 {
     int unused;  return r.search(chars(), length(), unused, 0) >= 0;
 }
 
-inline int string::contains(const regex& r, int p) const
+inline bool string::contains(const regex& r, int p) const
 {
     return r.match(chars(), length(), p) >= 0;
 }
 
 
-inline int string::matches(const subString& y, int p) const
+inline bool string::matches(const subString& y, int p) const
 {
     return match(p, length(), 1, y.chars(), y.length()) >= 0;
 }
 
-inline int string::matches(const string& y, int p) const
+inline bool string::matches(const string& y, int p) const
 {
     return match(p, length(), 1, y.chars(), y.length()) >= 0;
 }
 
-inline int string::matches(const char* t, int p) const
+inline bool string::matches(const char* t, int p) const
 {
     return match(p, length(), 1, t) >= 0;
 }
 
-inline int string::matches(char* t, int p) const
+inline bool string::matches(char* t, int p) const
 {
     return match(p, length(), 1, t) >= 0;
 }
 
-inline int string::matches(char c, int p) const
+inline bool string::matches(char c, int p) const
 {
     return match(p, length(), 1, &c, 1) >= 0;
 }
 
-inline int string::matches(const regex& r, int p) const
+inline bool string::matches(const regex& r, int p) const
 {
     int l = (p < 0)? -p : length() - p;
     return r.match(chars(), length(), p) == l;
 }
 
 
-inline int subString::contains(const char* t) const
+inline bool subString::contains(const char* t) const
 {   
     return S.search(pos, pos+len, t) >= 0;
 }
 
-inline int subString::contains(char* t) const
+inline bool subString::contains(char* t) const
 {   
     return S.search(pos, pos+len, t) >= 0;
 }
 
-inline int subString::contains(const string& y) const
+inline bool subString::contains(const string& y) const
 {   
     return S.search(pos, pos+len, y.chars(), y.length()) >= 0;
 }
 
-inline int subString::contains(const subString&  y) const
+inline bool subString::contains(const subString&  y) const
 {   
     return S.search(pos, pos+len, y.chars(), y.length()) >= 0;
 }
 
-inline int subString::contains(char c) const
+inline bool subString::contains(char c) const
 {
     return S.search(pos, pos+len, 0, c) >= 0;
 }
 
-inline int subString::contains(const regex& r) const
+inline bool subString::contains(const regex& r) const
 {
     int unused;  return r.search(chars(), len, unused, 0) >= 0;
 }
 
-inline int subString::matches(const regex& r) const
+inline bool subString::matches(const regex& r) const
 {
     return unsigned(r.match(chars(), len, 0)) == len;
 }
@@ -1698,6 +1728,196 @@ inline int compare(char x, const subString& y)
     return -compare(y, x);
 }
 
+// Const wrappers
+inline const subString string::at(int pos, int len) const
+{
+    return ((string *)this)->at(pos, len);
+}
+
+inline const subString string::operator() (int pos, int len) const
+{
+    return ((string *)this)->operator()(pos, len);
+}
+
+inline const subString string::at(const string& x, int startpos = 0) const
+{
+    return ((string *)this)->at(x, startpos);
+}
+
+inline const subString string::at(const subString&  x, int startpos = 0) const
+{
+    return ((string *)this)->at(x, startpos);
+}
+
+inline const subString string::at(const char* t, int startpos = 0) const
+{
+    return ((string *)this)->at(t, startpos);
+}
+
+inline const subString string::at(char* t, int startpos = 0) const
+{
+    return ((string *)this)->at(t, startpos);
+}
+
+inline const subString string::at(char c, int startpos = 0) const
+{
+    return ((string *)this)->at(c, startpos);
+}
+
+inline const subString string::at(const regex& r, int startpos = 0) const
+{
+    return ((string *)this)->at(r, startpos);
+}
+
+
+inline const subString string::before(int pos) const
+{
+    return ((string *)this)->before(pos);
+}
+
+inline const subString string::before(const string& x, int startpos = 0) const
+{
+    return ((string *)this)->before(x, startpos);
+}
+
+inline const subString string::before(const subString& x, int startpos = 0) 
+    const
+{
+    return ((string *)this)->before(x, startpos);
+}
+
+inline const subString string::before(const char* t, int startpos = 0) const
+{
+    return ((string *)this)->before(t, startpos);
+}
+
+inline const subString string::before(char* t, int startpos = 0) const
+{
+    return ((string *)this)->before(t, startpos);
+}
+
+inline const subString string::before(char c, int startpos = 0) const
+{
+    return ((string *)this)->before(c, startpos);
+}
+
+inline const subString string::before(const regex& r, int startpos = 0) const
+{
+    return ((string *)this)->before(r, startpos);
+}
+
+
+inline const subString string::through(int pos) const
+{
+    return ((string *)this)->through(pos);
+}
+
+inline const subString string::through(const string& x, int startpos = 0) const
+{
+    return ((string *)this)->through(x, startpos);
+}
+
+inline const subString string::through(const subString& x, int startpos = 0) 
+    const
+{
+    return ((string *)this)->through(x, startpos);
+}
+
+inline const subString string::through(const char* t, int startpos = 0) const
+{
+    return ((string *)this)->through(t, startpos);
+}
+
+inline const subString string::through(char* t, int startpos = 0) const
+{
+    return ((string *)this)->through(t, startpos);
+}
+
+inline const subString string::through(char c, int startpos = 0) const
+{
+    return ((string *)this)->through(c, startpos);
+}
+
+inline const subString string::through(const regex& r, int startpos = 0) const
+{
+    return ((string *)this)->through(r, startpos);
+}
+
+
+inline const subString string::from(int pos) const
+{
+    return ((string *)this)->from(pos);
+}
+
+inline const subString string::from(const string& x, int startpos = 0) const
+{
+    return ((string *)this)->from(x, startpos);
+}
+
+inline const subString string::from(const subString& x, int startpos = 0) const
+{
+    return ((string *)this)->from(x, startpos);
+}
+
+inline const subString string::from(const char* t, int startpos = 0) const
+{
+    return ((string *)this)->from(t, startpos);
+}
+
+inline const subString string::from(char* t, int startpos = 0) const
+{
+    return ((string *)this)->from(t, startpos);
+}
+
+inline const subString string::from(char c, int startpos = 0) const
+{
+    return ((string *)this)->from(c, startpos);
+}
+
+inline const subString string::from(const regex& r, int startpos = 0) const
+{
+    return ((string *)this)->from(r, startpos);
+}
+
+
+inline const subString string::after(int pos) const
+{
+    return ((string *)this)->after(pos);
+}
+
+inline const subString string::after(const string& x, int startpos = 0) const
+{
+    return ((string *)this)->after(x, startpos);
+}
+
+inline const subString string::after(const subString& x, int startpos = 0) 
+    const
+{
+    return ((string *)this)->after(x, startpos);
+}
+
+inline const subString string::after(const char* t, int startpos = 0) const
+{
+    return ((string *)this)->after(t, startpos);
+}
+
+inline const subString string::after(char* t, int startpos = 0) const
+{
+    return ((string *)this)->after(t, startpos);
+}
+
+inline const subString string::after(char c, int startpos = 0) const
+{
+    return ((string *)this)->after(c, startpos);
+}
+
+inline const subString string::after(const regex& r, int startpos = 0) const
+{
+    return ((string *)this)->after(r, startpos);
+}
+
+
+
 
 // I/O
 
@@ -1753,6 +1973,14 @@ string_COMPARE_ALL(char, const subString&)
 
 // A helper needed by at, before, etc.
 inline subString string::_substr(int first, int l)
+{
+    if (first < 0 || (unsigned)(first + l) > length() )
+	return subString(_nilstring, 0, 0) ;
+    else 
+	return subString(*this, first, l);
+}
+
+inline const subString string::_substr(int first, int l) const
 {
     if (first < 0 || (unsigned)(first + l) > length() )
 	return subString(_nilstring, 0, 0) ;

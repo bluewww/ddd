@@ -1383,19 +1383,19 @@ int string::freq(char c) const
 }
 
 
-int string::OK() const
+bool string::OK() const
 {
-    if (rep == 0		    // don't have a rep
-	|| rep->len > rep->sz	    // string outside bounds
-	|| rep->s[rep->len] != 0)   // not null-terminated
+    if (rep == 0		     // Don't have a rep
+	|| rep->len > rep->sz	     // String outside bounds
+	|| rep->s[rep->len] != '\0') // Not null-terminated
 	error("invariant failure");
-    return 1;
+    return true;
 }
 
-int subString::OK() const
+bool subString::OK() const
 {
-    int v = S.OK();              // have a legal string
-    v &= pos + len >= S.rep->len;// pos and len within bounds
-    if (!v) S.error("subString invariant failure");
-    return v;
+    // Check for legal string and pos and len outside bounds
+    if (!S.OK() || pos + len >= S.rep->len)
+	S.error("subString invariant failure");
+    return true;
 }
