@@ -45,6 +45,7 @@ char UndoBuffer_rcsid[] =
 #include "index.h"
 #include "misc.h"
 #include "regexps.h"
+#include "status.h"
 #include "string-fun.h"
 
 #ifndef LOG_UNDO_BUFFER
@@ -71,6 +72,9 @@ int UndoBuffer::own_direction = 0;
 
 // If true, ignore all changes and additions
 bool UndoBuffer::locked = false;
+
+// If true, we're at some past execution position
+bool UndoBuffer::_at_past_exec_pos = false;
 
 
 //-----------------------------------------------------------------------
@@ -116,25 +120,18 @@ void UndoBuffer::add(const UndoBufferEntry& entry)
 	history_position = history.size();
     }
 
-    log();
-    assert(OK());
+    check_past_exec_pos();
 }
 
 // Add command COMMAND to history.
-UndoBufferEntry& UndoBuffer::add_command(const string& command)
+void UndoBuffer::add_command(const string& command)
 {
     string c = command;
     strip_space(c);
     if (c == "")
-    {
-	static UndoBufferEntry dummy;
-	return dummy;
-    }
+	return;
 
-    log();
-    assert(OK());
-
-    UndoBufferEntry *ret = 0;
+    UndoBufferEntry *this_entry = 0;
 
     if (own_commands == 0)
     {
@@ -171,7 +168,7 @@ UndoBufferEntry& UndoBuffer::add_command(const string& command)
 
 	history_position++;
 
-	ret = &history[history_position - 2];
+	this_entry = &history[history_position - 2];
     }
     else if (own_direction < 0 && own_processed == 0)
     {
@@ -207,7 +204,7 @@ UndoBufferEntry& UndoBuffer::add_command(const string& command)
 	history_position--;
 	own_processed++;
 
-	ret = &history[history_position];
+	this_entry = &history[history_position];
     }
     else if (own_direction < 0 && own_processed > 0)
     {
@@ -224,7 +221,7 @@ UndoBufferEntry& UndoBuffer::add_command(const string& command)
 	next_entry[UB_COMMAND].prepend(c + '\n');
 	own_processed++;
 
-	ret = &next_entry;
+	this_entry = &next_entry;
     }
     else if (own_direction > 0 && own_processed == 0)
     {
@@ -260,7 +257,7 @@ UndoBufferEntry& UndoBuffer::add_command(const string& command)
 	history_position++;
 	own_processed++;
 
-	ret = &history[history_position - 2];
+	this_entry = &history[history_position - 2];
     }
     else if (own_direction > 0 && own_processed > 0)
     {
@@ -277,13 +274,10 @@ UndoBufferEntry& UndoBuffer::add_command(const string& command)
 	last_entry[UB_COMMAND].prepend(c + '\n');
 	own_processed++;
 
-	ret = &last_entry;
+	this_entry = &last_entry;
     }
 
-    log();
-    assert(OK());
-
-    return *ret;
+    check_past_exec_pos();
 }
 
 
@@ -322,8 +316,7 @@ void UndoBuffer::add(const string& name, const string& value, bool exec_pos)
     if (new_entry.has(name))
 	add(new_entry);
 
-    log();
-    assert(OK());
+    check_past_exec_pos();
 }
 
 
@@ -376,7 +369,7 @@ void UndoBuffer::process(const UndoBufferEntry& entry, int direction)
     else
 	process_status(entry, direction);
 
-    assert(OK());
+    check_past_exec_pos();
 
     locked = false;
 }
@@ -552,17 +545,43 @@ void UndoBuffer::process_status(const UndoBufferEntry& entry,
     log();
 }
 
+void UndoBuffer::set_past_exec_pos(bool set)
+{
+    if (_at_past_exec_pos == set)
+	return;
+
+    _at_past_exec_pos = set;
+    if (set)
+    {
+	set_status("Cannot restore previous program state; "
+		   "showing earlier state instead");
+    }
+    else
+    {
+	set_status("Back to current program state");
+    }
+
+    XtVaSetValues(data_disp->graph_edit, XtNdashedLines, set, NULL);
+    update_arg_buttons();
+    data_disp->refresh_args();
+}
+
 
 // True iff we're at some past execution position
-bool UndoBuffer::at_past_exec_pos()
+void UndoBuffer::check_past_exec_pos()
 {
+    log();
     assert(OK());
 
+    bool set = false;
     for (int i = history_position; i < history.size(); i++)
 	if (history[i].exec_pos)
-	    return true;	// later exec pos
+	{
+	    set = true;		// later exec pos
+	    break;
+	}
 
-    return false;
+    set_past_exec_pos(set);
 }
 
 // Goto last known execution position
@@ -573,38 +592,38 @@ void UndoBuffer::goto_current_exec_pos()
     if (!at_past_exec_pos())
 	return;
 
-    for (int i = history.size(); i >= 0; i--)
+    for (int i = history.size() - 1; i >= 0; i--)
     {
 	if (history[i].exec_pos)
 	{
-	    history_position = i + 1;
+	    history_position = i;
 	    process(history[i], 1);
-	    log();
+	    check_past_exec_pos();
 	    return;
 	}
     }
 }
 
-bool UndoBuffer::undo()
+void UndoBuffer::undo()
 {
     if (history_position > 1 && history.size() > 0)
     {
 	process(history[history_position - 2], -1);
-	return true;
+	return;
     }
 
-    return false;
+    set_status("Nothing to undo");
 }
 
-bool UndoBuffer::redo()
+void UndoBuffer::redo()
 {
     if (history_position < history.size())
     {
         process(history[history_position], 1);
-	return true;
+	return;
     }
 
-    return false;
+    set_status("Nothing to redo");
 }
 
 // Clear history
@@ -615,8 +634,7 @@ void UndoBuffer::clear()
     history_position = 0;
     locked           = false;
 
-    log();
-    assert(OK());
+    check_past_exec_pos();
 }
 
 // Clear execution positions
@@ -633,8 +651,7 @@ void UndoBuffer::clear_exec_pos()
 
     history = new_history;
 
-    log();
-    assert(OK());
+    check_past_exec_pos();
 }
 
 // Invariant

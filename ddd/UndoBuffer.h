@@ -57,6 +57,7 @@ class UndoBuffer {
 private:
     static UndoBufferArray history;
     static int history_position;
+    static bool _at_past_exec_pos;
 
     // General scheme:
     //
@@ -111,6 +112,10 @@ protected:
     // Log current position
     static void log();
 
+    // Enter or leave `past exec' mode
+    static void set_past_exec_pos(bool set);
+    static void check_past_exec_pos();
+
 public:
     // Add status NAME/VALUE to history.  If EXEC_POS is set, mark
     // this as new execution position.
@@ -118,7 +123,7 @@ public:
 		    bool exec_pos = false);
 
     // Add command COMMAND to history.
-    static UndoBufferEntry& add_command(const string &command);
+    static void add_command(const string &command);
 
     // Custom calls
     static void add_position(const string& file_name, int line, bool exec_pos)
@@ -156,12 +161,12 @@ public:
 	add(UB_DISPLAY_ADDRESS_PREFIX + name, addr);
     }
 
-    // Lookup previous/next position; return true iff successful
-    static bool undo();
-    static bool redo();
+    // Undo/Redo action
+    static void undo();
+    static void redo();
 
     // True iff we're at some past execution position
-    static bool at_past_exec_pos();
+    static bool at_past_exec_pos() { return _at_past_exec_pos; }
 
     // Go to the last known (`true') execution position
     static void goto_current_exec_pos();

@@ -78,14 +78,12 @@ void gdbLookupCB(Widget, XtPointer, XtPointer)
 
 void gdbUndoCB(Widget, XtPointer, XtPointer)
 {
-    if (!undo_buffer.undo())
-	set_status("Nothing to undo.");
+    undo_buffer.undo();
 }
 
 void gdbRedoCB(Widget, XtPointer, XtPointer)
 {
-    if (!undo_buffer.redo())
-	set_status("Nothing to redo.");
+    undo_buffer.redo();
 }
 
 
