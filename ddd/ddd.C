@@ -5636,6 +5636,10 @@ void _gdb_out(const string& txt)
 	return;
 
     string text(txt);
+    string buffered = buffered_gdb_output();
+    if (buffered != "")
+	text.prepend(buffered);
+
     gdb_input_at_prompt = gdb->ends_with_prompt(text);
     if (gdb_input_at_prompt)
 	debuggee_running = false;
