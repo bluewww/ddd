@@ -543,10 +543,9 @@ static char *complete_readline(char *text, int state)
 	uniq(completions, completions_size);
 
 	reply = "";
-	int len = strlen(rl_line_buffer);
 	for (int i = 0; i < completions_size; i++)
 	{
-	    string completion = text + completions[i].from(len);
+	    string completion = text + completions[i].from(rl_end);
 	    reply += completion + '\n';
 	}
 
