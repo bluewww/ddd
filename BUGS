@@ -243,7 +243,7 @@ Volunteers for fixing these and other bugs are welcome!
 211. Graham Hudspith <ghudspit@mltsa.uk.lucent.com> reports that the
      HP-UX version of DDD 2.1.95 crashes at start-up.
 
-213* DDD does not work with Sun DBX 4.0.  Fred Damen
+213. DDD 2.1.95 does not work with Sun DBX 4.0.  Fred Damen 
      <damenf@cig.mot.com> reports:
 
      1) The arrow/stop sign do not show. independant of the setting
@@ -300,7 +300,5 @@ Volunteers for fixing these and other bugs are welcome!
      bug or if ddd should be adapted to support that.
 
      [Should be fixed in DDD 2.2  -AZ]
-
-220. Status Displays are *always* marked as `changed'.
 
 222. (Insert your bug here)

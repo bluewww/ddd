@@ -21,10 +21,10 @@ Requirements
          X11R4 or later.
 
        * A Motif Widget library, version 1.1 or later.  Best results
-         are achieved using OSF/Motif 2.0.  DDD also compiles and runs
-         with LessTif, a free Motif clone, release 0.79 or later,
-         without loss of functionality.  LessTif is available via
-         `http://www.lesstif.org/'.
+         are achieved using OSF/Motif 2.0 or later.  DDD also compiles
+         and runs with LessTif, a free Motif clone, release 0.79 or
+         later, without loss of functionality.  LessTif is available
+         via `http://www.lesstif.org/'.
 
        * Optionally, in addition to the Motif widget library, the
          Athena Widget library (release 5 or later).  Having the
