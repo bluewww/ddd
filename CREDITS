@@ -9,11 +9,11 @@ The DDD Maintainers
 
 Major code contributions:
 
+Rocky BERNSTEIN <rocky@panix.com>         - BASH debugger support
 J.H.M. DASSEN <jdassen@wi.leidenuniv.nl>  - Tips and bug reports
+Dmitri DMITRIENKO <dd.cron.ru>            - PHP support
 Christian LINDIG <lindig@ips.cs.tu-bs.de> - PostScript and XFIG printing
 Richard WOLFF <rwolff@noao.edu>		  - Python support
-Dmitri Dmitrienko                         - PHP support
-Rocky Bernstein                           - BASH debugger support
 
 Significant suggestions and bug fixes:
 
@@ -77,6 +77,7 @@ Siddharth RAM <srram@qualcomm.com>
 Helmut RIEGLER <helmut%gurk@stveit2.net4you.co.at>
 Vadim ROGOZIN <dima@mercury.co.il
 Phil ROMIG <romig@bierstadt.unl.edu>
+Daniel SCHEPLER <schepler@math.berkeley.edu>
 Jochen SCHÜTZE <jos@gbf.de>
 Zdenek SEKERA <zs@cray.com>
 Thorsten SOMMER <sommer@ips.cs.tu-bs.de>
