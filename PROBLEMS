@@ -264,7 +264,11 @@ LessTif
     `http://www.lesstif.org'; if needed, apply the patches found in
     the `patches/' subdirectory.
 
-    With LessTif 0.83, no problems are known at this time.
+    With LessTif 0.83, the following problems are known:
+
+    * Glyphs occasionally get lost.
+
+    * The popup menu won't work when selected from a breakpoint.
  
 
 Linux
