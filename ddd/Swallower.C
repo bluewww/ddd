@@ -155,9 +155,12 @@ void SwallowerCheckEvents()
 				XtPointer(&info));
 		loop = loop->swallower.next;
 	    }
-	}
 
-	XtDispatchEvent(&event);
+	    // We don't dispatch this event, since root has no
+	    // associated widget.  Hence, XtWindowToWidget may return
+	    // NULL, which some toolkits (especially LessTif) don't
+	    // check for.
+	}
     }
 }
 
@@ -205,7 +208,7 @@ static void CheckIfWindowHasGone(Widget w, XtPointer, XEvent *event, Boolean *)
 	info.event  = event;
 
 	// Mark as `gone'
-	window = 0;
+	window = None;
 
 	// No further need to check for events
 	XtRemoveEventHandler(w, SubstructureNotifyMask, False, 
@@ -221,11 +224,13 @@ static void Swallow(Widget w)
     const SwallowerWidget _w = SwallowerWidget(w);
     const Window window = _w->swallower.window;
 
+    if (window == None || !XtIsRealized(w))
+	return;
+
+#if 0
     XSync(XtDisplay(w), False);
     SwallowerCheckEvents();
-
-    if (window == 0 || !XtIsRealized(w))
-	return;
+#endif
 
     XUnmapWindow(XtDisplay(w), window);
 
@@ -244,13 +249,15 @@ static void Swallow(Widget w)
 static void Spitout(Widget w)
 {
     const SwallowerWidget _w = SwallowerWidget(w);
-    const Window window = _w->swallower.window;
+    Window& window = _w->swallower.window;
 
+    if (window == None || !XtIsRealized(w))
+	return;
+
+#if 0
     XSync(XtDisplay(w), False);
     SwallowerCheckEvents();
-
-    if (window == 0 || !XtIsRealized(w))
-	return;
+#endif
 
     Window root = RootWindowOfScreen(XtScreen(w));
 
@@ -263,6 +270,9 @@ static void Spitout(Widget w)
     // No further need to check for events
     XtRemoveEventHandler(w, SubstructureNotifyMask, False, 
 			 CheckIfWindowHasGone, XtPointer(w));
+
+    // Mark window as `unused'
+    window = None;
 }
 
 static void Realize(Widget w, 
@@ -307,9 +317,15 @@ static Boolean SetValues(Widget old,
     SwallowerWidget before = SwallowerWidget(old);
     SwallowerWidget after  = SwallowerWidget(new_w);
 
-    if (before->swallower.window != after->swallower.window)
+    if (before->swallower.window != None &&
+	before->swallower.window != after->swallower.window)
     {
 	Spitout(old);
+    }
+
+    if (after->swallower.window != None &&
+	before->swallower.window != after->swallower.window)
+    {
 	Swallow(new_w);
     }
 
@@ -322,7 +338,8 @@ static void Resize(Widget w)
     const SwallowerWidget _w = SwallowerWidget(w);
     const Window window = _w->swallower.window;
 
-    XResizeWindow(XtDisplay(w), window, w->core.width, w->core.height);
+    if (window != None)
+	XResizeWindow(XtDisplay(w), window, w->core.width, w->core.height);
 }
 
 // Destroy widget
