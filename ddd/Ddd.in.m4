@@ -1098,12 +1098,32 @@ Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
 ~Ctrl Shift<Key>Insert: paste-clipboard()           \n])dnl
 dnl
 dnl Emacs + TAB completion.
-define(COMPLETE_TRANSLATIONS, EMACS_TRANSLATIONS[\
+define(COMPLETE_TRANSLATIONS, [EMACS_TRANSLATIONS \
 Ctrl<Key>T:		gdb-complete-arg($1)	    \n\
 ~Shift <Key>Tab:	gdb-complete-tab($1)	    \n])dnl
 dnl
-dnl Emacs + extra pageup/pagedown and newline capabilities
-define(TEXT_TRANSLATIONS, EMACS_TRANSLATIONS[\
+dnl Wheel mouse translations.  In XFree86, moving the wheel up sends 
+dnl fake button4 events and button5 ones on down motions.
+dnl See `http://www.inria.fr/koala/colas/mouse-wheel-scroll/' for a discussion.
+define(WHEEL_TRANSLATIONS,[\
+~Shift Ctrl<Btn4Down>,<Btn4Up>:		previous-page()\n\
+~Ctrl Shift<Btn4Down>,<Btn4Up>:		previous-line()\n\
+~Shift ~Ctrl<Btn4Down>,<Btn4Up>:	previous-line()\
+					previous-line()\
+					previous-line()\
+					previous-line()\
+					previous-line()\n\
+~Shift Ctrl<Btn5Down>,<Btn5Up>:		next-page()\n\
+~Ctrl Shift<Btn5Down>,<Btn5Up>:		next-line()\n\
+~Shift ~Ctrl<Btn5Down>,<Btn5Up>:	next-line()\
+					next-line()\
+					next-line()\
+					next-line()\
+					next-line()\n])dnl
+dnl
+dnl
+dnl Emacs + extra pageup/pagedown and newline capabilities + wheel
+define(TEXT_TRANSLATIONS, [EMACS_TRANSLATIONS WHEEL_TRANSLATIONS \
 Ctrl<Key>J:		newline()                   \n\
 Ctrl<Key>M:		newline()                   \n\
 Ctrl<Key>N:		gdb-next-history()	    \n\
@@ -1118,7 +1138,7 @@ Shift<Key>Prior:	previous-page(extend)	    \n\
 Shift<Key>Next:		next-page(extend)	    \n])dnl
 dnl
 dnl Emacs + pageup/pagedown + TAB completion.
-define(COMPLETE_TEXT_TRANSLATIONS, TEXT_TRANSLATIONS[\
+define(COMPLETE_TEXT_TRANSLATIONS, [TEXT_TRANSLATIONS] [\
 Ctrl<Key>T:		gdb-complete-arg($1)	    \n\
 ~Shift <Key>Tab:	gdb-complete-tab($1)	    \n])dnl
 dnl

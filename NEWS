@@ -162,6 +162,8 @@ Miscellaneous
   non-transient windows, allowing the DDD main window to obscure
   them.  See the `transientDialogs' resource for details.
 
+- Moving the wheel of a wheel mouse will scroll the text windows.
+
 - Save Options improvements.
   * DDD saves whether a window is open or closed.
   * DDD only saves resources that differ from the default setting.
