@@ -462,7 +462,7 @@ static void ddd_fatal(int sig...)
 	return;
     }
 
-    // Reinstall fatal error handlers
+    // Reinstall fatal error handlers (for SVR4 and others)
     ddd_install_fatal();
 
     bool have_core_file = false;
@@ -524,6 +524,12 @@ static bool ddd_dump_core(int sig...)
 	pid_t ret = waitpid(core_pid, &status, 0);
 	if (ret < 0)
 	    perror(ddd_NAME);
+    }
+
+    if (sig == SIGUSR1)
+    {
+	// Re-install handler (for SVR4 and others)
+	signal(sig, SignalProc(ddd_dump_core));
     }
 
     return false;
