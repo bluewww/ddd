@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "20 March 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1 May 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -3685,7 +3685,7 @@ October, 1996
 \s-2@DDD@\s+2 2.0: Color displays, \s-2XDB\s+2 support, generic
 \s-2DBX\s+2 support, command tool.
 .TP
-April, 1997
+May, 1997
 \s-2@DDD@\s+2 2.1: Alias detection, button tips, status displays.
 .PD
 .\"
