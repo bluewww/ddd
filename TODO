@@ -362,4 +362,7 @@ Volunteers for these and other projects are welcome!
 
 177. Create menu children in the background, using a work procedure.
 
-178. (Insert your project idea here)
+178. Offer more dereferencing options, which may be user-customizable.
+     Instead of just providing `Display *()', offer also `Display /o ()', etc.
+
+179. (Insert your project idea here)
