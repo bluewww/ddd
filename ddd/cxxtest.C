@@ -144,9 +144,10 @@ void list_test(int start)
     delete list;
 }
 
+// Test disambiguation
 void list_test(double d)
 {
-    // Do nothing - just test disambiguation
+    list_test(int(d));
 }
 
 //--------------------------------------------------------------------------
