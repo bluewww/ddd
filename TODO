@@ -31,15 +31,6 @@ Volunteers for these and other projects are welcome!
 008. Have buttons arranged such that they do not disappear when the
      window is narrowed.
 
-009. Recognize shared data structures (that is, two displays
-     referencing the same object).  This could be achieved by
-     comparing display addresses.  See also the mails of
-     markusd@cs.tu-berlin.de (Markus Dahm) and finster@ave.ac.agit.de
-     (Harald Finster).  Possible renderings include:
-     a) Merge two objects into one (maybe temporary?)
-     b) Move one object on top of the other
-     c) Draw a special `identity edge' between the two objects.
-
 017. Have the graph editor scroll automatically when the pointer drags
      something out of the visible part of the window.
 
