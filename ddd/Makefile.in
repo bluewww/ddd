@@ -1119,6 +1119,8 @@ PUB_SRC=`ls /usr/local/share/CVS/ddd/ddd | sed 's/,v//'`
 
 .PHONY: pub
 pub:	$(PROG_STUFF) configure
+	echo 'DDD development team <ddd@ips.cs.tu-bs.de>' > USERINFO
+	cp -p USERINFO $(PUB_DEST)
 	@for file in $(PROG_STUFF) configure Makedeps $(PUB_SRC); do \
 	    if gtest ./$$file -nt $(PUB_DEST)/$$file; then \
 		echo -n Updating $(PUB_DEST)/$$file...; \
@@ -1133,13 +1135,13 @@ NICE=20
 TARGET=all
 
 .PHONY: everywhere
-everywhere: ultrix solaris aix hpux
+everywhere: ultrix solaris sunos aix hpux
 
 .PHONY: ultrix
 ultrix:	
 	@echo '### zeller@infbsps0.ips.cs.tu-bs.de (mips-dec-ultrix4.4)'
 	rsh -l zeller infbsps0.ips.cs.tu-bs.de $(SHELL) -c \
-		\''cd $$HOME/tmp/ddd/ddd; \
+		\''cd $$HOME/tmp/ddd-ultrix/ddd; \
 		MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
 		nice -$(NICE) gmake CXXFLAGS="$(CXXFLAGS)" $(TARGET)'\'
 
@@ -1149,6 +1151,14 @@ solaris:
 	rsh -l aze whoopi.rob.cs.tu-bs.de      $(SHELL) -c \
 		\''cd $$HOME/ddd/ddd; \
 		PATH=/usr/local/bin:/bin:/usr/bin:/usr/ccs/bin:/usr/openwin/bin:/opt/SUNWspro/bin:/usr/ucb; export PATH; \
+		MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
+		nice -$(NICE) make CXXFLAGS="$(CXXFLAGS)" $(TARGET)'\'
+
+.PHONY:	sunos
+sunos:
+	@echo '### zeller@infbspsk.ips.cs.tu-bs.de (sparc-sun-sunos4.1.4)'
+	rsh -l zeller infbspsk.ips.cs.tu-bs.de      $(SHELL) -c \
+		\''cd $$HOME/tmp/ddd-sunos/ddd; \
 		MAKEFLAGS="$(MAKEFLAGS)"; export MAKEFLAGS; \
 		nice -$(NICE) make CXXFLAGS="$(CXXFLAGS)" $(TARGET)'\'
 
