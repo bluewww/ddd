@@ -777,6 +777,12 @@ static void sort(StringArray& a)
     } while (h != 1);
 }
 
+
+inline bool is_separator(char c)
+{
+    return c == ' ' || c == '\'' || c == '\"';
+}
+
 // Check whether LINE is a valid PS line.  Exclude occurrences of PS_COMMAND.
 static bool valid_ps_line(const string& line, const string& ps_command)
 {
@@ -803,9 +809,9 @@ static bool valid_ps_line(const string& line, const string& ps_command)
 
     int index = line.index(ps);
     if (index > 0
-	&& (line[index - 1] == '/' || line[index - 1] == ' ')
-	&& (line.length() == index + ps.length() 
-	    || line[index + ps.length()] == ' '))
+	&& (line[index - 1] == '/' || is_separator(line[index - 1]))
+	&& (line.length() == index + ps.length()
+	    || is_separator(line[index + ps.length()])))
 	return false;
 
     return true;
@@ -931,7 +937,8 @@ static void gdbUpdateProcessesCB(Widget, XtPointer client_data, XtPointer)
 }
 
 // Set program arguments from list
-static void SelectProcessCB(Widget w, XtPointer, XtPointer call_data)
+static void SelectProcessCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
 {
     XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
     int pos = cbs->item_position;
@@ -939,6 +946,12 @@ static void SelectProcessCB(Widget w, XtPointer, XtPointer call_data)
 	XmListDeselectAllItems(w); // Title selected
     else
 	ListSetAndSelectPos(w, pos);
+
+    int pid = get_pid(w, client_data, call_data);
+    if (pid <= 0)
+	set_status("");
+    else
+	set_status("Process " + itostring(pid));
 }
 
 
@@ -1088,13 +1101,13 @@ void gdbOpenProcessCB(Widget w, XtPointer, XtPointer)
 	processes = XmSelectionBoxGetChild(dialog, XmDIALOG_LIST);
 
 	XtAddCallback(processes, XmNsingleSelectionCallback,
-		      SelectProcessCB, 0);
+		      SelectProcessCB, XtPointer(processes));
 	XtAddCallback(processes, XmNmultipleSelectionCallback,
-		      SelectProcessCB, 0);
+		      SelectProcessCB, XtPointer(processes));
 	XtAddCallback(processes, XmNextendedSelectionCallback,
-		      SelectProcessCB, 0);
+		      SelectProcessCB, XtPointer(processes));
 	XtAddCallback(processes, XmNbrowseSelectionCallback,
-		      SelectProcessCB, 0);
+		      SelectProcessCB, XtPointer(processes));
 
 	XtAddCallback(dialog, XmNokCallback, 
 		      openProcessDone, XtPointer(processes));
