@@ -301,7 +301,8 @@ void PosBuffer::filter (string& answer)
 		    pos_buffer = line;
 		    already_read = PosComplete;
 
-		    answer = answer.after("\n");
+		    if (!answer.contains('[', 0))
+			answer = answer.after("\n");
 		}
 		else if (answer.contains("stopped in ")
 			 || answer.contains("stopped at "))
