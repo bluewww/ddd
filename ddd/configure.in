@@ -217,13 +217,34 @@ AC_LANG_CPLUSPLUS
 dnl
 dnl Locate Libraries
 dnl
+dnl Check for networking functions in C++ runtime library.
+dnl Zdenek Sekera <zs@cray.com> reports that SGI IRIX 6.x has these in -lc.
+ddd_have_connect_in_libc=no
+AC_CHECK_FUNC(connect, ddd_have_connect_in_libc=yes)
+ddd_have_gethostbyname_in_libc=no
+AC_CHECK_FUNC(gethostbyname, ddd_have_gethostbyname_in_libc=yes)
+ddd_have_regcmp_in_libc=no
+AC_CHECK_FUNC(regcmp, ddd_have_regcmp_in_libc=yes)
+dnl
+dnl
+if test "$ddd_have_connect_in_libc" != yes; then
 dnl Solaris 2.6 wants an explicit `-lsocket' before `-lnsl'.
 dnl Reported by Emmanuel Engel <Emmanuel.Engel@lri.fr>
 AC_CHECK_LIB(socket, connect)
+fi
 dnl
+if test "$ddd_have_gethostbyname_in_libc" != yes; then
 AC_CHECK_LIB(nsl, gethostbyname, LIBNSL="-lnsl")
+fi
 AC_SUBST(LIBNSL)
 dnl
+if test "$ddd_have_regcmp_in_libc" != yes; then
+AC_CHECK_LIB(gen, regcmp, LIBGEN="-lgen")
+fi
+AC_SUBST(LIBGEN)
+dnl
+dnl
+dnl Check for -ly, -lm, and -lc libraries.  These should always be present.
 AC_CHECK_LIB(y, yyerror, LIBY="-ly")
 AC_SUBST(LIBY)
 dnl
@@ -233,8 +254,6 @@ dnl
 AC_CHECK_LIB(c, open, LIBC="-lc")
 AC_SUBST(LIBC)
 dnl
-AC_CHECK_LIB(gen, regcmp, LIBGEN="-lgen")
-AC_SUBST(LIBGEN)
 dnl
 dnl
 dnl Marc Lepage <mlepage@kingston.hummingbird.com> reports that
@@ -244,6 +263,7 @@ dnl
 if test "$GXX" != yes; then
 AC_CHECK_LIB(cxxinst, main, CXXLIBS="-lcxxinst $CXXLIBS")
 fi
+dnl
 dnl
 dnl Look for the tgetent() function - either in libtermcap, libcurses,
 dnl or use the GNU termcap library as shipped with DDD.
