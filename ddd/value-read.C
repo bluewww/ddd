@@ -63,7 +63,7 @@ DispValueType determine_type (string value)
 
     // References.
     static regex 
-	RXreference("([(][^)]*[)] )? *@ *(0(0|x)[0-9a-f]+|[(]nil[)]) *:.*");
+	RXreference("([(][^)]+[)] )? *@ *(0(0|x)[0-9a-f]+|[(]nil[)]) *:.*");
     if (value.matches(RXreference))
 	return Reference;
 
@@ -127,20 +127,24 @@ DispValueType determine_type (string value)
     }
 
     // Pointers.
-    // GDB prepends the exact pointer type in parentheses.
-    static regex RXpointer_value("([(].*[)] )?" RXADDRESS ".*");
-    if (value.matches(RXpointer_value))
+
+    // GDB prepends the exact pointer type enclosed in `(...)'.  If
+    // the pointer type contains `(...)' itself (such as in pointers
+    // to functions), GDB uses '{...}' instead (as in `{int ()} 0x2908
+    // <main>').
+    static regex RXpointer1_value("([(][^)]+[)] )?" RXADDRESS ".*");
+    if (value.matches(RXpointer1_value))
+	return Pointer;
+    static regex RXpointer2_value("[{][^{}]+[}] " RXADDRESS_START ".*");
+    if (value.matches(RXpointer2_value))
 	return Pointer;
 
     // Arrays.
-    // GDB has a special format for pointers to functions:
-    // (e.g. `{int ()} 0x2908 <main>'), so check for closing brace
-    // as well.
-    if (value.contains('{', 0) && value.contains('}', -1))
+    if (value.contains('{', 0) /* && value.contains('}', -1) */)
 	return Array;
-    if (value.contains('[', 0) && value.contains(']', -1))
+    if (value.contains('[', 0) /* && value.contains(']', -1) */)
 	return Array;
-    if (value.contains('(', 0) && value.contains(')', -1))
+    if (value.contains('(', 0) /* && value.contains(')', -1) */)
 	return Array;
 
     // Simple values.
