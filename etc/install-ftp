@@ -77,16 +77,22 @@ ICONS="ddd.xbm ddd.xpm mini-ddd.xpm README"
 # Sample files
 SAMPLES="ddd.man ddd.man.txt Ddd"
 
-# Files to be ignored in DIFF files
+# Files to be ignored in DIFF files.  Note that we do not diff
+# `configure' files.  A `configure' diff is usually much larger than
+# the autoconf distribution required for recreate it.
 DIFF_IGNORE="
+configure
+ddd/configure
+librx/configure
+termcap/configure
 doc/ddd*.ps
 ddd/vsl-lex.C
 ddd/vsl-gramma.C
 ddd/vsl-gramma.h
 ddd/rxscan.C
+ddd/*.1
 ddd/*.man
 ddd/*.man.txt
-ddd/*.huff.C
 ddd/xlibdir.C
 ddd/Ddd.in
 "
@@ -229,7 +235,7 @@ if $diff; then
       echo
       echo "1. Change to the directory containing the $file_release"
       echo "   top-level directory, such that \`./$file_release/ANNOUNCE'"
-      echo "   contains the $file_release announement."
+      echo "   contains the $file_release announcement."
       echo
       echo
       echo "2. Create a symbolic link from \`$file_release' to \`$dist_release'":
@@ -271,8 +277,9 @@ if $diff; then
       echo "Note that changes in the following files are NOT included in this patch,"
       echo "since these files can easily be reconstructed using \`make':"
       echo "$DIFF_IGNORE" | sed 's/^/    &/'
+      echo "To re-create \`configure' files, \`make' requires GNU autoconf."
       echo
-      echo "Please report any bugs to ddd-bugs@ips.cs.tu-bs.de."
+      echo "Please report any bugs or problems to ddd-bugs@ips.cs.tu-bs.de."
       echo
       # echo "Prereq: $file_release"
       # echo
