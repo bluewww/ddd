@@ -34,7 +34,7 @@
 #endif
 
 #include "assert.h"
-
+#include "bool.h"
 
 // A DynArray acts like an ordinary array,
 // but it automatically expands to hold the referenced entry.
@@ -108,7 +108,7 @@ public:
         _allocated_size(m.size()),
         _values(new T [m.size()])
     {
-        for (int i = 0; i < m.size(); i++)
+        for (int i = 0; i < _allocated_size; i++)
             _values[i] = m._values[i];
     }
 
@@ -121,7 +121,7 @@ public:
     // Assignment
     DynArray<T>& operator = (const DynArray<T>& m)
     {
-        // make sure a = a works
+        // Make sure self-assignment A = A works
 	if (this != &m)
 	{
 	    T *old_values = _values;
@@ -136,6 +136,29 @@ public:
 	}
 
 	return *this;
+    }
+
+    // Comparison
+    bool operator == (const DynArray<T>& m)
+    {
+	if (this == &m)
+	    return true;	// THIS == THIS
+
+	if (size() != m.size())
+	    return false;
+
+	for (int i = size() - 1; i >= 0; i--)
+	{
+	    if (!(_values[i] == m._values[i]))
+		return false;
+	}
+
+	return true;
+    }
+
+    bool operator != (const DynArray<T>& m)
+    {
+	return !(operator == (m));
     }
 };    
 
