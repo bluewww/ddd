@@ -346,7 +346,7 @@ void AsyncAgent::deleteAllWorkProcs()
 // reference XtToolkitInitialize to avoid these stupid
 // "ld.so: Undefined symbol: __XtInherit" messages
 
-void _just_make_sure___XtInherit_is_loaded()
+void _just_make_sure_XtInherit_is_loaded()
 {
     XtToolkitInitialize();
 }
