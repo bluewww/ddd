@@ -899,7 +899,21 @@ void send_gdb_command(string cmd, Widget origin,
 	plus_cmd_data->break_arg = get_break_expression(cmd);
 	plus_cmd_data->refresh_breakpoints = true;
     }
+    else
+    {
+	// Unknown command -- refresh everything
+	if (gdb->has_display_command())
+	    cmd_data->filter_disp = Filter;
 
+	cmd_data->new_frame_pos = true;
+	cmd_data->new_exec_pos  = true;
+
+	plus_cmd_data->refresh_breakpoints = true;
+	plus_cmd_data->refresh_where       = true;
+	plus_cmd_data->refresh_frame       = true;
+	plus_cmd_data->refresh_data        = true;
+	plus_cmd_data->refresh_threads     = true;
+    }
 
     if (cmd_data->new_exec_pos
 	|| plus_cmd_data->refresh_frame 
