@@ -4,8 +4,14 @@ Changes in DDD						-*- text -*-
 DDD 1.3e
 --------
 
-    Fixes some compilation trouble with older GCC versions as well as
-    older C++ compilers.  Functionality is identical to 1.3d.
+    Bug fix release.
+
+    - Some compilation trouble with older GCC versions as well as
+      older C++ compilers fixed.  Thanks to Albert Chin-A-Young
+      <chinay@cig.mot.com>.
+    - Some configuration trouble with non-GCC compilers and Motif 2.0
+      fixed.  Thanks to Larry Schwimmer <rosebud@cyclone.stanford.edu>.
+    - Functionality is unchanged; executables are identical.
 
 
 DDD 1.3d
