@@ -101,9 +101,6 @@ static string yyfilename = "standard input";   // Aktueller Dateiname
 // Bibliothek aus geoeffnetem Strom einlesen
 VSLLib& VSLLib::read(istream& s, unsigned optimizeMode)
 {
-    if (abort != 0 && abort())
-	return *this;
-
     vsllib = this;
 
     yystream = &s;
@@ -111,16 +108,13 @@ VSLLib& VSLLib::read(istream& s, unsigned optimizeMode)
 
     // Einlesen...
     yynameSet.reset();
-    int ret = parse();
+    parse();
 
     if (VSEFlags::verbose)
     {
 	cout << ")";
 	cout.flush();
     }
-
-    if (ret)
-	return *this;
 
     // Nachbearbeitung (Binden, optimieren, usw.)
     process(optimizeMode);
@@ -136,9 +130,6 @@ VSLLib& VSLLib::read(istream& s, unsigned optimizeMode)
 // Bibliothek aus gegebenem Dateinamen einlesen
 VSLLib& VSLLib::read(const string& lib_name, unsigned optimizeMode)
 {
-    if (abort != 0 && abort())
-	return *this;
-
     if (VSEFlags::verbose)
     {
 	if (lib_name == "")
