@@ -4,6 +4,9 @@ Changes in DDD						-*- text -*-
 DDD 2.2 [in development]
 ------------------------
 
+    DDD 2.2 brings an improved user interface and support for
+    debugging running processes.
+
     User-visible changes to DDD 2.1:
     - Support for debugging processes running outside of DDD.  You can
       attach to a running process, examine it, and resume its execution.
