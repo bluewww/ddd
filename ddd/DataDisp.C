@@ -841,7 +841,7 @@ void DataDisp::deleteCB (Widget dialog, XtPointer client_data, XtPointer)
 	 dn = disp_graph->next(ref))
     {
 	DispValue *dv = dn->selected_value();
-	if (dn->selected() && (delete_from_display_part || dv == 0))
+	if (selected(dn) && (delete_from_display_part || dv == 0))
 	{
 	    disp_nrs += dn->disp_nr();
 
