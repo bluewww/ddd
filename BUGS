@@ -2,13 +2,14 @@
 # The DDD bug list.
 
 Note: For problems occurring when *building* DDD, see the file `PROBLEMS'.
+      For reported bugs that could not yet be reproduced, see `OPENBUGS'.
 
-This is a list of known DDD bugs, which should be fixed in some future
-DDD release.  If you want to fix one or more of these bugs, please ask
-us (at ddd@ips.cs.tu-bs.de) whether there are already people working
-on that bug.  Similar, if you find a bug, be sure to report it to us
-(at ddd-bugs@ips.cs.tu-bs.de) such that we may fix it (or include it
-in this list :-)
+This is a list of known (i.e. reproducible) DDD bugs, which should be
+fixed in some future DDD release.  If you want to fix one or more of
+these bugs, please ask us (at ddd@ips.cs.tu-bs.de) whether there are
+already people working on that bug.  Similar, if you find a bug, be
+sure to report it to us (at ddd-bugs@ips.cs.tu-bs.de) such that we may
+fix it (or include it in this list :-)
 
 Projects marked with an `*' are to be fixed in the next DDD release.
 Volunteers for fixing these and other bugs are welcome!
@@ -34,35 +35,13 @@ Volunteers for fixing these and other bugs are welcome!
 049 The bounding box is computed for all boxes, even if only selected
     boxes are to be printed.
 
-086 mayer@paradigml.com (Ron Mayer) says:
-
-    In a number of structures I would attempt to "Modify [the]
-    dependent display expression" to display in hex using expressions
-    like "/x g->head", instead of the default "(g)->head".
-
-    Occasionally this would make ddd hang, and lock up the X-server
-    completely so that I would have to rlogin from another terminal
-    to kill the program.  The bus-error was not reproducable, and
-    unfortunatelly I had core files disabled when it happened.
-
-    These structures did happen to be in a mmap()'d region of shared
-    memory, but since I didn't see the problems when I didn't use the
-    "/x" modifier I suspect this isn't the problem.
-
-    PS: What is the prefered way (if any) of making the hex output 
-        the default in the display graph?  If I "set output-radix 16" 
-        in the gdb window ddd seems to lock up very often.
-    [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
-
 126 Flashing data window.  Thomas Liefke
-    <liefke@cdc.Informatik.TH-Darmstadt.DE> says: 
-
-    The data window is flashing forever in certain circumstances. The
-    flashing looks like a rapid, endless update of the data
-    displayed. The flashing only occurs when the panner is
-    used. While the window (i.e. the boxes and the panner) is
-    flashing, another panner is occurring in the upper left corner in
-    each flash-cycle.
+    <liefke@cdc.Informatik.TH-Darmstadt.DE> reports that the data
+    window is flashing forever in certain circumstances. The flashing
+    looks like a rapid, endless update of the data displayed. The
+    flashing only occurs when the panner is used.  While the window
+    (i.e. the boxes and the panner) is flashing, another panner is
+    occurring in the upper left corner in each flash-cycle.
 
     The flashing does NOT occur when the scroll bar is used instead of a
     panner.
@@ -90,48 +69,6 @@ Volunteers for fixing these and other bugs are welcome!
 
     When I repeatedly change the size, the flashing comes again but
     not each time the window size is big enough to hold all boxes.
-    [I could not reproduce this problem.  -AZ]
-
-    This flashing occurs in the vsl demos as well.
-
-    For example:
-
-    cd ddd-2.0/vsllib
-    ../ddd/vsl DEMOS/arcs
-
-    Now the window is flashing until I increase the size of the
-    window so that everything fits into it. The flashing doesn't
-    occur again when I decrease the window size to the original size.
-
-    The flashing occurs in other demos as well. It doesn't occur in
-    DEMOS/bigflow.
-
-    I experienced the flashing neither in version 1.4 nor in version
-    2.0beta.
-    [This one is easily reproducible, but has low priority.  -AZ]
-
-127 Bob Vickers <bobv@dcs.rhbnc.ac.uk> says that DDD 2.0
-    (alpha-dec-osf3.2) sometimes fails to start.  Often it works
-    fine. But sometimes, especially if you haven't run it for a while
-    (e.g. first thing in the morning) the command window comes up but
-    there is no sign of the source window. There are sometimes error
-    messages, and these vary slightly.
-
-    The parent Unix window sometimes contains tty error messages, e.g.
-
-    platon$ make check
-    ==> Making check in ./ddd...
-    make[1]: Entering directory `/nobackup/work/bobv/ddd-2.0/ddd'
-    XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd cxxtest
-    X Toolkit Warning: Cannot convert string 
-    "-*-Menu-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1" to type FontStruct
-    (gdb) cannot set terminal foreground process group: I/O error
-    (gdb) cannot get slave terminal settings: I/O error
-
-    [We cannot fix this, as we neither have an OSF box nor
-     appropriate OSF documentation at our disposition.  The DDD
-     distribution comes with a demo program `ttytest' which is useful
-     for debugging the TTY interface in `TTYAgent.C'  -AZ]
 
 150 In GDB Modula-2-mode, DDD displays are named `^tree' instead of
     `tree^'.  [This is a GDB bug.  Here's a patch for GDB 4.16:
@@ -158,18 +95,8 @@ Volunteers for fixing these and other bugs are welcome!
 152 Curved edges cannot (yet) be printed.
     [Any PostScript and FIG gurus out there?  -AZ]
 
-153 Jonathan Edwards <edwards@intranet.com> says that in AIX DBX,
-    the local variable display does not display function arguments.
-    [May this be due to using AIX xlC instead of GCC?  -AZ]
-
 155 DBX `dump` output is not understood if local arrays are shown.
     (DBX prints these as `ARRAY')
-
-159 Jonathan Edwards <edwards@intranet.com> says:
-    A status display only shows once.  After stepping the program it
-    collapses into just the title.  Doing a refresh command restores
-    the display.
-    [This is due to using AIX xlC instead of GCC.  -AZ]
 
 168 Jens Albrecht <Jens.Albrecht@informatik.uni-erlangen.de>
     complains that using DBX, the `file' command does not change the
@@ -177,53 +104,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 169 The Manual Browser does not recognize manual (sub-)titles for
     ULTRIX and HP-UX `man' formats (probably problems with others, too)
-
-172 Jonathan Edwards <edwards@intranet.com> says: If I interrupt my
-    program while it is running, my data displays are not updated,
-    and instead I get the info in the debugger console.
-
-173 Matthias Kurz <mk@baerlap.north.de> says:
-    - Often the first graph display is not completely inside the
-      window; after selecting 'layout graph' things are right
-    [I could not reproduce this. -AZ]
-
-175 Harry Mangalam <mangalam@uci.edu> reports: As soon as I click on
-    a variable to try to highlight a structure name, DDD 2.1 goes
-    into an unresponsive state for several seconds (seems like up to
-    a minute on a 486) in which the ddd process hogs the cpu.  It
-    then returns to a usable state until the next time I try to
-    highlight a variable name.  It seems that if I click on a simple
-    variable name, it responds appopriately, but if I try to
-    drag-hilite the name, ddd goes berserk with the cpu.
-    [I could not reproduce this. -AZ]
-
-222 Bob Vickers <bobv@dcs.rhbnc.ac.uk> reports that the command tool
-    sometimes is really big and occupies most of the screen, thus
-    obliterating most of the other windows.  This happens with
-    OSF/Motif Version 1.2.4 on alpha-dec-osf4.0.
-    [Should be fixed in 2.99.1  -AZ]
-
-228 Chip Atkinson <chip@XiG.com> and Bernie Borenstein
-    <bernieb@deltanet.com> state that after enabling `ungrab mouse
-    pointer when interruping modal X application', pressing the right
-    mouse button grabs the cursor and won't release.  When ddd is
-    killed, the X server cannot give focus to any other windows.
-    This happens with Red Hat Linux 4.1 and Metrolink Motif 2.01.
-
-230 Roy Dragseth <royd@math.uit.no> reports that if you type in
-    commands really fast in ddd, it gets problems to cope.  When
-    using DDD from XEmacs, and defining XEmacs command sequences to
-    be sent to DDD, the last command(s) in the sequence get lost.
-
-235 Nagi M. Aboulenein <naboulen@ichips.intel.com> says: I'm seeing a
-    persistent problem with various version of DDD on FreeBSD/x86
-    platforms. The problem occurs when an attempt is made to save
-    options. At that point DDD dies and the options file is not
-    updated.
-
-241 Lev Makhlis <mlev@writeme.com> states that DDD 2.2.3
-    (i586-pc-linux-gnulibc1) consistently crashes if he runs it when
-    no `~/.ddd/' exists.
 
 249 Zdenek Sekera <zs@cray.com> reports:
 
@@ -257,28 +137,15 @@ Volunteers for fixing these and other bugs are welcome!
 255 In Java programs, the `info set' status display is treated as
     variable list.
 
-257 Marco Hess <marcoh@senet.com.au> says that sometimes, the source
-    window locks in scroll mode until it reaches the top or bottom of
-    the file.  [Changing the `glyphUpdateDelay' resource should fix
-    this; tell me if this helps.  -AZ]
-
 262 Ordinarily labeled toolbars don't show up as they should.  Motif
     bug?
 
-271 Source text and machine code are no drop targets.
+271 Source text and machine code should not be drop targets.
 
 272 (LessTif) The `select' font selection method works only once.
 
-277 When the editor fails, record and show its stderr messages.
+277 When `Edit' fails, record and show the editor stderr messages.
 
 278 The `--fonts' option needs documentation.
-
-279 Brian Dowtin <Private_User@gilbarco.com> reports that on 
-    SCO Server 5 and running DDD somehow the breakpoint pixmap
-    'sticks' to the window.  Sometime after setting a breakpoint, The
-    stop sign, stays in one spot. If I scroll up or down, its
-    there. If I delete the actual breakpoint its still there. If I
-    resize/close//reopen source window, its still there. If I load a
-    different source file - you get the picture.
 
 280 (Insert new bugs here)

@@ -1,0 +1,114 @@
+# $Id$ -*- Text -*-
+# The DDD open bugs list.
+
+Note: For problems occurring when *building* DDD, see the file `PROBLEMS'.
+      For known bugs that could be reproduced, see the file `BUGS'.
+
+This is a list of reported DDD bugs which could not yet be reproduced.
+Feel free to investigate into one of these problems.
+
+086 mayer@paradigml.com (Ron Mayer) says:
+
+    In a number of structures I would attempt to "Modify [the]
+    dependent display expression" to display in hex using expressions
+    like "/x g->head", instead of the default "(g)->head".
+
+    Occasionally this would make ddd hang, and lock up the X-server
+    completely so that I would have to rlogin from another terminal
+    to kill the program.  The bus-error was not reproducable, and
+    unfortunatelly I had core files disabled when it happened.
+
+    These structures did happen to be in a mmap()'d region of shared
+    memory, but since I didn't see the problems when I didn't use the
+    "/x" modifier I suspect this isn't the problem.
+
+    PS: What is the prefered way (if any) of making the hex output 
+        the default in the display graph?  If I "set output-radix 16" 
+        in the gdb window ddd seems to lock up very often.
+    [I could not reproduce this bug.  Can anyone clarify this?  -AZ]
+
+127 Bob Vickers <bobv@dcs.rhbnc.ac.uk> says that DDD 2.0
+    (alpha-dec-osf3.2) sometimes fails to start.  Often it works
+    fine. But sometimes, especially if you haven't run it for a while
+    (e.g. first thing in the morning) the command window comes up but
+    there is no sign of the source window. There are sometimes error
+    messages, and these vary slightly.
+
+    The parent Unix window sometimes contains tty error messages, e.g.
+
+    platon$ make check
+    ==> Making check in ./ddd...
+    make[1]: Entering directory `/nobackup/work/bobv/ddd-2.0/ddd'
+    XUSERFILESEARCHPATH=. XAPPLRESDIR=. ./ddd cxxtest
+    X Toolkit Warning: Cannot convert string 
+    "-*-Menu-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1" to type FontStruct
+    (gdb) cannot set terminal foreground process group: I/O error
+    (gdb) cannot get slave terminal settings: I/O error
+
+    [We cannot fix this, as we neither have an OSF box nor
+     appropriate OSF documentation at our disposition.  The DDD
+     distribution comes with a demo program `ttytest' which is useful
+     for debugging the TTY interface in `TTYAgent.C'  -AZ]
+
+153 Jonathan Edwards <edwards@intranet.com> says that in AIX DBX,
+    the local variable display does not display function arguments.
+    [This is probably due to using AIX xlC instead of GCC.  -AZ]
+
+159 Jonathan Edwards <edwards@intranet.com> says:
+    A status display only shows once.  After stepping the program it
+    collapses into just the title.  Doing a refresh command restores
+    the display.
+    [This is due to using AIX xlC instead of GCC.  -AZ]
+
+172 Jonathan Edwards <edwards@intranet.com> says: If I interrupt my
+    program while it is running, my data displays are not updated,
+    and instead I get the info in the debugger console.
+
+173 Matthias Kurz <mk@baerlap.north.de> says:
+    - Often the first graph display is not completely inside the
+      window; after selecting 'layout graph' things are right
+
+175 Harry Mangalam <mangalam@uci.edu> reports: As soon as I click on
+    a variable to try to highlight a structure name, DDD 2.1 goes
+    into an unresponsive state for several seconds (seems like up to
+    a minute on a 486) in which the ddd process hogs the cpu.  It
+    then returns to a usable state until the next time I try to
+    highlight a variable name.  It seems that if I click on a simple
+    variable name, it responds appopriately, but if I try to
+    drag-hilite the name, ddd goes berserk with the cpu.
+
+222 Bob Vickers <bobv@dcs.rhbnc.ac.uk> reports that the command tool
+    sometimes is really big and occupies most of the screen, thus
+    obliterating most of the other windows.  This happens with
+    OSF/Motif Version 1.2.4 on alpha-dec-osf4.0.
+    [Should be fixed in 2.99.1  -AZ]
+
+230 Roy Dragseth <royd@math.uit.no> reports that if you type in
+    commands really fast in ddd, it gets problems to cope.  When
+    using DDD from XEmacs, and defining XEmacs command sequences to
+    be sent to DDD, the last command(s) in the sequence get lost.
+
+235 Nagi M. Aboulenein <naboulen@ichips.intel.com> says: I'm seeing a
+    persistent problem with various version of DDD on FreeBSD/x86
+    platforms. The problem occurs when an attempt is made to save
+    options. At that point DDD dies and the options file is not
+    updated.
+
+241 Lev Makhlis <mlev@writeme.com> states that DDD 2.2.3
+    (i586-pc-linux-gnulibc1) consistently crashes if he runs it when
+    no `~/.ddd/' exists.
+
+257 Marco Hess <marcoh@senet.com.au> says that sometimes, the source
+    window locks in scroll mode until it reaches the top or bottom of
+    the file.  [Changing the `glyphUpdateDelay' resource should fix
+    this; tell me if this helps.  -AZ]
+
+279 Brian Dowtin <Private_User@gilbarco.com> reports that on 
+    SCO Server 5 and running DDD somehow the breakpoint pixmap
+    'sticks' to the window.  Sometime after setting a breakpoint, The
+    stop sign, stays in one spot. If I scroll up or down, its
+    there. If I delete the actual breakpoint its still there. If I
+    resize/close//reopen source window, its still there. If I load a
+    different source file - you get the picture.
+
+280 (Insert new bugs here)

@@ -2,11 +2,12 @@ This is the source distribution of DDD, the Data Display Debugger.
 Please consult the following files:
 
     ANNOUNCE     All about this DDD distribution, including FTP sites.
-    BUGS         Open issues in this DDD distribution.
+    BUGS         Known bugs in this DDD distribution.
     COPYING      The DDD license.
     COPYING.LIB  The license applying to some parts of DDD.
     INSTALL      Building and installing DDD.
     NEWS         Release information and recent changes.
+    OPENBUGS     Reported bugs for this and earlier DDD distributions.
     PROBLEMS     Hints for building DDD on specific systems.
     README       This file.
     TODO         Possible future DDD features.
