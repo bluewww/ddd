@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1 Oct 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "8 Oct 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC @srcdir@/PICS/dddlogo.ps 10cm
@@ -4205,7 +4205,7 @@ Primary debugger prompts (e.g. `\fB(gdb) \fR' or `\fB(dbx) \fR')
 .IP \(bu 2
 Secondary debugger prompts (e.g. `\fB>\fR')
 .IP \(bu 2 
-Confirmation prompts (e.g. `\fB(y or n) ?\fR')
+Confirmation prompts (e.g. `\fB(y or n) \fR')
 .IP \(bu 2
 Prompts for more output (e.g. `\fBPress RETURN to continue\fR')
 .IP \(bu 2
