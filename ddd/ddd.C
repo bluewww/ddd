@@ -7396,7 +7396,7 @@ static int points(string s)
 	double value = strtod(start, &tailptr);
 	if (start == tailptr)
 	{
-	    post_error("Unrecognized size", "paper_size_value_error");
+	    post_error("Unrecognized size.", "paper_size_value_error");
 	    return -1;
 	}
 	s = s.from(tailptr - start);
@@ -7443,7 +7443,7 @@ static int points(string s)
 	    factor = 72.0 * 1/2.54 * 100000 * 3.085678e+13;
 	else
 	{
-	    post_error("Unrecognized unit \"" + unit + "\"",
+	    post_error("Unrecognized unit \"" + unit + "\".",
 		       "paper_size_unit_error");
 	    return -1;
 	}
@@ -7468,7 +7468,7 @@ static int set_paper_size(string s)
 {
     if (!s.contains('x'))
     {
-	post_error("Unrecognized paper size (missing \"x\")",
+	post_error("Unrecognized paper size (missing \"x\").",
 		   "paper_size_x_error");
 	return -1;
     }
