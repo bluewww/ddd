@@ -1145,13 +1145,14 @@ eps-code.h:     header.str trailer.str eps-code.x
 
 
 ## Configuration info stuff
-configinfo.C:   USERINFO $(srcdir)/config-info Makefile config.h
-		$(SHELL) $(srcdir)/config-info > $@
+configinfo.C:   USERINFO Makefile config.h $(srcdir)/config-info
+		$(SHELL) $(srcdir)/config-info $(srcdir)/USERINFO USERINFO > $@
+		@-$(CAT) $(srcdir)/USERINFO || $(CAT) USERINFO
 
 configinfo.o:	configinfo.C configinfo.h
 
-USERINFO:	userinfo Makefile
-		-(./userinfo || echo '(unknown)') > $@; $(CAT) $@
+USERINFO:	userinfo
+		-(./userinfo || echo '(unknown)') > $@
 
 
 ## Update the shared source tree.  For development only.

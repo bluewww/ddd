@@ -27,7 +27,11 @@
 # `http://www.cs.tu-bs.de/softech/ddd/',
 # or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-userinfo=`cat ./USERINFO || echo "DDD development team <ddd@ips.cs.tu-bs.de>"`
+test "$#" = 0 && set USERINFO
+for file in "$@"; do 
+  test -f $file && break
+done
+userinfo=`cat $file || echo "DDD development team <ddd@ips.cs.tu-bs.de>"`
 echo "// Generated automatically by \`config-info' from \`Makefile' and \`config.h'."
 echo "// Do not edit."
 echo
