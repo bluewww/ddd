@@ -95,7 +95,7 @@
 @finalout
 
 @c Info Dir settings
-@dircategory Miscellaneous
+@dircategory Programming & development tools.
 @direntry
 * DDD: (ddd).                     The Data Display Debugger.
 @end direntry

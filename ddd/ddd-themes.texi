@@ -83,7 +83,7 @@
 @finalout
 
 @c Info Dir settings
-@dircategory Miscellaneous
+@dircategory Programming & development tools.
 @direntry
 * DDD-Themes: (ddd-themes).       Writing DDD Themes.
 @end direntry
