@@ -155,6 +155,9 @@ User Interface
   The bindings from DDD 3.0 and earlier (Ctrl+E for Run, Ctrl+I for
   Step, etc.) are still available.
 
+- You can configure the tool bar to appear at the bottom of the
+  window, as in DDD 2.x and earlier.
+
 
 Settings
 --------
