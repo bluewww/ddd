@@ -251,9 +251,9 @@ J       [A-Za-z_$][A-Za-z0-9_$.]*
 28{_}(debug|givenfile)({W}{C})?		RETURN(&rxdebug_cmd);
 29{W}no{W}tnedneped{W}			RETURN(&rxdep);
 30{_}disable{W}display({W}{C})?		RETURN(&rxdisable);
-31{_}disp(lay)?({W}{C})?		RETURN(&rxdisplay);
-32{_}disp(lay)?{W}			RETURN(&rxdisplay_cmd);
-33{_}disp(lay)?{W}{C} 			RETURN(&rxdisplay_cmd_and_args);
+31{_}(disp(lay)?|plot)({W}{C})?		RETURN(&rxdisplay);
+32{_}(disp(lay)?|plot){W}		RETURN(&rxdisplay_cmd);
+33{_}(disp(lay)?|plot){W}{C}		RETURN(&rxdisplay_cmd_and_args);
 34Do{_}n['o]t				RETURN(&rxdont);
 35\/[^/]*[^/.]\/[.][.]\/		RETURN(&rxdotdot);
 36-?(({D}\.{d}*)|({D})|(\.{D}))([eE][+-]?{D})?	RETURN(&rxdouble);

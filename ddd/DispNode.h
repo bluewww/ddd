@@ -84,6 +84,7 @@ private:
     bool          saved_node_hidden;  // Saved `hidden' flag of node
     bool          mydeferred;	      // Flag: is display deferred?
     int           myclustered;	      // Flag: is display clustered?
+    bool          myplotted;	      // Flag: is display plotted?
     bool          myconstant;	      // Flag: is display constant?
     DispValue*    disp_value;	      // Associated value
     DispValue*    myselected_value;   // Selected value within DISP_VALUE
@@ -112,8 +113,9 @@ public:
     // SCOPE (a function name or "") with a value of VALUE.
     DispNode(int disp_nr,
 	     const string& name,
-	     const string& scope = "",
-	     const string& value = "");
+	     const string& scope,
+	     const string& value,
+	     bool plotted);
 
     // Destructor
     ~DispNode();
@@ -146,6 +148,8 @@ public:
     bool deferred() const { return mydeferred; }
     bool& deferred()      { return mydeferred; }
     int clustered() const { return myclustered; }
+    bool plotted() const  { return myplotted; }
+    bool& plotted()       { return myplotted; }
     bool constant() const { return myconstant; }
     bool& constant()      { return myconstant; }
 

@@ -484,7 +484,7 @@ bool is_other_builtin_cmd(const string& cmd, GDBAgent *gdb)
 string get_display_expression (const string& display_cmd)
 {
 #if RUNTIME_REGEX
-    static regex rxdisplay_cmd("[ \t]*(disp|displ|displa|display)[ \t]+");
+    static regex rxdisplay_cmd("[ \t]*(disp|displ|displa|display|plot)[ \t]+");
 #endif
 
     string d(display_cmd);

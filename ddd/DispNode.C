@@ -62,7 +62,8 @@ int DispNode::change_tics = 0;
 DispNode::DispNode (int disp_nr,
 		    const string& name,
 		    const string& scope,
-		    const string& value)
+		    const string& val,
+		    bool pl)
     : BoxGraphNode(),
       mydisp_nr(disp_nr),
       myname(name),
@@ -73,6 +74,7 @@ DispNode::DispNode (int disp_nr,
       saved_node_hidden(false),
       mydeferred(false),
       myclustered(false),
+      myplotted(pl),
       myconstant(false),
       disp_value(0),
       myselected_value(0),
@@ -82,13 +84,19 @@ DispNode::DispNode (int disp_nr,
 {
     mylast_change = ++change_tics;
 
-    if (value != "")
+    if (val != "")
     {
-	string v = value;
+	string v = val;
 	disp_value = DispValue::parse(v, myname);
 	set_addr(disp_value->addr());
     }
 
+    if (plotted() && value() != 0)
+    {
+	// No need to show all detail; it is plotted, anyway
+	value()->collapse();
+    }
+	
     // Create new box from DISP_VALUE
     disp_box = new DispBox (mydisp_nr, myname, disp_value);
 
@@ -399,6 +407,7 @@ DispNode::DispNode(const DispNode& node)
       saved_node_hidden(node.saved_node_hidden),
       mydeferred(node.deferred()),
       myclustered(node.clustered()),
+      myplotted(node.plotted()),
       myconstant(node.constant()),
       disp_value(node.value() ? node.value()->dup() : 0),
       myselected_value(0),

@@ -1761,7 +1761,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	scope = get_scope(where_answer); // `where' or `frame' output
 
     cmd = cmd.after("graph ");
-    if (is_display_cmd(cmd))
+    if (is_display_cmd(cmd) || cmd.contains("plot", 0))
     {
 	string rcmd = reverse(cmd);
 
@@ -1770,6 +1770,7 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	DeferMode deferred = DeferNever;
 	bool clustered = false;
 	BoxPoint *pos = 0;
+	bool plotted = cmd.contains("plot", 0);
 
 	for (;;)
 	{
@@ -1855,13 +1856,13 @@ static bool handle_graph_cmd(string& cmd, const string& where_answer,
 	if (when_in != "" && when_in != scope)
 	{
 	    data_disp->new_displaySQ(display_expression, when_in, pos,
-				     depends_on, deferred, clustered,
+				     depends_on, deferred, clustered, plotted,
 				     origin, verbose, do_prompt);
 	}
 	else
 	{
 	    data_disp->new_displaySQ(display_expression, scope, pos,
-				     depends_on, deferred, clustered,
+				     depends_on, deferred, clustered, plotted,
 				     origin, verbose, do_prompt);
 	}
     }

@@ -115,6 +115,7 @@ class DataDisp {
     static void hideDetailCB            (Widget, XtPointer, XtPointer);
     static void dependentCB             (Widget, XtPointer, XtPointer);
     static void displayArgCB            (Widget, XtPointer, XtPointer);
+    static void plotArgCB               (Widget, XtPointer, XtPointer);
     static void setCB                   (Widget, XtPointer, XtPointer);
     static void shortcutCB              (Widget, XtPointer, XtPointer);
     static void deleteArgCB		(Widget, XtPointer, XtPointer);
@@ -187,13 +188,13 @@ class DataDisp {
     static void close_data_window();
 
     static DispNode *new_data_node(const string& name, const string& scope,
-				   const string& answer);
+				   const string& answer, bool plotted);
     static DispNode *new_user_node(const string& name, const string& scope,
-				   const string& answer);
+				   const string& answer, bool plotted);
     static DispNode *new_deferred_node(const string& expr, const string& scope,
 				       const BoxPoint& pos,
 				       const string& depends_on,
-				       bool clustered);
+				       bool clustered, bool plotted);
 
     static int getDispNrAtPoint(BoxPoint point);
 
@@ -276,6 +277,7 @@ public:
     // DEPENDS_ON (a display number or name).
     // If DEFERRED is set, defer creation until SCOPE is reached.
     // If CLUSTERED is set, cluster display.
+    // If PLOTTED is set, plot display.
     // If ORIGIN is set, the last origin is set to ORIGIN.
     static void new_displaySQ(string display_expression,
 			      string scope,
@@ -283,6 +285,7 @@ public:
 			      string depends_on = "",
 			      DeferMode deferred = DeferAlways,
 			      bool clustered = false,
+			      bool plotted = false,
 			      Widget origin = 0,
 			      bool verbose = true,
 			      bool prompt = true);
@@ -308,10 +311,11 @@ public:
 				 bool prompt = true);
 
     // Same, but return the appropriate command
-    static string new_display_cmd(string display_expression,
+    static string new_display_cmd(const string& display_expression,
 				  BoxPoint *pos = 0,
-				  string depends_on = "",
-				  bool clustered = false);
+				  const string& depends_on = "",
+				  bool clustered = false,
+				  bool plotted = false);
 
     static string refresh_display_cmd();
     static string disable_display_cmd(IntArray& display_nrs);
@@ -324,10 +328,12 @@ public:
 			    BoxPoint *pos = 0,
 			    string depends_on = "",
 			    bool clustered = false,
+			    bool plotted = false,
 			    Widget origin = 0)
     {
-	gdb_command(new_display_cmd(display_expression, pos, 
-				    depends_on, clustered), origin);
+	string c = new_display_cmd(display_expression, pos, 
+				   depends_on, clustered, plotted);
+	gdb_command(c, origin);
     }
 
     static void refresh_display(Widget origin = 0)
@@ -492,7 +498,8 @@ private:
     static void reset_done(const string& answer, void *data);
 
     // Clustering stuff
-    static void insert_data_node(DispNode *dn, int depend_nr, bool clustered);
+    static void insert_data_node(DispNode *dn, int depend_nr,
+				 bool clustered, bool plotted);
     static int new_cluster();
     static int current_cluster();
 

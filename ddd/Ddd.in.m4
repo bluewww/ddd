@@ -3702,6 +3702,7 @@ The item's functionality will be explained here.
 ! @rm Commands related to the data window.
 
 Ddd*toolbar*dereference.labelString: 	Display *()
+Ddd*toolbar*plot.labelString: 	        Plot ()
 Ddd*toolbar*detail.labelString:		Show ()
 Ddd*toolbar*show_more.labelString:   	Show More ()
 Ddd*toolbar*show_just.labelString:   	Show Just ()
@@ -3721,6 +3722,11 @@ Ddd*toolbar*dereference.labelPixmap: 		dispref
 Ddd*toolbar*dereference.labelInsensitivePixmap:	dispref-xx
 Ddd*toolbar*dereference.armPixmap:		dispref-arm
 Ddd*toolbar*dereference.highlightPixmap:	dispref-hi
+
+Ddd*toolbar*plot.labelPixmap: 			plot
+Ddd*toolbar*plot.labelInsensitivePixmap:	plot-xx
+Ddd*toolbar*plot.armPixmap:			plot-arm
+Ddd*toolbar*plot.highlightPixmap:		plot-hi
 
 Ddd*toolbar*detail.labelPixmap:			show
 Ddd*toolbar*detail.labelInsensitivePixmap:	show-xx
@@ -3790,6 +3796,15 @@ Ddd*toolbar*dereference.documentationString:\
 
 Ddd*toolbar*dereference2.documentationString:\
 @rm Display the dereferenced argument LBL(()) in the data window.
+
+Ddd*toolbar*plot.helpString:\
+LBL(Plot ())\n\
+\n\
+Plot the argument LBL(()).
+Ddd*toolbar*plot.tipString:\
+@rm Plot LBL(())
+Ddd*toolbar*plot.documentationString:\
+@rm Plot the argument LBL(())
 
 
 define(DETAIL_HELP, [\

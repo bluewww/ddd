@@ -107,6 +107,10 @@ class DispValue {
     bool can_plot2d() const;
     bool can_plot3d() const;
 
+    // Update helper
+    DispValue *_update(DispValue *source, 
+		       bool& was_changed, bool& was_initialized);
+
 protected:
     int _links;			// #references (>= 1)
 

@@ -38,6 +38,7 @@ char DispValue_rcsid[] =
 #define LOG_CREATE_VALUES 0
 #endif
 
+
 //-----------------------------------------------------------------------------
 // A `DispValue' maintains type and value of a displayed expression
 //-----------------------------------------------------------------------------
@@ -169,6 +170,7 @@ DispValue::DispValue (const DispValue& dv)
 	_children += dv.child(i)->dup();
     }
 }
+
 
 // True if more sequence members are coming
 bool DispValue::sequence_pending(const string& value, 
@@ -687,6 +689,12 @@ void DispValue::clear()
 
     static DispValueArray empty(0);
     _children = empty;
+
+    if (plotter() != 0)
+    {
+	delete plotter();
+	_plotter = 0;
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -841,6 +849,18 @@ DispValue *DispValue::update(string& value,
 // value instead.
 DispValue *DispValue::update(DispValue *source, 
 			     bool& was_changed, bool& was_initialized)
+{
+    bool was_plotted = (plotter() != 0);
+
+    DispValue *dv = _update(source, was_changed, was_initialized);
+    if (was_plotted && was_changed)
+	dv->plot();
+
+    return dv;
+}
+
+DispValue *DispValue::_update(DispValue *source, 
+			      bool& was_changed, bool& was_initialized)
 {
     if (source == this)
     {
