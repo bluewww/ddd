@@ -1062,12 +1062,13 @@ dnl Basic translations for all other texts and text fields
 define(EMACS_TRANSLATIONS,[\
 Ctrl<Key>A:		select-all()	    	    \n\
 Ctrl<Key>B:		gdb-backward-character()    \n\
-Ctrl<Key>C:		gdb-control(^C)		    \n\
 Ctrl<Key>D:		delete-next-character()     \n\
 Ctrl<Key>E:		end-of-line()		    \n\
 Ctrl<Key>F:		gdb-forward-character()	    \n\
 Ctrl<Key>G:		gdb-control(^C)		    \n\
 <Key>Break:		gdb-interrupt()		    \n\
+None<Key>Escape:	gdb-interrupt()             \n\
+None<Key>osfCancel:	gdb-interrupt()             \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>I:		self-insert()               \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
@@ -1105,6 +1106,14 @@ define(COMPLETE_TEXT_TRANSLATIONS, TEXT_TRANSLATIONS[\
 Ctrl<Key>T:		gdb-complete-arg($1)	    \n\
 ~Shift <Key>Tab:	gdb-complete-tab($1)	    \n])dnl
 dnl
+dnl Dialogs also have Cut/Copy/Paste.
+define(CLIPBOARD_TRANSLATIONS, [\
+~Ctrl Shift<Key>Delete: cut-clipboard()\n\
+~Shift Ctrl<Key>Insert: copy-clipboard()\n\
+~Ctrl Shift<Key>Insert: paste-clipboard()\n\
+~Shift Ctrl<Key>X:      cut-clipboard()\n\
+~Shift Ctrl<Key>C:      copy-clipboard()\n\
+~Shift Ctrl<Key>V:      paste-clipboard()\n])dnl
 
 ! Have some of these in argument fields as well
 Ddd*XmTextField.translations: \
@@ -1115,67 +1124,70 @@ Ddd*XmText.translations:      \
 
 ! In breakpoint dialogs, use a `break' completion
 Ddd*new_breakpoint_dialog*XmText.translations:   \
-#override\n COMPLETE_TRANSLATIONS(break)
+#override\n COMPLETE_TRANSLATIONS(break) CLIPBOARD_TRANSLATIONS
 
 Ddd*new_breakpoint_dialog*XmTextField.translations: \
-#override\n COMPLETE_TRANSLATIONS(break)
+#override\n COMPLETE_TRANSLATIONS(break) CLIPBOARD_TRANSLATIONS
 
 ! In watchpoint dialogs, use a `print' completion
 Ddd*new_watchpoint_dialog*XmText.translations:   \
-#override\n COMPLETE_TRANSLATIONS(print)
+#override\n COMPLETE_TRANSLATIONS(print) CLIPBOARD_TRANSLATIONS
 
 Ddd*new_watchpoint_dialog*XmTextField.translations: \
-#override\n COMPLETE_TRANSLATIONS(print)
+#override\n COMPLETE_TRANSLATIONS(print) CLIPBOARD_TRANSLATIONS
 
 
 ! In file dialogs, use a `file' completion
 Ddd*XmFileSelectionBox*XmText.translations:      \
-#override\n COMPLETE_TRANSLATIONS(file)
+#override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
 
 Ddd*XmFileSelectionBox*XmTextField.translations: \
-#override\n COMPLETE_TRANSLATIONS(file)
+#override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
 
 
 ! In `print', `make', and `cd' dialogs, use a `file' completion, too.
 Ddd*print_popup*XmText.translations: 		 \
-#override\n COMPLETE_TRANSLATIONS(file)
+#override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
 
 Ddd*print_popup*XmTextField.translations:        \
-#override\n COMPLETE_TRANSLATIONS(file)
+#override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
 
 Ddd*make_dialog*XmText.translations: 		 \
-#override\n COMPLETE_TRANSLATIONS(file)
+#override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
 
 Ddd*make_dialog*XmTextField.translations:        \
-#override\n COMPLETE_TRANSLATIONS(file)
+#override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
 
 Ddd*cd_dialog*XmText.translations: 		 \
-#override\n COMPLETE_TRANSLATIONS(file)
+#override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
 
 Ddd*cd_dialog*XmTextField.translations:          \
-#override\n COMPLETE_TRANSLATIONS(file)
+#override\n COMPLETE_TRANSLATIONS(file) CLIPBOARD_TRANSLATIONS
 
 ! In selection boxes, use `shell' completion.
 Ddd*XmSelectionBox*XmText.translations: 	 \
-#override\n COMPLETE_TRANSLATIONS(shell)
-
+#override\n COMPLETE_TRANSLATIONS(shell) CLIPBOARD_TRANSLATIONS
 Ddd*XmSelectionBox*XmTextField.translations:     \
-#override\n COMPLETE_TRANSLATIONS(shell)
+#override\n COMPLETE_TRANSLATIONS(shell) CLIPBOARD_TRANSLATIONS
+Ddd*XmDialogShell*XmText.translations: 	 \
+#override\n COMPLETE_TRANSLATIONS(shell) CLIPBOARD_TRANSLATIONS
+Ddd*XmDialogShell*XmTextField.translations:     \
+#override\n COMPLETE_TRANSLATIONS(shell) CLIPBOARD_TRANSLATIONS
 
 ! In the button editor, we have no completion.
 Ddd*edit_buttons*XmText.translations: 	 	 \
-#override\n TEXT_TRANSLATIONS
+#override\n TEXT_TRANSLATIONS CLIPBOARD_TRANSLATIONS
 
 ! In command definitions, we have command completion.
 Ddd*breakpoint_properties*XmTextField.translations: \
-#override\n COMPLETE_TRANSLATIONS(print)
+#override\n COMPLETE_TRANSLATIONS(print) CLIPBOARD_TRANSLATIONS
 Ddd*breakpoint_properties*XmText.translations:      \
-#override\n COMPLETE_TRANSLATIONS(" ")
+#override\n COMPLETE_TRANSLATIONS(" ") CLIPBOARD_TRANSLATIONS
 
 Ddd*define_command*XmTextField.translations:        \
-#override\n COMPLETE_TRANSLATIONS(" ")
+#override\n COMPLETE_TRANSLATIONS(" ") CLIPBOARD_TRANSLATIONS
 Ddd*define_command*XmText.translations:             \
-#override\n COMPLETE_TRANSLATIONS(" ")
+#override\n COMPLETE_TRANSLATIONS(" ") CLIPBOARD_TRANSLATIONS
 
 
 
@@ -2922,12 +2934,11 @@ Ddd*preferences*buttons*helpers.labelString:	Helpers
 Ddd*preferences*general*helpString:	\
 @rm These are the EMPH(General Preferences).\n\
 \n\
-ITEM When you move the mouse pointer over a button, \
-DDD can automatically\n\
-    give a hint on its usage.\n\
+ITEM When you move the mouse pointer over a button, DDD can give a hint \
+on its usage.\n\
     SUBITEM Select LBL(as popup tips) if you want the hint to be shown \
 in a popup window.\n\
-    SUBITEM Select LBL(in the status line) if you want it to be shown \
+    SUBITEM Select LBL(in the status line) if you want the hint to be shown \
 in the status line.\n\
     You can also select both options, or none at all.\n\
 ITEM When you move the mouse pointer over a variable in the source window,\n\
@@ -2937,6 +2948,11 @@ in a popup window.\n\
     SUBITEM Select LBL(in the status line) if you want it to be shown \
 in the status line.\n\
     You can also select both options, or none at all.\n\
+ITEM In DDD, the KEY(Tab) key can complete its arguments.\n\
+    SUBITEM Set LBL(in all windows) if you want completion in all DDD \
+windows.\n\
+    SUBITEM Set LBL(in console only) if you need the KEY(Tab) key to move \
+the focus.\n\
 ITEM If LBL(Iconify all windows at once) is set, all DDD windows are \
 iconified as a group.\n\
     Otherwise, windows are iconified separately.\n\
@@ -2944,9 +2960,6 @@ ITEM If LBL(Uniconify when ready) is set, the DDD windows are \
 automatically uniconified\n\
     when DDD becomes ready (e.g. after reaching a breakpoint).\n\
     Otherwise, DDD windows remain iconified.\n\
-ITEM If LBL(TAB key completes in all windows) is set, the KEY(TAB) key\n\
-    completes arguments in all DDD windows.\n\
-    Otherwise, the KEY(TAB) key completes in the @GDB@ console only.\n\
 ITEM If LBL(Suppress X warnings) is set, X warnings are silently ignored.\n\
 ITEM If LBL(Continue automatically...) is set, DDD will continue execution\n\
     of programs that were interrupted while grabbing the mouse pointer.\n\
@@ -2956,51 +2969,48 @@ Click on LBL(Reset) to restore the saved preferences.
 
 
 Ddd*preferences*buttonHints.labelString:	 \
-Automatic display of button hints
+Automatic Display of Button Hints
 Ddd*preferences*valueHints.labelString:	 \
-Automatic display of variable values
+Automatic Display of Variable Values
 
-Ddd*preferences*tips.labelString: as popup tips
-Ddd*preferences*docs.labelString: in the status line
+Ddd*preferences*tips.labelString: as Popup Tips
+Ddd*preferences*docs.labelString: in the Status Line
 
 Ddd*preferences*tabCompletion.labelString: \
-TAB key completes
-Ddd*preferences*inAllWindows.labelString: in all windows
-Ddd*preferences*inConsole.labelString:    in console only
+Tab key Completes
+Ddd*preferences*inAllWindows.labelString: in All Windows
+Ddd*preferences*inConsole.labelString:    in Console Only
 
 Ddd*preferences*groupIconify.labelString:	 \
-Iconify all windows at once
+Iconify all Windows at Once
 Ddd*preferences*uniconifyWhenReady.labelString:	 \
-Uniconify when ready
+Uniconify When Ready
 Ddd*preferences*suppressWarnings.labelString:	 \
-Suppress X warnings
+Suppress X Warnings
 Ddd*preferences*checkGrabs.labelString:	 \
-Continue automatically when mouse pointer is frozen
+Continue Automatically when Mouse Pointer is Frozen
 
 
 Ddd*preferences*source*helpString:	\
 @rm These are the EMPH(Source Preferences).\n\
 \n\
-ITEM If LBL(Show position and breakpoints as glyphs) is set,\n\
-    the current execution position and breakpoints are shown as glyphs.\n\
-    Otherwise, they are shown as characters in the text.\n\
+ITEM DDD can show the current position and breakpoints\n\
+    SUBITEM LBL(as glyphs), using small images in the text,\n\
+    SUBITEM LBL(as text characters), using ordinary text characters.\n\
 ITEM The LBL(Tool Buttons) can be placed\n\
     SUBITEM in the LBL(Command Tool) which can be moved around DDD, or\n\
     SUBITEM in the LBL(Source Window), as line of buttons.\n\
-ITEM If LBL(Refer to program sources by full path name) is set, \n\
-    source code locations are referred by full source file paths.\n\
-    Otherwise, only the base name is used.\n\
-ITEM If LBL(Find words only) is set, \
-only complete words are found.\n\
-    Otherwise, arbitrary occurrences are found.\n\
-ITEM If LBL(Find case sensitive) is set, \
-search is case-sensitive.\n\
-    Otherwise, occurrences are found regardless of case.\n\
-ITEM If LBL(Cache source files) is set, \
-source texts are cached in memory.\n\
+ITEM Using DBX, DDD can refer to program sources\n\
+    SUBITEM by LBL(full path name), or\n\
+    SUBITEM by LBL(base name only), as required by some DBX variants.\n\
+ITEM If LBL(Find words only) is set, only complete words are found.\n\
+    Otherwise, DDD finds arbitrary occurrences.\n\
+ITEM If LBL(Find case sensitive) is set, search is case-sensitive.\n\
+    Otherwise, DDD finds occurrences regardless of case.\n\
+ITEM If LBL(Cache source files) is set, source texts are cached in memory.\n\
     Otherwise, sources are read from disk upon each source change.\n\
-ITEM If LBL(Cache machine code) is set, \
-disassembled code is cached in memory.\n\
+ITEM If LBL(Cache machine code) is set, disassembled code is cached \
+in memory.\n\
     Otherwise, code is re-disassembled upon each function change.\n\
 ITEM In LBL(Tab Width), you can set the spacing of tab stops.\n\
     Setting the tab width to 8 sets a tab stop every 8 characters.\n\
@@ -3011,9 +3021,9 @@ ITEM In LBL(Indentation), you can indent the source and machine code,\n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
 
-Ddd*preferences*showExecPos.labelString:	Show position and breakpoints
-Ddd*preferences*asGlyphs.labelString:		as glyphs
-Ddd*preferences*asText.labelString:		as text characters
+Ddd*preferences*showExecPos.labelString:	Show Position and Breakpoints
+Ddd*preferences*asGlyphs.labelString:		as Glyphs
+Ddd*preferences*asText.labelString:		as Text Characters
 
 Ddd*preferences*toolButtons.labelString:	Tool buttons location
 Ddd*toolButtonsMenu*commandTool.labelString:	\
@@ -3021,68 +3031,56 @@ Command Tool
 Ddd*toolButtonsMenu*sourceWindow.labelString:   \
 Source Window\ \ \ \ \ 
 
-Ddd*preferences*referSources.labelString:	Refer to program sources
-Ddd*preferences*byPath.labelString:		by full path name
-Ddd*preferences*byBase.labelString:		by base name only
+Ddd*preferences*referSources.labelString:	Refer to Program Sources
+Ddd*preferences*byPath.labelString:		by Full Path Name
+Ddd*preferences*byBase.labelString:		by Base Name Only
 
 Ddd*preferences*cache.labelString:	        Cache
-Ddd*preferences*cacheSource.labelString:	source files
-Ddd*preferences*cacheCode.labelString:		machine code
+Ddd*preferences*cacheSource.labelString:	Source Files
+Ddd*preferences*cacheCode.labelString:		Machine Code
 
 Ddd*preferences*find.labelString:	        Find
 Ddd*preferences*wordsOnly.labelString:		\
-words only\ 
+Words Only\ 
 Ddd*preferences*caseSensitive.labelString:	\
-case sensitive
-
-Ddd*preferences*displayLineNumbers.labelString:	 \
-Display source line numbers
+Case Sensitive
 
 Ddd*preferences*tabWidth.orientation:		XmHORIZONTAL
 Ddd*preferences*tabWidth.minimum:		1
 Ddd*preferences*tabWidth.maximum:		32
 Ddd*preferences*tabWidth.showValue:		on
 Ddd*preferences*tabWidth.titleString:		\
-Tab width\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+Tab Width\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
 
 Ddd*preferences*sourceIndent.orientation:	XmHORIZONTAL
 Ddd*preferences*sourceIndent.minimum:		0
 Ddd*preferences*sourceIndent.maximum:		16
 Ddd*preferences*sourceIndent.showValue:		on
 Ddd*preferences*sourceIndent.titleString:	\
-Source indentation\ \ \ \ \ \ \ \ \ \ \ 
+Source Indentation\ \ \ \ \ \ \ \ \ \ \ 
 
 Ddd*preferences*codeIndent.orientation:		XmHORIZONTAL
 Ddd*preferences*codeIndent.minimum:		0
 Ddd*preferences*codeIndent.maximum:		16
 Ddd*preferences*codeIndent.showValue:		on
 Ddd*preferences*codeIndent.titleString:		\
-Machine code indentation
+Machine Code Indentation
 
 
 Ddd*preferences*data*helpString:	\
 @rm These are the EMPH(Data Preferences).\n\
 \n\
 ITEM If LBL(Detect aliases) is set, DDD detects displays with the same\n\
-    physical address and suppresses all aliases except the one that was\
- least recently changed.\n\
-    This is useful for examining shared data structures.\n\
-ITEM If LBL(Display two-dimensional arrays as tables) is set, the elements\
- of two-dimensional\n\
-    arrays are aligned in a table.\n\
-    Otherwise, two-dimensional arrays are displayed as nested one-dimensional\
- arrays.\n\
+    physical address and suppresses all aliases except the one that was\n\
+    least recently changed.  Useful for examining shared data structures.\n\
+ITEM If LBL(Display two-dimensional arrays as tables) is set, the elements\n\
+    of two-dimensional arrays are aligned in a table.\n\
+    Otherwise, two-dimensional arrays are displayed as nested linear arrays.\n\
 ITEM If LBL(Auto-align displays) is set,\n\
     each display is aligned on the nearest grid point.\n\
-ITEM If LBL(Show edge hints) is set,\n\
-    aliased displays are indicated as small rectangles on edges.\n\
-ITEM If LBL(Use compact layout) is set, the graph is layouted \
-in a compact fashion.\n\
-    This is suitable for homogeneous structures only.\n\
-    Otherwise, the standard layout algorithm is used.\n\
-ITEM If LBL(Automatic layout) is set, the graph is layouted
- after each change.\n\
-    Otherwise, layout can be invoked manually.\n\
+ITEM LBL(Compact layout) enables a compact layout,\n\
+    suitable for homogeneous structures only.\n\
+ITEM LBL(Automatic layout) makes DDD layout the graph after each change.\n\
 ITEM In LBL(Grid size), you can change the spacing of grid points.\n\
     A spacing of 0 disables the grid.\n\
 \n\
@@ -3090,17 +3088,17 @@ Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
 
 Ddd*preferences*detectAliases.labelString:	\
-Detect aliases (shared data structures)
+Detect Aliases (shared data structures)
 Ddd*preferences*align2dArrays.labelString:	\
-Display two-dimensional arrays as tables
+Display Two-Dimensional Arrays as Tables
 Ddd*preferences*showHints.labelString:	        \
-Show edge hints
+Show Edge Hints
 Ddd*preferences*snapToGrid.labelString:	        \
-Auto-align displays on nearest grid point
+Auto-Align Displays on Nearest Grid Point
 Ddd*preferences*compactLayout.labelString:      \
-Use compact layout (homogeneous structures only)
+Use Compact Layout (Homogeneous Structures Only)
 Ddd*preferences*autoLayout.labelString:	        \
-Re-layout graph automatically after each change
+Re-Layout Graph Automatically After Each Change
 
 Ddd*preferences*gridSize.orientation:		XmHORIZONTAL
 Ddd*preferences*gridSize.minimum:		0
@@ -3132,7 +3130,7 @@ ITEM LBL(Data Scrolling) sets the data window scrolling mode.\n\
         (not available in all DDD configurations).\n\
     SUBITEM LBL(Scrollbars) means to use two scrollbars.\n\
 ITEM LBL(Debugger Type) sets the type of the inferior debugger.\n\
-ITEM LBL(Show [DDD] Splash Screen) sets whether DDD shows its splash screen.\n\
+ITEM LBL(Show Splash Screen) sets whether DDD shows its splash screen.\n\
 ITEM LBL(Show Tip of the Day) sets whether DDD shows its tip of the day.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
@@ -3183,9 +3181,10 @@ ITEM LBL(Fixed Width) is the font used for program code and text fields.\n\
 To change a font, enter its name and size (in 1/10 points).\n\
 A pair VAR(family)-VAR(weight) as font name is sufficient.\n\
 \n\
-Using LBL(Browse), you can select fonts using CODE(xfontsel).\n\
+Using LBL(Browse), you can select fonts using the CODE(xfontsel)\n\
+font selection program.\n\
 Click on LBL(select) to select the chosen font.\n\
-Wildcard entries (LBL(*)) will be ignored.\n\
+Wildcard entries (SAMP(*)) will be ignored.\n\
 \n\
 Use the buttons above to view and change other preferences.\n\
 Click on LBL(Reset) to restore the saved preferences.
@@ -5081,7 +5080,6 @@ Click on LBL(Close) to close this window.
 Ddd*define_command_popup.title:    		DDD: Define Command
 
 ! Ddd*define_command.okLabelString:    		Close
-Ddd*define_command.cancelLabelString:    	Apply
 
 Ddd*define_command*name.label.labelString:	Command
 Ddd*define_command*name*text*columns:       	30
