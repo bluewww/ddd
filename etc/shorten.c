@@ -65,7 +65,7 @@ static char *shorten(s, length)
 
     /* fetch abbrev */
     for (; i > 0 && i + a + t >= length; i--)
-	if (isupper(s[i]))
+	if (!islower(s[i]))
 	    abbrev[BUFSIZ - ++a] = s[i];
 
     /* cut after upper-case-letter, if it's not the first */
@@ -96,8 +96,13 @@ int main(argc, argv)
     if (argc > 1)
 	length = atoi(argv[1]);
 
-    while (gets(s) != NULL)
+    while (fgets(s, sizeof(s), stdin) != NULL)
+    {
+	if (strlen(s) > 0 && s[strlen(s) - 1] == '\n')
+	    s[strlen(s) - 1] = '\0';
+
 	puts(shorten(s, length));
+    }
 
     return 0;
 }
