@@ -711,12 +711,10 @@ void UndoBuffer::done(StatusMsg *msg)
 	// one, we're in an earlier state.
 	const UndoBufferEntry& last = history[history.size() - 1];
 
-	for (int i = history_position - 1;
-	     !earlier && i < history.size() - 1; i++)
-	{
-	    if (in_earlier_state(history[i], last))
+	int i = max(history_position - 1, 0);
+	while (!earlier && i < history.size() - 1)
+	    if (in_earlier_state(history[i++], last))
 		earlier = true;
-	}
     }
 
     showing_earlier_state(earlier, msg);
