@@ -38,6 +38,8 @@ char cxxtest_rcsid[] =
 
 enum DayOfWeek {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
 
+static int a_global = 42;	// Place watchpoints on this one
+
 //--------------------------------------------------------------------------
 class Date {
     DayOfWeek day_of_week;
@@ -72,7 +74,9 @@ class Holiday : public Date {
 public:
     Holiday(DayOfWeek w, int d, int m, int y, const char *n) :
 	Date (w, d, m, y), name(n)
-    {}
+    {
+	a_global = 1;
+    }
     virtual ~Holiday()
     {}
 
@@ -120,7 +124,7 @@ void tree_test()
     tree->left =        new Tree(1, "Grace");    // Murray Hopper
     tree->left->left =  new Tree(5, "Judy");     // Clapp
     tree->left->right = new Tree(6, "Kathleen"); // McNulty
-    tree->right =       new Tree(9, "Mildred");  // Koss
+    tree->right =       new Tree(1, "Mildred");  // Koss
 
     tree->date.set(Tue, 29, 11, 1994);
     tree->date.set(Wed, 30, 11, 1994);
@@ -134,9 +138,9 @@ void list_test(int start)
 {
     List *list = 0;
 
-    list                         = new List(start++);
-    list->next                   = new List(start++);
-    list->next->next             = new List(start++);
+    list                         = new List(a_global + start++);
+    list->next                   = new List(a_global + start++);
+    list->next->next             = new List(a_global + start++);
     list->next->next->next       = list;
 
     delete list->next->next;
@@ -191,6 +195,7 @@ void array_test()
 	// Dereference DATE_PTR to see it traverse the individual *DATE_PTRs
 	date_ptr = date_ptrs[k];
 	reference_test(*date_ptr, date_ptrs[k]);
+	a_global = k;
     }
 }
 
