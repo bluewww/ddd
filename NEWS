@@ -4,16 +4,15 @@ DDD News						-*- text -*-
 DDD 3.1.4 [in development]
 ==========================
 
-DDD 3.1.4 fixes more minor bugs in DDD 3.1.
+DDD 3.1.4 fixes more minor problems in DDD 3.1.
 
+- [LessTif] LessTif 0.88 is supported.  See `PROBLEMS' for a discussion.
 - Changing the GDB display radix automatically refreshes displayed values.
-- If you have Java classes in `./foo/bar' and `bar' is a symlink back
-  to `.', DDD no longer searches `./foo/bar/foo/bar/...' and deeper.
-- [LessTif] LessTif 0.88 is supported.  Be sure to apply the patches
-  found in the `patches/' directory.
+- Searching Java classes visits each file exactly once.
+- [HP-UX] aCC now compiles DDD.  Thanks to Lassi A. Tuura <lat@iki.fi>
 
 There are no new features in DDD 3.1.4.  You don't need to upgrade
-unless you suffer from one of these bugs.
+unless you suffer from one of these problems.
 
 
 DDD 3.1.3
