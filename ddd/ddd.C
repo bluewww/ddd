@@ -1328,15 +1328,15 @@ int main(int argc, char *argv[])
     switch (gdb->type())
     {
     case GDB:
-	// In GDB, we use `dumb' while operating in the command window;
-	// when starting the execution TTY, we set the correct type.
+    case DBX:
+	// The debugger console has few capabilities.
+	// When starting the execution TTY, we set the correct type.
 	term_env += "dumb";
 	break;
 
-    case DBX:
     case XDB:
-	// In DBX, we have no means to set the TTY type afterwards;
-	// set the execution TTY type right now.
+	// In XDB, we have no means to set the TTY type afterwards;
+	// Set the execution TTY type right now.
 	term_env += app_data.term_type;
 	break;
     }
@@ -1823,7 +1823,7 @@ static int index_control(const string& text)
 	case '\007':		// BEL
 	case '\010':		// BS
 	case '\011':		// HT
-     // case '\012':		// NL
+	case '\012':		// NL
 	case '\013':		// VT
 	case '\014':		// NP
 	case '\015':		// CR
@@ -1860,45 +1860,51 @@ void gdb_ctrl(char ctrl)
     {
     case '\t':
     case '\r':
-    {
-	String s = XmTextGetString(gdb_w);
-	string message = s;
-	XtFree(s);
-
-	XmTextPosition startOfLine = promptPosition;
-	while (startOfLine - 1 >= 0 && message[startOfLine - 1] != '\n')
-	    startOfLine--;
-
-	switch (ctrl)
 	{
-	case '\t':
-	{
-	    const int TAB_WIDTH = 8;
-	    int column = promptPosition - startOfLine;
-	    int spaces = TAB_WIDTH - column % TAB_WIDTH;
-	    string spacing = replicate(' ', spaces);
+	    String s = XmTextGetString(gdb_w);
+	    string message = s;
+	    XtFree(s);
+
+	    XmTextPosition startOfLine = promptPosition;
+	    while (startOfLine - 1 >= 0 && message[startOfLine - 1] != '\n')
+		startOfLine--;
+
+	    switch (ctrl)
+	    {
+	    case '\t':
+		{
+		    const int TAB_WIDTH = 8;
+		    int column = promptPosition - startOfLine;
+		    int spaces = TAB_WIDTH - column % TAB_WIDTH;
+		    string spacing = replicate(' ', spaces);
 	
-	    XmTextInsert(gdb_w, promptPosition, (String)spacing);
-	    promptPosition += spacing.length();
+		    XmTextInsert(gdb_w, promptPosition, (String)spacing);
+		    promptPosition += spacing.length();
+		}
+		break;
+		
+	    case '\r':
+		{
+		    promptPosition = startOfLine;
+		}
+		break;
+	    }
 	    break;
 	}
-
-	case '\r':
-	{
-	    XmTextReplace(gdb_w, startOfLine, promptPosition, "");
-	    promptPosition = startOfLine;
-	    break;
-	}
-	}
-	break;
-    }
 
     case '\b':
-    {
-	XmTextReplace(gdb_w, promptPosition - 1, promptPosition, "");
-	promptPosition--;
+	{
+	    XmTextReplace(gdb_w, promptPosition - 1, promptPosition, "");
+	    promptPosition--;
+	}
 	break;
-    }
+
+    case '\n':
+	{
+	    promptPosition = XmTextGetLastPosition(gdb_w);
+	    XmTextInsert(gdb_w, promptPosition++, "\n");
+	}
+	break;
 
     default:
     {
