@@ -675,6 +675,7 @@ Ddd*run_again.foreground:	   dark green
 ! Highlight special dialogs
 Ddd*fatal_dialog*foreground:	   red4
 Ddd*terminated_dialog*foreground:  red4
+Ddd*no_debugger_dialog*foreground: red4
 
 ! Glyph colors
 Ddd*source_form_w.XmPushButton.background: grey90
@@ -3746,11 +3747,27 @@ Ddd*terminated_dialog*okLabelString:	   Restart
 Ddd*terminated_dialog*cancelLabelString:   Exit
 Ddd*terminated_dialog*helpString:	\
 @rm The inferior debugger (i.e. GDB, XDB, or DBX) terminated abnormally.\n\
-You may wish to examine its final output before exiting @DDD@.\n\
+You may wish to examine its final output before exiting or restarting @DDD@.
+
+Ddd*no_debugger_dialog_popup.title: @DDD@: Losing my Religion
+Ddd*no_debugger_dialog.messageString:   \
+@rm The inferior debugger could not be started.
+Ddd*no_debugger_dialog*okLabelString:	   Exit
+Ddd*no_debugger_dialog*helpString:	\
+@rm The inferior debugger (i.e. GDB, XDB, or DBX) could not be started.\n\
+You may wish to examine the diagnostic messages before exiting @DDD@.\n\
 \n\
-If you have just invoked @DDD@, and use XDB or DBX as inferior debugger,\n\
-re-invoke @DDD@, but giving it an executable as argument.  XDB and some\n\
-DBX versions require being invoked with an executable.
+Here are some hints that may help you out:\n\
+@tt \267 @rm If DDD looked for the wrong inferior debugger, re-invoke @DDD@,\n\
+    but use one of the @tt --gdb@rm, @tt --dbx@rm, or @tt --xdb @rm options \
+to specify\n\
+    the inferior debugger.\n\
+@tt \267 @rm If the inferior debugger could not be found, re-invoke @DDD@,\n\
+    but use the @tt --debugger @sl PATH @rm option to specify the full path\n\
+    of the inferior debugger.\n\
+@tt \267 @rm If you started DDD without arguments, re-invoke @DDD@,\n\
+    but give it an executable as argument.  XDB and some DBX versions\n\
+    require being invoked with an executable.
 
 Ddd*fatal_dialog.title: @DDD@: Oops!
 Ddd*fatal_dialog.messageString:	  \

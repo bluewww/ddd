@@ -130,15 +130,28 @@ void post_gdb_died(string reason, Widget w)
     static Widget died_dialog = 0;
     if (died_dialog)
 	DestroyWhenIdle(died_dialog);
-    died_dialog = 
-	verify(XmCreateErrorDialog (find_shell(w), 
-				    "terminated_dialog", NULL, 0));
+
+    if (gdb_initialized)
+    {
+	died_dialog = 
+	    verify(XmCreateErrorDialog (find_shell(w), 
+					"terminated_dialog", NULL, 0));
+	XtAddCallback(died_dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);
+	XtAddCallback(died_dialog, XmNokCallback,     DDDRestartCB,    NULL);
+	XtAddCallback(died_dialog, XmNcancelCallback, DDDExitCB,       NULL);
+    }
+    else
+    {
+	died_dialog = 
+	    verify(XmCreateErrorDialog (find_shell(w), 
+					"no_debugger_dialog", NULL, 0));
+	XtUnmanageChild(XmMessageBoxGetChild
+			(died_dialog, XmDIALOG_CANCEL_BUTTON));
+	XtAddCallback(died_dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);
+	XtAddCallback(died_dialog, XmNokCallback,     DDDExitCB,       NULL);
+    }
+
     Delay::register_shell(died_dialog);
-
-    XtAddCallback (died_dialog, XmNhelpCallback,   ImmediateHelpCB, NULL);
-    XtAddCallback (died_dialog, XmNokCallback,     DDDRestartCB,    NULL);
-    XtAddCallback (died_dialog, XmNcancelCallback, DDDExitCB,       NULL);
-
     XtManageChild (died_dialog);
 }
 
