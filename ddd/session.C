@@ -297,27 +297,38 @@ bool lock_session_dir(Display *display,
     info.pid = 0;
     string lock_file = session_lock_file(session);
 
-    ifstream is(lock_file);
-    if (!is.bad())
     {
-	// Lock already exists -- use contents as diagnostics
-	string version;
-	is >> version >> info.hostname >> info.pid;
+	ifstream is(lock_file);
+	if (!is.bad())
+	{
+	    string version;
+	    is >> version;
 
-	if (info.hostname != fullhostname())
-	    return false;	// Process running on remote host
+	    if (version.contains(DDD_NAME, 0))
+	    {
+		// Lock already exists -- use contents as diagnostics
+		is >> info.hostname >> info.pid;
 
-	if (info.pid > 0 && kill(info.pid, 0) == 0)
-	    return false;	// Process running on host
+		if (info.hostname != fullhostname())
+		    return false;	// Process running on remote host
+
+		if (info.pid > 0 && kill(info.pid, 0) == 0)
+		    return false;	// Process running on host
+	    }
+	}
     }
 
-    ofstream os(lock_file);
-    os << DDD_NAME "-" DDD_VERSION
-       << " " << fullhostname() 
-       << " " << getpid()
-       << " " << XDisplayString(display)
-       << " " << getuid()
-       << "\n";
+    // Lock session dir, possibly overriding old lock
+    {
+	ofstream os(lock_file);
+	os << DDD_NAME "-" DDD_VERSION
+	   << " " << fullhostname() 
+	   << " " << getpid()
+	   << " " << XDisplayString(display)
+	   << " " << getuid()
+	   << "\n";
+    }
+
     return true;
 }
 
