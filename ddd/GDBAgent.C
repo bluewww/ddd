@@ -382,7 +382,8 @@ void GDBAgent::trace(char *prefix, void *call_data) const
     s.gsub("\\n", nl);
 
     if (s_ends_with_nl)
-	s(s.length() - 1, 0) = "\\n";
+	s = s.before(int(s.length() - 1)) + "\\n" + 
+	    s.from(int(s.length() - 1));
 
     dddlog << prefix << s << '\n';
     dddlog.flush();
