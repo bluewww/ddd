@@ -3672,8 +3672,7 @@ Ddd*toolbar*breakAt.labelString:	Break at ()
 Ddd*toolbar*tempBreakAt.labelString:	Set Temporary Breakpoint at ()
 Ddd*toolbar*contUntil.labelString:	Continue Until ()
 Ddd*toolbar*enable.labelString:		Enable Breakpoint at ()
-Ddd*toolbar*condition.labelString:	Set Condition at ()...
-Ddd*toolbar*ignore_count.labelString:	Set Ignore Count at ()...
+Ddd*toolbar*properties.labelString:	Set Properties at ()...
 Ddd*toolbar*setPC.labelString:		Set Execution Position to ()
 Ddd*toolbar*watch.labelString:		Unwatch ()
 Ddd*toolbar*cwatch.labelString:		Set watchpoint on ()
@@ -3744,8 +3743,7 @@ define(BREAK_HELP, [\
 DESC(Set Temporary Breakpoint at (), [set temporary breakpoint])\n\
 DESC(Continue Until (), [set temporary breakpoint and resume execution])\n\
 DESC(Enable / Disable Breakpoint at (), [enable or disable breakpoint])\n\
-DESC(Set Condition at ()..., [set breakpoint condition])\n\
-DESC(Set Ignore Count at ()..., [set breakpoint ignore count])\n\
+DESC(Set Properties at ()..., [set breakpoint properties])\n\
 DESC(Set Execution Position to (), [move execution position])
 ])dnl
 
@@ -3770,10 +3768,8 @@ Ddd*toolbar*contUntil.documentationString: \
 @rm Set a temporary breakpoint at LBL(()) and resume execution
 Ddd*toolbar*enable.documentationString: \
 @rm Enable or disable the breakpoint at the argument LBL(())
-Ddd*toolbar*condition.documentationString: \
-@rm Specify a condition for the breakpoint at LBL(())
-Ddd*toolbar*ignore_count.documentationString: \
-@rm Specify how many crossings of the breakpoint at LBL(()) are to be ignored
+Ddd*toolbar*properties.documentationString: \
+@rm Edit the properties of the breakpoint at LBL(())
 Ddd*toolbar*setPC.documentationString: \
 @rm Set the current execution position to LBL(())
 
@@ -4059,13 +4055,9 @@ Ddd*bp_popup.disable.labelString:		Disable Breakpoint
 Ddd*bp_popup.disable.documentationString:	\
 @rm Disable the selected breakpoint
 
-Ddd*bp_popup.condition.labelString:		Set Condition...
-Ddd*bp_popup.condition.documentationString:	\
-@rm Specify a condition for the selected breakpoint
-
-Ddd*bp_popup.ignore_count.labelString:		Set Ignore Count...
-Ddd*bp_popup.ignore_count.documentationString:	\
-@rm Specify how many crossings of the selected breakpoint are to be ignored
+Ddd*bp_popup.properties.labelString:		Properties...
+Ddd*bp_popup.properties.documentationString:	\
+@rm Edit the properties of the selected breakpoint
 
 Ddd*bp_popup.delete.labelString:		Delete Breakpoint
 Ddd*bp_popup.delete.documentationString:	\
@@ -4767,7 +4759,7 @@ DESC(Print, [print selected item])\n\
 DESC(Enable, [enable all selected items])\n\
 DESC(Disable, [disable all selected items])\n\
 DESC(Condition..., [set or modify an item's condition])\n\
-DESC(Ignore Count..., [set or modify an item's ignore count])\n\
+DESC(Properties..., [set or modify an item's properties])\n\
 DESC(Delete, [delete all selected items])
 
 Ddd*new_breakpoint_dialog_popup.title: DDD: New Breakpoint
@@ -4806,24 +4798,6 @@ DESC(Set Read Watchpoint, [stop whenever the variable is read])\n\
 DESC(Set Access Watchpoint, \
 [stop whenever the variable is either read or written])
 
-
-Ddd*edit_breakpoint_condition_dialog_popup.title: DDD: Condition
-Ddd*edit_breakpoint_condition_dialog.selectionLabelString: Condition
-
-Ddd*edit_breakpoint_condition_dialog*helpString:	       \
-@rm Specify a condition VAR(cond) for the selected items.\n\
-The selected items break only if VAR(cond) evaluates to a non-zero value.
-
-
-Ddd*edit_breakpoint_ignore_count_dialog_popup.title: DDD: Ignore Count
-Ddd*edit_breakpoint_ignore_count_dialog.selectionLabelString: \
-Ignore Count
-
-Ddd*edit_breakpoint_ignore_count_dialog*helpString:	  \
-@rm Set the ignore count VAR(count) for the selected items.\n\
-Next VAR(count) hits of the selected items will be ignored.
-
-
 Ddd*edit_breakpoints_dialog*buttons*new_bp.labelString:	      New Breakpoint...
 Ddd*edit_breakpoints_dialog*buttons*new_bp.tipString:     \
 @rm Set new breakpoint
@@ -4854,23 +4828,77 @@ Ddd*edit_breakpoints_dialog*buttons*disable.tipString:     \
 Ddd*edit_breakpoints_dialog*buttons*disable.documentationString: \
 @rm Disable the selected items
 
-Ddd*edit_breakpoints_dialog*buttons*condition.labelString:     Condition...
-Ddd*edit_breakpoints_dialog*buttons*condition.tipString:     \
-@rm Set condition
-Ddd*edit_breakpoints_dialog*buttons*condition.documentationString:     \
-@rm Specify a condition for the selected items
-
-Ddd*edit_breakpoints_dialog*buttons*ignore_count.labelString:  Ignore Count...
-Ddd*edit_breakpoints_dialog*buttons*ignore_count.tipString:     \
-@rm Set ignore count
-Ddd*edit_breakpoints_dialog*buttons*ignore_count.documentationString:     \
-@rm Specify how many crossings of the selected items are to be ignored
+Ddd*edit_breakpoints_dialog*buttons*properties.labelString:     Properties...
+Ddd*edit_breakpoints_dialog*buttons*properties.tipString:     \
+@rm Edit properties
+Ddd*edit_breakpoints_dialog*buttons*properties.documentationString:     \
+@rm Specify the properties of the selected items
 
 Ddd*edit_breakpoints_dialog*buttons*delete.labelString:	       Delete
 Ddd*edit_breakpoints_dialog*buttons*delete.tipString:     \
 @rm Delete selected items
 Ddd*edit_breakpoints_dialog*buttons*delete.documentationString:     \
 @rm Delete the selected items
+
+
+
+!-----------------------------------------------------------------------------
+! Breakpoint Properties
+!-----------------------------------------------------------------------------
+
+Ddd*breakpoint_properties_popup.title:    DDD: Breakpoint Properties
+
+Ddd*breakpoint_properties.okLabelString:    		Close
+Ddd*breakpoint_properties.cancelLabelString:    	Delete
+
+Ddd*breakpoint_properties*title.labelString:		Breakpoint
+Ddd*breakpoint_properties*title.width:			120
+Ddd*breakpoint_properties*title.recomputeSize:		off
+
+Ddd*breakpoint_properties*enabled.labelString:		Enabled
+Ddd*breakpoint_properties*enabled.width:		120
+Ddd*breakpoint_properties*enabled.recomputeSize:	off
+
+Ddd*breakpoint_properties*condition.label.labelString:	Condition
+Ddd*breakpoint_properties*condition.label.width:	120
+Ddd*breakpoint_properties*condition.label.recomputeSize: off
+Ddd*breakpoint_properties*condition.text.columns:       32
+
+Ddd*breakpoint_properties*ignore.label.labelString:	Ignore Count
+Ddd*breakpoint_properties*ignore.label.width:		120
+Ddd*breakpoint_properties*ignore.label.recomputeSize:	off
+Ddd*breakpoint_properties*ignore*text.columns:          4
+Ddd*breakpoint_properties*ignore*text.maximumValue:	9999
+
+Ddd*breakpoint_properties*spinBoxChildType:		XmNUMERIC
+Ddd*breakpoint_properties*arrowLayout:		        XmARROWS_END
+Ddd*breakpoint_properties*spin.marginWidth:		0
+Ddd*breakpoint_properties*spin.marginHeight:		0
+
+Ddd*breakpoint_properties*commands.labelString:		Commands
+Ddd*breakpoint_properties*commands.width:		120
+Ddd*breakpoint_properties*commands.recomputeSize:	off
+
+Ddd*breakpoint_properties*commandsMenu.packing:		XmPACK_COLUMN
+Ddd*breakpoint_properties*commandsMenu.entryAlignment:	XmALIGNMENT_CENTER
+Ddd*breakpoint_properties*record.labelString:		\ \ \ Record...\ \ \ 
+Ddd*breakpoint_properties*edit.labelString:		Edit...
+
+Ddd*breakpoint_properties*helpString:		\
+@rm WIDGET(Breakpoint Properties)\n\
+\n\
+ITEM LBL(Condition) lets you specify a condition.\n\
+    The breakpoints break only if the condition evaluates to non-zero.\n\
+\n\
+ITEM LBL(Ignore Count) lets you set an ignore count VAR(count).\n\
+     The next VAR(count) hits of the breakpoints will be ignored.\n\
+\n\
+ITEM LBL(Commands) lets you record and edit command sequences.\n\
+     These command sequences will be executed when the breakpoints are hit.\n\
+\n\
+Click on LBL(Close) to close this window.\n\
+Clock on LBL(Delete) to delete the breakpoints.
+
 
 
 !-----------------------------------------------------------------------------
@@ -5068,7 +5096,7 @@ Ddd*edit_displays_dialog*buttons*set.tipString:  \
 Ddd*edit_displays_dialog*buttons*set.documentationString: \
 @rm Change a value in the selected data display
 
-Ddd*edit_displays_dialog*buttons*delete.labelString:	    Delete
+Ddd*edit_displays_dialog*buttons*delete.labelString:	    Undisplay
 Ddd*edit_displays_dialog*buttons*delete.tipString:  \
 @rm Delete selected displays
 Ddd*edit_displays_dialog*buttons*delete.documentationString:  \

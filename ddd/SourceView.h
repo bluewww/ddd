@@ -114,10 +114,15 @@ class SourceView {
     static void LookupBreakpointCB       (Widget, XtPointer, XtPointer);
     static void BreakpointCmdCB          (Widget, XtPointer, XtPointer);
 
-    static void EditBreakpointIgnoreCountDCB (Widget, XtPointer, XtPointer);
-    static void EditBreakpointConditionDCB   (Widget, XtPointer, XtPointer);
-    static void EditBreakpointIgnoreCountCB  (Widget, XtPointer, XtPointer);
-    static void EditBreakpointConditionCB    (Widget, XtPointer, XtPointer);
+    static void EditBreakpointPropertiesCB (Widget, XtPointer, XtPointer);
+    static void SetBreakpointIgnoreCountCB (Widget, XtPointer, XtPointer);
+    static void SetBreakpointConditionCB   (Widget, XtPointer, XtPointer);
+    static void ToggleBreakpointEnabledCB  (Widget, XtPointer, XtPointer);
+    static void RecordBreakpointCommandsCB (Widget, XtPointer, XtPointer);
+    static void EditBreakpointCommandsCB   (Widget, XtPointer, XtPointer);
+    static void SetBreakpointIgnoreCountNowCB(XtPointer, XtIntervalId *);
+    static void DeleteInfoCB               (Widget, XtPointer, XtPointer);
+    static void DeleteBreakpointCB         (Widget, XtPointer, XtPointer);
 
     static void UpdateBreakpointButtonsCB (Widget, XtPointer, XtPointer);
 
@@ -418,6 +423,10 @@ class SourceView {
     
     // Check if function at PC is larger than MAX_SIZE
     static bool function_is_larger_than(string pc, int max_size);
+
+    // Breakpoint properties.
+    static void update_properties_panel(struct BreakpointPropertiesInfo *info);
+    static void update_properties_panels();
 
     //-----------------------------------------------------------------------
     // Glyphs
@@ -808,8 +817,7 @@ public:
     static const char *basename(const char *);
 
     // Edit breakpoint properties.
-    static void edit_breakpoint_ignore_count(int bp_nr);
-    static void edit_breakpoint_condition(int bp_nr);
+    static void edit_breakpoint_properties(int bp_nr);
 };
 
 inline void SourceView::create_bp(const string& a, Widget w)

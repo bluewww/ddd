@@ -45,8 +45,7 @@ extern void gdbLookupCB       (Widget, XtPointer, XtPointer);
 extern void gdbTempBreakAtCB  (Widget, XtPointer, XtPointer);
 extern void gdbContUntilCB    (Widget, XtPointer, XtPointer);
 extern void gdbToggleEnableCB (Widget, XtPointer, XtPointer);
-extern void gdbEditConditionCB (Widget, XtPointer, XtPointer);
-extern void gdbEditIgnoreCountCB (Widget, XtPointer, XtPointer);
+extern void gdbEditBreakpointPropertiesCB (Widget, XtPointer, XtPointer);
 extern void gdbSetPCCB        (Widget, XtPointer, XtPointer);
 
 extern void gdbPrintCB        (Widget, XtPointer, XtPointer);

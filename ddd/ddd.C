@@ -1258,17 +1258,16 @@ static MMDesc watch_menu[] =
 };
 
 struct BreakItems {
-    enum ArgCmd { TempBreak, Enable, Sep1, Condition, IgnoreCount, Sep2,
+    enum ArgCmd { TempBreak, Sep1, Properties, Enable, Sep2,
 		  ContUntil, SetPC };
 };
 
 static MMDesc break_menu[] = 
 {
     { "tempBreakAt",  MMPush, { gdbTempBreakAtCB }},
-    { "enable",       MMPush, { gdbToggleEnableCB }},
     MMSep,
-    { "condition",    MMPush, { gdbEditConditionCB }},
-    { "ignore_count", MMPush, { gdbEditIgnoreCountCB }},
+    { "properties",   MMPush, { gdbEditBreakpointPropertiesCB }},
+    { "enable",       MMPush, { gdbToggleEnableCB }},
     MMSep,
     { "contUntil",    MMPush, { gdbContUntilCB }},
     { "setPC",        MMPush, { gdbSetPCCB }},
@@ -4328,8 +4327,7 @@ void update_arg_buttons()
     manage_child(break_menu[BreakItems::TempBreak].widget,   !have_break);
     manage_child(break_menu[BreakItems::Enable].widget,      have_break);
     manage_child(break_menu[BreakItems::Sep1].widget,        have_break);
-    manage_child(break_menu[BreakItems::Condition].widget,   have_break);
-    manage_child(break_menu[BreakItems::IgnoreCount].widget, have_break);
+    manage_child(break_menu[BreakItems::Properties].widget,  have_break);
     manage_child(break_menu[BreakItems::Sep2].widget,        have_break);
     manage_child(break_menu[BreakItems::ContUntil].widget,   !have_break);
 
@@ -4343,10 +4341,6 @@ void update_arg_buttons()
 
     set_sensitive(break_menu[BreakItems::Enable].widget,
 		  gdb->has_disable_command());
-    set_sensitive(break_menu[BreakItems::Condition].widget,
-		  gdb->has_breakpoint_conditions());
-    set_sensitive(break_menu[BreakItems::IgnoreCount].widget,
-		  gdb->has_ignore_command());
     set_sensitive(break_menu[BreakItems::SetPC].widget,
 		  gdb->has_jump_command() || gdb->has_assign_command());
 

@@ -104,6 +104,13 @@ char SourceView_rcsid[] =
 #include <X11/StringDefs.h>
 #include <X11/cursorfont.h>
 
+#if XmVersion >= 2000
+#include <Xm/SpinB.h>
+#ifndef XmIsSpinBox
+#define XmIsSpinBox(w) XtIsSubclass((w), xmSpinBoxWidgetClass)
+#endif
+#endif
+
 // LessTif hacks
 #include <X11/IntrinsicP.h>
 #include "LessTifH.h"
@@ -145,6 +152,7 @@ extern "C" {
 #include "charsets.h"
 #include "regexps.h"
 #include "index.h"
+#include "MakeMenu.h"
 
 
 
@@ -193,33 +201,27 @@ MMDesc SourceView::line_popup[] =
     MMEnd
 };
 
-struct BPItms { enum Itms {Disable, Sep1, Condition, IgnoreCount, 
-			   Sep2, Delete, Sep3, SetPC}; };
+struct BPItms { enum Itms {Properties, Disable, Delete, Sep, SetPC}; };
 MMDesc SourceView::bp_popup[] =
 {
+    {"properties",   MMPush, {SourceView::EditBreakpointPropertiesCB}},
     {"disable",      MMPush, {SourceView::bp_popup_disableCB}},
-    MMSep,
-    {"condition",    MMPush, {SourceView::EditBreakpointConditionCB}},
-    {"ignore_count", MMPush, {SourceView::EditBreakpointIgnoreCountCB}},
-    MMSep,
     {"delete",       MMPush, {SourceView::bp_popup_deleteCB}},
     MMSep,
     {"set_pc",       MMPush, {SourceView::bp_popup_set_pcCB}},
     MMEnd
 };
 
-struct BPButtons { enum Itms {NewBP, NewWP, Lookup, 
-			      Enable, Disable, Condition, 
-			      IgnoreCount, Delete}; };
+struct BPButtons { enum Itms {NewBP, NewWP, Properties, Lookup, 
+			      Enable, Disable, Delete}; };
 MMDesc SourceView::bp_area[] =
 {
     {"new_bp",       MMPush,   {SourceView::NewBreakpointCB}},
     {"new_wp",       MMPush,   {SourceView::NewWatchpointCB}},
+    {"properties",   MMPush,   {SourceView::EditBreakpointPropertiesCB, 0}},
     {"lookup",       MMPush,   {SourceView::LookupBreakpointCB}},
     {"enable",       MMPush,   {SourceView::BreakpointCmdCB, "enable"  }},
     {"disable",      MMPush,   {SourceView::BreakpointCmdCB, "disable" }},
-    {"condition",    MMPush,   {SourceView::EditBreakpointConditionCB, 0}},
-    {"ignore_count", MMPush,   {SourceView::EditBreakpointIgnoreCountCB, 0}},
     {"delete",       MMPush,   {SourceView::BreakpointCmdCB, "delete" }},
     MMEnd
 };
@@ -3677,6 +3679,9 @@ void SourceView::process_info_bp (string& info_output,
 
     // Set up breakpoint editor contents
     process_breakpoints(last_info_output);
+
+    // Set up existing panels
+    update_properties_panels();
 }
 
 int SourceView::next_breakpoint_number()
@@ -4703,10 +4708,6 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	// Grey out unsupported functions
 	XtSetSensitive(bp_popup[BPItms::Disable].widget, 
 		       gdb->has_disable_command());
-	XtSetSensitive(bp_popup[BPItms::Condition].widget, 
-		       gdb->has_breakpoint_conditions());
-	XtSetSensitive(bp_popup[BPItms::IgnoreCount].widget,
-		       gdb->has_ignore_command());
 	XtSetSensitive(bp_popup[BPItms::SetPC].widget,
 		       gdb->has_jump_command() || gdb->has_assign_command());
 
@@ -4964,234 +4965,445 @@ void SourceView::NewWatchpointCB(Widget, XtPointer, XtPointer)
     manage_and_raise(new_watchpoint_dialog);
 }
 
-// Edit breakpoint condition
-void SourceView::EditBreakpointConditionDCB(Widget, 
+
+//-----------------------------------------------------------------------------
+// Breakpoint properties
+//----------------------------------------------------------------------------
+
+struct BreakpointPropertiesInfo {
+    IntArray nrs;		// The affected breakpoints
+    Widget panel;
+    Widget title;
+    Widget enabled;
+    Widget ignore;
+    Widget condition;
+    Widget record;
+    Widget edit;
+    XtIntervalId timer;
+    bool spin_locked;
+    BreakpointPropertiesInfo *next;
+
+    static BreakpointPropertiesInfo *all;
+
+    BreakpointPropertiesInfo()
+	: nrs(),
+	  panel(0), title(0), enabled(0), ignore(0), condition(0),
+	  record(0), edit(0), timer(0), spin_locked(false),
+	  next(all)
+    {
+	all = this;
+    }
+
+    ~BreakpointPropertiesInfo()
+    {
+	if (all == this)
+	{
+	    all = next;
+	}
+	else
+	{
+	    BreakpointPropertiesInfo *info = all;
+	    while (info->next != this)
+		info = info->next;
+	    info->next = next;
+	}
+    }
+};
+
+BreakpointPropertiesInfo *BreakpointPropertiesInfo::all = 0;
+
+void SourceView::DeleteInfoCB(Widget, XtPointer client_data, XtPointer)
+{
+    BreakpointPropertiesInfo *info = 
+	(BreakpointPropertiesInfo *)client_data;
+
+    delete info;
+}
+
+void SourceView::update_properties_panels()
+{
+    // Update all panels
+    BreakpointPropertiesInfo *info = BreakpointPropertiesInfo::all;
+    while (info != 0)
+    {
+	update_properties_panel(info);
+	info = info->next;
+    }
+}
+
+void SourceView::update_properties_panel(BreakpointPropertiesInfo *info)
+{
+    // Remove breakpoints from list
+    int i;
+    for (i = 0; i < info->nrs.size(); i++)
+    {
+	MapRef ref;
+	BreakPoint *bp = 0;
+	for (bp = bp_map.first(ref);
+	     bp != 0;
+	     bp = bp_map.next(ref))
+	{
+	    if (bp->number() == info->nrs[i])
+		break;
+	}
+
+	if (bp == 0)
+	{
+	    // Breakpoint not found -- mark as deleted
+	    info->nrs[i] = 0;
+	}
+    }
+    IntArray new_nrs;
+
+    for (i = 0; i < info->nrs.size(); i++)
+    {
+	if (info->nrs[i] != 0)
+	    new_nrs += info->nrs[i];
+    }
+
+    info->nrs = new_nrs;
+
+    if (info->nrs.size() == 0)
+    {
+	// No breakpoint left -- destroy dialog shell
+	XtUnmanageChild(XtParent(info->panel));
+	return;
+    }
+
+    // Use first breakpoint for getting values
+    BreakPoint *bp = 0;
+    MapRef ref;
+    for (bp = bp_map.first(ref);
+	 bp != 0;
+	 bp = bp_map.next(ref))
+    {
+	if (bp->number() == info->nrs[0])
+	    break;
+    }
+    assert(bp != 0);
+
+    // Set titles
+    string what;
+    switch (bp->type())
+    {
+    case BREAKPOINT:
+	what = "Breakpoint";
+	break;
+
+    case WATCHPOINT:
+	what = "Watchpoint";
+	break;
+    }
+
+    string label;
+    if (info->nrs.size() == 1)
+    {
+	label = what + " " + itostring(info->nrs[0]);
+    }
+    else
+    {
+	label = what + "s ";
+	for (i = 0; i < info->nrs.size(); i++)
+	{
+	    if (i > 0)
+	    {
+		if (info->nrs.size() == 2)
+		    label += " and ";
+		else if (i == info->nrs.size() - 1)
+		    label += ", and ";
+		else
+		    label += ", ";
+	    }
+	    label += itostring(info->nrs[i]);
+	}
+    }
+
+    set_label(info->title, label);
+
+    MString title = string(DDD_NAME) + ": Properties: " + label;
+    XtVaSetValues(XtParent(info->panel), XmNdialogTitle, 
+		  title.xmstring(), NULL);
+
+    // Set values
+    XtVaSetValues(info->enabled, XmNset, bp->enabled(), NULL);
+
+    bool lock = info->spin_locked;
+    info->spin_locked = true;
+#if XmVersion >= 2000
+    if (XmIsSpinBox(XtParent(info->ignore)))
+    {
+	XtVaSetValues(info->ignore, XmNposition, bp->ignore_count(), NULL);
+    }
+    else
+#endif
+    {
+	string ignore = itostring(bp->ignore_count());
+	if (ignore == "0")
+	    ignore = "";
+
+	XmTextFieldSetString(info->ignore, (String)ignore);
+    }
+    info->spin_locked = lock;
+
+    XmTextFieldSetString(info->condition, (String)bp->condition());
+
+    set_sensitive(info->enabled,   gdb->has_disable_command());
+    set_sensitive(info->ignore,    gdb->has_ignore_command());
+    set_sensitive(info->condition, true);
+    set_sensitive(info->record,    gdb->type() == GDB);
+    set_sensitive(info->edit,      gdb->type() == GDB);
+}
+
+// Edit breakpoint properties
+void SourceView::EditBreakpointPropertiesCB(Widget, 
+					    XtPointer client_data, 
+					    XtPointer)
+{
+    if (breakpoint_list_w == 0)
+	return;
+
+    BreakpointPropertiesInfo *info = new BreakpointPropertiesInfo;
+    info->spin_locked = true;
+
+    if (client_data == 0)
+    {
+	IntArray breakpoint_nrs;
+	getDisplayNumbers(breakpoint_list_w, info->nrs);
+    }
+    else
+    {
+	info->nrs += *((int *)client_data);
+    }
+
+    // Check for first breakpoint
+    MapRef ref;
+    BreakPoint *bp = 0;
+    for (bp = bp_map.first(ref);
+	 bp != 0;
+	 bp = bp_map.next(ref))
+    {
+	if (bp->number() == info->nrs[0])
+	{
+	    break;
+	}
+    }
+    if (bp == 0)
+	return;			// No such breakpoint
+
+    Arg args[10];
+    int arg = 0;
+    Widget dialog = 
+	verify(XmCreatePromptDialog(source_text_w,
+				    "breakpoint_properties",
+				    args, arg));
+    XtVaSetValues(dialog, XmNdefaultButton, Widget(0), NULL);
+
+
+    // Remove old prompt
+    Widget text = XmSelectionBoxGetChild(dialog, XmDIALOG_TEXT);
+    XtUnmanageChild(text);
+    Widget old_label = 
+	XmSelectionBoxGetChild(dialog, XmDIALOG_SELECTION_LABEL);
+    XtUnmanageChild(old_label);
+
+    Delay::register_shell(dialog);
+
+    if (lesstif_version <= 79)
+	XtUnmanageChild(XmSelectionBoxGetChild(dialog, XmDIALOG_APPLY_BUTTON));
+
+    MMDesc commands_menu[] =
+    {
+	{ "record", MMPush, { RecordBreakpointCommandsCB, XtPointer(info) },
+	  NULL, &info->record },
+	{ "edit",   MMPush, { EditBreakpointCommandsCB, XtPointer(info) },
+	  NULL, &info->edit },
+	MMEnd
+    };
+
+    MMDesc enabled_menu[] = 
+    {
+	{ "enabled", MMToggle, { ToggleBreakpointEnabledCB, XtPointer(info) },
+	  NULL, &info->enabled },
+	MMEnd
+    };
+
+    MMDesc panel_menu[] = 
+    {
+	{ "title", MMButtonPanel, MMNoCB, enabled_menu },
+	{ "condition", MMEnterField, { SetBreakpointConditionCB,
+				      XtPointer(info) },
+	  NULL, &info->condition },
+	{ "ignore", MMSpinField,
+	  { SetBreakpointIgnoreCountCB, XtPointer(info) },
+	  NULL, &info->ignore },
+	{ "commands", MMButtonPanel, MMNoCB, commands_menu },
+	MMEnd
+    };
+
+    info->panel = MMcreatePanel(dialog, "panel", panel_menu);
+
+    XtVaSetValues(info->panel,
+		  XmNmarginWidth,    0,
+		  XmNmarginHeight,   0,
+		  NULL);
+
+    info->title = panel_menu[0].label;
+    MMaddCallbacks(panel_menu, XtPointer(info));
+
+    update_properties_panel(info);
+
+    XtAddCallback(dialog, XmNhelpCallback,    ImmediateHelpCB, NULL);
+    XtAddCallback(dialog, XmNunmapCallback,   DestroyThisCB, XtParent(dialog));
+    XtAddCallback(dialog, XmNdestroyCallback, DeleteInfoCB,  XtPointer(info));
+    XtAddCallback(dialog, XmNcancelCallback,  DeleteBreakpointCB, 
+		  XtPointer(info));
+
+    manage_and_raise(dialog);
+    info->spin_locked = false;
+}
+
+// Set breakpoint condition
+void SourceView::SetBreakpointConditionCB(Widget w,
+					  XtPointer client_data, 
+					  XtPointer)
+{
+    BreakpointPropertiesInfo *info = 
+	(BreakpointPropertiesInfo *)client_data;
+
+    String cond = XmTextFieldGetString(info->condition);
+
+    for (int i = 0; i < info->nrs.size(); i++)
+    {
+	set_bp_cond(info->nrs[i], cond, w);
+    }
+
+    XtFree(cond);
+}
+
+// Set breakpoint ignore count
+void SourceView::SetBreakpointIgnoreCountCB(Widget w,
 					    XtPointer client_data, 
 					    XtPointer call_data)
 {
-    if (breakpoint_list_w == 0)
+    XmAnyCallbackStruct *cbs = (XmAnyCallbackStruct *)call_data;
+    BreakpointPropertiesInfo *info = 
+	(BreakpointPropertiesInfo *)client_data;
+
+    if (info->spin_locked)
+	return;			// Ignore the SetValue change
+
+    int delay = 500;		// Wait until the SpinBox stops spinning
+    if (cbs->reason == XmCR_ACTIVATE)
+	delay = 0;
+
+#if XmVersion < 2000
+    // Don't care about changing values in non-SpinBoxes
+    if (cbs->reason == XmCR_VALUE_CHANGED)
 	return;
+#endif
 
-    XmSelectionBoxCallbackStruct *cbs = 
-	(XmSelectionBoxCallbackStruct *)call_data;
-    String input;
-    XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &input);
-
-    if (client_data == 0)
+    if (info->timer != 0)
     {
-	IntArray breakpoint_nrs;
-	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
-	for (int i = 0; i < breakpoint_nrs.size(); i++)
-	    set_bp_cond(breakpoint_nrs[i], input);
-    }
-    else
-    {
-	int bp_nr = *((int *)client_data);
-	set_bp_cond(bp_nr, input);
+	XtRemoveTimeOut(info->timer);
+	info->timer = 0;
     }
 
-    XtFree(input);
+    info->timer = XtAppAddTimeOut(XtWidgetToApplicationContext(w),
+				  delay,
+				  SetBreakpointIgnoreCountNowCB, 
+				  client_data);
 }
 
-void SourceView::EditBreakpointConditionCB(Widget,
-					   XtPointer client_data,
-					   XtPointer)
+void SourceView::SetBreakpointIgnoreCountNowCB(XtPointer client_data, 
+					       XtIntervalId *id)
 {
-    if (breakpoint_list_w == 0)
-	return;
-    if (!gdb->has_breakpoint_conditions())
-	return;
+    BreakpointPropertiesInfo *info = 
+	(BreakpointPropertiesInfo *)client_data;
 
-    static Widget edit_breakpoint_condition_dialog = 0;
-    if (edit_breakpoint_condition_dialog == 0)
+    assert (info->timer == *id);
+    info->timer = 0;
+
+    String _count = XmTextFieldGetString(info->ignore);
+    int count = atoi(_count);
+    XtFree(_count);
+
+    for (int i = 0; i < info->nrs.size(); i++)
     {
-	edit_breakpoint_condition_dialog = 
-	    verify(XmCreatePromptDialog(source_text_w,
-					"edit_breakpoint_condition_dialog",
-					NULL, 0));
-	Delay::register_shell(edit_breakpoint_condition_dialog);
-
-	if (lesstif_version <= 79)
-	    XtUnmanageChild(XmSelectionBoxGetChild(
-		edit_breakpoint_condition_dialog, XmDIALOG_APPLY_BUTTON));
-
-	XtAddCallback(edit_breakpoint_condition_dialog,
-		      XmNhelpCallback,
-		      ImmediateHelpCB,
-		      NULL);
+	gdb_command(gdb->ignore_command(itostring(info->nrs[i]), count));
     }
-
-    XtRemoveAllCallbacks(edit_breakpoint_condition_dialog,
-			 XmNokCallback);
-
-    XtAddCallback(edit_breakpoint_condition_dialog,
-		  XmNokCallback,
-		  EditBreakpointConditionDCB,
-		  client_data);
-
-    int bp_nr;
-    if (client_data == 0)
-    {
-	IntArray breakpoint_nrs;
-	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
-	bp_nr = breakpoint_nrs[0];
-    }
-    else
-    {
-	bp_nr = *((int *)client_data);
-    }
-
-    if (bp_nr > 0)
-    {
-	string cond = "";
-	MapRef ref;
-	for (BreakPoint* bp = bp_map.first(ref);
-	     bp != 0;
-	     bp = bp_map.next(ref))
-	{
-	    if (bp->number() == bp_nr)
-	    {
-		cond = bp->condition();
-		break;
-	    }
-	}
-
-	MString xmcond(cond);
-	XtVaSetValues(edit_breakpoint_condition_dialog,
-		      XmNtextString, xmcond.xmstring(),
-		      NULL);
-
-	Widget text = XmSelectionBoxGetChild(edit_breakpoint_condition_dialog,
-					     XmDIALOG_TEXT);
-	XmTextSetSelection(text, 0, cond.length(), 
-			   XtLastTimestampProcessed(XtDisplay(text)));
-    }
-
-    manage_and_raise(edit_breakpoint_condition_dialog);
 }
 
 
-
-// Edit breakpoint ignore count
-void SourceView::EditBreakpointIgnoreCountDCB(Widget, 
-					      XtPointer client_data, 
-					      XtPointer call_data)
+// Toggle breakpoint enabled state
+void SourceView::ToggleBreakpointEnabledCB(Widget, 
+					   XtPointer client_data, 
+					   XtPointer call_data)
 {
-    if (breakpoint_list_w == 0)
-	return;
-    if (!gdb->has_ignore_command())
-	return;
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+    BreakpointPropertiesInfo *info = 
+	(BreakpointPropertiesInfo *)client_data;
 
-    XmSelectionBoxCallbackStruct *cbs = 
-	(XmSelectionBoxCallbackStruct *)call_data;
-    String input;
-    XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &input);
-    int count = atoi(input);
-    XtFree(input);
-
-    if (client_data == 0)
-    {
-	IntArray breakpoint_nrs;
-	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
-	for (int i = 0; i < breakpoint_nrs.size(); i++)
-	    gdb_command(gdb->ignore_command(itostring(breakpoint_nrs[i]), 
-					    count));
-    }
-    else
-    {
-	int bp_nr = *((int *)client_data);
-	gdb_command(gdb->ignore_command(itostring(bp_nr), count));
-    }
+    string cmd = cbs->set ? gdb->enable_command() : gdb->disable_command();
+    
+    for (int i = 0; i < info->nrs.size(); i++)
+	cmd += " " + itostring(info->nrs[i]);
+    gdb_command(cmd);
 }
 
-void SourceView::EditBreakpointIgnoreCountCB(Widget,
-					     XtPointer client_data,
-					     XtPointer)
+// Delete Breakpoint
+void SourceView::DeleteBreakpointCB(Widget, XtPointer client_data, XtPointer)
 {
-    if (breakpoint_list_w == 0)
-	return;
+    BreakpointPropertiesInfo *info = 
+	(BreakpointPropertiesInfo *)client_data;
 
-    static Widget edit_breakpoint_ignore_count_dialog = 0;
-    if (edit_breakpoint_ignore_count_dialog == 0)
+    if (!gdb->has_delete_command())
     {
-	edit_breakpoint_ignore_count_dialog = 
-	    verify(XmCreatePromptDialog(source_text_w,
-					"edit_breakpoint_ignore_count_dialog",
-					NULL, 0));
-	Delay::register_shell(edit_breakpoint_ignore_count_dialog);
-
-	if (lesstif_version <= 79)
-	    XtUnmanageChild(XmSelectionBoxGetChild(
-		edit_breakpoint_ignore_count_dialog, XmDIALOG_APPLY_BUTTON));
-
-	XtAddCallback(edit_breakpoint_ignore_count_dialog,
-		      XmNhelpCallback,
-		      ImmediateHelpCB,
-		      NULL);
-    }
-
-    XtRemoveAllCallbacks(edit_breakpoint_ignore_count_dialog,
-			 XmNokCallback);
-
-    XtAddCallback(edit_breakpoint_ignore_count_dialog,
-		  XmNokCallback,
-		  EditBreakpointIgnoreCountDCB,
-		  client_data);
-
-    int bp_nr;
-    if (client_data == 0)
-    {
-	IntArray breakpoint_nrs;
-	getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
-	bp_nr = breakpoint_nrs[0];
+        for (int i = 0; i < info->nrs.size(); i++)
+	    gdb_command(delete_command(info->nrs[i]));
     }
     else
     {
-	bp_nr = *((int *)client_data);
+	string cmd = gdb->delete_command();
+
+	for (int i = 0; i < info->nrs.size(); i++)
+	    cmd += " " + itostring(info->nrs[i]);
+	gdb_command(cmd);
     }
-
-    string ignore = "";
-    if (bp_nr > 0)
-    {
-	MapRef ref;
-	for (BreakPoint* bp = bp_map.first(ref);
-	     bp != 0;
-	     bp = bp_map.next(ref))
-	{
-	    if (bp->number() == bp_nr)
-	    {
-		ignore = itostring(bp->ignore_count());
-		break;
-	    }
-	}
-    }
-
-    MString xmignore(ignore);
-    XtVaSetValues(edit_breakpoint_ignore_count_dialog,
-		  XmNtextString, xmignore.xmstring(),
-		  NULL);
-    Widget text = 
-	XmSelectionBoxGetChild(edit_breakpoint_ignore_count_dialog,
-			       XmDIALOG_TEXT);
-    XmTextSetSelection(text, 0, ignore.length(), 
-		       XtLastTimestampProcessed(XtDisplay(text)));
-
-    manage_and_raise(edit_breakpoint_ignore_count_dialog);
 }
 
-void SourceView::edit_breakpoint_ignore_count(int bp_nr)
+// Record breakpoint commands
+void SourceView::RecordBreakpointCommandsCB(Widget, 
+					    XtPointer client_data, 
+					    XtPointer call_data)
+{
+    (void)client_data;
+    (void)call_data;
+}
+
+// Edit breakpoint commands
+void SourceView::EditBreakpointCommandsCB(Widget, 
+					  XtPointer client_data, 
+					  XtPointer call_data)
+{
+    (void)client_data;
+    (void)call_data;
+}
+
+void SourceView::edit_breakpoint_properties(int bp_nr)
 {
     static int n;
     n = bp_nr;
-    EditBreakpointIgnoreCountCB(source_text_w, XtPointer(&n), 0);
+    EditBreakpointPropertiesCB(source_text_w, XtPointer(&n), 0);
 }
 
-void SourceView::edit_breakpoint_condition(int bp_nr)
-{
-    static int n;
-    n = bp_nr;
-    EditBreakpointConditionCB(source_text_w, XtPointer(&n), 0);
-}
+
+
+
+
+//-----------------------------------------------------------------------------
+// Breakpoint commands
+//----------------------------------------------------------------------------
 
 void SourceView::BreakpointCmdCB(Widget,
 				 XtPointer client_data,
@@ -5409,10 +5621,7 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
 		   gdb->has_enable_command() && selected_disabled > 0);
     XtSetSensitive(bp_area[BPButtons::Disable].widget,     
 		   gdb->has_disable_command() && selected_enabled > 0);
-    XtSetSensitive(bp_area[BPButtons::Condition].widget,   
-		   gdb->has_breakpoint_conditions() && selected > 0);
-    XtSetSensitive(bp_area[BPButtons::IgnoreCount].widget, 
-		   gdb->has_ignore_command() && selected > 0);
+    XtSetSensitive(bp_area[BPButtons::Properties].widget, selected > 0);
     XtSetSensitive(bp_area[BPButtons::Delete].widget, selected > 0);
 
     if (selected == 1)
