@@ -381,16 +381,18 @@ static void title(const AppData& ad, const string& s)
 
 static void get_derived_sizes(Dimension size,
 			      Dimension& small_size,
+			      Dimension& tiny_size,
 			      Dimension& llogo_size)
 {
     small_size = ((size * 8) / 90) * 10;
+    tiny_size  = ((size * 6) / 90) * 10;
     llogo_size = ((size * 3) / 20) * 10;
 }
 
 static void setup_x_fonts(const AppData& ad, XrmDatabase& db)
 {
-    Dimension small_size, llogo_size;
-    get_derived_sizes(ad.default_font_size, small_size, llogo_size);
+    Dimension small_size, tiny_size, llogo_size;
+    get_derived_sizes(ad.default_font_size, small_size, tiny_size, llogo_size);
 
     if (small_size < 80)
 	small_size = ad.default_font_size;
@@ -478,10 +480,11 @@ static void replace_vsl_font(string& defs, const string& func,
 
 static void setup_vsl_fonts(AppData& ad)
 {
-    Dimension small_size, llogo_size;
-    get_derived_sizes(ad.data_font_size, small_size, llogo_size);
+    Dimension small_size, tiny_size, llogo_size;
+    get_derived_sizes(ad.data_font_size, small_size, tiny_size, llogo_size);
 
     string small_size_s = itostring(small_size);
+    string tiny_size_s  = itostring(tiny_size);
 
     static string defs;
     defs = "";
@@ -511,19 +514,19 @@ static void setup_vsl_fonts(AppData& ad)
 				       override(PointSize, small_size_s))));
 
     replace_vsl_font(defs, "tiny_rm", ad, 
-		     override(PointSize, small_size_s), VariableWidthDDDFont);
+		     override(PointSize, tiny_size_s), VariableWidthDDDFont);
     replace_vsl_font(defs, "tiny_bf", ad, 
 		     override(Weight, "bold", 
-			      override(PointSize, small_size_s)), 
+			      override(PointSize, tiny_size_s)), 
 		     VariableWidthDDDFont);
     replace_vsl_font(defs, "tiny_it", ad, 
 		     override(Slant, "*", 
-			      override(PointSize, small_size_s)),
+			      override(PointSize, tiny_size_s)),
 		     VariableWidthDDDFont);
     replace_vsl_font(defs, "tiny_bf", ad, 
 		     override(Weight, "bold", 
 			      override(Slant, "*", 
-				       override(PointSize, small_size_s))),
+				       override(PointSize, tiny_size_s))),
 		     VariableWidthDDDFont);
 
     if (ad.show_fonts)
