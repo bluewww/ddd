@@ -183,6 +183,9 @@ Bug fixes
 
 - In a separate window setting, data buttons are properly placed.
 
+- Several hard-coded limits have been raised, such as the length of
+  GDB commands.
+
 - The `Home' and `End' keys work in all text fields.
 
 
