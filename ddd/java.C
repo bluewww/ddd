@@ -45,6 +45,7 @@ char java_rcsid[] =
 #include "ddd.h"
 #include "filetype.h"
 #include "glob.h"
+#include "isid.h"
 #include "regexps.h"
 #include "status.h"
 
@@ -424,7 +425,7 @@ static string _java_class_file(const string& class_name, bool search_classes)
 
 			// Find start of name
 			int start = i;
-			while (start > 0 && isalnum(class_file[start - 1]))
+			while (start > 0 && isid(class_file[start - 1]))
 			    start--;
 			src_class = class_file(start, i - start);
 

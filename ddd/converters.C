@@ -42,6 +42,7 @@ char converters_rcsid[] =
 
 #include "bool.h"
 #include "home.h"
+#include "isid.h"
 #include "BindingS.h"
 #include "OnOff.h"
 #include "strclass.h"
@@ -451,7 +452,7 @@ static int font_id_len(const string& s)
 	return 0;
 
     for (int i = 1; i < int(s.length()); i++)
-	if (s[i] != '-' && s[i] != '_' && !isalnum(s[i]))
+	if (s[i] != '-' && !isid(s[i]))
 	    return i;
 
     return s.length();

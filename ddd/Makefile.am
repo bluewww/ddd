@@ -77,6 +77,8 @@ BASE_SOURCES = \
 	home.C       \
 	home.h       \
 	hypot.h      \
+	isid.C       \
+	isid.h       \
 	misc.h       \
 	mutable.h    \
 	my-alloca.h  \
@@ -434,8 +436,6 @@ DDD_SOURCES = \
 	hostname.h   \
 	index.C      \
 	index.h      \
-	isid.C       \
-	isid.h       \
 	java.C 	     \
 	java.h 	     \
 	logo.C       \
