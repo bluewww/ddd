@@ -3268,6 +3268,7 @@ Click on LBL(OK) to close this window.
 !-----------------------------------------------------------------------------
 
 Ddd*edit_buttons_popup.title: DDD: Button Editor
+Ddd*edit_buttons_popup.okLabelString: Close
 
 Ddd*edit_buttons*buttons.entryAlignment:	XmALIGNMENT_CENTER
 Ddd*edit_buttons*buttons*indicatorOn:		off
@@ -4986,7 +4987,7 @@ Ddd*breakpoint_properties*delete.tipString:           \
 @rm Delete breakpoint
 
 Ddd*breakpoint_properties*condition.label.labelString:	Condition
-Ddd*breakpoint_properties*condition.text.columns:       31
+Ddd*breakpoint_properties*condition.text*columns:       29
 
 Ddd*breakpoint_properties*ignore.label.labelString:	Ignore Count
 Ddd*breakpoint_properties*ignore*text.columns:          4
