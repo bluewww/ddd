@@ -950,37 +950,13 @@ HTMLS =
 ## The manual page.
 MANS = ddd.man
 
-## The (derived) icons
+## The (derived) icons.
+# Icon directories
 icondir = $(srcdir)/../icons
 toolbardir = $(icondir)/toolbar
-ICONS = \
-	$(icondir)/ddd.xbm \
-	$(icondir)/dddmask.xbm \
-	$(icondir)/dddsplash.xbm \
-	$(icondir)/ddd.xface \
-	$(toolbardir)/breakat-xx.xpm \
-	$(toolbardir)/clearat-xx.xpm \
-	$(toolbardir)/delete-xx.xpm \
-	$(toolbardir)/deref-xx.xpm \
-	$(toolbardir)/disable-xx.xpm \
-	$(toolbardir)/display-xx.xpm \
-	$(toolbardir)/findbwd-xx.xpm \
-	$(toolbardir)/findfwd-xx.xpm \
-	$(toolbardir)/enable-xx.xpm \
-	$(toolbardir)/hide-xx.xpm \
-	$(toolbardir)/lookup-xx.xpm \
-	$(toolbardir)/maketemp-xx.xpm \
-	$(toolbardir)/newbreak-xx.xpm \
-	$(toolbardir)/newdisplay-xx.xpm \
-	$(toolbardir)/newwatch-xx.xpm \
-	$(toolbardir)/print-xx.xpm \
-	$(toolbardir)/properties-xx.xpm \
-	$(toolbardir)/rotate-xx.xpm \
-	$(toolbardir)/set-xx.xpm \
-	$(toolbardir)/show-xx.xpm \
-	$(toolbardir)/undisplay-xx.xpm \
-	$(toolbardir)/unwatch-xx.xpm \
-	$(toolbardir)/watch-xx.xpm \
+
+# XBM icons are derived from XPM sources
+XBM_ICONS = \
 	$(toolbardir)/breakat.xbm \
 	$(toolbardir)/clearat.xbm \
 	$(toolbardir)/delete.xbm \
@@ -1003,7 +979,36 @@ ICONS = \
 	$(toolbardir)/show.xbm \
 	$(toolbardir)/undisplay.xbm \
 	$(toolbardir)/unwatch.xbm \
-	$(toolbardir)/watch.xbm \
+	$(toolbardir)/watch.xbm 
+
+# XPM-XX icons are derived from XBM sources
+XPM_XX_ICONS = \
+	$(toolbardir)/breakat-xx.xpm \
+	$(toolbardir)/clearat-xx.xpm \
+	$(toolbardir)/delete-xx.xpm \
+	$(toolbardir)/deref-xx.xpm \
+	$(toolbardir)/disable-xx.xpm \
+	$(toolbardir)/display-xx.xpm \
+	$(toolbardir)/findbwd-xx.xpm \
+	$(toolbardir)/findfwd-xx.xpm \
+	$(toolbardir)/enable-xx.xpm \
+	$(toolbardir)/hide-xx.xpm \
+	$(toolbardir)/lookup-xx.xpm \
+	$(toolbardir)/maketemp-xx.xpm \
+	$(toolbardir)/newbreak-xx.xpm \
+	$(toolbardir)/newdisplay-xx.xpm \
+	$(toolbardir)/newwatch-xx.xpm \
+	$(toolbardir)/print-xx.xpm \
+	$(toolbardir)/properties-xx.xpm \
+	$(toolbardir)/rotate-xx.xpm \
+	$(toolbardir)/set-xx.xpm \
+	$(toolbardir)/show-xx.xpm \
+	$(toolbardir)/undisplay-xx.xpm \
+	$(toolbardir)/unwatch-xx.xpm \
+	$(toolbardir)/watch-xx.xpm 
+
+# XBM-XX icons are derived from XPM sources
+XBM_XX_ICONS = \
 	$(toolbardir)/breakat-xx.xbm \
 	$(toolbardir)/clearat-xx.xbm \
 	$(toolbardir)/delete-xx.xbm \
@@ -1027,6 +1032,18 @@ ICONS = \
 	$(toolbardir)/undisplay-xx.xbm \
 	$(toolbardir)/unwatch-xx.xbm \
 	$(toolbardir)/watch-xx.xbm
+
+# All derived icons
+# Order is significant here!  First sources, then derived files.
+ICONS = \
+	$(icondir)/ddd.xbm \
+	$(icondir)/dddmask.xbm \
+	$(icondir)/dddsplash.xbm \
+	$(icondir)/ddd.xface \
+	$(XBM_ICONS) \
+	$(XPM_XX_ICONS) \
+	$(XBM_XX_ICONS)
+
 
 ## Readme files built from ddd.texinfo
 README_FILES = 
