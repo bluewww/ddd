@@ -93,8 +93,13 @@ extern "C" void *memcpy(void *to, const void *from, size_t size);
 #endif
 
 // These should be checked by autoconf, but we prefer to play it safe
+#ifndef _POSIX_SOURCE
 #define _POSIX_SOURCE
+#endif
+
+#ifndef OPENDIR_NOT_ROBUST
 #define OPENDIR_NOT_ROBUST
+#endif
 
 #if defined (_POSIX_SOURCE)
 /* Posix does not require that the d_ino field be present, and some

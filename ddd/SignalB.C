@@ -59,6 +59,7 @@ SignalBlocker::SignalBlocker()
     sigset_t new_set;
 
     // The following line causes a warning on LINUX systems; this is harmless.
+    // (The problem is in the LINUX `sigfillset' definition.)
     sigfillset(&new_set);
     sigprocmask(SIG_BLOCK, &new_set, &old_set);
 #else

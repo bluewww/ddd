@@ -144,7 +144,7 @@ static char *_fullhostname(char *most_qualified_host)
     {
 	// Try official name
 	if (dots(h->h_name) > dots(most_qualified_host))
-	    most_qualified_host = h->h_name;
+	    most_qualified_host = (char *)h->h_name;
 
 	// Try aliases
 	for (int i = 0; h->h_aliases[i] != 0; i++)
