@@ -1666,6 +1666,6 @@ bool constSubString::OK() const
 {
     // Check for legal string and pos and len outside bounds
     if (!S.OK() || pos + len > S.rep->len)
-	S.error("subString invariant failure");
+	S.error("constsubString invariant failure");
     return true;
 }
