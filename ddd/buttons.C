@@ -701,7 +701,7 @@ Widget make_buttons(Widget parent, const string& name,
     return buttons;
 }
 
-void set_buttons(Widget buttons, String _button_list)
+void set_buttons(Widget buttons, String _button_list, bool manage)
 {
     XtPointer user_data;
     XtVaGetValues(buttons, XmNuserData, &user_data, NULL);
@@ -858,10 +858,13 @@ void set_buttons(Widget buttons, String _button_list)
     }
     delete[] commands;
 
-    if (number_of_buttons > 0)
-	XtManageChild(buttons);
-    else
-	XtUnmanageChild(buttons); // No buttons at all
+    if (manage)
+    {
+	if (number_of_buttons > 0)
+	    XtManageChild(buttons);
+	else
+	    XtUnmanageChild(buttons); // No buttons at all
+    }
 
     XtVaSetValues(buttons, XmNuserData, XtPointer(_button_list), NULL);
 
