@@ -32,6 +32,7 @@ DDD 2.1 [in development; scheduled for April, 1997]
     - The register window can display floating-point registers.
     - Thread support.  You can inquire existing threads and switch
       among them.  (requires GDB and operating system thread support)
+    - By default, DDD now comes in one single window.
     - The `Preferences' panel has been extended and reworked:
       + Button tips and Value tips can be enabled and disabled.
       + Tab width and graph grid size can now be changed at run time.

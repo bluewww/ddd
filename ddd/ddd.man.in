@@ -1737,13 +1737,12 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 .PP
 .PSPIC PICS/ddd-startup-prefs.ps 15.3cm
 .PP
-By default, \s-2@DDD@\s+2 uses three separate windows for commands,
-source, and data.  To attach the source and data windows to the
-debugger console, creating one single big \s-2@DDD@\s+2 window, set the
-`\fBWindows\fR' option to `\fBOne Single Window\fR'.  This change
-takes only effect after you have saved options and restarted
-\s-2@DDD@\s+2.  See also the `\fB\-\-attach\-windows\fR' 
-and `\fB\-\-separate\-windows\fR' options, below.
+By default, \s-2@DDD@\s+2 uses one single window for commands, source,
+and data.  To have separate windows for source, data, and debugger
+console, set the `\fBWindows\fR' option to `\fBSeparate Windows\fR'.
+This change takes only effect after you have saved options and
+restarted \s-2@DDD@\s+2.  See also the `\fB\-\-attach\-windows\fR' and
+`\fB\-\-separate\-windows\fR' options, below.
 .PP
 \s-2@DDD@\s+2 can display the status line at the bottom (`\fBat
 bottom\fR') or at the top (`\fBat top\fR').  This change
@@ -2058,9 +2057,9 @@ command history, its history file is used, otherwise,
 `\fB$HOME/.ddd_history\fR' is used.
 .TP
 .B "separateDataWindow (\fPclass\fB Separate)"
-If `\fBtrue\fR' (default), the data window and the debugger console
-are realized in different top-level windows.  If `\fBfalse\fR', the
-data window is attached to the debugger console.  See also the
+If `\fBtrue\fR', the data window and the debugger console are realized
+in different top-level windows.  If `\fBfalse\fR' (default), the data
+window is attached to the debugger console.  See also the
 `\fB\-\-attach\-windows\fR' and `\fB\-\-attach\-data\-window\fR'
 options, below.
 .TP
@@ -2071,9 +2070,9 @@ executed in the console window.  See also the `\fB\-\-exec\-window\fR'
 and `\fB\-\-no\-exec\-window\fR' options, below.
 .TP
 .B "separateSourceWindow (\fPclass\fB Separate)"
-If `\fBtrue\fR' (default), the source window and the debugger console
-are realized in different top-level windows.  If `\fBfalse\fR', the
-source window is attached to the debugger console.  See also the
+If `\fBtrue\fR', the source window and the debugger console are
+realized in different top-level windows.  If `\fBfalse\fR' (default),
+the source window is attached to the debugger console.  See also the
 `\fB\-\-attach\-windows\fR' and `\fB\-\-attach\-source\-window\fR'
 options, below.
 .TP
@@ -2992,8 +2991,8 @@ option, or with a \s-2@DDD@\s+2 option listed here, use the
 .\"
 .TP
 .B \-\-attach\-windows
-Attach the source and data windows to the debugger console, creating one
-single big \s-2@DDD@\s+2 window.
+Attach the source and data windows to the debugger console, creating
+one single big \s-2@DDD@\s+2 window.  This is the default setting.
 .TP
 .B \-\-attach\-source\-window
 Attaches only the source window to the debugger console.
@@ -3083,8 +3082,8 @@ Run the inferior debugger interactively on the remote host \fIhostname\fR.
 See `\fBREMOTE DEBUGGING\fR', above.
 .TP
 .B \-\-separate\-windows
-Separate the console, source and data windows.  This is the default.
-See also the `\fB\-\-attach\fR' options, above.
+Separate the console, source and data windows.  See also the
+`\fB\-\-attach\fR' options, above.
 .TP
 .B \-\-scrolled\-graph
 Use Motif scroll bars to scroll the data window.  This is the default

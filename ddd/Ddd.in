@@ -78,7 +78,7 @@ Ddd*debuggerCommand:
 ! True if data and source are to be displayed in separate top-level
 ! windows.  If this is false, the data and source windows are attached
 ! to the DDD console window.
-Ddd*Separate: true
+Ddd*Separate: false
 
 
 ! You may also attach the source window or data window alone.
