@@ -1,5 +1,5 @@
 // $Id$ -*- C++ -*-
-// Assoc<string, string>
+// Source origins
 
 // Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
@@ -26,19 +26,20 @@
 // `http://www.cs.tu-bs.de/softech/ddd/',
 // or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
-#ifndef _DDD_StringStringAssoc_h
-#define _DDD_StringStringAssoc_h
+#ifndef _DDD_SourceOrigin_h
+#define _DDD_SourceOrigin_h
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
-#include "strclass.h"
-#include "SourceO.h"
-#include "Assoc.h"
+// Source origins
+enum SourceOrigin { 
+    ORIGIN_LOCAL, 
+    ORIGIN_REMOTE,
+    ORIGIN_GDB,
+    ORIGIN_NONE
+};
 
-typedef Assoc<string, string>       StringStringAssoc;
-typedef Assoc<string, SourceOrigin> StringOriginAssoc;
-
-#endif // _DDD_StringStringAssoc_h
+#endif // _DDD_SourceOrigin_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

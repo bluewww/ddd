@@ -68,6 +68,7 @@
 #include "BreakPM.h"
 #include "CodeCache.h"
 #include "Delay.h"
+#include "StringSA.h"
 
 //-----------------------------------------------------------------------------
 extern GDBAgent* gdb;
@@ -79,7 +80,6 @@ class SourceView {
     static void add_to_history(const string& address);
     static void goto_entry(string entry);
 
-    static void other_fileCB             (Widget, XtPointer, XtPointer);
     static void set_source_argCB         (Widget, XtPointer, XtPointer);
 
     static void line_popup_setCB         (Widget, XtPointer, XtPointer);
@@ -264,11 +264,15 @@ private:
     static bool file_matches(const string& file1, const string& file2);
     static bool base_matches(const string& file1, const string& file2);
 
-    static Assoc<string, string> file_cache;
+    static StringStringAssoc file_cache;
+    static StringOriginAssoc origin_cache;
     static CodeCache code_cache;
 
     // The current source text.
     static string current_source;
+
+    // The origin of the current source text.
+    static SourceOrigin current_origin;
 
     // The current assembler code.
     static string current_code;
@@ -276,7 +280,7 @@ private:
     static string current_code_end;
 
     // Return current source name (name under this source is known to GDB)
-    static Assoc<string, string> source_name_cache;
+    static StringStringAssoc source_name_cache;
     static string current_source_name();
 
     // The current directory
@@ -312,6 +316,7 @@ private:
 				bool silent);
 
     static String read_indented(string& file_name, long& length,
+				SourceOrigin& origin,
 				bool silent = false);
     static int read_current(string& file_name, 
 			    bool force_reload = false,

@@ -148,7 +148,7 @@ inline int isid(char c)
 
 // ***************************************************************************
 //-----------------------------------------------------------------------
-// Xt-Zeugs
+// Xt stuff
 //-----------------------------------------------------------------------
 XtActionsRec SourceView::actions [] = {
     {"source-popup-menu",        SourceView::srcpopupAct        },
@@ -158,10 +158,10 @@ XtActionsRec SourceView::actions [] = {
 };
 
 //-----------------------------------------------------------------------
-// Menues
+// Menus
 //-----------------------------------------------------------------------
 
-// Popup-Menues - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Popup menus - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 struct LineItms { enum Itms {SetBP, SetTempBP, TempNContBP}; };
 MMDesc SourceView::line_popup[] =
 {
@@ -263,7 +263,7 @@ MMDesc SourceView::text_popup[] =
 
 
 //-----------------------------------------------------------------------
-// Daten
+// Data.  Lots of 'em.
 //-----------------------------------------------------------------------
 
 Widget SourceView::toplevel_w                = 0;
@@ -294,6 +294,8 @@ bool SourceView::all_registers          = false;
 int  SourceView::bp_indent_amount   = 0;
 int  SourceView::code_indent_amount = 4;
 
+SourceOrigin SourceView::current_origin = ORIGIN_NONE;
+
 Map<int, BreakPoint> SourceView::bp_map;
 
 string SourceView::current_file_name = "";
@@ -301,8 +303,9 @@ int    SourceView::line_count = 0;
 IntIntArrayAssoc SourceView::bps_in_line;
 TextPositionArray SourceView::_pos_of_line;
 StringArray SourceView::bp_addresses;
-Assoc<string, string> SourceView::file_cache;
-Assoc<string, string> SourceView::source_name_cache;
+StringStringAssoc SourceView::file_cache;
+StringOriginAssoc SourceView::origin_cache;
+StringStringAssoc SourceView::source_name_cache;
 CodeCache SourceView::code_cache;
 
 string SourceView::current_source;
@@ -342,8 +345,9 @@ bool SourceView::source_history_locked = false;
 
 bool SourceView::at_lowest_frame = true;
 
+
 //-----------------------------------------------------------------------
-// Helping functions
+// Helping functions.
 //-----------------------------------------------------------------------
 
 // Return true if W is a descendant of code_form_w
@@ -383,19 +387,9 @@ string& SourceView::current_text(Widget w)
 }
 
 //-----------------------------------------------------------------------
-// Methoden
+// Methods
 //-----------------------------------------------------------------------
 
-// ***************************************************************************
-//
-void SourceView::other_fileCB (Widget w,
-			       XtPointer,
-			       XtPointer)
-{
-    String filename = XmTextFieldGetString(w);
-    read_file (filename);
-    XtFree (filename);
-}
 
 // ***************************************************************************
 //
@@ -747,9 +741,8 @@ string SourceView::full_path(string file)
     return file;
 }
 
-// Return the basename of FILE
-// We don't use the default basename(), due to conflicts 
-// with the decl in <libiberty.h>.
+// Return the basename of FILE.  We don't use the default ::basename(),
+// due to conflicts with the decl in <libiberty.h>.
 const char *SourceView::basename(const char *name)
 {
     const char *base = name;
@@ -1014,7 +1007,7 @@ String SourceView::read_remote(const string& file_name, long& length,
 			       bool silent)
 {
     StatusDelay delay("Reading file " + 
-		      quote(file_name) + " from remote host");
+		      quote(file_name) + " from " + gdb_host);
     length = 0;
 
     string cat_command = sh_command("cat " + file_name);
@@ -1143,21 +1136,34 @@ String SourceView::read_from_gdb(const string& file_name, long& length,
 
 
 // Read file FILE_NAME and format it
-String SourceView::read_indented(string& file_name, long& length, bool silent)
+String SourceView::read_indented(string& file_name, long& length, 
+				 SourceOrigin& origin, bool silent)
 {
     length = 0;
     Delay delay;
     long t;
 
     file_name = full_path(file_name);
+    origin = ORIGIN_NONE;
 
     String text;
 
-    // Try to read file directly
-    if (!remote_gdb())
-	text = read_local(file_name, length, true);
-    else
+    // Try to read file
+    if (remote_gdb())
+    {
+	// Read file from remote source
 	text = read_remote(file_name, length, true);
+	if (text != 0)
+	    origin = ORIGIN_REMOTE;
+    }
+
+    if (!remote_gdb() && (text == 0 || length == 0))
+    {
+	// Read file from local source
+	text = read_local(file_name, length, true);
+	if (text != 0)
+	    origin = ORIGIN_LOCAL;
+    }
 
     if (text == 0 || length == 0)
     {
@@ -1173,7 +1179,17 @@ String SourceView::read_indented(string& file_name, long& length, bool silent)
 	{
 	    // Use the source name as file name
 	    file_name = source_name;
+	    if (text != 0)
+		origin = ORIGIN_GDB;
 	}
+    }
+
+    if (remote_gdb() && (text == 0 || length == 0))
+    {
+	// Read file from local source, even if we are remote
+	text = read_local(file_name, length, true);
+	if (text != 0)
+	    origin = ORIGIN_LOCAL;
     }
 
     if ((text == 0 || length == 0) && !silent)
@@ -1184,8 +1200,12 @@ String SourceView::read_indented(string& file_name, long& length, bool silent)
 	else
 	    text = read_remote(file_name, length, silent);
     }
+
     if (text == 0 || length == 0)
+    {
+	origin = ORIGIN_NONE;
 	return 0;
+    }
 
     // At this point, we have a source text.
     // Determine text length and number of lines
@@ -1215,7 +1235,7 @@ String SourceView::read_indented(string& file_name, long& length, bool silent)
 	line_no_s[i] = ' ';
 
     t = 0;
-    char *pos_ptr = indented_text; // Schreibposition in indented_text
+    char *pos_ptr = indented_text; // Writing position in indented_text
     while (t < length)
     {
 	// Increase line number
@@ -1275,23 +1295,30 @@ int SourceView::read_current(string& file_name, bool force_reload, bool silent)
     if (cache_source_files && !force_reload && file_cache.has(file_name))
     {
 	current_source = file_cache[file_name];
+	current_origin = origin_cache[file_name];
     }
     else
     {
 	long length = 0;
-	String indented_text = read_indented(file_name, length, silent);
+	SourceOrigin orig;
+	String indented_text = read_indented(file_name, length, orig, silent);
 	if (indented_text)
 	{
 	    current_source = string(indented_text, length);
+	    current_origin = orig;
 	    XtFree(indented_text);
 	}
 	else
 	{
 	    current_source = "";
+	    current_origin = ORIGIN_NONE;
 	}
 
 	if (current_source.length() > 0)
-	    file_cache[file_name] = current_source;
+	{
+	    file_cache[file_name]   = current_source;
+	    origin_cache[file_name] = current_origin;
+	}
 
 	int null_count = current_source.freq('\0');
 	if (null_count > 0 && !silent)
@@ -1331,9 +1358,12 @@ XmTextPosition SourceView::pos_of_line(int line)
 // Clear the file cache
 void SourceView::clear_file_cache()
 {
-    static Assoc<string, string> empty;
-    file_cache        = empty;
-    source_name_cache = empty;
+    static StringStringAssoc string_empty;
+    file_cache        = string_empty;
+    source_name_cache = string_empty;
+
+    static StringOriginAssoc origin_empty;
+    origin_cache      = origin_empty;
 }
 
 void SourceView::reload()
@@ -1420,7 +1450,28 @@ void SourceView::read_file (string file_name,
     XtManageChild(source_text_w);
 
     ostrstream os;
-    os << "File " << quote(file_name) << " ";
+    switch (current_origin)
+    {
+    case ORIGIN_LOCAL:
+	os << "File " << quote(file_name);
+	if (remote_gdb())
+	    os << " (from local host)";
+	break;
+
+    case ORIGIN_REMOTE:
+	os << "File " << quote(file_name) << " (from " << gdb_host << ")";
+	break;
+
+    case ORIGIN_GDB:
+	os << "Source " << quote(file_name) << " (from debugger)";
+	break;
+
+    case ORIGIN_NONE:
+	os << quote(file_name);
+	break;
+    }
+    os << ' ';
+
     if (line_count == 1)
 	os << "1 line, ";
     else
@@ -1478,9 +1529,6 @@ void SourceView::update_title()
 
 
 // ***************************************************************************
-// Bringt Breakpoint-Anzeige auf den aktuellen Stand (gemaess bp_map).
-//
-
 // Update breakpoint locations
 void SourceView::refresh_bp_disp()
 {
@@ -1491,7 +1539,7 @@ void SourceView::refresh_bp_disp()
 
 void SourceView::refresh_source_bp_disp()
 {
-    // Alte Breakpoint-Darstellungen ueberschreiben - - - - - - - - - - - - -
+    // Overwrite old breakpoint displays - - - - - - - - - - - - -
     for (IntIntArrayAssocIter b_i_l_iter(bps_in_line);
 	 b_i_l_iter.ok(); 
 	 b_i_l_iter++)
@@ -1537,7 +1585,7 @@ void SourceView::refresh_source_bp_disp()
 
 	    string insert_string = "";
 
-	    // Darstellung fuer alle Breakpoints der Zeile
+	    // Display all breakpoints in a line
 	    VarIntArray& bps = bps_in_line[line_nr];
 
 	    int i;
@@ -1639,10 +1687,11 @@ void SourceView::refresh_code_bp_disp()
 
 
 // ***************************************************************************
-// Findet zu pos die passende Zeilennummer.
-// in_text==true wenn pos im Quelltext-Bereich ist.
-// bp_nr ist die Nr des Breakpoints, der an Position pos
-// dargestellt wird, 0 sonst.
+// Find the line number at POS
+// LINE_NR becomes the line number at POS
+// IN_TEXT becomes true iff POS is in the source area
+// BP_NR is the number of the breakpoint at POS (none: 0)
+// Return false iff failure
 //
 bool SourceView::get_line_of_pos (Widget   w,
 				  XmTextPosition pos,
@@ -1853,7 +1902,7 @@ void SourceView::find_word_bounds (Widget text_w,
 
 
 //----------------------------------------------------------------------------
-// Anfragen stellen und auswerten
+// Create GDB requests and evaluate replies
 //----------------------------------------------------------------------------
 
 // ***************************************************************************
@@ -2318,11 +2367,9 @@ void SourceView::show_position (string position, bool silent)
 
 
 // ***************************************************************************
-// Wertet die Ausgabe auf 'info breakpoints' aus.
-// Aktualisiert die in bp_map gespeicherten breakpoints, fuegt ggf. neue
-// hinzu oder loescht alte.
-// Bringt durch Aufruf von refresh_bp_disp die Breakpoint-Anzeige 
-// auf den aktuellen Stand.
+// Process reply on 'info breakpoints'.
+// Update breakpoints in BP_BAP, adding new ones or deleting existing ones.
+// Update breakpoint display by calling REFRESH_BP_DISP.
 //
 void SourceView::process_info_bp (string& info_output)
 {
@@ -3114,7 +3161,7 @@ string SourceView::file_of_cursor()
 
 
 //-----------------------------------------------------------------------------
-// Reaktion auf Klicken der linken Maus-Taste
+// Handle mouse selections
 //----------------------------------------------------------------------------
 
 static XmTextPosition selection_startpos;
@@ -3188,9 +3235,11 @@ void SourceView::endSelectWordAct (Widget text_w, XEvent* e,
 		   (XtPointer)text_w);
 }
 
+
 //-----------------------------------------------------------------------------
-// Reaktion auf Klicken der rechten Maus-Taste
+// Handle source popup
 //----------------------------------------------------------------------------
+
 void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 {
     if (e->type != ButtonPress && e->type != ButtonRelease)
@@ -3257,7 +3306,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 
     if (pos_found && bp_nr != 0)
     {
-	// Auf Breakpoint-Anzeige geklickt: Popup-Menu fuer Breakpoint oeffnen
+	// Clicked on breakpoint: create breakpoint menu
 	static Widget bp_popup_w = 0;
 
 	if (bp_popup_w == 0) {
@@ -3308,7 +3357,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	     && (line_nr > 0 || address != "") 
 	     && (!in_text || right_of_text))
     {
-	// Popup-Menu fuer Zeile line_nr oeffnen
+	// Create popup menu for selected line
 	if (is_source_widget(w))
 	{
 	    static Widget line_popup_w = 0;
@@ -3336,7 +3385,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
     }
     else
     {
-	// 'Umgebenden' C-String ermitteln, und Popup dafuer oeffnen
+	// Determine surrounding token and create popup
 	static string word;
 	static string ref_word;
 
