@@ -33,9 +33,7 @@
 @c %**start of header
 
 @setfilename ddd.info
-@c @documentlanguage en
 @documentencoding ISO-8859-1
-@setshortcontentsaftertitlepage
 
 @include config.texi
 
@@ -45,7 +43,7 @@
 @set EDITION First
 
 @c !!set DDD manual's revision date
-@set DATE 1999-10-04
+@set DATE 1999-10-06
 
 
 @c Macros
@@ -91,6 +89,10 @@
 
 @macro VSL {}
 @acronym{VSL}
+@end macro
+
+@macro TTY {}
+@acronym{TTY}
 @end macro
 
 
@@ -202,6 +204,7 @@ Send bug reports to @email{bug-ddd@@gnu.org}. @*
 
 
 @c The title page.
+@ifnothtml
 @titlepage
 @sp -7
 @ifnottex
@@ -268,6 +271,7 @@ Send questions, comments, suggestions, etc. to
 Send bug reports to @email{bug-ddd@@gnu.org}. @*
 
 @end titlepage
+@end ifnothtml
 
 @ifnottex
 @c Main Info and HTML page.
@@ -278,13 +282,15 @@ Send bug reports to @email{bug-ddd@@gnu.org}. @*
 @DDD{} is a graphical front-end for @GDB{} and other command-line
 debuggers.
 
-The first part of this master menu lists the major nodes in this Info
-document, including the label and command indices.  The rest of the menu
-lists all the lower level nodes in the document.
-
 This is the @value{EDITION} Edition of @cite{Debugging with
 @DDD{}}, @value{DATE}, for @DDD{} Version @value{VERSION}.
 @end ifnottex
+
+@ifinfo
+The first part of this master menu lists the major nodes in this Info
+document, including the label and command indices.  The rest of the menu
+lists all the lower level nodes in the document.
+@end ifinfo
 
 @menu
 * Summary::                     Summary of @DDD{}.
@@ -309,13 +315,14 @@ This is the @value{EDITION} Edition of @cite{Debugging with
 * License::                     The @DDD{} license.
 * Help and Assistance::         Mailing Lists and other resources.
 
-* Label Index::                 All labels shown on the @DDD{} GUI.
+* Label Index::                 All labels shown on the @DDD{} @acronym{GUI}.
 * Key Index::                   Keys used to control @DDD{}.
 * Command Index::               Commands that can be typed within @DDD{}.
 * Resource Index::              All resources and environment variables.
 * File Index::                  All programs and files referenced by @DDD{}.
 * Concept Index::               All concepts as mentioned in this manual.
 
+@ifinfo
 @detailmenu --- The Detailed Node Listing ---
 
 Summary of @value{DDD}
@@ -722,7 +729,13 @@ Configuration Notes
 * LessTif::                     Using @DDD{} with LessTif
 
 @end detailmenu
+@end ifinfo
 @end menu
+
+@ifnothtml
+@shortcontents
+@end ifnothtml
+@contents
 
 @ifhtml
 @c This section comes below the summary in the HTML file.
@@ -1843,11 +1856,11 @@ Fonts}, for details.
 
 @item --fullname
 @itemx -f
-Enable the TTY interface, taking additional debugger commands from
+Enable the @TTY{} interface, taking additional debugger commands from
 standard input and forwarding debugger output on standard output.
-Current positions are issued in @GDB{} @option{-fullname} format suitable for
-debugger front-ends.  By default, both the debugger console and source
-window are disabled.  @xref{TTY mode}, for a discussion.
+Current positions are issued in @GDB{} @option{-fullname} format
+suitable for debugger front-ends.  By default, both the debugger console
+and source window are disabled.  @xref{TTY mode}, for a discussion.
 
 Giving this option is equivalent to setting the @DDD{}
 @samp{TTYMode} resource class to @samp{on}.  @xref{TTY mode}, for
@@ -2236,8 +2249,8 @@ resource to @var{on}.  @xref{Diagnostics}, for details.
 
 @item --tty
 @itemx -t
-@cindex TTY mode, setting when invoking @DDD{}
-Enable TTY interface, taking additional debugger commands from
+@cindex @acronym{TTY} mode, setting when invoking @DDD{}
+Enable @TTY{} interface, taking additional debugger commands from
 standard input and forwarding debugger output on standard output.
 Current positions are issued in a format readable for humans.  By
 default, the debugger console is disabled.
@@ -2967,8 +2980,9 @@ files must be run remotely.  This is controlled by the following
 resources (@pxref{Customizing}):
 
 @defvr Resource rshCommand (class RshCommand)
-The remote shell command to invoke TTY-based commands on remote hosts.
-Usually, @command{remsh}, @command{rsh}, @command{ssh}, or @command{on}.
+The remote shell command to invoke @TTY{}-based commands on
+remote hosts.  Usually, @command{remsh}, @command{rsh}, @command{ssh},
+or @command{on}.
 @pindex remsh
 @pindex rsh
 @pindex ssh
@@ -4481,8 +4495,8 @@ cannot be displayed; it is replaced by two separate tool bars, as in
 
 If you enable @samp{Flat} buttons (default), the border of tool bar
 buttons will appear only if the mouse pointer is over them.  This
-latest-and-greatest GUI invention can be disabled, such that the button
-border is always shown.
+latest-and-greatest @acronym{GUI} invention can be disabled, such that
+the button border is always shown.
 
 If you enable @samp{Color} buttons, tool bar images will be colored when
 entered.  If @DDD{} was built using Motif 2.0 and later, you can
@@ -7006,10 +7020,10 @@ separate execution window (@pxref{Using the Execution Window}).
 
 @cindex @acronym{TTY} settings
 @pindex stty
-If the inferior debugger changes the default @acronym{TTY} settings, for
+If the inferior debugger changes the default @TTY{} settings, for
 instance through a @command{stty} command in its initialization file,
 @DDD{} may also become confused.  The same applies to debugged programs
-which change the default @acronym{TTY} settings.
+which change the default @TTY{} settings.
 
 The behavior of the debugger console can be controlled using the
 following resource:
@@ -7061,16 +7075,16 @@ error redirection).
 @subsection Customizing the Execution Window
 
 You can customize the @DDD{} execution window and use a different
-TTY command.  The command is set by @samp{Edit @result{} Preferences
-@result{} Helpers @result{} Execution Window}:
+@TTY{} command.  The command is set by @samp{Edit @result{}
+Preferences @result{} Helpers @result{} Execution Window}:
 @lbindex Execution Window
 
 @defvr Resource termCommand (class TermCommand)
-The command to invoke for the execution window---a TTY emulator that
-shows the input/output of the debugged program.  A Bourne shell command
-to run in the separate TTY is appended to this string.  The string
-@samp{@@FONT@@} is replaced by the name of the fixed width font used by
-@DDD{}.  A simple value is
+The command to invoke for the execution window---a @TTY{}
+emulator that shows the input/output of the debugged program.  A Bourne
+shell command to run in the separate @TTY{} is appended to this
+string.  The string @samp{@@FONT@@} is replaced by the name of the fixed
+width font used by @DDD{}.  A simple value is
 
 @example
 Ddd*termCommand: xterm -fn @@FONT@@ -e /bin/sh -c
@@ -10587,13 +10601,13 @@ when @DDD{} exits.
 
 @node TTY mode
 @section Entering Commands at the TTY
-@cindex TTY interface
+@cindex @acronym{TTY} interface
 
 Rather than entering commands at the debugger console, you may prefer to
 enter commands at the terminal window @DDD{} was invoked from.
 
-When @DDD{} is invoked using the @option{--tty} option, it enables
-its @emph{TTY interface}, taking additional debugger commands from
+When @DDD{} is invoked using the @option{--tty} option, it enables its
+@emph{@TTY{} interface}, taking additional debugger commands from
 standard input and forwarding debugger output to standard output, just
 as if the inferior debugger had been invoked directly.  All remaining
 @DDD{} functionality stays unchanged.
@@ -10604,14 +10618,15 @@ Debugger Console} to open it.
 
 
 @cindex Readline
-@DDD{} can be configured to use the @samp{readline} library for reading in
-commands from standard input.  This @GNU{} library provides consistent
-behavior for programs which provide a command line interface to the
-user.  Advantages are @GNU{} Emacs-style or @dfn{vi}-style inline
-editing of commands, @command{csh}-like history substitution, and a storage
-and recall of command history across debugging sessions.  @xref{Command
-Line Editing, Command Line Editing, Command Line Editing, gdb, Debugging
-with @GDB{}}, for details on command-line editing via the TTY interface.
+@DDD{} can be configured to use the @samp{readline} library for reading
+in commands from standard input.  This @GNU{} library provides
+consistent behavior for programs which provide a command line interface
+to the user.  Advantages are @GNU{} Emacs-style or @dfn{vi}-style inline
+editing of commands, @command{csh}-like history substitution, and a
+storage and recall of command history across debugging sessions.
+@xref{Command Line Editing, Command Line Editing, Command Line Editing,
+gdb, Debugging with @GDB{}}, for details on command-line editing via the
+@TTY{} interface.
 
 
 
@@ -10625,17 +10640,17 @@ front-ends, combining their special abilities with those of @DDD{}.
 To have @DDD{} run as an inferior debugger in other front-ends, the
 general idea is to set up your debugger front-end such that
 @samp{@value{ddd} --tty} is invoked instead of the inferior debugger.
-When @DDD{} is invoked using the @option{--tty} option, it enables
-its @emph{TTY interface}, taking additional debugger commands from
+When @DDD{} is invoked using the @option{--tty} option, it enables its
+@emph{@TTY{} interface}, taking additional debugger commands from
 standard input and forwarding debugger output to standard output, just
 as if the inferior debugger had been invoked directly.  All remaining
 @DDD{} functionality stays unchanged.
 
-In case your debugger front-end uses the @GDB{} @option{-fullname} option to
-have @GDB{} report source code positions, the @option{--tty} option is not
-required.  @DDD{} recognizes the @option{-fullname} option, finds
-that it has been invoked from a debugger front-end and automatically
-enables the TTY interface.
+In case your debugger front-end uses the @GDB{} @option{-fullname}
+option to have @GDB{} report source code positions, the @option{--tty}
+option is not required.  @DDD{} recognizes the @option{-fullname}
+option, finds that it has been invoked from a debugger front-end and
+automatically enables the @TTY{} interface.
 
 If @DDD{} is invoked with the @option{-fullname} option, the debugger
 console and the source window are initially disabled, as their
@@ -11926,9 +11941,9 @@ All information sent from the inferior debugger standard output to
 @item
 All information sent from the inferior debugger standard error to
 @DDD{}, shown as @samp{<= @var{text}}.@footnote{Since the inferior
-debugger is invoked through a virtual TTY, standard error is normally
-redirected to standard output, so @DDD{} never receives standard
-error from the inferior debugger.}
+debugger is invoked through a virtual @TTY{}, standard error is
+normally redirected to standard output, so @DDD{} never receives
+standard error from the inferior debugger.}
 
 @item
 All information sent from @DDD{} to Gnuplot,
@@ -12354,8 +12369,5 @@ page} for recent announcements and other news related to @DDD{}.
 @node Concept Index
 @unnumbered Concept Index
 @printindex cp
-
-@summarycontents
-@contents
 
 @bye
