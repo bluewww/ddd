@@ -2,7 +2,7 @@
 // own assert() macros
 // built on libg++-assert.h and making sure top-level abort() is called
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of the ICE Library.
@@ -28,14 +28,19 @@
 // or send a mail to the ICE developers <ice@ips.cs.tu-bs.de>.
 
 // Allow this file to be included multiple times with different
-// settings of NDEBUG
-#if defined(NDEBUG)
+// settings of NDEBUG.
+
+#if NDEBUG
 #undef assert
 #undef _assert_fn
 #define assert(ignore)
 
-#elif HAVE_CONFIG_H
-#include "config.h"
+#else  // !NDEBUG
+
+#if HAVE_CONFIG_H
+#include "config.h"		// HAVE_PRETTY_FUNCTION
+#endif
+
 #include <stdlib.h>		// abort()
 #include <iostream.h>
 
@@ -54,16 +59,4 @@
 	          << ": assertion `" #ex "' failed\n", \
 	          ::abort(), 0))
 
-#else // !defined(NDEBUG) && !HAVE_CONFIG_H
-
-// This is weird.  In our projects, HAVE_CONFIG_H is always defined.
-// Are we running `configure' with `.' in the <...> #include path?
-// Revert to the original <assert.h>.
-
-#if __GNUC__
-#include_next <assert.h>	 // GNU C extension
-#else
-#include </usr/include/assert.h> // Dirty fix
-#endif
-
-#endif // HAVE_CONFIG_H && !defined(NDEBUG)
+#endif // !NDEBUG
