@@ -300,6 +300,13 @@ Volunteers for these and other projects are welcome!
 
 124* Include pictures in the PostScript copy of the DDD manual.
 
-126* `shorten' is needs some improvements (count `(' and `)' occurrences, etc.)
+126. `shorten' is needs some improvements (count `(' and `)'
+     occurrences, etc.)
 
-127. (Insert your project idea here)
+127. Include `jdb' (Java debugger) support.  For details, see
+     `http://www.javasoft.com/products/JDK/tools/solaris/jdb.html'.
+
+128. Have a way to completely remove selected struct members from the
+     view.  Suggested by marjeta@mccabe.com (Marjeta Cedilnik).
+
+129. (Insert your project idea here)

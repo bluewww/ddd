@@ -358,4 +358,9 @@ Volunteers for fixing these and other bugs are welcome!
      not parsed correctly.  Reported by Gerhard Wirrer
      <Gerhard.Wirrer@cern.ch>.
 
-142. (Insert your bug here)
+142. Ignore any warnings occurring in displayed values, as in
+     -> "display\n"
+     <- "2: command [256] = warning: array or string index out of range\n"
+     <- "1 \'\\001\'\n"
+
+143. (Insert your bug here)
