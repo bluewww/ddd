@@ -930,7 +930,7 @@ void PosBuffer::filter_jdb(string& answer)
 	    line = line.before('\n');
 	strip_trailing_space(line);
 
-	// Having reached a breakpoint, JDB uses a format like
+	// Having reached a breakpoint, JDB 1.1 uses a format like
 	// `(HelloWorld:3)'.
 	// Having loaded a class, JDB uses `class(foo.bar.HelloWorld)'.
 
@@ -943,7 +943,7 @@ void PosBuffer::filter_jdb(string& answer)
 	    rxjdbpos("((class|interface)[(][A-Za-z][A-Za-z0-9.]*[)]|"
 		     "[(][A-Za-z][A-Za-z0-9.]*:[1-9][0-9]*[)])");
 #endif
-	if (line.matches(rxjdbpos))
+	if (gdb->has_debug_command() && line.matches(rxjdbpos))
 	{
 	    string file = line.after('(');
 	    file = file.before(')');
