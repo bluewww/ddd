@@ -1335,7 +1335,17 @@ static void openClassDone(Widget w, XtPointer client_data,
 
     XtUnmanageChild(w);
 
-    gdb_command(gdb->debug_command(cls));
+    string cmd = gdb->debug_command(cls);
+    if (cmd != "")
+    {
+	// JDB 1.1 can simply load a class to debug
+	gdb_command(cmd);
+	return;
+    }
+
+    // JDB 1.2 cannot load a class to debug - load the source instead
+    string filename = source_view->full_path(java_class_file(cls));
+    source_view->read_file(filename);
 }
 
 
