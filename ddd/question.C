@@ -38,6 +38,7 @@ const char question_rcsid[] =
 #include "ddd.h"
 #include "AppData.h"
 #include "GDBAgent.h"
+#include "Delay.h"
 
 #include <X11/Intrinsic.h>
 
@@ -70,6 +71,8 @@ string gdb_question(const string& command, int timeout)
 {
     if (gdb_question_running)
 	return NO_GDB_ANSWER;
+
+    Delay delay;
 
     gdb_question_running = true;
 
