@@ -179,27 +179,34 @@ const int DataDisp::shortcut_items = 20;
     {"s20", MMPush | MMUnmanaged, { DataDisp::shortcutCB, XtPointer(20) }}, \
     {"other", MMPush, { DataDisp::dependentCB }}, \
     MMSep, \
-    {"edit",  MMPush, { dddEditShortcutsCB }}, \
-    MMEnd
+    {"edit",  MMPush, { dddEditShortcutsCB }}
 
 // The menu used in the `New Display' button.
 
 
-struct ShortcutItms { enum Itms {Dereference}; };
+struct ShortcutItms { enum Itms {S1, S2, S3, S4, S5,
+				 S6, S7, S8, S9, S10,
+				 S11, S12, S13, S14, S15,
+				 S16, S17, S18, S19, S20,
+				 Other, Sep1, Edit,
+				 Sep2, Dereference2, Delete2 }; };
 
 MMDesc DataDisp::shortcut_menu[]   = 
 {
-    {"deref", MMPush, {DataDisp::dereferenceArgCB}},
-    SHORTCUT_MENU 
+    SHORTCUT_MENU,
+    MMSep,
+    {"dereference2", MMPush, {DataDisp::dereferenceArgCB}},
+    {"delete2", MMPush, {DataDisp::deleteArgCB, XtPointer(True) }},
+    MMEnd
 };
 
 #define shortcut_menu1 (&shortcut_menu[1])
 
 // A stand-alone popup menu.
-MMDesc DataDisp::shortcut_popup1[] = { SHORTCUT_MENU };
+MMDesc DataDisp::shortcut_popup1[] = { SHORTCUT_MENU, MMEnd };
 
 // The sub-menu in the `New Display' item.
-MMDesc DataDisp::shortcut_popup2[] = { SHORTCUT_MENU };
+MMDesc DataDisp::shortcut_popup2[] = { SHORTCUT_MENU, MMEnd };
 
 struct RotateItms { enum Itms {RotateAll}; };
 
@@ -229,7 +236,7 @@ struct CmdItms { enum Itms {New, Dereference, Detail, Rotate, Set, Delete }; };
 
 MMDesc DataDisp::graph_cmd_area[] =
 {
-    {"new",           MMPush,                 {DataDisp::dependentArgCB},
+    {"new",           MMPush,                 {DataDisp::displayArgCB},
                                                DataDisp::shortcut_menu },
     {"dereference",   MMPush | MMInsensitive | MMUnmanaged, {DataDisp::dereferenceArgCB}},
     {"detail",        MMPush | MMInsensitive, {DataDisp::toggleDetailCB,
@@ -1348,8 +1355,8 @@ void DataDisp::dependentCB(Widget w, XtPointer client_data,
     manage_and_raise(dependent_display_dialog);
 }
 
-void DataDisp::dependentArgCB(Widget w, XtPointer client_data, 
-			      XtPointer call_data)
+void DataDisp::displayArgCB(Widget w, XtPointer client_data, 
+			    XtPointer call_data)
 {
     DataDispCount count(disp_graph);
     DispValue *disp_value_arg = selected_value();
@@ -1380,6 +1387,27 @@ void DataDisp::dependentArgCB(Widget w, XtPointer client_data,
 	}
 
 	new_display(arg, 0, depends_on, w);
+    }
+}
+
+
+void DataDisp::deleteArgCB(Widget dialog, XtPointer client_data, 
+			   XtPointer call_data)
+{
+    DataDispCount count(disp_graph);
+    Boolean delete_from_display_part = Boolean(client_data);
+
+    if (count.selected_titles > 0 || 
+	(delete_from_display_part && count.selected > 0))
+    {
+	// Delete selected displays
+	deleteCB(dialog, client_data, call_data);
+	return;
+    }
+    else
+    {
+	// Delete argument
+	delete_display(source_arg->get_string());
     }
 }
 
@@ -1882,8 +1910,9 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
     // Dereference
     set_sensitive(node_popup[NodeItms::Dereference].widget,
 		  dereference_ok);
-    set_sensitive(shortcut_menu[ShortcutItms::Dereference].widget,
-		  dereference_ok || (count.selected == 0 && arg_ok));
+    set_sensitive(shortcut_menu[ShortcutItms::Dereference2].widget,
+		  gdb->recording() || dereference_ok || 
+		  (count.selected == 0 && arg_ok));
     set_sensitive(graph_cmd_area[CmdItms::Dereference].widget,
 		  dereference_ok || (count.selected == 0 && arg_ok));
     set_sensitive(display_area[DisplayItms::Dereference].widget,
@@ -1938,6 +1967,8 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  count.selected_expanded > 0);
 
     // Delete
+    set_sensitive(shortcut_menu[ShortcutItms::Delete2].widget,
+		  gdb->recording() || count.selected_titles > 0);
     set_sensitive(graph_cmd_area[CmdItms::Delete].widget,
 		  count.selected_titles > 0);
     set_sensitive(display_area[DisplayItms::Delete].widget,
@@ -3516,9 +3547,14 @@ void DataDisp::enable_displayOQC (const string& answer, void *data)
 string DataDisp::delete_display_cmd(IntArray& display_nrs)
 {
     if (display_nrs.size() > 0)
-	return "graph undisplay " + numbers(display_nrs);
+	return delete_display_cmd(numbers(display_nrs));
     else
 	return "";
+}
+
+string DataDisp::delete_display_cmd(const string& name)
+{
+    return "graph undisplay " + name;
 }
 
 void DataDisp::delete_displaySQ(IntArray& display_nrs, bool verbose)
@@ -4533,7 +4569,7 @@ void DataDisp::language_changedHP(Agent *source, void *, void *)
 
     string label("Display " + gdb->dereferenced_expr("()"));
 
-    set_label(shortcut_menu[ShortcutItms::Dereference].widget, label);
+    set_label(shortcut_menu[ShortcutItms::Dereference2].widget, label);
     set_label(node_popup[NodeItms::Dereference].widget, label);
     set_label(display_area[DisplayItms::Dereference].widget, label);
     set_label(graph_cmd_area[CmdItms::Dereference].widget, label);

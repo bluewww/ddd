@@ -110,9 +110,10 @@ class DataDisp {
     static void showMoreDetailCB        (Widget, XtPointer, XtPointer);
     static void hideDetailCB            (Widget, XtPointer, XtPointer);
     static void dependentCB             (Widget, XtPointer, XtPointer);
-    static void dependentArgCB          (Widget, XtPointer, XtPointer);
+    static void displayArgCB            (Widget, XtPointer, XtPointer);
     static void setCB                   (Widget, XtPointer, XtPointer);
     static void shortcutCB              (Widget, XtPointer, XtPointer);
+    static void deleteArgCB		(Widget, XtPointer, XtPointer);
 
     //-----------------------------------------------------------------------
     // Popup menu callbacks
@@ -281,6 +282,7 @@ public:
     static string disable_display_cmd(IntArray& display_nrs);
     static string enable_display_cmd(IntArray& display_nrs);
     static string delete_display_cmd(IntArray& display_nrs);
+    static string delete_display_cmd(const string& name);
 
     // Same, but use the GDB_COMMAND interface for enqueing commands
     static void new_display(string display_expression,
@@ -310,6 +312,11 @@ public:
     static void delete_display(IntArray& display_nrs, Widget origin = 0)
     {
 	gdb_command(delete_display_cmd(display_nrs), origin);
+    }
+
+    static void delete_display(const string& name, Widget origin = 0)
+    {
+	gdb_command(delete_display_cmd(name), origin);
     }
 
     // Process 'info display' output in INFO_DISPLAY_ANSWER.  Deletes

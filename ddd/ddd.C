@@ -1255,23 +1255,32 @@ static MMDesc watch_menu[] =
     { "cwatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_CHANGE) } },
     { "rwatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_READ)   } },
     { "awatch",       MMPush, { gdbWatchCB, XtPointer(WATCH_ACCESS) } },
+
+    // It would be nice to have an `unwatch' command here. for
+    // recording commands.  Unfortunately, GDB needs a watchpoint
+    // number for deleting watchpoints.
+#if 0	
+    MMSep,
+    { "unwatch",      MMPush, { gdbUnwatchCB }},
+#endif
     MMEnd
 };
 
 struct BreakItems {
-    enum ArgCmd { TempBreak, Sep1, Properties, Enable, Sep2,
-		  ContUntil, SetPC };
+    enum ArgCmd { TempBreak, Properties, Enable, Sep1,
+		  ContUntil, SetPC, Sep2, ClearAt2 };
 };
 
 static MMDesc break_menu[] = 
 {
     { "tempBreakAt",  MMPush, { gdbTempBreakAtCB }},
-    MMSep,
     { "properties",   MMPush, { gdbEditBreakpointPropertiesCB }},
     { "enable",       MMPush, { gdbToggleEnableCB }},
     MMSep,
     { "contUntil",    MMPush, { gdbContUntilCB }},
     { "setPC",        MMPush, { gdbSetPCCB }},
+    MMSep,
+    { "clearAt2",     MMPush, { gdbClearAtCB }},
     MMEnd
 };
 
@@ -4354,11 +4363,12 @@ void update_arg_buttons()
     }
 
     manage_child(break_menu[BreakItems::TempBreak].widget,   !have_break);
-    manage_child(break_menu[BreakItems::Enable].widget,      have_break);
-    manage_child(break_menu[BreakItems::Sep1].widget,        have_break);
-    manage_child(break_menu[BreakItems::Properties].widget,  have_break);
-    manage_child(break_menu[BreakItems::Sep2].widget,        have_break);
     manage_child(break_menu[BreakItems::ContUntil].widget,   !have_break);
+    manage_child(break_menu[BreakItems::Sep2].widget,        !have_break);
+    manage_child(break_menu[BreakItems::ClearAt2].widget,    !have_break);
+
+    manage_child(break_menu[BreakItems::Properties].widget,  have_break);
+    manage_child(break_menu[BreakItems::Enable].widget,      have_break);
 
     bool break_enabled = have_enabled_breakpoint_at_arg();
     if (break_enabled)
@@ -4368,6 +4378,8 @@ void update_arg_buttons()
 	set_label(break_menu[BreakItems::Enable].widget, 
 		  "Enable Breakpoint at ()");
 
+    set_sensitive(break_menu[BreakItems::ClearAt2].widget,
+		  gdb->recording() || have_breakpoint_at_arg());
     set_sensitive(break_menu[BreakItems::Enable].widget,
 		  gdb->has_disable_command());
     set_sensitive(break_menu[BreakItems::SetPC].widget,
