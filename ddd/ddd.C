@@ -3,7 +3,7 @@
 
 // Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus (luetke@ips.cs.tu-bs.de)
-// and Andreas Zeller (zeller@ips.cs.tu-bs.de).
+// and Andreas Zeller (zeller@ips.cs.tu-bs.de)
 // 
 // This file is part of DDD.
 // 
@@ -15,15 +15,17 @@
 // DDD is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-// See the GNU General Public License for more details.
+// See the GNU Library General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public
 // License along with DDD -- see the file COPYING.
 // If not, write to the Free Software Foundation, Inc.,
 // 675 Mass Ave, Cambridge, MA 02139, USA.
 // 
-// DDD is the GDB-based data display debugger.
-// Contact ddd@ips.cs.tu-bs.de for details.
+// DDD is the data display debugger.
+// For details, see the DDD World-Wide-Web page, 
+// `http://www.cs.tu-bs.de/softech/ddd/',
+// or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
 
 // This file does most of the application work in DDD.  That is:
