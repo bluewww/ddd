@@ -133,9 +133,11 @@ static BoxPoint tool_shell_pos()
 // Move tool shell to POS
 static void move_tool_shell(BoxPoint pos)
 {
+#if 0
     // Make sure we don't move the tool shell off the screen
     pos[X] = max(pos[X], 0);
     pos[Y] = max(pos[Y], 0);
+#endif
 
     if (tool_shell == 0)
 	return;
