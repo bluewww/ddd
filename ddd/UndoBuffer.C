@@ -487,6 +487,9 @@ void UndoBuffer::process_command(const UndoBufferEntry& entry, int direction)
 	gdb_command(c);
     }
 
+    // This is to avoid confusion due to multiple undo/redos
+    syncCommandQueue();
+
     done();
 }
 
