@@ -35,18 +35,21 @@
 
 #include "GraphEdit.h"
 
-// declare specific GraphEdit class and instance datatypes
+// Declare specific GraphEdit class and instance datatypes
 typedef struct _ScrolledGraphEditClassRec *ScrolledGraphEditWidgetClass;
 typedef struct _ScrolledGraphEditRec      *ScrolledGraphEditWidget;
 
-// declare the class constant
+// Declare the class constant
 extern WidgetClass scrolledGraphEditWidgetClass;
 
-// declare special access functions
+// Declare special access functions
 
-// create a graph editor with scrollbars; return the graph editor widget ID
+// Create a graph editor with scrollbars; return the graph editor widget ID
 Widget createScrolledGraphEdit(Widget parent, String name, ArgList arglist,
 			       Cardinal argcount);
+
+// For a given graph editor W, return its scroller
+Widget scrollerOfGraphEdit(Widget w);
 
 #endif // _DDD_ScrolledGraphEdit_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

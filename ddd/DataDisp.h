@@ -319,6 +319,8 @@ private:
     // Unmerge display DISP_NR; return true iff change
     static bool unmerge_display(int disp_nr);
 
+    static Widget graph_form_w;
+
 public:
     static Widget graph_edit;
     static Widget graph_cmd_w;
@@ -334,6 +336,7 @@ public:
 
     int count_data_displays() const;
     static void refresh_graph_edit (bool silent = false);
+    static Widget graph_form() { return graph_form_w; }
 
     // Refresh address of NODE (0: all nodes)
     static void refresh_addr(DispNode *node = 0);

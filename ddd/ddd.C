@@ -522,15 +522,25 @@ static MMDesc program_menu[] =
     MMEnd
 };
 
-enum DDDWindow { ToolWindow, GDBWindow, SourceWindow, DataWindow, ExecWindow };
+enum DDDWindow { ToolWindow, ExecWindow, DummySep,
+		 ToggleDataWindow, DataWindow,
+		 ToggleSourceWindow, SourceWindow,
+		 ToggleGDBWindow, GDBWindow };
 
 #define VIEW_MENU \
 { \
-    { "tool",       MMPush, { gdbOpenToolWindowCB }}, \
-    { "console",    MMPush, { gdbOpenCommandWindowCB }}, \
-    { "source",     MMPush, { gdbOpenSourceWindowCB }}, \
-    { "data",       MMPush, { gdbOpenDataWindowCB }}, \
-    { "exec",       MMPush, { gdbOpenExecWindowCB }}, \
+    { "tool",       MMPush,   { gdbOpenToolWindowCB }}, \
+    { "exec",       MMPush,   { gdbOpenExecWindowCB }}, \
+    MMSep, \
+    { "toggle_data",    MMToggle | MMUnmanaged, \
+	{ gdbToggleDataWindowCB }}, \
+    { "data",           MMPush,   { gdbOpenDataWindowCB }}, \
+    { "toggle_source",  MMToggle | MMUnmanaged, \
+	{ gdbToggleSourceWindowCB }}, \
+    { "source",         MMPush,   { gdbOpenSourceWindowCB }}, \
+    { "toggle_console", MMToggle | MMUnmanaged, \
+	{ gdbToggleCommandWindowCB }}, \
+    { "console",        MMPush,   { gdbOpenCommandWindowCB }}, \
     MMEnd \
 }
 
@@ -932,10 +942,12 @@ static MMDesc help_menu[] =
 // Menu Bar for DDD command window
 static MMDesc command_menubar[] = 
 {
-    { "file",     MMMenu,          { gdbUpdateFileCB }, command_file_menu },
+    { "file",     MMMenu,          { gdbUpdateFileCB, command_file_menu }, 
+                                   command_file_menu },
     { "edit",     MMMenu,          { gdbUpdateEditCB }, command_edit_menu },
     { "options",  MMMenu,          MMNoCB, options_menu },
-    { "view",     MMMenu,          { gdbUpdateViewCB }, command_view_menu },
+    { "view",     MMMenu,          { gdbUpdateViewCB, command_view_menu }, 
+                                   command_view_menu },
     { "program",  MMMenu,          MMNoCB, program_menu },
     { "commands", MMMenu,          MMNoCB, command_menu },
     { "help",     MMMenu | MMHelp, MMNoCB, help_menu },
@@ -945,10 +957,12 @@ static MMDesc command_menubar[] =
 // Menu Bar for DDD source view
 static MMDesc source_menubar[] = 
 {
-    { "file",    MMMenu,           { gdbUpdateFileCB }, source_file_menu },
+    { "file",    MMMenu,           { gdbUpdateFileCB, source_file_menu }, 
+                                   source_file_menu },
     { "edit",    MMMenu,           { gdbUpdateEditCB }, source_edit_menu },
     { "options", MMMenu,           MMNoCB, options_menu },
-    { "view",    MMMenu,           { gdbUpdateViewCB }, source_view_menu },
+    { "view",     MMMenu,          { gdbUpdateViewCB, source_view_menu }, 
+                                   source_view_menu },
     { "program", MMMenu,           MMNoCB, program_menu },
     { "stack",   MMMenu,           MMNoCB, stack_menu },
     { "source",  MMMenu,           MMNoCB, source_menu },
@@ -959,10 +973,12 @@ static MMDesc source_menubar[] =
 // Menu Bar for DDD data window
 static MMDesc data_menubar[] = 
 {
-    { "file",    MMMenu,          { gdbUpdateFileCB }, data_file_menu },
+    { "file",    MMMenu,          { gdbUpdateFileCB, data_file_menu }, 
+                                  data_file_menu },
     { "edit",    MMMenu,          { gdbUpdateEditCB }, data_edit_menu },
     { "options", MMMenu,          MMNoCB, options_menu },
-    { "view",    MMMenu,          { gdbUpdateViewCB }, data_view_menu },
+    { "view",     MMMenu,         { gdbUpdateViewCB, data_view_menu }, 
+                                  data_view_menu },
     { "program", MMMenu,          MMNoCB, program_menu },
     { "data",    MMMenu,          MMNoCB, data_menu },
     { "help",    MMMenu | MMHelp, MMNoCB, help_menu },
@@ -972,10 +988,12 @@ static MMDesc data_menubar[] =
 // Menu Bar for combined DDD data/command window
 static MMDesc combined_menubar[] = 
 {
-    { "file",       MMMenu,       { gdbUpdateFileCB }, command_file_menu },
+    { "file",       MMMenu,       { gdbUpdateFileCB, command_file_menu }, 
+                                  command_file_menu },
     { "edit",       MMMenu,       { gdbUpdateEditCB }, command_edit_menu },
     { "options",    MMMenu,       MMNoCB, options_menu },
-    { "view",       MMMenu,       { gdbUpdateViewCB }, command_view_menu },
+    { "view",       MMMenu,       { gdbUpdateViewCB, command_view_menu }, 
+                                  command_view_menu },
     { "program",    MMMenu,       MMNoCB, program_menu },
     { "commands",   MMMenu,       MMNoCB, command_menu },
     { "stack",      MMMenu,       MMNoCB, stack_menu },
@@ -1435,8 +1453,8 @@ int main(int argc, char *argv[])
     }
     Atom WM_DELETE_WINDOW =
 	XmInternAtom(XtDisplay(toplevel), "WM_DELETE_WINDOW", False);
-    XmAddWMProtocolCallback(command_shell,
-			    WM_DELETE_WINDOW, gdbCloseCommandWindowCB, 0);
+    XmAddWMProtocolCallback(command_shell, WM_DELETE_WINDOW, DDDCloseCB, 0);
+
 #ifdef HAVE_X11_XMU_EDITRES_H
     XtAddEventHandler(command_shell, EventMask(0), true,
 		      XtEventHandler(_XEditResCheckMessages), NULL);
@@ -1488,8 +1506,8 @@ int main(int argc, char *argv[])
 	    verify(XtCreatePopupShell("data_disp_shell",
 				      topLevelShellWidgetClass,
 				      toplevel, args, arg));
-	XmAddWMProtocolCallback(data_disp_shell,
-				WM_DELETE_WINDOW, gdbCloseDataWindowCB, 0);
+	XmAddWMProtocolCallback(data_disp_shell, WM_DELETE_WINDOW, 
+				DDDCloseCB, 0);
 #ifdef HAVE_X11_XMU_EDITRES_H
 	XtAddEventHandler(data_disp_shell, EventMask(0), true,
 			  XtEventHandler(_XEditResCheckMessages), NULL);
@@ -1550,8 +1568,8 @@ int main(int argc, char *argv[])
 	    verify(XtCreatePopupShell("source_view_shell",
 				      topLevelShellWidgetClass,
 				      toplevel, args, arg));
-	XmAddWMProtocolCallback(source_view_shell,
-				WM_DELETE_WINDOW, gdbCloseSourceWindowCB, 0);
+	XmAddWMProtocolCallback(source_view_shell, WM_DELETE_WINDOW, 
+				DDDCloseCB, 0);
 #ifdef HAVE_X11_XMU_EDITRES_H
 	XtAddEventHandler(source_view_shell, EventMask(0), true,
 			  XtEventHandler(_XEditResCheckMessages), NULL);
@@ -1670,20 +1688,6 @@ int main(int argc, char *argv[])
     // Status line
     if (app_data.status_at_bottom && !app_data.separate_source_window)
 	create_status(source_view_parent);
-
-    // Set up `Windows' menus
-    if (!app_data.separate_source_window)
-    {
-	set_sensitive(command_view_menu[SourceWindow].widget, false);
-	set_sensitive(source_view_menu[SourceWindow].widget, false);
-	set_sensitive(data_view_menu[SourceWindow].widget, false);
-    }
-    if (!app_data.separate_data_window)
-    {
-	set_sensitive(command_view_menu[DataWindow].widget, false);
-	set_sensitive(source_view_menu[DataWindow].widget, false);
-	set_sensitive(data_view_menu[DataWindow].widget, false);
-    }
 
     // Paned Window is done
     XtManageChild (paned_work_w);
@@ -1891,7 +1895,13 @@ int main(int argc, char *argv[])
     }
     else
     {
-	// TTY mode: all shells follow as needed
+	// TTY mode: all shells follow as needed.
+    }
+
+    if (app_data.tty_mode)
+    {
+	// TTY mode: no need for a debugger console
+	gdbCloseCommandWindowCB(gdb_w, 0, 0);
     }
 
     // If some window is iconified, iconify all others as well
@@ -1952,7 +1962,7 @@ int main(int argc, char *argv[])
 	{
 	    // The command tool is not needed, as we have a tool bar.
 	}
-	else if (source_view_shell || iconic || app_data.tty_mode)
+	else if (source_view_shell || iconic)
 	{
 	    // We don't need the command tool right now - 
 	    // wait for source window to map
@@ -3425,10 +3435,6 @@ void gdbCutSelectionCB(Widget, XtPointer client_data, XtPointer call_data)
     DDDWindow win = DDDWindow(client_data);
     switch (win)
     {
-    case ToolWindow:
-	// Cannot cut from command tool
-	break;
-
     case GDBWindow:
 	XmTextCut(gdb_w, tm);
 	break;
@@ -3437,11 +3443,9 @@ void gdbCutSelectionCB(Widget, XtPointer client_data, XtPointer call_data)
 	XmTextFieldCut(source_arg->widget(), tm);
 	break;
 
-    case DataWindow:
+    default:
+	// Cannot cut from command tool
 	// Cannot cut from data window
-	break;
-
-    case ExecWindow:
 	// Cannot cut from exec window
 	break;
     }
@@ -3455,10 +3459,6 @@ void gdbCopySelectionCB(Widget, XtPointer client_data, XtPointer call_data)
     DDDWindow win = DDDWindow(client_data);
     switch (win)
     {
-    case ToolWindow:
-	// Cannot copy from command tool
-	break;
-
     case GDBWindow:
 	XmTextCopy(gdb_w, tm);
 	break;
@@ -3471,7 +3471,8 @@ void gdbCopySelectionCB(Widget, XtPointer client_data, XtPointer call_data)
 	XmTextFieldCopy(DataDisp::graph_arg->widget(), tm);
 	break;
 
-    case ExecWindow:
+    default:
+	// Cannot copy from command tool
 	// Cannot copy from exec window
 	break;
     }
@@ -3494,11 +3495,8 @@ void gdbPasteClipboardCB(Widget, XtPointer client_data, XtPointer)
 	XmTextFieldPaste(source_arg->widget());
 	break;
 
-    case DataWindow:
+    default:
 	// Cannot paste into data window
-	break;
-
-    case ExecWindow:
 	// Cannot paste into exec window
 	break;
     }
@@ -3509,10 +3507,6 @@ void gdbClearSelectionCB(Widget, XtPointer client_data, XtPointer)
     DDDWindow win = DDDWindow(client_data);
     switch (win)
     {
-    case ToolWindow:
-	// Cannot clear command tool
-	break;
-
     case GDBWindow:
 	XmTextReplace(gdb_w, promptPosition, 
 		      XmTextGetLastPosition(gdb_w), "");
@@ -3526,7 +3520,8 @@ void gdbClearSelectionCB(Widget, XtPointer client_data, XtPointer)
 	DataDisp::graph_arg->set_string("");
 	break;
 
-    case ExecWindow:
+    default:
+	// Cannot clear command tool
 	// Cannot clear exec window
 	break;
     }
@@ -3537,10 +3532,6 @@ void gdbDeleteSelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
     DDDWindow win = DDDWindow(client_data);
     switch (win)
     {
-    case ToolWindow:
-	// Cannot delete from command tool
-	break;
-
     case GDBWindow:
 	XmTextRemove(gdb_w);
 	break;
@@ -3553,7 +3544,8 @@ void gdbDeleteSelectionCB(Widget w, XtPointer client_data, XtPointer call_data)
 	DataDisp::deleteCB(w, client_data, call_data);
 	break;
 
-    case ExecWindow:
+    default:
+	// Cannot delete from command tool
 	// Cannot delete from exec window
 	break;
     }
@@ -3603,46 +3595,57 @@ void gdbUpdateEditCB(Widget, XtPointer, XtPointer)
     set_sensitive(data_edit_menu[EditItems::Paste].widget,    false);
 }
 
-void gdbUpdateFileCB(Widget, XtPointer, XtPointer)
+void gdbUpdateFileCB(Widget, XtPointer client_data, XtPointer)
 {
+    MMDesc *file_menu = (MMDesc *)client_data;
+
     // Check whether we can print something
     Graph *graph = graphEditGetGraph(data_disp->graph_edit);
     Boolean can_print = (graph->firstNode() != 0);
-    set_sensitive(command_file_menu[FileItems::Print].widget,      can_print);
-    set_sensitive(source_file_menu[FileItems::Print].widget,       can_print);
-    set_sensitive(data_file_menu[FileItems::Print].widget,         can_print);
-    set_sensitive(command_file_menu[FileItems::PrintAgain].widget, can_print);
-    set_sensitive(source_file_menu[FileItems::PrintAgain].widget,  can_print);
-    set_sensitive(data_file_menu[FileItems::PrintAgain].widget,    can_print);
+    set_sensitive(file_menu[FileItems::Print].widget,      can_print);
+    set_sensitive(file_menu[FileItems::PrintAgain].widget, can_print);
 
     // Check whether we can close something
     Boolean can_close = (running_shells() > 1);
-    set_sensitive(command_file_menu[FileItems::Close].widget, can_close);
-    set_sensitive(source_file_menu[FileItems::Close].widget,  can_close);
-    set_sensitive(data_file_menu[FileItems::Close].widget,    can_close);
+    set_sensitive(file_menu[FileItems::Close].widget, can_close);
 
+#if 0
     // If we have only one window, remove the `Close' item
     Boolean one_window = 
 	!app_data.separate_source_window && !app_data.separate_data_window;
-    manage_child(command_file_menu[FileItems::Close].widget, !one_window);
-    manage_child(source_file_menu[FileItems::Close].widget,  !one_window);
-    manage_child(data_file_menu[FileItems::Close].widget,    !one_window);
+    manage_child(file_menu[FileItems::Close].widget, !one_window);
+#endif
 }
 
-void gdbUpdateViewCB(Widget, XtPointer, XtPointer)
+void gdbUpdateViewCB(Widget, XtPointer client_data, XtPointer)
 {
-    // Check whether the execution tty is running
-    exec_tty_running();
-    Boolean b = (exec_tty_pid() > 0);
-    set_sensitive(command_view_menu[ExecWindow].widget, b);
-    set_sensitive(source_view_menu[ExecWindow].widget,  b);
-    set_sensitive(data_view_menu[ExecWindow].widget,    b);
+    MMDesc *view_menu = (MMDesc *)client_data;
 
-    // Check whether we have a command tool
-    b = (tool_shell != 0);
-    set_sensitive(command_view_menu[ToolWindow].widget, b);
-    set_sensitive(source_view_menu[ToolWindow].widget,  b);
-    set_sensitive(data_view_menu[ToolWindow].widget,    b);
+    set_toggle(view_menu[ToggleDataWindow].widget,   
+	       have_visible_data_window());
+    set_toggle(view_menu[ToggleSourceWindow].widget,
+	       have_visible_source_window());
+    set_toggle(view_menu[ToggleGDBWindow].widget,
+	       have_visible_command_window());
+
+    set_sensitive(view_menu[ExecWindow].widget, app_data.separate_exec_window);
+
+    manage_child(view_menu[DataWindow].widget,
+		 app_data.separate_data_window);
+    manage_child(view_menu[ToggleDataWindow].widget, 
+		 !app_data.separate_data_window);
+
+    manage_child(view_menu[SourceWindow].widget,
+		 app_data.separate_source_window);
+    manage_child(view_menu[ToggleSourceWindow].widget, 
+		 !app_data.separate_source_window);
+
+    manage_child(view_menu[GDBWindow].widget,
+		 app_data.separate_data_window 
+		 && app_data.separate_source_window);
+    manage_child(view_menu[ToggleGDBWindow].widget, 
+		 !(app_data.separate_data_window
+		   && app_data.separate_source_window));
 }
 
 

@@ -334,7 +334,21 @@ static void PannerCB(Widget /* panner */,
     XtSetValues(graph_edit, args, arg);
 }
 
+// For a given graph editor W, return its panner
+Widget pannerOfGraphEdit(Widget w)
+{
+    XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
 
+    Widget parent = w;
+
+    while (parent != 0)
+    {
+	if (XtIsSubclass(parent, formWidgetClass))
+	    break;
+	parent = XtParent(parent);
+    }
+    return parent;
+}
 
 #else // No Athena 
 
@@ -355,6 +369,12 @@ Widget createPannedGraphEdit(Widget parent, String name,
 
     return createScrolledGraphEdit(parent, name,
 				   graph_edit_args, graph_edit_arg);
+}
+
+// For a given graph editor W, return its panner
+Widget pannerOfGraphEdit(Widget w)
+{
+    return scrollerOfGraphEdit(w);
 }
 
 #endif

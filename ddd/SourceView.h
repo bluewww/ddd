@@ -488,6 +488,10 @@ public:
     static Widget source() { return source_text_w; }
     static Widget code()   { return code_text_w; }
 
+    // Return source and machine code forms (read-only)
+    static Widget source_form() { return source_form_w; }
+    static Widget code_form()   { return code_form_w; }
+
     // Clear caches
     static void clear_file_cache();
     static void clear_code_cache();

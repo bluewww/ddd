@@ -62,6 +62,24 @@ extern void gdbCloseDataWindowCB    (Widget, XtPointer, XtPointer);
 extern void gdbCloseExecWindowCB    (Widget, XtPointer, XtPointer);
 extern void gdbCloseToolWindowCB    (Widget, XtPointer, XtPointer);
 
+extern void gdbToggleCommandWindowCB(Widget, XtPointer, XtPointer);
+extern void gdbToggleSourceWindowCB (Widget, XtPointer, XtPointer);
+extern void gdbToggleDataWindowCB   (Widget, XtPointer, XtPointer);
+extern void gdbToggleExecWindowCB   (Widget, XtPointer, XtPointer);
+extern void gdbToggleToolWindowCB   (Widget, XtPointer, XtPointer);
+
+extern bool have_command_window();
+extern bool have_source_window();
+extern bool have_data_window();
+extern bool have_exec_window();
+extern bool have_tool_window();
+
+extern bool have_visible_command_window();
+extern bool have_visible_source_window();
+extern bool have_visible_data_window();
+extern bool have_visible_exec_window();
+extern bool have_visible_tool_window();
+
 extern void DDDCloseCB              (Widget, XtPointer, XtPointer);
 
 // Register this event handler with all shells

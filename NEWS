@@ -34,7 +34,9 @@ DDD 2.1 [in beta test; scheduled for May, 1997]
     - The register window can display floating-point registers.
     - Thread support.  You can inquire existing threads and switch
       among them.  (requires GDB and operating system thread support)
-    - By default, DDD now comes in one single window.
+    - In `one single window' mode (now default), you can disable
+      specific window parts (e.g. data displays, debugger console,
+      etc.) through the `Windows' menu.
     - The `Preferences' panel has been extended and reworked:
       + Button tips and value tips can be enabled and disabled.
       + Tab width and graph grid size can now be changed at run time.
@@ -125,6 +127,8 @@ DDD 2.1 [in beta test; scheduled for May, 1997]
       managers can save and restore DDD state.
     - The data window now uses a command queue for operations on data
       displays.  No more `The debugger is busy' messages.
+    - Improved handling of template-generated class names and
+      optimized-out structs.
     - And again, dozens of minor bug fixes and improvements.
 
     Release policy:

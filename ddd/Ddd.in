@@ -1594,36 +1594,52 @@ Ddd*menubar.view.helpString:	\
 \
 @rm This is the @sl Windows Menu.@rm\n\
 \n\
-@tt \267 @bf Command Tool... @rm - show the command tool.\n\
-@tt \267 @bf Debugger Console... @rm - show the @GDB@ console.\n\
-@tt \267 @bf Program Source... @rm - show the program source.\n\
-@tt \267 @bf Program Data... @rm - show the program data.\n\
-@tt \267 @bf Program Execution... @rm - show input/output of the program.
+@tt \267 @bf Command Tool... @rm - raise and recenter the command tool.\n\
+@tt \267 @bf Execution Window... @rm - raise the execution window.\n\
+\n\
+@tt \267 @bf Data Window @rm - toggle display of program data.\n\
+@tt \267 @bf Source Window @rm - toggle display of program source.\n\
+@tt \267 @bf @GDB@ Console @rm - toggle display of @GDB@ console.
 
 Ddd*viewMenu.tool.labelString:			Command Tool...
 Ddd*viewMenu.tool.mnemonic:			T
 Ddd*viewMenu.tool.documentationString: \
-@rm Show and recenter the command tool
+@rm Open and recenter the command tool
 
-Ddd*viewMenu.console.labelString:		Debugger Console...
-Ddd*viewMenu.console.mnemonic:			C
-Ddd*viewMenu.console.documentationString: \
-@rm Show the @GDB@ console and attached windows
-
-Ddd*viewMenu.source.labelString:		Program Source...
-Ddd*viewMenu.source.mnemonic:			S
-Ddd*viewMenu.source.documentationString: \
-@rm Show the source window
-
-Ddd*viewMenu.data.labelString:			Program Data...
-Ddd*viewMenu.data.mnemonic:			D
-Ddd*viewMenu.data.documentationString: \
-@rm Show the data window
-
-Ddd*viewMenu.exec.labelString:			Program Execution...
+Ddd*viewMenu.exec.labelString:			Execution Window...
 Ddd*viewMenu.exec.mnemonic:			E
 Ddd*viewMenu.exec.documentationString: \
-@rm Show the program execution window
+@rm Open the program execution window
+
+Ddd*viewMenu.toggle_data.labelString:		Data Window
+Ddd*viewMenu.toggle_data.mnemonic:		D
+Ddd*viewMenu.toggle_data.documentationString: \
+@rm Open/Close the data window
+
+Ddd*viewMenu.data.labelString:			Data Window...
+Ddd*viewMenu.data.mnemonic:			D
+Ddd*viewMenu.data.documentationString: \
+@rm Open the data window
+
+Ddd*viewMenu.toggle_source.labelString:		Source Window
+Ddd*viewMenu.toggle_source.mnemonic:		S
+Ddd*viewMenu.toggle_source.documentationString: \
+@rm Open/Close the source window
+
+Ddd*viewMenu.source.labelString:		Source Window...
+Ddd*viewMenu.source.mnemonic:			S
+Ddd*viewMenu.source.documentationString: \
+@rm Open the source window
+
+Ddd*viewMenu.toggle_console.labelString:	@GDB@ Console
+Ddd*viewMenu.toggle_console.mnemonic:		C
+Ddd*viewMenu.toggle_console.documentationString: \
+@rm Open/Close the @GDB@ console
+
+Ddd*viewMenu.console.labelString:		@GDB@ Console...
+Ddd*viewMenu.console.mnemonic:			C
+Ddd*viewMenu.console.documentationString: \
+@rm Open the @GDB@ console
 
 
 ! Program menu

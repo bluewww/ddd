@@ -40,6 +40,7 @@ char ScrolledGraphEdit_rcsid[] =
 
 #define EVERYWHERE (BoxRegion(BoxPoint(0,0), BoxSize(INT_MAX, INT_MAX)))
 
+#if USE_OWN_SCROLLED_WINDOW
 
 // Method function declarations
 
@@ -119,7 +120,6 @@ ScrolledGraphEditClassRec scrolledGraphEditClassRec = {
 WidgetClass scrolledGraphEditWidgetClass = 
     (WidgetClass)&scrolledGraphEditClassRec;
 
-
 static void Resize(Widget w)
 {
     // resize child if it's a graphEdit child
@@ -131,6 +131,18 @@ static void Resize(Widget w)
     scrolledGraphEditClassRec.core_class.superclass->core_class.resize(w);
 }
 
+#else // !USE_OWN_SCROLLED_WINDOW
+
+// In Motif 2.0 or later, the definition above crashes.
+// Use a standard scrolled window instead.
+
+// Siddharth Ram <srram@qualcomm.com> says this is also the case
+// for Motif 1.2 => use this definition all the time.
+
+WidgetClass scrolledGraphEditWidgetClass = 
+    (WidgetClass)&xmScrolledWindowClassRec;
+
+#endif
 
 Widget createScrolledGraphEdit(Widget parent, String name,
 			       ArgList arglist, Cardinal argcount)
@@ -141,23 +153,26 @@ Widget createScrolledGraphEdit(Widget parent, String name,
     XtSetArg(args[arg], XmNscrollingPolicy, XmAUTOMATIC); arg++;
     string swindow_name = string(name) + "_swindow";
 
-#if 1
-    // In Motif 2.0 or later, the definition above crashes.
-    // Use a standard scrolled window instead.
-
-    // Siddharth Ram <srram@qualcomm.com> says this is also the case
-    // for Motif 1.2 => use this definition all the time.
-    Widget scrolledWindow = 
-	verify(XtCreateManagedWidget((char *)swindow_name, 
-				     xmScrolledWindowWidgetClass,
-				     parent, args, arg));
-#else
     Widget scrolledWindow = 
 	verify(XtCreateManagedWidget((char *)swindow_name, 
 				     scrolledGraphEditWidgetClass,
 				     parent, args, arg));
-#endif
 
     return verify(XtCreateManagedWidget(name, graphEditWidgetClass,
 					scrolledWindow, arglist, argcount));
+}
+
+// For a given graph editor W, return its scroller
+Widget scrollerOfGraphEdit(Widget w)
+{
+    XtCheckSubclass(w, GraphEditWidgetClass, "Bad widget class");
+
+    Widget parent = w;
+    while (parent != 0)
+    {
+	if (XtIsSubclass(parent, scrolledGraphEditWidgetClass))
+	    break;
+	parent = XtParent(parent);
+    }
+    return parent;
 }

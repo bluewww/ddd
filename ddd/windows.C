@@ -42,6 +42,7 @@ char windows_rcsid[] =
 #include "AppData.h"
 #include "exit.h"
 #include "ddd.h"
+#include "DataDisp.h"
 #include "SourceView.h"
 #include "findParent.h"
 
@@ -366,13 +367,9 @@ int running_shells()
     if (data_disp_shell_state != PoppedDown)
 	shells++;
 
-#if 0
-    if (tty_running())
-	shells++;
-#endif
-
     return shells;
 }
+
 
 // Generic close callback
 void DDDCloseCB(Widget w, XtPointer, XtPointer)
@@ -387,70 +384,123 @@ void DDDCloseCB(Widget w, XtPointer, XtPointer)
     popdown_shell(shell);
 }
 
-// Specific close callbacks
+
+
+// Specific close and open callbacks
+
+// Debugger console
 void gdbCloseCommandWindowCB(Widget w, XtPointer, XtPointer)
 {
-    if (running_shells() == 1)
+    if (!have_data_window() && !have_source_window())
     {
 	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
 	return;
     }
-    popdown_shell(command_shell);
-}
 
-void gdbCloseSourceWindowCB(Widget w, XtPointer, XtPointer)
-{
-    if (running_shells() == 1)
+    XtUnmanageChild(XtParent(gdb_w));
+
+    if ((app_data.separate_source_window || !have_source_window())
+	&& (app_data.separate_data_window || !have_data_window()))
     {
-	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
-	return;
+	popdown_shell(command_shell);
     }
-    popdown_shell(source_view_shell);
 }
-
-void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
-{
-    if (running_shells() == 1)
-    {
-	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
-	return;
-    }
-    popdown_shell(data_disp_shell);
-}
-
-void gdbCloseExecWindowCB(Widget w, XtPointer, XtPointer)
-{
-    if (running_shells() == 1)
-    {
-	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
-	return;
-    }
-    kill_exec_tty();
-}
-
-void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
-{
-    popdown_shell(tool_shell);
-}
-
-
-//-----------------------------------------------------------------------------
-// Opening shells
-//-----------------------------------------------------------------------------
 
 void gdbOpenCommandWindowCB(Widget, XtPointer, XtPointer)
 {
-    popup_shell(command_shell);
+    XtManageChild(XtParent(gdb_w));
+
+    if (app_data.separate_source_window)
+	popup_shell(command_shell);
+}
+
+bool have_command_window()
+{
+    return XtIsManaged(XtParent(gdb_w));
+}
+
+bool have_visible_command_window()
+{
+    return have_command_window() && command_shell_state == PoppedUp;
+}
+
+
+// Source window
+void gdbCloseSourceWindowCB(Widget w, XtPointer, XtPointer)
+{
+    if (!have_command_window() && !have_data_window())
+    {
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
+	return;
+    }
+
+    // Unmanage source
+    XtUnmanageChild(source_view->source_form());
+    XtUnmanageChild(source_view->code_form());
+
+    popdown_shell(source_view_shell);
 }
 
 void gdbOpenSourceWindowCB(Widget, XtPointer, XtPointer)
 {
+    XtManageChild(source_view->source_form());
+    if (app_data.disassemble)
+	XtManageChild(source_view->code_form());
+
     popup_shell(source_view_shell);
+}
+
+bool have_source_window()
+{
+    return XtIsManaged(source_view->source_form());
+}
+
+bool have_visible_source_window()
+{
+    return have_source_window()
+	&& (source_view_shell == 0 || source_view_shell_state == PoppedUp);
+}
+
+
+// Data window
+void gdbCloseDataWindowCB(Widget w, XtPointer, XtPointer)
+{
+    if (!have_source_window() && !have_command_window())
+    {
+	DDDExitCB(w, XtPointer(EXIT_SUCCESS), 0);
+	return;
+    }
+
+    XtUnmanageChild(data_disp->graph_cmd_w);
+    XtUnmanageChild(data_disp->graph_form());
+
+    popdown_shell(data_disp_shell);
 }
 
 void gdbOpenDataWindowCB(Widget, XtPointer, XtPointer)
 {
+    XtManageChild(data_disp->graph_cmd_w);
+    XtManageChild(data_disp->graph_form());
+
     popup_shell(data_disp_shell);
+}
+
+bool have_data_window()
+{
+    return XtIsManaged(data_disp->graph_form());
+}
+
+bool have_visible_data_window()
+{
+    return have_data_window()
+	&& (data_disp_shell == 0 || data_disp_shell_state == PoppedUp);
+}
+
+
+// Execution window
+void gdbCloseExecWindowCB(Widget, XtPointer, XtPointer)
+{
+    kill_exec_tty();
 }
 
 void gdbOpenExecWindowCB(Widget, XtPointer, XtPointer)
@@ -460,11 +510,105 @@ void gdbOpenExecWindowCB(Widget, XtPointer, XtPointer)
     popup_tty(command_shell);
 }
 
+bool have_exec_window()
+{
+    exec_tty_running();
+    return exec_tty_pid() > 0;
+}
+
+bool have_visible_exec_window()
+{
+    // We cannot determine easily whether the exec window is visible
+    return have_exec_window();
+}
+
+
+// Tool window
+void gdbCloseToolWindowCB(Widget, XtPointer, XtPointer)
+{
+    popdown_shell(tool_shell);
+}
+
 void gdbOpenToolWindowCB(Widget, XtPointer, XtPointer)
 {
     popup_shell(tool_shell);
     wait_until_mapped(tool_shell);
     recenter_tool_shell(source_view->source());
+}
+
+bool have_tool_window()
+{
+    return tool_shell != 0;
+}
+
+bool have_visible_tool_window()
+{
+    return have_tool_window() && tool_shell_state == PoppedUp;
+}
+
+
+//-----------------------------------------------------------------------------
+// Toggling shells
+//-----------------------------------------------------------------------------
+
+void gdbToggleCommandWindowCB(Widget w, XtPointer client_data,
+			      XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (info->set)
+	gdbOpenCommandWindowCB(w, client_data, call_data);
+    else
+	gdbCloseCommandWindowCB(w, client_data, call_data);
+}
+
+void gdbToggleSourceWindowCB(Widget w, XtPointer client_data,
+			      XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (info->set)
+	gdbOpenSourceWindowCB(w, client_data, call_data);
+    else
+	gdbCloseSourceWindowCB(w, client_data, call_data);
+}
+
+void gdbToggleDataWindowCB(Widget w, XtPointer client_data,
+			      XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (info->set)
+	gdbOpenDataWindowCB(w, client_data, call_data);
+    else
+	gdbCloseDataWindowCB(w, client_data, call_data);
+}
+
+void gdbToggleExecWindowCB(Widget w, XtPointer client_data,
+			      XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (info->set)
+	gdbOpenExecWindowCB(w, client_data, call_data);
+    else
+	gdbCloseExecWindowCB(w, client_data, call_data);
+}
+
+void gdbToggleToolWindowCB(Widget w, XtPointer client_data,
+			      XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (info->set)
+	gdbOpenToolWindowCB(w, client_data, call_data);
+    else
+	gdbCloseToolWindowCB(w, client_data, call_data);
 }
 
 

@@ -182,6 +182,7 @@ MMDesc DataDisp::display_area[] =
 
 DispGraph *DataDisp::disp_graph             = 0;
 Widget     DataDisp::graph_edit             = 0;
+Widget     DataDisp::graph_form_w           = 0;
 Widget     DataDisp::last_origin            = 0;
 ArgField  *DataDisp::graph_arg              = 0;
 Widget     DataDisp::graph_cmd_w            = 0;
@@ -3488,9 +3489,15 @@ DataDisp::DataDisp (XtAppContext app_context,
     XtSetArg (args[arg], XtNgraph, (Graph *)disp_graph); arg++;
 
     if (panned)
+    {
 	graph_edit = createPannedGraphEdit(parent, "graph_edit", args, arg);
+	graph_form_w = pannerOfGraphEdit(graph_edit);
+    }
     else
+    {
 	graph_edit = createScrolledGraphEdit(parent, "graph_edit", args, arg);
+	graph_form_w = scrollerOfGraphEdit(graph_edit);
+    }
 
     set_last_origin(graph_edit);
 
