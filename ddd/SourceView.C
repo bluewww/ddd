@@ -487,6 +487,7 @@ void SourceView::line_popup_set_tempCB (Widget w,
 					XtPointer)
 {
     int line_nr = *((int *)client_data);
+
     switch (gdb->type())
     {
     case GDB:
@@ -495,17 +496,18 @@ void SourceView::line_popup_set_tempCB (Widget w,
 	break;
 
     case DBX:
-	gdb_command("file " + current_source_name(), w);
-	gdb_command("stop at " + itostring(line_nr), w);
-
-	// Make sure we get the number of the temporary breakpoint
-	syncCommandQueue();
 	{
+	    gdb_command("file " + current_source_name(), w);
+	    gdb_command("stop at " + itostring(line_nr), w);
+
+	    // Make sure we get the number of the temporary breakpoint
+	    syncCommandQueue();
+
 	    string line = itostring(line_nr);
-	    gdb_command("when at " + line + " " 
-			+ command_list(clear_command(line)), w);
+	    string clear_cmd = clear_command(line, true);
+	    gdb_command("when at " + line + " " + command_list(clear_cmd), w);
 	}
-	break;
+        break;
 
     case XDB:
 	gdb_command("b " + current_source_name() + ":" + itostring(line_nr)
@@ -526,12 +528,14 @@ void SourceView::address_popup_set_tempCB (Widget w,
 	break;
 
     case DBX:
-	gdb_command("stopi at " + address, w);
+	{
+	    gdb_command("stopi at " + address, w);
 
-	// Make sure we get the number of the temporary breakpoint
-	syncCommandQueue();
-	gdb_command("when $pc == " + address + " "
-		    + command_list(clear_command(address)), w);
+	    // Make sure we get the number of the temporary breakpoint
+	    syncCommandQueue();
+	    gdb_command("when $pc == " + address + " "
+			+ command_list(clear_command(address, true)), w);
+	}
 	break;
 
     case XDB:
@@ -5357,8 +5361,14 @@ void SourceView::set_all_registers(bool set)
     }
 }
 
-// Some DBXes lack a `clear' command.  Use `delete' instead.
-string SourceView::clear_command(string pos)
+
+// Return `clear ARG' command.
+
+// If CLEAR_NEXT is set, attempt to guess the next event number and
+// clear this one as well.  This is useful for setting temporary
+// breakpoints, as `delete' must also clear the event handler we're
+// about to install.
+string SourceView::clear_command(string pos, bool clear_next)
 {
     if (gdb->has_clear_command())
 	return "clear " + pos;
@@ -5374,6 +5384,7 @@ string SourceView::clear_command(string pos)
 
     int line_no = atoi(line);
 
+    int max_bp_nr = -1;
     string bps = "";
     MapRef ref;
     for (BreakPoint* bp = bp_map.first(ref);
@@ -5387,11 +5398,15 @@ string SourceView::clear_command(string pos)
 		if (bps != "")
 		    bps += " ";
 		bps += itostring(bp->number());
+		max_bp_nr = max(max_bp_nr, bp->number());
 	    }
     }
 
     if (bps == "")
 	return "";
+
+    if (clear_next && max_bp_nr >= 0)
+	bps += " " + itostring(max_bp_nr + 1);
 
     string cmd;
     switch (gdb->type())

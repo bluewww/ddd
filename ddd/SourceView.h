@@ -455,8 +455,9 @@ public:
     // Maximum length of expr in source popup
     static int max_popup_expr_length;
 
-    // Return `clear ARG' command
-    static string clear_command(string arg);
+    // Return `clear ARG' command.  If CLEAR_NEXT is set, attempt to
+    // guess the next event number and clear this one as well.
+    static string clear_command(string arg, bool clear_next = false);
 
     // Return `{ COMMAND; }'
     static string command_list(string cmd);
