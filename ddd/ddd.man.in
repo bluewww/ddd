@@ -3171,8 +3171,8 @@ To specify `\fBnetscape-4.0\fR' as browser, use the setting:
   || netscape\-4.0 '@URL@'\fR
 .br
 .sp
-This command first tries to connect to a running \fBnetscape-3.0\fR browser;
-if this fails, it starts a new \fBnetscape-3.0\fR process.
+This command first tries to connect to a running \fBnetscape-4.0\fR browser;
+if this fails, it starts a new \fBnetscape-4.0\fR process.
 .RE
 .TP
 .B "wwwPage (\fPclass\fB WWWPage)"
