@@ -183,6 +183,10 @@ Reported by:  (various)
     `xmPrimitiveClassRec' with `XmPrimitiveWidgetClass' in
     `GraphEdit.C'.
 
+    Roy Dragseth <royd@math.uit.no> says that you must link against
+    the X11R6 version of Xmu, the X11R4 version gave an error on
+    _XEditResCheckMessages being undefined at the link stage.
+
     Ivar Ruyter <ivarr@troll.hz.kfa-juelich.de> states: Build
     everything statically and add `-l:libdld.sl' to the LIBS line in
     the Makefile, voila you have a nice new Christmas Present.
@@ -282,6 +286,11 @@ Reported by:  Andreas Zeller <zeller@acm.org>
 
 Solaris 2.x
 ===========
+
+Reported by:  Christoph Koegl <koegl@informatik.uni-kl.de>
+
+    Use `LDFLAGS=-lsocket ./configure' to configure DDD on Solaris
+    2.5.  Otherwise, `./configure' won't find the Xt library.
 
 Reported by:  Blair Zajac <blair@olympia.gps.caltech.edu>
 

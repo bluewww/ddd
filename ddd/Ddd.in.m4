@@ -4277,7 +4277,9 @@ Ddd*no_debugger_dialog_popup.title: DDD: Losing my Religion
 ! @rm @GDB@ could not be started.
 Ddd*no_debugger_dialog*okLabelString:	   Exit
 Ddd*no_debugger_dialog*helpString:	\
-@rm @GDB@ could not be started.  DDD needs some inferior debugger to run.\n\
+@rm @GDB@ could not be started.\n\
+\n\
+DDD needs some inferior debugger to run.\n\
 You may wish to examine the diagnostic messages before exiting DDD.\n\
 \n\
 Here are some hints that may help you out:\n\
@@ -4298,6 +4300,8 @@ ITEM DDD passes all unknown options to @GDB@.  If @GDB@ choked on\n\
     get a list of valid DDD options.\n\
 ITEM If @GDB@ could not be invoked due to some communication failure,\n\
     try changing the SAMP(.blockTTYInput) resource.\n\
+For details on options and resources, see the DDD manual: select\n\
+LBL(Help) | LBL([DDD] Manual) or invoke DDD with the SAMP(--manual) option.\n\
 \n\
 Click on LBL(Exit) to exit DDD.
 
