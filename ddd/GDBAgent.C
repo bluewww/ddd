@@ -482,7 +482,16 @@ string GDBAgent::requires_reply (const string& answer)
 
 
 // ***************************************************************************
-void GDBAgent::cut_off_prompt (string& answer)
+// Normalize answer - handle control characters, remove comments and prompt
+void GDBAgent::normalize(string& answer)
+{
+    strip_control(answer);
+    strip_comments(answer);
+    cut_off_prompt(answer);
+}
+
+// Remove GDB prompt
+void GDBAgent::cut_off_prompt(string& answer)
 {
     switch (type())
     {
@@ -496,8 +505,6 @@ void GDBAgent::cut_off_prompt (string& answer)
 	break;
     }
 }
-
-
 
 // Strip annoying DBX comments
 void GDBAgent::strip_comments(string& s)
@@ -597,9 +604,10 @@ void GDBAgent::strip_control(string& answer)
 
 	case '\r':
 	    if (source_index + 1 < int(answer.length())
-		&& answer[source_index + 1] == '\n')
+		&& (answer[source_index + 1] == '\n'
+		    || answer[source_index + 1] == '\r'))
 	    {
-		// Followed by '\n' -- ignore
+		// Followed by '\n' or '\r' -- ignore
 		break;
 	    }
 
@@ -630,12 +638,6 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
     GDBAgent*   gdb   = (GDBAgent *) client_data;
     DataLength* dl    = (DataLength *) call_data;
     string      answer(dl->data, dl->length);
-
-    // Get rid of any control combinations ...
-    gdb->strip_control(answer);
-
-    // ... as well as of annoying DBX comments and messages
-    gdb->strip_comments(answer);
 
     string reply = gdb->requires_reply(answer);
     if (reply != "")
@@ -681,7 +683,7 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	else
 	{
             // Received complete answer (GDB issued prompt)
-	    gdb->cut_off_prompt (answer);
+	    gdb->normalize(answer);
 
 	    if (answer != "" && gdb->_on_answer != 0)
 		gdb->_on_answer (answer, gdb->_user_data);
@@ -740,9 +742,8 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	else
 	{
             // Received complete answer (GDB issued prompt)
-	    gdb->cut_off_prompt (answer);
-
 	    gdb->complete_answer += answer;
+	    gdb->normalize(gdb->complete_answer);
 
             // Set new state
 	    gdb->state = ReadyWithPrompt;
@@ -764,15 +765,14 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 	else
 	{
             // Received complete answer (GDB issued prompt)
-	    gdb->cut_off_prompt (answer);
-
 	    gdb->complete_answers[gdb->qu_index] += answer;
+	    gdb->normalize(gdb->complete_answers[gdb->qu_index]);
 
             // Set new state
 	    gdb->qu_index++;
 
-	    if (gdb->qu_index == gdb->_qu_count) {
-
+	    if (gdb->qu_index == gdb->_qu_count)
+	    {
 		// Received all answers
 		delete[] gdb->cmd_array;
 
@@ -780,7 +780,8 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 		gdb->state = ReadyWithPrompt;
 		gdb->busy_handlers.call(ReadyForCmd, 0, (void*)true);
 
-		if (gdb->questions_waiting) {
+		if (gdb->questions_waiting)
+		{
 		    // We did not call the OACProc yet.
 
 		    if (gdb->_on_answer_completion != 0)
@@ -799,7 +800,8 @@ void GDBAgent::InputHP(Agent *, void* client_data, void* call_data)
 						  gdb->_qa_data);
 		}
 	    }
-	    else {
+	    else
+	    {
 		// Send next question
 		gdb->write((const char *)gdb->cmd_array[gdb->qu_index], 
 			   gdb->cmd_array[gdb->qu_index].length());

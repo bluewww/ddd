@@ -323,9 +323,12 @@ private:
     bool ends_with_prompt (const string& answer);
     bool ends_with_secondary_prompt (const string& answer);
     string requires_reply (const string& answer);
-    void cut_off_prompt (string& answer);
-    void strip_comments (string& answer);
-    void strip_control (string& answer);
+
+    void cut_off_prompt(string& answer);
+    void strip_comments(string& answer);
+    void strip_control(string& answer);
+
+    void normalize(string& answer);
 
 protected:
     string complete_answer;
