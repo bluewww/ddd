@@ -1522,7 +1522,7 @@ Ddd*manual_help*helpString: \
 To view a specific section, select its title from the index at the top.\n\
 \n\
 To find a string in the manual, enter it in the @bf() @rm argument field \
-and press @key RETURN @rm.\n\
+and press @key RETURN@rm.\n\
 Click on @bf Find@small>> @bf() @rm to search the next occurrence of \
 @bf ()@rm.\n\
 Click on @bf Find@small<< @bf() @rm to search the previous occurrence of \
@@ -2930,8 +2930,7 @@ Ddd*status_form*highlightThickness: 	0
 
 Ddd*status_form.arrow.tipString: \
 @rm Show recent messages
-Ddd*status_form.arrow.documentationString: \
-@rm Show most recent messages from the status line
+Ddd*status_form.arrow.documentationString: .
 
 Ddd*status_form.status.alignment:	XmALIGNMENT_BEGINNING
 Ddd*status_form.status.leftOffset:	5
@@ -4036,14 +4035,16 @@ with the arguments at the argument prompt.
 
 
 !-----------------------------------------------------------------------------
-! GDB Status
+! Debugger State
 !-----------------------------------------------------------------------------
 
 Ddd*gdb_status_dialog_popup.title: @DDD@: Debugger State
+Ddd*gdb_status_dialog*okLabelString: Close
+Ddd*gdb_status_dialog*cancelLabelString: Update
+
 Ddd*gdb_status_dialog*helpString: \
-@rm This dialog shows the state and capabilities of the inferior debugger.
-
-
+@rm This dialog shows the state and capabilities of the inferior debugger.\n\
+Click on @bf Update @rm to update its contents.
 
 
 !-----------------------------------------------------------------------------
