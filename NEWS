@@ -9,7 +9,8 @@ DDD 3.1.4 fixes more minor bugs in DDD 3.1.
 - Changing the GDB display radix automatically refreshes displayed values.
 - If you have Java classes in `./foo/bar' and `bar' is a symlink back
   to `.', DDD no longer searches `./foo/bar/foo/bar/...' and deeper.
-- [LessTif] LessTif 0.88 is supported.
+- [LessTif] LessTif 0.88 is supported.  Be sure to apply the patches
+  found in the `patches/' directory.
 
 There are no new features in DDD 3.1.4.  You don't need to upgrade
 unless you suffer from one of these bugs.
