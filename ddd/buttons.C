@@ -36,23 +36,27 @@ char buttons_rcsid[] =
 #include "buttons.h"
 
 #include "AppData.h"
+#include "Command.h"
 #include "DataDisp.h"
 #include "Delay.h"
 #include "DestroyCB.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
+#include "LessTifH.h"
+#include "MakeMenu.h"
 #include "SourceView.h"
 #include "StringSA.h"
+#include "TimeOut.h"
+#include "args.h"
 #include "bool.h"
 #include "charsets.h"
-#include "cook.h"
 #include "comm-manag.h"
+#include "cook.h"
 #include "ctrl.h"
 #include "ddd.h"
 #include "disp-read.h"
 #include "editing.h"
 #include "fortranize.h"
-#include "Command.h"
 #include "question.h"
 #include "regexps.h"
 #include "select.h"
@@ -63,9 +67,6 @@ char buttons_rcsid[] =
 #include "string-fun.h"
 #include "verify.h"
 #include "wm.h"
-#include "TimeOut.h"
-#include "LessTifH.h"
-#include "MakeMenu.h"
 
 #include <Xm/Xm.h>
 #include <Xm/Label.h>
@@ -938,6 +939,8 @@ void set_buttons(Widget buttons, String _button_list, bool manage)
 	    callback = gdbGoForwardCB;
 	else if (name == "Edit")
 	    callback = gdbEditSourceCB;
+	else if (name == "Make")
+	    callback = gdbMakeAgainCB;
 	else if (name == "Reload")
 	    callback = gdbReloadSourceCB;
 

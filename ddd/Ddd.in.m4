@@ -293,6 +293,7 @@ Ddd*buttonCaptionGeometry: 29x7+0-0
 ! - `Back'     : Lookup previously selected source position
 ! - `Forward'  : Lookup next selected source position
 ! - `Edit'     : Edit current source file
+! - `Make'     : Remake current program
 ! - `Reload'   : Reload source file
 ! - `Complete' : Complete current command
 ! - `Yes'      : Answer current GDB prompt
@@ -319,8 +320,8 @@ Ddd*dataButtons:
 
 ! The command tool buttons, as of DDD 2.0 and later.
 Ddd*toolButtons: \
-run\nbreak^C\nstep\nstepi\nnext\nnexti\nuntil\nfinish\ncont\n\
-up\ndown\nBack\nForward\nEdit\nkill\nreturn
+run\nbreak^C\nstep\nstepi\nnext\nnexti\nuntil\nfinish\ncont\n\kill\n\
+up\ndown\nBack\nForward\nEdit\nMake
 
 Ddd*break.labelString: Interrupt
 
@@ -395,10 +396,10 @@ Ddd*tool_buttons.cont.bottomPosition:		60
 Ddd*tool_buttons.cont.leftPosition:		0
 Ddd*tool_buttons.cont.rightPosition:		45
 
-Ddd*tool_buttons.return.topPosition:		50
-Ddd*tool_buttons.return.bottomPosition:		60
-Ddd*tool_buttons.return.leftPosition:		45
-Ddd*tool_buttons.return.rightPosition:		90
+Ddd*tool_buttons.kill.topPosition:		50
+Ddd*tool_buttons.kill.bottomPosition:		60
+Ddd*tool_buttons.kill.leftPosition:		45
+Ddd*tool_buttons.kill.rightPosition:		90
 
 Ddd*tool_buttons.up.topPosition:		60
 Ddd*tool_buttons.up.bottomPosition:		70
@@ -425,10 +426,10 @@ Ddd*tool_buttons.Edit.bottomPosition:		90
 Ddd*tool_buttons.Edit.leftPosition:		0
 Ddd*tool_buttons.Edit.rightPosition:		45
 
-Ddd*tool_buttons.kill.topPosition:		80
-Ddd*tool_buttons.kill.bottomPosition:		90
-Ddd*tool_buttons.kill.leftPosition:		45
-Ddd*tool_buttons.kill.rightPosition:		90
+Ddd*tool_buttons.Make.topPosition:		80
+Ddd*tool_buttons.Make.bottomPosition:		90
+Ddd*tool_buttons.Make.leftPosition:		45
+Ddd*tool_buttons.Make.rightPosition:		90
 
 ! Command tool button placement.  Don't change this.
 Ddd*tool_buttons*topAttachment:			XmATTACH_POSITION

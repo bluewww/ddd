@@ -622,8 +622,8 @@ static MMDesc data_file_menu[]    = FILE_MENU;
 struct ProgramItems {
     enum ProgramItem { Run, RunAgain, Sep1,
 		       SeparateExecWindow, Sep2,
-		       Step, Stepi, Next, Nexti, Until, Sep3,
-		       Cont, Finish, Return, Sep4,
+		       Step, Stepi, Next, Nexti, Until, Finish, Sep3,
+		       Cont, Sep4,
 		       Kill, Break, Quit
     };
 };
@@ -641,10 +641,9 @@ struct ProgramItems {
     { "next",        MMPush, { gdbCommandCB, "next" }}, \
     { "nexti",       MMPush, { gdbCommandCB, "nexti" }}, \
     { "until",       MMPush, { gdbCommandCB, "until" }}, \
+    { "finish",      MMPush, { gdbCommandCB, "finish" }}, \
     MMSep, \
     { "cont",        MMPush, { gdbCommandCB, "cont" }}, \
-    { "finish",      MMPush, { gdbCommandCB, "finish" }}, \
-    { "return",      MMPush, { gdbCommandCB, "return" }}, \
     MMSep, \
     { "kill",        MMPush, { gdbCommandCB, "kill" }}, \
     { "break",       MMPush, { gdbCommandCB, "\003" }}, \
@@ -4519,10 +4518,6 @@ static void ReadyCB(XtPointer client_data = 0, XtIntervalId *id = 0)
     set_sensitive(command_program_menu[ProgramItems::Finish].widget,    ready);
     set_sensitive(source_program_menu[ProgramItems::Finish].widget,     ready);
     set_sensitive(data_program_menu[ProgramItems::Finish].widget,       ready);
-
-    set_sensitive(command_program_menu[ProgramItems::Return].widget,    ready);
-    set_sensitive(source_program_menu[ProgramItems::Return].widget,     ready);
-    set_sensitive(data_program_menu[ProgramItems::Return].widget,       ready);
 
     set_sensitive(command_program_menu[ProgramItems::Kill].widget,      ready);
     set_sensitive(source_program_menu[ProgramItems::Kill].widget,       ready);

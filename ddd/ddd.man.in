@@ -3361,39 +3361,42 @@ button label.
 .RS
 The following button names are reserved:
 .TP 10
-.B "Clear"
-Clear current command
-.TP 10
-.B "Prev"
-Show previous command
-.TP 10
-.B "Next"
-Show next command
-.TP 10
 .B "Apply"
 Send the given command to the debugger.
 .TP 10
 .B "Back"
 Lookup previously selected source position.
 .TP 10
-.B "Forward"
-Lookup next selected source position.
-.TP 10
-.B "Edit"
-Edit current source file.
-.TP 10
-.B "Reload"
-Reload source file.
+.B "Clear"
+Clear current command
 .TP 10
 .B "Complete"
 Complete current command.
 .TP 10
-.B "Yes"
-Answer current debugger prompt with `\fByes\fR'.  This button is
-visible only if the debugger asks a yes/no question.
+.B "Edit"
+Edit current source file.
+.TP 10
+.B "Forward"
+Lookup next selected source position.
+.TP 10
+.B "Make"
+Invoke the `\fBmake\fR' program, using the most recently given arguments.
+.TP 10
+.B "Next"
+Show next command
 .TP 10
 .B "No"
 Answer current debugger prompt with `\fBno\fR'.  This button is
+visible only if the debugger asks a yes/no question.
+.TP 10
+.B "Prev"
+Show previous command
+.TP 10
+.B "Reload"
+Reload source file.
+.TP 10
+.B "Yes"
+Answer current debugger prompt with `\fByes\fR'.  This button is
 visible only if the debugger asks a yes/no question.
 .RE
 .sp
