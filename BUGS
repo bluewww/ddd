@@ -254,4 +254,9 @@ Volunteers for fixing these and other bugs are welcome!
     compiled with Motif 2.1, does not show any breakpoint indicators.
     Nor does it show arrows.  This does not happen with Motif 2.0.
 
-245 (Insert your bug here)
+245 Pierre POMES <ppomes@it.inov.imt-mrs.fr> says that when displaying 
+    variables on DBX/SparcWorks 3.0.1, he gets an error `Unable to
+    determine the number of display "dbx: warning : -r option only
+    recognized for C++".
+
+246 (Insert your bug here)
