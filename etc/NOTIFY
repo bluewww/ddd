@@ -1,21 +1,20 @@
 Memo: Installing and notifying about new DDD releases
 =====================================================
 
-Update Web page at:
--------------------
+Update Web page
+---------------
 
-WWW page: gnudist.gnu.org:/home/www/html/software/ddd/
-Graphics: gnudist.gnu.org:/home/www/graphics
+Use CVS account at savannah.gnu.org
 
 
 Upload software to:
 -------------------
 
-alpha.gnu.org: ~ftp/gnu/ddd/             (alpha releases)
+fencepost.gnu.org:~ftp/gnu/ddd/             (alpha releases)
 
 or
 
-gnudist.gnu.org: /home/ftp/gnu/ddd/      (final releases)
+gnuftp.gnu.org: /home/ftp/gnu/ddd/      (final releases)
 
 
 E-Mail
