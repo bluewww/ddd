@@ -1,8 +1,9 @@
 // $Id$
 // Display boxes
 
-// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
-// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
+// and Andreas Zeller <zeller@ips.cs.tu-bs.de>
 // 
 // This file is part of DDD.
 // 
@@ -236,14 +237,10 @@ bool DispBox::is_numeric(const DispValue *dv, const DispValue *parent)
 
 // ***************************************************************************
 // Create a Box for the value DV
-Box* DispBox::create_value_box (const DispValue *dv,
-				const DispValue *parent,
-				int member_name_width)
+Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 {
-    if (dv == 0 || !dv->enabled())
-	return eval("disabled");
-
     Box *vbox = 0;
+
     switch (dv->type())
     {
     case Simple:
@@ -541,8 +538,25 @@ Box* DispBox::create_value_box (const DispValue *dv,
 	vbox = eval("changed_value", vbox->link());
     }
 
+    return vbox;
+}
+
+Box *DispBox::create_value_box (const DispValue *dv,
+				const DispValue *parent,
+				int member_name_width)
+{
+    Box *vbox = 0;
+    if (dv == 0 || !dv->enabled())
+    {
+	vbox = eval("disabled");
+    }
+    else
+    {
+	vbox = _create_value_box(dv, parent);
+    }
+
     // Add member name
-    if (parent != 0)
+    if (dv != 0 && parent != 0)
     {
 	switch (parent->type())
 	{
@@ -578,8 +592,11 @@ Box* DispBox::create_value_box (const DispValue *dv,
 	}
     }
 
-    Data* data = (Data *)dv;
-    vbox = vbox->tag(data);
+    if (dv != 0)
+    {
+	Data *data = (Data *)dv;
+	vbox = vbox->tag(data);
+    }
 
     return vbox;
 }

@@ -87,9 +87,12 @@ public:
     bool have_title() const { return title_box != 0; }
 
 private:
-    Box* create_value_box (const DispValue *dv,
-			   const DispValue *parent,
-			   int member_name_width = 0);
+    Box *create_value_box(const DispValue *dv,
+			  const DispValue *parent,
+			  int member_name_width = 0);
+
+    Box *_create_value_box(const DispValue *dv,
+			   const DispValue *parent);
 
     static VSLLib dummylib;
     static VSLLib *vsllib_ptr;
