@@ -149,15 +149,13 @@ Volunteers for fixing these and other bugs are welcome!
       * Printing a plot must select the DispValue first.
       * Set `Selected Only' if only a few displays are selected.
       * Allow printing color plots.
-    - Allow interactive rotation, using `set view' and a dialog with
-      three scrollbars
     - Show diagnostic if Gnuplot was not found (i.e. Gnuplot died
       while we were still waiting for a plot)
     - Add a primitive console (or some other way to enter commands)
     - Allow rotating scalar values
     - Have an `export' option that writes the data to a file.  This
       should just copy the original data file (in `File')
-    - Toggle color / grayscale / monochrome (also affects printing)
+    - Toggle color / grayscale / monochrome (would affect printing, too)
     - Document it all.
 
 330 Oliver Eichler <oliver.eichler@regensburg.netsurf.de> suggests
