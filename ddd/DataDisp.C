@@ -6136,7 +6136,7 @@ void DataDisp::merge_displays(IntArray displays,
 	else
 	{
 	    msg += rm("displays ");
-	    for (int i = 1; i < suppressed_displays.size(); i++)
+	    for (i = 1; i < suppressed_displays.size(); i++)
 	    {
 		if (i == suppressed_displays.size() - 1)
 		    msg += rm(", and ");
