@@ -242,7 +242,7 @@ Volunteers for fixing these and other bugs are welcome!
      obliterating most of the other windows.  This happens with
      OSF/Motif Version 1.2.4 on alpha-dec-osf4.0.
 
-224* Robert A Kerr <Robert_Kerr@byu.edu> says: On HP-UX 10.10,
+224. Robert A Kerr <Robert_Kerr@byu.edu> says: On HP-UX 10.10,
      the debugger LED on the bottom right never stops flashing.  If I
      try to do anything it gives me the "The debugger is busy error"
      and keeps flashing away.  I've let it sit for up to an hour
@@ -262,8 +262,5 @@ Volunteers for fixing these and other bugs are welcome!
 
 231. According to Ronald Wahl <Ronald.Wahl@Informatik.TU-Chemnitz.DE>, 
      DDD gets into a busy loop when used with libc-5.4.41 under Linux.
-
-232. The error message of `graph display foo' is not shown in the
-     status line.
 
 233. (Insert your bug here)

@@ -2650,10 +2650,10 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     refresh_addr(dn);
     refresh_graph_edit();
 
-    delete info;
-
     if (info->verbose)
 	prompt();
+
+    delete info;
 }
 
 // Create new user display from ANSWER
@@ -3041,8 +3041,11 @@ void DataDisp::sort_and_check(IntArray& display_nrs)
     {
 	DispNode *dn = disp_graph->get(display_nrs[i]);
 	if (dn == 0)
+	{
 	    post_gdb_message("No display number " 
 			     + itostring(display_nrs[i]) + ".\n");
+	    display_nrs[i] = 0;
+	}
     }
 }
 
@@ -3099,12 +3102,9 @@ void DataDisp::disable_displayOQC (const string& answer, void *data)
     bool verbose = bool(data);
 
     if (verbose)
-	gdb_out(answer);
+	post_gdb_message(answer);
 
     refresh_graph_edit();
-
-    if (verbose)
-	prompt();
 }
 
 
@@ -3135,7 +3135,7 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose)
     }
 
     if (enabled_data_displays > 0)
-	gdb_command(cmd, last_origin, enable_displayOQC);
+	gdb_command(cmd, last_origin, enable_displayOQC, (void *)verbose);
 
     int enabled_user_displays = 0;
     for (i = 0; i < display_nrs.size(); i++)
@@ -3158,13 +3158,17 @@ void DataDisp::enable_displaySQ(IntArray& display_nrs, bool verbose)
     }
 }
 
-void DataDisp::enable_displayOQC (const string& answer, void *)
+void DataDisp::enable_displayOQC (const string& answer, void *data)
 {
     if (answer == NO_GDB_ANSWER)
 	return;			// Command was canceled
 
-    gdb_out(answer);
-    refresh_displaySQ();
+    bool verbose = bool(data);
+
+    if (verbose)
+	post_gdb_message(answer);
+
+    refresh_displaySQ(0, false);
 }
 
 
@@ -3248,7 +3252,7 @@ void DataDisp::delete_displayOQC (const string& answer, void *data)
 
     // Anything remaining is an error message
     if (verbose)
-	gdb_out(ans);
+	post_gdb_message(ans);
 
     // Refresh editor
     refresh_graph_edit();
@@ -3256,9 +3260,6 @@ void DataDisp::delete_displayOQC (const string& answer, void *data)
     // Refresh remaining addresses
     force_check_aliases = true;
     refresh_addr();
-
-    if (verbose)
-	prompt();
 }
 
 

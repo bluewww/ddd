@@ -36,13 +36,14 @@ char post_rcsid[] =
 #include "post.h"
 
 #include "AppData.h"
+#include "Command.h"
 #include "Delay.h"
 #include "DestroyCB.h"
 #include "GDBAgent.h"
 #include "HelpCB.h"
 #include "TimeOut.h"
 #include "charsets.h"
-#include "Command.h"
+#include "cmdtty.h"
 #include "ddd.h"
 #include "exit.h"
 #include "findParent.h"
@@ -241,19 +242,24 @@ Widget post_gdb_died(string reason, int gdb_status, Widget w)
 static void GDBOutCB(XtPointer client_data, XtIntervalId *)
 {
     string *text_ptr = (string *)client_data;
-    gdb_out("\r" + *text_ptr + "\n" + gdb->prompt());
+    gdb_out("\r");
+    if (*text_ptr != "")
+	gdb_out(*text_ptr + "\n");
+    prompt();
+
     delete text_ptr;
 }
 
 Widget post_gdb_message(string text, Widget w)
 {
     strip_final_blanks(text);
-    if (text == "" || text == NO_GDB_ANSWER)
+    if (text == NO_GDB_ANSWER)
 	return 0;
 
     if (ddd_is_exiting)
     {
-	cerr << ddd_NAME << ": " << text << "\n";
+	if (text != "")
+	    cerr << ddd_NAME << ": " << text << "\n";
 	return 0;
     }
 
@@ -267,6 +273,9 @@ Widget post_gdb_message(string text, Widget w)
 			GDBOutCB, XtPointer(text_ptr));
 	return 0;
     }
+
+    if (text == "")
+	return 0;
 
     Arg args[10];
     int arg = 0;
