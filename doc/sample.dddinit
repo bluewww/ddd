@@ -1,5 +1,5 @@
 ! $Id$
-! Sample DDD initialization file.  To be copied in `~/.dddinit'.
+! Sample DDD initialization file.  To be copied in `~/.ddd/init'.
 
 ! Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
 ! Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
@@ -27,7 +27,7 @@
 ! or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 
 ! This file contains alternate resource settings for your personal
-! `~/.dddinit' file.  Most of these resources are documented either in
+! `~/.ddd/init' file.  Most of these resources are documented either in
 ! the DDD manual or in the `Ddd.in' resource file shipped with the
 ! DDD source distribution.  To activate any of these resources, remove
 ! the `! ' prefixes in the lines beginning with `Ddd' (as well as
@@ -108,8 +108,8 @@
 ! ----------------------------------------------------------------------------
 
 ! Make activated toggle buttons shine in red.  Tcl/Tk people like this.
-! Ddd*fillOnSelect: true
-! Ddd*selectColor: red4
+! Ddd*XmToggleButton.fillOnSelect: true
+! Ddd*XmToggleButton.selectColor: red4
 
 ! Here are some alternate color preferences submitted by Sasvata
 ! [Shash-wata] Chatterjee <Shash.Chatterjee@aud.alcatel.com>.
