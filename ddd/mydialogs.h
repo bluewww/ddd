@@ -46,9 +46,10 @@
 #include "IntArray.h"
 #include "charsets.h"
 
-// Create a display selection list
-Widget createDisplaySelectionList (Widget parent, String name,
-				   ArgList args, Cardinal num_args);
+// Create a selection box with a top-level shell.  This is like
+// XmCreateSelectionDialog, but the parent is a top-level shell.
+Widget createTopLevelSelectionDialog(Widget parent, String name,
+				     ArgList args, Cardinal num_args);
 
 // Get the display numbers
 void getDisplayNumbers(Widget selectionList, IntArray& arr);

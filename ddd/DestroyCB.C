@@ -29,9 +29,9 @@
 char DestroyCB_rcsid[] = 
     "$Id$";
 
-#include "findParent.h"
 #include "DestroyCB.h"
 #include "TimeOut.h"
+#include <Xm/DialogS.h>
 
 static void DestroyCB(XtPointer client_data, XtIntervalId *)
 {
@@ -47,13 +47,18 @@ void DestroyWhenIdle(Widget widget)
 		    XtPointer(widget));
 }
 
+
 // Callbacks
 
-// Destroy the surrounding shell
-void DestroyShellCB(Widget widget, XtPointer, XtPointer)
+// Destroy the ancestor shell
+void DestroyShellCB(Widget widget, XtPointer, XtPointer call_data)
 {
-    Widget shell = findShellParent(widget);
-    DestroyWhenIdle(shell);
+    Widget w = widget;
+
+    while (w != 0 && !XtIsShell(XtParent(w)))
+	w = XtParent(w);
+
+    DestroyThisCB(widget, XtPointer(w), call_data);
 }
 
 // Destroy specific widget
@@ -63,16 +68,28 @@ void DestroyThisCB(Widget, XtPointer client_data, XtPointer)
     DestroyWhenIdle(w);
 }
 
-// Unmanage the surrounding shell
-void UnmanageShellCB(Widget widget, XtPointer, XtPointer)
+// Unmanage the ancestor shell
+void UnmanageShellCB(Widget widget, XtPointer, XtPointer call_data)
 {
-    Widget shell = findShellParent(widget);
-    XtUnmanageChild(shell);
+    Widget w = widget;
+
+    while (w != 0 && !XtIsShell(XtParent(w)))
+	w = XtParent(w);
+
+    UnmanageThisCB(widget, XtPointer(w), call_data);
 }
 
 // Unmanage specific widget
 void UnmanageThisCB(Widget, XtPointer client_data, XtPointer)
 {
     Widget w = Widget(client_data);
+
+    Widget shell = w;
+    if (!XtIsShell(shell))
+	shell = XtParent(shell);
+
+    if (shell != 0 && XtIsShell(shell) && !XmIsDialogShell(shell))
+	XtPopdown(shell);
+
     XtUnmanageChild(w);
 }

@@ -41,6 +41,7 @@ char wm_rcsid[] =
 #include "findParent.h"
 
 #include <Xm/Xm.h>
+#include <Xm/DialogS.h>
 #include <X11/Xutil.h>
 
 // ANSI C++ doesn't like the XtIsRealized() macro
@@ -83,8 +84,8 @@ void wm_set_icon(Widget shell, Pixmap icon, Pixmap mask)
 void wm_set_name(Display *display, Window shell_window,
 		 string title, string icon)
 {
-    strip_trailing_space(title);
-    strip_trailing_space(icon);
+    strip_space(title);
+    strip_space(icon);
 
     if (title != "")
 	XStoreName(display, shell_window, (String)title);
@@ -94,8 +95,8 @@ void wm_set_name(Display *display, Window shell_window,
 
 void wm_set_name(Widget shell, string title, string icon)
 {
-    strip_trailing_space(title);
-    strip_trailing_space(icon);
+    strip_space(title);
+    strip_space(icon);
 
     XtVaSetValues(shell,
 		  XmNiconName, (char *)icon,
@@ -165,7 +166,7 @@ void manage_and_raise(Widget w)
 {
     if (w != 0)
     {
-	// If shell is withdrawn or iconic, realize dialog as icon
+	// If top-level shell is withdrawn or iconic, realize dialog as icon
 	bool iconic = false;
 	Widget shell = find_shell(w);
 	if (shell != 0)
@@ -181,6 +182,18 @@ void manage_and_raise(Widget w)
 	}
 
 	XtManageChild(w);
+
+	shell = w;
+	while (shell != 0 && !XtIsShell(shell))
+	    shell = XtParent(shell);
+
+	if (shell != 0 && !XmIsDialogShell(shell))
+	{
+	    if (!XtIsRealized(shell))
+		XtRealizeWidget(shell);
+	    XtPopup(shell, XtGrabNone);
+	}
+
 	raise_shell(w);
     }
 }

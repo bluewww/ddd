@@ -1212,9 +1212,7 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     process_pending_events();
 
     // Enable Text Window
-    XtRealizeWidget(XtParent(text_dialog));
     Delay::register_shell(XtParent(text_dialog));
-    XtPopup(XtParent(text_dialog), XtGrabNone);
     manage_and_raise(text_dialog);
 }
 

@@ -3139,6 +3139,14 @@ moved, the command tool is moved by the same offset such that its
 position relative to the source window remains unchanged.  If
 `\fBoff\fR', the command tool does not follow source window
 movements.
+.TP
+.B "transientDialogs (\fPclass\fB TransientDialogs)"
+If `\fBon\fR' (default), all dialogs are created as transient
+windows\(em\&that is, they always stay on top of the main
+\s-2@DDD@\s+2 windows, and they iconify with it.  If `\fBoff\fR', the
+important selection dialogs, such as the breakpoint and display
+editors, are created as top-level windows on their own, and may be
+obscured by the \s-2@DDD@\s+2 main windows.
 .PP
 .\"
 .\"

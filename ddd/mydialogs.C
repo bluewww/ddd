@@ -46,6 +46,8 @@ char mydialogs_rcsid[] =
 #include <Xm/Xm.h>
 #include <Xm/SelectioB.h>
 #include <Xm/List.h>
+#include <Xm/MwmUtil.h>
+#include <X11/Shell.h>
 
 // Misc includes
 #include "assert.h"
@@ -53,6 +55,7 @@ char mydialogs_rcsid[] =
 #include "DestroyCB.h"
 #include "HelpCB.h"
 #include "MString.h"
+#include "AppData.h"
 
 // Own includes
 #include "string-fun.h"
@@ -63,15 +66,51 @@ static XmStringTable makeXmStringTable (string label_list[], int list_length,
 					bool highlight_title);
 static void freeXmStringTable (XmStringTable xmlabel_list, int list_length);
 
-
-// Create a display selection list
-Widget createDisplaySelectionList(Widget parent, String name,
-				  ArgList args, Cardinal num_args)
+// Create a selection box with a top-level shell
+Widget createTopLevelSelectionDialog(Widget parent, String name,
+				     ArgList args, Cardinal num_args)
 {
-    Widget selectionList = 
-	verify(XmCreateScrolledList(parent, name, args, num_args));
-    XtManageChild (selectionList);
-    return selectionList;
+    if (app_data.transient_dialogs)
+	return XmCreateSelectionDialog(parent, name, args, num_args);
+
+    ArgList new_args = new Arg[num_args + 10];
+    Cardinal arg = 0;
+
+    // Give'em every decoration except `maximize'.
+    int decorations = 
+	MWM_DECOR_BORDER | MWM_DECOR_RESIZEH | 
+	MWM_DECOR_TITLE | MWM_DECOR_MENU | 
+	MWM_DECOR_MINIMIZE;
+    int functions = 
+	MWM_FUNC_RESIZE | MWM_FUNC_MOVE | MWM_FUNC_MINIMIZE | MWM_FUNC_CLOSE;
+
+    XtSetArg(new_args[arg], XmNdialogType,       XmDIALOG_SELECTION); arg++;
+    XtSetArg(new_args[arg], XmNallowShellResize, True);               arg++;
+    XtSetArg(new_args[arg], XmNdeleteResponse,   XmUNMAP);            arg++;
+    XtSetArg(new_args[arg], XmNmwmDecorations,   decorations);        arg++;
+    XtSetArg(new_args[arg], XmNmwmFunctions,     functions);          arg++;
+
+    for (Cardinal i = 0; i < num_args; i++)
+    {
+	XtSetArg(new_args[arg], args[i].name, args[i].value); arg++;
+    }
+
+    string shell_name = string(name) + "_popup";
+    Widget shell = verify(XtCreateWidget(shell_name.chars(), 
+					 topLevelShellWidgetClass,
+					 parent, new_args, arg));
+    Widget box = XmCreateSelectionBox(shell, name, new_args, arg);
+
+    delete[] new_args;
+
+    // Set a reasonable icon name
+    String title    = 0;
+    String iconName = 0;
+    XtVaGetValues(shell, XmNtitle, &title, XmNiconName, &iconName, NULL);
+    if (title != 0 && (iconName == 0 || string(iconName) == XtName(shell)))
+	XtVaSetValues(shell, XmNiconName, title, NULL);
+
+    return box;
 }
 
 

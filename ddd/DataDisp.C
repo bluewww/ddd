@@ -5207,9 +5207,9 @@ void DataDisp::create_shells()
     arg = 0;
     XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
     edit_displays_dialog_w =
-	verify(XmCreateSelectionDialog(find_shell(graph_edit), 
-				       "edit_displays_dialog", 
-				       args, arg));
+	verify(createTopLevelSelectionDialog(find_shell(graph_edit), 
+					     "edit_displays_dialog", 
+					     args, arg));
     Delay::register_shell(edit_displays_dialog_w);
 
     XtUnmanageChild(XmSelectionBoxGetChild(edit_displays_dialog_w,

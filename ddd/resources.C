@@ -884,6 +884,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNtransientDialogs,
+	XtCTransientDialogs,
+	XtRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, transient_dialogs),
+	XtRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNglobalTabCompletion,
 	XtCGlobalTabCompletion,
 	XtRBoolean,

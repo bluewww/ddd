@@ -3203,8 +3203,8 @@ void SourceView::create_shells()
     arg = 0;
     XtSetArg(args[arg], XmNvisibleItemCount, 0); arg++;
     edit_breakpoints_dialog_w =
-	verify(XmCreateSelectionDialog(parent, "edit_breakpoints_dialog",
-				       args, arg));
+	verify(createTopLevelSelectionDialog(parent, "edit_breakpoints_dialog",
+					     args, arg));
     Delay::register_shell(edit_breakpoints_dialog_w);
 
     XtUnmanageChild(XmSelectionBoxGetChild(edit_breakpoints_dialog_w,
@@ -3285,8 +3285,8 @@ void SourceView::create_shells()
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     stack_dialog_w =
-	verify(XmCreateSelectionDialog(parent, 
-				       "stack_dialog", args, arg));
+	verify(createTopLevelSelectionDialog(parent, 
+					     "stack_dialog", args, arg));
     Delay::register_shell(stack_dialog_w);
 
     XtUnmanageChild(XmSelectionBoxGetChild(stack_dialog_w, 
@@ -3335,8 +3335,8 @@ void SourceView::create_shells()
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     register_dialog_w = 
-	verify(XmCreateSelectionDialog(parent, 
-				       "register_dialog", args, arg));
+	verify(createTopLevelSelectionDialog(parent, 
+					     "register_dialog", args, arg));
     Delay::register_shell(register_dialog_w);
 
     XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w, 
@@ -3395,8 +3395,8 @@ void SourceView::create_shells()
     arg = 0;
     XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
     thread_dialog_w = 
-	verify(XmCreateSelectionDialog(parent, 
-				       "thread_dialog", args, arg));
+	verify(createTopLevelSelectionDialog(parent, 
+					     "thread_dialog", args, arg));
     Delay::register_shell(thread_dialog_w);
 
     XtUnmanageChild(XmSelectionBoxGetChild(thread_dialog_w, 
@@ -5051,13 +5051,13 @@ void SourceView::NewBreakpointDCB(Widget w, XtPointer, XtPointer call_data)
     create_bp(input, w);
 }
 
-void SourceView::NewBreakpointCB(Widget, XtPointer, XtPointer)
+void SourceView::NewBreakpointCB(Widget w, XtPointer, XtPointer)
 {
     static Widget new_breakpoint_dialog = 0;
     if (new_breakpoint_dialog == 0)
     {
 	new_breakpoint_dialog = 
-	    verify(XmCreatePromptDialog(source_text_w,
+	    verify(XmCreatePromptDialog(find_shell(w),
 					"new_breakpoint_dialog",
 					NULL, 0));
 	Delay::register_shell(new_breakpoint_dialog);
@@ -5110,7 +5110,7 @@ void SourceView::NewWatchpointDCB(Widget w, XtPointer, XtPointer call_data)
     gdb_command(gdb->watch_command(input, selected_watch_mode), w);
 }
 
-void SourceView::NewWatchpointCB(Widget, XtPointer, XtPointer)
+void SourceView::NewWatchpointCB(Widget w, XtPointer, XtPointer)
 {
     static Widget new_watchpoint_dialog = 0;
     if (new_watchpoint_dialog == 0)
@@ -5137,7 +5137,7 @@ void SourceView::NewWatchpointCB(Widget, XtPointer, XtPointer)
 	};
 
 	new_watchpoint_dialog = 
-	    verify(XmCreatePromptDialog(source_text_w,
+	    verify(XmCreatePromptDialog(find_shell(w),
 					"new_watchpoint_dialog",
 					NULL, 0));
 	Delay::register_shell(new_watchpoint_dialog);
@@ -6189,12 +6189,9 @@ void SourceView::setup_where_line(string& line)
 	}
     }
 
-
-#if 0
     const int min_width = 40;
     if (int(line.length()) < min_width)
 	line += replicate(' ', min_width - line.length());
-#endif
 }
 
 // Return current JDB frame; 0 if none

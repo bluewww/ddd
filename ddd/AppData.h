@@ -194,6 +194,8 @@
 #define XtCGroupIconify          "GroupIconify"
 #define XtNuniconifyWhenReady    "uniconifyWhenReady"
 #define XtCUniconifyWhenReady    "UniconifyWhenReady"
+#define XtNtransientDialogs      "transientDialogs"
+#define XtCTransientDialogs      "TransientDialogs"
 #define XtNglobalTabCompletion   "globalTabCompletion"
 #define XtCGlobalTabCompletion   "GlobalTabCompletion"
 #define XtNsaveHistoryOnExit     "saveHistoryOnExit"
@@ -401,6 +403,7 @@ struct AppData {
     Boolean   find_case_sensitive;
     Boolean   group_iconify;
     Boolean   uniconify_when_ready;
+    Boolean   transient_dialogs;
     Boolean   global_tab_completion;
     Boolean   save_history_on_exit;
     Boolean   cache_source_files;
