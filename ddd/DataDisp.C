@@ -229,6 +229,7 @@ static void set_label(Widget w, string label)
     XmStringFree(old_label);
 }
 
+
 //-----------------------------------------------------------------------------
 // Button Callbacks
 //-----------------------------------------------------------------------------
@@ -271,8 +272,8 @@ void DataDisp::toggleDetailCB(Widget dialog, XtPointer, XtPointer)
 	    if (dv == 0)
 		continue;
 
-	    if (dv->collapsed())
-		dv->expand();
+	    if (dv->collapsedAll() > 0)
+		dv->expandAll();
 	    else
 		dv->collapse();
 	    dn->refresh();
@@ -302,9 +303,9 @@ void DataDisp::showDetailCB (Widget dialog, XtPointer, XtPointer)
 	    if (dv == 0)
 		continue;
 	    
-	    if (dv->collapsed())
+	    if (dv->collapsedAll() > 0)
 	    {
-		dv->expand();
+		dv->expandAll();
 		dn->refresh();
 		changed = true;
 	    }
@@ -1044,10 +1045,8 @@ void DataDisp::refresh_args()
 		dv = dn->value();
 	    if (dv)
 	    {
-		if (dv->expanded())
-		    count_selected_expanded++;
-		if (dv->collapsed())
-		    count_selected_collapsed++;
+		count_selected_expanded  += int(dv->expanded());
+		count_selected_collapsed += dv->collapsedAll();
 	    }
 	}
     }
@@ -1189,9 +1188,9 @@ void DataDisp::refresh_args()
 	set_sensitive(node_popup[ValueItms::Detail].widget, true);
 	set_sensitive(graph_cmd_area[ValueItms::Detail].widget, true);
     }
-    else if (count_selected_expanded == 0 && count_selected_collapsed > 0)
+    else if (count_selected_collapsed > 0)
     {
-	// Only collapsed displays selected
+	// Some collapsed displays selected
 	set_label(node_popup[ValueItms::Detail].widget, "Show Detail");
 	set_label(graph_cmd_area[ValueItms::Detail].widget, "Show ()");
 	set_sensitive(node_popup[ValueItms::Detail].widget, true);
@@ -1205,9 +1204,9 @@ void DataDisp::refresh_args()
     }
 
     set_sensitive(display_area[DisplayItms::ShowDetail].widget, 
-		  count_selected_collapsed);
+		  count_selected_collapsed > 0);
     set_sensitive(display_area[DisplayItms::HideDetail].widget, 
-		  count_selected_expanded);
+		  count_selected_expanded > 0);
 
 
     // Delete

@@ -447,6 +447,56 @@ void DispValue::align_horizontal ()
 	v.array->align = Horizontal;
 }
 
+// ***************************************************************************
+// Like expand(), but expand entire subtree
+void DispValue::expandAll()
+{
+    expand();
+    for (int i = 0; i < number_of_childs(); i++)
+    {
+	DispValue *child = get_child(i);
+	child->expandAll();
+    }
+}
+
+// ***************************************************************************
+// Like collapse(), but collapse entire subtree
+void DispValue::collapseAll()
+{
+    collapse();
+    for (int i = 0; i < number_of_childs(); i++)
+    {
+	DispValue *child = get_child(i);
+	child->collapseAll();
+    }
+}
+
+
+// ***************************************************************************
+// Count expanded/collapsed nodes in tree
+
+int DispValue::expandedAll() const
+{
+    int count = 0;
+    if (expanded())
+	count++;
+    for (int i = 0; i < number_of_childs(); i++)
+	count += get_child(i)->expandedAll();
+
+    return count;
+}
+
+int DispValue::collapsedAll() const
+{
+    int count = 0;
+    if (collapsed())
+	count++;
+    for (int i = 0; i < number_of_childs(); i++)
+	count += get_child(i)->collapsedAll();
+
+    return count;
+}
+
 //-----------------------------------------------------------------------------
 // Aktualisierungen
 //-----------------------------------------------------------------------------

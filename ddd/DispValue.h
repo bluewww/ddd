@@ -65,12 +65,12 @@ class DispValue {
     void clear();
 
 public:
-    // Der Typ wird aus dem value selbst ermittelt.
+    // The DispValue type is determined from VALUE
     DispValue (DispValue* parent, 
-	       int           depth,
-	       string&       value,
-	       string        full_name, 
-	       string        print_name);
+	       int        depth,
+	       string&    value,
+	       string     full_name, 
+	       string     print_name);
 
     ~DispValue();
 
@@ -83,32 +83,41 @@ public:
     bool          expanded()   const { return myexpanded; }
     bool          collapsed()  const { return !expanded(); }
 
-    // nur fuer type() == Simple oder Pointer sinnvoll
+    // Makes sense only for type() == Simple or Pointer
     string  value()      const;
     
-    // nur fuer type() == Pointer sinnvoll
+    // Makes sense only for type() == Pointer
     bool dereferenced()      const;
     string  dereferenced_name() const;
 
     int number_of_childs() const;
     DispValue* get_child (int i) const;
     
-    // nur fuer type() == Array sinnvoll 
+    // Makes sense only for type() == Array
     bool vertical_aligned()   const;
     bool horizontal_aligned() const;
 
-    // nur fuer type() == Pointer sinnvoll
+    // Makes sense only for type() == Pointer
     void dereference();
 
-    // nur fuer type() == Array, StructOrClass, BaseClass sinnvoll
-    void collapse ()  { myexpanded = false; }
-    void expand ()    { myexpanded = true;  }
+    // Makes sense only for type() == Array, StructOrClass, BaseClass
+    // Expand/collapse single value
+    void expand()    { myexpanded = true;  }
+    void collapse()  { myexpanded = false; }
 
-    // nur fuer type() == Array sinnvoll 
-    void align_vertical ();
-    void align_horizontal ();
+    // Expand/collapse entire tree
+    void collapseAll();
+    void expandAll();
 
-    // true, wenn value wirklich neu war (sich also etwas veraendert)
+    // Count expanded or selected nodes in tree
+    int expandedAll()  const;
+    int collapsedAll() const;
+
+    // Makes sense only for type() == Array
+    void align_vertical();
+    void align_horizontal();
+
+    // True if VALUE was really new (i.e. something changed)
     void update (string& value, bool& changed, bool& inited);
     bool new_BaseClass_name (string name);
 };

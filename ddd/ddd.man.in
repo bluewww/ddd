@@ -758,7 +758,7 @@ resulting expression is shown in the \fIargument field\fR, below.
 Selection of multiple display parts is not supported.
 .\"
 .\"
-.SS "Manipulating Aggregate Values"
+.SS "Showing and Hiding Values"
 .\"
 \fIAggregate Values\fR can be shown \fIexpanded\fR, that is,
 displaying all details, or \fIhidden\fR, that is, displayed as
@@ -766,7 +766,8 @@ displaying all details, or \fIhidden\fR, that is, displayed as
 .PP
 To show details about an aggregate, select the aggregate by clicking
 the \fIleft mouse button\fR on its name or value and click on the
-`\fBShow()\fR' button.
+`\fBShow()\fR' button.  Details are shown for the aggregate itself as
+well as for all contained sub-aggregates.
 .PP
 To hide details about an aggregate, select the aggregate by clicking
 the \fIleft mouse button\fR on its name or value and click on the
@@ -774,7 +775,9 @@ the \fIleft mouse button\fR on its name or value and click on the
 .PP
 As a faster alternative, you can also press the \fIright mouse
 button\fR on the aggregate and select the appropriate menu item.
-.PP
+.\"
+.\"
+.SS "Rotating Arrays"
 Arrays can be aligned horizontally or vertically.  To change the
 alignment of an array, select it and then click on the `\fBRotate()\fR'
 button.
