@@ -679,6 +679,7 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
 	return false;
 
     GraphNode *node = dn->nodeptr();
+
     if (node->hidden() && dn->alias_of == disp_nr)
     {
 	// Already hidden as alias of DISP_NR
@@ -692,18 +693,37 @@ bool DispGraph::alias(Widget w, int disp_nr, int alias_disp_nr)
     node->hidden() = true;
     dn->alias_of   = disp_nr;
 
-    // Insert new alias edges
+    // Hide ordinary hints and insert new alias edges
     GraphEdge *edge;
-    for (edge = node->firstFrom(); edge != 0; 
-	 edge = node->nextFrom(edge))
+    VarArray<GraphNode *> from_nodes;
+    VarArray<GraphNode *> to_nodes;
+    int i;
+
+    for (edge = node->firstFrom(); edge != 0; edge = node->nextFrom(edge))
     {
-	add_alias_edge(w, alias_disp_nr, d0->nodeptr(), edge->to());
+	GraphEdge *e = edge;
+	while (e->to()->isHint())
+	{
+	    e->to()->hidden() = true;
+	    e = e->to()->firstFrom();
+	}
+	to_nodes += e->to();
     }
-    for (edge = node->firstTo(); edge != 0;
-	 edge = node->nextTo(edge))
+    for (edge = node->firstTo(); edge != 0; edge = node->nextTo(edge))
     {
-	add_alias_edge(w, alias_disp_nr, edge->from(), d0->nodeptr());
+	GraphEdge *e = edge;
+	while (e->from()->isHint())
+	{
+	    e->from()->hidden() = true;
+	    e = e->from()->firstTo();
+	}
+	from_nodes += e->from();
     }
+
+    for (i = 0; i < to_nodes.size(); i++)
+	add_alias_edge(w, alias_disp_nr, d0->nodeptr(), to_nodes[i]);
+    for (i = 0; i < from_nodes.size(); i++)
+	add_alias_edge(w, alias_disp_nr, from_nodes[i], d0->nodeptr());
 
     // Propagate `selected' state to hints
     for (node = firstNode(); node != 0; node = nextNode(node))
@@ -736,9 +756,10 @@ bool DispGraph::unalias(int alias_disp_nr)
     // Unsuppress display
     node->hidden() = false;
 
-    // Delete alias edges associated with this node
+    // Delete all alias edges associated with this node
     VoidArray kill_edges;
-    for (GraphEdge *edge = firstEdge(); edge != 0; edge = nextEdge(edge))
+    GraphEdge *edge;
+    for (edge = firstEdge(); edge != 0; edge = nextEdge(edge))
     {
 	AliasGraphEdge *e = ptr_cast(AliasGraphEdge, edge);
 	if (e != 0 && e->disp_nr() == alias_disp_nr)
@@ -759,6 +780,26 @@ bool DispGraph::unalias(int alias_disp_nr)
 	delete e;
     }
 
+    // Unsuppress remaining (ordinary) hints
+    for (edge = node->firstFrom(); edge != 0; edge = node->nextFrom(edge))
+    {
+	GraphEdge *e = edge;
+	while (e->to()->isHint())
+	{
+	    e->to()->hidden() = false;
+	    e = e->to()->firstFrom();
+	}
+    }
+    for (edge = node->firstTo(); edge != 0; edge = node->nextTo(edge))
+    {
+	GraphEdge *e = edge;
+	while (e->from()->isHint())
+	{
+	    e->from()->hidden() = false;
+	    e = e->from()->firstTo();
+	}
+    }
+
     dn->alias_of = 0;
     return true;
 }
@@ -768,54 +809,6 @@ bool DispGraph::unalias(int alias_disp_nr)
 //-----------------------------------------------------------------------------
 // Routing
 //-----------------------------------------------------------------------------
-
-// The routing algorithm to add a new edge between nodes N1 and N2
-// works as follows:
-
-// 1. Try direct edge unless an existing edge is obscured.
-//
-// +-----+     +-----+
-// +     +====>+     +
-// +-----+     +-----+
-//
-// 2. Try two-hint edge on the right side and the left side of direct edge
-// unless an existing edge or a new hint is obscured.
-//
-// +-----+     +-----+
-// +     +---->+     +
-// +-----+     +-----+
-//     |        A
-//     ==========
-//
-// 3. If there is any old two-hint edge like the one in #2, replace it by a 
-// one-hint edge.
-//
-// +-----+     +-----+
-// +     +---->+     +
-// +-----+     +-----+
-//     \        A
-//      \      /
-//       \    /
-//        \  /
-//         \/
-//
-// 4. Add another one-hint edge unless an existing edge or a new hint
-// is obscured.
-//
-//
-// +-----+     +-----+
-// +     +---->+     +
-// +-----+     +-----+
-//   \ \        A A
-//    \ \      / /
-//     \ \    / /
-//      \ \  / /
-//       \ \/ /
-//        \  /
-//         \/
-//
-// 5. Go to step 2 with an increased offset.
-
 
 // True iff R->P1 and R->P2 have the same angle
 bool DispGraph::same_angle(const BoxPoint& r,
@@ -1042,6 +1035,7 @@ void DispGraph::add_routed_alias_edge(Widget w, int alias_disp_nr,
 
 	// Add single hint
 	HintGraphNode *hint = new HintGraphNode(pos1);
+	hint->hidden() = from->hidden() || to->hidden();
 	*this += hint;
 
 	// Add edges
