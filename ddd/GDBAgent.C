@@ -2606,6 +2606,123 @@ ProgramLanguage GDBAgent::program_language(string text)
 
 
 //-----------------------------------------------------------------------------
+// Perl specials
+//-----------------------------------------------------------------------------
+
+
+// Return command to dump variable VAR
+string GDBAgent::dump_command(const string& var) const
+{
+    if (type() != PERL || !var.matches(rxidentifier))
+	return print_command(var);
+
+    // `V PACKAGE VAR' dumps variable VAR
+    string base = var.after(0);
+
+    string package = "";
+    if (base.contains("::"))
+    {
+	package = base.before("::", -1);
+	base = base.after(package + "::");
+    }
+
+    string cmd;
+    if (package == "")
+	cmd = "X ";	// Use current package
+    else
+	cmd = "V " + package + " ";
+
+    return cmd + base;
+}
+
+// Bring VALUE into a form that might be recognized by DDD
+string GDBAgent::munch_perl_array(const string& value)
+{
+    int n = value.freq('\n');
+    string *lines = new string[n + 1];
+    split(value, lines, n + 1, '\n');
+
+    bool compact = false;
+    bool first_elem = true;
+    string new_value;
+
+    for (int i = 0; i < n; i++)
+    {
+	string line = lines[i];
+	strip_space(line);
+
+	if (!compact && line.contains(rxint, 0))
+	{
+	    // Strip index
+	    line = line.after(rxint);
+
+	    if (line.contains("..", 0))
+	    {
+		// In compact representation, Perl omits individual
+		// indexes, and puts a START..END index instead.
+		compact = true;
+		line = lines[i].after(rxint);
+	    }
+	    strip_space(line);
+	
+	    if (!first_elem)
+		new_value += ", ";
+
+	    first_elem = false;
+	}
+
+	new_value += line;
+    }
+
+    delete []lines;
+    return new_value;
+}
+
+string GDBAgent::munch_perl_hash(const string& value)
+{
+    string new_value(value);
+    strip_space(new_value);
+
+    new_value.gsub("(\n   ", "(");
+    new_value.gsub("\n)", ")");
+    new_value.gsub("\n", ",");
+
+    return new_value;
+}
+
+// Get value of VAR in PERL_DUMP
+string GDBAgent::get_dumped_var(const string& dump, const string& var) const
+{
+    if (type() != PERL || var == "")
+	return dump;
+
+    string value = dump;
+
+    // Find the beginning
+    value.prepend('\n');
+    value = value.from("\n" + var + " = ");
+    if (value == "")
+	return dump;		// Not found
+
+    string name = value.before(" = ");
+    value = value.after(" = ");
+
+    string first_line = value.before('\n');
+    if (first_line.contains('(', -1))
+	value = value.through("\n)\n");
+    else
+	value = value.through("\n");
+
+    if (var[0] == '@')
+	value = munch_perl_array(value);
+    else if (var[0] == '%')
+	value = munch_perl_hash(value);
+
+    return name + " = " + value;
+}
+
+
+//-----------------------------------------------------------------------------
 // Handle error messages
 //-----------------------------------------------------------------------------
 

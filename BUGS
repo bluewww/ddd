@@ -161,7 +161,6 @@ Volunteers for fixing these and other bugs are welcome!
     - `Run' should set arguments.  Assign to $ARGS?
     - Settings.
     - Operations.  How do we dereference something?
-    - Displays.
 
 347*Verify buttons clears *all buttons* in SGI DBX, even basic ones
     such as `step' or `run'.  Suggestion: if `help run' doesn't give

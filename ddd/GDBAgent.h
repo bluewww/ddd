@@ -214,6 +214,10 @@ protected:
     // General trace function
     void trace(char *prefix, void *call_data) const;
 
+    // Perl specials
+    static string munch_perl_array(const string& value);
+    static string munch_perl_hash(const string& value);
+
 public:
     // Constructor
     GDBAgent (XtAppContext app_context,
@@ -667,6 +671,10 @@ public:
     string debug_command(string file = "") const;   // file FILE
     string signal_command(int sig) const;           // signal SIG
     string nop_command(string comment = "") const;  // # comment
+
+    // Dump a variable and get it from a dump.
+    string dump_command(const string& var) const;   // Perl: X var
+    string get_dumped_var(const string& dump, const string& var) const;
 
     // Run program with given arguments
     string run_command(string args) const;	    // set args ARGS\nrun

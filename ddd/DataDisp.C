@@ -3068,7 +3068,7 @@ void DataDisp::new_displaySQ (string display_expression,
 	{
 	    gdb_command(gdb->display_command(display_expression),
 			last_origin, OQCProc(0), (void *)0);
-	    gdb_command(gdb->print_command(display_expression),
+	    gdb_command(gdb->dump_command(display_expression),
 			last_origin, new_data_displayOQC, info);
 	}
     }
@@ -3495,7 +3495,7 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
 	return;
     }
 
-    if (!contains_display (answer, gdb))
+    if (!contains_display(answer, gdb))
     {
 	if (info->deferred == DeferIfNeeded)
 	{
@@ -3531,8 +3531,8 @@ void DataDisp::new_data_displayOQC (const string& answer, void* data)
     }
 
     // Create new DispNode
-    string ans = answer;
-    DispNode *dn = new_data_node(info->display_expression, 
+    string ans = gdb->get_dumped_var(answer, info->display_expression);
+    DispNode *dn = new_data_node(info->display_expression,
 				 info->scope, ans, info->plotted);
     if (dn == 0)
     {
@@ -3686,7 +3686,7 @@ void DataDisp::new_data_displaysSQA (string display_expression,
 	string expr = prefix + "[" + itostring (i) + "]" + postfix;
 	info->display_expressions += expr;
 	display_cmds              += gdb->display_command(expr);
-	print_cmds                += gdb->print_command(expr);
+	print_cmds                += gdb->dump_command(expr);
     }
 
     VoidArray dummy;
@@ -3741,8 +3741,9 @@ void DataDisp::new_data_displaysOQAC (const StringArray& answers,
 	else
 	{
 	    // Create new display and remember disabling-message
-	    DispNode *dn = new_data_node(info->display_expressions[i],
-					 info->scope, answer, info->plotted);
+	    const string& var = info->display_expressions[i];
+	    string ans = gdb->get_dumped_var(answer, var);
+	    DispNode *dn = new_data_node(var, info->scope, ans, info->plotted);
 	    if (dn == 0)
 		continue;
 
@@ -3858,7 +3859,7 @@ int DataDisp::add_refresh_data_commands(StringArray& cmds)
 	     dn = disp_graph->next(ref))
 	{
 	    if (!dn->is_user_command() && !dn->deferred())
-		cmds += gdb->print_command(dn->name());
+		cmds += gdb->dump_command(dn->name());
 	}
     }
 
@@ -5414,7 +5415,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
     if (!can_set)
 	return;
 
-    string value = gdb_question(gdb->print_command(name));
+    string value = gdb_question(gdb->dump_command(name));
     if (value == NO_GDB_ANSWER)
     {
 	value = "";		// GDB is busy - don't show old value
@@ -5424,7 +5425,7 @@ void DataDisp::setCB(Widget w, XtPointer, XtPointer)
 	post_gdb_message(value);
 	value = "";		// Variable cannot be accessed
     }
-
+    value = gdb->get_dumped_var(value, name);
     value = assignment_value(get_disp_value_str(value, gdb));
 
     // Make sure the old value is saved in the history

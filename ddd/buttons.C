@@ -59,6 +59,7 @@ char buttons_rcsid[] =
 #include "editing.h"
 #include "fortranize.h"
 #include "history.h"
+#include "isid.h"
 #include "question.h"
 #include "regexps.h"
 #include "select.h"
@@ -462,8 +463,15 @@ string gdbValue(const string& expr)
 	// Ask debugger for value.  In case of secondary prompts, use
 	// the default choice.
 	gdb->removeHandler(ReplyRequired, gdb_selectHP);
-	value = gdb_question(gdb->print_command(expr), help_timeout);
+	string dump = gdb_question(gdb->dump_command(expr), help_timeout);
+	if (dump == NO_GDB_ANSWER)
+	    value = NO_GDB_ANSWER;
+	else
+	    value = gdb->get_dumped_var(dump, expr);
 	gdb->addHandler(ReplyRequired, gdb_selectHP);
+
+	if (value.contains(" = "))
+	    value = value.after(" = ");
 
 	strip_space(value);
     }
@@ -556,7 +564,9 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     string expr = 
 	source_view->get_word_at_event(widget, event, startpos, endpos);
 
-    // clog << "Pointing at " << quote(expr) << "\n";
+#if LOG_VALUE_TIPS
+    clog << "Pointing at " << quote(expr) << "\n";
+#endif
 
     // If we're at a breakpoint, return appropriate help
     MString bp_help = 
@@ -602,12 +612,8 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     if (gdb->program_language() == LANGUAGE_PERL)
     {
 	// In Perl, all variables begin with `$', `@', or `%'.
-	if (expr != "")
-	{
-	    char c = expr[0];
-	    if (c != '$' && c != '@' && c != '%')
-		return clear;
-	}
+	if (expr != "" &&  !is_perl_prefix(expr[0]))
+	    return clear;
     }
 
     // Get value of ordinary variable
@@ -643,7 +649,7 @@ static MString gdbDefaultValueText(Widget widget, XEvent *event,
     if (tip == "void")
 	return clear;		// Empty variable
     if (gdb->program_language() == LANGUAGE_PERL && tip == "")
-	tip = "(null)";
+	tip = "undef";
 
     if (for_documentation)
     {
