@@ -356,7 +356,7 @@ void start_gdb()
     cmd_data->command     = "<init>";
     cmd_data->filter_disp = NoFilter;      // No `display' output
     cmd_data->pos_buffer  = new PosBuffer; // Find initial pos
-    cmd_data->user_prompt = false;
+    cmd_data->user_prompt = true;
 
     PlusCmdData* plus_cmd_data = new PlusCmdData;
     plus_cmd_data->command = "<init>";
@@ -521,7 +521,7 @@ void start_gdb()
     Command c("# reset");
     c.priority = COMMAND_PRIORITY_INIT;
     c.verbose  = false;
-    c.prompt   = true;
+    c.prompt   = false;
     c.check    = true;
     gdb_command(c);
 }
