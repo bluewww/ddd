@@ -2740,7 +2740,7 @@ dnl
 dnl The product version, in the form `MAJOR-NUMBER.MINOR-NUMBER[.PATCHLEVEL]'
 dnl A version in the form `YYYY-MM-DD' is a release-of-the-day, i.e. a
 dnl snapshot of the current development tree.
-VERSION=3.2.90
+VERSION=3.2.91
 dnl
 dnl The version nickname.
 NICKNAME="Da da da"
