@@ -296,10 +296,6 @@ Volunteers for these and other projects are welcome!
      backtrace window at X, Y; open-backtrace() would open it in some
      default position).  See also #154, above.
 
-157. When in the source window, using the Find()>> or Find()<< buttons
-     to find a string that does not appear elsewhere in the current
-     file should produce a message on the status line.
-
 160. Support DEC `decladebug'.  Jens Albrecht
      <Jens.Albrecht@informatik.uni-erlangen.de> has a trace.
 

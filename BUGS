@@ -281,17 +281,10 @@ Volunteers for fixing these and other bugs are welcome!
 131. `Find<<' and `Find>>' should be in the `Edit' menu (at least for
      sources)
 
-133. In Linux, clicking the middle mouse button on a breakpoint symbol
-     causes a segmentation fault.
-
 134. David M. Karr <dkarr@nmo.gtegsc.com> wrote: It seems to me that
      when the executable is reloaded, it should force a reload of the
      source.  I don't see much use in running an executable with the
-     old version of a source file.
-
-135. David M. Karr <dkarr@nmo.gtegsc.com> complains that 
-     navigating to overloaded functions seems to confuse debugger
-     state.  `Select one of the following names:  0) Cancel ...'
+     old version of a source file.  [Is this still a problem?  -AZ]
 
 136. If a DBX `where' output in the console window contains a line
      like ["test_dxdb.f":49], it is omitted from the listing.

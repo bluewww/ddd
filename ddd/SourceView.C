@@ -3017,6 +3017,7 @@ void SourceView::find(const string& s,
     int matchlen = s.length();
     int pos = -1;
     XmTextPosition cursor = XmTextGetInsertionPosition(source_text_w);
+    XmTextPosition initial_cursor = cursor;
     int wraps = 0;
 
     if (current_source == "")
@@ -3107,8 +3108,36 @@ void SourceView::find(const string& s,
 
     if (pos > 0)
     {
+	string msg;
+
+	// Highlight occurrence
 	XmTextSetSelection(source_text_w, pos, pos + matchlen, time);
+
+	// Set position
 	SetInsertionPosition(source_text_w, cursor, false);
+
+	if (cursor == initial_cursor)
+	{
+	    // Unchanged position
+	    msg = "No other occurrences of " + quote(s) + ".";
+	}
+	else
+	{
+	    int line_nr;
+	    bool in_text;
+	    int bp_nr;
+	    string address;
+
+	    if (!get_line_of_pos(source_text_w, pos, line_nr, 
+				 address, in_text, bp_nr))
+		line_nr = line_count;
+
+	    msg = "Found " + quote(s) + " in " + line_of_cursor();
+	    if (wraps)
+		msg += " (wrapped)";
+	}
+
+	set_status(msg);
     }
     else
     {

@@ -4073,11 +4073,14 @@ Please verify the file name and try again.
 
 Ddd*source_find_error_popup.title: @DDD@: Not Found
 Ddd*source_find_error*helpString:	\
-@rm The given argument @bf () @rm can not be found in the source text.
+@rm The given argument @bf () @rm can not be found in the source text.\n\
+\n\
+If you wish to search for @bf ()@rm even within words,\n\
+consider disabling @bf Find Words Only @rm (via the @bf Options @rm menu).
 
 Ddd*manual_find_error_popup.title: @DDD@: Not Found
 Ddd*manual_find_error*helpString:	\
-@rm The given key can not be found in the on-line manual.
+@rm The given argument @bf () @rm can not be found in the on-line manual.
 
 Ddd*no_source_error_popup.title: @DDD@: No Source
 Ddd*no_source_error*helpString:	\
