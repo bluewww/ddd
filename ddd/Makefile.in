@@ -647,7 +647,7 @@ IMAGE_WIDTH = 600
 	$(CONVERT) -geometry $(IMAGE_WIDTH) -interlace Line $< $@
 
 .fig.eps:
-	cd `dirname $@` && $(FIG2PS) $< > `basename $@`
+	(cd `dirname $<` && $(FIG2PS) `basename $<` ) > $@
 
 
 ## Libraries and object files
