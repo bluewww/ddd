@@ -49,7 +49,7 @@ char vsl_rcsid[] =
 #endif
 
 #if !HAVE_ATHENA
-int main(int argc, char *argv[]) 
+int main(void)
 {
     std::cerr << "This program requires the Athena widget library.\n";
     return EXIT_FAILURE;
