@@ -466,7 +466,12 @@ void gdb_command(const Command& c0)
     clog << "Command queue: " << commandQueue << "\n";
 #endif
 
-    if (interrupted && !is_running_cmd(c.command))
+    if (interrupted && 
+	!is_running_cmd(c.command) && 
+	!starts_recording(c.command) &&
+	!is_file_cmd(c.command, gdb) &&
+	!is_define_cmd(c.command) &&
+	!is_core_cmd(c.command))
     {
 	// Continue later
 	Command cont("cont");
