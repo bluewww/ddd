@@ -260,4 +260,7 @@ Volunteers for fixing these and other bugs are welcome!
      using DDD from XEmacs, and defining XEmacs command sequences to
      be sent to DDD, the last command(s) in the sequence get lost.
 
+231. According to Ronald Wahl <Ronald.Wahl@Informatik.TU-Chemnitz.DE>, 
+     DDD gets into a busy loop when used with libc-5.4.41 under Linux.
+
 231. (Insert your bug here)

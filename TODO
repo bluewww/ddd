@@ -362,26 +362,12 @@ Volunteers for these and other projects are welcome!
 
 235. L. Peter Deutsch <ghost@aladdin.com> suggests:
 
-     * Currently, "Show" always shows the substructure in-line.  I
-       propose that "Show 1 level" be further divided into "Show 1
-       level in-line" and "Display 1 level", the latter spawning a new
-       display with the substructure, as is now done for "Display
-       *()".  "Hide" would *not* automatically close spawned displays.
-
      * I propose adding some double-click support to the data display.
        Specifically, I would like to see double-clicking on a pointer
        value do the equivalent of "Display *()", double-clicking on a
        composite value with hidden substructure do the equivalent of
        "Show 1 level in-line", and double-clicking on a composite
        value with visible substructure do the equivalent of "Hide".
-
-     * There doesn't appear to be any GUI-based way to recast a
-       pointer in order to follow it to a datum of a different type.
-       I tried using the New Display -> Edit Menu route, but I
-       couldn't see how to make it work, even following the
-       instructions in the Help display.  The Borland GUI has a "Show
-       as ..."  menu item that lets you enter the type to which you
-       want the datum cast: this would be a nice addition.
 
      * There are 4 different styles of command selection in the GUI:
        menu bar (at the top), individual command buttons (2 rows),
@@ -402,4 +388,6 @@ Volunteers for these and other projects are welcome!
 
 236. Support getting core dumps via the /proc file system.
 
-237. (Insert your project idea here)
+237. `Find' should do case-insensitive search.
+
+238. (Insert your project idea here)
