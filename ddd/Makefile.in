@@ -941,7 +941,8 @@ HUFFMAN_OBJECTS = strclass.$(OBJEXT) cook.$(OBJEXT) rxclass.$(OBJEXT)
 OBJECTS = $(LIB_OBJECTS) $(DDD_OBJECTS)
 
 ## The program files.
-# We use `./ddd' to prevent VPATH selecting at the `ddd' directory instead.
+# We use `./ddd' to prevent Solaris VPATH-enabled make from selecting
+# the `ddd' directory instead.
 PROGS = $(ddd_canonical)$(EXEEXT) ./$(ddd)$(EXEEXT)
 
 ## The program files to be installed.
@@ -1646,11 +1647,11 @@ ddd.vsl.h: $(srcdir)/../vsllib/tab.vsl
 
 ## The programs.
 
-$(ddd)$(EXEEXT): $(ddd_canonical)$(EXEEXT)
-	$(RM) $@ $(SYMS); $(LN_S) $(ddd_canonical)$(EXEEXT) $@
-
+# We use `./ddd' to prevent Solaris VPATH-enabled make from selecting
+# the `ddd' directory instead.
 ./$(ddd)$(EXEEXT): $(ddd_canonical)$(EXEEXT)
-	$(RM) $@ $(SYMS); $(LN_S) $(ddd_canonical)$(EXEEXT) $@
+	$(RM) ./$(ddd)$(EXEEXT) $(SYMS)
+	$(LN_S) $(ddd_canonical)$(EXEEXT) ./$(ddd)$(EXEEXT)
 
 $(ddd_canonical)$(EXEEXT): ddd.$(OBJEXT) $(OBJECTS)
 	$(LINK.cc) -o $@ ddd.$(OBJEXT) $(OBJECTS) $(ALL_X_LIBS) $(LIBS)
