@@ -201,7 +201,6 @@ section, below.
 .SH "THE DDD WINDOWS"
 .\" ---------------
 .\"
-.PSPIC @srcdir@/PICS/disclaimer.ps 15.3cm
 .PSPIC @srcdir@/PICS/ddd-all.ps 15.3cm
 \s-2@DDD@\s+2 is composed of three main windows:
 .br
@@ -216,9 +215,11 @@ program.
 The \fIDebugger Console\fR accepts debugger commands and shows
 debugger messages.
 .PP
-By default, \s-2@DDD@\s+2 groups these main windows into one single
-window, but \s-2@DDD@\s+2 can also be configured to treat each one
-separately.
+By default, \s-2@DDD@\s+2 places these main windows stacked into one
+single window, but \s-2@DDD@\s+2 can also be configured to treat each
+one separately.
+.PP
+.PSPIC @srcdir@/PICS/ddd-separate.ps 15.3cm
 .PP
 Besides these main windows, there are some other optional windows
 .br
@@ -543,14 +544,17 @@ sources.
 .PP
 To open a program to be debugged, select `\fBFile | Open Program\fR'.
 .PP
+In \s-2JDB\s+2, select `\fBFile | Open Class\fR' instead.  This gives
+you a list of available classes to choose from.
+.PP
 To open a core dump for the program, select `\fBFile | Open Core
-Dump\fR' Before `\fBOpen Core Dump\fR', you should first use `\fBFile
-| Open Program\fR' to specify the program that generated the core dump
-and to load its symbol table.
+Dump\fR'.  Before `\fBOpen Core Dump\fR', you should first use
+`\fBFile | Open Program\fR' to specify the program that generated the
+core dump and to load its symbol table.
 .PP
 To open an arbitrary source file, select `\fBFile | Open Source\fR'.
-This works best if the given source file is actually related to the
-debugged program.
+You can use the source file for debugging purposes only if the given
+source file is actually related to the debugged program.
 .PP
 Note: With \s-2XDB\s+2 and some \s-2DBX\s+2 versions, the debugged
 program must be specified upon invocation and cannot be changed at run
@@ -703,7 +707,7 @@ Note: \s-2JDB\s+2 and some \s-2DBX\s+2 variants do not support
 breakpoint disabling.
 .PP
 To temporarily disable a breakpoint, press \fImouse button 3\fR on the
-breakpoint name and select the `\fBDisable Breakpoint\fR' item from
+breakpoint symbol and select the `\fBDisable Breakpoint\fR' item from
 the breakpoint popup menu.  To enable it again, select `\fBEnable
 Breakpoint\fR'.
 .PP
@@ -771,7 +775,79 @@ commands.  Type `\fBhelp clear\fR' or `\fBhelp delete\fR' at
 the `\fB(gdb)\fR' prompt for details.
 .\"
 .\"
-.SS "Moving Breakpoints"
+.SS "Editing Breakpoint Properties"
+.\"
+You can change all properties of a breakpoint by pressing \fImouse
+button 3\fR on the breakpoint symbol and select `\fBProperties\fR'
+from the breakpoint popup menu.  This will pop up a dialog showing the 
+current properties of the selected breakpoint.
+.PP
+.PSPIC @srcdir@/PICS/ddd-bp-properties.ps 15.3cm
+.PP
+.IP \(bu 2
+Click on `\fBLookup\fR' to move the cursor to the breakpoint's
+location.
+.IP \(bu 2
+Click on `\fBEnable\fR' to enable the breakpoint.
+.IP \(bu 2
+Click on `\fBDisable\fR' to disable the breakpoint.
+.IP \(bu 2
+Click on `\fBTemp\fR' to make the breakpoint temporary.
+Note: There is no way to make a temporary breakpoint non-temporary.
+.IP \(bu 2
+Click on `\fBDelete\fR' to delete the breakpoint.
+.PP
+.\"
+.\"
+.SS "Breakpoint Conditions"
+.\"
+Note: \s-2JDB\s+2 does not support breakpoint conditions.
+.PP
+In the field `\fBCondition\fR' of the `\fBBreakpoint Properties\fR'
+panel, you can specify a \fIbreakpoint condition\fR.  If a breakpoint
+condition is set, the breakpoint stops the program only if the
+associated condition is met\(em\&that is, if the condition expression
+evaluates to a non-zero value.
+.\"
+.\"
+.SS "Breakpoint Ignore Counts"
+.\"
+Note: \s-2JDB\s+2 and some \s-2DBX\s+2 variants do not support
+breakpoint ignore counts.
+.PP
+In the field `\fBIgnore Count\fR' of the `\fBBreakpoint Properties\fR'
+panel, you can specify a \fIbreakpoint ignore count\fR.  If an ignore
+count is set, each crossing of the breakpoint decrements the ignore
+count.  The program stops only if the ignore count is zero.
+.\"
+.SS "Breakpoint Commands"
+.\"
+Note: Breakpoint commands are currently available on \s-2GDB\s+2 only.
+.PP
+Using the `\fBCommands\fR' buttons of the `\fBBreakpoint
+Properties\fR' panel, you can record and edit commands to be executed
+when the breakpoint is hit.
+.PP
+To record a command sequence, follow these steps:
+.IP \(bu 2
+Click on `\fBRecord\fR' to begin the recording.
+.IP \(bu 2
+Now interact with \s-2DDD\s+2.  While recording, \s-2DDD\s+2 does not
+execute commands, but simply records them to be executed when the
+breakpoint is hit.  The recorded debugger commands are shown in the
+debugger console.
+.IP \(bu 2
+To stop the recording, click on `\fBEnd\fR' or enter `\fBend\fR' at
+the \s-2GDB\s+2 prompt.  To \fIcancel\fR the recording, click on
+`\fBInterrupt\fR' or press \fBCtrl+C\fR.
+.IP \(bu 2
+Click on `\fBEdit \s-2>>\s+2\fR' to edit the recorded commands.
+When done with editing, click on `\fBEdit \s-2<<\s+2\fR' to close the
+commands editor.
+.PP
+.\"
+.\"
+.SS "Moving and Copying Breakpoints"
 .\"
 To move a breakpoint to a different location, press \fImouse button 1\fR on
 the stop sign and drag it to the desired location.  This is equivalent
@@ -779,9 +855,11 @@ to deleting the breakpoint at the old location and setting a
 breakpoint at the new location.  The new breakpoint inherits all
 properties of the old breakpoint, except the breakpoint number.
 .PP
+To copy a breakpoint to a new location, press the \fBShift\fR key
+while dragging.
+.PP
 Note: Dragging breakpoints is not possible when glyphs are disabled.
 Delete and set breakpoints instead.
-.\"
 .\"
 .\"
 .SS "Finding Breakpoints"
@@ -796,51 +874,86 @@ where \fIn\fR is the breakpoint number and click on the `\fBLookup ()\fR'
 button to find its definition.
 .\"
 .\"
-.SS "Breakpoint Conditions"
+.SS "Editing all Breakpoints"
 .\"
-Note: \s-2JDB\s+2 does not support breakpoint conditions.
+To view and edit all breakpoints at once, select `\fBSource | Edit
+Breakpoints\fR'.  This will popup the \fIBreakpoint Editor\fR which
+displays the state of all breakpoints.
 .PP
-Using the Breakpoint Editor (invoked through `\fBSource | Edit
-Breakpoints\fR'), you can specify \fIbreakpoint conditions\fR.
-Reaching the breakpoint stops the program only if the associated
-condition is met\(em\&that is, if the condition expression evaluates
-to a non-zero value.
+.PSPIC @srcdir@/PICS/ddd-edit-breakpoints.ps 15.3cm
 .PP
-To set a breakpoint condition, select the appropriate breakpoint in
-the Breakpoint Editor and click on the `\fBCondition\fR' button.
-You can then enter (or change) the condition in a special dialog.
-.PP
-.PSPIC @srcdir@/PICS/ddd-cond.ps 15.3cm
-.PP
-As a faster alternative, you can also press \fImouse button 3\fR on the
-breakpoint in the source code and select the `\fBSet Condition\fR'
-item from the popup menu.
+In the breakpoint editor, you can select individual breakpoints by
+clicking on them.  Pressing \fBCtrl\fR while clicking toggles the
+selection.  To edit the properties of all selected breakpoints, click
+on `\fBProps\fR'.
 .\"
-.\"
-.SS "Breakpoint Ignore Counts"
-.\"
-Note: \s-2JDB\s+2 and some \s-2DBX\s+2 variants do not support
-breakpoint ignore counts.
-.PP
-Using the Breakpoint Editor (invoked through `\fBSource | Edit
-Breakpoints\fR'), you can specify \fIignore counts\fR.  If an ignore
-count is set, each crossing of the breakpoint decrements the ignore
-count.  The program stops only if the ignore count is zero.
-.PP
-To set a breakpoint ignore count, select the appropriate breakpoint in
-the Breakpoint Editor and click on the `\fBIgnore Count\fR' button.
-You can then enter (or change) the ignore count in a special dialog.
-.PP
-As a faster alternative, you can also press \fImouse button 3\fR on the
-breakpoint in the source code and select the `\fBSet Ignore Count\fR'
-item from the popup menu.
 .\"
 .SS "More Breakpoint Features"
 .\"
-Using \s-2GDB\s+2, several more breakpoint features can be invoked
-through the debugger console.  Enter `\fBhelp breakpoints\fR' at the
-`\fB(gdb)\fR' prompt.
+Using \s-2GDB\s+2, several more commands related to breakpoints can be
+invoked through the debugger console.  Enter `\fBhelp breakpoints\fR'
+at the `\fB(gdb)\fR' prompt.
 .\"
+.\"
+.\" ---------------
+.SH "WATCHPOINTS"
+.\" ---------------
+.\"
+You can make the program stop as soon as some variable value changes,
+or when some variable is read or written.  This is called `setting a
+\fIwatchpoint\fR on a variable'.
+.PP
+Watchpoints have much in common with breakpoints: in particular, you
+can enable and disable them.  You can also set conditions, ignore
+counts, and commands to be executed when a watched variable changes
+its value.
+.PP
+Please note: Unless you have special hardware support, watchpoints
+slow down the debugged program by about two orders of magnitude.
+.\"
+.\"
+.SS "Setting Watchpoints"
+.\"
+If the variable name is visible, click with \fImouse button 1\fR on
+the variable name.  The variable name is copied to the argument field.
+Otherwise, enter the variable name in the argument field.  Click on
+the `\fBWatch ()\fR' button to set a watchpoint there.
+.PP
+Using \s-2GDB\s+2, you can set different types of watchpoints.  Click
+and hold \fImouse button 1\fR on the `\fBWatch ()\fR' button to get a
+menu.
+.\"
+.\"
+.SS "Editing Watchpoint Properties"
+.\"
+To change the properties of a watchpoint, enter the name of the
+watched variable in the argument field.  Click and hold \fImouse
+button 1\fR on the `\fBWatch ()\fR' button and select `\fBWatchpoint
+Properties\fR'.
+.PP
+The \fBWatchpoint Properties\fR panel has the same functionality as
+the \fBBreakpoint Properties\fR panel; see `\fBEditing Breakpoint
+Properties\fR', above, for details.  As an additional feature, you can 
+click on `\fBPrint ()\fR' to see the current value of a watched
+variable.
+.\"
+.\"
+.SS "Editing all Watchpoints"
+.\"
+To view and edit all watchpoints at once, select `\fBData | Edit
+Watchpoints\fR'.  This will popup the \fIWatchpoint Editor\fR which
+displays the state of all watchpoints.
+.PP
+The \fIWatchpoint Editor\fR has the same functionality as the
+\fIBreakpoint Editor\fR; see `\fBEditing All Breakpoints\fR', above,
+for details.  As an additional feature, you can click on `\fBPrint
+()\fR' to see the current value of a watched variable.
+.\"
+.\"
+.SS "Deleting Watchpoints"
+.\"
+To delete a watchpoint, enter the name of the watched variable in the
+argument field and click the `\fBUnwatch ()\fR' button.
 .\"
 .\"
 .\" ---------------
@@ -863,7 +976,7 @@ command tool to its saved position, use `\fBView | Command Tool\fR'.
 By default, the command tool \fIsticks\fR to the \s-2@DDD@\s+2 source
 window: Whenever you move the \s-2@DDD@\s+2 source window, the command
 tool follows such that the distance between source window and command
-tool remains the same.  By default, the command tool also is
+tool remains the same.  By default, the command tool is also
 \fIauto-raised\fR, such that it stays on top of other \s-2@DDD@\s+2
 windows.
 .PP
@@ -873,11 +986,12 @@ windows.
 .SS "Starting Program Execution"
 .\"
 To start execution of the debugged program, select `\fBProgram |
-Run\fR'.  You will then be prompted for the arguments to give to your
+Run\fR'.  You will then be prompted for the arguments to pass to your
 program.  You can either select from a list of previously used
 arguments or enter own arguments in the text field.  Afterwards, press
 the `\fBOK\fR' button to start execution with the selected arguments.
 .PP
+.PSPIC @srcdir@/PICS/disclaimer.ps 15.3cm
 .PSPIC @srcdir@/PICS/ddd-arguments.ps 15.3cm
 .PP
 To run your program again, with the same arguments, select `\fBProgram

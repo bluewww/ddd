@@ -846,12 +846,13 @@ PICS = \
 	$(picdir)/ddd-attach.ps         \
 	$(picdir)/ddd-backtrace.ps	\
 	$(picdir)/ddd-bp-popup.ps       \
+	$(picdir)/ddd-bp-properties.ps  \
 	$(picdir)/ddd-button-editor.ps  \
 	$(picdir)/ddd-code.ps           \
-	$(picdir)/ddd-cond.ps           \
 	$(picdir)/ddd-console.ps        \
 	$(picdir)/ddd-data-prefs.ps     \
 	$(picdir)/ddd-drag.ps           \
+	$(picdir)/ddd-edit-breakpoints.ps \
 	$(picdir)/ddd-edit-displays.ps  \
 	$(picdir)/ddd-general-prefs.ps  \
 	$(picdir)/ddd-helpers.ps  	\
@@ -870,6 +871,7 @@ PICS = \
 	$(picdir)/ddd-rotate-display.ps \
 	$(picdir)/ddd-save-session.ps   \
 	$(picdir)/ddd-select-display.ps \
+	$(picdir)/ddd-separate.ps       \
 	$(picdir)/ddd-set.ps	        \
 	$(picdir)/ddd-settings.ps       \
 	$(picdir)/ddd-shortcuts.ps      \
@@ -1467,10 +1469,6 @@ $(picdir)/ddd-source.ps: \
 	$(picdir)/ddd-source.fig $(picdir)/ddd-source.xpm
 	cd $(picdir); $(FIG2PS) ddd-source.fig > ddd-source.ps
 
-$(picdir)/ddd-cond.ps: \
-	$(picdir)/ddd-cond.fig $(picdir)/ddd-cond.xpm
-	cd $(picdir); $(FIG2PS) ddd-cond.fig > ddd-cond.ps
-
 $(picdir)/ddd-line-popup.ps: \
 	$(picdir)/ddd-line-popup.fig $(picdir)/ddd-line-popup.xpm
 	cd $(picdir); $(FIG2PS) ddd-line-popup.fig > ddd-line-popup.ps
@@ -1618,6 +1616,19 @@ $(picdir)/ddd-drag.ps: \
 $(picdir)/disclaimer.ps: \
 	$(picdir)/disclaimer.fig
 	cd $(picdir); $(FIG2PS) disclaimer.fig > disclaimer.ps
+
+$(picdir)/ddd-separate.ps: \
+	$(picdir)/ddd-separate.fig $(picdir)/ddd-separate.xpm
+	cd $(picdir); $(FIG2PS) ddd-separate.fig > ddd-separate.ps
+
+$(picdir)/ddd-bp-properties.ps: \
+	$(picdir)/ddd-bp-properties.fig $(picdir)/ddd-bp-properties.xpm
+	cd $(picdir); $(FIG2PS) ddd-bp-properties.fig > ddd-bp-properties.ps
+
+$(picdir)/ddd-edit-breakpoints.ps: \
+	$(picdir)/ddd-edit-breakpoints.fig $(picdir)/ddd-edit-breakpoints.xpm
+	cd $(picdir); $(FIG2PS) ddd-edit-breakpoints.fig > ddd-edit-breakpoints.ps
+
 
 # The logo comes in XPM source
 $(picdir)/dddsplash.ps: $(icondir)/dddsplash.xpm
