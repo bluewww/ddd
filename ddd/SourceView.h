@@ -79,12 +79,12 @@ struct BreakpointPropertiesInfo;
 
 //-----------------------------------------------------------------------------
 class SourceView {
-    static void add_to_history(const string& file_name, int line);
-    static void add_to_history(const string& address);
+
+    // Position history
     static void add_current_to_history();
+    static void add_position_to_history(const string& file_name, int line);
 
-    static void goto_entry(string entry);
-
+    // Callbacks
     static void set_source_argCB         (Widget, XtPointer, XtPointer);
 
     static void line_popup_setCB         (Widget, XtPointer, XtPointer);
@@ -265,10 +265,6 @@ class SourceView {
     //-----------------------------------------------------------------------
     // Data
     //-----------------------------------------------------------------------
-    static StringArray history;
-    static int history_position; // Last position in history + 1
-    static bool source_history_locked;
-    static bool code_history_locked;
     static bool checking_scroll;
 
     static Widget toplevel_w;	 // Top-level widget
@@ -669,10 +665,6 @@ public:
     // Reload current file
     static void reload();
 
-    // Lookup previous/next position
-    static void go_back();
-    static void go_forward();
-
     // Return source cursor position in <source>:<line> format.
     static string line_of_cursor();
 
@@ -839,7 +831,6 @@ public:
     // Clear caches
     static void clear_file_cache();
     static void clear_code_cache();
-    static void clear_history();
 
     // Get the line at POSITION
     static string get_line(string position);
@@ -905,6 +896,10 @@ public:
 
     // Update glyphs for widget W (0: all)
     static void update_glyphs(Widget w = 0);
+
+    // Goto history entry
+    static void goto_entry(const string& file, int line,
+			   const string& address);
 };
 
 inline void SourceView::create_bp(const string& a, Widget w)

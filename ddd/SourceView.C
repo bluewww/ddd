@@ -66,8 +66,6 @@ char SourceView_rcsid[] =
 // but does not refer to a specific project, bug, Sunday,
 // or brand of soft drink.
 
-#define LOG_POSITION_HISTORY 0
-
 
 //-----------------------------------------------------------------------------
 
@@ -85,6 +83,7 @@ char SourceView_rcsid[] =
 #include "IntArray.h"
 #include "MakeMenu.h"
 #include "PosBuffer.h"
+#include "PositionH.h"
 #include "TimeOut.h"
 #include "assert.h"
 #include "charsets.h"
@@ -397,11 +396,6 @@ string SourceView::last_shown_pc       = "";
 int SourceView::last_frame_pos = 0;
 bool SourceView::frame_pos_locked = false;
 int SourceView::current_frame = -1;
-
-StringArray SourceView::history;
-int SourceView::history_position = 1;
-bool SourceView::code_history_locked = false;
-bool SourceView::source_history_locked = false;
 
 bool SourceView::checking_scroll = false;
 
@@ -2458,7 +2452,7 @@ void SourceView::read_file (string file_name,
     if (error)
 	return;
 
-    add_to_history(file_name, initial_line);
+    add_position_to_history(file_name, initial_line);
 
     // The remainder may take some time...
     Delay delay;
@@ -3577,7 +3571,7 @@ void SourceView::_show_execution_position(string file, int line, bool silent)
     if (!is_current_file(file) || line < 1 || line > line_count)
 	return;
 
-    add_to_history(file, line);
+    add_position_to_history(file, line);
 
     XmTextPosition pos = pos_of_line(line);
     int indent = indent_amount(source_text_w, pos);
@@ -3664,7 +3658,7 @@ void SourceView::show_position (string position, bool silent)
 	   
 	if (line > 0 && line <= line_count)
 	{
- 	    add_to_history(file_name, line);
+ 	    add_position_to_history(file_name, line);
     
 	    XmTextPosition pos = pos_of_line(line);
 	    int indent = indent_amount(source_text_w, pos);
@@ -4087,6 +4081,110 @@ void SourceView::lookup(string s, bool silent)
 
 
 //-----------------------------------------------------------------------
+// Position history
+//-----------------------------------------------------------------------
+
+// Add current position to history
+void SourceView::add_current_to_history()
+{
+    XmTextPosition pos;
+    int line_nr;
+    bool in_text;
+    int bp_nr;
+    string address;
+    bool pos_found;
+
+    // Get position in source code
+    pos = XmTextGetInsertionPosition(source_text_w);
+    pos_found = get_line_of_pos(source_text_w, pos, line_nr, address, 
+				in_text, bp_nr);
+    if (pos_found)
+	add_position_to_history(current_source_name(), line_nr);
+
+
+    // Get position in machine code
+    pos = XmTextGetInsertionPosition(code_text_w);
+    pos_found = get_line_of_pos(code_text_w, pos, line_nr, address, 
+				in_text, bp_nr);
+    if (pos_found && address != "")
+	position_history.add_address(address);
+}
+
+// Add position to history
+void SourceView::add_position_to_history(const string& file_name, int line)
+{
+    string source_name = file_name;
+    switch (gdb->type())
+    {
+    case GDB:
+    case JDB:
+	// Use source names instead.
+	if (source_name_cache.has(file_name))
+	    source_name = source_name_cache[file_name];
+	break;
+
+    case DBX:
+    case XDB:
+	break;
+    }
+
+    position_history.add_position(source_name, line);
+}
+
+// Lookup entry from position history
+void SourceView::goto_entry(const string& file_name, int line, 
+			    const string& address)
+{
+    // Show position in status line
+    string msg = "";
+    if (file_name != "")
+	msg = "File " + quote(file_name);
+    if (line != 0)
+    {
+	if (msg == "")
+	    msg = "Line ";
+	else
+	    msg += ", line ";
+	msg += itostring(line);
+    }
+    if (address != "")
+    {
+	if (msg == "")
+	    msg = "Address ";
+	else
+	    msg += ", address ";
+	msg += address;
+    }
+    set_status(msg);
+
+    if (file_name != "")
+    {
+	// Lookup source
+	if (!is_current_file(file_name))
+	{
+	    read_file(file_name, line);
+	}
+
+	if (is_current_file(file_name) && line > 0 && line <= line_count)
+	{
+	    XmTextPosition pos = pos_of_line(line);
+	    int indent = indent_amount(source_text_w, pos);
+	    SetInsertionPosition(source_text_w, pos + indent, true);
+	}
+    }
+
+    if (address != "")
+    {
+	// Lookup address
+	show_pc(address, 
+		address == last_execution_pc ? 
+		XmHIGHLIGHT_SELECTED : XmHIGHLIGHT_NORMAL);
+    }
+}
+
+
+
+//-----------------------------------------------------------------------
 // Process current working directory
 //-----------------------------------------------------------------------
 
@@ -4144,271 +4242,6 @@ void SourceView::process_use(string& use_output)
 
     clear_file_cache();
     reload();
-}
-
-
-
-//-----------------------------------------------------------------------
-// Position history
-//-----------------------------------------------------------------------
-
-// All entries in the history have the format `FILE:LINE[:ADDRESS]'.
-
-// Add position to history
-void SourceView::add_to_history(const string& file_name, int line)
-{
-    if (source_history_locked)
-    {
-	source_history_locked = false;
-	return;
-    }
-
-    string source_name = file_name;
-    switch (gdb->type())
-    {
-    case GDB:
-    case JDB:
-	// Use source names instead.
-	if (source_name_cache.has(file_name))
-	    source_name = source_name_cache[file_name];
-	break;
-
-    case DBX:
-    case XDB:
-	break;
-    }
-
-    string entry = source_name + ":" + itostring(line);
-
-    string current_entry = "";
-    if (history.size() > 0 && history_position > 0)
-    {
-	current_entry = history[history_position - 1];
-	if (current_entry.freq(':') == 2)
-	{
-	    int last_colon = current_entry.index(':', -1);
-	    current_entry = current_entry.before(last_colon);
-	}
-    }
-
-    if (entry != current_entry)
-    {
-	if (history_position < history.size())
-	{
-	    history[history_position++] = entry;
-	}
-	else
-	{
-	    history += entry;
-	    history_position = history.size();
-	}
-
-	StringArray new_history;
-	for (int i = 0; i < history_position; i++)
-	    new_history += history[i];
-	history = new_history;
-    }
-
-#if LOG_POSITION_HISTORY
-    clog << "Position history:\n";
-    for (int i = 0; i < history.size(); i++)
-	clog << i << (i == history_position - 1 ? "* " : "  ") 
-	     << history[i] << "\n";
-    clog << "\n";
-#endif
-}
-
-// Add position to history
-void SourceView::add_to_history(const string& address)
-{
-    if (code_history_locked)
-    {
-	code_history_locked = false;
-	return;
-    }
-
-    string new_entry = "";
-
-    if (history.size() > 0)
-    {
-	string& current_entry = history[history_position - 1];
-	if (current_entry.freq(':') < 2)
-	{
-	    // Append address to current position
-	    current_entry += ":" + address;
-	}
-	else
-	{
-	    // Address already there
-	    int last_colon = current_entry.index(':', -1);
-	    string current_address = current_entry.after(last_colon);
-	    if (address != current_address)
-	    {
-		// Add new entry
-		new_entry = current_entry.through(last_colon) + address;
-	    }
-	}
-    }
-    else
-    {
-	// No source position yet: add address
-	new_entry = "::" + address;
-    }
-
-    if (new_entry != "")
-    {
-	if (history_position < history.size())
-	{
-	    history[history_position++] = new_entry;
-	}
-	else
-	{
-	    history += new_entry;
-	    history_position = history.size();
-	}
-
-	StringArray new_history;
-	for (int i = 0; i < history_position; i++)
-	    new_history += history[i];
-	history = new_history;
-    }
-
-
-#if LOG_POSITION_HISTORY
-    clog << "Position history:\n";
-    for (int i = 0; i < history.size(); i++)
-	clog << i << (i == history_position - 1 ? "* " : "  ") 
-	     << history[i] << "\n";
-    clog << "\n";
-#endif
-}
-
-// Add current position to history
-void SourceView::add_current_to_history()
-{
-    XmTextPosition pos;
-    int line_nr;
-    bool in_text;
-    int bp_nr;
-    string address;
-    bool pos_found;
-
-    // Get position in source code
-    pos = XmTextGetInsertionPosition(source_text_w);
-    pos_found = get_line_of_pos(source_text_w, pos, line_nr, address, 
-				in_text, bp_nr);
-    if (pos_found)
-	add_to_history(current_source_name(), line_nr);
-
-
-    // Get position in machine code
-    pos = XmTextGetInsertionPosition(code_text_w);
-    pos_found = get_line_of_pos(code_text_w, pos, line_nr, address, 
-				in_text, bp_nr);
-    if (pos_found && address != "")
-	add_to_history(address);
-}
-
-// Lookup entry from position history
-void SourceView::goto_entry(string entry)
-{
-    string file_name = entry.before(':');
-    string line_str  = entry.after(':');
-    int line         = atoi(line_str);
-    string address   = line_str.after(':');
-
-    // Show position in status line
-    string msg = "";
-    if (file_name != "")
-	msg = "File " + quote(file_name);
-    if (line != 0)
-    {
-	if (msg == "")
-	    msg = "Line ";
-	else
-	    msg += ", line ";
-	msg += itostring(line);
-    }
-    if (address != "")
-    {
-	if (msg == "")
-	    msg = "Address ";
-	else
-	    msg += ", address ";
-	msg += address;
-    }
-    set_status(msg);
-
-
-    if (file_name != "")
-    {
-	// Lookup source
-	if (!is_current_file(file_name))
-	{
-	    source_history_locked = true;
-	    read_file(file_name, line);
-	}
-
-	if (is_current_file(file_name) && line > 0 && line <= line_count)
-	{
-	    XmTextPosition pos = pos_of_line(line);
-	    int indent = indent_amount(source_text_w, pos);
-	    SetInsertionPosition(source_text_w, pos + indent, true);
-	}
-    }
-
-    if (address != "")
-    {
-	// Lookup address
-	code_history_locked = true;
-	show_pc(address, 
-		address == last_execution_pc ? 
-		XmHIGHLIGHT_SELECTED : XmHIGHLIGHT_NORMAL);
-    }
-
-#if LOG_POSITION_HISTORY
-    clog << "Position history:\n";
-    for (int i = 0; i < history.size(); i++)
-	clog << i << (i == history_position - 1 ? "* " : "  ") 
-	     << history[i] << "\n";
-    clog << "\n";
-#endif
-}
-
-void SourceView::go_back()
-{
-    if (history_position > 1 && history.size() > 0)
-    {
-	const string& entry = history[--history_position - 1];
-	goto_entry(entry);
-    }
-    else
-    {
-	set_status("No previous source position.");
-    }
-}
-
-void SourceView::go_forward()
-{
-    if (history_position < history.size())
-    {
-	const string& entry = history[history_position++];
-	goto_entry(entry);
-    }
-    else
-    {
-	set_status("No next source position.");
-    }
-}
-
-// Clear history
-void SourceView::clear_history()
-{
-    static StringArray empty;
-    history               = empty;
-    history_position      = 1;
-    code_history_locked   = false;
-    source_history_locked = false;
 }
 
 
@@ -8987,7 +8820,7 @@ void SourceView::show_pc(const string& pc, XmHighlightMode mode,
 	return;
 
     SetInsertionPosition(code_text_w, pos + indent_amount(code_text_w));
-    add_to_history(pc);
+    position_history.add_address(pc);
 
     XmTextPosition pos_line_end = 0;
     if (current_code != "")

@@ -862,6 +862,7 @@ DDD_OBJECTS = \
 	HistoryF.o   \
 	MinMaxA.o    \
 	PosBuffer.o  \
+	PositionH.o  \
 	SmartC.o     \
 	SourceView.o \
 	WhatNextCB.o
