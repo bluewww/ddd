@@ -80,9 +80,6 @@ Volunteers for these and other projects are welcome!
 060. When using a dynamic version of libstdc++, configure fails
      to add its location to the -R flag.
 
-063* Have a (generic) panel for debugger options.  Inquire setting and
-     documentation strings via `show'.
-
 067. Andy Gill (andy@dcs.gla.ac.uk) wants more options to
      `graph display': ``for example,
 
