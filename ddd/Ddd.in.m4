@@ -3006,7 +3006,7 @@ source texts are cached in memory.\n\
 ITEM If LBL(Cache machine code) is set, \
 disassembled code is cached in memory.\n\
     Otherwise, code is re-disassembled upon each function change.\n\
-ITEM In LBL(Tab width), you can set the spacing of tab stops.\n\
+ITEM In LBL(Tab Width), you can set the spacing of tab stops.\n\
     Setting the tab width to 8 sets a tab stop every 8 characters.\n\
 ITEM In LBL(Indentation), you can indent the source and machine code,\n\
     giving additional room for the breakpoint area.\n\
@@ -3019,9 +3019,11 @@ Ddd*preferences*showExecPos.labelString:	Show position and breakpoints
 Ddd*preferences*asGlyphs.labelString:		as glyphs
 Ddd*preferences*asText.labelString:		as text characters
 
-Ddd*preferences*toolButtons.labelString:	Tool Buttons Location
-Ddd*toolButtonsMenu*commandTool.labelString:	Command Tool
-Ddd*toolButtonsMenu*sourceWindow.labelString:   Source Window
+Ddd*preferences*toolButtons.labelString:	Tool buttons location
+Ddd*toolButtonsMenu*commandTool.labelString:	\
+Command Tool
+Ddd*toolButtonsMenu*sourceWindow.labelString:   \
+Source Window\ \ \ \ \ 
 
 Ddd*preferences*referSources.labelString:	Refer to program sources
 Ddd*preferences*byPath.labelString:		by full path name
@@ -3032,8 +3034,10 @@ Ddd*preferences*cacheSource.labelString:	source files
 Ddd*preferences*cacheCode.labelString:		machine code
 
 Ddd*preferences*find.labelString:	        Find
-Ddd*preferences*wordsOnly.labelString:		words only
-Ddd*preferences*caseSensitive.labelString:	case sensitive
+Ddd*preferences*wordsOnly.labelString:		\
+words only\ 
+Ddd*preferences*caseSensitive.labelString:	\
+case sensitive
 
 Ddd*preferences*displayLineNumbers.labelString:	 \
 Display source line numbers
@@ -3043,14 +3047,14 @@ Ddd*preferences*tabWidth.minimum:		1
 Ddd*preferences*tabWidth.maximum:		32
 Ddd*preferences*tabWidth.showValue:		on
 Ddd*preferences*tabWidth.titleString:		\
-Tab width
+Tab width\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
 
 Ddd*preferences*sourceIndent.orientation:	XmHORIZONTAL
 Ddd*preferences*sourceIndent.minimum:		0
 Ddd*preferences*sourceIndent.maximum:		16
 Ddd*preferences*sourceIndent.showValue:		on
 Ddd*preferences*sourceIndent.titleString:	\
-Source indentation
+Source indentation\ \ \ \ \ \ \ \ \ \ \ 
 
 Ddd*preferences*codeIndent.orientation:		XmHORIZONTAL
 Ddd*preferences*codeIndent.minimum:		0
@@ -5218,8 +5222,8 @@ Select any thread to make it the current thread.\n\
 In JDB, you can also\n\
 ITEM select a threadgroup to switch between viewing all threads\n\
     and the threads of the selected threadgroup.\n\
-ITEM click on LBL(Suspend) to suspend the selected threads.\n\
-ITEM click on LBL(Resume) to resume the selected threads.
+ITEM click on LBL(Suspend) to suspend execution of the selected threads.\n\
+ITEM click on LBL(Resume) to resume execution of the selected threads.
 
 
 !-----------------------------------------------------------------------------
