@@ -267,7 +267,7 @@ Volunteers for fixing these and other bugs are welcome!
       should take place.  This is actually quite nasty because I never
       know what other *.o files will be destroyed by recompiling when
       I work on some xxx.c file.
-      [This is a problem with some Make flavours.  Use GNU make instead.  -AZ]
+      [This is a problem with some MAKE flavors.  Use GNU make instead.  -AZ]
 
    c. Some Makefiles in the subdirectories do not use CFLAGS thus
       making it neccessary to always edit them to put in the correct
@@ -280,4 +280,7 @@ Volunteers for fixing these and other bugs are welcome!
       the $(HOME) does not get propagated to all Makefiles.
       [This is a problem of the libiberty and librx maintainers.  -AZ]
 
-250 (Insert your bug here)
+250 In LessTif, selecting an identifier first, and a line then, will
+    not update () correctly.
+
+251 (Insert your bug here)
