@@ -76,9 +76,6 @@ char history_rcsid[] =
 #include <Xm/SelectioB.h>
 
 
-static void update_combo_boxes(const string& new_entry);
-
-
 //-----------------------------------------------------------------------------
 // Command history
 //-----------------------------------------------------------------------------
@@ -104,6 +101,15 @@ static bool gdb_new_history = true;
 
 // True if history command was issued
 static bool private_gdb_history = false;
+
+// Update all combo boxes
+static void update_combo_boxes();
+
+// Update combo boxes listening to NEW_ENTRY
+static void update_combo_boxes(const string& new_entry);
+
+
+
 
 void set_gdb_history_file(const string& file)
 {
@@ -206,73 +212,73 @@ void add_to_history(const string& line)
 // Load history from history file
 void load_history(const string& file)
 {
-    if (file != "")
+    if (file == "")
+	return;
+
+    // Delay d;
+
+    ifstream is(file);
+    if (is.bad())
+	return;
+
+    static StringArray empty;
+    gdb_history = empty;
+
+    assert(gdb_history.size() == 0);
+
+    // If the first command in history is a `file' command,
+    // insert them all and disregard later ones.
+    bool first_command = true;
+    bool first_is_file = false;
+    bool get_files     = true;
+
+    while (is)
     {
-	// Delay d;
+	char _line[BUFSIZ];
+	_line[0] = '\0';
 
-	ifstream is(file);
-	if (is.bad())
-	    return;
-
-	static StringArray empty;
-	gdb_history = empty;
-
-	assert(gdb_history.size() == 0);
-
-	// If the first command in history is a `file' command,
-	// insert them all and disregard later ones.
-	bool first_command = true;
-	bool first_is_file = false;
-	bool get_files     = true;
-
-	while (is)
+	is.getline(_line, sizeof(_line));
+	if (_line[0] != '\0')
 	{
-	    char _line[BUFSIZ];
-	    _line[0] = '\0';
+	    string line(_line);
 
-	    is.getline(_line, sizeof(_line));
-	    if (_line[0] != '\0')
+	    bool added = false;
+	    if (is_file_cmd(line, gdb) && line != "# reset")
 	    {
-		string line(_line);
+		if (first_command)
+		    first_is_file = true;
 
-		bool added = false;
-		if (is_file_cmd(line, gdb) && line != "# reset")
+		if (get_files)
 		{
-		    if (first_command)
-			first_is_file = true;
-
-		    if (get_files)
-		    {
-			string arg = line.after(rxwhite);
-			add_to_recent(arg);
-			added = first_is_file;
-		    }
+		    string arg = line.after(rxwhite);
+		    add_to_recent(arg);
+		    added = first_is_file;
 		}
-		else
-		{
-		    if (first_is_file)
-			get_files = false;
-		    if (first_command)
-			first_is_file = false;
-		}
-
-		if (!added && line[0] != '#')
-		{
-		    gdb_history += line;
-		    add_to_arguments(line);
-		    update_combo_boxes(line);
-		}
-
-		first_command = false;
 	    }
+	    else
+	    {
+		if (first_is_file)
+		    get_files = false;
+		if (first_command)
+		    first_is_file = false;
+	    }
+
+	    if (!added && line[0] != '#')
+	    {
+		gdb_history += line;
+		add_to_arguments(line);
+	    }
+
+	    first_command = false;
 	}
-
-	gdb_history += "";
-	gdb_current_history = gdb_history.size() - 1;
-	gdb_new_history = true;
-
-	update_arguments();
     }
+
+    gdb_history += "";
+    gdb_current_history = gdb_history.size() - 1;
+    gdb_new_history = true;
+
+    update_arguments();
+    update_combo_boxes();
 }
 
 // Save history into history file
@@ -484,6 +490,7 @@ void goto_history(int pos)
 // Combo Box Histories
 //-----------------------------------------------------------------------------
 
+// Update combo box containing TEXT
 static void update_combo_box(Widget text, HistoryFilter filter)
 {
     StringArray entries;
@@ -506,10 +513,17 @@ static void update_combo_box(Widget text, HistoryFilter filter)
 
 static WidgetHistoryFilterAssoc combo_boxes;
 
+// Update all combo boxes
+static void update_combo_boxes()
+{
+    for (WidgetHistoryFilterAssocIter iter(combo_boxes); iter.ok(); iter++)
+	update_combo_box(iter.key(), iter.value());
+}
+
+// Update combo boxes listening to NEW_ENTRY
 static void update_combo_boxes(const string& new_entry)
 {
-    for (WidgetHistoryFilterAssocIter iter(combo_boxes);
-	 iter.ok(); iter++)
+    for (WidgetHistoryFilterAssocIter iter(combo_boxes); iter.ok(); iter++)
     {
 	HistoryFilter filter = iter.value();
 	string arg = filter(new_entry);
