@@ -173,7 +173,7 @@ static char *_fullhostname(char *most_qualified_host)
 		{
 		    static char num_host[128];
 		    num_host[0] = '\0';
-		    for (int i = 0; i < h->h_length; i++)
+		    for (int i = 0; i < (int)h->h_length; i++)
 			sprintf(num_host + strlen(num_host), i ? ".%d" : "%d",
 				int((unsigned char)(h->h_addr_list[j][i])));
 
