@@ -276,7 +276,9 @@ Ddd*buttonImageGeometry:   21x17+4+0
 Ddd*buttonCaptionGeometry: 29x7+0-0
 
 ! Whether to use `flat' buttons that only have a 3d appearance when entered
-Ddd*flatButtons: on
+Ddd*flatToolbarButtons: on
+Ddd*flatDialogButtons:  on
+
 
 ! The color key to use for buttons.
 !   Color (`c')  - color
@@ -982,29 +984,28 @@ Ddd*exited_dialog*foreground:      red4
 Ddd*no_debugger_dialog*foreground: red4
 
 ! Glyph colors
-! Note: In Motif 1.2 and later, colors of dragged glyphs 
-! (temp_*) are taken from the drag source.
 Ddd*source_form_w.XmPushButton.background: grey90
-Ddd*source_form_w.plain_arrow.foreground:  DarkGreen
-Ddd*source_form_w.grey_arrow.foreground:   DarkGreen
-Ddd*source_form_w.temp_arrow.foreground:   DarkGreen
-Ddd*source_form_w.signal_arrow.foreground: red4
-Ddd*source_form_w.plain_stop.foreground:   red4
-Ddd*source_form_w.plain_cond.foreground:   red4
-Ddd*source_form_w.temp_stop.foreground:    red4
-Ddd*source_form_w.grey_stop.foreground:	   grey50
-Ddd*source_form_w.grey_cond.foreground:	   grey50
-
 Ddd*code_form_w.XmPushButton.background:   grey90
-Ddd*code_form_w.plain_arrow.foreground:	   DarkGreen
-Ddd*code_form_w.grey_arrow.foreground:	   DarkGreen
-Ddd*code_form_w.temp_arrow.foreground:     DarkGreen
-Ddd*code_form_w.signal_arrow.foreground:   red4
-Ddd*code_form_w.plain_stop.foreground:	   red4
-Ddd*code_form_w.plain_cond.foreground:	   red4
-Ddd*code_form_w.temp_stop.foreground:      red4
-Ddd*code_form_w.grey_stop.foreground:	   grey50
-Ddd*code_form_w.grey_cond.foreground:	   grey50
+
+Ddd*plain_arrow.foreground:  DarkGreen
+Ddd*grey_arrow.foreground:   DarkGreen
+Ddd*signal_arrow.foreground: red4
+
+Ddd*plain_stop.foreground:   red4
+Ddd*plain_cond.foreground:   red4
+Ddd*plain_temp.foreground:   red4
+
+Ddd*grey_stop.foreground:    grey50
+Ddd*grey_cond.foreground:    grey50
+Ddd*grey_temp.foreground:    grey50
+
+! Note: In Motif 1.2 and later, colors of dragged glyphs 
+! (drag_...) are copied from the drag source.
+Ddd*drag_arrow.foreground:   DarkGreen
+Ddd*drag_stop.foreground:    red4
+Ddd*drag_cond.foreground:    red4
+Ddd*drag_temp.foreground:    red4
+
 
 ! Graph colors
 Ddd*graph_edit.nodeColor:	   black
@@ -1028,11 +1029,18 @@ Ddd*plain_arrow.labelPixmap:	plain_arrow
 Ddd*grey_arrow.labelPixmap:	grey_arrow
 Ddd*temp_arrow.labelPixmap:	temp_arrow
 Ddd*signal_arrow.labelPixmap:	signal_arrow
+
 Ddd*plain_stop.labelPixmap:	plain_stop
 Ddd*plain_cond.labelPixmap:	plain_cond
-Ddd*temp_stop.labelPixmap:	temp_stop
+Ddd*plain_temp.labelPixmap:	plain_temp
+
+Ddd*drag_stop.labelPixmap:	drag_stop
+Ddd*drag_cond.labelPixmap:	drag_cond
+Ddd*drag_temp.labelPixmap:	drag_temp
+
 Ddd*grey_stop.labelPixmap:	grey_stop
 Ddd*grey_cond.labelPixmap:	grey_cond
+Ddd*grey_temp.labelPixmap:	grey_temp
 
 
 !-----------------------------------------------------------------------------
@@ -1811,7 +1819,7 @@ DESC(Detach Process, [detach a process previously attached])\n\
 \n\
 DESC(Print Graph..., [print the data display graph])\n\
 DESC(Change Directory..., [change current directory])\n\
-DESC(Make..., [run the CODE(make) program])\n\
+DESC(Make..., [run the make program])\n\
 \n\
 DESC(Close, [close this window])\n\
 DESC(Restart, [restart DDD])\n\
@@ -1895,14 +1903,14 @@ Ddd*menubar*fileMenu.make.mnemonic:	 M
 Ddd*menubar*fileMenu.make.accelerator:      ~Shift Ctrl<Key>M
 Ddd*menubar*fileMenu.make.acceleratorText:  Ctrl+M
 Ddd*menubar*fileMenu.make.documentationString:  \
-@rm Run the CODE(make) program
+@rm Run the make program
 
 Ddd*menubar*fileMenu.makeAgain.labelString:	 Make Again
 Ddd*menubar*fileMenu.makeAgain.mnemonic:	 i
 Ddd*menubar*fileMenu.makeAgain.accelerator:      Shift Ctrl<Key>M
 Ddd*menubar*fileMenu.makeAgain.acceleratorText:  Ctrl+Shift+M
 Ddd*menubar*fileMenu.makeAgain.documentationString:  \
-@rm Run the CODE(make) program with the most recently given arguments
+@rm Run the make program with the most recently given arguments
 
 Ddd*menubar*fileMenu.close.labelString:	 Close
 Ddd*menubar*fileMenu.close.mnemonic:	 C
@@ -4031,7 +4039,7 @@ Ddd*line_popup.set.documentationString:	\
 
 Ddd*line_popup.set_temp.labelString:		Set Temporary Breakpoint
 Ddd*line_popup.set_temp.documentationString:	\
-@rm Set a temporary breakpoint which will be deleted when reached
+@rm Set a temporary breakpoint which will be deleted when hit
 
 Ddd*line_popup.temp_n_cont.labelString:		Continue Until Here
 Ddd*line_popup.temp_n_cont.documentationString:	\
@@ -4154,21 +4162,22 @@ To change the program counter, drag it with BUTTON(1).
 Ddd*code_form_w.signal_arrow*tipString: \
 @rm Current program counter (stopped by signal)
 
+define(BREAKPOINT_HELP, [\n\
+To change the breakpoint properties, press BUTTON(3).\n\
+To move it to another location, drag it using BUTTON(1).\n\
+To copy iy to another location, drag it using KEY(Shift)+BUTTON(1).])
+
 Ddd*plain_stop.helpString: \
 STRONG(Breakpoint (enabled))\n\
 The debugged program will stop when reaching this location.\n\
-\n\
-To change the breakpoint properties, press BUTTON(3).\n\
-To move it to another location, drag it using BUTTON(1).
+BREAKPOINT_HELP
 Ddd*plain_stop.tipString: 
 Ddd*plain_stop.documentationString: 
 
 Ddd*grey_stop.helpString: \
 STRONG(Breakpoint (disabled))\n\
 A disabled breakpoint has no effect until reenabled.\n\
-\n\
-To change the breakpoint properties, press BUTTON(3).\n\
-To move it to another location, drag it using BUTTON(1).
+BREAKPOINT_HELP
 Ddd*grey_stop.tipString: 
 Ddd*grey_stop.documentationString: 
 
@@ -4176,20 +4185,31 @@ Ddd*plain_cond.helpString: \
 STRONG(Conditional breakpoint (enabled))\n\
 The debugged program will stop when reaching this location\n\
 if the associated condition is true.\n\
-\n\
-To change the breakpoint properties, press BUTTON(3).\n\
-To move it to another location, drag it using BUTTON(1).
+BREAKPOINT_HELP
 Ddd*plain_cond.tipString: 
 Ddd*plain_cond.documentationString: 
 
 Ddd*grey_cond.helpString: \
 STRONG(Conditional breakpoint (disabled))\n\
 A disabled breakpoint has no effect until reenabled.\n\
-\n\
-To change the breakpoint properties, press BUTTON(3).\n\
-To move it to another location, drag it using BUTTON(1).
+BREAKPOINT_HELP
 Ddd*grey_cond.tipString: 
 Ddd*grey_cond.documentationString: 
+
+Ddd*plain_temp.helpString: \
+STRONG(Temporary breakpoint (enabled))\n\
+The debugged program will stop when reaching this location.\n\
+The breakpoint will be deleted when hit.\n\
+BREAKPOINT_HELP
+Ddd*plain_temp.tipString: 
+Ddd*plain_temp.documentationString: 
+
+Ddd*grey_temp.helpString: \
+STRONG(Temporary breakpoint (disabled))\n\
+A disabled breakpoint has no effect until reenabled.\n\
+BREAKPOINT_HELP
+Ddd*grey_temp.tipString: 
+Ddd*grey_temp.documentationString: 
 
 
 
@@ -4463,11 +4483,11 @@ Ddd*?*Edit.documentationString: \
 Ddd*?*Make.helpString:	\
 LBL(Make)\n\
 \n\
-Run the CODE(make) program with the most recently given arguments.
+Run the make program with the most recently given arguments.
 Ddd*?*Make.tipString: \
-@rm Run the CODE(make) program
+@rm Run the make program
 Ddd*?*Make.documentationString: \
-@rm Run the CODE(make) program with the most recently given arguments.
+@rm Run the make program with the most recently given arguments.
 
 Ddd*?*Reload.helpString:	\
 LBL(Reload)\n\
@@ -4717,25 +4737,15 @@ Click on LBL(Delete) to delete the selected session.
 !-----------------------------------------------------------------------------
 
 Ddd*edit_breakpoints_dialog_popup.title: DDD: Breakpoint and Watchpoint Editor
-Ddd*edit_breakpoints_dialog*breakpoints.labelString: \
-Breakpoints and Watchpoints
-Ddd*edit_breakpoints_dialog*form1.orientation:	 XmVERTICAL
-Ddd*edit_breakpoints_dialog*form1.marginWidth:	 0
-Ddd*edit_breakpoints_dialog*form1.marginHeight:	 0
-Ddd*edit_breakpoints_dialog*form2.orientation:	 XmHORIZONTAL
-Ddd*edit_breakpoints_dialog*form2.marginWidth:	 0
-Ddd*edit_breakpoints_dialog*form2.marginHeight:	 0
-Ddd*edit_breakpoints_dialog*buttons.orientation: XmVERTICAL
-Ddd*edit_breakpoints_dialog*buttons.marginWidth:   0
-Ddd*edit_breakpoints_dialog*buttons.marginHeight:  0
+Ddd*edit_breakpoints_dialog.listLabelString: Breakpoints and Watchpoints
+Ddd*edit_breakpoints_dialog*buttons.orientation: XmHORIZONTAL
 Ddd*edit_breakpoints_dialog.okLabelString:	 Close
 
 Ddd*edit_breakpoints_dialog*buttons*labelType:  XmPIXMAP
+Ddd*edit_breakpoints_dialog.childPlacement:  XmPLACE_TOP
 
 Ddd*edit_breakpoints_dialog*helpString:	     \
 WIDGET(Breakpoint and Watchpoint Editor)\n\
-\n\
-Select breakpoints and watchpoints on the left; operations on the right.\n\
 \n\
 DESC(Break..., [create a new breakpoint])\n\
 DESC(Watch..., [create a new watchpoint])\n\
@@ -4743,9 +4753,9 @@ DESC(Lookup, [lookup selected item])\n\
 DESC(Enable, [enable all selected items])\n\
 DESC(Disable, [disable all selected items])\n\
 DESC(Props..., [set or modify an item's properties])\n\
-DESC(Clear, [delete all selected items])
-
-Ddd*edit_breakpoints_dialog*list.selectionPolicy: XmEXTENDED_SELECT
+DESC(Clear, [delete all selected items])\n\
+\n\
+Use KEY(Ctrl)+BUTTON(1) to toggle selections.
 
 Ddd*edit_breakpoints_dialog*new_bp.labelString:	           New Breakpoint...
 Ddd*edit_breakpoints_dialog*new_bp.labelPixmap:	           new_break
@@ -4773,9 +4783,19 @@ Ddd*edit_breakpoints_dialog*lookup.labelInsensitivePixmap: lookup-xx
 Ddd*edit_breakpoints_dialog*lookup.armPixmap:              lookup-arm
 
 Ddd*edit_breakpoints_dialog*lookup.tipString:     \
-@rm Lookup or print selected item
+@rm Lookup selected item
 Ddd*edit_breakpoints_dialog*lookup.documentationString: \
-@rm Lookup selected item in the source (breakpoint) or print value (watchpoint)
+@rm Lookup selected item in the source
+
+Ddd*edit_breakpoints_dialog*print.labelString:	       Print
+Ddd*edit_breakpoints_dialog*print.labelPixmap:	          print
+Ddd*edit_breakpoints_dialog*print.labelInsensitivePixmap: print-xx
+Ddd*edit_breakpoints_dialog*print.armPixmap:              print-arm
+
+Ddd*edit_breakpoints_dialog*print.tipString:     \
+@rm Print watched expression
+Ddd*edit_breakpoints_dialog*print.documentationString: \
+@rm Print value of watched expression in the @GDB@ console
 
 Ddd*edit_breakpoints_dialog*enable.labelString:	       Enable
 Ddd*edit_breakpoints_dialog*enable.labelPixmap:	           enable
@@ -4868,16 +4888,60 @@ DESC(Set Access Watchpoint, \
 Ddd*breakpoint_properties_popup.title:    DDD: Properties
 
 Ddd*breakpoint_properties.okLabelString:    		Close
-Ddd*breakpoint_properties.cancelLabelString:    	Delete
 
 Ddd*breakpoint_properties*title.labelString:		Breakpoint
+Ddd*breakpoint_properties*titleMenu.marginWidth:	0
+Ddd*breakpoint_properties*titleMenu.marginWidth:	0
+Ddd*breakpoint_properties*titlePanel.marginWidth:	0
+Ddd*breakpoint_properties*titlePanel.marginHeight:	0
 
 Ddd*breakpoint_properties*enabled.labelString:		Enabled
 Ddd*breakpoint_properties*temporary.labelString:	Temporary
-Ddd*breakpoint_properties*lookup.labelString:		\ \ Lookup\ \ 
+
+Ddd*breakpoint_properties*lookup.labelType:		XmPIXMAP
+Ddd*breakpoint_properties*lookup.labelString:		Lookup
+Ddd*breakpoint_properties*lookup.labelPixmap:	         lookup
+Ddd*breakpoint_properties*lookup.labelInsensitivePixmap: lookup-xx
+Ddd*breakpoint_properties*lookup.armPixmap:              lookup-arm
+Ddd*breakpoint_properties*lookup.tipString:             \
+@rm Lookup breakpoint
+
+Ddd*breakpoint_properties*enable.labelType:		XmPIXMAP
+Ddd*breakpoint_properties*enable.labelString:		Enable
+Ddd*breakpoint_properties*enable.labelPixmap:	         enable
+Ddd*breakpoint_properties*enable.labelInsensitivePixmap: enable-xx
+Ddd*breakpoint_properties*enable.armPixmap:              enable-arm
+Ddd*breakpoint_properties*enable.tipString:             \
+@rm Enable breakpoint
+
+Ddd*breakpoint_properties*disable.labelType:		XmPIXMAP
+Ddd*breakpoint_properties*disable.labelString:		Disable
+Ddd*breakpoint_properties*disable.labelPixmap:	         disable
+Ddd*breakpoint_properties*disable.labelInsensitivePixmap: disable-xx
+Ddd*breakpoint_properties*disable.armPixmap:              disable-arm
+Ddd*breakpoint_properties*disable.tipString:             \
+@rm Disable breakpoint
+
+Ddd*breakpoint_properties*temporary.labelType:		XmPIXMAP
+Ddd*breakpoint_properties*temporary.labelString:		 Temp 
+Ddd*breakpoint_properties*temporary.labelPixmap:	         maketemp
+Ddd*breakpoint_properties*temporary.labelInsensitivePixmap: maketemp-xx
+Ddd*breakpoint_properties*temporary.armPixmap:              maketemp-arm
+Ddd*breakpoint_properties*temporary.tipString:           \
+@rm Make breakpoint temporary
+Ddd*breakpoint_properties*temporary.documentationString:           \
+@rm Make breakpoint temporary, such that it will be deleted when hit
+
+Ddd*breakpoint_properties*delete.labelType:		XmPIXMAP
+Ddd*breakpoint_properties*delete.labelString:		Delete
+Ddd*breakpoint_properties*delete.labelPixmap:	         delete
+Ddd*breakpoint_properties*delete.labelInsensitivePixmap: delete-xx
+Ddd*breakpoint_properties*delete.armPixmap:              delete-arm
+Ddd*breakpoint_properties*delete.tipString:           \
+@rm Delete breakpoint
 
 Ddd*breakpoint_properties*condition.label.labelString:	Condition
-Ddd*breakpoint_properties*condition.text.columns:       32
+Ddd*breakpoint_properties*condition.text.columns:       31
 
 Ddd*breakpoint_properties*ignore.label.labelString:	Ignore Count
 Ddd*breakpoint_properties*ignore*text.columns:          4
@@ -4892,17 +4956,35 @@ Ddd*breakpoint_properties*commands.labelString:		Commands
 
 Ddd*breakpoint_properties*commandsMenu.packing:		XmPACK_COLUMN
 Ddd*breakpoint_properties*commandsMenu.entryAlignment:	XmALIGNMENT_CENTER
-Ddd*breakpoint_properties*record.labelString:		\ \ Record\ \ 
+Ddd*breakpoint_properties*record.labelString:		\ \ \ Record\ \ \ 
 Ddd*breakpoint_properties*end.labelString:		End
 Ddd*breakpoint_properties*edit.labelString:		Edit @small>>
+
+Ddd*breakpoint_properties*record.tipString: \
+@rm Record breakpoint commands
+Ddd*breakpoint_properties*record.documentationString: \
+@rm Record commands to be executed when breakpoint is hit
+
+Ddd*breakpoint_properties*end.tipString: \
+@rm End recording
+Ddd*breakpoint_properties*end.documentationString: \
+@rm End command recording
+
+Ddd*breakpoint_properties*edit.tipString: \
+@rm Edit breakpoint commands
+
 
 Ddd*breakpoint_properties*text.columns:		        40
 
 Ddd*breakpoint_properties*helpString:		\
 @rm WIDGET(Breakpoint Properties)\n\
 \n\
-DESC(Enabled, [enable or disable the breakpoint.])\n\
-DESC(Temporary, [make the breakpoint temporary.])\n\
+DESC(Lookup, [lookup the breakpoint.])\n\
+DESC(Enable, [enable the breakpoint.])\n\
+DESC(Disable, [disable the breakpoint.])\n\
+DESC(Temp, [make the breakpoint temporary.])\n\
+DESC(Delete, [delete the breakpoint.])\n\
+\n\
 DESC(Condition, [specify a breakpoint condition.\n\
     The breakpoint breaks only if the condition evaluates to non-zero.])\n\
 DESC(Ignore Count, [set an ignore count VAR(count).\n\
@@ -4916,8 +4998,7 @@ DESC(Commands, [record and edit @GDB@ command sequences.\n\
     SUBITEM Click on LBL(End) to stop the recording.])\n\
     SUBITEM Use LBL(Edit @small>>) to edit the recorded commands.\n\
 \n\
-Click on LBL(Close) to close this window.\n\
-Click on LBL(Delete) to delete the breakpoint.
+Click on LBL(Close) to close this window.
 
 
 
@@ -5002,9 +5083,6 @@ ITEM click on LBL(Suspend) to suspend the selected threads.\n\
 ITEM click on LBL(Resume) to resume the selected threads.
 
 
-
-
-
 !-----------------------------------------------------------------------------
 ! Command History
 !-----------------------------------------------------------------------------
@@ -5030,29 +5108,22 @@ Click on LBL(OK) or LBL(Apply) to execute the current command.
 !-----------------------------------------------------------------------------
 
 Ddd*edit_displays_dialog_popup.title: DDD: Display Editor
-Ddd*edit_displays_dialog*displays.labelString: Displays
-Ddd*edit_displays_dialog*form1.orientation:   XmVERTICAL
-Ddd*edit_displays_dialog*form1.marginWidth:   0
-Ddd*edit_displays_dialog*form1.marginHeight:  0
-Ddd*edit_displays_dialog*form2.orientation:   XmHORIZONTAL
-Ddd*edit_displays_dialog*form2.marginWidth:   0
-Ddd*edit_displays_dialog*form2.marginHeight:  0
-Ddd*edit_displays_dialog*buttons.orientation: XmVERTICAL
-Ddd*edit_displays_dialog*buttons.marginWidth:	0
-Ddd*edit_displays_dialog*buttons.marginHeight:	0
+Ddd*edit_displays_dialog*listLabelString: Displays
+Ddd*edit_displays_dialog*buttons.orientation: XmHORIZONTAL
 Ddd*edit_displays_dialog.okLabelString:	      Close
 
+Ddd*edit_displays_dialog.childPlacement:  XmPLACE_TOP
 Ddd*edit_displays_dialog*buttons*labelType:  XmPIXMAP
+
 
 Ddd*edit_displays_dialog*helpString:	  \
 WIDGET(Display Editor)\n\
 \n\
-Select displays on the left, operations on the right.\n\
-\n\
 Columns:\n\
 DESC(Num, [the display number])\n\
 DESC(Expression, [the display expression])\n\
-DESC(State, [the display state (enabled, disabled, or alias)])\n\
+DESC(State, [the display state (enabled, disabled, alias, or deferred)])\n\
+DESC(Scope, [the scope in which the display was created])\n\
 DESC(Address, [the location of the display expression in memory])\n\
 \n\
 Buttons:\n\
@@ -5061,7 +5132,10 @@ DESC(Disp *, [dereference the selected display])\n\
 DESC(Show, [show the details of all selected displays])\n\
 DESC(Hide, [hide the details of all selected displays])\n\
 DESC(Set, [change a value in the selected display])\n\
-DESC(Undisplay, [delete all selected displays])
+DESC(Undisp, [delete all selected displays])\n\
+\n\
+Use KEY(Ctrl)+BUTTON(1) to toggle selections.
+
 
 define(NEW_DISPLAY_HELP,
 [@rm Please enter an expression in the argument field.\n\
@@ -5073,24 +5147,6 @@ stack frame, plus all those whose scope is global or an entire file.\n\
 If LBL(Include in `Display ()' Menu) is set, the new display expression\n\
 becomes an item in the LBL(Display ()) menu.])dnl
 
-Ddd*edit_displays_dialog*list.selectionPolicy: XmEXTENDED_SELECT
-
-
-Ddd*new_display_dialog_popup.title:          	   DDD: New Display
-Ddd*new_display_dialog.okLabelString:              Display
-Ddd*new_display_dialog*label.labelString:    	   Display Expression
-Ddd*new_display_dialog*shortcut.labelString:   	   \
-Include in `Display ()' Menu
-Ddd*new_display_dialog*helpString:	           NEW_DISPLAY_HELP
-
-Ddd*dependent_display_dialog_popup.title:          DDD: New Dependent Display
-Ddd*dependent_display_dialog.okLabelString:        Display
-Ddd*dependent_display_dialog*label.labelString:    Display Expression
-Ddd*dependent_display_dialog*shortcut.labelString: \
-Include in `Display ()' Menu
-Ddd*dependent_display_dialog*helpString: 	   NEW_DISPLAY_HELP\n\
-\n\
-The new display will be made dependent on the currently selected display.
 
 Ddd*edit_displays_dialog*new.labelString:	    New...
 Ddd*edit_displays_dialog*new.labelPixmap:		new_display
@@ -5152,6 +5208,32 @@ Ddd*edit_displays_dialog*delete.tipString:  \
 Ddd*edit_displays_dialog*delete.documentationString:  \
 @rm Delete the selected data displays
 
+
+!-----------------------------------------------------------------------------
+! New Display
+!-----------------------------------------------------------------------------
+
+Ddd*new_display_dialog_popup.title:          	   DDD: New Display
+Ddd*new_display_dialog.okLabelString:              Display
+Ddd*new_display_dialog*label.labelString:    	   Display Expression
+Ddd*new_display_dialog*shortcut.labelString:   	   \
+Include in `Display ()' Menu
+Ddd*new_display_dialog*helpString:	           NEW_DISPLAY_HELP
+
+Ddd*dependent_display_dialog_popup.title:          DDD: New Dependent Display
+Ddd*dependent_display_dialog.okLabelString:        Display
+Ddd*dependent_display_dialog*label.labelString:    Display Expression
+Ddd*dependent_display_dialog*shortcut.labelString: \
+Include in `Display ()' Menu
+Ddd*dependent_display_dialog*helpString: 	   NEW_DISPLAY_HELP\n\
+\n\
+The new display will be made dependent on the currently selected display.
+
+
+
+!-----------------------------------------------------------------------------
+! Run, make, and CD dialogs
+!-----------------------------------------------------------------------------
 
 Ddd*run_dialog_popup.title: DDD: Run Program
 Ddd*run_dialog.listLabelString:		Arguments
