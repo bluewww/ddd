@@ -168,14 +168,17 @@ void manage_and_raise(Widget w)
 	// If shell is withdrawn or iconic, realize dialog as icon
 	bool iconic = false;
 	Widget shell = find_shell(w);
-  	XWindowAttributes attr;
-	iconic = (!XtIsRealized(shell)
-		  || XGetWindowAttributes(XtDisplay(shell), 
-					  XtWindow(shell), &attr)
-		  && attr.map_state != IsViewable);
+	if (shell != 0)
+	{
+	    XWindowAttributes attr;
+	    iconic = (!XtIsRealized(shell)
+		      || XGetWindowAttributes(XtDisplay(shell), 
+					      XtWindow(shell), &attr)
+		      && attr.map_state != IsViewable);
 
-	if (iconic)
-	    XtVaSetValues(w, XmNinitialState, IconicState, NULL);
+	    if (iconic)
+		XtVaSetValues(w, XmNinitialState, IconicState, NULL);
+	}
 
 	XtManageChild(w);
 	raise_shell(w);
