@@ -1,0 +1,121 @@
+// $Id$ -*- C++ -*-
+// List recently changed RCS files
+
+// Copyright (C) 1995 Technische Universitaet Braunschweig, Germany.
+// Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+// 
+// This file is part of the ICE Library.
+// 
+// The ICE Library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Library General Public
+// License as published by the Free Software Foundation; either
+// version 2 of the License, or (at your option) any later version.
+// 
+// The ICE Library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Library General Public License for more details.
+// 
+// You should have received a copy of the GNU Library General Public
+// License along with the ICE Library -- see the file COPYING.LIB.
+// If not, write to the Free Software Foundation, Inc.,
+// 675 Mass Ave, Cambridge, MA 02139, USA.
+// 
+// ICE is the incremental configuration engine.
+// Contact ice@ips.cs.tu-bs.de for details.
+
+// $Log$
+// Revision 1.1  1995/05/01 15:48:03  zeller
+// Initial revision
+//
+// Revision 1.2  1995/03/07  15:54:39  zeller
+// Fix: Log
+//
+// Revision 1.1.1.1  1995/02/09  09:12:13  zeller
+// ICE 0.5 distribution
+//
+// Revision 1.7  1995/02/08  16:01:17  zeller
+// New: Compiler no more complains on unused RCS ID
+//
+// Revision 1.6  1995/01/14  14:48:27  zeller
+// New license for ICE 0.5
+//
+
+static const char rcsid[] =
+    "$Id$";
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
+
+// For all files in args, check if the corresponding RCS file is newer.
+// If so, print the name of the RCS file on standard output.
+// Thus, you may use co `rcssync *.C` to check out all recent .C files.
+int main(int argc, char *argv[])
+{
+    int errors = 0;
+
+    for (int i = 1; i < argc; i++)
+    {
+	int checkout = 0;
+
+	char file[BUFSIZ];
+	char rcsfile[BUFSIZ];
+	strcpy(file, argv[i]);
+	strcpy(rcsfile, argv[i]);
+
+	int j = strlen(rcsfile);
+	while (j >= 0 && rcsfile[j] == '/')
+	    j--;
+	while (j >= 0 && rcsfile[j] != '/')
+	    j--;
+	if (j < 0)
+	{
+	    char buf[BUFSIZ];
+	    strcpy(buf, "RCS/");
+	    strcat(buf, rcsfile);
+	    strcpy(rcsfile, buf);
+	}
+	else
+	{
+	    char buf[BUFSIZ];
+	    strncpy(buf, rcsfile, j + 1);
+	    buf[j + 1] = '\0';
+	    strcat(buf, "RCS");
+	    strcat(buf, rcsfile + j);
+	    strcpy(rcsfile, buf);
+	}
+	strcat(rcsfile, ",v");
+
+	// printf("Checking: %s vs. %s\n", file, rcsfile);
+
+	struct stat filestat;
+	int ret = stat(file, &filestat);
+	if (ret != 0)
+	{
+	    perror(file);
+	    checkout = 1;
+	}
+	else
+	{
+	    struct stat rcsstat;
+	    ret = stat(rcsfile, &rcsstat);
+	    if (ret != 0)
+	    {
+		perror(rcsfile);
+		errors++;
+		continue;
+	    }
+
+	    checkout = rcsstat.st_mtime > filestat.st_mtime;
+	}
+
+	if (checkout)
+	    printf("%s\n", rcsfile);
+    }
+
+    return errors > 0;
+}
