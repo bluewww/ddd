@@ -3043,14 +3043,12 @@ Ddd*dataScrollingMenu*panner.labelString:	Panner
 Ddd*dataScrollingMenu*scrollbars.labelString:	Scrollbars
 
 Ddd*preferences*debugger.labelString:		Debugger Type
-Ddd*preferences*debugger.recomputeSize:		off
 Ddd*debuggerMenu*gdb.labelString:		GDB
 Ddd*debuggerMenu*dbx.labelString:		DBX
 Ddd*debuggerMenu*xdb.labelString:		XDB
 Ddd*debuggerMenu*jdb.labelString:		JDB
 
 Ddd*preferences*showStartupLogo.labelString:	DDD Splash Screen
-Ddd*preferences*showStartupLogo.recomputeSize:	off
 
 Ddd*showStartupLogoMenu*color.labelString:	Color
 Ddd*showStartupLogoMenu*grey.labelString:	Grey
@@ -4476,53 +4474,37 @@ Ddd*?*Reload.documentationString: \
 
 Ddd*print_popup.title: DDD: Print Graph
 
-Ddd*print*options.orientation:		      XmVERTICAL
-Ddd*print*options.marginWidth:		      0
-Ddd*print*options.marginHeight:		      0
-Ddd*print*options.spacing:		      0
-Ddd*print*options.?.orientation:	      XmHORIZONTAL
-Ddd*print*options.?.marginWidth:	      0
-Ddd*print*options.?.marginHeight:	      0
-Ddd*print*options.?.?.orientation:	      XmHORIZONTAL
-Ddd*print*options*isAligned:		      off
-Ddd*print*options*alignment:		      XmALIGNMENT_BEGINNING
+Ddd*print*to.labelString:		      Print To
+Ddd*print*toMenu.printer.labelString: 	      \
+\ \ \ \ \ \ \ \ \ Printer\ \ \ \ \ \ \ \ \ 
+Ddd*print*toMenu.file.labelString:    	      File
 
-Ddd*print*print_to.labelString:		      Print To:
-Ddd*print*print_to.width:		      120
-Ddd*print*print_to.recomputeSize:	      off
-Ddd*print*print_to_field*printer.labelString: Printer
-Ddd*print*print_to_field*file.labelString:    File
+Ddd*print*toMenu.?.indicatorOn:               off
+Ddd*print*toMenu.?.shadowThickness: 	      2
+Ddd*print*toMenu.entryAlignment: 	      XmALIGNMENT_CENTER
 
-Ddd*print*print_command.labelString:	      Print Command:
-Ddd*print*print_command.width:		      120
-Ddd*print*print_command.recomputeSize:	      off
-Ddd*print*print_command_field.columns:	      48
+Ddd*print*command.label.labelString:	      Print Command
+Ddd*print*command.text.columns:	      	      40
 
-Ddd*print*file_name.labelString:	      File Name:
-Ddd*print*file_name.width:		      120
-Ddd*print*file_name.recomputeSize:	      off
-Ddd*print*file_name_field.columns:	      32
-Ddd*print*file_name_field.value:	      ddd()graph.ps
+Ddd*print*name.label.labelString:	      File Name
+Ddd*print*name.text.columns:	      	      40
+Ddd*print*name.text.value:	      	      ddd()graph.ps
+
+Ddd*print*type.labelString:	      	      File Type
 Ddd*print*postscript.labelString:	      PostScript
 Ddd*print*xfig.labelString:		      FIG
 
-Ddd*print*print_what.labelString:	      Print:
-Ddd*print*print_what.width:		      120
-Ddd*print*print_what.recomputeSize:	      off
+Ddd*print*what.labelString:	      	      Print
 Ddd*print*all.labelString:		      All Displays
 Ddd*print*selected.labelString:		      Selected Displays
 
-Ddd*print*print_orientation.labelString:      Orientation:
-Ddd*print*print_orientation.width:	      120
-Ddd*print*print_orientation.recomputeSize:    off
+Ddd*print*orientation.labelString:            Orientation
 Ddd*print*portrait.labelString:		      Portrait
 Ddd*print*landscape.labelString:	      Landscape
 
-Ddd*print*paper_size.labelString:	      Paper Size:
-Ddd*print*paper_size.width:		      120
-Ddd*print*paper_size.recomputeSize:	      off
-Ddd*print*paper_size_field.orientation:	      XmVERTICAL
-Ddd*print*paper_size_field.numColumns:	      3
+Ddd*print*size.labelString:	      	      Paper Size
+Ddd*print*sizeMenu.orientation:	      	      XmVERTICAL
+Ddd*print*sizeMenu.numColumns:	      	      3
 Ddd*print*a4.labelString:		      A4 (210mm TIMES 297mm)
 Ddd*print*a3.labelString:		      A3 (297mm TIMES 420mm)
 Ddd*print*letter.labelString:		      Letter (8ONE_HALF" TIMES 11")
@@ -4539,7 +4521,7 @@ Enter the print command or the file name in the appropriate fields.\n\
 \n\
 Files can be created in the following formats:\n\
 DESC(PostScript, POSTSCRIPT format)\n\
-DESC(XFIG, [XFIG format (from the CODE(xfig) program)])\n\
+DESC(FIG, [FIG format (for the CODE(xfig) program)])\n\
 \n\
 If you wish to print all displays, select LBL(All Displays).\n\
 If you wish to print selected displays only, select\

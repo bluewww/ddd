@@ -1,7 +1,7 @@
 // $Id$ -*- C++ -*-
 // Printing dialog
 
-// Copyright (C) 1996 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
 // This file is part of DDD.
@@ -51,6 +51,7 @@ char print_rcsid[] =
 #include "verify.h"
 #include "wm.h"
 #include "charsets.h"
+#include "MakeMenu.h"
 
 #include "LessTifH.h"
 
@@ -177,10 +178,12 @@ static bool            print_to_printer    = true;
 static BoxPostScriptGC print_postscript_gc;
 static BoxFigGC        print_xfig_gc;
 static PrintType       print_type = PRINT_POSTSCRIPT;
+
 static Widget          print_dialog = 0;
 static Widget          print_command_field   = 0;
 static Widget          print_file_name_field = 0;
 static Widget          paper_size_dialog = 0;
+
 static Widget          a4_paper_size;
 static Widget          a3_paper_size;
 static Widget          letter_paper_size;
@@ -200,7 +203,7 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 	static string command;
 	command = app_data.print_command;
 
-	if (print_command_field)
+	if (print_command_field != 0)
 	{
 	    String c = XmTextFieldGetString(print_command_field);
 	    command = c;
@@ -210,7 +213,7 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 	app_data.print_command = command;
 	if (print(command, print_postscript_gc, print_selected_only) == 0)
 	{
-	    if (unmanage && print_dialog)
+	    if (unmanage && print_dialog != 0)
 		XtUnmanageChild(print_dialog);
 	}
     }
@@ -242,7 +245,7 @@ void graphQuickPrintCB(Widget w, XtPointer client_data, XtPointer)
 	    // File does not exist, is special, or override is on
 	    if (convert(f, gc, print_selected_only) == 0)
 	    {
-		if (unmanage && print_dialog)
+		if (unmanage && print_dialog != 0)
 		    XtUnmanageChild(print_dialog);
 	    }
 	}
@@ -286,8 +289,11 @@ static string suffix(PrintType print_type)
     return "";
 }
 
-static void SetPrintTypeCB(Widget, XtPointer client_data, XtPointer)
+static void SetPrintTypeCB(Widget w, XtPointer client_data, XtPointer)
 {
+    if (!XmToggleButtonGetState(w))
+	return;
+
     string old_suffix = suffix(print_type);
     print_type = PrintType(int(client_data));
     string new_suffix = suffix(print_type);
@@ -459,7 +465,7 @@ static int points(string s)
 	    factor = 72.0 * 1/2.54 * 100;
 	else if (unit == "km" || unit == "kilometer")
 	    factor = 72.0 * 1/2.54 * 100000;
-	else if (unit == "parsec")
+	else if (unit == "parsec")                              // ;-)
 	    factor = 72.0 * 1/2.54 * 100000 * 3.085678e+13;
 	else
 	{
@@ -579,6 +585,9 @@ static void SetGCOrientation(Widget w, XtPointer, XtPointer)
 	print_postscript_gc.orientation = BoxPostScriptGC::LANDSCAPE;
 }
 
+static void NopCB(Widget, XtPointer, XtPointer)
+{}
+
 void graphPrintCB(Widget w, XtPointer, XtPointer)
 {
     if (print_dialog != 0)
@@ -589,10 +598,9 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
     }
 
     Arg args[10];
-    Cardinal num_args;
-
+    Cardinal arg = 0;
     print_dialog = 
-	verify(XmCreatePromptDialog(find_shell(w), "print", ArgList(0), 0));
+	verify(XmCreatePromptDialog(find_shell(w), "print", args, arg));
     Delay::register_shell(print_dialog);
 
     if (lesstif_version <= 79)
@@ -621,189 +629,105 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 					  XmDIALOG_SELECTION_LABEL);
     XtUnmanageChild(label);
 
-    // Create form as work area
-    Widget options = verify(XmCreateRowColumn(print_dialog, "options", 0, 0));
-    XtManageChild(options);
+    // Create menu
+    static Widget print_to_printer;
+    static Widget print_to_file;
+    static MMDesc print_to_menu[] = 
+    {
+	{"printer", MMToggle, { SetPrintTargetCB }, NULL, &print_to_printer },
+	{"file",    MMToggle, { NopCB }, NULL, &print_to_file },
+	MMEnd
+    };
 
-    // Build options
-    Widget print_to_option = 
-	verify(XmCreateRowColumn(options, "print_to_option", 0, 0));
-    Widget print_to = 
-	verify(XmCreateLabel(print_to_option, "print_to", 0, 0));
-    Widget print_to_field = 
-	verify(XmCreateRadioBox(print_to_option, "print_to_field", 0, 0));
-    Widget print_to_printer = 
-	verify(XmCreateToggleButton(print_to_field, "printer", 0, 0));
-    Widget print_to_file = 
-	verify(XmCreateToggleButton(print_to_field, "file", 0, 0));
-    XtVaSetValues(print_to_field, XmNpacking, XmPACK_TIGHT, 0);
-    XtManageChild(print_to_option);
-    XtManageChild(print_to);
-    XtManageChild(print_to_field);
-    XtManageChild(print_to_printer);
-    XtManageChild(print_to_file);
+    Widget postscript;
+    static MMDesc type_menu[] = 
+    {
+	{"postscript", MMToggle,
+	  { SetPrintTypeCB, XtPointer(PRINT_POSTSCRIPT) }, NULL, &postscript},
+	{"xfig",       MMToggle,
+	  { SetPrintTypeCB, XtPointer(PRINT_FIG) }},
+	MMEnd
+    };
 
+    Widget print_all;
+    static MMDesc what_menu[] = 
+    {
+	{"all",      MMToggle, { NopCB }},
+	{"selected", MMToggle, { SetPrintSelectedNodesCB }, NULL, &print_all },
+	MMEnd
+    };
 
-    Widget print_command_option = 
-	verify(XmCreateRowColumn(options, "print_command_option", 0, 0));
-    Widget print_command = 
-	verify(XmCreateLabel(print_command_option, "print_command", 0, 0));
-    print_command_field = 
-	verify(XmCreateTextField(print_command_option, 
-				 "print_command_field", 0, 0));
-    XtManageChild(print_command_option);
-    XtManageChild(print_command);
-    XtManageChild(print_command_field);
+    Widget print_portrait;
+    static MMDesc orientation_menu[] = 
+    {
+	{"portrait",  MMToggle, { SetGCOrientation }},
+	{"landscape", MMToggle, { NopCB }, NULL, &print_portrait },
+	MMEnd
+    };
 
-    string command = string(app_data.print_command) + " ";
-    XmTextFieldSetString(print_command_field, command);
+    static MMDesc paper_menu[] = 
+    {
+	{"a4",        MMToggle, {SetGCA4},        NULL, &a4_paper_size},
+	{"a3",        MMToggle, {SetGCA3},        NULL, &a3_paper_size},
+	{"letter",    MMToggle, {SetGCLetter},    NULL, &letter_paper_size},
+	{"legal",     MMToggle, {SetGCLegal},     NULL, &legal_paper_size},
+	{"executive", MMToggle, {SetGCExecutive}, NULL, &executive_paper_size},
+	{"custom",    MMToggle, {SetGCCustom},    NULL, &custom_paper_size},
+	MMEnd
+    };
 
-    Widget file_name_option = 
-	verify(XmCreateRowColumn(options, "file_name_option", 0, 0));
-    Widget file_name = 
-	verify(XmCreateLabel(file_name_option, "file_name", 0, 0));
-    print_file_name_field = 
-	verify(XmCreateTextField(file_name_option, "file_name_field", 0, 0));
-    Widget file_type_menu =
-	verify(XmCreatePulldownMenu(file_name_option, "type", 0, 0));
-    Widget postscript = 
-	verify(XmCreatePushButton(file_type_menu, "postscript", 0, 0));
-    Widget xfig = 
-	verify(XmCreatePushButton(file_type_menu, "xfig", 0, 0));
-    num_args = 0;
-    XtSetArg(args[num_args], XmNsubMenuId, file_type_menu); num_args++;
-    Widget file_type = 
-	verify(XmCreateOptionMenu(file_name_option, "type", args, num_args));
-    XtManageChild(file_name_option);
-    XtManageChild(file_name);
-    XtManageChild(file_type);
-    XtManageChild(print_file_name_field);
-    XtManageChild(postscript);
-    XtManageChild(xfig);
+    Widget file_type;
+    static MMDesc menu[] =
+    {
+	{"to",          MMRadioPanel, MMNoCB, print_to_menu },
+	{"command",     MMTextField,  MMNoCB, NULL, &print_command_field },
+	{"name", 	MMTextField,  MMNoCB, NULL, &print_file_name_field },
+	{"type", 	MMRadioPanel, MMNoCB, type_menu, &file_type },
+	{"what",        MMRadioPanel, MMNoCB, what_menu },
+	{"orientation", MMRadioPanel, MMNoCB, orientation_menu },
+	{"size",        MMRadioPanel, MMNoCB, paper_menu },
+	MMEnd
+    };
 
-    XtAddCallback(postscript, XmNactivateCallback, 
-		  SetPrintTypeCB, XtPointer(PRINT_POSTSCRIPT));
-    XtAddCallback(xfig, XmNactivateCallback, 
-		  SetPrintTypeCB, XtPointer(PRINT_FIG));
+    Widget panel = MMcreatePanel(print_dialog, "options", menu);
+    (void) panel;		// Use it
+    MMadjustPanel(menu);
+
+    // Add callbacks
+    MMaddCallbacks(menu);
 
     XtAddCallback(print_to_printer, XmNvalueChangedCallback,   
-		  SetPrintTargetCB, 0);
+		  SetSensitiveCB,   XtPointer(print_command_field));
+    XtAddCallback(print_to_printer, XmNvalueChangedCallback,   
+		  SetSensitiveCB,   XtPointer(menu[1].label));
 
-    XtAddCallback(print_to_printer, XmNvalueChangedCallback,   
-		  SetSensitiveCB, XtPointer(print_command_field));
-    XtAddCallback(print_to_printer, XmNvalueChangedCallback,   
-		  SetSensitiveCB, XtPointer(print_command));
-    XtAddCallback(print_to_printer, XmNvalueChangedCallback,   
+    XtAddCallback(print_to_printer, XmNvalueChangedCallback,
 		  UnsetSensitiveCB, XtPointer(print_file_name_field));
-    XtAddCallback(print_to_printer, XmNvalueChangedCallback,   
+    XtAddCallback(print_to_printer, XmNvalueChangedCallback,
+		  UnsetSensitiveCB, XtPointer(menu[2].label));
+    XtAddCallback(print_to_printer, XmNvalueChangedCallback,
 		  UnsetSensitiveCB, XtPointer(file_type));
-    XtAddCallback(print_to_printer, XmNvalueChangedCallback,   
-		  UnsetSensitiveCB, XtPointer(file_name));
-    XtAddCallback(print_to_printer, XmNvalueChangedCallback,   
-		  TakeFocusCB, XtPointer(print_command_field));
+
+    XtAddCallback(print_to_printer, XmNvalueChangedCallback,
+		  TakeFocusCB,      XtPointer(print_command_field));
 
     XtAddCallback(print_to_file, XmNvalueChangedCallback,   
 		  UnsetSensitiveCB, XtPointer(print_command_field));
     XtAddCallback(print_to_file, XmNvalueChangedCallback,   
-		  UnsetSensitiveCB, XtPointer(print_command));
+		  UnsetSensitiveCB, XtPointer(menu[1].label));
+
     XtAddCallback(print_to_file, XmNvalueChangedCallback,   
-		  SetSensitiveCB, XtPointer(print_file_name_field));
+		  SetSensitiveCB,   XtPointer(print_file_name_field));
+    XtAddCallback(print_to_file, XmNvalueChangedCallback,
+		  SetSensitiveCB,   XtPointer(menu[2].label));
     XtAddCallback(print_to_file, XmNvalueChangedCallback,   
-		  SetSensitiveCB, XtPointer(file_type));
-    XtAddCallback(print_to_file, XmNvalueChangedCallback,   
-		  SetSensitiveCB, XtPointer(file_name));
-    XtAddCallback(print_to_file, XmNvalueChangedCallback,   
-		  TakeFocusCB, XtPointer(print_file_name_field));
+		  SetSensitiveCB,   XtPointer(file_type));
 
-    XmToggleButtonSetState(print_to_printer, True, True);
+    XtAddCallback(print_to_file, XmNvalueChangedCallback,
+		  TakeFocusCB,      XtPointer(print_file_name_field));
 
-    Widget print_what_option = 
-	verify(XmCreateRowColumn(options, "print_what_option", 0, 0));
-    Widget print_what = 
-	verify(XmCreateLabel(print_what_option, "print_what", 0, 0));
-    Widget print_what_field = 
-	verify(XmCreateRadioBox(print_what_option, "print_what_field", 0, 0));
-    Widget print_all = 
-	verify(XmCreateToggleButton(print_what_field, "all", 0, 0));
-    Widget print_selected = 
-	verify(XmCreateToggleButton(print_what_field, "selected", 0, 0));
-    XtVaSetValues(print_what_field, XmNpacking, XmPACK_TIGHT, 0);
-    XtManageChild(print_what_option);
-    XtManageChild(print_what);
-    XtManageChild(print_what_field);
-    XtManageChild(print_all);
-    XtManageChild(print_selected);
-    XtAddCallback(print_selected, XmNvalueChangedCallback, 
-		  SetPrintSelectedNodesCB, 0);
 
-    XmToggleButtonSetState(print_all, True, True);
-
-    Widget print_orientation_option = 
-	verify(XmCreateRowColumn(options, "print_orientation_option", 0, 0));
-    Widget print_orientation = 
-	verify(XmCreateLabel(print_orientation_option,
-			     "print_orientation", 0, 0));
-    Widget print_orientation_field = 
-	verify(XmCreateRadioBox(print_orientation_option,
-				"print_orientation_field", 0, 0));
-    Widget print_portrait = 
-	verify(XmCreateToggleButton(print_orientation_field, 
-				    "portrait", 0, 0));
-    Widget print_landscape = 
-	verify(XmCreateToggleButton(print_orientation_field, 
-				    "landscape", 0, 0));
-    XtVaSetValues(print_orientation_field, XmNpacking, XmPACK_TIGHT, 0);
-    XtManageChild(print_orientation_option);
-    XtManageChild(print_orientation);
-    XtManageChild(print_orientation_field);
-    XtManageChild(print_portrait);
-    XtManageChild(print_landscape);
-    XtAddCallback(print_portrait, XmNvalueChangedCallback, 
-		  SetGCOrientation, 0);
-
-    XmToggleButtonSetState(print_portrait, True, True);
-
-    Widget paper_size_option = 
-	verify(XmCreateRowColumn(options, "paper_size_option", 0, 0));
-    Widget paper_size = 
-	verify(XmCreateLabel(paper_size_option, "paper_size", 0, 0));
-    Widget paper_size_field = 
-	verify(XmCreateRadioBox(paper_size_option, "paper_size_field", 0, 0));
-    a4_paper_size = 
-	verify(XmCreateToggleButton(paper_size_field, "a4", 0, 0));
-    a3_paper_size = 
-	verify(XmCreateToggleButton(paper_size_field, "a3", 0, 0));
-    letter_paper_size = 
-	verify(XmCreateToggleButton(paper_size_field, "letter", 0, 0));
-    legal_paper_size = 
-	verify(XmCreateToggleButton(paper_size_field, "legal", 0, 0));
-    executive_paper_size = 
-	verify(XmCreateToggleButton(paper_size_field, "executive", 0, 0));
-    custom_paper_size = 
-	verify(XmCreateToggleButton(paper_size_field, "custom", 0, 0));
-    XtManageChild(paper_size_option);
-    XtManageChild(paper_size);
-    XtManageChild(paper_size_field);
-    XtManageChild(a4_paper_size);
-    XtManageChild(a3_paper_size);
-    XtManageChild(letter_paper_size);
-    XtManageChild(legal_paper_size);
-    XtManageChild(executive_paper_size);
-    XtManageChild(custom_paper_size);
-
-    XtAddCallback(a4_paper_size,        
-		  XmNvalueChangedCallback, SetGCA4,        0);
-    XtAddCallback(a3_paper_size,        
-		  XmNvalueChangedCallback, SetGCA3,        0);
-    XtAddCallback(letter_paper_size,    
-		  XmNvalueChangedCallback, SetGCLetter,    0);
-    XtAddCallback(legal_paper_size,     
-		  XmNvalueChangedCallback, SetGCLegal,     0);
-    XtAddCallback(executive_paper_size, 
-		  XmNvalueChangedCallback, SetGCExecutive, 0);
-    XtAddCallback(custom_paper_size,    
-		  XmNvalueChangedCallback, SetGCCustom,    0);
-
+    // Create size dialog
     paper_size_dialog = 
 	verify(XmCreatePromptDialog(find_shell(w), "paper_size_dialog", 
 				    ArgList(0), 0));
@@ -813,16 +737,27 @@ void graphPrintCB(Widget w, XtPointer, XtPointer)
 	XtUnmanageChild(XmSelectionBoxGetChild(paper_size_dialog,
 					       XmDIALOG_APPLY_BUTTON));
 
-    XtAddCallback(paper_size_dialog, XmNokCallback,     
+    XtAddCallback(paper_size_dialog, XmNokCallback,
 		  SetPaperSizeCB, XtPointer(0));
     XtAddCallback(paper_size_dialog, XmNcancelCallback, 
 		  ResetPaperSizeCB, XtPointer(0));
     XtAddCallback(paper_size_dialog, XmNhelpCallback,   
 		  ImmediateHelpCB, XtPointer(0));
 
+
+    // Set initial state
+    XmToggleButtonSetState(print_to_printer, True, True);
+    XmToggleButtonSetState(postscript, True, True);
+    XmToggleButtonSetState(print_all, True, True);
+    XmToggleButtonSetState(print_portrait, True, True);
+
     int ret = set_paper_size(app_data.paper_size);
     if (ret < 0)
 	XmToggleButtonSetState(a4_paper_size, True, True);
 
+    string command = string(app_data.print_command) + " ";
+    XmTextFieldSetString(print_command_field, command);
+
+    // Gofer it!
     manage_and_raise(print_dialog);
 }
