@@ -119,9 +119,12 @@ typedef struct PlusCmdData {
     bool     config_print_r;	       // try 'print -r'
     bool     config_where_h;	       // try 'where -h'
     bool     config_display;	       // try 'display'
+    bool     config_clear;	       // try 'clear'
     bool     config_pwd;	       // try 'pwd'
     bool     config_named_values;      // try 'print "ddd"'
     bool     config_func_pos;          // try 'func main'
+    bool     config_when_semicolon;    // try 'help when'
+    bool     config_page;	       // try 'set $page = 0'
 
     PlusCmdData () :
 	refresh_main(false),
@@ -144,9 +147,12 @@ typedef struct PlusCmdData {
 	config_print_r(false),
 	config_where_h(false),
 	config_display(false),
+	config_clear(false),
 	config_pwd(false),
 	config_named_values(false),
-	config_func_pos(false)
+	config_func_pos(false),
+	config_when_semicolon(false),
+	config_page(false)
     {}
 };
 
@@ -200,12 +206,18 @@ void start_gdb()
 	plus_cmd_data->config_where_h = true;
 	cmds[qu_count++] = "display";
 	plus_cmd_data->config_display = true;
+	cmds[qu_count++] = "clear";
+	plus_cmd_data->config_clear = true;
 	cmds[qu_count++] = "pwd";
 	plus_cmd_data->config_pwd = true;
 	cmds[qu_count++] = "print \"" DDD_NAME "\"";
 	plus_cmd_data->config_named_values = true;
 	cmds[qu_count++] = "func main";
 	plus_cmd_data->config_func_pos = true;
+	cmds[qu_count++] = "help when";
+	plus_cmd_data->config_when_semicolon = true;
+	cmds[qu_count++] = "set $page = 0";
+	plus_cmd_data->config_page = true;
 	cmds[qu_count++] = "sh pwd";
 	plus_cmd_data->refresh_pwd = true;
 	cmds[qu_count++] = "file";
@@ -508,9 +520,12 @@ void user_cmdSUC (string cmd, Widget origin)
     assert(!plus_cmd_data->config_print_r);
     assert(!plus_cmd_data->config_where_h);
     assert(!plus_cmd_data->config_display);
+    assert(!plus_cmd_data->config_clear);
     assert(!plus_cmd_data->config_pwd);
     assert(!plus_cmd_data->config_named_values);
     assert(!plus_cmd_data->config_func_pos);
+    assert(!plus_cmd_data->config_when_semicolon);
+    assert(!plus_cmd_data->config_page);
     
     // Setup additional trailing commands
     switch (gdb->type())
@@ -809,6 +824,11 @@ static void process_config_display(string& answer)
     gdb->has_display_command(is_known_command(answer));
 }
 
+static void process_config_clear(string& answer)
+{
+    gdb->has_clear_command(is_known_command(answer));
+}
+
 static void process_config_pwd(string& answer)
 {
     gdb->has_pwd_command(is_known_command(answer));
@@ -824,6 +844,16 @@ static void process_config_func_pos(string& answer)
     static regex RXcolon_and_line_number(": *[0-9][0-9]*");
     if (answer.contains(RXcolon_and_line_number))
 	gdb->has_func_pos(true);
+}
+
+static void process_config_when_semicolon(string& answer)
+{
+    gdb->has_when_semicolon(answer.contains(';'));
+}
+
+static void process_config_page(string&)
+{
+    // Nothing yet...
 }
 
 
@@ -882,6 +912,11 @@ void plusOQAC (string answers[],
 	process_config_display(answers[qu_count++]);
     }
 
+    if (plus_cmd_data->config_clear) {
+	assert (qu_count < count);
+	process_config_clear(answers[qu_count++]);
+    }
+
     if (plus_cmd_data->config_pwd) {
 	assert (qu_count < count);
 	process_config_pwd(answers[qu_count++]);
@@ -895,6 +930,16 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->config_func_pos) {
 	assert (qu_count < count);
 	process_config_func_pos(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_when_semicolon) {
+	assert (qu_count < count);
+	process_config_when_semicolon(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->config_page) {
+	assert (qu_count < count);
+	process_config_page(answers[qu_count++]);
     }
 
     if (plus_cmd_data->refresh_pwd) {
