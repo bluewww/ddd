@@ -41,11 +41,9 @@ char DispValue_rcsid[] =
 // A `DispValue' maintains type and value of a displayed expression
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-
 #include "DispValue.h"
 #include "DispValueA.h"
-#include "string-fun.h" // itostring
+#include "string-fun.h"
 #include "DynArray.h"
 #include "assert.h"
 #include "cook.h"
@@ -333,7 +331,6 @@ void DispValue::init(string& value, DispValueType given_type)
 		base = "(" + base + ")";
 
 	    v.array = new ArrayDispValue;
-	    myexpanded = (depth() > 0) ? false : true;
 	    v.array->align = Vertical;
 	    v.array->member_count = 0;
 
@@ -423,6 +420,9 @@ void DispValue::init(string& value, DispValueType given_type)
 	    } while (read_array_next (value) != 0);
 	    read_array_end (value);
 
+	    // Expand only if at top-level.
+	    myexpanded = (depth() == 0 || v.array->member_count <= 1);
+
 #if LOG_CREATE_VALUES
 	    clog << mytype << " has " << v.array->member_count << " members\n";
 #endif
@@ -440,7 +440,6 @@ void DispValue::init(string& value, DispValueType given_type)
     case BaseClass:
 	{
 	    v.str_or_cl = new StructOrClassDispValue;
-	    myexpanded = (depth() > 0) ? false : true;
 	    v.str_or_cl->member_count = 0;
 	
 #if LOG_CREATE_VALUES
@@ -541,6 +540,9 @@ void DispValue::init(string& value, DispValueType given_type)
 		// Skip the remainder
 		read_str_or_cl_end(value);
 	    }
+
+	    // Expand only if at top-level.
+	    myexpanded = (depth() == 0 || v.array->member_count <= 1);
 
 #if LOG_CREATE_VALUES
 	    clog << mytype << " "
