@@ -2,7 +2,7 @@
 // DDD buttons
 
 // Copyright (C) 1996-1998 Technische Universitaet Braunschweig, Germany.
-// Copyright (C) 2000 Universitaet Passau, Germany.
+// Copyright (C) 2000-2001 Universitaet Passau, Germany.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -908,6 +908,13 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 	if (button == 0)
 	    continue;
 
+	if (!app_data.verify_buttons)
+	{
+	    set_sensitive(button, true);
+	    button = 0;		// Don't process this one again
+	    continue;
+	}
+
 	XtCallbackList callbacks = 0;
 	XtVaGetValues(button, 
 		      XmNactivateCallback, &callbacks,
@@ -972,8 +979,6 @@ static void DontVerifyButtonCB(Widget w, XtPointer, XtPointer)
 // Make BUTTON insensitive if it is not supported
 void verify_button(Widget button)
 {
-    if (!app_data.verify_buttons)
-	return;
     if (button == 0)
 	return;
     if (!XtIsSubclass(button, xmPushButtonWidgetClass))
@@ -1464,6 +1469,8 @@ static void create_buttons_dialog(Widget parent)
     XtAddCallback(buttons_dialog, XmNapplyCallback,  SetTextCB, 0);
     XtAddCallback(buttons_dialog, XmNcancelCallback, ResetTextCB, 0);
 
+    XtManageChild(XmSelectionBoxGetChild(buttons_dialog,
+					 XmDIALOG_APPLY_BUTTON));
     XtUnmanageChild(XmSelectionBoxGetChild(buttons_dialog,
 					   XmDIALOG_SELECTION_LABEL));
     XtUnmanageChild(XmSelectionBoxGetChild(buttons_dialog, 
@@ -1508,6 +1515,7 @@ static void create_buttons_dialog(Widget parent)
 					     (char *)"verify", args, arg));
     XtManageChild(vfy);
     XtAddCallback(vfy, XmNvalueChangedCallback, SetVerifyButtonsCB, 0);
+    XtAddCallback(vfy, XmNvalueChangedCallback, SetTextCB, 0);
 
     console_w = 
 	add_button("console", buttons_dialog, button_box, text, vfy,
