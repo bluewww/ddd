@@ -170,6 +170,10 @@ DEFS = @DEFS@
 # Flags passed to the linker.  (-g -O)
 LDFLAGS = @LDFLAGS@
 
+# Use this for building statically linked executables with GCC.
+# LDFLAGS = -static @LDFLAGS@
+
+
 
 ## Local libraries
 
@@ -197,6 +201,10 @@ LIBX = @X_PRE_LIBS@ @X_LIBS@
 
 # Motif library.  (-lXm)
 LIBXM = @XM_LIBS@
+
+# Use this for building `semistatic' executables where Motif libraries
+# are statically linked in.
+# LIBXM = -Wl,-Bstatic @XM_LIBS@ -Wl,-Bdynamic
 
 # Athena libraries.  (-lXaw -lXmu)
 LIBXAW = @XAW_LIBS@
