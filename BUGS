@@ -248,8 +248,8 @@ Volunteers for fixing these and other bugs are welcome!
 
 244 Antonello Biancalana <promind@tecnonet.it> and Richard (Ruth?)
     <rruth@computer.org> report that DDD, when compiled with Motif
-    2.1, does not show any breakpoint indicators.  Nor does it show
-    arrows.  This does not happen with Motif 2.0.
+    2.1 and running on an XFree86 server (as in RedHat 5.0), does not
+    show glyphs.  (Motif 2.0 worked in this respect.)
 
 249 Zdenek Sekera <zs@cray.com> reports:
 
