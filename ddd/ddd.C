@@ -6248,8 +6248,6 @@ static void popup_splash_screen(Widget parent, string color_key)
 	verify(XmCreateDrawingArea(splash_shell, "splash", args, arg));
     XtManageChild(splash);
 
-    splash_delay = new _Delay(splash_shell);
-
     Dimension width, height;
     splash_pixmap = dddsplash(splash, color_key, width, height);
     XtVaSetValues(splash,
@@ -6268,6 +6266,9 @@ static void popup_splash_screen(Widget parent, string color_key)
     lock_dialog_y = y + 20;
 
     XtRealizeWidget(splash_shell);
+
+    splash_delay = new _Delay(splash_shell);
+
     popup_shell(splash_shell);
     wait_until_mapped(splash, splash_shell);
 }
