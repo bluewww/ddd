@@ -258,7 +258,5 @@ Volunteers for fixing these and other bugs are welcome!
     platforms. The problem occurs when an attempt is made to save
     options. At that point DDD dies and the options file is not
     updated.
-
-237 Inactive displays should not be bumped.
     
 238 (Insert your bug here)
