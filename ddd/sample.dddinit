@@ -1,0 +1,191 @@
+! $Id$
+! Sample DDD initialization file.  To be copied in `~/.dddinit'.
+
+! Copyright (C) 1997 Technische Universitaet Braunschweig, Germany.
+! Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+! 
+! This file is part of the DDD Library.
+! 
+! The DDD Library is free software; you can redistribute it and/or
+! modify it under the terms of the GNU Library General Public
+! License as published by the Free Software Foundation; either
+! version 2 of the License, or (at your option) any later version.
+! 
+! The DDD Library is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+! See the GNU Library General Public License for more details.
+! 
+! You should have received a copy of the GNU Library General Public
+! License along with the DDD Library -- see the file COPYING.LIB.
+! If not, write to the Free Software Foundation, Inc.,
+! 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+! 
+! DDD is the data display debugger.
+! For details, see the DDD World-Wide-Web page, 
+! `http://www.cs.tu-bs.de/softech/ddd/',
+! or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
+
+! This file contains alternate resource settings for your personal
+! `~/.dddinit' file.  Most of these resources are documented either in
+! the DDD manual or in the `Ddd.in' resource file shipped with the
+! DDD source distribution.  To activate any of these resources, remove
+! the `! ' prefixes in the lines beginning with `Ddd' (as well as
+! in the next line(s), if the previous line ends in `\').
+!
+! Please let us know what you like!  Tell us your preferences such
+! that other users can pick their choice.
+
+
+! ----------------------------------------------------------------------------
+! GEOMETRY
+! ----------------------------------------------------------------------------
+
+! Set the geometry for separate DDD windows.
+! Ddd*command_shell.geometry: +0+0
+! Ddd*source_view_shell.geometry: +0+220
+! Ddd*data_disp_shell.geometry: +0+670
+
+
+! ----------------------------------------------------------------------------
+! BUTTONS
+! ----------------------------------------------------------------------------
+
+! Some useful buttons to be added below the source.
+! Ddd*sourceButtons: \
+! print *():graph display *():print /x ():\
+! whatis ():ptype ():watch ():until:shell
+
+! A more detailed version of the above.
+! Ddd*sourceButtons: \
+! print *(()):graph display *(()):print /x ():\
+! whatis ():ptype ():watch ():until:shell
+! Ddd*print______.labelString:         Print *()
+! Ddd*graph_display______.labelString: Display *()
+! Ddd*whatis___.labelString:           What is ()
+
+! Show whenever a button is armed.
+! Ddd*highlightOnEnter: true
+
+
+! ----------------------------------------------------------------------------
+! REMOTE STUFF
+! ----------------------------------------------------------------------------
+
+! Commands to be issued whenever logging on remote machine using `--rhost'.
+! Ddd*rHostInitCommands: stty -echo -onlcr; jobs
+
+
+! ----------------------------------------------------------------------------
+! VSL STUFF
+! ----------------------------------------------------------------------------
+
+! Specify an individual VSL library.
+! Ddd*vslLibrary: 		/home/zeller/ddd/ddd/ddd.vsl
+! Ddd*vslPath:	 		/home/zeller/ddd/ddd:/home/zeller/ddd/vsllib
+
+
+! ----------------------------------------------------------------------------
+! DATA DISPLAYS
+! ----------------------------------------------------------------------------
+
+! Here is an alternate highlighting scheme for selected data displays.
+! Ddd*graph_edit.selectTile:	25_foreground
+
+
+! ----------------------------------------------------------------------------
+! STRINGS
+! ----------------------------------------------------------------------------
+
+! Michael.Taeschner@dlr.de (Michael Taeschner) suggests improved tip strings
+! for the `next' and `step' buttons.
+! Ddd*next.tipString: 1 step over
+! Ddd*step.tipString: 1 step into
+
+
+! ----------------------------------------------------------------------------
+! COLORS
+! ----------------------------------------------------------------------------
+
+! Make activated toggle buttons shine in red.  Tcl/Tk people like this.
+! Ddd*fillOnSelect: true
+! Ddd*selectColor: red4
+
+! Here are some alternate color preferences submitted by Sasvata
+! [Shash-wata] Chatterjee <Shash.Chatterjee@aud.alcatel.com>.
+!
+! Ddd*run.foreground: yellow
+! Ddd*run_again.foreground: yellow
+! Ddd*break.foreground: tomato3
+! Ddd*quit.foreground: tomato3
+! Ddd*status_form.led.selectColor: olivedrab
+! Ddd*foreground: papayawhip
+! Ddd*background: dodgerblue4
+! Ddd*XmText.background: tomato3
+! Ddd*XmTextField.background: olivedrab
+! Ddd*graphEdit.background: olivedrab
+! Ddd*graphEdit.foreground: pink
+! Ddd*XmList.background: tomato3
+! Ddd*graph_edit.nodeColor: papayawhip
+! Ddd*graph_edit.edgeColor: papayawhip
+! Ddd*graph_edit.selectColor: papayawhip
+! Ddd*graph_edit.gridColor: yellow
+! Ddd*graph_edit.frameColor: lightblue1
+! Ddd*graph_edit.outlineColor: seagreen2
+! Ddd*graph_edit.background: tomato3
+! Ddd*graph_edit.foreground: papayawhip
+! Ddd*graph_edit.shadowColor: yellow
+! Ddd*graph_edit_panner.background: tomato3
+! Ddd*graph_edit_panner.foreground: papayawhip
+! Ddd*graph_edit_panner.shadowColor: yellow
+! Ddd*vslDefs:\
+! #pragma replace display_color\n\
+! #pragma replace title_color\n\
+! #pragma replace disabled_color\n\
+! #pragma replace simple_color\n\
+! #pragma replace pointer_color\n\
+! #pragma replace struct_color\n\
+! #pragma replace array_color\n\
+! #pragma replace reference_color\n\
+! display_color(box) = color(box,"papayawhip","grey50");\n\
+! title_color(box) = color(box,"mediumaquamarine");\n\
+! disabled_color(box) = color(box,"ivory4");\n\
+! simple_color(box) = color(box,"palegreen");\n\
+! pointer_color(box) = color(box,"orchid");\n\
+! struct_color(box) = color(box,"aquamarine");\n\
+! array_color(box) = color(box,"orange");\n\
+! reference_color(box) = color(box,"indianred");\n
+
+
+! ----------------------------------------------------------------------------
+! FONTS
+! ----------------------------------------------------------------------------
+
+! Font sizes.  Here are some resolution-independent alternatives.
+! Ddd*fontList: \
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset,\n\
+! -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\n\
+! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=tt,\n\
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\n\
+! -*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=rm,\n\
+! -*-helvetica-medium-o-*-*-*-90-*-*-*-*-*-*=sl,\n\
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=bf,\n\
+! -*-helvetica-bold-o-*-*-*-90-*-*-*-*-*-*=bs,\n\
+! -*-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*=Logo,\n\
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=logo,\n\
+! -*-symbol-*-*-*-*-90-*-*-*-*-*-*=symbol
+! Ddd*XmTextField.FontList: \
+! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+! Ddd*XmText.FontList: \
+! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+! Ddd*tool_buttons.run.fontList: \
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+! Ddd*tool_buttons.break.fontList: \
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+! Ddd*tool_buttons*fontList: \
+! -*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset
+! Ddd*vslDefs: \
+! #pragma replace stdfontsize\n\
+! #pragma replace stdfontpoints\n\
+! stdfontsize() = 0;\n\
+! stdfontpoints() = 100;
