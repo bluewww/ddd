@@ -8,34 +8,38 @@ DDD 2.2 [in beta test]
     attaching to running processes, display shortcuts, and more.
 
     User-visible changes to DDD 2.1:
-    - Persistent sessions.  You can now save the entire debugger and
-      process state and resume the session later.  Saved state
-      includes process memory and state, inferior debugger settings,
-      breakpoints, and data displays.  (Requires GDB.)
-    - DDD now implements X11R6 session support.  When used with a
-      session manager, DDD saves and restores its entire state.
-    - Improved user interface:
-      + Source line numbers have been turned off (can be restored);
+    - Persistent sessions.   (Requires GDB.)
+      * You can now save the entire debugger and process state and
+        resume the session later.
+      * Saved state includes process memory and state, inferior
+        debugger settings, breakpoints, and data displays.
+      * X11R6 sessions are supported, too.  When used with a
+        session manager, DDD saves and restores its entire state.
+    - Improved user interface.
+      * Source line numbers have been turned off (can be restored);
         the breakpoint area extends to the first non-blank character.
-      + The `Disable ()' button for disabling displays has gone;
+      * The `Disable ()' button for disabling displays has gone;
         displays are now enabled or disabled via `Show ()/Hide ()'.
-      + The `Break at ()' and `Clear at ()' buttons have been merged
+      * The `Break at ()' and `Clear at ()' buttons have been merged
         into one single dynamic button.
-      + Improved command tool.  The command tool is now always
-        auto-raised and comes with window manager decorations.
-      + The `Windows' menu is now called `View', complying with the
+      * The `Windows' menu is now called `View', complying with the
         Motif style guide.
-      + Options are now grouped according to their functionality.  The
+      * Options are now grouped according to their functionality.  The
         `Options' menu has gone.  Use `Edit' instead.
-      + The `Edit' menu has been completely rewritten, allowing for
+      * The `Edit' menu has been completely rewritten, allowing for
         better clipboard operations.  For instance, you can now copy
         selected displays to the clipboard and paste them later.
-      + Several buttons now provide pulldown menus with useful
-        functions.  For instance, you can now incrementally `Show More'
-        details of an object, instead of showing all details at once.
+      * Several buttons provide new pulldown menus with useful functions.
       Due to the new layout, DDD now requires less width and height.
       If you already have a `~/.dddinit' file, resize DDD manually and
       save options.
+    - Improved command tool.
+      * The command tool is always auto-raised, i.e. placed on top of
+        the DDD windows.
+      * The command tool always comes with window manager decorations, 
+        such that you can easily move it around.
+      * The command tool sticks to the DDD source window: if you move
+        the DDD source window around, the command tool follows.
     - Display shortcuts.  Once you have changed `p' to `(char *) p'
       manually, DDD provides a menu shortcut for converting arbitrary
       values to `(char *)'.
@@ -43,36 +47,42 @@ DDD 2.2 [in beta test]
       changed, and deleted at run-time.
     - Support for debugging processes running outside of DDD.  You can
       attach to a running process, examine it, and resume execution.
-    - Improved online manuals:
-      + Multiple manual browsers are supported.
-      + Manual browsers are realized as top-level windows.
-      + DDD no longer blocks while the manual is uncompressed and formatted.
-      + DDD manuals are now stored in `gzip' format, saving space in
+    - Improved online manuals.
+      * Multiple manual browsers are supported.
+      * Manual browsers are realized as top-level windows.
+      * DDD no longer blocks while the manual is uncompressed and formatted.
+      * DDD manuals are now stored in `gzip' format, saving space in
         executables.
-    - New `What Next' help.  Gives a hint on what to do next,
-      depending on current state.  Useful for beginners.
-    - Data displayed in the data window is now highlighted whenever it
-      changes.
+    - New `What Next' help.  Gives a hint on what you can do next,
+      depending on the current DDD state.  Useful for beginners.
+    - Improved data display.
+      * Displayed data is highlighted whenever it changes.
+      * You can now incrementally `Show More' details of an object,
+        instead of showing all details at once.
+      * Processing displays can be interrupted by typing Ctrl+C.
+    - Drag and drop support.
+      * You can now alter the current execution position interactively
+        by dragging and dropping the execution arrow.  This allows you
+        to back up - perhaps with more breakpoints set-over a portion
+        of a program that has already executed, in order to examine
+        its execution in more detail.
+      * Breakpoints can be dragged and dropped, too.  This allows you
+        to move breakpoints to alternate positions, without changing
+        their properties.
+    - Improved display of breakpoints and execution positions.
+      * The current execution position is now properly cleared if
+        undetermined (no source, program terminated, etc.)
+      * If the program stopped due to a signal, this is indicated
+        by a lightning symbol within the current execution glyph.
+      * Faster scrolling.  While scrolling source or machine code at
+        high speed, glyphs are now unmapped.  Slow scrolling still
+        shows glyphs.
     - User-defined DDD commands.  DDD now provides a simple facility
       that allows the inferior debugger to execute DDD commands.  For
       details, see `User-Defined Commands' in the DDD manual.
     - For `Continue Until Here', DDD now sets a temporary breakpoint
       and continues (instead of using the GDB `until' command).  If
       the temporary breakpoint is not reached, it is deleted.
-    - You can now alter the current execution position interactively
-      by dragging and dropping the execution arrow.  This allows you
-      to back up - perhaps with more breakpoints set-over a portion of
-      a program that has already executed, in order to examine its
-      execution in more detail.
-    - Breakpoints can be dragged and dropped, too.
-    - Improved display of breakpoints and execution positions:
-      + The current execution position is now properly cleared if
-        undetermined (no source, program terminated, etc.)
-      + If the program stopped due to a signal, this is indicated
-        by a lightning symbol within the current execution glyph.
-      + Faster scrolling.  While scrolling source or machine code at
-        high speed, glyphs are now unmapped.  Slow scrolling still
-        shows glyphs.
     - Resource files have been renamed.  All files are now located
       under `~/.ddd/'.  The file `~/.dddinit' has been replaced by
       `~/.ddd/init'; `~/.ddd_history' is now `~/.ddd/history'.  The
@@ -81,9 +91,9 @@ DDD 2.2 [in beta test]
       (requires XPM; can be disabled)
     - During start-up, DDD shows a multi-color logo in a transient
       window. (requires XPM; can be disabled)
-    - Memory savings.  DDD regular expressions are now compiled during
-      DDD construction (instead of being compiled during DDD
-      execution).  DDD now typically requires 35% less memory.
+    - Significant memory savings.  DDD regular expressions are now
+      compiled during DDD construction (instead of being compiled
+      during DDD execution).  DDD now typically requires 35% less memory.
 
     Bug fixes:
     - DDD now runs on Linux with GNU libc 5.4.38 and later.
@@ -91,14 +101,14 @@ DDD 2.2 [in beta test]
       Wiegand <wiegand@kong.gsfc.nasa.gov>.
     - DDD no longer hangs while receiving large chunks of data.
     - Significant speed-ups in processing debugger and program output.
-      Processing displays can now be interrupted using Ctrl+C.
     - Several memory leaks and X resource leaks have been tightened.
     - DDD no longer requires the librx library.  Hence, librx errors
       can no more cause DDD to crash.
     - A serious bug that caused timers to be inadvertently removed has
       been fixed.  Bug effects included loss of console cursor, loss
       of data display contents, and loss of scrolling capabilities.
-    - Again, several dozens of minor improvements and bug fixes.
+    - And again, hundreds of minor improvements and bug fixes.  See
+      the ChangeLog for details.
 
 
 DDD 2.1.1
@@ -141,12 +151,12 @@ DDD 2.1
     - Value tips.  Moving the mouse pointer over a variable causes a
       small window to raise showing the current value.	(optional)
     - The status line has been reworked and extended:
-      + It displays information about the selected item.
-      + It has moved to the bottom, such that menu entries can be
+      * It displays information about the selected item.
+      * It has moved to the bottom, such that menu entries can be
 	described.  (can be restored)
-      + It contains a debugger status indicator, blinking whenever
+      * It contains a debugger status indicator, blinking whenever
 	the inferior debugger is busy.	(can be turned off)
-      + You can re-display the most recent messages.
+      * You can re-display the most recent messages.
     - The register window can display floating-point registers.
     - Thread support.  You can inquire existing threads and switch
       among them.  (requires GDB and operating system thread support)
@@ -154,19 +164,19 @@ DDD 2.1
       specific window parts (e.g. data displays, debugger console,
       etc.) through the `Windows' menu.
     - The `Preferences' panel has been extended and reworked:
-      + Button tips and value tips can be enabled and disabled.
-      + Tab width and graph grid size can now be changed at run time.
-      + You can choose at run time whether command buttons should 
+      * Button tips and value tips can be enabled and disabled.
+      * Tab width and graph grid size can now be changed at run time.
+      * You can choose at run time whether command buttons should 
 	be placed in the command tool (as in DDD 2.0) or in the 
 	source window (as in DDD 1.x).
-      + You can reset the DDD preferences to the least recently saved
+      * You can reset the DDD preferences to the least recently saved
 	settings.
     - Some items have been renamed for clarity:
-      + The `Stack' menu is now named `Status', as it hosts other
+      * The `Stack' menu is now named `Status', as it hosts other
 	status-related items besides backtrace and registers.
-      + The `Break' button is now named `Interrupt' (as in DDD 1.x),
+      * The `Break' button is now named `Interrupt' (as in DDD 1.x),
 	to avoid confusion with the `Break At' button.
-      + The `Quit' menu item is now named `Abort', to avoid confusion
+      * The `Quit' menu item is now named `Abort', to avoid confusion
 	with the `Exit' menu item (which issues a `quit' command).
     - Some key bindings have been re-assigned.	Generally, `Ctrl'
       invokes debugger or editing commands, and `Alt' changes debugger
