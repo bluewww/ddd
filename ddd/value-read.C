@@ -485,13 +485,16 @@ bool read_str_or_cl_end (string& value)
 // ***************************************************************************
 bool read_members_of_xy (string& value)
 {
-    static regex RXmembers_of_nl   ("members of .+: ?\n");
+    static regex RXmembers_of_nl("members of [^\n]+: ?\n");
 
     read_leading_junk (value);
-    if (!(value.index (RXmembers_of_nl) == 0))
-	return false;
-    value = value.after (RXmembers_of_nl);
-    return true;
+    if (value.index (RXmembers_of_nl) == 0)
+    {
+	value = value.after('\n');
+	return true;
+    }
+
+    return false;
 }
 
 
