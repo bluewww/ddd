@@ -159,10 +159,10 @@ int regex::search(const char* s, int len, int& matchlen, int startpos) const
 
     for (; startpos >= 0 && startpos < len; startpos += direction)
     {
-	if (strncmp(s, prefix, min(prefix_len, len - startpos)) == 0)
+	char *t = (char *)s + startpos;
+	if (strncmp(t, prefix, min(prefix_len, len - startpos)) == 0)
 	{
-	    errcode = regexec((regex_t *)&compiled, (char *)s + startpos, 
-			      nexprs(), exprs, 0);
+	    errcode = regexec((regex_t *)&compiled, t, nexprs(), exprs, 0);
 	    if (errcode == 0)
 		break;
 	}
