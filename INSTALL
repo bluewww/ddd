@@ -13,9 +13,9 @@ Requirements
 	 later, and a matching C++ I/O library (libstdc++ or libg++).
 
          Some other C++ compilers have been reported to compile DDD as
-         well, such as Sun CC 4.0, AIX xlC and SGI CC.  Cfront 3.0
-         does not compile DDD.  Prefer GCC if you can - for example,
-         DDD has been reported to fail when compiled with SGI CC.
+         well.  Good results have been reported with Sun CC 4.0.  SGI
+         CC and AIX xlC compile DDD, but introduce some subtle errors.
+         Cfront 3.0 does not compile DDD.
 
        * The X window library (Xlib) and X toolkit library (Xt),
          X11R4 or later.
@@ -118,21 +118,30 @@ Basic Installation
          cxxtest'.  Enjoy!
 
       7. If DDD crashes immediately after startup or after a few
-         interactions, see the `PROBLEMS' and `BUGS' files for your
-         problem.  Unless the problem is already listed, report
-         it to `ddd-bugs@ips.cs.tu-bs.de'.
+         interactions, see the `PROBLEMS' and `BUGS' files.  If the
+         problem is not listed, report it to the DDD maintainers
+         <ddd-bugs@ips.cs.tu-bs.de>.  If you need help, see the DDD
+         WWW page `http://www.cs.tu-bs.de/softech/ddd/' for patches,
+         people, and pointers.
 
       8. Optionally, type `make strip' to reduce the size of the `ddd'
          executable by stripping the debugging information.
 
-      9. Type `make install' to install the DDD program and manual page.
+      9. Type `make install'.  This installs the DDD executable `ddd'
+         in some public place (usually in `/usr/local/bin/') and the
+         DDD manual page `ddd.1' (in `/usr/local/man/man1/').  See
+         `Installation Names', below, on how to configure DDD to use
+         other locations.
 
-     10. Optionally, you can install the DDD application defaults
-         file, `ddd/Ddd', in a place where app-defaults files are
-         commonly found.  However, DDD runs perfectly without
-         app-defaults file.  See the comment at the beginning of
-         `ddd/Ddd', why you should *not* install an extra app-defaults
-         file.
+     10. Like every good X citizen, DDD comes with an application
+         defaults file, named `ddd/Ddd'.  This file is already
+         compiled into DDD, so you need not install it.  In fact, we
+         **STRONGLY RECOMMEND** not to install it; there is a whole
+         slew of version-skew problems associated with app-defaults
+         files, which are best avoided by simply not using them.  See
+         the comment at the beginning of `Ddd' for details.  If you
+         absolutely want to install it, copy `Ddd' to a place where
+         app-defaults files are commonly found.
 
      11. You can remove the program binaries, libraries and object
          files from the source directory by typing `make clean'.  To
@@ -174,7 +183,7 @@ Compilers and Options
     a Bourne-compatible shell, you can do that on the command line like
     this:
 
-         CXX=g++-2.6.0 CC=c89 CFLAGS=-O2 LIBS=-lposix ./configure
+         CXX=g++-2.8.0 CC=c89 CFLAGS=-O2 LIBS=-lposix ./configure
 
     Or on systems that have the `env' program, you can do it like this:
 
