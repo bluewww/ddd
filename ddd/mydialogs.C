@@ -49,6 +49,7 @@ char mydialogs_rcsid[] =
 
 // Misc includes
 #include "assert.h"
+#include "verify.h"
 #include "DestroyCB.h"
 #include "HelpCB.h"
 #include "MString.h"
@@ -67,7 +68,8 @@ static void freeXmStringTable (XmStringTable xmlabel_list, int list_length);
 Widget createDisplaySelectionList(Widget parent, String name,
 				  ArgList args, Cardinal num_args)
 {
-    Widget selectionList = XmCreateScrolledList(parent, name, args, num_args);
+    Widget selectionList = 
+	verify(XmCreateScrolledList(parent, name, args, num_args));
     XtManageChild (selectionList);
     return selectionList;
 }
@@ -90,6 +92,8 @@ void setLabelList (Widget  selectionList,
 {
     XmStringTable xmlabel_list = 
 	makeXmStringTable(label_list, list_length, highlight_title);
+
+    assert(XmIsList(selectionList));
 
     XtVaSetValues (selectionList,
 		   XmNitems,     xmlabel_list,
@@ -120,7 +124,9 @@ void getDisplayNumbers(Widget selectionList, IntArray& disp_nrs)
     disp_nrs = empty;
 
     XmStringTable selected_items;
-    int selected_items_count;
+    int selected_items_count = 0;
+
+    assert(XmIsList(selectionList));
 
     XtVaGetValues(selectionList,
 		  XmNselectedItemCount, &selected_items_count,
