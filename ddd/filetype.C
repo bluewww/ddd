@@ -104,9 +104,8 @@ bool is_binary_file(const string& file_name)
     return false;
 }
 
-
 // True if FILE_NAME is an executable file
-bool is_exec_file(const string& file_name)
+bool is_cmd_file(const string& file_name)
 {
     struct stat sb;
     if (stat(file_name, &sb))
@@ -118,10 +117,13 @@ bool is_exec_file(const string& file_name)
     if (!(sb.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)))
 	return false;		// not executable
 
-    if (!is_binary_file(file_name))
-	return false;		// no binary character in header
-
     return true;
+}
+
+// True if FILE_NAME is an executable binary file
+bool is_exec_file(const string& file_name)
+{
+    return is_cmd_file(file_name) && is_binary_file(file_name);
 }
 
 // True if FILE_NAME is a core file

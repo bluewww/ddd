@@ -35,8 +35,11 @@
 // True if FILE_NAME is a regular file
 bool is_regular_file(const string& file_name);
 
-// True if FILE_NAME is an executable file
+// True if FILE_NAME is an executable binary file
 bool is_exec_file(const string& file_name);
+
+// True if FILE_NAME is an executable file or script
+bool is_cmd_file(const string& file_name);
 
 // True if FILE_NAME is a core file
 bool is_core_file(const string& file_name);
