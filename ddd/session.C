@@ -236,6 +236,33 @@ static void copy(const string& from_name, const string& to_name, ostream& msg)
     }
 }
 
+// True if SESSION is a saved session
+bool is_saved_session(const string& session)
+{
+    return session == DEFAULT_SESSION || is_directory(session_dir(session));
+}
+
+// True if SESSION is temporary
+bool is_temporary_session(const string& session)
+{
+    return is_saved_session(session) && 
+	is_regular_file(session_tmp_flag(session));
+}
+
+// True if SESSION is temporary
+void set_temporary_session(const string& session, bool temporary)
+{
+    if (temporary)
+    {
+	ofstream os(session_tmp_flag(session));
+	os << "This session will be deleted unless saved explicitly.\n";
+    }
+    else
+    {
+	unlink(session_tmp_flag(session));
+    }
+}
+
 // Create DDD state directory
 static void create_session_state_dir(ostream& msg)
 {
@@ -572,6 +599,7 @@ void delete_session(const string& session, bool silent)
     unlink(session_core_file(session));
     unlink(session_history_file(session));
     unlink(session_lock_file(session));
+    unlink(session_tmp_flag(session));
 
     if (rmdir(session_dir(session)) && !silent)
     {
@@ -745,6 +773,9 @@ static void SaveSessionCB(Widget w, XtPointer client_data, XtPointer call_data)
 
 	DDDSaveOptionsCB(w, XtPointer(flags), call_data);
     }
+
+    // Mark as `non-temporary'
+    set_temporary_session(app_data.session, false);
 }
 
 // Save current session from a list of choices
@@ -1052,6 +1083,9 @@ static void OpenThisSessionCB(Widget w, XtPointer client_data,
     if (app_data.session != DEFAULT_SESSION)
     {
 	open_session(app_data.session);
+
+	// Mark as `non-temporary'
+	set_temporary_session(app_data.session, false);
     }
 }
 
@@ -1167,6 +1201,11 @@ void SaveSmSessionCB(Widget w, XtPointer, XtPointer call_data)
 		token->request_cancel = true;
 	    }
 	}
+    }
+    else
+    {
+	// Ordinary checkpoint -- mark as temporary
+	set_temporary_session(app_data.session, true);
     }
 }
 

@@ -994,6 +994,10 @@ void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
     delete_session(restart_session(), true);
     set_restart_session();
 
+    // Delete temporary session, if any
+    if (is_temporary_session(app_data.session))
+	delete_session(app_data.session);
+
     ddd_is_restarting = false;
     DDDDoneCB(w, client_data, call_data);
 }

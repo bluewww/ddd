@@ -1888,7 +1888,7 @@ int main(int argc, char *argv[])
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
 
 #if XtSpecificationRelease >= 6
-    if (session_id)
+    if (session_id != 0)
     {
 	XtSetArg(args[arg], XtNsessionID, session_id); arg++;
     }
@@ -1936,8 +1936,8 @@ int main(int argc, char *argv[])
 
 #if XtSpecificationRelease >= 6
     // Synchronize SESSION_ID and APP_DATA.session
-    session_id = 0;
-    XtVaGetValues(toplevel, XtNsessionID, &session_id, NULL);
+    if (session_id == 0)
+	XtVaGetValues(toplevel, XtNsessionID, &session_id, NULL);
     if (session_id != 0)
 	app_data.session = session_id;
 #endif
@@ -1982,9 +1982,6 @@ int main(int argc, char *argv[])
     setup_fonts(app_data, XtDatabase(XtDisplay(toplevel)));
     if (app_data.show_fonts)
 	return EXIT_SUCCESS;
-
-    // Create new session dir if needed
-    create_session_dir(app_data.session, messages);
 
     // Create a new auto_command_prefix if needed
     setup_auto_command_prefix();
