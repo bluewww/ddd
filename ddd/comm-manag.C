@@ -971,13 +971,34 @@ void plusOQAC (string answers[],
     int qu_count = 0;
     string file;
 
-    if (plus_cmd_data->refresh_initial_line) {
+    if (plus_cmd_data->refresh_initial_line)
+    {
 	switch (gdb->type())
 	{
 	case GDB:
-	    assert (qu_count < count);
-	    qu_count++;		// Ignore `list' output
-	    // FALL THROUGH
+	    {
+		// Handle `list' output
+		assert (qu_count < count);
+		string list = answers[qu_count++];
+
+		// Skip initial message lines like `Reading symbols...'
+		while (list != "" && !list.contains(rxint, 0))
+		    list = list.after('\n');
+
+		if (atoi(list) == 0)
+		{
+		    // No listing => no source => ignore `info line' output
+		    assert (qu_count < count);
+		    qu_count++;
+		}
+		else
+		{
+		    // Handle `info line' output
+		    assert (qu_count < count);
+		    source_view->process_info_line_main(answers[qu_count++]);
+		}
+	    }
+	    break;
 
 	case XDB:
 	    assert (qu_count < count);
