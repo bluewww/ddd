@@ -574,24 +574,24 @@ string GDBAgent::requires_reply (const string& answer)
 	|| last_line.contains("return"))
     {
 #if RUNTIME_REGEX
-	static regex rxq(".*[(]end[)][^\n]*");
+	static regex rxq(".*[(]END[)][^\n]*");
 #endif
-	if (last_line.matches(rxq))
+	if (answer.matches(rxq, last_line_index))
 	    return "q";		// Stop this
 
 #if RUNTIME_REGEX
-	static regex rxspace(".*(--more--|line [0-9])[^\n]*");
+	static regex rxspace(".*(--More--|line [0-9])[^\n]*");
 #endif
-	if (last_line.matches(rxspace))
+	if (answer.matches(rxspace, last_line_index))
 	    return " ";		// Keep on scrolling
 
 #if RUNTIME_REGEX
-	static regex rxreturn(".*([(]press return[)]"
-			      "|hit return to continue"
-			      "|type <return> to continue"
-			      "|more [(]n if no[)][?])[^\n]*");
+	static regex rxreturn(".*([(]press RETURN[)]"
+			      "|Hit RETURN to continue"
+			      "|Type <return> to continue"
+			      "|More [(]n if no[)][?])[^\n]*");
 #endif
-	if (last_line.matches(rxreturn))
+	if (answer.matches(rxreturn, last_line_index))
 	    return "\n";		// Keep on scrolling
 
 	if (type() == XDB)
@@ -600,9 +600,9 @@ string GDBAgent::requires_reply (const string& answer)
 	    // GDBAgent::requires_reply 
 	    // -- wiegand@kong.gsfc.nasa.gov (Robert Wiegand)
 #if RUNTIME_REGEX
-	    static regex rxxdb(".*standard input: END.*");
+	    static regex rxxdb(".*Standard input: END.*");
 #endif
-	    if (last_line.matches(rxxdb))
+	    if (answer.matches(rxxdb, last_line_index))
 		return "\n";	// Keep on scrolling
 	}
     }

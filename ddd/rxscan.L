@@ -297,10 +297,10 @@ C	(.|\n)*
 <S078>Process{W}{D}:{_}			return &rxprocess1;
 <S079>Process{W}{D}:			return &rxprocess2;
 <S080>[(][^ )]*db[^ )]*[)]{w}		return &rxprompt;
-<S081>{C}[(]end[)].*			return &rxq;
+<S081>{C}[(]END[)].*			return &rxq;
 <S082>@{W}{x}{W}:{C} 			return &rxreference;
 <S083>{_}refresh({W}{C})?		return &rxrefresh_cmd;
-<S084>{C}([(]press{W}return[)]|hit{W}return{W}to{W}continue|type{W}<return>{W}to{W}continue|more{W}[(]n{W}if{W}no[)][?]).* return &rxreturn;
+<S084>{C}([(]press{W}RETURN[)]|Hit{W}RETURN{W}to{W}continue|Type{W}<return>{W}to{W}continue|More{W}[(]n{W}if{W}no[)][?]).* return &rxreturn;
 <S085>{_}(r|rer|rerun|ru|run|R)({W}{C})? return &rxrun_cmd;
 <S086>{_}(r|ru|run|rer|rerun|c|cont|contin|continu|continue|u|unt|unti|until|s|si|step|stepi|n|ni|next|nexti|j|ju|jump|k|ki|kill|fin|fini|finis|finish|R|S)({W}{C})?	return &rxrunning_cmd;
 <S087>Select{w}one{w}of{w}\[{D}{w}-{w}{D}\]:{w}	return &rxselect;
@@ -312,7 +312,7 @@ C	(.|\n)*
 <S093>{_}(set|dbxenv){W}{C}		return &rxsetting_cmd;
 <S094>([][a-zA-Z0-9_().]|->)*		return &rxsimple;
 <S095>{_}disp(lay){W}[^ ]+		return &rxsingle_display_cmd;
-<S096>{C}(--more--|line{w}{d}).* 	return &rxspace;
+<S096>{C}(--More--|line{w}{d}).* 	return &rxspace;
 <S097>Breakpoint{W}{P}\,{W}{A}	return &rxstopped;
 <S098>{x}?{_}([(]|[{]|record\n|RECORD\n|RECORD{w}|OBJECT{w}|struct|class|union){C}	return &rxstr_or_cl_begin;
 <S099>([(]|[{])				return &rxstr_or_cl_begin_s;
@@ -326,7 +326,7 @@ C	(.|\n)*
 <S107>{A}{W}<[^ \n>]*{W}v(irtual{W})?t(a)?bl(e)?>[^{},]*[{]{C}	return &rxvtable;
 <S108>[{]{D}{W}vtable{W}entries\,{C}	return &rxvtable_entries;
 <S109>[ \n\t\r\v\f]+		 	return &rxwhite;
-<S110>{C}standard{W}input:{W}END{C} 	return &rxxdb;
+<S110>{C}Standard{W}input:{W}END{C} 	return &rxxdb;
 <S111>[^: \t]*:[^:]*:{w}{P}[: ]{C} 	return &rxxdbpos;
 <*>.|\n				        return 0;  // Anything else
 %%
