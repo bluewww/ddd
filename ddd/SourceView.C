@@ -1608,7 +1608,7 @@ void SourceView::set_source_argCB(Widget text_w,
 	{
 	    source_arg->set_string(s);
 	    if (double_click)
-		gdb_command(gdb->print_command(s, false), text_w);
+		gdb_command("graph display " + s, text_w);
 	}
     }
 }

@@ -993,9 +993,6 @@ the variable name and select the `\fBPrint\fR' item from the popup
 menu.
 .PP
 .PSPIC @srcdir@/PICS/ddd-print-popup.ps 15.3cm
-.PP
-As an even faster alternative, you can also double-click on the
-variable name.
 .\"
 .\"
 .SS "Displaying Complex Values in the Data Window"
@@ -1015,6 +1012,9 @@ automatically as soon as you create a display.
 .PP
 As a shorter alternative, you can simply press \fImouse button 3\fR on the
 variable name and select the `\fBDisplay\fR' item from the popup menu.
+.PP
+As an even faster alternative, you can also double-click on the
+variable name.
 .PP
 As another alternative, you may also enter the expression to be
 displayed in the argument field and press the `\fBDisplay ()\fR'

@@ -103,7 +103,7 @@ Data exploration
   pops up as soon as some value is displayed, and it pops down as soon
   as the last visible display is deleted.
 
-- You can easily print variable values in the debugger console by
+- You can easily display variable values in the data window by
   double-clicking on an occurrence.
 
 - Using GDB, VALUEs that are repeated N times are now displayed as
