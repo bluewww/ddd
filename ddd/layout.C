@@ -115,17 +115,17 @@ static GRAPHTAB tab;
 void Layout::add_graph (char *g)
 
 {
-	GRAPH *graph;
-	graph = graphGet (&tab,g);
-	if (graph) {
+    GRAPH *graph;
+    graph = graphGet (&tab,g);
+    if (graph) {
 #if WARN_IF_ALREADY_PRESENT
-		fprintf (stderr,"add-graph warning: ");
-		fprintf (stderr,"graph %s exists - not added!\n", g);
+	fprintf (stderr,"add-graph warning: ");
+	fprintf (stderr,"graph %s exists - not added!\n", g);
 #endif /* WARN_IF_ALREADY_PRESENT */
-		return;
-	} else {
-		graphNew (&tab,g);
-	}
+	return;
+    } else {
+	graphNew (&tab,g);
+    }
 }
 
 /* 
@@ -136,36 +136,34 @@ void Layout::add_graph (char *g)
  */
 
 void Layout::add_node (char *g, char *node)
-
 { 
+    NODE *nd;
+    GRAPH *graph;
+    ID id;
 
-	NODE *nd;
-	GRAPH *graph;
-	ID id;
-
-	graph = graphGet (&tab,g);
-	if (!graph) {
-		fprintf (stderr,"add-node warning: graph %s unknown\n",g);
-		return ;
-	}
-	id.label = node;
-	/*
-	 * check for dublicates
-	 */
-	nd = graphGetNode (graph,&id,Regular);
-	if (nd) {
+    graph = graphGet (&tab,g);
+    if (!graph) {
+	fprintf (stderr,"add-node warning: graph %s unknown\n",g);
+	return ;
+    }
+    id.label = node;
+    /*
+     * check for dublicates
+     */
+    nd = graphGetNode (graph,&id,Regular);
+    if (nd) {
 #if WARN_IF_ALREADY_PRESENT
-		fprintf (stderr,"add_node: Warning - node already");
-		fprintf (stderr,"member of the graph - not added\n");
+	fprintf (stderr,"add_node: Warning - node already");
+	fprintf (stderr,"member of the graph - not added\n");
 #endif /* WARN_IF_ALREADY_PRESENT */
-		return ;
-	}
-	/*
-	 * enter node with default width and height
-	 */
-	nd  = graphEnterNode (graph, &id, Regular);
-	nd->attr.node.w = 10 * strlen (node);
-	nd->attr.node.h = 30 ;
+	return ;
+    }
+    /*
+     * enter node with default width and height
+     */
+    nd  = graphEnterNode (graph, &id, Regular);
+    nd->attr.node.w = 10 * strlen (node);
+    nd->attr.node.h = 30 ;
 }
 	
 /* 
@@ -177,41 +175,39 @@ void Layout::add_node (char *g, char *node)
  */ 
 
 void Layout::add_edge (char *g, char *node1, char *node2)
-
 {
+    NODE *source;
+    NODE *target;
+    GRAPH *graph;
+    ID id1;
+    ID id2;
 
-	NODE *source;
-	NODE *target;
-	GRAPH *graph;
-	ID id1;
-	ID id2;
+    id1.label = node1;
+    id2.label = node2;
 
-	id1.label = node1;
-	id2.label = node2;
-
-	graph = graphGet (&tab,g);
-	if (!graph) {
-		fprintf (stderr,"add-edge warning: graph %s unknown\n",g);
-		return ;
-	}
-	source = graphGetNode (graph, &id1, Regular);
-	if (!source) {
-		fprintf (stderr,"add_edge: unknown node %s\n",node1);
-		exit (NOT_MEMBER);
-	}
-	target = graphGetNode (graph, &id2, Regular);
-	if (!target) {
-		fprintf (stderr,"add_edge: unknown node %s\n",node2);
-		exit (NOT_MEMBER);
-	}
-	if (source == target) {
-		/*
-		 * LOOP ! Mark the node
-		 */
-		source->loop = 1;
-	} else {
-		graphInsertEdge (graph, source,target);
-	}
+    graph = graphGet (&tab,g);
+    if (!graph) {
+	fprintf (stderr,"add-edge warning: graph %s unknown\n",g);
+	return ;
+    }
+    source = graphGetNode (graph, &id1, Regular);
+    if (!source) {
+	fprintf (stderr,"add_edge: unknown node %s\n",node1);
+	exit (NOT_MEMBER);
+    }
+    target = graphGetNode (graph, &id2, Regular);
+    if (!target) {
+	fprintf (stderr,"add_edge: unknown node %s\n",node2);
+	exit (NOT_MEMBER);
+    }
+    if (source == target) {
+	/*
+	 * LOOP ! Mark the node
+	 */
+	source->loop = 1;
+    } else {
+	graphInsertEdge (graph, source,target);
+    }
 }
 
 
@@ -222,26 +218,25 @@ void Layout::add_edge (char *g, char *node1, char *node2)
  */
 
 void Layout::set_node_width (char *g, char *node, int width)
-
 {
-	NODE *nd;
-	GRAPH *graph;
-	ID id;
+    NODE *nd;
+    GRAPH *graph;
+    ID id;
 
-	graph = graphGet (&tab,g);
-	if (!graph) {
-		fprintf (stderr,"set-node-width warning: ");
-		fprintf (stderr,"graph %s unknown\n",g);
-		return ;
-	}
-	id.label = node;
-	nd = graphGetNode (graph, &id, Regular);
-	if (!nd) {
-		fprintf (stderr,"set_node_width: node %s unknown to %s\n",
-			 node, g);
-		return ;
-	}
-	nd->attr.node.w = width;
+    graph = graphGet (&tab,g);
+    if (!graph) {
+	fprintf (stderr,"set-node-width warning: ");
+	fprintf (stderr,"graph %s unknown\n",g);
+	return ;
+    }
+    id.label = node;
+    nd = graphGetNode (graph, &id, Regular);
+    if (!nd) {
+	fprintf (stderr,"set_node_width: node %s unknown to %s\n",
+		 node, g);
+	return ;
+    }
+    nd->attr.node.w = width;
 }
 	
 
@@ -252,25 +247,24 @@ void Layout::set_node_width (char *g, char *node, int width)
  */
 
 void Layout::set_node_height (char *g, char *node, int height)
-
 {
-	NODE *nd;
-	GRAPH *graph;
-	ID id;
+    NODE *nd;
+    GRAPH *graph;
+    ID id;
 
-	graph = graphGet (&tab,g);
-	if (!graph) {
-		fprintf (stderr,"set-node warning: graph %s unknown\n",g);
-		return ;
-	}
-	id.label = node;
-	nd = graphGetNode (graph, &id, Regular);
-	if (!nd) {
-		fprintf (stderr,"set_node_width: node %s unknown to %s\n",
-			 node, g);
-		return ;
-	}
-	nd->attr.node.h = height;
+    graph = graphGet (&tab,g);
+    if (!graph) {
+	fprintf (stderr,"set-node warning: graph %s unknown\n",g);
+	return ;
+    }
+    id.label = node;
+    nd = graphGetNode (graph, &id, Regular);
+    if (!nd) {
+	fprintf (stderr,"set_node_width: node %s unknown to %s\n",
+		 node, g);
+	return ;
+    }
+    nd->attr.node.h = height;
 }
 	
 /*
@@ -280,27 +274,26 @@ void Layout::set_node_height (char *g, char *node, int height)
  */
 
 void Layout::set_node_position (char *g, char *node, int x, int y)
-
 {
-	NODE *nd;
-	GRAPH *graph;
-	ID id;
+    NODE *nd;
+    GRAPH *graph;
+    ID id;
 
-	graph = graphGet (&tab,g);
-	if (!graph) {
-		fprintf (stderr,"set-node-position warning: ");
-		fprintf (stderr,"graph %s unknown\n",g);
-		return ;
-	}
-	id.label = node;
-	nd = graphGetNode (graph, &id, Regular);
-	if (!nd) {
-		fprintf (stderr,"set_node_position: node %s unknown to %s\n",
-			 node, g);
-		return ;
-	}
-	nd->oldx = x;
-	nd->oldy = y;
+    graph = graphGet (&tab,g);
+    if (!graph) {
+	fprintf (stderr,"set-node-position warning: ");
+	fprintf (stderr,"graph %s unknown\n",g);
+	return ;
+    }
+    id.label = node;
+    nd = graphGetNode (graph, &id, Regular);
+    if (!nd) {
+	fprintf (stderr,"set_node_position: node %s unknown to %s\n",
+		 node, g);
+	return ;
+    }
+    nd->oldx = x;
+    nd->oldy = y;
 }
 
 /*
@@ -311,9 +304,7 @@ void Layout::set_node_position (char *g, char *node, int x, int y)
  */
 
 void Layout::add_edge_hint (char *, char *, char *, int, int)
-
 {
-
 }
 
 /* 
@@ -322,9 +313,7 @@ void Layout::add_edge_hint (char *, char *, char *, int, int)
  */
 
 void Layout::remove_edge_hint (char *, char *, char *, int, int)
-
 {
-
 }
 
 /* 
@@ -334,90 +323,88 @@ void Layout::remove_edge_hint (char *, char *, char *, int, int)
  */
 
 void Layout::remove_edge (char *g, char *node1, char *node2)
-
 {
-	GRAPH *graph;
-	NODE *source;
-	NODE *target;
-	NODE *hint;
-	NODE *tmp;
-	EDGE *toTarget;
-	EDGE *toSource;
-	ID id1, id2, tmpid;
-	int direction;		/* UP or DOWN */
+    GRAPH *graph;
+    NODE *source;
+    NODE *target;
+    NODE *hint;
+    NODE *tmp;
+    EDGE *toTarget;
+    EDGE *toSource;
+    ID id1, id2, tmpid;
+    int direction;		/* UP or DOWN */
 
-	id1.label = node1;
-	id2.label = node2;
+    id1.label = node1;
+    id2.label = node2;
 
-	graph = graphGet (&tab,g);
-	if (!graph) {
-		fprintf (stderr,"remove-edge warning: graph %s unknown\n",g);
-		return ;
+    graph = graphGet (&tab,g);
+    if (!graph) {
+	fprintf (stderr,"remove-edge warning: graph %s unknown\n",g);
+	return ;
+    }
+
+    source = graphGetNode (graph, &id1, Regular);
+    if (!source) {
+	fprintf (stderr,"remove_edge: unknown node %s\n",node1);
+	return;
+    }
+    target = graphGetNode (graph, &id2, Regular);
+    if (!target) {
+	fprintf (stderr,"remove_edge: unknown node %s\n",node2);
+	return;
+    }
+
+    /*
+     * try to find the edge between the two nodes
+     */
+
+    toTarget = graphFindEdgeAtSource (source,target);
+    if (!toTarget) {
+	fprintf (stderr,"remove_edge: can't find edge from");
+	fprintf (stderr," %s to %s \n", node1, node2);
+	return ;
+    }
+    toSource = graphFindEdgeAtTarget (source,target);
+    if (!toSource) {
+	fprintf (stderr,"remove_edge: can't find edge from");
+	fprintf (stderr," %s to %s \n", node1, node2);
+	return;
+    }
+
+    /*
+     * remove all hints
+     * start at the source node and move to the target node
+     * removing all hints on that way. We have to determine
+     * if we have to go UP ord DOWN at each hint we find, because
+     * the edge may be inverted!
+     */
+
+    hint = toTarget->node;
+    if (hint->type == Hint && hint->attr.hint.up == source) {
+	direction = DOWN;
+    } else {
+	direction = UP;
+    }
+    while (hint != target) {
+	if (hint->level != NOLEVEL) {
+	    /*
+	     * remove hint form its level
+	     */
+	    levelsRemoveNode (graph, hint, hint->level);
 	}
+	tmp = ( direction == DOWN ? 
+		hint->attr.hint.down : hint->attr.hint.up );
+	tmpid.id = hint->attr.hint.id;
+	graphRemoveNode (graph, &tmpid, Hint);
+	hint = tmp;
+    }
 
-	source = graphGetNode (graph, &id1, Regular);
-	if (!source) {
-		fprintf (stderr,"remove_edge: unknown node %s\n",node1);
-		return;
-	}
-	target = graphGetNode (graph, &id2, Regular);
-	if (!target) {
-		fprintf (stderr,"remove_edge: unknown node %s\n",node2);
-		return;
-	}
-
-	/*
-	 * try to find the edge between the two nodes
-	 */
-
-	toTarget = graphFindEdgeAtSource (source,target);
-	if (!toTarget) {
-		fprintf (stderr,"remove_edge: can't find edge from");
-		fprintf (stderr," %s to %s \n", node1, node2);
-		return ;
-	}
-	toSource = graphFindEdgeAtTarget (source,target);
-	if (!toSource) {
-		fprintf (stderr,"remove_edge: can't find edge from");
-		fprintf (stderr," %s to %s \n", node1, node2);
-		return;
-	}
-
-	/*
-	 * remove all hints
-	 * start at the source node and move to the target node
-	 * removing all hints on that way. We have to determine
-	 * if we have to go UP ord DOWN at each hint we find, because
-	 * the edge may be inverted!
-	 */
-
-	hint = toTarget->node;
-	if (hint->type == Hint && hint->attr.hint.up == source) {
-		direction = DOWN;
-	} else {
-		direction = UP;
-	}
-	while (hint != target) {
-		if (hint->level != NOLEVEL) {
-			/*
-			 * remove hint form its level
-			 */
-			levelsRemoveNode (graph, hint, hint->level);
-		}
-		tmp = ( direction == DOWN ? 
-		       hint->attr.hint.down : hint->attr.hint.up );
-		tmpid.id = hint->attr.hint.id;
-		graphRemoveNode (graph, &tmpid, Hint);
-		hint = tmp;
-	}
-
-	/*
-	 * remove edges
-	 */
+    /*
+     * remove edges
+     */
 	
-	listRemoveEdge (&source->attr.node.down, toTarget);
-	listRemoveEdge (&target->attr.node.up, toSource);	
-
+    listRemoveEdge (&source->attr.node.down, toTarget);
+    listRemoveEdge (&target->attr.node.up, toSource);	
 }
 
 /* 
@@ -428,50 +415,49 @@ void Layout::remove_edge (char *g, char *node1, char *node2)
  */
 
 void Layout::remove_node (char *g, char *label)
-
 {
-	GRAPH *graph;
-	NODE *node;
-	EDGE *edge;
-	ID id;
+    GRAPH *graph;
+    NODE *node;
+    EDGE *edge;
+    ID id;
 
-	graph = graphGet (&tab,g);
-	if (!graph) {
-		fprintf (stderr,"remove-edge warning: graph %s unknown\n",g);
-		return ;
-	}
-	id.label = label;
-	node = graphGetNode (graph, &id, Regular);
-	if (!node ) {
-		fprintf (stderr,"remove_node: unknown node %s\n", label);
-		exit (NOT_MEMBER);
-	}
-	if (node->level != NOLEVEL) {
-		levelsRemoveNode (graph, node, node->level);
-	}
-	/* 
-	 * remove all edges leading down ...
-	 */
+    graph = graphGet (&tab,g);
+    if (!graph) {
+	fprintf (stderr,"remove-edge warning: graph %s unknown\n",g);
+	return ;
+    }
+    id.label = label;
+    node = graphGetNode (graph, &id, Regular);
+    if (!node ) {
+	fprintf (stderr,"remove_node: unknown node %s\n", label);
+	exit (NOT_MEMBER);
+    }
+    if (node->level != NOLEVEL) {
+	levelsRemoveNode (graph, node, node->level);
+    }
+    /* 
+     * remove all edges leading down ...
+     */
 
-	edge = node->attr.node.down.head ;
-	while (edge) {
-		remove_edge (g,label, edge->target->attr.node.label);
-		edge = edge->next;
-	}
+    edge = node->attr.node.down.head ;
+    while (edge) {
+	remove_edge (g,label, edge->target->attr.node.label);
+	edge = edge->next;
+    }
 	
-	/* 
-	 * remove all edges leading up  ...
-	 */
+    /* 
+     * remove all edges leading up  ...
+     */
 
-	edge = node->attr.node.up.head ;
-	while (edge) {
-		remove_edge (g,edge->target->attr.node.label, label);
-		edge = edge->next;
-	}
-	/*
-	 * remove node by itself
-	 */
-	graphRemoveNode (graph, &id, Regular);
+    edge = node->attr.node.up.head ;
+    while (edge) {
+	remove_edge (g,edge->target->attr.node.label, label);
+	edge = edge->next;
+    }
+    /*
+     * remove node by itself
+     */
+    graphRemoveNode (graph, &id, Regular);
 }
 
 /* 
@@ -481,9 +467,8 @@ void Layout::remove_node (char *g, char *label)
  */
 
 void Layout::remove_graph (char *g)
-
 {
-	graphRemove (&tab,g);
+    graphRemove (&tab,g);
 }
 
 /* 
@@ -499,22 +484,21 @@ void Layout::remove_graph (char *g)
  */
 
 void Layout::layout (char *g)
-
 {
-	GRAPH *graph;
+    GRAPH *graph;
 	
-	graph = graphGet (&tab,g);
-	if (!graph) {
-		fprintf (stderr,"layout warning: graph %s unknown\n",g);
-		return ;
-	}
+    graph = graphGet (&tab,g);
+    if (!graph) {
+	fprintf (stderr,"layout warning: graph %s unknown\n",g);
+	return ;
+    }
 
-	if (graph->layouted) {
-		inc_layout(graph);
-	} else {
-		new_layout(graph);
-	}
-	dddOutput (graph);
+    if (graph->layouted) {
+	inc_layout(graph);
+    } else {
+	new_layout(graph);
+    }
+    dddOutput (graph);
 
 }
 
@@ -522,22 +506,21 @@ void Layout::layout (char *g)
  * debug
  */
 void Layout::dddDebug (char *g)
-
 {
-	GRAPH *graph;
+    GRAPH *graph;
 	
-	graph = graphGet (&tab,g);
-	if (!graph) {
-		fprintf (stderr,"debug warning: graph %s unknown\n",g);
-		return ;
-	}
+    graph = graphGet (&tab,g);
+    if (!graph) {
+	fprintf (stderr,"debug warning: graph %s unknown\n",g);
+	return ;
+    }
 
-	if (graph->layouted) {
-		inc_layout (graph);
-	} else {
-		new_layout (graph);
-	}
-	debugGraphXFig (graph);
+    if (graph->layouted) {
+	inc_layout (graph);
+    } else {
+	new_layout (graph);
+    }
+    debugGraphXFig (graph);
 }
 
 
@@ -547,41 +530,40 @@ void Layout::dddDebug (char *g)
  */
 
 void Layout::inc_layout (GRAPH *graph)
-
 {
-	int i;
+    int i;
 
-	levelsEnterNodes (graph,graph->pullup);
-	sortInsertHints (graph);
+    levelsEnterNodes (graph,graph->pullup);
+    sortInsertHints (graph);
 
-	sortGraphUpperBary (graph);
-	sortGraphLowerBary (graph);
-	sortInitX (graph);
+    sortGraphUpperBary (graph);
+    sortGraphLowerBary (graph);
+    sortInitX (graph);
 
-	/*
-	 * there are two ways for finetunig the x-coordinates.
-	 * graph.xiterations tells the number of iterations.
-	 */
-	if (graph->reverseflag) {
-		for (i=0;i < graph->xiterations/2;i++) {
-			sortGraphDownX (graph);
-			sortGraphUpX (graph);
-		}
-		if (graph->xiterations % 2) {
-			sortGraphUpX (graph);
-		}
-	} else {
-	
-		for (i=0;i<graph->xiterations/2;i++) {
-			sortGraphUpX (graph);
-			sortGraphDownX (graph);
-		}
-		if (graph->xiterations % 2) {
-			sortGraphUpX (graph);
-		}
+    /*
+     * there are two ways for finetunig the x-coordinates.
+     * graph.xiterations tells the number of iterations.
+     */
+    if (graph->reverseflag) {
+	for (i=0;i < graph->xiterations/2;i++) {
+	    sortGraphDownX (graph);
+	    sortGraphUpX (graph);
 	}
+	if (graph->xiterations % 2) {
+	    sortGraphUpX (graph);
+	}
+    } else {
+	
+	for (i=0;i<graph->xiterations/2;i++) {
+	    sortGraphUpX (graph);
+	    sortGraphDownX (graph);
+	}
+	if (graph->xiterations % 2) {
+	    sortGraphUpX (graph);
+	}
+    }
 
-	sortGraphVertical (graph);
+    sortGraphVertical (graph);
 }
 
 
@@ -591,61 +573,59 @@ void Layout::inc_layout (GRAPH *graph)
  */
 
 void Layout::new_layout (GRAPH *graph)
-
 {
+    int i;
 
-	int i;
+    graph->layouted = TRUE;
 
-	graph->layouted = TRUE;
+    levelsEnterNodes (graph,graph->pullup);
+    sortInsertHints (graph);
 
-	levelsEnterNodes (graph,graph->pullup);
-	sortInsertHints (graph);
+    /*
+     * there are two ways for finetunig the x-coordinates.
+     * graph->xiterations tells the number of iterations.
+     */
+    if (graph->reverseflag) {
 
-	/*
-	 * there are two ways for finetunig the x-coordinates.
-	 * graph->xiterations tells the number of iterations.
-	 */
-	if (graph->reverseflag) {
-
-		sortGraphLowerBary (graph);
-		sortGraphUpperBary (graph);
-		sortGraphLowerBary (graph);	
-		sortGraphUpperBary (graph);
-		if (graph->xiterations % 2) {
-			sortGraphLowerBary (graph);
-		}
-
-		sortInitX (graph);
-
-
-		for (i=0;i < graph->xiterations/2;i++) {
-			sortGraphDownX (graph);
-			sortGraphUpX (graph);
-		}
-		if (graph->xiterations % 2) {
-			sortGraphDownX (graph);
-		}
-	} else {
-		sortGraphUpperBary (graph);
-		sortGraphLowerBary (graph);
-		sortGraphUpperBary (graph);
-		sortGraphLowerBary (graph);	
-		if (graph->xiterations % 2) {
-			sortGraphUpperBary (graph);
-		}
-
-		sortInitX (graph);
-
-		for (i=0;i<graph->xiterations/2;i++) {
-			sortGraphUpX (graph);
-			sortGraphDownX (graph);
-		}
-		if (graph->xiterations % 2) {
-			sortGraphUpX (graph);
-		}
+	sortGraphLowerBary (graph);
+	sortGraphUpperBary (graph);
+	sortGraphLowerBary (graph);	
+	sortGraphUpperBary (graph);
+	if (graph->xiterations % 2) {
+	    sortGraphLowerBary (graph);
 	}
 
-	sortGraphVertical (graph);
+	sortInitX (graph);
+
+
+	for (i=0;i < graph->xiterations/2;i++) {
+	    sortGraphDownX (graph);
+	    sortGraphUpX (graph);
+	}
+	if (graph->xiterations % 2) {
+	    sortGraphDownX (graph);
+	}
+    } else {
+	sortGraphUpperBary (graph);
+	sortGraphLowerBary (graph);
+	sortGraphUpperBary (graph);
+	sortGraphLowerBary (graph);	
+	if (graph->xiterations % 2) {
+	    sortGraphUpperBary (graph);
+	}
+
+	sortInitX (graph);
+
+	for (i=0;i<graph->xiterations/2;i++) {
+	    sortGraphUpX (graph);
+	    sortGraphDownX (graph);
+	}
+	if (graph->xiterations % 2) {
+	    sortGraphUpX (graph);
+	}
+    }
+
+    sortGraphVertical (graph);
 }
 
 /*
@@ -674,7 +654,6 @@ void Layout::dddOutput (GRAPH *graph)
  */
 
 void Layout::dddNodeOut (char *, NODE *node)
-
 {
     if (node->x == node->oldx && node->y == node->oldy) {
 	return;	/* no changes */
@@ -717,61 +696,60 @@ void Layout::dddNodeOut (char *, NODE *node)
  */
 
 void Layout::debugNode (NODE *node)
-
 {
-	EDGE *tmp;
+    EDGE *tmp;
 
-	printf ("level=%i center=%i x=%i ",node->level, node->center,
-		node->x);
-	if (node->type == Regular) {
-		printf ("regular label=%s\n",node->attr.node.label);
-		printf ("down: ");
-		tmp = node->attr.node.down.head ;
-		while (tmp) {
-			if (tmp->node->type == Regular) {
-				printf ("%s ",tmp->node->attr.node.label);
-			} else {
-				printf ("%i ",tmp->node->attr.hint.id);
-			}
-			tmp=tmp->next;
-		}
-		printf ("\n");
-		printf ("up: ");
-		tmp = node->attr.node.up.head ;
-		while (tmp) {
-			if (tmp->node->type == Regular) {
-				printf ("%s ",tmp->node->attr.node.label);
-			} else {
-				printf ("%i ",tmp->node->attr.hint.id);
-			}
-			tmp=tmp->next;
-		}
-		printf ("\n");
-	} else {
-		printf ("hint %i\n",node->attr.hint.id);
-		printf ("down: ");
-		if (node->attr.hint.down) {
-			if (node->attr.hint.down->type == Regular) {
-				printf ("%s ",node->attr.hint.down
-					->attr.node.label);
-			} else {
-				printf ("%i ",node->attr.hint.down
-					->attr.hint.id);
-			}
-		}
-		printf ("\n");
-		printf ("up: ");
-		if (node->attr.hint.up) {
-			if (node->attr.hint.up->type == Regular) {
-				printf ("%s ",node->attr.hint.up
-					->attr.node.label);
-			} else {
-				printf ("%i ",node->attr.hint.up
-					->attr.hint.id);
-			}
-		}
-		printf ("\n");
+    printf ("level=%i center=%i x=%i ",node->level, node->center,
+	    node->x);
+    if (node->type == Regular) {
+	printf ("regular label=%s\n",node->attr.node.label);
+	printf ("down: ");
+	tmp = node->attr.node.down.head ;
+	while (tmp) {
+	    if (tmp->node->type == Regular) {
+		printf ("%s ",tmp->node->attr.node.label);
+	    } else {
+		printf ("%i ",tmp->node->attr.hint.id);
+	    }
+	    tmp=tmp->next;
 	}
+	printf ("\n");
+	printf ("up: ");
+	tmp = node->attr.node.up.head ;
+	while (tmp) {
+	    if (tmp->node->type == Regular) {
+		printf ("%s ",tmp->node->attr.node.label);
+	    } else {
+		printf ("%i ",tmp->node->attr.hint.id);
+	    }
+	    tmp=tmp->next;
+	}
+	printf ("\n");
+    } else {
+	printf ("hint %i\n",node->attr.hint.id);
+	printf ("down: ");
+	if (node->attr.hint.down) {
+	    if (node->attr.hint.down->type == Regular) {
+		printf ("%s ",node->attr.hint.down
+			->attr.node.label);
+	    } else {
+		printf ("%i ",node->attr.hint.down
+			->attr.hint.id);
+	    }
+	}
+	printf ("\n");
+	printf ("up: ");
+	if (node->attr.hint.up) {
+	    if (node->attr.hint.up->type == Regular) {
+		printf ("%s ",node->attr.hint.up
+			->attr.node.label);
+	    } else {
+		printf ("%i ",node->attr.hint.up
+			->attr.hint.id);
+	    }
+	}
+	printf ("\n");
+    }
 }
 
 /*
@@ -780,16 +758,15 @@ void Layout::debugNode (NODE *node)
  */
 
 void Layout::debugLevel (GRAPH *graph, int n)
-
 {
-	NODE **level = graph->level+n;
-	NODE *node;
+    NODE **level = graph->level+n;
+    NODE *node;
 
-	node = *level ;
-	while (node) {
-		debugNode (node);
-		node = node->right;
-	}
+    node = *level ;
+    while (node) {
+	debugNode (node);
+	node = node->right;
+    }
 }
 
 /*
@@ -798,14 +775,13 @@ void Layout::debugLevel (GRAPH *graph, int n)
  */
 
 void Layout::debugAllLevel (GRAPH *graph)
-
 {
-	int i;
+    int i;
 
-	for ( i = 0 ; i < graph->levels; i++) {
-		printf ("*** level %i ***\n",i);
-		debugLevel (graph,i);
-	}
+    for ( i = 0 ; i < graph->levels; i++) {
+	printf ("*** level %i ***\n",i);
+	debugLevel (graph,i);
+    }
 }	
 	
 /*
@@ -814,20 +790,19 @@ void Layout::debugAllLevel (GRAPH *graph)
  */
 
 void Layout::debugAllNodes (GRAPH *graph)
-
 {
-	int i;
-	NODE *node;
+    int i;
+    NODE *node;
 
-	for (i=0;i<PRIME;i++) {
-		if (graph->hashtab[i] ) {
-			node = graph->hashtab[i] ;
-			while (node) {
-				debugNode (node);
-				node = node->hashnext;
-			}
-		}
+    for (i=0;i<PRIME;i++) {
+	if (graph->hashtab[i] ) {
+	    node = graph->hashtab[i] ;
+	    while (node) {
+		debugNode (node);
+		node = node->hashnext;
+	    }
 	}
+    }
 }
 
 
@@ -838,70 +813,69 @@ void Layout::debugAllNodes (GRAPH *graph)
  */
 
 void Layout::debugNodeXFig (NODE *nd)
-
 {
-	EDGE *edge;
-	int arrow;
-	int w,h;
+    EDGE *edge;
+    int arrow;
+    int w,h;
 
-	if (nd->type == Regular) {
+    if (nd->type == Regular) {
 
-		w = nd->attr.node.w/2;
-		h = nd->attr.node.h/2;
+	w = nd->attr.node.w/2;
+	h = nd->attr.node.h/2;
 
-		printf ( BOXHEADER );
-		printf ("%i %i ",nd->x - w , nd->y - h);
-		printf ("%i %i ",nd->x + w , nd->y - h);
-		printf ("%i %i ",nd->x + w , nd->y + h);
-		printf ("%i %i ",nd->x - w , nd->y + h);
-		printf ("%i %i ",nd->x - w , nd->y - h);
-		printf (" 9999 9999\n");
-		printf ( TEXTHEADER );
-		printf ("%i %i %s\x01\n", nd->x, nd->y, nd->attr.node.label);
+	printf ( BOXHEADER );
+	printf ("%i %i ",nd->x - w , nd->y - h);
+	printf ("%i %i ",nd->x + w , nd->y - h);
+	printf ("%i %i ",nd->x + w , nd->y + h);
+	printf ("%i %i ",nd->x - w , nd->y + h);
+	printf ("%i %i ",nd->x - w , nd->y - h);
+	printf (" 9999 9999\n");
+	printf ( TEXTHEADER );
+	printf ("%i %i %s\x01\n", nd->x, nd->y, nd->attr.node.label);
 
-		/*
-		 * draw the lines to all descendants
-		 */
+	/*
+	 * draw the lines to all descendants
+	 */
 
-		edge = nd->attr.node.down.head;
-		while (edge) {
-			arrow = ( edge->arrow == Here ? HERE : OTHER);
-			if (arrow == HERE) {
-				debugEdgeXFig (nd, edge->node, HERE) ;
-			} else {
-				if (edge->node->type == Regular) {
-					debugEdgeXFig (nd, edge->node, OTHER);
-				} else {
-					debugEdgeXFig (nd, edge->node,NOTHING);
-				}
-			}
-			edge = edge->next;
-		}
-
-	} else if (nd->attr.hint.down) {
-		/*
-		 * draw the line 
-		 */
-		if (nd->attr.hint.down->type == Regular) {
-			if (nd->attr.hint.target == nd->attr.hint.down) {
-				debugEdgeXFig (nd, nd->attr.hint.down, OTHER);
-			} else {
-				debugEdgeXFig (nd, nd->attr.hint.down,NOTHING);
-			}
+	edge = nd->attr.node.down.head;
+	while (edge) {
+	    arrow = ( edge->arrow == Here ? HERE : OTHER);
+	    if (arrow == HERE) {
+		debugEdgeXFig (nd, edge->node, HERE) ;
+	    } else {
+		if (edge->node->type == Regular) {
+		    debugEdgeXFig (nd, edge->node, OTHER);
 		} else {
+		    debugEdgeXFig (nd, edge->node,NOTHING);
 		}
-
-		if (nd->attr.hint.down->type == Hint) {
-			debugEdgeXFig (nd, nd->attr.hint.down, NOTHING);
-		} else {
-			if (nd->attr.hint.target == nd->attr.hint.down) {
-				debugEdgeXFig (nd, nd->attr.hint.down, OTHER);
-			} else {
-				debugEdgeXFig (nd, nd->attr.hint.down,NOTHING);
-			}
-		}
-			
+	    }
+	    edge = edge->next;
 	}
+
+    } else if (nd->attr.hint.down) {
+	/*
+	 * draw the line 
+	 */
+	if (nd->attr.hint.down->type == Regular) {
+	    if (nd->attr.hint.target == nd->attr.hint.down) {
+		debugEdgeXFig (nd, nd->attr.hint.down, OTHER);
+	    } else {
+		debugEdgeXFig (nd, nd->attr.hint.down,NOTHING);
+	    }
+	} else {
+	}
+
+	if (nd->attr.hint.down->type == Hint) {
+	    debugEdgeXFig (nd, nd->attr.hint.down, NOTHING);
+	} else {
+	    if (nd->attr.hint.target == nd->attr.hint.down) {
+		debugEdgeXFig (nd, nd->attr.hint.down, OTHER);
+	    } else {
+		debugEdgeXFig (nd, nd->attr.hint.down,NOTHING);
+	    }
+	}
+			
+    }
 }
 
 /*
@@ -910,34 +884,32 @@ void Layout::debugNodeXFig (NODE *nd)
  */
 
 void Layout::debugEdgeXFig (NODE *source, NODE *target, int arrow)
-
 {
-	int x1,y1,x2,y2;
+    int x1,y1,x2,y2;
 
-	x1 = source->x ;
-	y1 = source->y ;
-	if (source->type == Regular ) {
-		y1 += source->attr.node.h/2;
-	}
-	x2 = target->x ;
-	y2 = target->y ;
-	if (target->type == Regular ) {
-		y2 -= target->attr.node.h/2;
-	}
-	switch (arrow) {
-	case OTHER:
-		printf (FWDLINE);
-		break;
-	case HERE:
-		printf (BKWDLINE);
-		break;
-	case NOTHING:
-	default:
-		printf (LINE);
-		break;
-	}
-	printf ("%i %i %i %i 9999 9999\n",x1,y1,x2,y2);
-
+    x1 = source->x ;
+    y1 = source->y ;
+    if (source->type == Regular ) {
+	y1 += source->attr.node.h/2;
+    }
+    x2 = target->x ;
+    y2 = target->y ;
+    if (target->type == Regular ) {
+	y2 -= target->attr.node.h/2;
+    }
+    switch (arrow) {
+    case OTHER:
+	printf (FWDLINE);
+	break;
+    case HERE:
+	printf (BKWDLINE);
+	break;
+    case NOTHING:
+    default:
+	printf (LINE);
+	break;
+    }
+    printf ("%i %i %i %i 9999 9999\n",x1,y1,x2,y2);
 }
 
 /*
@@ -945,19 +917,18 @@ void Layout::debugEdgeXFig (NODE *source, NODE *target, int arrow)
  */
 
 void Layout::debugGraphXFig (GRAPH *graph)
-
 {
-	NODE *node;
-	int i;
+    NODE *node;
+    int i;
 
-	printf (XFIGHEADER);
-	for ( i = 0 ; i < PRIME; i++) {
-		node = graph->hashtab[i];
-		while (node) {
-			debugNodeXFig (node);
-			node = node->hashnext;
-		}
+    printf (XFIGHEADER);
+    for ( i = 0 ; i < PRIME; i++) {
+	node = graph->hashtab[i];
+	while (node) {
+	    debugNodeXFig (node);
+	    node = node->hashnext;
 	}
+    }
 	
 }
 
@@ -972,11 +943,10 @@ void Layout::debugGraphXFig (GRAPH *graph)
  */
 
 void Layout::listInit (EDGELIST *list)
-
 {
-	list->head = (EDGE*) NULL;
-	list->tail = (EDGE*) NULL;
-	list->length = 0;
+    list->head = (EDGE*) NULL;
+    list->tail = (EDGE*) NULL;
+    list->length = 0;
 }
 
 /*
@@ -985,42 +955,41 @@ void Layout::listInit (EDGELIST *list)
  */
 
 EDGE *Layout::listInsertEdge (EDGELIST *list, NODE *node)
-
 {
-	EDGE *edge;
-	EDGE *tail;
+    EDGE *edge;
+    EDGE *tail;
 
-	/*
-	 * create a new edge
-	 */
-	edge = (EDGE*) malloc (sizeof (EDGE));
-	if (!edge) {
-		fprintf (stderr,"listInsertEdge: out of memory\n");
-		exit (MEMORY_ERROR);
-	}
-	/*
-	 * link the edge to the list
-	 */
-	edge->next = (EDGE*) NULL;
-	edge->prev = (EDGE*) NULL;
+    /*
+     * create a new edge
+     */
+    edge = (EDGE*) malloc (sizeof (EDGE));
+    if (!edge) {
+	fprintf (stderr,"listInsertEdge: out of memory\n");
+	exit (MEMORY_ERROR);
+    }
+    /*
+     * link the edge to the list
+     */
+    edge->next = (EDGE*) NULL;
+    edge->prev = (EDGE*) NULL;
 
-	tail = list->head;
-	list->head = edge;
-	edge->next = tail;
-	if (!tail) {
-		list->tail = edge;
-	} else {
-		tail->prev = edge;
-	}
+    tail = list->head;
+    list->head = edge;
+    edge->next = tail;
+    if (!tail) {
+	list->tail = edge;
+    } else {
+	tail->prev = edge;
+    }
 	
-	/*
-	 * enter the node to the edge
-	 */
-	edge->node = node;
+    /*
+     * enter the node to the edge
+     */
+    edge->node = node;
 
-	list->length++;
+    list->length++;
 
-	return edge;
+    return edge;
 }
 	
 /*
@@ -1029,33 +998,32 @@ EDGE *Layout::listInsertEdge (EDGELIST *list, NODE *node)
  */
 
 void Layout::listRemoveEdge (EDGELIST *list, EDGE *edge)
-
 {
-	if (edge->prev && edge->next) {
-		/* edge neither head nor tail of list */
-		edge->next->prev = edge->prev ;
-		edge->prev->next = edge->next ;
-	} else {
-		if (!edge->next) {
-			/* last entry of list */
-			list->tail = edge->prev;
-			if (edge->prev) {
-				edge->prev->next = (EDGE*) NULL;
-			}
-		}
-		if (!edge->prev) {
-			/* first entry of list */
-			list->head = edge->next ;
-			if (edge->next) {
-				edge->next->prev = (EDGE*) NULL;
-			}
-		}
+    if (edge->prev && edge->next) {
+	/* edge neither head nor tail of list */
+	edge->next->prev = edge->prev ;
+	edge->prev->next = edge->next ;
+    } else {
+	if (!edge->next) {
+	    /* last entry of list */
+	    list->tail = edge->prev;
+	    if (edge->prev) {
+		edge->prev->next = (EDGE*) NULL;
+	    }
 	}
-	free ((char*)edge);
-	/*
-	 * correct number of entries 
-	 */
-	list->length-- ;
+	if (!edge->prev) {
+	    /* first entry of list */
+	    list->head = edge->next ;
+	    if (edge->next) {
+		edge->next->prev = (EDGE*) NULL;
+	    }
+	}
+    }
+    free ((char*)edge);
+    /*
+     * correct number of entries 
+     */
+    list->length-- ;
 
 }
 
@@ -1065,20 +1033,19 @@ void Layout::listRemoveEdge (EDGELIST *list, EDGE *edge)
  */
 
 EDGE *Layout::listFindNode (EDGELIST *list, NODE *node)
-
 {
-	EDGE *edge;
+    EDGE *edge;
 	
-	edge = list->head;
-	while (edge && edge->node != node) {
-		edge = edge->next;
-	}
-	if (!edge) {
-		fprintf (stderr,"listFindEntry: can't find entry\n");
-		exit (NOT_MEMBER);
-	}
+    edge = list->head;
+    while (edge && edge->node != node) {
+	edge = edge->next;
+    }
+    if (!edge) {
+	fprintf (stderr,"listFindEntry: can't find entry\n");
+	exit (NOT_MEMBER);
+    }
 	
-	return edge;
+    return edge;
 }
 
 /*
@@ -1087,20 +1054,19 @@ EDGE *Layout::listFindNode (EDGELIST *list, NODE *node)
  */
 
 EDGE *Layout::listFindTarget (EDGELIST *list, NODE *target)
-
 {
-	EDGE *edge;
+    EDGE *edge;
 	
-	edge = list->head;
-	while (edge && edge->target != target) {
-		edge = edge->next;
-	}
-	if (!edge) {
-		fprintf (stderr,"listFindEntry: can't find entry\n");
-		edge = (EDGE*) NULL;
-	}
+    edge = list->head;
+    while (edge && edge->target != target) {
+	edge = edge->next;
+    }
+    if (!edge) {
+	fprintf (stderr,"listFindEntry: can't find entry\n");
+	edge = (EDGE*) NULL;
+    }
 	
-	return edge;
+    return edge;
 }
 
 /*
@@ -1110,19 +1076,18 @@ EDGE *Layout::listFindTarget (EDGELIST *list, NODE *target)
  */
 
 void Layout::listRemove (EDGELIST *list)
-
 {
-	EDGE *edge;
-	EDGE *tmp;
+    EDGE *edge;
+    EDGE *tmp;
 	
-	edge = list->head;
-	while (edge) {
-		tmp = edge->next;
-		free ((char*) edge);
-		edge = tmp;
-	}
-	list->head = (EDGE*) NULL;
-	list->tail = (EDGE*) NULL;
+    edge = list->head;
+    while (edge) {
+	tmp = edge->next;
+	free ((char*) edge);
+	edge = tmp;
+    }
+    list->head = (EDGE*) NULL;
+    list->tail = (EDGE*) NULL;
 }
 
 
@@ -1136,46 +1101,45 @@ void Layout::listRemove (EDGELIST *list)
  */
 
 void Layout::nodeInit (NODE* node, ID *id , NODETYPE type)
- 
 {
-	node->x = 0;
-	node->y = 0;
-	node->oldx = NOPOSITION;
-	node->oldy = NOPOSITION;
-	node->layouted = FALSE;
-	node->level = NOLEVEL;
-	node->center = 0;
-	node->index = 0 ;
-	node->loop = 0;
-	node->mark = (NODE*) NULL;
+    node->x = 0;
+    node->y = 0;
+    node->oldx = NOPOSITION;
+    node->oldy = NOPOSITION;
+    node->layouted = FALSE;
+    node->level = NOLEVEL;
+    node->center = 0;
+    node->index = 0 ;
+    node->loop = 0;
+    node->mark = (NODE*) NULL;
 	
-	node->left = (NODE*) NULL;
-	node->right = (NODE*) NULL;
+    node->left = (NODE*) NULL;
+    node->right = (NODE*) NULL;
 
-	node->hashnext = (NODE*) NULL;
-	node->hashprev = (NODE*) NULL;
+    node->hashnext = (NODE*) NULL;
+    node->hashprev = (NODE*) NULL;
 	
-	node->type = type;
+    node->type = type;
 
-	if ( type == Regular ) {
-		node->attr.node.label = (char*) malloc (strlen(id->label)+5);
-		if (!node->attr.node.label) {
-			fprintf (stderr,"nodeInit: out of memory!\n");
-			exit (MEMORY_ERROR);
-		}
-		strcpy (node->attr.node.label, id->label);
-
-		node->attr.node.w = 0;
-		node->attr.node.h = 0;
-		listInit (&node->attr.node.up);
-		listInit (&node->attr.node.down);
-	} else {
-		node->attr.hint.id = id->id ;
-		node->attr.hint.up = (NODE*) NULL;
-		node->attr.hint.down = (NODE*) NULL;
-		node->attr.hint.source = (NODE*) NULL;
-		node->attr.hint.target = (NODE*) NULL;
+    if ( type == Regular ) {
+	node->attr.node.label = (char*) malloc (strlen(id->label)+5);
+	if (!node->attr.node.label) {
+	    fprintf (stderr,"nodeInit: out of memory!\n");
+	    exit (MEMORY_ERROR);
 	}
+	strcpy (node->attr.node.label, id->label);
+
+	node->attr.node.w = 0;
+	node->attr.node.h = 0;
+	listInit (&node->attr.node.up);
+	listInit (&node->attr.node.down);
+    } else {
+	node->attr.hint.id = id->id ;
+	node->attr.hint.up = (NODE*) NULL;
+	node->attr.hint.down = (NODE*) NULL;
+	node->attr.hint.source = (NODE*) NULL;
+	node->attr.hint.target = (NODE*) NULL;
+    }
 		
 }		
 
@@ -1186,15 +1150,14 @@ void Layout::nodeInit (NODE* node, ID *id , NODETYPE type)
  */
 
 void Layout::nodeRemove (NODE *node) 
-
 {
-	if (node->type == Regular) {
-		free (node->attr.node.label);
-		listRemove (&node->attr.node.up);
-		listRemove (&node->attr.node.down);
-	}
+    if (node->type == Regular) {
+	free (node->attr.node.label);
+	listRemove (&node->attr.node.up);
+	listRemove (&node->attr.node.down);
+    }
 	
-	free ((char*)node);
+    free ((char*)node);
 }
 
 /*****************************************************************************
@@ -1207,32 +1170,31 @@ void Layout::nodeRemove (NODE *node)
  */
 
 void Layout::graphInit (GRAPH *graph, char *label)
-
 {
-	int i;
+    int i;
 	
-	graph->label = (char *)malloc (strlen(label)+1);
-	if (!graph->label) {
-		fprintf (stderr,"graphInit: out of memory!\n");
-	}
-	strcpy (graph->label, label);
-	graph->hashnext = (GRAPH*) NULL;
-	graph->hashprev = (GRAPH*) NULL;
+    graph->label = (char *)malloc (strlen(label)+1);
+    if (!graph->label) {
+	fprintf (stderr,"graphInit: out of memory!\n");
+    }
+    strcpy (graph->label, label);
+    graph->hashnext = (GRAPH*) NULL;
+    graph->hashprev = (GRAPH*) NULL;
 
-	graph->minxdist    = MINXDIST ;
-	graph->minydist    = MINYDIST;
-	graph->xiterations = XITERATIONS;
-	graph->reverseflag = REVERSE ;
-	graph->pullup      = PULLUP;
+    graph->minxdist    = MINXDIST ;
+    graph->minydist    = MINYDIST;
+    graph->xiterations = XITERATIONS;
+    graph->reverseflag = REVERSE ;
+    graph->pullup      = PULLUP;
 
-	graph->levels = 0;
-	graph->level = (NODE**) NULL;
+    graph->levels = 0;
+    graph->level = (NODE**) NULL;
 
-	graph->layouted = FALSE ; 	/* the graph was never layouted */
+    graph->layouted = FALSE ; 	/* the graph was never layouted */
 
-	for ( i = 0; i < PRIME; i++) {
-		graph->hashtab[i] = (NODE*) NULL;
-	}
+    for ( i = 0; i < PRIME; i++) {
+	graph->hashtab[i] = (NODE*) NULL;
+    }
 }
 
 /*
@@ -1242,38 +1204,37 @@ void Layout::graphInit (GRAPH *graph, char *label)
  */
 
 NODE *Layout::graphEnterNode (GRAPH *graph, ID *id, NODETYPE type)
-
 {
-	NODE *node;
-	NODE *tail;
-	int pos;
+    NODE *node;
+    NODE *tail;
+    int pos;
 
-	node = (NODE*) malloc (sizeof(NODE)) ;
-	if (!node) {
-		fprintf (stderr, "graphEnterNode: out of memory\n");
-		exit (MEMORY_ERROR);
-	}
-	nodeInit (node,id,type);
+    node = (NODE*) malloc (sizeof(NODE)) ;
+    if (!node) {
+	fprintf (stderr, "graphEnterNode: out of memory\n");
+	exit (MEMORY_ERROR);
+    }
+    nodeInit (node,id,type);
 
-	/*
-	 * insert the new node to the hashing table
-	 * TODO: check for dublicates of the given nodeID
-	 */
+    /*
+     * insert the new node to the hashing table
+     * TODO: check for dublicates of the given nodeID
+     */
 	
-	if (type == Regular) {
-		pos = graphHashStr (node->attr.node.label, PRIME);
-	} else {
-		pos =  node->attr.hint.id % PRIME;
-	}
-	tail = graph->hashtab[pos] ;
-	graph->hashtab[pos] = node;
-	node->hashnext = tail ;
-	node->hashprev = (NODE*) NULL;
-	if (node->hashnext) {
-		node->hashnext->hashprev = node;
-	}
+    if (type == Regular) {
+	pos = graphHashStr (node->attr.node.label, PRIME);
+    } else {
+	pos =  node->attr.hint.id % PRIME;
+    }
+    tail = graph->hashtab[pos] ;
+    graph->hashtab[pos] = node;
+    node->hashnext = tail ;
+    node->hashprev = (NODE*) NULL;
+    if (node->hashnext) {
+	node->hashnext->hashprev = node;
+    }
 	
-	return node;
+    return node;
 }
 
 /*
@@ -1282,53 +1243,52 @@ NODE *Layout::graphEnterNode (GRAPH *graph, ID *id, NODETYPE type)
  */
 
 NODE *Layout::graphGetNode (GRAPH *graph, ID *id, NODETYPE type)
-
 {
-	int pos;
-	int found = FALSE ;
-	NODE *node;
+    int pos;
+    int found = FALSE ;
+    NODE *node;
+
+    /*
+     * calculate the hash-entry
+     */
+    if (type == Regular) {
+	pos = graphHashStr (id->label, PRIME);
+	node = graph->hashtab[pos];
 
 	/*
-	 * calculate the hash-entry
+	 * search for entry 
 	 */
-	if (type == Regular) {
-		pos = graphHashStr (id->label, PRIME);
-		node = graph->hashtab[pos];
+	while (node && !found) {
+	    if (node->type != Regular 
+		||  strcmp(node->attr.node.label,id->label)) {
+		node = node->hashnext;
+	    } else {
+		found = TRUE;
+	    }
+	} 
 
-		/*
-		 * search for entry 
-		 */
-		while (node && !found) {
-			if (node->type != Regular 
-			    ||  strcmp(node->attr.node.label,id->label)) {
-				node = node->hashnext;
-			} else {
-				found = TRUE;
-			}
-		} 
-
-	} else {
-		pos =  id->id % PRIME;
-		node = graph->hashtab[pos];
-
-		/*
-		 * search for entry 
-		 */
-
-		while (node && !found) {
-			if (node->type != Hint 
-			    ||  node->attr.hint.id != id->id) {
-				node = node->hashnext;
-			} else {
-				found = TRUE;
-			}
-		} 
-	}
+    } else {
+	pos =  id->id % PRIME;
+	node = graph->hashtab[pos];
 
 	/*
-	 * node == NULL if not found
+	 * search for entry 
 	 */
-	return node;
+
+	while (node && !found) {
+	    if (node->type != Hint 
+		||  node->attr.hint.id != id->id) {
+		node = node->hashnext;
+	    } else {
+		found = TRUE;
+	    }
+	} 
+    }
+
+    /*
+     * node == NULL if not found
+     */
+    return node;
 }
 
 /*
@@ -1339,65 +1299,64 @@ NODE *Layout::graphGetNode (GRAPH *graph, ID *id, NODETYPE type)
  */
 
 void Layout::graphRemoveNode (GRAPH *graph, ID *id, NODETYPE type)
-
 {
-	int pos;
-	NODE *node;
+    int pos;
+    NODE *node;
+
+    /*
+     * calculate the hash-entry
+     */
+    if (type == Regular) {
+	pos = graphHashStr (id->label, PRIME);
+	node = graph->hashtab[pos];
 
 	/*
-	 * calculate the hash-entry
+	 * search for entry 
 	 */
-	if (type == Regular) {
-		pos = graphHashStr (id->label, PRIME);
-		node = graph->hashtab[pos];
-
-		/*
-		 * search for entry 
-		 */
-		while (node && strcmp(node->attr.node.label,id->label)) {
-			node = node->hashnext;
-		}
-
-	} else {
-		pos =  id->id % PRIME;
-		node = graph->hashtab[pos];
-
-		/*
-		 * search for entry 
-		 */
-		while (node && node->attr.hint.id != id->id) {
-			node = node->hashnext;
-		}
+	while (node && strcmp(node->attr.node.label,id->label)) {
+	    node = node->hashnext;
 	}
+
+    } else {
+	pos =  id->id % PRIME;
+	node = graph->hashtab[pos];
 
 	/*
-	 * node == NULL if not found
+	 * search for entry 
 	 */
-
-	if (!node) {
-		fprintf (stderr,"graphRemoveNode: can't find entry!\n");
-		exit (NOT_MEMBER);
+	while (node && node->attr.hint.id != id->id) {
+	    node = node->hashnext;
 	}
+    }
 
-	/*
-	 * remove the node from the double linked list
-	 */
+    /*
+     * node == NULL if not found
+     */
 
-	if (node->hashprev && node->hashprev) {
-		node->hashprev->hashnext = node->hashnext;
-		node->hashnext->hashprev = node->hashprev;
-	} else {
-		if (!node->hashprev) {
-			graph->hashtab[pos] = node->hashnext;
-			if (node->hashnext) {
-				node->hashnext->hashprev = (NODE*) NULL;
-			}
-		}
-		if (!node->hashnext && node->hashprev) {
-			node->hashprev->hashnext = (NODE*) NULL;
-		}
+    if (!node) {
+	fprintf (stderr,"graphRemoveNode: can't find entry!\n");
+	exit (NOT_MEMBER);
+    }
+
+    /*
+     * remove the node from the double linked list
+     */
+
+    if (node->hashprev && node->hashprev) {
+	node->hashprev->hashnext = node->hashnext;
+	node->hashnext->hashprev = node->hashprev;
+    } else {
+	if (!node->hashprev) {
+	    graph->hashtab[pos] = node->hashnext;
+	    if (node->hashnext) {
+		node->hashnext->hashprev = (NODE*) NULL;
+	    }
 	}
-	nodeRemove (node);
+	if (!node->hashnext && node->hashprev) {
+	    node->hashprev->hashnext = (NODE*) NULL;
+	}
+    }
+    nodeRemove (node);
 }
 	
 /* 
@@ -1406,26 +1365,25 @@ void Layout::graphRemoveNode (GRAPH *graph, ID *id, NODETYPE type)
  */
 
 void Layout::graphCreateLevels (GRAPH *graph, int n)
-
 {
-	NODE **nodeptr;
-	int i;
+    NODE **nodeptr;
+    int i;
 
-	graph->levels = n;
-	graph->level = (NODE **) malloc (sizeof (NODE*) * n);
-	if (!graph->level) {
-		fprintf (stderr,"graphCreateLevels: out of memory!\n");
-		exit (MEMORY_ERROR);
-	}
+    graph->levels = n;
+    graph->level = (NODE **) malloc (sizeof (NODE*) * n);
+    if (!graph->level) {
+	fprintf (stderr,"graphCreateLevels: out of memory!\n");
+	exit (MEMORY_ERROR);
+    }
 	
-	/*
-	 * initialize it
-	 */
+    /*
+     * initialize it
+     */
 
-	nodeptr = graph->level ;
-	for ( i = 0 ; i < n ; i++ ) {
-		*(nodeptr++) = (NODE*) NULL;
-	}
+    nodeptr = graph->level ;
+    for ( i = 0 ; i < n ; i++ ) {
+	*(nodeptr++) = (NODE*) NULL;
+    }
 }
 
 /*
@@ -1436,11 +1394,10 @@ void Layout::graphCreateLevels (GRAPH *graph, int n)
  */
 
 void Layout::graphRemoveLevels (GRAPH *graph)
-
 {
-	free ( (char*) graph->level);
-	graph->level = (NODE**) NULL;
-	graph->levels = 0;
+    free ( (char*) graph->level);
+    graph->level = (NODE**) NULL;
+    graph->levels = 0;
 }
 
 /*
@@ -1450,38 +1407,37 @@ void Layout::graphRemoveLevels (GRAPH *graph)
  */
 
 void Layout::graphAddLevels (GRAPH *graph, int n)
-
 {
-	NODE **newtab;
-	int i;
+    NODE **newtab;
+    int i;
 	
 
-	/*
-	 * create a larger table
-	 */
-	newtab = (NODE**) malloc (sizeof(NODE*) * (graph->levels + n));
-	if (!newtab) {
-		fprintf (stderr,"graphAddLevels: out of memory!\n");
-		exit (MEMORY_ERROR);
-	}
-	/*
-	 * fill the table ..
-	 */
-	for (i=0 ; i < graph->levels; i++) {
-		*(newtab+i) = *(graph->level);
-	}
-	/*
-	 * clear the new levels
-	 */
-	for (i=graph->levels; i < graph->levels+n; i++) {
-		*(newtab+i) = (NODE*) NULL;
-	}
-	/*
-	 * make the new table to the actual table
-	 */
-	graph->levels += n;
-	free ((char*) graph->level);
-	graph->level = newtab;
+    /*
+     * create a larger table
+     */
+    newtab = (NODE**) malloc (sizeof(NODE*) * (graph->levels + n));
+    if (!newtab) {
+	fprintf (stderr,"graphAddLevels: out of memory!\n");
+	exit (MEMORY_ERROR);
+    }
+    /*
+     * fill the table ..
+     */
+    for (i=0 ; i < graph->levels; i++) {
+	*(newtab+i) = *(graph->level);
+    }
+    /*
+     * clear the new levels
+     */
+    for (i=graph->levels; i < graph->levels+n; i++) {
+	*(newtab+i) = (NODE*) NULL;
+    }
+    /*
+     * make the new table to the actual table
+     */
+    graph->levels += n;
+    free ((char*) graph->level);
+    graph->level = newtab;
 }
 
 /*
@@ -1491,35 +1447,34 @@ void Layout::graphAddLevels (GRAPH *graph, int n)
  */
 
 void Layout::graphInsertEdge (GRAPH *, NODE *source, NODE *target)
-
 {
-	EDGE *from;
-	EDGE *to;
+    EDGE *from;
+    EDGE *to;
 
-	if (source->type != Regular) {
-		fprintf (stderr,"graphInsertEdge: wrong node type\n");
-		exit (NODE_TYPE);
-	}
-	if (target->type != Regular) {
-		fprintf (stderr,"graphInsertEdge: wrong node type\n");
-		exit (NODE_TYPE);
-	}
+    if (source->type != Regular) {
+	fprintf (stderr,"graphInsertEdge: wrong node type\n");
+	exit (NODE_TYPE);
+    }
+    if (target->type != Regular) {
+	fprintf (stderr,"graphInsertEdge: wrong node type\n");
+	exit (NODE_TYPE);
+    }
 	
-	to = graphFindEdgeAtSource (source,target) ;
-	if (to) {
-		fprintf (stderr,"graphInsertEdge: warning - edge exists\n");
-		return;
-	}
+    to = graphFindEdgeAtSource (source,target) ;
+    if (to) {
+	fprintf (stderr,"graphInsertEdge: warning - edge exists\n");
+	return;
+    }
 
-	from = listInsertEdge (&source->attr.node.down, target);
-	from->arrow = Other;
-	from->target = target;
-	from->node = target;
+    from = listInsertEdge (&source->attr.node.down, target);
+    from->arrow = Other;
+    from->target = target;
+    from->node = target;
 
-	to = listInsertEdge (&target->attr.node.up, source);
-	to->arrow = Here;
-	to->target = source;
-	to->node = source;
+    to = listInsertEdge (&target->attr.node.up, source);
+    to->arrow = Here;
+    to->target = source;
+    to->node = source;
 
 }
 
@@ -1529,40 +1484,39 @@ void Layout::graphInsertEdge (GRAPH *, NODE *source, NODE *target)
  */
 
 void Layout::graphInvertEdge (NODE *source, NODE *target)
-
 {
-	EDGE *to, *from;
-	EDGEARROW srcarrow;
+    EDGE *to, *from;
+    EDGEARROW srcarrow;
 
 
-	if (source->type != Regular || target->type != Regular) {
-		fprintf (stderr,"graphInvertEdge: node not regular!\n");
-		exit (INTERNAL);
-	}
-	fprintf (stderr,"inverting Edge %s -> %s\n", source->attr.node.label,
-		 target->attr.node.label);
-	to = listFindTarget (&source->attr.node.down,target);
-	from = listFindTarget (&target->attr.node.up,source);
-	if (!to || !from) {
-		fprintf (stderr,"graphInvertEdge: can't find edge!\n");
-		exit (NO_EDGE);
-	}
-	srcarrow = to->arrow;
+    if (source->type != Regular || target->type != Regular) {
+	fprintf (stderr,"graphInvertEdge: node not regular!\n");
+	exit (INTERNAL);
+    }
+    fprintf (stderr,"graphInvertEdge: inverting Edge %s -> %s\n", 
+	     source->attr.node.label, target->attr.node.label);
+    to = listFindTarget (&source->attr.node.down,target);
+    from = listFindTarget (&target->attr.node.up,source);
+    if (!to || !from) {
+	fprintf (stderr,"graphInvertEdge: can't find edge!\n");
+	exit (NO_EDGE);
+    }
+    srcarrow = to->arrow;
 
-	/*
-	 * remove the edge
-	 */
-	listRemoveEdge (&source->attr.node.down, to);
-	listRemoveEdge (&target->attr.node.up,from);
-	/*
-	 * create inverted edge
-	 */
-	to = listInsertEdge (&source->attr.node.up, target);
-	to->target = target;
-	to->arrow = srcarrow;
-	from = listInsertEdge (&target->attr.node.down, source);
-	from->target = source;
-	from->arrow = ( srcarrow == Here ? Other : Here );
+    /*
+     * remove the edge
+     */
+    listRemoveEdge (&source->attr.node.down, to);
+    listRemoveEdge (&target->attr.node.up,from);
+    /*
+     * create inverted edge
+     */
+    to = listInsertEdge (&source->attr.node.up, target);
+    to->target = target;
+    to->arrow = srcarrow;
+    from = listInsertEdge (&target->attr.node.down, source);
+    from->target = source;
+    from->arrow = ( srcarrow == Here ? Other : Here );
 }
 
 /*
@@ -1572,9 +1526,9 @@ void Layout::graphInvertEdge (NODE *source, NODE *target)
 
 int Layout::graphNewNodeID()
 {
-	int counter = 1000 ;
+    int counter = 1000 ;
 
-	return counter++ ;
+    return counter++ ;
 }
 
 /*
@@ -1584,61 +1538,60 @@ int Layout::graphNewNodeID()
  */
 
 NODE *Layout::graphInsertHint (GRAPH *graph, NODE *source, NODE* target)
-
 {
-	ID id;
-	NODE *hint = 0;
-	EDGE *toTarget = 0;
-	EDGE *toSource = 0;
+    ID id;
+    NODE *hint = 0;
+    EDGE *toTarget = 0;
+    EDGE *toSource = 0;
 
+    /*
+     * there must be an edge between source and target 
+     */
+
+    id.id = graphNewNodeID();
+    hint = graphEnterNode (graph,&id, Hint);
+    if (source->type == Regular) {
 	/*
-	 * there must be an edge between source and target 
+	 * find edge to target
 	 */
+	toTarget = listFindNode (&source->attr.node.down, target);
+	toTarget->node = hint;
+    } else {
+	source->attr.hint.down = hint;
+    }
 
-	id.id = graphNewNodeID();
-	hint = graphEnterNode (graph,&id, Hint);
-	if (source->type == Regular) {
-		/*
-		 * find edge to target
-		 */
-		toTarget = listFindNode (&source->attr.node.down, target);
-		toTarget->node = hint;
-	} else {
-		source->attr.hint.down = hint;
-	}
-
-	if (target->type == Regular) {
-		/*
-		 * find edge to source
-		 */
-		toSource = listFindNode (&target->attr.node.up, source);
-		toSource->node = hint;
-	} else {
-		target->attr.hint.up = hint;
-	}
-
-	hint->attr.hint.up = source;
-	hint->attr.hint.down = target;
-
+    if (target->type == Regular) {
 	/*
-	 * enter the information, to which edge this hint belongs
+	 * find edge to source
 	 */
+	toSource = listFindNode (&target->attr.node.up, source);
+	toSource->node = hint;
+    } else {
+	target->attr.hint.up = hint;
+    }
+
+    hint->attr.hint.up = source;
+    hint->attr.hint.down = target;
+
+    /*
+     * enter the information, to which edge this hint belongs
+     */
 	
-	if (source->type == Hint) {
-		hint->attr.hint.source = source->attr.hint.source;
-		hint->attr.hint.target = source->attr.hint.target;
-	} else if (target->type == Hint) {
-		hint->attr.hint.source = target->attr.hint.source;
-		hint->attr.hint.target = target->attr.hint.target;
-	} else if (toTarget->arrow == Other){
-		hint->attr.hint.source = source;
-		hint->attr.hint.target = target;
-	} else {
-		hint->attr.hint.source = target;
-		hint->attr.hint.target = source;
-	}
+    if (source->type == Hint) {
+	hint->attr.hint.source = source->attr.hint.source;
+	hint->attr.hint.target = source->attr.hint.target;
+    } else if (target->type == Hint) {
+	hint->attr.hint.source = target->attr.hint.source;
+	hint->attr.hint.target = target->attr.hint.target;
+    } else if (toTarget->arrow == Other){
+	hint->attr.hint.source = source;
+	hint->attr.hint.target = target;
+    } else {
+	hint->attr.hint.source = target;
+	hint->attr.hint.target = source;
+    }
 
-	return hint;
+    return hint;
 }
 
 /*
@@ -1648,22 +1601,21 @@ NODE *Layout::graphInsertHint (GRAPH *graph, NODE *source, NODE* target)
  */
 
 EDGE *Layout::graphFindEdgeAtSource (NODE *source, NODE *target)
-
 {
-	EDGE *edge;
+    EDGE *edge;
 	
-	edge = source->attr.node.down.head ;
-	while (edge && !(edge->target == target && edge->arrow == Other)){
-		edge = edge->next;
+    edge = source->attr.node.down.head ;
+    while (edge && !(edge->target == target && edge->arrow == Other)){
+	edge = edge->next;
+    }
+    if (!edge) {
+	edge = source->attr.node.up.head ;
+	while (edge && !(edge->target == target && 
+			 edge->arrow == Other )) {
+	    edge = edge->next;
 	}
-	if (!edge) {
-		edge = source->attr.node.up.head ;
-		while (edge && !(edge->target == target && 
-				 edge->arrow == Other )) {
-			edge = edge->next;
-		}
-	}
-	return edge;
+    }
+    return edge;
 }
 
 
@@ -1674,22 +1626,21 @@ EDGE *Layout::graphFindEdgeAtSource (NODE *source, NODE *target)
  */
 
 EDGE *Layout::graphFindEdgeAtTarget (NODE *source, NODE *target)
-
 {
-	EDGE *edge;
+    EDGE *edge;
 	
-	edge = target->attr.node.up.head ;
-	while (edge && !(edge->target == source && edge->arrow == Here)){
-		edge = edge->next;
+    edge = target->attr.node.up.head ;
+    while (edge && !(edge->target == source && edge->arrow == Here)){
+	edge = edge->next;
+    }
+    if (!edge) {
+	edge = target->attr.node.down.head ;
+	while (edge && !(edge->target == source && 
+			 edge->arrow == Here )) {
+	    edge = edge->next;
 	}
-	if (!edge) {
-		edge = target->attr.node.down.head ;
-		while (edge && !(edge->target == source && 
-				 edge->arrow == Here )) {
-			edge = edge->next;
-		}
-	}
-	return edge;
+    }
+    return edge;
 }
 
 
@@ -1702,21 +1653,20 @@ EDGE *Layout::graphFindEdgeAtTarget (NODE *source, NODE *target)
  */
 
 void Layout::graphResetLevels (GRAPH *graph) 
-
 {
-	int i;
-	NODE *node;
+    int i;
+    NODE *node;
 
-	for (i = 0 ; i < PRIME; i++) {
-		node = graph->hashtab[i];
-		while (node) {
-			node->level = NOLEVEL;
-			node->left = (NODE*) NULL;
-			node->right = (NODE*) NULL;
+    for (i = 0 ; i < PRIME; i++) {
+	node = graph->hashtab[i];
+	while (node) {
+	    node->level = NOLEVEL;
+	    node->left = (NODE*) NULL;
+	    node->right = (NODE*) NULL;
 
-			node = node->hashnext;
-		}
+	    node = node->hashnext;
 	}
+    }
 }
 	
 	
@@ -1728,19 +1678,18 @@ void Layout::graphResetLevels (GRAPH *graph)
  */
 
 int Layout::graphHashStr (char *str, int prime) 
-
 {
-	char *p;
-	unsigned h = 0, g;
+    char *p;
+    unsigned h = 0, g;
 	
-	for (p=str; *p != '\0'; p++ ) {
-		h = ( h << 4) + (*p);
-		if ((g = h & 0xf0000000)) {
-			h = h ^ (g >> 24);
-			h = h ^ g;
-		}
+    for (p=str; *p != '\0'; p++ ) {
+	h = ( h << 4) + (*p);
+	if ((g = h & 0xf0000000)) {
+	    h = h ^ (g >> 24);
+	    h = h ^ g;
 	}
-	return h % prime;
+    }
+    return h % prime;
 }
 
 /*
@@ -1755,20 +1704,19 @@ int Layout::graphHashStr (char *str, int prime)
  */
 
 GRAPH *Layout::graphGet (GRAPHTAB *tab, char *label)
-
 {
-	int pos;
-	GRAPH *graph;
+    int pos;
+    GRAPH *graph;
 
-	pos = graphHashStr (label, SMALLPRIME);
-	/*
-	 * try to find graph
-	 */
-	graph = (*tab)[pos];
-	while (graph && strcmp(graph->label, label)) {
-		graph = graph->hashnext;
-	}
-	return graph;
+    pos = graphHashStr (label, SMALLPRIME);
+    /*
+     * try to find graph
+     */
+    graph = (*tab)[pos];
+    while (graph && strcmp(graph->label, label)) {
+	graph = graph->hashnext;
+    }
+    return graph;
 }
 	
 	
@@ -1780,46 +1728,45 @@ GRAPH *Layout::graphGet (GRAPHTAB *tab, char *label)
  */
 
 GRAPH *Layout::graphNew (GRAPHTAB *tab,char *label)
-
 {
-	GRAPH *graph;
-	GRAPH *tail;
-	int pos;
+    GRAPH *graph;
+    GRAPH *tail;
+    int pos;
 
-	/*
-	 * check for dublicate
-	 */
-	graph = graphGet (tab, label);
-	if (graph) {
-		fprintf (stderr,"graphNew: %s allready there!\n",label);
-		return (GRAPH*) NULL;
-	}
+    /*
+     * check for dublicate
+     */
+    graph = graphGet (tab, label);
+    if (graph) {
+	fprintf (stderr,"graphNew: %s already there!\n",label);
+	return (GRAPH*) NULL;
+    }
 		
-	graph = (GRAPH*) malloc (sizeof(GRAPH));
-	if (!graph) {
-		fprintf (stderr,"graphNew: out of memory\n");
-		exit (MEMORY_ERROR);
-	}
-	graphInit (graph,label);
+    graph = (GRAPH*) malloc (sizeof(GRAPH));
+    if (!graph) {
+	fprintf (stderr,"graphNew: out of memory\n");
+	exit (MEMORY_ERROR);
+    }
+    graphInit (graph,label);
 	
-	/*
-	 * enter graph to tab
-	 */
-	pos = graphHashStr (label, SMALLPRIME);
+    /*
+     * enter graph to tab
+     */
+    pos = graphHashStr (label, SMALLPRIME);
 
-	if ((*tab)[pos]) {
-		tail = ((*tab)[pos])->hashnext;
-	} else {
-		tail = (GRAPH*) NULL;
-	}
-	(*tab)[pos] = graph;
-	graph->hashnext = tail;
-	graph->hashprev = (GRAPH*) NULL;
-	if (graph->hashnext) {
-		graph->hashnext->hashprev = graph;
-	}
+    if ((*tab)[pos]) {
+	tail = ((*tab)[pos])->hashnext;
+    } else {
+	tail = (GRAPH*) NULL;
+    }
+    (*tab)[pos] = graph;
+    graph->hashnext = tail;
+    graph->hashprev = (GRAPH*) NULL;
+    if (graph->hashnext) {
+	graph->hashnext->hashprev = graph;
+    }
 	
-	return graph;
+    return graph;
 }
 			
 /*
@@ -1828,58 +1775,57 @@ GRAPH *Layout::graphNew (GRAPHTAB *tab,char *label)
  */
 
 void Layout::graphRemove (GRAPHTAB *tab, char *label)
-
 {
-	int pos;
- 	int i;
-	GRAPH *graph;
-	NODE *nextnode;
-	NODE *node;
+    int pos;
+    int i;
+    GRAPH *graph;
+    NODE *nextnode;
+    NODE *node;
 
- 	pos = graphHashStr (label, SMALLPRIME);
+    pos = graphHashStr (label, SMALLPRIME);
+    /*
+     * try to find graph
+     */
+    graph = (*tab)[pos];
+    while (graph && strcmp(graph->label, label)) {
+	graph = graph->hashnext;
+    }
+    if (!graph) {
 	/*
-	 * try to find graph
+	 * not found
 	 */
-	graph = (*tab)[pos];
-	while (graph && strcmp(graph->label, label)) {
-		graph = graph->hashnext;
+	fprintf (stderr,"graphRemove: %s not found!\n",label);
+	return;
+    }
+    /*
+     * remove the graph
+     */
+    if (graph->hashprev && graph->hashprev) {
+	graph->hashprev->hashnext = graph->hashnext;
+	graph->hashnext->hashprev = graph->hashprev;
+    } else {
+	if (!graph->hashprev) {
+	    (*tab)[pos] = graph->hashnext;
+	    if (graph->hashnext) {
+		graph->hashnext->hashprev = (GRAPH*) NULL;
+	    }
 	}
-	if (!graph) {
-		/*
-		 * not found
-		 */
-		fprintf (stderr,"graphRemove: %s not found!\n",label);
-		return;
+	if (!graph->hashnext && graph->hashprev) {
+	    graph->hashprev->hashnext = (GRAPH*) NULL;
 	}
-	/*
-	 * remove the graph
-	 */
-	if (graph->hashprev && graph->hashprev) {
-		graph->hashprev->hashnext = graph->hashnext;
-		graph->hashnext->hashprev = graph->hashprev;
-	} else {
-		if (!graph->hashprev) {
-			(*tab)[pos] = graph->hashnext;
-			if (graph->hashnext) {
-				graph->hashnext->hashprev = (GRAPH*) NULL;
-			}
-		}
-		if (!graph->hashnext && graph->hashprev) {
-			graph->hashprev->hashnext = (GRAPH*) NULL;
-		}
-	}
+    }
 
-	graphRemoveLevels (graph); /* remove Levels */
-	for (i=0; i < PRIME; i++) {
-		node = graph->hashtab[i];
-		while (node) {
-			nextnode = node->hashnext;
-			nodeRemove (node);
-			node = nextnode;
-		}
+    graphRemoveLevels (graph); /* remove Levels */
+    for (i=0; i < PRIME; i++) {
+	node = graph->hashtab[i];
+	while (node) {
+	    nextnode = node->hashnext;
+	    nodeRemove (node);
+	    node = nextnode;
 	}
-	free (graph->label);
-	free ((char*) graph);
+    }
+    free (graph->label);
+    free ((char*) graph);
 }
 
 /*
@@ -1888,13 +1834,12 @@ void Layout::graphRemove (GRAPHTAB *tab, char *label)
  */
 
 void Layout::graphTabInit (GRAPHTAB *tab)
-
 {
-	int i;
+    int i;
 	
-	for (i=0 ; i < SMALLPRIME; i++) {
-		(*tab)[i] = (GRAPH*) NULL;
-	}
+    for (i=0 ; i < SMALLPRIME; i++) {
+	(*tab)[i] = (GRAPH*) NULL;
+    }
 }
 
 
@@ -1912,34 +1857,33 @@ void Layout::graphTabInit (GRAPHTAB *tab)
  */
 
 void Layout::levelsInsertNode (GRAPH *graph, NODE *node, int n)
-
 {
-	NODE **level;
+    NODE **level;
 
-	if (n > graph->levels || !graph->level) {
-		fprintf (stderr,"levelsInsertNode: wrong Level!\n");
-		exit (LEVEL_ERROR);
-	}
+    if (n > graph->levels || !graph->level) {
+	fprintf (stderr,"levelsInsertNode: wrong Level!\n");
+	exit (LEVEL_ERROR);
+    }
 
-	if (!node->right && !node->left) {
-
-		/*
-		 * insert Node at head of level
-		 */
-	
-		level = graph->level+n ;
-		node->right = *level;
-		node->left = (NODE*) NULL;
-		if (*level) {
-			(*level)->left = node;
-		}
-		*level = node;
-		node->level = n;
-	}
+    if (!node->right && !node->left) {
 
 	/*
-	 * else do nothing, assuming the node is member of a level
+	 * insert Node at head of level
 	 */
+	
+	level = graph->level+n ;
+	node->right = *level;
+	node->left = (NODE*) NULL;
+	if (*level) {
+	    (*level)->left = node;
+	}
+	*level = node;
+	node->level = n;
+    }
+
+    /*
+     * else do nothing, assuming the node is member of a level
+     */
 }
 
 /*
@@ -1950,20 +1894,19 @@ void Layout::levelsInsertNode (GRAPH *graph, NODE *node, int n)
  */
 
 void Layout::levelsRemoveNode (GRAPH *graph, NODE *node, int n)
-
 {
-	NODE **level = graph->level+n;
+    NODE **level = graph->level+n;
 
-	if (!node->left) {
-		*level = node->right;
-	} else {
-		node->left->right = node->right;
-	}
+    if (!node->left) {
+	*level = node->right;
+    } else {
+	node->left->right = node->right;
+    }
 
-	if (node->right) {
-		node->right->left = node->left;
-	}
-	node->level = NOLEVEL ;
+    if (node->right) {
+	node->right->left = node->left;
+    }
+    node->level = NOLEVEL ;
 }
 
 
@@ -1974,55 +1917,53 @@ void Layout::levelsRemoveNode (GRAPH *graph, NODE *node, int n)
  */
 
 void Layout::levelsEnterNodes (GRAPH *graph, int pullup)
-
 {
-	int levels;
-	int i;
-	NODE *node;
+    int levels;
+    int i;
+    NODE *node;
 
-	levels = sortApplyLevel (graph); 	/* apply levels */
+    levels = sortApplyLevel (graph); 	/* apply levels */
 
+    /*
+     * check for levels allready there
+     */
+    if (!levels) {
+	fprintf (stderr," levelsEnterNodes: internal Error\n");
+	exit (INTERNAL);
+    }
+    if (!graph->level) {
 	/*
-	 * check for levels allready there
+	 * create levels
 	 */
-	if (!levels) {
-		fprintf (stderr," levelsEnterNodes: internal Error\n");
-		exit (INTERNAL);
+	graphCreateLevels (graph, levels);
+    } else {
+	/*
+	 * maybee we have to add some levels
+	 */
+	if (levels > graph->levels) {
+	    graphAddLevels (graph, levels - graph->levels);
 	}
-	if (!graph->level) {
-		/*
-		 * create levels
+    }
+    for ( i = 0 ; i < PRIME ; i++ ) {
+	node = graph->hashtab[i] ;
+	while (node) {
+	    /*
+	     * add only new nodes ..
+	     */
+	    if (!node->layouted) {
+		/* 
+		 * node was previously not
+		 * layouted -- add it
 		 */
-		graphCreateLevels (graph, levels);
-	} else {
-		/*
-		 * maybee we have to add some levels
-		 */
-		if (levels > graph->levels) {
-			graphAddLevels (graph, levels - graph->levels);
-		}
-	}
-	for ( i = 0 ; i < PRIME ; i++ ) {
-		node = graph->hashtab[i] ;
-		while (node) {
-			/*
-			 * add only new nodes ..
-			 */
-			if (!node->layouted) {
-				/* 
-				 * node was previously not
-				 * layouted -- add it
-				 */
-				levelsInsertNode (graph,node, node->level);
-			}
-			node = node->hashnext;
+		levelsInsertNode (graph,node, node->level);
+	    }
+	    node = node->hashnext;
 			
-		}
 	}
-	if (pullup) {
-		sortPullupNodes (graph); 		/* optimize */
-	}
-
+    }
+    if (pullup) {
+	sortPullupNodes (graph); 		/* optimize */
+    }
 }
 	
 /*
@@ -2032,17 +1973,16 @@ void Layout::levelsEnterNodes (GRAPH *graph, int pullup)
  */
 
 void Layout::levelsIndex (NODE **level)
-
 {
-	int i = 1;
-	NODE *node;
+    int i = 1;
+    NODE *node;
 
-	node = *level ;
-	while (node) {
-		node->index = i;
-		i++;
-		node = node->right;
-	}
+    node = *level ;
+    while (node) {
+	node->index = i;
+	i++;
+	node = node->right;
+    }
 }
 
 /*
@@ -2051,17 +1991,16 @@ void Layout::levelsIndex (NODE **level)
  */
 
 int Layout::levelsLength (NODE **level) 
-
 {
-	NODE *node;
-	int len = 0;
+    NODE *node;
+    int len = 0;
 
-	node = *level;
-	while (node) {
-		len++;
-		node = node->right;
-	}
-	return len;
+    node = *level;
+    while (node) {
+	len++;
+	node = node->right;
+    }
+    return len;
 }
 
 
@@ -2079,26 +2018,25 @@ typedef int (*QuicksortCompareProc)(const void *, const void *);
  */
 
 int Layout::sortApplyLevel (GRAPH *graph)
-
 {
-	int level ;
-	int maxlevel = 0;
-	NODE *node;
-	int i;
+    int level ;
+    int maxlevel = 0;
+    NODE *node;
+    int i;
 
-	for (i=0; i < PRIME; i++) {
-		node = graph->hashtab[i];
-		while (node) {
-			if (node->level == NOLEVEL) {
-				level = distance (node,node);
-			} else {
-				level = node->level;
-			}
-			maxlevel = ( level > maxlevel ? level : maxlevel );
-			node = node->hashnext;
-		}
+    for (i=0; i < PRIME; i++) {
+	node = graph->hashtab[i];
+	while (node) {
+	    if (node->level == NOLEVEL) {
+		level = distance (node,node);
+	    } else {
+		level = node->level;
+	    }
+	    maxlevel = ( level > maxlevel ? level : maxlevel );
+	    node = node->hashnext;
 	}
-	return ++maxlevel;
+    }
+    return ++maxlevel;
 }
 
 /*
@@ -2110,37 +2048,36 @@ int Layout::sortApplyLevel (GRAPH *graph)
  */
 
 void Layout::sortPullupNodes (GRAPH *graph)
-
 {
-	NODE **level;
-	NODE *node;
-	NODE *rightnode;
-	int newlevel ;
+    NODE **level;
+    NODE *node;
+    NODE *rightnode;
+    int newlevel ;
 	
-	if (graph->levels < 2) {
-		return ;
+    if (graph->levels < 2) {
+	return ;
+    }
+    level = graph->level+(graph->levels-1);
+    do {
+	level--;
+	node = *level;
+		
+	while (node) {
+	    newlevel = minimumLevel (node) - 1;
+	    rightnode = node->right;
+	    if (newlevel != node->level) {
+		/*
+		 * pull it up
+		 */
+		levelsRemoveNode (graph, node, node->level);
+		node->left = (NODE*) NULL;
+		node->right = (NODE*) NULL;
+		levelsInsertNode (graph, node, newlevel);
+	    }
+	    node = rightnode;
 	}
-	level = graph->level+(graph->levels-1);
-	do {
-		level--;
-		node = *level;
 		
-		while (node) {
-			newlevel = minimumLevel (node) - 1;
-			rightnode = node->right;
-			if (newlevel != node->level) {
-				/*
-				 * pull it up
-				 */
-				levelsRemoveNode (graph, node, node->level);
-				node->left = (NODE*) NULL;
-				node->right = (NODE*) NULL;
-				levelsInsertNode (graph, node, newlevel);
-			}
-			node = rightnode;
-		}
-		
-	} while ( level != graph->level);
+    } while ( level != graph->level);
 }
 
 
@@ -2150,28 +2087,27 @@ void Layout::sortPullupNodes (GRAPH *graph)
  */
 
 int Layout::minimumLevel (NODE *node)
-
 {
-	EDGE *edge;
-	int min = 1000 ;
-	int tmp;
+    EDGE *edge;
+    int min = 1000 ;
+    int tmp;
 
-	if (node->type != Regular) {
-		fprintf (stderr,"minimumLevel: not a regular Node!\n");
-		exit (NOT_REGULAR);
-	}
+    if (node->type != Regular) {
+	fprintf (stderr,"minimumLevel: not a regular Node!\n");
+	exit (NOT_REGULAR);
+    }
 	
-	edge = node->attr.node.up.head ;
-	if (edge) {
-		while (edge) {
-			tmp = edge->target->level;
-			min = ( tmp < min ? tmp : min);
-			edge = edge->next;
-		}
-		return min;
-	} else {
-		return node->level + 1;
+    edge = node->attr.node.up.head ;
+    if (edge) {
+	while (edge) {
+	    tmp = edge->target->level;
+	    min = ( tmp < min ? tmp : min);
+	    edge = edge->next;
 	}
+	return min;
+    } else {
+	return node->level + 1;
+    }
 }
 		
 
@@ -2182,79 +2118,54 @@ int Layout::minimumLevel (NODE *node)
  */
 
 int Layout::distance (NODE *node, NODE *origin)
-
 {
-	int dist = 0;
-	int maxdist = 0;
-	EDGE *edge;
-	EDGE *tmpedge;
+    int dist = 0;
+    int maxdist = 0;
+    EDGE *edge;
+    EDGE *tmpedge;
 
-	node->mark = origin;
-	/*
-	 * have a look at the type of the node ...
-	 */
-	if (node->type == Regular) {
-		edge = node->attr.node.down.head ;
-		while (edge) {
-			if (edge->node->level != NOLEVEL) {
-				dist = 1 + edge->node->level;
-				edge = edge->next;
-			} else if ( edge->node->mark == origin ) {
-				/*
-				 * cycle detected ...
-				 * there is a cycle (following the
-				 * down-references) which is 
-				 * closed by the path from node to
-				 * edge->node
-				 * The cycle can be brocken up by 
-				 * inverting the edge between
-				 * node and edge->node.
-				 */
-				dist = 0;
-				tmpedge = edge->next;
-				graphInvertEdge (node,edge->node);
-				edge = tmpedge;
-			} else {
-				tmpedge = edge->next;
-				dist = 1 + distance (edge->node, origin);
-				edge = tmpedge;
-			}
-			maxdist = (dist > maxdist ? dist : maxdist);
-		}
-#if 1
-	} else {
-		fprintf (stderr,"distance: unleveled Hint!\n");
-		exit (INTERNAL);
-	}
-
-#else
-	} else if ( node->attr.hint.down ) {
+    node->mark = origin;
+    /*
+     * have a look at the type of the node ...
+     */
+    if (node->type == Regular) {
+	edge = node->attr.node.down.head ;
+	while (edge) {
+	    if (edge->node->level != NOLEVEL) {
+		dist = 1 + edge->node->level;
+		edge = edge->next;
+	    } else if ( edge->node->mark == origin ) {
 		/*
-		 * it's a hint
+		 * cycle detected ...
+		 * there is a cycle (following the
+		 * down-references) which is 
+		 * closed by the path from node to
+		 * edge->node
+		 * The cycle can be brocken up by 
+		 * inverting the edge between
+		 * node and edge->node.
 		 */
-		if (node->attr.hint.down->level != NOLEVEL){
-			maxdist = 1 + node->attr.hint.down->level ;
-		} else if (node->attr.hint.down->mark == origin ) {
-			/*
-			 * cycle detected ...
-			 */
-			fprintf (stderr, "Cycle detected ..");
-			exit (LOOPS);
-		} else {
-			maxdist = 1 + distance (node->attr.hint.down, origin);
-		}
-	} else {
-		/*
-		 * no descendants 
-		 */
-		maxdist = 0;
+		dist = 0;
+		tmpedge = edge->next;
+		graphInvertEdge (node,edge->node);
+		edge = tmpedge;
+	    } else {
+		tmpedge = edge->next;
+		dist = 1 + distance (edge->node, origin);
+		edge = tmpedge;
+	    }
+	    maxdist = (dist > maxdist ? dist : maxdist);
 	}
-#endif
-	/*
-	 * enter the distance to the node and return maxdist
-	 */
-	node->level = maxdist;
-	return maxdist;
+    }
+    else {
+	fprintf (stderr,"distance: unleveled Hint!\n");
+	exit (INTERNAL);
+    }
+    /*
+     * enter the distance to the node and return maxdist
+     */
+    node->level = maxdist;
+    return maxdist;
 }
 
 /*
@@ -2264,21 +2175,20 @@ int Layout::distance (NODE *node, NODE *origin)
  */
 
 void Layout::sortInsertHints (GRAPH *graph) 
-
 {
-	NODE *node;
-	NODE **level;
-	int i;
+    NODE *node;
+    NODE **level;
+    int i;
 
-	level = graph->level+(graph->levels-1);
-	for ( i = 0 ; i < graph->levels ; i++ ) {
-		node = *level;
-		while (node) {
-			sortCheckNode (graph,node);
-			node = node->right;
-		}
-		level--;
+    level = graph->level+(graph->levels-1);
+    for ( i = 0 ; i < graph->levels ; i++ ) {
+	node = *level;
+	while (node) {
+	    sortCheckNode (graph,node);
+	    node = node->right;
 	}
+	level--;
+    }
 }
 
 /*
@@ -2288,72 +2198,70 @@ void Layout::sortInsertHints (GRAPH *graph)
  */
 
 void Layout::sortCheckNode (GRAPH *graph, NODE *node)
-
 {
-	EDGE *edge;
-	NODE *des;
-	NODE *hint;
+    EDGE *edge;
+    NODE *des;
+    NODE *hint;
 
-	if (node->type == Regular) {
-		edge = node->attr.node.down.head ;
-		while (edge) {
-			des = edge->node;
-			if (des->level < node->level-1) {
-				/* 
-				 * insert hint
-				 */
-				hint = graphInsertHint (graph,node, des);
-				levelsInsertNode (graph, hint, node->level-1);
-			}
-			edge = edge->next;
-		}
-	} else {
-		if ( node->attr.hint.down
-		    && node->attr.hint.down->level < node->level-1 ) {
-			/*
-			 * insert hint
-			 */
-			hint = graphInsertHint (graph,node, 
-						node->attr.hint.down);
-			levelsInsertNode (graph, hint, node->level-1);
-		}
+    if (node->type == Regular) {
+	edge = node->attr.node.down.head ;
+	while (edge) {
+	    des = edge->node;
+	    if (des->level < node->level-1) {
+		/* 
+		 * insert hint
+		 */
+		hint = graphInsertHint (graph,node, des);
+		levelsInsertNode (graph, hint, node->level-1);
+	    }
+	    edge = edge->next;
 	}
+    } else {
+	if ( node->attr.hint.down
+	     && node->attr.hint.down->level < node->level-1 ) {
+	    /*
+	     * insert hint
+	     */
+	    hint = graphInsertHint (graph,node, 
+				    node->attr.hint.down);
+	    levelsInsertNode (graph, hint, node->level-1);
+	}
+    }
 }
 
 
 /*
  * sortNodeUpperBary
- * calculate the bary center og a node according to its anchestors.
+ * calculate the bary center of a node according to its ancestors.
  * ATTENTION: the 'index'-components of the anchestors must be valid!
  */
 	
 
 int Layout::sortNodeUpperBary (NODE *node)
-
 {
-	int sum = 0;
-	int count = 0;
-	EDGE *upnode;
+    int sum = 0;
+    int count = 0;
+    EDGE *upnode;
 
-	if (node->type == Hint) {
-		if (node->attr.hint.up) {
-			return (node->attr.hint.up->index * 10);
-		} else {
-			return 0;
-		}
+    if (node->type == Hint) {
+	if (node->attr.hint.up) {
+	    return (node->attr.hint.up->index * 10);
 	} else {
-		if (node->attr.node.up.length == 0) {
-			return 0;
-		} else {
-			upnode = node->attr.node.up.head;
-			while (upnode) {
-				sum += upnode->node->index;
-				count++;
-				upnode=upnode->next;
-			}
-			return ( (sum * 10) / count );
-		}
+	    return 0;
 	}
+    } else {
+	if (node->attr.node.up.length == 0) {
+	    return 0;
+	} else {
+	    upnode = node->attr.node.up.head;
+	    while (upnode) {
+		sum += upnode->node->index;
+		count++;
+		upnode=upnode->next;
+	    }
+	    return ( (sum * 10) / count );
+	}
+    }
 }
 			
 
@@ -2364,31 +2272,30 @@ int Layout::sortNodeUpperBary (NODE *node)
  */
 	
 int Layout::sortNodeLowerBary (NODE *node)
-
 {
-	int sum = 0;
-	int count = 0;
-	EDGE *downnode;
+    int sum = 0;
+    int count = 0;
+    EDGE *downnode;
 
-	if (node->type == Hint) {
-		if (node->attr.hint.down) {
-			return (node->attr.hint.down->index * 10);
-		} else {
-			return 0;
-		}
+    if (node->type == Hint) {
+	if (node->attr.hint.down) {
+	    return (node->attr.hint.down->index * 10);
 	} else {
-		if (node->attr.node.down.length == 0) {
-			return 0;
-		} else {
-			downnode = node->attr.node.down.head;
-			while (downnode) {
-				sum += downnode->node->index;
-				count++;
-				downnode=downnode->next;
-			}
-			return ( (sum * 10) / count );
-		}
+	    return 0;
 	}
+    } else {
+	if (node->attr.node.down.length == 0) {
+	    return 0;
+	} else {
+	    downnode = node->attr.node.down.head;
+	    while (downnode) {
+		sum += downnode->node->index;
+		count++;
+		downnode=downnode->next;
+	    }
+	    return ( (sum * 10) / count );
+	}
+    }
 }
 			
 /*
@@ -2402,32 +2309,31 @@ int Layout::sortNodeLowerBary (NODE *node)
  */
 
 void Layout::sortGraphUpperBary (GRAPH *graph)
-
 {
-	NODE **uplevel;
-	NODE **level;
-	NODE *node;
+    NODE **uplevel;
+    NODE **level;
+    NODE *node;
 
-	if (graph->levels < 2) {
-		/* only one level - nothing to do */
-		return;
+    if (graph->levels < 2) {
+	/* only one level - nothing to do */
+	return;
+    }
+
+    uplevel = graph->level+(graph->levels-1) ;
+    level = uplevel;
+
+    do {
+	level--;
+	levelsIndex (uplevel);
+	node = *level;
+	while (node) {
+	    node->center = sortNodeUpperBary (node);
+	    node = node->right;
 	}
-
-	uplevel = graph->level+(graph->levels-1) ;
-	level = uplevel;
-
-	do {
-		level--;
-		levelsIndex (uplevel);
-		node = *level;
-		while (node) {
-			node->center = sortNodeUpperBary (node);
-			node = node->right;
-		}
-		sortByCenter (level);
-		uplevel--;
+	sortByCenter (level);
+	uplevel--;
 		
-	} while (level != graph->level);
+    } while (level != graph->level);
 
 }
 
@@ -2443,35 +2349,33 @@ void Layout::sortGraphUpperBary (GRAPH *graph)
  */
 
 void Layout::sortGraphLowerBary (GRAPH *graph)
-
 {
-	NODE **downlevel;
-	NODE **toplevel;
-	NODE **level;
-	NODE *node;
+    NODE **downlevel;
+    NODE **toplevel;
+    NODE **level;
+    NODE *node;
 
-	if (graph->levels < 2) {
-		/* only one level - nothing to do */
-		return;
+    if (graph->levels < 2) {
+	/* only one level - nothing to do */
+	return;
+    }
+
+    toplevel = graph->level+(graph->levels-1);
+    downlevel = graph->level ;
+    level = downlevel;
+
+    do {
+	level++;
+	levelsIndex (downlevel);
+	node = *level;
+	while (node) {
+	    node->center = sortNodeLowerBary (node);
+	    node = node->right;
 	}
-
-	toplevel = graph->level+(graph->levels-1);
-	downlevel = graph->level ;
-	level = downlevel;
-
-	do {
-		level++;
-		levelsIndex (downlevel);
-		node = *level;
-		while (node) {
-			node->center = sortNodeLowerBary (node);
-			node = node->right;
-		}
-		sortByCenter (level);
-		downlevel++;
+	sortByCenter (level);
+	downlevel++;
 		
-	} while (level != toplevel);
-
+    } while (level != toplevel);
 }
 
 /*
@@ -2482,54 +2386,53 @@ void Layout::sortGraphLowerBary (GRAPH *graph)
  */
 
 void Layout::sortByCenter (NODE **level) 
-
 {
-	NODE **index;
-	NODE **tmp;
-	NODE *node;
-	int len = levelsLength (level);
-	int i;
+    NODE **index;
+    NODE **tmp;
+    NODE *node;
+    int len = levelsLength (level);
+    int i;
 	
-	if (len < 2) {
-		return;
-	}
+    if (len < 2) {
+	return;
+    }
 	
-	index = (NODE**) malloc (sizeof (NODE*) * len);
-	if (!index) {
-		fprintf (stderr,"sortByCenter: out of memory!\n");
-		exit (MEMORY_ERROR);
-	}
+    index = (NODE**) malloc (sizeof (NODE*) * len);
+    if (!index) {
+	fprintf (stderr,"sortByCenter: out of memory!\n");
+	exit (MEMORY_ERROR);
+    }
 
-	/* fill the index */
+    /* fill the index */
 	
-	tmp = index;
-	node = *level;
-	while (node) {
-		*(tmp++) = node;
-		node = node->right;
-	}
+    tmp = index;
+    node = *level;
+    while (node) {
+	*(tmp++) = node;
+	node = node->right;
+    }
 
-	/* sort the index */
+    /* sort the index */
 
-	qsort ( (char*) index , len, sizeof (NODE*), 
-	       (QuicksortCompareProc)sortCmpCenters );
+    qsort ( (char*) index , len, sizeof (NODE*), 
+	    (QuicksortCompareProc)sortCmpCenters );
 
-	/*
-	 * build up a new list according to the sorted index
-	 */
+    /*
+     * build up a new list according to the sorted index
+     */
 
-	tmp = index;
-	*level = *tmp;
-	(*level)->left = (NODE*) NULL;
+    tmp = index;
+    *level = *tmp;
+    (*level)->left = (NODE*) NULL;
 
-	for (i=1 ; i < len ; i++) {
-		(*tmp)->right = *(tmp+1);
-		(*(tmp+1))->left = *tmp;
-		tmp++;
-	}
-	(*tmp)->right = (NODE*) NULL;
+    for (i=1 ; i < len ; i++) {
+	(*tmp)->right = *(tmp+1);
+	(*(tmp+1))->left = *tmp;
+	tmp++;
+    }
+    (*tmp)->right = (NODE*) NULL;
 
-	free ( (char*) index);
+    free ( (char*) index);
 }
 
 #if 0
@@ -2541,22 +2444,21 @@ void Layout::sortByCenter (NODE **level)
  */
 
 void Layout::sortAvrgCenter (GRAPH *graph)
-
 {
-	NODE **level;
-	NODE *node;
-	int i;
+    NODE **level;
+    NODE *node;
+    int i;
 	
-	level = graph->level;
-	for (i=0; i < graph->levels; i++) {
-		node = *level;
-		while (node) {
-			node->center = (node->upcenter + node->downcenter) / 2;
-			node = node->right;
-		}
-		sortByCenter (level);
-		level++;
+    level = graph->level;
+    for (i=0; i < graph->levels; i++) {
+	node = *level;
+	while (node) {
+	    node->center = (node->upcenter + node->downcenter) / 2;
+	    node = node->right;
 	}
+	sortByCenter (level);
+	level++;
+    }
 }
 		
 #endif
@@ -2567,7 +2469,6 @@ void Layout::sortAvrgCenter (GRAPH *graph)
  */
 
 int Layout::sortCmpCenters (NODE **_n1, NODE **_n2) 
-
 {	
     NODE *n1 = *_n1;
     NODE *n2 = *_n2;
@@ -2604,32 +2505,31 @@ int Layout::sortCmpCenters (NODE **_n1, NODE **_n2)
  */
 
 void Layout::sortInitX (GRAPH *graph) 
-
 {
-	NODE **level = graph->level;
-	NODE *node;
-	int x;
-	int nodex;
-	int i;
+    NODE **level = graph->level;
+    NODE *node;
+    int x;
+    int nodex;
+    int i;
 	
-	for (i=0; i < graph->levels; i++) {
-		node = *level;
-		x = 0;
-		while (node) {
-			if (node->type == Regular) {
-				nodex = x + node->attr.node.w / 2;
-			} else {
-				nodex = x ;
-			}
-			node->x = nodex;
-			x += graph->minxdist ;
-			if (node->type == Regular) {
-				x +=  node->attr.node.w ;
-			} 
-			node = node->right;
-		}
-		level++;
+    for (i=0; i < graph->levels; i++) {
+	node = *level;
+	x = 0;
+	while (node) {
+	    if (node->type == Regular) {
+		nodex = x + node->attr.node.w / 2;
+	    } else {
+		nodex = x ;
+	    }
+	    node->x = nodex;
+	    x += graph->minxdist ;
+	    if (node->type == Regular) {
+		x +=  node->attr.node.w ;
+	    } 
+	    node = node->right;
 	}
+	level++;
+    }
 }
 
 /*
@@ -2640,22 +2540,21 @@ void Layout::sortInitX (GRAPH *graph)
  */
 
 void Layout::sortGraphUpX (GRAPH *graph)
-
 {
-	NODE **level;
+    NODE **level;
 
-	if (graph->levels < 2) {
-		/* only one level - nothing to do */
-		return;
-	}
+    if (graph->levels < 2) {
+	/* only one level - nothing to do */
+	return;
+    }
 
-	level = graph->level+(graph->levels-1) ;
+    level = graph->level+(graph->levels-1) ;
 
-	do {
-		level--;
-		sortLevelUpX (level, graph->minxdist);
+    do {
+	level--;
+	sortLevelUpX (level, graph->minxdist);
 		
-	} while (level != graph->level);
+    } while (level != graph->level);
 	
 }
 
@@ -2667,23 +2566,21 @@ void Layout::sortGraphUpX (GRAPH *graph)
  */
 
 void Layout::sortGraphDownX (GRAPH *graph)
-
 {
-	NODE **level;
-	NODE **toplevel = graph->level+(graph->levels-1);
+    NODE **level;
+    NODE **toplevel = graph->level+(graph->levels-1);
 
-	if (graph->levels < 2) {
-		/* only one level - nothing to do */
-		return;
-	}
+    if (graph->levels < 2) {
+	/* only one level - nothing to do */
+	return;
+    }
 
-	level = graph->level;
+    level = graph->level;
 
-	do {
-		level++;
-		sortLevelDownX (level, graph->minxdist);
-	} while (level != toplevel);
-	
+    do {
+	level++;
+	sortLevelDownX (level, graph->minxdist);
+    } while (level != toplevel);
 }
 
 /*
@@ -2696,46 +2593,45 @@ void Layout::sortGraphDownX (GRAPH *graph)
  */
 
 void Layout::sortLevelUpX (NODE **level, int dist)
-
 {
-	NODE **index;
-	NODE **tmp;
-	NODE *node;
+    NODE **index;
+    NODE **tmp;
+    NODE *node;
 
-	int len = levelsLength (level);
-	int newx;
+    int len = levelsLength (level);
+    int newx;
 
-	index = (NODE**) malloc (sizeof (NODE*) * (len+1));
-	if (!index) {
-		fprintf (stderr,"sortByCenter: out of memory!\n");
-		exit (MEMORY_ERROR);
-	}
+    index = (NODE**) malloc (sizeof (NODE*) * (len+1));
+    if (!index) {
+	fprintf (stderr,"sortByCenter: out of memory!\n");
+	exit (MEMORY_ERROR);
+    }
 
-	/* fill the index */
+    /* fill the index */
 	
-	tmp = index;
-	node = *level;
-	while (node) {
-		*(tmp++) = node;
-		node = node->right;
-	}
-	*tmp = (NODE*) NULL;
+    tmp = index;
+    node = *level;
+    while (node) {
+	*(tmp++) = node;
+	node = node->right;
+    }
+    *tmp = (NODE*) NULL;
 
-	/* 
-	 * sort the index by node priority (from low to high)
-	 */
+    /* 
+     * sort the index by node priority (from low to high)
+     */
 
-	qsort ( (char*)index, len, sizeof (NODE*), 
-	       (QuicksortCompareProc)sortCmpUpperPrio);
+    qsort ( (char*)index, len, sizeof (NODE*), 
+	    (QuicksortCompareProc)sortCmpUpperPrio);
 
-	tmp = index;
-	while (*tmp) {
-		newx = sortAvrgUpperX (*tmp) ;
-		sortMove (*tmp, newx, dist);
-		tmp++;
-	}
+    tmp = index;
+    while (*tmp) {
+	newx = sortAvrgUpperX (*tmp) ;
+	sortMove (*tmp, newx, dist);
+	tmp++;
+    }
 
-	free ( (char*) index);
+    free ( (char*) index);
 }
 
 /*
@@ -2748,46 +2644,45 @@ void Layout::sortLevelUpX (NODE **level, int dist)
  */
 
 void Layout::sortLevelDownX (NODE **level, int dist)
-
 {
-	NODE **index;
-	NODE **tmp;
-	NODE *node;
+    NODE **index;
+    NODE **tmp;
+    NODE *node;
 
-	int len = levelsLength (level);
-	int newx;
+    int len = levelsLength (level);
+    int newx;
 
-	index = (NODE**) malloc (sizeof (NODE*) * (len+1));
-	if (!index) {
-		fprintf (stderr,"sortLevelDownX: out of memory!\n");
-		exit (MEMORY_ERROR);
-	}
+    index = (NODE**) malloc (sizeof (NODE*) * (len+1));
+    if (!index) {
+	fprintf (stderr,"sortLevelDownX: out of memory!\n");
+	exit (MEMORY_ERROR);
+    }
 
-	/* fill the index */
+    /* fill the index */
 	
-	tmp = index;
-	node = *level;
-	while (node) {
-		*(tmp++) = node;
-		node = node->right;
-	}
-	*tmp = (NODE*) NULL;
+    tmp = index;
+    node = *level;
+    while (node) {
+	*(tmp++) = node;
+	node = node->right;
+    }
+    *tmp = (NODE*) NULL;
 
-	/* 
-	 * sort the index by node priority (from low to high)
-	 */
+    /* 
+     * sort the index by node priority (from low to high)
+     */
 
-	qsort ( (char*)index, len, sizeof (NODE*), 
-	       (QuicksortCompareProc)sortCmpLowerPrio);
+    qsort ( (char*)index, len, sizeof (NODE*), 
+	    (QuicksortCompareProc)sortCmpLowerPrio);
 
-	tmp = index;
-	while (*tmp) {
-		newx = sortAvrgLowerX (*tmp) ;
-		sortMove (*tmp, newx, dist);
-		tmp++;
-	}
+    tmp = index;
+    while (*tmp) {
+	newx = sortAvrgLowerX (*tmp) ;
+	sortMove (*tmp, newx, dist);
+	tmp++;
+    }
 
-	free ( (char*) index);
+    free ( (char*) index);
 }
 
 /*
@@ -2798,28 +2693,27 @@ void Layout::sortLevelDownX (NODE **level, int dist)
  */
 
 int Layout::sortLeftSpace (NODE *node, int dist) 
-
 {
-	int space = 0;
-	NODE *left;
+    int space = 0;
+    NODE *left;
 	
-	left = node->left;
-	while (left) {
-		space += node->x - left->x - dist;
-		if (node->type == Regular) {
-			space -= node->attr.node.w / 2;
-		}
-		if (left->type == Regular) {
-			space -= left->attr.node.w / 2;
-		}
-		node = left;
-		left = left->left;
-	}
-	space += node->x ;
+    left = node->left;
+    while (left) {
+	space += node->x - left->x - dist;
 	if (node->type == Regular) {
-		space -= node->attr.node.w / 2;
+	    space -= node->attr.node.w / 2;
 	}
-	return space;
+	if (left->type == Regular) {
+	    space -= left->attr.node.w / 2;
+	}
+	node = left;
+	left = left->left;
+    }
+    space += node->x ;
+    if (node->type == Regular) {
+	space -= node->attr.node.w / 2;
+    }
+    return space;
 }
 
 /*
@@ -2831,28 +2725,27 @@ int Layout::sortLeftSpace (NODE *node, int dist)
  */
 
 void Layout::sortMoveLeft (NODE *node, int newx, int dist)
-
 {
-	int maxleftx = 0;
-	int ready    = 0;
+    int maxleftx = 0;
+    int ready    = 0;
 
-	do {
-		node->x = newx;
-		if (node->left) {
-			maxleftx = newx - dist;
-			if (node->type == Regular) {
-				maxleftx -= node->attr.node.w / 2;
-			}
-			if (node->left->type == Regular) {
-				maxleftx -= node->left->attr.node.w / 2;
-			}
-			ready = ( node->left->x < maxleftx );
+    do {
+	node->x = newx;
+	if (node->left) {
+	    maxleftx = newx - dist;
+	    if (node->type == Regular) {
+		maxleftx -= node->attr.node.w / 2;
+	    }
+	    if (node->left->type == Regular) {
+		maxleftx -= node->left->attr.node.w / 2;
+	    }
+	    ready = ( node->left->x < maxleftx );
 			
-		}
-		node = node->left;			
-		newx = maxleftx;
+	}
+	node = node->left;			
+	newx = maxleftx;
 
-	} while (node && !ready) ;
+    } while (node && !ready) ;
 	
 }
 
@@ -2864,29 +2757,28 @@ void Layout::sortMoveLeft (NODE *node, int newx, int dist)
  */
 
 void Layout::sortMoveRight (NODE *node, int newx, int mindist)
-
 {
-	int minrightx = 0;
-	int ready     = 0;
+    int minrightx = 0;
+    int ready     = 0;
 
-	do {
-		node->x = newx;
+    do {
+	node->x = newx;
 
-		if (node->right) {
-			minrightx = newx + mindist ;
-			if (node->type == Regular) {
-				minrightx += node->attr.node.w /2;
-			}
-			if (node->right->type == Regular) {
-				minrightx += node->right->attr.node.w /2;
-			}
-		}
-		ready =  !(node->right) ||  (node->right->x > minrightx );
+	if (node->right) {
+	    minrightx = newx + mindist ;
+	    if (node->type == Regular) {
+		minrightx += node->attr.node.w /2;
+	    }
+	    if (node->right->type == Regular) {
+		minrightx += node->right->attr.node.w /2;
+	    }
+	}
+	ready =  !(node->right) ||  (node->right->x > minrightx );
 
-		node = node->right;
-		newx = minrightx;
+	node = node->right;
+	newx = minrightx;
 
-	} while (!ready) ;
+    } while (!ready) ;
 }
 
 /*
@@ -2897,23 +2789,22 @@ void Layout::sortMoveRight (NODE *node, int newx, int mindist)
  */ 
 
 void Layout::sortMove (NODE *node, int newx, int mindist)
-
 {
-	int leftspace;
-	int oldx;
-	int move;
+    int leftspace;
+    int oldx;
+    int move;
 
-	oldx = node->x;
-	if (newx < oldx) {
-		move = oldx - newx;
-		leftspace = sortLeftSpace (node, mindist);
-		if ( move > leftspace ) {
-			newx = oldx - leftspace;
-		}
-		sortMoveLeft (node,newx,mindist);
-	} else if (newx > oldx) {
-		sortMoveRight (node,newx,mindist);
+    oldx = node->x;
+    if (newx < oldx) {
+	move = oldx - newx;
+	leftspace = sortLeftSpace (node, mindist);
+	if ( move > leftspace ) {
+	    newx = oldx - leftspace;
 	}
+	sortMoveLeft (node,newx,mindist);
+    } else if (newx > oldx) {
+	sortMoveRight (node,newx,mindist);
+    }
 }
 	
 /*
@@ -2922,29 +2813,28 @@ void Layout::sortMove (NODE *node, int newx, int mindist)
  */
 
 int Layout::sortAvrgUpperX (NODE *node)
-
 {
-	EDGE *edge;
-	int sumx = 0;
-	int count = 0;
+    EDGE *edge;
+    int sumx = 0;
+    int count = 0;
 
-	if (node->type == Regular) {
-		edge = node->attr.node.up.head ;
-		while (edge) {
-			sumx += edge->node->x;
-			count++;
-			edge = edge->next;
-		}
-	} else if (node->attr.hint.up) {
-		sumx = node->attr.hint.up->x;
-		count = 1;
+    if (node->type == Regular) {
+	edge = node->attr.node.up.head ;
+	while (edge) {
+	    sumx += edge->node->x;
+	    count++;
+	    edge = edge->next;
 	}
+    } else if (node->attr.hint.up) {
+	sumx = node->attr.hint.up->x;
+	count = 1;
+    }
 	
-	if (count) {
-		return (sumx / count);
-	} else {
-		return ((node->x * 3) / 4);
-	}
+    if (count) {
+	return (sumx / count);
+    } else {
+	return ((node->x * 3) / 4);
+    }
 }
 /*
  * sortAvrgLowerX
@@ -2952,29 +2842,28 @@ int Layout::sortAvrgUpperX (NODE *node)
  */
 
 int Layout::sortAvrgLowerX (NODE *node)
-
 {
-	EDGE *edge;
-	int sumx = 0;
-	int count = 0;
+    EDGE *edge;
+    int sumx = 0;
+    int count = 0;
 
-	if (node->type == Regular) {
-		edge = node->attr.node.down.head ;
-		while (edge) {
-			sumx += edge->node->x;
-			count++;
-			edge = edge->next;
-		}
-	} else if (node->attr.hint.down) {
-		sumx = node->attr.hint.down->x;
-		count = 1;
+    if (node->type == Regular) {
+	edge = node->attr.node.down.head ;
+	while (edge) {
+	    sumx += edge->node->x;
+	    count++;
+	    edge = edge->next;
 	}
+    } else if (node->attr.hint.down) {
+	sumx = node->attr.hint.down->x;
+	count = 1;
+    }
 	
-	if (count) {
-		return (sumx / count);
-	} else {
-		return ((node->x * 3) / 4);
-	}
+    if (count) {
+	return (sumx / count);
+    } else {
+	return ((node->x * 3) / 4);
+    }
 }
 
 /*
@@ -2985,22 +2874,21 @@ int Layout::sortAvrgLowerX (NODE *node)
  */
 
 int Layout::sortCmpUpperPrio (NODE **fst, NODE **snd)
-
 {
-	int fstprio, sndprio;
+    int fstprio, sndprio;
 
-	if ( (*fst)->type == Hint ) {
-		fstprio = HINTPRIO;
-	} else {
-		fstprio = (*fst)->attr.node.up.length ;
-	}
-	if ( (*snd)->type == Hint ) {
-		sndprio = HINTPRIO;
-	} else {
-		sndprio = (*snd)->attr.node.up.length ;
-	}
+    if ( (*fst)->type == Hint ) {
+	fstprio = HINTPRIO;
+    } else {
+	fstprio = (*fst)->attr.node.up.length ;
+    }
+    if ( (*snd)->type == Hint ) {
+	sndprio = HINTPRIO;
+    } else {
+	sndprio = (*snd)->attr.node.up.length ;
+    }
 
-	return (fstprio - sndprio);
+    return (fstprio - sndprio);
 }
 
 /*
@@ -3011,22 +2899,21 @@ int Layout::sortCmpUpperPrio (NODE **fst, NODE **snd)
  */
 
 int Layout::sortCmpLowerPrio (NODE **fst, NODE **snd)
-
 {
-	int fstprio, sndprio;
+    int fstprio, sndprio;
 
-	if ( (*fst)->type == Hint ) {
-		fstprio = HINTPRIO;
-	} else {
-		fstprio = (*fst)->attr.node.down.length ;
-	}
-	if ( (*snd)->type == Hint ) {
-		sndprio = HINTPRIO;
-	} else {
-		sndprio = (*snd)->attr.node.down.length ;
-	}
+    if ( (*fst)->type == Hint ) {
+	fstprio = HINTPRIO;
+    } else {
+	fstprio = (*fst)->attr.node.down.length ;
+    }
+    if ( (*snd)->type == Hint ) {
+	sndprio = HINTPRIO;
+    } else {
+	sndprio = (*snd)->attr.node.down.length ;
+    }
 
-	return (fstprio - sndprio);
+    return (fstprio - sndprio);
 }
 
 /*
@@ -3037,40 +2924,39 @@ int Layout::sortCmpLowerPrio (NODE **fst, NODE **snd)
  */
 
 int Layout::sortLevelVertical (NODE **level, int miny, int minydist)
-
 {
-	int length = 0 ;
-	int maxheight = 0;
-	int newy;
-	NODE *node;
+    int length = 0 ;
+    int maxheight = 0;
+    int newy;
+    NODE *node;
 
-	/* 
-	 * calculate the max. height of the nodes at this level
-	 */
+    /* 
+     * calculate the max. height of the nodes at this level
+     */
 
-	node = *level;
-	while (node) {
-		if (node->type == Regular && 
-		    node->attr.node.h > maxheight) {
-			maxheight = node->attr.node.h;
-		}
-		length++;
-		node = node->right;
+    node = *level;
+    while (node) {
+	if (node->type == Regular && 
+	    node->attr.node.h > maxheight) {
+	    maxheight = node->attr.node.h;
 	}
-	/*
-	 * the distance to the previous level will be 'minydist'
-	 * and some additional dynamic space.
-	 */
+	length++;
+	node = node->right;
+    }
+    /*
+     * the distance to the previous level will be 'minydist'
+     * and some additional dynamic space.
+     */
 	
-	newy = miny + minydist + maxheight / 2 + (length * maxheight) / 5;
+    newy = miny + minydist + maxheight / 2 + (length * maxheight) / 5;
 
-	node = *level;
-	while (node) {
-		node->y = newy;
-		node = node->right;
-	}
+    node = *level;
+    while (node) {
+	node->y = newy;
+	node = node->right;
+    }
 
-	return newy + maxheight / 2;
+    return newy + maxheight / 2;
 }
 	
 /*
@@ -3079,20 +2965,19 @@ int Layout::sortLevelVertical (NODE **level, int miny, int minydist)
  */
 
 void Layout::sortGraphVertical (GRAPH *graph)
-
 {
-	int y = (- graph->minydist) + 1; /* for top level  */
-	NODE **level;
-	int i;
+    int y = (- graph->minydist) + 1; /* for top level  */
+    NODE **level;
+    int i;
 	
-	if (!graph->levels) {
-		/* nothing to do */
-		return;
-	}
+    if (!graph->levels) {
+	/* nothing to do */
+	return;
+    }
 
-	level = graph->level+(graph->levels-1);
-	for (i = 0; i < graph->levels; i++) {
-		y = sortLevelVertical (level,y, graph->minydist);
-		level-- ;
-	} 
+    level = graph->level+(graph->levels-1);
+    for (i = 0; i < graph->levels; i++) {
+	y = sortLevelVertical (level,y, graph->minydist);
+	level-- ;
+    } 
 }
