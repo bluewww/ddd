@@ -250,9 +250,6 @@ Volunteers for these and other projects are welcome!
 
 102. Have a WWW tutorial for DDD.  Any volunteers?
 
-103* In the `registers' window, optionally display floating-point
-     registers as well  (`info all-registers').
-
 104* Use DDD to do debugging where gdb and the program under test
      would be remote, but the source would be local.  As an
      alternative, try the local file if the remote source cannot be
@@ -311,4 +308,7 @@ Volunteers for these and other projects are welcome!
 120. Check whether `dbxenv output_short_file_name off' helps in
      debugging DBX code.
 
-121. (Insert your project idea here)
+121. Mirror the DDD WWW pages, using `wget' 
+     (ftp://gnjilux.cc.fer.hr/pub/unix/util/wget/)
+
+122. (Insert your project idea here)

@@ -332,9 +332,6 @@ Volunteers for fixing these and other bugs are welcome!
 129. Displaying `*tree' in `cxxtest.C' with `set print vtbl on' gives
      a bad display.
 
-130. Bad help text for `Break at ()' button, for `Close' and `Help' in
-     `Preferences'.  `Restart' and `Quit' are missing in menu helps.
-
 131. `Find<<' and `Find>>' should be in the `Edit' menu (at least for
      sources)
 
