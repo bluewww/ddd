@@ -1501,6 +1501,10 @@ Ddd*data_disp_shell.iconName:		DDD: Data
 Ddd*tool_shell.title:			DDD
 Ddd*tool_shell.iconName:		DDD: Command Tool
 
+! Default for everything else
+Ddd*title:				DDD Dialog
+Ddd*iconName:				DDD Dialog
+
 
 
 !-----------------------------------------------------------------------------
