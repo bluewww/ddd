@@ -50,7 +50,9 @@ char windows_rcsid[] =
 
 #include <Xm/Xm.h>
 #include <Xm/DialogS.h>
-#if XmVersion <= 1002
+#if XmVersion >= 1002
+#include <Xm/VendorS.h>		// XmIsMotifWMRunning()
+#else
 #include <Xm/VendorE.h>		// XmIsMotifWMRunning()
 #endif
 #include <X11/Xutil.h>
