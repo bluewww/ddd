@@ -1933,8 +1933,6 @@ void plusOQAC (const StringArray& answers,
 // Process asynchronous GDB answers
 //-----------------------------------------------------------------------------
 
-static string current_async_answer;
-
 static void AsyncAnswerHP(Agent *source, void *, void *call_data)
 {
     string& answer = *((string *)call_data);
@@ -1944,18 +1942,19 @@ static void AsyncAnswerHP(Agent *source, void *, void *call_data)
     {
 	// In JDB, any thread may hit a breakpoint asynchronously.
 	// Fetch its position.
-	current_async_answer += answer;
-	if (gdb->ends_with_prompt(current_async_answer))
+	static string answer_buffer;
+	answer_buffer += answer;
+	if (gdb->ends_with_prompt(answer_buffer))
 	{
 	    PosBuffer pb;
-	    pb.filter(current_async_answer);
+	    pb.filter(answer_buffer);
+	    pb.answer_ended();
 	    if (pb.pos_found())
-	    {
 		source_view->show_execution_position(pb.get_position());
-	    }
 
-	    current_async_answer = "";
+	    answer_buffer = "";
 	}
     }
+
     _gdb_out(answer);
 }
