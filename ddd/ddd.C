@@ -378,6 +378,9 @@ static void setup_tty();
 static void setup_version_warnings();
 static void setup_core_limit();
 
+// Helpers
+static void set_label(Widget w, const MString& new_label);
+
 
 //-----------------------------------------------------------------------------
 // Xt Stuff
@@ -888,7 +891,7 @@ static MMDesc refer_menu[] =
 
 static Widget words_only_w;
 static Widget case_sensitive_w;
-static MMDesc find_menu[] =
+static MMDesc find_preferences_menu[] =
 {
     { "wordsOnly", MMToggle, { sourceToggleFindWordsOnlyCB }, 
       NULL, &words_only_w },
@@ -913,7 +916,7 @@ static MMDesc source_preferences_menu[] =
 {
     { "showExecPos",      MMRadioPanel, MMNoCB, glyph_menu },
     { "referSources",     MMRadioPanel, MMNoCB, refer_menu, &refer_sources_w },
-    { "find",             MMButtonPanel, MMNoCB, find_menu },
+    { "find",             MMButtonPanel, MMNoCB, find_preferences_menu },
     { "cache",            MMButtonPanel, MMNoCB, cache_menu },
     { "displayLineNumbers", MMToggle, { sourceToggleDisplayLineNumbersCB },
       NULL, &display_line_numbers_w },
@@ -1215,6 +1218,16 @@ static MMDesc display_menu[] =
     MMEnd
 };
 
+struct WatchItems {
+    enum ArgCmd { WatchRef };
+};
+
+static MMDesc watch_menu[] =
+{
+    { "watchRef",        MMPush, { gdbWatchRefCB } },
+    MMEnd
+};
+
 struct BreakItems {
     enum ArgCmd { TempBreak, Enable, ContUntil, SetPC };
 };
@@ -1228,8 +1241,19 @@ static MMDesc break_menu[] =
     MMEnd
 };
 
+struct FindItems {
+    enum ArgCmd { FindForward, FindBackward };
+};
+
+static MMDesc find_menu[] = 
+{
+    { "findForward",  MMPush, { gdbFindCB, XtPointer(SourceView::forward) }},
+    { "findBackward", MMPush, { gdbFindCB, XtPointer(SourceView::backward) }},
+    MMEnd
+};
+
 struct ArgItems {
-    enum ArgCmd { Lookup, Break, Print, Display, FindForward, FindBackward };
+    enum ArgCmd { Lookup, Break, Print, Display, Watch, Find };
 };
 
 static MMDesc arg_cmd_area[] = 
@@ -1238,8 +1262,8 @@ static MMDesc arg_cmd_area[] =
     {"breakAt",       MMPush,  { gdbToggleBreakCB  }, break_menu   },
     {"print",         MMPush,  { gdbPrintCB        }, print_menu   },
     {"display",       MMPush,  { gdbDisplayCB      }, display_menu },
-    {"findBackward",  MMPush,  { gdbFindBackwardCB }},
-    {"findForward",   MMPush,  { gdbFindForwardCB  }},
+    {"watch",         MMPush,  { gdbToggleWatchCB  }, watch_menu },
+    {"find",          MMPush,  { gdbFindAgainCB    }, find_menu },
     MMEnd
 };
 
@@ -3185,6 +3209,25 @@ void update_options()
     set_string(uncompress_command_w, app_data.uncompress_command);
     set_string(www_command_w,        app_data.www_command);
 
+    // Set `find' label
+    Widget find_label_ref = 0;
+    switch (current_find_direction())
+    {
+    case SourceView::forward:
+	find_label_ref = find_menu[FindItems::FindForward].widget;
+	break;
+	
+    case SourceView::backward:
+	find_label_ref = find_menu[FindItems::FindBackward].widget;
+	break;
+    }
+    XmString label;
+    XtVaGetValues(find_label_ref, XmNlabelString, &label, NULL);
+    MString new_label(label, true);
+    XmStringFree(label);
+
+    set_label(arg_cmd_area[ArgItems::Find].widget, new_label);
+
     update_reset_preferences();
     fix_status_size();
 }
@@ -4128,9 +4171,8 @@ static void ShowGDBStatusCB(Widget w, XtPointer client_data, XtPointer)
 // Helpers
 //-----------------------------------------------------------------------------
 
-static void set_label(Widget w, string label)
+static void set_label(Widget w, const MString& new_label)
 {
-    MString new_label(label);
     XmString old_label;
     XtVaGetValues(w, XmNlabelString, &old_label, NULL);
     if (!XmStringCompare(new_label.xmstring(), old_label))
@@ -4147,16 +4189,16 @@ void update_arg_buttons()
     string arg = source_arg->get_string();
 
     bool can_find = (arg != "") && source_view->have_source();
-
-    set_sensitive(arg_cmd_area[ArgItems::FindBackward].widget, can_find);
-    set_sensitive(arg_cmd_area[ArgItems::FindForward].widget,  can_find);
+    set_sensitive(arg_cmd_area[ArgItems::Find].widget, can_find);
 
     bool can_print = (arg != "") && (arg.contains("::") || !arg.contains(":"));
-
     set_sensitive(arg_cmd_area[ArgItems::Print].widget, can_print);
     set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);
 
-    bool have_break = have_break_at_arg();
+    bool can_watch = can_print && gdb->has_watch_command();
+    set_sensitive(arg_cmd_area[ArgItems::Watch].widget, can_watch);
+
+    bool have_break = have_breakpoint_at_arg();
     if (have_break)
 	set_label(arg_cmd_area[ArgItems::Break].widget, "Clear at ()");
     else
@@ -4166,13 +4208,43 @@ void update_arg_buttons()
     manage_child(break_menu[BreakItems::Enable].widget,    have_break);
     manage_child(break_menu[BreakItems::ContUntil].widget, !have_break);
 
-    bool break_enabled = break_enabled_at_arg();
+    bool break_enabled = have_enabled_breakpoint_at_arg();
     if (break_enabled)
 	set_label(break_menu[BreakItems::Enable].widget, 
 		  "Disable Breakpoint at ()");
     else
 	set_label(break_menu[BreakItems::Enable].widget, 
 		  "Enable Breakpoint at ()");
+
+    bool have_watch = have_watchpoint_at_arg();
+    if (have_watch)
+	set_label(arg_cmd_area[ArgItems::Watch].widget, "Unwatch ()");
+    else
+	set_label(arg_cmd_area[ArgItems::Watch].widget, "Watch ()");
+
+    string watch_ref;
+    bool have_watch_ref = have_watchpoint_at_ref_arg();
+    if (have_watch_ref)
+	watch_ref = "Watch ";
+    else
+	watch_ref = "Unwatch ";
+
+    watch_ref += gdb->dereferenced_expr("()");
+    MString watch_ref_label(watch_ref);
+    XtVaSetValues(watch_menu[WatchItems::WatchRef].widget,
+		  XmNlabelString, watch_ref_label.xmstring(),
+		  NULL);
+
+    MString print_ref_label("Print " + gdb->dereferenced_expr("()"));
+    XtVaSetValues(print_menu[PrintItems::PrintRef].widget,
+		  XmNlabelString, print_ref_label.xmstring(),
+		  NULL);
+
+    MString disp_ref_label("Display " + gdb->dereferenced_expr("()"));
+    XtVaSetValues(display_menu[DispItems::DispRef].widget,
+		  XmNlabelString, disp_ref_label.xmstring(),
+		  NULL);
+
 }
 
 static void source_argHP(void *, void *, void *)
@@ -4949,20 +5021,9 @@ void gdbUpdateViewsCB(Widget, XtPointer client_data, XtPointer)
 }
 
 // Language changed - re-label buttons
-static void language_changedHP(Agent *source, void *, void *)
+static void language_changedHP(Agent *, void *, void *)
 {
-    GDBAgent *gdb = ptr_cast(GDBAgent, source);
-    assert(gdb != 0);
-
-    MString print_ref_label("Print " + gdb->dereferenced_expr("()"));
-    XtVaSetValues(print_menu[PrintItems::PrintRef].widget,
-		  XmNlabelString, print_ref_label.xmstring(),
-		  NULL);
-
-    MString disp_ref_label("Display " + gdb->dereferenced_expr("()"));
-    XtVaSetValues(display_menu[DispItems::DispRef].widget,
-		  XmNlabelString, disp_ref_label.xmstring(),
-		  NULL);
+    update_arg_buttons();
 }
 
 

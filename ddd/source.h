@@ -35,24 +35,29 @@
 
 #include <X11/Intrinsic.h>
 #include "bool.h"
+#include "SourceView.h"
 
 extern void gdbBreakAtCB      (Widget, XtPointer, XtPointer);
 extern void gdbClearAtCB      (Widget, XtPointer, XtPointer);
 extern void gdbToggleBreakCB  (Widget, XtPointer, XtPointer);
-extern void gdbPrintCB        (Widget, XtPointer, XtPointer);
-extern void gdbDisplayCB      (Widget, XtPointer, XtPointer);
 extern void gdbLookupCB       (Widget, XtPointer, XtPointer);
-extern void gdbFindForwardCB  (Widget, XtPointer, XtPointer);
-extern void gdbFindBackwardCB (Widget, XtPointer, XtPointer);
 
 extern void gdbTempBreakAtCB  (Widget, XtPointer, XtPointer);
 extern void gdbContUntilCB    (Widget, XtPointer, XtPointer);
 extern void gdbToggleEnableCB (Widget, XtPointer, XtPointer);
 extern void gdbSetPCCB        (Widget, XtPointer, XtPointer);
 
+extern void gdbPrintCB        (Widget, XtPointer, XtPointer);
+extern void gdbDisplayCB      (Widget, XtPointer, XtPointer);
+extern void gdbWatchCB        (Widget, XtPointer, XtPointer);
+extern void gdbUnwatchCB      (Widget, XtPointer, XtPointer);
+extern void gdbToggleWatchCB  (Widget, XtPointer, XtPointer);
+
 extern void gdbPrintRefCB     (Widget, XtPointer, XtPointer);
-extern void gdbWhatisCB       (Widget, XtPointer, XtPointer);
 extern void gdbDispRefCB      (Widget, XtPointer, XtPointer);
+extern void gdbWatchRefCB     (Widget, XtPointer, XtPointer);
+
+extern void gdbWhatisCB       (Widget, XtPointer, XtPointer);
 
 extern void gdbEditSourceCB   (Widget, XtPointer, XtPointer);
 extern void gdbReloadSourceCB (Widget, XtPointer, XtPointer);
@@ -60,8 +65,17 @@ extern void gdbReloadSourceCB (Widget, XtPointer, XtPointer);
 extern void gdbGoBackCB       (Widget, XtPointer, XtPointer);
 extern void gdbGoForwardCB    (Widget, XtPointer, XtPointer);
 
-extern bool have_break_at_arg();
-extern bool break_enabled_at_arg();
+extern bool have_breakpoint_at_arg();
+extern bool have_enabled_breakpoint_at_arg();
+
+extern bool have_watchpoint_at_arg();
+extern bool have_watchpoint_at_ref_arg();
+extern bool have_enabled_watchpoint_at_arg();
+
+extern void gdbFindCB         (Widget, XtPointer, XtPointer);
+extern void gdbFindAgainCB    (Widget, XtPointer, XtPointer);
+
+extern SourceView::SearchDirection current_find_direction();
 
 #endif // _DDD_source_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

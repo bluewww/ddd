@@ -137,14 +137,14 @@ void gdbWhatisCB(Widget w, XtPointer, XtPointer)
 // Breakpoints
 //-----------------------------------------------------------------------------
 
-bool have_break_at_arg()
+bool have_breakpoint_at_arg()
 {
-    return source_view->bp_at(current_arg(true)) != 0;
+    return source_view->breakpoint_at(current_arg(true)) != 0;
 }
 
-bool break_enabled_at_arg()
+bool have_enabled_breakpoint_at_arg()
 {
-    BreakPoint *bp = source_view->bp_at(current_arg(true));
+    BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
     return bp != 0 && bp->enabled();
 }
 
@@ -165,7 +165,8 @@ void gdbClearAtCB(Widget w, XtPointer, XtPointer)
 
 void gdbToggleBreakCB(Widget w, XtPointer, XtPointer)
 {
-    SourceView::set_bp(current_arg(true), !have_break_at_arg(), false, "", w);
+    SourceView::set_bp(current_arg(true), 
+		       !have_breakpoint_at_arg(), false, "", w);
 }
 
 void gdbContUntilCB(Widget w, XtPointer, XtPointer)
@@ -180,7 +181,7 @@ void gdbSetPCCB(Widget w, XtPointer, XtPointer)
 
 void gdbToggleEnableCB(Widget w, XtPointer, XtPointer)
 {
-    BreakPoint *bp = source_view->bp_at(current_arg(true));
+    BreakPoint *bp = source_view->breakpoint_at(current_arg(true));
     if (bp != 0)
     {
 	if (bp->enabled())
@@ -192,15 +193,84 @@ void gdbToggleEnableCB(Widget w, XtPointer, XtPointer)
 
 
 
+//-----------------------------------------------------------------------------
+// Watchpoints
+//-----------------------------------------------------------------------------
+
+// Like in `print', we don't use GLOBALS_FIRST for fortranizing the
+// current arg
+bool have_watchpoint_at_arg()
+{
+    return source_view->watchpoint_at(current_arg()) != 0;
+}
+bool have_watchpoint_at_ref_arg()
+{
+    return source_view->watchpoint_at(gdb->dereferenced_expr(current_arg())) 
+	!= 0;
+}
+
+bool have_enabled_watchpoint_at_arg()
+{
+    BreakPoint *bp = source_view->watchpoint_at(current_arg());
+    return bp != 0 && bp->enabled();
+}
+
+void gdbWatchCB(Widget w, XtPointer, XtPointer)
+{
+    string arg = current_arg();
+
+    if (arg != "" && !arg.matches(rxwhite))
+	gdb_command(gdb->watch_command(arg), w);
+}
+
+void gdbWatchRefCB(Widget w, XtPointer, XtPointer)
+{
+    string arg = current_arg();
+
+    if (arg != "" && !arg.matches(rxwhite))
+	gdb_command(gdb->watch_command(gdb->dereferenced_expr(arg)), w);
+}
+
+void gdbUnwatchCB(Widget, XtPointer, XtPointer)
+{
+    BreakPoint *wp = source_view->watchpoint_at(current_arg());
+    if (wp == 0)
+	return;
+    gdb_command(gdb->delete_command(wp->number_str()));
+}
+
+void gdbToggleWatchCB(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    BreakPoint *bp = source_view->watchpoint_at(current_arg());
+    if (bp == 0)
+	gdbWatchCB(w, client_data, call_data);
+    else
+	gdbUnwatchCB(w, client_data, call_data);
+}
+
 
 //-----------------------------------------------------------------------------
 // Searching
 //-----------------------------------------------------------------------------
 
-static void gdbFindCB(Widget w, 
-		      XtPointer call_data, 
-		      SourceView::SearchDirection direction)
+static SourceView::SearchDirection last_find_direction = SourceView::forward;
+
+void gdbFindCB(Widget w, 
+	       XtPointer client_data,
+	       XtPointer call_data)
 {
+    SourceView::SearchDirection direction = 
+	(SourceView::SearchDirection) client_data;
+
+    assert(direction == SourceView::forward || 
+	   direction == SourceView::backward);
+
+    if (direction != last_find_direction)
+    {
+	last_find_direction = direction;
+	update_options();
+    }
+
     XmPushButtonCallbackStruct *cbs = 
 	(XmPushButtonCallbackStruct *)call_data;
 
@@ -219,14 +289,14 @@ static void gdbFindCB(Widget w,
     source_arg->set_string(key);
 }
 
-void gdbFindForwardCB(Widget w, XtPointer, XtPointer call_data)
+void gdbFindAgainCB(Widget w, XtPointer, XtPointer call_data)
 {
-    gdbFindCB(w, call_data, SourceView::forward);
+    gdbFindCB(w, XtPointer(current_find_direction()), call_data);
 }
 
-void gdbFindBackwardCB(Widget w, XtPointer, XtPointer call_data)
+SourceView::SearchDirection current_find_direction()
 {
-    gdbFindCB(w, call_data, SourceView::backward);
+    return last_find_direction;
 }
 
 

@@ -3534,11 +3534,17 @@ Ddd*text_popup.print.documentationString: \
 Ddd*text_popup.disp.documentationString: \
 @rm Display the selected item in the data window
 
+Ddd*text_popup.watch.documentationString: \
+@rm Stop execution whenever the selected item changes
+
 Ddd*text_popup.printRef.documentationString: \
 @rm Print the dereferenced value of the selected item in the @GDB@ console
 
 Ddd*text_popup.dispRef.documentationString: \
 @rm Display the dereferenced item in the data window
+
+Ddd*text_popup.watchRef.documentationString: \
+@rm Stop execution whenever the dereferenced item changes
 
 Ddd*text_popup.whatis.documentationString: \
 @rm Print the type of the selected item in the @GDB@ console
@@ -3547,7 +3553,10 @@ Ddd*text_popup.lookup.documentationString: \
 @rm Lookup definition of the selected item
 
 Ddd*text_popup.breakAt.documentationString: \
-@rm Set or delete a breakpoint at the selected function
+@rm Set a breakpoint at the selected function
+
+Ddd*text_popup.clearAt.documentationString: \
+@rm Delete a breakpoint at the selected function
 
 
 !-----------------------------------------------------------------------------
@@ -3586,11 +3595,14 @@ Ddd*arg_cmd_w.arg_cmd_area*contUntil.labelString:	Continue Until ()
 Ddd*arg_cmd_w.arg_cmd_area*enable.labelString:		Enable Breakpoint at ()
 Ddd*arg_cmd_w.arg_cmd_area*setPC.labelString:		\
 Set Execution Position to ()
+Ddd*arg_cmd_w.arg_cmd_area*watch.labelString:		Watch ()
+Ddd*arg_cmd_w.arg_cmd_area*watchRef.labelString:	Watch *()
 Ddd*arg_cmd_w.arg_cmd_area*print.labelString:		Print ()
 Ddd*arg_cmd_w.arg_cmd_area*printRef.labelString:	Print *()
 Ddd*arg_cmd_w.arg_cmd_area*whatis.labelString:		Whatis ()
 Ddd*arg_cmd_w.arg_cmd_area*display.labelString:		Display ()
 Ddd*arg_cmd_w.arg_cmd_area*dispRef.labelString:		Display *()
+Ddd*arg_cmd_w.arg_cmd_area*find.labelString:		LBL_FIND_NEXT
 Ddd*arg_cmd_w.arg_cmd_area*findBackward.labelString:	LBL_FIND_PREV
 Ddd*arg_cmd_w.arg_cmd_area*findForward.labelString:	LBL_FIND_NEXT
 
@@ -3647,7 +3659,9 @@ Print the argument LBL(()) in the @GDB@ console.\n\
 \n\
 ANNOUNCE_PULLDOWN\n\
 DESC(Print *(), [print dereferenced argument])\n\
-DESC(Whatis (), [print type of argument])
+DESC(Whatis (), [print type of argument])\n\
+DESC(Watch (),  [stop when value changes])\n\
+DESC(Watch *(), [stop when dereferenced value changes])
 
 Ddd*arg_cmd_w.arg_cmd_area*print.tipString:	\
 @rm Print LBL(()) in the debugger console
@@ -3657,6 +3671,11 @@ Ddd*arg_cmd_w.arg_cmd_area*printRef.documentationString:	\
 @rm Print the dereferenced argument LBL(()) in the @GDB@ console
 Ddd*arg_cmd_w.arg_cmd_area*whatis.documentationString:	\
 @rm Print the type of the argument LBL(()) in the @GDB@ console
+
+Ddd*arg_cmd_w.arg_cmd_area*watch.documentationString: \
+@rm Stop execution whenever the value of LBL(()) changes
+Ddd*arg_cmd_w.arg_cmd_area*watchRef.documentationString: \
+@rm Stop execution whenever the dereferenced value of LBL(()) changes
 
 Ddd*arg_cmd_w.arg_cmd_area*display.helpString:	\
 LBL(Display ())\n\
@@ -3672,23 +3691,49 @@ Ddd*arg_cmd_w.arg_cmd_area*display.documentationString:	\
 Ddd*arg_cmd_w.arg_cmd_area*dispRef.documentationString:	\
 @rm Display the dereferenced argument LBL(()) in the data window
 
-Ddd*arg_cmd_w.arg_cmd_area*findBackward.helpString:	\
-LBL_FIND_PREV\n\
-Search the previous occurrence of LBL(()) in the current source text.\n\
-See LBL(Edit) | LBL(Preferences) | LBL(Source) for search settings.
-Ddd*arg_cmd_w.arg_cmd_area*findBackward.tipString:	\
-@rm Find previous LBL(()) in source
-Ddd*arg_cmd_w.arg_cmd_area*findBackward.documentationString:	\
-@rm Search the previous occurrence of LBL(()) in the current source
+Ddd*arg_cmd_w.arg_cmd_area*watch.helpString:	\
+LBL(Watch ()) / LBL(Unwatch())\n\
+Stop whenever the value of LBL(()) changes.\n\
+\n\
+LBL(Watch ()) sets a EMPH(watchpoint) on LBL(()) - a special breakpoint that\n\
+stops your program whenever the value of LBL(()) changes.  A watchpoint is\n\
+managed like any other breakpoint, via LBL(Source) | LBL(Edit Breakpoints).\n\
+\n\
+LBL(Unwatch()) deletes the EMPH(watchpoint) associated with LBL(()).\n\
+\n\
+Please note: on most architectures, watchpoints make the debugged program\n\
+execute about two orders of magnitude more slowly, but this can be well\n\
+worth it to catch errors where you have no clue what part of your program\n\
+is the culprit.\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+DESC(Watch *(), [watch dereferenced argument])
 
-Ddd*arg_cmd_w.arg_cmd_area*findForward.helpString:	\
-LBL_FIND_NEXT\n\
-Search the next occurrence of LBL(()) in the current source text.\n\
-See LBL(Edit) | LBL(Preferences) | LBL(Source) for search settings.
-Ddd*arg_cmd_w.arg_cmd_area*findForward.tipString:	\
-@rm Find next LBL(()) in source
+Ddd*arg_cmd_w.arg_cmd_area*watch.tipString:	\
+@rm Stop whenever LBL(()) changes
+Ddd*arg_cmd_w.arg_cmd_area*watch.documentationString:	\
+@rm Stop whenever the value of LBL(()) changes MORE_PULLDOWN()
+Ddd*arg_cmd_w.arg_cmd_area*watchRef.documentationString:	\
+@rm Stop whenever the dereferenced argument LBL(()) changes
+
+Ddd*arg_cmd_w.arg_cmd_area*find.helpString:	\
+LBL(LBL_FIND_PREV / LBL_FIND_NEXT)\n\
+Search an occurrence of LBL(()) in the current source text.\n\
+\n\
+See LBL(Edit) | LBL(Preferences) | LBL(Source) for search settings.\n\
+\n\
+ANNOUNCE_PULLDOWN\n\
+DESC(LBL_FIND_PREV, [find backwards])\n\
+DESC(LBL_FIND_NEXT, [find forwards])
+
+Ddd*arg_cmd_w.arg_cmd_area*find.tipString:	\
+@rm Find LBL(()) in source
+Ddd*arg_cmd_w.arg_cmd_area*find.documentationString:	\
+@rm Search LBL(()) in the current source MORE_PULLDOWN()
+Ddd*arg_cmd_w.arg_cmd_area*findBackward.documentationString:	\
+@rm Search the previous occurrence of LBL(()) in the source
 Ddd*arg_cmd_w.arg_cmd_area*findForward.documentationString:	\
-@rm Search the next occurrence of LBL(()) in the current source
+@rm Search the next occurrence of LBL(()) in the source
 
 
 
@@ -4295,7 +4340,7 @@ Ddd*edit_breakpoints_dialog*helpString:	     \
 Select breakpoints on the left; operations on the right.\n\
 \n\
 DESC(New..., [create a new breakpoint])\n\
-DESC(Lookup, [lookup selected breakpoint])\n\
+DESC(Lookup, [go to selected breakpoint])\n\
 DESC(Enable, [enable all selected breakpoints])\n\
 DESC(Disable, [disable all selected breakpoints])\n\
 DESC(Condition..., [set or modify a breakpoint condition])\n\
