@@ -63,6 +63,7 @@ char session_rcsid[] =
 #include "file.h"
 #include "filetype.h"
 #include "glob.h"
+#include "history.h"
 #include "mydialogs.h"
 #include "options.h"
 #include "post.h"
@@ -709,7 +710,6 @@ static void open_session(const string& session)
     // Clear all breakpoints and displays
     source_view->reset();
     data_disp->reset();
-    gdbClearWindowCB(0, 0, 0);
 
     // Discard current exec and core files
     if (gdb->type() == GDB)
@@ -720,7 +720,14 @@ static void open_session(const string& session)
 	gdb_command(c);
     }
 
-    // Remove settings panel
+    // Clear debugger console
+    gdbClearWindowCB(0, 0, 0);
+
+    // Load session-specific command history
+    load_history(session_history_file(session));
+
+    // Remove settings panel (such that GDB settings will be updated
+    // from scratch)
     reset_settings();
 
     // Enqueue start-up commands
