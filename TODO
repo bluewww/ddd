@@ -11,9 +11,6 @@ it (or include it in this list :-)
 Projects marked with an `*' are scheduled for the next DDD release.
 Volunteers for these and other projects are welcome!
 
-008 Have buttons arranged such that they do not disappear when the
-    window is narrowed.
-
 017 Have the graph editor scroll automatically when the pointer drags
     something out of the visible part of the window.
 
@@ -222,16 +219,11 @@ Volunteers for these and other projects are welcome!
     key to select non-contiguous commands, a la Windoze File Manager.
 
 164 Matthias Kurz <mk@baerlap.north.de> suggests:
-    - Recognize 'complete' variables; example "ptr->struct.field": if
-      one points inside this string always show the value of
-      ptr->struct.field.
-    [ A selection followed by a click on `Print ()' will do. - AZ]
     - Selection: Double click to select words - moving the mouse then
       expands on the basis of words
-    - possibility to select the base (dec, hex, oct ...) for
-      displayed values; Attach this as attributes to variables,
-      fields of structs/unions; load/save
-    - detecting when graph display takes too long (n seconds
+    - Attach base as attributes to variables, fields of
+      structs/unions; load/save
+    - Detect when graph display takes too long (n seconds
       configurable) if it takes too long switch in mode where updates
       are only done on request
     - Dump inspector hex[+/]ascii/octal dump of length n starting at
@@ -391,7 +383,7 @@ Volunteers for these and other projects are welcome!
 
 265*Make all toolbar actions accessible via alternate ways:
     - Add `Rotate' to the Display Editor.
-    - Add `Lookup', `Find', and `Print' to the Source Menu.
+    - Add `Lookup' to the Source Menu.
 
 266 Include TAGS support.
 
