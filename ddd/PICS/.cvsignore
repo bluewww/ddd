@@ -11,10 +11,12 @@ ddd-code.ps
 ddd-cond.ps
 ddd-console.ps
 ddd-data-prefs.ps
+ddd-define-command.ps
 ddd-display.ps
 ddd-drag.ps
 ddd-edit-breakpoints.ps
 ddd-edit-displays.ps
+ddd-font-prefs.ps
 ddd-general-prefs.ps
 ddd-helpers.ps
 ddd-hide-display.ps

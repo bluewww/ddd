@@ -873,10 +873,12 @@ PICS = \
 	$(picdir)/ddd-code.ps           \
 	$(picdir)/ddd-console.ps        \
 	$(picdir)/ddd-data-prefs.ps     \
+	$(picdir)/ddd-define-command.ps \
 	$(picdir)/ddd-display.ps        \
 	$(picdir)/ddd-drag.ps           \
 	$(picdir)/ddd-edit-breakpoints.ps \
 	$(picdir)/ddd-edit-displays.ps  \
+	$(picdir)/ddd-font-prefs.ps     \
 	$(picdir)/ddd-general-prefs.ps  \
 	$(picdir)/ddd-helpers.ps  	\
 	$(picdir)/ddd-hide-display.ps   \
@@ -1672,6 +1674,15 @@ $(picdir)/ddd-repeats.ps: \
 
 $(picdir)/ddd-toolbar.ps: $(picdir)/ddd-toolbar.fig $(picdir)/ddd-toolbar.xpm
 	cd $(picdir); $(FIG2PS) ddd-toolbar.fig > ddd-toolbar.ps
+
+$(picdir)/ddd-font-prefs.ps: \
+	$(picdir)/ddd-font-prefs.fig $(picdir)/ddd-font-prefs.xpm
+	cd $(picdir); $(FIG2PS) ddd-font-prefs.fig > ddd-font-prefs.ps
+
+$(picdir)/ddd-define-command.ps: \
+	$(picdir)/ddd-define-command.fig $(picdir)/ddd-define-command.xpm
+	cd $(picdir); $(FIG2PS) ddd-define-command.fig > ddd-define-command.ps
+
 
 # The logo comes in XPM source
 $(picdir)/dddsplash.ps: $(icondir)/dddsplash.xpm

@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-05-20" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-05\-25" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -99,12 +99,12 @@ but usually just
 .SH "DESCRIPTION"
 .\" ---------------
 .\"
-The purpose of a debugger such as \s-2@DDD@\s+2 is to allow you to see
+The purpose of a debugger such as \s-1@DDD@\s+1 is to allow you to see
 what is going on \*(lqinside\*(rq another program while it
 executes\(em\&or what another program was doing at the moment it
 crashed.
 .PP
-\s-2@DDD@\s+2 can do four main kinds of things (plus other things in support of
+\s-1@DDD@\s+1 can do four main kinds of things (plus other things in support of
 these) to help you catch bugs in the act:
 .IP \(bu 2
 Start your program, specifying anything that might affect its
@@ -121,22 +121,20 @@ Change things in your program, so you can experiment with correcting the
 effects of one bug and go on to learn about another.
 .PP
 .\"
-\*(lqClassical\*(rq \s-2UNIX\s+2 debuggers such as the \s-2GNU\s+2
-debugger (\s-2GDB\s+2) provide a command-line interface and a
+\*(lqClassical\*(rq \s-1UNIX\s+1 debuggers such as the \s-1GNU\s+1
+debugger (\s-1GDB\s+1) provide a command-line interface and a
 multitude of commands for these and other debugging purposes.
-\s-2@DDD@\s+2 is a \fIwrapper\fR around an inferior \s-2GDB\s+2,
-\s-2DBX\s+2, \s-2XDB\s+2, or \s-2JDB\s+2 debugger.  In addition to the
-command-line interface of the inferior debugger, \s-2@DDD@\s+2
-provides a common \fIgraphical user interface\fR to support debugging
-tasks.  The \s-2@DDD@\s+2 \fIgraphical data display\fR allows for
-interactive exploration of data structures.
+\s-1@DDD@\s+1 is a comfortable \fIgraphical user interface\fR around
+an inferior \s-1GDB\s+1, \s-1DBX\s+1, \s-1XDB\s+1, or \s-1JDB\s+1
+debugger.
+.\"
 .\"
 .\" ---------------
 .SH "INVOKING @DDD@"
 .\" ---------------
 .\"
-You can run \s-2@DDD@\s+2 with no arguments or options.  However, the
-most usual way to start \s-2@DDD@\s+2 is with one argument or two,
+You can run \s-1@DDD@\s+1 with no arguments or options.  However, the
+most usual way to start \s-1@DDD@\s+1 is with one argument or two,
 specifying an executable program as the argument:
 .sp
 .br
@@ -159,15 +157,15 @@ to debug a running process:
 .br
 .sp
 .\"
-would attach \s-2@DDD@\s+2 to process \c
+would attach \s-1@DDD@\s+1 to process \c
 .B 1234\c
 \& (unless you also have a file
 named `\|\c
 .B 1234\c
-\&\|'; \s-2@DDD@\s+2 does check for a core file first).
+\&\|'; \s-1@DDD@\s+1 does check for a core file first).
 .\"
 .PP
-By default, \s-2@DDD@\s+2 uses \s-2GDB\s+2 as inferior debugger.  Use
+By default, \s-1@DDD@\s+1 uses \s-1GDB\s+1 as inferior debugger.  Use
 .sp
 .br
   \fB@ddd@\ \-\-dbx \fIprogram\fR
@@ -186,9 +184,9 @@ or
 .br
 .sp
 .\"
-to run \s-2DBX\s+2 or \s-2XDB\s+2 or \s-2JDB\s+2 as inferior debugger.
+to run \s-1DBX\s+1 or \s-1XDB\s+1 or \s-1JDB\s+1 as inferior debugger.
 .PP
-To learn more about \s-2@DDD@\s+2 options, run
+To learn more about \s-1@DDD@\s+1 options, run
 .sp
 .br
   \fB@ddd@\ \-\-help\fR
@@ -198,13 +196,13 @@ to get a list of frequently used options, or see the `\fBOPTIONS\fR'
 section, below.
 .\"
 .\" ---------------
-.SH "THE DDD WINDOWS"
+.SH "THE @DDD@ WINDOWS"
 .\" ---------------
 .\"
-.SS "The DDD Main Windows"
+.SS "The @DDD@ Main Windows"
 .\"
 .PSPIC @srcdir@/PICS/ddd-all.ps 15.3cm
-\s-2@DDD@\s+2 is composed of three main windows:
+\s-1@DDD@\s+1 is composed of three main windows:
 .br
 .IP \(bu 2
 The \fIData Window\fR shows the current data of the debugged program.
@@ -217,8 +215,8 @@ program.
 The \fIDebugger Console\fR accepts debugger commands and shows
 debugger messages.
 .PP
-By default, \s-2@DDD@\s+2 places these main windows stacked into one
-single top-level window, but \s-2@DDD@\s+2 can also be configured to
+By default, \s-1@DDD@\s+1 places these main windows stacked into one
+single top-level window, but \s-1@DDD@\s+1 can also be configured to
 treat each one separately.
 .PP
 .PSPIC @srcdir@/PICS/ddd-separate.ps 15.3cm
@@ -237,25 +235,25 @@ usually placed beneath the current source.
 The \fIExecution Window\fR shows the input and output of the debugged
 program.
 .PP
-\s-2@DDD@\s+2 also has several temporary \fIdialogs\fR for showing and
+\s-1@DDD@\s+1 also has several temporary \fIdialogs\fR for showing and
 entering additional information.
 .\"
 .\"
 .SS "Using the Command Tool"
 .\"
 The command tool is a small window containing frequently used
-\s-2@DDD@\s+2 commands.  It can be moved around on top of the
-\s-2@DDD@\s+2 windows, but it can also be placed besides them.
-Whenever you save \s-2@DDD@\s+2 state, \s-2@DDD@\s+2 also saves the
+\s-1@DDD@\s+1 commands.  It can be moved around on top of the
+\s-1@DDD@\s+1 windows, but it can also be placed besides them.
+Whenever you save \s-1@DDD@\s+1 state, \s-1@DDD@\s+1 also saves the
 distance between command tool and source window, such that you can
 select your own individual command tool placement.  To move the
 command tool to its saved position, use `\fBView | Command Tool\fR'.
 .PP
-By default, the command tool \fIsticks\fR to the \s-2@DDD@\s+2 source
-window: Whenever you move the \s-2@DDD@\s+2 source window, the command
+By default, the command tool \fIsticks\fR to the \s-1@DDD@\s+1 source
+window: Whenever you move the \s-1@DDD@\s+1 source window, the command
 tool follows such that the distance between source window and command
 tool remains the same.  By default, the command tool is also
-\fIauto-raised\fR, such that it stays on top of other \s-2@DDD@\s+2
+\fIauto-raised\fR, such that it stays on top of other \s-1@DDD@\s+1
 windows.
 .PP
 The command tool can be configured to appear as a command tool bar
@@ -267,24 +265,25 @@ Buttons Location\fR' for details.
 .\"
 .SS "Using the Tool Bar"
 .\"
-Some \s-2@DDD@\s+2 commands require an \fIargument\fR.  This argument
+Some \s-1@DDD@\s+1 commands require an \fIargument\fR.  This argument
 is specified in the \fIargument field\fR, labeled `\fB():\fR'.
 Basically, there are four ways to set arguments:
 .IP \(bu 2
-You can enter the argument manually, using the keyboard.
+You can \fIkey in\fR the argument manually.
 .IP \(bu 2
-You can click on `\fB():\fR' to clear the current contents and 
-paste the current selection, using \fImouse button 2\fR.
+You can \fIpaste\fR the current selection into the argument field
+(typically using \fImouse button 2\fR).  To clear old contents
+beforehand, click on the `\fB():\fR' label.
 .IP \(bu 2
-You can select an item from the source and data windows.  This will
-automatically copy the item to the argument field.
+You can \fIselect an item\fR from the source and data windows.  This
+will automatically copy the item to the argument field.
 .IP \(bu 2
-You can select a previously used argument from the drop-down menu at
-the right of the argument field.
+You can select a \fIpreviously used argument\fR from the drop-down
+menu at the right of the argument field.
 .PP
-Using \s-2GDB\s+2, the argument field provides a completion mechanism.
+Using \s-1GDB\s+1, the argument field provides a completion mechanism.
 You can enter the first few characters of an item an press the
-`\s-2TAB\s+2' key to complete it.  Pressing `\s-2TAB\s+2' again
+`\s-1TAB\s+1' key to complete it.  Pressing `\s-1TAB\s+1' again
 shows alternative completions.
 .PP
 After having entered an argument, you can select one of the buttons on
@@ -300,12 +299,12 @@ a menu with further operations.
 .SH "GETTING HELP"
 .\" ---------------
 .\"
-\s-2@DDD@\s+2 has an extensive on-line help system.  Here's how to get 
-help while working with \s-2@DDD@\s+2.
+\s-1@DDD@\s+1 has an extensive on-line help system.  Here's how to get 
+help while working with \s-1@DDD@\s+1.
 .\"
 .SS "Button Tips"
 .\"
-You can get a short help text on most \s-2@DDD@\s+2 buttons by simply
+You can get a short help text on most \s-1@DDD@\s+1 buttons by simply
 moving the mouse pointer on it and leave it there.  After a second, a
 small window (called \fIbutton tip\fR) pops up, giving a hint on the
 button's meaning.  The button tip disappears as soon as you move the
@@ -319,11 +318,11 @@ recent messages.
 .\"
 .SS "Context-Sensitive Help"
 .\"
-You can get detailed help on any visible \s-2@DDD@\s+2 item.  Just
-press the `\fBF1\fR' key and move the question mark arrow on the item
-you want help for.  Clicking on the item pops up a detailed help text.
+You can get detailed help on any visible \s-1@DDD@\s+1 item.  Just
+point on the item you want help and press the `\fBF1\fR' key.  This
+pops up a detailed help text.
 .PP
-The \s-2@DDD@\s+2 dialogs all contain `\fBHelp\fR' buttons that give
+The \s-1@DDD@\s+1 dialogs all contain `\fBHelp\fR' buttons that give
 detailed information about the dialog.
 .\"
 .SS "Help on Debugger Commands"
@@ -337,7 +336,7 @@ See `\fBEntering Commands\fR', below, for details on entering commands.
 .\"
 In case you're stuck, try `\fBHelp | What Now?\fR' (the `\fBWhat
 Now\fR' item in the `\fBHelp\fR' menu) or press \fBCtrl+F1\fR.
-Depending on the current state, \s-2@DDD@\s+2 will give you some hints
+Depending on the current state, \s-1@DDD@\s+1 will give you some hints
 on what you can do.
 .\"
 .\"
@@ -346,7 +345,7 @@ on what you can do.
 .SH "OPENING FILES"
 .\" ---------------
 .\"
-If you did not invoke \s-2@DDD@\s+2 specifying a program to be debugged,
+If you did not invoke \s-1@DDD@\s+1 specifying a program to be debugged,
 you can use the `\fBFile\fR' menu to open programs, core dumps and
 sources.
 .PP
@@ -354,7 +353,7 @@ sources.
 .PP
 To open a program to be debugged, select `\fBFile | Open Program\fR'.
 .PP
-In \s-2JDB\s+2, select `\fBFile | Open Class\fR' instead.  This gives
+In \s-1JDB\s+1, select `\fBFile | Open Class\fR' instead.  This gives
 you a list of available classes to choose from.
 .PP
 To re-open a recently debugged program or class, select `\fBFile |
@@ -369,7 +368,7 @@ To open an arbitrary source file, select `\fBFile | Open Source\fR'.
 You can use the source file for debugging purposes only if the given
 source file is actually related to the debugged program.
 .PP
-Note: With \s-2XDB\s+2 and some \s-2DBX\s+2 versions, the debugged
+Note: With \s-1XDB\s+1 and some \s-1DBX\s+1 versions, the debugged
 program must be specified upon invocation and cannot be changed at run
 time.
 .\"
@@ -408,14 +407,14 @@ definition.
 .\"
 If the item you wish to search is visible in the source text, click
 with \fImouse button 1\fR on it.  The identifier is copied to the argument
-field.  Click on the `\fBFind\s-2>>\s+2 ()\fR' button to find
-following occurrences and on the `\fBFind\s-2<<\s+2 ()\fR' button to
+field.  Click on the `\fBFind\s-1>>\s+1 ()\fR' button to find
+following occurrences and on the `\fBFind\s-1<<\s+1 ()\fR' button to
 find previous occurrences.
 .PP
 As an alternative, you can enter the item in the argument field and
 click on one of the `\fBFind\fR' buttons.
 .PP
-By default, \s-2@DDD@\s+2 finds only complete words.  To search for
+By default, \s-1@DDD@\s+1 finds only complete words.  To search for
 arbitrary substrings, change the value of the `\fBSource | Find Words
 Only\fR' option.
 .\"
@@ -456,8 +455,8 @@ Breakpoints\fR'.  Click on the `\fBBreak\fR' button and enter the
 location.
 .PP
 (If you find this number of alternatives confusing, be aware that
-\s-2@DDD@\s+2 users fall into three categories, which must all be
-supported.  \fINovice users\fR explore \s-2@DDD@\s+2 and may prefer to
+\s-1@DDD@\s+1 users fall into three categories, which must all be
+supported.  \fINovice users\fR explore \s-1@DDD@\s+1 and may prefer to
 use one single mouse button.  \fIAdvanced users\fR know how to use
 shortcuts and prefer popup menus.  \fIExperienced users\fR prefer the
 command line interface.)
@@ -476,8 +475,8 @@ correctly.  If this happens, try writing in your
   \fB@Ddd@*cacheGlyphImages: off\fR
 .sp
 .br
-and restart @DDD@.  See also the `\fBcacheGlyphImages\fR' resource in
-the `\fBRESOURCES\fR' section, below.
+and restart \s-1@DDD@\s+1.  See also the `\fBcacheGlyphImages\fR'
+resource in the `\fBRESOURCES\fR' section, below.
 .\"
 .\"
 .SS "Setting Breakpoints by Name"
@@ -496,9 +495,6 @@ and enter the function name.
 .\"
 .SS "Disabling Breakpoints"
 .\"
-Note: \s-2JDB\s+2 and some \s-2DBX\s+2 variants do not support
-breakpoint disabling.
-.PP
 To temporarily disable a breakpoint, press \fImouse button 3\fR on the
 breakpoint symbol and select the `\fBDisable Breakpoint\fR' item from
 the breakpoint popup menu.  To enable it again, select `\fBEnable
@@ -516,12 +512,13 @@ Disabled breakpoints are indicated by a grey stop sign, or
 The `\fBDisable Breakpoint\fR' item is also accessible via the
 `\fBClear at ()\fR' button.  Just press and hold \fImouse button 1\fR
 on the button to get a popup menu.
+.PP
+Note: \s-1JDB\s+1 and some \s-1DBX\s+1 variants do not support
+breakpoint disabling.
 .\"
 .\"
 .SS "Temporary Breakpoints"
 .\"
-Note: \s-2JDB\s+2 does not support temporary breakpoints.
-.PP
 A \fItemporary breakpoint\fR is immediately deleted as soon as it is
 reached.  To set a temporary breakpoint, press \fImouse button 3\fR on the
 left of the source line and select the `\fBSet Temporary
@@ -539,6 +536,8 @@ reached.
 The `\fBSet Temporary Breakpoint\fR' and `\fBContinue Until Here\fR'
 items are also accessible via the `\fBBreak at ()\fR' button.  Just
 press and hold \fImouse button 1\fR on the button to get a popup menu.
+.PP
+Note: \s-1JDB\s+1 does not support temporary breakpoints.
 .\"
 .\"
 .SS "Deleting Breakpoints"
@@ -579,7 +578,7 @@ Click on `\fBEnable\fR' to enable the breakpoint.
 Click on `\fBDisable\fR' to disable the breakpoint.
 .IP \(bu 2
 Click on `\fBTemp\fR' to make the breakpoint temporary.  Note:
-\s-2GDB\+2 provides no way to make a temporary breakpoint
+\s-1GDB\+2 provides no way to make a temporary breakpoint
 non-temporary.
 .IP \(bu 2
 Click on `\fBDelete\fR' to delete the breakpoint.
@@ -588,29 +587,29 @@ Click on `\fBDelete\fR' to delete the breakpoint.
 .\"
 .SS "Breakpoint Conditions"
 .\"
-Note: \s-2JDB\s+2 does not support breakpoint conditions.
-.PP
 In the field `\fBCondition\fR' of the `\fBBreakpoint Properties\fR'
 panel, you can specify a \fIbreakpoint condition\fR.  If a breakpoint
 condition is set, the breakpoint stops the program only if the
 associated condition is met\(em\&that is, if the condition expression
 evaluates to a non-zero value.
+.PP
+Note: \s-1JDB\s+1 does not support breakpoint conditions.
 .\"
 .\"
 .SS "Breakpoint Ignore Counts"
 .\"
-Note: \s-2JDB\s+2 and some \s-2DBX\s+2 variants do not support
-breakpoint ignore counts.
-.PP
 In the field `\fBIgnore Count\fR' of the `\fBBreakpoint Properties\fR'
 panel, you can specify a \fIbreakpoint ignore count\fR.  If the ignore
 count is set to some value \fIN\fR, the next \fIN\fR crossings of the
 breakpoint will be ignored: Each crossing of the breakpoint decrements
 the ignore count; the program stops only if the ignore count is zero.
+.PP
+Note: \s-1JDB\s+1 and some \s-1DBX\s+1 variants do not support
+breakpoint ignore counts.
 .\"
 .SS "Breakpoint Commands"
 .\"
-Note: Breakpoint commands are currently available on \s-2GDB\s+2 only.
+Note: Breakpoint commands are currently available on \s-1GDB\s+1 only.
 .PP
 Using the `\fBCommands\fR' buttons of the `\fBBreakpoint
 Properties\fR' panel, you can record and edit commands to be executed
@@ -618,19 +617,19 @@ when the breakpoint is hit.
 .PP
 To record a command sequence, follow these steps:
 .IP \(bu 2
-Click on `\fBRecord\fR' to begin the recording.
+Click on `\fBRecord\fR' to begin the recording of the breakpoint commands.
 .IP \(bu 2
-Now interact with \s-2DDD\s+2.  While recording, \s-2DDD\s+2 does not
+Now interact with \s-1DDD\s+1.  While recording, \s-1DDD\s+1 does not
 execute commands, but simply records them to be executed when the
 breakpoint is hit.  The recorded debugger commands are shown in the
 debugger console.
 .IP \(bu 2
 To stop the recording, click on `\fBEnd\fR' or enter `\fBend\fR' at
-the \s-2GDB\s+2 prompt.  To \fIcancel\fR the recording, click on
+the \s-1GDB\s+1 prompt.  To \fIcancel\fR the recording, click on
 `\fBInterrupt\fR' or press \fBCtrl+G\fR.
 .IP \(bu 2
-Click on `\fBEdit \s-2>>\s+2\fR' to edit the recorded commands.
-When done with editing, click on `\fBEdit \s-2<<\s+2\fR' to close the
+Click on `\fBEdit \s-1>>\s+1\fR' to edit the recorded commands.
+When done with editing, click on `\fBEdit \s-1<<\s+1\fR' to close the
 commands editor.
 .PP
 .\"
@@ -678,7 +677,7 @@ on `\fBProps\fR'.
 .\"
 .SS "More Breakpoint Features"
 .\"
-Using \s-2GDB\s+2, several more commands related to breakpoints can be
+Using \s-1GDB\s+1, several more commands related to breakpoints can be
 invoked through the debugger console.  Enter `\fBhelp breakpoints\fR'
 at the `\fB(gdb)\fR' prompt.
 .\"
@@ -687,11 +686,6 @@ at the `\fB(gdb)\fR' prompt.
 .SH "WATCHPOINTS"
 .\" ---------------
 .\"
-Note: Watchpoints are available in \s-2GDB\s+2 and some \s-2DBX\s+2
-variants only.  In \s-2XDB\s+2, a similar feature is available via
-\s-2XDB\s+2 \fIassertions\fR; see the \s-2XDB\s+2 documentation for
-details.
-.PP
 You can make the program stop as soon as some variable value changes,
 or when some variable is read or written.  This is called `setting a
 \fIwatchpoint\fR on a variable'.
@@ -708,6 +702,11 @@ the program after each machine instruction in order to examine whether
 the watched value has changed.  However, this delay can be well worth
 it to catch errors when you have no clue what part of your program is
 the culprit.
+.PP
+Note: Watchpoints are available in \s-1GDB\s+1 and some \s-1DBX\s+1
+variants only.  In \s-1XDB\s+1, a similar feature is available via
+\s-1XDB\s+1 \fIassertions\fR; see the \s-1XDB\s+1 documentation for
+details.
 .\"
 .\"
 .SS "Setting Watchpoints"
@@ -717,7 +716,7 @@ the variable name.  The variable name is copied to the argument field.
 Otherwise, enter the variable name in the argument field.  Click on
 the `\fBWatch ()\fR' button to set a watchpoint there.
 .PP
-Using \s-2GDB\s+2, you can set different types of watchpoints.  Click
+Using \s-1GDB\s+1, you can set different types of watchpoints.  Click
 and hold \fImouse button 1\fR on the `\fBWatch ()\fR' button to get a
 menu.
 .\"
@@ -766,23 +765,21 @@ program.  You can either select from a list of previously used
 arguments or enter own arguments in the text field.  Afterwards, press
 the `\fBOK\fR' button to start execution with the selected arguments.
 .PP
-.PSPIC @srcdir@/PICS/ddd-arguments.ps 15.3cm
-.PP
 To run your program again, with the same arguments, select `\fBProgram
 | Run Again\fR' or press the `\fBRun\fR' button on the command tool.
 You may also enter `\fBrun\fR', followed by arguments at the debugger
 prompt instead.
 .PP
 By default, input and output of the debugged program go to the
-debugger console.  As an alternative, \s-2@DDD@\s+2 can also invoke an
+debugger console.  As an alternative, \s-1@DDD@\s+1 can also invoke an
 \fIexecution window\fR, where the program terminal input and output is
 shown.  See `\fBProgram | Run in Execution Window\fR' for details.
+.PP
+.PSPIC @srcdir@/PICS/ddd-arguments.ps 15.3cm
 .\"
 .\"
 .SS "Attaching to a Running Process"
 .\"
-Note: \s-2JDB\s+2 does not support attaching to processes.
-.PP
 If the debugged program is already running in some process, you can
 \fIattach\fR to this process (instead of starting a new one with
 `\fBRun\fR').  Select `\fBFile | Attach to Process\fR' to choose from
@@ -791,28 +788,30 @@ attach to the specified process.
 .PP
 .PSPIC @srcdir@/PICS/ddd-attach.ps 15.3cm
 .PP
-The first thing \s-2@DDD@\s+2 does after arranging to debug the
+The first thing \s-1@DDD@\s+1 does after arranging to debug the
 specified process is to stop it. You can examine and modify an
-attached process with all the \s-2@DDD@\s+2 commands that are
+attached process with all the \s-1@DDD@\s+1 commands that are
 ordinarily available when you start processes with `\fBRun\fR'. You
 can insert breakpoints; you can step and continue; you can modify
 storage. If you would rather the process continue running, you may use
-`\fBContinue\fR' after attaching \s-2@DDD@\s+2 to the process.
+`\fBContinue\fR' after attaching \s-1@DDD@\s+1 to the process.
 .PP
 When using `\fBAttach to Process\fR', you should first use `\fBOpen
 Program\fR' to specify the program running in the process and load its
 symbol table.
 .PP
 When you have finished debugging the attached process, you can use the
-`\fBFile | Detach Process\fR' to release it from \s-2@DDD@\s+2
+`\fBFile | Detach Process\fR' to release it from \s-1@DDD@\s+1
 control.  Detaching the process continues its execution.  After
-`\fBDetach Process\fR', that process and \s-2@DDD@\s+2 become
+`\fBDetach Process\fR', that process and \s-1@DDD@\s+1 become
 completely independent once more, and you are ready to attach another
 process or start one with `\fBRun\fR'.
 .PP
 You can customize the list of processes shown by defining an alternate
 command to list processes.  See `\fBEdit | Preferences | Helpers |
 List Processes\fR'.
+.PP
+Note: \s-1JDB\s+1 does not support attaching to processes.
 .\"
 .\"
 .SS "Stopping the Program"
@@ -821,7 +820,7 @@ The program stops as soon as a breakpoint is reached.  The current
 execution position is highlighted by an arrow.
 .PP
 You can interrupt a running program any time by clicking the
-`\fBInterrupt\fR' button or typing \fBCtrl+G\fR in a \s-2@DDD@\s+2
+`\fBInterrupt\fR' button or typing \fBCtrl+G\fR in a \s-1@DDD@\s+1
 window.
 .\"
 .\"
@@ -852,8 +851,6 @@ a discussion.
 .\"
 .SS "Altering the Execution Position"
 .\"
-Note: \s-2JDB\s+2 does not support altering the execution position.
-.PP
 To resume execution at a different location, press \fImouse button 1\fR on
 the arrow and drag it to a different location.  The most common
 occasion to use this feature is to back up\(em\&perhaps with more
@@ -866,7 +863,7 @@ Moving the execution position does not change the current stack frame,
 or the stack pointer, or the contents of any memory location or any
 register other than the program counter.
 .PP
-Some inferior debuggers (notably \s-2GDB\s+2) allow you to set the new
+Some inferior debuggers (notably \s-1GDB\s+1) allow you to set the new
 execution position into a different function from the one currently
 executing.  This may lead to bizarre results if the two functions
 expect different patterns of arguments or of local variables.  For
@@ -881,6 +878,8 @@ disabled.  Use `\fBSet Execution Position\fR' from the breakpoint
 popup menu instead to set the execution position to the current
 location.  This item is also accessible by pressing and holding the
 `\fBBreak at ()\fR/\fBClear at ()\fR' button.
+.PP
+Note: \s-1JDB\s+1 does not support altering the execution position.
 .\"
 .\"
 .SS "Examining the Stack"
@@ -888,7 +887,7 @@ location.  This item is also accessible by pressing and holding the
 When your program has stopped, the first thing you need to know is
 where it stopped and how it got there.
 .PP
-\s-2@DDD@\s+2 provides a \fIbacktrace window\fR showing a summary of 
+\s-1@DDD@\s+1 provides a \fIbacktrace window\fR showing a summary of 
 how your program got where it is.  To enable the backtrace window,
 select `\fBStatus | Backtrace\fR'.
 .PP
@@ -907,7 +906,7 @@ respectively, will also move you through the stack.
 .\"
 .SS "Examining Threads"
 .\"
-Note: Thread support is available with \s-2GDB\s+2 and \s-2JDB\s+2 only.
+Note: Thread support is available with \s-1GDB\s+1 and \s-1JDB\s+1 only.
 .PP
 In some operating systems, a single program may have more than one
 \fIthread\fR of execution.  The precise semantics of threads differ
@@ -917,27 +916,36 @@ share one address space (that is, they can all examine and modify the
 same variables).  On the other hand, each thread has its own registers
 and execution stack, and perhaps private memory.
 .PP
-For debugging purposes, \s-2@DDD@\s+2 lets you display the list of
+For debugging purposes, \s-1@DDD@\s+1 lets you display the list of
 threads currently active in your program and lets you select the
 \fIcurrent thread\fR\(em\&the thread which is the focus of debugging.
-\s-2@DDD@\s+2 shows all program information from the perspective of
+\s-1@DDD@\s+1 shows all program information from the perspective of
 the current thread.
 .PP
 To view all currently active threads in your program, select
 `\fBStatus | Threads\fR'.  The current thread is highlighted.  Select
 any thread to make it the current thread.
 .PP
+Using \s-1JDB\s+1, additional functionality is available:
+.IP \(bu 2
+Select a \fIthreadgroup\fR to switch between viewing all threads and
+the threads of the selected threadgroup;
+.IP \(bu 2
+Click on LBL(Suspend) to suspend execution of the selected threads;
+.IP \(bu 2
+Click on LBL(Resume) to resume execution of the selected threads.
+.PP
 .PSPIC @srcdir@/PICS/ddd-threads.ps 15.3cm
 .PP
-For more information on threads, see the section `\fBDebugging
-programs with multiple threads\fR' in the \s-2GDB\s+2 documentation.
+For more information on threads, see the \s-1JDB\s+1 and \s-1GDB\s+2
+documentation.
 .\"
 .\"
 .\" ---------------
 .SH "EXAMINING DATA"
 .\" ---------------
 .TP
-\s-2@DDD@\s+2 provides three means to examine data.
+\s-1@DDD@\s+1 provides three means to examine data.
 .TP 10
 .B "Value Hints"
 The quickest way to examine variables is to move the pointer on an
@@ -975,7 +983,8 @@ The variable value can also be printed in the debugger console, making
 it available for further operations.  To print a variable value,
 select the desired variable by clicking \fImouse button 1\fR on its
 name.  The variable name is copied to the argument field.  By clicking
-the `\fBPrint ()\fR' button, the value is printed in the debugger console.
+the `\fBPrint ()\fR' button, the value is printed in the debugger
+console.  Note that the value is also shown in the status line.
 .PP
 As a shorter alternative, you can simply press \fImouse button 3\fR on
 the variable name and select the `\fBPrint\fR' item from the popup
@@ -1031,7 +1040,7 @@ If the suffix `\fBwhen in \fIscope\fR' is given, display creation is
 function name, as in the backtrace output).
 .br
 .IP \(bu 2
-If the suffix `\fBnow or when in \fIscope\fR' is given, \s-2@DDD@\s+2
+If the suffix `\fBnow or when in \fIscope\fR' is given, \s-1@DDD@\s+1
 attempts to create the display immediately.  If display creation fails,
 it is \fIdeferred\fR until execution reaches the given \fIscope\fR (a
 function name, as in the backtrace output).
@@ -1076,17 +1085,6 @@ connected displays are automatically selected.
 .PSPIC @srcdir@/PICS/ddd-select-display.ps 15.3cm
 .\"
 .\"
-.SS "Selecting Display Parts"
-.\"
-If a display is composed from several values (that is, a C/C++
-\fIclass\fR, \fIstruct\fR, \fIunion\fR, or \fIarray\fR; or a
-Pascal/MODULA \fIRECORD\fR or \fIARRAY\fR), you can
-select individual parts by clicking on their names or values.  The
-resulting expression is shown in the \fIargument field\fR, below.
-.PP
-You can only select one part of a display at a time.
-.\"
-.\"
 .SS "Showing and Hiding Values"
 .\"
 Aggregate values (i.e. records, structs, classes, and arrays) can be
@@ -1101,6 +1099,8 @@ contained sub-aggregates.
 To hide details about an aggregate, select the aggregate by clicking
 \fImouse button 1\fR on its name or value and click on the `\fBHide ()\fR'
 button.
+.PP
+.PSPIC @srcdir@/PICS/ddd-hide-display.ps 15.3cm
 .PP
 When pressing and holding \fImouse button 1\fR on the `\fBShow
 ()\fR/\fBHide ()\fR' button, a menu pops up with even more
@@ -1125,8 +1125,6 @@ to the `\fBHide ()\fR' button.
 As a faster alternative, you can also press \fImouse button 3\fR on the
 aggregate and select the appropriate menu item.
 .PP
-.PSPIC @srcdir@/PICS/ddd-hide-display.ps 15.3cm
-.PP
 As an even faster alternative, you can also double-click \fImouse
 button 1\fR on a value.  If some part of the value is hidden, more
 details will be shown; if the entire value is shown, double-clicking
@@ -1135,7 +1133,7 @@ a value until you get the right amount of details.
 .PP
 If \fIall\fR details of a display are hidden, the display is called
 \fIdisabled\fR; this is indicated by the string `\fI(Disabled)\fR'.
-Displays can also be disabled or enabled via the \s-2@DDD@\s+2
+Displays can also be disabled or enabled via the \s-1@DDD@\s+1
 commands
 .sp
 .br
@@ -1179,7 +1177,7 @@ Using dependent displays, you can investigate the data structure of a
 \*(lqtree\*(rq for example and lay it out according to your intuitive
 image of the \*(lqtree\*(rq data structure.
 .PP
-By default, \s-2@DDD@\s+2 does not recognize shared data structures
+By default, \s-1@DDD@\s+1 does not recognize shared data structures
 (i.e. a data object referenced by multiple other data objects).  See
 `\fBExamining Shared Data Structures\fR', below, for details on how to
 examine such structures.
@@ -1187,7 +1185,7 @@ examine such structures.
 .\"
 .SS "Display Shortcuts"
 .\"
-\s-2@DDD@\s+2 maintains a \fIshortcut menu\fR of frequently used
+\s-1@DDD@\s+1 maintains a \fIshortcut menu\fR of frequently used
 display expressions.  This menu is activated
 .br
 .IP \(bu 2
@@ -1227,7 +1225,7 @@ the text is empty, the `\fBNew Display\fR' menu will be empty, too.
 .PP
 .PSPIC @srcdir@/PICS/ddd-shortcut-editor.ps 15.3cm
 .PP
-\s-2@DDD@\s+2 also allows you to specify individual labels for
+\s-1@DDD@\s+1 also allows you to specify individual labels for
 user-defined buttons.  You can write such a label after the
 expression, separated by `\fB//\fR'.  This feature is used in the
 default contents of the `\fBNew Display\fR' menu, where each of the
@@ -1239,7 +1237,7 @@ base conversions has a label:
     /o ()	// Convert to Oct\fR
 .sp
 .br
-Feel free to add other conversions here.  \s-2@DDD@\s+2 supports up to 
+Feel free to add other conversions here.  \s-1@DDD@\s+1 supports up to 
 20 `\fBNew Display\fR' menu items.
 .\"
 .\"
@@ -1267,9 +1265,9 @@ holding the `\fBDisplay ()\fR' button.
 .SS "Displaying Local Variables"
 .\"
 You can display all local variables at once by choosing `\fBData |
-Display Local Variables\fR'.  When using \s-2DBX\s+2, \s-2XDB\s+2, or
-\s-2JDB\s+2, this displays all local variables, including the
-arguments of the current function.  When using \s-2GDB\s+2, function
+Display Local Variables\fR'.  When using \s-1DBX\s+1, \s-1XDB\s+1, or
+\s-1JDB\s+1, this displays all local variables, including the
+arguments of the current function.  When using \s-1GDB\s+1, function
 arguments are contained in a separate display, activated by
 `\fBDisplay Arguments\fR'.
 .PP
@@ -1300,7 +1298,7 @@ updated each time the program stops.  For instance, by entering
 a status display named `\fBWhere\fR' is created that shows the current
 backtrace.
 .PP
-If you are using \s-2GDB\s+2, \s-2@DDD@\s+2 provides a panel from
+If you are using \s-1GDB\s+1, \s-1@DDD@\s+1 provides a panel from
 which you can choose useful status displays.  Select `\fBData |
 Status Displays\fR' and pick your choice from the list.
 .PP
@@ -1313,8 +1311,8 @@ should delete them as soon as you don't need them any more.
 .SS "Displaying Multiple Array Values"
 .\"
 When debugging C or C++ programs, one often has to deal with pointers
-to arrays of dynamically determined size.  Both \s-2@DDD@\s+2 and
-\s-2GDB\s+2 provide special support for such dynamic arrays.
+to arrays of dynamically determined size.  Both \s-1@DDD@\s+1 and
+\s-1GDB\s+1 provide special support for such dynamic arrays.
 .PP
 To display several successive objects of the same type (a section of
 an array, or an array of dynamically determined size), use the
@@ -1329,7 +1327,7 @@ display.  Thus,
 creates ten new display nodes for `\fBargv[0]\fR',
 `\fBargv[1]\fR', ..., `\fBargv[9]\fR'.
 .PP
-Using \s-2GDB\s+2 as inferior debugger, you can use \fIartificial arrays\fR.
+Using \s-1GDB\s+1 as inferior debugger, you can use \fIartificial arrays\fR.
 Typing
 .sp
 .br
@@ -1340,12 +1338,12 @@ creates a single array display node containing `\fBargv[0]\fR' up to
 `\fBargv[9]\fR'.  Generally, by using the `\fB@\fR' operator, you
 can specify the number of array elements to be displayed.
 .PP
-For more details on artificial arrays, see the \s-2GDB\s+2 documentation.
+For more details on artificial arrays, see the \s-1GDB\s+1 documentation.
 .\"
 .\"
 .SS "Repeated Array Values"
 .\"
-Using \s-2GDB\s+2, an array value that is repeated 10 or more times is
+Using \s-1GDB\s+1, an array value that is repeated 10 or more times is
 displayed only once.  The value is shown with a `\fB<\fIN\fB\(mu>\fR'
 postfix added, where \fIN\fR is the number of times the value is
 repeated.  Thus, the display `\fB0x0 <30\(mu>\fR' stands for 30 array
@@ -1354,22 +1352,20 @@ space, especially with homogeneous arrays.
 .PP
 .PSPIC @srcdir@/PICS/ddd-repeats.ps 15.3cm
 .PP
-The default \s-2GDB\s+2 threshold for repeated array values is 10.
+The default \s-1GDB\s+1 threshold for repeated array values is 10.
 You can change it via `\fBEdit | GDB Settings | Threshold for repeated
 print elements\fR'.  Setting the threshold to \fB0\fR will cause
-\s-2GDB\s+2 (and \s-2@DDD@\s+2) to display each array element
+\s-1GDB\s+1 (and \s-1@DDD@\s+1) to display each array element
 individually.  Be sure to refresh the data window via `\fBData |
-Refresh Displays\fR' after a change in \s-2GDB\s+2 settings.
+Refresh Displays\fR' after a change in \s-1GDB\s+1 settings.
 .PP
-You can also configure \s-2@DDD@\s+2 to display each array element
-individually, regardless of \s-2GDB\s+2 settings; see the
+You can also configure \s-1@DDD@\s+1 to display each array element
+individually, regardless of \s-1GDB\s+1 settings; see the
 `\fBexpandRepeatedValues\fR' resource for details.
 .\"
 .\"
 .SS "Altering Variable Values"
 .\"
-Note: Altering variable values is not supported in \s-2JDB\s+2.
-.PP
 Using the `\fBSet ()\fR' button or the `\fBSet Value\fR' menu item in
 the data popup menu, you can alter the value of the selected variable,
 to resume execution with the changed value.  In a dialog, you can
@@ -1381,6 +1377,8 @@ structures; you must change each primitive structure member
 separately.
 .PP
 .PSPIC @srcdir@/PICS/ddd-set.ps 15.3cm
+.PP
+Note: Altering variable values is not supported in \s-1JDB\s+1.
 .\"
 .\"
 .SS "Refreshing the Data Window"
@@ -1437,21 +1435,21 @@ data window also automatically closes the data window.
 .\"
 .SS "Examining Shared Data Structures"
 .\"
-By default, \s-2@DDD@\s+2 does not recognize shared data
+By default, \s-1@DDD@\s+1 does not recognize shared data
 structures\(em\&that is, a data object referenced by multiple other
 data objects.  For instance, if two pointers \fBp1\fR and \fBp2\fR
 point at the same data object \fBd\fR, the data displays \fBd\fR,
 \fB*p1\fR, and \fB*p2\fR will be separate, although they denote the
 same object.
 .PP
-\s-2@DDD@\s+2 provides a special mode which makes it detect these
-situations.  \s-2@DDD@\s+2 recognizes if two or more data displays are
+\s-1@DDD@\s+1 provides a special mode which makes it detect these
+situations.  \s-1@DDD@\s+1 recognizes if two or more data displays are
 stored at the same physical address, and if this is so, merges all
 these \fIaliases\fR into one single data display, the \fIoriginal data
 display\fR.  This mode is called \fIAlias Detection\fR; it is enabled
 via the `\fBData | Detect Aliases\fR'.
 .PP
-When alias detection is enabled, \s-2@DDD@\s+2 inquires the memory
+When alias detection is enabled, \s-1@DDD@\s+1 inquires the memory
 location (the \fIaddress\fR) of each data display after each program
 step.  If two displays have the same address, they are merged into
 one.  More specifically, only the one which has least recently changed
@@ -1497,7 +1495,7 @@ provides a means to determine the address of an arbitrary data
 object.  Currently, only C and C++ are supported.
 .br
 .IP \(bu 2
-Some inferior debuggers (for instance, SunOS \s-2DBX\s+2) produce
+Some inferior debuggers (for instance, SunOS \s-1DBX\s+1) produce
 incorrect output for address expressions.  Given a pointer \fIp\fR,
 you may verify the correct function of your inferior debugger by
 comparing the values of \fIp\fR and \fB&\fIp\fR (unless \fIp\fR
@@ -1505,11 +1503,11 @@ actually points to itself).  You can also examine the data display
 addresses, as shown in the Display Editor.
 .br
 .IP \(bu 2
-Alias detection slows down \s-2@DDD@\s+2 considerably, which is why it
+Alias detection slows down \s-1@DDD@\s+1 considerably, which is why it
 is disabled by default.  You may consider to enable it only at
 need\(em\&for instance, while examining some complex data
 structure\(em\&and disable it while examining control flow (i.e.,
-stepping through your program).  \s-2@DDD@\s+2 will automatically
+stepping through your program).  \s-1@DDD@\s+1 will automatically
 restore edges and data displays when switching modes.
 .PP
 .\"
@@ -1519,7 +1517,7 @@ restore edges and data displays when switching modes.
 .SH "GRAPH EDITING"
 .\" ---------------
 .\"
-The \s-2@DDD@\s+2 data window offers some basic functionality to
+The \s-1@DDD@\s+1 data window offers some basic functionality to
 manipulate the display graph.
 .\"
 .\"
@@ -1532,7 +1530,7 @@ holding the button causes all selected displays to move along with the
 pointer.
 .PP
 If the data window becomes too small to hold all displays, scroll bars
-are created.  If your \s-2@DDD@\s+2 is set up to use \fIpanners\fR
+are created.  If your \s-1@DDD@\s+1 is set up to use \fIpanners\fR
 instead, a panner is created in the lower right edge.  When the panner
 is moved around, the window view follows the position of the panner.
 See `\fBCUSTOMIZING @DDD@\fR', below, for details on how to set up
@@ -1593,7 +1591,7 @@ Subsequent layouts will respect the direction of the last rotation.
 .\"
 .SS "Printing the Display Graph"
 .\"
-\s-2@DDD@\s+2 allows for printing the graph picture on PostScript
+\s-1@DDD@\s+1 allows for printing the graph picture on PostScript
 printers or into files.  This is useful for documenting program states.
 .PP
 .PSPIC @srcdir@/PICS/ddd-print-graph.ps 15.3cm
@@ -1616,10 +1614,10 @@ When the graph is printed in a file, two formats are available:
 \fBPostScript\fR - suitable for enclosing it in another document;
 .br
 .IP \(bu 2
-\fB\s-2FIG\s+2\fR - suitable for editing, using the \s-2XFIG\s+2 graphic
+\fB\s-1FIG\s+1\fR - suitable for editing, using the \s-1XFIG\s+1 graphic
 editor, or for conversion into other formats (among others
-\s-2IBMGL\s+2, \s-2L\s-2A\s+2T\dE\uX\s+2, \s-2PIC\s+2), 
-using the \s-2TRANSFIG\s+2 or \s-2FIG2DEV\s+2 package.
+\s-1IBMGL\s+1, \s-1L\s-1A\s+1T\dE\uX\s+1, \s-1PIC\s+1), 
+using the \s-1TRANSFIG\s+1 or \s-1FIG2DEV\s+1 package.
 .PP
 .PSPIC @srcdir@/PICS/ddd-print-output.ps 15.3cm
 .PP
@@ -1634,10 +1632,10 @@ suppressed.
 .SH "MACHINE-LEVEL DEBUGGING"
 .\" ---------------
 .\"
-Note: Machine-level support is available with \s-2GDB\s+2 only.
+Note: Machine-level support is available with \s-1GDB\s+1 only.
 .PP
 Sometimes, it is desirable to examine a program not only at the
-source level, but also at the machine level.  \s-2@DDD@\s+2 provides
+source level, but also at the machine level.  \s-1@DDD@\s+1 provides
 special machine code and register windows for this task.
 .\"
 .\"
@@ -1664,7 +1662,7 @@ to see the corresponding code in the other window.
 .PP
 The `\fBmaxDisassemble\fR' resource controls how much is to be
 disassembled.  If `\fBmaxDisassemble\fR' is set to 256 (default) and
-the current function is larger than 256 bytes, \s-2@DDD@\s+2 only
+the current function is larger than 256 bytes, \s-1@DDD@\s+1 only
 disassembles the first 256 bytes below the current location.  You can
 set the `\fBmaxDisassemble\fR' resource to a larger value if you
 prefer to have a larger machine code view.
@@ -1690,7 +1688,7 @@ subroutine calls are executed without stopping.
 .\"
 .SS "Registers"
 .\"
-\s-2@DDD@\s+2 provides a \fIregister window\fR showing the machine
+\s-1@DDD@\s+1 provides a \fIregister window\fR showing the machine
 register values after each program stop.  To enable the register
 window, select `\fBStatus | Registers\fR'.
 .PP
@@ -1705,40 +1703,33 @@ to have its value displayed in the data window.
 .SH "EDITING SOURCE CODE"
 .\" ---------------------
 .\"
-In \s-2@DDD@\s+2 itself, you cannot change the source file currently
-displayed.  \s-2@DDD@\s+2 allows you to invoke a \fItext editor\fR
+In \s-1@DDD@\s+1 itself, you cannot change the source file currently
+displayed.  \s-1@DDD@\s+1 allows you to invoke a \fItext editor\fR
 instead.  To invoke a text editor for the current source file, select
 the `\fBEdit\fR' button or `\fBSource | Edit Source\fR'.
 .PP
 The editor command is specified in the `\fBeditCommand\fR' resource.
-By default, \s-2@DDD@\s+2 tries to invoke the first available editor
+By default, \s-1@DDD@\s+1 tries to invoke the first available editor
 from the following list:
 .br
 .IP \(bu 2
 The editor specified in the `\fBXEDITOR\fR' environment variable;
-.br
 .IP \(bu 2
-The `\fBgnuclient\fR' program, invoking a separate window from a running
-\fBEmacs\fR editor;
-.br
-.IP \(bu 2
-The `\fBemacsclient\fR' program, invoking a separate window from a running
-\fBEmacs\fR editor;
-.br
-.IP \(bu 2
-A `\fBxterm\fR' terminal emulator running the editor specified in the
+An `\fBxterm\fR' terminal emulator running the editor specified in the
 `\fBEDITOR\fR' environment variable;
-.br
 .IP \(bu 2
-A `\fBxterm\fR' terminal emulator running the `\fBvi\fR' editor.
+An `\fBxterm\fR' terminal emulator running the `\fBvi\fR' editor.
+.PP
+(You can change this setting via `\fBEdit | Preferences | Helpers |
+Edit Sources\fR'.)
 .PP
 After the editor has exited, the source code shown is automatically
 brought up-to-date.
 .PP
-If you have \s-2@DDD@\s+2 and an editor running in parallel, you can
+If you have \s-1@DDD@\s+1 and an editor running in parallel, you can
 also update the source code manually via `\fBSource | Reload
 Source\fR'.  This reloads the source code shown from the source file.
-Since \s-2@DDD@\s+2 automatically reloads the source code if the debugged
+Since \s-1@DDD@\s+1 automatically reloads the source code if the debugged
 program has been recompiled, this should seldom be necessary.
 .\"
 .\"
@@ -1749,10 +1740,10 @@ program has been recompiled, this should seldom be necessary.
 .\"
 In the \fIdebugger console\fR, you can interact with the command
 interface of the inferior debugger.  Enter commands at the \fIdebugger
-prompt\fR\(em\&that is, `\fB(gdb)\fR' for \s-2GDB\s+2, `\fB(dbx)\fR'
-for \s-2DBX\s+2, `\fB>\fR' for \s-2XDB\s+2, and `\fB>\fR' or
-`\fIthread\fB[\fIdepth\fB]\fR' for \s-2JDB\s+2.  You can use arbitrary
-debugger commands; use the \s-2\fBRETURN\fR\s+2 key to enter them.
+prompt\fR\(em\&that is, `\fB(gdb)\fR' for \s-1GDB\s+1, `\fB(dbx)\fR'
+for \s-1DBX\s+1, `\fB>\fR' for \s-1XDB\s+1, and `\fB>\fR' or
+`\fIthread\fB[\fIdepth\fB]\fR' for \s-1JDB\s+1.  You can use arbitrary
+debugger commands; use the \s-1\fBRETURN\fR\s+1 key to enter them.
 .PP
 .PSPIC @srcdir@/PICS/ddd-console.ps 15.3cm
 .PP
@@ -1765,13 +1756,13 @@ You can \fIsearch\fR for previous commands by pressing `\fBCtrl+B\fR'.
 This invokes \fIincremental search mode,\fR where you can enter a
 string to be searched in previous commands.  Press `\fBCtrl+B\fR'
 again to repeat the search, or `\fBCtrl+F\fR' to search in the reverse
-direction.  To return to normal mode, press \s-2\fBESC\fR\s+2, or use
+direction.  To return to normal mode, press \s-1\fBESC\fR\s+1, or use
 any cursor command.
 .PP
 .PSPIC @srcdir@/PICS/ddd-history.ps 15.3cm
 .PP
-Using \s-2GDB\s+2, you can also \fIcomplete\fR commands and arguments
-by pressing the `\s-2\fBTAB\fR\s+2' key; pressing the `\s-2\fBTAB\fR\s+2'
+Using \s-1GDB\s+1, you can also \fIcomplete\fR commands and arguments
+by pressing the `\s-1\fBTAB\fR\s+1' key; pressing the `\s-1\fBTAB\fR\s+1'
 key multiple times shows one possible expansion after the other.
 .PP
 Here are some of the most frequently needed debugger commands.
@@ -1819,11 +1810,11 @@ Show information about the command \c
 \&, or general usage information.
 .TP
 .B quit
-Exit \s-2GDB\s+2 (and \s-2@DDD@\s+2).
+Exit \s-1GDB\s+1 (and \s-1@DDD@\s+1).
 .PP
-For full details on \s-2GDB\s+2 commands, see \c
+For full details on \s-1GDB\s+1 commands, see \c
 .I 
-Using \s-2GDB\s+2: A Guide to the \s-2GNU\s+2 Source-Level Debugger\c
+Using \s-1GDB\s+1: A Guide to the \s-1GNU\s+1 Source-Level Debugger\c
 \&, by Richard M. Stallman and Roland H. Pesch.  
 The same text is available online as the \c
 .B gdb\c
@@ -1882,9 +1873,9 @@ Show information about the command \c
 \&, or general usage information.
 .TP
 .B quit
-Exit \s-2DBX\s+2 (and \s-2@DDD@\s+2).
+Exit \s-1DBX\s+1 (and \s-1@DDD@\s+1).
 .PP
-For full details on \s-2DBX\s+2 commands, see the \s-2DBX\s+2
+For full details on \s-1DBX\s+1 commands, see the \s-1DBX\s+1
 documentation.
 .\"
 .SS "Common XDB commands"
@@ -1935,9 +1926,9 @@ Show information about the command \c
 \&, or general usage information.
 .TP
 .B q
-Exit \s-2XDB\s+2 (and \s-2@DDD@\s+2).
+Exit \s-1XDB\s+1 (and \s-1@DDD@\s+1).
 .PP
-For full details on \s-2XDB\s+2 commands, see the \s-2XDB\s+2
+For full details on \s-1XDB\s+1 commands, see the \s-1XDB\s+1
 documentation.
 .\"
 .SS "Common JDB commands"
@@ -1982,9 +1973,9 @@ method calls in the line.
 Show general usage information.
 .TP
 .B quit
-Exit \s-2JDB\s+2 (and \s-2@DDD@\s+2).
+Exit \s-1JDB\s+1 (and \s-1@DDD@\s+1).
 .PP
-For full details on \s-2JDB\s+2 commands, see the \s-2JDB\s+2
+For full details on \s-1JDB\s+1 commands, see the \s-1JDB\s+1
 documentation.
 .\"
 .\"
@@ -1992,10 +1983,10 @@ documentation.
 .SH "CUSTOMIZING @DDD@"
 .\" ---------------
 .\"
-You can set up your personal \s-2@DDD@\s+2 preferences by using the
+You can set up your personal \s-1@DDD@\s+1 preferences by using the
 `\fBEdit | Preferences\fR' menu from the menu bar.  These preferences
-affect your running \s-2@DDD@\s+2 process only, unless you save these
-preferences for a later \s-2@DDD@\s+2 invocation.  Frequently used
+affect your running \s-1@DDD@\s+1 process only, unless you save these
+preferences for a later \s-1@DDD@\s+1 invocation.  Frequently used
 preferences can also be found in the individual menus.
 .\"
 .SS "Frequently Used Preferences"
@@ -2005,42 +1996,42 @@ This is useful for programs that have special terminal requirements
 not provided by the debugger window, as raw keyboard processing or
 terminal control sequences.
 .PP
-By default, \s-2@DDD@\s+2 finds only complete words.  This is
+By default, \s-1@DDD@\s+1 finds only complete words.  This is
 convenient for clicking on an identifier in the source text and search
 for exactly this identifier.  If you want to find all occurrences,
 including word parts, unset `\fBSource | Find Words Only\fR'.
 .PP
-By default, \s-2@DDD@\s+2 find is case-sensitive.  This is convenient
+By default, \s-1@DDD@\s+1 find is case-sensitive.  This is convenient
 for case-sensitive programming languages.  If you want to find all
 occurrences, regardless of case, unset `\fBSource | Find Case
 Sensitive\fR'.
 .PP
 If you wish to display machine code of selected functions, set
-`\fBSource | Display Machine Code\fR'.  This makes \s-2@DDD@\s+2 run
+`\fBSource | Display Machine Code\fR'.  This makes \s-1@DDD@\s+1 run
 a little slower, so it is disabled by default.
 .PP
-Through `\fBEdit | Preferences\fR', you can set up more \s-2@DDD@\s+2
+Through `\fBEdit | Preferences\fR', you can set up more \s-1@DDD@\s+1
 preferences, which are discussed here.
 .\"
 .\"
 .SS "General Preferences"
 .PP
-By default, when you move the pointer over a button, \s-2@DDD@\s+2
-gives a hint on the button's meaning in a small window.  Experienced
-users may find these \fIbutton tips\fR disturbing; this is why you
-can disable them by unsetting the `\fBAutomatic display of button
-hints as popup tips\fR' option.
+By default, when you move the pointer over a button, \s-1@DDD@\s+1
+gives a hint on the button's meaning in a small window.  This feature
+is known as \fIbutton tips\fR (also known as \fItool tips\fR or
+\fIballoon help\fR).  Experienced users may find these hints
+disturbing; this is why you can disable them by unsetting the
+`\fBAutomatic display of button hints as popup tips\fR' option.
 .PP
-.PSPIC @srcdir@/PICS/disclaimer.ps 15.3cm
 .PSPIC @srcdir@/PICS/ddd-general-prefs.ps 15.3cm
 .PP
 The button hints are also displayed in the status line.  Disabling
 hints in status line (by unsetting the `\fBAutomatic display of button
 hints in the status line\fR' option) and disabling button tips as well
-makes \s-2@DDD@\s+2 run slightly faster.
+makes \s-1@DDD@\s+1 run slightly faster.
 .PP
 By default, when you move the pointer over a variable in the source
-code, \s-2@DDD@\s+2 displays the variable value in a small window.
+code, \s-1@DDD@\s+1 displays the variable value in a small window.
 Users may find these \fIvalue tips\fR disturbing; this is why you can
 disable them by unsetting the `\fBAutomatic display of variable
 values as popup tips\fR' option.
@@ -2048,35 +2039,35 @@ values as popup tips\fR' option.
 The variable values are also displayed in the status line.  Disabling
 variable values in status line (by unsetting the `\fBAutomatic display
 of variable values in the status line\fR' option) and disabling value
-tips as well will make \s-2@DDD@\s+2 run slightly faster.
+tips as well will make \s-1@DDD@\s+1 run slightly faster.
 .PP
-If you want to use \s-2\fBTAB\fR\s+2 key completion in all text
-windows, set the `\s-2\fBTAB\fR\s+2 \fBkey completes in all windows\fR'
+If you want to use \s-1\fBTAB\fR\s+1 key completion in all text
+windows, set the `\s-1\fBTAB\fR\s+1 \fBkey completes in all windows\fR'
 option.  This is useful if you have pointer-driven keyboard focus (see
-below) and no special usage for the \s-2\fBTAB\fR\s+2 key.  Otherwise,
-the \s-2\fBTAB\fR\s+2 key completes in the debugger console only.
+below) and no special usage for the \s-1\fBTAB\fR\s+1 key.  Otherwise,
+the \s-1\fBTAB\fR\s+1 key completes in the debugger console only.
 .PP
-If you frequently switch between \s-2@DDD@\s+2 and other multi-window
+If you frequently switch between \s-1@DDD@\s+1 and other multi-window
 applications, you may like to set the `\fBIconify all windows at
-once\fR' option.  This way, all \s-2@DDD@\s+2 windows are iconified
+once\fR' option.  This way, all \s-1@DDD@\s+1 windows are iconified
 and deiconified as a group.
 .PP
-If you want to keep \s-2@DDD@\s+2 off your desktop during a longer
+If you want to keep \s-1@DDD@\s+1 off your desktop during a longer
 computation, you may like to set the `\fBUniconify when ready\fR'
-option.  This way, you can iconify \s-2@DDD@\s+2 while it is busy on a
-command (e.g. running a program); \s-2@DDD@\s+2 will automatically pop
+option.  This way, you can iconify \s-1@DDD@\s+1 while it is busy on a
+command (e.g. running a program); \s-1@DDD@\s+1 will automatically pop
 up again after becoming ready (e.g. after the debugged program has
 stopped at a breakpoint).
 .PP
 If you are bothered by X warnings, you can suppress them by setting
 the `\fBSuppress X warnings\fR' option.
 .PP
-When debugging a modal X application, \s-2@DDD@\s+2 may interrupt it
+When debugging a modal X application, \s-1@DDD@\s+1 may interrupt it
 while it has grabbed the pointer, making further interaction
 impossible.  If the `\fBContinue automatically when mouse pointer is
-frozen\fR' option is set, \s-2@DDD@\s+2 will check after each
+frozen\fR' option is set, \s-1@DDD@\s+1 will check after each
 interaction whether the pointer is grabbed.  If this is so,
-\s-2@DDD@\s+2 will continue the debugged program such that you can
+\s-1@DDD@\s+1 will continue the debugged program such that you can
 continue to use your display.
 .PP
 The `\fBReset\fR' button restores the most recently saved preferences.
@@ -2084,56 +2075,66 @@ The `\fBReset\fR' button restores the most recently saved preferences.
 .SS "Source Preferences"
 .PP
 In the source text, the current execution position and breakpoints are
-indicated by symbols (\*(lqglyphs\*(rq).  As an alternative, \s-2@DDD@\s+2
+indicated by symbols (\*(lqglyphs\*(rq).  As an alternative, \s-1@DDD@\s+1
 can also indicate these positions using text characters.  If you wish
 to disable glyphs, unset the `\fBUse Glyphs\fR' option.  This also
-makes \s-2@DDD@\s+2 run slightly faster, especially when scrolling.
+makes \s-1@DDD@\s+1 run slightly faster, especially when scrolling.
 .PP
 .PSPIC @srcdir@/PICS/ddd-source-prefs.ps 15.3cm
 .PP
-In contrast to previous releases, \s-2@DDD@\s+2 2.2 and later do not
-display line numbers in the source code.  If you want to see each
-source line prefixed with its respective number, set the `\fBDisplay
-source line numbers\fR' option.
+\s-1@DDD@\s+1 can locate the tool buttons in the command tool
+(`\fBCommand Tool\fR') or in a \fIcommand tool bar\fR above the
+program source (`\fBSource Window\fR').  Pick your choice.
 .PP
-By default, \s-2@DDD@\s+2 finds only complete words.  This is
+Some \s-1DBX\s+1 and \s-1XDB\s+1 variants do not properly handle paths
+in source file specifications.  If you want the inferior debugger to
+refer to source locations by source base names only, unset the `\fBRefer
+to sources by full path name\fR' option.
+.PP
+By default, \s-1@DDD@\s+1 finds only complete words.  This is
 convenient for clicking on an identifier in the source text and search
 for exactly this identifier.  If you want to find all occurrences,
 including word parts, unset `\fBFind words only\fR'.
 .PP
-By default, \s-2@DDD@\s+2 find is case-sensitive.  This is convenient
+By default, \s-1@DDD@\s+1 find is case-sensitive.  This is convenient
 for case-sensitive programming languages.  If you want to find all
 occurrences, regardless of case, unset `\fBFind case sensitive\fR'.
 .PP
-By default, \s-2@DDD@\s+2 caches source files in memory.  This is
+By default, \s-1@DDD@\s+1 caches source files in memory.  This is
 convenient for remote debugging, since remote file access may be slow.
 If you want to reduce memory usage, unset the `\fBCache source
 files\fR' option.
 .PP
-By default, \s-2@DDD@\s+2 caches machine code in memory.  This is bad
+By default, \s-1@DDD@\s+1 caches machine code in memory.  This is bad
 for memory usage, but convenient for speed, since disassembling a
 function each time it is reached may take time.  If you want to reduce
 memory usage, unset the `\fBCache machine code\fR' option.
-.PP
-Some \s-2DBX\s+2 and \s-2XDB\s+2 variants do not properly handle paths
-in source file specifications.  If you want the inferior debugger to
-refer to source locations by source base names only, unset the `\fBRefer
-to sources by full path name\fR' option.
 .PP
 If your source code uses a tab width different from \fB8\fR (the
 default), you can set an alternate width using the `\fBTab width\fR'
 slider.
 .PP
+You can instruct \s-1@DDD@\s+1 to indent the source code, leaving more
+room for breakpoints and execution glyphs.  This is done using the
+`\fBSource indentation\fR' slider.  The default value is \fB0\fR for
+no indentation at all.  If the source indentation is \fB5\fR or
+higher, \s-1@DDD@\s+1 will also show line numbers.
+.PP
+Finally, you can instruct \s-1@DDD@\s+1 to indent the machine code,
+leaving room for breakpoints and execution glyphs.  This is done using
+the `\fBMachine code indentation\fR' slider.  The default value is
+\fB4\fR.
+.PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
 .SS "Data Preferences"
 .PP
-If you want \s-2@DDD@\s+2 to detect aliases, set the `\fBDetect
-Aliases\fR' option.  Note that alias detection makes \s-2@DDD@\s+2 run
+If you want \s-1@DDD@\s+1 to detect aliases, set the `\fBDetect
+Aliases\fR' option.  Note that alias detection makes \s-1@DDD@\s+1 run
 slower.  See `\fBExamining Shared Data Structures\fR', above, for
 details on alias detection.
 .PP
-By default, \s-2@DDD@\s+2 displays two-dimensional arrays as tables,
+By default, \s-1@DDD@\s+1 displays two-dimensional arrays as tables,
 aligning the array elements in rows and columns.  If you prefer
 viewing two-dimensional arrays as nested one-dimensional arrays, you
 can disable the `\fBDisplay two-dimensional arrays as tables\fR'
@@ -2165,69 +2166,152 @@ If you change one of the resources in this panel, the change will not
 take effect immediately.  Instead, you can
 .IP \(bu 2
 save options (using `\fBEdit\fR' | `\fBSave Options\fR') to make the
-change effective for future \s-2@DDD@\s+2 sessions,
-.IP
-or restart \s-2@DDD@\s+2 (using `\fBFile\fR' | `\fBRestart DDD\fR') to
-make it effective for the restarted \s-2@DDD@\s+2 session.
+change effective for future \s-1@DDD@\s+1 sessions,
+.IP \(bu 2
+or restart \s-1@DDD@\s+1 (using `\fBFile\fR' | `\fBRestart
+\s-1DDD\s+1\fR') to make it effective for the restarted \s-1@DDD@\s+1
+session.
 .PP
-By default, \s-2@DDD@\s+2 stacks commands, source, and data in one
+After having made changes in the panel, \s-1@DDD@\s+1 will
+automatically offer you to restart itself, such that you can see the
+changes taking effect.  Note that even after restarting, you still
+must save options to make the changes permanent.
+.PP
+By default, \s-1@DDD@\s+1 stacks commands, source, and data in one
 single top-level window.  To have separate top-level windows for
 source, data, and debugger console, set the `\fBWindow Layout\fR'
 option to `\fBSeparate Windows\fR'.  See also the
 `\fB\-\-attach-windows\fR' and `\fB\-\-separate-windows\fR' options,
 below.
 .PP
-The \s-2@DDD@\s+2 tool bar buttons can be displayed using \fBImages\fR,
-showing a small symbol for each action, and/or \fBCaptions\fR, showing
-the action name below the image.  If neither of these two is set,
-tool bar buttons are labeled like other buttons (with the exception of
-the common tool bar, which never shows ordinary labels).
+To cut, copy, and paste text, \s-1@DDD@\s+1 supports two types of key
+bindings, each in accordance with a specific style guide.
+.TP
+.B "\s-1KDE\s+1-style bindings"
+This binds the Cut/Copy/Paste operations to
+\fBCtrl+X\fR/\fBCtrl+C\fR/\fBCtrl+V\fR.  These key bindings are
+conformant to the \s-1KDE\s+1 style guide.  Note that this means that
+\fBCtrl+C\fR no longer interrupts the debuggee; use \fBCtrl+G\fR
+instead.
+.TP
+.B "Motif-style bindings"
+This (default) setting binds Cut/Copy/Paste to
+\fBShift+Del\fR/\fBCtrl+Ins\fR/\fBShift+Ins\fR.  This is conformant to
+the Motif style guide.
 .PP
-\s-2@DDD@\s+2 can locate the tool buttons in the command tool
-(`\fBcommand tool\fR') or in a \fIcommand tool bar\fR above the
-program source (`\fBsource window\fR').  Pick your choice.
+The \s-1@DDD@\s+1 tool bar buttons can appear in a variety of styles:
+.TP
+.B "Images"
+This lets each toolbar button show an image illustrating the action.
+.TP
+.B "Captions"
+This shows the action name below the image.
 .PP
-By default, \s-2@DDD@\s+2 directs keyboard input to the item your
+The default is to have images as well as captions, but you can choose
+to have only images (saving space) or only captions.  If neither of
+these two options is set, tool bar buttons are labeled like other
+buttons, as in \s-1@DDD@\s+1 2.x (with the exception of the common tool
+bar, which never shows ordinary labels).
+.PP
+If you enable `\fBFlat\fR' buttons (default), the border of toolbar
+buttons will appear only if the mouse pointer is over them.  This
+latest-and-greatest \s-1GUI\s+1 invention can be disabled, such that
+the button border is always shown.
+.PP
+If you enable `\fBColor\fR' buttons, toolbar images will be colored.
+Don't expect too much\(em\&even color toolbar images have a large
+amount of grey.
+.PP
+By default, \s-1@DDD@\s+1 directs keyboard input to the item your
 mouse pointer points at.  If you prefer a click-to-type keyboard focus
 (that is, click on an item to make it accept keyboard input), set the
 `\fBKeyboard Focus\fR' option on `\fBClick to Type\fR'.
 .PP
-By default, \s-2@DDD@\s+2 uses Motif scroll bars to scroll the data
+By default, \s-1@DDD@\s+1 uses Motif scroll bars to scroll the data
 window.  Many people find this inconvenient, since you can scroll in
 the horizontal or vertical direction only.  As an alternative,
-\s-2@DDD@\s+2 provides a panner (a kind of two-dimensional scroll bar).
+\s-1@DDD@\s+1 provides a panner (a kind of two-dimensional scroll bar).
 This is much more comfortable, but may be incompatible with your Motif
-toolkit.  To set up \s-2@DDD@\s+2 such that it uses panners by
+toolkit.  To set up \s-1@DDD@\s+1 such that it uses panners by
 default, set the `\fBData Scrolling\fR' option to `\fBPanner\fR'.
-This change takes only effect after you have saved options and
-restarted \s-2@DDD@\s+2.  See also the `\fB\-\-panned-graph-editor\fR' and
+See also the `\fB\-\-panned-graph-editor\fR' and
 `\fB\-\-scrolled-graph-editor\fR' options, below.
 .PP
 .PSPIC @srcdir@/PICS/ddd-startup-prefs.ps 15.3cm
 .PP
-By default, \s-2@DDD@\s+2 runs with \s-2GDB\s+2 as inferior debugger.
+By default, \s-1@DDD@\s+1 runs with \s-1GDB\s+1 as inferior debugger.
 To change this default, set the `\fBDebugger Type\fR' option to
-another debugger.  This change takes only effect after you have saved
-options and restarted \s-2@DDD@\s+2.  See also the `\fB\-\-gdb\fR',
-`\fB\-\-dbx\fR', `\fB\-\-xdb\fR', and `\fB\-\-jdb\fR' options, below.
+another debugger.  See also the `\fB\-\-gdb\fR', `\fB\-\-dbx\fR',
+`\fB\-\-xdb\fR', and `\fB\-\-jdb\fR' options, below.
 .PP
-If you want the \s-2@DDD@\s+2 splash screen shown upon startup, you
-can select between different versions.  The `\fBColor\fR' version is
-the nicest, but requires several color cells.  The `\fBGrey\fR'
-version requires some grey color cells, which are also used by
-\s-2@DDD@\s+2.  The `\fBGrey4\fR' version needs no additional color
-cells.  Selecting `\fBNone\fR' disables the splash screen completely.
+If you want the \s-1@DDD@\s+1 splash screen shown upon startup, enable 
+`\fBDDD Splash Screen\fR'.
+.PP
+If you want the \s-1@DDD@\s+1 tips of the day displayed upon startup,
+enable `\fBTip of the Day\fR'.
 .PP
 The `\fBReset\fR' button restores the most recently saved preferences.
 .\"
+.SS "Fonts"
+.\"
+You can configure the basic \s-1@DDD@\s+1 fonts at run-time.  Each
+font is specified using two members:
+.IP \(bu 2
+The \fIfont family\fR is an X font specifications, where the initial
+'\fIFoundry\fB-\fR' specification may be omitted, as well as any
+specification after `\fIFamily\fR'.  Thus, a pair
+`\fIfamily\fB\-\fIweight\fR' usually suffices.
+.IP \(bu 2
+The \fIfont size\fR is given as (resolution-independent) 1\(f/10 points.
+.PP
+The `\fBBrowse\fR' button opens a font selection program, where you
+can select fonts and attributes interactively.  Clicking `\fBquit\fR'
+or `\fBselect\fR' in the font selector causes all non-default values
+to be transferred to the \s-1@DDD@\s+1 font preferences panel.
+.PP
+.PSPIC @srcdir@/PICS/ddd-font-prefs.ps 15.3cm
+.PP
+The following fonts can be set using the preferences panel:
+.TP
+.B "Default Font"
+The default \s-1@DDD@\s+1 font to use for labels, menus, and buttons.
+Default value is `\fBhelvetica-bold\fR'.
+.TP
+.B "Variable Width"
+The variable width \s-1@DDD@\s+1 font to use for help texts and messages.
+Default value is `\fBhelvetica-medium\fR'.
+.TP
+.B "Fixed Width"
+The fixed width \s-1@DDD@\s+1 font to use for source code, the
+debugger console, text fields, data displays, and the execution
+window.
+Default value is `\fBlucidatypewriter-medium\fR'.
+.PP
+Just like startup preferences, changes in this panel will not take
+effect immediately.  Instead, you can
+.IP \(bu 2
+save options (using `\fBEdit\fR' | `\fBSave Options\fR') to make the
+change effective for future \s-1@DDD@\s+1 sessions,
+.IP \(bu 2
+or restart \s-1@DDD@\s+1 (using `\fBFile\fR' | `\fBRestart
+\s-1DDD\s+1\fR') to make it effective for the restarted \s-1@DDD@\s+1
+session.
+.PP
+After having made changes in the panel, \s-1@DDD@\s+1 will
+automatically offer you to restart itself, such that you can see the
+changes taking effect.  Note that even after restarting, you still
+must save options to make the changes permanent.
+.PP
+The `\fBReset\fR' button restores the most recently saved preferences.
+.\" 
 .SS "Helpers"
 .\"
-\s-2@DDD@\s+2 relies on some external applications (called
+\s-1@DDD@\s+1 relies on some external applications (called
 \fIhelpers\fR) for specific tasks.  Through the `\fBHelpers\fR' panel,
 you can choose and customize these applications.
 .PP
 In `\fBEdit Sources\fR', you can select an X editor to be invoked via
-the \s-2@DDD@\s+2 `\fBEdit\fR' button.  `\fB@FILE@\fR' is replaced by
+the \s-1@DDD@\s+1 `\fBEdit\fR' button.  `\fB@FILE@\fR' is replaced by
 the current file name; `\fB@LINE@\fR' is replaced by the current line.
 Typical values include `\fBxedit @FILE@\fR' or `\fBgnuclient +@LINE@
 @FILE@\fR'.  See also the `\fBeditCommand\fR' resource, below.
@@ -2236,7 +2320,7 @@ In `\fBGet Core File\fR', you can enter a command to get a core file
 from a running process.  `\fB@FILE@\fR' is replaced by the name of the
 target core file; `\fB@PID@\fR' is replaced by the process ID.  A
 typical value is `\fBgcore -o @FILE@ @PID@\fR'.  If you don't have an
-appropriate command, leave this value empty: \s-2DDD\s+2 will then
+appropriate command, leave this value empty: \s-1DDD\s+1 will then
 kill the debuggee in order to get a core file.  See also the
 `\fBgetCoreCommand\fR' resource, below.
 .PP
@@ -2246,24 +2330,25 @@ Attach to Process\fR' dialog.  See also the `\fBpsCommand\fR'
 resource, below.
 .PP
 In `\fBExecution Window\fR', you can enter a command to start a 
-terminal emulator.  To this command, \s-2@DDD@\s+2 appends Bourne
+terminal emulator.  To this command, \s-1@DDD@\s+1 appends Bourne
 shell commands to be executed within the execution window.  A simple
-value is `\fBxterm -e /bin/sh -c\fR'.  See also the `\fBtermCommand\fR'
+value is `\fBxterm \-e /bin/sh \-c\fR'.  See also the `\fBtermCommand\fR'
 resource, below.
 .PP
 .PSPIC @srcdir@/PICS/ddd-helpers.ps 15.3cm
 .PP
-`\fBUncompress\fR' is the uncompression command used by \s-2@DDD@\s+2
-to uncompress the \s-2@DDD@\s+2 license and manual pages.  The
+`\fBUncompress\fR' is the uncompression command used by \s-1@DDD@\s+1
+to uncompress the \s-1@DDD@\s+1 license and manual pages.  The
 uncompression command should be invoked such that it reads from
 standard input and writes to standard output.  A typical value is
-`\fBgunzip -c\fR'.  See also the `\fBuncompressCommand\fR' resource,
+`\fBgunzip \-c\fR'.  See also the `\fBuncompressCommand\fR' resource,
 below.
 .PP
-Finally, `\fBWeb Browser\fR' is the command to invoke a \s-2WWW\s+2
-browser for the \s-2@DDD@\s+2 \s-2WWW\s+2 page.  `\fB@URL@\fR' is
-replaced by the URL to be shown.  A simple value is `\fBnetscape
-@URL@\fR'.  See also the `\fBwwwCommand\fR' resource, below.
+Finally, `\fBWeb Browser\fR' is the command to invoke a \s-1WWW\s+1
+browser for the \s-1@DDD@\s+1 \s-1WWW\s+1 page.  `\fB@URL@\fR' is
+replaced by the \s-1URL\s+1 (web page) to be shown.  A simple value is
+`\fBnetscape @URL@\fR'.  See also the `\fBwwwCommand\fR' resource,
+below.
 .\"
 .\"
 .SS "Saving Options"
@@ -2275,7 +2360,7 @@ will be saved in `\fB$HOME/.@ddd@/sessions/\fIsession\fB/init\fR' instead.
 .\"
 .SS "Other Customizations"
 .\"
-Other personal \s-2@DDD@\s+2 resources can also be set in your
+Other personal \s-1@DDD@\s+1 resources can also be set in your
 `\fB.@ddd@/init\fR' file.  See the `\fBRESOURCES\fR' section, below.
 .PP
 The inferior debugger can be customized via `\fBEdit |
@@ -2287,25 +2372,25 @@ Settings\fR'.  See the `\fBDEBUGGER SETTINGS\fR' section, below.
 .SH "DEBUGGER SETTINGS"
 .\" ---------------
 .\"
-If you use \s-2GDB\s+2 (or some \s-2DBX\s+2 flavor) as inferior
+If you use \s-1GDB\s+1 (or some \s-1DBX\s+1 flavor) as inferior
 debugger, you can change its settings using `\fBEdit | Settings\fR'.
 Using the settings editor, you can determine whether C++ names are to
 be demangled, how many array elements are to print, and so on.
 .PP
 The capabilities of the settings editor depend on the capabilities of
-your inferior debugger\(em\&that is, your \s-2GDB\s+2 or \s-2DBX\s+2
+your inferior debugger\(em\&that is, your \s-1GDB\s+1 or \s-1DBX\s+1
 version.  Clicking on `\fB?\fR' gives an an explanation on the
-specific item; the \s-2GDB\s+2 documentation gives more details.
+specific item; the \s-1GDB\s+1 documentation gives more details.
 .PP
 Clicking on `\fBReset\fR' restores the most recently saved settings.
 .PP
 Some debugger settings are insensitive and cannot be changed, because
-doing so would endanger \s-2@DDD@\s+2 operation.  See the
+doing so would endanger \s-1@DDD@\s+1 operation.  See the
 `\fBgdbInitCommands\fR' and `\fBdbxInitCommands\fR' resources for
 details.
 .PP
 All debugger settings (except source and object paths) 
-are saved with \s-2@DDD@\s+2 options.
+are saved with \s-1@DDD@\s+1 options.
 .PP
 .PSPIC @srcdir@/PICS/ddd-settings.ps 15.3cm
 .\"
@@ -2314,103 +2399,156 @@ are saved with \s-2@DDD@\s+2 options.
 .SH "USER-DEFINED ACTIONS"
 .\" ---------------
 .\"
-.SS "Defining Commands"
-.\"
-If your debugger allows you to define own command sequences, you can
-also use these \fIuser-defined commands\fR within \s-2@DDD@\s+2; just
-enter them at the debugger prompt.  However, you may encounter some
-problems:
-.IP \(bu 2
-In contrast to the well-documented commands of the inferior debugger, 
-\s-2@DDD@\s+2 does not know what your specific command does.  This may 
-lead to inconsistencies between \s-2@DDD@\s+2 and the inferior
-debugger.  For instance, if your own command `\fBbp\fR' sets a
-breakpoint, \s-2@DDD@\s+2 may not display it immediately, because
-\s-2@DDD@\s+2 does not know that `\fBbp\fR' changes the breakpoint
-state.
-.br
-.IP \(bu 2
-You cannot use \s-2@DDD@\s+2 \fBgraph\fR commands within user-defined
-commands.  This is only natural, because user-defined commands are
-interpreted by the inferior debugger, which does not know about
-\s-2@DDD@\s+2 commands.
-.PP
-As a solution, \s-2@DDD@\s+2 provides a simple facility called
-\fIauto-commands\fR.  If \s-2@DDD@\s+2 receives any output from the
-inferior debugger in the form `\fB@ddd@: \fIcommand\fR', it will
-interpret \fIcommand\fR as if it had been entered at the debugger
-prompt.
-.PP
-Suppose you want to define a \s-2GDB\s+2 command `\fBgd\fR' that
-serves as abbreviation for `\fBgraph display\fR'.  All \fBgd\fR
-has to do is to issue a string
-.br
-.sp
-  \fBddd: graph display \fIargument\fR
-.sp
-.br
-where \fIargument\fR is the argument given to `\fBgd\fR'.  In
-\s-2GDB\s+2, this can be achieved using the \fBecho\fR command.  In
-your \fB$HOME/.gdbinit\fR file, insert the lines
-.br
-.sp
-  \fBdefine gd
-    echo ddd: graph display $arg0\\n
-  end\fR
-.sp
-.br
-To complete the setting, you must also set the
-`\fBautoCommandPrefix\fR' resource to the `\fBddd: \fR' prefix you
-gave in your command.  In `\fB$HOME/.ddd/init\fR', write:
-.br
-.sp
-  \fBDdd*autoCommandPrefix: ddd:\\ 
-.sp
-.br
-Be sure to leave a space after the trailing backslash.
-.PP
-Entering \fBdispfoo\fR will now have the same effect as entering
-\fBgraph display foo\fR at the debugger prompt.
-.PP
-Note: In your commands, you should choose some other prefix than
-`\fBddd: \fR'.  This is because auto-commands raise a security
-problem, since arbitrary commands can be executed.  Just imagine some
-malicious program issuing a string like `\fB\fIprefix\fR shell rm -fr
-$HOME\fR' when being debugged!  As a consequence, be sure to choose
-your own \fIprefix\fR; it must be at least three characters long.
-.PP
-If you do not define a prefix, it is created dynamically by
-\s-2@DDD@\s+2, and used to set up breakpoint commands.
-.\"
 .SS "Defining Buttons"
 .\"
 To facilitate interaction, you can add own command buttons to
-\s-2@DDD@\s+2.  These buttons can be added below the debugger console
+\s-1@DDD@\s+1.  These buttons can be added below the debugger console
 (`\fBConsole Buttons\fR'), the source window (`\fBSource Buttons\fR'),
 or the data window (`\fBData Buttons\fR').
 .PP
 To define individual buttons, use the \fIButton Editor\fR, invoked via
 `\fBCommands | Edit Buttons\fR'.  The button editor displays a text,
 where each line contains the command for exactly one button.  Clicking
-on `\fBApply\fR' creates the appropriate buttons from the text.  If
-the text is empty (the default), no button is created.
+on `\fBOK\fR' creates the appropriate buttons from the text.  If the
+text is empty (the default), no button is created.
 .PP
 As a simple example, assume you want to create a `\fBprint i\fR'
 button.  Invoke `\fBCommands | Edit Buttons\fR' and enter a line
 saying `\fBprint i\fR' in the button editor.  Then click on
-`\fBApply\fR'.  A button named `\fBPrint i\fR' will now appear below
-the debugger console\(em\&try it!  To remove the button, clear the
-`\fBprint i\fR' line and press `\fBApply\fR' again.
+`\fBOK\fR'.  A button named `\fBPrint i\fR' will now appear below the
+debugger console\(em\&try it!  To remove the button, reopen the button
+editor, clear the `\fBprint i\fR' line and press `\fBOK\fR' again.
 .PP
-By default, \s-2@DDD@\s+2 disables buttons whose commands are not
+By default, \s-1@DDD@\s+1 disables buttons whose commands are not
 supported by the inferior debugger.  To enable such buttons, unset the
 `\fBEnable supported buttons only\fR' toggle in the button editor.
 .PP
-\s-2@DDD@\s+2 also allows you to specify control sequences and special
+.PSPIC @srcdir@/PICS/ddd-button-editor.ps 15.3cm
+.PP
+\s-1@DDD@\s+1 also allows you to specify control sequences and special
 labels for user-defined buttons.  See the examples in `\fBUser-defined
 Buttons\fR' in the `\fBRESOURCES\fR' section, below.
+.\"
+.SS "Defining Commands with GDB"
+.\"
+Aside from breakpoint commands (see `\fBBreakpoint commands\fR',
+above), \s-1@DDD@\s+1 also allows you to store sequences of commands
+as a user-defined \s-1GDB\s+1 command.  A \fIuser-defined command\fR
+is a sequence of \s-1GDB\s+1 commands to which you assign a new name
+as a command.  Using \s-1@DDD@\s+1, this is done via the \fICommand
+Editor\fR, invoked via `\fBCommands | Define Command\fR'.
 .PP
-.PSPIC @srcdir@/PICS/ddd-button-editor.ps 15.3cm
+.PSPIC @srcdir@/PICS/ddd-define-command.ps 15.3cm
+.PP
+A \s-1GDB\s+1 command is created in three steps:
+.IP \(bu 2
+Enter the name of the command in the `\fBCommand\fR' field.  Use the
+drop-down list on the right to select from already defined commands.
+.IP \(bu 2
+Click on `\fBRecord\fR' to begin the recording of the command sequence.
+.IP \(bu 2
+Now interact with \s-1DDD\s+1.  While recording, \s-1DDD\s+1 does not
+execute commands, but simply records them to be executed when the
+breakpoint is hit.  The recorded debugger commands are shown in the
+debugger console.
+.IP \(bu 2
+To stop the recording, click on `\fBEnd\fR' or enter `\fBend\fR' at
+the \s-1GDB\s+1 prompt.  To \fIcancel\fR the recording, click on
+`\fBInterrupt\fR' or press \fBCtrl+G\fR.
+.IP \(bu 2
+Click on `\fBEdit \s-1>>\s+1\fR' to edit the recorded commands.
+When done with editing, click on `\fBEdit \s-1<<\s+1\fR' to close the
+commands editor.
+.PP
+After the command is defined, you can enter it at the \s-1GDB\s+1
+prompt.  You may also click on `\fBApply\fR' to apply the given
+user-defined command.
+.PP
+For convenience, you can assign a button to the defined command.
+Enabling one of the `\fBButton\fR' locations will add a button with
+the given command to the specified location.  If you want to edit the
+button, select `\fBCommands | Edit Buttons\fR'; see also `\fBDefining
+Buttons\fR', above.
+.PP
+When user-defined \s-1GDB\s+1 commands are executed, the commands of
+the definition are not printed.  An error in any command stops
+execution of the user-defined command.
+.PP
+If used interactively, commands that would ask for confirmation
+proceed without asking when used inside a user-defined command.  Many
+\s-1GDB\s+1 commands that normally print messages to say what they are
+doing omit the messages when used in a user-defined command.
+.\" .PP
+.\" \s-1@DDD@\s+1 commands that are part of \s-1GDB\s+1 command
+.\" definitions are realized transparently as \fIauto-commands\fR; see the
+.\" next section for a discussion.
+.\"
+.\"
+.SS "Defining Commands with DBX, XDB and JDB"
+.\"
+If your \s-1DBX\s+1, \s-1XDB\s+1, or \s-1JDB\s+1 debugger allows you
+to define own command sequences, you can also use these user-defined
+commands within \s-1@DDD@\s+1; just enter them at the debugger prompt.
+.PP
+However, you may encounter some problems:
+.IP \(bu 2
+In contrast to the well-documented commands of the inferior debugger,
+\s-1@DDD@\s+1 does not know what a user-defined command does.  This
+may lead to inconsistencies between \s-1@DDD@\s+1 and the inferior
+debugger.  For instance, if your the user-defined command `\fBbp\fR'
+sets a breakpoint, \s-1@DDD@\s+1 may not display it immediately,
+because \s-1@DDD@\s+1 does not know that `\fBbp\fR' changes the
+breakpoint state.
+.IP \(bu 2
+You cannot use \s-1@DDD@\s+1 \fBgraph\fR commands within user-defined
+commands.  This is only natural, because user-defined commands are
+interpreted by the inferior debugger, which does not know about
+\s-1@DDD@\s+1 commands.
+.PP
+As a solution, \s-1@DDD@\s+1 provides a simple facility called
+\fIauto-commands\fR.  If \s-1@DDD@\s+1 receives any output from the
+inferior debugger in the form `\fIprefix\fR \fIcommand\fR', it will
+interpret \fIcommand\fR as if it had been entered at the debugger
+prompt.  \fIprefix\fR is a user-defined string, for example `\fB@ddd@:
+\fR'.
+.PP
+Suppose you want to define a command `\fBgd\fR' that serves as
+abbreviation for `\fBgraph display\fR'.  All the command \fBgd\fR has
+to do is to issue a string
+.br
+.sp
+  \fB@ddd@: graph display \fIargument\fR
+.sp
+.br
+where \fIargument\fR is the argument given to `\fBgd\fR'.  Using
+\s-1GDB\s+1, this can be achieved using the \fBecho\fR command.  In
+your \fB$HOME/.gdbinit\fR file, insert the lines
+.br
+.sp
+  \fBdefine gd
+    echo @ddd@: graph display $arg0\\n
+  end\fR
+.sp
+.br
+To complete the setting, you must also set the
+`\fBautoCommandPrefix\fR' resource to the `\fB@ddd@: \fR' prefix you
+gave in your command.  In `\fB$HOME/.ddd/init\fR', write:
+.br
+.sp
+  \fBDdd*autoCommandPrefix: @ddd@:\\ \fR
+.sp
+.br
+(Be sure to leave a space after the trailing backslash.)
+.PP
+Entering `\fBgd foo\fR' will now have the same effect as entering
+`\fBgraph display foo\fR' at the debugger prompt.
+.PP
+Please note: In your commands, you should choose some other prefix
+than `\fB@ddd@: \fR'.  This is because auto-commands raise a security
+problem, since arbitrary commands can be executed.  Just imagine some
+malicious program issuing a string like `\fIprefix\fB shell rm -fr
+$HOME\fR' when being debugged!  As a consequence, be sure to choose
+your own \fIprefix\fR; it must be at least three characters long.
 .\"
 .\"
 .\"
@@ -2419,45 +2557,46 @@ Buttons\fR' in the `\fBRESOURCES\fR' section, below.
 .SH "QUITTING @DDD@"
 .\" ---------------
 .\"
-To exit \s-2@DDD@\s+2, select `\fBFile | Exit\fR'.  You may also type
-the `\fBquit\fR' command at the debugger prompt.  \s-2GDB\s+2 and
-\s-2XDB\s+2 also accept the `\fBq\fR' command or an end-of-file
-character (usually \fBCtrl+D\fR).
+To exit \s-1@DDD@\s+1, select `\fBFile | Exit\fR'.  You may also type
+the `\fBquit\fR' command at the debugger prompt or press \fBCtrl+Q\fR.
+\s-1GDB\s+1 and \s-1XDB\s+1 also accept the `\fBq\fR' command or an
+end-of-file character (usually \fBCtrl+D\fR).  Closing the last
+\s-1@DDD@\s+1 window will also exit \s-1@DDD@\s+1.
 .PP
 An interrupt (\fBCtrl+G\fR or \fBInterrupt\fR) does not exit from
-\s-2@DDD@\s+2, but rather terminates the action of any debugger
+\s-1@DDD@\s+1, but rather terminates the action of any debugger
 command that is in progress and returns to the debugger command level.
 It is safe to type the interrupt character at any time because the
 debugger does not allow it to take effect until a time when it is
 safe.
 .PP
 In case an ordinary interrupt does not succeed, you can also use an
-abort (\fBCtrl+\\\fR or \fBAbort\fR), which sends a \s-2QUIT\s+2
+abort (\fBCtrl+\\\fR or \fBAbort\fR), which sends a \s-1QUIT\s+1
 signal to the inferior debugger.  Use this in emergencies only; the
 inferior debugger may be left inconsistent or even exit after a
-\s-2QUIT\s+2 signal.
+\s-1QUIT\s+1 signal.
 .PP
-As a last resort\(em\&if \s-2@DDD@\s+2 hangs, for example\(em\&, you
-may also interrupt \s-2@DDD@\s+2 itself using an interrupt signal
-(\s-2SIGINT\s+2).  This can be done by typing the interrupt character
-(usually \fBCtrl+C\fR) in the shell \s-2@DDD@\s+2 was started from, or
-by using the \s-2UNIX\s+2 `\fBkill\fR' command.  An interrupt signal
-interrupts any \s-2@DDD@\s+2 action; the inferior debugger is
+As a last resort\(em\&if \s-1@DDD@\s+1 hangs, for example\(em\&, you
+may also interrupt \s-1@DDD@\s+1 itself using an interrupt signal
+(\s-1SIGINT\s+1).  This can be done by typing the interrupt character
+(usually \fBCtrl+C\fR) in the shell \s-1@DDD@\s+1 was started from, or
+by using the \s-1UNIX\s+1 `\fBkill\fR' command.  An interrupt signal
+interrupts any \s-1@DDD@\s+1 action; the inferior debugger is
 interrupted as well.  Since this interrupt signal can result in
 internal inconsistencies, use this as a last resort in emergencies
-only; save your work as soon as possible and restart \s-2@DDD@\s+2.
+only; save your work as soon as possible and restart \s-1@DDD@\s+1.
 .\"
 .\"
 .\" ---------------
 .SH "PERSISTENT SESSIONS"
 .\" ---------------
 .\"
-Note: Persistent sessions are supported with \s-2GDB\s+2 running on
-the local machine only.  Support for other \s-2DBX\s+2, \s-2XDB\s+2,
-and \s-2JDB\s+2 is partially implemented; your mileage may vary.
+Note: Persistent sessions are supported with \s-1GDB\s+1 running on
+the local machine only.  Support for other \s-1DBX\s+1, \s-1XDB\s+1,
+and \s-1JDB\s+1 is partially implemented; your mileage may vary.
 .PP
-If you want to interrupt your current \s-2@DDD@\s+2 session, you can
-save its entire \s-2@DDD@\s+2 state in a file and restore it later.
+If you want to interrupt your current \s-1@DDD@\s+1 session, you can
+save its entire \s-1@DDD@\s+1 state in a file and restore it later.
 .\"
 .SS "Saving Sessions"
 To save a session, select `\fBFile | Save Session As\fR'.  You will 
@@ -2474,10 +2613,8 @@ the current execution position.
 After clicking on `\fBSave\fR', the session is saved in 
 `\fB$HOME/.@ddd@/sessions/\fIsession\fR'.
 .PP
-.PSPIC @srcdir@/PICS/ddd-save-session.ps 15.3cm
-.PP
 After saving the current state as a session, the session becomes
-\fIactive\fR.  This means that \s-2@DDD@\s+2 state will be saved 
+\fIactive\fR.  This means that \s-1@DDD@\s+1 state will be saved 
 as session defaults:
 .br
 .IP \(bu 2
@@ -2485,7 +2622,7 @@ User options will be saved in
 `\fB$HOME/.@ddd@/sessions/\fIsession\fB/init\fR' instead of
 `\fB$HOME/.@ddd@/init\fR'; see `\fBSaving Options\fR', below, for details.
 .IP \(bu 2
-The \s-2@DDD@\s+2 command history will be saved in
+The \s-1@DDD@\s+1 command history will be saved in
 `\fB$HOME/.@ddd@/sessions/\fIsession\fB/history\fR' instead of
 `\fB$HOME/.@ddd@/history\fR'; see `\fBEntering Commands\fR', above, for
 details.
@@ -2493,27 +2630,30 @@ details.
 To make the current session inactive, open the \fIdefault session\fR
 named `\fB[None]\fR'; see below for details on opening sessions.
 .PP
-If a core file is to be included in the session, \s-2@DDD@\s+2 uses
-the `\fBgcore\fR' command specified in `\fBEdit | Preferences |
-Helpers | Get Core File\fR'.  Since `\fBgcore\fR' automatically
-resumes debuggee execution, and since some time may elapse until
-\s-2@DDD@\s+2 can stop the debuggee again, the current execution
-position may change after saving state.  If you do not want this,
-leave the entry in `\fBEdit | Preferences | Helpers | Get Core
-File\fR' empty.
+.PSPIC @srcdir@/PICS/ddd-save-session.ps 15.3cm
 .PP
-If no `\fBgcore\fR' command is specified, \s-2@DDD@\s+2 must kill the
-debugged program in order to get a core file.  This means that you
-cannot resume program execution after saving a session.
+If your program is running, or if you have opened a core file,
+\s-1@DDD@\s+1 can include a core file in the session such that the
+debuggee data will be restored when re-opening it.  To get a core
+file, \s-1@DDD@\s+1 typically must kill the debuggee.  This means that
+you cannot resume program execution after saving a session.  Depending
+on your architecture, other options for getting a core file may also
+be available.
+.PP
+If a core file is \fInot\fR to be included in the session, \s-1DDD\s+1
+data displays are saved as \fIdeferred\fR; that is, they will be
+restored as soon as program execution reaches the scope in which they
+were created.
+.\"
 .\"
 .SS "Opening Sessions"
 To resume a previously saved session, select `\fBFile | Open
 Session\fR' and choose a session name from the list.  After clicking
-on `\fBOpen\fR', the entire \s-2@DDD@\s+2 state will be restored from
+on `\fBOpen\fR', the entire \s-1@DDD@\s+1 state will be restored from
 the given session.
 .PP
 The session named `\fB[None]\fR' is the \fIdefault session\fR which is
-active when starting \s-2@DDD@\s+2.  To save options for default
+active when starting \s-1@DDD@\s+1.  To save options for default
 sessions, open the default session and save options; see `\fBSaving
 Options\fR' below for details.
 .PP
@@ -2534,7 +2674,7 @@ want to delete and click on `\fBDelete\fR'.
 The default session cannot be deleted.
 .\"
 .SS "Starting @DDD@ with a Session"
-To start-up \s-2@DDD@\s+2 with a given session named \fIsession\fR
+To start-up \s-1@DDD@\s+1 with a given session named \fIsession\fR
 instead of the default session, use
 .sp
 .br
@@ -2558,45 +2698,45 @@ session.
 .SH "INTEGRATING @DDD@"
 .\" ---------------
 .\"
-You can run \s-2@DDD@\s+2 as an inferior debugger in other debugger
+You can run \s-1@DDD@\s+1 as an inferior debugger in other debugger
 front-ends, combining their special abilities with those of
-\s-2@DDD@\s+2.
+\s-1@DDD@\s+1.
 .\"
 .SS "General Information"
 .\"
-To have \s-2@DDD@\s+2 run as an inferior debugger in other front-ends,
+To have \s-1@DDD@\s+1 run as an inferior debugger in other front-ends,
 set up your debugger front-end such that `\fB@ddd@ \-\-tty\fR' is
-invoked instead of the inferior debugger.  When \s-2@DDD@\s+2 is
+invoked instead of the inferior debugger.  When \s-1@DDD@\s+1 is
 invoked using the `\fB\-\-tty\fR' option, it enables its
-\fI\s-2TTY\s+2 interface\fR, taking additional debugger commands from
+\fI\s-1TTY\s+1 interface\fR, taking additional debugger commands from
 standard input and forwarding debugger output to standard output, just
 as if the inferior debugger had been invoked directly.  All remaining
-\s-2@DDD@\s+2 functionality stays unchanged.
+\s-1@DDD@\s+1 functionality stays unchanged.
 .PP
-In case your debugger front-end uses the \s-2GDB\s+2
-`\fB\-fullname\fR' option to have \s-2GDB\s+2 report source code
-positions, the `\fB\-\-tty\fR' option is not required.  \s-2@DDD@\s+2
+In case your debugger front-end uses the \s-1GDB\s+1
+`\fB\-fullname\fR' option to have \s-1GDB\s+1 report source code
+positions, the `\fB\-\-tty\fR' option is not required.  \s-1@DDD@\s+1
 recognizes the `\fB\-fullname\fR' option, finds that it has been
 invoked from a debugger front-end and automatically enables
-the \s-2TTY\s+2 interface.
+the \s-1TTY\s+1 interface.
 .PP
 You may also invoke `\fB@ddd@ \-\-tty\fR' directly, entering
-\s-2@DDD@\s+2 commands from your \s-2TTY\s+2, or use \s-2@DDD@\s+2 as
+\s-1@DDD@\s+1 commands from your \s-1TTY\s+1, or use \s-1@DDD@\s+1 as
 the end of a pipe, controlled by a remote program.  Be aware, however,
-that the \s-2TTY\s+2 interface does not support line editing and
-command completion and that \s-2@DDD@\s+2 exits as soon as it detects
-an \s-2EOF\s+2 condition on its standard input.  Also, do not try to
-run \s-2@DDD@\s+2 with \s-2@DDD@\s+2 as inferior debugger.
+that the \s-1TTY\s+1 interface does not support line editing and
+command completion and that \s-1@DDD@\s+1 exits as soon as it detects
+an \s-1EOF\s+1 condition on its standard input.  Also, do not try to
+run \s-1@DDD@\s+1 with \s-1@DDD@\s+1 as inferior debugger.
 .PP
-Using \s-2@DDD@\s+2 in \s-2TTY\s+2 mode automatically disables some
-\s-2@DDD@\s+2 windows, because it is assumed that their facilities are 
+Using \s-1@DDD@\s+1 in \s-1TTY\s+1 mode automatically disables some
+\s-1@DDD@\s+1 windows, because it is assumed that their facilities are 
 provided by the remote program:
 .IP \(bu 2 
-If \s-2@DDD@\s+2 is invoked with the `\fB\-\-tty\fR' option, the
+If \s-1@DDD@\s+1 is invoked with the `\fB\-\-tty\fR' option, the
 debugger console is initially disabled, as its facilities are supposed
 to be provided by the integrating front-end.
 .IP \(bu 2
-If \s-2@DDD@\s+2 is invoked with the `\fB\-fullname\fR' option, the
+If \s-1@DDD@\s+1 is invoked with the `\fB\-fullname\fR' option, the
 debugger console and the source window are initially disabled, as their
 facilities are supposed to be provided by the integrating front-end.
 .PP
@@ -2615,8 +2755,8 @@ program to be debugged.  Proceed as usual.
 .\"
 Set the variable \fBgdb-command-name\fR to \fB"ddd"\fR, by inserting
 the following line in your \fB$HOME/.emacs\fR file or evaluating it by
-pressing \s-2\fBESC\fR\s+2 \s-2\fB:\fR\s+2\fR (\s-2\fBESC\fR\s+2
-\s-2\fBESC\fR\s+2 for XEmacs 19.13 and earlier):
+pressing \s-1\fBESC\fR\s+1 \s-1\fB:\fR\s+1\fR (\s-1\fBESC\fR\s+1
+\s-1\fBESC\fR\s+1 for XEmacs 19.13 and earlier):
 .br
 .sp
   \fB(setq gdb-command-name "@ddd@")\fR
@@ -2638,49 +2778,50 @@ Invoke \fBxxgdb\fR as
 .SH "USING @DDD@ WITH LESSTIF"
 .\" ---------------
 .\"
-\s-2@DDD@\s+2 2.1.1 and later include a number of hacks that make
-\s-2@DDD@\s+2 run with \fILessTif,\fR a free Motif clone, without loss
-of functionality.  Since a \s-2@DDD@\s+2 binary may be dynamically
+\s-1@DDD@\s+1 2.1.1 and later include a number of hacks that make
+\s-1@DDD@\s+1 run with \fILessTif,\fR a free Motif clone, without loss
+of functionality.  Since a \s-1@DDD@\s+1 binary may be dynamically
 bound and used with either an OSF/Motif or LessTif library, these
-hacks can be enabled and disabled at run time.
+\fIlesstif hacks\fR can be enabled and disabled at run time.
 .PP
-Whether the hacks are included at run-time depends on the setting of
-the `\fBlessTifVersion\fR' resource.  `\fBlessTifVersion\fR' indicates
-the LessTif version against which \s-2@DDD@\s+2 is linked.  For
-LessTif version \fIx.y\fR, its value is \fIx\fR multiplied by 1000
-plus \fIy\fR\(em\&for instance, the value \fB95\fR stands for LessTif
-0.95 and the value \fB1000\fR stands for LessTif 1.0.  To specify the
-version number of the LessTif library at \s-2@DDD@\s+2 invocation, you
-can also use the option `\fB\-\-lesstif-version\fR \fIversion\fR'.
+Whether the \fIlesstif hacks\fR are included at run-time depends on
+the setting of the `\fBlessTifVersion\fR' resource.
+`\fBlessTifVersion\fR' indicates the LessTif version against which
+\s-1@DDD@\s+1 is linked.  For LessTif version \fIx.y\fR, its value is
+\fIx\fR multiplied by 1000 plus \fIy\fR\(em\&for instance, the value
+\fB95\fR stands for LessTif 0.95 and the value \fB1000\fR stands for
+LessTif 1.0.  To specify the version number of the LessTif library at
+\s-1@DDD@\s+1 invocation, you can also use the option
+`\fB\-\-lesstif-version\fR \fIversion\fR'.
 .PP
 The default value of the `\fBlessTifVersion\fR' resource is derived
-from the LessTif library \s-2@DDD@\s+2 was compiled against (or
+from the LessTif library \s-1@DDD@\s+1 was compiled against (or
 \fB1000\fR when compiled against OSF/Motif).  Hence, you normally
 don't need to worry about the value of this resource.  However, if you
-use a dynamically linked \s-2@DDD@\s+2 binary with a library other
-than the one \s-2@DDD@\s+2 was compiled against, you must specify the
+use a dynamically linked \s-1@DDD@\s+1 binary with a library other
+than the one \s-1@DDD@\s+1 was compiled against, you must specify the
 version number of the library using this resource.  (Unfortunately,
-\s-2@DDD@\s+2 cannot detect this at run-time.)
+\s-1@DDD@\s+1 cannot detect this at run-time.)
 .PP
 Here are a few scenarios to illustrate this scheme:
 .IP \(bu 2
-Your \s-2@DDD@\s+2 binary was compiled against OSF/Motif, but you use
-a LessTif 0.81 dynamic library instead.  Invoke \s-2@DDD@\s+2 with
-`\fB\-\-lesstif-version 81\fR'.
+Your \s-1@DDD@\s+1 binary was compiled against OSF/Motif, but you use
+a LessTif 0.85 dynamic library instead.  Invoke \s-1@DDD@\s+1 with
+`\fB\-\-lesstif-version 85\fR'.
 .IP \(bu 2
-Your \s-2@DDD@\s+2 binary was compiled against LessTif, but you use
-a OSF/Motif dynamic library instead.    Invoke \s-2@DDD@\s+2 with
+Your \s-1@DDD@\s+1 binary was compiled against LessTif, but you use
+a OSF/Motif dynamic library instead.    Invoke \s-1@DDD@\s+1 with
 `\fB\-\-lesstif-version 1000\fR'.
 .IP \(bu 2
-Your \s-2@DDD@\s+2 binary was compiled against LessTif 0.81, and you
-have upgraded to LessTif 0.90.  Invoke \s-2@DDD@\s+2 with
+Your \s-1@DDD@\s+1 binary was compiled against LessTif 0.85, and you
+have upgraded to LessTif 0.90.  Invoke \s-1@DDD@\s+1 with
 `\fB\-\-lesstif-version 90\fR'.
 .PP
-To find out the LessTif or OSF/Motif version \s-2@DDD@\s+2 was
-compiled against, invoke \s-2@DDD@\s+2 with the
+To find out the LessTif or OSF/Motif version \s-1@DDD@\s+1 was
+compiled against, invoke \s-1@DDD@\s+1 with the
 `\fB\-\-configuration\fR' option.
 .PP
-In the \s-2@DDD@\s+2 source, LessTif-specific hacks are controlled by
+In the \s-1@DDD@\s+1 source, LessTif-specific hacks are controlled by
 the string `\fBlesstif_version\fR'.
 .\"
 .\"
@@ -2689,8 +2830,8 @@ the string `\fBlesstif_version\fR'.
 .\" ---------------
 .\"
 It is possible to have the inferior debugger run on a remote
-\s-2UNIX\s+2 host.  This is useful when the remote host has a slow
-network connection or when \s-2@DDD@\s+2 is available on the local
+\s-1UNIX\s+1 host.  This is useful when the remote host has a slow
+network connection or when \s-1@DDD@\s+1 is available on the local
 host only.
 .PP
 Furthermore, the inferior debugger may support debugging a program on
@@ -2703,10 +2844,10 @@ enough to run a full-featured debugger.
 .SS "Using @DDD@ with a Remote Debugger"
 .\"
 In order to run the inferior debugger on a remote host, you need
-`\fBremsh\fR' (called `\fBrsh\fR' on \s-2BSD\s+2 systems) access on
+`\fBremsh\fR' (called `\fBrsh\fR' on \s-1BSD\s+1 systems) access on
 the remote host.
 .PP
-To run the debugger on a remote host \fIhostname\fR, invoke \s-2@DDD@\s+2 as
+To run the debugger on a remote host \fIhostname\fR, invoke \s-1@DDD@\s+1 as
 .sp
 .br
   \fB@ddd@\ \-\-host \fIhostname\fB \fIremote-program\fR
@@ -2736,26 +2877,26 @@ remote core files.  Also, be sure to specify a remote process id when
 debugging a running program.
 .br
 .IP \(bu 2
-The remote debugger is started non-interactively.  Some \s-2DBX\s+2
+The remote debugger is started non-interactively.  Some \s-1DBX\s+1
 versions have trouble with this.  If you don't get a prompt from the
 remote debugger, use the `\fB\-\-rhost\fR' option instead of
 `\fB\-\-host\fR'.  This will invoke the remote debugger via an
 interactive shell on the remote host, which may lead to better
 results.
 .br
-Note: using `\fB\-\-rhost\fR', \s-2@DDD@\s+2 invokes the inferior
+Note: using `\fB\-\-rhost\fR', \s-1@DDD@\s+1 invokes the inferior
 debugger as soon as a shell prompt appears.  The first output on the
 remote host ending in a space character or `\fB>\fR' and not followed
 by a newline is assumed to be a shell prompt.  If necessary, adjust
 your shell prompt on the remote host.
 .br
 .IP \(bu 2
-To run the remote program, \s-2@DDD@\s+2 invokes an `\fBxterm\fR' terminal
+To run the remote program, \s-1@DDD@\s+1 invokes an `\fBxterm\fR' terminal
 emulator on the remote host, giving your current `\fBDISPLAY\fR'
 environment variable as address.  If the remote host cannot invoke
 `\fBxterm\fR', or does not have access to your X display, start
-\s-2@DDD@\s+2 with the `\fB\-\-no-exec-window\fR' option.  The program
-input/output will then go through the \s-2@DDD@\s+2 debugger console.
+\s-1@DDD@\s+1 with the `\fB\-\-no-exec-window\fR' option.  The program
+input/output will then go through the \s-1@DDD@\s+1 debugger console.
 .br
 .IP \(bu 2
 In remote mode, all sources are loaded from the remote host; file
@@ -2763,25 +2904,25 @@ dialogs scan remote directories.  This may result in somewhat slower
 operation than normal.
 .br
 .IP \(bu 2
-To help you find problems due to remote execution, run \s-2@DDD@\s+2
+To help you find problems due to remote execution, run \s-1@DDD@\s+1
 with the `\fB\-\-trace\fR' option.  This prints the shell commands
-issued by \s-2@DDD@\s+2 on standard error.
+issued by \s-1@DDD@\s+1 on standard error.
 .\"
 .\"
 .SS "Using @DDD@ with a Remote Program"
 .\"
-The \s-2GDB\s+2 debugger allows you to run the \fIdebugged program\fR
-on a remote machine (called \fIremote target\fR), while \s-2GDB\s+2
+The \s-1GDB\s+1 debugger allows you to run the \fIdebugged program\fR
+on a remote machine (called \fIremote target\fR), while \s-1GDB\s+1
 runs on the local machine.
 .PP
-The section `\fBRemote debugging\fR' in the \s-2GDB\s+2 documentation
+The section `\fBRemote debugging\fR' in the \s-1GDB\s+1 documentation
 contains all the details.  Basically, the following steps are required:
 .IP \(bu 2
 Transfer the executable to the remote target.
 .IP \(bu 2
 Start `\fBgdbserver\fR' on the remote target.
 .IP \(bu 2
-Start \s-2@DDD@\s+2 using \s-2GDB\s+2 on the local machine, and load the same
+Start \s-1@DDD@\s+1 using \s-1GDB\s+1 on the local machine, and load the same
 executable using the '\fBfile\fR' command.
 .IP \(bu 2
 Attach to the remote `\fBgdbserver\fR' using the '\fBtarget remote\fR'
@@ -2790,8 +2931,8 @@ command.
 The local `\fB.gdbinit\fR' file is useful for setting up directory
 search paths, etc.
 .PP
-Of course, you can also combine \s-2@DDD@\s+2 remote mode and
-\s-2GDB\s+2 remote mode, running \s-2@DDD@\s+2, \s-2GDB\s+2, and the
+Of course, you can also combine \s-1@DDD@\s+1 remote mode and
+\s-1GDB\s+1 remote mode, running \s-1@DDD@\s+1, \s-1GDB\s+1, and the
 debugged program each on a different machine.
 .\"
 .\"
@@ -2803,12 +2944,12 @@ Sometimes, you may require to debug programs with root privileges, but
 without actually logging in as root.  This is usually done by
 installing the debugger \fIsetuid root\fR, that is, having the
 debugger run with root privileges.  For security reasons, you cannot
-install \s-2@DDD@\s+2 as a setuid program; \s-2@DDD@\s+2 invokes shell
+install \s-1@DDD@\s+1 as a setuid program; \s-1@DDD@\s+1 invokes shell
 commands and even shell scripts, such that all known problems of
-setuid shell scripts apply.  Instead, you should invoke \s-2@DDD@\s+2
+setuid shell scripts apply.  Instead, you should invoke \s-1@DDD@\s+1
 such that a \fIsetuid\fR copy of the inferior debugger is used.
 .PP
-Here is an example.  Have a \fIsetuid root\fR copy of \s-2GDB\s+2
+Here is an example.  Have a \fIsetuid root\fR copy of \s-1GDB\s+1
 installed as `\fBrootgdb\fR'.  Then invoke
 .sp
 .br
@@ -2826,23 +2967,23 @@ invoking user, you should give it very limited access.
 .SH "RESOURCES"
 .\" ---------------
 .\"
-\s-2@DDD@\s+2 understands all of the core X Toolkit resource names and
-classes.  The following resources are specific to \s-2@DDD@\s+2.
+\s-1@DDD@\s+1 understands all of the core X Toolkit resource names and
+classes.  The following resources are specific to \s-1@DDD@\s+1.
 .\"
 .\"
 .SS "Setting @DDD@ Fonts"
 .\"
-\s-2@DDD@\s+2 uses the following resources to set up its fonts:
+\s-1@DDD@\s+1 uses the following resources to set up its fonts:
 .TP
 .B "defaultFont (\fPclass\fR Font)"
-The default \s-2@DDD@\s+2 font to use for labels, menus, buttons, etc.
+The default \s-1@DDD@\s+1 font to use for labels, menus, buttons, etc.
 The font is specified as an X font spec, where the initial
 '\fIFoundry\fB-\fR' specification may be omitted, as well as any
 specification after `\fIFamily\fR'.
 Default value is `\fBhelvetica-bold\fR'.
 .sp
 .br
-To set the default \s-2@DDD@\s+2 font to, say,
+To set the default \s-1@DDD@\s+1 font to, say,
 \fBhelvetica medium\fR, insert a line
 .sp
 .br
@@ -2852,20 +2993,20 @@ To set the default \s-2@DDD@\s+2 font to, say,
 in your `\fB$HOME/.@ddd@/init\fR' file.
 .TP
 .B "defaultFontSize  (\fPclass\fR FontSize)"
-The size of the default \s-2@DDD@\s+2 font, in 1/10 points.  This
+The size of the default \s-1@DDD@\s+1 font, in 1\(f/10 points.  This
 resource overrides any font size specification in the
 `\fBdefaultFont\fR' resource (see above).  The default value is
 \fB120\fR for a 12.0 point font.
 .TP
 .B "variableWidthFont (\fPclass\fR Font)"
-The variable width \s-2@DDD@\s+2 font to use for help texts and messages.
+The variable width \s-1@DDD@\s+1 font to use for help texts and messages.
 The font is specified as an X font spec, where the initial
 '\fIFoundry\fB-\fR' specification may be omitted, as well as any
 specification after `\fIFamily\fR'.
 Defaults to `\fBhelvetica-medium-r\fR'.
 .sp
 .br
-To set the variable width \s-2@DDD@\s+2 font family to, say,
+To set the variable width \s-1@DDD@\s+1 font family to, say,
 \fBtimes\fR, insert a line
 .sp
 .br
@@ -2875,13 +3016,13 @@ To set the variable width \s-2@DDD@\s+2 font family to, say,
 in your `\fB$HOME/.@ddd@/init\fR' file.
 .TP
 .B "variableWidthFontSize  (\fPclass\fR FontSize)"
-The size of the variable width \s-2@DDD@\s+2 font, in 1/10 points.
+The size of the variable width \s-1@DDD@\s+1 font, in 1\(f/10 points.
 This resource overrides any font size specification in the
 `\fBvariableWidthFont\fR' resource (see above).  The default value is
 \fB120\fR for a 12.0 point font.
 .TP
 .B "fixedWidthFont (\fPclass\fR Font)"
-The fixed width \s-2@DDD@\s+2 font to use for source code, the
+The fixed width \s-1@DDD@\s+1 font to use for source code, the
 debugger console, text fields, data displays, and the execution
 window.
 The font is specified as an X font spec, where the initial
@@ -2890,7 +3031,7 @@ specification after `\fIFamily\fR'.
 Defaults to `\fBlucidatypewriter-medium\fR'.
 .sp
 .br
-To set the fixed width \s-2@DDD@\s+2 font family to, say,
+To set the fixed width \s-1@DDD@\s+1 font family to, say,
 \fBcourier\fR, insert a line
 .sp
 .br
@@ -2900,13 +3041,13 @@ To set the fixed width \s-2@DDD@\s+2 font family to, say,
 in your `\fB$HOME/.@ddd@/init\fR' file.
 .TP
 .B "fixedWidthFontSize  (\fPclass\fR FontSize)"
-The size of the fixed width \s-2@DDD@\s+2 font, in 1/10 points.  This
-resource overrides any font size specification in the
+The size of the fixed width \s-1@DDD@\s+1 font, in 1\(f/10 points.
+This resource overrides any font size specification in the
 `\fBfixedWidthFont\fR' resource (see above).  The default value is
 \fB120\fR for a 12.0 point font.
 .PP
 As all font size resources have the same class (and by default the
-same value), you can easily change the default \s-2@DDD@\s+2 font size
+same value), you can easily change the default \s-1@DDD@\s+1 font size
 to, say, 9.0 points by inserting a line
 .sp
 .br
@@ -2926,7 +3067,7 @@ application defaults file for instructions.
 .SS "Setting @DDD@ Colors"
 .\"
 .PP
-These are the most important color resources used in \s-2@DDD@\s+2:
+These are the most important color resources used in \s-1@DDD@\s+1:
 .TP 30
 .B @Ddd@*foreground:
 .B black
@@ -2973,7 +3114,7 @@ resource, below.
 .\"
 .SS "General Preferences"
 .\"
-The following resources determine \s-2@DDD@\s+2 general behavior.
+The following resources determine \s-1@DDD@\s+1 general behavior.
 .TP
 .B "buttonTips (\fPclass\fB Tips)"
 Whether button tips are enabled (`\fBon\fR', default) or
@@ -2985,16 +3126,16 @@ Whether the display of button hints in the status line is enabled
 (`\fBon\fR', default) or not (`\fBoff\fR').
 .TP
 .B "checkGrabs (\fPclass\fB CheckGrabs)"
-When debugging a modal X application, \s-2@DDD@\s+2 may interrupt it
+When debugging a modal X application, \s-1@DDD@\s+1 may interrupt it
 while it has grabbed the pointer, making further interaction
-impossible.  If this is `\fBon\fR' (default), \s-2@DDD@\s+2 will check
+impossible.  If this is `\fBon\fR' (default), \s-1@DDD@\s+1 will check
 after each interaction whether the pointer is grabbed.  If this is so,
-\s-2@DDD@\s+2 will automatically continue execution of debugged
+\s-1@DDD@\s+1 will automatically continue execution of debugged
 program.
 .TP
 .B "checkGrabDelay (\fPclass\fB CheckGrabDelay)"
 The time to wait (in ms) after a debugger command before checking for
-a grabbed pointer.  If \s-2@DDD@\s+2 sees some pointer event within
+a grabbed pointer.  If \s-1@DDD@\s+1 sees some pointer event within
 this delay, the pointer cannot be grabbed and an explicit check for a
 grabbed pointer is unnecessary.  Default is \fB5000\fR, or 5 seconds.
 .TP
@@ -3009,14 +3150,14 @@ the Motif style guide.
 .IP \(bu 2
 If this is `\fBKDE\fR', Cut/Copy/Paste is on
 \fBCtrl+X\fR/\fBCtrl+C\fR/\fBCtrl+V\fR.  This is conformant to the
-\s-2KDE\s+2 style guide.  Note that this means that \fBCtrl+C\fR no
+\s-1KDE\s+1 style guide.  Note that this means that \fBCtrl+C\fR no
 longer interrupts the debuggee; use \fBCtrl+G\fR instead.
 .RE
 .TP
 .B "globalTabCompletion (\fPclass\fB GlobalTabCompletion)"
-If this is `\fBon\fR' (default), the \s-2\fBTAB\fR\s+2 key completes
+If this is `\fBon\fR' (default), the \s-1\fBTAB\fR\s+1 key completes
 arguments in all windows.  If this is `\fBoff\fR', the
-\s-2\fBTAB\fR\s+2 key completes arguments in the debugger console
+\s-1\fBTAB\fR\s+1 key completes arguments in the debugger console
 only.
 .TP
 .B "grabAction (\fPclass\fB grabAction)"
@@ -3024,7 +3165,7 @@ The action to take after having detected a grabbed mouse pointer.
 This is a list of newline-separated commands.  Default is
 `\fBcont\fR', meaning to continue the debuggee.  Other possible
 choices include `\fBkill\fR' (killing the debuggee) or `\fBquit\fR'
-(exiting \s-2@DDD@\s+2).
+(exiting \s-1@DDD@\s+1).
 .TP
 .B "grabActionDelay (\fPclass\fB grabActionDelay)"
 The time to wait (in ms) before taking an action due to having
@@ -3033,25 +3174,25 @@ up telling the user about imminent execution of the grab action (see
 the `\fBgrabAction\fR' resource, above).  If the pointer grab is
 released within this delay, the working dialog pops down and no action 
 is taken.  This is done to exclude pointer grabs from sources other
-than the debugged program (including \s-2@DDD@\s+2).  Default is
+than the debugged program (including \s-1@DDD@\s+1).  Default is
 \fB10000\fR, or 10 seconds.
 .TP
 .B "groupIconify (\fPclass\fB GroupIconify)"
-If this is `\fBon\fR', (un)iconifying any \s-2@DDD@\s+2 window
-causes all other \s-2@DDD@\s+2 windows to (un)iconify as well.
-Default is `\fBoff\fR', meaning that each \s-2@DDD@\s+2 window can
+If this is `\fBon\fR', (un)iconifying any \s-1@DDD@\s+1 window
+causes all other \s-1@DDD@\s+1 windows to (un)iconify as well.
+Default is `\fBoff\fR', meaning that each \s-1@DDD@\s+1 window can
 be iconified on its own.
 .TP
 .B "saveHistoryOnExit (\fPclass\fB SaveHistoryOnExit)"
 If `\fBon\fR' (default), the command history is automatically saved
-when \s-2@DDD@\s+2 exits.
+when \s-1@DDD@\s+1 exits.
 .TP
 .B "splashScreen (\fPclass\fB SplashScreen)"
-If `\fBon\fR' (default), show a \s-2@DDD@\s+2 splash screen upon
+If `\fBon\fR' (default), show a \s-1@DDD@\s+1 splash screen upon
 start-up.
 .TP
 .B "splashScreenColorKey (\fPclass\fB ColorKey)"
-The color key to use for the \s-2@DDD@\s+2 splash screen.  Possible
+The color key to use for the \s-1@DDD@\s+1 splash screen.  Possible
 values include:
 .RS
 .br
@@ -3067,8 +3208,8 @@ values include:
 `\fBbest\fR' chooses the best visual available for your display.
 .br
 .PP
-Note: if \s-2@DDD@\s+2 runs on a monochrome display, or if
-\s-2@DDD@\s+2 was compiled without the \s-2XPM\s+2 library, only the
+Note: if \s-1@DDD@\s+1 runs on a monochrome display, or if
+\s-1@DDD@\s+1 was compiled without the \s-1XPM\s+1 library, only the
 monochrome version (`\fBm\fR') can be shown.
 .RE
 .TP
@@ -3090,15 +3231,15 @@ different X or Motif configuration.  By default, this is
 The tip of the day numbered \fIn\fR (a string).
 .TP
 .B "uniconifyWhenReady (\fPclass\fB UniconifyWhenReady)"
-If this is `\fBon\fR' (default), the \s-2@DDD@\s+2 windows are
-uniconified automatically whenever \s-2GDB\s+2 becomes ready.  This
-way, you can iconify \s-2@DDD@\s+2 during some longer operation and
+If this is `\fBon\fR' (default), the \s-1@DDD@\s+1 windows are
+uniconified automatically whenever \s-1GDB\s+1 becomes ready.  This
+way, you can iconify \s-1@DDD@\s+1 during some longer operation and
 have it uniconify itself as soon as the program stops.  Setting this
-to `\fBoff\fR' leaves the \s-2@DDD@\s+2 windows iconified.
+to `\fBoff\fR' leaves the \s-1@DDD@\s+1 windows iconified.
 .TP
 .B "valueTips (\fPclass\fB Tips)"
 Whether value tips are enabled (`\fBon\fR', default) or not
-(`\fBoff\fR').  Value tips affect \s-2@DDD@\s+2 performance and may
+(`\fBoff\fR').  Value tips affect \s-1@DDD@\s+1 performance and may
 be distracting for some experienced users.
 .TP
 .B "valueDocs (\fPclass\fB Docs)"
@@ -3108,7 +3249,7 @@ Whether the display of variable values in the status line is enabled
 .\"
 .SS "Source Window"
 .\"
-The following resources determine the \s-2@DDD@\s+2 source window.
+The following resources determine the \s-1@DDD@\s+1 source window.
 .TP
 .B "cacheGlyphImages (\fPclass\fB CacheMachineCode)"
 Whether to cache (share) glyph images (`\fBon\fR') or not
@@ -3120,12 +3261,12 @@ is `\fBoff\fR' for Motif 2.1 or later on Linux machines, and
 .B "cacheMachineCode (\fPclass\fB CacheMachineCode)"
 Whether to cache disassembled machine code (`\fBon\fR', default) or
 not (`\fBoff\fR').  Caching machine code requires more memory, but
-makes \s-2@DDD@\s+2 run faster.
+makes \s-1@DDD@\s+1 run faster.
 .TP
 .B "cacheSourceFiles (\fPclass\fB CacheSourceFiles)"
 Whether to cache source files (`\fBon\fR', default) or not
 (`\fBoff\fR').  Caching source files requires more memory, but makes
-\s-2@DDD@\s+2 run faster.
+\s-1@DDD@\s+1 run faster.
 .TP
 .B "disassemble (\fPclass\fB Disassemble)"
 If this is `\fBon\fR', the source code is automatically
@@ -3193,23 +3334,23 @@ The tab width used in the source window (default: \fB8\fR)
 .B "useSourcePath (\fPclass\fB UseSourcePath)"
 If this is `\fBoff\fR' (default), the inferior debugger refers to
 source code locations only by their base names.  If this is
-`\fBon\fR' (default), \s-2@DDD@\s+2 uses the full source code paths.
+`\fBon\fR' (default), \s-1@DDD@\s+1 uses the full source code paths.
 .\"
 .\"
 .SS "Window Creation and Layout"
 .\"
-The following resources determine \s-2@DDD@\s+2 window creation and
+The following resources determine \s-1@DDD@\s+1 window creation and
 layout as well as the interaction with the X window manager.
 .TP
 .B "autoRaiseTool (\fPclass\fB AutoRaiseTool)"
-If `\fBon\fR' (default), \s-2@DDD@\s+2 will always keep the command
-tool on top of other \s-2@DDD@\s+2 windows.  If this setting
+If `\fBon\fR' (default), \s-1@DDD@\s+1 will always keep the command
+tool on top of other \s-1@DDD@\s+1 windows.  If this setting
 interferes with your window manager, or if your window manager keeps
 the command tool on top anyway, set this resource to `\fBoff\fR'.
 .TP
 .B "autoRaiseMenu (\fPclass\fB AutoRaiseMenu)"
-If `\fBon\fR' (default), \s-2@DDD@\s+2 will always keep the pull down
-menu on top of the \s-2@DDD@\s+2 main window.  If this setting
+If `\fBon\fR' (default), \s-1@DDD@\s+1 will always keep the pull down
+menu on top of the \s-1@DDD@\s+1 main window.  If this setting
 interferes with your window manager, or if your window manager does
 not auto-raise windows, set this resource to `\fBoff\fR':
 .br
@@ -3219,9 +3360,9 @@ not auto-raise windows, set this resource to `\fBoff\fR':
 .br
 .TP
 .B "colorWMIcons (\fPclass\fB ColorWMIcons)"
-If `\fBon\fR' (default), \s-2@DDD@\s+2 uses multi-color icons.  If
+If `\fBon\fR' (default), \s-1@DDD@\s+1 uses multi-color icons.  If
 your window manager has trouble with multi-color icons, set this
-resource to `\fBoff\fR' and \s-2@DDD@\s+2 will use black-and-white
+resource to `\fBoff\fR' and \s-1@DDD@\s+1 will use black-and-white
 icons instead.
 .TP
 .B "decorateTool (\fPclass\fB DecorateTool)"
@@ -3236,13 +3377,13 @@ for the command tool.  However, your window manager may be configured
 not to decorate transient windows, which means that you cannot easily
 move the command tool around.
 .IP \(bu 2
-If this is `\fBon\fR', \s-2@DDD@\s+2 realizes the command tool as a
+If this is `\fBon\fR', \s-1@DDD@\s+1 realizes the command tool as a
 \fItop-level window\fR.  Such windows are always decorated by the
 window manager.  However, top-level windows are not automatically kept
 on top of other windows, such that you may wish to set the
 `\fBautoRaiseTool\fR' resource, too.
 .IP \(bu 2
-If this is `\fBauto\fR' (default), \s-2@DDD@\s+2 checks whether the
+If this is `\fBauto\fR' (default), \s-1@DDD@\s+1 checks whether the
 window manager decorates transients.  If yes, the command tool is
 realized as a transient window (as in the `\fBoff\fR' setting); if no,
 the command tool is realized as a top-level window (as in the
@@ -3283,8 +3424,8 @@ options, below.
 .TP
 .B "statusAtBottom (\fPclass\fB StatusAtBottom)"
 If `\fBon\fR' (default), the status line is placed at the bottom of
-the \s-2@DDD@\s+2 source window.  If `\fBoff\fR', the status line is
-placed at the top of the \s-2@DDD@\s+2 source window (as in DDD 1.x).
+the \s-1@DDD@\s+1 source window.  If `\fBoff\fR', the status line is
+placed at the top of the \s-1@DDD@\s+1 source window (as in \s-1DDD\s+1 1.x).
 See also the `\fB\-\-status-at-bottom\fR' and
 `\fB\-\-status-at-top\fR' options, below.
 .TP
@@ -3299,10 +3440,10 @@ movements.
 .B "transientDialogs (\fPclass\fB TransientDialogs)"
 If `\fBon\fR' (default), all dialogs are created as transient
 windows\(em\&that is, they always stay on top of the main
-\s-2@DDD@\s+2 windows, and they iconify with it.  If `\fBoff\fR', the
+\s-1@DDD@\s+1 windows, and they iconify with it.  If `\fBoff\fR', the
 important selection dialogs, such as the breakpoint and display
 editors, are created as top-level windows on their own, and may be
-obscured by the \s-2@DDD@\s+2 main windows.
+obscured by the \s-1@DDD@\s+1 main windows.
 .PP
 .\"
 .\"
@@ -3314,37 +3455,37 @@ The following resources determine the inferior debugger.
 .B "autoCommands (\fPclass\fB AutoCommands)"
 If this is `\fBon\fR' (default), each line output by the inferior
 debugger beginning with the value of the `\fBautoCommandPrefix\fR'
-resource (see below) will be interpreted as \s-2@DDD@\s+2 command and
+resource (see below) will be interpreted as \s-1@DDD@\s+1 command and
 executed.  Useful for user-defined commands; see `\fBUSER-DEFINED
 COMMANDS\fR', above.
 .TP
 .B "autoCommandPrefix (\fPclass\fB AutoCommandPrefix)"
 The prefix for auto-commands.  By default, an empty string, meaning to
-generate a new prefix for each \s-2@DDD@\s+2 session.  If this is set
-to `\fBddd: \fR', for example, each \s-2GDB\s+2 output in the form
-`\fBddd: \fIcommand\fR' will cause \s-2@DDD@\s+2 to execute
+generate a new prefix for each \s-1@DDD@\s+1 session.  If this is set
+to `\fBddd: \fR', for example, each \s-1GDB\s+1 output in the form
+`\fBddd: \fIcommand\fR' will cause \s-1@DDD@\s+1 to execute
 \fIcommand\fR.
 .TP
 .B "blockTTYInput (\fPclass\fB BlockTTYInput)"
-Whether \s-2@DDD@\s+2 should block when reading data from the inferior
+Whether \s-1@DDD@\s+1 should block when reading data from the inferior
 debugger via the pseudo-tty interface.  Some systems \fIrequire\fR
 this, such as Linux with libc 5.4.33 and earlier; set it to
 `\fBon\fR'.  Some other systems \fIprohibit\fR this, such as Linux
 with GNU libc 6 and later; set it to `\fBoff\fR'.  The value
 `\fBauto\fR' (default) will always select the \*(lqbest\*(rq choice
-(that is, the best choice known to the \s-2@DDD@\s+2 developers).
+(that is, the best choice known to the \s-1@DDD@\s+1 developers).
 .TP
 .B "dbxInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
-initially sent to \s-2DBX\s+2.  By default, it is empty.
+initially sent to \s-1DBX\s+1.  By default, it is empty.
 .br
-Do not use this resource to customize \s-2DBX\s+2; instead, use a
+Do not use this resource to customize \s-1DBX\s+1; instead, use a
 personal `\fB$HOME/.dbxinit\fR' or `\fB$HOME/.dbxrc\fR' file.  See
-your \s-2DBX\s+2 documentation for details.
+your \s-1DBX\s+1 documentation for details.
 .TP
 .B "dbxSettings (\fPclass\fB Settings)"
 This string contains a list of newline-separated commands that are
-also initially sent to \s-2DBX\s+2.  By default, it is empty.
+also initially sent to \s-1DBX\s+1.  By default, it is empty.
 .TP
 .B "debugger (\fPclass\fB Debugger)"
 The type of the inferior debugger (`\fBgdb\fR', `\fBdbx\fR',
@@ -3372,23 +3513,23 @@ option, below, and `\fBREMOTE DEBUGGING\fR', above.
 The host where the inferior debugger is to be executed; an empty
 string (default) means to use the `\fBdebuggerHost\fR' resource.  In
 contrast to `\fBdebuggerHost\fR', using this resource causes
-\s-2@DDD@\s+2 to login interactively to the remote host and invoke the
+\s-1@DDD@\s+1 to login interactively to the remote host and invoke the
 inferior debugger from the remote shell.  See also the
 `\fB\-\-rhost\fR' option, below, and `\fBREMOTE DEBUGGING\fR', above.
 .TP
 .B "fullNameMode (\fPclass\fB TTYMode)"
-If this is `\fBon\fR', \s-2@DDD@\s+2 reports the current source
-position on standard output in \s-2GDB\s+2 `\fB\-fullname\fR'
+If this is `\fBon\fR', \s-1@DDD@\s+1 reports the current source
+position on standard output in \s-1GDB\s+1 `\fB\-fullname\fR'
 format.  As a side effect, the source window is disabled by default.
 See also the `\fB\-\-fullname\fR' option, below.
 .TP
 .B "gdbInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
-initially sent to \s-2GDB\s+2.  As a side-effect, all settings
+initially sent to \s-1GDB\s+1.  As a side-effect, all settings
 specified in this resource are considered fixed and cannot be changed
-through the \s-2GDB\s+2 settings panel, unless preceded by white
+through the \s-1GDB\s+1 settings panel, unless preceded by white
 space.  By default, the `\fBgdbInitCommands\fR' resource contains some
-settings vital to \s-2@DDD@\s+2:
+settings vital to \s-1@DDD@\s+1:
 .sp
 .br
   \fB@Ddd@*gdbInitCommands: \\
@@ -3400,16 +3541,16 @@ settings vital to \s-2@DDD@\s+2:
 .sp
 While the `\fBset height\fR', `\fBset width\fR', and `\fBset
 prompt\fR' settings are fixed, the `\fBset verbose\fR' settings can be
-changed through the \s-2GDB\s+2 settings panel (although being reset
-upon each new \s-2@DDD@\s+2 invocation).
+changed through the \s-1GDB\s+1 settings panel (although being reset
+upon each new \s-1@DDD@\s+1 invocation).
 .br
-Do not use this resource to customize \s-2GDB\s+2; instead, use a
-personal `\fB$HOME/.gdbinit\fR' file.  See your \s-2GDB\s+2
+Do not use this resource to customize \s-1GDB\s+1; instead, use a
+personal `\fB$HOME/.gdbinit\fR' file.  See your \s-1GDB\s+1
 documentation for details.
 .TP
 .B "gdbSettings (\fPclass\fB Settings)"
 This string contains a list of newline-separated commands that are
-also initially sent to \s-2GDB\s+2.  Its default value is
+also initially sent to \s-1GDB\s+1.  Its default value is
 .sp
 .br
   \fB@Ddd@*gdbSettings: \\
@@ -3420,15 +3561,15 @@ This resource is used to save and restore the debugger settings.
 .TP
 .B "jdbInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
-initially sent to \s-2JDB\s+2.  By default, it is empty.
+initially sent to \s-1JDB\s+1.  By default, it is empty.
 .br
-This resource may be used to customize \s-2JDB\s+2.
+This resource may be used to customize \s-1JDB\s+1.
 .TP
 .B "jdbSettings (\fPclass\fB Settings)"
 This string contains a list of newline-separated commands that are
-also initially sent to \s-2JDB\s+2.  By default, it is empty.
+also initially sent to \s-1JDB\s+1.  By default, it is empty.
 .sp
-This resource is used by \s-2@DDD@\s+2 to save and restore \s-2JDB\s+2
+This resource is used by \s-1@DDD@\s+1 to save and restore \s-1JDB\s+1
 settings.
 .TP
 .B "questionTimeout (\fPclass\fB QuestionTimeout)"
@@ -3438,7 +3579,7 @@ Default is \fB10\fR.
 .B "rHostInitCommands (\fPclass\fB RHostInitCommands)"
 These commands are initially executed in a remote interactive
 session, using the `\fB\-\-rhost\fR' option.  By default, it sets up
-the remote terminal such that it suits \s-2@DDD@\s+2:
+the remote terminal such that it suits \s-1@DDD@\s+1:
 .sp
 .br
   \fB@Ddd@*rHostInitCommands: stty \-echo \-onlcr\fR
@@ -3454,38 +3595,38 @@ single-processor systems.  See also the `\fB\-\-sync-debugger\fR'
 option, below.
 .TP
 .B "terminateOnEOF (\fPclass\fB TerminateOnEOF)"
-If `\fBon\fR', \s-2@DDD@\s+2 terminates the inferior debugger when
-\s-2@DDD@\s+2 detects an EOF condition (that is, as soon as the
+If `\fBon\fR', \s-1@DDD@\s+1 terminates the inferior debugger when
+\s-1@DDD@\s+1 detects an EOF condition (that is, as soon as the
 inferior debugger closes its output channel).  This was the default
-behavior in \s-2@DDD@\s+2 2.x and earlier.  If `\fBoff\fR' (default),
-\s-2@DDD@\s+2 takes no special action.
+behavior in \s-1@DDD@\s+1 2.x and earlier.  If `\fBoff\fR' (default),
+\s-1@DDD@\s+1 takes no special action.
 .TP
 .B "ttyMode (\fPclass\fB TTYMode)"
-If `\fBon\fR', enable \s-2TTY\s+2 interface, taking additional
+If `\fBon\fR', enable \s-1TTY\s+1 interface, taking additional
 debugger commands from standard input and forwarding debugger output
 on standard output.  As a side effect, the debugger console is
 disabled by default.  See also the `\fB\-\-tty\fR' and
 `\fB\-\-fullname\fR' options, below.
 .TP
 .B "useTTYCommand (\fPclass\fB UseTTYCommand)"
-If `\fBon\fR', use the \s-2GDB\s+2 `\fBtty\fR' command for
+If `\fBon\fR', use the \s-1GDB\s+1 `\fBtty\fR' command for
 redirecting input/output to the separate execution window.  If
 `\fBoff\fR', use explicit redirection through shell redirection
 operators `\fB<\fR' and `\fB>\fR'.  The default is `\fBoff\fR'
 (explicit redirection), since on some systems, the `\fBtty\fR' command
-does not work properly on some \s-2GDB\s+2 versions.
+does not work properly on some \s-1GDB\s+1 versions.
 .TP
 .B "xdbInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are
-initially sent to \s-2XDB\s+2.  By default, it is empty.
+initially sent to \s-1XDB\s+1.  By default, it is empty.
 .br
-Do not use this resource to customize \s-2DBX\s+2; instead, use a
-personal `\fB$HOME/.xdbrc\fR' file.  See your \s-2XDB\s+2
+Do not use this resource to customize \s-1DBX\s+1; instead, use a
+personal `\fB$HOME/.xdbrc\fR' file.  See your \s-1XDB\s+1
 documentation for details.
 .TP
 .B "xdbSettings (\fPclass\fB Settings)"
 This string contains a list of newline-separated commands that are
-also initially sent to \s-2XDB\s+2.  By default, it is empty.
+also initially sent to \s-1XDB\s+1.  By default, it is empty.
 .PP
 .\"
 .\"
@@ -3516,7 +3657,7 @@ The geometry of the image within the button icon.  Default is
 `\fB25\(mu21\(pl2\(pl0\fR'.
 .TP
 .B "buttonColorKey (\fPclass\fB ColorKey)"
-The \s-2XPM\s+2 color key to use for buttons images.  `\fBc\fR' means
+The \s-1XPM\s+1 color key to use for buttons images.  `\fBc\fR' means
 color, `\fBg\fR' (default) means grey, and `\fBm\fR' means monochrome.
 .TP
 .B "commandToolBar (\fPclass\fB ToolBar)"
@@ -3527,9 +3668,9 @@ tool bar disables the command tool and vice versa.
 .TP
 .B "commonToolBar (\fPclass\fB ToolBar)"
 Whether the tool bar buttons should be shown in one common tool bar at the
-top of the common \s-2@DDD@\s+2 window (`\fBon\fR', default), or whether they
+top of the common \s-1@DDD@\s+1 window (`\fBon\fR', default), or whether they
 should be placed in two separate tool bars, one for data, and one for
-source operations, as in \s-2@DDD@\s+2 2.x (`\fBoff\fR').
+source operations, as in \s-1@DDD@\s+1 2.x (`\fBoff\fR').
 .TP
 .B "consoleButtons (\fPclass\fB Buttons)"
 A newline-separated list of buttons to be added under the debugger
@@ -3605,7 +3746,7 @@ The default resource value is empty\(em\&no console buttons are
 created.
 .PP
 Here are some examples to insert into your `\fB$HOME/.@ddd@/init\fR' file.
-These are the settings of \s-2@DDD@\s+2 1.x:
+These are the settings of \s-1@DDD@\s+1 1.x:
 .sp
 .br
   \fB@Ddd@*consoleButtons: Yes\\nNo\\nbreak^C\fR
@@ -3655,7 +3796,7 @@ The default resource value is empty\(em\&no source buttons are
 created.
 .PP
 Here are some example to insert into your `\fB$HOME/.@ddd@/init\fR' file.
-These are the settings of \s-2@DDD@\s+2 1.x:
+These are the settings of \s-1@DDD@\s+1 1.x:
 .sp
 .br
   \fB@Ddd@*sourceButtons: \\
@@ -3693,7 +3834,7 @@ above, and the `\fBtoolButtons\fR' resource, below.
 .B "toolbarsAtBottom (\fPclass\fB ToolbarsAtBottom)"
 Whether source and data tool bars should be placed above source and
 data, respectively (`\fBoff\fR', default), or below, as in
-\s-2@DDD@\s+2 2.x (`\fBon\fR').
+\s-1@DDD@\s+1 2.x (`\fBon\fR').
 ,TP
 .B "toolButtons (\fPclass\fB Buttons)"
 A newline-separated list of buttons to be included in the command tool
@@ -3741,20 +3882,20 @@ The following resources control the data display.
 .\"
 .TP
 .B "align2dArrays (\fPclass\fB Align2dArrays)"
-If `\fBon\fR' (default), \s-2@DDD@\s+2 lays out two-dimensional arrays
+If `\fBon\fR' (default), \s-1@DDD@\s+1 lays out two-dimensional arrays
 as tables, such that all array elements are aligned with each other.
-If `\fBoff\fR', \s-2@DDD@\s+2 treats a two-dimensional array as an
+If `\fBoff\fR', \s-1@DDD@\s+1 treats a two-dimensional array as an
 array of one-dimensional arrays, each aligned on its own.
 .TP
 .B "bumpDisplays (\fPclass\fB BumpDisplays)"
 If some display \fID\fR changes size and this resource is `\fBon\fR'
-(default), \s-2@DDD@\s+2 assigns new positions to displays below and
+(default), \s-1@DDD@\s+1 assigns new positions to displays below and
 on the right of \fID\fR such that the distance between displays
 remains constant.  If this is `\fBoff\fR', other displays are not
 rearranged.
 .TP
 .B "detectAliases (\fPclass\fB DetectAliases)"
-If `\fBon\fR', \s-2@DDD@\s+2 attempts to recognize shared data
+If `\fBon\fR', \s-1@DDD@\s+1 attempts to recognize shared data
 structures.  See `\fBExamining shared data structures\fR', above, for
 a discussion.  The default is `\fBoff\fR', meaning that shared data
 structures are not recognized.
@@ -3770,16 +3911,16 @@ activation, the string `\fB()\fR' in \fIexpression\fR is replaced by
 the name of the currently selected display.
 .TP
 .B "expandRepeatedValues (\fPclass\fB ExpandRepeatedValues)"
-\s-2GDB\s+2 can print repeated array elements as `\fIVALUE\fB
+\s-1GDB\s+1 can print repeated array elements as `\fIVALUE\fB
 <repeated \fIN\fB times>\fR'.  If `\fBexpandRepeatedValues\fR' is
-`\fBon\fR', \s-2@DDD@\s+2 will display \fIN\fR instances of
+`\fBon\fR', \s-1@DDD@\s+1 will display \fIN\fR instances of
 \fIVALUE\fR instead.  If `\fBexpandRepeatedValues\fR' is `\fBoff\fR'
-(default), \s-2@DDD@\s+2 will display \fIVALUE\fR with
+(default), \s-1@DDD@\s+1 will display \fIVALUE\fR with
 `\fB<\fIN\fB\(mu>' appended to indicate the repetition.
 .TP
 .B "hideInactiveDisplays (\fPclass\fB HideInactiveDisplays)"
 If some display gets out of scope and this resource is `\fBon\fR'
-(default), \s-2@DDD@\s+2 removes it from the data display.  If this is
+(default), \s-1@DDD@\s+1 removes it from the data display.  If this is
 `\fBoff\fR', it is simply disabled.
 .TP
 .B "labelDelimiter (\fPclass\fB LabelDelimiter)"
@@ -3805,15 +3946,15 @@ The paper size used for printing, in format \fIwidth\fR x
 \fIheight\fR.  The default is A4 format, or `\fB210mm \(mu 297mm\fR'.
 .TP
 .B "vslBaseDefs (\fPclass\fB VSLDefs)"
-A string with additional \s-2VSL\s+2 definitions that are appended to
-the builtin \s-2VSL\s+2 library.  This resource is prepended to the
-`\fBvslDefs\fR' resource below and set in the \s-2@DDD@\s+2
+A string with additional \s-1VSL\s+1 definitions that are appended to
+the builtin \s-1VSL\s+1 library.  This resource is prepended to the
+`\fBvslDefs\fR' resource below and set in the \s-1@DDD@\s+1
 application defaults file; don't change it.
 .TP
 .B "vslDefs (\fPclass\fB VSLDefs)"
-A string with additional \s-2VSL\s+2 definitions that are appended to
-the builtin \s-2VSL\s+2 library.  The default value is an empty
-string.  This resource can be used to override specific \s-2VSL\s+2
+A string with additional \s-1VSL\s+1 definitions that are appended to
+the builtin \s-1VSL\s+1 library.  The default value is an empty
+string.  This resource can be used to override specific \s-1VSL\s+1
 definitions that affect the data display.
 .RS
 .PP
@@ -3826,7 +3967,7 @@ with a new definition \fInew_def\fR is:
 \fIfunction\fB(\fIargs\fR...\fB) = \fInew_def\fB;\fR
 .br
 .sp
-The following \s-2VSL\s+2 functions are frequently used:
+The following \s-1VSL\s+1 functions are frequently used:
 .TP 10
 .B "color(\fIbox\fB, \fIforeground\fB [\|, \fIbackground\fB\|])"
 Set the \fIforeground\fR and \fIbackground\fR colors of \fIbox\fR.
@@ -3877,7 +4018,7 @@ The font size used (in pixels).  \fB0\fR (default) means to use
 \fBstdfontpoints()\fR instead.
 .TP 10
 .B "stdfontpoints()"
-The font size used (in 1/10 points).  \fB0\fR means to use
+The font size used (in 1\(f/10 points).  \fB0\fR means to use
 \fBstdfontsize()\fR instead.  Default value: \fB90\fR.
 .TP 10
 .B "stdfontweight()"
@@ -3918,17 +4059,17 @@ the `\fBvslDefs\fR' resource.
 .sp
 .TP
 .B "vslLibrary (\fPclass\fB VSLLibrary)"
-The \s-2VSL\s+2 library to use.  `\fBbuiltin\fR' (default) means to
+The \s-1VSL\s+1 library to use.  `\fBbuiltin\fR' (default) means to
 use the built-in library, any other value is used as file name.
 .TP
 .B "vslPath (\fPclass\fB VSLPath)"
-A colon-separated list of directories to search for \s-2VSL\s+2
+A colon-separated list of directories to search for \s-1VSL\s+1
 include files.  Default is `\fB.\fR', the current directory.
 .RS
 .PP
-If your \s-2@DDD@\s+2 source distribution is installed in
+If your \s-1@DDD@\s+1 source distribution is installed in
 `\fB/opt/src\fR', you can use the following settings to read the
-\s-2VSL\s+2 library from `\fB/home/joe/ddd.vsl\fR':
+\s-1VSL\s+1 library from `\fB/home/joe/ddd.vsl\fR':
 .sp
 .br
   \fB@Ddd@*vslLibrary:  /home/joe/ddd.vsl
@@ -3936,11 +4077,11 @@ If your \s-2@DDD@\s+2 source distribution is installed in
   .:/opt/src/ddd/ddd:/opt/src/ddd/vsllib\fR
 .br
 .sp
-\s-2VSL\s+2 include files referenced by `\fB/home/joe/ddd.vsl\fR' are
+\s-1VSL\s+1 include files referenced by `\fB/home/joe/ddd.vsl\fR' are
 searched first in the current directory `\fB.\fR', then in
 `\fB/opt/src/ddd/ddd/\fR', and then in `\fB/opt/src/ddd/vsllib/\fR'.
 .PP
-Instead of supplying another \s-2VSL\s+2 library, it is often easier
+Instead of supplying another \s-1VSL\s+1 library, it is often easier
 to specify some minor changes to the built-in library.  See the
 `\fBvslDefs\fR' resource, above, for details.
 .RE
@@ -3961,7 +4102,7 @@ of the last line.
 .\"
 .SS "Customizing Helpers"
 .\"
-The following resources determine external programs invoked by \s-2@DDD@\s+2.
+The following resources determine external programs invoked by \s-1@DDD@\s+1.
 .TP
 .B "editCommand (\fPclass\fB EditCommand)"
 A command string to invoke an editor on the specific file.
@@ -3993,10 +4134,10 @@ This `\fB.@ddd@/init\fR' setting invokes an editing session for an
 .TP
 .B "fontSelectCommand (\fPclass\fB FontSelectCommand)"
 A command to select from a list of fonts.  The string `\fB@FONT@\fR'
-is replaced by the current \s-2@DDD@\s+2 default font; the string
-`\fB@TYPE@\fR' is replaced by a symbolic name of the \s-2@DDD@\s+2
+is replaced by the current \s-1@DDD@\s+1 default font; the string
+`\fB@TYPE@\fR' is replaced by a symbolic name of the \s-1@DDD@\s+1
 font to edit.  The program must either place the name of the selected
-font in the \s-2PRIMARY\s+2 selection or print the selected font on
+font in the \s-1PRIMARY\s+1 selection or print the selected font on
 standard output.  A typical value is:
 .sp
 .br
@@ -4013,18 +4154,18 @@ must be written to `\fB@FILE@.@PID@\fR'.
 Leave this entry empty if you have no `\fBgcore\fR' or similar command.
 .TP
 .B "lessTifVersion (\fPclass\fB LessTifVersion)"
-Indicates the LessTif version \s-2@DDD@\s+2 is running against.  For
+Indicates the LessTif version \s-1@DDD@\s+1 is running against.  For
 LessTif version \fIx.y\fR, the value is \fIx\fR multiplied by 1000
 plus \fIy\fR\(em\&for instance, the value \fB79\fR stands for LessTif
 0.79 and the value \fB1005\fR stands for LessTif 1.5.
 .br
 If the value of this resource is less than 1000, indicating LessTif
-0.99 or earlier, \s-2@DDD@\s+2 enables version-specific hacks to make
-\s-2@DDD@\s+2 work around LessTif bugs and deficiencies.
+0.99 or earlier, \s-1@DDD@\s+1 enables version-specific hacks to make
+\s-1@DDD@\s+1 work around LessTif bugs and deficiencies.
 .br
-If \s-2@DDD@\s+2 was compiled against LessTif, the default value is
+If \s-1@DDD@\s+1 was compiled against LessTif, the default value is
 the value of the `\fBLessTifVersion\fR' macro in \fB<Xm/Xm.h>\fR.  If
-\s-2@DDD@\s+2 was compiled against OSF/Motif, the default value is
+\s-1@DDD@\s+1 was compiled against OSF/Motif, the default value is
 \fB1000\fR, disabling all LessTif-specific hacks.
 .TP
 .B "listCoreCommand (\fPclass\fB listCoreCommand)"
@@ -4083,8 +4224,8 @@ Depending on your system, useful alternate values include `\fBps
 contain a `\fBPID\fR' title, or each line must begin with a process
 ID.
 .br
-Note that the output of this command is filtered by \s-2@DDD@\s+2; a
-process is only shown if it can be attached to.  The \s-2@DDD@\s+2
+Note that the output of this command is filtered by \s-1@DDD@\s+1; a
+process is only shown if it can be attached to.  The \s-1@DDD@\s+1
 process itself as well as the process of the inferior debugger are
 suppressed, too.
 .TP
@@ -4096,7 +4237,7 @@ hosts.  Usually, `\fBremsh\fR', `\fBrsh\fR', or `\fBon\fR'.
 The command to invoke a separate tty for showing the input/output of
 the debugged program.  A Bourne shell command to run in the separate
 tty is appended to this string.  The string `\fB@FONT@\fR' is replaced
-by the name of the fixed width font used by \s-2@DDD@\s+2.  A simple
+by the name of the fixed width font used by \s-1@DDD@\s+1.  A simple
 value is
 .sp
 .br
@@ -4104,8 +4245,8 @@ value is
 .br
 .TP
 .B "uncompressCommand (\fPclass\fB UncompressCommand)"
-The command to uncompress the built-in \s-2@DDD@\s+2 manual, the
-\s-2@DDD@\s+2 license, and the \s-2@DDD@\s+2 news.  Takes a compressed
+The command to uncompress the built-in \s-1@DDD@\s+1 manual, the
+\s-1@DDD@\s+1 license, and the \s-1@DDD@\s+1 news.  Takes a compressed
 text from standard input and writes the uncompressed text to standard
 output.  The default value is `\fBgzip -d -c\fR'; typical values
 include `\fBzcat\fR' and `\fBgunzip -c\fR'.
@@ -4117,8 +4258,8 @@ variable to be passed to the debugged program.  Default:
 `\fBxterm\fR'.
 .TP
 .B "wwwCommand (\fPclass\fB WWWCommand)"
-The command to invoke a \s-2WWW\s+2 browser.  The string `\fB@URL@\fR'
-is replaced by the \s-2URL\s+2 to open.  Default is to try a running
+The command to invoke a \s-1WWW\s+1 browser.  The string `\fB@URL@\fR'
+is replaced by the \s-1URL\s+1 to open.  Default is to try a running
 Netscape first, then \fB$WWWBROWSER\fR, then to invoke a new Netscape
 process, then to let a running Emacs do the job, then to invoke
 Mosaic, then to invoke Lynx in an xterm.
@@ -4137,7 +4278,7 @@ if this fails, it starts a new \fBnetscape-4.0\fR process.
 .RE
 .TP
 .B "wwwPage (\fPclass\fB WWWPage)"
-The \s-2@DDD@\s+2 \s-2WWW\s+2 page.  Value:
+The \s-1@DDD@\s+1 \s-1WWW\s+1 page.  Value:
 .sp
 .br
   \fB@Ddd@*wwwPage: http://www.cs.tu-bs.de/softech/ddd/\fR
@@ -4148,58 +4289,58 @@ The \s-2@DDD@\s+2 \s-2WWW\s+2 page.  Value:
 .\"
 .SS "Obtaining Diagnostics"
 .\"
-The following resources are used for debugging \s-2@DDD@\s+2 and to
-obtain specific \s-2@DDD@\s+2 information.
+The following resources are used for debugging \s-1@DDD@\s+1 and to
+obtain specific \s-1@DDD@\s+1 information.
 .TP
 .B "appDefaultsVersion (\fPclass\fB Version)"
-The version of the \s-2@DDD@\s+2 app-defaults file.  If this string
-does not match the version of the current \s-2@DDD@\s+2 executable,
-\s-2@DDD@\s+2 issues a warning.
+The version of the \s-1@DDD@\s+1 app-defaults file.  If this string
+does not match the version of the current \s-1@DDD@\s+1 executable,
+\s-1@DDD@\s+1 issues a warning.
 .TP
 .B "checkConfiguration (\fPclass\fB CheckConfiguration)"
-If `\fBon\fR', check the \s-2@DDD@\s+2 environment (in particular, the
+If `\fBon\fR', check the \s-1@DDD@\s+1 environment (in particular, the
 X configuration), report any possible problem causes and exit.  See
 also the `\fB\-\-check-configuration\fR' option, below.
 .TP
 .B "dddinitVersion (\fPclass\fB Version)"
-The version of the \s-2@DDD@\s+2 executable that last wrote the
+The version of the \s-1@DDD@\s+1 executable that last wrote the
 `\fB$HOME/.@ddd@/init\fR' file.  If this string does not match the
-version of the current \s-2@DDD@\s+2 executable, \s-2@DDD@\s+2 issues
+version of the current \s-1@DDD@\s+1 executable, \s-1@DDD@\s+1 issues
 a warning.
 .TP
 .B "showConfiguration (\fPclass\fB ShowConfiguration)"
-If `\fBon\fR', show the \s-2@DDD@\s+2 configuration on standard
+If `\fBon\fR', show the \s-1@DDD@\s+1 configuration on standard
 output and exit.  See also the `\fB\-\-configuration\fR' option,
 below.
 .TP
 .B "showFonts (\fPclass\fB ShowFonts)"
-If `\fBon\fR', show the \s-2@DDD@\s+2 font definitions on standard
+If `\fBon\fR', show the \s-1@DDD@\s+1 font definitions on standard
 output and exit.  See also the `\fB\-\-fonts\fR' option, below.
 .TP
 .B "showInvocation (\fPclass\fB ShowInvocation)"
-If `\fBon\fR', show the \s-2@DDD@\s+2 invocation options on standard
+If `\fBon\fR', show the \s-1@DDD@\s+1 invocation options on standard
 output and exit.  See also the `\fB\-\-help\fR' option, below.
 .TP
 .B "showLicense (\fPclass\fB ShowLicense)"
-If `\fBon\fR', show the \s-2@DDD@\s+2 license on standard output and
+If `\fBon\fR', show the \s-1@DDD@\s+1 license on standard output and
 exit.  See also the `\fB\-\-license\fR' option, below.
 .TP
 .B "showManual (\fPclass\fB ShowManual)"
-If `\fBon\fR', show this \s-2@DDD@\s+2 manual page on standard
+If `\fBon\fR', show this \s-1@DDD@\s+1 manual page on standard
 output and exit.  If the standard output is a terminal, the manual
 page is shown in a pager (\fB$PAGER\fR, `\fBless\fR' or `\fBmore\fR').
 See also the `\fB\-\-manual\fR' option, below.
 .TP
 .B "showNews (\fPclass\fB ShowNews)"
-If `\fBon\fR', show the \s-2@DDD@\s+2 news on standard output and
+If `\fBon\fR', show the \s-1@DDD@\s+1 news on standard output and
 exit.  See also the `\fB\-\-news\fR' option, below.
 .TP
 .B "showVersion (\fPclass\fB ShowVersion)"
-If `\fBon\fR', show the \s-2@DDD@\s+2 version on standard output and
+If `\fBon\fR', show the \s-1@DDD@\s+1 version on standard output and
 exit.  See also the `\fB\-\-version\fR' option, below.
 .TP
 .B "trace (\fPclass\fB Trace)"
-If `\fBon\fR', show the dialog between \s-2@DDD@\s+2 and the
+If `\fBon\fR', show the dialog between \s-1@DDD@\s+1 and the
 inferior debugger on standard output.  Default is `\fBoff\fR'.
 .\"
 .\"
@@ -4207,30 +4348,30 @@ inferior debugger on standard output.  Default is `\fBoff\fR'.
 .SS "More Resources"
 .\"
 The `\fBDdd\fR' application defaults file contains even more
-information about setting \s-2@DDD@\s+2 resources.  The `\fBDdd\fR'
-file comes with the \s-2@DDD@\s+2 distribution.
+information about setting \s-1@DDD@\s+1 resources.  The `\fBDdd\fR'
+file comes with the \s-1@DDD@\s+1 distribution.
 .\"
 .\"
 .\" ---------------
 .SH "OPTIONS"
 .\" ---------------
 .\"
-You can use the following options when starting \s-2@DDD@\s+2.  All
+You can use the following options when starting \s-1@DDD@\s+1.  All
 options may be abbreviated, as long as they are unambiguous; single
-dashes may also be used.  \s-2@DDD@\s+2 also understands the usual X
+dashes may also be used.  \s-1@DDD@\s+1 also understands the usual X
 options such as `\fB\-display\fR' or `\fB\-geometry\fR'; see
 \fBX(1)\fR for details.
 .PP
 All other arguments and options are passed to the inferior debugger.
 To pass an option to the inferior debugger that conflicts with an X
-option, or with a \s-2@DDD@\s+2 option listed here, use the
+option, or with a \s-1@DDD@\s+1 option listed here, use the
 `\fB\-\-debugger\fR' option, below.
 .PP
 .\"
 .TP
 .B \-\-attach-windows
 Attach the source and data windows to the debugger console, creating
-one single big \s-2@DDD@\s+2 window.  This is the default setting.
+one single big \s-1@DDD@\s+1 window.  This is the default setting.
 .TP
 .B \-\-attach-source-window
 Attaches only the source window to the debugger console.
@@ -4242,26 +4383,26 @@ Attaches only the source window to the debugger console.
 Enable button tips.
 .TP
 .B \-\-configuration
-Show the \s-2@DDD@\s+2 configuration settings and exit.
+Show the \s-1@DDD@\s+1 configuration settings and exit.
 .TP
 .B \-\-check-configuration
-Check the \s-2@DDD@\s+2 environment (in particular, the X configuration),
+Check the \s-1@DDD@\s+1 environment (in particular, the X configuration),
 report any possible problem causes and exit.
 .TP
 .B \-\-data-window
 Create the data window upon start-up.
 .TP
 .B \-\-dbx
-Run the \s-2DBX\s+2 debugger as inferior debugger.
+Run the \s-1DBX\s+1 debugger as inferior debugger.
 .TP
 .B \-\-debugger \fIname\fR
 Invoke the inferior debugger \fIname\fR.  This is useful if you have
 several debugger versions around, or if the inferior debugger cannot
 be invoked as `\fBgdb\fR', `\fBdbx\fR', `\fBxdb\fR', or `\fBjdb\fR',
 respectively.  This option can also be used to pass options to the
-inferior debugger that would otherwise conflict with \s-2@DDD@\s+2
+inferior debugger that would otherwise conflict with \s-1@DDD@\s+1
 options.  For instance, to pass a `\fB\-d \fIdirectory\fR' option to
-\s-2XDB\s+2, use:
+\s-1XDB\s+1, use:
 .sp
 .br
   \fB@ddd@\ \-\-debugger "xdb \-d \fIdirectory\fB"\fR
@@ -4286,21 +4427,21 @@ not provided by the debugger window, as raw keyboard processing or
 terminal control sequences.
 .TP
 .B \-\-fonts\fR
-Show the font definitions used by \s-2@DDD@\s+2 on standard output.
+Show the font definitions used by \s-1@DDD@\s+1 on standard output.
 .TP
 .B \-\-fontsize \fIsize\fR
-Set the default font size to \fIsize\fR 1/10 points.  To use 12-point
-fonts, say `\fB\-\-fontsize 120\fR'.
+Set the default font size to \fIsize\fR 1\(f/10 points.  To use
+12-point fonts, say `\fB\-\-fontsize 120\fR'.
 .TP
 .B \-\-fullname
-Enable \s-2TTY\s+2 interface, taking additional debugger commands
+Enable \s-1TTY\s+1 interface, taking additional debugger commands
 from standard input and forwarding debugger output on standard output.
-Current positions are issued in \s-2GDB\s+2 `\fB\-fullname\fR' format
+Current positions are issued in \s-1GDB\s+1 `\fB\-fullname\fR' format
 suitable for debugger front-ends.  By default, both the debugger
 console and source window are disabled.
 .TP
 .B \-\-gdb
-Run the \s-2GDB\s+2 debugger as inferior debugger.
+Run the \s-1GDB\s+1 debugger as inferior debugger.
 .TP
 .B \-\-glyphs
 Display the current execution position and breakpoints as glyphs.
@@ -4317,7 +4458,7 @@ option is not used, use \fIusername\fR as remote user name.  See
 `\fBREMOTE DEBUGGING\fR', above.
 .TP
 .B \-\-jdb
-Run \s-2JDB\s+2 as inferior debugger.
+Run \s-1JDB\s+1 as inferior debugger.
 .TP
 .B \-\-lesstif-hacks\fR
 Equivalent to `\fB\-\-lesstif-version \fIversion\fR', where
@@ -4325,12 +4466,12 @@ Equivalent to `\fB\-\-lesstif-version \fIversion\fR', where
 Deprecated.
 .TP
 .B \-\-lesstif-version \fIversion\fR
-Enable some hacks to make \s-2@DDD@\s+2 run properly with LessTif.
+Enable some hacks to make \s-1@DDD@\s+1 run properly with LessTif.
 See the `\fBlessTifVersion\fR' resource and `\fBUSING @DDD@ WITH
 LESSTIF\fR', above, for a discussion.
 .TP
 .B \-\-license
-Show the \s-2@DDD@\s+2 license and exit.
+Show the \s-1@DDD@\s+1 license and exit.
 .TP
 .B \-\-login \fIusername\fR
 Use \fIusername\fR as remote user name.  See `\fBREMOTE DEBUGGING\fR',
@@ -4340,7 +4481,7 @@ above.
 Show this manual page and exit.
 .TP
 .B \-\-news
-Show the \s-2@DDD@\s+2 news and exit.
+Show the \s-1@DDD@\s+1 news and exit.
 .TP
 .B \-\-no-button-tips
 Disable button tips.
@@ -4395,7 +4536,7 @@ Separate the console, source and data windows.  See also the
 .TP
 .B \-\-scrolled-graph-editor
 Use Motif scroll bars to scroll the data window.  This is the default
-in most \s-2@DDD@\s+2 configurations.  See also
+in most \s-1@DDD@\s+1 configurations.  See also
 \fB\-\-panned-graph-editor\fR, above.
 .TP
 .B \-\-source-window
@@ -4412,14 +4553,14 @@ Do not process X events while the debugger is busy.  This may result
 in slightly better performance on single-processor systems.
 .TP
 .B \-\-trace
-Show the interaction between \s-2@DDD@\s+2 and the inferior debugger
-on standard error.  This is useful for debugging \s-2@DDD@\s+2.  If
+Show the interaction between \s-1@DDD@\s+1 and the inferior debugger
+on standard error.  This is useful for debugging \s-1@DDD@\s+1.  If
 `\fB\-\-trace\fR' is not specified, this information is written into
 `\fB$HOME/.@ddd@/log\fR', such that you can also do a post-mortem
 debugging.
 .TP
 .B \-\-tty
-Enable \s-2TTY\s+2 interface, taking additional debugger commands from
+Enable \s-1TTY\s+1 interface, taking additional debugger commands from
 standard input and forwarding debugger output on standard output.
 Current positions are issued in a format readable for humans.  By
 default, the debugger console is disabled.
@@ -4428,24 +4569,24 @@ default, the debugger console is disabled.
 Enable value tips.
 .TP
 .B \-\-version
-Show the \s-2@DDD@\s+2 version and exit.
+Show the \s-1@DDD@\s+1 version and exit.
 .TP
 .B \-\-vsl-library \fIlibrary\fR
-Load the \s-2VSL\s+2 library \fIlibrary\fR instead of using the
-\s-2@DDD@\s+2 built-in library.  This is useful for customizing
+Load the \s-1VSL\s+1 library \fIlibrary\fR instead of using the
+\s-1@DDD@\s+1 built-in library.  This is useful for customizing
 display shapes and fonts.
 .TP
 .B \-\-vsl-path \fIpath\fR
-Search \s-2VSL\s+2 libraries in \fIpath\fR (a colon-separated
+Search \s-1VSL\s+1 libraries in \fIpath\fR (a colon-separated
 directory list).
 .TP
 .B \-\-vsl-help
-Show a list of further options controlling the \s-2VSL\s+2
+Show a list of further options controlling the \s-1VSL\s+1
 interpreter.  These options are intended for debugging purposes and
 are subject to change without further notice.
 .TP
 .B \-\-xdb
-Run \s-2XDB\s+2 as inferior debugger.
+Run \s-1XDB\s+1 as inferior debugger.
 .\"
 .\"
 .\" ---------------
@@ -4453,7 +4594,7 @@ Run \s-2XDB\s+2 as inferior debugger.
 .\" ---------------
 .\"
 .\"
-The following \s-2@DDD@\s+2 actions may be used in translation tables.
+The following \s-1@DDD@\s+1 actions may be used in translation tables.
 .\"
 .SS "General Actions"
 .\"
@@ -4475,7 +4616,7 @@ Assign focus to the element that just received input.
 .\"
 .SS "Data Display Actions"
 .\"
-These actions are used in the \s-2@DDD@\s+2 graph editor.
+These actions are used in the \s-1@DDD@\s+1 graph editor.
 .TP
 .B end ()
 End the action initiated by \fBselect\fR.  Bound to a button up event.
@@ -4628,12 +4769,12 @@ Bound to \fBCtrl+T\fR.
 .TP
 .B gdb-complete-command ()
 Complete current command line in the debugger console.
-Bound to \s-2\fBTAB\fR\s+2 and \fBCtrl+T\fR.
+Bound to \s-1\fBTAB\fR\s+1 and \fBCtrl+T\fR.
 .TP
 .B gdb-complete-tab (\fIcommand\fB)
-If global \s-2\fBTAB\fR\s+2 completion is enabled, complete current
+If global \s-1\fBTAB\fR\s+1 completion is enabled, complete current
 argument as if \fIcommand\fR was prepended.  Otherwise, proceed as if
-the \s-2\fBTAB\fR\s+2 key was hit.  Bound to \s-2\fBTAB\fR\s+2.
+the \s-1\fBTAB\fR\s+1 key was hit.  Bound to \s-1\fBTAB\fR\s+1.
 .TP
 .B gdb-delete-or-control (\fIcontrol-character\fB)
 Like \fBgdb-control\fR, but effective only if the cursor is at the end
@@ -4675,7 +4816,7 @@ Enter reverse incremental search mode.  Bound to \fBCtrl+B\fR.
 Enter incremental search mode.  Bound to \fBCtrl+F\fR.
 .TP
 .B gdb-isearch-exit ()
-Exit incremental search mode.  Bound to \s-2\fBESC\fR\s+2.
+Exit incremental search mode.  Bound to \s-1\fBESC\fR\s+1.
 .TP
 .B gdb-set-line (\fIvalue\fB)
 Set the current line to \fIvalue\fR.  Bound to \fBCtrl+U\fR.
@@ -4715,7 +4856,7 @@ meaning to copy the dragged glyph.  If no \fIaction\fR is given,
 .SH "IMAGES"
 .\" ---------------
 .\"
-\s-2@DDD@\s+2 installs a number of pixmaps that may be used as pixmap
+\s-1@DDD@\s+1 installs a number of pixmaps that may be used as pixmap
 resources, simply by giving a symbolic name.  For button pixmaps, two
 variants are also installed:
 .IP \(bu 2
@@ -4730,7 +4871,7 @@ The suffix `\fB-arm\fR' indicates an armed variant (Button is pushed).
 `\fBClear at ()\fR' button.
 .TP
 .B "@ddd@"
-\s-2@DDD@\s+2 icon.
+\s-1@DDD@\s+1 icon.
 .TP
 .B "delete"
 `\fBDelete ()\fR' button.
@@ -4760,10 +4901,10 @@ A temporary breakpoint (being dragged).
 `\fBEnable\fR' button.
 .TP
 .B "find_forward"
-`\fBFind\s-2>>\s+2 ()\fR' button.
+`\fBFind\s-1>>\s+1 ()\fR' button.
 .TP
 .B "find_backward"
-`\fBFind\s-2<<\s+2 ()\fR' button.
+`\fBFind\s-1<<\s+1 ()\fR' button.
 .TP
 .B "grey_arrow"
 The execution pointer (not in lowest frame).
@@ -4840,59 +4981,59 @@ The execution pointer (stopped by signal).
 .SH "ENVIRONMENT"
 .\" ---------------
 .\"
-\s-2@DDD@\s+2 is controlled by the following environment variables:
+\s-1@DDD@\s+1 is controlled by the following environment variables:
 .PP
 .PD 0
 .TP 20
 .B @DDD@_NO_SIGNAL_HANDLERS
-If set, \s-2@DDD@\s+2 does not catch fatal errors.  This is sometimes
-useful when debugging \s-2@DDD@\s+2.
+If set, \s-1@DDD@\s+1 does not catch fatal errors.  This is sometimes
+useful when debugging \s-1@DDD@\s+1.
 .TP
 .B @DDD@_STATE
-Root of \s-2@DDD@\s+2 state directory.  Default is `\fB$HOME/.@ddd@/\fR'.
+Root of \s-1@DDD@\s+1 state directory.  Default is `\fB$HOME/.@ddd@/\fR'.
 .TP
 .B @DDD@_SESSION
 If set, indicates a session to start, overriding all options.  This is
-used by \s-2@DDD@\s+2 when restarting itself.
+used by \s-1@DDD@\s+1 when restarting itself.
 .TP
 .B @DDD@_SESSIONS
-\s-2@DDD@\s+2 session directory.  Default is `\fB$DDD_STATE/sessions/\fR'.
+\s-1@DDD@\s+1 session directory.  Default is `\fB$DDD_STATE/sessions/\fR'.
 .TP
 .B EDITOR
 The text editor to invoke for editing source code.  See the
 `\fBeditCommand\fR' resource, above.
 .TP
 .B VSL_INCLUDE
-Where to search for \s-2VSL\s+2 include files.  Default is the current 
+Where to search for \s-1VSL\s+1 include files.  Default is the current 
 directory.
 .TP
 .B WWWBROWSER
-The \s-2WWW\s+2 browser to invoke for viewing the \s-2@DDD@\s+2
-\s-2WWW\s+2 page.  See the `\fBwwwCommand\fR' resource, above.
+The \s-1WWW\s+1 browser to invoke for viewing the \s-1@DDD@\s+1
+\s-1WWW\s+1 page.  See the `\fBwwwCommand\fR' resource, above.
 .TP
 .B XEDITOR
 The X editor to invoke for editing source code.  See the
 `\fBeditCommand\fR' resource, above.
 .PD
-The following environment variables are set by \s-2@DDD@\s+2:
+The following environment variables are set by \s-1@DDD@\s+1:
 .PD 0
 .TP 20
 .B DDD_NAME
-Set to a string indicating the \s-2@DDD@\s+2 version.  By testing
+Set to a string indicating the \s-1@DDD@\s+1 version.  By testing
 whether \fBDDD_NAME\fR is set, a debuggee (or inferior debugger) can
-determine whether it was invoked by \s-2@DDD@\s+2.
+determine whether it was invoked by \s-1@DDD@\s+1.
 .TP
 .B TERM
-Set to `\fBdumb\fR', the \s-2@DDD@\s+2 terminal type.  This is set for
+Set to `\fBdumb\fR', the \s-1@DDD@\s+1 terminal type.  This is set for
 the inferior debugger only.  If the debuggee runs in a separate
 execution window, the debuggee's \fBTERM\fR value is set according to
 the `\fBtermType\fR' resource (see `\fBRESOURCES\fR', above).
 .TP
 .B TERMCAP
-Set to `' (none), the \s-2@DDD@\s+2 terminal capabilities.
+Set to `' (none), the \s-1@DDD@\s+1 terminal capabilities.
 .TP
 .B PAGER
-Set to `\fBcat\fR', the preferred \s-2@DDD@\s+2 pager.
+Set to `\fBcat\fR', the preferred \s-1@DDD@\s+1 pager.
 .PD
 .\"
 .\"
@@ -4903,55 +5044,55 @@ Set to `\fBcat\fR', the preferred \s-2@DDD@\s+2 pager.
 .PD 0
 .TP 20
 .B $HOME/.@ddd@/
-\s-2@DDD@\s+2 state directory.
+\s-1@DDD@\s+1 state directory.
 .TP
 .B $HOME/.@ddd@/init
-Individual \s-2@DDD@\s+2 resource file.  \s-2@DDD@\s+2 options are
+Individual \s-1@DDD@\s+1 resource file.  \s-1@DDD@\s+1 options are
 saved here.
 .TP
 .B $HOME/.@ddd@/history
-Default \s-2@DDD@\s+2 command history file.
+Default \s-1@DDD@\s+1 command history file.
 .TP
 .B $HOME/.@ddd@/lock
-\s-2@DDD@\s+2 lock file; indicates that a \s-2@DDD@\s+2 is running.
+\s-1@DDD@\s+1 lock file; indicates that a \s-1@DDD@\s+1 is running.
 .TP
 .B $HOME/.@ddd@/log
-Trace of the current interaction between \s-2@DDD@\s+2 and the
+Trace of the current interaction between \s-1@DDD@\s+1 and the
 inferior debugger.
 .TP
 .B $HOME/.@ddd@/sessions/
-\s-2@DDD@\s+2 session directory.  One subdirectory per session.
+\s-1@DDD@\s+1 session directory.  One subdirectory per session.
 .TP
 .B $HOME/.@ddd@/sessions/\fIsession\fB/@ddd@core
-\s-2@DDD@\s+2 core file for \fIsession\fR.
+\s-1@DDD@\s+1 core file for \fIsession\fR.
 .TP
 .B $HOME/.@ddd@/sessions/\fIsession\fB/init
-\s-2@DDD@\s+2 resource file for \fIsession\fR.
+\s-1@DDD@\s+1 resource file for \fIsession\fR.
 .TP
 .B $HOME/.@ddd@/sessions/\fIsession\fB/history
-\s-2@DDD@\s+2 command history for \fIsession\fR.
+\s-1@DDD@\s+1 command history for \fIsession\fR.
 .TP
 .B $HOME/.@ddd@/sessions/.@ddd@/
-The \s-2@DDD@\s+2 `restart' session.
+The \s-1@DDD@\s+1 `restart' session.
 .TP
 .B $HOME/.@ddd@/tips
-\s-2@DDD@\s+2 tips resource file.  Contains the number of the next tip
+\s-1@DDD@\s+1 tips resource file.  Contains the number of the next tip
 of the day.
 .TP
 .B $HOME/.gdbinit
-\s-2GDB\s+2 initialization file.
+\s-1GDB\s+1 initialization file.
 .TP
 .B $HOME/.dbxinit
-\s-2DBX\s+2 initialization file.
+\s-1DBX\s+1 initialization file.
 .TP
 .B $HOME/.dbxrc
-Alternate \s-2DBX\s+2 initialization file.
+Alternate \s-1DBX\s+1 initialization file.
 .TP
 .B $HOME/.xdbrc
-\s-2XDB\s+2 initialization file.
+\s-1XDB\s+1 initialization file.
 .TP
 .B $HOME/.@ddd@init
-Old-style \s-2@DDD@\s+2 initialization file; used only if
+Old-style \s-1@DDD@\s+1 initialization file; used only if
 \fB$HOME/.@ddd@/init\fR does not exist.
 .PD
 .\"
@@ -4969,7 +5110,7 @@ Old-style \s-2@DDD@\s+2 initialization file; used only if
 entry in \fBinfo\fR.
 .PP
 .I
-Using \s-2GDB\s+2: A Guide to the \s-2GNU\s+2 Source-Level Debugger\c
+Using \s-1GDB\s+1: A Guide to the \s-1GNU\s+1 Source-Level Debugger\c
 \&, by Richard M. Stallman and Roland H. Pesch.
 .PP
 .I
@@ -4983,30 +5124,30 @@ Java Language Debugging\c
 \fBproducts/jdk/1.1/debugging/\fR
 .PP
 .I
-\s-2DDD\s+2\(em\&A Free Graphical Front-End for \s-2UNIX\s+2 Debuggers\c
+\s-1DDD\s+1\(em\&A Free Graphical Front-End for \s-1UNIX\s+1 Debuggers\c
 \&, by Andreas Zeller and Dorothea Lütkehaus, Computer Science Report
 95-07, Technische Universität Braunschweig, 1995.
 .PP
 .I
-\s-2DDD\s+2 \(en ein Debugger mit graphischer Datendarstellung\c
+\s-1DDD\s+1 \(en ein Debugger mit graphischer Datendarstellung\c
 \&, by Dorothea Lütkehaus, Diploma Thesis, Technische
 Universität Braunschweig, 1994.
 .PP
-The \s-2@DDD@\s+2 \fI\s-2FTP\s+2 site,\fR
+The \s-1@DDD@\s+1 \fI\s-1FTP\s+1 site,\fR
 .sp
 .br
   \fBftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/\fR
 .br
 .sp
 .PP
-The \s-2@DDD@\s+2 \fI\s-2WWW\s+2 page,\fR
+The \s-1@DDD@\s+1 \fI\s-1WWW\s+1 page,\fR
 .sp
 .br
   \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR
 .br
 .sp
 .PP
-The \s-2@DDD@\s+2 \fIMailing List,\fR
+The \s-1@DDD@\s+1 \fIMailing List,\fR
 .sp
 .br
    \fBddd-users@ips.cs.tu-bs.de\fR
@@ -5026,7 +5167,7 @@ For more information on this list, send a mail to
 .\"
 .SS "Limitations using GDB"
 .\"
-Some \s-2GDB\s+2 settings are essential for \s-2@DDD@\s+2 to work correctly.
+Some \s-1GDB\s+1 settings are essential for \s-1@DDD@\s+1 to work correctly.
 These settings with their correct values are:
 .sp
 .br
@@ -5039,73 +5180,70 @@ These settings with their correct values are:
   \fBset prompt (gdb) \fR
 .br
 .sp
-\s-2@DDD@\s+2 sets these values automatically when invoking
-\s-2GDB\s+2; If these values are changed, there may be some
+\s-1@DDD@\s+1 sets these values automatically when invoking
+\s-1GDB\s+1; if these values are changed, there may be some
 malfunctions, especially in the data display.
 .PP
-When debugging at the machine level with \s-2GDB\s+2 4.12 and earlier
+When debugging at the machine level with \s-1GDB\s+1 4.12 and earlier
 as inferior debugger, use a `\fBdisplay /x $pc\fR' command to ensure
 the program counter value is updated correctly at each stop.  You may
 also enter the command in \fB$HOME/.gdbinit\fR or (better yet) upgrade
-to the most recent \s-2GDB\s+2 version.
+to the most recent \s-1GDB\s+1 version.
 .PP
 .\"
 .SS "Limitations using DBX"
 .\"
-When used for debugging Pascal-like programs, \s-2@DDD@\s+2 does not
+When used for debugging Pascal-like programs, \s-1@DDD@\s+1 does not
 infer correct array subscripts and always starts to count with 1.
 .PP
-With some \s-2DBX\s+2 versions (notably Solaris \s-2DBX\s+2),
-\s-2@DDD@\s+2 strips C-style and C++-style comments from the
-\s-2DBX\s+2 output in order to interpret it properly.  This also
+With some \s-1DBX\s+1 versions (notably Solaris \s-1DBX\s+1),
+\s-1@DDD@\s+1 strips C-style and C++-style comments from the
+\s-1DBX\s+1 output in order to interpret it properly.  This also
 affects the output of the debugged program when sent to the debugger
 console.  Using the separate execution window avoids these problems.
 .PP
-In some \s-2DBX\s+2 versions (notably \s-2DEC\s+2 \s-2DBX\s+2 and
-\s-2AIX\s+2 \s-2DBX\s+2), there is no automatic data display.  As an
-alternative, \s-2@DDD@\s+2 uses the `\fBprint\fR' command to access
-data values.  This means that variable names are interpreted according
-to the current frame; variables outside the current frame cannot be
-displayed.  This also means that displays slow down \s-2@DDD@\s+2
-considerably.
+In some \s-1DBX\s+1 versions (notably \s-1DEC\s+1 \s-1DBX\s+1 and
+\s-1AIX\s+1 \s-1DBX\s+1), there is no automatic data display.  As an
+alternative, \s-1@DDD@\s+1 uses the \s-1DBX\s+1 `\fBprint\fR' command
+to access data values.  This means that variable names are interpreted
+according to the current frame; variables outside the current frame
+cannot be displayed.
 .\"
 .SS "Limitations using XDB"
 .\"
-There is no automatic data display in \s-2XDB\s+2.  As a workaround,
-\s-2@DDD@\s+2 uses the `\fBp\fR' command to access data values.  This
+There is no automatic data display in \s-1XDB\s+1.  As a workaround,
+\s-1@DDD@\s+1 uses the `\fBp\fR' command to access data values.  This
 means that variable names are interpreted according to the current
-frame; variables outside the current frame cannot be displayed.  This
-also means that displays slow down \s-2@DDD@\s+2 considerably.
+frame; variables outside the current frame cannot be displayed.
 .\"
 .SS "Limitations using JDB"
 .\"
 .PP
-There is no automatic data display in \s-2JDB\s+2.  As a workaround,
-\s-2@DDD@\s+2 uses the `\fBdump\fR' command to access data values.
+There is no automatic data display in \s-1JDB\s+1.  As a workaround,
+\s-1@DDD@\s+1 uses the `\fBdump\fR' command to access data values.
 This means that variable names are interpreted according to the
 current frame; variables outside the current frame cannot be
-displayed.  This also means that displays slow down \s-2@DDD@\s+2
-considerably.
+displayed.
 .PP
-The \s-2JDB\s+2 `\fBdump\fR' and `\fBprint\fR' commands do not support
+The \s-1JDB\s+1 `\fBdump\fR' and `\fBprint\fR' commands do not support
 expression evaluation.  Hence, you cannot display arbitrary
 expressions.
 .PP
-Parsing of \s-2JDB\s+2 output is quite CPU-intensive, due to the
+Parsing of \s-1JDB\s+1 output is quite CPU-intensive, due to the
 recognition of asynchronous prompts (any thread may output anything at
 any time, including prompts).  Hence, a program producing much console
-output is likely to slow down \s-2@DDD@\s+2 considerably.  In such a
+output is likely to slow down \s-1@DDD@\s+1 considerably.  In such a
 case, have the program run with \fB\-debug\fR in a separate window and
-attach \s-2JDB\s+2 to it using the \fB\-passwd\fR option.
+attach \s-1JDB\s+1 to it using the \fB\-passwd\fR option.
 .\"
 .SS "General Limitations"
 .\"
 If command output is sent to the debugger console, it is impossible
-for \s-2@DDD@\s+2 to distinguish between the output of the debugged
+for \s-1@DDD@\s+1 to distinguish between the output of the debugged
 program and the output of the inferior debugger.  This problem can be
 avoided by running the program in the separate execution window.
 .PP
-Output that confuses \s-2@DDD@\s+2 includes:
+Output that confuses \s-1@DDD@\s+1 includes:
 .IP \(bu 2
 Primary debugger prompts (e.g. `\fB(gdb) \fR' or `\fB(dbx) \fR')
 .IP \(bu 2
@@ -5120,10 +5258,10 @@ Display output (e.g. `\fB$pc = 0x1234\fR')
 If your program outputs any of these strings, you should run it in the
 separate execution window.
 .PP
-If the inferior debugger changes the default \s-2TTY\s+2 settings, for
+If the inferior debugger changes the default \s-1TTY\s+1 settings, for
 instance through a `\fBstty\fR' command in its initialization file,
-\s-2@DDD@\s+2 will likely become confused.  The same applies to
-debugged programs which change the default \s-2TTY\s+2 settings.
+\s-1@DDD@\s+1 will likely become confused.  The same applies to
+debugged programs which change the default \s-1TTY\s+1 settings.
 .\"
 .\"
 .\"
@@ -5131,16 +5269,16 @@ debugged programs which change the default \s-2TTY\s+2 settings.
 .SH "REPORTING BUGS"
 .\" ---------------
 .\"
-If you find a bug in \s-2@DDD@\s+2, please send us a bug report.  We
+If you find a bug in \s-1@DDD@\s+1, please send us a bug report.  We
 will either attempt to fix the bug\(em\&or include the bug description
-in the \s-2@DDD@\s+2 `\fBBUGS\fR' file, such that others can attempt
+in the \s-1@DDD@\s+1 `\fBBUGS\fR' file, such that others can attempt
 to fix it.  (Instead of sending bug reports, you may also send
-\fIfixes\fR; \s-2@DDD@\s+2 is an excellent tool for debugging itself
+\fIfixes\fR; \s-1@DDD@\s+1 is an excellent tool for debugging itself
 :-)
 .\"
 .SS "Where to Send Bug Reports"
 .\"
-We recommend that you send bug reports for \s-2@DDD@\s+2 via electronic
+We recommend that you send bug reports for \s-1@DDD@\s+1 via electronic
 mail to
 .sp
 .br
@@ -5159,22 +5297,22 @@ As a last resort, send bug reports on paper to:
 .br
   Abteilung Softwaretechnologie 
 .br
-  \s-2@DDD@\s+2-Bugs 
+  \s-1@DDD@\s+1-Bugs 
 .br
   Bültenweg 88
 .br
   D-38092 Braunschweig
 .br
-  \s-2GERMANY\s+2 
+  \s-1GERMANY\s+1 
 .br
 .DE
 .\"
-.SS "Is it a \s-2@DDD@\s+2 Bug?"
+.SS "Is it a \s-1@DDD@\s+1 Bug?"
 .\"
 Before sending in a bug report, try to find out whether the problem
-cause really lies within \s-2@DDD@\s+2.  A common cause of problems
+cause really lies within \s-1@DDD@\s+1.  A common cause of problems
 are incomplete or missing X or Motif installations, for instance, or
-bugs in the X server or Motif itself.  Running \s-2@DDD@\s+2 as
+bugs in the X server or Motif itself.  Running \s-1@DDD@\s+1 as
 .br
 .sp
   \fB@ddd@ \-\-check-configuration\fR
@@ -5184,17 +5322,17 @@ checks for common problems and gives hints on how to repair them.
 .PP
 Another potential cause of problems is the inferior debugger;
 occasionally, they show bugs, too.  To find out whether a bug was
-caused by the inferior debugger, run \s-2@DDD@\s+2 as
+caused by the inferior debugger, run \s-1@DDD@\s+1 as
 .br
 .sp
   \fB@ddd@ \-\-trace\fR
 .sp
 .br
-This shows the interaction between \s-2@DDD@\s+2 and the inferior
-debugger on standard error while \s-2@DDD@\s+2 is running.  (If
+This shows the interaction between \s-1@DDD@\s+1 and the inferior
+debugger on standard error while \s-1@DDD@\s+1 is running.  (If
 `\fB\-\-trace\fR' is not given, this interaction is logged in
 `\fB$HOME/.@ddd@/log\fR'.)  Compare the debugger output to the output
-of \s-2@DDD@\s+2 and determine which one is wrong.
+of \s-1@DDD@\s+1 and determine which one is wrong.
 .\"
 .SS "How to Report Bugs"
 .\"
@@ -5230,44 +5368,44 @@ receive your bug report.
 .\"
 .SS "What to Include in a Bug Report"
 .\"
-To enable us to fix a \s-2@DDD@\s+2 bug, you \fImust\fR include the
+To enable us to fix a \s-1@DDD@\s+1 bug, you \fImust\fR include the
 following information:
 .br
 .IP \(bu 2
-Your \s-2@DDD@\s+2 configuration.  Invoke \s-2@DDD@\s+2 as
+Your \s-1@DDD@\s+1 configuration.  Invoke \s-1@DDD@\s+1 as
 .br
 .sp
   \fB@ddd@ \-\-configuration\fR
 .sp
 .br
 to get the configuration information.  If this does not work, please
-include at least the \s-2@DDD@\s+2 version, the type of machine you
+include at least the \s-1@DDD@\s+1 version, the type of machine you
 are using, and its operating system name and version number.
 .br
 .IP \(bu 2
-The debugger you are using and its version (e.g., `\fBgdb-4.16\fR' or
-`\fBdbx as shipped with Solaris 2.5\fR').
+The debugger you are using and its version (e.g., `\fBgdb-4.17\fR' or
+`\fBdbx as shipped with Solaris 2.6\fR').
 .br
 .IP \(bu 2
-The compiler you used to compile \s-2@DDD@\s+2 and its version (e.g.,
-`\fBgcc-2.8.0\fR').
+The compiler you used to compile \s-1@DDD@\s+1 and its version (e.g.,
+`\fBgcc-2.8.1\fR').
 .br
 .IP \(bu 2
 A description of what behavior you observe that you believe is
-incorrect.  For example, \*(lq\s-2@DDD@\s+2 gets a fatal signal\*(rq
-or \*(lq\s-2@DDD@\s+2 exits immediately after attempting to create the
+incorrect.  For example, \*(lq\s-1@DDD@\s+1 gets a fatal signal\*(rq
+or \*(lq\s-1@DDD@\s+1 exits immediately after attempting to create the
 data window\*(lq.
 .br
 .IP \(bu 2
-A \fIlog file\fR showing the interaction between \s-2@DDD@\s+2 and the
+A \fIlog file\fR showing the interaction between \s-1@DDD@\s+1 and the
 inferior debugger.  By default, this interaction is logged in
 `\fB$HOME/.@ddd@/log\fR'.  Include all trace output from the
-\s-2@DDD@\s+2 invocation up to the first bug occurrence; insert own
+\s-1@DDD@\s+1 invocation up to the first bug occurrence; insert own
 comments where necessary.
 .br
 .IP \(bu 2
-If you wish to suggest changes to the \s-2@DDD@\s+2 source, send us context
-diffs.  If you even discuss something in the \s-2@DDD@\s+2 source, refer to
+If you wish to suggest changes to the \s-1@DDD@\s+1 source, send us context
+diffs.  If you even discuss something in the \s-1@DDD@\s+1 source, refer to
 it by context, \fInever\fR by line number.
 .PP
 Be sure to include this information in \fIevery\fR single bug report.
@@ -5277,55 +5415,55 @@ Be sure to include this information in \fIevery\fR single bug report.
 .SH "HISTORY"
 .\" ---------------
 .\"
-The history of \s-2@DDD@\s+2 is a story of code recycling.  The oldest
-parts of \s-2@DDD@\s+2 were written in 1990, when \fIAndreas Zeller\fR
-designed \s-2VSL\s+2, a box-based visual structure language for
-visualizing data and program structures.  The \s-2VSL\s+2 interpreter
-and the \s-2BOX\s+2 library became part of Andreas' Diploma Thesis, a
+The history of \s-1@DDD@\s+1 is a story of code recycling.  The oldest
+parts of \s-1@DDD@\s+1 were written in 1990, when \fIAndreas Zeller\fR
+designed \s-1VSL\s+1, a box-based visual structure language for
+visualizing data and program structures.  The \s-1VSL\s+1 interpreter
+and the \s-1BOX\s+1 library became part of Andreas' Diploma Thesis, a
 graphical syntax editor based on the Programming System Generator
-\s-2PSG\s+2.
+\s-1PSG\s+1.
 .PP
-In 1992, the \s-2VSL\s+2 and \s-2BOX\s+2 libraries were recycled for
-the \s-2NORA\s+2 project.  For \s-2NORA\s+2, an experimental
+In 1992, the \s-1VSL\s+1 and \s-1BOX\s+1 libraries were recycled for
+the \s-1NORA\s+1 project.  For \s-1NORA\s+1, an experimental
 inference-based software development tool set, Andreas wrote a graph
-editor (based on \s-2VSL\s+2 and the \s-2BOX\s+2 libraries) and
+editor (based on \s-1VSL\s+1 and the \s-1BOX\s+1 libraries) and
 facilities for inter-process knowledge exchange.  Based on these
 tools, \fIDorothea Lütkehaus\fR (now \fIDorothea Krabiell\fR) realized
-\s-2@DDD@\s+2 as her Diploma Thesis, 1994.
+\s-1@DDD@\s+1 as her Diploma Thesis, 1994.
 .PP
-The original \s-2@DDD@\s+2 had no source window; this was added by
-Dorothea during the winter of 1994/1995.  In the first quarter of
-1995, finally, Andreas completed \s-2@DDD@\s+2 by adding command and
-execution windows, extensions for \s-2DBX\s+2 and remote debugging as
+The original \s-1@DDD@\s+1 had no source window; this was added by
+Dorothea during the winter of 1994\(en1995.  In the first quarter of
+1995, finally, Andreas completed \s-1@DDD@\s+1 by adding command and
+execution windows, extensions for \s-1DBX\s+1 and remote debugging as
 well as configuration support for several architectures.  Since then,
-Andreas has further maintained and extended \s-2@DDD@\s+2, based on
-the comments and suggestions of several \s-2@DDD@\s+2 users around the 
-world.  See the comments in the \s-2@DDD@\s+2 source for details.
+Andreas has further maintained and extended \s-1@DDD@\s+1, based on
+the comments and suggestions of several \s-1@DDD@\s+1 users around the
+world.  See the comments in the \s-1@DDD@\s+1 source for details.
 .PP
-Major \s-2@DDD@\s+2 events:
+Major \s-1@DDD@\s+1 events:
 .PD 0
 .TP 20
 April, 1995
-\s-2@DDD@\s+2 0.9: First \s-2@DDD@\s+2 beta release.
+\s-1@DDD@\s+1 0.9: First \s-1@DDD@\s+1 beta release.
 .TP
 May, 1995
-\s-2@DDD@\s+2 1.0: First public \s-2@DDD@\s+2 release.
+\s-1@DDD@\s+1 1.0: First public \s-1@DDD@\s+1 release.
 .TP
 December, 1995
-\s-2@DDD@\s+2 1.4: Machine-level debugging, glyphs, \s-2EMACS\s+2 integration.
+\s-1@DDD@\s+1 1.4: Machine-level debugging, glyphs, \s-1EMACS\s+1 integration.
 .TP
 October, 1996
-\s-2@DDD@\s+2 2.0: Color displays, \s-2XDB\s+2 support, generic
-\s-2DBX\s+2 support, command tool.
+\s-1@DDD@\s+1 2.0: Color displays, \s-1XDB\s+1 support, generic
+\s-1DBX\s+1 support, command tool.
 .TP
 May, 1997
-\s-2@DDD@\s+2 2.1: Alias detection, button tips, status displays.
+\s-1@DDD@\s+1 2.1: Alias detection, button tips, status displays.
 .TP
 November, 1997
-\s-2@DDD@\s+2 2.2: Persistent sessions, display shortcuts.
+\s-1@DDD@\s+1 2.2: Persistent sessions, display shortcuts.
 .TP
 June, 1998
-\s-2@DDD@\s+2 3.0: Icon tool bar, Java support, \s-2JDB\s+2 support.
+\s-1@DDD@\s+1 3.0: Icon tool bar, Java support, \s-1JDB\s+1 support.
 .PD
 .\"
 .\"
@@ -5333,9 +5471,9 @@ June, 1998
 .SH "EXTENDING @DDD@"
 .\" ---------------
 .\"
-If you have any contributions to be incorporated into \s-2@DDD@\s+2,
+If you have any contributions to be incorporated into \s-1@DDD@\s+1,
 please send them to `\fBddd@ips.cs.tu-bs.de\fR'.  For suggestions on
-what might be done, see the file `\fBTODO\fR' in the \s-2@DDD@\s+2
+what might be done, see the file `\fBTODO\fR' in the \s-1@DDD@\s+1
 distribution.
 .\"
 .\"
@@ -5359,12 +5497,12 @@ distribution.
 .br
   D-38092 Braunschweig 
 .br
-  \s-2GERMANY\s+2 
+  \s-1GERMANY\s+1 
 .br
 .DE
 .PP
-You may also leave a message in the \fI\s-2@DDD@\s+2 Guestbook\fR. It
-is accessible via our \s-2@DDD@\s+2 \s-2WWW\s+2 page,
+You may also leave a message in the \fI\s-1@DDD@\s+1 Guestbook\fR. It
+is accessible via our \s-1@DDD@\s+1 \s-1WWW\s+1 page,
 .sp
 .br
   \fBhttp://www.cs.tu-bs.de/softech/ddd/\fR .
@@ -5375,25 +5513,25 @@ is accessible via our \s-2@DDD@\s+2 \s-2WWW\s+2 page,
 .SH "PRINTING THIS MANUAL"
 .\" --------------------
 .\"
-Invoke \s-2@DDD@\s+2 with the `\fB\-\-manual\fR' option to show this
+Invoke \s-1@DDD@\s+1 with the `\fB\-\-manual\fR' option to show this
 manual page on standard output.  This text output is suitable for
 installation as formatted manual page (as
-`\fB/usr/local/man/cat1/ddd.1\fR' or similar) on \s-2UNIX\s+2 systems.
+`\fB/usr/local/man/cat1/ddd.1\fR' or similar) on \s-1UNIX\s+1 systems.
 .PP
-A PostScript copy of this manual page, including several \s-2@DDD@\s+2
-screen shots and diagrams, is included in the \s-2@DDD@\s+2 source
+A PostScript copy of this manual page, including several \s-1@DDD@\s+1
+screen shots and diagrams, is included in the \s-1@DDD@\s+1 source
 distribution and available separately as `\fBddd.man.ps.gz\fR' in
 .sp
 .br
   \fBftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/doc/\fR
 .br
 .sp
-This directory also contains other documentation related to \s-2@DDD@\s+2.
+This directory also contains other documentation related to \s-1@DDD@\s+1.
 .PP
-A \s-2ROFF\s+2 copy of this manual page, suitable for installation as
-manual page on \s-2UNIX\s+2 systems (as
+A \s-1ROFF\s+1 copy of this manual page, suitable for installation as
+manual page on \s-1UNIX\s+1 systems (as
 `\fB/usr/local/man/man1/ddd.1\fR' or similar), is included in the
-\s-2@DDD@\s+2 source distribution.
+\s-1@DDD@\s+1 source distribution.
 .PP
 .\"
 .\"
@@ -5401,26 +5539,26 @@ manual page on \s-2UNIX\s+2 systems (as
 .SH "COPYRIGHT"
 .\" ---------------
 .\"
-\s-2@DDD@\s+2 is Copyright \(co 1995, 1996, 1997, 1998
+\s-1@DDD@\s+1 is Copyright \(co 1995, 1996, 1997, 1998
 Technische Universität Braunschweig, Germany.
 .PP
-\s-2@DDD@\s+2 is free software; you can redistribute it and/or modify
+\s-1@DDD@\s+1 is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 .PP
-\s-2@DDD@\s+2 is distributed in the hope that it will be useful,
+\s-1@DDD@\s+1 is distributed in the hope that it will be useful,
 but \fIwithout any warranty\fR; without even the implied warranty of
 \fImerchantability\fR or \fIfitness for a particular purpose\fR.
 See the License for more details.
 .PP
 You should have received a copy of the License along with
-\s-2@DDD@\s+2.  If not, invoke \s-2@DDD@\s+2 with the
+\s-1@DDD@\s+1.  If not, invoke \s-1@DDD@\s+1 with the
 `\fB\-\-license\fR' option; this will print a copy on standard output.
-To read the License from within \s-2@DDD@\s+2, use `\fBHelp | @DDD@
+To read the License from within \s-1@DDD@\s+1, use `\fBHelp | @DDD@
 License\fR'.
 .PP
-This \s-2@DDD@\s+2 manual page is Copyright \(co 1995, 1996, 1997, 1998
+This \s-1@DDD@\s+1 manual page is Copyright \(co 1995, 1996, 1997, 1998
 Technische Universität Braunschweig, Germany.
 .PP
 Permission is granted to make and distribute verbatim copies of this
