@@ -660,8 +660,17 @@ int TTYAgent::setupChildCommunication()
 #ifdef ECHO
 	settings.c_lflag &= ~ECHO;      // No echo
 #endif
+#ifdef ECHONL
+	settings.c_lflag &= ~ECHONL;    // No echo of newlines
+#endif
 #ifdef ISIG
 	settings.c_lflag |= ISIG;       // Enable signal characters
+#endif
+#ifdef TOSTOP
+	settings.c_lflag &= ~TOSTOP;    // No interrupt on background processes
+#endif
+#ifdef NOFLSH
+	settings.c_lflag &= ~NOFLSH;    // Clear queues upon interrupt
 #endif
 #ifdef OPOST
 	settings.c_oflag &= ~OPOST;     // Do not process output data
