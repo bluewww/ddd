@@ -36,6 +36,7 @@
 #include "bool.h"
 #include "UndoBE.h"
 #include "string-fun.h"		// itostring()
+#include "IntArray.h"
 
 // Special value keys
 #define UB_POS       "pos"	 // Current source position
@@ -48,6 +49,8 @@
 // Prefix for current displays; followed by display name
 #define UB_DISPLAY_PREFIX         "display "  // Display value
 #define UB_DISPLAY_ADDRESS_PREFIX "&display " // Display address
+
+class BreakPoint;
 
 class UndoBuffer {
 
@@ -94,6 +97,10 @@ private:
     static void CommandDone(const string &, void *);
     static void ExtraDone(void *);
 
+    // Rename all breakpoints from OLD_BP_NR to NEW_BP_NR
+    static void remap_breakpoint(int old_bp_nr, int new_bp_nr);
+    static void remap_breakpoint(string& cmd, int old_bp_nr, int new_bp_nr);
+
 protected:
     // Add new entry
     static void add(const UndoBufferEntry& entry);
@@ -111,7 +118,7 @@ public:
 		    bool exec_pos = false);
 
     // Add command COMMAND to history.
-    static void add_command(const string &command);
+    static UndoBufferEntry& add_command(const string &command);
 
     // Custom calls
     static void add_position(const string& file_name, int line, bool exec_pos)
@@ -167,6 +174,9 @@ public:
 
     // Invariant
     static bool OK();
+
+    // Add breakpoint state to OS
+    static void add_breakpoint_state(ostream& os, BreakPoint *bp);
 };
 
 extern UndoBuffer undo_buffer;

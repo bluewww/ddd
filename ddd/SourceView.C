@@ -3721,7 +3721,6 @@ void SourceView::process_info_bp (string& info_output,
     bool changed = false;
     bool added   = false;
     ostrstream undo_commands;
-    int deleted_nr = 1;
 
     while (info_output != "")
     {
@@ -3800,7 +3799,7 @@ void SourceView::process_info_bp (string& info_output,
 	    BreakPoint *bp = bp_map.get(bp_nr);
 
 	    ostrstream old_state;
-	    bp->get_state(old_state, deleted_nr);
+	    undo_buffer.add_breakpoint_state(old_state, bp);
 
 	    ostrstream local_commands;
 	    bool need_total_undo = false;
@@ -3820,8 +3819,7 @@ void SourceView::process_info_bp (string& info_output,
 		    // To undo this change, we must delete the old
 		    // breakpoint and create a new one.
 		    undo_commands << delete_command(bp->number()) << "\n"
-				  << old_state;
-		    deleted_nr++;
+				  << string(old_state);
 		}
 		else
 		{
@@ -3837,7 +3835,15 @@ void SourceView::process_info_bp (string& info_output,
 	    BreakPoint *new_bp = new BreakPoint(info_output, break_arg, bp_nr);
 	    bp_map.insert(bp_nr, new_bp);
 
-	    undo_commands << delete_command(bp_nr) << '\n';
+	    if (gdb->has_delete_command())
+	    {
+		string num = "@" + itostring(bp_nr) + "@";
+		undo_commands << gdb->delete_command(num) << '\n';
+	    }
+	    else
+	    {
+		undo_commands << delete_command(bp_nr) << '\n';
+	    }
 
 	    if (!added)
 	    {
@@ -3864,7 +3870,7 @@ void SourceView::process_info_bp (string& info_output,
     for (i = 0; i < bps_not_read.size(); i++)
     {
 	BreakPoint *bp = bp_map.get(bps_not_read[i]);
-	bp->get_state(undo_commands, deleted_nr++);
+	undo_buffer.add_breakpoint_state(undo_commands, bp);
 
 	delete bp;
 	bp_map.del(bps_not_read[i]);

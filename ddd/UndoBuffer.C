@@ -35,18 +35,23 @@ char UndoBuffer_rcsid[] =
 
 #include "UndoBuffer.h"
 
-#include "SourceView.h"
+#include "BreakPoint.h"
+#include "Command.h"
 #include "DataDisp.h"
+#include "SourceView.h"
 #include "cook.h"
 #include "ddd.h"
-#include "string-fun.h"
+#include "disp-read.h"
+#include "index.h"
 #include "misc.h"
-#include "comm-manag.h"
-#include "Command.h"
+#include "regexps.h"
+#include "string-fun.h"
 
 #ifndef LOG_UNDO_BUFFER
 #define LOG_UNDO_BUFFER 0
 #endif
+
+#define REMAP_COMMAND "@remap "
 
 UndoBuffer undo_buffer;
 
@@ -116,15 +121,20 @@ void UndoBuffer::add(const UndoBufferEntry& entry)
 }
 
 // Add command COMMAND to history.
-void UndoBuffer::add_command(const string& command)
+UndoBufferEntry& UndoBuffer::add_command(const string& command)
 {
     string c = command;
     strip_space(c);
     if (c == "")
-	return;
+    {
+	static UndoBufferEntry dummy;
+	return dummy;
+    }
 
     log();
     assert(OK());
+
+    UndoBufferEntry *ret = 0;
 
     if (own_commands == 0)
     {
@@ -160,6 +170,8 @@ void UndoBuffer::add_command(const string& command)
 	history = new_history;
 
 	history_position++;
+
+	ret = &history[history_position - 2];
     }
     else if (own_direction < 0 && own_processed == 0)
     {
@@ -194,21 +206,25 @@ void UndoBuffer::add_command(const string& command)
 
 	history_position--;
 	own_processed++;
+
+	ret = &history[history_position];
     }
     else if (own_direction < 0 && own_processed > 0)
     {
-	// Called from undo => another `redo' command; add to last
+	// Called from undo => another `redo' command; prepend before last
 	//
 	// BEFORE        AFTER
 	// -----------   -----------
 	//  entries...    entries...
 	// >state        >state
-	//  old_command   old_command + command
+	//  old_command   command + old_command
 	//  entries...    entries...
 
 	UndoBufferEntry& next_entry = history[history_position];
-	next_entry[UB_COMMAND] += '\n' + c;
+	next_entry[UB_COMMAND].prepend(c + '\n');
 	own_processed++;
+
+	ret = &next_entry;
     }
     else if (own_direction > 0 && own_processed == 0)
     {
@@ -243,26 +259,34 @@ void UndoBuffer::add_command(const string& command)
 
 	history_position++;
 	own_processed++;
+
+	ret = &history[history_position - 2];
     }
     else if (own_direction > 0 && own_processed > 0)
     {
-	// Called from redo => another `undo' command: add to previous
+	// Called from redo => another `undo' command: prepend to previous
 	//
 	// BEFORE        AFTER
 	// -----------   -----------
 	//  entries...    entries...
-	//  old_command   old_command + command
+	//  old_command   command + old_command
 	// >state        >state
 	//  entries...    entries...
 
 	UndoBufferEntry& last_entry = history[history_position - 2];
-	last_entry[UB_COMMAND] += '\n' + c;
+	last_entry[UB_COMMAND].prepend(c + '\n');
 	own_processed++;
+
+	ret = &last_entry;
     }
 
     log();
     assert(OK());
+
+    return *ret;
 }
+
+
 
 // Add status NAME/VALUE to history
 void UndoBuffer::add(const string& name, const string& value, bool exec_pos)
@@ -373,10 +397,12 @@ void UndoBuffer::ExtraDone(void *)
 	// Command had no effect on history.  Leave it unchanged.
 	if (own_direction < 0)
 	{
+	    // Undo
 	    add_command(history[history_position - 2][UB_COMMAND]);
 	}
 	else
 	{
+	    // Redo
 	    add_command(history[history_position][UB_COMMAND]);
 	}
     }
@@ -385,29 +411,75 @@ void UndoBuffer::ExtraDone(void *)
     own_commands--;
 }
 
+void UndoBuffer::remap_breakpoint(string& cmd, int old_bp_nr, int new_bp_nr)
+{
+    string old_num = "@" + itostring(old_bp_nr) + "@";
+    string new_num = "@" + itostring(new_bp_nr) + "@";
+    cmd.gsub(old_num, new_num);
+}
+
+void UndoBuffer::remap_breakpoint(int old_bp_nr, int new_bp_nr)
+{
+    for (int i = 0; i < history.size(); i++)
+    {
+	if (!history[i].command)
+	    continue;
+	remap_breakpoint(history[i][UB_COMMAND], old_bp_nr, new_bp_nr);
+    }
+}
+
+void UndoBuffer::add_breakpoint_state(ostream& os, BreakPoint *bp)
+{
+    os << REMAP_COMMAND << "@" << bp->number() << "@\n";
+    bp->get_state(os, bp->number());
+}
+
 void UndoBuffer::process_command(const UndoBufferEntry& entry, int direction)
 {
     // Process command
-    string cmd = entry[UB_COMMAND];
+    string commands = entry[UB_COMMAND];
 
+    int count = 0;
     own_processed = 0;
-
-    while (cmd != "")
+    while (commands != "")
     {
-	string line;
-	if (cmd.contains('\n'))
-	    line = cmd.before('\n');
+	string cmd;
+	if (commands.contains('\n'))
+	    cmd = commands.before('\n');
 	else
-	    line = cmd;
-	cmd = cmd.after('\n');
+	    cmd = commands;
+	commands = commands.after('\n');
 
-	fix_symbols(line);
+	// Handle breakpoint remappings
+	if (cmd.contains(REMAP_COMMAND, 0))
+	{
+	    int old_bp_nr = atoi(cmd.chars() + strlen(REMAP_COMMAND "@"));
+	    int new_bp_nr = source_view->next_breakpoint_number() + count++;
 
-	Command c(line);
+	    remap_breakpoint(old_bp_nr, new_bp_nr);
+	    remap_breakpoint(commands, old_bp_nr, new_bp_nr);
+
+	    continue;
+	}
+
+	// Replace all occurrences of `@N@' by N
+#if RUNTIME_REGEX
+	static regex rxnum("@[0-9]+@");
+#endif
+	int i;
+	while ((i = index(cmd, rxnum, "@")) >= 0)
+	{
+	    int num = atoi(cmd.chars() + i + 1);
+	    int j = cmd.index('@', i + 1);
+	    cmd.at(i, j - i + 1) = itostring(num);
+	}
+
+	Command c(cmd);
 	c.callback       = CommandDone;
 	c.extra_callback = ExtraDone;
+	c.priority       = COMMAND_PRIORITY_SYSTEM;
 	own_commands++;
-	own_direction = direction;
+	own_direction    = direction;
 	gdb_command(c);
     }
 }
