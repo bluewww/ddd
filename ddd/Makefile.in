@@ -662,7 +662,6 @@ DDD_OBJECTS = \
 	logo.o       \
 	manual.o     \
 	mydialogs.o  \
-	obscure.o    \
 	options.o    \
 	post.o       \
 	print.o      \

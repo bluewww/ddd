@@ -40,7 +40,6 @@ char commandQueue_rcsid[] =
 #include "exectty.h"
 #include "findParent.h"
 #include "history.h"
-#include "obscure.h"
 #include "ddd.h"
 #include "Queue.h"
 #include "windows.h"
@@ -74,7 +73,6 @@ void _gdb_command(string command, Widget origin)
 	    promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
 
 	handle_running_commands(command, origin);
-	handle_obscure_commands(command, origin);
 
 	if (command.length() == 0)
 	{
