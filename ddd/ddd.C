@@ -4659,7 +4659,7 @@ static void gdb_recordingHP(Agent *, void *, void *call_data)
     delete recording_msg;
     recording_msg = 0;
 
-    if (recording)
+    if (recording && emptyCommandQueue())
 	recording_msg = new StatusMsg("Recording commands");
 
     // Recording state affects toolbar button sensitivity
