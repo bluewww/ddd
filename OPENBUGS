@@ -177,4 +177,13 @@ detail.
     "stepi", ... appears for a short time and then disappears. On
     e.g. fvwm it works correct. Does someone have an idea?'
 
-723 (Insert new bugs here)
+723 Stefan von Dombrowski <Stefan.von.Dombrowski@dlr.de> says:
+
+    A minor problem though: When one uses a seperate tool window this
+    window doesn't keep its relative position with respect to the main
+    window.  Every time you move the main window a constant offset is
+    added to the relative position of the tool window. This has the
+    effect that the tool window at last moves to the lower left of the
+    screen.
+
+724 (Insert new bugs here)

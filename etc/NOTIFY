@@ -2,8 +2,10 @@ Memo: Whom to notify about new DDD releases
 ===========================================
 
 Text is found in `ANNOUNCE'.
-Title: `The Data Display Debugger (DDD) x.y is available' or
-       `DDD x.y is available'.
+Title: `DDD X.Y [for Z] is available - graphical debugger front-end'
+Headers: `Followup-to: poster', 
+         `Reply-to: ddd@ips.cs.tu-bs.de'
+         `X-Face: [ddd/icons/ddd.xface]'
 
 E-Mail
 ------
@@ -24,8 +26,6 @@ Major releases only (no more than once a year)
 * xannounce@x.org              (for `comp.windows.x.announce')
 * linux-announce@news.ornl.gov (for `comp.os.linux.announce')
 
-Note: `linux-announce' wants a short announcement (no huge list of FTP sites)
-
 
 USENET News
 -----------
@@ -37,9 +37,6 @@ USENET News
 * gnu.utils.help
 * comp.windows.x      (not needed if comp.windows.x.announce has it)
 * comp.windows.x.apps (dito)
-
-Use `Followup-to: poster', `Reply-to: ddd@ips.cs.tu-bs.de' and
-`ddd/icons/ddd.xface' as headers.
 
 
 Where to install

@@ -116,6 +116,4 @@ Volunteers for fixing these and other bugs are welcome!
 306*`graph undisplay -1 1', with 1 being the only display, does not
     delete display -1.
 
-307*In the `Set' dialog, strip `\t' and `\n' characters from the value.
-
 308 (Insert new bugs here)
