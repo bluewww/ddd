@@ -25,7 +25,7 @@
 .\" Contact ddd@ips.cs.tu-bs.de for details.
 .\"
 .\"
-.TH @ddd@ 1 "3 May 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "6 May 1995" "@DDD@ @VERSION@" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger (v@VERSION@)
 .SH SYNOPSIS
@@ -274,7 +274,7 @@ If you did not invoke \s-2@DDD@\s+2 specifying a program to be debugged,
 you can use the `\fBFile\fR' menu to open programs, core dumps and
 sources.
 .PP
-To open a program to be debugged, select `\fBOpen File\fR' from the
+To open a program to be debugged, select `\fBOpen Program\fR' from the
 `\fBFile\fR' menu.
 .PP
 To open a core dump for the program, select `\fBOpen Core\fR' from the
@@ -784,9 +784,9 @@ manipulate the display graph.
 .\"
 From time to time, you may wish to move displays at another place in
 the data window.  You can move a single display by pressing and
-holding the \fIleft mouse button\fR on a display.  Moving the pointer
-while holding the button causes all selected displays to move along
-with the pointer.
+holding the \fIleft mouse button\fR on the display title.  Moving the
+pointer while holding the button causes all selected displays to move
+along with the pointer.
 .PP
 If the data window becomes too small to hold all displays, scroll bars
 are created.  If your \s-2@DDD@\s+2 is set up to use \fIpanners\fR
@@ -804,8 +804,8 @@ by grid positions.
 .SS "Aligning Displays"
 .\"
 You can align all displays on the nearest grid position by selecting
-`\fBAlign\fR' from the `\fBGraph\fR' menu.  This is useful for
-getting strictly horizontal or vertical edges.
+`\fBAlign Displays\fR' from the `\fBGraph\fR' menu.  This is useful
+for keeping edges horizontal or vertical.
 .PP
 You can enforce alignment by selecting `\fBSnap to Grid\fR' in the
 `\fBData Options\fR' menu.  If `\fBSnap to Grid\fR' is
@@ -814,8 +814,8 @@ enabled, displays can be moved on grid positions only.
 .\"
 .SS "Layouting the Display Graph"
 .\"
-You can layout the entire graph as a tree by selecting `\fBLayout\fR'
-from the `\fBGraph\fR' menu.
+You can layout the entire graph as a tree by selecting `\fBLayout
+Graph\fR' from the `\fBData\fR' menu.
 .PP
 Layouting the graph may introduce \fIedge hints\fR; that is, edges are
 no more straight lines, but lead to an edge hint and from there to
@@ -837,7 +837,7 @@ enabled, the graph is layouted after each change.
 .SS "Rotating the Display Graph"
 .\"
 You can rotate the entire graph clockwise by 90 degrees by selecting
-`\fBRotate\fR' from the `\fBGraph\fR' menu.
+`\fBRotate Graph\fR' from the `\fBData\fR' menu.
 .PP
 If the graph was previously layouted, you may need to layout it again.
 Subsequent layouts will respect the direction of the last rotation.
@@ -845,27 +845,20 @@ Subsequent layouts will respect the direction of the last rotation.
 .\"
 .SS "Printing the Display Graph"
 .\"
-\s-2@DDD@\s+2 allows for printing the graph picture on a printer, which is
-useful for documenting program states.
+\s-2@DDD@\s+2 allows for printing the graph picture on PostScript
+printers, which is useful for documenting program states.
 .PP
-To print the display graph on a printer, select the `\fBPrint...\fR'
-item from the `\fBGraph\fR' menu.  Enter the printer name in the
-`\fBPrinter\fR' field, the number of copies, the printer type.  Click on
-the `\fBPrint\fR' button to start printing.
+To print the graph on a PostScript printer, select the `\fBPrint
+Graph...\fR' item from the `\fBFile\fR' menu.  Enter the printing
+command in the `\fBPrinter Command\fR' field.  Click on the
+`\fBPrint\fR' button to start printing.
 .PP
 To re-print the display graph using the previous settings, select the
-`\fBQuick Print\fR' item from the `\fBGraph\fR' menu.
-.\"
-.\"
-.\"
-.SS "Saving the Display Graph in a File"
-.\"
-\s-2@DDD@\s+2 allows for storing the graph picture in a file, which makes it
-possible to process graph pictures in other documents.
+`\fBQuick Print\fR' item from the `\fBFile\fR' menu.
 .PP
-To save the graph picture in a file, select the `\fBExport...\fR' item
-from the `\fBGraph\fR' menu.  Select a file name and file type; click
-on the `\fBExport\fR' button to save the graph picture.
+As an alternative, you may also print the graph in a file.  Click on
+the `\fBFile\fR' button and enter the file name in the `\fBFile
+Name\fR' field.  Click on the `\fBPrint\fR' button to create the file.
 
 .\" ---------------
 .SH QUITTING @DDD@
