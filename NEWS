@@ -18,17 +18,20 @@ DDD 1.5 (in development)
       window.  The command tool can be moved wherever appropriate,
       leaving more space for window contents.
     - User-defined buttons are now available.  These can also
-      be used to re-install the DDD 1.4 command buttons.
-    - Improved directory support.  Sources and executables can reside
-      in several different directories.
-    - Changing the current directory (`cd') is now supported.
-      File selection dialogs are synchronized with the current
-      directory.
+      be used to re-install the old command buttons.
     - Variable values can now be altered interactively during program
       execution.
     - `New display' subsumes `Dependent display': if a display is
       selected, the new display is made dependent on it.
-    - A couple of buttons have been renamed for further clarity.
+    - Some items have been renamed for further clarity:
+      * The `command window' is now named `debugger console', to avoid
+        confusion with the command tool.
+      * The `Interrupt' button is now named `Break', to associate the
+	concept with `Breakpoints'
+      * The `Break ()' and `Clear ()' buttons are now named `Break at
+	()' and `Clear at ()', for further clarity.
+      * The `Dereference' button is now named `Display *', for
+	further clarity.
 
     Changes in configuration and building:
     - Regular expressions now use the POSIX.2 standard regcomp/regexec
@@ -45,14 +48,22 @@ DDD 1.5 (in development)
       change as LessTif evolves.
 
     Several bug fixes, including:
-    - The execution window can be opened, closed and re-opened
-      without DDD crashing or hanging.
-    - Invoking a source editor via `Edit' should work fine now.
+    - Improved directory support.  Sources and executables can reside
+      in several different directories.
+    - Several TTY problems fixed.  Switching between execution window 
+      and debugger console should work fine now; the execution window
+      can be opened, closed and re-opened without DDD crashing or
+      hanging.
+    - Editor problems fixed.  Invoking a source editor via `Edit'
+      should work fine now.
     - The rubber band outline no more clutters the data display.
+    - No more endless scrolling when glyphs are enabled.  Scrolling is
+      slightly faster, too.
     - On HP-UX, the `@' character is no more discarded from GDB input.
     - On Solaris 2.x, annoying DBX warnings like `dbx: -r option only
       recognized for C++' are silently ignored.
-    - The `vslPath' resource now works.
+    - You can now specify the location of own VSL libraries via the
+      `vslPath' resource.
 
 
 DDD 1.4d
