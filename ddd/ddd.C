@@ -921,24 +921,41 @@ struct FileItems {
     };
 };
 
+// Auxiliary struct used by WhenReady. A pointer to function can not
+// be passed directly in a XtPointer.
+struct WhenReadyProc_t {
+  XtCallbackProc proc;
+};
+#define DECL_WR(PROC) \
+ static WhenReadyProc_t WR_##PROC = { PROC }
+DECL_WR(gdbOpenClassCB);
+DECL_WR(gdbOpenFileCB);
+DECL_WR(gdbOpenCoreCB);
+DECL_WR(OpenSessionCB);
+DECL_WR(SaveSessionAsCB);
+DECL_WR(gdbOpenProcessCB);
+DECL_WR(gdbChangeDirectoryCB);
+DECL_WR(gdbMakeCB);
+DECL_WR(gdbMakeAgainCB);
+
 #define FILE_MENU(recent_menu) \
 { \
     { "open_class",    MMPush | MMUnmanaged, \
-        { WhenReady, XtPointer(gdbOpenClassCB) }, 0, 0, 0, 0 }, \
+        { WhenReady, XtPointer(&WR_gdbOpenClassCB) }, 0, 0, 0, 0 }, \
     { "open_file",     MMPush, \
-        { WhenReady, XtPointer(gdbOpenFileCB) }, 0, 0, 0, 0 }, \
+        { WhenReady, XtPointer(&WR_gdbOpenFileCB) }, 0, 0, 0, 0 }, \
     { "recent",        MMMenu, MMNoCB, recent_menu, 0, 0, 0 }, \
     { "open_core",     MMPush, \
-        { WhenReady, XtPointer(gdbOpenCoreCB) }, 0, 0, 0, 0}, \
+        { WhenReady, XtPointer(&WR_gdbOpenCoreCB) }, 0, 0, 0, 0}, \
     { "open_source",   MMPush, { gdbLookupSourceCB, 0 }, 0, 0, 0, 0 }, \
     MMSep, \
     { "open_session",  MMPush, \
-        { WhenReady, XtPointer(OpenSessionCB) }, 0, 0, 0, 0 }, \
+        { WhenReady, XtPointer(&WR_OpenSessionCB) }, 0, 0, 0, 0 }, \
     { "save_session",  MMPush, \
-        { WhenReady, XtPointer(SaveSessionAsCB) }, 0, 0, 0, 0 }, \
+        { WhenReady, XtPointer(&WR_SaveSessionAsCB) }, 0, 0, 0, 0 }, \
     MMSep, \
     { "attach",        MMPush, \
-        { WhenReady, XtPointer(gdbOpenProcessCB) }, 0, 0, 0, 0 }, \
+        { WhenReady, XtPointer(&WR_gdbOpenProcessCB) }, 0, 0, 0, 0 }, \
     { "detach",        MMPush, \
         { gdbCommandCB, XtPointer("detach") }, 0, 0, 0, 0 }, \
     MMSep, \
@@ -947,12 +964,12 @@ struct FileItems {
  	{ PrintAgainCB, XtPointer(1) }, 0, 0, 0, 0 }, \
     { "separator",     MMSeparator | MMUnmanaged, MMNoCB, 0, 0, 0, 0 }, \
     { "cd",            MMPush, \
-        { WhenReady, XtPointer(gdbChangeDirectoryCB) }, 0, 0, 0, 0 }, \
+        { WhenReady, XtPointer(&WR_gdbChangeDirectoryCB) }, 0, 0, 0, 0 }, \
     { "separator",     MMSeparator | MMUnmanaged, MMNoCB, 0, 0, 0, 0 }, \
     { "make",          MMPush, \
-        { WhenReady, XtPointer(gdbMakeCB) }, 0, 0, 0, 0 }, \
+        { WhenReady, XtPointer(&WR_gdbMakeCB) }, 0, 0, 0, 0 }, \
     { "makeAgain",     MMPush | MMUnmanaged, \
-        { WhenReady, XtPointer(gdbMakeAgainCB) }, 0, 0, 0, 0 }, \
+        { WhenReady, XtPointer(&WR_gdbMakeAgainCB) }, 0, 0, 0, 0 }, \
     MMSep, \
     { "close",         MMPush, { DDDCloseCB, 0 }, 0, 0, 0, 0 }, \
     { "restart",       MMPush, { DDDRestartCB, 0 }, 0, 0, 0, 0 }, \
@@ -1060,6 +1077,8 @@ struct EditItems {
     };
 };
 
+DECL_WR(dddPopupSettingsCB);
+
 #define EDIT_MENU(win, w) \
 { \
     { "undo",        MMPush,  { gdbUndoCB, 0 }, 0, 0, 0, 0}, \
@@ -1082,7 +1101,7 @@ struct EditItems {
     { "preferences", MMPush,  \
       { dddPopupPreferencesCB, 0 }, 0, 0, 0, 0}, \
     { "settings",    MMPush,  \
-      { WhenReady, XtPointer(dddPopupSettingsCB) }, 0, 0, 0, 0}, \
+      { WhenReady, XtPointer(&WR_dddPopupSettingsCB) }, 0, 0, 0, 0}, \
     MMSep, \
     { "saveOptions", MMToggle,  \
       { dddToggleSaveOptionsOnExitCB, 0 }, 0, &(w), 0, 0}, \
@@ -1104,6 +1123,9 @@ static MMDesc data_edit_menu[]    = EDIT_MENU(DataWindow,
 static Widget complete_w;
 static Widget define_w;
 
+DECL_WR(gdbCompleteCB);
+DECL_WR(gdbApplyCB);
+
 static MMDesc command_menu[] =
 {
     { "history",  MMPush, { gdbHistoryCB, 0 }, 0, 0, 0, 0},
@@ -1115,9 +1137,9 @@ static MMDesc command_menu[] =
     { "isearch_next", MMPush, { gdbISearchNextCB, 0 }, 0, 0, 0, 0},
     { "isearch_exit", MMPush, { gdbISearchExitCB, 0 }, 0, 0, 0, 0},
     MMSep,
-    { "complete", MMPush, { WhenReady, XtPointer(gdbCompleteCB) }, 
+    { "complete", MMPush, { WhenReady, XtPointer(&WR_gdbCompleteCB) }, 
       0, &complete_w, 0, 0 },
-    { "apply",    MMPush, { WhenReady, XtPointer(gdbApplyCB) }, 0, 0, 0, 0},
+    { "apply",    MMPush, { WhenReady, XtPointer(&WR_gdbApplyCB) }, 0, 0, 0, 0},
     MMSep,
     { "clear_line",   MMPush, { gdbClearCB, 0 }, 0, 0, 0, 0},
     { "clear_window", MMPush, { gdbClearWindowCB, 0 }, 0, 0, 0, 0},
@@ -1132,19 +1154,23 @@ static Widget registers_w;
 static Widget threads_w;
 static Widget signals_w;
 
+static WhenReadyProc_t WR_ViewStackFramesCB = { SourceView::ViewStackFramesCB };
+static WhenReadyProc_t WR_ViewRegistersCB = { SourceView::ViewRegistersCB };
+static WhenReadyProc_t WR_ViewThreadsCB = { SourceView::ViewThreadsCB };
+DECL_WR(dddPopupSignalsCB);
 static MMDesc stack_menu[] =
 {
     { "stack",      MMPush,  { WhenReady, 
-			       XtPointer(SourceView::ViewStackFramesCB) },
+			       XtPointer(&WR_ViewStackFramesCB) },
       0, &stack_w, 0, 0 },
     { "registers",  MMPush,  { WhenReady, 
-			       XtPointer(SourceView::ViewRegistersCB) },
+			       XtPointer(&WR_ViewRegistersCB) },
       0, &registers_w, 0, 0 },
     { "threads",    MMPush,  { WhenReady,
-			       XtPointer(SourceView::ViewThreadsCB) },
+			       XtPointer(&WR_ViewThreadsCB) },
       0, &threads_w, 0, 0 },
     { "signals",    MMPush,  { WhenReady,
-			       XtPointer(dddPopupSignalsCB) },
+			       XtPointer(&WR_dddPopupSignalsCB) },
       0, &signals_w, 0, 0 },
     MMSep,
     { "up",         MMPush,  { gdbCommandCB, XtPointer("up") }, 0, 0, 0, 0},
@@ -1678,6 +1704,7 @@ static Widget infos_w            = 0;
 static Widget align_w            = 0;
 static Widget edit_watchpoints_w = 0;
 
+DECL_WR(dddPopupInfosCB);
 static MMDesc data_menu[] = 
 {
     { "displays",    MMPush,    { DataDisp::EditDisplaysCB, 0 }, 0, 0, 0, 0},
@@ -1697,7 +1724,7 @@ static MMDesc data_menu[] =
       0, &locals_w, 0, 0 },
     { "info args",   MMToggle,  { graphToggleArgsCB, 0 }, 
       0, &args_w, 0, 0 },
-    { "infos",       MMPush,    { WhenReady, XtPointer(dddPopupInfosCB) }, 
+    { "infos",       MMPush,    { WhenReady, XtPointer(&WR_dddPopupInfosCB) }, 
       0, &infos_w, 0, 0 },
     MMSep,
     { "align",      MMPush,    { graphAlignCB, 0  }, 0, &align_w, 0, 0 },
@@ -5758,7 +5785,7 @@ struct WhenReadyInfo {
     XmPushButtonCallbackStruct cbs;
     XEvent event;
 
-    WhenReadyInfo(MString msg, XtCallbackProc p,
+    WhenReadyInfo(const MString &msg, XtCallbackProc p,
 		  XtPointer cl_data,
 		  const XmPushButtonCallbackStruct& c)
 	: message(msg),
@@ -5802,7 +5829,7 @@ static void WhenReady(Widget w, XtPointer client_data, XtPointer call_data)
     if (cbs == 0)
 	return;	    // This happens with old LessTif versions
 
-    XtCallbackProc proc = (XtCallbackProc)client_data;
+    XtCallbackProc proc = STATIC_CAST(const WhenReadyProc_t*,client_data)->proc;
     XtPointer user_client_data = 0; // No way to pass extra values here
 
     if (can_do_gdb_command())

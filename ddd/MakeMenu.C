@@ -982,19 +982,23 @@ void MMaddCallbacks(const MMDesc items[], XtPointer default_closure, int depth)
     MMonItems(items, addCallback, default_closure, depth);
 }
 
-
 // Add help callback
+struct addHelpCallback_t {
+  XtCallbackProc proc;
+};
+
 static void addHelpCallback(const MMDesc *item, XtPointer closure)
 {
     Widget widget       = item->widget;
-    XtCallbackProc proc = XtCallbackProc(closure);
+    XtCallbackProc proc = STATIC_CAST(const addHelpCallback_t*,closure)->proc;
 
     XtAddCallback(widget, XmNhelpCallback, proc, XtPointer(0));
 }
 
 void MMaddHelpCallback(const MMDesc items[], XtCallbackProc proc, int depth)
 {
-    MMonItems(items, addHelpCallback, XtPointer(proc), depth);
+    addHelpCallback_t proc_ = { proc };
+    MMonItems(items, addHelpCallback, XtPointer(&proc_), depth);
 }
 
 
