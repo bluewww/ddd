@@ -159,6 +159,12 @@ void WhatNextCB(Widget, XtPointer, XtPointer)
 	return;
     }
 
+    if (gdb->recording())
+    {
+	hint_on("recording");
+	return;
+    }
+
     if (!gdb->isReadyWithPrompt())
     {
 	hint_on("busy_dialog");
