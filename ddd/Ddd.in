@@ -496,19 +496,19 @@ Ddd*highlightThickness:		1
 ! @Logo and @logo are used in the DDD logo.
 
 Ddd*fontList: \
--*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=charset,\
--*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\
--*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=tt,\
--*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\
--*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*=rm,\
--*-helvetica-medium-o-*-*-*-100-*-*-*-*-*-*=sl,\
--*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=bf,\
--*-helvetica-bold-o-*-*-*-100-*-*-*-*-*-*=bs,\
--*-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*=Logo,\
--*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=logo,\
--*-symbol-*-*-*-*-*-100-*-*-*-*-*-*=symbol
+-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset,\
+-*-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*=small,\
+-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=tt,\
+-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=key,\
+-*-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*=rm,\
+-*-helvetica-medium-o-*-*-12-*-*-*-*-*-*-*=sl,\
+-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=bf,\
+-*-helvetica-bold-o-*-*-12-*-*-*-*-*-*-*=bs,\
+-*-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*=Logo,\
+-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=logo,\
+-*-symbol-*-*-*-12-*-*-*-*-*-*-*=symbol
 
-! This alternate setting is slightly smaller.
+! An alternate, resolution-independent setting.
 ! Ddd*fontList: \
 ! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset,\
 ! -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\
@@ -518,32 +518,44 @@ Ddd*fontList: \
 ! -*-helvetica-medium-o-*-*-*-90-*-*-*-*-*-*=sl,\
 ! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=bf,\
 ! -*-helvetica-bold-o-*-*-*-90-*-*-*-*-*-*=bs,\
-! -*-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*=Logo,\
+! -*-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*=Logo,\
 ! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=logo,\
-! -*-symbol-*-*-*-*-*-90-*-*-*-*-*-*=symbol
+! -*-symbol-*-*-*-*-90-*-*-*-*-*-*=symbol
 
 ! Fixed-width fonts.  `lucidatypewriter' is the font the DDD developers
 ! prefer; another popular choice is `courier'.
 Ddd*XmTextField.FontList: \
-	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+	-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
 Ddd*XmText.FontList:	  \
-	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+	-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+Ddd*XmList.FontList:	  \
+	-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+
+! The resolution-independent alternative.
+! Ddd*XmTextField.FontList: \
+! 	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+! Ddd*XmText.FontList:	  \
+! 	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+! Ddd*XmList.FontList:	  \
+! 	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+
+
 
 ! Command tool fonts.  Slightly smaller.
 Ddd*tool_buttons.run.fontList: \
-	-*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=charset
+	-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
 Ddd*tool_buttons.break.fontList:  \
-	-*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=charset
+	-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
 Ddd*tool_buttons*fontList:  \
-	-*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+	-*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*=charset
 
-! And again, the smaller alternative.
+! The resolution-independent alternative.
 ! Ddd*tool_buttons.run.fontList: \
-!	-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+! 	-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
 ! Ddd*tool_buttons.break.fontList:  \
-!	-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+! 	-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
 ! Ddd*tool_buttons*fontList:  \
-!	-*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset
+! 	-*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset
 	
 
 ! For fonts in the execution window, see the `termCommand' resource, above.
@@ -618,7 +630,10 @@ Ddd*graph_edit.outlineColor:	   grey50
 ! - stdfontfamily() is the font family used: one of
 !   family_times(), family_courier(), family_helvetica(), 
 !   family_new_century(), family_typewriter().
-! - stdfontsize() is the font size used (in 1/10 points).
+! - stdfontsize() is the font size in pixels.
+!   0 means to use stdfontpoints() instead.
+! - stdfontpoints() is the font size in 1/10 points.
+!   0 means to use stdfontsize() instead.
 ! - stdfontweight() is the weight used: one of
 !   weight_medium(), weight_bold().
 !
@@ -643,11 +658,13 @@ Ddd*graph_edit.outlineColor:	   grey50
 ! array_color(box)     = color(box, "blue4");		\n\
 ! reference_color(box) = color(box, "blue4");		\n\
 ! \n\
-! #replace stdfontfamily	\n\
-! #replace stdfontsize		\n\
-! #replace stdfontweight	\n\
-! stdfontfamily() = family_typewriter();	\n\
-! stdfontsize()	  = 90;				\n\
+! #replace stdfontfamily\n\
+! #replace stdfontsize	\n\
+! #replace stdfontpoints\n\
+! #replace stdfontweight\n\
+! stdfontfamily() = family_typewriter();\n\
+! stdfontsize()   = 12;	\n\
+! stdfontpoints() = 0;	\n\
 ! stdfontweight() = weight_medium();
 
 ! See the file `ddd.vsl' for further definitions to override here.
@@ -2125,7 +2142,7 @@ Ddd*graph_cmd_area.marginWidth:	 0
 
 Ddd*graph_cmd_w.graph_arg_label.labelString:	():
 Ddd*graph_cmd_w.graph_arg_label.marginWidth:	0
-Ddd*graph_cmd_w.graph_arg.columns:		18
+Ddd*graph_cmd_w.graph_arg.columns:		20
 Ddd*graph_cmd_w*graph_arg.editable:		false
 Ddd*graph_cmd_w*graph_arg.contextHelpString:	\
 @rm This is the argument @bf() @rm for the command buttons on the right.\n\
@@ -2307,7 +2324,7 @@ Ddd*arg_cmd_w.source_arg.contextHelpString:	\
 You can edit this field, or easily change its value\n\
 by selecting something in the source text above.
 Ddd*arg_cmd_w.source_arg.value:			 main
-Ddd*arg_cmd_w.source_arg.columns:		 18
+Ddd*arg_cmd_w.source_arg.columns:		 20
 
 Ddd*arg_cmd_w.orientation:				XmHORIZONTAL
 Ddd*arg_cmd_w.arg_cmd_area.orientation:			XmHORIZONTAL

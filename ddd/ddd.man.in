@@ -1882,63 +1882,78 @@ This is the default font setting:
 .sp
 .br
   \fB@Ddd@*fontList: \\
-  -*-helvetica-bold-r-*-*-*-100-\\
-  *-*-*-*-*-*=charset,\\
-  -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\\
-  -*-lucidatypewriter-medium-r-*-*-*-90-\\
-  *-*-*-*-*-*=tt,\\
-  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\\
-  -*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*=rm,\\
-  -*-helvetica-medium-o-*-*-*-100-*-*-*-*-*-*=sl,\\
-  -*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=bf,\\
-  -*-helvetica-bold-o-*-*-*-100-*-*-*-*-*-*=bs,\\
-  -*-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*=Logo,\\
-  -*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*=logo,\\
-  -*-symbol-*-*-*-*-*-100-*-*-*-*-*-*=symbol\fR
+  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset,\\
+  -*-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*=small,\\
+  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=tt,\\
+  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=key,\\
+  -*-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*=rm,\\
+  -*-helvetica-medium-o-*-*-12-*-*-*-*-*-*-*=sl,\\
+  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=bf,\\
+  -*-helvetica-bold-o-*-*-12-*-*-*-*-*-*-*=bs,\\
+  -*-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*=Logo,\\
+  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=logo,\\
+  -*-symbol-*-*-*-12-*-*-*-*-*-*-*=symbol
 .br
 .sp
-Here is an alternative setting with slightly smaller fonts:
+Here is an alternative, resolution-independent setting.
 .sp
 .br
   \fB@Ddd@*fontList: \\
-  -*-helvetica-bold-r-*-*-*-90-\\
-  *-*-*-*-*-*=charset,\\
+  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset,\\
   -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\\
-  -*-lucidatypewriter-medium-r-*-*-*-90-\\
-  *-*-*-*-*-*=tt,\\
+  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=tt,\\
   -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=key,\\
   -*-helvetica-medium-r-*-*-*-90-*-*-*-*-*-*=rm,\\
   -*-helvetica-medium-o-*-*-*-90-*-*-*-*-*-*=sl,\\
   -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=bf,\\
   -*-helvetica-bold-o-*-*-*-90-*-*-*-*-*-*=bs,\\
-  -*-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*=Logo,\\
+  -*-helvetica-bold-r-*-*-*-120-*-*-*-*-*-*=Logo,\\
   -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=logo,\\
-  -*-symbol-*-*-*-*-*-90-*-*-*-*-*-*=symbol\fR
+  -*-symbol-*-*-*-*-90-*-*-*-*-*-*=symbol\fR
 .br
 .sp
 The fonts in text fields are specified as follows:
 .sp
 .br
   \fB@Ddd@*XmTextField.FontList: \\
-  -*-lucidatypewriter-medium-r-*-*-*-90-\\
-  *-*-*-*-*-*=charset
-  @Ddd@*XmText.FontList:	  \\
-  -*-lucidatypewriter-medium-r-*-*-*-90-\\
-  *-*-*-*-*-*=charset\fR
+  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+  @Ddd@*XmText.FontList: \\
+  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+  @Ddd@*XmList.FontList: \\
+  -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset\fR
 .br
 .sp
-The fonts in the command tool are also set differently.
+Here is the resolution-independent alternative:
 .sp
 .br
-  \fB@Ddd@*tool_buttons.run.fontList:   \\
-  -*-helvetica-bold-r-*-*-*-100-\\
-  *-*-*-*-*-*=charset
-  @Ddd@*tool_buttons.break.fontList:  \\
-  -*-helvetica-bold-r-*-*-*-100-\\
-  *-*-*-*-*-*=charset
-  @Ddd@*tool_buttons*fontList:        \\
-  -*-helvetica-medium-r-*-*-*-90-\\
-  *-*-*-*-*-*=charset\fR
+  \fB@Ddd@*XmTextField.FontList: \\
+  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+  @Ddd@*XmText.FontList: \\
+  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+  @Ddd@*XmList.FontList: \\
+  -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset\fR
+.br
+.sp
+These are the fonts in the command tool:
+.sp
+.br
+  \fB@Ddd@*tool_buttons.run.fontList: \\
+  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
+  @Ddd@*tool_buttons.break.fontList: \\
+  -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
+  @Ddd@*tool_buttons*fontList: \\
+  -*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*=charset\fR
+.br
+.sp
+Here is the resolution-independent alternative:
+.sp
+.br
+  \fB@Ddd@*tool_buttons.run.fontList: \\
+  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+  @Ddd@*tool_buttons.break.fontList: \\
+  -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+  @Ddd@*tool_buttons*fontList: \\
+  -*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset\fR
 .br
 .sp
 For fonts in the data display, see the `\fBvslDefs\fR' resource,
@@ -2037,20 +2052,17 @@ The font family used.  One of \fBfamily_times()\fR,
 \fBfamily_new_century()\fR, or \fBfamily_typewriter()\fR (default).
 .TP 10
 .B "stdfontsize()"
-The font size used (in 1/10 points).  Default: \fB90\fR.
+The font size used (in pixels).  0 means to use
+\fBstdfontpoints()\fR instead.  Default value: \fB12\fR.
+.TP 10
+.B "stdfontpoints()"
+The font size used (in 1/10 points).  0 (default) means to use
+\fBstdfontsize()\fR instead.
 .TP 10
 .B "stdfontweight()"
 The font weight used.  One of \fBweight_medium()\fR (default) or
 \fBweight_bold()\fR.
 .PP
-To set the default font size to 12 points, use
-.sp
-.br
-  \fB@Ddd@*vslDefs: \\
-  #replace stdfontsize\\n\\
-  stdfontsize() = 120;\\n\fR
-.br
-.sp
 To set the pointer color to "red4", use
 .sp
 .br
@@ -2059,13 +2071,23 @@ To set the pointer color to "red4", use
   pointer_color(box) = color(box, "red4");\\n\fR
 .br
 .sp
-To set the default font to 10-point courier, use
+To set the default font size to resolution-independent 10.0 points, use
+.sp
+.br
+  \fB@Ddd@*vslDefs: \\
+  #replace stdfontsize\\n\\
+  #replace stdfontpoints\\n\\
+  stdfontsize() = 0;\\n
+  stdfontpoints() = 100;\\n\fR
+.br
+.sp
+To set the default font to 12-pixel courier, use
 .sp
 .br
   \fB@Ddd@*vslDefs: \\
   #replace stdfontsize\\n\\
   #replace stdfontfamily\\n\\
-  stdfontsize() = 100;\\n\\
+  stdfontsize() = 12;\\n\\
   stdfontfamily() = family_courier();\\n\fR
 .br
 .sp

@@ -36,10 +36,8 @@ DDD 2.0 (in beta test)
       `--exec-window'.  Options must now always be saved explicitly.
     - Ctrl+C has now the highest priority of all processed events.
     - The DDD License can now be viewed from within DDD.
-    - Fonts are now resolution-independent, and slightly larger than
-      before.
     - The DDD resources are now fully documented; the DDD manual
-      contains several customiztion examples.
+      contains several customization examples (fonts, colors, buttons).
 
     Supported debuggers and languages:
     - XDB support.  On popular request, DDD now supports HP's XDB as
