@@ -53,6 +53,7 @@ char test_graph_rcsid[] =
 #include "BoxGraphN.h"
 #include "HintGraphN.h"
 #include "ArcGraphE.h"
+#include "BoxEdgeA.h"
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
@@ -89,6 +90,9 @@ Graph *myGraph()
 	new HintGraphNode(BoxPoint(100, 50));
     GraphNode *n8 =
 	new BoxGraphNode(new StringBox("100, 100 b"), BoxPoint(100, 100));
+
+    BoxEdgeAnnotation *a1 = new BoxEdgeAnnotation(new StringBox("a1"));
+    BoxEdgeAnnotation *a2 = new BoxEdgeAnnotation(new StringBox("a2"));
 
     n2->selected() = True;
 
@@ -152,14 +156,14 @@ Graph *myGraph()
     *g += new LineGraphEdge(n3, n5);
     assert(g->OK());
 
-    *g += new LineGraphEdge(n4, n5);
+    *g += new LineGraphEdge(n4, n5, a1);
     assert(g->OK());
 
     GraphEdge *e67 = new ArcGraphEdge(n6, n7); 
     *g += e67;
     assert(g->OK());
 
-    GraphEdge *e78 = new ArcGraphEdge(n7, n8); 
+    GraphEdge *e78 = new ArcGraphEdge(n7, n8, a2);
     *g += e78;
     assert(g->OK());
 
