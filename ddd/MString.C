@@ -35,3 +35,12 @@ char MString_rcsid[] =
 
 #include "MString.h"
 
+Boolean MString::OK() const
+{
+    // All of these must return some result.
+    (void) isEmpty();
+    (void) length();
+    (void) lineCount();
+
+    return True;
+}

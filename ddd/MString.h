@@ -38,6 +38,7 @@
 
 #include <Xm/Xm.h>
 #include "strclass.h"
+#include "assert.h"
 
 #ifdef XmFONTLIST_DEFAULT_TAG
 #define MSTRING_DEFAULT_CHARSET XmFONTLIST_DEFAULT_TAG
@@ -54,77 +55,47 @@ public:
     MString(char *text = "", 
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
 	_mstring(XmStringCreateLtoR(text, charset))
-    {}
+    {
+	assert(OK());
+    }
 
     MString(const char *text,
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
 	_mstring(XmStringCreateLtoR((char *)text, charset))
-    {}
+    {
+	assert(OK());
+    }
 
     MString(const string& text, 
 	    XmStringCharSet charset = MSTRING_DEFAULT_CHARSET):
-	_mstring(XmStringCreateLtoR((String)text, charset))
-    {}
+	_mstring(XmStringCreateLtoR((char *)text, charset))
+    {
+	assert(OK());
+    }
 
-    // `XmString' might be defined as `char *'; hence the DUMMY parameter
+    // In Motif 1.1, `XmString' is defined as `char *'; hence the DUMMY parameter
     MString(XmString text, bool /* dummy */):
 	_mstring(XmStringCopy(text))
-    {}
+    {
+	assert(OK());
+    }
 
     // Copy constructor
     MString(const MString& m):
 	_mstring(XmStringCopy(m._mstring))
-    {}
+    {
+	assert(m.OK());
+	assert(OK());
+    }
 
     // Destructor
-    ~MString() { XmStringFree(_mstring); }
-
-    // Assignment
-    MString& operator=(const MString& m)
+    ~MString()
     {
-	// Make sure a = a works
-	XmString tmp = XmStringCopy(m._mstring);
+	assert(OK());
 	XmStringFree(_mstring);
-	_mstring = tmp;
-
-	return *this;
     }
 
-    // Concatenation
-    MString& operator += (const MString& m)
-    {
-	XmString old = _mstring;
-	_mstring = XmStringConcat(_mstring, m._mstring);
-	XmStringFree(old);
-
-	return *this;
-    }
-    MString& prepend(const MString& m)
-    {
-	XmString old = _mstring;
-	_mstring = XmStringConcat(m._mstring, _mstring);
-	XmStringFree(old);
-
-	return *this;
-    }
-
-    // Comparison
-    Boolean operator == (const MString& m) const
-    {
-	return XmStringCompare(_mstring, m._mstring);
-    }
-
-    Boolean operator != (const MString& m) const
-    {
-	return !XmStringCompare(_mstring, m._mstring);
-    }
-
-    // Conversions
-    operator XmString() const { return _mstring; }
-    operator XmString()       { return _mstring; }
-    XmString xmstring() const { return _mstring; }
-
-    // Attributes
+    // Resources
     Dimension baseline(XmFontList fontlist) const
     {
 	return XmStringBaseline(fontlist, _mstring);
@@ -133,6 +104,16 @@ public:
     Boolean isEmpty() const
     {
 	return XmStringEmpty(_mstring);
+    }
+
+    int lineCount() const
+    {
+	return XmStringLineCount(_mstring);
+    }
+
+    Boolean isNull() const
+    {
+	return isEmpty() && lineCount() == 0;
     }
 
     void extent(Dimension& x, Dimension& y, XmFontList fontlist) const
@@ -155,11 +136,6 @@ public:
 	return XmStringLength(_mstring);
     }
 
-    int lineCount() const
-    {
-	return XmStringLineCount(_mstring);
-    }
-
     string str(XmStringCharSet charset = MSTRING_DEFAULT_CHARSET) const
     {
 	char *text;
@@ -173,16 +149,83 @@ public:
 	return "";
     }
 
+    // Assignment
+    MString& operator=(const MString& m)
+    {
+	assert(OK());
+	assert(m.OK());
+
+	// Make sure a = a works
+	XmString tmp = XmStringCopy(m._mstring);
+	XmStringFree(_mstring);
+	_mstring = tmp;
+
+	return *this;
+    }
+
+    // Concatenation
+    MString& operator += (const MString& m)
+    {
+	assert(OK());
+	assert(m.OK());
+
+	XmString old = _mstring;
+	_mstring = XmStringConcat(_mstring, m._mstring);
+	XmStringFree(old);
+
+	return *this;
+    }
+    MString& prepend(const MString& m)
+    {
+	assert(OK());
+	assert(m.OK());
+
+	XmString old = _mstring;
+	_mstring = XmStringConcat(m._mstring, _mstring);
+	XmStringFree(old);
+
+	return *this;
+    }
+
+    // Comparison
+    Boolean operator == (const MString& m) const
+    {
+	assert(OK());
+	assert(m.OK());
+	return XmStringCompare(_mstring, m._mstring);
+    }
+
+    Boolean operator != (const MString& m) const
+    {
+	assert(OK());
+	assert(m.OK());
+	return !XmStringCompare(_mstring, m._mstring);
+    }
+
+    // Conversions
+    operator XmString() const { return _mstring; }
+    operator XmString()       { return _mstring; }
+    XmString xmstring() const { return _mstring; }
+
     // Substrings
     Boolean contains(const MString& m) const
     {
+	assert(OK());
+	assert(m.OK());
 	return XmStringHasSubstring(_mstring, m._mstring);
     }
+
+    // Invariant
+    Boolean OK() const;
 };
 
-// Addition
+
+// Concatenation
 inline MString operator + (const MString& m1, const MString& m2)
 {
+    assert(m1.OK());
+    assert(m2.OK());
+
     return MString(XmStringConcat(m1.xmstring(), m2.xmstring()), true);
 }
 
