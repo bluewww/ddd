@@ -99,10 +99,17 @@ char exit_rcsid[] =
 
 #include <signal.h>
 #include <iostream.h>
+#include <ctype.h>
 
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
 #include <Xm/PushB.h>
+
+#if HAVE_EXCEPTIONS
+#define string stdstring
+#include <stdexcept>
+#undef string
+#endif
 
 #if defined(HAVE_RAISE)
 #if !defined(HAVE_RAISE_DECL)
@@ -228,7 +235,7 @@ void ddd_install_fatal(char *program_name)
 }
 
 // Post a dialog containing TITLE and CAUSE
-static void post_fatal(string title, string cause)
+static void post_fatal(string title, string cause, string cls)
 {
     static Widget fatal_dialog = 0;
     if (fatal_dialog == 0)
@@ -250,10 +257,11 @@ static void post_fatal(string title, string cause)
 #endif
     }
 
+    defineConversionMacro("CLASS", cls);
     defineConversionMacro("TITLE", title);
     defineConversionMacro("CAUSE", cause);
 
-    string msg = string("Internal error (") + title + ")";
+    string msg = cls + ": " + title;
     MString mtext = rm(msg);
     XtVaSetValues (fatal_dialog,
 		   XmNmessageString, mtext.xmstring(),
@@ -285,7 +293,7 @@ void ddd_show_signal(int sig)
     {
 	string title = sigName(sig);
 	string cause = "`" + title + "' signal";
-	post_fatal(title, cause);
+	post_fatal(title, cause, "Internal error");
     }
 }
 
@@ -297,11 +305,46 @@ static void ddd_signal(int sig...)
     raise(sig);
 }
 
+// Show the user that a C++ exception has been raised
+void ddd_show_exception(const char *c, const char *what)
+{
+    gdb_question_running = false;
+
+    // Interrupt current GDB action
+    gdb_keyboard_command = true;
+    _gdb_command("\003", gdb_w);
+
+    // Show the message in an error dialog,
+    // allowing the user to clean up manually.
+
+    if (what == 0)
+	what = "C++ exception";
+
+    string title = what;
+    string cause = what;
+    string cls   = "Internal error";
+
+    // EGCS 1.0 prepends the name length to type names; fix this
+    while (isdigit(*c))
+	c++;
+
+    if (c != 0)
+	cls = c;
+
+    cls.gsub('_', ' ');
+    cls[0] = toupper(cls[0]);
+
+    if (c != 0)
+	cause.prepend(cls + ": ");
+
+    post_fatal(title, cause, cls);
+}
+
 // Issue fatal message on stderr
-static void print_fatal_msg(char *title, char *cause)
+static void print_fatal_msg(char *title, char *cause, char *cls)
 {
     static const char *msg =
-	"\nInternal error (%s).\n"
+	"\n%s (%s).\n"
 	"\n"
 	"Oops!  You have found a bug in " DDD_NAME ".\n"
 	"\n"
@@ -330,7 +373,7 @@ static void print_fatal_msg(char *title, char *cause)
 	"\n"
 	"We thank you for your support.\n\n";
 
-    fprintf(stderr, msg, title, cause);
+    fprintf(stderr, msg, cls, title, cause);
 }
 
 // Fatal signal handler: issue error message and re-raise signal
@@ -361,7 +404,7 @@ static void ddd_fatal(int sig...)
 	    char *title = sigName(sig);
 	    char cause[BUFSIZ];
 	    sprintf(cause, "`%s' signal", title);
-	    print_fatal_msg(title, cause);
+	    print_fatal_msg(title, cause, "internal error");
 	}
 
 	// Re-raise signal.  This should kill us as we return.
@@ -404,7 +447,7 @@ void ddd_install_x_fatal()
 // Xt and Motif errors
 //-----------------------------------------------------------------------------
 
-static void PostXErrorCB(XtPointer client_data, XtIntervalId *)
+static void PostXtErrorCB(XtPointer client_data, XtIntervalId *)
 {
     string *msg_ptr = (string *)client_data;
     string msg = *msg_ptr;
@@ -412,7 +455,7 @@ static void PostXErrorCB(XtPointer client_data, XtIntervalId *)
 
     string title = msg.before('\v');
     string cause = msg.after('\v');
-    post_fatal(title, cause);
+    post_fatal(title, cause, "X Toolkit Error");
 }
 
 static XtErrorHandler old_xt_error_handler;
@@ -438,13 +481,14 @@ static void ddd_xt_error(String message = 0)
 
     if (entered++ || !main_loop_entered || ddd_is_exiting)
     {
-	print_fatal_msg(title, cause);
+	print_fatal_msg(title, cause, "Xt error");
 	ddd_xt_error();
     }
 
     // Issue error in dialog
     string *msg_ptr = new string(title + '\v' + cause);
-    XtAppAddTimeOut(xt_error_app_context, 0, PostXErrorCB, XtPointer(msg_ptr));
+    XtAppAddTimeOut(xt_error_app_context, 0, PostXtErrorCB, 
+		    XtPointer(msg_ptr));
 
     // Return to main event loop
     entered--;
@@ -461,6 +505,17 @@ void ddd_install_xt_error(XtAppContext app_context)
 //-----------------------------------------------------------------------------
 // Other X errors
 //-----------------------------------------------------------------------------
+
+static void PostXErrorCB(XtPointer client_data, XtIntervalId *)
+{
+    string *msg_ptr = (string *)client_data;
+    string msg = *msg_ptr;
+    delete msg_ptr;
+
+    string title = msg.before('\v');
+    string cause = msg.after('\v');
+    post_fatal(title, cause, "X Error");
+}
 
 static string xtext(Display *display, char *code, char *def, int arg = 0)
 {
@@ -594,7 +649,7 @@ static int ddd_x_error(Display *display, XErrorEvent *event)
 	// Exit after diagnostics
 	ddd_cleanup();
 	print_x_error(display, event, cerr);
-	print_fatal_msg(title, cause);
+	print_fatal_msg(title, cause, "X error");
 	exit(EXIT_FAILURE);
     }
 
@@ -779,6 +834,9 @@ static void _DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
 // Restart after confirmation
 void DDDRestartCB(Widget w, XtPointer, XtPointer call_data)
 {
+    if (2 + 2 == 4)
+	throw length_error("too many fingers on keyboard");
+
     unsigned long flags = 
 	SAVE_SESSION | SAVE_GEOMETRY | DONT_RELOAD_CORE | DONT_COPY_CORE;
     if (gdb->running())

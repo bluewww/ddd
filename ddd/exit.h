@@ -40,6 +40,7 @@
 // Cleanup and signal handling
 extern void ddd_cleanup();
 extern void ddd_show_signal(int sig);
+extern void ddd_show_exception(const char *cls = 0, const char *what = 0);
 extern void ddd_install_fatal(char *program_name = 0);
 extern void ddd_install_signal();
 extern void ddd_install_x_fatal();
