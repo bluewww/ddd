@@ -177,7 +177,7 @@ static void Initialize(Widget /* request */,
     const Window window = _w->swallower.window;
     SwallowerWidget& next = _w->swallower.next;
 
-    if (window != None && (w->core.width == 0 || w->core.height == 0))
+    if (window != None && (w->core.width <= 1 || w->core.height <= 1))
     {
 	// Query current width or height
 	XWindowAttributes attr;
@@ -210,7 +210,6 @@ static void CheckIfWindowHasGone(Widget w, XtPointer, XEvent *event, Boolean *)
 	SwallowerInfo info;
 	info.window = window;
 	info.event  = event;
-	XtCallCallbacks(w, XtNwindowGoneCallback, XtPointer(&info));
 
 	// Mark as `gone'
 	window = 0;
@@ -218,6 +217,9 @@ static void CheckIfWindowHasGone(Widget w, XtPointer, XEvent *event, Boolean *)
 	// No further need to check for events
 	XtRemoveEventHandler(w, SubstructureNotifyMask, False, 
 			     CheckIfWindowHasGone, XtPointer(w));
+
+	// Call the callbacks
+	XtCallCallbacks(w, XtNwindowGoneCallback, XtPointer(&info));
     }
 }
 
@@ -226,12 +228,16 @@ static void Swallow(Widget w)
     const SwallowerWidget _w = SwallowerWidget(w);
     const Window window = _w->swallower.window;
 
+    XSync(XtDisplay(w), False);
+    SwallowerCheckEvents();
+
     if (window == 0 || !XtIsRealized(w))
 	return;
 
     XUnmapWindow(XtDisplay(w), window);
 
     XResizeWindow(XtDisplay(w), window, w->core.width, w->core.height);
+    XSetWindowBorderWidth(XtDisplay(w), window, 0);
 
     XReparentWindow(XtDisplay(w), window, XtWindow(w), 0, 0);
 
@@ -246,6 +252,9 @@ static void Spitout(Widget w)
 {
     const SwallowerWidget _w = SwallowerWidget(w);
     const Window window = _w->swallower.window;
+
+    XSync(XtDisplay(w), False);
+    SwallowerCheckEvents();
 
     if (window == 0 || !XtIsRealized(w))
 	return;
@@ -270,7 +279,7 @@ static void Realize(Widget w,
     const SwallowerWidget _w = SwallowerWidget(w);
     const Window window = _w->swallower.window;
 
-    if (window != None && (w->core.width == 0 || w->core.height == 0))
+    if (window != None && (w->core.width <= 1 || w->core.height <= 1))
     {
 	// Query current width or height
 	XWindowAttributes attr;
@@ -329,8 +338,10 @@ static void Destroy(Widget w)
     const SwallowerWidget _w = SwallowerWidget(w);
     const SwallowerWidget next = _w->swallower.next;
 
-    // If we still have a swalloed window, spit it out
+#if 0
+    // If we still have a swallowed window, spit it out
     Spitout(w);
+#endif
 
     // Unregister
     SwallowerWidget loop = all_swallowers;
