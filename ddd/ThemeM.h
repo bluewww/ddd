@@ -40,9 +40,24 @@ class ThemeManager {
 private:
     StringStringArrayAssoc map;
 
+protected:
+    static string read_word(string& value);
+
 public:
     // Create from external representation REP
     ThemeManager(const string& rep);
+
+    // Copy constructor
+    ThemeManager(const ThemeManager& t)
+	: map(t.map)
+    {}
+
+    // Assignment
+    ThemeManager& operator = (const ThemeManager& t)
+    {
+	map = t.map;
+	return *this;
+    }
 
     // Convert into external representation
     friend ostream& operator<<(ostream& os, const ThemeManager& t);

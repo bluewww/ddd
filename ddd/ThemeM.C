@@ -39,6 +39,20 @@ char ThemeManager_rcsid[] =
 #include "value-read.h"
 #include "string-fun.h"
 
+string ThemeManager::read_word(string& value)
+{
+    string token;
+
+    do {
+	token = read_token(value);
+	if (token == "")
+	    return "";
+	strip_space(token);
+    } while (token == "");
+
+    return token;
+}
+
 ThemeManager::ThemeManager(const string& value)
     : map()
 {
@@ -49,16 +63,15 @@ ThemeManager::ThemeManager(const string& value)
     string v = value;
     while (v != "")
     {
-	string token = read_token(v);
-	strip_space(token);
+	string token = read_word(v);
 
 	if (token == "pattern")
 	{
-	    pattern = unquote(read_token(v));
+	    pattern = unquote(read_word(v));
 	}
 	else if (token == "theme")
 	{
-	    themes += unquote(read_token(v));
+	    themes += unquote(read_word(v));
 	    a_map[pattern] = themes;
 	}
 	else
