@@ -55,10 +55,14 @@ char HelpCB_rcsid[] =
 #include <Xm/TextF.h>
 #include <Xm/PushB.h>
 #include <Xm/PanedW.h>
+#include <Xm/MenuShell.h>
 
 #include <X11/cursorfont.h>
 #include <X11/StringDefs.h>
-#include <X11/Shell.h>
+
+#if LESSTIF_HACKS
+#include <X11/IntrinsicP.h>
+#endif
 
 #include "strclass.h"
 #include "cook.h"
@@ -1142,6 +1146,9 @@ static Widget tip_shell               = 0;
 // The tip label.
 static Widget tip_label               = 0;
 
+// The tip row; a RowColumn widget surrounding the label.
+static Widget tip_row                 = 0;
+
 // True if the button tip shell is raised.
 static bool tip_popped_up             = false;
 
@@ -1204,15 +1211,24 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XtSetArg(args[arg], XmNallowShellResize, true);             arg++;
 	XtSetArg(args[arg], XmNx, WidthOfScreen(XtScreen(w)) + 1);  arg++;
 	XtSetArg(args[arg], XmNy, HeightOfScreen(XtScreen(w)) + 1); arg++;
-	tip_shell = verify(XtCreateWidget("tipShell",
-					  overrideShellWidgetClass, 
-					  findTheTopLevelShell(w), args, arg));
+	tip_shell = verify(XmCreateMenuShell(findTheTopLevelShell(w),
+					     "tipShell", args, arg));
+
+	arg = 0;
+	XtSetArg(args[arg], XmNmarginWidth, 0);                     arg++;
+	XtSetArg(args[arg], XmNmarginHeight, 0);                    arg++;
+	XtSetArg(args[arg], XmNresizeWidth, True);                  arg++;
+	XtSetArg(args[arg], XmNresizeHeight, True);                 arg++;
+	XtSetArg(args[arg], XmNborderWidth, 0);                     arg++;
+	XtSetArg(args[arg], XmNshadowThickness, 0);                 arg++;
+	tip_row = verify(XmCreateRowColumn(tip_shell, "tipRow", args, arg));
+	XtManageChild(tip_row);
 
 	arg = 0;
 	XtSetArg(args[arg], XmNlabelString, tip.xmstring());        arg++;
 	XtSetArg(args[arg], XmNrecomputeSize, true);                arg++;
 	XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING);   arg++;
-	tip_label = XmCreateLabel(tip_shell, "tipLabel", args, arg);
+	tip_label = XmCreateLabel(tip_row, "tipLabel", args, arg);
 	XtManageChild(tip_label);
 
 	// Simple hack to ensure shell is realized
@@ -1220,8 +1236,21 @@ static void PopupTip(XtPointer client_data, XtIntervalId *timer)
 	XtPopdown(tip_shell);
     }
 
-    XtVaSetValues(tip_label, XmNlabelString, tip.xmstring(), NULL);
+#if LESSTIF_HACKS
+    // Some Motif versions (esp. LessTif 0.79) fail to resize the
+    // shell properly.  Use this hack instead.
+    XmFontList font_list;
+    XtVaGetValues(tip_label, XmNfontList, &font_list, NULL);
+    
+    Dimension tip_width  = tip.width(font_list)  + 6;
+    Dimension tip_height = tip.height(font_list) + 6;
 
+    XtResizeWidget(tip_label, tip_width, tip_height, 0);
+    XtResizeWidget(tip_row,   tip_width, tip_height, 0);
+    XtResizeWidget(tip_shell, tip_width, tip_height, 1);
+#endif
+
+    XtVaSetValues(tip_label, XmNlabelString, tip.xmstring(), NULL);
 
     // Find a possible place for the tip.  Consider the alignment of
     // the parent composite as well as the distance to the screen edge.

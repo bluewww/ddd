@@ -166,6 +166,18 @@ char ddd_rcsid[] =
 #include <X11/Xmu/Editres.h>
 #endif
 
+#if LESSTIF_HACKS
+#include <X11/IntrinsicP.h>
+
+extern "C" {
+#define new new_w
+#define class class_w
+#include <Xm/SashP.h>	  // XmIsSash()
+#undef class
+#undef new
+}
+#endif
+
 // Lots of DDD stuff
 #include "AgentM.h"
 #include "AppData.h"
@@ -295,6 +307,9 @@ static void CheckDragCB(Widget, XtPointer client_data, XtPointer call_data);
 
 // Verify whether buttons are active
 static void verify_buttons(MMDesc *items);
+
+// Fix the size of the status line
+static void fix_status_size();
 
 
 //-----------------------------------------------------------------------------
@@ -1639,8 +1654,8 @@ int main(int argc, char *argv[])
     XtQueryGeometry(arg_cmd_w, NULL, &size);
     unsigned char unit_type;
     XtVaGetValues(arg_cmd_w, XmNunitType, &unit_type, NULL);
-    int new_height = XmConvertUnits(arg_cmd_w, XmVERTICAL, XmPIXELS, 
-				    size.height, unit_type);
+    Dimension new_height = XmConvertUnits(arg_cmd_w, XmVERTICAL, XmPIXELS, 
+					  size.height, unit_type);
     XtVaSetValues(arg_cmd_w,
 		  XmNpaneMaximum, new_height,
 		  XmNpaneMinimum, new_height,
@@ -2158,6 +2173,132 @@ static void verify_buttons(MMDesc *items)
 }
 
 //-----------------------------------------------------------------------------
+// Fix size of status line
+//-----------------------------------------------------------------------------
+
+static void fix_status_size()
+{
+    if (!app_data.status_at_bottom)
+	return;
+
+    Widget status_form = XtParent(status_w);
+    if (!XtIsRealized(status_form))
+	return;
+
+    Dimension pane_maximum, height;
+    XtVaGetValues(status_form,
+		  XmNpaneMaximum, &pane_maximum, 
+		  XmNheight, &height,
+		  NULL);
+
+    if (height <= pane_maximum)
+	return;
+
+    XtVaSetValues(status_form,
+		  XmNallowResize, True,
+		  XmNheight, pane_maximum,
+		  XmNallowResize, False,
+		  NULL);
+
+#if LESSTIF_HACKS
+    // Simulate a drag of the lowest sash to the bottom.  Ugly hack.
+
+    // Find the children of the paned window
+    Widget paned = XtParent(status_form);
+    WidgetList children;
+    Cardinal num_children = 0;
+    
+    XtVaGetValues(paned, 
+		  XmNchildren, &children,
+		  XmNnumChildren, &num_children,
+		  NULL);
+
+    // The sash controlling the status line is the lowest of all
+    Widget sash = 0;
+    for (Cardinal i = 0; i < num_children; i++)
+    {
+	Widget child = children[i];
+
+	if (XmIsSash(child) && XtIsRealized(child) && XtIsManaged(child))
+	{
+	    Position sash_y  = 0;
+	    Position child_y = 1;
+
+	    if (sash != 0)
+	    {
+		XtVaGetValues(sash,  XmNy, &sash_y, NULL);
+		XtVaGetValues(child, XmNy, &child_y, NULL);
+	    }
+
+	    if (child_y > sash_y)
+		sash = child;
+	}
+    }
+
+    if (sash == 0)
+	return;			// No sash found
+
+    // Simulate a vertical drag of MOVEMENT pixels
+    const Dimension movement = max(height, HeightOfScreen(XtScreen(sash)));
+
+    // Press button 1 ...
+    XEvent event;
+    event.type                = ButtonPress;
+    event.xbutton.serial      = 0;
+    event.xbutton.display     = XtDisplay(sash);
+    event.xbutton.window      = XtWindow(sash);
+    event.xbutton.root        = RootWindowOfScreen(XtScreen(sash));
+    event.xbutton.subwindow   = None;
+    event.xbutton.time        = XtLastTimestampProcessed(XtDisplay(sash));
+    event.xbutton.x           = 0;
+    event.xbutton.y           = 0;
+    event.xbutton.x_root      = 0;
+    event.xbutton.y_root      = 0;
+    event.xbutton.state       = Button1Mask;
+    event.xbutton.button      = Button1;
+    event.xbutton.same_screen = True;
+    XtDispatchEvent(&event);
+
+    // ... move down ...
+    for (Dimension y = 0; y < movement; y++)
+    {
+	event.type                = MotionNotify;
+	event.xmotion.serial      = 0;
+	event.xmotion.display     = XtDisplay(sash);
+	event.xmotion.window      = XtWindow(sash);
+	event.xmotion.root        = RootWindowOfScreen(XtScreen(sash));
+	event.xmotion.subwindow   = None;
+	event.xmotion.time        = XtLastTimestampProcessed(XtDisplay(sash));
+	event.xmotion.x           = 0;
+	event.xmotion.y           = y;
+	event.xmotion.x_root      = 0;
+	event.xmotion.y_root      = y;
+	event.xmotion.state       = Button1Mask;
+	event.xmotion.is_hint     = NotifyNormal;
+	event.xmotion.same_screen = True;
+	XtDispatchEvent(&event);
+    }
+
+    // ... and release it again.
+    event.type                = ButtonRelease;
+    event.xbutton.serial      = 0;
+    event.xbutton.display     = XtDisplay(sash);
+    event.xbutton.window      = XtWindow(sash);
+    event.xbutton.root        = RootWindowOfScreen(XtScreen(sash));
+    event.xbutton.subwindow   = None;
+    event.xbutton.time        = XtLastTimestampProcessed(XtDisplay(sash));
+    event.xbutton.x           = 0;
+    event.xbutton.y           = movement;
+    event.xbutton.x_root      = 0;
+    event.xbutton.y_root      = movement;
+    event.xbutton.state       = Button1Mask;
+    event.xbutton.button      = Button1;
+    event.xbutton.same_screen = True;
+    XtDispatchEvent(&event);
+#endif
+}
+
+//-----------------------------------------------------------------------------
 // Setup
 //-----------------------------------------------------------------------------
 
@@ -2165,6 +2306,7 @@ static Boolean ddd_setup_done(XtPointer)
 {
     ddd_check_version();
     install_button_tips();
+    fix_status_size();
     main_loop_entered = true;
 
     DispBox::init_vsllib(process_pending_events);
@@ -2395,6 +2537,7 @@ void update_options()
     EnableTextDocs(app_data.value_docs);
 
     update_reset_preferences();
+    fix_status_size();
 }
 
 //-----------------------------------------------------------------------------
@@ -2658,6 +2801,7 @@ static void ChangePanelCB(Widget, XtPointer client_data, XtPointer call_data)
 
     if (cbs->set)
     {
+	// Manage this child
 	XtManageChild(panel);
 	XtAddCallback(preferences_dialog, XmNhelpCallback,
 		      HelpOnThisCB, XtPointer(panel));
@@ -2666,21 +2810,34 @@ static void ChangePanelCB(Widget, XtPointer client_data, XtPointer call_data)
 	current_panel = panel;
 
 	update_reset_preferences();
-    }
-    else
-    {
-	XtUnmanageChild(panel);
-	XtRemoveCallback(preferences_dialog, XmNhelpCallback,
-			 HelpOnThisCB, XtPointer(panel));
-	XtRemoveCallback(reset_preferences_w, XmNactivateCallback,
-			 ResetPreferencesCB, XtPointer(panel));
+
+	// Unmanage all other children
+	WidgetList children;
+	Cardinal num_children;
+	XtVaGetValues(XtParent(panel), 
+		      XmNchildren, &children,
+		      XmNnumChildren, &num_children,
+		      NULL);
+
+	for (Cardinal i = 0; i < num_children; i++)
+	{
+	    Widget child = children[i];
+	    if (child != panel)
+	    {
+		XtUnmanageChild(child);
+		XtRemoveCallback(preferences_dialog, XmNhelpCallback,
+				 HelpOnThisCB, XtPointer(child));
+		XtRemoveCallback(reset_preferences_w, XmNactivateCallback,
+				 ResetPreferencesCB, XtPointer(child));
+	    }
+	}
     }
 }
 
-static void add_panel(Widget parent, Widget buttons, 
-		      String name, MMDesc items[],
-		      Dimension& max_width, Dimension& max_height,
-		      bool set = false)
+static Widget add_panel(Widget parent, Widget buttons, 
+			String name, MMDesc items[],
+			Dimension& max_width, Dimension& max_height,
+			bool set = false)
 {
     Arg args[10];
     int arg;
@@ -2713,9 +2870,21 @@ static void add_panel(Widget parent, Widget buttons,
 		  XtPointer(form));
 
     XmToggleButtonSetState(button, Boolean(set), False);
-    XmToggleButtonCallbackStruct cbs;
-    cbs.set = set;
-    ChangePanelCB(button, XtPointer(form), &cbs);
+
+    if (set)
+    {
+	XmToggleButtonCallbackStruct cbs;
+	cbs.set = set;
+	ChangePanelCB(button, XtPointer(form), &cbs);
+    }
+    else
+    {
+#if !LESSTIF_HACKS
+	XtUnmanageChild(panel);
+#endif
+    }
+
+    return button;
 }
 
 // Create preferences dialog
@@ -2769,8 +2938,9 @@ static void make_preferences(Widget parent)
     Dimension max_width  = 0;
     Dimension max_height = 0;
 
-    add_panel(change, buttons, "general", general_preferences_menu, 
-	      max_width, max_height, true);
+    Widget general_button =
+	add_panel(change, buttons, "general", general_preferences_menu, 
+	      max_width, max_height, false);
     add_panel(change, buttons, "source",  source_preferences_menu,  
 	      max_width, max_height, false);
     add_panel(change, buttons, "data",    data_preferences_menu,    
@@ -2791,6 +2961,8 @@ static void make_preferences(Widget parent)
 		  XmNresizeWidth, False,
 		  XmNresizeHeight, False,
 		  NULL);
+
+    XmToggleButtonSetState(general_button, True, True);
 }
 
 // Popup Preference Panel
@@ -2822,6 +2994,11 @@ static void create_status(Widget parent)
     XtSetArg(args[arg], XmNresizable,          False); arg++;
     XtSetArg(args[arg], XmNfillOnSelect,       True); arg++;
     XtSetArg(args[arg], XmNset,                True); arg++;
+#if LESSTIF_HACKS
+    MString spaces("   ");
+    XtSetArg(args[arg], XmNlabelString,        spaces.xmstring()); arg++;
+#endif
+
     led_w = verify(XmCreateToggleButton(status_form, "led", args, arg));
     XtManageChild(led_w);
 
@@ -2880,10 +3057,14 @@ static void create_status(Widget parent)
     size.request_mode = CWHeight;
     XtQueryGeometry(status_w, NULL, &size);
     XtVaGetValues(status_w, XmNunitType, &unit_type, NULL);
-    int new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
-				    size.height, unit_type);
+    Dimension new_height = XmConvertUnits(status_w, XmVERTICAL, XmPIXELS, 
+					  size.height, unit_type);
     XtVaSetValues(led_w,
+#if LESSTIF_HACKS
+		  XmNindicatorSize, new_height - 3,
+#else
 		  XmNindicatorSize, new_height - 1,
+#endif
 		  NULL);
     XtVaSetValues(arrow_w,
 		  XmNheight, new_height - 2,
@@ -3262,6 +3443,7 @@ static void gdb_ready_for_questionHP (Agent *, void*, void* call_data)
 		  gdb_ready && (gdb->type() == GDB || gdb->type() == DBX));
 
     blink(!gdb_ready);
+    fix_status_size();
 }
 
 static void gdb_ready_for_cmdHP (Agent *, void *, void *)

@@ -54,8 +54,11 @@ char status_rcsid[] =
 #include <Xm/SelectioB.h>
 #include <Xm/RowColumn.h>
 #include <Xm/Label.h>
-#include <X11/Shell.h>
+#include <Xm/MenuShell.h>
 
+#if LESSTIF_HACKS
+#include <X11/IntrinsicP.h>
+#endif
 
 //-----------------------------------------------------------------------------
 // Data
@@ -158,6 +161,7 @@ static MString *history = 0;
 static int current_history = 0;
 
 static Widget history_label = 0;
+static Widget history_row   = 0;
 
 static Widget create_status_history(Widget parent)
 {
@@ -171,14 +175,24 @@ static Widget create_status_history(Widget parent)
 
     arg = 0;
     XtSetArg(args[arg], XmNallowShellResize, True); arg++;
-    history_shell = verify(XtCreateWidget("status_history_shell",
-					  overrideShellWidgetClass, 
-					  parent, args, arg));
+    history_shell = verify(XmCreateMenuShell(parent,
+					     "status_history_shell",
+					     args, arg));
+
+    arg = 0;
+    XtSetArg(args[arg], XmNmarginWidth, 0);     arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0);    arg++;
+    XtSetArg(args[arg], XmNresizeWidth, True);  arg++;
+    XtSetArg(args[arg], XmNresizeHeight, True); arg++;
+    XtSetArg(args[arg], XmNborderWidth, 0);     arg++;
+    XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
+    history_row = verify(XmCreateRowColumn(history_shell, "row", args, arg));
+    XtManageChild(history_row);
 
     arg = 0;
     XtSetArg(args[arg], XmNresizable, True); arg++;
     XtSetArg(args[arg], XmNalignment, XmALIGNMENT_BEGINNING); arg++;
-    history_label = verify(XmCreateLabel(history_shell, "label", args, arg));
+    history_label = verify(XmCreateLabel(history_row, "label", args, arg));
     XtManageChild(history_label);
 					   
     return history_shell;
@@ -211,6 +225,21 @@ Widget status_history(Widget parent)
 	    i = (i + 1) % status_history_size;
 	} while (i != current_history);
     }
+
+#if LESSTIF_HACKS
+    // Some Motif versions (esp. LessTif 0.79) fail to resize the
+    // shell properly.  Use this hack instead.
+    XmFontList font_list;
+    XtVaGetValues(history_label, XmNfontList, &font_list, NULL);
+    
+    Dimension history_width  = history_msg.width(font_list)  + 6;
+    Dimension history_height = history_msg.height(font_list) + 6;
+
+    XtResizeWidget(history_label, history_width, history_height, 0);
+    XtResizeWidget(history_row,   history_width, history_height, 0);
+
+    XtResizeWidget(history_shell, history_width, history_height, 1);
+#endif
 
     XtVaSetValues(history_label, XmNlabelString, history_msg.xmstring(), 
 		  XtPointer(0));

@@ -214,12 +214,12 @@ dnl
 dnl Check X options
 dnl
 if test "$with_x" = no; then
-AC_MSG_ERROR($DDD requires the X window system to compile and run.
-                  Please do not use the configure option '--without-x'.)
+AC_MSG_ERROR([$DDD requires the X window system to compile and run.
+                  Please do not use the configure option '--without-x'.])
 fi
 if test "$with_motif" = no; then
-AC_MSG_ERROR($DDD requires Motif to compile and run.
-                  Please do not use the configure option '--without-motif'.)
+AC_MSG_ERROR([$DDD requires Motif to compile and run.
+                  Please do not use the configure option '--without-motif'.])
 fi
 dnl
 dnl
@@ -259,10 +259,10 @@ X11_LIBS=""
 AC_CHECK_LIB(X11, XOpenDisplay, X11_LIBS="-lX11",,${X_PRE_LIBS})
 if test "$X11_LIBS" = ""; then
 dnl Not having X is fatal.  Let the user fix this.
-AC_MSG_ERROR(The X11 library '-lX11' could not be found.
+AC_MSG_ERROR([The X11 library '-lX11' could not be found.
                   Please use the configure options '--x-includes=DIR'
                   and '--x-libraries=DIR' to specify the X location.
-                  See the file 'config.log' for further diagnostics.)
+                  See the file 'config.log' for further diagnostics.])
 fi
 AC_SUBST(X_LIBS)
 AC_SUBST(X11_LIBS)
@@ -291,10 +291,10 @@ AC_CHECK_LIB(Xt, XtToolkitInitialize, XT_LIBS="-lXt",,
 	${X_PRE_LIBS} ${X11_LIBS})
 if test "$XT_LIBS" = ""; then
 dnl Not having Xt is fatal.  Let the user fix this.
-AC_MSG_ERROR(The X toolkit library '-lXt' could not be found.
+AC_MSG_ERROR([The X toolkit library '-lXt' could not be found.
                   Please use the configure options '--with-x-includes=DIR'
                   and '--with-x-libraries=DIR' to specify the X location.
-                  See the file 'config.log' for further diagnostics.)
+                  See the file 'config.log' for further diagnostics.])
 fi
 AC_SUBST(XT_LIBS)
 dnl
@@ -324,13 +324,13 @@ AC_CHECK_LIB(Xaw, XawTextSetInsertionPoint,
 	${X_PRE_LIBS} ${XAW_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS})
 if test "$XAW_LIBS" = ""; then
 dnl A warning suffices here -- DDD also works without Athena.
-AC_MSG_WARN(The Athena widgets library '-lXaw' could not be found.
+AC_MSG_WARN([The Athena widgets library '-lXaw' could not be found.
                     If you have the athena library, please use the
                     configure options '--with-athena-includes=DIR' and 
                     '--with-athena-libraries=DIR' to specify the Xaw location.
                     If you do not have the athena library, use the configure
                     option '--without-athena' to suppress this message.
-                    See the file 'config.log' for further diagnostics.)
+                    See the file 'config.log' for further diagnostics.])
 fi
 fi
 if test "$XAW_LIBS" != ""; then
@@ -364,14 +364,31 @@ AC_CHECK_LIB(Xm, XmCreateOptionMenu,
 fi
 if test "$XM_LIBS" = ""; then
 dnl Without Motif, we won't get far.  Let the user fix this.
-AC_MSG_ERROR(The Motif library '-lXm' could not be found.
+AC_MSG_ERROR([The Motif library '-lXm' could not be found.
                   Please use the configure options '--with-motif-includes=DIR'
                   and '--with-motif-libraries=DIR' to specify the Xm location.
-                  See the file 'config.log' for further diagnostics.)
+                  See the file 'config.log' for further diagnostics.])
 fi
 AC_SUBST(XM_LIBS)
 dnl
 dnl
+dnl Check for LessTif and LessTif hacks
+ICE_CHECK_LESSTIF
+AC_ARG_ENABLE(lesstif-hacks,
+[  --enable-lesstif-hacks  enable LessTif bug workarounds])dnl
+if test "$enable_lesstif_hacks" = yes
+then
+AC_DEFINE(LESSTIF_HACKS)
+elif test "$ice_cv_have_lesstif" = yes
+then
+AC_MSG_WARN([You are using a LessTif library.  Unless you are using
+                    a LessTif version that is 100% Motif compatible, you
+                    should use the configure option '--enable-lesstif-hacks'.
+                    This enables some bug workarounds that make ${DDD} run
+                    with current LessTif releases.])
+fi
+dnl
+dnl 
 dnl
 dnl
 LIBS="$ice_save_LIBS"

@@ -99,6 +99,10 @@ char SourceView_rcsid[] =
 #include <Xm/ToggleB.h>
 #include <X11/StringDefs.h>
 
+#if LESSTIF_HACKS
+#include <X11/IntrinsicP.h>
+#endif
+
 // System stuff
 extern "C" {
 #include <sys/types.h>
@@ -355,6 +359,18 @@ bool SourceView::checking_scroll = false;
 bool SourceView::at_lowest_frame = true;
 
 int SourceView::max_popup_expr_length = 20;
+
+
+//-----------------------------------------------------------------------
+// Selectinn stuff
+//-----------------------------------------------------------------------
+
+static XmTextPosition selection_startpos;
+static XmTextPosition selection_endpos;
+static XmTextPosition selection_pos;
+static Time           selection_time;
+static XEvent         selection_event;
+
 
 //-----------------------------------------------------------------------
 // Helping functions.
@@ -802,7 +818,7 @@ static string last_info_output = "";
 
 void SourceView::set_source_argCB(Widget text_w, 
 				  XtPointer client_data, 
-				  XtPointer)
+				  XtPointer call_data)
 {
     string& text = current_text(text_w);
     if (text == "")
@@ -812,33 +828,100 @@ void SourceView::set_source_argCB(Widget text_w,
 	selection_click = false;
 
     XmTextPosition startPos, endPos;
-    if (XmTextGetSelectionPosition(text_w, &startPos, &endPos))
+    Boolean have_selection = 
+	XmTextGetSelectionPosition(text_w, &startPos, &endPos);
+
+    if (!have_selection)
     {
-	int startIndex = 0;
-	if (startPos > 0)
-	    startIndex = text.index('\n', startPos - text.length()) + 1;
-
-	int endIndex = 0;
-	if (endPos > 0)
-	    endIndex = text.index('\n', endPos - text.length()) + 1;
-
-	bool bp_selected = false;
-	if (selection_click
-	    && startIndex == endIndex
-	    && startPos < XmTextPosition(text.length())
-	    && endPos < XmTextPosition(text.length())
-	    && text[startPos] != '\n'
-	    && text[endPos] != '\n')
+	// No selection?  If the current motion was caused by a mouse
+	// click, fetch word at current cursor position instead.
+	XmTextVerifyCallbackStruct *cbs = 
+	    (XmTextVerifyCallbackStruct *)call_data;
+	if (cbs != 0 && cbs->reason == XmCR_MOVING_INSERT_CURSOR)
 	{
-	    if (text_w == source_text_w
-		&& startPos - startIndex <= bp_indent_amount
-		&& endPos - endIndex <= bp_indent_amount)
+	    XEvent *event = cbs->event;
+	    if (event == 0)
 	    {
-		// Selection from line number area: prepend source file name
-		string line = text(startIndex, bp_indent_amount);
-		int line_nr = atoi(line);
-		source_arg->set_string(current_source_name() 
-				       + ":" + itostring(line_nr));
+		// LessTif 0.79 may not pass a reasonable event here.
+#if XtSpecificationRelease >= 6
+		// Use the last processed event instead.
+		event = XtLastEventProcessed(XtDisplay(text_w));
+#else
+		// Use the last recorded selection event instead.
+		event = &selection_event;
+#endif
+		selection_click = true;
+	    }
+
+	    if (event != 0 && (event->type == ButtonPress ||
+			       event->type == ButtonRelease))
+	    {
+		find_word_bounds(text_w, cbs->newInsert, 
+				 startPos, endPos);
+		have_selection = True;
+	    }
+	}
+    }
+
+    // Don't use this selection event again.
+    selection_event.type = KeyPress;
+
+    if (!have_selection)
+    {
+	// No selection - sorry
+	return;
+    }
+
+    int startIndex = 0;
+    if (startPos > 0)
+	startIndex = text.index('\n', startPos - text.length()) + 1;
+
+    int endIndex = 0;
+    if (endPos > 0)
+	endIndex = text.index('\n', endPos - text.length()) + 1;
+
+    bool bp_selected = false;
+    if (selection_click
+	&& startIndex == endIndex
+	&& startPos < XmTextPosition(text.length())
+	&& endPos < XmTextPosition(text.length())
+	&& text[startPos] != '\n'
+	&& text[endPos] != '\n')
+    {
+	if (text_w == source_text_w
+	    && startPos - startIndex <= bp_indent_amount
+	    && endPos - endIndex <= bp_indent_amount)
+	{
+	    // Selection from line number area: prepend source file name
+	    string line = text(startIndex, bp_indent_amount);
+	    int line_nr = atoi(line);
+	    source_arg->set_string(current_source_name() 
+				   + ":" + itostring(line_nr));
+
+	    // If a breakpoint is here, select this one only
+	    MapRef ref;
+	    for (BreakPoint* bp = bp_map.first(ref);
+		 bp != 0;
+		 bp = bp_map.next(ref))
+	    {
+		bp->selected() = 
+		    bp_matches(bp) && bp->line_nr() == line_nr;
+	    }
+
+	    bp_selected = true;
+	}
+	else if (text_w == code_text_w
+		 && startPos - startIndex <= code_indent_amount
+		 && endPos - endIndex <= code_indent_amount)
+	{
+	    // Selection from address area
+	    int index = text.index(rxaddress, startPos);
+	    if (index >= 0)
+	    {
+		string address = text.from(index);
+		address = address.through(rxalphanum);
+
+		source_arg->set_string(address);
 
 		// If a breakpoint is here, select this one only
 		MapRef ref;
@@ -847,61 +930,34 @@ void SourceView::set_source_argCB(Widget text_w,
 		     bp = bp_map.next(ref))
 		{
 		    bp->selected() = 
-			bp_matches(bp) && bp->line_nr() == line_nr;
+			(bp->type() == BREAKPOINT
+			 && (compare_address(address, bp->address()) == 0));
 		}
-
+		
 		bp_selected = true;
 	    }
-	    else if (text_w == code_text_w
-		     && startPos - startIndex <= code_indent_amount
-		     && endPos - endIndex <= code_indent_amount)
-	    {
-		// Selection from address area
-		int index = text.index(rxaddress, startPos);
-		if (index >= 0)
-		{
-		    string address = text.from(index);
-		    address = address.through(rxalphanum);
-
-		    source_arg->set_string(address);
-
-		    // If a breakpoint is here, select this one only
-		    MapRef ref;
-		    for (BreakPoint* bp = bp_map.first(ref);
-			 bp != 0;
-			 bp = bp_map.next(ref))
-		    {
-			bp->selected() = 
-			    (bp->type() == BREAKPOINT
-			     && (compare_address(address, 
-						 bp->address()) == 0));
-		    }
-		
-		    bp_selected = true;
-		}
-	    }
 	}
+    }
 
-	if (bp_selected)
+    if (bp_selected)
+    {
+	// Update breakpoint selection
+	process_breakpoints(last_info_output);
+    }
+    else
+    {
+	// Selection from source or code
+	string s;
+	if (startPos < XmTextPosition(text.length())
+	    && endPos < XmTextPosition(text.length()))
 	{
-	    // Update breakpoint selection
-	    process_breakpoints(last_info_output);
+	    s = text(startPos, endPos - startPos);
 	}
-	else
-	{
-	    // Selection from source or code
-	    string s;
-	    if (startPos < XmTextPosition(text.length())
-		&& endPos < XmTextPosition(text.length()))
-	    {
-		s = text(startPos, endPos - startPos);
-	    }
 
-	    while (s.contains('\n'))
-		s = s.after('\n');
+	while (s.contains('\n'))
+	    s = s.after('\n');
 
-	    source_arg->set_string(s);
-	}
+	source_arg->set_string(s);
     }
 }
 
@@ -2270,8 +2326,8 @@ void SourceView::create_text(Widget parent,
 
     // Create text window
     arg = 0;
-    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
-    XtSetArg(args[arg], XmNmarginWidth, 0);  arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0);    arg++;
+    XtSetArg(args[arg], XmNmarginWidth,  0);    arg++;
     string form_name = base + "_form_w";
     form = verify(XmCreateForm(parent, form_name, args, arg));
 
@@ -3290,11 +3346,6 @@ string SourceView::file_of_cursor()
 // Handle mouse selections
 //----------------------------------------------------------------------------
 
-static XmTextPosition selection_startpos;
-static XmTextPosition selection_endpos;
-static XmTextPosition selection_pos;
-static Time selection_time;
-
 void SourceView::setSelection(XtPointer client_data, XtIntervalId *)
 {
     Widget w = (Widget)client_data;
@@ -3312,11 +3363,13 @@ void SourceView::setSelection(XtPointer client_data, XtIntervalId *)
 void SourceView::startSelectWordAct (Widget text_w, XEvent* e, 
 				     String *params, Cardinal *num_params)
 {
-    XtCallActionProc(text_w, "grab-focus", e, params, *num_params);
+    selection_event = *e;
 
+    XtCallActionProc(text_w, "grab-focus", e, params, *num_params);
+    
     if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
-    
+
     XButtonEvent *event = (XButtonEvent *) e;
 
     XmTextPosition pos = XmTextXYToPos (text_w, event->x, event->y);
@@ -3338,8 +3391,10 @@ void SourceView::startSelectWordAct (Widget text_w, XEvent* e,
 void SourceView::endSelectWordAct (Widget text_w, XEvent* e, 
 				   String *params, Cardinal *num_params)
 {
-    XtCallActionProc(text_w, "extend-end", e, params, *num_params);
+    selection_event = *e;
 
+    XtCallActionProc(text_w, "extend-end", e, params, *num_params);
+    
     if (e->type != ButtonPress && e->type != ButtonRelease)
 	return;
     
@@ -3365,6 +3420,31 @@ void SourceView::endSelectWordAct (Widget text_w, XEvent* e,
 //-----------------------------------------------------------------------------
 // Handle source popup
 //----------------------------------------------------------------------------
+
+void SourceView::set_text_popup_label(int item, const string& arg, bool sens)
+{
+    Widget w = text_popup[item].widget;
+    MString label = MString(text_cmd_labels[item]) + tt(arg);
+
+    XtVaSetValues(w, XmNlabelString, label.xmstring(), NULL);
+    XtSetSensitive(w, sens);
+}
+
+void SourceView::set_text_popup_resource(int item, const string& arg)
+{
+#if LESSTIF_HACKS
+    // Set up resources for yet-to-be-created popup menu
+    string db = string(DDD_CLASS_NAME "*text_popup.") 
+	+ text_popup[item].name + "." + XmNlabelString + ": "
+	+ "@rm " + text_cmd_labels[item] 
+	+ " @tt " + arg;
+
+    XrmDatabase res = XrmGetStringDatabase(db.chars());
+    XrmDatabase target = XtDatabase(XtDisplay(source_text_w));
+    XrmMergeDatabases(res, &target);
+#endif
+}
+
 
 void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 {
@@ -3541,6 +3621,21 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	// Popup specific word menu
 	ref_word = gdb->dereferenced_expr(word);
 
+	string current_arg = word;
+	shorten(current_arg, max_popup_expr_length);
+	string current_ref_arg = gdb->dereferenced_expr(current_arg);
+
+#if LESSTIF_HACKS
+	set_text_popup_resource(TextItms::Break,    current_arg);
+	set_text_popup_resource(TextItms::Clear,    current_arg);
+	set_text_popup_resource(TextItms::Print,    current_arg);
+	set_text_popup_resource(TextItms::Disp,     current_arg);
+	set_text_popup_resource(TextItms::PrintRef, current_ref_arg);
+	set_text_popup_resource(TextItms::DispRef,  current_ref_arg);
+	set_text_popup_resource(TextItms::Whatis,   current_arg);
+	set_text_popup_resource(TextItms::Lookup,   current_arg);
+#endif
+
 	Widget text_popup_w = 
 	    MMcreatePopupMenu(text_w, "text_popup", text_popup);
 	MMaddCallbacks (text_popup, XtPointer(&word));
@@ -3550,62 +3645,15 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	Widget shell = XtParent(text_popup_w);
 	XtAddCallback(shell, XtNpopdownCallback, DestroyThisCB, shell);
 
-	string popup_arg = word;
-	shorten(popup_arg, max_popup_expr_length);
-	MString current_arg = tt(popup_arg);
-	MString current_ref_arg = tt(gdb->dereferenced_expr(popup_arg));
-
-	Arg args[5];
-	int arg = 0;
-	MString label = MString(text_cmd_labels[TextItms::Break]) 
-	    + current_arg;
-	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
-	XtSetValues(text_popup[TextItms::Break].widget, args, arg);
-
-	arg = 0;
-	label = MString(text_cmd_labels[TextItms::Clear]) + current_arg;
-	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
-	XtSetValues(text_popup[TextItms::Clear].widget, args, arg);
-
-	arg = 0;
-	label = MString(text_cmd_labels[TextItms::Print]) + current_arg;
-	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
-	XtSetValues(text_popup[TextItms::Print].widget, args, arg);
-
-	arg = 0;
-	label = MString(text_cmd_labels[TextItms::Disp]) + current_arg;
-	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
-	XtSetValues(text_popup[TextItms::Disp].widget, args, arg);
-
-	arg = 0;
-	label = MString(text_cmd_labels[TextItms::PrintRef]) + current_ref_arg;
-	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
-	XtSetValues(text_popup[TextItms::PrintRef].widget, args, arg);
-
-	arg = 0;
-	label = MString(text_cmd_labels[TextItms::DispRef]) + current_ref_arg;
-	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
-	XtSetValues(text_popup[TextItms::DispRef].widget, args, arg);
-
-	arg = 0;
-	label = MString(text_cmd_labels[TextItms::Whatis]) + current_arg;
-	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
-	XtSetValues(text_popup[TextItms::Whatis].widget, args, arg);
-
-	arg = 0;
-	label = MString(text_cmd_labels[TextItms::Lookup]) + current_arg;
-	XtSetArg (args[arg], XmNlabelString, label.xmstring());arg++;
-	XtSetValues(text_popup[TextItms::Lookup].widget, args, arg);
-
 	bool sens = (word.length() > 0);
-	XtSetSensitive (text_popup[TextItms::Break].widget,    sens);
-	XtSetSensitive (text_popup[TextItms::Clear].widget,    sens);
-	XtSetSensitive (text_popup[TextItms::Print].widget,    sens);
-	XtSetSensitive (text_popup[TextItms::Disp].widget,     sens);
-	XtSetSensitive (text_popup[TextItms::PrintRef].widget, sens);
-	XtSetSensitive (text_popup[TextItms::DispRef].widget,  sens);
-	XtSetSensitive (text_popup[TextItms::Whatis].widget,   sens);
-	XtSetSensitive (text_popup[TextItms::Lookup].widget,   sens);
+	set_text_popup_label(TextItms::Break,    current_arg, sens);
+	set_text_popup_label(TextItms::Clear,    current_arg, sens);
+	set_text_popup_label(TextItms::Print,    current_arg, sens);
+	set_text_popup_label(TextItms::Disp,     current_arg, sens);
+	set_text_popup_label(TextItms::PrintRef, current_ref_arg, sens);
+	set_text_popup_label(TextItms::DispRef,  current_ref_arg, sens);
+	set_text_popup_label(TextItms::Whatis,   current_arg, sens);
+	set_text_popup_label(TextItms::Lookup,   current_arg, sens);
 
 	XmMenuPosition (text_popup_w, event);
 	XtManageChild (text_popup_w);
@@ -5547,7 +5595,9 @@ void SourceView::set_disassemble(bool set)
 	disassemble = set;
 
 	if (!disassemble)
+	{
 	    XtUnmanageChild(code_form_w);
+	}
 	else
 	{
 	    XtManageChild(code_form_w);

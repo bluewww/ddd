@@ -65,6 +65,9 @@
 /* Define if you have Motif widgets. */
 #undef HAVE_MOTIF_WIDGETS
 
+/* Define if your Motif widgets are actually LessTif widgets. */
+#undef HAVE_LESSTIF
+
 /* Define if your C++ compiler supports named return values. */
 #undef HAVE_NAMED_RETURN_VALUES
 
@@ -85,6 +88,10 @@
 
 /* Define if the `regex_t' type has a `re_nsub' member, according to POSIX.2 */
 #undef HAVE_REGEX_T_RE_NSUB
+
+/* Define to enable some LessTif bug workarounds.  Required for
+   LessTif 0.79, for instance.  Don't use these with Motif. */
+#undef LESSTIF_HACKS
 
 /* Define to the signal handler type accepted by signal(). 
    See the `signal' man page and the decl in <signal.h> for the exact type.

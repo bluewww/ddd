@@ -198,6 +198,9 @@ class SourceView {
     static MMDesc text_popup[];
     static MMDesc bp_area[];
 
+    static void set_text_popup_label(int item, const string& arg, bool sens);
+    static void set_text_popup_resource(int item, const string& arg);
+
     //-----------------------------------------------------------------------
     // Daten
     //-----------------------------------------------------------------------

@@ -702,15 +702,21 @@ static string widget_size(Widget w)
     {
 	short columns;
 	XtVaGetValues(w, XmNcolumns, &columns, NULL);
-	s += '\n';
-	s += int_app_value(string(XtName(w)) + "." + XmNcolumns, columns);
+	if (columns > 0)
+	{
+	    s += '\n';
+	    s += int_app_value(string(XtName(w)) + "." + XmNcolumns, columns);
+	}
     }
     if (XmIsText(w))
     {
 	short rows;
 	XtVaGetValues(w, XmNrows, &rows, NULL);
-	s += '\n';
-	s += int_app_value(string(XtName(w)) + "." + XmNrows, rows);
+	if (rows > 0)
+	{
+	    s += '\n';
+	    s += int_app_value(string(XtName(w)) + "." + XmNrows, rows);
+	}
     }
 
     return s;

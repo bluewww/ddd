@@ -31,6 +31,7 @@ char MakeMenu_rcsid[] =
 
 #include "assert.h"
 #include "strclass.h"
+#include "MString.h"
 
 #include <stdlib.h>
 #include <Xm/Xm.h>
@@ -104,6 +105,40 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    arg = 0;
 	    XtSetArg(args[arg], XmNsubMenuId, subMenu); arg++;
 	    widget = verify(XmCreateCascadeButton(shell, name, args, arg));
+
+#if LESSTIF_HACKS
+	    {
+		// LessTif has a very tight packing of menu items;
+		// place a few spaces around the labels to increase
+		// item distance.
+		XmString old_label;
+		XtVaGetValues(widget, XmNlabelString, &old_label, NULL);
+		MString new_label(old_label, true);
+		XmStringFree(old_label);
+
+		if (!new_label.isNull())
+		{
+		    new_label = MString("  ") + new_label + MString("  ");
+		    XtVaSetValues(widget, 
+				  XmNlabelString, new_label.xmstring(), 
+				  NULL);
+		}
+
+		// Same applies to accelerator texts.
+		XmString old_acc;
+		XtVaGetValues(widget, XmNacceleratorText, &old_acc, NULL);
+		MString new_acc(old_acc, true);
+		XmStringFree(old_acc);
+
+		if (!new_acc.isNull())
+		{
+		    new_acc = MString("  ") + new_acc;
+		    XtVaSetValues(widget, 
+				  XmNacceleratorText, new_acc.xmstring(), 
+				  NULL);
+		}
+	    }
+#endif	    
 	    break;
 
 	case MMRadioMenu:

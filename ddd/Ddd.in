@@ -603,8 +603,13 @@ Ddd*highlightThickness:		1
 ! @Logo and @logo are used in the DDD logo.
 !
 ! Note: these font names are also used in DDD.  See `ddd/charsets.h'.
+!
+! Note: LessTif 0.79 always wants `FONTLIST_DEFAULT_TAG_STRING' 
+! instead of `charset' for TextField and Text widgets; this must also 
+! be the first font specified.
 
 Ddd*fontList: \
+-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
 -*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset,\
 -*-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*=small,\
 -*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=tt,\
@@ -620,6 +625,7 @@ Ddd*fontList: \
 
 ! An alternate, resolution-independent setting.
 ! Ddd*fontList: \
+! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
 ! -*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset,\
 ! -*-helvetica-bold-r-*-*-*-80-*-*-*-*-*-*=small,\
 ! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=tt,\
@@ -636,33 +642,42 @@ Ddd*fontList: \
 ! Fixed-width fonts.  `lucidatypewriter' is the font the DDD developers
 ! prefer; another popular choice is `courier'.
 Ddd*XmTextField.FontList: \
-	-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
+-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
 Ddd*XmText.FontList:	  \
-	-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
+-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
+-*-lucidatypewriter-medium-r-*-*-12-*-*-*-*-*-*-*=charset
 
 ! The resolution-independent alternative.
 ! Ddd*XmTextField.FontList: \
-! 	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
+! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
+! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
 ! Ddd*XmText.FontList:	  \
-! 	-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
-
+! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
+! -*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-*-*=charset
 
 
 ! Command tool fonts.  Slightly smaller.
 Ddd*tool_buttons.run.fontList: \
-	-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
+-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
+-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
 Ddd*tool_buttons.break.fontList:  \
-	-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
+-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
+-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*=charset
 Ddd*tool_buttons*fontList:  \
-	-*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*=charset
+-*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
+-*-helvetica-medium-r-*-*-10-*-*-*-*-*-*-*=charset
 
 ! The resolution-independent alternative.
 ! Ddd*tool_buttons.run.fontList: \
-! 	-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
-! Ddd*tool_buttons.break.fontList:  \
-! 	-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
-! Ddd*tool_buttons*fontList:  \
-! 	-*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset
+-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
+-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+! Ddd*tool_buttons.break.fontList: \
+-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
+-*-helvetica-bold-r-*-*-*-90-*-*-*-*-*-*=charset
+! Ddd*tool_buttons*fontList: \
+-*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=FONTLIST_DEFAULT_TAG_STRING,\
+-*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*=charset
 
 ! For fonts in the execution window, see the `termCommand' resource, above.
 ! For fonts in the data display, see the `vslDefs' resource, below.
