@@ -75,21 +75,18 @@ dnl
 dnl Check for -liberty.
 AC_CHECK_LIB(iberty, xstrerror, ddd_have_libiberty=true)
 dnl
-dnl Look for the tgetent() function - either in termcap, libcurses,
+dnl Look for the tgetent() function - either in libtermcap, libcurses,
 dnl or use the GNU termcap library as shipped with DDD.
-dnl
-AC_CHECK_LIB(curses, tgetent, ddd_have_termcap=true)
-dnl 
-dnl If we have a special `termcap' library, use it instead.
-AC_CHECK_LIB(termcap, tgetent, ddd_have_termcap=true)
-dnl
-dnl On Linux ELF systems, `-lncurses' is preferred to `-ltermcap'.
-dnl Reported by jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
-AC_CHECK_LIB(ncurses, tgetent, ddd_have_termcap=true)
 dnl
 dnl On FreeBSD systems, `-lmytinfo' is preferred to `-lncurses'.
 dnl Reported by Vincenzo Capuano <vcapuano@esoc.esa.de>
-AC_CHECK_LIB(mytinfo, tgetent, ddd_have_termcap=true)
+dnl
+dnl On Linux ELF systems, `-lncurses' is preferred to `-ltermcap'.
+dnl Reported by jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
+ddd_have_termcap=false
+for termlib in mytinfo ncurses curses termcap terminfo termlib; do
+   AC_CHECK_LIB(${termlib}, tgetent, [ddd_have_termcap=true; break])
+done
 dnl
 dnl
 AC_MSG_CHECKING([for packages to be configured and built])

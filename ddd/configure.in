@@ -233,22 +233,16 @@ dnl
 dnl Look for the tgetent() function - either in libtermcap, libcurses,
 dnl or use the GNU termcap library as shipped with DDD.
 dnl
-LIBTERMCAP="../termcap/libtermcap.a"
-dnl
-dnl Try the `curses' library first.  Usually a safe guess.
-AC_CHECK_LIB(curses, tgetent, LIBTERMCAP="-lcurses")
-dnl 
-dnl If we have a special `termcap' library, use it instead.
-AC_CHECK_LIB(termcap, tgetent, LIBTERMCAP="-ltermcap")
+dnl On FreeBSD systems, `-lmytinfo' is preferred to `-lncurses'.
+dnl Reported by Vincenzo Capuano <vcapuano@esoc.esa.de>
 dnl
 dnl On Linux ELF systems, `-lncurses' is preferred to `-ltermcap'.
 dnl Reported by jdassen@wi.leidenuniv.nl (J.H.M. Dassen)
-AC_CHECK_LIB(ncurses, tgetent, LIBTERMCAP="-lncurses")
 dnl
-dnl On FreeBSD systems, `-lmytinfo' is preferred to `-lncurses'.
-dnl Reported by Vincenzo Capuano <vcapuano@esoc.esa.de>
-AC_CHECK_LIB(mytinfo, tgetent, LIBTERMCAP="-lmytinfo")
-dnl
+LIBTERMCAP="../termcap/libtermcap.a"
+for termlib in mytinfo ncurses curses termcap terminfo termlib; do
+   AC_CHECK_LIB(${termlib}, tgetent, [LIBTERMCAP="-l${termlib}"; break])
+done
 AC_SUBST(LIBTERMCAP)
 dnl
 dnl
