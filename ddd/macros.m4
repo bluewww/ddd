@@ -32,8 +32,7 @@ dnl --------
 dnl
 dnl Use `[' and `]' for quoting; the default quotes ``' and `'' 
 dnl are used too often within DDD resources.
-changequote()dnl
-changequote([,])dnl
+changequote()changequote([,])dnl
 dnl
 dnl Disable comment characters
 ifdef([changecom],changecom)dnl
@@ -52,86 +51,89 @@ dnl
 dnl Typesetting
 dnl -----------
 dnl
-dnl ITEM issues a simple centered dot.
-define(ITEM,@tt \267 @rm)dnl
-dnl
-dnl SUBITEM issues a dash.
-define(SUBITEM,@tt - @rm)dnl
+dnl Note: all macros are recognized only with parameters; i.e.
+dnl if a macro F(X) is defined, F and F() expand to F.
 dnl
 dnl DESC(ITEM, DESC) issues `* ITEM - DESC.', with ITEM in bold.
-define(DESC,@tt \267 LBL($1) - $2.)dnl
+define([DESC], [ifelse([$1], , [[DESC]], [@tt \267 LBL($1) - $2.])])dnl
 dnl
 dnl LBL(foo) is used for describing labels
-define(LBL,@bf $1@rm )dnl
+define([LBL], [ifelse([$1], , [[LBL]], [@bf $1@rm ])])dnl
 dnl
 dnl TEXT(k) is used for describing visible text
-define(TEXT,`@tt $1@rm')dnl
+define([TEXT], [ifelse([$1], , [[TEXT]], [`@tt $1@rm'])])dnl
 dnl
 dnl CODE(k) indicates code.
-define(CODE,@tt $1@rm )dnl
+define([CODE], [ifelse([$1], , [[CODE]], [@tt $1@rm ])])dnl
 dnl
 dnl KBD(k) is used for commands at the GDB prompt
-define(KBD,`@tt $1@rm')dnl
+define([KBD], [ifelse([$1], , [[KBD]], [`@tt $1@rm'])])dnl
 dnl
 dnl KEY(k) is used for keyboard keys
-define(KEY,@key $1@rm )dnl
+define([KEY], [ifelse([$1], , [[KEY]], [@key $1@rm ])])dnl
 dnl
 dnl BUTTON(k) is used for mouse buttons
-define(BUTTON,@sl $1@rm )dnl
+define([BUTTON], [ifelse([$1], , [[BUTTON]], [@sl $1@rm ])])dnl
 dnl
 dnl SAMP(k) shows a literal sequence of characters.
-define(SAMP,`@tt $1@rm')dnl
+define([SAMP], [ifelse([$1], , [[SAMP]], [`@tt $1@rm'])])dnl
 dnl 
 dnl VAR(v) shows a metasyntactic variable.
-define(VAR,@sl $1@rm )dnl
+define([VAR], [ifelse([$1], , [[VAR]], [@sl $1@rm ])])dnl
 dnl
 dnl FILE(f) shows the name of a file
-define(FILE,`@tt $1@rm')dnl
+define([FILE], [ifelse([$1], , [[FILE]], [`@tt $1@rm'])])dnl
 dnl
 dnl DFN(f) gives a definition
-define(DFN,@sl $1@rm )dnl
+define([DFN], [ifelse([$1], , [[DFN]], [@sl $1@rm ])])dnl
 dnl
 dnl CITE(c) refers to some external work
-define(CITE,@sl $1@rm )dnl
+define([CITE], [ifelse([$1], , [[CITE]], [@sl $1@rm ])])dnl
 dnl
 dnl URL(u) refers to an URL
-define(URL,@tt $1@rm )dnl
+define([URL], [ifelse([$1], , [[URL]], [@tt $1@rm ])])dnl
 dnl
 dnl EMAIL(e) refers to an e-mail address
-define(EMAIL,@tt<$1>@rm )dnl
+define([EMAIL], [ifelse([$1], , [[EMAIL]], [@tt<$1>@rm ])])dnl
 dnl
 dnl EMPH(t) emphasizes text
-define(EMPH,@sl $1@rm )dnl
+define([EMPH], [ifelse([$1], , [[EMPH]], [@sl $1@rm ])])dnl
 dnl
 dnl STRONG(t) places strong emphasis
-define(STRONG,@bf $1@rm )dnl
+define([STRONG], [ifelse([$1], , [[STRONG]], [@bf $1@rm ])])dnl
+dnl
+dnl ITEM issues a simple centered dot.
+define([ITEM], [@tt \267 @rm])dnl
+dnl
+dnl SUBITEM issues a dash.
+define([SUBITEM], [@tt - @rm])dnl
 dnl
 dnl
 dnl Constants
 dnl ---------
 dnl
 dnl LBL_FIND_PREV and LBL_FIND_NEXT are the labels used for the Find buttons
-define(LBL_FIND_PREV,Find@small<< @bf()@rm )dnl
-define(LBL_FIND_NEXT,Find@small>> @bf()@rm )dnl
+define([LBL_FIND_PREV], [Find@small<< @bf()@rm ])dnl
+define([LBL_FIND_NEXT], [Find@small>> @bf()@rm ])dnl
 dnl
 dnl POSTSCRIPT includes a (TM) symbol
-define(POSTSCRIPT,PostScript@symbol \344 @rm )dnl
+define([POSTSCRIPT], [PostScript@symbol \344 @rm ])dnl
 dnl
 dnl KEY_RETURN is the symbol of the return key
-define(KEY_RETURN,KEY(RETURN @symbol \277))dnl
+define([KEY_RETURN], [KEY(RETURN @symbol \277)])dnl
 dnl
 dnl ONE_HALF is the 1/2 symbol.
-define(ONE_HALF,\275)dnl
+define([ONE_HALF], [\275])dnl
 dnl
 dnl TIMES is the x symbol.
-define(TIMES,\327)dnl
+define([TIMES], [\327])dnl
 dnl
 dnl DDD is defined as `@DDD@', which `configure' replaces by `DDD' again
 dnl Same applies to `Ddd' and `ddd'.  This allows `configure' to set up
 dnl an alternate name for DDD.
-define(DDD,[[@DDD@]])dnl
-define(Ddd,[[@Ddd@]])dnl
-define(ddd,[[@ddd@]])dnl
+define([DDD], [[@DDD@]])dnl
+define([Ddd], [[@Ddd@]])dnl
+define([ddd], [[@ddd@]])dnl
 dnl
 dnl
 dnl Header

@@ -36,7 +36,7 @@ Ddd*appDefaultsVersion: @VERSION@
 ! are stored in the `~/.dddinit' file.
 ! =================================================================
 !
-! This file lists the default resources built into DDD.	 You can use the
+! This file lists the default resources built into DDD.  You can use the
 ! stuff in this file for examples of how to customize DDD for your
 ! environment; normally you will do this by copying the few lines you
 ! want to alter to your private resource database, which usually lives
@@ -218,19 +218,19 @@ Ddd*uncompressCommand: @UNCOMPRESS@
 ! The DDD WWW page.
 Ddd*wwwPage: http://www.cs.tu-bs.de/softech/ddd/
 
-! Command to invoke the WWW page.  @[URL]@ stands for the [URL] to open.
+! Command to invoke the WWW page.  @URL@ stands for the URL to open.
 ! Default is to try a running Netscape first, then to invoke a new 
 ! Netscape process, then to let a running Emacs do the job, then to
 ! invoke Mosaic, then to invoke Lynx.
 ! Note that if you don't have WWW access, letting all these commands fail
 ! may take a lot of time...
 Ddd*wwwCommand: \
-   netscape -remote 'openURL(@[URL]@)' \
-|| netscape '@[URL]@' \
-|| gnudoit '(w3-fetch \042@[URL]@\042)' \
-|| mosaic '@[URL]@' \
-|| Mosaic '@[URL]@' \
-|| xterm -e lynx '@[URL]@'
+   netscape -remote 'openURL(@URL@)' \
+|| netscape '@URL@' \
+|| gnudoit '(w3-fetch \042@URL@\042)' \
+|| mosaic '@URL@' \
+|| Mosaic '@URL@' \
+|| xterm -e lynx '@URL@'
 
 ! The time (in seconds) to wait for synchronous GDB questions to complete
 Ddd*questionTimeout: 10
@@ -756,9 +756,10 @@ Ddd*tool_buttons*fontList:  \
 !   to breakpoints (when activated) as well as everything associated
 !   with signal handling (interrupt button, signal arrow).
 !
-! * GREEN (actually, dark greeen) is used for all objects associated
+! * GREEN (actually, dark green) is used for all objects associated
 !   with running the debugged program (green traffic light).  This applies
-!   to the current execution position as well as to the run button.
+!   to the current execution position as well as to the run button, but
+!   also to the `GDB busy' indicator (meaning that the program is running.)
 !
 ! * BLUE (actually, blue4) is used for objects associated with references
 !   (blue is the default color for links in popular WWW browswers).  This
@@ -1618,7 +1619,7 @@ but proceed through subroutine calls])\n\
 DESC(Continue, [continue program after signal or breakpoint])\n\
 DESC(Finish, [execute until function returns])\n\
 \n\
-DESC(Kill, [Kill execution of program being debugged])\n\
+DESC(Kill, [kill execution of program being debugged])\n\
 DESC(Interrupt, [interrupt program (or current @GDB@ command)])\n\
 DESC(Abort, [abort program (or current @GDB@ command)])
 
@@ -2036,13 +2037,13 @@ DESC(On Context..., [click on an item and get help on it])\n\
 DESC(On Window..., [help on the application itself])\n\
 DESC(On Help..., [help on how to use the help facility])\n\
 \n\
-DESC(DDD Manual..., [the DDD on-line manual])\n\
+DESC([[DDD]] Manual..., [the DDD on-line manual])\n\
 DESC(@GDB@ Manual..., [the @GDB@ on-line manual])\n\
 \n\
-DESC(DDD License..., [the DDD license])\n\
-DESC(DDD WWW Page..., [the DDD WWW page])\n\
+DESC([[DDD]] License..., [the DDD license])\n\
+DESC([[DDD]] WWW Page..., [the DDD WWW page])\n\
 \n\
-DESC(About DDD..., [some general information about DDD])
+DESC(About [[DDD]]..., [some general information about DDD])
 
 Ddd*helpMenu.whatNext.labelString:		What Next...
 Ddd*helpMenu.whatNext.mnemonic:			N
@@ -3782,39 +3783,8 @@ Ddd*new_display_dialog*helpString:	\
 @rm Please enter a display expression in the argument field.\n\
 The current value of the expression is shown each time the program stops.\n\
 \n\
-Variables accessible are those of the lexical environment of the selected\n\
-stack frame, plus all those whose scope is global or an entire file.\n\
-\n\
-CODE($)VAR(num) gets previous value number VAR(num).  \
-CODE($) and CODE($$) are the last two values.\n\
-CODE($$)VAR(num) refers to VAR(num)'th value back from the last one.\n\
-Names starting with CODE($) refer to registers\
- (with the values they would have\n\
-if the program were to return to the stack frame now selected, restoring\n\
-all registers saved by frames farther in) or else to @GDB@\n\
-`convenience' variables (any such name not a known register).\n\
-Use assignment expressions to give values to convenience variables.\n\
-\n\
-CODE({)VAR(type)CODE(}) VAR(adrexp) refers to a datum of data type\
- VAR(type), located at address VAR(adrexp).\n\
-\n\
-CODE(@ ) is a binary operator for treating consecutive data objects\n\
-anywhere in memory as an array. VAR(foo)CODE(@ )VAR(num)\
- gives an array whose first\n\
-element is VAR(foo), whose second element is stored in the space following\n\
-where VAR(foo) is stored, etc.  VAR(foo) must be an expression \
-whose value\n\
-resides in memory.\n\
-\n\
-changequote(,)dnl
-As a special extension, you can display ranges of array elements\n\
-by using the notation CODE([)VAR(from)CODE(..)VAR(to)CODE(]),\n\
-where VAR(from) and VAR(to) are the positions of the first\n\
-and last array element to display.\n\
-Thus, CODE(argv[0..9]) will create 10 new displays\
-  CODE(argv[0]), CODE(argv[1]), ..., CODE(argv[9]).
-changequote([,])dnl
-
+Variables accessible are those of the lexical environment of the current\n\
+stack frame, plus all those whose scope is global or an entire file.
 
 Ddd*dependent_display_dialog_popup.title: DDD: Dependent Display
 Ddd*dependent_display_dialog.selectionLabelString:	\
