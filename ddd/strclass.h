@@ -1032,7 +1032,11 @@ inline string& string::operator = (ostrstream& os)
 #endif
 
     const char *str = os.str();
+#if OSTRSTREAM_PCOUNT_INCLUDES_NUL
+    rep = string_Salloc(rep, str, os.pcount() - 1, os.pcount() - 1);
+#else
     rep = string_Salloc(rep, str, os.pcount(), os.pcount());
+#endif
 
 #if HAVE_FROZEN_OSTRSTREAM
     os.freeze(frozen);

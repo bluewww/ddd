@@ -720,6 +720,45 @@ AC_DEFINE(HAVE_ANSI_LIFETIME_OF_TEMPORARIES)
 fi
 ])dnl
 dnl
+dnl ICE_OSTRSTREAM_PCOUNT_INCLUDES_NUL
+dnl ---------------------------------
+dnl
+dnl If the C++ ostrstream::pcount() function includes the terminating
+dnl NUL character (as SGI CC does), define `OSTRSTREAM_PCOUNT_INCLUDES_NUL'.
+dnl
+AC_DEFUN(ICE_OSTRSTREAM_PCOUNT_INCLUDES_NUL,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether ostrstream::pcount() includes the final NUL character)
+AC_CACHE_VAL(ice_cv_ostrstream_pcount_includes_nul,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_RUN(
+[
+// This program returns 0 if ostrstream::pcount() does not include
+// the terminating NUL character, and 1 otherwise.
+#include <strstream.h>
+
+int main() 
+{
+    ostrstream os;
+    os << 'a';
+    return os.pcount() - 1;
+}
+], 
+ice_cv_ostrstream_pcount_includes_nul=no,
+ice_cv_ostrstream_pcount_includes_nul=yes,
+ice_cv_ostrstream_pcount_includes_nul=no
+)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_ostrstream_pcount_includes_nul)
+if test "$ice_cv_ostrstream_pcount_includes_nul" = yes; then
+AC_DEFINE(OSTRSTREAM_PCOUNT_INCLUDES_NUL)
+fi
+])dnl
+dnl
 dnl
 dnl ICE_CXX_LONG_LONG
 dnl -----------------

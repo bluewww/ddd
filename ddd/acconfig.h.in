@@ -122,6 +122,10 @@
 /* Define if the `regex_t' type has a `re_nsub' member, according to POSIX.2 */
 #undef HAVE_REGEX_T_RE_NSUB
 
+/* Define if ostrstream::pcount() returns the number of characters written
+   plus 1 (for the terminating NUL character), as the SGI C++ I/O library. */
+#undef OSTRSTREAM_PCOUNT_INCLUDES_NUL
+
 /* Define to the signal handler type accepted by signal(). 
    See the `signal' man page and the decl in <signal.h> for the exact type.
    Typically values are `int', `...', and `int ...'. */
