@@ -50,7 +50,7 @@ include(ifdef(`macros',macros(),ifdef(`srcdir',srcdir()/macros.m4,macros.m4)))
 ! Initial tip (number 0) - shown after wrap-around.
 
 If you have any more DDD tips of the day,
-please send them to the DDD developers EMAIL([ddd]@ ips.cs.tu-bs.de).
+please send them to the DDD developers EMAIL([ddd]@ gnu.org).
 
 
 ! First tips.
