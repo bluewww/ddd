@@ -50,6 +50,9 @@
 /* Define if your C++ compiler supports exception handling. */
 #undef HAVE_EXCEPTIONS
 
+/* Define if your C++ compiler supports ISO C++ standard exceptions. */
+#undef HAVE_STD_EXCEPTIONS
+
 /* Define if your C++ compiler supports run-time type information. */
 #undef HAVE_TYPEINFO
 

@@ -652,6 +652,35 @@ AC_DEFINE(HAVE_EXCEPTIONS)
 fi
 ])dnl
 dnl
+dnl
+dnl ICE_CXX_STD_EXCEPTIONS
+dnl ----------------------------
+dnl
+dnl If the C++ compiler handles ISO C++ std exceptions, 
+dnl define `HAVE_STD_EXCEPTIONS'.
+dnl
+AC_DEFUN(ICE_CXX_STD_EXCEPTIONS,
+[
+AC_REQUIRE([ICE_CXX_EXCEPTIONS])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) supports standard exceptions)
+AC_CACHE_VAL(ice_cv_have_std_exceptions,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([#include <stdexcept>],
+[try { throw runtime_error("too many fingers on keyboard"); }
+ catch(const exception& e) { const char *s = e.what(); }],
+ice_cv_have_std_exceptions=yes,
+ice_cv_have_std_exceptions=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_std_exceptions)
+if test "$ice_cv_have_std_exceptions" = yes; then
+AC_DEFINE(HAVE_STD_EXCEPTIONS)
+fi
+])dnl
+dnl
+dnl
 dnl ICE_CXX_TYPEINFO
 dnl ----------------
 dnl

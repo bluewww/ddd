@@ -1,7 +1,7 @@
 // $Id$
 // DDD main program (and much more)
 
-// Copyright (C) 1995-1997 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@ips.cs.tu-bs.de>.
 // 
@@ -257,12 +257,12 @@ extern "C" {
 #include <fstream.h>
 #include <time.h>
 
-#if HAVE_EXCEPTIONS && HAVE_STDEXCEPT
+#if HAVE_STD_EXCEPTIONS
 #define string stdstring	  // Avoid `string' name clash
 #define __SGI_STL_INTERNAL_RELOPS // Avoid <stl_relops.h> warning
 #include <stdexcept>
 #undef string
-#endif // HAVE_EXCEPTIONS && HAVE_STDEXCEPT
+#endif // HAVE_STD_EXCEPTIONS
 
 
 //-----------------------------------------------------------------------------
@@ -2286,18 +2286,16 @@ void process_next_event()
     }
 #if HAVE_EXCEPTIONS
     }
-#if HAVE_STDEXCEPT
-    // Catch standard exceptions
+#if HAVE_STD_EXCEPTIONS
+    // Catch standard exceptions.
 #if HAVE_TYPEINFO
-    // Just get the exception type and diagnostics
+    // Just get the exception type and diagnostics.
     catch (const exception& err)
     {
 	ddd_show_exception(typeid(err).name(), err.what());
     }
 #else // !HAVE_TYPEINFO
-    // I seriously doubt that exception handling works without
-    // run-time type identification.  Nonetheless, catch the two major
-    // error classes.
+    // Catch the two major error classes.
     catch (const logic_error& err)
     {
 	ddd_show_exception("logic_error", err.what());
@@ -2311,7 +2309,7 @@ void process_next_event()
 	ddd_show_exception("exception", err.what());
     }
 #endif // !HAVE_TYPEINFO
-#endif // HAVE_STDEXCEPT
+#endif // HAVE_STD_EXCEPTIONS
     catch (...)
     {
 	// Handle non-standard C++ exceptions
