@@ -174,6 +174,18 @@ void processCommandQueue(XtPointer, XtIntervalId *)
     }
 }
 
+// Wait for command queue to drain
+void syncCommandQueue()
+{
+    while (!commandQueue.isEmpty())
+    {
+	processCommandQueue(0, 0);
+	while (!gdb->isReadyWithPrompt())
+	    XtAppProcessEvent(XtWidgetToApplicationContext(command_shell),
+			      XtIMTimer | XtIMAlternateInput);
+    }
+}
+
 // Shell finder
 Widget find_shell(Widget w)
 {

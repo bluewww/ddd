@@ -52,6 +52,9 @@ bool emptyCommandQueue();
 // Clear command queue
 void clearCommandQueue();
 
+// Synchronize with command queue
+void syncCommandQueue();
+
 // Return a shell widget according to last command origin
 Widget find_shell(Widget w = 0);
 
