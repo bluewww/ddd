@@ -369,4 +369,6 @@ Volunteers for these and other projects are welcome!
 
 242 Make programs dump core by forking and killing them.
 
-243 (Insert your project idea here)
+243 Create a `log' file in ~/.ddd/ listing the entire interaction.
+
+244 (Insert your project idea here)

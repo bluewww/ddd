@@ -258,5 +258,7 @@ Volunteers for fixing these and other bugs are welcome!
     platforms. The problem occurs when an attempt is made to save
     options. At that point DDD dies and the options file is not
     updated.
-    
+
+238 A `BadMatch' error has been reported for the command tool.
+
 238 (Insert your bug here)
