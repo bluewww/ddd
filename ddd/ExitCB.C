@@ -31,6 +31,7 @@ char ExitCB_rcsid[] =
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdio.h>		// perror()
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
 
@@ -60,6 +61,9 @@ void RestartCB(Widget, XtPointer, XtPointer)
 {
     environ = saved_environ();
     execvp(saved_argv()[0], saved_argv());
+
+    // Could not restart - just exit
+    perror(saved_argv()[0]);
     exit(EXIT_FAILURE);
 }
 
