@@ -319,11 +319,15 @@ VSLLib::VSLLib(const VSLLib& lib)
 	    new_d->libnext() = d->libnext()->duplicated_into;
     }
 
-    _first = lib._first->duplicated_into;
-    _last  = lib._last->duplicated_into;
+    if (lib._first != 0)
+	_first = lib._first->duplicated_into;
+    if (lib._last != 0)
+	_last  = lib._last->duplicated_into;
 
     for (d = lib._first; d != 0; d = d->libnext())
 	d->duplicated_into = 0;
+
+    assert(OK());
 }
 
 VSLLib *VSLLib::dup() const
