@@ -829,7 +829,7 @@ ddd-message:
 	@$(ECHO) "Building $(ddd_canonical)..."
 
 .PHONY: ddd-done
-ddd-done:
+ddd-done: $(ddd)
 	@$(ECHO) "Building $(ddd_canonical)... done."
 	@$(ECHO) "You may now type \`make check' for a test."
 
