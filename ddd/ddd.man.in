@@ -2871,7 +2871,7 @@ Set the \fIFOREGROUND\fR and \fIBACKGROUND\fR colors of \fIBOX\fR.
 .TP 10
 .B "display_color(\fIBOX\fB)"
 The color used in data displays.
-Default: \fBcolor(\fIBOX\fB, "black", "grey95")
+Default: \fBcolor(\fIBOX\fB, "black", "white")
 .TP 10
 .B "title_color(\fIBOX\fB)"
 The color used in the title bar.

@@ -42,7 +42,7 @@ shadow(box, thickness) =
 shadow(box) = shadow(box, 1);
 
 // Colors
-display_color(box)   = color(box, "black", "grey95");
+display_color(box)   = color(box, "black", "white");
 title_color(box)     = color(box, "black");
 disabled_color(box)  = color(box, "white", "grey50");
 simple_color(box)    = color(box, "black");
