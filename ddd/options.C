@@ -680,15 +680,15 @@ void save_options(Widget origin)
     switch (gdb->type())
     {
     case GDB:
-	gdb_settings = get_gdb_settings();
+	gdb_settings = get_settings(GDB);
 	break;
 
     case DBX:
-	// dbx_settings = get_dbx_settings();
+	dbx_settings = get_settings(DBX);
 	break;
 
     case XDB:
-	// xdb_settings = get_xdb_settings();
+	xdb_settings = get_settings(XDB);
 	break;
     }
 

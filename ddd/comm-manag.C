@@ -500,23 +500,9 @@ void user_cmdSUC (string cmd, Widget origin)
 
     if (is_setting_cmd(cmd))
     {
-	// Get and refresh settings
-	switch (gdb->type())
-	{
-	case GDB:
-	    (void) get_gdb_settings();
-	    plus_cmd_data->refresh_setting = true;
-	    plus_cmd_data->set_command     = cmd;
-	    break;
-
-	case DBX:
-	    // (void) get_dbx_settings();
-	    break;
-
-	case XDB:
-	    // (void) get_xdb_settings();
-	    break;
-	}
+	get_settings(gdb->type());
+	plus_cmd_data->refresh_setting = true;
+	plus_cmd_data->set_command     = cmd;
     }
 
     if (cmd_data->new_exec_pos
@@ -677,7 +663,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	assert (!plus_cmd_data->refresh_history_filename);
 	assert (!plus_cmd_data->refresh_history_size);
 	assert (!plus_cmd_data->refresh_history_save);
-	assert (!plus_cmd_data->refresh_setting);
+	if (plus_cmd_data->refresh_setting)
+	    cmds += cmd.before(rxwhite);
 	break;
 
     case XDB:

@@ -192,7 +192,7 @@ bool is_setting_cmd (const string& cmd)
     static regex RXsetting_cmd("[ \t]*(set|dbxenv)[ \t]+.*");
     static regex RXpath_cmd("[ \t]*(dir|directory|path)([ \t]+.*)?");
 
-    return !cmd.contains('=') 
+    return !cmd.contains(" = ") 
 	&& (cmd.matches (RXsetting_cmd) || cmd.matches(RXpath_cmd));
 }
 

@@ -2584,7 +2584,7 @@ void gdb_ready_for_questionHP (void*, void*, void* call_data)
 
     set_sensitive(stack_w,    gdb_ready);
     set_sensitive(register_w, gdb_ready && gdb->type() == GDB);
-    set_sensitive(settings_w, gdb_ready && gdb->type() == GDB);
+    set_sensitive(settings_w, gdb_ready);
 }
 
 void gdb_ready_for_cmdHP (void *, void *, void *)

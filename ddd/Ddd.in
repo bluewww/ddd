@@ -2360,6 +2360,17 @@ Ddd*settings*sep.bottomOffset:			10
 Ddd*settings*leader.bottomOffset:		4
 Ddd*settings*leader.separatorType:		XmSINGLE_DASHED_LINE
 
+Ddd*settings*v8.labelString: SPARC V8
+Ddd*settings*v9.labelString: SPARC V9
+Ddd*settings*v9sgi.labelString: SPARC V9 with Special Graphics Instructions
+Ddd*settings*parent.labelString: stay with parent
+Ddd*settings*child.labelString: follow child
+Ddd*settings*both.labelString: follow both
+Ddd*settings*ask.labelString: ask for an option
+Ddd*settings*stdio.labelString: Standard I/O
+Ddd*settings*pty.labelString: PTY
+
+
 Ddd*settings*help.tipString:\
 @rm Get help on this setting
 

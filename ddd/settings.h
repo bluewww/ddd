@@ -35,6 +35,7 @@
 
 #include <X11/Intrinsic.h>
 #include "strclass.h"
+#include "GDBAgent.h"
 
 // Popup editor for debugger settings
 void dddPopupSettingsCB (Widget, XtPointer, XtPointer);
@@ -43,7 +44,7 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer);
 void process_show(string command, string value, bool init = false);
 
 // Get settings string
-string get_gdb_settings();
+string get_settings(DebuggerType type);
 
 // Mark settings as `saved'
 void save_settings_state();

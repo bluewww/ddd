@@ -65,6 +65,7 @@ char settings_rcsid[] =
 #include "VarArray.h"
 #include "StringSA.h"
 #include "SourceView.h"
+#include "string-fun.h"
 
 static Widget settings_form  = 0;
 static Widget reset_settings = 0;
@@ -133,7 +134,7 @@ static void SetOptionCB(Widget w, XtPointer client_data, XtPointer)
 }
 
 // ToggleButton reply
-static void SetBoolCB(Widget, XtPointer client_data, XtPointer call_data)
+static void SetOnOffCB(Widget, XtPointer client_data, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *cbs = 
 	(XmToggleButtonCallbackStruct *)call_data;
@@ -142,6 +143,30 @@ static void SetBoolCB(Widget, XtPointer client_data, XtPointer call_data)
 	gdb_set_command((String)client_data, "on");
     else
 	gdb_set_command((String)client_data, "off");
+}
+
+// ToggleButton reply
+static void SetTrueFalseCB(Widget, XtPointer client_data, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (cbs->set)
+	gdb_set_command((String)client_data, "true");
+    else
+	gdb_set_command((String)client_data, "false");
+}
+
+// ToggleButton reply
+static void SetSensitiveCB(Widget, XtPointer client_data, XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *cbs = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (cbs->set)
+	gdb_set_command((String)client_data, "sensitive");
+    else
+	gdb_set_command((String)client_data, "insensitive");
 }
 
 // ToggleButton reply
@@ -194,24 +219,66 @@ void process_show(string command, string value, bool init)
     if (settings_form == 0)
 	return;
 
-    if (value.contains('\n', -1))
+    if (value.freq('\n') > 1)
+    {
+	// In DBX, we always get all values at once.  Find the
+	// appropriate line.
+	string base = command.after(rxwhite);
+	if (base.contains(rxwhite))
+	    base = base.before(rxwhite);
+
+	int column = 0;
+	int start_value = -1;
+	for (int i = 0; i < int(value.length()); i++)
+	{
+	    if (column == 0 && value.contains(base, i))
+	    {
+		start_value = i;
+		break;
+	    }
+
+	    if (value[i] == '\n')
+		column = 0;
+	    else
+		column++;
+	}
+
+	if (start_value < 0)
+	{
+	    cerr << "Warning: cannot set " << quote(base)
+		 << " to " << quote(value) << "\n";
+	    return;
+	}
+
+	value = value.from(start_value);
+	value = value.after(base);
+	if (value.contains('\n'))
+	    value = value.before('\n');
+	read_leading_blanks(value);
+	strip_final_blanks(value);
+    }
+
+    if (value.contains('\n'))
 	value = value.before('\n');
 
     if (!init)
 	set_status(value);
-	
-    if (value.contains(".", -1))
-    {
-	value = value.after(" is ", -1);
-	value = value.before(int(value.length()) - 1);
-    }
 
-    if (value.contains("\"auto;", 0))
-	value = "auto";
-    if (value.contains('"', 0))
-	value = unquote(value);
-    else if (value.contains(": "))
-	value = value.after(": ");
+    if (gdb->type() == GDB)
+    {
+	if (value.contains(".", -1))
+	{
+	    value = value.after(" is ", -1);
+	    value = value.before(int(value.length()) - 1);
+	}
+
+	if (value.contains("\"auto;", 0))
+	    value = "auto";
+	if (value.contains('"', 0))
+	    value = unquote(value);
+	else if (value.contains(": "))
+	    value = value.after(": ");
+    }
 
     static string empty;
     value.gsub(gdb_out_ignore, empty);
@@ -253,7 +320,9 @@ void process_show(string command, string value, bool init)
     }
     else if (button != 0 && XmIsToggleButton(button))
     {
-	bool set = value != "off" && value != "0" && value != "unlimited";
+	bool set = value != "off" && value != "0" && value != "unlimited" 
+	    && value != "false" && value != "insensitive";
+
 	XtVaSetValues(button, XmNset, set, NULL);
 	return;
     }
@@ -277,8 +346,10 @@ void process_show(string command, string value, bool init)
 
 enum EntryType
 {
-    BoolToggleButtonEntry,	// Create on/off toggle button
+    OnOffToggleButtonEntry,	// Create on/off toggle button
+    TrueFalseToggleButtonEntry,	// Create true/false toggle button
     NumToggleButtonEntry,	// Create 1/0 toggle button
+    SensitiveToggleButtonEntry,	// Create sensitive/insensitive toggle button
     CheckOptionMenuEntry,       // Create `check' option menu
     OtherOptionMenuEntry,       // Create other option menu
     TextFieldEntry		// Create text field
@@ -301,23 +372,51 @@ static bool is_verb(const string& doc)
 }
 
 // Determine entry type
-static EntryType entry_type(const string& base, 
+static EntryType entry_type(DebuggerType type,
+			    const string& base, 
 			    const string& doc,
 			    const string& value)
 {
-    if (base.contains("check", 0))
-	return CheckOptionMenuEntry;
-    else if (base.contains("language", 0) || base.contains("demangle", 0))
-	return OtherOptionMenuEntry;
-    else if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
-	return BoolToggleButtonEntry;
-    else if ((value.contains("0.\n", -1) || value.contains("1.\n", -1))
-	     && (is_verb(doc)))
-	return NumToggleButtonEntry;
-    else
-	return TextFieldEntry;
+    switch (type)
+    {
+    case GDB:
+	if (base.contains("check", 0))
+	    return CheckOptionMenuEntry;
+	else if (base.contains("language", 0) || base.contains("demangle", 0))
+	    return OtherOptionMenuEntry;
+	else if (value.contains("on.\n", -1) || value.contains("off.\n", -1))
+	    return OnOffToggleButtonEntry;
+	else if ((value.contains("0.\n", -1) || value.contains("1.\n", -1))
+		 && (is_verb(doc)))
+	    return NumToggleButtonEntry;
+	break;
+
+    case DBX:
+	if (value.contains(rxint, 0))
+	    return TextFieldEntry;
+	else if (value.contains("on", 0) || value.contains("off", 0))
+	    return OnOffToggleButtonEntry;
+	else if (value.contains("true", 0) || value.contains("false", 0))
+	    return TrueFalseToggleButtonEntry;
+	else if (value.contains("sensitive", 0) 
+		 || value.contains("insensitive", 0))
+	    return SensitiveToggleButtonEntry;
+	else if (base.contains("version") 
+	    || base.contains("run_io")
+	    || base.contains("follow_fork_mode"))
+	    return OtherOptionMenuEntry;
+	break;
+
+    case XDB:
+	break;			// FIXME
+    }
+
+    // When all else fails, display a text
+    return TextFieldEntry;
 }
 
+
+// The GDB question cache
 static StringStringAssoc gdb_question_cache;
 
 static string cached_gdb_question(const string& question)
@@ -334,65 +433,289 @@ static void clear_gdb_question_cache()
     gdb_question_cache = empty;
 }
 
-static void add_settings(int& row, EntryType entry_filter,
-			 string command = "set");
+static void strip_leading(string& doc, const string& key)
+{
+    if (doc.contains(key, 0))
+	doc = doc.after(key);
+}
+
+static void strip_from(string& doc, const string& key)
+{
+    if (doc.contains(key))
+	doc = doc.before(key);
+}
+
+static void munch_doc(string& doc)
+{
+    // Sun DBX 3.0
+    strip_leading(doc, "# ");
+    strip_leading(doc, "If on, ");
+    strip_leading(doc, "If true, ");
+    strip_leading(doc, "When on, ");
+    strip_leading(doc, "When `on', ");
+    strip_leading(doc, "Set ");
+    strip_leading(doc, "Sets ");
+    strip_leading(doc, "Governs ");
+    strip_leading(doc, "Limit ");
+    strip_leading(doc, "Enable/disable ");
+    strip_leading(doc, "Allow/disallow ");
+    strip_leading(doc, "whether the ");
+    strip_leading(doc, "debugger will ");
+    strip_leading(doc, "Automatically ");
+    strip_leading(doc, "Name of ");
+    
+    // DEC DBX
+    strip_leading(doc, "non-0 => ");
+    strip_leading(doc, "non-0 implies ");
+    strip_leading(doc, "if non-0 ");
+    strip_leading(doc, "if set, ");
+    strip_leading(doc, "this ");
+    strip_leading(doc, "is ");
+    strip_leading(doc, "contains ");
+    strip_leading(doc, "the ");
+    strip_leading(doc, "name of ");
+    strip_leading(doc, "specify ");
+    strip_leading(doc, "which ");
+
+    // GDB
+    strip_leading(doc, "whether to ");
+    strip_leading(doc, "the ");
+
+    // More DEC DBX
+    strip_from(doc, "we're looking at");
+    strip_from(doc, "we're debugging");
+    strip_from(doc, "if this is non-0");
+    strip_from(doc, "Default:");
+    strip_from(doc, " to $DBX");
+    strip_from(doc, " entirely");
+
+    if (doc.length() > 0)
+	doc[0] = toupper(doc[0]);
+}
+
+
+// Get DBX documentation
+static string get_dbx_help(string dbxenv, string base)
+{
+    string dbx_help = cached_gdb_question("help " + dbxenv);
+
+    // Find documentation in DBX_HELP
+    int column = 0;
+    int start_help = -1;
+    int i;
+    for (i = 0; i < int(dbx_help.length()); i++)
+    {
+	if (column == 0 
+	    && (dbx_help.contains(base, i) 
+		|| dbx_help.contains(dbxenv + " " + base, i)))
+	{
+	    start_help = i;
+	    break;
+	}
+
+	if (dbx_help[i] == '\n')
+	    column = 0;
+	else
+	    column++;
+    }
+
+    if (start_help < 0)
+    {
+	dbx_help = base;
+	dbx_help.gsub('_', ' ');
+	return dbx_help;		// Simple default
+    }
+
+    int end_help = -1;
+    for (i++, column++; i < int(dbx_help.length()); i++)
+    {
+	if (column == 0 && !isspace(dbx_help[i]))
+	{
+	    end_help = i;
+	    break;
+	}
+
+	if (dbx_help[i] == '\n')
+	    column = 0;
+	else
+	    column++;
+    }
+
+    if (end_help >= 0)
+	dbx_help = dbx_help.at(start_help, end_help - start_help);
+    else
+	dbx_help = dbx_help.from(start_help);
+
+    return dbx_help;
+}
+
+static string get_dbx_doc(string dbxenv, string base)
+{
+    // Some specials
+    if (base == "rtc_biu_at_exit")
+	return "Produce memory report at exit";
+    if (base == "run_autostart")
+	return "Let `step' and `next' implicitly start the program";
+    if (base == "follow_fork_inherit")
+	return "When following child, inherit events";
+    if (base == "follow_fork_mode")
+	return "When process forks";
+    if (base == "run_io")
+	return "Redirect I/O to";
+    if (base == "output_list_size")
+	return "Lines to print in the `list' command";
+    if (base == "suppress_startup_message")
+	return "Suppress startup message below release";
+    if (base == "disassembler_version")
+	return "Disassembler version";
+    
+    // Generic
+    string dbx_doc = get_dbx_help(dbxenv, base);
+    dbx_doc = dbx_doc.after(base);
+    read_leading_blanks(dbx_doc);
+
+    if (dbx_doc.contains("  - "))
+    {
+	dbx_doc = dbx_doc.after("  - ");
+	read_leading_blanks(dbx_doc);
+    }
+    else if (dbx_doc.contains(" # "))
+    {
+	dbx_doc = dbx_doc.after(" # ");
+	read_leading_blanks(dbx_doc);
+    }
+
+    // Remove remaining `# ' prefixes (Solaris DBX)
+    dbx_doc.gsub("  # ", "");
+    dbx_doc.gsub(" # ", " number ");
+    dbx_doc.gsub("etc. ", "etc ");
+
+    // Reduce spaces (Solaris DBX & DEC DBX)
+    dbx_doc.gsub(rxwhite, " ");
+
+    if (dbx_doc.contains(". "))
+	dbx_doc = dbx_doc.before(". ");
+    if (dbx_doc.contains("; "))
+	dbx_doc = dbx_doc.before("; ");
+    dbx_doc.gsub("etc ", "etc. ");
+    munch_doc(dbx_doc);
+
+    return dbx_doc;
+}
+
+static void add_settings(int& row, DebuggerType type, EntryType entry_filter,
+			 string command = "");
 
 // Add single button
-static void add_button(int& row, EntryType entry_filter, string line)
+static void add_button(int& row, DebuggerType type, EntryType entry_filter,
+		       string line)
 {
-    if (!line.contains(" -- "))
-	return;			// No help line
-
-    string set_command  = line.before(" -- ");
-    string doc          = line.after(" -- ");
-    string base         = set_command.after("set ");
-    if (base == "")
-	base = set_command;
-    string show_command = "show " + base;
-
-    if (base == "args")
-	return;			// Already handled in `Run...' editor
-
-    if (base == "radix")
-	return;			// Already handled in input- and output-radix
-
-    bool is_set = doc.contains("Set ", 0);
-    bool is_add = doc.contains("Add ", 0);
-
-    if (!is_set && !is_add)
-    {
-	// Generic command or `set variable' - list `set' subcommands
-	add_settings(row, entry_filter, set_command);
+    if (line == "")
 	return;
+
+    string set_command;		// Command to create the setting
+    string show_command;	// Command to display the value
+    string doc;			// Documentation string
+    string base;		// Common base of set_command and show_command
+    string value;		// Current variable value
+    EntryType e_type;		// Type of the entry
+
+    bool is_set = true;		// Command sets a value
+    bool is_add = false;	// Command adds a value
+
+    switch (type)
+    {
+    case GDB:
+	{
+	    if (!line.contains(" -- "))
+		return;			// No help line
+
+	    set_command  = line.before(" -- ");
+	    doc          = line.after(" -- ");
+	    base         = set_command.after("set ");
+	    if (base == "")
+		base = set_command;
+	    show_command = "show " + base;
+
+	    if (base == "args")
+		return; // Already handled in `Run...' editor
+
+	    if (base == "radix")
+		return; // Already handled in input- and output-radix
+
+	    is_set = doc.contains("Set ", 0);
+	    is_add = doc.contains("Add ", 0);
+
+	    if (!is_set && !is_add)
+	    {
+		// Generic command or `set variable' - list `set' subcommands
+		add_settings(row, type, entry_filter, set_command);
+		return;
+	    }
+
+	    value = cached_gdb_question(show_command);
+	    if (is_set && value.freq('\n') > 1)
+	    {
+		// Generic command - list `set' subcommands
+		add_settings(row, type, entry_filter, set_command);
+		return;
+	    }
+
+	    if (is_set && !value.contains(".\n", -1))
+		return;
+
+	    e_type = entry_type(type, base, doc, value);
+
+	    if (is_set)
+		doc = doc.after("Set ");
+	    else if (is_add)
+		doc = doc.after("Add ");
+
+	    if (is_add && doc.contains("of "))
+		doc = doc.after("of ");
+	    munch_doc(doc);
+	}
+        break;
+
+    case DBX:
+	{
+	    if (!line.contains("$", 0) 
+		&& !(line.contains(rxidentifier, 0) && islower(line[0])))
+		return;			// No help line
+
+	    base = line.before(rxwhite);
+	    if (base == "")
+		return;
+
+	    value = line.after(rxwhite);
+
+	    string dbxenv;
+	    if (base[0] == '$')
+	    {
+		dbxenv = "set";
+		set_command = "set " + base + " =";
+	    }
+	    else
+	    {
+		dbxenv = "dbxenv";
+		set_command  = "dbxenv " + base;
+	    }
+
+	    if (base == "run_savetty")
+		return; // Makes no sense under a GUI
+
+	    show_command = set_command + " " + value;
+	    doc = get_dbx_doc(dbxenv, base);
+	    e_type = entry_type(type, base, doc, value);
+	}
+        break;
+
+    case XDB:
+	return;			// FIXME
     }
 
-    string value = cached_gdb_question(show_command);
-    if (is_set && value.freq('\n') > 1)
-    {
-	// Generic command - list `set' subcommands
-	add_settings(row, entry_filter, set_command);
-	return;
-    }
-
-    if (is_set && !value.contains(".\n", -1))
-	return;
-
-    if (is_set)
-	doc = doc.after("Set ");
-    else if (is_add)
-	doc = doc.after("Add ");
-
-    EntryType e_type = entry_type(base, doc, value);
     if (e_type != entry_filter)
 	return;
-
-    if (is_add && doc.contains("of "))
-	doc = doc.after("of ");
-    if (doc.contains("whether to ", 0))
-	doc = doc.after("whether to ");
-    if (doc.contains("the ", 0))
-	doc = doc.after("the ");
-    doc[0] = toupper(doc[0]);
 
     Arg args[10];
     int arg;
@@ -410,7 +733,33 @@ static void add_button(int& row, EntryType entry_filter, string line)
     XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);      arg++;
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);                arg++;
     XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_BEGINNING);  arg++;
-    if (e_type != BoolToggleButtonEntry && e_type != NumToggleButtonEntry)
+
+    XtCallbackProc callback = 0;
+
+    switch (e_type)
+    {
+    case OnOffToggleButtonEntry:
+	callback = SetOnOffCB;
+	break;
+
+    case TrueFalseToggleButtonEntry:
+	callback = SetTrueFalseCB;
+	break;
+
+    case SensitiveToggleButtonEntry:
+	callback = SetSensitiveCB;
+	break;
+
+    case NumToggleButtonEntry:
+	callback = SetNumCB;
+	break;
+
+    default:
+	callback = 0;
+	break;
+    }
+
+    if (callback == 0)
     {
 	if (is_set)
 	    label = verify(XmCreateLabel(settings_form, base, args, arg));
@@ -427,12 +776,8 @@ static void add_button(int& row, EntryType entry_filter, string line)
 					args, arg));
 	XtManageChild(label);
 
-	if (e_type == BoolToggleButtonEntry)
-	    XtAddCallback(entry, XmNvalueChangedCallback,
-			  SetBoolCB, XtPointer(set_command_s));
-	else
-	    XtAddCallback(entry, XmNvalueChangedCallback,
-			  SetNumCB, XtPointer(set_command_s));
+	XtAddCallback(entry, XmNvalueChangedCallback,
+		      callback, XtPointer(set_command_s));
     }
 
     // Add help button
@@ -449,7 +794,9 @@ static void add_button(int& row, EntryType entry_filter, string line)
     // Add entry
     switch (e_type)
     {
-    case BoolToggleButtonEntry:
+    case OnOffToggleButtonEntry:
+    case TrueFalseToggleButtonEntry:
+    case SensitiveToggleButtonEntry:
     case NumToggleButtonEntry:
 	// All is done
 	break;
@@ -504,34 +851,65 @@ static void add_button(int& row, EntryType entry_filter, string line)
 	    Widget menu = 
 		verify(XmCreatePulldownMenu(settings_form, "menu", args, arg));
 
-	    // Possible options are listed upon `set language' without value
-	    string options = cached_gdb_question("set " + base);
+	    // Possible options are listed upon `set language'
+	    // without value
+	    string options;
+	    char separator;
+
+	    switch (gdb->type())
+	    {
+	    case GDB:
+		options = cached_gdb_question("set " + base);
+		separator = '\n';
+		break;
+
+	    case DBX:
+		options = get_dbx_help("dbxenv", base);
+		options = options.after('<');
+		options = options.before('>');
+
+		if (options == "")
+		{
+		    if (base == "follow_fork_mode")
+			options = "parent|child|both|ask";
+		}
+		separator = '|';
+		break;
+	    }
 
 	    while (options != "")
 	    {
-		string option = options.before('\n');
-		options = options.after('\n');
+		string option = options;
+		if (option.contains(separator))
+		    option = option.before(separator);
+		options = options.after(separator);
+		read_leading_blanks(options);
+		strip_final_blanks(options);
 
-		if (option.contains("  "))
+		string label = option;
+		if (gdb->type() == GDB && option.contains("  "))
 		{
-		    string label = option.after("  ");
+		    label = option.after("  ");
 		    label = label.after(rxwhite);
 
 		    if (option.contains(" auto"))
 			option = "auto";
 		    else
 			option = option.before(rxwhite);
+		}
 
-		    MString xmlabel(label);
-		    arg = 0;
+		MString xmlabel(label);
+		arg = 0;
+		if (gdb->type() == GDB)
+		{
 		    XtSetArg(args[arg], XmNlabelString, 
 			     xmlabel.xmstring()); arg++;
-		    Widget button = 
-			verify(XmCreatePushButton(menu, option, args, arg));
-		    XtManageChild(button);
-		    XtAddCallback(button, XmNactivateCallback, SetOptionCB, 
-				  set_command_s);
 		}
+		Widget button = 
+		    verify(XmCreatePushButton(menu, option, args, arg));
+		XtManageChild(button);
+		XtAddCallback(button, XmNactivateCallback, SetOptionCB, 
+			      set_command_s);
 	    }
 
 	    MString empty;
@@ -602,16 +980,48 @@ static void add_button(int& row, EntryType entry_filter, string line)
     row++;
 }
 
-// Add buttons
-static void add_settings(int& row, EntryType entry_filter, string command)
+
+static string default_set_command(DebuggerType type)
 {
-    string commands = cached_gdb_question("help " + command);
+    switch (type)
+    {
+    case GDB:
+	return "set";
+    case DBX:
+	return "dbxenv";
+    case XDB:
+	return "I";
+    }
+
+    return "";
+}
+
+// Add buttons
+static void add_settings(int& row, DebuggerType type,
+			 EntryType entry_filter, string command)
+{
+    if (command == "")
+	command = default_set_command(type);
+
+    string commands;
+
+    switch (type)
+    {
+    case GDB:
+	commands = cached_gdb_question("help " + command);
+	break;
+
+    case XDB:
+    case DBX:
+	commands = cached_gdb_question(command);
+	break;
+    }
 
     while (commands != "")
     {
 	string line = commands.before('\n');
 	commands = commands.after('\n');
-	add_button(row, entry_filter, line);
+	add_button(row, type, entry_filter, line);
     }
 }
 
@@ -641,8 +1051,10 @@ static void ResetSettingsCB (Widget, XtPointer, XtPointer)
 }
 
 // Fetch help for specific COMMAND
-static string get_help_line(string command)
+static string get_help_line(string command, DebuggerType type)
 {
+    (void) type;
+
     string reply = cached_gdb_question("help " + command);
     reply = reply.before('\n');
     if (reply.contains('.'))
@@ -652,10 +1064,10 @@ static string get_help_line(string command)
 }
 
 // Create settings editor
-static Widget create_gdb_settings()
+static Widget create_settings(DebuggerType type)
 {
     static Widget settings = 0;
-    if (settings != 0 || !gdb->isReadyWithPrompt() || gdb->type() != GDB)
+    if (settings != 0 || !gdb->isReadyWithPrompt() || gdb->type() != type)
 	return settings;
 
     StatusDelay delay("Retrieving debugger settings");
@@ -709,22 +1121,46 @@ static Widget create_gdb_settings()
 
     // Add setting buttons to the button box.
     int row = 0;
-    add_settings(row, BoolToggleButtonEntry);
-    // add_separator(row);
-    add_settings(row, NumToggleButtonEntry);
-    add_separator(row);
-    add_settings(row, OtherOptionMenuEntry);
-    add_separator(row);
-    add_settings(row, CheckOptionMenuEntry);
-    add_separator(row);
-    add_button(row, TextFieldEntry, get_help_line("dir"));
-    add_button(row, TextFieldEntry, get_help_line("path"));
-    add_separator(row);
-    add_settings(row, TextFieldEntry);
+    int last_row = row;
+    add_settings(row, type, OnOffToggleButtonEntry);
+    add_settings(row, type, TrueFalseToggleButtonEntry);
+    add_settings(row, type, SensitiveToggleButtonEntry);
+    add_settings(row, type, NumToggleButtonEntry);
+
+    if (row != last_row)
+	add_separator(row);
+
+    last_row = row;
+    add_settings(row, type, OtherOptionMenuEntry);
+
+    if (row != last_row)
+	add_separator(row);
+
+    last_row = row;
+    add_settings(row, type, CheckOptionMenuEntry);
+
+    if (row != last_row)
+	add_separator(row);
+
+    if (type == GDB)
+    {
+	last_row = row;
+	add_button(row, type, TextFieldEntry, get_help_line("dir", type));
+	add_button(row, type, TextFieldEntry, get_help_line("path", type));
+	if (row != last_row)
+	    add_separator(row);
+    }
+
+    add_settings(row, type, TextFieldEntry);
+
+    // Clean up cached documentation stuff
     clear_gdb_question_cache();
+
+    // Setup values
     update_reset_settings();
 
-    XtVaSetValues(settings_form, XmNfractionBase, row, NULL);
+    if (row > 0)
+	XtVaSetValues(settings_form, XmNfractionBase, row, NULL);
     XtManageChild(settings_form);
     XtManageChild(scroll);
 
@@ -734,7 +1170,7 @@ static Widget create_gdb_settings()
 // Popup editor for debugger settings
 void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 {
-    Widget settings = create_gdb_settings();
+    Widget settings = create_settings(gdb->type());
     if (settings == 0)
 	return;
 
@@ -743,9 +1179,9 @@ void dddPopupSettingsCB (Widget, XtPointer, XtPointer)
 }
 
 // Fetch GDB settings string
-string get_gdb_settings()
+string get_settings(DebuggerType type)
 {
-    Widget settings = create_gdb_settings();
+    Widget settings = create_settings(type);
     if (settings == 0)
 	return "";
 
@@ -758,24 +1194,45 @@ string get_gdb_settings()
 	    value = "0";
 
 	string base = XtName(entry);
-	if (base == "set remotelogfile" && value == "")
+
+	switch (type)
 	{
-	    // This is the default setting - do nothing
-	}
-	else if (base == "set remotedevice" && value == "")
-	{
-	    // This is the default setting - do nothing
-	}
-	else if (base.contains("set ", 0))
-	{
-	    // Add setting.
-	    command += base + ' ' + value + '\n';
-	}
-	else
-	{
-	    // `dir' and `path' values are not saved, since they are
-	    // dependent on the current machine and the current
-	    // executable.
+	case GDB:
+	    if (base == "set remotelogfile" && value == "")
+	    {
+		// This is the default setting - do nothing
+	    }
+	    else if (base == "set remotedevice" && value == "")
+	    {
+		// This is the default setting - do nothing
+	    }
+	    else if (base.contains("set ", 0))
+	    {
+		// Add setting.
+		command += base + ' ' + value + '\n';
+	    }
+	    else
+	    {
+		// `dir' and `path' values are not saved, since they are
+		// dependent on the current machine and the current
+		// executable.
+	    }
+	    break;
+
+	case DBX:
+	case XDB:
+	    if (base == "dbxenv disassembler_version" 
+		|| base == "dbxenv rtc_error_log_file_name"
+		|| base == "dbxenv output_log_file_name")
+	    {
+		// Do nothing - dependent on the current machine etc.
+	    }
+	    else
+	    {
+		// Add setting.
+		command += base + ' ' + value + '\n';
+	    }
+	    break;
 	}
     }
 
