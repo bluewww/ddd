@@ -163,13 +163,11 @@ ln -s $CVSROOT/CVSROOT/ddd-log-96 ChangeLog-1996
 ln -s $CVSROOT/CVSROOT/ddd-log-95 ChangeLog-1995
 (cd ddd && aclocal)
 autoconf -l ddd
-(cd ddd && autoconf)
+automake --gnu
+(cd ddd && autoconf && automake --foreign)
 (cd readline && autoconf)
 (cd termcap && autoconf)
 sh ./configure -v
-
-# Create an empty `ddd/Makedeps' such that old MAKEs won't fail.
-touch ddd/Makedeps
 
 # Create distribution stuff.
 (cd libiberty && test -f Makefile && make)

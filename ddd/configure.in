@@ -660,8 +660,6 @@ LDFLAGS="$ice_save_LDFLAGS"
 fi
 dnl
 dnl
-dnl Set CXXFLAGS
-CXXFLAGS="$CXXFLAGS $CXXOPT $CXXDEBUG $CXXWARNINGS $CXXSTUFF $X_PERMISSIVE"
 dnl
 dnl
 dnl Setup library loading flags

@@ -35,6 +35,8 @@
 CAT = cat
 MV = mv
 ECHO = echo
+GREP = grep
+DATE = date
 
 # The fig2dev command.  (fig2dev)
 FIG2DEV = fig2dev
@@ -73,6 +75,15 @@ TEXI2PDF = texi2dvi --pdf
 # Available from http://www.tug.org/applications/pdftex/epstopdf
 EPSTOPDF = epstopdf
 
+# A compress command, reading from stdin and writing to stdout.  (gzip -c)
+COMPRESS = @COMPRESS@
+
+# An uncompress command, reading from stdin and writing to stdout.  (gunzip -c)
+UNCOMPRESS = @UNCOMPRESS@
+
+# The etags command.  (etags)
+ETAGS = etags --c++
+
 # The texi2html program.  (texi2html)
 TEXI2HTML = $(MAKEINFO) --html
 
@@ -80,6 +91,23 @@ TEXI2HTML = $(MAKEINFO) --html
 SUFFIXES = .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xbmxx .xpm .xpmxx \
 	   .xface .C~ .c~ .f .f~ .sh .sh~ .fig .eps .jpg .png .gif .pdf \
 	   $(IMGEXT)
+
+# Architecture (usually overridden by the top-level Makefile).
+
+# The host we were compiled on.  (CPU-COMPANY-SYSTEM)
+host_canonical = @host@
+
+# The target we were compiled for.  (CPU-COMPANY-SYSTEM)
+target_canonical = @host@
+
+# The flags we use to compile C++ files.
+# CXXOPT = -DNDEBUG -O2
+CXXOPT = @CXXOPT@
+# CXXDEBUG = -g
+CXXDEBUG = @CXXDEBUG@
+# CXXWARNINGS = -W -Wall
+CXXWARNINGS = @CXXWARNINGS@
+CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS)
 
 
 # DDD Sources.
@@ -92,7 +120,6 @@ BASE_SOURCES = \
 	bool.h       \
 	compare.C    \
 	compare.h    \
-	constref.h   \
 	cook.C       \
 	cook.h       \
 	cwd.C        \
@@ -349,13 +376,11 @@ VSL_SOURCES = \
 	VSLDefList.C \
 	VSLDefList.h \
         VSLErr.C     \
-        VSLErr.h     \
 	VSLLib.C     \
 	VSLLib.h     \
 	VSLNode.C    \
 	VSLNode.h    \
-        VSLRead.C    \
-        VSLRead.h
+        VSLRead.C
 
 # Graph structure, graph layout and graph editor widget
 # Top-level classes are `Graph', declared in `Graph.h'
@@ -411,6 +436,7 @@ DDD_SOURCES = \
 	annotation.h \
 	args.C       \
 	args.h       \
+	build.h      \
 	buttons.C    \
 	buttons.h    \
 	cmdtty.C     \
@@ -426,6 +452,7 @@ DDD_SOURCES = \
 	data.h       \
 	dbx-lookup.C \
 	dbx-lookup.h \
+	ddd.vsl.h    \
 	decoration.C \
 	decoration.h \
 	deref.C      \
@@ -456,6 +483,7 @@ DDD_SOURCES = \
 	gdbinit.h    \
 	history.C    \
 	history.h    \
+	host.h       \
 	hostname.C   \
 	hostname.h   \
 	index.C      \
@@ -521,6 +549,7 @@ DDD_SOURCES = \
 	ungrab.h     \
 	value-read.C \
 	value-read.h \
+	version.h    \
 	vsldoc.C     \
 	vsldoc.h     \
 	windows.C    \
@@ -673,7 +702,7 @@ ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXP) $(LIBXPM) $(LIBXAW) $(LIBXEXT) \
 
 
 
-bin_PROGRAMS = ddd cxxtest ctest
+bin_PROGRAMS = ddd cxxtest ctest userinfo
 ddd_SOURCES = ddd.C \
 	$(BASE_SOURCES) \
 	$(TEMPLATE_SOURCES) \
@@ -686,10 +715,12 @@ ddd_SOURCES = ddd.C \
 	$(DDD_SOURCES)
 
 cxxtest_SOURCES = cxxtest.C
-ctest_sources   = ctest.c
+ctest_SOURCES   = ctest.c
+userinfo_SOURCES = userinfo.C
 
 ddd_LDADD = $(ALL_X_LIBS) $(DDD_LIBS) 
-INCLUDES = -I. -I$(srcdir) -I$(srcdir)/.. $(X_INCLUDE)
+X_INCLUDE = @X_CFLAGS@
+INCLUDES = -I$(srcdir)/.. $(X_INCLUDE)
 
 
 
@@ -787,13 +818,17 @@ IMAGE_WIDTH = 600
 .fig.eps:
 	(cd `dirname $<` && $(FIG2PS) `basename $<` ) > $@
 
+.texi.pdf:
+	TEXINPUTS=$(top_srcdir)/../texinfo:$$TEXINPUTS \
+	  MAKEINFO='$(MAKEINFO) -I $(srcdir)' $(TEXI2PDF) $<
+
 
 
 # DDD Manual.
 info_TEXINFOS = ddd.texi
 ddd_TEXINFOS = $(srcdir)/config.texi $(srcdir)/gpl.texinfo
 texidir = $(srcdir)/../texinfo
-TEXINFO_TEX = $(texidir)/texinfo.tex
+TEXINFO_TEX = $(texidir)
 
 $(srcdir)/config.texi: cfg.texi
 	@$(CMP) cfg.texi $@ 2> /dev/null || \
@@ -802,6 +837,7 @@ $(srcdir)/config.texi: cfg.texi
 $(srcdir)/gpl.texinfo: $(texidir)/gpl.texinfo
 	$(RM) $@; $(LN_S) $(texidir)/gpl.texinfo $@
 
+ddd.dvi: $(PS_IMAGES)
 
 
 # The DDD manual in PDF format, including all pictures.
@@ -812,9 +848,7 @@ pdf: $(docdir)/ddd.pdf
 $(docdir)/ddd.pdf: ddd.pdf
 	$(INSTALL_DATA) ddd.pdf $@
 
-ddd.pdf: $(srcdir)/ddd.texi $(PDF_IMAGES)
-	-test -d PICS || $(LN_S) $(picdir) .
-	$(TEXI2PDF) $(srcdir)/ddd.texi
+ddd.pdf: $(PDF_IMAGES)
 
 
 # The DDD manual in HTML format.
@@ -832,7 +866,7 @@ $(htmldir)/index.html: $(srcdir)/ddd.texi $(HTML_IMAGES) \
 	@-test -d $(htmldir)/PICS || $(MKDIR) $(htmldir)/PICS
 	@-test -d PICS || $(LN_S) $(picdir) .
 	$(RM) ddd*.html
-	$(TEXI2HTML) $(srcdir)/ddd.texi
+	$(MAKEINFO) --html -I $(srcdir) -I $(texidir) $(srcdir)/ddd.texi
 	for file in ddd*.html; do \
 		$(SED) -f $(srcdir)/fix-html.sed $$file | \
 		$(SED) 's/@IMGEXT@/\$(IMGEXT)/g' > $$file~ && \
@@ -845,6 +879,13 @@ $(htmldir)/index.html: $(srcdir)/ddd.texi $(HTML_IMAGES) \
 	@$(ECHO) Installing images...done.
 	$(RM) $(htmldir)/index.html
 	$(LN_S) ddd.html $@
+
+# Manual page
+man_MANS = ddd.1
+
+# `ddd.man' has 8-bit format, `ddd.1' has 7-bit format
+ddd.1:   ddd.man $(srcdir)/unumlaut.sed
+	-$(SED) -f $(srcdir)/unumlaut.sed ddd.man > $@~ && $(MV) $@~ $@
 
 
 # PostScript pictures in the DDD manual.
@@ -1167,17 +1208,17 @@ $(picdir)/ddd-toolbars.eps: \
 	$(picdir)/ddd-toolbar-4.xpm
 $(picdir)/tut-backtrace.eps: \
 	$(picdir)/tut-backtrace.fig $(picdir)/tut-backtrace.xpm
-$(picdir)/tut-display.eps:
+$(picdir)/tut-display.eps: \
 	$(picdir)/tut-display.fig $(picdir)/tut-display.xpm
-$(picdir)/tut-finish.eps:
+$(picdir)/tut-finish.eps: \
 	$(picdir)/tut-finish.fig $(picdir)/tut-finish.xpm
-$(picdir)/tut-invoke.eps:
+$(picdir)/tut-invoke.eps: \
 	$(picdir)/tut-invoke.fig $(picdir)/tut-invoke.xpm
-$(picdir)/tut-run.eps:
+$(picdir)/tut-run.eps: \
 	$(picdir)/tut-run.fig $(picdir)/tut-run.xpm
-$(picdir)/tut-set.eps:
+$(picdir)/tut-set.eps: \
 	$(picdir)/tut-set.fig $(picdir)/tut-set.xpm
-$(picdir)/tut-value.eps:
+$(picdir)/tut-value.eps: \
 	$(picdir)/tut-value.fig $(picdir)/tut-value.xpm
 
 
@@ -1481,3 +1522,292 @@ XBM_XX_ICONS = \
 	$(toolbardir)/undisplay.xbmxx \
 	$(toolbardir)/unwatch.xbmxx \
 	$(toolbardir)/watch.xbmxx
+
+# All derived icons
+# Order is significant here!  First sources, then derived files.
+ICONS = \
+	$(icondir)/ddd.xbm \
+	$(icondir)/dddmask.xbm \
+	$(icondir)/dddsplash.xbm \
+	$(icondir)/ddd.xface \
+	$(XBM_ICONS) \
+	$(XPM_XX_ICONS) \
+	$(XBM_XX_ICONS)
+
+
+
+# The resource header and app-default files.
+
+Ddd.ad.h: Ddd $(srcdir)/ad2c.sed
+	$(SED) -n -f $(srcdir)/ad2c.sed Ddd > $@~ && $(MV) $@~ $@
+
+$(srcdir)/Ddd.in: $(srcdir)/Ddd.in.m4 $(srcdir)/tips.m4 \
+	$(srcdir)/macros.m4 $(srcdir)/colors.m4 
+	( \
+	( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/Ddd.in.m4)dnl" \
+	) | $(M4); \
+        ( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/tips.m4)dnl" \
+	) | $(M4); \
+	) > $@~ && $(MV) $@~ $@
+
+$(srcdir)/tips.m4: $(srcdir)/../TIPS $(srcdir)/tips2m4.awk
+	$(AWK) -f $(srcdir)/tips2m4.awk $(srcdir)/../TIPS > $@~ && $(MV) $@~ $@
+
+$(srcdir)/tips.html: $(srcdir)/../TIPS
+	( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "define(macros, \`$(srcdir)/html.m4')dnl"; \
+		echo "include(srcdir()/../TIPS)dnl" \
+	) | $(M4) | $(AWK) -f $(srcdir)/tips2html.awk | \
+	$(SED) 's/\\133/\[/g' | $(SED) 's/\\135/\]/g' | \
+	$(SED) 's/@\([A-Z][A-Z]*\)@/\1/g' | $(SED) 's/@ /@/g' \
+	> $@~ && $(MV) $@~ $@
+
+
+# The VSL header files.
+
+VSLDIR  = $(srcdir)/../vsllib
+
+VSL_CPP = $(CPP) -I$(VSLDIR) -I$(prefix)/lib/vsl-include
+
+VSLSOURCES = \
+	$(VSLDIR)/std.vsl \
+	$(VSLDIR)/builtin.vsl \
+	$(VSLDIR)/tab.vsl \
+	$(VSLDIR)/fonts.vsl \
+	$(VSLDIR)/colors.vsl
+
+$(srcdir)/ddd.vsl.h: $(srcdir)/ddd.vsl $(srcdir)/vsl2c.sed $(VSLSOURCES)
+	$(CAT) $(srcdir)/ddd.vsl > tmp.c
+	$(VSL_CPP) tmp.c | $(SED) -f $(srcdir)/vsl2c.sed > $@
+	$(RM) tmp.c
+
+$(srcdir)/ddd.vsl: $(srcdir)/ddd.vsl.m4 $(srcdir)/colors.m4
+	( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/ddd.vsl.m4)dnl" \
+	) | $(M4) > $@~ && $(MV) $@~ $@
+
+
+# Special rules for configuration.
+# autoheader might not change config.h.in
+stamp-h: $(srcdir)/config.h.in
+$(srcdir)/config.h.in: stamp-h.in
+$(srcdir)/stamp-h.in: $(srcdir)/acconfig.h
+	cd $(srcdir) && $(AUTOHEADER)
+	$(DATE) > $@~ && $(MV) $@~ $@
+
+$(srcdir)/acconfig.h: $(srcdir)/acconfig.h.in $(srcdir)/acspecial.h
+	( \
+		echo "define(srcdir, \`$(srcdir)')dnl"; \
+		echo "include(srcdir()/acconfig.h.in)dnl" \
+	) | $(M4) > $@~ && $(MV) $@~ $@
+
+$(srcdir)/acspecial.h: $(srcdir)/configure.in
+	$(GREP) '^ICE_[a-zA-Z0-9_]* *(' $(srcdir)/configure.in > $@~ && \
+	$(MV) $@~ $@
+
+# Special program includes
+version.h: vr.h
+	@$(CMP) vr.h $@ 2> /dev/null || ( $(CAT) vr.h > $@~ && $(MV) $@~ $@ )
+build.h: bld.h
+	@$(CMP) bld.h $@ 2> /dev/null || ( $(CAT) bld.h > $@~ && $(MV) $@~ $@ )
+host.h: $(srcdir)/host.h.in config.status
+	$(CAT) $(srcdir)/host.h.in | \
+	$(SED) "s%@HOST_CANONICAL@%$(host_canonical)%" | \
+	$(SED) "s%@TARGET_CANONICAL@%$(target_canonical)%" > $@~ && \
+	$(MV) $@~ $@
+
+# Special Texinfo includes
+config.texi: cfg.texi
+	@$(CMP) cfg.texi $@ 2> /dev/null || \
+	( $(CAT) cfg.texi > $@~ && $(MV) $@~ $@ )
+
+## EPS code stuff.
+$(srcdir)/header.str: $(srcdir)/header.ps
+	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/header.ps > $@~ && $(MV) $@~ $@
+
+$(srcdir)/trailer.str: $(srcdir)/trailer.ps
+	$(SED) 's/^.*$$/"&\\n"/' $(srcdir)/trailer.ps > $@~ && $(MV) $@~ $@
+
+$(srcdir)/eps-code.h: \
+	$(srcdir)/header.str $(srcdir)/trailer.str $(srcdir)/eps-code.x
+	$(SED) -e '/prolog/r $(srcdir)/header.str' \
+	       -e '/trailer/r $(srcdir)/trailer.str' $(srcdir)/eps-code.x \
+	> $@~ && $(MV) $@~ $@
+
+
+## Lex and Yacc stuff.
+
+## YACC commands.
+YY = yy
+YACCTOCXX = $(srcdir)/yacctoC
+
+## LEX commands.
+LEXTOCXX = $(srcdir)/lextoC
+
+# The lex output root (lex.yy)
+LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
+
+# VSL parsers.
+vsl-lex.C: $(srcdir)/vsl-lex.L
+	$(LEX) $(LFLAGS) $(srcdir)/vsl-lex.L
+	$(SHELL) $(LEXTOCXX) -prefix vsl
+	$(MV) $(LEX_OUTPUT_ROOT).C $@
+	$(RM) $(LEX_OUTPUT_ROOT).c
+
+vsl-gramma.h vsl-gramma.C: $(srcdir)/vsl-gramma.Y \
+	$(YACCTOCXX) $(YACCTOCXX).bison $(YACCTOCXX).h $(YACCTOCXX).sun
+	$(YACC) $(YFLAGS) -d $(srcdir)/vsl-gramma.Y
+	$(SHELL) $(YACCTOCXX) -prefix vsl
+	$(MV) y.tab.H vsl-gramma.h
+	$(MV) y.tab.C vsl-gramma.C
+	$(RM) y.tab.c y.tab.h
+
+# DDD regexp parsers.
+rxscan.C: $(srcdir)/rxscan.L
+	$(LEX) $(LFLAGS) $(srcdir)/rxscan.L
+	$(SHELL) $(LEXTOCXX) -prefix "ddd"
+	$(MV) $(LEX_OUTPUT_ROOT).C $@
+	$(RM) $(LEX_OUTPUT_ROOT).c
+
+
+
+# The info file, in text format
+# ddd.info.txt does NOT depend on ddd.info since we don't want it to get
+# re-created after each configuration.
+ddd.info.txt: $(srcdir)/ddd.texi configure.in
+	$(MAKE) $(docdir)/ddd.info
+	info --subnodes -o - -f $(docdir)/ddd.info > $@~ && $(MV) $@~ $@
+
+# ddd.man.txt may reside in $(srcdir) or `.' , hence the `$?'
+ddd.info.txt.gz: ddd.info.txt
+	$(COMPRESS) $? > $@~ && $(MV) $@~ $@
+
+ddd.info.txt.gz.C: ddd.info.txt.gz
+	$(MAKE) stringify$(EXEEXT)
+	-./stringify < $? > $@~ && $(MV) $@~ $@
+
+# COPYING.huff.C does NOT depend on huffencode since we don't want it
+# to get re-created after each configuration.
+COPYING.huff.C: $(srcdir)/../COPYING
+	$(MAKE) huffencode$(EXEEXT)
+	-$(SED) 's///' < $(srcdir)/../COPYING | ./huffencode > $@~ && \
+	$(MV) $@~ $@
+
+COPYING.gz: $(srcdir)/../COPYING
+	$(COMPRESS) $(srcdir)/../COPYING > $@
+
+COPYING.gz.C: COPYING.gz
+	$(MAKE) stringify$(EXEEXT)
+	-./stringify < COPYING.gz > $@~ && $(MV) $@~ $@
+
+# NEWS.huff.C does NOT depend on huffencode since we don't want it
+# to get re-created after each configuration.
+NEWS.huff.C: $(srcdir)/../NEWS
+	$(MAKE) huffencode$(EXEEXT)
+	-$(SED) 's///' < $(srcdir)/../NEWS | ./huffencode > $@~ && \
+	$(MV) $@~ $@
+
+NEWS.gz: $(srcdir)/../NEWS
+	$(COMPRESS) $(srcdir)/../NEWS > $@~ && $(MV) $@~ $@
+
+NEWS.gz.C: NEWS.gz
+	$(MAKE) stringify$(EXEEXT)
+	-./stringify < NEWS.gz > $@~ && $(MV) $@~ $@
+
+show.$(OBJEXT): COPYING.gz.C NEWS.gz.C ddd.info.txt.gz.C
+
+
+# Configuration info stuff
+configinfo.C: USERINFO $(srcdir)/config-info
+	$(SHELL) $(srcdir)/config-info $(srcdir)/USERINFO USERINFO > $@~ && \
+	$(MV) $@~ $@
+
+# If `~/.ddd_userinfo' exists, use this file as personal identification.
+USERINFO: userinfo$(EXEEXT)
+	-(cat $$HOME/.ddd_userinfo 2> /dev/null || \
+	./userinfo || echo '(unknown)') > $@~ && $(MV) $@~ $@
+	@$(ECHO) ""
+	@$(ECHO) "Please check your name and e-mail address:"
+	@$(ECHO) ""
+	@$(CAT) $@
+	@$(ECHO) ""
+	@$(ECHO) "This information will be compiled into $(DDD)."
+	@$(ECHO) "If it is not correct, please edit $@ and re-compile."
+	@$(ECHO) ""
+
+## For demonstration and debugging purposes
+.PHONY: check
+check: Ddd ./$(ddd)$(EXEEXT) cxxtest$(EXEEXT)
+	XUSERFILESEARCHPATH=%N XAPPLRESDIR=. ./$(ddd)$(EXEEXT) $(DDD_OPTIONS) cxxtest$(EXEEXT)
+
+# We don't want no optimizing, but debugging info in our test files
+MAKE_DEBUG = \
+$(MAKE) CXXFLAGS="`$(ECHO) '$(CXXFLAGS)' | \
+	$(SED) 's/-O[^ ]*//' | $(SED) 's/-DNDEBUG//'`" \
+	CFLAGS="`$(ECHO) '$(CFLAGS)' | \
+	$(SED) 's/-O[^ ]*//' | $(SED) 's/-DNDEBUG//'`"
+
+cxxtest.$(OBJEXT): $(srcdir)/cxxtest.C
+	@case '$(CXXFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(CXXCOMPILE) -c @CXXDEBUG@ $(srcdir)/cxxtest.C -o $@;; \
+	esac
+
+ctest.$(OBJEXT): $(srcdir)/ctest.c
+	@case '$(CFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(COMPILE) -c -g $(srcdir)/ctest.c -o $@;; \
+	esac
+
+sample.$(OBJEXT): $(srcdir)/sample.c
+	@case '$(CFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(COMPILE) -c -g $(srcdir)/sample.c -o $@;; \
+	esac
+
+grabtest.$(OBJEXT): $(srcdir)/grabtest.C
+	@case '$(CXXFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(CXXCOMPILE) -c @CXXDEBUG@ $(srcdir)/grabtest.C -o $@;; \
+	esac
+
+bug.$(OBJEXT):	$(srcdir)/bug.C
+	@case '$(CXXFLAGS)' in \
+	*-O*) $(MAKE_DEBUG) $@;; \
+	*) set -x; \
+	   $(CXXCOMPILE) -c @CXXDEBUG@ $(srcdir)/bug.C -o $@;; \
+	esac
+
+
+# Architecture-independent files required for building DDD.
+# In a distribution, these should be already built.
+#
+# Order is significant here!  First source files, then derived files.
+PROG_STUFF = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
+             acconfig.h acspecial.h stamp-h.in config.h \
+             $(srcdir)/tips.m4 $(srcdir)/tips.html \
+             $(srcdir)/Ddd.in Ddd.ad.h host.h \
+             $(srcdir)/ddd.vsl $(srcdir)/ddd.vsl.h \
+             vr.h version.h bld.h build.h configinfo.C \
+             COPYING.gz.C NEWS.gz.C ddd.info.txt.gz.C \
+             xlibdir.C eps-code.h .gdbinit
+
+# Additional files to be included in the distribution.
+DIST_STUFF = ../$(ddd)-$(VERSION)-$(REL).spec \
+             $(man_MANS) $(docdir)/ddd.ps $(docdir)/ddd.pdf \
+	     $(htmldir)/index.html $(ICONS)
+
+# Let automake know what we need
+EXTRA_DIST = $(PROG_STUFF) $(DIST_STUFF)
+
+diststuff: $(EXTRA_DIST)
