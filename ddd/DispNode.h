@@ -45,9 +45,8 @@
 #include "HandlerL.h"
 #include "BoxGraphN.h"
 
-// DDD includes
-#include "DispValue.h"
-#include "DispBox.h"
+class DispValue;
+class DispBox;
 
 // Event types
 const unsigned DispNode_Disabled   = 0;

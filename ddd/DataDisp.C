@@ -65,7 +65,8 @@ char DataDisp_rcsid[] =
 #include "CompositeB.h"
 #include "DestroyCB.h"
 #include "DispGraph.h"
-#include "DispNode.h"		// Constructors
+#include "DispNode.h"
+#include "DispBox.h"
 #include "GraphEdit.h"		// XtNgraph
 #include "HistoryD.h"
 #include "IntIntAA.h"

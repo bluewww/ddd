@@ -52,27 +52,24 @@
 // Motif includes
 #include <Xm/Xm.h>
 
-// Misc includes
-#include "strclass.h"
-#include "MakeMenu.h"
-#include "HelpCB.h"
-#include "ExitCB.h"
-#include "events.h"
-#include "VSEFlags.h"
-#include "VSLLib.h"
-#include "Delay.h"
-#include "IntArray.h"
-#include "MString.h"
-#include "DispNode.h"
-#include "string-fun.h"
-
 // DDD includes
 #include "ArgField.h"
+#include "BoxSize.h"
 #include "Command.h"
+#include "Delay.h"
+#include "ExitCB.h"
 #include "GDBAgent.h"
 #include "GraphEdit.h"
-#include "DispBox.h"
+#include "HelpCB.h"
+#include "IntArray.h"
+#include "MString.h"
+#include "MakeMenu.h"
 #include "StringA.h"
+#include "VSEFlags.h"
+#include "VSLLib.h"
+#include "events.h"
+#include "strclass.h"
+#include "string-fun.h"
 
 
 //-----------------------------------------------------------------------------
@@ -87,6 +84,10 @@ enum DeferMode {
 
 class NewDisplayInfo;
 class DispGraph;
+class DispNode;
+class DispBox;
+class DispValue;
+class RegionGraphNode;
 
 //-----------------------------------------------------------------------------
 class DataDisp {
