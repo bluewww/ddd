@@ -94,27 +94,29 @@ Reported by:  bas@phys.uva.nl (Bas V. de Bakker),
        the remainder of DDD without `-O' and `-felide-constructors'
        flags.
 
-Reported by:	Jacek M. Holeczek <holeczek@clri6f.gsi.de>
+
+Reported by:	Jacek M. Holeczek <holeczek@us.edu.pl>
 
     This "howto" describes the way one can get ddd-3.0 compiled on AIX 4.1
     using standard AIX utilities: C Set ++ for AIX Compiler (xlC), lex
     and yacc. The same procedure should be valid on AIX 4.2 and AIX 3.2.
 
-    First unpack the source distribution and go to the ddd-3.0
-    subdirectory.
+    First unpack the source distribution and go to the ddd-3.0 subdirectory.
 
     Then set some environment variables:
             export CC=xlC
             export CXX=xlC
-            export CFLAGS=-O
-            export CXXFLAGS=-O
-            export LDFLAGS=-O
+            export CFLAGS="-O"
+            export CXXFLAGS="-O"
+            export LDFLAGS="-O"
+            unset LIBPATH
 
     If you decide NOT to use gnu gcc, flex, and bison you may also
     need to remove the /usr/local/bin (or any other subdirectory where
     you keep gnu executables) from the PATH environment variable (so
     that the ./configure script will not find them, and it will find
-    standard AIX xlC, lex, and yacc).
+    standard AIX xlC, lex, and yacc) :
+            export PATH=/usr/bin:/etc:/usr/sbin:/usr/ucb:/usr/bin/X11:/sbin
 
     Then run configure:
             ./configure -v
@@ -135,20 +137,20 @@ Reported by:	Jacek M. Holeczek <holeczek@clri6f.gsi.de>
     If you decided to use standard AIX lex and yacc the make will
     crash while compiling ./ddd/VSLRead.C. You have to edit
     ./ddd/vsl-gramma.C (after the ./ddd/vsl-gramma.C is newly
-    created by yacc) and modify the declaration of yyerror:
-            extern "C" void yyerror(char *s);       // added "C"
+    created by yacc) and modify the declaration of vslerror:
+            extern "C" void vslerror(char *s);       // added "C"
 
-    and the definition of yyparse:
+    and the definition of vslparse:
             #ifdef __cplusplus
             // extern "C"                           // commented extern "C"
             #endif /* __cplusplus */
             int
-            yyparse()
+            vslparse()
 
     then run "make" again.  You should get no other warnings/errors except :
       - when compiling ./ddd/mainloop.C :
 	63  1500-010: (W) WARNING in ddd_main_loop(): Infinite loop.  Program may not stop.
-        ( you can safely ignore it ).
+        ( this is intentional, you can safely ignore it ).
     Finally run "make strip" and "make install".  Have fun ...
 
 DEC
