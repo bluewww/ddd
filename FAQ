@@ -1,123 +1,113 @@
 DDD Frequently Asked Questions					-*- text -*-
 ******************************
 
-1. Is there a way to edit the source in the source window?
+1.  Can I dereference a multi-length array graphically via the mouse?
 
-No.  First, although the Motif Text widget supports editing sources,
-this would be difficult to realize because of the line numbers,
-breakpoint symbols etc.  which would have to be updated after each
-change.  Second, it would be difficult to maintain consistency between
-the debugger line information and the edited source; for instance,
-lookup() and break() commands would still refer to the last compiled
-source.  Third, there are virtually no limits on what a source editor
-should be able to; we don't think it is useful to implement yet
-another Emacs.
-
-
-2. Can I dereference a multi-length array graphically via the mouse?
-
-The problem is that GDB does not know the actual length of the array;
-you have to supply it by hand (i.e. using the keyboard).
-You can use the DDD ``display successive array elements`` or the GDB
-``artificial array'' mechanism.  If you have a pointer, say:
-
-int *pi;
-
-pointing to an array of 10 ints, you can see the integers by entering
-
-graph display pi[0..9]
-
-at the `(gdb)' prompt (or entering `pi[0..9]` in the `Dependent
-Display' dialog).
-
-As an alternative, you can use the GDB ``artificial array'' mechanism
-by entering
-
-graph display *pi@10
-
-This will create an array starting with pi showing the first 10 elements.
+    The problem is that GDB does not know the actual length of the
+    array; you have to supply it by hand (i.e. using the keyboard).
+    You can use the DDD ``display successive array elements`` or the
+    GDB ``artificial array'' mechanism.  If you have a pointer, say:
+    
+        int *pi;
+    
+    pointing to an array of 10 ints, you can see the integers by
+    entering
+    
+        graph display pi[0..9]
+    
+    at the `(gdb)' prompt (or entering `pi[0..9]` in the `Dependent
+    Display' dialog).
+    
+    As an alternative, you can use the GDB ``artificial array'' mechanism
+    by entering
+    
+        graph display pi[0]@10
+    
+    This will create an array starting with pi showing the first 10
+    elements.
 
 
-3. Does DDD sit on top of GDB, or is it integrated with gdb source?
+2.  Does DDD sit on top of GDB, or is it integrated with gdb source?
 
-DDD sits on top of a separate GDB process.  Use `ddd --trace' to see
-the interaction.
-
-
-4. If it sits on top, how can GDB upgrades be incorporated?
-
-By getting and installing the new GDB.  No changes to DDD are
-necessary, unless the GDB developers introduce incompatible changes.
+    DDD sits on top of a separate GDB process.  Use `ddd --trace' to
+    see the interaction.
 
 
-5. Does DDD work with DBX on other systems than Sun?
+3.  If it sits on top, how can GDB upgrades be incorporated?
 
-DDD has been reported to run with Sun DBX as shipped with SunOS 4.x
-and Solaris 2.  Unfortunately, DBX is quite different across machines
-since every vendor icorporated his own extensions.  As long as some
-basics stay the same, DDD may work more or less with other DBX
-versions as well.  If not, extending the DDD code to support other DBX
-versions is not too difficult.  Use `ddd --trace' to see the
-interaction.
+    By getting and installing the new GDB.  No changes to DDD are
+    necessary, unless the GDB developers introduce incompatible
+    changes.
 
 
-6. I don't like the 'break point' symbol.  Can I change it?
+4.  Does DDD work with DBX on other systems than Sun?
 
-Yes - by altering the code :-).  I may make it user-defineable some
-day, but the choice is limited to text characters unless you supply
-your own text font.
-
-
-7. When I hit a break point, can the break line
-   be brought to the center of the source window?
-
-Again, by altering the code - I guess I'll realize that in a future
-DDD release.
+    DDD has been reported to run with Sun DBX as shipped with SunOS
+    4.x and Solaris 2.  Unfortunately, DBX is quite different across
+    machines since every vendor icorporated his own extensions.  As
+    long as some basics stay the same, DDD may work more or less with
+    other DBX versions as well.  If not, extending the DDD code to
+    support other DBX versions is not too difficult.  Use `ddd
+    --trace' to see the interaction.
 
 
-8. I compiled DDD on my machine and it fails.  I got the executable
-   from an FTP site and it runs.  What is the difference? Is there
-   some compilation setup I need to do, or is the executable patched?
+5.  I don't like the 'break point' symbol.  Can I change it?
 
-It is a frequently observed effect that our executables work while the
-executables of DDD users fail.  This is simply due to the fact that we
-test them throroughly.  The usual test a new DDD distribution has to
-pass is to configure, compile, and run out-of-the-box on half a dozen
-machines and configurations.
-
-We do not really know why our executables work while others fail,
-although the source code is identical.  A simple explanation may be
-that the compilation environment (C compiler, C++ compiler,
-libraries...) have slight differences (aka bugs) from site to site.
-We have set up DDD such that it works on our site - for instance, some
-DDD parts work around compiler bugs detected on a specific machine.
-Users compiling DDD on their local machine will encounter other
-problems, but will not know how to fix them.  That is, while the DDD
-code stays the same, the executables may vary a lot.
+    Yes - by altering the code :-).  I may make it user-defineable
+    some day, but the choice is limited to text characters unless you
+    supply your own text font.
 
 
-9. I have heard that there is a magic command built into DDD.
-   Is this true, and what is this magic command for?
+6.  I compiled DDD on my machine and it fails.  I got the executable
+    from an FTP site and it runs.  What is the difference? Is there
+    some compilation setup I need to do, or is the executable patched?
 
-You'll have to find out this one for yourself.  Use the source, Luke.
+    It is a frequently observed effect that our executables work while
+    the executables of DDD users fail.  This is simply due to the fact
+    that we test them throroughly.  The usual test a new DDD
+    distribution has to pass is to configure, compile, and run
+    out-of-the-box on half a dozen machines and configurations.
+    
+    We do not really know why our executables work while others fail,
+    although the source code is identical.  A simple explanation may
+    be that the compilation environment (C compiler, C++ compiler,
+    libraries...) have slight differences (aka bugs) from site to
+    site.  We have set up DDD such that it works on our site - for
+    instance, some DDD parts work around compiler bugs detected on a
+    specific machine.  Users compiling DDD on their local machine will
+    encounter other problems, but will not know how to fix them.  That
+    is, while the DDD code stays the same, the executables may vary a
+    lot.
 
 
-10. Is there an Athena Widgets port of DDD?
+7.  I have heard that there is a magic command built into DDD.
+    Is this true, and what is this magic command for?
 
-No.
+    You'll have to find out this one for yourself.  Use the source,
+    Luke.
 
 
-11. Why does my DDD call `xmkmf' when being started?
+8.  Is there an Athena Widgets port of DDD?
 
-To run properly, OSF/Motif requires a file called `XKeysymDB' in the X
-project root.  Since we distribute DDD binaries, the X project root
-compiled into the X libraries (and thus hard-coded in the DDD binary)
-may not be valid on the actual machine.  DDD tries to repair this
-situation by calling `xmkmf' and thus determining the X project root.
-Usually, this is not required if DDD runs on the machine it was
-compiled on.  You may run `ddd --check-configuration' to find out why
-DDD finds it necessary to determine the X project root.  The code for
-this hack can be found in `xconfig.C'.
+    No.  If you want DDD running with a free widget set, you should
+    support the LessTif team, who are developing a free
+    Motif-compliant widget set.  Check out their WWW page at
+    
+    http://www.cs.uidaho.edu:8000/hungry/microshaft/lesstif.html
 
+
+9.  Why does my DDD call `xmkmf' when being started?
+
+    To run properly, OSF/Motif requires a file called `XKeysymDB' in
+    the X project root.  Since we distribute DDD binaries, the X
+    project root compiled into the X libraries (and thus hard-coded in
+    the DDD binary) may not be valid on the actual machine.  DDD tries
+    to repair this situation by calling `xmkmf' and thus determining
+    the X project root.  Usually, this is not required if DDD runs on
+    the machine it was compiled on.  You may run `ddd
+    --check-configuration' to find out why DDD finds it necessary to
+    determine the X project root.  The code for this hack can be found
+    in `xconfig.C'.
+    
 
 $Id$

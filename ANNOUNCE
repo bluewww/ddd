@@ -29,6 +29,7 @@ DDD News
       debugged program properly.
     - New `Help on Debugging' item.
       Written by David A. Lyons (dlyons@apple.com).
+    - Colours slightly reworked: text background is a little brighter.
     - A short DDD survey, including lots of screen shots, is included
       in `doc/ddd-paper.ps'.  The paper also describes some DDD innards.
     - DDD source code has been adapted to the current ANSI/ISO C++
