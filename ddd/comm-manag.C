@@ -625,7 +625,8 @@ void init_session(const string& restart, const string& settings,
 		string cmd = init_commands.before('\n');
 		init_commands = init_commands.after('\n');
 
-		if (is_file_cmd(cmd, gdb) || is_core_cmd(cmd))
+		if (is_file_cmd(cmd, gdb) || is_core_cmd(cmd) || 
+		    cmd.contains("set confirm", 0))
 		{
 		    // Use this command the ordinary way
 		    file_commands += cmd + "\n";
@@ -644,7 +645,7 @@ void init_session(const string& restart, const string& settings,
 	init_commands = file_commands;
     }
 
-    // Process all start-up commands.  These should load the file, etc.
+    // Process all start-up commands (load file, etc.)
     while (init_commands != "")
     {
 	Command c(init_commands.before('\n'), Widget(0), OQCProc(0));
@@ -671,7 +672,7 @@ void init_session(const string& restart, const string& settings,
 
     if (info != 0)
     {
-	// Source remaining commands
+	// Source remaining commands (settings, etc.)
 	Command c("source " + info->tempfile, Widget(0), 
 		  SourceDoneCB, (void *)info);
 	c.priority = COMMAND_PRIORITY_INIT;
