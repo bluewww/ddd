@@ -128,8 +128,8 @@ Volunteers for fixing these and other bugs are welcome!
      ddd --dbx $PAR_HOME/bin/tesla-wish 20919
      Reported by Joe Hildebrand <hildjj@fuentez.com>
 
-068. On HPUX 9.05 ddd does not pass any characters to the left of the "@"
-     symbol typed into the command line.
+068. On HPUX 9.05, DDD does not pass any characters to the left of the "@"
+     symbol typed into the command line.  [fixed in DDD 1.5  -AZ]
 
 069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
      [Linux 1.3.38 system, X11R6 (XFree 3.1.1), Motif 2.x]
@@ -155,6 +155,20 @@ Volunteers for fixing these and other bugs are welcome!
         the source window does not get highlighted. If one has also the
         assembler window then the line in this window is highlighted, but
         not the one in the source language window.
+
+     5. When one sets a breakpoint or do something that issues a command
+        to the underlying debugger, the source window is scrolled back to
+        the the current line. This makes it difficult to see what you've
+        actually done, since for example the breakpoint you just set is
+        usually not visible.
+          Maybe it would be nice not to scroll and have a button that lets
+        one go to the current line in a single mouse click?
+
+     6. If one has automatic save of options and also use one of
+        --exec-window or --noexec-window (to change the expected ddd
+        behaviour for a session), then the new behaviour is automatically
+        saved. I find this counter-intuitive, but maybe is this a feature
+        (which may be documented in the manual for dumb people like me).
 
 070. Matthias Kurz <mk@baerlap.north.de> complains: When glyphs are
      enabled, I have endless scrolling as soon as I press a `repeat'
@@ -210,7 +224,7 @@ Volunteers for fixing these and other bugs are welcome!
      up. The outline draws in the wrong place, not just within the
      selected rectangle, but also in the upper left corner of the
      window regardles of where the selection rectangle starts.
-     [Fixed in DDD 1.5 - AZ]
+     [Fixed in DDD 1.5  -AZ]
 
 079. Window resize problems.  louie@dbmx.com (Lewis Alderton) says: I
      am running using FVWM ( virtual window manager ) and when the

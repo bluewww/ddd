@@ -1,6 +1,22 @@
 Changes in DDD						-*- text -*-
 **************
 
+DDD 1.5 (in development)
+------------------------
+
+    Changes to DDD 1.4:
+    - Regular expressions now use the POSIX.2 standard regcomp/regexec
+      interface.  The slower interface is compensated by smarter calls.
+    - DDD configuration now generally attempts to link with system
+      libraries wherever possible.  GNU termcap and librx are
+      used only if the system does not provide them.  This results in
+      smaller and (hopefully) safer DDD executables.
+
+    Several bug fixes, including:
+    - On HP-UX, the `@' character is no more discarded from GDB input.
+    - The `vslPath' resource is no more ignored.
+
+
 DDD 1.4d
 --------
 

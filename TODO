@@ -114,20 +114,6 @@ Volunteers for these and other projects are welcome!
 
 069. Yves Arrouye <Yves.Arrouye@marin.fdn.fr> states:
 
-     1. When one sets a breakpoint or do something that issues a command
-        to the underlying debugger, the source window is scrolled back to
-        the the current line. This makes it difficult to see what you've
-        actually done, since for example the breakpoint you just set is
-        usually not visible.
-          Maybe it would be nice not to scroll and have a button that lets
-        one go to the current line in a single mouse click?
-
-     2. If one has automatic save of options and also use one of
-        --exec-window or --noexec-window (to change the expected ddd
-        behaviour for a session), then the new behaviour is automatically
-        saved. I find this counter-intuitive, but maybe is this a feature
-        (which may be documented in the manual for dumb people like me).
-
      3. Add a way to cast a display. What I mean is that when I debug some
         code with a `generic' C function which takes a void* and a tag that
         indicates the kind of stuff the void* is really, I'd like to be able
@@ -155,7 +141,7 @@ Volunteers for these and other projects are welcome!
      (i.e. comments and graphics that are associated with certain
      variable/function names in the code).
 
-073. While the debugee is running, show some image sequence in the DDD
+073. While the debuggee is running, show some image sequence in the DDD
      window (similar to Netscape :-)
 
 074. Have a `ddd-announce' mailing list, where only DDD announcements
