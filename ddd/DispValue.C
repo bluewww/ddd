@@ -215,7 +215,7 @@ bool DispValue::sequence_pending(const string& value,
 }
 
 // In Perl, replace `{$REF}' and `$REF' by `REF->'
-static string normalize_base(const string& base)
+string DispValue::normalize_base(const string& base)
 {
 #if RUNTIME_REGEX
     static regex rxsimple("([][a-zA-Z0-9_$@%().`]|->)*");

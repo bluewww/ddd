@@ -188,6 +188,9 @@ protected:
     // Copy constructor
     DispValue (const DispValue& dv);
 
+    // Return a `normalized' prefix BASE for arrays and structs
+    string normalize_base(const string& base);
+
 public:
     // Global settings
     static bool expand_repeated_values;
