@@ -3,25 +3,21 @@ Please consult the following files:
 
     ANNOUNCE     All about the recent DDD release, including FTP sites.
     BUGS         Known DDD bugs.
+    CREDITS      Thanks for DDD.
     COPYING      The DDD license.
     COPYING.LIB  The license applying to some parts of DDD.
     INSTALL      Building and installing DDD.
     NEWS         Release information and recent changes.
     PROBLEMS     Hints for building DDD on specific systems.
-    PROJECTS     Possible future DDD features.
     SERVICE      People offering support services for DDD.
+    TODO         Possible future DDD features.
 
-
-Note: you can retrieve recent versions of all these files 
-
-- via anonymous FTP
-  from `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/'
-
-- via e-mail by sending a mail to `majordomo@ips.cs.tu-bs.de' with the words
-
-  get ddd-users <file>
-
-  in the body of your message.
+Recent versions of these files reflecting the current development state
+are stored in `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/'.
+They can also be obtained via e-mail by sending a mail to
+`majordomo@ibr.cs.tu-bs.de' with the words `get ddd-users <file>' in
+the body of your mail.  A list of available files is obtained by
+writing `index ddd-users' in the body of your mail.
 
 -- 
 Andreas Zeller (ddd@ips.cs.tu-bs.de)
