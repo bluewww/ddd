@@ -101,30 +101,29 @@ static DispValueType _determine_type (string& value)
 	    return Simple;
     }
 
-    // According to Jens Krinke <krinke@ips.cs.tu-bs.de>, AIX DBX
-    // prepends `ID:' before structs.  Treat this as base class.
+    // AIX DBX prepends `BASECLASS:' before base class structs.
     if (value.contains(rxdbx_baseclass, 0))
-	return BaseClass;
+	return Struct;
 
     // Structs.
     // XDB and JDB prepend the address before each struct.  JDB also
     // prepends the class name.
 #if RUNTIME_REGEX
-    static regex rxstr_or_cl_begin(
+    static regex rxstruct_begin(
 	"(" RXADDRESS ")? *"
 	"([(]|[{]|record\n|RECORD\n|RECORD |OBJECT "
 	"|struct|class|union).*");
-    static regex rxstr_or_cl_end("([)]|[}]|end\n|END\n|end;|END;)");
+    static regex rxstruct_end("([)]|[}]|end\n|END\n|end;|END;)");
 #endif
 
-    if (value.matches(rxstr_or_cl_begin))
+    if (value.matches(rxstruct_begin))
     {
 	// Check for empty struct.
 	string v = value;
 	string addr;
-	bool ok = read_str_or_cl_begin(v, addr);
-	if (ok && v.contains(rxstr_or_cl_end, 0))
-	    return Simple;
+	bool ok = read_struct_begin(v, addr);
+	if (ok && v.contains(rxstruct_end, 0))
+	    return Struct;
 
 	// Check for leading keywords.
 #if RUNTIME_REGEX
@@ -134,7 +133,7 @@ static DispValueType _determine_type (string& value)
 	    "|struct|class|union).*");
 #endif
 	if (value.matches(rxstruct_keyword_begin))
-	    return StructOrClass;
+	    return Struct;
 
 	// Check for leading braces.  DEC DBX uses `{' for arrays as
 	// well as for structs; likewise, AIX DBX uses `(' for arrays
@@ -155,11 +154,11 @@ static DispValueType _determine_type (string& value)
 	    {
 	    case ':':
 		if (gdb->program_language() == LANGUAGE_JAVA)
-		    return StructOrClass;
+		    return Struct;
 		break;
 
 	    case '=':
-		return StructOrClass;
+		return Struct;
 
 	    case '(':
 	    case '{':
@@ -200,7 +199,7 @@ static DispValueType _determine_type (string& value)
 	{
 	    int nl = value.index('\n', pointer_index + addr_len);
 	    if (nl >= 0 && brace < nl)
-		return StructOrClass;
+		return Struct;
 	}
 
 	// We have an ordinary pointer
@@ -655,19 +654,19 @@ int read_repeats(string& value)
 }
 
 // Read the beginning of a struct from VALUE.  Return false iff done.
-bool read_str_or_cl_begin (string& value, string& addr)
+bool read_struct_begin (string& value, string& addr)
 {
     return read_array_begin(value, addr);
 }
 
 // Read next struct element from VALUE.  Return false iff done.
-bool read_str_or_cl_next (string& value)
+bool read_struct_next (string& value)
 {
     return read_array_next(value);
 }
 
 // Read end of struct from VALUE.  Return false iff done.
-bool read_str_or_cl_end (string& value)
+bool read_struct_end (string& value)
 {
     return read_array_end(value);
 }
@@ -703,7 +702,7 @@ void munch_dump_line (string& value)
 }
 
 // Skip `members of SUBCLASS:' in VALUE.  Return false iff failure.
-bool read_members_of_xy (string& value)
+bool read_members_prefix (string& value)
 {
 #if RUNTIME_REGEX
     static regex rxmembers_of_nl("members of [^\n]+: ?\n");
@@ -718,6 +717,7 @@ bool read_members_of_xy (string& value)
 
     return false;
 }
+
 
 // Read member name; return "" upon error
 string read_member_name (string& value)
@@ -929,27 +929,4 @@ static void read_leading_comment (string& value)
     }
 
     value = value.from(i);
-}
-
-//-----------------------------------------------------------------------------
-// Debugging stuff
-//-----------------------------------------------------------------------------
-
-ostream& operator<<(ostream& os, DispValueType type)
-{
-    switch (type)
-    {
-    case UnknownType:   os << "Unknown";       break;
-    case Simple:        os << "Simple";        break;
-    case Pointer:       os << "Pointer";       break;
-    case Array:         os << "Array";         break;
-    case StructOrClass:	os << "StructOrClass"; break;
-    case BaseClass:     os << "BaseClass";     break;
-    case Reference:     os << "Reference";     break;
-    case Sequence:   	os << "Sequence";      break;
-    case List:   	os << "List";	       break;
-    case Text:          os << "Text";	       break;
-    }
-    
-    return os;
 }

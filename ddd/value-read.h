@@ -39,23 +39,9 @@
 
 #include "strclass.h"
 #include "bool.h"
+#include "DispValueT.h"
+
 #include <iostream.h>
-
-// Various types of elements that can be read
-enum DispValueType {
-    UnknownType = 0,		// Unknown type
-    Simple = 1,			// Ordinary or other value
-    Pointer,			// Pointer value
-    Array,			// Array
-    StructOrClass,		// Struct, Class, Record, Object
-    BaseClass,			// C++ base class member
-    Reference,			// C++ Reference.  2 children.
-    Sequence,			// Sequence of values.
-    List,			// List of values.  Last member may be text.
-    Text			// Multi-line text.  Last member of a list.
-};
-
-ostream& operator<<(ostream& os, DispValueType type);
 
 // Determine type of next element in VALUE
 DispValueType determine_type (string value);
@@ -78,10 +64,12 @@ bool read_array_end (string& value);
 int read_repeats(string& value);
 
 // Read struct or class; return false iff error
-bool read_str_or_cl_begin (string& value, string& addr);
-bool read_str_or_cl_next (string& value);
-bool read_str_or_cl_end (string& value);
-bool read_members_of_xy (string& value);
+bool read_struct_begin (string& value, string& addr);
+bool read_struct_next (string& value);
+bool read_struct_end (string& value);
+
+// Read GDB `members of CLASS:' prefix
+bool read_members_prefix (string& value);
 
 // Convert a DBX initial `dump' line into a readable format
 void munch_dump_line (string& value);

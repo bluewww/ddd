@@ -40,13 +40,13 @@
 #include "strclass.h"
 #include "bool.h"
 #include "Box.h"
-#include "value-read.h"
+#include "DispValueT.h"
 #include "StringSA.h"
 
 class SimpleDispValue;
 class PointerDispValue;
 class ArrayDispValue;
-class StructOrClassDispValue;
+class StructDispValue;
 
 class DispValue {
     DispValueType mytype;
@@ -60,13 +60,11 @@ class DispValue {
     int           myrepeats;	// Number of repetitions
 
     union {
-	SimpleDispValue*        simple;    // mytype == Simple
-	PointerDispValue*       pointer;   // mytype == Pointer
-	ArrayDispValue*         array;     // mytype == Array
-	StructOrClassDispValue* str_or_cl; // mytype == StructOrClass
-				           // or mytype == BaseClass
-                                           // or mytype == Reference
-    } v;
+	SimpleDispValue*  simple;    // type Simple
+	PointerDispValue* pointer;   // type Pointer
+	ArrayDispValue*   array;     // type Array
+	StructDispValue*  str;       // type StructOrClass or Reference
+    };
 
     // Initialize from VALUE.  If TYPE is given, use TYPE as type
     // instead of inferring it.
@@ -85,7 +83,7 @@ class DispValue {
 				  const string& member_name);
 
 protected:
-    // Makes sense only for type() == Array, StructOrClass, BaseClass
+    // Makes sense only for type() == Array, Struct
     // Expand/collapse single value
     void _expand()    { myexpanded = true;  }
     void _collapse()  { myexpanded = false; }
@@ -177,7 +175,6 @@ public:
     // TYPE as type instead of inferring it.
     void update (string& value, bool& changed, bool& inited,
 		 DispValueType type = UnknownType);
-    bool new_BaseClass_name (string name);
 
     // Background processing.  PROCESSED is the number of characters
     // processed so far.  If this returns true, abort operation.

@@ -53,6 +53,7 @@ char DispValue_rcsid[] =
 #include "misc.h"
 #include "DispNode.h"
 #include "regexps.h"
+#include "value-read.h"
 
 #include <ctype.h>
 
@@ -100,12 +101,12 @@ public:
 };
 
 // Struct or class
-class StructOrClassDispValue {
+class StructDispValue {
 public:
     DispValueArray members;
     int            member_count;
 
-    StructOrClassDispValue()
+    StructDispValue()
 	: members(), member_count(0)
     {}
 };
@@ -189,7 +190,7 @@ DispValue::DispValue (DispValue* p,
     : mytype(UnknownType), myparent(p), mydepth (d), myexpanded(true), 
       myfull_name(f_n), print_name(p_n), changed(false), myrepeats(1)
 {
-    v.simple = 0;
+    simple = 0;
     init(value, given_type);
 
     // A new display is not changed, but initialized
@@ -198,54 +199,62 @@ DispValue::DispValue (DispValue* p,
 
 // Duplicator
 DispValue::DispValue (const DispValue& dv)
-    : mytype(dv.mytype), myparent(dv.myparent), mydepth(dv.mydepth),
+    : mytype(dv.mytype), myparent(0), mydepth(dv.mydepth),
       myexpanded(dv.myexpanded), myfull_name(dv.myfull_name),
-      print_name(dv.print_name), changed(false), myrepeats(dv.myrepeats)
+      print_name(dv.print_name), myaddr(dv.myaddr),
+      changed(false), myrepeats(dv.myrepeats)
 {
     switch (mytype)
     {
     case UnknownType:
     {
-	v.simple = 0;
+	simple = 0;
 	break;
     }
 
     case Simple:
     case Text:
     {
-	v.simple = new SimpleDispValue;
-	v.simple->value = dv.v.simple->value;
+	simple = new SimpleDispValue;
+	simple->value = dv.simple->value;
 	break;
     }
 
     case Pointer:
     {
-	v.pointer = new PointerDispValue;
-	v.pointer->value = dv.v.pointer->value;
-	v.pointer->dereferenced = false;
+	pointer = new PointerDispValue;
+	pointer->value = dv.pointer->value;
+	pointer->dereferenced = false;
 	break;
     }
 
     case Array:
     {
-	v.array = new ArrayDispValue;
-	v.array->member_count = dv.v.array->member_count;
-	for (int i = 0; i < v.array->member_count; i++)
-	    v.array->members[i] = dv.v.array->members[i]->dup();
-	v.array->align = dv.v.array->align;
+	array = new ArrayDispValue;
+	array->member_count = dv.array->member_count;
+	for (int i = 0; i < array->member_count; i++)
+	{
+	    array->members[i] = dv.array->members[i]->dup();
+	    array->members[i]->myparent = this;
+	}
+	array->index_base = dv.array->index_base;
+	array->have_index_base = dv.array->have_index_base;
+	array->align = dv.array->align;
 	break;
     }
 
-    case StructOrClass:
-    case BaseClass:
+    case Struct:
     case Reference:
     case Sequence:
     case List:
     {
-	v.str_or_cl = new StructOrClassDispValue;
-	v.str_or_cl->member_count = dv.v.str_or_cl->member_count;
-	for (int i = 0; i < v.str_or_cl->member_count; i++)
-	    v.str_or_cl->members[i] = dv.v.str_or_cl->members[i]->dup();
+	str = new StructDispValue;
+	str->member_count = dv.str->member_count;
+	for (int i = 0; i < str->member_count; i++)
+	{
+	    str->members[i] = dv.str->members[i]->dup();
+	    str->members[i]->myparent = this;
+	}
 	break;
     }
     }
@@ -256,9 +265,10 @@ DispValue *DispValue::dup() { return new DispValue(*this); }
 // True if more sequence members are coming
 bool DispValue::sequence_pending(const string& value) const
 {
-    if (parent() != 0 && parent()->type() == Array)
+    if (parent() != 0 && 
+	(parent()->type() == Array || parent()->type() == Struct))
     {
-	// In an array, we always read everything up to the final delimiter.
+	// In a composite, we always read everything up to the final delimiter.
 	return false;
     }
 
@@ -270,20 +280,6 @@ bool DispValue::sequence_pending(const string& value) const
 
     if (!is_delimited(value))
 	return true;		// Not at delimiter - more stuff follows
-
-    if (parent() != 0 && parent()->type() == StructOrClass)
-    {
-	// Check for invalid member name.  If we're not at a delimiter,
-	// but cannot read the next member name, return true.
-	if (is_ending(v) || v.contains(',', 0) || v.contains(';', 0))
-	    return false;
-
-	if (!read_str_or_cl_next(v))
-	    return false;
-
-	if (read_member_name(v) == "")
-	    return true;
-    }
 
     // Sequence is done
     return false;
@@ -303,19 +299,18 @@ void DispValue::init(string& value, DispValueType given_type)
     {
 	clear();
 
-	mytype          = Simple;
-	v.simple        = new SimpleDispValue;
-	v.simple->value = "(Aborted)";
+	mytype        = Simple;
+	simple        = new SimpleDispValue;
+	simple->value = "(Aborted)";
 	return;
     }
 
     mytype = given_type;
-    if (mytype == UnknownType && print_name == "")
+    if (mytype == UnknownType && 
+	(parent() == 0 || parent()->type() == List) && print_name == "")
 	mytype = Text;
-    if (mytype == UnknownType && is_user_command (print_name))
+    if (mytype == UnknownType && parent() == 0 && is_user_command(print_name))
 	mytype = List;
-    if (mytype == UnknownType && is_BaseClass_name (print_name))
-	mytype = BaseClass;
     if (mytype == UnknownType)
 	mytype = determine_type(value);
 
@@ -326,36 +321,36 @@ void DispValue::init(string& value, DispValueType given_type)
 
     case Simple:
     {
-	v.simple = new SimpleDispValue;
-	v.simple->value = read_simple_value(value, depth(), ignore_repeats);
+	simple = new SimpleDispValue;
+	simple->value = read_simple_value(value, depth(), ignore_repeats);
 #if LOG_CREATE_VALUES
-	clog << mytype << ": " << quote(v.simple->value) << "\n";
+	clog << mytype << ": " << quote(simple->value) << "\n";
 #endif
 	break;
     }
 
     case Text:
     {
-	v.simple = new SimpleDispValue;
-	v.simple->value = value;
+	simple = new SimpleDispValue;
+	simple->value = value;
 #if LOG_CREATE_VALUES
-	clog << mytype << ": " << quote(v.simple->value) << "\n";
+	clog << mytype << ": " << quote(simple->value) << "\n";
 #endif
 	break;
     }
 
     case Pointer:
     {
-	v.pointer = new PointerDispValue;
-	v.pointer->value = read_pointer_value (value, ignore_repeats);
-	v.pointer->dereferenced = false;
+	pointer = new PointerDispValue;
+	pointer->value = read_pointer_value (value, ignore_repeats);
+	pointer->dereferenced = false;
 
 #if LOG_CREATE_VALUES
-	clog << mytype << ": " << quote(v.pointer->value) << "\n";
+	clog << mytype << ": " << quote(pointer->value) << "\n";
 #endif
 	// Hide vtable pointers.
-	if (v.pointer->value.contains("virtual table")
-	    || v.pointer->value.contains("vtable"))
+	if (pointer->value.contains("virtual table")
+	    || pointer->value.contains("vtable"))
 	    myexpanded = false;
 	break;
     }
@@ -370,21 +365,21 @@ void DispValue::init(string& value, DispValueType given_type)
 	if (!base.matches(rxsimple))
 	    base = "(" + base + ")";
 
-	v.array = new ArrayDispValue;
-	v.array->align = Vertical;
-	v.array->member_count = 0;
+	array = new ArrayDispValue;
+	array->align = Vertical;
+	array->member_count = 0;
 
 #if LOG_CREATE_VALUES
 	clog << mytype << ": " << "\n";
 #endif
 
-	read_array_begin (value, myaddr);
+	read_array_begin(value, myaddr);
 
 	// Check for `vtable entries' prefix.
 	string vtable_entries = read_vtable_entries(value);
 	if (vtable_entries != "")
 	{
-	    v.array->members[v.array->member_count++] = 
+	    array->members[array->member_count++] = 
 		new DispValue (this, depth() + 1,
 			       vtable_entries, 
 			       myfull_name, myfull_name);
@@ -393,12 +388,12 @@ void DispValue::init(string& value, DispValueType given_type)
 	// Read the array elements.  Assume that the type is the
 	// same across all elements.
 	DispValueType member_type = UnknownType;
-	if (!v.array->have_index_base)
+	if (!array->have_index_base)
 	{
-	    v.array->index_base = index_base(base, depth());
-	    v.array->have_index_base = true;
+	    array->index_base = index_base(base, depth());
+	    array->have_index_base = true;
 	}
-	int array_index = v.array->index_base;
+	int array_index = array->index_base;
 
 	// The array has at least one element.  Otherwise, GDB
 	// would treat it as a pointer.
@@ -411,7 +406,7 @@ void DispValue::init(string& value, DispValueType given_type)
 			      add_member_name(base, member_name), 
 			      member_name, member_type);
 	    member_type = dv->type();
-	    v.array->members[v.array->member_count++] = dv;
+	    array->members[array->member_count++] = dv;
 
 	    int repeats = read_repeats(value);
 
@@ -427,7 +422,7 @@ void DispValue::init(string& value, DispValueType given_type)
 			new DispValue(this, depth() + 1, val,
 				      add_member_name(base, member_name),
 				      member_name, member_type);
-		    v.array->members[v.array->member_count++] = 
+		    array->members[array->member_count++] = 
 			repeated_dv;
 		}
 	    }
@@ -461,10 +456,10 @@ void DispValue::init(string& value, DispValueType given_type)
 	read_array_end (value);
 
 	// Expand only if at top-level.
-	myexpanded = (depth() == 0 || v.array->member_count <= 1);
+	myexpanded = (depth() == 0 || array->member_count <= 1);
 
 #if LOG_CREATE_VALUES
-	clog << mytype << " has " << v.array->member_count << " members\n";
+	clog << mytype << " has " << array->member_count << " members\n";
 #endif
 	break;
     }
@@ -476,11 +471,11 @@ void DispValue::init(string& value, DispValueType given_type)
 	munch_dump_line(value);
 
 	// FALL THROUGH
-    case StructOrClass:
-    case BaseClass:
+    case Struct:
     {
-	v.str_or_cl = new StructOrClassDispValue;
-	v.str_or_cl->member_count = 0;
+	str = new StructDispValue;
+	str->member_count = 0;
+	bool found_struct_begin = false;
 	
 #if LOG_CREATE_VALUES
 	clog << mytype << " " << quote(myfull_name) << "\n";
@@ -524,13 +519,16 @@ void DispValue::init(string& value, DispValueType given_type)
 		member_prefix += ".";
 	    }
 
-	    read_str_or_cl_begin (value, myaddr);
+	    // In case we do not find a struct beginning, read only
+	    // one value.
+	    found_struct_begin = read_struct_begin (value, myaddr);
 	}
 
 	bool more_values = true;
-	string member_name = read_member_name (value);
 	while (more_values)
 	{
+	    string member_name = read_member_name(value);
+
 	    if (member_name == "")
 	    {
 		// Some struct stuff that is not a member
@@ -550,6 +548,20 @@ void DispValue::init(string& value, DispValueType given_type)
 		    // Empty value - stop here
 		    consume = false;
 		}
+		else if (dv->type() == Struct)
+		{
+		    // What's this - a struct within a struct?  Just
+		    // adopt the members.
+		    // (This happens when we finally found the struct
+		    // after having read all the AIX DBX base classes.)
+		    for (int i = 0; i < dv->nchildren(); i++)
+		    {
+			DispValue *dv2 = dv->get_child(i)->dup();
+			dv2->myparent = this;
+			str->members[str->member_count++] = dv2;
+		    }
+		    consume = false;
+		}
 
 		if (!consume)
 		{
@@ -558,38 +570,58 @@ void DispValue::init(string& value, DispValueType given_type)
 		}
 		else
 		{
-		    v.str_or_cl->members[v.str_or_cl->member_count++] = dv;
+		    str->members[str->member_count++] = dv;
 		}
 
-		more_values = read_str_or_cl_next (value);
+		more_values = found_struct_begin && read_struct_next (value);
 	    }
-	    else if (is_BaseClass_name (member_name) || member_name == " ")
+	    else if (is_BaseClass_name(member_name))
 	    {
-		// Anonymous union
-		v.str_or_cl->members[v.str_or_cl->member_count++] = 
-		    new DispValue (this, depth() + 1, value, myfull_name,
-				   member_name);
-		more_values = read_str_or_cl_next (value);
-		read_members_of_xy (value);
+		// Base class member
+		DispValue *dv = new DispValue(this, depth() + 1, value, 
+					      myfull_name, member_name);
+		str->members[str->member_count++] = dv;
+
+		more_values = found_struct_begin && read_struct_next(value);
+
+		// Skip a possible `members of CLASS:' prefix
+		read_members_prefix(value);
+
+		// AIX DBX does not place a separator between base
+		// classes and the other members, so we always
+		// continue reading after having found a base
+		// class.  After all, the own class members are
+		// still missing.
+		if (!found_struct_begin)
+		    more_values = true;
 	    }
 	    else
 	    {
+		// Ordinary member
 		string full_name;
 
-		// If a member name contains `.', quote it.  This
-		// happens with vtable pointers on Linux (`_vptr.').
-		if (member_name.contains('.') && gdb->has_quotes())
+		if (member_name == " ")
+		{
+		    // Anonymous union
+		    full_name = myfull_name;
+		}
+		else if (member_name.contains('.') && gdb->has_quotes())
+		{
+		    // The member name contains `.' => quote it.  This
+		    // happens with vtable pointers on Linux (`_vptr.').
 		    full_name = member_prefix + quote(member_name, '\'');
+		}
 		else
+		{
+		    // Ordinary member
 		    full_name = member_prefix + member_name;
+		}
 
-		v.str_or_cl->members[v.str_or_cl->member_count++] = 
+		str->members[str->member_count++] = 
 		    new DispValue (this, depth() + 1, value, 
 				   full_name, member_name);
-		more_values = read_str_or_cl_next (value);
+		more_values = found_struct_begin && read_struct_next (value);
 	    }
-	    if (more_values)
-		member_name = read_member_name (value);
 
 	    if (background(value.length()))
 	    {
@@ -601,22 +633,23 @@ void DispValue::init(string& value, DispValueType given_type)
 	if (mytype == List && value != "")
 	{
 	    // Add remaining value as text
-	    v.str_or_cl->members[v.str_or_cl->member_count++] = 
+	    str->members[str->member_count++] = 
 		new DispValue(this, depth() + 1, value, "", "");
 	}
-	else
+
+	if (found_struct_begin)
 	{
 	    // Skip the remainder
-	    read_str_or_cl_end(value);
+	    read_struct_end(value);
 	}
 
 	// Expand only if at top-level.
-	myexpanded = (depth() == 0 || v.array->member_count <= 1);
+	myexpanded = (depth() == 0 || str->member_count <= 1);
 
 #if LOG_CREATE_VALUES
 	clog << mytype << " "
 	     << quote(myfull_name)
-	     << " has " << v.str_or_cl->member_count << " members\n";
+	     << " has " << str->member_count << " members\n";
 #endif
 
 	break;
@@ -624,9 +657,9 @@ void DispValue::init(string& value, DispValueType given_type)
 
     case Reference:
     {
-	v.str_or_cl = new StructOrClassDispValue;
+	str = new StructDispValue;
 	myexpanded = true;
-	v.str_or_cl->member_count = 2;
+	str->member_count = 2;
 
 	int sep = value.index('@');
 	sep = value.index(':', sep);
@@ -634,12 +667,12 @@ void DispValue::init(string& value, DispValueType given_type)
 	string ref = value.before(sep);
 	value = value.after(sep);
 
-	v.str_or_cl->members[0] = 
+	str->members[0] = 
 	    new DispValue(this, depth() + 1, ref, 
 			  gdb->address_expr(myfull_name), 
 			  myfull_name, Pointer);
 
-	v.str_or_cl->members[1] = 
+	str->members[1] = 
 	    new DispValue(this, depth() + 1, value,
 			  myfull_name, myfull_name);
 
@@ -657,6 +690,7 @@ void DispValue::init(string& value, DispValueType given_type)
 	abort();
     }
 
+    // Handle trailing stuff (`sequences')
     if (parent() == 0 || parent()->type() != Sequence)
     {
 	bool need_clear = true;
@@ -677,8 +711,8 @@ void DispValue::init(string& value, DispValueType given_type)
 		clog << mytype << " " << quote(myfull_name) << "\n";
 #endif
 
-		v.str_or_cl = new StructOrClassDispValue;
-		v.str_or_cl->member_count = 0;
+		str = new StructDispValue;
+		str->member_count = 0;
 		need_clear = false;
 	    }
 	    
@@ -700,7 +734,7 @@ void DispValue::init(string& value, DispValueType given_type)
 	    }
 	    else
 	    {
-		v.str_or_cl->members[v.str_or_cl->member_count++] = dv;
+		str->members[str->member_count++] = dv;
 	    }
 	}
 
@@ -709,7 +743,7 @@ void DispValue::init(string& value, DispValueType given_type)
 	{
 	    clog << mytype << " "
 		 << quote(myfull_name)
-		 << " has " << v.str_or_cl->member_count << " members\n";
+		 << " has " << str->member_count << " members\n";
 	}
 #endif
     }
@@ -732,27 +766,26 @@ void DispValue::clear()
     switch (mytype) {
     case Simple:
     case Text:
-	delete v.simple;
+	delete simple;
 	break;
     case Pointer:
-	delete v.pointer;
+	delete pointer;
 	break;
     case Array:
-	for (i = 0; i < v.array->member_count; i++) {
-	    delete v.array->members[i];
+	for (i = 0; i < array->member_count; i++) {
+	    delete array->members[i];
 	}
-	delete v.array;
+	delete array;
 	break;
 
     case Sequence:
     case List:
-    case StructOrClass:
-    case BaseClass:
+    case Struct:
     case Reference:
-	for (i = 0; i < v.str_or_cl->member_count; i++) {
-	    delete v.str_or_cl->members[i];
+	for (i = 0; i < str->member_count; i++) {
+	    delete str->members[i];
 	}
-	delete v.str_or_cl;
+	delete str;
 	break;
 
     case UnknownType:
@@ -770,15 +803,14 @@ bool DispValue::dereferenced() const
     switch (mytype)
     {
     case Pointer:
-	return v.pointer->dereferenced;
+	return pointer->dereferenced;
 
     case Simple:
     case Text:
     case Array:
     case Sequence:
     case List:
-    case StructOrClass:
-    case BaseClass:
+    case Struct:
     case Reference:
 	return false;
 
@@ -810,8 +842,7 @@ string DispValue::dereferenced_name() const
     case Array:
     case Sequence:
     case List:
-    case StructOrClass:
-    case BaseClass:
+    case Struct:
     case Reference:
 	return "";
 
@@ -831,16 +862,15 @@ string DispValue::value() const
     switch (mytype) {
     case Simple:
     case Text:
-	return v.simple->value;
+	return simple->value;
 
     case Pointer:
-	return v.pointer->value;
+	return pointer->value;
 
     case Array:
     case Sequence:
     case List:
-    case StructOrClass:
-    case BaseClass:
+    case Struct:
     case Reference:
 	return "";
 
@@ -855,19 +885,18 @@ string DispValue::value() const
 
 
 
-// Return #children.  Only if type() == Array, StructOrClass, or BaseClass.
+// Return #children.  Only if type() == Array or Struct
 int DispValue::nchildren() const
 {
     switch (mytype) {
     case Array:
-	return v.array->member_count;
+	return array->member_count;
 
     case Sequence:
     case List:
-    case StructOrClass:
-    case BaseClass:
+    case Struct:
     case Reference:
-	return v.str_or_cl->member_count;
+	return str->member_count;
 
     case Simple:
     case Text:
@@ -884,23 +913,22 @@ int DispValue::nchildren() const
 
 
 // Get child #i (0: first child).
-// Only if type() == Array, StructOrClass, or BaseClass.
+// Only if type() == Array or Struct
 DispValue* DispValue::get_child (int i) const
 {
     switch (mytype) {
     case Array:
 	assert (i >= 0);
-	assert (i < v.array->member_count);
-	return v.array->members[i];
+	assert (i < array->member_count);
+	return array->members[i];
 
     case Sequence:
     case List:
-    case StructOrClass:
-    case BaseClass:
+    case Struct:
     case Reference:
 	assert (i >= 0);
-	assert (i < v.str_or_cl->member_count);
-	return v.str_or_cl->members[i];
+	assert (i < str->member_count);
+	return str->members[i];
 
     case Pointer:
     case Simple:
@@ -922,12 +950,11 @@ bool DispValue::vertical_aligned()   const
 {
     switch (mytype) {
     case Array:
-	return v.array->align == Vertical;
+	return array->align == Vertical;
 
     case Sequence:
     case List:
-    case StructOrClass:
-    case BaseClass:
+    case Struct:
     case Reference:
     case Pointer:
     case Simple:
@@ -947,12 +974,11 @@ bool DispValue::horizontal_aligned() const
 {
     switch (mytype) {
     case Array:
-	return v.array->align == Horizontal;
+	return array->align == Horizontal;
 
     case Sequence:
     case List:
-    case StructOrClass:
-    case BaseClass:
+    case Struct:
     case Reference:
     case Pointer:
     case Simple:
@@ -977,21 +1003,21 @@ bool DispValue::horizontal_aligned() const
 void DispValue::dereference()
 {
     if (mytype == Pointer)
-	v.pointer->dereferenced = true;
+	pointer->dereferenced = true;
 }
 
 // Align vertically.  Only if type() == Array.
 void DispValue::align_vertical ()
 {
     if (mytype == Array)
-	v.array->align = Vertical;
+	array->align = Vertical;
 }
 
 // Align horizontally.  Only if type() == Array.
 void DispValue::align_horizontal ()
 {
     if (mytype == Array)
-	v.array->align = Horizontal;
+	array->align = Horizontal;
 }
 
 
@@ -1085,21 +1111,6 @@ int DispValue::heightExpanded() const
 // Update values
 //-----------------------------------------------------------------------------
 
-// Return baseclass name.  Only if type() == BaseClass.
-bool DispValue::new_BaseClass_name (string name)
-{
-    if (mytype != BaseClass)
-	return false;
-
-    if (print_name != name)
-    {
-	print_name = name;
-	changed = true;
-	return true;
-    }
-    return false;
-}
-
 // Update values from VALUE.  Set WAS_CHANGED iff value changed; Set
 // WAS_INITIALIZED iff type changed.  If GIVEN_TYPE is given, use
 // GIVEN_TYPE as type instead of inferring it.
@@ -1122,12 +1133,12 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
     DispValueType new_type = given_type;
     if (mytype == Sequence)
 	new_type = Sequence;
-    if (new_type == UnknownType && print_name == "")
+    if (new_type == UnknownType && 
+	(parent() == 0 || parent()->type() == List) && print_name == "")
 	new_type = Text;
-    if (new_type == UnknownType && is_user_command (print_name))
+    if (new_type == UnknownType && parent() == 0 && 
+	is_user_command(print_name))
 	new_type = List;
-    if (new_type == UnknownType && is_BaseClass_name (print_name))
-	new_type = BaseClass;
     if (new_type == UnknownType)
 	new_type = determine_type(value);
 
@@ -1153,8 +1164,8 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
     {
 	string new_value = 
 	    read_simple_value(value, depth(), ignore_repeats);
-	if (v.simple->value != new_value) {
-	    v.simple->value = new_value;
+	if (simple->value != new_value) {
+	    simple->value = new_value;
 	    changed = was_changed = true;
 	}
 	break;
@@ -1162,8 +1173,8 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 
     case Text:
     {
-	if (v.simple->value != value) {
-	    v.simple->value = value;
+	if (simple->value != value) {
+	    simple->value = value;
 	    changed = was_changed = true;
 	}
 	break;
@@ -1172,8 +1183,8 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
     case Pointer:
     {
 	string new_value = read_pointer_value (value, ignore_repeats);
-	if (v.pointer->value != new_value) {
-	    v.pointer->value = new_value;
+	if (pointer->value != new_value) {
+	    pointer->value = new_value;
 	    changed = was_changed = true;
 	}
 	break;
@@ -1188,7 +1199,7 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	bool size_changed = false;
 	if (vtable_entries != "")
 	{
-	    v.array->members[member_index++]->update(vtable_entries, 
+	    array->members[member_index++]->update(vtable_entries, 
 						     was_changed, 
 						     was_initialized);
 	    if (was_initialized)
@@ -1201,10 +1212,10 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	{
 	    DispValueType member_type = UnknownType;
 	    bool more_values = true;
-	    while (more_values && member_index < v.array->member_count)
+	    while (more_values && member_index < array->member_count)
 	    {
 		string repeated_value = value;
-		DispValue *member = v.array->members[member_index++];
+		DispValue *member = array->members[member_index++];
 		member->update(value, was_changed, was_initialized, 
 			       member_type);
 
@@ -1223,7 +1234,7 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 		    while (--repeats > 0)
 		    {
 			string val = repeated_value;
-			DispValue *member = v.array->members[member_index++];
+			DispValue *member = array->members[member_index++];
 
 			if (member->repeats() > 1)
 			{
@@ -1254,13 +1265,13 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	}
 
 	if (was_initialized || size_changed || 
-	    member_index != v.array->member_count)
+	    member_index != array->member_count)
 	{
 #if LOG_UPDATE_VALUES
 	    clog << mytype << " changed";
-	    if (member_index != v.array->member_count)
+	    if (member_index != array->member_count)
 	    {
-		clog << " (old size " << v.array->member_count 
+		clog << " (old size " << array->member_count 
 		     << "!= new size " << member_index << ")";
 	    }
 	    clog << "\n";
@@ -1281,9 +1292,9 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
     case Sequence:
     {
 	int i;
-	for (i = 0; i < v.str_or_cl->member_count; i++)
+	for (i = 0; i < str->member_count; i++)
 	{
-	    v.str_or_cl->members[i]->update(value, was_changed, 
+	    str->members[i]->update(value, was_changed, 
 					    was_initialized);
 	    if (was_initialized)
 		break;
@@ -1295,13 +1306,12 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
     }
 
     case List:
-    case StructOrClass:
-    case BaseClass:
+    case Struct:
     {
 	if (mytype == List 
-	    && v.str_or_cl->member_count == 1
-	    && v.str_or_cl->members[0]->type() == Text
-	    && v.str_or_cl->members[0]->value() != value)
+	    && str->member_count == 1
+	    && str->members[0]->type() == Text
+	    && str->members[0]->value() != value)
 	{
 	    // Re-initialize single text.
 	    init(value);
@@ -1312,24 +1322,26 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	if (mytype == List)
 	    munch_dump_line (value);
 
-	read_str_or_cl_begin (value, myaddr);
+	bool found_struct_begin = read_struct_begin (value, myaddr);
 	int i;
 	bool more_values = true;
-	for (i = 0; more_values && i < v.str_or_cl->member_count; i++)
+	for (i = 0; more_values && i < str->member_count; i++)
 	{
 	    string member_name = read_member_name (value);
 
 	    if (member_name == "")
 	    {
-		if (v.str_or_cl->members[i]->full_name() == myfull_name)
+		// Some struct stuff that is not a member
+		if (str->members[i]->full_name() == myfull_name)
 		{
-		    v.str_or_cl->members[i]->update(value, was_changed,
-						    was_initialized);
+		    str->members[i]->update(value, was_changed, 
+					    was_initialized);
 		    if (was_initialized)
 			break;
 		    if (background(value.length()))
 			break;
-		    more_values = read_str_or_cl_next (value);
+		    more_values = 
+			found_struct_begin && read_struct_next(value);
 		}
 		else
 		{
@@ -1338,43 +1350,47 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	    }
 	    else if (is_BaseClass_name (member_name))
 	    {
-		if (v.str_or_cl->members[i]->
-		    new_BaseClass_name(member_name))
+		// Base class member
+		if (str->members[i]->print_name != member_name)
+		{
+		    str->members[i]->print_name = member_name;
 		    was_changed = true;
-		v.str_or_cl->members[i]->update(value, was_changed,
-						was_initialized);
+		}
+		str->members[i]->update(value, was_changed,
+					was_initialized);
 		if (was_initialized)
 		    break;
-		if (!read_str_or_cl_next (value))
-		    break;
+
+		read_struct_next(value);
+		read_members_prefix(value);
+
 		if (background(value.length()))
 		    break;
-		read_members_of_xy (value);
 	    }
 	    else
 	    {
-		if (member_name != v.str_or_cl->members[i]->name())
+		// Ordinary member or anonymous union
+		if (member_name != str->members[i]->name())
 		    break;
 
-		v.str_or_cl->members[i]->update(value, was_changed,
-						was_initialized);
+		str->members[i]->update(value,
+					was_changed,
+					was_initialized);
 		if (was_initialized)
 		    break;
 		if (background(value.length()))
 		    break;
-		more_values = read_str_or_cl_next (value);
+		more_values = found_struct_begin && read_struct_next(value);
 	    }
 	}
 
-	if (was_initialized 
-	    || i != v.str_or_cl->member_count 
-	    || more_values)
+	if (was_initialized || i != str->member_count || more_values)
 	{
 #if LOG_UPDATE_VALUES
 	    clog << mytype << " changed";
-	    if (i != v.str_or_cl->member_count)
+	    if (i != str->member_count)
 	    {
-		clog << " (old size " << v.str_or_cl->member_count
+		clog << " (old size " << str->member_count
 		     << "!= new size " << i << ")";
 	    }
 	    if (more_values)
@@ -1391,7 +1407,9 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	    was_initialized = was_changed = true;
 	    return;
 	}
-	read_str_or_cl_end (value);
+
+	if (found_struct_begin)
+	    read_struct_end(value);
     }
     break;
 
@@ -1400,10 +1418,10 @@ void DispValue::update(string& value, bool& was_changed, bool& was_initialized,
 	string ref = value.before(':');
 	value = value.after(':');
 
-	v.str_or_cl->members[0]->update(ref, was_changed, was_initialized);
+	str->members[0]->update(ref, was_changed, was_initialized);
 	if (!was_initialized)
-	    v.str_or_cl->members[1]->update(value, 
-					    was_changed, was_initialized);
+	    str->members[1]->update(value, 
+				      was_changed, was_initialized);
 	if (was_initialized)
 	{
 	    value = init_value;
