@@ -251,6 +251,8 @@ dnl
 AC_LANG_CPLUSPLUS
 dnl
 dnl
+dnl Check for libtool.
+AM_PROG_LIBTOOL
 dnl
 dnl
 dnl Locate Libraries
