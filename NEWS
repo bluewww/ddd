@@ -1,6 +1,22 @@
 Changes in DDD						-*- text -*-
 **************
 
+DDD 1.2
+-------
+
+    Again, a bug fix release.  Many minor bugs have been fixed; see
+    the `ChangeLog' file for details.
+
+    Changes to DDD 1.1:
+    - DDD now also compiles using other C++ compilers than GCC (well -
+      we tried Sun's CC and it worked).  All remaining GCC- or
+      libg++-specific code should be removed now.
+    - DDD now runs on SGI/IRIX machines.
+    - Interrupting running processes via the Interrupt button now
+      works correctly on Solaris, HP-UX, and other systems.
+
+    Thanks to all who sent in bug reports and suggestions.
+
 DDD 1.1
 -------
 

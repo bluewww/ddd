@@ -180,5 +180,6 @@ Volunteers for fixing these and other bugs are welcome!
      (Segmentation fault).'  no core dump.  I've attached the
      '--configuration' and '--check-configuration' report.  let me
      know if you need any other info.
+     [A bug in Motif 1.1 - does not occur in later Motif versions].
 
 041. (Insert your bug here)
