@@ -267,7 +267,7 @@ AC_LANG(C++)
 dnl
 dnl
 dnl Check for libtool.
-AM_PROG_LIBTOOL
+AC_PROG_LIBTOOL
 dnl
 dnl
 dnl Locate Libraries
