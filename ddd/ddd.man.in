@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers at `ddd@ips.cs.tu-bs.de'.
 .\"
-.TH @ddd@ 1 "27 May 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1 Jun 1997" "@DDD@ @VERSION@"
 .SH NAME
 @ddd@, x@ddd@ - the data display debugger
 .PSPIC PICS/dddlogo21.ps 10cm
@@ -100,6 +100,7 @@ but usually just
 .\" ---------------
 .SH "DESCRIPTION"
 .\" ---------------
+.\"
 The purpose of a debugger such as \s-2@DDD@\s+2 is to allow you to see
 what is going on \*(lqinside\*(rq another program while it
 executes\(em\&or what another program was doing at the moment it
@@ -1978,6 +1979,38 @@ doing so would endanger \s-2@DDD@\s+2 operation.  See the
 All debugger settings (except source and object paths) 
 are saved with \s-2@DDD@\s+2 options.
 .\"
+.\"
+.\"
+.\" ---------------
+.SH "USING @DDD@ WITH LESSTIF"
+.\" ---------------
+.\"
+\s-2@DDD@\s+2 2.1.1 and later include a number of hacks that make
+\s-2@DDD@\s+2 run with \fILessTif,\fR a free Motif clone, without loss
+of functionality.  Since a \s-2@DDD@\s+2 binary may be dynamically
+bound and used with either an OSF/Motif or LessTif library, these
+hacks can be enabled and disabled at run time.  The default setting
+depends on the include files used when compiling \s-2@DDD@\s+2:
+.IP \(bu 2
+If \s-2@DDD@\s+2 was compiled using LessTif 0.99 or earlier, these
+hacks are enabled by default.  When using a dynamically bound
+\s-2@DDD@\s+2 binary with a LessTif 1.0 library or an OSF/Motif
+library, you may wish to disable the hacks.  To disable them, invoke
+\s-2@DDD@\s+2 with `\fB\-\-no\-lesstif\-hacks\fR' or set the
+`\fBlessTifHacks\fR' resource to `\fBfalse\fR'.
+.br
+.IP \(bu 2
+If \s-2@DDD@\s+2 was compiled using OSF/Motif include files or LessTif
+include files, version 1.0 or later, these hacks are disabled by
+default.  When using a dynamically bound \s-2@DDD@\s+2 binary with a
+LessTif library, version 0.99 or earlier, you may wish to enable these
+hacks.  To enable them, invoke \s-2@DDD@\s+2 with
+`\fB\-\-lesstif\-hacks\fR' or set the `\fBlessTifHacks\fR' resource to
+`\fBtrue\fR'.
+.PP
+All of these hacks apply to LessTif 0.79; future LessTif releases
+might need them no more.  In the \s-2@DDD@\s+2 source, these hacks are
+controlled by the string `\fBlesstif_hacks\fR'.
 .\"
 .\" ---------------
 .SH "RESOURCES"
