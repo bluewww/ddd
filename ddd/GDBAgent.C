@@ -86,7 +86,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _type(tp),
       _user_data(0),
       busy_handlers (BusyNTypes),
-      _has_frame_command(tp == GDB),
+      _has_frame_command(tp == GDB || tp == XDB),
       _has_line_command(false),
       _has_run_io_command(false),
       _has_print_r_command(false),
@@ -768,6 +768,7 @@ string GDBAgent::print_command(string expr) const
 
     case XDB:
 	cmd = "p";
+	break;
     }
 
     if (expr != "")
@@ -806,11 +807,11 @@ string GDBAgent::where_command() const
     {
     case GDB:
     case DBX:
-    if (has_where_h_command())
-	return "where -h";
-    else
-	return "where";
-
+	if (has_where_h_command())
+	    return "where -h";
+	else
+	    return "where";
+	
     case XDB:
 	return "t";
     }
@@ -825,13 +826,38 @@ string GDBAgent::pwd_command() const
     {
     case GDB:
     case DBX:
-    if (has_pwd_command())
-	return "pwd";
-    else
-	return "sh pwd";
+	if (has_pwd_command())
+	    return "pwd";
+	else
+	    return "sh pwd";
 
     case XDB:
 	return "!pwd";
+    }
+
+    return "";			// Never reached
+}
+
+// Some DBXes want `sh pwd' instead of `pwd'
+string GDBAgent::frame_command(string depth) const
+{
+    if (!has_frame_command())
+	return "";
+
+    switch (type())
+    {
+    case GDB:
+    case DBX:
+	if (depth == "")
+	    return "frame";
+	else
+	    return "frame " + depth;
+
+    case XDB:
+	if (depth == "")
+	    return print_command("$depth");
+	else
+	    return "V " + depth;
     }
 
     return "";			// Never reached

@@ -156,7 +156,7 @@ bool is_frame_cmd (const string& cmd)
 	"(up"
 	"|do|down|"
 	"|f|fra|fram|frame"
-	"|top"
+	"|top|V"
 	")([ \t]+.*)?");
 
     return cmd.matches (RXframe_cmd);

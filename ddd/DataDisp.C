@@ -1689,6 +1689,7 @@ string DataDisp::refresh_display_command()
     switch (gdb->type())
     {
     case DBX:
+    case XDB:
 	{
 	    command = gdb->print_command() + " ";
 	    int i = 0;
@@ -1721,9 +1722,6 @@ string DataDisp::refresh_display_command()
     case GDB:
 	command = gdb->display_command();
 	break;
-
-    case XDB:
-	break;			// FIXME
     }
 
     return command;

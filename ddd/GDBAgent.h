@@ -269,6 +269,7 @@ public:
     string display_command(string expr = "") const; // Usually "display EXPR"
     string where_command() const;	            // Usually "where "
     string pwd_command() const;	                    // Usually "pwd "
+    string frame_command(string depth = "") const;  // Usually "frame EXPR"
 
 private:
     bool trace_dialog;

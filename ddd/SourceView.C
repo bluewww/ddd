@@ -3216,7 +3216,8 @@ void SourceView::NewBreakpointDCB(Widget w, XtPointer, XtPointer call_data)
 	}
 
     case XDB:
-	break;			// FIXME
+	gdb_command("b " + input);
+	break;
     }
 }
 
@@ -3618,10 +3619,15 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
     switch (gdb->type())
     {
     case GDB:
-	// GDB frame output is caught by our routines
-	gdb_command("frame " + itostring(count - cbs->item_position));
+	// GDB frame output is caught by our routines.
+	gdb_command(gdb->frame_command(itostring(count - cbs->item_position)));
 	break;
     
+    case XDB:
+	// XDB frame output is caught by our routines.
+	gdb_command(gdb->frame_command(itostring(cbs->item_position - 1)));
+	break;
+
     case DBX:
 	{
 	    string pos;
@@ -3684,8 +3690,8 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 	    {
 		// DBX 3.x works better
 		string reply = 
-		    gdb_question("frame " + 
-				 itostring(count - cbs->item_position + 1));
+		    gdb_question(gdb->frame_command(
+			itostring(count - cbs->item_position + 1)));
 		if (reply == NO_GDB_ANSWER)
 		{
 		    post_gdb_busy(w);
@@ -3700,9 +3706,6 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
 		show_execution_position(pos);
 	}
 	break;
-
-    case XDB:
-	break;			// FIXME
     }
 }
 
@@ -3716,7 +3719,7 @@ void SourceView::refresh_stack_frames()
 
     if (gdb->has_frame_command())
     {
-	string frame = gdb_question("frame");
+	string frame = gdb_question(gdb->frame_command());
 	process_frame(frame);
     }
 }
@@ -3740,18 +3743,20 @@ void SourceView::process_where (string& where_output)
     while (count > 0 && frame_list[count - 1] == "")
 	count--;
 
-    // Invert list such that `Up' and `Down' make sense
-    int i;
-    for (i = 0; i < count / 2; i++)
+    if (gdb->type() != XDB)
     {
-	string tmp = frame_list[i];
-	frame_list[i] = frame_list[count - i - 1];
-	frame_list[count - i - 1] = tmp;
+	// Invert list such that `Up' and `Down' make sense
+	for (int i = 0; i < count / 2; i++)
+	{
+	    string tmp = frame_list[i];
+	    frame_list[i] = frame_list[count - i - 1];
+	    frame_list[count - i - 1] = tmp;
+	}
     }
 
     // Make sure we have a minimum width
     const int min_width = 40;
-    for (i = 0; i < count; i++)
+    for (int i = 0; i < count; i++)
     {
 	selected[i] = false;
 
@@ -3781,14 +3786,27 @@ void SourceView::process_where (string& where_output)
 
 void SourceView::process_frame (string& frame_output)
 {
-    if (frame_output != "" && (frame_output[0] == '#' || gdb->type() == DBX))
+    if (frame_output != "" 
+	&& (frame_output[0] == '#' 
+	    || gdb->type() == DBX
+	    || gdb->type() == XDB))
     {
-	string	frame_nr;
+	string frame_nr;
 
-	if (gdb->type() == GDB)
+	switch (gdb->type())
+	{
+	case GDB:
 	    frame_nr = frame_output.after(0);
-	else
+	    break;
+
+	case DBX:
 	    frame_nr = frame_output;
+	    break;
+
+	case XDB:
+	    frame_nr = frame_output.after(" = ");
+	    break;
+	}
 
 	int frame = get_positive_nr(frame_nr);
 
@@ -3805,7 +3823,18 @@ void SourceView::process_frame (string& frame_output)
 		      XmNtopItemPosition, &top_item,
 		      XmNvisibleItemCount, &visible_items,
 		      NULL);
-	int pos = count - frame;
+	int pos;
+	switch (gdb->type())
+	{
+	case GDB:
+	case DBX:
+	    pos = count - frame;
+	    break;
+
+	case XDB:
+	    pos = frame + 1;
+	    break;
+	}
 
 	XmListSelectPos(frame_list_w, pos, False);
 	if (pos == 1)
@@ -3902,7 +3931,8 @@ void SourceView::set_frame_pos(int arg, int pos)
     {
 	int *position_list;
 	int position_count;
-	if (XmListGetSelectedPos(frame_list_w, &position_list, &position_count))
+	if (XmListGetSelectedPos(frame_list_w,
+				 &position_list, &position_count))
 	{
 	    if (position_count == 1)
 		pos = position_list[0] + arg;

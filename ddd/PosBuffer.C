@@ -376,7 +376,7 @@ void PosBuffer::filter (string& answer)
 		    if (last_line.contains('\n'))
 			last_line = last_line.after('\n', -1);
 
-		    static regex RXxdbpos("[^: \t]*:[^:]*: [1-9][0-9]*: .*");
+		    static regex RXxdbpos("[^: \t]*:[^:]*: [1-9][0-9]*[: ].*");
 		    if (last_line.matches(RXxdbpos))
 		    {
 			string file = last_line.before(':');
@@ -387,6 +387,7 @@ void PosBuffer::filter (string& answer)
 			
 			read_leading_blanks(func);
 			read_leading_blanks(line);
+			line = line.through(rxint);
 
 			pos_buffer   = file + ":" + line;
 			func_buffer  = func;

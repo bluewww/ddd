@@ -495,10 +495,14 @@ void user_cmdSUC (string cmd, Widget origin)
 	    if (arg > 0)
 	    {
 		cmd_data->set_frame_pos = true;
+
+		int direction = 1;
 		if (is_up_cmd(cmd))
-		    cmd_data->set_frame_arg = -arg;
-		else
-		    cmd_data->set_frame_arg = arg;
+		    direction = -direction;
+		if (gdb->type() == XDB)
+		    direction = -direction;
+		
+		cmd_data->set_frame_arg = direction * arg;
 	    }
 	}
 	else
@@ -554,7 +558,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	if (plus_cmd_data->refresh_where)
 	    cmds[qu_count++] = "where";
 	if (plus_cmd_data->refresh_frame)
-	    cmds[qu_count++] = "frame";
+	    cmds[qu_count++] = gdb->frame_command();
 	if (plus_cmd_data->refresh_register)
 	    cmds[qu_count++] = "info registers";
 	if (plus_cmd_data->refresh_disp)
@@ -588,7 +592,7 @@ void user_cmdSUC (string cmd, Widget origin)
 	if (plus_cmd_data->refresh_frame)
 	{
 	    assert(gdb->has_frame_command());
-	    cmds[qu_count++] = "frame";
+	    cmds[qu_count++] = gdb->frame_command();
 	}
 	assert (!plus_cmd_data->refresh_register);
 	if (plus_cmd_data->refresh_disp)
@@ -609,7 +613,8 @@ void user_cmdSUC (string cmd, Widget origin)
 	    cmds[qu_count++] = "lb";
 	if (plus_cmd_data->refresh_where)
 	    cmds[qu_count++] = "t";
-	assert (!plus_cmd_data->refresh_frame);
+	if (plus_cmd_data->refresh_frame)
+	    cmds[qu_count++] = gdb->frame_command();
 	assert (!plus_cmd_data->refresh_register);
 	if (plus_cmd_data->refresh_disp)
 	    cmds[qu_count++] = data_disp->refresh_display_command();
@@ -707,6 +712,7 @@ void user_cmdOAC (void* data)
 	    switch (gdb->type())
 	    {
 	    case DBX:
+	    case XDB:
 		file = dbx_lookup(func);
 		file = file.before(':');
 		break;
@@ -714,9 +720,6 @@ void user_cmdOAC (void* data)
 	    case GDB:
 		// GDB always issues file names on positions...
 		break;
-
-	    case XDB:
-		break;		// FIXME
 	    }
 
 	    if (file != "")
@@ -825,7 +828,8 @@ static bool is_known_command(string& answer)
     return answer.contains("program is not active") // DBX
 	|| (!answer.contains("syntax")              // DEC DBX
 	    && !answer.contains("help")             // GDB & DBX 1.0
-	    && !answer.contains("not found"));      // DBX 3.0
+	    && !answer.contains("not found")        // DBX 3.0
+	    && !answer.contains("Unknown", 0));     // XDB
 }
 
 static void process_config_frame(string& answer)
