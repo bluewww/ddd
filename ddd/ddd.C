@@ -573,13 +573,14 @@ struct FileItems {
     { "detach",        MMPush, { gdbCommandCB, "detach" }}, \
     MMSep, \
     { "print",         MMPush, { graphPrintCB }}, \
-    { "printAgain",    MMPush, { graphQuickPrintCB, XtPointer(1) }}, \
-    MMSep, \
+    { "printAgain",    MMPush | MMUnmanaged, \
+ 	                       { graphQuickPrintCB, XtPointer(1) }}, \
+    { "separator",     MMSeparator | MMUnmanaged }, \
     { "make",          MMPush, { gdbMakeCB }}, \
-    { "makeAgain",     MMPush, { gdbMakeAgainCB }}, \
+    { "makeAgain",     MMPush | MMUnmanaged, { gdbMakeAgainCB }}, \
     MMSep, \
     { "close",         MMPush, { DDDCloseCB }}, \
-    { "restart",       MMPush | MMUnmanaged, { DDDRestartCB }}, \
+    { "restart",       MMPush, { DDDRestartCB }}, \
     { "exit",          MMPush, { DDDExitCB, XtPointer(EXIT_SUCCESS) }}, \
     MMEnd \
 }
@@ -1328,7 +1329,8 @@ int main(int argc, char *argv[])
     // initialized.
 
     // Save environment for restart.
-    register_restart(argv);
+    register_argv(argv);
+    register_environ();
 
     // This one is required for error messages
     char *program_name = argc > 0 ? argv[0] : ddd_NAME;
@@ -1542,7 +1544,14 @@ int main(int argc, char *argv[])
     }
 
     XrmDatabase session_db = 0;
-    if (session_id != 0)
+    if (restart_session() != "")
+    {
+	// A session is given in $DDD_SESSION: override everything.
+	session_db = GetFileDatabase(session_state_file(restart_session()));
+	if (session_db != 0)
+	    XrmMergeDatabases(session_db, &dddinit);
+    }
+    else if (session_id != 0)
     {
 	// Merge in session resources; these override `~/.ddd/init' as
 	// well as the command-line options.
@@ -1551,7 +1560,7 @@ int main(int argc, char *argv[])
 	    XrmMergeDatabases(session_db, &dddinit);
     }
 
-    // Open X connection and create toplevel application shell
+    // Open X connection and create top-level application shell
     XtAppContext app_context;
     arg = 0;
     XtSetArg(args[arg], XmNdeleteResponse, XmDO_NOTHING); arg++;
@@ -1609,6 +1618,12 @@ int main(int argc, char *argv[])
 
     if (app_data.session == 0)
 	app_data.session = DEFAULT_SESSION;
+    if (restart_session() != "")
+    {
+	static string s;
+	s = restart_session();
+	app_data.session = s;
+    }
     session_id = app_data.session;
 
     // From this point on, APP_DATA is valid.
@@ -1698,8 +1713,9 @@ int main(int argc, char *argv[])
     XtVaGetValues(toplevel, XmNiconic, &iconic, NULL);
 
     // Show startup logo
-    if (!iconic)
+    if (!iconic && restart_session() == "")
 	popup_startup_logo(toplevel, app_data.show_startup_logo);
+    last_shown_startup_logo = app_data.show_startup_logo;
 
     // Warn for incompatible `Ddd' and `~/.ddd/init' files
     if (app_data.app_defaults_version == 0)
@@ -1742,7 +1758,7 @@ int main(int argc, char *argv[])
     // Register own converters
     registerOwnConverters();
 
-    // Global variables: Set lesstif version
+    // Global variables: Set LessTif version
     lesstif_version = app_data.lesstif_version;
 
     // Global variables: Set maximum lengths for `shorten' calls
@@ -2921,12 +2937,24 @@ static void fix_status_size()
 // Setup
 //-----------------------------------------------------------------------------
 
-static Boolean delete_init_delay_if_idle(XtPointer)
+static Boolean session_setup_done(XtPointer)
 {
     if (emptyCommandQueue() && gdb->isReadyWithPrompt())
     {
+	// Delete initialization delay, if any
 	delete init_delay;
 	init_delay = 0;
+
+	// Delete temporary restart session, if any
+	if (restart_session() != "")
+	    delete_session(restart_session(), true);
+
+	if (app_data.initial_session != 0)
+	{
+	    set_session(app_data.initial_session);
+	    app_data.initial_session = 0;
+	}
+
 	return True;		// Remove from the list of work procs
     }
     return False;		// Get called again
@@ -2957,13 +2985,12 @@ static Boolean ddd_setup_done(XtPointer)
 	DispBox::init_vsllib(process_pending_events);
 	DataDisp::refresh_graph_edit();
 
-	if (init_delay != 0)
+	if (init_delay != 0 || app_data.initial_session != 0)
 	{
 	    // Restoring session may still take time
 	    XtAppAddWorkProc(XtWidgetToApplicationContext(command_shell),
-			     delete_init_delay_if_idle, 0);
+			     session_setup_done, 0);
 	}
-
 	return True;		// Remove from the list of work procs
     }
     else

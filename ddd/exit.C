@@ -744,13 +744,57 @@ static void DDDDoneAnywayCB(Widget w, XtPointer client_data,
 // Exit after confirmation
 void DDDExitCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
+    // Delete temporary restart session, if any
+    delete_session(restart_session(), true);
+    set_restart_session();
+
     ddd_is_restarting = false;
     DDDDoneCB(w, client_data, call_data);
 }
 
-// Restart after confirmation
-void DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
+
+// Restart unconditionally
+static void _DDDRestartCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
+    app_data.initial_session = app_data.session;
+
+    set_session(RESTART_SESSION);
+
+    unsigned long flags = (unsigned long)client_data;
+    DDDSaveOptionsCB(w, XtPointer(flags), call_data);
+
+    set_restart_session(app_data.session);
+    register_environ();
+
     ddd_is_restarting = true;
     DDDDoneCB(w, client_data, call_data);
+}
+
+
+// Restart after confirmation
+void DDDRestartCB(Widget w, XtPointer, XtPointer call_data)
+{
+    unsigned long flags = SAVE_SESSION | SAVE_GEOMETRY | DONT_RELOAD;
+    if (gdb->running())
+	flags |= SAVE_CORE;
+
+    if (saving_options_kills_program(flags))
+    {
+	// Saving session would kill program; request confirmation
+	static Widget dialog = 0;
+	if (dialog)
+	    DestroyWhenIdle(dialog);
+
+	dialog = verify(XmCreateQuestionDialog(find_shell(w),
+					       "confirm_restart_dialog",
+					       0, 0));
+	Delay::register_shell(dialog);
+	XtAddCallback(dialog, XmNokCallback, _DDDRestartCB,
+		      XtPointer(flags | MAY_KILL));
+	XtAddCallback(dialog, XmNhelpCallback, ImmediateHelpCB, 0);
+    
+	manage_and_raise(dialog);
+    }
+    else
+	_DDDRestartCB(w, XtPointer(flags), call_data);
 }

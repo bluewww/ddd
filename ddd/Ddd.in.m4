@@ -1480,12 +1480,10 @@ DESC(Attach to Process..., [attach to a process outside of DDD])\n\
 DESC(Detach Process, [detach a process previously attached])\n\
 \n\
 DESC(Print Graph..., [print the data display graph])\n\
-DESC(Print Again, [print using the previous settings])\n\
-\n\
 DESC(Make..., [run the CODE(make) program])\n\
-DESC(Make Again, [make using the previous settings])\n\
 \n\
 DESC(Close, [close this window])\n\
+DESC(Restart, [restart DDD])\n\
 DESC(Exit, [exit DDD])
 
 Ddd*menubar*fileMenu.open_file.labelString: Open Program...
@@ -4479,6 +4477,15 @@ a core dump reflecting the current memory contents.  Unfortunately, \n\
 DDD must kill the program for that.\n\
 \n\
 To kill your program and save the entire state, click on LBL(Yes).
+
+Ddd*confirm_restart_dialog_popup.title: DDD: Restart Session
+Ddd*confirm_restart_dialog.messageString: \
+@rm The program is running.  Restart anyway (and kill it)?
+Ddd*confirm_restart_dialog.okLabelString:     Yes
+Ddd*confirm_restart_dialog.cancelLabelString: No
+Ddd*confirm_restart_dialog*helpString: \
+@rm This is a @GDB@ message.\n\
+For more details, consult the @GDB@ documentation.
 
 Ddd*data_not_saved_dialog_popup.title: DDD: Save Session
 Ddd*data_not_saved_dialog.messageString: \
