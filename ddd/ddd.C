@@ -3084,6 +3084,9 @@ static Boolean ddd_setup_done(XtPointer)
 	install_button_tips();
 	fix_status_size();
 
+	// Initialize `views' menu.  LessTif needs this.
+	gdbUpdateViewsCB(0, XtPointer(views_menu), 0);
+
 	main_loop_entered = true;
 
 	DispBox::init_vsllib(process_pending_events);
