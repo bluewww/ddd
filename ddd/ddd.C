@@ -4026,6 +4026,7 @@ static void ResetGeneralPreferencesCB(Widget, XtPointer, XtPointer)
 	       initial_app_data.global_tab_completion);
 
     set_string_int(max_undo_size_w, initial_app_data.max_undo_size / 1000);
+    app_data.max_undo_size = initial_app_data.max_undo_size;
 
     notify_set_toggle(set_console_completion_w, 
 	       !initial_app_data.global_tab_completion);
