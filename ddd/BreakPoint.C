@@ -63,7 +63,9 @@ BreakPoint::BreakPoint (string& info_output)
       myfile_changed(true),
       myposition_changed(true),
       myaddress_changed(true),
-      myselected(false)
+      myselected(false),
+      mysource_glyph(0),
+      mycode_glyph(0)
 {
     mynumber_str = read_nr_str (info_output);
     mynumber = get_positive_nr (mynumber_str);
@@ -91,7 +93,7 @@ BreakPoint::BreakPoint (string& info_output)
 	info_output = info_output.after(RXblanks_or_tabs);
 
 	// "Enb" lesen
-	if (info_output.contains("n"), 0)
+	if (info_output.contains("n", 0))
 	    myenabled = false;
 	else {
 	    myenabled = true;
@@ -100,8 +102,7 @@ BreakPoint::BreakPoint (string& info_output)
 
 	if (mytype == BREAKPOINT)
 	{
-	    myaddress   = info_output.through(RXname_colon_int_nl);
-	    myaddress   = myaddress.through(rxalphanum);
+	    myaddress   = info_output.through(rxalphanum);
 
 	    info_output = info_output.from (RXname_colon_int_nl);
 	    myfile_name = info_output.before(":");
@@ -250,8 +251,7 @@ bool BreakPoint::update (string& info_output)
 
 	string new_info = "";
 	if (mytype == BREAKPOINT) {
-	    string new_address = info_output.through(RXname_colon_int_nl);
-	    new_address        = new_address.through(rxalphanum);
+	    string new_address = info_output.through(rxalphanum);
 
 	    if (myaddress != new_address)
 	    {

@@ -37,6 +37,8 @@
 // Diese Klasse speichert Informationen zu Breakpoints des gdb.
 //-----------------------------------------------------------------------------
 
+#include <X11/Intrinsic.h>
+
 // includes von Nora-Zeugs
 #include "strclass.h"
 #include "bool.h"
@@ -59,6 +61,8 @@ class BreakPoint {
     bool    myposition_changed;
     bool    myaddress_changed;
     bool    myselected;
+    Widget  mysource_glyph;
+    Widget  mycode_glyph;
 
 public:
     // Entfernt eigene info aus info_output.
@@ -75,6 +79,8 @@ public:
     const string& address   () const { return myaddress; }
     const string& infos     () const { return myinfos; }
     bool&         selected  ()       { return myselected; }
+    Widget&       source_glyph ()    { return mysource_glyph; }
+    Widget&       code_glyph ()      { return mycode_glyph; }
 
     // true wenn sich beim letzten update enabled geaendert hat.
     //
