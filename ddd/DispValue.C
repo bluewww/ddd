@@ -54,6 +54,7 @@ char DispValue_rcsid[] =
 #include "assert.h"
 #include "cook.h"
 #include "ddd.h"
+#include "deref.h"
 #include "fonts.h"
 #include "misc.h"
 #include "plotter.h"
@@ -730,13 +731,13 @@ string DispValue::dereferenced_name() const
     switch (mytype)
     {
     case Pointer:
-	{
-	    string f = full_name();
-	    if (f.contains('/', 0))
-		f = f.from(2);	// Skip /FMT expressions
+    {
+	string f = full_name();
+	if (f.contains('/', 0))
+	    f = f.from(2);	// Skip /FMT expressions
 
-	    return gdb->dereferenced_expr(f);
-	}
+	return deref(f);
+    }
 
     case Simple:
     case Text:

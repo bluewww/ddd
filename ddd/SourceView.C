@@ -97,6 +97,7 @@ char SourceView_rcsid[] =
 #include "cwd.h"
 #include "dbx-lookup.h"
 #include "ddd.h"
+#include "deref.h"
 #include "disp-read.h"
 #include "editing.h"
 #include "events.h"
@@ -1310,8 +1311,7 @@ void SourceView::text_popup_print_refCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command(gdb->print_command(gdb->dereferenced_expr(
-	fortranize(*word_ptr)), false), w);
+    gdb_command(gdb->print_command(deref(fortranize(*word_ptr)), false), w);
 }
 
 
@@ -1333,8 +1333,7 @@ void SourceView::text_popup_watch_refCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command(gdb->watch_command(gdb->dereferenced_expr(
-	fortranize(*word_ptr))), w);
+    gdb_command(gdb->watch_command(deref(fortranize(*word_ptr))), w);
 }
 
 
@@ -1354,8 +1353,7 @@ void SourceView::text_popup_disp_refCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command("graph display " + 
-		gdb->dereferenced_expr(fortranize(*word_ptr)), w);
+    gdb_command("graph display " + deref(fortranize(*word_ptr)), w);
 }
 
 // ***************************************************************************
@@ -4955,7 +4953,7 @@ void SourceView::srcpopupAct (Widget w, XEvent* e, String *, Cardinal *)
 	// Popup specific word menu
 	string current_arg = word;
 	shorten(current_arg, max_popup_expr_length);
-	string current_ref_arg = gdb->dereferenced_expr(current_arg);
+	string current_ref_arg = deref(current_arg);
 
 	if (lesstif_version <= 82)
 	{

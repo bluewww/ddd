@@ -803,6 +803,7 @@ DDD_OBJECTS = \
 	ctrl.o       \
 	data.o       \
 	dbx-lookup.o \
+	deref.o      \
 	disp-read.o  \
 	editing.o    \
 	environ.o    \

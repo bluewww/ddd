@@ -256,17 +256,8 @@ static DispValueType _determine_type (string& value)
     }
 
     // In Perl, pointers are printed as `TYPE(ADDR)'
-    int paren_index = value.index('(');
-    if (paren_index > 0)
-    {
-	string id   = value.before(paren_index);
-	string addr = value.after(paren_index);
-	if (id.matches(rxidentifier) && addr.contains(rxaddress, 0))
-	{
-	    // We have a Perl pointer
-	    return Pointer;
-	}
-    }
+    if (value.contains(rxperlref, 0))
+	return Pointer;
 
     // Arrays.
     if (value.contains('{', 0))

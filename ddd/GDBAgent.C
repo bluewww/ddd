@@ -2279,8 +2279,12 @@ string GDBAgent::dereferenced_expr(string expr) const
     switch (program_language())
     {
     case LANGUAGE_C:
-    case LANGUAGE_PERL:
 	return prepend_prefix("*", expr);
+
+    case LANGUAGE_PERL:
+	// Perl has three `dereferencing' operators, depending on the
+	// type of reference.  Return a generic name.
+	return "dereferenced " + expr;
 
     case LANGUAGE_FORTRAN:
 	// GDB prints dereferenced pointers as `**X', but accepts them as `*X'.
@@ -2307,7 +2311,7 @@ string GDBAgent::dereferenced_expr(string expr) const
 	return prepend_prefix("*", expr);
 
     case LANGUAGE_PYTHON:
-	return "";		// Not supported by Python/PYDB
+	return "";		// No such thing in Python/PYDB
 
     case LANGUAGE_OTHER:
 	return expr;		// All other languages
@@ -2762,7 +2766,11 @@ string GDBAgent::get_dumped_var(const string& dump, const string& var) const
     if (name == "")
 	return dump;
 
-    string base = prefix[prefix.length() - 1] + name;
+    string base;
+    if (prefix == "")
+	base = name;
+    else
+	base = prefix[prefix.length() - 1] + name;
 
     string value = dump;
 
@@ -2791,21 +2799,12 @@ string GDBAgent::get_dumped_var(const string& dump, const string& var) const
     }
 
     // If this is a reference, strip the referred object
-    int paren_index = value.index('(');
-    if (paren_index > 0 && paren_index < value.index('\n'))
-    {
-	string id   = value.before(paren_index);
-	string addr = value.after(paren_index);
-	if (id.matches(rxidentifier) && addr.contains(rxaddress, 0))
-	{
-	    // We have a Perl pointer
-	    value = value.before('\n');
-	}
-    }
+    if (value.contains(rxperlref, 0))
+	value = value.before('\n');
 
-    if (prefix[0] == '@')
+    if (prefix != "" && prefix[0] == '@')
 	value = munch_perl_array(value);
-    else if (prefix[0] == '%')
+    else if (prefix != "" && prefix[0] == '%')
 	value = munch_perl_hash(value);
 
     return var + " = " + value;

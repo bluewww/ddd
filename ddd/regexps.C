@@ -244,3 +244,4 @@ const regex rxdbx_baseclass             (rx_matcher, (void *)"C1");
 const regex rxset3_cmd                  (rx_matcher, (void *)"C2");
 const regex rxperlprompt                (rx_matcher, (void *)"C3");
 const regex rxperlpos                   (rx_matcher, (void *)"C4");
+const regex rxperlref                   (rx_matcher, (void *)"C5");

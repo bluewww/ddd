@@ -123,6 +123,7 @@ extern const regex rxpath_cmd;
 extern const regex rxpc;
 extern const regex rxperlpos;
 extern const regex rxperlprompt;
+extern const regex rxperlref;
 extern const regex rxprocess1;
 extern const regex rxprocess2;
 extern const regex rxprompt;

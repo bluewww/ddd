@@ -102,6 +102,7 @@ char DataDisp_rcsid[] =
 #include "converters.h"
 #include "cook.h"
 #include "ddd.h"
+#include "deref.h"
 #include "disp-read.h"
 #include "history.h"
 #include "logo.h"
@@ -571,8 +572,7 @@ void DataDisp::dereferenceArgCB(Widget w, XtPointer client_data,
 	return;
     }
 
-    new_display(gdb->dereferenced_expr(source_arg->get_string()), 
-		0, "", false, false, w);
+    new_display(deref(source_arg->get_string()), 0, "", false, false, w);
 }
 
 void DataDisp::toggleDetailCB(Widget dialog,

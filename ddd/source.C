@@ -47,6 +47,7 @@ char source_rcsid[] =
 #include "dbx-lookup.h"
 #include "events.h"
 #include "ddd.h"
+#include "deref.h"
 #include "post.h"
 #include "regexps.h"
 #include "shell.h"
@@ -104,7 +105,7 @@ void gdbPrintRefCB(Widget w, XtPointer, XtPointer)
     string arg = current_arg();
 
     if (arg != "" && !arg.matches(rxwhite))
-	gdb_command(gdb->print_command(gdb->dereferenced_expr(arg), false), w);
+	gdb_command(gdb->print_command(deref(arg), false), w);
 }
 
 void gdbDisplayCB(Widget w, XtPointer, XtPointer)
@@ -120,7 +121,7 @@ void gdbDispRefCB(Widget w, XtPointer, XtPointer)
     string arg = current_arg();
 
     if (arg != "" && !arg.matches(rxwhite))
-	gdb_command("graph display " + gdb->dereferenced_expr(arg), w);
+	gdb_command("graph display " + deref(arg), w);
 }
 
 void gdbWhatisCB(Widget w, XtPointer, XtPointer)
@@ -237,8 +238,7 @@ bool have_watchpoint_at_arg()
 }
 bool have_watchpoint_at_ref_arg()
 {
-    return source_view->watchpoint_at(gdb->dereferenced_expr(current_arg())) 
-	!= 0;
+    return source_view->watchpoint_at(deref(current_arg())) != 0;
 }
 
 bool have_enabled_watchpoint_at_arg()
@@ -270,7 +270,7 @@ void gdbWatchRefCB(Widget w, XtPointer, XtPointer)
     string arg = current_arg();
 
     if (arg != "" && !arg.matches(rxwhite))
-	gdb_command(gdb->watch_command(gdb->dereferenced_expr(arg)), w);
+	gdb_command(gdb->watch_command(deref(arg)), w);
 }
 
 void gdbUnwatchCB(Widget, XtPointer, XtPointer)
