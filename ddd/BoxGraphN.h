@@ -86,8 +86,6 @@ public:
     // Destructor
     virtual ~BoxGraphNode()
     {
-	if (_highlight)
-	    _highlight->unlink();
 	if (_box)
 	    _box->unlink();
     }
@@ -114,23 +112,7 @@ public:
     }
 
     // Set the box.
-    void setBox(Box *b)
-    {
-	setHighlight(0);
-
-	Box *old = _box;
-	if (b)
-	    _box = b->link();
-	else
-	    _box = 0;
-
-	if (old)
-	    old->unlink();
-
-	if (b)
-	    resize(b->size());
-    }
-
+    void setBox(Box *b);
 
     // Print
     virtual void _print(ostream& os, const GraphGC& gc) const;

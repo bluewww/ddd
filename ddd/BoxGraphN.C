@@ -46,7 +46,8 @@ void BoxGraphNode::forceDraw(Widget w,
 			     const BoxRegion& /* exposed */,
 			     const GraphGC& gc) const
 {
-    assert (box() != 0);
+    assert(box() != 0);
+    // assert(box()->OK());
 
     // We do not check for exposures here --
     // boxes are usually small and partial display
@@ -162,7 +163,28 @@ MarkBox *BoxGraphNode::find_mark(Box *dup, Box *src, Box *mark)
 
     return 0;
 }
-	
+
+
+// Set the box.
+void BoxGraphNode::setBox(Box *b)
+{
+    assert(b == 0 || b->OK());
+
+    setHighlight(0);
+
+    Box *old = _box;
+    if (b)
+	_box = b->link();
+    else
+	_box = 0;
+
+    if (old)
+	old->unlink();
+
+    if (b)
+	resize(b->size());
+}
+
 
 // Copy Constructor
 BoxGraphNode::BoxGraphNode(const BoxGraphNode& node):
