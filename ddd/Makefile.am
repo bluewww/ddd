@@ -1964,7 +1964,8 @@ DISTCLEANFILES = build.h host.h root.h ../config.cache USERINFO $(IMAGES)
 
 # `make mostlyclean' should also remove these temporary Texinfo files.
 MOSTLYCLEANFILES = ddd.au ddd.cm ddd.cms ddd.en ddd.fl ddd.fls ddd.lb ddd.lbs \
-	ddd.tmp ddd.html ddd.pdf ddd.ps 
+	ddd.tmp ddd.html ddd.pdf ddd.ps \
+	ddd-themes.fl ddd-themes.fls ddd-themes.pdf ddd-themes.tmp
 
 # Have `make maintainer-clean' remove _all_ derived files.
 MAINTAINERCLEANFILES = $(PROG_STUFF)
