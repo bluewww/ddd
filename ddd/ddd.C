@@ -1683,12 +1683,8 @@ static Boolean ddd_setup_done(XtPointer)
 
 inline void set_sensitive(Widget w, bool state)
 {
-    if (w == 0)
-	return;
-
-    if (XtIsSensitive(w) == state)
-	return;
-    XtSetSensitive(w, state);
+    if (w != 0)
+	XtSetSensitive(w, state);
 }
 
 

@@ -210,9 +210,8 @@ void DataDisp::set_last_origin(Widget w)
 
 inline void set_sensitive(Widget w, bool state)
 {
-    if (w == 0 || XtIsSensitive(w) == state)
-	return;
-    XtSetSensitive(w, state);
+    if (w != 0)
+	XtSetSensitive(w, state);
 }
 
 static void set_label(Widget w, string label)
