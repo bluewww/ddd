@@ -155,15 +155,14 @@ bool is_core_file(const string& file_name)
 #else // !defined(CORE_MAGIC)
     // Let's try some heuristics to exclude other files...
 
-#if 0
     // Paul E. Raines states: My source files are on an NFS mounted
     // VMS partition that in translation all files are marked
     // executable (like mounting DOS under Linux)
-    // Hence, this check would filter out all core files.
+    // Hence, be sure to leave at least all files named `core'.
 
-    if (sb.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH))
+    if (sb.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH) 
+	&& !file_name.contains("core"))
 	return false;		// executable
-#endif
 
     if (!is_binary_file(file_name))
 	return false;		// no binary character in header
