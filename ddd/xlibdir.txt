@@ -27,7 +27,7 @@
 # or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 
 # We do everything in `/tmp/xc$$'.  If we're interrupted, clean it up.
-tmp=${TMPDIR=/tmp}/xc$$
+tmp=${TMPDIR-/tmp}/xc$$
 mkdir $tmp
 trap "cd /; rm -fr $tmp; exit 2" 1 2 15
 cd $tmp

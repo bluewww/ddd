@@ -3400,8 +3400,8 @@ by the file name.  The default is to invoke \fB$XEDITOR\fR first, then
 .sp
 .br
   \fB@Ddd@*editCommand: \\
-  ${XEDITOR=false} +@LINE@ @FILE@ \\
-  || xterm \-e ${EDITOR=vi} +@LINE@ @FILE@\fR
+  ${XEDITOR-false} +@LINE@ @FILE@ \\
+  || xterm \-e ${EDITOR-vi} +@LINE@ @FILE@\fR
 .br
 .sp
 .br

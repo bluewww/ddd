@@ -201,8 +201,8 @@ Ddd*paperSize: 210mm x 297mm
 ! `@FILE@' by the file name.  Default is to invoke $XEDITOR first,
 ! then $EDITOR, then VI.
 Ddd*editCommand: \
-${XEDITOR=false} +@LINE@ @FILE@ \
-|| xterm -e ${EDITOR=vi} +@LINE@ @FILE@
+${XEDITOR-false} +@LINE@ @FILE@ \
+|| xterm -e ${EDITOR-vi} +@LINE@ @FILE@
 
 
 ! A command to get a core dump of a running process (typically, `gcore')
