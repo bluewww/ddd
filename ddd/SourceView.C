@@ -3393,7 +3393,7 @@ void SourceView::lookup(string s, bool silent)
 
 	case XDB:
 	{
-	    Command c("v" + s);
+	    Command c("v " + s);
 	    c.verbose = !silent;
 	    gdb_command(c);
 	    break;
