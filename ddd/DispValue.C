@@ -32,6 +32,7 @@ char DispValue_rcsid[] =
 #ifdef __GNUG__
 #pragma implementation
 #pragma implementation "DynArray.h"
+#pragma implementation "VarArray.h"
 #endif
 
 #define LOG_CREATE_VALUES 0
