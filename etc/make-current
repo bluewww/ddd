@@ -76,7 +76,7 @@ trap "echo -n 'Cleaning up...'; cd $tmpdir; rm -fr ddd; echo done." 0
 
 # Go ahead...
 echo "Creating ddd-$date.tar.gz (expires $expires)..."
-set +x
+set -x
 cd $tmpdir
 
 # Get the DDD development tree out of CVS.
