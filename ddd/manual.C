@@ -121,14 +121,12 @@ void GDBManualCB(Widget w, XtPointer, XtPointer)
 
     string cmd = "man " + downcase(gdb->title());
 
-#if 0				// Needs support in `HelpCB.C'
     if (gdb->type() == GDB)
     {
 	// Try `info' first
 	cmd.prepend("info --subnodes -o - -f " 
-		    + downcase(gdb->title()) + " || ");
+		    + downcase(gdb->title()) + " 2> /dev/null || ");
     }
-#endif
 
     cmd = sh_command(cmd);
 
@@ -142,7 +140,9 @@ void GDBManualCB(Widget w, XtPointer, XtPointer)
 	    man << char(c);
 	
 	string s(man);
-	MString title(gdb->title() + " Manual");
+	bool info = s.contains("File: ", 0);
+
+	MString title(gdb->title() + (info ? " Info" : " Manual"));
 	ManualStringHelpCB(w, title, s);
 
 	pclose(fp);

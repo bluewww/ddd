@@ -1278,13 +1278,13 @@ Ddd*manual_help*index.visibleItemCount:	5
 
 Ddd*manual_help*indexSW.height:		90
 
-Ddd*manual_help*text.columns:		72
+Ddd*manual_help*text.columns:		80
 Ddd*manual_help*text.rows:		25
 Ddd*manual_help*text.wordWrap:		true
 Ddd*manual_help*text.scrollHorizontal:	false
 Ddd*manual_help*scrollBarDisplayPolicy: XmAS_NEEDED
 
-Ddd*manual_help*textSW.width:		500
+Ddd*manual_help*textSW.width:		550
 Ddd*manual_help*textSW.height:		342
 
 Ddd*manual_help*search.orientation:	XmHORIZONTAL
@@ -1296,20 +1296,20 @@ Ddd*manual_help*search*alignment:	XmALIGNMENT_CENTER
 
 Ddd*manual_help*arg_label.labelString:	():
 
-Ddd*manual_help*key.columns:		50
+Ddd*manual_help*key.columns:		58
 Ddd*manual_help*findBackward.labelString: Find@small<< @bf()
 Ddd*manual_help*findBackward.tipString:	  \
 @rm Find previous @bf() @rm in manual
 Ddd*manual_help*findBackward.documentationString:	\
-@rm Search the previous occurrence of @bf () @rm in the @DDD@ manual
+@rm Search the previous occurrence of @bf () @rm in the manual
 Ddd*manual_help*findForward.labelString:  Find@small>> @bf()
 Ddd*manual_help*findForward.tipString:	  \
 @rm Find next @bf() @rm in manual
 Ddd*manual_help*findForward.documentationString:	\
-@rm Search the next occurrence of @bf () @rm in the @DDD@ manual
+@rm Search the next occurrence of @bf () @rm in the manual
 
 Ddd*manual_help*helpString: \
-@rm This is the @sl @DDD@ Manual.@rm\n\
+@rm This is the @sl @DDD@ Manual Browser.@rm\n\
 \n\
 To view a specific section, select its title from the index at the top.\n\
 \n\
@@ -2041,6 +2041,8 @@ Ddd*menubar.help*helpString: \
 @tt \267 @bf On Help... @rm - help on how to use the help facility.\n\
 \n\
 @tt \267 @bf @DDD@ Manual... @rm - the @DDD@ on-line manual.\n\
+@tt \267 @bf @GDB@ Manual... @rm - the @GDB@ on-line manual.\n\
+\n\
 @tt \267 @bf @DDD@ License... @rm - the @DDD@ license.\n\
 @tt \267 @bf @DDD@ WWW Page... @rm - the @DDD@ WWW page.
 
@@ -4059,7 +4061,7 @@ Ddd*source_find_error*helpString:	\
 
 Ddd*manual_find_error_popup.title: @DDD@: Not Found
 Ddd*manual_find_error*helpString:	\
-@rm The given key can not be found in the @DDD@ manual.
+@rm The given key can not be found in the on-line manual.
 
 Ddd*no_source_error_popup.title: @DDD@: No Source
 Ddd*no_source_error*helpString:	\

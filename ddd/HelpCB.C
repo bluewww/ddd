@@ -40,6 +40,8 @@ char HelpCB_rcsid[] =
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <limits.h>
+#include <ctype.h>
 
 #include <Xm/Xm.h>
 #include <Xm/CascadeB.h>
@@ -572,29 +574,8 @@ static void FindBackwardCB(Widget w, XtPointer client_data,
     FindCB(w, client_data, call_data, false);
 }
 
-// Find title pos in TEXT before CURSOR position
-static XmTextPosition find_title(const string& text, XmTextPosition cursor)
-{
-    for (XmTextPosition start = cursor; start >= 0; start--)
-    {
-	if (start == 0 || text[start - 1]== '\n')
-	{
-	    // At beginning of line
-	    for (int i = 0; start + i < int(text.length())
-		     && text[start + i] != '\n' && i < 4; i++)
-	    {
-		if (text[start + i] != ' ')
-		    return start;
-	    }
-	}
-    }
-
-    return 0;
-}
-
-
 // Highlight current section after cursor motion
-static void HighlightSectionCB(Widget w, XtPointer client_data, 
+static void HighlightSectionCB(Widget, XtPointer client_data, 
 			       XtPointer call_data)
 {
     XmTextVerifyCallbackStruct *cbs = (XmTextVerifyCallbackStruct *)call_data;
@@ -602,22 +583,33 @@ static void HighlightSectionCB(Widget w, XtPointer client_data,
 
     XmTextPosition cursor = cbs->newInsert;
 
-    String text_s = XmTextGetString(w);
-    string text(text_s);
-    XtFree(text_s);
+    void *userData;
+    XtVaGetValues(list, XmNuserData, &userData, NULL);
+    XmTextPosition *positions = (XmTextPosition *)userData;
 
-    XmTextPosition title_start = find_title(text, cursor);
-    string t = text.from(int(title_start));
-    t = t.before('\n');
+    int pos = 0;
+    while (positions[pos] <= cursor)
+	pos++;
 
-    MString title = (t.contains(' ', 0)) ? rm(t) : bf(t);
-
-    int pos = XmListItemPos(list, title.xmstring());
-    if (pos > 0)
-	ListSetAndSelectPos(list, pos);
+    ListSetAndSelectPos(list, pos);
 }
 
-// Note: this assumes `groff -Tascii -man' format.
+// Return true iff TEXT contains a manual header line at pos
+static bool has_header(const string& text, unsigned pos)
+{
+    if (pos < text.length() - 1
+	&& !isspace(text[pos])
+	&& (pos == 0 || text[pos - 1] == '\n')
+	&& text[pos + 1] != '\b')
+    {
+	// Non-highlighted character in column 1
+	return true;
+    }
+
+    return false;
+}
+
+// Note: assumes `man' or `info' format.
 void ManualStringHelpCB(Widget widget, XtPointer client_data, 
 			XtPointer)
 {
@@ -628,7 +620,7 @@ void ManualStringHelpCB(Widget widget, XtPointer client_data,
 }
 
 void ManualStringHelpCB(Widget widget, const MString& title,
-			const string& text)
+			const string& unformatted_text)
 {
     Delay delay;
 
@@ -679,9 +671,9 @@ void ManualStringHelpCB(Widget widget, const MString& title,
 	XtManageChild(help_index);
 	
 	arg = 0;
-	XtSetArg(args[arg], XmNeditable,         False);             arg++;
-	XtSetArg(args[arg], XmNeditMode,         XmMULTI_LINE_EDIT); arg++;
-	XtSetArg(args[arg], XmNvalue,            text.chars());      arg++;
+	XtSetArg(args[arg], XmNeditable, False);                    arg++;
+	XtSetArg(args[arg], XmNeditMode, XmMULTI_LINE_EDIT);        arg++;
+	XtSetArg(args[arg], XmNvalue,    unformatted_text.chars()); arg++;
 	help_man = verify(XmCreateScrolledText(area, "text", args, arg));
 	XtManageChild(help_man);
 
@@ -761,96 +753,241 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     if (!title.isNull())
 	XtVaSetValues(dialog_title, XmNlabelString, title.xmstring(), NULL);
 
-    // Strip manual headers and footers
-    string stripped_text(text);
-    unsigned source = 0;
-    int target = 0;
-    int line = 0;
-
-    while (source < stripped_text.length())
-    {
-	char c = stripped_text[source++];
-	if ((line % 66 + 1) >= 7 && (line % 66 + 1) <= 60)
-	    stripped_text[target++] = c;
-
-	if (c == '\n')
-	    line++;
-    }
-    stripped_text.from(target) = "";
-
-
-    // Handle umlauts
-    stripped_text.gsub("\"\ba", "\344");
-    stripped_text.gsub("\"\bo", "\366");
-    stripped_text.gsub("\"\bu", "\374");
-    stripped_text.gsub("_\b\"\b_\ba", "_\b\344");
-    stripped_text.gsub("_\b\"\b_\bo", "_\b\366");
-    stripped_text.gsub("_\b\"\b_\bu", "_\b\374");
-
-
-    // Handle underlines via selections
-    int size = stripped_text.length();
-    bool *underlined    = new bool[size];
-    bool *doublestriked = new bool[size];
+    string text(unformatted_text);
+    bool manual = !text.contains("File:", 0);
     int i;
-    for (i = 0; i < size; i++)
-	underlined[i] = doublestriked[i] = false;
 
-    source = 0;
-    target = 0;
-
-    while (source < stripped_text.length())
+    if (manual)
     {
-	char c = stripped_text[target++] = stripped_text[source++];
+	// Manual page: strip manual headers and footers
+	unsigned source = 0;
+	int target = 0;
 
-	if (c == '\b' && target >= 2)
+	for (;;)
 	{
-	    target -= 2;
-	    if (stripped_text[target] == '_')
-		underlined[target] = true;
-	    if (stripped_text[target] == stripped_text[source])
-		doublestriked[target] = true;
+	    while (has_header(text, source))
+	    {
+		// Header line: strip line and surrounding blanks
+		if (target > 0)
+		    target--;
+		while (target >= 0 && text[target] == '\n')
+		    target--;
+		target++;
+		if (target > 0)
+		    text[target++] = '\n';
+
+		source = text.index('\n', source);
+		while (source < text.length() && text[source] == '\n')
+		    source++;
+	    }
+
+	    if (source >= text.length())
+		break;
+
+	    text[target++] = text[source++];
 	}
+	text.from(target) = "";
+
+	// Handle umlauts
+	text.gsub("\"\ba", "\344");
+	text.gsub("\"\bo", "\366");
+	text.gsub("\"\bu", "\374");
+	text.gsub("_\b\"\b_\ba", "_\b\344");
+	text.gsub("_\b\"\b_\bo", "_\b\366");
+	text.gsub("_\b\"\b_\bu", "_\b\374");
     }
-    stripped_text.from(target) = "";
+    else
+    {
+	// Info file: strip menus
+	unsigned source = 0;
+	int target = 0;
+
+	while (source < text.length())
+	{
+	    while (text.contains("* ", source)
+		   && (source == 0 || text[source - 1] == '\n'))
+	    {
+		// Skip menu item
+		while (text[source++] != '\n')
+		    ;
+	    }
+	    text[target++] = text[source++];
+	}
+	text.from(target) = "";
+    }
+
+    {
+	// Info and manual: kill multiple empty lines
+	unsigned source = 0;
+	int target = 0;
+	while (source < text.length())
+	{
+	    if (text[source] == '\n')
+	    {
+		while (source < text.length() - 2
+		       && text[source + 1] == '\n'
+		       && text[source + 2] == '\n')
+		    source++;
+	    }
+	    text[target++] = text[source++];
+	}
+	text.from(target) = "";
+    }
+
+    if (manual)
+    {
+	// Manual page: handle underlines
+
+	int size = text.length();
+	bool *underlined    = new bool[size];
+	bool *doublestriked = new bool[size];
+	for (i = 0; i < size; i++)
+	    underlined[i] = doublestriked[i] = false;
+
+	unsigned source = 0;
+	int target = 0;
+
+	while (source < text.length())
+	{
+	    char c = text[target++] = text[source++];
+
+	    if (c == '\b' && target >= 2)
+	    {
+		target -= 2;
+		if (text[target] == '_')
+		    underlined[target] = true;
+		if (text[target] == text[source])
+		    doublestriked[target] = true;
+	    }
+	}
+	text.from(target) = "";
+
+	// Set text
+	XtVaSetValues(help_man, XmNvalue, text.chars(), NULL);
+
+	// Set highlighting
+	XmTextSetHighlight(help_man, 0, XmTextGetLastPosition(help_man), 
+			   XmHIGHLIGHT_NORMAL);
+
+	XmTextPosition underlining    = 0;
+	XmTextPosition doublestriking = 0;
+	for (i = 0; i < int(text.length()); i++)
+	{
+	    if (doublestriked[i] && !doublestriking)
+	    {
+		doublestriking = i;
+	    }
+	    else if (!doublestriked[i] && doublestriking)
+	    {
+		// There is no bold face in XmText, normal selection
+		// clutters the screen and secondary selection is already used.
+		// So what shall we do here?  Use the Motif 2.0 CSText?
+#if 0
+		XmTextSetHighlight(help_man, doublestriking, i, 
+				   XmHIGHLIGHT_SELECTED);
+#endif
+		doublestriking = 0;
+	    }
+
+	    if (underlined[i] && !underlining)
+	    {
+		underlining = i;
+	    }
+	    else if (!underlined[i] && underlining)
+	    {
+		XmTextSetHighlight(help_man, underlining, i, 
+				   XmHIGHLIGHT_SECONDARY_SELECTED);
+		underlining = 0;
+	    }
+	}
+
+	delete[] underlined;
+	delete[] doublestriked;
+    }
 
     // Find titles
     StringArray titles;
     IntArray positions;
 
-    int start_of_line = 0;
-
-    for (source = 0; source < stripped_text.length(); source++)
+    if (manual)
     {
-	if (stripped_text[source] == '\n')
+	// Manual page
+	int start_of_line = 0;
+
+	for (unsigned source = 0; source < text.length(); source++)
 	{
-	    if (source - start_of_line > 3)
+	    if (text[source] == '\n')
 	    {
-		bool is_title = false;
-		
-		if (stripped_text(start_of_line, 2) == "  "
-		    && stripped_text[start_of_line + 3] != ' ')
-		    is_title = true; // .SS title
-		else if (stripped_text[start_of_line] != ' '
-			 && source - start_of_line < 60)
-		    is_title = true; // .SH title
-
-		if (is_title)
+		if (source - start_of_line > 3)
 		{
-		    titles += stripped_text(start_of_line,
-					    source - start_of_line);
-		    positions += start_of_line;
-		}
-	    }
+		    // Check manual title
+		    bool is_title = false;
+		
+		    if (text(start_of_line, 2) == "  "
+			&& text[start_of_line + 3] != ' ')
+			is_title = true; // .SS title
+		    else if (text[start_of_line] != ' '
+			     && source - start_of_line < 60)
+			is_title = true; // .SH title
 
-	    start_of_line = source + 1;
+		    if (is_title)
+		    {
+			titles += text(start_of_line,
+						source - start_of_line);
+			positions += start_of_line;
+		    }
+		}
+
+		start_of_line = source + 1;
+	    }
 	}
+    }
+    else
+    {
+	// Info file
+	int source = 0;
+	while (source >= 0)
+	{
+	    assert(text.contains("File: ", source));
+
+	    // Fetch title below `File: ' line
+	    int start_of_title = text.index("\n\n", source) + 2;
+	    int end_of_title   = text.index("\n", start_of_title);
+	    string title = text(start_of_title, end_of_title - start_of_title);
+
+	    // Fetch indent level, using the underline characters
+	    int start_of_underline = text.index('\n', start_of_title) + 1;
+	    static string underlines = "*=-.";
+	    int indent = underlines.index(text[start_of_underline]);
+	    if (indent < 0)
+		indent = underlines.length();
+	    if (indent == 0)
+		title.upcase();
+
+	    // Add title and position
+	    titles += replicate(' ', indent * 2) + title;
+	    positions += source;
+
+	    // Strip `File: ' line
+	    text = text.before(source) + text.from(start_of_title);
+	    
+	    // Find next `File: ' line
+	    source = text.index("File: ", source);
+	}
+
+	// Set text
+	XtVaSetValues(help_man, XmNvalue, text.chars(), NULL);
+
+	// Info: no highlighting
+	XmTextSetHighlight(help_man, 0, XmTextGetLastPosition(help_man), 
+			   XmHIGHLIGHT_NORMAL);
     }
 
     // Set titles in selection list
-    XmTextPosition *xmpositions = new XmTextPosition[titles.size()];
+    XmTextPosition *xmpositions = new XmTextPosition[titles.size() + 1];
     for (i = 0; i < titles.size(); i++)
 	xmpositions[i] = positions[i];
+    xmpositions[i] = INT_MAX;
 
     XmStringTable xmtitles = new XmString[titles.size()];
 
@@ -873,51 +1010,6 @@ void ManualStringHelpCB(Widget widget, const MString& title,
     for (i = 0; i < titles.size(); i++)
 	XmStringFree(xmtitles[i]);
     delete[] xmtitles;
-    
-
-    // Setup text for existing dialog
-    arg = 0;
-    XtSetArg(args[arg], XmNvalue, (String)stripped_text); arg++;
-    XtSetValues(help_man, args, arg);
-
-    // Highlight underlined and doublestriked text
-    XmTextSetHighlight(help_man, 0, stripped_text.length() - 1, 
-		       XmHIGHLIGHT_NORMAL);
-
-    XmTextPosition underlining    = 0;
-    XmTextPosition doublestriking = 0;
-    for (i = 0; i < int(stripped_text.length()); i++)
-    {
-	if (doublestriked[i] && !doublestriking)
-	{
-	    doublestriking = i;
-	}
-	else if (!doublestriked[i] && doublestriking)
-	{
-	    // There is no bold face in XmText, normal selection
-	    // clutters the screen and secondary selection is already used.
-	    // So what shall we do here?  Use the Motif 2.0 CSText?
-#if 0
-	    XmTextSetHighlight(help_man, doublestriking, i, 
-			       XmHIGHLIGHT_SELECTED);
-#endif
-	    doublestriking = 0;
-	}
-
-	if (underlined[i] && !underlining)
-	{
-	    underlining = i;
-	}
-	else if (!underlined[i] && underlining)
-	{
-	    XmTextSetHighlight(help_man, underlining, i, 
-			       XmHIGHLIGHT_SECONDARY_SELECTED);
-	    underlining = 0;
-	}
-    }
-
-    delete[] underlined;
-    delete[] doublestriked;
 
     // Enable Text Window
     XtManageChild(text_dialog);
