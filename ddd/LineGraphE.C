@@ -1,0 +1,331 @@
+// $Id$
+// class LineGraphEdge
+
+// Copyright (C) 1993 Technische Universitaet Braunschweig, Germany.
+// Written by Andreas Zeller (zeller@ips.cs.tu-bs.de).
+// 
+// This file is part of the NORA Library.
+// 
+// The NORA Library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Library General Public
+// License as published by the Free Software Foundation; either
+// version 2 of the License, or (at your option) any later version.
+// 
+// The NORA Library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU Library General Public License for more details.
+// 
+// You should have received a copy of the GNU Library General Public
+// License along with the NORA Library -- see the file COPYING.LIB.
+// If not, write to the Free Software Foundation, Inc.,
+// 675 Mass Ave, Cambridge, MA 02139, USA.
+// 
+// NORA is an experimental inference-based software development
+// environment. Contact nora@ips.cs.tu-bs.de for details.
+
+// $Log$
+// Revision 1.1  1995/05/01 15:47:45  zeller
+// Initial revision
+//
+// Revision 1.26  1994/07/19  21:30:07  zeller
+// Changes for gcc-2.6.0 (and ANSI C++)
+//
+// Revision 1.25  1994/02/22  16:33:17  zeller
+// Fix: M_PI statt PI
+//
+// Revision 1.24  1993/08/27  15:46:05  zeller
+// Neu: TypeInfo
+//
+// Revision 1.23  1993/05/22  20:11:22  zeller
+// %Q% added by apply-q-flag.sh 1.5
+//
+// Revision 1.22  1993/04/22  11:00:20  zeller
+// Lizenz verbessert
+// 
+// Revision 1.21  1993/04/16  11:38:40  zeller
+// Neu: GNU Library General Public License eingefuegt
+// 
+// Revision 1.20  1992/11/13  19:10:30  zeller
+// GraphGC jetzt ueberall const;
+// Bei Pfeilen auf Hint Pfeilspitze weglassen
+// 
+// Revision 1.19  1992/11/13  15:52:29  zeller
+// Neu: Loeschen von Knoten und Kanten moeglich
+// 
+// Revision 1.18  1992/11/13  13:40:03  zeller
+// Auswahl Clip-Prozedur jetzt ueber Tabelle
+// 
+// Revision 1.17  1992/11/13  13:05:23  zeller
+// Fix: clipToSide() fuer rechtwinklige Kanten korrigiert
+// 
+// Revision 1.16  1992/11/12  23:58:36  zeller
+// Fix: Fall "Knotengroesse == 0" beruecksichtigt
+// 
+// Revision 1.15  1992/11/06  01:47:02  zeller
+// Noch besser: Auch Kante nicht zeichnen, wenn Startpunkt == Endpunkt
+// 
+// Revision 1.14  1992/11/06  01:42:17  zeller
+// Fix: Pfeil nur zeichnen, wenn Start- und Zielpunkt verschieden
+// (sonst macht atan2 einen DOMAIN error)
+// 
+// Revision 1.13  1992/11/05  19:04:07  zeller
+// Neue Graphik-Kontexte -- vermeiden allzuhaeufiges Umschalten
+// 
+// Revision 1.12  1992/11/04  12:03:03  zeller
+// "assert.h" statt <assert.h>
+// 
+// Revision 1.11  1992/06/02  00:56:17  zeller
+// Anpassung an gcc 2.1
+// 
+// Revision 1.10  1992/06/01  17:02:39  zeller
+// Neu: #pragma implementation
+// 
+// Revision 1.9  1992/05/20  15:45:48  zeller
+// Dateinamen verkuerzt
+// 
+// Revision 1.8  1992/03/16  16:17:11  zeller
+// If Nodes overlap, don't draw the edges.
+// 
+// Revision 1.7  1992/03/16  16:01:03  zeller
+// Neue Verfahren, um Verbindungspunkte der Kanten zu bestimmen
+// 
+// Revision 1.6  1992/03/16  13:21:00  zeller
+// Neu: _draw() statt draw()
+// 
+// Revision 1.5  1992/02/27  23:01:27  zeller
+// Neu: GraphGC; Pfeile zeichnen
+// 
+// Revision 1.4  1992/02/27  19:13:18  zeller
+// Exposure check (vorerst) weggelassen
+// 
+// Revision 1.3  1992/02/27  14:37:18  zeller
+// Neu: offsetIfSelected
+// 
+// Revision 1.2  1992/02/25  18:25:47  zeller
+// Algorithmus in Ordnung gebracht
+// 
+// Revision 1.1  1992/02/25  17:15:18  zeller
+// Initial revision
+// 
+
+char LineGraphEdge_rcsid[] = "$Id$";
+
+#ifdef __GNUG__
+#pragma implementation
+#endif
+
+
+#include "assert.h"
+
+#include <math.h>
+#include <values.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#include <X11/Intrinsic.h>
+
+#include "LineGraphE.h"
+#include "GraphNode.h"
+
+DEFINE_TYPE_INFO_1(LineGraphEdge, GraphEdge)
+
+// find the points to draw line at
+
+enum Side { North = 1, South = 2, East = 4, West = 8 };
+
+// Clip point <p> to side <side> of region <b>
+static void moveToSide(BoxRegion& b, int side, BoxPoint& p, BoxPoint&)
+{
+    assert(side == North || side == South || side == East || side == West);
+
+    p = b.origin();
+
+    // fetch points
+    if (side & (North | South))
+    {
+	p[X] += b.space(X) / 2;
+	if (side & South)
+	    p[Y] += b.space(Y);
+    }
+
+    if (side & (East | West))
+    {
+	p[Y] += b.space(Y) / 2;
+	if (side & East)
+	    p[X] += b.space(X);
+    }
+}
+
+
+// Clip point <p> to side <side> of region <b> centered around <c>
+static void clipToSide(BoxRegion& b, int side, BoxPoint& p, BoxPoint& c)
+{
+    assert(side == North || side == South || side == East || side == West);
+
+    BoxDimension d1, d2;
+
+    if (side & (North | South))
+	d1 = X, d2 = Y;
+    else
+	d1 = Y, d2 = X;
+
+    int offset;
+    if (side & (North | West))
+	offset = -1;
+    else
+	offset = 1;
+
+    if (c[d1] != p[d1] && c[d2] != p[d2])
+	p[d1] += offset * (b.space(d2) / 2) * (c[d1] - p[d1]) 
+	    / (c[d2] - p[d2]);
+    p[d2] += offset * b.space(d2) / 2;
+}
+
+
+// Clip point <p> to side <side> of region <b> centered around <c>
+// Assume that b contains a circle
+static void clipToCircle(BoxRegion& b, int side, BoxPoint& p, BoxPoint& c)
+{
+    assert(side == North || side == South || side == East || side == West);
+
+    double radius = max(b.space(X), b.space(Y)) / 2;
+    if (radius > 0.0)
+    {
+	double hyp = hypot(c[X] - p[X], c[Y] - p[Y]);
+
+	p[X] += BoxCoordinate((radius * (c[X] - p[X])) / hyp);
+	p[Y] += BoxCoordinate((radius * (c[Y] - p[Y])) / hyp);
+    }
+}
+
+
+typedef void (*ClipProc)(BoxRegion& b, int side, BoxPoint& p, BoxPoint& c);
+
+struct ClipMapRec {
+    EdgeAttachMode mode;
+    ClipProc       proc;
+};
+
+const ClipMapRec clipMap[] = {
+    {Straight, clipToSide},
+    {Circle,   clipToCircle},
+    {Centered, moveToSide}
+};
+
+// Find line from region <b1> centered around <c1>
+// to region <b2> centered around <c2>
+// Resulting line shall be drawn from <p1> to <p2>
+void LineGraphEdge::findLine(BoxPoint& c1, BoxPoint& c2,
+			     BoxRegion& b1, BoxRegion& b2, 
+			     BoxPoint& p1, BoxPoint& p2, 
+			     const GraphGC& gc)
+{
+    // allow all sizes to begin
+    int side1 = North | South | East | West;
+    int side2 = North | South | East | West;
+
+    // exclude opposite side
+    if (c2[X] > c1[X]) { side1 &= ~West; side2 &= ~East; }
+    else               { side1 &= ~East; side2 &= ~West; }
+
+    if (c2[Y] > c1[Y]) { side1 &= ~North; side2 &= ~South; }
+    else               { side1 &= ~South; side2 &= ~North; }
+
+    // find edge cutting the line between the two center points c1, c2
+    BoxCoordinate dx = abs(c1[X] - c2[X]);
+    BoxCoordinate dy = abs(c1[Y] - c2[Y]);
+
+    if (b1.space(Y) * dx > b1.space(X) * dy) side1 &= ~(North | South);
+    else                                     side1 &= ~(East | West);
+
+    if (b2.space(Y) * dx > b2.space(X) * dy) side2 &= ~(North | South);
+    else                                     side2 &= ~(East | West);
+
+    p1 = c1;
+    p2 = c2;
+
+    // select appropriate clipping procedure
+    for (int i = 0; i < sizeof(clipMap)/sizeof(clipMap[0]); i++)
+	if (gc.edgeAttachMode == clipMap[i].mode)
+	{
+	    clipMap[i].proc(b1, side1, p1, c2);
+	    clipMap[i].proc(b2, side2, p2, c1);
+
+	    return;
+	}
+
+    assert(0);
+}
+
+
+// Draw
+
+void LineGraphEdge::_draw(Widget w, 
+			  const BoxRegion& exposed, 
+			  const GraphGC& gc) const
+{
+    // Get node starting points
+    BoxPoint pos1     = from()->pos();
+    BoxRegion region1 = from()->region(gc);
+    if (from()->selected())
+    {
+	pos1             += gc.offsetIfSelected;
+	region1.origin() += gc.offsetIfSelected;
+    }
+
+    BoxPoint pos2     = to()->pos();
+    BoxRegion region2 = to()->region(gc);
+    if (to()->selected())
+    {
+	pos2             += gc.offsetIfSelected;
+	region2.origin() += gc.offsetIfSelected;
+    }
+
+    // If nodes overlap, don't draw the edge.
+    if (region1 <= region2)
+	return;
+
+    // Get the line points
+    BoxPoint l1, l2;
+    findLine(pos1, pos2, region1, region2, l1, l2, gc);
+
+    // If there is no edge (adjacent nodes), don't draw it.
+    if (l1 == l2)
+	return;
+
+    XDrawLine(XtDisplay(w), XtWindow(w), gc.edgeGC,
+	l1[X], l1[Y], l2[X], l2[Y]);
+
+    if (gc.drawArrowHeads && !to()->isHint())
+    {
+	// draw arrowhead at l2
+
+	const double offset = gc.arrowAngle * M_PI/180;	// angle
+	const int length    = gc.arrowLength;		// length
+
+        // get arrow angle
+	double alpha = atan2(l1[Y] - l2[Y], l1[X] - l2[X]);
+
+        // get coordinates
+	XPoint points[3];
+	points[0].x = l2[X];
+	points[0].y = l2[Y];
+	points[1].x = (short)(l2[X] + length * cos(alpha + offset / 2));
+	points[1].y = (short)(l2[Y] + length * sin(alpha + offset / 2));
+	points[2].x = (short)(l2[X] + length * cos(alpha - offset / 2));
+	points[2].y = (short)(l2[Y] + length * sin(alpha - offset / 2));
+
+#if 0
+        cout << "\nalpha = " << alpha / M_PI * 360 << "\n";
+	for (int i = 0; i < 3; i++)
+	    cout << "points[" << i << "] = "
+		<< BoxPoint(points[i].x, points[i].y) << "\n";
+#endif
+
+	XFillPolygon(XtDisplay(w), XtWindow(w), gc.edgeGC, points, 
+		     XtNumber(points), Convex, CoordModeOrigin);
+    }
+}
