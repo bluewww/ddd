@@ -36,6 +36,10 @@ DDD 3.0 [in beta test]
       * ESC is the canonical `Interrupt' key.  Ctrl+C still
         interrupts, too, but can be assigned to Copy for full KDE
         style compliance.
+    - Edit->Cut/Copy/Paste/... now apply to the current destination
+      text field (i.e. the one that has the selection, or the least
+      recently used).  This way, you can cut/copy/paste across all
+      text fields.
     - Conditional breakpoints, temporary breakpoints, and breakpoints
       with ignore counts now have their special symbols on their own.
     - On popular demand, the command tool has `until' and `make' buttons.
