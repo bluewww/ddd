@@ -2328,11 +2328,19 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  count.selected > 0);
 
     // Set
-    bool can_set = gdb->has_assign_command() && arg_ok && !undoing;
-    set_sensitive(graph_cmd_area[CmdItms::Set].widget,   can_set);
-    set_sensitive(display_area[DisplayItms::Set].widget, can_set);
+    bool can_set = gdb->has_assign_command() && !undoing;
+    bool set_node_ok = 
+	disp_node_arg != 0 && 
+	(!disp_node_arg->is_user_command() || 
+	 disp_value_arg != 0 && disp_value_arg != disp_node_arg->value());
+    bool set_arg_ok = (disp_node_arg == 0 && arg_ok && !is_user_command(arg));
+
+    set_sensitive(graph_cmd_area[CmdItms::Set].widget,
+		  can_set && (set_arg_ok || set_node_ok));
+    set_sensitive(display_area[DisplayItms::Set].widget,
+		  can_set && (set_arg_ok || set_node_ok));
     set_sensitive(node_popup[NodeItms::Set].widget, 
-		  gdb->has_assign_command() && !undoing);
+		  can_set && set_node_ok);
 
     // Cluster
     if (count.selected_unclustered > 0 || count.selected_clustered == 0)
