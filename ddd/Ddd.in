@@ -875,7 +875,7 @@ Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>N:		gdb-next-history()	    \n\
 Ctrl<Key>P:		gdb-previous-history()	    \n\
-Ctrl<Key>U:		gdb-set-line("")	    \n\
+Ctrl<Key>U: 		gdb-set-line("")	    \n\
 Ctrl<Key>V:		next-page()		    \n\
 Meta<Key>V:		previous-page()		    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
@@ -919,7 +919,7 @@ Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>T:		gdb-complete-arg(print)	    \n\
-Ctrl<Key>U:		beginning-of-line()	    \
+Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
@@ -938,7 +938,7 @@ Ctrl ~Shift<Key>E:	end-of-line()		    \n\
 Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
-Ctrl<Key>U:		beginning-of-line()	    \
+Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>V:		next-page()		    \n\
 Meta<Key>V:		previous-page()		    \n\
@@ -970,7 +970,7 @@ Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>T:		gdb-complete-arg(break)	    \n\
-Ctrl<Key>U:		beginning-of-line()	    \
+Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
@@ -990,7 +990,7 @@ Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>T:		gdb-complete-arg(break)	    \n\
-Ctrl<Key>U:		beginning-of-line()	    \
+Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
@@ -1010,7 +1010,7 @@ Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>T:		gdb-complete-arg(file)	    \n\
-Ctrl<Key>U:		beginning-of-line()	    \
+Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
@@ -1030,7 +1030,7 @@ Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>T:		gdb-complete-arg(file)	    \n\
-Ctrl<Key>U:		beginning-of-line()	    \
+Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
@@ -1049,7 +1049,7 @@ Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>T:		gdb-complete-arg(file)      \n\
-Ctrl<Key>U:		beginning-of-line()	    \
+Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
@@ -1068,7 +1068,7 @@ Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>T:		gdb-complete-arg(file)      \n\
-Ctrl<Key>U:		beginning-of-line()	    \
+Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
@@ -1087,7 +1087,7 @@ Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>T:		gdb-complete-arg(file)	    \n\
-Ctrl<Key>U:		beginning-of-line()	    \
+Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
@@ -1106,7 +1106,7 @@ Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>T:		gdb-complete-arg(file)	    \n\
-Ctrl<Key>U:		beginning-of-line()	    \
+Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
@@ -1125,7 +1125,7 @@ Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>T:		gdb-complete-arg(shell)     \n\
-Ctrl<Key>U:		beginning-of-line()	    \
+Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
@@ -1145,7 +1145,7 @@ Ctrl<Key>F:		forward-character()	    \n\
 Ctrl<Key>H:		delete-previous-character() \n\
 Ctrl<Key>K:		delete-to-end-of-line()	    \n\
 Ctrl<Key>T:		gdb-complete-arg(shell)     \n\
-Ctrl<Key>U:		beginning-of-line()	    \
+Ctrl<Key>U: 		beginning-of-line()	    \
 			delete-to-end-of-line()	    \n\
 Ctrl<Key>W:		delete-previous-word()	    \n\
 Ctrl<Key>osfBackSpace:	delete-previous-word()	    \n\
@@ -1493,6 +1493,10 @@ Ddd*menubar.helpString:		\
 @tt \267 @bf Data @rm - edit displays.\n\
 @tt \267 @bf Help @rm - on-line help and version information.
 
+Ddd*menubar.marginWidth:     0
+Ddd*menubar.marginHeight:    1
+! Ddd*menubar.shadowThickness: 1
+
 ! File menu
 Ddd*menubar.file.labelString:		File
 Ddd*menubar.file*documentationString:	@rm Open program and source files
@@ -1521,8 +1525,8 @@ outside of @DDD@.\n\
 
 Ddd*menubar*fileMenu.open_file.labelString: Open Program...
 Ddd*menubar*fileMenu.open_file.mnemonic:    O
-! Ddd*menubar*fileMenu.open_file.accelerator:      Meta<Key>O
-! Ddd*menubar*fileMenu.open_file.acceleratorText:  Alt+O
+Ddd*menubar*fileMenu.open_file.accelerator:      Meta<Key>O
+Ddd*menubar*fileMenu.open_file.acceleratorText:  Alt+O
 Ddd*menubar*fileMenu.open_file.documentationString:   \
 @rm Open a program to be debugged
 
@@ -1538,11 +1542,15 @@ Ddd*menubar*fileMenu.open_source.documentationString:   \
 
 Ddd*menubar*fileMenu.attach.labelString: Attach to Process...
 Ddd*menubar*fileMenu.attach.mnemonic:    A
+Ddd*menubar*fileMenu.attach.accelerator:      ~Shift Ctrl<Key>Z
+Ddd*menubar*fileMenu.attach.acceleratorText:  Ctrl+Z
 Ddd*menubar*fileMenu.attach.documentationString:   \
 @rm Attach to a process outside of @DDD@
 
 Ddd*menubar*fileMenu.detach.labelString:       Detach Process
 Ddd*menubar*fileMenu.detach.mnemonic:	       t
+Ddd*menubar*fileMenu.detach.accelerator:       Shift Ctrl<Key>Z
+Ddd*menubar*fileMenu.detach.acceleratorText:   Ctrl+Shift+Z
 Ddd*menubar*fileMenu.detach.documentationString:
 
 Ddd*menubar*fileMenu.print.labelString:	 Print Graph...
@@ -1645,7 +1653,7 @@ Ddd*editMenu.paste.documentationString: \
 
 Ddd*editMenu.clear.labelString:				Clear
 Ddd*editMenu.clear.mnemonic:				e
-! Ddd*editMenu.clear.accelerator:			~Shift Ctrl<Key>U
+! Ddd*editMenu.clear.accelerator:			Ctrl<Key>U
 Ddd*editMenu.clear.acceleratorText:			Ctrl+U
 Ddd*editMenu.clear.documentationString: \
 @rm Clear current selection
@@ -1763,7 +1771,7 @@ Ddd*menubar*programMenu.run_again.documentationString: \
 
 Ddd*menubar*programMenu.separateExecWindow.labelString:	Run in Execution Window
 Ddd*menubar*programMenu.separateExecWindow.mnemonic:	W
-Ddd*menubar*programMenu*separateExecWindow.accelerator:	Alt<Key>X
+Ddd*menubar*programMenu*separateExecWindow.accelerator:	Meta<Key>X
 Ddd*menubar*programMenu*separateExecWindow.acceleratorText: Alt+X
 Ddd*menubar*programMenu.separateExecWindow.documentationString:\
 @rm Toggle execution of debugged program in separate window
@@ -1904,14 +1912,14 @@ Ddd*commandsMenu.isearch_exit.documentationString: \
 
 Ddd*commandsMenu.clear_line.labelString:        Clear Line
 Ddd*commandsMenu.clear_line.mnemonic:	        L
-! *commandsMenu.clear_line.accelerator:	        Ctrl<Key>U
+! *commandsMenu.clear_line.accelerator:	        Ctrl ~Shift ~Meta<Key>U
 Ddd*commandsMenu.clear_line.acceleratorText:    Ctrl+U
 Ddd*commandsMenu.clear_line.documentationString: \
 @rm Clear current command line
 
 Ddd*commandsMenu.clear_window.labelString:      Clear Window
 Ddd*commandsMenu.clear_window.mnemonic:	        W
-Ddd*commandsMenu.clear_window.accelerator:      Shift Ctrl<Key>U
+Ddd*commandsMenu.clear_window.accelerator:      Ctrl Shift ~Meta<Key>U
 Ddd*commandsMenu.clear_window.acceleratorText:  Ctrl+Shift+U
 Ddd*commandsMenu.clear_window.documentationString: \
 @rm Clear all before last @GDB@ prompt
@@ -1995,28 +2003,28 @@ Ddd*sourceMenu.breakpoints.documentationString: \
 
 Ddd*sourceMenu.findWordsOnly.labelString:	Find Words Only
 Ddd*sourceMenu.findWordsOnly.mnemonic:		W
-Ddd*sourceMenu*findWordsOnly.accelerator:	Alt<Key>Y
-Ddd*sourceMenu*findWordsOnly.acceleratorText:	Alt+Y
+Ddd*sourceMenu*findWordsOnly.accelerator:	Meta<Key>W
+Ddd*sourceMenu*findWordsOnly.acceleratorText:	Alt+W
 Ddd*sourceMenu.findWordsOnly.documentationString:\
 @rm Switch between finding complete words and finding arbitrary occurrences
 
 Ddd*sourceMenu.disassemble.labelString:		Display Machine Code
 Ddd*sourceMenu.disassemble.mnemonic:		M
-Ddd*sourceMenu*disassemble.accelerator:		Alt<Key>M
+Ddd*sourceMenu*disassemble.accelerator:		Meta<Key>M
 Ddd*sourceMenu*disassemble.acceleratorText:	Alt+M
 Ddd*sourceMenu.disassemble.documentationString:\
 @rm Toggle display of machine code window
 
 Ddd*sourceMenu.edit.labelString:	Edit Source...
 Ddd*sourceMenu.edit.mnemonic:		E
-Ddd*sourceMenu.edit.accelerator:	Ctrl Shift<Key>E
+Ddd*sourceMenu.edit.accelerator:	Ctrl Shift ~Meta<Key>E
 Ddd*sourceMenu.edit.acceleratorText:	Ctrl+Shift+E
 Ddd*sourceMenu.edit.documentationString: \
 @rm Invoke text editor for the current source
 
 Ddd*sourceMenu.reload.labelString:	Reload Source
 Ddd*sourceMenu.reload.mnemonic:		R
-Ddd*sourceMenu.reload.accelerator:	Ctrl Shift<Key>L
+Ddd*sourceMenu.reload.accelerator:	Ctrl Shift ~Meta<Key>L
 Ddd*sourceMenu.reload.acceleratorText:	Ctrl+Shift+L
 Ddd*sourceMenu.reload.documentationString: \
 @rm Reload current source file
@@ -2075,9 +2083,9 @@ Ddd*dataMenu.detectAliases.documentationString:	\
 
 ! This item is visible in GDB only.
 Ddd*dataMenu.info locals.labelString:	Display Local Variables
-Ddd*dataMenu.info locals.mnemonic:	V
-Ddd*dataMenu.info locals.accelerator:	Meta<Key>V
-Ddd*dataMenu.info locals.acceleratorText: Alt+V
+Ddd*dataMenu.info locals.mnemonic:	L
+Ddd*dataMenu.info locals.accelerator:	Meta<Key>L
+Ddd*dataMenu.info locals.acceleratorText: Alt+L
 Ddd*dataMenu.info locals.documentationString: \
 @rm Display the local variables of the current stack frame.
 
@@ -2091,22 +2099,22 @@ Ddd*dataMenu.info args.documentationString: \
 
 ! This item is visible in DBX only.
 Ddd*dataMenu.dump.labelString:		Display Local Variables
-Ddd*dataMenu.dump.mnemonic:		V
-Ddd*dataMenu.dump.accelerator:		Meta<Key>V
-Ddd*dataMenu.dump.acceleratorText:	Alt+V
+Ddd*dataMenu.dump.mnemonic:		L
+Ddd*dataMenu.dump.accelerator:		Meta<Key>L
+Ddd*dataMenu.dump.acceleratorText:	Alt+L
 Ddd*dataMenu.dump.documentationString: \
 @rm Display all local variables of the current stack frame.
 
 ! This item is visible in XDB only.
 Ddd*dataMenu.l.labelString:		Display Local Variables
-Ddd*dataMenu.l.mnemonic:		V
-Ddd*dataMenu.l.accelerator:		Meta<Key>V
-Ddd*dataMenu.l.acceleratorText:		Alt+V
+Ddd*dataMenu.l.mnemonic:		L
+Ddd*dataMenu.l.accelerator:		Meta<Key>L
+Ddd*dataMenu.l.acceleratorText:		Alt+L
 Ddd*dataMenu.l.documentationString: \
 @rm Display all local variables of the current stack frame.
 
 Ddd*dataMenu.infos.labelString:		More Status Displays...
-Ddd*dataMenu.infos.mnemonic:		t
+Ddd*dataMenu.infos.mnemonic:		M
 Ddd*dataMenu.infos.documentationString: \
 @rm Show various things about the program being debugged
 
@@ -2125,22 +2133,22 @@ Ddd*dataMenu.rotate.documentationString:	\
 @rm Rotate the graph clockwise by 90 degrees
 
 Ddd*dataMenu.layout.labelString:	Layout Graph
-Ddd*dataMenu.layout.mnemonic:		L
-Ddd*dataMenu.layout.accelerator:	Meta<Key>L
-Ddd*dataMenu.layout.acceleratorText:	Alt+L
+Ddd*dataMenu.layout.mnemonic:		y
+Ddd*dataMenu.layout.accelerator:	Meta<Key>Y
+Ddd*dataMenu.layout.acceleratorText:	Alt+Y
 Ddd*dataMenu.layout.documentationString:	\
 @rm Layout the graph
 
 Ddd*dataMenu.selectAll.labelString:	Select All
 Ddd*dataMenu.selectAll.mnemonic:	S
-Ddd*dataMenu.selectAll.accelerator:	Meta<Key>S
-Ddd*dataMenu.selectAll.acceleratorText:	Alt+S
+Ddd*dataMenu.selectAll.accelerator:	Meta<Key>Z
+Ddd*dataMenu.selectAll.acceleratorText:	Alt+Z
 Ddd*dataMenu.selectAll.documentationString:	\
 @rm Select all displays
 
 Ddd*dataMenu.refresh.labelString:	Refresh
 Ddd*dataMenu.refresh.mnemonic:		f
-Ddd*dataMenu.refresh.accelerator:	Ctrl ~Shift<Key>L
+Ddd*dataMenu.refresh.accelerator:	Ctrl ~Shift ~Meta<Key>L
 Ddd*dataMenu.refresh.acceleratorText:	Ctrl+L
 Ddd*dataMenu.refresh.documentationString:	\
 @rm Redraw all displays, using current values
@@ -2546,7 +2554,7 @@ Ddd*settings*helpString: \
 @rm These are the @sl @GDB@ Settings.@rm\n\
 \n\
 All settings (except source and object paths) can be saved\n\
-using @bf Options @rm| @bf Save Options @rm.\n\
+using @bf Edit @rm| @bf Save Options @rm.\n\
 \n\
 Click on @bf ? @rm near an item to get further information.\n\
 In a text field, press the @key RETURN @rm key to commit the changes.\n\
@@ -2617,10 +2625,16 @@ Ddd*XmPanedWindow.spacing:		4
 ! Motif 1.x, using ScrolledWindow
 Ddd*graph_edit_swindow.width:		622
 Ddd*graph_edit_swindow.height:		200
+Ddd*graph_edit_swindow.spacing:		0
+Ddd*graph_edit_swindow.borderWidth:	0
+Ddd*graph_edit_swindow.shadowThickness:	0
 
 ! Motif 2.0, using ScrolledWindow
 Ddd*graph_editSW.width:			622
 Ddd*graph_editSW.height:		200
+Ddd*graph_editSW.spacing:		0
+Ddd*graph_editSW.borderWidth:		0
+Ddd*graph_editSW.shadowThickness:	0
 
 ! Motif 1.x, using Porthole
 Ddd*graph_edit_porthole.width:		622
@@ -4193,7 +4207,7 @@ Ddd*save_options_dialog*cancelLabelString:   No
 Ddd*save_options_dialog*defaultButtonType:   XmDIALOG_OK_BUTTON
 Ddd*save_options_dialog*helpString:	\
 @rm You have changed some @DDD@ startup preferences\n\
-(using the @bf Options @rm menu).\n\
+(using @bf Edit @rm| @bf Preferences @rm).\n\
 To save them for the next @DDD@ invocation, click on @bf Yes@rm.\n\
 To discard the changes, click on @bf No@rm.
 
@@ -4243,7 +4257,7 @@ Ddd*source_find_error*helpString:	\
 @rm The given argument @bf () @rm can not be found in the source text.\n\
 \n\
 If you wish to search for @bf () @rm even within words,\n\
-consider disabling @bf Find Words Only @rm (via the @bf Options @rm menu).
+consider disabling @bf Source @rm| @bf Find Words Only @rm.
 
 Ddd*manual_find_error_popup.title: @DDD@: Not Found
 Ddd*manual_find_error*helpString:	\
@@ -4414,7 +4428,7 @@ information,\n\
     @GDB@ will be unable to locate the source code.  To request debugging\n\
     information, specify the `@tt -g@rm' option when you run the compiler.\n\
 @tt \267 @rm You may need to tell @GDB@ where the source code files are.\n\
-    Invoke @bf Options @rm| @bf @GDB@ Settings @rm and look for appropriate \
+    Invoke @bf Edit @rm| @bf @GDB@ Settings @rm and look for appropriate \
 entries.\n\
 @tt \267 @rm If you don't have the source code of your program, @DDD@ is not\n\
     the tool of choice for you.  Try using a machine-code oriented debugger\n\
