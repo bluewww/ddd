@@ -69,6 +69,14 @@ char DispBox_rcsid[] =
 #define LOG_BOX_CACHE 0
 #endif
 
+#ifndef CACHE_LIBS
+#define CACHE_LIBS 1
+#endif
+
+#ifndef LOG_LIB_CACHE
+#define LOG_LIB_CACHE 0
+#endif
+
 
 //-----------------------------------------------------------------------------
 
@@ -150,19 +158,82 @@ void DispBox::init_vsllib(void (*background)())
     vsllib_initialized = true;
 }
 
+struct VSLLibCache {
+    StringArray themes;
+    VSLLib *lib;
+    VSLLibCache *next;
+
+    VSLLibCache(const StringArray& _themes, const VSLLib *_lib, 
+		VSLLibCache *_next = 0)
+	: themes(_themes), lib(_lib->dup()), next(_next)
+    {}
+
+    ~VSLLibCache()
+    {
+	delete next;
+	delete lib;
+    }
+} *DispBox::vsllib_cache = 0;
+
 VSLLib *DispBox::vsllib(const DispValue *dv)
 {
     if (!vsllib_initialized)
 	init_vsllib();
 
-    if (dv != 0)
+    if (dv == 0)
+	return vsllib_ptr;
+
+    string expr = dv->full_name();
+    StringArray themes = theme_manager.themes(expr);
+
+#if LOG_LIB_CACHE
+    clog << "Searching lib for theme";
+    for (int i = 0; i < themes.size(); i++)
+	clog << " " << themes[i];
+    clog << "\n";
+#endif
+
+    int count = 0;
+
+    // Check whether we have such a library in the cache
+    for (VSLLibCache *p = vsllib_cache; p != 0; p = p->next)
     {
-	string expr = dv->full_name();
-	StringArray themes = theme_manager.themes(expr);
-	vsllib_ptr->set_theme_list(themes);
+	bool ok = true;
+	if (p->themes.size() != themes.size())
+	    ok = false;
+
+	for (int i = 0; ok && i < p->themes.size(); i++)
+	    if (p->themes[i] != themes[i])
+		ok = false;
+
+	if (ok)
+	    return p->lib;
+
+	count++;
     }
 
+#if LOG_LIB_CACHE
+    clog << "Adding new lib: " << count + 1 << " libs in cache\n";
+#endif
+
+    // Not found.  Set theme list and keep a copy in the cache.
+    vsllib_ptr->set_theme_list(themes);
+
+#if CACHE_LIBS
+    vsllib_cache  = new VSLLibCache(themes, vsllib_ptr, vsllib_cache);
+#endif
+
     return vsllib_ptr;
+}
+
+void DispBox::clear_vsllib_cache()
+{
+#if LOG_LIB_CACHE
+    clog << "Clearing lib cache: " << 0 << " libs in cache\n";
+#endif
+
+    delete vsllib_cache;
+    vsllib_cache = 0;
 }
 
 // ***************************************************************************
@@ -284,7 +355,6 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 
     Box *vbox = 0;
 
-#if CACHE_BOXES
     // Check cache first
     vbox = dv->cached_box();
 
@@ -298,7 +368,6 @@ Box *DispBox::_create_value_box(const DispValue *dv, const DispValue *parent)
 	assert_ok(vbox->OK());
 	return vbox;
     }
-#endif
 
 #if LOG_BOX_CACHE
     clog << dv->full_name() << ": computing new box\n";

@@ -63,6 +63,8 @@ private:
 
     static bool is_numeric(const DispValue *dv, const DispValue *parent);
 
+    static struct VSLLibCache *vsllib_cache;
+
 public:
     // Must be initialized from outside!
     static string  vsllib_name;
@@ -80,6 +82,9 @@ public:
 
     // Mapping of expressions to themes
     static ThemeManager theme_manager;
+
+    // Clear cache
+    static void clear_vsllib_cache();
 
     // Create a new box.  If DV == 0, create a disabled box.
     DispBox (int disp_nr, const string& title, 

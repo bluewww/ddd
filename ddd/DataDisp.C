@@ -6830,6 +6830,7 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
 void DataDisp::set_theme_manager(const ThemeManager& t)
 {
     DispBox::theme_manager = t;
+    DispBox::clear_vsllib_cache();
 
     // Recompute all
     MapRef ref;
