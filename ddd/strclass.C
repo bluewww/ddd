@@ -1536,7 +1536,7 @@ std::istream& operator>>(std::istream& s, string& x)
     }
 
     if (s.flags() & std::ios::skipws)
-	ws(s);
+	std::ws(s);
 
     if (!s.good()) 
     {
@@ -1579,7 +1579,7 @@ int readline(std::istream& s, string& x, char terminator, int discard)
     }
 
     if (s.flags() & std::ios::skipws)
-	ws(s);
+	std::ws(s);
 
     if (!s.good()) 
     {
