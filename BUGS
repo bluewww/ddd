@@ -144,15 +144,6 @@ Volunteers for fixing these and other bugs are welcome!
      [I could not reproduce this bug.  Does this also happen on 
       other configurations?  -AZ]
 
-072. Alexander Dvorak <Alexander.Dvorak@physik.uni-regensburg.de>
-     says that dragging and dropping the `Stop' symbol several times
-     causes DDD to crash with a segmentation fault.
-     [Pre-compiled DDD as in 071.  Does this also happen on 
-      other configurations?  -AZ] 
-
-075. On Linux boxes, attempting to drag & drop a breakpoint symbol
-     causes a core dump.  [Motif/Linux bug?]
-
 076. Jauder Ho <jauderho@umich.edu> says:
      DDD 1.4b (i586-unknown-linux) gets fatal signal
      When I run my program after setting a breakpoint and allowing ddd
@@ -253,4 +244,10 @@ Volunteers for fixing these and other bugs are welcome!
 103* configure: if CXX=gcc and -lstdc++ is found, `configure' defines
      HAVE_LIBSTDC++ - trouble!
 
-104. (Insert your bug here)
+104* James_Kingdon <J.B.Kingdon@pac.soton.ac.uk> says:
+     The ddd/configure script searches for includes using 'prefix' as
+     the root. If called from the toplevel configure, prefix is set to
+     /usr/local and most of the includes won't be found. If you call
+     ddd/configure directly, or set prefix to /usr all works well.
+
+105. (Insert your bug here)
