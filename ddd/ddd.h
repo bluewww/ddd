@@ -92,9 +92,6 @@ extern class ArgField   *source_arg;
 // Text to ignore upon output
 extern string gdb_out_ignore;
 
-// Pass the COMMAND given in CLIENT_DATA to gdb_command()
-void gdbCommandCB(Widget w, XtPointer call_data, XtPointer client_data);
-
 // Process next DDD event
 void process_next_event();
 

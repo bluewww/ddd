@@ -82,5 +82,8 @@ extern bool gdb_input_at_prompt;
 // RESET means to reset the history; SHOW means to redisplay.
 extern void clear_isearch(bool reset = false, bool show = true);
 
+// Pass the COMMAND given in CLIENT_DATA to gdb_command()
+void gdbCommandCB(Widget w, XtPointer client_data, XtPointer call_data);
+
 #endif // _DDD_editing_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
