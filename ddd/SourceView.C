@@ -2158,6 +2158,13 @@ String SourceView::read_indented(string& file_name, long& length,
 	text = read_class(file_name, full_file_name, origin, length, true);
     }
 
+    if (gdb->type() == PERL && file_name.contains('-', 0))
+    {
+	// Attempt to load `-e' in Perl or likewise
+	origin = ORIGIN_NONE;
+	return 0;
+    }
+
     if (text == 0 || length == 0)
     {
 	for (int trial = 1; (text == 0 || length == 0) && trial <= 2; trial++)
