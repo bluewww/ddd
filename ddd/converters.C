@@ -647,6 +647,13 @@ void registerOwnConverters()
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
 		       XtDestructor(NULL));
 
+    // string -> XmRPrimForegroundPixmap.  LessTif 0.81 needs this, but Motif
+    // may want this, too.
+    XtSetTypeConverter(XtRString, 
+		       XmRPrimForegroundPixmap, CvtStringToPixmap,
+		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheNone,
+		       XtDestructor(NULL));
+
     // string -> bitmap
     XtSetTypeConverter(XtRString, XtRBitmap, CvtStringToBitmap,
 		       thisCvtArgs, XtNumber(thisCvtArgs), XtCacheByDisplay,
