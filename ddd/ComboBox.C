@@ -33,11 +33,12 @@ char ComboBox_rcsid[] =
 #pragma implementation
 #endif
 
-// Comment out to rely on our replacement routines
+// #define as 0 to rely exclusively on our replacement routines
 // #define USE_XM_COMBOBOX 0
 
 #include "ComboBox.h"
 
+#include "bool.h"
 #include "frame.h"
 #include "charsets.h"
 #include "verify.h"
@@ -47,6 +48,8 @@ char ComboBox_rcsid[] =
 #include <Xm/ArrowB.h>
 #include <Xm/TextF.h>
 #include <Xm/List.h>
+#include <Xm/Frame.h>
+#include <Xm/Form.h>
 #include <X11/Shell.h>
 #include <X11/cursorfont.h>
 
@@ -68,6 +71,24 @@ char ComboBox_rcsid[] =
 // ComboBox helpers
 //-----------------------------------------------------------------------
 
+struct ComboBoxInfo
+{
+    Widget top;			// The top-level window
+    Widget text;		// The text to be updated
+    Widget button;		// The arrow button
+    Widget list;		// The list to select from
+    Widget shell;		// The shell that contains the list
+    XtIntervalId timer;		// The timer that controls popup time
+    bool popped_up;		// True iff the combo box is popped up
+
+    ComboBoxInfo()
+	: top(0), text(0), button(0), list(0), shell(0), 
+	  timer(0), popped_up(false)
+    {}
+};
+
+
+#if !USE_XM_COMBOBOX
 // Make sure menu stays on top.  This prevents conflicts with
 // auto-raise windows which would otherwise hide menu panels.
 static void AutoRaiseEH(Widget w, XtPointer, XEvent *event, Boolean *)
@@ -85,44 +106,6 @@ static void AutoRaiseEH(Widget w, XtPointer, XEvent *event, Boolean *)
     }
 }
 
-struct ComboBoxInfo
-{
-    Widget text;		// The text to be updated
-    Widget button;		// The arrow button
-    Widget list;		// The list to select from
-    Widget shell;		// The shell that contains the list
-    XtIntervalId timer;		// The timer that controls popup time
-    bool popped_up;		// True iff the combo box is popped up
-
-    ComboBoxInfo()
-	: text(0), button(0), list(0), shell(0), timer(0), popped_up(false)
-    {}
-};
-
-static void PopdownComboListCB(Widget, XtPointer client_data, XtPointer)
-{
-    ComboBoxInfo *info = (ComboBoxInfo *)client_data;
-
-    XtPopdown(info->shell);
-    info->popped_up = false;
-}
-
-static void RefreshComboTextCB(Widget w, XtPointer client_data,
-			       XtPointer call_data)
-{
-    XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
-    ComboBoxInfo *info = (ComboBoxInfo *)client_data;
-
-    XmString item = cbs->item;
-    String item_s;
-    XmStringGetLtoR(item, CHARSET_TT, &item_s);
-    XmTextFieldSetString(info->text, item_s);
-    XtFree(item_s);
-
-    if (info->shell != 0)
-	PopdownComboListCB(w, client_data, call_data);
-}
-
 static void CloseWhenActivatedCB(XtPointer client_data, XtIntervalId *id)
 {
     ComboBoxInfo *info = (ComboBoxInfo *)client_data;
@@ -131,6 +114,14 @@ static void CloseWhenActivatedCB(XtPointer client_data, XtIntervalId *id)
     (void) id;
 
     info->timer = 0;
+}
+
+static void PopdownComboListCB(Widget, XtPointer client_data, XtPointer)
+{
+    ComboBoxInfo *info = (ComboBoxInfo *)client_data;
+
+    XtPopdown(info->shell);
+    info->popped_up = false;
 }
 
 static void PopupComboListCB(Widget w, XtPointer client_data, 
@@ -195,6 +186,28 @@ static void ActivatePopdownComboListCB(Widget w, XtPointer client_data,
 	PopdownComboListCB(w, client_data, call_data);
 }
 
+#endif // !USE_XM_COMBOBOX
+
+
+static void RefreshComboTextCB(Widget w, XtPointer client_data,
+			       XtPointer call_data)
+{
+    (void) w;			// Use it
+
+    XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
+    ComboBoxInfo *info = (ComboBoxInfo *)client_data;
+
+    XmString item = cbs->item;
+    String item_s;
+    XmStringGetLtoR(item, CHARSET_TT, &item_s);
+    XmTextFieldSetString(info->text, item_s);
+    XtFree(item_s);
+
+#if !USE_XM_COMBOBOX
+    PopdownComboListCB(w, client_data, call_data);
+#endif
+}
+
 
 //-----------------------------------------------------------------------
 // ComboBox access
@@ -221,6 +234,20 @@ Widget ComboBoxButton(Widget text)
     ComboBoxInfo *info = (ComboBoxInfo *)userData;
     return info->button;
 }
+
+Boolean ComboBoxIsSimple(Widget text)
+{
+    return ComboBoxButton(text) != 0;
+}
+
+Widget ComboBoxTop(Widget text)
+{
+    XtPointer userData;
+    XtVaGetValues(text, XmNuserData, &userData, NULL);
+    ComboBoxInfo *info = (ComboBoxInfo *)userData;
+    return info->top;
+}
+
 
 // Set items
 void ComboBoxSetList(Widget text, const StringArray& items)
@@ -257,83 +284,125 @@ Widget CreateComboBox(Widget parent, String name, ArgList _args, Cardinal _arg)
     ArgList args = new Arg[_arg + 10];
     Cardinal arg = 0;
 
-    for (Cardinal i = 0; i < _arg; i++)
-	args[arg++] = _args[i];
+    ComboBoxInfo *info = new ComboBoxInfo;
 
-    ComboBoxInfo *info = 0;
+    arg = 0;
+    XtSetArg(args[arg], XmNshadowType, XmSHADOW_IN); arg++;
+    XtSetArg(args[arg], XmNmarginWidth,        0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight,       0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,        0); arg++;
+    XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
+    info->top = verify(XmCreateFrame(parent, "frame", args, arg));
+    XtManageChild(info->top);
 
 #if USE_XM_COMBOBOX
-    info = new ComboBoxInfo;
-
-    Widget combobox = 
-	verify(XmCreateDropDownComboBox(parent, name, args, arg));
+    arg = 0;
+    for (Cardinal i = 0; i < _arg; i++)
+	args[arg++] = _args[i];
+    Widget combo = verify(XmCreateDropDownComboBox(info->top, 
+						   name, args, arg));
+    XtManageChild(combo);
 
     arg = 0;
     XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
     XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-    XtSetValues(combobox, args, arg);
-    XtManageChild(combobox);
+    XtSetArg(args[arg], XmNborderWidth, 0); arg++;
+    XtSetArg(args[arg], XmNmarginWidth, 0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetValues(combo, args, arg);
 
-    info->text = XtNameToWidget(combobox, "*Text");
+    info->text = XtNameToWidget(combo, "*Text");
     arg = 0;
-    XtSetArg(args[arg], XmNshadowThickness, 2); arg++;
+    XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
     XtSetValues(info->text, args, arg);
 
-    info->list = XtNameToWidget(combobox, "*List");
+    info->list = XtNameToWidget(combo, "*List");
     arg = 0;
-    XtSetArg(args[arg], XmNshadowThickness, 2); arg++;
+    XtSetArg(args[arg], XmNshadowThickness,    2); arg++;
+    XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
     XtSetValues(info->list, args, arg);
+
+    info->shell = info->list;
+    while (!XtIsShell(info->shell))
+	info->shell = XtParent(info->shell);
+#else
+    arg = 0;
+    XtSetArg(args[arg], XmNmarginWidth,        0); arg++;
+    XtSetArg(args[arg], XmNmarginHeight,       0); arg++;
+    XtSetArg(args[arg], XmNborderWidth,        0); arg++;
+    XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
+    Widget form = verify(XmCreateForm(info->top, "form", args, arg));
+    XtManageChild(form);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNborderWidth,        0); arg++;
+    XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
+    XtSetArg(args[arg], XmNshadowThickness,    0); arg++;
+    for (Cardinal i = 0; i < _arg; i++)
+	args[arg++] = _args[i];
+    info->text = verify(XmCreateTextField(form, name, args, arg));
+    XtManageChild(info->text);
+
+    Pixel foreground;
+    XtVaGetValues(parent, XmNbackground, &foreground, 0);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNarrowDirection,     XmARROW_DOWN); arg++;
+    XtSetArg(args[arg], XmNborderWidth,        0);            arg++;
+    XtSetArg(args[arg], XmNforeground,         foreground);   arg++;
+    XtSetArg(args[arg], XmNhighlightThickness, 0);            arg++;
+    XtSetArg(args[arg], XmNshadowThickness,    0);            arg++;
+    info->button = XmCreateArrowButton(form, "comboBoxArrow", args, arg);
+    XtManageChild(info->button);
+
+    XtVaSetValues(info->button,
+		  XmNrightAttachment,   XmATTACH_FORM,
+		  XmNtopAttachment,     XmATTACH_FORM,
+		  XmNbottomAttachment,  XmATTACH_FORM,
+		  NULL);
+
+    XtVaSetValues(info->text,
+		  XmNleftAttachment,   XmATTACH_FORM,
+		  XmNrightAttachment,  XmATTACH_WIDGET,
+		  XmNrightWidget,      info->button,
+		  XmNtopAttachment,    XmATTACH_FORM,
+		  XmNbottomAttachment, XmATTACH_FORM,
+		  NULL);
+
+    XtAddCallback(info->button, XmNarmCallback,
+		  PopupComboListCB, XtPointer(info));
+    XtAddCallback(info->button, XmNactivateCallback,
+		  ActivatePopdownComboListCB, XtPointer(info));
+
+    XtAddCallback(info->text, XmNvalueChangedCallback,
+		  PopdownComboListCB, XtPointer(info));
+    XtAddCallback(info->text, XmNactivateCallback,
+		  PopdownComboListCB, XtPointer(info));
+
+    Widget shell = parent;
+    while (!XtIsShell(shell))
+	shell = XtParent(shell);
+
+    XtAddCallback(shell, XmNpopdownCallback,
+		  PopdownComboListCB, XtPointer(info));
+
+    arg = 0;
+    XtSetArg(args[arg], XmNborderWidth, 0); arg++;
+    info->shell = XtCreatePopupShell("comboBoxShell", 
+				     overrideShellWidgetClass,
+				     shell, args, arg);
+
+    XtAddEventHandler(info->shell, VisibilityChangeMask, False,
+		      AutoRaiseEH, XtPointer(0));
+
+    arg = 0;
+    XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
+    info->list = XmCreateScrolledList(info->shell, "list", args, arg);
+    XtManageChild(info->list);
 #endif
 
-    // Add combo box arrow if still needed
-    if (info == 0)
-    {
-	info = new ComboBoxInfo;
-
-	info->text = verify(XmCreateTextField(parent, name, args, arg));
-	XtManageChild(info->text);
-
-	Pixel foreground;
-	XtVaGetValues(parent, XmNbackground, &foreground, 0);
-
-	arg = 0;
-	XtSetArg(args[arg], XmNarrowDirection,  XmARROW_DOWN); arg++;
-	XtSetArg(args[arg], XmNshadowThickness, 0);            arg++;
-	XtSetArg(args[arg], XmNforeground,      foreground);   arg++;
-	info->button = XmCreateArrowButton(parent, "comboBoxArrow", args, arg);
-	XtManageChild(info->button);
-	XtAddCallback(info->button, XmNarmCallback,
-		      PopupComboListCB, XtPointer(info));
-	XtAddCallback(info->button, XmNactivateCallback,
-		      ActivatePopdownComboListCB, XtPointer(info));
-
-	XtAddCallback(info->text, XmNvalueChangedCallback,
-		      PopdownComboListCB, XtPointer(info));
-	XtAddCallback(info->text, XmNactivateCallback,
-		      PopdownComboListCB, XtPointer(info));
-
-	Widget shell = parent;
-	while (!XtIsShell(shell))
-	    shell = XtParent(shell);
-
-	XtAddCallback(shell, XmNpopdownCallback,
-		      PopdownComboListCB, XtPointer(info));
-
-	arg = 0;
-	XtSetArg(args[arg], XmNborderWidth, 0); arg++;
-	info->shell = XtCreatePopupShell("comboBoxShell", 
-					 overrideShellWidgetClass,
-					 shell, args, arg);
-
-	XtAddEventHandler(info->shell, VisibilityChangeMask, False,
-			  AutoRaiseEH, XtPointer(0));
-
-	arg = 0;
-	XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
-	info->list = XmCreateScrolledList(info->shell, "list", 
-					  args, arg);
-	XtManageChild(info->list);
-    }
+    // Give shell a little more border
+    XtVaSetValues(info->shell, XmNborderWidth, 1, NULL);
 
     // Store ComboBox info in text field
     XtVaSetValues(info->text, XmNuserData, XtPointer(info), NULL);

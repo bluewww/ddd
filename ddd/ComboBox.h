@@ -46,6 +46,7 @@ void ComboBoxSetList(Widget name, const StringArray& items);
 Widget ComboBoxList(Widget text);
 Widget ComboBoxText(Widget text);
 Widget ComboBoxButton(Widget text);
+Widget ComboBoxTop(Widget text);
 
 #endif // _DDD_ComboBox_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
