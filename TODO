@@ -92,9 +92,6 @@ Volunteers for these and other projects are welcome!
 
 064. Have scrolling parameters user-configurable.
 
-065. Show an hourglass cursor while waiting for assembly.  More
-     general, show an hourglass cursor while a question is pending.
-
 066. Upgrade rx library to rx-1.0.  Should be less buggy.
 
 067. Andy Gill (andy@dcs.gla.ac.uk) wants more options to
@@ -159,7 +156,8 @@ Volunteers for these and other projects are welcome!
      window (similar to Netscape :-)
 
 074. Have a `ddd-announce' mailing list, where only DDD announcements
-     are posted.  (Hmm.  Might be time for `comp.debuggers.ddd.announce'...)
+     are posted.  (Hmm.  Might be time for a USENET newsgroup
+     `comp.debuggers.ddd.announce' :-)
 
 075. Andre Cormeau <ac@enci.ucalgary.ca> says:
 

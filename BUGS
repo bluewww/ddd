@@ -237,9 +237,7 @@ Volunteers for fixing these and other bugs are welcome!
      do the same thing with the right mouse button: left click (or
      sweep) the name in the source window and then right click and
      select "Display xxx".  "Internal Error (Segmentation Fault)"!
-     [Fixed in DDD 1.4c; use the patch
-     `ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/patches/message-box'
-     to fix it.  -AZ]
+     [Fixed in DDD 1.4c]
 
 077. oyvind@stavanger.Geco-Prakla.slb.com (Oyvind Yrke) says that DDD
      crashes after receiving too much data from GDB (e.g. `info
