@@ -60,7 +60,17 @@ DEFINE_TYPE_INFO_0(VSLLib)
 
 void (*VSLLib::background)() = 0;   // Hintergrund-Prozedur
 
-#define BACKGROUND() { if (background) background(); }
+#define BACKGROUND() do { if (background) background(); } while (false)
+#define ASSERT_OK() \
+do { \
+    if (VSEFlags::assert_library_ok) \
+    { \
+        bool ok = OK(); \
+        assert(ok); \
+	if (!ok) \
+	    abort(); \
+    } \
+} while (false)
 
 
 // Initialisierung
@@ -324,8 +334,7 @@ int VSLLib::resolveNames()
 	BACKGROUND();
 
 	changes += cdef->resolveNames();
-	if (VSEFlags::assert_library_ok)
-	    assert(OK());
+	ASSERT_OK();
     }
 
     return changes;
@@ -345,13 +354,11 @@ int VSLLib::compilePatterns()
 
 	// Funktions-Pattern
 	cdef->uncompilePattern();
-	if (VSEFlags::assert_library_ok)
-	    assert(OK());
+	ASSERT_OK();
 
 	// LET- und WHERE-Pattern
 	cdef->expr()->uncompilePatterns(cdef);
-	if (VSEFlags::assert_library_ok)
-	    assert(OK());
+	ASSERT_OK();
     }
 
     // Jetzt alle Pattern neu erzeugen.
@@ -361,13 +368,11 @@ int VSLLib::compilePatterns()
 
 	// Funktions-Pattern
 	cdef->compilePattern();
-	if (VSEFlags::assert_library_ok)
-	    assert(OK());
+	ASSERT_OK();
 
 	// LET- und WHERE-Pattern
 	cdef->expr()->compilePatterns(cdef);
-	if (VSEFlags::assert_library_ok)
-	    assert(OK());
+	ASSERT_OK();
 
 	changes++;
     }
@@ -385,8 +390,7 @@ int VSLLib::resolveDefs()
 	BACKGROUND();
 
 	changes += cdef->expr()->resolveDefs(cdef);
-	if (VSEFlags::assert_library_ok)
-	    assert(OK());
+	ASSERT_OK();
     }
 
     return changes;
@@ -401,8 +405,7 @@ int VSLLib::resolveSynonyms()
 	BACKGROUND();
 
 	changes += cdef->expr()->resolveSynonyms(cdef, &cdef->expr());
-	if (VSEFlags::assert_library_ok)
-	    assert(OK());
+	ASSERT_OK();
     }
 
     return changes;
@@ -417,8 +420,7 @@ int VSLLib::foldOps()
 	BACKGROUND();
 
 	changes += cdef->expr()->foldOps(cdef, &cdef->expr());
-	if (VSEFlags::assert_library_ok)
-	    assert(OK());
+	ASSERT_OK();
     }
 
     return changes;
@@ -435,8 +437,7 @@ int VSLLib::foldConsts()
 	    BACKGROUND();
 
 	    changes += cdef->expr()->foldConsts(cdef, &cdef->expr());
-	    if (VSEFlags::assert_library_ok)
-		assert(OK());
+	    ASSERT_OK();
 	}
 
     return changes;
@@ -452,8 +453,7 @@ int VSLLib::inlineFuncs()
 	BACKGROUND();
 
 	changes += cdef->expr()->inlineFuncs(cdef, &cdef->expr());
-	if (VSEFlags::assert_library_ok)
-	    assert(OK());
+	ASSERT_OK();
     }
 
     return changes;
@@ -478,8 +478,7 @@ int VSLLib::countSelfReferences()
 	BACKGROUND();
 
 	changes += cdef->expr()->countSelfReferences(cdef, cdef->deflist);
-	if (VSEFlags::assert_library_ok)
-	    assert(OK());
+	ASSERT_OK();
     }
 
     return changes;
@@ -539,8 +538,7 @@ int VSLLib::cleanup()
 	    d = d->libprev();
 	}
 
-	if (VSEFlags::assert_library_ok)
-	    assert(OK());
+	ASSERT_OK();
     }
 
     return changes;
