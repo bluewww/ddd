@@ -4934,11 +4934,15 @@ static void create_status(Widget parent)
 
     XtAddCallback(status_w, XmNarmCallback, 
 		  PopupStatusHistoryCB, XtPointer(0));
+    XtAddCallback(status_w, XmNactivateCallback, 
+		  PopdownStatusHistoryCB, XtPointer(0));
     XtAddCallback(status_w, XmNdisarmCallback, 
 		  PopdownStatusHistoryCB, XtPointer(0));
 
     XtAddCallback(arrow_w, XmNarmCallback, 
 		  PopupStatusHistoryCB, XtPointer(0));
+    XtAddCallback(arrow_w, XmNactivateCallback, 
+		  PopdownStatusHistoryCB, XtPointer(0));
     XtAddCallback(arrow_w, XmNdisarmCallback, 
 		  PopdownStatusHistoryCB, XtPointer(0));
 
