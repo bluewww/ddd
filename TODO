@@ -397,9 +397,6 @@ Volunteers for these and other projects are welcome!
      represent. This would come in handy if one (as I do at the
      moment) displays heavily cross-pointered data structures.
 
-220. Create an echo filter.  If the last command sent to GDB gets
-     echoed, ignore it straight away.
-
 221. Have a DDD USENET news group, such as `comp.debuggers.ddd',
      instead of a mailing list.  [This should be done when there are
      more than 1000 subscribers, or when the number of messages/day is

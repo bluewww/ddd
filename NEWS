@@ -101,6 +101,7 @@ DDD 2.2 [in beta test]
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
       Wiegand <wiegand@kong.gsfc.nasa.gov>.
     - DDD no longer hangs while receiving large chunks of data.
+    - DDD is now also works with echoing TTY connections.
     - Significant speed-ups in processing debugger and program output.
     - Several memory leaks and X resource leaks have been tightened.
     - DDD no longer requires the librx library.  Consequently, librx
