@@ -2877,12 +2877,6 @@ static Widget add_panel(Widget parent, Widget buttons,
 	cbs.set = set;
 	ChangePanelCB(button, XtPointer(form), &cbs);
     }
-    else
-    {
-#if !LESSTIF_HACKS
-	XtUnmanageChild(panel);
-#endif
-    }
 
     return button;
 }
