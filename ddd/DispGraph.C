@@ -439,7 +439,6 @@ BoxPoint DispGraph::default_pos(DispNode *new_node,
 
 		offset = horizontal ? BoxPoint(delta[X], 0) 
 		    : BoxPoint(0, delta[Y]);
-		pos += offset;
 	    }
 	}
     }
