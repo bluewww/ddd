@@ -81,7 +81,8 @@ DebuggerType debugger_type(const string& type)
 GDBAgent::GDBAgent (XtAppContext app_context,
 		    const string& gdb_call,
 		    DebuggerType tp)
-    : state(BusyOnInitialCmds),
+    : TTYAgent (app_context, gdb_call),
+      state(BusyOnInitialCmds),
       _type(tp),
       _user_data(0),
       busy_handlers (BusyNTypes),
@@ -109,8 +110,7 @@ GDBAgent::GDBAgent (XtAppContext app_context,
       _on_answer_completion(0),
       _on_question_completion(0),
       _on_qu_array_completion(0),
-      complete_answer(""),
-      TTYAgent (app_context, gdb_call)
+      complete_answer("")
 {
     removeAllHandlers(Died);
     addHandler(Input, InputHP, this); // GDB-Ausgaben
@@ -122,6 +122,40 @@ GDBAgent::GDBAgent (XtAppContext app_context,
     addHandler(Panic, PanicHP, this);
     addHandler(Strange, PanicHP, this);
 }
+
+GDBAgent::GDBAgent(const GDBAgent& gdb)
+    : TTYAgent(gdb),
+      state(gdb.state),
+      _type(gdb.type()),
+      _user_data(0),
+      busy_handlers(gdb.busy_handlers),
+      _has_frame_command(gdb.has_frame_command()),
+      _has_line_command(gdb.has_line_command()),
+      _has_run_io_command(gdb.has_run_io_command()),
+      _has_print_r_command(gdb.has_print_r_command()),
+      _has_where_h_command(gdb.has_where_h_command()),
+      _has_display_command(gdb.has_display_command()),
+      _has_clear_command(gdb.has_clear_command()),
+      _has_pwd_command(gdb.has_pwd_command()),
+      _has_named_values(gdb.has_named_values()),
+      _has_func_pos(gdb.has_func_pos()),
+      _has_when_semicolon(gdb.has_when_semicolon()),
+      trace_dialog(false),
+      questions_waiting(false),
+      _qu_data(0),
+      qu_index(0),
+      _qu_count(0),
+      cmd_array(0),
+      complete_answers(0),
+      _qu_datas(0),
+      _qa_data(0),
+      _on_answer(0),
+      _on_answer_completion(0),
+      _on_question_completion(0),
+      _on_qu_array_completion(0),
+      complete_answer("")
+{}
+
 
 string GDBAgent::default_prompt() const
 {

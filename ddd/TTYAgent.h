@@ -58,15 +58,6 @@ protected:
     virtual int setupCommunication();
     virtual int setupChildCommunication();
     virtual int setupParentCommunication();
-
-    // Duplicator -- too complicated yet
-    TTYAgent (const TTYAgent& tty)
-	: LiterateAgent(tty)
-    {
-	// Never used
-	::abort();
-    };
-    virtual Agent *dup() const { return new TTYAgent(*this); }
     
 public:
     // Constructors
@@ -91,6 +82,17 @@ public:
 	master(-1), slave(-1),
 	push(false)
     {}
+
+    // Duplicator
+    TTYAgent (const TTYAgent& tty)
+	: LiterateAgent(tty),
+	  _master_tty(tty.master_tty()),
+	  _slave_tty(tty.slave_tty()),
+	  master(tty.master),
+	  slave(tty.slave),
+	  push(tty.push)
+    {};
+    virtual Agent *dup() const { return new TTYAgent(*this); }
 
     // Return the name of the used tty
     const string& master_tty() const { return _master_tty; }

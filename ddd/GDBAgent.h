@@ -134,20 +134,15 @@ private:
     bool _has_func_pos;
     bool _has_when_semicolon;
 
-protected:
-    // Copy constructor - too complicated yet
-    GDBAgent (const GDBAgent& gdb)
-	: TTYAgent(gdb)
-    {
-	// Never used
-	::abort();
-    };
-    virtual Agent *dup() const { return new GDBAgent(*this); }
-
 public:
+    // Constructor
     GDBAgent (XtAppContext app_context,
 	      const string& gdb_call,
 	      DebuggerType type);
+
+    // Duplicator
+    GDBAgent (const GDBAgent& gdb);
+    virtual Agent *dup() const { return new GDBAgent(*this); }
 
     ~GDBAgent ();
 
