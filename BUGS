@@ -363,19 +363,16 @@ Volunteers for fixing these and other bugs are welcome!
      dbx cannot handle `when at { }' without a command inside the
      parentheses (this should be `{ delete xx,yy }' anyway).
 
-189* When `Iconify all windows at once is set', (de-)iconifying the
-     data window causes all other windows to (de-)iconify, *except*
-     the command tool.
-
-196* DDD started with the XDB debugger gets a segmentation fault during
+196. DDD started with the XDB debugger gets a segmentation fault during
      startup.  This happens when XDB issues the following line:
 
      <- "\r\e[K\e[7mStandard input: END\e[m"
 
+     [Is this still true for DDD 2.2?  -AZ]
+
 198. In `--tty' mode, EOF terminates DDD, even if only a subprogram
      (e.g. a shell) is running.
 
-200. DBX trouble:
-     - Sessions do not work (cannot save core file).
+200. With DBX on SunOS 4.1.4, sessions do not work (cannot save core file).
 
-201. (Insert your bug here)
+202. (Insert your bug here)
