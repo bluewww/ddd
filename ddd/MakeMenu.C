@@ -163,7 +163,7 @@ static Widget active_button = 0;
 
 static const int SHADOW_THICKNESS = 2;
 
-static void flatten_button(Widget w)
+static void flatten_button(Widget w, bool switch_colors = true)
 {
     Dimension highlight = SHADOW_THICKNESS;
     Dimension shadow    = 0;
@@ -179,16 +179,23 @@ static void flatten_button(Widget w)
     {
 	// clog << "Flattening " << XtName(w) << "\n";
 
-	XtVaSetValues(w,
-		      XmNhighlightThickness, SHADOW_THICKNESS,
-		      XmNshadowThickness, 0,
-		      XmNlabelPixmap, highlight_pixmap,
-		      XmNhighlightPixmap, label_pixmap,
-		      NULL);
+	Arg args[10];
+	Cardinal arg = 0;
+
+	XtSetArg(args[arg], XmNhighlightThickness, SHADOW_THICKNESS); arg++;
+	XtSetArg(args[arg], XmNshadowThickness,    0);                arg++;
+
+	if (switch_colors)
+	{
+	    XtSetArg(args[arg], XmNlabelPixmap, highlight_pixmap); arg++;
+	    XtSetArg(args[arg], XmNhighlightPixmap, label_pixmap); arg++;
+	}
+
+	XtSetValues(w, args, arg);
     }
 }
 
-static void unflatten_button(Widget w)
+static void unflatten_button(Widget w, bool switch_colors = true)
 {
     Dimension highlight = 0;
     Dimension shadow    = SHADOW_THICKNESS;
@@ -204,12 +211,19 @@ static void unflatten_button(Widget w)
     {
 	// clog << "Unflattening " << XtName(w) << "\n";
 
-	XtVaSetValues(w,
-		      XmNhighlightThickness, 0,
-		      XmNshadowThickness, SHADOW_THICKNESS,
-		      XmNlabelPixmap, highlight_pixmap,
-		      XmNhighlightPixmap, label_pixmap,
-		      NULL);
+	Arg args[10];
+	Cardinal arg = 0;
+
+	XtSetArg(args[arg], XmNhighlightThickness, 0);                arg++;
+	XtSetArg(args[arg], XmNshadowThickness,    SHADOW_THICKNESS); arg++;
+
+	if (switch_colors)
+	{
+	    XtSetArg(args[arg], XmNlabelPixmap, highlight_pixmap); arg++;
+	    XtSetArg(args[arg], XmNhighlightPixmap, label_pixmap); arg++;
+	}
+
+	XtSetValues(w, args, arg);
     }
 }
 
@@ -245,12 +259,30 @@ static void FlattenEH(Widget w,
     }
 }
 
+// Handle Arm() and Disarm() actions
+static void FlattenCB(Widget w, XtPointer client_data, XtPointer)
+{
+    if (w == active_button)
+    {
+	// We have already entered it -- don't interfere
+	return;
+    }
+
+    bool set = bool(client_data);
+    if (set)
+	flatten_button(w, false);
+    else
+	unflatten_button(w, false);
+}
+
 static void ReflattenButtonCB(Widget /* shell */, XtPointer client_data, 
 			      XtPointer = 0)
 {
     Widget w = (Widget)client_data;
     EventMask event_mask = EnterWindowMask | LeaveWindowMask;
     XtAddEventHandler(w, event_mask, False, FlattenEH, XtPointer(0));
+    XtAddCallback(w, XmNarmCallback,    FlattenCB, XtPointer(False));
+    XtAddCallback(w, XmNdisarmCallback, FlattenCB, XtPointer(True));
     flatten_button(w);
 }
 
@@ -1083,6 +1115,8 @@ static void PopupPushMenuAct(Widget w, XEvent *event, String *, Cardinal *)
 	// flattening until the menu is popped down again.
 	EventMask event_mask = EnterWindowMask | LeaveWindowMask;
 	XtRemoveEventHandler(w, event_mask, False, FlattenEH, XtPointer(0));
+	XtRemoveCallback(w, XmNarmCallback,    FlattenCB, XtPointer(False));
+	XtRemoveCallback(w, XmNdisarmCallback, FlattenCB, XtPointer(True));
 #if 0
 	XtAddCallback(shell, XtNpopdownCallback, ReflattenButtonCB, 
 		      XtPointer(w));
