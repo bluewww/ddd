@@ -1286,9 +1286,9 @@ static Widget create_panel(DebuggerType type, bool create_settings)
 {
     string title_msg;
     if (create_settings)
-	title_msg = gdb->title() + " settings";
+	title_msg = gdb->title() + " Settings";
     else
-	title_msg = gdb->title() + " status displays";
+	title_msg = gdb->title() + " Status Displays";
     StatusDelay delay("Retrieving " + title_msg);
 
     Arg args[10];
