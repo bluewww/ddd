@@ -55,12 +55,14 @@ extern char *xmalloc (), *xrealloc ();
 
 /* Backwards compatibility, now that savestring has been removed from
    all `public' readline header files. */
+#if 0
 char *
 savestring (s)
      char *s;
 {
   return ((char *)strcpy (xmalloc (1 + (int)strlen (s)), (s)));
 }
+#endif
 
 /* Does shell-like quoting using single quotes. */
 char *

@@ -1,6 +1,6 @@
 ## -*- text -*- ##
 # Master Makefile for the GNU readline library.
-# Copyright (C) 1994 Free Software Foundation, Inc.
+# Copyright (C) 1994, 1998 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -183,8 +183,9 @@ stamp-h: config.status $(srcdir)/config.h.in
 	CONFIG_FILES= CONFIG_HEADERS=config.h ./config.status
 	echo > $@
 
-$(srcdir)/configure: $(srcdir)/configure.in	## Comment-me-out in distribution
-	cd $(srcdir) && autoconf	## Comment-me-out in distribution
+# CYGNUS LOCAL: Never run autoconf.
+#$(srcdir)/configure: $(srcdir)/configure.in	 Comment-me-out in distribution
+#	cd $(srcdir) && autoconf	 Comment-me-out in distribution
 
 documentation: force
 	-test -d doc || mkdir doc
@@ -200,10 +201,10 @@ install: installdirs $(STATIC_LIBS)
 	for f in ${INSTALLED_HEADERS}; do \
 		$(INSTALL_DATA) $(srcdir)/$$f $(includedir)/readline ; \
 	done
-	-$(MV) $(libdir)/libreadline.a $(libdir)/libreadline.old
+	-( if test -f $(libdir)/libreadline.a ; then $(MV) $(libdir)/libreadline.a $(libdir)/libreadline.old; fi )
 	$(INSTALL_DATA) libreadline.a $(libdir)/libreadline.a
 	-test -n "$(RANLIB)" && $(RANLIB) -t $(libdir)/libreadline.a
-	-$(MV) $(libdir)/libhistory.a $(libdir)/libhistory.old
+	-( if test -f $(libdir)/libhistory.a; then $(MV) $(libdir)/libhistory.a $(libdir)/libhistory.old; fi )
 	$(INSTALL_DATA) libhistory.a $(libdir)/libhistory.a
 	-test -n "$(RANLIB)" && $(RANLIB) -t $(libdir)/libhistory.a
 	-( if test -d doc ; then \
