@@ -1320,6 +1320,16 @@ XtResource ddd_resources[] = {
     },
 
     {
+	XtNdeleteAliasDisplays,
+	XtCDeleteAliasDisplays,
+	XmRBoolean,
+	sizeof(Boolean),
+	XtOffsetOf(AppData, delete_alias_displays),
+	XmRImmediate,
+	XtPointer(True)
+    },
+
+    {
 	XtNalign2dArrays,
 	XtCAlign2dArrays,
 	XmRBoolean,

@@ -3622,6 +3622,9 @@ void DataDisp::enable_displayOQC (const string& answer, void *data)
 
 string DataDisp::delete_display_cmd(IntArray& display_nrs)
 {
+    if (app_data.delete_alias_displays)
+	add_aliases(display_nrs);
+
     if (display_nrs.size() > 0)
 	return delete_display_cmd(numbers(display_nrs));
     else

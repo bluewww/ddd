@@ -106,6 +106,9 @@ Data exploration
 - You can easily display variable values in the data window by
   double-clicking on an occurrence.
 
+- The `Undisplay ()' button also deletes all aliases of the selected
+  display.  See the `deleteAliasDisplays' resource for details.
+
 - Using GDB, VALUEs that are repeated N times are now displayed as
   `VALUE <Nx>', saving space in the data display; see `Edit->GDB
   Settings->Threshold for repeated print elements'.  Setting the

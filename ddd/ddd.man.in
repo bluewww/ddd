@@ -3984,6 +3984,12 @@ on the right of \fID\fR such that the distance between displays
 remains constant.  If this is `\fBoff\fR', other displays are not
 rearranged.
 .TP
+.B "deleteAliasDisplays (\fPclass\fB DeleteAliasDisplays)"
+If this is `\fBon\fR' (default), the `\fBUndisplay ()\fR' button also
+deletes all aliases of the selected displays.  If this is `\fBoff\fR',
+only the selected displays are deleted; the aliases remain, and one of
+the aliases will be unsuppressed.
+.TP
 .B "detectAliases (\fPclass\fB DetectAliases)"
 If `\fBon\fR', \s-1@DDD@\s+1 attempts to recognize shared data
 structures.  See `\fBExamining shared data structures\fR', above, for
