@@ -221,21 +221,6 @@ void sourceSetDisplayGlyphsCB (Widget, XtPointer client_data, XtPointer)
 	set_status(displaying + "as text characters.");
 }
 
-void sourceToggleDisassembleCB (Widget, XtPointer, XtPointer call_data)
-{
-    XmToggleButtonCallbackStruct *info = 
-	(XmToggleButtonCallbackStruct *)call_data;
-
-    app_data.disassemble = info->set;
-
-    if (info->set)
-	set_status("Showing machine code.");
-    else
-	set_status("Not showing machine code.");
-
-    update_options();
-}
-
 void sourceToggleAllRegistersCB (Widget, XtPointer, XtPointer call_data)
 {
     XmToggleButtonCallbackStruct *info = 

@@ -72,7 +72,6 @@ extern void sourceToggleFindWordsOnlyCB     (Widget, XtPointer, XtPointer);
 extern void sourceToggleFindCaseSensitiveCB (Widget, XtPointer, XtPointer);
 extern void sourceToggleCacheSourceFilesCB  (Widget, XtPointer, XtPointer);
 extern void sourceToggleCacheMachineCodeCB  (Widget, XtPointer, XtPointer);
-extern void sourceToggleDisassembleCB       (Widget, XtPointer, XtPointer);
 extern void sourceToggleAllRegistersCB      (Widget, XtPointer, XtPointer);
 extern void sourceToggleDisplayLineNumbersCB(Widget, XtPointer, XtPointer);
 extern void sourceSetDisplayGlyphsCB        (Widget, XtPointer, XtPointer);
