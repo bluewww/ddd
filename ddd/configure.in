@@ -583,6 +583,6 @@ dnl
 if test "$silent" != yes; then
 echo "configure: configuration is done.  Type \`make' to make $DDD."
 echo "In case of trouble, please check the settings in the files generated"
-echo "by \`configure' - that is, \`ddd/config.h' and \`ddd/Makefile.h'."
+echo "by \`configure' - that is, \`ddd/config.h' and \`ddd/Makefile'."
 fi
 exit 0
