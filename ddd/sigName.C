@@ -66,5 +66,5 @@ char *statusName(int state)
     else if (WIFSTOPPED(((state))))
         return sigName(WSTOPSIG(((state))));
 
-    return "Unknown state change";
+    return (char *)"Unknown state change";
 }
