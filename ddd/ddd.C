@@ -5133,13 +5133,14 @@ static void popup_startup_logo(Widget parent, string color_key)
     int arg = 0;
     XtSetArg(args[arg], XmNallowShellResize, True); arg++;
     XtSetArg(args[arg], XmNborderWidth, 0); arg++;
-    logo_shell = XtCreatePopupShell("logo_shell", overrideShellWidgetClass, 
-				    parent, args, arg);
+    logo_shell = verify(XtCreatePopupShell("logo_shell", 
+					   overrideShellWidgetClass, 
+					   parent, args, arg));
 
     arg = 0;
     XtSetArg(args[arg], XmNlabelType, XmPIXMAP); arg++;
     XtSetArg(args[arg], XmNallowResize, True); arg++;
-    Widget logo = XmCreateLabel(logo_shell, "logo", args, arg);
+    Widget logo = verify(XmCreateLabel(logo_shell, "logo", args, arg));
     XtManageChild(logo);
     XtRealizeWidget(logo_shell);
 
