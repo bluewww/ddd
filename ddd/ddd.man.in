@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998\-11\-11" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998\-11\-15" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -2817,18 +2817,14 @@ the \s-1@DDD@\s+1 \s-1WWW\s+1 page.  `\fB@URL@\fR' is replaced by the
 \s-1@DDD@\s+1 can run Gnuplot in two ways:
 .IP \(bu 2
 \s-1@DDD@\s+1 can use an \fBExternal Plot Window\fR, i.e. the plot
-window as supplied by Gnuplot.  \s-1@DDD@\s+1 incorporates or
-\(lqswallows\(rq the Gnuplot output window into its own user
-interface.  Advantages: fast and 100% Gnuplot compatible.
-Disadvantage: Some window managers, notably \s-1MWM\s+1, have trouble
-with swallowing techniques.
+window as supplied by Gnuplot.  \s-1@DDD@\s+1 \(lqswallows\(rq the
+Gnuplot output window into its own user interface.  Unfortunately,
+some window managers, notably \s-1MWM\s+1, have trouble with
+swallowing techniques.
 .IP \(bu 2
-\s-1@DDD@\s+1 can supply a \fBBuiltin Plot Window\fR instead.
-Advantages: no interferences with the window manager.  The
-\s-1@DDD@\s+1 builtin plot window also requires less resources than
-the Gnuplot window.  Disadvantages: Plots are slower (due to less
-resource usage) and less customizable (Gnuplot resources are not
-understood).
+\s-1@DDD@\s+1 can supply a \fBBuiltin Plot Window\fR instead.  This
+works with all window managers, but plots are less customizable
+(Gnuplot resources are not understood).
 .PP
 Pick your choice from the menu.  See also the `\fBplotCommand\fR' and
 `\fBplotTermType\fR' resources, below.
@@ -4767,17 +4763,14 @@ The following resources control the plot window.
 .B "plotTermType (\fPclass\fB PlotTermType)"
 The Gnuplot terminal type.  Can have one of two values:
 .IP \(bu 2
-If this is `\fBx11\fR', \s-1@DDD@\s+1 incorporates or \(lqswallows\(rq
-the Gnuplot output window into its own user interface.  Advantages:
-fast and 100% Gnuplot compatible.  Disadvantage: Some window managers,
+If this is `\fBx11\fR', \s-1@DDD@\s+1 \(lqswallows\(rq the Gnuplot
+output window into its own user interface.  Some window managers,
 notably \s-1MWM\s+1, have trouble with swallowing techniques.
 .IP \(bu 2
 Setting this resource to `\fBxlib\fR' (default) makes \s-1@DDD@\s+1
-provide a \fIbuiltin plot window\fR instead.  Advantages: no
-interferences with the window manager.  The \s-1@DDD@\s+1 builtin plot
-window also requires less resources than the Gnuplot window.
-Disadvantages: Plots are slower (due to less resource usage) and less
-customizable (Gnuplot resources are not understood).
+provide a \fIbuiltin plot window\fR instead.  In this mode, plots work
+well with any window manager, but are less customizable (Gnuplot
+resources are not understood).
 .TP
 .B "plotCommand (\fPclass\fB PlotCommand)"
 The name of a Gnuplot executable.  Default is `\fBgnuplot\fR',
