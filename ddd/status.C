@@ -303,13 +303,15 @@ Widget status_history(Widget parent)
 
 static void add_to_status_history(const MString& message)
 {
+    static MString empty = rm(" ");
+
     if (history == 0)
 	history = new MString[status_history_size];
 
     int last_history = 
 	(status_history_size + current_history - 1) % status_history_size;
 
-    if (message.isNull() || message.isEmpty())
+    if (message.isNull() || message.isEmpty() || message == empty)
 	return;
     if (message == history[last_history])
 	return;
