@@ -207,5 +207,6 @@ repeated_value (value, n) ->
 display_box (title, value) -> 
   shadow(display_color(frame(title | hrule() | hwhite () | rm(value))));
 
+// The entire box, but without title
 display_box (value) -> 
-  shadow(display_color(rm(value)));
+  shadow(display_color(frame(rm(value))));
