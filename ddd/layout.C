@@ -147,7 +147,7 @@ void Layout::add_node (const char *g, const char *node)
 	fprintf (stderr,"add-node warning: graph %s unknown\n",g);
 	return ;
     }
-    id.label = CONST_CAST(char*,node);
+    id.label = node;
     /*
      * check for dublicates
      */
@@ -183,8 +183,8 @@ void Layout::add_edge (const char *g, const char *node1, const char *node2)
     ID id1;
     ID id2;
 
-    id1.label = CONST_CAST(char*,node1);
-    id2.label = CONST_CAST(char*,node2);
+    id1.label = node1;
+    id2.label = node2;
 
     graph = graphGet (&tab,g);
     if (!graph) {
@@ -230,7 +230,7 @@ void Layout::set_node_width (const char *g, const char *node, int width)
 	fprintf (stderr,"graph %s unknown\n",g);
 	return ;
     }
-    id.label = CONST_CAST(char*,node);
+    id.label = node;
     nd = graphGetNode (graph, &id, Regular);
     if (!nd) {
 	fprintf (stderr,"set_node_width: node %s unknown to %s\n",
@@ -258,7 +258,7 @@ void Layout::set_node_height (const char *g, const char *node, int height)
 	fprintf (stderr,"set-node warning: graph %s unknown\n",g);
 	return ;
     }
-    id.label = CONST_CAST(char*,node);
+    id.label = node;
     nd = graphGetNode (graph, &id, Regular);
     if (!nd) {
 	fprintf (stderr,"set_node_width: node %s unknown to %s\n",
@@ -286,7 +286,7 @@ void Layout::set_node_position (const char *g, const char *node, int x, int y)
 	fprintf (stderr,"graph %s unknown\n",g);
 	return ;
     }
-    id.label = CONST_CAST(char*,node);
+    id.label = node;
     nd = graphGetNode (graph, &id, Regular);
     if (!nd) {
 	fprintf (stderr,"set_node_position: node %s unknown to %s\n",
@@ -335,8 +335,8 @@ void Layout::remove_edge (const char *g, const char *node1, const char *node2)
     ID id1, id2, tmpid;
     int direction;		/* UP or DOWN */
 
-    id1.label = CONST_CAST(char*,node1);
-    id2.label = CONST_CAST(char*,node2);
+    id1.label = node1;
+    id2.label = node2;
 
     graph = graphGet (&tab,g);
     if (!graph) {
@@ -427,7 +427,7 @@ void Layout::remove_node (const char *g, const char *label)
 	fprintf (stderr,"remove-edge warning: graph %s unknown\n",g);
 	return ;
     }
-    id.label = CONST_CAST(char*,label);
+    id.label = label;
     node = graphGetNode (graph, &id, Regular);
     if (!node ) {
 	fprintf (stderr,"remove_node: unknown node %s\n", label);

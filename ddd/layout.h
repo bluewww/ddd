@@ -95,7 +95,7 @@ union _ATTRIBUTES {
 
 union _ID {
     int id;
-    char *label;
+    const char *label;
 };
 
 struct _NODE {
