@@ -824,7 +824,7 @@ PROG_STUFF       = vsl-lex.C vsl-gramma.h vsl-gramma.C rxscan.C \
 	 	   acconfig.h acspecial.h stamp-h.in config.h \
 		   $(srcdir)/Ddd.in Ddd.ad.h host.h \
 		   ddd.vsl.h vr.h version.h configinfo.C \
-		   ddd.man ddd.man.txt ddd.man.txt.gz ddd.man.txt.gz.C \
+		   ddd.man ddd.1 ddd.man.txt ddd.man.txt.gz ddd.man.txt.gz.C \
                    COPYING.gz.C NEWS.gz.C xlibdir.C eps-code.h
 
 # Extra files to be built for the distribution
@@ -846,7 +846,7 @@ DISTCLEAN_STUFF	 = $(CLEAN_STUFF) \
 		   config.status config.h host.h paths.h \
 		   Makefile MakeOut LOG OOBR OOBR-FTR \
 		   config.log config.cache configinfo.C stamp-h \
-		   Ddd Ddd.ad.h ddd.1 ddd.man-nopics
+		   Ddd Ddd.ad.h ddd.man-nopics
 
 # Any files that can be reconstructed, except configure script
 REALCLEAN_STUFF	 = $(DISTCLEAN_STUFF) $(DIST_STUFF) \
@@ -913,11 +913,11 @@ uninstall-info:
 	cd $(infodir); $(RM) $(INFOS)
 
 .PHONY: install-man
-install-man: ddd.man
+install-man: ddd.1
 	-parent=`$(ECHO) $(man1dir) | $(SED) -e 's@/[^/]*$$@@'`; \
 	test -d $$parent || $(MKDIR) $$parent
 	-test -d $(man1dir) || $(MKDIR) $(man1dir)
-	$(INSTALL_DATA) ddd.man \
+	$(INSTALL_DATA) ddd.1 \
 		$(man1dir)/`$(ECHO) ddd$(man1ext) | $(SED) '$(transform)'`
 
 .PHONY: uninstall-man
