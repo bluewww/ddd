@@ -615,7 +615,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_new_casts)
 if test "$ice_cv_have_new_casts" = yes; then
-AC_DEFINE(HAVE_NEW_CASTS)
+AC_DEFINE(HAVE_NEW_CASTS,1,
+[Define if your C++ compiler supports new C++ casts, such as `const_cast'.])
 fi
 ])dnl
 dnl
@@ -640,7 +641,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_attribute_noreturn)
 if test "$ice_cv_have_attribute_noreturn" = yes; then
-AC_DEFINE(HAVE_ATTRIBUTE_NORETURN)
+AC_DEFINE(HAVE_ATTRIBUTE_NORETURN,1,
+[Define if your C++ compiler supports __attribute__ ((noreturn)).])
 fi
 ])dnl
 dnl
@@ -703,7 +705,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_bool)
 if test "$ice_cv_have_bool" = yes; then
-AC_DEFINE(HAVE_BOOL)
+AC_DEFINE(HAVE_BOOL,1,
+[Define if your C++ compiler supports `bool' types.])
 fi
 ])dnl
 dnl
@@ -729,7 +732,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_explicit)
 if test "$ice_cv_have_explicit" = yes; then
-AC_DEFINE(HAVE_EXPLICIT)
+AC_DEFINE(HAVE_EXPLICIT,1,
+[Define if your C++ compiler supports the `explicit' keyword.])
 fi
 ])dnl
 dnl
@@ -755,7 +759,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_mutable)
 if test "$ice_cv_have_mutable" = yes; then
-AC_DEFINE(HAVE_MUTABLE)
+AC_DEFINE(HAVE_MUTABLE,1,
+[Define if your C++ compiler supports the `mutable' keyword.])
 fi
 ])dnl
 dnl
@@ -789,7 +794,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_namespace)
 if test "$ice_cv_have_namespace" = yes; then
-AC_DEFINE(HAVE_NAMESPACE)
+AC_DEFINE(HAVE_NAMESPACE,1,
+[Define if your C++ compiler supports namespaces.])
 fi
 ])dnl
 dnl
@@ -818,7 +824,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_explicit_template_instantiation)
 if test "$ice_cv_have_explicit_template_instantiation" = yes; then
-AC_DEFINE(HAVE_EXPLICIT_TEMPLATE_INSTANTIATION)
+AC_DEFINE(HAVE_EXPLICIT_TEMPLATE_INSTANTIATION,1,
+[Define if your C++ compiler supports explicit template instantiation.])
 fi
 ])dnl
 dnl
@@ -847,7 +854,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_pretty_function)
 if test "$ice_cv_have_pretty_function" = yes; then
-AC_DEFINE(HAVE_PRETTY_FUNCTION)
+AC_DEFINE(HAVE_PRETTY_FUNCTION,1,
+[Define if your C++ compiler supports the __PRETTY_FUNCTION__ macro.])
 fi
 ])dnl
 dnl
@@ -875,7 +883,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_array_operator_new)
 if test "$ice_cv_have_array_operator_new" = yes; then
-AC_DEFINE(HAVE_ARRAY_OPERATOR_NEW)
+AC_DEFINE(HAVE_ARRAY_OPERATOR_NEW,1,
+[Define if your C++ compiler supports overloaded operator array new.])
 fi
 ])dnl
 dnl
@@ -903,7 +912,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_streampos)
 if test "$ice_cv_have_streampos" = yes; then
-AC_DEFINE(HAVE_STREAMPOS)
+AC_DEFINE(HAVE_STREAMPOS,1,
+[Define if the `streampos' type can be used after <iostream.h>.])
 fi
 ])dnl
 dnl
@@ -931,7 +941,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_std_streampos)
 if test "$ice_cv_have_std_streampos" = yes; then
-AC_DEFINE(HAVE_STD_STREAMPOS)
+AC_DEFINE(HAVE_STD_STREAMPOS,1,
+[Define if the `std::streampos' type can be used after <iostream.h>.])
 fi
 ])dnl
 dnl
@@ -957,7 +968,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_iostate)
 if test "$ice_cv_have_iostate" = yes; then
-AC_DEFINE(HAVE_IOSTATE)
+AC_DEFINE(HAVE_IOSTATE,1,
+[Define if the ios::iostate type is defined or declared in <iostream.h>.])
 fi
 ])dnl
 dnl
@@ -986,7 +998,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_placement_new)
 if test "$ice_cv_have_placement_new" = yes; then
-AC_DEFINE(HAVE_PLACEMENT_NEW)
+AC_DEFINE(HAVE_PLACEMENT_NEW,1,
+[Define if your C++ compiler supports placement new.])
 fi
 ])dnl
 dnl
@@ -1051,7 +1064,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_ansi_lifetime_of_temporaries)
 if test "$ice_cv_have_ansi_lifetime_of_temporaries" = yes; then
-AC_DEFINE(HAVE_ANSI_LIFETIME_OF_TEMPORARIES)
+AC_DEFINE(HAVE_ANSI_LIFETIME_OF_TEMPORARIES,1,
+[Define if your C++ compiler has ANSI-compliant lifetime of temporaries.])
 fi
 ])dnl
 ##!dnl
@@ -1092,7 +1106,9 @@ fi
 ##!])
 ##!AC_MSG_RESULT($ice_cv_ostrstream_pcount_broken)
 ##!if test "$ice_cv_ostrstream_pcount_broken" = yes; then
-##!AC_DEFINE(OSTRSTREAM_PCOUNT_BROKEN)
+##!AC_DEFINE(OSTRSTREAM_PCOUNT_BROKEN,1,
+##![Define if ostringstream::pcount() is increased by 1 after accessing the
+##!string via ostringstream::str(), as in the SGI C++ I/O library.])
 ##!fi
 ##!])dnl
 dnl
@@ -1117,7 +1133,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_long_long)
 if test "$ice_cv_have_long_long" = yes; then
-AC_DEFINE(HAVE_LONG_LONG)
+AC_DEFINE(HAVE_LONG_LONG,1,
+[Define if your C++ compiler supports `long long' types.])
 fi
 ])dnl
 dnl
@@ -1142,7 +1159,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_exceptions)
 if test "$ice_cv_have_exceptions" = yes; then
-AC_DEFINE(HAVE_EXCEPTIONS)
+AC_DEFINE(HAVE_EXCEPTIONS,1,
+[Define if your C++ compiler supports exception handling.])
 fi
 ])dnl
 dnl
@@ -1175,7 +1193,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_std_exceptions)
 if test "$ice_cv_have_std_exceptions" = yes; then
-AC_DEFINE(HAVE_STD_EXCEPTIONS)
+AC_DEFINE(HAVE_STD_EXCEPTIONS,1,
+[Define if your C++ compiler supports ISO C++ standard exceptions.])
 fi
 ])dnl
 dnl
@@ -1206,7 +1225,8 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_have_typeinfo)
 if test "$ice_cv_have_typeinfo" = yes; then
-AC_DEFINE(HAVE_TYPEINFO)
+AC_DEFINE(HAVE_TYPEINFO,1,
+[Define if your C++ compiler supports run-time type information.])
 fi
 ])dnl
 dnl
@@ -1272,7 +1292,8 @@ ice_cv_have_path_max=no)
 ])
 AC_MSG_RESULT($ice_cv_have_path_max)
 if test "$ice_cv_have_path_max" = yes; then
-AC_DEFINE(HAVE_PATH_MAX)
+AC_DEFINE(HAVE_PATH_MAX,1,
+[Define if PATH_MAX is defined or declared in <limits.h>.])
 fi
 ])dnl
 dnl
@@ -1293,7 +1314,8 @@ ice_cv_have_posix_path_max=no)
 ])
 AC_MSG_RESULT($ice_cv_have_posix_path_max)
 if test "$ice_cv_have_posix_path_max" = yes; then
-AC_DEFINE(HAVE_POSIX_PATH_MAX)
+AC_DEFINE(HAVE_POSIX_PATH_MAX,1,
+[Define if _POSIX_PATH_MAX is defined or declared in <limits.h>.])
 fi
 ])dnl
 dnl
@@ -1314,7 +1336,8 @@ ice_cv_have_maxpathlen=no)
 ])
 AC_MSG_RESULT($ice_cv_have_maxpathlen)
 if test "$ice_cv_have_maxpathlen" = yes; then
-AC_DEFINE(HAVE_MAXPATHLEN)
+AC_DEFINE(HAVE_MAXPATHLEN,1,
+[Define if MAXPATHLEN is defined or declared in <sys/param.h>])
 fi
 ])dnl
 dnl
@@ -1389,7 +1412,8 @@ yes
 ], ice_cv_have_lesstif=yes, ice_cv_have_lesstif=no))
 AC_MSG_RESULT($ice_cv_have_lesstif)
 if test "$ice_cv_have_lesstif" = yes; then
-AC_DEFINE(HAVE_LESSTIF)
+AC_DEFINE(HAVE_LESSTIF,1,
+[Define if your Motif widgets are actually LessTif widgets.])
 fi
 ])dnl
 dnl
@@ -1411,7 +1435,8 @@ ice_cv_have_ptrace_dumpcore=no)
 ])
 AC_MSG_RESULT($ice_cv_have_ptrace_dumpcore)
 if test "$ice_cv_have_ptrace_dumpcore" = yes; then
-AC_DEFINE(HAVE_PTRACE_DUMPCORE)
+AC_DEFINE(HAVE_PTRACE_DUMPCORE,1,
+[Define if ptrace() supports a PTRACE_DUMPCORE request to dump core files.])
 fi
 ])dnl
 dnl
@@ -1434,7 +1459,8 @@ yes
 ], ice_cv_have_core_magic=yes, ice_cv_have_core_magic=no))
 AC_MSG_RESULT($ice_cv_have_core_magic)
 if test "$ice_cv_have_core_magic" = yes; then
-AC_DEFINE(HAVE_CORE_MAGIC)
+AC_DEFINE(HAVE_CORE_MAGIC,1,
+[Define if <sys/core.h> defines CORE_MAGIC to identify core files.])
 fi
 ])dnl
 dnl
@@ -1707,7 +1733,8 @@ void handler(int sg);],
 [signal(1, handler);], ice_cv_type_signal=void, ice_cv_type_signal=int)])dnl
 AC_LANG_RESTORE
 AC_MSG_RESULT($ice_cv_type_signal)
-AC_DEFINE_UNQUOTED(RETSIGTYPE, $ice_cv_type_signal)
+AC_DEFINE_UNQUOTED(RETSIGTYPE, $ice_cv_type_signal,
+[Define type of signal.])
 ])dnl
 dnl
 dnl
@@ -1768,7 +1795,10 @@ AC_MSG_RESULT($ice_cv_type_sig_handler_args)
 if test "$ice_cv_type_sig_handler_args" = ""; then
 AC_MSG_WARN([[Please #define SIGHANDLERARGS in config.h]])
 fi
-AC_DEFINE_UNQUOTED(SIGHANDLERARGS, $ice_cv_type_sig_handler_args)
+AC_DEFINE_UNQUOTED(SIGHANDLERARGS, $ice_cv_type_sig_handler_args,
+[Define to the signal handler type accepted by signal().
+See the `signal' man page and the decl in <signal.h> for the exact type.
+Typically values are `int', `...', and `int ...'.])
 ])dnl
 ##!dnl
 ##!dnl
@@ -1794,7 +1824,8 @@ AC_DEFINE_UNQUOTED(SIGHANDLERARGS, $ice_cv_type_sig_handler_args)
 ##!])
 ##!AC_MSG_RESULT($ice_cv_frozen_ostrstream)
 ##!if test "$ice_cv_frozen_ostrstream" = yes; then
-##!AC_DEFINE(HAVE_FROZEN_OSTRSTREAM)
+##!AC_DEFINE(HAVE_FROZEN_OSTRSTREAM,1,
+##![Define if your C++ library has an ostringstream::frozen() function.])
 ##!fi
 ##!])dnl
 ##!dnl
@@ -1819,7 +1850,8 @@ AC_DEFINE_UNQUOTED(SIGHANDLERARGS, $ice_cv_type_sig_handler_args)
 ##!])
 ##!AC_MSG_RESULT($ice_cv_freeze_ostrstream)
 ##!if test "$ice_cv_freeze_ostrstream" = yes; then
-##!AC_DEFINE(HAVE_FREEZE_OSTRSTREAM)
+##!AC_DEFINE(HAVE_FREEZE_OSTRSTREAM,1,
+##![Define if your C++ library has an ostringstream::freeze() function.])
 ##!fi
 ##!])dnl
 ##!dnl
@@ -1844,7 +1876,8 @@ AC_DEFINE_UNQUOTED(SIGHANDLERARGS, $ice_cv_type_sig_handler_args)
 ##!])
 ##!AC_MSG_RESULT($ice_cv_frozen_ostrstreambuf)
 ##!if test "$ice_cv_frozen_ostrstreambuf" = yes; then
-##!AC_DEFINE(HAVE_FROZEN_OSTRSTREAMBUF)
+##!AC_DEFINE(HAVE_FROZEN_OSTRSTREAMBUF,1,
+##![Define if your C++ library has an ostringstreambuf::frozen() function.])
 ##!fi
 ##!])dnl
 ##!dnl
@@ -1869,7 +1902,8 @@ AC_DEFINE_UNQUOTED(SIGHANDLERARGS, $ice_cv_type_sig_handler_args)
 ##!])
 ##!AC_MSG_RESULT($ice_cv_freeze_ostrstreambuf)
 ##!if test "$ice_cv_freeze_ostrstreambuf" = yes; then
-##!AC_DEFINE(HAVE_FREEZE_OSTRSTREAMBUF)
+##!AC_DEFINE(HAVE_FREEZE_OSTRSTREAMBUF,1,
+##![Define if your C++ library has an ostringstreambuf::freeze() function.])
 ##!fi
 ##!])dnl
 dnl
@@ -1933,7 +1967,8 @@ extern "C" {
 ice_cv_have_regex_t_re_nsub=yes, ice_cv_have_regex_t_re_nsub=no)])dnl
 AC_MSG_RESULT($ice_cv_have_regex_t_re_nsub)
 if test "$ice_cv_have_regex_t_re_nsub" = yes; then
-AC_DEFINE(HAVE_REGEX_T_RE_NSUB)
+AC_DEFINE(HAVE_REGEX_T_RE_NSUB,1,
+[Define if the `regex_t' type has a `re_nsub' member, according to POSIX.2 ])
 fi
 dnl
 dnl
@@ -1979,7 +2014,8 @@ extern "C" {
 ice_cv_have_regex_t_n_subexps=yes, ice_cv_have_regex_t_n_subexps=no)])dnl
 AC_MSG_RESULT($ice_cv_have_regex_t_n_subexps)
 if test "$ice_cv_have_regex_t_n_subexps" = yes; then
-AC_DEFINE(HAVE_REGEX_T_N_SUBEXPS)
+AC_DEFINE(HAVE_REGEX_T_N_SUBEXPS,1,
+[Define if the `regex_t' type has a `n_subexps' member, as in GNU RX 1.0])
 fi
 dnl
 dnl
@@ -2059,7 +2095,8 @@ int main()
 ice_cv_regcomp_broken=yes)])dnl
 AC_MSG_RESULT($ice_cv_regcomp_broken)
 if test "$ice_cv_regcomp_broken" = yes; then
-AC_DEFINE(REGCOMP_BROKEN)
+AC_DEFINE(REGCOMP_BROKEN,1,
+[Define if `regcomp()' from <regex.h> does not work.])
 fi
 dnl
 dnl
@@ -2771,7 +2808,9 @@ AC_LANG_RESTORE
 ])
 AC_MSG_RESULT($ice_cv_motif_dialogs_own_selection_list)
 if test "$ice_cv_motif_dialogs_own_selection_list" = yes; then
-AC_DEFINE(MOTIF_DIALOGS_OWN_SELECTION_LIST)
+AC_DEFINE(MOTIF_DIALOGS_OWN_SELECTION_LIST,1,
+[Define if Motif selection dialogs `own' their selection list, i.e. it
+must not be freed after setting.])
 fi
 ])dnl
 dnl

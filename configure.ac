@@ -604,7 +604,8 @@ if test "$xpm_includes" != "no" && test "$xpm_libraries" != "no"
 then
 AC_CHECK_LIB(Xpm, XpmCreatePixmapFromXpmImage,
 	XPM_LIBS="-lXpm"
-	AC_DEFINE(HAVE_XPM),,${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
+	AC_DEFINE(HAVE_XPM,1,[Define if you have the XPM library.]),,
+        ${X_PRE_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
 if test "$XPM_LIBS" != ""; then
 AC_CHECK_HEADERS(X11/xpm.h xpm.h)
 fi
@@ -623,7 +624,7 @@ AC_CHECK_LIB(Xmu, XmuCvtStringToOrientation,
 	${X_PRE_LIBS} ${XAW_LIBS} ${XT_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
 AC_CHECK_LIB(Xaw, XawTextSetInsertionPoint, 
 	XAW_LIBS="-lXaw ${XAW_LIBS}"
-	AC_DEFINE(HAVE_ATHENA),,
+	AC_DEFINE(HAVE_ATHENA,1,[Define if you have the X Athena widgets.]),,
 	${X_PRE_LIBS} ${XAW_LIBS} ${XT_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS})
 if test "$XAW_LIBS" = ""; then
 dnl A warning suffices here -- DDD also works without Athena.
@@ -665,24 +666,24 @@ then
 dnl Motif 2.1 wants `-lXp' (X11R6.3 print server)
 AC_CHECK_LIB(Xp, XpSelectInput,
 	XP_LIBS="-lXp"
-	AC_DEFINE(HAVE_XP),,
+	AC_DEFINE(HAVE_XP,1,[Define if you have the XP library (X11R6.3 print server).]),,
 	${X_PRE_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN})
 dnl
 AC_CHECK_LIB(Xm, XmCreateOptionMenu, 
 	XM_LIBS="-lXm"
-	AC_DEFINE(HAVE_MOTIF),,
+	AC_DEFINE(HAVE_MOTIF,1,[Define if you have Motif widgets.]),,
 	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN})
 dnl
 AC_CHECK_LIB(Xm, xmUseVersion, 
-	AC_DEFINE(HAVE_XMUSEVERSION),,
+	AC_DEFINE(HAVE_XMUSEVERSION,1,[Define if the Motif library defines `xmUseVersion'.]),,
 	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN})
 dnl
 AC_CHECK_LIB(Xm, XmInstallImage,
-	AC_DEFINE(HAVE_XMINSTALLIMAGE),,
+	AC_DEFINE(HAVE_XMINSTALLIMAGE,1,[Define if the Motif library defines `XmInstallImage'.]),,
 	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN})
 dnl
 AC_CHECK_LIB(Xm, Xm21InstallImage,
-	AC_DEFINE(HAVE_XM21INSTALLIMAGE),,
+	AC_DEFINE(HAVE_XM21INSTALLIMAGE,1,[Define if the Motif library defines `Xm21InstallImage'.]),,
 	${X_PRE_LIBS} ${XP_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${X_EXTRA_LIBS} ${LIBGEN})
 fi
 if test "$XM_LIBS" = ""; then
@@ -896,8 +897,13 @@ dnl
 dnl As of DDD 2.2, we don't need all this RX stuff, but use
 dnl a LEX-generated scanner for regexps.
 dnl
-AC_DEFINE(WITH_RUNTIME_REGEX, 0)
-AC_DEFINE(RUNTIME_REGEX, 0)
+AC_DEFINE(WITH_RUNTIME_REGEX, 0,
+[Define if you want support for runtime-compiled regexps. Required
+in ICE; not needed in DDD.])
+AC_DEFINE(RUNTIME_REGEX, 0,
+[Define if you want support for runtime-compiled regexps. Default in
+DDD 2.1 and earlier.  Requires ~30% more memory; slightly slower,
+too. Requires WITH_RUNTIME_REGEX to be set. Required in ICE.])
 dnl
 dnl
 dnl User-defined options
@@ -921,19 +927,25 @@ AC_ARG_ENABLE(builtin-vsllib,
 	builtin_vsllib="$enableval", builtin_vsllib=no)
 dnl
 if test "$builtin_manual" != no; then
-AC_DEFINE(WITH_BUILTIN_MANUAL)
+AC_DEFINE(WITH_BUILTIN_MANUAL,1,
+[Define if you want the manual to be compiled into the executable.])
 fi
 if test "$builtin_app_defaults" != no; then
-AC_DEFINE(WITH_BUILTIN_APP_DEFAULTS)
+AC_DEFINE(WITH_BUILTIN_APP_DEFAULTS,1,
+[Define if you want the app-defaults file to be compiled into the
+executable.])
 fi
 if test "$builtin_news" != no; then
-AC_DEFINE(WITH_BUILTIN_NEWS)
+AC_DEFINE(WITH_BUILTIN_NEWS,1,
+[Define if you want the DDD news to be compiled into the executable.])
 fi
 if test "$builtin_license" != no; then
-AC_DEFINE(WITH_BUILTIN_LICENSE)
+AC_DEFINE(WITH_BUILTIN_LICENSE,1,
+[Define if you want the DDD license to be compiled into the executable.])
 fi
 if test "$builtin_vsllib" != no; then
-AC_DEFINE(WITH_BUILTIN_VSLLIB)
+AC_DEFINE(WITH_BUILTIN_VSLLIB,1,
+[Define if you want the DDD VSL library to be compiled into DDD.])
 fi
 dnl
 dnl Check for risky LessTif versions.
