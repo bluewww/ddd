@@ -5381,21 +5381,30 @@ static void gdb_strangeHP(Agent *source, void *, void *call_data)
     gdb_msgHP(source, call_data, "gdb_io_warning");
 }
 
-static void gdb_echo_detectedHP(Agent *, void *, void *)
+static void gdb_echo_detectedHP(Agent *, void *, void *call_data)
 {
-    static bool tried = false;
+    static bool last_echoing = false;
 
-    if (tried)
-	return;
+    bool echoing = bool(long(call_data));
+    if (echoing != last_echoing)
+    {
+	if (echoing)
+	{
+	    // Here is a subtle warning.
+	    set_status(gdb->title() + " is running in echo mode.");
 
-    // Here is a more subtle warning.
-    set_status(gdb->title() + " is running in echo mode.");
+	    // Attempt to disable echo mode explicitly via stty command.
+	    gdb_command(gdb->shell_command("stty -echo -onlcr"), 0, 0, 0, 
+			false, false, COMMAND_PRIORITY_AGAIN);
+	}
+	else
+	{
+	    // Tell the user everything is fine.
+	    set_status(gdb->title() + " is no longer running in echo mode.");
+	}
 
-    // Attempt to disable echo mode explicitly via stty command.
-    gdb_command(gdb->shell_command("stty -echo -onlcr"), 0, 0, 0, 
-		false, false, COMMAND_PRIORITY_AGAIN);
-
-    tried = true;
+	last_echoing = echoing;
+    }
 }
 
 static void gdb_recordingHP(Agent *, void *, void *call_data)

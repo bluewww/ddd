@@ -1186,7 +1186,7 @@ void GDBAgent::handle_echo(string& answer)
 	{
 	    // All characters written have been echoed.
 	    // Remove echoed characters and keep on processing.
-	    callHandlers(EchoDetected);
+	    callHandlers(EchoDetected, (void *)true);
 	    answer = answer.from(i);
 	    echoed_characters = -1;
 	}
@@ -1217,6 +1217,7 @@ void GDBAgent::handle_echo(string& answer)
 	    if (last_written.length() > ECHO_THRESHOLD)
 	    {
 		// No more echos - disable echo detection until re-activated
+		callHandlers(EchoDetected, (void *)false);
 		detect_echos(false);
 	    }
 	}
