@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-04-13" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-04-16" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -3932,15 +3932,16 @@ variable to be passed to the debugged program.  Default:
 .B "wwwCommand (\fPclass\fB WWWCommand)"
 The command to invoke a \s-2WWW\s+2 browser.  The string `\fB@URL@\fR'
 is replaced by the \s-2URL\s+2 to open.  Default is to try a running
-Netscape first, then to invoke a new Netscape process, then to let a
-running Emacs do the job, then to invoke Mosaic, then to invoke Lynx.
+Netscape first, then \fB$WWWBROWSER\fR, then to invoke a new Netscape
+process, then to let a running Emacs do the job, then to invoke
+Mosaic, then to invoke Lynx in an xterm.
 .RS
 .PP
 To specify `\fBnetscape-4.0\fR' as browser, use the setting:
 .sp
 .br
   \fB@Ddd@*wwwCommand: \\
-  netscape-4.0 \-remote 'openURL(@URL@)' \\
+     netscape-4.0 \-remote 'openURL(@URL@)' \\
   || netscape-4.0 '@URL@'\fR
 .br
 .sp
@@ -4681,6 +4682,10 @@ The text editor to invoke for editing source code.  See the
 .B VSL_INCLUDE
 Where to search for \s-2VSL\s+2 include files.  Default is the current 
 directory.
+.TP
+.B WWWBROWSER
+The \s-2WWW\s+2 browser to invoke for viewing the \s-2@DDD@\s+2
+\s-2WWW\s+2 page.  See the `\fBwwwCommand\fR' resource, above.
 .TP
 .B XEDITOR
 The X editor to invoke for editing source code.  See the

@@ -240,13 +240,14 @@ Ddd*uncompressCommand: @UNCOMPRESS@
 Ddd*wwwPage: http://www.cs.tu-bs.de/softech/ddd/
 
 ! Command to invoke the WWW page.  @URL@ stands for the URL to open.
-! Default is to try a running Netscape first, then to invoke a new 
-! Netscape process, then to let a running Emacs do the job, then to
-! invoke Mosaic, then to invoke Lynx.
+! Default is to try a running Netscape first, then to invoke $WWWBROWSER,
+! then to invoke a new Netscape process, then to let a running (X)Emacs
+! do the job, then to invoke Mosaic, then to invoke Lynx in an xterm.
 ! Note that if you don't have WWW access, letting all these commands fail
 ! may take a lot of time...
 Ddd*wwwCommand: \
    netscape -remote 'openURL(@URL@)' \
+|| ${WWWBROWSER-false} '@URL@' \
 || netscape '@URL@' \
 || gnudoit '(w3-fetch \042@URL@\042)' \
 || mosaic '@URL@' \
