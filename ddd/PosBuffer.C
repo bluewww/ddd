@@ -504,7 +504,8 @@ void PosBuffer::filter (string& answer)
 		pc_buffer = "0x" + pc_buffer;
 	    pc_buffer = pc_buffer.through(rxaddress);
 	    answer.at(index1, index2 - index1 + 1) = "";
-	    already_read = PosComplete;
+	    if (pos_buffer != "")
+		already_read = PosComplete;
 	}
 	break;
 	
@@ -654,11 +655,15 @@ void PosBuffer::filter (string& answer)
 		    line = line.after("::");
 
 		line = line.after(":");
-		line = line.through(rxint);
-		if (line != "")
+		strip_leading_space(line);
+		if (line.contains(rxint, 0))
 		{
-		    already_read = PosComplete;
-		    answer = answer.after("\n");
+		    line = line.through(rxint);
+		    if (line != "")
+		    {
+			already_read = PosComplete;
+			answer = answer.after("\n");
+		    }
 		}
 	    }
 
@@ -693,6 +698,8 @@ void PosBuffer::filter (string& answer)
 		else
 		    pos_buffer = line;
 	    }
+	    if (already_read == PosComplete && pos_buffer == "")
+		already_read = Null;
 	}
 	break;
 	
@@ -901,11 +908,11 @@ string PosBuffer::answer_ended ()
     case PosPart:
 	assert (pos_buffer == "");
 	return answer_buffer;
-		
+
     case Null:
 	assert (pos_buffer == "");
 	return "";
-	
+
     case PosComplete:
 	assert (pos_buffer != "");
 	return "";
