@@ -206,11 +206,13 @@ MMDesc SourceView::bp_popup[] =
     MMEnd
 };
 
-struct BPButtons { enum Itms {New, Lookup, Enable, Disable, Condition, 
+struct BPButtons { enum Itms {NewBP, NewWP, Lookup, 
+			      Enable, Disable, Condition, 
 			      IgnoreCount, Delete}; };
 MMDesc SourceView::bp_area[] =
 {
-    {"new",          MMPush,   {SourceView::NewBreakpointCB}},
+    {"new_bp",       MMPush,   {SourceView::NewBreakpointCB}},
+    {"new_wp",       MMPush,   {SourceView::NewWatchpointCB}},
     {"lookup",       MMPush,   {SourceView::LookupBreakpointCB}},
     {"enable",       MMPush,   {SourceView::BreakpointCmdCB, "enable"  }},
     {"disable",      MMPush,   {SourceView::BreakpointCmdCB, "disable" }},
@@ -3443,6 +3445,7 @@ void SourceView::process_info_bp (string& info_output,
 
 	if (bp_map.contains (bp_nr))
 	{
+	    // Update existing breakpoint
 	    bps_not_read -= bp_nr;
 	    if (bp_map.get(bp_nr)->update(info_output)
 		&& (bp_map.get(bp_nr)->position_changed()
@@ -4645,6 +4648,111 @@ void SourceView::NewBreakpointCB(Widget, XtPointer, XtPointer)
     manage_and_raise(new_breakpoint_dialog);
 }
 
+WatchMode SourceView::selected_watch_mode = WATCH_CHANGE;
+
+void SourceView::SetWatchModeCB(Widget, XtPointer client_data, 
+				XtPointer call_data)
+{
+    XmToggleButtonCallbackStruct *info = 
+	(XmToggleButtonCallbackStruct *)call_data;
+
+    if (info->set)
+	selected_watch_mode = WatchMode(client_data);
+}
+
+void SourceView::NewWatchpointDCB(Widget w, XtPointer, XtPointer call_data)
+{
+    XmSelectionBoxCallbackStruct *cbs = 
+	(XmSelectionBoxCallbackStruct *)call_data;
+
+    String _input;
+    XmStringGetLtoR(cbs->value, MSTRING_DEFAULT_CHARSET, &_input);
+    string input(_input);
+    XtFree(_input);
+
+    int i = 0;
+    while (i < int(input.length()) && isspace(input[i]))
+	i++;
+    input = input.from(i);
+    if (input == "")
+	return;
+
+    gdb_command(gdb->watch_command(input, selected_watch_mode), w);
+}
+
+void SourceView::NewWatchpointCB(Widget, XtPointer, XtPointer)
+{
+    static Widget new_watchpoint_dialog = 0;
+    if (new_watchpoint_dialog == 0)
+    {
+	static Widget cwatch_w, rwatch_w, awatch_w;
+
+	static MMDesc wp_modes[] =
+	{
+	    { "cwatch",  MMPush, { SetWatchModeCB, XtPointer(WATCH_CHANGE) }, 
+	      NULL, &cwatch_w },
+	    { "rwatch",  MMPush, { SetWatchModeCB, XtPointer(WATCH_READ) }, 
+	      NULL, &rwatch_w },
+	    { "awatch", MMPush, { SetWatchModeCB, XtPointer(WATCH_ACCESS)},
+	      NULL, &awatch_w},
+	    MMEnd
+	};
+
+	static MMDesc wp_menu[] = 
+	{
+	    { "set",      MMLabel },
+	    { "method",   MMOptionMenu, MMNoCB, wp_modes },
+	    { "on",       MMLabel },
+	    MMEnd
+	};
+
+	new_watchpoint_dialog = 
+	    verify(XmCreatePromptDialog(source_text_w,
+					"new_watchpoint_dialog",
+					NULL, 0));
+	Delay::register_shell(new_watchpoint_dialog);
+
+	if (lesstif_version <= 79)
+	    XtUnmanageChild(XmSelectionBoxGetChild(new_watchpoint_dialog,
+						   XmDIALOG_APPLY_BUTTON));
+	XtUnmanageChild(XmSelectionBoxGetChild(new_watchpoint_dialog,
+					       XmDIALOG_SELECTION_LABEL));
+
+	XtAddCallback(new_watchpoint_dialog,
+		      XmNhelpCallback,
+		      ImmediateHelpCB,
+		      NULL);
+	XtAddCallback(new_watchpoint_dialog,
+		      XmNokCallback,
+		      NewWatchpointDCB,
+		      NULL);
+
+	Widget panel = MMcreateButtonPanel(new_watchpoint_dialog, 
+					   "panel", wp_menu);
+	XtVaSetValues(panel, 
+		      XmNorientation, XmHORIZONTAL,
+		      XmNborderWidth,  0,
+		      XmNentryBorder,  0,
+		      XmNspacing,      0,
+		      XmNmarginWidth,  0,
+		      XmNmarginHeight, 0,
+		      NULL);
+	MMaddCallbacks(wp_menu);
+
+	XtSetSensitive(cwatch_w, (gdb->has_watch_command() & WATCH_CHANGE) 
+		       == WATCH_CHANGE);
+	XtSetSensitive(rwatch_w, (gdb->has_watch_command() & WATCH_READ) 
+		       == WATCH_READ);
+	XtSetSensitive(awatch_w, (gdb->has_watch_command() & WATCH_ACCESS) 
+		       == WATCH_ACCESS);
+
+	// Initialize: use CWATCH as default menu item
+	XtCallActionProc(cwatch_w, "ArmAndActivate", 
+			 (XEvent *)0, (String *)0, 0);
+    }
+
+    manage_and_raise(new_watchpoint_dialog);
+}
 
 // Edit breakpoint condition
 void SourceView::EditBreakpointConditionDCB(Widget, 
@@ -4844,7 +4952,7 @@ void SourceView::EditBreakpointIgnoreCountCB(Widget,
 	{
 	    if (bp->number() == bp_nr)
 	    {
-		ignore = bp->ignore_count();
+		ignore = itostring(bp->ignore_count());
 		break;
 	    }
 	}
@@ -4904,8 +5012,23 @@ void SourceView::LookupBreakpointCB(Widget, XtPointer, XtPointer)
 
     IntArray breakpoint_nrs;
     getDisplayNumbers(breakpoint_list_w, breakpoint_nrs);
-    if (breakpoint_nrs.size() == 1)
+    if (breakpoint_nrs.size() != 1)
+	return;
+
+    BreakPoint *bp = bp_map.get(breakpoint_nrs[0]);
+    if (bp == 0)
+	return;
+
+    switch (bp->type())
+    {
+    case BREAKPOINT:
 	lookup("#" + itostring(breakpoint_nrs[0]));
+	break;
+
+    case WATCHPOINT:
+	gdb_command(gdb->print_command(bp->expr(), false));
+	break;
+    }
 }
 
 // Return breakpoint of BP_INFO; 0 if new; -1 if none
@@ -4995,6 +5118,19 @@ void SourceView::process_breakpoints(string& info_breakpoints_output)
     delete[] selected;
 }
 
+static void set_label(Widget w, const MString& new_label)
+{
+    XmString old_label;
+    XtVaGetValues(w, XmNlabelString, &old_label, NULL);
+    if (!XmStringCompare(new_label.xmstring(), old_label))
+    {
+	XtVaSetValues(w,
+		      XmNlabelString, new_label.xmstring(),
+		      NULL);
+    }
+    XmStringFree(old_label);
+}
+
 void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer, 
 					   XtPointer call_data)
 {
@@ -5008,16 +5144,14 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
 
     // Update selection
     MapRef ref;
-    for (BreakPoint* bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+    BreakPoint *bp;
+    for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
 	bp->selected() = false;
 
     for (int i = 0; i < breakpoint_nrs.size(); i++)
     {
 	int bp_number = breakpoint_nrs[i];
-	MapRef ref;
-	for (BreakPoint* bp = bp_map.first(ref);
-	     bp != 0;
-	     bp = bp_map.next(ref))
+	for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
 	{
 	    if (bp->number() == bp_number)
 	    {
@@ -5038,18 +5172,49 @@ void SourceView::UpdateBreakpointButtonsCB(Widget, XtPointer,
     }
 #endif
 
-    // Update buttons
+    // Count selected ones
+    BreakPoint *selected_bp = 0;
     int selected = breakpoint_nrs.size();
+    int selected_enabled = 0;
+    int selected_disabled = 0;
+    for (bp = bp_map.first(ref); bp != 0; bp = bp_map.next(ref))
+    {
+	if (bp->selected())
+	{
+	    selected_bp = bp;
+	    if (bp->enabled())
+		selected_enabled++;
+	    else
+		selected_disabled++;
+	}
+    }
+
+    // Update buttons
+    XtSetSensitive(bp_area[BPButtons::NewWP].widget, gdb->has_watch_command());
     XtSetSensitive(bp_area[BPButtons::Lookup].widget, selected == 1);
     XtSetSensitive(bp_area[BPButtons::Enable].widget,      
-		   gdb->has_enable_command() && selected > 0);
+		   gdb->has_enable_command() && selected_disabled > 0);
     XtSetSensitive(bp_area[BPButtons::Disable].widget,     
-		   gdb->has_disable_command() && selected > 0);
+		   gdb->has_disable_command() && selected_enabled > 0);
     XtSetSensitive(bp_area[BPButtons::Condition].widget,   
 		   gdb->has_breakpoint_conditions() && selected > 0);
     XtSetSensitive(bp_area[BPButtons::IgnoreCount].widget, 
 		   gdb->has_ignore_command() && selected > 0);
     XtSetSensitive(bp_area[BPButtons::Delete].widget, selected > 0);
+
+    if (selected == 1)
+    {
+	switch (selected_bp->type())
+	{
+	case BREAKPOINT:
+	    set_label(bp_area[BPButtons::Lookup].widget, "Lookup");
+	    break;
+
+	case WATCHPOINT:
+	    set_label(bp_area[BPButtons::Lookup].widget, "Print");
+	    break;
+	}
+    }
 }
 
 void SourceView::EditBreakpointsCB(Widget, XtPointer, XtPointer)
@@ -6291,7 +6456,7 @@ void SourceView::update_glyphs_now()
 		}
 
 
-		if (bp->enabled())
+		if (bp->enabled() && bp->ignore_count() == 0)
 		    bp_glyph = map_stop_at(text_w, pos, plain_stops[k],
 					   plain_count, positions);
 		else

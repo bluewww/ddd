@@ -111,6 +111,9 @@ class SourceView {
     static void NewBreakpointDCB         (Widget, XtPointer, XtPointer);
     static void NewBreakpointCB          (Widget, XtPointer, XtPointer);
 
+    static void NewWatchpointDCB         (Widget, XtPointer, XtPointer);
+    static void NewWatchpointCB          (Widget, XtPointer, XtPointer);
+
     static void LookupBreakpointCB       (Widget, XtPointer, XtPointer);
     static void BreakpointCmdCB          (Widget, XtPointer, XtPointer);
 
@@ -134,6 +137,8 @@ class SourceView {
     static void SelectFrameCB    (Widget, XtPointer, XtPointer);
     static void SelectRegisterCB (Widget, XtPointer, XtPointer);
     static void SelectThreadCB   (Widget, XtPointer, XtPointer);
+
+    static void SetWatchModeCB(Widget, XtPointer, XtPointer);
 
     static void update_title ();
     static void MoveCursorToGlyphPosCB(Widget, XtPointer, XtPointer);
@@ -254,6 +259,8 @@ class SourceView {
     static bool all_registers;	              // Show all registers?
     static bool at_lowest_frame;              // Are we at lowest frame?
     static bool signal_received;	      // Did we receive a signal?
+
+    static WatchMode selected_watch_mode;     // Last selected watch mode
 
     // Tab width
     static int tab_width;
