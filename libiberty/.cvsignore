@@ -17,4 +17,5 @@ xhost-mkfrag
 autom4te.cache
 configure
 config.log
+config.in
 stamp-h
