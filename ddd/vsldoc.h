@@ -38,5 +38,8 @@
 // Return initial comments from VSL file FILE; search it in PATH
 string vsldoc(string file, const string& path = ".");
 
+// Clear cache
+void clear_vsldoc_cache();
+
 #endif // _DDD_vsldoc_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

@@ -2430,6 +2430,7 @@ static void get_themes(StringArray& themes)
 
 static void add_themes(Widget form, int& row, Dimension& max_width)
 {
+    clear_vsldoc_cache();
     StringArray themes;
     get_themes(themes);
 

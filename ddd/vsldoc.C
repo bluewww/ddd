@@ -36,12 +36,26 @@ char vsldoc_rcsid[] =
 #include "vsldoc.h"
 #include "string-fun.h"
 #include "basename.h"
+#include "StringSA.h"
 
 #include <stdio.h>
+
+// Cache
+static StringStringAssoc docs;
+
+// Clear cache
+void clear_vsldoc_cache()
+{
+    static StringStringAssoc empty;
+    docs = empty;
+}
 
 // Return initial comments from VSL file FILE.
 string vsldoc(string file, const string& path)
 {
+    if (docs.has(file))
+	return docs[file];
+
     FILE *fp = 0;
 
     if (file == basename(file))
@@ -90,5 +104,6 @@ string vsldoc(string file, const string& path)
 	contents = contents.after("\n");
     }
 
+    docs[file] = doc;
     return doc;
 }
