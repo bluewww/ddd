@@ -1,7 +1,5 @@
-DDD 3.3.8 is available					-*- text -*-
-**********************
-
-Release 3.3.8 of DDD, the Data Display Debugger, is now available.
+DDD is available					-*- text -*-
+****************
 
 
 What is DDD?
@@ -21,6 +19,7 @@ More information is available at the GNU DDD homepage at
 
 What's new in DDD?
 ==================
+(For recent releases, please see the file "NEWS".)
 
 DDD-3.3.8
 ========
