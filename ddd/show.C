@@ -44,7 +44,6 @@ const char show_rcsid[] =
 #include "shell.h"
 #include "status.h"
 #include "version.h"
-#include "strings.h"
 #include "filetype.h"
 #include "HelpCB.h"
 
@@ -221,6 +220,14 @@ void show_resources(XrmDatabase db)
 //-----------------------------------------------------------------------------
 // Show Manual Page
 //-----------------------------------------------------------------------------
+
+#define HUFFTEXT "ddd.man.huff.C"
+#include "huffdecode.C"
+
+void ddd_man(ostream& os)
+{
+    huffdecode(os);
+}
 
 void show_manual()
 {

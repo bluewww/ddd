@@ -37,6 +37,7 @@
 #include "GDBAgent.h"
 #include <X11/Intrinsic.h>
 #include <X11/Xresource.h>
+#include <iostream.h>
 
 // Help texts
 void show_invocation(DebuggerType type);
@@ -49,7 +50,9 @@ void show_manual();
 void DDDWWWPageCB(Widget, XtPointer, XtPointer);
 
 // Manual
+void ddd_man(ostream& os);
 void DDDManualCB(Widget, XtPointer, XtPointer);
+
 
 #endif // _DDD_show_h
 // DON'T ADD ANYTHING BEHIND THIS #endif

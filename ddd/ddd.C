@@ -205,7 +205,6 @@ char ddd_rcsid[] =
 #include "status.h"
 #include "strclass.h"
 #include "string-fun.h"
-#include "strings.h"
 #include "verify.h"
 #include "version.h"
 #include "windows.h"
@@ -392,6 +391,11 @@ XtActionsRec actions [] = {
     {"ddd-get-focus",          get_focusAct},
 };
 
+// Resources
+String ddd_fallback_resources[] = {
+#include "Ddd.ad.h"
+0
+};
 
 //-----------------------------------------------------------------------------
 // Menus

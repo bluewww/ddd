@@ -642,7 +642,6 @@ DDD_OBJECTS = \
 	source.o     \
 	status.o     \
 	string-fun.o \
-	strings.o    \
 	value-read.o \
 	windows.o    \
 	wm.o         \
@@ -867,6 +866,9 @@ love:
 Ddd.ad.h: Ddd
 	$(AD2C) $? > Ddd.ad.h
 
+# `make depend' fails to find this dependency :-(
+ddd.o: Ddd.ad.h
+
 
 ## The VSL header files.
 
@@ -1034,7 +1036,7 @@ ddd.man.huff.C: ddd.man.txt
 	./huffencode < ddd.man.txt > $@
 
 # `make depend' fails to find this dependency :-(
-strings.o: ddd.man.huff.C huffdecode.C
+show.o: ddd.man.huff.C huffdecode.C
 
 
 ## The xlibdir script
