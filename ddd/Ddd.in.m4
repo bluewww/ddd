@@ -3170,13 +3170,13 @@ Ddd*preferences*source*helpString:	\
 \n\
 ITEM DDD can show the current position and breakpoints\n\
     SUBITEM LBL(as glyphs), using small images in the text,\n\
-    SUBITEM LBL(as text characters), using ordinary text characters.\n\
+    SUBITEM LBL(as text), using ordinary text characters.\n\
 ITEM The LBL(Tool Buttons) can be placed\n\
     SUBITEM in the LBL(Command Tool) which can be moved around DDD, or\n\
     SUBITEM in the LBL(Source Window), as line of buttons.\n\
 ITEM Using DBX, DDD can refer to program sources\n\
-    SUBITEM by LBL(full path name), or\n\
-    SUBITEM by LBL(base name only), as required by some DBX variants.\n\
+    SUBITEM by LBL(path name), or\n\
+    SUBITEM by LBL(base name), as required by some DBX variants.\n\
 ITEM If LBL(Find words only) is set, only complete words are found.\n\
     Otherwise, DDD finds arbitrary occurrences.\n\
 ITEM If LBL(Find case sensitive) is set, search is case-sensitive.\n\
@@ -3197,7 +3197,7 @@ Click on LBL(Reset) to restore the saved preferences.
 
 Ddd*preferences*showExecPos.labelString:	Show Position and Breakpoints
 Ddd*preferences*asGlyphs.labelString:		as Glyphs
-Ddd*preferences*asText.labelString:		as Text Characters
+Ddd*preferences*asText.labelString:		as Text
 
 Ddd*preferences*toolButtons.labelString:	Tool buttons location
 Ddd*toolButtonsMenu*commandTool.labelString:	\
@@ -3206,8 +3206,8 @@ Ddd*toolButtonsMenu*sourceWindow.labelString:   \
 Source Window\ \ \ \ \ 
 
 Ddd*preferences*referSources.labelString:	Refer to Program Sources
-Ddd*preferences*byPath.labelString:		by Full Path Name
-Ddd*preferences*byBase.labelString:		by Base Name Only
+Ddd*preferences*byPath.labelString:		by Path Name
+Ddd*preferences*byBase.labelString:		by Base Name
 
 Ddd*preferences*cache.labelString:	        Cache
 Ddd*preferences*cacheSource.labelString:	Source Files
@@ -3404,7 +3404,7 @@ Ddd*preferences*fonts*default.labelString:	 Default Font
 Ddd*preferences*fonts*variableWidth.labelString: Variable Width
 Ddd*preferences*fonts*fixedWidth.labelString:	 Fixed Width
 
-Ddd*preferences*fonts*name.text.columns:	 32
+Ddd*preferences*fonts*name.text.columns:	 31
 Ddd*preferences*fonts*size.label.labelString:	 Size
 Ddd*preferences*fonts*size.text.columns:	 3
 Ddd*preferences*fonts*browse.labelString:	 Browse...
@@ -3456,7 +3456,7 @@ Ddd*preferences*plot*labelString:		Plot
 Ddd*preferences*plot_window*labelString:	Plot Window
 Ddd*preferences*extern*labelString:		External
 Ddd*preferences*builtin*labelString:		Builtin
-Ddd*preferences*text.columns:			50
+Ddd*preferences*text.columns:			48
 
 
 
@@ -5151,7 +5151,7 @@ Ddd*print.okLabelString: Print
 
 Ddd*print*to.labelString:		      Print To
 Ddd*print*toMenu.printer.labelString: 	      \
-\ \ \ \ \ \ \ \ \ Printer\ \ \ \ \ \ \ \ \ 
+\ \ \ \ \ \ \ \ \ \ \ Printer\ \ \ \ \ \ \ \ \ \ \ 
 Ddd*print*toMenu.file.labelString:    	      File
 
 Ddd*print*toMenu.?.indicatorOn:               off
@@ -5161,9 +5161,11 @@ Ddd*print*toMenu.entryAlignment: 	      XmALIGNMENT_CENTER
 Ddd*print*command.label.labelString:	      Print Command
 Ddd*print*command.text.columns:	      	      40
 
-Ddd*print*name.label.labelString:	      File Name
-Ddd*print*name.text.columns:	      	      40
+Ddd*print*name.labelString:	      	      File Name
+Ddd*print*name.text.columns:	      	      29
 Ddd*print*name.text.value:	      	      ddd()graph.ps
+
+Ddd*print*browse.labelString:	      	      Browse...
 
 Ddd*print*type.labelString:	      	      File Type
 Ddd*print*postscript.labelString:	      PostScript
@@ -5219,6 +5221,14 @@ KBD(7.5in x 10in) DASH Executive paper\n\
 Supported units for VAR(width) and VAR(height) include:\n\
 KBD(pt) (points), KBD(in) (inches),\n\
 KBD(mm) (millimeters), KBD(cm) (centimeters).
+
+Ddd*browse_print_popup.title:       DDD: Print to File
+Ddd*browse_print.selectionLabelString: Print to File
+Ddd*browse_print*helpString:	   \
+@rm You can select the file to print to.\n\
+\n\
+Click on LBL(OK) to set the file name.\n\
+Click on LBL(Filter) to apply the given filter.
 
 
 
