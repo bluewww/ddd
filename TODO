@@ -292,4 +292,10 @@ Volunteers for these and other projects are welcome!
 121. Mirror the DDD WWW pages, using `wget' 
      (ftp://gnjilux.cc.fer.hr/pub/unix/util/wget/)
 
-122. (Insert your project idea here)
+122. Have a window that shows DDD/GDB communication, with the ability
+     to modify commands before they are processed.
+
+123. For debugging DDD, have a `graph parse EXPR' command that creates
+     a data display from EXPR.
+
+124. (Insert your project idea here)
