@@ -302,7 +302,7 @@ static void HelpOnThemeCB(Widget w, XtPointer client_data,
 {
     // Fetch text from file
     string file = XtName((Widget)client_data);
-    string text = vsldoc(file);
+    string text = vsldoc(file, DispBox::vsllib_path);
     if (text == "")
 	text = "No help available on this theme.";
 
@@ -1474,7 +1474,7 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     {
 	set_command = show_command = line;
 	e_type = entry_filter;
-	doc = vsldoc(line);
+	doc = vsldoc(line, DispBox::vsllib_path);
 	if (doc == "")		   // No documentation:
 	    doc = basename(line);  // Use base name of file instead
 	else if (doc.contains("."))

@@ -35,17 +35,37 @@ char vsldoc_rcsid[] =
 
 #include "vsldoc.h"
 #include "string-fun.h"
+#include "basename.h"
 
 #include <stdio.h>
 
 // Return initial comments from VSL file FILE.
-string vsldoc(const string& file)
+string vsldoc(string file, const string& path)
 {
-    ostrstream os;
-    FILE *fp = fopen(file, "r");
+    FILE *fp = 0;
+
+    if (file == basename(file))
+    {
+	// Search for FILE in PATH
+	int n = path.freq(':');
+	string *dirs = new string[n + 1];
+	split(path, dirs, n + 1, ':');
+	for (int i = 0; i < n; i++)
+	{
+	    string full_file_name = dirs[i] + "/" + file;
+	    fp = fopen(full_file_name, "r");
+	    if (fp != 0)
+		break;
+	}
+    }
+
+    if (fp == 0)
+	fp = fopen(file, "r");
+
     if (fp == 0)
 	return "";
 
+    ostrstream os;
     int c;
     while ((c = getc(fp)) != EOF)
 	os << (char)c;
