@@ -224,7 +224,7 @@ line, the last command is repeated as well.  The `\fBCommand
 History...\fR' item in the `\fBCommands...\fR' menu shows the command
 history.
 .PP
-Using \s-2GDB\s+2, you can \fIcompleted\fR commands and arguments by
+Using \s-2GDB\s+2, you can \fIcomplete\fR commands and arguments by
 pressing the \s-2\fBTAB\fR\s+2 key; pressing the \s-2\fBTAB\fR\s+2 key
 multiple times shows one possible expansion after the other.
 .PP
