@@ -650,7 +650,7 @@ void dddSetPannerCB (Widget w, XtPointer client_data, XtPointer)
 
 void dddSetDebuggerCB (Widget w, XtPointer client_data, XtPointer)
 {
-    DebuggerType type = DebuggerType(client_data);
+    DebuggerType type = DebuggerType(int(client_data));
 
     switch (type)
     {
@@ -1010,7 +1010,8 @@ bool save_options(unsigned long flags)
     const bool save_core     = (flags & SAVE_CORE);
     const bool interact      = (flags & MAY_INTERACT);
 
-    string session = (save_session ? app_data.session : DEFAULT_SESSION);
+    string session = 
+	(save_session ? app_data.session : (char *)DEFAULT_SESSION);
 
     create_session_dir(session);
     const string file = session_state_file(session);
