@@ -144,7 +144,7 @@ echo "Please report any bugs or problems to bug-ddd@gnu.org."
 echo
 echo
 diff -r -C 2 -P $yesterday_dir $today_dir
-) > $target/$diff
+) | gzip -c -v9 > $target/$diff.gz
 
 echo "Creating $target/$diff...done"
 
