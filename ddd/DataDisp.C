@@ -1336,9 +1336,15 @@ void DataDisp::RefreshGraphEditCB(XtPointer client_data, XtIntervalId *id)
 
     if (disp_graph->firstVisibleNode() != 0)
     {
-	// Graph is non-empty: make sure its shell is visible
-	XtManageChild(graph_edit);
-	initial_popup_shell(data_disp_shell);
+	static bool popped_up = false;
+
+	if (!popped_up)
+	{
+	    // Graph is non-empty: make sure its shell is visible
+	    XtManageChild(graph_edit);
+	    initial_popup_shell(data_disp_shell);
+	    popped_up = true;
+	}
     }
 }
 
