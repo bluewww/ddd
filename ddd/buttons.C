@@ -613,7 +613,7 @@ static void VerifyButtonWorkProc(XtPointer client_data, XtIntervalId *id)
 		{
 		    XtSetSensitive(button, is_known_command(answer));
 		    button = 0;	           // Don't process this one again
-		    next_invocation = 100; // Process next button in 100ms
+		    next_invocation = 5;   // Process next button in 5ms
 		}
 
 		verify_id = XtAppAddTimeOut(app_context, next_invocation,
