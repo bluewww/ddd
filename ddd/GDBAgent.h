@@ -129,7 +129,8 @@ const unsigned LanguageChanged  = ReadyForCmd + 1;
 const unsigned ReplyRequired    = LanguageChanged + 1;
 const unsigned EchoDetected     = ReplyRequired + 1;
 const unsigned AsyncAnswer      = EchoDetected + 1;
-const unsigned GDBAgent_NTypes  = AsyncAnswer + 1;
+const unsigned Recording        = AsyncAnswer + 1;
+const unsigned GDBAgent_NTypes  = Recording + 1;
 
 // Handler info
 struct ReplyRequiredInfo {
@@ -566,7 +567,7 @@ public:
 
     // True if we are recording commands
     bool recording() const         { return _recording; }
-    bool recording(bool val)       { return _recording = val; }
+    bool recording(bool val);
 
     // True if checking for echos
     bool detect_echos() const        { return _detect_echos; }

@@ -1155,6 +1155,13 @@ void GDBAgent::handle_reply(string& answer)
     }
 }
 
+bool GDBAgent::recording(bool val)
+{
+    _recording = val;
+    callHandlers(Recording, (void *)recording());
+    return recording();
+}
+
 void GDBAgent::handle_input(string& answer)
 {
     handle_echo(answer);
