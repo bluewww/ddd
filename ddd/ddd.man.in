@@ -1329,7 +1329,8 @@ pressing \s-2\fBESC\fR\s+2 \s-2\fBESC\fR\s+2 \s-2\fB:\fR\s+2\fR
   \fB(setq gdb-command-name "@ddd@")\fR
 .sp
 .br
-Use `\fBM-x gdb\fR' to start a debugging session.  Proceed as usual.
+Use `\fBM-x gdb\fR' or `\fBM-x gdbsrc\fR' 
+to start a debugging session.  Proceed as usual.
 .PP
 .SS "Using @DDD@ with XXGDB"
 Invoke \fBxxgdb\fR as
