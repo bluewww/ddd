@@ -407,6 +407,6 @@ Volunteers for these and other projects are welcome!
     such as bar graphs.  This can be easily established using VSL
     functions.  See also 273 and 292.
 
-294 Have a way to expand `<repeats N times>' in display output.
+294 Have a way to expand `VALUE <Nx>' manually.
 
 295 (Insert new project ideas here)
