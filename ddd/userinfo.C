@@ -245,11 +245,11 @@ int userinfo(char *arg = 0)
 	    while (is_letter(*s++))
 		;
 
-	    if (*s)
+	    if (*s != '\0')
 	    {
-		// User id contains non-letters and is probably a
-		// symbolic name => leave it unchanged.
-		fputs(pwd->pw_name + 1, stdout);
+		// User id contains non-letters => probably a symbolic
+		// name => leave it unchanged.
+		fputs(pwd->pw_name, stdout);
 	    }
 	    else
 	    {
