@@ -3420,7 +3420,7 @@ Ddd*node_popup.set.labelString:		Set Value...
 Ddd*node_popup.set.documentationString: \
 @rm Change the selected display value
 
-Ddd*node_popup.delete.labelString:	Delete Display
+Ddd*node_popup.delete.labelString:	Undisplay
 Ddd*node_popup.delete.documentationString: \
 @rm Delete the selected display
 
@@ -3502,7 +3502,7 @@ Ddd*toolbar*rotate.labelString:		Rotate ()
 Ddd*toolbar*rotateAll.labelString:	Rotate All ()
 Ddd*toolbar*new.labelString:		Display ()
 Ddd*toolbar*set.labelString:		Set ()
-Ddd*toolbar*delete.labelString:		Delete ()
+Ddd*toolbar*delete.labelString:		Undisplay ()
 
 Ddd*toolbar*dereference.labelPixmap: 		dispref
 Ddd*toolbar*dereference.labelInsensitivePixmap:	dispref-xx
@@ -3620,11 +3620,11 @@ Ddd*toolbar*set.documentationString:	\
 @rm Change the value of the argument LBL(())
 
 Ddd*toolbar*delete.helpString:	\
-LBL(Delete ())\n\
+LBL(Undisplay ())\n\
 \n\
 Delete the selected displays.
 Ddd*toolbar*delete.tipString:	\
-@rm Delete selected displays
+@rm Undisplay LBL(())
 Ddd*toolbar*delete.documentationString:	\
 @rm Delete the selected displays
 
@@ -5287,7 +5287,7 @@ To discard the changes, click on LBL(No).
 
 Ddd*set_dialog_popup.title: DDD: Set Value
 Ddd*set_dialog*helpString:	\
-@rm You can now change a value in the selected display.\n\
+@rm You can now change the value of the variable in LBL(()).\n\
 If you want to keep it unchanged, click on LBL(Cancel).
 
 Ddd*kill_to_save_dialog_popup.title: DDD: Save Session
