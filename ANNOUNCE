@@ -37,12 +37,6 @@ What's new in DDD?
       All data display features are available in Java.
     - Watchpoints.  You can have the debugged program stop
       automatically whenever a particular variable is read or written.
-    - New key bindings.
-      * All key bindings are conformant with the KDE style guide:
-        Ctrl+O opens a file, Ctrl+S saves the session, etc.
-      * ESC is the canonical `Interrupt' key.  Ctrl+C still
-        interrupts, too, but can be assigned to Copy for full KDE
-        style compliance.
     - Deferred displays.  DDD now can maintain displays whose creation
       is deferred until a particular scope is entered.  Benefits:
       * Displays are now persistent across recompilations.
@@ -56,6 +50,16 @@ What's new in DDD?
     - User-defined commands.  Using GDB, you can record and edit new
       commands and assign them to buttons; see `Commands->Define
       Command'.  All commands are saved across DDD sessions.
+    - New key bindings.
+      * All key bindings are conformant with the KDE style guide:
+        Ctrl+O opens a file, Ctrl+S saves the session, etc.
+      * ESC is the canonical `Interrupt' key.  Ctrl+C still
+        interrupts, too, but can be assigned to Copy for full KDE
+        style compliance.
+    - Edit->Cut/Copy/Paste/... now apply to the current destination
+      text field (i.e. the one that has the selection, or the least
+      recently used).  This way, you can cut/copy/paste across all
+      text fields.
     - Conditional breakpoints, temporary breakpoints, and breakpoints
       with ignore counts now have their special symbols on their own.
     - On popular demand, the command tool has `until' and `make' buttons.
@@ -116,7 +120,7 @@ What's new in DDD?
       accepts `close' colors.
 
     Changes in configuration and building:
-    - LessTif 0.83 is supported (and a standard test environment of
+    - LessTif 0.84 is supported (and a standard test environment of
       the DDD developers).  See `patches/' for some useful patches.
     - GDB 4.17 is supported.
     - GCC 2.8.1 with enabled optimization is supported.
