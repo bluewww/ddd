@@ -312,13 +312,15 @@ void BreakPoint::process_pydb(string& info_output)
 
 void BreakPoint::process_dbx(string& info_output)
 {
-    if (info_output.contains("stop ", 0) || 
+    if (info_output.contains("PC==", 0) ||
+	info_output.contains("stop ", 0) ||
 	info_output.contains("stopped ", 0))
     {
 	// Breakpoint
 
 	info_output = info_output.after(rxblanks_or_tabs);
 	strip_leading_space (info_output);
+
 	if (info_output.contains ("at ", 0))
 	{
 	    info_output = info_output.after(rxblanks_or_tabs);
@@ -357,27 +359,43 @@ void BreakPoint::process_dbx(string& info_output)
 	}
 	else if (info_output.contains ("in ", 0))
 	{
-	    // `stop in FUNC'
-	    string func = info_output.after(rxblanks_or_tabs);
-	    if (func.contains('\n'))
-		func = func.before('\n');
-	    strip_space(func);
-	    myfunc = func;
+	    string line = info_output.after("in ");
+	    if (line.contains('\n'))
+		line = line.before('\n');
 
-	    myfile_name = "";
-	    myline_nr = 0;
-
-	    // Attempt to get exact position
-	    string pos = dbx_lookup(func);
-	    if (pos != "")
+	    if (line.contains("\":"))
 	    {
-		string file_name = pos.before(":");
-		string line_s    = pos.after(":");
-		int new_line_nr  = get_positive_nr(line_s);
+		// Ladebug output:
+		// `PC==x in TYPE FUNC(ARGS...) "FILE":LINE { COMMANDS }
 
-		myfile_name = file_name;
-		if (new_line_nr != 0)
-		    myline_nr = new_line_nr;
+		myfile_name = line.after("\"");
+		myfile_name = myfile_name.before("\"");
+		myline_nr   = get_positive_nr(line.after("\":"));
+		myfunc      = line.before("\"");
+		strip_space(myfunc);
+	    }
+	    else
+	    {
+		// DBX output:
+		// `stop in FUNC'
+		myfunc = line.before(rxblanks_or_tabs);
+		strip_space(myfunc);
+
+		myfile_name = "";
+		myline_nr = 0;
+
+		// Attempt to get exact position of FUNC
+		string pos = dbx_lookup(myfunc);
+		if (pos != "")
+		{
+		    string file_name = pos.before(":");
+		    string line_s    = pos.after(":");
+		    int new_line_nr  = get_positive_nr(line_s);
+
+		    myfile_name = file_name;
+		    if (new_line_nr != 0)
+			myline_nr = new_line_nr;
+		}
 	    }
 	}
 	else

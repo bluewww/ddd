@@ -62,11 +62,16 @@ string itostring (int nr)
 // Remove leading parentheses
 static void read_leading_parentheses(string& s)
 {
-    while (s.length() > 0 && (isspace(s[0]) || s[0] == '(' || s[0] == '['))
+    while (s.length() > 0 && (isspace(s[0]) || 
+			      s[0] == '(' || 
+			      s[0] == '[' || 
+			      s[0] == '#'))
+    {
 	s = s.after(0);
+    }
 }
 
-// Remove trainling parentheses
+// Remove trailing parentheses
 static void read_trailing_parentheses(string& s)
 {
     while (s.length() > 0 && (isspace(s[0]) || s[0] == ')' || s[0] == ']'))

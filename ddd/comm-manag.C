@@ -1,7 +1,7 @@
 // $Id$
 // GDB communication manager
 
-// Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+// Copyright (C) 1995-1999 Technische Universitaet Braunschweig, Germany.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -2375,7 +2375,7 @@ bool is_known_command(const string& answer)
     if (ans.freq('\n') > 1)
     {
 	int last_nl = ans.index('\n', -1);
-	ans = ans.before('\n') + ans.from(last_nl + 1);
+	ans = ans.through('\n') + ans.from(last_nl + 1);
     }
 
     if (ans.contains("program is not active")) // DBX
@@ -2386,6 +2386,15 @@ bool is_known_command(const string& answer)
 
     if (ans.contains("invalid keyword"))      // DEC DBX
 	return false;
+
+    if (ans.contains("unable to parse input")) // Ladebug
+	return false;
+
+    if (ans.contains("isn\'t available"))     // Ladebug
+	return false;
+
+    if (ans.contains("there is no running program")) // Ladebug
+	return true;
 
     if (ans.contains("undefined command"))    // GDB
 	return false;
@@ -2755,8 +2764,10 @@ static void extra_completed (const StringArray& answers,
 
 	file = answers[qu_count++];
 
-	// Simple sanity check
+	// Simple sanity checks
 	strip_trailing_space(file);
+	if (file.contains("file\n", 0))	// Ladebug echoes `file'
+	    file = file.after(rxwhite);
 	if (file.contains('\n'))
 	    file = file.before('\n');
 	if (file.contains(' '))

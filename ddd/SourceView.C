@@ -3978,7 +3978,8 @@ void SourceView::process_info_bp (string& info_output,
 		strip_leading_space(info_output);
 		    
 		if (!info_output.contains('(', 0)
-		    && !info_output.contains('[', 0))
+		    && !info_output.contains('[', 0)
+		    && !info_output.contains('#', 0))
 		{
 		    // No breakpoint info - skip this line
 		    info_output = info_output.after('\n');

@@ -569,6 +569,7 @@ void PosBuffer::filter_dbx(string& answer)
     // When reaching a breakpoint, DBX issues the breakpoint
     // number before the status line.  Check for this and
     // initialize defaults from breakpoint position.
+    strip_leading_space(answer);
     if (answer.contains('(', 0) || answer.contains('[', 0))
     {
 	// Get breakpoint position
@@ -645,30 +646,36 @@ void PosBuffer::filter_dbx(string& answer)
 	// "[new_tree:113 ,0x400858] \ttree->right = NULL;"
 		
 	line = answer.from(dbxpos_index);
-
-	// Note that the function name may contain "::" sequences.
-	while (line.contains("::"))
-	    line = line.after("::");
-	line = line.after(":");
-	line = line.through(rxint);
-	if (line != "")
+	if (line.contains("[#", 0))
 	{
-	    if (answer.index('\n', dbxpos_index) >= 0)
+	    // This is a Ladebug breakpoint, no position info.
+	}
+	else
+	{
+	    // Note that the function name may contain "::" sequences.
+	    while (line.contains("::"))
+		line = line.after("::");
+	    line = line.after(":");
+	    line = line.through(rxint);
+	    if (line != "")
 	    {
-		already_read = PosComplete;
+		if (answer.index('\n', dbxpos_index) >= 0)
+		{
+		    already_read = PosComplete;
 
-		// Strip position info and line
-		strip_leading_space(answer);
-		if (answer.contains('[', 0))
-		    answer = answer.after("\n");
-	    }
-	    else
-	    {
-		// Wait for `\n' such that we can delete the line
-		answer_buffer = answer;
-		answer = "";
-		already_read = PosPart;
-		return;
+		    // Strip position info and line
+		    strip_leading_space(answer);
+		    if (answer.contains('[', 0))
+			answer = answer.after("\n");
+		}
+		else
+		{
+		    // Wait for `\n' such that we can delete the line
+		    answer_buffer = answer;
+		    answer = "";
+		    already_read = PosPart;
+		    return;
+		}
 	    }
 	}
     }
