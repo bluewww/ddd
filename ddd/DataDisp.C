@@ -82,13 +82,13 @@ char DataDisp_rcsid[] =
 #include "Map.h"
 #include "PannedGE.h"
 #include "PosBuffer.h"
-#include "UndoBuffer.h"
 #include "ScrolledGE.h"
 #include "SmartC.h"
 #include "StringBox.h"		// StringBox::fontTable
 #include "StringMap.h"
 #include "TagBox.h"
 #include "TimeOut.h"
+#include "UndoBuffer.h"
 #include "VSEFlags.h"
 #include "VSLLib.h"
 #include "VoidArray.h"
@@ -2038,22 +2038,27 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	set_label(graph_cmd_area[CmdItms::New].widget,
 		  "Display ()", DISPLAY_ICON);
     }
-    set_sensitive(shortcut_menu[ShortcutItms::New2].widget, arg_ok);
-    set_sensitive(graph_cmd_area[CmdItms::New].widget, arg_ok);
-    set_sensitive(display_area[DisplayItms::New].widget, true);
 
-    // Dereference
     bool recording = gdb->recording() && emptyCommandQueue();
     bool record_ok = recording && arg_ok;
+    bool undoing = undo_buffer.at_past_exec_pos();
+
+    set_sensitive(shortcut_menu[ShortcutItms::New2].widget, 
+		  arg_ok && !undoing);
+    set_sensitive(graph_cmd_area[CmdItms::New].widget, arg_ok && !undoing);
+    set_sensitive(display_area[DisplayItms::New].widget, !undoing);
+
+    // Dereference
     set_sensitive(node_popup[NodeItms::Dereference].widget,
-		  dereference_ok);
+		  dereference_ok && !undoing);
     set_sensitive(shortcut_menu[ShortcutItms::Dereference2].widget,
-		  record_ok || dereference_ok || 
-		  (count.selected == 0 && arg_ok));
+		  (record_ok || dereference_ok || 
+		  (count.selected == 0 && arg_ok)) && !undoing);
     set_sensitive(graph_cmd_area[CmdItms::Dereference].widget,
-		  dereference_ok || (count.selected == 0 && arg_ok));
+		  (dereference_ok || (count.selected == 0 && arg_ok)) &&
+		  !undoing);
     set_sensitive(display_area[DisplayItms::Dereference].widget,
-		  dereference_ok);
+		  dereference_ok && !undoing);
 
     // Rotate
     set_sensitive(node_popup[NodeItms::Rotate].widget,       rotate_ok);
@@ -2118,10 +2123,11 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 		  count.selected > 0);
 
     // Set
-    bool can_set = gdb->has_assign_command() && arg_ok;
+    bool can_set = gdb->has_assign_command() && arg_ok && !undoing;
     set_sensitive(graph_cmd_area[CmdItms::Set].widget,   can_set);
     set_sensitive(display_area[DisplayItms::Set].widget, can_set);
-    set_sensitive(node_popup[NodeItms::Set].widget, gdb->has_assign_command());
+    set_sensitive(node_popup[NodeItms::Set].widget, 
+		  gdb->has_assign_command() && !undoing);
 
     // Cluster
     if (count.selected_unclustered > 0 || count.selected_clusters == 0)
@@ -2151,6 +2157,9 @@ void DataDisp::RefreshArgsCB(XtPointer, XtIntervalId *timer_id)
 	    sens = true;	// Exactly one value selected
  	else if (disp_node_arg != 0)
 	    sens = true;	// Exactly one expression selected
+
+	if (undoing)
+	    sens = false;
 
 	set_sensitive(shortcut_popup1[i].widget, sens);
 	set_sensitive(shortcut_popup2[i].widget, sens);

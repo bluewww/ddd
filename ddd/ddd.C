@@ -196,6 +196,7 @@ char ddd_rcsid[] =
 #include "MakeMenu.h"
 #include "SourceView.h"
 #include "TimeOut.h"
+#include "UndoBuffer.h"
 #include "VSEFlags.h"
 #include "WhatNextCB.h"
 #include "args.h"
@@ -839,6 +840,7 @@ static MMDesc command_menu[] =
     MMEnd
 };
 
+static Widget stack_w;
 static Widget registers_w;
 static Widget threads_w;
 static Widget signals_w;
@@ -846,7 +848,8 @@ static Widget signals_w;
 static MMDesc stack_menu[] =
 {
     { "stack",      MMPush,  { WhenReady, 
-			       XtPointer(SourceView::ViewStackFramesCB) }},
+			       XtPointer(SourceView::ViewStackFramesCB) },
+      NULL, &stack_w },
     { "registers",  MMPush,  { WhenReady, 
 			       XtPointer(SourceView::ViewRegistersCB) },
       NULL, &registers_w },
@@ -1255,13 +1258,13 @@ static Widget edit_watchpoints_w = 0;
 
 static MMDesc data_menu[] = 
 {
-    { "displays",   MMPush,    { DataDisp::EditDisplaysCB }},
+    { "displays",    MMPush,    { DataDisp::EditDisplaysCB }},
     { "watchpoints", MMPush,   { SourceView::EditBreakpointsCB }, 
                                  NULL, &edit_watchpoints_w },
-    {"examine",       MMPush,  { gdbExamineCB }, NULL, &examine_w},
+    { "examine",     MMPush,  { gdbExamineCB }, NULL, &examine_w},
     MMSep,
-    {"print",         MMPush,  { gdbPrintCB   }, NULL, &print_w },
-    {"display",       MMPush,  { gdbDisplayCB }, NULL, &display_w},
+    { "print",       MMPush,  { gdbPrintCB   }, NULL, &print_w },
+    { "display",     MMPush,  { gdbDisplayCB }, NULL, &display_w },
     MMSep,
     { "detectAliases", MMToggle, { graphToggleDetectAliasesCB },
       NULL, &detect_aliases_w },
@@ -4800,7 +4803,8 @@ void update_arg_buttons()
     set_sensitive(find_forward_w, can_find);
     set_sensitive(find_backward_w, can_find);
 
-    bool can_print = (arg != "") && !is_file_pos(arg);
+    bool undoing = undo_buffer.at_past_exec_pos();
+    bool can_print = (arg != "") && !is_file_pos(arg) && !undoing;
     set_sensitive(arg_cmd_area[ArgItems::Print].widget, can_print);
     set_sensitive(arg_cmd_area[ArgItems::Display].widget, can_print);
     set_sensitive(print_w,   can_print);
@@ -4896,6 +4900,11 @@ void update_arg_buttons()
 		  XmNlabelString, disp_ref_label.xmstring(),
 		  NULL);
 
+    set_sensitive(stack_w,     !undoing);
+    set_sensitive(registers_w, gdb->has_regs_command() && !undoing);
+    set_sensitive(threads_w,   (gdb->type() == GDB || gdb->type() == JDB) &&
+		                !undoing);
+    set_sensitive(infos_w,     gdb->type() == GDB && !undoing);
 }
 
 // Arg changed - re-label buttons
@@ -6826,10 +6835,7 @@ static void setup_options()
 
     set_sensitive(complete_w,  gdb->type() == GDB);
     set_sensitive(define_w,    gdb->type() == GDB);
-    set_sensitive(registers_w, gdb->has_regs_command());
-    set_sensitive(threads_w,   gdb->type() == GDB || gdb->type() == JDB);
     set_sensitive(signals_w,   gdb->type() == GDB);
-    set_sensitive(infos_w,     gdb->type() == GDB);
 }
 
 static void setup_core_limit()
