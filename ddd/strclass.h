@@ -731,6 +731,16 @@ inline string operator + (const char* x, const subString& y) return r;
     cat(x, y, r);
 }
 
+inline string operator + (char* x, const string& y) return r;
+{
+    cat(x, y, r);
+}
+
+inline string operator + (char* x, const subString& y) return r;
+{
+    cat(x, y, r);
+}
+
 inline string reverse(const string& x) return r;
 {
     r.rep = string_Sreverse(x.rep, r.rep);
@@ -809,6 +819,16 @@ inline string operator + (const char* x, const string& y)
 }
 
 inline string operator + (const char* x, const subString& y) 
+{
+    string r; cat(x, y, r); return r;
+}
+
+inline string operator + (char* x, const string& y) 
+{
+    string r; cat(x, y, r); return r;
+}
+
+inline string operator + (char* x, const subString& y) 
 {
     string r; cat(x, y, r); return r;
 }
