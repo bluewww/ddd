@@ -3396,6 +3396,7 @@ Ddd*signals.cancelLabelString: Reset
 Ddd*signals_popup.title: DDD: Signal Handling
 
 Ddd*signals*send.labelString:	   Send
+Ddd*signals*help.labelString:	   ?
 Ddd*signals*sep.bottomOffset:	   10
 Ddd*signals*leader.bottomOffset:   4
 Ddd*signals*leader.separatorType:  XmSINGLE_DASHED_LINE
@@ -3410,7 +3411,12 @@ This panel controls how signals are handled by @GDB@.\n\
 DESC(Stop, [interrupt program if this signal happens (implies LBL(Print))])\n\
 DESC(Print, [print a message in the @GDB@ console if this signal happens])\n\
 DESC(Pass, [let program see this signal; otherwise program doesn't know])\n\
-DESC(Send, [continue program execution with this signal])
+DESC(Send, [continue program execution with this signal])\n\
+\n\
+Click on LBL(?) to get further information on the specific signal.\n\
+\n\
+Click on LBL(Reset) to restore the original settings.\n\
+Click on LBL(OK) to close this window.
 
 
 

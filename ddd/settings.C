@@ -48,6 +48,7 @@ char settings_rcsid[] =
 #include <Xm/Separator.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "AppData.h"
 #include "Assoc.h"
@@ -74,6 +75,7 @@ char settings_rcsid[] =
 #include "logo.h"
 #include "question.h"
 #include "regexps.h"
+#include "shell.h"
 #include "status.h"
 #include "string-fun.h"
 #include "verify.h"
@@ -303,6 +305,47 @@ static void SignalCB(Widget w, XtPointer, XtPointer call_data)
 	(XmToggleButtonCallbackStruct *)call_data;
 
     gdb_handle_command(w, cbs->set);
+}
+
+// Get help on signal - using `info' on `libc'
+static void HelpOnSignalCB(Widget w, XtPointer client_data, 
+			   XtPointer call_data)
+{
+    string sig = XtName(Widget(client_data));
+    string cmd = "info -f libc -n 'Variable Index' " + sig + " -o -";
+
+    string s;
+
+    FILE *fp = popen(sh_command(cmd), "r");
+    if (fp != 0)
+    {
+	ostrstream info;
+	int c;
+	while ((c = getc(fp)) != EOF)
+	    info << char(c);
+	pclose(fp);
+	
+	s = info;
+	int start = s.index(" - Macro: int " + sig);
+	start = s.index('\n', start);
+	s = s.after(start);
+	int end = s.index("\n - ");
+	if (end >= 0)
+	    s = s.before(end);
+
+	strip_space(s);
+	while (s.contains("  "))
+	    s.gsub("  ", " ");
+	s.gsub("\n ", "\n");
+    }
+
+    if (s == "")
+	s = "No help available on this signal.";
+
+    MString text = bf(sig + " signal");
+    text += cr() + cr() + rm(s);
+
+    MStringHelpCB(w, XtPointer(text.xmstring()), call_data);
 }
 
 
@@ -1051,13 +1094,22 @@ static Widget create_signal_button(Widget label,
     XtSetArg(args[arg], XmNbottomPosition,   row + 1);            arg++;
     XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_CENTER); arg++;
 
-    string fullname = string(XtName(label)) + "-" + name;
-    Widget w = 
-	verify(XmCreateToggleButton(XtParent(label), fullname, args, arg));
-    XtManageChild(w);
+    Widget w = 0;
+    if (name == "send")
+    {
+	w = verify(XmCreatePushButton(XtParent(label), name, args, arg));
+	XtManageChild(w);
 
-    XtAddCallback(w, XmNvalueChangedCallback,
-		  SignalCB, XtPointer(label));
+	XtAddCallback(w, XmNactivateCallback, SendSignalCB, XtPointer(label));
+    }
+    else
+    {
+	string fullname = string(XtName(label)) + "-" + name;
+	w = verify(XmCreateToggleButton(XtParent(label), fullname, args, arg));
+	XtManageChild(w);
+
+	XtAddCallback(w, XmNvalueChangedCallback, SignalCB, XtPointer(label));
+    }
 
     return w;
 }
@@ -1321,40 +1373,24 @@ static void add_button(Widget form, int& row, Dimension& max_width,
 		      callback, XtPointer(set_command_s));
     }
 
-    Widget help  = 0;
+    // Add help button
+    arg = 0;
+    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);      arg++;
+    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_POSITION);  arg++;
+    XtSetArg(args[arg], XmNtopPosition,      row);                arg++;
+    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);  arg++;
+    XtSetArg(args[arg], XmNbottomPosition,   row + 1);            arg++;
+    XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_CENTER); arg++;
+    Widget help = verify(XmCreatePushButton(form, "help", args, arg));
+    XtManageChild(help);
+
+    Widget send  = 0;
     Widget pass  = 0;
     Widget print = 0;
     Widget stop  = 0;
-    Widget send  = 0;
-    if (e_type != SignalEntry)
+    if (e_type == SignalEntry)
     {
-	// Add help button
-	arg = 0;
-	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);      arg++;
-	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_POSITION);  arg++;
-	XtSetArg(args[arg], XmNtopPosition,      row);                arg++;
-	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);  arg++;
-	XtSetArg(args[arg], XmNbottomPosition,   row + 1);            arg++;
-	XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_CENTER); arg++;
-	help = verify(XmCreatePushButton(form, "help", args, arg));
-	XtManageChild(help);
-    }
-    else
-    {
-	// Add stop, print, pass, and send buttons
-	arg = 0;
-	XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);      arg++;
-	XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_POSITION);  arg++;
-	XtSetArg(args[arg], XmNtopPosition,      row);                arg++;
-	XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_POSITION);  arg++;
-	XtSetArg(args[arg], XmNbottomPosition,   row + 1);            arg++;
-	XtSetArg(args[arg], XmNalignment,        XmALIGNMENT_CENTER); arg++;
-	send = verify(XmCreatePushButton(form, "send", args, arg));
-	XtManageChild(send);
-
-	XtAddCallback(send, XmNactivateCallback, 
-		      SendSignalCB, XtPointer(label));
-
+	send  = create_signal_button(label, "send",  row, help);
 	pass  = create_signal_button(label, "pass",  row, send);
 	print = create_signal_button(label, "print", row, pass);
 	stop  = create_signal_button(label, "stop",  row, print);
@@ -1568,7 +1604,12 @@ static void add_button(Widget form, int& row, Dimension& max_width,
     XtManageChild(leader);
 
     // Add help callback
-    if (help != 0)
+    if (e_type == SignalEntry)
+    {
+	XtAddCallback(help, XmNactivateCallback, 
+		      HelpOnSignalCB, XtPointer(label));
+    }
+    else
     {
 	XtAddCallback(help, XmNactivateCallback, 
 		      HelpOnThisCB, XtPointer(entry));
