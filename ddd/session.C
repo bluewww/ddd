@@ -94,7 +94,7 @@ extern "C" {
 #include <unistd.h>
 #include <ctype.h>
 
-#ifdef HAVE_SYS_STAT_H
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>		// mkdir()
 #endif
 }
