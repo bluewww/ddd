@@ -677,7 +677,8 @@ public:
     string condition_command(string bp, string expr) const; 
 				                    // cond BP EXPR
     string shell_command(string cmd) const;	    // shell CMD
-    string debug_command(string file = "") const;   // file FILE
+    string debug_command(string file = "",          // file FILE
+			 string args = "") const;
     string signal_command(int sig) const;           // signal SIG
     string nop_command(string comment = "") const;  // # comment
 

@@ -155,6 +155,7 @@ char GDBAgent_rcsid[] =
 #include "index.h"
 #include "isid.h"
 #include "home.h"
+#include "value-read.h"		// read_token
 
 #include <stdlib.h>
 #include <iostream.h>
@@ -2099,8 +2100,11 @@ string GDBAgent::shell_command(string cmd) const
 }
 
 // Return command to debug PROGRAM
-string GDBAgent::debug_command(string program) const
+string GDBAgent::debug_command(string program, string args) const
 {
+    if (args != "" && !args.contains(' ', 0))
+	args = " " + args;
+
     switch (type())
     {
     case GDB:
@@ -2120,7 +2124,7 @@ string GDBAgent::debug_command(string program) const
 	return "load " + program;
 
     case PERL:
-	return "exec " + quote("perl -d " + program);
+	return "exec " + quote("perl -d " + program + args);
     }
     return "";			// Never reached
 }
@@ -2193,7 +2197,17 @@ string GDBAgent::run_command(string args) const
 	    return "r" + args;
 
     case PERL:
-	return "R";
+    {
+	string c = "R\n@ARGV = ($ARGV[0], ";
+	while (args != "")
+	{
+	    strip_leading_space(args);
+	    string arg = read_token(args);
+	    c += quote(arg, '\'') + ", ";
+	}
+	c += ")";
+	return c;
+    }
     }
 
     return "";			// Never reached

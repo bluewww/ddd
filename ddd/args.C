@@ -44,6 +44,7 @@ char args_rcsid[] =
 #include "disp-read.h"
 #include "file.h"
 #include "mydialogs.h"
+#include "options.h"
 #include "regexps.h"
 #include "string-fun.h"
 #include "verify.h"
@@ -120,6 +121,16 @@ void add_to_arguments(string line)
 	add_argument(args, run_arguments, last_run_argument, 
 		     run_arguments_updated);
     }
+    else if (gdb->type() == PERL && line.contains("@ARGV", 0))
+    {
+	// @ARGV = ($ARGV[0], 'arg1', 'arg2', )
+	string args = line.after(", '");
+	args.gsub("', '", " ");
+	args = args.before("', )");
+
+	add_argument(args, run_arguments, last_run_argument, 
+		     run_arguments_updated);
+    }
     else if (is_run_cmd(line))
     {
 	string args = line.after(rxwhite);
@@ -146,6 +157,14 @@ void add_to_arguments(string line)
 	if (dir.contains('/', 0))
 	    add_argument(dir, cd_arguments, last_cd_argument, 
 			 cd_arguments_updated);
+    }
+    else if (gdb->type() == PERL && is_file_cmd(line, gdb))
+    {
+	string args = line.after(" -d ");
+	args = args.after(rxwhite); // Skip file name
+	args = args.before('\"');
+	add_argument(args, run_arguments, last_run_argument, 
+		     run_arguments_updated);
     }
 }
 
@@ -215,7 +234,7 @@ void update_arguments()
 // Run program with given arguments
 static void gdbRunDCB(Widget, XtPointer, XtPointer)
 {
-    Widget text = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
+    Widget text  = XmSelectionBoxGetChild(run_dialog, XmDIALOG_TEXT);
     String _args = XmTextGetString(text);
     string args(_args);
     XtFree(_args);
