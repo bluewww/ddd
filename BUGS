@@ -164,4 +164,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 326 The bounding box is too small by one pixel.  See also 049.
 
-327 (Insert new bugs here)
+327 `ddd --version` requires X access.
+
+328 (Insert new bugs here)
