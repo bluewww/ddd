@@ -37,6 +37,7 @@
 #pragma interface
 #endif
 
+#include "strclass.h"
 #include "Box.h"
 #include "VSLLib.h"
 #include "DispValue.h"
@@ -49,7 +50,7 @@ private:
     Box* title_box;
 public:
     // Must be initialized from outside!
-    static VSLLib* vsllibptr;
+    static string  vsllib_name;
     static int     max_name_length;
 
     // bei dv == 0 disabled-box erzeugen
@@ -68,23 +69,33 @@ private:
     string short_name (string name, int length = max_name_length);
     Box*   create_value_box (const DispValue* dv, int member_name_width = 0);
 
+    static VSLLib* vsllib_ptr;
+    static void init_vsllib();
+    static VSLLib *vsllib()
+    {
+	if (vsllib_ptr == 0)
+	    init_vsllib();
+	return vsllib_ptr;
+    }
+    
+
 protected:
     // Evaluation functions
     static Box *dup(const string& func_name, const Box *box);
     static Box *eval(const string& func_name, ListBox *arg)
     {
-	return dup(func_name, vsllibptr->eval(func_name, arg));
+	return dup(func_name, vsllib()->eval(func_name, arg));
     }
     static Box *eval(const string& func_name, VSLArg args[])
     {
-	return dup(func_name, vsllibptr->eval(func_name, args));
+	return dup(func_name, vsllib()->eval(func_name, args));
     }
     static Box *eval(const string& func_name, 
 		     VSLArg arg1 = (Box *)0,
 		     VSLArg arg2 = (Box *)0,
 		     VSLArg arg3 = (Box *)0)
     {
-	return dup(func_name, vsllibptr->eval(func_name, arg1, arg2, arg3));
+	return dup(func_name, vsllib()->eval(func_name, arg1, arg2, arg3));
     }
 };
 

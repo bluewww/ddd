@@ -2454,23 +2454,10 @@ DataDisp::DataDisp (XtAppContext app_context,
 		    int    max_name_length,
 		    bool   panned)
 {
-    static const char builtin_def[] = 
-#include "ddd.vsl.h"
-	;
-
     registerOwnConverters();
 
-    StringBox::fontTable = new FontTable (XtDisplay(parent));
-
-    if (string(vslLibrary) == "builtin")
-    {
-	istrstream is(builtin_def);
-	DispBox::vsllibptr = new VSLLib(is);
-    }
-    else
-    {
-	DispBox::vsllibptr = new VSLLib (vslLibrary);
-    }
+    StringBox::fontTable     = new FontTable (XtDisplay(parent));
+    DispBox::vsllib_name     = vslLibrary;
     DispBox::max_name_length = max_name_length;
 
     disp_graph = new DispGraph();

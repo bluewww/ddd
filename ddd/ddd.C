@@ -6558,6 +6558,7 @@ void set_status(const string& message)
     XtVaSetValues(status_w,
 		  XmNlabelString, msg.xmstring(),
 		  NULL);
+    XFlush(XtDisplay(status_w));
 }
 
 //-----------------------------------------------------------------------------

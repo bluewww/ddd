@@ -41,6 +41,8 @@ char DispBox_rcsid[] =
 #include "DispBox.h"
 #include "strclass.h"
 #include "bool.h"
+#include "cook.h"
+#include "ddd.h"
 
 
 //-----------------------------------------------------------------------------
@@ -52,8 +54,9 @@ static regex RXscope("[a-zA-Z_0-9]*`", true);
 
 //-----------------------------------------------------------------------------
 
-VSLLib* DispBox::vsllibptr = 0;
+VSLLib* DispBox::vsllib_ptr      = 0;
 int     DispBox::max_name_length = 20;
+string  DispBox::vsllib_name     = "builtin";
 
 // ***************************************************************************
 //
@@ -78,6 +81,32 @@ DispBox::DispBox (string disp_nr,
 	args[1] = eval("disabled");
 
     mybox = eval("display_box", args);
+}
+
+
+// ***************************************************************************
+//
+void DispBox::init_vsllib()
+{
+    static const char builtin_def[] = 
+#include "ddd.vsl.h"
+	;
+
+
+    if (string(vsllib_name) != "builtin")
+    {
+	StatusDelay("Reading VSL library " + quote(vsllib_name));
+	vsllib_ptr = new VSLLib (vsllib_name);
+    }
+
+    if (vsllib_ptr == 0)
+    {
+	StatusDelay("Reading builtin VSL library");
+	istrstream is(builtin_def);
+	vsllib_ptr = new VSLLib(is);
+    }
+
+    assert (vsllib_ptr != 0);
 }
 
 
