@@ -113,7 +113,7 @@ AC_MSG_CHECKING(for ${YACC} flags)
 YFLAGS=""
 AC_MSG_RESULT(${YFLAGS})
 AC_SUBST(YFLAGS)dnl
-AC_CHECK_LIB(y, main, LIBS="$LIBS -ly")
+AC_CHECK_LIB(y, yyerror, LIBS="$LIBS -ly")
 AC_PROG_LEX
 AC_MSG_CHECKING(for ${LEX} flags)
 LFLAGS=""
@@ -159,7 +159,7 @@ dnl We need to check whether we need the libraries because IRIX5 ships
 dnl with bogus versions.
 AC_CHECK_FUNC(connect, , ddd_check_socket=1)
 if test "$ddd_check_socket" = 1; then
-  AC_CHECK_LIB(socket, main, LIBS="$LIBS -lsocket", ddd_check_both=1)
+  AC_CHECK_LIB(socket, connect, LIBS="$LIBS -lsocket", ddd_check_both=1)
 fi
 if test "$ddd_check_both" = 1; then
   ddd_old_libs=$LIBS
@@ -171,13 +171,13 @@ AC_CHECK_FUNC(gethostbyname)
 dnl
 dnl If we use gcc or g++, link with -lg++ if it exists
 if test "$GXX" = yes; then
-AC_CHECK_LIB(g++, main, LIBS="$LIBS -lg++")
+AC_CHECK_LIB(g++, lib_error_handler, LIBS="$LIBS -lg++")
 fi
 dnl
-AC_CHECK_LIB(m, main, LIBM="-lm")
+AC_CHECK_LIB(m, sin, LIBM="-lm")
 AC_SUBST(LIBM)
 dnl
-AC_CHECK_LIB(c, main, LIBC="-lc")
+AC_CHECK_LIB(c, open, LIBC="-lc")
 AC_SUBST(LIBC)
 dnl
 AC_CHECK_LIB(gen, regcmp, LIBGEN="-lgen")
