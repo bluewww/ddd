@@ -238,6 +238,7 @@ int main(int argc, char *argv[])
 	for (int i = 2; i < argc; i++)
 	    themes += argv[i];
 	lib.set_theme_list(themes);
+	assert(lib.OK());
 
 	if (VSEFlags::assert_library_ok)
 	    assert(lib.OK());
