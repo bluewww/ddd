@@ -3509,6 +3509,21 @@ bool DataDisp::unmerge_display(int disp_nr)
     return disp_graph->unalias(disp_nr);
 }
 
+void DataDisp::PreLayoutCB(Widget, XtPointer client_data, XtPointer)
+{
+}
+
+// Re-enable aliases after layouting
+void DataDisp::PostLayoutCB(Widget, XtPointer client_data, XtPointer)
+{
+    DataDisp *data_disp = (DataDisp *)client_data;
+    if (data_disp->detect_aliases)
+    {
+	data_disp->set_detect_aliases(false);
+	data_disp->set_detect_aliases(true);
+    }
+}
+
 //----------------------------------------------------------------------------
 // Constructor
 //----------------------------------------------------------------------------
@@ -3522,15 +3537,18 @@ DataDisp::DataDisp (XtAppContext app_context,
 {
     registerOwnConverters();
 
+    // Init globals
     StringBox::fontTable     = new FontTable (XtDisplay(parent));
     DispBox::vsllib_name     = vsl_library;
     DispBox::vsllib_path     = vsl_path;
     DispBox::vsllib_defs     = vsl_defs;
 
+    // Create graph
     disp_graph = new DispGraph();
 
     disp_graph->addHandler(DispGraph_Empty, no_displaysHP);
 
+    // Crate graph editor
     Arg args[10];
     int arg = 0;
     XtSetArg (args[arg], XtNgraph, (Graph *)disp_graph); arg++;
@@ -3542,6 +3560,7 @@ DataDisp::DataDisp (XtAppContext app_context,
 
     set_last_origin(graph_edit);
 
+    // Create menus
     graph_popup_w = 
 	MMcreatePopupMenu(graph_edit, "graph_popup", graph_popup);
     InstallButtonTips(graph_popup_w);
@@ -3552,9 +3571,11 @@ DataDisp::DataDisp (XtAppContext app_context,
 
     disp_graph->callHandlers();
 
+    // Add actions
     XtAppAddActions (app_context, actions, XtNumber (actions));
     XtManageChild (graph_edit);
 
+    // Create buttons
     graph_cmd_w = 
 	verify(XmCreateRowColumn(parent, "graph_cmd_w", NULL, 0));
 
@@ -3618,14 +3639,15 @@ DataDisp::DataDisp (XtAppContext app_context,
     XtManageChild (form2);
     XtManageChild (form1);
 
-    XtAddCallback(graph_edit,
-		  XtNselectionChangedCallback,
-		  UpdateDisplayEditorSelectionCB,
-		  0);
-    XtAddCallback(graph_edit,
-		  XtNcompareNodesCallback,
-		  CompareNodesCB,
-		  0);
+    // Add callbacks
+    XtAddCallback(graph_edit, XtNselectionChangedCallback,
+		  UpdateDisplayEditorSelectionCB, XtPointer(this));
+    XtAddCallback(graph_edit, XtNcompareNodesCallback,
+		  CompareNodesCB, XtPointer(this));
+    XtAddCallback(graph_edit, XtNpreLayoutCallback,
+		  PreLayoutCB, XtPointer(this));
+    XtAddCallback(graph_edit, XtNpostLayoutCallback,
+		  PostLayoutCB, XtPointer(this));
 
     if (display_list_w)
     {

@@ -71,6 +71,8 @@
 #define XtNselectionChangedCallback "selectionChanged"
 #define XtNsizeChangedCallback      "sizeChanged"
 #define XtNcompareNodesCallback     "compareNodes"
+#define XtNpreLayoutCallback        "preLayout"
+#define XtNpostLayoutCallback       "postLayout"
 #define XtNselectTile               "selectTile"
 #define XtNrotation		    "rotation"
 #define XtNautoLayout		    "autoLayout"
@@ -125,6 +127,19 @@ typedef struct _GraphEditClassRec *GraphEditWidgetClass;
 typedef struct _GraphEditRec      *GraphEditWidget;
 
 
+// Modes
+enum LayoutMode {
+    RegularLayoutMode,		// Use regular Sugiyama/Misue layout method
+    CompactLayoutMode		// Use a more compact alternative
+};
+
+enum SelectionMode { 
+    SetSelection,		// Set the selection
+    ExtendSelection,		// Extend the selection
+    ToggleSelection		// Toggle the selection
+};
+
+
 // Callback Infos
 struct GraphEditPositionChangedInfo {
     Graph     *graph;          // Graph this node is in
@@ -145,7 +160,7 @@ struct GraphEditPositionChangedInfo {
 };
 
 struct GraphEditSelectionChangedInfo {
-    Graph     *graph;          // Graph this node is in
+    Graph     *graph;		// Graph this node is in
 
     GraphEditSelectionChangedInfo():
         graph(0)
@@ -155,11 +170,24 @@ struct GraphEditSelectionChangedInfo {
     {}
 };
 
+struct GraphEditLayoutInfo {
+    Graph     *graph;		// Graph this node is in
+    LayoutMode mode;		// Current layout mode
+    int rotation;		// Rotation (in degrees)
+
+    GraphEditLayoutInfo():
+        graph(0), mode(RegularLayoutMode), rotation(0)
+    {}
+    GraphEditLayoutInfo(const GraphEditLayoutInfo& info):
+        graph(info.graph), mode(info.mode), rotation(info.rotation)
+    {}
+};
+
 struct GraphEditCompareNodesInfo {
-    Graph     *graph;          // Graph these nodes are in
-    GraphNode *node1;	       // Nodes to compare
+    Graph     *graph;		// Graph these nodes are in
+    GraphNode *node1;		// Nodes to compare
     GraphNode *node2;
-    int       result;          // Compare result (read/write; < 0, 0, > 0)
+    int       result;		// Compare result (read/write; < 0, 0, > 0)
 
     GraphEditCompareNodesInfo():
         graph(0),
@@ -175,18 +203,6 @@ struct GraphEditCompareNodesInfo {
     {}
 };
 
-
-// Modes
-enum LayoutMode {
-    RegularLayoutMode,		// use regular Sugiyama/Misue layout method
-    CompactLayoutMode		// use a more compact alternative
-};
-
-enum SelectionMode { 
-    SetSelection,		// set the selection
-    ExtendSelection,		// extend the selection
-    ToggleSelection		// toggle the selection
-};
 
 // Declare the class constant
 extern WidgetClass graphEditWidgetClass;

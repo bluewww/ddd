@@ -114,8 +114,10 @@ class DataDisp {
     //-----------------------------------------------------------------------
     // Callbacks of the display editor
     //-----------------------------------------------------------------------
-    static void UpdateGraphEditorSelectionCB    (Widget, XtPointer, XtPointer);
-    static void UpdateDisplayEditorSelectionCB  (Widget, XtPointer, XtPointer);
+    static void UpdateGraphEditorSelectionCB   (Widget, XtPointer, XtPointer);
+    static void UpdateDisplayEditorSelectionCB (Widget, XtPointer, XtPointer);
+    static void PreLayoutCB                    (Widget, XtPointer, XtPointer);
+    static void PostLayoutCB                   (Widget, XtPointer, XtPointer);
 
     //-----------------------------------------------------------------------
     // Sorting nodes for layout

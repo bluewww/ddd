@@ -180,6 +180,10 @@ static XtResource resources[] = {
 	offset(sizeChangedProc), XtRCallback, XtPointer(0) },
     { XtNcompareNodesCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
 	offset(compareNodesProc), XtRCallback, XtPointer(0) },
+    { XtNpreLayoutCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
+	offset(preLayoutProc), XtRCallback, XtPointer(0) },
+    { XtNpostLayoutCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
+	offset(postLayoutProc), XtRCallback, XtPointer(0) },
 
 #undef offset
 };
@@ -2585,13 +2589,13 @@ static void compact_layouted_graph(Graph *graph)
 static void _Layout(Widget w, XEvent *event, String *params,
     Cardinal *num_params)
 {
-    static char graph_name[] = "graph";
-
     const GraphEditWidget _w   = GraphEditWidget(w);
     Graph* graph               = _w->graphEdit.graph;
     const GraphGC& graphGC     = _w->graphEdit.graphGC;
     Cardinal& rotation         = _w->graphEdit.rotation;
     LayoutMode mode            = _w->graphEdit.layoutMode;
+
+    static char graph_name[] = "graph";
 
     if (num_params && *num_params > 0 && params[0][0] != '\0')
     {
@@ -2615,6 +2619,13 @@ static void _Layout(Widget w, XEvent *event, String *params,
 			 "layout", "+0", "MODE, ");
     if (new_rotation < 0)
 	return;
+
+    // Call hooks before layouting
+    GraphEditLayoutInfo info;
+    info.graph    = graph;
+    info.mode     = mode;
+    info.rotation = new_rotation;
+    XtCallCallbacks(w, XtNpreLayoutCallback, caddr_t(&info));
 
     // Remove all hint nodes
     remove_all_hints(graph);
@@ -2678,6 +2689,9 @@ static void _Layout(Widget w, XEvent *event, String *params,
 
     rotation = 0;
     _Rotate(w, event, rotate_params, &rotate_num_params);
+
+    // Layout is done
+    XtCallCallbacks(w, XtNpostLayoutCallback, caddr_t(&info));
 }
 
 // DoLayout() should be named Layout(), but this conflicts with the
