@@ -2584,6 +2584,11 @@ Ddd*dataMenu.watchpoints.mnemonic:	W
 Ddd*dataMenu.watchpoints.documentationString: \
 @rm Set, view, and edit watchpoints
 
+Ddd*dataMenu.examine.labelString:	Examine Memory...
+Ddd*dataMenu.examine.mnemonic:		x
+Ddd*dataMenu.examine.documentationString: \
+@rm Examine memory in any of several formats
+
 Ddd*dataMenu.print.labelString:		Print ()
 Ddd*dataMenu.print.mnemonic:		P
 Ddd*dataMenu.print.accelerator:		Ctrl<Key>equal
@@ -3817,6 +3822,7 @@ Ddd*toolbar*unwatch.labelString:	Delete Watchpoint on ()
 Ddd*toolbar*print.labelString:		Print ()
 Ddd*toolbar*printRef.labelString:	Print *()
 Ddd*toolbar*whatis.labelString:		Whatis ()
+Ddd*toolbar*examine.labelString:	Examine ()...
 Ddd*toolbar*display.labelString:	Display ()
 Ddd*toolbar*dispRef.labelString:	Display *()
 Ddd*toolbar*find.labelString:		LBL_FIND_FORWARD
@@ -3916,6 +3922,7 @@ Ddd*toolbar*setPC.documentationString: \
 define(PRINT_HELP, [\
 DESC(Print *(), [print dereferenced argument])\n\
 DESC(Whatis (), [print type of argument])
+DESC(Examine (), [examine memory starting at argument])
 ])dnl
 
 Ddd*toolbar*print.helpString:	\
@@ -3935,6 +3942,8 @@ Ddd*toolbar*printRef.documentationString:	\
 @rm Print the dereferenced argument LBL(()) in the @GDB@ console
 Ddd*toolbar*whatis.documentationString:	\
 @rm Print the type of the argument LBL(()) in the @GDB@ console
+Ddd*toolbar*examine.documentationString:	\
+@rm Examine memory starting at LBL(())
 
 define(DISPLAY_HELP, [\
 DESC(Display *(), [display dereferenced argument])
@@ -5421,6 +5430,57 @@ Ddd*dependent_display_dialog*menu.labelString:     menu
 Ddd*dependent_display_dialog*helpString: 	   NEW_DISPLAY_HELP\n\
 \n\
 The new display will be made dependent on the currently selected display.
+
+
+!-----------------------------------------------------------------------------
+! Examine Memory
+!-----------------------------------------------------------------------------
+ 
+Ddd*examine_dialog_popup.title:	DDD: Examine Memory
+
+Ddd*examine_dialog*examine.label.labelString:	Examine
+Ddd*examine_dialog*examine*text.columns:	4
+Ddd*examine_dialog*examine*text.maximumValue:	9999
+Ddd*examine_dialog*examine*text.minimumValue:	1
+
+Ddd*examine_dialog*spinBoxChildType:		XmNUMERIC
+Ddd*examine_dialog*arrowLayout:		        XmARROWS_END
+Ddd*examine_dialog*spin.marginWidth:		0
+Ddd*examine_dialog*spin.marginHeight:		0
+
+Ddd*examine_dialog*o.labelString:	octal
+Ddd*examine_dialog*x.labelString:	hex
+Ddd*examine_dialog*d.labelString:	decimal
+Ddd*examine_dialog*u.labelString:	unsigned
+Ddd*examine_dialog*t.labelString:	binary
+Ddd*examine_dialog*f.labelString:	float
+Ddd*examine_dialog*a.labelString:	address
+Ddd*examine_dialog*i.labelString:	instruction
+Ddd*examine_dialog*c.labelString:	char
+Ddd*examine_dialog*s.labelString:	string
+
+Ddd*examine_dialog*b.labelString:	bytes
+Ddd*examine_dialog*h.labelString:	halfwords
+Ddd*examine_dialog*w.labelString:	words
+Ddd*examine_dialog*g.labelString:	giants
+
+Ddd*examine_dialog*address.label.labelString: from
+
+Ddd*examine_dialog.okLabelString:	Print
+Ddd*examine_dialog.applyLabelString:	Display
+Ddd*examine_dialog.cancelLabelString:	Close
+
+Ddd*examine_dialog*helpString:	\
+@rm You can examine memory in any of several formats,\n\
+independently of your program's data types.\n\
+\n\
+You can select the number of items to examine, the format,\n\
+and the starting address.\n\
+\n\
+Click on LBL(Print) to print the items in the debugger console.\n\
+Click on LBL(Display) to display the items in the data window.\n\
+Click on LBL(Close) to close this window.
+
 
 
 

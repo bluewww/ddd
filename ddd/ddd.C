@@ -210,6 +210,7 @@ char ddd_rcsid[] =
 #include "disp-read.h"
 #include "editing.h"
 #include "environ.h"
+#include "examine.h"
 #include "exectty.h"
 #include "exit.h"
 #include "expired.h"
@@ -1199,6 +1200,7 @@ static MMDesc helpers_preferences_menu [] =
 // Data
 static Widget print_w            = 0;
 static Widget display_w          = 0;
+static Widget examine_w          = 0;
 static Widget locals_w           = 0;
 static Widget args_w             = 0;
 static Widget detect_aliases_w   = 0;
@@ -1211,6 +1213,7 @@ static MMDesc data_menu[] =
     { "displays",   MMPush,    { DataDisp::EditDisplaysCB }},
     { "watchpoints", MMPush,   { SourceView::EditBreakpointsCB }, 
                                  NULL, &edit_watchpoints_w },
+    {"examine",       MMPush,  { gdbExamineCB }, NULL, &examine_w},
     MMSep,
     {"print",         MMPush,  { gdbPrintCB   }, NULL, &print_w },
     {"display",       MMPush,  { gdbDisplayCB }, NULL, &display_w},
@@ -1319,10 +1322,13 @@ struct PrintItems {
     enum ArgCmd { PrintRef, Whatis };
 };
 
+static Widget print_examine_w = 0;
+
 static MMDesc print_menu[] =
 {
     { "printRef",        MMPush, { gdbPrintRefCB } },
     { "whatis",          MMPush, { gdbWhatisCB } },
+    { "examine",         MMPush, { gdbExamineCB }, NULL, &print_examine_w },
     MMEnd
 };
 
@@ -6464,10 +6470,12 @@ static void setup_auto_command_prefix()
 // All options that remain fixed for a session go here.
 static void setup_options()
 {
-    set_sensitive(disassemble_w, gdb->type() == GDB);
-    set_sensitive(code_indent_w, gdb->type() == GDB);
-
+    set_sensitive(disassemble_w,        gdb->type() == GDB);
+    set_sensitive(code_indent_w,        gdb->type() == GDB);
+    set_sensitive(examine_w,            gdb->type() == GDB);
+    set_sensitive(print_examine_w,      gdb->type() == GDB);
     set_sensitive(cache_machine_code_w, gdb->type() == GDB);
+
     set_sensitive(set_refer_base_w, gdb->type() != GDB);
     set_sensitive(set_refer_path_w, gdb->type() != GDB);
     set_sensitive(refer_sources_w,  gdb->type() != GDB);

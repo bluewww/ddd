@@ -757,6 +757,7 @@ DDD_OBJECTS = \
 	disp-read.o  \
 	editing.o    \
 	environ.o    \
+	examine.o    \
 	exectty.o    \
 	exit.o       \
 	expired.o    \
