@@ -9,6 +9,16 @@ in the final DDD 3.1 release.  See the DDD WWW Page
 `http://www.cs.tu-bs.de/softech/ddd/' for further information.
 
 
+DDD 3.0.92 [in development]
+===========================
+
+This is the third beta release of DDD 3.1, fixing some minor bugs:
+
+- Perl source position was not recognized in a number of cases.
+
+See the DDD ChangeLog for more details.
+
+
 DDD 3.0.91
 ==========
 
