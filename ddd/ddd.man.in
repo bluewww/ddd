@@ -4469,10 +4469,10 @@ indicates a disabled (insensitive) variant.
 .B "@ddd@"
 \s-2@DDD@\s+2 icon.
 .TP
-.B "deref"
+.B "dispref"
 .PD 0
 .TP
-.B "deref-xx"
+.B "dispref-xx"
 `\fBDisplay * ()\fR' button.
 .PD
 .TP
@@ -4483,17 +4483,17 @@ indicates a disabled (insensitive) variant.
 `\fBDisplay ()\fR' button.
 .PD
 .TP
-.B "find_next"
+.B "find_forward"
 .PD 0
 .TP
-.B "find_next-xx"
+.B "find_forward-xx"
 `\fBFind\s-2>>\s+2 ()\fR' button.
 .PD
 .TP
-.B "find_prev"
+.B "find_backward"
 .PD 0
 .TP
-.B "find_prev-xx"
+.B "find_backward-xx"
 `\fBFind\s-2<<\s+2 ()\fR' button.
 .PD
 .TP
