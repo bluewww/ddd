@@ -129,7 +129,7 @@ CXXWARNINGS = @CXXWARNINGS@
 CXXFLAGS = $(CXXOPT) $(CXXDEBUG) $(CXXWARNINGS)
 
 # Extra C++-specific flags.  (-fexternal-templates -felide-constructors)
-CXXSTUFF = @CXXSTUFF@
+CXXSTUFF = @CXXSTUFF@ @X_PERMISSIVE@
 
 # Possible extra libraries required for all C++ programs.  ()
 CXXLIBS = @CXXLIBS@

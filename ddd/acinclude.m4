@@ -194,6 +194,78 @@ AC_SUBST(EXTERNAL_TEMPLATES)
 dnl
 dnl
 dnl
+dnl
+dnl ICE_PERMISSIVE
+dnl --------------
+dnl
+dnl If the C++ compiler accepts the `-fpermissive' flag,
+dnl set output variable `PERMISSIVE' to `-fpermissive',
+dnl empty otherwise.
+dnl
+AC_DEFUN(ICE_PERMISSIVE,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_REQUIRE([ICE_WERROR])
+AC_MSG_CHECKING(whether the C++ compiler (${CXX}) accepts -fpermissive)
+AC_CACHE_VAL(ice_cv_permissive,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+ice_save_cxxflags="$CXXFLAGS"
+CXXFLAGS="$WERROR -fpermissive"
+AC_TRY_COMPILE(,[int a;],
+ice_cv_permissive=yes, ice_cv_permissive=no)
+CXXFLAGS="$ice_save_cxxflags"
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_permissive)
+if test "$ice_cv_permissive" = yes; then
+PERMISSIVE=-fpermissive
+fi
+AC_SUBST(PERMISSIVE)
+])dnl
+dnl
+dnl
+dnl ICE_X_PERMISSIVE
+dnl ----------------
+dnl
+dnl If the C++ compiler wants `-fpermissive' to compile X headers,
+dnl set output variable `X_PERMISSIVE' to `-fpermissive',
+dnl empty otherwise.
+dnl
+AC_DEFUN(ICE_X_PERMISSIVE,
+[
+AC_REQUIRE([ICE_PERMISSIVE])
+if test "$PERMISSIVE" != ""; then
+AC_MSG_CHECKING(whether compiling X headers requires $PERMISSIVE)
+AC_CACHE_VAL(ice_cv_x_permissive,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE([
+#include <Xm/Xm.h>
+],[int a;],
+ice_cv_x_permissive=no, ice_cv_x_permissive=maybe)
+if test "$ice_cv_x_permissive" = maybe; then
+ice_save_cxxflags="$CXXFLAGS"
+CXXFLAGS="$CXXFLAGS $PERMISSIVE"
+AC_TRY_COMPILE([
+#include <Xm/Xm.h>
+],[int a;],
+ice_cv_x_permissive=yes, ice_cv_x_permissive=no)
+CXXFLAGS="$ice_save_cxxflags"
+fi
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_x_permissive)
+if test "$ice_cv_x_permissive" = yes; then
+X_PERMISSIVE=$PERMISSIVE
+fi
+fi
+AC_SUBST(X_PERMISSIVE)
+])dnl
+dnl
+dnl
 dnl ICE_NO_IMPLICIT_TEMPLATES
 dnl -------------------------
 dnl
@@ -1428,6 +1500,7 @@ AC_SUBST(CXXDYNAMIC_BINDING)dnl
 dnl
 if test "$GXX" = yes; then
 ICE_EXTERNAL_TEMPLATES
+ICE_PERMISSIVE
 dnl ICE_NO_IMPLICIT_TEMPLATES
 ICE_ELIDE_CONSTRUCTORS
 ICE_CONSERVE_SPACE
