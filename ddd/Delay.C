@@ -148,7 +148,11 @@ _Delay::_Delay(Widget w):
     Display *display = XtDisplay(widget);
 
     if (current_cursor == 0)
-	current_cursor = XCreateFontCursor(display, XC_top_left_arrow);
+    {
+	// XC_left_ptr is the default cursor in OSF/Motif.
+	// (How do we determine the current cursor? - FIXME)
+	current_cursor = XCreateFontCursor(display, XC_left_ptr);
+    }
 
     old_cursor = current_cursor;
 
