@@ -2631,7 +2631,8 @@ XrmDatabase GetFileDatabase(char *filename)
     { 
 	XmNwidth, XmNheight,	              // Shell sizes
 	XmNcolumns, XmNrows,	              // Text window sizes
-	XtNtoolRightOffset, XtNtoolTopOffset  // Command tool offset
+	XtNtoolRightOffset, XtNtoolTopOffset, // Command tool offset
+	XtNshowStartupLogo	              // Startup logo
     };
 
     bool version_mismatch = false;
