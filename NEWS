@@ -42,11 +42,12 @@ DDD 2.2 [in development]
     - For `Continue until here', DDD now uses explicit temporary
       breakpoints and `continue' instead of the GDB `until' command.
     - Improved display of breakpoints and execution positions:
-      + The current execution position is now cleared if undetermined.
+      + The current execution position is now properly cleared if
+        undetermined (no source, program terminated, etc.)
       + If the program stopped due to a signal, this is indicated
         by a lightning symbol within the current execution glyph.
-      + While scrolling source or machine code, glyphs are unmapped such
-        that they do not delay scrolling.
+      + Faster scrolling.  While scrolling source or machine code at
+        high speed, glyphs are now unmapped.  Slow scrolling still works.
 
     Bug fixes:
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
