@@ -2161,19 +2161,19 @@ $(docdir)/ddd.ps: ddd.dvi
 
 ## The DDD manual in DVI format.
 
+texidir = $(srcdir)/../texinfo
+
 INCLUDES = \
 	config.texi \
-	gpl.texinfo \
-	lgpl.texinfo \
-	texinfo.tex \
-	epsf.tex \
-	xepsf.tex
+	$(texidir)/gpl.texinfo \
+	$(texidir)/lgpl.texinfo \
+	$(texidir)/texinfo.tex \
+	$(texidir)/epsf.tex \
+	$(texidir)/xepsf.tex
 
-ddd.dvi: ddd.texi $(INCLUDES) $(PS_IMAGES)
+ddd.dvi: $(srcdir)/ddd.texi $(INCLUDES) $(PS_IMAGES)
 	-test -d PICS || $(LN_S) $(picdir) .
 	$(TEXI2DVI) $(srcdir)/ddd.texi
-
-texidir = $(srcdir)/../texinfo
 
 gpl.texinfo: $(texidir)/gpl.texinfo
 	$(RM) $@; $(LN_S) $(texidir)/gpl.texinfo $@
@@ -2187,8 +2187,8 @@ texinfo.tex: $(texidir)/texinfo.tex
 epsf.tex: $(texidir)/epsf.tex
 	$(RM) $@; $(LN_S) $(texidir)/epsf.tex $@
 
-xepsf.tex: epsf.tex
-	$(RM) $@; $(LN_S) epsf.tex $@
+$(texidir)/xepsf.tex: $(texidir)/epsf.tex
+	$(RM) $@; $(LN_S) $(texidir)/epsf.tex $@
 
 
 ## The DDD manual in PDF format, including all pictures.
@@ -2196,14 +2196,14 @@ xepsf.tex: epsf.tex
 $(docdir)/ddd.pdf: ddd.pdf
 	$(INSTALL_DATA) ddd.pdf $@
 
-ddd.pdf: ddd.texi $(INCLUDES) $(PDF_IMAGES)
+ddd.pdf: $(srcdir)/ddd.texi $(INCLUDES) $(PDF_IMAGES)
 	-test -d PICS || $(LN_S) $(picdir) .
 	$(TEXI2PDF) $(srcdir)/ddd.texi
 
 
 ## The DDD manual in HTML format.
 
-$(htmldir)/index.html: ddd.texi $(INCLUDES) $(HTML_IMAGES) \
+$(htmldir)/index.html: $(srcdir)/ddd.texi $(INCLUDES) $(HTML_IMAGES) \
 	style.css $(srcdir)/fix-html.sed
 	@-test -d $(htmldir) || $(MKDIR) $(htmldir)
 	@-test -d $(htmldir)/PICS || $(MKDIR) $(htmldir)/PICS
@@ -2352,7 +2352,7 @@ bld.h: bld.h.in config.status
 config.texi: cfg.texi
 	@$(CMP) cfg.texi $@ 2> /dev/null || \
 	( $(CAT) cfg.texi > $@~ && $(MV) $@~ $@ )
-cfg.texi: cfg.texi.in config.status
+cfg.texi: $(srcdir)/cfg.texi.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 ## The manual page
