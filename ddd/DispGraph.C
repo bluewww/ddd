@@ -37,10 +37,13 @@ char DispGraph_rcsid[] =
 // DispGraph stores information about all displayed display expressions.
 //-----------------------------------------------------------------------------
 
+#include "DispGraph.h"
+
 #include <math.h>
+#include "pi.h"
+#include "hypot.h"
 #include <X11/StringDefs.h>
 
-#include "DispGraph.h"
 #include "GraphEdit.h"
 #include "assert.h"
 #include "VarArray.h"
@@ -883,7 +886,7 @@ BoxPoint DispGraph::rotate_offset(const BoxPoint& p, int angle)
     double length = hypot(p[X], p[Y]);
     double alpha  = atan2(p[X], p[Y]);
 
-    alpha += (2.0 * M_PI * angle / 360.0);
+    alpha += (2.0 * PI * angle / 360.0);
 
     return BoxPoint(BoxCoordinate(length * cos(alpha)), 
 		    BoxCoordinate(length * sin(alpha)));

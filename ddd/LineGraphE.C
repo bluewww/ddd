@@ -34,9 +34,13 @@ char LineGraphEdge_rcsid[] =
 #endif
 
 
+#include "LineGraphE.h"
+
 #include "assert.h"
 
 #include <math.h>
+#include "pi.h"
+#include "hypot.h"
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
@@ -45,7 +49,6 @@ char LineGraphEdge_rcsid[] =
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 
-#include "LineGraphE.h"
 #include "GraphNode.h"
 
 DEFINE_TYPE_INFO_1(LineGraphEdge, GraphEdge)
@@ -60,7 +63,7 @@ void LineGraphEdge::moveToSide(const BoxRegion& b, int side,
 
     p = b.origin();
 
-    // fetch points
+    // Fetch points
     if (side & (North | South))
     {
 	p[X] += b.space(X) / 2;
@@ -247,7 +250,7 @@ void LineGraphEdge::drawArrowHead(Widget w,
     if (!gc.drawArrowHeads || to()->isHint())
 	return;
 
-    const double offset = gc.arrowAngle * M_PI/180;	// Angle
+    const double offset = gc.arrowAngle * PI / 180;	// Angle
     const int length    = gc.arrowLength;		// Length
 
     // Get coordinates
@@ -260,7 +263,7 @@ void LineGraphEdge::drawArrowHead(Widget w,
     points[2].y = short(pos[Y] + length * sin(alpha - offset / 2));
 
 #if 0
-	clog << "\nangle = " << (alpha / (M_PI * 2.0)) * 360.0  << "\n";
+	clog << "\nangle = " << (alpha / (PI * 2.0)) * 360.0  << "\n";
 	for (int i = 0; i < 3; i++)
 	    clog << "points[" << i << "] = "
 		 << BoxPoint(points[i].x, points[i].y) << "\n";
@@ -338,11 +341,11 @@ void LineGraphEdge::drawSelf(Widget w,
 	arrow_angle = 360 - (start + 180) % 360;
 	break;
     }
-    double alpha = 2 * M_PI * arrow_angle / 360.0;
+    double alpha = 2 * PI * arrow_angle / 360.0;
 
     // Incline arrow a little into the arc
     double cosine = gc.arrowLength / (2.0 * radius);
-    double inclination = (M_PI / 2.0) - acos(cosine);
+    double inclination = (PI / 2.0) - acos(cosine);
 
     // Draw arrow
     position = BoxPoint(region.origin());

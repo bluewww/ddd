@@ -38,6 +38,8 @@ char ArcGraphEdge_rcsid[] =
 #include "misc.h"
 
 #include <math.h>
+#include "pi.h"
+#include "hypot.h"
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -195,9 +197,9 @@ void ArcGraphEdge::drawLine(Widget w,
 
     const int base = 360 * 64;
 
-    int angle_from = (int(alpha_from * base / (M_PI * 2.0)) + base) % base;
-    int angle_to   = (int(alpha_to   * base / (M_PI * 2.0)) + base) % base;
-    int angle_hint = (int(alpha_hint * base / (M_PI * 2.0)) + base) % base;
+    int angle_from = (int(alpha_from * base / (PI * 2.0)) + base) % base;
+    int angle_to   = (int(alpha_to   * base / (PI * 2.0)) + base) % base;
+    int angle_hint = (int(alpha_hint * base / (PI * 2.0)) + base) % base;
 
     int path_from_hint = (base + angle_hint - angle_from) % base;
     int path_hint_to   = (base + angle_to - angle_hint) % base;
@@ -235,9 +237,9 @@ void ArcGraphEdge::drawLine(Widget w,
 	// Draw arrow head at POS_TO
 	double alpha = atan2(pos_to[Y] - c[Y], pos_to[X] - c[X]);
 	if (path > 0)
-	    alpha += M_PI / 2.0;
+	    alpha += PI / 2.0;
 	else
-	    alpha -= M_PI / 2.0;
+	    alpha -= PI / 2.0;
 	drawArrowHead(w, exposed, gc, pos_to, alpha);
     }
 }
