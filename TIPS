@@ -86,9 +86,9 @@ When using GDB, all text fields have command and argument completion
 with KEY(Tab), just like the shell.  In a file selection box, type part of
 a filename, hit KEY(Tab), and voila!  It's completed.
 
-To display a variable-length array in GDB, enter 
-KBD(graph display VAR(ptr)\1330\135@ VAR(n)) at the GDB prompt.
-This displays VAR(n) elements of a C or C++ array VAR(ptr).
+You can always recenter the command tool
+by selecting LBL(View) | LBL(Command Tool),
+or by pressing KEY(Alt+8).
 
 To scroll the data display, most users find a EMPH(panner)
 much more convenient than two scrollbars.
@@ -140,12 +140,15 @@ CODE(run       )      - possibly giving arguments here
 To get rid of these tips of the day, unset
 LBL(Edit) | LBL(Preferences) | LBL(Startup) | LBL(Show Tip of the Day).
 
+To display the first VAR(n) elements of a variable-length array VAR(ptr),
+enter KBD(graph display VAR(ptr)\1330\135@ VAR(n)) at the GDB prompt.
+
 You can have each of DDD, @GDB@ and the debugged program run on
 different machines.  See the DDD KBD(--rhost) option for details.
 
 You can copy breakpoints by dragging them while pressing KEY(Shift).
 Just press and hold KEY(Shift)+BUTTON(1) on a breakpoint,
-move it to the new position and release BUTTON(1) again.  That's all!
+move it to the new position and release BUTTON(1) again.
 
 To save and restore data displays, cut, copy and paste them via the
 LBL(Edit) menu.  Together with CODE(xclipboard), you can manage

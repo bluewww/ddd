@@ -106,4 +106,8 @@ detail.
     resize/close//reopen source window, its still there. If I load a
     different source file - you get the picture.
 
-280 (Insert new bugs here)
+280 Ralf Hildebrandt <R.Hildebrandt@tu-bs.de> reports that on his
+    HP-UX box, the tooltips are not complete: "Set/Delete Breakpo???",
+    "Display/Undisplay???", etc.
+
+281 (Insert new bugs here)
