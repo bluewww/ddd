@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1999\-01\-01" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1999\--03\-04" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -41,6 +41,7 @@
 .B @ddd@
 .RB "[\|" \-\-gdb "\|]"
 .RB "[\|" \-\-dbx "\|]"
+.RB "[\|" \-\-ladebug "\|]"
 .RB "[\|" \-\-xdb "\|]"
 .RB "[\|" \-\-jdb "\|]"
 .RB "[\|" \-\-pydb "\|]"
@@ -106,8 +107,12 @@ effects of one bug and go on to learn about another.
 debugger (\s-1GDB\s+1) provide a command-line interface and a
 multitude of commands for these and other debugging purposes.
 \s-1@DDD@\s+1 is a comfortable \fIgraphical user interface\fR around
-an inferior \s-1GDB\s+1, \s-1DBX\s+1, \s-1XDB\s+1, \s-1JDB\s+1, Python
-debugger, or Perl debugger.
+an inferior \s-1GDB\s+1, \s-1DBX\s+1, \s-1LADEBUG\s+1, \s-1XDB\s+1,
+\s-1JDB\s+1, Python debugger, or Perl debugger.
+.\"
+Note: Within this manual, \s-1LADEBUG\s+1 is considered a \s-1DBX\s+1
+variant; everything said for \s-1DBX\s+1 also applies to
+\s-1LADEBUG\s+1 unless stated otherwise.
 .\"
 .\"
 .\" ---------------
@@ -162,6 +167,12 @@ or
 or
 .sp
 .br
+  \fB@ddd@\ \-\-ladebug \fIprogram\fR
+.br
+.sp
+or
+.sp
+.br
   \fB@ddd@\ \-\-xdb \fIprogram\fR
 .br
 .sp
@@ -184,7 +195,7 @@ or
 .br
 .sp
 .\"
-to run \s-1GDB\s+1, \s-1DBX\s+1, \s-1XDB\s+1, \s-1JDB\s+1,
+to run \s-1GDB\s+1, \s-1DBX\s+1, \s-1LADEBUG\s+1, \s-1XDB\s+1, \s-1JDB\s+1,
 \s-1PYDB\s+1 or Perl as inferior debugger.
 .PP
 To learn more about \s-1@DDD@\s+1 options, run
@@ -2404,10 +2415,11 @@ program has been recompiled, this should seldom be necessary.
 In the \fIdebugger console\fR, you can interact with the command
 interface of the inferior debugger.  Enter commands at the \fIdebugger
 prompt\fR\(em\&that is, `\fB(gdb)\fR' for \s-1GDB\s+1, `\fB(dbx)\fR'
-for \s-1DBX\s+1, `\fB>\fR' for \s-1XDB\s+1, `\fB>\fR' and
-`\fIthread\fB[\fIdepth\fB]\fR' for \s-1JDB\s+1, or `\fB(Pydb)\fR' for
-\s-1PYDB\s+1, or `\fBDB<>\fR' for Perl.  You can use arbitrary
-debugger commands; use the \s-1\fBRETURN\fR\s+1 key to enter them.
+for \s-1DBX\s+1, `\fB(ladebug)\fR' for \s-1LADEBUG\s+1, `\fB>\fR' for
+\s-1XDB\s+1, `\fB>\fR' and `\fIthread\fB[\fIdepth\fB]\fR' for
+\s-1JDB\s+1, or `\fB(Pydb)\fR' for \s-1PYDB\s+1, or `\fBDB<>\fR' for
+Perl.  You can use arbitrary debugger commands; use the
+\s-1\fBRETURN\fR\s+1 key to enter them.
 .PP
 .PSPIC @srcdir@/PICS/ddd-console.eps 15.3cm
 .PP
@@ -2742,8 +2754,8 @@ By default, \s-1@DDD@\s+1 determines the inferior debugger
 automatically.  To change this default, unset `\fBDetermine
 Automatically\fR' and set the `\fBDebugger Type\fR' option to a
 specific debugger.  See also the `\fB\-\-gdb\fR', `\fB\-\-dbx\fR',
-`\fB\-\-xdb\fR', `\fB\-\-jdb\fR', `\fB\-\-pydb\fR', and
-`\fB\-\-perl\fR' options, below.
+`\fB\-\-ladebug\fR', `\fB\-\-xdb\fR', `\fB\-\-jdb\fR',
+`\fB\-\-pydb\fR', and `\fB\-\-perl\fR' options, below.
 .PP
 If you want the \s-1@DDD@\s+1 splash screen shown upon startup, enable 
 `\fBDDD Splash Screen\fR'.
@@ -3341,8 +3353,8 @@ windows.
 .\"
 Use `\fBM-x gdb\fR' or `\fBM-x dbx\fR' to start a debugging session.
 At the prompt, enter `\fB@ddd@ \-\-tty\fR', followed by
-`\fB\-\-dbx\fR' or `\fB\-\-gdb\fR', if required, and the name of the
-program to be debugged.  Proceed as usual.
+`\fB\-\-dbx\fR', `\fB\-\-ladebug\fR', or `\fB\-\-gdb\fR', if required,
+and the name of the program to be debugged.  Proceed as usual.
 .\"
 .\"
 .SS "Using @DDD@ with XEmacs"
@@ -4147,8 +4159,9 @@ also initially sent to \s-1DBX\s+1.  By default, it is empty.
 The type of the inferior debugger to invoke (`\fBgdb\fR', `\fBdbx\fR',
 `\fBxdb\fR', `\fBjdb\fR', `\fBpydb\fR', or `\fBperl\fR').  This
 resource is usually set through the `\fB\-\-gdb\fR', `\fB\-\-dbx\fR',
-`\fB\-\-xdb\fR', `\fB\-\-jdb\fR', `\fB\-\-pydb\fR', and
-`\fB\-\-perl\fR', options; see below for details.
+`\fB\-\-ladebug\fR', `\fB\-\-xdb\fR', `\fB\-\-jdb\fR',
+`\fB\-\-pydb\fR', and `\fB\-\-perl\fR', options; see below for
+details.
 .TP
 .B "debuggerCommand (\fPclass\fB DebuggerCommand)"
 The name under which the inferior debugger is to be invoked.  If this
@@ -5333,6 +5346,9 @@ option is not used, use \fIusername\fR as remote user name.  See
 .TP
 .B \-\-jdb
 Run \s-1JDB\s+1 as inferior debugger.
+.TP
+.B \-\-ladebug
+Run \s-1LADEBUG\s+1 as inferior debugger.
 .TP
 .B \-\-lesstif-hacks\fR
 Equivalent to `\fB\-\-lesstif-version 999\fR'.

@@ -62,5 +62,6 @@ static string parent_name()
 bool being_debugged()
 {
     static string name = parent_name();
-    return name == "gdb" || name == "dbx" || name == "xdb";
+    return (name == "gdb" || name == "dbx" || 
+	    name == "ladebug" || name == "xdb");
 }

@@ -324,14 +324,21 @@ string GDBAgent::title() const
     {
     case GDB:
 	return "GDB";
+
     case DBX:
+	if (path().contains("ladebug") || prompt().contains("ladebug"))
+	    return "Ladebug";
 	return "DBX";
+
     case XDB:
 	return "XDB";
+
     case JDB:
 	return "JDB";
+
     case PYDB:
 	return "PYDB";
+
     case PERL:
 	return "Perl";
     }

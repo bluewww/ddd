@@ -453,6 +453,9 @@ static XrmOptionDescRec options[] = {
 { "--dbx",                  XtNdebugger,             XrmoptionNoArg,  "dbx" },
 { "-dbx",                   XtNdebugger,             XrmoptionNoArg,  "dbx" },
 
+{ "--ladebug",              XtNdebugger,            XrmoptionNoArg, "ladebug"},
+{ "-ladebug", 		    XtNdebugger,            XrmoptionNoArg, "ladebug"},
+
 { "--xdb",                  XtNdebugger,             XrmoptionNoArg,  "xdb" },
 { "-xdb",                   XtNdebugger,             XrmoptionNoArg,  "xdb" },
 
@@ -7252,7 +7255,7 @@ static void setup_options()
     set_sensitive(signals_w,   gdb->type() == GDB);
 
     set_sensitive(set_debugger_gdb_w,  have_cmd("gdb"));
-    set_sensitive(set_debugger_dbx_w,  have_cmd("dbx"));
+    set_sensitive(set_debugger_dbx_w,  have_cmd("dbx") || have_cmd("ladebug"));
     set_sensitive(set_debugger_xdb_w,  have_cmd("xdb"));
     set_sensitive(set_debugger_jdb_w,  have_cmd("jdb"));
     set_sensitive(set_debugger_pydb_w, have_cmd("pydb"));
