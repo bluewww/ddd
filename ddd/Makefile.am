@@ -703,7 +703,7 @@ ALL_X_LIBS = $(X_LDFLAGS) $(LIBXM) $(LIBXP) $(LIBXPM) $(LIBXAW) $(LIBXEXT) \
 
 
 bin_PROGRAMS = ddd
-EXTRA_PROGRAMS = stringify userinfo ctest cxxtest
+noinst_PROGRAMS = stringify userinfo ctest cxxtest
 ddd_SOURCES = ddd.C \
 	$(BASE_SOURCES) \
 	$(TEMPLATE_SOURCES) \
