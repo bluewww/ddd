@@ -323,7 +323,6 @@ Volunteers for fixing these and other bugs are welcome!
 
 095* DDD 1.5 with AIX DBX and ctest:
      - the `func' line is += 5
-     - double `(nil)' in `tree_test' won't work
      - up/down won't work
      - displaying `dates' causes seg fault.
 

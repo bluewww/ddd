@@ -85,16 +85,22 @@ DispValueType determine_type (string value)
     {
 	static regex 
 	    RXstr_or_cl_begin_s("([(]|{\n|record\n|RECORD\n)");
+	static regex 
+	    RXstr_or_cl_end_s("([)]|}\n|end\n|END\n)");
 
 	// DEC DBX uses `{' for arrays as well as for structs;
-	// likewise, AIX DBX uses `(' for arrays and structs.  So, we
-	// check for some member of this struct -- that is, a ` = '
-	// before any other sub-structure.
+	// likewise, AIX DBX uses `(' for arrays and structs.  To
+	// disambiguate between arrays and structs, we check for some
+	// struct member -- that is, a ` = ' before any other
+	// sub-struct or struct end.
 	string v = value.after(RXstr_or_cl_begin_s);
+	int end_pos = v.index(RXstr_or_cl_end_s);
 	int eq_pos  = v.index(" = ");
 	int str_pos = v.index(RXstr_or_cl_begin_s);
 
-	if (eq_pos > 0 && (str_pos < 0 || str_pos > eq_pos))
+	if (eq_pos > 0 
+	    && (end_pos < 0 || end_pos > eq_pos)
+	    && (str_pos < 0 || str_pos > eq_pos))
 	    return StructOrClass;
     }
 
