@@ -233,6 +233,8 @@ void show_invocation(DebuggerType type, ostream& os)
 	"  --rhost USER@HOST  Like --host, but use a rlogin connection.\n"
 	"  --vsl-library LIB  Load VSL library LIB.\n"
 	"  --vsl-path PATH    Look for VSL libraries in PATH.\n"
+	"  --font FONT        Use font FONT as default.\n"
+	"  --fontsize SIZE    Use fonts sized SIZE 1/10 points.\n"
 	"  --trace-dialog     Show dialog with inferior debugger"
 	" on standard error.\n"
 	"  --trace-shell      Show shell commands on standard error.\n"

@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "1998-04-24" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "1998-04-25" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -2704,89 +2704,101 @@ classes.  The following resources are specific to \s-2@DDD@\s+2.
 .\"
 .SS "Setting @DDD@ Fonts"
 .\"
-This is the default font setting in \s-2@DDD@\s+2:
-.sp
-.br
-  \fB@Ddd@*fontList: \\
-  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=charset,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-*\-80\-*\-*\-*\-*\-*\-*=small,\\
-  \-*\-lucidatypewriter\-medium\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=tt,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=key,\\
-  \-*\-helvetica\-medium\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=rm,\\
-  \-*\-helvetica\-medium\-o\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=sl,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=bf,\\
-  \-*\-helvetica\-bold\-o\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=bs,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-*\-120\-*\-*\-*\-*\-*\-*=Logo,\\
-  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=logo,\\
-  \-*\-symbol\-*\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=symbol\fR
-.br
-.sp
+\s-2@DDD@\s+2 uses the following resources to set up its fonts:
 .TP
-The font names are used as follows:
-.TP 10
-.B "charset" 
-The default font in buttons, menus, etc.
-.TP 10
-.B "small"
-The default font in a slightly smaller size. 
-.TP 10
-.B "tt"
-The fixed-width font (teletype) used in texts.
-.TP 10
-.B "tb"
-A bold fixed-width font (teletype) used in texts.
-.TP 10
-.B "key"
-The font used for describing key caps.
-.TP 10
-.B "rm"
-Roman font.  In help texts.
-.TP 10
-.B "sl"
-Slanted font.  In help texts.
-.TP 10
-.B "bf"
-Bold face.  In help texts.
-.TP 10
-.B "bs"
-Slanted bold face.  In help texts.
-.TP 10
-.B "Logo"
-The \s-2@DDD@\s+2 logo font (uppercase letters).
-.TP 10
-.B "logo"
-The \s-2@DDD@\s+2 logo font (lowercase letters).
-.TP 10
-.B "symbol"
-The symbol font.  In help texts.
+.B "defaultFont (\fPclass\fR Font)"
+The default \s-2@DDD@\s+2 font to use for labels, menus, buttons, etc.
+Defaults to
+.br
+ `\fB-*-helvetica-bold-r-*-*-*-90-*-*-*-*-iso8859-*\fR'.
+.sp
+.br
+To set the default \s-2@DDD@\s+2 font to, say,
+\fBhelvetica medium\fR, insert a line
+.sp
+.br
+  \fB@Ddd@*defaultFont: -*-helvetica-medium-r-*\fR
+.br
+.sp
+in your `\fB$HOME/.@ddd@/init\fR' file.
+.sp
+.br
+Since \s-2@DDD@\s+2 derives other font variants from this
+specification, at least the font family \fImust\fR be specified.
+.TP
+.B "defaultFontSize  (\fPclass\fR FontSize)"
+The size of the default \s-2@DDD@\s+2 font, in 1/10 points.  This
+ressource overrides any font size specification in the
+`\fBdefaultFont\fR' ressource (see above).  The default value is
+\fB90\fR for a 9.0 point font.
+.TP
+.B "variableWidthFont (\fPclass\fR Font)"
+The variable width \s-2@DDD@\s+2 font to use for help texts and messages.
+Defaults to
+.br
+ `\fB-*-helvetica-medium-r-*-*-*-90-*-*-*-*-iso8859-*\fR'.
+.sp
+.br
+To set the variable width \s-2@DDD@\s+2 font family to, say,
+\fBnew century schoolbook\fR, insert a line
+.sp
+.br
+  \fB@Ddd@*fixedWidthFont: -*-new century schoolbook-medium-r-*\fR
+.br
+.sp
+in your `\fB$HOME/.@ddd@/init\fR' file.
+.sp
+.br
+Since \s-2@DDD@\s+2 derives other font variants from this
+specification, at least the font family \fImust\fR be specified.
+.TP
+.B "variableWidthFontSize  (\fPclass\fR FontSize)"
+The size of the variable width \s-2@DDD@\s+2 font, in 1/10 points.
+This ressource overrides any font size specification in the
+`\fBvariableWidthFont\fR' ressource (see above).  The default value is
+\fB90\fR for a 9.0 point font.
+.TP
+.B "fixedWidthFont (\fPclass\fR Font)"
+The fixed width \s-2@DDD@\s+2 font to use for source code, text fields
+and data displays.  Defaults to
+.br
+`\fB-*-lucidatypewriter-medium-r-*-*-*-90-*-*-*-*-iso8859-*\fR'.
+.sp
+.br
+To set the fixed width \s-2@DDD@\s+2 font family to, say,
+\fBcourier\fR, insert a line
+.sp
+.br
+  \fB@Ddd@*fixedWidthFont: -*-courier-medium-r-*\fR
+.br
+.sp
+in your `\fB$HOME/.@ddd@/init\fR' file.
+.br
+.sp
+Since \s-2@DDD@\s+2 derives other font variants from this
+specification, at least the font family \fImust\fR be specified.
+.TP
+.B "fixedWidthFontSize  (\fPclass\fR FontSize)"
+The size of the fixed width \s-2@DDD@\s+2 font, in 1/10 points.  This
+ressource overrides any font size specification in the
+`\fBfixedWidthFont\fR' ressource (see above).  The default value is
+\fB90\fR for a 9.0 point font.
 .PP
-The fonts in text fields are defined as follows:
+As all font size resources have the same class (and by default the
+same value), you can easily change the default \s-2@DDD@\s+2 font size
+to, say, 12.0 points by inserting a line
 .sp
 .br
-  \fB@Ddd@*XmTextField.FontList: \\
-  \-*\-lucidatypewriter\-medium\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=charset
-  @Ddd@*XmText.FontList: \\
-  \-*\-lucidatypewriter\-medium\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=charset\fR
+  \fB@Ddd@*FontSize: 120\fR
 .br
 .sp
-The command tool uses a slightly smaller font for its buttons.
-.sp
-.br
-  \fB@Ddd@*tool_buttons.run.fontList: \\
-  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=charset
-  @Ddd@*tool_buttons.break.fontList: \\
-  \-*\-helvetica\-bold\-r\-*\-*\-*\-90\-*\-*\-*\-*\-*\-*=charset
-  @Ddd@*tool_buttons*fontList: \\
-  \-*\-helvetica\-medium\-r\-*\-*\-*\-80\-*\-*\-*\-*\-*\-*=charset\fR
-.br
-.sp
-You can override these font definitions in your
-`\fB$HOME/.@ddd@/init\fR' file by supplying alternate resource values.
-The `\fBDdd\fR' application defaults file also contains instructions
-on how to create a new `\fBDdd\fR' file with alternate font sizes and
-resolutions just by changing a few definitions.
+in your `\fB$HOME/.@ddd@/init\fR' file.
 .PP
-For fonts within the data display, see the `\fBvslDefs\fR' resource, below.
+To find out your favorite font size, try `\fB\-\-fontsize\fR
+\fISIZE\fR'.  This also sets all font sizes to \fISIZE\fR.
+.PP
+If you want to set the fonts of specific items, see the `\fBDdd\fR'
+application defaults file for instructions.
 .\"
 .\"
 .\"
@@ -2831,9 +2843,10 @@ These are the most important color resources used in \s-2@DDD@\s+2:
 .B @Ddd@*graph_edit.outlineColor:
 .B grey50
 .PP
-Again, you can copy and modify the appropriate resources to your
-`\fB$HOME/.@ddd@/init\fR' file.  For colors within the data display, see
-the `\fBvslDefs\fR' resource, below.
+You can copy and modify the appropriate resources to your
+`\fB$HOME/.@ddd@/init\fR' file.  For colors within the data display,
+things are slightly more complicated\(emsee the `\fBvslDefs\fR'
+resource, below.
 .\"
 .\"
 .\"
@@ -4095,6 +4108,10 @@ This is useful for programs that have special terminal requirements
 not provided by the debugger window, as raw keyboard processing or
 terminal control sequences.
 .TP
+.B \-\-fontsize \fIsize\fR
+Set the default font size to \fIsize\fR 1/10 points.  To use 12-point
+fonts, say `\fB\-\-fontsize 120\fR'.
+.TP
 .B \-\-fullname
 Enable \s-2TTY\s+2 interface, taking additional debugger commands
 from standard input and forwarding debugger output on standard output.
@@ -5294,7 +5311,7 @@ November, 1997
 \s-2@DDD@\s+2 2.2: Persistent sessions, display shortcuts.
 .TP
 June, 1998
-\s-2@DDD@\s+2 3.0: Button images, Java support, \s-2JDB\s+2 support.
+\s-2@DDD@\s+2 3.0: Icon toolbar, Java support, \s-2JDB\s+2 support.
 .PD
 .\"
 .\"

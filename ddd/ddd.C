@@ -406,6 +406,12 @@ static XrmOptionDescRec options[] = {
 { "--trace",                XtCTrace,                XrmoptionNoArg,  S_true },
 { "-trace",                 XtCTrace,                XrmoptionNoArg,  S_true },
 
+{ "--font",                 XtNdefaultFont,          XrmoptionSepArg, NULL },
+{ "-font",                  XtNdefaultFont,          XrmoptionSepArg, NULL },
+
+{ "--fontsize",             XtCFontSize,             XrmoptionSepArg, NULL },
+{ "-fontsize",              XtCFontSize,             XrmoptionSepArg, NULL },
+
 { "--vsl-library",          XtNvslLibrary,           XrmoptionSepArg, NULL },
 { "-vsl-library",           XtNvslLibrary,           XrmoptionSepArg, NULL },
 
