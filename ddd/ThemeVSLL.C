@@ -63,8 +63,6 @@ ThemedVSLLib::ThemedVSLLib(istream& is, unsigned optimizeMode)
 
 void ThemedVSLLib::optimize(unsigned optimizeMode)
 {
-    assert (_original_lib == 0);
-
     delete _original_lib;
     _original_lib = dup();
 
@@ -78,6 +76,7 @@ void ThemedVSLLib::set_theme_list(const StringArray& themes)
 	return;			// Everything stays the same
 
     // Assign from original library
+    assert (_original_lib != 0);
     (void) VSLLib::operator = (*_original_lib);
 
     // Read in themes
@@ -100,8 +99,8 @@ ThemedVSLLib::~ThemedVSLLib()
 // Representation invariant
 bool ThemedVSLLib::OK() const
 {
-    assert(VSLLib::OK());
-    assert(_original_lib == 0 || _original_lib->OK());
+    assert (VSLLib::OK());
+    assert (_original_lib == 0 || _original_lib->OK());
 
     return true;
 }
