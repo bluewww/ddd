@@ -305,12 +305,11 @@ const Box *VSLDef::eval(Box *arg) const
     // Debugging
     if (VSEFlags::show_large_eval)
     {
-	cout << "\n" << depth << " ";
+	clog << depth << " ";
 	for (int i = 0; i < depth; i++)
-	    cout << "  ";
+	    clog << "  ";
 
-	cout << longname() << *arg << ":";
-	cout.flush();
+	clog << longname() << *arg << "...\n";
     }
 
     // Actual function
@@ -340,18 +339,18 @@ const Box *VSLDef::eval(Box *arg) const
     // Debugging
     if (VSEFlags::show_large_eval)
     {
-	cout << "\n" << depth << " ";
+	clog << depth << " ";
 	for (int i = 0; i < depth; i++)
-	    cout << "  ";
+	    clog << "  ";
 
-	cout << longname() << *arg;
+	clog << longname() << *arg;
 
 	if (box == 0)
-	    cout << " FAILS";
+	    clog << " FAILS";
 	else
-	    cout << " = " << *box;
+	    clog << " = " << *box;
 
-	cout.flush();
+	clog << "\n";
     }
 
     // Delete backtrace

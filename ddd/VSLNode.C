@@ -81,28 +81,27 @@ const Box *VSLNode::eval(ListBox *arglist) const
 {
     if (VSEFlags::show_tiny_eval)
     {
-	cout << "\n" << *this;
+	clog << *this;
 	if (arglist)
-	    cout << " " << *arglist;
+	    clog << " " << *arglist;
 
-	cout << ": ";
-	cout.flush();
+	clog << "...";
     }
 
     const Box *box = _eval(arglist);
 
     if (VSEFlags::show_tiny_eval)
     {
-	cout << "\n" << *this;
+	clog << *this;
 	if (arglist)
 	    cout << " " << *arglist;
 
 	if (box == 0)
-	    cout << " FAILS";
+	    clog << " FAILS";
 	else
-	    cout << " = " << *box;
+	    clog << " = " << *box;
 
-	cout.flush();
+	clog << "\n";
     }
 
     return box;

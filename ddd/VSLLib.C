@@ -215,7 +215,20 @@ const Box *VSLLib::eval(const string& func_name, ListBox *a) const
     if (d == 0)
 	eval_error("'" + func_name + "(...)' undefined");
 
-    return d ? d->eval(a) : 0;
+    const Box *result = d ? d->eval(a) : 0;
+
+    if (VSEFlags::show_huge_eval)
+    {
+	clog << func_name << *a;
+	if (result)
+	    clog << " = " << *result;
+	else
+	    clog << " FAILS";
+
+	clog << "\n";
+    }
+
+    return result;
 }
 
 // Custom functions
