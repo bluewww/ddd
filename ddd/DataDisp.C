@@ -5873,10 +5873,14 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
     if (node->pos() == BoxPoint())
 	return true;		// No valid position yet
 
+    DispNode *dn = ptr_cast(DispNode, node);
+    if (dn != 0 && (!dn->active() || dn->clustered()))
+	return true;		// Clustered or inactive
+
     const GraphGC& gc = graphEditGetGraphGC(graph_edit);
     BoxRegion oldRegion = node->region(gc);
 
-    // Do the resize; don't get called recursively
+    // Do the resize, but don't get called recursively
     RegionGraphNode::ResizeCB = Yes;
     node->resize(newSize);
     RegionGraphNode::ResizeCB = bump;
@@ -5902,9 +5906,9 @@ bool DataDisp::bump(RegionGraphNode *node, const BoxSize& newSize)
 	if (r == node)
 	    continue;
 
-	// If R is inactive, don't bump it
-	DispNode *dn = ptr_cast(DispNode, r);
-	if (dn != 0 && !dn->active())
+	// If R is inactive or clustered, don't bump it
+	DispNode *rn = ptr_cast(DispNode, r);
+	if (rn != 0 && (!rn->active() || rn->clustered()))
 	    continue;
 
 	// If ORIGIN (the upper left corner of R) is right of BUMPER,
