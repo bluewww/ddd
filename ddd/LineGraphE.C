@@ -428,13 +428,91 @@ void LineGraphEdge::drawSelf(Widget w,
     drawArrowHead(w, exposed, gc, arrowpos, alpha);
 }
 
-void LineGraphEdge::_print(ostream& os, const GraphGC &gc) const
+void LineGraphEdge::printSelf(ostream& os, const GraphGC &gc) const
 {
-    if (from() == to())
+    assert(from() == to());
+
+    if (!gc.printGC->isPostScript())
     {
 	static int warning = 0;
 	if (warning++ == 0)
 	    cerr << "Warning: arc printing is not supported\n";
+
+	return;
+    }
+
+    // Get arc start
+    BoxRegion region = from()->region(gc);
+    if (from()->selected())
+	region.origin() += gc.offsetIfSelected;
+
+    // Draw arc
+    Dimension diameter = gc.selfEdgeDiameter;
+
+    // Make sure edge is still attached to node
+    diameter = min(diameter, region.space(X) + region.space(X) / 2);
+    diameter = min(diameter, region.space(Y) + region.space(Y) / 2);
+
+    // Be sure we don't make it too small
+    diameter = max(diameter, 4);
+    Dimension radius = (diameter + 1) / 2;
+    diameter = radius * 2;
+
+    BoxPoint center(region.origin());	// Center of the arc
+    BoxPoint anno(region.origin());     // Position of annotation
+    int start = 0;		        // Start of the arc (in degrees)
+    const int extend = 270;	        // Extend of the arc (in degrees)
+
+    switch (gc.selfEdgePosition)
+    {
+    case NorthEast:
+	center += BoxPoint(region.space(X), 0);
+	anno   += BoxPoint(region.space(X) + radius, -radius);
+	start = 270;
+	break;
+
+    case SouthEast:
+	center += BoxPoint(region.space(X), region.space(Y));
+	anno   += BoxPoint(region.space(X) + radius, region.space(Y) + radius);
+	start = 180;
+	break;
+
+    case SouthWest:
+	center += BoxPoint(0, region.space(Y));
+	anno   += BoxPoint(-radius, region.space(Y) + radius);
+	start = 90;
+	break;
+
+    case NorthWest:
+	center += BoxPoint(0, 0);
+	anno   += BoxPoint(-radius, -radius);
+	start = 0;
+	break;
+    }
+
+    int end = (720 - start) % 360 ;
+    int s   = (720 - start - extend) % 360 ;
+
+    BoxCoordinate line_width = 1;
+
+    os << s << " " << end << " " << radius << " " << radius << " "
+       << center[X] << " " << center[Y] << " " << line_width << " arc*\n";
+
+    if (annotation() != 0)
+    {
+	// Print annotation
+	annotation()->_print(os, anno, gc);
+    }
+
+    // FIX ME: the arrow is missing
+}
+
+void LineGraphEdge::_print(ostream& os, const GraphGC &gc) const
+{
+    if (from() == to())
+    {
+	printSelf(os, gc);
+	return;
     }
 
     GraphEdge::_print(os, gc);

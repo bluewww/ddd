@@ -77,6 +77,9 @@ protected:
 			       const BoxPoint& pos,
 			       double alpha) const;
 
+    // Print self edge.
+    virtual void printSelf(ostream& os, const GraphGC &gc) const;
+
 private:
     // Clip point P to side SIDE of region B.
     static void moveToSide  (const BoxRegion& b, int side,
