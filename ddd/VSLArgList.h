@@ -66,10 +66,12 @@ public:
 	return _list;
     }
 
+#if 0
     operator ListBox *() const
     {
 	return list();
     }
+#endif
 };
 
 #endif // _DDD_VSLArgList_h
