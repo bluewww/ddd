@@ -615,6 +615,7 @@ GRAPH_OBJECTS = \
 	GraphNode.o  \
 	HintGraphN.o \
 	LineGraphE.o \
+	ArcGraphE.o  \
 	PannedGE.o   \
 	PosGraphN.o  \
 	RegionGN.o   \
