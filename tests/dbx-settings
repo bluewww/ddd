@@ -1,0 +1,499 @@
+From owner-ddd-bugs@ibr.cs.tu-bs.de  Mon Oct  5 13:57:43 1998
+From: Paolo Barbante <barbante@vki.ac.be>
+Subject: DDD 1998-09-01 (alphaev56-dec-osf4.0b) gets `Segmentation fault' signal
+To: ddd-bugs@ips.cs.tu-bs.de
+Date: Mon, 05 Oct 1998 13:56:15 +0200
+Organization: von Karman Institute for Fluid Dynamics
+Received: from mumm.ibr.cs.tu-bs.de (majordom@mumm.ibr.cs.tu-bs.de [134.169.34.190])
+	by infbssys.ips.cs.tu-bs.de (8.9.1/8.9.1) with ESMTP id NAA17726
+	for <zeller@ips.cs.tu-bs.de>; Mon, 5 Oct 1998 13:57:42 +0200
+Received: by mumm.ibr.cs.tu-bs.de (8.9.1/8.9.0) id NAA01352
+	for ddd-bugs-outgoing; Mon, 5 Oct 1998 13:57:14 +0200 (MET DST)
+Received: from infbssys.ips.cs.tu-bs.de (root@infbssys.ips.cs.tu-bs.de [134.169.32.1])
+	by mumm.ibr.cs.tu-bs.de (8.9.1/8.9.0) with ESMTP id NAA01348
+	for <ddd-bugs@ibr.cs.tu-bs.de>; Mon, 5 Oct 1998 13:57:13 +0200 (MET DST)
+Received: from server.vki.ac.be (server.vki.ac.be [193.190.162.1])
+	by infbssys.ips.cs.tu-bs.de (8.9.1/8.9.1) with SMTP id NAA17719
+	for <ddd-bugs@ips.cs.tu-bs.de>; Mon, 5 Oct 1998 13:57:04 +0200
+Received: from aricp64.vki.ac.be by server.vki.ac.be (5.65v4.0/1.1.8.2/10Aug95-0928AM)
+	id AA09173; Mon, 5 Oct 1998 13:56:48 +0200
+Message-Id: <3618B3DF.C5C304A@vki.ac.be>
+X-Mailer: Mozilla 4.06 [en] (X11; I; Linux 2.0.35 i586)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Sender: owner-ddd-bugs@ibr.cs.tu-bs.de
+Precedence: bulk
+Status: RO
+
+Operation: Edit -> DBX settings ...
+
+Log file
+DDD 1998-09-01 (alphaev56-dec-osf4.0b), Copyright (C) 1998 TU
+Braunschweig.
+Compiled with CC
+Requires X11R6, Xt11R6, Motif 1.2.4 (OSF/Motif Version 1.2.4)
+Includes DDD core, manual, app-defaults, Athena Panner
+Built 1998-09-16 by Barbante Paolo <barbante@alpha14.vki.ac.be>.
+$  /vki_phd/barbante/ddd/bin/ddd smulti
++  /bin/sh -c 'exec dbx '\''smulti'\'''
+#  Hello, world!
+#  Starting DBX...
+#  Running DBX (pid 30238, tty /dev/ttyq1)...
+#  Current language: c/c++
+<- "dbx version 3.11.10\n"
+<- "Type \'help\' for help.\n"
+<- "\n"
+<- "main:  28  read_param();\n"
+<- "(dbx) "
+-> "sh stty -echo -onlcr\n"
+<- "executing alias file\n"
+<- "(dbx) "
+-> "set $page = 1\n"
+<- "(dbx) "
+-> "frame\n"
+<- "frame\n"
+<- "     ^ syntax error\n"
+<- "(dbx) "
+-> "func\n"
+<- "main\n"
+<- "(dbx) "
+-> "dbxenv run_io\n"
+<- "dbxenv run_io\n"
+<- "       ^ syntax error\n"
+<- "(dbx) "
+-> "print -r 4711\n"
+<- "print -r 4711\n"
+<- "         ^ syntax error\n"
+<- "(dbx) "
+-> "where -h\n"
+<- "where -h\n"
+<- "      ^ syntax error\n"
+<- "(dbx) "
+-> "display\n"
+<- "display\n"
+<- "       ^ syntax error\n"
+<- "(dbx) "
+-> "clear\n"
+<- "clear\n"
+<- "     ^ syntax error\n"
+<- "(dbx) "
+-> "help handler\n"
+<- "\n"
+<- "Invalid keyword handler\n"
+<- "\n"
+<- "(dbx) "
+-> "pwd\n"
+<- "\n"
+<- "\"/usr/include/pwd.h\" not defined or not active\n"
+<- "(dbx) "
+-> "help setenv\n"
+<- "setenv name \"string\"\t       - set environment variable <name> to
+<string>\n"
+<- "(dbx) "
+-> "help edit\n"
+<- "edit                           - invoke editor on current file\n"
+<- "edit <file>                    - invoke editor on file\n"
+<- "(dbx) "
+-> "help make\n"
+<- "\n"
+<- "Invalid keyword make\n"
+<- "\n"
+<- "(dbx) "
+-> "help regs\n"
+<- "\n"
+<- "Invalid keyword regs\n"
+<- "\n"
+<- "(dbx) "
+-> "print \"DDD\"\n"
+<- "DDD \n"
+<- "(dbx) "
+-> "help when\n"
+<- "when <exp> { <command_list> }  - when <exp> is true, execute
+command_list\n"
+<- "when at <line>{<command_list>} - when reach <line>, execute
+command_list\n"
+<- "when in <proc>{<command_list>} - when reach <proc>, execute
+command_list\n"
+<- "(dbx) "
+-> "delete 4711 4711\n"
+<- "delete 4711 4711\n"
+<- "            ^ syntax error\n"
+<- "(dbx) "
+-> "help run\n"
+<- "run arg1 arg2 ... < f1 >& f2   - begin execution of the program\n"
+<- "(dbx) "
+-> "help givenfile\n"
+<- "\n"
+<- "Invalid keyword givenfile\n"
+<- "\n"
+<- "(dbx) "
+-> "help cont\n"
+<- "[n] cont                       - continue execution\n"
+<- "[n] cont <signal>              - continue with signal\n"
+<- "cont to <line>                 - continue until <line> is reached\n"
+<- "\t\t\t\t(temporary breakpoint)\n"
+<- "cont in <proc>                 - continue until <proc> is reached 
+(see above)\n"
+<- "cont <signal> to <line>        - continue with signal until <line>
+(see above)\n"
+<- "cont <signal> in <proc>        - continue with signal until <proc>
+(see above)\n"
+<- "(dbx) "
+-> "help examine\n"
+<- "\n"
+<- "Invalid keyword examine\n"
+<- "\n"
+<- "(dbx) "
+-> "language\n"
+<- "language\n"
+<- "        ^ syntax error\n"
+<- "(dbx) "
+-> "sh pwd\n"
+<- "executing alias file\n"
+<- "/tmp_mnt/vki_phd/barbante/slimite/multi\n"
+<- "(dbx) "
+-> "file\n"
+<- "/tmp_mnt/vki_phd/barbante/slimite/multi/slimite.c\n"
+<- "(dbx) "
+-> "list\n"
+<- "    29   \n"
+<- "    30    
+set_1_(&flg_anha,&oper,&flg_termo,&flg_traco,&flg_stop,&sonine,\n"
+<- "    31            &R,&pi,&kb,&Na,&nspec);\n"
+<- "    32  \n"
+<- "    33     Mw=vector(nspec);\n"
+<- "    34     set_2_(Mw);\n"
+<- "    35  \n"
+<- "    36  \n"
+<- "    37  /* Dynamic allocation of problem variables  */\n"
+<- "    38  \n"
+<- "    39     u=vector(neq); u_old=vector(neq); us=vector(neq);
+u1=vector(neq);\n"
+<- "(dbx) "
+-> "status\n"
+<- "(dbx) "
+#  Reading file "/tmp_mnt/vki_phd/barbante/slimite/multi/slimite.c"...
+#  Reading file
+"/tmp_mnt/vki_phd/barbante/slimite/multi/slimite.c"...done.
+#  File "/tmp_mnt/vki_phd/barbante/slimite/multi/slimite.c" 321 lines,
+10451 characters
+-> "# reset\n"
+<- "# reset\n"
+<- "       ^ syntax error\n"
+<- "(dbx) "
+-> "file\n"
+<- "/tmp_mnt/vki_phd/barbante/slimite/multi/slimite.c\n"
+<- "(dbx) "
+-> "list\n"
+<- "    40     u2=vector(neq); up1=vector(neq);\n"
+<- "    41  \n"
+<- "    42     h=vector(neq); h_old=vector(neq); h1=vector(neq);
+h2=vector(neq);\n"
+<- "    43     hp1=vector(neq);\n"
+<- "    44  \n"
+<- "    45     c=matrix(nspec,neq); c_old=matrix(nspec,neq);
+cs=matrix(nspec,neq);\n"
+<- "    46     css=matrix(nspec,neq); c1=matrix(nspec,neq);
+c2=matrix(nspec,neq);\n"
+<- "    47     cp1=matrix(nspec,neq);\n"
+<- "    48  \n"
+<- "    49     M=vector(neq); Ms=vector(neq); \n"
+<- "    50     J=matrix(nspec,neq); Js=matrix(nspec,neq);
+hsp=matrix(nspec,neq);\n"
+<- "(dbx) "
+-> "status\n"
+<- "(dbx) "
+-> "debug \n"
+<- "\n"
+<- "\"debug\" is not defined\n"
+<- "\n"
+<- "(dbx) "
+#  Starting DBX...done.
+#  Welcome to DDD 1998-09-01!
+-> "help detach\n"
+<- "detach [<exp>]\t\t\t- detach from process with pid <exp> or\n"
+<- "\t\t\t\t  current process; process continues running\n"
+<- "(dbx) "
+-> "help run\n"
+<- "run arg1 arg2 ... < f1 >& f2   - begin execution of the program\n"
+<- "(dbx) "
+-> "help step\n"
+<- "step <int>                     - single step n lines (assumes 1 for
+<int>)\n"
+<- "(dbx) "
+-> "help stepi\n"
+<- "stepi <exp>                    - single step <exp> assembly
+instructions\n"
+<- "(dbx) "
+-> "help next\n"
+<- "next <int>                     - step over next line n times
+(assumes 1)\n"
+<- "(dbx) "
+-> "help nexti\n"
+<- "nexti <exp>                    - step over next instruction
+<exp>times(see next)\n"
+<- "(dbx) "
+-> "help until\n"
+<- "\n"
+<- "Invalid keyword until\n"
+<- "\n"
+<- "(dbx) "
+-> "help cont\n"
+<- "[n] cont                       - continue execution\n"
+<- "[n] cont <signal>              - continue with signal\n"
+<- "cont to <line>                 - continue until <line> is reached\n"
+<- "\t\t\t\t(temporary breakpoint)\n"
+<- "cont in <proc>                 - continue until <proc> is reached 
+(see above)\n"
+<- "cont <signal> to <line>        - continue with signal until <line>
+(see above)\n"
+<- "cont <signal> in <proc>        - continue with signal until <proc>
+(see above)\n"
+<- "(dbx) "
+-> "help signal\n"
+<- "\n"
+<- "Invalid keyword signal\n"
+<- "\n"
+<- "(dbx) "
+-> "help kill\n"
+<- "\n"
+<- "Invalid keyword kill\n"
+<- "\n"
+<- "(dbx) "
+-> "help up\n"
+<- "up <exp>                       - move up <exp> activation levels in
+the stack\n"
+<- "(dbx) "
+-> "help down\n"
+<- "down <exp>                     - move down <exp> activation levels
+in the stack\n"
+<- "(dbx) "
+-> "print \"allocation =\", allocation\n"
+<- "allocation = \n"
+<- "\"allocation\" is not defined or not active\n"
+<- "(dbx) "
+#  Retrieving DBX Settings...
+-> "dbxenv\n"
+<- "dbxenv\n"
+<- "      ^ syntax error\n"
+<- "(dbx) "
+-> "set\n"
+<- "$stop_all_forks\t0\n"
+<- "$stop_on_fork\t1\n"
+<- "$stop_on_exec\t1\n"
+<- "$traploops\t3\n"
+<- "$rld_root\t\"\"\n"
+<- "$job_control\t1\n"
+<- "$newevent\t0\n"
+<- "$dynamic_scope\t1\n"
+<- "$use_rld_symbols\t0\n"
+<- "$stop_in_main\t1\n"
+<- "$symtotal\t0\n"
+<- "$assignverify\t1\n"
+<- "$framereg\t1\n"
+<- "$use_sockets\t0\n"
+<- "$tid\t\t3\n"
+<- "$tagfile\t\"tags\"\n"
+<- "$stopall_on_step\t1\n"
+<- "$stdc\t\t0\n"
+<- "$sigvec\t\t\"sigaction\"\n"
+<- "$sigtramp\t\"__sigtramp\"\n"
+<- "$rimode\t\t0\n"
+<- "$repeatmode\t"
+<- "1\n"
+<- "More (n if no)?"
+-> "\n"
+<- "$regstyle\t1\n"
+<- "$readtextfile\t1\n"
+<- "$prompt\t\t\"(dbx) \"\n"
+<- "$program\t\"\"\n"
+<- "$printwhilestep\t0\n"
+<- "$printwide\t0\n"
+<- "$printtargets\t1\n"
+<- "$printdata\t0\n"
+<- "$pimode\t\t0\n"
+<- "$childpid\t-1\n"
+<- "$pid\t\t31032\n"
+<- "$pagewindow\t22\n"
+<- "$page\t\t1\n"
+<- "$maxstrlen\t128\n"
+<- "$pasmain\t\"pasmain\"\n"
+<- "$cobmain\t\"cobmain\"\n"
+<- "$formain\t\"formain\"\n"
+<- "$main\t\t\"main\"\n"
+<- "$listwindow"
+<- "\t11\n"
+<- "$lines\t\t20\n"
+<- "$kdebug_dbgtty\t\"\"\n"
+<- "$kdebug_line\t\"kdebug\"\n"
+<- "More (n if no)?"
+-> "\n"
+<- "$kdebug_host\t\"localhost\"\n"
+<- "$historyevent\t47\n"
+<- "$dispix\t\t0\n"
+<- "$defaultout\t\"\"\n"
+<- "$defaultin\t\"\"\n"
+<- "$datacache\t1\n"
+<- "$curevent\t0\n"
+<- "$casesense\t0\n"
+<- "$byteaccess\t0\n"
+<- "$break_during_step\t0\n"
+<- "$asynch_interface\t0\n"
+<- "$addrfmt\t\"0x%lx\"\n"
+<- "$curscopeid\t1215\n"
+<- "$curfileent\t27\n"
+<- "$curfuncid\t51\n"
+<- "$cursrcline\t51\n"
+<- "$cursource\t\"/tmp_mnt/vki_phd/barbante/slimite/multi/slimite."
+<- "c"
+<- "\""
+<- "\n"
+<- "$curpc"
+<- "\t"
+<- "\t"
+<- "4831914064"
+<- "\n"
+<- "$curline"
+<- "\t"
+<- "28"
+<- "\n"
+<- "(dbx) "
+-> "help variable\n"
+<- "$addrfmt\tprintf format string dbx prints addresses with \n"
+<- "$byteaccess\tnon-0 => dbx accesses memory items less than 4 bytes
+with \n"
+<- "\t\tspecial ptrace requests, used for intrepid system development.
+\n"
+<- "\t\tdefault - 0.\n"
+<- "$casesense\t0 => ignore case when searching for a specific variable
+\n"
+<- "\t\tname. set to non-0 if you have two variables with same \n"
+<- "\t\tname but different case.  default-0.\n"
+<- "$curevent\tthis is the current event (breakpoint,record,etc) that
+was \n"
+<- "\t\tadded or encountered. set only by dbx.\n"
+<- "$curline\tcurrent line we\'re looking at. set to the middle of
+windows \n"
+<- "\t\tof lines.  set only by dbx.\n"
+<- "$cursrcline\tone beyond last  line we looked at  set only by dbx. 
+\n"
+<- "$curpc\t\tcurrent instruction address we\'re looking at akin to
+curline \n"
+<- "$datacache\tnon-0 => dbx caches data from the process we\'re
+debugging so \n"
+<- "\t\trepeated access is quick; system developer may want to turn \n"
+<- "\t\tthis off if their memory is changed asynchronously. default -
+1.\n"
+<- "$defin\t\tinternal use by dbx \n"
+<- "$defout\t\tinternal use by dbx \n"
+<- "$dispix\t\twhen debugging pixie code, if you want to see the real
+\n"
+<- "\t\tinstructions being executed set this to non-0; default - 0.\n"
+<- "$hexchars\toutput chars in hex (set, unset)\n"
+<- "$hexin\t\tinput constants are assumed in hex (set, unset)\n"
+<- "More (n if no)?"
+-> "\n"
+<- "$hexints\toutput integers in hex (set, unset)\n"
+<- "$hexstrings\toutput strings in hex(set, unset)\n"
+<- "$historyevent\tlast history line number. set by dbx \n"
+<- "$kdebug_dbgtty\tterminal on kdebug gateway system used for debug
+messages\n"
+<- "$kdebug_host\thost name of kdebug gateway system\n"
+<- "$kdebug_line\tport name from /etc/remote used to connect to kdebug
+test system\n"
+<- "$lines\t\tnumber of lines for history. default - 20 \n"
+<- "$listwindow\thow big the window should be on a \"list\" command.
+default - 10 \n"
+<- "$main\t\tname of procedure dbx start out in. default - \"main\" \n"
+<- "$maxstrlen\tmaximum characters dbx will print out for a string. \n"
+<- "\t\tdefault - 128.\n"
+<- "$octin\t\tinput constants are assumed in octal (set, unset)\n"
+<- "$octints\toutput integers in octal (set, unset)\n"
+<- "$printwhilestep\tnon-0 implies print out every line/inst for the
+\"step[i] n\" \n"
+<- "\t\tcommand. default - 0 => only print last line/inst stepped to.\n"
+<- "$page\t\t0 => paginate dbx output accessing to continue at the end
+of \n"
+<- "\t\teach page. non-0 => continuous output. default - 1.\n"
+<- "$pagewindow\tnumber of lines in a page, default - 22 (room left for
+\n"
+<- "\t\tcontinuation query).\n"
+<- "$pimode\t\tprint input while playing it back if this is non-0
+otherwise \n"
+<- "\t\tdon\'t default - 0.\n"
+<- "$printdata\tif non-0 print contents of registers used next to each
+\n"
+<- "More (n if no)?"
+-> "\n"
+<- "\t\tinstruction displayed. default - 0.\n"
+<- "$printtargets\tif non-0 print labels of jump instruction targets.
+default - 1.\n"
+<- "$printwide\tif non-0 print variable contents in a horizontal format
+\n"
+<- "\t\trather than vertical. default - 0.\n"
+<- "$prompt\t\tthis contains the dbx prompt string. default \"(dbx)\"
+\n"
+<- "$readtextfile\tif non-0 read all instructions from the text file.
+default - 1. \n"
+<- "$repeatmode\tif non-0 repeat last command when an empty line is
+entered. \n"
+<- "\t\tdefault - 1 \n"
+<- "$regstyle\tnon-0 => print out regs in normal format (r0,r1,...r31).
+0 => \n"
+<- "\t\tprint out regs in other format (zero, at, v0, v1,...). \n"
+<- "\t\tdefault - 1.\n"
+<- "$rimode\t\tif non-0 record input while recording output. default -
+0. \n"
+<- "$sigtramp\tcontains name of signal handler wrapper routine. on BSD
+it is \n"
+<- "\t\t\"sigvec\" and on SYSV \"sigtramp\".\n"
+<- "$stop_on_exec\tif set, a process that calls execv or execve will
+stop at\n"
+<- "\t\tthe main entry point of the new image. Default is set.\n"
+<- "$stop_on_fork\tif set, the child process from a fork call will be
+stopped\n"
+<- "\t\tafter the fork call.  Default is set.\n"
+<- "$stop_all_forks\tif set, dbx will stop on any fork.  Differs from
+stop_on_fork\n"
+<- "\t\tin that no attempt is made to filter out fork calls from \n"
+<- "\t\tlibrary calls.  Default is off.\n"
+<- "$tagfile\tcontains the name of the file to search for the tag\n"
+<- "More (n if no)?"
+-> "\n"
+<- "\t\tcommand and tagvalue macro.\n"
+<- "$traploops\tmaximum number of consecutive invocations of a SIGTRAP
+handler.\n"
+<- "\t\tdefault - 3.\n"
+<- "$use_sockets\tif set, use sockets for sable, else use namedpipes\n"
+<- "     \n"
+<- "(dbx) "
+!  Segmentation fault
+-> "\003"
+<- "\n"
+<- "Interrupt\n"
+<- "(dbx) "
+-> "print \"variables =\", variables\n"
+<- "variables ="
+<- " \n"
+<- "\"variables\" is not defined or not active\n"
+<- "(dbx) "
+-> "quit\n"
+#  Running DBX (pid 30238, tty /dev/ttyq1)...Exit 0.
+#  Saving history in "/vki_phd/barbante/.ddd/history"...
+#  Saving history in "/vki_phd/barbante/.ddd/history"...done.
+#  Thanks for using DDD 1998-09-01!  (We apologize for the
+inconvenience.)
+-----
+This message is brought to you via the `ddd-bugs' mailing list.
+
+Send messages to all subscribers:           ddd-bugs@ips.cs.tu-bs.de
+Administrative requests (unsubscribing...): ddd-bugs-request@ips.cs.tu-bs.de
+
+Message archive:     http://www.cs.tu-bs.de/softech/ddd/ddd-bugs/
+Recent DDD info:     http://www.cs.tu-bs.de/softech/ddd/
+Recent DDD software: ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
+DDD mirror sites:    ftp://ftp.th-darmstadt.de/pub/programming/tools/ddd/
+                     ftp://ftp.gre.ac.uk/pub/tools/debuggers/ddd/
+                     ftp://uiarchive.cso.uiuc.edu/pub/packages/ddd/
+
