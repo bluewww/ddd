@@ -23,7 +23,7 @@ extern void freeargv PARAMS ((char **));
 
 /* Return the last component of a path name.  */
 
-extern char *basename ();
+extern char *basename PARAMS ((const char *));
 
 /* Concatenate an arbitrary number of strings, up to (char *) NULL.
    Allocates memory using xmalloc.  */
