@@ -83,8 +83,7 @@ GDBAgent *new_gdb(DebuggerType type,
 
 	case PERL:
 	    // Be sure to invoke the debugger.
-	    // Also load the `MCarp' package to enable stack dumps.
-	    gdb_call += " -d -MCarp";
+	    gdb_call += " -d";
 	    break;
 
 	case PYDB:
