@@ -87,7 +87,7 @@ VSLDef& VSLDef::operator = (const VSLDef&)
 // Copy constructor
 VSLDef::VSLDef(const VSLDef& d)
     : _expr(d._expr ? d._expr->dup() : 0),
-      _node_pattern(d._node_pattern ? d._node_pattern->dup() : 0),
+      _node_pattern(d._node_pattern->dup()),
       _box_pattern(d._box_pattern ? d._box_pattern->dup() : 0),
       _nargs(d._nargs),
       _straight(d._straight),
@@ -99,6 +99,7 @@ VSLDef::VSLDef(const VSLDef& d)
       duplicated_into(0)
 {
     ((VSLDef &)d).duplicated_into = this;
+    assert(OK());
 }
 
 // Duplicate
