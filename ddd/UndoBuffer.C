@@ -615,28 +615,12 @@ void UndoBuffer::undo()
 
     StatusDelay delay("Undoing " + undo_action());
    
-    const UndoBufferEntry& undo_entry = history[history_position - 1];
-    if (undo_entry.has_command())
+    // Undo most recent command
+    process_command(history_position - 1);
+    if (history_position > 1)
     {
-	// Undo most recent command
-	process_command(history_position - 1);
-    }
-    else if (history_position > 1)
-    {
-	// Search for previous state
-	for (int i = history_position - 2; i >= 0; i--)
-	{
-	    const UndoBufferEntry& prev_entry = history[i];
-
-	    if (i > 0 && prev_entry.has_command())
-		continue;
-
-	    if (i > 0 && prev_entry.has_pos())
-		process_pos(i);
-	    else
-		process_state(i);
-	    break;
-	}
+	process_pos(history_position - 2);
+	process_state(history_position - 2);
     }
 
     history_position--;
@@ -658,14 +642,9 @@ void UndoBuffer::redo()
     StatusDelay delay("Redoing " + redo_action());
 
     // Redo next command and restore state
-    const UndoBufferEntry& redo_entry = history[history_position];
-
-    if (redo_entry.has_command())
-	process_command(history_position);
-    else if (redo_entry.has_pos())
-	process_pos(history_position);
-    else
-	process_state(history_position);
+    process_state(history_position);
+    process_pos(history_position);
+    process_command(history_position);
     
     history_position++;
 
