@@ -187,6 +187,6 @@ int main (int argc, char* argv[])
     i++;
     type_test();
     --i;
-    cin_cout_test ();
+    cin_cout_test();
     return 0;
 }
