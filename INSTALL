@@ -25,8 +25,9 @@ Requirements
          results are achieved using Motif 2.0 in conjunction with the
          Athena Widget library.
 
-       * Optionally, the Athena Widget library (release 5 or later).
-         Having the Athena Widget library is convenient for supporting
+       * Optionally, in addition to the OSF/Motif widget library, the
+         Athena Widget library (release 5 or later).  Having the
+         Athena Widget library is convenient for supporting
          two-dimensional scrollbars and the `editres' protocol.
 
     To run DDD, you need a GDB debugger (version 4 is required; best
