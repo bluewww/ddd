@@ -90,12 +90,15 @@ DDD 2.1 [in beta test; scheduled for April, 1997]
     - With DBX, the current source line was omitted from the listing
       under certain circumstances.  Fixed.
     - `Help on Version' no longer includes the entire DDD configuration.
-    - Several single-letter options like `-d DIR' are now passed down to the
-      inferior debugger.
-    - Buttons ending in `...' insert their name, followed by a space.
+    - Several single-letter options like `-d DIR' are now properly 
+      passed down to the inferior debugger.
+    - `Select All' followed by `Delete' no more causes DDD to crash.
+    - Problems with button specs ending in `...' have been fixed.
     - Line continuations (i.e. lines ending in `\') are properly handled.
-    - The `vsl' and `test-graph' programs can again be built.
-    - And, again, dozens of minor bug fixes and improvements.
+    - Problems in building the `vsl' and `test-graph' programs are fixed.
+    - On Linux, drag-and-drop of pixmaps has been disabled explicitly
+      (several Linux Motif libraries are broken in this aspect).
+    - And again, dozens of minor bug fixes and improvements.
 
     Release policy:
     - Due to the large amount of testing, we make new DDD releases

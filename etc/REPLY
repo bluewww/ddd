@@ -6,13 +6,13 @@ the inferior debugger.  Please run DDD with the `--trace' option and
 let me know what happens.
 
 This will be in DDD 2.1.  In fact, it already has been implemented.
-If you really need this feature, you can try out the current DDD
+If you really need this feature, you can try out tomorrow's DDD
 snapshot from one of these sites:
 
 I have made some changes in DDD that should fix your problem.
 Unfortunately, I cannot test them as I don't have an appropriate
-configuration.  Tomorrow, you may wish to check out my working DDD
-copy from one of these sites:
+configuration.  Please try out tomorrow's DDD snapshot from one of
+these sites:
 
     ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/current/
     ftp://ftp.th-darmstadt.de/pub/programming/tools/ddd/current/

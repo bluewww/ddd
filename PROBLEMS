@@ -260,10 +260,10 @@ Reported by:  Bernie Borenstein <c372321@hc1056.mdc.com>
 
 Reported by:  Andreas Zeller <zeller@acm.org>
 
-     Some Motif versions cause DDD to crash when dragging & dropping
-     breakpoint symbols.  Being written for Motif 1.x, there is no
-     special drag & drop handling in DDD; if DDD crashes upon drag &
-     drop, this is a bug in your Motif library.
+     Some Motif versions cause DDD to crash when dragging and dropping
+     pixmaps (for example, breakpoint symbols).  Being written for
+     Motif 1.1, there is no special drag-and-drop handling in DDD; if
+     DDD crashes upon drag-and-drop, this is a bug in your Motif library.
 
 
 SGI
