@@ -1,23 +1,11 @@
 Changes in DDD						-*- text -*-
 **************
 
-DDD 1.0
--------
-
-First public DDD release.
-
-Changes to 0.9.7:
-- Some last minor bugs were fixed.
-- New `Stack' menu; the `Source' menu may grow in time.
-- Improved DBX/PASCAL support.
-- New revision control (CVS).
-
-
-DDD 0.9.7
+DDD 0.9.8
 ---------
 
 Hopefully the last beta release before DDD 1.0.  This release should
-configure, compile and run out-of-the-box on the following systems:
+configure, compile and run on the following systems:
 
     hppa1.1-hp-hpux9.05 
     linux-i386-unknown
@@ -33,6 +21,19 @@ encountered any problems (unless they are known problems listed in the
 `BUGS' and `PROBLEMS' files).  If your system is not in the list
 above, please let us share your experiences.
 
+General Features:
+- Improved auto-configuration for HP-UX and Solaris.
+- Pascal and Modula-2 support for DBX completed.
+- Sources are now under CVS revision control
+  (implies a large diff to earlier versions).
+
+User Interface:
+- Foreground color explictly set to black.
+- New `Stack' menu (the `Source' menu may grow in time).
+
+
+DDD 0.9.7
+---------
 
 General Features:
 - Full DBX support, including graphical data display.  Nearly all
@@ -199,7 +200,6 @@ Data Display:
 - Layout sorts nodes according to the display strings.
 - Full color display support.
 
-
 Thanks to all who spent time in testing DDD and sending reports.
 
 
@@ -222,7 +222,7 @@ User Interface:
 DDD 0.9.0
 ---------
 
-First DDD release.
+First beta DDD release.
 
 
 
