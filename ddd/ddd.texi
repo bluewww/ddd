@@ -45,16 +45,14 @@
 @defcodeindex en
 @c %**end of header
 
-@c Combine all indexes into one
+@c Combine authors and concepts
 @synindex au cp
-@syncodeindex en cp
-@syncodeindex fl cp
-@syncodeindex fn cp
-@syncodeindex vr cp
-@syncodeindex ky cp
-@syncodeindex pg cp
-@syncodeindex lb cp
-@syncodeindex cm cp
+
+@c Combine environment variables and resources
+@syncodeindex en vr
+
+@c Combine programs and files
+@syncodeindex pg fl
 
 @c !!set DDD manual's edition---not the same as DDD version!
 @set EDITION First
@@ -258,7 +256,12 @@ This is the @value{EDITION} Edition of @cite{Debugging with
 * License::                     The @value{DDD} license.
 * Help and Assistance::         Mailing Lists and other resources.
 
-* Index::                       
+* Label Index::                 All labels shown on the @value{DDD} GUI.
+* Key Index::                   Keys used to control @value{DDD}.
+* Command Index::               Commands that can be typed within @value{DDD}.
+* Resource Index::              All resources and environment variables.
+* File Index::                  All programs and files referenced by @value{DDD}.
+* Concept Index::               All concepts as mentioned in this manual.
 
 @detailmenu --- The Detailed Node Listing ---
 
@@ -675,15 +678,6 @@ Frequently Answered Questions
 * How do I change the key bindings?::  
 * How do I change the colors? ::  
 * How do I recenter the command tool?::  
-
-Index
-
-* Labels::                      All labels as they occur in the @value{DDD} GUI
-* Keys::                        Keys used to control @value{DDD}.
-* Commands::                    Commands that can be typed within @value{DDD}.
-* Resources::                   All resources and environment variables.
-* Files::                       All programs and files referenced by @value{DDD}.
-* Concepts::                    Concept index.
 
 @end detailmenu
 @end menu
@@ -4804,8 +4798,8 @@ variables that take specific values in order to control and customize
 @value{DDD} behavior.
 
 Most @value{DDD} resources can be set interactively while @value{DDD} is
-running or when invoking @value{DDD}.  @xref{Resource Index}, for the
-full list of @value{DDD} resources.
+running or when invoking @value{DDD}.  @xref{Resource Index}, for the full list
+of @value{DDD} resources.
 
 We first discuss how customizing works in general; then we turn to
 customizing parts of @value{DDD} introduced so far.
@@ -4910,9 +4904,9 @@ This changes the related @value{DDD} resource for this particular
 Options}), the changed resource will also apply to future invocations.
 
 @item
-Finally, you can Set the appropriate resource in a file named
-@file{.@value{ddd}/init} in your home directory.  @xref{Resource Index},
-for a list of @value{DDD} resources to be set.
+Finally, you can set the appropriate resource in a file named
+@file{.@value{ddd}/init} in your home directory.  
+@xref{Resource Index}, for a list of @value{DDD} resources to be set.
 @end itemize
 
 
@@ -12357,9 +12351,34 @@ page} for recent announcements and other news related to @value{DDD}.
 
 
 
-@node Index
-@unnumbered Index
+@node Label Index
+@unnumbered Label Index
 
+@printindex lb
+
+@node Key Index
+@unnumbered Key Index
+
+@printindex ky
+
+
+@node Command Index
+@unnumbered Commands Index
+
+@printindex cm
+
+@node Resource Index
+@unnumbered Resource Index
+
+@printindex vr
+
+@node File Index
+@unnumbered File Index
+
+@printindex fl
+
+@node Concept Index
+@unnumbered Concepts Index
 @printindex cp
 
 @shortcontents
