@@ -45,13 +45,13 @@ DDD_NAMES
 dnl
 dnl Revision Control.
 dnl
-AC_PREREQ(2.53)
+AC_PREREQ(2.59)
 AC_REVISION([$Id$])
 dnl
 dnl Initialization.
 dnl
 AC_CONFIG_SRCDIR([NEWS])
-AM_CONFIG_HEADER([ddd/config.h])
+AC_CONFIG_HEADERS([ddd/config.h])
 dnl
 dnl Some simple checks.
 dnl
@@ -61,7 +61,7 @@ AC_ARG_PROGRAM
 #  1.x:  minimum required version
 #  foreign:  we don't follow the normal rules for GNU packages (no COPYING
 #            file in the top srcdir, etc, etc), so stop complaining.
-AM_INIT_AUTOMAKE([1.6 foreign])
+AM_INIT_AUTOMAKE([1.7.9 foreign])
 AC_PROG_MAKE_SET
 dnl
 dnl
@@ -210,7 +210,7 @@ dnl
 rpath=
 RPATH=
 AC_ARG_ENABLE(rpath,
-AC_HELP_STRING([--enable-rpath=PATH],[search run-time libraries in PATH]),
+AS_HELP_STRING([--enable-rpath=PATH],[search run-time libraries in PATH]),
 [rpath="$enableval"],[rpath=])
 if test "$rpath" != ""; then
 RPATH="-R`echo $rpath | sed 's/:/ -R/g'`"
@@ -339,14 +339,14 @@ dnl check for ncurses
 ncurses_includes=
 ncurses_libraries=
 AC_ARG_WITH(ncurses,
-AC_HELP_STRING([--without-ncurses],[do not use the Ncurses library]),[
+AS_HELP_STRING([--without-ncurses],[do not use the Ncurses library]),[
   if test "$withval" = "no"; then
     ncurses_includes=no
     ncurses_libraries=no
   fi
 ])
 AC_ARG_WITH(ncurses-libraries,
-AC_HELP_STRING([--with-ncurses-libraries=DIR],
+AS_HELP_STRING([--with-ncurses-libraries=DIR],
                [Ncurses libraries are in DIR]),[
   ncurses_libraries="$withval"
   case "$ncurses_libraries" in
@@ -390,7 +390,7 @@ dnl
 dnl Check for -lreadline (optional)
 readline_support=no
 AC_ARG_WITH(readline,
-AC_HELP_STRING([--with-readline],
+AS_HELP_STRING([--with-readline],
                [do use the readline library default=no]),[
   if test "$withval" = "no"; then
     readline_support=no
@@ -401,7 +401,7 @@ AC_HELP_STRING([--with-readline],
 LIBREADLINE=""
 if test "x${readline_support}" != "xno"; then
   AC_ARG_WITH(readline-includes,
-  AC_HELP_STRING([--with-readline-includes=DIR],
+  AS_HELP_STRING([--with-readline-includes=DIR],
                  [Readline libraries are in DIR]),[
     readline_includes="$withval"
     case "$readline_includes" in
@@ -417,7 +417,7 @@ if test "x${readline_support}" != "xno"; then
     esac
   ])
   AC_ARG_WITH(readline-libraries,
-  AC_HELP_STRING([--with-readline-libraries=DIR],
+  AS_HELP_STRING([--with-readline-libraries=DIR],
                  [Readline libraries are in DIR]),[
     readline_libraries="$withval"
     case "$readline_libraries" in
@@ -460,7 +460,7 @@ dnl The `-liberty' library per definition contains only functions
 dnl missing in system libraries.
 libiberty_support=yes
 AC_ARG_WITH(libiberty,
-AC_HELP_STRING([--with-libiberty],
+AS_HELP_STRING([--with-libiberty],
                [do use the libiberty library default=yes]),[
   if test "$withval" = "no"; then
     libiberty_support=no
@@ -1013,21 +1013,21 @@ dnl
 dnl User-defined options
 dnl
 AC_ARG_ENABLE(builtin-manual,
-AC_HELP_STRING([--enable-builtin-manual],[compile manual into DDD]),
+AS_HELP_STRING([--enable-builtin-manual],[compile manual into DDD]),
 	builtin_manual="$enableval", builtin_manual=no)
 AC_ARG_ENABLE(builtin-app-defaults,
-AC_HELP_STRING([--enable-builtin-app-defaults],
+AS_HELP_STRING([--enable-builtin-app-defaults],
                [compile app-defaults file into DDD]),
 	builtin_app_defaults="$enableval", builtin_app_defaults=no)
 AC_ARG_ENABLE(builtin-news,
-AC_HELP_STRING([--enable-builtin-news],[compile NEWS file into DDD]),
+AS_HELP_STRING([--enable-builtin-news],[compile NEWS file into DDD]),
 	builtin_news="$enableval", builtin_news=no)
 AC_ARG_ENABLE(builtin-license,
-AC_HELP_STRING([--enable-builtin-license],
+AS_HELP_STRING([--enable-builtin-license],
                [compile COPYING file into DDD]),
 	builtin_license="$enableval", builtin_license=no)
 AC_ARG_ENABLE(builtin-vsllib,
-AC_HELP_STRING([--enable-builtin-vsllib],[compile VSL library into DDD]),
+AS_HELP_STRING([--enable-builtin-vsllib],[compile VSL library into DDD]),
 	builtin_vsllib="$enableval", builtin_vsllib=no)
 dnl
 if test "$builtin_manual" != no; then

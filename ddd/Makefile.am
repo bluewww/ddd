@@ -1430,9 +1430,6 @@ CONVERT    = convert
 # Available from http://www.tug.org/applications/pdftex/epstopdf
 EPSTOPDF = epstopdf
 
-# The texi2pdf program.  (texi2pdf)
-TEXI2PDF = texi2dvi --pdf
-
 # The fig2dev command.  (fig2dev)
 FIG2DEV = fig2dev
 FIG2PS  = $(FIG2DEV) -L eps

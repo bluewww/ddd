@@ -2072,7 +2072,7 @@ AC_REQUIRE([ICE_CXX_ISYSTEM])
 motif_includes=
 motif_libraries=
 AC_ARG_WITH(motif,
-AC_HELP_STRING([--without-motif],[do not use Motif widgets]))
+AS_HELP_STRING([--without-motif],[do not use Motif widgets]))
 dnl Treat --without-motif like
 dnl --without-motif-includes --without-motif-libraries.
 if test "$with_motif" = "no"
@@ -2081,11 +2081,11 @@ motif_includes=no
 motif_libraries=no
 fi
 AC_ARG_WITH(motif-includes,
-AC_HELP_STRING([--with-motif-includes=DIR],
+AS_HELP_STRING([--with-motif-includes=DIR],
                [Motif include files are in DIR]),
 motif_includes="$withval")
 AC_ARG_WITH(motif-libraries,
-AC_HELP_STRING([--with-motif-libraries=DIR],
+AS_HELP_STRING([--with-motif-libraries=DIR],
                [Motif libraries are in DIR]),
 motif_libraries="$withval")
 AC_MSG_CHECKING([for Motif])
@@ -2259,7 +2259,7 @@ AC_REQUIRE([ICE_CXX_ISYSTEM])
 athena_includes=
 athena_libraries=
 AC_ARG_WITH(athena,
-AC_HELP_STRING([--without-athena],[do not use Athena widgets]))
+AS_HELP_STRING([--without-athena],[do not use Athena widgets]))
 dnl Treat --without-athena like
 dnl --without-athena-includes --without-athena-libraries.
 if test "$with_athena" = "no"
@@ -2268,11 +2268,11 @@ athena_includes=no
 athena_libraries=no
 fi
 AC_ARG_WITH(athena-includes,
-AC_HELP_STRING([--with-athena-includes=DIR],
+AS_HELP_STRING([--with-athena-includes=DIR],
                [Athena include files are in DIR]),
 athena_includes="$withval")
 AC_ARG_WITH(athena-libraries,
-AC_HELP_STRING([--with-athena-libraries=DIR],
+AS_HELP_STRING([--with-athena-libraries=DIR],
                [Athena libraries are in DIR]),
 athena_libraries="$withval")
 AC_MSG_CHECKING([for Athena])
@@ -2447,7 +2447,7 @@ AC_REQUIRE([ICE_CXX_ISYSTEM])
 xpm_includes=
 xpm_libraries=
 AC_ARG_WITH(xpm,
-AC_HELP_STRING([--without-xpm],[do not use the Xpm library]))
+AS_HELP_STRING([--without-xpm],[do not use the Xpm library]))
 dnl Treat --without-xpm like
 dnl --without-xpm-includes --without-xpm-libraries.
 if test "$with_xpm" = "no"
@@ -2456,10 +2456,10 @@ xpm_includes=no
 xpm_libraries=no
 fi
 AC_ARG_WITH(xpm-includes,
-AC_HELP_STRING([--with-xpm-includes=DIR],[Xpm include files are in DIR]),
+AS_HELP_STRING([--with-xpm-includes=DIR],[Xpm include files are in DIR]),
 xpm_includes="$withval")
 AC_ARG_WITH(xpm-libraries,
-AC_HELP_STRING([--with-xpm-libraries=DIR],[Xpm libraries are in DIR]),
+AS_HELP_STRING([--with-xpm-libraries=DIR],[Xpm libraries are in DIR]),
 xpm_libraries="$withval")
 AC_MSG_CHECKING([for Xpm])
 #
