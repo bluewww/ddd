@@ -1,0 +1,35 @@
+/* XPM */
+static char *properties_xx_xpm[] = {
+/* width height ncolors chars_per_pixel */
+"29 25 3 1",
+/* colors */
+"  c grey50 g grey50 m black",
+". c none   g none   m none  s Background",
+"X c white  g white  m white",
+/* pixels */
+"....              ...........",
+".... XXXXXXXXXXX  X..........",
+".... X.      ...  X..........",
+".... X.     XX..  X..........",
+".... X.  XXX ...  X .........",
+".... X. XX   X.    . ........",
+".... X. X..X X.  XXX X.......",
+".... X.  ..  X.   .. X.......",
+".... X..XX . X.  X .   ......",
+".... X.....  X.   .X.XX .....",
+".... X......     XX.... X....",
+".... X.. ... XXX  .. .. X....",
+".... X  .X...X...XX..  .X....",
+"....    X............ XX.....",
+".....XXX . .  ..   .. X......",
+".........  X.X . XX  .X......",
+"..........XX..   X..XX.......",
+"...............XXX...........",
+"   ..........................",
+" XX . . ..  ..   ...   ......",
+" X. X  .X .X . XX . .XXX.....",
+"   .X XX. X. X X. X.  .......",
+" XXX. X.. X. X X. X..X ......",
+" X... X...  .X   .X   .X . . ",
+".X....X....XX. XXX..XXX..X.X."
+};
