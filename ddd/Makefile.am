@@ -48,7 +48,8 @@ SUFFIXES = .C .cc .c .mod .p .Y .YY .L .txt .i .xbm .xbmxx .xpm .xpmxx \
 	   $(IMGEXT)
 
 # Shared data installation
-dddrootdir   = $(pkgdatadir)-@VERSION@
+dddrootdir   = $(pkgdatadir)-$(VERSION)
+dddappdir    = $(pkgdatadir)-$(VERSION)/$(ddd)
 
 
 # -----------------------------------------------------------------------------
@@ -1841,14 +1842,7 @@ host.h: $(srcdir)/host.h.in config.status
 # Installation.
 # -----------------------------------------------------------------------------
 
-# These files are to be installed with DDD.
-COPYING: $(srcdir)/../COPYING
-	$(LN_S) $< $@
-
-NEWS: $(srcdir)/../NEWS
-	$(LN_S) $< $@
-
-dddroot_DATA = COPYING NEWS Ddd
+dddapp_DATA = Ddd
 
 
 # -----------------------------------------------------------------------------
