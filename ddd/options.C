@@ -1467,11 +1467,7 @@ static bool must_kill_to_get_core()
 
 static bool is_fallback_value(string resource, const string& val)
 {
-#if 1
-    // Not tested yet
-    return false;
-#else
-    XrmDatabase db = app_defaults(XtDisplay(find_shell()));
+    XrmDatabase default_db = app_defaults(XtDisplay(find_shell()));
 
     static String app_name  = 0;
     static String app_class = 0;
@@ -1485,18 +1481,28 @@ static bool is_fallback_value(string resource, const string& val)
 
     char *type;
     XrmValue xrmvalue;
-    Bool success = XrmGetResource(db, str_name, str_class, &type, &xrmvalue);
-    string found = "";
+    Bool success = XrmGetResource(default_db, str_name, str_class, 
+				  &type, &xrmvalue);
+    string default_val = NO_GDB_ANSWER;
 
     if (success)
     {
 	char *str = (char *)xrmvalue.addr;
 	int len   = xrmvalue.size - 1; // includes the final `\0'
-	found = string(str, len);
+	default_val = cook(string(str, len));
     }
 
-    return found == val;
+#if 0
+    if (val != default_val)
+    {
+	clog << resource
+	     << ": val " << quote(val)
+	     << " != default " << quote(default_val)
+	     << '\n';
+    }
 #endif
+
+    return val == default_val;
 }
 
 static string app_value(string resource, const string& value, 

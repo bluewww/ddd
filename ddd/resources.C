@@ -1985,7 +1985,7 @@ XrmDatabase app_defaults(Display *display)
     // Add builtin fallback defaults.
     int i = 0;
     while (ddd_fallback_resources[i] != 0)
-	XrmPutLineResource(&db, ddd_fallback_resources[i]);
+	XrmPutLineResource(&db, ddd_fallback_resources[i++]);
 
     // Add app-defaults file, overriding fallback defaults.
     static String app_name  = 0;
