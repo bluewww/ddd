@@ -369,12 +369,17 @@ void set_status(string message, bool temporary)
 // Same, but use an MString.
 void set_status_mstring(MString message, bool temporary)
 {
-    if (status_w == 0 || (status_locked && !temporary))
+    if (status_w == 0)
 	return;
 
-    current_status_text = message;
     if (!temporary)
+    {
 	add_to_status_history(message);
+	if (status_locked)
+	    return;
+    }
+
+    current_status_text = message;
 
     XtVaSetValues(status_w,
 		  XmNlabelString, message.xmstring(),
