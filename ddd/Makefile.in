@@ -181,6 +181,7 @@ LIBTERMCAP = @LIBTERMCAP@
 LIBIBERTY  = @LIBIBERTY@
 LIBM       = @LIBM@
 LIBC       = @LIBC@
+NON_X_LIBS = @LIBS@
 LIBS = $(LIBC) $(LIBRX) $(LIBTERMCAP) $(LIBIBERTY) $(LIBM) $(LIBC)
 
 
@@ -619,6 +620,21 @@ DDD_OBJECTS = \
 	PosBuffer.o  \
 	SourceView.o
 
+# Objects required for userinfo
+USERINFO_OBJECTS = \
+	Agent.o      \
+	AgentM.o     \
+	HandlerL.o   \
+	SignalB.o    \
+	TypeInfo.o   \
+	UniqueId.o   \
+	compare.o    \
+	hash.o       \
+	hostname.o   \
+	regex.o      \
+	sigName.o    \
+	strclass.o
+
 ## All objects.
 OBJECTS = $(NORA_OBJECTS) $(DDD_OBJECTS)
 
@@ -626,7 +642,7 @@ OBJECTS = $(NORA_OBJECTS) $(DDD_OBJECTS)
 PROGS = ddd
 
 ## Extra demonstration files.
-DEMOS = cxxtest ctest test-graph ttytest bug ptest m2test
+DEMOS = userinfo cxxtest ctest test-graph ttytest bug ptest m2test
 
 ## Where to find texinfo files and so
 MAKEINFO_FLAGS = \
@@ -674,7 +690,7 @@ CLEAN_STUFF	 = $(PROGS) $(DEMOS) core *.o *.a *.s *.i \
 		   *.aux *.cp *.cps *.fn *.fns *.flc \
 		   *.ky *.kys *.log *.pg *.pgs *.toc *.tp *.tps *.vr *.vrs \
 		   *.tar *.tar.gz *~ lex.* y.tab.* site.* *.sum \
-		   *.diff rcssync *.private
+		   *.diff rcssync *.private USERINFO
 
 # Files to be deleted from distribution
 DISTCLEAN_STUFF	 = $(CLEAN_STUFF) ddd.man.ps \
@@ -807,19 +823,18 @@ programs: $(PROGS)
 .PHONY: demos
 demos:	$(DEMOS)
 
+
 ## A TECO-ism
 
 .PHONY: love
 love:
 	@$(ECHO) 'not war?'
 
+
 ## The resource header files.
 
 Ddd.ad.h: Ddd
 	$(AD2C) $? > Ddd.ad.h
-
-# `make depend' fails to find this dependency :-(
-strings.o: Ddd.ad.h
 
 
 ## The VSL header files.
@@ -840,6 +855,9 @@ ddd:	ddd.o $(OBJECTS)
 
 
 ## The demonstration programs.
+
+userinfo: userinfo.o $(USERINFO_OBJECTS)
+	-$(LINK.cc) -o $@ userinfo.o $(USERINFO_OBJECTS) $(NON_X_LIBS) $(LIBS)
 
 test-graph: test-graph.o $(NORA_OBJECTS) 
 	$(LINK.cc) -o $@ test-graph.o $(NORA_OBJECTS) $(ALL_X_LIBS) $(LIBS)
@@ -1010,11 +1028,13 @@ eps-code.h:     header.str trailer.str eps-code.x
 		    eps-code.x > eps-code.h
 
 ## Configuration info stuff
-configinfo.C:   config-info Makefile config.h
+configinfo.C:   USERINFO $(srcdir)/config-info Makefile config.h
 		$(SHELL) $(srcdir)/config-info > $@
 
 configinfo.o:	configinfo.C configinfo.h
 
+USERINFO:	userinfo Makefile
+		@(./userinfo || echo '(unknown)') > $@
 
 ## Make dependency stuff.
 

@@ -83,6 +83,8 @@ static void _MStringHelpCB(Widget widget,
 			   bool help_on_help = false,
 			   Pixmap pixmap = 0);
 
+MString helpOnVersionExtraText;
+
 static MString get_help_string(Widget widget)
 {
     // Get text
@@ -144,6 +146,7 @@ void HelpOnVersionCB(Widget widget, XtPointer, XtPointer call_data)
 	shell = XtParent(shell);
 
     MString text = get_help_string(shell);
+    text += helpOnVersionExtraText;
 
     // Get the pixmap
     Pixmap pixmap = 0;

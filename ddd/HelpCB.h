@@ -92,5 +92,8 @@ extern MString (*DefaultHelpText)(Widget widget);
 // Pixmap to display at ``help on version''
 extern Pixmap (*helpOnVersionPixmapProc)(Widget w);
 
+// Additional text to display at ``help on version''
+extern MString helpOnVersionExtraText;
+
 #endif // _Nora_HelpCB_h
 // DON'T ADD ANYTHING BEHIND THIS #endif
