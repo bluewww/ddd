@@ -14,14 +14,14 @@ DDD 2.2 [in development]
         into one single dynamic button.
       If you already have a ~/.dddinit file, you must resize DDD
       manually and save options.
-    - Online manuals are improved.
+    - Online manuals are improved:
       + Multiple manual browsers are supported.
       + Manual browsers are realized as top-level windows.
       + DDD no longer blocks while the manual is uncompressed and formatted.
       + DDD manuals are now stored in `gzip' format, saving space in
         executables.
-    - Command tool handling simplified.  The command tool is always
-      auto-raised and decorated, regardless of window manager settings.
+    - The command tool has been improved.  It is now always
+      auto-raised and comes with window manager decorations.
 
     Bug fixes:
     - Various fixes for XDB on HP-UX 10.x included.  Thanks to Robert
