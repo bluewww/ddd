@@ -29,16 +29,6 @@
 char MakeMenu_rcsid[] = 
     "$Id$";
 
-// #define USE_XM_SPINBOX 0
-
-// Whether to use XmSpinBox
-#ifndef USE_XM_SPINBOX
-#if XmVersion >= 2000
-#define USE_XM_SPINBOX 1
-#else
-#define USE_XM_SPINBOX 0
-#endif
-#endif
 
 #include "MakeMenu.h"
 
@@ -48,6 +38,7 @@ char MakeMenu_rcsid[] =
 #include "TimeOut.h"
 #include "misc.h"
 #include "string-fun.h"
+#include "charsets.h"
 
 #include <stdlib.h>
 #include <Xm/Xm.h>
@@ -63,9 +54,33 @@ char MakeMenu_rcsid[] =
 #include <Xm/Label.h>
 #include <Xm/MenuShell.h>
 #include <X11/Xutil.h>
+
+// Whether to use XmSpinBox
+#ifndef USE_XM_SPINBOX
+#if XmVersion >= 2000
+#define USE_XM_SPINBOX 1
+#else
+#define USE_XM_SPINBOX 0
+#endif
+#endif
+
+// Whether to use XmComboBox
+#ifndef USE_XM_COMBOBOX
+#if XmVersion >= 2000
+#define USE_XM_COMBOBOX 1
+#else
+#define USE_XM_COMBOBOX 0
+#endif
+#endif
+
 #if USE_XM_SPINBOX
 #include <Xm/SpinB.h>
 #endif
+
+#if USE_XM_COMBOBOX
+#include <Xm/ComboBox.h>
+#endif
+
 #include "LessTifH.h"
 #include "bool.h"
 #include "verify.h"
@@ -400,6 +415,60 @@ static Widget create_spin_arrow(Widget parent, unsigned char direction,
 
 #endif
 
+#if USE_XM_COMBOBOX
+//-----------------------------------------------------------------------
+// ComboBox helpers
+//-----------------------------------------------------------------------
+
+static void RefreshComboTextCB(Widget, XtPointer client_data, 
+			       XtPointer call_data)
+{
+    XmListCallbackStruct *cbs = (XmListCallbackStruct *)call_data;
+    Widget text = Widget(client_data);
+
+    XmString item = cbs->item;
+    String item_s;
+    XmStringGetLtoR(item, CHARSET_TT, &item_s);
+    XtVaSetValues(text, XmNvalue, item_s, NULL);
+    XtFree(item_s);
+}
+
+void MMsetComboBoxList(Widget name, const StringArray& items)
+{
+    Widget combobox = name;
+    while (combobox != 0 && !XmIsComboBox(combobox))
+	combobox = XtParent(combobox);
+    assert(combobox != 0);
+
+    Widget list = XtNameToWidget(combobox, "*List");
+    assert(list != 0);
+
+    XmStringTable xmlist = 
+	XmStringTable(XtMalloc(items.size() * sizeof(XmString)));
+
+    int i;
+    for (i = 0; i < items.size(); i++)
+	xmlist[i] = XmStringCreateLtoR(items[i], CHARSET_TT);
+
+    XtVaSetValues(list,
+		  XmNitems,     xmlist,
+		  XmNitemCount, items.size(),
+		  NULL);
+
+    for (i = 0; i < items.size(); i++)
+	XmStringFree(xmlist[i]);
+
+    // It seems XMLIST is already owned by LIST
+    // XtFree((char *)xmlist);
+}
+
+#else  // !USE_XM_COMBOBOX
+
+void MMsetComboBoxList(Widget, String[], int)
+{}
+
+#endif
+
 //-----------------------------------------------------------------------
 // Add items
 //-----------------------------------------------------------------------
@@ -423,13 +492,14 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
     for (MMDesc *item = items; item != 0 && item->name != 0; item++)
     {
 	String name             = item->name;
-	MMType type             = item->type;
+	MMType flags            = item->type;
+	MMType type             = flags & MMTypeMask;
 	Widget& widget          = item->widget;
 	Widget *widgetptr       = item->widgetptr;
 	MMDesc *subitems        = item->items;
 	Widget& label           = item->label;
 
-	if (type & MMIgnore)
+	if (flags & MMIgnore)
 	    continue;		// Don't create
 
 	string subMenuName = string(name) + "Menu";
@@ -441,8 +511,9 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	Widget panel   = 0;
 	bool flat = false;
 	label = 0;
+	widget = 0;
 
-	switch(type & MMTypeMask) 
+	switch(type) 
 	{
 	case MMFlatPush:
 	{
@@ -612,13 +683,13 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 
 	    arg = 0;
 	    label = verify(XmCreateLabel(widget, name, args, arg));
-	    if (name[0] != '\0' && (type & MMUnmanagedLabel) == 0)
+	    if (name[0] != '\0' && (flags & MMUnmanagedLabel) == 0)
 		XtManageChild(label);
 
 	    Widget (*create_panel)(Widget, String, MMDesc[], 
 				   ArgList, Cardinal) = 0;
 
-	    switch (type & MMTypeMask)
+	    switch (type)
 	    {
 	    case MMPanel:
 		create_panel = MMcreatePanel;
@@ -655,6 +726,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    break;
 	}
 
+	case MMComboBox:
 	case MMTextField:
 	case MMEnterField:
 	case MMSpinField:
@@ -673,12 +745,12 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 
 	    arg = 0;
 	    label = verify(XmCreateLabel(panel, labelName, args, arg));
-	    if (name[0] != '\0' && (type & MMUnmanagedLabel) == 0)
+	    if (name[0] != '\0' && (flags & MMUnmanagedLabel) == 0)
 		XtManageChild(label);
 
 	    Widget spin = panel;
 #if USE_XM_SPINBOX
-	    if ((type & MMTypeMask) == MMSpinField)
+	    if (type == MMSpinField)
 	    {
 		arg = 0;
 		spin = XmCreateSpinBox(panel, spinName, args, arg);
@@ -686,12 +758,53 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    }
 #endif
 
-	    arg = 0;
-	    widget = verify(XmCreateTextField(spin, textName, args, arg));
-	    XtManageChild(widget);
+#if USE_XM_COMBOBOX
+	    if (type == MMComboBox)
+	    {
+		arg = 0;
+		Widget combobox = 
+		    verify(XmCreateDropDownComboBox(panel, textName, 
+						    args, arg));
+
+		arg = 0;
+		XtSetArg(args[arg], XmNshadowThickness, 0); arg++;
+		XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
+		XtSetValues(combobox, args, arg);
+		XtManageChild(combobox);
+
+		widget = XtNameToWidget(combobox, "*Text");
+		arg = 0;
+		XtSetArg(args[arg], XmNshadowThickness, 2); arg++;
+		XtSetValues(widget, args, arg);
+
+		Widget list = XtNameToWidget(combobox, "*List");
+		arg = 0;
+		XtSetArg(args[arg], XmNshadowThickness, 2); arg++;
+		XtSetValues(list, args, arg);
+
+		XtAddCallback(list, XmNbrowseSelectionCallback,
+			      RefreshComboTextCB, XtPointer(widget));
+		XtAddCallback(list, XmNsingleSelectionCallback,
+			      RefreshComboTextCB, XtPointer(widget));
+		XtAddCallback(list, XmNmultipleSelectionCallback,
+			      RefreshComboTextCB, XtPointer(widget));
+		XtAddCallback(list, XmNextendedSelectionCallback,
+			      RefreshComboTextCB, XtPointer(widget));
+	    }
+#endif
+	    if (widget == 0)
+	    {
+		arg = 0;
+		if (type == MMSpinField)
+		{
+		    XtSetArg(args[arg], XmNhighlightThickness, 0); arg++;
+		}
+		widget = verify(XmCreateTextField(spin, textName, args, arg));
+		XtManageChild(widget);
+	    }
 
 #if !USE_XM_SPINBOX
-	    if ((type & MMTypeMask) == MMSpinField)
+	    if (type == MMSpinField)
 	    {
 		create_spin_arrow(panel, XmARROW_LEFT,  widget);
 		create_spin_arrow(panel, XmARROW_RIGHT, widget);
@@ -719,7 +832,7 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	    abort();
 	}
 
-	if (type & MMHelp)
+	if (flags & MMHelp)
 	{
 	    arg = 0;
 	    XtSetArg(args[arg], XmNmenuHelpWidget, item->widget); arg++;
@@ -729,10 +842,10 @@ void MMaddItems(Widget shell, MMDesc items[], bool ignore_seps)
 	if (panel == 0)
 	    panel = widget;
 
-	if (type & MMInsensitive)
+	if (flags & MMInsensitive)
 	    XtSetSensitive(panel, False);
 
-	if (!(type & MMUnmanaged))
+	if (!(flags & MMUnmanaged))
 	    XtManageChild(panel);
 
 	if (widgetptr)
@@ -913,7 +1026,8 @@ void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure)
 // Add callbacks to items
 static void addCallback(MMDesc *item, XtPointer default_closure)
 {
-    MMType type             = item->type;
+    MMType flags            = item->type;
+    MMType type             = flags & MMTypeMask;
     Widget widget           = item->widget;
     XtCallbackRec callback  = item->callback;
     
@@ -922,7 +1036,7 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 
     bool flat = false;
 
-    switch(type & MMTypeMask) 
+    switch(type) 
     {
     case MMFlatPush:
     {
@@ -992,6 +1106,7 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 	break;
     }
 
+    case MMComboBox:
     case MMTextField:
     case MMSpinField:
     {
@@ -1001,7 +1116,7 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
 			  callback.callback, 
 			  callback.closure);
 
-	if ((type & MMTypeMask) == MMTextField)
+	if (type == MMTextField)
 	    break;
 	// FALL THROUGH
     }
