@@ -33,6 +33,7 @@
 // - Command window
 // - Command completion
 // and more...
+//
 // (Some day, this file shall be split into several modules. - AZ)
 
 char ddd_rcsid[] =
