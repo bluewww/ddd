@@ -43,8 +43,14 @@ class BreakPoint;
 class UndoBuffer {
 
 private:
+    // The history itself
     static UndoBufferArray history;
+
+    // Last position in history + 1
     static int history_position;
+
+    // Last target in history
+    static int history_target;
 
     // General scheme:
     //
@@ -109,6 +115,9 @@ protected:
 
     // Get a short action description from COMMAND
     static string action(const string& command);
+
+    // True if ENTRY has any effect
+    static bool has_effect(const UndoBufferEntry& entry);
 
 public:
     // Add status NAME/VALUE to history.

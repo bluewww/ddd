@@ -145,10 +145,12 @@ Volunteers for fixing these and other bugs are welcome!
     (Create a DispGraph::cluster() routine, like DispGraph::make_active()).
 
 320 Finish Undo/Redo:
+    - Have a pure command-based buffer, using a special command to
+      restore state.
     - graph undisplay `NAME` should delete *all* displays named NAME
     - undo/redo may make clusters (or user displays?) inactive - they
       should all be restored at the end
-    - `set X; next' does not create a separate `undo set' in history.
+    - Undo signals
     - Document it all
 
 322*Finish Plots:
