@@ -27,12 +27,6 @@ DDD 2.3 [in development]
     Changes in configuration and building:
     - LessTif 0.83 is supported.  See `patches/' for some useful patches.
 
-    License changes:
-    - DDD now comes with a GNU General Public License (GPL); see
-      `COPYING' for terms and conditions for copying, distributing and
-      modifying DDD.  (In previous releases, the GNU *library* GPL, as 
-      in `COPYING.LIB', applied to most of DDD.)
-
     And once more, several more minor improvements and bug fixes; see
     the `ChangeLog' file for details.
 
