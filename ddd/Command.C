@@ -42,7 +42,7 @@ char Command_rcsid[] =
 #endif
 
 #ifndef LOG_QUEUE
-#define LOG_QUEUE 1
+#define LOG_QUEUE 0
 #endif
 
 #include "Command.h"
@@ -623,13 +623,6 @@ void processCommandQueue(XtPointer, XtIntervalId *id)
 
     if (emptyCommandQueue())
 	return;
-
-#if LOG_QUEUE
-    clog << "processCommandQueue: "
-	 << "processing_gdb_commands = " << processing_gdb_commands << ", "
-	 << "continuing = " << continuing 
-	 << "\n";
-#endif
 
     if (can_do_gdb_command())
     {
