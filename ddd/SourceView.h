@@ -109,6 +109,8 @@ class SourceView {
     static void CheckScrollWorkProc(XtPointer, XtIntervalId *);
 
     static void StackDialogPoppedDownCB (Widget, XtPointer, XtPointer);
+    static void CodeDialogPoppedDownCB (Widget, XtPointer, XtPointer);
+    static void RegisterDialogPoppedDownCB (Widget, XtPointer, XtPointer);
     static void SelectFrameCB (Widget, XtPointer, XtPointer);
 
     static void fill_labels(const string& info_output);
@@ -203,6 +205,14 @@ private:
     static Widget down_w;                    // The `Down' button
     static bool stack_dialog_popped_up;	     // True if the stack is visible
 
+    static Widget code_dialog_w;              // Dialog for machine code
+    static Widget code_text_w;                // Text inside
+    static bool code_dialog_popped_up;	      // True if code is visible
+
+    static Widget register_dialog_w;          // Dialog for registers
+    static Widget register_text_w;            // Text inside
+    static bool register_dialog_popped_up;    // True if registers are visible
+
     static bool display_glyphs;	// True if glyphs are to be displayed
 
     // The indenting amount
@@ -266,6 +276,12 @@ public:
     // Handle 'frame' information
     static void process_frame           (string& frame_output);
 
+    // Handle 'info register' information
+    static void process_register        (string& where_output);
+
+    // Handle 'disassemble' information
+    static void process_code            (string& where_output);
+
     // Process the remainder of an output line
     static void check_remainder         (string& info_output);
 
@@ -304,10 +320,18 @@ public:
     // Callbacks for menu bar
     static void EditBreakpointsCB(Widget, XtPointer, XtPointer);
     static void ViewStackFramesCB(Widget, XtPointer, XtPointer);
-    static void refresh_stack_frames();
+    static void ViewCodeCB(Widget, XtPointer, XtPointer);
+    static void ViewRegistersCB(Widget, XtPointer, XtPointer);
 
-    // Check whether `where' command is required
+    // Refreshing dialogs
+    static void refresh_stack_frames();
+    static void refresh_code();
+    static void refresh_registers();
+
+    // Check whether specific commands are required at next prompt
     static bool where_required();
+    static bool register_required();
+    static bool code_required();
 
     // Check whether source files are to be cached
     static bool cache_source_files;

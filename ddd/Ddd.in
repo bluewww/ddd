@@ -395,7 +395,7 @@ Ddd*debugging_poem*foreground: 	   dark green
 Ddd*source_form_w.XmPushButton.background: grey90
 Ddd*source_form_w.arrow.foreground:        dark green
 Ddd*source_form_w.break.foreground:        red4
-Ddd*source_form_w.nobreak.foreground:      red4
+Ddd*source_form_w.nobreak.foreground:      grey50
 
 ! Data display colors
 Ddd*graph_edit.nodeColor:          black
@@ -1044,25 +1044,31 @@ Ddd*menubar.view.contextHelpString:	\
 @tt \267 @bf Execution... @rm - show the execution window.
 
 Ddd*viewMenu.command.labelString:		Command...
-Ddd*viewMenu.command.mnemonic:		C
+Ddd*viewMenu.command.mnemonic:			C
 Ddd*viewMenu.source.labelString:		Source...
-Ddd*viewMenu.source.mnemonic:		S
-Ddd*viewMenu.data.labelString:		Data...
-Ddd*viewMenu.data.mnemonic:		D
-Ddd*viewMenu.exec.labelString:		Execution...
-Ddd*viewMenu.exec.mnemonic:		E
+Ddd*viewMenu.source.mnemonic:			S
+Ddd*viewMenu.data.labelString:			Data...
+Ddd*viewMenu.data.mnemonic:			D
+Ddd*viewMenu.exec.labelString:			Execution...
+Ddd*viewMenu.exec.mnemonic:			E
 
 
 Ddd*menubar.program.labelString:		Program
-Ddd*menubar.program.mnemonic:		P
+Ddd*menubar.program.mnemonic:			P
 Ddd*menubar.program*contextHelpString:	\
 \
 @rm This is the @sl Program menu@rm.\n\
 \n\
 @tt \267 @bf Run @rm - start the debugged program.\n\
-@tt \267 @bf Step @rm - step program until it reaches a different source line.\n\
-@tt \267 @bf Next @rm - step program, proceeding through subroutine calls.\n\
+@tt \267 @bf Step @rm - step program until it reaches \
+a different source line.\n\
+@tt \267 @bf Step Instruction @rm - step exactly one machine instruction.\n\
+@tt \267 @bf Next @rm - like @bf Step@rm,\n\
+  but proceed through subroutine calls.\n\
+@tt \267 @bf Next Instruction @rm - like @bf Step Instruction@rm,\n\
+  but proceed through subroutine calls.\n\
 @tt \267 @bf Continue @rm - continue program after signal or breakpoint.\n\
+\n\
 @tt \267 @bf Kill @rm - Kill execution of program being debugged.\n\
 @tt \267 @bf Interrupt @rm - interrupt program (or current debugger command).
 
@@ -1073,13 +1079,23 @@ Ddd*menubar*programMenu.run.acceleratorText:       Ctrl+R
 
 Ddd*menubar*programMenu.step.labelString: 	   Step
 Ddd*menubar*programMenu.step.mnemonic:	           S
-Ddd*menubar*programMenu.step.accelerator:          Ctrl<Key>S
+Ddd*menubar*programMenu.step.accelerator:          Ctrl ~Shift<Key>S
 Ddd*menubar*programMenu.step.acceleratorText:      Ctrl+S
+
+Ddd*menubar*programMenu.stepi.labelString: 	   Step Instruction
+Ddd*menubar*programMenu.stepi.mnemonic:	           I
+Ddd*menubar*programMenu.stepi.accelerator:         Ctrl Shift<Key>S
+Ddd*menubar*programMenu.stepi.acceleratorText:     Ctrl+Shift+S
 
 Ddd*menubar*programMenu.next.labelString: 	   Next
 Ddd*menubar*programMenu.next.mnemonic:	           N
-Ddd*menubar*programMenu.next.accelerator:          Ctrl<Key>X
+Ddd*menubar*programMenu.next.accelerator:          Ctrl ~Shift<Key>X
 Ddd*menubar*programMenu.next.acceleratorText:      Ctrl+X
+
+Ddd*menubar*programMenu.nexti.labelString: 	   Next Instruction
+Ddd*menubar*programMenu.nexti.mnemonic:	           e
+Ddd*menubar*programMenu.nexti.accelerator:         Ctrl Shift<Key>X
+Ddd*menubar*programMenu.nexti.acceleratorText:     Ctrl+Shift+X
 
 Ddd*menubar*programMenu.cont.labelString:	   Continue
 Ddd*menubar*programMenu.cont.mnemonic:	           C
@@ -1088,6 +1104,8 @@ Ddd*menubar*programMenu.cont.acceleratorText:      Ctrl+O
 
 Ddd*menubar*programMenu.kill.labelString:	   Kill
 Ddd*menubar*programMenu.kill.mnemonic:	           K
+Ddd*menubar*programMenu.kill.accelerator:          Ctrl Shift<Key>K
+Ddd*menubar*programMenu.kill.acceleratorText:      Ctrl+Shift+K
 
 Ddd*menubar*programMenu.interrupt.labelString:     Interrupt
 Ddd*menubar*programMenu.interrupt.mnemonic:        I
@@ -1189,6 +1207,22 @@ Ddd*sourceMenu.forward.labelString:	Forward
 Ddd*sourceMenu.forward.mnemonic:	F
 Ddd*sourceMenu.forward.accelerator:	Ctrl<Key>Right
 Ddd*sourceMenu.forward.acceleratorText:	Ctrl+Right
+
+
+
+Ddd*menubar.machine.labelString:	Machine
+Ddd*menubar.machine.mnemonic:		M
+Ddd*menubar.machine.contextHelpString:	\
+\
+@rm This is the @sl Machine menu@rm.\n\
+@tt \267 @bf Show Instructions... @rm - show machine instructions.\n\
+@tt \267 @bf Show Registers... @rm - show machine registers.
+
+Ddd*machineMenu.code.labelString:	Show Instructions...
+Ddd*machineMenu.code.mnemonic:		I
+
+Ddd*machineMenu.registers.labelString:	Show Registers...
+Ddd*machineMenu.registers.mnemonic:	R
 
 
 Ddd*menubar.data.labelString:		Data
@@ -1965,10 +1999,10 @@ Ddd*edit_breakpoints_dialog*buttons*delete.contextHelpString:  \
 !-----------------------------------------------------------------------------
 
 Ddd*stack_dialog_popup.title:             @DDD@: Backtrace
+Ddd*stack_dialog.listLabelString:         Backtrace
 Ddd*stack_dialog.okLabelString:           Close
 Ddd*stack_dialog.applyLabelString:        Up
 Ddd*stack_dialog.cancelLabelString:       Down
-Ddd*stack_dialog.listLabelString:         Backtrace
 Ddd*stack_dialog*visibleItemCount:        10
 
 Ddd*stack_dialog*contextHelpString:       \
@@ -1986,13 +2020,48 @@ in this window.  You can also move around by pressing \
 
 
 !-----------------------------------------------------------------------------
+! Machine Instructions
+!-----------------------------------------------------------------------------
+
+Ddd*code_dialog_popup.title:             @DDD@: Machine Instructions
+Ddd*code_dialog*label.labelString:       Machine Instructions
+Ddd*code_dialog.okLabelString:           Close
+Ddd*code_dialog.applyLabelString:        Step Instruction
+Ddd*code_dialog.cancelLabelString:       Next Instruction
+
+Ddd*code_dialog*text.rows:      12
+Ddd*code_dialog*text.columns:   80
+Ddd*code_dialog*text.resizable: true
+
+Ddd*code_dialog*contextHelpString:       \
+@rm This window shows the disassembled @sl machine instructions \
+@rm of the current function.
+
+
+!-----------------------------------------------------------------------------
+! Registers
+!-----------------------------------------------------------------------------
+
+Ddd*register_dialog_popup.title:             @DDD@: Registers
+Ddd*register_dialog*label.labelString:       Registers
+Ddd*register_dialog.okLabelString:           Close
+
+Ddd*register_dialog*text.rows:      12
+Ddd*register_dialog*text.columns:   50
+Ddd*register_dialog*text.resizable: true
+
+Ddd*register_dialog*contextHelpString:       \
+@rm This window shows the @sl machine registers@rm.
+
+
+!-----------------------------------------------------------------------------
 ! Command History
 !-----------------------------------------------------------------------------
 
 Ddd*history_dialog_popup.title:             @DDD@: Command History
+Ddd*history_dialog.listLabelString:         Command History
 Ddd*history_dialog.okLabelString:           Close
 Ddd*history_dialog.applyLabelString:        Apply
-Ddd*history_dialog.listLabelString:         Command History
 Ddd*history_dialog*visibleItemCount:        10
 
 Ddd*history_dialog*contextHelpString:       \

@@ -1059,9 +1059,12 @@ static MMDesc program_menu[] =
     { "run",         MMPush, { gdbCommandCB, "run" }},
     MMSep,
     { "step",        MMPush, { gdbCommandCB, "step" }},
+    { "stepi",       MMPush, { gdbCommandCB, "stepi" }},
     { "next",        MMPush, { gdbCommandCB, "next" }},
+    { "nexti",       MMPush, { gdbCommandCB, "nexti" }},
     { "cont",        MMPush, { gdbCommandCB, "cont" }},
     MMSep,
+    { "kill",        MMPush, { gdbCommandCB, "kill" }},
     { "interrupt",   MMPush, { gdbCommandCB, "\003" }},
     MMEnd
 };
@@ -1148,6 +1151,8 @@ static MMDesc command_menu[] =
 };
 
 static Widget stack_w;
+static Widget code_w;
+static Widget register_w;
 
 static MMDesc stack_menu[] =
 {
@@ -1168,6 +1173,15 @@ static MMDesc source_menu[] =
     MMSep,
     { "back",       MMPush,  { gdbGoBackCB }},
     { "forward",    MMPush,  { gdbGoForwardCB }},
+    MMEnd
+};
+
+static MMDesc machine_menu[] =
+{
+    { "code",       MMPush,  { SourceView::ViewCodeCB },
+      NULL, &code_w },
+    { "registers",  MMPush,  { SourceView::ViewRegistersCB },
+      NULL, &register_w },
     MMEnd
 };
 
@@ -1357,6 +1371,7 @@ static MMDesc source_menubar[] =
     { "program", MMMenu,           MMNoCB, program_menu },
     { "stack",   MMMenu,           MMNoCB, stack_menu },
     { "source",  MMMenu,           MMNoCB, source_menu },
+    { "machine", MMMenu,           MMNoCB, machine_menu },
     { "help",    MMMenu | MMHelp,  MMNoCB, help_menu },
     MMEnd
 };
@@ -1385,6 +1400,7 @@ static MMDesc combined_menubar[] =
     { "commands",   MMMenu,       MMNoCB, command_menu },
     { "stack",      MMMenu,       MMNoCB, stack_menu },
     { "source",     MMMenu,       MMNoCB, source_menu },
+    { "machine",    MMMenu,       MMNoCB, machine_menu },
     { "data",       MMMenu,       MMNoCB, data_menu },
     { "help", MMMenu | MMHelp,    MMNoCB, help_menu },
     MMEnd
@@ -5157,7 +5173,9 @@ void gdb_ready_for_questionHP (void*, void*, void* call_data)
 	completion_delay = 0;
     }
 
-    set_sensitive(stack_w, gdb_ready);
+    set_sensitive(stack_w,    gdb_ready);
+    set_sensitive(code_w,     gdb_ready && gdb->type() == GDB);
+    set_sensitive(register_w, gdb_ready && gdb->type() == GDB);
 }
 
 void gdb_ready_for_cmdHP (void *, void *, void *)

@@ -98,6 +98,8 @@ typedef struct PlusCmdData {
     bool     refresh_bpoints;          // send 'info b'
     bool     refresh_where;            // send 'where'
     bool     refresh_frame;            // send 'frame'
+    bool     refresh_code;             // send 'disassemble'
+    bool     refresh_register;         // send 'info registers'
     bool     refresh_disp;             // send 'display'
     bool     refresh_disp_info;        // send 'info display'
     bool     refresh_history_filename; // send 'show history filename'
@@ -111,7 +113,8 @@ typedef struct PlusCmdData {
 	refresh_bpoints(false),
 	refresh_where(false),
 	refresh_frame(false),
-	refresh_disp(false),
+	refresh_code(false),
+	refresh_register(false),
 	refresh_disp_info(false),
 	refresh_history_filename(false),
 	refresh_history_size(false),
@@ -263,6 +266,16 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_frame = true;
     }
 
+    if (source_view->code_required())
+    {
+	plus_cmd_data->refresh_code = true;
+    }
+
+    if (source_view->register_required())
+    {
+	plus_cmd_data->refresh_register = true;
+    }
+
     if (data_disp->count_all() == 0)
     {
 	// No displays
@@ -292,10 +305,12 @@ void user_cmdSUC (string cmd, Widget origin)
 	// No new displays
 	cmd_data->filter_disp = NoFilter;
 
-	// Breakpoints and Frame won't change
-	plus_cmd_data->refresh_bpoints = false;
-	plus_cmd_data->refresh_where   = false;
-	plus_cmd_data->refresh_frame   = false;
+	// Breakpoints, Frames, Code and Registers won't change
+	plus_cmd_data->refresh_bpoints  = false;
+	plus_cmd_data->refresh_where    = false;
+	plus_cmd_data->refresh_frame    = false;
+	plus_cmd_data->refresh_code     = false;
+	plus_cmd_data->refresh_register = false;
     }
     else if (is_running_cmd(cmd, gdb->type()))
     {
@@ -306,12 +321,14 @@ void user_cmdSUC (string cmd, Widget origin)
     else if (is_frame_cmd(cmd))
     {
 	// Update displays
-	cmd_data->filter_disp          = NoFilter;
-	cmd_data->new_frame_pos        = true;
+	cmd_data->filter_disp           = NoFilter;
+	cmd_data->new_frame_pos         = true;
 
-	plus_cmd_data->refresh_bpoints = false;
-	plus_cmd_data->refresh_where   = false;
-	plus_cmd_data->refresh_frame   = true;
+	plus_cmd_data->refresh_bpoints  = false;
+	plus_cmd_data->refresh_where    = false;
+	plus_cmd_data->refresh_frame    = true;
+	plus_cmd_data->refresh_code     = false;
+	plus_cmd_data->refresh_register = false;
 
 	switch (gdb->type())
 	{
@@ -348,15 +365,18 @@ void user_cmdSUC (string cmd, Widget origin)
 		plus_cmd_data->refresh_line      = true;
 	    }
 	}
-	plus_cmd_data->refresh_bpoints = false;
-	plus_cmd_data->refresh_where   = false;
+	plus_cmd_data->refresh_bpoints  = false;
+	plus_cmd_data->refresh_where    = false;
+	plus_cmd_data->refresh_register = false;
     }
     else if (is_nop_cmd(cmd))
     {
-	cmd_data->filter_disp          = NoFilter;
-	plus_cmd_data->refresh_bpoints = false;
-	plus_cmd_data->refresh_where   = false;
-	plus_cmd_data->refresh_frame   = false;
+	cmd_data->filter_disp           = NoFilter;
+	plus_cmd_data->refresh_bpoints  = false;
+	plus_cmd_data->refresh_where    = false;
+	plus_cmd_data->refresh_frame    = false;
+	plus_cmd_data->refresh_code     = false;
+	plus_cmd_data->refresh_register = false;
     }
 	
     if (gdb->type() == DBX && plus_cmd_data->refresh_frame)
@@ -393,6 +413,12 @@ void user_cmdSUC (string cmd, Widget origin)
 	plus_cmd_data->refresh_frame = false;
     }
 
+    if (gdb->type() == DBX)
+    {
+	plus_cmd_data->refresh_code     = false;
+	plus_cmd_data->refresh_register = false;
+    }
+
     gdb_out(cmd);
     gdb_out("\n");
 
@@ -416,6 +442,10 @@ void user_cmdSUC (string cmd, Widget origin)
 	    cmds[qu_count++] = "where";
 	if (plus_cmd_data->refresh_frame)
 	    cmds[qu_count++] = "frame";
+	if (plus_cmd_data->refresh_code)
+	    cmds[qu_count++] = "disassemble";
+	if (plus_cmd_data->refresh_register)
+	    cmds[qu_count++] = "info registers";
 	if (plus_cmd_data->refresh_disp)
 	    cmds[qu_count++] = "display";
 	if (plus_cmd_data->refresh_disp_info)
@@ -438,6 +468,10 @@ void user_cmdSUC (string cmd, Widget origin)
 	if (plus_cmd_data->refresh_where)
 	    cmds[qu_count++] = "where";
 	if (plus_cmd_data->refresh_frame)
+	    assert(0);
+	if (plus_cmd_data->refresh_code)
+	    assert(0);
+	if (plus_cmd_data->refresh_register)
 	    assert(0);
 	if (plus_cmd_data->refresh_disp)
 	    assert(0);
@@ -692,6 +726,16 @@ void plusOQAC (string answers[],
     if (plus_cmd_data->refresh_frame) {
 	assert (qu_count < count);
 	source_view->process_frame(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->refresh_code) {
+	assert (qu_count < count);
+	source_view->process_code(answers[qu_count++]);
+    }
+
+    if (plus_cmd_data->refresh_register) {
+	assert (qu_count < count);
+	source_view->process_register(answers[qu_count++]);
     }
 
     bool disabling_occurred = false;

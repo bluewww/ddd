@@ -38,7 +38,7 @@ char SourceView_rcsid[] =
 #include "SourceView.h"
 #include "IntArray.h"
 
-// includes von Nora-Zeugs
+// Nora stuff
 #include "assert.h"
 #include "HelpCB.h"
 #include "DestroyCB.h"
@@ -46,7 +46,7 @@ char SourceView_rcsid[] =
 #include "events.h"
 #include "cook.h"
 
-// includes von Motif-Zeugs
+// Motif stuff
 #include <Xm/Form.h>
 #include <Xm/Label.h>
 #include <Xm/MessageB.h>
@@ -56,19 +56,18 @@ char SourceView_rcsid[] =
 #include <Xm/PushB.h>
 #include <Xm/SelectioB.h>
 #include <Xm/List.h>
-#include <Xm/BulletinB.h>
 
-// sonstige includes
+// System stuff
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <iomanip.h>
-#include <stdlib.h> // fuer atoi
-#include <string.h> // fuer strdup, strchr
-#include <ctype.h> // fuer strdup, strchr
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
-// includes eigener Sachen
+// DDD stuff
 #include "PosBuffer.h"
 #include "string-fun.h"
 #include "ddd.h"
@@ -81,6 +80,7 @@ char SourceView_rcsid[] =
 #include "break.xbm"
 #include "nobreak.xbm"
 
+// Additional macros
 inline int isid(char c)
 {
     return isalnum(c) || c == '_';
@@ -206,8 +206,15 @@ Widget SourceView::stack_dialog_w            = 0;
 Widget SourceView::frame_list_w              = 0;
 Widget SourceView::up_w                      = 0;
 Widget SourceView::down_w                    = 0;
+Widget SourceView::code_dialog_w             = 0;
+Widget SourceView::code_text_w               = 0;
+Widget SourceView::register_dialog_w         = 0;
+Widget SourceView::register_text_w           = 0;
 
-bool SourceView::stack_dialog_popped_up = false;
+bool SourceView::stack_dialog_popped_up    = false;
+bool SourceView::code_dialog_popped_up     = false;
+bool SourceView::register_dialog_popped_up = false;
+
 bool SourceView::cache_source_files     = true;
 bool SourceView::display_glyphs         = true;
 
@@ -888,8 +895,10 @@ int SourceView::read_current(string& file_name, bool force_reload)
     line_count = current_text.freq('\n');
 
     // Line positions
-    if (pos_of_line != 0) {
+    if (pos_of_line != 0)
+    {
 	delete[] pos_of_line;
+	pos_of_line = 0;
     }
     pos_of_line = new XmTextPosition[line_count + 2];
     pos_of_line[0] = XmTextPosition(0);
@@ -1249,13 +1258,17 @@ SourceView::SourceView (XtAppContext app_context,
 
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg (args[arg], XmNmarginHeight, 0); arg++;
-    XtSetArg (args[arg], XmNmarginWidth, 0);  arg++;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNmarginWidth, 0);  arg++;
     source_form_w = 
-	verify(XmCreateBulletinBoard(parent, "source_form_w", args, arg));
+	verify(XmCreateForm(parent, "source_form_w", args, arg));
 
     arg = 0;
-    XtSetArg (args[arg], XmNselectionArrayCount, 1); arg++;
+    XtSetArg(args[arg], XmNselectionArrayCount, 1); arg++;
+    XtSetArg(args[arg], XmNtopAttachment,     XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNbottomAttachment,  XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNleftAttachment,    XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNrightAttachment,   XmATTACH_FORM); arg++;
     source_text_w = verify(XmCreateScrolledText (source_form_w,
 						 "source_text_w",
 						 args, arg));
@@ -1410,6 +1423,112 @@ SourceView::SourceView (XtAppContext app_context,
     XtAddCallback(stack_dialog_w,
 		  XmNcancelCallback, gdbCommandCB, "down");
     XtAddCallback(stack_dialog_w,
+		  XmNhelpCallback, ImmediateHelpCB, 0);
+
+
+    // Create code view
+    arg = 0;
+    XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
+    code_dialog_w =
+	verify(XmCreatePromptDialog(source_text_w, 
+				    "code_dialog", args, arg));
+    Delay::register_shell(code_dialog_w);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+    Widget code_form_w = 
+	verify(XmCreateForm(code_dialog_w, "form", args, arg));
+    XtManageChild(code_form_w);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNtopAttachment,   XmATTACH_FORM);         arg++;
+    XtSetArg(args[arg], XmNleftAttachment,  XmATTACH_FORM);         arg++;
+    XtSetArg(args[arg], XmNrightAttachment, XmATTACH_FORM);         arg++;
+    XtSetArg(args[arg], XmNalignment,       XmALIGNMENT_BEGINNING); arg++;
+    Widget code_label_w = 
+	verify(XmCreateLabel(code_form_w, "label", args, arg));
+    XtManageChild(code_label_w);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_WIDGET);   arg++;
+    XtSetArg(args[arg], XmNtopWidget,        code_label_w);      arg++;
+    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
+    XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
+    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
+    XtSetArg(args[arg], XmNeditable,         False);             arg++;
+    XtSetArg(args[arg], XmNeditMode,         XmMULTI_LINE_EDIT); arg++;
+    code_text_w = verify(XmCreateScrolledText(code_form_w, 
+					      "text", args, arg));
+    XtUnmanageChild(XmSelectionBoxGetChild(code_dialog_w,
+					   XmDIALOG_TEXT));
+    XtUnmanageChild(XmSelectionBoxGetChild(code_dialog_w, 
+					   XmDIALOG_SELECTION_LABEL));
+    XtManageChild(XmSelectionBoxGetChild(code_dialog_w,
+					 XmDIALOG_APPLY_BUTTON));
+    XtManageChild(code_text_w);
+
+    XtAddCallback(code_dialog_w,
+		  XmNokCallback, UnmanageThisCB, code_dialog_w);
+    XtAddCallback(code_dialog_w,
+		  XmNokCallback, CodeDialogPoppedDownCB, 0);
+    XtAddCallback(code_dialog_w,
+		  XmNapplyCallback, gdbCommandCB, "stepi");
+    XtAddCallback(code_dialog_w,
+		  XmNcancelCallback, gdbCommandCB, "nexti");
+    XtAddCallback(code_dialog_w,
+		  XmNhelpCallback, ImmediateHelpCB, 0);
+
+
+    // Create register view
+    arg = 0;
+    XtSetArg(args[arg], XmNautoUnmanage, False); arg++;
+    register_dialog_w =
+	verify(XmCreatePromptDialog(source_text_w, 
+				    "register_dialog", args, arg));
+    Delay::register_shell(register_dialog_w);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNmarginHeight, 0); arg++;
+    XtSetArg(args[arg], XmNmarginWidth,  0); arg++;
+    Widget register_form_w = 
+	verify(XmCreateForm(register_dialog_w, "form", args, arg));
+    XtManageChild(register_form_w);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNtopAttachment,   XmATTACH_FORM);         arg++;
+    XtSetArg(args[arg], XmNleftAttachment,  XmATTACH_FORM);         arg++;
+    XtSetArg(args[arg], XmNrightAttachment, XmATTACH_FORM);         arg++;
+    XtSetArg(args[arg], XmNalignment,       XmALIGNMENT_BEGINNING); arg++;
+    Widget register_label_w = 
+	verify(XmCreateLabel(register_form_w, "label", args, arg));
+    XtManageChild(register_label_w);
+
+    arg = 0;
+    XtSetArg(args[arg], XmNtopAttachment,    XmATTACH_WIDGET);   arg++;
+    XtSetArg(args[arg], XmNtopWidget,        register_label_w);  arg++;
+    XtSetArg(args[arg], XmNbottomAttachment, XmATTACH_FORM);     arg++;
+    XtSetArg(args[arg], XmNleftAttachment,   XmATTACH_FORM);     arg++;
+    XtSetArg(args[arg], XmNrightAttachment,  XmATTACH_FORM);     arg++;
+    XtSetArg(args[arg], XmNeditable,         False);             arg++;
+    XtSetArg(args[arg], XmNeditMode,         XmMULTI_LINE_EDIT); arg++;
+    register_text_w = verify(XmCreateScrolledText(register_form_w, 
+					      "text", args, arg));
+    XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w, 
+					   XmDIALOG_SELECTION_LABEL));
+    XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w,
+					   XmDIALOG_TEXT));
+    XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w,
+					   XmDIALOG_CANCEL_BUTTON));
+    XtUnmanageChild(XmSelectionBoxGetChild(register_dialog_w,
+					   XmDIALOG_APPLY_BUTTON));
+    XtManageChild(register_text_w);
+
+    XtAddCallback(register_dialog_w,
+		  XmNokCallback, UnmanageThisCB, register_dialog_w);
+    XtAddCallback(register_dialog_w,
+		  XmNokCallback, RegisterDialogPoppedDownCB, 0);
+    XtAddCallback(register_dialog_w,
 		  XmNhelpCallback, ImmediateHelpCB, 0);
 }
 
@@ -2984,8 +3103,69 @@ void SourceView::set_frame_pos(int arg, int pos)
     XtSetSensitive(down_w, pos < count);
 }
 
-bool SourceView::where_required() { return stack_dialog_popped_up; }
+bool SourceView::where_required()    { return stack_dialog_popped_up; }
+bool SourceView::code_required()     { return code_dialog_popped_up; }
+bool SourceView::register_required() { return register_dialog_popped_up; }
 
+
+
+//-----------------------------------------------------------------------------
+// Machine stuff
+//----------------------------------------------------------------------------
+
+void SourceView::process_register(string& register_output)
+{
+    XmTextPosition top = XmTextGetTopCharacter(register_text_w);
+    XmTextSetString(register_text_w, String(register_output));
+    XmTextSetTopCharacter(register_text_w, top);
+}
+
+void SourceView::process_code(string& code_output)
+{
+    XmTextSetString(code_text_w, String(code_output));
+}
+
+void SourceView::refresh_code()
+{
+    string code = gdb_question("disassemble");
+    if (code == string(-1))
+	code = "No code.";
+    process_code(code);
+}
+
+void SourceView::refresh_registers()
+{
+    string registers = gdb_question("info registers");
+    if (registers == string(-1))
+	registers = "No registers.";
+    process_register(registers);
+}
+
+void SourceView::ViewCodeCB(Widget, XtPointer, XtPointer)
+{
+    refresh_code();
+    XtManageChild(code_dialog_w);
+    
+    code_dialog_popped_up = true;
+}
+
+void SourceView::ViewRegistersCB(Widget, XtPointer, XtPointer)
+{
+    refresh_registers();
+    XtManageChild(register_dialog_w);
+    
+    register_dialog_popped_up = true;
+}
+
+void SourceView::CodeDialogPoppedDownCB (Widget, XtPointer, XtPointer)
+{
+    code_dialog_popped_up = false;
+}
+
+void SourceView::RegisterDialogPoppedDownCB (Widget, XtPointer, XtPointer)
+{
+    register_dialog_popped_up = false;
+}
 
 //-----------------------------------------------------------------------------
 // Get Line in GDB format
@@ -3016,6 +3196,7 @@ string SourceView::get_line(string position)
     buf << line << '\t' << text;
     return string(buf);
 }
+
 
 //----------------------------------------------------------------------------
 // Glyph stuff
@@ -3072,7 +3253,9 @@ Widget SourceView::create_glyph(String name,
 {
     Arg args[10];
     Cardinal arg = 0;
-    XtSetArg(args[arg], XmNmappedWhenManaged, False); arg++;
+    XtSetArg(args[arg], XmNmappedWhenManaged, False);         arg++;
+    XtSetArg(args[arg], XmNtopAttachment,     XmATTACH_FORM); arg++;
+    XtSetArg(args[arg], XmNleftAttachment,    XmATTACH_FORM); arg++;
     Widget w = XmCreatePushButton(source_form_w, name, args, arg);
     XtRealizeWidget(w);
     XtManageChild(w);
@@ -3131,8 +3314,8 @@ void SourceView::map_glyph(Widget w, Position x, Position y)
 	height + border_width + margin_height
 	+ shadow_thickness + highlight_thickness;
     XtVaSetValues(w,
-		  XmNx, x,
-		  XmNy, y - glyph_height + line_height() / 2 - 2,
+		  XmNleftOffset, x,
+		  XmNtopOffset, y - glyph_height + line_height() / 2 - 2,
 		  NULL);
     XtMapWidget(w);
 }    
@@ -3171,7 +3354,7 @@ const int max_glyphs = 20;
 const int arrow_x_offset = -5;
 
 // Horizontal breakpoint symbol offset (pixels)
-const int break_x_offset = +8;
+const int break_x_offset = +6;
 
 void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 {
@@ -3183,6 +3366,10 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 
     if (arrow_w == 0)
     {
+	// On the Form widget, later children are displayed
+	// on top of earlier children.  A stop sign hiding an arrow
+	// gives more pleasing results than vice-versa, so place arrow
+	// glyph below sign glyphs.
 	arrow_w = create_glyph("arrow", 
 			       arrow_bits, arrow_width, arrow_height);
 
@@ -3199,9 +3386,19 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 
     // clog << "Arrow:\n";
     Position x, y;
-    XmTextPosition pos = pos_of_line[last_execution_line];
-    Boolean pos_displayed = XmTextPosToXY(source_text_w, pos, &x, &y);
-    if (display_glyphs && pos_displayed && last_execution_line)
+    XmTextPosition pos;
+    Boolean pos_displayed = False;
+
+    if (display_glyphs
+	&& pos_of_line != 0
+	&& last_execution_line > 0
+	&& last_execution_line <= line_count)
+    {
+	pos = pos_of_line[last_execution_line];
+	pos_displayed = XmTextPosToXY(source_text_w, pos, &x, &y);
+    }
+
+    if (pos_displayed)
 	map_glyph(arrow_w, x + arrow_x_offset, y);
     else
 	XtUnmapWidget(arrow_w);
@@ -3218,20 +3415,24 @@ void SourceView::UpdateGlyphsWorkProc(XtPointer client_data, XtIntervalId *)
 	     bp != 0;
 	     bp = bp_map.next(ref))
 	{
-	    if (bp->type() == BREAKPOINT && 
-		(bp->file_name() == "" || 
-		 basename(bp->file_name()) == basename(current_file_name)))
+	    if (bp->type() == BREAKPOINT
+		&& (bp->file_name() == "" || 
+		    basename(bp->file_name()) == basename(current_file_name))
+		&& pos_of_line != 0
+		&& bp->line_nr() > 0
+		&& bp->line_nr() <= line_count)
 	    {
 		pos = pos_of_line[bp->line_nr()];
 		pos_displayed = XmTextPosToXY(source_text_w, pos, &x, &y);
 		if (pos_displayed)
 		{
-		    Widget glyph;
+		    Widget glyph = 0;
 		    if (bp->enabled())
-			glyph = breaks_w[b] ? breaks_w[b++]    : 0;
+			glyph = breaks_w[b]    ? breaks_w[b++]    : 0;
 		    else
 			glyph = nobreaks_w[nb] ? nobreaks_w[nb++] : 0;
-		    if (glyph)
+
+		    if (glyph != 0)
 			map_glyph(glyph, x + break_x_offset, y);
 		}
 	    }
