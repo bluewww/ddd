@@ -4724,13 +4724,18 @@ Ddd*?*Apply.tipString: \
 Ddd*?*Undo.helpString:	\
 LBL(Undo)\n\
 \n\
-Undo last action.
+Undo last command.  Almost all commands can be undone this way.\n\
+\n\
+As a special exception, if the last command affected the state of the\n\
+debuggee, DDD does EMPH(not) restore the previous program state.\n\
+Instead, DDD goes into EMPH(historic mode) showing you all it remembers\n\
+about this state.
 Ddd*?*Undo.tipString: 
 
 Ddd*?*Redo.helpString:	\
 LBL(Redo)\n\
 \n\
-Redo next action.
+Redo next command.  Every command undone can be redone this way.
 Ddd*?*Redo.tipString: 
 
 Ddd*?*Edit.helpString:	\
