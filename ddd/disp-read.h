@@ -103,6 +103,7 @@ bool is_handle_cmd(const string& cmd);
 
 // True if CMD changes debugger command definitions.
 bool is_define_cmd(const string& cmd);
+bool is_end_cmd(const string& cmd);
 
 // True if CMD changes the current file.
 bool is_file_cmd(const string& cmd, GDBAgent *gdb);

@@ -358,6 +358,10 @@ bool is_define_cmd (const string& cmd)
 
     return cmd.matches(rxdefine_cmd);
 }
+bool is_end_cmd (const string& cmd)
+{
+    return cmd.contains("end");
+}
 
 // True if CMD changes debuggee
 bool is_file_cmd (const string& cmd, GDBAgent *gdb)
