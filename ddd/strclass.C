@@ -93,7 +93,9 @@ string _nilstring;
 // copy n bytes
 inline static void ncopy(const char* from, char* to, int n)
 {
-    if (from != to) while (--n >= 0) *to++ = *from++;
+    if (from != to)
+	while (--n >= 0)
+	    *to++ = *from++;
 }
 
 // copy n bytes, null-terminate
@@ -111,13 +113,17 @@ inline static void ncopy0(const char* from, char* to, int n)
 // copy until null
 inline static void scopy(const char* from, char* to)
 {
-    if (from != 0) while((*to++ = *from++) != 0);
+    if (from != 0)
+	while((*to++ = *from++) != 0)
+	    ;
 }
 
 // copy right-to-left
 inline static void revcopy(const char* from, char* to, int n)
 {
-    if (from != 0) while (--n >= 0) *to-- = *from--;
+    if (from != 0)
+	while (--n >= 0)
+	    *to-- = *from--;
 }
 
 
@@ -128,7 +134,8 @@ inline static int slen(const char* t) // inline  strlen
     else
     {
 	const char* a = t;
-	while (*a++ != 0);
+	while (*a++ != 0)
+	    ;
 	return a - 1 - t;
     }
 }
@@ -203,9 +210,12 @@ strRep* string_Salloc(strRep* old, const char* src, int srclen, int newlen)
     assert(malloc_verify());
 #endif
 
-    if (old == &_nilstrRep) old = 0;
-    if (srclen < 0) srclen = slen(src);
-    if (newlen < srclen) newlen = srclen;
+    if (old == &_nilstrRep)
+	old = 0;
+    if (srclen < 0)
+	srclen = slen(src);
+    if (newlen < srclen)
+	newlen = srclen;
     strRep* rep;
     if (old == 0 || unsigned(newlen) > old->allocated)
 	rep = string_Snew(newlen);
@@ -232,7 +242,8 @@ static strRep *string_Sresize(strRep* old, int newlen)
     assert(malloc_verify());
 #endif
 
-    if (old == &_nilstrRep) old = 0;
+    if (old == &_nilstrRep)
+	old = 0;
     strRep* rep;
     if (old == 0)
 	rep = string_Snew(newlen);
@@ -266,8 +277,10 @@ strRep* string_Scopy(strRep* old, strRep* s)
     assert(malloc_verify());
 #endif
 
-    if (old == &_nilstrRep) old = 0;
-    if (s == &_nilstrRep) s = 0;
+    if (old == &_nilstrRep)
+	old = 0;
+    if (s == &_nilstrRep)
+	s = 0;
     if (old == s) 
 	return (old == 0)? &_nilstrRep : old;
     else if (s == 0)
@@ -308,9 +321,12 @@ strRep* string_Scat(strRep* old,
     assert(malloc_verify());
 #endif
 
-    if (old == &_nilstrRep) old = 0;
-    if (srclen < 0) srclen = slen(s);
-    if (tlen < 0) tlen = slen(t);
+    if (old == &_nilstrRep)
+	old = 0;
+    if (srclen < 0)
+	srclen = slen(s);
+    if (tlen < 0)
+	tlen = slen(t);
     unsigned newlen = srclen + tlen;
     strRep* rep;
 
@@ -342,10 +358,14 @@ strRep* string_Scat(strRep* old, const char* s, int srclen,
     assert(malloc_verify());
 #endif
 
-    if (old == &_nilstrRep) old = 0;
-    if (srclen < 0) srclen = slen(s);
-    if (tlen < 0) tlen = slen(t);
-    if (ulen < 0) ulen = slen(u);
+    if (old == &_nilstrRep)
+	old = 0;
+    if (srclen < 0)
+	srclen = slen(s);
+    if (tlen < 0)
+	tlen = slen(t);
+    if (ulen < 0)
+	ulen = slen(u);
     unsigned newlen = srclen + tlen + ulen;
     strRep* rep;
     if (old == 0 || newlen > old->allocated || 
@@ -386,7 +406,8 @@ strRep* string_Sprepend(strRep* old, const char* t, int tlen)
     {
 	s = old->s; srclen = old->len;
     }
-    if (tlen < 0) tlen = slen(t);
+    if (tlen < 0)
+	tlen = slen(t);
     unsigned newlen = srclen + tlen;
     strRep* rep;
     if (old == 0 || newlen > string_Sremainder(old) || 
@@ -416,7 +437,8 @@ inline static int scmp(const char* a, const char* b)
     else
     {
 	signed char diff = 0;
-	while ((diff = *a - *b++) == 0 && *a++ != 0);
+	while ((diff = *a - *b++) == 0 && *a++ != 0)
+	    ;
 	return diff;
     }
 }
@@ -426,7 +448,11 @@ inline static int ncmp(const char* a, int al, const char* b, int bl)
 {
     int n = (al <= bl)? al : bl;
     signed char diff;
-    while (n-- > 0) if ((diff = *a++ - *b++) != 0) return diff;
+
+    while (n-- > 0)
+	if ((diff = *a++ - *b++) != 0)
+	    return diff;
+
     return al - bl;
 }
 
@@ -497,7 +523,11 @@ int compare(const subString& x, const char* y)
 	const char* a = x.chars();
 	int n = x.length();
 	signed char diff;
-	while (n-- > 0) if ((diff = *a++ - *y++) != 0) return diff;
+
+	while (n-- > 0)
+	    if ((diff = *a++ - *y++) != 0)
+		return diff;
+
 	return (*y == 0) ? 0 : -1;
     }
 }
@@ -511,7 +541,11 @@ int compare(const char *x, const subString& y)
 	const char* a = y.chars();
 	int n = y.length();
 	signed char diff;
-	while (n-- > 0) if ((diff = *x++ - *a++) != 0) return diff;
+
+	while (n-- > 0)
+	    if ((diff = *x++ - *a++) != 0)
+		return diff;
+
 	return (*x == 0) ? 0 : -1;
     }
 }
@@ -530,12 +564,16 @@ int string::search(int start, int sl, char c) const
 	{
 	    const char* a = &(s[start]);
 	    const char* lasta = &(s[sl]);
-	    while (a < lasta) if (*a++ == c) return --a - s;
+	    while (a < lasta)
+		if (*a++ == c)
+		    return --a - s;
 	}
 	else
 	{
 	    const char* a = &(s[sl + start + 1]);
-	    while (--a >= s) if (*a == c) return a - s;
+	    while (--a >= s)
+		if (*a == c)
+		    return a - s;
 	}
     }
     return -1;
@@ -544,7 +582,9 @@ int string::search(int start, int sl, char c) const
 int string::search(int start, int sl, const char* t, int tl) const
 {
     const char* s = chars();
-    if (tl < 0) tl = slen(t);
+    if (tl < 0)
+	tl = slen(t);
+
     if (sl > 0 && tl > 0)
     {
 	if (start >= 0)
@@ -557,7 +597,9 @@ int string::search(int start, int sl, const char* t, int tl) const
 	    {
 		const char* x = p++;
 		const char* y = t;
-		while (*x++ == *y++) if (y >= lastt) return --p - s;
+		while (*x++ == *y++)
+		    if (y >= lastt)
+			return --p - s;
 	    }
 	}
 	else
@@ -570,7 +612,9 @@ int string::search(int start, int sl, const char* t, int tl) const
 	    {
 		const char* x = p;
 		const char* y = lastt;
-		while (*x-- == *y--) if (y < t) return ++x - s;
+		while (*x-- == *y--)
+		    if (y < t)
+			return ++x - s;
 	    }
 	}
     }
@@ -579,7 +623,8 @@ int string::search(int start, int sl, const char* t, int tl) const
 
 int string::match(int start, int sl, int exact, const char* t, int tl) const
 {
-    if (tl < 0) tl = slen(t);
+    if (tl < 0)
+	tl = slen(t);
 
     if (start < 0)
     {
@@ -595,17 +640,23 @@ int string::match(int start, int sl, int exact, const char* t, int tl) const
 
     int n = tl;
     const char* s = &(rep->s[start]);
-    while (--n >= 0) if (*s++ != *t++) return -1;
+
+    while (--n >= 0)
+	if (*s++ != *t++)
+	    return -1;
+
     return tl;
 }
 
 void subString::assign(strRep* ysrc, const char* ys, int ylen)
 {
-    if (&S == &_nilstring) return;
+    if (&S == &_nilstring)
+	return;
 
     assert(!S.consuming());
 
-    if (ylen < 0) ylen = slen(ys);
+    if (ylen < 0)
+	ylen = slen(ys);
     strRep* targ = S.rep;
     unsigned sl = targ->len - len + ylen;
 
@@ -646,8 +697,10 @@ int string::_gsub(const char* pat, int pl, const char* r, int rl)
     assert(!consuming());
 
     int nmatches = 0;
-    if (pl < 0) pl = slen(pat);
-    if (rl < 0) rl = slen(r);
+    if (pl < 0)
+	pl = slen(pat);
+    if (rl < 0)
+	rl = slen(r);
     int sl = length();
     if (sl <= 0 || pl <= 0 || sl < pl)
 	return nmatches;
@@ -674,7 +727,8 @@ int string::_gsub(const char* pat, int pl, const char* r, int rl)
 	    int mustfit = xi + remaining + rl - pl;
 	    if (mustfit >= nsz)
 	    {
-		if (nrep != 0) nrep->len = xi;
+		if (nrep != 0)
+		    nrep->len = xi;
 		nrep = string_Sresize(nrep, mustfit);
 		nsz = string_Sremainder(nrep);
 		x = nrep->s;
@@ -723,7 +777,8 @@ int string::_gsub(const regex& pat, const char* r, int rl)
     if (sl <= 0)
 	return nmatches;
 
-    if (rl < 0) rl = slen(r);
+    if (rl < 0)
+	rl = slen(r);
 
     const char* s = chars();
 
@@ -749,7 +804,8 @@ int string::_gsub(const regex& pat, const char* r, int rl)
 	    int mustfit = xi + remaining + rl - pl;
 	    if (mustfit >= nsz)
 	    {
-		if (nrep != 0) nrep->len = xi;
+		if (nrep != 0)
+		    nrep->len = xi;
 		nrep = string_Sresize(nrep, mustfit);
 		x = nrep->s;
 		nsz = string_Sremainder(nrep);
@@ -798,7 +854,8 @@ void string::del(int pos, int len)
 {
     assert(!consuming());
 
-    if (pos < 0 || len <= 0 || (unsigned)(pos + len) > length()) return;
+    if (pos < 0 || len <= 0 || (unsigned)(pos + len) > length())
+	return;
     int nlen = length() - len;
     int first = pos + len;
     ncopy0(&(rep->s[first]), &(rep->s[pos]), length() - first);
@@ -936,14 +993,16 @@ subString string::before(const char* t, int startpos)
 subString string::through(const string& y, int startpos)
 {
     int last = search(startpos, length(), y.chars(), y.length());
-    if (last >= 0) last += y.length();
+    if (last >= 0)
+	last += y.length();
     return _substr(0, last);
 }
 
 subString string::through(const subString& y, int startpos)
 {
     int last = search(startpos, length(), y.chars(), y.length());
-    if (last >= 0) last += y.length();
+    if (last >= 0)
+	last += y.length();
     return _substr(0, last);
 }
 
@@ -951,14 +1010,16 @@ subString string::through(const regex& r, int startpos)
 {
     int mlen;
     int first = r.search(chars(), length(), mlen, startpos);
-    if (first >= 0) first += mlen;
+    if (first >= 0)
+	first += mlen;
     return _substr(0, first);
 }
 
 subString string::through(char c, int startpos)
 {
     int last = search(startpos, length(), c);
-    if (last >= 0) last += 1;
+    if (last >= 0)
+	last += 1;
     return _substr(0, last);
 }
 
@@ -966,28 +1027,32 @@ subString string::through(const char* t, int startpos)
 {
     int tlen = slen(t);
     int last = search(startpos, length(), t, tlen);
-    if (last >= 0) last += tlen;
+    if (last >= 0)
+	last += tlen;
     return _substr(0, last);
 }
 
 subString string::after(const string& y, int startpos)
 {
     int first = search(startpos, length(), y.chars(), y.length());
-    if (first >= 0) first += y.length();
+    if (first >= 0)
+	first += y.length();
     return _substr(first, length() - first);
 }
 
 subString string::after(const subString& y, int startpos)
 {
     int first = search(startpos, length(), y.chars(), y.length());
-    if (first >= 0) first += y.length();
+    if (first >= 0)
+	first += y.length();
     return _substr(first, length() - first);
 }
 
 subString string::after(char c, int startpos)
 {
     int first = search(startpos, length(), c);
-    if (first >= 0) first += 1;
+    if (first >= 0)
+	first += 1;
     return _substr(first, length() - first);
 }
 
@@ -995,7 +1060,8 @@ subString string::after(const regex& r, int startpos)
 {
     int mlen;
     int first = r.search(chars(), length(), mlen, startpos);
-    if (first >= 0) first += mlen;
+    if (first >= 0) 
+	first += mlen;
     return _substr(first, length() - first);
 }
 
@@ -1003,7 +1069,8 @@ subString string::after(const char* t, int startpos)
 {
     int tlen = slen(t);
     int first = search(startpos, length(), t, tlen);
-    if (first >= 0) first += tlen;
+    if (first >= 0)
+	first += tlen;
     return _substr(first, length() - first);
 }
 
@@ -1140,27 +1207,40 @@ strRep* string_Sreverse(strRep* src, strRep* dest)
 strRep* string_Supcase(strRep* src, strRep* dest)
 {
     int n = src->len;
-    if (src != dest) dest = string_Salloc(dest, src->s, n, n);
+    if (src != dest)
+	dest = string_Salloc(dest, src->s, n, n);
+
     char* p = dest->s;
     char* e = &(p[n]);
-    for (; p < e; ++p) if (islower(*p)) *p = toupper(*p);
+
+    for (; p < e; ++p)
+	if (islower(*p))
+	    *p = toupper(*p);
+
     return dest;
 }
 
 strRep* string_Sdowncase(strRep* src, strRep* dest)
 {
     int n = src->len;
-    if (src != dest) dest = string_Salloc(dest, src->s, n, n);
+    if (src != dest)
+	dest = string_Salloc(dest, src->s, n, n);
+
     char* p = dest->s;
     char* e = &(p[n]);
-    for (; p < e; ++p) if (isupper(*p)) *p = tolower(*p);
+
+    for (; p < e; ++p)
+	if (isupper(*p))
+	    *p = tolower(*p);
+
     return dest;
 }
 
 strRep* string_Scapitalize(strRep* src, strRep* dest)
 {
     int n = src->len;
-    if (src != dest) dest = string_Salloc(dest, src->s, n, n);
+    if (src != dest)
+	dest = string_Salloc(dest, src->s, n, n);
 
     char* p = dest->s;
     char* e = &(p[n]);
@@ -1213,6 +1293,9 @@ string replicate(const string& y, int n) return w
 
 string common_prefix(const string& x, const string& y, int startpos) return r;
 {
+    if ((int)x.length() + startpos < 0 || (int)y.length() + startpos < 0)
+	return;
+
     const char* xchars = x.chars();
     const char* ychars = y.chars();
     const char* xs = &(xchars[startpos]);
@@ -1221,12 +1304,16 @@ string common_prefix(const string& x, const string& y, int startpos) return r;
     const char* ys = &(ychars[startpos]);
     const char* topy = &(ychars[y.length()]);
     int l;
-    for (l = 0; xs < topx && ys < topy && *xs++ == *ys++; ++l);
+    for (l = 0; xs < topx && ys < topy && *xs++ == *ys++; ++l)
+	;
     r.rep = string_Salloc(r.rep, ss, l, l);
 }
 
 string common_suffix(const string& x, const string& y, int startpos) return r;
 {
+    if ((int)x.length() + startpos < 0 || (int)y.length() + startpos < 0)
+	return;
+
     const char* xchars = x.chars();
     const char* ychars = y.chars();
     const char* xs = &(xchars[x.length() + startpos]);
@@ -1234,7 +1321,8 @@ string common_suffix(const string& x, const string& y, int startpos) return r;
     const char* ys = &(ychars[y.length() + startpos]);
     const char* boty = ychars;
     int l;
-    for (l = 0; xs >= botx && ys >= boty && *xs == *ys ; --xs, --ys, ++l);
+    for (l = 0; xs >= botx && ys >= boty && *xs == *ys ; --xs, --ys, ++l)
+	;
     r.rep = string_Salloc(r.rep, ++xs, l, l);
 }
 
@@ -1246,7 +1334,8 @@ string replicate(char c, int n)
     string w;
     w.rep = string_Sresize(w.rep, n);
     char* p = w.rep->s;
-    while (n-- > 0) *p++ = c;
+    while (n-- > 0) 
+	*p++ = c;
     *p = 0;
     return w;
 }
@@ -1270,6 +1359,9 @@ string replicate(const string& y, int n)
 string common_prefix(const string& x, const string& y, int startpos)
 {
     string r;
+    if ((int)x.length() + startpos < 0 || (int)y.length() + startpos < 0)
+	return r;
+
     const char* xchars = x.chars();
     const char* ychars = y.chars();
     const char* xs = &(xchars[startpos]);
@@ -1278,7 +1370,8 @@ string common_prefix(const string& x, const string& y, int startpos)
     const char* ys = &(ychars[startpos]);
     const char* topy = &(ychars[y.length()]);
     int l;
-    for (l = 0; xs < topx && ys < topy && *xs++ == *ys++; ++l);
+    for (l = 0; xs < topx && ys < topy && *xs++ == *ys++; ++l)
+	;
     r.rep = string_Salloc(r.rep, ss, l, l);
     return r;
 }
@@ -1286,6 +1379,9 @@ string common_prefix(const string& x, const string& y, int startpos)
 string common_suffix(const string& x, const string& y, int startpos) 
 {
     string r;
+    if ((int)x.length() + startpos < 0 || (int)y.length() + startpos < 0)
+	return r;
+	
     const char* xchars = x.chars();
     const char* ychars = y.chars();
     const char* xs = &(xchars[x.length() + startpos]);
@@ -1293,7 +1389,8 @@ string common_suffix(const string& x, const string& y, int startpos)
     const char* ys = &(ychars[y.length() + startpos]);
     const char* boty = ychars;
     int l;
-    for (l = 0; xs >= botx && ys >= boty && *xs == *ys ; --xs, --ys, ++l);
+    for (l = 0; xs >= botx && ys >= boty && *xs == *ys ; --xs, --ys, ++l)
+	;
     r.rep = string_Salloc(r.rep, ++xs, l, l);
     return r;
 }
@@ -1335,8 +1432,10 @@ istream& operator>>(istream& s, string& x)
     x.rep->s[i] = 0;
     x.rep->len = i;
     int new_state = s.rdstate();
-    if (i == 0) new_state |= ios::failbit;
-    if (ch == EOF) new_state |= ios::eofbit;
+    if (i == 0)
+	new_state |= ios::failbit;
+    if (ch == EOF) 
+	new_state |= ios::eofbit;
     s.clear(new_state);
     return s;
 }
@@ -1378,7 +1477,8 @@ int readline(istream& s, string& x, char terminator, int discard)
     }
     x.rep->s[i] = 0;
     x.rep->len = i;
-    if (ch == EOF) s.clear(s.rdstate() | ios::eofbit);
+    if (ch == EOF)
+	s.clear(s.rdstate() | ios::eofbit);
     return i;
 }
 
@@ -1391,32 +1491,36 @@ int string::freq(const subString& y) const
 {
     int found = 0;
     for (unsigned int i = 0; i < length(); i++) 
-	if (match(i,length(),0,y.chars(), y.length())>= 0) found++;
-    return(found);
+	if (match(i,length(),0,y.chars(), y.length())>= 0)
+	    found++;
+    return found;
 }
 
 int string::freq(const string& y) const
 {
     int found = 0;
     for (unsigned int i = 0; i < length(); i++) 
-	if (match(i,length(),0,y.chars(),y.length()) >= 0) found++;
-    return(found);
+	if (match(i,length(),0,y.chars(),y.length()) >= 0)
+	    found++;
+    return found;
 }
 
 int string::freq(const char* t) const
 {
     int found = 0;
     for (unsigned int i = 0; i < length(); i++) 
-	if (match(i,length(),0,t) >= 0) found++;
-    return(found);
+	if (match(i,length(),0,t) >= 0)
+	    found++;
+    return found;
 }
 
 int string::freq(char c) const
 {
     int found = 0;
     for (unsigned int i = 0; i < length(); i++) 
-	if (match(i,length(),0,&c,1) >= 0) found++;
-    return(found);
+	if (match(i,length(),0,&c,1) >= 0)
+	    found++;
+    return found;
 }
 
 
