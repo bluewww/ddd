@@ -26,6 +26,12 @@ dnl `http://www.cs.tu-bs.de/softech/ddd/',
 dnl or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 dnl
 dnl
+dnl Include a note that we're generated automatically
+dnl
+! Generated automatically from .m4 source by @M4@ -- DO NOT EDIT
+dnl
+dnl
+dnl
 dnl M4 setup
 dnl --------
 dnl

@@ -1,6 +1,5 @@
 // $Id$ -*- c++ -*-
 // VSL functions for DDD graph display
-// Generated automatically from ddd.vsl.m4 and colors.m4 by M4.
 include(ifdef(`srcdir',srcdir()/colors.m4,colors.m4))dnl
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
