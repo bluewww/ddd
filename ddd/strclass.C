@@ -1120,7 +1120,7 @@ strRep* string_Scapitalize(strRep* src, strRep* dest)
 #if 0				// already defined in -lg++
 string replicate(char c, int n) return w;
 {
-    w.rep = Sresize(w.rep, n);
+    w.rep = string_Sresize(w.rep, n);
     char* p = w.rep->s;
     while (n-- > 0) *p++ = c;
     *p = 0;
@@ -1171,7 +1171,7 @@ string common_suffix(const string& x, const string& y, int startpos) return r;
 string replicate(char c, int n)
 {
     string w;
-    w.rep = Sresize(w.rep, n);
+    w.rep = string_Sresize(w.rep, n);
     char* p = w.rep->s;
     while (n-- > 0) *p++ = c;
     *p = 0;
@@ -1183,7 +1183,7 @@ string replicate(const string& y, int n)
 {
     string w;
     int len = y.length();
-    w.rep = Sresize(w.rep, n * len);
+    w.rep = string_Sresize(w.rep, n * len);
     char* p = w.rep->s;
     while (n-- > 0)
     {
