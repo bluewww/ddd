@@ -94,7 +94,7 @@ XtResource ddd_resources[] = {
 	sizeof(Boolean),
 	XtOffsetOf(AppData, open_selection),
 	XmRImmediate,
-	XtPointer(True)
+	XtPointer(False)
     },
 
     { 

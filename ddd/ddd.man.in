@@ -4081,12 +4081,12 @@ This resource is used by \s-1@DDD@\s+1 to save and restore \s-1JDB\s+1
 settings.
 .TP
 .B "openSelection (\fPclass\fB OpenSelection)"
-If this is `\fBon\fR' (default), \s-1@DDD@\s+1 invoked without
-argument checks whether the current selection or clipboard contains
-the file name or \s-1URL\s+1 of an executable program.  If this is so,
-\s-1@DDD@\s+1 will automatically open this program for debugging.  If
-this resource is `\fBoff\fR', \s-1@DDD@\s+1 invoked without arguments
-will always start without a debugged program.
+If this is `\fBon\fR', \s-1@DDD@\s+1 invoked without argument checks
+whether the current selection or clipboard contains the file name or
+\s-1URL\s+1 of an executable program.  If this is so, \s-1@DDD@\s+1
+will automatically open this program for debugging.  If this resource
+is `\fBoff\fR' (default), \s-1@DDD@\s+1 invoked without arguments will
+always start without a debugged program.
 .TP
 .B "perlInitCommands (\fPclass\fB InitCommands)"
 This string contains a list of newline-separated commands that are

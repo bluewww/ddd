@@ -155,7 +155,7 @@ Ddd*saveOptionsOnExit: off
 
 ! On if DDD should attempt to open the current selection 
 ! when invoked without args.
-Ddd*openSelection: on
+Ddd*openSelection: off
 
 
 ! The command to invoke the execution window for showing I/O of the debugged
