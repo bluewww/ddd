@@ -582,7 +582,7 @@ void SourceView::text_popup_printCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command("print " + *word_ptr, w);
+    gdb_command(gdb->print_command() + " " + *word_ptr, w);
 }
 
 void SourceView::text_popup_print_refCB (Widget w, 
@@ -591,7 +591,7 @@ void SourceView::text_popup_print_refCB (Widget w,
     string* word_ptr = (string*)client_data;
     assert(word_ptr->length() > 0);
 
-    gdb_command("print *(" + *word_ptr + ")", w);
+    gdb_command(gdb->print_command() + " *(" + *word_ptr + ")", w);
 }
 
 
@@ -897,7 +897,7 @@ String SourceView::read_from_gdb(const string& file_name, long& length)
 	command = "list 1,1000000";
 	break;
     }
-    string listing = gdb_question(command);
+    string listing = gdb_question(command, -1);
 
     // GDB listings have the format <NUMBER>\t<LINE>.
     // Copy LINE only; line numbers will be re-added later.
@@ -3459,17 +3459,10 @@ void SourceView::SelectFrameCB (Widget w, XtPointer, XtPointer call_data)
     }
 }
 
-inline string where(GDBAgent *gdb)
-{
-    if (gdb->type() == DBX && gdb->version() != DBX1)
-	return "where -h";
-    else
-	return "where";
-}
-
 void SourceView::refresh_stack_frames()
 {
-    string where_s = gdb_question(where(gdb));
+    // Allow unlimited time to find out where we are
+    string where_s = gdb_question(gdb->where_command(), -1);
     if (where_s == string(-1))
 	where_s = "No stack.";
     process_where(where_s);
@@ -3726,7 +3719,7 @@ void SourceView::process_register(string& register_output)
     {
 	tabto(register_list[i], 26);
 	untabify(register_list[i]);
-	selected[i] = 0;
+	selected[i] = false;
     }
 
     setLabelList(register_list_w, register_list, selected, count);
