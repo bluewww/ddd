@@ -34,16 +34,17 @@
 // Main types
 typedef int MMType;
 
-const MMType MMPush       = 0;	// create PushButton (default)
-const MMType MMToggle     = 1;	// create ToggleButton
-const MMType MMMenu       = 2;	// create CascadeButton with menu
-const MMType MMSeparator  = 3;	// create Separator
-const MMType MMLabel      = 4;	// create Label
-const MMType MMRadioMenu  = 5;	// create CascadeButton with RadioBox menu
-const MMType MMOptionMenu = 6;  // create an option menu
-const MMType MMPanel      = 7;  // create a panel
-const MMType MMRadioPanel = 8;  // create a panel with RadioBox menu
-const MMType MMScale      = 9;  // create a scale
+const MMType MMPush        = 0;	// create PushButton (default)
+const MMType MMToggle      = 1;	// create ToggleButton
+const MMType MMMenu        = 2;	// create CascadeButton with menu
+const MMType MMSeparator   = 3;	// create Separator
+const MMType MMLabel       = 4;	// create Label
+const MMType MMRadioMenu   = 5;	// create CascadeButton with RadioBox menu
+const MMType MMOptionMenu  = 6;  // create an option menu
+const MMType MMPanel       = 7;  // create a panel
+const MMType MMRadioPanel  = 8;  // create a panel with RadioBox menu
+const MMType MMButtonPanel = 9;  // like MMRadioPanel, but no radio behavior
+const MMType MMScale      = 10;  // create a scale
 
 const MMType MMTypeMask  = 15;	// mask to find type
 
@@ -98,6 +99,7 @@ Widget MMcreateMenuBar           (Widget parent, String name, MMDesc items[]);
 Widget MMcreateWorkArea          (Widget parent, String name, MMDesc items[]);
 Widget MMcreatePanel             (Widget parent, String name, MMDesc items[]);
 Widget MMcreateRadioPanel        (Widget parent, String name, MMDesc items[]);
+Widget MMcreateButtonPanel       (Widget parent, String name, MMDesc items[]);
 
 void   MMaddCallbacks   (MMDesc items[], XtPointer default_closure = 0);
 void   MMaddHelpCallback(MMDesc items[], XtCallbackProc proc);

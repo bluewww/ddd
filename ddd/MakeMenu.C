@@ -132,6 +132,7 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 
 	case MMPanel:
 	case MMRadioPanel:
+	case MMButtonPanel:
 	    // Create a label with an associated panel
 	    assert(subitems != 0);
 
@@ -151,10 +152,21 @@ static void addItems(Widget /* parent */, Widget shell, MMDesc items[],
 	    XtManageChild(label);
 
 	    strcpy(subMenuName, string(name) + "Menu");
-	    if (type == MMPanel)
+
+	    switch (type)
+	    {
+	    case MMPanel:
 		subMenu = MMcreatePanel(widget, subMenuName, subitems);
-	    else
+		break;
+
+	    case MMRadioPanel:
 		subMenu = MMcreateRadioPanel(widget, subMenuName, subitems);
+		break;
+
+	    case MMButtonPanel:
+		subMenu = MMcreateButtonPanel(widget, subMenuName, subitems);
+		break;
+	    }
 		
 	    XtVaSetValues(subMenu,
 			  XmNorientation, XmHORIZONTAL,
@@ -314,6 +326,20 @@ Widget MMcreateRadioPanel(Widget parent, String name, MMDesc items[])
     return panel;
 }
 
+// Create button panel from items
+Widget MMcreateButtonPanel(Widget parent, String name, MMDesc items[])
+{
+    Arg args[10];
+    int arg;
+
+    arg = 0;
+    Widget panel = verify(XmCreateRowColumn(parent, name, args, arg));
+    addItems(parent, panel, items);
+    XtManageChild(panel);
+
+    return panel;
+}
+
 // Perform proc on items
 void MMonItems(MMDesc items[], MMItemProc proc, XtPointer closure)
 {
@@ -382,6 +408,7 @@ static void addCallback(MMDesc *item, XtPointer default_closure)
     case MMSeparator:
     case MMPanel:
     case MMRadioPanel:
+    case MMButtonPanel:
 	assert(callback.callback == 0);
 	break;
 
