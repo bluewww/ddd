@@ -5816,26 +5816,41 @@ static void setup_command_tool()
     XtAddEventHandler(tool_shell, STRUCTURE_MASK, False,
 		      StructureNotifyEH, XtPointer(0));
 
-    // Determine `best' size for tool shell
+#if XmVersion >= 1002
+#define FIXED_COMMAND_TOOL 1
+#endif
+
+#if FIXED_COMMAND_TOOL
+    // Some FVWM flavors have trouble in finding the `best' window size.
+    // Determine `best' size for tool shell.
     XtWidgetGeometry size;
     size.request_mode = CWHeight | CWWidth;
     XtQueryGeometry(tool_buttons_w, NULL, &size);
+#endif
 
     // Set shell geometry
     Position pos_x, pos_y;
     get_transient_pos(XtScreen(tool_shell_parent), pos_x, pos_y);
 
     ostrstream os;
-    os << size.width << "x" << size.height << "+" << pos_x << "+" << pos_y;
+#if FIXED_COMMAND_TOOL
+    os << size.width << "x" << size.height;
+#endif
+    os << "+" << pos_x << "+" << pos_y;
     string geometry(os);
 
     XtSetArg(args[arg], XmNgeometry, geometry.chars()); arg++;
     XtSetArg(args[arg], XmNx, pos_x);                   arg++;
     XtSetArg(args[arg], XmNy, pos_y);                   arg++;
+
+#if FIXED_COMMAND_TOOL
+    // Some FVWM flavors have trouble in finding the `best' window size.
     XtSetArg(args[arg], XmNmaxWidth,  size.width);      arg++;
     XtSetArg(args[arg], XmNmaxHeight, size.height);     arg++;
     XtSetArg(args[arg], XmNminWidth,  size.width);      arg++;
     XtSetArg(args[arg], XmNminHeight, size.height);     arg++;
+#endif
+
     XtSetValues(tool_shell, args, arg);
 }
 
