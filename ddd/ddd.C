@@ -2031,7 +2031,7 @@ int main(int argc, char *argv[])
 	if (app_data.app_defaults_version != 0)
 	{
 	    messages << "Ignoring app-defaults file for " 
-		     << DDD_NAME << app_data.app_defaults_version << "\n";
+		     << DDD_NAME " " << app_data.app_defaults_version << "\n";
 	}
 
 	XrmDatabase app_def = app_defaults(XtDisplay(toplevel));
