@@ -30,7 +30,7 @@ char ExitCB_rcsid[] =
     "$Id$";
 
 #include <stdlib.h>
-#include <unistd.h>
+#include <unistd.h>             // environ, execvp()
 #include <stdio.h>		// perror()
 #include <Xm/Xm.h>
 #include <Xm/MessageB.h>
@@ -39,7 +39,7 @@ char ExitCB_rcsid[] =
 #include "ExitCB.h"
 #include "verify.h"
 
-extern char **environ;
+extern "C" char **environ;
 
 // Callbacks
 
