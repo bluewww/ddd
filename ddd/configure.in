@@ -384,8 +384,9 @@ if test "$motif_includes" != "no" && test "$motif_libraries" != "no"
 then
 # Rudolf Leitgeb <leitgeb@leland.Stanford.EDU> says that 
 # Motif 2.1 (linux 2.0.29) wants `-lXp' after `-lXm'.
-AC_CHECK_LIB(Xp, main,
-	XP_LIBS="-lXp",,
+AC_CHECK_LIB(Xp, XpSelectInput,
+	XP_LIBS="-lXp"
+	AC_DEFINE(HAVE_XP),,
 	${X_PRE_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XEXT_LIBS} ${X11_LIBS} ${LIBGEN})
 AC_CHECK_LIB(Xm, XmCreateOptionMenu, 
 	XM_LIBS="-lXm"

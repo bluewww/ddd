@@ -59,6 +59,9 @@
 /* Define if MAXPATHLEN is defined or declared in <sys/param.h>. */
 #undef HAVE_MAXPATHLEN
 
+/* Define if you have the XP library, as in Motif 2.1 and later */
+#undef HAVE_XP
+
 /* Define if you have the XPM library. */
 #undef HAVE_XPM
 
