@@ -1460,10 +1460,10 @@ Ddd*helpString:	\
 Ddd*XmScrollBar.helpString: \
 @rm This is a EMPH(Scroll Bar).\n\
 \n\
-Click or hold the BUTTON(left mouse button) on an arrow button\n\
+Click or hold BUTTON(1) on an arrow button\n\
 to scroll the window in the arrow direction.\n\
 \n\
-Drag the slider with the BUTTON(left mouse button) to select the\n\
+Drag the slider with BUTTON(1) to select the\n\
 visible part of the window.
 ! Ddd*XmScrollBar.tipString: \
 ! @rm Scroll window
@@ -1471,7 +1471,7 @@ visible part of the window.
 Ddd*XmSash.helpString: \
 @rm This is a EMPH(Paned Window Sash).\n\
 \n\
-Drag the sash with the BUTTON(left mouse button) to resize window parts.
+Drag the sash with BUTTON(1) to resize window parts.
 Ddd*XmSash.tipString: \
 @rm Resize window
 
@@ -3057,28 +3057,27 @@ define(GRAPH_EDIT_HELP,[\
 It shows the data displays of the debugged program.\n\
 \n\
 STRONG(Selecting displays)\n\
-ITEM Using the BUTTON(left mouse button), click on a display \
+ITEM Using BUTTON(1), click on a display \
 to select it.\n\
 ITEM Double-click on a display to select all connected displays.\n\
 ITEM Double-click on the background to select all displays.\n\
 ITEM Drag on the background to select several displays.\n\
 \n\
-Using the BUTTON(middle mouse button) \
-(or KEY(Shift) + BUTTON(Left mouse button)) instead\n\
+Using BUTTON(2) (or KEY(Shift) + BUTTON(1)) instead\n\
 EMPH(toggles) the selection rather than setting it.\n\
 \n\
 STRONG(Moving displays)\n\
-ITEM Using the BUTTON(left mouse button), drag on a display to move\n\
+ITEM Using BUTTON(1), drag on a display to move\n\
     all selected displays.\n\
 \n\
 STRONG(Modifying displays)\n\
-ITEM Using the BUTTON(right mouse button), click on some display \
+ITEM Using BUTTON(3), click on some display \
 to modify it.\n\
-ITEM Using KEY(Shift) + BUTTON(right mouse button), select modifications \
-from a shortcut menu.\n\
+ITEM Using KEY(Shift) + BUTTON(3), select modifications from\n\
+    a shortcut menu.\n\
 \n\
 STRONG(Creating displays)\n\
-ITEM Using the BUTTON(right mouse button), click on the background\n\
+ITEM Using BUTTON(3), click on the background\n\
     to create new displays via a popup menu.
 ])dnl
 
@@ -3088,7 +3087,7 @@ Ddd*data_disp_shell.helpString:	GRAPH_EDIT_HELP
 Ddd*graph_edit_panner.helpString:	\
 @rm This is a EMPH(panner).\n\
 \n\
-Drag the slider with the BUTTON(left mouse button) to scroll the data window.
+Drag the slider with BUTTON(1) to scroll the data window.
 Ddd*graph_edit_panner.tipString:	\
 @rm Scroll data window
 
@@ -3198,8 +3197,7 @@ Ddd*graph_cmd_w.graph_cmd_area*delete.labelString:	Delete ()
 ! Ddd*graph_cmd_w.graph_cmd_area*marginBottom:	  1
 
 define(ANNOUNCE_PULLDOWN,[\
-Pulldown menu functions (press and hold the \
-BUTTON(left) or BUTTON(right mouse button)):\
+Pulldown menu functions (press and hold BUTTON(1)):\
 ])dnl
 
 Ddd*graph_cmd_w.graph_cmd_area*new.helpString:\
@@ -3375,19 +3373,19 @@ STRONG(Left side)\n\
 The EMPH(left side) shows line numbers and breakpoints:\n\
 ITEM A plain stop sign or TEXT([#]VAR(n)[#]) indicates \
 an enabled breakpoint.\n\
-ITEM A grey stop sign or TEXT([_]VAR(n)[_])' indicates \
+ITEM A grey stop sign or TEXT([_]VAR(n)[_]) indicates \
 a disabled breakpoint.\n\
 ITEM The next executed line is indicated by an arrow or TEXT(>).\n\
 \n\
-Click the BUTTON(left mouse button) to select positions.\n\
-Click the BUTTON(right mouse button) to set and modify breakpoints.\n\
+Click BUTTON(1) to select positions.\n\
+Click BUTTON(3) to set and modify breakpoints.\n\
 \n\
 STRONG(Right side)\n\
 The EMPH(right side) contains the source code.\n\
 \n\
-Click the BUTTON(left mouse button) to select words.\n\
-Drag with the BUTTON(left mouse button) to extend your selection.\n\
-Click the BUTTON(right mouse button) to show values and lookup places.\n\
+Click BUTTON(1) to select words.\n\
+Drag with BUTTON(1) to extend your selection.\n\
+Click BUTTON(3) to show values and lookup places.\n\
 \n\
 To view a specific source, use the LBL(Lookup ()) button below.
 
@@ -3399,19 +3397,19 @@ STRONG(Left side)\n\
 The EMPH(left side) shows addresses and breakpoints:\n\
 ITEM A plain stop sign or TEXT([#]VAR(n)[#]) indicates \
 an enabled breakpoint.\n\
-ITEM A grey stop sign or TEXT([_]VAR(n)[_])' indicates \
+ITEM A grey stop sign or TEXT([_]VAR(n)[_]) indicates \
 a disabled breakpoint.\n\
 ITEM The next executed location is indicated by an arrow or TEXT(>).\n\
 \n\
-Click the BUTTON(left mouse button) to select addresses.\n\
-Click the BUTTON(right mouse button) to set and modify breakpoints.\n\
+Click BUTTON(1) to select addresses.\n\
+Click BUTTON(3) to set and modify breakpoints.\n\
 \n\
 STRONG(Right side)\n\
 The EMPH(right side) contains the machine code.\n\
 \n\
-Click the BUTTON(left mouse button) to select words.\n\
-Drag with the BUTTON(left mouse button) to extend your selection.\n\
-Click the BUTTON(right mouse button) to show values and lookup places.\n\
+Click BUTTON(1) to select words.\n\
+Drag with BUTTON(1) to extend your selection.\n\
+Click BUTTON(3) to show values and lookup places.\n\
 \n\
 To disassemble a specific function or address,\n\
 use the LBL(Lookup ()) button below.
@@ -3652,7 +3650,7 @@ Ddd*source_form_w.plain_arrow*helpString: \
 STRONG(Current Execution Position)\n\
 The plain arrow shows the current execution position in the lowest frame.\n\
 \n\
-To change the execution position, drag it with the BUTTON(left mouse button).
+To change the execution position, drag it with BUTTON(1).
 Ddd*source_form_w.plain_arrow*tipString: \
 @rm Current execution position
 Ddd*source_form_w.plain_arrow*documentationString: \
@@ -3662,7 +3660,7 @@ Ddd*code_form_w.plain_arrow*helpString: \
 STRONG(Current Program Counter)\n\
 The plain arrow shows the current program counter in the lowest frame.\n\
 \n\
-To change the program counter, drag it with the BUTTON(left mouse button).
+To change the program counter, drag it with BUTTON(1).
 Ddd*code_form_w.plain_arrow*tipString: \
 @rm Current program counter
 Ddd*code_form_w.plain_arrow*documentationString: \
@@ -3685,7 +3683,7 @@ STRONG(Current Execution Position (signaled))\n\
 The lightning arrow shows the current execution position after being\n\
 stopped by a signal.\n\
 \n\
-To change the execution position, drag it with the BUTTON(left mouse button).
+To change the execution position, drag it with BUTTON(1).
 Ddd*source_form_w.signal_arrow*tipString: \
 @rm Current execution position (stopped by signal)
 
@@ -3694,7 +3692,7 @@ STRONG(Current Program Counter (signaled))\n\
 The lightning arrow shows the current program counter after being\n\
 stopped by a signal.\n\
 \n\
-To change the program counter, drag it with the BUTTON(left mouse button).
+To change the program counter, drag it with BUTTON(1).
 Ddd*code_form_w.signal_arrow*tipString: \
 @rm Current program counter (stopped by signal)
 
@@ -3702,8 +3700,8 @@ Ddd*plain_stop.helpString: \
 STRONG(Breakpoint (enabled))\n\
 The debugged program will stop when reaching this location.\n\
 \n\
-To change the breakpoint properties, press the BUTTON(right mouse button).\n\
-To move it to another location, drag it using the BUTTON(left mouse button).
+To change the breakpoint properties, press BUTTON(3).\n\
+To move it to another location, drag it using BUTTON(1).
 Ddd*plain_stop.tipString: 
 Ddd*plain_stop.documentationString: 
 
@@ -3711,8 +3709,8 @@ Ddd*grey_stop.helpString: \
 STRONG(Breakpoint (disabled))\n\
 A disabled breakpoint has no effect until reenabled.\n\
 \n\
-To change the breakpoint properties, press the BUTTON(right mouse button).\n\
-To move it to another location, drag it using the BUTTON(left mouse button).
+To change the breakpoint properties, press BUTTON(3).\n\
+To move it to another location, drag it using BUTTON(1).
 Ddd*grey_stop.tipString: 
 Ddd*grey_stop.documentationString: 
 
@@ -5136,14 +5134,14 @@ ITEM To examine a variable value, select it first (click on an \
 occurrence).\n\
     Then use LBL(Print ()) (for simple values) and LBL(Display ()) \
 (for complex\n\
-    values).  As a shortcut, you may also press the BUTTON(right mouse\n\
-    button) to get a popup menu.\n\
+    values).  As a shortcut, you may also press BUTTON(3)\n\
+    to get a popup menu.\n\
 ITEM You can display all local variables at once using \
 LBL(Data) | LBL(Display\n\
     Local Variables).\n\
 ITEM To set and clear further breakpoints, use \
 LBL(Source) | LBL(Edit Breakpoints).\n\
-    As a shortcut, you may also press the BUTTON(right mouse button) on a\n\
+    As a shortcut, you may also press BUTTON(3) on a\n\
     location or breakpoint to get a popup menu.])dnl
 
 Ddd*stopped_at_passed_signal.helpString: \

@@ -27,7 +27,7 @@
 .\" `http://www.cs.tu-bs.de/softech/ddd/',
 .\" or send a mail to the DDD developers <ddd@ips.cs.tu-bs.de>.
 .\"
-.TH @ddd@ 1 "28 Nov 1997" "@DDD@ @VERSION@"
+.TH @ddd@ 1 "03 Dec 1997" "@DDD@ @VERSION@"
 .SH "NAME"
 @ddd@, x@ddd@ - the data display debugger
 .SH ""
@@ -515,16 +515,15 @@ text.
 .SS "Looking up Definitions"
 .\"
 If you wish to lookup a specific function or variable definition whose
-name is visible in the source text, click with the \fIleft mouse
-button\fR on the function or variable name.  The name is copied to the
-argument field.  Click on the `\fBLookup ()\fR' button to find its
-definition.
+name is visible in the source text, click with \fImouse button 1\fR on the
+function or variable name.  The name is copied to the argument field.
+Click on the `\fBLookup ()\fR' button to find its definition.
 .PP
 .PSPIC @srcdir@/PICS/ddd-source-popup.ps 15.3cm
 .PP
-As a shorter alternative, you can simply press the \fIright mouse
-button\fR on the function name and select the `\fBLookup\fR' item from
-the source popup menu.
+As a shorter alternative, you can simply press \fImouse button 3\fR on the
+function name and select the `\fBLookup\fR' item from the source popup
+menu.
 .PP
 As another alternative, you can enter the function name in the
 argument field and click on the `\fBLookup ()\fR' button to find its
@@ -537,10 +536,10 @@ details.
 .SS "Textual Search"
 .\"
 If the item you wish to search is visible in the source text, click
-with the \fIleft mouse button\fR on it.  The identifier is copied to
-the argument field.  Click on the `\fBFind\s-2>>\s+2 ()\fR' button to find
-following occurrences and on the  `\fBFind\s-2<<\s+2 ()\fR' button to find
-previous occurrences.
+with \fImouse button 1\fR on it.  The identifier is copied to the argument
+field.  Click on the `\fBFind\s-2>>\s+2 ()\fR' button to find
+following occurrences and on the `\fBFind\s-2<<\s+2 ()\fR' button to
+find previous occurrences.
 .PP
 As an alternative, you can enter the item in the argument field and
 click on one of the `\fBFind\fR' buttons.
@@ -568,13 +567,13 @@ Using the source window, you can make the program stop at certain
 .\"
 .SS "Setting Breakpoints by Location"
 .\"
-If the source line is visible, click with the \fIleft mouse button\fR
+If the source line is visible, click with \fImouse button 1\fR
 on the left of the source line and then on the `\fBBreak at ()\fR'
 button.
 .PP
-As an alternative, you can simply press the \fIright mouse button\fR
-on the left of the source line and select the `\fBSet Breakpoint\fR' item
-from the line popup menu.
+As an alternative, you can simply press \fImouse button 3\fR on the left of
+the source line and select the `\fBSet Breakpoint\fR' item from the
+line popup menu.
 .PP
 .PSPIC @srcdir@/PICS/ddd-line-popup.ps 15.3cm
 .PP
@@ -604,14 +603,12 @@ Breakpoints are indicated by a plain stop sign, or as
 .\"
 .SS "Setting Breakpoints by Name"
 .\"
-If the function name is visible, click with the \fIleft
-mouse button\fR on the function name.  The function name is copied to
-the argument field.  Click on the `\fBBreak at ()\fR' button to set a
-breakpoint there.
+If the function name is visible, click with \fImouse button 1\fR on the
+function name.  The function name is copied to the argument field.
+Click on the `\fBBreak at ()\fR' button to set a breakpoint there.
 .PP
-As a shorter alternative, you can simply press the \fIright
-mouse button\fR on the function name and select the `\fBbreak\fR' item
-from the popup menu.
+As a shorter alternative, you can simply press \fImouse button 3\fR on the
+function name and select the `\fBbreak\fR' item from the popup menu.
 .PP
 As another alternative, you can enter the function name in the
 argument field (possibly using name completion by pressing the
@@ -631,10 +628,10 @@ prompt) for details.  The \s-2XDB\s+2 `\fBb\fR' command works as well.
 .\"
 Note: Some \s-2DBX\s+2 variants do not support breakpoint disabling.
 .PP
-To temporarily disable a breakpoint, press the \fIright mouse
-button\fR on the breakpoint name and select the `\fBDisable
-Breakpoint\fR' item from the breakpoint popup menu.  To enable it
-again, select `\fBEnable Breakpoint\fR'.
+To temporarily disable a breakpoint, press \fImouse button 3\fR on the
+breakpoint name and select the `\fBDisable Breakpoint\fR' item from
+the breakpoint popup menu.  To enable it again, select `\fBEnable
+Breakpoint\fR'.
 .PP
 .PSPIC @srcdir@/PICS/ddd-bp-popup.ps 15.3cm
 .PP
@@ -649,16 +646,16 @@ Finally, you can use the \s-2GDB\s+2 `\fBdisable\fR' command.  Type
 `\fBhelp disable\fR' at the `\fB(gdb)\fR' prompt for details.
 .PP
 The `\fBDisable Breakpoint\fR' item is also accessible via the
-`\fBClear at ()\fR' button.  Just press and hold the \fIleft mouse
-button\fR on the button to get a popup menu.
+`\fBClear at ()\fR' button.  Just press and hold \fImouse button 1\fR on the
+button to get a popup menu.
 .\"
 .\"
 .SS "Temporary Breakpoints"
 .\"
 A \fItemporary breakpoint\fR is immediately deleted as soon as it is
-reached.  To set a temporary breakpoint, press the \fIright mouse
-button\fR on the left of the source line and select the `\fBSet
-Temporary Breakpoint\fR' item from the popup menu.
+reached.  To set a temporary breakpoint, press \fImouse button 3\fR on the
+left of the source line and select the `\fBSet Temporary
+Breakpoint\fR' item from the popup menu.
 .PP
 Temporary breakpoints are convenient to make the program continue up
 to a specific location: just set the temporary breakpoint at this
@@ -672,26 +669,24 @@ stack frame is exited.  In \s-2DBX\s+2 and \s-2XDB\s+2, execution
 stops when the temporary breakpoint is reached.
 .PP
 The `\fBSet Temporary Breakpoint\fR' and `\fBContinue Until Here\fR'
-items are also accessible via the `\fBBreak at ()\fR' button.  Just press
-and hold the \fIleft mouse button\fR on the button to get a popup
-menu.
+items are also accessible via the `\fBBreak at ()\fR' button.  Just
+press and hold \fImouse button 1\fR on the button to get a popup menu.
 .\"
 .\"
 .SS "Deleting Breakpoints"
 .\"
-If the breakpoint is visible, click with the \fIleft mouse button\fR
-on the breakpoint.  The breakpoint location is copied to the argument
-field.  Click on the `\fBClear at ()\fR' button to delete all
-breakpoints there.
+If the breakpoint is visible, click with \fImouse button 1\fR on the
+breakpoint.  The breakpoint location is copied to the argument field.
+Click on the `\fBClear at ()\fR' button to delete all breakpoints
+there.
 .PP
-If the function name is visible, click with the \fIleft mouse
-button\fR on the function name.  The function name is copied to the
-argument field.  Click on the `\fBClear at ()\fR' button to set a
-breakpoint there.
+If the function name is visible, click with \fImouse button 1\fR on the
+function name.  The function name is copied to the argument field.
+Click on the `\fBClear at ()\fR' button to set a breakpoint there.
 .PP
-As a shorter alternative, you can simply press the \fIright mouse
-button\fR on the breakpoint and select the `\fBDelete Breakpoint\fR'
-item from the popup menu.
+As a shorter alternative, you can simply press \fImouse button 3\fR on the
+breakpoint and select the `\fBDelete Breakpoint\fR' item from the
+popup menu.
 .PP
 As yet another alternative, you can select the breakpoint and click on
 `\fBDelete\fR' in the Breakpoint editor (invoked through `\fBSource |
@@ -704,11 +699,11 @@ the `\fB(gdb)\fR' prompt for details.
 .\"
 .SS "Moving Breakpoints"
 .\"
-To move a breakpoint to a different location, press the \fIleft mouse
-button\fR on the stop sign and drag it to the desired location.  This
-is equivalent to deleting the breakpoint at the old location and
-setting a breakpoint at the new location.  The new breakpoint inherits
-all properties of the old breakpoint, except the breakpoint number.
+To move a breakpoint to a different location, press \fImouse button 1\fR on
+the stop sign and drag it to the desired location.  This is equivalent
+to deleting the breakpoint at the old location and setting a
+breakpoint at the new location.  The new breakpoint inherits all
+properties of the old breakpoint, except the breakpoint number.
 .PP
 Note: Dragging breakpoints is not possible when glyphs are disabled.
 Delete and set breakpoints instead.
@@ -741,9 +736,9 @@ You can then enter (or change) the condition in a special dialog.
 .PP
 .PSPIC @srcdir@/PICS/ddd-cond.ps 15.3cm
 .PP
-As a faster alternative, you can also press the \fIright mouse
-button\fR on the breakpoint in the source code and select the `\fBSet
-Condition\fR' item from the popup menu.
+As a faster alternative, you can also press \fImouse button 3\fR on the
+breakpoint in the source code and select the `\fBSet Condition\fR'
+item from the popup menu.
 .\"
 .\"
 .SS "Breakpoint Ignore Counts"
@@ -757,9 +752,9 @@ To set a breakpoint ignore count, select the appropriate breakpoint in
 the Breakpoint Editor and click on the `\fBIgnore Count\fR' button.
 You can then enter (or change) the ignore count in a special dialog.
 .PP
-As a faster alternative, you can also press the \fIright mouse
-button\fR on the breakpoint in the source code and select the `\fBSet
-Ignore Count\fR' item from the popup menu.
+As a faster alternative, you can also press \fImouse button 3\fR on the
+breakpoint in the source code and select the `\fBSet Ignore Count\fR'
+item from the popup menu.
 .\"
 .SS "More Breakpoint Features"
 .\"
@@ -883,11 +878,11 @@ a discussion.
 .\"
 .SS "Altering the Execution Position"
 .\"
-To resume execution at a different location, press the \fIleft mouse
-button\fR on the arrow and drag it to a different location.  The most
-common occasion to use this feature is to back up\(em\&perhaps with
-more breakpoints set-over a portion of a program that has already
-executed, in order to examine its execution in more detail.
+To resume execution at a different location, press \fImouse button 1\fR on
+the arrow and drag it to a different location.  The most common
+occasion to use this feature is to back up\(em\&perhaps with more
+breakpoints set-over a portion of a program that has already executed,
+in order to examine its execution in more detail.
 .PP
 .PSPIC @srcdir@/PICS/ddd-drag.ps 15.3cm
 .PP
@@ -1000,14 +995,13 @@ variable.  The value is also shown in the status line.
 .PP
 The variable value can also be printed in the debugger console, making
 it available for further operations.  To print a variable value,
-select the desired variable by clicking the \fIleft mouse button\fR on
-its name.  The variable name is copied to the argument field.  By
-clicking the `\fBPrint ()\fR' button, a new display is created in the
-data window.
+select the desired variable by clicking \fImouse button 1\fR on its name.
+The variable name is copied to the argument field.  By clicking the
+`\fBPrint ()\fR' button, a new display is created in the data window.
 .PP
-As a shorter alternative, you can simply press the \fIright mouse
-button\fR on the variable name and select the `\fBPrint\fR' item from
-the popup menu.
+As a shorter alternative, you can simply press \fImouse button 3\fR on
+the variable name and select the `\fBPrint\fR' item from the popup
+menu.
 .PP
 .PSPIC @srcdir@/PICS/ddd-print-popup.ps 15.3cm
 .\"
@@ -1018,14 +1012,13 @@ display\fR in the \fIdata window\fR.  The data window holds
 \fIdisplays\fR showing names and the values of variables.  The display
 is updated each time the program stops.
 .PP
-To create a new display, select the desired variable by clicking the
-\fIleft mouse button\fR on its name.  The variable name is copied to
-the argument field.  By clicking the `\fBDisplay ()\fR' button, a new
+To create a new display, select the desired variable by clicking
+\fImouse button 1\fR on its name.  The variable name is copied to the
+argument field.  By clicking the `\fBDisplay ()\fR' button, a new
 display is created in the data window.
 .PP
-As a shorter alternative, you can simply press the \fIright mouse
-button\fR on the variable name and select the `\fBDisplay\fR' item from
-the popup menu.
+As a shorter alternative, you can simply press \fImouse button 3\fR on the
+variable name and select the `\fBDisplay\fR' item from the popup menu.
 .PP
 As another alternative, you may also enter the expression to be
 displayed in the argument field and press the `\fBDisplay ()\fR'
@@ -1058,9 +1051,9 @@ Each display in the data window has a \fItitle bar\fR containing the
 \fIdisplay number\fR and the displayed expression (the \fIdisplay
 name\fR).  Below the title, the \fIdisplay value\fR is shown.
 .PP
-You can select individual displays by clicking on them with the
-\fIleft mouse button\fR.  The resulting expression is shown in the
-\fIargument field\fR, below.
+You can select individual displays by clicking on them with
+\fImouse button 1\fR.  The resulting expression is shown in the \fIargument
+field\fR, below.
 .PP
 You can \fIextend\fR an existing selection by pressing the \fBShift\fR
 key while selecting.  You can also \fItoggle\fR an existing selection
@@ -1072,11 +1065,10 @@ Single displays may also be selected by using the arrow keys.
 .\"
 .SS "Selecting Multiple Displays"
 .\"
-Multiple displays are selected by pressing and holding the \fIleft
-mouse button\fR somewhere on the window background.  By moving the
-pointer while holding the button, a selection rectangle is shown; all
-displays fitting in the rectangle are selected when the mouse button
-is released.
+Multiple displays are selected by pressing and holding \fImouse button 1\fR
+somewhere on the window background.  By moving the pointer while
+holding the button, a selection rectangle is shown; all displays
+fitting in the rectangle are selected when mouse button 1 is released.
 .PP
 If the \fBShift\fR key is pressed while selecting, the existing
 selection is \fIextended\fR.
@@ -1106,15 +1098,15 @@ displaying all details, or \fIhidden\fR, that is, displayed as
 `\fB{...}\fR'.
 .PP
 To show details about an aggregate, select the aggregate by clicking
-the \fIleft mouse button\fR on its name or value and click on the
-`\fBShow ()\fR' button.  Details are shown for the aggregate itself as
-well as for all contained sub-aggregates.
+\fImouse button 1\fR on its name or value and click on the `\fBShow ()\fR'
+button.  Details are shown for the aggregate itself as well as for all
+contained sub-aggregates.
 .PP
 To hide details about an aggregate, select the aggregate by clicking
-the \fIleft mouse button\fR on its name or value and click on the
-`\fBHide ()\fR' button.
+\fImouse button 1\fR on its name or value and click on the `\fBHide ()\fR'
+button.
 .PP
-When pressing and holding the \fIleft mouse button\fR on the `\fBShow
+When pressing and holding \fImouse button 1\fR on the `\fBShow
 ()\fR/\fBHide ()\fR' button, a menu pops up with even more
 alternatives:
 .TP
@@ -1134,8 +1126,8 @@ This item is equivalent to the `\fBShow ()\fR' button.
 Hide all details of the selected aggregate.  This item is equivalent
 to the `\fBHide ()\fR' button.
 .PP
-As a faster alternative, you can also press the \fIright mouse
-button\fR on the aggregate and select the appropriate menu item.
+As a faster alternative, you can also press \fImouse button 3\fR on the
+aggregate and select the appropriate menu item.
 .PP
 .PSPIC @srcdir@/PICS/ddd-hide-display.ps 15.3cm
 .PP
@@ -1162,8 +1154,8 @@ Arrays can be aligned horizontally or vertically.  To change the
 alignment of an array, select it and then click on the `\fBRotate
 ()\fR' button.
 .PP
-As a faster alternative, you can also press the \fIright mouse
-button\fR on the array and select the `\fBRotate\fR' menu item.
+As a faster alternative, you can also press \fImouse button 3\fR on the array
+and select the `\fBRotate\fR' menu item.
 .PP
 .PSPIC @srcdir@/PICS/ddd-rotate-display.ps 15.3cm
 .PP
@@ -1203,12 +1195,11 @@ over again.  It can be accessed in three ways:
 by pressing and holding the `\fBNew Display\fR' button, or
 .br
 .IP \(bu 2
-by pressing the \fIright mouse button\fR on some display and selecting
-`\fBNew Display\fR', or
+by pressing \fImouse button 3\fR on some display and selecting `\fBNew
+Display\fR', or
 .br
 .IP \(bu 2
-by pressing \fBShift\fR and the \fIright mouse button\fR on some
-display.
+by pressing \fBShift\fR and \fImouse button 3\fR on some display.
 .br
 .PP
 As an example, assume you have selected a display named `\fBfoo\fR'
@@ -1261,9 +1252,9 @@ To dereference a pointer, select the originating pointer value or name
 and click on the `\fBDisplay *()\fR' button.  A new display showing
 the dereferenced pointer value is created.
 .PP
-As a faster alternative, you can also press the \fIright mouse
-button\fR on the originating pointer value or name and select the
-`\fBDisplay *\fR' menu item.
+As a faster alternative, you can also press \fImouse button 3\fR on the
+originating pointer value or name and select the `\fBDisplay *\fR'
+menu item.
 .PP
 The `\fBDisplay *()\fR' function is also accessible by pressing and
 holding the `\fBDisplay ()\fR' button.
@@ -1365,9 +1356,9 @@ separately.
 .\"
 .SS "Deleting Displays"
 .\"
-To delete a single display, select it and click on the `\fBDelete ()\fR'
-button.  As an alternative, you can also press the \fIright mouse
-button\fR on the display and select the `\fBDelete Display\fR' item.
+To delete a single display, select it and click on the `\fBDelete
+()\fR' button.  As an alternative, you can also press \fImouse button 3\fR on
+the display and select the `\fBDelete Display\fR' item.
 .PP
 When a display is deleted, its immediate ancestors and descendants are
 automatically selected, so that you can easily delete entire graphs.
@@ -1488,9 +1479,8 @@ you think it could be useful.
 You can refresh the data window by selecting `\fBData | Refresh
 Displays\fR'.
 .PP
-As an alternative, you can press the \fIright mouse button\fR
-on the background of the data window and select the `\fBRefresh
-Display\fR' item.
+As an alternative, you can press \fImouse button 3\fR on the background of
+the data window and select the `\fBRefresh Display\fR' item.
 .PP
 Typing
 .sp
@@ -1514,9 +1504,9 @@ manipulate the display graph.
 .\"
 From time to time, you may wish to move displays at another place in
 the data window.  You can move a single display by pressing and
-holding the \fIleft mouse button\fR on the display title.  Moving the
-pointer while holding the button causes all selected displays to move
-along with the pointer.
+holding \fImouse button 1\fR on the display title.  Moving the pointer while
+holding the button causes all selected displays to move along with the
+pointer.
 .PP
 If the data window becomes too small to hold all displays, scroll bars
 are created.  If your \s-2@DDD@\s+2 is set up to use \fIpanners\fR

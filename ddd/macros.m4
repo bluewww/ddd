@@ -75,8 +75,8 @@ dnl
 dnl KEY(k) is used for keyboard keys
 define([KEY], [ifelse([$1], , [[KEY]], [@key $1@rm ])])dnl
 dnl
-dnl BUTTON(k) is used for mouse buttons
-define([BUTTON], [ifelse([$1], , [[BUTTON]], [@sl $1@rm ])])dnl
+dnl BUTTON(n) sets mouse button N.
+define([BUTTON], [ifelse([$1], , [[BUTTON]], [@sl mouse button $1@rm ])])dnl
 dnl
 dnl SAMP(k) shows a literal sequence of characters.
 define([SAMP], [ifelse([$1], , [[SAMP]], [`@tt $1@rm'])])dnl
