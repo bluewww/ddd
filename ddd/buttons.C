@@ -221,6 +221,29 @@ static string gdbHelp(string command)
     return help;
 }
 
+static string gdbSettingsValue(string command)
+{
+    switch (gdb->type())
+    {
+    case GDB:
+	if (command.contains("set ", 0))
+	{
+	    string value = gdb_question("show " + command.after(rxwhite));
+	    if (!value.contains("current"))
+		value.gsub(" is ", " is currently ");
+	    strip_final_blanks(value);
+	    return value;
+	}
+	break;
+
+    case DBX:
+    case XDB:
+	return "";		// FIXME
+    }
+
+    return NO_GDB_ANSWER;
+}
+
 static MString gdbDefaultHelpText(Widget widget)
 {
     string name = gdbHelpName(widget);
@@ -235,6 +258,15 @@ static MString gdbDefaultHelpText(Widget widget)
     else
     {
 	msg += rm(help);
+
+	// Add current settings state, if any
+	string state = gdbSettingsValue(name);
+	if (state != NO_GDB_ANSWER)
+	{
+	    msg += cr();
+	    msg += cr();
+	    msg += rm(state);
+	}
     }
 
     return msg;
