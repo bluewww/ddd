@@ -167,7 +167,7 @@ void _gdb_command(const Command& c)
 	{
 	    promptPosition = messagePosition = XmTextGetLastPosition(gdb_w);
 	}
-	else if (cmd.length() > 0 && c.verbose)
+	else if (cmd.length() > 0 && c.echo)
 	{
 	    add_to_history(cmd);
 	}
