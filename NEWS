@@ -1,6 +1,19 @@
 DDD News						-*- text -*-
 ********
 
+DDD 2.2.2
+---------
+
+    DDD 2.2.2 fixes some more bugs introduced in DDD 2.2.
+
+    There are no user-visible changes to DDD 2.2.1.
+
+    Bug fixes:
+    - Getting and identifying core dumps on Sun Solaris now works.
+    - Improved support for Sun DBX 4.0.
+
+
+
 DDD 2.2.1
 ---------
 
