@@ -97,3 +97,12 @@ jck@catt.citri.edu.au (Justin Kibell):
     created. I use it quite a lot now and find it very useful. Keep up
     the good work.
 
+aisic@ksl.co.il (Ilan Aisic)
+
+    I tried it on a huge program that we're developing here and was
+    very impressed (the ups debugger core dumps on it).
+    I've installed it for all our SunOS systems and became a fan!
+    I've told all the other developers in here about ddd by email and
+    later today when I'm supposed to give a talk about a different
+    issue, I'll hand them all a copy of doc/ddd-paper.ps. [...]
+    Regards, and thanks for writing such a nice GUI for gdb.

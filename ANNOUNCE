@@ -1,231 +1,240 @@
 DDD 1.3b is available
 =====================
 
-    Release 1.3b of the Data Display Debugger (DDD), a graphical
-    front-end for GDB and DBX debuggers, is now available by anonymous
-    FTP from `ftp.ips.cs.tu-bs.de` [134.169.32.1] in the file
-    `/pub/local/softech/ddd/ddd-1.3b.tar.gz' (1.1 MB).  Diffs from
-    earlier versions are in `/pub/local/softech/ddd/diffs/`.  Binaries
-    for various architectures are in `/pub/local/softech/ddd/bin/`.
-    Please try a closer FTP site first; see below for a list.
+Release 1.3b of the Data Display Debugger (DDD), a graphical
+front-end for GDB and DBX debuggers, is now available at
+
+    ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-1.3b.tar.gz
+
+Diffs from earlier versions are in
+
+    ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/diffs/
+
+DDD binaries for various architectures are in 
+
+    ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/bin/
+
+Please try a closer FTP site first; see below for a list.
 
 
 DDD News
 ========
 
-    DDD 1.3b now compiles using GCC 2.7; some new features have been
-    added and several minor bugs fixed.  Some bugs remain; see the
-    `BUGS' file for details.
+DDD 1.3b now compiles using GCC 2.7; some new features have been
+added and several minor bugs fixed.  Some bugs remain; see the
+`BUGS' file for details.
 
-    Changes to DDD 1.2:
-    - You can now edit the current source via an external editor.
-    - Display placement has been improved; new displays are now
-      created in the current visible view, if possible.
-    - The current execution position now stays near the middle of the
-      visible source code.  Following statements remain visible.
-    - Diagnostics of printing commands no longer get lost.
-    - Upon fatal errors, DDD tries to resume execution by returning to
-      the main event loop.  This leaves you a chance for exiting the
-      debugged program properly.
-    - DDD can now be interrupted using the SIGINT signal.
-    - In the breakpoint editor, you can now set multiple breakpoint
-      conditions and ignore counts at a time.
-    - New `Help/on Debugging' item.
-      Written by David A. Lyons (dlyons@apple.com).
-    - New `Help/DDD WWW Page' item.  Invokes a WWW browser
-      with recent DDD info.
-    - The DDD WWW page has moved to `http://www.cs.tu-bs.de/softech/ddd/'.
-    - Colours slightly reworked: text background is a little brighter.
-    - A short DDD survey, including lots of screen shots, is included
-      in `doc/ddd-paper.ps'.  The paper also describes some DDD innards.
-    - DDD source code has been adapted to the current ANSI/ISO C++
-      draft standard.  Any GCC release from 2.3.3 onwards, including
-      the recent GCC 2.7.0, should now compile DDD (unjustified
-      commpiler warnings in GCC 2.5 or lower, though).
-    - DBX support on Solaris improved.
-      Thanks to grant@isgtec.com (Grant McDorman)
-    - Patches for FreeBSD incorporated.
-      Thanks to smcarey@mailbox.syr.edu (Shawn M. Carey).
-    - DDD-specific application defaults now override user application
-      defaults.  Thanks to ksfdo0@ksepl.shell.nl (Fred Donck).
-    - New GNU librx 0.07.2 library included (from libg++-2.7.0),
-      should be faster and more reliable.
+Changes to DDD 1.2:
+- You can now edit the current source via an external editor.
+- Display placement has been improved; new displays are now created in
+  the current visible view, if possible.
+- The current execution position now stays near the middle of the
+  visible source code.  Following statements remain visible.
+- Diagnostics of printing commands no longer get lost.
+- Upon fatal errors, DDD tries to resume execution by returning to the
+  main event loop.  This leaves you a chance for exiting the debugged
+  program properly.
+- DDD can now be interrupted using the SIGINT signal.
+- In the breakpoint editor, you can now set multiple breakpoint
+  conditions and ignore counts at a time.
+- New `Help/on Debugging' item.  Written by David A. Lyons
+  (dlyons@apple.com).
+- New `Help/DDD WWW Page' item.  Invokes a WWW browser with recent DDD
+  info.
+- The DDD WWW page has moved to `http://www.cs.tu-bs.de/softech/ddd/'.
+- Colors slightly reworked: text background is a little brighter.
+- A short DDD survey, including lots of screen shots, is included in
+  `doc/ddd-paper.ps'.  The paper also describes some DDD innards.
+- DDD source code has been adapted to the current ANSI/ISO C++ draft
+  standard.  Any GCC release from 2.3.3 onwards, including the recent
+  GCC 2.7.0, should now compile DDD (unjustified compiler warnings in
+  GCC 2.5 or lower, though).
+- DBX support on Solaris improved.  Thanks to grant@isgtec.com (Grant
+  McDorman)
+- Patches for FreeBSD incorporated.  Thanks to smcarey@mailbox.syr.edu
+  (Shawn M. Carey).
+- DDD-specific application defaults now override user application
+  defaults.  Thanks to ksfdo0@ksepl.shell.nl (Fred Donck).
+- New GNU librx 0.07.2 library included (from libg++-2.7.0), should be
+  faster and more reliable.
 
-    Thanks to all who sent in bug reports and suggestions.  DDD now
-    runs on every major UNIX flavour (with the exception of OSF/1 -
-    any volunteers for that task?).
+Thanks to all who sent in bug reports and suggestions.  DDD now runs
+on every major UNIX flavor (with the exception of OSF/1 - any
+volunteers for that task?).
 
 
 
 Summary of DDD
 ==============
 
-    The Data Display Debugger (DDD) is a novel graphical user
-    interface to GDB and DBX, the popular UNIX debuggers.  Besides
-    ``usual'' features such as viewing source texts and breakpoints,
-    DDD provides a *graphical data display*, where data structures are
-    displayed as graphs.  A simple mouse click dereferences pointers
-    or reveals structure contents.  Complex data structures can be
-    explored incrementally and interactively, using automatic layout
-    if preferred.  Each time the program stops, the data display
-    reflects the current variable values.  Using DDD, you can reason
-    about your application by viewing its data, not just by viewing it
-    execute lines of source code.
+The Data Display Debugger (DDD) is a novel graphical user interface to
+GDB and DBX, the popular UNIX debuggers.  Besides ``usual'' features
+such as viewing source texts and breakpoints, DDD provides a
+*graphical data display*, where data structures are displayed as
+graphs.  A simple mouse click dereferences pointers or reveals
+structure contents.  Complex data structures can be explored
+incrementally and interactively, using automatic layout if preferred.
+Each time the program stops, the data display reflects the current
+variable values.  Using DDD, you can reason about your application by
+viewing its data, not just by viewing it execute lines of source code.
 
-    Other DDD features include: debugging of programs written in C,
-    C++, Pascal, or Modula-2; hypertext source navigation and lookup;
-    GDB/DBX command-line interface with full editing, history, and
-    completion capabilities; breakpoint, backtrace, and history
-    editors; optional program execution in terminal emulator window;
-    debugging on remote host; on-line manual; interactive help on the
-    OSF/Motif user interface.  DDD has been designed to compete with
-    well-known commercial debuggers.
+Other DDD features include: debugging of programs written in C, C++,
+Pascal, or MODULA-2; hypertext source navigation and lookup; GDB/DBX
+command-line interface with full editing, history, and completion
+capabilities; breakpoint, backtrace, and history editors; optional
+program execution in terminal emulator window; debugging on remote
+host; on-line manual; interactive help on the OSF/Motif user
+interface.  DDD has been designed to compete with well-known
+commercial debuggers.
 
-    DDD has been extensively beta-tested (especially by debugging
-    itself) and configures, compiles and runs out-of-the-box on almost
-    every major UNIX brand, including AIX (powerpc-ibm-aix3,
-    rs6000-ibm-aix3), HP-UX (hppa1.1-hp-hpux9), IRIX (mips-sgi-irix5),
-    Linux (i386-unknown-linux, i486-unknown-linux), Solaris
-    (i386-sun-solaris2 sparc-sun-solaris2), SunOS (sparc-sun-sunos4),
-    and ULTRIX (mips-dec-ultrix4).  Only exception is OSF/1.
+DDD has been extensively beta-tested (especially by debugging itself)
+and configures, compiles and runs out-of-the-box on almost every major
+UNIX brand, including AIX (powerpc-ibm-aix3, rs6000-ibm-aix3), FreeBSD
+(i386-intel-freebsd1), HP-UX (hppa1.1-hp-hpux9, m68k-hp-hpux9), IRIX
+(mips-sgi-irix5), Linux (i386-unknown-linux, i486-unknown-linux),
+Solaris (i386-sun-solaris2, sparc-sun-solaris2), SunOS
+(sparc-sun-sunos4), and ULTRIX (mips-dec-ultrix4).  Only known
+exception is OSF/1 - any volunteers for that task?
 
-    DDD is free software, protected by the GNU general public license.
-    It is actively maintained by its authors, Dorothea Luetkehaus and
-    Andreas Zeller at the Technische Universitaet Braunschweig, Germany.
+DDD is free software, protected by the GNU general public license.  It
+is actively maintained by its authors, Dorothea Luetkehaus and Andreas
+Zeller at the Technische Universitaet Braunschweig, Germany.
 
 
 
 Requirements
 ============
 
-    To build a complete DDD from sources, you need:
+To build a complete DDD from sources, you need:
 
-       * The GNU C++ compiler (GCC/G++), (preferably release 2.6.3 or
-         later), and a matching C++ I/O library (libg++, libstdc++, or
-         libiostream).
+* The GNU C++ compiler (GCC/G++, preferably release 2.6.3 or later),
+  and a matching C++ I/O library (libg++, libstdc++, or libiostream).
 
-         Some other C++ compilers have been reported to compile DDD as
-         well, such as Sun CC 4.0.  Cfront 3.0 does not compile DDD.
+  Some other C++ compilers have been reported to compile DDD as well,
+  such as Sun CC 4.0.  Cfront 3.0 does not compile DDD.
 
-       * The X window library (Xlib) and X toolkit library (Xt),
-         X11R4 or later.
+* The X window library (Xlib) and X toolkit library (Xt), X11R4 or
+  later.
 
-       * The OSF/Motif Widget library (release 1.1 or later).  Best
-         results are achieved using Motif 2.0 in conjunction with the
-         Athena Widget library.
+* The OSF/Motif Widget library (release 1.1 or later).  Best results
+  are achieved using Motif 2.0 in conjunction with the Athena Widget
+  library.
 
-       * Optionally, in addition to the OSF/Motif widget library, the
-         Athena Widget library (release 5 or later).  Having the
-         Athena Widget library is convenient for supporting
-         two-dimensional scrollbars and the `editres' protocol.
+* Optionally, in addition to the OSF/Motif widget library, the Athena
+  Widget library (release 5 or later).  Having the Athena Widget
+  library is convenient for supporting two-dimensional scrollbars and
+  the `editres' protocol.
 
-    To run DDD, you need a GDB debugger (version 4 is required; best
-    results are achieved with 4.13 or later).  Using GDB, you can
-    debug programs written in C and C++.
+To run DDD, you need a GDB debugger (version 4 is required; best
+results are achieved with 4.13 or later).  Using GDB, you can debug
+programs written in C and C++.
 
-    As an alternative, DDD also supports Sun's DBX debugger.  Using
-    DBX, you can additionally debug programs written in Pascal and
-    Modula-2.  DBX debuggers on other systems may work, too.
+As an alternative, DDD also supports Sun's DBX debugger.  Using DBX,
+you can additionally debug programs written in Pascal and MODULA-2.
+DBX debuggers on other systems may work, too.
 
 
 More Information
 ================
 
-    A World-Wide-Web page (including screen shots) devoted to DDD is
-    installed at `http://www.cs.tu-bs.de/softech/ddd/'.
+A World-Wide-Web page (including screen shots) devoted to DDD is
+installed at
 
-    A short DDD survey with several screen shots is available at
-    `ftp://ftp.ips.cs.tu-bs.de:/pub/local/softech/ddd/ddd-paper.ps.gz'.
-    The six-page paper gives a short introduction to the
-    ``look-and-feel'' of DDD and highlights some internal aspects.
+    http://www.cs.tu-bs.de/softech/ddd/
 
-    The DDD users mailing list, `ddd-users@ips.cs.tu-bs.de', is the
-    right place to contact other DDD users for assistance and hints.
-    New DDD releases and bug fixes are also announced here.
-    Send a mail to `ddd-users-request@ips.cs.tu-bs.de' for more
-    information.
+A short DDD survey with several screen shots is available at
 
-    Some people and organizations offer support services for DDD.
-    See the file `SERVICE' in the DDD distribution for details.
+    ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/ddd-paper.ps.gz
 
-    Send suggestions and bug reports for DDD to `ddd-bugs@ips.cs.tu-bs.de'.
+The six-page paper gives a short introduction to the ``look-and-feel''
+of DDD and highlights some internal aspects.
+
+The DDD users mailing list, `ddd-users@ips.cs.tu-bs.de', is the right
+place to contact other DDD users for assistance and hints.  New DDD
+releases and bug fixes are also announced here.  Send a mail to
+`ddd-users-request@ips.cs.tu-bs.de' for more information.
+
+Some people and organizations offer support services for DDD.  See the
+file `SERVICE' in the DDD distribution for details.
+
+Send suggestions and bug reports for DDD to `ddd-bugs@ips.cs.tu-bs.de'.
 
 
 
 DDD source FTP sites
 ====================
 
-    The DDD source package `ddd-1.3b.tar.gz' will soon be at these FTP
-    sites as well.  Please try them before `ftp.ips.cs.tu-bs.de' since
-    ftp.ips has a slow network connection.
+The DDD source package `ddd-1.3b.tar.gz' will soon be at these FTP
+sites as well.  Please try them before `ftp.ips.cs.tu-bs.de' since
+ftp.ips has a slow network connection.
 
 
 North America
 -------------
 
-    ftp.crl.research.digital.com[192.58.206.2]:/pub/X11/contrib/utilities/
-    ftp.x.org[198.112.44.100]:/contrib/utilities/
-    ftp.cs.columbia.edu[128.59.26.5]:/archives/X11R6/contrib/utilities/
-    ftp.uu.net[192.48.96.9]:/systems/window-sys/X/contrib/utilities/
+ftp://ftp.crl.research.digital.com/pub/X11/contrib/utilities/ddd-1.3b.tar.gz
+ftp://ftp.x.org/contrib/utilities/ddd-1.3b.tar.gz
+ftp://ftp.cs.columbia.edu/archives/X11R6/contrib/utilities/ddd-1.3b.tar.gz
+ftp://ftp.uu.net/systems/window-sys/X/contrib/utilities/ddd-1.3b.tar.gz
 
 
 Europe
 ------
 
-    ftp.denet.dk[129.142.6.74]:/pub/X11/contrib/utilities/
-    nic.funet.fi[192.52.71.41]:/pub/X11/contrib/utilities/
-    ftp.ibp.fr[132.227.60.2]:/pub/X11/contrib/utilities/
-    ftp.germany.eu.net[192.76.144.75]:/pub/X11/XConsortium/contrib/utilities/
-    ftp.uni-paderborn.de[131.234.2.32]:/pub/X11/contrib/utilities/
-    ftp.luth.se[130.240.18.2]:/pub/X11/contrib/utilities/
-    ftp.sunet.se[130.238.127.3]:/pub/X11/contrib/utilities/
-    ftp.eunet.ch[146.228.10.16]:/archive/software/X/utilities/
-    ftp.NL.net[193.78.240.13]:/pub/windows/X/contrib/utilities/
-    src.doc.ic.ac.uk[146.169.2.10]:/packages/X11-contrib/utilities/
+ftp://ftp.denet.dk/pub/X11/contrib/utilities/ddd-1.3b.tar.gz
+ftp://nic.funet.fi/pub/X11/contrib/utilities/ddd-1.3b.tar.gz
+ftp://ftp.ibp.fr/pub/X11/contrib/utilities/ddd-1.3b.tar.gz
+ftp://ftp.germany.eu.net/pub/X11/XConsortium/contrib/utilities/ddd-1.3b.tar.gz
+ftp://ftp.uni-paderborn.de/pub/X11/contrib/utilities/ddd-1.3b.tar.gz
+ftp://ftp.luth.se/pub/X11/contrib/utilities/ddd-1.3b.tar.gz
+ftp://ftp.sunet.se/pub/X11/contrib/utilities/ddd-1.3b.tar.gz
+ftp://ftp.eunet.ch/archive/software/X/utilities/ddd-1.3b.tar.gz
+ftp://ftp.NL.net/pub/windows/X/contrib/utilities/ddd-1.3b.tar.gz
+ftp://src.doc.ic.ac.uk/packages/X11-contrib/utilities/ddd-1.3b.tar.gz
 
 
 East Asia
 ---------
 
-    ftp.cs.cuhk.hk[137.189.4.57]:/pub/Xcontrib/utilities/
-    ftp.iij.ad.jp[192.244.176.50]:/pub/X/contrib/utilities/
-    NCTUCCCA.edu.tw[140.111.1.10]:/X/contrib/utilities/
+ftp://ftp.cs.cuhk.hk/pub/Xcontrib/utilities/ddd-1.3b.tar.gz
+ftp://ftp.iij.ad.jp/pub/X/contrib/utilities/ddd-1.3b.tar.gz
+ftp://NCTUCCCA.edu.tw/X/contrib/utilities/ddd-1.3b.tar.gz
 
 
 Australia
 ---------
 
-    archie.AU[139.130.23.2]:X11/contrib/utilities/
+ftp://archie.AUX11/contrib/utilities/ddd-1.3b.tar.gz
 
 
 
 DDD full FTP sites
 ==================
 
-    Besides DDD source packages, the sites listed here also carry DDD
-    binaries and patches as well as formatted DDD documentation and
-    DDD-related papers.
+Besides DDD source packages, the sites listed here also carry DDD
+binaries and patches as well as formatted DDD documentation and
+DDD-related papers.
 
-    DDD pre-compiled binaries are available for a variety of
-    architectures.  This may be useful for people who lack GCC or
-    Motif.  However, compiling DDD on your machine is strongly
-    preferred.  Use binaries as a last resort only.
+DDD pre-compiled binaries are available for a variety of
+architectures.  This may be useful for people who lack GCC or Motif.
+However, compiling DDD on your machine is strongly preferred.  Use
+binaries as a last resort only.
 
-    The `bin/README' file contains a list of available binaries.
-    Additional contributions are very welcome.
+The `bin/README' file contains a list of available binaries.
+Additional contributions are very welcome.
 
 
 North America
 -------------
 
-    uiarchive.cso.uiuc.edu[128.174.5.14]:/pub/packages/ddd/
+ftp://uiarchive.cso.uiuc.edu/pub/packages/ddd/
 
 
 Europe
 ------
 
-    ftp.ips.cs.tu-bs.de[134.169.32.1]:/pub/local/softech/ddd/
-    ftp.th-darmstadt.de[130.83.47.112]:/pub/programming/tools/ddd/
+ftp://ftp.ips.cs.tu-bs.de/pub/local/softech/ddd/
+ftp://ftp.th-darmstadt.de/pub/programming/tools/ddd/
 
 
 Have fun!

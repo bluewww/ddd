@@ -53,7 +53,7 @@ DDD Frequently Asked Questions					-*- text -*-
 
 5.  I don't like the 'break point' symbol.  Can I change it?
 
-    Yes - by altering the code :-).  I may make it user-defineable
+    Yes - by altering the code :-).  We may make it user-defineable
     some day, but the choice is limited to text characters unless you
     supply your own text font.
 
@@ -83,8 +83,7 @@ DDD Frequently Asked Questions					-*- text -*-
 7.  I have heard that there is a magic command built into DDD.
     Is this true, and what is this magic command for?
 
-    You'll have to find out this one for yourself.  Use the source,
-    Luke.
+    It's an adventurer's secret.  Use the source, Luke.
 
 
 8.  Is there an Athena Widgets port of DDD?
@@ -116,12 +115,54 @@ DDD Frequently Asked Questions					-*- text -*-
     Copy the appropriate resource lines from the `Ddd' file contained
     in the DDD distribution (type `./configure -v; cd ddd; make Ddd'
     to create it from scratch) in your `~/.dddinit' file.  For
-    instance, to make the background less bright, use:
+    instance, to make the background less bright as in DDD 1.2 and
+    before, use:
 
 	Ddd*XmText.background:             light grey
 	Ddd*XmTextField.background:        light grey
 	Ddd*GraphEdit.background:          light grey
 	Ddd*XmList.background:             light grey
-    
+
+
+
+11. I want to use DDD interprocess communication in my own
+    application.  How do I proceed?
+
+    There is a demonstration program named `ttytest' in the DDD
+    package.  Just type `make ttytest'.  It should be relatively
+    easy to customize this application.
+
+    Here are some pointers: If you want to talk with a separate
+    process, use the `TTYAgent' class, as defined in `TTYAgent.C'.
+    Using the `write' method, you can send arbitrary data to GDB; you
+    can define an `Input' handler that will be called each time GDB
+    sends you data.  The header files of `TTYAgent' and its
+    superclasses should contain sufficient information.  As all
+    communication is handled asynchronously, you can realize a usual
+    Xt-based interface using Athena widgets, Motif widgets, or another
+    Xt-based toolkit.
+
+
+
+12. I want to use the DDD graph editor in my own application.
+    How do I proceed?
+
+    There is a demonstration program named `test-graph' in the DDD
+    package.  Just type `make test-graph'.  It should be relatively
+    easy to customize this application.
+
+    Here are some pointers: The `GraphEdit' widget, as defined in
+    `GraphEdit.h' contains the DDD graph editor.  Variants with Athena
+    panners and Motif scrollbars are found in `PannedGE.h' and
+    `ScrolledGE.h', respectively.  The `GraphEdit' widget works on a
+    `Graph' structure, which is defined in `Graph.h'; a graph is
+    composed of nodes and edges, both forming class hierarchies whose
+    top classes are defined in `GraphNode.h' and `GraphEdge.h',
+    respectively.  The graph nodes in DDD are Box graph nodes, defined
+    in `BoxGraphN.h'; a box is a (possibly structured) rectangular
+    entity holding strings, lines, or figures.  See also the DDD paper
+    `doc/ddd-paper.ps' for details on boxes and how they are composed.
+
+
 
 $Id$
