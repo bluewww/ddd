@@ -3,6 +3,7 @@
 
 // Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 1999-2001 Universitaet Passau, Germany.
+// Copyright (C) 2001-2004 Free Software Foundation, Inc.
 // Written by Dorothea Luetkehaus <luetke@ips.cs.tu-bs.de>
 // and Andreas Zeller <zeller@gnu.org>.
 // 
@@ -7386,7 +7387,7 @@ static void setup_version_info()
 		    "Universit\344t Passau, Germany.\n"
 		    "Copyright \251 2001 "
 		    "Universit\344t des Saarlandes, Germany.\n"
-		    "Copyright \251 2001-2003 "
+		    "Copyright \251 2001-2004 "
 		    "Free Software Foundation, Inc.\n"));
 #endif
 }

@@ -3,6 +3,7 @@
 
 // Copyright (C) 1996-2000 Technische Universitaet Braunschweig, Germany.
 // Copyright (C) 2001 Universitaet des Saarlandes, Germany.
+// Copyright (C) 2001-2004 Free Software Foundation, Inc.
 // Written by Andreas Zeller <zeller@gnu.org>.
 // 
 // This file is part of DDD.
@@ -286,12 +287,14 @@ static void show_configuration(std::ostream& os, bool version_only)
 
     // Version info
     s = string("@(#)GNU " DDD_NAME " " DDD_VERSION " (" DDD_HOST ")\n") +
-	"@(#)Copyright (C) 1995-1999 " 
+	"@(#)Copyright (C) 1995-1999 "
 	"Technische Universit\344t Braunschweig, Germany.\n"
         "@(#)Copyright (C) 1999-2001 "
 	"Universit\344t Passau, Germany.\n"
         "@(#)Copyright (C) 2001 "
-	"Universit\344t des Saarlandes, Germany.\n";
+	"Universit\344t des Saarlandes, Germany.\n"
+        "@(#)Copyright (C) 2001-2004 "
+        "Free Software Foundation, Inc.\n";
     s.gsub(sccs, string(""));
     os << s;
 
