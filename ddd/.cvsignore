@@ -18,6 +18,9 @@ config.log
 config.status
 configinfo.C
 configure
+conftest.s1
+conftest.s2
+conftest.subs
 ctest
 cxxtest
 ddd
