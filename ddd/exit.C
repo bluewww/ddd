@@ -230,7 +230,7 @@ static void ddd_fatal(int sig)
 	static const char msg[] =
 	    "\nInternal error (%s).\n"
 	    "\n"
-	    "Congratulations!  You have found a bug in " DDD_NAME ".\n"
+	    "Oops!  You have found a bug in " DDD_NAME ".\n"
 	    "\n"
 	    "If you can reproduce this bug, please send a bug report\n"
 	    "to `ddd-bugs@ips.cs.tu-bs.de', giving a subject like\n"
