@@ -284,14 +284,20 @@ static void get_args(string command, string& base, string& args)
     if (args == "" && gdb->type() == GDB)
     {
 	args = gdb_question("show args");
-	if (!args.contains("Arguments", 0))
+
+	// GDB 4.16 issues `Arguments list', GDB 4,17 `Argument list'.  Shhh.
+	if (!args.contains("Argument", 0))
+	{
 	    args = "";
+	}
 	else
 	{
+	    // Strip one pair of enclosing `"' characters
 	    if (args.contains('"'))
 	    {
 		args = args.after('"');
-		args = args.before('"', -1);
+		if (args.contains('"'))
+		    args = args.before('"', -1);
 	    }
 	}
     }
